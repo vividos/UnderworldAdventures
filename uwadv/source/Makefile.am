@@ -15,7 +15,7 @@ SDL_CFLAGS = `sdl-config --cflags`
 SDL_LIBS = `sdl-config --libs`
 
 CPPFLAGS = -I.. $(SDL_CFLAGS)
-LDFLAGS = $(SDL_LIBS) -lGL -lGLU
+LDFLAGS = $(SDL_LIBS) -lGL -lGLU $(X_LIBS)
 
 # automake build rules
 bin_PROGRAMS = uwadv
