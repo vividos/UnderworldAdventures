@@ -39,7 +39,7 @@ ua_debug_server::ua_debug_server()
 
 ua_debug_server::~ua_debug_server()
 {
-   delete server_impl;
+//   delete server_impl;
 }
 
 bool ua_debug_server::start_debugger(ua_game_interface* game)
