@@ -55,9 +55,11 @@ trap_last = trap_text_string
 -- sets off effect of a trap
 function trap_set_off(obj_handle)
 
-   dump_objinfo_table(obj_handle)
+   -- dump_objinfo_table(obj_handle)
 
    objinfo = objlist_get_obj_info(obj_handle)
+
+   print( "trap set off: " .. ui_get_gamestring(4,objinfo.item_id))
 
    if objinfo.item_id == trap_damage
    then
