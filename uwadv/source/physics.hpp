@@ -49,10 +49,13 @@ public:
 
    //! inits physics model
    void init(ua_underworld *uw){ underw = uw; }
+/*
+   //! sets movement speed of player; range: [-1.0; 1.0]
+   void set_player_movement_speed(double factor);
 
-   //! sets speed of player; range: [0.0; 1.0]
-   void set_player_speed(double factor);
-
+   //! sets rotation speed of player; range: [0.0; 1.0]
+   void set_player_rotation_speed(double factor);
+*/
    //! evaluates player movement
    void eval_player_movement(double time);
 
@@ -74,9 +77,12 @@ protected:
 
    //! last evaluation time
    double last_evaltime;
+/*
+   //! current player movement speed factor
+   double move_speed;
 
-   //! current player speed factor
-   double player_speed;
+   //! current player rotation speed factor
+   double rotate_speed;*/
 };
 
 #endif

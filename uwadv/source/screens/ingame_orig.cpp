@@ -112,16 +112,10 @@ void ua_ingame_orig_screen::init()
    check_dragging = false;
 
    tickcount = 0;
-   look_down = look_up = false;
    gamemode = ua_mode_default;
    panel_type = 0;
 
-
-
-   hit = 0;
-   test_vit = 0;
    dbgint = ua_debug_interface::get_new_debug_interface();
-
 
    keymap.init(core->get_settings());
 
@@ -402,11 +396,11 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    {
       if (type==SDL_KEYDOWN)
       {
-         core->get_underworld().get_physics().set_player_speed(1.0);
-         pl.set_movement_mode(ua_move_walk_forward);
+         pl.set_movement_factor(ua_move_walk,1.0);
+         pl.set_movement_mode(ua_move_walk);
       }
       else
-         pl.set_movement_mode(0,ua_move_walk_forward);
+         pl.set_movement_mode(0,ua_move_walk);
    }
    else
    // check for walk backwards
@@ -414,41 +408,59 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    {
       if (type==SDL_KEYDOWN)
       {
-         core->get_underworld().get_physics().set_player_speed(-1.0);
-         pl.set_movement_mode(ua_move_walk_forward);
+         pl.set_movement_factor(ua_move_walk,-1.0);
+         pl.set_movement_mode(ua_move_walk);
       }
       else
-         pl.set_movement_mode(0,ua_move_walk_forward);
+         pl.set_movement_mode(0,ua_move_walk);
    }
    else
    // check for turn left key
    if (keymap.is_key(ua_key_turn_left,keymod))
    {
       if (type==SDL_KEYDOWN)
-         pl.set_movement_mode(ua_move_rotate_left);
+      {
+         pl.set_movement_factor(ua_move_rotate,1.0);
+         pl.set_movement_mode(ua_move_rotate);
+      }
       else
-         pl.set_movement_mode(0,ua_move_rotate_left);
+         pl.set_movement_mode(0,ua_move_rotate);
    }
    else
    // check for turn right key
    if (keymap.is_key(ua_key_turn_right,keymod))
    {
       if (type==SDL_KEYDOWN)
-         pl.set_movement_mode(ua_move_rotate_right);
+      {
+         pl.set_movement_factor(ua_move_rotate,-1.0);
+         pl.set_movement_mode(ua_move_rotate);
+      }
       else
-         pl.set_movement_mode(0,ua_move_rotate_right);
+         pl.set_movement_mode(0,ua_move_rotate);
    }
    else
    // check for look up key
    if (keymap.is_key(ua_key_look_up,keymod))
    {
-      look_up = type==SDL_KEYDOWN;
+      if (type==SDL_KEYDOWN)
+      {
+         pl.set_movement_factor(ua_move_lookup,1.0);
+         pl.set_movement_mode(ua_move_lookup);
+      }
+      else
+         pl.set_movement_mode(0,ua_move_lookup);
    }
    else
    // check for look down key
    if (keymap.is_key(ua_key_look_down,keymod))
    {
-      look_down = type==SDL_KEYDOWN;
+      if (type==SDL_KEYDOWN)
+      {
+         pl.set_movement_factor(ua_move_lookup,-1.0);
+         pl.set_movement_mode(ua_move_lookup);
+      }
+      else
+         pl.set_movement_mode(0,ua_move_lookup);
    }
 
    // now check for keydown only keys
@@ -457,7 +469,8 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    // check for center look key
    if (keymap.is_key(ua_key_center_view,keymod))
    {
-      look_down = look_up = false;
+      pl.set_movement_mode(0,ua_move_lookup);
+      pl.set_movement_factor(ua_move_lookup,0.0);
       pl.set_angle_pan(0.0);
    }
    else
@@ -939,29 +952,6 @@ void ua_ingame_orig_screen::tick()
       tickcount++;
    }
 
-   // check for looking up or down
-   if (look_up || look_down)
-   {
-      double viewangle = core->get_underworld().get_player().get_angle_pan();
-
-      viewangle += (look_up ? -1.0 : 1.0)*(viewangle_speed/core->get_tickrate());
-
-      // view angle has to stay between -180 and 180 degree
-      while (viewangle > 180.0 || viewangle < -180.0 )
-         viewangle = fmod(viewangle-360.0,360.0);
-
-      double maxangle = 45.0;
-
-      if (core->get_settings().get_bool(ua_setting_uwadv_features))
-         maxangle = 75.0;
-
-      // restrict up-down view angle
-      if (viewangle < -maxangle) viewangle = -maxangle;
-      if (viewangle > maxangle) viewangle = maxangle;
-
-      core->get_underworld().get_player().set_angle_pan(viewangle);
-   }
-
    // check for fading in/out
    if ((fade_state==0 || fade_state==2) &&
       ++fade_ticks >= (core->get_tickrate()*fade_time))
@@ -1118,7 +1108,7 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
          bool isobj;
 
          renderer.select_pick(x,y,tilex,tiley,isobj,id);
-         hit = ((id+(isobj?0:0x0400))<<16) | (tilex << 8) | tiley;
+//         hit = ((id+(isobj?0:0x0400))<<16) | (tilex << 8) | tiley;
       }
    }
 }

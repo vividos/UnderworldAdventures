@@ -74,14 +74,39 @@ const double ua_player_max_rotate_speed = 90;
 // ua_physics_model methods
 
 ua_physics_model::ua_physics_model()
-:last_evaltime(-0.1),player_speed(1.0)
+:last_evaltime(-0.1)//,player_speed(1.0)
 {
 }
 
-void ua_physics_model::set_player_speed(double factor)
+/*void ua_physics_model::set_player_speed(double factor)
 {
    player_speed = factor>1.0 ? 1.0 : factor;
-}
+}*/
+
+/*
+   // check for looking up or down
+   if (look_up || look_down)
+   {
+      double viewangle = core->get_underworld().get_player().get_angle_pan();
+
+      viewangle += (look_up ? -1.0 : 1.0)*(viewangle_speed/core->get_tickrate());
+
+      // view angle has to stay between -180 and 180 degree
+      while (viewangle > 180.0 || viewangle < -180.0 )
+         viewangle = fmod(viewangle-360.0,360.0);
+
+      double maxangle = 45.0;
+
+      if (core->get_settings().get_bool(ua_setting_uwadv_features))
+         maxangle = 75.0;
+
+      // restrict up-down view angle
+      if (viewangle < -maxangle) viewangle = -maxangle;
+      if (viewangle > maxangle) viewangle = maxangle;
+
+      core->get_underworld().get_player().set_angle_pan(viewangle);
+   }
+*/
 
 void ua_physics_model::eval_player_movement(double time)
 {
@@ -89,9 +114,10 @@ void ua_physics_model::eval_player_movement(double time)
 
    unsigned int mode = underw->get_player().get_movement_mode();
 
-   if (mode & ua_move_walk_forward)
+   if (mode & ua_move_walk)
    {
-      double speed = ua_player_max_walk_speed*(time-last_evaltime) * player_speed;
+      double speed = ua_player_max_walk_speed*(time-last_evaltime) *
+         player.get_movement_factor(ua_move_walk);
       double angle = underw->get_player().get_angle_rot();
 
       ua_vector2d dir;
@@ -118,13 +144,11 @@ void ua_physics_model::eval_player_movement(double time)
         // - if along a slope allow player to "fall"
         
       }
- 
- 
+
       // cache the player height
       player.set_height(finalHeight);
-      
    }
-  
+/*
    if (mode & ua_move_rotate_left)
    {
       double angle = ua_player_max_rotate_speed*(time-last_evaltime);
@@ -136,7 +160,7 @@ void ua_physics_model::eval_player_movement(double time)
       double angle = ua_player_max_rotate_speed*(time-last_evaltime);
       player.set_angle_rot(player.get_angle_rot()-angle);
    }
-
+*/
    last_evaltime = time;
 }
 

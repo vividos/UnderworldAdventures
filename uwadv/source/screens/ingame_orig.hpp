@@ -227,20 +227,13 @@ protected:
    //! key mappings
    ua_keymap keymap;
 
-   //! look up/down states
-   bool look_down,look_up;
-
    //! selected game mode
    ua_ingame_orig_game_mode gamemode;
 
-
-
-   // test stuff
-   GLuint hit;
-   unsigned int test_vit;
+   //! debug interface
    ua_debug_interface* dbgint;
 
-
+   //! underworld renderer
    ua_renderer renderer;
 
 
