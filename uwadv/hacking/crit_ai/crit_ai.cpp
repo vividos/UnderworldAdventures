@@ -29,6 +29,7 @@
 #include "common.hpp"
 #include "underworld.hpp"
 #include "gamecfg.hpp"
+#include "textscroll.hpp"
 
 
 // global variables
@@ -36,6 +37,7 @@ bool can_exit = false;
 unsigned int width, height;
 
 const double crit_ai_tickrate = 20.0;
+Uint16 cur_crit;
 
 enum action_mode
 {
@@ -46,6 +48,9 @@ enum action_mode
 };
 
 
+void crit_ai_change_level(unsigned int level);
+
+
 
 // core classes
 ua_underworld underworld;
@@ -53,6 +58,8 @@ ua_settings settings;
 ua_files_manager filesmgr;
 ua_texture_manager texmgr;
 ua_debug_interface* debug;
+
+ua_textscroll scroll;
 
 class ua_dummy_core: public ua_game_core_interface
 {
@@ -93,24 +100,7 @@ public:
 
    virtual void ui_changed_level(unsigned int level)
    {
-      // prepare all used wall/ceiling textures
-      {
-         const std::vector<Uint16>& used_textures =
-            underworld.get_current_level().get_used_textures();
-
-         unsigned int max = used_textures.size();
-         for(unsigned int n=0; n<max; n++)
-            texmgr.prepare(used_textures[n]);
-      }
-/*
-      // prepare all switch, door and tmobj textures
-      {
-         unsigned int n;
-         for(n=0; n<16; n++) texmgr.prepare(ua_tex_stock_switches+n);
-         for(n=0; n<13; n++) texmgr.prepare(ua_tex_stock_door+n);
-         for(n=0; n<33; n++) texmgr.prepare(ua_tex_stock_tmobj+n);
-      }
-*/
+      crit_ai_change_level(level);
    };
 
    virtual void ui_start_conv(unsigned int level, unsigned int objpos){}
@@ -170,14 +160,22 @@ void crit_ai_init()
    // import default game
    underworld.import_savegame(settings,"data/",true);
 
-   callback.ui_changed_level(0);
-
 
    underworld.get_scripts().register_callback(&callback);
 
    // get debug interface ptr
    debug = ua_debug_interface::get_new_debug_interface(&core);
    debug->start_debugger();
+
+
+
+   scroll.init(core, 0, -100, 400,60, 6, 0);
+   //scroll.set_color(3);
+   scroll.print("Critter AI Workbench started.");
+   scroll.print("Available Commands:");
+   scroll.print("N  next critter    P pathfinding");
+   scroll.print("Q  quit");
+
 
    // OpenGL setup
 
@@ -195,6 +193,10 @@ void crit_ai_init()
    // z-buffer
    glDisable(GL_DEPTH_TEST);
 
+   // alpha blending
+   glDisable(GL_BLEND);
+   glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+
    // camera setup
 
    // set projection matrix
@@ -205,7 +207,71 @@ void crit_ai_init()
 
    // switch back to modelview matrix
    glMatrixMode(GL_MODELVIEW);
+
+
+   callback.ui_changed_level(0);
 }
+
+void search_next_crit()
+{
+   ua_level& level = underworld.get_current_level();
+   ua_object_list& objlist = level.get_mapobjects();
+
+   Uint16 item_id;
+   Uint8 tilex, tiley;
+
+   do
+   {
+      cur_crit++;
+
+      if (cur_crit>=0x400)
+         cur_crit = 0;
+
+      item_id = objlist.get_object(cur_crit).get_object_info().item_id;
+
+      ua_object_info_ext& extinfo = objlist.get_object(cur_crit).get_ext_object_info();
+      tilex = extinfo.tilex;
+      tiley = extinfo.tiley;
+
+   }
+   while (item_id < 0x40 || item_id >= 0x7f || tilex == 0xff || tiley == 0xff);
+
+   {
+      std::string desc(underworld.get_strings().get_string(4,item_id));
+
+      char buffer[256];
+      sprintf(buffer,"selected new critter at 0x%04x, at %02x/%02x, id=0x%04x, name=%s",
+         cur_crit, tilex, tiley, item_id, desc.c_str() );
+      scroll.print(buffer);
+   }
+}
+
+void crit_ai_change_level(unsigned int level)
+{
+   // prepare all used wall/ceiling textures
+   {
+      const std::vector<Uint16>& used_textures =
+         underworld.get_current_level().get_used_textures();
+
+      unsigned int max = used_textures.size();
+      for(unsigned int n=0; n<max; n++)
+         texmgr.prepare(used_textures[n]);
+   }
+/*
+   // prepare all switch, door and tmobj textures
+   {
+      unsigned int n;
+      for(n=0; n<16; n++) texmgr.prepare(ua_tex_stock_switches+n);
+      for(n=0; n<13; n++) texmgr.prepare(ua_tex_stock_door+n);
+      for(n=0; n<33; n++) texmgr.prepare(ua_tex_stock_tmobj+n);
+   }
+*/
+   // s
+
+   cur_crit = 0;
+   search_next_crit();
+}
+
 
 void crit_ai_done()
 {
@@ -268,7 +334,7 @@ void draw_screen()
       glBindTexture(GL_TEXTURE_2D, 0);
       glColor3ub(0,255,0);
 
-      double quadwidth = 0.4;
+      double quadwidth = 0.33;
       glBegin(GL_QUADS);
       glVertex2d(xpos+quadwidth,ypos+quadwidth);
       glVertex2d(xpos-quadwidth,ypos+quadwidth);
@@ -276,6 +342,47 @@ void draw_screen()
       glVertex2d(xpos+quadwidth,ypos-quadwidth);
       glEnd();
    }
+
+   // draw current critter
+   {
+      ua_object& obj = underworld.get_current_level().get_mapobjects().get_object(cur_crit);
+      ua_object_info_ext& extinfo = obj.get_ext_object_info();
+
+      double xpos = extinfo.tilex + extinfo.xpos/8.0;
+      double ypos = extinfo.tiley + extinfo.ypos/8.0;
+
+      glBindTexture(GL_TEXTURE_2D, 0);
+      glColor3ub(255,0,0);
+
+      double quadwidth = 0.33;
+      glBegin(GL_QUADS);
+      glVertex2d(xpos+quadwidth,ypos+quadwidth);
+      glVertex2d(xpos-quadwidth,ypos+quadwidth);
+      glVertex2d(xpos-quadwidth,ypos-quadwidth);
+      glVertex2d(xpos+quadwidth,ypos-quadwidth);
+      glEnd();
+   }
+
+   // store and setup new proj. matrix
+   glMatrixMode(GL_PROJECTION);
+   glPushMatrix();
+   glLoadIdentity();
+
+   glOrtho(0,400, 0,300, -1,1);
+
+   // switch back to modelview matrix
+   glMatrixMode(GL_MODELVIEW);
+
+   glEnable(GL_BLEND);
+
+   scroll.render();
+
+   glDisable(GL_BLEND);
+
+   // restore matrix
+   glMatrixMode(GL_PROJECTION);
+   glPopMatrix();
+   glMatrixMode(GL_MODELVIEW);
 
    SDL_GL_SwapBuffers();
 }
@@ -298,6 +405,10 @@ void process_events()
          {
          case SDLK_q:
             can_exit = true;
+
+         case SDLK_n: // search for next critter to track
+            search_next_crit();
+            break;
 
          default:
             break;
@@ -397,7 +508,7 @@ int main(int argc, char* argv[])
       {
          // set new caption
          char buffer[256];
-         sprintf(buffer,"Underworld Adventures: Critter AI workbench - %3.1f frames/s, %3.1 ticks/s",
+         sprintf(buffer,"Underworld Adventures: Critter AI workbench - %3.1f frames/s, %3.1f ticks/s",
             renders*1000.f/(now-fcstart),ticks*1000.f/(now-fcstart));
 
          SDL_WM_SetCaption(buffer,NULL);
