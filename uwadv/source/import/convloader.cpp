@@ -102,7 +102,7 @@ bool ua_uw_import::load_conv_code(ua_conv_code_vm& vm, const char* cnvfile,
    // read number of entries
    Uint16 entries = fread16(fd);
 
-   if (conv>entries)
+   if (conv>=entries)
    {
       fclose(fd);
       throw ua_exception("invalid conversation!");
@@ -157,6 +157,14 @@ bool ua_uw_import::load_conv_code(ua_conv_code_vm& vm, const char* cnvfile,
    {
       // just take another function that may seem reasonable
       code[0x0584] = 0x0666;
+   }
+
+   // fix for Judy conversation; argument to random is 2, but switch statement
+   // checks for 3 values; the 3rd answer will never be given
+   if (conv == 23)
+   {
+      // PUSHI #3
+      code[0x04fd] = 3;
    }
 
    vm.set_conv_slot(conv);
