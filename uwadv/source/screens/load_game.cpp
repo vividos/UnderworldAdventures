@@ -79,7 +79,7 @@ void ua_load_game_screen::init()
       scroll.print(buffer.str().c_str());
    }
 
-   scroll.print("enter number of game to load: ");
+   scroll.print("enter number of game to load (or x to leave): ");
    scroll.enter_input_mode();
 
    game_nr = -1;
@@ -101,6 +101,9 @@ void ua_load_game_screen::handle_event(SDL_Event &event)
       std::string text;
       if (scroll.is_input_done(text))
       {
+         if (text.compare("x")==0)
+            core->pop_screen(); // leave
+
          // find out game number to load
          game_nr = strtol(text.c_str(),NULL,10);
 
@@ -108,7 +111,7 @@ void ua_load_game_screen::handle_event(SDL_Event &event)
          {
             game_nr = -1;
             scroll.print("wrong game number");
-            scroll.print("enter number of game to load: ");
+            scroll.print("enter number of game to load (or x to leave): ");
             scroll.enter_input_mode();
          }
          else
