@@ -84,6 +84,11 @@ function trap_set_off(obj_handle,trig_obj_handle)
       player_set_height(
          tilemap_get_floor_height(newlevel, player_get_pos() )+0.1 )
 
+   elseif objinfo.item_id == trap_inventory
+   then
+      -- an_inventory trap
+      return; -- only follow when object is in inventory
+
    elseif objinfo.item_id == trap_text_string
    then
       -- a_text string trap
