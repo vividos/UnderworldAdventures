@@ -29,6 +29,8 @@
 #include "common.hpp"
 #include "convgraph.hpp"
 #include "opcodes.hpp"
+#include <sstream>
+#include <iomanip>
 
 
 // ua_conv_graph methods
@@ -36,9 +38,9 @@
 void ua_conv_graph::init(std::vector<Uint16> code,
    Uint16 codestart, Uint16 codeend,
    std::vector<std::string>& mystrings,
-   std::vector<std::string>& myimported_funcs,
-   std::vector<std::string>& myimported_vars,
-   Uint16 mynumglobals)
+   std::map<Uint16,ua_conv_imported_item>& myimported_funcs,
+   std::map<Uint16,ua_conv_imported_item>& myimported_vars,
+   Uint16 myglob_reserved)
 {
    strings.clear();
    strings = mystrings;
@@ -49,9 +51,11 @@ void ua_conv_graph::init(std::vector<Uint16> code,
    imported_vars.clear();
    imported_vars = myimported_vars;
 
-   nglobals = mynumglobals;
+   processed_funcs.clear();
 
-   printf("converting to graph\n");
+   nglobals = myglob_reserved;
+
+//   ua_trace("converting to graph\n");
 
    // convert code segment to graph
    for(Uint16 i=codestart; i<codeend; i++)
@@ -59,17 +63,44 @@ void ua_conv_graph::init(std::vector<Uint16> code,
       // fill item struct
       ua_conv_graph_item item;
       item.pos = i;
-      item.opcode = code[i];
+      item.opcode_data.opcode = code[i];
 
-      if (item.opcode <= op_last && ua_conv_instructions[item.opcode].args != 0)
-         item.arg = code[++i];
+      if (item.opcode_data.opcode <= op_last &&
+          ua_conv_instructions[item.opcode_data.opcode].args != 0)
+         item.opcode_data.arg = code[++i];
       else
-         item.arg = 0;
+         item.opcode_data.arg = 0;
 
       // add it to graph
       graph.push_back(item);
    }
 
+   // add all 
+//   add_intrinsic_functions();
+/*
+   ua_conv_func_info start_info;
+   std::string start_name("start");
+   start_info.intrinsic = false;
+   start_info.return_type = ua_dt_void;
+   start_info.start = 0;
+
+   functions.insert(std::make_pair<std::string, ua_conv_func_info>(start_name, start_info));
+*/
+}
+/*
+void ua_conv_graph::add_intrinsic_functions()
+{
+   ua_conv_func_info info;
+   info.intrinsic = true;
+   info.start = 0;
+
+   info.return_type = ua_dt_int;
+   info.param_types.push_back(ua_dt_int_array);
+   info.param_types.push_back(ua_dt_int_array);
+
+
+
+/*
    // add "extern private[]" decl
    {
       ua_conv_graph_item declitem;
@@ -81,902 +112,1663 @@ void ua_conv_graph::init(std::vector<Uint16> code,
 
       graph.insert(graph.begin(),declitem);
    }
+* /
 }
+*/
 
-void ua_conv_graph::process()
+void ua_conv_graph::disassemble()
 {
-   printf("searching functions\n");
-   search_functions();
-
-   printf("replacing expression opcodes\n");
-   replace_expressions();
-
-   printf("folding expressions\n");
-   fold_expressions();
-
-   printf("adding control structures\n");
-   find_control_structs();
-
-   printf("fixing up functions\n");
-   fixup_functions();
+   collect_xrefs();
 }
 
+void ua_conv_graph::decompile()
+{
+   collect_xrefs();
+   search_functions();
+   fix_call_jump_targets();
 
-/* replace function entry code:
+   // initially add start() as function
+   {
+      ua_conv_func_info start_func;
+      start_func.return_type = ua_dt_void;
+      start_func.start = 0;
 
+      analysis_queue.push_back(start_func);
+   }
+
+   // analyze all functions in the analysis queue
+   // the queue may grow while analyzing a function
+   while(analysis_queue.size() > 0)
+   {
+      ua_conv_func_info info = analysis_queue.front();
+      analysis_queue.pop_front();
+
+      graph_iterator iter = find_pos(info.start);
+
+      ua_assert(0 != iter->label_name.size())
+
+      // check if function was already analyzed
+      if (functions.find(iter->label_name) == functions.end())
+      {
+         ua_trace("analyzing function \"%s\" at %04x\n", iter->label_name.c_str(), info.start);
+
+         analyze_function(info);
+
+         post_process_function(info);
+
+         // add to known functions
+         functions.insert(std::make_pair<std::string, ua_conv_func_info>(iter->label_name, info));
+      }
+   }
+}
+
+void ua_conv_graph::format_graph_item(std::string& item_text,
+   const ua_conv_graph_item& item) const
+{
+   switch(item.itemtype)
+   {
+   case gt_func_start:
+      item_text = "gt_func_start";
+      break;
+
+   case gt_func_end:
+      item_text = "gt_func_end";
+      break;
+
+   case gt_opcode:
+      format_opcode(item_text, item);
+      break;
+
+   case gt_statement:
+      item_text = item.statement_data.statement;
+      break;
+
+   case gt_operator:
+      {
+         std::ostringstream buffer;
+         buffer <<
+            (item.is_processed ? "   // " : "") <<
+            "operator " <<
+            ua_conv_instructions[item.operator_data.op_opcode].mnemonic <<
+            ", needs " << item.operator_data.needed_expr << " expressions, yields " <<
+            (item.operator_data.returns_expr ? "an" : "no") << " expression; level=" <<
+            item.operator_data.prec_level << std::ends;
+
+         item_text = buffer.str();
+      }
+      break;
+
+   case gt_expression:
+      {
+         std::ostringstream buffer;
+         buffer <<
+            (item.is_processed ? "   // " : "") <<
+            "expression: " <<
+            item.expression_data.expression <<
+            (item.expression_data.is_address ? " (address-of)" : " (value-of)") <<
+            "; level=" << item.expression_data.prec_level << std::ends;
+         item_text = buffer.str();
+      }
+      break;
+
+   default:
+      item_text = "// unknown graph item type!";
+      break;
+   }
+}
+
+void ua_conv_graph::format_opcode(std::string& opcode_text,
+   const ua_conv_graph_item& item) const
+{
+   ua_assert(item.itemtype == gt_opcode);
+
+   std::ostringstream buffer;
+   buffer << "   ";
+
+   if (item.is_processed)
+      buffer << "// ";
+
+   // code segment address
+   buffer << std::setfill('0') << std::setw(4) <<
+      std::setbase(16) << item.pos << " ";
+
+   if (item.opcode_data.opcode>op_last)
+   {
+      // unknown opcode
+      buffer << "??? (0x" << std::setfill('0') <<
+         std::setw(4) << std::setbase(16) << item.opcode_data.opcode << ")";
+   }
+   else
+   {
+      Uint16 opcode = item.opcode_data.opcode;
+
+      buffer << ua_conv_instructions[opcode].mnemonic;
+
+      if (ua_conv_instructions[item.opcode_data.opcode].args > 0 &&
+          item.opcode_data.jump_target.size() > 0 &&
+          (opcode == op_JMP || opcode == op_BEQ || opcode == op_BNE ||
+           opcode == op_BRA || opcode == op_CALL))
+      {
+         // label available
+         buffer << " " << item.opcode_data.jump_target;
+      }
+      else
+      if (opcode == op_CALLI)
+      {
+         // intrinsic function name
+         Uint16 ifunc = item.opcode_data.arg;
+         ua_assert(imported_funcs.find(ifunc) != imported_funcs.end());
+         
+         buffer << " " << imported_funcs.find(ifunc)->second.name;
+      }
+      else
+      if (ua_conv_instructions[item.opcode_data.opcode].args > 0)
+      {
+         // unknown, not resolved by collect_xrefs, or PUSH, PUSHI_EFF
+         // just format the string
+         buffer << " 0x"<< std::setfill('0') <<
+            std::setw(4) << std::setbase(16) << item.opcode_data.arg;
+      }
+   }
+
+   buffer << std::ends;
+
+   opcode_text = buffer.str();
+}
+
+void ua_conv_graph::collect_xrefs()
+{
+   ua_assert(graph.size()>0);
+
+   // start function
+   graph.front().label_name = "start";
+   graph.front().xref_count = 1;
+
+   graph_iterator iter,stop;
+   iter=graph.begin();
+   stop=graph.end();
+
+   for(;iter!=stop; iter++)
+   {
+      ua_conv_graph_item& item = *iter;
+      if (item.itemtype != gt_opcode)
+         continue;
+      Uint16 opcode = item.opcode_data.opcode;
+
+      if (opcode == op_JMP || opcode == op_BEQ || opcode == op_BNE ||
+          opcode == op_BRA || opcode == op_CALL)
+      {
+         // calculate jump target
+         Uint16 target = item.opcode_data.arg;
+
+         // adjust for relative jumps
+         if (opcode == op_BEQ || opcode == op_BNE || opcode == op_BRA)
+            target += item.pos+1;
+
+         // find target position
+         graph_iterator target_pos = find_pos(target);
+         ua_assert(target_pos != graph.end());
+
+         ua_conv_graph_item& target_item = *target_pos;
+
+         if (target_item.xref_count == 0)
+         {
+            // not a target yet, generate label name from pos
+            std::ostringstream buffer;
+            buffer << "label_" << std::setfill('0') <<
+               std::setw(4) << std::setbase(16) << target_item.pos << std::ends;
+            target_item.label_name = buffer.str();
+         }
+
+         // copy over label name and pos
+         item.opcode_data.jump_target = target_item.label_name;
+         item.opcode_data.jump_target_pos = target_item.pos;
+
+         // increase xref count
+         target_item.xref_count++;
+      }
+   }
+}
+
+/*! Searches for function entry and exit code and inserts additional
+    highlevel icodes.
+
+   function entry code:
    PUSHBP
    SPTOBP
    PUSHI #n   // n: locals size
    ADDSP
 
    and function exit code:
-
    BPTOSP
    POPBP
    RET
-
 */
-
 void ua_conv_graph::search_functions()
 {
+   graph_iterator iter,stop;
+   iter = graph.begin();
+   stop = graph.end();
+
    // go through code and search for functions
-   for(unsigned int i=0; i<graph.size(); i++)
+   for(;iter!=stop; iter++)
    {
       // check for function entry code
-      if (i+3<graph.size() &&
-          is_opcode(i,op_PUSHBP) &&
-          is_opcode(i+1,op_SPTOBP) &&
-          is_opcode(i+2,op_PUSHI) &&
-          is_opcode(i+3,op_ADDSP) )
+      Uint16 pattern_func_start[4] =
+      { op_PUSHBP, op_SPTOBP, op_PUSHI, op_ADDSP };
+
+      if (match_opcode_pattern(iter, pattern_func_start, 4))
       {
          // found entry code
-         graph[i].itemtype = gt_opcode_done;
-         graph[i+1].itemtype = gt_opcode_done;
-         graph[i+2].itemtype = gt_opcode_done;
-         graph[i+3].itemtype = gt_opcode_done;
 
-         // insert function item
+         // test if function started with START opcode
+         bool func_start = false;
+         if (iter != graph.begin())
          {
-            ua_conv_graph_item funcitem;
-            funcitem.itemtype = gt_control;
-            funcitem.indent_change = 1;
-            funcitem.pos = graph[i].pos;
+            graph_iterator iter_start = iter;
+            iter_start--;
 
-            // generate new function name
-            {
-               char buffer[256];
+            func_start = iter_start->itemtype == gt_opcode &&
+               iter_start->opcode_data.opcode == op_START;
 
-               // opcode START precedes function?
-               if (i>0 && is_opcode(i-1,op_START))
-               {
-                  graph[--i].itemtype = gt_opcode_done;
-                  strcpy(buffer,"main");
-                  funcitem.pos--;
-               }
-               else
-                  sprintf(buffer,"func_%04x",graph[i].pos);
-
-               funcitem.plaintext.assign(buffer);
-            }
-
-            // remember local function
-            ua_conv_func_info funcinfo;
-            funcinfo.start = graph[i].pos;
-            functions.push_back(funcinfo);
-
-            graph.insert(graph.begin()+i,funcitem);
-            i++;
+            if (func_start)
+               --iter;
          }
 
-         // insert "locals"
-         if (graph[i+2].arg>0)
+         // set up new function start item
+         ua_conv_graph_item& item = *iter;
+
+         ua_conv_graph_item func_item;
+         func_item.itemtype = gt_func_start;
+         func_item.pos = item.pos;
+         func_item.xref_count = item.xref_count;
+
+         // generate function name from label, if applicable
+         if (item.label_name.size()==0 && item.xref_count==0)
          {
-            ua_conv_graph_item declitem;
-            declitem.itemtype = gt_decl;
-            declitem.pos = graph[i].pos;
-
-            char buffer[256];
-            sprintf(buffer,"int locals[%u];\n",graph[i+2].arg);
-            declitem.plaintext.assign(buffer);
-
-            graph.insert(graph.begin()+i,declitem);
-            i++;
+            // unused func
+            std::ostringstream buffer;
+            buffer << "unused_" << std::setfill('0') <<
+               std::setw(4) << std::setbase(16) << item.pos << std::ends;
+            item.label_name = buffer.str();
+         }
+         else
+         if (item.label_name.find("label_") == 0)
+         {
+            // label to func
+            item.label_name.replace(0,6,"func_");
          }
 
-         i += 4;
+         func_item.label_name = item.label_name;
+         item.label_name = "";
+         item.xref_count = 0;
+
+         graph.insert(iter,func_item); // insert before iter
+
+         // advance iterator
+
+         // started with START opcode?
+         if (func_start)
+         {
+            iter->is_processed = true; iter++; // jump over START
+         }
+         iter->is_processed = true; iter++; // PUSHBP
+         iter->is_processed = true; iter++; // SPTOBP
+
+         // find out number of local variables
+         //func_item.function_data.locals_size = iter->opcode_data.arg;
+
+         iter->is_processed = true; iter++; // PUSHI
+         iter->is_processed = true;         // ADDSP
       }
 
       // check for function exit code
-      if (i+2<graph.size() &&
-          is_opcode(i,op_BPTOSP) &&
-          is_opcode(i+1,op_POPBP) &&
-          is_opcode(i+2,op_RET) )
+      Uint16 pattern_func_end[3] = { op_BPTOSP, op_POPBP, op_RET };
+
+      if (match_opcode_pattern(iter, pattern_func_end, 3))
       {
-         // found entry code
-         graph[i].itemtype = gt_opcode_done;
-         graph[i+1].itemtype = gt_opcode_done;
-         graph[i+2].itemtype = gt_opcode_done;
+         // set up new function end item
+         ua_conv_graph_item& item = *iter;
 
-         ua_conv_graph_item funcitem;
-         funcitem.itemtype = gt_control;
-         funcitem.indent_change = -1;
-         funcitem.plaintext.assign("} // end func");
-         funcitem.pos = graph[i].pos;
+         ua_conv_graph_item func_item;
+         func_item.itemtype = gt_func_end;
+         func_item.pos = item.pos;
 
-         graph.insert(graph.begin()+i,funcitem);
+         graph.insert(iter,func_item);
 
-         i += 3;
+         iter->is_processed = true; iter++; // BPTOSP
+         iter->is_processed = true; iter++; // POPBP
+         iter->is_processed = true;         // RET
       }
    }
 }
 
-void ua_conv_graph::replace_expressions()
+void ua_conv_graph::fix_call_jump_targets()
 {
-   char buffer[256];
+   graph_iterator iter,stop;
+   iter = graph.begin();
+   stop = graph.end();
 
-   // go through code and replace code with expressions and operators
-   for(unsigned int i=0; i<graph.size(); i++)
+   // go through code and search for functions
+   for(;iter!=stop; iter++)
    {
-      unsigned int max = graph.size();
-
-      // PUSHI: global/private address or immediate value (don't know yet)
-      if (is_opcode(i,op_PUSHI))
+      // as a "service" we correct jump targets for opcodes here
+      if (iter->itemtype == gt_opcode && iter->opcode_data.opcode == op_CALL)
       {
-         graph[i].itemtype = gt_opcode_done;
-
-         ua_conv_graph_item expritem;
-         expritem.itemtype = gt_expression;
-         expritem.expr_finished = false;
-         expritem.expr_address = false;
-         expritem.arg = graph[i].arg; // save arg, in case we need it
-         expritem.pos = graph[i].pos;
-
-         // do expression string
-         sprintf(buffer,"%u",graph[i].arg);
-         expritem.plaintext.assign(buffer);
-
-         graph.insert(graph.begin()+i,expritem);
-         max++;
-         i++;
-      }
-
-      // PUSHI_EFF: local/param pointer
-      if (is_opcode(i,op_PUSHI_EFF))
-      {
-         graph[i].itemtype = gt_opcode_done;
-
-         ua_conv_graph_item expritem;
-         expritem.itemtype = gt_expression;
-         expritem.expr_finished = false;
-         expritem.expr_address = true;
-         expritem.arg = graph[i].arg; // save arg, in case we need it
-         expritem.pos = graph[i].pos;
-
-         // do expression string
-         if (graph[i].arg < 0x8000)
-         {
-            sprintf(buffer,"&locals[%u]",graph[i].arg);
-         }
-         else
-         {
-            int param_no = -(Sint16)graph[i].arg-1;
-            sprintf(buffer,"&param%u",param_no);
-            // TODO: store number of used param in funcinfo
-         }
-         expritem.plaintext.assign(buffer);
-
-         graph.insert(graph.begin()+i,expritem);
-         max++;
-         i++;
-      }
-
-      // basic operators
-      if (is_opcode(i,op_OFFSET) ||
-          is_opcode(i,op_FETCHM) ||
-          is_opcode(i,op_OPNEG) ||
-          is_opcode(i,op_OPNOT) )
-      {
-         graph[i].itemtype = gt_opcode_done;
-
-         ua_conv_graph_item operitem;
-         operitem.itemtype = gt_operator;
-         operitem.opcode = graph[i].opcode;
-         operitem.arg = graph[i].arg;
-         operitem.expr_finished = false;
-         operitem.expr_address = graph[i].expr_address;
-
-         if (graph[i].opcode == op_OFFSET)
-            operitem.oper_needed = 2;
-         else
-            operitem.oper_needed = 1;
-
-         graph.insert(graph.begin()+i,operitem);
-         max++;
-         i++;
-      }
-
-      // compare/logical operators
-      if (is_opcode(i,op_TSTEQ) ||
-          is_opcode(i,op_TSTGT) ||
-          is_opcode(i,op_TSTGE) ||
-          is_opcode(i,op_TSTLT) ||
-          is_opcode(i,op_TSTLE) ||
-          is_opcode(i,op_TSTNE) ||
-          is_opcode(i,op_OPOR)  ||
-          is_opcode(i,op_OPAND) ||
-          is_opcode(i,op_OPADD) ||
-          is_opcode(i,op_OPSUB) ||
-          is_opcode(i,op_OPMUL) ||
-          is_opcode(i,op_OPDIV) ||
-          is_opcode(i,op_OPMOD) )
-      {
-         graph[i].itemtype = gt_opcode_done;
-
-         ua_conv_graph_item operitem;
-         operitem.itemtype = gt_operator;
-         operitem.opcode = graph[i].opcode;
-         operitem.arg = graph[i].arg;
-         operitem.expr_finished = false;
-         operitem.expr_address = false;
-
-         switch(graph[i].opcode)
-         {
-         case op_TSTEQ: operitem.plaintext.assign(" == "); break;
-         case op_TSTGT: operitem.plaintext.assign(" > "); break;
-         case op_TSTGE: operitem.plaintext.assign(" >= "); break;
-         case op_TSTLT: operitem.plaintext.assign(" < "); break;
-         case op_TSTLE: operitem.plaintext.assign(" <= "); break;
-         case op_TSTNE: operitem.plaintext.assign(" != "); break;
-         case op_OPOR:  operitem.plaintext.assign(" || "); break;
-         case op_OPAND: operitem.plaintext.assign(" && "); break;
-         case op_OPADD: operitem.plaintext.assign(" + "); break;
-         case op_OPSUB: operitem.plaintext.assign(" - "); break;
-         case op_OPMUL: operitem.plaintext.assign(" * "); break;
-         case op_OPDIV: operitem.plaintext.assign(" / "); break;
-         case op_OPMOD: operitem.plaintext.assign(" % "); break;
-         }
-
-         graph.insert(graph.begin()+i,operitem);
-         max++;
-         i++;
-      }
-
-      // misc. operators
-      if (is_opcode(i,op_STO) ||
-          is_opcode(i,op_SAY_OP) ||
-          is_opcode(i,op_CALLI) ||
-          is_opcode(i,op_CALL) ||
-          is_opcode(i,op_SAVE_REG) )
-      {
-         graph[i].itemtype = gt_opcode_done;
-
-         ua_conv_graph_item operitem;
-         operitem.itemtype = gt_operator;
-         operitem.opcode = graph[i].opcode;
-         operitem.arg = graph[i].arg;
-         operitem.pos = graph[i].pos;
-         operitem.expr_finished = true; // operator finishes whole expression
-         operitem.expr_address = false;
-
-         switch(graph[i].opcode)
-         {
-         case op_STO:
-            operitem.oper_needed = 2;
-            break;
-
-         case op_SAY_OP:
-            operitem.oper_needed = 1;
-            break;
-
-         case op_CALL:
-         case op_CALLI:
-            {
-               operitem.oper_needed = 0;
-
-               unsigned int j=i+1;
-               while(is_opcode(j,op_POP) && j<max)
-               {
-                  operitem.oper_needed++;
-                  graph[j].itemtype = gt_opcode_done;
-                  j++;
-               }
-
-               if (is_opcode(j,op_PUSH_REG))
-               {
-                  // call return value is part of expression
-                  operitem.expr_finished = false;
-                  graph[j].itemtype = gt_opcode_done;
-               }
-            }
-            break;
-
-         case op_SAVE_REG:
-            operitem.oper_needed = 1;
-            operitem.expr_finished = true;
-            if (i+1<graph.size() && is_opcode(i+1,op_POP))
-               graph[i+1].itemtype = gt_opcode_done;
-            break;
-         }
-
-         graph.insert(graph.begin()+i,operitem);
-         max++;
-         i++;
+         graph_iterator target_iter = find_pos(iter->opcode_data.arg);
+         iter->opcode_data.jump_target = target_iter->label_name;
       }
    }
 }
 
-/*
-   general strategy:
-   search operators and try to build new expressions until no operators
-   are left
-*/
-void ua_conv_graph::fold_expressions()
+void ua_conv_graph::analyze_function(ua_conv_func_info& info)
 {
-   // go through code and search for operators
-   for(unsigned int i=0; i<graph.size(); i++)
+   // search start and end of function
+   graph_iterator iter,start,stop;
+   start = stop = find_pos(info.start);
+
+   // search first opcode
+   while(start != graph.end() && start->itemtype != gt_opcode)
+      start++;
+
+   stop = start;
+
+   // search function end
+   while(stop != graph.end() && stop->itemtype != gt_func_end)
+      stop++;
+
+   // go through the function and replace with expressions and operations
+   // expressions are incomplete values on the stack
+   // operations are complete control statements that may consume zero or more
+   // expressions
+   for(iter=start; iter!=stop; iter++)
    {
-      if (graph[i].itemtype != gt_operator)
+      // only examine opcodes that weren't processed yet
+      if (iter->itemtype != gt_opcode || iter->is_processed)
          continue;
 
-      // found operator
-      ua_conv_graph_item& item = graph[i];
+      Uint16 pattern_local_array[3] = { op_PUSHI, op_PUSHI_EFF, op_OFFSET };
+      Uint16 pattern_return_stmt[2] = { op_SAVE_REG, op_POP };
 
-      unsigned int expr_needed = item.oper_needed;
-      std::vector<unsigned int> expr_indices;
+      ua_conv_graph_item& item = *iter;
+      Uint16 opcode = item.opcode_data.opcode;
 
-      // search for needed expressions
-      unsigned int j=i;
-
-      if (expr_needed>0)
+      // check for some simple control structures
+      if (opcode == op_SAY_OP)
       {
-         for(j=i-1; j>0 && graph[j].itemtype != gt_control; j--)
+         // say op
+         item.is_processed = true;
+
+         // consumes 1 expression
+         ua_conv_graph_item oper_item;
+         oper_item.itemtype = gt_operator;
+         oper_item.pos = iter->pos;
+         oper_item.operator_data.op_opcode = opcode;
+         oper_item.operator_data.needed_expr = 1;
+         oper_item.operator_data.returns_expr = false;
+         oper_item.operator_data.prec_level =
+            ua_conv_instructions[opcode].op_prec_level;
+
+         // insert just before this opcode
+         graph.insert(iter,oper_item);
+      }
+      else
+      if (opcode == op_EXIT_OP)
+      {
+         // exit statement
+         item.is_processed = true;
+
+         ua_conv_graph_item oper_item;
+         oper_item.itemtype = gt_statement;
+         oper_item.pos = iter->pos;
+         oper_item.statement_data.statement = "exit;";
+
+         graph.insert(iter,oper_item);
+      }
+      else
+      if (opcode == op_CALLI)
+      {
+         // intrinsic call
+         item.is_processed = true;
+         Uint16 intrisic_no = item.opcode_data.arg;
+
+         --iter; // previous PUSHI opcode tells number of arguments
+
+         ua_assert(true == is_opcode(iter,op_PUSHI));
+
+         // set PUSHI opcode to processed
+         iter->is_processed = true;
+
+         ua_conv_graph_item oper_item;
+         oper_item.itemtype = gt_operator;
+         oper_item.pos = iter->pos;
+
+         // note: this number may be wrong, e.g. for babl_menu
+         //oper_item.control_data.needed_expr = iter->opcode_data.arg;
+
+         // find out number of function args by counting following POP opcodes
+         Uint16 arguments = 0;
+         graph_iterator pop_iter = iter; pop_iter++; pop_iter++;
+         while(pop_iter != stop && is_opcode(pop_iter, op_POP))
          {
-            if (graph[j].itemtype == gt_expression && !graph[j].expr_finished)
+            pop_iter->is_processed = true;
+            arguments++;
+            pop_iter++;
+         }
+
+         oper_item.operator_data.op_opcode = opcode;
+         oper_item.operator_data.op_arg = intrisic_no;
+         // note: CALLI functions have 2 parameter, but the 1st is the number
+         // of arguments, so subtract 1 from this number again
+         oper_item.operator_data.needed_expr = arguments-1;
+
+         oper_item.operator_data.returns_expr = false;
+
+         // check if a PUSH_REG follows
+         if (is_opcode(pop_iter,op_PUSH_REG))
+         {
+            pop_iter->is_processed = true;
+            oper_item.operator_data.returns_expr = true;
+         }
+
+         oper_item.operator_data.prec_level =
+            ua_conv_instructions[opcode].op_prec_level;
+
+         // insert just before this opcode
+         graph.insert(iter,oper_item);
+
+         ++iter;
+      }
+      else
+      if (opcode == op_CALL)
+      {
+         // local function call
+         Uint16 call_target = item.opcode_data.arg;
+         item.is_processed = true;
+
+         ua_conv_graph_item oper_item;
+         oper_item.itemtype = gt_operator;
+         oper_item.pos = iter->pos;
+
+         // find out number of function args by counting following POP opcodes
+         Uint16 arguments = 0;
+         graph_iterator pop_iter = iter; pop_iter++;
+         while(pop_iter != stop && is_opcode(pop_iter, op_POP))
+         {
+            pop_iter->is_processed = true;
+            arguments++;
+            pop_iter++;
+         }
+
+         oper_item.operator_data.op_opcode = opcode;
+         oper_item.operator_data.op_arg = call_target;
+         oper_item.operator_data.needed_expr = arguments;
+
+         oper_item.operator_data.returns_expr = false;
+
+         // check if a PUSH_REG follows
+         if (is_opcode(pop_iter,op_PUSH_REG))
+         {
+            pop_iter->is_processed = true;
+            oper_item.operator_data.returns_expr = true;
+         }
+
+         oper_item.operator_data.prec_level =
+            ua_conv_instructions[opcode].op_prec_level;
+
+         // insert just before this opcode
+         graph.insert(iter,oper_item);
+
+         // function call
+         ua_conv_func_info new_info;
+         new_info.start = item.opcode_data.arg;
+         new_info.return_type = ua_dt_void; // type is void until known better
+         // note: info.param_types is unknown for now
+
+         // is recursive call?
+         if (new_info.start == info.start)
+            ua_trace("discovered recursive function call at %04x\n", item.pos);
+         else
+         {
+            // put in analysis queue, when not already processed
+            if (processed_funcs.find(new_info.start) == processed_funcs.end())
             {
-               // found unfinished expression to use
-               expr_indices.push_back(j);
-               if (--expr_needed==0)
-                  break;
+               processed_funcs.insert(new_info.start);
+               analysis_queue.push_back(new_info);
             }
          }
       }
-
-      // construct new expression item
-      ua_conv_graph_item new_expr;
-      new_expr.itemtype = gt_expression;
-      new_expr.expr_finished = item.expr_finished;
-
-      if (item.oper_needed>0)
-         new_expr.pos = graph[expr_indices[item.oper_needed-1]].pos;
       else
-         new_expr.pos = graph[i].pos; // should not happen
-
-      unsigned int new_expr_pos = j;
-
-      // construct new expression string
-      std::string new_plaintext;
-      switch(item.opcode)
+      // compare/arithmetic/logical operators
+      if (opcode == op_TSTEQ || opcode == op_TSTGT || opcode == op_TSTGE ||
+          opcode == op_TSTLT || opcode == op_TSTLE || opcode == op_TSTNE ||
+          opcode == op_OPOR  || opcode == op_OPAND || opcode == op_OPADD ||
+          opcode == op_OPSUB || opcode == op_OPMUL || opcode == op_OPDIV ||
+          opcode == op_OPMOD )
       {
-      case op_OFFSET:
+         // binary operator
+         item.is_processed = true;
+
+         ua_conv_graph_item oper_item;
+         oper_item.itemtype = gt_operator;
+         oper_item.pos = iter->pos;
+         oper_item.operator_data.op_opcode = opcode;
+         oper_item.operator_data.needed_expr = 2;
+         oper_item.operator_data.returns_expr = true;
+         oper_item.operator_data.returned_type = ua_dt_int;
+         oper_item.operator_data.prec_level =
+            ua_conv_instructions[opcode].op_prec_level;
+
+         graph.insert(iter,oper_item);
+      }
+      else
+      // unary negate
+      if (opcode == op_OPNEG)
+      {
+         // unary operator
+         item.is_processed = true;
+
+         ua_conv_graph_item oper_item;
+         oper_item.itemtype = gt_operator;
+         oper_item.pos = iter->pos;
+         oper_item.operator_data.op_opcode = opcode;
+         oper_item.operator_data.needed_expr = 1;
+         oper_item.operator_data.returns_expr = true;
+         oper_item.operator_data.returned_type = ua_dt_int;
+         oper_item.operator_data.prec_level =
+            ua_conv_instructions[opcode].op_prec_level;
+
+         graph.insert(iter,oper_item);
+      }
+      else
+      // logical not
+      if (opcode == op_OPNOT)
+      {
+         // unary operator
+         item.is_processed = true;
+
+         ua_conv_graph_item oper_item;
+         oper_item.itemtype = gt_operator;
+         oper_item.pos = iter->pos;
+         oper_item.operator_data.op_opcode = opcode;
+         oper_item.operator_data.needed_expr = 1;
+         oper_item.operator_data.returns_expr = true;
+         oper_item.operator_data.returned_type = ua_dt_int;
+         oper_item.operator_data.prec_level =
+            ua_conv_instructions[opcode].op_prec_level;
+
+         graph.insert(iter,oper_item);
+      }
+      else 
+      // assignment operator
+      if (opcode == op_STO)
+      {
+         item.is_processed = true;
+
+         ua_conv_graph_item oper_item;
+         oper_item.itemtype = gt_operator;
+         oper_item.pos = iter->pos;
+         oper_item.operator_data.op_opcode = opcode;
+         oper_item.operator_data.needed_expr = 2;
+         oper_item.operator_data.returns_expr = false;
+         oper_item.operator_data.returned_type = ua_dt_void;
+         oper_item.operator_data.prec_level =
+            ua_conv_instructions[opcode].op_prec_level;
+
+         // check if a SWAP precedes the STO opcode
+         graph_iterator swap_iter = iter;
+         ua_assert(iter != graph.begin());
+         swap_iter--; 
+
+         if (is_opcode(swap_iter, op_SWAP))
          {
-            ua_conv_graph_item& opitem0 = graph[expr_indices[0]];
+            oper_item.operator_data.sto_swap_args = true;
 
-            if (!opitem0.expr_address)
+            swap_iter->is_processed = true;
+         }
+
+         graph.insert(iter,oper_item);
+      }
+      else
+      // local array
+      if (match_opcode_pattern(iter, pattern_local_array,
+         SDL_TABLESIZE(pattern_local_array)))
+      {
+         // array offset
+         graph_iterator arr_iter = iter;
+         Uint16 offset = arr_iter->opcode_data.arg;
+         arr_iter->is_processed = true;
+         ua_assert(offset <= 0x7fff && offset > 0);
+         arr_iter++;
+
+         // local var index
+         Uint16 local_idx = arr_iter->opcode_data.arg;
+         arr_iter->is_processed = true;
+         arr_iter++;
+
+         // offset
+         arr_iter->is_processed = true;
+
+         // set up expression item
+         ua_conv_graph_item local_array_item;
+         local_array_item.itemtype = gt_expression;
+         local_array_item.pos = iter->pos;
+         local_array_item.expression_data.is_address = true;
+
+         std::ostringstream buffer;
+         buffer << "local_" << local_idx <<
+            "[" << offset << "]" << std::ends;
+
+         local_array_item.expression_data.expression = buffer.str();
+
+         // TODO add to info.array_info
+
+         graph.insert(iter,local_array_item);
+         iter++; iter++;
+      }
+      else
+      // address-of local var
+      if (opcode == op_PUSHI_EFF)
+      {
+         // local var index
+         Uint16 local_idx = iter->opcode_data.arg;
+         iter->is_processed = true;
+
+         // set up expression item
+         ua_conv_graph_item local_var_item;
+         local_var_item.itemtype = gt_expression;
+         local_var_item.pos = iter->pos;
+         local_var_item.expression_data.is_address = true;
+
+         // check if a FETCHM follows; then it's not the address of the
+         // local var but the value
+         graph_iterator fetchm_iter = iter; fetchm_iter++;
+         ua_assert(fetchm_iter != graph.end());
+         if (is_opcode(fetchm_iter, op_FETCHM))
+         {
+            fetchm_iter->is_processed = true;
+            local_var_item.expression_data.is_address = false;
+         }
+
+         std::ostringstream buffer;
+         if (local_idx > 0x7fff)
+         {
+            unsigned int param_num = (-(Sint16)local_idx)-1;
+
+            // param value
+            buffer << "param" << param_num << std::ends;
+
+            // this expression is an address, since param values are always
+            // passed by reference
+            local_var_item.expression_data.is_address = true;
+
+            // set param info
+            if (param_num > info.param_types.size())
+               info.param_types.resize(param_num, ua_dt_int);
+         }
+         else
+         {
+            buffer << "local_" << local_idx << std::ends;
+
+            // add local variable info
+            if (local_idx >= info.locals_types.size())
+               info.locals_types.resize(local_idx+1, ua_dt_unknown);
+
+            ua_assert(local_idx < info.locals_types.size());
+
+            info.locals_types[local_idx] = ua_dt_int;
+         }
+
+         local_var_item.expression_data.expression = buffer.str();
+
+         graph.insert(iter,local_var_item);
+      }
+      else
+      // immediate value
+      if (opcode == op_PUSHI)
+      {
+         // check if CALLI follows; if yes, don't process this PUSHI
+         graph_iterator next_iter = iter; next_iter++;
+         if (!is_opcode(next_iter, op_CALLI))
+         {
+            iter->is_processed = true;
+
+            // set up expression item
+            ua_conv_graph_item immediate_item;
+            immediate_item.itemtype = gt_expression;
+            immediate_item.pos = iter->pos;
+            immediate_item.expression_data.is_address = false;
+
+            // check if a FETCHM follows; then it's not an immediate value,
+            // but the value of a global var
+            graph_iterator fetchm_iter = iter; fetchm_iter++;
+            ua_assert(fetchm_iter != graph.end());
+
+            if (is_opcode(fetchm_iter, op_FETCHM))
             {
-               // value can be pointer or global/private address
-               std::string ptrtext;
-               if (opitem0.plaintext.find("param") != std::string::npos)
-               {
-                  // paramX seems to be a pointer, so add array index
-                  ptrtext.assign(opitem0.plaintext);
-               }
-               else
-               {
-                  // value is global/private
-                  format_global(opitem0.arg,ptrtext);
-               }
+               fetchm_iter->is_processed = true;
 
-               char buffer[256];
-               sprintf(buffer,"&%s[%u]",
-                  ptrtext.c_str(),graph[expr_indices[1]].arg);
+               // global or private variable value
+               Uint16 var_idx = iter->opcode_data.arg;
 
-               new_plaintext.assign(buffer);
+               immediate_item.expression_data.expression = get_memory_varname(var_idx);
             }
             else
             {
-               new_expr.arg = opitem0.arg + graph[expr_indices[1]].arg-1;
+               // might be an immediate or a global address
+               std::ostringstream buffer;
+               buffer << iter->opcode_data.arg << std::ends;
 
-               char buffer[256];
-               sprintf(buffer,"&locals[%u]",new_expr.arg);
-               new_plaintext.append(buffer);
+               immediate_item.expression_data.expression = buffer.str();
+               immediate_item.expression_data.pushi_imm_value = iter->opcode_data.arg;
+               immediate_item.expression_data.is_pushi_imm = true;
             }
 
-            new_expr.expr_address = true;
+            graph.insert(iter,immediate_item);
          }
-         break;
+      }
+      else
+      // return-statement
+      if (match_opcode_pattern(iter, pattern_return_stmt,
+         SDL_TABLESIZE(pattern_return_stmt)))
+      {
+         // returns value from function
+         iter->is_processed = true;
 
-      case op_FETCHM:
+         graph_iterator next_iter = iter; next_iter++;
+         ua_assert(next_iter != graph.begin());
+         next_iter->is_processed = true;
+
+         // set up expression item
+         ua_conv_graph_item return_item;
+         return_item.itemtype = gt_operator;
+         return_item.pos = iter->pos;
+         return_item.operator_data.op_opcode = opcode;
+         return_item.operator_data.needed_expr = 1;
+         return_item.operator_data.returns_expr = false;
+         return_item.operator_data.returned_type = ua_dt_int;
+         return_item.operator_data.prec_level =
+            ua_conv_instructions[opcode].op_prec_level;
+
+         graph.insert(iter,return_item);
+
+         // remember return type
+         info.return_type = ua_dt_int;
+      }
+      // dereference-operator
+      if (opcode == op_FETCHM)
+      {
+         // turns an address-of variable to value-of variable
+         iter->is_processed = true;
+
+         // set up expression item
+         ua_conv_graph_item deref_item;
+         deref_item.itemtype = gt_operator;
+         deref_item.pos = iter->pos;
+         deref_item.operator_data.op_opcode = opcode;
+         deref_item.operator_data.needed_expr = 1;
+         deref_item.operator_data.returns_expr = true;
+         deref_item.operator_data.returned_type = ua_dt_int;
+         deref_item.operator_data.prec_level =
+            ua_conv_instructions[opcode].op_prec_level;
+
+         graph.insert(iter,deref_item);
+      }
+      else
+      // array-index-operator
+      if (opcode == op_OFFSET)
+      {
+         // indexes an array
+         iter->is_processed = true;
+
+         // set up expression item
+         ua_conv_graph_item arr_idx_item;
+         arr_idx_item.itemtype = gt_operator;
+         arr_idx_item.pos = iter->pos;
+         arr_idx_item.operator_data.op_opcode = opcode;
+         arr_idx_item.operator_data.needed_expr = 2;
+         arr_idx_item.operator_data.returns_expr = true;
+         arr_idx_item.operator_data.returned_type = ua_dt_int;
+         arr_idx_item.operator_data.prec_level =
+            ua_conv_instructions[opcode].op_prec_level;
+
+         graph.insert(iter,arr_idx_item);
+      }
+   }
+
+   combine_operators(start,stop);
+   find_control_structs(start,stop);
+}
+
+
+/*!
+    search operators and try to build new expressions until no operators are
+    left
+*/
+void ua_conv_graph::combine_operators(/*ua_conv_func_info& info*/
+   const graph_iterator& start, const graph_iterator& stop)
+{
+   while(true)
+   {
+      // search next operator
+      graph_iterator iter, last_oper = graph.end();
+      for(iter=start; iter!=stop; iter++)
+      {
+         if (iter->itemtype == gt_operator && !iter->is_processed)
          {
-            ua_conv_graph_item& opitem = graph[expr_indices[0]];
-            if (!opitem.expr_address)
+            // found operator
+            last_oper = iter;
+            break;
+         }
+      }
+
+      if (last_oper == graph.end())
+         break; // no more operators
+
+      // combine found operator with expressions to form new expression
+      graph_iterator oper = last_oper;
+
+      bool statement_between = false;
+
+      // search n previous expressions
+      std::vector<graph_iterator> expressions;
+
+      Uint16 min_expr_pos = oper->pos;
+
+      iter = oper;
+      while(iter != start && expressions.size() < oper->operator_data.needed_expr)
+      {
+         if (iter->itemtype == gt_expression && !iter->is_processed)
+         {
+            // found an expression
+            expressions.push_back(iter);
+
+            // remember expression with minimum position
+            if (iter->pos < min_expr_pos)
+               min_expr_pos = iter->pos;
+         }
+         if (iter->itemtype == gt_statement)
+            statement_between = true;
+         iter--;
+      }
+
+      ua_assert(iter != start);
+      ua_assert(expressions.size() == oper->operator_data.needed_expr);
+
+      // set up new item; for now we assume it's another expression
+      ua_conv_graph_item new_expression;
+      new_expression.pos = min_expr_pos;
+
+      // now that we have n expressions, we can combine it with the operator
+      switch(oper->operator_data.op_opcode)
+      {
+      case op_CALL:
+      case op_CALLI:
+         {
+            std::ostringstream buffer;
+
+            if (oper->operator_data.op_opcode == op_CALLI)
             {
-               if (opitem.plaintext.find("param") != std::string::npos ||
-                   opitem.plaintext.find("local") != std::string::npos )
-               {
-                  new_plaintext.assign(opitem.plaintext);
-                  new_plaintext.append("[0]");
-               }
-               else
-                  // fetch global/private value
-                  new_plaintext.erase();
-                  format_global(opitem.arg,new_plaintext);
+               Uint16 val = oper->operator_data.op_arg;
+               ua_assert(imported_funcs.find(val) != imported_funcs.end());
+
+               buffer << imported_funcs.find(val)->second.name;
+            }
+            else
+               buffer << "func_" << std::setfill('0') <<
+                  std::setw(4) << std::setbase(16) << oper->operator_data.op_arg;
+            buffer << "(";
+
+            // do parameter
+            unsigned int max=expressions.size();
+            for(unsigned int n=0; n<max; n++)
+            {
+               ua_conv_graph_item& param = *expressions[n];
+
+               // check if lvalue is from PUSHI opcode
+               if (param.expression_data.is_pushi_imm)
+                  pushi_immediate_to_global(expressions[n]);
+
+               // param must be address, since all params are passed by reference/pointer
+               ua_assert(true == param.expression_data.is_address);
+
+               buffer << param.expression_data.expression;
+
+               if (n < max-1)
+                  buffer << ", ";
+            }
+
+            // since a statement appeared between this operator and the
+            // expressions used, insert the new expression on the place the
+            // operator is located; the reason for this is because uw1 conv.
+            // code can use temporary local variables that are initialized and
+            // used as parameter for function calls
+            if (statement_between)
+               new_expression.pos = oper->pos;
+
+            // decide if function call returns data
+            if (oper->operator_data.returns_expr)
+            {
+               buffer << ")" << std::ends;
+
+               new_expression.itemtype = gt_expression;
+               new_expression.expression_data.expression = buffer.str();
+               new_expression.expression_data.is_address = false;
             }
             else
             {
-               if (opitem.plaintext[0]=='&')
-               {
-                  new_plaintext.assign(opitem.plaintext);
-                  new_plaintext.erase(0,1);
-                  new_expr.expr_address = false;
-               }
-               else
-               {
-                  char buffer[256];
+               buffer << ");" << std::ends;
 
-                  if (opitem.plaintext.find("param") != std::string::npos)
-                  {
-                     int param_no = -(Sint16)opitem.arg-1;
-                     sprintf(buffer,"param%u",param_no);
-                  }
-                  else
-                  if (opitem.plaintext.find("locals") != std::string::npos)
-                  {
-                     sprintf(buffer,"locals[%u]",opitem.arg);
-                  }
-                  else
-                     // should not happen: dereferencing global
-                     strcpy(buffer,opitem.plaintext.c_str());
-
-                  new_plaintext.assign(buffer);
-               }
+               new_expression.itemtype = gt_statement;
+               new_expression.statement_data.statement = buffer.str();
             }
-
-            new_expr.expr_address = false;
-         }
-         break;
-
-      case op_OPNEG:
-         {
-            new_plaintext.assign("-");
-            new_plaintext.append(graph[expr_indices[0]].plaintext);
-         }
-         break;
-
-      case op_OPNOT:
-         {
-            new_plaintext.assign("!");
-            new_plaintext.append(graph[expr_indices[0]].plaintext);
          }
          break;
 
       case op_SAVE_REG:
          {
-            new_plaintext.assign("return ");
-            new_plaintext.append(graph[expr_indices[0]].plaintext);
+            ua_assert(expressions.size() == 1);
+            ua_assert(false == expressions[0]->expression_data.is_address)
+
+            new_expression.itemtype = gt_statement;
+
+            std::ostringstream buffer;
+            buffer << "return " <<
+               expressions[0]->expression_data.expression <<
+               ";" << std::ends;
+
+            new_expression.statement_data.statement = buffer.str();
          }
          break;
 
-      case op_STO:
+      case op_FETCHM:
          {
-            // swap indices?
-            bool swap = i>0 && is_opcode(i-1,op_SWAP);
+            ua_assert(expressions.size() == 1);
+            ua_assert(true == expressions[0]->expression_data.is_address);
 
-            if (swap)
-               graph[i-1].itemtype = gt_opcode_done;
-
-            ua_conv_graph_item& rvalue = graph[expr_indices[swap ? 1 : 0]];
-            ua_conv_graph_item& lvalue = graph[expr_indices[swap ? 0 : 1]];
-
-            std::string rstr(rvalue.plaintext);
-            std::string lstr(lvalue.plaintext);
-
-            // check if lvalue is address
-            if (!lvalue.expr_address)
-            {
-               // store to global/private
-               lstr.erase();
-               format_global(lvalue.arg,lstr);
-            }
-            else
-            {
-               if (lstr[0]=='&')
-                  lstr.erase(0,1);
-
-               if (lstr.compare("locals")==0)
-               {
-                  char buffer[256];
-                  sprintf(buffer,"[%u]",lvalue.arg);
-                  lstr.append(buffer);
-               }
-            }
-
-
-            new_plaintext.assign(lstr);
-            new_plaintext.append(" = ");
-            new_plaintext.append(rstr);
+            new_expression.itemtype = gt_expression;
+            new_expression.expression_data = expressions[0]->expression_data;
+            new_expression.expression_data.is_address = false;
          }
          break;
 
+      case op_OFFSET:
+         {
+            ua_assert(expressions.size() == 2);
+
+            // check if expression 0 is from PUSHI opcode
+            if (expressions[0]->expression_data.is_pushi_imm)
+               pushi_immediate_to_global(expressions[0]);
+
+            ua_assert(true == expressions[0]->expression_data.is_address);
+            ua_assert(false == expressions[1]->expression_data.is_address);
+
+            new_expression.itemtype = gt_expression;
+            new_expression.expression_data.is_address = true;
+
+            std::ostringstream buffer;
+
+            buffer << expressions[0]->expression_data.expression <<
+               "[" << expressions[1]->expression_data.expression << "]" <<
+               std::ends;
+
+            new_expression.expression_data.expression = buffer.str();
+         }
+         break;
+
+         // comparison operators
       case op_TSTEQ:
+      case op_TSTNE:
       case op_TSTGT:
       case op_TSTGE:
       case op_TSTLT:
       case op_TSTLE:
-      case op_TSTNE:
-      case op_OPAND:
+         // arithmetic and logical operators
       case op_OPADD:
-      case op_OPSUB:
       case op_OPMUL:
+      case op_OPSUB:
       case op_OPDIV:
       case op_OPMOD:
+      case op_OPOR:
+      case op_OPAND:
          {
-            new_plaintext.assign(graph[expr_indices[1]].plaintext);
-            new_plaintext.append(item.plaintext);
-            new_plaintext.append(graph[expr_indices[0]].plaintext);
+            ua_assert(expressions.size() == 2);
+
+            new_expression.itemtype = gt_expression;
+
+            graph_iterator rvalue, lvalue;
+            rvalue = expressions[0];
+            lvalue = expressions[1];
+
+            unsigned int precedence = oper->operator_data.prec_level;
+
+            ua_conv_graph_item& value = *lvalue;
+
+            // check that both lvalue and rvalue are value-of
+            ua_assert(false == lvalue->expression_data.is_address);
+            ua_assert(false == rvalue->expression_data.is_address);
+
+            // do new expression
+            // when an expression used has a higher proecedence, put brackets
+            // around that expression
+            std::ostringstream buffer;
+
+            // lvalue
+            if (precedence > lvalue->expression_data.prec_level)
+               buffer << "(" << lvalue->expression_data.expression << ")";
+            else
+               buffer << lvalue->expression_data.expression;
+
+            // operator char
+            buffer << " " << ua_conv_instructions[oper->operator_data.op_opcode].operator_text << " ";
+            
+            // rvalue
+            if (precedence > rvalue->expression_data.prec_level)
+               buffer << "(" << rvalue->expression_data.expression << ")";
+            else
+               buffer << rvalue->expression_data.expression;
+
+            new_expression.expression_data.expression = buffer.str();
+            new_expression.expression_data.is_address = false;
+
+            // the new expression has the lowest precedence of all used expressions
+            unsigned int new_prec = ua_min(expressions[0]->expression_data.prec_level,
+               expressions[1]->expression_data.prec_level);
+            new_prec = ua_min(new_prec,precedence);
+
+            new_expression.expression_data.prec_level = new_prec;
          }
          break;
 
-      case op_OPOR:
+      case op_OPNEG:
          {
-            new_plaintext.assign("(");
-            new_plaintext.append(graph[expr_indices[1]].plaintext);
-            new_plaintext.append(item.plaintext);
-            new_plaintext.append(graph[expr_indices[0]].plaintext);
-            new_plaintext.append(")");
+            ua_assert(expressions.size() == 1);
+            ua_assert(false == expressions[0]->expression_data.is_address);
+
+            new_expression.itemtype = gt_expression;
+            new_expression.expression_data = expressions[0]->expression_data;
+
+            std::string newtext("-");
+            newtext += new_expression.expression_data.expression;
+
+            new_expression.expression_data.expression = newtext;
+         }
+         break;
+
+      case op_OPNOT:
+         {
+            ua_assert(expressions.size() == 1);
+            ua_assert(false == expressions[0]->expression_data.is_address);
+
+            new_expression.itemtype = gt_expression;
+            new_expression.expression_data = expressions[0]->expression_data;
+
+            std::string newtext("!");
+            newtext += new_expression.expression_data.expression;
+
+            new_expression.expression_data.expression = newtext;
          }
          break;
 
       case op_SAY_OP:
          {
-            new_plaintext.assign("say( \"");
+            ua_assert(expressions.size() == 1);
 
-            ua_conv_graph_item& opitem = graph[expr_indices[0]];
-            if (!opitem.expr_address)
-            {
-               std::string text(strings[opitem.arg]);
+            // no, we have a statement
+            new_expression.itemtype = gt_statement;
 
-               std::string::size_type pos = 0;
-               while( (pos = text.find('\n',pos)) != std::string::npos)
-               {
-                  text.replace(pos,1,"\\n\"\n      \"");
-                  pos += 7;
-               }
+            // SAY with PUSHI before?
+            ua_assert(true == expressions[0]->expression_data.is_pushi_imm);
 
-               new_plaintext.append(text);
-            }
-            else
-               new_plaintext.append(opitem.plaintext);
+            Uint16 string_id = expressions[0]->expression_data.pushi_imm_value;
+            ua_assert(string_id < strings.size());
 
-            new_plaintext.append("\" )");
+            // replace linefeeds in text
+            std::string outtext(strings[string_id]);
+
+            std::string::size_type pos = 0;
+            while(std::string::npos != (pos = outtext.find('\n')))
+               outtext.replace(pos,1,"\\n");
+
+            std::ostringstream buffer;
+            buffer << "say(\"" << outtext << "\");" << std::ends;
+            new_expression.statement_data.statement = buffer.str();
          }
          break;
 
-      case op_CALL:
-      case op_CALLI:
+      case op_STO:
          {
-            if (item.opcode == op_CALLI)
-            {
-               // take imported function name
-               new_plaintext.assign(imported_funcs[item.arg]);
-            }
-            else
-            {
-               // take function name
-               unsigned int pos = find_pos(item.arg);
-               if (pos==0)
-               {
-                  char buffer[256];
-                  sprintf(buffer,"func_%04x",item.arg);
-                  new_plaintext.assign(buffer);
-               }
-               else
-                  new_plaintext.assign(graph[pos].plaintext);
-            }
+            ua_assert(expressions.size() == 2);
 
-            std::string params;
-            unsigned int max = expr_indices.size();
-            for(unsigned int n=0; n<max; n++)
-            {
-               params.append(graph[expr_indices[n]].plaintext);
-               if (n<max-1)
-                  params.append(", ");
-            }
+            new_expression.itemtype = gt_statement;
 
-            if (params.size()>0)
-            {
-               new_plaintext.append("( ");
-               new_plaintext.append(params);
-               new_plaintext.append(" )");
-            }
-            else
-               new_plaintext.append("()");
+            graph_iterator rvalue, lvalue;
+            rvalue = expressions[0];
+            lvalue = expressions[1];
 
-            if (item.oper_needed>0)
-            {
-               // search for new insertion position before last finished expression
-               unsigned int n = i-1;
+            // swap iterators if SWAP opcode was found
+            if (oper->operator_data.sto_swap_args)
+               std::swap(rvalue,lvalue);
 
-               while(n>j && n>0)
-               {
-                  if (graph[n].itemtype == gt_expression)
-                  {
-                     if (graph[n].expr_finished)
-                        break; // found a finished expression
-                     else
-                        new_expr_pos = n; // unfinished expression; new last position
-                  }
-                  n--;
-               }
-            }
+            // check if lvalue is from PUSHI opcode
+            if (lvalue->expression_data.is_pushi_imm)
+               pushi_immediate_to_global(lvalue);
+/*
+            ua_trace("lvalue: %s (%s)\n", lvalue->expression_data.expression.c_str(),
+               lvalue->expression_data.is_address?"address-of":"value-of");
+            ua_trace("rvalue: %s (%s)\n", rvalue->expression_data.expression.c_str(),
+               rvalue->expression_data.is_address?"address-of":"value-of");
+*/
+            // check that lvalue is address-of and rvalue is value-of
+            ua_assert(true == lvalue->expression_data.is_address);
+            ua_assert(false == rvalue->expression_data.is_address);
+
+            std::ostringstream buffer;
+            buffer << lvalue->expression_data.expression << " = " <<
+               rvalue->expression_data.expression << ";" << std::ends;
+
+            new_expression.statement_data.statement = buffer.str();
+
+            // also relocate store expression; see op_CALL/op_CALLI part for
+            // further comments
+            if (statement_between)
+               new_expression.pos = expressions[0]->pos;
          }
+         break;
+
+      default:
+         // opcode appeared that wasn't processed
+         ua_assert(false);
          break;
       }
 
-      new_expr.plaintext.assign(new_plaintext);
+      // mark operator as "done"
+      oper->is_processed = true;
 
-      // delete old operator
-      graph.erase(graph.begin()+i);
-      if (new_expr_pos>i) new_expr_pos--;
-      i--;
+      // mark expressions as "done"
+      unsigned int max = expressions.size();
+      for(unsigned int i=0; i<max; i++)
+         expressions[i]->is_processed = true;
 
-      // delete all old expressions
-      {
-         for(unsigned int n=0; n<expr_indices.size(); n++)
-         {
-            graph.erase(graph.begin()+expr_indices[n]);
-            if (new_expr_pos>expr_indices[n]) new_expr_pos--;
-            i--;
-         }
-      }
+      // insert new expression before first expression used for this new one
+      graph_iterator insert_iter = find_pos(new_expression.pos);
+      ua_assert(insert_iter != graph.end());
 
-      // insert new expression
-      graph.insert(graph.begin()+new_expr_pos,new_expr);
-      i++;
+      graph.insert(insert_iter,new_expression);
    }
 }
 
+void ua_conv_graph::find_control_structs(const graph_iterator& start,
+   const graph_iterator& stop)
+{
+   graph_iterator iter;
+
+   // search for remaining opcodes
+   for(iter=start; iter!=stop; iter++)
+   {
+      // only examine opcodes that weren't processed yet
+      if (iter->itemtype != gt_opcode || iter->is_processed)
+         continue;
+
+      Uint16 opcode = iter->opcode_data.opcode;
+
+      // start for if, if-else, while and switch statement
+      if (opcode == op_BEQ)
+      {
+         ua_conv_graph_item item = *iter;
+
+         iter->is_processed = true;
+
+         // search expression before this opcode
+         graph_iterator expr_iter = iter;
+
+         while(expr_iter != start && (expr_iter->itemtype != gt_expression || expr_iter->is_processed))
+            expr_iter--;
+
+         ua_assert(expr_iter != start);
+         ua_assert(expr_iter->itemtype == gt_expression);
+
+         // now examine jump target of BEQ opcode, label1
+         graph_iterator label1_iter = find_pos(iter->opcode_data.jump_target_pos);
+
+         graph_iterator op_iter = label1_iter;
+         op_iter--;
+
+         // check if an opcode precedes label1
+         if (op_iter->itemtype == gt_opcode && !op_iter->is_processed)
+         {
+            // yes, opcode before label1
+            // when we have BRA, it might be "if-else" or "while"
+            if (is_opcode(op_iter, op_BRA))
+            {
+               // it's "while" when the BRA jumps up, else it's "if-else"
+               if (op_iter->opcode_data.jump_target_pos < op_iter->pos)
+               {
+                  // "while" control statement
+                  // check that the BRA target points to the expression found
+                  //ua_assert(expr_iter->pos == op_iter->opcode_data.jump_target_pos);
+                  if (expr_iter->pos != op_iter->opcode_data.jump_target_pos)
+                  {
+                     // the BRA target doesn't point to the expression used at
+                     // the start of the while() loop. that indicates a for()
+                     // statement which isn't parsed yet. the BRA opcode
+                     // instead jumps to the for loop break condition check
+                     // happens in conv 10
+                     ua_trace("possible for() statement found on pos %04x\n",
+                        expr_iter->pos);
+                  }
+
+                  graph_iterator label2_iter = find_pos(op_iter->opcode_data.jump_target_pos);
+
+                  process_while(expr_iter,label1_iter);
+
+                  // mark items as "done"
+                  expr_iter->is_processed = true;
+               }
+               else
+               {
+                  // "if-else", determine endif position
+                  graph_iterator endif_iter =
+                     find_pos(op_iter->opcode_data.jump_target_pos);
+
+                  process_if_else(true,expr_iter, label1_iter, endif_iter);
+               }
+
+               // mark items as "done"
+               op_iter->is_processed = true;
+               expr_iter->is_processed = true;
+            }
+            else
+            // when we have JMP, it is "switch"
+            if (is_opcode(op_iter, op_JMP))
+            {
+               // check if expression contains "==" operator
+               std::string expr(expr_iter->expression_data.expression);
+               std::string::size_type pos = expr.find(" == ");
+
+               // TODO add function that checks it it really is switch
+               if (std::string::npos == pos || pos <= 3)
+                  process_if_else(false,expr_iter, graph.end(), label1_iter);
+               else
+                  process_switch(expr_iter, op_iter);
+            }
+            else
+            // unknown opcode
+               ua_assert(false);
+         }
+         else
+         {
+            // no opcode, so it must be simple "if"
+            process_if_else(false,expr_iter, graph.end(), label1_iter);
+         }
+      }
+   }
+}
+
+void ua_conv_graph::process_if_else(bool with_else,
+   const graph_iterator& expr_iter, graph_iterator else_iter,
+   const graph_iterator& endif_iter)
+{
+   expr_iter->is_processed = true;
+
+   // if (expr) statement and opening brace
+   {
+      ua_conv_graph_item if_statement;
+
+      // if statement
+      if_statement.itemtype = gt_statement;
+      if_statement.pos = expr_iter->pos;
+
+      std::ostringstream buffer;
+      buffer << "if (" << expr_iter->expression_data.expression << ")" <<
+         std::ends;
+
+      if_statement.statement_data.statement = buffer.str();
+
+      graph.insert(expr_iter, if_statement);
+
+      // opening brace
+      if_statement.statement_data.statement = "{";
+      if_statement.statement_data.indent_change = 1;
+
+      graph.insert(expr_iter, if_statement);
+   }
+
+   // else statement
+   if (with_else)
+   {
+      ua_assert(else_iter != graph.end())
+
+      ua_conv_graph_item else_statement;
+
+      else_statement.itemtype = gt_statement;
+      else_statement.pos = else_iter->pos;
+      else_statement.statement_data.statement = "}";
+      else_statement.statement_data.indent_change = -1;
+
+      graph.insert(else_iter, else_statement);
+
+      else_statement.statement_data.statement = "else";
+      else_statement.statement_data.indent_change = 0;
+
+      graph.insert(else_iter, else_statement);
+
+      else_statement.statement_data.statement = "{";
+      else_statement.statement_data.indent_change = 1;
+
+      graph.insert(else_iter, else_statement);
+   }
+
+   // closing brace
+   {
+      ua_conv_graph_item endif_statement;
+
+      endif_statement.itemtype = gt_statement;
+      endif_statement.pos = endif_iter->pos-2;
+
+      std::ostringstream buffer;
+#ifdef HAVE_END_STMT_INFO
+      buffer << "} // end if (" << expr_iter->expression_data.expression << ")";
+#else
+      buffer << "} // end if";
+#endif
+
+      endif_statement.statement_data.statement = buffer.str();
+      endif_statement.statement_data.indent_change = -1;
+
+      graph.insert(endif_iter, endif_statement);
+   }
+}
+
+void ua_conv_graph::process_switch(
+   graph_iterator expr_iter, graph_iterator jmp_iter)
+{
+   // first expression; find out switch variable
+   std::string expr_base(expr_iter->expression_data.expression);
+   std::string::size_type pos = expr_base.find(" == ");
+   ua_assert(pos != std::string::npos);
+
+   // switch statement
+   {
+      ua_conv_graph_item switch_statement;
+      switch_statement.itemtype = gt_statement;
+      switch_statement.pos = expr_iter->pos;
+
+      std::ostringstream buffer;
+      buffer << "switch (" << expr_base.substr(0,pos) << ")";
+
+      switch_statement.statement_data.statement = buffer.str();
+
+      graph.insert(expr_iter, switch_statement);
+
+      // opening brace
+      switch_statement.statement_data.statement = "{";
+
+      graph.insert(expr_iter, switch_statement);
+   }
+   pos += 4;
+
+   graph_iterator switch_end_iter =
+      find_pos(jmp_iter->opcode_data.jump_target_pos);
+
+   std::string expr(expr_base);
+
+   // process as many case statements we can find
+   do
+   {
+      // case statement
+      {
+         ua_conv_graph_item case_statement;
+         case_statement.itemtype = gt_statement;
+         case_statement.pos = expr_iter->pos;
+
+         std::ostringstream buffer;
+         buffer << "case " << expr.substr(pos) << ":";
+
+         case_statement.statement_data.statement = buffer.str();
+         case_statement.statement_data.indent_change = 1;
+
+         graph.insert(expr_iter, case_statement);
+      }
+
+      // break statement
+      {
+         ua_conv_graph_item break_statement;
+         break_statement.itemtype = gt_statement;
+         break_statement.pos = jmp_iter->pos;
+
+         break_statement.statement_data.statement = "   break;";
+
+         break_statement.statement_data.indent_change = -1;
+
+         graph.insert(jmp_iter, break_statement);
+      }
+
+      expr_iter->is_processed = true;
+      jmp_iter->is_processed = true;
+
+      // determine new expression iterator
+      expr_iter = jmp_iter;
+      expr_iter++;
+
+      // already at end of switch statement?
+      if (expr_iter == switch_end_iter)
+         break;
+
+      // TODO debug code
+      ua_conv_graph_item& expr_item = *expr_iter;
+      // TODO fix this: switch with only one expression, conv 6
+      if (expr_item.itemtype != gt_expression)
+         break;
+
+      // determine next case value from expression
+      ua_assert(expr_iter->itemtype == gt_expression);
+      expr = expr_iter->expression_data.expression;
+
+      ua_assert(0 == expr.find(expr_base.substr(0,pos)));
+
+      graph_iterator op_beq_iter = expr_iter;
+      op_beq_iter++;
+
+      // search next BEQ opcode
+      while((op_beq_iter->itemtype != gt_opcode ||
+             op_beq_iter->is_processed) &&
+            op_beq_iter != switch_end_iter)
+         op_beq_iter++;
+
+      ua_assert(op_beq_iter->itemtype == gt_opcode);
+      ua_assert(is_opcode(op_beq_iter, op_BEQ));
+
+      op_beq_iter->is_processed = true;
+
+      jmp_iter = find_pos(op_beq_iter->opcode_data.jump_target_pos);
+      jmp_iter--;
+
+      // TODO debug code
+      ua_conv_graph_item& jmp_item = *jmp_iter;
+      // TODO fix: no break statement in switch-case, conv 7
+      if (jmp_item.itemtype != gt_opcode)
+         break;
+
+      ua_assert(jmp_iter->itemtype == gt_opcode);
+      ua_assert(is_opcode(jmp_iter,op_JMP));
+
+   } while(expr_iter != switch_end_iter);
+
+
+   // switch end statement
+   {
+      ua_conv_graph_item switch_statement;
+      switch_statement.itemtype = gt_statement;
+      // use end switch iterator pos, only 2 opcodes before
+      switch_statement.pos = switch_end_iter->pos-2;
+
+      std::ostringstream buffer;
+#ifdef HAVE_END_STMT_INFO
+      buffer << "} // end switch (" << expr.substr(0,pos-4) << ")";
+#else
+      buffer << "} // end switch";
+#endif
+
+      switch_statement.statement_data.statement = buffer.str();
+
+      graph.insert(switch_end_iter, switch_statement);
+   }
+}
+
+void ua_conv_graph::process_while(
+   const graph_iterator& expr_iter, const graph_iterator& while_end_iter)
+{
+   // while-statement
+   ua_conv_graph_item while_statement;
+
+   while_statement.itemtype = gt_statement;
+   while_statement.pos = expr_iter->pos;
+
+   std::ostringstream buffer;
+   buffer << "while (" << expr_iter->expression_data.expression << ")" <<
+      std::ends;
+
+   while_statement.statement_data.statement = buffer.str();
+
+   graph.insert(expr_iter, while_statement);
+
+   // opening brace
+   while_statement.statement_data.statement = "{";
+   while_statement.statement_data.indent_change = 1;
+
+   graph.insert(expr_iter, while_statement);
+
+   // closing brace
+   std::ostringstream buffer2;
+#ifdef HAVE_END_STMT_INFO
+   buffer2 << "} // end while (" << expr_iter->expression_data.expression << ")";
+#else
+   buffer2 << "} // end while";
+#endif
+
+   while_statement.statement_data.statement = buffer2.str();
+   while_statement.statement_data.indent_change = -1;
+   while_statement.pos = while_end_iter->pos-2;
+
+   graph.insert(while_end_iter, while_statement);
+}
+
+void ua_conv_graph::post_process_function(ua_conv_func_info& info)
+{
+   // get function start
+   graph_iterator func_start = find_pos(info.start);
+   ua_conv_graph_item& item = *func_start;
+   ua_assert(item.itemtype == gt_func_start);
+
+   item.is_processed = true;
+
+   ua_conv_graph_item func_item;
+   func_item.itemtype = gt_statement;
+   func_item.pos = item.pos;
+
+   std::ostringstream buffer;
+
+   // return type
+   buffer << ua_type_to_str(info.return_type) << " ";
+
+   // function name
+   buffer << item.label_name << "(";
+
+   // parameters
+   const std::vector<ua_conv_datatype>& param_types = info.param_types;
+
+   unsigned int max = param_types.size();
+   for(unsigned int i=0; i<max; i++)
+   {
+      buffer << ua_type_to_str(param_types[i]) << " param" << i+1;
+      if (i<max-1)
+         buffer << ", ";
+   }
+
+   buffer << ")";
+   buffer << " // referenced " << item.xref_count << " times";
+
+   func_item.statement_data.statement = buffer.str();
+
+   graph.insert(func_start,func_item);
+
+   func_item.label_name = "";
+
+   // opening brace
+   func_item.statement_data.statement = "{";
+   func_item.statement_data.indent_change = 1;
+
+   graph.insert(func_start,func_item);
+
+   // all locals and arrays
+   ua_conv_graph_item locals_item;
+   locals_item.itemtype = gt_statement;
+   locals_item.pos = item.pos;
+
+   max = info.locals_types.size();
+   for(unsigned int j=0; j<max; j++)
+   {
+      ua_conv_datatype type = info.locals_types[j];
+
+      if (type != ua_dt_unknown)
+      {
+         std::ostringstream buffer;
+         buffer << ua_type_to_str(type) << " local_" << j << ";";
+
+         locals_item.statement_data.statement = buffer.str();
+
+         graph.insert(func_start,locals_item);
+      }
+   }
+
+   // arrays
+   max = info.array_info.size();
+   for(unsigned int n=0; n<max; n++)
+   {
+      ua_conv_func_array_info array_info = info.array_info[n];
+
+      std::ostringstream buffer;
+
+      ua_assert(array_info.local_start < info.locals_types.size());
+
+      buffer << ua_type_to_str(info.locals_types[array_info.local_start]) <<
+         "local_" << array_info.local_start <<
+         "[" << array_info.array_size << "]";
+
+      locals_item.statement_data.statement = buffer.str();
+
+      graph.insert(func_start,func_item);
+   }
+
+   // add function end
+   graph_iterator func_end = func_start;
+   while(func_end != graph.end() && func_end->itemtype != gt_func_end)
+      func_end++;
+   ua_assert(func_end != graph.end() && func_end->itemtype == gt_func_end);
+
+   func_end->is_processed = true;
+
+   func_item.itemtype = gt_statement;
+   func_item.pos = func_end->pos;
+   func_item.statement_data.statement = "}";
+   func_item.statement_data.indent_change = -1;
+
+   graph.insert(func_end,func_item);
+
+   // empty line
+   func_item.statement_data.statement = "";
+   func_item.statement_data.indent_change = 0;
+
+   graph.insert(func_end,func_item);
+}
+
+/*
 void ua_conv_graph::find_control_structs()
 {
    // go through code and search for control structures
    for(unsigned int i=0; i<graph.size(); i++)
    {
-      if (is_opcode(i,op_EXIT_OP))
-      {
-         graph[i].itemtype = gt_opcode_done;
-         i++;
-      }
-
-      // check for if/switch/while
-      if (is_opcode(i,op_BEQ))
-      {
-         graph[i].itemtype = gt_opcode_done;
-
-         // calculate branch target
-         Uint16 target = graph[i].arg + graph[i].pos + 1;
-         unsigned int branch_target = find_pos(target);
-
-         // find expression to use
-         unsigned int expr_pos = i-1;
-         while( expr_pos>0 && graph[expr_pos].itemtype != gt_expression && graph[expr_pos].expr_finished )
-            expr_pos--;
-
-         // check if we have a "while" loop
-         if (is_opcode(branch_target-1,op_BRA) &&
-             graph[branch_target-1].arg>0x7fff)
-         {
-            graph[branch_target-1].itemtype = gt_opcode_done;
-
-            // while loop end
-            insert_control("} // while",branch_target,graph[branch_target-1].pos,-1);
-
-            // add "while" statement
-            {
-               std::string whiletext("while ( ");
-               whiletext.append(graph[expr_pos].plaintext);
-               whiletext.append(" ) {");
-               insert_control(whiletext.c_str(),expr_pos,graph[expr_pos].pos,1);
-
-               // delete expression
-               graph.erase(graph.begin()+expr_pos+1);
-            }
-            i++;
-         }
-         else
-         // check if we have a "switch" control statement
-         if (graph[branch_target+1].opcode == graph[expr_pos+1].opcode &&
-             graph[branch_target+1].opcode == op_PUSHI_EFF &&
-             graph[branch_target+1].arg == graph[expr_pos+1].arg &&
-
-             graph[branch_target+2].opcode == graph[expr_pos+2].opcode &&
-             graph[branch_target+2].opcode == op_FETCHM &&
-
-             graph[branch_target+3].opcode == graph[expr_pos+3].opcode &&
-             graph[branch_target+3].opcode == op_PUSHI)
-         {
-            char buffer[256];
-
-            // "switch" control statement
-            {
-               sprintf(buffer,"switch ( locals[%u] ) {",graph[expr_pos+1].arg);
-               std::string sw_text(buffer);
-
-               // add statement
-               insert_control(sw_text.c_str(),expr_pos,graph[expr_pos].pos,0);
-
-               expr_pos++; branch_target++;
-            }
-
-            Uint16 endsw_pos = 0;
-            do
-            {
-               // do "case" label
-               {
-                  sprintf(buffer,"case %u:",graph[expr_pos+3].arg);
-
-                  std::string case_text(buffer);
-                  insert_control(case_text.c_str(),expr_pos,graph[expr_pos].pos,1);
-
-                  // delete expression
-                  graph.erase(graph.begin()+expr_pos+1);
-               }
-
-               // do "break" label
-               {
-                  std::string break_text("break;");
-                  insert_control(break_text.c_str(),branch_target,graph[branch_target-1].pos,-1);
-
-                  if (is_opcode(branch_target-1,op_JMP))
-                  {
-                     graph[branch_target-1].itemtype = gt_opcode_done;
-                     endsw_pos = graph[branch_target-1].arg;
-                  }
-                  else
-                  if (is_opcode(branch_target-1,op_BRA))
-                  {
-                     graph[branch_target-1].itemtype = gt_opcode_done;
-                     endsw_pos = graph[branch_target-1].arg + graph[branch_target-1].pos +1;
-                  }
-
-                  branch_target++;
-               }
-
-               // find next "branch target"
-               expr_pos = branch_target;
-
-               // check if branch target == end switch position
-               if (graph[branch_target].pos == endsw_pos)
-                  break;
-
-               // JMP right after BEQ?
-/*               if (is_opcode(branch_target-1,op_JMP) &&
-                   graph[branch_target-2].opcode == op_BEQ)
-                   break;*/
-
-               if (graph[branch_target].itemtype == gt_expression)
-               {
-                  int j = branch_target+1;
-                  while(!is_opcode(j,op_BEQ)) j++;
-                  branch_target = find_pos(graph[j].arg + graph[j].pos +1);
-                  graph[j].itemtype = gt_opcode_done;
-               }
-
-               // loop when we have another "case"
-            }
-            while(graph[expr_pos+1].opcode == op_PUSHI_EFF &&
-               graph[expr_pos+2].opcode == op_FETCHM &&
-               graph[expr_pos+3].opcode == op_PUSHI);
-
-            if (is_opcode(branch_target-1,op_JMP))
-               graph[branch_target-1].itemtype = gt_opcode_done;
-
-            // add "end switch"
-            {
-               std::string endsw_text("} // end switch");
-               //endsw_text.append(graph[i].plaintext);
-
-               insert_control(endsw_text.c_str(),branch_target,graph[branch_target-1].pos,0);
-
-//               if (is_opcode(label_endif-1,op_JMP))
-//                  graph[label_endif-1].itemtype = gt_opcode_done;
-            }
-         }
-         else
-         {
-            // "if" control statement
-            {
-               std::string iftext("if ( ");
-               iftext.append(graph[expr_pos].plaintext);
-               iftext.append(" ) {");
-
-               // add "if" statement
-               insert_control(iftext.c_str(),expr_pos,graph[expr_pos].pos,1);
-
-               // delete expression
-               graph.erase(graph.begin()+expr_pos+1);
-            }
-
-            // find out endif target
-            Uint16 target_endif = 0;
-            {
-               int j=branch_target-1;
-
-               // check opcode and get endif target
-               if (is_opcode(j,op_JMP))
-               {
-                  target_endif = graph[j].arg;
-                  graph[j].itemtype = gt_opcode_done;
-               }
-               else
-               if (is_opcode(j,op_BRA))
-               {
-                  target_endif = graph[j].arg + graph[j].pos +1;
-                  graph[j].itemtype = gt_opcode_done;
-               }
-               else
-                  target_endif = target; // no else part
-
-               // check for another jump
-
-               // search last opcode
-               j--;
-
-               // check again, there might be another jump/branch
-               if (is_opcode(j,op_JMP))
-               {
-                  target_endif = graph[j].arg;
-                  graph[j].itemtype = gt_opcode_done;
-               }
-               else
-               if (is_opcode(j,op_BRA))
-               {
-                  target_endif = graph[j].arg + graph[j].pos +1;
-                  graph[j].itemtype = gt_opcode_done;
-               }
-            }
-
-            unsigned int label_endif = find_pos(target_endif);
-            label_endif = find_pos(graph[label_endif-1].pos);
-
-            // search last pos
-            while(graph[label_endif+1].pos == graph[label_endif].pos)
-               label_endif++;
-
-            label_endif++;
-
-            // add "endif" statement
-            {
-               std::string endif_text("} // end if");
-               //endif_text.append(graph[expr_pos].plaintext);
-
-               insert_control(endif_text.c_str(),label_endif,graph[label_endif-1].pos,-1);
-
-               if (is_opcode(label_endif-1,op_JMP))
-                  graph[label_endif-1].itemtype = gt_opcode_done;
-            }
-
-            // add "else" statement, when used
-            if (label_endif != branch_target)
-            {
-               std::string endif_text("} else {");
-               //endif_text.append(graph[expr_pos].plaintext);
-
-               // we have an else statement
-               insert_control(endif_text.c_str(),branch_target,graph[branch_target-1].pos,-1);
-            }
-
-         }
-      }
-
       if (is_opcode(i,op_JMP))
       {
          graph[i].itemtype = gt_opcode_done;
@@ -1021,82 +1813,73 @@ void ua_conv_graph::find_control_structs()
       }
    }
 }
+*/
 
-void ua_conv_graph::fixup_functions()
+ua_conv_graph::graph_iterator ua_conv_graph::find_pos(Uint16 target)
 {
-   unsigned int max = functions.size();
-   for(unsigned int i=0; i<max; i++)
+   graph_iterator iter,stop;
+   iter = graph.begin();
+   stop = graph.end();
+
+   for(;iter!=stop;iter++)
+      if (iter->pos == target)
+         return iter;
+
+   // should not happen
+   ua_assert(0);
+   return stop;
+}
+
+bool ua_conv_graph::match_opcode_pattern(graph_iterator iter, Uint16* pattern,
+   unsigned int length)
+{
+   for(unsigned int i=0; i<length; i++, iter++)
+      if (iter == graph.end() || iter->itemtype != gt_opcode ||
+          iter->opcode_data.opcode != pattern[i])
+         return false;
+
+   // all pattern bytes found, no end reached
+   return true;
+}
+
+bool ua_conv_graph::is_opcode(graph_iterator iter, Uint16 opcode) const
+{
+   return (iter->itemtype == gt_opcode &&
+      iter->opcode_data.opcode == opcode);
+}
+
+void ua_conv_graph::pushi_immediate_to_global(graph_iterator iter)
+{
+   ua_assert(iter->itemtype == gt_expression);
+   ua_assert(true == iter->expression_data.is_pushi_imm);
+   ua_assert(false == iter->expression_data.is_address);
+
+   // resolve to proper address
+   Uint16 mem_idx = iter->expression_data.pushi_imm_value;
+
+   iter->expression_data.expression = get_memory_varname(mem_idx);
+
+   iter->expression_data.is_pushi_imm = false;
+   iter->expression_data.pushi_imm_value = 0;
+   iter->expression_data.is_address = true;
+}
+
+std::string ua_conv_graph::get_memory_varname(Uint16 mem_idx)
+{
+   ua_assert(mem_idx < nglobals);
+
+   std::map<Uint16,ua_conv_imported_item>::iterator iter =
+      imported_vars.find(mem_idx);
+
+   if (iter != imported_vars.end())
    {
-      ua_conv_func_info& funcinfo = functions[i];
-
-      // get function name
-      unsigned int pos = find_pos(funcinfo.start);
-
-      if (graph[pos].plaintext.find("int locals[") != std::string::npos)
-         pos--;
-
-      std::string funcname(graph[pos].plaintext);
-
-      // create param string
-      std::string params;
-
-      for(unsigned int i=0; i<funcinfo.numparam; i++)
-      {
-         if (i==0) params.append(" ");
-
-         char buffer[20];
-         sprintf(buffer,"param%u ",i);
-         params.append(buffer);
-      }
-
-      // create function decl.
-      char buffer[256];
-      sprintf(buffer,"%s %s(%s) {",
-         funcinfo.return_type == ua_dt_string? "string" :
-         funcinfo.return_type == ua_dt_int ? "int" : "void",
-         funcname.c_str(), params.c_str());
-
-      graph[pos].plaintext.assign(buffer);
+      return iter->second.name;
    }
-}
-
-unsigned int ua_conv_graph::find_pos(Uint16 target)
-{
-   unsigned int max = graph.size();
-   for(unsigned int i=0; i<max; i++)
-      if (graph[i].pos == target)
-         return i;
-   return 0; // should not happen
-}
-
-bool ua_conv_graph::is_opcode(unsigned int pos, Uint16 opcode)
-{
-   return (graph[pos].itemtype == gt_opcode && graph[pos].opcode == opcode);
-}
-
-void ua_conv_graph::format_global(Uint16 offset,std::string& str)
-{
-   char buffer[256];
-   if (offset<nglobals)
-      sprintf(buffer,"global[%u]",offset);
    else
    {
-      if (offset<nglobals+imported_vars.size())
-         strcpy(buffer,imported_vars[offset-nglobals].c_str());
-      else
-         sprintf(buffer,"private[%u]",offset-nglobals-imported_vars.size());
+      std::ostringstream buffer;
+      buffer << "global_" << mem_idx << std::ends;
+
+      return buffer.str();
    }
-   str.append(buffer);
-}
-
-void ua_conv_graph::insert_control(const char* str, unsigned int graph_pos,
-   Uint16 opcode_pos, int indent_change)
-{
-   ua_conv_graph_item control_item;
-   control_item.itemtype = gt_control;
-   control_item.indent_change = indent_change;
-   control_item.plaintext.assign(str);
-   control_item.pos = opcode_pos;
-
-   graph.insert(graph.begin()+graph_pos,control_item);
 }
