@@ -29,7 +29,7 @@
 #include "common.hpp"
 #include "cnvdasm.hpp"
 #include "resource/fread_endian.hpp"
-#include "instr.hpp"
+#include "conv/opcodes.hpp"
 
 
 // constants
