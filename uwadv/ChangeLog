@@ -1,3 +1,200 @@
+2002-07-08 22:17  vividos
+
+	* source/: Makefile.in (1.19), linux/mkinstalldirs (1.13),
+	tools/Makefile.in (1.14):
+
+	updated makefiles
+	
+2002-07-08 22:04  vividos
+
+	* source/win32/Makefile.mingw (1.18):
+
+	moved "all" rule to begin to work
+	
+2002-07-08 21:55  vividos
+
+	* docs/README.Linux.txt (1.4):
+
+	added note about case sensitivity of uw1 game files
+	
+2002-07-08 21:44  vividos
+
+	* source/screens/ingame_orig.cpp (1.20):
+
+	increased fog density a bit
+	
+2002-07-08 21:42  vividos
+
+	* source/objects.cpp (1.8):
+
+	made objects a bit bigger
+	
+2002-07-08 21:22  vividos
+
+	* source/physics.cpp (1.6):
+
+	added modifications done by Telemachos; http://www.peroxide.dk/
+	
+2002-07-08 13:35  vividos
+
+	* source/: physics.cpp (1.5), physics.hpp (1.3):
+
+	added collision detection and response (not working yet)
+	
+2002-07-08 13:15  vividos
+
+	* source/uamath.hpp (1.4):
+
+	added rotate function to ua_vector2d
+	
+2002-07-06 15:30  vividos
+
+	* source/: tools/Makefile.am (1.11), win32/Makefile.mingw (1.17),
+	win32/mapdisp.dsp (1.5):
+
+	added files for mapdisp to compile
+	
+2002-07-06 15:29  vividos
+
+	* source/tools/cnvdbg.cpp (1.10):
+
+	fixed compiling
+	
+2002-07-06 15:28  vividos
+
+	* source/tools/mapdisp.cpp (1.2):
+
+	fixed compiling
+	added fps calculation
+	
+2002-07-06 15:28  vividos
+
+	* source/resource/maploader.cpp (1.10):
+
+	put level loading into global function ua_import_levelmaps() so that mapdisp can use it
+	
+2002-07-06 03:50  vividos
+
+	* source/screens/: ingame_orig.cpp (1.19), start_menu.cpp (1.7),
+	start_splash.cpp (1.17):
+
+	changed usage for new ua_texture interface
+	
+2002-07-06 03:50  vividos
+
+	* source/: cutscene.cpp (1.10), cutscene.hpp (1.6),
+	resource/cutsloader.cpp (1.8):
+
+	cutscene frame is now copied/converted directly to texture
+	
+2002-07-06 03:50  vividos
+
+	* source/: texture.cpp (1.15), texture.hpp (1.10),
+	resource/texloader.cpp (1.9):
+
+	reworked ua_texture interface to be more flexible
+	put object textures into one ua_texture object
+	put palette loading into ua_texture_manager
+	
+2002-07-05 17:21  vividos
+
+	* docs/uw-formats.txt (1.20):
+
+	a 1 in the wrong direction
+	
+2002-07-05 17:14  vividos
+
+	* source/screens/: ingame_orig.cpp (1.18), ingame_orig.hpp (1.9):
+
+	added fog to simulate underworld darkness (and to hide far clipping plane :)
+	other minor changes
+	
+2002-07-05 17:05  vividos
+
+	* hacking/: levarkdec/levarkdec.cpp (1.7),
+	miscdecode/miscdecode.cpp (1.5):
+
+	corrected game string blocks used
+	levarkdec: added dumping of unknowns list
+	
+2002-07-05 17:00  vividos
+
+	* docs/uw-formats.txt (1.19):
+
+	added info about the level map's unknown list
+	added info about objects belonging to NPCs
+	
+2002-07-05 16:22  vividos
+
+	* misc/uw1-levelobjs-level1.txt (1.2):
+
+	added tile coordinates for objects refered by tiles
+	
+2002-07-05 15:10  vividos
+
+	* source/: level.cpp (1.17), objects.cpp (1.7), objects.hpp (1.5),
+	resource/objloader.cpp (1.7):
+
+	ua_object and ua_npc_object pointer are now stored in smart pointer class ua_smart_ptr
+	
+2002-07-05 15:10  vividos
+
+	* source/uatypes.hpp (1.11):
+
+	added ua_smart_ptr class
+	
+2002-07-05 15:09  vividos
+
+	* source/image.cpp (1.10):
+
+	removed image initializing
+	
+2002-07-05 14:08  vividos
+
+	* docs/Readme.txt (1.2):
+
+	replaced by README.uwadv.txt
+	
+2002-07-05 14:07  vividos
+
+	* docs/README.uwadv.txt (1.1):
+
+	[no log message]
+	
+2002-07-05 14:06  vividos
+
+	* docs/Authors.txt (1.2):
+
+	added lua authors
+	
+2002-07-05 14:06  vividos
+
+	* docs/README.mingw32.txt (1.2):
+
+	small changes
+	
+2002-07-05 12:08  vividos
+
+	* source/: conv/codevm.cpp (1.10), conv/codevm.hpp (1.11),
+	resource/codeloader.cpp (1.10):
+
+	changed conv globals size to Uint16
+	
+2002-07-05 12:07  vividos
+
+	* source/: cutscene.cpp (1.9), image.cpp (1.9), level.cpp (1.16),
+	level.hpp (1.11), quadtree.cpp (1.9), texture.cpp (1.14), uwadv.hpp
+	(1.6), resource/imageloader.cpp (1.8), screens/start_menu.cpp
+	(1.6):
+
+	removed warnings
+	
+2002-07-05 11:55  vividos
+
+	* ChangeLog (1.11):
+
+	cvs bug: some files were not included in the logs
+	
 2002-07-05 01:43  vividos
 
 	* ChangeLog (1.10):
