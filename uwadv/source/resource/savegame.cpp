@@ -65,6 +65,14 @@ Uint32 ua_savegame::read32()
    return fread32(sg);
 }
 
+void ua_savegame::read_string(std::string& str)
+{
+   str.erase();
+   Uint16 len = read16();
+   for(unsigned int i=0; i<len; i++)
+      str.append(1,static_cast<char>(read8()));
+}
+
 void ua_savegame::write8(Uint8 value)
 {
    fputc(value,sg);
@@ -75,9 +83,20 @@ void ua_savegame::write16(Uint16 value)
    fwrite16(sg,value);
 }
 
+void read_string(std::string& str)
+{
+}
+
 void ua_savegame::write32(Uint32 value)
 {
    fwrite32(sg,value);
+}
+
+void ua_savegame::write_string(const char* str)
+{
+   Uint16 len = strlen(str);
+   write16(len);
+   for(unsigned int i=0; i<len; i++) write8(static_cast<Uint8>(str[i]));
 }
 
 void ua_savegame::begin_section(const char* section_name)
@@ -114,19 +133,27 @@ void ua_savegame::open(const char* filename, bool issaving)
    saving = issaving;
    sg = fopen(filename, saving ? "wb" : "rb");
 
-   // read version
+   // read or write header
+   begin_section("header");
    if (saving)
    {
+      // write header
       write32(current_version);
       write8(0); // compression: none
-      write8(0); // game type: uw1
+      write8(info.type); // game type: uw1
+
+      write_string(info.title.c_str());
    }
    else
    {
+      // read header
       save_version = read32();
       Uint8 compression = read8();
-      Uint8 gtype = read8();
+      info.type = read8();
+
+      read_string(info.title);
    }
+   end_section();
 }
 
 

@@ -33,6 +33,26 @@
 #include "settings.hpp"
 
 
+// structs
+
+//! savegame info struct
+struct ua_savegame_info
+{
+   //! ctor
+   ua_savegame_info():title("no savegame title"), type(0)
+   {
+   }
+
+   //! savegame title
+   std::string title;
+
+   //! game type; 0 = uw1, 1 = uw2
+   unsigned int type;
+
+//   ua_image preview;
+};
+
+
 // classes
 
 //! savegame class
@@ -54,6 +74,9 @@ public:
    //! reads a 32-bit value
    Uint32 read32();
 
+   //! reads string from savegame
+   void read_string(std::string& str);
+
    // savegame saving functions
 
    //! writes a 8-bit value
@@ -65,6 +88,9 @@ public:
    //! writes a 32-bit value
    void write32(Uint32 value);
 
+   //! writes string to savegame
+   void write_string(const char* str);
+
    // common functions
 
    //! starts new section to read/write
@@ -75,6 +101,9 @@ public:
 
    //! finally closes savegame file
    void close();
+
+   //! returns savegame info
+   ua_savegame_info& get_savegame_info(){ return info; }
 
    //! current version
    static const Uint32 current_version;
@@ -90,19 +119,9 @@ protected:
    FILE *sg;
    bool saving;
    Uint32 save_version;
-};
 
-
-//! savegame info struct
-struct ua_savegame_info
-{
-   //! savegame title
-   std::string title;
-
-   //! game type; 0 = uw1, 1 = uw2
-   unsigned int type;
-
-//   ua_image preview;
+   //! savegame info
+   ua_savegame_info info;
 };
 
 
