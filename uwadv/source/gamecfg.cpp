@@ -37,7 +37,20 @@
 
 // ua_gamecfg_loader methods
 
-/*! \todo implement keyword "check-files" */
+/*! Processes a keyword/value pair. The following keywords are currently
+    recognized:
+    * game-name
+    * init-scripting
+    * load-script
+    * use-resources
+    * import-strings
+    * check-files
+
+    \param name the keyword name
+    \param value the keyword value
+
+    \todo implement keyword "check-files"
+*/
 void ua_gamecfg_loader::load_value(const std::string& name, const std::string& value)
 {
    if (name.compare("game-name")==0)
@@ -58,12 +71,12 @@ void ua_gamecfg_loader::load_value(const std::string& name, const std::string& v
    if (name.compare("load-script")==0)
    {
       // load given lua script name
-      game->get_scripting().load_script(value.c_str());
+      game.get_scripting().load_script(value.c_str());
    }
    else
    if (name.compare("use-resources")==0)
    {
-      ua_settings &settings = game->get_settings();
+      ua_settings& settings = game.get_settings();
 
       // check if resources to use are available
       if (value.compare("uw1")==0)
@@ -101,11 +114,11 @@ void ua_gamecfg_loader::load_value(const std::string& name, const std::string& v
    if (name.compare("import-strings")==0)
    {
       // load game strings
-      SDL_RWops* gstr = game->get_files_manager().get_uadata_file(value.c_str());
+      SDL_RWops* gstr = game.get_files_manager().get_uadata_file(value.c_str());
 
       // TODO check if gstr == NULL
 
-      game->get_underworld().get_strings().load(gstr);
+      game.get_underworld().get_strings().load(gstr);
    }
    else
    if (name.compare("check-files")==0)

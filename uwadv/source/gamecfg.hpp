@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,10 +23,6 @@
 
    \brief game config loader
 
-   game configuration file loader that processes directives from the
-   %game-prefix%/game.cfg files; start parsing the file using
-   ua_cfgfile::load().
-
 */
 //! \ingroup game
 
@@ -48,34 +44,30 @@ class ua_game_interface;
 // classes
 
 //! game.cfg loader
+/*! Loads game configuration from game.cfg file found in uadata subfolders
+    prefixed with the current game prefix (%game-prefix%/game.cfg).
+
+    To start loading, call ua_cfgfile::load().
+
+    \todo use member game_name somewhere
+*/
 class ua_gamecfg_loader: public ua_cfgfile
 {
 public:
    //! ctor
-   ua_gamecfg_loader(){}
-
-   //! inits reader
-   void init(ua_game_interface* game);
+   ua_gamecfg_loader(ua_game_interface& game_int):game(game_int){}
 
 protected:
    //! called to load a specific value
    virtual void load_value(const std::string& name, const std::string& value);
 
 protected:
-   //! core interface pointer
-   ua_game_interface* game;
+   //! game interface
+   ua_game_interface& game;
 
    //! game name
    std::string game_name;
 };
-
-
-// inline methods
-
-inline void ua_gamecfg_loader::init(ua_game_interface* thegame)
-{
-   game = thegame;
-}
 
 
 #endif
