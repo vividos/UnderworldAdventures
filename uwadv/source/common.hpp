@@ -47,7 +47,10 @@
 
 
 // lua include
+extern "C"
+{
 #include "lua/include/lua.h"
+}
 
 
 // linux config file
