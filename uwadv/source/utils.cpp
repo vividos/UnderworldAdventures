@@ -31,6 +31,7 @@
 #include <cstdarg>
 #include <cstdio>
 #include <algorithm>
+#include <cctype>
 
 #ifdef __MINGW32__
 #define HAVE_SYS_STAT_H
