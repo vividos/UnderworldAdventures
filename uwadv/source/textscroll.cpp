@@ -75,6 +75,10 @@ void ua_textscroll::init(ua_game_core_interface& core, unsigned int xpos,
       tex.use(1);
       tex.upload();
    }
+
+   // enable unicode key support
+   SDL_EnableUNICODE(1);
+   ua_trace("unicode keyboard support enabled\n");
 }
 
 bool ua_textscroll::print(const char* text)
@@ -297,24 +301,25 @@ bool ua_textscroll::handle_event(SDL_Event &event)
       // check type'able keys when in input mode
       if (input_mode)
       {
-         SDLKey key = event.key.keysym.sym;
-         if ((key>=SDLK_a && key<=SDLK_z) ||
-            (key>=SDLK_SPACE && key<=SDLK_QUESTION) )
+         // check for unicode key
+         char ch;
+         if ((event.key.keysym.unicode & 0xFF80) == 0)
          {
-            char c = key;
-            if ((event.key.keysym.mod & KMOD_SHIFT)!=0)
+            // normal (but translated) key
+            ch = event.key.keysym.unicode & 0x7F;
+
+            // check range
+            if (ch>=SDLK_SPACE && ch<=SDLK_z)
             {
-               if (key>=SDLK_0 && key<=SDLK_9)
-                  c -= 16;
-               else
-                  c = toupper(c);
+               // add to text and update
+               input_text.append(1,ch);
+
+               update_scroll();
+               handled = true;
             }
-
-            input_text.append(1,c);
-
-            update_scroll();
-            handled = true;
          }
+
+         SDLKey key = event.key.keysym.sym;
 
          // handle "delete" key
          if ((key==SDLK_BACKSPACE || key==SDLK_DELETE) && !input_text.empty())
@@ -417,4 +422,8 @@ void ua_textscroll::render()
 void ua_textscroll::done()
 {
    tex.done();
+
+   // disable unicode key support
+   SDL_EnableUNICODE(0);
+   ua_trace("unicode keyboard support disabled\n");
 }
