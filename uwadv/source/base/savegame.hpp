@@ -232,7 +232,7 @@ public:
    bool quicksave_avail();
 
    //! returns quicksave savegame for loading or writing
-   ua_savegame get_quicksave_savegame(bool saving);
+   ua_savegame get_quicksave_savegame(bool saving, ua_savegame_info& info);
 
    //! sets screenshot for next save operation
    void set_save_screenshot(std::vector<Uint32>& image_rgba,

@@ -385,7 +385,8 @@ bool ua_savegames_manager::quicksave_avail()
    return ua_file_exists(quicksave_name.c_str());
 }
 
-ua_savegame ua_savegames_manager::get_quicksave_savegame(bool saving)
+ua_savegame ua_savegames_manager::get_quicksave_savegame(bool saving,
+   ua_savegame_info& the_info)
 {
    std::string quicksave_name(savegame_folder);
    quicksave_name.append("quicksave.uas");
@@ -396,6 +397,7 @@ ua_savegame ua_savegames_manager::get_quicksave_savegame(bool saving)
    {
       // set up infos
       ua_savegame_info& info = sg.get_savegame_info();
+      info = the_info;
       info.title = "Quicksave Savegame";
       info.game_prefix = game_prefix;
       info.type = 0;
@@ -409,6 +411,10 @@ ua_savegame ua_savegames_manager::get_quicksave_savegame(bool saving)
 
    // open for loading/saving
    sg.open(quicksave_name.c_str(),saving);
+
+   if (!saving)
+      the_info = sg.get_savegame_info();
+
    return sg;
 }
 
