@@ -105,14 +105,35 @@ end
 function lua_objlist_get(obj_handle)
 
    -- check if the user already has item in hand
-   if inv_float_get_item() ~= lua_slot_no_item
+   if inv_float_get_item() ~= inv_item_none
    then
       return
    end
 
+   objinfo = objlist_get_obj_info(obj_handle)
+
    -- check if object can be picked up
+   if prop_get_common( objinfo.item_id ).can_be_picked_up ~= 1
+   then
+      -- print: "You cannot pick that up."
+      ui_print_string(ui_get_gamestring(1,96))
+      return
+   end
 
    -- check if object is near enough
+   local xdist,ydist = player_get_pos()
+   xdist = xdist - (objinfo.tilex + objinfo.xpos / 8.0)
+   ydist = ydist - (objinfo.tiley + objinfo.ypos / 8.0)
+
+   -- further away than 1.4 tiles?
+   local dist = xdist*xdist + ydist*ydist
+   if dist > 2.0
+   then
+      -- print: "That is too far away to take." or "You cannot reach that."
+      ui_print_string(ui_get_gamestring(1,93+random()*2))
+      print( "object too far away; distance: " .. dist )
+      return
+   end
 
    -- add object to inventory and float it
    if inv_float_add_item(obj_handle) ~= ua_slot_no_item
