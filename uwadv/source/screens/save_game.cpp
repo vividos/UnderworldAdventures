@@ -319,7 +319,11 @@ void ua_save_game_screen::handle_event(SDL_Event& event)
             press_button();
          }
          break;
+      default:
+         break;
       }
+      break;
+   default:
       break;
    }
 }
