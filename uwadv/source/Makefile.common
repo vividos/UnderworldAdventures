@@ -54,7 +54,6 @@ uwadv_SOURCES = \
 	import/texloader.cpp \
 	import/tgaimport.cpp \
 	import/uw2dec.cpp \
-	linux/debug.cpp \
 	renderer/critter.cpp renderer/critter.hpp \
 	renderer/models.cpp renderer/models.hpp \
 	renderer/quadtree.cpp renderer/quadtree.hpp \
