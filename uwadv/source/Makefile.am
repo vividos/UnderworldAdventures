@@ -33,6 +33,7 @@ EXTRA_DIST = \
 	linux/uwadv.6.in \
 	linux/ua-lowercase-all.pl.6 \
 	resource/model/wrllexer.l \
+	resource/model/import3ds.cpp \
 	win32/animview.dsp \
 	win32/cnvdasm.dsp \
 	win32/cnvdbg.dsp \
