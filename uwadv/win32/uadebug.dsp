@@ -113,17 +113,7 @@ SOURCE=..\source\debug\hotspotlist.cpp
 # Begin Source File
 
 SOURCE=..\source\debug\luasrcframe.cpp
-
-!IF  "$(CFG)" == "uadebug - Win32 Release"
-
 # ADD CPP /Yu"dbgcommon.hpp"
-
-!ELSEIF  "$(CFG)" == "uadebug - Win32 Debug"
-
-# ADD CPP /Yu"dbgcommon.hpp"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
@@ -206,6 +196,39 @@ SOURCE=..\source\debug\uwaccess.hpp
 # Begin Group "resource files"
 
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+# Begin Source File
+
+SOURCE=..\source\win32\uadebug\Des.ico
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\win32\uadebug\new.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\win32\uadebug\open.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\win32\uadebug\save.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\win32\uadebug\uadebug_res.rc
+
+!IF  "$(CFG)" == "uadebug - Win32 Release"
+
+# ADD BASE RSC /l 0x407 /i "\uwadv\uwadv\source\win32\uadebug"
+# ADD RSC /l 0x407 /i "$(wxwin)/include" /i "\uwadv\uwadv\source\win32\uadebug"
+
+!ELSEIF  "$(CFG)" == "uadebug - Win32 Debug"
+
+# ADD BASE RSC /l 0x407 /i "\uwadv\uwadv\source\win32\uadebug"
+# ADD RSC /l 0x407 /i "$(wxwin)/include" /i "\uwadv\uwadv\source\win32\uadebug"
+
+!ENDIF 
+
+# End Source File
 # End Group
 # Begin Group "misc. files"
 
