@@ -80,7 +80,19 @@ void ua_object_list::addobj_follow(Uint32 objprop[0x400*2],
    while(objpos!=0)
    {
       if (master_obj_list[objpos].get_object_info().item_id != ua_item_none)
-         break; // we already had that object
+      {
+         // we already had that object
+
+         // at least update tilex/tiley when needed
+         if (tilex != 0xff && tiley != 0xff)
+         {
+            ua_object_info_ext& extinfo = master_obj_list[objpos].get_ext_object_info();
+
+            extinfo.tilex = tilex;
+            extinfo.tiley = tiley;
+         }
+         break;
+      }
 
       // get object properties
       Uint32 word1 = objprop[objpos*2+0];
@@ -138,8 +150,11 @@ void ua_object_list::addobj_follow(Uint32 objprop[0x400*2],
          extinfo.zpos = zpos;
          extinfo.heading = heading;
 
-         extinfo.tilex = tilex;
-         extinfo.tiley = tiley;
+         if (tilex != 0xff && tiley != 0xff)
+         {
+            extinfo.tilex = tilex;
+            extinfo.tiley = tiley;
+         }
 
          // npc infos
          if (objpos<0x0100)
@@ -191,7 +206,7 @@ void ua_object_list::addobj_follow(Uint32 objprop[0x400*2],
 
       // examine special property and add recursively
       if (is_quantity==0)
-         addobj_follow(objprop,npcinfo,quantity,texmap,0,0);
+         addobj_follow(objprop,npcinfo,quantity,texmap,0xff,0xff);
 
       // add next object in chain
       objpos = link;
