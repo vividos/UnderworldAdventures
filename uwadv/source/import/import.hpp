@@ -36,15 +36,17 @@
 
 
 // forward references
-class ua_settings;
-class ua_font;
-class ua_image;
-struct ua_lp_descriptor;
-class ua_object_properties;
+class ua_underworld;
 class ua_player;
 class ua_level;
 class ua_object_list;
 class ua_object;
+class ua_object_properties;
+class ua_conv_globals;
+class ua_settings;
+class ua_font;
+class ua_image;
+struct ua_lp_descriptor;
 class ua_critter;
 
 
@@ -52,6 +54,31 @@ class ua_critter;
 class ua_uw_import
 {
 public:
+   // underworld objects loading
+
+   //! loads underworld objects from folder
+   void load_underworld(ua_underworld& underw, ua_settings& settings, const char* folder, bool initial);
+
+   //! loads properties
+   void load_properties(ua_object_properties& prop, const char* path);
+
+   //! loads player info
+   void load_player(ua_player& player, const char* path);
+
+   //! loads map objects
+   void load_mapobjects(ua_object_list& objlist, SDL_RWops* rwops, Uint16 texmap[64]);
+
+   //! loads uw1, uw_demo or uw2 level maps
+   void load_levelmaps(std::vector<ua_level> &levels, ua_settings &settings,
+      const char* folder);
+
+   //! loads conversation globals
+   void load_conv_globals(ua_conv_globals& globals, ua_settings& settings,
+      const char* folder, bool initial);
+
+
+   // visuals loading
+
    //! loads 8 main palettes
    void load_palettes(const char* allpalname,
       ua_palette256_ptr allpalettes[8]);
@@ -96,19 +123,6 @@ public:
    void load_critter(ua_critter& critter, const char* file,
       unsigned int used_auxpal);
 
-   //! loads properties
-   void load_properties(ua_object_properties& prop, const char* path);
-
-   //! loads player info
-   void load_player(ua_player& player, const char* path);
-
-   //! loads map objects
-   void load_mapobjects(ua_object_list& objlist, SDL_RWops* rwops, Uint16 texmap[64]);
-
-   //! loads uw1, uw_demo or uw2 level maps
-   virtual void load_levelmaps(std::vector<ua_level> &levels, ua_settings &settings,
-      const char* folder);
-
 protected:
 
    //! loads tilemap infos
@@ -133,7 +147,7 @@ class ua_uw1_import: public ua_uw_import
 {
 public:
    //! loads uw1 or uw_demo level maps
-   virtual void load_levelmaps(std::vector<ua_level> &levels,
+   void load_levelmaps(std::vector<ua_level> &levels,
       ua_settings &settings, const char* folder);
 
    //! loads all uw1 critters
@@ -146,7 +160,7 @@ class ua_uw2_import: public ua_uw_import
 {
 public:
    //! loads uw2 levelmaps
-   virtual void load_levelmaps(std::vector<ua_level> &levels,
+   void load_levelmaps(std::vector<ua_level> &levels,
       ua_settings &settings, const char* folder);
 
    //! loads all uw2 critters
