@@ -30,9 +30,9 @@
 #include "player.hpp"
 
 //! Size of the player ellipsoid
-const double ua_ellipsoid_x = 0.2;//0.3;
-const double ua_ellipsoid_y = 0.2;//0.3;
-const double ua_ellipsoid_z = 2.9;//3.2;//0.4*8;
+const double ua_ellipsoid_x = 0.2;
+const double ua_ellipsoid_y = 0.2;
+const double ua_ellipsoid_z = 2.9;
 
 // ua_player methods
 ua_player::ua_player()
@@ -43,8 +43,11 @@ ua_player::ua_player()
 
 void ua_player::init()
 {
-   xpos = ypos = 32.0;
-   height = 0.0;
+   xpos = 32.0;
+   ypos = 2.0;
+   height = 26.0*4.0;
+   //xpos = ypos = 32.0;
+   //height = 0.0;
    rotangle = panangle = 0.0;
    move_mode = 0;
 

@@ -58,7 +58,7 @@ void ua_model3d_3ds::render(ua_vector3d& base)
 
    Lib3dsMesh* m = f->meshes;
 
-   glDisable(GL_TEXTURE_2D);
+//   glDisable(GL_TEXTURE_2D);
 
    do
    {
@@ -85,5 +85,5 @@ void ua_model3d_3ds::render(ua_vector3d& base)
       m = m->next;
    } while(m != NULL);
 
-   glEnable(GL_TEXTURE_2D);
+//   glEnable(GL_TEXTURE_2D);
 }

@@ -28,7 +28,6 @@
 // needed includes
 #include "common.hpp"
 #include "underworld.hpp"
-//TODO#include "core.hpp"
 #include "uamath.hpp"
 
 
@@ -273,7 +272,7 @@ void ua_underworld::check_move_trigger()
             ua_vector3d trig_pos(
                static_cast<double>(x)+(extinfo.xpos+0.5)/8.0,
                static_cast<double>(y)+(extinfo.ypos+0.5)/8.0,
-               extinfo.zpos/4.0);
+               extinfo.zpos);
 
             trig_pos -= pl_pos;
 
