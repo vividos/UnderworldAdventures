@@ -43,7 +43,6 @@ EXTRA_DIST =  \
 	docs/README.music.txt \
 	docs/README.tools.txt \
 	docs/README.uwadv.txt \
-	docs/ua-diffs.txt \
 	docs/ua-doxygen.cfg \
 	docs/ua-todo-list.txt \
 	docs/uw1-keyboard.txt \

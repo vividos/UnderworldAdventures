@@ -45,7 +45,7 @@ uwadv_SOURCES = \
 	import/cutsloader.cpp \
 	import/fontloader.cpp \
 	import/imageloader.cpp \
-	import/import.hpp io_endian.hpp \
+	import/import.hpp import/io_endian.hpp \
 	import/maploader.cpp \
 	import/objloader.cpp \
 	import/playerimport.cpp \
@@ -99,6 +99,7 @@ uwadv_SOURCES = \
 	underw/underworld.cpp underw/underworld.hpp \
 	underw/test/physicstest.cpp \
 	common.hpp \
+	dbgserver.hpp \
 	debug.cpp debug.hpp \
 	game_interface.hpp \
 	gamecfg.cpp gamecfg.hpp \
@@ -107,7 +108,8 @@ uwadv_SOURCES = \
 	uwadv.cpp uwadv.hpp \
 	\
 	resource/codeloader.cpp \
-	resource/modeldecode.cpp
+	resource/modeldecode.cpp \
+	resource/models_impl.hpp
 
 the_rest = \
 	resource/models_impl.hpp \

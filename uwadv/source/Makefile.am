@@ -48,10 +48,9 @@ EXTRA_DIST = \
 	resource/model/wrllexer.l \
 	resource/model/flex.skl \
 	resource/model/import3ds.cpp \
-	win32/debug.cpp \
 	win32/game_win32.cpp \
 	win32/game_win32.hpp \
-	win32/main.cpp \
+	win32/debug_impl.cpp \
 	win32/resource.h \
 	win32/Uus.ico \
 	win32/uwadv_res.rc \
@@ -59,7 +58,10 @@ EXTRA_DIST = \
 	win32/uaconfig/resource.h \
 	win32/uaconfig/uaconfig.cpp \
 	win32/uaconfig/uaconfig.hpp \
-	win32/uaconfig/uaconfig_res.rc
+	win32/uaconfig/uaconfig_res.rc \
+	win32/uadebug/Des.ico \
+	win32/uadebug/resource.h \
+	win32/uadebug/uadebug_res.rc
 
 script/lua/liblualib.la:
 	cd script/lua; $(MAKE)
