@@ -46,12 +46,15 @@ class ua_settings;
 //! available fonts
 typedef enum
 {
-   ua_font_small = 0,   //!< "font4x5p.sys", height 4px, for inventory object count
-   ua_font_italic = 1,  //!< "font5x6i.sys", height 7px, for character stats screen
+   //! "font4x5p.sys", height 4px, for inventory object count
+   ua_font_small = 0,   
+   //! "font5x6i.sys", height 7px, for character stats screen
+   ua_font_italic = 1,
    ua_font_normal = 2,  //!< "font5x6p.sys", height 6px, for scroll messages
    ua_font_big = 3,     //!< "fontbig.sys",  height 15px, for cutscenes
    ua_font_buttons = 4, //!< "fontbutn.sys", height 6px,  for buttons
-   ua_font_chargen = 5  //!< "fontchar.sys", height 10px, for character generation
+   //! "fontchar.sys", height 10px, for character generation, not available in uw_demo
+   ua_font_chargen = 5
 } ua_font_id;
 
 
