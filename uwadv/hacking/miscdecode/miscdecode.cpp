@@ -126,14 +126,15 @@ int main(int argc, char* argv[])
          fread(&item2,2,1,fd);
          fread(&resitem,2,1,fd);
 
-         if (item1==0 && item2==0 && resitem==0)
+         if ((item1==0 && item2==0 && resitem==0) ||
+             (item1==0xffff && item2==0xffff && resitem==0xffff))
             break;
 
          fprintf(out,"%04x + %04x = %04x:  \"%s\"%s + \"%s\"%s = \"%s\"%s\n",
             item1,item2,resitem,
-            gs.get_string(3,item1&0x1ff).c_str(), (item1&0x8000)==0 ? "" : "(*)",
-            gs.get_string(3,item2&0x1ff).c_str(), (item2&0x8000)==0 ? "" : "(*)",
-            gs.get_string(3,resitem&0x1ff).c_str(), (resitem&0x8000)==0 ? "" : "(*)"
+            gs.get_string(4,item1&0x1ff).c_str(), (item1&0x8000)==0 ? "" : "(*)",
+            gs.get_string(4,item2&0x1ff).c_str(), (item2&0x8000)==0 ? "" : "(*)",
+            gs.get_string(4,resitem&0x1ff).c_str(), (resitem&0x8000)==0 ? "" : "(*)"
          );
       }
 
@@ -171,7 +172,7 @@ int main(int argc, char* argv[])
          fprintf(out,"%03x: armour=%02x mass=%03x stuff2=%01x flags=%02x value=%04x "
             "unknown1=%04x scale=%02x unknown2=%04x name=%s\n",
             i,armour,mass>>4,mass&15,flags,value,unknown1,scale,unknown2,
-            gs.get_string(3,i).c_str() );
+            gs.get_string(4,i).c_str() );
 
          pos = ftell(fd) - pos;
       }
@@ -198,7 +199,7 @@ int main(int argc, char* argv[])
             fprintf(out,"%04x: slash=%02x bash=%02x stab=%02x type=%02x durability=%02x "
                "unknowns=%02x %02x %02x name=%s\n",
                i,buffer[0],buffer[1],buffer[2],buffer[6],buffer[7],
-               buffer[3],buffer[4],buffer[5],gs.get_string(3,i).c_str() );
+               buffer[3],buffer[4],buffer[5],gs.get_string(4,i).c_str() );
          }
          fprintf(out,"\n");
       }
@@ -213,7 +214,7 @@ int main(int argc, char* argv[])
             fread(buffer,1,3,fd);
 
             fprintf(out,"%04x: durability=%02x unknown1=%02x unknown2=%02x name=%s\n",
-               i,buffer[0],buffer[1],buffer[2],gs.get_string(3,i).c_str());
+               i,buffer[0],buffer[1],buffer[2],gs.get_string(4,i).c_str());
          }
          fprintf(out,"\n");
       }
@@ -229,7 +230,7 @@ int main(int argc, char* argv[])
             fread(buffer,1,4,fd);
 
             fprintf(out,"%04x: protection=%02x durability=%02x unknown1=%02x category=%02x name=%s\n",
-               i,buffer[0],buffer[1],buffer[2],buffer[3],gs.get_string(3,i).c_str());
+               i,buffer[0],buffer[1],buffer[2],buffer[3],gs.get_string(4,i).c_str());
          }
          fprintf(out,"\n");
       }
@@ -246,7 +247,7 @@ int main(int argc, char* argv[])
                fprintf(out," %02x",fgetc(fd));
                // if (j==23) fprintf(out,"\n   ",i);
             }
-            fprintf(out," name=%s\n",gs.get_string(3,i).c_str());
+            fprintf(out," name=%s\n",gs.get_string(4,i).c_str());
          }
          fprintf(out,"\n");
       }
@@ -261,7 +262,7 @@ int main(int argc, char* argv[])
             fread(buffer,1,3,fd);
 
             fprintf(out,"%04x: capacity=%02x accept=%02x unknown=%02x name=%s\n",
-               i,buffer[0],buffer[1],buffer[2],gs.get_string(3,i).c_str());
+               i,buffer[0],buffer[1],buffer[2],gs.get_string(4,i).c_str());
          }
          fprintf(out,"\n");
       }
@@ -273,7 +274,7 @@ int main(int argc, char* argv[])
          for(int i=0x90; i<0xa0; i++)
          {
             fprintf(out,"%02x: brightness=%02x duration=%02x name=%s\n",
-               i,fgetc(fd),fgetc(fd),gs.get_string(3,i).c_str());
+               i,fgetc(fd),fgetc(fd),gs.get_string(4,i).c_str());
          }
          fprintf(out,"\n");
       }
@@ -290,7 +291,7 @@ int main(int argc, char* argv[])
             fprintf(out,"%04x: startframe=%02x numframes=%02x unknown1=%02x unknown2=%02x "
                "name=%s\n",
                i,buffer[1],buffer[2],buffer[0],buffer[3],
-               gs.get_string(3,i).c_str());
+               gs.get_string(4,i).c_str());
          }
       }
 

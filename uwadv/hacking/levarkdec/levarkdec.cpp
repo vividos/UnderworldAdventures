@@ -90,6 +90,7 @@ int main(int argc, char* argv[])
 
    FILE *out = fopen("uw-levelobjs.txt","w");
    FILE *out2 = fopen("uw-misc.txt","w");
+   FILE *out3 = fopen("uw-unknowns.txt","w");
 
    // read in toc
 
@@ -216,14 +217,18 @@ int main(int argc, char* argv[])
       // more tga writing here
 #endif
 
+      fprintf(out,"objects for level %02u, at offset %08x:\n\n",j,offsets[j]+0x4000);
+
       // collect level map object list infos
       std::vector<bool> ref_by_tile;
       std::vector<bool> linked_by_obj;
       std::vector<bool> link2_by_obj;
+      std::vector<Uint8> tile_coords;
 
       ref_by_tile.resize(0x400,false);
       linked_by_obj.resize(0x400,false);
       link2_by_obj.resize(0x400,false);
+      tile_coords.resize(0x800,0xff);
 
       {
          fseek(fd,offsets[j]+0x4000,SEEK_SET);
@@ -249,6 +254,10 @@ int main(int argc, char* argv[])
 
             ref_by_tile[idx] = true;
 
+            // remember tile coordinates
+            tile_coords[idx*2+0] = i&63;
+            tile_coords[idx*2+1] = i>>6;
+
             // check for link2 targets of tile ref item first
             check_link2(out,objlist,link2_by_obj,idx);
 
@@ -262,9 +271,10 @@ int main(int argc, char* argv[])
          }
       }
 
+      fprintf(out,"\n");
+
       // level object dumping
       fseek(fd,offsets[j]+0x4000,SEEK_SET);
-      fprintf(out,"objects for level %02u, at offset %08x:\n\n",j,offsets[j]+0x4000);
 
       for(int n=0; n<0x400; n++)
       {
@@ -286,17 +296,17 @@ int main(int argc, char* argv[])
          fprintf(out,"quan/link2=%04x ",(objval[1] & (0x3ff<<22))>>22);
 
          if (ref_by_tile[n])
-            fprintf(out,"tile   ");
+            fprintf(out,"tile %02x/%02x ",tile_coords[n*2+0],tile_coords[n*2+1]);
          else
          {
             if (linked_by_obj[n])
-               fprintf(out,"linked ");
+               fprintf(out,"linked     ");
             else
             {
                if (link2_by_obj[n])
-                  fprintf(out,"link2d ");
+                  fprintf(out,"link2d     ");
                else
-                  fprintf(out,"       ");
+                  fprintf(out,"           ");
             }
          }
 
@@ -312,17 +322,19 @@ int main(int argc, char* argv[])
                fprintf(out,"%02x ",(unsigned int)npcinfo[c]);
 
             if (npcinfo[18]>0)
-               fprintf(out,"name=%-25s ",gs.get_string(6,npcinfo[18]+16).c_str());
+               fprintf(out,"name=%-25s ",gs.get_string(7,npcinfo[18]+16).c_str());
+            else
+               fprintf(out,"%-30s ","");
          }
 
-         fprintf(out,"desc=%s\n",gs.get_string(3,objval[0] & 0x000001ff).c_str());
+         fprintf(out,"desc=%s\n",gs.get_string(4,objval[0] & 0x000001ff).c_str());
       }
       fprintf(out,"\n");
 
       // unknown list dumping
       fseek(fd,offsets[j+9],SEEK_SET);
       {
-         fprintf(out2,"unknowns list at level %u, offset %08x\n",j,offsets[j+9]);
+         fprintf(out2,"animation overlay list at level %u, offset %08x\n",j,offsets[j+9]);
 
          unsigned char unknowns[64*6];
          fread(unknowns,64,6,fd);
@@ -338,11 +350,32 @@ int main(int argc, char* argv[])
             fprintf(out2,"unk1=%04x ",(unknowns[i*6+0]<<8) | unknowns[i*6+1]);
             fprintf(out2,"unk2=%04x\n",(unknowns[i*6+2]<<8) | unknowns[i*6+3]);
 
-//            fprintf(out2,"desc1=%s",gs.get_string(3,unk1&0x01ff).c_str());
+//            fprintf(out2,"desc1=%s",gs.get_string(4,unk1&0x01ff).c_str());
          }
       }
       fprintf(out2,"\n");
 
+
+      // dump block at 0x7300
+      {
+         fseek(fd,offsets[j]+0x6383,SEEK_SET);
+
+         fprintf(out3,"unknowns for level %u\n\n",j);
+
+         fseek(fd,offsets[j]+0x7300,SEEK_SET);
+
+         for(unsigned int k=0; k<0x400; k++)
+         {
+            unsigned short value;
+            fread(&value,1,2,fd);
+
+            if ((k&15)==0) fprintf(out3,"%04x:",k);
+            fprintf(out3," %04x",value);
+            if ((k&15)==15) fprintf(out3,"\n");
+         }
+
+         fprintf(out3,"\n");
+      }
 
    } // end for
 
@@ -351,6 +384,7 @@ int main(int argc, char* argv[])
    fclose(fd);
    fclose(out);
    fclose(out2);
+   fclose(out3);
 
    return 0;
 }
