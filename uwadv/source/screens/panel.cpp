@@ -29,6 +29,7 @@
 #include "common.hpp"
 #include "panel.hpp"
 #include "underworld.hpp"
+#include "script.hpp"
 #include <sstream>
 
 
@@ -106,6 +107,7 @@ struct {
    { ua_area_paperdoll_feet,  32, 54, 61, 75 },
 };
 
+
 // ua_panel methods
 
 ua_panel::ua_panel()
@@ -135,7 +137,7 @@ void ua_panel::init(ua_panel_parent_interface* the_panel_parent, unsigned int xp
    img_manager.load_list(img_panels, "panels", 0,3);
    img_manager.load_list(img_chains, "chains");
    img_manager.load(img_inv_bagpanel, "inv", 6);
-   img_manager.load_list(img_inv_updown, "buttons", 27,28);
+   img_manager.load_list(img_inv_updown, "buttons", 27,29);
 
    img_manager.load_list(img_armor, armor_female ? "armor_f" : "armor_m");
 
@@ -268,13 +270,24 @@ void ua_panel::mouse_event(bool button_clicked, bool left_button,
 
       if (button_clicked)
          inventory_click(button_down,left_button,area);
-/*      else
+      else
       {
          // check item dragging
          if (check_dragging && drag_area != area)
-            inventory_dragged_item();
+         {
+            ua_inventory& inv = panel_parent->get_game_interface().
+               get_underworld().get_inventory();
+
+            // user dragged item out of area
+            check_dragging = false;
+            inv.float_item(drag_item);
+
+            update_cursor_image();
+            update_panel();
+
+         }
       }
-*/
+/*
 #ifdef HAVE_DEBUG
       if (area != ua_area_none)
       {
@@ -287,6 +300,7 @@ void ua_panel::mouse_event(bool button_clicked, bool left_button,
          update();
       }
 #endif
+*/
    }
 
    if (panel_type == ua_panel_stats && button_clicked && !button_down)
@@ -363,15 +377,15 @@ void ua_panel::tick()
 
 void ua_panel::update_panel()
 {
-   ua_image& img = get_image();
-
    // inventory panel?
    if (panel_type == ua_panel_inventory)
       update_inventory();
    else
+      // stats panel?
    if (panel_type == ua_panel_stats)
       update_stats();
    else
+      // runebag panel?
    if (panel_type == ua_panel_runebag)
       update_runebag();
 
@@ -616,34 +630,8 @@ void ua_panel::update_runebag()
             (i&3)*18+9, (i>>2)*15+6, true);
 }
 
-
-// old stuff
-
-/*
-void ua_panel::update_cursor_image()
-{
-   ua_inventory& inv = core->get_underworld().get_inventory();
-
-   Uint16 cursor_object = 0;
-   bool cursor_is_object = false;
-
-   // check if we still have a floating object
-   if (inv.get_floating_item() != ua_slot_no_item)
-   {
-      // still floating? then set new cursor object
-      cursor_object =  inv.get_item(inv.get_floating_item()).item_id;
-      cursor_is_object = cursor_object != ua_slot_no_item;
-   }
-
-   if (cursor_is_object)
-      ingame_orig->set_cursor_image(true,cursor_object,true);
-   else
-      ingame_orig->set_cursor_image(false,0xffff,true);
-}
-*/
-
 void ua_panel::inventory_click(bool button_down, bool left_button,
-   enum ua_panel_inventory_area_id area)
+   ua_panel_inventory_area_id area)
 {
    ua_inventory& inv = panel_parent->get_game_interface().
       get_underworld().get_inventory();
@@ -699,14 +687,14 @@ void ua_panel::inventory_click(bool button_down, bool left_button,
 
    if (area == ua_area_none)
       return; // no pos that is interesting for us
-/*
+
    // left/right button pressed
    if (button_down && !check_dragging && area != ua_area_inv_container)
    {
       // start checking for dragging items
       check_dragging = true;
       drag_item = item;
-      drag_area = (ua_screen_area_id)area;
+      drag_area = area;
       return;
    }
 
@@ -745,8 +733,7 @@ void ua_panel::inventory_click(bool button_down, bool left_button,
       }
 
       update_cursor_image();
-
-      update_panel_texture();
+      update_panel();
       return;
    }
 
@@ -759,7 +746,7 @@ void ua_panel::inventory_click(bool button_down, bool left_button,
       if (inv.get_container_item_id() != ua_slot_no_item)
          inv.close_container();
 
-      update_panel_texture();
+      update_panel();
       return;
    }
 
@@ -772,36 +759,49 @@ void ua_panel::inventory_click(bool button_down, bool left_button,
       //cursor_is_object = false;
       slot_start = 0;
 
-      update_panel_texture();
+      update_panel();
       return;
    }
+
+   ua_scripting* scripting = panel_parent->get_game_interface().
+      get_underworld().get_scripting();
 
    // perform left/right click action
    if (left_button)
    {
       // trigger "use" action
-      if (item != ua_item_none)
-         core->get_underworld().get_scripts().lua_inventory_use(item);
+      if (item != ua_item_none && scripting != NULL)
+         scripting->inventory_use(item);
    }
    else
    {
       // trigger "look" action
-      if (item != ua_item_none)
-         core->get_underworld().get_scripts().lua_inventory_look(item);
+      if (item != ua_item_none && scripting != NULL)
+         scripting->inventory_look(item);
    }
-*/
 }
-/*
-void ua_panel::inventory_dragged_item()
+
+void ua_panel::update_cursor_image()
 {
-   ua_inventory& inv = core->get_underworld().get_inventory();
+   ua_inventory& inv = panel_parent->get_game_interface().
+      get_underworld().get_inventory();
 
-   // user dragged item out of area
-   check_dragging = false;
-   inv.float_item(drag_item);
+   Uint16 cursor_object = 0;
+   bool cursor_is_object = false;
 
-   update_cursor_image();
+   // check if we still have a floating object
+   if (inv.get_floating_item() != ua_slot_no_item)
+   {
+      // still floating? then set new cursor object
+      cursor_object =  inv.get_item(inv.get_floating_item()).item_id;
+      cursor_is_object = cursor_object != ua_slot_no_item;
+   }
 
-   update_panel_texture();
+   if (cursor_is_object)
+      panel_parent->set_cursor(cursor_object+0x0100,true);
+   else
+   {
+      panel_parent->set_cursor(-1,true);
+      panel_parent->set_cursor(0,false);
+   }
 }
-*/

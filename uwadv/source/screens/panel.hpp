@@ -58,6 +58,8 @@ public:
    ua_panel_parent_interface(){}
    virtual ~ua_panel_parent_interface(){}
 
+   virtual void set_cursor(int index, bool priority=false)=0;
+
    virtual ua_game_interface& get_game_interface()=0;
 };
 
@@ -104,6 +106,8 @@ protected:
    void inventory_click(bool button_down, bool left_button,
       enum ua_panel_inventory_area_id area);
 
+   //! updates cursor image, e.g. when starting dragging an item
+   void update_cursor_image();
 
 protected:
    //! interface to panel owner
@@ -179,19 +183,11 @@ protected:
    //! indicates if dragging should be checked
    bool check_dragging;
 
-
-/*
-   void update_cursor_image();
-
-   void inventory_dragged_item();
-
-protected:
-   //! area the item is dragged from
-   unsigned int drag_area;
-
    //! item index that is currently dragged
    Uint16 drag_item;
-*/
+
+   //! area the item is dragged from
+   enum ua_panel_inventory_area_id drag_area;
 };
 
 
