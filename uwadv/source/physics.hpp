@@ -26,8 +26,8 @@
 */
 
 // new collision detection is off
-#undef HAVE_NEW_CD
-//#define HAVE_NEW_CD
+//#undef HAVE_NEW_CD
+#define HAVE_NEW_CD
 
 // include guard
 #ifndef __uwadv_physics_hpp_
