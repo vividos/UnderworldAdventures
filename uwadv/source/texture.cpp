@@ -148,8 +148,15 @@ void ua_texture::upload(bool mipmaps)
 void ua_texture::done()
 {
    texels.clear();
+
+   // delete all texture names
    if (texname.size()>0)
       glDeleteTextures(texname.size(),&texname[0]);
+   texname.clear();
+
+   // invalidate current texture
+   if (texmgr != NULL)
+      texmgr->using_new_texname(0);
 }
 
 
