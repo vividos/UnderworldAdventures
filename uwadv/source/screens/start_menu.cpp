@@ -51,10 +51,8 @@ void ua_start_menu_screen::init()
    ua_trace("start menu screen started\n");
 
    // load background image
-   img.load_raw(core->get_settings(),"data/opscr.byt",2);
-
-   // get palette #2 (needed for palette shifting)
-   memcpy(palette,core->get_texmgr().get_palette(2),sizeof(ua_onepalette));
+   img_screen.load_raw(core->get_settings(),"data/opscr.byt",2);
+   img_screen.init(&core->get_texmgr(),0,0,320,200);
 
    // load button graphics
    img_buttons.load(core->get_settings(),"opbtn",0,0,2);
@@ -64,7 +62,7 @@ void ua_start_menu_screen::init()
 
 void ua_start_menu_screen::suspend()
 {
-   tex.done();
+   mousecursor.done();
 }
 
 void ua_start_menu_screen::resume()
@@ -86,26 +84,28 @@ void ua_start_menu_screen::resume()
 
    glClearColor(0.0, 0.0, 0.0, 0.0);
 
-   // init texture
-   tex.init(&core->get_texmgr());
-   tex.convert(img);
-   tex.use();
-   tex.upload();
+   // upload screen image quad
+   img_screen.convert_upload();
 
+   // mouse cursor
    mousecursor.init(core,0);
    mousecursor.show(true);
 
+   // set other flags/values
    stage = 0;
    tickcount = 0;
    journey_avail = core->get_savegames_mgr().get_savegames_count()>0;
    buttondown = false;
    selected_area = -1;
    shiftcount=0.0;
+   reupload_image = true;
 }
 
 void ua_start_menu_screen::done()
 {
    suspend();
+
+   img_screen.done();
 
    // clear screen
    glClearColor(0,0,0,0);
@@ -115,6 +115,8 @@ void ua_start_menu_screen::done()
 
 void ua_start_menu_screen::handle_event(SDL_Event &event)
 {
+   unsigned int last_selected_area = selected_area;
+
    switch(event.type)
    {
    case SDL_KEYDOWN:
@@ -182,26 +184,38 @@ void ua_start_menu_screen::handle_event(SDL_Event &event)
       break;
    default: break;
    }
+
+   // check if selected area changed
+   if (selected_area != last_selected_area)
+      reupload_image = true;
 }
 
 void ua_start_menu_screen::render()
 {
    glClear(GL_COLOR_BUFFER_BIT);
 
-   // combine button graphics with background image
-   const unsigned int btn_coords[] =
+   // do we need to reupload the image quad texture?
+   if (reupload_image)
    {
-      98,81, 81,104, 72,128, 85,153
-   };
+      // combine button graphics with background image
+      const unsigned int btn_coords[] =
+      {
+         98,81, 81,104, 72,128, 85,153
+      };
 
-   unsigned int max = journey_avail? 4 : 3;
-   for(unsigned int i=0; i<max; i++)
-   {
-      unsigned int btnnr = i*2;
-      if (int(i)==selected_area) btnnr++;
+      unsigned int max = journey_avail? 4 : 3;
+      for(unsigned int i=0; i<max; i++)
+      {
+         unsigned int btnnr = i*2;
+         if (int(i)==selected_area) btnnr++;
 
-      img.paste_image(img_buttons.get_image(btnnr),
-         btn_coords[i*2],btn_coords[i*2+1]);
+         img_screen.paste_image(img_buttons.get_image(btnnr),
+            btn_coords[i*2],btn_coords[i*2+1]);
+      }
+
+      img_screen.convert_upload();
+
+      reupload_image = false;
    }
 
    // calculate brightness of texture quad
@@ -224,23 +238,10 @@ void ua_start_menu_screen::render()
 
    glColor3ub(light,light,light);
 
-   // prepare image texture
-   tex.convert(palette,img);
-   tex.use();
-   tex.upload();
-
-   double u = tex.get_tex_u(), v = tex.get_tex_v();
-
-   // draw background quad
-   glBegin(GL_QUADS);
-   glTexCoord2d(0.0, v  ); glVertex2i(  0,  0);
-   glTexCoord2d(u  , v  ); glVertex2i(320,  0);
-   glTexCoord2d(u  , 0.0); glVertex2i(320,200);
-   glTexCoord2d(0.0, 0.0); glVertex2i(  0,200);
-   glEnd();
+   // render screen image and mouse
+   img_screen.render();
 
    mousecursor.draw();
-   tex.use();
 }
 
 void ua_start_menu_screen::tick()
@@ -260,11 +261,16 @@ void ua_start_menu_screen::tick()
    {
       shiftcount -= 1.0/palette_shifts_per_second;
 
+      ua_onepalette& palette = img_screen.get_quadpalette();
+
       // shift palette
       Uint8 saved[4];
       memcpy(saved,palette[127],4);
       memmove(palette[65],palette[64],(127-64)*4);
       memcpy(palette[64],saved,4);
+
+      // initiate new upload
+      reupload_image = true;
    }
 
    // in stage 3, we really press the selected button
@@ -300,7 +306,7 @@ void ua_start_menu_screen::press_button()
    case 3: // "journey onward"
       if (journey_avail)
       {
-         // "load game" screen (with later starting "orig. ingame ui"
+         // "load game" screen (with later starting "orig. ingame ui")
          core->push_screen(new ua_load_game_screen(new ua_ingame_orig_screen));
       }
       break;

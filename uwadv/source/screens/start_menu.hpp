@@ -34,6 +34,7 @@
 #define __uwadv_start_menu_hpp_
 
 // needed includes
+#include "imgquad.hpp"
 #include "screen.hpp"
 #include "mousecursor.hpp"
 
@@ -67,7 +68,6 @@ protected:
    int get_selected_area();
 
 protected:
-
    // constants
 
    //! time to fade in/out
@@ -97,17 +97,14 @@ protected:
    //! indicates if the mouse button is down
    bool buttondown;
 
-   //! background image
-   ua_image img;
-
-   //! texture object for background
-   ua_texture tex;
+   //! start screen image
+   ua_image_quad img_screen;
 
    //! image list with buttons
    ua_image_list img_buttons;
 
-   //! background image palette
-   ua_onepalette palette;
+   //! indicates if image quad texture should be reuploaded
+   bool reupload_image;
 };
 
 #endif
