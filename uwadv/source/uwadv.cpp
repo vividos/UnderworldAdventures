@@ -188,7 +188,7 @@ void ua_game::run()
       // reset timer when needed
       if (reset_tick_timer)
       {
-         then = now;
+         then = now = SDL_GetTicks();
          reset_tick_timer = false;
       }
 
