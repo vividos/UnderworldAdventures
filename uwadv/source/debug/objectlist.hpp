@@ -30,7 +30,6 @@
 #define uadebug_objectlist_hpp_
 
 // needed includes
-//#include "wx/listctrl.h" // list control
 #include "editlist.hpp"
 
 
@@ -43,8 +42,14 @@ public:
    //! ctor
    ua_objectlist_ctrl(wxWindow* parent, int level);
 
+   //! sets new underworld level to use
+   void set_level(unsigned int thelevel){ level = thelevel; }
+
    //! returns level
    unsigned int get_level() const { return level; }
+
+   //! returns string table
+   std::vector<std::string>& get_table(){ return table; }
 
    //! updates data from underworld
    void UpdateData();
@@ -89,8 +94,29 @@ public:
    static const char* frame_name;
 
 protected:
+   //! menu handler: Master Object List | Change level
+   void OnMenuObjlistChangeLevel(wxCommandEvent& event);
+
+   //! menu handler: Master Object List | Save to text file
+   void OnMenuObjlistSave(wxCommandEvent& event);
+
+protected:
    //! list control for the master object list
    ua_objectlist_ctrl* listctrl;
+
+   //! menu bar
+   wxMenuBar* menubar;
+
+   //! object list menu
+   wxMenu* objlistmenu;
+
+   enum
+   {
+      MENU_OBJLIST_SAVE=2000,
+      MENU_OBJLIST_CHANGELEVEL,
+   };
+
+   DECLARE_EVENT_TABLE()
 };
 
 #endif

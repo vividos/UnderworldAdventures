@@ -29,6 +29,8 @@
 #include "dbgcommon.hpp"
 #include "objectlist.hpp"
 #include "dbgapp.hpp"
+#include "mainframe.hpp"
+#include <sstream>
 
 
 // static variables
@@ -75,7 +77,7 @@ unsigned int ua_objectlist_widths[] =
 };
 
 
-// ua_objectlist_frame event table
+// ua_objectlist_ctrl event table
 
 BEGIN_EVENT_TABLE(ua_objectlist_ctrl, wxListCtrl)
    EVT_LIST_BEGIN_LABEL_EDIT(-1, ua_objectlist_ctrl::OnBeginLabelEdit)
@@ -212,16 +214,19 @@ void ua_objectlist_ctrl::UpdateData()
    }
 
    cmd(udc_unlock,0,NULL,NULL);
+
+   // refresh view
+   RefreshItems(0,0x03ff);
 }
 
 void ua_objectlist_ctrl::OnBeginLabelEdit(wxListEvent& event)
 {
    int column = event.m_item.GetColumn();
 
-   // do not allow editing column 0 and 2
-   if (column==0 || column==2)
+   // do not allow editing some columns
+   if (column==0 || column==2 || column==3)
    {
-      // select new item when clicking on column 0
+      // select new item when clicking on some columns
       if (column==0 ||column==2)
          SetItemState(event.m_item.GetId(),wxLIST_STATE_SELECTED,wxLIST_STATE_SELECTED);
 
@@ -247,6 +252,14 @@ int ua_objectlist_ctrl::OnGetItemImage(long item) const
 }
 
 
+// ua_objectlist_frame event table
+
+BEGIN_EVENT_TABLE(ua_objectlist_frame, wxMDIChildFrame)
+   EVT_MENU(MENU_OBJLIST_CHANGELEVEL, ua_objectlist_frame::OnMenuObjlistChangeLevel)
+   EVT_MENU(MENU_OBJLIST_SAVE, ua_objectlist_frame::OnMenuObjlistSave)
+END_EVENT_TABLE()
+
+
 // ua_objectlist_frame methods
 
 ua_objectlist_frame::ua_objectlist_frame(/*wxDocManager* doc_manager, */
@@ -263,4 +276,114 @@ ua_objectlist_frame::ua_objectlist_frame(/*wxDocManager* doc_manager, */
    title.Printf("Master Object List - Level %u",listctrl->get_level());
 
    SetTitle(title);
+
+   // menu bar
+   menubar = new wxMenuBar();
+   reinterpret_cast<ua_debugger_main_frame*>(parent)->AddFrameMenus(menubar);
+
+   // object list menu
+   objlistmenu = new wxMenu;
+   objlistmenu->Append(MENU_OBJLIST_CHANGELEVEL, "&Change level ...",
+      "changes underworld level to show master object list");
+   objlistmenu->Append(MENU_OBJLIST_SAVE, "&Save to text file ...",
+      "saves master object list as text file");
+
+   menubar->Append(objlistmenu, "&Master Object List");
+
+   SetMenuBar(menubar);
+}
+
+void ua_objectlist_frame::OnMenuObjlistChangeLevel(wxCommandEvent& event)
+{
+   unsigned int level = listctrl->get_level();
+
+   // choose level to change to
+   {
+      // TODO use string names of levels from (custom) game strings
+      wxString levelnames[] =
+      {
+         "Level 0: Goblin Home/Human Enclave",
+         "Level 1: Mountain-Folk",
+         "Level 2: Lair of the Lizardmen",
+         "Level 3: Knights of the Crux",
+         "Level 4: Lair of the Lizards",
+         "Level 5: The Tombs",
+         "Level 6: Seers of the Moonstone",
+         "Level 7: Meeting Halls",
+         "Level 8: Ethereal Void",
+      };
+
+      wxSingleChoiceDialog dlg(this,"select a new underworld level ...",
+         "Underworld Adventures Debugger",
+         SDL_TABLESIZE(levelnames),levelnames,NULL);
+
+      dlg.SetSelection(level);
+
+      if (dlg.ShowModal() != wxID_OK)
+         return;
+
+      level = dlg.GetSelection();
+   }
+
+   // change level
+   listctrl->set_level(level);
+   listctrl->UpdateData();
+
+   // set new title
+   wxString title;
+   title.Printf("Master Object List - Level %u",listctrl->get_level());
+
+   SetTitle(title);
+}
+
+void ua_objectlist_frame::OnMenuObjlistSave(wxCommandEvent& event)
+{
+   // update object list
+   UpdateData();
+
+   // construct base filename
+   std::string filename;
+   {
+      std::ostringstream buffer;
+      buffer << "objlist-level" << listctrl->get_level() <<
+         ".csv" << std::ends;
+
+      filename.assign(buffer.str());
+   }
+
+   // ask for file to save to
+   {
+      wxFileDialog dlg(this,"select an output filename","./",
+         filename.c_str(),"*.csv",wxSAVE|wxOVERWRITE_PROMPT);
+
+      if (dlg.ShowModal()==wxID_OK)
+         filename.assign(dlg.GetPath());
+      else
+         return;
+   }
+
+   // write comma separated values file
+   {
+      std::vector<std::string>& table = listctrl->get_table();
+      unsigned int ncol = SDL_TABLESIZE(ua_objectlist_captions);
+
+      FILE* fd = fopen(filename.c_str(),"wt");
+
+      // write column names
+      for(unsigned int col=0; col<ncol; col++)
+         fprintf(fd,"\"%s\";",ua_objectlist_captions[col]);
+
+      fputs("\n",fd);
+
+      // write table
+      for(unsigned int objpos=0; objpos<0x400; objpos++)
+      {
+         for(unsigned int col=0; col<ncol; col++)
+            fprintf(fd,"\"%s\";",table[objpos*ncol+col].c_str());
+
+         fputs("\n",fd);
+      }
+
+      fclose(fd);
+   }
 }
