@@ -43,7 +43,6 @@
 #include "fading.hpp"
 
 
-
 // classes
 
 //! start splash screen class
