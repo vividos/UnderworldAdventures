@@ -117,6 +117,14 @@ ua_audio_impl::~ua_audio_impl()
 
 void ua_audio_impl::init(ua_settings &settings, ua_files_manager &filesmgr)
 {
+   ua_trace("init audio subsystem ...");
+
+   if (!settings.get_bool(ua_setting_audio_enabled))
+   {
+      ua_trace("disabled by settings\n");
+      return;
+   }
+
    // init mixer
    SDL_Init(SDL_INIT_AUDIO);
    Mix_OpenAudio(12000, MIX_DEFAULT_FORMAT, 2, 4096);
@@ -128,6 +136,8 @@ void ua_audio_impl::init(ua_settings &settings, ua_files_manager &filesmgr)
    load_playlist(settings,filesmgr,"uw1/audio/music.m3u");
 
    uw_path = settings.get_string(ua_setting_uw_path);
+
+   ua_trace("done\n");
 }
 
 void ua_audio_impl::play_sound(const char *soundname)
