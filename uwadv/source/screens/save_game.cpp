@@ -23,10 +23,7 @@
 
    \brief save game screen implementation
 
-   TODO: use ua_screen_ctrl_base::get_area() to check for buttons and
-   list of savegames, etc.
-
-   TODO: add scroll buttons
+   \todo add scroll buttons
 
 */
 
@@ -41,21 +38,265 @@
 
 // globals
 
-const unsigned int ua_save_game_btn_width = 55;
-
-static unsigned int ua_save_game_btn_coords[] =
-{
-   17,155,
-   84,155,
-   17,177,
-   84,177
-};
+const unsigned int ua_save_game_button::button_width = 55;
 
 
 // constants
 
 //! time to fade in/out
 const double ua_save_game_screen::fade_time = 0.5;
+
+
+// ua_save_game_button methods
+
+void ua_save_game_button::init(ua_save_game_screen* my_screen,
+   ua_game_interface& game, unsigned int xpos, unsigned int ypos,
+   const char* text, ua_save_game_button_id my_id)
+{
+   screen = my_screen;
+   id = my_id;
+   leftbuttondown = rightbuttondown = false;
+
+   // load buttons (unpressed/pressed)
+   game.get_image_manager().load_list(img_buttons, "chrbtns", 0,3, 3);
+
+   // create window
+   image.create(button_width, img_buttons[0].get_yres());
+   image.get_palette() = img_buttons[0].get_palette();
+
+   ua_image_quad::init(game, xpos, ypos);
+
+   {
+      // shorten button images according to button width
+      ua_image& button0 = img_buttons[0];
+      button0.paste_rect(button0, 66,0, 1,16, button_width-1,0);
+
+      ua_image& button1 = img_buttons[1];
+      button1.paste_rect(button1, 66,0, 1,16, button_width-1,0);
+
+      ua_image& button2 = img_buttons[2];
+      button2.paste_rect(button2, 66,0, 1,16, button_width-1,0);
+
+      // paste text onto buttons
+      ua_font font_normal;
+      ua_image img_temp;
+
+      font_normal.load(game.get_settings(), ua_font_chargen);
+
+      // normal
+      font_normal.create_string(img_temp, text, 162);
+
+      int pos = (button_width-img_temp.get_xres())/2;
+      if (pos<0) pos = 0;
+
+      button1.paste_rect(img_temp, 0,0, button1.get_xres(),button1.get_yres(),
+         pos,3, true);
+
+      // highlighted
+      font_normal.create_string(img_temp, text, 73);
+
+      pos = (button_width-img_temp.get_xres())/2;
+      if (pos<0) pos = 0;
+
+      button2.paste_rect(img_temp, 0,0, button2.get_xres(),button2.get_yres(),
+         pos,3, true);
+   }
+
+   update_button(false);
+}
+
+bool ua_save_game_button::process_event(SDL_Event& event)
+{
+   // check if mouse left button area
+   if (event.type == SDL_MOUSEMOTION && (leftbuttondown || rightbuttondown))
+   {
+      unsigned int xpos, ypos;
+      calc_mousepos(event, xpos, ypos);
+
+      update_button(in_window(xpos,ypos));
+   }
+
+   return ua_window::process_event(event);
+}
+
+void ua_save_game_button::mouse_event(bool button_clicked, bool left_button,
+   bool button_down, unsigned int mousex, unsigned int mousey)
+{
+   // update button states
+   if (button_clicked)
+   {
+      if (left_button) leftbuttondown = button_down;
+      else rightbuttondown = button_down;
+   }
+
+   // update button images
+   if (button_clicked)
+      update_button(button_down);
+
+   // send "press button" event
+   if (button_clicked && !button_down)
+      screen->press_button(id);
+}
+
+void ua_save_game_button::update_button(bool state_pressed)
+{
+   // paste base button
+   ua_image& button0 = img_buttons[0];
+   image.paste_rect(button0, 0,0, button0.get_xres(),button0.get_yres(), 0,0);
+
+   // base border depending on selection
+   ua_image& button = img_buttons[state_pressed ? 1 : 2];
+
+   image.paste_rect(button, 0,0,
+      button.get_xres(),button.get_yres(), 0,0, true);
+
+   update();
+}
+
+
+// ua_save_game_savegames_list methods
+
+void ua_save_game_savegames_list::init(ua_save_game_screen* my_screen,
+   ua_game_interface& game, unsigned int xpos, unsigned int ypos,
+   bool my_show_new)
+{
+   savegames_manager = &game.get_savegames_manager();
+   screen = my_screen;
+   show_new = my_show_new;
+
+   list_base = 0;
+   selected_savegame = -1;
+
+   // load font
+   font_normal.load(game.get_settings(), ua_font_normal);
+
+   // setup image
+   ua_image_quad::init(game, xpos, ypos);
+
+   get_image().create(119,126);
+   get_image().clear(142);
+
+   update();
+}
+
+void ua_save_game_savegames_list::update_list()
+{
+   // \todo move to object members
+   unsigned int list_base = 0;
+
+   get_image().clear(142);
+
+   unsigned int charheight = font_normal.get_charheight();
+
+   // show savegames, but only as much entries as fit
+   unsigned int numitems = savegames_manager->get_savegames_count() + (show_new ? 0 : 1);
+
+   unsigned int maxitems = unsigned(get_image().get_yres() / charheight);
+
+   if (numitems-list_base > maxitems)
+      numitems = list_base+17;
+
+   for(unsigned int i=list_base; i<numitems; i++)
+   {
+      bool selected = int(i) == selected_savegame;
+
+      std::string desc;
+      if (!show_new && i==numitems-1)
+      {
+         // last entry: new game slot
+         // \todo move to strings
+         desc.assign("new savegame slot");
+      }
+      else
+      {
+         // get savegame info
+         ua_savegame_info info;
+         savegames_manager->get_savegame_info(i,info);
+
+         std::ostringstream buffer;
+         buffer << i+1 << ". " << std::ends;
+
+         desc.assign(buffer.str().c_str());
+         desc.append(info.title);
+      }
+
+      // string too long for list field?
+      if (font_normal.calc_length(desc.c_str()) > get_image().get_xres()-2)
+      {
+         desc.append("...");
+         std::string::size_type pos = desc.size()-4;
+
+         do
+         {
+            // delete one char
+            desc.erase(pos,1);
+            pos--;
+
+         } while(pos > 0 && font_normal.calc_length(desc.c_str()) > get_image().get_xres()-2);
+      }
+
+      // when selected, fill background
+      if (selected)
+         get_image().fill_rect(0,i*(charheight+1)+2,
+            get_image().get_xres(),charheight, 162);
+
+      // paste image
+      ua_image img_temp;
+      font_normal.create_string(img_temp,desc.c_str(),selected ? 73 : 162);
+
+      get_image().ua_image::paste_rect(img_temp, 0,0,
+         img_temp.get_xres(), img_temp.get_yres(),
+         2,i*(charheight+1)+2, true);
+   }
+
+   update();
+
+   // screen->update_info();
+}
+
+void ua_save_game_savegames_list::mouse_event(bool button_clicked, bool left_button,
+   bool button_down, unsigned int mousex, unsigned int mousey)
+{
+   if ((button_clicked && button_down) || !button_clicked)
+   {
+      // determine 
+      unsigned int item = (mousey-wnd_ypos-2) / (font_normal.get_charheight()+1);
+      item += list_base;
+
+      int last_selected = selected_savegame;
+
+      unsigned int numitems = savegames_manager->get_savegames_count() + (show_new ? 0 : 1);
+
+      // check if user selected an empty slot
+      if (item < numitems)
+         selected_savegame = item;
+      else
+      {
+         // only deselect when clicked on empty slot
+         if (button_down)
+            selected_savegame = -1;
+      }
+
+      // update when needed
+      if (last_selected != selected_savegame)
+         update_list();
+   }
+
+/*
+   // calculate cursor position
+   if (fade_state == 1 && (
+       event.type == SDL_MOUSEBUTTONDOWN ||
+       event.type == SDL_MOUSEBUTTONUP ||
+       (event.type == SDL_MOUSEMOTION && button_pressed)))
+   {
+      int x,y;
+      SDL_GetMouseState(&x,&y);
+      unsigned int cursorx = 0;//TODOunsigned(double(x)/game->get_screen_width()*320.0);
+      unsigned int cursory = 0;//TODOunsigned(double(y)/game->get_screen_height()*200.0);
+
+  }
+*/
+}
 
 
 // ua_save_game_screen methods
@@ -71,109 +312,100 @@ void ua_save_game_screen::init()
 
    ua_trace("save game screen started\n");
 
-   // setup orthogonal projection
-   glMatrixMode(GL_PROJECTION);
-   glLoadIdentity();
-   gluOrtho2D(0,320,0,200);
-   glMatrixMode(GL_MODELVIEW);
-   glLoadIdentity();
+   game->get_renderer().setup_camera2d();
 
-   // set OpenGL flags
-   glBindTexture(GL_TEXTURE_2D,0);
-   glClearColor(0.0, 0.0, 0.0, 0.0);
-
-   glEnable(GL_TEXTURE_2D);
-   glDisable(GL_DEPTH_TEST);
-
+   glDisable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
-   sgmgr = &game->get_savegames_manager();
+   show_preview = false;
 
-   list_base_game = 0;
-   button_highlight = -1;
-   selected_savegame = -1;
-   button_pressed = false;
-   fade_state = 0;
-   fade_ticks = 0;
-   edit_desc = false;
+//   edit_desc = false;
 
    // scan for savegames
-   sgmgr->rescan();
+   game->get_savegames_manager().rescan();
 
-   // load fonts
-   ua_settings& settings = game->get_settings();
-
-   font_btns.load(settings, ua_font_chargen);
-   font_normal.load(settings, ua_font_normal);
-
-   img_buttons.load(settings,"chrbtns",0,0,3);
+//   font_normal.load(settings, ua_font_normal);
 
    // load background images
    {
       ua_image img_back;
-      img_back.load_raw(game->get_settings(),"data/chargen.byt",3);
-
-      // shorten buttons
-      ua_image& button0 = img_buttons.get_image(0);
-      ua_image& button1 = img_buttons.get_image(1);
-      ua_image& button2 = img_buttons.get_image(2);
-
-      button0.paste_rect(button0,66,0, 1,16, ua_save_game_btn_width-1,0);
-      button1.paste_rect(button1,66,0, 1,16, ua_save_game_btn_width-1,0);
-      button2.paste_rect(button2,66,0, 1,16, ua_save_game_btn_width-1,0);
+      game->get_image_manager().
+         load(img_back, "data/chargen.byt",0, 3, ua_img_byt);
 
       // prepare left image (savegames list)
-      img_back1.create(160,200,0,3);
-      img_back1.init(&game->get_renderer().get_texture_manager(),0,0, 160,200);
-      img_back1.paste_rect(img_back,160,0, 160,200, 0,0);
+      ua_image& img1 = img_back1.get_image();
 
-      // add some buttons
-      img_back1.paste_rect(img_buttons.get_image(0),0,0, ua_save_game_btn_width,16, 17,155);
-      img_back1.paste_rect(img_buttons.get_image(0),0,0, ua_save_game_btn_width,16, 84,155);
-
-      if (!from_menu)
-         img_back1.paste_rect(img_buttons.get_image(0),0,0, ua_save_game_btn_width,16, 17,177);
-      img_back1.paste_rect(img_buttons.get_image(0),0,0, ua_save_game_btn_width,16, 84,177);
+      img1.create(160,200);
+      img1.get_palette() = img_back.get_palette();
+      img1.paste_rect(img_back, 160,0, 160,200, 0,0);
 
       // add frame
-      img_back1.paste_rect(img_back,11,124, 138,6, 10,4);
-      img_back1.paste_rect(img_back,10,130, 6,56, 9,10);
-      img_back1.paste_rect(img_back,10,130, 6,56, 9,66);
-      img_back1.paste_rect(img_back,10,130, 6,19, 9,122);
+      img1.paste_rect(img_back,11,124, 138,6, 10,4);
+      img1.paste_rect(img_back,10,130, 6,56, 9,10);
+      img1.paste_rect(img_back,10,130, 6,56, 9,66);
+      img1.paste_rect(img_back,10,130, 6,19, 9,122);
 
-      img_back1.paste_rect(img_back,144,130, 6,56, 143,10);
-      img_back1.paste_rect(img_back,144,130, 6,56, 143,66);
-      img_back1.paste_rect(img_back,144,130, 6,19, 143,122);
+      img1.paste_rect(img_back,144,130, 6,56, 143,10);
+      img1.paste_rect(img_back,144,130, 6,56, 143,66);
+      img1.paste_rect(img_back,144,130, 6,19, 143,122);
 
-      img_back1.paste_rect(img_back,10,186, 140,6, 9,141);
+      img1.paste_rect(img_back,10,186, 140,6, 9,141);
+
+      img_back1.init(*game, 0,0);
+      img_back1.update();
+
+      register_window(&img_back1);
 
       // prepare right image (savegame info)
-      img_back2.create(160,200,0,3);
-      img_back2.init(&game->get_renderer().get_texture_manager(),160,0, 160,200);
-      img_back2.paste_rect(img_back,0,0, 160,200, 0,0);
+      ua_image& img2 = img_back2.get_image();
 
-      img_back2_orig.create(160,200,0,3);
-      img_back2_orig.paste_rect(img_back,0,0, 160,200, 0,0);
+      img2.create(160,200);
+      img2.get_palette() = img_back.get_palette();
+      img2.paste_rect(img_back, 0,0, 160,200, 0,0);
 
-      // update all controls
-      update_buttons();
-      update_list();
+      img_back2.init(*game, 160,0);
+      img_back2.update();
+
+      register_window(&img_back2);
+
+//      img_back2_orig.create(160,200,0,3);
+//      img_back2_orig.paste_rect(img_back,0,0, 160,200, 0,0);
    }
 
+   // init buttons
+   button_load.init(this, *game, 17,155, "Load", ua_button_load);
+   button_save.init(this, *game, 17,177, "Save", ua_button_save);
+   button_refresh.init(this, *game, 84,155, "Refresh", ua_button_refresh);
+   button_exit.init(this, *game, 84,177, "Exit", ua_button_exit);
+
+   if (from_menu)
+      register_window(&button_save);
+   register_window(&button_load);
+   register_window(&button_refresh);
+   register_window(&button_exit);
+
+   // init savegames list
+   savegames_list.init(this, *game, 19,13, from_menu);
+
+   savegames_list.update_list();
+
+   register_window(&savegames_list);
+
    // init mouse cursor
-   mousecursor.init(game,10);
+   mousecursor.init(*game,10);
    mousecursor.show(true);
 
    register_window(&mousecursor);
+
+   // init fadein
+   fader.init(true, game->get_tickrate(), fade_time);
+   fade_state = 0;
 }
 
 void ua_save_game_screen::destroy()
 {
-   img_back1.done();
-   img_back2.done();
-
-   if (edit_desc)
-      desc_scroll.done();
+//   if (edit_desc)
+//      desc_scroll.done();
 
    tex_preview.done();
 
@@ -182,6 +414,10 @@ void ua_save_game_screen::destroy()
 
 bool ua_save_game_screen::process_event(SDL_Event& event)
 {
+   if (ua_screen::process_event(event))
+      return true;
+
+/*
    if (edit_desc && desc_scroll.handle_event(event))
    {
       if (desc_scroll.is_input_done(desc))
@@ -224,90 +460,10 @@ bool ua_save_game_screen::process_event(SDL_Event& event)
       }
       return true;
    }
-
-   // calculate cursor position
-   if (fade_state == 1 && (
-       event.type == SDL_MOUSEBUTTONDOWN ||
-       event.type == SDL_MOUSEBUTTONUP ||
-       (event.type == SDL_MOUSEMOTION && button_pressed)))
-   {
-      int x,y;
-      SDL_GetMouseState(&x,&y);
-      unsigned int cursorx = 0;//TODOunsigned(double(x)/game->get_screen_width()*320.0);
-      unsigned int cursory = 0;//TODOunsigned(double(y)/game->get_screen_height()*200.0);
-
-      // check if a button was pressed
-      button_highlight = -1;
-      for(unsigned int i=0; i<4; i++)
-      {
-         // don't check "Save" button when coming from start menu
-         if (from_menu && i==2)
-            continue;
-
-         if (cursorx>ua_save_game_btn_coords[i*2] &&
-             cursorx<ua_save_game_btn_coords[i*2]+ua_save_game_btn_width &&
-             cursory>ua_save_game_btn_coords[i*2+1] &&
-             cursory<ua_save_game_btn_coords[i*2+1]+16)
-         {
-            button_highlight = i;
-            break;
-         }
-      }
-
-      // check if an entry was selected
-      if (cursorx>19 && cursorx<19+119 &&
-          cursory>13 && cursory<13+126)
-      {
-         unsigned int item = (cursory-13-2)/(font_normal.get_charheight()+1);
-         int last_selected = selected_savegame;
-
-         // check if user selected an empty slot
-         if (item+list_base_game<sgmgr->get_savegames_count()+(from_menu ? 0 : 1))
-            selected_savegame = item;
-         else
-         {
-            // only deselect when clicked on empty slot
-            if (event.type == SDL_MOUSEBUTTONDOWN)
-               selected_savegame = -1;
-         }
-
-         // update when needed
-         if (last_selected != selected_savegame)
-            update_list();
-      }
-   }
+*/
 
    switch(event.type)
    {
-   case SDL_MOUSEBUTTONDOWN: // mouse button was pressed down
-      if (fade_state == 1)
-      {
-         // highlight button when needed
-         update_buttons();
-         img_back1.convert_upload();
-
-         button_pressed = true;
-      }
-      break;
-
-   case SDL_MOUSEBUTTONUP: // mouse button was released
-      if (fade_state == 1)
-      {
-         // check if all buttons are released
-         Uint8 state = SDL_GetMouseState(NULL,NULL);
-         if ((state&(SDL_BUTTON_LMASK|SDL_BUTTON_RMASK)) == 0)
-         {
-            // press button
-            press_button();
-
-            // reset buttons
-            update_buttons();
-            img_back1.convert_upload();
-
-            button_pressed = false;
-         }
-      }
-
    case SDL_KEYDOWN: // key was pressed
       switch(event.key.keysym.sym)
       {
@@ -315,14 +471,17 @@ bool ua_save_game_screen::process_event(SDL_Event& event)
          // simulate press on exit button
          if (fade_state == 1)
          {
-            button_highlight = 3;
-            press_button();
+            //TODObutton_exit.
+
+            press_button(ua_button_exit);
          }
          break;
+
       default:
          break;
       }
       break;
+
    default:
       break;
    }
@@ -332,35 +491,17 @@ bool ua_save_game_screen::process_event(SDL_Event& event)
 
 void ua_save_game_screen::draw()
 {
+   glClear(GL_COLOR_BUFFER_BIT);
+
    // determine brightness of images
    {
-      Uint8 light = 255;
-      switch(fade_state)
-      {
-      case 0: // fading in
-         light = Uint8(255*(double(fade_ticks) / (game->get_tickrate()*fade_time)));
-         break;
-
-      case 2: // fading out
-         light = Uint8(255-255*(double(fade_ticks) / (game->get_tickrate()*fade_time)));
-         break;
-
-      case 3: // exiting
-         light = 0;
-         break;
-      }
-
+      Uint8 light = fader.get_fade_value();
       glColor3ub(light,light,light);
    }
 
-   // draw background
-   glDisable(GL_BLEND);
-   img_back1.render();
-   img_back2.render();
-
    // render edit field when needed
-   if (edit_desc)
-      desc_scroll.render();
+//   if (edit_desc)
+//      desc_scroll.render();
 
    // render savegame preview image
    if (show_preview)
@@ -379,49 +520,44 @@ void ua_save_game_screen::draw()
       glEnd();
    }
 
-   // draw mouse cursor
-   glEnable(GL_BLEND);
-
+   // draw registered windows
    ua_screen::draw();
 }
 
 void ua_save_game_screen::tick()
 {
-   // check for fading in/out
-   if ((fade_state==0 || fade_state==2) &&
-      ++fade_ticks >= (game->get_tickrate()*fade_time))
+   if (fader.tick())
    {
       fade_state++;
-      fade_ticks=0;
 
       if (fade_state==3)
       {
          // faded out, do some action
-         switch(button_highlight)
+         switch(pressed_button)
          {
-         case 0: // load
+         case ua_button_load:
          {
             ua_trace("loading saved game, filename %s\n",
-               sgmgr->get_savegame_filename(selected_savegame).c_str());
+               game->get_savegames_manager().get_savegame_filename(
+                  savegames_list.get_selected_savegame()).c_str());
 
             // clear screen; loading takes a while
-            glClearColor(0,0,0,0);
-            glClear(GL_COLOR_BUFFER_BIT);
-            SDL_GL_SwapBuffers();
+            game->get_renderer().clear();
 
             // load savegame
-            ua_savegame sg = sgmgr->get_savegame_load(selected_savegame,true);
+            ua_savegame sg = game->get_savegames_manager().get_savegame_load(
+               savegames_list.get_selected_savegame(),true);
             game->get_underworld().load_game(sg);
-/*
+
             // next screen
-            if (from_menu)
-               core->replace_screen(new ua_ingame_orig_screen);
-            else*/
-               game->remove_screen();
+//            if (from_menu)
+//               core->replace_screen(new ua_ingame_orig_screen);
+//            else
+//               game->remove_screen();
             break;
          }
 
-         case 3: // exit
+         case ua_button_exit:
             game->remove_screen();
             break;
          }
@@ -429,137 +565,42 @@ void ua_save_game_screen::tick()
    }
 }
 
-void ua_save_game_screen::update_list()
+void ua_save_game_screen::press_button(ua_save_game_button_id id)
 {
-   img_back1.fill_rect(19,13, 119,126, 142);
+   pressed_button = id;
 
-   unsigned int height = font_normal.get_charheight();
-
-   // show savegames, but at most 17 entries
-   unsigned int max = sgmgr->get_savegames_count()+(from_menu ? 0 : 1);
-   if (max-list_base_game>17) max = list_base_game+17;
-
-   for(unsigned int i=list_base_game; i<max; i++)
+   switch(id)
    {
-      bool selected = i==selected_savegame;
-
-      std::string desc;
-      if (!from_menu && i==max-1)
-      {
-         // last entry: new game slot
-         desc.assign("new savegame slot");
-      }
-      else
-      {
-         // get savegame info
-         ua_savegame_info info;
-         sgmgr->get_savegame_info(i,info);
-
-         std::ostringstream buffer;
-         buffer << i+1 << ". " << std::ends;
-
-         desc.assign(buffer.str().c_str());
-         desc.append(info.title);
-      }
-
-      // string too long for list field?
-      if (font_normal.calc_length(desc.c_str())>117)
-      {
-         desc.append("...");
-         std::string::size_type pos = desc.size()-4;
-
-         do
-         {
-            // delete one char
-            desc.erase(pos,1);
-            pos--;
-
-         } while(pos > 0 && font_normal.calc_length(desc.c_str())>117);
-      }
-
-      // when selected, fill background
-      if (selected)
-         img_back1.fill_rect(19,i*(height+1)+13+2,119,height,162);
-
-      // paste image
-      ua_image temp;
-      font_normal.create_string(temp,desc.c_str(),selected ? 73 : 162);
-
-      img_back1.paste_rect(temp,0,0, 119-2,height,
-         19+2,i*(height+1)+13+2,true);
-   }
-
-   img_back1.convert_upload();
-
-   update_info();
-}
-
-void ua_save_game_screen::update_buttons()
-{
-   // TODO put in string resources
-   static const char* texts[] =
-   {
-      "Load", "Refresh", "Save", "Exit"
-   };
-
-   // paste buttons and captions
-   for(unsigned int i=0; i<4; i++)
-   {
-      // don't draw "Save" button when coming from start menu
-      if (from_menu && i==2)
-         continue;
-
-      // button frame
-      ua_image& button = img_buttons.get_image(button_highlight == signed(i) ? 1 : 2);
-
-      img_back1.paste_rect(button,0,0, ua_save_game_btn_width,16,
-         ua_save_game_btn_coords[i*2], ua_save_game_btn_coords[i*2+1], true);
-
-      // button caption
-      ua_image temp;
-      font_btns.create_string(temp,texts[i],button_highlight == signed(i) ? 162 : 73);
-
-      int pos = (ua_save_game_btn_width-temp.get_xres())/2;
-      if (pos<0) pos = 0;
-
-      img_back1.paste_image(temp,
-         ua_save_game_btn_coords[i*2] + pos,
-         ua_save_game_btn_coords[i*2+1]+3, true);
-   }
-}
-
-void ua_save_game_screen::press_button()
-{
-   switch(button_highlight)
-   {
-   case 0: // load
+   case ua_button_load:
       {
          // check if user tries to load the "new slot" entry
-         if (selected_savegame>=sgmgr->get_savegames_count())
+         if (savegames_list.get_selected_savegame() >=
+            game->get_savegames_manager().get_savegames_count())
          {
-            button_highlight = -1;
+            //TODO button_highlight = -1;
             break;
          }
 
          // fade out and do action
          fade_state = 2;
+         fader.init(false, game->get_tickrate(), fade_time);
       }
       break;
 
-   case 1: // refresh
+   case ua_button_refresh:
       {
          // refresh list
-         sgmgr->rescan();
+         game->get_savegames_manager().rescan();
 
-         button_highlight = -1;
-         selected_savegame = -1;
-         update_list();
+         //button_highlight = -1;
+         savegames_list.update_list();
       }
       break;
 
-   case 2: // save
+   case ua_button_save: // save
       if (!from_menu)
       {
+/*
          // ask for a savegame name
          edit_desc = true;
 
@@ -578,21 +619,24 @@ void ua_save_game_screen::press_button()
             desc.assign(info.title);
          }
 
-         //TODOdesc_scroll.init(*core,19,ypos,119,height+1,1,162);
+         desc_scroll.init(*core,19,ypos,119,height+1,1,162);
          desc_scroll.set_color(73);
          desc_scroll.clear_scroll();
          desc_scroll.enter_input_mode(desc.c_str());
+*/
       }
       break;
 
-   case 3: // exit
+   case ua_button_exit: // exit
       fade_state = 2;
+      fader.init(false, game->get_tickrate(), fade_time);
       break;
    }
 }
 
 void ua_save_game_screen::update_info()
 {
+/*
    // restore original image
    img_back2.paste_image(img_back2_orig,0,0);
 
@@ -612,7 +656,7 @@ void ua_save_game_screen::update_info()
       img_back2.paste_image(temp,(160-width)/2,10,true);
 
       // gender
-      std::string text(""/*TODOcore->get_strings().get_string(2,info.gender+9)*/);
+      std::string text(""/ *TODOcore->get_strings().get_string(2,info.gender+9)* /);
       font_btns.create_string(temp,text.c_str(),textcolor);
       img_back2.paste_image(temp,18,21,true);
 
@@ -676,4 +720,5 @@ void ua_save_game_screen::update_info()
    }
 
    img_back2.convert_upload();
+*/
 }
