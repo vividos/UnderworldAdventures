@@ -40,6 +40,7 @@
 #include "imgquad.hpp"
 #include "textscroll.hpp"
 #include "ingame_ctrls.hpp"
+#include "underworld.hpp"
 /*
 #include "image.hpp"
 #include "font.hpp"
@@ -131,7 +132,7 @@ enum ua_screen_area_id
 // classes
 
 //! original ingame screen
-class ua_ingame_orig_screen: public ua_screen
+class ua_ingame_orig_screen: public ua_screen, public ua_underworld_callback
 {
 public:
    //! ctor
@@ -139,7 +140,7 @@ public:
    //! dtor
    virtual ~ua_ingame_orig_screen(){}
 
-   // virtual functions from ua_screen
+   // virtual methods from ua_screen
    virtual void init();
    virtual void destroy();
    virtual void draw();
@@ -153,6 +154,12 @@ public:
    //! actually performs scheduled action
    void do_action(ua_ingame_orig_action action);
 
+   //! returns game mode
+   ua_ingame_game_mode get_gamemode(){ return gamemode; }
+
+   //! sets game mode
+   void set_gamemode(ua_ingame_game_mode my_gamemode){ gamemode = my_gamemode; }
+
 protected:
    //! suspends game resources while showing another screen
    void suspend();
@@ -160,21 +167,23 @@ protected:
    //! resumes gameplay and restores resources
    void resume();
 
+   // virtual methods from ua_underworld_callback
+   //! notifies callback class
+   virtual void uw_notify(ua_underworld_notification notify,
+      unsigned int param=0);
+
+   //! called to print text to textscroll
+   virtual void uw_print(const char* text);
+
+   //! starts conversation with object in current level, on list position
+   virtual void uw_start_conversation(unsigned int list_pos);
+
+
 /*
-   // virtual functions from ua_underworld_script_callback
-   virtual void ui_changed_level(unsigned int level);
-   virtual void ui_start_conv(unsigned int level, unsigned int objpos);
    virtual void ui_show_cutscene(unsigned int cutscene);
-   virtual void ui_print_string(const char* str);
-   virtual void ui_show_ingame_anim(unsigned int anim);
-   virtual void ui_cursor_use_item(Uint16 item_id);
-   virtual void ui_cursor_target();
 
    //! sets cursor image
    void set_cursor_image(bool is_object, Uint16 image, bool prio=false);
-
-   //! returns game mode
-   ua_ingame_orig_game_mode get_gamemode(){ return gamemode; }
 */
 protected:
    // constants
@@ -255,9 +264,6 @@ protected:
 
 
 /*
-   //! called for a given mouse action; click is false for mouse moves
-   virtual void mouse_action(bool click, bool left_button, bool pressed);
-
    //! finds out selection on specific mouse cursor position
    GLuint get_selection(unsigned int xpos, unsigned int ypos);
 
@@ -297,24 +303,8 @@ protected:
    ua_image_list img_objects;
 
 
-   // command buttons
-
-   //! command buttons image
-   ua_image img_cmd_buttons;
-
-   //! command buttons texture
-   ua_texture tex_cmd_buttons;
-
-
    //! inventory/stats/runebag panel
    ua_panel panel;
-
-
-   //! text scroll
-   ua_textscroll textscroll;
-
-   //! text scroll width
-   unsigned int scrollwidth;
 
 
    //! screenshot image in rgba format
