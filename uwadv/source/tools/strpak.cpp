@@ -537,7 +537,7 @@ int main(int argc, char *argv[])
 
    if (argc<4)
    {
-      printf("syntax: strpak <command> <input-file> <output-file> [<huffnode-basefile>]\n"
+      printf("syntax: strpak <command> <input-file> <output-file>\n"
              "   command can either be \"pack\" or \"unpack\".\n");
       printf("example: strpak unpack strings.pak uw-strings.txt\n"
              "         strpak pack uw-strings.txt strings2.pak\n\n");
