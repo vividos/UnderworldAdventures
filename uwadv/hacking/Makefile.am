@@ -9,5 +9,5 @@ EXTRA_DIST = \
 	levarkdec/levarkdec.cpp levarkdec/levarkdec.dsp \
 	miscdecode/miscdecode.cpp miscdecode/miscdecode.dsp \
 	sgdecode/sgdecode.cpp sgdecode/sgdecode.dsp \
-	stringextraxt/stringextract.cpp stringextract/stringextract.dsp \
+	stringextract/stringextract.cpp stringextract/stringextract.dsp \
 	trdecode/trdecode.cpp trdecode/trdecode.dsp
