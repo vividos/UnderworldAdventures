@@ -185,10 +185,10 @@ Table of Contents
 
       Offset  Size   Description
       0000    4000   Tile map (64 x 64 x 4 bytes)
-      4000    1b00   Mobile object information (objects 000-0ff, 256 x 27bytes)
-      5b00    1800   Static object information (objects 100-3ff, 768 x 8bytes)
-      7300    01fc   Free list for mobile objects (objects 002-0ff, 254 x 2bytes)
-      74fc    0600   Free list for static objects (objects 100-3ff, 768 x 2bytes)
+      4000    1b00   Mobile object information (objects 000-0ff, 256 x 27 bytes)
+      5b00    1800   Static object information (objects 100-3ff, 768 x 8 bytes)
+      7300    01fc   Free list for mobile objects (objects 002-0ff, 254 x 2 bytes)
+      74fc    0600   Free list for static objects (objects 100-3ff, 768 x 2 bytes)
       7afc    0104   Unknown (260 bytes)
       7c00    0002
       7c02    0002   No. entries in mobile free list minus 1
@@ -333,6 +333,21 @@ Table of Contents
       01a3: a_look trigger
       01a5: an_open trigger
       01a6: an_unlock trigger
+
+     Free list, mobile objects
+     -------------------------
+     This consists of an Int16 for each mobile object (critter) slot which is
+     not in use, giving the slot position in the master object list. Note that
+     there are only 254 entries in this table because object 0 is always the
+     null object (and hence is never allocated) and object 1 is always the
+     avatar (and can never be free - that's probably a metaphor for life, or
+     something). Of course, only the first (no. free mobile objects) entries
+     are valid.
+
+     Free list, static objects
+     -------------------------
+     This consists of an Int16 for each static object which is not in use, as
+     above. This table is 768 entries long (room for all possible static objects).
 
    * Object animation overlay info
 
