@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -30,34 +30,20 @@
 // needed includes
 #include "common.hpp"
 #include "cutscene.hpp"
-#include "../import/io_endian.hpp"
+#include "import.hpp"
+#include "io_endian.hpp"
 
 
-// ua_cutscene methods
+// ua_uw_import methods
 
-void ua_cutscene::load(ua_settings &settings, unsigned int main,
-   unsigned int sub)
+void ua_uw_import::load_cutscene(const char* filename, ua_image& image,
+   std::vector<ua_lp_descriptor>& lpdarray,
+   std::vector<Uint8>& lpages, unsigned int& records)
 {
-   char buffer[32];
-   sprintf(buffer,"cuts/cs%03o.n%02o",main,sub);
-
-   load(settings,buffer);
-}
-
-void ua_cutscene::load(ua_settings &settings, const char *relfilename)
-{
-   std::string filename(settings.get_string(ua_setting_uw_path));
-   filename.append(relfilename);
-
-   load(filename.c_str());
-}
-
-void ua_cutscene::load(const char *filename)
-{
-   FILE *fd = fopen(filename,"rb");
+   FILE* fd = fopen(filename,"rb");
    if (fd==NULL)
    {
-      std::string text("could not open file ");
+      std::string text("could not open cutscene file ");
       text.append(filename);
       throw ua_exception(text.c_str());
    }
@@ -71,28 +57,31 @@ void ua_cutscene::load(const char *filename)
    char sign[4];
    fread(sign,1,4,fd);
 
-   if (0!=strncmp(sign,"LPF ",4))
+   if (0 != strncmp(sign,"LPF ",4))
       throw ua_exception("wrong cutscene file type");
 
    // number of large pages and records
    fseek(fd,6,SEEK_SET);
-   largepages = fread16(fd);
+   Uint16 largepages = fread16(fd);
    records = fread32(fd);
 
    fseek(fd,0x10,SEEK_SET);
    fread(sign,1,4,fd);
-   if (0!=strncmp(sign,"ANIM",4))
+   if (0 != strncmp(sign,"ANIM",4))
       throw ua_exception("wrong cutscene file type");
 
    // width and height
-   xres = fread16(fd);
-   yres = fread16(fd);
-   create(xres,yres,0,0);
+   unsigned int xres = fread16(fd);
+   unsigned int yres = fread16(fd);
+   image.create(xres,yres);
 
    // skip color cycling infos
    fseek(fd,0x0100,SEEK_SET);
 
-   ua_onepalette& anim_palette = quadpalette;
+   // create new palette
+   image.create_new_palette();
+
+   ua_palette256& anim_palette = *image.get_palette();
 
    // read in palette
    for(int n=0; n<256; n++)
@@ -125,6 +114,112 @@ void ua_cutscene::load(const char *filename)
    fread(&lpages[0],lpsize,1,fd);
 
    fclose(fd);
+}
 
-   curframe = (unsigned int)-1;
+
+// global functions
+
+// dumps pixels to output buffer
+void ua_cuts_dump_pixel(Uint8*& src,Uint8*& dst,unsigned int& maxpix,unsigned int size)
+{
+   unsigned int len = ua_min(size,maxpix);
+   memcpy(dst,src,len);
+   dst += len;
+   src += len;
+   maxpix -= len;
+}
+
+// does a run with a pixel to output buffer
+void ua_cuts_run_pixel(Uint8*& src,Uint8*& dst,unsigned int& maxpix,unsigned int size)
+{
+   Uint8 pixel = *src++;
+   unsigned int len = ua_min(size,maxpix);
+
+   memset(dst,pixel,len);
+   dst += len;
+   maxpix -= len;
+}
+
+// skips some pixels in the output buffer
+void ua_cuts_skip_pixel(Uint8*& dst,unsigned int& maxpix,unsigned int size)
+{
+   if (size>maxpix) size=maxpix;
+   dst += size;
+   maxpix -= size;
+}
+
+
+// ua_uw_import methods
+
+void ua_uw_import::extract_cutscene_data(Uint8* src,Uint8* dst,unsigned int maxpix)
+{
+   while(maxpix>0)
+   {
+      Sint8 cnt = static_cast<Sint8>(*src++);
+
+      // short operations
+
+      if (cnt>0)
+      {
+         // short dump
+         ua_cuts_dump_pixel(src,dst,maxpix,cnt);
+         continue;
+      }
+
+      if (cnt==0)
+      {
+         // short run
+         Uint8 wordcnt = *src++;
+         ua_cuts_run_pixel(src,dst,maxpix,wordcnt);
+         continue;
+      }
+
+      // remove sign bit
+      cnt &= 0x7f;
+
+      if (cnt!=0)
+      {
+         // short skip
+         ua_cuts_skip_pixel(dst,maxpix,cnt);
+         continue;
+      }
+
+      // long operations
+
+      // get next 16 bit word
+#if (SDL_BYTEORDER==SDL_BIG_ENDIAN)
+      Uint16 wordcnt = ua_endian_convert16(*(reinterpret_cast<Uint16*>(src)));
+#else
+      Uint16 wordcnt = *(reinterpret_cast<Uint16*>(src));
+#endif
+      src+=2;
+
+      // end of decoding?
+      if (wordcnt == 0)
+         break;
+
+      if (static_cast<Sint16>(wordcnt)>0)
+      {
+         // long skip
+         ua_cuts_skip_pixel(dst,maxpix,wordcnt);
+         continue;
+      }
+
+      // remove sign bit
+      wordcnt &= 0x7fff;
+
+      if (wordcnt>=0x4000)
+      {
+         // clear "longRun" bit
+         wordcnt -= 0x4000;
+
+         // long run
+         ua_cuts_run_pixel(src,dst,maxpix,wordcnt);
+      }
+      else
+      {
+         // long dump
+         ua_cuts_dump_pixel(src,dst,maxpix,wordcnt);
+      }
+   }
 }
