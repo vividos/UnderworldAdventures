@@ -177,6 +177,11 @@ void ua_files_manager::replace_system_vars(std::string& path)
    // replace %uadata%
    while( std::string::npos != (pos = path.find("%uadata%") ) )
       path.replace(pos,8,uadata_path.c_str());
+
+   // replace any double-slashes occured from past replacements
+   while( std::string::npos != (pos = path.find("//") ) ||
+          std::string::npos != (pos = path.find("\\\\") )    )
+      path.replace(pos,2,"/");
 }
 
 void ua_files_manager::init_cfgfiles_list()
