@@ -612,7 +612,8 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    }
    else
    // check for exit screen key
-   if (keymap.is_key(ua_key_ua_return_menu,keymod))
+   if (keymap.is_key(ua_key_ua_return_menu,keymod) &&
+       core->get_settings().get_gametype() != ua_game_uw_demo)
    {
       fade_state = 2;
       fade_ticks = 0;
@@ -660,7 +661,6 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
       dbgint->start_debugger();
    }
 #endif
-#ifdef HAVE_DEBUG
    else
    // check for "level up" key
    if (keymap.is_key(ua_key_ua_level_up,keymod))
@@ -672,10 +672,9 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    // check for "level down" key
    if (keymap.is_key(ua_key_ua_level_down,keymod))
    {
-      if (curlevel<8)
+      if (curlevel+1<core->get_underworld().get_num_levels())
          core->get_underworld().change_level(++curlevel);
    }
-#endif
 }
 
 void ua_ingame_orig_screen::render()
