@@ -40,29 +40,46 @@ const double ua_critter_frames_manager::critter_fps = 3.0;
 // ua_critter methods
 
 ua_critter::ua_critter()
-:xres(0), yres(0), maxframes(0), allframe_bytes(NULL)
+:xres(0), yres(0), maxframes(0)
 {
 }
 
 /*! Prepares textures for this critter. */
 void ua_critter::prepare()
 {
+   reset_prepare();
+
    tex.resize(maxframes);
 
    for(unsigned int i=0; i<maxframes; i++)
    {
       ua_texture& curtex = tex[i];
-
       curtex.init(1);
+   }
 
-      unsigned int offset = 0;
-      curtex.convert(&allframe_bytes.get()[i*xres*yres],
+   frame_uploaded.clear();
+   frame_uploaded.resize(maxframes,false);
+}
+
+void ua_critter::reset_prepare()
+{
+   tex.clear();
+}
+
+ua_texture& ua_critter::get_texture(unsigned int frame)
+{
+   if (!frame_uploaded[frame])
+   {
+      frame_uploaded[frame] = true;
+
+      tex[frame].convert(&allframe_bytes[frame*xres*yres],
          xres,yres, *palette.get(), 0);
 
-      curtex.upload(0,false);
+      tex[frame].upload(0,false);
       // using mipmapped textures (2nd param "true") disables the alpha
       // channel somehow; might be a driver problem
    }
+   return tex[frame];
 }
 
 /*! Updates animation frame for given object. When the end of the animation is
@@ -109,6 +126,13 @@ void ua_critter_frames_manager::prepare(ua_object_list* new_mapobjects)
 
    if (mapobjects == NULL)
       return;
+
+   // go through all critters and reset them
+   {
+      unsigned int max = allcritters.size();
+      for(unsigned int i=0; i<max; i++)
+         allcritters[i].reset_prepare();
+   }
 
    // go through master object list and check which object frames have to be managed
    const std::vector<ua_object>& objlist = mapobjects->get_master_obj_list();

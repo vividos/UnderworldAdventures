@@ -55,11 +55,14 @@ public:
    //! prepares critter textures
    void prepare();
 
+   //! resets frame preparation
+   void reset_prepare();
+
    //! returns critter texture index by frame
    inline unsigned int get_frame(Uint8 animstate, Uint8 animframe);
 
    //! returns texture object for a given frame
-   inline ua_texture& get_texture(unsigned int frame);
+   ua_texture& get_texture(unsigned int frame);
 
    //! returns hotspot u coordinate
    inline double get_hotspot_u(unsigned int frame);
@@ -81,7 +84,10 @@ protected:
    std::vector<std::vector<Uint8> > segmentlist;
 
    //! array with all frame bytes
-   ua_smart_ptr<Uint8> allframe_bytes;
+   std::vector<Uint8> allframe_bytes;
+
+   //! indicates if a frame was already uploaded
+   std::vector<bool> frame_uploaded;
 
    //! frame resolution
    unsigned int xres, yres;
@@ -102,6 +108,8 @@ protected:
    ua_palette256_ptr palette;
 
    friend class ua_uw_import;
+   // friendship needed for OMIT_1ST_PASS define
+   friend class ua_uw1_import;
 };
 
 
@@ -148,11 +156,6 @@ protected:
 unsigned int ua_critter::get_frame(Uint8 animstate, Uint8 animframe)
 {
    return segmentlist[animstate][animframe];
-}
-
-ua_texture& ua_critter::get_texture(unsigned int frame)
-{
-   return tex[frame];
 }
 
 double ua_critter::get_hotspot_u(unsigned int frame)
