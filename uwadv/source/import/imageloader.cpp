@@ -21,22 +21,7 @@
 */
 /*! \file imageloader.cpp
 
-   \brief *.gr and *.byt files loading implementation
-
-   ua_image_decode_rle() decodes the underworld rle format, for word lengths
-   up to 8 bit and stores the pixels in an array.
-
-   ua_image_load() does the image loading for "*.gr" files from the start of
-   an image header
-
-   ua_image::load() takes a graphic file name and loads it. used without the
-   .gr extension (e.g. only "charhead" for name)
-
-   ua_image_list::load() does the same, but for a range of images in a graphic
-   file.
-
-   ua_image::load_raw() loads a raw image, stored in "*.byt" files. the full
-   path from the uw1 root directory must be given.
+   \brief *.gr, *.byt files and palette loading
 
 */
 
@@ -49,6 +34,9 @@
 
 // global methods
 
+/*! decodes the underworld rle format, for word lengths up to 8 bit, and
+    stores the pixels in an array.
+*/
 void ua_image_decode_rle(FILE *fd, Uint8* pixels, unsigned int bits,
    unsigned int datalen, unsigned int maxpix, unsigned char *auxpalidx,
    unsigned int padding=0, unsigned int linewidth=0)
@@ -326,7 +314,7 @@ void ua_uw_import::load_image_gr(ua_image& img, const char* imgname,
 
    // load image into pixel vector
    bool special_panels = (strstr("panels.gr",imgname) != NULL);
-   load_image_gr_priv(img,fd,auxpalettes,special_panels);
+   load_image_gr_impl(img,fd,auxpalettes,special_panels);
 
    fclose(fd);
 }
@@ -400,13 +388,13 @@ void ua_uw_import::load_image_gr_list(std::vector<ua_image>& imglist,
       ua_image& lastimg = imglist.back();//[imglist.size()-1];
 
       // load image
-      load_image_gr_priv(lastimg,fd,auxpalettes,special_panels);
+      load_image_gr_impl(lastimg,fd,auxpalettes,special_panels);
    }
 
    fclose(fd);
 }
 
-void ua_uw_import::load_image_gr_priv(ua_image& img, FILE* fd,
+void ua_uw_import::load_image_gr_impl(ua_image& img, FILE* fd,
    Uint8 auxpalidx[32][16], bool special_panels)
 {
    Uint8 type, width, height, auxpal=0;
