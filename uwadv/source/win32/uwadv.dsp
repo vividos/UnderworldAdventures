@@ -701,6 +701,10 @@ SOURCE=..\physics.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\physicsobject.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\player.cpp
 # End Source File
 # Begin Source File
@@ -734,6 +738,10 @@ SOURCE=..\objects.hpp
 # Begin Source File
 
 SOURCE=..\physics.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\physicsobject.hpp
 # End Source File
 # Begin Source File
 
