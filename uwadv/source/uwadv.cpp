@@ -276,7 +276,7 @@ void ua_game::init_core()
 
    // init audio
    audio = ua_audio_interface::get_audio_interface();
-   audio->init(settings);
+   audio->init(settings,filesmgr);
 
    // initializes underworld
    underworld.init(this);
