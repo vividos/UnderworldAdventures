@@ -127,15 +127,11 @@ public:
    //! saves object to savegame
    void save_object(ua_savegame &sg);
 
-   //! renders object to OpenGL
-   virtual void render(unsigned int x, unsigned int y,
-      ua_texture_manager &texmgr, ua_frustum &fr, ua_level &lev);
-
 protected:
    //! basic object info
    ua_object_info info;
 
-   //! object coordinates
+   //! object coordinates inside current tile
    double xpos,ypos;
 };
 
@@ -151,14 +147,14 @@ public:
 
    // master object list access
 
-   //! returns first object in a specific tile
-   bool get_first_tile_object(unsigned int xpos, unsigned int ypos, ua_object &obj);
-
-   //! returns next object in object chain
-   bool get_next_tile_object(ua_object &obj);
+   //! returns list pos of first object in element
+   Uint16 get_tile_list_start(unsigned int xpos, unsigned int ypos);
 
    //! returns an object at a specific list pos
    ua_object &get_object(Uint16 at){ return master_obj_list[at]; }
+
+   // todo: object insert, remove, etc.
+
 
    // loading / saving / importing
 
