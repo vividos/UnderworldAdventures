@@ -1,0 +1,8 @@
+#
+# Underworld Adventures home page
+# robots.txt file
+#
+User-agent: *
+Disallow: /shots/
+Disallow: /phorum/
+Disallow: /phpMyAdmin/
