@@ -4,12 +4,7 @@
 # $Id$
 #
 
-AUTOMAKE_OPTIONS = foreign
-
-# ugly hack to let the makefile know where configure.in etc. is
-top_srcdir = linux
-top_builddir = linux
-
+SUBDIRS = tools
 
 # compiler options
 CXXFLAGS = -I.. $(SDL_CFLAGS) -Wall
@@ -26,7 +21,16 @@ liblua_a_SOURCES = lua/src/lapi.c lua/src/lcode.c lua/src/ldebug.c \
 	lua/src/llex.c lua/src/lmem.c lua/src/lobject.c \
 	lua/src/lparser.c lua/src/lstate.c lua/src/lstring.c \
 	lua/src/ltable.c lua/src/ltests.c lua/src/ltm.c \
-	lua/src/lundump.c lua/src/lvm.c lua/src/lzio.c
+	lua/src/lundump.c lua/src/lvm.c lua/src/lzio.c \
+	lua/src/lapi.h lua/src/lcode.h lua/src/ldebug.h \
+	lua/src/ldo.h lua/src/lfunc.h lua/src/lgc.h \
+	lua/src/llex.h lua/src/llimits.h lua/src/lmem.h \
+	lua/src/lobject.h lua/src/lopcodes.h lua/src/lparser.h \
+	lua/src/lstate.h lua/src/lstring.h lua/src/ltable.h \
+	lua/src/ltm.h lua/src/lundump.h lua/src/lvm.h \
+	lua/src/lzio.h \
+	lua/include/lauxlib.h lua/include/lua.h \
+	lua/include/luadebug.h lua/include/lualib.h
 
 liblua_a_CFLAGS = -Ilua/include -Wall
 
@@ -38,7 +42,18 @@ libzziplib_a_SOURCES = resource/zziplib/SDL_rwops_zzip.c \
 	resource/zziplib/zzip-info.c \
 	resource/zziplib/zzip-io.c \
 	resource/zziplib/zzip-stat.c \
-	resource/zziplib/zzip-zip.c
+	resource/zziplib/zzip-zip.c \
+	resource/zziplib/SDL_rwops_zzip.h \
+	resource/zziplib/zzip-conf.h \
+	resource/zziplib/zzip-config.h \
+	resource/zziplib/zzip-file.h \
+	resource/zziplib/zzip-io.h \
+	resource/zziplib/zzip-msvc.h \
+	resource/zziplib/zzip-stdint.h \
+	resource/zziplib/zzip.h \
+	resource/zziplib/zzipformat.h \
+	resource/zziplib/zziplib.h
+
 
 libzziplib_a_CFLAGS = -Iresource/zziplib $(SDL_CFLAGS) -Wall
 
@@ -48,11 +63,12 @@ bin_PROGRAMS = uwadv
 uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	player.cpp quadtree.cpp texture.cpp underworld.cpp uwadv.cpp \
 	objects.cpp cutscene.cpp physics.cpp files.cpp keymap.cpp \
+	uwscript.cpp \
 	audio.hpp common.hpp core.hpp font.hpp gamestrings.hpp \
 	image.hpp inventory.hpp level.hpp player.hpp quadtree.hpp \
 	screen.hpp settings.hpp texture.hpp uatypes.hpp \
 	underworld.hpp uwadv.hpp objects.hpp cutscene.hpp physics.hpp \
-	files.hpp keymap.hpp \
+	files.hpp keymap.hpp uwscript.hpp uamath.hpp \
 	linux/main.cpp \
 	audio/audio.cpp audio/midi.cpp audio/xmidi.cpp \
 	audio/midi.hpp audio/xmidi.hpp \
@@ -74,14 +90,24 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	screens/ingame_orig.hpp screens/start_splash.hpp \
 	screens/start_menu.hpp screens/acknowledgements.hpp \
 	screens/conversation.hpp screens/create_character.hpp \
-	screens/map_view.hpp
+	screens/map_view.hpp screens/cutscene_view.hpp
 
 uwadv_LDADD = $(OPENGL_LIBS) $(SDL_LIBS) liblua.a libzziplib.a -lz
 
 uwadv_DEPENDENCIES = liblua.a libzziplib.a
 
 EXTRA_DIST = audio/midi_driver/win_midiout.cpp \
-	audio/midi_driver/win_midiout.h
+	audio/midi_driver/win_midiout.h \
+	linux/uwadv.spec.in \
+	linux/uwadv.cfg.in \
+	linux/ua-lowercase-all.pl
 
-SUBDIRS = tools
+uwadv.cfg: linux/uwadv.cfg.in
+	rm -f $@ $@.tmp $@.tmptmp
+	sed 's,@UW1PATH\@,@UW1PATH@,g' $< >$@.tmp
+	sed 's,@UADATAPATH\@,@UADATAPATH@,g' $@.tmp >$@.tmptmp
+	rm -f $@.tmp
+	mv $@.tmptmp $@
 
+cfgdir = $(datadir)/games/uwadv
+cfg_DATA = uwadv.cfg

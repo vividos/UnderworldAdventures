@@ -1,0 +1,57 @@
+#
+# Note that this is NOT a relocatable package
+#
+%define ver      @VERSION@
+%define rel      1
+%define name	 @PACKAGE@
+
+Summary: Underworld Adventures
+Name: %name
+Version: %ver
+Release: %rel
+Copyright: GPL
+Group: Amusements/Games
+Source: uwadv-%{ver}.tar.gz
+BuildRoot: /var/tmp/uwadv
+Obsoletes: uwadv
+Packager: Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+URL: http://uwadv.sourceforge.net
+
+%description
+Underworld Adventures is a project to recreate Ultima Underworld 1 on modern operating systems
+
+%changelog
+
+* Tue Aug 06 2002  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+
+- Created initial .spec file
+
+%prep
+%setup
+
+%build
+# Needed for snapshot releases.
+if [ ! -f configure ]; then
+  ./autogen.sh
+fi
+CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{_prefix} --bindir=%{_bindir} --datadir=%{_datadir} --sysconfdir=$RPM_BUILD_ROOT/etc
+
+if [ "$SMP" != "" ]; then
+  (make "MAKE=make -k -j $SMP"; exit 0)
+  make
+else
+  make
+fi
+
+%install
+rm -rf $RPM_BUILD_ROOT
+make prefix=$RPM_BUILD_ROOT%{_prefix} bindir=$RPM_BUILD_ROOT%{_bindir} datadir=$RPM_BUILD_ROOT%{_datadir} install
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%files
+%defattr(-, root, root)
+%doc ChangeLog docs/Authors.txt docs/README.uwadv.txt
+%{_bindir}/uwadv
+%{_datadir}/games/uwadv/uwadv.cfg

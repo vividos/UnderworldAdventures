@@ -6,11 +6,6 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-# ugly hack to let the makefile know where configure.in etc. is
-top_srcdir = ../linux
-top_builddir = ../linux
-
-
 # compiler options
 CXXFLAGS = -I.. $(SDL_CFLAGS)
 LDFLAGS = $(SDL_LIBS)

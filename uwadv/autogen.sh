@@ -43,9 +43,10 @@ rm -f config.h.in config.h
 rm -f depcomp compile
 rm -f aclocal.m4
 rm -f install-sh ltmain.sh missing mkinstalldirs
-rm -f uwadv.cfg
+rm -f uwadv.cfg uwadv.spec
 rm -f Makefile.in Makefile
-rm -f ../Makefile.in ../Makefile ../tools/Makefile.in ../tools/Makefile
+rm -f source/Makefile.in source/Makefile 
+rm -f source/tools/Makefile.in source/tools/Makefile
 # maybe change this last line into some fancy
 # 'find all Makefile.am and delete corresponding Makefile and Makefile.in'
 

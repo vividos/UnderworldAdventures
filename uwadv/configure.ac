@@ -6,7 +6,7 @@ dnl
 
 dnl initial stuff
 AC_PREREQ(2.53)
-AC_INIT(../uwadv.cpp)
+AC_INIT(source/uwadv.cpp)
 
 
 # version info
@@ -107,7 +107,7 @@ FMOD is available at http://www.fmod.org/]))
 
 dnl checking for uwadv.cfg entries
 
-AC_ARG_WITH(uw1, [  --with-uw1=DIR          directory where UW1 is installed ],UW1PATH=$with_uw1,UW1PATH=/usr/local/games/uw1/)
+AC_ARG_WITH(uw1, [  --with-uw1=DIR          directory where UW1 is installed ],UW1PATH=$with_uw1,UW1PATH=${datadir}/games/uw1)
 AC_SUBST(UW1PATH)
 
 UADATAPATH=${datadir}/games/uwadv
@@ -117,6 +117,6 @@ CPPFLAGS="$CPPFLAGS -DCONFIGDIR=\\\"${datadir}/games/uwadv/\\\""
 
 dnl produce output files
 AC_SUBST(OPENGL_LIBS)
-AC_CONFIG_FILES([Makefile ../Makefile ../tools/Makefile])
+AC_CONFIG_FILES([Makefile source/Makefile source/tools/Makefile uwadv.spec:source/linux/uwadv.spec.in])
 AC_OUTPUT
 
