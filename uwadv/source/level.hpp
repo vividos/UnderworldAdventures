@@ -128,10 +128,12 @@ public:
    void save_game(ua_savegame &sg);
 
    //! imports a level map
-   void import_map(FILE *fd);
+   void import_map(FILE *fd, Uint16 ceil_tex, Uint16 wall_textures[48],
+      Uint16 floor_textures[10]);
 
    //! imports texture usage info
-   void import_texinfo(FILE *fd);
+   void import_texinfo(FILE *fd, Uint16 wall_textures[48],
+      Uint16 floor_textures[10]);
 
 protected:
    //! renders the floor of a tile
@@ -161,7 +163,7 @@ private:
 
 protected:
    //! all levelmap tiles; 64x64 tiles assumed
-   std::vector<ua_levelmap_tile>tiles;
+   std::vector<ua_levelmap_tile> tiles;
 
    //! all objects in level
    ua_object_list allobjects;
@@ -169,13 +171,11 @@ protected:
    //! height scale in units per tile height
    double height_scale;
 
-   // texture usage tables
-   Uint16 wall_textures[48];
-   Uint16 floor_textures[10];
-   Uint16 door_textures[6];
+   //! numbers of all used stock textures
+   std::vector<Uint16> used_textures;
 
    //! number of ceiling stock texture
-   unsigned int ceiling_texnr;
+   Uint16 ceiling_texture;
 };
 
 #endif

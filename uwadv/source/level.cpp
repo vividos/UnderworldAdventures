@@ -29,6 +29,7 @@
 #include "common.hpp"
 #include "level.hpp"
 #include <string>
+#include <set>
 #include <cmath>
 
 
@@ -36,15 +37,13 @@
 
 void ua_level::prepare_textures(ua_texture_manager &texmgr)
 {
-   int tex;
-   for(tex=0;tex<48;tex++) texmgr.prepare(wall_textures[tex]);
-   for(tex=0;tex<10;tex++) texmgr.prepare(floor_textures[tex]);
+   // prepare all used textures
+   unsigned int max = used_textures.size();
+   for(unsigned int n=0; n<max; n++)
+      texmgr.prepare(used_textures[n]);
 
-   // prepare door textures
-
-   // ceiling texture, always #15
-   ceiling_texnr = ua_tex_stock_floor+15;
-   texmgr.prepare(ceiling_texnr);
+   // prepare ceiling texture
+   texmgr.prepare(ceiling_texture);
 }
 
 double ua_level::get_floor_height(double xpos, double ypos)
@@ -119,6 +118,8 @@ void ua_level::load_game(ua_savegame &sg)
    tiles.resize(64*64);
    unsigned int n=0;
 
+   std::set<Uint16> textures_used;
+
    for(n=0; n<64*64; n++)
    {
       ua_levelmap_tile &tile = tiles[n];
@@ -129,11 +130,22 @@ void ua_level::load_game(ua_savegame &sg)
       tile.texture_wall = sg.read16();
       tile.texture_floor = sg.read16();
 
+      textures_used.insert(tile.texture_wall);
+      textures_used.insert(tile.texture_floor);
    }
 
-   // read texture info
-   for(n=0; n<48; n++) wall_textures[n] = sg.read16();
-   for(n=0; n<10; n++) floor_textures[n] = sg.read16();
+   // add used textures to used_textures vector
+   std::set<Uint16>::iterator iter,stop;
+   iter = textures_used.begin();
+   stop = textures_used.end();
+
+   used_textures.clear();
+
+   for(; iter != stop; iter++)
+      used_textures.push_back(*iter);
+
+   // read ceiling texture
+   ceiling_texture = sg.read16();
 
    // read objects list
    allobjects.load_game(sg);
@@ -157,9 +169,8 @@ void ua_level::save_game(ua_savegame &sg)
       sg.write16(tile.texture_floor);
    }
 
-   // write texture info
-   for(n=0; n<48; n++) sg.write16(wall_textures[n]);
-   for(n=0; n<10; n++) sg.write16(floor_textures[n]);
+   // write ceiling texture
+   sg.write16(ceiling_texture);
 
    // write objects list
    allobjects.save_game(sg);
@@ -344,7 +355,7 @@ void ua_level::render_ceiling(unsigned int x, unsigned int y, ua_texture_manager
       return; // don't draw solid tiles
 
    // use ceiling texture
-   texmgr.use(ceiling_texnr);
+   texmgr.use(ceiling_texture);
 
    glColor3ub(192,192,192);
 

@@ -82,6 +82,9 @@ void ua_import_levelmaps(ua_settings &settings, const char *folder,
       throw ua_exception(text.c_str());
    }
 
+   Uint16 wall_textures[48];
+   Uint16 floor_textures[10];
+
    // uw_demo is treated specially
    if (settings.get_gametype() == ua_game_uw_demo)
    {
@@ -99,12 +102,12 @@ void ua_import_levelmaps(ua_settings &settings, const char *folder,
             text.append(mapfile);
             throw ua_exception(text.c_str());
          }
-         level.import_texinfo(fd2);
+         level.import_texinfo(fd2,wall_textures,floor_textures);
          fclose(fd2);
       }
 
       // import map
-      level.import_map(fd);
+      level.import_map(fd,ua_tex_stock_floor+9,wall_textures,floor_textures);
 
       // import objects
       fseek(fd,0,SEEK_SET);
@@ -130,11 +133,11 @@ void ua_import_levelmaps(ua_settings &settings, const char *folder,
 
       // load texture usage table
       fseek(fd,offsets[i+18],SEEK_SET);
-      level.import_texinfo(fd);
+      level.import_texinfo(fd,wall_textures,floor_textures);
 
       // load level map
       fseek(fd,offsets[i],SEEK_SET);
-      level.import_map(fd);
+      level.import_map(fd,ua_tex_stock_floor+15,wall_textures,floor_textures);
 
       // load object list
       fseek(fd,offsets[i],SEEK_SET);
@@ -167,7 +170,8 @@ void ua_underworld::import_savegame(ua_settings &settings,const char *folder,boo
 
 // ua_level methods
 
-void ua_level::import_map(FILE *fd)
+void ua_level::import_map(FILE *fd, Uint16 ceil_tex, Uint16 wall_textures[48],
+   Uint16 floor_textures[10])
 {
    // read in map info
 
@@ -191,18 +195,33 @@ void ua_level::import_map(FILE *fd)
       Uint8 wall_index = (tileword & 0x003F0000) >> 16; // 6 bit wide
       Uint8 floor_index = (tileword & 0x00003C00) >> 10; // 4 bit wide
 
-      if (wall_index>48) wall_index=0;
-      if (floor_index>10) floor_index=0;
+      if (wall_index>=48) wall_index=0;
+      if (floor_index>=10) floor_index=0;
 
       tiles[tile].texture_wall = wall_textures[wall_index];
       tiles[tile].texture_floor = floor_textures[floor_index];
    }
+
+   // ceiling texture
+   ceiling_texture = ceil_tex;
 }
 
-void ua_level::import_texinfo(FILE *fd)
+void ua_level::import_texinfo(FILE *fd, Uint16 wall_textures[48],
+   Uint16 floor_textures[10])
 {
+   used_textures.clear();
+
    Uint16 tex;
-   for(tex=0; tex<48; tex++) wall_textures[tex]  = fread16(fd)+ua_tex_stock_wall;
-   for(tex=0; tex<10; tex++) floor_textures[tex] = fread16(fd)+ua_tex_stock_floor;
-   for(tex=0; tex<6; tex++)  door_textures[tex]  = fread16(fd);
+   for(tex=0; tex<48; tex++)
+   {
+      wall_textures[tex]  = fread16(fd)+ua_tex_stock_wall;
+      used_textures.push_back(wall_textures[tex]);
+   }
+   for(tex=0; tex<10; tex++)
+   {
+      floor_textures[tex] = fread16(fd)+ua_tex_stock_floor;
+      used_textures.push_back(floor_textures[tex]);
+   }
+
+//   for(tex=0; tex<6; tex++)  door_textures[tex]  = fread16(fd);
 }
