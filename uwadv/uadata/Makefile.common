@@ -14,7 +14,8 @@ luaSCRIPTS = \
 	uw1/scripts/traps.lua \
 	uw1/scripts/triggers.lua \
 	uw1/scripts/dump.lua \
-	uw1/scripts/lookat.lua
+	uw1/scripts/lookat.lua \
+	uw1/scripts/critter.lua
 
 luaOBJECTS = $(luaSCRIPTS:.lua=.lob)
 

@@ -125,6 +125,11 @@ SOURCE=..\source\..\uadata\uw1\scripts\createchar.lua
 # End Source File
 # Begin Source File
 
+SOURCE=..\uadata\uw1\scripts\critter.lua
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
 SOURCE=..\source\..\uadata\uw1\scripts\cutscene.lua
 # PROP Exclude_From_Build 1
 # End Source File
