@@ -107,7 +107,8 @@ public:
       bool transparent=false);
 
    //! pastes whole given image to position
-   void paste_image(const ua_image& from_img, unsigned int destx,unsigned int desty);
+   void paste_image(const ua_image& from_img, unsigned int destx,
+      unsigned int desty, bool transparent=false);
 
    //! fills a specific rectangle with a color
    void fill_rect(unsigned int startx, unsigned int starty,
@@ -193,11 +194,11 @@ inline unsigned int ua_image::get_yres() const
    return yres;
 }
 
-inline void ua_image::paste_image(const ua_image& from_img, unsigned int destx,
-   unsigned int desty)
+inline void ua_image::paste_image(const ua_image& from_img,
+   unsigned int destx, unsigned int desty, bool transparent)
 {
    paste_rect(from_img, 0,0, from_img.get_xres(), from_img.get_yres(),
-      destx,desty, false);
+      destx,desty, transparent);
 }
 
 inline ua_palette256_ptr ua_image_manager::get_palette(
