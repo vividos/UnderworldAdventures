@@ -7,4 +7,4 @@ luaSCRIPTS = \
 	uw1/scripts/game.lua
 
 luaOBJECTS = $(luaSCRIPTS:.lua=.lob)
-uarFILES = $(luaOBJECTS) uw1/scripts/uwinit.txt
+uarFILES = $(luaOBJECTS) uw1/scripts/uwinit.txt uw1/audio/music.m3u
