@@ -46,36 +46,36 @@ void ua_level::prepare_textures(ua_texture_manager &texmgr)
    texmgr.prepare(ua_tex_stock_floor+15);
 }
 
-float ua_level::get_floor_height(float xpos, float ypos)
+double ua_level::get_floor_height(double xpos, double ypos)
 {
-   if (xpos<0.f || ypos<0.f || xpos>64.f || ypos>64.f)
-      return 0.f;
+   if (xpos<0.0 || ypos<0.0 || xpos>64.0 || ypos>64.0)
+      return 0.0;
 
-   float height = 0.f;
+   double height = 0.0;
 
-   ua_levelmap_tile &tile = tiles[Uint8(ypos)*64 + Uint8(xpos)];
+   ua_levelmap_tile &tile = tiles[static_cast<Uint8>(ypos)*64 + static_cast<Uint8>(xpos)];
 
    switch(tile.type)
    {
    case ua_tile_solid:
-      height = 0.f; // player shouldn't get there, though
+      height = 0.0; // player shouldn't get there, though
       break;
 
    case ua_tile_slope_n:
-      height = tile.floor*height_scale + 
-         float(tile.slope*height_scale)*fmod(ypos,1.0);
+      height = tile.floor*height_scale +
+         double(tile.slope*height_scale)*fmod(ypos,1.0);
       break;
    case ua_tile_slope_s:
       height = (tile.floor+tile.slope)*height_scale -
-         float(tile.slope*height_scale)*fmod(ypos,1.0);
+         double(tile.slope*height_scale)*fmod(ypos,1.0);
       break;
    case ua_tile_slope_e:
       height = tile.floor*height_scale +
-         float(tile.slope*height_scale)*fmod(xpos,1.0);
+         double(tile.slope*height_scale)*fmod(xpos,1.0);
       break;
    case ua_tile_slope_w:
       height = (tile.floor+tile.slope)*height_scale -
-         float(tile.slope*height_scale)*fmod(xpos,1.0);
+         double(tile.slope*height_scale)*fmod(xpos,1.0);
       break;
 
    case ua_tile_open:
@@ -121,6 +121,13 @@ void ua_level::render(ua_texture_manager &texmgr,ua_frustum &fr)
       const ua_quad_tile_coord &qtc = tilelist[i];
       render_walls(qtc.first,qtc.second,texmgr);
    }
+
+   // draw all objects in tile
+   for(i=0;i<max;i++)
+   {
+      const ua_quad_tile_coord &qtc = tilelist[i];
+      render_objs(qtc.first,qtc.second,texmgr,fr);
+   }
 }
 
 void ua_level::render(ua_texture_manager &texmgr)
@@ -135,9 +142,13 @@ void ua_level::render(ua_texture_manager &texmgr)
 
    for(y=0; y<64;y++) for(x=0; x<64;x++)
       render_walls(x,y,texmgr);
+
+/* // TODO construct proper frustum for viewing in mapdisp
+   for(y=0; y<64;y++) for(x=0; x<64;x++)
+      render_objs(x,y,texmgr);*/
 }
 
-void ua_level::render_floor(int x, int y, ua_texture_manager &texmgr)
+void ua_level::render_floor(unsigned int x, unsigned int y, ua_texture_manager &texmgr)
 {
    ua_levelmap_tile &tile = tiles[y*64 + x];
    if (tile.type == ua_tile_solid)
@@ -152,84 +163,84 @@ void ua_level::render_floor(int x, int y, ua_texture_manager &texmgr)
    {
    case ua_tile_open:
       glBegin(GL_QUADS);
-      glTexCoord2d(0.0,0.0); glVertex3f(x,y,tile.floor*height_scale);
-      glTexCoord2d(1.0,0.0); glVertex3f(x+1,y,tile.floor*height_scale);
-      glTexCoord2d(1.0,1.0); glVertex3f(x+1,y+1,tile.floor*height_scale);
-      glTexCoord2d(0.0,1.0); glVertex3f(x,y+1,tile.floor*height_scale);
+      glTexCoord2d(0.0,0.0); glVertex3d(x,y,tile.floor*height_scale);
+      glTexCoord2d(1.0,0.0); glVertex3d(x+1,y,tile.floor*height_scale);
+      glTexCoord2d(1.0,1.0); glVertex3d(x+1,y+1,tile.floor*height_scale);
+      glTexCoord2d(0.0,1.0); glVertex3d(x,y+1,tile.floor*height_scale);
       glEnd();
       break;
 
    case ua_tile_diagonal_se:
       glBegin(GL_TRIANGLES);
-      glTexCoord2d(0.0,0.0); glVertex3f(x,y,tile.floor*height_scale);
-      glTexCoord2d(1.0,0.0); glVertex3f(x+1,y,tile.floor*height_scale);
-      glTexCoord2d(1.0,1.0); glVertex3f(x+1,y+1,tile.floor*height_scale);
+      glTexCoord2d(0.0,0.0); glVertex3d(x,y,tile.floor*height_scale);
+      glTexCoord2d(1.0,0.0); glVertex3d(x+1,y,tile.floor*height_scale);
+      glTexCoord2d(1.0,1.0); glVertex3d(x+1,y+1,tile.floor*height_scale);
       glEnd();
       break;
 
    case ua_tile_diagonal_sw:
       glBegin(GL_TRIANGLES);
-      glTexCoord2d(0.0,0.0); glVertex3f(x,y,tile.floor*height_scale);
-      glTexCoord2d(1.0,0.0); glVertex3f(x+1,y,tile.floor*height_scale);
-      glTexCoord2d(0.0,1.0); glVertex3f(x,y+1,tile.floor*height_scale);
+      glTexCoord2d(0.0,0.0); glVertex3d(x,y,tile.floor*height_scale);
+      glTexCoord2d(1.0,0.0); glVertex3d(x+1,y,tile.floor*height_scale);
+      glTexCoord2d(0.0,1.0); glVertex3d(x,y+1,tile.floor*height_scale);
       glEnd();
       break;
 
    case ua_tile_diagonal_nw:
       glBegin(GL_TRIANGLES);
-      glTexCoord2d(0.0,0.0); glVertex3f(x,y,tile.floor*height_scale);
-      glTexCoord2d(1.0,1.0); glVertex3f(x+1,y+1,tile.floor*height_scale);
-      glTexCoord2d(0.0,1.0); glVertex3f(x,y+1,tile.floor*height_scale);
+      glTexCoord2d(0.0,0.0); glVertex3d(x,y,tile.floor*height_scale);
+      glTexCoord2d(1.0,1.0); glVertex3d(x+1,y+1,tile.floor*height_scale);
+      glTexCoord2d(0.0,1.0); glVertex3d(x,y+1,tile.floor*height_scale);
       glEnd();
       break;
 
    case ua_tile_diagonal_ne:
       glBegin(GL_TRIANGLES);
-      glTexCoord2d(0.0,1.0); glVertex3f(x,y+1,tile.floor*height_scale);
-      glTexCoord2d(1.0,0.0); glVertex3f(x+1,y,tile.floor*height_scale);
-      glTexCoord2d(1.0,1.0); glVertex3f(x+1,y+1,tile.floor*height_scale);
+      glTexCoord2d(0.0,1.0); glVertex3d(x,y+1,tile.floor*height_scale);
+      glTexCoord2d(1.0,0.0); glVertex3d(x+1,y,tile.floor*height_scale);
+      glTexCoord2d(1.0,1.0); glVertex3d(x+1,y+1,tile.floor*height_scale);
       glEnd();
       break;
 
    case ua_tile_slope_n:
       glBegin(GL_QUADS);
-      glTexCoord2d(0.0,0.0); glVertex3f(x,y,tile.floor*height_scale);
-      glTexCoord2d(1.0,0.0); glVertex3f(x+1,y,tile.floor*height_scale);
-      glTexCoord2d(1.0,1.0); glVertex3f(x+1,y+1,(tile.floor+tile.slope)*height_scale);
-      glTexCoord2d(0.0,1.0); glVertex3f(x,y+1,(tile.floor+tile.slope)*height_scale);
+      glTexCoord2d(0.0,0.0); glVertex3d(x,y,tile.floor*height_scale);
+      glTexCoord2d(1.0,0.0); glVertex3d(x+1,y,tile.floor*height_scale);
+      glTexCoord2d(1.0,1.0); glVertex3d(x+1,y+1,(tile.floor+tile.slope)*height_scale);
+      glTexCoord2d(0.0,1.0); glVertex3d(x,y+1,(tile.floor+tile.slope)*height_scale);
       glEnd();
       break;
 
    case ua_tile_slope_s:
       glBegin(GL_QUADS);
-      glTexCoord2d(0.0,0.0); glVertex3f(x,y,(tile.floor+tile.slope)*height_scale);
-      glTexCoord2d(1.0,0.0); glVertex3f(x+1,y,(tile.floor+tile.slope)*height_scale);
-      glTexCoord2d(1.0,1.0); glVertex3f(x+1,y+1,tile.floor*height_scale);
-      glTexCoord2d(0.0,1.0); glVertex3f(x,y+1,tile.floor*height_scale);
+      glTexCoord2d(0.0,0.0); glVertex3d(x,y,(tile.floor+tile.slope)*height_scale);
+      glTexCoord2d(1.0,0.0); glVertex3d(x+1,y,(tile.floor+tile.slope)*height_scale);
+      glTexCoord2d(1.0,1.0); glVertex3d(x+1,y+1,tile.floor*height_scale);
+      glTexCoord2d(0.0,1.0); glVertex3d(x,y+1,tile.floor*height_scale);
       glEnd();
       break;
 
    case ua_tile_slope_e:
       glBegin(GL_QUADS);
-      glTexCoord2d(0.0,0.0); glVertex3f(x,y,tile.floor*height_scale);
-      glTexCoord2d(1.0,0.0); glVertex3f(x+1,y,(tile.floor+tile.slope)*height_scale);
-      glTexCoord2d(1.0,1.0); glVertex3f(x+1,y+1,(tile.floor+tile.slope)*height_scale);
-      glTexCoord2d(0.0,1.0); glVertex3f(x,y+1,tile.floor*height_scale);
+      glTexCoord2d(0.0,0.0); glVertex3d(x,y,tile.floor*height_scale);
+      glTexCoord2d(1.0,0.0); glVertex3d(x+1,y,(tile.floor+tile.slope)*height_scale);
+      glTexCoord2d(1.0,1.0); glVertex3d(x+1,y+1,(tile.floor+tile.slope)*height_scale);
+      glTexCoord2d(0.0,1.0); glVertex3d(x,y+1,tile.floor*height_scale);
       glEnd();
       break;
 
    case ua_tile_slope_w:
       glBegin(GL_QUADS);
-      glTexCoord2d(0.0,0.0); glVertex3f(x,y,(tile.floor+tile.slope)*height_scale);
-      glTexCoord2d(1.0,0.0); glVertex3f(x+1,y,tile.floor*height_scale);
-      glTexCoord2d(1.0,1.0); glVertex3f(x+1,y+1,tile.floor*height_scale);
-      glTexCoord2d(0.0,1.0); glVertex3f(x,y+1,(tile.floor+tile.slope)*height_scale);
+      glTexCoord2d(0.0,0.0); glVertex3d(x,y,(tile.floor+tile.slope)*height_scale);
+      glTexCoord2d(1.0,0.0); glVertex3d(x+1,y,tile.floor*height_scale);
+      glTexCoord2d(1.0,1.0); glVertex3d(x+1,y+1,tile.floor*height_scale);
+      glTexCoord2d(0.0,1.0); glVertex3d(x,y+1,(tile.floor+tile.slope)*height_scale);
       glEnd();
       break;
    }
 }
 
-void ua_level::render_ceiling(int x, int y, ua_texture_manager &texmgr)
+void ua_level::render_ceiling(unsigned int x, unsigned int y, ua_texture_manager &texmgr)
 {
    ua_levelmap_tile &tile = tiles[y*64 + x];
    if (tile.type == ua_tile_solid)
@@ -241,14 +252,14 @@ void ua_level::render_ceiling(int x, int y, ua_texture_manager &texmgr)
 
    // draw ceiling tile; for simplicity, we only draw a square
    glBegin(GL_QUADS);
-   glTexCoord2d(0.0,0.0); glVertex3f(x,y,tile.ceiling*height_scale);
-   glTexCoord2d(1.0,0.0); glVertex3f(x,y+1,tile.ceiling*height_scale);
-   glTexCoord2d(1.0,1.0); glVertex3f(x+1,y+1,tile.ceiling*height_scale);
-   glTexCoord2d(0.0,1.0); glVertex3f(x+1,y,tile.ceiling*height_scale);
+   glTexCoord2d(0.0,0.0); glVertex3d(x,y,tile.ceiling*height_scale);
+   glTexCoord2d(1.0,0.0); glVertex3d(x,y+1,tile.ceiling*height_scale);
+   glTexCoord2d(1.0,1.0); glVertex3d(x+1,y+1,tile.ceiling*height_scale);
+   glTexCoord2d(0.0,1.0); glVertex3d(x+1,y,tile.ceiling*height_scale);
    glEnd();
 }
 
-void ua_level::render_walls(int x, int y, ua_texture_manager &texmgr)
+void ua_level::render_walls(unsigned int x, unsigned int y, ua_texture_manager &texmgr)
 {
    ua_levelmap_tile &tile = tiles[y*64 + x];
    if (tile.type == ua_tile_solid)
@@ -363,6 +374,18 @@ void ua_level::render_walls(int x, int y, ua_texture_manager &texmgr)
    }
 }
 
+void ua_level::render_objs(unsigned int x, unsigned int y,
+   ua_texture_manager &texmgr, ua_frustum &fr)
+{
+   std::vector<ua_object*> objlist(allobjects.get_object_list(x,y));
+   int max=objlist.size();
+   for(int i=0; i<max; i++)
+   {
+      ua_object *obj=objlist[i];
+      obj->render(x,y,texmgr,fr,*this);
+   }
+}
+
 void ua_level::get_tile_coords(
    ua_levelmap_wall_render_side side, ua_levelmap_tiletype type,
    Uint8 basex, Uint8 basey, Uint8 basez, Uint8 slope, Uint8 ceiling,
@@ -446,17 +469,17 @@ void ua_level::render_wall(ua_levelmap_wall_render_side side,
    // draw with proper winding
    if (side == ua_left || side == ua_front)
    {
-      glTexCoord2d(1.0,v1); glVertex3f(x1,y1,z1*height_scale);
-      glTexCoord2d(0.0,v2); glVertex3f(x2,y2,z2*height_scale);
-      glTexCoord2d(0.0,v3); glVertex3f(x2,y2,nz2*height_scale);
-      glTexCoord2d(1.0,v4); glVertex3f(x1,y1,nz1*height_scale);
+      glTexCoord2d(1.0,v1); glVertex3d(x1,y1,z1*height_scale);
+      glTexCoord2d(0.0,v2); glVertex3d(x2,y2,z2*height_scale);
+      glTexCoord2d(0.0,v3); glVertex3d(x2,y2,nz2*height_scale);
+      glTexCoord2d(1.0,v4); glVertex3d(x1,y1,nz1*height_scale);
    }
    else
    {
-      glTexCoord2d(1.0,v1); glVertex3f(x1,y1,z1*height_scale);
-      glTexCoord2d(1.0,v4); glVertex3f(x1,y1,nz1*height_scale);
-      glTexCoord2d(0.0,v3); glVertex3f(x2,y2,nz2*height_scale);
-      glTexCoord2d(0.0,v2); glVertex3f(x2,y2,z2*height_scale);
+      glTexCoord2d(1.0,v1); glVertex3d(x1,y1,z1*height_scale);
+      glTexCoord2d(1.0,v4); glVertex3d(x1,y1,nz1*height_scale);
+      glTexCoord2d(0.0,v3); glVertex3d(x2,y2,nz2*height_scale);
+      glTexCoord2d(0.0,v2); glVertex3d(x2,y2,z2*height_scale);
    }
 
    glEnd();

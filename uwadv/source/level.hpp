@@ -33,6 +33,7 @@
 #include "settings.hpp"
 #include "texture.hpp"
 #include "quadtree.hpp"
+#include "objects.hpp"
 
 
 // enums
@@ -63,20 +64,29 @@ typedef enum
 // structs
 
 //! levelmap tile description
-typedef struct
+struct ua_levelmap_tile
 {
+   //! ctor
+   ua_levelmap_tile():type(ua_tile_solid){}
+
+   //! tile type
    ua_levelmap_tiletype type;
 
+   //! floor height
    Uint16 floor;
+
+   //! ceiling height
    Uint16 ceiling;
+
+   //! slope from this tile to next
    Uint8 slope;
 
+   //! stock texture id for wall
    Uint16 texture_wall;
+
+   //! stock texture id for floor
    Uint16 texture_floor;
-
-   Uint16 index;
-
-} ua_levelmap_tile;
+};
 
 
 // classes
@@ -86,9 +96,9 @@ class ua_level
 {
 public:
    //! ctor
-   ua_level():tiles(NULL){ height_scale=0.125f; }
+   ua_level(){ height_scale=0.125; }
    //! dtor
-   ~ua_level(){ delete[] tiles; tiles=NULL; };
+   ~ua_level(){}
 
    //! loads the map of a specific level
    void load(ua_settings &settings, unsigned int level);
@@ -103,17 +113,24 @@ public:
    void render(ua_texture_manager &texmgr);
 
    // returns floor height on specific position
-   float get_floor_height(float xpos, float ypos);
+   double get_floor_height(double xpos, double ypos);
+
+   //! returns map object list ref
+   ua_object_list &get_mapobjects(){ return allobjects; }
 
 protected:
    //! renders the floor of a tile
-   void render_floor(int x, int y, ua_texture_manager &texmgr);
+   void render_floor(unsigned int x, unsigned int y, ua_texture_manager &texmgr);
 
    //! renders the ceiling of a tile
-   void render_ceiling(int x, int y, ua_texture_manager &texmgr);
+   void render_ceiling(unsigned int x, unsigned int y, ua_texture_manager &texmgr);
 
    //! renders the walls of a tile
-   void render_walls(int x, int y, ua_texture_manager &texmgr);
+   void render_walls(unsigned int x, unsigned int y, ua_texture_manager &texmgr);
+
+   //! renders the objects of a tile
+   void render_objs(unsigned int x, unsigned int y,
+      ua_texture_manager &texmgr, ua_frustum &fr);
 
 private:
    //! retrieves tile coordinates
@@ -129,10 +146,13 @@ private:
 
 protected:
    //! all levelmap tiles; 64x64 tiles assumed
-   ua_levelmap_tile *tiles;
+   std::vector<ua_levelmap_tile>tiles;
+
+   //! all objects in level
+   ua_object_list allobjects;
 
    //! height scale in units per tile height
-   float height_scale;
+   double height_scale;
 
    // texture usage tables
    Uint16 wall_textures[48];
