@@ -29,7 +29,13 @@ case "$host_os" in
    *)
       OPENGL_LIBS="-lGL -lGLU"
       ;;
+
 esac
+
+# this is technically OS-specific, but for now all OS-es that use configure
+# do have a home-dir
+
+AC_DEFINE(HAVE_HOME, 1, "Users have home directories on this OS")
 
 
 dnl find and test the compiler
@@ -105,6 +111,6 @@ AC_SUBST(UADATAPATH)
 AC_SUBST(OPENGL_LIBS)
 
 dnl produce output files
-AC_CONFIG_FILES([../Makefile ../tools/Makefile Makefile uwadv.cfg])
+AC_CONFIG_FILES([Makefile ../Makefile ../tools/Makefile uwadv.cfg])
 AC_OUTPUT
 

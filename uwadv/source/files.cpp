@@ -41,7 +41,70 @@ ua_files_manager::ua_files_manager()
 
 void ua_files_manager::init(ua_settings &settings)
 {
+   init_cfgfiles_list();
+
    uadata_path = settings.uadata_path;
+}
+
+void ua_files_manager::init_cfgfiles_list()
+{
+   cfgfiles_list.clear();
+
+
+#ifdef GLOBAL_CONFIG_FILE
+
+   std::string globalcfgfile = GLOBAL_CONFIG_FILE;
+
+   cfgfiles_list.push_back(globalcfgfile);
+
+#endif
+
+
+#ifdef HAVE_HOME
+
+   std::string homecfgfile;
+
+   const char *homedir = getenv("HOME");
+   if(homedir)
+   {
+      // User has a home directory
+      homecfgfile = homedir;
+
+#ifndef BEOS
+      homecfgfile += "/.";
+#else
+      homecfgfile += "/config/settings/";
+#endif
+
+      homecfgfile += "uwadv.cfg";
+   }
+   else
+   {
+      homecfgfile = "uwadv.cfg";
+   }
+
+   cfgfiles_list.push_back(homecfgfile);
+
+#else
+
+   // no home dir? get file from local directory
+
+   cfgfiles_list.push_back("uwadv.cfg");
+
+#endif
+
+
+#if 1
+   // some debugging info
+
+   std::cout << "Config files:" << std::endl;
+   std::vector<std::string>::iterator iter;
+   for (iter = cfgfiles_list.begin();
+        iter != cfgfiles_list.end();
+        ++iter)
+      std::cout << *iter << std::endl;
+#endif
+
 }
 
 SDL_RWops *ua_files_manager::get_uadata_file(const char *relpath)

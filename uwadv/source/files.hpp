@@ -33,6 +33,7 @@
 #include "settings.hpp"
 #include "SDL_rwops.h"
 #include <string>
+#include <vector>
 
 
 // classes
@@ -54,7 +55,7 @@ public:
    bool savegames_avail();
 
    //! returns a list of all configuration files to load
-   std::vector<std::string> &get_cfgfiles_list(){ return cfgfiles_list; }
+   std::vector<std::string> &get_cfgfiles_list() { return cfgfiles_list; }
 
 protected:
    //! path to "uadata" dir
@@ -62,6 +63,9 @@ protected:
 
    //! list of all config files to load
    std::vector<std::string> cfgfiles_list;
+
+   //! initialize list of config files
+   void init_cfgfiles_list();
 };
 
 #endif
