@@ -99,6 +99,16 @@ struct ua_triangle3d_textured: public ua_triangle3d
    //! u/v texture coordinates
    double tex_u[3];
    double tex_v[3];
+
+   void set(unsigned int point, double x, double y, double z, double u, double v)
+   {
+      points[point].set(x,y,z); tex_u[point] = u; tex_v[point] = v;
+   }
+
+   bool operator<(const ua_triangle3d_textured &tri)
+   {
+      return texnum>tri.texnum;
+   }
 };
 
 

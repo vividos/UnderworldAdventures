@@ -30,7 +30,11 @@
 #include "level.hpp"
 #include <string>
 #include <set>
+#include <algorithm>
 #include <cmath>
+
+
+#undef HAVE_ALTERNATE_RENDERER
 
 
 // ua_level methods
@@ -61,6 +65,7 @@ double ua_level::get_floor_height(double xpos, double ypos)
       height = tile.ceiling*height_scale; // player shouldn't get there, though
       break;
 
+      // sloped tiles
    case ua_tile_slope_n:
       height = tile.floor*height_scale +
          double(tile.slope*height_scale)*fmod(ypos,1.0);
@@ -105,15 +110,327 @@ double ua_level::get_floor_height(double xpos, double ypos)
    return height;
 }
 
-ua_levelmap_tile &ua_level::get_tile(unsigned int xpos, unsigned int ypos)
+ua_levelmap_tile& ua_level::get_tile(unsigned int xpos, unsigned int ypos)
 {
    xpos%=64; ypos%=64;
    return tiles[ypos*64 + xpos];
 }
 
-void ua_level::get_tile_triangles(unsigned int xpos, unsigned int ypos,
-   std::vector<ua_triangle3d_textured> &alltriangles)
+void add_wall(ua_triangle3d_textured& tri1, ua_triangle3d_textured& tri2,
+   ua_levelmap_wall_render_side side,
+   double x1, double y1, double z1,
+   double x2, double y2, double z2,
+   double nz1, double nz2, double ceiling)
 {
+   // calculate texture coordinates
+   double v1,v2,v3,v4;
+   v1 = ceiling-z1; // ceiling is the "base" for textures
+   v2 = ceiling-z2;
+   v3 = ceiling-nz2;
+   v4 = ceiling-nz1;
+
+   // add triangles with proper winding
+   if (side == ua_left || side == ua_front)
+   {
+      tri1.set(0,x1,y1,z1, 0.0,v1);
+      tri1.set(1,x2,y2,z2, 1.0,v2);
+      tri1.set(2,x2,y2,nz2, 1.0,v3);
+
+      tri2.set(0,x1,y1,z1, 0.0,v1);
+      tri2.set(1,x2,y2,nz2, 1.0,v3);
+      tri2.set(2,x1,y1,nz1, 0.0,v4);
+   }
+   else
+   {
+      tri1.set(0,x1,y1,z1, 1.0,v1);
+      tri1.set(1,x1,y1,nz1, 1.0,v4);
+      tri1.set(2,x2,y2,nz2, 0.0,v3);
+
+      tri2.set(0,x1,y1,z1, 1.0,v1);
+      tri2.set(1,x2,y2,nz2, 0.0,v3);
+      tri2.set(2,x2,y2,z2, 0.0,v2);
+   }
+}
+
+
+void ua_level::get_tile_triangles(unsigned int xpos, unsigned int ypos,
+   std::vector<ua_triangle3d_textured>& alltriangles)
+{
+   ua_levelmap_tile& tile = get_tile(xpos,ypos);
+
+   if (tile.type == ua_tile_solid)
+      return; // no triangles to generate
+
+   double x = xpos, y = ypos;
+   double ceil_height = tile.ceiling*height_scale;
+   double floor_height = tile.floor*height_scale;
+
+   // tile walls
+   {
+      Uint16 walltex = tile.texture_wall;
+
+      // diagonal walls
+      {
+         bool diag_used = true;
+         ua_triangle3d_textured diag_tri1,diag_tri2;
+
+         diag_tri1.texnum = diag_tri2.texnum = walltex;
+
+         switch(tile.type)
+         {
+         case ua_tile_diagonal_se:
+            add_wall(diag_tri1, diag_tri2,
+               ua_left,x,y,floor_height,x+1,y+1,floor_height,
+               ceil_height,ceil_height,ceil_height);
+            break;
+
+         case ua_tile_diagonal_sw:
+            add_wall(diag_tri1, diag_tri2,
+               ua_left,x,y+1,floor_height,x+1,y,floor_height,
+               ceil_height,ceil_height,ceil_height);
+            break;
+
+         case ua_tile_diagonal_nw:
+            add_wall(diag_tri1, diag_tri2,
+               ua_left,x+1,y+1,floor_height,x,y,floor_height,
+               ceil_height,ceil_height,ceil_height);
+            break;
+
+         case ua_tile_diagonal_ne:
+            add_wall(diag_tri1, diag_tri2,
+               ua_left,x+1,y,floor_height,x,y+1,floor_height,
+               ceil_height,ceil_height,ceil_height);
+            break;
+
+         default:
+            diag_used = false;
+         }
+
+         if (diag_used)
+         {
+            alltriangles.push_back(diag_tri1);
+            alltriangles.push_back(diag_tri2);
+         }
+      }
+
+      // draw every wall side
+      for(unsigned int side=ua_left; side<=ua_back; side++)
+      {
+         // ignore some walls for diagonal wall tiles
+         if ((tile.type==ua_tile_diagonal_se && (side==ua_left || side==ua_front)) ||
+             (tile.type==ua_tile_diagonal_sw && (side==ua_right || side==ua_front)) ||
+             (tile.type==ua_tile_diagonal_nw && (side==ua_right || side==ua_back)) ||
+             (tile.type==ua_tile_diagonal_ne && (side==ua_left || side==ua_back)) )
+            continue;
+
+         Uint16 x1, y1, z1, x2, y2, z2;
+
+         // get current tile coordinates
+         get_tile_coords((ua_levelmap_wall_render_side)side,tile.type,
+            x,y,tile.floor,tile.slope,tile.ceiling,
+            x1,y1,z1, x2,y2,z2);
+
+         // get adjacent tile coordinates
+         Uint16 nx, ny, nz1, nz2;
+         switch(side)
+         {
+         case ua_left:  nx=x-1; ny=y; break;
+         case ua_right: nx=x+1; ny=y; break;
+         case ua_front: ny=y+1; nx=x; break;
+         case ua_back:  ny=y-1; nx=x; break;
+         }
+
+         if (nx<64 && ny<64)
+         {
+            // tile inside map
+
+            ua_levelmap_tile &ntile = tiles[ny*64 + nx];
+
+            if (ntile.type == ua_tile_solid)
+            {
+               // wall goes up to the ceiling
+               nz1 = nz2 = ntile.ceiling;
+            }
+            else
+            {
+               // get z coordinates for the adjacent tile
+               ua_levelmap_wall_render_side adjside;
+               switch(side)
+               {
+               case ua_left: adjside=ua_right; break;
+               case ua_right: adjside=ua_left; break;
+               case ua_front: adjside=ua_back; break;
+               default: adjside=ua_front; break;
+               }
+
+               Uint16 dummy=0;
+               get_tile_coords(adjside,ntile.type,nx,ny,
+                  ntile.floor,ntile.slope,ntile.ceiling,
+                  dummy,dummy,nz1, dummy,dummy,nz2);
+
+               // if the wall to the adjacent tile goes up (e.g. a stair),
+               // we draw that wall. if it goes down, the adjacent tile has to
+               // draw that wall. so we only draw walls that go up to another
+               // tile or the ceiling.
+
+               if (nz1 == nz2 && nz2 == ntile.ceiling)
+               {
+                  // get_tile_coords() returns this, when the adjacent wall is a
+                  // diagonal wall. we assume the diagonal tile has the same
+                  // height as our current tile to render.
+
+                  nz1 = nz2 = tile.ceiling;
+               }
+
+               // determine if we should draw the wall
+               if (nz1 < z1 || nz2 < z2)
+                  continue;
+            }
+         }
+         else
+         {
+            // tile outside map
+            // seems to never happen, but only to be at the safe side
+            nz1 = nz2 = tile.ceiling;
+         }
+
+         // special case: no wall to draw
+         if (z1 == nz1 && z2 == nz2)
+            continue;
+
+         ua_triangle3d_textured tri1,tri2;
+         tri1.texnum = tri2.texnum = walltex;
+
+         // now that we have all info, draw the tile wall
+//         render_wall((ua_levelmap_wall_render_side)side,x1,y1,z1,x2,y2,z2,nz1,nz2,tile.ceiling);
+         add_wall(tri1,tri2,
+            (ua_levelmap_wall_render_side)side,
+            x1,y1,z1*height_scale,
+            x2,y2,z2*height_scale,
+            nz1*height_scale,nz2*height_scale,ceil_height);
+
+         alltriangles.push_back(tri1);
+         alltriangles.push_back(tri2);
+
+      } // end for
+   }
+
+   // tile floor / ceiling
+   {
+      double floor_slope_height = (tile.floor+tile.slope)*height_scale;
+
+      ua_triangle3d_textured floor_tri1, floor_tri2;
+      ua_triangle3d_textured ceil_tri1, ceil_tri2;
+      bool tri2_used = true;
+
+      // set texnums
+      ceil_tri1.texnum = ceil_tri2.texnum = ceiling_texture;
+      floor_tri1.texnum = floor_tri2.texnum = tile.texture_floor;
+
+      // common ceiling quad
+      ceil_tri1.set(0,x,y,ceil_height, 0.0,0.0);
+      ceil_tri1.set(1,x+1,y+1,ceil_height, 1.0,1.0);
+      ceil_tri1.set(2,x+1,y,ceil_height, 1.0,0.0);
+      ceil_tri2.set(0,x,y,ceil_height, 0.0,0.0);
+      ceil_tri2.set(1,x,y+1,ceil_height, 0.0,1.0);
+      ceil_tri2.set(2,x+1,y+1,ceil_height, 1.0,1.0);
+
+      switch(tile.type)
+      {
+      case ua_tile_open:
+         floor_tri1.set(0,x,y,floor_height, 0.0,0.0);
+         floor_tri1.set(1,x+1,y,floor_height, 1.0,0.0);
+         floor_tri1.set(2,x+1,y+1,floor_height, 1.0,1.0);
+         floor_tri2.set(0,x,y,floor_height, 0.0,0.0);
+         floor_tri2.set(1,x+1,y+1,floor_height, 1.0,1.0);
+         floor_tri2.set(2,x,y+1,floor_height, 0.0,1.0);
+         break;
+
+      case ua_tile_diagonal_se:
+         floor_tri1.set(0,x,y,floor_height, 0.0,0.0);
+         floor_tri1.set(1,x+1,y,floor_height, 1.0,0.0);
+         floor_tri1.set(2,x+1,y+1,floor_height, 1.0,1.0);
+         tri2_used = false;
+         break;
+
+      case ua_tile_diagonal_sw:
+         floor_tri1.set(0,x,y,floor_height, 0.0,0.0);
+         floor_tri1.set(1,x+1,y,floor_height, 1.0,0.0);
+         floor_tri1.set(2,x,y+1,floor_height, 0.0,1.0);
+
+         ceil_tri1.set(0,x,y,ceil_height, 0.0,0.0);
+         ceil_tri1.set(1,x,y+1,ceil_height, 0.0,1.0);
+         ceil_tri1.set(2,x+1,y,ceil_height, 1.0,0.0);
+         tri2_used = false;
+         break;
+
+      case ua_tile_diagonal_nw:
+         floor_tri1.set(0,x,y,floor_height, 0.0,0.0);
+         floor_tri1.set(1,x+1,y+1,floor_height, 1.0,1.0);
+         floor_tri1.set(2,x,y+1,floor_height, 0.0,1.0);
+         ceil_tri1 = ceil_tri2;
+         tri2_used = false;
+         break;
+
+      case ua_tile_diagonal_ne:
+         floor_tri1.set(0,x,y+1,floor_height, 0.0,1.0);
+         floor_tri1.set(1,x+1,y,floor_height, 1.0,0.0);
+         floor_tri1.set(2,x+1,y+1,floor_height, 1.0,1.0);
+
+         ceil_tri1.set(0,x,y+1,ceil_height, 0.0,1.0);
+         ceil_tri1.set(1,x+1,y+1,ceil_height, 1.0,1.0);
+         ceil_tri1.set(2,x+1,y,ceil_height, 1.0,0.0);
+
+         tri2_used = false;
+         break;
+
+      case ua_tile_slope_n:
+         floor_tri1.set(0,x,y,floor_height, 0.0,0.0);
+         floor_tri1.set(1,x+1,y,floor_height, 1.0,0.0);
+         floor_tri1.set(2,x+1,y+1,floor_slope_height, 1.0,1.0);
+         floor_tri2.set(0,x,y,floor_height, 0.0,0.0);
+         floor_tri2.set(1,x+1,y+1,floor_slope_height, 1.0,1.0);
+         floor_tri2.set(2,x,y+1,floor_slope_height, 0.0,1.0);
+         break;
+
+      case ua_tile_slope_s:
+         floor_tri1.set(0,x,y,floor_slope_height, 0.0,0.0);
+         floor_tri1.set(1,x+1,y,floor_slope_height, 1.0,0.0);
+         floor_tri1.set(2,x+1,y+1,floor_height, 1.0,1.0);
+         floor_tri2.set(0,x,y,floor_slope_height, 0.0,0.0);
+         floor_tri2.set(1,x+1,y+1,floor_height, 1.0,1.0);
+         floor_tri2.set(2,x,y+1,floor_height, 0.0,1.0);
+         break;
+
+      case ua_tile_slope_e:
+         floor_tri1.set(0,x,y,floor_height, 0.0,0.0);
+         floor_tri1.set(1,x+1,y,floor_slope_height, 1.0,0.0);
+         floor_tri1.set(2,x+1,y+1,floor_slope_height, 1.0,1.0);
+         floor_tri2.set(0,x,y,floor_height, 0.0,0.0);
+         floor_tri2.set(1,x+1,y+1,floor_slope_height, 1.0,1.0);
+         floor_tri2.set(2,x,y+1,floor_height, 0.0,1.0);
+         break;
+
+      case ua_tile_slope_w:
+         floor_tri1.set(0,x,y,floor_slope_height, 0.0,0.0);
+         floor_tri1.set(1,x+1,y,floor_height, 1.0,0.0);
+         floor_tri1.set(2,x+1,y+1,floor_height, 1.0,1.0);
+         floor_tri2.set(0,x,y,floor_slope_height, 0.0,0.0);
+         floor_tri2.set(1,x+1,y+1,floor_height, 1.0,1.0);
+         floor_tri2.set(2,x,y+1,floor_slope_height, 0.0,1.0);
+         break;
+
+      } // end switch
+
+      // insert triangles into list
+      alltriangles.push_back(floor_tri1);
+      if (tri2_used)
+         alltriangles.push_back(floor_tri2);
+
+      alltriangles.push_back(ceil_tri1);
+      if (tri2_used)
+         alltriangles.push_back(ceil_tri2);
+   }
 }
 
 void ua_level::load_game(ua_savegame &sg)
@@ -191,7 +508,41 @@ void ua_level::render(ua_texture_manager &texmgr,ua_frustum &fr)
 
    q.get_visible_tiles(fr,tilelist);
 
-   int i,max = tilelist.size();
+   int i,max;
+
+#ifdef HAVE_ALTERNATE_RENDERER
+
+   // collect all triangles
+   std::vector<ua_triangle3d_textured> alltriangles;
+   max = tilelist.size();
+   for(i=0; i<max; i++)
+   {
+      const ua_quad_tile_coord &qtc = tilelist[i];
+      get_tile_triangles(qtc.first,qtc.second,alltriangles);
+   }
+
+   // sort triangles by texnum
+   std::sort(alltriangles.begin(), alltriangles.end());
+
+   // render all triangles
+   glColor3ub(192,192,192);
+   max = alltriangles.size();
+   for(i=0; i<max; i++)
+   {
+      ua_triangle3d_textured &tri = alltriangles[i];
+
+      texmgr.use(tri.texnum);
+
+      glBegin(GL_TRIANGLES);
+      for(int j=0; j<3; j++)
+      {
+         glTexCoord2d(tri.tex_u[j],tri.tex_v[j]);
+         glVertex3d(tri.points[j].x, tri.points[j].y, tri.points[j].z);
+      }
+      glEnd();
+   }
+
+#else
 
    // draw floor tile polygons, for all visible tiles
    for(i=0;i<max;i++)
@@ -214,12 +565,15 @@ void ua_level::render(ua_texture_manager &texmgr,ua_frustum &fr)
       render_walls(qtc.first,qtc.second,texmgr);
    }
 
+#endif
+
    // set up new viewpoint, "view coordinates" used in ua_object::render()
    glPushMatrix();
    glLoadIdentity();
    glRotated(-fr.get_yangle()+270.0, 1.0, 0.0, 0.0);
 
    // draw all objects in tile
+   max = tilelist.size();
    for(i=0;i<max;i++)
    {
       const ua_quad_tile_coord &qtc = tilelist[i];
