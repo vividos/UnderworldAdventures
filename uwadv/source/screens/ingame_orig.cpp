@@ -66,6 +66,7 @@ ua_ingame_orig_screen::ua_ingame_orig_screen(ua_game_interface& game)
    command_buttons.set_parent(this);
    view3d.set_parent(this);
    powergem.set_parent(this);
+   move_arrows.set_parent(this);
 }
 
 void ua_ingame_orig_screen::init()
@@ -240,6 +241,10 @@ void ua_ingame_orig_screen::init()
    powergem.add_border(img_background.get_image());
    powergem.update_gem();
    register_window(&powergem);
+
+   // init move arrows
+   move_arrows.init(game,107,154);
+   register_window(&move_arrows);
 
    // init mouse cursor
    mousecursor.init(game,0);

@@ -81,17 +81,6 @@ enum ua_ingame_move_state
    ua_move_walk_backwards
 };
 
-/*
-//! screen area values
-enum ua_screen_area_id
-{
-   ua_area_textscroll,
-
-   ua_area_move_left,
-   ua_area_move_foreward,
-   ua_area_move_right,
-};
-*/
 
 // classes
 
@@ -236,6 +225,9 @@ protected:
 
    //! powergem
    ua_ingame_powergem powergem;
+
+   //! move arrows
+   ua_ingame_move_arrows move_arrows;
 
 
    // game related
