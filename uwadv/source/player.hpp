@@ -30,6 +30,7 @@
 #define __uwadv_player_hpp_
 
 // needed includes
+#include "savegame.hpp"
 
 
 // enums
@@ -153,6 +154,15 @@ public:
 
    //! returns player skill value
    unsigned int get_skill(ua_player_skills which);
+
+
+   // loading/saving/importing
+
+   //! loads a savegame
+   void load_game(ua_savegame &sg);
+
+   //! saves to a savegame
+   void save_game(ua_savegame &sg);
 
 protected:
    //! the name of the player

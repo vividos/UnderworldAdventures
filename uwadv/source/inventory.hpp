@@ -136,6 +136,14 @@ public:
    //! drops a floating item into the parent's list
    bool drop_floating_item_parent();
 
+   // loading / saving / importing
+
+   //! loads a savegame
+   void load_game(ua_savegame &sg);
+
+   //! saves to a savegame
+   void save_game(ua_savegame &sg);
+
 protected:
    //! builds new slot link list
    void build_slot_link_list(Uint16 link1);

@@ -34,6 +34,7 @@
 #include "texture.hpp"
 #include "quadtree.hpp"
 #include "objects.hpp"
+#include "savegame.hpp"
 
 
 // enums
@@ -119,6 +120,12 @@ public:
    ua_object_list &get_mapobjects(){ return allobjects; }
 
    // loading / saving / importing
+
+   //! loads a savegame
+   void load_game(ua_savegame &sg);
+
+   //! saves to a savegame
+   void save_game(ua_savegame &sg);
 
    //! imports a level map
    void import_map(FILE *fd);

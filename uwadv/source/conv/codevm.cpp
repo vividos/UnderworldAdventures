@@ -33,6 +33,23 @@
 #include "codevm.hpp"
 
 
+// ua_conv_globals methods
+
+void ua_conv_globals::load_game(ua_savegame &sg)
+{
+   sg.begin_section("conv.globals");
+
+   sg.end_section();
+}
+
+void ua_conv_globals::save_game(ua_savegame &sg)
+{
+   sg.begin_section("conv.globals");
+
+   sg.end_section();
+}
+
+
 // ua_conv_code_vm methods
 
 ua_conv_code_vm::ua_conv_code_vm()

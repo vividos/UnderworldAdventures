@@ -95,3 +95,79 @@ void ua_underworld::change_level(unsigned int level)
 
    get_current_level().prepare_textures(core->get_texmgr());
 }
+
+//! loads a savegame
+void ua_underworld::load_game(ua_savegame &sg)
+{
+   // load all levels
+   {
+      levels.clear();
+
+      sg.begin_section("tilemaps");
+
+      Uint32 max = sg.read32();
+
+      for(Uint32 i=0; i<max; i++)
+      {
+         ua_level newlevel;
+         newlevel.load_game(sg);
+
+         levels.push_back(newlevel);
+      }
+
+      sg.end_section();
+   }
+
+   // load map annotations
+
+   // load objects list
+
+   // load inventory
+   inventory.load_game(sg);
+
+   // save player infos
+   player.load_game(sg);
+
+   // conv. globals
+   conv_globals.load_game(sg);
+
+   // Lua script values
+   script.load_game(sg);
+
+   sg.close();
+}
+
+//! saves to a savegame
+void ua_underworld::save_game(ua_savegame &sg)
+{
+   // save all levels
+   {
+      sg.begin_section("tilemaps");
+
+      unsigned int max = levels.size();
+      sg.write32(max);
+
+      for(unsigned int i=0; i<max; i++)
+         levels[i].save_game(sg);
+
+      sg.end_section();
+   }
+
+   // save map annotations
+
+   // save objects list
+
+   // save inventory
+   inventory.save_game(sg);
+
+   // save player infos
+   player.save_game(sg);
+
+   // conv. globals
+   conv_globals.save_game(sg);
+
+   // Lua script values
+   script.save_game(sg);
+
+   sg.close();
+}

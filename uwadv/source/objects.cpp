@@ -141,3 +141,17 @@ void ua_object_list::get_object_list(unsigned int xpos, unsigned int ypos,
       idx = objptr->get_object_info().link1;
    }
 }
+
+void ua_object_list::load_game(ua_savegame &sg)
+{
+   sg.begin_section("objlist");
+
+   sg.end_section();
+}
+
+void ua_object_list::save_game(ua_savegame &sg)
+{
+   sg.begin_section("objlist");
+
+   sg.end_section();
+}

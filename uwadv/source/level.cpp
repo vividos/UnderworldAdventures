@@ -112,6 +112,14 @@ ua_levelmap_tile &ua_level::get_tile(unsigned int xpos, unsigned int ypos)
    return tiles[ypos*64 + xpos];
 }
 
+void ua_level::load_game(ua_savegame &sg)
+{
+}
+
+void ua_level::save_game(ua_savegame &sg)
+{
+}
+
 void ua_level::render(ua_texture_manager &texmgr,ua_frustum &fr)
 {
    // determine list of visible tiles

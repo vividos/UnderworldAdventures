@@ -40,6 +40,7 @@
 #include "quadtree.hpp"
 #include "physics.hpp"
 #include "uwscript.hpp"
+#include "savegame.hpp"
 
 
 // forward declaration
@@ -101,18 +102,15 @@ public:
 
    // loading / saving / importing
 
+   //! loads a savegame
+   void load_game(ua_savegame &sg);
+
+   //! saves to a savegame
+   void save_game(ua_savegame &sg);
+
    //! imports a saved game
    void import_savegame(ua_settings &settings,const char *folder,bool initial);
-/*
-   //! loads complete game state from savegame
-   void load_game();
 
-   //! loads new game state
-   void new_game();
-
-   //! saves game state
-   void save_game();
-*/
 protected:
    //! interface to core game class
    ua_game_core_interface *core;

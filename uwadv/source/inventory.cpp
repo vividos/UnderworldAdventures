@@ -544,3 +544,17 @@ void ua_inventory::append_item(Uint16 cont, Uint16 item)
       get_item(item).link1 = 0;
    }
 }
+
+void ua_inventory::load_game(ua_savegame &sg)
+{
+   sg.begin_section("inventory");
+
+   sg.end_section();
+}
+
+void ua_inventory::save_game(ua_savegame &sg)
+{
+   sg.begin_section("inventory");
+
+   sg.end_section();
+}

@@ -34,6 +34,7 @@
 #include "settings.hpp"
 #include "texture.hpp"
 #include "quadtree.hpp"
+#include "savegame.hpp"
 
 
 // enums
@@ -139,6 +140,12 @@ public:
    ua_object_ptr get_object(Uint16 at){ return master_obj_list[at]; }
 
    // loading / saving / importing
+
+   //! loads a savegame
+   void load_game(ua_savegame &sg);
+
+   //! saves to a savegame
+   void save_game(ua_savegame &sg);
 
    //! imports an object list
    void import_objs(FILE *fd);

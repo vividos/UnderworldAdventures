@@ -30,7 +30,7 @@
 #define __uwadv_uwscript_hpp_
 
 // needed includes
-//#include "underworld.hpp"
+#include "savegame.hpp"
 
 
 // enums
@@ -76,6 +76,12 @@ public:
 
    //! cleans up underworld scripting
    void done();
+
+   //! loads a savegame
+   void load_game(ua_savegame &sg);
+
+   //! saves to a savegame
+   void save_game(ua_savegame &sg);
 
    // Lua script functions
 

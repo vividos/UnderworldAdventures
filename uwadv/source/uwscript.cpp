@@ -168,6 +168,20 @@ void ua_underworld_script_bindings::done()
    lua_close(L);
 }
 
+void ua_underworld_script_bindings::load_game(ua_savegame &sg)
+{
+   sg.begin_section("luascript");
+
+   sg.end_section();
+}
+
+void ua_underworld_script_bindings::save_game(ua_savegame &sg)
+{
+   sg.begin_section("luascript");
+
+   sg.end_section();
+}
+
 
 // Lua functions callable from C
 

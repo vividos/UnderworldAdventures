@@ -74,3 +74,17 @@ unsigned int ua_player::get_skill(ua_player_skills which)
    if (which>=ua_skill_max) return 0;
    return skills[static_cast<unsigned int>(which)];
 }
+
+void ua_player::load_game(ua_savegame &sg)
+{
+   sg.begin_section("player");
+
+   sg.end_section();
+}
+
+void ua_player::save_game(ua_savegame &sg)
+{
+   sg.begin_section("player");
+
+   sg.end_section();
+}

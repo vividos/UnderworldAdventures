@@ -53,6 +53,7 @@
 // needed includes
 #include <string>
 #include <vector>
+#include "savegame.hpp"
 
 
 // enums
@@ -105,6 +106,12 @@ public:
    }
 
    // loading / saving / importing
+
+   //! loads a savegame
+   void load_game(ua_savegame &sg);
+
+   //! saves to a savegame
+   void save_game(ua_savegame &sg);
 
    //! imports a globals file; init=true: load file without actual globals
    void import(const char *bgname, bool init);
