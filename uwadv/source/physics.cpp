@@ -76,11 +76,15 @@ const double ua_cd_liftoff   = 0.05;
 //! minimum distance
 const double ua_physics_min_dist = 0.05;
 
+#ifndef HAVE_NEW_CD
+
 //! player circle radius
 const double ua_player_radius = 0.4;
 
 //! max height the player can step
 const double ua_physics_max_step_height = 2.1;
+
+#endif
 
 //! max speed a player can walk, in tiles / second
 const double ua_player_max_walk_speed = 2.4;
@@ -114,6 +118,7 @@ bool ua_physics_insersect_sphere_triangle(ua_vector3d sO, float sR,
 
 double ua_physics_dist_point_plane(ua_vector3d point, ua_vector3d pO, ua_vector3d pN);
 
+
 // ua_physics_model methods
 
 ua_physics_model::ua_physics_model()
@@ -128,9 +133,7 @@ void ua_physics_model::init(ua_underworld *uw)
 
 void ua_physics_model::eval_physics(double time)
 {
-  
-  
-  // evaluate player movement
+   // evaluate player movement
    {
       ua_player &pl = underw->get_player();
 
@@ -160,7 +163,7 @@ void ua_physics_model::eval_physics(double time)
          dir *= speed;
 
          // position vector
-         ua_vector3d pos(pl.get_xpos(),pl.get_ypos(),pl.get_height()*0.125);
+         ua_vector3d pos(pl.get_xpos(),pl.get_ypos(),pl.get_height());
          ua_vector3d ellipsoid = pl.get_ellipsoid();
          pos.z += (ellipsoid.z + ua_cd_liftoff);
               
@@ -173,7 +176,7 @@ void ua_physics_model::eval_physics(double time)
 
          // set new player pos
          pl.set_pos(pos.x,pos.y);
-         pl.set_height((pos.z - (ellipsoid.z + ua_cd_liftoff)) / 0.125);
+         pl.set_height(pos.z - (ellipsoid.z + ua_cd_liftoff));
          
 #else // HAVE_NEW_CD
 
@@ -228,7 +231,7 @@ void ua_physics_model::eval_physics(double time)
      ua_vector3d dir = pl.get_fall_velocity();
        
      // position vector
-     ua_vector3d pos(pl.get_xpos(),pl.get_ypos(),pl.get_height()*0.125);
+     ua_vector3d pos(pl.get_xpos(),pl.get_ypos(),pl.get_height());
     
      ua_vector3d ellipsoid = pl.get_ellipsoid();
      pos.z += (ellipsoid.z + ua_cd_liftoff);
@@ -242,7 +245,7 @@ void ua_physics_model::eval_physics(double time)
 
      // set new player pos
      pl.set_pos(pos.x,pos.y);
-     pl.set_height((pos.z - (ellipsoid.z + ua_cd_liftoff)) / 0.125);
+     pl.set_height(pos.z - (ellipsoid.z + ua_cd_liftoff));
    
 #endif
    }

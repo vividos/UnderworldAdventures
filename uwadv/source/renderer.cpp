@@ -193,7 +193,7 @@ void ua_renderer::render()
       for(int j=0; j<3; j++)
       {
          glTexCoord2d(tri.tex_u[j],tri.tex_v[j]);
-         glVertex3d(tri.points[j].x, tri.points[j].y, tri.points[j].z);
+         glVertex3d(tri.points[j].x, tri.points[j].y, tri.points[j].z*height_scale);
       }
       glEnd();
    }
@@ -359,8 +359,8 @@ void ua_renderer::get_tile_triangles(ua_level& level, unsigned int xpos, unsigne
       return; // no triangles to generate
 
    double x = xpos, y = ypos;
-   double ceil_height = tile.ceiling*height_scale;
-   double floor_height = tile.floor*height_scale;
+   double ceil_height = tile.ceiling;
+   double floor_height = tile.floor;
 
    // tile walls
    {
@@ -501,9 +501,9 @@ void ua_renderer::get_tile_triangles(ua_level& level, unsigned int xpos, unsigne
          // now that we have all info, draw the tile wall
 //         render_wall((ua_levelmap_wall_render_side)side,x1,y1,z1,x2,y2,z2,nz1,nz2,tile.ceiling);
          add_wall(tri1,tri2, side,
-            x1,y1,z1*height_scale,
-            x2,y2,z2*height_scale,
-            nz1*height_scale,nz2*height_scale,ceil_height);
+            x1,y1,z1,
+            x2,y2,z2,
+            nz1,nz2,ceil_height);
 
          alltriangles.push_back(tri1);
          alltriangles.push_back(tri2);
@@ -513,7 +513,7 @@ void ua_renderer::get_tile_triangles(ua_level& level, unsigned int xpos, unsigne
 
    // tile floor / ceiling
    {
-      double floor_slope_height = (tile.floor+tile.slope)*height_scale;
+      double floor_slope_height = tile.floor + tile.slope;
 
       ua_triangle3d_textured floor_tri1, floor_tri2;
       ua_triangle3d_textured ceil_tri1, ceil_tri2;

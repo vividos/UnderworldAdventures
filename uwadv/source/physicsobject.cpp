@@ -31,8 +31,11 @@
 
 
 //! default initial gravity pull
-const double ua_default_gravity_pull = -0.04;
-const double ua_max_gravity_pull = -0.5; // TODO - tweak
+const double ua_default_gravity_pull = -0.04*8;
+const double ua_max_gravity_pull = -0.5*8; // TODO - tweak
+
+
+// ua_physics_object methods
 
 ua_physics_object::ua_physics_object()
 {
@@ -105,7 +108,3 @@ void ua_physics_object::accellerate_fall_velocity(double time) {
   if (fall_velocity.z < ua_max_gravity_pull)
     fall_velocity.z = ua_max_gravity_pull;
 }
-
-
-
-
