@@ -56,7 +56,9 @@ enum ua_elua_action
    actSetUIImg = 6,       // sets the specified image at the specified location
    actUIClear = 7,        // clears all screen elements (not the background)
    actUIUpdate = 8,       // updates the screen after a SetUIxxx/UIClear action (no params)
-   actSetPlayerName = 9   // guess what...
+   actSetPlayerName = 9,  // does what the name suggests (param1=name)
+   actSetPlayerAttr = 10, // does what the name suggests (param1=attribute, param2=value)
+   actSetPlayerSkill = 11 // does what the name suggests (param1=skill, param2=value)
 };
 
 //! custom type for identifying buttons/text 
@@ -402,7 +404,6 @@ void ua_create_character_screen::do_action()
                static_cast<unsigned int>(lua_tonumber(L,5)),
                static_cast<unsigned int>(lua_tonumber(L,6)));
       break;
-      ua_trace("standard text set by char. creation script\n");
    }
 
    case actSetUICustText:
@@ -413,7 +414,6 @@ void ua_create_character_screen::do_action()
                static_cast<unsigned int>(lua_tonumber(L,5)),
                static_cast<unsigned int>(lua_tonumber(L,6)));
       break;
-      ua_trace("custom text set by char. creation script\n");
    }
 
    case actSetUINumber:
@@ -423,7 +423,6 @@ void ua_create_character_screen::do_action()
                static_cast<unsigned int>(lua_tonumber(L,4)),
                static_cast<unsigned int>(lua_tonumber(L,5)));
       break;
-      ua_trace("number set by char. creation script\n");
    }
 
    case actSetUIImg:
@@ -433,7 +432,6 @@ void ua_create_character_screen::do_action()
       img.paste_image(cimg, static_cast<unsigned int>(lua_tonumber(L,4)) - cimg.get_xres()/2, 
                             static_cast<unsigned int>(lua_tonumber(L,5)) - cimg.get_yres()/2, true);
       break;
-      ua_trace("image set by char. creation script\n");
    }
 
    case actUIClear:
@@ -450,6 +448,20 @@ void ua_create_character_screen::do_action()
       if (n<3) break;
       pplayer->set_name(lua_tostring(L,3));
       ua_trace("player name set to \"%s\" by char. creation script\n", lua_tostring(L,3));
+      break;
+
+   case actSetPlayerAttr:
+      if (n<4) break;
+      pplayer->set_attr(static_cast<ua_player_attributes>(static_cast<unsigned int>(lua_tonumber(L,3))), 
+                        static_cast<unsigned int>(lua_tonumber(L,4)));
+      ua_trace("player attribute set\n");
+      break;
+
+   case actSetPlayerSkill:
+      if (n<4) break;
+      pplayer->set_skill(static_cast<ua_player_skills>(static_cast<unsigned int>(lua_tonumber(L,3))), 
+                         static_cast<unsigned int>(lua_tonumber(L,4)));
+      ua_trace("player skill set\n");
       break;
 
    default:
@@ -561,7 +573,7 @@ int ua_create_character_screen::getbuttonover()
 
    // determine column
    int columns = btng_buttoncount/btng_buttonspercolumn;
-   int btnsize = img_buttons.get_image(btng_buttontype).get_xres();
+   int btnsize = img_buttons.get_image(btng_buttonimg_normal).get_xres();
    int bgsize = columns*btnsize + (columns-1)*6;
    xpos -= bgxpos-(bgsize/2);
    if ((xpos<0) || (xpos>bgsize) || (xpos%(btnsize+6) > btnsize))
@@ -569,7 +581,7 @@ int ua_create_character_screen::getbuttonover()
    int coffset = xpos/(btnsize+6) * btng_buttonspercolumn;
 
    // determine button in column
-   btnsize = img_buttons.get_image(btng_buttontype).get_yres();
+   btnsize = img_buttons.get_image(btng_buttonimg_normal).get_yres();
    bgsize = btng_buttonspercolumn*btnsize + ((btng_buttonspercolumn-1)*5);
    int mv = (btng_caption!=ccvNone) ? 15 : 0;
    ypos -= (200-(bgsize+mv))/2+mv;
