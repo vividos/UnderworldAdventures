@@ -45,7 +45,7 @@ Uint32 ua_obj_handle_encode(Uint32 objpos, Uint32 level)
 }
 
 void ua_obj_handle_decode(Uint32 obj_handle, Uint32 &objpos,
-   Uint32 level)
+   Uint32& level)
 {
    objpos = obj_handle & 0x03ff;
    level = obj_handle>>10;
