@@ -24,6 +24,9 @@
    \brief game physics model
 
 */
+//! \ingroup underworld
+
+//@{
 
 // include guard
 #ifndef uwadv_physics_hpp_
@@ -87,5 +90,8 @@ protected:
    //! last evaluation time
    double last_evaltime;
 };
+
+
+//}@
 
 #endif

@@ -24,6 +24,9 @@
    \brief inventory representation
 
 */
+//! \ingroup underworld
+
+//@{
 
 // include guard
 #ifndef uwadv_inventory_hpp_
@@ -184,5 +187,8 @@ protected:
    //! link to floating object
    Uint16 floating_object;
 };
+
+
+//}@
 
 #endif

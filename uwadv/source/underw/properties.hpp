@@ -24,6 +24,9 @@
    \brief object property manager
 
 */
+//! \ingroup underworld
+
+//@{
 
 // include guard
 #ifndef uwadv_properties_hpp_
@@ -99,5 +102,8 @@ inline ua_common_obj_property& ua_object_properties::get_common_property(
 
    return common_properties[item_id];
 }
+
+
+//}@
 
 #endif

@@ -24,6 +24,9 @@
    \brief map notes class
 
 */
+//! \ingroup underworld
+
+//@{
 
 // include guard
 #ifndef uwadv_mapnotes_hpp_
@@ -70,5 +73,8 @@ protected:
    //! map with lists of all notes
    std::map<unsigned int,std::vector<ua_map_notes_entry> > mapnotes;
 };
+
+
+//}@
 
 #endif

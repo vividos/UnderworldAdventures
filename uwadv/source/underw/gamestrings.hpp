@@ -28,6 +28,9 @@
    or conversation strings.
 
 */
+//! \ingroup underworld
+
+//@{
 
 // include guard
 #ifndef uwadv_gamestrings_hpp_
@@ -71,5 +74,8 @@ protected:
    //! game string container
    std::map<int,std::vector<std::string> > allstrings;
 };
+
+
+//}@
 
 #endif

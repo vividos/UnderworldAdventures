@@ -24,6 +24,9 @@
    \brief game level map class
 
 */
+//! \ingroup underworld
+
+//@{
 
 // include guard
 #ifndef uwadv_level_hpp_
@@ -136,5 +139,8 @@ protected:
    //! indicates if level map is in use
    bool used;
 };
+
+
+//}@
 
 #endif

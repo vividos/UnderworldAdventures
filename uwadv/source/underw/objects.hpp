@@ -24,6 +24,9 @@
    \brief objects management
 
 */
+//! \ingroup underworld
+
+//@{
 
 // include guard
 #ifndef uwadv_objects_hpp_
@@ -233,5 +236,8 @@ protected:
    //! object tilemap position xref table
    std::vector<std::pair<Uint8,Uint8> > xref_tilepos;
 };
+
+
+//}@
 
 #endif

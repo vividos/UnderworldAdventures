@@ -24,6 +24,9 @@
    \brief an object that can be applied to collision
 
 */
+//! \ingroup underworld
+
+//@{
 
 // include guard
 #ifndef uwadv_physicsobject_hpp_
@@ -58,5 +61,8 @@ protected:
    int safeSpotHead;
    int safeSpotTail;
 };
+
+
+//}@
 
 #endif

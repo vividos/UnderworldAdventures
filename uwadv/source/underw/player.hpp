@@ -24,6 +24,9 @@
    \brief player character representation
 
 */
+//! \ingroup underworld
+
+//@{
 
 // include guard
 #ifndef uwadv_player_hpp_
@@ -295,5 +298,7 @@ inline unsigned int ua_player::get_movement_mode() const
    return move_mode;
 }
 
+
+//}@
 
 #endif

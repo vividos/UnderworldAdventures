@@ -24,6 +24,9 @@
    \brief pathfinding algorithm
 
 */
+//! \ingroup underworld
+
+//@{
 
 // include guard
 #ifndef uwadv_pathfinder_hpp_
@@ -100,5 +103,8 @@ void ua_pathfinder::set_flag(ua_pathfind_flags flagtype, bool set_it)
    path_flags[flagtype] = set_it;
 }
 
+
+
+//}@
 
 #endif

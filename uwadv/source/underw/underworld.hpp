@@ -24,6 +24,12 @@
    \brief underworld class
 
 */
+/*! \defgroup underworld Underworld Objects Documentation
+
+   abc 123
+
+*/
+//@{
 
 // include guard
 #ifndef uwadv_underworld_hpp_
@@ -170,5 +176,8 @@ protected:
    //! list with active triggers
    std::set<Uint16> trigger_active;
 };
+
+
+//}@
 
 #endif
