@@ -96,8 +96,21 @@ protected:
    double get_lua_constant(const char *name);
 
 protected:
-   // registered C functions callable from Lua
 
+   //! returns underworld object reference from lua stack variable "self"
+   static ua_underworld& lua_get_underworld(lua_State* L, int params);
+
+   // registered C functions callable from Lua
+   // prototype: static int xyz(lua_State* L);
+
+   static int player_get_attr(lua_State* L);
+   static int player_set_attr(lua_State* L);
+   static int player_get_skill(lua_State* L);
+   static int player_set_skill(lua_State* L);
+   static int player_get_pos(lua_State* L);
+   static int player_set_pos(lua_State* L);
+   static int player_get_angle(lua_State* L);
+   static int player_set_angle(lua_State* L);
 
 protected:
    //! lua script state

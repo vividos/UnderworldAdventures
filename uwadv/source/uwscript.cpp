@@ -107,11 +107,26 @@ void ua_underworld_script_bindings::init(ua_underworld *uw)
    } while (pos != std::string::npos);
 
    register_functions();
+
+   // call init function lua_init_script(self)
+   lua_getglobal(L,"lua_init_script");
+   lua_pushuserdata(L,uw);
+   checked_lua_call(1,0);
 }
 
 void ua_underworld_script_bindings::register_functions()
 {
 //   lua_register(L,"func_name",func_name);
+
+   // ua_player access
+   lua_register(L,"player_get_attr",player_get_attr);
+   lua_register(L,"player_set_attr",player_set_attr);
+   lua_register(L,"player_get_skill",player_get_skill);
+   lua_register(L,"player_set_skill",player_set_skill);
+   lua_register(L,"player_get_pos",player_get_pos);
+   lua_register(L,"player_set_pos",player_set_pos);
+   lua_register(L,"player_get_angle",player_get_angle);
+   lua_register(L,"player_set_angle",player_set_angle);
 }
 
 void ua_underworld_script_bindings::checked_lua_call(int params, int retvals)
@@ -119,6 +134,7 @@ void ua_underworld_script_bindings::checked_lua_call(int params, int retvals)
    int ret = lua_call(L,params,retvals);
    if (ret!=0)
       ua_trace("Lua function call error code: %u\n",ret);
+//      throw ua_exception("");
 }
 
 double ua_underworld_script_bindings::get_lua_constant(const char *name)
@@ -135,6 +151,11 @@ double ua_underworld_script_bindings::get_lua_constant(const char *name)
 
 void ua_underworld_script_bindings::done()
 {
+   // call init function lua_init_script(self)
+   lua_getglobal(L,"lua_done_script");
+   lua_pushuserdata(L,this);
+   checked_lua_call(1,0);
+
    lua_close(L);
 }
 
@@ -194,5 +215,112 @@ ua_obj_combine_result ua_underworld_script_bindings::lua_obj_combine(
    return res;
 }
 
+/*! params is the number of parameters the current registered function
+    expects. it is needed to determine where the "self" userdata value is
+    stored. */
+ua_underworld& ua_underworld_script_bindings::lua_get_underworld(lua_State* L,int params)
+{
+   ua_underworld* self =
+      reinterpret_cast<ua_underworld*>(lua_touserdata(L,-params));
+
+   if (self->get_scripts().L != L)
+      throw ua_exception("wrong 'self' parameter in ua_underworld Lua script");
+
+   return *self;
+}
+
 
 // registered C functions callable from Lua
+
+int ua_underworld_script_bindings::player_get_attr(lua_State *L)
+{
+   ua_player &pl = lua_get_underworld(L,2).get_player();
+
+   ua_player_attributes attr_type =
+      static_cast<ua_player_attributes>(static_cast<int>(lua_tonumber(L,-1)));
+
+   unsigned int attr_value = pl.get_attr(attr_type);
+   lua_pushnumber(L,static_cast<double>(attr_value));
+
+   return 1; // one return parameter
+}
+
+int ua_underworld_script_bindings::player_set_attr(lua_State *L)
+{
+   ua_player &pl = lua_get_underworld(L,3).get_player();
+
+   ua_player_attributes attr_type =
+      static_cast<ua_player_attributes>(static_cast<int>(lua_tonumber(L,-2)));
+   unsigned int attr_value = static_cast<unsigned int>(lua_tonumber(L,-1));
+
+   pl.set_attr(attr_type,attr_value);
+
+   return 0;
+}
+
+int ua_underworld_script_bindings::player_get_skill(lua_State *L)
+{
+   ua_player &pl = lua_get_underworld(L,2).get_player();
+
+   ua_player_skills skill_type =
+      static_cast<ua_player_skills>(static_cast<int>(lua_tonumber(L,-1)));
+
+   unsigned int skill_value = pl.get_skill(skill_type);
+   lua_pushnumber(L,static_cast<double>(skill_value));
+
+   return 1;
+}
+
+int ua_underworld_script_bindings::player_set_skill(lua_State *L)
+{
+   ua_player &pl = lua_get_underworld(L,3).get_player();
+
+   ua_player_skills skill_type =
+      static_cast<ua_player_skills>(static_cast<int>(lua_tonumber(L,-2)));
+   unsigned int skill_value = static_cast<unsigned int>(lua_tonumber(L,-1));
+
+   pl.set_skill(skill_type,skill_value);
+
+   return 0;
+}
+
+int ua_underworld_script_bindings::player_get_pos(lua_State *L)
+{
+   ua_player &pl = lua_get_underworld(L,1).get_player();
+
+   lua_pushnumber(L,pl.get_xpos());
+   lua_pushnumber(L,pl.get_ypos());
+
+   return 2;
+}
+
+int ua_underworld_script_bindings::player_set_pos(lua_State *L)
+{
+   ua_player &pl = lua_get_underworld(L,3).get_player();
+
+   double xpos = lua_tonumber(L,-2);
+   double ypos = lua_tonumber(L,-1);
+
+   pl.set_pos(xpos,ypos);
+
+   return 0;
+}
+
+int ua_underworld_script_bindings::player_get_angle(lua_State *L)
+{
+   ua_player &pl = lua_get_underworld(L,1).get_player();
+
+   lua_pushnumber(L,pl.get_angle());
+
+   return 1;
+}
+
+int ua_underworld_script_bindings::player_set_angle(lua_State *L)
+{
+   ua_player &pl = lua_get_underworld(L,2).get_player();
+
+   double angle = lua_tonumber(L,-1);
+   pl.set_angle(angle);
+
+   return 0;
+}
