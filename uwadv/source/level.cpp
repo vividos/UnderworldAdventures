@@ -122,6 +122,7 @@ void ua_level::load_game(ua_savegame &sg)
 
       textures_used.insert(tile.texture_wall);
       textures_used.insert(tile.texture_floor);
+      textures_used.insert(tile.texture_ceiling);
    }
 
    // add used textures to used_textures vector
