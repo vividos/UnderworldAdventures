@@ -32,7 +32,7 @@
 #include "common.hpp"
 #include "physics.hpp"
 #include "underworld.hpp"
-#include "renderer.hpp"
+#include "geometry.hpp"
 
 
 // typedefs
@@ -331,15 +331,14 @@ bool ua_physics_model::collide_with_world(ua_physics_object& object,
 
 void ua_physics_model::check_collision(ua_physics_object& object, int xpos, int ypos, ua_collision_data& data)
 {
+   ua_geometry_provider geom(underw->get_current_level());
+
    // retrieve all tile triangles to check
    std::vector<ua_triangle3d_textured> alltriangles;
    {
-      /*TODO
       for(int i=-1; i<2; i++)
-      for(int j=-1; j<2; j++)
-         ua_renderer::get_tile_triangles(underw->get_current_level(),
-            unsigned(xpos+i),unsigned(ypos+j),alltriangles);
-      */
+         for(int j=-1; j<2; j++)
+            geom.get_tile_triangles(unsigned(xpos+i),unsigned(ypos+j),alltriangles);
    }
 
    // also retrieve 3d model triangles
@@ -356,7 +355,7 @@ void ua_physics_model::check_collision(ua_physics_object& object, int xpos, int 
 
          ua_vector3d base(
             xpos+(extobjinfo.xpos+0.5)/8.0, ypos+(extobjinfo.ypos+0.5)/8.0,
-            extobjinfo.zpos/4.0);
+            extobjinfo.zpos);
 
          // get triangles from model manager
          //TODOua_model3d_manager::cur_modelmgr->get_bounding_triangles(
