@@ -66,10 +66,13 @@ SDL is available here: http://www.libsdl.org/
 
 
 dnl checking for working OpenGL
+save_CPPFLAGS="$CPPFLAGS"
+CPPFLAGS="$CXXFLAGS"
 AC_CHECK_HEADER(GL/gl.h,,AC_MSG_ERROR([
 OpenGL header not found. An OpenGL graphics library is required
 to compile and run Underworld Adventures.
 Check http://mesa3d.sourceforge.net/ for a good one.]))
+CPPFLAGS="$save_CPPFLAGS"
 
 
 dnl checking for FMOD

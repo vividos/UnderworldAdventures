@@ -5387,6 +5387,8 @@ SDL is available here: http://www.libsdl.org/
 
 
 
+save_CPPFLAGS="$CPPFLAGS"
+CPPFLAGS="$CXXFLAGS"
 # On IRIX 5.3, sys/types and inttypes.h are conflicting.
 
 
@@ -5561,6 +5563,7 @@ Check http://mesa3d.sourceforge.net/ for a good one." >&2;}
 fi
 
 
+CPPFLAGS="$save_CPPFLAGS"
 
 
 if test "${ac_cv_header_fmod_h+set}" = set; then
