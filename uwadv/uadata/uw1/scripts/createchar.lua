@@ -189,11 +189,7 @@ ccharui = {
 function cchar_global(this, globalaction)
    if globalaction==gactInit then
       self = this       -- sets "self" as userdata for all C function calls
-      curstep = 0 
-      psex = 0
-      pclass = 0
-      pimg = 0
-      pname = ""
+      skills = {}
       cchar_do_action(self, actSetInitVal, ccharui.strblock, ccharui.btngxcoord)
    end
 
@@ -202,11 +198,37 @@ function cchar_global(this, globalaction)
       cchar_do_action(self, actEnd)
    else
       -- show the first button group
+      curstep = 0 
+      psex = 0
+      pclass = 0
+      pstr = 15
+      pdex = 15
+      pint = 15
+      pvit = 15
+      pimg = 0
+      pname = ""
       curgroup = 1
+      numberofskills = 0
       cchar_do_action(self, actClear)
       cchar_do_action(self, actSetBtnGroup, ccharui.btngroups[curgroup].heading, ccharui.btngroups[curgroup].btntype, ccharui.btngroups[curgroup].btns)
       cchar_do_action(self, actUpdate)
    end
+end
+
+
+-- adds a value to, or changes a value in, the skills table
+function cchar_addskill(skill, value)
+   -- try to find the skill in the table
+   for csi = 1, numberofskills do
+      -- increase the value if found and return
+      if skills[csi].name==skill then
+         skills[csi].val = skills[csi].val + value
+         return
+      end
+   end
+   -- not found? add the skill
+   numberofskills = numberofskills + 1
+   skills[numberofskills] = { name = skill, val = value };
 end
 
 
@@ -243,7 +265,8 @@ function cchar_buttonclick(button, text)
          if button==0 then
             curgroup = -1
          else
-            curgroup = 0
+            cchar_global(self, gactDeinit)
+            return
          end
       end
       curgroup = curgroup + 1
@@ -251,11 +274,28 @@ function cchar_buttonclick(button, text)
    -- special case, player skills button groups (depend on player class)
    elseif curgroup>=3 and curgroup<=17 then
 
-      if curgroup==3 then
-      -- cchar_do_action(self, actSetPropVal, ppClass, button)
+      if curgroup==3 then   -- player class selection button 
          pclass = button
          curstep = 0
-      else
+
+         -- the attack and defence skill appear for all player classes
+         cchar_addskill(ccvAttack, 10)
+         cchar_addskill(ccvDefence, 10)
+
+         -- add class specific inital skills
+         if button==1 or button==4 then   -- fighter/druid
+            cchar_addskill(ccvMana, 10)
+            cchar_addskill(ccvCasting, 10)
+         elseif button==3 then            -- tinker
+            cchar_addskill(ccvRepair, 10)
+         elseif button==5 then            -- palading
+            cchar_addskill(ccvCharm, 10)
+         elseif button==6 then            -- ranger
+            cchar_addskill(ccvTrack, 10)
+         end
+
+      else   -- class specific skill selection button 
+         cchar_addskill(ccharui.btngroups[curgroup].btns[button+1], 10)
          curstep = curstep + 1
       end
       curgroup = ccharui.skillorder[pclass][curstep]
@@ -280,26 +320,21 @@ function cchar_buttonclick(button, text)
          -- common stats
          cchar_do_action(self, actSetText, pclass+ccvFighter, 141, 21, alRight)
          cchar_do_action(self, actSetText, ccvStrc, 93, 50, alLeft)
-         cchar_do_action(self, actSetNumber, 0, 139, 50)
+         cchar_do_action(self, actSetNumber, pstr, 139, 50)
          cchar_do_action(self, actSetText, ccvDexc, 93, 67, alLeft)
-         cchar_do_action(self, actSetNumber, 1, 139, 67)
+         cchar_do_action(self, actSetNumber, pdex, 139, 67)
          cchar_do_action(self, actSetText, ccvIntc, 93, 84, alLeft)
-         cchar_do_action(self, actSetNumber, 10, 139, 84)
+         cchar_do_action(self, actSetNumber, pint, 139, 84)
          cchar_do_action(self, actSetText, ccvVitc, 93, 101, alLeft)
-         cchar_do_action(self, actSetNumber, 100, 139, 101)
-
-         -- class/skill specific stats
-         cchar_do_action(self, actSetText, ccvAttack, 30, 132, alLeft)
-         cchar_do_action(self, actSetNumber, 9, 125, 132)
-         cchar_do_action(self, actSetText, ccvDefence, 30, 143, alLeft)
-         cchar_do_action(self, actSetNumber, 10, 125, 143)
-         cchar_do_action(self, actSetText, ccvRepair, 30, 154, alLeft)
-         cchar_do_action(self, actSetNumber, 11, 125, 154)
-         cchar_do_action(self, actSetText, ccvSword, 30, 165, alLeft)
-         cchar_do_action(self, actSetNumber, 12, 125, 165)
-         cchar_do_action(self, actSetText, ccvAppraise, 30, 176, alLeft)
-         cchar_do_action(self, actSetNumber, 13, 125, 176)
+         cchar_do_action(self, actSetNumber, pvit, 139, 101)
       end
+
+      -- class/skill specific stats
+      for csi = 1, numberofskills do
+         cchar_do_action(self, actSetText, skills[csi].name, 30, 132+11*(csi-1), alLeft)
+         cchar_do_action(self, actSetNumber, skills[csi].val, 125, 132+11*(csi-1))
+      end
+
       if curgroup>19 then
          cchar_do_action(self, actSetImg, 17+pimg, 44, 81)
       end
