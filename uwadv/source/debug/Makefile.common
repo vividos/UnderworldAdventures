@@ -9,4 +9,5 @@ libuadebug_la_SOURCES = \
 	dbgapp.hpp dbgapp.cpp \
 	editlist.hpp editlist.cpp \
 	mainframe.hpp mainframe.cpp \
-	playerinfo.hpp playerinfo.cpp
+	playerinfo.hpp playerinfo.cpp \
+	objectlist.hpp objectlist.cpp
