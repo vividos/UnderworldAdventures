@@ -39,7 +39,7 @@ ua_player::ua_player()
 void ua_player::init()
 {
    xpos = ypos = 32.0;
-   height = 3.0; // Start height at entrance
+   height = 24.0; // start height at entrance
    rotangle = panangle = 0.0;
    move_mode = 0;
 
