@@ -55,9 +55,6 @@ void ua_underworld::init(ua_settings& settings, ua_files_manager& filesmgr)
    ua_trace("loading game strings ... ");
    gstr.load(settings);
    ua_trace("done\n");
-
-   // init and load the scripts as last step
-   script.init(this);
 }
 
 void ua_underworld::done()
