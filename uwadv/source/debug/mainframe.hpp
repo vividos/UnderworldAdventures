@@ -62,6 +62,12 @@ protected:
    //! menu handler: Underworld | Update
    void OnMenuUnderwUpdate(wxCommandEvent& event);
 
+   //! menu handler: Underworld | Suspend Game
+   void OnMenuUnderwSuspend(wxCommandEvent& event);
+
+   //! menu handler: Underworld | Resume Game
+   void OnMenuUnderwResume(wxCommandEvent& event);
+
    //! menu handler: Underworld | Player Info
    void OnMenuUnderwPlayer(wxCommandEvent& event);
 
@@ -85,6 +91,8 @@ protected:
    enum
    {
       MENU_FILE_QUIT=1000,
+      MENU_UNDERW_SUSPEND,
+      MENU_UNDERW_RESUME,
       MENU_UNDERW_UPDATE,
       MENU_UNDERW_PLAYER,     //!< shows player info
       MENU_UNDERW_OBJECTLIST, //!< shows master object list

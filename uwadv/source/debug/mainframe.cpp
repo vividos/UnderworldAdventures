@@ -52,6 +52,8 @@
 BEGIN_EVENT_TABLE(ua_debugger_main_frame, wxMDIParentFrame)
    EVT_MENU(MENU_FILE_QUIT, ua_debugger_main_frame::OnMenuFileQuit)
    EVT_MENU(MENU_UNDERW_UPDATE, ua_debugger_main_frame::OnMenuUnderwUpdate)
+   EVT_MENU(MENU_UNDERW_SUSPEND, ua_debugger_main_frame::OnMenuUnderwSuspend)
+   EVT_MENU(MENU_UNDERW_RESUME, ua_debugger_main_frame::OnMenuUnderwResume)
    EVT_MENU(MENU_UNDERW_PLAYER, ua_debugger_main_frame::OnMenuUnderwPlayer)
    EVT_MENU(MENU_UNDERW_OBJECTLIST, ua_debugger_main_frame::OnMenuUnderwObjectList)
 END_EVENT_TABLE()
@@ -93,6 +95,8 @@ ua_debugger_main_frame::ua_debugger_main_frame(wxWindow* parent,
    // underworld menu
    m_pUnderwMenu = new wxMenu();
    m_pUnderwMenu->Append(MENU_UNDERW_UPDATE, "&Update", "updates all windows");
+   m_pUnderwMenu->Append(MENU_UNDERW_SUSPEND, "&Suspend Game", "suspends a running game");
+   m_pUnderwMenu->Append(MENU_UNDERW_RESUME, "&Resume Game", "resumes a suspended game");
    m_pUnderwMenu->AppendSeparator();
    m_pUnderwMenu->Append(MENU_UNDERW_PLAYER, "&Player Info", "shows Player Infos");
    m_pUnderwMenu->Append(MENU_UNDERW_OBJECTLIST, "Master &Object List", "shows Master Object List");
@@ -152,6 +156,16 @@ void ua_debugger_main_frame::OnMenuFileQuit(wxCommandEvent& event)
 void ua_debugger_main_frame::OnMenuUnderwUpdate(wxCommandEvent& event)
 {
    UpdateAll();
+}
+
+void ua_debugger_main_frame::OnMenuUnderwSuspend(wxCommandEvent& event)
+{
+   wxGetApp().command(udc_game_suspend,0,NULL,NULL);
+}
+
+void ua_debugger_main_frame::OnMenuUnderwResume(wxCommandEvent& event)
+{
+   wxGetApp().command(udc_game_resume,0,NULL,NULL);
 }
 
 void ua_debugger_main_frame::OnMenuUnderwPlayer(wxCommandEvent& event)

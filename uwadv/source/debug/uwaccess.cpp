@@ -70,6 +70,14 @@ unsigned int ua_uw_access_api::command_func(
       debug->unlock();
       break;
 
+   case udc_game_suspend: // suspend game
+      // TODO
+      break;
+
+   case udc_game_resume: // resume game
+      // TODO
+      break;
+
    case udc_player_get: // get player value
       {
          ua_player& pl = underw.get_player();

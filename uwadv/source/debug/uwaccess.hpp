@@ -47,28 +47,31 @@ enum
    udc_lock=1,       //!< lock underworld object
    udc_unlock=2,     //!< unlock underworld
 
-   udc_player_get=3, /*!< gets player value; param1.uint holds array index;
+   udc_game_suspend=3, //!< suspends game
+   udc_game_resume=4,  //!< resumes game
+
+   udc_player_get=5, /*!< gets player value; param1.uint holds array index;
                           allowed types:
                           0: get player info
                           1: get attribute
                           2: get skill */
-   udc_player_set=4, /*!< sets player value; param1.uint holds index;
+   udc_player_set=6, /*!< sets player value; param1.uint holds index;
                           types are the same as in udc_player_get */
 
-   udc_objlist_get=5, /*< gets master object list value
+   udc_objlist_get=7, /*< gets master object list value
                           type contains "level"
                           param1 contains object list position to get
                           param2 contains value index to get:
                              0: item_id
                              1: ?
                           */
-   udc_objlist_set=6,
+   udc_objlist_set=8,
 
-   udc_tilemap_get=7,
-   udc_tilemap_set=8,
+   udc_tilemap_get=9,
+   udc_tilemap_set=10,
 
-   udc_strings_get=9,
-   udc_strings_set=10,
+   udc_strings_get=11,
+   udc_strings_set=12,
 };
 
 //! parameter types
