@@ -64,7 +64,19 @@ public:
    //! processes SDL events; returns true when event shouldn't processed further
    virtual bool process_event(SDL_Event& event);
 
+   //! processes mouse event specific to that window
+   virtual void mouse_event(bool button_clicked, bool left_button,
+      bool button_down, unsigned int mousex, unsigned int mousey);
+
+   unsigned int get_xpos() const { return wnd_xpos; }
+   unsigned int get_ypos() const { return wnd_ypos; }
+
+   unsigned int get_width() const { return wnd_width; }
+   unsigned int get_height() const { return wnd_height; }
+
 protected:
+   unsigned int wnd_xpos, wnd_ypos;
+   unsigned int wnd_width, wnd_height;
 };
 
 #endif

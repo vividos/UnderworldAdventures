@@ -35,6 +35,7 @@
 // ua_window methods
 
 ua_window::ua_window()
+:wnd_xpos(0), wnd_ypos(0), wnd_width(0), wnd_height(0)
 {
 }
 
@@ -45,6 +46,10 @@ ua_window::~ua_window()
 void ua_window::create(unsigned int xpos, unsigned int ypos,
    unsigned int width, unsigned int height)
 {
+   wnd_xpos = xpos;
+   wnd_ypos = ypos;
+   wnd_width = width;
+   wnd_height = height;
 }
 
 void ua_window::destroy()
@@ -58,4 +63,9 @@ void ua_window::draw()
 bool ua_window::process_event(SDL_Event& event)
 {
    return false;
+}
+
+void ua_window::mouse_event(bool button_clicked, bool left_button,
+   bool button_down, unsigned int mousex, unsigned int mousey)
+{
 }
