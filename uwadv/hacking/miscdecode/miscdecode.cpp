@@ -309,5 +309,30 @@ int main(int argc, char* argv[])
       fclose(out);
    }
 
+   // decoding sounds.dat
+   do
+   {
+      FILE *fd = fopen(UWPATH"sound\\sounds.dat","rb");
+      FILE *out = fopen("uw-sounds-dat.txt","w");
+
+      int count = fgetc(fd);
+
+      for(unsigned int i=0; i<count; i++)
+      {
+         fprintf(out," %02x: ",i);
+         for(unsigned int i=0; i<5; i++)
+         {
+            fprintf(out," %02x",fgetc(fd));
+         }
+
+         fprintf(out,"\n");
+      }
+      fprintf(out,"\n");
+
+      fclose(fd);
+      fclose(out);
+
+   } while(false);
+
    return 0;
 }
