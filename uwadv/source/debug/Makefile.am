@@ -9,16 +9,20 @@ CXXFLAGS = @CXXFLAGS@
 LDFLAGS = @LIBS@
 
 if BUILD_UADEBUG
- bin_LTLIBRARIES = libuadebug.la
+ lib_LTLIBRARIES = libuadebug.la
 endif
 
 # Makefile.common defines libuadebug_la_SOURCES
 include Makefile.common
 
 
-EXTRA_DIST = \
 if BUILD_UADEBUG
+ dist_add =
 else
-	$(libuadebug_la_SOURCES) \
+ dist_add = $(libuadebug_la_SOURCES) 
 endif
+
+EXTRA_DIST = \
+	$(dist_add)
 	Makefile.common
+
