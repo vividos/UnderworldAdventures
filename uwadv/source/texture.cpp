@@ -38,6 +38,11 @@ void ua_texture::convert(ua_texture_manager &texmgr,ua_image &img)
    if (img.get_palette()>=8)
       return;
 
+   convert(img,texmgr.get_palette(img.get_palette()));
+}
+
+void ua_texture::convert(ua_image &img, ua_onepalette &pal)
+{
    Uint8 *pix = &img.get_pixels()[0];
 
    unsigned int origx = img.get_xres();
@@ -52,8 +57,6 @@ void ua_texture::convert(ua_texture_manager &texmgr,ua_image &img)
    v = float(origy)/yres;
 
    texels.resize(xres*yres,0x00000000);
-
-   ua_onepalette &pal = texmgr.get_palette(img.get_palette());
 
    for(unsigned int y=0; y<origy; y++)
    for(unsigned int x=0; x<origx; x++)
@@ -114,6 +117,11 @@ void ua_texture::use(ua_texture_manager &texmgr, unsigned int animstep)
    texmgr.invalidate_tex();
 
    glBindTexture(GL_TEXTURE_2D,texname[animstep]);
+}
+
+void ua_texture::clean()
+{
+   glDeleteTextures(texcount,&texname[0]);
 }
 
 

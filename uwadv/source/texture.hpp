@@ -87,6 +87,9 @@ public:
    void convert(ua_texture_manager &texmgr, ua_image_list &imglist,
       unsigned int start=0, unsigned int until=-1);
 
+   //! converts image with custom palette to texture
+   void convert(ua_image &img, ua_onepalette &pal);
+
    //! prepares texture for usage
    void prepare(bool mipmaps=false, GLenum min_filt = GL_LINEAR,
       GLenum max_filt = GL_LINEAR);
@@ -99,6 +102,9 @@ public:
 
    //! returns v texture coordinate
    float get_tex_v(){ return v; }
+
+   //! cleans up texture name(s) after use
+   void clean();
 
 protected:
    //! upper left texture coordinates
