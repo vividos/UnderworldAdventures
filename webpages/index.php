@@ -46,6 +46,9 @@ function insert_mail()
   .newsHeading { font-size:14pt; font-weight:bold; }
   .newsBody { font-size:11pt; margin-left:32px; }
 
+  .devlogHeading { margin-left:20px; font-weight:bold; padding-top:10px; }
+  .devlogBody { font-size:11pt; }
+
  </style>
 </head>
 <body>
