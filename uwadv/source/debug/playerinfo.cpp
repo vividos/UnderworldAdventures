@@ -32,30 +32,120 @@
 
 // ua_playerinfo_list misc. stuff
 
-const char* ua_playerinfo_list::frame_name = "playerinfo";
+const char* ua_playerinfo_list::frame_name = "Player Info";
 
 // event table
 BEGIN_EVENT_TABLE(ua_playerinfo_list, wxListCtrl)
 END_EVENT_TABLE()
+
+const char* ua_playerinfo_captions[] =
+{
+   "xpos",
+   "ypos",
+   "height",
+   "angle",
+
+   // attributes
+   "gender",
+   "handedness",
+   "appearance",
+   "profession",
+   "maplevel",
+   "strength",
+   "dexterity",
+   "intelligence",
+   "life",
+   "max_life",
+   "mana",
+   "max_mana",
+   "weariness",
+   "hungriness",
+   "poisoned",
+   "mentalstate",
+   "nightvision",
+   "talks",
+   "kills",
+   "level",
+   "exp_points",
+   "difficulty",
+
+   // skills
+   "attack",
+   "defense",
+   "unarmed",
+   "sword",
+   "axe",
+   "mace",
+   "missile",
+   "mana",
+   "lore",
+   "casting",
+   "traps",
+   "search",
+   "track",
+   "sneak",
+   "repair",
+   "charm",
+   "picklock",
+   "acrobat",
+   "appraise",
+   "swimming",
+};
 
 
 // ua_playerinfo_list methods
 
 ua_playerinfo_list::ua_playerinfo_list(wxWindow *parent,
    const wxWindowID id, const wxPoint& pos, const wxSize& size, long style)
-:wxListCtrl(parent, id, pos, size, style)
+:wxListCtrl(parent, id, pos, size, style | wxLC_REPORT | wxLC_HRULES | wxLC_VRULES)
 {
    wxListItem column;
    column.m_format = wxLIST_FORMAT_LEFT;
-   column.m_width = 120;
+   column.m_width = 110;
    column.m_text = "Player Attribute";
    column.m_mask = wxLIST_MASK_TEXT | wxLIST_MASK_WIDTH | wxLIST_MASK_FORMAT;
 
    InsertColumn(0,column);
 
-   column.m_width = 200-120-10;
+   column.m_width = 200-column.m_width-20;
    column.m_text = "Value";
    InsertColumn(1,column);
+}
+
+void ua_playerinfo_list::UpdateData(ua_debug_interface* inter, bool to_underw)
+{
+   ua_uw_access_api* api = inter->get_access_api();
+
+   DeleteAllItems();
+
+   for(unsigned int i=0; i<SDL_TABLESIZE(ua_playerinfo_captions); i++)
+   {
+      // set item caption
+      wxString caption(ua_playerinfo_captions[i]);
+      long nr = InsertItem(i,caption);
+
+      // set value
+      wxString value;
+      double d;
+
+      if (i<4)
+      {
+         api->player_value(inter,false,i,d);
+         value.Printf("%3.2f",d);
+      }
+      else
+      {
+         unsigned int val;
+         if (i<4+ua_attr_max)
+            api->player_attribute(inter,false,i-4,val);
+         else
+            api->player_skill(inter,false,i-4-ua_attr_max,val);
+
+         value.Printf("%u",val);
+      }
+
+      SetItem(nr,1,value);
+   }
 }
 
 void ua_playerinfo_list::AddBar(wxFrameLayout* pLayout)
@@ -64,7 +154,7 @@ void ua_playerinfo_list::AddBar(wxFrameLayout* pLayout)
 
    cbDimInfo sizes( 600,200, // when docked horizontally
       200,800, // when docked vertically
-      200,400, // when floated
+      170,400, // when floated
       FALSE,   // the bar is not fixed-size
       4,       // vertical gap (bar border)
       4        // horizontal gap (bar border)

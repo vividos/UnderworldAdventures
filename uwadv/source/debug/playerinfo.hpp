@@ -41,6 +41,8 @@ public:
    ua_playerinfo_list(wxWindow *parent, const wxWindowID id, const wxPoint& pos,
       const wxSize& size, long style);
 
+   //! updates data from underworld
+   void UpdateData(ua_debug_interface* inter, bool to_underw=false);
 
    //! adds bar to frame layout
    void AddBar(wxFrameLayout* pLayout);
