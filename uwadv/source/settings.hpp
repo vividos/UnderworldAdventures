@@ -63,6 +63,9 @@ enum ua_settings_key
    //! path to the savegame folder
    ua_setting_savegame_folder,
 
+   //! boolean value that indicates if uwadv-specific features are enabled
+   ua_setting_uwadv_features,
+
    //! screen resolution string, in the form <xres> x <yres>
    ua_setting_screen_resolution,
 

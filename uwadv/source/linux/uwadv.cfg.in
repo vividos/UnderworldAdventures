@@ -25,6 +25,13 @@ uadata-path @UADATAPATH@
 savegame-folder ./uasave/
 
 #
+# enables or disables Underworld Adventures specific features and
+# enhancements. either set to "yes" or "no"
+#
+
+enable-uwadv-features yes
+
+#
 # sets the screen resolution to use
 # resolution must be specified in the form "<xres> x <yres>", # e.g. "800 x 600"
 #
