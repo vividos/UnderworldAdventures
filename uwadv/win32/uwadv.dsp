@@ -562,6 +562,10 @@ SOURCE=..\source\mousecursor.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\source\pathfinder.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\source\quadtree.cpp
 # End Source File
 # Begin Source File
@@ -643,6 +647,10 @@ SOURCE=..\source\models.hpp
 # Begin Source File
 
 SOURCE=..\source\mousecursor.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\pathfinder.hpp
 # End Source File
 # Begin Source File
 
