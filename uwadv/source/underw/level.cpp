@@ -35,7 +35,7 @@
 // ua_level methods
 
 ua_level::ua_level()
-:used(false)
+:used(true)
 {
    // do empty tile map
    tiles.resize(64*64);
