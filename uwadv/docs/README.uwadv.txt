@@ -4,7 +4,7 @@ Underworld Adventures Readme File
 Underworld Adventures is a project to recreate Ultima Underworld 1 on modern
 operating systems (e.g. Win32, Linux or MacOS), using the original game files.
 It uses OpenGL for 3D graphics, the SDL library for platform specific tasks
-and Lua for scripting. It is developed as Open-Source and is licensed under
+and Lua for scripting. It is developed as Open Source and is licensed under
 the GNU General Public License.
 
 Underworld Adventures is Copyright (C) 2002 Underworld Adventures Team
@@ -31,7 +31,8 @@ when the "eye" symbol is highlighted.
 Level changing: To let the user explore more of the Abyss than just the first
 level, there are some keyboard keys to change the levels. Press Alt + PageDown
 to descend a level, and Alt + PageUp to move one level up. You are usualy
-placed at different interesting spots when changing levels.
+placed at different interesting spots when changing levels. Users of the
+"uw_demo" can use these keys to change positions in the first level.
 
 SPOILER WARNING: Since this is considered cheating, you might see things that
                  you should not see before ending the game. So better don't
