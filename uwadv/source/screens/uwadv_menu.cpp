@@ -45,21 +45,6 @@ void ua_uwadv_menu_screen::init(ua_game_core_interface* thecore)
 
    ua_settings &settings = core->get_settings();
 
-   // select uw1 as game for now
-   if (!settings.get_bool(ua_setting_uw1_avail))
-   {
-      throw ua_exception("could not find relevant game files");
-   }
-
-   // select proper game type
-   if (settings.get_bool(ua_setting_uw1_is_uw_demo))
-      settings.set_gametype(ua_game_uw_demo);
-   else
-      settings.set_gametype(ua_game_uw1);
-
-   // set the generic uw path
-   settings.set_value(ua_setting_uw_path,settings.get_string(ua_setting_uw1_path));
-
    // set game prefix to use
    std::string prefix("uw1");
    settings.set_value(ua_setting_game_prefix,prefix);
