@@ -45,7 +45,7 @@ bool ua_conv_dasm::init(ua_gamestrings* mygs, const char *cnvfile,
 
       if (allstrings.find(0x0e00+conv) == allstrings.end())
       {
-         printf("could not find string block 0x%04x.",0x0e00+conv);
+         printf("could not find string block 0x%04x.\n",0x0e00+conv);
          return false;
       }
    }
@@ -66,9 +66,8 @@ void ua_conv_dasm::disassemble()
 
    // output all stuff
 
-   printf(";\n; conversation #%u, string block 0x%04x\n"
-      "; npc name: %s\n;\n\n",conv_nr,strblock,
-      gs->get_string(7,conv_nr+16).c_str());
+   printf(";\n; conversation #%u\n; string block 0x%04x, name: %s\n;\n\n",
+      conv_nr,strblock,gs->get_string(7,conv_nr+16).c_str());
 
    unsigned int max = code.size();
    for(unsigned int i=0; i<max; i++)
@@ -135,6 +134,9 @@ void ua_conv_dasm::decompile(bool with_opcodes)
       for(unsigned int i=0; i<max; i++)
          imported_functions.push_back(imported_funcs[i].name);
    }
+
+   printf("conversation #%u\nstring block 0x%04x, name %s\n\n",
+      conv_nr,strblock,gs->get_string(7,conv_nr+16).c_str());
 
    // load code into conversation graph and process
    ua_conv_graph cgraph;
