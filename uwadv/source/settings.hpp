@@ -64,6 +64,9 @@ enum ua_settings_key
    //! path to the savegame folder
    ua_setting_savegame_folder,
 
+   //! custom keymap file to load
+   ua_setting_custom_keymap,
+
    //! boolean value that indicates if uwadv-specific features are enabled
    ua_setting_uwadv_features,
 

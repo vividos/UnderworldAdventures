@@ -45,6 +45,7 @@ struct
    { "uw2-path", ua_setting_uw2_path },
    { "uadata-path", ua_setting_uadata_path },
    { "savegame-folder", ua_setting_savegame_folder },
+   { "custom-keymap", ua_setting_custom_keymap },
    { "enable-uwadv-features", ua_setting_uwadv_features },
    { "screen-resolution", ua_setting_screen_resolution },
    { "fullscreen", ua_setting_fullscreen },
