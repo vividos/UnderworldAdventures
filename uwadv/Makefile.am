@@ -17,6 +17,7 @@ EXTRA_DIST =  \
 	docs/uw1-walkthrough.txt \
 	docs/uw2-walkthrough.txt \
 	docs/uw-formats.txt \
+	docs/uw1-keyboard.txt \
 	misc/anmformt.zip \
 	misc/uw1-combinations.txt \
 	misc/uw1-common-obj-prop.txt \
