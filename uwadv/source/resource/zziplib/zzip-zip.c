@@ -190,7 +190,7 @@ __zzip_find_disk_trailer(int fd, zzip_off_t filesize,
          offset -= ZZIP_BUFSIZ/2; /* outer loop step */
          maplen = ZZIP_BUFSIZ;
 
-         if (offset+maplen > (zzip_off_t)filesize) 
+         if ((zzip_off_t)(offset+maplen) > filesize) 
              maplen = filesize-offset; 
          
          if (filesize-offset > 64*1024) 
