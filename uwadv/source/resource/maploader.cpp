@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -56,12 +56,25 @@ ua_levelmap_tiletype ua_tile_type_mapping[16] =
 };
 
 
+// external function
+extern SDL_RWops* ua_rwops_uw2dec(FILE* fd,unsigned int blocknum,
+   unsigned int destsize);
+
+
 // global functions
 
-void ua_import_levelmaps(ua_settings &settings, const char *folder,
-   std::vector<ua_level> &levels)
+void ua_import_levelmaps(ua_settings& settings, const char* folder,
+   std::vector<ua_level>& levels)
 {
-   unsigned int numlevels = settings.get_gametype() == ua_game_uw_demo ? 1 : 9;
+   // determine number of levels
+   unsigned int numlevels = 0;
+   switch(settings.get_gametype())
+   {
+   case ua_game_uw_demo: numlevels = 1; break;
+   case ua_game_uw1: numlevels = 9; break;
+   case ua_game_uw2: numlevels = 80; break;
+   }
+
    levels.reserve(numlevels);
 
    ua_trace("importing %u level maps from %s\n",numlevels,folder);
@@ -84,12 +97,13 @@ void ua_import_levelmaps(ua_settings &settings, const char *folder,
       throw ua_exception(text.c_str());
    }
 
-   Uint16 wall_textures[48];
-   Uint16 floor_textures[10];
+   Uint16 textures[64];
 
    // uw_demo is treated specially
    if (settings.get_gametype() == ua_game_uw_demo)
    {
+      // load uw_demo maps
+
       ua_level level;
 
       // import texture usage table
@@ -97,67 +111,114 @@ void ua_import_levelmaps(ua_settings &settings, const char *folder,
          mapfile.assign(settings.get_string(ua_setting_uw_path));
          mapfile.append("data/level13.txm");
 
-         FILE *fd2 = fopen(mapfile.c_str(),"rb");
-         if (fd2==NULL)
+         SDL_RWops* rwops = SDL_RWFromFile(mapfile.c_str(),"rb");
+         if (rwops == NULL)
          {
             std::string text("could not open file ");
             text.append(mapfile);
             throw ua_exception(text.c_str());
          }
-         level.import_texinfo(fd2,wall_textures,floor_textures);
-         fclose(fd2);
+         level.import_texinfo(rwops,textures);
+         SDL_RWclose(rwops);
       }
 
       // import map
-      level.import_map(fd,wall_textures,floor_textures);
+      SDL_RWops* rwops = SDL_RWFromFP(fd,0);
+      level.import_map(rwops,textures);
 
       // import objects
-      fseek(fd,0,SEEK_SET);
-      level.get_mapobjects().import_objs(fd);
+      SDL_RWseek(rwops,0,SEEK_SET);
+      level.get_mapobjects().import_objs(rwops);
+      SDL_RWclose(rwops);
 
       levels.push_back(level);
    }
    else
+   if (settings.get_gametype() == ua_game_uw1)
    {
+      // load uw1 maps
 
-   // read in offsets
-   std::vector<Uint32> offsets;
-   Uint16 numoffsets = fread16(fd);
-   offsets.resize(numoffsets,0);
+      // read in offsets
+      std::vector<Uint32> offsets;
+      Uint16 noffsets = fread16(fd);
+      offsets.resize(noffsets,0);
 
-   for(Uint16 n=0; n<numoffsets; n++)
-      offsets[n]=fread32(fd);
+      for(Uint16 n=0; n<noffsets; n++)
+         offsets[n] = fread32(fd);
 
-   // load all levels
-   for(unsigned int i=0; i<numlevels; i++)
+      SDL_RWops* rwops = SDL_RWFromFP(fd,0);
+
+      // load all levels
+      for(unsigned int i=0; i<numlevels; i++)
+      {
+         ua_level level;
+
+         // load texture usage table
+         SDL_RWseek(rwops,offsets[i+18],SEEK_SET);
+         level.import_texinfo(rwops,textures);
+
+         // load level map
+         SDL_RWseek(rwops,offsets[i],SEEK_SET);
+         level.import_map(rwops,textures);
+
+         // load object list
+         SDL_RWseek(rwops,offsets[i],SEEK_SET);
+         level.get_mapobjects().import_objs(rwops);
+
+         levels.push_back(level);
+      }
+
+      SDL_RWclose(rwops);
+   }
+   else
+   if (settings.get_gametype() == ua_game_uw2)
    {
-      ua_level level;
+      // load uw2 maps
 
-      // load texture usage table
-      fseek(fd,offsets[i+18],SEEK_SET);
-      level.import_texinfo(fd,wall_textures,floor_textures);
+      // resize; uw2 has some unused level blocks
+      levels.resize(numlevels);
 
-      // load level map
-      fseek(fd,offsets[i],SEEK_SET);
+      // load all levels
+      for(unsigned int i=0; i<numlevels; i++)
+      {
+         SDL_RWops* rwops;
+         ua_level level;
 
-      level.import_map(fd,wall_textures,floor_textures);
+         // load texture mapping
+         rwops = ua_rwops_uw2dec(fd,i+80,0x0086);
+         if (rwops != NULL)
+         {
+            level.import_texinfo(rwops,textures,true);
+            SDL_RWclose(rwops);
+         }
 
-      // load object list
-      fseek(fd,offsets[i],SEEK_SET);
-      level.get_mapobjects().import_objs(fd);
+         // load map / objects
+         rwops = ua_rwops_uw2dec(fd,i,0x7e08);
+         if (rwops == NULL)
+            continue;
 
-      levels.push_back(level);
+         // load level map
+         SDL_RWseek(rwops,0,SEEK_SET);
+         level.import_map(rwops,textures,true);
+
+         // load object list
+         SDL_RWseek(rwops,0,SEEK_SET);
+         level.get_mapobjects().import_objs(rwops);
+
+         SDL_RWclose(rwops);
+
+         // put into vector
+         levels[i] = level;
+      }
    }
 
-   } // end if
    fclose(fd);
 }
 
 
 // ua_level methods
 
-void ua_level::import_map(FILE *fd, Uint16 wall_textures[48],
-   Uint16 floor_textures[10])
+void ua_level::import_map(SDL_RWops* rwops, Uint16 textures[64], bool uw2_mode)
 {
    // read in map info
 
@@ -167,7 +228,7 @@ void ua_level::import_map(FILE *fd, Uint16 wall_textures[48],
 
    for(Uint16 tile=0; tile<64*64; tile++)
    {
-      Uint32 tileword = fread32(fd);
+      Uint32 tileword = SDL_RWread32(rwops);
 
       // extract infos from tile word
       tiles[tile].type = ua_tile_type_mapping[tileword & 0x0000000F];
@@ -181,30 +242,50 @@ void ua_level::import_map(FILE *fd, Uint16 wall_textures[48],
       Uint8 wall_index = (tileword & 0x003F0000) >> 16; // 6 bit wide
       Uint8 floor_index = (tileword & 0x00003C00) >> 10; // 4 bit wide
 
-      if (wall_index>=48) wall_index=0;
-      if (floor_index>=10) floor_index=0;
+      if (!uw2_mode)
+      {
+         if (wall_index>=48) wall_index=0;
+         if (floor_index>=10) floor_index=0;
+      }
 
-      tiles[tile].texture_wall = wall_textures[wall_index];
-      tiles[tile].texture_floor = floor_textures[floor_index];
-      tiles[tile].texture_ceiling = floor_textures[9];
+      if (tile==33+33*64)
+         _asm nop;
+
+      tiles[tile].texture_wall = textures[wall_index];
+      tiles[tile].texture_floor = textures[floor_index + (uw2_mode ? 0 : 48)];
+      tiles[tile].texture_ceiling = textures[uw2_mode ? 32 : (9+48)];
    }
+
+   used = true;
 }
 
-void ua_level::import_texinfo(FILE *fd, Uint16 wall_textures[48],
-   Uint16 floor_textures[10])
+void ua_level::import_texinfo(SDL_RWops* rwops, Uint16 textures[64], bool uw2_mode)
 {
    used_textures.clear();
 
-   Uint16 tex;
-   for(tex=0; tex<48; tex++)
+   if (!uw2_mode)
    {
-      wall_textures[tex]  = fread16(fd)+ua_tex_stock_wall;
-      used_textures.push_back(wall_textures[tex]);
+      Uint16 tex;
+      for(tex=0; tex<48; tex++)
+      {
+         textures[tex]  = SDL_RWread16(rwops)+ua_tex_stock_wall;
+         used_textures.push_back(textures[tex]);
+      }
+      for(tex=48; tex<48+10; tex++)
+      {
+         textures[tex] = SDL_RWread16(rwops)+ua_tex_stock_floor;
+         used_textures.push_back(textures[tex]);
+      }
+      for(tex=48+10; tex<64; textures[tex++]=0);
    }
-   for(tex=0; tex<10; tex++)
+   else
    {
-      floor_textures[tex] = fread16(fd)+ua_tex_stock_floor;
-      used_textures.push_back(floor_textures[tex]);
+      Uint16 tex;
+      for(tex=0; tex<64; tex++)
+      {
+         textures[tex] = SDL_RWread16(rwops);
+         used_textures.push_back(textures[tex]);
+      }
    }
 
 //   for(tex=0; tex<6; tex++)  door_textures[tex]  = fread16(fd);
