@@ -38,7 +38,7 @@ void ua_inventory::init()
    runebag.reset();
    floating_object = 0xffff;
 
-#ifdef _DEBUG
+#ifdef HAVE_DEBUG
 
    Uint16 test_inv[] =
    {

@@ -460,7 +460,7 @@ void ua_ingame_orig_screen::setup_opengl()
    // fog
    glEnable(GL_FOG);
    glFogi(GL_FOG_MODE,GL_EXP2);
-#ifdef _DEBUG
+#ifdef HAVE_DEBUG
    glFogf(GL_FOG_DENSITY,0.1f);
 #else
    glFogf(GL_FOG_DENSITY,0.65f);

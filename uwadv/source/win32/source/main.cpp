@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
 {
    ua_game_win32 ua;
 
-#ifndef _DEBUG
+#ifndef HAVE_DEBUG
    try
 #endif
    {
@@ -50,13 +50,15 @@ int main(int argc, char* argv[])
       ua.run();
       ua.done();
    }
-#ifndef _DEBUG
+#ifndef HAVE_DEBUG
    catch (ua_exception e)
    {
+      ua_trace("caught ua_exception: %s\n",e.what());
       ua.error_msg(e.what());
    }
    catch (std::exception e)
    {
+      ua_trace("caught std::exception\n");
       ua.error_msg("std::exception");
    }
 #endif

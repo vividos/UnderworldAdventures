@@ -558,7 +558,7 @@ int main(int argc, char *argv[])
 
    ua_conv_debugger dbg;
 
-#ifndef _DEBUG
+#ifndef HAVE_DEBUG
    try
 #endif
    {
@@ -567,7 +567,7 @@ int main(int argc, char *argv[])
       // start debugging
       dbg.start();
    }
-#ifndef _DEBUG
+#ifndef HAVE_DEBUG
    catch(ua_exception e)
    {
       printf("caught an ua_exception: \"%s\"\n",e.what());
