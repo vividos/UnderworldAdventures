@@ -33,6 +33,7 @@ Table of Contents
 8.0   Misc. stuff
 8.1   Combining objects
 8.2   Graves
+8.3   Terrain texture properties
 
 
 1.0 General stuff
@@ -77,7 +78,7 @@ Table of Contents
    charhead.gr    character images, for conversations
    chrbtns.gr     character generation graphics, palette #3
    chrgen.dat
-   cmb.dat        combining rules (see 7.1)
+   cmb.dat        combining rules (see 8.1)
    cnv.ark        conversation scripts
    comobj.dat     common object properties
    compass.gr     compass graphics
@@ -97,7 +98,7 @@ Table of Contents
    fontbutn.sys   font for buttons (?)
    fontchar.sys   character generation font (?)
    genhead.gr     heads images
-   grave.dat      (?) grave IDs
+   grave.dat      grave IDs
    heads.gr       avatar character generation heads
    inv.gr         inventory graphics, scroll backgrounds (?)
    lev.ark        level maps, texture indices and object list
@@ -124,7 +125,7 @@ Table of Contents
    skills.dat
    spells.gr      spells graphics
    strings.pak    all the game strings
-   terrain.dat
+   terrain.dat    terrain texture properties (see 8.3)
    tmflat.gr      wall switches and other decals
    tmobj.gr       more wall decals
    uw.cfg         underworld configuration (audio, cut scenes)
@@ -212,8 +213,8 @@ Table of Contents
 
      They are stored after the tile map data. First come 256 entries for
      critters, each 0x1b (=27) bytes long. The first 8 bytes form two Int32
-     that describe general critter info (see below). The remaining bytes are
-     unknown.
+     that describe general critter info (see below). The remaining bytes is
+     be NPC data (like xhome, yhome etc.).
 
      Then follows 0x400 (=1024) entries for objects, the master object list.
      They only consist of the two Int32's, the general object info:
@@ -1134,5 +1135,26 @@ Table of Contents
 
    Large headstone images live in the cutscene file cuts/cs401.n01, one frame
    each, indexed by grave ID.
+
+8.3 Terrain texture properties
+
+   The file terrain.dat in the data directory contains information on the
+   terrain types represented by the various wall and floor textures. There is
+   a 16-bit word per texture, up to a maximum of 256 walls and 256 floors.
+   Floor data therefore starts at file offset 0x200. Terrain types are:
+
+    0000    Normal (solid) wall or floor
+    0002    Ankh mural (shrines)
+    0003    Stairs up
+    0004    Stairs down
+    0005    Pipe
+    0006    Grating
+    0007    Drain
+    0008    Chained-up princess
+    0009    Window
+    000a    Tapestry
+    000b    Textured door (used for the lock to the Key of Infinity)
+    0010    Water (not waterfall)
+    0020    Lava (not lavafall)
 
 eof
