@@ -81,13 +81,16 @@ void ua_uwadv_menu_screen::render()
 void ua_uwadv_menu_screen::tick()
 {
 #ifdef HAVE_DEBUG
-//   core->push_screen(new ua_start_menu_screen);
+
+#if 0
    core->push_screen(new ua_start_splash_screen);
+//   core->push_screen(new ua_start_menu_screen);
+#else
+   core->get_underworld().import_savegame(core->get_settings(),"data/",true);
+   core->get_underworld().get_scripts().lua_started_newgame();
 
-//   core->get_underworld().import_savegame(core->get_settings(),"data/",true);
-//   core->get_underworld().get_scripts().lua_started_newgame();
-
-//   core->push_screen(new ua_ingame_orig_screen);
+   core->push_screen(new ua_ingame_orig_screen);
+#endif
 
 #else
    // for now, immediately start splash screen
