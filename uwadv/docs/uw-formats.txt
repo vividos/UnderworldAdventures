@@ -170,7 +170,7 @@ Table of Contents
    Underworld 1, there are 45 offsets which point to different data:
 
    <9 blocks level map/object info>
-   <9 blocks unknown info>
+   <9 blocks object animation overlay info>
    <9 blocks level texture usage>
    <9 blocks level automap flags>
    <9 blocks level comment entries>
@@ -266,15 +266,19 @@ Table of Contents
       01a5: an_open trigger
       01a6: an_unlock trigger
 
-   * Unknown info
+   * Object animation overlay info
 
-     The 9 blocks contain entries with length of 6 bytes with unknown content.
+     The 9 blocks contain entries with length of 6 bytes with infos about
+     objects with animation overlay images from animo.gr.
      It always is 0x0180 bytes long, which leads to 64 entries.
 
-     0000   Int16   unk1
+     0000   Int16   link1
      0002   Int16   unk2
      0004   Int8    tile x coordinate
      0005   Int8    tile y coordinate
+
+     link1's most significant 10 bits contain a link into the object table,
+     to the object that should get an animation overlay.
 
    * Level texture usage
 
