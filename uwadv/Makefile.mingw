@@ -1,6 +1,6 @@
 #
 # Underworld Adventures - an Ultima Underworld hacking project
-# Copyright (c) 2002,2003,2004 Underworld Adventures Team
+# Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,37 +30,37 @@ UWADV_PATH = c:/uwadv
 
 # set to "yes" for console or "no" to have stdout.txt/stderr.txt
 # for releases, always use "no"
-WITH_CONSOLE = no
+WITH_CONSOLE = yes
 
 # set to "yes" to have some debugging features
 # for releases, always use "no"
-WITH_DEBUGGING = no
+WITH_DEBUGGING = yes
 
 # path to mingw compiler
-MINGW_PATH = c:/mingw
+MINGW_PATH = d:/devel/mingw
 
 # version stored in installer
-UWADV_VERSION = 0.9-mojito
+UWADV_VERSION = 0.10-test1
 
 # -------------------------------------------------------------------
 # STLport configuration
 # -------------------------------------------------------------------
 
 # set to "yes" if you have STLport (and modify STLPORT_PATH then)
-WITH_STLPORT = yes
+WITH_STLPORT = no
 
 # path to where STLport was installed and built
-STLPORT_PATH = c:/mingw/stlport
+STLPORT_PATH = d:/devel/packages/STLport
 
 # -------------------------------------------------------------------
 # wxWidgets configuration
 # -------------------------------------------------------------------
 
 # set to "yes" if you have wxWidgets
-WITH_WXWIDGETS = yes
+WITH_WXWIDGETS = no
 
 # path to wxWidgets base dir (only needed for uadebug.dll)
-WXWIN_PATH = d:/projekte/wxMSW
+WXWIN_PATH = d:/devel/packages/wxMSW
 
 # -------------------------------------------------------------------
 # docbook configuration
@@ -71,17 +71,17 @@ WITH_DOCBOOK_XSL = yes
 
 # base path to docbook-xsl package
 # note: for some reason xsltproc doesn't like all slashes in the path
-DOCBOOK_XSL_BASEPATH = d:\\uwadv/docbook/docbook-xsl-1.64.0
+DOCBOOK_XSL_BASEPATH = d:\\devel/packages/docbook-xsl-1.64.0
 
 # xsl-transformation processor to use
 # choose either "xsltproc" or "msxsl" and configure paths below
 XSLT_PROCESSOR = xsltproc
 
 # path and filename for the xsltproc utility
-XSLTPROC_PATH = d:/uwadv/docbook/xsltproc.exe
+XSLTPROC_PATH = d:/devel/tools/xslt/xsltproc.exe
 
 # path and filename for the msxsl utility
-MSXSL_PATH = d:/uwadv/docbook/msxsl.exe
+MSXSL_PATH = d:/devel/tools/xslt/msxsl.exe
 
 # -------------------------------------------------------------------
 # configuration details
@@ -138,6 +138,7 @@ endif
 ifeq ("$(WITH_STLPORT)", "yes")
  STLPORT_INCLUDE = -I$(STLPORT_PATH)/stlport/
  STLPORT_LIB = -L$(STLPORT_PATH)/lib/
+ DEFINES += -D_STLP_USE_AUTO_LINK -D_STLP_VERBOSE_AUTO_LINK
  ifeq ("$(WITH_DEBUGGING)", "yes")
   DEFINES += -D_STLP_DEBUG -D_STLP_USE_STATIC_LIB
   #-D_STLP_DEBUG_ALLOC -D_STLP_USE_SYSTEM_ASSERT
@@ -151,10 +152,10 @@ else
  STLPORT_LIB =
 endif
 
-INCLUDES = $(SDL_INCLUDE) $(STLPORT_INCLUDE) $(FMOD_INCLUDE) \
-	-Isource/ -Isource/audio -Isource/base -Isource/conv -Isource/import \
+INCLUDES = $(SDL_INCLUDE) $(STLPORT_INCLUDE) $(ZLIB_INCLUDE) \
+	-Isource -Isource/audio -Isource/base -Isource/conv -Isource/import \
 	-Isource/renderer -Isource/script -Isource/ui -Isource/underw \
-	-Isource/script/lua/include/ -Isource/base/zziplib/
+	-Isource/script/lua/include -Isource/base/zziplib
 
 # wxWidgets
 ifeq ("$(WITH_WXWIDGETS)", "yes")
@@ -164,7 +165,6 @@ ifeq ("$(WITH_WXWIDGETS)", "yes")
 	-lwxmsw -lfl -lole32 -loleaut32 -luuid \
 	-lcomctl32 -lwsock32
 	# -lwinspool -lcomdlg32 -ladvapi32 -lshell32 \
-	# -lodbc32 -lodbccp32 -lrpcrt4.lib
 	# -lzlib -lpng -ljpeg -ltiff -lregex
 else
  WXWIN_LIB =
@@ -211,8 +211,7 @@ uwadv_EXEC = uwadv.exe
 
 uwadv_win32objects = \
 	source/win32/game_win32.o \
-	source/win32/uwadv_res.o \
-	source/win32/debug_impl.o
+	source/win32/uwadv_res.o
 
 uwadv_CPPs = $(filter %.cpp,$(uwadv_SOURCES))
 uwadv_Cs = $(filter %.c,$(uwadv_SOURCES))
@@ -222,13 +221,13 @@ uwadv_OBJS = $(uwadv_CPPs:%.cpp=source/%.o) \
 
 uwadv_LIBS = $(WIN32_LIB) -lwinmm $(OPENGL_LIB) \
 	-L. -lzziplib -llua \
-	$(uwadv_SDL_LIB) $(FMOD_LIB) $(STLPORT_LIB) -lz
+	$(uwadv_SDL_LIB) $(STLPORT_LIB) -lz
 
 
 ifeq ("$(WITH_CONSOLE)", "yes")
 uwadv_LDFLAGS = -mconsole
 else
-uwadv_LDFLAGS =
+uwadv_LDFLAGS = -mwindows
 endif
 
 
@@ -496,8 +495,8 @@ luac-clean:
 	cd source/script/lua/src/luac && make clean
 
 update: uwadv data uaconfig
-	strip $(uwadv_EXEC)
-	strip $(uaconfig_EXEC)
+	strip --strip-all $(uwadv_EXEC)
+	strip --strip-all $(uaconfig_EXEC)
 	mkdir -p $(UWADV_PATH)
 	cp $(uwadv_EXEC) $(UWADV_PATH)
 	cp $(uaconfig_EXEC) $(UWADV_PATH)
