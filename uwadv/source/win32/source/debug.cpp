@@ -28,6 +28,7 @@
 // needed includes
 #include "common.hpp"
 #include "debug.hpp"
+#include <SDL_thread.h>
 
 
 // debugger implementation class
@@ -44,11 +45,21 @@ public:
    virtual void start_debugger();
 
 protected:
+   //! debugger thread procedure
+   static int thread_proc(void* ptr);
+
+protected:
    //! indicates if debugger dll is available
    bool avail;
 
    //! DLL module handle
    HMODULE dll;
+
+   //! semaphore that indicates if debugger still runs
+   SDL_sem* sem_debugger;
+
+   //! debug thread
+   SDL_Thread* thread_debug;
 };
 
 
@@ -75,37 +86,54 @@ ua_debug_impl_win32::ua_debug_impl_win32()
    avail = dll != NULL;
 
    avail &= NULL != ::GetProcAddress(dll,"uadebug_start");
-   avail &= NULL != ::GetProcAddress(dll,"uadebug_done");
+
+   sem_debugger = SDL_CreateSemaphore(0);
+   thread_debug = NULL;
 }
 
 ua_debug_impl_win32::~ua_debug_impl_win32()
 {
-   // call uadebug_done() and free library
-   if (avail)
-   {
-         // get function pointer
-      void* funcptr = ::GetProcAddress(dll,"uadebug_done");
-
-      uadebug_done_func uadebug_done = (uadebug_done_func)funcptr;
-
-      uadebug_done();
-
-      // free DLL instance
-      ::FreeLibrary(dll);
-   }
+   // free DLL instance
+   ::FreeLibrary(dll);
 
    avail = false;
+
+   SDL_DestroySemaphore(sem_debugger);
+
+   if (thread_debug!=NULL)
+      SDL_KillThread(thread_debug);
 }
 
 void ua_debug_impl_win32::start_debugger()
 {
-   if (avail)
+   // check if debugger already runs
+   if (avail && SDL_SemValue(sem_debugger)==0)
+   {
+      // start new thread
+      thread_debug = SDL_CreateThread(thread_proc,this);
+   }
+}
+
+int ua_debug_impl_win32::thread_proc(void* ptr)
+{
+   ua_debug_impl_win32* This = reinterpret_cast<ua_debug_impl_win32*>(ptr);
+
+   // increase semaphore count
+   SDL_SemPost(This->sem_debugger);
+
+   if (This->avail)
    {
       // get function pointer
-      void* funcptr = ::GetProcAddress(dll,"uadebug_start");
+      void* funcptr = ::GetProcAddress(This->dll,"uadebug_start");
 
       uadebug_start_func uadebug_start = (uadebug_start_func)funcptr;
 
+      // start debugger
       uadebug_start();
    }
+
+   // decrease semaphore count
+   SDL_SemWait(This->sem_debugger);
+
+   return 0;
 }
