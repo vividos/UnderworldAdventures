@@ -47,6 +47,7 @@ public:
    virtual void start_debugger();
    virtual void lock();
    virtual void unlock();
+   virtual void tick();
 
 protected:
    //! debugger thread procedure
@@ -167,4 +168,9 @@ void ua_debug_impl_win32::lock()
 
 void ua_debug_impl_win32::unlock()
 {
+}
+
+void ua_debug_impl_win32::tick()
+{
+   api.tick();
 }

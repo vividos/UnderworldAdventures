@@ -220,6 +220,9 @@ void ua_game::run()
 
       if (exit_game) break;
 
+      // do debug processing (uwadv thread)
+      debug->tick();
+
       // process incoming events
       process_events();
 

@@ -56,6 +56,8 @@ public:
    //! unlocks underworld object
    virtual void unlock()=0;
 
+   //! does debugger processing on uwadv side
+   virtual void tick()=0;
 
    //! dtor
    virtual ~ua_debug_interface(){}

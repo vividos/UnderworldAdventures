@@ -47,6 +47,7 @@ public:
    virtual void start_debugger();
    virtual void lock();
    virtual void unlock();
+   virtual void tick();
 
 protected:
    //! game core object
@@ -94,6 +95,10 @@ void ua_debug_impl_linux::lock()
 }
 
 void ua_debug_impl_linux::unlock()
+{
+}
+
+void ua_debug_impl_linux::tick()
 {
 }
 
