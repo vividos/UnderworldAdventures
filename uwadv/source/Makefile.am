@@ -58,3 +58,9 @@ EXTRA_DIST = \
 	win32/source/uaconfig/uaconfig.cpp \
 	win32/source/uaconfig/uaconfig.hpp \
 	win32/source/uaconfig/uaconfig_res.rc
+
+lua/liblualib.la:
+	cd lua; $(MAKE)
+
+resource/zziplib/libzzip.la:
+	cd resource/zziplib; $(MAKE)
