@@ -53,9 +53,15 @@ public:
    //! returns true when savegames are available
    bool savegames_avail();
 
+   //! returns a list of all configuration files to load
+   std::vector<std::string> &get_cfgfiles_list(){ return cfgfiles_list; }
+
 protected:
    //! path to "uadata" dir
    std::string uadata_path;
+
+   //! list of all config files to load
+   std::vector<std::string> cfgfiles_list;
 };
 
 #endif
