@@ -54,10 +54,16 @@ Table of Contents
 
    Additional information from:
 
+   Fabian Pache
+     - map details, UW2 related
+     - 3D models, UW2 related
+
    Alistair Brown (basic object format, via the Underworld II editor
       <http://bearcity.pwp.blueyonder.co.uk/>)
 
    Ulf Wohlers (Objects and 3D models)
+
+   $Id$
 
 
 1.1 Summary of data files
@@ -127,7 +133,7 @@ Table of Contents
    strings.pak    all the game strings
    terrain.dat    terrain texture properties (see 8.3)
    tmflat.gr      wall switches and other decals
-   tmobj.gr       more wall decals
+   tmobj.gr       more wall decals, 3d model textures
    uw.cfg         underworld configuration (audio, cut scenes)
    views.gr       the letters "mv", probably not used
    w16.tr         wall textures, size 16x16
@@ -221,10 +227,17 @@ Table of Contents
         bits      len  description
          0 -  3    4   tile type (0-9, see below)
          4 -  7    4   floor height
-         8 -  9    2   unknown, always 0
+         8 -  9    2   ?? special light feature ??
         10 - 13    4   floor texture index (from level texture usage block)
         14         1   unknown (only used on level 6, near the shrine)
         15         1   door bit (when 1, a door is present)
+
+        about bit 8,9:
+        They have me hitting my head against the wall. Bit 9 is never set, so
+        it can be gladly ignored. For UW2 Bit 8 is set pretty often, and if
+        set the light level changes. Ironically 1 sometimes means daylight (in
+        Lord British Castle Lv 1) but sometimes 0 means daylight (LBC Lv 5).
+        But the areas are exactly right.
 
      02 tile properties 2 / object list link
 
@@ -261,7 +274,10 @@ Table of Contents
      They contain 4 Int16 words which can be split into bits:
 
      00 objid / flags:      0- 8   Object ID (see below)
+                            9-10   ?? index for 3D-object-textures ??
                               12   Enchantment flag (enchantable objects only)
+                              14   Set for only for traps, triggers and locks
+                                   - "Effects The World Flag?"
                               15   Link flag (link field is quantity/special)
 
      02 position:           0- 6   Object Z position (0-127)
@@ -392,6 +408,55 @@ Table of Contents
    * Level comment entries
 
      not decoded yet
+
+2.0b Underworld 2 modifications
+
+   "lev.ark" has a silightly different format here.
+
+     0000  Int32  number of directory entries <320>
+     0004  Int16  unknown
+
+   now follow 4 tables, each for the number of directory entries
+   every table entry is a Int32
+
+     Table 1: offset table
+       number of bytes from bof to datachunk.
+       an offset of 0 means the entry is not (yet) used
+
+     Table 2: flags for the datachunk
+       Bit 0 is always set
+       Bit 1 is set for compressed entries
+       Bit 2 is set for entries where data size is not maxsize,
+             might be chunks that are writen to when the game is saved
+
+     Table 3: data size
+       either compressed or uncompressed data, according to the flags
+
+     Table 4: maxsize
+       this is mainly a guess
+       maxsize is always greater or equal to data size.
+       If it is greater the exess bytes are zeros
+
+     there are 320 entries in the standard lev.ark
+     these can be split into 4 sets of 80 entries each
+       0.. 79  level maps
+      80..159  texture mappings
+     160..239  map visibility flags
+     240..319  ??? strings, entered on map ???
+
+   * Level maps
+
+     as described in 2.0
+
+   * Texture mappings
+
+     these are 134 Bytes large, either uncompressed or after decompression
+     each of the 64 entries is an Int16, the index of the texture in t64.tr
+     the first 16 entries are shared by the floor and wall indices
+     entries 17 to 63 are wall-only textures
+     ceiling seems to be textured by entry 0x20
+
+     the last 6 bytes appear to be some kind of checksum, always 00 01 02 03 04 05 
 
 
 2.1 Palettes
@@ -571,6 +636,24 @@ Table of Contents
     pres2.byt      "a blue sky prod. game" screen, palette #5
     win1.byt       winning screen with text, palette #7
     win2.byt       blank winning screen for character info, palette #7
+
+   Underworld 2 has no .byt files. Instead there is one "byt.ark". Like every
+   other ark file this starts with some tables followed by the data, in this
+   case the images themselves. There are 11 entries, of which only 9 are
+   valid:
+
+     entry   palette   usage
+      0       1        Map framework - background, crystal, and the like
+      1       0        Character generation
+      2       0        Bartering
+      3                -unused-
+      4       0        HUD - the frame, bottles, scroll
+      5       0        Underworld 2 Main menu - without menu entries
+      6       5        Origin presents
+      7       5        Looking Glass Technologies
+      8       0        Congratulation screen
+      9       0        like the above but without the text
+     10                -unused-
 
 
 2.6 Palette mappings
@@ -1909,7 +1992,64 @@ Table of Contents
       1E   blackrock gem (UWII)
       1F   shelf (UWII)
 
-   todo more
+   Notes from Fabian Pache (http://uw2rev.sourceforge.net) for UW2 models:
+
+   I am not concerned with recreating the original 3D models because 
+   (1) they are stored within the executable (thanks Ulf Wohlers)
+   (2) they are rather poor
+   Therefore I replace the old objects with new ones.
+
+   There are two types of 3D objects: Dynamic and Static objects
+   The following information has not been obtained by debugging, disassembling
+   or any other kind of dark magic, but rather by observing and 
+   crossreferencing various files. It may not be the way UW" really does things,
+   but it's the way things look. 
+   I'll refer to unknown as variable1 and to link2 as
+   variable2 as their usage is... well, variable.
+
+7.1 Dynamic objects
+
+   Dynamic objects either have a context sensitve geometry, like pillars or
+   they have context sensitive textures (tmap, bridge...). I'll be talking
+   about a cube size a lot - what I mean is the size of a tile
+
+7.1.1 Pillars
+   The position given by the item is the southwest corner of the pillar,
+   It obviously spans from floor to ceiling. Texture is stored in tmobj.gr
+   Texture index are the 2 least significant bits of the flags
+   
+7.1.2 Bridges
+
+   Bridges are used for two things: Bridging gaps and altering or lowering the ceiling
+   If bit 2 and 3 of the flags are set it's a ceiling, otherwise it's a bridge.
+
+7.1.2.1 Real bridges
+
+   Bridges are textured by tmobj.gr textures. Use index 30 + bits 0 and 1 of the flags.
+   Description is "Bridge".
+
+7.1.2.2 ceilings
+
+   Texture is still unknown. Suspect some offset + bit 0 and 1 of the flags into
+   the texture mapping of the level. Description is texture dependant
+
+7.1.3 Tmap
+
+   There are two tmap objects for uw2. objects.gr names one as tmap_c and the other as
+   tmap_s. Looking into the difference. 
+   [ tmap_c is usually used as wall decal -> no collision detection
+   [ tmap_s is usually used to insert new (thin) walls -> collision detection
+   [ not too sure about this ]
+   tmap_c (index 366) and tmap_s (index 367) use a texture from t64.tr.
+   Index is variable1 resolved with the level's texturemapping. Description is
+   the texture's description
+   Any tmap is a square object of tile size, whose lower center is given by the items
+   coordinates. [Figure out the exact offsets]
+
+7.2 Static objects
+
+   Though formerly defined in code these objects always look the same. Only 
+   interesting point remaining is the base of the coordinate system
 
 
 8.0 Misc. stuff
@@ -1963,5 +2103,11 @@ Table of Contents
     000b    Textured door (used for the lock to the Key of Infinity)
     0010    Water (not waterfall)
     0020    Lava (not lavafall)
+    0040    Waterfall      - UW2
+    00C0    Ice wall       - UW2
+    00D8
+    00E8    Ice walls (crumbling?)
+    0080    Lavafall       - UW2
+    00F8    Ice            - UW2
 
 eof
