@@ -131,7 +131,7 @@ void ua_conv_debugger::start()
          if (ret)
          {
             printf("loaded conversation #%u.\n",conv);
-            ua_conv_code_vm::init(cg);
+            ua_conv_code_vm::init(cg,gs.get_block(strblock));
             printf("conversation partner: \"%s\"\n",
                gs.get_string(7,16+conv_nr).c_str());
             printf("using strings from string block #%04x\n",strblock);
@@ -209,7 +209,7 @@ void ua_conv_debugger::start()
       {
          // re-init vm
          printf("re-init'ing virtual machine.\n");
-         ua_conv_code_vm::init(cg);
+         ua_conv_code_vm::init(cg,gs.get_block(strblock));
          printf("deleting all breakpoints.\n");
          allbreakpoints.clear();
       }
@@ -343,7 +343,7 @@ void ua_conv_debugger::start()
 
             // reinit code vm
             ua_conv_code_vm::done(cg);
-            ua_conv_code_vm::init(cg);
+            ua_conv_code_vm::init(cg,gs.get_block(strblock));
          }
 
          // check if breakpoints are reached
