@@ -28,6 +28,7 @@
 // needed includes
 #include "common.hpp"
 #include "levark.hpp"
+#include "prop.hpp"
 
 
 // enums
@@ -36,6 +37,7 @@ enum uwdump_command
 {
    cmd_nop=0,
    cmd_leveldec,
+   cmd_objprop,
 };
 
 
@@ -85,6 +87,7 @@ void parse_args(unsigned int argc, const char** argv)
                "\n"
                " commands:\n"
                "   leveldump <file>    dumps <basepath><file> as lev.ark\n"
+               "   propdump            dumps data/comobj.dat and objects.dat\n"
                "\n"
                " options:\n"
                "   -d<basepath>   sets uw1/uw2 path; using current folder when not specified\n"
@@ -101,6 +104,12 @@ void parse_args(unsigned int argc, const char** argv)
          if (strcmp(argv[i],"leveldump")==0)
          {
             command = cmd_leveldec;
+            need_param = true;
+         }
+         else
+         if (strcmp(argv[i],"propdump")==0)
+         {
+            command = cmd_objprop;
             need_param = true;
          }
          else
@@ -209,6 +218,13 @@ int main(char argc, char* argv[])
       {
          ua_dump_level_archive levdump;
          levdump.start(basepath,param);
+      }
+      break;
+
+   case cmd_objprop: // object properties decoding
+      {
+         ua_dump_obj_properties objprop;
+         objprop.start(basepath);
       }
       break;
    }

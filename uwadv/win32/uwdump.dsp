@@ -92,6 +92,14 @@ SOURCE=..\source\tools\uwdump\levark.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\source\tools\uwdump\prop.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\tools\uwdump\prop.hpp
+# End Source File
+# Begin Source File
+
 SOURCE="..\docs\uw-formats.txt"
 # End Source File
 # Begin Source File
