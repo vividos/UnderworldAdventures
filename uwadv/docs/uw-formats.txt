@@ -139,8 +139,8 @@ Table of Contents
 
    This document follows some conventions, to keep a nice and well-to-read
    format. The document is indented by 3 spaces; text must be wrapped at
-   line column 79 and and tables can (but doesn't need to be) indented with
-   3 spaces, too. No tab spaces should be used. Special parts of the formats
+   line column 79 and tables can (but doesn't need to be) indented with 3
+   spaces, too. No tab spaces should be used. Special parts of the formats
    specification that only refer to either Ultima Underworld 1 or 2 are marked
    with [uw1] or [uw2].
 
@@ -400,8 +400,8 @@ Table of Contents
    Files in the "crit" folder:
 
    as.an          animation associations
-   cr.an          
-   pg.mp          
+   cr.an          animation segment list
+   pg.mp          page file
    crXX.YY        critter animations, XX=animation(octal) YY=page
 
    Files in the "sound" folder:
@@ -533,9 +533,9 @@ Table of Contents
    0000  Int8   Graphic file format:
                 01 .gr
                 02 .tr
-                03 .cr
-                04 .sr
-                05 .ar
+                03 .cr [uw2]
+                04 .sr [uw2]
+                05 .ar [uw2]
    0001  Int16  number of bitmaps
    0003  Int32  offset to bitmap #0
    0007  Int32  offset to bitmap #1
@@ -711,8 +711,9 @@ Table of Contents
    e.g. the bat and the vampire bat uses the same anim value, but different
    auxiliary palettes.
 
-   [uw2] The critter associations are stored in the file "as.an"; it doesn't contain
-   the critter names, only the 64 entries for "anim" and "auxpal" are stored.
+   [uw2] The critter associations are stored in the file "as.an"; it doesn't
+   contain the critter names, only the 64 entries for "anim" and "auxpal" are
+   stored.
 
    Animation for each critter is stored in a file named "CrXXpage.nYY", where
       XX = animation number (=anim), YY = page number
@@ -996,7 +997,7 @@ Table of Contents
      160..239  automap infos
      240..319  map notes
 
-   Data blocks for Ultima Underworld 2 are compressed using the uw2
+   [uw2] Data blocks for Ultima Underworld 2 are compressed using the uw2
    compression scheme described in chapter 9.1.
 
    The "level tilemap/master object list" for each level contains infos about
@@ -1854,6 +1855,7 @@ Table of Contents
    * Critters table
 
    0000   Int8   unknown
+   0005   Int8   npc_power
 
    * Containers table
 
@@ -2006,7 +2008,7 @@ Table of Contents
 
 7.4  Assembler language opcodes
 
-   The conversation code is an assembler-like languages with a set of opcodes.
+   The conversation code is an assembler-like language with a set of opcodes.
    It runs on a 16-bit virtual machine with a stack and a result register for
    imported functions. The language set is described here:
 
@@ -2578,8 +2580,8 @@ Table of Contents
            4: door to armoury opened
 
    flags 0..31 are stored in a 32-bit integer bit field, flags 32..35 are
-   stored in as Int8 values. See chapter 9.1. for where the values are stored
-   in the savegame.
+   stored as Int8 values. See chapter 9.1. where the values are stored in the
+   savegame.
 
 
  +--------------------------------------------------------------------------+
@@ -2667,6 +2669,8 @@ Table of Contents
      VertNo  vertex number; lowest 3 bits are ignored
      TexCo   texture coordinate; contains a 16 bit fractional texture coord.
 
+   All data types use 16 bit values.
+
    Every model has a header that looks like this:
 
      0000   Int32   unknown
@@ -2678,7 +2682,7 @@ Table of Contents
    In general, node entries look as following:
 
      0000   Int16   node id
-     0002           custom node data (may be omitted)
+     0002   n       custom node data (may be omitted)
 
 
 8.1  List of all nodes
@@ -3010,73 +3014,73 @@ Table of Contents
    during gameplay.
 
    The file "player.dat" contains the main character data. The first 220 bytes
-   are encrypted with a rather simple algorithm. Byte 0 in the file is the
-   starting xor value. Byte 1 is xor'ed with xorvalue + 3, and for each next
-   byte, the xorvalue is incremented by 3. A simple implementation in C is here:
+   are encrypted with a rather simple xor algorithm. The first byte in the
+   file is the starting xor value. The next byte is xor'ed with xorvalue + 3,
+   and for each next byte the xorvalue is incremented by 3. A simple
+   implementation in C is here (it is assumed that xorvalue already contains
+   the first byte):
 
       // descramble data
-      unsigned char xorvalue = data[0];
       unsigned char incrnum = 3;
 
-      for(int i=1; i<=220; i++)
+      for(int i=0; i<220; i++)
       {
-         if (i==81) incrnum = 3;
+         if (i==80) incrnum = 3;
          data[i] ^= (xorvalue+incrnum);
          incrnum += 3;
       }
 
    After decryption, the file contains the following:
 
-   0000   Int8    unused (was starting xor value)
-   0001   14*char character name
+   0000   14*char character name
    ...
-   001F   Int8    Strength
-   0020   Int8    Dexterity
-   0021   Int8    Intelligence
-   0022   Int8    Attack
-   0023   Int8    Defense
-   0024   Int8    Unarmed
-   0025   Int8    Sword
-   0026   Int8    Axe
-   0027   Int8    Mace
-   0028   Int8    Missile
-   0029   Int8    Mana
-   002A   Int8    Lore
-   002B   Int8    Casting
-   002C   Int8    Traps
-   002D   Int8    Search
-   002E   Int8    Track
-   002F   Int8    Sneak
-   0030   Int8    Repair
-   0031   Int8    Charm
-   0032   Int8    Picklock
-   0033   Int8    Acrobat
-   0034   Int8    Appraise
-   0035   Int8    Swimming
+   001E   Int8    Strength
+   001F   Int8    Dexterity
+   0020   Int8    Intelligence
+   0021   Int8    Attack
+   0022   Int8    Defense
+   0023   Int8    Unarmed
+   0024   Int8    Sword
+   0025   Int8    Axe
+   0026   Int8    Mace
+   0027   Int8    Missile
+   0028   Int8    Mana
+   0029   Int8    Lore
+   002A   Int8    Casting
+   002B   Int8    Traps
+   002C   Int8    Search
+   002D   Int8    Track
+   002E   Int8    Sneak
+   002F   Int8    Repair
+   0030   Int8    Charm
+   0031   Int8    Picklock
+   0032   Int8    Acrobat
+   0033   Int8    Appraise
+   0034   Int8    Swimming
    ...
-   0037   Int8    max. vitality
-   0038   Int8    current mana, play_mana
-   0039   Int8    max. mana
-   003A   Int8    hunger, play_hunger
+   0036   Int8    max. vitality
+   0037   Int8    current mana, (play_mana)
+   0038   Int8    max. mana
+   0039   Int8    hunger, play_hunger
    ...
-   003E   Int8    character level
+   003D   Int8    character level (play_level)
    ...
-   0045   3*8bits rune flags (*)
+   0044   3*8bits rune flags (*)
    ...
-   004D   Int16   weight in 0.1 stones
-   004F   Int32   experience in 0.1 points
+   004C   Int16   weight in 0.1 stones
+   004E   Int32   experience in 0.1 points
    ...
-   0055   Int16   x-position in level
-   0057   Int16   y-position
-   0059   Int16   z-position
-   005B   Int16   heading
-   005D   Int16   dungeon level
+   0054   Int16   x-position in level
+   0056   Int16   y-position
+   0058   Int16   z-position
+   005A   Int16   heading
+   005C   Int16   dungeon level
    ...
-   0060   Int8    bits 2..5: play_poison
+   005F   Int8    bits 2..5: play_poison
    ...
-   00CF   Int32   game time
+   00CE   Int32   game time
    ...
-   00DD   Int8    current vitality
+   00DC   Int8    current vitality
 
    (*) The rune field is a bitfield, where an 1 indicates an available
        rune. Bits are seen from most to least significant. The 'A' rune is
@@ -3086,6 +3090,8 @@ Table of Contents
 
 
 9.3  Unknown files
+
+   This section lists files with unknown meaning.
 
    skills.dat
    ----------
