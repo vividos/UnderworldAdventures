@@ -4,36 +4,49 @@
 # $Id$
 #
 
-uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
-	player.cpp quadtree.cpp texture.cpp underworld.cpp uwadv.cpp \
-	objects.cpp cutscene.cpp physics.cpp physicsobject.cpp files.cpp keymap.cpp \
-	uwscript.cpp settings.cpp utils.cpp mousecursor.cpp \
-	renderer.cpp textscroll.cpp critter.cpp imgquad.cpp models.cpp \
-	gamecfg.cpp mapnotes.cpp pathfinder.cpp \
-	audio.hpp common.hpp core.hpp font.hpp gamestrings.hpp \
-	image.hpp inventory.hpp level.hpp player.hpp quadtree.hpp \
-	screen.hpp settings.hpp texture.hpp utils.hpp \
-	underworld.hpp uwadv.hpp objects.hpp cutscene.hpp physics.hpp \
-	physicsobject.hpp imgquad.hpp models.hpp \
-	files.hpp keymap.hpp uwscript.hpp uamath.hpp settings.hpp \
-	savegame.hpp mousecursor.hpp renderer.hpp textscroll.hpp \
-	debug.hpp cfgfile.hpp critter.hpp gamecfg.hpp properties.hpp \
-	mapnotes.hpp pathfinder.hpp \
-	linux/main.cpp linux/debug.cpp \
-	audio/audio.cpp audio/midi.cpp audio/xmidi.cpp \
+uwadv_SOURCES = \
+	audio/audio.cpp audio/audio.hpp \
+	audio/midi.cpp audio/midi.hpp \
 	audio/resamp.c audio/resamp.h \
 	audio/vocresample.cpp \
-	audio/midi.hpp audio/xmidi.hpp \
-	audio/midi_driver/linux_sdl_mixer.cpp \
-	audio/midi_driver/linux_sdl_mixer.h \
+	audio/xmidi.cpp audio/xmidi.hpp \
+	audio/midi_driver/midi_sdl_mixer.cpp \
+	audio/midi_driver/midi_sdl_mixer.hpp \
+	audio/midi_driver/win_midiout.cpp \
+	audio/midi_driver/win_midiout.h \
+	base/cfgfile.cpp base/cfgfile.hpp \
+	base/files.cpp base/files.hpp \
+	base/savegame.cpp base/savegame.hpp \
+	base/settings.cpp base/settings.hpp \
+	base/uamath.hpp \
+	base/utils.cpp base/utils.hpp \
+	common.hpp
+
+the_rest = \
+	font.cpp image.cpp inventory.cpp level.cpp \
+	player.cpp quadtree.cpp texture.cpp underworld.cpp uwadv.cpp \
+	objects.cpp cutscene.cpp physics.cpp physicsobject.cpp keymap.cpp \
+	uwscript.cpp mousecursor.cpp \
+	renderer.cpp textscroll.cpp critter.cpp imgquad.cpp models.cpp \
+	gamecfg.cpp mapnotes.cpp pathfinder.cpp \
+	audio.hpp core.hpp font.hpp gamestrings.hpp \
+	image.hpp inventory.hpp level.hpp player.hpp quadtree.hpp \
+	screen.hpp texture.hpp \
+	underworld.hpp uwadv.hpp objects.hpp cutscene.hpp physics.hpp \
+	physicsobject.hpp imgquad.hpp models.hpp \
+	keymap.hpp uwscript.hpp \
+	mousecursor.hpp renderer.hpp textscroll.hpp \
+	debug.hpp critter.hpp gamecfg.hpp properties.hpp \
+	mapnotes.hpp pathfinder.hpp \
+	linux/main.cpp linux/debug.cpp \
 	conv/codevm.cpp conv/codevm.hpp conv/opcodes.hpp \
 	conv/convgraph.hpp conv/convgraph.cpp \
 	debug/uwaccess.cpp debug/uwaccess.hpp \
 	resource/codeloader.cpp resource/fontloader.cpp \
 	resource/gamestrings.cpp resource/imageloader.cpp \
-	resource/maploader.cpp resource/cfgfile.cpp \
+	resource/maploader.cpp \
 	resource/texloader.cpp resource/objloader.cpp \
-	resource/cutsloader.cpp resource/savegame.cpp \
+	resource/cutsloader.cpp \
 	resource/critloader.cpp resource/modeldecode.cpp \
 	resource/tgaimport.cpp resource/playerimport.cpp \
 	resource/proploader.cpp \
