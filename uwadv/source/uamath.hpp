@@ -141,10 +141,17 @@ public:
    //! division assignment with vector
    ua_vector3d& operator/=(const ua_vector3d& vec);
 
-   inline ua_vector3d operator-(const ua_vector3d &v) const {return ua_vector3d(x-v.x, y-v.y, z-v.z);}
-   inline ua_vector3d operator+(const ua_vector3d &v) const {return ua_vector3d(x+v.x, y+v.y, z+v.z);}
-   inline ua_vector3d operator*(const float f) const {return ua_vector3d(x*f, y*f, z*f);} 
-   inline ua_vector3d operator-() {return ua_vector3d(-x, -y, -z);} // unary minus 
+   //! addition
+   inline ua_vector3d operator+(const ua_vector3d &v) const;
+
+   //! subtraction
+   inline ua_vector3d operator-(const ua_vector3d &v) const;
+
+   //! scalar multiplication
+   inline ua_vector3d operator*(const double f) const;
+
+   //! unary minus
+   inline ua_vector3d operator-() const;
 
    //! sets vector by giving vector elements
    void set(double nx, double ny, double nz);
@@ -335,6 +342,27 @@ inline ua_vector3d& ua_vector3d::operator/=(const ua_vector3d& vec)
    z /= vec.z;
    return *this;
 }
+
+inline ua_vector3d ua_vector3d::operator-(const ua_vector3d& vec) const
+{
+   return ua_vector3d(x-vec.x, y-vec.y, z-vec.z);
+}
+
+inline ua_vector3d ua_vector3d::operator+(const ua_vector3d& vec) const
+{
+   return ua_vector3d(x+vec.x, y+vec.y, z+vec.z);
+}
+
+inline ua_vector3d ua_vector3d::operator*(const double d) const
+{
+   return ua_vector3d(x*d, y*d, z*d);
+}
+
+inline ua_vector3d ua_vector3d::operator-() const
+{
+   return ua_vector3d(-x, -y, -z);
+}
+
 
 inline void ua_vector3d::set(double nx, double ny, double nz)
 {
