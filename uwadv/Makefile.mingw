@@ -46,6 +46,7 @@ SDL_INCLUDE = -I$(MINGW_PATH)/include/sdl/
 # compiler
 CC = gcc
 CXX = c++
+AR = ar
 CFLAGS =
 CXXFLAGS =
 LDFLAGS = -mwindows -s
@@ -171,6 +172,14 @@ uaconfig_LIBS = $(WIN32_LIB) $(SDL_LIB) -lwinmm $(STLPORT_LIB)
 
 include source/tools/Makefile.common
 
+# tools library
+
+libuatools_EXT = libuatools.a
+
+libuatools_CPPs = $(filter %.cpp,$(libuatools_la_SOURCES))
+libuatools_OBJS = $(libuatools_CPPs:%.cpp=source/tools/%.o)
+
+
 # conv debugger
 
 cnvdbg_EXEC = cnvdbg.exe
@@ -179,7 +188,7 @@ cnvdbg_CPPs = $(filter %.cpp,$(cnvdbg_SOURCES))
 cnvdbg_OBJS = $(cnvdbg_CPPs:%.cpp=source/tools/%.o)
 
 cnvdbg_LDFLAGS = -mconsole
-cnvdbg_LIBS = -lmingw32 -lkernel32 -luser32 \
+cnvdbg_LIBS = -lmingw32 -lkernel32 -luser32 libuatools.a \
 	$(SDL_LIB) $(STLPORT_LIB) -lz
 
 
@@ -191,8 +200,8 @@ cnvdasm_CPPs = $(filter %.cpp,$(cnvdasm_SOURCES))
 cnvdasm_OBJS = $(cnvdasm_CPPs:%.cpp=source/tools/%.o)
 
 cnvdasm_LDFLAGS = -mconsole
-cnvdasm_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB) \
-	$(STLPORT_LIB) -lz
+cnvdasm_LIBS = -lmingw32 -lkernel32 -luser32 libuatools.a \
+	$(SDL_LIB) $(STLPORT_LIB) -lz
 
 
 # xmidi to midi converter
@@ -214,8 +223,8 @@ mapdisp_CPPs = $(filter %.cpp,$(mapdisp_SOURCES))
 mapdisp_OBJS = $(mapdisp_CPPs:%.cpp=source/tools/%.o)
 
 mapdisp_LDFLAGS =
-mapdisp_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB) $(STLPORT_LIB) \
-	$(OPENGL_LIB) -lz
+mapdisp_LIBS = -lmingw32 -lkernel32 -luser32 libuatools.a \
+	$(SDL_LIB) $(STLPORT_LIB) $(OPENGL_LIB) -lz
 
 
 # animation viewer
@@ -226,7 +235,8 @@ animview_CPPs = $(filter %.cpp,$(animview_SOURCES))
 animview_OBJS = $(animview_CPPs:%.cpp=source/tools/%.o)
 
 animview_LDFLAGS =
-animview_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB) $(STLPORT_LIB) $(OPENGL_LIB)
+animview_LIBS = -lmingw32 -lkernel32 -luser32 libuatools.a \
+	$(SDL_LIB) $(STLPORT_LIB) $(OPENGL_LIB)
 
 
 # string pack/unpack tool
@@ -237,7 +247,7 @@ strpak_CPPs = $(filter %.cpp,$(strpak_SOURCES))
 strpak_OBJS = $(strpak_CPPs:%.cpp=source/tools/%.o)
 
 strpak_LDFLAGS = -mconsole
-strpak_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB) $(STLPORT_LIB)
+strpak_LIBS = -lmingw32 -lkernel32 -luser32 libuatools.a $(SDL_LIB) $(STLPORT_LIB) \
 
 
 
@@ -245,7 +255,7 @@ strpak_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB) $(STLPORT_LIB)
 # build rules
 #
 
-tools: cnvdbg cnvdasm xmi2mid mapdisp animview strpak
+tools: libuatools cnvdbg cnvdasm xmi2mid mapdisp animview strpak
 
 uwadv: $(uwadv_EXEC) uwadv.cfg
 $(uwadv_EXEC): $(uwadv_OBJS)
@@ -260,13 +270,17 @@ $(uaconfig_EXEC): $(uaconfig_OBJS)
 	$(CXX) $(LDFLAGS) $(uaconfig_LDFLAGS) -o $(@) $(uaconfig_OBJS) $(uaconfig_LIBS)
 
 
+libuatools: $(libuatools_EXT)
+$(libuatools_EXT): $(libuatools_OBJS)
+	$(AR) r $(libuatools_EXT) $(libuatools_OBJS)
+
 cnvdbg: $(cnvdbg_EXEC)
-$(cnvdbg_EXEC): $(cnvdbg_OBJS)
+$(cnvdbg_EXEC): libuatools $(cnvdbg_OBJS)
 	$(CXX) $(LDFLAGS) $(cnvdbg_LDFLAGS) -o $(@) $(cnvdbg_OBJS) $(cnvdbg_LIBS)
 
 
 cnvdasm: $(cnvdasm_EXEC)
-$(cnvdasm_EXEC): $(cnvdasm_OBJS)
+$(cnvdasm_EXEC): libuatools $(cnvdasm_OBJS)
 	$(CXX) $(LDFLAGS) $(cnvdasm_LDFLAGS) -o $(@) $(cnvdasm_OBJS) $(cnvdasm_LIBS)
 
 
@@ -276,17 +290,17 @@ $(xmi2mid_EXEC): $(xmi2mid_OBJS)
 
 
 mapdisp: $(mapdisp_EXEC)
-$(mapdisp_EXEC): $(mapdisp_OBJS)
+$(mapdisp_EXEC): libuatools $(mapdisp_OBJS)
 	$(CXX) $(LDFLAGS) $(mapdisp_LDFLAGS) -o $(@) $(mapdisp_OBJS) $(mapdisp_LIBS)
 
 
 animview: $(animview_EXEC)
-$(animview_EXEC): $(animview_OBJS)
+$(animview_EXEC): libuatools $(animview_OBJS)
 	$(CXX) $(LDFLAGS) $(animview_LDFLAGS) -o $(@) $(animview_OBJS) $(animview_LIBS)
 
 
 strpak: $(strpak_EXEC)
-$(strpak_EXEC): $(strpak_OBJS)
+$(strpak_EXEC): libuatools $(strpak_OBJS)
 	$(CXX) $(LDFLAGS) $(strpak_LDFLAGS) -o $(@) $(strpak_OBJS) $(strpak_LIBS)
 
 #
@@ -339,10 +353,10 @@ installer: install
 clean: data-clean luac-clean
 	rm -f $(uwadv_EXEC) $(cnvdbg_EXEC) $(cnvdasm_EXEC) $(xmi2mid_EXEC) \
 		$(mapdisp_EXEC) $(animview_EXEC) $(strpak_EXEC) \
-		$(uaconfig_EXEC) \
+		$(uaconfig_EXEC) $(libuatools_EXT) \
 		$(uwadv_OBJS) $(cnvdbg_OBJS) $(cnvdasm_OBJS) $(xmi2mid_OBJS) \
 		$(mapdisp_OBJS) $(animview_OBJS) $(strpak_OBJS) \
-		$(uaconfig_OBJS)
+		$(uaconfig_OBJS) $(libuatools_OBJS)
 
 
 #
