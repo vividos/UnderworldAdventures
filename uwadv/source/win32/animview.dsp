@@ -104,6 +104,10 @@ SOURCE=..\image.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\settings.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\texture.cpp
 # End Source File
 # End Group

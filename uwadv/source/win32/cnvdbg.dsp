@@ -101,6 +101,10 @@ SOURCE=..\conv\codevm.hpp
 
 SOURCE=..\resource\gamestrings.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=..\settings.cpp
+# End Source File
 # End Group
 # Begin Source File
 

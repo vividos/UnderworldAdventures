@@ -124,6 +124,10 @@ SOURCE=..\quadtree.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\settings.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\resource\texloader.cpp
 # End Source File
 # Begin Source File

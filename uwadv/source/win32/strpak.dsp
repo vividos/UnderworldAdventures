@@ -103,6 +103,10 @@ SOURCE=..\gamestrings.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\settings.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\settings.hpp
 # End Source File
 # Begin Source File
