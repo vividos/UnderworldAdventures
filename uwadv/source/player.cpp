@@ -45,6 +45,12 @@ void ua_player::init()
 
    memset(attributes,0,sizeof(attributes));
    memset(skills,0,sizeof(skills));
+
+   move_factors[ua_move_walk] = 0.0;
+   move_factors[ua_move_rotate] = 0.0;
+   move_factors[ua_move_lookup] = 0.0;
+   move_factors[ua_move_jump] = 0.0;
+   move_factors[ua_move_float] = 0.0;
 }
 
 void ua_player::set_movement_mode(unsigned int set,unsigned int del)

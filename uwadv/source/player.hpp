@@ -38,9 +38,11 @@
 //! player movement enum
 enum ua_player_movement_mode
 {
-   ua_move_walk_forward = 1,
-   ua_move_rotate_left  = 2,
-   ua_move_rotate_right = 4,
+   ua_move_walk = 1,    // walks forward (or backwards, when factor is negative)
+   ua_move_rotate  = 2, // rotates player left (or right)
+   ua_move_lookup = 4,  // moves player look angle up (or down)
+   ua_move_jump = 8,    // jumps forward (or factor 0.0 for standing jump)
+   ua_move_float = 16,  // floats player up (or down)
 };
 
 
@@ -123,22 +125,27 @@ public:
    //! initializes player object
    void init();
 
+
    // set functions
 
    //! sets player position
-   void set_pos(double x, double y){ xpos=x; ypos=y; }
+   void set_pos(double x, double y);
 
    //! sets player view rotation angle
-   void set_angle_rot(double theangle){ rotangle=theangle; }
+   void set_angle_rot(double theangle);
 
    //! sets player view panning angle
-   void set_angle_pan(double theangle){ panangle=theangle; }
+   void set_angle_pan(double theangle);
 
    //! sets player height
-   void set_height(double theheight){ height=theheight; }
+   void set_height(double theheight);
+
 
    //! sets and delete movement mode values
    void set_movement_mode(unsigned int set,unsigned int del=0);
+
+   //! sets movement factor for a given movement type; range is [-1.0; 1.0]
+   void set_movement_factor(ua_player_movement_mode mode, double factor);
 
 
    //! sets player attribute value
@@ -150,26 +157,30 @@ public:
    //! sets player name
    void set_name(std::string name);
 
+
    // get functions
 
    //! returns x position
-   double get_xpos(){ return xpos; }
+   double get_xpos();
 
    //! returns y position
-   double get_ypos(){ return ypos; }
+   double get_ypos();
 
    //! returns view rotation angle
-   double get_angle_rot(){ return rotangle; }
+   double get_angle_rot();
 
    //! returns view panning angle
-   double get_angle_pan(){ return panangle; }
+   double get_angle_pan();
 
    //! returns player height
-   double get_height() { return height; }
+   double get_height();
 
 
    //! returns movement mode
-   unsigned int get_movement_mode(){ return move_mode; }
+   unsigned int get_movement_mode();
+
+   //! returns movement factor for given movement mode
+   double get_movement_factor(ua_player_movement_mode mode);
 
 
    //! returns player attribute value
@@ -202,6 +213,73 @@ protected:
 
    //! array with all player skills
    unsigned int skills[ua_skill_max];
+
+   //! movement factors map
+   std::map<ua_player_movement_mode,double> move_factors;
 };
+
+
+// inline methods
+
+inline void ua_player::set_pos(double x, double y)
+{
+   xpos=x; ypos=y;
+}
+
+inline void ua_player::set_angle_rot(double theangle)
+{
+   rotangle=theangle;
+}
+
+inline void ua_player::set_angle_pan(double theangle)
+{
+   panangle=theangle;
+}
+
+inline void ua_player::set_height(double theheight)
+{
+   height=theheight;
+}
+
+inline void ua_player::set_movement_factor(ua_player_movement_mode mode, double factor)
+{
+   move_factors[mode] = factor;
+}
+
+inline double ua_player::get_movement_factor(ua_player_movement_mode mode)
+{
+   return move_factors[mode];
+}
+
+inline double ua_player::get_xpos()
+{
+   return xpos;
+}
+
+inline double ua_player::get_ypos()
+{
+   return ypos;
+}
+
+inline double ua_player::get_angle_rot()
+{
+   return rotangle;
+}
+
+inline double ua_player::get_angle_pan()
+{
+   return panangle;
+}
+
+inline double ua_player::get_height()
+{
+   return height;
+}
+
+inline unsigned int ua_player::get_movement_mode()
+{
+   return move_mode;
+}
+
 
 #endif
