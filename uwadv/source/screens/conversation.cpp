@@ -28,6 +28,7 @@
 // needed includes
 #include "common.hpp"
 #include "conversation.hpp"
+#include <sstream>
 
 
 // ua_conversation_screen methods
@@ -69,7 +70,7 @@ void ua_conversation_screen::init()
       scrollwidth = 218;
 
    // init text scrolls
-   scroll_conv.init(*core,58,52,161,79,10,42);
+   scroll_conv.init(*core,58,52,161,79,13,42);
    scroll_conv.set_color(46);
 
    scroll_menu.init(*core,15,169, scrollwidth,30, 5, 42);
@@ -86,10 +87,11 @@ void ua_conversation_screen::init()
       cnv_name.append("data/cnv.ark");
 
       ua_conv_code_vm::load_code(cnv_name.c_str(),static_cast<Uint16>(convslot));
-      ua_conv_code_vm::init(core->get_underworld().get_conv_globals());
-
-      process_code = true;
+      ua_conv_code_vm::init(core->get_underworld().get_conv_globals(),
+         core->get_strings().get_block(strblock));
    }
+
+   state = ua_state_running;
 }
 
 void ua_conversation_screen::done()
@@ -106,11 +108,35 @@ void ua_conversation_screen::done()
 
 void ua_conversation_screen::handle_event(SDL_Event &event)
 {
-   if (scroll_menu.handle_event(event))
+   if (scroll_menu.handle_event(event) || scroll_conv.handle_event(event))
       return;
 
    switch(event.type)
    {
+   case SDL_KEYDOWN:
+      if (state == ua_state_wait_menu &&
+          event.key.keysym.sym > SDLK_0 && event.key.keysym.sym <= SDLK_9)
+      {
+         unsigned int selection = event.key.keysym.sym - (Uint32)SDLK_1;
+
+         if (selection<answer_values.size())
+         {
+            result_register = answer_values[selection];
+
+            // print answer
+            std::string answer(localstrings[answer_string_ids[selection]]);
+            replace_placeholder(answer);
+
+            scroll_conv.set_color(1);
+            scroll_conv.print(answer.c_str());
+            scroll_conv.set_color(46);
+
+            // continue processing
+            state = ua_state_running;
+         }
+      }
+      break;
+
    case SDL_MOUSEMOTION: // mouse has moved
       {
          // calculate cursor position
@@ -140,16 +166,93 @@ void ua_conversation_screen::render()
 
 void ua_conversation_screen::tick()
 {
-//   while(process_code)
-//      ua_conv_code_vm::step();
+   if (!finished && !scroll_menu.have_more_lines() && !scroll_conv.have_more_lines())
+   {
+      while(state == ua_state_running && !finished)
+         ua_conv_code_vm::step();
+   }
 
-//   core->pop_screen();
+   if (finished)
+      core->pop_screen();
 }
 
-void ua_conversation_screen::imported_func(Uint16 number)
+void ua_conversation_screen::imported_func(const std::string& funcname)
 {
+   Uint16 argpos = stack.get_stackp();
+   Uint16 argcount = stack.at(argpos);
+   argpos--;
+
+   if (funcname.compare("babl_menu")==0)
+   {
+      argpos = stack.at(argpos);
+
+      unsigned int ask_count = 0;
+      Uint16 arg = stack.at(argpos++);
+      answer_values.clear();
+      answer_string_ids.clear();
+
+      scroll_menu.clear_scroll();
+
+      while (arg!=0)
+      {
+         ask_count++;
+
+         // format menu entry string
+         std::ostringstream buffer;
+         buffer << ask_count << ". " << localstrings[arg] << std::ends;
+
+         std::string menuentry(buffer.str());
+         replace_placeholder(menuentry);
+
+         // print menu entry
+         scroll_menu.print(menuentry.c_str());
+
+         // remember answer value/string id
+         answer_values.push_back(ask_count);
+         answer_string_ids.push_back(arg);
+
+         // get next argument
+         arg = stack.at(argpos++);
+      }
+
+      state = ua_state_wait_menu;
+
+   } else
+
+   if (funcname.compare("sex")==0)
+   {
+      Uint16 arg1 = stack.at(argpos--);
+      arg1 = stack.at(arg1);
+
+      Uint16 arg2 = stack.at(argpos);
+      arg2 = stack.at(arg2);
+
+      // check player gender
+      if (core->get_underworld().get_player().get_attr(ua_attr_gender)!=0)
+         arg1 = arg2;
+
+      result_register = arg1;
+   }
+   else
+      ua_trace("unknown imported function: %s\n",funcname.c_str());
 }
 
 void ua_conversation_screen::say_op(Uint16 str_id)
+{
+   std::string str(localstrings[str_id]);
+
+   replace_placeholder(str);
+
+   scroll_conv.print(str.c_str());
+      // scrolled text view
+//      process_code = false;
+}
+
+Uint16 ua_conversation_screen::get_global(const std::string& globname)
+{
+   return 0;
+}
+
+void ua_conversation_screen::set_global(const std::string& globname, Uint16 val)
 {
 }

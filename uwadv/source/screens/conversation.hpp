@@ -37,6 +37,17 @@
 #include "conv/codevm.hpp"
 
 
+// enums
+
+//! conv screen state values
+enum ua_conv_screen_state
+{
+   ua_state_running=0,  // vm code can run
+   ua_state_wait_menu,  // waiting for menu selection
+   ua_state_wait_input, // waiting for string input
+};
+
+
 // classes
 
 //! conversation screen class
@@ -60,8 +71,10 @@ public:
 
    // virtual functions from ua_conv_code_vm
 
-   virtual void imported_func(Uint16 number);
+   virtual void imported_func(const std::string& funcname);
    virtual void say_op(Uint16 str_id);
+   virtual Uint16 get_global(const std::string& globname);
+   virtual void set_global(const std::string& globname, Uint16 val);
 
 protected:
    // ui elements
@@ -83,8 +96,14 @@ protected:
    //! conversation slot to use
    unsigned int convslot;
 
-   //! indicates if code can be processed
-   bool process_code;
+   //! screen state
+   ua_conv_screen_state state;
+
+   //! possible values for answer to push on stack after selection
+   std::vector<Uint16> answer_values;
+
+   //! answer string id's
+   std::vector<Uint16> answer_string_ids;
 };
 
 #endif
