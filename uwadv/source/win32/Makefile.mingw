@@ -165,7 +165,7 @@ tools: cnvdbg cnvdasm xmi2mid mapdisp animview strpak
 
 uwadv: $(uwadv_EXEC)
 $(uwadv_EXEC): $(uwadv_OBJS)
-	$(CC) $(LDFLAGS) $(uwadv_LDFLAGS) -o $(@) $(uwadv_OBJS) $(uwadv_LIBS)
+	$(CXX) $(LDFLAGS) $(uwadv_LDFLAGS) -o $(@) $(uwadv_OBJS) $(uwadv_LIBS)
 
 source/uwadv_res.o: source/uwadv.rc source/Uus.ico
 	cd source && windres -i uwadv.rc -o uwadv_res.o
@@ -173,32 +173,32 @@ source/uwadv_res.o: source/uwadv.rc source/Uus.ico
 
 cnvdbg: $(cnvdbg_EXEC)
 $(cnvdbg_EXEC): $(cnvdbg_OBJS)
-	$(CC) $(LDFLAGS) $(cnvdbg_LDFLAGS) -o $(@) $(cnvdbg_OBJS) $(cnvdbg_LIBS)
+	$(CXX) $(LDFLAGS) $(cnvdbg_LDFLAGS) -o $(@) $(cnvdbg_OBJS) $(cnvdbg_LIBS)
 
 
 cnvdasm: $(cnvdasm_EXEC)
 $(cnvdasm_EXEC): $(cnvdasm_OBJS)
-	$(CC) $(LDFLAGS) $(cnvdasm_LDFLAGS) -o $(@) $(cnvdasm_OBJS) $(cnvdasm_LIBS)
+	$(CXX) $(LDFLAGS) $(cnvdasm_LDFLAGS) -o $(@) $(cnvdasm_OBJS) $(cnvdasm_LIBS)
 
 
 xmi2mid: $(xmi2mid_EXEC)
 $(xmi2mid_EXEC): $(xmi2mid_OBJS)
-	$(CC) $(LDFLAGS) $(xmi2mid_LDFLAGS) -o $(@) $(xmi2mid_OBJS) $(xmi2mid_LIBS)
+	$(CXX) $(LDFLAGS) $(xmi2mid_LDFLAGS) -o $(@) $(xmi2mid_OBJS) $(xmi2mid_LIBS)
 
 
 mapdisp: $(mapdisp_EXEC)
 $(mapdisp_EXEC): $(mapdisp_OBJS)
-	$(CC) $(LDFLAGS) $(mapdisp_LDFLAGS) -o $(@) $(mapdisp_OBJS) $(mapdisp_LIBS)
+	$(CXX) $(LDFLAGS) $(mapdisp_LDFLAGS) -o $(@) $(mapdisp_OBJS) $(mapdisp_LIBS)
 
 
 animview: $(animview_EXEC)
 $(animview_EXEC): $(animview_OBJS)
-	$(CC) $(LDFLAGS) $(animview_LDFLAGS) -o $(@) $(animview_OBJS) $(animview_LIBS)
+	$(CXX) $(LDFLAGS) $(animview_LDFLAGS) -o $(@) $(animview_OBJS) $(animview_LIBS)
 
 
 strpak: $(strpak_EXEC)
 $(strpak_EXEC): $(strpak_OBJS)
-	$(CC) $(LDFLAGS) $(strpak_LDFLAGS) -o $(@) $(strpak_OBJS) $(strpak_LIBS)
+	$(CXX) $(LDFLAGS) $(strpak_LDFLAGS) -o $(@) $(strpak_OBJS) $(strpak_LIBS)
 
 
 installer: uwadv
