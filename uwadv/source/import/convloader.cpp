@@ -154,8 +154,8 @@ bool ua_uw_import::load_conv_code(ua_conv_code_vm& vm, const char* cnvfile,
 void ua_uw_import::load_conv_code_imported_funcs(ua_conv_code_vm& vm,
    FILE *fd)
 {
-   std::map<Uint16,ua_conv_imported_item>& imported_globals = vm.get_imported_funcs();
-   std::map<Uint16,ua_conv_imported_item>& imported_funcs = vm.get_imported_globals();
+   std::map<Uint16,ua_conv_imported_item>& imported_funcs = vm.get_imported_funcs();
+   std::map<Uint16,ua_conv_imported_item>& imported_globals = vm.get_imported_globals();
 
    imported_funcs.clear();
    imported_globals.clear();
