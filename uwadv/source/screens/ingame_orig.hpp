@@ -33,6 +33,7 @@
 #include "screen.hpp"
 #include "image.hpp"
 #include "font.hpp"
+#include "keymap.hpp"
 
 
 // classes
@@ -64,16 +65,11 @@ protected:
 
 protected:
 
-   //! indicates if player moves forward
-   bool walk;
-   double walk_dir;
-
-   bool leftbuttondown,rightbuttondown;
-
    //! field of view angle
    double fov;
-   //! current player angle
-   double playeryangle;
+
+   //! current view angle
+   double viewangle;
 
    //! current mouse cursor
    unsigned int cursor_image;
@@ -82,6 +78,20 @@ protected:
 
    //! start of inventory slots the user sees
    unsigned int slot_start;
+
+   //! ticks since start of screen
+   unsigned long tickcount;
+
+   //! key mappings
+   ua_keymap keymap;
+
+   bool look_down;
+   bool look_up;
+
+
+   // temp. variables
+   bool leftbuttondown,rightbuttondown;
+
 
    //! 2d ui image background
    ua_image img_back;

@@ -31,6 +31,13 @@
 #include "uamath.hpp"
 
 
+// constants
+
+//! speed of view angle change in degree / second
+const double ua_ingame_orig_viewangle_speed = 60;
+
+
+
 // ua_ingame_orig_screen methods
 
 void ua_ingame_orig_screen::init()
@@ -42,15 +49,17 @@ void ua_ingame_orig_screen::init()
    glClear(GL_COLOR_BUFFER_BIT);
    SDL_GL_SwapBuffers();
 
-   walk = false;
    fov = 90.0;
-   playeryangle = 0.0;
-   leftbuttondown = rightbuttondown = false;
+   viewangle = 0.0;
    cursor_image = 0;
    cursorx = cursory = 0;
    slot_start = 0;
+   tickcount = 0;
+   look_down = look_up = false;
 
    setup_opengl();
+
+   keymap.init(core->get_settings());
 
    core->get_underworld().import_savegame(core->get_settings(),"data/",true);
    core->get_underworld().change_level(0);
@@ -79,7 +88,7 @@ void ua_ingame_orig_screen::init()
 
    img_compass.load(settings,"compass");
    img_bodies.load(settings,"bodies");
-   img_cursors.load(settings,"cursors",0,1);
+   img_cursors.load(settings,"cursors");
    img_objects.load(settings,"objects");
 
    bool female = core->get_underworld().get_player().get_attr(ua_attr_gender)!=0;
@@ -117,26 +126,60 @@ void ua_ingame_orig_screen::handle_event(SDL_Event &event)
 void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
 {
    static int curlevel = 0;
+   ua_player &pl = core->get_underworld().get_player();
+
+   // check for forward key
+   if (keymap.get_key(ua_key_forward)==keysym.sym)
+   {
+      if (type==SDL_KEYDOWN)
+         pl.set_movement_mode(ua_move_walk_forward);
+      else
+         pl.set_movement_mode(0,ua_move_walk_forward);
+   }
+   else
+   // check for turn left key
+   if (keymap.get_key(ua_key_turn_left)==keysym.sym)
+   {
+      if (type==SDL_KEYDOWN)
+         pl.set_movement_mode(ua_move_rotate_left);
+      else
+         pl.set_movement_mode(0,ua_move_rotate_left);
+   }
+   else
+   // check for turn right key
+   if (keymap.get_key(ua_key_turn_right)==keysym.sym)
+   {
+      if (type==SDL_KEYDOWN)
+         pl.set_movement_mode(ua_move_rotate_right);
+      else
+         pl.set_movement_mode(0,ua_move_rotate_right);
+   }
+   else
+   // check for look up key
+   if (keymap.get_key(ua_key_look_up)==keysym.sym)
+   {
+      look_up = type==SDL_KEYDOWN;
+   }
+   else
+   // check for center look key
+   if (keymap.get_key(ua_key_look_center)==keysym.sym)
+   {
+      if (type==SDL_KEYDOWN)
+      {
+         look_down = look_up = false;
+         viewangle=0.0;
+      }
+   }
+   else
+   // check for look down key
+   if (keymap.get_key(ua_key_look_down)==keysym.sym)
+   {
+      look_down = type==SDL_KEYDOWN;
+   }
+   else
 
    switch(keysym.sym)
    {
-   case SDLK_UP:
-      walk = (type==SDL_KEYDOWN);
-      walk_dir = 0.0;
-      break;
-   case SDLK_DOWN:
-      walk = (type==SDL_KEYDOWN);
-      walk_dir = 180.0;
-      break;
-   case SDLK_RIGHT:
-      walk = (type==SDL_KEYDOWN);
-      walk_dir = 90.0;
-      break;
-   case SDLK_LEFT:
-      walk = (type==SDL_KEYDOWN);
-      walk_dir = 270.0;
-      break;
-
    case SDLK_PAGEUP:
       if (curlevel>0 && type==SDL_KEYDOWN)
          core->get_underworld().change_level(--curlevel);
@@ -155,33 +198,6 @@ void ua_ingame_orig_screen::handle_mouse_action(SDL_Event &event)
    {
    case SDL_MOUSEMOTION:
       // mouse has moved
-      if (leftbuttondown)
-      {
-         double playerxangle = core->get_underworld().get_player().get_angle();
-
-         int x,y;
-         SDL_GetRelativeMouseState(&x,&y);
-         {
-            playerxangle += x*0.2;
-            playeryangle += y*0.2;
-         }
-
-         // view rotate angle has to stay between 0 and 360 degree
-         while (playerxangle > 360.0 || playerxangle < 0.0 )
-            playerxangle = fmod(playerxangle+360.0,360.0);
-
-         core->get_underworld().get_player().set_angle(playerxangle);
-
-         while (playeryangle > 180.0 || playeryangle < -180.0 )
-            playeryangle = fmod(playeryangle-360.0,360.0);
-
-         // restrict up-down view angle
-         if (playeryangle < -40.0)
-            playeryangle = -40.0;
-
-         if (playeryangle > 40.0)
-            playeryangle = 40.0;
-      }
 
       // calculate cursor position
       {
@@ -189,8 +205,8 @@ void ua_ingame_orig_screen::handle_mouse_action(SDL_Event &event)
          SDL_GetMouseState(&x,&y);
          x = int(double(x)/core->get_screen_width()*320.0);
          y = int(double(y)/core->get_screen_height()*200.0);
-         cursorx = x<5 ? 0 : x-5;
-         cursory = y<5 ? 0 : y-5;
+         cursorx = x<8 ? 0 : x-8;
+         cursory = y<8 ? 0 : y-8;
       }
       break;
 
@@ -225,7 +241,7 @@ void ua_ingame_orig_screen::render()
 
    {
       // rotation
-      glRotated(playeryangle+270.0, 1.0, 0.0, 0.0);
+      glRotated(viewangle+270.0, 1.0, 0.0, 0.0);
       glRotated(-xangle+90.0, 0.0, 0.0, 1.0);
 
       ua_player &pl = core->get_underworld().get_player();
@@ -234,7 +250,7 @@ void ua_ingame_orig_screen::render()
       glTranslated(-pl.get_xpos(),-pl.get_ypos(),-plheight);
    }
 
-   ua_frustum fr(pl.get_xpos(),pl.get_ypos(),plheight,xangle,-playeryangle,fov,16.0);
+   ua_frustum fr(pl.get_xpos(),pl.get_ypos(),plheight,xangle,-viewangle,fov,16.0);
 
    // render underworld
    core->get_underworld().render(fr);
@@ -428,10 +444,25 @@ void ua_ingame_orig_screen::render_ui()
 
 void ua_ingame_orig_screen::tick()
 {
-   // movement
-   if (walk)
-      core->get_underworld().walk_player(
-         core->get_underworld().get_player().get_angle()-walk_dir);
+   // evaluate underworld
+   core->get_underworld().eval_underworld(double(tickcount)/core->get_tickrate());
+
+
+   // check for looking up or down
+   if (look_up || look_down)
+   {
+      viewangle += (look_up ? 1.0 : -1.0)*(ua_ingame_orig_viewangle_speed/core->get_tickrate());
+
+      // view angle has to stay between -180 and 180 degree
+      while (viewangle > 180.0 || viewangle < -180.0 )
+         viewangle = fmod(viewangle-360.0,360.0);
+
+      // restrict up-down view angle
+      if (viewangle < -40.0) viewangle = -40.0;
+      if (viewangle > 40.0) viewangle = 40.0;
+   }
+
+   tickcount++;
 }
 
 void ua_ingame_orig_screen::setup_opengl()
@@ -460,11 +491,7 @@ void ua_ingame_orig_screen::setup_opengl()
    // fog
    glEnable(GL_FOG);
    glFogi(GL_FOG_MODE,GL_EXP2);
-#ifdef HAVE_DEBUG
-   glFogf(GL_FOG_DENSITY,0.1f);
-#else
-   glFogf(GL_FOG_DENSITY,0.65f);
-#endif
+   glFogf(GL_FOG_DENSITY,0.2f); // 0.65f
    glFogf(GL_FOG_START,0.0);
    glFogf(GL_FOG_END,1.0);
    int fog_color[4] = { 0,0,0,0 };
