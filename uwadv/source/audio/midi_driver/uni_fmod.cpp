@@ -35,7 +35,8 @@
 
 #include "uni_fmod.h"
 
-// linker options
+
+// win32 linker options
 #pragma comment(lib, "fmodvc.lib")
 
 
@@ -56,7 +57,7 @@ uni_fmod_driver::~uni_fmod_driver()
 bool uni_fmod_driver::init_driver()
 {
    // hmm, have to init sound part of FMOD to get midi to play
-   FSOUND_Init(44010,2,0);
+   FSOUND_Init(44100,2,0);
 }
 
 void uni_fmod_driver::start_track(XMIDIEventList *eventlist, bool repeat)
