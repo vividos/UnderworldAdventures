@@ -77,11 +77,6 @@ double ua_underworld::get_player_height()
    return player.get_height();
 }
 
-void ua_underworld::render(ua_frustum &fr)
-{
-   get_current_level().render(core->get_texmgr(),fr);
-}
-
 ua_level &ua_underworld::get_current_level()
 {
    unsigned int curlevel = player.get_attr(ua_attr_maplevel);

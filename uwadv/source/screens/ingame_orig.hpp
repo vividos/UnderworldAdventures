@@ -34,6 +34,7 @@
 #include "image.hpp"
 #include "font.hpp"
 #include "keymap.hpp"
+#include "renderer.hpp"
 
 
 // enums
@@ -159,13 +160,6 @@ protected:
    //! speed of view angle change in degree / second
    static const double viewangle_speed;
 
-
-   //! field of view angle
-   double fov;
-
-   //! current view angle
-   double viewangle;
-
    //! current mouse cursor
    unsigned int cursor_image;
    //! mouse cursor coordinates
@@ -206,6 +200,10 @@ protected:
 
 
    GLuint hit;
+
+
+
+   ua_renderer renderer;
 
 
    // mouse button states

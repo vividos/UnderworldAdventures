@@ -200,10 +200,8 @@ void ua_level::import_map(FILE *fd, Uint16 ceil_tex, Uint16 wall_textures[48],
 
       tiles[tile].texture_wall = wall_textures[wall_index];
       tiles[tile].texture_floor = floor_textures[floor_index];
+      tiles[tile].texture_ceiling = ceil_tex;
    }
-
-   // ceiling texture
-   ceiling_texture = ceil_tex;
 }
 
 void ua_level::import_texinfo(FILE *fd, Uint16 wall_textures[48],

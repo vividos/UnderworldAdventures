@@ -55,13 +55,13 @@ typedef enum
    ua_tile_slope_w = 0x09
 
 } ua_levelmap_tiletype;
-
+/*
 //! side of currently rendered wall; used internally
 typedef enum
 {
    ua_left, ua_right, ua_front, ua_back
 } ua_levelmap_wall_render_side;
-
+*/
 
 // structs
 
@@ -88,6 +88,9 @@ struct ua_levelmap_tile
 
    //! stock texture id for floor
    Uint16 texture_floor;
+
+   //! stock texture id for ceiling
+   Uint16 texture_ceiling;
 };
 
 //! textured triangle
@@ -119,18 +122,12 @@ class ua_level
 {
 public:
    //! ctor
-   ua_level(){ height_scale=0.125; }
+   ua_level(){}
    //! dtor
    ~ua_level(){}
 
    //! prepares textures used in map for OpenGL
    void prepare_textures(ua_texture_manager &texmgr);
-
-   //! renders map to OpenGL, using a view frustum
-   void render(ua_texture_manager &texmgr,ua_frustum &fr);
-
-   //! renders whole map to OpenGL
-   void render(ua_texture_manager &texmgr);
 
    //! returns floor height on specific position
    double get_floor_height(double xpos, double ypos);
@@ -162,46 +159,14 @@ public:
       Uint16 floor_textures[10]);
 
 protected:
-   //! renders the floor of a tile
-   void render_floor(unsigned int x, unsigned int y, ua_texture_manager &texmgr);
-
-   //! renders the ceiling of a tile
-   void render_ceiling(unsigned int x, unsigned int y, ua_texture_manager &texmgr);
-
-   //! renders the walls of a tile
-   void render_walls(unsigned int x, unsigned int y, ua_texture_manager &texmgr);
-
-   //! renders the objects of a tile
-   void render_objs(unsigned int x, unsigned int y,
-      ua_texture_manager &texmgr, ua_frustum &fr);
-
-private:
-   //! retrieves tile coordinates
-   void get_tile_coords(ua_levelmap_wall_render_side side, ua_levelmap_tiletype type,
-      unsigned int basex, unsigned int basey, Uint16 basez, Uint16 slope, Uint16 ceiling,
-      Uint16 &x1, Uint16 &y1, Uint16 &z1,
-      Uint16 &x2, Uint16 &y2, Uint16 &z2);
-
-   //! renders a wall of a tile, dependent on the neighbour
-   void render_wall(ua_levelmap_wall_render_side side,
-      Uint16 x1, Uint16 y1, Uint16 z1, Uint16 x2, Uint16 y2, Uint16 z2,
-      Uint16 nz1, Uint16 nz2, Uint16 ceiling);
-
-protected:
    //! all levelmap tiles; 64x64 tiles assumed
    std::vector<ua_levelmap_tile> tiles;
 
    //! all objects in level
    ua_object_list allobjects;
 
-   //! height scale in units per tile height
-   double height_scale;
-
    //! numbers of all used stock textures
    std::vector<Uint16> used_textures;
-
-   //! number of ceiling stock texture
-   Uint16 ceiling_texture;
 };
 
 #endif

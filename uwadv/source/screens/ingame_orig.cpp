@@ -101,8 +101,6 @@ void ua_ingame_orig_screen::init()
    glClear(GL_COLOR_BUFFER_BIT);
    SDL_GL_SwapBuffers();
 
-   fov = 90.0;
-   viewangle = 0.0;
    cursor_image = 0;
    cursorx = cursory = 0;
    cursor_is_object = false;
@@ -155,8 +153,9 @@ void ua_ingame_orig_screen::suspend()
 {
    tex.done();
 
+   renderer.done();
+
    glDisable(GL_SCISSOR_TEST);
-   glDisable(GL_FOG);
 }
 
 void ua_ingame_orig_screen::resume()
@@ -285,7 +284,7 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
       if (type==SDL_KEYDOWN)
       {
          look_down = look_up = false;
-         viewangle=0.0;
+         pl.set_angle_pan(0.0);
       }
    }
    else
@@ -349,23 +348,7 @@ void ua_ingame_orig_screen::render()
 
    glLoadIdentity();
 
-   ua_player &pl = core->get_underworld().get_player();
-   double plheight = 0.6+core->get_underworld().get_player_height();
-   double xangle = pl.get_angle();
-
-   {
-      // rotation
-      glRotated(viewangle+270.0, 1.0, 0.0, 0.0);
-      glRotated(-xangle+90.0, 0.0, 0.0, 1.0);
-
-      // move to position on map
-      glTranslated(-pl.get_xpos(),-pl.get_ypos(),-plheight);
-   }
-
-   ua_frustum fr(pl.get_xpos(),pl.get_ypos(),plheight,xangle,-viewangle,fov,16.0);
-
-   // render underworld
-   core->get_underworld().render(fr);
+   renderer.render();
 
    // render user interface
 
@@ -439,7 +422,7 @@ void ua_ingame_orig_screen::render_ui()
    ua_player &pl = core->get_underworld().get_player();
    {
       // calculate angle
-      double angle = fmod(-pl.get_angle()+90.0+360.0,360.0);
+      double angle = fmod(-pl.get_angle_rot()+90.0+360.0,360.0);
       unsigned int compassdir = (unsigned(angle/11.25)&31);
 
       // paste image to use
@@ -663,6 +646,8 @@ void ua_ingame_orig_screen::tick()
    // check for looking up or down
    if (look_up || look_down)
    {
+      double viewangle = core->get_underworld().get_player().get_angle_pan();
+
       viewangle += (look_up ? -1.0 : 1.0)*(viewangle_speed/core->get_tickrate());
 
       // view angle has to stay between -180 and 180 degree
@@ -677,6 +662,8 @@ void ua_ingame_orig_screen::tick()
       // restrict up-down view angle
       if (viewangle < -maxangle) viewangle = -maxangle;
       if (viewangle > maxangle) viewangle = maxangle;
+
+      core->get_underworld().get_player().set_angle_pan(viewangle);
    }
 
    // check for fading in/out
@@ -702,52 +689,20 @@ void ua_ingame_orig_screen::tick()
 
 void ua_ingame_orig_screen::setup_opengl()
 {
-   // culling
-   glCullFace(GL_BACK);
-   glFrontFace(GL_CCW);
-   glEnable(GL_CULL_FACE);
-
    // clear color
    glClearColor(0,0,0,0);
-
-   // z-buffer
-   glEnable(GL_DEPTH_TEST);
-
-   // enable texturing
-   glEnable(GL_TEXTURE_2D);
-
-   // smooth shading
-   glShadeModel(GL_SMOOTH);
 
    // alpha blending
    glDisable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
-   // fog
-   glEnable(GL_FOG);
-   glFogi(GL_FOG_MODE,GL_EXP2);
-   glFogf(GL_FOG_DENSITY,0.2f); // 0.65f
-   glFogf(GL_FOG_START,0.0);
-   glFogf(GL_FOG_END,1.0);
-   GLint fog_color[4] = { 0,0,0,0 };
-   glFogiv(GL_FOG_COLOR,fog_color);
-
-   // give some hints
-   glHint(GL_FOG_HINT,GL_DONT_CARE);
-   glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
-   glHint(GL_POLYGON_SMOOTH_HINT,GL_DONT_CARE);
-
    // camera setup
+   ua_vector3d view_offset(0.0, 0.0, 0.0);
+   renderer.init(&core->get_underworld(),view_offset);
 
-   // set projection matrix
-   glMatrixMode(GL_PROJECTION);
-   glLoadIdentity();
-
-   double aspect = double(core->get_screen_width())/core->get_screen_height();
-   gluPerspective(fov, aspect, 0.25, 16.0);
-
-   // switch back to modelview matrix
-   glMatrixMode(GL_MODELVIEW);
+   renderer.setup_camera(90.0,
+      double(core->get_screen_width())/core->get_screen_height(),
+      16.0);
 
    // set up scissor test
    glClearColor(0,0,0,0);
@@ -994,13 +949,12 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
       int x,y;
       SDL_GetMouseState(&x,&y);
 
-      hit = get_selection(x,y);
+//      hit = get_selection(x,y);
    }
 }
 
 /*! picking tutorial:
-    http://www.lighthouse3d.com/opengl/picking/index.php3
-*/
+
 GLuint ua_ingame_orig_screen::get_selection(unsigned int xpos, unsigned int ypos)
 {
    // set selection buffer
@@ -1086,3 +1040,4 @@ GLuint ua_ingame_orig_screen::get_selection(unsigned int xpos, unsigned int ypos
 
    return hitid;
 }
+*/

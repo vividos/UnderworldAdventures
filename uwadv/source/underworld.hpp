@@ -37,7 +37,6 @@
 #include "inventory.hpp"
 #include "conv/codevm.hpp"
 #include "level.hpp"
-#include "quadtree.hpp"
 #include "physics.hpp"
 #include "uwscript.hpp"
 #include "savegame.hpp"
@@ -67,9 +66,6 @@ public:
 
    //! returns the height of the player
    double get_player_height();
-
-   //! renders the current game map and all objects
-   void render(ua_frustum &fr);
 
    // access to underworld components
 
