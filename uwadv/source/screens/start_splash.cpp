@@ -191,20 +191,13 @@ bool ua_start_splash_screen::process_event(SDL_Event& event)
          break;
 
       case 2: // fading in animation
-         {
-            stage=4;
+         stage=4;
+         tickcount = unsigned(blend_time * game->get_tickrate()) - tickcount;
 
-            // init fadeout
-            fader.init(false,game->get_tickrate(),blend_time);
+         // init fadeout
+         fader.init(false,game->get_tickrate(),blend_time,tickcount);
 
-            // "simulate" the number of ticks we already did
-            for(unsigned int i=0; i<tickcount; i++)
-               fader.tick();
-
-            tickcount = unsigned(blend_time * game->get_tickrate()) - tickcount;
-
-            ret = true;
-         }
+         ret = true;
          break;
 
       case 3: // showing animation
