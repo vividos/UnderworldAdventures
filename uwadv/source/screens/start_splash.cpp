@@ -34,6 +34,7 @@
 #include "scripting.hpp"
 #include "start_menu.hpp"
 #include "ingame_orig.hpp"
+#include "import.hpp"
 
 
 // constants
