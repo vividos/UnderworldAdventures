@@ -62,11 +62,14 @@ void ua_files_manager::init(ua_settings &settings)
    // load all settings
    bool foundconfig = false;
 
+   ua_trace("loading all config files ...\n");
+
    unsigned int max = cfgfiles_list.size();
    for(unsigned int i=0; i<max; i++)
    {
       bool fileok = true;
       try {
+         ua_trace("loading %s\n",cfgfiles_list[i].c_str());
          settings.load(cfgfiles_list[i].c_str());
       } catch (ua_exception e) {
          fileok = false;
@@ -76,6 +79,8 @@ void ua_files_manager::init(ua_settings &settings)
 
    if (!foundconfig)
       throw ua_exception("Could not find any config files");
+
+   ua_trace("\n");
 
    settings.init();
 
@@ -165,7 +170,7 @@ void ua_files_manager::init_cfgfiles_list()
    cfgfiles_list.push_back("uwadv.cfg");
 
 
-#if 1
+#if 0
    // some debugging info
 
    std::cout << "Trying the following config files:" << std::endl;
@@ -176,7 +181,6 @@ void ua_files_manager::init_cfgfiles_list()
       std::cout << *iter << std::endl;
    std::cout << std::endl;
 #endif
-
 }
 
 SDL_RWops *ua_files_manager::get_uadata_file(const char *relpath)
