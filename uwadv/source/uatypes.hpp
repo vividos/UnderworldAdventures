@@ -23,6 +23,8 @@
 
    \brief commonly used types
 
+   ua_smart_ptr was inspired by boost::shared_ptr
+
 */
 
 // include guard
@@ -64,6 +66,63 @@ inline int ua_trace_printf(const char *fmt,...)
 
 
 // classes
+
+//! smart pointer class
+template<typename T>
+class ua_smart_ptr
+{
+public:
+   // typedefs
+   typedef T  value_type;
+   typedef T* pointer_type;
+   typedef T& reference_type;
+
+   //! ctor
+   explicit ua_smart_ptr(T* ptr=0):px(ptr){ pn=new long(1);}
+   //! dtor
+   ~ua_smart_ptr(){ dispose(); }
+
+   //! copy ctor
+   ua_smart_ptr(const ua_smart_ptr &ptr):px(ptr.px){ ++*(pn = ptr.pn); }
+   //! assignment operator
+   ua_smart_ptr &operator =(const ua_smart_ptr &ptr){ share(ptr.px,ptr.pn); return *this; }
+
+   //! member-selection operator
+   T* operator->() const { return px; }
+
+   //! indirection operator
+   T& operator*() const { return *px; }
+
+   //! returns pointer
+   T* get(){ return px; }
+
+protected:
+   //! deletes pointer
+   void dispose()
+   {
+      if (--*pn == 0)
+      { delete px; delete pn; }
+   }
+
+   //! shares pointer
+   void share(T* rpx, long* rpn)
+   {
+      if (pn != rpn)
+      {
+         ++*rpn;
+         dispose();
+         px = rpx;
+         pn = rpn;
+      }
+   }
+
+protected:
+   //! pointer to refcount
+   long *pn;
+   //! pointer to type object
+   T*px;
+};
+
 
 //! exception class
 class ua_exception: public std::exception
