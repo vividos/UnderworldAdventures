@@ -141,6 +141,9 @@ void ua_save_game_screen::init()
       img_back2.init(&core->get_texmgr(),160,0, 160,200);
       img_back2.paste_rect(img_back,0,0, 160,200, 0,0);
 
+      img_back2_orig.create(160,200,0,3);
+      img_back2_orig.paste_rect(img_back,0,0, 160,200, 0,0);
+
       // update all controls
       update_buttons();
       update_list();
@@ -153,6 +156,9 @@ void ua_save_game_screen::init()
 
 void ua_save_game_screen::done()
 {
+   img_back1.done();
+   img_back2.done();
+
    mousecursor.done();
 
    if (edit_desc)
@@ -177,7 +183,8 @@ void ua_save_game_screen::handle_event(SDL_Event &event)
          // saving game
          if (selected_savegame < sgmgr->get_savegames_count())
          {
-            ua_trace("saving game over old savegame slot\n");
+            ua_trace("saving game over old savegame slot, filename %s\n",
+               sgmgr->get_savegame_filename(selected_savegame).c_str());
 
             // saving over selected game
             ua_savegame sg = sgmgr->get_savegame_save_overwrite(selected_savegame,info);
@@ -328,7 +335,7 @@ void ua_save_game_screen::render()
       desc_scroll.render();
 
    // render savegame preview image
-   if (show_infos)
+   if (show_preview)
    {
       tex_preview.use();
 
@@ -364,7 +371,8 @@ void ua_save_game_screen::tick()
          switch(button_highlight)
          {
          case 0: // load
-            ua_trace("loading saved game\n");
+            ua_trace("loading saved game, filename %s\n",
+               sgmgr->get_savegame_filename(selected_savegame).c_str());
             // load savegame
             core->get_underworld().load_game(
                sgmgr->get_savegame_load(selected_savegame,true));
@@ -548,26 +556,87 @@ void ua_save_game_screen::press_button()
 
 void ua_save_game_screen::update_info()
 {
+   // restore original image
+   img_back2.paste_image(img_back2_orig,0,0);
+
    if (selected_savegame < sgmgr->get_savegames_count())
    {
-      show_infos = true;
-
       // get savegame infos
       ua_savegame_info info;
       sgmgr->get_savegame_info(selected_savegame,info);
 
       // show infos
+      ua_image temp;
+      unsigned int textcolor = 73;
+
+      // player name
+      unsigned int width = font_btns.calc_length(info.name.c_str());
+      font_btns.create_string(temp,info.name.c_str(),162);
+      img_back2.paste_image(temp,(160-width)/2,10,true);
+
+      // gender
+      std::string text(core->get_strings().get_string(2,info.gender+9));
+      font_btns.create_string(temp,text.c_str(),textcolor);
+      img_back2.paste_image(temp,18,21,true);
+
+      // profession
+      text = core->get_strings().get_string(2,info.profession+23);
+      font_btns.create_string(temp,text.c_str(),textcolor);
+      img_back2.paste_image(temp,141-temp.get_xres(),21,true);
+
+      // basic attributes
+      for(unsigned int i=0; i<4; i++)
+      {
+         // text
+         text = core->get_strings().get_string(2,i+17);
+         font_btns.create_string(temp,text.c_str(),textcolor);
+         img_back2.paste_image(temp,93,50+i*17,true);
+
+         // number
+         unsigned int val=0;
+         switch(i)
+         {
+         case 0: val = info.strength; break;
+         case 1: val = info.dexterity; break;
+         case 2: val = info.intelligence; break;
+         case 3: val = info.vitality; break;
+         }
+
+         std::ostringstream buffer;
+         buffer << val << std::ends;
+
+         font_btns.create_string(temp,buffer.str().c_str(),textcolor);
+         img_back2.paste_image(temp,126,50+i*17,true);
+      }
+
+      // appearance
+      ua_image& appimg = img_buttons.get_image(
+         info.appearance+(info.gender==0 ? 0 : 5)+17);
+      img_back2.paste_image(appimg,31+(info.gender),47,true);
+
+#ifdef HAVE_DEBUG
+      // savegame filename
+      text = sgmgr->get_savegame_filename(selected_savegame);
+      std::string::size_type pos = text.find_last_of("\\/");
+      if (pos != std::string::npos)
+         text.erase(0,pos+1);
+
+      font_normal.create_string(temp,text.c_str(),162);
+      img_back2.paste_image(temp,5,192,true);
+#endif
 
       // do preview image
       tex_preview.init(&core->get_texmgr());
       tex_preview.convert(info.image_xres, info.image_yres, &info.image_rgba[0]);
       tex_preview.use();
       tex_preview.upload();
+
+      show_preview = true;
    }
    else
    {
-      // empty info pane
-      show_infos = false;
+      // empty info pane, no preview
+      show_preview = false;
    }
 
    img_back2.convert_upload();

@@ -87,8 +87,11 @@ protected:
    //! right background image
    ua_image_quad img_back2;
 
-   //! indicates if infos on left pane are shown
-   bool show_infos;
+   //! original image contents for right background image
+   ua_image img_back2_orig;
+
+   //! indicates if preview image is shown
+   bool show_preview;
 
    //! savegame preview image
    ua_texture tex_preview;
