@@ -54,7 +54,10 @@ int main(int argc, char* argv[])
    catch (ua_exception e)
    {
       ua_trace("caught ua_exception: %s\n",e.what());
-      ua.error_msg(e.what());
+
+      std::string text("caught ua_exception:\n\r");
+      text.append(e.what());
+      ua.error_msg(text.c_str());
    }
    catch (std::exception e)
    {
