@@ -306,8 +306,8 @@ void ua_create_character_screen::drawtext(const char* str, int x, int y, int xal
 
 void ua_create_character_screen::drawnumber(unsigned int num, int x, int y, unsigned char color)
 {
-   char ca[10];
-   itoa(num, ca, 10);
+   char ca[12];
+   sprintf(ca, "%d", num);
    drawtext(ca, x, y, 2, color);
 }
 

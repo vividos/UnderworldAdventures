@@ -12,7 +12,7 @@ top_builddir = linux
 
 
 # compiler options
-CXXFLAGS = -I.. $(SDL_CFLAGS)
+CXXFLAGS = -I.. $(SDL_CFLAGS) -Wall
 LDFLAGS = $(SDL_LIBS) -lSDL_mixer
 
 
@@ -28,7 +28,7 @@ liblua_a_SOURCES = lua/src/lapi.c lua/src/lcode.c lua/src/ldebug.c \
 	lua/src/ltable.c lua/src/ltests.c lua/src/ltm.c \
 	lua/src/lundump.c lua/src/lvm.c lua/src/lzio.c
 
-liblua_a_CFLAGS = -Ilua/include
+liblua_a_CFLAGS = -Ilua/include -Wall
 
 
 libzziplib_a_SOURCES = resource/zziplib/SDL_rwops_zzip.c \
@@ -40,7 +40,7 @@ libzziplib_a_SOURCES = resource/zziplib/SDL_rwops_zzip.c \
 	resource/zziplib/zzip-stat.c \
 	resource/zziplib/zzip-zip.c
 
-libzziplib_a_CFLAGS = -Iresource/zziplib $(SDL_CFLAGS)
+libzziplib_a_CFLAGS = -Iresource/zziplib $(SDL_CFLAGS) -Wall
 
 
 bin_PROGRAMS = uwadv
@@ -69,9 +69,12 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	resource/fread_endian.hpp \
 	screens/ingame_orig.cpp screens/start_splash.cpp \
 	screens/start_menu.cpp screens/cutscene_view.cpp \
-	screens/acknowledgements.cpp \
+	screens/acknowledgements.cpp screens/conversation.cpp \
+	screens/create_character.cpp screens/map_view.cpp \
 	screens/ingame_orig.hpp screens/start_splash.hpp \
-	screens/start_menu.hpp screens/acknowledgements.hpp
+	screens/start_menu.hpp screens/acknowledgements.hpp \
+	screens/conversation.hpp screens/create_character.hpp \
+	screens/map_view.hpp
 
 uwadv_LDADD = -lGL -lGLU $(SDL_LIBS) liblua.a libzziplib.a -lz
 

@@ -1,3 +1,9 @@
+2007-07-30 22:23  wjpalenstijn
+
+	* source/Makefile.am: added new screens/* files
+	* screens/create_character.cpp:
+	replaced non-standard itoa() with sprintf()
+
 2007-07-30 21:08  wjpalenstijn
 
 	* source/inventory.cpp, source/screens/acknowledgements.cpp,
