@@ -23,6 +23,8 @@
 
    \brief math stuff
 
+   all angle params should be passed in degrees, not radians
+
 */
 
 // include guard
@@ -42,6 +44,7 @@
 
 // constants
 
+//! pi constant
 const double ua_pi = 3.141592653589793;
 
 
@@ -62,50 +65,44 @@ public:
 
 public:
    //! ctor
-   ua_vector2d(){ x=y=0.0; }
+   ua_vector2d();
    //! copy ctor
-   ua_vector2d(const ua_vector2d &vec){ x=vec.x; y=vec.y; }
+   ua_vector2d(const ua_vector2d &vec);
    //! assign operator
-   ua_vector2d& operator =(const ua_vector2d &vec){ x=vec.x; y=vec.y; return *this; }
+   ua_vector2d& operator =(const ua_vector2d &vec);
 
    //! ctor with x and y coordinates
-   ua_vector2d(double ax, double ay){ x=ax; y=ay; }
+   ua_vector2d(double ax, double ay);
 
    //! sets vector by giving vector elements
-   void set(double nx, double ny){ x=nx; y=ny; }
+   void set(double nx, double ny);
 
    //! sets vector by giving two vectors
-   void set(const ua_vector2d &v1,const ua_vector2d &v2){ x=v2.x-v1.x; y=v2.y-v1.y; }
+   void set(const ua_vector2d &v1,const ua_vector2d &v2);
 
    //! sets vector by giving polar coordinates (angle in degree, not radians)
-   void set_polar(double len, double angle)
-   { x=len*cos(ua_deg2rad(angle)); y=len*sin(ua_deg2rad(angle)); }
+   void set_polar(double len, double angle);
 
    //! add assignment
-   ua_vector2d& operator +=(const ua_vector2d &vec){ x+=vec.x; y+=vec.y; return *this; }
+   ua_vector2d& operator+=(const ua_vector2d &vec);
 
    //! subtract assignment
-   ua_vector2d& operator -=(const ua_vector2d &vec){ x-=vec.x; y-=vec.y; return *this; }
+   ua_vector2d& operator-=(const ua_vector2d &vec);
 
-   // multiplication assignment
-   ua_vector2d& operator *=(double sc){ x*=sc; y*=sc; return *this; }
+   //! multiplication assignment
+   ua_vector2d& operator*=(double sc);
 
    //! returns length of vector
-   double length() const { return sqrt(x*x+y*y); }
+   double length() const;
 
    //! normalizes vector
-   void normalize(){ (*this)*=(1.0/length()); }
+   void normalize();
 
    //! calculates the inner (dot) product
-   double dot(const ua_vector2d &vec) const { return x*vec.x + y*vec.y; }
+   double dot(const ua_vector2d &vec) const;
 
    //! rotates vector; angle in degree
-   void rotate(double angle)
-   {
-      double temp = x*cos(ua_deg2rad(angle))-y*sin(ua_deg2rad(angle));
-      y = x*sin(ua_deg2rad(angle))+y*cos(ua_deg2rad(angle));
-      x=temp;
-   }
+   void rotate(double angle);
 };
 
 
@@ -118,44 +115,52 @@ public:
 
 public:
    //! ctor
-   ua_vector3d(){ x=y=z=0.0; }
+   ua_vector3d();
 
    //! copy ctor
-   ua_vector3d(const ua_vector3d &vec){ x=vec.x; y=vec.y; z=vec.z; }
-
-   //! assign operator
-   ua_vector3d& operator =(const ua_vector3d &vec){ x=vec.x; y=vec.y; z=vec.z; return *this; }
+   ua_vector3d(const ua_vector3d& vec);
 
    //! ctor with x, y and z coordinates
-   ua_vector3d(double ax, double ay, double az){ x=ax; y=ay; z=az; }
+   ua_vector3d(double ax, double ay, double az);
+
+   //! assign operator
+   ua_vector3d& operator=(const ua_vector3d &vec);
 
    //! add assignment
-   ua_vector3d& operator +=(const ua_vector3d &vec){ x+=vec.x; y+=vec.y; z+=vec.z; return *this; }
+   ua_vector3d& operator+=(const ua_vector3d &vec);
 
    //! subtract assignment
-   ua_vector3d& operator -=(const ua_vector3d &vec){ x-=vec.x; y-=vec.y; z-=vec.z; return *this; }
+   ua_vector3d& operator-=(const ua_vector3d &vec);
 
    // multiplication assignment
-   ua_vector3d& operator *=(double sc){ x*=sc; y*=sc; z*=sc; return *this; }
+   ua_vector3d& operator*=(double sc);
+
+   // division assignment with vector
+   ua_vector3d& operator/=(const ua_vector3d& vec);
 
    //! sets vector by giving vector elements
-   void set(double nx, double ny, double nz){ x=nx; y=ny; z=nz; }
+   void set(double nx, double ny, double nz);
 
    //! returns length of vector
-   double length() const { return sqrt(x*x+y*y+z*z); }
+   double length() const;
 
    //! normalizes vector
-   void normalize(){ (*this)*=(1.0/length()); }
+   void normalize();
 
-   //! calculates the inner (dot) product
-   double dot(const ua_vector3d &vec) const { return x*vec.x + y*vec.y + z*vec.z; }
+   //! calculates inner (dot) product
+   double dot(const ua_vector3d &vec) const;
 
-   void cross(const ua_vector3d &first, const ua_vector3d &second)
-   {
-      set(first.y * second.z - first.z * second.y,
-          first.z * second.x - first.x * second.z,
-          first.x * second.y - first.y * second.x);
-   }
+   //! calculates outer (cross) product
+   void cross(const ua_vector3d &first, const ua_vector3d &second);
+
+   //! rotate vector around x axis
+   void rotate_x(double angle);
+
+   //! rotate vector around y axis
+   void rotate_y(double angle);
+
+   //! rotate vector around z axis
+   void rotate_z(double angle);
 };
 
 
@@ -165,5 +170,204 @@ struct ua_triangle3d
    //! triangle points
    ua_vector3d points[3];
 };
+
+
+// inline methods
+
+
+// ua_vector2d methods
+
+inline ua_vector2d::ua_vector2d()
+{
+   x = y = 0.0;
+}
+
+inline ua_vector2d::ua_vector2d(const ua_vector2d &vec)
+{
+   x = vec.x;
+   y = vec.y;
+}
+
+inline ua_vector2d& ua_vector2d::operator=(const ua_vector2d &vec)
+{
+   x = vec.x;
+   y = vec.y;
+   return *this;
+}
+
+inline ua_vector2d::ua_vector2d(double ax, double ay)
+{
+   x = ax;
+   y = ay;
+}
+
+inline void ua_vector2d::set(double nx, double ny)
+{
+   x = nx;
+   y = ny;
+}
+
+inline void ua_vector2d::set(const ua_vector2d &v1,const ua_vector2d &v2)
+{
+   x = v2.x - v1.x;
+   y = v2.y - v1.y;
+}
+
+inline void ua_vector2d::set_polar(double len, double angle)
+{
+   x = len * cos(ua_deg2rad(angle));
+   y = len * sin(ua_deg2rad(angle));
+}
+
+inline ua_vector2d& ua_vector2d::operator+=(const ua_vector2d &vec)
+{
+   x += vec.x;
+   y += vec.y;
+   return *this;
+}
+
+inline ua_vector2d& ua_vector2d::operator-=(const ua_vector2d &vec)
+{
+   x -= vec.x;
+   y -= vec.y;
+   return *this;
+}
+
+inline ua_vector2d& ua_vector2d::operator*=(double sc)
+{
+   x *= sc;
+   y *= sc;
+   return *this;
+}
+
+inline double ua_vector2d::length() const
+{
+   return sqrt(x*x + y*y);
+}
+
+inline void ua_vector2d::normalize()
+{
+   (*this)*=(1.0/length());
+}
+
+inline double ua_vector2d::dot(const ua_vector2d &vec) const
+{
+   return x*vec.x + y*vec.y;
+}
+
+inline void ua_vector2d::rotate(double angle)
+{
+   double temp = x*cos(ua_deg2rad(angle))-y*sin(ua_deg2rad(angle));
+   y = x*sin(ua_deg2rad(angle))+y*cos(ua_deg2rad(angle));
+   x=temp;
+}
+
+
+// ua_vector3d methods
+
+inline ua_vector3d::ua_vector3d()
+{
+   x = y = z = 0.0;
+}
+
+inline ua_vector3d::ua_vector3d(const ua_vector3d& vec)
+:x(vec.x), y(vec.y), z(vec.z)
+{
+}
+
+inline ua_vector3d::ua_vector3d(double ax, double ay, double az)
+:x(ax), y(ay), z(az)
+{
+}
+
+inline ua_vector3d& ua_vector3d::operator=(const ua_vector3d &vec)
+{
+   x = vec.x;
+   y = vec.y;
+   z = vec.z;
+   return *this;
+}
+
+inline ua_vector3d& ua_vector3d::operator+=(const ua_vector3d &vec)
+{
+   x += vec.x;
+   y += vec.y;
+   z += vec.z;
+   return *this;
+}
+
+inline ua_vector3d& ua_vector3d::operator-=(const ua_vector3d &vec)
+{
+   x -= vec.x;
+   y -= vec.y;
+   z -= vec.z;
+   return *this;
+}
+
+inline ua_vector3d& ua_vector3d::operator*=(double sc)
+{
+   x *= sc;
+   y *= sc;
+   z *= sc;
+   return *this;
+}
+
+inline ua_vector3d& ua_vector3d::operator/=(const ua_vector3d& vec)
+{
+   x /= vec.x;
+   y /= vec.y;
+   z /= vec.z;
+   return *this;
+}
+
+inline void ua_vector3d::set(double nx, double ny, double nz)
+{
+   x = nx;
+   y = ny;
+   z = nz;
+}
+
+inline double ua_vector3d::length() const
+{
+   return sqrt(x*x + y*y + z*z);
+}
+
+inline void ua_vector3d::normalize()
+{
+   (*this)*=(1.0/length());
+}
+
+inline double ua_vector3d::dot(const ua_vector3d &vec) const
+{
+   return x*vec.x + y*vec.y + z*vec.z;
+}
+
+inline void ua_vector3d::cross(const ua_vector3d &first, const ua_vector3d &second)
+{
+   set(first.y * second.z - first.z * second.y,
+       first.z * second.x - first.x * second.z,
+       first.x * second.y - first.y * second.x);
+}
+
+inline void ua_vector3d::rotate_x(double angle)
+{
+   double y_temp = y, angle_rad = ua_deg2rad(angle);
+   y = y*cos(angle_rad) - z*sin(angle_rad);
+   z = y_temp*sin(angle_rad) + z*cos(angle_rad);
+}
+
+inline void ua_vector3d::rotate_y(double angle)
+{
+   double x_temp = x, angle_rad = ua_deg2rad(angle);
+   x = x*cos(angle_rad) + z*sin(angle_rad);
+   z = - x_temp*sin(angle_rad) + z*cos(angle_rad);
+}
+
+inline void ua_vector3d::rotate_z(double angle)
+{
+   double x_temp = x, angle_rad = ua_deg2rad(angle);
+   x = x*cos(angle_rad) - y*sin(angle_rad);
+   y = x_temp*sin(angle_rad) + y*cos(angle_rad);
+}
 
 #endif
