@@ -1,3 +1,41 @@
+2003-04-28 10:49  vividos
+
+	* configure.ac (1.30), win32/uwadv.nsi (1.7):
+
+	updated version number to 0.8a-hot-chili
+	
+2003-04-28 10:48  vividos
+
+	* source/screens/panel.cpp (1.9):
+
+	allow opening container in all game modes
+	
+2003-04-28 10:47  vividos
+
+	* source/screens/ingame_orig.cpp (1.139):
+
+	fixed crash in release builds when items that can't be picked up are tried to be picked up
+	was a bug in the priority cursor code
+	
+2003-04-27 14:45  vividos
+
+	* source/resource/model/: wrllexer.cpp (1.4), wrllexer.l (1.5):
+
+	fixed bug #722818:
+	added full path to wrllexer.hpp
+	
+2003-04-24 19:18  vividos
+
+	* configure.ac (1.29):
+
+	fixed version number
+	
+2003-04-24 19:08  vividos
+
+	* ChangeLog (1.35):
+
+	updated for release hot-chili
+	
 2003-04-24 19:03  vividos
 
 	* source/screens/panel.cpp (1.8):
