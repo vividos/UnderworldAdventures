@@ -75,8 +75,20 @@ void ua_files_manager::init(ua_settings &settings)
 
    ua_trace("\n");
 
-   // get uadata path
-   uadata_path = settings.get_string(ua_setting_uadata_path);
+   // check "uadata-path"
+   {
+      // get uadata path
+      uadata_path = settings.get_string(ua_setting_uadata_path);
+
+      // check if path ends with slash
+      std::string::size_type pos = uadata_path.find_last_of("\\/");
+      if (pos != std::string::npos && pos != uadata_path.size()-1)
+      {
+         // add slash and write back
+         uadata_path.append("/");
+         settings.set_value(ua_setting_uadata_path,uadata_path);
+      }
+   }
 
    // get savegame folder name
    {
@@ -84,6 +96,14 @@ void ua_files_manager::init(ua_settings &settings)
 
       // replace strings in savegame folder
       replace_system_vars(savegame_folder);
+
+      // check if path ends with slash
+      std::string::size_type pos = savegame_folder.find_last_of("\\/");
+      if (pos != std::string::npos && pos != savegame_folder.size()-1)
+      {
+         // add slash
+         savegame_folder.append("/");
+      }
 
       // store back value
       settings.set_value(ua_setting_savegame_folder,savegame_folder);
@@ -112,6 +132,16 @@ void ua_files_manager::init(ua_settings &settings)
       settings.set_value(ua_setting_uw1_is_uw_demo,false);
 
       std::string base = settings.get_string(ua_setting_uw1_path);
+
+      // check if path ends with slash
+      std::string::size_type pos = base.find_last_of("\\/");
+      if (pos != std::string::npos && pos != base.size()-1)
+      {
+         // add slash and write back
+         base.append("/");
+         settings.set_value(ua_setting_uw1_path,base);
+      }
+
       if (!base.empty())
       {
          if (ua_file_isavail(base,"data/cnv.ark") &&
@@ -141,6 +171,16 @@ void ua_files_manager::init(ua_settings &settings)
       settings.set_value(ua_setting_uw2_avail,false);
 
       std::string base = settings.get_string(ua_setting_uw2_path);
+
+      // check if path ends with slash
+      std::string::size_type pos = base.find_last_of("\\/");
+      if (pos != std::string::npos && pos != base.size()-1)
+      {
+         // add slash and write back
+         base.append("/");
+         settings.set_value(ua_setting_uw2_path,base);
+      }
+
       if (!base.empty())
       {
          if (ua_file_isavail(base,"data/cnv.ark") &&
