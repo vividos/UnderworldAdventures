@@ -55,9 +55,19 @@ struct ua_hotspot_items
    { "Level 1: 's Grave (near 22)", 0, 49.5, 41.5 },
    { "Level 1: Shrine (17)", 0, 46.5, 15.5 },
 
+   { "Level 2: Brawnclan (3)", 1, 13.5, 28.5 },
+
+   { "Level 3: Sseetharee (2)", 2, 24.5, 22.5 },
+
+   { "Level 4: Sethar Strongarm (11)", 3, 50.5, 22.5 },
+
+   { "Level 5: Shanclick and Eyesnack (1)", 4, 52.5, 23.5 },
+
    { "Level 6: Wine of Compassion (16)", 5, 26.5, 51.5 },
 
    { "Level 7: Crystal Splinter passage", 6, 20.5, 44.5 },
+
+   { "Level 8: Before the Chamber of Virtue", 7, 32.0, 25.5 },
 
    { "Ethereal Void: Starting point", 8, 29.5, 24.5 },
    { "Ethereal Void: Green Pathway End", 8, 52.5, 48.5 },
