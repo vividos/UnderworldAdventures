@@ -34,24 +34,23 @@
 #include <SDL_thread.h>
 
 
-// debugger implementation class
+// classes
 
+//! linux debugger implementation class
 class ua_debug_impl_linux: public ua_debug_interface
 {
 public:
-   ua_debug_impl_linux(ua_underworld* underw);
+   ua_debug_impl_linux(ua_game_core_interface* thecore);
    virtual ~ua_debug_impl_linux();
 
    // implemented abstraction methods from ua_debug_interface
    virtual void start_debugger();
    virtual void lock();
    virtual void unlock();
-   virtual ua_underworld* get_underworld();
-   virtual ua_uw_access_api* get_access_api();
 
 protected:
-   //! underworld object
-   ua_underworld* underw;
+   //! game core object
+   ua_game_core_interface* core;
 
    //! access api
    ua_uw_access_api api;
@@ -61,22 +60,22 @@ protected:
 // ua_debug_interface methods
 
 ua_debug_interface* ua_debug_interface::get_new_debug_interface(
-   ua_underworld* underw)
+   ua_game_core_interface* core)
 {
-   return new ua_debug_impl_linux(underw);
+   return new ua_debug_impl_linux(core);
 }
 
 
-// ua_debug_impl methods
+// ua_debug_impl_linux methods
 
-ua_debug_impl_linux::ua_debug_impl_linux(ua_underworld* theunderw)
-:underw(theunderw)
+ua_debug_impl_linux::ua_debug_impl_linux(ua_game_core_interface* thecore)
+:core(thecore)
 {
    // todo: load dynamic debugger library
    ua_trace("linux debug impl. started; debugger is not available\n");
 
    // initialize access api
-   api.init();
+   api.init(core,this);
 }
 
 ua_debug_impl_linux::~ua_debug_impl_linux()
@@ -96,16 +95,6 @@ void ua_debug_impl_linux::lock()
 
 void ua_debug_impl_linux::unlock()
 {
-}
-
-ua_underworld* ua_debug_impl_linux::get_underworld()
-{
-   return underw;
-}
-
-ua_uw_access_api* ua_debug_impl_linux::get_access_api()
-{
-   return &api;
 }
 
 #endif // WIN32
