@@ -31,6 +31,7 @@
 
 // needed includes
 #include "game_interface.hpp"
+#include "underworld.hpp"
 
 
 // enums
@@ -70,8 +71,9 @@ public:
    //! executes a trigger action
    virtual void do_trigger(unsigned int pos)=0;
 
-   //! casts spell described by the runes in spell rack
-   virtual void cast_spell()=0;
+   //! user performed an action
+   virtual void user_action(ua_underworld_user_action action,
+      unsigned int param)=0;
 
    //! notifies script that the current level has changed
    virtual void on_changing_level()=0;
@@ -82,11 +84,14 @@ public:
    //! performs object "use" action
    virtual void object_use(unsigned int pos)=0;
 
-   //! combines two objects in inventory
-   virtual void inventory_combine(unsigned int pos,unsigned int pos2)=0;
-
    //! performs inventory item "look" action
    virtual void inventory_look(unsigned int pos)=0;
+
+   //! performs inventory item "use" action
+   virtual void inventory_use(unsigned int pos)=0;
+
+   //! combines two objects in inventory
+   virtual void inventory_combine(unsigned int pos,unsigned int pos2)=0;
 
    //! creates new scripting object
    static ua_scripting* create_scripting(ua_scripting_language lang);
