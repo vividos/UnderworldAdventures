@@ -41,6 +41,7 @@ uwadv_SOURCES = \
 	conv/codevm.cpp conv/codevm.hpp \
 	conv/convgraph.cpp conv/convgraph.hpp \
 	conv/opcodes.hpp \
+	import/cutsloader.cpp \
 	import/fontloader.cpp \
 	import/imageloader.cpp \
 	import/import.hpp io_endian.hpp \
@@ -59,7 +60,6 @@ uwadv_SOURCES = \
 	screens/uwadv_menu.cpp screens/uwadv_menu.hpp \
 	script/luascript.cpp script/luascript.hpp \
 	script/script.hpp \
-	script/luascript.cpp script/luascript.hpp \
 	ui/cutscene.cpp ui/cutscene.hpp \
 	ui/fading.hpp \
 	ui/font.cpp ui/font.hpp \
@@ -87,9 +87,7 @@ uwadv_SOURCES = \
 	main.cpp \
 	uwadv.cpp uwadv.hpp \
 	\
-	renderer/models.cpp \
 	resource/codeloader.cpp resource/critloader.cpp \
-	resource/cutsloader.cpp \
 	resource/maploader.cpp resource/modeldecode.cpp \
 	resource/objloader.cpp resource/playerimport.cpp \
 	resource/proploader.cpp \
