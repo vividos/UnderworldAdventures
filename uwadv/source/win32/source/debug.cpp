@@ -87,6 +87,9 @@ ua_debug_impl_win32::ua_debug_impl_win32()
 
    avail &= (NULL != ::GetProcAddress(dll,"uadebug_start"));
 
+   ua_trace("win32 debug impl. started; debugger is %savailable\n",
+      avail ? "" : "not ");
+
    sem_debugger = SDL_CreateSemaphore(0);
    thread_debug = NULL;
 }
@@ -109,6 +112,8 @@ void ua_debug_impl_win32::start_debugger()
    // check if debugger already runs
    if (avail && SDL_SemValue(sem_debugger)==0)
    {
+      ua_trace("starting uadebug thread\n");
+
       // start new thread
       thread_debug = SDL_CreateThread(thread_proc,this);
    }
@@ -131,6 +136,8 @@ int ua_debug_impl_win32::thread_proc(void* ptr)
       // start debugger
       uadebug_start();
    }
+
+   ua_trace("uadebug thread ended\n");
 
    // decrease semaphore count
    SDL_SemWait(This->sem_debugger);
