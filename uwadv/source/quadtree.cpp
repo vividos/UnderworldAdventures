@@ -36,10 +36,13 @@
 
 // ua_frustum methods
 
-ua_frustum::ua_frustum(double xpos,double ypos,double myxangle,double myyangle,double fov,double farplane)
+ua_frustum::ua_frustum(double xpos,double ypos,double zpos,double myxangle,double myyangle,double fov,double farplane)
 {
    xangle=myxangle;
    yangle=myyangle;
+   pos[0]=xpos;
+   pos[1]=ypos;
+   pos[2]=zpos;
 
    // calculate all three triangle points forming the 2d frustum top view
    x[0] = xpos - 3.0*cos(ua_deg2rad(xangle));
