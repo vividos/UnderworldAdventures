@@ -307,8 +307,10 @@ void ua_game::init_core()
    // init textures
    texmgr.init(settings);
 
+   ua_trace("loading game strings ... ");
    // load game strings
    gstr.load(settings);
+   ua_trace("done\n");
 
    // init audio
    audio = ua_audio_interface::get_audio_interface();
