@@ -23,8 +23,8 @@
 
    \brief audio interface implementation
 
-   audio interface implementation does an the interfacing with the audio part
-   of SDL and the ua_midi_player class.
+   audio manager implementation; does the audio music and sound playback using
+   the audio part of SDL and the ua_midi_player class.
 
 */
 
@@ -83,7 +83,11 @@ void ua_audio_manager::init(ua_settings& settings, ua_files_manager& filesmgr)
    midipl->init_player(settings);
    midipl->init_driver();
 
-   load_playlist(settings,filesmgr,"uw1/audio/music.m3u");
+   // do playlist pathname
+   std::string playlist_name(settings.get_string(ua_setting_game_prefix));
+   playlist_name.append("/audio/music.m3u");
+
+   load_playlist(settings,filesmgr,playlist_name.c_str());
 
    uw_path = settings.get_string(ua_setting_uw_path);
 
@@ -182,7 +186,7 @@ void ua_audio_manager::stop_music()
 void ua_audio_manager::load_playlist(ua_settings& settings,
    ua_files_manager& filesmgr, const char* filename)
 {
-   SDL_RWops *m3u = filesmgr.get_uadata_file(filename);
+   SDL_RWops* m3u = filesmgr.get_uadata_file(filename);
    if (m3u==NULL) return;
 
    // load playlist into buffer
