@@ -1,6 +1,6 @@
 --
 -- Underworld Adventures - an Ultima Underworld hacking project
--- Copyright (c) 2002 Michael Fink
+-- Copyright (c) 2002,2003 Underworld Adventures Team
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -225,6 +225,8 @@ level_pos = {
 
 function repos_player(newlevel)
 
+   local newlevel = player_get_attr(player_attr_maplevel)
+
    local targets = level_pos[newlevel]
 
    if targets == nil
@@ -258,8 +260,5 @@ function lua_change_level(newlevel)
    ui_print_string("changing to level " .. newlevel+1 .. " ...")
 
    -- fun_replace_tilemap_solids()
-
-   -- reposition player
-   repos_player(newlevel)
 
 end
