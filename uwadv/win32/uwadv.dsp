@@ -130,12 +130,22 @@ SOURCE=..\source\..\uadata\uw1\scripts\cutscene.lua
 # End Source File
 # Begin Source File
 
+SOURCE=..\uadata\uw1\scripts\dump.lua
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
 SOURCE=..\source\..\uadata\uw1\scripts\game.lua
 # PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
 SOURCE=..\source\..\uadata\uw1\scripts\inventory.lua
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
+SOURCE=..\uadata\uw1\scripts\lookat.lua
 # PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File

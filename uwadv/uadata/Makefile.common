@@ -12,7 +12,9 @@ luaSCRIPTS = \
 	uw1/scripts/uwinterface.lua \
 	uw1/scripts/game.lua \
 	uw1/scripts/traps.lua \
-	uw1/scripts/triggers.lua
+	uw1/scripts/triggers.lua \
+	uw1/scripts/dump.lua \
+	uw1/scripts/lookat.lua
 
 luaOBJECTS = $(luaSCRIPTS:.lua=.lob)
 
