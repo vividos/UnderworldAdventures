@@ -75,13 +75,16 @@ protected:
    void render_walls(ua_levelmap_tile& tile, unsigned int x,
       unsigned int y, ua_texture_manager& texmgr);
 
-/*
    //! renders the objects of a tile
-   void render_objs(unsigned int x, unsigned int y,
+   void render_objects(unsigned int x, unsigned int y,
       ua_texture_manager &texmgr, ua_frustum &fr);
-*/
 
-private:
+protected:
+
+   //! renders a single object
+   void render_object(ua_object& obj, unsigned int x, unsigned int y,
+      ua_texture_manager &texmgr, ua_frustum &fr);
+
    //! retrieves tile coordinates
    void get_tile_coords(unsigned int side, ua_levelmap_tiletype type,
       unsigned int basex, unsigned int basey, Uint16 basez, Uint16 slope, Uint16 ceiling,

@@ -26,6 +26,10 @@
    picking tutorial:
    http://www.lighthouse3d.com/opengl/picking/index.php3
 
+   billboarding tutorials:
+   http://www.lighthouse3d.com/opengl/billboarding/
+   http://nate.scuzzy.net/gltut/
+
 */
 
 // needed includes
@@ -215,6 +219,13 @@ void ua_renderer::render()
       render_walls(tile,qtc.first,qtc.second,texmgr);
    }
 
+   // draw all visible objects
+   for(i=0;i<max;i++)
+   {
+      const ua_quad_tile_coord &qtc = tilelist[i];
+      render_objects(qtc.first,qtc.second,texmgr,fr);
+   }
+
 #endif
 }
 
@@ -280,27 +291,6 @@ void ua_renderer::select_pick(unsigned int xpos, unsigned int ypos,
       }
    }
 }
-
-/*
-void ua_level::render(ua_texture_manager &texmgr,ua_frustum &fr)
-{
-
-   // set up new viewpoint, "view coordinates" used in ua_object::render()
-   glPushMatrix();
-   glLoadIdentity();
-   glRotated(-fr.get_yangle()+270.0, 1.0, 0.0, 0.0);
-
-   // draw all objects in tile
-   max = tilelist.size();
-   for(i=0;i<max;i++)
-   {
-      const ua_quad_tile_coord &qtc = tilelist[i];
-      render_objs(qtc.first,qtc.second,texmgr,fr);
-   }
-
-   // restore old viewpoint
-   glPopMatrix();
-}*/
 
 /*
 void ua_renderer::render(ua_texture_manager &texmgr)
@@ -597,20 +587,105 @@ void ua_renderer::render_walls(ua_levelmap_tile& tile, unsigned int x,
    glPopName();
 }
 
-/*
-void ua_renderer::render_objs(unsigned int x, unsigned int y,
+
+void ua_renderer::render_objects(unsigned int x, unsigned int y,
    ua_texture_manager &texmgr, ua_frustum &fr)
 {
-   ua_object obj;
+   glPushName((y<<8) + x);
 
-   if (allobjects.get_first_tile_object(x,y,obj))
-   do
+   ua_object_list& objlist = underw->get_current_level().get_mapobjects();
+
+   // get first object link
+   Uint16 link1 = objlist.get_tile_list_start(x,y);
+
+   while(link1 != 0)
    {
-      obj.render(x,y,texmgr,fr,*this);
+      ua_object& obj = objlist.get_object(link1);
 
-   } while(allobjects.get_next_tile_object(obj));
+      // remember object list position for picking
+      glPushName(link1);
+
+      // render object
+      render_object(obj,x,y,texmgr,fr);
+
+      glPopName();
+
+      // next object in link chain
+      link1 = obj.get_object_info().link1;
+   }
+
+   glPopName();
 }
-*/
+
+/*! objects are drawn using the method described in the billboarding tutorial,
+    "Cheating - Faster but not so easy" */
+void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y,
+   ua_texture_manager &texmgr, ua_frustum &fr)
+{
+   // don't render invisible objects
+#ifndef HAVE_DEBUG
+   if (info.type==ua_obj_invisible)
+      return;
+#endif
+
+   ua_level& level = underw->get_current_level();
+
+   double quadwidth = 0.25;
+   double objxpos = double(x) + (obj.get_xpos()+0.5)/8.0;
+   double objypos = double(y) + (obj.get_ypos()+0.5)/8.0;
+   double height = level.get_floor_height(objxpos,objypos)*height_scale;
+
+   ua_vector3d right(1,0,0), up(0,0,1);
+
+   {
+      float modelview[16];
+
+      // get the current modelview matrix
+      glGetFloatv(GL_MODELVIEW_MATRIX , modelview);
+
+      right.set(modelview[0],modelview[4],modelview[8]);
+      up.set(modelview[1],modelview[5],modelview[9]);
+   }
+
+   right.normalize();
+   up.normalize();
+
+   right *= 0.5*quadwidth;
+   up *= quadwidth;
+
+   ua_vector3d base1(objxpos, objypos, height);
+   ua_vector3d base2(base1);
+
+   base1 -= right;
+   base2 += right;
+
+   ua_vector3d high1(base1);
+   ua_vector3d high2(base2);
+
+   high1 += up;
+   high2 += up;
+
+   // draw object quad
+   {
+      // get object texture coords
+      double u1,v1,u2,v2;
+      texmgr.object_tex(obj.get_object_info().item_id,u1,v1,u2,v2);
+
+      glEnable(GL_BLEND);
+
+      glColor3ub(255,255,255);
+
+      // render quad
+      glBegin(GL_QUADS);
+      glTexCoord2d(u1,v2); glVertex3d(base1.x,base1.y,base1.z);
+      glTexCoord2d(u2,v2); glVertex3d(base2.x,base2.y,base2.z);
+      glTexCoord2d(u2,v1); glVertex3d(high2.x,high2.y,high2.z);
+      glTexCoord2d(u1,v1); glVertex3d(high1.x,high1.y,high1.z);
+      glEnd();
+
+      glDisable(GL_BLEND);
+   }
+}
 
 void ua_renderer::get_tile_coords(
    unsigned int side, ua_levelmap_tiletype type,
