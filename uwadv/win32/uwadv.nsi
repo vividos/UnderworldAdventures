@@ -107,6 +107,8 @@ File uwadv-manual.html
 File uw1-keyboard.txt
 File Changes.txt
 File Authors.txt
+File README-SDL.txt
+File README-SDL_mixer.txt
 CreateDirectory "$INSTDIR\uasave"
 
 SetOutPath $INSTDIR\uadata
@@ -161,6 +163,8 @@ Delete $INSTDIR\README.uwadv.txt
 Delete $INSTDIR\uwadv-manual.html
 Delete $INSTDIR\uw1-keyboard.txt
 Delete $INSTDIR\Authors.txt
+Delete $INSTDIR\README-SDL.txt
+Delete $INSTDIR\README-SDL_mixer.txt
 Delete $INSTDIR\Changes.txt
 Delete $INSTDIR\stdout.txt
 Delete $INSTDIR\stderr.txt
