@@ -149,6 +149,13 @@ public:
 
    //! calculates the inner (dot) product
    double dot(const ua_vector3d &vec) const { return x*vec.x + y*vec.y + z*vec.z; }
+
+   void cross(const ua_vector3d &first, const ua_vector3d &second)
+   {
+      set(first.y * second.z - second.y * first.z,
+          first.z * second.x - second.z * first.x,
+          first.x * second.y - second.x * first.y);
+   }
 };
 
 
