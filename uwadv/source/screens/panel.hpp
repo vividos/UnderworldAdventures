@@ -36,7 +36,7 @@
 
 
 // forward references
-enum ua_screen_area_id;
+//enum ua_screen_area_id;
 class ua_ingame_orig_screen;
 
 
@@ -80,7 +80,7 @@ protected:
    bool check_dragging;
 
    //! area the item is dragged from
-   ua_screen_area_id drag_area;
+   unsigned int drag_area;
 
    //! item index that is currently dragged
    Uint16 drag_item;
