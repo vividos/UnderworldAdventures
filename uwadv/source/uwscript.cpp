@@ -117,6 +117,9 @@ void ua_underworld_script_bindings::register_functions()
    lua_register(L,"conv_get_global",conv_get_global);
    lua_register(L,"conv_set_global",conv_set_global);
 
+   lua_register(L,"prop_get_common",prop_get_common);
+   lua_register(L,"prop_get_special",prop_get_special);
+
    lua_register(L,"ui_start_conv",ui_start_conv);
    lua_register(L,"ui_show_cutscene",ui_show_cutscene);
    lua_register(L,"ui_print_string",ui_print_string);
@@ -909,6 +912,61 @@ int ua_underworld_script_bindings::conv_set_global(lua_State* L)
       globals[pos] = value;
    }
 
+   return 0;
+}
+
+
+// prop_* functions
+
+int ua_underworld_script_bindings::prop_get_common(lua_State* L)
+{
+   ua_underworld &uw = get_underworld_from_self(L);
+
+   Uint16 item_id = static_cast<Uint16>(lua_tonumber(L,-1));
+
+   ua_common_obj_property& prop =
+      uw.get_obj_properties().get_common_property(item_id);
+
+   // create new table and fill it with infos
+   lua_newtable(L);
+
+   lua_pushstring(L,"item_id");
+   lua_pushnumber(L,static_cast<double>(item_id));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"height");
+   lua_pushnumber(L,static_cast<double>(prop.height));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"mass");
+   lua_pushnumber(L,static_cast<double>(prop.mass));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"radius");
+   lua_pushnumber(L,static_cast<double>(prop.radius));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"quality_class");
+   lua_pushnumber(L,static_cast<double>(prop.quality_class));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"quality_type");
+   lua_pushnumber(L,static_cast<double>(prop.quality_type));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"can_have_owner");
+   lua_pushnumber(L,prop.can_have_owner ? 1.0 : 0.0);
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"can_be_looked_at");
+   lua_pushnumber(L,prop.can_be_looked_at ? 1.0 : 0.0);
+   lua_settable(L,-3);
+
+   return 1;
+}
+
+int ua_underworld_script_bindings::prop_get_special(lua_State* L)
+{
    return 0;
 }
 

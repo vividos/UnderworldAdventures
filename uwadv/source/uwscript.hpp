@@ -240,6 +240,9 @@ protected:
    static int conv_get_global(lua_State* L);
    static int conv_set_global(lua_State* L);
 
+   static int prop_get_common(lua_State* L);
+   static int prop_get_special(lua_State* L);
+
    static int ui_start_conv(lua_State* L);
    static int ui_show_cutscene(lua_State* L);
    static int ui_print_string(lua_State* L);
