@@ -128,7 +128,8 @@ function lua_objlist_look(obj_handle)
    -- object owned by someone?
    owner = ""
    if (objinfo.item_id < 64 or objinfo.item_id >= 128) and
-      objinfo.item_id < 320  and objinfo.owner > 0 then
+      objinfo.item_id < 320  and objinfo.owner > 0
+   then
 
       local article,name = format_item_name(objinfo.owner-1+64, 0)
 
@@ -139,5 +140,29 @@ function lua_objlist_look(obj_handle)
    ui_print_string(
      "You see " .. article ..
      mood .. name .. named .. owner)
+
+end
+
+function lua_objlist_talk(obj_handle)
+
+   objinfo = objlist_get_obj_info(obj_handle)
+
+   dump_objinfo_table(objinfo,obj_handle)
+
+   if objinfo.item_id < 64 or objinfo.item_id >= 128
+   then
+      ui_print_string(ui_get_gamestring(1,156))
+      return
+   end
+
+   if objinfo.data.size > 0
+   then
+      local conv = objinfo.data[0]
+
+      if conv > 0 and conv < 255
+      then
+         ui_start_conv(conv)
+      end
+   end
 
 end
