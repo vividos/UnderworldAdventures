@@ -33,9 +33,7 @@
 #include <cctype>
 
 
-// constants
-
-const char *ua_cnvdbg_version = "0.1";
+int my_stricmp(const char *a, const char *b){ return strcmp(a,b); }
 
 
 // ua_conv_debugger methods
@@ -90,7 +88,7 @@ void ua_conv_debugger::start()
          strcpy(lastbuffer,buffer);
 
       // check for every command
-      if (stricmp("help",buffer)==0 || tolower(buffer[0])=='h' || buffer[0]=='?')
+      if (my_stricmp("help",buffer)==0 || tolower(buffer[0])=='h' || buffer[0]=='?')
       {
          printf(
             "cnvdbg - help\n\n"
@@ -146,7 +144,7 @@ void ua_conv_debugger::start()
          continue;
       }
 
-      if (stricmp("reg",buffer)==0 ||
+      if (my_stricmp("reg",buffer)==0 ||
           (tolower(buffer[0])=='r' && strncmp("reset",buffer,4)!=0))
       {
          printf("registers:\n"
@@ -154,7 +152,7 @@ void ua_conv_debugger::start()
                instrp,stack.get_stackp(),basep,result_register);
       }
 
-      if (stricmp("info",buffer)==0 || tolower(buffer[0])=='i')
+      if (my_stricmp("info",buffer)==0 || tolower(buffer[0])=='i')
       {
          if (!loaded)
          {
@@ -187,15 +185,15 @@ void ua_conv_debugger::start()
          printf("\n");
       }
 
-      if (stricmp("verbose",buffer)==0 || tolower(buffer[0])=='v')
+      if (my_stricmp("verbose",buffer)==0 || tolower(buffer[0])=='v')
       {
          verbose = !verbose;
          printf("verbose: %s\n",verbose ? "on" : "off");
          continue;
       }
 
-      if (stricmp("exit",buffer)==0 || tolower(buffer[0])=='x' ||
-          stricmp("quit",buffer)==0 || tolower(buffer[0])=='q')
+      if (my_stricmp("exit",buffer)==0 || tolower(buffer[0])=='x' ||
+          my_stricmp("quit",buffer)==0 || tolower(buffer[0])=='q')
       {
          endloop=true;
          continue;
@@ -241,7 +239,7 @@ void ua_conv_debugger::start()
       // reset last list pointer
       lastlistptr = instrp;
 
-      if (stricmp("dump",buffer)==0 || tolower(buffer[0])=='d')
+      if (my_stricmp("dump",buffer)==0 || tolower(buffer[0])=='d')
       {
          // dump whole stack
          Uint16 stackp = stack.get_stackp();
@@ -259,12 +257,12 @@ void ua_conv_debugger::start()
          printf("\n");
       }
 
-      if (stricmp("step",buffer)==0 || tolower(buffer[0])=='s' || tolower(buffer[0])=='n')
+      if (my_stricmp("step",buffer)==0 || tolower(buffer[0])=='s' || tolower(buffer[0])=='n')
       {
          n=1;
       }
 
-      if (stricmp("cont",buffer)==0 || tolower(buffer[0])=='c')
+      if (my_stricmp("cont",buffer)==0 || tolower(buffer[0])=='c')
       {
          n=-1;
       }
@@ -543,8 +541,7 @@ void ua_conv_debugger::fetchm_priv(Uint16 at)
 
 int main(int argc, char *argv[])
 {
-   printf("cnvdbg %s - ultima underworld 1 conversation script debugger\n\n",
-      ua_cnvdbg_version);
+   printf("cnvdbg - ultima underworld 1 conversation script debugger\n\n");
 
    if (argc<4)
    {
