@@ -122,7 +122,8 @@ public:
    //! pushes a value onto the stack
    void push(Uint16 val)
    {
-      if (stackp>stack.size()) throw ua_ex_stack_access;
+      if (Uint16(stackp+1)>stack.size())
+         throw ua_ex_stack_access;
       stack[++stackp] = val;
    }
 
