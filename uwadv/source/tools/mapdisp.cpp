@@ -36,7 +36,7 @@
 
 // needed includes
 #include "common.hpp"
-#include "level.hpp"
+#include "underworld.hpp"
 
 
 // globals
@@ -50,20 +50,26 @@ static double yangle = 0.0;
 static bool leftbuttondown = false;
 static bool rightbuttondown = false;
 
-static int level=0;
-static ua_level levelmap;
+static int curlevel=0;
+static std::vector<ua_level> levels;
 static ua_texture_manager texmgr;
 static ua_settings settings;
 
 
+// prototypes
+
+// levelmap loader, defined in resource/maploader.cpp
+void ua_import_levelmaps(ua_settings &settings, const char *folder,
+   std::vector<ua_level> &levels);
+
+
 // functions
 
-void load_level(int lev)
+void load_level(int level)
 {
    // load new level
-   level = lev;
-   levelmap.load(settings,lev);
-   levelmap.prepare_textures(texmgr);
+   curlevel=level;
+   levels[curlevel].prepare_textures(texmgr);
 }
 
 void init_mapdisp()
@@ -83,6 +89,8 @@ void init_mapdisp()
    // init texture manager
    texmgr.init(settings);
 
+   ua_import_levelmaps(settings,"data/",levels);
+
    // load first level
    load_level(0);
 }
@@ -96,13 +104,13 @@ void handle_key_down(SDL_keysym* keysym)
       break;
 
    case SDLK_PAGEUP:
-      if (settings.gtype == ua_game_uw1 && level>0)
-         load_level(level-1);
+      if (curlevel>0)
+         load_level(curlevel-1);
       break;
 
    case SDLK_PAGEDOWN:
-      if (settings.gtype == ua_game_uw1 && level<8)
-         load_level(level+1);
+      if (curlevel<levels.size()-1)
+         load_level(curlevel+1);
       break;
 
    case SDLK_UP:
@@ -181,26 +189,26 @@ void draw_screen()
    glLoadIdentity();
 
    // position move
-   glTranslatef( xpos, -ypos, -zpos );
+   glTranslated( xpos, -ypos, -zpos );
 
    // rotation
-   glRotatef( yangle, 1.0, 0.0, 0.0 );
-   glRotatef( xangle, 0.0, 0.0, 1.0 );
+   glRotated( yangle, 1.0, 0.0, 0.0 );
+   glRotated( xangle, 0.0, 0.0, 1.0 );
 
    // move to center of map
-   glTranslatef( -32.0, -32.0, 0.0 );
+   glTranslated( -32.0, -32.0, 0.0 );
 
    // draw ground square
    glBegin(GL_QUADS);
    glColor3ub(32,32,32);
-   glVertex3f(0,0,-0.1f);
-   glVertex3f(64,0,-0.1f);
-   glVertex3f(64,64,-0.1f);
-   glVertex3f(0,64,-0.1f);
+   glVertex3d(0,0,-0.1);
+   glVertex3d(64,0,-0.1);
+   glVertex3d(64,64,-0.1);
+   glVertex3d(0,64,-0.1);
    glEnd();
 
    // render map
-   levelmap.render(texmgr);
+   levels[curlevel].render(texmgr);
 
    SDL_GL_SwapBuffers();
 }
@@ -284,11 +292,31 @@ int main(int argc, char* argv[])
    setup_opengl(width,height);
    init_mapdisp();
 
+   Uint32 now, fcstart = SDL_GetTicks();
+   unsigned int renders=0;
+
    // main loop
    while(!can_exit)
    {
       process_events();
       draw_screen();
+      renders++;
+
+      now = SDL_GetTicks();
+
+      if (now-fcstart > 2000)
+      {
+         // set new caption
+         char buffer[256];
+         sprintf(buffer,"Underworld Adventures: Map Display; %3.1f frames/s",
+            renders*1000.f/(now-fcstart));
+
+         SDL_WM_SetCaption(buffer,NULL);
+
+         // restart counting
+         renders = 0;
+         fcstart = now;
+      }
    }
 
    // finish off SDL
