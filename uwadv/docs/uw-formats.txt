@@ -28,6 +28,12 @@ Table of Contents
 
 6.0   Savegame format
 
+7.0   3D objects
+
+8.0   Misc. stuff
+8.1   Combining objects
+8.2   Graves
+
 
 1.0 General stuff
 
@@ -71,7 +77,7 @@ Table of Contents
    charhead.gr    character images, for conversations
    chrbtns.gr     character generation graphics, palette #3
    chrgen.dat
-   cmb.dat
+   cmb.dat        combining rules (see 7.1)
    cnv.ark        conversation scripts
    comobj.dat     common object properties
    compass.gr     compass graphics
@@ -1092,5 +1098,41 @@ Table of Contents
 
    todo: how items are stored
 
+
+7.0 3D objects
+
+   todo
+
+
+8.0 Misc. stuff
+
+8.1 Combining objects
+
+   In the Ultima Underworlds, when you `apply' certain objects to one another
+   in your inventory a new object is created. For example,
+   pole + strong thread = fishing pole. The mechanism for this is very simple
+   and is controlled by the file "cmb.dat" in the data/ directory.
+
+   This file contains a table of 3 16-bit words for each allowable
+   combination: `source1', `source2', `newobject' in that order. 3 zeros mark
+   the end of the table. The low 9 bits of each word is the object ID. If an
+   object of type source1 is applied to an object of type source2 (or vice
+   versa) an object of type newobject is created. The top bit of each of the
+   source words indicates whether that object is destroyed in the process: if
+   it is a 1, the object is destroyed. (It is always the case that at least
+   one of the source objects is destroyed: you can't create something from
+   nothing, at least not this way).
+
+8.2 Graves
+
+   Graves. (Dig those graves!) There are 2 bitmaps available for graves: 28
+   and 29 in tmobj.gr. Which one is drawn in the model depends on the low bits
+   of the "state" field, as usual. Headstone text is determined by the "link"
+   field: the high (512) bit seems always to be set, the rest is the string
+   index in the object message block 7. This also serves as an index into
+   grave.dat which in turn gives a unique grave ID.
+
+   Large headstone images live in the cutscene file cuts/cs401.n01, one frame
+   each, indexed by grave ID.
 
 eof
