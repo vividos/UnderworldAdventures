@@ -35,7 +35,7 @@
 // needed includes
 #include "savegame.hpp"
 #include "uamath.hpp"
-#include "physicsobject.hpp"
+#include "physicsbody.hpp"
 #include "runes.hpp"
 
 
@@ -55,7 +55,9 @@ enum ua_player_movement_mode
 
 //! player attribute enum
 /*! player attributes are values that characterize the player, and
-    may be used for combat/spell/etc. calculations */
+    may be used for combat/spell/etc. calculations
+    \todo add more needed skills
+*/
 typedef enum
 {
    // note: scripts depend on numerical values, they must be in-sync with
@@ -95,6 +97,7 @@ typedef enum
 
 } ua_player_attributes;
 
+
 //! player skills enum
 typedef enum
 {
@@ -127,14 +130,14 @@ typedef enum
 // classes
 
 //! player class
-class ua_player: public ua_physics_object
+class ua_player: public ua_physics_body
 {
 public:
    //! ctor
    ua_player();
 
    //! initializes player object
-   void init();
+   void init(class ua_underworld& underw);
 
 
    // set functions
@@ -207,6 +210,10 @@ public:
    unsigned int get_skill(ua_player_skills which) const;
 
 
+   //! does rotation moves
+   void rotate_move(double time_elapsed);
+
+
    // loading/saving
 
    //! loads a savegame
@@ -218,12 +225,25 @@ public:
    //! fills details into savegame info struct
    void fill_savegame_infos(ua_savegame_info& info);
 
+   // virtual methods from ua_physics_object
+   virtual void set_new_elapsed_time(double time_elapsed);
+   virtual ua_vector3d get_pos();
+   virtual void set_pos(ua_vector3d& pos);
+   virtual ua_vector3d get_dir();
+
+   virtual void reset_gravity();
+   virtual ua_vector3d get_gravity_force();
+   virtual void hit_floor();
+
 protected:
    //! the name of the player
    std::string name;
 
    // positional values
    double xpos, ypos, rotangle, panangle, height;
+
+   //! maximum pan angle
+   double max_panangle;
 
    //! current movement mode
    unsigned int move_mode;
