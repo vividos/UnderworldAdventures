@@ -247,6 +247,37 @@ protected:
 };
 
 
+//! power gem
+class ua_ingame_powergem: public ua_ingame_orig_ctrl
+{
+public:
+   //! initializes powergem
+   virtual void init(ua_game_interface& game, unsigned int xpos,
+      unsigned int ypos);
+
+   //! sets attack mode, e.g. for keyboard combat
+   void set_attack_mode(bool attack){ attack_mode = attack; }
+
+   //! updates gem image
+   void update_gem();
+
+   // virtual methods from ua_window
+   virtual void mouse_event(bool button_clicked, bool left_button,
+      bool button_down, unsigned int mousex, unsigned int mousey);
+   virtual void tick();
+
+protected:
+   //! indicates if in attack mode, i.e. with drawn weapon
+   bool attack_mode;
+
+   //! frame used when having maximum power
+   unsigned int maxpower_frame;
+
+   //! powergame images
+   std::vector<ua_image> img_powergem;
+};
+
+
 //! menu currently shown by ua_ingame_command_buttons
 enum ua_ingame_command_menu
 {

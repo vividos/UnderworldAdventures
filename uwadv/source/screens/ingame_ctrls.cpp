@@ -95,7 +95,7 @@ void ua_ingame_compass::draw()
       // reupload compass texture
       compass_curimg = compassimg;
 
-      unsigned int dest = ua_image_quad::has_border ? 1 : 0;
+      unsigned int dest = has_border ? 1 : 0;
       get_image().paste_image(img_compass[compassimg],dest,dest);
 
       update();
@@ -143,7 +143,7 @@ void ua_ingame_runeshelf::update_runeshelf()
       // paste appropriate rune image
       ua_image& img_rune = img_runestones[(rune[i]-1)%24];
 
-      unsigned int dest = ua_image_quad::has_border ? 1 : 0;
+      unsigned int dest = has_border ? 1 : 0;
       img_shelf.paste_rect(img_rune, 0,0, 14,14,
          i*15+dest, dest, true);
    }
@@ -190,7 +190,7 @@ void ua_ingame_spell_area::update_spell_area()
       // paste appropriate spell image
       ua_image& img_spell = img_spells[(spell[i]-1)%21];
 
-      unsigned int dest = ua_image_quad::has_border ? 1 : 0;
+      unsigned int dest = has_border ? 1 : 0;
       img_area.paste_rect(img_spell, 0,0, 16,18,
          i*17+dest, dest, true);
    }
@@ -275,7 +275,7 @@ void ua_ingame_flask::draw()
 
 void ua_ingame_flask::update_flask()
 {
-   unsigned int dest = ua_image_quad::has_border ? 1 : 0;
+   unsigned int dest = has_border ? 1 : 0;
    get_image().paste_image(img_flask[last_image], dest,dest);
    update();
 }
@@ -306,7 +306,7 @@ void ua_ingame_gargoyle_eyes::update_eyes()
 {
    unsigned int new_image = 0;
 
-   unsigned int dest = ua_image_quad::has_border ? 1 : 0;
+   unsigned int dest = has_border ? 1 : 0;
    get_image().paste_image(img_eyes[new_image], dest,dest);
    update();
 }
@@ -386,7 +386,7 @@ void ua_ingame_3dview::init(ua_game_interface& game, unsigned int xpos,
 
 void ua_ingame_3dview::draw()
 {
-   // do nothing
+   // do nothing, we're invisible
 }
 
 bool ua_ingame_3dview::process_event(SDL_Event& event)
@@ -416,6 +416,12 @@ bool ua_ingame_3dview::process_event(SDL_Event& event)
 
                SDL_WarpMouse(xpos,ypos);
             }
+
+            // update event mouse pos values
+            event.motion.xrel += Sint16(xpos)-event.motion.x;
+            event.motion.yrel += Sint16(ypos)-event.motion.y;
+            event.motion.x = xpos;
+            event.motion.y = ypos;
          }
          else
          {
@@ -436,8 +442,8 @@ void ua_ingame_3dview::mouse_event(bool button_clicked, bool left_button,
    in_view3d = true;
 
    // calculate relative mouse pos in window
-   double relx = double(mousex-wnd_xpos)/(wnd_width-wnd_xpos);
-   double rely = double(mousey-wnd_ypos)/(wnd_height-wnd_ypos);
+   double relx = double(mousex-wnd_xpos)/wnd_width;
+   double rely = double(mousey-wnd_ypos)/wnd_height;
 
    ua_player& pl = parent->get_game_interface().get_underworld().get_player();
 
@@ -542,6 +548,24 @@ void ua_ingame_3dview::mouse_event(bool button_clicked, bool left_button,
       }
    }
 
+   // check combat start
+   if (parent->get_gamemode() == ua_mode_fight && button_clicked && !left_button)
+   {
+      if (button_down)
+      {
+         // start combat weapon drawback
+         parent->get_game_interface().get_underworld().
+            user_action(ua_action_combat_draw,
+               rely < 0.33 ? 0 : rely < 0.67 ? 1 : 2);
+      }
+      else
+      {
+         // end combat weapon drawback
+         parent->get_game_interface().get_underworld().
+            user_action(ua_action_combat_release, 0);
+      }
+   }
+
    // check right mouse button down
    if (button_clicked && button_down && !left_button)
    {
@@ -613,6 +637,66 @@ void ua_ingame_3dview::mouse_event(bool button_clicked, bool left_button,
          break;
       }
    }
+}
+
+
+// ua_ingame_powergem methods
+
+void ua_ingame_powergem::init(ua_game_interface& game, unsigned int xpos,
+   unsigned int ypos)
+{
+   attack_mode = false;
+
+   game.get_image_manager().load_list(img_powergem, "power");
+
+   get_image().create(31,12);
+   get_image().set_palette(game.get_image_manager().get_palette(0));
+
+   ua_image_quad::init(game, xpos,ypos);
+}
+
+void ua_ingame_powergem::update_gem()
+{
+   unsigned int frame = 0;
+
+   unsigned int power =
+      parent->get_game_interface().get_underworld().get_attack_power();
+
+   if (power > 0)
+   {
+      if (power >= 100)
+         frame = (maxpower_frame&3)+10;
+      else
+      {
+         frame = (unsigned(power/100.0*8.0)%9)+1;
+         maxpower_frame = 0;
+      }
+   }
+
+   unsigned int dest = has_border ? 1 : 0;
+   get_image().paste_image(img_powergem[frame], dest,dest);
+
+   update();
+}
+
+void ua_ingame_powergem::mouse_event(bool button_clicked, bool left_button,
+   bool button_down, unsigned int mousex, unsigned int mousey)
+{
+}
+
+void ua_ingame_powergem::tick()
+{
+/*
+   // check if we have to update
+   unsigned int power =
+      parent->get_game_interface().get_underworld().get_attack_power();
+   if (power >= 100)
+   {
+      if (++maxpower_frame>3)
+         maxpower_frame = 0;
+      update_gem();
+   }
+*/
 }
 
 
