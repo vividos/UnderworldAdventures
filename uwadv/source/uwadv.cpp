@@ -444,6 +444,11 @@ void ua_game::replace_screen(ua_ui_screen_base *newscreen)
 
 void ua_game::pop_screen()
 {
+   // clear screen; this stuff could take a while
+   glClearColor(0,0,0,0);
+   glClear(GL_COLOR_BUFFER_BIT);
+   SDL_GL_SwapBuffers();
+
    screen->done();
 
    screen_to_destroy = screen;
