@@ -23,8 +23,6 @@
 
    \brief game interface class
 
-   a
-
 */
 //! \ingroup game
 
@@ -42,6 +40,7 @@ class ua_audio_manager;
 class ua_settings;
 class ua_files_manager;
 class ua_savegames_manager;
+class ua_image_manager;
 class ua_renderer;
 class ua_scripting;
 class ua_underworld;
@@ -87,6 +86,9 @@ public:
 
    //! returns savegames manager object
    virtual ua_savegames_manager& get_savegames_manager()=0;
+
+   //! returns image manager object
+   virtual ua_image_manager& get_image_manager()=0;
 
    //! returns renderer object
    virtual ua_renderer& get_renderer()=0;

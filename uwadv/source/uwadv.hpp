@@ -36,13 +36,14 @@
 #define uwadv_uwadv_hpp_
 
 // needed includes
-#include "settings.hpp"
-#include "files.hpp"
-#include "screen.hpp"
+#include "base/settings.hpp"
+#include "base/files.hpp"
+#include "ui/screen.hpp"
 #include "audio/audio.hpp"
+#include "ui/image.hpp"
 #include "renderer/renderer.hpp"
 #include "script/script.hpp"
-#include "underworld.hpp"
+#include "underw/underworld.hpp"
 #include "game_interface.hpp"
 
 
@@ -80,6 +81,7 @@ public:
    virtual ua_settings& get_settings();
    virtual ua_files_manager& get_files_manager();
    virtual ua_savegames_manager& get_savegames_manager();
+   virtual ua_image_manager& get_image_manager();
    virtual ua_renderer& get_renderer();
    virtual ua_scripting& get_scripting();
    virtual ua_underworld& get_underworld();
@@ -137,6 +139,9 @@ protected:
    //! savegames manager
    ua_savegames_manager savegames_manager;
 
+   //! image manager
+   ua_image_manager image_manager;
+
    //! renderer class
    ua_renderer renderer;
 
@@ -149,19 +154,9 @@ protected:
    //! screen queued to destroy
    ua_screen* screen_to_destroy;
 
-/*
-   //! texture manager
-   ua_texture_manager texmgr;
-
-   //! critter pool
-   ua_critter_pool critter_pool;
-
-   //! 3d models manager
-   ua_model3d_manager model_manager;
 
    //! debug interface
-   ua_debug_interface* debug;
-*/
+//   ua_debug_interface* debug;
 };
 
 // inline methods
@@ -184,6 +179,11 @@ inline ua_settings& ua_uwadv_game::get_settings()
 inline ua_files_manager& ua_uwadv_game::get_files_manager()
 {
    return files_manager;
+}
+
+inline ua_image_manager& ua_uwadv_game::get_image_manager()
+{
+   return image_manager;
 }
 
 inline ua_savegames_manager& ua_uwadv_game::get_savegames_manager()
