@@ -47,7 +47,8 @@ int main(int argc, char* argv[])
 #endif
    {
       ua.init();
-      ua.parse_args(static_cast<unsigned int>(argc),argv);
+      ua.parse_args(static_cast<unsigned int>(argc),
+         const_cast<const char**>(argv));
       ua.run();
       ua.done();
    }
