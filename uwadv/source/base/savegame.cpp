@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures team
+   Copyright (c) 2002,2003,2004 Underworld Adventures team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by

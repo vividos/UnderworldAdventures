@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
     look as follows:
 
     ; one-line comment
-    [section]  ; sections may be omitted
     key1 value1
     key2 value2
 
@@ -54,9 +53,7 @@
 
     To use the class, derive from it and implement at least:
     - load_value()           for reading
-    - load_start_section()   to have support for sections while reading
     - write_replace()        for writing
-    - write_start_section()  to support writing sections
 
     Note: After calling ua_cfgfile::load(SDL_RWops*) the file is not closed
     using SDL_RWclose(). It has to be closed manually.
@@ -79,11 +76,8 @@ public:
    //! loads a config file from SDL_RWops
    void load(SDL_RWops* file);
 
-   //! called when a new "[section]" starts
-   virtual void load_start_section(const std::string& secname){}
-
    //! called to load a specific value
-   virtual void load_value(const std::string& name, const std::string& value){}
+   virtual void load_value(const char* name, const char* value){}
 
 
    // config file (re)writing
@@ -91,15 +85,15 @@ public:
    //! creates a new config file using the original file as template
    void write(const char* origfile, const char* newfile);
 
-   //! called when a new "[section]" starts
-   virtual void write_start_section(const std::string& secname);
-
    //! called to replace a value
-   virtual void write_replace(const std::string& name, std::string& value){}
+   virtual void write_replace(const char* name, std::string& value){}
 
 protected:
+   //! reads a raw line
+   virtual void read_raw_line(const char* line){}
+
    //! writes a raw line (that didn't contain a key/value pair) to the new file
-   void write_raw_line(const std::string& line);
+   void write_raw_line(const char* line);
 
 protected:
    //! indicates if write() is currently called

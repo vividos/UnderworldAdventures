@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -35,15 +35,6 @@
 
 ua_files_manager::ua_files_manager()
 {
-}
-
-//! checks if a file with given filename is available
-bool ua_file_isavail(const std::string& base, const char* fname)
-{
-   std::string filename = base;
-   filename += fname;
-
-   return ua_file_exists(filename.c_str());
 }
 
 void ua_files_manager::init(ua_settings& settings)
@@ -126,13 +117,9 @@ void ua_files_manager::init(ua_settings& settings)
       settings.set_value(ua_setting_custom_keymap,custom_keymap);
    }
 
-   // check for available games
-
-   // check for uw1
+   // add slashes to paths if not already there
    {
-      settings.set_value(ua_setting_uw1_avail,false);
-      settings.set_value(ua_setting_uw1_is_uw_demo,false);
-
+      // uw1 path
       std::string base = settings.get_string(ua_setting_uw1_path);
 
       // check if path ends with slash
@@ -144,56 +131,16 @@ void ua_files_manager::init(ua_settings& settings)
          settings.set_value(ua_setting_uw1_path,base);
       }
 
-      if (!base.empty())
-      {
-         if (ua_file_isavail(base,"data/cnv.ark") &&
-             ua_file_isavail(base,"data/strings.pak") &&
-             ua_file_isavail(base,"data/pals.dat") &&
-             ua_file_isavail(base,"data/allpals.dat"))
-         {
-            // could be uw1 or uw_demo
-            if (ua_file_isavail(base,"uw.exe")||ua_file_isavail(base,"uwdemo.exe"))
-            {
-               settings.set_value(ua_setting_uw1_avail,true);
-
-               // check if we only have the demo
-               if (ua_file_isavail(base,"data/level13.st") &&
-                   ua_file_isavail(base,"data/level13.anx") &&
-                   ua_file_isavail(base,"data/level13.txm"))
-               {
-                  settings.set_value(ua_setting_uw1_is_uw_demo,true);
-               }
-            }
-         }
-      }
-   }
-
-   // check for uw2
-   {
-      settings.set_value(ua_setting_uw2_avail,false);
-
-      std::string base = settings.get_string(ua_setting_uw2_path);
+      // uw2 path
+      base = settings.get_string(ua_setting_uw2_path);
 
       // check if path ends with slash
-      std::string::size_type pos = base.find_last_of("\\/");
+      pos = base.find_last_of("\\/");
       if (pos != std::string::npos && pos != base.size()-1)
       {
          // add slash and write back
          base.append("/");
          settings.set_value(ua_setting_uw2_path,base);
-      }
-
-      if (!base.empty())
-      {
-         if (ua_file_isavail(base,"data/cnv.ark") &&
-             ua_file_isavail(base,"data/strings.pak") &&
-             ua_file_isavail(base,"data/pals.dat") &&
-             ua_file_isavail(base,"data/allpals.dat") &&
-             ua_file_isavail(base,"uw2.exe") &&
-             ua_file_isavail(base,"data/t64.tr"))
-         {
-            settings.set_value(ua_setting_uw2_avail,true);
-         }
       }
    }
 

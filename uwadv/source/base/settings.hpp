@@ -23,18 +23,12 @@
 
    \brief game settings class
 
-   The ua_settings class manages uwadv's global settings values. The values
-   can have the types "boolean", "int" or "std::string". The values are stored
-   in a config file that is read via the ua_cfgfile class. The ua_settings
-   class also manages a game type value that determines which type of game
-   is currently running. To load the settings, just use ua_cfgfile::load().
-
 */
 /*! \defgroup base Base Components
 
-   base component documentation yet to come ...
-
-   The Base Components Module depends on no other modules.
+   The Base Components contains classes used by all other components of the
+   project.
+   The Base Components depend on no other modules.
 
 */
 //@{
@@ -63,14 +57,8 @@ enum ua_settings_key
    //! path to the uw2 game files
    ua_setting_uw2_path,
 
-   //! boolean value that indicates if uw1 (or uw_demo) game is available
-   ua_setting_uw1_avail,
-
    //! true when the uw1 installation is the uw_demo
    ua_setting_uw1_is_uw_demo,
-
-   //! boolean value that indicates if uw2 game is available
-   ua_setting_uw2_avail,
 
    //! path to the "uadata" folder
    ua_setting_uadata_path,
@@ -109,11 +97,8 @@ enum ua_settings_key
 //! game type enum
 enum ua_game_type
 {
-   //! we have the full game
+   //! we have uw1
    ua_game_uw1,
-
-   //! only the demo is available
-   ua_game_uw_demo,
 
    //! we have uw2
    ua_game_uw2,
@@ -122,7 +107,14 @@ enum ua_game_type
 
 // classes
 
-//! config class
+//! settings class
+/*! The ua_settings class manages uwadv's global settings values. The values
+    can have the types "boolean", "int" or "std::string". The values are
+    stored in a config file that is read via the ua_cfgfile class. The
+    ua_settings class also manages a game type value that determines which
+    type of game is currently running. To load the settings, just use
+    ua_cfgfile::load().
+*/
 class ua_settings: public ua_cfgfile
 {
 public:
@@ -163,10 +155,10 @@ protected:
    bool search_key_from_string(const char* keyname, ua_settings_key& key);
 
    //! called to load a specific value
-   virtual void load_value(const std::string& name, const std::string& value);
+   virtual void load_value(const char* name, const char* value);
 
    //! called to replace a value
-   virtual void write_replace(const std::string& name, std::string& value);
+   virtual void write_replace(const char* name, std::string& value);
 
 protected:
    //! settings map typedef

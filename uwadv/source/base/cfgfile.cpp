@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -90,7 +90,7 @@ void ua_cfgfile::load(SDL_RWops* rwops)
       // empty line?
       if (line.size()==0)
       {
-         if (is_writing) write_raw_line(line);
+         if (is_writing) write_raw_line(line.c_str());
          continue;
       }
 
@@ -101,7 +101,7 @@ void ua_cfgfile::load(SDL_RWops* rwops)
       // comment line?
       if (line.size()==0 || line.at(0)=='#')
       {
-         if (is_writing) write_raw_line(line);
+         if (is_writing) write_raw_line(line.c_str());
          continue;
       }
 
@@ -114,27 +114,11 @@ void ua_cfgfile::load(SDL_RWops* rwops)
          {
             std::string comment;
             comment.assign(line.c_str()+pos2);
-            write_raw_line(comment);
+            write_raw_line(comment.c_str());
          }
 
          // remove comment
          line.erase(pos2);
-      }
-
-      // check for section start
-      if (line.at(0)=='[' && line.size()>2)
-      {
-         std::string section(line.c_str()+1,line.size()-2);
-
-         if (is_writing)
-         {
-            write_start_section(section);
-            write_raw_line(line);
-         }
-         else
-            load_start_section(section);
-
-         continue;
       }
 
       // trim spaces at end of line
@@ -154,7 +138,7 @@ void ua_cfgfile::load(SDL_RWops* rwops)
       // empty line?
       if (line.size()==0)
       {
-         if (is_writing) write_raw_line(line);
+         if (is_writing) write_raw_line(line.c_str());
          continue;
       }
 
@@ -163,11 +147,13 @@ void ua_cfgfile::load(SDL_RWops* rwops)
       while( (pos = line.find('\t',pos) != std::string::npos) )
          line.replace(pos,1," ");
 
+      read_raw_line(line.c_str());
+
       // there must be at least one space, to separate key from value
       pos = line.find(' ');
       if (pos==std::string::npos)
       {
-         if (is_writing) write_raw_line(line);
+         if (is_writing) write_raw_line(line.c_str());
          continue;
       }
 
@@ -184,13 +170,13 @@ void ua_cfgfile::load(SDL_RWops* rwops)
          // hand over key and value
          if (is_writing)
          {
-            write_replace(key,value);
+            write_replace(key.c_str(),value);
             key.append(1,' ');
             key.append(value);
-            write_raw_line(key);
+            write_raw_line(key.c_str());
          }
          else
-            load_value(key,value);
+            load_value(key.c_str(),value.c_str());
       }
    }
 }
@@ -215,17 +201,8 @@ void ua_cfgfile::write(const char* origfile, const char* newfile)
    newfp = NULL;
 }
 
-void ua_cfgfile::write_start_section(const std::string& secname)
+void ua_cfgfile::write_raw_line(const char* line)
 {
-   std::string line("[");
-   line.append(secname);
-   line.append("]");
-
-   write_raw_line(line);
-}
-
-void ua_cfgfile::write_raw_line(const std::string& line)
-{
-   fputs(line.c_str(),newfp);
+   fputs(line,newfp);
    fputs("\n",newfp);
 }

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -156,25 +156,28 @@ bool ua_settings::search_key_from_string(const char* keyname, ua_settings_key& k
    return false;
 }
 
-void ua_settings::load_value(const std::string& name, const std::string& value)
+void ua_settings::load_value(const char* name, const char* value)
 {
-   ua_trace("settings key/value: %s => %s\n",name.c_str(),value.c_str());
+   ua_trace("settings key/value: %s => %s\n",name,value);
 
    // retrieve settings key
    ua_settings_key key;
 
-   if (!search_key_from_string(name.c_str(),key))
-      ua_trace("didn't find settings key \"%s\" in table.\n",name.c_str());
+   if (!search_key_from_string(name,key))
+      ua_trace("didn't find settings key \"%s\" in table.\n",name);
    else
-      set_value(key,value);
+   {
+      std::string str_value(value);
+      set_value(key,str_value);
+   }
 }
 
-void ua_settings::write_replace(const std::string& name, std::string& value)
+void ua_settings::write_replace(const char* name, std::string& value)
 {
    // search for key by name
    ua_settings_key key;
 
-   if (search_key_from_string(name.c_str(),key))
+   if (search_key_from_string(name,key))
    {
       // retrieve new value for that setting
       value.assign(settings[key]);

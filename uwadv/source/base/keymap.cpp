@@ -196,7 +196,7 @@ ua_key_value ua_keymap::find_key(Uint32 keymod)
    return iter == keymap.end() ? ua_key_nokey : iter->second;
 }
 
-void ua_keymap::load_value(const std::string& name, const std::string& value)
+void ua_keymap::load_value(const char* name, const char* value)
 {
    // search "keymap key" key from name
    ua_key_value key = ua_key_nokey;

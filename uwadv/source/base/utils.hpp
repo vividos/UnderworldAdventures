@@ -196,7 +196,7 @@ protected:
 */
 inline Uint16 ua_endian_convert16(Uint16 x)
 {
-   return (((x)&0x00ff)<<8) | (((x)&0xff00)>>8);
+   return Uint16(((x)&0x00ff)<<8) | (((x)&0xff00)>>8);
 }
 
 //! endian-converts 32-bit value
@@ -204,8 +204,8 @@ inline Uint16 ua_endian_convert16(Uint16 x)
     high word. */
 inline Uint32 ua_endian_convert32(Uint32 x)
 {
-   return ua_endian_convert16(((x)&0xffff0000)>>16) |
-      ua_endian_convert16((x)&0x0000ffff)<<16;
+   return Uint32(ua_endian_convert16(((x)&0xffff0000)>>16)) |
+      Uint32(ua_endian_convert16((x)&0x0000ffff)<<16);
 }
 
 // SDL_RWops helper functions
