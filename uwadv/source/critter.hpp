@@ -59,6 +59,8 @@ public:
    //! returns hotspot v coordinate
    inline double get_hotspot_v();
 
+   void set_currentframe(unsigned int frame){ currentframe=frame; }
+
    // get current frame of animation
    unsigned int get_currentframe();
 
@@ -81,11 +83,14 @@ protected:
    //! max. number of frames stored in allframe_bytes
    unsigned int maxframes;
 
-   //! hotspot point in image
-   unsigned int hot_x, hot_y;
+   //! width/height for all frames
+   std::vector<unsigned int> imgsizes;
+
+   //! hotspot x/y coordinates for all frames
+   std::vector<unsigned int> hotxy_coords;
 
    //! texture with all critter images
-   ua_texture tex;
+   std::vector<ua_texture> tex;
 
    //! current animation segment
    unsigned int currentanim;
@@ -127,17 +132,17 @@ protected:
 
 ua_texture& ua_critter::get_texture()
 {
-   return tex;
+   return tex[currentframe];
 }
 
 double ua_critter::get_hotspot_u()
 {
-   return double(hot_x)/tex.get_xres();
+   return double(hotxy_coords[currentframe*2+0])/tex[currentframe].get_xres();
 }
 
 double ua_critter::get_hotspot_v()
 {
-   return double(hot_y)/tex.get_yres();
+   return double(hotxy_coords[currentframe*2+1])/tex[currentframe].get_yres();
 }
 
 

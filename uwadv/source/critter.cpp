@@ -33,7 +33,8 @@
 // constants
 
 // should make move this to a header
-const double critter_fps = 1.0;
+//const double critter_fps = 1.0;
+const double critter_fps = 3.0;
 
 
 // ua_critter methods
@@ -47,14 +48,18 @@ ua_critter::ua_critter()
 
 void ua_critter::prepare(ua_texture_manager& texmgr)
 {
-   tex.init(&texmgr,maxframes);
+   tex.resize(maxframes);
 
    for(unsigned int i=0; i<maxframes; i++)
    {
-      tex.convert(&allframe_bytes.get()[i*xres*yres],         
-         xres,yres,texmgr.get_palette(0),i);
+      ua_texture& curtex = tex[i];
 
-      tex.upload(i,false);
+      curtex.init(&texmgr,1);
+
+      curtex.convert(&allframe_bytes.get()[i*xres*yres],
+         xres,yres,texmgr.get_palette(0),0);
+
+      curtex.upload(0,false);
       // using mipmapped textures (2nd param "true") disables the alpha
       // channel somehow; might be a driver problem
    }
@@ -65,7 +70,8 @@ void ua_critter::prepare(ua_texture_manager& texmgr)
 
 unsigned int ua_critter::get_currentframe()
 {
-   return segmentlist[currentanim][currentframe];
+   return currentframe;
+   //return segmentlist[currentanim][currentframe];
 }
 
 void ua_critter::tick(double ticktime)
@@ -78,6 +84,11 @@ void ua_critter::tick(double ticktime)
       currentframe++;
 
       // check if current frame needs to be reset
+      if (currentframe>=maxframes)
+         currentframe = 0;
+
+/*
+      // check if current frame needs to be reset
       if( currentframe >= segmentlist[currentanim].size() ||
           segmentlist[currentanim][currentframe] == 0xff)
       {
@@ -86,7 +97,7 @@ void ua_critter::tick(double ticktime)
          // do new animation
          Uint8 newslot = 0x23 + unsigned( (rand()*3.0)/double(RAND_MAX) );
          currentanim = slotlist[newslot];
-      }
+      }*/
    }
 }
 
