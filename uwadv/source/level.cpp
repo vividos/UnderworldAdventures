@@ -123,6 +123,20 @@ void ua_level::render(ua_texture_manager &texmgr,ua_frustum &fr)
    }
 }
 
+void ua_level::render(ua_texture_manager &texmgr)
+{
+   int x,y;
+
+   for(y=0; y<64;y++) for(x=0; x<64;x++)
+      render_floor(x,y,texmgr);
+
+   for(y=0; y<64;y++) for(x=0; x<64;x++)
+      render_ceiling(x,y,texmgr);
+
+   for(y=0; y<64;y++) for(x=0; x<64;x++)
+      render_walls(x,y,texmgr);
+}
+
 void ua_level::render_floor(int x, int y, ua_texture_manager &texmgr)
 {
    ua_levelmap_tile &tile = tiles[y*64 + x];

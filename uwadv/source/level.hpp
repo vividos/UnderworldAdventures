@@ -99,6 +99,9 @@ public:
    //! renders map to OpenGL, using a view frustum
    void render(ua_texture_manager &texmgr,ua_frustum &fr);
 
+   //! renders whole map to OpenGL
+   void render(ua_texture_manager &texmgr);
+
    // returns floor height on specific position
    float get_floor_height(float xpos, float ypos);
 

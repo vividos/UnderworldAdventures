@@ -87,11 +87,23 @@ xmi2mid_OBJS = ../tools/xmi2mid.o ../audio/xmidi.o
 
 xmi2mid_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB)
 
+
+# map display
+
+mapdisp_EXEC = mapdisp.exe
+
+mapdisp_OBJS = ../tools/mapdisp.o ../level.o ../resource/maploader.o \
+	../quadtree.o ../texture.o ../resource/texloader.o
+
+mapdisp_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB) $(STLPORT_LIB) -lopengl32 -lglu32
+
 #
 # build rules
 #
 
-all: $(uwadv_EXEC) $(cnvdbg_EXEC) $(cnvdasm_EXEC) $(xmi2mid_EXEC)
+all: $(uwadv_EXEC) $(cnvdbg_EXEC) $(cnvdasm_EXEC) $(xmi2mid_EXEC) $(mapdisp_EXEC)
+
+tools: $(cnvdbg_EXEC) $(cnvdasm_EXEC) $(xmi2mid_EXEC) $(mapdisp_EXEC)
 
 $(uwadv_EXEC): $(uwadv_OBJS)
 	$(CC) $(LDFLAGS) -o $(@) $(uwadv_OBJS) $(uwadv_LIBS)
@@ -111,6 +123,8 @@ $(cnvdasm_EXEC): $(cnvdasm_OBJS)
 $(xmi2mid_EXEC): $(xmi2mid_OBJS)
 	$(CC) $(LDFLAGS) -o $(@) $(xmi2mid_OBJS) $(xmi2mid_LIBS)
 
+$(mapdisp_EXEC): $(mapdisp_OBJS)
+	$(CC) $(LDFLAGS) -o $(@) $(mapdisp_OBJS) $(mapdisp_LIBS)
 
 installer: $(uwadv_EXEC)
 	mkdir -p ../../output/release/
@@ -119,7 +133,8 @@ installer: $(uwadv_EXEC)
 
 clean:
 	rm -f $(uwadv_EXEC) $(cnvdbg_EXEC) $(cnvdasm_EXEC) $(xmi2mid_EXEC) \
-		$(uwadv_OBJS) $(cnvdbg_OBJS) $(cnvdasm_OBJS) $(xmi2mid_OBJS)
+		$(uwadv_OBJS) $(cnvdbg_OBJS) $(cnvdasm_OBJS) $(xmi2mid_OBJS) \
+		$(mapdisp_OBJS) $(mapdisp_EXEC)
 
 .cpp.o:
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $(<) -o $*.o

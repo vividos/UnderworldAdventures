@@ -142,19 +142,6 @@ void ua_ingame_orig_screen::render()
 
    glLoadIdentity();
 
-/*   if (mapmode)
-   {
-      // position move
-      glTranslatef( xpos+0.0, 8.0, -40.0+ypos );
-
-      // rotation
-      glRotatef( yangle, 1.0, 0.0, 0.0 );
-      glRotatef( -xangle, 0.0, 0.0, 1.0 );
-
-      // move to center of map
-      glTranslatef( -32.0, -32.0, 0.0 );
-   }
-   else*/
    ua_player &pl = core->get_underworld().get_player();
    {
       // rotation
@@ -167,15 +154,6 @@ void ua_ingame_orig_screen::render()
       glTranslatef(-pl.get_xpos(),-pl.get_ypos(),
          -(0.6f+core->get_underworld().get_player_height()) );
    }
-
-   // draw ground square
-   glBegin(GL_QUADS);
-   glColor3ub(32,32,32);
-   glVertex3f(0,0,-0.1f);
-   glVertex3f(64,0,-0.1f);
-   glVertex3f(64,64,-0.1f);
-   glVertex3f(0,64,-0.1f);
-   glEnd();
 
    ua_frustum fr(pl.get_xpos(),pl.get_ypos(),-playerxangle+90.0,90.f,16.0);
 
