@@ -19,10 +19,9 @@
 # $Id$
 #
 # Underworld Adventures install script
-# Note: process this with NSIS 2.0
+# Note: process this with NSIS 2.0 as follows:
+# makensis /DVERSION="<version-string>"
 #
-
-!define VERSION "0.9-pre1"
 
 # compiler utility commands
 #
@@ -104,6 +103,7 @@ File uwadv.cfg
 File keymap.cfg
 File Copying
 File README.uwadv.txt
+File uwadv-manual.html
 File uw1-keyboard.txt
 File Changes.txt
 File Authors.txt
@@ -128,6 +128,7 @@ CreateDirectory "$SMPROGRAMS\Underworld Adventures"
 CreateShortCut "$SMPROGRAMS\Underworld Adventures\Underworld Adventures.lnk" "$INSTDIR\uwadv.exe" "" "" "0"
 CreateShortCut "$SMPROGRAMS\Underworld Adventures\Underworld Adventures Config.lnk" "$INSTDIR\uaconfig.exe" "" "" "0"
 CreateShortCut "$SMPROGRAMS\Underworld Adventures\Underworld Adventures Readme.lnk" "$INSTDIR\README.uwadv.txt" "" "" "0"
+CreateShortCut "$SMPROGRAMS\Underworld Adventures\Underworld Adventures Manual.lnk" "$INSTDIR\uwadv-manual.html" "" "" "0"
 CreateShortCut "$SMPROGRAMS\Underworld Adventures\Ultima Underworld 1 Keyboard Commands.lnk" "$INSTDIR\uw1-keyboard.txt" "" "" "0"
 CreateShortCut "$SMPROGRAMS\Underworld Adventures\Uninstall Underworld Adventures.lnk" "$INSTDIR\uninst-uwadv.exe" "" "" "0"
 
@@ -157,6 +158,7 @@ Delete $INSTDIR\uwadv.cfg.old
 Delete $INSTDIR\keymap.cfg
 Delete $INSTDIR\Copying
 Delete $INSTDIR\README.uwadv.txt
+Delete $INSTDIR\uwadv-manual.html
 Delete $INSTDIR\uw1-keyboard.txt
 Delete $INSTDIR\Authors.txt
 Delete $INSTDIR\Changes.txt
