@@ -21,7 +21,7 @@
 */
 /*! \file ingame_orig.cpp
 
-   a
+   ingame user interface, from the original uw1
 
 */
 
@@ -35,8 +35,6 @@
 
 void ua_ingame_orig_screen::init()
 {
-   setup_opengl();
-
    walk = false;
 
    fov = 90.0;
@@ -44,6 +42,8 @@ void ua_ingame_orig_screen::init()
    playeryangle = 0.f;
 
    leftbuttondown = rightbuttondown = false;
+
+   setup_opengl();
 }
 
 void ua_ingame_orig_screen::done()
@@ -200,7 +200,7 @@ void ua_ingame_orig_screen::setup_opengl()
    glMatrixMode(GL_PROJECTION);
    glLoadIdentity();
 
-   gluPerspective(fov, core->get_aspect_ratio(), 0.25, 16.0*16.0);
+   gluPerspective(fov, core->get_aspect_ratio(), 0.25, 16.0);
 
    // switch back to modelview matrix
    glMatrixMode(GL_MODELVIEW);
