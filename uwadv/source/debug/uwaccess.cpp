@@ -100,7 +100,49 @@ unsigned int ua_uw_access_api::command_func(
       }
       break;
 
-   case udc_player_set:
+   case udc_player_set: // set player value
+      {
+         ua_player& pl = core->get_underworld().get_player();
+
+         unsigned int value = param1->val.i;
+
+         if (value<4)
+         {
+            ua_level& level = core->get_underworld().get_current_level();
+
+            switch(value)
+            {
+            case 0: // xpos
+               pl.set_pos(param2->val.d,pl.get_ypos());
+               pl.set_height(level.get_floor_height(param2->val.d,pl.get_ypos()));
+               break;
+            case 1: // ypos
+               pl.set_pos(pl.get_xpos(),param2->val.d);
+               pl.set_height(level.get_floor_height(param2->val.d,pl.get_ypos()));
+               break;
+            case 2: pl.set_height(param2->val.d); break;
+            case 3: pl.set_angle_rot(param2->val.d); break;
+            }
+         }
+         else
+         {
+            value -= 4;
+
+            if (value<ua_attr_max)
+            {
+               // setting attribute
+               pl.set_attr((ua_player_attributes)value,param2->val.i);
+
+               if (value==ua_attr_maplevel)
+                  core->get_underworld().change_level(param2->val.i);
+            }
+            else
+            {
+               value -= ua_attr_max;
+               pl.set_skill((ua_player_skills)value,param2->val.i);
+            }
+         }
+      }
       break;
    }
 
