@@ -28,8 +28,7 @@
 // needed includes
 #include "common.hpp"
 #include "uwadv.hpp"
-//#include "screens/start_splash.hpp"
-#include "screens/ingame_orig.hpp"
+#include "screens/start_splash.hpp"
 
 
 // ua_game methods
@@ -114,8 +113,7 @@ void ua_game::init()
    screenstack.clear();
 
    // create new user interface screen
-//   push_screen(new ua_start_splash_screen);
-   push_screen(new ua_ingame_orig_screen);
+   push_screen(new ua_start_splash_screen);
 }
 
 #define HAVE_FRAMECOUNT
