@@ -36,11 +36,11 @@
 
 // constants
 
-//! time for fade in/out
-const double ua_start_menu_blend_time = 0.5;
+//! time to fade in/out
+const double ua_start_menu_screen::fade_time = 0.5;
 
 //! palette shifts per second
-const double ua_start_menu_palette_shifts_per_second = 20.0;
+const double ua_start_menu_screen::palette_shifts_per_second = 20.0;
 
 
 // ua_start_menu_screen methods
@@ -196,11 +196,11 @@ void ua_start_menu_screen::render()
    switch(stage)
    {
    case 0:
-      light = Uint8(255*(float(tickcount) / (core->get_tickrate()*ua_start_menu_blend_time)));
+      light = Uint8(255*(double(tickcount) / (core->get_tickrate()*fade_time)));
       break;
 
    case 2:
-      light = Uint8(255-255*(float(tickcount) / (core->get_tickrate()*ua_start_menu_blend_time)));
+      light = Uint8(255-255*(double(tickcount) / (core->get_tickrate()*fade_time)));
       break;
 
    case 3:
@@ -230,7 +230,7 @@ void ua_start_menu_screen::tick()
 {
    // when fading in or out, check if blend time is over
    if ((stage==0 || stage==2) &&
-      ++tickcount >= (core->get_tickrate()*ua_start_menu_blend_time))
+      ++tickcount >= (core->get_tickrate()*fade_time))
    {
       // do next stage
       stage++;
@@ -239,9 +239,9 @@ void ua_start_menu_screen::tick()
 
    // do palette shifting
    shiftcount += 1.0/core->get_tickrate();
-   if (shiftcount >= 1.0/ua_start_menu_palette_shifts_per_second)
+   if (shiftcount >= 1.0/palette_shifts_per_second)
    {
-      shiftcount -= 1.0/ua_start_menu_palette_shifts_per_second;
+      shiftcount -= 1.0/palette_shifts_per_second;
 
       // shift palette
       Uint8 saved[4];

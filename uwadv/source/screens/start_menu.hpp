@@ -66,6 +66,15 @@ protected:
    int get_selected_area();
 
 protected:
+
+   // constants
+
+   //! time to fade in/out
+   static const double fade_time;
+
+   //! palette shifts per second
+   static const double palette_shifts_per_second;
+
    //! current stage
    unsigned int stage;
 
