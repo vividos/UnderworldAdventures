@@ -35,9 +35,6 @@
 
 // constants
 
-//! speed of view angle change in degree / second
-const double ua_ingame_orig_screen::viewangle_speed = 60;
-
 //! time to fade in/out
 const double ua_ingame_orig_screen::fade_time = 0.5;
 

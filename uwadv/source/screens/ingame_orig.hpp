@@ -182,9 +182,6 @@ protected:
    //! time to fade in/out
    static const double fade_time;
 
-   //! speed of view angle change in degree / second
-   static const double viewangle_speed;
-
 
    // mouse cursor
 
