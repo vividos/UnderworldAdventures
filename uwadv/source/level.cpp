@@ -114,10 +114,48 @@ ua_levelmap_tile &ua_level::get_tile(unsigned int xpos, unsigned int ypos)
 
 void ua_level::load_game(ua_savegame &sg)
 {
+   // read tilemap
+   tiles.clear();
+   tiles.resize(64*64);
+   unsigned int n=0;
+
+   for(n=0; n<64*64; n++)
+   {
+      ua_levelmap_tile tile;
+      tile.type = static_cast<ua_levelmap_tiletype>(sg.read8());
+      tile.floor = sg.read16();
+      tile.ceiling = sg.read16();
+      tile.slope = sg.read8();
+      tile.texture_wall = sg.read16();
+      tile.texture_floor = sg.read16();
+
+      tiles.push_back(tile);
+   }
+
+   // read texture info
+   for(n=0; n<48; n++) wall_textures[n] = sg.read16();
+   for(n=0; n<10; n++) floor_textures[n] = sg.read16();
 }
 
 void ua_level::save_game(ua_savegame &sg)
 {
+   // write tilemap
+   unsigned int n=0;
+
+   for(n=0; n<64*64; n++)
+   {
+      ua_levelmap_tile& tile = tiles[n];
+      sg.write8(tile.type);
+      sg.write16(tile.floor);
+      sg.write16(tile.ceiling);
+      sg.write8(tile.slope);
+      sg.write16(tile.texture_wall);
+      sg.write16(tile.texture_floor);
+   }
+
+   // write texture info
+   for(n=0; n<48; n++) sg.write16(wall_textures[n]);
+   for(n=0; n<10; n++) sg.write16(floor_textures[n]);
 }
 
 void ua_level::render(ua_texture_manager &texmgr,ua_frustum &fr)
