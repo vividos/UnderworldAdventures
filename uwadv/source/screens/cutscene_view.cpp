@@ -76,47 +76,9 @@ void ua_cutscene_view_screen::init()
    // register C functions
    lua_register(L,"cuts_do_action",cuts_do_action);
 
-   // load lua script
-   {
-      SDL_RWops *script =
-         core->get_filesmgr().get_uadata_file("uw1/scripts/cutscene.lua");
-
-      // not found? try another
-      if (script==NULL)
-      {
-         script = core->get_filesmgr().get_uadata_file("uw1/scripts/cutscene.lob");
-
-         if (script==NULL)
-            throw ua_exception("could not load cutscene script from uadata");
-         else
-            ua_trace("loaded Lua compiled script \"uw1/scripts/cutscene.lob\"\n");
-      }
-      else
-         ua_trace("loaded Lua script \"uw1/scripts/cutscene.lua\"\n");
-
-      // load script into buffer
-      std::vector<char> buffer;
-      unsigned int len=0;
-      {
-         SDL_RWseek(script,0,SEEK_END);
-         len = SDL_RWtell(script);
-         SDL_RWseek(script,0,SEEK_SET);
-
-         buffer.resize(len+1,0);
-
-         SDL_RWread(script,&buffer[0],len,1);
-         buffer[len]=0;
-      }
-      SDL_RWclose(script);
-
-      // execute script
-      int ret = lua_dobuffer(L,&buffer[0],len,"");
-      if (ret!=0)
-      {
-         ua_trace("Lua script ended with error code %u\n",ret);
-         ended = true;
-      }
-   }
+   // load lua cutscene script
+   if (0!=core->get_filesmgr().load_lua_script(L,"uw1/scripts/cutscene"))
+      ended = true;
 
    // call "cuts_init(this,cutscene)"
    lua_getglobal(L,"cuts_init");
