@@ -52,6 +52,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-, root, root)
-%doc ChangeLog docs/Authors.txt docs/README.uwadv.txt
+%doc Copying ChangeLog
+%doc docs/Authors.txt docs/README.uwadv.txt
 %{_bindir}/uwadv
 %{_datadir}/games/uwadv/uwadv.cfg
+%{_datadir}/games/uwadv/uadata00.uar

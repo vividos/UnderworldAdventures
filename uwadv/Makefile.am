@@ -1,8 +1,11 @@
 AUTOMAKE_OPTIONS = foreign
 
-SUBDIRS = source
+SUBDIRS = source uadata
 
 EXTRA_DIST =  \
+	uwadv.spec \
+	Makefile.mingw \
+	uwadv.dsw \
 	docs/Authors.txt \
 	docs/README.dev.txt \
 	docs/README.Linux.txt \

@@ -107,16 +107,22 @@ FMOD is available at http://www.fmod.org/]))
 
 dnl checking for uwadv.cfg entries
 
-AC_ARG_WITH(uw1, [  --with-uw1=DIR          directory where UW1 is installed ],UW1PATH=$with_uw1,UW1PATH=${datadir}/games/uw1)
+AC_ARG_WITH(uw1, [  --with-uw1=DIR          directory where UW1 is installed ],UW1PATH=$with_uw1,UW1PATH=${datadir}/games/uw1/)
 AC_SUBST(UW1PATH)
 
-UADATAPATH=${datadir}/games/uwadv
+UADATAPATH=${datadir}/games/uwadv/
 AC_SUBST(UADATAPATH)
 
 CPPFLAGS="$CPPFLAGS -DCONFIGDIR=\\\"${datadir}/games/uwadv/\\\""
 
 dnl produce output files
 AC_SUBST(OPENGL_LIBS)
-AC_CONFIG_FILES([Makefile source/Makefile source/tools/Makefile uwadv.spec:source/linux/uwadv.spec.in])
+AC_CONFIG_FILES([
+Makefile
+source/Makefile
+source/tools/Makefile
+uadata/Makefile
+uwadv.spec:source/linux/uwadv.spec.in
+])
 AC_OUTPUT
 

@@ -238,11 +238,16 @@ $(strpak_EXEC): $(strpak_OBJS)
 # general build rules
 #
 
-data: luac
-	cd uadata && make
+include uadata/Makefile.common
+uadata_uarFILES = $(uarFILES:%=uadata/%)
+
+data: uadata/uadata00.uar
+
+uadata/uadata00.uar: $(uadata_uarFILES)
+	cd uadata; zip uadata00.uar $(uarFILES)
 
 data-clean:
-	cd uadata && make clean
+	cd uadata; rm -f $(luaOBJECTS) uadata00.uar
 
 luac:
 	cd source/lua/src/luac && make
@@ -284,3 +289,6 @@ clean: data-clean luac-clean
 
 %.o: %.cpp
 	$(CXX) $(CFLAGS) $(CXXFLAGS) -c $(<) -o $*.o
+
+%.lob: %.lua luac
+	source/lua/bin/luac -o $@ $<
