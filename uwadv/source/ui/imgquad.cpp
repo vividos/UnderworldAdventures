@@ -190,6 +190,7 @@ void ua_image_quad::draw()
    {
       dx = 1.22*0.5/quadwidth;
       quadwidth = wnd_width/2;
+      x1 = wnd_xpos+quadwidth;
    }
    else
    if (has_border)
