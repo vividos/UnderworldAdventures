@@ -36,6 +36,27 @@ up / down key     moves level towards or from the viewer
 page up / down    changes underworld level
 
 
+animview - Underworld Cutscenes Animation Viewer
+------------------------------------------------
+
+animview is a viewer for cutscene animation files stored in the "cuts" folder
+of Ultima Underworld. The animation frames can be played back continuously, or
+each frame can be viewed separately.
+
+The program is started using the command line, specifying the cutscene file to
+play back. In the "cuts" folder, only files that don't have the extension
+".n00" are animation files. When using Windows, the file to play back can be
+dragged and dropped on the animview.exe to start viewing.
+
+At startup, the first frame of the animation sequence is shown. The user can
+toggle continuous playback with the space bar. Pressing the return key steps
+through the single frames. The last frame often is the same frame as the first
+one.
+
+Background info: The cutscene animations were done with Deluxe Paint on Amiga,
+using the Deluxe Paint Animator file format (*.anm).
+
+
 cnvdbg - Underworld Conversation Debugger
 -----------------------------------------
 
@@ -76,7 +97,7 @@ ones (also shows up when you use the command "help"):
    exit/quit  x quits the debugger
 
    short keys can be used for the commands, e.g. 's' for step
-   some commands are only available, when a conversation is loaded
+   some commands are only available when a conversation is loaded
 
 For more information about the inner workings of the conversation system of
 Ultima Underworld, just look into the file "docs/uw-formats.txt" in the source
@@ -91,7 +112,18 @@ assembler-like conversation script code. The disassembler part just decodes
 every opcode and prints a assembler source listing. The decompiler instead
 tries to recognize code structures and produces C-like code.
 
-- the program is still in development, so no further description is available -
+The program has the following calling syntax:
+
+   cnvdasm <command> <cnv-archive> <conv-slot>
+
+The command can either be "dasm" which only performs disassembling the conv
+code, or "dec" which performs decompiling to C-like code. The cnv-archive
+usually is a file called "cnv.ark" found in the "data" folder of Underworld.
+The conv-slot specifies the conversation slot that should be decoded. Not all
+slots actually contain code.
+
+Again, for more info about the conversation system, look into the file
+"docs/uw-formats.txt" in the source distribution of Underworld Adventures.
 
 
 xmi2mid - XMIDI to MIDI converter
@@ -100,7 +132,7 @@ xmi2mid - XMIDI to MIDI converter
 xmi2mid is a converter for XMIDI files (*.xmi) that are used in Ultima
 Underworld (and many other games) to ordinary midi (*.mid) files. Only the
 first track of an XMIDI file is extracted, though. The calling syntax for the
-program:
+program is:
 
    xmi2mid <xmi-file> <mid-file>
 
