@@ -240,13 +240,16 @@ luac:
 	cd source/lua/src/luac && make
 	cp source/lua/bin/luac.exe* uadata
 
-install: uwadv tools data
+update: uwadv tools data
 	strip $(uwadv_EXEC)
 	mkdir -p $(UWADV_PATH)
 	cp $(uwadv_EXEC) $(UWADV_PATH)
-	cp uwadv.cfg $(UWADV_PATH)
 	mkdir -p $(UWADV_PATH)uadata/
 	cp uadata/uadata00.uar $(UWADV_PATH)uadata/
+
+install: update
+	cp uwadv.cfg $(UWADV_PATH)
+
 
 installer: uwadv data
 	rem mkdir -p output/release/
