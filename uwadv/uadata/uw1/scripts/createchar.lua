@@ -42,7 +42,7 @@ gactDeinit = 1  -- deinitialize
 actEnd = 0             -- ends the character creation screen (no params)
 actSetInitVal = 1      -- sets init values (param1=stringblock, param2=buttongroup x-coord, param3=normal text color, param4=highlighted text color, param5=table with button image indexes)
 actSetUIBtnGroup = 2   -- sets the specified button group (param1=heading, param2=buttontype, param3=buttontable)
-actSetUIText = 3       -- sets the specified text at the specified location (param1=stringno, param2=x-coord, param3=y-coord, param4=alignment)
+actSetUIText = 3       -- sets the specified text at the specified location (param1=stringno, param2=x-coord, param3=y-coord, param4=alignment, [param5=stringblock])
 actSetUICustText = 4   -- sets the specified custom text at the specified location (param1=text, param2=x-coord, param3=y-coord, param4=alignment)
 actSetUINumber = 5     -- sets the specifed number at the specified location (param1=number, param2=right x-coord, param3=y-coord)
 actSetUIImg = 6        -- sets the specified image at the specified location (param1=imagenumber, param2=center x-coord, param3=center y-coord)
@@ -109,11 +109,16 @@ ccvSwimming = 50
 btText = 0       -- standard button with text from string table, btns contains stringtable index
 btImage = 1      -- square button with image, btns contains index of image
 btInput = 2      -- input area, btns contains the stringtable index of the label of the input area
+btTimer = 3      -- countdown timer, heading contains time in msec before virtual button 0 is pressed, values in btns are ignored
 
 -- text alignment types
 alLeft = 0
 alCenter = 1
 alRight = 2
+
+-- end action types
+eaCancel = 0    -- end screen and go back to start menu
+eaNewGame = 1   -- end screen and go the in-game view with a new game
 
 
 -- tables
@@ -173,7 +178,9 @@ ccharui = {
      -- general buttons
       [20]= { heading = ccvDifficulty, btntype = btText, btns = { ccvStandard, ccvEasy } },
       [21]= { heading = ccvNone, btntype = btInput, btns = { ccvName }},
-      [22]= { heading = ccvKeep, btntype = btText, btns = { ccvYes, ccvNo } }
+      [22]= { heading = ccvKeep, btntype = btText, btns = { ccvYes, ccvNo } },
+
+      [23]= { heading = 1000, btntype = btTimer, btns = { } }
    },
 
    skillorder = -- table with the skill button group order for every player class
@@ -190,26 +197,26 @@ ccharui = {
 
    skilltrans = -- translates ccvXXX to player_skill_XXX values (defined in uwinterface.lua)
    {
-	  [ccvAttack]	= player_skill_attack,
-	  [ccvDefence]	= player_skill_defense,
-	  [ccvUnarmed]	= player_skill_unarmed,
-	  [ccvSword]	= player_skill_sword,
-	  [ccvAxe]		= player_skill_axe,
-	  [ccvMace]		= player_skill_mace,
-	  [ccvMissile]	= player_skill_missile,
-	  [ccvMana]		= player_skill_mana,
-	  [ccvLore]		= player_skill_lore,
-	  [ccvCasting]	= player_skill_casting,
-	  [ccvTraps]	= player_skill_traps,
-	  [ccvSearch]	= player_skill_search,
-	  [ccvTrack]	= player_skill_track,
-	  [ccvSneak]	= player_skill_sneak,
-	  [ccvRepair]	= player_skill_repair,
-	  [ccvCharm]	= player_skill_charm,
-	  [ccvPicklock]	= player_skill_picklock,
-	  [ccvAcrobat]	= player_skill_acrobat,
-	  [ccvAppraise]	= player_skill_appraise,
-	  [ccvSwimming] = player_skill_swimming
+      [ccvAttack]   = player_skill_attack,
+      [ccvDefence]  = player_skill_defense,
+      [ccvUnarmed]  = player_skill_unarmed,
+      [ccvSword]    = player_skill_sword,
+      [ccvAxe]      = player_skill_axe,
+      [ccvMace]     = player_skill_mace,
+      [ccvMissile]  = player_skill_missile,
+      [ccvMana]     = player_skill_mana,
+      [ccvLore]     = player_skill_lore,
+      [ccvCasting]  = player_skill_casting,
+      [ccvTraps]    = player_skill_traps,
+      [ccvSearch]   = player_skill_search,
+      [ccvTrack]    = player_skill_track,
+      [ccvSneak]    = player_skill_sneak,
+      [ccvRepair]   = player_skill_repair,
+      [ccvCharm]    = player_skill_charm,
+      [ccvPicklock] = player_skill_picklock,
+      [ccvAcrobat]  = player_skill_acrobat,
+      [ccvAppraise] = player_skill_appraise,
+      [ccvSwimming] = player_skill_swimming
    }
 }
 
@@ -255,7 +262,7 @@ function cchar_addskill(skill, value)
       -- increase the value if found and return
       if skills[csi].name==skill then
          skills[csi].val = skills[csi].val + value/2
-		 cchar_do_action(self, actSetPlayerSkill, ccharui.skilltrans[skill], skills[csi].val)
+         cchar_do_action(self, actSetPlayerSkill, ccharui.skilltrans[skill], skills[csi].val)
          return
       end
    end
@@ -289,6 +296,7 @@ function cchar_buttonclick(button, text)
          pimg = button + 5
 
       elseif curgroup==20 then
+         cchar_do_action(self, actSetPlayerAttr, player_attr_difficulty, button)
 
       elseif curgroup==21 then
          if strlen(text)<1 then
@@ -299,12 +307,15 @@ function cchar_buttonclick(button, text)
          end
 
       elseif curgroup==22 then
-         if button==0 then
-            curgroup = -1
-         else
+         if button==1 then
             cchar_global(self, gactDeinit)
             return
          end
+
+      elseif curgroup==23 then
+         curgroup = -1
+         cchar_do_action(self, actEnd, eaNewGame)
+         return
       end
       curgroup = curgroup + 1
 
@@ -319,11 +330,12 @@ function cchar_buttonclick(button, text)
          pstr = random(20,30)
          pdex = random(15,25)
          pint = random(12,22)
-         pvit = random(34,36)
+         pvit = random(33,36)
          cchar_do_action(self, actSetPlayerAttr, player_attr_strength, pstr)
          cchar_do_action(self, actSetPlayerAttr, player_attr_dexterity, pdex)
          cchar_do_action(self, actSetPlayerAttr, player_attr_intelligence, pint)
          cchar_do_action(self, actSetPlayerAttr, player_attr_max_life, pvit)
+         cchar_do_action(self, actSetPlayerAttr, player_attr_life, pvit)
 
          -- the attack and defence skill appear for all player classes
          cchar_addskill(ccvAttack, random(4,13))
@@ -360,6 +372,7 @@ function cchar_buttonclick(button, text)
    -- show the new button group and stats (or end)
    if curgroup>0 then
       cchar_do_action(self, actUIClear)
+
       if curgroup>1 then 
          cchar_do_action(self, actSetUIText, psex+ccvMale, 18, 21, alLeft) 
       end
@@ -385,12 +398,21 @@ function cchar_buttonclick(button, text)
       if curgroup>19 then
          cchar_do_action(self, actSetUIImg, 17+pimg, 44, 81)
       end
+
       if curgroup>21 then
          cchar_do_action(self, actSetUICustText, pname, 80, 10, alCenter)
       end
+
+      if curgroup>22 then
+         -- show "playname enters the abyss..."
+         cchar_do_action(self, actSetUICustText, pname, 240, 90, alCenter)
+         -- we need one string (#256) from stringblock 1
+         cchar_do_action(self, actSetUIText, 256, 240, 100, alCenter, 1)
+      end
+
       cchar_do_action(self, actSetUIBtnGroup, ccharui.btngroups[curgroup].heading, ccharui.btngroups[curgroup].btntype, ccharui.btngroups[curgroup].btns)
       cchar_do_action(self, actUIUpdate)
    else
-      cchar_do_action(self, actEnd)
+      cchar_do_action(self, actEnd, eaCancel)
    end
 end
