@@ -40,12 +40,18 @@ using namespace std;
 #endif
 
 
-// endian helper macros
+// endian conversion
 
-# define ua_endian_convert16(x) ( (((x)&0x00ff)<<8) | (((x)&0xff00)>>8) )
-# define ua_endian_convert32(x) ( ua_endian_convert16(((x)&0xffff0000)>>16) | \
-   ua_endian_convert16((x)&0x0000ffff)<<16 )
+inline Uint16 ua_endian_convert16(Uint16 x)
+{
+   return (((x)&0x00ff)<<8) | (((x)&0xff00)>>8);
+}
 
+inline Uint32 ua_endian_convert32(Uint32 x)
+{
+   return ua_endian_convert16(((x)&0xffff0000)>>16) |
+      ua_endian_convert16((x)&0x0000ffff)<<16;
+}
 
 // SDL_RWops helper functions
 
