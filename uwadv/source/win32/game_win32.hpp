@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -29,8 +29,8 @@
 */
 
 // include guard
-#ifndef __uwadv_game_win32_hpp_
-#define __uwadv_game_win32_hpp_
+#ifndef uwadv_game_win32_hpp_
+#define uwadv_game_win32_hpp_
 
 // needed includes
 #include "uwadv.hpp"
@@ -39,15 +39,14 @@
 
 // win32 specific game class
 
-class ua_game_win32: public ua_game
+class ua_uwadv_game_win32: public ua_uwadv_game
 {
 public:
    //! ctor
-   ua_game_win32(){}
+   ua_uwadv_game_win32(){}
 
    // customized virtual methods
    virtual void init();
-   virtual void system_message(SDL_SysWMEvent &syswm);
    virtual void done();
    virtual void error_msg(const char *msg);
 

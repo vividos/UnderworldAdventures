@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -31,15 +31,22 @@
 #include "resource.h"
 
 
-// ua_game_win32 members
+// implement win32 game object
 
-void ua_game_win32::init()
+ua_uwadv_game_implement(ua_uwadv_game_win32);
+
+
+// ua_uwadv_game_win32 members
+
+void ua_uwadv_game_win32::init()
 {
    // call base class method
-   ua_game::init();
+   ua_uwadv_game::init();
 
    // get window manager info
    SDL_SysWMinfo info;
+   info.window = NULL;
+
    SDL_VERSION(&info.version); // fill in SDL version
    SDL_GetWMInfo(&info);
 
@@ -52,42 +59,29 @@ void ua_game_win32::init()
    icon_small = (HICON)::LoadImage(inst,
       MAKEINTRESOURCE(IDI_ICON),IMAGE_ICON,16,16,LR_DEFAULTCOLOR);
 
-   // set menu and icons
-//   ::SetMenu(info.window,menu);
+   // set icons
    ::SendMessage(info.window,WM_SETICON,ICON_BIG,(LPARAM)icon);
    ::SendMessage(info.window,WM_SETICON,ICON_SMALL,(LPARAM)icon_small);
 }
 
-void ua_game_win32::system_message(SDL_SysWMEvent &syswm)
+void ua_uwadv_game_win32::done()
 {
-   switch(syswm.msg->msg)
-   {
-   case WM_COMMAND:
-      if (HIWORD(syswm.msg->wParam)==0)
-      switch(LOWORD(syswm.msg->wParam))
-      {
-      case ID_GAME_EXIT:
-         exit_game=true;
-         break;
-      }
-      break;
-   }
-}
+   ua_uwadv_game::done();
 
-void ua_game_win32::done()
-{
-   ua_game::done();
-
-   // free resources
-   //::DestroyMenu(menu); // seems that the menu gets destroyed by the window
+   // free icon resources
    ::DestroyIcon(icon);
    ::DestroyIcon(icon_small);
 }
 
-void ua_game_win32::error_msg(const char *msg)
+void ua_uwadv_game_win32::error_msg(const char* msg)
 {
+   ua_uwadv_game::error_msg(msg);
+
+   // present the user a message box
    SDL_SysWMinfo info;
+   info.window = NULL;
+
    SDL_GetWMInfo(&info);
 
-   ::MessageBox(info.window,msg,"Underworld Adventures",MB_OK);
+   ::MessageBox(info.window, msg, "Underworld Adventures", MB_OK);
 }
