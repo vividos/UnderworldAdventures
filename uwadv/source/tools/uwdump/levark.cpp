@@ -75,57 +75,96 @@ void ua_dump_level_archive::start(std::string& basepath,std::string& param)
 
       printf("file length: %08x bytes, %u slots\n\n",filelen,noffsets);
 
-      // read in all offsets
-      for(Uint16 n=0; n<noffsets; n++)
+      if (!is_uw2)
       {
-         Uint32 offset = fread32(fd);
-         if (offset != 0)
+         // dump uw1 structure
+
+         // lev.ark offsets in map/ordered form
+         std::vector<Uint32> offsets_list;
+         std::vector<Uint32> offsets_ordered;
+
+         // read in all offsets
+         for(Uint16 n=0; n<noffsets; n++)
          {
-            offsets_ordered.push_back(offset);
-            offsets_list.push_back(offset);
+            Uint32 offset = fread32(fd);
+            if (offset != 0)
+            {
+               offsets_ordered.push_back(offset);
+               offsets_list.push_back(offset);
+            }
+         }
+
+         std::sort(offsets_ordered.begin(),offsets_ordered.end());
+         offsets_ordered.push_back(filelen);
+
+         // dump blocks
+         printf("block  offset    size  description\n");
+         unsigned int max = offsets_list.size()-1;
+         for(unsigned int i=0; i<max; i++)
+         {
+            Uint32 offset = offsets_list[i];
+
+            // search offset
+            unsigned int a,max2 = offsets_ordered.size();
+            for(a=0; a<max2 && offsets_ordered[a] != offset; a++);
+
+            Uint32 next_offset = offsets_ordered[i+1];
+            if (a==max2-1)
+               next_offset = offsets_ordered[i];
+
+            next_offset -= offsets_ordered[i];
+
+            printf("%4u   %08x  %04x  %s\n",
+               i,offsets_ordered[i],next_offset,
+               next_offset == 0x7c08 ? "tile map + master object list" :
+               next_offset == 0x0180 ? "animation overlay info" :
+               next_offset == 0x007a ? "texture mapping table" :
+               next_offset == 0x1000 ? "automap info" : ""
+            );
          }
       }
-
-      std::sort(offsets_ordered.begin(),offsets_ordered.end());
-      offsets_ordered.push_back(filelen);
-
-      // dump blocks
-      printf("block  offset    size  description\n");
-      unsigned int max = offsets_list.size()-1;
-      for(unsigned int i=0; i<max; i++)
+      else
       {
-         Uint32 offset = offsets_list[i];
+         // dumping uw2 structure
 
-         // search offset
-         unsigned int a,max2 = offsets_ordered.size();
-         for(a=0; a<max2 && offsets_ordered[a] != offset; a++);
+         std::vector<Uint32> tablevalues;
+         tablevalues.resize(noffsets*4);
 
-         Uint32 next_offset = offsets_ordered[i+1];
-         if (a==max2-1)
-            next_offset = offsets_ordered[i];
+         fseek(fd,6L,SEEK_SET);
 
-         next_offset -= offsets_ordered[i];
+         // read in all offsets, flags and size values
+         for(unsigned int n=0; n<noffsets*4; n++)
+            tablevalues[n] = fread32(fd);
 
-         printf("%4u   %08x  %04x  %s\n",
-            i,offsets_ordered[i],next_offset,
-            next_offset == 0x7c08 ? "tile map + master object list" :
-            next_offset == 0x0180 ? "animation overlay info" :
-            next_offset == 0x007a ? "texture mapping" :
-            next_offset == 0x1000 ? "automap info" : ""
+         // dump the values
+         printf("block  offset    flags  blocksize  avail  description\n");
+
+         for(unsigned int i=0; i<noffsets; i++)
+         {
+            if (tablevalues[i]==0)
+               continue;
+
+            printf("%4u   %08x  %04x   %04x       %04x   %s\n",
+               i,tablevalues[i],
+               tablevalues[i+noffsets],
+               tablevalues[i+noffsets*2],
+               tablevalues[i+noffsets*3],
+               i<80 ? "tile map + master object list" :
+               i<160 ? "texture mapping table" :
+               i<240 ? "automap info" :
+               i<320 ? "map notes" : "unknown"
             );
+         }
+         printf("\n");
       }
-      printf("\n");
    }
 
-   unsigned int nlevels = !is_uw2 ? 9 : 50;
+   unsigned int nlevels = !is_uw2 ? 9 : 80;
+   unsigned int dumpedlevels = 0;
 
    // process all levels
    for(level=0; level<nlevels; level++)
    {
-      fseek(fd,level*4+2,SEEK_SET);
-      Uint32 offset = fread32(fd);
-      fseek(fd,offset,SEEK_SET);
-
       objinfos.clear();
       npcinfos.clear();
 
@@ -141,18 +180,111 @@ void ua_dump_level_archive::start(std::string& basepath,std::string& param)
 
       if (is_uw2)
       {
-         // TODO load uw2 file
-      }
-      else
-      {
+         // load uw2 file
+         std::vector<Uint8> decoded;
+         decoded.resize(0x7e08,0);
+
+         extern SDL_RWops* ua_rwops_uw2dec(FILE* fd,unsigned int blocknum, unsigned int destsize);
+         SDL_RWops* rwops = ua_rwops_uw2dec(fd,level,0x7e08);
+
+         if (rwops == NULL)
+            continue;
+
+         SDL_RWread(rwops,&decoded[0],1,0x7e08);
+
          // read in tilemap
          {
             for(unsigned int i=0; i<64*64; i++)
             {
-               Uint16 tileword = fread16(fd);
-               tileword = fread16(fd);
+               Uint16 tileword2 = decoded[i*2+2] | (decoded[i*2+3]<<8);
 
-               Uint16 index = get_bits(tileword,6,10);
+               Uint16 index = get_bits(tileword2,6,10);
+               tilemap_links.push_back(index);
+            }
+         }
+
+         // read in master object list
+         {
+            for(unsigned int i=0; i<0x100; i++)
+            {
+               // read object info
+               objinfos.push_back(decoded[0x4000+i*27+0] | (decoded[0x4000+i*27+1]<<8));
+               objinfos.push_back(decoded[0x4000+i*27+2] | (decoded[0x4000+i*27+3]<<8));
+               objinfos.push_back(decoded[0x4000+i*27+4] | (decoded[0x4000+i*27+5]<<8));
+               objinfos.push_back(decoded[0x4000+i*27+6] | (decoded[0x4000+i*27+7]<<8));
+
+               // read npc extra info
+               for(unsigned int j=8; j<27; j++)
+                  npcinfos.push_back(decoded[0x4000+i*27+j]);
+            }
+
+            for(unsigned int n=0; n<0x300; n++)
+            {
+               // read object info
+               objinfos.push_back(decoded[0x5b00+n*8+0] | (decoded[0x5b00+n*8+1]<<8));
+               objinfos.push_back(decoded[0x5b00+n*8+2] | (decoded[0x5b00+n*8+3]<<8));
+               objinfos.push_back(decoded[0x5b00+n*8+4] | (decoded[0x5b00+n*8+5]<<8));
+               objinfos.push_back(decoded[0x5b00+n*8+6] | (decoded[0x5b00+n*8+7]<<8));
+            }
+         }
+
+         // read in free list
+         {
+            Uint16 mobile_items = decoded[0x7c02] | (decoded[0x7c03]<<8);
+            Uint16 static_items = decoded[0x7c04] | (decoded[0x7c05]<<8);
+
+            for(unsigned int i=0; i<mobile_items+1; i++)
+            {
+               Uint16 pos = decoded[0x7300+i*2] | (decoded[0x7300+i*2+1]<<8);
+               freelist.insert(pos);
+            }
+
+            for(unsigned int n=0; n<static_items+1; n++)
+            {
+               Uint16 pos = decoded[0x74fc+n*2] | (decoded[0x74fc+n*2+1]<<8);
+               freelist.insert(pos);
+            }
+         }
+
+         // texture mapping
+         {
+            SDL_RWops* rwops_tex = ua_rwops_uw2dec(fd,80+level,0x0086);
+
+            if (rwops_tex != NULL)
+            {
+               std::vector<Uint8> origtexmap;
+               origtexmap.resize(0x0086,0);
+
+               SDL_RWread(rwops_tex,&origtexmap[0],1,0x0086);
+
+               SDL_RWclose(rwops_tex);
+
+               for(unsigned int i=0; i<64; i++)
+               {
+                  Uint16 texid = origtexmap[i*2] | (origtexmap[i*2+1]<<8);
+                  texmapping.push_back(texid);
+               }
+            }
+         }
+
+         SDL_RWclose(rwops);
+         printf("\n");
+      }
+      else
+      {
+         // load uw1 file
+         fseek(fd,level*4+2,SEEK_SET);
+         Uint32 offset = fread32(fd);
+         fseek(fd,offset,SEEK_SET);
+
+         // read in tilemap
+         {
+            for(unsigned int i=0; i<64*64; i++)
+            {
+               Uint16 tileword1 = fread16(fd);
+               Uint16 tileword2 = fread16(fd);
+
+               Uint16 index = get_bits(tileword2,6,10);
                tilemap_links.push_back(index);
             }
          }
@@ -175,45 +307,46 @@ void ua_dump_level_archive::start(std::string& basepath,std::string& param)
          }
 
          // read in free list
-         fseek(fd,0x7c02-0x7300,SEEK_CUR);
-         Uint16 mobile_items = fread16(fd);
-         Uint16 static_items = fread16(fd);
-
-         fseek(fd,0x7300-0x7c06,SEEK_CUR);
-         for(unsigned int j=0; j<mobile_items+1; j++)
          {
-            Uint16 pos = fread16(fd);
-            freelist.insert(pos);
-         }
+            fseek(fd,offset+0x7c02,SEEK_SET);
+            Uint16 mobile_items = fread16(fd);
+            Uint16 static_items = fread16(fd);
 
-         fseek(fd,0x01fc-(mobile_items+1)*2,SEEK_CUR);
-         for(unsigned int k=0; k<static_items+1; k++)
-         {
-            Uint16 pos = fread16(fd);
-            freelist.insert(pos);
+            fseek(fd,offset+0x7300,SEEK_SET);
+            for(unsigned int i=0; i<mobile_items+1; i++)
+               freelist.insert(fread16(fd));
+
+            fseek(fd,offset+0x74fc,SEEK_SET);
+            for(unsigned int n=0; n<static_items+1; n++)
+               freelist.insert(fread16(fd));
          }
 
          // texture mapping
-         fseek(fd,(level+nlevels*2)*4+2,SEEK_SET);
-         offset = fread32(fd);
-         fseek(fd,offset,SEEK_SET);
-
          {
+            fseek(fd,(level+nlevels*2)*4+2,SEEK_SET);
+            offset = fread32(fd);
+            fseek(fd,offset,SEEK_SET);
+
             for(unsigned int i=0; i<48; i++)
-               tex_wall[i] = fread16(fd);
+               texmapping.push_back(fread16(fd));
 
             for(unsigned int j=0; j<10; j++)
-               tex_floor[j] = fread16(fd);
+               texmapping.push_back(fread16(fd));
          }
       }
 
       objinfos[4] |= 0x007f; // an_adventurer item_id
+      objinfos[0] &= ~(1<<12); // not enchanted
 
       process_level();
       dump_infos();
+
+      dumpedlevels++;
    }
 
    fclose(fd);
+
+   printf("dumped %u levels.\n",dumpedlevels);
 }
 
 void ua_dump_level_archive::process_level()
@@ -245,7 +378,7 @@ void ua_dump_level_archive::process_level()
 
 void ua_dump_level_archive::dump_infos()
 {
-   printf("dumping infos for level %u\n\n",level);
+   printf("dumping infos for level %u (0x%02x)\n\n",level,level);
 
    // dump every object in list
    {
@@ -306,22 +439,42 @@ void ua_dump_level_archive::dump_infos()
    }
 
    // dumping traps
-   printf("dumping traps:\n");
-
-   for(unsigned int j=0x0180; j<0x0191; j++)
    {
-      for(unsigned int pos=0; pos<0x400; pos++)
-      {
-         bool is_free = freelist.find(pos)!=freelist.end();
-         Uint16 item_id = get_bits(objinfos[pos*4],0,9);
+      printf("dumping traps:\n");
 
-         if (!is_free && j==item_id)
-            dump_item(pos);
+      for(unsigned int j=0x0180; j<0x0191; j++)
+      {
+         for(unsigned int pos=0; pos<0x400; pos++)
+         {
+            bool is_free = freelist.find(pos)!=freelist.end();
+            Uint16 item_id = get_bits(objinfos[pos*4],0,9);
+
+            if (!is_free && j==item_id)
+               dump_item(pos);
+         }
       }
+      printf("\n");
+   }
+
+   // dumping enchanted objects
+   {
+      printf("dumping enchanted items:\n");
+      for(unsigned int i=0; i<0x400; i++)
+      {
+         bool is_free = freelist.find(i)!=freelist.end();
+         Uint16 item_id = get_bits(objinfos[i*4],0,9);
+         bool enchanted = get_bits(objinfos[i*4],12,1) != 0;
+
+         // dump enchanted and "a_spell" items
+         if (!is_free && enchanted && (item_id < 0x0140 || item_id >= 0x01c0 || item_id==0x0120))
+            dump_item(i);
+      }
+
+      printf("\n");
    }
 
    // following buttons/triggers, etc.
-   printf("\ndumping special link chains:\n");
+   printf("dumping special link chains:\n");
    {
       std::bitset<0x400> visited;
       visited.reset();
@@ -341,18 +494,29 @@ void ua_dump_level_archive::dump_infos()
    }
 
    // dumping texture mapping
-   printf("\ndumping texture mapping:\nwall textures:");
    {
-      unsigned int i;
-      for(i=0; i<48; i++)
-         printf("%c%04x",(i%8)==0? '\n' : ' ',tex_wall[i]);
+      printf("\ndumping texture mapping:\nwall textures:");
+      {
+         unsigned int i;
+         if (!is_uw2)
+         {
+            for(i=0; i<48; i++)
+               printf("%c%04x",(i%8)==0? '\n' : ' ',texmapping[i]);
 
-      printf("\n\nceiling textures:");
-      for(i=0; i<10; i++)
-         printf("%c%04x",(i%8)==0? '\n' : ' ',tex_floor[i]);
+            printf("\n\nceiling textures:");
+            for(i=0; i<10; i++)
+               printf("%c%04x",(i%8)==0? '\n' : ' ',texmapping[i+48]);
+         }
+         else
+         {
+            for(i=0; i<64; i++)
+               printf("%c%04x",(i%8)==0? '\n' : ' ',texmapping[i]);
+         }
+      }
+      printf("\n");
    }
 
-   printf("\n\n");
+   printf("\n");
 }
 
 void ua_dump_level_archive::dump_special_link_chain(std::bitset<0x400>& visited, unsigned int pos,
@@ -468,7 +632,7 @@ void ua_dump_level_archive::dump_item(Uint16 pos)
    printf("link=%04x ",get_bits(objptr[2],6,10));
 
    printf("flags=%x invis=%x ench=%x is_quant=%x ",
-      get_bits(objptr[0],9,4), get_bits(objptr[0],14,1),
+      get_bits(objptr[0],9,3), get_bits(objptr[0],14,1),
       get_bits(objptr[0],12,1),get_bits(objptr[0],15,1));
 
    printf("ref=%02x ",linkcount[pos]);
@@ -489,11 +653,62 @@ void ua_dump_level_archive::dump_item(Uint16 pos)
       get_bits(objptr[1],7,2),
       get_bits(objptr[1],0,7) );
 
+   // enchanted items
+   if ( item_id > 0x01bf || item_id < 0x0180 ) // filter out traps/triggers
+   {
+      Uint16* obj2ptr = NULL;
+
+      // retrieve spell ptr
+      bool is_quant = get_bits(objptr[0],15,1) != 0;
+      if (!is_quant && special > 0)
+      {
+         // sp_link
+         obj2ptr = &objinfos[special*4];
+      }
+      else
+      {
+         // special property
+         bool ench = get_bits(objptr[0],12,1) != 0;
+         if (is_quant && ench && (item_id < 0x0140 || item_id > 0x017f))
+            obj2ptr = objptr;
+      }
+
+      if (obj2ptr != NULL)
+      {
+         bool bit11 = get_bits(obj2ptr[0],11,1) != 0;
+
+         Uint16 quantity = get_bits(obj2ptr[3],6,10);
+
+         Uint16 val1,val2;
+         if (bit11)
+         {
+            val1 = quantity >> 6;   // val1: 4 bits
+
+            if (val1 != 0)
+               val1 += 12;
+            val2 = quantity & 0x3f; // val2: 6 bits
+         }
+         else
+         {
+            val1 = quantity >> 4;   // val1: 6 bits
+            val2 = quantity & 0x0f;  // val2: 4 bits
+         }
+
+         //printf("[ench: val1=%02x val2=%02x] ",val1,val2);
+      }
+   }
+
+   // all triggers
+   if (item_id >= 0x01a0 && item_id <= 0x01bf)
+   {
+      printf("[trigger tilepos=%02x/%02x] ",quality,owner);
+   }
+   else
    switch(item_id)
    {
    case 0x016e: // special tmap object
-      printf("[texidx=%02x tex=%04x texname=\"%s\"",owner,tex_wall[owner],
-         gstr.get_string(10,tex_wall[owner]).c_str());
+      printf("[texidx=%02x tex=%04x texname=\"%s\"",owner,texmapping[owner],
+         gstr.get_string(10,texmapping[owner]).c_str());
       if (!is_quantity)
          printf(" sp_link=%04x",special);
       printf("] ");

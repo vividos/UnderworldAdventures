@@ -61,10 +61,7 @@ protected:
    // link chain index from tilemap, 64*64 bytes long
    std::vector<Uint16> tilemap_links;
 
-   // lev.ark offsets in map/ordered form
-   std::vector<Uint32> offsets_list;
-   std::vector<Uint32> offsets_ordered;
-
+   // set with free master object list positions
    std::set<Uint16> freelist;
 
    // common object info bytes, 0x400*8 bytes long
@@ -82,8 +79,8 @@ protected:
    // tilemap position for all objects, 0x400 long
    std::vector<std::pair<Uint8,Uint8> > item_positions;
 
-   Uint16 tex_wall[48];
-   Uint16 tex_floor[10];
+   // texture mapping table
+   std::vector<Uint16> texmapping;
 
    // game strings
    ua_gamestrings gstr;
