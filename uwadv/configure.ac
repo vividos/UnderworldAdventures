@@ -70,7 +70,7 @@ AC_MSG_CHECKING(for debug options)
 DEBUG_FLAGS="-O2"
 AC_ARG_ENABLE(debug,
   [  --enable-debug          enable debugging (disables optimizations)],
-  [ DEBUG_FLAGS="-O -g -Wall"
+  [ DEBUG_FLAGS="-O -g -Wall -DHAVE_DEBUG"
     AC_MSG_RESULT(yes)
   ], AC_MSG_RESULT(no))
 
