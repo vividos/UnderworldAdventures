@@ -185,10 +185,6 @@ SOURCE=..\screens\start_splash.cpp
 # End Group
 # Begin Source File
 
-SOURCE=..\character.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\font.cpp
 # End Source File
 # Begin Source File
@@ -198,6 +194,10 @@ SOURCE=..\image.cpp
 # Begin Source File
 
 SOURCE=..\level.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\player.cpp
 # End Source File
 # Begin Source File
 
@@ -273,11 +273,11 @@ SOURCE=..\audio.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\character.hpp
+SOURCE=..\common.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\common.hpp
+SOURCE=..\core.hpp
 # End Source File
 # Begin Source File
 
@@ -298,6 +298,10 @@ SOURCE=..\image.hpp
 # Begin Source File
 
 SOURCE=..\level.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\player.hpp
 # End Source File
 # Begin Source File
 
