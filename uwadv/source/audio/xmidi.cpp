@@ -736,7 +736,7 @@ void XMIDI::AdjustTimings(Uint32 ppqn)
 */
 int XMIDI::ConvertEvent (const int time, const unsigned char status, SDL_RWops *source, const int size, first_state &fs)
 {
-   Uint32 delta=0;
+//   Uint32 delta=0;
    int data;
 
    data = SDL_RWread8(source);

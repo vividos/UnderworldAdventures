@@ -62,7 +62,7 @@ void ua_sdl_mixer_midi_driver::start_track(XMIDIEventList* eventlist, bool repea
    stop_track();
 
    // find out midi file length
-   int length = eventlist->Write(NULL);
+   //int length = eventlist->Write(NULL);
 
    // convert XMIDI event list to midi file, into temp. file
    SDL_RWops* midifile = SDL_RWFromFile("uwadv.mid","wb");
