@@ -104,7 +104,7 @@ protected:
 
    //! clicked somewhere on inventory panel
    void inventory_click(bool button_down, bool left_button,
-      enum ua_panel_inventory_area_id area);
+      unsigned int area);
 
    //! updates cursor image, e.g. when starting dragging an item
    void update_cursor_image();
@@ -187,7 +187,7 @@ protected:
    Uint16 drag_item;
 
    //! area the item is dragged from
-   enum ua_panel_inventory_area_id drag_area;
+   unsigned int drag_area;
 };
 
 

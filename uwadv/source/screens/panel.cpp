@@ -631,8 +631,11 @@ void ua_panel::update_runebag()
 }
 
 void ua_panel::inventory_click(bool button_down, bool left_button,
-   ua_panel_inventory_area_id area)
+   unsigned int the_area)
 {
+   ua_panel_inventory_area_id area =
+      static_cast<ua_panel_inventory_area_id>(the_area);
+
    ua_inventory& inv = panel_parent->get_game_interface().
       get_underworld().get_inventory();
 
