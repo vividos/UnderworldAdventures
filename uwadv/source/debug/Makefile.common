@@ -10,4 +10,5 @@ libuadebug_la_SOURCES = \
 	editlist.hpp editlist.cpp \
 	mainframe.hpp mainframe.cpp \
 	playerinfo.hpp playerinfo.cpp \
-	objectlist.hpp objectlist.cpp
+	objectlist.hpp objectlist.cpp \
+	hotspotlist.hpp hotspotlist.cpp

@@ -107,6 +107,11 @@ SOURCE=..\source\debug\editlist.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\source\debug\hotspotlist.cpp
+# ADD CPP /Yu"dbgcommon.hpp"
+# End Source File
+# Begin Source File
+
 SOURCE=..\source\debug\mainframe.cpp
 # ADD CPP /Yu"dbgcommon.hpp"
 # End Source File
@@ -148,6 +153,10 @@ SOURCE=..\source\debug\dbgcommon.hpp
 # Begin Source File
 
 SOURCE=..\source\debug\editlist.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\debug\hotspotlist.hpp
 # End Source File
 # Begin Source File
 
