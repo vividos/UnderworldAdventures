@@ -1,3 +1,39 @@
+2003-02-11 17:05  vividos
+
+	* source/screens/start_splash.cpp (1.33):
+
+	called lua_started_newgame() for uw_demo, too
+	
+2003-02-11 16:46  vividos
+
+	* docs/README.dev.txt (1.7):
+
+	updated release procedure a bit
+	
+2003-02-11 16:43  vividos
+
+	* configure.ac (1.26), win32/uwadv.nsi (1.5):
+
+	updated version number for next release
+	
+2003-02-11 16:36  vividos
+
+	* docs/README.uwadv.txt (1.10):
+
+	added release notes for new release
+	
+2003-02-11 16:36  vividos
+
+	* docs/Changes (1.4):
+
+	updated changes
+	
+2003-02-11 13:49  vividos
+
+	* ChangeLog (1.31):
+
+	updated changelog
+	
 2003-02-11 13:38  vividos
 
 	* hacking/hacking.h (1.7):
