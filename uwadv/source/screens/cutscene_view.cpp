@@ -224,9 +224,10 @@ bool ua_cutscene_view_screen::process_event(SDL_Event& event)
       // handle key presses
       switch(event.key.keysym.sym)
       {
+      case SDLK_SPACE:
       case SDLK_RETURN:
       case SDLK_ESCAPE:
-         ua_trace("cutscene ended by return/escape\n");
+         ua_trace("cutscene ended by space/return/escape\n");
          ended = true;
 
          // initiate text and anim fadeout
