@@ -38,19 +38,50 @@
 #include <sys/stat.h>
 #endif
 
+
 //! creates a folder
 /*! borrowed from Exult, files/utils.cc */
 int ua_mkdir(const char *dirname, int mode)
 {
    std::string name(dirname);
 
-#if (defined(MACOSX) || defined(BEOS))
    // remove any trailing slashes
-   string::size_type pos = name.find_last_not_of('/');
+   std::string::size_type pos = name.find_last_not_of('/');
 
-   if (pos != string::npos)
+   if (pos != std::string::npos)
       name.resize(pos+1);
+
+   // check if parent folder exists
+   {
+      std::string parent(name);
+
+      // remove next slash
+      std::string::size_type pos = parent.find_last_of('/');
+
+      if (pos != std::string::npos)
+         parent.erase(pos);
+
+      // test parent if it's a folder
+#ifdef _MSC_VER
+      // msvc case
+      bool exists = false;
+
+      DWORD ret = GetFileAttributes(parent.c_str());
+      exists = (ret!= (DWORD)-1) &&
+         (ret & FILE_ATTRIBUTE_DIRECTORY) != 0;
+#else
+      // every other sane system
+      bool exists =
+         (stat(parent.c_str(), &sbuf) == 0) &&
+         S_ISDIR(sbuf.st_mode);
 #endif
+
+      if (!exists)
+      {
+         // call recursively
+         ua_mkdir(parent.c_str(),mode);
+      }
+   }
 
 #if defined(WIN32) && defined(UNICODE)
 
