@@ -60,7 +60,7 @@ void ua_start_splash_screen::init()
    ua_trace("start splash screen started\n");
 
    // start intro midi music
-   core->get_audio().start_music(0,true);
+   core->get_audio().start_music(0,false);
 
    // setup orthogonal projection
    glMatrixMode(GL_PROJECTION);
