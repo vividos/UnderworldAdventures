@@ -38,16 +38,40 @@ ua_keymap::ua_keymap()
 
 void ua_keymap::init(ua_settings &settings)
 {
-   keymap.insert(std::make_pair<ua_key_value,unsigned int>(ua_key_forward,SDLK_w));
-   keymap.insert(std::make_pair<ua_key_value,unsigned int>(ua_key_turn_left,SDLK_a));
-   keymap.insert(std::make_pair<ua_key_value,unsigned int>(ua_key_turn_right,SDLK_d));
+   keymap[ua_key_run_forward] = SDLK_w;
+   keymap[ua_key_run_forward_easymove] = ua_make_keymod(SDLK_w,KMOD_SHIFT);
+   keymap[ua_key_walk_forward] = SDLK_s;
+   keymap[ua_key_walk_forward_easymove] = ua_make_keymod(SDLK_s,KMOD_SHIFT);
+   keymap[ua_key_turn_left] = SDLK_a;
+   keymap[ua_key_turn_left_easymove] = ua_make_keymod(SDLK_a,KMOD_SHIFT);
+   keymap[ua_key_turn_right] = SDLK_d;
+   keymap[ua_key_turn_right_easymove] = ua_make_keymod(SDLK_d,KMOD_SHIFT);
+   keymap[ua_key_slide_left] = SDLK_y;
+   keymap[ua_key_slide_right] = SDLK_c;
+   keymap[ua_key_walk_backwards] = SDLK_x;
+   keymap[ua_key_walk_backwards_easymove] = ua_make_keymod(SDLK_x,KMOD_SHIFT);
 
-   keymap.insert(std::make_pair<ua_key_value,unsigned int>(ua_key_look_up,SDLK_1));
-   keymap.insert(std::make_pair<ua_key_value,unsigned int>(ua_key_look_center,SDLK_2));
-   keymap.insert(std::make_pair<ua_key_value,unsigned int>(ua_key_look_down,SDLK_3));
+   keymap[ua_key_fly_up] = SDLK_e;
+   keymap[ua_key_fly_down] = SDLK_q;
+   keymap[ua_key_look_down] = SDLK_1;
+   keymap[ua_key_center_view] = SDLK_2;
+   keymap[ua_key_look_up] = SDLK_3;
+   keymap[ua_key_standing_long_jump] = ua_make_keymod(SDLK_j,KMOD_SHIFT);
+   keymap[ua_key_jump] = SDLK_j;
+
+   keymap[ua_key_game_quit_game] = ua_make_keymod(SDLK_q,KMOD_ALT|KMOD_NUM);
 }
 
-unsigned int ua_keymap::get_key(ua_key_value key)
+bool ua_keymap::is_key(ua_key_value key, Uint32 keymod)
+{
+   Uint32 keymod2 = get_key(key);
+
+   // compare keysym and keymod values separately
+   return (( keymod&0xffff) == (keymod2&0xffff) &&
+      ((keymod>>16) & (keymod2>>16)) != 0);
+}
+
+Uint32 ua_keymap::get_key(ua_key_value key)
 {
    std::map<ua_key_value,unsigned int>::iterator iter =
       keymap.find(key);

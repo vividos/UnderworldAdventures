@@ -233,8 +233,10 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    static int curlevel = 0;
    ua_player &pl = core->get_underworld().get_player();
 
-   // check for forward key
-   if (keymap.get_key(ua_key_forward)==keysym.sym)
+   Uint32 keymod = ua_make_keymod(keysym.sym,keysym.mod);
+
+   // check for run forward key
+   if (keymap.is_key(ua_key_run_forward,keymod))
    {
       if (type==SDL_KEYDOWN)
          pl.set_movement_mode(ua_move_walk_forward);
@@ -243,7 +245,7 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    }
    else
    // check for turn left key
-   if (keymap.get_key(ua_key_turn_left)==keysym.sym)
+   if (keymap.is_key(ua_key_turn_left,keymod))
    {
       if (type==SDL_KEYDOWN)
          pl.set_movement_mode(ua_move_rotate_left);
@@ -252,7 +254,7 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    }
    else
    // check for turn right key
-   if (keymap.get_key(ua_key_turn_right)==keysym.sym)
+   if (keymap.is_key(ua_key_turn_left,keymod))
    {
       if (type==SDL_KEYDOWN)
          pl.set_movement_mode(ua_move_rotate_right);
@@ -261,13 +263,13 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    }
    else
    // check for look up key
-   if (keymap.get_key(ua_key_look_up)==keysym.sym)
+   if (keymap.is_key(ua_key_look_up,keymod))
    {
       look_up = type==SDL_KEYDOWN;
    }
    else
    // check for center look key
-   if (keymap.get_key(ua_key_look_center)==keysym.sym)
+   if (keymap.is_key(ua_key_center_view,keymod))
    {
       if (type==SDL_KEYDOWN)
       {
@@ -277,13 +279,21 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    }
    else
    // check for look down key
-   if (keymap.get_key(ua_key_look_down)==keysym.sym)
+   if (keymap.is_key(ua_key_look_down,keymod))
    {
       look_down = type==SDL_KEYDOWN;
    }
    else
+   // check for exit screen key
+   if (keymap.is_key(ua_key_game_quit_game,keymod))
+   {
+      fade_state = 2;
+      fade_ticks = 0;
+      fadeout_action = 0;
+   }
+   else
 
-   switch(keysym.sym)
+   switch(keymod)
    {
 #ifdef HAVE_DEBUG
    case SDLK_PAGEUP:
@@ -296,7 +306,7 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
          core->get_underworld().change_level(++curlevel);
       break;
 
-   case SDLK_F6: // quicksave
+   case SDLK_F11: // quicksave
       if (type==SDL_KEYDOWN)
       {
          ua_trace("quicksaving ... ");
@@ -306,7 +316,7 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
       }
       break;
 
-   case SDLK_F7: // quickload
+   case SDLK_F12: // quickload
       if (type==SDL_KEYDOWN)
       {
          ua_trace("quickloading ... ");
@@ -316,16 +326,6 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
       }
       break;
 #endif
-
-   case SDLK_q:
-      // exit screen when pressing Alt + q
-      if ((keysym.mod & KMOD_ALT)!=0)
-      {
-         fade_state = 2;
-         fade_ticks = 0;
-         fadeout_action = 0;
-      }
-      break;
    }
 }
 
