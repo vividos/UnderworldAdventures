@@ -4,7 +4,7 @@
 # $Id$
 #
 
-AUTOMAKE_OPTIONS = gnu
+AUTOMAKE_OPTIONS = foreign
 
 EXTRA_PROGRAMS = cnvdasm cnvdbg xmi2mid
 

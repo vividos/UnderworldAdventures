@@ -6,4 +6,6 @@ configure
 stamp-h.in
 config.h
 confdefs.h
+config.h.in
+libtool
 

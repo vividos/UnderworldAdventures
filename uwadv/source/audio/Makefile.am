@@ -4,7 +4,7 @@
 # $Id$
 #
 
-AUTOMAKE_OPTIONS = gnu
+AUTOMAKE_OPTIONS = foreign
 
 top_srcdir = ../linux
 top_builddir = ../linux

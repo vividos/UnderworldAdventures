@@ -4,7 +4,7 @@
 # $Id$
 #
 
-AUTOMAKE_OPTIONS = gnu
+AUTOMAKE_OPTIONS = foreign
 
 EXTRA_DIST = uwadv.cfg
 

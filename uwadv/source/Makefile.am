@@ -4,7 +4,7 @@
 # $Id$
 #
 
-AUTOMAKE_OPTIONS = gnu
+AUTOMAKE_OPTIONS = foreign
 
 # ugly hack to let the makefile know where configure.in etc. is
 top_srcdir = linux
