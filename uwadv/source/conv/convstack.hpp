@@ -24,6 +24,9 @@
    \brief conversation code stack
 
 */
+//! \ingroup conv
+
+//@{
 
 // include guard
 #ifndef uwadv_convstack_hpp_
@@ -92,25 +95,25 @@ inline void ua_conv_stack::init(Uint16 stacksize)
 
 inline void ua_conv_stack::push(Uint16 val)
 {
-   ua_assert(Uint16(stackp+1)>stack.size());
+   ua_assert(Uint16(stackp+1)<stack.size());
    stack[++stackp] = val;
 }
 
 inline Uint16 ua_conv_stack::pop()
 {
-   ua_assert(stackp<=stack.size());
+   ua_assert(stackp<stack.size());
    return stack[stackp--];
 }
 
 inline Uint16 ua_conv_stack::at(Uint16 pos)
 {
-   ua_assert(pos<=stack.size());
+   ua_assert(pos<stack.size());
    return stack[pos];
 }
 
 inline void ua_conv_stack::set(Uint16 pos, Uint16 val)
 {
-   ua_assert(pos<=stack.size());
+   ua_assert(pos<stack.size());
    stack[pos]=val;
 }
 
@@ -132,3 +135,4 @@ inline void ua_conv_stack::set_stackp(Uint16 val)
 
 
 #endif
+//@}
