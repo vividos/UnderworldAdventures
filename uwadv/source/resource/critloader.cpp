@@ -42,12 +42,15 @@ extern void ua_image_decode_rle(FILE *fd, Uint8* pixels, unsigned int bits,
 
 // ua_critter methods
 
+#ifdef DO_CRITLOAD_DEBUG
 extern unsigned int memory_used;
+#endif
 
 void ua_critter::load(const char* file, unsigned int used_auxpal)
 {
-   unsigned int maxleft,maxright,maxtop,maxbottom;
-   maxleft = maxright = maxtop = maxbottom = 0;
+   xres = yres = 0;
+   hotxy_coords.clear();
+   imgsizes.clear();
 
    maxframes = 0;
 
@@ -64,9 +67,6 @@ void ua_critter::load(const char* file, unsigned int used_auxpal)
       {
          // pass 1: init frame image
 
-         xres = maxleft+maxright;
-         yres = maxtop+maxbottom;
-
 #ifdef DO_CRITLOAD_DEBUG
          unsigned int used_bytes = maxframes * xres * yres;
 
@@ -75,7 +75,17 @@ void ua_critter::load(const char* file, unsigned int used_auxpal)
          memory_used += used_bytes;
 #endif
 
+         // allocate needed number of bytes
          allframe_bytes = ua_smart_ptr<Uint8>(new Uint8[maxframes * xres * yres]);
+
+#if defined(DO_CRITLOAD_DEBUG) && defined(HAVE_DEBUG)
+         memset(&allframe_bytes.get()[0],0xcc, maxframes * xres * yres);
+#else
+         memset(&allframe_bytes.get()[0],0x00, maxframes * xres * yres);
+#endif
+
+         hotxy_coords.resize(maxframes*2,0);
+         imgsizes.resize(maxframes*2,0);
       }
 
       while(true)
@@ -199,39 +209,44 @@ void ua_critter::load(const char* file, unsigned int used_auxpal)
                hoty = fgetc(fd);
                type = fgetc(fd);
 
-               // check if hotspot is in image
+#ifdef DO_CRITLOAD_DEBUG
+               // check if hotspot is outside image
                if (hotx>width) hotx = width;
                if (hoty>height) hoty = height;
+#endif
 
                if (pass==0)
                {
-                  // pass 0: calculate maximum frame image width
+                  // pass 0: determine maximum frame image width
 
-                  unsigned int left,right,top,bottom;
-                  right = width-hotx;
-                  left = hotx;
-                  top = hoty;
-                  bottom = height-hoty;
-
-                  // determine max width needed for this frame
-                  if (right > maxright) maxright = right;
-                  if (left > maxleft) maxleft = left;
-                  if (top > maxtop) maxtop = top;
-                  if (bottom > maxbottom) maxbottom = bottom;
+                  if (xres<width) xres = width;
+                  if (yres<height) yres = height;
                }
                else
                {
                   // pass 1: read in actual image
+                  unsigned int curframe = frame_offset+n;
+
+                  imgsizes[curframe*2+0] = width;
+                  imgsizes[curframe*2+1] = height;
+
+                  hotxy_coords[curframe*2+0] = hotx;
+                  hotxy_coords[curframe*2+1] = hoty;
 
                   Uint16 datalen = fread16(fd);
 
                   // rle-decode image
-                  unsigned int bytes_offset =
-                     (frame_offset+n)*xres*yres + (maxtop-hoty)*xres + (maxleft-hotx);
+                  unsigned int bytes_offset = curframe*xres*yres;
 
                   ua_image_decode_rle(fd, &allframe_bytes.get()[bytes_offset],
                      type==6 ? 5 : 4, datalen, width*height, auxpal,
                      xres-width, width);
+
+#ifdef DO_CRITLOAD_DEBUG
+                  // mark hotspot with a green and a red dot
+                  allframe_bytes.get()[bytes_offset + hoty*xres + hotx] = 0xfd;
+                  allframe_bytes.get()[bytes_offset + hoty*xres + hotx-1] = 0x14;
+#endif
                }
                // end of current frame
             }
@@ -248,10 +263,6 @@ void ua_critter::load(const char* file, unsigned int used_auxpal)
       // end of all page files
    }
    // end of all passes
-
-   // remember new hotspot
-   hot_x = maxleft;
-   hot_y = maxtop;
 }
 
 void ua_critter_pool::load(ua_settings& settings)
@@ -294,7 +305,10 @@ void ua_critter_pool::load(ua_settings& settings)
          char buffer[16];
          sprintf(buffer,"crit/cr%02opage",anim); // yeah, octal!
          critfile.append(buffer);
-
+/*
+         ua_trace("loading critter %02x from cr%02opage.*, auxpal=%02x\n",
+            i,anim,auxpal);
+*/
          // load it
          crit.load(critfile.c_str(),auxpal);
       }
