@@ -669,9 +669,10 @@ void ua_create_character_screen::tick()
       {
          if (ended)
          {
-            core->pop_screen();
             if (newgame)
-               core->push_screen(new ua_ingame_orig_screen);
+               core->replace_screen(new ua_ingame_orig_screen);
+            else
+               core->pop_screen();
             return;
          } // else
          changed = true;
