@@ -32,9 +32,11 @@
 
 
 -- dumps objlist table entries
-function dump_objinfo_table(objinfo,obj_handle)
+function dump_objinfo_table(obj_handle)
 
+   local objinfo = objlist_get_obj_info(obj_handle)
    local category = "quantity"
+
    if objinfo.is_quantity > 0
    then
       if objinfo.quantity >= 512
@@ -125,7 +127,7 @@ function lua_objlist_look(obj_handle)
    objinfo = objlist_get_obj_info(obj_handle)
 
    print("looking at object")
-   dump_objinfo_table(objinfo,obj_handle)
+   dump_objinfo_table(obj_handle)
 
    local quantity = 0
 
@@ -183,7 +185,7 @@ function lua_objlist_talk(obj_handle)
    objinfo = objlist_get_obj_info(obj_handle)
 
    print("talking with object\n")
-   dump_objinfo_table(objinfo,obj_handle)
+   dump_objinfo_table(obj_handle)
 
    -- check if npc
    if objinfo.item_id < 64 or objinfo.item_id >= 128
