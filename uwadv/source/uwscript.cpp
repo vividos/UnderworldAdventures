@@ -554,6 +554,14 @@ int ua_underworld_script_bindings::objlist_get_obj_info(lua_State* L)
    lua_pushnumber(L,info.is_quantity ? 1.0 : 0.0);
    lua_settable(L,-3);
 
+   lua_pushstring(L,"is_hidden");
+   lua_pushnumber(L,info.is_hidden ? 1.0 : 0.0);
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"flags");
+   lua_pushnumber(L,static_cast<double>(info.flags));
+   lua_settable(L,-3);
+
 
    lua_pushstring(L,"xpos");
    lua_pushnumber(L,static_cast<double>(extinfo.xpos));
