@@ -29,6 +29,7 @@
 #include "common.hpp"
 #include "models.hpp"
 
+
 // globals
 
 std::vector<ua_model3d_ptr> allmodels;
@@ -134,7 +135,8 @@ void draw_screen()
 
    // render model
    ua_vector3d base(0.0, 0.0, 0.0);
-   allmodels[curmodel]->render(base);
+   ua_object obj;
+   allmodels[curmodel]->render(obj,base);
 
    if (light_on)
       glDisable(GL_LIGHTING);
@@ -309,8 +311,14 @@ int main(int argc, char* argv[])
 // fake functions to get linking to work
 
 #include "files.hpp"
+#include "player.hpp"
 
 SDL_RWops* ua_files_manager::get_uadata_file(const char* relpath)
 {
    return NULL;
+}
+
+unsigned int ua_player::get_attr(ua_player_attributes) const
+{
+   return 0;
 }
