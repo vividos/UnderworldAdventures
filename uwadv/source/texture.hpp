@@ -159,7 +159,7 @@ public:
    ua_onepalette &get_palette(unsigned int pal){ return pals.get_palette(pal); };
 
    //! invalidates last bound texture name
-   void invalidate_tex(){ last_texname=-1; }
+   void invalidate_tex(){ last_texname=0; }
 
 private:
    //! loads all palettes
