@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -63,6 +63,30 @@ enum ua_underworld_user_action
 {
    //! dummy action
    ua_action_nothing=0,
+
+   //! user looks at object
+   ua_action_look_object,
+
+   //! user looks at object in inventory
+   ua_action_look_object_inventory,
+
+   //! user looks at a wall in 3d world
+   ua_action_look_wall,
+
+   //! user uses object
+   ua_action_use_object,
+
+   //! user uses object in inventory
+   ua_action_use_object_inventory,
+
+   //! user looks at object in inventory
+   ua_action_use_wall,
+
+   //! user gets object from 3d view
+   ua_action_get_object,
+
+   //! user talks to object
+   ua_action_talk_object,
 
    //! clicked on active spell; param is the spell that is clicked on
    ua_action_clicked_spells,
