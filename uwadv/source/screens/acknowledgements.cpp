@@ -75,8 +75,11 @@ void ua_acknowledgements_screen::init()
    cuts_ack.init(&core->get_texmgr());
 
    // trick to copy image properties and palette
-   img[0] = ua_image_quad(cuts_ack);
-   img[1] = ua_image_quad(cuts_ack);
+   img[0].init(&core->get_texmgr(),0,0,320,200,false);
+   memcpy(img[0].get_quadpalette(),cuts_ack.get_quadpalette(),sizeof(ua_onepalette));
+
+   img[1].init(&core->get_texmgr(),0,0,320,200,false);
+   memcpy(img[1].get_quadpalette(),cuts_ack.get_quadpalette(),sizeof(ua_onepalette));
 
    // tex 0 is a blank frame / fading-out frame
    img[0].clear(1);
@@ -135,9 +138,7 @@ void ua_acknowledgements_screen::render()
    if (stage==1)
    {
       // render second quad using alpha blending
-
       glEnable(GL_BLEND);
-      // render second quad; image to fade out
 
       // calculate alpha
       Uint8 alpha = 255-Uint8(255*(double(tickcount)/(core->get_tickrate()*xfade_time)));
@@ -173,11 +174,16 @@ void ua_acknowledgements_screen::tick()
       img[imgnum].paste_image(cuts_ack,0,0);
       img[imgnum].convert_upload();
 
+      //ua_trace("uploading frame %u to image %u\n",curframe,imgnum);
+      //ua_trace("showing image %u, blending image %u\n",1-(curframe&1),curframe&1);
+
       return;
    }
 
    if (stage==1 && double(tickcount)/core->get_tickrate() >= xfade_time)
    {
+      //ua_trace("showing image %u, current frame %u\n",1-(curframe&1),curframe);
+
       if (ended)
          core->pop_screen();
 
