@@ -35,11 +35,7 @@
 #include "save_game.hpp"
 #include "cutscene_view.hpp"
 #include "debug.hpp"
-/*
 #include "conversation.hpp"
-#include <sstream>
-#include <iomanip>
-*/
 
 
 // constants
@@ -47,8 +43,8 @@
 //! time to fade in/out
 const double ua_ingame_orig_screen::fade_time = 0.5;
 
-const unsigned int ua_ingame_screenshot_xres = 80;
-const unsigned int ua_ingame_screenshot_yres = 50;
+const unsigned int ua_ingame_screenshot_xres = 160;
+const unsigned int ua_ingame_screenshot_yres = 100;
 
 
 // ua_ingame_orig_screen methods
@@ -313,8 +309,6 @@ void ua_ingame_orig_screen::destroy()
 void ua_ingame_orig_screen::draw()
 {
    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-
-   game.get_renderer().set_viewport3d(52,19, 172,112);
 
    // 3d world
    {
@@ -707,15 +701,8 @@ void ua_ingame_orig_screen::key_event(bool key_down, ua_key_value key)
    case ua_key_special_quicksave:
       if (key_down)
       {
-         // render savegame preview image
-         do_savegame_screenshot(ua_ingame_screenshot_xres,
-            ua_ingame_screenshot_yres);
-
-         ua_trace("quicksaving... ");
-         uw_print("quicksaving...");
-
+         uw_print("\\0quicksaving...");
          schedule_action(ua_action_quicksave,false);
-         ua_trace("done\n");
       }
       break;
 
@@ -723,36 +710,21 @@ void ua_ingame_orig_screen::key_event(bool key_down, ua_key_value key)
    case ua_key_special_quickload:
       if (key_down && game.get_savegames_manager().quicksave_avail())
       {
-         ua_trace("quickloading... ");
-         uw_print("quickloading...");
-
+         uw_print("\\0quickloading...");
          schedule_action(ua_action_quickload,false);
-         ua_trace("done\n");
       }
       break;
 
       // "load game" key
    case ua_key_game_restore_game:
       if (key_down)
-      {
-         // render savegame preview image
-         do_savegame_screenshot(ua_ingame_screenshot_xres,
-            ua_ingame_screenshot_yres);
-
          schedule_action(ua_action_load_game, true);
-      }
       break;
 
       // "save game" key
    case ua_key_game_save_game:
       if (key_down)
-      {
-         // render savegame preview image
-         do_savegame_screenshot(ua_ingame_screenshot_xres,
-            ua_ingame_screenshot_yres);
-
          schedule_action(ua_action_save_game, true);
-      }
       break;
 
       // returns from menu to game
@@ -809,9 +781,12 @@ void ua_ingame_orig_screen::tick()
    }
 
    // action to perform?
-   if ((fade_state == 0 || fade_state == 2) && fading.tick())
+   if (((fade_state == 0 || fade_state == 2) && fading.tick()) || fade_state == 5)
    {
-      fade_state++;
+      if (fade_state == 5)
+         fade_state = 1;
+      else
+         fade_state++;
 
       // now it's time
       do_action(fadeout_action);
@@ -830,9 +805,20 @@ void ua_ingame_orig_screen::schedule_action(ua_ingame_orig_action action, bool f
       fading.init(false,game.get_tickrate(), fade_time);
    }
    else
+      fade_state = 5; // special schedule_action fade state
+
+   // check which action we scheduled
+   switch(action)
    {
-      fade_state=0;
-      fading.init(false,game.get_tickrate(), 0.0);
+   case ua_action_save_game:
+   case ua_action_quicksave:
+      // render savegame preview image
+      do_savegame_screenshot(ua_ingame_screenshot_xres,
+         ua_ingame_screenshot_yres);
+      break;
+
+   default:
+      break;
    }
 }
 
@@ -851,12 +837,12 @@ void ua_ingame_orig_screen::do_action(ua_ingame_orig_action action)
 
       // start "load game" screen
    case ua_action_load_game:
-      game.replace_screen(new ua_save_game_screen(game,false),true);
+      game.replace_screen(new ua_save_game_screen(game,false,true),true);
       break;
 
       // start "save game" screen
    case ua_action_save_game:
-      game.replace_screen(new ua_save_game_screen(game,false),true);
+      game.replace_screen(new ua_save_game_screen(game,false,false),true);
       break;
 
       // quickloading
@@ -866,6 +852,7 @@ void ua_ingame_orig_screen::do_action(ua_ingame_orig_action action)
          ua_savegame sg = game.get_savegames_manager().
             get_quicksave_savegame(false);
          game.get_underworld().load_game(sg);
+         uw_print("quickloading done.");
       }
       break;
 
@@ -880,12 +867,13 @@ void ua_ingame_orig_screen::do_action(ua_ingame_orig_action action)
          pl.fill_savegame_infos(sg.get_savegame_info());
 
          game.get_underworld().save_game(sg);
+         uw_print("quicksaving done.");
       }
       break;
 
       // starts conversation
    case ua_action_conversation:
-      //game.replace_screen(new ua_conversation_screen(game,fadeout_param),true);
+      game.replace_screen(new ua_conversation_screen(game,fadeout_param),true);
       break;
 
       // shows cutscene
@@ -1010,18 +998,19 @@ void ua_ingame_orig_screen::do_savegame_screenshot(
    unsigned int screenshot_xres,screenshot_yres;
 
    // set up viewport and camera
-   glViewport(0,0,xres,yres);
+   // note: viewport is set only for having a proper aspect ratio; the real
+   // viewport is set some more lines below
+   game.get_renderer().set_viewport3d(0,0, xres,yres);
 
-   ua_vector3d view_offset(0,0,0);
+   ua_vector3d view_offset(0,0,20.0);
    game.get_renderer().setup_camera3d(view_offset);
+
+   glViewport(0,0,xres,yres);
 
    glClear(GL_COLOR_BUFFER_BIT);
 
    // render a const world
    game.get_renderer().render_underworld(game.get_underworld());
-
-   // flip pages
-   SDL_GL_SwapBuffers();
 
    // prepare screenshot
    screenshot_xres = xres;
@@ -1033,11 +1022,14 @@ void ua_ingame_orig_screen::do_savegame_screenshot(
    // read in scanlines
    glReadBuffer(GL_BACK);
 
-   for(int i=yres-1; i>=0 ;i--)
+   for(int i=0; i<yres; i++)
    {
-      glReadPixels(0, i, xres, 1, GL_RGBA, GL_UNSIGNED_BYTE,
-         &screenshot_rgba[(yres-1-i)*xres]);
+      glReadPixels(0, yres-i-1, xres, 1, GL_RGBA, GL_UNSIGNED_BYTE,
+         &screenshot_rgba[i*xres]);
    }
+
+   // reset viewport to original
+   game.get_renderer().set_viewport3d(52,19, 172,112);
 
    // set in savegames manager
    game.get_savegames_manager().set_save_screenshot(
