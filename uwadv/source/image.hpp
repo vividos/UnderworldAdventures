@@ -73,6 +73,10 @@ public:
    void paste_image(const ua_image &img, unsigned int destx,unsigned int desty,
       bool transparent=false);
 
+   //! copies a rectangular area to the given image
+   void copy_rect(ua_image &img, unsigned int startx, unsigned int starty,
+      unsigned int width, unsigned int height);
+
    //! clears bitmap with one palette index
    void clear(Uint8 index=0);
 

@@ -84,6 +84,23 @@ void ua_image::paste_image(const ua_image &img, unsigned int destx,unsigned int 
    }
 }
 
+void ua_image::copy_rect(ua_image &img, unsigned int startx, unsigned int starty,
+   unsigned int width, unsigned int height)
+{
+   img.create(width,height,0,palette);
+
+   // get source and destination ptr
+   Uint8* src = &pixels[0]+starty*xres+startx;
+   Uint8* dest = &img.get_pixels()[0];
+
+   // copy line by line
+   for(unsigned int y=0; y<height; y++)
+   {
+      memcpy(dest,&src[y*xres],width);
+      dest += width;
+   }
+}
+
 void ua_image::clear(Uint8 index)
 {
    unsigned int max = pixels.size();
