@@ -1,6 +1,6 @@
 --
 -- Underworld Adventures - an Ultima Underworld hacking project
--- Copyright (c) 2002 Michael Fink
+-- Copyright (c) 2002,2003 Underworld Adventures Team
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -229,6 +229,7 @@ function cchar_global(globalaction, seed)
       skills = {}
       randomseed(seed)
       cchar_do_action(actSetInitVal, ccharui.strblock, ccharui.btngxcoord, ccharui.textcolor_normal, ccharui.textcolor_highlight, ccharui.btnimages)
+      finished = 0
    end
 
    -- end it all when we're at the first page and a deinit was received
@@ -274,6 +275,11 @@ end
 
 -- processes action on a button click in the current group
 function cchar_buttonclick(button, text)
+
+   if finished == 1 and curgroup < 22
+   then
+      return
+   end
 
    -- simple case, button groups in sequential order
    if curgroup<=2 or curgroup>=18 then
@@ -424,6 +430,8 @@ function cchar_buttonclick(button, text)
          cchar_do_action(actSetUICustText, pname, 240, 90, alCenter)
          -- we need one string (#256) from stringblock 1
          cchar_do_action(actSetUIText, 256, 240, 100, alCenter, 1)
+         -- we're finished (don't allow any more input)
+         finished = 1
       end
 
       cchar_do_action(actSetUIBtnGroup, ccharui.btngroups[curgroup].heading, ccharui.btngroups[curgroup].btntype, ccharui.btngroups[curgroup].btns)
