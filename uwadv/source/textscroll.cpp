@@ -197,7 +197,8 @@ void ua_textscroll::update_scroll()
 {
    // redo scroll texture
    ua_image img_text,img_temp;
-   img_text.create(width,height,bg_color,0);
+   unsigned int imgheight = maxlines * font_normal.get_charheight() + 1;
+   img_text.create(width,imgheight,bg_color,0);
 
    unsigned int max = ua_min(maxlines,linestack.size());
    for(unsigned int i=0; i<max; i++)
@@ -207,7 +208,7 @@ void ua_textscroll::update_scroll()
          linestack[i].c_str(),text_color);
 
       // calc y position
-      unsigned int ypos = i*(img_temp.get_yres()+1)+1;
+      unsigned int ypos = i * font_normal.get_charheight() + 1;
 
       img_text.paste_image(img_temp,1,ypos,true);
 
@@ -252,8 +253,8 @@ void ua_textscroll::update_scroll()
 
       unsigned int texwidth = width/2+1;
 
-      img_text.copy_rect(img_split1,0,0, texwidth,height);
-      img_text.copy_rect(img_split2,texwidth-1,0, texwidth-1,height);
+      img_text.copy_rect(img_split1,0,0, texwidth,imgheight);
+      img_text.copy_rect(img_split2,texwidth-1,0, texwidth-1,imgheight);
 
       // upload it to the texture
       tex.convert(img_split1,0);
