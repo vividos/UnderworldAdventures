@@ -87,6 +87,7 @@ void ua_cutscene::load(const char *filename)
    // width and height
    xres = fread16(fd);
    yres = fread16(fd);
+   create(xres,yres,0,0);
 
    // skip color cycling infos
    fseek(fd,0x0100,SEEK_SET);
