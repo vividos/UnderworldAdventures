@@ -56,6 +56,7 @@ public:
    }
 
 protected:
+   //! exception description
    std::string description;
 };
 

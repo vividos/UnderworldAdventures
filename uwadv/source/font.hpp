@@ -30,6 +30,7 @@
 #define __uwadv_font_hpp_
 
 // needed includes
+#include <vector>
 #include "settings.hpp"
 #include "image.hpp"
 

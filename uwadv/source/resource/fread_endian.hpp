@@ -62,6 +62,4 @@ inline Uint32 fread32(FILE *fd)
    return data;
 }
 
-
-
 #endif
