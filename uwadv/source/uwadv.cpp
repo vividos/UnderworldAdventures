@@ -33,6 +33,7 @@
 #include "screens/ingame_orig.hpp"
 #include "screens/start_splash.hpp"
 #include <iostream>
+#include <ctime>
 
 
 // tables
@@ -71,6 +72,8 @@ ua_game::ua_game():tickrate(20),exit_game(false),
       "- debug mode -\n"
 #endif
       "\n");
+
+   srand((unsigned)time(NULL));
 }
 
 void ua_game::init()
@@ -604,6 +607,9 @@ void ua_game::init_game()
       else
          ua_trace("not available\n");
    }
+
+   // reset tick timer
+   reset_tick_timer = true;
 }
 
 void ua_game::push_screen(ua_ui_screen_base *newscreen)
