@@ -24,7 +24,35 @@ modelFILES = uw1/model3d.cfg \
 	models/static/textures/mushroom.tga \
 	models/static/textures/steak.tga \
 	models/static/textures/wdchest.tga \
-	models/static/textures/wood.tga
+	models/static/textures/wood.tga \
+	models/static/apple.wrl \
+	models/static/backpack.wrl \
+	models/static/bag.wrl \
+	models/static/barrel.wrl \
+	models/static/bed_frame.wrl \
+	models/static/bone1.wrl \
+	models/static/bread.wrl \
+	models/static/candle.wrl \
+	models/static/flute.wrl \
+	models/static/grass1.wrl \
+	models/static/grass2.wrl \
+	models/static/grass3.wrl \
+	models/static/rune_a.wrl \
+	models/static/skull.wrl \
+	models/static/table.wrl \
+	models/static/textures/apple.tga \
+	models/static/textures/backpack.tga \
+	models/static/textures/bag.tga \
+	models/static/textures/barrel.tga \
+	models/static/textures/bone.tga \
+	models/static/textures/bread.tga \
+	models/static/textures/candle.tga \
+	models/static/textures/flute.tga \
+	models/static/textures/grass.tga \
+	models/static/textures/plank.tga \
+	models/static/textures/skull.tga \
+	models/static/textures/water.tga
+
 
 uarEXTRA = \
 	uw1/scripts/uwinit.txt \
