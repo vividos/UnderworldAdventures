@@ -31,6 +31,8 @@
 
 // needed includes
 #include "screen.hpp"
+#include "cutscene.hpp"
+#include "font.hpp"
 
 
 // classes
@@ -50,19 +52,22 @@ public:
    virtual void tick();
 
 protected:
+   //! creates text image from string
+   void create_text_image(const char *str);
+
+   //! performs cutscene action; called by cuts_do_action
+   void do_action();
+
    // registered lua C functions
 
-   //! plays a sound
-   static int cuts_play_sound(lua_State *L);
-
-   //! indicates that the cutscene is finished
-   static int cuts_finished(lua_State *L);
+   //! performs an action given by the script
+   static int cuts_do_action(lua_State *L);
 
 protected:
    //! lua script state
    lua_State *L;
 
-   //! cutscene to show
+   //! cutscene number to show
    unsigned int cutscene;
 
    //! number of ticks
@@ -70,6 +75,52 @@ protected:
 
    //! indicates if cutscene script ended
    bool ended;
+
+   // subtitle text stuff
+
+   //! indicates if the subtitle text is currently shown
+   bool showtext;
+
+   //! string block to use
+   unsigned int strblock;
+
+   //! text color
+   Uint8 textcolor;
+
+   //! subtitle font
+   ua_font font_big;
+
+   //! current text as image
+   ua_image img_text;
+
+   //! texture for cutscene text
+   ua_texture tex_text;
+
+   //! text fadein/fadeout state
+   unsigned int text_fade_state;
+
+   //! count for fadein/fadeout
+   unsigned int fadecount;
+
+   // cutscene animation stuff
+
+   //! indicates if animation should be shown
+   bool showanim;
+
+   //! indicates if animation moves
+   bool loopanim;
+
+   //! cutscene animation sequence
+   ua_cutscene cuts;
+
+   //! texture for animation
+   ua_texture tex_anim;
+
+   //! current animation frame
+   unsigned int curframe;
+
+   //! animation tick count
+   double animcount;
 };
 
 #endif
