@@ -59,8 +59,8 @@ public:
    virtual void render(ua_vector3d& base){}
 
    //! returns bounding triangles for collision detection
-/*   virtual void get_bounding_triangles(
-      std::vector<ua_triangle3d_textured>& alltriangles){}*/
+   virtual void get_bounding_triangles(ua_vector3d& base,
+      std::vector<ua_triangle3d_textured>& alltriangles){}
 };
 
 
@@ -72,9 +72,26 @@ typedef ua_smart_ptr<ua_model3d> ua_model3d_ptr;
 class ua_model3d_builtin: public ua_model3d
 {
 public:
+   //! ctor
    ua_model3d_builtin(){}
 
+   //! renders model
    virtual void render(ua_vector3d& base);
+
+   //! returns bounding triangles for collision detection
+   virtual void get_bounding_triangles(ua_vector3d& base,
+      std::vector<ua_triangle3d_textured>& alltriangles);
+
+protected:
+   std::vector<ua_vector3d> coords;
+   std::vector<unsigned int> coord_index;
+
+   std::vector<ua_triangle3d_textured> alltriangles;
+
+   ua_vector3d origin;
+
+   friend bool ua_model_decode_builtins(const char* filename,
+      std::vector<ua_model3d_ptr>& allmodels);
 };
 
 
@@ -125,6 +142,10 @@ public:
 
    //! renders a model
    void render(Uint16 item_id, ua_vector3d& base);
+
+   //! returns bounding triangles for collision detection with given item_id
+   void get_bounding_triangles(Uint16 item_id, ua_vector3d& base,
+      std::vector<ua_triangle3d_textured>& alltriangles);
 
 protected:
    //! called to load a specific value

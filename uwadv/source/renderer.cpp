@@ -1010,6 +1010,12 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
    // check if a 3d model is available for that item
    if (modelmgr->model_avail(item_id))
    {
+      base.z = (extinfo.zpos/4.0)*height_scale;
+
+      // hack: set texture for bridge
+      if (item_id==0x0164)
+         texmgr->use(ua_tex_stock_floor+31);
+
       modelmgr->render(item_id,base);
       return;
    }

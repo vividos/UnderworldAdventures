@@ -37,13 +37,16 @@ extern bool ua_model_decode_builtins(const char* filename,
    std::vector<ua_model3d_ptr>& allmodels);
 
 
-// ua_model3d methods
+// ua_model3d_builtin methods
 
 void ua_model3d_builtin::render(ua_vector3d& base)
 {
    // render all triangles
-   glColor3ub(192,192,192);
-/*
+//   glColor3ub(192,192,192);
+
+//   glEnable(GL_TEXTURE_2D);
+   glDisable(GL_CULL_FACE);
+
    unsigned int max = alltriangles.size();
    for(unsigned int i=0; i<max; i++)
    {
@@ -52,19 +55,31 @@ void ua_model3d_builtin::render(ua_vector3d& base)
 //      texmgr->use(tri.texnum);
 
       glBegin(GL_TRIANGLES);
+      //glBegin(GL_LINE_LOOP);
       for(int j=0; j<3; j++)
       {
-         //glTexCoord2d(tri.tex_u[j],tri.tex_v[j]);
-         glVertex3d(tri.points[j].x, tri.points[j].y, tri.points[j].z);
+         int k = j;//j==0 ? 0 : 1-(j-2);
+         glTexCoord2d(tri.tex_u[k]*256.0,tri.tex_v[k]*256.0);
+         glVertex3d(
+            base.x-origin.x+tri.points[k].x,
+            base.y-origin.y+tri.points[k].y,
+            base.z-origin.z+tri.points[k].z);
       }
       glEnd();
-   }*/
+   }
+
+   glEnable(GL_CULL_FACE);
+//   glEnable(GL_TEXTURE_2D);
+}
+
+void ua_model3d_builtin::get_bounding_triangles(ua_vector3d& base,
+   std::vector<ua_triangle3d_textured>& alltriangles)
+{
+   alltriangles = this->alltriangles;
 }
 
 
 // ua_model3d_manager methods
-
-   void init(const char* uwexe_filename);
 
 void ua_model3d_manager::init(ua_game_core_interface* thecore)
 {
@@ -101,7 +116,11 @@ void ua_model3d_manager::load_value(const std::string& name, const std::string& 
       // we have a builtin graphics
       unsigned int builtin_nr = strtol(value.c_str()+7,NULL,10);
 
-      // TODO: insert builtin model
+      // insert builtin model
+      ua_model3d_ptr model_ptr = allbuiltins[builtin_nr];
+
+      allmodels.insert(
+         std::make_pair<Uint16,ua_model3d_ptr>(item_id,model_ptr) );
    }
    else
    {
@@ -135,4 +154,14 @@ void ua_model3d_manager::render(Uint16 item_id, ua_vector3d& base)
 
    if (iter != allmodels.end())
       iter->second->render(base);
+}
+
+void ua_model3d_manager::get_bounding_triangles(Uint16 item_id,
+   ua_vector3d& base, std::vector<ua_triangle3d_textured>& alltriangles)
+{
+   std::map<Uint16,ua_model3d_ptr>::iterator iter =
+      allmodels.find(item_id);
+
+   if (iter != allmodels.end())
+      iter->second->get_bounding_triangles(base,alltriangles);
 }
