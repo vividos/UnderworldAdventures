@@ -87,10 +87,13 @@ public:
    // common functionality
 
    //! returns runebag as bitset
-   std::bitset<26> &get_runebag(){ return runebag; }
+   std::bitset<24>& get_runebag(){ return runebag; }
 
-      //! retrieves an item from an object
+   //! retrieves an item from an object
    ua_object_info &get_item(Uint16 index);
+
+   //! calculates weight of inventory in stones
+   double get_inventory_weight();
 
    // container functionality
 
@@ -115,6 +118,9 @@ public:
    //! closes current container and enables the previous one
    void close_container();
 
+   //! calculates weight of items in given container in stones
+   double get_container_weight(Uint16 cont_pos);
+
    // floating object functionality
 
    //! returns currently floating item, or ua_slot_no_item when none floats
@@ -135,8 +141,8 @@ public:
    //! drops a floating item into the parent's list
    bool drop_floating_item_parent();
 
-   //! calculates available weight of inventory in stones
-   double get_weight_avail();
+   //! inserts new item and makes it floating; returns itemlist pos
+   Uint16 insert_floating_item(ua_object_info& objinfo);
 
    // loading / saving / importing
 
@@ -164,7 +170,7 @@ protected:
    ua_underworld* underw;
 
    //! rune bag
-   std::bitset<26> runebag;
+   std::bitset<24> runebag;
 
    //! item list
    std::vector<ua_object_info> itemlist;

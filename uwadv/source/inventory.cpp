@@ -88,6 +88,23 @@ ua_object_info &ua_inventory::get_item(Uint16 index)
    return itemlist[index];
 }
 
+double ua_inventory::get_inventory_weight()
+{
+   ua_object_properties& prop = underw->get_obj_properties();
+
+   unsigned int weight = 0;
+
+   for(unsigned int i=0; i<256; i++)
+   if (itemlist[i].item_id != ua_slot_no_item && i != floating_object)
+   {
+      ua_common_obj_property& cprop = prop.get_common_property(itemlist[i].item_id);
+      weight += cprop.mass;
+   }
+//      weight += prop.get_common_property(itemlist[i].item_id).mass;
+
+   return weight / 10.0;
+}
+
 unsigned int ua_inventory::get_num_slots()
 {
    return slot_links.size();
@@ -152,6 +169,33 @@ void ua_inventory::close_container()
    }
 
    build_slot_link_list(index);
+}
+
+double ua_inventory::get_container_weight(Uint16 cont_pos)
+{
+   // check if we got a container item pos
+   if (!is_container(get_item(cont_pos).item_id))
+      return 0.0;
+
+   ua_object_properties& prop = underw->get_obj_properties();
+
+   unsigned int weight = 0;
+   Uint16 link = get_item(cont_pos).quantity;
+
+   // build normal list
+   while (link != 0)
+   {
+      // get object
+      ua_object_info &obj = get_item(link);
+
+      // add weight
+      weight += prop.get_common_property(obj.item_id).mass;
+
+      // next object
+      link = obj.link;
+   }
+
+   return weight / 10.0;
 }
 
 Uint16 ua_inventory::get_floating_item()
@@ -447,6 +491,26 @@ bool ua_inventory::drop_floating_item_parent()
    return true; // dropping was successful
 }
 
+Uint16 ua_inventory::insert_floating_item(ua_object_info& objinfo)
+{
+   // already have a floating object?
+   if (floating_object != ua_slot_no_item)
+      return ua_slot_no_item;
+
+   Uint16 pos = allocate_item();
+   if (pos == ua_slot_no_item)
+      return pos;
+
+   ua_object_info& newobj = get_item(pos);
+   newobj = objinfo;
+   newobj.link = 0;
+
+   // make floating
+   floating_object = pos;
+
+   return pos;
+}
+
 void ua_inventory::build_slot_link_list(Uint16 link)
 {
    // rebuild slot_links list
@@ -550,17 +614,12 @@ void ua_inventory::append_item(Uint16 cont, Uint16 item)
    }
 }
 
-double ua_inventory::get_weight_avail()
-{
-   return 42.0;
-}
-
 void ua_inventory::load_game(ua_savegame& sg)
 {
    sg.begin_section("inventory");
 
    // load runebag
-   for(unsigned int r=0; r<26; r++)
+   for(unsigned int r=0; r<24; r++)
       runebag.set(r, sg.read8()!=0 );
 
    // load itemlist
@@ -577,7 +636,7 @@ void ua_inventory::save_game(ua_savegame& sg)
    sg.begin_section("inventory");
 
    // save runebag
-   for(unsigned int r=0; r<26; r++) {
+   for(unsigned int r=0; r<24; r++) {
       // Hope this doesn't break anything but bitset::at() is not available in gcc/mingw.. 'test' should be the 'official' function to use (telemachos) 
       // sg.write8(runebag.at(r) ? 1 : 0);
       sg.write8(runebag.test(r) ? 1 : 0);
