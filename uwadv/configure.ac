@@ -38,7 +38,7 @@ AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE($PACKAGE,$VERSION,no-define)
 AM_CONFIG_HEADER(source/config.h)
 
-AC_CONFIG_SUBDIRS(source/resource/zziplib)
+AC_CONFIG_SUBDIRS(source/base/zziplib)
 
 
 # initial variable values
@@ -201,8 +201,7 @@ source/Makefile
 source/debug/Makefile
 source/tools/Makefile
 source/tools/uwdump/Makefile
-source/resource/Makefile
-source/resource/zziplib/Makefile
+source/base/Makefile
 source/lua/Makefile
 uadata/Makefile
 hacking/Makefile

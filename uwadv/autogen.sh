@@ -49,7 +49,7 @@ rm -f Makefile.in Makefile
 rm -f source/Makefile.in source/Makefile 
 rm -f source/tools/Makefile.in source/tools/Makefile
 rm -f source/tools/uwdump/Makefile.in source/tools/uwdump/Makefile
-rm -f source/resource/Makefile.in source/resource/Makefile
+rm -f source/base/Makefile.in source/base/Makefile
 rm -f source/lua/Makefile.in source/lua/Makefile
 rm -f uadata/Makefile.in uadata/Makefile
 rm -f hacking/Makefile.in hacking/Makefile
@@ -64,9 +64,9 @@ autoheader
 automake --copy --force --add-missing --foreign
 autoconf
 
-echo "Generating files in source/resource/zziplib..."
+echo "Generating files in source/base/zziplib..."
 
-cd source/resource/zziplib
+cd source/base/zziplib
 
 rm -f configure config.log config.guess config.sub config.status
 rm -f depcomp compile
