@@ -66,6 +66,9 @@ public:
    //! starts music playback
    virtual void start_music(unsigned int music, bool repeat)=0;
 
+   //! fades out currently playing music track; fadeout time in seconds
+   virtual void fadeout_music(double time)=0;
+
    //! stops music playback
    virtual void stop_music()=0;
 

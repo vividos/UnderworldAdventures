@@ -49,19 +49,22 @@ public:
    virtual ~ua_audio_impl();
 
    //! initializes audio
-   void init(ua_settings &settings, ua_files_manager &filesmgr);
+   virtual void init(ua_settings &settings, ua_files_manager &filesmgr);
 
    //! plays a sound; stops when finished
-   void play_sound(const char *soundname);
+   virtual void play_sound(const char *soundname);
 
    //! stops sound playback
-   void stop_sound();
+   virtual void stop_sound();
 
    //! starts music playback
-   void start_music(unsigned int music, bool repeat);
+   virtual void start_music(unsigned int music, bool repeat);
+
+   //! fades out currently playing music track; fadeout time in seconds
+   virtual void fadeout_music(double time);
 
    //! stops music playback
-   void stop_music();
+   virtual void stop_music();
 
 protected:
    //! loads music playlist
@@ -189,6 +192,7 @@ void ua_audio_impl::start_music(unsigned int music, bool repeat)
    {
       // start midi player
       midipl.start_track(trackname.c_str(),0,repeat);
+      ua_trace(" (%s)",Mix_GetError());
    }
    else
    {
@@ -203,6 +207,11 @@ void ua_audio_impl::start_music(unsigned int music, bool repeat)
          ua_trace(" (%s)",Mix_GetError());
    }
    ua_trace("\n");
+}
+
+void ua_audio_impl::fadeout_music(double time)
+{
+   Mix_FadeOutMusic(static_cast<int>(time*1000.0));
 }
 
 void ua_audio_impl::stop_music()
