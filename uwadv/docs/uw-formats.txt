@@ -146,7 +146,7 @@ Table of Contents
    question.gr    a single question mark
    scrledge.gr    scroll paper edges
    shades.dat
-   skills.dat
+   skills.dat     char. generation skills for all classes
    spells.gr      spells graphics
    strings.pak    all the game strings
    terrain.dat    terrain texture properties (see 8.3)
@@ -271,6 +271,14 @@ Table of Contents
 
 
 3  Graphics and visuals
+
+
+
+6  Objects and items
+
+
+6.x  List of all object ID's
+
 
  +--------------------------------------------------------------------------+
 
@@ -685,8 +693,9 @@ Table of Contents
       000c   Int8   unknown
       000d   Int8   unknown
       000e   Int16  npc home coordinates:
-                       bits 0-5:  npc_yhome
-                       bits 6-11: npc_xhome
+                       bits 0-3:   unknown
+                       bits 4-9:   npc_yhome
+                       bits 10-15: npc_xhome
       0010   Int8   unknown
       0011   Int8   unknown
       0012   Int8   npc_whoami, conversation slot to use (or 0 for none)
