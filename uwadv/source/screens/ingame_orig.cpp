@@ -1170,20 +1170,10 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
             else
             {
                // user clicked on a texture
-               unsigned int texid = id;
+               ua_trace("looking at wall/ceiling, tile=%02x/%02x, id=%04x\n",
+                  tilex,tiley,texid);
 
-               if (id>=ua_tex_stock_floor)
-                  texid = 510-(id-ua_tex_stock_floor);
-
-               std::string desc("You see ");
-               desc.append(core->get_underworld().get_strings().get_string(10,texid));
-
-               ui_print_string(desc.c_str());
-
-               ua_trace("looked at wall/ceiling, tile=%u/%u id=%u\n",
-                  tilex,tiley,id);
-
-               //core->get_underworld().get_scripts().lua_wall_look();
+               core->get_underworld().get_scripts().lua_wall_look(texid);
             }
          }
          else
