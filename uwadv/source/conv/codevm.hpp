@@ -80,19 +80,35 @@ public:
    void push(Uint16 val){ stack.at(++stackp) = val; }
 
    //! pops a value from the stack
-   Uint16 pop(){ return stack.at(stackp--); }
+   Uint16 pop()
+   {
+      if (stackp>stack.size()) throw ua_ex_stack_access;
+      return stack.at(stackp--);
+   }
 
    //! returns value at stack position
-   Uint16 at(Uint16 pos){ return stack.at(pos); }
+   Uint16 at(Uint16 pos)
+   {
+      if (pos>stack.size()) throw ua_ex_stack_access;
+      return stack.at(pos);
+   }
 
    //! returns value at stack position
-   void set(Uint16 pos, Uint16 val){ stack.at(pos)=val; }
+   void set(Uint16 pos, Uint16 val)
+   {
+      if (pos>stack.size()) throw ua_ex_stack_access;
+      stack.at(pos)=val;
+   }
 
    //! gets new stack pointer
    Uint16 get_stackp(){ return stackp; }
 
    //! sets new stack pointer
-   void set_stackp(Uint16 val){ stackp = val; }
+   void set_stackp(Uint16 val)
+   {
+      if (stackp>stack.size()) throw ua_ex_stack_access;
+      stackp = val;
+   }
 
 protected:
    //! stack pointer; always points to top element of stack
@@ -146,6 +162,9 @@ protected:
 protected:
    //! number of conversation
    Uint16 conv_nr;
+
+   //! number of string block to use
+   Uint16 strblock;
 
    //! size of code
    Uint16 codesize;

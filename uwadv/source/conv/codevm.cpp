@@ -351,6 +351,16 @@ void ua_conv_code_vm::step()
       }
       break;
 
+   case 0x0028: // RESPOND_OP
+      break;
+
+   case 0x0029: // OPNEG
+      {
+         Uint16 arg1 = stack.pop();
+         stack.push(-arg1);
+      }
+      break;
+
    default:
       throw ua_ex_unk_opcode;
       break;
