@@ -145,6 +145,16 @@ SOURCE=..\source\..\uadata\uw1\scripts\objlist.lua
 # End Source File
 # Begin Source File
 
+SOURCE=..\uadata\uw1\scripts\traps.lua
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
+SOURCE=..\uadata\uw1\scripts\triggers.lua
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
 SOURCE=..\source\..\uadata\uw1\scripts\uwinterface.lua
 # PROP Exclude_From_Build 1
 # End Source File
