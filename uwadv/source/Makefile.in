@@ -74,6 +74,8 @@ top_srcdir = linux
 top_builddir = linux
 AMTAR = @AMTAR@
 AWK = @AWK@
+CC = @CC@
+CPP = @CPP@
 CXX = @CXX@
 DEPDIR = @DEPDIR@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
@@ -94,19 +96,20 @@ install_sh = @install_sh@
 AUTOMAKE_OPTIONS = foreign
 
 # compiler options
-CPPFLAGS = -I.. $(SDL_CFLAGS)
+CXXFLAGS = -I.. $(SDL_CFLAGS)
 LDFLAGS = $(SDL_LIBS)
+
 
 # automake build rules
 bin_PROGRAMS = uwadv
 
 uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	player.cpp quadtree.cpp texture.cpp underworld.cpp uwadv.cpp \
-	objects.cpp \
+	objects.cpp cutscene.cpp \
 	audio.hpp common.hpp core.hpp font.hpp gamestrings.hpp \
 	image.hpp inventory.hpp level.hpp player.hpp quadtree.hpp \
 	screen.hpp settings.hpp texture.hpp uatypes.hpp \
-	underworld.hpp uwadv.hpp objects.hpp \
+	underworld.hpp uwadv.hpp objects.hpp cutscene.hpp \
 	linux/main.cpp \
 	audio/audio.cpp audio/midi.cpp audio/xmidi.cpp \
 	audio/midi.hpp audio/xmidi.hpp \
@@ -116,10 +119,13 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	resource/gamestrings.cpp resource/imageloader.cpp \
 	resource/maploader.cpp resource/settings.cpp \
 	resource/texloader.cpp resource/objloader.cpp \
+	resource/cutsloader.cpp \
 	resource/fread_endian.hpp \
 	screens/ingame_orig.cpp screens/start_splash.cpp \
 	screens/ingame_orig.hpp screens/start_splash.hpp
 
+
+uwadv_LDADD = -lGL -lGLU
 
 EXTRA_DIST = audio/midi_driver/win_midiout.cpp \
 	audio/midi_driver/win_midiout.hpp \
@@ -137,24 +143,26 @@ PROGRAMS = $(bin_PROGRAMS)
 am_uwadv_OBJECTS = font.$(OBJEXT) image.$(OBJEXT) inventory.$(OBJEXT) \
 	level.$(OBJEXT) player.$(OBJEXT) quadtree.$(OBJEXT) \
 	texture.$(OBJEXT) underworld.$(OBJEXT) uwadv.$(OBJEXT) \
-	objects.$(OBJEXT) main.$(OBJEXT) audio.$(OBJEXT) midi.$(OBJEXT) \
-	xmidi.$(OBJEXT) uni_fmod.$(OBJEXT) codevm.$(OBJEXT) \
-	codeloader.$(OBJEXT) fontloader.$(OBJEXT) gamestrings.$(OBJEXT) \
+	objects.$(OBJEXT) cutscene.$(OBJEXT) main.$(OBJEXT) \
+	audio.$(OBJEXT) midi.$(OBJEXT) xmidi.$(OBJEXT) \
+	uni_fmod.$(OBJEXT) codevm.$(OBJEXT) codeloader.$(OBJEXT) \
+	fontloader.$(OBJEXT) gamestrings.$(OBJEXT) \
 	imageloader.$(OBJEXT) maploader.$(OBJEXT) settings.$(OBJEXT) \
-	texloader.$(OBJEXT) objloader.$(OBJEXT) ingame_orig.$(OBJEXT) \
-	start_splash.$(OBJEXT)
+	texloader.$(OBJEXT) objloader.$(OBJEXT) cutsloader.$(OBJEXT) \
+	ingame_orig.$(OBJEXT) start_splash.$(OBJEXT)
 uwadv_OBJECTS = $(am_uwadv_OBJECTS)
-uwadv_LDADD = $(LDADD)
 uwadv_DEPENDENCIES =
 uwadv_LDFLAGS =
 
 DEFS = @DEFS@
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
+CPPFLAGS = @CPPFLAGS@
 LIBS = @LIBS@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/audio.Po ./$(DEPDIR)/codeloader.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/codevm.Po ./$(DEPDIR)/font.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/codevm.Po ./$(DEPDIR)/cutscene.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/cutsloader.Po ./$(DEPDIR)/font.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/fontloader.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/gamestrings.Po ./$(DEPDIR)/image.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/imageloader.Po \
@@ -172,7 +180,6 @@ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-CXXFLAGS = @CXXFLAGS@
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -237,6 +244,7 @@ maploader.$(OBJEXT): resource/maploader.cpp
 settings.$(OBJEXT): resource/settings.cpp
 texloader.$(OBJEXT): resource/texloader.cpp
 objloader.$(OBJEXT): resource/objloader.cpp
+cutsloader.$(OBJEXT): resource/cutsloader.cpp
 ingame_orig.$(OBJEXT): screens/ingame_orig.cpp
 start_splash.$(OBJEXT): screens/start_splash.cpp
 uwadv$(EXEEXT): $(uwadv_OBJECTS) $(uwadv_DEPENDENCIES) 
@@ -252,6 +260,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/audio.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/codeloader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/codevm.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cutscene.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cutsloader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/font.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fontloader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gamestrings.Po@am__quote@
@@ -458,6 +468,18 @@ objloader.obj: resource/objloader.cpp
 @AMDEP_TRUE@	depfile='$(DEPDIR)/objloader.Po' tmpdepfile='$(DEPDIR)/objloader.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o objloader.obj `cygpath -w resource/objloader.cpp`
+
+cutsloader.o: resource/cutsloader.cpp
+@AMDEP_TRUE@	source='resource/cutsloader.cpp' object='cutsloader.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/cutsloader.Po' tmpdepfile='$(DEPDIR)/cutsloader.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cutsloader.o `test -f 'resource/cutsloader.cpp' || echo '$(srcdir)/'`resource/cutsloader.cpp
+
+cutsloader.obj: resource/cutsloader.cpp
+@AMDEP_TRUE@	source='resource/cutsloader.cpp' object='cutsloader.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/cutsloader.Po' tmpdepfile='$(DEPDIR)/cutsloader.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cutsloader.obj `cygpath -w resource/cutsloader.cpp`
 
 ingame_orig.o: screens/ingame_orig.cpp
 @AMDEP_TRUE@	source='screens/ingame_orig.cpp' object='ingame_orig.o' libtool=no @AMDEPBACKSLASH@

@@ -74,15 +74,15 @@ top_srcdir = ../linux
 top_builddir = ../linux
 AMTAR = @AMTAR@
 AWK = @AWK@
+CC = @CC@
+CPP = @CPP@
 CXX = @CXX@
 DEPDIR = @DEPDIR@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 PACKAGE = @PACKAGE@
-
-# SDL stuff
-SDL_CFLAGS = `sdl-config --cflags`
+SDL_CFLAGS = @SDL_CFLAGS@
 SDL_CONFIG = @SDL_CONFIG@
-SDL_LIBS = `sdl-config --libs`
+SDL_LIBS = @SDL_LIBS@
 STRIP = @STRIP@
 VERSION = @VERSION@
 X_CFLAGS = @X_CFLAGS@
@@ -95,41 +95,62 @@ install_sh = @install_sh@
 
 AUTOMAKE_OPTIONS = foreign
 
-CPPFLAGS = -I.. $(SDL_CFLAGS)
-LDFLAGS = $(SDL_LIBS) $(X_LIBS)
+# compiler options
+CXXFLAGS = -I.. $(SDL_CFLAGS)
+LDFLAGS = $(SDL_LIBS)
 
-# automake rules
-EXTRA_PROGRAMS = cnvdasm cnvdbg xmi2mid mapdisp
+# tools build rule
+TOOLS = cnvdasm cnvdbg xmi2mid mapdisp animview
+
+
+# automake build rules
+EXTRA_PROGRAMS = $(TOOLS)
+
+CLEANFILES = $(TOOLS)
 
 cnvdasm_SOURCES = cnvdasm.cpp cnvdasm.hpp instr.hpp \
 	../conv/codevm.cpp ../resource/codeloader.cpp \
-	../resource/gamestrings.cpp
+	../resource/gamestrings.cpp \
+	cnvdasm.hpp instr.hpp ../conv/codevm.hpp
 
 
 cnvdbg_SOURCES = cnvdbg.cpp cnvdbg.hpp instr.hpp \
 	../conv/codevm.cpp ../resource/codeloader.cpp \
-	../resource/gamestrings.cpp
+	../resource/gamestrings.cpp \
+	cnvdbg.hpp instr.hpp ../conv/codevm.hpp
 
 
-xmi2mid_SOURCES = xmi2mid.cpp ../audio/xmidi.cpp
+xmi2mid_SOURCES = xmi2mid.cpp ../audio/xmidi.cpp ../audio/xmidi.hpp
 
 mapdisp_SOURCES = mapdisp.cpp ../level.cpp ../resource/maploader.cpp \
 	../quadtree.cpp ../resource/texloader.cpp ../texture.cpp \
 	../resource/imageloader.cpp ../resource/objloader.cpp \
-	../image.cpp ../objects.cpp
+	../image.cpp ../objects.cpp \
+	../common.hpp ../resource/fread_endian.hpp ../image.hpp \
+	../level.hpp ../objects.hpp ../quadtree.hpp ../settings.hpp \
+	../texture.hpp ../uatypes.hpp
 
 
 mapdisp_LDADD = -lGL -lGLU
 
-EXTRA_DIST = 
+animview_SOURCES = animview.cpp ../cutscene.cpp ../resource/cutsloader.cpp \
+	../common.hpp ../cutscene.hpp ../settings.hpp ../uatypes.hpp \
+	../resource/fread_endian.hpp
 
-SUBDIRS = 
+
+EXTRA_DIST = 
 subdir = ../tools
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 EXTRA_PROGRAMS = cnvdasm$(EXEEXT) cnvdbg$(EXEEXT) xmi2mid$(EXEEXT) \
-	mapdisp$(EXEEXT)
+	mapdisp$(EXEEXT) animview$(EXEEXT)
+am_animview_OBJECTS = animview.$(OBJEXT) cutscene.$(OBJEXT) \
+	cutsloader.$(OBJEXT)
+animview_OBJECTS = $(am_animview_OBJECTS)
+animview_LDADD = $(LDADD)
+animview_DEPENDENCIES =
+animview_LDFLAGS =
 am_cnvdasm_OBJECTS = cnvdasm.$(OBJEXT) codevm.$(OBJEXT) \
 	codeloader.$(OBJEXT) gamestrings.$(OBJEXT)
 cnvdasm_OBJECTS = $(am_cnvdasm_OBJECTS)
@@ -157,11 +178,14 @@ xmi2mid_LDFLAGS =
 
 DEFS = @DEFS@
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
+CPPFLAGS = @CPPFLAGS@
 LIBS = @LIBS@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/cnvdasm.Po ./$(DEPDIR)/cnvdbg.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/codeloader.Po ./$(DEPDIR)/codevm.Po \
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/animview.Po ./$(DEPDIR)/cnvdasm.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/cnvdbg.Po ./$(DEPDIR)/codeloader.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/codevm.Po ./$(DEPDIR)/cutscene.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/cutsloader.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/gamestrings.Po ./$(DEPDIR)/image.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/imageloader.Po ./$(DEPDIR)/level.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/mapdisp.Po ./$(DEPDIR)/maploader.Po \
@@ -174,24 +198,17 @@ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-CXXFLAGS = @CXXFLAGS@
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-DIST_SOURCES = $(cnvdasm_SOURCES) $(cnvdbg_SOURCES) $(mapdisp_SOURCES) \
-	$(xmi2mid_SOURCES)
-
-RECURSIVE_TARGETS = info-recursive dvi-recursive install-info-recursive \
-	uninstall-info-recursive all-recursive install-data-recursive \
-	install-exec-recursive installdirs-recursive install-recursive \
-	uninstall-recursive check-recursive installcheck-recursive
+DIST_SOURCES = $(animview_SOURCES) $(cnvdasm_SOURCES) $(cnvdbg_SOURCES) \
+	$(mapdisp_SOURCES) $(xmi2mid_SOURCES)
 DIST_COMMON = Makefile.am Makefile.in
-DIST_SUBDIRS = $(SUBDIRS)
-SOURCES = $(cnvdasm_SOURCES) $(cnvdbg_SOURCES) $(mapdisp_SOURCES) $(xmi2mid_SOURCES)
+SOURCES = $(animview_SOURCES) $(cnvdasm_SOURCES) $(cnvdbg_SOURCES) $(mapdisp_SOURCES) $(xmi2mid_SOURCES)
 
-all: all-recursive
+all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .cpp .o .obj
@@ -200,6 +217,11 @@ $(srcdir)/Makefile.in:  Makefile.am  $(top_srcdir)/configure.in $(ACLOCAL_M4)
 	  $(AUTOMAKE) --foreign  ../tools/Makefile
 Makefile:  $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)
+cutscene.$(OBJEXT): ../cutscene.cpp
+cutsloader.$(OBJEXT): ../resource/cutsloader.cpp
+animview$(EXEEXT): $(animview_OBJECTS) $(animview_DEPENDENCIES) 
+	@rm -f animview$(EXEEXT)
+	$(CXXLINK) $(animview_LDFLAGS) $(animview_OBJECTS) $(animview_LDADD) $(LIBS)
 codevm.$(OBJEXT): ../conv/codevm.cpp
 codeloader.$(OBJEXT): ../resource/codeloader.cpp
 gamestrings.$(OBJEXT): ../resource/gamestrings.cpp
@@ -232,10 +254,13 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/animview.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cnvdasm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cnvdbg.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/codeloader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/codevm.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cutscene.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cutsloader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gamestrings.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/image.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/imageloader.Po@am__quote@
@@ -264,6 +289,30 @@ distclean-depend:
 @AMDEP_TRUE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(CXXCOMPILE) -c -o $@ `cygpath -w $<`
+
+cutscene.o: ../cutscene.cpp
+@AMDEP_TRUE@	source='../cutscene.cpp' object='cutscene.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/cutscene.Po' tmpdepfile='$(DEPDIR)/cutscene.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cutscene.o `test -f '../cutscene.cpp' || echo '$(srcdir)/'`../cutscene.cpp
+
+cutscene.obj: ../cutscene.cpp
+@AMDEP_TRUE@	source='../cutscene.cpp' object='cutscene.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/cutscene.Po' tmpdepfile='$(DEPDIR)/cutscene.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cutscene.obj `cygpath -w ../cutscene.cpp`
+
+cutsloader.o: ../resource/cutsloader.cpp
+@AMDEP_TRUE@	source='../resource/cutsloader.cpp' object='cutsloader.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/cutsloader.Po' tmpdepfile='$(DEPDIR)/cutsloader.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cutsloader.o `test -f '../resource/cutsloader.cpp' || echo '$(srcdir)/'`../resource/cutsloader.cpp
+
+cutsloader.obj: ../resource/cutsloader.cpp
+@AMDEP_TRUE@	source='../resource/cutsloader.cpp' object='cutsloader.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/cutsloader.Po' tmpdepfile='$(DEPDIR)/cutsloader.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cutsloader.obj `cygpath -w ../resource/cutsloader.cpp`
 
 codevm.o: ../conv/codevm.cpp
 @AMDEP_TRUE@	source='../conv/codevm.cpp' object='codevm.o' libtool=no @AMDEPBACKSLASH@
@@ -423,61 +472,6 @@ xmidi.obj: ../audio/xmidi.cpp
 CXXDEPMODE = @CXXDEPMODE@
 uninstall-info-am:
 
-# This directory's subdirectories are mostly independent; you can cd
-# into them and run `make' without going through this Makefile.
-# To change the values of `make' variables: instead of editing Makefiles,
-# (1) if the variable is set in `config.status', edit `config.status'
-#     (which will cause the Makefiles to be regenerated when you run `make');
-# (2) otherwise, pass the desired values on the `make' command line.
-$(RECURSIVE_TARGETS):
-	@set fnord $$MAKEFLAGS; amf=$$2; \
-	dot_seen=no; \
-	target=`echo $@ | sed s/-recursive//`; \
-	list='$(SUBDIRS)'; for subdir in $$list; do \
-	  echo "Making $$target in $$subdir"; \
-	  if test "$$subdir" = "."; then \
-	    dot_seen=yes; \
-	    local_target="$$target-am"; \
-	  else \
-	    local_target="$$target"; \
-	  fi; \
-	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
-	   || case "$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac; \
-	done; \
-	if test "$$dot_seen" = "no"; then \
-	  $(MAKE) $(AM_MAKEFLAGS) "$$target-am" || exit 1; \
-	fi; test -z "$$fail"
-
-mostlyclean-recursive clean-recursive distclean-recursive \
-maintainer-clean-recursive:
-	@set fnord $$MAKEFLAGS; amf=$$2; \
-	dot_seen=no; \
-	case "$@" in \
-	  distclean-* | maintainer-clean-*) list='$(DIST_SUBDIRS)' ;; \
-	  *) list='$(SUBDIRS)' ;; \
-	esac; \
-	rev=''; for subdir in $$list; do \
-	  if test "$$subdir" = "."; then :; else \
-	    rev="$$subdir $$rev"; \
-	  fi; \
-	done; \
-	rev="$$rev ."; \
-	target=`echo $@ | sed s/-recursive//`; \
-	for subdir in $$rev; do \
-	  echo "Making $$target in $$subdir"; \
-	  if test "$$subdir" = "."; then \
-	    local_target="$$target-am"; \
-	  else \
-	    local_target="$$target"; \
-	  fi; \
-	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
-	   || case "$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac; \
-	done && test -z "$$fail"
-tags-recursive:
-	list='$(SUBDIRS)'; for subdir in $$list; do \
-	  test "$$subdir" = . || (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) tags); \
-	done
-
 ETAGS = etags
 ETAGSFLAGS =
 
@@ -492,15 +486,10 @@ ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	       END { for (i in files) print i; }'`; \
 	mkid -fID $$unique
 
-TAGS: tags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
+TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 		$(TAGS_FILES) $(LISP)
 	tags=; \
 	here=`pwd`; \
-	list='$(SUBDIRS)'; for subdir in $$list; do \
-	  if test "$$subdir" = .; then :; else \
-	    test -f $$subdir/TAGS && tags="$$tags -i $$here/$$subdir/TAGS"; \
-	  fi; \
-	done; \
 	list='$(SOURCES) $(HEADERS)  $(LISP) $(TAGS_FILES)'; \
 	unique=`for i in $$list; do \
 	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
@@ -544,34 +533,21 @@ distdir: $(DISTFILES)
 	    || exit 1; \
 	  fi; \
 	done
-	list='$(SUBDIRS)'; for subdir in $$list; do \
-	  if test "$$subdir" = .; then :; else \
-	    test -d $(distdir)/$$subdir \
-	    || mkdir $(distdir)/$$subdir \
-	    || exit 1; \
-	    (cd $$subdir && \
-	      $(MAKE) $(AM_MAKEFLAGS) \
-	        top_distdir="$(top_distdir)" \
-	        distdir=../$(distdir)/$$subdir \
-	        distdir) \
-	      || exit 1; \
-	  fi; \
-	done
 check-am: all-am
-check: check-recursive
+check: check-am
 all-am: Makefile
-installdirs: installdirs-recursive
-installdirs-am:
 
-install: install-recursive
-install-exec: install-exec-recursive
-install-data: install-data-recursive
-uninstall: uninstall-recursive
+installdirs:
+
+install: install-am
+install-exec: install-exec-am
+install-data: install-data-am
+uninstall: uninstall-am
 
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 
-installcheck: installcheck-recursive
+installcheck: installcheck-am
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
 	  INSTALL_STRIP_FLAG=-s \
@@ -580,6 +556,7 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-rm -f Makefile $(CONFIG_CLEAN_FILES) stamp-h stamp-h[0-9]*
@@ -587,20 +564,20 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-clean: clean-recursive
+clean: clean-am
 
 clean-am: clean-generic mostlyclean-am
 
-distclean: distclean-recursive
+distclean: distclean-am
 
 distclean-am: clean-am distclean-compile distclean-depend \
 	distclean-generic distclean-tags
 
-dvi: dvi-recursive
+dvi: dvi-am
 
 dvi-am:
 
-info: info-recursive
+info: info-am
 
 info-am:
 
@@ -608,42 +585,33 @@ install-data-am:
 
 install-exec-am:
 
-install-info: install-info-recursive
+install-info: install-info-am
 
 install-man:
 
 installcheck-am:
 
-maintainer-clean: maintainer-clean-recursive
+maintainer-clean: maintainer-clean-am
 
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
-mostlyclean: mostlyclean-recursive
+mostlyclean: mostlyclean-am
 
 mostlyclean-am: mostlyclean-compile mostlyclean-generic
 
 uninstall-am: uninstall-info-am
 
-uninstall-info: uninstall-info-recursive
-
-.PHONY: $(RECURSIVE_TARGETS) GTAGS all all-am check check-am clean \
-	clean-generic clean-recursive distclean distclean-compile \
-	distclean-depend distclean-generic distclean-recursive \
-	distclean-tags distdir dvi dvi-am dvi-recursive info info-am \
-	info-recursive install install-am install-data install-data-am \
-	install-data-recursive install-exec install-exec-am \
-	install-exec-recursive install-info install-info-am \
-	install-info-recursive install-man install-recursive \
+.PHONY: GTAGS all all-am check check-am clean clean-generic distclean \
+	distclean-compile distclean-depend distclean-generic \
+	distclean-tags distdir dvi dvi-am info info-am install \
+	install-am install-data install-data-am install-exec \
+	install-exec-am install-info install-info-am install-man \
 	install-strip installcheck installcheck-am installdirs \
-	installdirs-am installdirs-recursive maintainer-clean \
-	maintainer-clean-generic maintainer-clean-recursive mostlyclean \
-	mostlyclean-compile mostlyclean-generic mostlyclean-recursive \
-	tags tags-recursive uninstall uninstall-am uninstall-info-am \
-	uninstall-info-recursive uninstall-recursive
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic tags uninstall \
+	uninstall-am uninstall-info-am
 
-
-# tools build rule
-tools: cnvdasm cnvdbg xmi2mid mapdisp
+tools: $(TOOLS)
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

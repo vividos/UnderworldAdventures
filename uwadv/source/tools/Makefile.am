@@ -11,39 +11,48 @@ top_srcdir = ../linux
 top_builddir = ../linux
 
 
-# SDL stuff
-SDL_CFLAGS = `sdl-config --cflags`
-SDL_LIBS = `sdl-config --libs`
-
-CPPFLAGS = -I.. $(SDL_CFLAGS)
-LDFLAGS = $(SDL_LIBS) $(X_LIBS)
+# compiler options
+CXXFLAGS = -I.. $(SDL_CFLAGS)
+LDFLAGS = $(SDL_LIBS)
 
 
 # tools build rule
-tools: cnvdasm cnvdbg xmi2mid mapdisp
+TOOLS = cnvdasm cnvdbg xmi2mid mapdisp animview
+tools: $(TOOLS)
 
 
-# automake rules
-EXTRA_PROGRAMS = cnvdasm cnvdbg xmi2mid mapdisp
+# automake build rules
+
+EXTRA_PROGRAMS = $(TOOLS)
+
+CLEANFILES = $(TOOLS)
+
 
 cnvdasm_SOURCES = cnvdasm.cpp cnvdasm.hpp instr.hpp \
 	../conv/codevm.cpp ../resource/codeloader.cpp \
-	../resource/gamestrings.cpp
+	../resource/gamestrings.cpp \
+	cnvdasm.hpp instr.hpp ../conv/codevm.hpp
 
 cnvdbg_SOURCES = cnvdbg.cpp cnvdbg.hpp instr.hpp \
 	../conv/codevm.cpp ../resource/codeloader.cpp \
-	../resource/gamestrings.cpp
+	../resource/gamestrings.cpp \
+	cnvdbg.hpp instr.hpp ../conv/codevm.hpp
 
-xmi2mid_SOURCES = xmi2mid.cpp ../audio/xmidi.cpp
+xmi2mid_SOURCES = xmi2mid.cpp ../audio/xmidi.cpp ../audio/xmidi.hpp
 
 mapdisp_SOURCES = mapdisp.cpp ../level.cpp ../resource/maploader.cpp \
 	../quadtree.cpp ../resource/texloader.cpp ../texture.cpp \
 	../resource/imageloader.cpp ../resource/objloader.cpp \
-	../image.cpp ../objects.cpp
+	../image.cpp ../objects.cpp \
+	../common.hpp ../resource/fread_endian.hpp ../image.hpp \
+	../level.hpp ../objects.hpp ../quadtree.hpp ../settings.hpp \
+	../texture.hpp ../uatypes.hpp
 
 mapdisp_LDADD = -lGL -lGLU
 
-EXTRA_DIST = 
+animview_SOURCES = animview.cpp ../cutscene.cpp ../resource/cutsloader.cpp \
+	../common.hpp ../cutscene.hpp ../settings.hpp ../uatypes.hpp \
+	../resource/fread_endian.hpp
 
-SUBDIRS = 
+EXTRA_DIST =
 

@@ -10,20 +10,23 @@ AUTOMAKE_OPTIONS = foreign
 top_srcdir = linux
 top_builddir = linux
 
+
 # compiler options
-CPPFLAGS = -I.. $(SDL_CFLAGS)
+CXXFLAGS = -I.. $(SDL_CFLAGS)
 LDFLAGS = $(SDL_LIBS)
 
+
 # automake build rules
+
 bin_PROGRAMS = uwadv
 
 uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	player.cpp quadtree.cpp texture.cpp underworld.cpp uwadv.cpp \
-	objects.cpp \
+	objects.cpp cutscene.cpp \
 	audio.hpp common.hpp core.hpp font.hpp gamestrings.hpp \
 	image.hpp inventory.hpp level.hpp player.hpp quadtree.hpp \
 	screen.hpp settings.hpp texture.hpp uatypes.hpp \
-	underworld.hpp uwadv.hpp objects.hpp \
+	underworld.hpp uwadv.hpp objects.hpp cutscene.hpp \
 	linux/main.cpp \
 	audio/audio.cpp audio/midi.cpp audio/xmidi.cpp \
 	audio/midi.hpp audio/xmidi.hpp \
@@ -33,9 +36,12 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	resource/gamestrings.cpp resource/imageloader.cpp \
 	resource/maploader.cpp resource/settings.cpp \
 	resource/texloader.cpp resource/objloader.cpp \
+	resource/cutsloader.cpp \
 	resource/fread_endian.hpp \
 	screens/ingame_orig.cpp screens/start_splash.cpp \
 	screens/ingame_orig.hpp screens/start_splash.hpp
+
+uwadv_LDADD = -lGL -lGLU
 
 EXTRA_DIST = audio/midi_driver/win_midiout.cpp \
 	audio/midi_driver/win_midiout.hpp \
