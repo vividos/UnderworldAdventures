@@ -50,20 +50,13 @@ public:
       ua_vector3d& base, std::vector<ua_triangle3d_textured>& alltriangles);
 
 protected:
-   ua_vector3d origin, extents;
+   //! model extents
+   ua_vector3d extents;
 
-   //! list with vertex coordinates
-   std::vector<ua_vector3d> coords;
+   //! all triangles
+   std::vector<ua_triangle3d_textured> triangles;
 
-   //! vertex index table
-   std::vector<int> coord_index;
-
-   //! texture coordinates for faces
-//   std::vector<ua_vector2d> texcoords;
-
-   //! face color values (for debugging purposes)
-   std::vector<unsigned char> face_colors;
-
+   // friend decoding function
    friend bool ua_model_decode_builtins(const char* filename,
       std::vector<ua_model3d_ptr>& allmodels, bool dump);
 };

@@ -168,9 +168,9 @@ void ua_mdl_store_vertex(const ua_vector3d& vertex, Uint16 vertno,
 // global functions
 
 void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
-   std::vector<ua_vector3d>& vertex_list,
-   std::vector<int>& vertex_indices,
-   std::vector<unsigned char>& face_colors, bool dump)
+   std::vector<ua_vector3d>vertex_list,
+   std::vector<ua_triangle3d_textured>& triangles,
+   bool dump)
 {
    // parse node until end node
    bool loop = true;
@@ -399,24 +399,24 @@ void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
       case M3_UW_FACE_VERTICES: // 007e define face vertices
          {
             Uint16 nvert = fread16(fd);
+            ua_poly_tessellator tess;
 
             ua_mdl_trace("[face] nvert=%u vertlist=",nvert);
 
             for(Uint16 i=0; i<nvert; i++)
             {
                Uint16 vertno = ua_mdl_read_vertno(fd);
-               vertex_indices.push_back(vertno);
+
+               ua_vertex3d vert;
+               vert.pos = vertex_list[vertno];
+               tess.add_poly_vertex(vert);
 
                ua_mdl_trace("%u",vertno);
                if (i<=nvert-1) ua_mdl_trace(" ");
             }
 
-            vertex_indices.push_back(-1);
-
-            // do color indices
-            face_colors.push_back(0xff);
-            face_colors.push_back(0x00);
-            face_colors.push_back(0x00);
+            const std::vector<ua_triangle3d_textured>& tri = tess.tessellate(0x0001);
+            triangles.insert(triangles.begin(),tri.begin(),tri.end());
          }
          break;
 
@@ -433,27 +433,29 @@ void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
             }
 
             Uint16 nvert = fread16(fd);
+            ua_poly_tessellator tess;
 
             ua_mdl_trace("nvert=%u vertlist=",nvert);
 
             for(Uint16 i=0; i<nvert; i++)
             {
                Uint16 vertno = ua_mdl_read_vertno(fd);
-               vertex_indices.push_back(vertno);
 
                double u0 = ua_mdl_read_fixed(fd);
                double v0 = ua_mdl_read_fixed(fd);
+
+               ua_vertex3d vert;
+               vert.pos = vertex_list[vertno];
+               vert.u = u0;
+               vert.v = v0;
+               tess.add_poly_vertex(vert);
 
                ua_mdl_trace("%u (%f/%f)",vertno,u0,v0);
                if (i<=nvert-1) ua_mdl_trace(" ");
             }
 
-            vertex_indices.push_back(-1);
-
-            // do color indices
-            face_colors.push_back(0x00);
-            face_colors.push_back(0x00);
-            face_colors.push_back(0xff);
+            const std::vector<ua_triangle3d_textured>& tri = tess.tessellate(0x0002);
+            triangles.insert(triangles.begin(),tri.begin(),tri.end());
          }
          break;
 
@@ -504,13 +506,13 @@ void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
 
             // parse left nodes
             fseek(fd,left,SEEK_SET);
-            ua_model_parse_node(fd,origin,vertex_list,vertex_indices,face_colors,dump);
+            ua_model_parse_node(fd,origin,vertex_list,triangles,dump);
 
             ua_mdl_trace("      [sort] end left node/start right node\n");
 
             // parse right nodes
             fseek(fd,right,SEEK_SET);
-            ua_model_parse_node(fd,origin,vertex_list,vertex_indices,face_colors,dump);
+            ua_model_parse_node(fd,origin,vertex_list,triangles,dump);
 
             // return to "here"
             fseek(fd,here,SEEK_SET);
@@ -571,46 +573,48 @@ void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
       case M3_UW_FACE_SHORT: // 00A0 ??? shorthand face definition
          {
             vertno = ua_mdl_read_vertno(fd);
+            ua_poly_tessellator tess;
+
             ua_mdl_trace("[face] shorthand unk1=%u vertlist=",vertno);
 
             for(Uint16 i=0; i<4; i++)
             {
                Uint8 vertno = fgetc(fd);
-               vertex_indices.push_back(vertno);
+
+               ua_vertex3d vert;
+               vert.pos = vertex_list[vertno];
+               tess.add_poly_vertex(vert);
+
                ua_mdl_trace("%u ",vertno);
             }
 
-            vertex_indices.push_back(-1);
-
-            // do color indices
-            face_colors.push_back(0x00);
-            face_colors.push_back(0xff);
-            face_colors.push_back(0x00);
+            const std::vector<ua_triangle3d_textured>& tri = tess.tessellate(0x0003);
+            triangles.insert(triangles.begin(),tri.begin(),tri.end());
          }
          break;
 
       case 0x00d2: // 00D2 ??? shorthand face definition
          {
             vertno = ua_mdl_read_vertno(fd);
+            ua_poly_tessellator tess;
 
             ua_mdl_trace("[face] vertno=%u vertlist=",vertno);
 
             for(Uint16 i=0; i<4; i++)
             {
                Uint8 vertno = fgetc(fd);
-               vertex_indices.push_back(vertno);
+
+               ua_vertex3d vert;
+               vert.pos = vertex_list[vertno];
+               tess.add_poly_vertex(vert);
 
                ua_mdl_trace("%u ",vertno);
             }
 
+            const std::vector<ua_triangle3d_textured>& tri = tess.tessellate(0x0004);
+            triangles.insert(triangles.begin(),tri.begin(),tri.end());
+
             ua_mdl_trace("shorthand");
-
-            vertex_indices.push_back(-1);
-
-            // do color indices
-            face_colors.push_back(0x00);
-            face_colors.push_back(0xff);
-            face_colors.push_back(0xff);
          }
          break;
 
@@ -705,16 +709,16 @@ bool ua_model_decode_builtins(const char* filename,
 
       ua_model3d_builtin* model = new ua_model3d_builtin;
 
+      // temporary variables
+      ua_vector3d origin;
+      std::vector<ua_vector3d> vertex_list;
+
       // parse root node
-      ua_model_parse_node(fd,
-         model->origin,
-         model->coords,
-         model->coord_index,
-         model->face_colors,dump);
+      ua_model_parse_node(fd, origin, vertex_list, model->triangles, dump);
 
       ua_mdl_trace("\n");
 
-      model->origin.z -= extents.z/2.0;
+      /*model->*/origin.z -= extents.z/2.0;
       model->extents = extents;
 
       // insert model
