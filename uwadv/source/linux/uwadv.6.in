@@ -44,7 +44,7 @@ A per-user keyboard mapping file for Underworld Adventures. Options previously s
 Explains all Ultima Underworld 1 Keyboard commands.
 .RE
 .SH DIAGNOSTICS
-While Underworld Adventures is running, the file "stdout.txt" is created in the current directory; it contains debugging output and would be useful for the developers in case of an error.
+While Underworld Adventures is running it produces debugging output on the console where the program was started. The output can be piped into a text file that could help the developers to track bugs and errors that can occur.
 .SH BUGS
 The program currently is less than alpha, so expect all sorts of bugs and missing features.
 .SH AUTHORS
@@ -53,6 +53,8 @@ Michael Fink <vividos at sourceforge dot net>
 Dirk Manders <phlask at sourceforge dot net>
 .br
 Willem Jan Palenstijn <wjpalenstijn at sourceforge dot net>
+.br
+Kasper Fauerby <telemachos at peroxide dot dk>
 .br
 
 More authors and contributors are listed in the file
