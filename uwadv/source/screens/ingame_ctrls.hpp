@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -68,6 +68,10 @@ public:
    //! draws compass
    virtual void draw();
 
+   // virtual methods from ua_window
+   virtual void mouse_event(bool button_clicked, bool left_button,
+      bool button_down, unsigned int mousex, unsigned int mousey);
+
 protected:
    //! current compass image
    unsigned int compass_curimg;
@@ -91,6 +95,10 @@ public:
    //! updates runeshelf
    void update_runeshelf();
 
+   // virtual methods from ua_window
+   virtual void mouse_event(bool button_clicked, bool left_button,
+      bool button_down, unsigned int mousex, unsigned int mousey);
+
 protected:
    //! all runestones
    std::vector<ua_image> img_runestones;
@@ -104,12 +112,19 @@ protected:
 class ua_ingame_spell_area: public ua_ingame_orig_ctrl
 {
 public:
+   //! dtor
+   virtual ~ua_ingame_spell_area(){}
+
    //! initializes active spells area
    virtual void init(ua_game_interface& game, unsigned int xpos,
       unsigned int ypos);
 
    //! updates spell area
    void update_spell_area();
+
+   // virtual methods from ua_window
+   virtual void mouse_event(bool button_clicked, bool left_button,
+      bool button_down, unsigned int mousex, unsigned int mousey);
 
 protected:
    //! all runestones
@@ -135,6 +150,10 @@ public:
 
    //! updates flask image
    void update_flask();
+
+   // virtual methods from ua_window
+   virtual void mouse_event(bool button_clicked, bool left_button,
+      bool button_down, unsigned int mousex, unsigned int mousey);
 
 protected:
    //! indicates if showing a vitality or mana flask
@@ -164,6 +183,10 @@ public:
 
    //! updates eyes image
    void update_eyes();
+
+   // virtual methods from ua_window
+   virtual void mouse_event(bool button_clicked, bool left_button,
+      bool button_down, unsigned int mousex, unsigned int mousey);
 
 protected:
    //! eyes images
@@ -195,6 +218,10 @@ public:
 
    //! updates the dragon's image
    void update_dragon();
+
+   // virtual methods from ua_window
+   virtual void mouse_event(bool button_clicked, bool left_button,
+      bool button_down, unsigned int mousex, unsigned int mousey);
 
 protected:
    //! specifies if the left or right dragon has to be drawn
@@ -305,6 +332,12 @@ protected:
 
    //! currently selected button
    signed int button_selected;
+
+   //! indicates if user is toggling off an action type
+   bool toggle_off;
+
+   //! action button stored when in main menu
+   int saved_action_button;
 };
 
 

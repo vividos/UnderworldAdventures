@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -103,6 +103,13 @@ void ua_ingame_compass::draw()
    ua_image_quad::draw();
 }
 
+void ua_ingame_compass::mouse_event(bool button_clicked, bool left_button,
+   bool button_down, unsigned int mousex, unsigned int mousey)
+{
+   if (button_clicked && !button_down)
+      parent->get_underworld().user_action(ua_action_clicked_compass);
+}
+
 
 // ua_ingame_runeshelf methods
 
@@ -143,6 +150,13 @@ void ua_ingame_runeshelf::update_runeshelf()
    update();
 }
 
+void ua_ingame_runeshelf::mouse_event(bool button_clicked, bool left_button,
+   bool button_down, unsigned int mousex, unsigned int mousey)
+{
+   if (button_clicked && !button_down)
+      parent->get_underworld().user_action(ua_action_clicked_runeshelf);
+}
+
 
 // ua_ingame_spell_area methods
 
@@ -181,6 +195,13 @@ void ua_ingame_spell_area::update_spell_area()
    }
 
    update();
+}
+
+void ua_ingame_spell_area::mouse_event(bool button_clicked, bool left_button,
+   bool button_down, unsigned int mousex, unsigned int mousey)
+{
+   if (button_clicked && !button_down)
+      parent->get_underworld().user_action(ua_action_clicked_spells);
 }
 
 
@@ -259,6 +280,14 @@ void ua_ingame_flask::update_flask()
    update();
 }
 
+void ua_ingame_flask::mouse_event(bool button_clicked, bool left_button,
+   bool button_down, unsigned int mousex, unsigned int mousey)
+{
+   if (button_clicked && !button_down)
+      parent->get_underworld().user_action(
+         vitality_flask ? ua_action_clicked_vitality_flask : ua_action_clicked_mana_flask);
+}
+
 
 // ua_ingame_gargoyle_eyes methods
 
@@ -280,6 +309,13 @@ void ua_ingame_gargoyle_eyes::update_eyes()
    unsigned int dest = ua_image_quad::has_border ? 1 : 0;
    get_image().paste_image(img_eyes[new_image], dest,dest);
    update();
+}
+
+void ua_ingame_gargoyle_eyes::mouse_event(bool button_clicked, bool left_button,
+   bool button_down, unsigned int mousex, unsigned int mousey)
+{
+   if (button_clicked && !button_down)
+      parent->get_underworld().user_action(ua_action_clicked_gargoyle);
 }
 
 
@@ -327,6 +363,12 @@ void ua_ingame_dragon::update_dragon()
    update();
 }
 
+void ua_ingame_dragon::mouse_event(bool button_clicked, bool left_button,
+   bool button_down, unsigned int mousex, unsigned int mousey)
+{
+   if (button_clicked && !button_down)
+      parent->get_underworld().user_action(ua_action_clicked_dragons);
+}
 
 
 // tables
@@ -413,12 +455,18 @@ void ua_ingame_command_buttons::init(ua_game_interface& game, unsigned int xpos,
    options[0] = options[1] = options[2] = 0;
    button_selected = -1;
    menu = ua_cmd_menu_actions;
+   toggle_off = false;
+   saved_action_button = -1;
 
    update_menu();
 }
 
 void ua_ingame_command_buttons::select_button(int button)
 {
+   // save action menu button when entering options menu
+   if (menu == ua_cmd_menu_actions && button == 0)
+      saved_action_button = button_selected;
+
    button_selected = button;
 
    update_menu();
@@ -426,44 +474,56 @@ void ua_ingame_command_buttons::select_button(int button)
 
 void ua_ingame_command_buttons::select_previous_button(bool jump_to_start)
 {
+   // not in actions menu
    if (button_selected == -1 || menu == ua_cmd_menu_actions)
       return;
 
+   int last_button_selected = button_selected;
    ua_ingame_command_menu_info& menuinfo = ua_ingame_command_menu_table[menu];
 
    if (jump_to_start)
    {
+      // jump to start of selectable buttons
       while (button_selected>0 && menuinfo.selectable[button_selected-1])
          button_selected--;
    }
    else
    {
+      // go to previous button
       if (button_selected>0 && menuinfo.selectable[button_selected-1])
          button_selected--;
    }
 
-   update_menu();
+   // update when necessary
+   if (last_button_selected != button_selected)
+      update_menu();
 }
 
 void ua_ingame_command_buttons::select_next_button(bool jump_to_end)
 {
+   // not in actions menu
    if (button_selected == -1 || menu == ua_cmd_menu_actions)
       return;
 
+   int last_button_selected = button_selected;
    ua_ingame_command_menu_info& menuinfo = ua_ingame_command_menu_table[menu];
 
    if (jump_to_end)
    {
+      // jump to end of selectable buttons
       while (button_selected<7 && menuinfo.selectable[button_selected+1])
          button_selected++;
    }
    else
    {
+      // go to next button
       if (button_selected<7 && menuinfo.selectable[button_selected+1])
          button_selected++;
    }
 
-   update_menu();
+   // update when necessary
+   if (last_button_selected != button_selected)
+      update_menu();
 }
 
 
@@ -521,7 +581,7 @@ void ua_ingame_command_buttons::update_menu()
             btn += options[menuinfo.opt_index[i]];
 
          // selected? draw selected image then
-         if (button_selected > 0 && i == unsigned(button_selected))
+         if (button_selected >= 0 && i == unsigned(button_selected))
             btn++;
 
          unsigned int xpos = menuinfo.selectable[i] ? 1 : 2;
@@ -548,29 +608,52 @@ void ua_ingame_command_buttons::mouse_event(bool button_clicked,
    if (!button_clicked && (SDL_GetMouseState(NULL, NULL) & (SDL_BUTTON_LMASK|SDL_BUTTON_RMASK)) == 0)
       return; // no button was pressed
 
+   // check if user is currently toggling off a button
+   if (toggle_off && button_clicked && !button_down)
+   {
+      toggle_off = false;
+      return;
+   }
+
    unsigned int ypos = mousey-wnd_ypos;
 
    static unsigned int button_pos[8] = { 2, 17, 32, 47, 62, 77, 92, 107 };
    static unsigned int action_pos[8] = { 0, 17, 35, 54, 70, 90, 107, 107 };
 
    int last_button_selected = button_selected;
+   ua_ingame_command_menu_info& menuinfo = ua_ingame_command_menu_table[menu];
 
    // find selected button
-   button_selected = -1;
    for(unsigned int i=0; i<7; i++)
    {
-      if ((menu == ua_cmd_menu_actions && ypos >= (action_pos[i]) && ypos < (action_pos[i+1])) ||
-          (menu != ua_cmd_menu_actions && ypos >= (button_pos[i]) && ypos < (button_pos[i+1])))
+      if (menuinfo.selectable[i] && (
+          (menu == ua_cmd_menu_actions && ypos >= (action_pos[i]) && ypos < (action_pos[i+1])) ||
+          (menu != ua_cmd_menu_actions && ypos >= (button_pos[i]) && ypos < (button_pos[i+1]))
+         ))
       {
          button_selected = i;
          break;
       }
    }
 
-   if (last_button_selected != button_selected)
-      update_menu();
+   // toggle buttons in action menu
+   if (menu == ua_cmd_menu_actions && last_button_selected == button_selected &&
+       button_clicked && button_down)
+   {
+      button_selected = -1;
+      toggle_off = true;
+   }
 
-   // do button press when user clicked button
+   if (last_button_selected != button_selected)
+   {
+      update_menu();
+   }
+
+   // store action menu button when entering options menu
+   if (button_clicked && button_down && menu == ua_cmd_menu_actions && button_selected == 0)
+      saved_action_button = last_button_selected;
+
+   // do button press when user released button
    if (button_clicked && !button_down && button_selected != -1)
    {
       // press key
@@ -611,13 +694,19 @@ void ua_ingame_command_buttons::do_button_action()
       case 0: // save game
          parent->schedule_action(ua_action_save_game,true);
          menu = ua_cmd_menu_actions;
+         button_selected = saved_action_button;
+         parent->set_gamemode(ua_ingame_game_mode(button_selected-1+ua_mode_talk));
          //menu = ua_cmd_menu_save; // old-style save menu
+         //button_selected = 1;
          break;
 
       case 1: // restore game
          parent->schedule_action(ua_action_load_game,true);
          menu = ua_cmd_menu_actions;
+         button_selected = saved_action_button;
+         parent->set_gamemode(ua_ingame_game_mode(button_selected-1+ua_mode_talk));
          //menu = ua_cmd_menu_restore; // old-style restore menu
+         //button_selected = 1;
          break;
 
       case 2: // music
@@ -640,10 +729,13 @@ void ua_ingame_command_buttons::do_button_action()
 
       case 5: // return to game
          menu = ua_cmd_menu_actions;
+         button_selected = saved_action_button;
+         parent->set_gamemode(ua_ingame_game_mode(button_selected-1+ua_mode_talk));
          break;
 
       case 6: // quit game
          menu = ua_cmd_menu_quit;
+         button_selected = 3;
          break;
 
       default:
@@ -680,6 +772,7 @@ void ua_ingame_command_buttons::do_button_action()
          break;
 
       case 4: // done
+         button_selected = menu == ua_cmd_menu_music ? 2 : 3;
          menu = ua_cmd_menu_options;
          break;
 
@@ -701,6 +794,7 @@ void ua_ingame_command_buttons::do_button_action()
 
       case 6: // done
          menu = ua_cmd_menu_options;
+         button_selected = 4;
          break;
 
       default:
@@ -713,6 +807,7 @@ void ua_ingame_command_buttons::do_button_action()
       switch(button_selected)
       {
       case 5: // cancel
+         button_selected = menu == ua_cmd_menu_save ? 0 : 1;
          menu = ua_cmd_menu_options;
          break;
 
@@ -724,10 +819,6 @@ void ua_ingame_command_buttons::do_button_action()
    default:
       break;
    }
-
-   // invalidate selection when changing menu
-   if (old_menu != menu && !option_changed)
-      button_selected = -1;
 
    // update menu when necessary
    if (old_menu != menu || option_changed)
