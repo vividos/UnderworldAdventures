@@ -20,6 +20,8 @@ uwadv_SOURCES = \
 	base/settings.cpp base/settings.hpp \
 	base/uamath.hpp \
 	base/utils.cpp base/utils.hpp \
+	uwadv.cpp uwadv.hpp \
+	main.cpp \
 	common.hpp
 
 the_rest = \
