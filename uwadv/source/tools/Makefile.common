@@ -28,8 +28,7 @@ libuatools_la_SOURCES = \
 	../settings.cpp ../settings.hpp \
 	../texture.cpp ../texture.hpp ../resource/texloader.cpp \
 	../resource/tgaimport.cpp \
-	../utils.cpp ../utils.hpp \
-	../critter.cpp ../critter.hpp
+	../utils.cpp ../utils.hpp
 
 cnvdbg_SOURCES = cnvdbg.cpp cnvdbg.hpp
 
