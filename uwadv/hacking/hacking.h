@@ -4,9 +4,33 @@
 #ifndef __uwadv_hacking_h_
 #define __uwadv_hacking_h_
 
+# pragma warning( disable : 4786 ) // identifier was truncated to '255' characters in the debug information
+
 #include <stdio.h>
+#include <string>
+#include <vector>
+#include <map>
 
 #define UWPATH "d:\\projekte\\uwadv\\uw1\\"
+
+//! game string container class
+class ua_gamestrings
+{
+public:
+   //! ctor
+   ua_gamestrings(){}
+
+   //! loads all game strings from a file
+   void load(const char *filename);
+
+   //! returns a game string
+   std::string get_string(unsigned int block, unsigned int string_nr);
+
+protected:
+   //! game string container
+   std::map<int,std::vector<std::string> > allstrings;
+};
+
 
 inline void tga_writeheader(FILE *fd, int width, int height, int type=2, int colmap=0, bool bottomup=false)
 {
