@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Underworld Adventures Team
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -21,17 +21,33 @@
 */
 /*! \file image.hpp
 
-   \brief image loading and handling, image lists
+   \brief image loading and handling, image manager
 
 */
 
 // include guard
-#ifndef __uwadv_image_hpp_
-#define __uwadv_image_hpp_
+#ifndef uwadv_image_hpp_
+#define uwadv_image_hpp_
 
 // needed includes
 #include <vector>
 #include "settings.hpp"
+
+
+// typedefs
+
+//! a GL_RGBA compatible palette
+typedef Uint8 ua_palette256[256][4];
+
+
+// enums
+
+//! image loading type
+enum ua_image_type
+{
+   ua_img_gr = 0, //!< image from *.gr files
+   ua_img_byt,    //!< image from *.byt files
+};
 
 
 // classes
@@ -39,43 +55,26 @@
 //! single image
 class ua_image
 {
-   friend class ua_image_list;
+//   friend class ua_image_list;
 public:
    //! ctor
    ua_image();
    //! dtor
-   virtual ~ua_image(){}
-
-   //! loads a single image; name must be without the extension ".gr"
-   void load(ua_settings& settings, const char *name, unsigned int which=0,
-      unsigned int palette=0);
-
-   //! loads a raw image (*.byt)
-   void load_raw(ua_settings& settings, const char *name, unsigned int palette=0);
+   ~ua_image(){}
 
    //! returns image x resolution
-   unsigned int get_xres() const { return xres; }
+   unsigned int get_xres() const;
    //! returns image y resolution
-   unsigned int get_yres() const { return yres; }
-   //! returns palette number
-   unsigned int get_palette() const { return palette; }
+   unsigned int get_yres() const;
 
    // image manipulation
 
    //! creates a new bitmap
-   void create(unsigned int width, unsigned int height, unsigned int initial=0,
-      unsigned int palette=0);
-
-   //! returns the pixel vector
-   std::vector<Uint8>& get_pixels(){ return pixels; }
-
-   //! pastes a image on a specific pos
-   void paste_image(const ua_image& from_img, unsigned int destx,unsigned int desty,
-      bool transparent=false);
+   void create(unsigned int width, unsigned int height);
 
    //! copies a rectangular area to the given image
-   void copy_rect(ua_image& to_img, unsigned int startx, unsigned int starty,
-      unsigned int width, unsigned int height);
+//   void copy_rect(ua_image& to_img, unsigned int startx, unsigned int starty,
+//      unsigned int width, unsigned int height);
 
    //! pastes a rectangular area from given image
    void paste_rect(const ua_image& from_img, unsigned int fromx, unsigned int fromy,
@@ -89,48 +88,81 @@ public:
    //! clears bitmap with one palette index
    void clear(Uint8 index=0);
 
-protected:
-   //! private image loader
-   void load_image(FILE* fd,Uint8 auxpalidx[32][16], bool special_panels);
 
-   //! const version of the get_pixels() function; used internally
+   //! returns the pixel vector
+   std::vector<Uint8>& get_pixels(){ return pixels; }
+
+   //! returns a const pixel vector
    const std::vector<Uint8>& get_pixels() const { return pixels; }
 
-protected:
-   //! used palette
-   unsigned int palette;
+   //! returns palette
+   ua_smart_ptr<ua_palette256>& get_palette(){ return palette; };
 
-   //! resolution
+protected:
+   //! image resolution
    unsigned int xres,yres;
 
    //! pixels
    std::vector<Uint8> pixels;
+
+   //! smart pointer to palette to use
+   ua_smart_ptr<ua_palette256> palette;
+
+//   friend class ua_image_manager;
 };
 
 
-//! list of images
-class ua_image_list
+//! image manager class
+class ua_image_manager
 {
 public:
    //! ctor
-   ua_image_list(){}
+   ua_image_manager(){}
 
-   //! loads a list of images
-   void load(ua_settings &settings, const char *name, unsigned int from=0,
-      unsigned int to=0, unsigned int palette=0);
+   //! inits image manager
+   void init(ua_settings& settings);
 
-   //! returns size of list
-   unsigned int size(){ return allimages.size(); };
+   //! loads a single image
+   void load(ua_image& img, const char* basename, unsigned int imgnum = 0,
+      unsigned int palette = 0, ua_image_type type = ua_img_gr);
 
-   //! returns a single image
-   ua_image &get_image(unsigned int num);
+   //! loads an array of images
+   void load_list(std::vector<ua_image> imgs, const char* basename,
+      unsigned int img_from = 0, unsigned int img_to = 0,
+      unsigned int palette = 0);
 
-   //! returns the list of images
-   std::vector<ua_image> &get_allimages(){ return allimages; }
+   //! returns ptr to palette
+   ua_smart_ptr<ua_palette256> get_palette(unsigned int pal);
 
 protected:
-   //! images in the list
-   std::vector<ua_image> allimages;
+   //! path to uw folder
+   std::string uw_path;
+
+   //! smart ptr to all all palettes
+   ua_smart_ptr<ua_palette256> allpalettes[8];
+
+   //! auxiliary palettes for 4-bit images
+   Uint8 allauxpals[32][16];
 };
+
+
+// inline methods
+
+inline unsigned int ua_image::get_xres() const
+{
+   return xres;
+}
+
+inline unsigned int ua_image::get_yres() const
+{
+   return yres;
+}
+
+inline ua_smart_ptr<ua_palette256> ua_image_manager::get_palette(
+   unsigned int pal)
+{
+   return allpalettes[pal >= 8 ? 0 : pal];
+}
+
 
 #endif

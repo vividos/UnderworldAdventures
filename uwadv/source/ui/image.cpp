@@ -28,35 +28,25 @@
 // needed includes
 #include "common.hpp"
 #include "image.hpp"
+#include "import/import.hpp"
 
 
 // ua_image methods
 
 ua_image::ua_image()
-: palette(0), xres(0), yres(0)
+: xres(0), yres(0)
 {
 }
 
-void ua_image::create(unsigned int width, unsigned int height, unsigned int initial,
-   unsigned int pal)
+void ua_image::create(unsigned int width, unsigned int height)
 {
    xres = width; yres = height;
-   pixels.resize(width*height,initial);
-   palette = pal;
+   pixels.resize(width*height);
 }
 
-/*! when image to paste and image that is pasted is the same one, then
-    non-transparent pastes are only successful when the source and target
-    areas don't overlap
-*/
-void ua_image::paste_image(const ua_image &from_img, unsigned int destx,unsigned int desty,
-   bool transparent)
-{
-   paste_rect(from_img,0,0,
-      from_img.get_xres(), from_img.get_yres(),
-      destx,desty,transparent);
-}
-
+/*
+// currently commented out; look if the function is used at all and remove it
+// when not
 void ua_image::copy_rect(ua_image &img, unsigned int startx, unsigned int starty,
    unsigned int width, unsigned int height)
 {
@@ -73,7 +63,11 @@ void ua_image::copy_rect(ua_image &img, unsigned int startx, unsigned int starty
       dest += width;
    }
 }
-
+*/
+/*! when image to paste and image that is pasted is the same one, then
+    non-transparent pastes are only successful when the source and target
+    areas don't overlap
+*/
 void ua_image::paste_rect(const ua_image& from_img, unsigned int fromx, unsigned int fromy,
    unsigned width, unsigned height, unsigned int destx,unsigned int desty, bool transparent)
 {
@@ -130,17 +124,94 @@ void ua_image::fill_rect(unsigned int startx, unsigned int starty,
 
 void ua_image::clear(Uint8 index)
 {
-   unsigned int max = pixels.size();
-   for(unsigned int i=0; i<max; i++) pixels[i]=index;
+   memset(&pixels[0],index,pixels.size());
 }
 
 
-// ua_image_list methods
+// ua_image_manager methods
 
-ua_image &ua_image_list::get_image(unsigned int num)
+void ua_image_manager::init(ua_settings& settings)
 {
-   if (num>=allimages.size())
-      throw ua_exception("ua_image_list: index out of bounds");
+   uw_path = settings.get_string(ua_setting_uw_path);
 
-   return allimages[num];
+   ua_uw_import import;
+
+   // load all palettes
+   std::string filename(uw_path);
+   filename.append("data/pals.dat");
+
+   import.load_palettes(filename.c_str(), allpalettes);
+
+   // load all auxiliary palettes
+   filename.assign(uw_path);
+   filename.append("data/allpals.dat");
+
+   import.load_aux_palettes(filename.c_str(), allauxpals);
+}
+
+/*! when loading *.gr images, just specify the filename without the .gr and
+    without path; for *.byt images specify the complete relative path to the
+    file; 
+*/
+void ua_image_manager::load(ua_image& img, const char* basename, unsigned int imgnum,
+   unsigned int palette, ua_image_type type)
+{
+   switch(type)
+   {
+   case ua_img_gr:
+      {
+         // create filename
+         std::string filename(uw_path);
+         filename.append("data/");
+         filename.append(basename);
+         filename.append(".gr");
+
+         // import the image
+         ua_uw_import import;
+         import.load_image_gr(img, filename.c_str(), imgnum, allauxpals);
+      }
+      break;
+
+   case ua_img_byt:
+      {
+         // create filename
+         std::string filename(uw_path);
+         filename.append(basename);
+
+         img.create(320,200);
+
+         // import the image
+         ua_uw_import import;
+         import.load_image_byt(filename.c_str(), &img.get_pixels()[0]);
+      }
+      break;
+
+   default:
+      break;
+   }
+
+   // set palette ptr
+   img.get_palette() = allpalettes[palette];
+}
+
+/*! just specify the filename without the .gr and without path */
+void ua_image_manager::load_list(std::vector<ua_image> imgs, const char* basename,
+   unsigned int img_from, unsigned int img_to,
+   unsigned int palette)
+{
+   std::string filename(uw_path);
+   filename.append("data/");
+   filename.append(basename);
+   filename.append(".gr");
+
+   // import the images
+   ua_uw_import import;
+
+   import.load_image_gr_list(imgs, filename.c_str(), img_from, img_to,
+      allauxpals);
+
+   // set palette ptr for all images
+   unsigned int max = imgs.size();
+   for(unsigned int i=0; i<max; i++)
+      imgs[i].get_palette() = allpalettes[palette];
 }
