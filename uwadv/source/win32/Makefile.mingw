@@ -21,15 +21,16 @@ FMOD_LIB = #-Lc:/mingw/include/fmod/api/lib/ -lfmod
 #
 
 SDL_LIB = -lSDLmain -lSDL
+WIN32_LIB = -lmingw32 -lkernel32 -luser32
+OPENGL_LIB = -lopengl32 -lglu32
 
 CC = c++
 CFLAGS = -O2 #-g -O
 
 DEFINES =
 INCLUDES = $(SDL_INCLUDE) $(STLPORT_INCLUDE) $(FMOD_INCLUDE) -I.. -I. 
-CPPFLAGS = $(DEFINES) $(INCLUDES)
-
-LDFLAGS = -mwindows -mconsole -s
+CXXFLAGS = $(DEFINES) $(INCLUDES)
+LDFLAGS = -mwindows -s
 
 #
 # build targets
@@ -53,8 +54,10 @@ uwadv_OBJS = main.o game_win32.o uwadv_res.o \
 	../resource/texloader.o ../resource/objloader.o \
 	../screens/ingame_orig.o ../screens/start_splash.o
 
-uwadv_LIBS = -lmingw32 -lkernel32 -luser32 -lwinmm -lopengl32 -lglu32 \
+uwadv_LIBS = $(WIN32_LIB) -lwinmm $(OPENGL_LIB) \
 	$(SDL_LIB) $(FMOD_LIB) $(STLPORT_LIB)
+
+uwadv_LDFLAGS = -mconsole
 
 
 # conv debugger
@@ -67,6 +70,8 @@ cnvdbg_OBJS = ../tools/cnvdbg.o ../conv/codevm.o \
 cnvdbg_LIBS = -lmingw32 -lkernel32 -luser32 \
 	$(SDL_LIB) $(STLPORT_LIB)
 
+cnvdbg_LDFLAGS = -mconsole
+
 
 # conv decompiler
 
@@ -75,8 +80,9 @@ cnvdasm_EXEC = cnvdasm.exe
 cnvdasm_OBJS = ../tools/cnvdasm.o ../conv/codevm.o \
 	../resource/codeloader.o ../resource/gamestrings.o
 
-cnvdasm_LIBS = -lmingw32 -lkernel32 -luser32 \
-	$(SDL_LIB) $(STLPORT_LIB)
+cnvdasm_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB) $(STLPORT_LIB)
+
+cnvdasm_LDFLAGS = -mconsole
 
 
 # xmidi to midi converter
@@ -86,6 +92,8 @@ xmi2mid_EXEC = xmi2mid.exe
 xmi2mid_OBJS = ../tools/xmi2mid.o ../audio/xmidi.o
 
 xmi2mid_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB)
+
+xmi2mid_LDFLAGS = -mconsole
 
 
 # map display
@@ -97,36 +105,57 @@ mapdisp_OBJS = ../tools/mapdisp.o ../level.o ../resource/maploader.o \
 	../resource/imageloader.o ../resource/objloader.o \
 	../image.o ../objects.o
 
-mapdisp_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB) $(STLPORT_LIB) -lopengl32 -lglu32
+mapdisp_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB) $(STLPORT_LIB) $(OPENGL_LIB)
+
+mapdisp_LDFLAGS =
+
+
+# animation viewer
+
+animview_EXEC = animview.exe
+
+animview_OBJS = ../tools/animview.o ../cutscene.o ../resource/cutsloader.o
+
+animview_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB) $(STLPORT_LIB)
+
+animview_LDFLAGS =
+
 
 #
 # build rules
 #
 
-all: $(uwadv_EXEC) $(cnvdbg_EXEC) $(cnvdasm_EXEC) $(xmi2mid_EXEC) $(mapdisp_EXEC)
+all: $(uwadv_EXEC) tools
 
-tools: $(cnvdbg_EXEC) $(cnvdasm_EXEC) $(xmi2mid_EXEC) $(mapdisp_EXEC)
+tools: $(cnvdbg_EXEC) $(cnvdasm_EXEC) $(xmi2mid_EXEC) $(mapdisp_EXEC) \
+	(animview_EXEC)
 
 $(uwadv_EXEC): $(uwadv_OBJS)
-	$(CC) $(LDFLAGS) -o $(@) $(uwadv_OBJS) $(uwadv_LIBS)
+	$(CC) $(LDFLAGS) $(uwadv_LDFLAGS) -o $(@) $(uwadv_OBJS) $(uwadv_LIBS)
 
 uwadv_res.o: uwadv.rc Uus.ico
 	windres -i uwadv.rc -o $@
 
 
 $(cnvdbg_EXEC): $(cnvdbg_OBJS)
-	$(CC) $(LDFLAGS) -o $(@) $(cnvdbg_OBJS) $(cnvdbg_LIBS)
+	$(CC) $(LDFLAGS) $(cnvdbg_LDFLAGS) -o $(@) $(cnvdbg_OBJS) $(cnvdbg_LIBS)
 
 
 $(cnvdasm_EXEC): $(cnvdasm_OBJS)
-	$(CC) $(LDFLAGS) -o $(@) $(cnvdasm_OBJS) $(cnvdasm_LIBS)
+	$(CC) $(LDFLAGS) $(cnvdasm_LDFLAGS) -o $(@) $(cnvdasm_OBJS) $(cnvdasm_LIBS)
 
 
 $(xmi2mid_EXEC): $(xmi2mid_OBJS)
-	$(CC) $(LDFLAGS) -o $(@) $(xmi2mid_OBJS) $(xmi2mid_LIBS)
+	$(CC) $(LDFLAGS) $(xmi2mid_LDFLAGS) -o $(@) $(xmi2mid_OBJS) $(xmi2mid_LIBS)
+
 
 $(mapdisp_EXEC): $(mapdisp_OBJS)
-	$(CC) $(LDFLAGS) -o $(@) $(mapdisp_OBJS) $(mapdisp_LIBS)
+	$(CC) $(LDFLAGS) $(mapdisp_LDFLAGS) -o $(@) $(mapdisp_OBJS) $(mapdisp_LIBS)
+
+
+$(animview_EXEC): $(animview_OBJS)
+	$(CC) $(LDFLAGS) $(animview_LDFLAGS) -o $(@) $(animview_OBJS) $(animview_LIBS)
+
 
 installer: $(uwadv_EXEC)
 	mkdir -p ../../output/release/
@@ -135,8 +164,9 @@ installer: $(uwadv_EXEC)
 
 clean:
 	rm -f $(uwadv_EXEC) $(cnvdbg_EXEC) $(cnvdasm_EXEC) $(xmi2mid_EXEC) \
+		$(mapdisp_EXEC) $(animview_EXEC) \
 		$(uwadv_OBJS) $(cnvdbg_OBJS) $(cnvdasm_OBJS) $(xmi2mid_OBJS) \
-		$(mapdisp_OBJS) $(mapdisp_EXEC)
+		$(mapdisp_OBJS) $(animview_OBJS) \
 
 .cpp.o:
-	$(CC) $(CFLAGS) $(CPPFLAGS) -c $(<) -o $*.o
+	$(CC) $(CFLAGS) $(CXXFLAGS) -c $(<) -o $*.o
