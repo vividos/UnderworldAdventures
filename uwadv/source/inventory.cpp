@@ -577,9 +577,13 @@ void ua_inventory::save_game(ua_savegame& sg)
    sg.begin_section("inventory");
 
    // save runebag
-   for(unsigned int r=0; r<26; r++)
-      sg.write8(runebag.at(r) ? 1 : 0);
-
+   for(unsigned int r=0; r<26; r++) {
+      // Hope this doesn't break anything but bitset::at() is not available in gcc/mingw.. 'test' should be the 'official' function to use (telemachos) 
+      // sg.write8(runebag.at(r) ? 1 : 0);
+      sg.write8(runebag.test(r) ? 1 : 0);
+   }  
+   
+   
    // save itemlist
    for(unsigned int i=0; i<256; i++)
       itemlist[i].save_info(sg);
