@@ -48,6 +48,9 @@ void ua_game::init()
    if (settings.gtype == ua_game_none)
       throw ua_exception("could not find relevant game files");
 
+   if (settings.gtype == ua_game_uw2)
+      throw ua_exception("you can't play with Ultima Underworld 2");
+
    // First, initialize SDL's video subsystem
    if( SDL_Init(SDL_INIT_VIDEO) < 0 )
    {
