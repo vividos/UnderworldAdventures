@@ -55,6 +55,11 @@ public:
    void decompile(bool with_opcodes);
 
 protected:
+   // worker functions
+
+   //! collects cross references
+   void collect_xrefs();
+
 
 
    // helper functions
@@ -63,6 +68,8 @@ protected:
    void print_opcode(Uint16 opcode, Uint16 arg, Uint16 pos);
 
 protected:
+   //! all jump/branch cross references
+   std::map<Uint16,std::vector<Uint16> > all_xrefs;
 
    //! game strings
    ua_gamestrings* gs;

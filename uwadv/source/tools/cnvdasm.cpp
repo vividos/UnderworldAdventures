@@ -61,11 +61,56 @@ bool ua_conv_dasm::init(ua_gamestrings* mygs, const char *cnvfile,
 
 void ua_conv_dasm::disassemble()
 {
+   // collect cross refs
+   collect_xrefs();
+
+   // output all stuff
+
    printf(";\n; conversation #%u, string block 0x%04x\n"
-      "; npc name: %s\n;\n",conv_nr,strblock,
+      "; npc name: %s\n;\n\n",conv_nr,strblock,
       gs->get_string(7,conv_nr+16).c_str());
 
-   // TODO: disassemble and output
+   unsigned int max = code.size();
+   for(unsigned int i=0; i<max; i++)
+   {
+      // output xrefs
+      {
+         std::map<Uint16,std::vector<Uint16> >::iterator iter = all_xrefs.find(i);
+
+         if (iter != all_xrefs.end())
+         {
+            printf("\n ;| xref:");
+
+            const std::vector<Uint16>& xrefs = (*iter).second;
+
+            unsigned int max = xrefs.size();
+            for(unsigned int i=0; i<max; i++)
+               printf(" %04x",xrefs[i]);
+
+            printf("\n");
+         }
+      }
+
+      // output opcode/arg
+      {
+         Uint16 opcode = code[i];
+         Uint16 arg = 0;
+         Uint16 pos = i;
+
+         if (opcode<=op_last && ua_conv_instructions[opcode].args>0)
+            arg = code[++i];
+
+         printf("%04x:   ",pos);
+
+         print_opcode(opcode,arg,pos);
+
+         if (opcode == op_RET) printf("\n");
+      }
+
+      printf("\n");
+   }
+
+   printf("\n; conversation #%u ended\n\n",conv_nr);
 }
 
 void ua_conv_dasm::decompile(bool with_opcodes)
@@ -79,6 +124,48 @@ void ua_conv_dasm::decompile(bool with_opcodes)
    // TODO: output code
 }
 
+
+void ua_conv_dasm::collect_xrefs()
+{
+   unsigned int max = code.size();
+   for(unsigned int i=0; i<max; i++)
+   {
+      Uint16 opcode = code[i];
+
+      if (opcode == op_JMP || opcode == op_BEQ || opcode == op_BNE ||
+          opcode == op_BRA || opcode == op_CALL)
+      {
+         // calculate jump target
+         Uint16 target = code[i+1];
+
+         // adjust for relative jumps
+         if (opcode == op_BEQ || opcode == op_BNE || opcode == op_BRA)
+            target += i+1;
+
+         // search for target in xrefs
+         std::map<Uint16,std::vector<Uint16> >::iterator iter = all_xrefs.find(target);
+
+         if (iter == all_xrefs.end())
+         {
+            // no item yet; create new xref list
+            std::vector<Uint16> new_vect;
+            new_vect.push_back(i);
+
+            all_xrefs.insert(
+               std::make_pair<Uint16,std::vector<Uint16> >(target,new_vect));
+         }
+         else
+         {
+            // add position to existing xrefs
+            (*iter).second.push_back(i);
+         }
+      }
+
+      // advance position when argument was present
+      if (opcode<=op_last && ua_conv_instructions[opcode].args>0)
+         ++i;
+   }
+}
 
 void ua_conv_dasm::print_opcode(Uint16 opcode, Uint16 arg, Uint16 pos)
 {
@@ -114,7 +201,7 @@ int main(int argc, char *argv[])
          "   \"decasm\" (= decompiler with disassembled opcodes).\n"
          "   <conv-slot-end> can be omitted.\n\n"
          "   examples: cnvdasm dasm data/cnv.ark 1 320\n"
-         "   cnvdasm dec data/cnv.ark 3\n\n");
+         "   cnvdasm dec data/cnv.ark 4\n\n");
       return 0;
    }
 
@@ -124,7 +211,7 @@ int main(int argc, char *argv[])
    // load game strings
    ua_gamestrings gs;
    {
-      printf("loading game strings\n");
+      printf("loading game strings");
 
       // construct game strings file name
       std::string gstrname(argv[2]);
@@ -146,13 +233,15 @@ int main(int argc, char *argv[])
             return 0;
          }
       }
+
+      printf("\n\n");
    }
 
    // determine what to do
    if (0==strcmp(argv[1],"dasm"))
    {
       // disassemble all slots
-      for(unsigned int slot=start; slot<end; slot++)
+      for(unsigned int slot=start; slot<=end; slot++)
       {
          ua_conv_dasm dasm;
 
@@ -166,7 +255,7 @@ int main(int argc, char *argv[])
       bool with_opcodes = 0==strcmp(argv[1],"decasm");
 
       // decompile all slots
-      for(unsigned int slot=start; slot<end; slot++)
+      for(unsigned int slot=start; slot<=end; slot++)
       {
          ua_conv_dasm dasm;
 
