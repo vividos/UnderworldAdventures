@@ -20,7 +20,7 @@
 --
 
 --
--- objects.lua - lua underworld script; object functions
+-- objlist.lua - lua underworld script; object list functions
 --
 
 -- constants
@@ -28,3 +28,11 @@
 -- tables
 
 -- functions
+
+
+-- called when looking at object in object list
+function lua_objlist_look(obj_handle)
+
+   ui_print_string( "lua_objlist_look not implemented yet.")
+
+end

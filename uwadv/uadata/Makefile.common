@@ -2,7 +2,7 @@ luaSCRIPTS = \
 	uw1/scripts/cutscene.lua \
 	uw1/scripts/createchar.lua \
 	uw1/scripts/inventory.lua \
-	uw1/scripts/objects.lua \
+	uw1/scripts/objlist.lua \
 	uw1/scripts/uwinterface.lua \
 	uw1/scripts/game.lua
 
