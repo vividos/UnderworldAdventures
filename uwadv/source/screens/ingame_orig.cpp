@@ -282,10 +282,10 @@ void ua_ingame_orig_screen::draw()
 
       // calculate viewport for window at 52/68 to 226/182
       unsigned int xpos, ypos, width, height;
-      xpos = (surf->w / 320.0) * 52;
-      ypos = (surf->h / 200.0) * 68;
-      width = (surf->w / 320.0) * (226-52);
-      height = (surf->h / 200.0) * (182-68);
+      xpos = unsigned((surf->w / 320.0) * 52.0);
+      ypos = unsigned((surf->h / 200.0) * 68);
+      width = unsigned((surf->w / 320.0) * (226.0-52.0));
+      height = unsigned((surf->h / 200.0) * (182.0-68.0));
 
       glViewport(xpos,ypos, width,height);
 
