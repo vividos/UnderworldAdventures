@@ -1,0 +1,186 @@
+Underworld Adventures Todo-List
+-------------------------------
+
+This file contains the todo-list for the uwadv project. Feel free to assign
+you to some tasks, as well as adding more. Priority scale goes from 1
+(serious) to 5 (might get in when we have time).
+
+And here it goes:
+
+technical/source
+----------------
+
+- savegame manager API
+  prio: 2  assigned: vividos
+
+- add zlib compression to savegame writing/loading
+  prio: 4  assigned: none
+
+- levelmap annotations list API
+  prio: 3  assigned: vividos
+
+- keymap loading from external file (keymap.cfg)
+  prio: 3  assigned: none
+
+- add check for all needed files before starting uwadv
+  prio: 4  assigned: none
+
+- load/use music fallback playlist when file isn't found in normal one
+  prio: 4  assigned: phlask
+
+- win32: setting of different SDL audio backend driver (at SDL_AudioInit)
+  prio: 4  assigned: none
+
+- get rid of all -Wall warnings
+  prio: 5  assigned: none
+
+- port uwadv to MacOS X / other platforms
+  prio: 3  assigned: none
+
+- write an interactive debugger for Lua scripts and the ua_underworld object,
+  e.g. using wxWindows for platform independence
+  prio: 4  assigned: vividos
+
+- write conversation code disassembler for use in the interactive debugger, to
+  examine conv code, too
+  prio: 5  assigned: none
+
+- write map editor for uwadv savegames
+  prio: 4  assigned: none
+
+- replace all object 2d graphics with 3d low-poly models
+  prio: 4  assigned: none
+
+
+game interface
+--------------
+
+- selection style mouse cursor on "start menu" and "create char." screens
+  prio: 3  assigned: phlask
+
+- ingame_orig: split up areas into more textures to reduce texture uploads
+  prio: 2  assigned: vividos
+
+- do message scroll, do Lua function to print texts
+  prio: 2  assigned: vividos
+
+- do vitality/mana flask from values in ua_player
+  prio: 2  assigned: vividos
+
+- savegame loading screen implementation
+  prio: 2  assigned: phlask
+
+- savegame saving screen implementation (together into loading screen?)
+  prio: 2  assigned: none
+
+- npc's rendering and animation
+  prio: 2  assigned: none
+
+- level map view screen
+  prio: 3  assigned: none
+
+- implementation of all keymap keys
+  prio: 2  assigned: vividos
+
+- add eating via dropping on paperdoll head
+  prio: 3  assigned: none
+
+- combat implementation (ingame screen)
+  prio: 2  assigned: none
+
+- 3d model loading / rendering (from game files)
+  prio: 2  assigned: none
+
+- decals rendering (tmap objects)
+  prio: 2  assigned: none
+
+- conversation screen implementation
+  prio: 3  assigned: none
+
+- meditating at shrines(object interaction)
+  prio: 3  assigned: none
+
+- ingame_orig: mouse cursor movement
+  prio: 2  assigned: vividos
+
+- all remaining cutscenes
+  prio: 3  assigned: none
+
+- ingame_new: design and implement new user interface
+  prio: 3  assigned: none
+
+- add endgame screen implementation
+  prio: 4  assigned: none
+
+
+underworld ingame
+-----------------
+
+- complete Lua <--> underworld interface
+  prio: 2  assigned: vividos
+
+- complete saving of all needed infos from the ua_underworld object (including
+  Lua script values)
+  prio: 3  assigned: vividos
+
+- npc AI via Lua scripts
+  prio: 2  assigned: none
+
+- add inventory weight count
+  prio: 3  assigned: none
+
+- object interaction: picking up objects (stealing)
+  prio: 2  assigned: none
+
+- object interaction: throwing, dropping objects
+  prio: 2  assigned: none
+
+- traps / triggers handling
+  prio: 3  assigned: none
+
+- combat implementation (lua scripts)
+  prio: 2  assigned: none
+
+- conversation virtual machine implementation (all imported functions,
+  possible interface to Lua scripting)
+  prio: 3  assigned: none
+
+- meditating at shrines(lua scripts)
+  prio: 3  assigned: none
+
+- physics: pathfinding algorithm (A*)
+  prio: 3  assigned: none
+
+- physics: tracing of objects in map, npc's, objects from objlist, avatar
+  prio: 3  assigned: none
+
+- physics: walking and floating (sinus) movement
+  prio: 4  assigned: none
+
+- physics: floating mode (ring)
+  prio: 3  assigned: none
+
+- physics: swimming mode
+  prio: 3  assigned: none
+
+- magic/spells system
+  prio: 2  assigned: none
+
+- sleeping, resting, w/ cutscenes
+  prio: 3  assigned: none
+
+- fix collision detection with real 3d model from Peroxide tutorial
+  prio: 3  assigned: telemachos
+
+
+finally
+-------
+
+- verify story continuity
+  prio: 2  assigned: none
+
+- complete source code documentation
+  prio: 2  assigned: uwadv team
+
+- release 1.0 of uwadv and celebrate a big party!
+  prio: 1  assigned: uwadv team
