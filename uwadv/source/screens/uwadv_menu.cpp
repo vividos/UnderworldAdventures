@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -29,6 +29,8 @@
 #include "common.hpp"
 #include "uwadv_menu.hpp"
 #include "settings.hpp"
+#include "renderer.hpp"
+#include "files.hpp"
 #include "start_splash.hpp"
 #ifdef HAVE_DEBUG
  #include "screens/start_menu.hpp"
@@ -47,6 +49,64 @@ void ua_uwadv_menu_screen::init()
 
    ua_trace("uwadv menu screen started\n");
 
+   // init 2d camera
+   game->get_renderer().setup_camera2d();
+   glEnable(GL_TEXTURE_2D);
+
+   // load texture
+   SDL_RWops* rwops = game->get_files_manager().get_uadata_file("uwadv-loading.tga");
+
+   if (rwops != NULL)
+   {
+      tex.init(&game->get_renderer().get_texture_manager());
+      tex.load(rwops);
+      tex.upload(0);
+   }
+
+   rendered = false;
+}
+/*
+void ua_uwadv_menu_screen::destroy()
+{
+}
+*/
+void ua_uwadv_menu_screen::draw()
+{
+   tex.use();
+
+   // set wrap parameter
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
+   // set mipmap parameter
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+   const unsigned width = 150;
+   const unsigned height = 75;
+   const unsigned xpos = (320-width)/2;
+   const unsigned ypos = (200-height)/2;
+
+   // draw quad
+   glBegin(GL_QUADS);
+   glTexCoord2d(0.0, 0.0); glVertex2i(xpos,       ypos);
+   glTexCoord2d(1.0, 0.0); glVertex2i(xpos+width, ypos);
+   glTexCoord2d(1.0, 1.0); glVertex2i(xpos+width, ypos+height);
+   glTexCoord2d(0.0, 1.0); glVertex2i(xpos,       ypos+height);
+   glEnd();
+
+   rendered = true;
+}
+/*
+void ua_uwadv_menu_screen::process_event(SDL_Event& event)
+{
+}
+*/
+void ua_uwadv_menu_screen::tick()
+{
+   if (!rendered)
+      return;
+
    ua_settings& settings = game->get_settings();
 
    // set game prefix to use
@@ -62,24 +122,10 @@ void ua_uwadv_menu_screen::init()
 
    // now that we know the generic uw path, we can init the whole game stuff
    game->init_game();
-}
-/*
-void ua_uwadv_menu_screen::destroy()
-{
-}
 
-void ua_uwadv_menu_screen::draw()
-{
-}
-
-void ua_uwadv_menu_screen::process_event(SDL_Event& event)
-{
-}
-*/
-void ua_uwadv_menu_screen::tick()
-{
 #ifdef HAVE_DEBUG
-   game->replace_screen(new ua_start_menu_screen,false);
+   game->get_underworld().import_savegame(game->get_settings(),"data/",true);
+   game->replace_screen(new ua_ingame_orig_screen,false);
 
 /*
    paste one:
@@ -87,7 +133,7 @@ void ua_uwadv_menu_screen::tick()
    game->get_underworld().import_savegame(game->get_settings(),"data/",true);
    game->replace_screen(new ua_ingame_orig_screen,false);
    --------------------
-   game->replace_screen(new ua_save_game_screen(false),false);
+   game->replace_screen(new ua_save_game_screen(true),false);
    --------------------
    game->replace_screen(new ua_start_menu_screen,false);
    --------------------

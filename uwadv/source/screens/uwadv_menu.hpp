@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -37,6 +37,7 @@
 
 // needed includes
 #include "screen.hpp"
+#include "texture.hpp"
 
 
 // classes
@@ -54,11 +55,16 @@ public:
 
    virtual void init();
 //   virtual void destroy();
-//   virtual void draw();
+   virtual void draw();
 //   virtual bool process_event(SDL_Event& event);
    virtual void tick();
 
 protected:
+   //! "loading..." textures
+   ua_texture tex;
+
+   //! indicates if texture was already rendered
+   bool rendered;
 };
 
 
