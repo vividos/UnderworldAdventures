@@ -115,6 +115,7 @@ void ua_ingame_orig_screen::init()
    dbgint = ua_debug_interface::get_new_debug_interface();
 
    // load keymap
+   ua_trace("loading keymap uw1/keymap.cfg\n");
    keymap.init(core->get_settings());
    keymap.load(core->get_filesmgr().get_uadata_file("uw1/keymap.cfg"));
 
