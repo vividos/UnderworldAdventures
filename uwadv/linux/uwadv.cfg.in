@@ -15,7 +15,6 @@
 
 #
 # path to Ultima Underworld folder (where the uw.exe lives)
-# must end with a /
 # Underworld Demo (uw_demo) path works, too
 # note that placeholders cannot be used!
 #
@@ -24,7 +23,6 @@ uw1-path @UW1PATH@
 
 #
 # path to the uwadv "uadata" dir
-# must end with a /
 # note that placeholders cannot be used!
 #
 
@@ -32,7 +30,7 @@ uadata-path @UADATAPATH@
 
 #
 # path to a folder where the savegames are stored
-# must end with a /
+# the folder is created when it doesn't exist
 #
 
 savegame-folder %uahome%/uasave/
@@ -65,7 +63,7 @@ screen-resolution 800 x 600
 # "yes" enables it, "no" disables it
 #
 
-fullscreen  no
+fullscreen no
 
 #
 # sets the narration type for cutscenes (including the intro)
@@ -84,7 +82,7 @@ cutscene-narration sound
 audio-enabled true
 
 #
-# win32: midi device selection
+# win32 only: midi device selection
 # determines the midi device to use for the win32 midi driver
 #
 
