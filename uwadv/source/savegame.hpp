@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,9 +26,10 @@
 */
 
 // include guard
-#ifndef __uwadv_savegame_hpp_
-#define __uwadv_savegame_hpp_
+#ifndef uwadv_savegame_hpp_
+#define uwadv_savegame_hpp_
 
+// we have zlib compressed savegames
 #define HAVE_ZLIB_SAVEGAME
 
 // needed includes
@@ -45,15 +46,40 @@
 struct ua_savegame_info
 {
    //! ctor
-   ua_savegame_info():title("no savegame title"),type(0) {}
+   ua_savegame_info();
+
+   //! game type; 0 = uw1, 1 = uw2, 2 = custom
+   unsigned int type;
 
    //! savegame title
    std::string title;
 
-   //! game type; 0 = uw1, 1 = uw2
-   unsigned int type;
+   //! name of game base folder; only needed for game type == 2
+   std::string gamefolder;
 
-//   ua_image preview;
+   //! player name
+   std::string name;
+
+   //! player gender (0=male)
+   unsigned int gender;
+
+   //! player appearance (0..4)
+   unsigned int appearance;
+
+   //! player profession (0..7)
+   unsigned int profession;
+
+   //! current map level
+   unsigned int maplevel;
+
+   //! basic player stats
+   unsigned int strength,dexterity,intelligence,vitality;
+
+   //! screenshot bytes in RGBA format
+   std::vector<Uint32> image_rgba;
+
+   //! screenshot resolution
+   unsigned int image_xres, image_yres;
 };
 
 
@@ -119,15 +145,25 @@ protected:
    //! opens savegame
    void open(const char* filename, bool saving);
 
+   //! writes out savegame info
+   void write_info();
+
+   //! reads in savegame info
+   void read_info();
+
 protected:
 
+   //! input file
 #ifdef HAVE_ZLIB_SAVEGAME
    gzFile sg;
 #else
    FILE *sg;
 #endif
 
+   //! true when currently saving
    bool saving;
+
+   //! savegame version
    Uint32 save_version;
 
    //! savegame info
@@ -161,11 +197,11 @@ public:
    ua_savegame get_savegame_load(unsigned int index);
 
    //! creates a savegame in a new slot; uses savegame info for savegame
-   ua_savegame get_savegame_save_new_slot(const ua_savegame_info& info);
+   ua_savegame get_savegame_save_new_slot(ua_savegame_info& info);
 
    //! overwrites an existing savegame; uses savegame info
    ua_savegame get_savegame_save_overwrite(unsigned int index,
-      const ua_savegame_info& info);
+      ua_savegame_info& info);
 
    //! returns true when a quicksave savegame is available
    bool quicksave_avail();
@@ -173,12 +209,22 @@ public:
    //! returns the quicksave savegame
    ua_savegame get_quicksave(bool saving);
 
+   //! sets screenshot for next save operation
+   void set_save_screenshot(std::vector<Uint32>& image_rgba,
+      unsigned int xres, unsigned int yres);
+
 protected:
    //! savegame folder name
    std::string savegame_folder;
 
    //! list of all current savegames
    std::vector<std::string> savegames;
+
+   //! savegame image in rgba format
+   std::vector<Uint32> image_savegame;
+
+   //! savegame image resolution
+   unsigned int image_xres,image_yres;
 };
 
 #endif

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -39,8 +39,17 @@
 
 // constants
 
-//! current version
+//! current savegame version
 const Uint32 ua_savegame::current_version = 0;
+
+
+// ua_savegame_info methods
+ua_savegame_info::ua_savegame_info()
+:type(0),title("no savegame title"),gender(0),appearance(0),profession(0),
+ maplevel(0),strength(0),dexterity(0),intelligence(0),vitality(0),
+ image_xres(0), image_yres(0)
+{
+}
 
 
 // ua_savegame methods
@@ -196,27 +205,84 @@ void ua_savegame::open(const char* filename, bool issaving)
    {
       // write header
       write32(current_version);
-
+/*
 #ifdef HAVE_ZLIB_SAVEGAME
       write8(1); // compression: zlib
 #else
       write8(0); // compression: none
 #endif
-
-      write8(info.type); // game type: uw1
-
-      write_string(info.title.c_str());
+*/
+      write_info();
    }
    else
    {
       // read header
       save_version = read32();
-      Uint8 compression = read8();
-      info.type = read8();
+      //Uint8 compression = read8();
 
-      read_string(info.title);
+      read_info();
    }
    end_section();
+}
+
+void ua_savegame::write_info()
+{
+   write8(info.type);
+   write_string(info.title.c_str());
+   write_string(info.gamefolder.c_str());
+
+   write_string(info.name.c_str());
+
+   write8(info.gender);
+   write8(info.appearance);
+   write8(info.profession);
+   write8(info.maplevel);
+
+   write8(info.strength);
+   write8(info.dexterity);
+   write8(info.intelligence);
+   write8(info.vitality);
+
+   // write image
+   write16(info.image_xres);
+   write16(info.image_yres);
+
+   unsigned int max = info.image_xres * info.image_yres;
+   for(unsigned int i=0; i<max; i++)
+      write32(info.image_rgba[i]);
+}
+
+void ua_savegame::read_info()
+{
+   // savegame infos
+   info.type = read8();
+   read_string(info.title);
+   read_string(info.gamefolder);
+
+   // player infos
+   read_string(info.name);
+
+   info.gender = read8();
+   info.appearance = read8();
+   info.profession = read8();
+   info.maplevel = read8();
+
+   info.strength = read8();
+   info.dexterity = read8();
+   info.intelligence = read8();
+   info.vitality = read8();
+
+   // read image
+   info.image_xres = read16();
+   info.image_yres = read16();
+
+   unsigned int max = info.image_xres * info.image_yres;
+
+   info.image_rgba.clear();
+   info.image_rgba.resize(max);
+
+   for(unsigned int i=0; i<max; i++)
+      info.image_rgba[i] = read32();
 }
 
 
@@ -280,11 +346,15 @@ ua_savegame ua_savegames_manager::get_savegame_load(unsigned int index)
    ua_savegame sg;
    sg.open(save_name.c_str(),false);
 
+   // set loaded image as new savegame image
+   ua_savegame_info& info = sg.get_savegame_info();
+   set_save_screenshot(info.image_rgba, info.image_xres, info.image_yres);
+
    return sg;
 }
 
 ua_savegame ua_savegames_manager::get_savegame_save_new_slot(
-   const ua_savegame_info& info)
+   ua_savegame_info& info)
 {
    std::string save_name;
 
@@ -306,6 +376,12 @@ ua_savegame ua_savegames_manager::get_savegame_save_new_slot(
 
    } while( ua_file_exists(save_name.c_str()) );
 
+   // add savegame preview image to savegame info
+   info.image_rgba.clear();
+   info.image_rgba = image_savegame;
+   info.image_xres = image_xres;
+   info.image_yres = image_yres;
+
    // open savegame for saving
    ua_savegame sg;
    sg.get_savegame_info() = info; // set savegame info
@@ -315,9 +391,15 @@ ua_savegame ua_savegames_manager::get_savegame_save_new_slot(
 }
 
 ua_savegame ua_savegames_manager::get_savegame_save_overwrite(
-   unsigned int index, const ua_savegame_info& info)
+   unsigned int index, ua_savegame_info& info)
 {
    std::string save_name(savegames[index]);
+
+   // add savegame preview image to savegame info
+   info.image_rgba.clear();
+   info.image_rgba = image_savegame;
+   info.image_xres = image_xres;
+   info.image_yres = image_yres;
 
    // overwrites savegame with existing name
    ua_savegame sg;
@@ -348,6 +430,13 @@ ua_savegame ua_savegames_manager::get_quicksave(bool saving)
    {
       ua_savegame_info info;
       info.title = "Quicksave Savegame";
+
+      // add savegame preview image to savegame info
+      info.image_rgba.clear();
+      info.image_rgba = image_savegame;
+      info.image_xres = image_xres;
+      info.image_yres = image_yres;
+
       sg.get_savegame_info() = info;
    }
 
@@ -355,4 +444,12 @@ ua_savegame ua_savegames_manager::get_quicksave(bool saving)
    sg.open(quicksave_name.c_str(),saving);
 
    return sg;
+}
+
+void ua_savegames_manager::set_save_screenshot(
+   std::vector<Uint32>& image_rgba, unsigned int xres, unsigned int yres)
+{
+   image_savegame = image_rgba;
+   image_xres = xres;
+   image_yres = yres;
 }
