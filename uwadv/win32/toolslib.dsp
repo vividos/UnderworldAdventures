@@ -125,11 +125,23 @@ SOURCE=..\source\imgquad.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\source\resource\model\importwrl.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\source\level.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\source\resource\maploader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\resource\modeldecode.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\models.cpp
 # End Source File
 # Begin Source File
 
@@ -165,7 +177,15 @@ SOURCE=..\source\texture.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\source\resource\tgaimport.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\source\utils.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\resource\model\wrllexer.cpp
 # End Source File
 # End Group
 # Begin Group "uwadv header files"
@@ -193,6 +213,10 @@ SOURCE=..\source\cutscene.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\source\resource\model\FlexLexer.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\source\resource\fread_endian.hpp
 # End Source File
 # Begin Source File
@@ -210,6 +234,10 @@ SOURCE=..\source\imgquad.hpp
 # Begin Source File
 
 SOURCE=..\source\level.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\models.hpp
 # End Source File
 # Begin Source File
 
@@ -250,6 +278,10 @@ SOURCE=..\source\uatypes.hpp
 # Begin Source File
 
 SOURCE=..\source\utils.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\resource\model\wrllexer.hpp
 # End Source File
 # End Group
 # End Target
