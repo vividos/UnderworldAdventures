@@ -48,6 +48,10 @@ ua_object::ua_object(unsigned int myxpos,unsigned int myypos,Uint16 mylink1,Uint
 void ua_object::render(unsigned int x, unsigned int y,
    ua_texture_manager &texmgr, ua_frustum &fr, ua_level &lev)
 {
+   // don't render invisible objects
+   if (type==ua_obj_invisible)
+      return;
+
    // get object position
    double objxpos = x + (xpos+0.5)/8.0;
    double objypos = y + (ypos+0.5)/8.0;

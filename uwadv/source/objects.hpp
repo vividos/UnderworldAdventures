@@ -70,6 +70,9 @@ public:
    virtual void render(unsigned int x, unsigned int y,
       ua_texture_manager &texmgr, ua_frustum &fr, ua_level &lev);
 
+   //! sets object type
+   void set_type(ua_obj_type tp){ type=tp; };
+
    //! returns object type
    ua_obj_type get_type(){ return type; }
 

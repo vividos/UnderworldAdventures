@@ -126,6 +126,12 @@ void ua_object_list::addobj_follow(std::vector<Uint32> &objprop,Uint16 objpos)
          obj = new ua_object(xpos,ypos,link1,objid);
       }
 
+      if ( (objid >= 0x40 && objid < 0x80) ||
+           (objid >= 0x140 && objid != 458) )
+         obj->set_type(ua_obj_invisible);
+      else
+         obj->set_type(ua_obj_object);
+
       // add to master object list
       master_obj_list[objpos] = obj;
 
