@@ -55,23 +55,32 @@ Lua functions callable from C:
    lua_init_script
    lua_done_script
    lua_game_tick
-   lua_obj_look_at
-   lua_obj_use
-   lua_obj_walk_over
-   lua_obj_combine
-   lua_obj_get
-   lua_obj_can_talk
-   lua_obj_can_use
-   lua_obj_can_get
-   lua_player_hit_floor
-   lua_player_hit_wall
-   lua_inventory_is_container
-   lua_inventory_categorize_item
    lua_track
    lua_sleep
+
+   lua_objlist_default_action
+   lua_objlist_talk
+   lua_objlist_get
+   lua_objlist_look
+   lua_objlist_use
+   lua_objlist_use_target
+   lua_objlist_drag
+   lua_objlist_walk_over
+
    lua_cast_spell
+   lua_cast_target
+
+   lua_inventory_is_container
+   lua_inventory_categorize_item
+   lua_inventory_look
+   lua_inventory_use
+   lua_inventory_combine_obj
+
    lua_savegame_load
    lua_savegame_save
+
+   (lua_player_hit_floor)
+   (lua_player_hit_wall)
 
 registered C functions to call from Lua:
 
@@ -514,6 +523,7 @@ todo
   call e.g. "lua_cast_target" to finally cast target spells, or call
   "ui_cursor_use_item" to cancel targetting.
 
+
 2.1.3.7. Savegame functions
 
 * savegame_store_value(savegame,value)
@@ -629,3 +639,5 @@ that doesn't use the value, it can be set to anything.
 
 
 2.3. Character creation interface
+
+todo
