@@ -32,7 +32,7 @@
 #include "common.hpp"
 #include "audio.hpp"
 #include "midi.hpp"
-#include "sdl_mixer.h"
+#include "SDL_mixer.h"
 #include <string>
 
 
