@@ -279,8 +279,8 @@ void ua_conv_debugger::start()
             {
                // look if breakpoint already exists in the list
 
-               int max = allbreakpoints.size();
-               for(int i=0; i<max; i++)
+               int i,max = allbreakpoints.size();
+               for(i=0; i<max; i++)
                if (allbreakpoints.at(i)==bpt)
                {
                   allbreakpoints.erase(allbreakpoints.begin()+i);
