@@ -12,7 +12,7 @@ top_builddir = linux
 
 # SDL stuff
 SDL_CFLAGS = `sdl-config --cflags`
-SDL_LIBS = `sdl-config --libs`
+SDL_LIBS = `sdl-config --libs` -lSDLmain
 
 CPPFLAGS = -I.. $(SDL_CFLAGS)
 LDFLAGS = $(SDL_LIBS) -lGL -lGLU
