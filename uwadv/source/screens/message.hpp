@@ -39,14 +39,18 @@
 struct ua_msg_area_coord
 {
    //! ctor
-//   ua_msg_area_coord(unsigned int xmin, unsigned int xmax, unsigned int ymin, unsigned int ymax);
+   ua_msg_area_coord():xmin(0),xmax(0),ymin(0),ymax(0){}
+   //! init ctor
+   ua_msg_area_coord(unsigned int my_xmin, unsigned int my_xmax,
+      unsigned int my_ymin, unsigned int my_ymax):
+         xmin(my_xmin), xmax(my_xmax), ymin(my_ymin), ymax(my_ymax){}
 
+   //! area bounds
    unsigned int xmin, xmax;
    unsigned int ymin, ymax;
 
+   //! checks if given position is in area
    inline bool is_in_area(unsigned int xpos, unsigned int ypos) const;
-
-   inline bool operator<(const ua_msg_area_coord& coord) const;
 };
 
 
@@ -68,11 +72,12 @@ public:
       SDL_Event& event);
 
    //! area map type
-   typedef std::map<ua_msg_area_coord,ua_msg_area_handler_func_type> ua_msg_area_map;
+   typedef std::vector<std::pair<ua_msg_area_coord,ua_msg_area_handler_func_type> > ua_msg_area_map;
 
 public:
    //! ctor
-   ua_message_processor(){}
+   ua_message_processor():keymap_handler(NULL),leftbuttondown(false),
+      rightbuttondown(false){}
 
    //! inits message processor
    void message_init(unsigned int screen_width, unsigned int screen_height);
@@ -139,11 +144,5 @@ inline bool ua_msg_area_coord::is_in_area(unsigned int xpos,
    return (xpos >= xmin && xpos <= xmax &&
            ypos >= ymin && ypos <= ymax);
 }
-
-inline bool ua_msg_area_coord::operator<(const ua_msg_area_coord& coord) const
-{
-   return coord.xmin < xmin && coord.ymin < ymin;
-}
-
 
 #endif

@@ -37,13 +37,14 @@ void ua_message_processor<T>::message_init(unsigned int screen_width,
    unsigned int screen_height)
 {
    scrwidth = screen_width; scrheight = screen_height;
+   keymap_handler = NULL;
 }
 
 template <typename T>
 void ua_message_processor<T>::register_area_handler(ua_msg_area_coord& coords,
    ua_msg_area_handler_func_type handler)
 {
-   area_map.insert(
+   area_map.push_back(
       std::make_pair<ua_msg_area_coord,ua_msg_area_handler_func_type>(
          coords,handler));
 }
@@ -68,7 +69,8 @@ void ua_message_processor<T>::message_handle_event(SDL_Event& event)
 
    if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
    {
-      call_keymap_handler(ua_dummy,event,keymap_handler);
+      if (keymap_handler != NULL)
+         call_keymap_handler((ua_key_value)0,event,keymap_handler);
    }
    else
    {
