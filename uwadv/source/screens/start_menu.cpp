@@ -31,6 +31,7 @@
 #include "cutscene_view.hpp"
 #include "acknowledgements.hpp"
 #include "create_character.hpp"
+#include "ingame_orig.hpp"
 #include "load_game.hpp"
 
 
@@ -290,8 +291,8 @@ void ua_start_menu_screen::press_button()
    case 3: // "journey onward"
       if (journey_avail)
       {
-         // "load game" screen
-         core->push_screen(new ua_load_game_screen);
+         // "load game" screen (with later starting "orig. ingame ui"
+         core->push_screen(new ua_load_game_screen(new ua_ingame_orig_screen));
       }
       break;
    }
