@@ -50,6 +50,7 @@ rm -f source/resource/Makefile.in source/resource/Makefile
 rm -f source/resource/zziplib/Makefile.in source/resource/zziplib/Makefile
 rm -f source/lua/Makefile.in source/lua/Makefile
 rm -f uadata/Makefile.in uadata/Makefile
+rm -f hacking/Makefile.in hacking/Makefile
 # maybe change this last line into some fancy
 # 'find all Makefile.am and delete corresponding Makefile and Makefile.in'
 

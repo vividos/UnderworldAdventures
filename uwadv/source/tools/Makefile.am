@@ -4,8 +4,6 @@
 # $Id$
 #
 
-AUTOMAKE_OPTIONS = foreign
-
 # compiler options
 CXXFLAGS = -I.. $(SDL_CFLAGS)
 LDFLAGS = $(SDL_LIBS)

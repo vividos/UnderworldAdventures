@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = foreign
 
-SUBDIRS = source uadata
+SUBDIRS = hacking source uadata
 
 EXTRA_DIST =  \
 	uwadv.spec \
