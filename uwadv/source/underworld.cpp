@@ -43,9 +43,12 @@ void ua_underworld::init(ua_game_core_interface *thecore)
 
    physics.init(this);
 
+   inventory.init();
+
    player.init();
    player.set_pos(32.0,2.0);
    player.set_angle(90.0);
+   player.set_attr(ua_attr_gender,1);
 }
 
 void ua_underworld::walk_player(double angle)
