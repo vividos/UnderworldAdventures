@@ -98,7 +98,7 @@ function trap_set_off(obj_handle,trig_obj_handle)
    end
 
    -- set off possible additional triggers/traps
-   if objinfo.is_quantity == 0
+   if objinfo.is_quantity == 0 and objinfo.quantity ~= 0
    then
       lua_trigger_set_off(objinfo.quantity)
    end
