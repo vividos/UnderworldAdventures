@@ -30,10 +30,37 @@
 #define uadebug_luasrcframe_hpp_
 
 // needed includes
+#include <wx/docview.h>
 
 
 // forward references
 class wxStyledTextCtrl;
+
+
+class ua_lua_view: public wxView
+{
+public:
+   ua_lua_view(){}
+
+   void OnDraw(wxDC* dc);
+
+protected:
+
+   DECLARE_DYNAMIC_CLASS(ua_lua_view)
+};
+
+
+class ua_lua_document: public wxDocument
+{
+public:
+   //! ctor
+   ua_lua_document(){}
+
+protected:
+   wxString text;
+
+   DECLARE_DYNAMIC_CLASS(ua_lua_document)
+};
 
 
 // classes
@@ -44,7 +71,7 @@ class ua_lua_source_frame: public wxMDIChildFrame
 public:
    //! ctor
    ua_lua_source_frame( /*wxDocManager* doc_manager, */
-      wxMDIParentFrame* parent, wxWindowID id,
+      wxString& filename, wxMDIParentFrame* parent, wxWindowID id,
       const wxPoint& pos, const wxSize& size, long style);
 
 protected:
