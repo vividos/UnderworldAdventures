@@ -101,6 +101,12 @@ void ua_image_quad::draw()
    unsigned int quadheight = wnd_height;
    double dx = split_textures ? 0.5/quadwidth : 0.0;
 
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
    // render (first) quad
    glBegin(GL_QUADS);
    glTexCoord2d(0.0,  v);   glVertex2i(wnd_xpos+0,        200-wnd_ypos-quadheight);
@@ -112,6 +118,12 @@ void ua_image_quad::draw()
    if (split_textures)
    {
       tex.use(1);
+
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
       // render second quad
       glBegin(GL_QUADS);
