@@ -223,10 +223,13 @@ void ua_textscroll::update_scroll()
 
          xpos += img_input.get_xres();
 
-         // draw a cursor line after the text
-         img_line.create(1,img_input.get_yres()+2,1,0);
+         if (xpos+1<img_line.get_xres())
+         {
+            // draw a cursor line after the text
+            img_line.create(1,img_input.get_yres()+2,1,0);
 
-         ua_image::paste_image(img_line,xpos+1,ypos-1,true);
+            ua_image::paste_image(img_line,xpos+1,ypos-1,true);
+         }
       }
 
       img_temp.clear();
