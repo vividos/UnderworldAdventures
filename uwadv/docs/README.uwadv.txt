@@ -21,14 +21,18 @@ processor.
 Setup Paths
 -----------
 
-Before starting the game, you have to set up the path to the installed game
-files. Open the file "uwadv.cfg" that was installed with the other uwadv
-files, e.g. with Notepad (Windows) or vi (Linux). Edit the path after the word
-"uw1-path" so that it points to the game files. The Path should end with a
-slash '/' or a backslash '\' (depending on the operating system).
+Before starting the game, you have to set up the path to the installed Ultima
+Underworld game files. Without them, the game won't run.
 
-Another path that maybe have to be setup is the "uadata-path". It should point
-to where the "uadata" folder is. It may be relative to the uwadv executable.
+As Windows user, just start the "Underworld Adventures Config" program that
+can be found in the "Start Menu -> Programs -> Underworld Adventures". It also
+is started when installing Underworld Adventures.
+
+For advanced users or people using Linux (or other systems), just open the
+file "uwadv.cfg" with a text editor (it usually is installed to
+"/usr/local/share/games/uwadv/") and edit the settings manually. Operating
+systems that allow a user home directory can have a file "~/.uwadv.cfg" that
+supersedes settings in the global config file.
 
 To start the Underworld Adventures, just run the executable "uwadv.exe" (on
 Windows) or "uwadv" (on Linux). While running, the two files "stdout.txt" and
