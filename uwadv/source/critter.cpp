@@ -33,7 +33,7 @@
 // constants
 
 // should make move this to a header
-const double critter_fps = 0.5;
+const double critter_fps = 1.0;
 
 
 // ua_critter methods
@@ -79,7 +79,13 @@ void ua_critter::tick(double ticktime)
       // check if current frame needs to be reset
       if( currentframe >= segmentlist[currentanim].size() ||
           segmentlist[currentanim][currentframe] == 0xff)
+      {
          currentframe = 0;
+
+         // do new animation
+         Uint8 newslot = 0x23 + unsigned( (rand()*3.0)/double(RAND_MAX) );
+         currentanim = slotlist[newslot];
+      }
    }
 }
 
