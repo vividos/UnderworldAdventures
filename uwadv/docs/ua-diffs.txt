@@ -10,3 +10,5 @@ original games there are. Some differences can be switched off with the
 
 - cutscene speech is played back a bit too slow (as the .voc files are
   resampled to 22088 Hz as opposed to 22050 Hz)
+
+- input cursor in conversation is a vertical line, not a blinking cursor
