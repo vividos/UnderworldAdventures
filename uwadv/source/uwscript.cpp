@@ -543,26 +543,29 @@ int ua_underworld_script_bindings::objlist_get_obj_info(lua_State* L)
    lua_pushnumber(L,static_cast<double>(info.quantity));
    lua_settable(L,-3);
 
-   // add data table
-   lua_pushstring(L,"data");
+   // add npc infos
+   if (extinfo.npc_used)
    {
-      lua_newtable(L);
-
-      // push table entries
-      unsigned int max = info.data.size();
-
-      lua_pushstring(L,"size");
-      lua_pushnumber(L,static_cast<double>(max));
+      lua_pushstring(L,"npc_whoami");
+      lua_pushnumber(L,static_cast<double>(extinfo.npc_whoami));
       lua_settable(L,-3);
 
-      for(unsigned int i=0; i<max; i++)
-      {
-         lua_pushnumber(L,static_cast<double>(i));
-         lua_pushnumber(L,static_cast<double>(info.data[i]));
-         lua_settable(L,-3);
-      }
+      lua_pushstring(L,"npc_attitude");
+      lua_pushnumber(L,static_cast<double>(extinfo.npc_attitude));
+      lua_settable(L,-3);
+
+      lua_pushstring(L,"npc_hp");
+      lua_pushnumber(L,static_cast<double>(extinfo.npc_hp));
+      lua_settable(L,-3);
+
+      lua_pushstring(L,"npc_xhome");
+      lua_pushnumber(L,static_cast<double>(extinfo.npc_xhome));
+      lua_settable(L,-3);
+
+      lua_pushstring(L,"npc_yhome");
+      lua_pushnumber(L,static_cast<double>(extinfo.npc_yhome));
+      lua_settable(L,-3);
    }
-   lua_settable(L,-3);
 
    return 1;
 }
