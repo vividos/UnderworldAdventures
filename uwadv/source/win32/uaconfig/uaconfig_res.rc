@@ -55,7 +55,7 @@ END
 IDD_DIALOG_UACONFIG DIALOG DISCARDABLE  0, 0, 282, 150
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Underworld Adventures Configuration"
-FONT 8, "MS Sans Serif"
+FONT 8, "Tahoma"
 BEGIN
     LTEXT           "General Settings",IDC_STATIC,4,2,53,8
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,60,6,218,1
@@ -65,26 +65,26 @@ BEGIN
     LTEXT           "Cutscenes Narration",IDC_STATIC,9,31,65,8
     COMBOBOX        IDC_COMBO_CUTS_NARRATION,92,27,90,46,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
+    CONTROL         "enable Underworld Adventures features",
+                    IDC_CHECK_ENABLE_FEATURES,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,9,44,141,10
     LTEXT           "Graphics Settings",IDC_STATIC,4,56,56,8
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,64,60,212,1
     LTEXT           "Screen Resolution",IDC_STATIC,9,71,59,8
     COMBOBOX        IDC_COMBO_SCREEN_RESOLUTION,92,67,90,103,CBS_DROPDOWN | 
                     WS_VSCROLL | WS_GROUP | WS_TABSTOP
     CONTROL         "Fullscreen Mode",IDC_CHECK_FULLSCREEN,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,193,69,68,10
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,4,126,274,1
-    PUSHBUTTON      "&Cancel",IDCANCEL,172,132,50,14
-    PUSHBUTTON      "&OK",IDOK,228,132,50,14
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,64,60,212,1
-    CONTROL         "enable audio output",IDC_CHECK_ENABLE_AUDIO,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,9,97,79,10
     LTEXT           "Audio Settings",IDC_STATIC,4,85,46,8
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,54,89,223,1
+    CONTROL         "enable audio output",IDC_CHECK_ENABLE_AUDIO,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,9,97,79,10
     LTEXT           "MIDI device",IDC_STATIC,9,111,40,8
     COMBOBOX        IDC_COMBO_MIDI_DEVICE,92,109,137,83,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    CONTROL         "enable Underworld Adventures features",
-                    IDC_CHECK_ENABLE_FEATURES,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,9,44,141,10
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,4,126,274,1
+    PUSHBUTTON      "&Cancel",IDCANCEL,172,132,50,14
+    PUSHBUTTON      "&OK",IDOK,228,132,50,14
 END
 
 
@@ -122,6 +122,33 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDI_ICON_UACONFIG       ICON    DISCARDABLE     "Corp.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDOK                    "Leaves Underworld Adventures Configuration dialog and saves settings made so far."
+    IDCANCEL                "Leaves Underworld Adventures Configuration dialog and dismisses all changes made."
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDC_EDIT_UW1_PATH       "Contains the full path to a folder where Ultima Underworld I is installed."
+    IDC_BUTTON_SET_UW1_PATH "Lets you browse for a folder where Ultima Underworld I is installed."
+    IDC_COMBO_CUTS_NARRATION 
+                            "Lets you choose the way cutscene text are shown and narrated."
+    IDC_CHECK_FULLSCREEN    "When checked, enables fullscreen mode for the main window. Be sure that the screen resolution is a valid fullscreen resolution."
+    IDC_COMBO_SCREEN_RESOLUTION 
+                            "Screen resolution used for the main window; must have the form ""<xres> x <yres>""."
+    IDC_CHECK_ENABLE_AUDIO  "When checked, enables audio output in Underworld Adventures."
+    IDC_COMBO_MIDI_DEVICE   "Sets MIDI device to use for MIDI playback; doesn't have an effect when using the digital soundtrack."
+    IDC_CHECK_ENABLE_FEATURES 
+                            "When checked, Underworld Adventures features are enabled. Please read the documentation for more information."
+END
+
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 
