@@ -65,6 +65,7 @@ ua_ingame_orig_screen::ua_ingame_orig_screen(ua_game_interface& game)
    dragon_right.set_parent(this);
    command_buttons.set_parent(this);
    view3d.set_parent(this);
+   powergem.set_parent(this);
 }
 
 void ua_ingame_orig_screen::init()
@@ -168,6 +169,10 @@ void ua_ingame_orig_screen::init()
       register_window(&img_background);
    }
 
+   // init 3d view window
+   view3d.init(game,54,20);
+   register_window(&view3d);
+
    // init compass
    compass.init(game, 112,131);
    compass.add_border(img_background.get_image());
@@ -226,12 +231,15 @@ void ua_ingame_orig_screen::init()
    command_buttons.init(game, 0,0); // buttons are self-repositioning
    register_window(&command_buttons);
 
-   // init 3d view window
-   view3d.init(game,54,20);
-   register_window(&view3d);
-
+   // init panel
    panel.init(game,235,6);
    register_window(&panel);
+
+   // init powergem
+   powergem.init(game,4,139);
+   powergem.add_border(img_background.get_image());
+   powergem.update_gem();
+   register_window(&powergem);
 
    // init mouse cursor
    mousecursor.init(game,0);
@@ -557,6 +565,27 @@ void ua_ingame_orig_screen::key_event(bool key_down, ua_key_value key)
    case ua_key_menu_press_button:
       if (key_down && gamemode == ua_mode_options)
          command_buttons.do_button_action();
+      break;
+
+      // combat keys
+   case ua_key_combat_bash:
+   case ua_key_combat_slash:
+   case ua_key_combat_thrust:
+      if (gamemode == ua_mode_fight)
+      {
+         if (key_down)
+         {
+            // start combat weapon drawback
+            game.get_underworld().user_action(ua_action_combat_draw,
+               key == ua_key_combat_bash ? 0 :
+               key == ua_key_combat_slash ? 1 : 2);
+         }
+         else
+         {
+            // end combat weapon drawback
+            game.get_underworld().user_action(ua_action_combat_release, 0);
+         }
+      }
       break;
 
       // options menu
@@ -916,8 +945,8 @@ void ua_ingame_orig_screen::uw_notify(ua_underworld_notification notify,
 {
    switch(notify)
    {
-   case ua_notify_update_gem:
-      //power_gem.update_gem();
+   case ua_notify_update_powergem:
+      powergem.update_gem();
       break;
 
    case ua_notify_update_gargoyle_eyes:

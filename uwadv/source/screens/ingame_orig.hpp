@@ -86,7 +86,6 @@ enum ua_ingame_move_state
 enum ua_screen_area_id
 {
    ua_area_textscroll,
-   ua_area_powergem,
 
    ua_area_move_left,
    ua_area_move_foreward,
@@ -152,9 +151,6 @@ protected:
    //! starts conversation with object in current level, on list position
    virtual void uw_start_conversation(unsigned int list_pos);
 
-/*
-   virtual void ui_show_cutscene(unsigned int cutscene);
-*/
 protected:
    // constants
 
@@ -235,6 +231,9 @@ protected:
    //! 3d view area (invisible)
    ua_ingame_3dview view3d;
 
+   //! powergem
+   ua_ingame_powergem powergem;
+
 
    // game related
 
@@ -253,12 +252,8 @@ protected:
    void do_screenshot(bool with_menu, unsigned int xres=0, unsigned int yres=0);
 
 protected:
-
    //! mouse cursor image
    unsigned int cursor_image;
-
-   //! true when cursor is a priority cursor
-   bool prio_cursor;
 
 
    // misc. stuff
