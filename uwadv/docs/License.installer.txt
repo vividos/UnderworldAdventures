@@ -12,26 +12,3 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-SDL Readme
-----------
-
-The Simple DirectMedia Layer (SDL for short) is a cross-platfrom library
-designed to make it easy to write multi-media software, such as games and
-emulators.
-
-The Simple DirectMedia Layer library source code is available from:
-http://www.libsdl.org/
-
-This library is distributed under the terms of the GNU LGPL license:
-http://www.gnu.org/copyleft/lesser.html
-
-
-SDL_mixer Readme
-----------------
-
-This library is distributed under the terms of the GNU LGPL license:
-http://www.gnu.org/copyleft/lesser.html
-
-The source is available from the libraries page at the SDL website:
-http://www.libsdl.org/
