@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@
 // enums
 
 //! levelmap tile types
-typedef enum
+enum ua_levelmap_tiletype
 {
    ua_tile_solid = 0x00,
    ua_tile_open  = 0x01,
@@ -55,7 +55,7 @@ typedef enum
    ua_tile_slope_s = 0x08,
    ua_tile_slope_w = 0x09
 
-} ua_levelmap_tiletype;
+};
 
 
 // structs

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -44,12 +44,12 @@
 //! player movement enum
 enum ua_player_movement_mode
 {
-   ua_move_walk = 1,    // walks forward (or backwards, when factor is negative)
-   ua_move_rotate  = 2, // rotates player left (or right)
-   ua_move_lookup = 4,  // moves player look angle up (or down)
-   ua_move_jump = 8,    // jumps forward (or factor 0.0 for standing jump)
-   ua_move_slide = 16,  // slides right (or left)
-   ua_move_float = 32,  // floats player up (or down)
+   ua_move_walk = 1,    //!< walks forward (or backwards, when factor is negative)
+   ua_move_rotate  = 2, //!< rotates player left (or right)
+   ua_move_lookup = 4,  //!< moves player look angle up (or down)
+   ua_move_jump = 8,    //!< jumps forward (or factor 0.0 for standing jump)
+   ua_move_slide = 16,  //!< slides right (or left)
+   ua_move_float = 32,  //!< floats player up (or down)
 };
 
 
@@ -58,7 +58,7 @@ enum ua_player_movement_mode
     may be used for combat/spell/etc. calculations
     \todo add more needed skills
 */
-typedef enum
+enum ua_player_attributes
 {
    // note: scripts depend on numerical values, they must be in-sync with
    // those in uwinterface.lua
@@ -95,11 +95,11 @@ typedef enum
 
    ua_attr_max
 
-} ua_player_attributes;
+};
 
 
 //! player skills enum
-typedef enum
+enum ua_player_skills
 {
    // note: scripts depend on numerical values, they must be in-sync with uwinterface.lua
    ua_skill_attack=0,
@@ -124,7 +124,7 @@ typedef enum
    ua_skill_swimming=19,
 
    ua_skill_max
-} ua_player_skills;
+};
 
 
 // classes
