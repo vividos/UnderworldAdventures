@@ -13,8 +13,14 @@ luaSCRIPTS = \
 	uw1/scripts/game.lua
 
 luaOBJECTS = $(luaSCRIPTS:.lua=.lob)
+
+modelFILES = \
+	models/static/muffin.wrl \
+	models/static/steak.wrl
+
 uarFILES = $(luaOBJECTS) \
 	uw1/scripts/uwinit.txt \
 	uw1/audio/music.m3u \
-	uw1/keymap.cfg
-
+	uw1/keymap.cfg \
+	uw1/model3d.cfg \
+	$(modelFILES)
