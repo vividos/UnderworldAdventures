@@ -45,7 +45,7 @@ public:
    //! ctor
    ua_files_manager();
 
-   //! initializes files manager
+   //! initializes files manager; loads all config files; also sets gametype in ua_settings
    void init(ua_settings &settings);
 
    //! returns "uadata" file

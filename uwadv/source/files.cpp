@@ -40,11 +40,71 @@ ua_files_manager::ua_files_manager()
 {
 }
 
+//! checks if a file with given filename is available
+bool ua_file_isavail(const char *base, const char *fname)
+{
+   std::string filename(base);
+   filename.append(fname);
+
+   FILE *fd = fopen(filename.c_str(),"rb");
+   if (fd==NULL)
+      return false;
+
+   fclose(fd);
+   return true;
+}
+
 void ua_files_manager::init(ua_settings &settings)
 {
+   // init config files list
    init_cfgfiles_list();
 
-   uadata_path = settings.uadata_path;
+   // load all settings
+   unsigned int max = cfgfiles_list.size();
+   for(unsigned int i=0; i<max; i++)
+   {
+      settings.load(cfgfiles_list[i].c_str());
+   }
+
+   settings.init();
+
+   uadata_path = settings.get_string(ua_setting_uadata_path);
+
+   // check for available games
+
+   const char *base = settings.get_string(ua_setting_uw_path).c_str();
+
+   // check for files that have to be available in all games
+   if (!ua_file_isavail(base,"data/cnv.ark") &&
+       !ua_file_isavail(base,"data/strings.pak") &&
+       !ua_file_isavail(base,"data/pals.dat") &&
+       !ua_file_isavail(base,"data/allpals.dat"))
+   {
+      settings.set_gametype(ua_game_none);
+   }
+   else
+   // check for demo relevant files
+   if (ua_file_isavail(base,"uwdemo.exe") &&
+       ua_file_isavail(base,"data/level13.st") &&
+       ua_file_isavail(base,"data/level13.anx") &&
+       ua_file_isavail(base,"data/level13.txm"))
+   {
+      settings.set_gametype(ua_game_uw_demo);
+   }
+   else
+   // check for ultima underworld 2
+   if (ua_file_isavail(base,"uw2.exe"))
+   {
+      settings.set_gametype(ua_game_uw2);
+   }
+   else
+   // check for ultima underworld 1
+   if (ua_file_isavail(base,"uw.exe"))
+   {
+      settings.set_gametype(ua_game_uw1);
+   }
+   else
+      settings.set_gametype(ua_game_none);
 }
 
 void ua_files_manager::init_cfgfiles_list()
