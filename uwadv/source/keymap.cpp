@@ -68,7 +68,7 @@ bool ua_keymap::is_key(ua_key_value key, Uint32 keymod)
 
    // compare keysym and keymod values separately
    return (( keymod&0xffff) == (keymod2&0xffff) &&
-      ((keymod>>16) & (keymod2>>16)) != 0);
+      (keymod2>>16 == 0 || ((keymod>>16) & (keymod2>>16)) != 0));
 }
 
 Uint32 ua_keymap::get_key(ua_key_value key)
