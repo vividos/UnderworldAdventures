@@ -32,88 +32,104 @@
 
 // global functions
 
-void ua_extract_data(Uint8 *src,Uint8 *dst,unsigned int maxpix)
+// dumps pixels to output buffer
+void ua_cuts_dump_pixel(Uint8 *&src,Uint8 *&dst,unsigned int &maxpix,unsigned int size)
+{
+   while(size>0 && maxpix>0)
+   {
+      *dst++ = *src++;
+      size--; maxpix--;
+   }
+}
+
+// does a run with a pixel to output buffer
+void ua_cuts_run_pixel(Uint8 *&src,Uint8 *&dst,unsigned int &maxpix,unsigned int size)
+{
+   Uint8 pixel = *src++;
+   while(size>0 && maxpix>0)
+   {
+      *dst++ = pixel;
+      size--; maxpix--;
+   }
+}
+
+// skips some pixels in the output buffer
+void ua_cuts_skip_pixel(Uint8 *&dst,unsigned int &maxpix,unsigned int size)
+{
+   if (size>maxpix) size=maxpix;
+   dst += size;
+   maxpix -= size;
+}
+
+void ua_cuts_extract_data(Uint8 *src,Uint8 *dst,unsigned int maxpix)
 {
    while(maxpix>0)
    {
-      Sint8 cnt = (Sint8)*src++;
+      Sint8 cnt = static_cast<Sint8>(*src++);
+
+      // short operations
 
       if (cnt>0)
       {
-         // dump
-         while (cnt>0)
-         {
-            *dst++ = *src++;
-            cnt--;
-            maxpix--;
-         }
+         // short dump
+         ua_cuts_dump_pixel(src,dst,maxpix,cnt);
+         continue;
       }
-      else if (cnt==0)
+
+      if (cnt==0)
       {
-         // run
-         Uint8 wordCnt = *src++;
-         Uint8 pixel = *src++;
-         maxpix -= wordCnt;
-         while(wordCnt>0)
-         {
-            *dst++ = pixel;
-            wordCnt--;
-         }
+         // short run
+         Uint8 wordcnt = *src++;
+         ua_cuts_run_pixel(src,dst,maxpix,wordcnt);
+         continue;
+      }
+
+      // remove sign bit
+      cnt &= 0x7f;
+
+      if (cnt!=0)
+      {
+         // short skip
+         ua_cuts_skip_pixel(dst,maxpix,cnt);
+         continue;
+      }
+
+      // long operations
+
+      // get next 16 bit word
+#if (SDL_BYTEORDER==SDL_BIG_ENDIAN)
+      Uint16 wordcnt = ua_endian_convert16(*(reinterpret_cast<Uint16*>(src)));
+#else
+      Uint16 wordcnt = *(reinterpret_cast<Uint16*>(src));
+#endif
+      src+=2;
+
+      // end of decoding?
+      if (wordcnt == 0)
+         break;
+
+      if (static_cast<Sint16>(wordcnt)>0)
+      {
+         // long skip
+         ua_cuts_skip_pixel(dst,maxpix,wordcnt);
+         continue;
+      }
+
+      // remove sign bit
+      wordcnt &= 0x7fff;
+
+      if (wordcnt>=0x4000)
+      {
+         // clear "longRun" bit
+         wordcnt -= 0x4000;
+
+         // long run
+         ua_cuts_run_pixel(src,dst,maxpix,wordcnt);
       }
       else
       {
-         cnt &= 0x7f;
-         if (cnt != 0)
-         {
-            // shortSkip
-            dst += cnt;
-            maxpix -= cnt;
-         }
-         else
-         {
-            // longOp
-            Uint16 wordCnt = *((Uint16*)src);
-            src+=2;
-
-            if ((Sint16)wordCnt <= 0)
-            {
-               // notLongSkip
-               if (wordCnt == 0)
-               {
-                  break; // end loop
-               }
-
-               wordCnt &= 0x7fff; // Remove sign bit.
-               if (wordCnt >= 0x4000)
-               {
-                  // longRun
-                  wordCnt -= 0x4000; // Clear "longRun" bit
-                  Uint8 pixel = *src++;
-                  maxpix -= wordCnt;
-                  while(wordCnt>0)
-                  {  
-                     *dst++ = pixel;
-                     wordCnt--;
-                  }
-               }
-               else
-               {
-                  // longDump
-                  maxpix -= wordCnt;
-                  while(wordCnt>0)
-                  {
-                     *dst++ = *src++;
-                     wordCnt--;
-                  }
-               }
-            }
-            else
-            {
-               // longSkip
-               maxpix -= wordCnt;
-               dst += wordCnt;
-            }
-         }
+         // long dump
+         ua_cuts_dump_pixel(src,dst,maxpix,wordcnt);
       }
    }
 }
@@ -153,7 +169,8 @@ const Uint8 *ua_cutscene::get_frame(unsigned int framenum)
    if(src[1])
       src += ( src16[1] + ( src16[1] & 1 ));
 
-   ua_extract_data(&src[4],&outbuffer[0],width*height);
+   // extract the pixel data
+   ua_cuts_extract_data(&src[4],&outbuffer[0],width*height);
 
    return &outbuffer[0];
 }
