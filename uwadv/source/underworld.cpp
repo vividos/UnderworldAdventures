@@ -32,32 +32,28 @@
 
 // ua_underworld methods
 
-void ua_underworld::init(ua_settings &settings, ua_texture_manager &texmgr)
+void ua_underworld::init(ua_settings &settings, ua_game_core_interface *thecore)
 {
-   curmap = new ua_levelmap;
+   core=thecore;
+}
 
-   // load map
-   curlevel = 0;
-   curmap->load(settings,curlevel);
+void ua_underworld::load_game()
+{
+}
 
-   texmgr.reset();
-   curmap->prepare_textures(texmgr);
+void ua_underworld::new_game()
+{
+}
+
+void ua_underworld::save_game()
+{
 }
 
 void ua_underworld::done()
 {
-   delete curmap;
-   curmap = NULL;
 }
 
-void ua_underworld::move_player(float x, float y, int level)
+void ua_underworld::render()
 {
-/*   curmap->load(settings,--curlevel);
-   texmgr.reset();
-   map.prepare_textures(texmgr);*/
-}
-
-void ua_underworld::render(ua_texture_manager &texmgr)
-{
-   curmap->render(texmgr);
+//   curmap->render(texmgr);
 }

@@ -30,8 +30,17 @@
 #define __uwadv_underworld_hpp_
 
 // needed includes
-#include "levelmap.hpp"
-#include "texture.hpp"
+#include <vector>
+#include "core.hpp"
+#include "level.hpp"
+#include "player.hpp"
+#include "inventory.hpp"
+#include "conv/codevm.hpp"
+#include "level.hpp"
+
+
+// forward declaration
+class ua_game_core_interface;
 
 
 // classes
@@ -43,35 +52,54 @@ public:
    ua_underworld(){}
 
    //! initializes underworld
-   //! \todo game state loading, from char generation or saved game
-   void init(ua_settings &settings, ua_texture_manager &texmgr);
+   void init(ua_settings &settings, ua_game_core_interface *core);
+
+   //! loads complete game state from savegame
+   void load_game(/*...*/);
+
+   //! loads new game state
+   void new_game(/*...*/);
+
+   //! saves game state
+   void save_game(/*...*/);
 
    //! clean up the underworld
    void done();
 
-   float get_player_height(float x, float y){ return curmap->get_floor_height(x,y)+0.6; }
-
-   //! saves game
-   //void save();
-
    //! moves player according to the speed vector
-   void walk_player(){}
+   void walk_player(float angle){}
 
    //! transfers player to other location
-   void move_player(float x, float y, int level=-1);
+//   void move_player(float x, float y, int level=-1);
 
    //! renders the current game map and all objects
-   void render(ua_texture_manager &texmgr);
+   void render();
+
+   // access to underworld components
+
+   ua_player &get_player(){ return player; }
+
+   ua_inventory &get_inventory(){ return inventory; }
+
+   ua_conv_globals &get_conv_globals(){ return conv_globals; }
+
+   ua_level &get_level(unsigned int level);
 
 protected:
+   //! interface to core game class
+   ua_game_core_interface *core;
+
+   ua_player player;
+
+   ua_inventory inventory;
+
+   ua_conv_globals conv_globals;
+
    //! current level
-   int curlevel;
+   unsigned int curlevel;
 
-   //! current level map
-   ua_levelmap *curmap;
-
-   //! all level maps
-   std::vector<ua_levelmap*> allmaps;
+   //! all underworld levels
+   std::vector<ua_level*> levels;
 };
 
 #endif

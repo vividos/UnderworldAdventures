@@ -30,6 +30,7 @@
 #define __uwadv_uwadv_hpp_
 
 // needed includes
+#include <vector>
 #include "settings.hpp"
 #include "texture.hpp"
 #include "gamestrings.hpp"
@@ -54,6 +55,9 @@ public:
    //! cleans up all stuff
    virtual void done();
 
+   //! shows the user an error message
+   virtual void error_msg(const char *msg);
+
 protected:
    //! controls how many ticks per second are done
    const unsigned int tickrate;
@@ -69,6 +73,9 @@ protected:
 
    //! texture manager
    ua_texture_manager texmgr;
+
+   //! underworld object
+   ua_underworld underworld;
 
    //! indicates if game can be exited
    bool exit_game;
@@ -91,12 +98,13 @@ protected:
 protected:
    // ua_game_core_interface virtual methods
 
-   virtual unsigned int get_screen_width(){ return width; };
-   virtual unsigned int get_screen_height(){ return height; };
+   virtual float get_aspect_ratio(){ return float(width)/height; }
+   virtual unsigned int get_tickrate(){ return tickrate; }
    virtual ua_audio_interface &get_audio(){ return *audio; }
-   virtual ua_gamestrings &get_strings(){ return gstr; };
-   virtual ua_settings &get_settings(){ return settings; };
-   virtual ua_texture_manager &get_texmgr(){ return texmgr; };
+   virtual ua_gamestrings &get_strings(){ return gstr; }
+   virtual ua_settings &get_settings(){ return settings; }
+   virtual ua_texture_manager &get_texmgr(){ return texmgr; }
+   virtual ua_underworld &get_underworld(){ return underworld; }
 
    virtual void push_screen(ua_ui_screen_base *newscreen);
    virtual void replace_screen(ua_ui_screen_base *newscreen);
@@ -117,9 +125,6 @@ private:
 
    //! renders the screen
    void draw_screen();
-
-   //! does the game logic
-   void game_logic();
 };
 
 #endif
