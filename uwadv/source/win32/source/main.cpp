@@ -30,8 +30,10 @@
 #include "game_win32.hpp"
 
 
-// undefine "main" mapping to "SDL_main", to get console output
+// to have console output, use a genuine main(), not the SDL_main one
+#ifdef HAVE_CONSOLE
 #undef main
+#endif
 
 
 // main function
