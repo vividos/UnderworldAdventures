@@ -272,7 +272,7 @@ void ua_panel::update_panel_texture()
 
          ua_image img_weight;
          font_normal.create_string(img_weight,buffer.str().c_str(),224);
-         panel.paste_image(img_weight,65,52,true);
+         panel.paste_image(img_weight,69-img_weight.get_xres()/2,52,true);
       }
    }
 
