@@ -335,6 +335,13 @@ int main(int argc, char* argv[])
             for(int c=0; c<19; c++)
                fprintf(out,"%02x ",(unsigned int)npcinfo[c]);
 
+            // print xhome/yhome
+            fprintf(out,"xhome=%02x yhome=%02x extra=%02x ",
+               (npcinfo[15]>>2)&0x3f,
+               ((npcinfo[14]|(npcinfo[15]<<8))>>4)&0x3f,
+               npcinfo[14]&0x0f);
+
+            // print name
             if (npcinfo[18]>0)
                fprintf(out,"name=%-25s ",gs.get_string(7,npcinfo[18]+16).c_str());
             else
