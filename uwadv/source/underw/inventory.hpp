@@ -143,7 +143,7 @@ public:
    //! inserts new item and makes it floating; returns itemlist pos
    Uint16 insert_floating_item(ua_object_info& objinfo);
 
-   // loading / saving / importing
+   // loading / saving
 
    //! loads a savegame
    void load_game(ua_savegame& sg);

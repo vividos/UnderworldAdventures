@@ -224,7 +224,7 @@ public:
    void delete_object(Uint16 pos);
 
 
-   // loading / saving / importing
+   // loading / saving
 
    //! loads a savegame
    void load_game(ua_savegame &sg);
