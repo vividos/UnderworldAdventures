@@ -24,6 +24,9 @@
    \brief scripting support for Underworld Adventures
 
 */
+//! \ingroup scripting
+
+//@{
 
 // include guard
 #ifndef uwadv_scripting_hpp_
@@ -115,4 +118,6 @@ public:
    static ua_scripting* create_scripting(ua_scripting_language lang);
 };
 
+
 #endif
+//@}
