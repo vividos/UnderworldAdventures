@@ -37,6 +37,10 @@ Table of Contents
    5      String resources
 
    6      Objects and items
+   6.1    List of all objects and items
+   6.2    Common object properties
+   6.3    Object class properties
+   6.4    Item combining
 
    7      Conversations
 
@@ -847,8 +851,219 @@ Table of Contents
 
 6  Objects and items
 
+   This chapter contains informations about the objects in Ultima Underworld.
+   Objects (or items) are grouped by type. Here's a short overview of all
+   object groups:
 
-6.x  List of all object ID's
+   0000-001F  Weapons and missiles
+   0020-003F  Armour and clothing
+   0040-007F  Monsters
+   0080-008F  Containers
+   0090-0097  Light sources
+   0098-009F  Wands
+   00A0-00AF  Treasure
+   00B0-00BF  Comestibles
+   00C0-00DF  Scenery and junk
+   00E0-00FF  Runes and bits of the Key of Infinity
+   0100-010F  Keys, lockpick, lock
+   0110-011F  Quest items
+   0120-012F  Inventory items, misc stuff
+   0130-013F  Books and scrolls
+   0140-014F  Doors
+   0150-015F  Furniture
+   0160-016F  Pillar, some decals, force field, special tmap (?)
+   0170-017F  Switches
+   0180-019F  Traps
+   01A0-01BF  Triggers
+   01C0-01CF  Explosions/splats, fountain, silver tree, moving things
+
+   A description string for each object is stored in game strings block 0004
+
+
+6.1  List of all objects and items
+
+   This chapter lists and describes all objects that are available in Ultima
+   Underworld. Descriptions for obvious items are omitted.
+
+   000f: a_fist
+         this is not really an item, but is used for fist combat
+
+   002f  a_pair of dragon skin boots
+         player doesn't get hurt when walking on lava
+
+   007f  an_adventurer
+         the player as object; isn't used ingame
+
+   0110  a_picture of Tom
+
+   0166  some_writing
+         decal on the wall; text is determined through "quantity" field,
+         first 10 bits; game strings block 0008
+
+
+6.1.2  Traps and Triggers
+
+   Traps are set off by triggers, which are triggered by the player coming
+   near them. Traps can also be set off by switches or buttons, etc.
+
+   0180  a_damage trap
+         player is hurt; number of hit points are in field "quality"
+
+   0181  a_teleport trap
+         teleports the player to another level and tile; destination level is
+         given by trap z position (0 means current level), tile coordinates
+         are given in "quality" and "owner" fields.
+
+   0182  a_arrow trap
+   0183  a_do trap
+   0184  a_pit trap
+   0185  a_change terrain trap
+   0186  a_spelltrap
+   0187  a_create object trap
+   0188  a_door trap
+         opens or shuts a door when set off. The "quantity" field specifies
+         the lock of the door.
+
+   0189  a_ward trap
+   018a  a_tell trap
+   018b  a_delete object trap
+   018c  an_inventory trap
+   018d  a_set variable trap
+   018e  a_check variable trap
+   018f  a_combination trap
+   0190  a_text string trap
+         causes the player to get a text message when it is set off. The
+         "owner" field specifies string number per level, in game strings
+         block 0009. The actual string number printed is (64*level + "owner")
+
+   01a0  a_move trigger
+   01a1  a_pick up trigger
+   01a2  a_use trigger
+         triggers a trap as if it was "used" by the player. trap to use is
+         specified in "quantity" field.
+
+   01a3  a_look trigger
+   01a4  a_step on trigger
+   01a5  an_open trigger
+   01a6  an_unlock trigger
+
+
+6.2  Common object properties
+
+   Object properties common to all items are stored in the file "comobj.dat".
+   The number of object properties is determined by (filelen-2) / 11   (each
+   entry is 11 bytes long).
+
+   The first two bytes of the file contain unknown information. Each entry has
+   the following format:
+
+   0000  Int8    armour (ID?)
+   0001  Int16   mass/stuff:
+                 bits 0-3:  unknown
+                 bits 4-15: mass in 0.1 stones
+   0003  Int8    flags (lower 4 bits only)
+                 0/2: object in range [336, 368[ seem to be 3d objects
+                 4:   decal object
+   0004  Int16   value (?)
+   0005  Int24   unknown1
+   0008  Int8    scale value (?)
+   0009  Int8    unknown2
+   000A  Int8    lower 4 bits are quality type 0-f
+
+   Each possible value of "quality type" maps onto a group of 6 strings in
+   block 4 from lowest to highest quality. Items which have a quality are
+   always described as "a/an <quality> <item>", with the exception of group D
+   which is for armour items which are gramatically plural even if there is
+   only one of the object, e.g. "leather leggings".
+
+
+6.3  Object class properties
+
+   Object properties specific to a range of objects are stored in the file
+   "objects.dat". The file contains several tables. Here is an overview:
+
+   pos   size     desc                        entries   bytes per entry
+   0000  Int16    unknown, always 0x010f
+   0002  0x80     melee weapons table         16         8 bytes
+   0082  0x30     ranged weapons table        16         3 bytes
+   00b2  0x80     armour and wearables table  32         4 bytes
+   0132  0x0c00   critters table              64        48 bytes
+   0d32  0x30     containers table            16         3 bytes
+   0d62  0x20     lights info table           16         2 bytes
+   0d82  0x20     unknown, maybe jewelry info table
+   0da2  0x40     animation object table      16         4 bytes
+   0de2           end
+
+   * Melee weapons table
+
+   0000   Int8   damage modifier for Slash attack
+   0001   Int8   damage modifier for Bash attack
+   0002   Int8   damage modifier for Stab attack
+   0003   3      unknown
+   0006   Int8   skill type (3: sword, 4: axe, 5: mace, 6: unarmed)
+   0007   Int8   durability
+
+   * Ranged weapons table
+
+   0000   Int8   unknown
+   0001   Int8   unknown
+   0002   Int8   durability
+
+   * Armour and wearables table
+
+   0000   Int8   protection
+   0001   Int8   durability
+   0002   Int8   unknown
+   0003   Int8   category:
+                 00: shield
+                 01: body armour
+                 03: leggings
+                 04: gloves
+                 05: boots
+                 08: hat
+                 09: ring
+
+   * Critters table
+
+   0000   Int8   unknown
+
+   * Containers table
+
+   0000   Int8   capacity
+   0001   Int8   objects accepted (0xFF means any)
+   0002   Int8   unknown
+
+   * Lights info table
+
+   0000   Int8   light brightneess
+   0001   Int8   duration (00: does't go out, e.g. taper of sacrifice)
+
+   * Jewelry info table (?)
+
+   * Animation object table
+
+   0000   Int8   unknown
+   0001   Int8   start frame (from animo.gr)
+   0002   Int8   number of frames
+   0003   Int8   unknown
+
+
+6.4  Item combining
+
+   In the Ultima Underworlds, when you `apply' certain objects to one another
+   in your inventory a new object is created. For example,
+   pole + strong thread = fishing pole. The mechanism for this is very simple
+   and is controlled by the file "cmb.dat" in the data/ directory.
+
+   This file contains a table of 3 16-bit words for each allowable
+   combination: `source1', `source2', `newobject' in that order. 3 zeros mark
+   the end of the table. The low 9 bits of each word is the object ID. If an
+   object of type source1 is applied to an object of type source2 (or vice
+   versa) an object of type newobject is created. The top bit of each of the
+   source words indicates whether that object is destroyed in the process: if
+   it is a 1, the object is destroyed. (It is always the case that at least
+   one of the source objects is destroyed: you can't create something from
+   nothing, at least not this way).
 
 
  +--------------------------------------------------------------------------+
@@ -1246,132 +1461,6 @@ Table of Contents
      the last 6 bytes appear to be some kind of checksum, always 00 01 02 03 04 05 
 
 
-
-3.0 Object IDs
-
-   0000-001F  Weapons and missiles
-   0020-003F  Armour and clothing
-   0040-007F  Monsters
-   0080-008F  Containers
-   0090-0097  Light sources
-   0098-009F  Wands
-   00A0-00AF  Treasure
-   00B0-00BF  Comestibles
-   00C0-00DF  Scenery and junk
-   00E0-00FF  Runes and bits of the Key of Infinity
-   0100-010F  Keys, lockpick, lock
-   0110-011F  Quest items
-   0120-012F  Inventory items, misc stuff
-   0130-013F  Books and scrolls
-   0140-014F  Doors
-   0150-015F  Furniture
-   0160-016F  Pillar, some decals, force field, special tmap (?)
-   0170-017F  Switches
-   0180-019F  Traps
-   01A0-01BF  Triggers
-   01C0-01CF  Explosions/splats, fountain, silver tree, moving things
-
-   Description for each object is stored in game strings, block 0004
-
-
-3.1 Common object properties
-
-   These are stored in the file "comobj.dat". The number of object properties
-   is determined by (filelen-2) / 11  (each entry is 11 bytes long)
-
-   The first two bytes contain unknown information. Each entry has the
-   following format:
-
-   0000  Int8    armour (ID?)
-   0001  Int16   mass in 0.1 stones; (lower 4 bits are stuff2, ??)
-   0003  Int8    flags (lower 4 bits only)
-                 0/2: object in range [336, 368[ seem to be 3d objects
-                 4:   decal object
-   0004  Int16   value (?)
-   0005  Int24   unknown1
-   0008  Int8    scale value (?)
-   0009  Int8    unknown2
-   000A  Int8   lower 4 bits are quality type 0-f
-
-   Each possible value of "quality type" maps onto a group of 6 strings in
-   chunk 4 from lowest to highest quality. Items which have a quality are
-   always described as "a/an <quality> <item>", with the exception of group D
-   which is for armour items which are gramatically plural even if there is
-   only one of the object, e.g. "leather leggings".
-
-
-3.2 Object class properties
-
-   These are stored in the file "objects.dat". It contains infos about
-   different classes of objects, e.g. weapons, armor etc. The file is split
-   in several tables. Here is an overview:
-
-   pos   size     desc                        entries   bytes per entry
-   0000  Int16    unknown, always 0x010f
-   0002  0x80     melee weapons table         16         8 bytes
-   0082  0x30     ranged weapons table        16         3 bytes
-   00b2  0x80     armour and wearables table  32         4 bytes
-   0132  0x0c00   critters table              64        48 bytes
-   0d32  0x30     containers table            16         3 bytes
-   0d62  0x20     lights info table           16         2 bytes
-   0d82  0x20     unknown, maybe jewelry info table
-   0da2  0x40     animation object table      16         4 bytes
-   0de2           end
-
-   * melee weapons table
-
-     0000   Int8   damage modifier for Slash attack
-     0001   Int8   damage modifier for Bash attack
-     0002   Int8   damage modifier for Stab attack
-     0003   3      unknown
-     0006   Int8   skill type (3: sword, 4: axe, 5: mace, 6: unarmed)
-     0007   Int8   durability
-
-   * ranged weapons table
-
-     0000   Int8   unknown
-     0001   Int8   unknown
-     0002   Int8   durability
-
-   * armour and wearables table
-
-     0000   Int8   protection
-     0001   Int8   durability
-     0002   Int8   unknown
-     0003   Int8   category:
-                   00: shield
-                   01: body armour
-                   03: leggings
-                   04: gloves
-                   05: boots
-                   08: hat
-                   09: ring
-
-   * critters table
-
-     0000   Int8   unknown
-
-   * containers table
-
-     0000   Int8   capacity
-     0001   Int8   objects accepted (0xFF means any)
-     0002   Int8   unknown
-
-   * lights info table
-
-     0000   Int8   light brightneess
-     0001   Int8   duration (00: does't go out, e.g. taper of sacrifice)
-
-   * jewelry info table (?)
-
-   * animation object table
-
-     0000   Int8   unknown
-     0001   Int8   start frame (from animo.gr)
-     0002   Int8   number of frames
-     0003   Int8   unknown
-
-
 3.3 Traps
 
    Traps have various effects on the game world. Traps have object IDs from
@@ -1397,12 +1486,6 @@ Table of Contents
    0192  Jump trap (uw2)
 
 
-   * Teleport trap (ID 0181)
-
-     This trap teleports the player. The destination level is given by the
-     trap z position (0 ==> remain on the current level). The destination
-     tile coordinates are given by the "Unk2" and "quality" fields.
-
    * Pit trap (ID 0184)
 
      This is probably a bottomless pit that drops the player through to the
@@ -1416,18 +1499,6 @@ Table of Contents
 
      This trap creates an object when it is set off. The link field
      points at the object to create.
-
-   * Door trap (ID 0188)
-
-     When set off, this trap opens or shuts a door. The link field
-     points at the lock, if the door has one.
-
-   * Text string trap (ID 0190)
-
-     This trap causes the player to get a text message when it is set off. The
-     "Owner / special" field of the object definition contains the string number per
-     level, in game string block 0009. The actual string number printed is
-     (64*level + unk2).
 
    * Jump trap (ID 0192) (uw2)
 
@@ -2632,22 +2703,6 @@ Table of Contents
 
 8.0 Misc. stuff
 
-8.1 Combining objects
-
-   In the Ultima Underworlds, when you `apply' certain objects to one another
-   in your inventory a new object is created. For example,
-   pole + strong thread = fishing pole. The mechanism for this is very simple
-   and is controlled by the file "cmb.dat" in the data/ directory.
-
-   This file contains a table of 3 16-bit words for each allowable
-   combination: `source1', `source2', `newobject' in that order. 3 zeros mark
-   the end of the table. The low 9 bits of each word is the object ID. If an
-   object of type source1 is applied to an object of type source2 (or vice
-   versa) an object of type newobject is created. The top bit of each of the
-   source words indicates whether that object is destroyed in the process: if
-   it is a 1, the object is destroyed. (It is always the case that at least
-   one of the source objects is destroyed: you can't create something from
-   nothing, at least not this way).
 
 8.2 Graves
 
