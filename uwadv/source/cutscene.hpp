@@ -32,14 +32,14 @@
 // needed includes
 #include <vector>
 #include "settings.hpp"
-#include "image.hpp"
+#include "imgquad.hpp"
 #include "texture.hpp"
 
 
 // classes
 
 //! cutscene animation class
-class ua_cutscene: public ua_image
+class ua_cutscene: public ua_image_quad
 {
 public:
    //! ctor
@@ -54,14 +54,18 @@ public:
    //! loads a cutscene by absolute filename
    void load(const char *filename);
 
+   //! initializes cutscene quad after loading
+   void init(ua_texture_manager* texmgr, unsigned int xpos=0, unsigned int ypos=0);
+
    //! returns maximum number of frames
    unsigned int get_maxframes(){ return records; }
 
    //! extracts a new frame into the current image
    void get_frame(unsigned int framenum);
 
+   // TODO: remove that method when it's no longer needed
    //! returns animation palette
-   ua_onepalette& get_anim_palette(){ return anim_palette; }
+   ua_onepalette& get_anim_palette(){ return quadpalette; }
 
 protected:
    //! decodes one frame
@@ -70,14 +74,12 @@ protected:
 protected:
    //! number of large pages in file
    unsigned int largepages;
+
    //! number of records in file
    unsigned int records;
 
    //! number of current frame
    unsigned int curframe;
-
-   //! animation palette
-   ua_onepalette anim_palette;
 
    //! large page descriptor struct type
    struct lp_descriptor

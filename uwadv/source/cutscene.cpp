@@ -135,6 +135,12 @@ void ua_cuts_extract_data(Uint8 *src,Uint8 *dst,unsigned int maxpix)
    }
 }
 
+void ua_cutscene::init(ua_texture_manager* texmgr,
+   unsigned int xpos, unsigned int ypos)
+{
+   ua_image_quad::init(texmgr,xpos,ypos,ua_image::xres,ua_image::yres,false);
+}
+
 void ua_cutscene::get_frame(unsigned int framenum)
 {
    if (curframe!=framenum)
