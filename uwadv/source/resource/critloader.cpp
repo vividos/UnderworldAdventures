@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -247,6 +247,9 @@ void ua_critter::load(const char* file, unsigned int used_auxpal)
 
 void ua_critter_pool::load(ua_settings& settings)
 {
+   if (settings.get_gametype()==ua_game_uw2)
+      return; // no critter loading for uw2 yet
+
    ua_trace("loading all critter animations ... ");
    unsigned int now = SDL_GetTicks();
 
