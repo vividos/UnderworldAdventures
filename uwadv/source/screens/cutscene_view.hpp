@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,8 +26,8 @@
 */
 
 // include guard
-#ifndef __uwadv_cutscene_view_hpp_
-#define __uwadv_cutscene_view_hpp_
+#ifndef uwadv_cutscene_view_hpp_
+#define uwadv_cutscene_view_hpp_
 
 // needed includes
 #include "screen.hpp"
@@ -45,15 +45,15 @@ public:
    ua_cutscene_view_screen(unsigned int cuts=0):cutscene(cuts){}
 
    // virtual functions from ua_ui_screen_base
-   virtual void init();
+   virtual void init(ua_game_core_interface* core);
    virtual void done();
-   virtual void handle_event(SDL_Event &event);
+   virtual bool handle_event(SDL_Event& event);
    virtual void render();
    virtual void tick();
 
 protected:
    //! creates text image from string
-   void create_text_image(const char *str);
+   void create_text_image(const char* str);
 
    //! performs cutscene action; called by cuts_do_action
    void do_action();
@@ -61,11 +61,23 @@ protected:
    // registered lua C functions
 
    //! performs an action given by the script
-   static int cuts_do_action(lua_State *L);
+   static int cuts_do_action(lua_State* L);
 
 protected:
+   // constants
+
+   //! frames per second for cutscene animation
+   static const double anim_fps;
+
+   //! time needed to fade in/out text
+   static const double fade_time;
+
+   //! name of lua userdata variable containing the "this" pointer
+   static const char* lua_thisptr_name;
+
+
    //! lua script state
-   lua_State *L;
+   lua_State* L;
 
    //! cutscene number to show
    unsigned int cutscene;

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -33,20 +33,23 @@
 // constants
 
 //! frames per second for cutscene animation
-const double ua_cutscene_view_anim_fps = 5.0;
+const double ua_cutscene_view_screen::anim_fps = 5.0;
 
 //! time needed to fade in/out text
-const double ua_cutscene_view_fade_time = 0.5;
+const double ua_cutscene_view_screen::fade_time = 0.5;
 
 //! name of lua userdata variable containing the "this" pointer
-const char* ua_cutscene_view_lua_thisptr_name = "self";
+const char* ua_cutscene_view_screen::lua_thisptr_name = "self";
 
 
 // ua_cutscene_view_screen methods
 
-void ua_cutscene_view_screen::init()
+void ua_cutscene_view_screen::init(ua_game_core_interface* thecore)
 {
-   ua_trace("cutscene animation %u started\n",cutscene);
+   ua_ui_screen_base::init(thecore);
+
+   ua_trace("cutscene view screen started\n"
+      "showing cutscene %u\n",cutscene);
 
    // determine cutscene type
    ua_settings &settings = core->get_settings();
@@ -102,7 +105,7 @@ void ua_cutscene_view_screen::init()
 
    // set "this" pointer
    lua_pushuserdata(L,this);
-   lua_setglobal(L,ua_cutscene_view_lua_thisptr_name);
+   lua_setglobal(L,lua_thisptr_name);
 
    // call "cuts_init(cutscene)"
    lua_getglobal(L,"cuts_init");
@@ -137,6 +140,8 @@ void ua_cutscene_view_screen::init()
 
 void ua_cutscene_view_screen::done()
 {
+   ua_trace("cutscene view screen ended\n\n");
+
    // stop audio track
    core->get_audio().stop_sound();
 
@@ -147,7 +152,7 @@ void ua_cutscene_view_screen::done()
    lua_close(L);
 }
 
-void ua_cutscene_view_screen::handle_event(SDL_Event &event)
+bool ua_cutscene_view_screen::handle_event(SDL_Event& event)
 {
    switch(event.type)
    {
@@ -170,6 +175,7 @@ void ua_cutscene_view_screen::handle_event(SDL_Event &event)
       }
    default: break;
    }
+   return true;
 }
 
 void ua_cutscene_view_screen::render()
@@ -194,12 +200,12 @@ void ua_cutscene_view_screen::render()
 
       case 1: // fade in
          light = static_cast<Uint8>( 255*double(anim_fadecount) /
-            (ua_cutscene_view_fade_time*core->get_tickrate()) );
+            (fade_time*core->get_tickrate()) );
          break;
 
       case 2: // fade out
          light = 255-static_cast<Uint8>( 255*double(anim_fadecount) /
-            (ua_cutscene_view_fade_time*core->get_tickrate()) );
+            (fade_time*core->get_tickrate()) );
          break;
       }
       glColor3ub(light,light,light);
@@ -224,12 +230,12 @@ void ua_cutscene_view_screen::render()
 
       case 1: // fade in
          light = static_cast<Uint8>( 255*double(text_fadecount) /
-            (ua_cutscene_view_fade_time*core->get_tickrate()) );
+            (fade_time*core->get_tickrate()) );
          break;
 
       case 2: // fade out
          light = 255-static_cast<Uint8>( 255*double(text_fadecount) /
-            (ua_cutscene_view_fade_time*core->get_tickrate()) );
+            (fade_time*core->get_tickrate()) );
          break;
       }
       glColor3ub(light,light,light);
@@ -242,7 +248,7 @@ void ua_cutscene_view_screen::render()
 
 void ua_cutscene_view_screen::tick()
 {
-   if (ended && anim_fadecount >= ua_cutscene_view_fade_time*core->get_tickrate())
+   if (ended && anim_fadecount >= fade_time*core->get_tickrate())
    {
       // we're finished
       core->pop_screen();
@@ -255,10 +261,10 @@ void ua_cutscene_view_screen::tick()
       // count up animcount
       animcount += 1.0/core->get_tickrate();
 
-      if (animcount>=1.0/ua_cutscene_view_anim_fps)
+      if (animcount>=1.0/anim_fps)
       {
          // calculate remaining time
-         animcount -= 1.0/ua_cutscene_view_anim_fps;
+         animcount -= 1.0/anim_fps;
 
          // count up frames
          curframe++;
@@ -280,7 +286,7 @@ void ua_cutscene_view_screen::tick()
       ++anim_fadecount;
 
       // end of fade reached?
-      if (anim_fadecount >= ua_cutscene_view_fade_time*core->get_tickrate())
+      if (anim_fadecount >= fade_time*core->get_tickrate())
       {
          if (anim_fade_state == 1)
             anim_fade_state = 0;
@@ -295,7 +301,7 @@ void ua_cutscene_view_screen::tick()
       ++text_fadecount;
 
       // end of fade reached?
-      if (text_fadecount >= ua_cutscene_view_fade_time*core->get_tickrate())
+      if (text_fadecount >= fade_time*core->get_tickrate())
       {
          if (text_fade_state == 1)
             text_fade_state = 0;
@@ -326,7 +332,7 @@ void ua_cutscene_view_screen::tick()
    ++tickcount;
 }
 
-void ua_cutscene_view_screen::create_text_image(const char *str)
+void ua_cutscene_view_screen::create_text_image(const char* str)
 {
    unsigned int maxlen = 310;
 
@@ -421,7 +427,7 @@ void ua_cutscene_view_screen::do_action()
    case 0: // cuts_finished
       ended = true;
       anim_fadecount = static_cast<unsigned int>(
-         ua_cutscene_view_fade_time*core->get_tickrate() ) + 1;
+         fade_time*core->get_tickrate() ) + 1;
       break;
 
    case 1: // cuts_set_string_block
@@ -527,7 +533,7 @@ int ua_cutscene_view_screen::cuts_do_action(lua_State* L)
 {
    // check for "self" parameter being userdata
 
-   lua_getglobal(L,ua_cutscene_view_lua_thisptr_name);
+   lua_getglobal(L,lua_thisptr_name);
    if (lua_isuserdata(L,-1))
    {
       // get pointer to screen
