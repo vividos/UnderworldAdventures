@@ -87,6 +87,9 @@ void load_level(int level)
       texmgr.prepare(used_textures[n]);
 
    // collect all triangles
+   alltriangles.clear();
+   alltriangles.reserve(12000);
+
    for(unsigned int x=0; x<64; x++)
       for(unsigned int y=0; y<64; y++)
          ua_renderer::get_tile_triangles(levels[curlevel],x,y,alltriangles);
@@ -347,8 +350,8 @@ int main(int argc, char* argv[])
       {
          // set new caption
          char buffer[256];
-         sprintf(buffer,"Underworld Adventures: Map Display; %3.1f frames/s",
-            renders*1000.f/(now-fcstart));
+         sprintf(buffer,"Underworld Adventures: Map Display, Level %u; %3.1f frames/s, %u triangles",
+            curlevel+1, renders*1000.f/(now-fcstart), alltriangles.size());
 
          SDL_WM_SetCaption(buffer,NULL);
 
