@@ -306,11 +306,11 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
       fade_ticks = 0;
       fadeout_action = 0;
    }
+#ifdef HAVE_DEBUG
    else
 
    switch(keymod)
    {
-#ifdef HAVE_DEBUG
    case SDLK_PAGEUP:
       if (curlevel>0 && type==SDL_KEYDOWN)
          core->get_underworld().change_level(--curlevel);
@@ -340,8 +340,8 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
          ua_trace("done\n");
       }
       break;
-#endif
    }
+#endif
 }
 
 void ua_ingame_orig_screen::render()

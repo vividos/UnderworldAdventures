@@ -203,7 +203,7 @@ bool ua_underworld_script_bindings::lua_inventory_is_container(Uint16 item_id)
    checked_lua_call(1,1);
 
    // returns nil when no container
-   bool ret = lua_isnumber(L,-1);
+   bool ret = lua_isnumber(L,-1)!=0;
 
    // remove return parameters
    lua_pop(L,1);
