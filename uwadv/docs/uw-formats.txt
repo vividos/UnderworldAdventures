@@ -1055,15 +1055,178 @@ Table of Contents
    cr35        tybal, tyball
 
 
-
-
 5.1 Cutscene Animations
 
    Cutscene animations are stored in folder "cuts". Text strings for cutscenes
-   can be found in string blocks 11 through 24.
+   can be found in string blocks 11 through 24. Here is an overview of
+   files contents:
 
-   The format of the cutscenes files is like the DeluxePaint Animation ".ANM"
-   files. The complete description is in the file "uw-cuts-animfile.txt".
+      * = not in "static" install
+
+      cs???.n00   anim control files (?)
+
+      cs000.n01   black screen
+      cs000.n02 * garamon in swirling air
+      cs000.n03   garamon talking
+      cs000.n04 * garamon talking
+      cs000.n05 * garamon talking
+      cs000.n06 * garamon in swirling air
+      cs000.n07   garamon appearing
+      cs000.n10   intro w/ tyball stealing princess, troll and guards etc.
+      cs000.n11   almric talking, on throne
+      cs000.n12   almric talking, closeup
+      cs000.n15   guard talking
+      cs000.n16 * guard talking
+      cs000.n17 * guard talking
+      cs000.n20   mountain scene, avatar taken to the abyss
+      cs000.n21 * mountain scene
+      cs000.n22   abyss doors closed, from outside
+      cs000.n23   doors closed, from inside, w/ avatar
+      cs000.n24   guard talking, with purple background
+      cs000.n25 * guard talking, with purple background
+
+      cs001.n01   ship approaching, abyss collapsing
+      cs001.n02   ship taking avatar on board
+      cs001.n03   almric talking, on ship
+      cs001.n04   almric talking, on ship
+      cs001.n05 * almric talking, on ship, birds in background
+      cs001.n06   arial talking
+      cs001.n07   arial talking
+      cs001.n10   abyss collapsing, ship sails away
+
+      cs002.n01   dying tyball talking
+      cs002.n02 * dying tyball talking
+      cs002.n03 * dying tyball talking
+      cs002.n04 * dying tyball, dying
+
+      cs003.n01   arial talking
+      cs003.n02 * arial talking
+
+      cs011.n01   "ultima underworld the stygian abyss" splash screen anim
+      cs012.n01   acknowledgements
+      cs013.n01   goblet with letters "in"
+      cs014.n01   goblet with letters "sa"
+      cs015.n01   goblet with letters "hn"
+
+      cs400.n01   "look" graphics for windows to abyss volcano core
+      cs401.n01   grave stones
+
+      cs402.n01   death skulls w/ silver sapling
+      cs403.n01   death skulls animation
+      cs403.n02   death skull end anim
+
+      cs404.n01   anvil graphics
+      cs410.n01   map piece showing some traps
+
+   The cutscene files are done with Amiga's DeluxePaint Animator (file
+   extension *.anm). The complete description can be found in the file
+   "uw-cuts-animfile.txt". Here's a short overview for usage in uw1:
+
+   The files, "large page files", constist of a header, followed by one or
+   more large pages, where each page can store one or more animation frames.
+   A large page is always 64k big, except for the last page (which is
+   truncated at the end of usable data).
+
+   The file starts with a "large page file header":
+
+      0000   Int32   file ID, always contains "LPF "
+      ...
+      0006   Int16   number of large pages in the file
+      0008   Int32   number of records in the file
+      ...
+      0010   Int32   content type, always contains "ANIM"
+      0014   Int16   width in pixels
+      0016   Int16   height in pixels
+
+   The whole header is 128 bytes long. After the header color cycling info
+   follows, which is not used in uw1. Then comes the color palette:
+
+      0000   Int8    intensity for blue, ranges from 0..255
+      0001   Int8    intensity for green
+      0002   Int8    intensity for red
+      0003   Int8    padding byte
+      ...            repeated for all 256 color indices
+
+   After the palette an array with 256 "large page descriptors" follow:
+
+      0000   Int16   number of first record in the large page
+      0002   Int16   number of records in the large page
+      0004   Int16   total number of bytes, excluding header
+
+   Unused descriptors contain no information. After the array, the large pages
+   start. A "large page" has the following layout:
+
+      0000   lpdesc  large page descriptor
+      0006   Int16   empty
+      0008   Int16   length of first record
+      000A   Int16   length of second record
+      ...
+
+   The large page descriptor is repeated for the current large page. A record
+   contains a frame (which may depend on the previous frame). The start can be
+   calculated by summing up the length of the previous records. A "record" has
+   the following structure:
+
+      0000   Int8    unknown
+      0001   Int8    flag
+      0002   Int16   extra offset, when flag != 0
+      0004           start of compressed data
+
+   The extra offset must be even (when odd, add an extra 1).
+
+   The compression scheme is a variation of run-length encoding, with some
+   extras. There are "dump", "run" and "skip" records. "dump" records just
+   copy the next bytes to the output buffer. "run" records get the next byte
+   and repeat them according to the count. A "skip" record skips pixels in the
+   output buffer (it is assumed that the previous decoded image is still in
+   the buffer).
+
+   First, read a signed Int8. If it is positive, dump that many bytes.
+   If it is 0, the next two Int8's are the count and the pixel byte for a
+   "run" record. For negative values, remove the sign bit. If the resulting
+   byte is != 0, skip that many bytes in the output, else a "long" operation
+   is started.
+
+   For the long operation, retrieve the next two Int8's, treating as a little
+   endian signed Int16. If the value is 0, the decoding ends. If the value
+   is > 0, skip that many bytes in the output. For values < 0, remove the sign
+   bit. If the resulting value is >= 0x4000, we have a "run" record with
+   count = value & 0x3fff and the next Int8 as the pixel index. If the value
+   is <= 0x4000, we have a long "dump" record.
+
+   Here is some C code to describe the decoding:
+
+      while(true)
+      {
+         Int8 cnt = get_next_src8();
+
+         if (cnt>0) dump_pixels(cnt);
+         if (cnt==0) run_pixels(get_next_src8(),get_next_src8());
+         if (cnt<0)
+         {
+            cnt &= 0x7f;
+            if (cnt!=0) skip_pixels(cnt);
+            else
+            {
+               // we have a "long" operation
+               Int8 cnt2 = get_next_src16();
+               if (cnt2>0)
+                  skip_pixels(cnt2);
+               else
+               if (cnt2==0)
+                  break;
+               else
+               {
+                  cnt2 &= 0x7fff;
+
+                  if (cnt2>=0x4000)
+                     run_pixels(cnt2-0x4000,get_next_src());
+                  else
+                     dump_pixels(cnt2);
+               }
+            }
+         }
+      }
 
 
 6.0 Savegame format
