@@ -166,7 +166,7 @@ public:
    virtual void uw_print(const char* text)=0;
 
    //! starts conversation with object in current level, on list position
-   virtual void uw_start_conversation(unsigned int list_pos)=0;
+   virtual void uw_start_conversation(Uint16 list_pos)=0;
 };
 
 
