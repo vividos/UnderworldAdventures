@@ -576,7 +576,7 @@ void ua_ingame_orig_screen::setup_opengl()
    glFogf(GL_FOG_DENSITY,0.2f); // 0.65f
    glFogf(GL_FOG_START,0.0);
    glFogf(GL_FOG_END,1.0);
-   int fog_color[4] = { 0,0,0,0 };
+   GLint fog_color[4] = { 0,0,0,0 };
    glFogiv(GL_FOG_COLOR,fog_color);
 
    // give some hints
