@@ -73,8 +73,14 @@ const double ua_player_max_rotate_speed = 90;
 
 // ua_physics_model methods
 
-ua_physics_model::ua_physics_model():last_evaltime(-0.1)
+ua_physics_model::ua_physics_model()
+:last_evaltime(-0.1),player_speed(1.0)
 {
+}
+
+void ua_physics_model::set_player_speed(double factor)
+{
+   player_speed = factor>1.0 ? 1.0 : factor;
 }
 
 void ua_physics_model::eval_player_movement(double time)
@@ -85,7 +91,7 @@ void ua_physics_model::eval_player_movement(double time)
 
    if (mode & ua_move_walk_forward)
    {
-      double speed = ua_player_max_walk_speed*(time-last_evaltime);
+      double speed = ua_player_max_walk_speed*(time-last_evaltime) * player_speed;
       double angle = underw->get_player().get_angle();
 
       ua_vector2d dir;
