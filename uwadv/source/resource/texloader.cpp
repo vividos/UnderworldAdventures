@@ -56,6 +56,7 @@ void ua_palettes::load(ua_settings &settings)
    }
    fclose(fd);
 
+/*
    // load all auxiliary palettes
    std::string allauxpalname(settings.uw1_path);
    allauxpalname.append("data/allpals.dat");
@@ -72,16 +73,37 @@ void ua_palettes::load(ua_settings &settings)
       }
    }
    fclose(fd);
+*/
 }
 
 
 // ua_texture_manager methods
 
-void ua_texture_manager::load_textures(bool wall, const char *texfname)
+void ua_texture_manager::init(ua_settings &settings)
+{
+   // load palettes
+   pals.load(settings);
+
+   // load all wall textures
+   std::string walltexfname(settings.uw1_path);
+   walltexfname.append("data/w64.tr");
+   load_textures(0x0000,walltexfname.c_str());
+
+   // load all floor textures
+   std::string floortexfname(settings.uw1_path);
+   floortexfname.append("data/f32.tr");
+   load_textures(0x0100,floortexfname.c_str());
+}
+
+void ua_texture_manager::load_textures(unsigned int startidx, const char *texfname)
 {
    FILE *fd = fopen(texfname,"rb");
    if (fd==NULL)
-      throw ua_exception("could not open texture file");
+   {
+      std::string text("could not open texture file: ");
+      text.append(texfname);
+      throw ua_exception(text.c_str());
+   }
 
    // get file length
    fseek(fd,0,SEEK_END);
@@ -94,34 +116,12 @@ void ua_texture_manager::load_textures(bool wall, const char *texfname)
 
    Uint16 entries = fread16(fd);
 
-   // free memory for old textures
-   delete_textures(wall);
-
-   // allocate memory for all textures
-   if (wall)
-   {
-      allwalltex = new Uint8*[entries];
-      numwalltex = entries;
-      wallxyres = xyres;
-
-      wall_texnums.clear();
-      wall_texnums.resize(entries,0);
-   }
-   else
-   {
-      allfloortex = new Uint8*[entries];
-      numfloortex = entries;
-      floorxyres = xyres;
-
-      floor_texnums.clear();
-      floor_texnums.resize(entries,0);
-   }
-
-   Uint8 **textures = wall ? allwalltex : allfloortex;
+   // reserve needed entries
+   allstocktex.resize(startidx+entries);
 
    // read in all offsets
-   Uint32 *offsets = new Uint32[entries];
-   for(int i=0; i<entries; i++) offsets[i] = fread32(fd);
+   std::vector<Uint32> offsets(entries);
+   for(int i=0; i<entries; i++) offsets.at(i) = fread32(fd);
 
    // read in all textures
    for(int tex=0; tex<entries; tex++)
@@ -130,37 +130,20 @@ void ua_texture_manager::load_textures(bool wall, const char *texfname)
       fseek(fd,offsets[tex],SEEK_SET);
 
       // alloc memory for texture
-      int datalen = xyres*xyres;
+      unsigned int datalen = xyres*xyres;
 
-      textures[tex] = new Uint8[datalen];
+      ua_stock_texture &stex = allstocktex.at(startidx+tex);
+      stex.pixels.resize(datalen);
 
-      Uint8 *buffer = textures[tex];
+      unsigned int idx = 0;
       while(datalen>0)
       {
-         int size = datalen > 1024 ? 1024 : datalen; // ua_min
-         int read = fread(buffer,1,size,fd);
-         buffer += read;
+         unsigned int size = ua_min(datalen,1024);
+         unsigned int read = fread(&stex.pixels[idx],1,size,fd);
+         idx += read;
          datalen -= read;
       }
    }
 
-   delete[] offsets;
-
    fclose(fd);
-}
-
-void ua_texture_manager::init(ua_settings &settings)
-{
-   // load palettes
-   pals.load(settings);
-
-   // load all wall textures
-   std::string walltexfname(settings.uw1_path);
-   walltexfname.append("data/w64.tr");
-   load_textures(true,walltexfname.c_str());
-
-   // load all floor textures
-   std::string floortexfname(settings.uw1_path);
-   floortexfname.append("data/f32.tr");
-   load_textures(false,floortexfname.c_str());
 }

@@ -83,8 +83,8 @@ void ua_levelmap::load(ua_settings &settings, int level)
 
    Uint16 tex;
    for(tex=0; tex<48; tex++) wall_textures[tex]  = fread16(fd);
-   for(tex=0; tex<10; tex++) floor_textures[tex] = fread16(fd);
-   for(tex=0; tex<6; tex++)  door_textures[tex]  = fread16(fd);
+   for(tex=0; tex<10; tex++) floor_textures[tex] = fread16(fd)+0x0100;
+   for(tex=0; tex<6; tex++)  door_textures[tex]  = fread16(fd)+0x0200;
 
    // read in map info
 

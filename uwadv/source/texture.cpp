@@ -30,42 +30,50 @@
 #include "texture.hpp"
 
 
+// ua_texture methods
+
+void ua_texture::use()
+{
+}
+
+void ua_texture::set_anim_step(unsigned int step)
+{
+}
+
+
 // ua_texture_manager methods
 
 ua_texture_manager::ua_texture_manager()
 {
-   allwalltex = allfloortex = NULL;
-   numwalltex = numfloortex = 0;
 }
 
 ua_texture_manager::~ua_texture_manager()
 {
-   delete_textures(false);
-   delete_textures(true);
+   allstocktex.clear();
 }
 
 void ua_texture_manager::reset()
 {
    glBindTexture(GL_TEXTURE_2D,0);
 
-   int i,max = wall_texnums.size();
-   for(i=0; i<max; i++)
+   int max = allstocktex.size();
+   for(int i=0; i<max; i++)
    {
-      if (wall_texnums[i]!=0)
-         glDeleteTextures(1,&wall_texnums[i]);
-   }
-
-   max = floor_texnums.size();
-   for(i=0; i<max; i++)
-   {
-      if (floor_texnums[i]!=0)
-         glDeleteTextures(1,&floor_texnums[i]);
+      ua_stock_texture &stex = allstocktex.at(i);
+      if (stex.texname!=0)
+         glDeleteTextures(1,&stex.texname);
    }
 }
 
-void ua_texture_manager::prepare(bool wall, int idx)
+void ua_texture_manager::prepare(unsigned int idx)
 {
-   if ((wall && idx >= numwalltex) || (!wall && idx >= numfloortex))
+   if (idx>=allstocktex.size())
+      return;
+
+   ua_stock_texture &stex = allstocktex.at(idx);
+   unsigned int texsize = stex.pixels.size();
+
+   if (texsize==0)
       return;
 
    // generate a texture object number
@@ -83,57 +91,40 @@ void ua_texture_manager::prepare(bool wall, int idx)
    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
    // generate 32-bit truecolor texture
-   Uint8 xyres = wall ? wallxyres : floorxyres;
-   Uint8 *indexed = wall ? allwalltex[idx] : allfloortex[idx];
-   Uint32 *texels = new Uint32[xyres*xyres];
+   Uint8 xyres = texsize==64*64 ? 64 : texsize==32*32 ? 32 : texsize/64;
 
+//   Uint8 *indexed = wall ? allwalltex[idx] : allfloortex[idx];
+
+   std::vector<Uint32> texels;
+   texels.resize(stex.pixels.size()*4,0);
+
+   // use texture #0, stock textures always use these
    ua_onepalette &pal = pals.get_palette(0);
 
-   for(int i=0; i<xyres*xyres; i++)
+   for(int i=0; i<texsize; i++)
    {
-      texels[i] = *(Uint32*)(pal+indexed[i]);
+      texels[i] = *(Uint32*)(pal+stex.pixels.at(i));
    }
 
    // build texture and mipmaps
    gluBuild2DMipmaps(GL_TEXTURE_2D, 3, xyres, xyres, GL_RGBA,
-      GL_UNSIGNED_BYTE, texels);
+      GL_UNSIGNED_BYTE, &texels.at(0));
 
-   delete[] texels;
-
-   if (wall)
-      wall_texnums[idx] = texname;
-   else
-      floor_texnums[idx] = texname;
+   // remember texture name
+   stex.texname = texname;
 }
 
-void ua_texture_manager::use(bool wall, int idx)
+void ua_texture_manager::use(unsigned int idx)
 {
-   GLuint texname=0;
+   if (idx>=allstocktex.size())
+      return;
 
-   if (idx>=0)
-      texname = wall ? wall_texnums[idx] : floor_texnums[idx];
+   ua_stock_texture &stex = allstocktex.at(idx);
 
-   if (last_texname != texname)
+   if (last_texname != stex.texname)
    {
       // bind texture to use it
-      glBindTexture(GL_TEXTURE_2D,texname);
-      last_texname = texname;
+      glBindTexture(GL_TEXTURE_2D,stex.texname);
+      last_texname = stex.texname;
    }
-}
-
-void ua_texture_manager::delete_textures(bool wall)
-{
-   int num=0;
-   Uint8 **tex;
-
-   if (wall){ num = numwalltex; tex = allwalltex; }
-   else { num = numfloortex; tex = allfloortex; }
-
-   for(int i=0; i<num; i++)
-      delete[] tex[i];
-
-   delete[] tex;
-
-   if (wall){ numwalltex = 0; allwalltex = NULL; }
-   else { numfloortex = 0; allfloortex = NULL; }
 }

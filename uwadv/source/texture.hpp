@@ -23,6 +23,9 @@
 
    a
 
+   stock textures: wall textures start at index 0x0000, floor textures at
+   0x0100
+
 */
 
 // include guard
@@ -54,14 +57,52 @@ public:
    ua_onepalette &get_palette(Uint8 pal){ return allpals[pal]; }
 
    //! returns an auxiliary palette table; type is Uint8 [16]
-   Uint8 *get_auxpal(Uint8 idx){ return allauxpals[idx]; }
+//   Uint8 *get_auxpal(Uint8 idx){ return allauxpals[idx]; }
 
 protected:
    //! all main palettes
    ua_onepalette allpals[8];
 
    //! all auxiliary palettes
-   Uint8 allauxpals[32][16];
+//   Uint8 allauxpals[32][16];
+};
+
+
+//! texture class; represents one or more texture images
+class ua_texture
+{
+public:
+   //! ctor
+   ua_texture(){}
+
+   //! binds texture to use it in OpenGL
+   void use();
+
+   //! returns u texture coordinate
+   float get_tex_u(){ return u;}
+
+   //! returns v texture coordinate
+   float get_tex_v(){ return v; }
+
+   //! sets animation step to use
+   void set_anim_step(unsigned int step);
+
+protected:
+   //! upper left texture coordinates
+   float u,v;
+
+   //! texture name(s)
+   std::vector<GLuint> texname;
+};
+
+
+//! stock texture
+struct ua_stock_texture
+{
+   ua_stock_texture():texname(0){}
+
+   std::vector<Uint8> pixels;
+   GLuint texname;
 };
 
 
@@ -74,62 +115,37 @@ public:
    //! dtor
    ~ua_texture_manager();
 
-   //! initializes texture manager
+   //! initializes texture manager; loads stock textures
    void init(ua_settings &settings);
 
-   //! resets usage of textures in OpenGL
+   //! resets usage of stock textures in OpenGL
    void reset();
 
-   //! prepares a texture for usage in OpenGL
-   void prepare(bool wall, int idx);
+   //! prepares a stock texture for usage in OpenGL
+   void prepare(unsigned int idx);
 
-   //! use a texture in OpenGL
-   void use(bool wall, int idx);
+   //! prepares an external texture for usage in OpenGL
+   void prepare(ua_texture &tex);
+
+   //! use a stock texture in OpenGL
+   void use(unsigned int idx);
 
 private:
    //! loads all palettes
    void load_palettes(const char *allpalname);
 
    //! loads textures from file
-   void load_textures(bool wall, const char *texfname);
-
-   //! deletes memory for textures
-   void delete_textures(bool wall);
+   void load_textures(unsigned int startidx, const char *texfname);
 
 protected:
    //! all palettes
    ua_palettes pals;
 
-   //! OpenGL wall texture numbers
-   std::vector<GLuint> wall_texnums;
-
-   //! OpenGL floor texture numbers
-   std::vector<GLuint> floor_texnums;
-
    //! last bound texture name
    GLuint last_texname;
 
-   // wall texture stuff
-
-   //! all wall textures
-   Uint8 **allwalltex;
-
-   //! number of wall textures
-   int numwalltex;
-
-   //! resolution of wall textures
-   Uint8 wallxyres;
-
-   // floor texture stuff
-
-   //! all floor textures
-   Uint8 **allfloortex;
-
-   //! number of floor textures
-   int numfloortex;
-
-   //! resolution of floor textures
-   Uint8 floorxyres;
+   // all stock textures
+   std::vector<ua_stock_texture> allstocktex;
 };
 
 #endif
