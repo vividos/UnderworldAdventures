@@ -43,7 +43,7 @@ void ua_level::prepare_textures(ua_texture_manager &texmgr)
    // prepare door textures
 
    // ceiling texture, always #15
-   texmgr.prepare(0x010f);
+   texmgr.prepare(ua_tex_stock_floor+15);
 }
 
 float ua_level::get_floor_height(float xpos, float ypos)

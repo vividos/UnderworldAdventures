@@ -152,7 +152,6 @@ SOURCE=..\audio\midi.cpp
 # Begin Source File
 
 SOURCE=..\audio\midi_driver\uni_fmod.cpp
-# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 

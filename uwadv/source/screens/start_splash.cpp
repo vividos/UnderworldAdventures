@@ -59,11 +59,15 @@ void ua_start_splash_screen::init()
 
    font.init(core->get_settings(),ua_font_big);
 
-   img.load_raw(core->get_settings(),"data/opscr.byt",2);
+   if (core->get_settings().gtype == ua_game_uw_demo)
+      img.load_raw(core->get_settings(),"data/presd.byt",5);
+   else
+      img.load_raw(core->get_settings(),"data/opscr.byt",2);
+
    tex.convert(core->get_texmgr(),img);
    tex.prepare(false,GL_NEAREST,GL_NEAREST);
 
-   font.create_string(img2,"Hello, Underworld!",21);
+   font.create_string(img2,"Underworld Adventures",21);
    tex2.convert(core->get_texmgr(),img2);
    tex2.prepare();
 
@@ -137,26 +141,32 @@ void ua_start_splash_screen::render()
    glEnd();
 
 
-   // above background, draw font text
-   glEnable(GL_BLEND);
-   tex2.use();
+   if (core->get_settings().gtype == ua_game_uw_demo)
+   {
+      // above background, draw font text
+      glEnable(GL_BLEND);
+      tex2.use();
 
-   glBegin(GL_QUADS);
-   glTexCoord2d(0.0,tex2.get_tex_v());
-   glVertex3i(10,10,0);
+      float scale = 0.9f;
+      int xpos=(320-img2.get_xres()*scale)/2, ypos=3;
 
-   glTexCoord2d(tex2.get_tex_u(),tex2.get_tex_v());
-   glVertex3i(int(10+img2.get_xres()*0.8),10,0);
+      glBegin(GL_QUADS);
+      glTexCoord2d(0.0,tex2.get_tex_v());
+      glVertex3i(xpos,ypos,0);
 
-   glTexCoord2d(tex2.get_tex_u(),0.0);
-   glVertex3i(int(10+img2.get_xres()*0.8),int(10+img2.get_yres()*0.8),0);
+      glTexCoord2d(tex2.get_tex_u(),tex2.get_tex_v());
+      glVertex3i(int(xpos+img2.get_xres()*scale),ypos,0);
 
-   glTexCoord2d(0.0,0.0);
-   glVertex3i(10,int(10+img2.get_yres()*0.8),0);
+      glTexCoord2d(tex2.get_tex_u(),0.0);
+      glVertex3i(int(xpos+img2.get_xres()*scale),int(ypos+img2.get_yres()*scale),0);
 
-   glEnd();
+      glTexCoord2d(0.0,0.0);
+      glVertex3i(xpos,int(ypos+img2.get_yres()*scale),0);
 
-   glDisable(GL_BLEND);
+      glEnd();
+
+      glDisable(GL_BLEND);
+   }
 }
 
 void ua_start_splash_screen::tick()

@@ -90,7 +90,7 @@ xmi2mid_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB)
 # build rules
 #
 
-all: $(uwadv_EXEC) $(cnvdbg_EXEC) $(cnvdasm_EXEC)
+all: $(uwadv_EXEC) $(cnvdbg_EXEC) $(cnvdasm_EXEC) $(xmi2mid_EXEC)
 
 $(uwadv_EXEC): $(uwadv_OBJS)
 	$(CC) $(LDFLAGS) -o $(@) $(uwadv_OBJS) $(uwadv_LIBS)
@@ -117,7 +117,8 @@ installer: $(uwadv_EXEC)
 	install/makensis.exe uwadv.nsi
 
 clean:
-	rm -f $(uwadv_OBJS) $(cnvdbg_OBJS) $(cnvdasm_OBJS) $(xmi2mid_OBJS)
+	rm -f $(uwadv_EXEC) $(cnvdbg_EXEC) $(cnvdasm_EXEC) $(xmi2mid_EXEC) \
+		$(uwadv_OBJS) $(cnvdbg_OBJS) $(cnvdasm_OBJS) $(xmi2mid_OBJS)
 
 .cpp.o:
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $(<) -o $*.o
