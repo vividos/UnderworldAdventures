@@ -41,6 +41,7 @@ dnl X config
 AC_PATH_X
 AC_PATH_XTRA
 CFLAGS="$CFLAGS $X_CFLAGS"
+CXXFLAGS="$CXXFLAGS $X_FLAGS"
 LIBS="$LIBS $X_LIBS"
 
 
@@ -84,7 +85,7 @@ OpenGL support does not work. Please reinstall your OpenGL library and include f
 dnl checking for FMOD
 
 AC_CHECK_HEADER(fmod.h,
-  AC_DEFINE(HAVE_FMOD_H,,[defined when FMOD library is present]),
+  AC_DEFINE(HAVE_FMOD_H,,[defined when the FMOD library is present]),
   AC_MSG_WARN([
 FMOD not found. No midi playback available.
 FMOD is available at http://www.fmod.org/]))
