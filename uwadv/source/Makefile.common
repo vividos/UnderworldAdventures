@@ -54,6 +54,10 @@ uwadv_SOURCES = \
 	renderer/renderer_impl.cpp renderer/renderer_impl.hpp \
 	renderer/tessellator.cpp renderer/tessellator.hpp \
 	renderer/texture.cpp renderer/texture.hpp \
+	screens/acknowledgements.cpp screens/acknowledgements.hpp \
+	screens/cutscene_view.cpp screens/cutscene_view.hpp \
+	screens/save_game.cpp screens/save_game.hpp \
+	screens/start_menu.cpp screens/start_menu.hpp \
 	screens/start_splash.cpp screens/start_splash.hpp \
 	screens/uwadv_menu.cpp screens/uwadv_menu.hpp \
 	script/luascript.cpp script/luascript.hpp \
