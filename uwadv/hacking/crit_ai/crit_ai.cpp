@@ -266,7 +266,6 @@ void crit_ai_change_level(unsigned int level)
       for(n=0; n<33; n++) texmgr.prepare(ua_tex_stock_tmobj+n);
    }
 */
-   // s
 
    cur_crit = 0;
    search_next_crit();
@@ -277,6 +276,12 @@ void crit_ai_done()
 {
    delete debug;
    debug = NULL;
+}
+
+void crit_ai_tick()
+{
+   unsigned int curlevel = underworld.get_player().get_attr(ua_attr_maplevel);
+   underworld.get_scripts().lua_critter_evaluate(curlevel, cur_crit);
 }
 
 void draw_screen()
@@ -494,6 +499,8 @@ int main(int argc, char* argv[])
 
          underworld.eval_underworld(double(tickcount)/core.get_tickrate());
          tickcount++;
+
+         crit_ai_tick();
 
          debug->tick();
 
