@@ -1,45 +1,860 @@
-2007-08-05 20:15  wjpalenstijn
-	* source/linux/configure.ac: define CONFIGDIR, --with-uw1=DIR
-	* source/files.cpp: use CONFIGDIR for config file list
+2002-08-07 23:34  wjpalenstijn
 
-2007-08-05 19:35  wjpalenstijn
-	* source/linux/configure.ac: define HAVE_HOME
-	* source/files.*: initialize config files list
+	* source/: Makefile.am (1.30), lua/Makefile.am (1.2):
 
-2007-08-05 17:35  wjpalenstijn
-	* source/linux/*: configure.in->configure.ac, added Makefile.am
-	* source/linux/configure.ac: don't add -lGL -lGLU in MacOSX
-	* source/Makefile.am: use $(OPENGL_LIBS)
-
-2007-08-02 20:45  wjpalenstijn
-	* source/inventory.cpp: fixed link1-list corruption when dropping obj.
-	* source/screens/ingame_orig.cpp: fixed crash (bug #590321)
-
-2007-07-31 22:50  wjpalenstijn
-	* source/linux/various: removed generated files from CVS to .cvsignore
-
-2007-07-30 22:30  wjpalenstijn
-	removed Makefile.in from CVS, added to .cvsignore
-
-2007-07-30 22:23  wjpalenstijn
-
-	* source/Makefile.am: added new screens/* files
-	* screens/create_character.cpp:
-	replaced non-standard itoa() with sprintf()
-
-2007-07-30 21:08  wjpalenstijn
-
-	* source/inventory.cpp, source/screens/acknowledgements.cpp,
-	* source/objects.cpp, source/audio/midi.hpp, source/audio/audio.cpp:
-	removed some warnings
-
-	* source/resource/fontloader.cpp:
-	fixed off-by-one in fontid range check
-
-	* source/uamath.hpp:
-	enclosed MSVC-specific pragma's in #ifdef _MSC_VER
-
+	fixed lua build
 	
+2002-08-07 23:31  vividos
+
+	* source/resource/settingsloader.cpp (1.6):
+
+	added dumping of read key/value pairs
+	
+2002-08-07 23:24  vividos
+
+	* source/audio/: midi.cpp (1.17), midi.hpp (1.9),
+	midi_driver/win_midiout.cpp (1.10), midi_driver/win_midiout.h
+	(1.7):
+
+	added (kludgy) way to set win32 midi device number
+	
+2002-08-07 23:19  wjpalenstijn
+
+	* source/lua/.cvsignore (1.2):
+
+	.cvsignore updated
+	
+2002-08-07 23:18  wjpalenstijn
+
+	* autogen.sh (1.5), configure.ac (1.5), source/Makefile.am (1.29),
+	source/lua/Makefile.am (1.1), uadata/Makefile.am (1.2):
+
+	build liblua and luac
+	
+2002-08-07 22:15  wjpalenstijn
+
+	* source/files.cpp (1.11):
+
+	semicolons... yes...
+	
+2002-08-07 22:12  wjpalenstijn
+
+	* source/files.cpp (1.10):
+
+	use std:;string in ua_file_isavail
+	
+2002-08-07 22:08  wjpalenstijn
+
+	* source/files.cpp (1.9):
+
+	use std:;string in ua_file_isavail
+	
+2002-08-07 21:32  wjpalenstijn
+
+	* source/settings.cpp (1.5):
+
+	include <iostream>
+	
+2002-08-07 21:28  wjpalenstijn
+
+	* source/: Makefile.am (1.28), resource/zziplib/Makefile.am (1.2):
+
+	minor linux build updates
+	
+2002-08-07 21:26  wjpalenstijn
+
+	* source/: inventory.hpp (1.7), settings.cpp (1.4), settings.hpp
+	(1.9), resource/settingsloader.cpp (1.5):
+
+	use new-style enums; added ua_settings::dump
+	
+2002-08-07 20:33  wjpalenstijn
+
+	* source/uwadv.cpp (1.23):
+
+	include <iostream>
+	
+2002-08-07 20:32  wjpalenstijn
+
+	* autogen.sh (1.4), configure.ac (1.4), source/Makefile.am (1.27),
+	source/resource/Makefile.am (1.4),
+	source/resource/zziplib/Makefile.am (1.1),
+	source/resource/zziplib/.cvsignore (1.1):
+
+	more linux build system updates
+	
+2002-08-07 20:28  wjpalenstijn
+
+	* source/files.cpp (1.8):
+
+	only abort if no config files found at all
+	
+2002-08-07 19:45  vividos
+
+	* source/win32/: animview.dsp (1.5), cnvdasm.dsp (1.4), cnvdbg.dsp
+	(1.4), mapdisp.dsp (1.7), strpak.dsp (1.4):
+
+	fixed compiling the tools by adding settings.cpp (now needed)
+	
+2002-08-07 19:43  wjpalenstijn
+
+	* source/.cvsignore (1.7):
+
+	updated .cvsignore
+	
+2002-08-07 19:41  wjpalenstijn
+
+	* .cvsignore (1.5), autogen.sh (1.3), configure.ac (1.3),
+	source/.cvsignore (1.6), source/Makefile.am (1.26),
+	source/common.hpp (1.11), source/uwadv.cpp (1.22),
+	source/tools/Makefile.am (1.14):
+
+	more build updates
+	
+2002-08-07 19:39  vividos
+
+	* Makefile.mingw (1.8):
+
+	fixed tools compile
+	
+2002-08-07 19:37  vividos
+
+	* source/tools/mapdisp.cpp (1.4):
+
+	changed code that has to do with ua_settings
+	
+2002-08-07 19:17  vividos
+
+	* Makefile.mingw (1.7):
+
+	added new settings files
+	
+2002-08-07 19:13  vividos
+
+	* source/win32/uwadv.dsp (1.24):
+
+	added new settings files
+	
+2002-08-07 19:10  vividos
+
+	* source/audio/midi_driver/win_midiout.cpp (1.9):
+
+	included common.hpp to prevent some msvc warnings
+	
+2002-08-07 19:08  vividos
+
+	* source/resource/settingsloader.cpp (1.4):
+
+	some small changes for the settings names
+	
+2002-08-07 19:08  vividos
+
+	* source/: linux/uwadv.cfg.in (1.3), win32/uwadv.cfg (1.7):
+
+	changed names of some settings values
+	added win32-midi-device setting
+	
+2002-08-07 19:03  vividos
+
+	* source/: audio/audio.cpp (1.14), resource/cutsloader.cpp (1.10),
+	resource/fontloader.cpp (1.9), resource/gamestrings.cpp (1.11),
+	resource/imageloader.cpp (1.11), resource/maploader.cpp (1.12),
+	resource/texloader.cpp (1.12), screens/cutscene_view.cpp (1.18),
+	screens/ingame_orig.cpp (1.38), screens/start_splash.cpp (1.25),
+	uwadv.cpp (1.21):
+
+	changed the way settings in ua_settings are accessed; get_string(), get_int() or get_bool() is used now
+	
+2002-08-07 19:03  wjpalenstijn
+
+	* Makefile.am (1.2), Makefile.mingw (1.6), autogen.sh (1.2),
+	configure.ac (1.2), source/Makefile.am (1.25),
+	source/linux/uwadv.spec.in (1.2), uadata/Makefile (1.8),
+	uadata/Makefile.am (1.1), uadata/Makefile.common (1.1):
+
+	various: updated build system to include uadata directory
+	
+2002-08-07 19:02  vividos
+
+	* source/: files.cpp (1.7), files.hpp (1.7):
+
+	added loading of config files for ua_settings
+	moved check for game type to files manager
+	
+2002-08-07 18:52  vividos
+
+	* source/resource/settingsloader.cpp (1.3):
+
+	changed text string for cutscene narration type
+	
+2002-08-07 18:50  vividos
+
+	* source/: settings.cpp (1.3), settings.hpp (1.8),
+	resource/settingsloader.cpp (1.2):
+
+	changed way settings are handled. they are stored in a std::map now
+	
+2002-08-07 16:35  vividos
+
+	* source/resource/: settingsloader.cpp (1.1), settings.cpp (1.11):
+
+	renamed resource/settings.cpp to resource/settingsloader.cpp
+	
+2002-08-07 14:44  vividos
+
+	* source/Makefile.am (1.24):
+
+	added liblua source files
+	
+2002-08-07 12:24  vividos
+
+	* source/uwscript.cpp (1.4):
+
+	added opening of lua libraries
+	
+2002-08-07 12:22  vividos
+
+	* source/win32/uwadv.dsp (1.23):
+
+	added lualib source files
+	
+2002-08-07 12:22  vividos
+
+	* Makefile.mingw (1.5):
+
+	added lualib source files
+	enhanced clean target
+	
+2002-08-07 12:13  vividos
+
+	* source/common.hpp (1.10):
+
+	added lualib include
+	
+2002-08-07 11:42  vividos
+
+	* source/inventory.cpp (1.14):
+
+	fixes for floating/dropping items with currently visible container
+	
+2002-08-07 11:38  vividos
+
+	* source/screens/ingame_orig.cpp (1.37):
+
+	fixed floating cursor determination
+	
+2002-08-07 10:47  vividos
+
+	* Makefile.mingw (1.4):
+
+	added "make update" rule that doesn't overwrite uwadv.cfg
+	
+2002-08-07 10:30  vividos
+
+	* source/win32/uwadv.cfg (1.6):
+
+	changed default uadata dir to get install target to work
+	
+2002-08-07 10:28  vividos
+
+	* Makefile.mingw (1.3):
+
+	added "make install" target
+	
+2002-08-07 09:51  vividos
+
+	* Makefile.mingw (1.2):
+
+	added rules to build uadata resources and luac
+	
+2002-08-07 09:36  vividos
+
+	* uadata/Makefile (1.7):
+
+	added createchar.lua and uwinit.txt to resource file
+	
+2002-08-07 08:58  phlask
+
+	* source/screens/create_character.cpp (1.5),
+	source/screens/create_character.hpp (1.4),
+	uadata/uw1/scripts/createchar.lua (1.2):
+
+	removed delays between screens
+	stringblock for text is now correctly read from the script
+	playername is now pushed to the script by the code
+	
+2002-08-07 00:26  vividos
+
+	* source/uwadv.cpp (1.20):
+
+	removed unneeded variable
+	changed some values from float to double
+	
+2002-08-07 00:06  vividos
+
+	* source/win32/uwadv.dsp (1.22):
+
+	added character creation lua script
+	
+2002-08-07 00:05  vividos
+
+	* uadata/uw1/scripts/objects.lua (1.3):
+
+	added remaining combinations for the key of infinity
+	added some comments
+	
+2002-08-06 23:56  vividos
+
+	* source/inventory.cpp (1.13):
+
+	corrected way item is changed when first item is destroyed
+	
+2002-08-06 23:49  vividos
+
+	* uadata/uw1/scripts/objects.lua (1.2):
+
+	added table with some object combinations
+	
+2002-08-06 19:56  phlask
+
+	* source/screens/start_menu.cpp (1.15):
+
+	create character screen is enabled
+	
+2002-08-06 19:55  phlask
+
+	* uadata/uw1/scripts/createchar.lua (1.1):
+
+	Buttons are shown in correct order and some player property text too. Selected items aren't actually applied yet.
+	
+2002-08-06 19:50  phlask
+
+	* source/screens/: create_character.cpp (1.4), create_character.hpp
+	(1.3):
+
+	the whole character creation process can now be controlled by a script (major rewrite)
+	
+2002-08-06 18:28  vividos
+
+	* docs/README.Lua.txt (1.7):
+
+	re-added constants description about item combining
+	
+2002-08-06 18:26  vividos
+
+	* uadata/uw1/scripts/: objects.lua (1.1), uwinit.txt (1.2):
+
+	added objects.lua script
+	
+2002-08-06 18:24  vividos
+
+	* source/win32/uwadv.dsp (1.21), uadata/Makefile (1.6):
+
+	added another lua script
+	
+2002-08-06 18:24  vividos
+
+	* source/: uwscript.cpp (1.3), uwscript.hpp (1.4):
+
+	implemented calling of Lua script for the item combining
+	
+2002-08-06 18:23  vividos
+
+	* source/inventory.cpp (1.12):
+
+	re-added destroying first item for item combining
+	
+2002-08-06 17:56  wjpalenstijn
+
+	* .cvsignore (1.4), source/linux/.cvsignore (1.11),
+	source/.cvsignore (1.5):
+
+	updated .cvsignore
+	
+2002-08-06 17:54  wjpalenstijn
+
+	* configure.ac (1.1), Makefile.am (1.1), acinclude.m4 (1.1),
+	autogen.sh (1.1), source/Makefile.am (1.23),
+	source/linux/Makefile.am (1.10), source/linux/acinclude.m4 (1.4),
+	source/linux/autogen.sh (1.6), source/linux/configure.ac (1.6),
+	source/linux/uwadv.spec.in (1.1), source/tools/Makefile.am (1.13):
+
+	various: moved configure.ac (and related) to main project dir
+	
+2002-08-06 15:42  vividos
+
+	* source/win32/install/: makensis.exe (1.3), upx.exe (1.2):
+
+	removed installer creation files
+	
+2002-08-06 15:30  vividos
+
+	* source/win32/uwadv.dsp (1.20):
+
+	added uwscript.cpp/.hpp
+	added new lua scripts
+	
+2002-08-06 15:28  vividos
+
+	* .cvsignore (1.3):
+
+	added more folders and files to ignore
+	
+2002-08-06 15:27  vividos
+
+	* Makefile.mingw (1.1), source/win32/Makefile.mingw (1.27):
+
+	moved Makefile.mingw to main project dir
+	added uwscript.cpp/.hpp
+	added rule to copy uwadv.cfg to main project dir
+	
+2002-08-06 15:22  vividos
+
+	* .cvsignore (1.2):
+
+	added win32 executables
+	
+2002-08-06 15:20  vividos
+
+	* source/screens/start_splash.cpp (1.24):
+
+	removed a warning
+	
+2002-08-06 15:01  vividos
+
+	* uwadv.dsw (1.1), source/win32/uwadv.dsw (1.4):
+
+	moved msvc workspace file uwadv.dsp to the main project dir
+	
+2002-08-06 11:55  vividos
+
+	* docs/README.Lua.txt (1.6):
+
+	added return values description
+	changed some constants for item combining
+	
+2002-08-06 11:40  vividos
+
+	* source/screens/ingame_orig.cpp (1.36):
+
+	removed check for items dropped to paperdoll slots; now done in ua_inventory via Lua script
+	
+2002-08-06 11:39  vividos
+
+	* source/: inventory.cpp (1.11), inventory.hpp (1.6),
+	underworld.cpp (1.15):
+
+	added item combining and item rejection for paperdoll slots to ua_inventory
+	
+2002-08-06 11:37  vividos
+
+	* source/uwscript.hpp (1.3):
+
+	added more item categories
+	
+2002-08-06 11:37  vividos
+
+	* uadata/uw1/scripts/inventory.lua (1.2):
+
+	added item combining implementation
+	
+2002-08-06 11:01  vividos
+
+	* source/: uwscript.cpp (1.2), uwscript.hpp (1.2):
+
+	added item combining binding
+	
+2002-08-06 10:12  vividos
+
+	* source/underworld.hpp (1.11):
+
+	added function to access script bindings
+	
+2002-08-06 10:01  vividos
+
+	* source/image.cpp (1.15):
+
+	speed improvement for non-transparent pastes
+	
+2002-08-06 09:55  vividos
+
+	* source/: underworld.hpp (1.10), uwscript.cpp (1.1), uwscript.hpp
+	(1.1):
+
+	added ua_underworld Lua scripting bindings
+	
+2002-08-06 09:54  vividos
+
+	* source/underworld.cpp (1.14):
+
+	added ua_underworld::done() method
+	
+2002-08-06 00:42  vividos
+
+	* source/uwadv.cpp (1.19):
+
+	added cleanup call for ua_underworld
+	
+2002-08-06 00:37  vividos
+
+	* uadata/: Makefile (1.5), uw1/scripts/inventory.lua (1.1),
+	uw1/scripts/uwinit.txt (1.1):
+
+	added new lua script, underworld Lua init list and Makefile rules
+	
+2002-08-05 23:43  vividos
+
+	* source/screens/cutscene_view.cpp (1.17):
+
+	used ua_files_manager::load_lua_script() to load a script
+	
+2002-08-05 23:42  vividos
+
+	* source/: files.cpp (1.6), files.hpp (1.6):
+
+	added function to load Lua script/compiled script transparently
+	
+2002-08-05 22:50  wjpalenstijn
+
+	* source/: Makefile.am (1.22), linux/Makefile.am (1.9),
+	linux/configure.ac (1.5):
+
+	source/linux/*: a bit of cleanup
+	
+2002-08-05 21:35  wjpalenstijn
+
+	* source/linux/Makefile.am (1.8):
+
+	source/linux/Makefile.am: install uwadv.cfg to $(datadir)/games/uwadv/
+	
+2002-08-05 20:54  wjpalenstijn
+
+	* source/linux/.cvsignore (1.10):
+
+	.cvsignore: added autom4te*.cache, ltmain.sh
+	
+2002-08-05 20:49  wjpalenstijn
+
+	* source/linux/: Makefile.am (1.7), configure.ac (1.4):
+
+	configure.ac, Makefile.am: use make to generate uwadv.cfg to be able to substitute $(datadir)
+	
+2002-08-05 20:30  wjpalenstijn
+
+	* source/linux/autogen.sh (1.5):
+
+	autogen.sh: clean up generated files
+	
+2002-08-05 20:18  wjpalenstijn
+
+	* ChangeLog (1.24), source/files.cpp (1.5),
+	source/linux/configure.ac (1.3):
+
+	2007-08-05 20:15  wjpalenstijn
+		* source/linux/configure.ac: define CONFIGDIR, --with-uw1=DIR
+		* source/files.cpp: use CONFIGDIR for config file list
+	
+2002-08-05 19:38  wjpalenstijn
+
+	* ChangeLog (1.23), source/files.cpp (1.4), source/files.hpp (1.5),
+	source/linux/configure.ac (1.2):
+
+	2007-08-05 19:35  wjpalenstijn
+		* source/linux/configure.ac: define HAVE_HOME
+		* source/files.*: initialize config files list
+	
+2002-08-05 19:33  wjpalenstijn
+
+	* source/linux/Makefile.am (1.6):
+
+	let automake use foreign mode
+	
+2002-08-05 17:38  wjpalenstijn
+
+	* ChangeLog (1.22), source/Makefile.am (1.21):
+
+	* sources/Makefile.am: use $(OPENGL_LIBS)
+	
+2002-08-05 17:36  wjpalenstijn
+
+	* ChangeLog (1.21), source/linux/Makefile.am (1.5),
+	source/linux/configure.ac (1.1), source/linux/configure.in (1.16):
+
+	2007-08-05 17:35  wjpalenstijn
+		* sources/linux/*: configure.in->configure.ac, added Makefile.am
+		* sources/linux/configure.ac: don't add -lGL -lGLU in MacOSX
+	
+2002-08-05 17:24  vividos
+
+	* source/files.hpp (1.4):
+
+	added function to retrieve list of config files
+	
+2002-08-05 16:28  vividos
+
+	* source/audio/midi.cpp (1.16):
+
+	modified ua_try_midi_driver() to not use template specialization; wasn't working for MSVC
+	
+2002-08-05 14:55  wjpalenstijn
+
+	* Copying (1.2), docs/Authors.txt (1.6), docs/README.Linux.txt
+	(1.6), docs/README.Lua.txt (1.5), docs/README.dev.txt (1.3),
+	docs/README.mingw32.txt (1.4), docs/README.tools.txt (1.5),
+	docs/README.uwadv.txt (1.2), docs/ua-doxygen.cfg (1.4),
+	docs/uw-formats.txt (1.21), docs/uw1-walkthrough.txt (1.2),
+	docs/uw2-walkthrough.txt (1.2), hacking/.cvsignore (1.2),
+	hacking/hacking.dsw (1.3), hacking/cnvdec/cnvdec.dsp (1.2),
+	hacking/critdec/critdec.dsp (1.2), hacking/cutsdec/cutsdec.dsp
+	(1.3), hacking/fontdecode/fontdecode.dsp (1.2),
+	hacking/grdecode/grdecode.dsp (1.2),
+	hacking/levarkdec/levarkdec.dsp (1.3),
+	hacking/miscdecode/miscdecode.dsp (1.3),
+	hacking/sgdecode/sgdecode.dsp (1.2),
+	hacking/stringextract/stringextract.dsp (1.2),
+	hacking/trdecode/trdecode.dsp (1.2), misc/uw1-combinations.txt
+	(1.2), misc/uw1-common-obj-prop.txt (1.2),
+	misc/uw1-levelobjs-level1.txt (1.3), misc/uw1-object-classes.txt
+	(1.2), source/audio.hpp (1.7), source/common.hpp (1.9),
+	source/core.hpp (1.6), source/cutscene.cpp (1.12),
+	source/cutscene.hpp (1.8), source/files.cpp (1.3), source/files.hpp
+	(1.3), source/font.cpp (1.7), source/font.hpp (1.5),
+	source/gamestrings.hpp (1.6), source/image.cpp (1.14),
+	source/image.hpp (1.10), source/inventory.cpp (1.10),
+	source/inventory.hpp (1.5), source/keymap.cpp (1.3),
+	source/keymap.hpp (1.3), source/level.cpp (1.18), source/level.hpp
+	(1.12), source/objects.cpp (1.11), source/objects.hpp (1.7),
+	source/physics.cpp (1.9), source/physics.hpp (1.5),
+	source/player.cpp (1.8), source/player.hpp (1.8),
+	source/quadtree.cpp (1.10), source/quadtree.hpp (1.6),
+	source/screen.hpp (1.6), source/settings.hpp (1.7),
+	source/texture.cpp (1.18), source/texture.hpp (1.12),
+	source/uamath.hpp (1.6), source/uatypes.hpp (1.13),
+	source/underworld.cpp (1.13), source/underworld.hpp (1.9),
+	source/uwadv.cpp (1.18), source/uwadv.hpp (1.8),
+	source/audio/audio.cpp (1.13), source/audio/midi.cpp (1.15),
+	source/audio/midi.hpp (1.8), source/audio/xmidi.cpp (1.11),
+	source/audio/xmidi.hpp (1.7),
+	source/audio/midi_driver/linux_sdl_mixer.cpp (1.3),
+	source/audio/midi_driver/linux_sdl_mixer.h (1.3),
+	source/audio/midi_driver/uni_fmod.cpp (1.10),
+	source/audio/midi_driver/uni_fmod.h (1.6),
+	source/audio/midi_driver/win_midiout.cpp (1.8),
+	source/audio/midi_driver/win_midiout.h (1.6),
+	source/conv/codevm.cpp (1.11), source/conv/codevm.hpp (1.13),
+	source/linux/main.cpp (1.3), source/lua/COPYRIGHT (1.2),
+	source/lua/HISTORY (1.2), source/lua/README (1.2),
+	source/resource/codeloader.cpp (1.12),
+	source/resource/cutsloader.cpp (1.9),
+	source/resource/fontloader.cpp (1.8),
+	source/resource/fread_endian.hpp (1.6),
+	source/resource/gamestrings.cpp (1.10),
+	source/resource/imageloader.cpp (1.10),
+	source/resource/maploader.cpp (1.11), source/resource/objloader.cpp
+	(1.8), source/resource/settings.cpp (1.10),
+	source/resource/texloader.cpp (1.11),
+	source/screens/acknowledgements.cpp (1.5),
+	source/screens/acknowledgements.hpp (1.2),
+	source/screens/conversation.cpp (1.2),
+	source/screens/conversation.hpp (1.2),
+	source/screens/create_character.cpp (1.3),
+	source/screens/create_character.hpp (1.2),
+	source/screens/cutscene_view.cpp (1.16),
+	source/screens/cutscene_view.hpp (1.5),
+	source/screens/ingame_orig.cpp (1.35),
+	source/screens/ingame_orig.hpp (1.15), source/screens/map_view.cpp
+	(1.2), source/screens/map_view.hpp (1.2),
+	source/screens/start_menu.cpp (1.14), source/screens/start_menu.hpp
+	(1.6), source/screens/start_splash.cpp (1.23),
+	source/screens/start_splash.hpp (1.7), source/tools/animview.cpp
+	(1.6), source/tools/cnvdasm.cpp (1.8), source/tools/cnvdasm.hpp
+	(1.4), source/tools/cnvdbg.cpp (1.12), source/tools/cnvdbg.hpp
+	(1.4), source/tools/instr.hpp (1.4), source/tools/mapdisp.cpp
+	(1.3), source/tools/strpak.cpp (1.6), source/tools/xmi2mid.cpp
+	(1.2), source/win32/Makefile.mingw (1.26),
+	source/win32/animview.dsp (1.4), source/win32/cnvdasm.dsp (1.3),
+	source/win32/cnvdbg.dsp (1.3), source/win32/mapdisp.dsp (1.6),
+	source/win32/strpak.dsp (1.3), source/win32/tools.dsw (1.6),
+	source/win32/uwadv.cfg (1.5), source/win32/uwadv.dsp (1.19),
+	source/win32/uwadv.dsw (1.3), source/win32/uwadv.nsi (1.5),
+	source/win32/xmi2mid.dsp (1.3),
+	source/win32/install/License.installer.txt (1.2),
+	source/win32/source/game_win32.cpp (1.2),
+	source/win32/source/game_win32.hpp (1.2),
+	source/win32/source/main.cpp (1.5), uadata/Makefile (1.4),
+	uadata/uw1/scripts/cutscene.lua (1.7):
+
+	* all: converted to unix-style endlines
+	
+2002-08-02 20:54  wjpalenstijn
+
+	* source/: inventory.cpp (1.9), screens/ingame_orig.cpp (1.34):
+
+	forgot to convert files to DOS endlines before committing
+	
+2002-08-02 20:46  wjpalenstijn
+
+	* ChangeLog (1.20), source/inventory.cpp (1.8),
+	source/screens/ingame_orig.cpp (1.33):
+
+	2007-08-02 20:45  wjpalenstijn
+		* source/inventory.cpp: fixed link1-list corruption when dropping obj.
+		* source/screens/ingame_orig.cpp: fixed crash (bug #590321)
+	
+2002-08-01 18:41  phlask
+
+	* source/screens/cutscene_view.cpp (1.15):
+
+	sound (voice) playback now stops directly when aborting the intro
+	
+2002-08-01 18:28  phlask
+
+	* source/: audio/audio.cpp (1.12), audio.hpp (1.6):
+
+	added stop_sound() which stops all audio playback at once
+	
+2002-07-31 22:54  wjpalenstijn
+
+	* ChangeLog (1.19), source/linux/aclocal.m4 (1.4),
+	source/linux/mkinstalldirs (1.14), source/linux/.cvsignore (1.9),
+	source/linux/config.guess (1.2), source/linux/config.h.in (1.6),
+	source/linux/config.sub (1.2), source/linux/configure (1.13),
+	source/linux/depcomp (1.2), source/linux/install-sh (1.3),
+	source/linux/missing (1.3):
+
+	2007-07-31 22:50  wjpalenstijn
+		* source/linux/various: removed generated files from CVS to .cvsignore
+	
+2002-07-31 08:14  vividos
+
+	* source/screens/start_splash.cpp (1.22):
+
+	fixed animation loading when savegames are available
+	
+2002-07-31 01:07  vividos
+
+	* docs/README.Lua.txt (1.4):
+
+	added some ua_underworld <--> lua scripting interface infos
+	
+2002-07-31 00:09  vividos
+
+	* source/win32/uwadv.dsp (1.18):
+
+	some more reordering
+	
+2002-07-31 00:07  vividos
+
+	* source/screens/start_splash.cpp (1.21):
+
+	first two static images are only shown when no savegames are available
+	
+2002-07-31 00:06  vividos
+
+	* source/screens/start_menu.cpp (1.13):
+
+	made "journey onward" button dependent on available savegames
+	
+2002-07-31 00:05  vividos
+
+	* source/: files.cpp (1.2), files.hpp (1.2):
+
+	added member function ua_files_manager::savegames_avail()
+	
+2002-07-30 23:53  vividos
+
+	* source/screens/: start_menu.cpp (1.12), start_menu.hpp (1.5):
+
+	corrected palette shifting fps calculation
+	
+2002-07-30 23:39  vividos
+
+	* source/screens/: start_splash.cpp (1.20), start_splash.hpp (1.6):
+
+	simplified splash screens
+	
+2002-07-30 22:30  wjpalenstijn
+
+	* ChangeLog (1.18), source/.cvsignore (1.4), source/Makefile.in
+	(1.21), source/tools/.cvsignore (1.2), source/tools/Makefile.in
+	(1.16):
+
+	2007-07-30 22:30  wjpalenstijn
+		removed Makefile.in from CVS, added to .cvsignore
+	
+2002-07-30 22:26  wjpalenstijn
+
+	* source/Makefile.am (1.20), ChangeLog (1.17),
+	source/screens/create_character.cpp (1.2):
+
+	2007-07-30 22:23  wjpalenstijn
+	
+		* source/Makefile.am: added new screens/* files
+		* screens/create_character.cpp:
+		replaced non-standard itoa() with sprintf()
+	
+2002-07-30 21:51  vividos
+
+	* source/win32/Makefile.mingw (1.25):
+
+	added conversation and map_view screen files
+	
+2002-07-30 21:50  vividos
+
+	* source/win32/uwadv.dsp (1.17):
+
+	restructured "uwadv files" folders
+	added conversation and map_view screen files
+	
+2002-07-30 21:49  vividos
+
+	* docs/README.mingw32.txt (1.3):
+
+	added infos about needed SDL_mixer and zlib libraries
+	
+2002-07-30 21:36  vividos
+
+	* source/screens/: conversation.cpp (1.1), conversation.hpp (1.1),
+	map_view.cpp (1.1), map_view.hpp (1.1):
+
+	added more (later) needed screens
+	
+2002-07-30 21:33  vividos
+
+	* source/screens/ingame_orig.cpp (1.32):
+
+	possible fix for glScissor() not working on MacOS X: enabled GL_SCISSOR_TEST after calling glScissor()
+	
+2002-07-30 21:15  wjpalenstijn
+
+	* source/inventory.cpp (1.7), source/objects.cpp (1.10),
+	source/uamath.hpp (1.5), source/screens/acknowledgements.cpp (1.4),
+	ChangeLog (1.16), source/audio/audio.cpp (1.11),
+	source/audio/midi.hpp (1.7), source/resource/fontloader.cpp (1.7):
+
+	2007-07-30 21:08  wjpalenstijn
+	
+		* source/inventory.cpp, source/screens/acknowledgements.cpp,
+		* source/objects.cpp, source/audio/midi.hpp, source/audio/audio.cpp:
+		removed some warnings
+	
+		* source/resource/fontloader.cpp:
+		fixed off-by-one in fontid range check
+	
+		* source/uamath.hpp:
+		enclosed MSVC-specific pragma's in #ifdef _MSC_VER
+	
+2002-07-30 20:27  vividos
+
+	* docs/: README.Lua.txt (1.3), README.tools.txt (1.4):
+
+	small changes
+	
+2002-07-30 11:56  vividos
+
+	* ChangeLog (1.15):
+
+	updated for cheesecake release
 	
 2002-07-30 11:14  vividos
 
