@@ -1,8 +1,11 @@
-2004-xx-xx release 0.9-xxx
+2004-04-10 release 0.9-mojito
 
-	* restructured code
+	* restructured and refactored code
 	* added config option to show "pixely" user interface
 	* added splash screen when starting the game
+	* new savegame format (incompatible to previous versions)
+	* updated and improved physics code
+	* added stats and runebag panel
 
 2003-04-24 release 0.8-hot-chili
 
