@@ -248,10 +248,9 @@ void ua_start_splash_screen::tick()
          else
          {
             // load new image and texture
-            tex.clean();
             img.load_raw(core->get_settings(),splash_seq[stage+1].moreinfo,5);
             tex.convert(core->get_texmgr(),img);
-            tex.prepare(false,GL_NEAREST,GL_NEAREST);
+            tex.upload();
             is_animation = false;
          }
          img_loaded = true;
