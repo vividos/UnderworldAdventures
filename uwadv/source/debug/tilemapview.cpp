@@ -118,7 +118,7 @@ void ua_tilemapview_canvas::Render()
 void ua_tilemapview_canvas::OnSize(wxSizeEvent& event)
 {
    // this is also necessary to update the context on some platforms
-   wxGLCanvas::OnSize(event);
+/*   wxGLCanvas::OnSize(event);
 
    // set GL viewport (not called by wxGLCanvas::OnSize on all platforms...)
    int w, h;
@@ -130,6 +130,7 @@ void ua_tilemapview_canvas::OnSize(wxSizeEvent& event)
       SetCurrent();
       glViewport(0, 0, (GLint) w, (GLint) h);
    }
+*/
 }
 
 void ua_tilemapview_canvas::OnPaint(wxPaintEvent& event)
