@@ -688,6 +688,12 @@ Table of Contents
    copied to the memory address in the private globals. At end of conversation
    they are copied back to the game globals.
 
+   * Memory layout
+
+     0000    imported globals (copied on start) (usually 0x001f long)
+     0020    private conversation globals
+     0020+n  stack begin (ascends up)
+
    * Conversation assembler language
 
    The conversation code is an assembler-like languages with a set of opcodes.
@@ -768,19 +774,29 @@ Table of Contents
      @XY<num>
 
      X: source of variable to substitute, one of these: GSP
-        G: global variable (?)
+        G: game global variable
         S: stack variable
-        P: private variable (?)
+        P: pointer variable
      Y: type of variable, one of these: SI
         S: value is a string number into current string block
         I: value is an integer value
-     <num>: hex value, without leading 0's
+     <num>: decimal value
+
+     For pointer variables, the num value determines the location of the
+     pointer relative to the stack. It usually refers to variables passed
+     to a function (since they were push'ed onto the stack).
 
      For stack variables, the num value determines which stack value is taken
      from the current local variables. The value to take is basep + <num>
 
+     For global variables, the value describes the globals position in memory,
+     at the front where the imported game globals and private globals are
+     stored.
+
      Example:
-     A @SS2 means: print string with string number found at basep + 2
+     @SS2 means: print string with string number found at basep + 2
+     @PI-3 means: print int value pointed to by pointer at basep - 3
+     @GS8 means: print string from global var #8
 
    * Conversation builtin functions
 
@@ -818,16 +834,16 @@ Table of Contents
      -------------------------------------------------------------------------
 
      id=000f name="get_quest" ret_type=int
-     parameters:   s[0]: unknown, value?
-                   s[1]: pointer to ???
+     parameters:   s[0]: sub-category ???
+                   s[1]: pointer to index ???
      description:  returns a quest flag (??)
      return value: quest value (??)
      -------------------------------------------------------------------------
 
      id=0010 name="set_quest" ret_type=void
-     parameters:   s[0]: unknown, value?
-                   s[1]: pointer to ???
-                   s[2]: pointer to ???
+     parameters:   s[0]: value to set
+                   s[1]: pointer to sub-category ???
+                   s[2]: pointer to index ???
      description:  sets a quest value (??)
      return value: none
      -------------------------------------------------------------------------
@@ -847,11 +863,36 @@ Table of Contents
      return value: ???
      -------------------------------------------------------------------------
 
+     id=0014 name="give_ptr_npc" ret_type=int
+     parameters:   s[0]: unknown, value ???
+                   s[1]: pointer to ???
+                   s[2]: pointer to quantity to transfer???
+     description:  player hands over an item to NPC
+     return value: unused
+     -------------------------------------------------------------------------
+
      id=0015 name="take_from_npc" ret_type=int
-     parameters:   s[0]: unknown, may be quantity
-                   s[1]: pointer to item ID?
+     parameters:   s[0]: quantity (?)
+                   s[1]: pointer to item ID
      description:  gives the player an item
-     return value: ???
+     return value: 1: ok, 2: player has no space left
+     -------------------------------------------------------------------------
+
+     id=0031 name="find_barter" ret_type=int
+     parameters:   s[0]: quantity
+                   s[1]: item ID to find
+     description:  searches for item in barter area
+     return value: 1 when found (?)
+     -------------------------------------------------------------------------
+
+     id=0032 name="find_barter_total" ret_type=int
+     parameters:   s[0]: ???
+                   s[1]: pointer to number of found items
+                   s[2]: pointer to
+                   s[3]: pointer to
+                   s[4]: pointer to item ID to find
+     description:  searches for item in barter area
+     return value: 1 when found (?)
      -------------------------------------------------------------------------
 
 
