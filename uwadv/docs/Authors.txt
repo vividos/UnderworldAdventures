@@ -1,5 +1,5 @@
 Michael Fink <vividos at users.sourceforge.net>
-Dirk Manders <phlaskman at hotmail.com>
+Dirk Manders <phlask@users.sourceforge.net>
 
 Underworld Adventures additionally contains code from:
 
