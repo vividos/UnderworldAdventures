@@ -176,9 +176,9 @@ function lua_inventory_look(inv_pos)
 
    dump_invinfo_table(inv_pos)
 
-   -- inv_objinfo = inv_get_objinfo(inv_pos)
+   inv_objinfo = inv_get_objinfo(inv_pos)
 
-   -- look_at_objinfo(inv_objinfo,1)
+   look_at_objinfo(inv_objinfo,1)
 
 end
 
