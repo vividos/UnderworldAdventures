@@ -367,7 +367,7 @@ void ua_game::init_core()
    underworld.init(settings,filesmgr);
 
    // create debug interface instance
-   debug = ua_debug_interface::get_new_debug_interface(&underworld);
+   debug = ua_debug_interface::get_new_debug_interface(this);
 }
 
 void ua_game::push_screen(ua_ui_screen_base *newscreen)

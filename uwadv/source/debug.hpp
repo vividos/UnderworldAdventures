@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Underworld Adventures Team
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,11 +26,15 @@
 */
 
 // include guard
-#ifndef __uwadv_debug_hpp_
-#define __uwadv_debug_hpp_
+#ifndef uwadv_debug_hpp_
+#define uwadv_debug_hpp_
 
 // needed includes
-#include "underworld.hpp"
+
+
+// forward references
+class ua_game_core_interface;
+class ua_underworld;
 
 
 // classes
@@ -40,7 +44,8 @@ class ua_debug_interface
 {
 public:
    //! returns a new debug interface
-   static ua_debug_interface* get_new_debug_interface(ua_underworld* underw);
+   static ua_debug_interface* get_new_debug_interface(
+      ua_game_core_interface* core);
 
    //! starts visual debugger
    virtual void start_debugger()=0;
@@ -50,9 +55,6 @@ public:
 
    //! unlocks underworld object
    virtual void unlock()=0;
-
-   //! returns underworld object
-   virtual ua_underworld* get_underworld()=0;
 
 
    //! dtor
