@@ -13,7 +13,7 @@ are:
  * GCC 2.95.2 or higher
  * a working X window system
  * SDL 1.2.3 (or higher), available at http://www.libsdl.org/
- * Mesa (or another working OpenGL implementation) http://www.mesa3d.org
+ * Mesa (or any other working OpenGL implementation) http://www.mesa3d.org
 
 Additionally, you can install FMOD to hear MIDI music.
 
@@ -42,6 +42,8 @@ finished, the executable "uwadv" is built. Now type (as root now):
 The built files are now installed into their proper folders. More infos about
 running Underworld Adventures can be found in the file "README.uwadv.txt".
 
+Note: make install may not work yet!
+
 Remarks
 -------
 
@@ -51,7 +53,9 @@ Installing FMOD:
    script, so it's a bit harder to install.
 
    To install the two header files ("fmod.h" and "fmod_errors.h"), you have to
-   be root. Just copy them to "/usr/local/include/" or "/usr/include/"
+   be root. Just copy them to "/usr/local/include/" or "/usr/include/". Be
+   sure that the two include files have linux line endings. When not, convert
+   them using "recode ibmpc..lat1 <file>".
 
    To install the shared library, you have to copy the file ("libfmod-3.5.so"
    in the latest release at this time) to "/usr/lib/" (or again
