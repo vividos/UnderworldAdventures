@@ -106,6 +106,10 @@ public:
    //! cleans up texture name(s) after use
    void clean();
 
+   //! uploads the texture directly, without using a texture name
+   void upload(bool mipmaps=false, unsigned int texnr=0,
+      GLenum min_filt = GL_LINEAR, GLenum max_filt = GL_LINEAR);
+
 protected:
    //! upper left texture coordinates
    float u,v;

@@ -86,25 +86,8 @@ void ua_texture::prepare(bool mipmaps, GLenum min_filt, GLenum max_filt)
 
    for(unsigned int i=0; i<texcount; i++)
    {
-      Uint32 *tex = &texels[i*xres*yres];
-
       glBindTexture(GL_TEXTURE_2D, texname[i]);
-
-      // set texture parameters
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, min_filt);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, max_filt);
-
-      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
-      // build mipmaps/single texture
-      if (mipmaps)
-         gluBuild2DMipmaps(GL_TEXTURE_2D, 3, xres, yres, GL_RGBA,
-            GL_UNSIGNED_BYTE, tex);
-      else
-         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, xres, yres, 0, GL_RGBA,
-            GL_UNSIGNED_BYTE, tex);
+      upload(mipmaps,i,min_filt,max_filt);
    }
 }
 
@@ -122,6 +105,27 @@ void ua_texture::use(ua_texture_manager &texmgr, unsigned int animstep)
 void ua_texture::clean()
 {
    glDeleteTextures(texcount,&texname[0]);
+}
+
+void ua_texture::upload(bool mipmaps, unsigned int texnr, GLenum min_filt, GLenum max_filt)
+{
+   Uint32 *tex = &texels[texnr*xres*yres];
+
+   // set texture parameters
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, min_filt);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, max_filt);
+
+   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+   // build mipmaps/single texture
+   if (mipmaps)
+      gluBuild2DMipmaps(GL_TEXTURE_2D, 3, xres, yres, GL_RGBA,
+         GL_UNSIGNED_BYTE, tex);
+   else
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, xres, yres, 0, GL_RGBA,
+         GL_UNSIGNED_BYTE, tex);
 }
 
 
