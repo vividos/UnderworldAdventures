@@ -135,7 +135,35 @@ void ua_cuts_extract_data(Uint8 *src,Uint8 *dst,unsigned int maxpix)
    }
 }
 
-const Uint8 *ua_cutscene::get_frame(unsigned int framenum)
+void ua_cutscene::get_frame(ua_texture &tex, unsigned int framenum)
+{
+   if (curframe!=framenum)
+   {
+      // when we are at the max, start again from the first
+      if (curframe>framenum)
+      {
+         decode_frame(0);
+         curframe=0;
+      }
+
+      // decode all frames between the current and the wanted frame
+      while(curframe<framenum)
+      {
+         curframe++;
+         decode_frame(curframe);
+      }
+   }
+
+   // now copy the bytes to the image
+   ua_image img;
+   img.create(width,height,0,0);
+   memcpy(&img.get_pixels()[0],&outbuffer[0],width*height);
+
+   tex.convert(img,palette);
+}
+
+
+void ua_cutscene::decode_frame(unsigned int framenum)
 {
    // first, search large page to use
    int i=0;
@@ -172,6 +200,4 @@ const Uint8 *ua_cutscene::get_frame(unsigned int framenum)
 
    // extract the pixel data
    ua_cuts_extract_data(&src[4],&outbuffer[0],width*height);
-
-   return &outbuffer[0];
 }

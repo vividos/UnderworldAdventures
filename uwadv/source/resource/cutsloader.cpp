@@ -92,6 +92,7 @@ void ua_cutscene::load(const char *filename)
       palette[n][1] = fgetc(fd); // green
       palette[n][0] = fgetc(fd); // red
       fgetc(fd); // extra pad byte
+      palette[n][3] = 0xff; // transparency
    }
 
    // now we are at the large page descriptor array

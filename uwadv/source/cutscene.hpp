@@ -32,15 +32,17 @@
 // needed includes
 #include <vector>
 #include "settings.hpp"
+#include "texture.hpp"
 
 
 // classes
 
+//! cutscene animation class
 class ua_cutscene
 {
 public:
    //! ctor
-   ua_cutscene(){}
+   ua_cutscene(){ curframe=(unsigned int)-1; }
 
    //! loads a cutscene by main and sub number
    void load(ua_settings &settings, unsigned int main, unsigned int sub);
@@ -56,9 +58,12 @@ public:
    //! returns maximum number of frames
    unsigned int get_maxframes(){ return records; }
 
-   const Uint8 *get_frame(unsigned int framenum);
+   //! extracts a new frame into a texture
+   void get_frame(ua_texture &tex, unsigned int framenum);
 
-   const Uint8 *get_palette(){ return &palette[0][0]; }
+protected:
+   //! decodes one frame
+   void decode_frame(unsigned int framenum);
 
 protected:
    //! width of animation bitmap
@@ -71,9 +76,13 @@ protected:
    //! number of records in file
    unsigned int records;
 
-   //! animation palette
-   Uint8 palette[256][3];
+   //! number of current frame
+   unsigned int curframe;
 
+   //! animation palette
+   Uint8 palette[256][4];
+
+   //! large page descriptor struct type
    struct lp_descriptor
    {
       Uint16 base;
