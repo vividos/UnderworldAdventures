@@ -54,7 +54,7 @@ public:
    ~ua_renderer();
 
    //! initializes renderer
-   void init(ua_settings& settings);
+   void init(ua_game_interface& game);
 
    //! cleans up renderer
    void done();

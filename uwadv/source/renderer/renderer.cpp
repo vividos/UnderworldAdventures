@@ -59,9 +59,9 @@ ua_renderer::~ua_renderer()
    done();
 }
 
-void ua_renderer::init(ua_settings& settings)
+void ua_renderer::init(ua_game_interface& game)
 {
-   texmgr.init(settings);
+   texmgr.init(game);
 
    critpool = new ua_critter_pool;
    modelmgr = new ua_model3d_manager;
