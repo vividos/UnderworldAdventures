@@ -19,6 +19,24 @@
    $Id$
 
 */
+/*
+   when updating the wrllexer.cpp file from this flex input file, be sure to
+   use the modified flex skeleton file flex.skl in this folder. the command
+   to regenerate is:
+
+     flex -Sflex.skl wrllexer.l
+
+   before commiting the new file, be sure to change the line
+
+      #include <FlexLexer.h>
+
+   to look like
+
+      #include "FlexLexer.h"
+
+   so that compiles on mingw32 and linux don't need explicit include paths
+   up to here.
+*/
 
 /* flex options */
 
