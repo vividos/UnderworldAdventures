@@ -796,7 +796,7 @@ void ua_ingame_orig_screen::update_panel_texture()
       // player appearance
       {
          unsigned int bodyimg = pl.get_attr(ua_attr_appearance)%5
-            + female? 5 : 0;
+            + female? 0 : 5;
 
          panel.paste_image(this->img_bodies.get_image(bodyimg),24,4);
       }
