@@ -853,28 +853,31 @@ Table of Contents
    0004   Int32   code size in number of instructions (16-bit words)
    0008   Int16   unknown2, always seems to be 0x0000
    000A   Int16   game strings block to use
-   000C   Int16   number of stack space reserved for private globals
+   000C   Int16   number of memory reserved for variables (*)
    000E   Int16   number of imported globals (functions + variables)
    0010           start of imported functions list
 
-   One import record describes builtin (or imported) functions and game
-   global variables used by the conversation:
+   (*) This number includes all variables not belonging to stack, e.g. unnamed
+   globals, imported globals and private conversation globals.
+
+   An import record describes imported functions and game global variables
+   used by the conversation:
 
    0000   Int16   length of function name
    0002   n*char  name of function
-   n+02   Int16   ID (builtin) / memory address (variable)
+   n+02   Int16   ID (imported func.) / memory address (variable)
    n+04   Int16   unknown, always seems to be 1
-   n+06   Int16   import type (0x010F=variable, 0x0111=builtin)
+   n+06   Int16   import type (0x010F=variable, 0x0111=imported func.)
    n+08   Int16   return type (0x0000=void, 0x0129=int, 0x012B=string)
 
    Each conversation has a set of private global variables that are saved
    across conversations. The initial size of them are stored in the file
-   babglobals.dat. When a game is saved, the globals are in the file
-   bglobals.dat. The layout of both is as follows:
+   "babglobals.dat". When a game is saved, the globals are stored in the file
+   "bglobals.dat". The layout of both files is as follows:
 
    0000   Int16     number of conversation slot
    0002   Int16     size of private global data for that conv.
-   0004   n*Int16   all globals for that slot (omitted in babglobals.dat)
+   0004   n*Int16   all globals for that slot (omitted in "babglobals.dat")
    ...              repeat until file end
 
    On conversation start the game globals listed in the import table is
@@ -883,9 +886,17 @@ Table of Contents
 
    * Memory layout
 
-     0000    imported globals (copied on start) (usually 0x001f long)
-     0020    private conversation globals
+     0000    unnamed globals (may be empty, size n)
+     000n    imported globals (copied on start) (usually 0x001f long)
+     0020    private conversation globals (of size n)
      0020+n  stack begin (ascends up)
+
+     There may be unnamed globals that start at memory location 0. The
+     imported globals then start at a higher address (the exact positions
+     of the imported globals are noted in the "import records list".
+
+     For the memory, a full range of 16-bit memory (64k) should be available,
+     which gives plenty of stack memory.
 
    * Conversation assembler language
 
@@ -921,7 +932,7 @@ Table of Contents
    12  BRA        1 0 0  branch. Always branch relative to the offset address.
    13  CALL       1 0 1  call subroutine. Push the next instruction address and
                          jump to the absolute address (in words) given.
-   14  CALLI      1 0 0  call imported subroutine.
+   14  CALLI      1 0 0  call imported subroutine. Argument is the function ID.
    15  RET        0 1 0  return from subroutine. Pop the return address off the
                          stack and jump to it.
    16  PUSHI      1 0 1  push immediate value onto the stack.
@@ -964,7 +975,7 @@ Table of Contents
      "babl_menu") there may be strings like @SS1 or @GS8 that are substituted
      with other text. The format of the "format string" is like this:
 
-     @XY<num>
+     @XY<num>[<extension>]
 
      X: source of variable to substitute, one of these: GSP
         G: game global variable
@@ -974,6 +985,7 @@ Table of Contents
         S: value is a string number into current string block
         I: value is an integer value
      <num>: decimal value
+     <extension>: format: C<number>, might be fractional part
 
      For pointer variables, the num value determines the location of the
      pointer relative to the stack. It usually refers to variables passed
@@ -991,91 +1003,385 @@ Table of Contents
      @PI-3 means: print int value pointed to by pointer at basep - 3
      @GS8 means: print string from global var #8
 
-   * Conversation builtin functions
+   * Conversation imported functions
 
-     Here are listed all builtin functions:
+     Each imported function has an ID (the argument of the CALLI opcode), and
+     the "import table" (see above) usually imports all available functions,
+     even unused ones. All imported functions have at least one argument, and
+     the first one is the number of arguments additionally passed (some times
+     this rule seems to be violated, e.g. function "babl_menu", see (*)
+     below). First argument is always pushed last on stack.
+
+     Here is a quick overview of all builtin functions ("args" is the number
+     of arguments without the mandatory first one):
+
+       id   type    args     function name
+      0000  int      1 (*)   babl_menu
+      0001  int      2 (*)   babl_fmenu
+      0002  void     1       print
+      0003  int      0       babl_ask
+      0004  int      2       compare
+      0005  int      1       random
+      0006  string   ?       plural
+      0007  int      2       contains
+      0008  string   ?       append
+      0009  string   ?       copy
+      000a  int      ?       find
+      000b  int      1       length
+      000c  int      ?       val
+      000d  void     ?       say
+      000e  void     ?       respond
+      000f  int      1       get_quest
+      0010  void     2       set_quest
+      0011  string   2       sex
+      0012  int      2       show_inv
+      0013  int      2       give_to_npc
+      0014  int      2       give_ptr_npc
+      0015  int      1       take_from_npc
+      0016  int      1       take_id_from_npc
+      0017  int      4       identify_inv
+      0018  int      *       do_offer
+      0019  int      2       do_demand
+      001a  int      1       do_inv_create
+      001b  int      1       do_inv_delete
+      001c  int      1       check_inv_quality
+      001d  int      2       set_inv_quality
+      001e  int      1       count_inv
+      001f  void     0       setup_to_barter
+      0020  void     ?       end_barter
+      0021  void     0       do_judgement
+      0022  void     0       do_decline
+      0023  void     ?       pause
+      0024  void     2       set_likes_dislikes
+      0025  int      3       gronk_door
+      0026  void     1/3     set_race_attitude
+      0027  void     3       place_object
+      0028  void     1       take_from_npc_inv
+      0029  void     ?       add_to_npc_inv
+      002a  void     0       remove_talker
+      002b  void     2       set_attitude
+      002c  int      2       x_skills
+      002d  int      2       x_traps
+      002e  void     ?       x_obj_pos
+      002f  void     9       x_obj_stuff
+      0030  int      2       find_inv
+      0031  int      1       find_barter
+      0032  int      4       find_barter_total
+
+     Here is a detailed description of every builtin function. arg0 is always
+     the first argument, the number of args passed.
 
      id=0000 name="babl_menu" ret_type=int
-     parameters:   s[0]: unknown
-                   s[1]: pointer to list of string id's; ends with id == 0
-     description:  shows a menu of further questions the user can select
-     return value: number of selected response
+     parameters:   arg1: pointer to a list of string id's; ends with id == 0
+     description:  shows a menu of further questions the user can select;
+                   string id's are stored in list in arg1
+     return value: number of selected response (index of arg1 list)
      -------------------------------------------------------------------------
 
      id=0001 name="babl_fmenu" ret_type=int
-     parameters:   s[0]: unknown, always 0x0000
-                   s[1]: pointer to list of string id's; ends with id == 0
-                   s[2]: unknown, points to 3 values
-     description:  ???
-     return value: number of selected response
+     parameters:   arg1: pointer to list of string id's; ends with id == 0
+                   arg2: pointer to list with on/off values (1==on)
+     description:  shows a menu with questions from list in arg1; the list in
+                   arg2 indicates if the question is available (0 means not
+                   available).
+     return value: number of selected response string (from the arg1 list)
+     -------------------------------------------------------------------------
+
+     id=0002 name="print" ret_type=void
+     parameters:   arg1: pointer to string id
+     description:  prints a string that is not spoken by anyone (e.g. scene
+                   description).
      -------------------------------------------------------------------------
 
      id=0003 name="babl_ask" ret_type=int
-     parameters:   s[0]: unknown, always 0x0000
-     description:  lets the user type in a string
-     return value: ???, string handle which can be printed with @SS1 when put
-                   to stack on basep + 1
+     parameters:   none
+     description:  lets the user type in a string; the string typed in is
+                   stored in a newly allocated string slot. The string is not
+                   stored after conversation ended.
+     return value: string handle of allocated string
+     -------------------------------------------------------------------------
+
+     id=0004 name="compare" ret_type=int
+     parameters:   arg1: pointer to string handle
+                   arg2: pointer to string handle
+     description:  compares strings for equality, case independent
+     return value: returns 1 when strings are equal, 0 when not
+     -------------------------------------------------------------------------
+
+     id=0005 name="random" ret_type=int
+     parameters:   arg1: highest value
+     description:  generates a random number in the range of [1..arg1]
+     return value: the generated random number
+     -------------------------------------------------------------------------
+
+     id=0006 name="plural" ret_type=string
+     parameters:   arg1: item id to retrieve plural string (guessed)
+     description:  (as this function is not used in uw1, I only can guess)
+                   the function returns a newly allocated string with the
+                   plural of the description string of a given item id.
+     return value: string handle (guessed)
      -------------------------------------------------------------------------
 
      id=0007 name="contains" ret_type=int
-     parameters:   s[0]: pointer to first string handle (?)
-                   s[1]: pointer to second string handle (?)
-                   s[2]: unknown
-     description:  checks if the first string has the second string inside
-     return value: 1 when the string was found
+     parameters:   arg1: pointer to first string handle
+                   arg2: pointer to second string handle
+     description:  checks if the first string contains the second string
+                   (case-independent).
+     return value: returns 1 when the string was found
+     -------------------------------------------------------------------------
 
+     id=0008 name="append" ret_type=string
+     parameters:   unknown
+     description:  (not used in uw1)
+     return value: unknown
+     -------------------------------------------------------------------------
+
+     id=0009 name="copy" ret_type=string
+     parameters:   unknown
+     description:  (not used in uw1)
+     return value: unknown
+     -------------------------------------------------------------------------
+
+     id=000a name="find" ret_type=int
+     parameters:   unknown
+     description:  (not used in uw1)
+     return value: unknown
+     -------------------------------------------------------------------------
+
+     id=000b name="length" ret_type=int
+     parameters:   arg1: pointer to string handle
+     description:  calculates length of string
+     return value: returns length of string
+     -------------------------------------------------------------------------
+
+     id=000c name="val" ret_type=int
+     parameters:   unknown
+     description:  (not used in uw1)
+     return value: unknown
+     -------------------------------------------------------------------------
+
+     id=000d name="say" ret_type=void
+     parameters:   unknown
+     description:  (not used in uw1)
+     return value: unknown
+     -------------------------------------------------------------------------
+
+     id=000e name="respond" ret_type=void
+     parameters:   unknown
+     description:  (not used in uw1)
+     return value: unknown
      -------------------------------------------------------------------------
 
      id=000f name="get_quest" ret_type=int
-     parameters:   s[0]: sub-category ???
-                   s[1]: pointer to index ???
-     description:  returns a quest flag (??)
-     return value: quest value (??)
+     parameters:   arg1: quest flag number
+     description:  returns a quest flag value
+     return value: quest flag value
      -------------------------------------------------------------------------
 
      id=0010 name="set_quest" ret_type=void
-     parameters:   s[0]: value to set
-                   s[1]: pointer to sub-category ???
-                   s[2]: pointer to index ???
+     parameters:   arg1: new flag value
+                   arg2: quest flag number
      description:  sets a quest value (??)
      return value: none
      -------------------------------------------------------------------------
 
      id=0011 name="sex" ret_type=string
-     parameters:   s[0]: 
-     description:  
-     return value: ???
+     parameters:   arg1: pointer to first string handle
+                   arg2: pointer to second string handle
+     description:  decides on the gender of the avatar which string handle to
+                   return. for a male avatar, the second handle is taken,
+                   otherwise the first handle is taken
+     return value: selected string handle
      -------------------------------------------------------------------------
 
      id=0012 name="show_inv" ret_type=int
-     parameters:   s[0]: unknown
-                   s[1]: pointer to ???
-                   s[2]: pointer to ???
+     parameters:   arg1: unknown
+                   arg2: unknown
      description:  lets the player show an item to the NPC, the player gets
-                   the item back
-     return value: ???
+                   the item back (?)
+     return value: unknown
+     -------------------------------------------------------------------------
+
+     id=0013 name="give_to_npc" ret_type=int
+     parameters:   arg1: item id
+                   arg2: item quantity
+     description:  
+     return value: unknown, ignored
      -------------------------------------------------------------------------
 
      id=0014 name="give_ptr_npc" ret_type=int
-     parameters:   s[0]: unknown, value ???
-                   s[1]: pointer to ???
-                   s[2]: pointer to quantity to transfer???
-     description:  player hands over an item to NPC
+     parameters:   arg1: quantity?
+                   arg2: master object list position? (got from find_barter)
+     description:  player hands over an item to NPC (?)
      return value: unused
      -------------------------------------------------------------------------
 
      id=0015 name="take_from_npc" ret_type=int
-     parameters:   s[0]: quantity (?)
-                   s[1]: pointer to item ID
+     parameters:   arg1: item id
      description:  gives the player an item
      return value: 1: ok, 2: player has no space left
      -------------------------------------------------------------------------
 
+     id=0016 name="take_id_from_npc" ret_type=int
+     parameters:   unknown
+     description:  unknown
+     return value: unknown
+     -------------------------------------------------------------------------
+
+     id=0017 name="identify_inv" ret_type=int
+     parameters:   unknown
+     description:  unknown
+     return value: unknown
+     -------------------------------------------------------------------------
+
+     id=0018 name="do_offer" ret_type=int
+     parameters:   unknown
+     description:  unknown
+     return value: unknown
+     -------------------------------------------------------------------------
+
+     id=0019 name="do_demand" ret_type=int
+     parameters:   unknown
+     description:  unknown
+     return value: unknown
+     -------------------------------------------------------------------------
+
+     id=001a name="do_inv_create" ret_type=int
+     parameters:   arg1: item id
+     description:  creates item in npc inventory
+     return value: unknown
+     -------------------------------------------------------------------------
+
+     id=001b name="do_inv_delete" ret_type=int
+     parameters:   arg1: item id
+     description:  deletes item in npc inventory
+     return value: unknown
+     -------------------------------------------------------------------------
+
+     id=001c name="check_inv_quality" ret_type=int
+     parameters:   unknown
+     description:  unknown
+     return value: unknown
+     -------------------------------------------------------------------------
+
+     id=001d name="set_inv_quality" ret_type=int
+     parameters:   unknown
+     description:  unknown
+     return value: unknown
+     -------------------------------------------------------------------------
+
+     id=001e name="count_inv" ret_type=int
+     parameters:   unknown
+     description:  unknown
+     return value: unknown
+     -------------------------------------------------------------------------
+
+     id=001f name="setup_to_barter" ret_type=void
+     parameters:   none
+     description:  starts bartering
+     -------------------------------------------------------------------------
+
+     id=0020 name="end_barter" ret_type=void
+     parameters:   unknown
+     description:  (not used in uw1), ends bartering
+     -------------------------------------------------------------------------
+
+     id=0021 name="do_judgement" ret_type=void
+     parameters:   none
+     description:  judges current trade (using the "appraise" skill) and
+                   prints result
+     -------------------------------------------------------------------------
+
+     id=0022 name="do_decline" ret_type=void
+     parameters:   none
+     description:  declines trade offer (?)
+     -------------------------------------------------------------------------
+
+     id=0023 name="pause" ret_type=void
+     parameters:   unknown
+     description:  (not used in uw1)
+     -------------------------------------------------------------------------
+
+     id=0024 name="set_likes_dislikes" ret_type=void
+     parameters:   arg1: pointer to list of things the npc likes to trade
+                   arg2: pointer to list of things the npc dislikes to trade
+     description:  sets list of items that a npc likes or dislikes to trade;
+                   the list is terminated with a -1 (0xffff) entry
+     -------------------------------------------------------------------------
+
+     id=0025 name="gronk_door" ret_type=int
+     parameters:   arg1: x tile coordinate with door to open
+                   arg2: y tile coordinate
+     description:  opens closed door or portcullis
+     return value: unknown
+     -------------------------------------------------------------------------
+
+     id=0026 name="set_race_attitude" ret_type=void
+     parameters:   unknown
+     description:  sets attitude for a whole race (?)
+     -------------------------------------------------------------------------
+
+     id=0027 name="place_object" ret_type=void
+     parameters:   arg1: x tile pos
+                   arg2: y tile pos
+                   arg3: item pointer (from do_inv_create)
+     description:  places a generated object in underworld (?)
+     -------------------------------------------------------------------------
+
+     id=0028 name="take_from_npc_inv" ret_type=void
+     parameters:   unknown
+     description:  unknown
+     -------------------------------------------------------------------------
+
+     id=0029 name="add_to_npc_inv" ret_type=void
+     parameters:   unknown
+     description:  (not used in uw1)
+     -------------------------------------------------------------------------
+
+     id=002a name="remove_talker" ret_type=void
+     parameters:   none
+     description:  removes npc the player is talking to (?)
+     -------------------------------------------------------------------------
+
+     id=002b name="set_attitude" ret_type=void
+     parameters:   unknown
+     description:  unknown
+     -------------------------------------------------------------------------
+
+     id=002c name="x_skills" ret_type=int
+     parameters:   unknown
+     description:  unknown
+     return value: unknown
+     -------------------------------------------------------------------------
+
+     id=002d name="x_traps" ret_type=int
+     parameters:   unknown
+     description:  unknown
+     return value: unknown
+     -------------------------------------------------------------------------
+
+     id=002e name="x_obj_pos" ret_type=void
+     parameters:   unknown
+     description:  (not used in uw1)
+     -------------------------------------------------------------------------
+
+     id=002f name="x_obj_stuff" ret_type=void
+     parameters:   unknown
+     description:  unknown
+     -------------------------------------------------------------------------
+
+     id=0030 name="find_inv" ret_type=int
+     parameters:   arg1: unknown
+                   arg2: item id
+     description:  searches item in npc inventory
+     return value: position in master object list
+     -------------------------------------------------------------------------
+
      id=0031 name="find_barter" ret_type=int
-     parameters:   s[0]: quantity
-                   s[1]: item ID to find
+     parameters:   arg1: item id to find
      description:  searches for item in barter area
-     return value: 1 when found (?)
+     return value: returns pos in master object list of item, or 0 if none
+                   found
      -------------------------------------------------------------------------
 
      id=0032 name="find_barter_total" ret_type=int
@@ -1087,6 +1393,73 @@ Table of Contents
      description:  searches for item in barter area
      return value: 1 when found (?)
      -------------------------------------------------------------------------
+
+   * Conversation imported variable
+
+     All imported variables have type int (except for "npc_name" and
+     "play_name", which are strings). Here's a list of all imported game
+     variables:
+
+       variable name       description
+
+        play_hunger
+        play_health
+        play_arms
+        play_power
+        play_hp
+        play_mana
+        play_level
+        new_player_exp     (not used in uw1)
+        play_name          player name
+        play_poison        (not used in uw1)
+        play_drawn         is 1 when player has drawn his weapon (?)
+        play_sex           (not used in uw1)
+        npc_xhome          x coord of home tile
+        npc_yhome          y coord of home tile
+        npc_whoami         npc conversation slot number
+        npc_hunger
+        npc_health
+        npc_hp
+        npc_arms           (not used in uw1)
+        npc_power
+        npc_goal
+        npc_attitude
+        npc_gtarg
+        npc_talkedto       is 1 when player already talked to npc
+        npc_level
+        npc_name           (not used in uw1)
+        dungeon_level      (not used in uw1)
+        riddlecounter      (not used in uw1)
+        game_time
+        game_days
+        game_mins
+
+   * Quest flags
+
+     There are quest flags that are kept during gameplay to implement
+     interaction between NPC's. flags can be get/set using get_quest() and
+     set_quest() or during gameplay, triggered by actions. Here's a list of
+     flags and their meanings (when no values for the flag are specified, 1
+     means yes or true, and 0 means no or false):
+
+       flag   description
+
+         0    Dr. Owl's assistant Murgo freed
+         2    met Dr. Owl?
+         3    permission to speak to king Ketchaval
+         4    Goldthirst's quest to kill the gazer (1: gazer killed)
+
+         6    friend of Lizardman folk
+
+         7    ?? (conv #24, )
+
+        11    Rodrick killed
+
+        32    status of "Knight of the Crux" quest
+               0: no knight
+               2: started quest to search the "writ of Lorne"
+               3: found writ
+               4: door to armoury opened
 
 
 5.0 Critter Animation
