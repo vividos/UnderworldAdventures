@@ -344,13 +344,19 @@ void ua_game::run()
    case 2: // start custom game
       {
          // set prefix
-         ua_trace("start custom game; prefix: %s\n",custom_game_prefix.c_str());
+         ua_trace("starting custom game\n");
          settings.set_value(ua_setting_game_prefix,custom_game_prefix);
 
          init_game();
 
+#ifndef HAVE_DEBUG
          // start splash screen
          push_screen(new ua_start_splash_screen);
+#else
+         // for uw2 testing; splash screens don't work yet
+         underworld.import_savegame(settings,"data/",true);
+         push_screen(new ua_ingame_orig_screen);
+#endif
       }
       break;
    }
@@ -518,9 +524,7 @@ void ua_game::init_game()
 {
    std::string prefix(settings.get_string(ua_setting_game_prefix));
 
-   ua_trace("initializing game\n prefix: %s\n uw-path: %s\n",
-      prefix.c_str(),
-      settings.get_string(ua_setting_uw_path).c_str());
+   ua_trace("initializing game; prefix: %s\n",prefix.c_str());
 
    // load game config file
    std::string gamecfg_name(prefix);
@@ -547,6 +551,9 @@ void ua_game::init_game()
       cfgloader.load(gamecfg);
    }
 
+   ua_trace("using generic uw-path: %s\n",
+      settings.get_string(ua_setting_uw_path).c_str());
+
    // init underworld
    underworld.init(settings,filesmgr);
 
@@ -569,6 +576,26 @@ void ua_game::init_game()
 
    // create debug interface instance
    debug = ua_debug_interface::get_new_debug_interface(this);
+
+   // load language specific .pak file
+   {
+      ua_trace("loading language-specific strings ... ");
+
+      std::string langpak_name(prefix);
+      langpak_name.append("/lang.pak");
+
+      SDL_RWops* rwops = filesmgr.get_uadata_file(langpak_name.c_str());
+      if (rwops != NULL)
+      {
+         get_strings().load(rwops);
+         SDL_RWclose(rwops);
+
+         ua_trace("language \"%s\"\n",
+            get_strings().get_string(0x0a00,0).c_str());
+      }
+      else
+         ua_trace("not available\n");
+   }
 }
 
 void ua_game::push_screen(ua_ui_screen_base *newscreen)
