@@ -168,7 +168,7 @@ Table of Contents
    You can install the "dot" tool to generate fancy include, dependency and
    collaboration graphs. The "dot" tool is available at:
 
-      http://www.graphviz.com/
+      http://www.graphviz.org/
 
    Be sure to download the "dot" tool and the associated "third-party"
    libraries. Extract the dot.exe and the libraries into the doxygen "bin"
