@@ -96,7 +96,6 @@ void ua_underworld_script_bindings::register_functions()
    lua_register(L,"objlist_get_obj_info",objlist_get_obj_info);
    lua_register(L,"objlist_set_obj_info",objlist_set_obj_info);
    lua_register(L,"objlist_remove_obj",objlist_remove_obj);
-   lua_register(L,"objlist_obj_is_npc",objlist_obj_is_npc);
    lua_register(L,"objlist_insert_obj",objlist_insert_obj);
 
    lua_register(L,"tilemap_get_tile",tilemap_get_tile);
@@ -505,25 +504,25 @@ int ua_underworld_script_bindings::objlist_get_obj_info(lua_State* L)
    lua_pushnumber(L,info.enchanted ? 1.0 : 0.0);
    lua_settable(L,-3);
 
-   lua_pushstring(L,"is_link");
-   lua_pushnumber(L,info.is_link ? 1.0 : 0.0);
+   lua_pushstring(L,"is_quantity");
+   lua_pushnumber(L,info.is_quantity ? 1.0 : 0.0);
    lua_settable(L,-3);
 
 
-   lua_pushstring(L,"zpos");
-   lua_pushnumber(L,extinfo.zpos);
-   lua_settable(L,-3);
-
-   lua_pushstring(L,"dir");
-   lua_pushnumber(L,static_cast<double>(extinfo.dir));
+   lua_pushstring(L,"xpos");
+   lua_pushnumber(L,static_cast<double>(extinfo.xpos));
    lua_settable(L,-3);
 
    lua_pushstring(L,"ypos");
-   lua_pushnumber(L,extinfo.ypos);
+   lua_pushnumber(L,static_cast<double>(extinfo.ypos));
    lua_settable(L,-3);
 
-   lua_pushstring(L,"xpos");
-   lua_pushnumber(L,extinfo.xpos);
+   lua_pushstring(L,"zpos");
+   lua_pushnumber(L,static_cast<double>(extinfo.zpos));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"heading");
+   lua_pushnumber(L,static_cast<double>(extinfo.heading));
    lua_settable(L,-3);
 
 
@@ -540,22 +539,40 @@ int ua_underworld_script_bindings::objlist_get_obj_info(lua_State* L)
    lua_settable(L,-3);
 
    lua_pushstring(L,"quantity");
-   lua_pushnumber(L,static_cast<double>(info.quantity));
+   lua_pushnumber(L,static_cast<double>(
+      info.is_quantity ? info.quantity : ua_obj_handle_encode(info.quantity,level)
+   ));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"npc_used");
+   lua_pushnumber(L,extinfo.npc_used? 1.0 : 0.0);
    lua_settable(L,-3);
 
    // add npc infos
    if (extinfo.npc_used)
    {
-      lua_pushstring(L,"npc_whoami");
-      lua_pushnumber(L,static_cast<double>(extinfo.npc_whoami));
+      lua_pushstring(L,"npc_hp");
+      lua_pushnumber(L,static_cast<double>(extinfo.npc_hp));
+      lua_settable(L,-3);
+
+      lua_pushstring(L,"npc_goal");
+      lua_pushnumber(L,static_cast<double>(extinfo.npc_goal));
+      lua_settable(L,-3);
+
+      lua_pushstring(L,"npc_gtarg");
+      lua_pushnumber(L,static_cast<double>(extinfo.npc_gtarg));
+      lua_settable(L,-3);
+
+      lua_pushstring(L,"npc_level");
+      lua_pushnumber(L,static_cast<double>(extinfo.npc_level));
+      lua_settable(L,-3);
+
+      lua_pushstring(L,"npc_talkedto");
+      lua_pushnumber(L,extinfo.npc_talkedto? 1.0 : 0.0);
       lua_settable(L,-3);
 
       lua_pushstring(L,"npc_attitude");
       lua_pushnumber(L,static_cast<double>(extinfo.npc_attitude));
-      lua_settable(L,-3);
-
-      lua_pushstring(L,"npc_hp");
-      lua_pushnumber(L,static_cast<double>(extinfo.npc_hp));
       lua_settable(L,-3);
 
       lua_pushstring(L,"npc_xhome");
@@ -564,6 +581,14 @@ int ua_underworld_script_bindings::objlist_get_obj_info(lua_State* L)
 
       lua_pushstring(L,"npc_yhome");
       lua_pushnumber(L,static_cast<double>(extinfo.npc_yhome));
+      lua_settable(L,-3);
+
+      lua_pushstring(L,"npc_hunger");
+      lua_pushnumber(L,static_cast<double>(extinfo.npc_hunger));
+      lua_settable(L,-3);
+
+      lua_pushstring(L,"npc_whoami");
+      lua_pushnumber(L,static_cast<double>(extinfo.npc_whoami));
       lua_settable(L,-3);
    }
 
@@ -580,12 +605,6 @@ int ua_underworld_script_bindings::objlist_remove_obj(lua_State* L)
 {
    // todo: implement
    return 0;
-}
-
-int ua_underworld_script_bindings::objlist_obj_is_npc(lua_State* L)
-{
-   // todo: implement
-   return 1;
 }
 
 int ua_underworld_script_bindings::objlist_insert_obj(lua_State* L)

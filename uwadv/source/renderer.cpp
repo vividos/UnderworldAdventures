@@ -1002,8 +1002,8 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
    ua_level& level = underw->get_current_level();
    ua_object_info_ext& extinfo = obj.get_ext_object_info();
 
-   double objxpos = static_cast<double>(x) + extinfo.xpos;
-   double objypos = static_cast<double>(y) + extinfo.ypos;
+   double objxpos = static_cast<double>(x) + (extinfo.xpos+0.5)/8.0;
+   double objypos = static_cast<double>(y) + (extinfo.ypos+0.5)/8.0;
    double height = level.get_floor_height(objxpos,objypos)*height_scale;
 
    ua_vector3d base(objxpos, objypos, height);
@@ -1094,7 +1094,7 @@ void ua_renderer::render_tmap_decal(ua_object& obj, unsigned int x, unsigned int
 
    double decalwidth = 0.15;
 
-   switch(extinfo.dir)
+   switch(extinfo.heading)
    {
    case 0: xpos += extinfo.xpos; ypos += 1.0;               break; // bottom side
    case 2: ypos += extinfo.ypos; xpos += 1.0; xdir = false; decalwidth = -decalwidth; break; // left side
