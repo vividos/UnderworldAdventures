@@ -155,6 +155,8 @@ void ua_audio_impl::start_music(unsigned int music, bool repeat)
 
    std::string trackname = music_playlist[music];
 
+   ua_trace("audio: playing back %s\n",trackname.c_str());
+
    // make lowercase
    std::transform(trackname.begin(),trackname.end(),trackname.begin(),::tolower);
 
