@@ -33,6 +33,8 @@
 #include "save_game.hpp"
 #include "cutscene_view.hpp"
 #include "conversation.hpp"
+#include <sstream>
+#include <iomanip>
 
 
 // constants
@@ -953,8 +955,11 @@ void ua_ingame_orig_screen::update_panel_texture()
 
       // inventory weight
       {
+         std::ostringstream buffer;
+         buffer << static_cast<unsigned int>(inv.get_weight_avail()) << std::ends;
+
          ua_image img_weight;
-         font_normal.create_string(img_weight,"42",224);
+         font_normal.create_string(img_weight,buffer.str().c_str(),224);
          panel.paste_image(img_weight,65,52,true);
       }
    }
