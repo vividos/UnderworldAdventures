@@ -13,7 +13,7 @@ AC_PREFIX_DEFAULT(/usr/local)
 
 
 dnl libtool
-AM_PROG_LIBTOOL
+dnl AM_PROG_LIBTOOL
 
 
 dnl find and test the compiler

@@ -62,8 +62,6 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-host_alias = @host_alias@
-host_triplet = @host@
 
 EXEEXT = @EXEEXT@
 OBJEXT = @OBJEXT@
@@ -73,19 +71,12 @@ PATH_SEPARATOR = @PATH_SEPARATOR@
 top_srcdir = linux
 top_builddir = linux
 AMTAR = @AMTAR@
-AS = @AS@
 AWK = @AWK@
 CC = @CC@
 CXX = @CXX@
 DEPDIR = @DEPDIR@
-DLLTOOL = @DLLTOOL@
-ECHO = @ECHO@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
-LIBTOOL = @LIBTOOL@
-LN_S = @LN_S@
-OBJDUMP = @OBJDUMP@
 PACKAGE = @PACKAGE@
-RANLIB = @RANLIB@
 STRIP = @STRIP@
 VERSION = @VERSION@
 am__include = @am__include@
@@ -167,21 +158,15 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/uwadv.Po ./$(DEPDIR)/xmidi.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
-LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) \
-	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
-	$(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
-CXXLINK = $(LIBTOOL) --mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
+	-o $@
 CXXFLAGS = @CXXFLAGS@
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
-	$(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
-LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 DIST_SOURCES = $(uwadv_SOURCES)
 DIST_COMMON = Makefile.am Makefile.in
 SOURCES = $(uwadv_SOURCES)
@@ -189,7 +174,7 @@ SOURCES = $(uwadv_SOURCES)
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .cpp .lo .o .obj
+.SUFFIXES: .cpp .o .obj
 $(srcdir)/Makefile.in:  Makefile.am  $(top_srcdir)/configure.in $(ACLOCAL_M4)
 	cd $(top_srcdir) && \
 	  $(AUTOMAKE) --foreign  ../Makefile
@@ -202,12 +187,11 @@ install-binPROGRAMS: $(bin_PROGRAMS)
 	@list='$(bin_PROGRAMS)'; for p in $$list; do \
 	  p1=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
 	  if test -f $$p \
-	     || test -f $$p1 \
 	  ; then \
 	    p1=`echo "$$p1" | sed -e 's,^.*/,,'`; \
 	    f=`echo $$p1|sed '$(transform);s/$$/$(EXEEXT)/'`; \
-	   echo " $(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(binPROGRAMS_INSTALL) $$p $(DESTDIR)$(bindir)/$$f"; \
-	   $(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(binPROGRAMS_INSTALL) $$p $(DESTDIR)$(bindir)/$$f; \
+	   echo " $(INSTALL_PROGRAM_ENV) $(binPROGRAMS_INSTALL) $$p $(DESTDIR)$(bindir)/$$f"; \
+	   $(INSTALL_PROGRAM_ENV) $(binPROGRAMS_INSTALL) $$p $(DESTDIR)$(bindir)/$$f; \
 	  else :; fi; \
 	done
 
@@ -285,12 +269,6 @@ distclean-depend:
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(CXXCOMPILE) -c -o $@ `cygpath -w $<`
 
-.cpp.lo:
-@AMDEP_TRUE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LTCXXCOMPILE) -c -o $@ `test -f '$<' || echo '$(srcdir)/'`$<
-
 audio.o: audio/audio.cpp
 @AMDEP_TRUE@	source='audio/audio.cpp' object='audio.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@	depfile='$(DEPDIR)/audio.Po' tmpdepfile='$(DEPDIR)/audio.TPo' @AMDEPBACKSLASH@
@@ -302,12 +280,6 @@ audio.obj: audio/audio.cpp
 @AMDEP_TRUE@	depfile='$(DEPDIR)/audio.Po' tmpdepfile='$(DEPDIR)/audio.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o audio.obj `cygpath -w audio/audio.cpp`
-
-audio.lo: audio/audio.cpp
-@AMDEP_TRUE@	source='audio/audio.cpp' object='audio.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/audio.Plo' tmpdepfile='$(DEPDIR)/audio.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o audio.lo `test -f 'audio/audio.cpp' || echo '$(srcdir)/'`audio/audio.cpp
 
 midi.o: audio/midi.cpp
 @AMDEP_TRUE@	source='audio/midi.cpp' object='midi.o' libtool=no @AMDEPBACKSLASH@
@@ -321,12 +293,6 @@ midi.obj: audio/midi.cpp
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o midi.obj `cygpath -w audio/midi.cpp`
 
-midi.lo: audio/midi.cpp
-@AMDEP_TRUE@	source='audio/midi.cpp' object='midi.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/midi.Plo' tmpdepfile='$(DEPDIR)/midi.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o midi.lo `test -f 'audio/midi.cpp' || echo '$(srcdir)/'`audio/midi.cpp
-
 xmidi.o: audio/xmidi.cpp
 @AMDEP_TRUE@	source='audio/xmidi.cpp' object='xmidi.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@	depfile='$(DEPDIR)/xmidi.Po' tmpdepfile='$(DEPDIR)/xmidi.TPo' @AMDEPBACKSLASH@
@@ -338,12 +304,6 @@ xmidi.obj: audio/xmidi.cpp
 @AMDEP_TRUE@	depfile='$(DEPDIR)/xmidi.Po' tmpdepfile='$(DEPDIR)/xmidi.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o xmidi.obj `cygpath -w audio/xmidi.cpp`
-
-xmidi.lo: audio/xmidi.cpp
-@AMDEP_TRUE@	source='audio/xmidi.cpp' object='xmidi.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/xmidi.Plo' tmpdepfile='$(DEPDIR)/xmidi.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o xmidi.lo `test -f 'audio/xmidi.cpp' || echo '$(srcdir)/'`audio/xmidi.cpp
 
 uni_fmod.o: audio/midi_driver/uni_fmod.cpp
 @AMDEP_TRUE@	source='audio/midi_driver/uni_fmod.cpp' object='uni_fmod.o' libtool=no @AMDEPBACKSLASH@
@@ -357,12 +317,6 @@ uni_fmod.obj: audio/midi_driver/uni_fmod.cpp
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o uni_fmod.obj `cygpath -w audio/midi_driver/uni_fmod.cpp`
 
-uni_fmod.lo: audio/midi_driver/uni_fmod.cpp
-@AMDEP_TRUE@	source='audio/midi_driver/uni_fmod.cpp' object='uni_fmod.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/uni_fmod.Plo' tmpdepfile='$(DEPDIR)/uni_fmod.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o uni_fmod.lo `test -f 'audio/midi_driver/uni_fmod.cpp' || echo '$(srcdir)/'`audio/midi_driver/uni_fmod.cpp
-
 codevm.o: conv/codevm.cpp
 @AMDEP_TRUE@	source='conv/codevm.cpp' object='codevm.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@	depfile='$(DEPDIR)/codevm.Po' tmpdepfile='$(DEPDIR)/codevm.TPo' @AMDEPBACKSLASH@
@@ -374,12 +328,6 @@ codevm.obj: conv/codevm.cpp
 @AMDEP_TRUE@	depfile='$(DEPDIR)/codevm.Po' tmpdepfile='$(DEPDIR)/codevm.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o codevm.obj `cygpath -w conv/codevm.cpp`
-
-codevm.lo: conv/codevm.cpp
-@AMDEP_TRUE@	source='conv/codevm.cpp' object='codevm.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/codevm.Plo' tmpdepfile='$(DEPDIR)/codevm.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o codevm.lo `test -f 'conv/codevm.cpp' || echo '$(srcdir)/'`conv/codevm.cpp
 
 codeloader.o: resource/codeloader.cpp
 @AMDEP_TRUE@	source='resource/codeloader.cpp' object='codeloader.o' libtool=no @AMDEPBACKSLASH@
@@ -393,12 +341,6 @@ codeloader.obj: resource/codeloader.cpp
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o codeloader.obj `cygpath -w resource/codeloader.cpp`
 
-codeloader.lo: resource/codeloader.cpp
-@AMDEP_TRUE@	source='resource/codeloader.cpp' object='codeloader.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/codeloader.Plo' tmpdepfile='$(DEPDIR)/codeloader.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o codeloader.lo `test -f 'resource/codeloader.cpp' || echo '$(srcdir)/'`resource/codeloader.cpp
-
 fontloader.o: resource/fontloader.cpp
 @AMDEP_TRUE@	source='resource/fontloader.cpp' object='fontloader.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@	depfile='$(DEPDIR)/fontloader.Po' tmpdepfile='$(DEPDIR)/fontloader.TPo' @AMDEPBACKSLASH@
@@ -410,12 +352,6 @@ fontloader.obj: resource/fontloader.cpp
 @AMDEP_TRUE@	depfile='$(DEPDIR)/fontloader.Po' tmpdepfile='$(DEPDIR)/fontloader.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o fontloader.obj `cygpath -w resource/fontloader.cpp`
-
-fontloader.lo: resource/fontloader.cpp
-@AMDEP_TRUE@	source='resource/fontloader.cpp' object='fontloader.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/fontloader.Plo' tmpdepfile='$(DEPDIR)/fontloader.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o fontloader.lo `test -f 'resource/fontloader.cpp' || echo '$(srcdir)/'`resource/fontloader.cpp
 
 gamestrings.o: resource/gamestrings.cpp
 @AMDEP_TRUE@	source='resource/gamestrings.cpp' object='gamestrings.o' libtool=no @AMDEPBACKSLASH@
@@ -429,12 +365,6 @@ gamestrings.obj: resource/gamestrings.cpp
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gamestrings.obj `cygpath -w resource/gamestrings.cpp`
 
-gamestrings.lo: resource/gamestrings.cpp
-@AMDEP_TRUE@	source='resource/gamestrings.cpp' object='gamestrings.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/gamestrings.Plo' tmpdepfile='$(DEPDIR)/gamestrings.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gamestrings.lo `test -f 'resource/gamestrings.cpp' || echo '$(srcdir)/'`resource/gamestrings.cpp
-
 imageloader.o: resource/imageloader.cpp
 @AMDEP_TRUE@	source='resource/imageloader.cpp' object='imageloader.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@	depfile='$(DEPDIR)/imageloader.Po' tmpdepfile='$(DEPDIR)/imageloader.TPo' @AMDEPBACKSLASH@
@@ -446,12 +376,6 @@ imageloader.obj: resource/imageloader.cpp
 @AMDEP_TRUE@	depfile='$(DEPDIR)/imageloader.Po' tmpdepfile='$(DEPDIR)/imageloader.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imageloader.obj `cygpath -w resource/imageloader.cpp`
-
-imageloader.lo: resource/imageloader.cpp
-@AMDEP_TRUE@	source='resource/imageloader.cpp' object='imageloader.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/imageloader.Plo' tmpdepfile='$(DEPDIR)/imageloader.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o imageloader.lo `test -f 'resource/imageloader.cpp' || echo '$(srcdir)/'`resource/imageloader.cpp
 
 maploader.o: resource/maploader.cpp
 @AMDEP_TRUE@	source='resource/maploader.cpp' object='maploader.o' libtool=no @AMDEPBACKSLASH@
@@ -465,12 +389,6 @@ maploader.obj: resource/maploader.cpp
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o maploader.obj `cygpath -w resource/maploader.cpp`
 
-maploader.lo: resource/maploader.cpp
-@AMDEP_TRUE@	source='resource/maploader.cpp' object='maploader.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/maploader.Plo' tmpdepfile='$(DEPDIR)/maploader.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o maploader.lo `test -f 'resource/maploader.cpp' || echo '$(srcdir)/'`resource/maploader.cpp
-
 settings.o: resource/settings.cpp
 @AMDEP_TRUE@	source='resource/settings.cpp' object='settings.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@	depfile='$(DEPDIR)/settings.Po' tmpdepfile='$(DEPDIR)/settings.TPo' @AMDEPBACKSLASH@
@@ -482,12 +400,6 @@ settings.obj: resource/settings.cpp
 @AMDEP_TRUE@	depfile='$(DEPDIR)/settings.Po' tmpdepfile='$(DEPDIR)/settings.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o settings.obj `cygpath -w resource/settings.cpp`
-
-settings.lo: resource/settings.cpp
-@AMDEP_TRUE@	source='resource/settings.cpp' object='settings.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/settings.Plo' tmpdepfile='$(DEPDIR)/settings.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o settings.lo `test -f 'resource/settings.cpp' || echo '$(srcdir)/'`resource/settings.cpp
 
 texloader.o: resource/texloader.cpp
 @AMDEP_TRUE@	source='resource/texloader.cpp' object='texloader.o' libtool=no @AMDEPBACKSLASH@
@@ -501,12 +413,6 @@ texloader.obj: resource/texloader.cpp
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o texloader.obj `cygpath -w resource/texloader.cpp`
 
-texloader.lo: resource/texloader.cpp
-@AMDEP_TRUE@	source='resource/texloader.cpp' object='texloader.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/texloader.Plo' tmpdepfile='$(DEPDIR)/texloader.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o texloader.lo `test -f 'resource/texloader.cpp' || echo '$(srcdir)/'`resource/texloader.cpp
-
 ingame_orig.o: screens/ingame_orig.cpp
 @AMDEP_TRUE@	source='screens/ingame_orig.cpp' object='ingame_orig.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@	depfile='$(DEPDIR)/ingame_orig.Po' tmpdepfile='$(DEPDIR)/ingame_orig.TPo' @AMDEPBACKSLASH@
@@ -519,12 +425,6 @@ ingame_orig.obj: screens/ingame_orig.cpp
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ingame_orig.obj `cygpath -w screens/ingame_orig.cpp`
 
-ingame_orig.lo: screens/ingame_orig.cpp
-@AMDEP_TRUE@	source='screens/ingame_orig.cpp' object='ingame_orig.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/ingame_orig.Plo' tmpdepfile='$(DEPDIR)/ingame_orig.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ingame_orig.lo `test -f 'screens/ingame_orig.cpp' || echo '$(srcdir)/'`screens/ingame_orig.cpp
-
 start_splash.o: screens/start_splash.cpp
 @AMDEP_TRUE@	source='screens/start_splash.cpp' object='start_splash.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@	depfile='$(DEPDIR)/start_splash.Po' tmpdepfile='$(DEPDIR)/start_splash.TPo' @AMDEPBACKSLASH@
@@ -536,22 +436,7 @@ start_splash.obj: screens/start_splash.cpp
 @AMDEP_TRUE@	depfile='$(DEPDIR)/start_splash.Po' tmpdepfile='$(DEPDIR)/start_splash.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o start_splash.obj `cygpath -w screens/start_splash.cpp`
-
-start_splash.lo: screens/start_splash.cpp
-@AMDEP_TRUE@	source='screens/start_splash.cpp' object='start_splash.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/start_splash.Plo' tmpdepfile='$(DEPDIR)/start_splash.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o start_splash.lo `test -f 'screens/start_splash.cpp' || echo '$(srcdir)/'`screens/start_splash.cpp
 CXXDEPMODE = @CXXDEPMODE@
-
-mostlyclean-libtool:
-	-rm -f *.lo
-
-clean-libtool:
-	-rm -rf .libs _libs
-
-distclean-libtool:
-	-rm -f libtool
 uninstall-info-am:
 
 ETAGS = etags
@@ -649,12 +534,12 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
+clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
 
 distclean-am: clean-am distclean-compile distclean-depend \
-	distclean-generic distclean-libtool distclean-tags
+	distclean-generic distclean-tags
 
 dvi: dvi-am
 
@@ -680,21 +565,19 @@ maintainer-clean-am: distclean-am maintainer-clean-generic
 
 mostlyclean: mostlyclean-am
 
-mostlyclean-am: mostlyclean-compile mostlyclean-generic \
-	mostlyclean-libtool
+mostlyclean-am: mostlyclean-compile mostlyclean-generic
 
 uninstall-am: uninstall-binPROGRAMS uninstall-info-am
 
 .PHONY: GTAGS all all-am check check-am clean clean-binPROGRAMS \
-	clean-generic clean-libtool distclean distclean-compile \
-	distclean-depend distclean-generic distclean-libtool \
-	distclean-tags distdir dvi dvi-am info info-am install \
-	install-am install-binPROGRAMS install-data install-data-am \
-	install-exec install-exec-am install-info install-info-am \
-	install-man install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-compile mostlyclean-generic \
-	mostlyclean-libtool tags uninstall uninstall-am \
+	clean-generic distclean distclean-compile distclean-depend \
+	distclean-generic distclean-tags distdir dvi dvi-am info \
+	info-am install install-am install-binPROGRAMS install-data \
+	install-data-am install-exec install-exec-am install-info \
+	install-info-am install-man install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic tags uninstall uninstall-am \
 	uninstall-binPROGRAMS uninstall-info-am
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
