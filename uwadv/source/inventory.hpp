@@ -30,14 +30,113 @@
 #define __uwadv_inventory_hpp_
 
 // needed includes
+#include <vector>
+#include <bitset>
+#include "objects.hpp"
+
+
+// enums
+typedef enum
+{
+   ua_slot_topmost_first_item=0, // topmost inventory; first item list pos
+
+   ua_slot_lefthand=8,
+   ua_slot_righthand,
+   ua_slot_leftshoulder,
+   ua_slot_rightshoulder,
+
+   ua_slot_leftfinger,
+   ua_slot_rightfinger,
+
+   ua_slot_paperdoll_legs,
+   ua_slot_paperdoll_chest,
+   ua_slot_paperdoll_hands,
+   ua_slot_paperdoll_feet,
+   ua_slot_paperdoll_head,
+
+   ua_slot_max,            // from here on indices in itemlist are free
+
+   ua_slot_paperdoll_start=ua_slot_paperdoll_legs
+
+} ua_inv_paperdoll_slots;
 
 
 // classes
 
+//! inventory class
 class ua_inventory
 {
 public:
+   //! ctor
    ua_inventory(){}
+
+   //! initializes inventory
+   void init();
+
+   // common functionality
+
+   //! returns runebag as bitset
+   std::bitset<26> &get_runebag(){ return runebag; }
+
+      //! retrieves an item from an object
+   ua_object_info &get_item(Uint16 index);
+
+   // container functionality
+
+   //! returns number of slots
+   unsigned int get_num_slots();
+
+   //! returns one of the 8 item slots
+   Uint16 get_slot_item(unsigned int index);
+
+   //! returns current container item id; 0xffff when topmost
+   Uint16 get_container_item_id();
+
+   //! opens a container and sets it as current
+   void open_container(Uint16 index);
+
+   //! closes current container and enables the previous one
+   void close_container();
+
+   // floating object functionality
+
+   //! returns currently floating item, or 0xffff when none floats
+   Uint16 get_floating_item();
+
+   //! makes an item "floating", by slot index
+   bool float_item_slot(Uint16 slot_index);
+
+   //! makes an item in the itemlist "floating"
+   bool float_item(Uint16 index);
+
+   //! drops a floating item into the given slot
+   bool drop_floating_item_slot(Uint16 slot_index);
+
+   //! drops a floating item onto the given itemlist index
+   bool drop_floating_item(Uint16 index);
+
+protected:
+   //! builds new slot link list
+   void build_slot_link_list(Uint16 link1);
+
+   //! allocates a new item; returns 0xffff when no itemlist position is free
+   Uint16 allocate_item();
+
+protected:
+   //! rune bag
+   std::bitset<26> runebag;
+
+   //! item list
+   std::vector<ua_object_info> itemlist;
+
+   //! slot links of current items
+   std::vector<Uint16> slot_links;
+
+   //! stack with currently opened container
+   std::vector<Uint16> container_stack;
+
+   //! link to floating object
+   Uint16 floating_object;
 };
 
 #endif
