@@ -547,8 +547,7 @@ int ua_cutscene_view_screen::cuts_do_action(lua_State *L)
 
       // perform action
       self->do_action();
-
-      return 0;
    }
-   return 1;
+
+   return 0;
 }
