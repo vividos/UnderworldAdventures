@@ -52,9 +52,14 @@ void ua_mousecursor::settype(int type)
 
 void ua_mousecursor::set_custom(ua_image& cursorimg)
 {
-   cursorw = cursorimg.get_xres();
-   cursorh = cursorimg.get_yres();
-   mousetex.convert(cursorimg);
+   cursorw = cursorimg.get_xres()+2;
+   cursorh = cursorimg.get_yres()+2;
+
+   ua_image cursorimg2;
+   cursorimg2.create(cursorw,cursorh,0);
+   cursorimg2.paste_image(cursorimg,1,1);
+
+   mousetex.convert(cursorimg2);
    mousetex.use();
    mousetex.upload();
 }
@@ -85,11 +90,14 @@ void ua_mousecursor::draw()
 
    mousetex.use();
    double u = mousetex.get_tex_u(), v = mousetex.get_tex_v();
+   double du = mousetex.get_tex_u()/mousetex.get_xres();
+   double dv = mousetex.get_tex_v()/mousetex.get_yres();
+
    glBegin(GL_QUADS);
-   glTexCoord2d(0.0, v  ); glVertex2i(cursorx, 200-cursory);
-   glTexCoord2d(u  , v  ); glVertex2i(cursorx+cursorw, 200-cursory);
-   glTexCoord2d(u  , 0.0); glVertex2i(cursorx+cursorw, 200-cursory+cursorh);
-   glTexCoord2d(0.0, 0.0); glVertex2i(cursorx, 200-cursory+cursorh);
+   glTexCoord2d(du,   v-dv); glVertex2i(cursorx, 200-cursory);
+   glTexCoord2d(u-du, v-dv); glVertex2i(cursorx+cursorw, 200-cursory);
+   glTexCoord2d(u-du, dv);   glVertex2i(cursorx+cursorw, 200-cursory+cursorh);
+   glTexCoord2d(du,   dv);   glVertex2i(cursorx, 200-cursory+cursorh);
    glEnd();
 }
 
