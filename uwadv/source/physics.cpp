@@ -44,12 +44,24 @@
 //! collision check data
 typedef struct ua_collision_data
 {
+#ifdef HAVE_NEW_CD
+
    ua_vector3d pos;
    ua_vector3d dir;
    ua_vector3d nearest_poly_inter;
 
    double nearest_dist;
    bool found;
+
+#else // HAVE_NEW_CD
+
+   ua_vector2d pos;
+   ua_vector2d dir;
+   ua_vector2d line_inter;
+   ua_vector2d circle_inter; // seems to be not needed
+   double nearest_dist;
+
+#endif // HAVE_NEW_CD
 
 } ua_collision_data;
 
@@ -128,7 +140,8 @@ void ua_physics_model::eval_physics(double time)
          else
             speed *= pl.get_movement_factor(ua_move_walk);
 
-#if 1
+#ifdef HAVE_NEW_CD
+
          // construct direction vector
          ua_vector3d dir(1.0, 0.0, 0.0);
          dir.rotate_z(angle);
@@ -150,7 +163,8 @@ void ua_physics_model::eval_physics(double time)
          pl.set_pos(pos.x,pos.y);
          pl.set_height(pos.z);
 
-#else // disabled code
+#else // HAVE_NEW_CD
+
          ua_vector2d dir;
          dir.set_polar(speed,angle);
          ua_vector2d pos(pl.get_xpos(),pl.get_ypos());
@@ -177,7 +191,8 @@ void ua_physics_model::eval_physics(double time)
 
          // cache the player height
          pl.set_height(finalHeight);
-#endif
+
+#endif // HAVE_NEW_CD
       }
 
       // player rotation
@@ -207,6 +222,8 @@ void ua_physics_model::eval_physics(double time)
 
    last_evaltime = time;
 }
+
+#ifdef HAVE_NEW_CD
 
 void ua_physics_model::track_object(ua_vector3d& pos, const ua_vector3d& dir)
 {
@@ -442,8 +459,7 @@ void ua_physics_model::check_collision(int xpos, int ypos, ua_collision_data& da
    } // end for loop
 }
 
-
-#if 0
+#else // HAVE_NEW_CD
 
 /*! calculates new position for a given position and direction vector
     all tile walls are checked for collision, and when the player collides
@@ -520,7 +536,7 @@ void ua_physics_model::calc_collision(ua_vector2d &pos, const ua_vector2d &dir)
 
 
 #ifdef HAVE_DEBUG
-      static level=0;
+      static int level=0;
 
       if (level>10)
          return;
@@ -771,8 +787,11 @@ bool ua_physics_model::check_collision(const ua_vector2d &point1,const ua_vector
 
    return false;
 }
-#endif
 
+#endif // HAVE_NEW_CD
+
+
+#ifdef HAVE_NEW_CD
 
 // helper math functions
 
@@ -897,3 +916,5 @@ ua_vector3d ua_physics_closest_point_on_triangle(const ua_vector3d& a,
 
    return result;
 }
+
+#endif // HAVE_NEW_CD

@@ -25,6 +25,9 @@
 
 */
 
+// new collision detection is off
+#undef HAVE_NEW_CD
+
 // include guard
 #ifndef __uwadv_physics_hpp_
 #define __uwadv_physics_hpp_
@@ -54,6 +57,8 @@ public:
    void eval_physics(double time);
 
 
+#ifdef HAVE_NEW_CD
+
    // functions for tracking objects in 3d space
 
    //! returns number of objects that are tracked
@@ -72,8 +77,10 @@ protected:
    //! checks mesh for collision
    void check_collision(int xpos, int ypos, ua_collision_data& data);
 
+#else // HAVE_NEW_CD
 
-#if 0
+protected:
+
    //! calculates collision and response; recursively called
    void calc_collision(ua_vector2d &pos, const ua_vector2d &dir);
 
@@ -84,7 +91,8 @@ protected:
    //! does collision check; returns true when line was hit
    bool check_collision(const ua_vector2d &point1,const ua_vector2d &point2,
       ua_collision_data &data, bool check_height);
-#endif
+
+#endif // HAVE_NEW_CD
 
 protected:
    //! current underworld object
