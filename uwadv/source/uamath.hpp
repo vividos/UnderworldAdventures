@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -28,8 +28,8 @@
 */
 
 // include guard
-#ifndef __uwadv_uamath_hpp_
-#define __uwadv_uamath_hpp_
+#ifndef uwadv_uamath_hpp_
+#define uwadv_uamath_hpp_
 
 // needed includes
 #include <cmath>
@@ -187,6 +187,30 @@ struct ua_triangle3d
 {
    //! triangle points
    ua_vector3d points[3];
+};
+
+
+//! textured triangle
+struct ua_triangle3d_textured: public ua_triangle3d
+{
+   //! stock texture number used
+   Uint16 texnum;
+
+   //! u/v texture coordinates
+   double tex_u[3];
+   double tex_v[3];
+
+   //! sets triangle point properties
+   void set(unsigned int point, double x, double y, double z, double u, double v)
+   {
+      points[point].set(x,y,z); tex_u[point] = u; tex_v[point] = v;
+   }
+
+   //! compare operator for std::sort
+   bool operator<(const ua_triangle3d_textured &tri) const
+   {
+      return texnum>tri.texnum;
+   }
 };
 
 
