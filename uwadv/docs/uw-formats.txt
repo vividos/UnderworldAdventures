@@ -149,6 +149,21 @@ Table of Contents
    uw.ad          adlib stuff
    *.adv          device driver for midi/wave output
 
+   Here's a list of song names for the .xmi files:
+
+   uw01.xmi       Introduction
+   uw02.xmi       Dark Abyss
+   uw03.xmi       Descent
+   uw04.xmi       Wanderer
+   uw05.xmi       Battlefield
+   uw06.xmi       Combat
+   uw07.xmi       Injured
+   uw10.xmi       Armed
+   uw11.xmi       Victory
+   uw12.xmi       Death
+   uw13.xmi       Fleeing
+   uw15.xmi       Maps & Legends
+
    Here are all files found in a save game (e.g. "Save1") folder:
 
    lev.ark        modified level map
