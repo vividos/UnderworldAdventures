@@ -95,7 +95,8 @@ ua_object_info_ext::ua_object_info_ext()
  npc_used(false),
  npc_hp(0), npc_goal(0), npc_gtarg(0), npc_level(0),
  npc_talkedto(0), npc_attitude(0), npc_xhome(0), npc_yhome(0), 
- npc_hunger(0), npc_whoami(0)
+ npc_hunger(0), npc_whoami(0),
+ state(0), animframe(0)
 {
 }
 
