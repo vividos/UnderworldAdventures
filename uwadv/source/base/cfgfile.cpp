@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ ua_cfgfile::ua_cfgfile()
 {
 }
 
-void ua_cfgfile::load(const char *filename)
+void ua_cfgfile::load(const char* filename)
 {
    // try to open from file
    SDL_RWops* rwops = SDL_RWFromFile(filename,"rb");
@@ -195,7 +195,7 @@ void ua_cfgfile::load(SDL_RWops* rwops)
    }
 }
 
-void ua_cfgfile::write(const char *origfile, const char *newfile)
+void ua_cfgfile::write(const char* origfile, const char* newfile)
 {
    // open the new file
    newfp = fopen(newfile,"wt");
@@ -223,7 +223,6 @@ void ua_cfgfile::write_start_section(const std::string& secname)
 
    write_raw_line(line);
 }
-
 
 void ua_cfgfile::write_raw_line(const std::string& line)
 {

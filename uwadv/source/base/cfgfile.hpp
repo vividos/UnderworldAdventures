@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,14 +23,34 @@
 
    \brief general config file handling
 
-   note: after calling calling load(SDL_RWops*) the file is not closed using
-   SDL_RWclose()
+   The ua_cfgfile class supports reading and writing configuration files,
+   stored as text files that have "key" and "value" pairs. The file might
+   look as follows:
+
+   ; one-line comment
+   [section]  ; sections may be omitted
+   key1 value1
+   key2 value2
+
+   Keys and values are separated with at least one whitespace. when saving
+   files one space character is put between them. Comments are preserved
+   during writing; comments that are on a line with a key/value pair are
+   written to a new line
+
+   To use the class, derive from it and implement at least:
+   - load_value()           for reading
+   - load_start_section()   to have support for sections while reading
+   - write_replace()        for writing
+   - write_start_section()  to support writing sections
+
+   note: after calling ua_cfgfile::load(SDL_RWops*) the file is not closed
+   using SDL_RWclose()
 
 */
 
 // include guard
-#ifndef __uwadv_cfgfile_hpp_
-#define __uwadv_cfgfile_hpp_
+#ifndef uwadv_cfgfile_hpp_
+#define uwadv_cfgfile_hpp_
 
 // needed includes
 
@@ -51,7 +71,7 @@ public:
    // config file loading
 
    //! loads a filename
-   void load(const char *filename);
+   void load(const char* filename);
 
    //! loads a config file from SDL_RWops
    void load(SDL_RWops* file);
@@ -66,7 +86,7 @@ public:
    // config file (re)writing
 
    //! creates a new config file using the original file as template
-   void write(const char *origfile, const char *newfile);
+   void write(const char* origfile, const char* newfile);
 
    //! called when a new "[section]" starts
    virtual void write_start_section(const std::string& secname);
