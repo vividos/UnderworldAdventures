@@ -11,4 +11,5 @@ install-sh
 missing
 mkinstalldirs
 compile
+uwadv.cfg
 
