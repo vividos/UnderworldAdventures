@@ -98,12 +98,33 @@ void ua_physics_model::eval_player_movement(double time)
       dir.set_polar(speed,angle);
       ua_vector2d pos(player.get_xpos(),player.get_ypos());
 
+      // Get player height before collision:
+      double h1 = underw->get_player_height();
+      
+      // Perform collision detection:
       calc_collision(pos,dir);
-
-      // set new player pos
+   
+      // set new player 2D pos
       player.set_pos(pos.x,pos.y);
+ 
+      // Get the map height of the new 2d position:  
+      double h2 = underw->get_current_level().get_floor_height(pos.x, pos.y);
+ 
+      double finalHeight = h2;
+      // a drop down? Check if player is allowed to fall down
+      if (h2 < h1) {
+        // TODO:
+        // - If edge, check whole player cylinder is over the edge.
+        // - if along a slope allow player to "fall"
+        
+      }
+ 
+ 
+      // cache the player height
+      player.set_height(finalHeight);
+      
    }
-
+  
    if (mode & ua_move_rotate_left)
    {
       double angle = ua_player_max_rotate_speed*(time-last_evaltime);
@@ -279,6 +300,7 @@ bool ua_physics_model::check_collision(const ua_vector2d &point1,const ua_vector
    // step 0: check if this line has a step that the player cannot climb
    if (check_height)
    {
+      // TODO: calculate intersection of player velocity and line and use that point instead of mid-point.
       ua_vector2d mid(line);
       mid *= 0.5;
       mid += point1;
@@ -286,15 +308,18 @@ bool ua_physics_model::check_collision(const ua_vector2d &point1,const ua_vector
       ua_vector2d testdir(norm);
       testdir *= 0.05;
 
-      ua_vector2d testpt1(mid),testpt2(mid);
-      testpt1+=testdir; // goes inside the tile
-      testpt2-=testdir; // goes outside the tile
+      // testpt is a point in the tile we wish to climb up to.
+      ua_vector2d testpt(mid);
+      testpt-=testdir; 
 
-      // get floor heights of both test points
+      // get height of player:
+      double height1 = underw->get_player().get_height();
+      
+      // get floor height of step
       ua_level &level = underw->get_current_level();
-      double height1 = level.get_floor_height(testpt1.x,testpt1.y);
-      double height2 = level.get_floor_height(testpt2.x,testpt2.y);
+      double height2 = level.get_floor_height(testpt.x,testpt.y);
 
+      // Is this too big a step up?
       if (height2<height1+ua_physics_max_step_height)
          return false; // no need to test
    }

@@ -33,7 +33,7 @@ CXX = c++
 CFLAGS = -O2 #-g -O
 CXXFLAGS =
 LDFLAGS = -mwindows -s
-DEFINES =
+DEFINES = 
 
 
 # fmod isn't needed for Win32, since uwadv has a native midi driver

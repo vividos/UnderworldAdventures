@@ -71,7 +71,10 @@ void ua_underworld::eval_underworld(double time)
 double ua_underworld::get_player_height()
 {
    // TODO: ask physics model about player height
-   return get_current_level().get_floor_height(player.get_xpos(),player.get_ypos());
+   //return get_current_level().get_floor_height(player.get_xpos(),player.get_ypos());
+   
+   // Height is now stored in player object after collision detection.
+   return player.get_height();
 }
 
 void ua_underworld::render(ua_frustum &fr)

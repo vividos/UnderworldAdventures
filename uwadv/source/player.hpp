@@ -130,6 +130,10 @@ public:
 
    //! sets player view angle
    void set_angle(double theangle){ angle=theangle; }
+   
+   //! sets player height
+   void set_height(double theheight){ height=theheight; }
+   
 
    //! sets and delete movement mode values
    void set_movement_mode(unsigned int set,unsigned int del=0);
@@ -154,7 +158,11 @@ public:
 
    //! returns view angle
    double get_angle(){ return angle; }
-
+   
+   //! returns player height
+   double get_height() { return height; }
+   
+   
    //! returns movement mode
    unsigned int get_movement_mode(){ return move_mode; }
 
@@ -179,7 +187,7 @@ protected:
    std::string name;
 
    // positional values
-   double xpos,ypos,angle;
+   double xpos,ypos,angle, height;
 
    //! current movement mode
    unsigned int move_mode;

@@ -276,7 +276,7 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
       else
          pl.set_movement_mode(0,ua_move_rotate_right);
    }
-   else
+    else
    // check for look up key
    if (keymap.is_key(ua_key_look_up,keymod))
    {
