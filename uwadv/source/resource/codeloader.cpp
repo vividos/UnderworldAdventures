@@ -189,5 +189,7 @@ bool ua_conv_code_vm::load_code(const char *cnvfile, Uint16 conv)
    for(Uint16 i=0; i<codesize; i++)
       code[i] = fread16(fd);
 
+   fclose(fd);
+
    return true;
 }
