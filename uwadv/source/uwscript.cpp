@@ -38,6 +38,11 @@ void ua_underworld_script_bindings::init(ua_underworld *uw)
    // init lua state
    L = lua_open(256);
 
+   // open lualib libraries
+   lua_baselibopen(L);
+   lua_strlibopen(L);
+   lua_mathlibopen(L);
+
    // load all lua scripts
    ua_files_manager &fmgr = uw->get_game_core()->get_filesmgr();
 
