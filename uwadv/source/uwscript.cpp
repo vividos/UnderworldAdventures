@@ -259,6 +259,16 @@ void ua_underworld_script_bindings::lua_objlist_talk(Uint32 level, Uint32 objpos
    checked_lua_call(1,0);
 }
 
+void ua_underworld_script_bindings::lua_objlist_use(Uint32 level, Uint32 objpos)
+{
+   Uint32 objhandle = ua_obj_handle_encode(objpos,level);
+
+   // call Lua function
+   lua_getglobal(L,"lua_objlist_use");
+   lua_pushnumber(L,static_cast<double>(objhandle));
+   checked_lua_call(1,0);
+}
+
 
 // lua_inventory_* functions
 

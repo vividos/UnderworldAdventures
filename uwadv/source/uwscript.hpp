@@ -153,6 +153,9 @@ public:
    //! does "talk" action to object
    void lua_objlist_talk(Uint32 level, Uint32 objpos);
 
+   //! does "use" action to object
+   void lua_objlist_use(Uint32 level, Uint32 objpos);
+
 
    // inventory functions
 
