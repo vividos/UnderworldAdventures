@@ -246,6 +246,8 @@ void ua_ingame_orig_screen::init()
 
 void ua_ingame_orig_screen::suspend()
 {
+   ua_trace("suspending orig. ingame user interface\n");
+
    // unregister script callbacks
    core->get_underworld().get_scripts().register_callback(NULL);
 
@@ -268,6 +270,8 @@ void ua_ingame_orig_screen::suspend()
 
 void ua_ingame_orig_screen::resume()
 {
+   ua_trace("resuming orig. ingame user interface\n");
+
    fade_state = 0;
    fade_ticks = 0;
 
@@ -332,6 +336,8 @@ void ua_ingame_orig_screen::done()
 {
    suspend();
    delete dbgint;
+
+   ua_trace("leaving orig. ingame user interface\n");
 }
 
 void ua_ingame_orig_screen::handle_event(SDL_Event &event)
