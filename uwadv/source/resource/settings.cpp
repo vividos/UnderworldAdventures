@@ -66,12 +66,14 @@ inline bool ua_istab(char c){ return c=='\t'; }
 
 // ua_config methods
 
-bool ua_settings::load()
+void ua_settings::load()
 {
    std::ifstream cfg(ua_settings_file);
 
    if (!cfg.is_open())
-      return false;
+   {
+      throw ua_exception("could not open config file ./uwadv.cfg");
+   }
 
    // read in all lines
    std::string line;
@@ -133,8 +135,6 @@ bool ua_settings::load()
 
    // initialize rest of settings
    init();
-
-   return true;
 }
 
 void ua_settings::init()

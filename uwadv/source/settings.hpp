@@ -63,7 +63,7 @@ public:
    ua_settings(){}
 
    //! loads settings from config file
-   bool load();
+   void load();
 
    //! path to uw1
    std::string uw1_path;
