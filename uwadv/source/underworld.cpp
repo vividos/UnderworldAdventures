@@ -51,7 +51,7 @@ void ua_underworld::init(ua_game_core_interface *thecore)
    // init the scripts as last step
    script.init(this);
 
-   change_level(0);
+   change_level(player.get_attr(ua_attr_maplevel));
 }
 
 void ua_underworld::done()
