@@ -25,6 +25,8 @@
 
 */
 
+#ifndef WIN32
+
 // needed includes
 #include "common.hpp"
 #include "SDL.h"
@@ -54,3 +56,6 @@ int main(int argc, char* argv[])
 
    return 0;
 }
+
+
+#endif
