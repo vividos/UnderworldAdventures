@@ -58,6 +58,48 @@ struct
 };
 
 
+// dump stuff
+
+#define ua_mdl_trace if (dump) printf
+
+//! model name tables
+const char* ua_model_name[32] =
+{
+   "-",
+   "door frame",
+   "bridge",
+   "bench",
+   "Lotus Turbo Esprit (no, really!)",
+   "small boulder",
+   "medium boulder",
+   "large boulder",
+   "arrow",
+   "beam",
+   "pillar",
+   "shrine",
+   "?",
+   "painting [uw2]",
+   "?",
+   "?",
+   "texture map (8-way lever)",
+   "texture map (8-way switch)",
+   "texture map (writing)",
+   "gravestone",
+   "texture map (0x016e)",
+   "-",
+   "?texture map (0x016f)",
+   "moongate",
+   "table",
+   "chest",
+   "nightstand",
+   "barrel",
+   "chair",
+   "bed [uw2]",
+   "blackrock gem [uw2]",
+   "shelf [uw2]"
+};
+
+
 // enums
 
 //! model node commands
@@ -128,7 +170,7 @@ void ua_mdl_store_vertex(const ua_vector3d& vertex, Uint16 vertno,
 void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
    std::vector<ua_vector3d>& vertex_list,
    std::vector<int>& vertex_indices,
-   std::vector<unsigned char>& face_colors)
+   std::vector<unsigned char>& face_colors, bool dump)
 {
    // parse node until end node
    bool loop = true;
@@ -139,12 +181,15 @@ void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
       ua_model_nodecmd cmd = (ua_model_nodecmd)fread16(fd);
       Uint16 refvert, vertno, unk1;
       double vx, vy, vz;
+      double nx, ny, nz;
       ua_vector3d refvect;
 
+      ua_mdl_trace(" %04x ",cmd);
       switch(cmd)
       {
          // misc. nodes
       case M3_UW_ENDNODE: // 0000 end node
+         ua_mdl_trace("[end]");
          loop = false;
          break;
 
@@ -157,6 +202,8 @@ void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
          vz = ua_mdl_read_fixed(fd);
 
          unk1 = fread16(fd);
+         ua_mdl_trace("[origin] vertno=%u origin=%u unk1=%04x origin=(%f,%f,%f)",
+            vertno,origin,unk1,vx,vy,vz);
          break;
 
          // vertex definition nodes
@@ -168,6 +215,9 @@ void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
 
          refvect = ua_vector3d(vx,vy,vz);
          ua_mdl_store_vertex(refvect,vertno, vertex_list);
+
+         ua_mdl_trace("[vertex] vertno=%u vertex=(%f,%f,%f)",
+            vertno,vx,vy,vz);
          break;
 
       case M3_UW_VERTICES: // 0082 define initial vertices
@@ -182,6 +232,9 @@ void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
 
                refvect = ua_vector3d(vx,vy,vz);
                ua_mdl_store_vertex(refvect,vertno+n, vertex_list);
+
+               ua_mdl_trace("%s[vertex] vertno=%u vertex=(%f,%f,%f)",
+                  n==0 ? "" : "\n      ",vertno+n,vx,vy,vz);
             }
          }
          break;
@@ -194,6 +247,9 @@ void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
          refvect = vertex_list[refvert];
          refvect.x += vx;
          ua_mdl_store_vertex(refvect,vertno, vertex_list);
+
+         ua_mdl_trace("[vertex] vertno=%u vertex=(%f,%f,%f) x from=%u",
+            vertno,refvect.x,refvect.y,refvect.z,refvert);
          break;
 
       case M3_UW_VERTEX_Z: // 0088 define vertex offset Z
@@ -204,6 +260,9 @@ void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
          refvect = vertex_list[refvert];
          refvect.z += vz;
          ua_mdl_store_vertex(refvect,vertno, vertex_list);
+
+         ua_mdl_trace("[vertex] vertno=%u vertex=(%f,%f,%f) z from=%u",
+            vertno,refvect.x,refvect.y,refvect.z,refvert);
          break;
 
       case M3_UW_VERTEX_Y: // 008a define vertex offset Y
@@ -214,6 +273,9 @@ void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
          refvect = vertex_list[refvert];
          refvect.y += vy;
          ua_mdl_store_vertex(refvect,vertno, vertex_list);
+
+         ua_mdl_trace("[vertex] vertno=%u vertex=(%f,%f,%f) y from=%u",
+            vertno,refvect.x,refvect.y,refvect.z,refvert);
          break;
 
       case M3_UW_VERTEX_XZ: // 0090 define vertex offset X,Z
@@ -226,6 +288,9 @@ void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
          refvect.x += vx;
          refvect.z += vz;
          ua_mdl_store_vertex(refvect,vertno, vertex_list);
+
+         ua_mdl_trace("[vertex] vertno=%u vertex=(%f,%f,%f) xz from=%u",
+            vertno,refvect.x,refvect.y,refvect.z,refvert);
          break;
 
       case M3_UW_VERTEX_XY: // 0092 define vertex offset X,Y
@@ -238,6 +303,9 @@ void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
          refvect.x += vx;
          refvect.y += vy;
          ua_mdl_store_vertex(refvect,vertno, vertex_list);
+
+         ua_mdl_trace("[vertex] vertno=%u vertex=(%f,%f,%f) xy from=%u",
+            vertno,refvect.x,refvect.y,refvect.z,refvert);
          break;
 
       case M3_UW_VERTEX_YZ: // 0094 define vertex offset Y,Z
@@ -250,6 +318,9 @@ void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
          refvect.y += vy;
          refvect.z += vz;
          ua_mdl_store_vertex(refvect,vertno, vertex_list);
+
+         ua_mdl_trace("[vertex] vertno=%u vertex=(%f,%f,%f) yz from=%u",
+            vertno,refvect.x,refvect.y,refvect.z,refvert);
          break;
 
       case M3_UW_VERTEX_CEIL: // 008c define vertex variable height
@@ -260,35 +331,68 @@ void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
          refvect = vertex_list[refvert];
          refvect.z = 32.0; // todo: ceiling value
          ua_mdl_store_vertex(refvect,vertno, vertex_list);
+
+         ua_mdl_trace("[vertex] vertno=%u vertex=(%f,%f,ceil) ceil from=%u unk1=%04x",
+            vertno,refvect.x,refvect.y,refvert,unk1);
          break;
 
          // face plane checks
       case M3_UW_FACE_PLANE: // 0058 define face plane, arbitrary heading
-         fread16(fd);
-         ua_mdl_read_fixed(fd);
-         ua_mdl_read_fixed(fd);
-         ua_mdl_read_fixed(fd);
-         ua_mdl_read_fixed(fd);
-         ua_mdl_read_fixed(fd);
-         ua_mdl_read_fixed(fd);
+         unk1 = fread16(fd);
+         nx = ua_mdl_read_fixed(fd);
+         vx = ua_mdl_read_fixed(fd);
+         ny = ua_mdl_read_fixed(fd);
+         vy = ua_mdl_read_fixed(fd);
+         nz = ua_mdl_read_fixed(fd);
+         vz = ua_mdl_read_fixed(fd);
+
+         ua_mdl_trace("[planecheck] skip=%04x normal=(%f,%f,%f) dist=(%f,%f,%f)",
+            unk1,nx,ny,nz,vx,vy,vz);
          break;
 
       case M3_UW_FACE_PLANE_X: // 0064 define face plane X
       case M3_UW_FACE_PLANE_Z: // 0066 define face plane Z
       case M3_UW_FACE_PLANE_Y: // 0068 define face plane Y
-         fread16(fd);
-         ua_mdl_read_fixed(fd);
-         ua_mdl_read_fixed(fd);
+         unk1 = fread16(fd);
+         nx = ua_mdl_read_fixed(fd);
+         vx = ua_mdl_read_fixed(fd);
+
+         ua_mdl_trace("[planecheck] skip=%04x normal=(%f,%f,%f) dist=(%f,%f,%f) %c",
+            unk1,
+            cmd == M3_UW_FACE_PLANE_X ? nx : 0.0,
+            cmd == M3_UW_FACE_PLANE_Y ? nx : 0.0,
+            cmd == M3_UW_FACE_PLANE_Z ? nx : 0.0,
+            cmd == M3_UW_FACE_PLANE_X ? vx : 0.0,
+            cmd == M3_UW_FACE_PLANE_Y ? vx : 0.0,
+            cmd == M3_UW_FACE_PLANE_Z ? vx : 0.0,
+
+            cmd == M3_UW_FACE_PLANE_X ? 'x' : cmd == M3_UW_FACE_PLANE_Y ? 'y' : 'z'
+         );
          break;
 
       case M3_UW_FACE_PLANE_ZY: // 005e define face plane Z/Y
       case M3_UW_FACE_PLANE_XY: // 0060 define face plane X/Y
       case M3_UW_FACE_PLANE_XZ: // 0062 define face plane X/Z
-         fread16(fd);
-         ua_mdl_read_fixed(fd);
-         ua_mdl_read_fixed(fd);
-         ua_mdl_read_fixed(fd);
-         ua_mdl_read_fixed(fd);
+         unk1 = fread16(fd);
+         nx = ua_mdl_read_fixed(fd);
+         vx = ua_mdl_read_fixed(fd);
+         ny = ua_mdl_read_fixed(fd);
+         vy = ua_mdl_read_fixed(fd);
+
+         ua_mdl_trace("[planecheck] skip=%04x ",unk1);
+         if (dump)
+         switch(cmd)
+         {
+         case M3_UW_FACE_PLANE_ZY:
+            ua_mdl_trace("normal=(%f,%f,%f) dist=(%f,%f,%f) zy",0.0,ny,nx,0.0,vy,vx);
+            break;
+         case M3_UW_FACE_PLANE_XY:
+            ua_mdl_trace("normal=(%f,%f,%f) dist=(%f,%f,%f) xy",nx,ny,0.0,vx,vy,0.0);
+            break;
+         case M3_UW_FACE_PLANE_XZ:
+            ua_mdl_trace("normal=(%f,%f,%f) dist=(%f,%f,%f) xz",nx,0.0,ny,vx,0.0,vy);
+            break;
+         }
          break;
 
          // face info nodes
@@ -296,10 +400,15 @@ void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
          {
             Uint16 nvert = fread16(fd);
 
+            ua_mdl_trace("[face] nvert=%u vertlist=",nvert);
+
             for(Uint16 i=0; i<nvert; i++)
             {
                Uint16 vertno = ua_mdl_read_vertno(fd);
                vertex_indices.push_back(vertno);
+
+               ua_mdl_trace("%u",vertno);
+               if (i<=nvert-1) ua_mdl_trace(" ");
             }
 
             vertex_indices.push_back(-1);
@@ -314,11 +423,18 @@ void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
       case M3_UW_TEXTURE_FACE: // 00a8 define texture-mapped face
       case M3_UW_TMAP_VERTICES: // 00b4 define face vertices with u,v information
          {
+            ua_mdl_trace("[face] %s ",cmd==M3_UW_TEXTURE_FACE ? "tex" : "tmap");
+
             // read texture number
             if (cmd==M3_UW_TEXTURE_FACE)
-               fread16(fd); // texture number?
+            {
+               unk1 = fread16(fd); // texture number?
+               ua_mdl_trace("texnum=%04x ",unk1);
+            }
 
             Uint16 nvert = fread16(fd);
+
+            ua_mdl_trace("nvert=%u vertlist=",nvert);
 
             for(Uint16 i=0; i<nvert; i++)
             {
@@ -327,6 +443,9 @@ void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
 
                double u0 = ua_mdl_read_fixed(fd);
                double v0 = ua_mdl_read_fixed(fd);
+
+               ua_mdl_trace("%u (%f/%f)",vertno,u0,v0);
+               if (i<=nvert-1) ua_mdl_trace(" ");
             }
 
             vertex_indices.push_back(-1);
@@ -335,24 +454,43 @@ void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
             face_colors.push_back(0x00);
             face_colors.push_back(0x00);
             face_colors.push_back(0xff);
-
          }
          break;
 
          // sort nodes
       case M3_UW_SORT_PLANE: // 0006 define sort node, arbitrary heading
-         ua_mdl_read_fixed(fd);
-         ua_mdl_read_fixed(fd);
+         nx = ua_mdl_read_fixed(fd);
+         vx = ua_mdl_read_fixed(fd);
          // fall-through
 
       case M3_UW_SORT_PLANE_ZY: // 000C define sort node, ZY plane
       case M3_UW_SORT_PLANE_XY: // 000E define sort node, XY plane
       case M3_UW_SORT_PLANE_XZ: // 0010 define sort node, XZ plane
          {
-            ua_mdl_read_fixed(fd);
-            ua_mdl_read_fixed(fd);
-            ua_mdl_read_fixed(fd);
-            ua_mdl_read_fixed(fd);
+            ny = ua_mdl_read_fixed(fd);
+            vy = ua_mdl_read_fixed(fd);
+            nz = ua_mdl_read_fixed(fd);
+            vz = ua_mdl_read_fixed(fd);
+
+            if (dump)
+            {
+               ua_mdl_trace("[sort] ");
+               switch(cmd)
+               {
+               case M3_UW_SORT_PLANE:
+                  ua_mdl_trace("normal=(%f,%f,%f) dist=(%f,%f,%f)",nx,ny,nz,vx,vy,vz);
+                  break;
+               case M3_UW_SORT_PLANE_ZY:
+                  ua_mdl_trace("normal=(%f,%f,%f) dist=(%f,%f,%f)",0.0,nz,ny,0.0,vz,vy);
+                  break;
+               case M3_UW_SORT_PLANE_XY:   
+                  ua_mdl_trace("normal=(%f,%f,%f) dist=(%f,%f,%f)",ny,nz,0.0,vy,vz,0.0);
+                  break;
+               case M3_UW_SORT_PLANE_XZ:
+                  ua_mdl_trace("normal=(%f,%f,%f) dist=(%f,%f,%f)",ny,0.0,nz,vy,0.0,vz);
+                  break;
+               }
+            }
 
             Uint32 left = fread16(fd);
             left += ftell(fd);
@@ -360,18 +498,24 @@ void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
             Uint32 right = fread16(fd);
             right += ftell(fd);
 
+            ua_mdl_trace(" left=%08x right=%08x\n      [sort] start left node\n",left,right);
+
             long here = ftell(fd);
 
             // parse left nodes
             fseek(fd,left,SEEK_SET);
-            ua_model_parse_node(fd,origin,vertex_list,vertex_indices,face_colors);
+            ua_model_parse_node(fd,origin,vertex_list,vertex_indices,face_colors,dump);
+
+            ua_mdl_trace("      [sort] end left node/start right node\n");
 
             // parse right nodes
             fseek(fd,right,SEEK_SET);
-            ua_model_parse_node(fd,origin,vertex_list,vertex_indices,face_colors);
+            ua_model_parse_node(fd,origin,vertex_list,vertex_indices,face_colors,dump);
 
             // return to "here"
             fseek(fd,here,SEEK_SET);
+
+            ua_mdl_trace("      [sort] end");
          }
          break;
 
@@ -380,16 +524,19 @@ void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
          refvert = ua_mdl_read_vertno(fd);
          unk1 = fread16(fd);
          vertno = ua_mdl_read_vertno(fd);
+         ua_mdl_trace("[shade] color refvert=%u unk1=%04x vertno=%u",refvert,unk1,vertno);
          break;
 
       case M3_UW_FACE_SHADE: // 00BC define face shade
          unk1 = fread16(fd);
-         unk1 = fread16(fd);
+         vertno = fread16(fd);
+         ua_mdl_trace("[shade] shade unk1=%02x unk2=%02x",unk1,vertno);
          break;
 
       case M3_UW_FACE_TWOSHADES: // 00BE ??? seems to define 2 shades
+         vertno = fread16(fd);
          unk1 = fread16(fd);
-         unk1 = fread16(fd);
+         ua_mdl_trace("[shade] twoshade unk1=%02x unk2=%02x ",vertno,unk1);
          break;
 
       case M3_UW_VERTEX_DARK: // 00D4 define dark vertex face (?)
@@ -397,10 +544,15 @@ void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
             Uint16 nvert = fread16(fd);
             unk1 = fread16(fd);
 
+            ua_mdl_trace("[shade] color nvert=%u, unk1=%04x vertlist=",
+               nvert,unk1);
+
             for(Uint16 n=0; n<nvert; n++)
             {
                vertno = ua_mdl_read_vertno(fd);
                unk1 = fgetc(fd);
+
+               ua_mdl_trace("%u (%02x) ",vertno,unk1);
             }
 
             if (nvert & 1)
@@ -409,19 +561,23 @@ void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
          break;
 
       case M3_UW_FACE_GOURAUD: // 00D6 define gouraud shading
+         ua_mdl_trace("[shade] gouraud");
          break;
 
       case M3_UW_FACE_UNK40: // 0040 ???
+         ua_mdl_trace("[shade] unknown");
          break;
 
       case M3_UW_FACE_SHORT: // 00A0 ??? shorthand face definition
          {
             vertno = ua_mdl_read_vertno(fd);
+            ua_mdl_trace("[face] shorthand unk1=%u vertlist=",vertno);
 
             for(Uint16 i=0; i<4; i++)
             {
                Uint8 vertno = fgetc(fd);
                vertex_indices.push_back(vertno);
+               ua_mdl_trace("%u ",vertno);
             }
 
             vertex_indices.push_back(-1);
@@ -437,11 +593,17 @@ void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
          {
             vertno = ua_mdl_read_vertno(fd);
 
+            ua_mdl_trace("[face] vertno=%u vertlist=",vertno);
+
             for(Uint16 i=0; i<4; i++)
             {
                Uint8 vertno = fgetc(fd);
                vertex_indices.push_back(vertno);
+
+               ua_mdl_trace("%u ",vertno);
             }
+
+            ua_mdl_trace("shorthand");
 
             vertex_indices.push_back(-1);
 
@@ -474,14 +636,15 @@ void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
          break;
 
       default:
-         ua_trace("unknown command: %04x at offset 0x%08x\n",cmd,ftell(fd)-2);
+         ua_mdl_trace("unknown command at offset 0x%08x\n",ftell(fd)-2);
          return;
       }
+      ua_mdl_trace("\n");
    }
 }
 
 bool ua_model_decode_builtins(const char* filename,
-   std::vector<ua_model3d_ptr>& allmodels)
+   std::vector<ua_model3d_ptr>& allmodels, bool dump)
 {
    // open file
    FILE* fd = fopen(filename,"rb");
@@ -537,19 +700,19 @@ bool ua_model_decode_builtins(const char* filename,
 
       ua_vector3d extents(ex,ez,ey);
 
-      //ua_trace(" loading builtin model %u, offset=0x%08x {unk1=0x%04x, e=(%3.2f, %3.2f, %3.2f) }\n",
-      //   n,base + offsets[n],unk1,ex,ey,ez);
+      ua_mdl_trace("dumping builtin model %u (%s)\noffset=0x%08x [unk1=0x%04x, extents=(%f,%f,%f) ]\n",
+         n,ua_model_name[n],base + offsets[n],unk1,ex,ey,ez);
 
       ua_model3d_builtin* model = new ua_model3d_builtin;
 
       // parse root node
-      //std::vector<ua_vector3d> vertex_list;
-      //ua_model_parse_node(fd,vertex_list,model.get_triangles());
       ua_model_parse_node(fd,
          model->origin,
          model->coords,
          model->coord_index,
-         model->face_colors);
+         model->face_colors,dump);
+
+      ua_mdl_trace("\n");
 
       model->origin.z -= extents.z/2.0;
       model->extents = extents;
