@@ -783,8 +783,8 @@ int ua_underworld_script_bindings::ui_get_gamestring(lua_State* L)
 {
    ua_underworld &uw = get_underworld_from_self(L);
 
-   unsigned int block = static_cast<unsigned int>(lua_tonumber(L,-1));
-   unsigned int num = static_cast<unsigned int>(lua_tonumber(L,-2));
+   unsigned int block = static_cast<unsigned int>(lua_tonumber(L,-2));
+   unsigned int num = static_cast<unsigned int>(lua_tonumber(L,-1));
 
    // retrieve game string
    std::string str(uw.get_strings().get_string(block,num));
