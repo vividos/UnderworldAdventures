@@ -371,6 +371,7 @@ void ua_save_game_screen::tick()
          switch(button_highlight)
          {
          case 0: // load
+		 {
             ua_trace("loading saved game, filename %s\n",
                sgmgr->get_savegame_filename(selected_savegame).c_str());
 
@@ -384,7 +385,7 @@ void ua_save_game_screen::tick()
             else
                core->pop_screen();
             break;
-
+		 }
          case 3: // exit
             core->pop_screen();
             break;
