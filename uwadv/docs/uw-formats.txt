@@ -1,3 +1,284 @@
+ +--------------------------------------------------------------------------+
+               Ultima Underworld 1 and 2 Formats Specification
+
+                            Underworld Adventures
+                        http://uwadv.sourceforge.net/
+ +--------------------------------------------------------------------------+
+
+Document version:
+   $Id$
+
+
+Table of Contents
+-----------------
+
+   1      Introduction
+
+   2      Overview
+   2.1    Remarks
+   2.2    Summary of game files
+   2.2.1  Ultima Underworld 1 files
+   2.2.2  Ultima Underworld 2 files
+
+   3      Graphics and visuals
+   3.1    Images and palettes
+   3.1.1  Images
+   3.1.2  Palettes
+   3.2    Textures
+   3.3    Fonts
+   3.4    Critter animations
+   3.5    Cutscene animations
+
+   4      Level maps and object lists
+   4.1    Level map
+   4.2    Master object list
+   4.3    Free lists
+
+   5      String resources
+
+   6      Objects and items
+
+   7      Conversations
+
+   8      3d models
+
+   9      Miscellaneous stuff
+
+ +--------------------------------------------------------------------------+
+
+
+1  Introduction
+
+   <-- start here
+
+ +--------------------------------------------------------------------------+
+
+
+2  Overview
+
+   This chapter gives a short overview over the game itself, as well as a
+   detailed summary about all game files used in Ultima Underworld 1 and 2.
+
+
+2.1  Remarks
+
+   Ultima Underworld is a MS-DOS based game created in C with Turbo-C and
+   Optasm as the assembler used.
+
+
+2.2  Summary of game files
+
+   This section lists all the files that are part of the Ultima Underworld
+   game installations.
+
+
+2.2.1  Ultima Underworld 1 files
+
+   Here's a list of all files for Ultima Underworld 1:
+
+   Files in the main folder:
+
+   install.dat    infos which files are installed
+   install.exe    installer created with EZ-INSTALL 3.13
+   install.olb    ANSI text strings for the installer
+   lha.doc        LHA manual for 2.13
+   lha.exe        LHA 2.13 to unpack installer game files
+   uw.exe         ultima underworld 1 executable
+   uwsound.exe    sound settings program
+
+   Files in the "data" folder:
+
+   3dwin.gr       3d window graphics
+   allpals.dat    auxilliary 4-bit palette indices
+   animo.gr       small animations
+   armor_f.gr     female paperdoll armor graphics
+   armor_m.gr     male paperdoll armor graphics
+   babglobs.dat   initial conversation globals
+   blnkmap.byt    blank map bitmap, palette #1
+   bodies.gr      paperdoll bodies
+   buttons.gr     buttons, seems to be from some map editor
+   chains.gr      rotating chains for the stats window
+   chargen.byt    character generation bitmap, palette #3
+   charhead.gr    character images, for conversations
+   chrbtns.gr     character generation graphics, palette #3
+   chrgen.dat
+   cmb.dat        item combining rules
+   cnv.ark        conversation scripts
+   comobj.dat     common object properties
+   compass.gr     compass graphics
+   conv.byt       seems to be a conversation screenshot, palette #0
+   converse.gr    conversation screen bitmaps
+   cursors.gr     mouse cursor images
+   doors.gr       doors textures (may be decals)
+   dragons.gr     scroll dragons animations
+   eyes.gr        eyes from top screen
+   f16.tr         floor/ceiling textures, size 16x16
+   f32.tr         floor/ceiling textures, size 32x32
+   flasks.gr      health and mana flask graphics
+   font4x5p.sys   small font
+   font5x6i.sys   italic font, used in character stats screen
+   font5x6p.sys   normal font, used for scroll messages
+   fontbig.sys    big font, for cutscenes
+   fontbutn.sys   font for buttons (?)
+   fontchar.sys   character generation font (?)
+   genhead.gr     generic heads images
+   grave.dat      grave IDs
+   heads.gr       avatar character generation heads
+   inv.gr         inventory graphics, scroll backgrounds (?)
+   lev.ark        level maps, texture indices and object list
+   lfti.gr        left menu buttons
+   light.dat      palette mappings for 16 different light levels
+   lights.dat
+   main.byt       main game screen bitmap, palette #0
+   mono.dat       palette mapping for grayscale colors
+   objects.dat    object data specific to an object class
+   objects.gr     object graphics, some never seen in inventory (460 objects!)
+   opbtn.gr       opening screen buttons, create new game, etc.; palette #2
+   opscr.byt      opening screen, palette #2
+   optb.gr        some options buttons
+   optbtns.gr     all options buttons from the left menu
+   pals.dat       eight palettes (#0 to #7; #5 and #6 are the same)
+   panels.gr      some invalid type, 0x0 and 1x1 resolution images
+   player.dat     initial player character called "gronkey"
+   power.gr       hit power indicator graphics
+   pres1.byt      "origin presents" screen, palette #5
+   pres2.byt      "a blue sky prod. game" screen, palette #5
+   question.gr    a single question mark
+   scrledge.gr    scroll paper edges
+   shades.dat
+   skills.dat
+   spells.gr      spells graphics
+   strings.pak    all the game strings
+   terrain.dat    terrain texture properties (see 8.3)
+   tmflat.gr      wall switches and other decals
+   tmobj.gr       more wall decals, 3d model textures
+   uw.cfg         underworld configuration (audio, cut scenes)
+   views.gr       the letters "mv", probably not used
+   w16.tr         wall textures, size 16x16
+   w64.tr         wall textures, size 64x64
+   weapons.cm
+   weapons.dat
+   weapons.gr     weapon hit animations, for left and right handedness
+   win1.byt       winning screen with text, palette #7
+   win2.byt       blank winning screen for character info, palette #7
+   xfer.dat
+
+   Files in the "sound" folder:
+
+   XX.voc         all cutscene audio files
+   uwXX.xmi       underworld extended midi music
+   awXX.xmi       the same, for adlib music (?)
+   sounds.dat     sound effect midi commands (?)
+   uw.mt          MT32 sysex data
+   uw.ad          adlib stuff
+   *.adv          device driver for midi/wave output:
+
+   adlib.adv      Ad Lib Music Synthesizer Card
+   mt32mpu.adv    Roland MT-32 or compatible
+   pasdig.adv     Pro Audio Spectrum Digital Sound
+   pasfm.adv      Pro Audio Spectrum FM Sound
+   pcspkr.adv     IBM PC or compatible internal speaker
+   sbdig.adv      Sound Blaster Digital Sound
+   sbfm.adv       Sound Blaster FM Sound
+   sbpdig.adv     Sound Blaster Pro Digital Sound
+   sbpfm.adv      Sound Blaster Pro FM Sound
+   tandy.adv      Tandy 3-voice internal sound
+
+   Here's a list of song names for the .xmi files:
+
+   uw01.xmi       Introduction
+   uw02.xmi       Dark Abyss
+   uw03.xmi       Descent
+   uw04.xmi       Wanderer
+   uw05.xmi       Battlefield
+   uw06.xmi       Combat
+   uw07.xmi       Injured
+   uw10.xmi       Armed
+   uw11.xmi       Victory
+   uw12.xmi       Death
+   uw13.xmi       Fleeing
+   uw15.xmi       Maps & Legends
+
+   Files in the "cuts" folder:
+
+   * = not in "static" install
+
+   cs???.n00   anim control files (?)
+
+   cs000.n01   black screen
+   cs000.n02 * garamon in swirling air
+   cs000.n03   garamon talking
+   cs000.n04 * garamon talking
+   cs000.n05 * garamon talking
+   cs000.n06 * garamon in swirling air
+   cs000.n07   garamon appearing
+   cs000.n10   intro w/ tyball stealing princess, troll and guards etc.
+   cs000.n11   almric talking, on throne
+   cs000.n12   almric talking, closeup
+   cs000.n15   guard talking
+   cs000.n16 * guard talking
+   cs000.n17 * guard talking
+   cs000.n20   mountain scene, avatar taken to the abyss
+   cs000.n21 * mountain scene
+   cs000.n22   abyss doors closed, from outside
+   cs000.n23   doors closed, from inside, w/ avatar
+   cs000.n24   guard talking, with purple background
+   cs000.n25 * guard talking, with purple background
+
+   cs001.n01   ship approaching, abyss collapsing
+   cs001.n02   ship taking avatar on board
+   cs001.n03   almric talking, on ship
+   cs001.n04   almric talking, on ship
+   cs001.n05 * almric talking, on ship, birds in background
+   cs001.n06   arial talking
+   cs001.n07   arial talking
+   cs001.n10   abyss collapsing, ship sails away
+
+   cs002.n01   dying tyball talking
+   cs002.n02 * dying tyball talking
+   cs002.n03 * dying tyball talking
+   cs002.n04 * dying tyball, dying
+
+   cs003.n01   arial talking
+   cs003.n02 * arial talking
+
+   cs011.n01   "ultima underworld the stygian abyss" splash screen anim
+   cs012.n01   acknowledgements
+   cs013.n01   goblet with letters "in"
+   cs014.n01   goblet with letters "sa"
+   cs015.n01   goblet with letters "hn"
+
+   cs400.n01   "look" graphics for windows to abyss volcano core
+   cs401.n01   grave stones
+
+   cs402.n01   death skulls w/ silver sapling
+   cs403.n01   death skulls animation
+   cs403.n02   death skull end anim
+
+   cs404.n01   anvil graphics
+   cs410.n01   map piece showing some traps
+
+
+2.2.2  Ultima Underworld 2 files
+
+   Here is a list of all files from Ultima Underworld 2 that differ in content
+   or are only available in the second game.
+
+   Files in the main folder:
+
+
+ +--------------------------------------------------------------------------+
+
+
+3  Graphics and visuals
+
+ +--------------------------------------------------------------------------+
+
+
++--------------------------+
++ old document starts here +
++--------------------------+
+
 Ultima Underworld Formats Specification
 ---------------------------------------
 
@@ -63,7 +344,6 @@ Table of Contents
 
    Ulf Wohlers (Objects and 3D models)
 
-   $Id$
 
 
 1.1 Summary of data files
@@ -1763,62 +2043,7 @@ Table of Contents
    can be found in string blocks 0c00 through 0c21. Here is an overview of
    files contents:
 
-      * = not in "static" install
 
-      cs???.n00   anim control files (?)
-
-      cs000.n01   black screen
-      cs000.n02 * garamon in swirling air
-      cs000.n03   garamon talking
-      cs000.n04 * garamon talking
-      cs000.n05 * garamon talking
-      cs000.n06 * garamon in swirling air
-      cs000.n07   garamon appearing
-      cs000.n10   intro w/ tyball stealing princess, troll and guards etc.
-      cs000.n11   almric talking, on throne
-      cs000.n12   almric talking, closeup
-      cs000.n15   guard talking
-      cs000.n16 * guard talking
-      cs000.n17 * guard talking
-      cs000.n20   mountain scene, avatar taken to the abyss
-      cs000.n21 * mountain scene
-      cs000.n22   abyss doors closed, from outside
-      cs000.n23   doors closed, from inside, w/ avatar
-      cs000.n24   guard talking, with purple background
-      cs000.n25 * guard talking, with purple background
-
-      cs001.n01   ship approaching, abyss collapsing
-      cs001.n02   ship taking avatar on board
-      cs001.n03   almric talking, on ship
-      cs001.n04   almric talking, on ship
-      cs001.n05 * almric talking, on ship, birds in background
-      cs001.n06   arial talking
-      cs001.n07   arial talking
-      cs001.n10   abyss collapsing, ship sails away
-
-      cs002.n01   dying tyball talking
-      cs002.n02 * dying tyball talking
-      cs002.n03 * dying tyball talking
-      cs002.n04 * dying tyball, dying
-
-      cs003.n01   arial talking
-      cs003.n02 * arial talking
-
-      cs011.n01   "ultima underworld the stygian abyss" splash screen anim
-      cs012.n01   acknowledgements
-      cs013.n01   goblet with letters "in"
-      cs014.n01   goblet with letters "sa"
-      cs015.n01   goblet with letters "hn"
-
-      cs400.n01   "look" graphics for windows to abyss volcano core
-      cs401.n01   grave stones
-
-      cs402.n01   death skulls w/ silver sapling
-      cs403.n01   death skulls animation
-      cs403.n02   death skull end anim
-
-      cs404.n01   anvil graphics
-      cs410.n01   map piece showing some traps
 
    The cutscene files are done with Amiga's DeluxePaint Animator (file
    extension *.anm). The complete description can be found in the zip file
