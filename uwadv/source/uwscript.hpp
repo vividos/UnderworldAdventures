@@ -194,6 +194,8 @@ protected:
    static int player_set_skill(lua_State* L);
    static int player_get_pos(lua_State* L);
    static int player_set_pos(lua_State* L);
+   static int player_get_height(lua_State* L);
+   static int player_set_height(lua_State* L);
    static int player_get_angle(lua_State* L);
    static int player_set_angle(lua_State* L);
 
@@ -210,6 +212,7 @@ protected:
    static int tilemap_set_floor(lua_State* L);
    static int tilemap_get_ceiling(lua_State* L);
    static int tilemap_set_ceiling(lua_State* L);
+   static int tilemap_get_floor_height(lua_State* L);
    static int tilemap_get_objlist_start(lua_State* L);
 
    static int inventory_rune_avail(lua_State* L);

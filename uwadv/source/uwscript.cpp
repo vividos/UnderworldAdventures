@@ -88,6 +88,8 @@ void ua_underworld_script_bindings::register_functions()
    lua_register(L,"player_set_skill",player_set_skill);
    lua_register(L,"player_get_pos",player_get_pos);
    lua_register(L,"player_set_pos",player_set_pos);
+   lua_register(L,"player_get_height",player_get_height);
+   lua_register(L,"player_set_height",player_set_height);
    lua_register(L,"player_get_angle",player_get_angle);
    lua_register(L,"player_set_angle",player_set_angle);
 
@@ -104,6 +106,7 @@ void ua_underworld_script_bindings::register_functions()
    lua_register(L,"tilemap_set_floor",tilemap_set_floor);
    lua_register(L,"tilemap_get_ceiling",tilemap_get_ceiling);
    lua_register(L,"tilemap_set_ceiling",tilemap_set_ceiling);
+   lua_register(L,"tilemap_get_height",tilemap_get_height);
    lua_register(L,"tilemap_get_objlist_start",tilemap_get_objlist_start);
 
    lua_register(L,"conv_get_global",conv_get_global);
@@ -414,6 +417,25 @@ int ua_underworld_script_bindings::player_set_pos(lua_State *L)
    return 0;
 }
 
+int ua_underworld_script_bindings::player_get_height(lua_State* L)
+{
+   ua_player &pl = get_underworld_from_self(L).get_player();
+
+   lua_pushnumber(L,pl.get_height());
+
+   return 1;
+}
+
+int ua_underworld_script_bindings::player_set_height(lua_State* L)
+{
+   ua_player &pl = get_underworld_from_self(L).get_player();
+
+   double height = lua_tonumber(L,-1);
+   pl.set_height(height);
+
+   return 0;
+}
+
 int ua_underworld_script_bindings::player_get_angle(lua_State *L)
 {
    ua_player &pl = get_underworld_from_self(L).get_player();
@@ -617,6 +639,24 @@ int ua_underworld_script_bindings::tilemap_set_ceiling(lua_State* L)
       static_cast<unsigned int>(lua_tonumber(L,-1) ));
 
    return 0;
+}
+
+int ua_underworld_script_bindings::tilemap_get_height(lua_State* L)
+{
+   ua_underworld &uw = get_underworld_from_self(L);
+
+   int level = static_cast<int>(lua_tonumber(L,-3));
+   double xpos = lua_tonumber(L,-2);
+   double ypos = lua_tonumber(L,-1);
+
+   // get current level when level is negative
+   if (level<0)
+      level = uw.get_player().get_attr(ua_attr_maplevel);
+
+   double height = uw.get_level(level).get_floor_height(xpos,ypos);
+   lua_pushnumber(L,height);
+
+   return 1;
 }
 
 int ua_underworld_script_bindings::tilemap_get_objlist_start(lua_State* L)

@@ -90,6 +90,8 @@ registered C functions to call from Lua:
    player_set_skill
    player_get_pos
    player_set_pos
+   player_get_height
+   player_set_height
    player_get_angle
    player_set_angle
 
@@ -106,6 +108,7 @@ registered C functions to call from Lua:
    tilemap_set_floor
    tilemap_get_ceiling
    tilemap_set_ceiling
+   tilemap_get_floor_height
    tilemap_get_objlist_start
 
    inventory_rune_avail
@@ -350,6 +353,15 @@ registered C functions to call from Lua:
 
   sets new player position.
 
+* player_get_height()
+  return values: height
+
+  returns current player height
+
+* player_set_height(height)
+
+  sets new player height
+
 * player_get_angle()
   return values: angle
 
@@ -449,6 +461,12 @@ inventory of NPC's, contents of a container or door to a lock object).
   return values: none
 
   sets ceiling height.
+
+* tilemap_get_floor_height(level, xpos, ypos)
+  return values: height
+
+  returns height on a specific tilemap position; xpos and ypos can be
+  fractional values
 
 * tilemap_get_objlist_start(tile_handle)
   return values: obj_handle
