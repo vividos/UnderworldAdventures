@@ -39,6 +39,9 @@ WITH_DEBUGGING = no
 # path to mingw compiler
 MINGW_PATH = c:/mingw
 
+# version stored in installer
+UWADV_VERSION = 0.9-xxx
+
 # -------------------------------------------------------------------
 # STLport configuration
 # -------------------------------------------------------------------
@@ -491,7 +494,7 @@ luac:
 luac-clean:
 	cd source/script/lua/src/luac && make clean
 
-update: uwadv data uaconfig
+update: uwadv data uaconfig manual
 	strip $(uwadv_EXEC)
 	strip $(uaconfig_EXEC)
 	mkdir -p $(UWADV_PATH)
@@ -514,12 +517,13 @@ installer: install
 	cp docs/License.installer.txt $(UWADV_PATH)
 	cp Copying $(UWADV_PATH)
 	cp docs/README.uwadv.txt $(UWADV_PATH)
+	cp $(manual_TARGETS) $(UWADV_PATH)
 	cp docs/uw1-keyboard.txt $(UWADV_PATH)
 	cp docs/Changes $(UWADV_PATH)/Changes.txt
 	cp docs/Authors.txt $(UWADV_PATH)
 	cd $(UWADV_PATH) && ./upx -9 uwadv.exe
 	cd $(UWADV_PATH) && ./upx -9 uaconfig.exe
-	cd $(UWADV_PATH) && ./makensis.exe uwadv.nsi
+	cd $(UWADV_PATH) && ./makensis.exe //DVERSION="$(UWADV_VERSION)" uwadv.nsi
 
 clean: data-clean luac-clean manual-clean
 	rm -f $(uwadv_EXEC) $(cnvdbg_EXEC) $(cnvdasm_EXEC) $(xmi2mid_EXEC) \
