@@ -1184,13 +1184,14 @@ Table of Contents
       0032  int      4       find_barter_total
 
      Here is a detailed description of every builtin function. arg0 is always
-     the first argument, the number of args passed.
+     the first argument (the last value pushed on the stack) and specifies the
+     number of arguments passed.
 
      id=0000 name="babl_menu" ret_type=int
      parameters:   arg1: pointer to a list of string id's; ends with id == 0
      description:  shows a menu of further questions the user can select;
                    string id's are stored in list in arg1
-     return value: number of selected response (index of arg1 list)
+     return value: number of selected response (one-based index of arg1 list)
      -------------------------------------------------------------------------
 
      id=0001 name="babl_fmenu" ret_type=int
@@ -1560,18 +1561,21 @@ Table of Contents
        flag   description
 
          0    Dr. Owl's assistant Murgo freed
+         1    talked to Hagbard
          2    met Dr. Owl?
          3    permission to speak to king Ketchaval
          4    Goldthirst's quest to kill the gazer (1: gazer killed)
-
+         5    Garamon, magic source
          6    friend of Lizardman folk
-
-         7    ?? (conv #24, )
-
+         7    ?? (conv #24, Murgo)
+         8    book from Bronus for Morlock
+         9    "find Gurstang" quest?
+        10    where to find Zak, for Delanrey
         11    Rodrick killed
 
         32    status of "Knight of the Crux" quest
                0: no knight
+               1: seek out Dorna Ironfist
                2: started quest to search the "writ of Lorne"
                3: found writ
                4: door to armoury opened
