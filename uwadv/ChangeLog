@@ -1,3 +1,1061 @@
+2002-11-13 15:40  vividos
+
+	* source/tools/Makefile.am (1.24):
+
+	removed superfluous include path
+	
+2002-11-13 12:35  vividos
+
+	* source/win32/map3ds.dsp (1.3):
+
+	fixed needed libraries
+	
+2002-11-13 12:34  vividos
+
+	* source/win32/cnvdbg.dsp (1.8):
+
+	added "msvcrt" to ignore libs list for debug build
+	
+2002-11-13 12:18  vividos
+
+	* source/win32/mapdisp.dsp (1.10):
+
+	added some more header files
+	
+2002-11-13 12:18  vividos
+
+	* hacking/Makefile.am (1.5), source/lua/Makefile.common (1.2),
+	source/resource/Makefile.am (1.5), uadata/Makefile.am (1.7),
+	uadata/Makefile.common (1.6):
+
+	added header to makefiles
+	
+2002-11-13 12:15  vividos
+
+	* source/tools/Makefile.am (1.23):
+
+	fixed tools makefile (hopefully)
+	
+2002-11-13 12:14  vividos
+
+	* configure.ac (1.17):
+
+	added zlib to LIBS variable
+	
+2002-11-13 12:10  vividos
+
+	* source/tools/mapdisp.cpp (1.9):
+
+	fixed collecting triangles (local var. covered the global one)
+	
+2002-11-13 12:08  vividos
+
+	* source/tools/Makefile.common (1.6):
+
+	fixed mapdisp, cnvdbg and cnvdasm source files list
+	
+2002-11-13 12:07  vividos
+
+	* Makefile.mingw (1.40):
+
+	linked zlib to mapdisp
+	
+2002-11-13 12:06  vividos
+
+	* source/screens/ingame_orig.cpp (1.102):
+
+	reset stock texture usage when changing level
+	
+2002-11-13 12:04  vividos
+
+	* source/renderer.hpp (1.10):
+
+	made ua_triangle3d_textured compare operator const
+	
+2002-11-13 11:36  vividos
+
+	* source/: renderer.cpp (1.18), renderer.hpp (1.9):
+
+	moved helper function add_wall to ua_renderer as static function
+	fixed texture coordinate generation in get_tile_triangles()
+	
+2002-11-13 11:24  vividos
+
+	* source/win32/mapdisp.dsp (1.9):
+
+	fixed compiling/linking
+	
+2002-11-13 11:24  vividos
+
+	* source/tools/mapdisp.cpp (1.8):
+
+	added fake function to prevent linking with all ua_underworld stuff (including lua)
+	
+2002-11-13 11:19  vividos
+
+	* source/tools/mapdisp.cpp (1.7):
+
+	fixed mapdisp code
+	
+2002-11-13 11:14  vividos
+
+	* source/: underworld.cpp (1.32), resource/maploader.cpp (1.17):
+
+	moved ua_underworld::import_savegame() to underworld.cpp
+	
+2002-11-13 10:57  vividos
+
+	* uadata/uw1/scripts/game.lua (1.12):
+
+	added some locations for level 1
+	
+2002-11-13 10:57  vividos
+
+	* source/: physics.cpp (1.22), physicsobject.cpp (1.3), player.cpp
+	(1.21), renderer.cpp (1.17):
+
+	adjusted player height value range
+	adjusted physics constants accordingly
+	
+2002-11-13 09:52  vividos
+
+	* source/: physicsobject.hpp (1.2), physicsobject.cpp (1.2):
+
+	converted to use proper line endings
+	
+2002-11-13 01:32  vividos
+
+	* uadata/uw1/scripts/game.lua (1.11):
+
+	added player repositioning when user changes level using the PageUp and PageDown keys (level 1 positions done)
+	
+2002-11-13 01:04  vividos
+
+	* source/uwscript.cpp (1.18):
+
+	fixed function name
+	
+2002-11-13 01:01  vividos
+
+	* source/uwscript.cpp (1.17), source/uwscript.hpp (1.15),
+	docs/README.Lua.txt (1.17):
+
+	added functions player_set_height, player_get_height and tilemap_get_floor_height
+	
+2002-11-13 00:18  vividos
+
+	* source/screens/ingame_orig.cpp (1.101):
+
+	enabled level changing keys (PageUp / PageDown)
+	disabled "exit screen" key (Alt+Q)
+	
+2002-11-13 00:12  vividos
+
+	* source/underworld.hpp (1.20):
+
+	added function to retrieve number of levels
+	
+2002-11-13 00:05  vividos
+
+	* source/screens/create_character.cpp (1.25):
+
+	added fade-out when entering game
+	
+2002-11-12 23:52  vividos
+
+	* source/screens/start_splash.cpp (1.31):
+
+	intro track is faded out when we have uw_demo (after that the ingame screen follows)
+	
+2002-11-12 23:51  vividos
+
+	* source/screens/: ingame_orig.cpp (1.100), ingame_orig.hpp (1.29):
+
+	fixed text scroll width when using uw_demo
+	
+2002-11-12 23:01  vividos
+
+	* source/textscroll.cpp (1.12):
+
+	unicode key support is only enabled while input mode
+	
+2002-11-12 17:23  vividos
+
+	* docs/uw-formats.txt (1.33):
+
+	renumbered level map descriptions
+	changed indendation for that part
+	
+2002-11-12 17:18  vividos
+
+	* docs/uw-formats.txt (1.32):
+
+	added some info about texture names
+	
+2002-11-12 13:41  vividos
+
+	* docs/uw-formats.txt (1.31):
+
+	merged most of Fabian Pache's additions for uw2 specific formats
+	
+2002-11-12 13:24  vividos
+
+	* README (1.1):
+
+	added general readme file
+	
+2002-11-12 13:07  vividos
+
+	* source/resource/maploader.cpp (1.16):
+
+	added trace output for level maps loading
+	
+2002-11-12 13:07  vividos
+
+	* source/screens/start_splash.cpp (1.30):
+
+	initial game is imported for uw_demo now
+	
+2002-11-12 12:49  vividos
+
+	* configure.ac (1.16):
+
+	some checks are not performed for MacOS X
+	CXXFLAGS and LIBS are now set for use in source/Makefile.am
+	reordered checks for OpenGL and X11
+	added status output at the end
+	replaced dnl macro with #
+	
+2002-11-12 12:38  vividos
+
+	* docs/README.Linux.txt (1.9):
+
+	updated some infos
+	removed FMOD remarks
+	
+2002-11-12 12:29  vividos
+
+	* source/lua/Makefile.am (1.10):
+
+	added header
+	fixed typo
+	
+2002-11-12 12:29  vividos
+
+	* Makefile.am (1.8):
+
+	added header
+	
+2002-11-12 12:23  vividos
+
+	* source/Makefile.am (1.45):
+
+	replaced CXXFLAGS and LDFLAGS options with those generated by configure.ac
+	
+2002-11-11 19:04  vividos
+
+	* source/win32/uwadv.dsp (1.44):
+
+	added physicsobject.cpp/.hpp
+	
+2002-11-11 18:28  vividos
+
+	* source/resource/critloader.cpp (1.5):
+
+	fixed critter animation loading for uw_demo
+	
+2002-11-10 20:54  vividos
+
+	* source/Makefile.common (1.18):
+
+	added physicsobject.hpp, too
+	
+2002-11-08 12:27  telemachos
+
+	* source/: Makefile.common (1.17), physics.cpp (1.21), physics.hpp
+	(1.13), physicsobject.cpp (1.1), physicsobject.hpp (1.1),
+	player.cpp (1.20), player.hpp (1.20):
+
+	first version of physicsobject. First version of accelerated gravity
+	
+2002-11-07 22:06  vividos
+
+	* source/screens/ingame_orig.cpp (1.99):
+
+	fixed thin black lines for compass (more or less)
+	
+2002-11-07 22:03  vividos
+
+	* source/resource/texloader.cpp (1.15):
+
+	used default wrapping params for object textures now
+	
+2002-11-07 22:02  vividos
+
+	* source/texture.cpp (1.25):
+
+	fixed stock textures wrapping parameter
+	
+2002-11-07 22:00  vividos
+
+	* source/mousecursor.cpp (1.8):
+
+	simplified mouse cursor texture clamping
+	
+2002-11-07 21:48  vividos
+
+	* source/image.cpp (1.19):
+
+	fixed bug in paste_rect()
+	
+2002-11-07 21:48  vividos
+
+	* source/texture.hpp (1.17):
+
+	set default for wrapping params to GL_CLAMP_TO_EDGE
+	
+2002-11-07 21:33  wjpalenstijn
+
+	* source/: Makefile.am (1.44), linux/uwadv.spec.in (1.7):
+
+	package keymap.cfg in .rpm (as doc)
+	
+2002-11-07 19:54  vividos
+
+	* source/: image.cpp (1.18), image.hpp (1.14):
+
+	added "paste_rect" function to ua_image
+	
+2002-11-07 09:58  vividos
+
+	* source/Makefile.am (1.43):
+
+	added keymap.cfg to installed files
+	
+2002-11-07 09:56  vividos
+
+	* source/linux/uwadv.spec.in (1.6):
+
+	fixed typo
+	added keymap.cfg to rpm
+	
+2002-11-07 09:52  vividos
+
+	* source/: Makefile.am (1.42), linux/ua-lowercase-all.pl.6 (1.1),
+	linux/uwadv.spec.in (1.5):
+
+	added ua-lowercase-all.pl.6 man page
+	
+2002-11-07 00:26  vividos
+
+	* source/linux/uwadv.6.in (1.2):
+
+	updated man page significantly
+	
+2002-11-06 22:39  wjpalenstijn
+
+	* configure.ac (1.15), source/Makefile.am (1.41),
+	source/linux/uwadv.spec.in (1.4), uadata/Makefile.am (1.6):
+
+	fixed make dist and uwadv.spec; add manpage to .rpm; removed FMOD check from configure
+	
+2002-11-06 22:37  wjpalenstijn
+
+	* source/linux/.cvsignore (1.12):
+
+	added uwadv.6
+	
+2002-11-06 18:43  vividos
+
+	* source/linux/uwadv.6.in (1.1):
+
+	added initial manpage for uwadv
+	
+2002-11-05 00:16  vividos
+
+	* source/tools/: cnvdasm.cpp (1.11), cnvdasm.hpp (1.6):
+
+	implemented disassembling
+	
+2002-11-04 23:29  vividos
+
+	* source/tools/: cnvdasm.cpp (1.10), cnvdasm.hpp (1.5):
+
+	removed old disassembler and decompiler code
+	prepared usage of conversation graph to decompile code (not finished yet)
+	
+2002-11-04 23:28  vividos
+
+	* source/win32/cnvdasm.dsp (1.8):
+
+	ignored msvcrt import library
+	
+2002-11-04 23:17  vividos
+
+	* source/physics.hpp (1.12):
+
+	enabled new physics code
+	
+2002-11-04 23:16  vividos
+
+	* Makefile.am (1.7):
+
+	added some more files to EXTRA_DIST
+	
+2002-11-04 23:12  vividos
+
+	* misc/: ua-objtex00.png (1.1), ua-objtex01.png (1.1):
+
+	added object textures 0 and 1
+	
+2002-11-04 23:10  vividos
+
+	* source/tools/cnvdbg.cpp (1.13):
+
+	fixed includes
+	
+2002-11-04 22:32  vividos
+
+	* source/tools/cnvdasm.cpp (1.9):
+
+	fixed includes
+	
+2002-11-04 22:30  vividos
+
+	* source/conv/: convgraph.cpp (1.1), convgraph.hpp (1.1):
+
+	added conversation graph
+	
+2002-11-04 22:03  vividos
+
+	* source/: Makefile.common (1.16), tools/Makefile.common (1.5),
+	win32/cnvdasm.dsp (1.7), win32/cnvdbg.dsp (1.7):
+
+	added opcodes.hpp, convgraph.cpp/.hpp
+	removed instr.hpp
+	
+2002-11-04 21:59  vividos
+
+	* source/tools/instr.hpp (1.5):
+
+	removed instr.hpp
+	all stuff is now in conv/opcode.hpp
+	
+2002-11-04 21:57  vividos
+
+	* source/conv/codevm.cpp (1.14):
+
+	used enum values from opcode.hpp for the "big switch"
+	
+2002-11-04 21:56  vividos
+
+	* source/conv/opcodes.hpp (1.1):
+
+	added opcode file
+	
+2002-11-04 17:13  vividos
+
+	* docs/uw-formats.txt (1.30):
+
+	added overview over imported functions
+	added much info about imported functions
+	added imported variables list
+	added quest flag values list
+	
+2002-10-30 00:48  vividos
+
+	* source/resource/objloader.cpp (1.10):
+
+	removed setting critter objects to invisible
+	
+2002-10-30 00:43  vividos
+
+	* source/screens/ingame_orig.cpp (1.98):
+
+	added playing of "Descent", looping
+	
+2002-10-29 23:52  vividos
+
+	* source/renderer.cpp (1.16):
+
+	added alpha testing for transparent object sprites
+	tweaked critter sprite positioning a bit
+	
+2002-10-29 23:50  vividos
+
+	* source/: critter.hpp (1.4), resource/critloader.cpp (1.4):
+
+	added relative hotspot point coordinates
+	
+2002-10-29 23:46  vividos
+
+	* source/critter.cpp (1.2):
+
+	switched off generating mipmapped textures
+	
+2002-10-28 23:12  wjpalenstijn
+
+	* source/: keymap.cpp (1.9), renderer.cpp (1.15), textscroll.cpp
+	(1.11), texture.cpp (1.24), audio/audio.cpp (1.25),
+	resource/cfgfile.cpp (1.6), screens/acknowledgements.cpp (1.9),
+	screens/create_character.cpp (1.24), screens/cutscene_view.cpp
+	(1.23), screens/ingame_orig.cpp (1.97), screens/start_menu.cpp
+	(1.27):
+
+	fixed some compile errors and warnings
+	
+2002-10-28 23:10  wjpalenstijn
+
+	* configure.ac (1.14):
+
+	typo and some comments
+	
+2002-10-28 22:06  vividos
+
+	* source/: renderer.cpp (1.14), renderer.hpp (1.8):
+
+	added critter rendering (not finished yet)
+	
+2002-10-28 22:05  vividos
+
+	* source/: Makefile.common (1.15), win32/uwadv.dsp (1.43):
+
+	added critter.cpp
+	
+2002-10-28 22:03  vividos
+
+	* source/screens/ingame_orig.cpp (1.96):
+
+	critter pool object is passed to renderer
+	
+2002-10-28 22:01  vividos
+
+	* source/uwadv.cpp (1.39):
+
+	added function call to prepare critter pool textures
+	
+2002-10-28 22:00  vividos
+
+	* source/: critter.cpp (1.1), critter.hpp (1.3):
+
+	added texture preparation for critters
+	
+2002-10-28 21:58  vividos
+
+	* source/texture.hpp (1.16):
+
+	made some functions const
+	
+2002-10-28 18:53  vividos
+
+	* source/uamath.hpp (1.14):
+
+	moved new inline operators to the "inline definitions"
+	
+2002-10-28 18:25  vividos
+
+	* source/: core.hpp (1.9), uwadv.hpp (1.14):
+
+	added function to retrieve ua_critter_pool object
+	
+2002-10-28 18:13  vividos
+
+	* source/: renderer.cpp (1.13), renderer.hpp (1.7):
+
+	factored out drawing of billboard quad
+	
+2002-10-28 18:08  vividos
+
+	* source/screens/ingame_orig.cpp (1.95):
+
+	ifdef was set at the wrong place
+	
+2002-10-28 17:43  vividos
+
+	* source/screens/: ingame_orig.cpp (1.94), ingame_orig.hpp (1.28):
+
+	fixed movement directions when pressing two complementary movement keys (e.g. pressing left, then right, then releasing right)
+	
+2002-10-28 17:19  vividos
+
+	* source/resource/fontloader.cpp (1.12):
+
+	generalized fix for overly large font chars like 'w' or 'm'
+	
+2002-10-28 17:07  vividos
+
+	* source/screens/ingame_orig.cpp (1.93):
+
+	disabled loading and saving screens and quicksave feature for non-debug builds
+	
+2002-10-28 15:44  vividos
+
+	* source/win32/uaopt.dsp (1.2):
+
+	set option "inline any suitable function"
+	
+2002-10-28 15:36  vividos
+
+	* source/resource/critloader.cpp (1.3):
+
+	only frame 0 is loaded for now
+	
+2002-10-27 22:18  vividos
+
+	* Makefile.mingw (1.39):
+
+	reverted back to version 1.37
+	(no need to commit personal makefile modifications)
+	
+2002-10-27 20:51  telemachos
+
+	* Makefile.mingw (1.38), source/physics.cpp (1.20),
+	source/physics.hpp (1.11), source/player.cpp (1.19),
+	source/player.hpp (1.19), source/renderer.cpp (1.12),
+	source/uamath.hpp (1.13):
+
+	fixes to CD, pulled near plane closer. TM
+	
+2002-10-26 21:21  vividos
+
+	* docs/ua-diffs.txt (1.2):
+
+	added fact about cutscene speech played back a tad too slow
+	
+2002-10-26 21:20  vividos
+
+	* docs/Authors.txt (1.7):
+
+	updated phlask's mail address
+	
+2002-10-26 21:00  vividos
+
+	* docs/README.mingw32.txt (1.10):
+
+	updated according to the latest changes
+	
+2002-10-26 20:54  vividos
+
+	* Makefile.am (1.6):
+
+	added some more text files in "docs" folder
+	
+2002-10-26 20:53  vividos
+
+	* hacking/Makefile.am (1.4):
+
+	added uwmdldec project
+	
+2002-10-26 20:22  vividos
+
+	* source/screens/start_menu.cpp (1.26):
+
+	music is now fade out when "introduction" is selected
+	
+2002-10-26 20:15  vividos
+
+	* source/audio/audio.cpp (1.24):
+
+	trackname was lowercased while only extension comparison needed lowercase string
+	
+2002-10-26 20:02  vividos
+
+	* source/: audio.hpp (1.9), audio/audio.cpp (1.23):
+
+	added music fade-out
+	
+2002-10-26 19:48  vividos
+
+	* source/audio/midi_driver/linux_sdl_mixer.cpp (1.4):
+
+	forgot to add writing out a midi file to play it back
+	
+2002-10-26 19:03  vividos
+
+	* Makefile.mingw (1.37):
+
+	added WITH_STLPORT configure option
+	
+2002-10-26 18:36  vividos
+
+	* source/mousecursor.cpp (1.7):
+
+	fixed image errors on edges of mouse cursor image
+	
+2002-10-26 18:22  vividos
+
+	* source/screens/: ingame_orig.cpp (1.92), ingame_orig.hpp (1.27):
+
+	fixed bug with cursor not changing back to crosshair when moving out of 3d view
+	
+2002-10-26 15:01  vividos
+
+	* source/: uwscript.cpp (1.16), uwscript.hpp (1.14):
+
+	added functions ui_get_gamestring and lua_objlist_look
+	
+2002-10-26 14:59  vividos
+
+	* docs/README.Lua.txt (1.16):
+
+	added ui_get_gamestring function
+	
+2002-10-26 14:58  vividos
+
+	* source/files.cpp (1.26):
+
+	replaced dobule-slashes with single-ones
+	
+2002-10-26 14:47  vividos
+
+	* source/files.cpp (1.25):
+
+	added variable placeholder expansion for "custom-keymap" setting
+	
+2002-10-26 14:46  vividos
+
+	* source/screens/ingame_orig.cpp (1.91):
+
+	added custom keymap loading
+	
+2002-10-26 14:37  vividos
+
+	* source/files.hpp (1.14):
+
+	added function to retrieve uahome_path
+	
+2002-10-26 14:33  vividos
+
+	* source/: settings.cpp (1.10), settings.hpp (1.17):
+
+	added "custom-keymap" setting
+	
+2002-10-26 14:31  vividos
+
+	* source/: linux/uwadv.cfg.in (1.9), win32/uwadv.cfg (1.13):
+
+	added "custom-keymap" option
+	added slashes for "savegame-folder" option
+	
+2002-10-26 14:20  vividos
+
+	* source/win32/uwadv.nsi (1.14):
+
+	added keymap.cfg to files to install
+	
+2002-10-26 14:20  vividos
+
+	* source/win32/uwadv.dsp (1.42):
+
+	renamed objects.lua to objlist.lua
+	moved gamestrings.hpp to underworld header files
+	
+2002-10-26 14:16  vividos
+
+	* uadata/: uw1/scripts/objlist.lua (1.1), uw1/scripts/uwinit.txt
+	(1.4), uw1/scripts/objects.lua (1.5), Makefile.common (1.5):
+
+	renamed objects.lua to objlist.lua
+	
+2002-10-26 14:15  vividos
+
+	* source/: underworld.cpp (1.31), underworld.hpp (1.19), uwadv.cpp
+	(1.38), uwadv.hpp (1.13):
+
+	moved ua_gamestrings object from ua_game to ua_underworld class
+	
+2002-10-21 21:52  vividos
+
+	* uwadv.dsw (1.4), source/Makefile.am (1.40):
+
+	added uaopt.dsp
+	
+2002-10-21 21:51  vividos
+
+	* source/win32/: uaopt.dsp (1.1), uwadv.dsp (1.41):
+
+	moved some source files to uaopt.dsp which builds an optimized static library in debug mode
+	
+2002-10-21 16:59  vividos
+
+	* docs/uw-formats.txt (1.29):
+
+	added a list of song names for the .xmi files
+	
+2002-10-20 20:10  vividos
+
+	* source/resource/critloader.cpp (1.2):
+
+	added critter image loading
+	
+2002-10-18 17:59  vividos
+
+	* Makefile.mingw (1.36), source/critter.hpp (1.2),
+	source/tools/Makefile.am (1.22):
+
+	added needed libz for cnvdbg and cnvdasm
+	
+2002-10-18 16:14  vividos
+
+	* docs/uw-formats.txt (1.28):
+
+	compression type 08 can also occur on critter animations
+	
+2002-10-18 15:39  vividos
+
+	* source/: uwadv.cpp (1.37), uwadv.hpp (1.12):
+
+	added ua_critter_pool as core member
+	
+2002-10-18 15:38  vividos
+
+	* source/: Makefile.common (1.14), win32/uwadv.dsp (1.40):
+
+	added critter.hpp and resource/critloader.cpp
+	
+2002-10-18 15:37  vividos
+
+	* source/: critter.hpp (1.1), resource/critloader.cpp (1.1):
+
+	added initial critter loading implementation (not complete yet)
+	
+2002-10-18 14:37  vividos
+
+	* source/: linux/uwadv.cfg.in (1.8), win32/uwadv.cfg (1.12):
+
+	added note about config file and placeholders
+	used %uahome% for savegame dir now
+	
+2002-10-18 14:34  vividos
+
+	* source/: files.cpp (1.24), files.hpp (1.13):
+
+	added uahome path
+	changed config files added to cfgfile_list
+	
+2002-10-18 14:29  vividos
+
+	* source/Makefile.common (1.13):
+
+	moved uwadv_win32objects to Makefile.mingw32
+	
+2002-10-18 14:29  vividos
+
+	* Makefile.mingw (1.35):
+
+	changed paths setup a bit
+	added uwadv_win32objects
+	
+2002-10-18 13:55  vividos
+
+	* source/win32/source/debug.cpp (1.7):
+
+	fixed compile error on mingw32
+	
+2002-10-18 13:43  vividos
+
+	* source/linux/debug.cpp (1.3):
+
+	excluded building for mingw32
+	
+2002-10-17 22:02  vividos
+
+	* Makefile.mingw (1.34):
+
+	fixed compilation for .c files
+	
+2002-10-17 20:41  vividos
+
+	* hacking/: hacking.dsw (1.4), uwmdldec/.cvsignore (1.1),
+	uwmdldec/uwmdldec.cpp (1.1), uwmdldec/uwmdldec.dsp (1.1):
+
+	added uw model decoding project
+	
+2002-10-17 20:38  vividos
+
+	* source/: Makefile.common (1.12), win32/uwadv.dsp (1.39):
+
+	added resample files
+	
+2002-10-17 20:36  vividos
+
+	* source/audio/vocresample.cpp (1.2):
+
+	added CVS $Id$ line
+	
+2002-10-17 19:20  vividos
+
+	* source/audio/: audio.cpp (1.22), vocresample.cpp (1.1):
+
+	added resampling for original voc files
+	
+2002-10-17 18:50  vividos
+
+	* source/audio/: resamp.c (1.1), resamp.h (1.1):
+
+	added resample code from http://www.dspguru.com/sw/lib/multirate_algs_1-2.zip
+	available at http://www.dspguru.com/sw/opendsp/alglib.htm
+	
+2002-10-16 13:16  vividos
+
+	* hacking/critdec/critdec.dsp (1.5):
+
+	added crit-log.txt to misc. files
+	
+2002-10-16 13:12  vividos
+
+	* source/win32/source/debug.cpp (1.6):
+
+	indented library loading for clarification
+	
+2002-10-16 13:10  vividos
+
+	* source/linux/debug.cpp (1.2):
+
+	fixed linux debug prototype (hopefully)
+	
+2002-10-16 13:02  vividos
+
+	* source/debug/: playerinfo.cpp (1.2), playerinfo.hpp (1.2):
+
+	player info list ctrl is filled with infos now
+	
+2002-10-16 13:01  vividos
+
+	* source/debug/: dbgapp.cpp (1.2), dbgapp.hpp (1.2), mainframe.cpp
+	(1.3), mainframe.hpp (1.3):
+
+	ua_debug_interface pointer is passed to debugger now
+	added some more menu items
+	
+2002-10-16 12:57  vividos
+
+	* source/: Makefile.common (1.11), debug/Makefile.common (1.2),
+	win32/uwadv.dsp (1.38):
+
+	added new files
+	
+2002-10-16 12:54  vividos
+
+	* source/: debug/dbgcommon.hpp (1.3), debug/pch.cpp (1.1),
+	win32/uadebug.dsp (1.3):
+
+	using precompiled header for MSVC (speeds up compilation quite a bit)
+	all .cpp files of uadebug must include "dbgcommon.hpp" as first file
+	
+2002-10-16 12:51  vividos
+
+	* source/screens/ingame_orig.cpp (1.90):
+
+	get_new_debug_interface() has a ua_underworld* parameter now
+	
+2002-10-16 12:50  vividos
+
+	* source/: debug.hpp (1.2), debug/uwaccess.cpp (1.1),
+	debug/uwaccess.hpp (1.1), win32/source/debug.cpp (1.5):
+
+	added access api for uadebug
+	
+2002-10-14 16:27  vividos
+
+	* docs/README.mingw32.txt (1.9):
+
+	updated mingw32 readme file
+	
+2002-10-14 16:07  vividos
+
+	* docs/README.Lua.txt (1.15):
+
+	corrected list with Lua functions callable from C
+	
+2002-10-14 14:30  vividos
+
+	* source/uwadv.cpp (1.36):
+
+	added trace output of SDL version used
+	
+2002-10-14 14:07  vividos
+
+	* source/: physics.cpp (1.19), physics.hpp (1.10):
+
+	old collision detection is used again
+	new routines can be enabled using HAVE_NEW_CD
+	
+2002-10-14 13:18  vividos
+
+	* docs/uw-formats.txt (1.27):
+
+	completed infos about critter animations
+	started to do 3d object models info
+	
+2002-10-14 12:16  vividos
+
+	* hacking/critdec/: critdec.cpp (1.8), critdec.dsp (1.4):
+
+	updated to conform with the uw-formats.txt descriptions
+	
+2002-10-13 21:57  vividos
+
+	* docs/uw-formats.txt (1.26):
+
+	added infos about free lists
+	
+2002-10-11 16:56  vividos
+
+	* docs/uw-formats.txt (1.25):
+
+	added more infos from Jim's last commit to his uw-specs.txt
+	
+2002-10-11 15:38  vividos
+
+	* source/: physics.cpp (1.18), physics.hpp (1.9):
+
+	updated collision detection/response code to use Telemachos' tutorial (this time, real 3d CD is done)
+	http://www.peroxide.dk/download/tutorials/tut10/pxdtut10.html
+	
+2002-10-11 13:23  vividos
+
+	* source/uamath.hpp (1.12):
+
+	added multiplication assignment with vector to ua_vector3d
+	
+2002-10-11 12:43  vividos
+
+	* source/uamath.hpp (1.11):
+
+	moved all inlined members to the end of the file
+	added rotate_x, y and z for ua_vector3d
+	
+2002-10-11 11:44  vividos
+
+	* uadata/uw1/scripts/inventory.lua (1.7):
+
+	fixed item combining
+	
+2002-10-10 19:31  vividos
+
+	* source/screens/ingame_orig.cpp (1.89):
+
+	fixed limitation of cursor to 3d view when in mouse_move mode
+	
+2002-10-10 19:30  vividos
+
+	* source/: mousecursor.cpp (1.6), mousecursor.hpp (1.5):
+
+	added updatepos() with mouse coordinates relative to the 2d view area (320x200)
+	
+2002-10-10 18:19  vividos
+
+	* source/screens/ingame_orig.cpp (1.88):
+
+	first try to restrict mouse area during mouse_move mode
+	
+2002-10-07 22:30  vividos
+
+	* ChangeLog (1.28):
+
+	updated
+	
 2002-10-07 20:53  vividos
 
 	* Makefile.mingw (1.33):
@@ -282,6 +1340,20 @@
 	* source/win32/uadebug.dsp (1.2):
 
 	added playerinfo.cpp/.hpp
+	
+2002-10-05 10:40  vividos
+
+	* source/debug/: mainframe.cpp (1.2), mainframe.hpp (1.2),
+	playerinfo.cpp (1.1), playerinfo.hpp (1.1):
+
+	added menu bar
+	added player info dockable bar
+	
+2002-10-05 10:39  vividos
+
+	* source/debug/dbgcommon.hpp (1.2):
+
+	added frame layout core header
 	
 2002-10-03 01:13  vividos
 
@@ -701,6 +1773,19 @@
 	* source/win32/source/debug.cpp (1.2):
 
 	remade way the debugger start function is called
+	
+2002-09-20 00:34  vividos
+
+	* source/debug/Makefile.common (1.1):
+
+	added common makefile
+	
+2002-09-20 00:32  vividos
+
+	* source/debug/: dbgapp.cpp (1.1), dbgapp.hpp (1.1), dbgcommon.hpp
+	(1.1), mainframe.cpp (1.1), mainframe.hpp (1.1):
+
+	added
 	
 2002-09-20 00:26  vividos
 
@@ -1296,6 +2381,12 @@
 
 	added tries on OpenGL selection to identify objects in 3d view
 	
+2002-08-26 22:00  vividos
+
+	* uadata/uw1/audio/music-fallback.m3u (1.1):
+
+	added fallback music playlist
+	
 2002-08-26 21:43  vividos
 
 	* uadata/uw1/scripts/game.lua (1.7):
@@ -1588,6 +2679,12 @@
 
 	updated text to mention uwadv config program
 	
+2002-08-21 16:02  vividos
+
+	* source/win32/source/uaconfig/uaconfig.cpp (1.6):
+
+	screen resolution: fixed setting current selection for already inserted resolution string
+	
 2002-08-21 15:57  vividos
 
 	* source/win32/License.installer.txt (1.2):
@@ -1619,6 +2716,13 @@
 	* Makefile.mingw (1.25), source/win32/uaconfig.dsp (1.2):
 
 	added needed link library winmm.lib
+	
+2002-08-21 14:35  vividos
+
+	* source/win32/source/uaconfig/: resource.h (1.3), uaconfig.cpp
+	(1.5), uaconfig.hpp (1.2), uaconfig_res.rc (1.4):
+
+	added audio settings
 	
 2002-08-21 14:32  phlask
 
@@ -1816,6 +2920,12 @@
 
 	call in lua_init_script() to set the player map level is honored now
 	
+2002-08-19 23:44  vividos
+
+	* source/win32/source/uaconfig/uaconfig.cpp (1.4):
+
+	removed gcc warning
+	
 2002-08-19 23:42  vividos
 
 	* Makefile.mingw (1.21):
@@ -1848,6 +2958,19 @@
 
 	clarified that MSYS is needed to compile
 	
+2002-08-19 19:31  vividos
+
+	* source/win32/source/uaconfig/uaconfig.cpp (1.3):
+
+	added filling of screen resolution combo box
+	added check for screen resolution available in fullscreen mode
+	
+2002-08-19 18:40  vividos
+
+	* source/win32/source/uaconfig/uaconfig_res.rc (1.3):
+
+	caption changes as suggested on the uwadv-devel mailing list
+	
 2002-08-19 12:29  vividos
 
 	* source/screens/ingame_orig.cpp (1.46):
@@ -1867,6 +2990,12 @@
 	* source/win32/uwadv.cfg (1.10):
 
 	set 640x480 as default resolution
+	
+2002-08-19 10:12  vividos
+
+	* source/win32/source/uaconfig/.cvsignore (1.1):
+
+	added
 	
 2002-08-19 10:10  vividos
 
@@ -1911,7 +3040,9 @@
 	
 2002-08-18 22:06  vividos
 
-	* source/win32/source/: resource.h (1.2), uwadv_res.rc (1.2):
+	* source/win32/source/: resource.h (1.2), uwadv_res.rc (1.2),
+	uaconfig/resource.h (1.2), uaconfig/uaconfig.cpp (1.2),
+	uaconfig/uaconfig_res.rc (1.2):
 
 	added more settings
 	
@@ -2048,7 +3179,13 @@
 	
 2002-08-16 19:35  vividos
 
-	* source/win32/uaconfig.dsp (1.1), Makefile.mingw (1.16):
+	* source/win32/source/uaconfig/Corp.ico (1.1),
+	source/win32/uaconfig.dsp (1.1),
+	source/win32/source/uaconfig/resource.h (1.1),
+	source/win32/source/uaconfig/uaconfig.cpp (1.1),
+	source/win32/source/uaconfig/uaconfig.hpp (1.1),
+	source/win32/source/uaconfig/uaconfig_res.rc (1.1), Makefile.mingw
+	(1.16):
 
 	added uaconfig program
 	
@@ -2132,6 +3269,13 @@
 	* Makefile.mingw (1.14):
 
 	added WITH_CONSOLE configure option
+	
+2002-08-15 12:09  vividos
+
+	* uadata/uw1/audio/music.m3u (1.2):
+
+	removed unneeded slash
+	added header
 	
 2002-08-15 01:49  vividos
 
@@ -2353,6 +3497,12 @@
 	* source/: resource/savegame.cpp (1.1), savegame.hpp (1.1):
 
 	added savegame.cpp/.hpp
+	
+2002-08-13 15:18  vividos
+
+	* uadata/uw1/audio/music.m3u (1.1):
+
+	added music playlist
 	
 2002-08-13 11:57  vividos
 
@@ -2897,6 +4047,14 @@
 	* source/common.hpp (1.10):
 
 	added lualib include
+	
+2002-08-07 12:04  vividos
+
+	* source/lua/src/lib/: Makefile (1.1), README (1.1), lauxlib.c
+	(1.1), lbaselib.c (1.1), ldblib.c (1.1), liolib.c (1.1), lmathlib.c
+	(1.1), lstrlib.c (1.1):
+
+	added lualib, from lua-4.0.1
 	
 2002-08-07 11:42  vividos
 
