@@ -31,9 +31,10 @@
 #include "dbgserver.hpp"
 #include "game_interface.hpp"
 #include "underworld.hpp"
-#include "renderer.hpp"
 #include <deque>
-
+#ifndef DISABLE_RENDERER
+#include "renderer.hpp"
+#endif
 
 #ifdef WIN32
 
@@ -58,7 +59,7 @@ public:
    {
       return dll != NULL && ::GetProcAddress(dll,"uadebug_start") != NULL;
    }
-   virtual void start_debugger(ua_game_interface* the_game)
+   virtual void start_debugger(ua_basic_game_interface* the_game)
    {
       game = the_game;
 
@@ -85,9 +86,10 @@ public:
       if (schedule_prepare)
       {
          schedule_prepare = false;
-
+#if 0//#ifndef DISABLE_RENDERER
          game->get_renderer().prepare_level(
             game->get_underworld().get_current_level());
+#endif
       }
 
 
@@ -227,7 +229,7 @@ protected:
    HMODULE dll;
 
    //! pointer to game interface
-   ua_game_interface* game;
+   ua_basic_game_interface* game;
 
    //! is true when new level textures should be prepared at next tick()
    bool schedule_prepare;

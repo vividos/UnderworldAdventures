@@ -72,7 +72,7 @@ void ua_debug_server::init()
       debug_impl != NULL && debug_impl->is_avail() ? "" : "not ");
 }
 
-bool ua_debug_server::start_debugger(ua_game_interface* game)
+bool ua_debug_server::start_debugger(ua_basic_game_interface* game)
 {
    // check if debugger already runs
    if (debug_impl != NULL && debug_impl->is_avail() && SDL_SemValue(sem_debugger)==0)
@@ -127,7 +127,7 @@ void ua_debug_server::lock(bool set_lock)
 
 int ua_debug_server::thread_proc(void* ptr)
 {
-   ua_game_interface* game = reinterpret_cast<ua_game_interface*>(ptr);
+   ua_basic_game_interface* game = reinterpret_cast<ua_basic_game_interface*>(ptr);
    ua_debug_server* This = &game->get_debugger();
 
    // increase semaphore count

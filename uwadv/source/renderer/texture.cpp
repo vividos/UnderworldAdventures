@@ -238,12 +238,12 @@ void ua_texture_manager::init(ua_game_interface& game)
    ua_uw_import import;
 
    // load stock textures
-   if (settings.get_gametype() == ua_game_uw1 || settings.get_gametype() == ua_game_uw_demo)
+   if (settings.get_gametype() == ua_game_uw1)
    {
       // load all wall textures
       std::string walltexfname(settings.get_string(ua_setting_uw_path));
       walltexfname.append(
-         settings.get_gametype() == ua_game_uw1 ? "data/w64.tr" : "data/dw64.tr");
+         settings.get_bool(ua_setting_uw1_is_uw_demo) ? "data/dw64.tr" : "data/w64.tr");
 
       import.load_textures(allstocktex_imgs, ua_tex_stock_wall,
          walltexfname.c_str(), palette0);
@@ -251,7 +251,7 @@ void ua_texture_manager::init(ua_game_interface& game)
       // load all floor textures
       std::string floortexfname(settings.get_string(ua_setting_uw_path));
       floortexfname.append(
-         settings.get_gametype() == ua_game_uw1 ? "data/f32.tr" : "data/df32.tr");
+         settings.get_bool(ua_setting_uw1_is_uw_demo) ? "data/df32.tr" : "data/f32.tr");
 
       import.load_textures(allstocktex_imgs, ua_tex_stock_floor,
          floortexfname.c_str(), palette0);

@@ -65,7 +65,7 @@ void ua_start_splash_screen::init()
       ua_trace("loading first image\n");
 
       const char* first_img_name = "data/pres1.byt";
-      if (game.get_settings().get_gametype() == ua_game_uw_demo)
+      if (game.get_settings().get_bool(ua_setting_uw1_is_uw_demo))
          first_img_name = "data/presd.byt";
 
       // load image, palette 5
@@ -76,7 +76,7 @@ void ua_start_splash_screen::init()
    }
 
    // demo game?
-   if (game.get_settings().get_gametype() == ua_game_uw_demo)
+   if (game.get_settings().get_bool(ua_setting_uw1_is_uw_demo))
    {
       // write a string under the demo title
       ua_font font;
@@ -101,7 +101,7 @@ void ua_start_splash_screen::init()
    animcount = 0.0;
 
    // leave out first two screens when we have savegames
-   if (game.get_settings().get_gametype() != ua_game_uw_demo &&
+   if (!game.get_settings().get_bool(ua_setting_uw1_is_uw_demo) &&
        game.get_savegames_manager().get_savegames_count()>0)
    {
       ua_trace("skipping images (savegames available)\n");
@@ -197,7 +197,7 @@ bool ua_start_splash_screen::process_event(SDL_Event& event)
          tickcount=0;
 
          // fade out music when we have the demo (ingame starts after this)
-         if (game.get_settings().get_gametype() == ua_game_uw_demo)
+         if (game.get_settings().get_bool(ua_setting_uw1_is_uw_demo))
             game.get_audio_manager().fadeout_music(blend_time);
 
          // init fadeout
@@ -219,8 +219,9 @@ void ua_start_splash_screen::tick()
    tickcount++;
 
    // check if animation should be loaded
-   if ( (stage == 1 || (stage == 0 && game.get_settings().get_gametype() == ua_game_uw_demo)) &&
-      tickcount >= show_time * game.get_tickrate())
+   if ( (stage == 1 || (stage == 0 &&
+         game.get_settings().get_bool(ua_setting_uw1_is_uw_demo))) &&
+         tickcount >= show_time * game.get_tickrate())
    {
       ua_trace("loading animation\n");
 
@@ -284,7 +285,7 @@ void ua_start_splash_screen::tick()
       // finished
    case 5:
       // start next screen
-      if (game.get_settings().get_gametype() == ua_game_uw_demo)
+      if (game.get_settings().get_bool(ua_setting_uw1_is_uw_demo))
       {
          // when we have the demo, we immediately go to the ingame screen
          game.get_underworld().import_savegame(game.get_settings(),"data/",true);

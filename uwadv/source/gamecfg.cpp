@@ -35,24 +35,36 @@
 #include "scripting.hpp"
 
 
+// global functions
+
+//! checks if a file with given filename is available
+bool ua_file_isavail(const std::string& base, const char* fname)
+{
+   std::string filename = base;
+   filename += fname;
+
+   return ua_file_exists(filename.c_str());
+}
+
+
 // ua_gamecfg_loader methods
 
 /*! Processes a keyword/value pair. The following keywords are currently
     recognized:
-    * game-name
-    * init-scripting
-    * load-script
-    * use-resources
-    * import-strings
-    * check-files
+    game-name: specifies game name in future uw menu screens
+    init-scripting: inits scripting engine
+    load-script: loads a given script into scripting engine
+    use-resources: specifies which resources the game has to use (uw1 or uw2)
+    import-strings: imports gamestrings from custom .pak file
 
-    \param name the keyword name
-    \param value the keyword value
-
-    \todo implement keyword "check-files"
+    \param the_name the keyword name
+    \param the_value the keyword value
 */
-void ua_gamecfg_loader::load_value(const std::string& name, const std::string& value)
+void ua_gamecfg_loader::load_value(const char* the_name, const char* the_value)
 {
+   std::string name(the_name);
+   std::string value(the_value);
+
    if (name.compare("game-name")==0)
    {
       game_name = value;
@@ -60,13 +72,20 @@ void ua_gamecfg_loader::load_value(const std::string& name, const std::string& v
    else
    if (name.compare("init-scripting")==0)
    {
-/*
       if (value == "lua")
       {
+         // init Lua scripting
+         *scripting = ua_scripting::create_scripting(ua_script_lang_lua);
+
+         // check if scripting was set
+         if (*scripting == NULL)
+            throw ua_exception("could not create scripting object");
+
+         // init scripting
+         (*scripting)->init(&game);
       }
       else
          ua_trace("unsupported scripting language \"%s\"\n", value.c_str());
-*/
    }
    if (name.compare("load-script")==0)
    {
@@ -81,31 +100,70 @@ void ua_gamecfg_loader::load_value(const std::string& name, const std::string& v
       // check if resources to use are available
       if (value.compare("uw1")==0)
       {
-            // TODO check if all game files are available here
-            // TODO delete setting ua_setting_uw1_avail, not needed then
-            if (!settings.get_bool(ua_setting_uw1_avail))
-               throw ua_exception("could not find relevant uw1 game files");
+         // check base path
+         std::string base = settings.get_string(ua_setting_uw1_path);
+         if (base.empty())
+            throw ua_exception("path to uw1 was not specified in config file");
 
-         // select proper game type
-         if (settings.get_bool(ua_setting_uw1_is_uw_demo))
-            settings.set_gametype(ua_game_uw_demo);
-         else
-            settings.set_gametype(ua_game_uw1);
+         settings.set_gametype(ua_game_uw1);
+         settings.set_value(ua_setting_uw1_is_uw_demo, false);
 
-         // set generic uw path
+         do
+         {
+            // check for uw game files
+            if (ua_file_isavail(base,"data/cnv.ark") ||
+                ua_file_isavail(base,"data/strings.pak") ||
+                ua_file_isavail(base,"data/pals.dat") ||
+                ua_file_isavail(base,"data/allpals.dat"))
+            {
+               // could be uw1 or uw_demo
+               if (ua_file_isavail(base,"uw.exe"))
+                  break; // found all needed files
+               else
+               // check if we only have the demo
+               if (ua_file_isavail(base,"uwdemo.exe") &&
+                   ua_file_isavail(base,"data/level13.st") &&
+                   ua_file_isavail(base,"data/level13.anx") &&
+                   ua_file_isavail(base,"data/level13.txm"))
+               {
+                  // found all needed files for uw_demo
+                  settings.set_value(ua_setting_uw1_is_uw_demo, true);
+                  break;
+               }
+            }
+
+            throw ua_exception("could not find relevant uw1 game files");
+
+         } while(false);
+
+         // set generic uw path to uw1 path
          settings.set_value(ua_setting_uw_path,settings.get_string(ua_setting_uw1_path));
       }
       else
       if (value.compare("uw2")==0)
       {
-         // set generic uw path
+         // check base path
+         std::string base = settings.get_string(ua_setting_uw2_path);
+         if (base.empty())
+            throw ua_exception("path to uw2 was not specified in config file");
+
+         // check for uw2 game files
+         if (!ua_file_isavail(base,"data/cnv.ark") ||
+             !ua_file_isavail(base,"data/strings.pak") ||
+             !ua_file_isavail(base,"data/pals.dat") ||
+             !ua_file_isavail(base,"data/allpals.dat") ||
+             !ua_file_isavail(base,"uw2.exe") ||
+             !ua_file_isavail(base,"data/t64.tr"))
+            throw ua_exception("could not find relevant uw2 game files");
+
+         // set generic uw path to uw2 path
          settings.set_value(ua_setting_uw_path,settings.get_string(ua_setting_uw2_path));
          settings.set_gametype(ua_game_uw2);
       }
       else
       {
          // unknown string
-         std::string text("unknown resources string in game.cfg: ");
+         std::string text("unknown use-resources string in game.cfg: ");
          text.append(value);
          throw ua_exception(text.c_str());
       }
@@ -116,13 +174,13 @@ void ua_gamecfg_loader::load_value(const std::string& name, const std::string& v
       // load game strings
       SDL_RWops* gstr = game.get_files_manager().get_uadata_file(value.c_str());
 
-      // TODO check if gstr == NULL
-
-      game.get_underworld().get_strings().load(gstr);
-   }
-   else
-   if (name.compare("check-files")==0)
-   {
-      // TODO implement
+      if (gstr != NULL)
+      {
+         // add strings.pak-like file
+         game.get_underworld().get_strings().add_pak_file(gstr);
+         // note: don't call SDL_RWclose, the ua_gamestrings file will do that
+      }
+      else
+         ua_trace("could not load strings file %s\n", value.c_str());
    }
 }

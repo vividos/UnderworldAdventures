@@ -114,8 +114,8 @@ void ua_uwadv_menu_screen::tick()
    settings.set_value(ua_setting_game_prefix,prefix);
 
    ua_trace("selected game: %s\n\n",
-      settings.get_gametype() == ua_game_uw1 ? "uw1" :
-      settings.get_gametype() == ua_game_uw_demo ? "uw_demo" : "uw2");
+      settings.get_gametype() != ua_game_uw1 ? "uw2" :
+      settings.get_bool(ua_setting_uw1_is_uw_demo) ? "uw_demo" : "uw1");
 
    // set generic uw path
    settings.set_value(ua_setting_uw_path,settings.get_string(ua_setting_uw1_path));

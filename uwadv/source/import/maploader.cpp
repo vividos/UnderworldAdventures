@@ -31,6 +31,7 @@
 #include "underworld.hpp"
 #include "level.hpp"
 #include "io_endian.hpp"
+#include "texture.hpp"
 #include <string>
 
 
@@ -66,7 +67,7 @@ void ua_uw1_import::load_levelmaps(std::vector<ua_level> &levels, ua_settings &s
    // load uw1 maps
 
    // determine number of levels
-   unsigned int numlevels = settings.get_gametype() == ua_game_uw_demo ? 1 : 9;
+   unsigned int numlevels = settings.get_bool(ua_setting_uw1_is_uw_demo) ? 1 : 9;
    levels.resize(numlevels);
 
    ua_trace("importing %u uw1 level maps from %s\n",numlevels,folder);
@@ -75,7 +76,7 @@ void ua_uw1_import::load_levelmaps(std::vector<ua_level> &levels, ua_settings &s
 
    std::string mapfile(settings.get_string(ua_setting_uw_path));
 
-   if (settings.get_gametype() == ua_game_uw_demo)
+   if (settings.get_bool(ua_setting_uw1_is_uw_demo))
    {
       // load uw_demo maps
       SDL_RWops* rwops;

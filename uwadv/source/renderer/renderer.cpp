@@ -169,8 +169,6 @@ void ua_renderer::setup_camera2d()
     \param the_view_offset view offset that is added to the player's position
     \param the_fov field of view angle
     \param the_far_dist distance from camera to far plane
-
-    \todo move z view offset elsewhere
 */
 void ua_renderer::setup_camera3d(const ua_vector3d& the_view_offset,
    double the_fov, double the_far_dist)
@@ -329,6 +327,13 @@ void ua_renderer::select_pick(const ua_underworld& underw, unsigned int xpos,
       id = renderid - (isobj ? 0 : 0x0400);
    }
 }
+
+/*! Swaps OpenGL screen buffers */
+void ua_renderer::swap_buffers()
+{
+   SDL_GL_SwapBuffers();
+}
+
 
 /*! Prepares renderer for new level.
 

@@ -148,7 +148,7 @@ void ua_ingame_orig_screen::init()
          const char* mainscreenname = "data/main.byt";
 
          // replace name when using uw_demo
-         if (settings.get_gametype() == ua_game_uw_demo)
+         if (settings.get_bool(ua_setting_uw1_is_uw_demo))
             mainscreenname = "data/dmain.byt";
 
          game.get_image_manager().ua_image_manager::load(img_background.get_image(),
@@ -183,7 +183,7 @@ void ua_ingame_orig_screen::init()
       unsigned int scrollwidth = 290;
 
       // adjust scroll width for uw_demo
-      if (game.get_settings().get_gametype() == ua_game_uw_demo)
+      if (game.get_settings().get_bool(ua_setting_uw1_is_uw_demo))
          scrollwidth = 218;
 
       textscroll.init(game, 15,169, scrollwidth,30, 42);

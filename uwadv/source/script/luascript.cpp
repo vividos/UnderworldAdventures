@@ -39,7 +39,7 @@ const char* ua_lua_scripting::self_name = "_scripting_self";
 
 // ua_lua_scripting methods
 
-void ua_lua_scripting::init(ua_game_interface* the_game)
+void ua_lua_scripting::init(ua_basic_game_interface* the_game)
 {
    game = the_game;
 
@@ -465,7 +465,6 @@ int ua_lua_scripting::player_get_info(lua_State* L)
    return 1;
 }
 
-/*! \todo implement */
 int ua_lua_scripting::player_set_info(lua_State* L)
 {
    // retrieve player object
@@ -843,9 +842,7 @@ int ua_lua_scripting::conv_is_avail(lua_State* L)
 
    Uint16 slot = static_cast<Uint16>(lua_tonumber(L,-1));
 
-   std::map<int,std::vector<std::string> >& allstrings = gstr.get_allstrings();
-
-   if (allstrings.find(slot+0x0e00) == allstrings.end())
+   if (!gstr.is_avail(slot+0x0e00))
       lua_pushnil(L);
    else
       lua_pushnumber(L,static_cast<double>(slot));

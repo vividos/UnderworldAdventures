@@ -375,13 +375,8 @@ void ua_uwadv_game::run()
       }
 
       // draw the screen
-      {
-         curscreen->draw();
-
-         // finished
-         // TODO move this to somewhere else
-         SDL_GL_SwapBuffers();
-      }
+      curscreen->draw();
+      renderer.swap_buffers();
 
       renders++;
 
@@ -610,23 +605,13 @@ void ua_uwadv_game::init_game()
 
    ua_trace("initializing game; prefix: %s\n",prefix.c_str());
 
-   // init Lua scripting
-   scripting = ua_scripting::create_scripting(ua_script_lang_lua);
-
-   // check if scripting was set
-   if (scripting == NULL)
-      throw ua_exception("could not create scripting object");
-
-   scripting->init(this);
-   underworld.set_scripting(scripting);
-
    // load game config file
    std::string gamecfg_name(prefix);
    gamecfg_name.append("/game.cfg");
 
    // try to load %prefix%/game.cfg
    {
-      ua_gamecfg_loader cfgloader(*this);
+      ua_gamecfg_loader cfgloader(*this,&scripting);
 
       SDL_RWops* gamecfg = files_manager.get_uadata_file(gamecfg_name.c_str());
 
@@ -652,6 +637,7 @@ void ua_uwadv_game::init_game()
 
    // init underworld
    underworld.init(settings,files_manager);
+   underworld.set_scripting(scripting);
 
    // init audio
    audio_manager.init(settings,files_manager);
@@ -669,8 +655,8 @@ void ua_uwadv_game::init_game()
       SDL_RWops* rwops = files_manager.get_uadata_file(langpak_name.c_str());
       if (rwops != NULL)
       {
-         underworld.get_strings().load(rwops);
-         SDL_RWclose(rwops);
+         underworld.get_strings().add_pak_file(rwops);
+         // note: don't call SDL_RWclose, the ua_gamestrings file will do that
 
          ua_trace("language \"%s\"\n",
             underworld.get_strings().get_string(0x0a00,0).c_str());

@@ -97,18 +97,11 @@ ua_objectlist_ctrl::ua_objectlist_ctrl(wxWindow* parent, int mylevel)
    // determine level to show
    if (mylevel<0)
    {
-/*
-      ua_debug_command_func cmd = wxGetApp().command;
+      ua_debug_client_interface& client = wxGetApp().get_client_interface();
+      client.lock(true);
 
-      cmd(udc_lock,0,NULL,NULL);
-
-      ua_debug_param param1;
-      param1.set_int(8);
-      cmd(udc_player_get,0,&param1,NULL);
-
-      level = param1.val.i;
-      cmd(udc_unlock,0,NULL,NULL);
-*/
+      level = client.get_player_attr(4);
+      client.lock(false);
    }
    else
       level = static_cast<unsigned int>(mylevel);
@@ -132,6 +125,9 @@ ua_objectlist_ctrl::ua_objectlist_ctrl(wxWindow* parent, int mylevel)
 
 void ua_objectlist_ctrl::UpdateData()
 {
+   ua_debug_client_interface& client = wxGetApp().get_client_interface();
+   client.lock(true);
+
 /*
    ua_debug_command_func cmd = wxGetApp().command;
    unsigned int ncol = SDL_TABLESIZE(ua_objectlist_captions);
@@ -214,9 +210,9 @@ void ua_objectlist_ctrl::UpdateData()
       // set string
       table[objpos*ncol+col].assign(text);
    }
-
-   cmd(udc_unlock,0,NULL,NULL);
 */
+   client.lock(false);
+
    // refresh view
    RefreshItems(0,0x03ff);
 }

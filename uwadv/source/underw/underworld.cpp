@@ -29,9 +29,12 @@
 #include "common.hpp"
 #include "underworld.hpp"
 #include "uamath.hpp"
-#include "import.hpp"
 #include "scripting.hpp"
 #include "geometry.hpp"
+
+#ifndef DISABLE_IMPORTS
+#include "import.hpp"
+#endif
 
 
 // ua_underworld methods
@@ -66,7 +69,8 @@ void ua_underworld::init(ua_settings& settings, ua_files_manager& filesmgr)
 
    // load game strings
    ua_trace("loading game strings ... ");
-   gstr.load(settings);
+   gstr.init(settings);
+//   gstr.load(settings);
    ua_trace("done\n");
 
    physics.add_track_body(&player);
@@ -277,6 +281,9 @@ void ua_underworld::save_game(ua_savegame &sg)
 
 void ua_underworld::import_savegame(ua_settings& settings,const char* folder,bool initial)
 {
+#ifdef DISABLE_IMPORTS
+   ua_trace("imports were disabled in this build\n");
+#else
    ua_uw_import import;
 
    // load level maps
@@ -300,6 +307,7 @@ void ua_underworld::import_savegame(ua_settings& settings,const char* folder,boo
 
    // reload level
    change_level(player.get_attr(ua_attr_maplevel));
+#endif
 }
 
 void ua_underworld::check_move_trigger()

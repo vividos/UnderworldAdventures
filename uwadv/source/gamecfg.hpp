@@ -38,7 +38,8 @@
 
 
 // forward references
-class ua_game_interface;
+class ua_basic_game_interface;
+class ua_scripting;
 
 
 // classes
@@ -48,22 +49,27 @@ class ua_game_interface;
     prefixed with the current game prefix (%game-prefix%/game.cfg).
 
     To start loading, call ua_cfgfile::load().
-
-    \todo use member game_name somewhere
 */
 class ua_gamecfg_loader: public ua_cfgfile
 {
 public:
    //! ctor
-   ua_gamecfg_loader(ua_game_interface& game_int):game(game_int){}
+   ua_gamecfg_loader(ua_basic_game_interface& the_game,
+      ua_scripting** the_scripting):game(the_game), scripting(the_scripting){}
+
+   //! returns game name
+   const char* get_game_name(){ return game_name.c_str(); }
 
 protected:
    //! called to load a specific value
-   virtual void load_value(const std::string& name, const std::string& value);
+   virtual void load_value(const char* name, const char* value);
 
 protected:
    //! game interface
-   ua_game_interface& game;
+   ua_basic_game_interface& game;
+
+   //! pointer to pointer to scripting object to initialize
+   ua_scripting** scripting;
 
    //! game name
    std::string game_name;

@@ -34,7 +34,7 @@
 
 
 // forward references
-class ua_game_interface;
+class ua_basic_game_interface;
 
 
 // enums
@@ -102,7 +102,7 @@ protected:
    //! returns if debugger is available
    virtual bool is_avail()=0;
    //! returns if debugger
-   virtual void start_debugger(ua_game_interface* game)=0;
+   virtual void start_debugger(ua_basic_game_interface* game)=0;
    //! does idle tick processing
    virtual void tick()=0;
 

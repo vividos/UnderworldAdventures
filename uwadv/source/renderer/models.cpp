@@ -189,8 +189,11 @@ void ua_model3d_manager::init(ua_game_core_interface* thecore)
 */
 }
 
-void ua_model3d_manager::load_value(const std::string& name, const std::string& value)
+void ua_model3d_manager::load_value(const char* the_name, const char* the_value)
 {
+   std::string name(the_name);
+   std::string value(the_value);
+
    // get item id
    Uint16 item_id;
    if (name.find("0x")==0)

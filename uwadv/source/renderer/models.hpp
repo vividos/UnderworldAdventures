@@ -97,7 +97,7 @@ public:
 
 protected:
    //! called to load a specific value
-   virtual void load_value(const std::string& name, const std::string& value);
+   virtual void load_value(const char* name, const char* value);
 
 protected:
    //! map with all 3d model objects

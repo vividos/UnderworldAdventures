@@ -40,7 +40,7 @@
 
 
 // forward references
-class ua_game_interface;
+class ua_basic_game_interface;
 class ua_debug_server_impl;
 
 
@@ -59,7 +59,7 @@ public:
    void init();
 
    //! starts debugger client; returns if debugger was already running
-   bool start_debugger(ua_game_interface* game);
+   bool start_debugger(ua_basic_game_interface* game);
 
    //! does tick processing
    void tick();

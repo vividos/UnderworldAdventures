@@ -91,7 +91,7 @@ void ua_conversation_screen::init()
       const char* mainscreenname = "data/main.byt";
 
       // replace name when using uw_demo
-      if (game.get_settings().get_gametype() == ua_game_uw_demo)
+      if (game.get_settings().get_bool(ua_setting_uw1_is_uw_demo))
          mainscreenname = "data/dmain.byt";
 
       ua_image& img = img_back.get_image();
@@ -185,7 +185,7 @@ void ua_conversation_screen::init()
    // adjust scroll width for uw_demo
    unsigned int scrollwidth = 289;
 
-   if (game.get_settings().get_gametype() == ua_game_uw_demo)
+   if (game.get_settings().get_bool(ua_setting_uw1_is_uw_demo))
       scrollwidth = 218;
 
    // init text scrolls
@@ -209,8 +209,11 @@ void ua_conversation_screen::init()
       cnv_name.append("data/cnv.ark");
 
       ua_conv_code_vm::load_code(cnv_name.c_str(),static_cast<Uint16>(convslot));
-      ua_conv_code_vm::init(game.get_underworld().get_conv_globals(),
-         game.get_underworld().get_strings().get_block(strblock));
+
+      std::vector<std::string> strblock;
+      game.get_underworld().get_strings().get_stringblock(static_cast<Uint16>(convslot),strblock);
+
+      ua_conv_code_vm::init(game.get_underworld().get_conv_globals(),strblock);
    }
 
    state = ua_state_fadein;

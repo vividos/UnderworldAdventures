@@ -61,6 +61,13 @@ bool ua_debugger::OnInit()
    return true;
 }
 
+int ua_debugger::OnExit()
+{
+   delete doc_manager;
+   doc_manager = NULL;
+   return 0;
+}
+
 
 // global functions
 

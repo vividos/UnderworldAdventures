@@ -64,7 +64,7 @@ public:
    void checked_call(int nargs, int nresults);
 
    // virtual methods from ua_scripting
-   virtual void init(ua_game_interface* game);
+   virtual void init(ua_basic_game_interface* game);
    virtual bool load_script(const char* basename);
    virtual void done();
    virtual void init_new_game();
@@ -90,8 +90,8 @@ protected:
    //! lua state information
    lua_State* L;
 
-   //! ptr to game interface
-   ua_game_interface* game;
+   //! ptr to basic game interface
+   ua_basic_game_interface* game;
 
    //! name for 'self' global in Lua
    static const char* self_name;

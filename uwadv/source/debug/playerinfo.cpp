@@ -131,34 +131,33 @@ ua_playerinfo_list::ua_playerinfo_list(wxWindow *parent,
 
 void ua_playerinfo_list::UpdateData()
 {
-/*
-   ua_debug_command_func cmd = wxGetApp().command;
+   ua_debug_client_interface& client = wxGetApp().get_client_interface();
 
    // lock underworld
-   cmd(udc_lock,0,NULL,NULL);
+   client.lock(true);
 
    // update all items
    for(unsigned int i=0; i<SDL_TABLESIZE(ua_playerinfo_captions); i++)
    {
       // set value
       wxString value;
-      ua_debug_param param1;
 
-      param1.set_int(i);
-      cmd(udc_player_get,1,&param1,NULL);
-
-      if (param1.type == ua_param_int)
-         value.Printf("%u",param1.val.i);
+      if (i<4)
+      {
+         double d = client.get_player_pos_info(i);
+         value.Printf("%3.2f", d);
+      }
       else
-      if (param1.type == ua_param_double)
-         value.Printf("%3.2f",param1.val.d);
+      {
+         unsigned int attr = client.get_player_attr(i-4);
+         value.Printf("%u",attr);
+      }
 
       SetItem(i,1,value);
    }
 
    // unlock again
-   cmd(udc_unlock,0,NULL,NULL);
-*/
+   client.lock(false);
 }
 
 void ua_playerinfo_list::AddBar(wxFrameLayout* pLayout)

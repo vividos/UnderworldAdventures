@@ -230,6 +230,50 @@ void ua_audio_manager::stop_music()
       midipl->stop_track();
 }
 
+//! music playlist loader helper class
+class ua_audio_playlist_loader: public ua_cfgfile
+{
+public:
+   //! ctor
+   ua_audio_playlist_loader(std::vector<std::string>& the_playlist,
+      ua_files_manager& the_filesmgr, const char* uwpath)
+      :playlist(the_playlist), filesmgr(the_filesmgr), uw_path(uwpath){}
+
+protected:
+   //! reads a raw line
+   virtual void read_raw_line(const char* the_line)
+   {
+      std::string line(the_line);
+
+      // check for # chars
+      std::string::size_type pos = line.find_first_of('#');
+      if (pos != std::string::npos)
+         line.erase(pos);
+
+      if (line.size()==0)
+         return;
+
+      filesmgr.replace_system_vars(line);
+
+      // additionally replace %uw-path%
+      pos = line.find("%uw-path%");
+      if (pos != std::string::npos)
+         line.replace(pos,9,uw_path);
+
+      playlist.push_back(line);
+   }
+
+protected:
+   //! playlist to load
+   std::vector<std::string>& playlist;
+
+   //! files manager to use
+   ua_files_manager& filesmgr;
+
+   //! uw path
+   std::string uw_path;
+};
+
 /*! Loads the music soundtrack playlist from the given filename. The file can
     be stored in the uadata resource file or in the equivalent path. The file
     can contain, among the placeholders recognized by
@@ -239,8 +283,6 @@ void ua_audio_manager::stop_music()
     \param settings settings object
     \param filesmgr files manager object
     \param filename playlist filename
-
-    \todo maybe use ua_cfgfile to load playlist?
 */
 void ua_audio_manager::load_playlist(ua_settings& settings,
    ua_files_manager& filesmgr, const char* filename)
@@ -248,52 +290,8 @@ void ua_audio_manager::load_playlist(ua_settings& settings,
    SDL_RWops* m3u = filesmgr.get_uadata_file(filename);
    if (m3u==NULL) return;
 
-   // load playlist into buffer
-   std::vector<char> buffer;
-   unsigned int len=0;
-   {
-      SDL_RWseek(m3u,0,SEEK_END);
-      len = SDL_RWtell(m3u);
-      SDL_RWseek(m3u,0,SEEK_SET);
-
-      buffer.resize(len+1,0);
-
-      SDL_RWread(m3u,&buffer[0],len,1);
-      buffer[len]=0;
-   }
-   SDL_RWclose(m3u);
-
-   // convert to string
-   std::string playlist(&buffer[0]);
-   playlist.append("\n"); // end guard
-
-   std::string::size_type pos;
-
-   while( std::string::npos != (pos = playlist.find('\n')) )
-   {
-      // extract one line
-      std::string line;
-      line.assign(playlist.c_str(),pos);
-      playlist.erase(0,pos+1);
-
-      // get rid of comments and newlines
-      pos = line.find_first_of("#\n\r");
-      if (pos != std::string::npos)
-         line.erase(pos);
-
-      // check for empty line
-      if (line.empty()) continue;
-
-      filesmgr.replace_system_vars(line);
-
-      // additionally replace %uw-path%
-      pos = line.find("%uw-path%");
-      if (pos != std::string::npos)
-         line.replace(pos,9,uw_path);
-
-      // add to playlist
-      music_playlist.push_back(line);
-   }
+   ua_audio_playlist_loader loader(music_playlist, filesmgr, uw_path.c_str());
+   loader.load(m3u);
 }
 
 /*! Callback function to get notified when a digital audio channel has

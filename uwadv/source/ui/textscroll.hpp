@@ -82,6 +82,7 @@ enum ua_textscroll_colorcode
     through scroll history
     \todo add left and right borders
     \todo limit scroll history to some max. number of lines, e.g. 256
+    \todo implement more codes: \p paragraph, \m show "more" immediately
 */
 class ua_textscroll: public ua_image_quad
 {

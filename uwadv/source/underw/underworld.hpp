@@ -28,6 +28,9 @@
 
    underworld objects documentation yet to come ...
 
+   The underworld objects depend on the "Base Components" and, if you
+   don't have defined DISABLE_IMPORTS, it depends on the "Import Components"
+
 */
 //@{
 

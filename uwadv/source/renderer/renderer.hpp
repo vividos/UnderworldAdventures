@@ -92,6 +92,9 @@ public:
       unsigned int& tilex, unsigned int& tiley,
       bool& isobj, unsigned int& id);
 
+   //! swaps screen buffers
+   void swap_buffers();
+
    //! prepares renderer for given level (e.g. when changing levels)
    void prepare_level(ua_level& level);
 

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -34,12 +34,12 @@
 
 // ua_uw2_import methods
 
-/*! the function reads in compressed blocks from uw2 .ark files and creates
-    a SDL_RWops struct to transparently access it.
+/*! Reads in compressed blocks from uw2 .ark files and creates an SDL_RWops
+    struct to transparently access it.
 
     The code was adapted from the LoW project: http://low.sourceforge.net/
 
-    \param fd        an open .ark file
+    \param fd        an open .ark file; won't be closed
     \param blocknum  block number to read in
     \param destsize  number of bytes which should be read from the block
 */
@@ -156,7 +156,7 @@ SDL_RWops* ua_uw2_import::get_rwops_uw2dec(FILE* fd,unsigned int blocknum, unsig
    return rwops;
 }
 
-/*! frees memory when SDL_RWclose is called
+/*! Frees memory when SDL_RWclose is called
     \param rwops pointer to the rwops struct to be freed
 */
 int ua_uw2_import::uw2dec_close(SDL_RWops* rwops)

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,8 +23,6 @@
 
    \brief level geometry provider implementation
 
-   ;
-
 */
 
 // needed includes
@@ -43,8 +41,13 @@ enum
 
 // ua_geometry_provider methods
 
-void ua_geometry_provider::get_tile_triangles(unsigned int xpos, unsigned int ypos,
-   std::vector<ua_triangle3d_textured>& alltriangles)
+/*! Returns all triangles generated for tile with given coordinates.
+    \param xpos x tile position
+    \param ypos y tile position
+    \param alltriangles vector of triangles the new triangles are added to
+*/
+void ua_geometry_provider::get_tile_triangles(unsigned int xpos,
+   unsigned int ypos, std::vector<ua_triangle3d_textured>& alltriangles)
 {
    const ua_levelmap_tile& tile = level.get_tile(xpos,ypos);
 

@@ -84,7 +84,6 @@ enum ua_music_track_uw1
 enum ua_audio_sfx_type
 {
    ua_sfx_steps=0,
-   // TODO add more
 };
 
 

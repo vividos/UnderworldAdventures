@@ -66,7 +66,7 @@ public:
    virtual ~ua_scripting(){}
 
    //! inits scripting
-   virtual void init(ua_game_interface* game)=0;
+   virtual void init(ua_basic_game_interface* game)=0;
 
    //! loads a script into scripting engine
    virtual bool load_script(const char* basename)=0;

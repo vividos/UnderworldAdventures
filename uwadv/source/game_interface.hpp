@@ -72,18 +72,12 @@ enum ua_game_events
 
 // classes
 
-//! game interface class
-class ua_game_interface
+//! basic game interface class, without ui stuff
+class ua_basic_game_interface
 {
 public:
    //! returns game tickrate
    virtual double get_tickrate()=0;
-
-   //! initializes game; only called after all stuff is initialized and ready
-   virtual void init_game()=0;
-
-   //! returns audio manager
-   virtual ua_audio_manager& get_audio_manager()=0;
 
    //! returns settings object
    virtual ua_settings& get_settings()=0;
@@ -94,12 +88,6 @@ public:
    //! returns savegames manager object
    virtual ua_savegames_manager& get_savegames_manager()=0;
 
-   //! returns image manager object
-   virtual ua_image_manager& get_image_manager()=0;
-
-   //! returns renderer object
-   virtual ua_renderer& get_renderer()=0;
-
    //! returns scripting object
    virtual ua_scripting& get_scripting()=0;
    
@@ -108,6 +96,24 @@ public:
 
    //! returns underworld object
    virtual ua_underworld& get_underworld()=0;
+};
+
+
+//! game interface class
+class ua_game_interface: public ua_basic_game_interface
+{
+public:
+   //! initializes game; only called after all stuff is initialized and ready
+   virtual void init_game()=0;
+
+   //! returns audio manager
+   virtual ua_audio_manager& get_audio_manager()=0;
+
+   //! returns image manager object
+   virtual ua_image_manager& get_image_manager()=0;
+
+   //! returns renderer object
+   virtual ua_renderer& get_renderer()=0;
 
    //! replaces current screen with new one; saves current on a screen stack when selected
    virtual void replace_screen(ua_screen* new_screen, bool save_current)=0;

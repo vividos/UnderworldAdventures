@@ -46,6 +46,9 @@ public:
    //! called on initialisation
    virtual bool OnInit();
 
+   //! called on exit
+   virtual int OnExit();
+
    //! returns client interface
    ua_debug_client_interface& get_client_interface(){ return client; }
 
