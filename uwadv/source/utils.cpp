@@ -196,7 +196,7 @@ void ua_find_files(const char* pathname, std::vector<std::string>& filelist)
             filelist.push_back(globres.gl_pathv[i]);
 
          globfree(&globres);
-      return 0;
+         return;
 
       case 3: //no matches
          break;
