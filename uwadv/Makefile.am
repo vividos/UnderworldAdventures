@@ -33,7 +33,7 @@ dist_docbook_DATA = docs/docbook/uwadv-manual.html
 DOCBOOKXSL=http://docbook.sourceforge.net/release/xsl/current/html/docbook.xsl
 
 docs/docbook/uwadv-manual.html: ${top_srcdir}/docs/docbook/uwadv-manual.xml
-	$(XSLTPROC) $(XSLTPROC_FLAGS) -o $ @$(DOCBOOKXSL) $<
+	$(XSLTPROC) $(XSLTPROC_FLAGS) -o $@ $(DOCBOOKXSL) $<
 else
 dist_docbook_DATA =
 endif
