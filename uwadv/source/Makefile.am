@@ -22,6 +22,8 @@ liblua_a_SOURCES = lua/src/lapi.c lua/src/lcode.c lua/src/ldebug.c \
 	lua/src/lparser.c lua/src/lstate.c lua/src/lstring.c \
 	lua/src/ltable.c lua/src/ltests.c lua/src/ltm.c \
 	lua/src/lundump.c lua/src/lvm.c lua/src/lzio.c \
+	lua/src/lib/lauxlib.c lua/src/lib/lbaselib.c \
+	lua/src/lib/lmathlib.c lua/src/lib/lstrlib.c \
 	lua/src/lapi.h lua/src/lcode.h lua/src/ldebug.h \
 	lua/src/ldo.h lua/src/lfunc.h lua/src/lgc.h \
 	lua/src/llex.h lua/src/llimits.h lua/src/lmem.h \
