@@ -29,6 +29,7 @@
 #include "common.hpp"
 #include "ingame_orig.hpp"
 #include "uamath.hpp"
+#include "load_game.hpp"
 #include "cutscene_view.hpp"
 #include "conversation.hpp"
 
@@ -479,7 +480,7 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    {
       fade_state = 2;
       fade_ticks = 0;
-      fadeout_action = 0;
+      fadeout_action = 0; // return to menu
    }
    else
    // check for quicksave key
@@ -498,6 +499,22 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
       ua_savegame sg = core->get_savegames_mgr().get_quicksave(false);
       core->get_underworld().load_game(sg);
       ua_trace("done\n");
+   }
+   else
+   // check for "load game" key
+   if (keymap.is_key(ua_key_game_restore_game,keymod))
+   {
+      fade_state = 2;
+      fade_ticks = 0;
+      fadeout_action = 1; // load game
+   }
+   else
+   // check for "save game" key
+   if (keymap.is_key(ua_key_game_save_game,keymod))
+   {
+      fade_state = 2;
+      fade_ticks = 0;
+      fadeout_action = 2; // save game
    }
    else
    // check for "debugger" key
@@ -968,6 +985,23 @@ void ua_ingame_orig_screen::tick()
          case 0: // leave the ingame_orig screen
             core->pop_screen();
             break;
+
+         case 1: // start "load game" screen
+            core->push_screen(new ua_load_game_screen);
+            break;
+
+         case 2: // start "save game" screen
+//            core->push_screen(new ua_save_game_screen);
+            break;
+
+         case 3: // start conversation
+            core->push_screen(new ua_conversation_screen(fadeout_param));
+            break;
+
+         case 4: // start cutscene
+            // show cutscene
+            core->push_screen(new ua_cutscene_view_screen(fadeout_param));
+            break;
          }
       }
    }
@@ -1315,14 +1349,20 @@ void ua_ingame_orig_screen::ui_changed_level(unsigned int level)
 
 void ua_ingame_orig_screen::ui_start_conv(unsigned int convslot)
 {
-   // start conversation
-   core->push_screen(new ua_conversation_screen(convslot));
+   // start fading out
+   fade_state = 2;
+   fade_ticks = 0;
+   fadeout_action = 3; // start conversation
+   fadeout_param = convslot;
 }
 
 void ua_ingame_orig_screen::ui_show_cutscene(unsigned int cutscene)
 {
-   // show cutscene
-   core->push_screen(new ua_cutscene_view_screen(cutscene));
+   // start fading out
+   fade_state = 2;
+   fade_ticks = 0;
+   fadeout_action = 4; // start cutscene
+   fadeout_param = cutscene;
 }
 
 void ua_ingame_orig_screen::ui_print_string(const char* str)

@@ -249,6 +249,9 @@ protected:
    //! fadeout action to carry out
    unsigned int fadeout_action;
 
+   //! fadeout parameter for specific actions
+   unsigned int fadeout_param;
+
 
    // images, textures and fonts
 
