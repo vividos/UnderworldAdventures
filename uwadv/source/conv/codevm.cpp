@@ -39,12 +39,47 @@ void ua_conv_globals::load_game(ua_savegame &sg)
 {
    sg.begin_section("conv.globals");
 
+   allglobals.clear();
+
+   // get number of slots
+   Uint16 max1 = sg.read16();
+
+   for(Uint16 i=0; i<max1; i++)
+   {
+      // get number of slot globals
+      Uint16 max2 = sg.read16();
+
+      std::vector<Uint16> slotglobals;
+
+      // get all slot globals
+      for(Uint16 j=0; j<max2; j++)
+         slotglobals.push_back(sg.read16());
+
+      allglobals.push_back(slotglobals);
+   }
+
    sg.end_section();
 }
 
 void ua_conv_globals::save_game(ua_savegame &sg)
 {
    sg.begin_section("conv.globals");
+
+   // write number of conv slots
+   unsigned int max1 = allglobals.size();
+   sg.write16(max1);
+
+   // for each slot ...
+   for(unsigned int i=0; i<max1; i++)
+   {
+      // write number of slot globals
+      unsigned int max2 = allglobals[i].size();
+      sg.write16(max2);
+
+      // write all globals
+      for(unsigned int j=0; j<max2; j++)
+         sg.write16(allglobals[i][j]);
+   }
 
    sg.end_section();
 }
