@@ -245,6 +245,8 @@ void ua_object_list::delete_object(Uint16 pos)
 
 void ua_object_list::load_game(ua_savegame &sg)
 {
+   sg.begin_section("objlist");
+
    // read tile index table
    tile_index.clear();
    tile_index.resize(64*64,0);
@@ -259,10 +261,14 @@ void ua_object_list::load_game(ua_savegame &sg)
 
    for(n=0; n<0x400; n++)
       master_obj_list[n].load_object(sg);
+
+   sg.end_section();
 }
 
 void ua_object_list::save_game(ua_savegame &sg)
 {
+   sg.begin_section("objlist");
+
    // write tile index table
    unsigned int n=0;
 
@@ -272,4 +278,6 @@ void ua_object_list::save_game(ua_savegame &sg)
    // write all objects in master object list
    for(n=0; n<0x400; n++)
       master_obj_list[n].save_object(sg);
+
+   sg.end_section();
 }
