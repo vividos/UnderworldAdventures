@@ -317,7 +317,7 @@ void ua_save_game_screen::init()
       ua_image& img = img_back.get_image();
 
       img.create(320,200);
-      img.set_palette(game.get_image_manager().get_palette(0));
+      img.set_palette(game.get_image_manager().get_palette(3));
       img.paste_rect(temp_back,160,0, 160,200, 0,0);
 
       // add frame
