@@ -23,7 +23,7 @@ place the mouse cursor over the 3d window and left-click to start moving.
 During using mouse movement mode you cannot leave the window, as in the
 original game.
 
-Looking at objects and walls: You can look at these by left-clicking on them.
+Looking at objects and walls: You can look at these by right-clicking on them.
 For this, you have to be in "default" or "look" command mode. "default" mode
 is when no command icons (those on the left side) are on, and "look" mode is
 when the "eye" symbol is highlighted.
