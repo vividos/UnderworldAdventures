@@ -209,6 +209,8 @@ void process_events()
          case SDLK_RETURN:
             mode=2;
             break;
+		 default:
+			 break;
          }
          break;
 

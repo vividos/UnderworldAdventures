@@ -185,6 +185,9 @@ void process_events()
          case SDLK_l:
             light_on = !light_on;
             break;
+
+		 default:
+			 break;
          }
          break;
 
