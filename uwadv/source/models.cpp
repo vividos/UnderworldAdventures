@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Underworld Adventures Team
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -41,12 +41,11 @@ extern bool ua_model_decode_builtins(const char* filename,
 
 void ua_model3d_builtin::render(ua_vector3d& base)
 {
-   // render all triangles
-//   glColor3ub(192,192,192);
-
-//   glEnable(GL_TEXTURE_2D);
    glDisable(GL_CULL_FACE);
 
+   glColor3ub(255,255,255);
+
+   // render all triangles
    unsigned int max = alltriangles.size();
    for(unsigned int i=0; i<max; i++)
    {
@@ -69,23 +68,45 @@ void ua_model3d_builtin::render(ua_vector3d& base)
    }
 
    glEnable(GL_CULL_FACE);
-//   glEnable(GL_TEXTURE_2D);
 }
 
 void ua_model3d_builtin::get_bounding_triangles(ua_vector3d& base,
-   std::vector<ua_triangle3d_textured>& alltriangles)
+   std::vector<ua_triangle3d_textured>& trilist)
 {
-   alltriangles = this->alltriangles;
+   unsigned int max = alltriangles.size();
+   for(unsigned int i=0; i<max; i++)
+   {
+      ua_triangle3d_textured tri(alltriangles[i]);
+
+      tri.points[0] += base;
+      tri.points[0] += origin;
+
+      tri.points[1] += base;
+      tri.points[1] += origin;
+
+      tri.points[2] += base;
+      tri.points[2] += origin;
+
+      ua_vector3d temp = tri.points[2];
+      tri.points[2] = tri.points[1];
+      tri.points[1] = temp;
+
+      trilist.push_back(tri);
+   }
 }
 
 
 // ua_model3d_manager methods
+
+ua_model3d_manager* ua_model3d_manager::cur_modelmgr = NULL; 
 
 void ua_model3d_manager::init(ua_game_core_interface* thecore)
 {
    ua_trace("initializing model3d manager\n");
 
    core = thecore;
+
+   cur_modelmgr = this; 
 
    // loading builtin models
    std::string uwexe_filename(core->get_settings().get_string(ua_setting_uw_path));
