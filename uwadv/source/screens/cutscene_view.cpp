@@ -79,14 +79,16 @@ void ua_cutscene_view_screen::init()
 
       // not found? try another
       if (script==NULL)
+      {
          script = core->get_filesmgr().get_uadata_file("uw1/scripts/cutscene.lob");
+
+         if (script==NULL)
+            throw ua_exception("could not load cutscene script from uadata");
+         else
+            ua_trace("loaded Lua compiled script \"uw1/scripts/cutscene.lob\"\n");
+      }
       else
          ua_trace("loaded Lua script \"uw1/scripts/cutscene.lua\"\n");
-
-      if (script==NULL)
-         throw ua_exception("could not load cutscene script from uadata");
-      else
-         ua_trace("loaded Lua compiled script \"uw1/scripts/cutscene.lob\"\n");
 
       // load script into buffer
       std::vector<char> buffer;
