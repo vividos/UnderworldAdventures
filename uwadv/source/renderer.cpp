@@ -62,6 +62,7 @@ enum
 // ua_renderer methods
 
 ua_renderer::ua_renderer()
+:selection_mode(false)
 {
 }
 
@@ -264,7 +265,9 @@ void ua_renderer::select_pick(unsigned int xpos, unsigned int ypos,
    setup_camera_priv(true,xpos,ypos);
 
    // render scene
+   selection_mode = true;
    render();
+   selection_mode = false;
 
    // switch off selection mode
    GLint hits = glRenderMode(GL_RENDER);
@@ -1003,7 +1006,6 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
 
    double objxpos = static_cast<double>(x) + (extinfo.xpos+0.5)/8.0;
    double objypos = static_cast<double>(y) + (extinfo.ypos+0.5)/8.0;
-   //double height = level.get_floor_height(objxpos,objypos)*height_scale;
    double height = extinfo.zpos/4.0*height_scale;
 
    ua_vector3d base(objxpos, objypos, height);
@@ -1052,28 +1054,28 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
    }
    else
    {
-      if (item_id >= 0x0170 && item_id <= 0x017f)
+      // switches/levers/buttons/pull chains
+      if ((item_id >= 0x0170 && item_id <= 0x017f) ||
+          item_id == 0x0161 || // a_lever
+          item_id == 0x0162 || // a_switch
+          item_id == 0x0166)   // some_writing
       {
          render_decal(obj,x,y);
          return;
       }
 
-      /*if (item_id == 0x0166 || item_id == 0x016e)
+      // special tmap object
+      if (item_id == 0x016e || item_id == 0x016f)
       {
          render_tmap_obj(obj,x,y);
          return;
-      }*/
-/*
-      if (item_id == 0x01a0)
-      {
-         base.z = extinfo.zpos/4.0*height_scale;
       }
-*/
+
       // normal object
       double quadwidth = 0.25;
 
       // items that have to be drawn at the ceiling?
-      if (item_id == 0x00d3 || item_id == 0x00d4)
+      if (item_id == 0x00d3 || item_id == 0x00d4) // a_stalactite / a_plant
       {
          // adjust height
          base.z = level.get_tile(x,y).ceiling*height_scale - quadwidth;
@@ -1094,13 +1096,18 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
 
 void ua_renderer::render_decal(ua_object& obj, unsigned int x, unsigned int y)
 {
+   // 0x0161 a_lever
+   // 0x0162 a_switch
+   // 0x0166 some writing
+   // 0x017x buttons/switches/levers/pull chain
+
    ua_object_info_ext& extinfo = obj.get_ext_object_info();
    ua_vector3d base(static_cast<double>(x),static_cast<double>(y),
       extinfo.zpos/4.0*height_scale);
 
    ua_vector2d to_right;
 
-   const double wall_offset = 0.00;
+   const double wall_offset = selection_mode ? 0.02 : 0.00;
 
    switch(extinfo.heading)
    {
@@ -1110,42 +1117,45 @@ void ua_renderer::render_decal(ua_object& obj, unsigned int x, unsigned int y)
    case 6: to_right.set(0.0,1.0);  base.y += extinfo.ypos/8.0; base.x += wall_offset; break;
 
    default:
+      while(false);
       break; // should not occur
    }
 
-   double decalheight = 1.0/8.0;
+   const double decalheight = 1.0/8.0;
 
    to_right.normalize();
-   to_right *= 1.0/8.0;
+   to_right *= decalheight;
 
    // get object texture coords
+   // TODO select correct texture
    double u1,v1,u2,v2;
    texmgr->object_tex(obj.get_object_info().item_id,u1,v1,u2,v2);
 
    // enable polygon offset
-   glPolygonOffset(-2.0, -2.0);
-   glEnable(GL_POLYGON_OFFSET_FILL);
+   if (!selection_mode)
+   {
+      glPolygonOffset(-2.0, -2.0);
+      glEnable(GL_POLYGON_OFFSET_FILL);
+   }
 
    // draw quad
    glColor3ub(255,255,255);
 
    // render quad
    glBegin(GL_QUADS);
-//   glBegin(GL_LINE_LOOP);
    glTexCoord2d(u1,v2); glVertex3d(base.x-to_right.x,base.y-to_right.y,base.z-decalheight);
    glTexCoord2d(u2,v2); glVertex3d(base.x+to_right.x,base.y+to_right.y,base.z-decalheight);
    glTexCoord2d(u2,v1); glVertex3d(base.x+to_right.x,base.y+to_right.y,base.z+decalheight);
    glTexCoord2d(u1,v1); glVertex3d(base.x-to_right.x,base.y-to_right.y,base.z+decalheight);
    glEnd();
 
-   glDisable(GL_POLYGON_OFFSET_FILL);
-//   glEnable(GL_TEXTURE_2D);
+   if (!selection_mode)
+      glDisable(GL_POLYGON_OFFSET_FILL);
 }
 
 void ua_renderer::render_tmap_obj(ua_object& obj, unsigned int x, unsigned int y)
 {
-   // 0x0166 some writing, 0x016e special tmap object, 0x0177 pull chain
-
+   // 0x016e / 0x016f special tmap object
    ua_object_info_ext& extinfo = obj.get_ext_object_info();
 
    double xpos = static_cast<double>(x) + (extinfo.xpos+0.5)/8.0;

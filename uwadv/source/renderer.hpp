@@ -138,6 +138,9 @@ protected:
    //! distance of far plane
    double farplane;
 
+   //! indicates if in selection (picking) mode
+   bool selection_mode;
+
    //! billboard right and up vectors
    ua_vector3d bb_right, bb_up;
 
