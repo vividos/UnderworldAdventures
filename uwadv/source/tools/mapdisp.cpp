@@ -36,7 +36,9 @@
 
 // needed includes
 #include "common.hpp"
-#include "underworld.hpp"
+#include "level.hpp"
+#include "renderer.hpp"
+#include <algorithm>
 
 
 // globals
@@ -52,8 +54,12 @@ static bool rightbuttondown = false;
 
 static int curlevel=0;
 static std::vector<ua_level> levels;
-static ua_texture_manager texmgr;
 static ua_settings settings;
+static ua_texture_manager texmgr;
+
+
+// list with all triangles of current map
+std::vector<ua_triangle3d_textured> alltriangles;
 
 
 // prototypes
@@ -69,7 +75,26 @@ void load_level(int level)
 {
    // load new level
    curlevel=level;
-   levels[curlevel].prepare_textures(texmgr);
+
+   texmgr.reset();
+
+   // prepare all used textures
+   const std::vector<Uint16>& used_textures =
+      levels[curlevel].get_used_textures();
+
+   unsigned int max = used_textures.size();
+   for(unsigned int n=0; n<max; n++)
+      texmgr.prepare(used_textures[n]);
+
+   // collect all triangles
+   std::vector<ua_triangle3d_textured> alltriangles;
+
+   for(unsigned int x=0; x<64; x++)
+      for(unsigned int y=0; y<64; y++)
+         ua_renderer::get_tile_triangles(levels[curlevel],x,y,alltriangles);
+
+   // sort triangles by texnum
+   std::sort(alltriangles.begin(), alltriangles.end());
 }
 
 void init_mapdisp()
@@ -208,8 +233,23 @@ void draw_screen()
    glVertex3d(0,64,-0.1);
    glEnd();
 
-   // render map
-   levels[curlevel].render(texmgr);
+   // render all triangles
+   glColor3ub(192,192,192);
+   unsigned int max = alltriangles.size();
+   for(unsigned int i=0; i<max; i++)
+   {
+      ua_triangle3d_textured &tri = alltriangles[i];
+
+      texmgr.use(tri.texnum);
+
+      glBegin(GL_TRIANGLES);
+      for(int j=0; j<3; j++)
+      {
+         glTexCoord2d(tri.tex_u[j],tri.tex_v[j]);
+         glVertex3d(tri.points[j].x, tri.points[j].y, tri.points[j].z*0.125);
+      }
+      glEnd();
+   }
 
    SDL_GL_SwapBuffers();
 }
