@@ -53,7 +53,7 @@ void ua_image_decode_rle(FILE *fd,std::vector<Uint8> &pixels,unsigned int bits,
 {
    // bit extraction variables
    unsigned int bits_avail=0;
-   unsigned int rawbits;
+   int rawbits;
    unsigned int bitmask = ((1<<bits)-1) << (8-bits);
    unsigned int nibble;
 

@@ -34,8 +34,8 @@
 
 // ua_game methods
 
-ua_game::ua_game():tickrate(20),exit_game(false),audio(NULL),screen(NULL),
-   reset_tick_timer(false),screen_to_destroy(NULL)
+ua_game::ua_game():tickrate(20),exit_game(false),
+   reset_tick_timer(false),audio(NULL),screen(NULL),screen_to_destroy(NULL)
 {
    printf("Underworld Adventures\n");
    printf("http://uwadv.sourceforge.net/\n\n");

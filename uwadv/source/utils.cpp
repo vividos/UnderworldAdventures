@@ -192,7 +192,7 @@ void ua_find_files(const char* pathname, std::vector<std::string>& filelist)
    {
       case 0: // ok
          // add all found files to the list
-         for (int i=0; i<globres.gl_pathc; i++)
+         for (unsigned int i=0; i<globres.gl_pathc; i++)
             filelist.push_back(globres.gl_pathv[i]);
 
          globfree(&globres);

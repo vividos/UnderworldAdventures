@@ -52,7 +52,7 @@ const char *ua_font_names[6] =
 
 void ua_font::init(ua_settings &settings, ua_font_id fontid)
 {
-   if (fontid >= SDL_TABLESIZE(ua_font_names))
+   if (fontid >= (int)SDL_TABLESIZE(ua_font_names))
       throw ua_exception("ua_font::init: invalid font id");
 
    // do font name

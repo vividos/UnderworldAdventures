@@ -107,7 +107,7 @@ void ua_settings::load(const char *filename)
          line.replace(pos,1," ");
 
       // we now have a real config line
-      for(int i=0; i<SDL_TABLESIZE(ua_settings_mapping); i++)
+      for(unsigned int i=0; i < SDL_TABLESIZE(ua_settings_mapping); i++)
       {
          // search through all option entries
          int len = strlen(ua_settings_mapping[i].optname);
@@ -198,7 +198,7 @@ void ua_settings::write(const char *origfile, const char *newfile)
 
 
          // we now have a real config line
-         for(int i=0; i<SDL_TABLESIZE(ua_settings_mapping); i++)
+         for(unsigned int i=0; i < SDL_TABLESIZE(ua_settings_mapping); i++)
          {
             // search through all option entries
             int len = strlen(ua_settings_mapping[i].optname);

@@ -272,7 +272,7 @@ void ua_renderer::select_pick(unsigned int xpos, unsigned int ypos,
       GLuint min = 0xffffffff;
       unsigned int idx = 0;
 
-      for(unsigned int i=0; i<hits && idx<64; i++)
+      for(int i=0; i<hits && idx<64; i++)
       {
          // get count of names stored in this record
          GLuint namecount = select_buf[idx++];
