@@ -31,6 +31,7 @@
 // needed includes
 #include "common.hpp"
 #include "codevm.hpp"
+#include "opcodes.hpp"
 
 
 // ua_conv_globals methods
@@ -141,10 +142,10 @@ void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
    // execute one instruction
    switch(code[instrp])
    {
-   case 0x0000: // NOP
+   case op_NOP:
       break;
 
-   case 0x0001: // OPADD
+   case op_OPADD:
       {
          Uint16 arg1 = stack.pop();
          Uint16 arg2 = stack.pop();
@@ -152,7 +153,7 @@ void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
       }
       break;
 
-   case 0x0002: // OPMUL
+   case op_OPMUL:
       {
          Uint16 arg1 = stack.pop();
          Uint16 arg2 = stack.pop();
@@ -160,7 +161,7 @@ void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
       }
       break;
 
-   case 0x0003: // OPSUB
+   case op_OPSUB:
       {
          Uint16 arg1 = stack.pop();
          Uint16 arg2 = stack.pop();
@@ -168,7 +169,7 @@ void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
       }
       break;
 
-   case 0x0004: // OPDIV
+   case op_OPDIV:
       {
          Uint16 arg1 = stack.pop();
          Uint16 arg2 = stack.pop();
@@ -178,7 +179,7 @@ void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
       }
       break;
 
-   case 0x0005: // OPMOD
+   case op_OPMOD:
       {
          Uint16 arg1 = stack.pop();
          Uint16 arg2 = stack.pop();
@@ -188,7 +189,7 @@ void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
       }
       break;
 
-   case 0x0006: // OPOR
+   case op_OPOR:
       {
          Uint16 arg1 = stack.pop();
          Uint16 arg2 = stack.pop();
@@ -196,7 +197,7 @@ void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
       }
       break;
 
-   case 0x0007: // OPAND
+   case op_OPAND:
       {
          Uint16 arg1 = stack.pop();
          Uint16 arg2 = stack.pop();
@@ -204,11 +205,11 @@ void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
       }
       break;
 
-   case 0x0008: // OPNOT
+   case op_OPNOT:
       stack.push(!stack.pop());
       break;
 
-   case 0x0009: // TSTGT
+   case op_TSTGT:
       {
          Uint16 arg1 = stack.pop();
          Uint16 arg2 = stack.pop();
@@ -216,7 +217,7 @@ void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
       }
       break;
 
-   case 0x000A: // TSTGE
+   case op_TSTGE:
       {
          Uint16 arg1 = stack.pop();
          Uint16 arg2 = stack.pop();
@@ -224,7 +225,7 @@ void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
       }
       break;
 
-   case 0x000B: // TSTLT
+   case op_TSTLT:
       {
          Uint16 arg1 = stack.pop();
          Uint16 arg2 = stack.pop();
@@ -232,7 +233,7 @@ void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
       }
       break;
 
-   case 0x000C: // TSTLE
+   case op_TSTLE:
       {
          Uint16 arg1 = stack.pop();
          Uint16 arg2 = stack.pop();
@@ -240,7 +241,7 @@ void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
       }
       break;
 
-   case 0x000D: // TSTEQ
+   case op_TSTEQ:
       {
          Uint16 arg1 = stack.pop();
          Uint16 arg2 = stack.pop();
@@ -248,7 +249,7 @@ void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
       }
       break;
 
-   case 0x000E: // TSTNE
+   case op_TSTNE:
       {
          Uint16 arg1 = stack.pop();
          Uint16 arg2 = stack.pop();
@@ -256,11 +257,11 @@ void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
       }
       break;
 
-   case 0x000F: // JMP
+   case op_JMP:
       instrp = code[instrp+1]-1;
       break;
 
-   case 0x0010: // BEQ
+   case op_BEQ:
       {
          Uint16 arg1 = stack.pop();
          if (arg1 == 0)
@@ -270,7 +271,7 @@ void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
       }
       break;
 
-   case 0x0011: // BNE
+   case op_BNE:
       {
          Uint16 arg1 = stack.pop();
          if (arg1 != 0)
@@ -280,25 +281,25 @@ void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
       }
       break;
 
-   case 0x0012: // BRA
+   case op_BRA:
       instrp += code[instrp+1]+1;
       break;
 
-   case 0x0013: // CALL local
+   case op_CALL: // local function
       // stack value points to next instruction after call
       stack.push(instrp+1);
       instrp = code[instrp+1]-1;
       call_level++;
       break;
 
-   case 0x0014: // CALL imported
+   case op_CALLI: // imported function
       {
          Uint16 arg1 = code[++instrp];
          imported_func(arg1);
       }
       break;
 
-   case 0x0015: // RET
+   case op_RET:
       {
          if (--call_level)
          {
@@ -313,19 +314,19 @@ void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
       }
       break;
 
-   case 0x0016: // PUSHI
+   case op_PUSHI:
       stack.push(code[++instrp]);
       break;
 
-   case 0x0017: // PUSHI_EFF
+   case op_PUSHI_EFF:
       stack.push(basep + code[++instrp]);
       break;
 
-   case 0x0018: // POP
+   case op_POP:
       stack.pop();
       break;
 
-   case 0x0019: // SWAP
+   case op_SWAP:
       {
          Uint16 arg1 = stack.pop();
          Uint16 arg2 = stack.pop();
@@ -334,26 +335,26 @@ void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
       }
       break;
 
-   case 0x001A: // PUSHBP
+   case op_PUSHBP:
       stack.push(basep);
       break;
 
-   case 0x001B: // POPBP
+   case op_POPBP:
       {
          Uint16 arg1 = stack.pop();
          basep = arg1;
       }
       break;
 
-   case 0x001C: // SPTOBP
+   case op_SPTOBP:
       basep = stack.get_stackp();
       break;
 
-   case 0x001D: // BPTOSP
+   case op_BPTOSP:
       stack.set_stackp(basep);
       break;
 
-   case 0x001E: // ADDSP
+   case op_ADDSP:
       {
          Uint16 arg1 = stack.pop();
 
@@ -363,7 +364,7 @@ void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
       }
       break;
 
-   case 0x001F: // FETCHM
+   case op_FETCHM:
       {
          Uint16 arg1 = stack.pop();
 
@@ -373,7 +374,7 @@ void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
       }
       break;
 
-   case 0x0020: // STO
+   case op_STO:
       {
          Uint16 arg1 = stack.pop();
          Uint16 arg2 = stack.pop();
@@ -384,7 +385,7 @@ void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
       }
       break;
 
-   case 0x0021: // OFFSET
+   case op_OFFSET:
       {
          Uint16 arg1 = stack.pop();
          Uint16 arg2 = stack.pop();
@@ -393,36 +394,38 @@ void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
       }
       break;
 
-   case 0x0022: // START
-      // do nothing (or?)
+   case op_START:
+      // do nothing
       break;
 
-   case 0x0023: // SAVE_REG
+   case op_SAVE_REG:
       {
          Uint16 arg1 = stack.pop();
          result_register = arg1;
       }
       break;
 
-   case 0x0024: // PUSH_REG
+   case op_PUSH_REG:
       stack.push(result_register);
       break;
 
-   case 0x0026: // EXIT_OP
-      // do nothing (or?)
+   case op_EXIT_OP:
+      // finish processing (we still might be in some sub function)
+      finished = true;
       break;
 
-   case 0x0027: // SAY_OP
+   case op_SAY_OP:
       {
          Uint16 arg1 = stack.pop();
          say_op(arg1);
       }
       break;
 
-   case 0x0028: // RESPOND_OP
+   case op_RESPOND_OP:
+      // do nothing
       break;
 
-   case 0x0029: // OPNEG
+   case op_OPNEG:
       {
          Uint16 arg1 = stack.pop();
          stack.push(-arg1);
@@ -434,5 +437,6 @@ void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
       break;
    }
 
+   // process next instruction
    ++instrp;
 }
