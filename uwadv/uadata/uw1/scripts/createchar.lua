@@ -33,16 +33,13 @@
 
 -- constants
 
--- string block for labels/buttons
-cchar_strblock = 2
-
 -- global actions (incoming param values for Lua function cchar_global)
 gactInit = 0    -- initialize
 gactDeinit = 1  -- deinitialize
 
 -- actions (outgoing param values for C function cchar_do_action)
 actEnd = 0            -- ends the character creation screen (no params)
-actSetStringBlock = 1 -- sets the stringblock (param1=stringblock)
+actSetInitVal = 1     -- sets init values (param1=stringblock, param2=buttongroup x-coord)
 actSetBtnGroup = 2    -- sets the specified button group (param1=heading, param2=buttontype, param3=buttontable)
 actSetText = 3        -- sets the specified text at the specified location (param1=stringno, param2=x-coord, param3=y-coord, param4=alignment)
 actSetName = 4        -- sets the specified name at the specified location (param1=name, param2=x-coord, param3=y-coord, param4=alignment)
@@ -120,12 +117,11 @@ alRight = 2
 -- button groups
 
 ccharui = {
-   strblock = cchar_strblock,
+   strblock = 2, -- string block for labels/buttons
+   btngxcoord = 240, -- x-coord for center of buttongroup
 
    btngroups = -- table with all buttons groups (a.k.a. "screens")
    {
-      --[1]= { heading = ccvSkill, btntype = btnText, btns = { ccvTraps, ccvSneak, ccvAppraise, ccvTrack, ccvLore, ccvSearch, ccvAcrobat, ccvSwimming, ccvCasting, ccvMana } },
-
      -- general buttons
       [1] = { heading = ccvSex,  btntype = btText,  btns = { ccvMale, ccvFemale } },
       [2] = { heading = ccvHandedness, btntype = btText, btns = { ccvLeft, ccvRight } },
@@ -198,7 +194,7 @@ function cchar_global(this, globalaction)
       pclass = 0
       pimg = 0
       pname = ""
-      cchar_do_action(self, actSetStringBlock, ccharui.strblock)
+      cchar_do_action(self, actSetInitVal, ccharui.strblock, ccharui.btngxcoord)
    end
 
    -- end it all when we're at the first page and a deinit was received
@@ -237,7 +233,11 @@ function cchar_buttonclick(button, text)
       elseif curgroup==20 then
 
       elseif curgroup==21 then
-         pname = text
+         if strlen(text)<1 then
+            return
+         else
+            pname = text
+         end
 
       elseif curgroup==22 then
          if button==0 then

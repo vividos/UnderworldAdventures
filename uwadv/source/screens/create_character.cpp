@@ -46,7 +46,7 @@ enum ua_elua_globalaction
 enum ua_elua_action
 {
    actEnd = 0,            // ends the character creation screen (no params)
-   actSetStringBlock = 1, // sets the stringblock (param1=stringblock)
+   actSetInitVal = 1,     // sets init values (param1=stringblock, param2=buttongroup x-coord)
    actSetBtnGroup = 2,    // sets the specified button group (param1=heading, param2=buttontype, param3=buttontable)
    actSetText = 3,        // sets the specified text at the specified location (param1=stringno, param2=x-coord, param3=y-coord)
    actSetName = 4,        // sets the specified name at the specified location (param1=name, param2=x-coord, param3=y-coord, param4=alignment)
@@ -123,6 +123,7 @@ void ua_create_character_screen::init()
    tickcount=0;
    buttondown=false;
    strblock=2;
+   bgxpos=240;
    btng_caption=0;
    btng_buttontype=0;
    btng_buttoncount = 0;
@@ -138,6 +139,11 @@ void ua_create_character_screen::initluascript()
 {
    // get a new lua state
    L = lua_open(128);
+
+   // open lualib libraries
+   lua_baselibopen(L);
+   lua_strlibopen(L);
+   lua_mathlibopen(L);
 
    // register C functions
    lua_register(L,"cchar_do_action", cchar_do_action);
@@ -190,11 +196,15 @@ void ua_create_character_screen::handle_event(SDL_Event &event)
    case SDL_KEYDOWN:
       // handle key presses
       if ((btng_buttontype==btInput) && 
-          (((event.key.keysym.sym>=SDLK_a) && (event.key.keysym.sym<=SDLK_z)) 
-          || (event.key.keysym.sym==SDLK_BACKSPACE) || (event.key.keysym.sym==SDLK_SPACE)))
+          (((event.key.keysym.sym>=SDLK_a) && (event.key.keysym.sym<=SDLK_z)) || 
+           ((event.key.keysym.sym>=SDLK_0) && (event.key.keysym.sym<=SDLK_9)) ||
+           (event.key.keysym.sym==SDLK_BACKSPACE) || 
+           (event.key.keysym.sym==SDLK_SPACE) || 
+           (event.key.keysym.sym==SDLK_MINUS) ||
+           (event.key.keysym.sym==SDLK_UNDERSCORE)))
       {
          char c = event.key.keysym.sym;
-         if ((SDL_GetModState() & KMOD_SHIFT) && ((c>='a') && (c<='z')))
+         if ((event.key.keysym.mod & KMOD_SHIFT) && ((c>='a') && (c<='z')))
             c -= 32;
          handleinputchar(c);
          drawbuttongroup();
@@ -218,15 +228,27 @@ void ua_create_character_screen::handle_event(SDL_Event &event)
          break;
 
       case SDLK_UP:
-         // select the area above, if possible
+         // select the button above, if possible
          if (selected_button==-1) selected_button=0;
          if (selected_button>0) selected_button--;
          break;
 
       case SDLK_DOWN:
-         // select the area below, if possible
+         // select the button below, if possible
          if (selected_button+1<btng_buttoncount)
             selected_button++;
+         break;
+
+      case SDLK_RIGHT:
+         // select the button to the right, if possible
+         if (selected_button+btng_buttonspercolumn<btng_buttoncount)
+            selected_button += btng_buttonspercolumn;
+         break;
+
+      case SDLK_LEFT:
+         // select the button to the right, if possible
+         if (selected_button-btng_buttonspercolumn>=0)
+            selected_button -= btng_buttonspercolumn;
          break;
 
       case SDLK_RETURN:
@@ -304,9 +326,10 @@ void ua_create_character_screen::do_action()
       ended = true;
       break;
 
-   case actSetStringBlock:
-      if (n<3) break;
+   case actSetInitVal:
+      if (n<4) break;
       strblock = static_cast<unsigned int>(lua_tonumber(L,3));
+	  bgxpos = static_cast<unsigned int>(lua_tonumber(L,4));
       break;
 
    case actSetBtnGroup:
@@ -326,6 +349,7 @@ void ua_create_character_screen::do_action()
          btng_buttons[i] = static_cast<unsigned int>(lua_tonumber(L,6));
          lua_pop(L, 1);
       }
+      btng_buttonspercolumn = (btng_buttoncount>8) ? btng_buttoncount/2 : btng_buttoncount;
       selected_button=prev_button=0;
       drawbuttongroup();
       break;
@@ -445,27 +469,27 @@ void ua_create_character_screen::drawbutton(int buttontype, bool highlight, int 
 void ua_create_character_screen::drawbuttongroup()
 {
    ua_image button = img_buttons.get_image(btng_buttontype);
-   int columnsplit = (btng_buttoncount>8) ? btng_buttoncount/2 : btng_buttoncount;
-   int inity = columnsplit*button.get_yres() + ((columnsplit-1)*5);
+   int inity = btng_buttonspercolumn*button.get_yres() + ((btng_buttonspercolumn-1)*5);
    if (btng_caption!=ccvNone)
        inity += 15;
    inity = (200-inity)/2;
    if (btng_caption!=ccvNone)
    {
-      drawtext(btng_caption, 240, inity, 1);
+      drawtext(btng_caption, bgxpos, inity, 1);
       inity += 15;
    }
 
    int y = inity;
-   int x = 240;
-   if (columnsplit!=btng_buttoncount)
+   int x = bgxpos;
+   int iex = btng_buttonspercolumn;
+   if (iex!=btng_buttoncount)
       x -= button.get_xres()/2+3;
    else
-      columnsplit = -1;
+      iex = -1;
    for(int i=0; i<btng_buttoncount; i++)
    {
       drawbutton(btng_buttontype, (selected_button==i), btng_buttons[i], x, y);
-      if (i==columnsplit-1)
+      if (i==iex-1)
       {
          y = inity;
          x += button.get_xres()+6;
@@ -476,30 +500,27 @@ void ua_create_character_screen::drawbuttongroup()
 
 int ua_create_character_screen::getbuttonover()
 {
-   // get mouse coordinates
-   int x, y;
-   SDL_GetMouseState(&x,&y);
-   unsigned int xpos,ypos;
-   xpos = unsigned(double(x)/core->get_screen_width()*320);
-   ypos = unsigned(double(y)/core->get_screen_height()*200);
-   int btnhwidth = img_buttons.get_image(btng_buttontype).get_xres()/2;
-   if ((xpos<240-btnhwidth) || (xpos>240+btnhwidth))
-      return -1;
+   int xpos, ypos;
+   SDL_GetMouseState(&xpos, &ypos);
+   xpos = int(double(xpos)/core->get_screen_width()*320);
+   ypos = int(double(ypos)/core->get_screen_height()*200);
 
-   int btnheight = img_buttons.get_image(btng_buttontype).get_yres();
-   y = btng_buttoncount*btnheight + ((btng_buttoncount-1)*5);
-   if (btng_caption!=ccvNone)
-       y += 15;
-   y = (200-y)/2;
-   if (btng_caption!=ccvNone)
-      y += 15;
-   for(int i=0; i<btng_buttoncount; i++)
-   {
-        if ((ypos>y) && (ypos<y+btnheight))
-            return i;
-        y += btnheight + 5;
-    }
-   return -1;
+   // determine column
+   int columns = btng_buttoncount/btng_buttonspercolumn;
+   int btnsize = img_buttons.get_image(btng_buttontype).get_xres();
+   int bgsize = columns*btnsize + (columns-1)*6;
+   xpos -= bgxpos-(bgsize/2);
+   if ((xpos<0) || (xpos>bgsize) || (xpos%(btnsize+6) > btnsize))
+      return -1;
+   int coffset = xpos/(btnsize+6) * btng_buttonspercolumn;
+
+   // determine button in column
+   btnsize = img_buttons.get_image(btng_buttontype).get_yres();
+   bgsize = btng_buttonspercolumn*btnsize + ((btng_buttonspercolumn-1)*5);
+   int mv = (btng_caption!=ccvNone) ? 15 : 0;
+   ypos -= (200-(bgsize+mv))/2+mv;
+   return (ypos>=0) && (ypos<=bgsize) && (ypos%(btnsize+5) <= btnsize) ? 
+      ypos/(btnsize+5) + coffset : -1;
 }
 
 void ua_create_character_screen::render()

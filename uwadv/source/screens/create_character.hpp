@@ -143,6 +143,9 @@ protected:
    //! input text
    char* inputtext;
 
+   //! x-coordinate for center of buttongroup
+   unsigned int bgxpos;
+
    //! string number of caption in current button group (0 if none)
    unsigned int btng_caption;
 
@@ -151,6 +154,9 @@ protected:
 
    //! number of buttons in current group
    unsigned int btng_buttoncount;
+
+   //! number of buttons per column in current group
+   int btng_buttonspercolumn;
 
    //! array of string numbers for buttons in current group
    unsigned int* btng_buttons;
