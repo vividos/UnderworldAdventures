@@ -532,8 +532,8 @@ bool ua_model_decode_builtins(const char* filename,
       double ey = ua_mdl_read_fixed(fd);
       double ez = ua_mdl_read_fixed(fd);
 
-      ua_trace(" loading builtin model %u, offset=0x%08x {unk1=0x%04x, e=(%3.2f, %3.2f, %3.2f) }\n",
-         n,base + offsets[n],unk1,ex,ey,ez);
+      //ua_trace(" loading builtin model %u, offset=0x%08x {unk1=0x%04x, e=(%3.2f, %3.2f, %3.2f) }\n",
+      //   n,base + offsets[n],unk1,ex,ey,ez);
 
       // TODO: fix loading
       //ua_model3d_ptr model_ptr(new ua_model3d_builtin);
