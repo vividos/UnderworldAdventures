@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -33,6 +33,13 @@
 
 
 // ua_level methods
+
+ua_level::ua_level()
+:used(false)
+{
+   // do empty tile map
+   tiles.resize(64*64);
+}
 
 double ua_level::get_floor_height(double xpos, double ypos)
 {
@@ -102,6 +109,11 @@ ua_levelmap_tile& ua_level::get_tile(unsigned int xpos, unsigned int ypos)
 
 void ua_level::load_game(ua_savegame &sg)
 {
+   used = sg.read8() != 0;
+
+   if (!used)
+      return; // don't read empty maps
+
    // read tilemap
    tiles.clear();
    tiles.resize(64*64);
@@ -141,8 +153,13 @@ void ua_level::load_game(ua_savegame &sg)
    // read annotations list
 }
 
-void ua_level::save_game(ua_savegame &sg)
+void ua_level::save_game(ua_savegame& sg)
 {
+   sg.write8(used ? 1 : 0);
+
+   if (!used)
+      return; // don't write empty maps
+
    // write tilemap
    unsigned int n=0;
 
