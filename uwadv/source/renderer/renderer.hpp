@@ -31,15 +31,15 @@
 
 // needed includes
 #include "uamath.hpp"
-#include "quadtree.hpp"
-#include "critter.hpp"
-#include "models.hpp"
-//#include "underworld.hpp"
+#include "texture.hpp"
 #include "settings.hpp"
 
 
 // forward references
 class ua_underworld;
+class ua_renderer_impl;
+class ua_critter_pool;
+class ua_model3d_manager;
 
 
 // classes
@@ -50,12 +50,11 @@ class ua_renderer
 public:
    //! ctor
    ua_renderer();
+   //! dtor
+   ~ua_renderer();
 
    //! initializes renderer
-   void init(ua_settings& settings
-      /*ua_underworld* uw, ua_texture_manager* texmgr,
-      ua_critter_pool* thecritpool, ua_model3d_manager* modelmgr,
-      const ua_vector3d& view_offset*/);
+   void init(ua_settings& settings);
 
    //! cleans up renderer
    void done();
@@ -70,10 +69,17 @@ public:
    void setup_camera2d();
 
    //! sets up camera for 3d scene rendering
-   void setup_camera3d(double fov, double farplane=16.0);
+   void setup_camera3d(const ua_vector3d& view_offset, double fov = 90.0,
+      double farplane = 16.0);
 
    //! renders current view of the underworld
    void render_underworld(const ua_underworld& underw);
+
+   //! does selection/picking
+   void select_pick(const ua_underworld& underw,
+      unsigned int xpos, unsigned int ypos,
+      unsigned int& tilex, unsigned int& tiley,
+      bool& isobj, unsigned int& id);
 
 /*
    //! renders underworld
@@ -81,64 +87,12 @@ public:
       double panangle, double rotangle,
       std::vector<ua_quad_tile_coord>& tilelist);
 
-   //! does selection/picking
-   void select_pick(unsigned int xpos, unsigned int ypos,
-      unsigned int& tilex, unsigned int& tiley, bool& isobj, unsigned int& id);
 
    //! returns the list of all triangles for a given tile
    static void get_tile_triangles(ua_level& level, unsigned int xpos, unsigned int ypos,
       std::vector<ua_triangle3d_textured>& alltriangles);
 */
-protected:
-/*
-   //! private method to set up camera
-   void setup_camera_priv(bool pick,unsigned int xpos, unsigned int ypos);
 
-   //! renders tile floor
-   void render_floor(ua_levelmap_tile& tile, unsigned int x, unsigned int y);
-
-   //! renders tile ceiling
-   void render_ceiling(ua_levelmap_tile& tile, unsigned int x, unsigned int y);
-
-   //! renders tile walls
-   void render_walls(ua_levelmap_tile& tile, unsigned int x, unsigned int y);
-
-   //! renders the objects of a tile
-   void render_objects(unsigned int x, unsigned int y);
-
-protected:
-   //! renders a single object
-   void render_object(ua_object& obj, unsigned int x, unsigned int y);
-
-   //! renders decal
-   void render_decal(ua_object& obj, unsigned int x, unsigned int y);
-
-   //! renders tmap object
-   void render_tmap_obj(ua_object& obj, unsigned int x, unsigned int y);
-
-   //! draws a billboarded quad
-   void draw_billboard_quad(ua_vector3d base,
-      double quadwidth, double quadheight,
-      double u1,double v1,double u2,double v2);
-
-   //! retrieves tile coordinates
-   static void get_tile_coords(unsigned int side, ua_levelmap_tiletype type,
-      unsigned int basex, unsigned int basey, Uint16 basez, Uint16 slope, Uint16 ceiling,
-      Uint16 &x1, Uint16 &y1, Uint16 &z1,
-      Uint16 &x2, Uint16 &y2, Uint16 &z2);
-
-   //! renders a wall of a tile, dependent on the neighbour
-   static void render_wall(unsigned int side,
-      Uint16 x1, Uint16 y1, Uint16 z1, Uint16 x2, Uint16 y2, Uint16 z2,
-      Uint16 nz1, Uint16 nz2, Uint16 ceiling);
-
-   //! helper function for get_tile_triangles()
-   static void add_wall(ua_triangle3d_textured& tri1, ua_triangle3d_textured& tri2,
-      unsigned int side,
-      double x1, double y1, double z1,
-      double x2, double y2, double z2,
-      double nz1, double nz2, double ceiling);
-*/
 protected:
    //! texture manager to use for rendering
    ua_texture_manager texmgr;
@@ -149,23 +103,22 @@ protected:
    //! 3d models manager
    ua_model3d_manager* modelmgr;
 
+   //! renderer implementation
+   ua_renderer_impl* renderer_impl;
+
+   //! camera view offset
+   ua_vector3d view_offset;
+
    //! field of view in degrees
    double fov;
 
-   //! aspect ratio
-   double aspect;
-
    //! distance of far plane
-   double farplane;
+   double far_dist;
 
-   //! indicates if in selection (picking) mode
-   bool selection_mode;
+   // constants
 
-   //! billboard right and up vectors
-   ua_vector3d bb_right, bb_up;
-
-   //! rendering height scale
-   static const double height_scale;
+   //! near plane distance
+   static const double near_dist;
 };
 
 
