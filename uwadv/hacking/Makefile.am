@@ -1,6 +1,6 @@
 EXTRA_DIST = \
 	hacking.dsw \
-	hacking.h \
+	hacking.h gamestrings.cpp \
 	cnvdec/cnvdec.cpp cnvdec/cnvdec.dsp \
 	critdec/critdec.cpp critdec/critdec.dsp \
 	cutsdec/cutsdec.cpp cutsdec/cutsdec.dsp \
