@@ -42,6 +42,10 @@
 #include "midi_driver/uni_fmod.h"
 #endif
 
+#ifdef HAVE_SDL_MIXER
+#include "midi_driver/linux_sdl_mixer.h"
+#endif
+
 
 // global functions
 
@@ -88,6 +92,15 @@ bool ua_midi_player::init_driver()
 #ifdef HAVE_FMOD_H
    ua_try_midi_driver<uni_fmod_driver>(midi_driver);
 #endif
+
+#ifdef HAVE_SDL_MIXER
+   ua_try_midi_driver<sdl_mixer_driver>(midi_driver);
+#endif
+
+   if (midi_driver != NULL)
+      ua_trace("audio: using midi driver \"%s\"\n",midi_driver->copyright());
+   else
+      ua_trace("audio: no midi driver found.\n");
 
    init=true;
    return midi_driver != NULL;
