@@ -48,17 +48,20 @@ void ua_player::init()
 
 void ua_player::set_attr(ua_player_attributes which, unsigned int value)
 {
-   if (which<ua_attr_max) attributes[static_cast<unsigned int>(which)];
+   if (which<ua_attr_max)
+      attributes[static_cast<unsigned int>(which)]=value;
 }
 
 void ua_player::set_stat(ua_player_stats which, unsigned int value)
 {
-   if (which<ua_stat_max) attributes[static_cast<unsigned int>(which)];
+   if (which<ua_stat_max)
+      attributes[static_cast<unsigned int>(which)]=value;
 }
 
 void ua_player::set_skill(ua_player_skills which, unsigned int value)
 {
-   if (which<ua_skill_max) attributes[static_cast<unsigned int>(which)];
+   if (which<ua_skill_max)
+      attributes[static_cast<unsigned int>(which)]=value;
 }
 
 unsigned int ua_player::get_attr(ua_player_attributes which)
