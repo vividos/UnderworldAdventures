@@ -1,3 +1,9 @@
+2002-07-05 01:43  vividos
+
+	* ChangeLog (1.10):
+
+	updated
+	
 2002-07-05 01:24  vividos
 
 	* source/: conv/codevm.hpp (1.10), resource/codeloader.cpp (1.9),
@@ -587,6 +593,12 @@
 
 	last fix for grainroll, the second try
 	
+2002-06-20 21:41  vividos
+
+	* ChangeLog (1.9):
+
+	updated for next try of the grainroll release
+	
 2002-06-20 21:38  vividos
 
 	* source/screens/start_splash.cpp (1.8):
@@ -690,6 +702,12 @@
 
 	added cutscene decoding code
 	
+2002-06-16 16:56  vividos
+
+	* ChangeLog (1.8):
+
+	updated
+	
 2002-06-15 18:55  vividos
 
 	* docs/uw-formats.txt (1.15):
@@ -777,6 +795,12 @@
 
 	added ua_rad2deg and ua_trace macro
 	
+2002-06-13 18:57  vividos
+
+	* ChangeLog (1.7):
+
+	updated
+	
 2002-06-13 18:55  vividos
 
 	* source/audio/: midi.cpp (1.10), midi_driver/linux_sdl_mixer.cpp
@@ -846,6 +870,12 @@
 	* source/audio/midi_driver/uni_fmod.cpp (1.5):
 
 	forgot to include common.hpp
+	
+2002-05-28 12:12  vividos
+
+	* ChangeLog (1.6):
+
+	updated
 	
 2002-05-28 12:10  vividos
 
@@ -1085,6 +1115,12 @@
 	updated with terrain texture properties
 	added NPC info desc. for master object list
 	
+2002-05-16 01:08  vividos
+
+	* ChangeLog (1.5):
+
+	updated
+	
 2002-05-16 01:06  vividos
 
 	* source/quadtree.cpp (1.3):
@@ -1176,6 +1212,12 @@
 
 	more fixes for autobuild system
 	
+2002-05-10 11:51  vividos
+
+	* ChangeLog (1.4):
+
+	updated just for fun
+	
 2002-05-10 10:07  vividos
 
 	* docs/uw-formats.txt (1.11):
@@ -1261,6 +1303,12 @@
 	* source/uatypes.hpp (1.5):
 
 	more precision for constants and macros
+	
+2002-05-05 21:21  vividos
+
+	* ChangeLog (1.3):
+
+	updated for release 'ricecraecker'
 	
 2002-05-05 21:02  vividos
 
@@ -1437,6 +1485,12 @@
 	(1.1), linux/mkinstalldirs (1.1), linux/uwadv.cfg (1.1):
 
 	added linux build files
+	
+2002-04-29 14:10  vividos
+
+	* ChangeLog (1.2):
+
+	updated
 	
 2002-04-29 14:08  vividos
 
@@ -1885,27 +1939,52 @@
 	
 2002-04-11 11:49  vividos
 
-	* hacking/: .cvsignore (1.1), hacking.dsw (1.1), cnvdec/.cvsignore
-	(1.1), cnvdec/cnvdec.cpp (1.1), cnvdec/cnvdec.dsp (1.1),
-	critdec/.cvsignore (1.1), critdec/critdec.cpp (1.1),
-	critdec/critdec.dsp (1.1), fontdecode/.cvsignore (1.1),
-	fontdecode/fontdecode.cpp (1.1), fontdecode/fontdecode.dsp (1.1),
-	grdecode/.cvsignore (1.1), grdecode/grdecode.cpp (1.1),
-	grdecode/grdecode.dsp (1.1), levarkdec/.cvsignore (1.1),
-	levarkdec/levarkdec.cpp (1.1), levarkdec/levarkdec.dsp (1.1),
-	miscdecode/.cvsignore (1.1), miscdecode/miscdecode.cpp (1.1),
-	miscdecode/miscdecode.dsp (1.1), sgdecode/.cvsignore (1.1),
-	sgdecode/sgdecode.cpp (1.1), sgdecode/sgdecode.dsp (1.1),
-	stringextract/.cvsignore (1.1), stringextract/stringextract.cpp
-	(1.1), stringextract/stringextract.dsp (1.1), trdecode/.cvsignore
-	(1.1), trdecode/trdecode.cpp (1.1), trdecode/trdecode.dsp (1.1):
+	* .cvsignore (1.1), hacking/.cvsignore (1.1), hacking/hacking.dsw
+	(1.1), hacking/cnvdec/.cvsignore (1.1), hacking/cnvdec/cnvdec.cpp
+	(1.1), hacking/cnvdec/cnvdec.dsp (1.1), hacking/critdec/.cvsignore
+	(1.1), hacking/critdec/critdec.cpp (1.1),
+	hacking/critdec/critdec.dsp (1.1), hacking/fontdecode/.cvsignore
+	(1.1), hacking/fontdecode/fontdecode.cpp (1.1),
+	hacking/fontdecode/fontdecode.dsp (1.1),
+	hacking/grdecode/.cvsignore (1.1), hacking/grdecode/grdecode.cpp
+	(1.1), hacking/grdecode/grdecode.dsp (1.1),
+	hacking/levarkdec/.cvsignore (1.1), hacking/levarkdec/levarkdec.cpp
+	(1.1), hacking/levarkdec/levarkdec.dsp (1.1),
+	hacking/miscdecode/.cvsignore (1.1),
+	hacking/miscdecode/miscdecode.cpp (1.1),
+	hacking/miscdecode/miscdecode.dsp (1.1),
+	hacking/sgdecode/.cvsignore (1.1), hacking/sgdecode/sgdecode.cpp
+	(1.1), hacking/sgdecode/sgdecode.dsp (1.1),
+	hacking/stringextract/.cvsignore (1.1),
+	hacking/stringextract/stringextract.cpp (1.1),
+	hacking/stringextract/stringextract.dsp (1.1),
+	hacking/trdecode/.cvsignore (1.1), hacking/trdecode/trdecode.cpp
+	(1.1), hacking/trdecode/trdecode.dsp (1.1):
 
 	added hacking projects
+	
+2002-04-10 22:52  vividos
+
+	* ChangeLog (1.1):
+
+	always created with `cvs2cl.pl -r -S --no-wrap --gmt'
 	
 2002-04-10 22:50  vividos
 
 	* docs/: uw-formats.txt (1.1), uw1-walkthrough.txt (1.1),
 	uw2-walkthrough.txt (1.1):
+
+	initial import
+	
+2002-04-10 22:32  vividos
+
+	* Copying (1.1):
+
+	Initial revision
+	
+2002-04-10 22:32  vividos
+
+	* Copying (1.1.1.1):
 
 	initial import
 	
