@@ -110,7 +110,7 @@ void ua_cutscene_view_screen::init()
    lua_register(lua.get_lua_State(),"cuts_do_action",cuts_do_action);
 
    // load lua cutscene script
-   if (0 != lua.load_script("uw1/scripts/cutscene"))
+   if (!lua.load_script("uw1/scripts/cutscene"))
       ended = true;
 
    lua_State* L = lua.get_lua_State();

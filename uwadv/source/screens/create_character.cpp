@@ -369,11 +369,11 @@ void ua_create_character_screen::init_luascript()
    lua_register(L,"cchar_do_action", cchar_do_action);
 
    // load lua interface script for constants
-   if (0 != lua.load_script("uw1/scripts/uwinterface"))
+   if (!lua.load_script("uw1/scripts/uwinterface"))
       ended = true;
 
    // load lua cutscene script
-   if (0 != lua.load_script("uw1/scripts/createchar"))
+   if (!lua.load_script("uw1/scripts/createchar"))
       ended = true;
 
    // store pointer to this instance in a global var
