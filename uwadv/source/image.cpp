@@ -45,6 +45,10 @@ void ua_image::create(unsigned int width, unsigned int height, unsigned int init
    palette = pal;
 }
 
+/*! when image to paste and image that is pasted is the same one, then
+    non-transparent pastes are only successful when the source and target
+    areas don't overlap
+*/
 void ua_image::paste_image(const ua_image &img, unsigned int destx,unsigned int desty,
    bool transparent)
 {
@@ -63,8 +67,9 @@ void ua_image::paste_image(const ua_image &img, unsigned int destx,unsigned int 
    {
       // non-transparent paste
       for(unsigned int y=0; y<sheight; y++)
-      for(unsigned int x=0; x<swidth; x++)
-         dest[(y+desty)*xres+(x+destx)] = src[y*sxres+x];
+      {
+         memcpy(&dest[(y+desty)*xres+destx], &src[y*sxres], swidth);
+      }
    }
    else
    {
