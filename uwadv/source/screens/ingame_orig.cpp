@@ -276,6 +276,12 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
       if (curlevel<9 && type==SDL_KEYDOWN)
          core->get_underworld().change_level(++curlevel);
       break;
+
+   case SDLK_q:
+      // exit screen when pressing Alt + q
+      if ((keysym.mod & KMOD_ALT)!=0)
+         core->pop_screen();
+      break;
    }
 }
 
