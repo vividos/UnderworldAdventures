@@ -3,7 +3,19 @@ Microsoft Developer Studio Workspace File, Format Version 6.00
 
 ###############################################################################
 
-Project: "uwadv"=.\uwadv.dsp - Package Owner=<4>
+Project: "cnvdbg"=.\cnvdbg.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "xmi2mid"=.\xmi2mid.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
