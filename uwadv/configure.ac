@@ -80,17 +80,17 @@ AC_ARG_ENABLE(debug,
 
 
 # checking for X11
-case "$host_os" in
-   darwin*)
-      X_CFLAGS=""
-      X_LIB=""
-      ;;
-   *)
-      AC_PATH_X
-      AC_PATH_XTRA
-      ;;
-
-esac
+#case "$host_os" in
+#   darwin*)
+#      X_CFLAGS=""
+#      X_LIB=""
+#      ;;
+#   *)
+#      AC_PATH_X
+#      AC_PATH_XTRA
+#      ;;
+#
+#esac
 
 
 # checking for SDL
@@ -143,11 +143,14 @@ fi
 
 
 # Build the debugger?
-AC_ARG_ENABLE(uadebug,    [  --enable-uadebug        Enables building the tools; note that wxWindows is needed],,enable_uadebug=no)
+AC_ARG_ENABLE(uadebug,    [  --enable-uadebug        Enables building the Underworld Debugger;
+note that wxWindows is needed],,enable_uadebug=no)
 AC_MSG_CHECKING(whether to build the underworld debugger)
 if test x$enable_uadebug = xyes; then
         AC_MSG_RESULT(yes)
-        AM_CONDITIONAL(BUILD_UADEBUG, true)
+        AC_MSG_WARN([ building the Underworld Debugger is currently not implemented!
+        Nothing is built. ])
+        AM_CONDITIONAL(BUILD_UADEBUG, false)
 else
         AC_MSG_RESULT(no)
         AM_CONDITIONAL(BUILD_UADEBUG, false)
