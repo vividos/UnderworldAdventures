@@ -19,55 +19,37 @@
    $Id$
 
 */
-/*! \file debug.hpp
+/*! \file uwaccess.hpp
 
-   \brief debug interface
+   \brief underworld access API
 
 */
 
 // include guard
-#ifndef __uwadv_debug_hpp_
-#define __uwadv_debug_hpp_
+#ifndef __uadebug_uwaccess_hpp__
+#define __uadebug_uwaccess_hpp__
 
 // needed includes
-#include "underworld.hpp"
 
 
-// forward declaration
-struct ua_uw_access_api;
+// structs
 
-
-// classes
-
-//! debug interface
-class ua_debug_interface
+//! ua_underworld access api function struct
+struct ua_uw_access_api
 {
-public:
-   //! returns a new debug interface
-   static ua_debug_interface* get_new_debug_interface(ua_underworld* underw);
+   //! gets/sets a player double value
+   void (*player_value)(ua_debug_interface* inter,
+      bool set, unsigned int index, double& value);
 
-   //! starts visual debugger
-   virtual void start_debugger()=0;
+   void (*player_attribute)(ua_debug_interface* inter,
+      bool set, unsigned int index, unsigned int& value);
 
-   //! locks underworld object
-   virtual void lock()=0;
+   void (*player_skill)(ua_debug_interface* inter,
+      bool set, unsigned int index, unsigned int& value);
 
-   //! unlocks underworld object
-   virtual void unlock()=0;
+   //! inits access api struct; must be the last member in the struct
+   void init();
 
-   //! returns underworld object
-   virtual ua_underworld* get_underworld()=0;
-
-   //! returns a pointer to the uw access API struct
-   virtual ua_uw_access_api* get_access_api()=0;
-
-
-   //! dtor
-   virtual ~ua_debug_interface(){}
-
-protected:
-   //! ctor
-   ua_debug_interface(){}
 };
 
 #endif

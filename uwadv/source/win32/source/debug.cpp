@@ -28,6 +28,7 @@
 // needed includes
 #include "common.hpp"
 #include "debug.hpp"
+#include "debug/uwaccess.hpp"
 #include <SDL_thread.h>
 
 
@@ -37,12 +38,16 @@ class ua_debug_impl_win32: public ua_debug_interface
 {
 public:
    //! ctor
-   ua_debug_impl_win32();
+   ua_debug_impl_win32(ua_underworld* theunderw);
    //! dtor
    virtual ~ua_debug_impl_win32();
 
-   //! starts debugger
+   // implemented abstraction methods from ua_debug_interface
    virtual void start_debugger();
+   virtual void lock();
+   virtual void unlock();
+   virtual ua_underworld* get_underworld();
+   virtual ua_uw_access_api* get_access_api();
 
 protected:
    //! debugger thread procedure
@@ -60,26 +65,33 @@ protected:
 
    //! debug thread
    SDL_Thread* thread_debug;
+
+   //! underworld object
+   ua_underworld* underw;
+
+   //! access api
+   ua_uw_access_api api;
 };
 
 
 // ua_debug_interface methods
 
-ua_debug_interface* ua_debug_interface::get_new_debug_interface()
+ua_debug_interface* ua_debug_interface::get_new_debug_interface(
+   ua_underworld* underw)
 {
-   return new ua_debug_impl_win32;
+   return new ua_debug_impl_win32(underw);
 }
 
 
-// types
+// typedefs
 
-typedef void (*uadebug_start_func)(void);
-typedef void (*uadebug_done_func)(void);
+typedef void (*uadebug_start_func)(ua_debug_interface*);
 
 
 // ua_debug_impl methods
 
-ua_debug_impl_win32::ua_debug_impl_win32()
+ua_debug_impl_win32::ua_debug_impl_win32(ua_underworld* theunderw)
+:underw(theunderw)
 {
    // load library, check if functions are available
    dll = ::LoadLibrary("uadebug.dll");
@@ -92,6 +104,9 @@ ua_debug_impl_win32::ua_debug_impl_win32()
 
    sem_debugger = SDL_CreateSemaphore(0);
    thread_debug = NULL;
+
+   // init access api
+   api.init();
 }
 
 ua_debug_impl_win32::~ua_debug_impl_win32()
@@ -134,7 +149,7 @@ int ua_debug_impl_win32::thread_proc(void* ptr)
       uadebug_start_func uadebug_start = (uadebug_start_func)funcptr;
 
       // start debugger
-      uadebug_start();
+      uadebug_start(This);
    }
 
    ua_trace("uadebug thread ended\n");
@@ -143,4 +158,22 @@ int ua_debug_impl_win32::thread_proc(void* ptr)
    SDL_SemWait(This->sem_debugger);
 
    return 0;
+}
+
+void ua_debug_impl_win32::lock()
+{
+}
+
+void ua_debug_impl_win32::unlock()
+{
+}
+
+ua_underworld* ua_debug_impl_win32::get_underworld()
+{
+   return underw;
+}
+
+ua_uw_access_api* ua_debug_impl_win32::get_access_api()
+{
+   return &api;
 }
