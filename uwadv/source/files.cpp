@@ -46,12 +46,7 @@ bool ua_file_isavail(std::string base, std::string fname)
    std::string filename = base;
    filename += fname;
 
-   FILE *fd = fopen(filename.c_str(),"rb");
-   if (fd==NULL)
-      return false;
-
-   fclose(fd);
-   return true;
+   return ua_file_exists(filename.c_str());
 }
 
 void ua_files_manager::init(ua_settings &settings)
