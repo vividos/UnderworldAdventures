@@ -219,6 +219,7 @@ int main()
       for(unsigned int n=0; n<length;)
       {
          unsigned char bits = fgetc(fd);
+         //printf("new block: %02x\n",bits);
 
          for(int b=0; b<8; b++, bits>>=1)
          {
@@ -226,6 +227,7 @@ int main()
             {
                // bit set, copy one byte
                buffer[n++] = fgetc(fd);
+               //printf("put: %02x (target=%04x)\n", buffer[n-1],n-1);
             }
             else
             {
@@ -233,24 +235,28 @@ int main()
                int m1 = fgetc(fd);
                int m2 = fgetc(fd);
 
-               m1 |= (m2&0xF0) << 4;
-               if(m1&0x800)
-                  m1 |= 0xFFFFF000;
+               signed int offset = m1 | ((m2&0xF0) << 4);
+               unsigned int count = (m2&0x0F) + 3;
 
-               m2 =  (m2&0x0F) + 3;
-               m1 += 18;
+               if(offset&0x800)
+                  offset |= 0xFFFFF000;
 
-               if(m1 > n)
+               offset += 18;
+
+               while(offset < ((int)n-0x1000))
+                  offset += 0x1000;
+
+               if(offset > n)
                {
-                  _asm nop;
+                  //printf("repeat: error: pos %03x, count %u\n", offset, count);
+                  n = length;
                   break;
                }
 
-               while(m1 < ((int)n-0x1000))
-                  m1 += 0x1000;
+               //printf("repeat: offset %03x, count %u\n", offset, count);
 
-               while(m2-- && n<length)
-                  buffer[n++] = buffer[m1++];
+               while(count-- && n<length)
+                  buffer[n++] = buffer[offset++];
             }
             if(n>=length)
                break;
