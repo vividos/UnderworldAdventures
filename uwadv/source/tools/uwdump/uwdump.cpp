@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2003 Underworld Adventures Team
+   Copyright (c) 2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@
 #include "levark.hpp"
 #include "prop.hpp"
 #include "mdldump.hpp"
+#include "cnvdec.hpp"
 
 
 // enums
@@ -37,9 +38,10 @@
 enum uwdump_command
 {
    cmd_nop=0,
-   cmd_leveldec,
-   cmd_objprop,
-   cmd_mdldump,
+   cmd_leveldec,//!< level decoding
+   cmd_objprop, //!< object properties dumping
+   cmd_mdldump, //!< builtin models dumping
+   cmd_cnvdec,  //!< conversation code decompiling
 };
 
 
@@ -91,6 +93,7 @@ void parse_args(unsigned int argc, const char** argv)
                "   leveldump <file>    dumps <basepath><file> as lev.ark\n"
                "   propdump            dumps data/comobj.dat and objects.dat\n"
                "   mdldump             dumps builtin model data\n"
+               "   cnvdec <slot>       decompiles conv. code\n"
                "\n"
                " options:\n"
                "   -d<basepath>   sets uw1/uw2 path; using current folder when not specified\n"
@@ -123,6 +126,12 @@ void parse_args(unsigned int argc, const char** argv)
             need_param = true;
          }
          else
+         if (strcmp(argv[i],"cnvdec")==0)
+         {
+            command = cmd_cnvdec;
+            need_param = true;
+         }
+         else
             printf("unknown command: %s\n",argv[i]);
       }
       else
@@ -133,6 +142,10 @@ void parse_args(unsigned int argc, const char** argv)
          switch(command)
          {
          case cmd_leveldec:
+            param.assign(argv[i]);
+            break;
+
+         case cmd_cnvdec:
             param.assign(argv[i]);
             break;
          }
@@ -192,7 +205,7 @@ extern "C"
 int main(char argc, char* argv[])
 {
    printf("uwdump - ultima underworld data dump program\n"
-      "Copyright (c) 2003 Michael Fink\n\n");
+      "Copyright (c) 2003,2004 Michael Fink\n\n");
 
    basepath.assign("./");
 
@@ -222,6 +235,15 @@ int main(char argc, char* argv[])
       {
          ua_dump_builtin_models mdldump;
          mdldump.start(basepath);
+      }
+      break;
+
+   case cmd_cnvdec: // conversation code decompiling
+      {
+         Uint16 slot = (Uint16)strtol(param.c_str(), NULL, 10);
+
+         ua_conv_code_decompiler cnvdec;
+         cnvdec.start(basepath, slot);
       }
       break;
 
