@@ -43,7 +43,7 @@ uwadv_EXEC = uwadv.exe
 uwadv_OBJS = main.o game_win32.o uwadv_res.o \
 	../font.o ../image.o ../inventory.o ../level.o \
 	../texture.o ../underworld.o ../uwadv.o ../player.o \
-	../quadtree.o ../objects.o \
+	../quadtree.o ../objects.o ../physics.o \
 	../audio/audio.o ../audio/midi.o ../audio/xmidi.o \
 	../audio/midi_driver/uni_fmod.o \
 	../audio/midi_driver/win_midiout.o \
@@ -114,9 +114,10 @@ mapdisp_LDFLAGS =
 
 animview_EXEC = animview.exe
 
-animview_OBJS = ../tools/animview.o ../cutscene.o ../resource/cutsloader.o
+animview_OBJS = ../tools/animview.o ../cutscene.o ../resource/cutsloader.o \
+	../image.o ../texture.o
 
-animview_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB) $(STLPORT_LIB)
+animview_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB) $(STLPORT_LIB) $(OPENGL_LIB)
 
 animview_LDFLAGS =
 
