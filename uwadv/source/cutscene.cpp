@@ -162,7 +162,6 @@ void ua_cutscene::get_frame(ua_texture &tex, unsigned int framenum)
    tex.convert(img,palette);
 }
 
-
 void ua_cutscene::decode_frame(unsigned int framenum)
 {
    // first, search large page to use
@@ -201,3 +200,110 @@ void ua_cutscene::decode_frame(unsigned int framenum)
    // extract the pixel data
    ua_cuts_extract_data(&src[4],&outbuffer[0],width*height);
 }
+
+
+#ifdef PROFILING_CUTSCENE
+
+#include <time.h>
+
+int main(int argc, char**argv)
+{
+   time_t begin, stop;
+   int i,max;
+
+   // benchmark ctor
+   double ctor_time;
+   {
+      begin=time(0);
+      max = 200000;
+      for(i=0; i<max; i++)
+      {
+         ua_cutscene cuts;
+      }
+      stop=time(0);
+
+      ctor_time = double(stop-begin)*1000.0/double(max);
+      printf("ctor : %1.2f ms\n",ctor_time);
+   }
+
+   // benchmark loading
+   double load_time;
+   {
+      begin=time(0);
+      max = 20;
+      for(i=0; i<max; i++)
+      {
+         ua_cutscene cuts;
+         cuts.load(argv[1]);
+      }
+      stop=time(0);
+
+      load_time = double(stop-begin)*1000.0/double(max)-ctor_time;
+      printf("load : %3.1f ms\n",load_time);
+   }
+
+   // benchmark extracting first frame
+   double frame1_time;
+   {
+      ua_texture tex;
+
+      begin=time(0);
+      max = 100;
+      for(i=0; i<max; i++)
+      {
+         ua_cutscene cuts;
+         cuts.load(argv[1]);
+         cuts.get_frame(tex,0);
+      }
+      stop=time(0);
+
+      frame1_time = double(stop-begin)*1000.0/double(max)-load_time;
+      printf("first frame : %2.1f ms\n",frame1_time);
+   }
+
+   // benchmark extracting first frame 100 times
+   double frame2_time;
+   {
+      ua_texture tex;
+      ua_cutscene cuts;
+      cuts.load(argv[1]);
+      cuts.get_frame(tex,0);
+
+      begin=time(0);
+      max = 100;
+      for(i=0; i<max; i++)
+      {
+         cuts.get_frame(tex,0);
+      }
+      stop=time(0);
+
+      frame2_time = double(stop-begin)*1000.0/double(max);
+      printf("first frame, %u times : %2.1f ms\n",max,frame2_time);
+   }
+
+   // benchmark extracting all frames of the cutscene
+   double frame3_time;
+   {
+      ua_texture tex;
+      ua_cutscene cuts;
+      cuts.load(argv[1]);
+
+      begin=time(0);
+      max = 100;
+      int max2 = cuts.get_maxframes();
+
+      for(i=0; i<max; i++)
+      {
+         for(int j=0; j<max2; j++)
+         cuts.get_frame(tex,j);
+      }
+      stop=time(0);
+
+      frame3_time = double(stop-begin)*1000.0/double(max*max2);
+      printf("all frames : %2.1f ms\n",frame3_time);
+   }
+
+   return 0;
+}
+
+#endif
