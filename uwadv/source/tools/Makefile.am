@@ -27,4 +27,6 @@ if BUILD_TOOLS
  strpak_LDADD = -luatools
 endif
 
-EXTRA_DIST = Makefile.common
+EXTRA_DIST = Makefile.common \
+	map3ds.cpp \
+	wrlview.cpp

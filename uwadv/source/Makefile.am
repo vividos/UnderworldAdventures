@@ -28,7 +28,9 @@ EXTRA_DIST = \
 	audio/midi_driver/win_midiout.cpp \
 	audio/midi_driver/win_midiout.h \
 	resource/model/wrllexer.l \
+	resource/model/flex.skl \
 	resource/model/import3ds.cpp \
+	win32/debug.cpp \
 	win32/game_win32.cpp \
 	win32/game_win32.hpp \
 	win32/main.cpp \

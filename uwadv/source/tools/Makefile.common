@@ -5,7 +5,7 @@
 #
 
 libuatools_la_SOURCES = \
-	../common.hpp ../uamath.hpp ../uatypes.hpp \
+	../common.hpp ../uamath.hpp \
 	../resource/fread_endian.hpp \
 	../resource/cfgfile.cpp ../cfgfile.hpp \
 	../resource/codeloader.cpp ../conv/opcodes.hpp \
