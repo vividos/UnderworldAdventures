@@ -153,6 +153,13 @@ LRESULT ua_config_prog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
    ::SendMessage(m_hWnd, WM_SETICON, ICON_SMALL, (LPARAM)wndicon_small);
    ::ShowWindow(m_hWnd,SW_SHOW);
 
+   // cutscene narration combobox
+   ::SendDlgItemMessage(m_hWnd,IDC_COMBO_CUTS_NARRATION,CB_ADDSTRING,0,(LPARAM)"Sound");
+   ::SendDlgItemMessage(m_hWnd,IDC_COMBO_CUTS_NARRATION,CB_ADDSTRING,0,(LPARAM)"Subtitles");
+   ::SendDlgItemMessage(m_hWnd,IDC_COMBO_CUTS_NARRATION,CB_ADDSTRING,0,(LPARAM)"Sound+Subtitles");
+
+   // todo: add all available resolutions to IDC_COMBO_SCREEN_RESOLUTION
+
    // load configuration
    load_config();
 
@@ -216,8 +223,25 @@ void ua_config_prog::load_config()
 {
    settings.load("./uwadv.cfg");
 
-   std::string uw1_path(settings.get_string(ua_setting_uw1_path));
-   ::SetDlgItemText(m_hWnd,IDC_EDIT_UW1_PATH,uw1_path.c_str());
+   std::string text;
+
+   // sets uw1 path
+   text = settings.get_string(ua_setting_uw1_path);
+   ::SetDlgItemText(m_hWnd,IDC_EDIT_UW1_PATH,text.c_str());
+
+   // set cutscene narration option
+   text = settings.get_string(ua_setting_cuts_narration);
+   ::SendDlgItemMessage(m_hWnd,IDC_COMBO_CUTS_NARRATION,CB_SETCURSEL,
+      (text.compare("both")==0 ? 2 : text.compare("sound")==0 ? 0 : 1),
+      0);
+
+   // set screen resolution text
+   text = settings.get_string(ua_setting_screen_resolution);
+   ::SetDlgItemText(m_hWnd,IDC_COMBO_SCREEN_RESOLUTION,text.c_str());
+
+   // set "fullscreen" check
+   ::SendDlgItemMessage(m_hWnd,IDC_CHECK_FULLSCREEN,BM_SETCHECK,
+      settings.get_bool(ua_setting_fullscreen) ? BST_CHECKED : BST_UNCHECKED, 0);
 }
 
 //! checks if a file with given filename is available
@@ -253,17 +277,43 @@ bool ua_config_prog::check_config()
 
       if (!uw1_avail)
       {
-         ::MessageBox(m_hWnd,"couldn't find Ultima Underworld I game files!",
+         ::MessageBox(m_hWnd,"couldn't find Ultima Underworld I game files in specified folder!",
             "Underworld Adventures Configuration",MB_OK);
          return false;
       }
    }
+
+   // todo: when fullscreen, check if resolution is available
 
    return true;
 }
 
 void ua_config_prog::save_config()
 {
+   char buffer[MAX_PATH];
+   std::string value;
+   int sel;
+
+   // uw1 path
+   ::GetDlgItemText(m_hWnd,IDC_EDIT_UW1_PATH,buffer,MAX_PATH);
+   value.assign(buffer);
+   settings.set_value(ua_setting_uw1_path,value);
+
+   // cutscene narration
+   sel = ::SendDlgItemMessage(m_hWnd,IDC_COMBO_CUTS_NARRATION,CB_GETCURSEL,0,0);
+   value = (sel==0 ? "sound" : (sel==1 ? "subtitles" : "both"));
+   settings.set_value(ua_setting_cuts_narration,value);
+
+   // screen resolution text
+   ::GetDlgItemText(m_hWnd,IDC_COMBO_SCREEN_RESOLUTION,buffer,MAX_PATH);
+   value.assign(buffer);
+   settings.set_value(ua_setting_screen_resolution,value);
+
+   // fullscreen check
+   sel = ::SendDlgItemMessage(m_hWnd,IDC_CHECK_FULLSCREEN,BM_GETCHECK,0,0);
+   settings.set_value(ua_setting_fullscreen, bool(sel==BST_CHECKED));
+
+   // write config file
    settings.write("./uwadv.cfg","./uwadv.cfg.new");
    remove("./uwadv.cfg.old");
    rename("./uwadv.cfg","./uwadv.cfg.old");

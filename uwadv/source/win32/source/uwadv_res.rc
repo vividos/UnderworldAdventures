@@ -49,28 +49,6 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Menu
-//
-
-IDR_MENU MENU DISCARDABLE 
-BEGIN
-    POPUP "&Game"
-    BEGIN
-        MENUITEM "&Load",                       ID_GAME_LOAD, GRAYED
-        MENUITEM "&Save",                       ID_GAME_SAVE, GRAYED
-        MENUITEM SEPARATOR
-        MENUITEM "E&xit",                       ID_GAME_EXIT
-    END
-    POPUP "&Settings"
-    BEGIN
-        MENUITEM "&General Settings",           ID_SETTINGS_GENERAL, GRAYED
-        MENUITEM "&Audio Settings",             ID_SETTINGS_AUDIO, GRAYED
-    END
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
 // Icon
 //
 

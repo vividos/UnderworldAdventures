@@ -57,12 +57,24 @@ STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Underworld Adventures Configuration"
 FONT 8, "MS Sans Serif"
 BEGIN
-    LTEXT           "Ultima Underworld I path",IDC_STATIC,4,3,78,8
-    EDITTEXT        IDC_EDIT_UW1_PATH,9,14,243,12,ES_AUTOHSCROLL
-    PUSHBUTTON      "set",IDC_BUTTON_SET_UW1_PATH,254,14,24,12
+    LTEXT           "General Settings",IDC_STATIC,4,2,53,8
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,60,6,218,1
+    LTEXT           "Ultima Underworld I Path",IDC_STATIC,9,16,79,8
+    EDITTEXT        IDC_EDIT_UW1_PATH,92,12,161,12,ES_AUTOHSCROLL | WS_GROUP
+    PUSHBUTTON      "set",IDC_BUTTON_SET_UW1_PATH,255,12,21,12
+    LTEXT           "Cutscenes Narration",IDC_STATIC,9,31,65,8
+    COMBOBOX        IDC_COMBO_CUTS_NARRATION,92,27,90,46,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Graphics Settings",IDC_STATIC,4,57,56,8
+    LTEXT           "Screen Resolution",IDC_STATIC,9,72,59,8
+    COMBOBOX        IDC_COMBO_SCREEN_RESOLUTION,92,68,90,103,CBS_DROPDOWN | 
+                    WS_VSCROLL | WS_GROUP | WS_TABSTOP
+    CONTROL         "Fullscreen Mode",IDC_CHECK_FULLSCREEN,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,193,70,68,10
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,4,126,274,1
     PUSHBUTTON      "exit",IDCANCEL,172,132,50,14
     PUSHBUTTON      "save && exit",IDOK,228,132,50,14
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,64,61,213,1
 END
 
 
@@ -79,9 +91,14 @@ BEGIN
         LEFTMARGIN, 4
         RIGHTMARGIN, 278
         VERTGUIDE, 9
-        TOPMARGIN, 4
+        VERTGUIDE, 92
+        VERTGUIDE, 182
+        VERTGUIDE, 193
+        TOPMARGIN, 2
         BOTTOMMARGIN, 146
-        HORZGUIDE, 26
+        HORZGUIDE, 24
+        HORZGUIDE, 39
+        HORZGUIDE, 80
     END
 END
 #endif    // APSTUDIO_INVOKED

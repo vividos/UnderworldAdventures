@@ -6,6 +6,9 @@
 #define IDI_ICON_UACONFIG               102
 #define IDC_EDIT_UW1_PATH               1000
 #define IDC_BUTTON_SET_UW1_PATH         1002
+#define IDC_COMBO_CUTS_NARRATION        1003
+#define IDC_CHECK_FULLSCREEN            1004
+#define IDC_COMBO_SCREEN_RESOLUTION     1005
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -14,7 +17,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        103
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1003
+#define _APS_NEXT_CONTROL_VALUE         1005
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

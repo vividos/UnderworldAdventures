@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Developer Studio generated include file.
-// Used by uwadv.rc
+// Used by uwadv_res.rc
 //
 #define IDR_MENU                        101
 #define IDI_ICON                        102
