@@ -1197,7 +1197,7 @@ Table of Contents
                         4-9    npc_yhome
                         10-15  npc_xhome
    0017   000f
-   0018   0010   Int8   0-4:   
+   0018   0010   Int8   0-4:   npc_heading?
                         5-7:   
    0019   0011   Int8   0-6:   npc_hunger (?)
    001a   0012   Int8          npc_whoami
@@ -1638,6 +1638,10 @@ Table of Contents
          object.
 
    018c  an_inventory trap
+         the trap searches for an item in the inventory; when it is found, the
+         sp_link'ed trigger is set off. the item_id is given by
+         ("quality" << 5) | "owner". additionally, the zpos value must be != 0
+         to enable the trap.
 
    018d  a_set variable trap
          sets a game variable; fields "quality", "owner" and "ypos" are
@@ -1776,6 +1780,7 @@ Table of Contents
    0006  Int8    bits 2..3: quality class (this value*6+quality gives index
                             into string block 5
    0007  Int8    bit 7: if 1, item can have owner ("belongs to ...")
+                 bits 1..4: type? a=talisman, 9=magic, 3..5=ammunition
    0008  Int8    scale value (?)
    0009  Int8    unknown2
                  bits 0-1: ??
