@@ -60,6 +60,8 @@ protected:
    //! updates panel texture
    void update_panel_texture();
 
+   void update_cursor_image();
+
    //! clicked on inventory
    void inventory_click(
       bool pressed, bool left_button, unsigned int area);

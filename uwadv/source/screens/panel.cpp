@@ -123,9 +123,7 @@ void ua_panel::mouse_action(bool click, bool left_button, bool pressed)
    unsigned int area = get_area(ua_panel_area_table,cursorx,cursory);
 
    if (click)
-   {
       inventory_click(pressed,left_button,area);
-   }
    else
    {
       // check item dragging
@@ -284,10 +282,30 @@ void ua_panel::update_panel_texture()
    tex_panel.upload();
 }
 
+void ua_panel::update_cursor_image()
+{
+   ua_inventory& inv = core->get_underworld().get_inventory();
+
+   Uint16 cursor_object = 0;
+   bool cursor_is_object = false;
+
+   // check if we still have a floating object
+   if (inv.get_floating_item() != ua_slot_no_item)
+   {
+      // still floating? then set new cursor object
+      cursor_object =  inv.get_item(inv.get_floating_item()).item_id;
+      cursor_is_object = cursor_object != ua_slot_no_item;
+   }
+
+   if (cursor_is_object)
+      ingame_orig->set_cursor_image(true,cursor_object,true);
+   else
+      ingame_orig->set_cursor_image(false,0xffff,true);
+}
+
 void ua_panel::inventory_click(
    bool pressed, bool left_button, unsigned int area)
 {
-/*
    ua_inventory& inv = core->get_underworld().get_inventory();
 
    // check scroll up/down buttons
@@ -386,21 +404,7 @@ void ua_panel::inventory_click(
          inv.drop_floating_item(item);
       }
 
-      Uint16 cursor_object = 0;
-      cursor_is_object = false;
-
-      // check if we still have a floating object
-      if (inv.get_floating_item() != ua_slot_no_item)
-      {
-         // still floating? then set new cursor object
-         cursor_object =  inv.get_item(inv.get_floating_item()).item_id;
-         cursor_is_object = cursor_object != ua_slot_no_item;
-      }
-
-      if (cursor_is_object)
-         mousecursor.set_custom(img_objects.get_image(cursor_object));
-      else
-         cursor_image_current = (unsigned int)-1;
+      update_cursor_image();
 
       update_panel_texture();
       return;
@@ -422,11 +426,11 @@ void ua_panel::inventory_click(
    // check if container
    if (item != ua_slot_no_item &&
        inv.is_container(inv.get_item(item).item_id) &&
-       gamemode == ua_mode_default)
+       ingame_orig->get_gamemode() == ua_mode_default)
    {
       // open container
       inv.open_container(item);
-      cursor_is_object = false;
+      //cursor_is_object = false;
       slot_start = 0;
 
       update_panel_texture();
@@ -444,34 +448,17 @@ void ua_panel::inventory_click(
       // trigger "use" action
       core->get_underworld().get_scripts().lua_inventory_use(item);
    }
-*/
 }
 
 void ua_panel::inventory_dragged_item()
 {
-/*
    ua_inventory& inv = core->get_underworld().get_inventory();
 
    // user dragged item out of area
    check_dragging = false;
    inv.float_item(drag_item);
 
-   Uint16 cursor_object = 0;
-   cursor_is_object = false;
-
-   // check if we still have a floating object
-   if (inv.get_floating_item() != ua_slot_no_item)
-   {
-      // still floating? then set new cursor object
-      cursor_object =  inv.get_item(inv.get_floating_item()).item_id;
-      cursor_is_object = cursor_object != ua_slot_no_item;
-   }
-
-   if (cursor_is_object)
-      mousecursor.set_custom(img_objects.get_image(cursor_object));
-   else
-      cursor_image_current = (unsigned int)-1;
+   update_cursor_image();
 
    update_panel_texture();
-*/
 }

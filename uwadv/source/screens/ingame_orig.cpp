@@ -59,7 +59,6 @@ ua_screen_area_data ua_ingame_orig_area_table[] =
 };
 
 
-
 // ua_ingame_orig_screen methods
 
 void ua_ingame_orig_screen::init(ua_game_core_interface* thecore)
@@ -69,8 +68,6 @@ void ua_ingame_orig_screen::init(ua_game_core_interface* thecore)
    ua_trace("orig. ingame user interface started\n");
 
    cursor_image = 0;
-   cursor_image_current = 0;
-   cursor_is_object = false;
    mouse_move = false;
 
    move_turn_left = move_turn_right = move_walk_forward =
@@ -119,6 +116,8 @@ void ua_ingame_orig_screen::init(ua_game_core_interface* thecore)
 
    // load some images
    ua_settings &settings = core->get_settings();
+
+   img_objects.load(settings,"objects");
 
    // background image
    {
@@ -337,6 +336,8 @@ void ua_ingame_orig_screen::handle_event(SDL_Event& event)
 {
    ua_ui_screen_base::handle_event(event);
 
+   panel.handle_event(event);
+
    if (textscroll.handle_event(event))
       return;
 
@@ -353,7 +354,6 @@ void ua_ingame_orig_screen::handle_event(SDL_Event& event)
       break;
 
    default:
-//      ua_screen_ctrl_base::handle_event(event);
       break;
    }
 }
@@ -874,16 +874,7 @@ void ua_ingame_orig_screen::render_ui()
    textscroll.render();
 
    // draw mouse cursor
-   {
-      if (cursor_image_current != cursor_image && !cursor_is_object)
-      {
-         // change mouse cursor type
-         cursor_image_current = cursor_image;
-         mousecursor.settype(cursor_image);
-      }
-
-      mousecursor.draw();
-   }
+   mousecursor.draw();
 }
 
 void ua_ingame_orig_screen::tick()
@@ -1031,14 +1022,11 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
    default: break;
    }
 
-   // panel
-   panel.mouse_action(click,left_button,pressed);
-
    if (in_screen3d && area != ua_area_screen3d)
    {
       // cursor was moved out of 3d screen
       in_screen3d = false;
-      cursor_image = 0;
+      set_cursor_image(false,0);
    }
 
    // check 3d view area
@@ -1084,24 +1072,24 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
          if (rely>=0.75)
          {
             // lower part of screen
-            if (relx<0.33){ slide = -1.0; cursor_image = 3; } else
-            if (relx>=0.66){ slide = 1.0; cursor_image = 4; } else
-               { walk = -0.4*(rely-0.75)/0.25; cursor_image = 2; }
+            if (relx<0.33){ slide = -1.0; set_cursor_image(false,3); } else
+            if (relx>=0.66){ slide = 1.0; set_cursor_image(false,4); } else
+               { walk = -0.4*(rely-0.75)/0.25; set_cursor_image(false,2); }
          }
          else
          if (rely>=0.6)
          {
             // middle part
-            if (relx<0.33){ rotate = (0.33-relx)/0.33; cursor_image = 5; } else
-            if (relx>=0.66){ rotate = -(relx-0.66)/0.33; cursor_image = 6; } else
-               cursor_image = 0;
+            if (relx<0.33){ rotate = (0.33-relx)/0.33; set_cursor_image(false,5); } else
+            if (relx>=0.66){ rotate = -(relx-0.66)/0.33; set_cursor_image(false,6); } else
+               set_cursor_image(false,0);
          }
          else
          {
             // upper part
-            if (relx<0.33){ rotate = (0.33-relx)/0.33; cursor_image = 7; } else
-            if (relx>=0.66){ rotate = -(relx-0.66)/0.33; cursor_image = 8; } else
-               cursor_image = 1;
+            if (relx<0.33){ rotate = (0.33-relx)/0.33; set_cursor_image(false,7); } else
+            if (relx>=0.66){ rotate = -(relx-0.66)/0.33; set_cursor_image(false,8); } else
+               set_cursor_image(false,1);
 
             // walking speed increases in range [0.6; 0.2] only
             walk = (0.6-rely)/0.4;
@@ -1302,4 +1290,31 @@ void ua_ingame_orig_screen::do_screenshot(bool with_menu, unsigned int xres, uns
    renderer.setup_camera(90.0,
       double(core->get_screen_width())/core->get_screen_height(),
       16.0);
+}
+
+void ua_ingame_orig_screen::set_cursor_image(bool is_object, Uint16 image,
+   bool prio)
+{
+   if (!prio && prio_cursor)
+      return; // do nothing; priority cursor in effect
+
+   if (image==0xffff && prio_cursor)
+   {
+      // reset cursor image
+      prio_cursor = false;
+      image = 0;
+   }
+
+   cursor_image = image;
+   prio_cursor = prio;
+
+   if (!is_object)
+   {
+      // change mouse cursor type
+      mousecursor.settype(cursor_image);
+   }
+   else
+   {
+      mousecursor.set_custom(img_objects.get_image(cursor_image));
+   }
 }

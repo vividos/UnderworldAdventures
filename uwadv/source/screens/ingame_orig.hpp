@@ -145,6 +145,12 @@ public:
    virtual void ui_cursor_use_item(Uint16 item_id);
    virtual void ui_cursor_target();
 
+   //! sets cursor image
+   void set_cursor_image(bool is_object, Uint16 image, bool prio=false);
+
+   //! returns game mode
+   ua_ingame_orig_game_mode get_gamemode(){ return gamemode; }
+
 protected:
    //! sets up OpenGL stuff, flags, etc.
    void setup_opengl();
@@ -176,11 +182,8 @@ protected:
    //! mouse cursor image
    unsigned int cursor_image;
 
-   //! current cursor image
-   unsigned int cursor_image_current;
-
-   //! indicates if cursor is an object icon
-   bool cursor_is_object;
+   //! true when cursor is a priority cursor
+   bool prio_cursor;
 
    //! mouse cursor
    ua_mousecursor mousecursor;
@@ -237,6 +240,9 @@ protected:
 
    //! background image quad
    ua_image_quad img_back;
+
+   //! all inventory objects
+   ua_image_list img_objects;
 
    //! compass images
    ua_image_list img_compass;
