@@ -34,7 +34,7 @@
 
 // needed includes
 #include "uamath.hpp"
-#include "physicsobject.hpp"
+#include "physicsbody.hpp"
 #include <vector>
 
 
@@ -43,53 +43,106 @@ class ua_underworld;
 struct ua_collision_data;
 
 
+// enums
+
+//! physics parameter
+enum ua_physics_param
+{
+   //! controls if gravity is active in the physics model
+   ua_physics_gravity=0,
+
+   //! last param; not used
+   ua_physics_param_max
+};
+
+
 // classes
+
+//! physics model callback interface
+class ua_physics_model_callback
+{
+public:
+   //! returns surrounding triangles on given position
+   virtual void get_surrounding_triangles(unsigned int xpos,
+      unsigned int ypos, std::vector<ua_triangle3d_textured>& alltriangles)=0;
+};
+
 
 //! physics model class
 class ua_physics_model
 {
 public:
    //! ctor
-   ua_physics_model();
+   ua_physics_model():callback(NULL){}
 
-   //! inits physics model
-   void init(ua_underworld* uw);
+   //! inits the physics model
+   void init(ua_physics_model_callback* callback);
 
-   //! evaluates physics of player and objects
-   void eval_physics(double time);
+   bool get_physics_param(ua_physics_param param);
+   void set_physics_param(ua_physics_param param, bool value);
 
+   //! evaluate physics on objects
+   void eval_physics(double time_elapsed);
 
-   // functions for tracking objects in 3d space
+   //! tracks object movement using current parameters
+   void track_object(ua_physics_body& body);
 
-   //! returns number of objects that are tracked
-   unsigned int get_tracking_count();
-
-   //! tracks object with given index
-   void track_object(unsigned int index);
+   //! add physics body to track to model
+   void add_track_body(ua_physics_body* body);
 
 protected:
-   //! tracks object by position and direction; vectors must be in ellipsoid space
-   void track_object(ua_physics_object& object, ua_vector3d& pos,
-      const ua_vector3d& dir, bool gravity_call, double time);
+   //! tracks object movement for given direction vector
+   bool track_object(ua_physics_body& body, ua_vector3d dir,
+      bool gravity_force=false);
 
    //! recursive collision response calculation
-   bool collide_with_world(ua_physics_object& object, ua_vector3d& pos,
+   bool collide_with_world(ua_collision_data& data, ua_vector3d& pos,
       const ua_vector3d& dir);
 
    //! checks mesh for collision
-   void check_collision(ua_physics_object& object, int xpos, int ypos,
-      ua_collision_data& data);
+   void check_collision(ua_collision_data& data);
+
+   //! checks single triangle for collision
+   void check_triangle(ua_collision_data& data, const ua_vector3d& p1,
+      const ua_vector3d& p2, const ua_vector3d& p3);
+
+   //! solves quadratic equation and returns solution < t
+   bool get_lowest_root(double a, double b, double c, double t,
+      double& new_t);
 
 protected:
-   //! current underworld object
-   ua_underworld* underw;
+   //! model parameters
+   bool params[ua_physics_param_max];
 
-   //! current recursion depth for function collide_with_world()
-   unsigned int collision_recursion_depth;
+   //! recursion depth for collide_with_world()
+   int collision_recursion_depth;
 
-   //! last evaluation time
-   double last_evaltime;
+   //! callback interface pointer
+   ua_physics_model_callback* callback;
+
+   std::vector<ua_physics_body*> tracked_bodies;
+
+   // friend to test class
+   friend class ua_test_physics_model;
 };
+
+
+// inline methods
+
+inline bool ua_physics_model::get_physics_param(ua_physics_param param)
+{
+   return params[param];
+}
+
+inline void ua_physics_model::set_physics_param(ua_physics_param param, bool value)
+{
+   params[param] = value;
+}
+
+inline void ua_physics_model::add_track_body(ua_physics_body* body)
+{
+   tracked_bodies.push_back(body);
+}
 
 
 #endif

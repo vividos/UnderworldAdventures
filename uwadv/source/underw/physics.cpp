@@ -23,7 +23,9 @@
 
    \brief game physics implementation
 
-   used collision detection and response code from this tutorial:
+   used collision detection and response code from this paper:
+   http://www.peroxide.dk/papers/collision/collision.pdf
+   previous document:
    http://www.peroxide.dk/download/tutorials/tut10/pxdtut10.html
 
 */
@@ -31,346 +33,227 @@
 // needed includes
 #include "common.hpp"
 #include "physics.hpp"
-#include "underworld.hpp"
-#include "geometry.hpp"
-
-
-// typedefs
-
-//! collision check data
-typedef struct ua_collision_data
-{
-   ua_vector3d pos;
-   ua_vector3d dir;
-   ua_vector3d nearest_poly_inter;
-
-   double nearest_dist;
-   bool found;
-   bool stuck;
-
-} ua_collision_data;
 
 
 // constants
 
-
-
-//! Trick to get smoother CD
-const double ua_cd_liftoff = 0.07*4;
+//! trick to get smoother CD
+const double ua_physics_cd_liftoff = 0.5;
 
 //! minimum distance
-const double ua_physics_min_dist = 0.05*4;
-
-//! max speed a player can walk, in tiles / second
-const double ua_player_max_walk_speed = 2.4;
-
-//! max speed a player can slide left or right
-const double ua_player_max_slide_speed = 1.0;
-
-//! max speed a player can rotate, in degrees / second
-const double ua_player_max_rotate_speed = 90;
-
-//! max speed a player can rotate the view, in degrees / second
-const double ua_player_max_view_rotate_speed = 60;
+const double ua_physics_min_distance = 0.005;
 
 
-// helper function prototypes
-
-double ua_physics_intersect_ray_plane(const ua_vector3d& r_orig,
-   const ua_vector3d& r_vector, const ua_vector3d& p_orig, const ua_vector3d& p_normal);
-
-double ua_physics_intersect_ray_sphere(const ua_vector3d& r_orig,
-   const ua_vector3d& r_vector, const ua_vector3d& s_orig, double s_rad);
+// function prototypes
 
 bool ua_physics_check_point_in_triangle(const ua_vector3d& point,
-   const ua_vector3d& a, const ua_vector3d& b, const ua_vector3d& c);
+   const ua_vector3d& pa, const ua_vector3d& pb, const ua_vector3d& pc);
 
-ua_vector3d ua_physics_closest_point_on_triangle(const ua_vector3d& a,
-   const ua_vector3d& b, const ua_vector3d& c, const ua_vector3d& p);
 
-bool ua_physics_insersect_sphere_triangle(ua_vector3d sO, float sR, 
-   ua_vector3d a, ua_vector3d b, ua_vector3d c, ua_vector3d& ip);
+// structs
 
-double ua_physics_dist_point_plane(ua_vector3d point, ua_vector3d pO, ua_vector3d pN);
+//! collision check data
+struct ua_collision_data
+{
+   //! ellipsoid radius
+   ua_vector3d ellipsoid;
+
+   // information about the move being requested (in eSpace)
+   ua_vector3d dir;        //!< direction
+   ua_vector3d norm_dir;   //!< normalized dir
+   ua_vector3d base_point; //!< base point
+
+   // hit information
+   bool found_collision;   //!< indicates if collision was found
+   double nearest_dist;    //!< dist to nearest triangle
+   ua_vector3d intersect_point;  //!< direction intersection point
+};
 
 
 // ua_physics_model methods
 
-ua_physics_model::ua_physics_model()
-:last_evaltime(-0.1)
+void ua_physics_model::init(ua_physics_model_callback* the_callback)
 {
+   callback = the_callback;
+   collision_recursion_depth = 0;
+
+   // initial params
+   set_physics_param(ua_physics_gravity, true);
 }
 
-void ua_physics_model::init(ua_underworld *uw)
+void ua_physics_model::eval_physics(double time_elapsed)
 {
-   underw = uw;
-}
-
-void ua_physics_model::eval_physics(double time)
-{
-   // evaluate player movement
+   unsigned int max = tracked_bodies.size();
+   for(unsigned int i=0; i<max; i++)
    {
-      ua_player &pl = underw->get_player();
+      ua_physics_body& body = *tracked_bodies[i];
 
-      unsigned int mode = underw->get_player().get_movement_mode();
+      body.set_new_elapsed_time(time_elapsed);
+      track_object(body);
+   }
+}
 
-      if ((mode & ua_move_walk) || (mode & ua_move_slide))
-      {
-         double speed = ua_player_max_walk_speed*(time-last_evaltime);
-         double angle = underw->get_player().get_angle_rot();
+void ua_physics_model::track_object(ua_physics_body& body)
+{
+   // apply direction
+   track_object(body, body.get_dir());
 
-         // adjust angle for sliding
-         if (mode & ua_move_slide)
-         {
-            angle -= 90.0;
-            speed *= pl.get_movement_factor(ua_move_slide);
-            speed *= ua_player_max_slide_speed/ua_player_max_walk_speed;
-         }
-         else
-            speed *= pl.get_movement_factor(ua_move_walk);
-
-
-         // construct direction vector
-         ua_vector3d dir(1.0, 0.0, 0.0);
-         dir.rotate_z(angle);
-         dir *= speed;
-
-         // position vector
-         ua_vector3d pos(pl.get_xpos(),pl.get_ypos(),pl.get_height());
-         ua_vector3d ellipsoid = pl.get_ellipsoid();
-         pos.z += (ellipsoid.z + ua_cd_liftoff);
-
-
-         // do object tracking; pos is modified after call
-         track_object(pl, pos,dir, false, time);
-
-         // limit height when falling out of the map
-         if (pos.z<0.0) pos.z = 0.0;
-
-         // set new player pos
-         pl.set_pos(pos.x,pos.y);
-         pl.set_height(pos.z - (ellipsoid.z + ua_cd_liftoff));
-      }
-
-      // player rotation
-      if (mode & ua_move_rotate)
-      {
-         double angle = ua_player_max_rotate_speed * (time-last_evaltime) *
-            pl.get_movement_factor(ua_move_rotate);
-         angle += pl.get_angle_rot();
-
-         // keep angle in range [0; 360]
-         while(angle>360.0) angle -= 360.0;
-         while(angle<0.0) angle += 360.0;
-
-         pl.set_angle_rot(angle);
-      }
-
-      // view up/down
-      if (mode & ua_move_lookup)
-      {
-         double viewangle = pl.get_angle_pan();
-         viewangle -= ua_player_max_view_rotate_speed * (time-last_evaltime) *
-            pl.get_movement_factor(ua_move_lookup);
-
-         double maxangle = underw->have_enhanced_features() ? 45.0 : 75.0;
-
-         // restrict up-down view angle
-         if (viewangle < -maxangle) viewangle = -maxangle;
-         if (viewangle > maxangle) viewangle = maxangle;
-
-         pl.set_angle_pan(viewangle);
-      }
-
-
-     // If we use the new CD we should apply gravity here nomatter if any keys were pressed..
-     // construct direction vector
-     ua_vector3d dir = pl.get_fall_velocity();
-
-     // position vector
-     ua_vector3d pos(pl.get_xpos(),pl.get_ypos(),pl.get_height());
-
-     ua_vector3d ellipsoid = pl.get_ellipsoid();
-     pos.z += (ellipsoid.z + ua_cd_liftoff);
-
-
-     // do object tracking; pos is modified after call
-     track_object(pl, pos,dir, true, time);
-
-     // limit height when falling out of the map
-     if (pos.z<0.0) pos.z = 0.0;
-
-     // set new player pos
-     pl.set_pos(pos.x,pos.y);
-     pl.set_height(pos.z - (ellipsoid.z + ua_cd_liftoff));
+   if (get_physics_param(ua_physics_gravity))
+   {
+      // apply gravity
+      track_object(body, body.get_gravity_force(), true);
    }
 
-   last_evaltime = time;
+   // apply effect forces, e.g. jump traps, up vector for bouncing balls
+   ua_vector3d effect_force;
+   track_object(body, effect_force);
 }
 
-void ua_physics_model::track_object(ua_physics_object& object,
-   ua_vector3d& pos, const ua_vector3d& dir, bool gravity_call, double time)
+/*!
+    \param body physics body to track
+    \param dir direction vector of object
+    \param gravity_force indicates if we're processing a gravity force
+    \return true if we collided with triangle
+*/
+bool ua_physics_model::track_object(ua_physics_body& body, ua_vector3d dir,
+   bool gravity_force)
 {
-   ua_vector3d dir2(dir);
+   // setup collision package for this tracking
+   ua_collision_data data;
+   data.ellipsoid = body.get_ellipsoid();
+   data.found_collision = false;
+
+   ua_vector3d pos = body.get_pos();
+
    // transform to ellipsoid space
-   ua_vector3d ellipsoid = object.get_ellipsoid();
-   pos /= ellipsoid;
-   dir2 /= ellipsoid;
+   pos /= data.ellipsoid;
+   dir /= data.ellipsoid;
 
    // call recursive collision response function
    collision_recursion_depth = 0;
-   bool collided = collide_with_world(object, pos,dir2);
 
-   if (gravity_call)
+   bool collided = collide_with_world(data, pos, dir);
+
+   if (gravity_force && collided)
    {
-      if (collided)
-      {
-         object.reset_fall_velocity();
-      } 
-      else
-      {
-         object.accellerate_fall_velocity(time);
-      }
+      body.hit_floor();
+//      body.reset_gravity();
    }
 
-   // transform back to normal space
-   pos *= ellipsoid;
+   // transform position back to normal space and set it
+   pos *= data.ellipsoid;
+
+   // limit height when falling out of the map
+   if (pos.z<0.0) pos.z = 0.0;
+
+   body.set_pos(pos);
+
+   return collided;
 }
 
-bool ua_physics_model::collide_with_world(ua_physics_object& object,
+/*! 
+    \param pos current position in eSpace
+    \param dir current direction vector in eSpace
+    \return true when a collision occured
+*/
+bool ua_physics_model::collide_with_world(ua_collision_data& data,
    ua_vector3d& pos, const ua_vector3d& dir)
 {
+   double min_distance = ua_physics_min_distance;
+
    // do we need to worry?
-   if (dir.length()<ua_physics_min_dist || collision_recursion_depth > 15)
+   if (collision_recursion_depth > 5)
       return true;
 
-   collision_recursion_depth++;
+   // set up collision data we send to the mesh
+   data.base_point = pos;
+   data.norm_dir = data.dir = dir;
+   data.norm_dir.normalize();
+   data.found_collision = false;
 
-   ua_vector3d dest(pos);
-   dest += dir;
+   // check triangle mesh collision (calls the collision routines)
+   check_collision(data);
 
-   ua_collision_data data;
-
-   // reset the collision package we send to the mesh
-   data.pos = pos;
-   data.dir = dir;
-   data.nearest_dist = -1.0;
-   data.found = false;
-   data.stuck = false;
-
-   // check triangle mesh collision
-   ua_vector3d ellipsoid = object.get_ellipsoid();
-   check_collision( object, static_cast<int>(pos.x*ellipsoid.x), static_cast<int>(pos.y*ellipsoid.y), data);
-
-   if (data.stuck)
+   // if no collision we just move along the direction
+   if (!data.found_collision)
    {
-     // recovery code here:
-     ua_vector3d safeSpot = object.pop_safe_spot();
-     pos = safeSpot;
-     return true; // if stuck we definitly collides
+      pos += dir;
+      return false; // no collision
    }
 
-   if (!data.found)
+   // collision occured
+
+   ua_vector3d dest_point(pos); dest_point += dir;
+   ua_vector3d new_basepoint(pos);
+
+   // only update if we are not already very close
+   // and if so we only move very close to intersection ...
+   // not to the exact spot
+   if (data.nearest_dist >= min_distance)
    {
-      // no collision occured
- 
-      // move very close to the desired destination
       ua_vector3d dir2(dir);
       dir2.normalize();
-      dir2 *= dir.length()-ua_physics_min_dist;
+      dir2 *= (data.nearest_dist - min_distance);
 
-      // push 'pos' as a safe spot:
-      object.push_safe_spot(pos);
+      new_basepoint = data.base_point;
+      new_basepoint += dir2;
 
-      // return the final position
-      pos += dir2;
-      return false; // no collision found
+      // adjust polygon intersection point (so sliding
+      // plane will be unaffected by the fact that we
+      // move slightly less than collision tells us)
+      dir2.normalize();
+      dir2 *= min_distance;
+      data.intersect_point -= dir2;
    }
-   else
+
+   // determine the sliding plane
+   ua_vector3d slideplane_normal = new_basepoint;
+   slideplane_normal -= data.intersect_point;
+   slideplane_normal.normalize();
+
+   ua_plane3d sliding_plane(data.intersect_point, slideplane_normal);
+
+   // calculate new destination point
+   ua_vector3d new_destpoint = slideplane_normal;
+   new_destpoint *= -sliding_plane.signed_dist_to(dest_point);
+   new_destpoint += dest_point;
+
+   // generate the slide vector, which will become our new velocity vector for
+   // the next iteration
+   ua_vector3d new_dir = new_destpoint;
+   new_dir -= data.intersect_point;
+
+   // recurse
+
+   // don't recurse if the new direction is very small
+   if (new_dir.length() < min_distance)
    {
-      // there was a collision
-
-      // move close to where we hit something
-      ua_vector3d newpos(data.pos);
-
-      // only update if we are not already very close
-      if (data.nearest_dist >= ua_physics_min_dist)
-      {
-         ua_vector3d dir2(dir);
-         dir2.normalize();
-         dir2 *= data.nearest_dist-ua_physics_min_dist;
-
-         newpos += dir2;
-      }
-
-      // calculate sliding plane
-      ua_vector3d slideplane_origin = data.nearest_poly_inter;
-      ua_vector3d slideplane_normal = newpos - data.nearest_poly_inter;
-
-      // project destination point onto the sliding plane
-
-      double len = ua_physics_intersect_ray_plane(dest,
-         slideplane_normal, slideplane_origin, slideplane_normal);
-
-      // calculate new destination point on the sliding plane
-      ua_vector3d newdest(
-         dest.x + len * slideplane_normal.x,
-         dest.y + len * slideplane_normal.y,
-         dest.z + len * slideplane_normal.z);
-
-      // generate slide vector
-      // it becomes our new velocity vector for the next iteration
-      ua_vector3d newdir = newdest - data.nearest_poly_inter;
-
-      // call the function with the new position and velocity
-      collide_with_world(object, newpos,newdir);
-      pos = newpos;
-      return true; // there was a collision here
+      pos = new_basepoint;
+      return true;
    }
+
+   // call the function with the new position and velocity
+   collision_recursion_depth++;
+
+   collide_with_world(data, new_basepoint,new_dir);
+   pos = new_basepoint;
+
+   collision_recursion_depth--;
+
+   // recursion call might have not collided with something, but we surely had
+   return true;
 }
 
-void ua_physics_model::check_collision(ua_physics_object& object, int xpos, int ypos, ua_collision_data& data)
+void ua_physics_model::check_collision(ua_collision_data& data)
 {
-   ua_geometry_provider geom(underw->get_current_level());
+   unsigned int xpos = static_cast<unsigned int>(data.base_point.x*data.ellipsoid.x);
+   unsigned int ypos = static_cast<unsigned int>(data.base_point.y*data.ellipsoid.y);
 
    // retrieve all tile triangles to check
    std::vector<ua_triangle3d_textured> alltriangles;
-   {
-      for(int i=-1; i<2; i++)
-         for(int j=-1; j<2; j++)
-            geom.get_tile_triangles(unsigned(xpos+i),unsigned(ypos+j),alltriangles);
-   }
 
-   // also retrieve 3d model triangles
-   {
-      ua_object_list& objlist = underw->get_current_level().get_mapobjects();
-
-      // get first object link
-      Uint16 link = objlist.get_tile_list_start(xpos,ypos);
-
-      while(link != 0)
-      {
-         ua_object& obj = objlist.get_object(link);
-         ua_object_info_ext& extobjinfo = obj.get_ext_object_info();
-
-         ua_vector3d base(
-            xpos+(extobjinfo.xpos+0.5)/8.0, ypos+(extobjinfo.ypos+0.5)/8.0,
-            extobjinfo.zpos);
-
-         // get triangles from model manager
-         //TODOua_model3d_manager::cur_modelmgr->get_bounding_triangles(
-         //TODO   obj,base,alltriangles);
-
-         // next object in link chain
-         link = obj.get_object_info().link;
-      }
-   }
-
-   // keep a copy of this as it's needed a few times
-   ua_vector3d normdir(data.dir);
-   normdir.normalize();
-   
-   ua_vector3d ellipsoid = object.get_ellipsoid();
+   if (callback != NULL)
+      callback->get_surrounding_triangles(xpos,ypos,alltriangles);
 
    // check all triangles
    unsigned int max = alltriangles.size();
@@ -379,257 +262,352 @@ void ua_physics_model::check_collision(ua_physics_object& object, int xpos, int 
       ua_triangle3d_textured& tri = alltriangles[i];
 
       // get triangle points and convert to ellipsoid space
-      ua_vector3d p1(tri.vertices[0].pos), p2(tri.vertices[1].pos), p3(tri.vertices[2].pos);
-      p1 /= ellipsoid;
-      p2 /= ellipsoid;
-      p3 /= ellipsoid;
+      tri.vertices[0].pos /= data.ellipsoid;
+      tri.vertices[1].pos /= data.ellipsoid;
+      tri.vertices[2].pos /= data.ellipsoid;
 
-      // construct plane containing this triangle
-      ua_vector3d p_origin(p1), v1(p2), v2(p3);
-      v1 -= p1;
-      v2 -= p1;
+      check_triangle(data, tri.vertices[0].pos, tri.vertices[1].pos, tri.vertices[2].pos);
+   }
+}
 
-      // determine normal to plane containing polygon
-      ua_vector3d p_normal;
-      p_normal.cross(v1,v2);
-      p_normal.normalize();
-           
-        
-      // calculate sphere intersection point
-#ifdef CD_DEBUG_INFO
-      printf("sphere pos (%f,%f,%f)\n", data.pos.x, data.pos.y,data.pos.z); 
-#endif      
-      ua_vector3d sphere_inter(data.pos);
-      sphere_inter -= p_normal;
+/*! Checks triangle for collision; triangle vertices must already be in
+    ellipsoid space.
+*/
+void ua_physics_model::check_triangle(ua_collision_data& data,
+   const ua_vector3d& p1, const ua_vector3d& p2, const ua_vector3d& p3)
+{
+   // construct plane containing this triangle
+   ua_plane3d triangle_plane(p1, p2, p3);
 
-      // classify point to determine if ellipsoid spans the plane
-      bool backside = false;
+   // is triangle front-facing to the direction vector?
+   // we only check front-facing triangles
+   if (!triangle_plane.is_front_facing_to(data.norm_dir))
+      return;
+
+   // triangle is front-facing
+
+   // get interval of plane intersection
+   double t0, t1;
+   bool embedded = false;
+
+   // calculate signed distance from sphere
+   // position to triangle plane
+   double dist_triangle = triangle_plane.signed_dist_to(data.base_point);
+
+   // cache this as we're going to use it a few times below
+   double normal_dot_dir = triangle_plane.normal.dot(data.dir);
+
+   // if sphere is travelling parallel to the plane
+   if (normal_dot_dir == 0.0)
+   {
+      if (fabs(dist_triangle) >= 1.0)
       {
-         ua_vector3d dir(p_origin);
-         dir -= sphere_inter;
-         double d = dir.dot(p_normal);
-         backside = d>0.001;
-      }
-
-      // find the plane intersection point
-      double dist_plane_inter; // distToPlaneIntersection
-      ua_vector3d plane_inter;
-
-      if (backside)
-      {
-         // plane is embedded in ellipsoid
-
-         // find plane intersection point by shooting a ray from the
-         // sphere intersection point along the planes normal
-         dist_plane_inter = ua_physics_intersect_ray_plane(
-            sphere_inter, p_normal, p_origin, p_normal);
-
-         // calculate plane intersection point
-         plane_inter.set(sphere_inter.x + dist_plane_inter * p_normal.x,
-                         sphere_inter.y + dist_plane_inter * p_normal.y,
-                         sphere_inter.z + dist_plane_inter * p_normal.z);
+         // sphere is not embedded in plane; no collision possible
+         return;
       }
       else
       {
-         // shoot ray along the velocity vector
-         dist_plane_inter = ua_physics_intersect_ray_plane(sphere_inter, normdir, p_origin, p_normal);
-         
-         // calculate plane intersection point
-         plane_inter.set(sphere_inter.x + dist_plane_inter * normdir.x,
-                         sphere_inter.y + dist_plane_inter * normdir.y,
-                         sphere_inter.z + dist_plane_inter * normdir.z);
+         // sphere is embedded in plane
+         // it intersets in the whole range [0..1]
+         embedded = true;
+         t0 = 0.0;
+         t1 = 1.0;
+      }
+   }
+   else
+   {
+      // N dot D is not 0. calculate intersection interval
+      t0 = (-1.0-dist_triangle) / normal_dot_dir;
+      t1 = ( 1.0-dist_triangle) / normal_dot_dir;
+
+      // swap so t0 < t1
+      if (t0 > t1) std::swap(t0,t1);
+
+      // check that at least one result is within range
+      if (t0 > 1.0 || t1 < 0.0)
+      {
+         // both t values are outside values [0,1]
+         // no collision possible
+         return;
       }
 
-      // find polygon intersection point; by default we assume its equal to the
-      // plane intersection point
-      ua_vector3d poly_inter(plane_inter);
+      // clamp to [0,1]
+      if (t0 < 0.0) t0 = 0.0;
+      if (t1 < 0.0) t1 = 0.0;
+      if (t0 > 1.0) t0 = 1.0;
+      if (t1 > 1.0) t1 = 1.0;
+   }
 
-      double dist_ell_inter = dist_plane_inter;
+   // OK, at this point we have two time values t0 and t1
+   // between which the swept sphere intersects with the
+   // triangle plane. If any collision is to occur it must
+   // happen within this interval.
+   ua_vector3d collision_point;
+   bool found = false;
+   double t = 1.0;
 
-#ifdef CD_DEBUG_INFO
-      printf("sphere (%f,%f,%f) - normDir (%f,%f,%f)\n",sphere_inter.x,sphere_inter.y,sphere_inter.z,normdir.x, normdir.y, normdir.z); 
-      printf("planeO (%f,%f,%f) - planeNorm (%f,%f,%f)\n", p_origin.x,p_origin.y,p_origin.z, p_normal.x,p_normal.y,p_normal.z);
-      printf("triangle (%f,%f,%f) - (%f,%f,%f) - (%f,%f,%f)\n", p1.x,p1.y,p1.z, p2.x,p2.y,p2.z, p3.x, p3.y, p3.z);
-#endif
+   // First we check for the easy case - collision inside
+   // the triangle. If this happens it must be at time t0
+   // as this is when the sphere rests on the front side
+   // of the triangle plane. Note, this can only happen if
+   // the sphere is not embedded in the triangle plane.
+   if (!embedded)
+   {
+      ua_vector3d plane_intersect_point;
+      plane_intersect_point += data.dir;
+      plane_intersect_point *= t0;
+      plane_intersect_point += data.base_point;
+      plane_intersect_point -= triangle_plane.normal;
 
-      if (!ua_physics_check_point_in_triangle(plane_inter,p1,p2,p3))
+      if (ua_physics_check_point_in_triangle(plane_intersect_point,
+         p1, p2, p3))
       {
-         // Not in triangle - must collide with an edge.. the hard case:
-         
-         dist_ell_inter = -1.0f; // we assume no hit then..
-         int numSubdivisions = 25; 
-         
-         ua_vector3d moveDist = data.dir;
-         moveDist.normalize();
-         moveDist *= (data.dir.length() / numSubdivisions);
-         ua_vector3d testPos(data.pos);
-         int t = 0;
-         ua_vector3d ip; // intersection point
-         
-         
-         bool foundCol = false;
-         while (t < numSubdivisions && !foundCol) {
-            // move sphere a little forward and check for intersection
-            testPos = data.pos + (moveDist*t);
-           
-            if (fabs(ua_physics_dist_point_plane(testPos, p1, p_normal)) <= 1.0f) {
-               if (ua_physics_insersect_sphere_triangle(testPos, 1.0f, p1, p2, p3, ip)) {
-                 
-                 // if t==0 we must be stuck
-                 if (t == 0) {
-                    data.stuck = true;
-                    return;                   
-                 }                
-                                  
-                 dist_ell_inter = (t-1) * moveDist.length();
-                 poly_inter = ip;
-                 
-                 float d = ua_physics_intersect_ray_sphere(poly_inter, -normdir, data.pos, 1.0f);
-                 sphere_inter = ip - normdir*dist_ell_inter;
-                 foundCol = true;
-              }
+         found = true;
+         t = t0;
+         collision_point = plane_intersect_point;
+      }
+   }
+
+   // If we haven't found a collision already we'll have to
+   // sweep sphere against points and edges of the triangle.
+   // Note: A collision inside the triangle (the check above)
+   // will always happen before a vertex or edge collision!
+   // This is why we can skip the swept test if the above
+   // gives a collision!
+
+   if (!found)
+   {
+      // some commonly used terms
+      ua_vector3d dir = data.dir;
+      ua_vector3d base = data.base_point;
+
+      double dir_sq_length = dir.length(); dir_sq_length *= dir_sq_length;
+      double a,b,c;
+      double new_t;
+
+      // For each vertex or edge a quadratic equation have to
+      // be solved. We parameterize this equation as
+      // a*t^2 + b*t + c = 0 and below we calculate the
+      // parameters a,b and c for each test.
+
+      // check against points
+      a = dir_sq_length;
+
+      // P1
+      b = 2.0*(dir.dot(base-p1));
+      c = (p1-base).length(); c *= c;
+      c -= 1.0;
+      if (get_lowest_root(a,b,c,t,new_t))
+      {
+         t = new_t;
+         found = true;
+         collision_point = p1;
+      }
+
+      // P2
+      b = 2.0*(dir.dot(base-p2));
+      c = (p2-base).length(); c *= c;
+      c -= 1.0;
+      if (get_lowest_root(a,b,c,t,new_t))
+      {
+         t = new_t;
+         found = true;
+         collision_point = p2;
+      }
+
+      // P3
+      b = 2.0*(dir.dot(base-p3));
+      c = (p3-base).length(); c *= c;
+      c -= 1.0;
+      if (get_lowest_root(a,b,c,t,new_t))
+      {
+         t = new_t;
+         found = true;
+         collision_point = p3;
+      }
+
+      // check against edges
+
+      // p1 -> p2
+      {
+         ua_vector3d edge = p2 - p1;
+         ua_vector3d base_to_vertex = p1 - base;
+         double edge_sq_length = edge.length();
+         edge_sq_length *= edge_sq_length;
+         double edge_dot_dir = edge.dot(dir);
+         double edge_dot_base_to_vertex = edge.dot(base_to_vertex);
+         double base_to_vertex_sq_length = base_to_vertex.length();
+         base_to_vertex_sq_length *= base_to_vertex_sq_length;
+
+         // calculate parameters for equation
+         a = edge_sq_length*-dir_sq_length + edge_dot_dir*edge_dot_dir;
+         b = edge_sq_length*(2.0*dir.dot(base_to_vertex)) -
+            2.0*edge_dot_dir*edge_dot_base_to_vertex;
+         c = edge_sq_length*(1-base_to_vertex_sq_length) +
+            edge_dot_base_to_vertex*edge_dot_base_to_vertex;
+
+         // does this swept sphere collide against infinite edge?
+         if (get_lowest_root(a,b,c,t,new_t))
+         {
+            // check if intersection is within line segment:
+            double f = (edge_dot_dir*new_t - edge_dot_base_to_vertex) /
+               edge_sq_length;
+
+            if (f >= 0.0 && f < 1.0)
+            {
+               // intersection took place within segment
+               t = new_t;
+               found = true;
+               collision_point = edge;
+               collision_point *= f;
+               collision_point += p1;
             }
-            t++;
          }
-         
-         // not in triangle
-         /*
-         poly_inter = ua_physics_closest_point_on_triangle(p1,p2,p3,plane_inter);
-         normdir *= -1;
-         dist_ell_inter = ua_physics_intersect_ray_sphere(poly_inter, normdir, data.pos, 1.0);
-
-         if (dist_ell_inter > 0)
-         {
-      
-            // calculate true sphere intersection point
-            sphere_inter.set(
-               poly_inter.x + dist_ell_inter * normdir.x,
-               poly_inter.y + dist_ell_inter * normdir.y,
-               poly_inter.z + dist_ell_inter * normdir.z);
-         }
-
-         normdir *= -1;
-#ifdef CD_DEBUG_INFO
-         printf("not in triangle..\n");           
-         printf("backray hit sphere at distance %f\n", dist_ell_inter);
-#endif
-      */
-      }
-      else {
-#ifdef CD_DEBUG_INFO
-        printf("in triangle..\n");
-#endif
       }
 
-      // here we do the error checking to see if we got ourself stuck last frame
-//      if (CheckPointInSphere(polyIPoint, source, 1.0f)) 
-//         colPackage->stuck = TRUE;
-
-      // ok, now we might update the collision data if we hit something
-#ifdef CD_DEBUG_INFO
-      printf("dist to ell %f  - velocity length %f\n", dist_ell_inter, data.dir.length());
-#endif
-      if (dist_ell_inter > 0 && dist_ell_inter <= data.dir.length() )
+      // p2 -> p3
       {
-         if (!data.found || dist_ell_inter < data.nearest_dist)
+         ua_vector3d edge = p3 - p2;
+         ua_vector3d base_to_vertex = p2 - base;
+         double edge_sq_length = edge.length();
+         edge_sq_length *= edge_sq_length;
+         double edge_dot_dir = edge.dot(dir);
+         double edge_dot_base_to_vertex = edge.dot(base_to_vertex);
+         double base_to_vertex_sq_length = base_to_vertex.length();
+         base_to_vertex_sq_length *= base_to_vertex_sq_length;
+
+         // calculate parameters for equation
+         a = edge_sq_length*-dir_sq_length + edge_dot_dir*edge_dot_dir;
+         b = edge_sq_length*(2.0*dir.dot(base_to_vertex)) -
+            2.0*edge_dot_dir*edge_dot_base_to_vertex;
+         c = edge_sq_length*(1-base_to_vertex_sq_length) +
+            edge_dot_base_to_vertex*edge_dot_base_to_vertex;
+
+         // does this swept sphere collide against infinite edge?
+         if (get_lowest_root(a,b,c,t,new_t))
          {
-#ifdef CD_DEBUG_INFO
-            printf("CD accepted..\n");
-#endif
-            // if we are hit we have a closest hit so far; we save the information
-            data.nearest_dist = dist_ell_inter;
-            data.nearest_poly_inter = poly_inter;
-            data.found = true;
+            // check if intersection is within line segment:
+            double f = (edge_dot_dir*new_t - edge_dot_base_to_vertex) /
+               edge_sq_length;
+
+            if (f >= 0.0 && f < 1.0)
+            {
+               // intersection took place within segment
+               t = new_t;
+               found = true;
+               collision_point = edge;
+               collision_point *= f;
+               collision_point += p2;
+            }
          }
       }
 
-   } // end for loop
+      // p3 -> p1
+      {
+         ua_vector3d edge = p1 - p3;
+         ua_vector3d base_to_vertex = p3 - base;
+         double edge_sq_length = edge.length();
+         edge_sq_length *= edge_sq_length;
+         double edge_dot_dir = edge.dot(dir);
+         double edge_dot_base_to_vertex = edge.dot(base_to_vertex);
+         double base_to_vertex_sq_length = base_to_vertex.length();
+         base_to_vertex_sq_length *= base_to_vertex_sq_length;
+
+         // calculate parameters for equation
+         a = edge_sq_length*-dir_sq_length + edge_dot_dir*edge_dot_dir;
+         b = edge_sq_length*(2.0*dir.dot(base_to_vertex)) -
+            2.0*edge_dot_dir*edge_dot_base_to_vertex;
+         c = edge_sq_length*(1-base_to_vertex_sq_length) +
+            edge_dot_base_to_vertex*edge_dot_base_to_vertex;
+
+         // does this swept sphere collide against infinite edge?
+         if (get_lowest_root(a,b,c,t,new_t))
+         {
+            // check if intersection is within line segment:
+            double f = (edge_dot_dir*new_t - edge_dot_base_to_vertex) /
+               edge_sq_length;
+
+            if (f >= 0.0 && f < 1.0)
+            {
+               // intersection took place within segment
+               t = new_t;
+               found = true;
+               collision_point = edge;
+               collision_point *= f;
+               collision_point += p3;
+            }
+         }
+      }
+
+   } // !found
+
+   // set result
+   if (found)
+   {
+      // distance to collision: 't' is time of collision
+      double dist_coll = t*data.dir.length();
+
+      // does this triangle qualify for the closest hit?
+      // it does if it's the first hit or the closest
+      if (!data.found_collision ||
+          dist_coll < data.nearest_dist)
+      {
+         // collision information necessary for sliding
+         data.nearest_dist = dist_coll;
+         data.intersect_point = collision_point;
+         data.found_collision = true;
+      }
+   }
+}
+
+/*! Calculates lowest root of quadratic equation of the form
+    ax^2 + bx + c = 0; the solution that is returned is positive and lower
+    than max_r. Other solutions are disregarded.
+*/
+bool ua_physics_model::get_lowest_root(double a, double b, double c,
+   double max_r, double& root)
+{
+   // check if a solution exists
+   double determinant = b*b - 4.0*a*c;
+
+   // if determinant is negative it means no solutions
+   if (determinant < 0.0)
+      return false;
+
+   // calculate the two roots: (if determinant == 0 then
+   // x1==x2 but let’s disregard that slight optimization)
+   double sqrt_d = sqrt(determinant);
+   double r1 = (-b - sqrt_d) / (2*a);
+   double r2 = (-b + sqrt_d) / (2*a);
+
+   // sort so x1 <= x2
+   if (r1 > r2) std::swap(r1,r2);
+
+   // get lowest root
+   if (r1 > 0 && r1 < max_r)
+   {
+      root = r1;
+      return true;
+   }
+
+   // it is possible that we want x2 - this can happen
+   // if x1 < 0
+   if (r2 > 0 && r2 < max_r)
+   {
+      root = r2;
+      return true;
+   }
+
+   // no (valid) solutions
+   return false;
 }
 
 
 // helper math functions
 
-// ray intersections. All return -1.0 if no intersection, otherwise the distance along the
-// ray where the (first) intersection takes place
-
-double ua_physics_intersect_ray_plane(const ua_vector3d& r_orig,
-   const ua_vector3d& r_vector, const ua_vector3d& p_orig, const ua_vector3d& p_normal)
-{
-   double d = -p_normal.dot(p_orig);
-
-   double numer = p_normal.dot(r_orig) + d;
-   double denom = p_normal.dot(r_vector);
-
-   if (denom == 0)
-      return -1.0; // normal is orthogonal to vector, can't intersect
-
-   return -numer / denom;
-}
-
-double ua_physics_intersect_ray_sphere(const ua_vector3d& r_orig,
-   const ua_vector3d& r_vector, const ua_vector3d& s_orig, double s_rad)
-{
-   ua_vector3d q(s_orig);
-   q -= r_orig;
-
-   double c = q.length();
-   double v = q.dot(r_vector);
-   double d = s_rad*s_rad - (c*c - v*v);
-
-   // if there was no intersection, return -1
-   if (d < 0.0)
-      return -1.0;
-
-   // return distance to the [first] intersecting point
-   return (v - sqrt(d));
-}
-
-
-bool ua_physics_insersect_sphere_triangle(ua_vector3d sO, float sR, ua_vector3d a, ua_vector3d b, ua_vector3d c, ua_vector3d& ip) {
-
-   // Check the 3 edges:
-
-   // A -> B
-   ua_vector3d rayDir = b - a;
-   float edgeLength = rayDir.length();
-   rayDir.normalize();
-   float dist = ua_physics_intersect_ray_sphere(a,rayDir, sO, sR);
-   if (dist > 0 && dist <= edgeLength)
-   {
-      ip = a + rayDir*dist;
-      return true;
-   }
-
-   // B -> C
-   rayDir = c - b;
-   edgeLength = rayDir.length();
-   rayDir.normalize();
-   dist = ua_physics_intersect_ray_sphere(b,rayDir, sO, sR);
-   if (dist > 0 && dist <= edgeLength)
-   {
-      ip = b + rayDir*dist;
-      return true;
-   }
-
-   // C -> A
-   rayDir = a - c;
-   edgeLength = rayDir.length();
-   rayDir.normalize();
-   dist = ua_physics_intersect_ray_sphere(c,rayDir, sO, sR);
-   if (dist > 0 && dist <= edgeLength)
-   {
-     ip = c + rayDir*dist;
-     return true;
-   }
-
-  return false;
-}
-
-
-
-typedef unsigned int uint32;
-#define in(a) ((uint32&) a)
-bool ua_physics_check_point_in_triangle(const ua_vector3d& point, const ua_vector3d& pa, const ua_vector3d& pb, const ua_vector3d& pc)
+/*! \todo replace in() macro test with somewhat more portable */
+bool ua_physics_check_point_in_triangle(const ua_vector3d& point,
+   const ua_vector3d& pa, const ua_vector3d& pb, const ua_vector3d& pc)
 {
    ua_vector3d e10=pb-pa;
    ua_vector3d e20=pc-pa;
@@ -650,78 +628,7 @@ bool ua_physics_check_point_in_triangle(const ua_vector3d& point, const ua_vecto
    float y = (e*a)-(d*b);
    float z = x+y-ac_bb;
 
+#define in(a) ((Uint32&) a)
+
    return (( in(z)& ~(in(x)|in(y)) ) & 0x80000000)!=0;
-}
-
-double ua_physics_dist_point_plane(ua_vector3d point, ua_vector3d pO, ua_vector3d pN)
-{
-   ua_vector3d dir = pO - point;
-   return (dir.dot(pN));
-}
-
-
-void ua_physics_closest_point_on_line(ua_vector3d& point,
-   const ua_vector3d& a, const ua_vector3d& b, const ua_vector3d& p)
-{
-   // determine t (the length of the vector from ‘a’ to ‘p’)
-   ua_vector3d c(p); c -= a;
-   ua_vector3d v(b); v -= a;
-
-   double d = v.length();
-   v.normalize();
-
-   double t = v.dot(c);
-
-   // check to see if ‘t’ is beyond the extents of the line segment
-   if (t < 0.0)
-   {
-      point = a;
-      return;
-   }
-
-   if (t > d)
-   {
-      point = b;
-      return;
-   }
-
-   // return the point between ‘a’ and ‘b’
-   // set length of V to t. V is normalized so this is easy
-   v *= t;
-   point = a;
-   point += v;
-}
-
-double ua_physics_point_dist(ua_vector3d a, const ua_vector3d& b)
-{
-   a-=b;
-   return a.length();
-}
-
-ua_vector3d ua_physics_closest_point_on_triangle(const ua_vector3d& a,
-   const ua_vector3d& b, const ua_vector3d& c, const ua_vector3d& p)
-{
-   ua_vector3d Rab, Rbc, Rca;
-
-   ua_physics_closest_point_on_line(Rab,a,b,p);
-   ua_physics_closest_point_on_line(Rbc,b,c,p);
-   ua_physics_closest_point_on_line(Rca,c,a,p);
-
-   double dAB = ua_physics_point_dist(Rab,p);
-   double dBC = ua_physics_point_dist(Rbc,p);
-   double dCA = ua_physics_point_dist(Rca,p);
-
-   double min = dAB;
-   ua_vector3d result(Rab);
-
-   if (dBC < min)
-   {
-      min = dBC;
-      result = Rbc;
-   }
-
-   if (dCA < min)
-      result = Rca;
-
-   return result;
 }
