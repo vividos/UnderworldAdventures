@@ -247,7 +247,7 @@ void ua_ingame_orig_screen::init()
 
 void ua_ingame_orig_screen::suspend()
 {
-   ua_trace("suspending orig. ingame user interface\n");
+   ua_trace("suspending orig. ingame user interface\n\n");
 
    // unregister script callbacks
    core->get_underworld().get_scripts().register_callback(NULL);

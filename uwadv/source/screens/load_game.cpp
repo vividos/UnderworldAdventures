@@ -91,7 +91,7 @@ void ua_load_game_screen::done()
 
    SDL_ShowCursor(0);
 
-   ua_trace("leaving load game screen\n");
+   ua_trace("leaving load game screen\n\n");
 }
 
 void ua_load_game_screen::handle_event(SDL_Event &event)
