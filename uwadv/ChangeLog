@@ -1,6 +1,7 @@
 2007-08-05 17:35  wjpalenstijn
 	* sources/linux/*: configure.in->configure.ac, added Makefile.am
 	* sources/linux/configure.ac: don't add -lGL -lGLU in MacOSX
+	* sources/Makefile.am: use $(OPENGL_LIBS)
 
 2007-08-02 20:45  wjpalenstijn
 	* source/inventory.cpp: fixed link1-list corruption when dropping obj.

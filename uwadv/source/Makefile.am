@@ -76,7 +76,7 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	screens/conversation.hpp screens/create_character.hpp \
 	screens/map_view.hpp
 
-uwadv_LDADD = -lGL -lGLU $(SDL_LIBS) liblua.a libzziplib.a -lz
+uwadv_LDADD = $(OPENGL_LIBS) $(SDL_LIBS) liblua.a libzziplib.a -lz
 
 uwadv_DEPENDENCIES = liblua.a libzziplib.a
 
