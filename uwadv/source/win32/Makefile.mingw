@@ -91,6 +91,7 @@ uwadv_OBJS = source/main.o source/game_win32.o source/uwadv_res.o \
 	../resource/cutsloader.o \
 	../screens/ingame_orig.o ../screens/start_splash.o \
 	../screens/start_menu.o ../screens/cutscene_view.o \
+	../screens/acknowledgements.o \
 	$(lua_OBJS) $(zziplib_OBJS)
 
 

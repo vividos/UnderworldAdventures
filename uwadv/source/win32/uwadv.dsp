@@ -187,6 +187,10 @@ SOURCE=..\conv\codevm.cpp
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\screens\acknowledgements.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\screens\cutscene_view.cpp
 # End Source File
 # Begin Source File
@@ -443,6 +447,10 @@ SOURCE=..\conv\codevm.hpp
 # Begin Group "screens headers"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\screens\acknowledgements.hpp
+# End Source File
 # Begin Source File
 
 SOURCE=..\screens\cutscene_view.hpp
