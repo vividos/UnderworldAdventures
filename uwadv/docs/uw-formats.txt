@@ -768,6 +768,7 @@ Table of Contents
                    s[1]: pointer to list of string id's; ends with id == 0
      description:  shows a menu of further questions the user can select
      return value: number of selected response
+     -------------------------------------------------------------------------
 
      id=0001 name="babl_fmenu" ret_type=int
      parameters:   s[0]: unknown, always 0x0000
@@ -775,6 +776,60 @@ Table of Contents
                    s[2]: unknown, points to 3 values
      description:  ???
      return value: number of selected response
+     -------------------------------------------------------------------------
+
+     id=0003 name="babl_ask" ret_type=int
+     parameters:   s[0]: unknown, always 0x0000
+     description:  lets the user type in a string
+     return value: ???, string handle which can be printed with @SS1 when put
+                   to stack on basep + 1
+     -------------------------------------------------------------------------
+
+     id=0007 name="contains" ret_type=int
+     parameters:   s[0]: pointer to first string handle (?)
+                   s[1]: pointer to second string handle (?)
+                   s[2]: unknown
+     description:  checks if the first string has the second string inside
+     return value: 1 when the string was found
+
+     -------------------------------------------------------------------------
+
+     id=000f name="get_quest" ret_type=int
+     parameters:   s[0]: unknown, value?
+                   s[1]: pointer to ???
+     description:  returns a quest flag (??)
+     return value: quest value (??)
+     -------------------------------------------------------------------------
+
+     id=0010 name="set_quest" ret_type=void
+     parameters:   s[0]: unknown, value?
+                   s[1]: pointer to ???
+                   s[2]: pointer to ???
+     description:  sets a quest value (??)
+     return value: none
+     -------------------------------------------------------------------------
+
+     id=0011 name="sex" ret_type=string
+     parameters:   s[0]: 
+     description:  
+     return value: ???
+     -------------------------------------------------------------------------
+
+     id=0012 name="show_inv" ret_type=int
+     parameters:   s[0]: unknown
+                   s[1]: pointer to ???
+                   s[2]: pointer to ???
+     description:  lets the player show an item to the NPC, the player gets
+                   the item back
+     return value: ???
+     -------------------------------------------------------------------------
+
+     id=0015 name="take_from_npc" ret_type=int
+     parameters:   s[0]: unknown, may be quantity
+                   s[1]: pointer to item ID?
+     description:  gives the player an item
+     return value: ???
+     -------------------------------------------------------------------------
 
 
 5.0 Critter Animation
