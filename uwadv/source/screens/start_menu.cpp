@@ -31,6 +31,7 @@
 #include "ingame_orig.hpp"
 #include "cutscene_view.hpp"
 #include "acknowledgements.hpp"
+#include "create_character.hpp"
 
 
 // constants
@@ -260,7 +261,7 @@ void ua_start_menu_screen::press_button()
       break;
 
    case 1: // "create character"
-      //core->push_screen(new ua_create_char_screen);
+      core->push_screen(new ua_create_character_screen);
       break;
 
    case 2: // "acknowledgements"
