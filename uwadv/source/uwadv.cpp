@@ -29,7 +29,7 @@
 #include "common.hpp"
 #include "uwadv.hpp"
 #include "screens/start_splash.hpp"
-#ifdef _DEBUG
+#ifdef HAVE_DEBUG
  #include "screens/ingame_orig.hpp"
  #include "screens/start_menu.hpp"
 #endif
@@ -51,13 +51,23 @@ void ua_game::init()
    // load settings
    settings.load();
 
+   // trace output some settings
+   ua_trace("uw1-path: %s\nuadata-path: %s\n",
+      settings.uw1_path.c_str(),settings.uadata_path.c_str());
+
+   ua_trace("game detected: %s\n\n",
+      settings.gtype == ua_game_none? "none" :
+      settings.gtype == ua_game_uw1 ? "uw1" :
+      settings.gtype == ua_game_uw_demo ? "uw_demo" : "uw2");
+
+   // check some settings
    if (settings.gtype == ua_game_none)
       throw ua_exception("could not find relevant game files");
 
    if (settings.gtype == ua_game_uw2)
-      throw ua_exception("you can't play with Ultima Underworld 2");
+      throw ua_exception("you can't play with Ultima Underworld 2 data files");
 
-   // First, initialize SDL's video subsystem
+   // first, initialize SDL's video subsystem
    if( SDL_Init(SDL_INIT_VIDEO) < 0 )
    {
       std::string text("video initialization failed: ");
@@ -126,7 +136,7 @@ void ua_game::init()
 
    screenstack.clear();
 
-#ifdef _DEBUG
+#ifdef HAVE_DEBUG
    push_screen(new ua_start_menu_screen);
 //   push_screen(new ua_ingame_orig_screen);
 #else
