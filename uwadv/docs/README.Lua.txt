@@ -112,8 +112,18 @@ registered C functions to call from Lua:
    tilemap_get_floor_height
    tilemap_get_objlist_start
 
-   inventory_rune_avail
-   inventory_rune_add
+   inv_get_objinfo
+   inv_slot_get_num
+   inv_slot_get_item
+   inv_slot_remove_item
+   inv_float_get_item
+   inv_float_add_item
+   inv_cont_calc_weight
+   inv_cont_get_cur
+   inv_cont_open
+   inv_cont_close
+   inv_rune_avail
+   inv_rune_set
 
    quest_get_flag
    quest_set_flag
@@ -124,6 +134,7 @@ registered C functions to call from Lua:
 
    prop_get_common
    prop_get_special
+   prop_get_tex
 
    ui_start_conv
    ui_show_cutscene
@@ -400,6 +411,7 @@ T = {
    enchanted = 1,  -- 1 if enchanted, 0 if not
    is_quantity = 1,-- is "special" field a quantity/property?
    is_hidden = 0,  -- is object hidden?
+   flags = 0,      -- special flags
 
    xpos = 2,       -- fractional x position in tile (0..7)
    ypos = 7,       -- fractional y position in tile (0..7)
@@ -522,21 +534,91 @@ is below 512 (0x0200).
 
 2.1.3.4. Inventory access functions
 
-* inventory_rune_avail(rune)
+* inv_get_objinfo(inv_pos)
+  return values: table
+
+  retrieves object info to the given inventory itemlist position in a table
+  that looks like the following:
+
+  T = {
+     item_id = 0,    -- item ID
+     link = 4,       -- next inventory itemlist position (or 0 if last)
+
+     quality = 1,    -- quality value
+     owner = 0,      -- owner / special field
+     quantity = 0,   -- quantity / property / special link field
+
+     enchanted = 1,  -- 1 if enchanted, 0 if not
+     is_quantity = 1,-- is "special" field a quantity/property?
+     is_hidden = 0,  -- is object hidden?
+     flags = 0,      -- special flags
+  }
+
+* inv_slot_get_num()
+  return values: numslots
+
+  returns number of slots in current container
+
+* inv_slot_get_item(slot_pos)
+  return values: inv_pos
+
+  returns itemlist position of given slot item; for topmost container the
+  item position may be lua_slot_no_item
+
+* inv_slot_remove_item(inv_pos)
+  return values: none
+
+  removes slot item on given slot position; if it was the floating item, the
+  floating status is cleared
+
+* inv_float_get_item()
+  return values: inv_pos
+
+  returns the itemlist position of the currently floating item or
+  lua_slot_no_item
+
+* inv_float_add_item(obj_handle)
+  return values: inv_pos
+
+  adds object with given object handle to the inventory itemlist and makes the
+  object floating if there's no currently floating object; returns
+  lua_slot_no_item on failure
+
+* inv_cont_calc_weight()
+  return values: weight
+
+  calculates inventory weight in stones
+
+* inv_cont_get_cur()
+  return values: inv_pos
+
+  returns current container itemlist position or lua_slot_no_item when topmost
+
+* inv_cont_open(inv_pos)
+  return values: none
+
+  opens container with given itemlist position; doesn't do anything if given
+  item is not a container; check with lua_inventory_is_container() if object
+  is a container
+
+* inv_cont_close()
+  return values: none
+
+  closes currently open container
+
+* inv_rune_avail(rune)
   return values: avail
 
-  returns nil when the given rune is not available. "rune" can be either a
-  string where the first char is taken as the rune letter. if "rune" is a
+  returns 1 when the rune with given number is available. "rune" can either be
+  a string where the first char is taken as the rune letter. if "rune" is a
   number, it is used as aphabetical index value. note that there only are
   24 runes, X and Z doesn't exist.
 
-* inventory_rune_add(rune)
+* inv_rune_set(rune)
   return values: none
 
   adds rune to the runebag. the parameter "rune" is treated the same as in
   "inventory_rune_avail".
-
-todo
 
 
 2.1.3.5. Quest flags functions
@@ -580,14 +662,14 @@ todo
   returns a table with common properties; the table has the following layout:
 
   T = {
-    item_id = 0,      -- item id
-    height = 2,
-    mass = 0,
-    radius = 0,
+    item_id = 0,          -- item id
+    height = 2,           -- item height (or 0 if no collision check)
+    mass = 0,             -- mass in stones
+    radius = 0,           -- object radius (for collision checks)
     quality_class = 1,
     quality_type = 2,
-    can_have_owner = 1,
-    can_be_looked_at = 1
+    can_have_owner = 1,   -- is 1 when item can have an owner
+    can_be_looked_at = 1  -- is 1 when object can be looked at
   }
 
 * prop_get_special(item_id)
