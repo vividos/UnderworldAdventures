@@ -1,0 +1,4 @@
+LIBRARY uadebug.dll
+EXPORTS
+
+uadebug_start   @1
