@@ -160,6 +160,11 @@ void ua_texture::upload(unsigned int numtex, bool mipmaps)
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, xres, yres, 0, GL_RGBA,
          GL_UNSIGNED_BYTE, tex);
    }
+
+   // check for errors
+   GLenum error = glGetError();
+   if (error != GL_NO_ERROR)
+      ua_trace("ua_texture: error during uploading texture! (%u)\n",error);
 }
 
 const Uint32* ua_texture::get_texels(unsigned int numtex) const
