@@ -57,7 +57,6 @@ rm -rf $RPM_BUILD_ROOT
 %doc Copying ChangeLog
 %doc docs/Authors.txt docs/README.uwadv.txt
 %doc docs/uw1-keyboard.txt uadata/uw1/keymap.cfg
-%doc docs/README.music.txt
 %{_bindir}/uwadv
 %{_bindir}/ua-lowercase-all.pl
 %{_datadir}/games/uwadv/uwadv.cfg
