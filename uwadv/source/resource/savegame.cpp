@@ -245,7 +245,7 @@ void ua_savegame::write_info()
 {
    write8(info.type);
    write_string(info.title.c_str());
-   write_string(info.gamefolder.c_str());
+   write_string(info.game_prefix.c_str());
 
    write_string(info.name.c_str());
 
@@ -273,7 +273,7 @@ void ua_savegame::read_info()
    // savegame infos
    info.type = read8();
    read_string(info.title);
-   read_string(info.gamefolder);
+   read_string(info.game_prefix);
 
    // player infos
    read_string(info.name);
@@ -311,6 +311,7 @@ ua_savegames_manager::ua_savegames_manager()
 void ua_savegames_manager::init(ua_settings &settings)
 {
    savegame_folder = settings.get_string(ua_setting_savegame_folder);
+   game_prefix = settings.get_string(ua_setting_game_prefix);
 
    rescan();
 }
@@ -460,6 +461,7 @@ ua_savegame ua_savegames_manager::get_quicksave(bool saving,
    {
       ua_savegame_info info;
       info.title = "Quicksave Savegame";
+      info.game_prefix = game_prefix;
 
       info.fill_infos(player);
 

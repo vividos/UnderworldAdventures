@@ -61,8 +61,8 @@ struct ua_savegame_info
    //! savegame title
    std::string title;
 
-   //! name of game base folder; only needed for game type == 2
-   std::string gamefolder;
+   //! name of game prefix
+   std::string game_prefix;
 
    // player infos
 
@@ -190,7 +190,7 @@ public:
    ua_savegames_manager();
 
    //! inits savegame manager
-   void init(ua_settings &settings);
+   void init(ua_settings& settings);
 
    //! rescans for existing savegames
    void rescan();
@@ -230,6 +230,9 @@ public:
 protected:
    //! savegame folder name
    std::string savegame_folder;
+
+   //! game prefix of current file
+   std::string game_prefix;
 
    //! list of all current savegames
    std::vector<std::string> savegames;
