@@ -58,10 +58,6 @@ void ua_conv_debugger::start()
 {
    allbreakpoints.clear();
 
-   // load private globals
-   for(int s=0; s<priv_globals.size(); s++)
-      stack.push(priv_globals[s]);
-
    Uint16 lastlistptr = 0x0000;
    char lastbuffer[256];
    verbose = false;
@@ -473,6 +469,22 @@ void ua_conv_debugger::imported_func(Uint16 number)
 
       printf("<NPC gives player an item>\n"
          "arg1=%04x, *arg2=%04x\n\n",arg1,stack.at(arg2));
+   }
+
+   if (iitem.name=="set_quest")
+   {
+      Uint16 arg1=stack.at(stack.get_stackp());
+      Uint16 arg2=stack.at(stack.get_stackp()-1);
+      Uint16 arg3=stack.at(stack.get_stackp()-2);
+      printf("<set_quest: arg1=%04x, *arg2=%04x, *arg3=%04x>\n",
+         arg1,stack.at(arg2),stack.at(arg3));
+   }
+
+   if (iitem.name=="get_quest")
+   {
+      Uint16 arg1=stack.at(stack.get_stackp());
+      Uint16 arg2=stack.at(stack.get_stackp()-1);
+      printf("<get_quest: arg1=%04x, *arg2=%04x>\n",arg1,stack.at(arg2));
    }
 }
 

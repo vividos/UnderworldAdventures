@@ -30,6 +30,7 @@
 #define __uwadv_cnvdbg_hpp_
 
 // needed includes
+#include <vector>
 #include "conv/codevm.hpp"
 #include "gamestrings.hpp"
 
@@ -69,9 +70,6 @@ protected:
 
    //! we have the globals 'on board'
    ua_conv_globals cg;
-
-   //! private globals
-   std::vector<Uint16> priv_globals;
 
    //! list of all breakpoints
    std::vector<Uint16> allbreakpoints;
