@@ -112,8 +112,11 @@ public:
    //! renders whole map to OpenGL
    void render(ua_texture_manager &texmgr);
 
-   // returns floor height on specific position
+   //! returns floor height on specific position
    double get_floor_height(double xpos, double ypos);
+
+   //! returns a tile info struct
+   ua_levelmap_tile &get_tile(unsigned int xpos, unsigned int ypos);
 
    //! returns map object list ref
    ua_object_list &get_mapobjects(){ return allobjects; }

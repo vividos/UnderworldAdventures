@@ -59,7 +59,7 @@ double ua_level::get_floor_height(double xpos, double ypos)
    switch(tile.type)
    {
    case ua_tile_solid:
-      height = 0.0; // player shouldn't get there, though
+      height = tile.ceiling*height_scale; // player shouldn't get there, though
       break;
 
    case ua_tile_slope_n:
@@ -79,17 +79,37 @@ double ua_level::get_floor_height(double xpos, double ypos)
          double(tile.slope*height_scale)*fmod(xpos,1.0);
       break;
 
-   case ua_tile_open:
+      // diagonal tiles
    case ua_tile_diagonal_se:
+      if (fmod(xpos,1.0)-fmod(ypos,1.0)<0.0) height = tile.ceiling*height_scale;
+      else height = tile.floor*height_scale;
+      break;
    case ua_tile_diagonal_sw:
+      if (fmod(xpos,1.0)+fmod(ypos,1.0)>1.0) height = tile.ceiling*height_scale;
+      else height = tile.floor*height_scale;
+      break;
    case ua_tile_diagonal_nw:
+      if (fmod(xpos,1.0)-fmod(ypos,1.0)>0.0) height = tile.ceiling*height_scale;
+      else height = tile.floor*height_scale;
+      break;
    case ua_tile_diagonal_ne:
+      if (fmod(xpos,1.0)+fmod(ypos,1.0)<1.0) height = tile.ceiling*height_scale;
+      else height = tile.floor*height_scale;
+      break;
+
+   case ua_tile_open:
    default:
       height = tile.floor*height_scale;
       break;
    };
 
    return height;
+}
+
+ua_levelmap_tile &ua_level::get_tile(unsigned int xpos, unsigned int ypos)
+{
+   xpos%=64; ypos%=64;
+   return tiles[ypos*64 + xpos];
 }
 
 void ua_level::render(ua_texture_manager &texmgr,ua_frustum &fr)
