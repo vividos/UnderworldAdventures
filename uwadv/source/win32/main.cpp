@@ -47,11 +47,11 @@ int main(int argc, char* argv[])
 #ifndef _DEBUG
    catch (ua_exception e)
    {
-      printf("caught ua_exception: %s\n",e.what());
+      ua.error_msg(e.what());
    }
    catch (std::exception e)
    {
-      printf("caught std::exception: %s\n",e.what());
+      ua.error_msg("std::exception");
    }
 #endif
 

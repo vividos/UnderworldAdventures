@@ -21,7 +21,9 @@
 */
 /*! \file game_win32.hpp
 
-   win32 specific game class
+   win32 specific game class; implements some virtual functions to override
+   win32 specific stuff, as menu or icon loading/handling or system message
+   processing.
 
 */
 
@@ -46,6 +48,7 @@ public:
    virtual void init();
    virtual void system_message(SDL_SysWMEvent &syswm);
    virtual void done();
+   virtual void error_msg(const char *msg);
 
 protected:
    // menu resource

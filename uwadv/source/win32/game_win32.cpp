@@ -83,3 +83,11 @@ void ua_game_win32::done()
    ::DestroyIcon(icon);
    ::DestroyIcon(icon_small);
 }
+
+void ua_game_win32::error_msg(const char *msg)
+{
+   SDL_SysWMinfo info;
+   SDL_GetWMInfo(&info);
+
+   ::MessageBox(info.window,msg,"Underworld Adventures",MB_OK);
+}
