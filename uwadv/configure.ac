@@ -82,7 +82,7 @@ dnl AC_CHECK_HEADERS(cstdio cstdlib cstring cmath cctype)
 dnl AC_CHECK_HEADERS(vector string map iostream set bitset)
 dnl AC_CHECK_HEADERS(utility algorithm exception fstream)
 dnl AC_CHECK_HEADERS(sstream iomanip)
-AC_CHECK_HEADERS(bitset sstream,,AC_MSG_ERROR([A required C++ header file is not found.]))
+AC_CHECK_HEADERS(bitset sstream,,[AC_MSG_ERROR([A required C++ header file is not found.])])
 
 
 # checking for --enable-debug
@@ -97,15 +97,15 @@ AC_ARG_ENABLE(debug,
 
 
 # checking for SDL
-AM_PATH_SDL(1.2.3,,AC_MSG_ERROR([
+AM_PATH_SDL(1.2.3,,[AC_MSG_ERROR([
 Underworld Adventures needs at least SDL 1.2.3 or higher installed.
 SDL is available here: http://www.libsdl.org/
-]))
+])])
 
 # check for SDL_mixer
-AC_CHECK_HEADER(SDL/SDL_mixer.h,,AC_MSG_ERROR([
+AC_CHECK_HEADER(SDL/SDL_mixer.h,,[AC_MSG_ERROR([
 SDL_mixer isn't installed. Please install SDL_mixer, available from
-http://www.libsdl.org/projects/SDL_mixer/]))
+http://www.libsdl.org/projects/SDL_mixer/])])
 
 SDL_LIBS="$SDL_LIBS -lSDL_mixer"
 
@@ -119,10 +119,10 @@ case "$host_os" in
       ;;
    *)
       OPENGL_LIBS="-lGL -lGLU"
-      AC_CHECK_HEADER(GL/gl.h,,AC_MSG_ERROR([
+      AC_CHECK_HEADER(GL/gl.h,,[AC_MSG_ERROR([
 OpenGL header not found. An OpenGL graphics library is required
 to compile and run Underworld Adventures.
-Check http://mesa3d.sourceforge.net/ for a good one.]))
+Check http://mesa3d.sourceforge.net/ for a good one.])])
       ;;
 
 esac
@@ -130,9 +130,9 @@ CPPFLAGS="$save_CPPFLAGS"
 
 
 # checking for zlib
-AC_CHECK_HEADER(zlib.h,,AC_MSG_ERROR([
+AC_CHECK_HEADER(zlib.h,,[AC_MSG_ERROR([
 zlib header not found. Zlib is required to compile and run
-Underworld Adventures.]))
+Underworld Adventures.])])
 ZLIB_LIBS="-lz"
 
 
