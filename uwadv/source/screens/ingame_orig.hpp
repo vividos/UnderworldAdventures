@@ -31,32 +31,48 @@
 
 // needed includes
 #include "screen.hpp"
+#include "keymap.hpp"
+#include "mousecursor.hpp"
+#include "fading.hpp"
+#include "imgquad.hpp"
+/*
 #include "image.hpp"
 #include "font.hpp"
-#include "keymap.hpp"
 #include "renderer.hpp"
 #include "textscroll.hpp"
 #include "uwscript.hpp"
 #include "debug.hpp"
 #include "panel.hpp"
-
+*/
 
 // enums
 
 //! game modes
-typedef enum
+enum ua_ingame_game_mode
 {
-   ua_mode_default=0, // nothing selected
-   ua_mode_options,
-   ua_mode_talk,
-   ua_mode_get,
-   ua_mode_look,
-   ua_mode_fight,
-   ua_mode_use,
+   ua_mode_default=0, //!< nothing selected
+   ua_mode_options,   //!< in the options menu
+   ua_mode_talk,      //!< talk mode
+   ua_mode_get,       //!< get mode
+   ua_mode_look,      //!< look mode
+   ua_mode_fight,     //!< fight mode
+   ua_mode_use        //!< use mode
+};
 
-} ua_ingame_orig_game_mode;
+//! actions to perform by screen
+enum ua_ingame_orig_action
+{
+   ua_action_none=0,    //!< no action to perform
+   ua_action_exit,      //!< exits the game
+   ua_action_load_game, //!< shows savegame loading screen
+   ua_action_save_game, //!< shows savegame loading screen
+   ua_action_quickload, //!< performs quickloading
+   ua_action_quicksave, //!< performs quicksaving
+   ua_action_conversation, //!< starts conversation
+   ua_action_cutscene,  //!< shows cutscene
+};
 
-
+/*
 //! screen area values
 enum ua_screen_area_id
 {
@@ -113,29 +129,40 @@ enum ua_screen_area_id
    ua_area_paperdoll_legs,
    ua_area_paperdoll_feet,
 };
-
+*/
 
 // classes
 
-//! user interface abstract base class
-class ua_ingame_orig_screen:
-   public ua_ui_screen_base,
-   public ua_underworld_script_callback
+class ua_ingame_orig_screen: public ua_screen
 {
 public:
    //! ctor
    ua_ingame_orig_screen(){}
+   //! dtor
    virtual ~ua_ingame_orig_screen(){}
 
-   // virtual functions from ua_screen_ctrl_base
-   virtual void init(ua_game_core_interface* core);
-   virtual void suspend();
-   virtual void resume();
-   virtual void done();
-   virtual void handle_event(SDL_Event& event);
-   virtual void render();
+   // virtual functions from ua_screen
+   virtual void init();
+   virtual void destroy();
+   virtual void draw();
+   virtual bool process_event(SDL_Event& event);
+   virtual void key_event(bool key_down, ua_key_value key);
    virtual void tick();
 
+protected:
+   //! suspends game resources while showing another screen
+   void suspend();
+
+   //! resumes gameplay and restores resources
+   void resume();
+
+   //! schedules action and starts fadeout if specified
+   void schedule_action(ua_ingame_orig_action action, bool fadeout_before);
+
+   //! actually performs scheduled action
+   void do_action(ua_ingame_orig_action action);
+
+/*
    // virtual functions from ua_underworld_script_callback
    virtual void ui_changed_level(unsigned int level);
    virtual void ui_start_conv(unsigned int level, unsigned int objpos);
@@ -150,16 +177,59 @@ public:
 
    //! returns game mode
    ua_ingame_orig_game_mode get_gamemode(){ return gamemode; }
-
+*/
 protected:
+   // constants
+
+   //! time to fade in/out
+   static const double fade_time;
+
+
+   // screen related
+
+   //! keymap
+   ua_keymap keymap;
+
+
+   //! background image
+   ua_image_quad img_background;
+
+   //! mouse cursor
+   ua_mousecursor mousecursor;
+
+   //! indicates if there is a movement key pressed
+   bool move_turn_left, move_turn_right,
+      move_walk_forward, move_run_forward, move_walk_backwards;
+
+   //! fading helper
+   ua_fading_helper fading;
+
+   //! current fading state; 0: fadein; 2: fadeout
+   unsigned int fade_state;
+
+   //! action to perform after fadeout
+   ua_ingame_orig_action fadeout_action;
+
+   //! optional parameter for fadeout action
+   unsigned int fadeout_param;
+
+
+
+   // game related
+
+   //! selected game mode
+   ua_ingame_game_mode gamemode;
+   
+   //! tickcount used for time bookkeeping
+   unsigned int tickcount;
+
+
+/*
    //! sets up OpenGL stuff, flags, etc.
    void setup_opengl();
 
    //! renders 2d user interface
    void render_ui();
-
-   //! handles keyboard action
-   void handle_key_action(Uint8 type, SDL_keysym &keysym);
 
    //! called for a given mouse action; click is false for mouse moves
    virtual void mouse_action(bool click, bool left_button, bool pressed);
@@ -171,13 +241,6 @@ protected:
    void do_screenshot(bool with_menu, unsigned int xres=0, unsigned int yres=0);
 
 protected:
-   // constants
-
-   //! time to fade in/out
-   static const double fade_time;
-
-
-   // mouse cursor
 
    //! mouse cursor image
    unsigned int cursor_image;
@@ -185,15 +248,8 @@ protected:
    //! true when cursor is a priority cursor
    bool prio_cursor;
 
-   //! mouse cursor
-   ua_mousecursor mousecursor;
-
    //! indicates that mouse movement is currently on
    bool mouse_move;
-
-   //! indicates if there is a movement key pressed
-   bool move_turn_left, move_turn_right,
-      move_walk_forward, move_run_forward, move_walk_backwards;
 
 
    //! is true when the mouse cursor is in 3d screen
@@ -202,32 +258,7 @@ protected:
 
    // misc. stuff
 
-   //! ticks since start of screen
-   unsigned long tickcount;
-
-   //! key mappings
-   ua_keymap keymap;
-
-   //! selected game mode
-   ua_ingame_orig_game_mode gamemode;
-
-   //! underworld renderer
-   ua_renderer renderer;
-
-
    // fading in/out
-
-   //! current fade state
-   unsigned int fade_state;
-
-   //! current fade tickcount
-   unsigned int fade_ticks;
-
-   //! fadeout action to carry out
-   unsigned int fadeout_action;
-
-   //! fadeout parameter for specific actions
-   unsigned int fadeout_param;
 
    //! level of npc object to converse with
    unsigned int conv_level;
@@ -237,9 +268,6 @@ protected:
 
 
    // images, textures and fonts
-
-   //! background image quad
-   ua_image_quad img_back;
 
    //! all inventory objects
    ua_image_list img_objects;
@@ -288,6 +316,7 @@ protected:
 
    //! screenshot image resolution
    unsigned int screenshot_xres,screenshot_yres;
+*/
 };
 
 #endif
