@@ -152,7 +152,7 @@ else
 endif
 
 INCLUDES = $(SDL_INCLUDE) $(STLPORT_INCLUDE) $(FMOD_INCLUDE) \
-	-Isource/ -Isource/audio -Isource/base -Isource/import \
+	-Isource/ -Isource/audio -Isource/base -Isource/conv -Isource/import \
 	-Isource/renderer -Isource/script -Isource/ui -Isource/underw \
 	-Isource/script/lua/include/ -Isource/base/zziplib/
 
