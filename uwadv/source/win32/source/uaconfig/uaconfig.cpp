@@ -301,14 +301,18 @@ void ua_config_prog::load_config()
    text = settings.get_string(ua_setting_screen_resolution);
 
    // check if we already have that one
-   if (CB_ERR == ::SendDlgItemMessage(m_hWnd,IDC_COMBO_SCREEN_RESOLUTION,
-      CB_FINDSTRINGEXACT,(WPARAM)-1,(LPARAM)text.c_str()))
+   int item = ::SendDlgItemMessage(m_hWnd,IDC_COMBO_SCREEN_RESOLUTION,
+      CB_FINDSTRINGEXACT,(WPARAM)-1,(LPARAM)text.c_str());
+
+   if (item == CB_ERR)
    {
       // add current resolution value
       ::SendDlgItemMessage(m_hWnd,IDC_COMBO_SCREEN_RESOLUTION,
          CB_INSERTSTRING,0,(LPARAM)text.c_str());
-      ::SendDlgItemMessage(m_hWnd,IDC_COMBO_SCREEN_RESOLUTION,CB_SETCURSEL,0,0);
+      item = 0;
    }
+   // set selection
+   ::SendDlgItemMessage(m_hWnd,IDC_COMBO_SCREEN_RESOLUTION,CB_SETCURSEL,item,0);
 
    // set "fullscreen" check
    ::SendDlgItemMessage(m_hWnd,IDC_CHECK_FULLSCREEN,BM_SETCHECK,
