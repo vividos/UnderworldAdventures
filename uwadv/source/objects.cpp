@@ -29,7 +29,7 @@
 #include "common.hpp"
 #include "objects.hpp"
 #include "level.hpp"
-#include <cmath>
+#include "uamath.hpp"
 
 
 // ua_object methods

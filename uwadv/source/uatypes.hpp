@@ -35,18 +35,10 @@
 #include <stdarg.h>
 
 
-// constants
-
-const double ua_pi = 3.141592653589793;
-
-
 // macros
 
 #define ua_min(a,b) ((a)<(b) ? (a) : (b))
 #define ua_max(a,b) ((a)>(b) ? (a) : (b))
-
-#define ua_deg2rad(a) ((double(a)/180.0)*ua_pi)
-#define ua_rad2deg(a) ((double(a)/ua_pi)*180.0)
 
 
 // trace messages
