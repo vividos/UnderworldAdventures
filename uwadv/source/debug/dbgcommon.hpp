@@ -54,4 +54,9 @@
 #include "wx/fl/controlbar.h" // core API
 
 
+#if !wxUSE_GLCANVAS
+#error Please set wxUSE_GLCANVAS to 1 in setup.h.
+#endif
+
+
 #endif
