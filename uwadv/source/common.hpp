@@ -46,6 +46,10 @@
 #include "uatypes.hpp"
 
 
+// lua include
+#include "lua/include/lua.h"
+
+
 // linux config file
 #ifdef HAVE_CONFIG_H
 #include "linux/config.h"
