@@ -29,6 +29,7 @@
 #include "common.hpp"
 #include "start_menu.hpp"
 #include "ingame_orig.hpp"
+#include "cutscene_view.hpp"
 
 
 // constants
@@ -63,7 +64,7 @@ void ua_start_menu_screen::init()
    tex.init();
    tex.convert(core->get_texmgr(),img);
    tex.use(core->get_texmgr());
-   tex.upload(false);
+   tex.upload();
 
    // get palette #2 (needed for palette shifting)
    memcpy(palette,core->get_texmgr().get_palette(2),sizeof(ua_onepalette));
@@ -240,8 +241,8 @@ void ua_start_menu_screen::press_button()
 {
    switch(selected_area)
    {
-   case 0:
-      //core->push_screen(new ua_introduction_screen);
+   case 0: // "introduction"
+      core->push_screen(new ua_cutscene_view_screen(0));
       break;
 
    case 1: // "create character"
