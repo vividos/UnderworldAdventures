@@ -21,8 +21,6 @@
 */
 /*! \file audio.cpp
 
-   \brief audio interface implementation
-
    audio interface implementation does an the interfacing with the audio part
    of SDL and the ua_midi_player class.
 
@@ -32,10 +30,21 @@
 #include "common.hpp"
 #include "audio.hpp"
 #include "midi.hpp"
+#include "sdl_mixer.h"
 #include <string>
 
 
 // tables
+
+//! table with all voc file names
+const char *ua_audio_allvocs[] =
+{
+   "00", "01", "02", "03", "04", "05", "06", "07", "08", "09",
+   "10", "11", "12", "13", "14", "15", "16", "17", "18", "19",
+   "20", "22", "23", "24", "25", "26", "27", "28", "29", "30",
+   "31", "32", "33", "34", "35", "36", "37", "38", "39", "50",
+   "58", "65"
+};
 
 //! table with all midi file names
 const char *ua_audio_allmidis[] =
@@ -66,7 +75,11 @@ public:
    //! initializes audio
    void init(ua_settings &settings)
    {
+      // init mixer
       SDL_Init(SDL_INIT_AUDIO);
+      Mix_OpenAudio(12000, MIX_DEFAULT_FORMAT, 2, 4096);
+      Mix_ChannelFinished(mixer_channel_finished);
+
       midipl.init_player(settings);
       midipl.init_driver();
       uw1path = settings.uw1_path;
@@ -75,6 +88,18 @@ public:
    //! plays a sound; stops when finished
    void play_sound(unsigned int sound)
    {
+      if (sound>=SDL_TABLESIZE(ua_audio_allvocs)) return;
+
+      // construct filename
+      std::string vocname(uw1path);
+      vocname.append("sound/");
+      vocname.append(ua_audio_allvocs[sound]);
+      vocname.append(".voc");
+
+      // start playing
+      Mix_Chunk* mc;
+      if (mc = Mix_LoadWAV(vocname.c_str()))
+          Mix_PlayChannel(-1, mc, 0);
    }
 
    //! starts music playback
@@ -97,7 +122,17 @@ public:
    //! dtor
    virtual ~ua_audio_impl()
    {
+      Mix_CloseAudio();
       SDL_QuitSubSystem(SDL_INIT_AUDIO);
+   }
+
+protected:
+   //! frees audio chunk when channel stops playing (callback function)
+   static void mixer_channel_finished(int channel)
+   {
+      Mix_Chunk* mc;
+      if (mc = Mix_GetChunk(channel))
+          Mix_FreeChunk(mc);
    }
 
 protected:
