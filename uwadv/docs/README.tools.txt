@@ -53,6 +53,11 @@ toggle continuous playback with the space bar. Pressing the return key steps
 through the single frames. The last frame often is the same frame as the first
 one.
 
+When an extra parameter "decode" is passed at the end of the command line, the
+frames are decoded to tga files instead. They are stored in the current folder
+and always have the format anim????.tga. Subsequent calls to animview will
+overwrite existent files.
+
 Background info: The cutscene animations were done with Deluxe Paint on Amiga,
 using the Deluxe Paint Animator file format (*.anm).
 
