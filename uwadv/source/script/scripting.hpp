@@ -19,15 +19,15 @@
    $Id$
 
 */
-/*! \file script.hpp
+/*! \file scripting.hpp
 
    \brief scripting support for Underworld Adventures
 
 */
 
 // include guard
-#ifndef uwadv_script_hpp_
-#define uwadv_script_hpp_
+#ifndef uwadv_scripting_hpp_
+#define uwadv_scripting_hpp_
 
 // needed includes
 #include "game_interface.hpp"

@@ -42,7 +42,7 @@
 #include "audio/audio.hpp"
 #include "ui/image.hpp"
 #include "renderer/renderer.hpp"
-#include "script/script.hpp"
+#include "script/scripting.hpp"
 #include "underw/underworld.hpp"
 #include "game_interface.hpp"
 #include "debug.hpp"

@@ -32,7 +32,7 @@
 #include "settings.hpp"
 #include "files.hpp"
 #include "underworld.hpp"
-#include "script.hpp"
+#include "scripting.hpp"
 
 
 // ua_gamecfg_loader methods

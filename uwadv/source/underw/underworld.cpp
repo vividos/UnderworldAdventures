@@ -30,7 +30,7 @@
 #include "underworld.hpp"
 #include "uamath.hpp"
 #include "import.hpp"
-#include "script.hpp"
+#include "scripting.hpp"
 
 
 // ua_underworld methods

@@ -29,7 +29,7 @@
 #include "common.hpp"
 #include "panel.hpp"
 #include "underworld.hpp"
-#include "script.hpp"
+#include "scripting.hpp"
 #include <sstream>
 
 
