@@ -499,7 +499,7 @@ Table of Contents
    01A0-01BF  Triggers
    01C0-01CF  Explosions/splats, fountain, silver tree, moving things
 
-   Description for each object is in game strings, block 3
+   Description for each object is in game strings, block 0004
 
 
 3.1 Common object properties
@@ -641,7 +641,7 @@ Table of Contents
 
      This trap causes the player to get a text message when it is set off. The
      "Unk2" field of the object definition contains the string number per
-     level, in game string block 8. The actual string number printed is
+     level, in game string block 0009. The actual string number printed is
      (64*level + unk2).
 
 
@@ -667,7 +667,9 @@ Table of Contents
    Each block contains a variable number of strings. The block header is:
 
    0000   Int16   no. of strings
-   0002   Int16   relative offset from end of block header
+   0002   Int16   relative offset from end of block header to first string
+   0004   Int16   relative offset to second string
+   ...
 
    Strings are compressed using the Huffman tree in the usual way. Bits are
    extracted big-endian i.e. rotated out of the top of each byte in turn.
@@ -675,43 +677,42 @@ Table of Contents
    branch is taken, otherwise take the left. Repeat until a leaf (node with -1
    for its children) is reached, at which point output the symbol for that node.
    For the next bit we start again from the root. End of string is marked with a
-   `|' character.
-
-   * conversation escape codes
-
-     Strings used for conversation can contain special character sequences.
-     A "\m" shows a "[more]" string and waits for user interaction. "@SS1" is
-     replaced by a gender specific string that is stored in the string block as
-     string number 1 and 2 (if the symbol doesn't appear in the block,
-     conversation strings start a string 1, else with string 3)
+   `|' character. The remaining bits in the last byte are unused.
 
    * game strings contents
 
-     block 0: general UI strings
-     block 1: character creation strings, mantras (?)
-     block 2: wall text/scroll/book/book title strings (*)
-     block 3: object descriptions (*)
-     block 4: object "look" descriptions
-     block 5: spell names
-     block 6: conversation partner names, starting at string 17
-     block 8: text trap messages
-     block 10: debugging strings
-     block 11: intro cutscene text
-     block 12: ending cutscene text
-     block 13: tyball cutscene text (?)
-     block 14: arial cuscene text (?)
-     block 15: dream cutscene 1 text
-     block 16: dream cutscene 2 text
-     block 17-24: garamon cutscene texts
-     block 25-121: conversation strings
+     block 0001: general UI strings
+     block 0002: character creation strings, mantras (?)
+     block 0003: wall text/scroll/book/book title strings (*)
+     block 0004: object descriptions (*)
+     block 0005: object "look" descriptions, object quality states
+     block 0006: spell names
+     block 0007: conversation partner names, starting at string 17 for conv 1
+     block 0008: text on walls, signs
+     block 0009: text trap messages
+     block 000a: wall/floor description text
+     block 0018: debugging strings (not used ingame)
+     block 0c00: intro cutscene text
+     block 0c01: ending cutscene text
+     block 0c02: tyball cutscene text
+     block 0c03: arial cuscene text (?)
+     block 0c18: dream cutscene 1 text "arrived"
+     block 0c19: dream cutscene 2 text "talismans"
+     block 0c1a-0c21: garamon cutscene texts
+     block 0e01-0f3a: conversation strings
 
-     Block 2 contains text/scroll etc. strings. The exact string to use for a
-     book, scroll or other text object is in the link2 field. It is calculated
-     as link2 - 0x0200.
+     Block 0003 contains text/scroll etc. strings. The exact string to use for
+     books, scrolls or other text object is in the link2 field. It is calculated
+     as link2 - 0x0200. For each level, 32 string slots are available.
 
-     Block 3 contains the object descriptions. The article (e.g. 'a' or 'an')
-     is separated with an underscore '_'. When a '&' is in the string, it
-     separates the plural of the object's name.
+     Block 0004 contains the object descriptions. The article (e.g. 'a' or
+     'an') is separated with an underscore '_'. When a '&' is in the string,
+     it separates the plural of the object's name. The complete text string is
+     "you see <article> <mood> <description> [named <npc-name>]. <mood> can be
+     one of "mellow" or "upset".
+
+     In the uw_demo, the 0cxx blocks and many of the conversation string
+     blocks aren't available.
 
 
 4.1 Conversations
@@ -724,19 +725,14 @@ Table of Contents
 
    If an offset is 0, the conversation slot is empty and no conversation is
    available. The name of the conversation partner is stored in string block
-   6, as string number (conversation slot number+17).
-
-   To find out which string block to use during conversation, you have to
-   count the valid conversation slots up to the slot with the current
-   conversation. The number of valid slots is the offset in string blocks,
-   plus 25.
+   0007, as string number (conversation slot number - 0x0e00 +16).
 
    The conversation header looks like this:
 
    0000   Int32   unknown1, always seems to be 0x0828, or 28 08
    0004   Int32   code size in number of instructions (16-bit words)
    0008   Int16   unknown2, always seems to be 0x0000
-   000A   Int16   seems to be conversation number + 0x0E00
+   000A   Int16   game strings block to use
    000C   Int16   number of stack space reserved for private globals
    000E   Int16   number of imported globals (functions + variables)
    0010           start of imported functions list
@@ -1066,7 +1062,7 @@ Table of Contents
 5.1 Cutscene Animations
 
    Cutscene animations are stored in folder "cuts". Text strings for cutscenes
-   can be found in string blocks 11 through 24. Here is an overview of
+   can be found in string blocks 0c00 through 0c21. Here is an overview of
    files contents:
 
       * = not in "static" install
@@ -1127,10 +1123,11 @@ Table of Contents
       cs410.n01   map piece showing some traps
 
    The cutscene files are done with Amiga's DeluxePaint Animator (file
-   extension *.anm). The complete description can be found in the file
-   "uw-cuts-animfile.txt". Here's a short overview for usage in uw1:
+   extension *.anm). The complete description can be found in the zip file
+   "anmformt.zip" in the "misc" folder. Here's a short overview for usage in
+   uw1:
 
-   The files, "large page files", constist of a header, followed by one or
+   The files, "large page files", consist of a header, followed by one or
    more large pages, where each page can store one or more animation frames.
    A large page is always 64k big, except for the last page (which is
    truncated at the end of usable data).
@@ -1147,7 +1144,8 @@ Table of Contents
       0016   Int16   height in pixels
 
    The whole header is 128 bytes long. After the header color cycling info
-   follows, which is not used in uw1. Then comes the color palette:
+   follows (which also is 128 bytes long), which is not used in uw1. Then
+   comes the color palette:
 
       0000   Int8    intensity for blue, ranges from 0..255
       0001   Int8    intensity for green
@@ -1343,7 +1341,7 @@ Table of Contents
    and 29 in tmobj.gr. Which one is drawn in the model depends on the low bits
    of the "state" field, as usual. Headstone text is determined by the "link"
    field: the high (512) bit seems always to be set, the rest is the string
-   index in the object message block 7. This also serves as an index into
+   index in the object message block 0008. This also serves as an index into
    grave.dat which in turn gives a unique grave ID.
 
    Large headstone images live in the cutscene file cuts/cs401.n01, one frame
