@@ -39,8 +39,13 @@ void ua_cutscene::load(ua_settings &settings, unsigned int main,
    char buffer[32];
    sprintf(buffer,"cuts/cs%03o.n%02o",main,sub);
 
+   load(settings,buffer);
+}
+
+void ua_cutscene::load(ua_settings &settings, const char *relfilename)
+{
    std::string filename(settings.uw1_path);
-   filename.append(buffer);
+   filename.append(relfilename);
 
    load(filename.c_str());
 }
@@ -116,4 +121,6 @@ void ua_cutscene::load(const char *filename)
    fread(&lpages[0],lpsize,1,fd);
 
    fclose(fd);
+
+   curframe = -1;
 }
