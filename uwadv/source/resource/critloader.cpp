@@ -30,6 +30,7 @@
 // needed includes
 #include "common.hpp"
 #include "critter.hpp"
+#include "fread_endian.hpp"
 
 
 // external functions
@@ -40,34 +41,209 @@ extern void ua_image_decode_rle(FILE *fd,std::vector<Uint8> &pixels,unsigned int
 
 // ua_critter methods
 
-void ua_critter::load(const char* file, Uint8 auxpal)
+void ua_critter::load(const char* file, unsigned int used_auxpal)
 {
-   unsigned int curpage = 0;
-   while(true)
+//   ua_trace(" loading frames from file %s ... ",file);
+//   unsigned int now = SDL_GetTicks();
+
+   std::vector<ua_image>& allframes_list = allframes.get_allimages();
+
+   unsigned int maxleft,maxright,maxtop,maxbottom;
+   maxleft = maxright = maxtop = maxbottom = 0;
+
+   ua_image img_frame;
+
+   for(unsigned int pass=0; pass<2; pass++)
    {
-      // construct next pagefile name
-      std::string pagefile(file);
+      unsigned int curpage = 0;
+      unsigned int segment_offset = 0;
+      unsigned int frame_offset = 0;
 
-      char buffer[8];
-      sprintf(buffer,".n%02u",curpage++);
-      pagefile.append(buffer);
+      if (pass==1)
+      {
+         // pass 1: init frame image
+         img_frame.create(maxleft+maxright,maxtop+maxbottom);
+      }
 
-      // try to open pagefile
-      FILE* fd = fopen(pagefile.c_str(),"rb");
-      if (fd==NULL)
-         break; // no more page files
+      while(true)
+      {
+         // construct next pagefile name
+         std::string pagefile(file);
 
-      // todo: load animation
+         char buffer[8];
+         sprintf(buffer,".n%02u",curpage++);
+         pagefile.append(buffer);
 
+         // try to open pagefile
+         FILE* fd = fopen(pagefile.c_str(),"rb");
+         if (fd==NULL)
+            break; // no more page files
 
-      // close pagefile
-      fclose(fd);
+         // load animation
+         Uint8 auxpal[32];
+
+         if (pass==0)
+         {
+            // pass 0: just skip over all tables
+
+            // skip over slot and segment lists and all auxpals
+            fgetc(fd);
+            unsigned int nslots = fgetc(fd);
+            fseek(fd,nslots,SEEK_CUR);
+
+            unsigned int nsegs = fgetc(fd);
+            fseek(fd,nsegs*8,SEEK_CUR);
+
+            unsigned int nauxpals = fgetc(fd);
+            fseek(fd,nauxpals*32,SEEK_CUR);
+         }
+         else
+         {
+            // pass 1: read in all tables
+
+            // read in slot list
+            {
+               unsigned int slotbase = fgetc(fd);
+               unsigned int nslots = fgetc(fd);
+
+               slotlist.resize(nslots+slotbase,0xff);
+
+               // read in segment indices
+               for(unsigned int i=0; i<nslots; i++)
+                  slotlist[i+slotbase] = fgetc(fd) + segment_offset;
+            }
+
+            // read in segment lists
+            {
+               unsigned int nsegs = fgetc(fd);
+               segmentlist.resize(nsegs+segment_offset);
+
+               for(unsigned int i=0; i<nsegs; i++)
+               {
+                  std::vector<Uint8>& cursegment = segmentlist[i+segment_offset];
+                  cursegment.resize(8);
+
+                  for(unsigned int j=0; j<8; j++)
+                     cursegment[j] = fgetc(fd) + frame_offset;
+               }
+
+               segment_offset += nsegs;
+            }
+
+            // read auxiliary palette to use
+            {
+               unsigned int nauxpals = fgetc(fd);
+
+               if (used_auxpal>nauxpals)
+                  used_auxpal=0; // wrong palette given; should not happen
+
+               // skip to used palette
+               long nextdata = ftell(fd) + nauxpals*32;
+
+               if (used_auxpal>0)
+                  fseek(fd,used_auxpal*32,SEEK_CUR);
+
+               fread(auxpal,32,1,fd);
+
+               fseek(fd,nextdata,SEEK_SET);
+            }
+         }
+
+         // read in all frames
+         {
+            unsigned int noffsets = fgetc(fd);
+            unsigned int unknown1 = fgetc(fd);
+
+            if (pass==1)
+            {
+               // resize image list, to gain a little performance
+               allframes_list.resize(noffsets+frame_offset);
+            }
+
+            // read in frame offsets
+            std::vector<Uint16> alloffsets;
+            alloffsets.resize(noffsets);
+
+            for(unsigned int i=0; i<noffsets; i++)
+               alloffsets[i] = fread16(fd);
+
+            for(unsigned int n=0; n<noffsets; n++)
+            {
+               // seek to frame header
+               fseek(fd,alloffsets[n],SEEK_SET);
+
+               unsigned int width,height,hotx,hoty,type;
+               width = fgetc(fd);
+               height = fgetc(fd);
+               hotx = fgetc(fd);
+               hoty = fgetc(fd);
+               type = fgetc(fd);
+
+               if (pass==0)
+               {
+                  // pass 0: calculate maximum frame image width
+
+                  unsigned int left,right,top,bottom;
+                  right = width-hotx;
+                  left = hotx;
+                  top = hoty;
+                  bottom = height-hoty;
+
+                  // determine max width needed for this frame
+                  if (right > maxright) maxright = right;
+                  if (left > maxleft) maxleft = left;
+                  if (top > maxtop) maxtop = top;
+                  if (bottom > maxbottom) maxbottom = bottom;
+               }
+               else
+               {
+                  // pass 1: read in actual image
+
+                  Uint16 datalen = fread16(fd);
+
+                  ua_image img_temp;
+                  img_temp.create(width,height);
+
+                  // rle-decode image
+                  ua_image_decode_rle(fd,img_temp.get_pixels(),
+                     type==6 ? 5 : 4, datalen, width*height, auxpal);
+
+                  // copy to frame
+                  img_frame.clear();
+
+                  // paste to frame
+                  img_frame.paste_image(img_temp,
+                     maxleft-hotx, maxtop-hoty);
+
+                  allframes_list.push_back(img_frame);
+               }
+               // end of current frame
+            }
+            // end of all frames
+
+            frame_offset += noffsets;
+         }
+
+         // close pagefile
+         fclose(fd);
+
+         // end of page file
+      }
+      // end of all page files
    }
+   // end of all passes
+
+   // remember new hotspot
+   hotspot_x = maxleft;
+   hotspot_y = maxtop;
+
+//   ua_trace("done, needed %u ms\n",SDL_GetTicks()-now);
 }
 
 void ua_critter_pool::load(ua_settings& settings)
 {
-   ua_trace("loading all critter animations\n");
+   ua_trace("loading all critter animations ... ");
+   unsigned int now = SDL_GetTicks();
 
    // load infos from "assoc.anm"
    char animnames[32][8];
@@ -110,4 +286,6 @@ void ua_critter_pool::load(ua_settings& settings)
    }
 
    fclose(assoc);
+
+   ua_trace("done, needed %u ms\n",SDL_GetTicks()-now);
 }
