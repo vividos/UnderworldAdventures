@@ -37,7 +37,7 @@
 // constants
 
 //! current savegame version
-const Uint32 ua_savegame::current_version = 0;
+const Uint32 ua_savegame::current_version = 1;
 
 
 // ua_savegame_info methods#
