@@ -33,41 +33,10 @@
 
 // ua_object_list methods
 
-void ua_object_list::load(ua_settings &settings, unsigned int level)
+void ua_object_list::import_objs(FILE *fd)
 {
    tile_index.resize(64*64,0);
    master_obj_list.resize(0x400,0);
-
-   // construct map file name
-   std::string mapfile(settings.uw1_path);
-
-   if (settings.gtype == ua_game_uw1)
-      mapfile.append("data/lev.ark");
-   else if (settings.gtype == ua_game_uw_demo)
-      mapfile.append("data/level13.st");
-
-   FILE *fd = fopen(mapfile.c_str(),"rb");
-   if (fd==NULL)
-   {
-      std::string text("could not open file ");
-      text.append(mapfile);
-      throw ua_exception(text.c_str());
-   }
-
-   if (settings.gtype == ua_game_uw1)
-   {
-      // seek to proper level map
-      fseek(fd,4*level+2,SEEK_SET);
-
-      Uint32 offset = fread32(fd);
-
-      // seek to proper level map
-      fseek(fd,offset,SEEK_SET);
-   }
-   if (settings.gtype == ua_game_uw_demo)
-   {
-      fseek(fd,0,SEEK_SET);
-   }
 
    // read in all tile indices
    for(unsigned int tile=0; tile<64*64; tile++)
@@ -136,6 +105,12 @@ void ua_object_list::addobj_follow(std::vector<Uint32> &objprop,Uint16 objpos)
       master_obj_list[objpos] = obj;
 
       // examine link2 and add where appropriate/known
+
+      if (objpos==link1)
+      {
+         // throw ua_exception("while importing: very strange, object links to itself");
+         break;
+      }
 
       // add next obj in list
       objpos=link1;

@@ -100,9 +100,6 @@ public:
    //! dtor
    ~ua_level(){}
 
-   //! loads the map of a specific level
-   void load(ua_settings &settings, unsigned int level);
-
    //! prepares textures used in map for OpenGL
    void prepare_textures(ua_texture_manager &texmgr);
 
@@ -120,6 +117,14 @@ public:
 
    //! returns map object list ref
    ua_object_list &get_mapobjects(){ return allobjects; }
+
+   // loading / saving / importing
+
+   //! imports a level map
+   void import_map(FILE *fd);
+
+   //! imports texture usage info
+   void import_texinfo(FILE *fd);
 
 protected:
    //! renders the floor of a tile

@@ -27,6 +27,7 @@
 
 // needed includes
 #include "common.hpp"
+#include "underworld.hpp"
 #include "level.hpp"
 #include "fread_endian.hpp"
 #include <string>
@@ -36,36 +37,47 @@
 
 ua_levelmap_tiletype ua_tile_type_mapping[16] =
 {
-  ua_tile_solid,
-  ua_tile_open,
-  ua_tile_diagonal_se,
-  ua_tile_diagonal_sw,
-  ua_tile_diagonal_ne,
-  ua_tile_diagonal_nw,
-  ua_tile_slope_n,
-  ua_tile_slope_s,
-  ua_tile_slope_e,
-  ua_tile_slope_w,
-  ua_tile_solid,
-  ua_tile_solid,
-  ua_tile_solid,
-  ua_tile_solid,
-  ua_tile_solid,
-  ua_tile_solid
+   ua_tile_solid,
+   ua_tile_open,
+   ua_tile_diagonal_se,
+   ua_tile_diagonal_sw,
+   ua_tile_diagonal_ne,
+   ua_tile_diagonal_nw,
+   ua_tile_slope_n,
+   ua_tile_slope_s,
+   ua_tile_slope_e,
+   ua_tile_slope_w,
+   ua_tile_solid,
+   ua_tile_solid,
+   ua_tile_solid,
+   ua_tile_solid,
+   ua_tile_solid,
+   ua_tile_solid
 };
 
 
-// ua_level methods
+// ua_underworld methods
 
-void ua_level::load(ua_settings &settings, unsigned int level)
+void ua_underworld::import_savegame(ua_settings &settings,const char *folder,bool initial)
 {
-   // construct map file name
-   std::string mapfile(settings.uw1_path);
+   unsigned int maxlevels = 0;
 
-   if (settings.gtype == ua_game_uw1)
-      mapfile.append("data/lev.ark");
-   else if (settings.gtype == ua_game_uw_demo)
+   if (settings.gtype == ua_game_uw_demo)
+      maxlevels = 1;
+   else
+      maxlevels = 9;
+
+   levels.reserve(maxlevels);
+
+   // open map file
+   std::string mapfile(settings.uw1_path);
+   if (settings.gtype == ua_game_uw_demo)
       mapfile.append("data/level13.st");
+   else
+   {
+      mapfile.append(folder);
+      mapfile.append("lev.ark");
+   }
 
    FILE *fd = fopen(mapfile.c_str(),"rb");
    if (fd==NULL)
@@ -75,63 +87,76 @@ void ua_level::load(ua_settings &settings, unsigned int level)
       throw ua_exception(text.c_str());
    }
 
-   Uint16 entries=0;
-   std::vector<Uint32> offsets;
-
-   if (settings.gtype == ua_game_uw1)
-   {
-      // read in all offsets
-      entries = fread16(fd);
-
-      offsets.resize(entries,0);
-      for(Uint16 n=0; n<entries; n++)
-         offsets[n] = fread32(fd);
-
-      // for ultima underword 1, we have 9 level maps
-
-      // read in texture usage table
-
-      // seek to block
-      fseek(fd,offsets[level+18],SEEK_SET);
-
-      Uint16 tex;
-      for(tex=0; tex<48; tex++) wall_textures[tex]  = fread16(fd)+ua_tex_stock_wall;
-      for(tex=0; tex<10; tex++) floor_textures[tex] = fread16(fd)+ua_tex_stock_floor;
-      for(tex=0; tex<6; tex++)  door_textures[tex]  = fread16(fd);
-   }
-   else
-   {
-      // we only have the demo
-      std::string texmapfile(settings.uw1_path);
-      texmapfile.append("data/level13.txm");
-
-      FILE *fd2 = fopen(texmapfile.c_str(),"rb");
-      if (fd2==NULL)
-      {
-         std::string text("could not open file ");
-         text.append(texmapfile);
-         throw ua_exception(text.c_str());
-      }
-
-      Uint16 tex;
-      for(tex=0; tex<48; tex++) wall_textures[tex]  = fread16(fd2)+ua_tex_stock_wall;
-      for(tex=0; tex<10; tex++) floor_textures[tex] = fread16(fd2)+ua_tex_stock_floor;
-      for(tex=0; tex<6; tex++)  door_textures[tex]  = fread16(fd2);
-
-      fclose(fd2);
-   }
-
-   // read in map info
-
-   if (settings.gtype == ua_game_uw1)
-   {
-      // seek to proper level map
-      fseek(fd,offsets[level],SEEK_SET);
-   }
+   // uw_demo is treated specially
    if (settings.gtype == ua_game_uw_demo)
    {
+      ua_level level;
+
+      // import texture usage table
+      {
+         mapfile.assign(settings.uw1_path);
+         mapfile.append("data/level13.txm");
+
+         FILE *fd2 = fopen(mapfile.c_str(),"rb");
+         if (fd2==NULL)
+         {
+            std::string text("could not open file ");
+            text.append(mapfile);
+            throw ua_exception(text.c_str());
+         }
+         level.import_texinfo(fd2);
+         fclose(fd2);
+      }
+
+      // import map
+      level.import_map(fd);
+
+      // import objects
       fseek(fd,0,SEEK_SET);
+      level.get_mapobjects().import_objs(fd);
+
+      levels.push_back(level);
+      fclose(fd);
+
+      return;
    }
+
+   // read in offsets
+   std::vector<Uint32> offsets;
+   Uint16 numoffsets = fread16(fd);
+   offsets.resize(numoffsets,0);
+
+   for(Uint16 n=0; n<numoffsets; n++)
+      offsets[n]=fread32(fd);
+
+   // load all levels
+   for(unsigned int i=0; i<maxlevels; i++)
+   {
+      ua_level level;
+
+      // load texture usage table
+      fseek(fd,offsets[i+18],SEEK_SET);
+      level.import_texinfo(fd);
+
+      // load level map
+      fseek(fd,offsets[i],SEEK_SET);
+      level.import_map(fd);
+
+      // load object list
+      fseek(fd,offsets[i],SEEK_SET);
+      level.get_mapobjects().import_objs(fd);
+
+      levels.push_back(level);
+   }
+
+   fclose(fd);
+}
+
+// ua_level methods
+
+void ua_level::import_map(FILE *fd)
+{
+   // read in map info
 
    // alloc memory for tiles
    tiles.clear();
@@ -159,9 +184,12 @@ void ua_level::load(ua_settings &settings, unsigned int level)
       tiles[tile].texture_wall = wall_textures[wall_index];
       tiles[tile].texture_floor = floor_textures[floor_index];
    }
+}
 
-   fclose(fd);
-
-   // load all objects
-   allobjects.load(settings,level);
+void ua_level::import_texinfo(FILE *fd)
+{
+   Uint16 tex;
+   for(tex=0; tex<48; tex++) wall_textures[tex]  = fread16(fd)+ua_tex_stock_wall;
+   for(tex=0; tex<10; tex++) floor_textures[tex] = fread16(fd)+ua_tex_stock_floor;
+   for(tex=0; tex<6; tex++)  door_textures[tex]  = fread16(fd);
 }

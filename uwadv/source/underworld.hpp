@@ -51,19 +51,11 @@ class ua_game_core_interface;
 class ua_underworld
 {
 public:
+   //! ctor
    ua_underworld(){}
 
    //! initializes underworld
    void init(ua_game_core_interface *core);
-
-   //! loads complete game state from savegame
-   void load_game(/*...*/);
-
-   //! loads new game state
-   void new_game(/*...*/);
-
-   //! saves game state
-   void save_game(/*...*/);
 
    //! clean up the underworld
    void done();
@@ -71,24 +63,43 @@ public:
    //! moves player according to the direction angle
    void walk_player(double angle);
 
-   //! transfers player to other location
-//   void move_player(float x, float y, int level=-1);
-
-   float get_player_height();
+   //! returns the height of the player
+   double get_player_height();
 
    //! renders the current game map and all objects
    void render(ua_frustum &fr);
 
    // access to underworld components
 
+   //! returns player
    ua_player &get_player(){ return player; }
 
+   //! returns player's inventory
    ua_inventory &get_inventory(){ return inventory; }
 
+   //! returns conversation globals
    ua_conv_globals &get_conv_globals(){ return conv_globals; }
 
-   ua_level &get_level(unsigned int level);
+   //! returns current level
+   ua_level &get_current_level();
 
+   //! changes current level
+   void change_level(unsigned int level);
+
+   // loading / saving / importing
+
+   //! imports a saved game
+   void import_savegame(ua_settings &settings,const char *folder,bool initial);
+/*
+   //! loads complete game state from savegame
+   void load_game();
+
+   //! loads new game state
+   void new_game();
+
+   //! saves game state
+   void save_game();
+*/
 protected:
    //! interface to core game class
    ua_game_core_interface *core;
@@ -102,16 +113,14 @@ protected:
    //! conversation globals of the current underworld
    ua_conv_globals conv_globals;
 
-   ua_level level;
-
    //! physics model to use in underworld
    ua_physics_model physics;
 
    //! current level
-//   unsigned int curlevel;
+   unsigned int curlevel;
 
    //! all underworld levels
-//   std::vector<ua_level*> levels;
+   std::vector<ua_level> levels;
 };
 
 #endif

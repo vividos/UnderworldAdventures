@@ -116,15 +116,17 @@ public:
    //! ctor
    ua_object_list(){}
 
-   //! loads object list
-   void load(ua_settings &settings, unsigned int level);
-
    //! returns list of objects on a tile
    std::vector<ua_object*> get_object_list(unsigned int xpos,
       unsigned int ypos);
 
    //! returns an object at a specific list pos
    ua_object *get_object(Uint16 at);
+
+   // loading / saving / importing
+
+   //! imports an object list
+   void import_objs(FILE *fd);
 
 private:
    //! adds object to master object list and follows link1 and link2 objs

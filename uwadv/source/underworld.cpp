@@ -37,30 +37,15 @@ void ua_underworld::init(ua_game_core_interface *thecore)
 {
    core=thecore;
 
-   level.load(core->get_settings(),0);
-   level.prepare_textures(core->get_texmgr());
+   curlevel=0;
+
+   levels.clear();
 
    physics.init(this);
 
    player.init();
    player.set_pos(32.0,2.0);
    player.set_angle(90.0);
-}
-
-void ua_underworld::load_game()
-{
-}
-
-void ua_underworld::new_game()
-{
-}
-
-void ua_underworld::save_game()
-{
-}
-
-void ua_underworld::done()
-{
 }
 
 void ua_underworld::walk_player(double angle)
@@ -74,17 +59,27 @@ void ua_underworld::walk_player(double angle)
    physics.walk_player(dir);
 }
 
-float ua_underworld::get_player_height()
+double ua_underworld::get_player_height()
 {
-   return level.get_floor_height(player.get_xpos(),player.get_ypos());
+   // TODO: ask physics model about player height
+   return get_current_level().get_floor_height(player.get_xpos(),player.get_ypos());
 }
 
 void ua_underworld::render(ua_frustum &fr)
 {
-   level.render(core->get_texmgr(),fr);
+   get_current_level().render(core->get_texmgr(),fr);
 }
 
-ua_level &ua_underworld::get_level(unsigned int level)
+ua_level &ua_underworld::get_current_level()
 {
-   return this->level;
+   return levels[curlevel];
+}
+
+void ua_underworld::change_level(unsigned int level)
+{
+   if (level>levels.size())
+      throw ua_exception("game wanted to change to unknown level");
+
+   curlevel = level;
+   get_current_level().prepare_textures(core->get_texmgr());
 }
