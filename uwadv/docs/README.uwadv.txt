@@ -24,8 +24,11 @@ Setup Paths
 Before starting the game, you have to set up the path to the installed game
 files. Open the file "uwadv.cfg" that was installed with the other uwadv
 files, e.g. with Notepad (Windows) or vi (Linux). Edit the path after the word
-"uw1path" so that it points to the game files. The Path should end with a
+"uw1-path" so that it points to the game files. The Path should end with a
 slash '/' or a backslash '\' (depending on the operating system).
+
+Another path that maybe have to be setup is the "uadata-path". It should point
+to where the "uadata" folder is. It may be relative to the uwadv executable.
 
 To start the Underworld Adventures, just run the executable "uwadv.exe" (on
 Windows) or "uwadv" (on Linux). While running, the two files "stdout.txt" and
