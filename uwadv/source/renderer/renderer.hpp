@@ -43,7 +43,8 @@ class ua_underworld;
 class ua_level;
 class ua_renderer_impl;
 class ua_critter_frames_manager;
-//class ua_model3d_manager;
+class ua_model3d_manager;
+class ua_object;
 
 
 // classes
@@ -68,6 +69,9 @@ public:
 
    //! returns texture manager
    ua_texture_manager& get_texture_manager();
+
+   //! returns 3d model manager
+   ua_model3d_manager& get_model3d_manager();
 
    //! returns critter frames manager
    ua_critter_frames_manager& get_critter_frames_manager();
@@ -100,6 +104,11 @@ public:
 
    //! does renderer-specific tick processing
    void tick(double tickrate);
+
+   //! returns 3d model bounding triangles if a 3d model exists
+   void get_model3d_bounding_triangles(unsigned int x, unsigned int y,
+      const ua_object& obj,
+      std::vector<ua_triangle3d_textured>& alltriangles);
 
 protected:
    //! renderer implementation

@@ -65,6 +65,7 @@ void ua_renderer::init(ua_game_interface& game)
       throw ua_exception("couldn't create ua_renderer_impl class");
 
    get_texture_manager().init(game);
+   get_model3d_manager().init(game);
    get_critter_frames_manager().init(game.get_settings(), game.get_image_manager());
 
    // culling: only render front face, counter clockwise
@@ -108,6 +109,11 @@ void ua_renderer::clear()
 ua_texture_manager& ua_renderer::get_texture_manager()
 {
    return renderer_impl->get_texture_manager();
+}
+
+ua_model3d_manager& ua_renderer::get_model3d_manager()
+{
+   return renderer_impl->get_model3d_manager();
 }
 
 ua_critter_frames_manager& ua_renderer::get_critter_frames_manager()
@@ -389,4 +395,16 @@ void ua_renderer::tick(double tickrate)
 
    // do critter frames processing, too
    get_critter_frames_manager().tick(tickrate);
+}
+
+void ua_renderer::get_model3d_bounding_triangles(unsigned int x,
+   unsigned int y, const ua_object& obj,
+   std::vector<ua_triangle3d_textured>& alltriangles)
+{
+   ua_model3d_manager& model_mgr = get_model3d_manager();
+   if (model_mgr.model_avail(obj.get_object_info().item_id))
+   {
+      ua_vector3d base = renderer_impl->calc_object_pos(x,y,obj);
+      model_mgr.get_bounding_triangles(obj, base, alltriangles);
+   }
 }

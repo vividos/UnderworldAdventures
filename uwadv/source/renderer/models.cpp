@@ -28,19 +28,24 @@
 // needed includes
 #include "common.hpp"
 #include "models.hpp"
-//#include "core.hpp"
+#include "model_builtin.hpp"
+#include "game_interface.hpp"
+#include "files.hpp"
+
+
+// external functions
+
+bool ua_model_decode_builtins(const char* filename,
+   std::vector<ua_model3d_ptr>& allmodels, bool dump);
 
 
 // ua_model3d_manager methods
 
-void ua_model3d_manager::init(ua_game_core_interface* thecore)
+void ua_model3d_manager::init(ua_game_interface& game)
 {
    ua_trace("initializing model3d manager\n");
 
-   core = thecore;
-
-/*TODO
-   ua_settings& settings = core->get_settings();
+   ua_settings& settings = game.get_settings();
 
    // loading builtin models
    std::string uwexe_filename(settings.get_string(ua_setting_uw_path));
@@ -53,12 +58,11 @@ void ua_model3d_manager::init(ua_game_core_interface* thecore)
    ua_model_decode_builtins(uwexe_filename.c_str(), allbuiltins, false);
 
    // loading %game%/model3d.cfg
-   std::string cfgfile_name(core->get_settings().get_string(ua_setting_game_prefix));
+   std::string cfgfile_name(settings.get_string(ua_setting_game_prefix));
    cfgfile_name.append("/model3d.cfg");
 
    ua_trace(" loading config file: %s\n",cfgfile_name.c_str());
-   ua_cfgfile::load(core->get_filesmgr().get_uadata_file(cfgfile_name.c_str()));
-*/
+   ua_cfgfile::load(game.get_files_manager().get_uadata_file(cfgfile_name.c_str()));
 }
 
 void ua_model3d_manager::load_value(const char* the_name, const char* the_value)
@@ -85,6 +89,14 @@ void ua_model3d_manager::load_value(const char* the_name, const char* the_value)
       allmodels.insert(
          std::make_pair<Uint16,ua_model3d_ptr>(item_id,model_ptr) );
    }
+   if (value.find("special")==0)
+   {
+      ua_model3d_special* model = new ua_model3d_special;
+      ua_model3d_ptr model_ptr = ua_model3d_ptr(model);
+
+      allmodels.insert(
+         std::make_pair<Uint16,ua_model3d_ptr>(item_id, model_ptr) );
+   }
    else
    {
 /*
@@ -107,12 +119,13 @@ void ua_model3d_manager::load_value(const char* the_name, const char* the_value)
    }
 }
 
-bool ua_model3d_manager::model_avail(Uint16 item_id)
+bool ua_model3d_manager::model_avail(Uint16 item_id) const
 {
    return allmodels.find(item_id) != allmodels.end();
 }
 
-void ua_model3d_manager::render(ua_object& obj, ua_vector3d& base)
+void ua_model3d_manager::render(const ua_object& obj,
+   ua_texture_manager& texmgr, ua_vector3d& base)
 {
    Uint16 item_id = obj.get_object_info().item_id;
 
@@ -122,10 +135,10 @@ void ua_model3d_manager::render(ua_object& obj, ua_vector3d& base)
 
    // render
    if (iter != allmodels.end())
-      iter->second->render(obj,base);
+      iter->second->render(obj,texmgr,base);
 }
 
-void ua_model3d_manager::get_bounding_triangles(ua_object& obj,
+void ua_model3d_manager::get_bounding_triangles(const ua_object& obj,
    ua_vector3d& base, std::vector<ua_triangle3d_textured>& alltriangles)
 {
    Uint16 item_id = obj.get_object_info().item_id;

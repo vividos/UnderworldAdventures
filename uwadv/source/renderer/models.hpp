@@ -41,7 +41,7 @@
 
 
 // forward declarations
-class ua_game_core_interface;
+class ua_game_interface;
 
 
 // classes
@@ -60,10 +60,11 @@ public:
    const char* get_model_name();
 
    //! renders model
-   virtual void render(ua_object& obj, ua_vector3d& base){}
+   virtual void render(const ua_object& obj, ua_texture_manager& texmgr,
+      ua_vector3d& base){}
 
    //! returns bounding triangles for collision detection
-   virtual void get_bounding_triangles(ua_object& obj,
+   virtual void get_bounding_triangles(const ua_object& obj,
       ua_vector3d& base, std::vector<ua_triangle3d_textured>& alltriangles){}
 };
 
@@ -80,16 +81,17 @@ public:
    ua_model3d_manager(){}
 
    //! init manager
-   void init(ua_game_core_interface* core);
+   void init(ua_game_interface& game);
 
    //! returns if a 3d model for a certain item_id is available
-   bool model_avail(Uint16 item_id);
+   bool model_avail(Uint16 item_id) const;
 
    //! renders a model
-   void render(ua_object& obj, ua_vector3d& base);
+   void render(const ua_object& obj, ua_texture_manager& texmgr,
+      ua_vector3d& base);
 
    //! returns bounding triangles for collision detection with given item_id
-   void get_bounding_triangles(ua_object& obj, ua_vector3d& base,
+   void get_bounding_triangles(const ua_object& obj, ua_vector3d& base,
       std::vector<ua_triangle3d_textured>& alltriangles);
 
 protected:
@@ -102,9 +104,6 @@ protected:
 
    //! all builtin models from the exe
    std::vector<ua_model3d_ptr> allbuiltins;
-
-   //! files manager used while loading cfg files
-   ua_game_core_interface* core;
 };
 
 

@@ -61,13 +61,17 @@ public:
    ua_critter_frames_manager& get_critter_frames_manager(){ return critter_manager; }
 
    //! returns 3d models manager
-   ua_model3d_manager& get_ua_model3d_manager(){ return model_manager; }
+   ua_model3d_manager& get_model3d_manager(){ return model_manager; }
 
    //! renders the objects of a tile
    void render_objects(const ua_level& level, unsigned int x, unsigned int y);
 
    //! sets selection mode on or off
    void set_selection_mode(bool enabled){ selection_mode = enabled; }
+
+   //! calculates object position in 3d world
+   ua_vector3d calc_object_pos(unsigned int x, unsigned int y,
+      const ua_object& obj) const;
 
 protected:
    //! renders a single object

@@ -38,10 +38,10 @@ extern bool ua_model_decode_builtins(const char* filename,
 
 // ua_model3d_builtin methods
 
-void ua_model3d_builtin::render(ua_object& obj, ua_vector3d& base)
+void ua_model3d_builtin::render(const ua_object& obj,
+   ua_texture_manager& texmgr, ua_vector3d& base)
 {
    glDisable(GL_CULL_FACE);
-   glDisable(GL_TEXTURE_2D);
 
    unsigned int max = triangles.size();
 
@@ -49,6 +49,8 @@ void ua_model3d_builtin::render(ua_object& obj, ua_vector3d& base)
 
    for(unsigned int i=0; i<max; i++)
    {
+#if 0
+//#ifdef HAVE_DEBUG
       // select debug triangle color
       switch(triangles[i].texnum)
       {
@@ -65,13 +67,12 @@ void ua_model3d_builtin::render(ua_object& obj, ua_vector3d& base)
          glColor3ub(255,0,255); // violet
          break;
       }
-
+#endif
       const ua_triangle3d_textured& tri = triangles[i];
 
-//      glBegin(GL_LINE_LOOP);
       glBegin(GL_TRIANGLES);
 
-      // TODO generate normal vector
+      // generate normal vector
       ua_vector3d normal,vec1(tri.vertices[1].pos),vec2(tri.vertices[2].pos);
       vec1 -= tri.vertices[0].pos;
       vec2 -= tri.vertices[0].pos;
@@ -90,25 +91,12 @@ void ua_model3d_builtin::render(ua_object& obj, ua_vector3d& base)
          );
 
       glEnd();
-/*
-#ifdef HAVE_DEBUG
-      glColor3ub(255,255,255);
-      glBegin(GL_LINE_LOOP);
-      for(unsigned n=0; n<3; n++)
-         glVertex3d(
-            base.x-origin.x+tri.vertices[n].pos.x,
-            base.y-origin.y+tri.vertices[n].pos.y,
-            base.z-origin.z+tri.vertices[n].pos.z
-         );
-      glEnd();
-#endif
-*/
    }
 
-#ifdef HAVE_DEBUG
-/*
+#if 0
+//#ifdef HAVE_DEBUG
    // draw extents box
-   glColor3ub(255,255,255);
+   glDisable(GL_TEXTURE_2D);
 
    ua_vector3d ext(extents);
    ext.x *= 0.5;
@@ -141,16 +129,88 @@ void ua_model3d_builtin::render(ua_object& obj, ua_vector3d& base)
    glVertex3d(base.x+-ext.x, base.y+ ext.y, base.z+0);
    glVertex3d(base.x+-ext.x, base.y+-ext.y, base.z+0);
    glEnd();
-*/
+
+   glEnable(GL_TEXTURE_2D);
 #endif
 
    glEnable(GL_CULL_FACE);
-   glEnable(GL_TEXTURE_2D);
 }
 
-void ua_model3d_builtin::get_bounding_triangles(ua_object& obj,
+void ua_model3d_builtin::get_bounding_triangles(const ua_object& obj,
    ua_vector3d& base, std::vector<ua_triangle3d_textured>& trilist)
 {
    // just hand over the tessellated triangles
    trilist.insert(trilist.end(),triangles.begin(),triangles.end());
+}
+
+
+// ua_model3d_special methods
+
+void ua_model3d_special::render(const ua_object& obj,
+   ua_texture_manager& texmgr, ua_vector3d& base)
+{
+   Uint16 item_id = obj.get_object_info().item_id;
+   if (item_id == 0x0164)
+   {
+      // set texture for bridge
+      texmgr.use(obj.get_object_info().flags);
+
+      // render bridge
+      ua_vector3d ext(0.5,0.5, 0.062);
+
+      glBegin(GL_TRIANGLES);
+      glTexCoord2d(0.0, 0.0); glVertex3d(base.x-ext.x, base.y-ext.y, base.z+ext.z);
+      glTexCoord2d(1.0, 0.0); glVertex3d(base.x+ext.x, base.y-ext.y, base.z+ext.z);
+      glTexCoord2d(1.0, 1.0); glVertex3d(base.x+ext.x, base.y+ext.y, base.z+ext.z);
+
+      glTexCoord2d(0.0, 0.0); glVertex3d(base.x-ext.x, base.y-ext.y, base.z+ext.z);
+      glTexCoord2d(1.0, 1.0); glVertex3d(base.x+ext.x, base.y+ext.y, base.z+ext.z);
+      glTexCoord2d(0.0, 1.0); glVertex3d(base.x-ext.x, base.y+ext.y, base.z+ext.z);
+
+      glTexCoord2d(0.0, 0.0); glVertex3d(base.x-ext.x, base.y-ext.y, base.z);
+      glTexCoord2d(1.0, 1.0); glVertex3d(base.x+ext.x, base.y+ext.y, base.z);
+      glTexCoord2d(1.0, 0.0); glVertex3d(base.x+ext.x, base.y-ext.y, base.z);
+
+      glTexCoord2d(0.0, 0.0); glVertex3d(base.x-ext.x, base.y-ext.y, base.z);
+      glTexCoord2d(0.0, 1.0); glVertex3d(base.x-ext.x, base.y+ext.y, base.z);
+      glTexCoord2d(1.0, 1.0); glVertex3d(base.x+ext.x, base.y+ext.y, base.z);
+      glEnd();
+   }
+   else
+   if (item_id >= 0x0140 && item_id < 0x0150)
+   {
+      // TODO render door/open door/moving door
+   }
+}
+
+void ua_model3d_special::get_bounding_triangles(const ua_object& obj,
+   ua_vector3d& base, std::vector<ua_triangle3d_textured>& alltriangles)
+{
+   Uint16 item_id = obj.get_object_info().item_id;
+   if (item_id == 0x0164)
+   {
+      // bridge triangles
+      ua_vector3d ext(0.5,0.5, 0.062+1.6);
+
+      ua_triangle3d_textured tri;
+      tri.set(0, base.x-ext.x, base.y-ext.y, base.z+ext.z, 0.0, 0.0);
+      tri.set(1, base.x+ext.x, base.y-ext.y, base.z+ext.z, 0.0, 0.0);
+      tri.set(2, base.x+ext.x, base.y+ext.y, base.z+ext.z, 0.0, 0.0);
+      alltriangles.push_back(tri);
+
+      tri.set(0, base.x-ext.x, base.y-ext.y, base.z+ext.z, 0.0, 0.0);
+      tri.set(1, base.x+ext.x, base.y+ext.y, base.z+ext.z, 0.0, 0.0);
+      tri.set(2, base.x-ext.x, base.y+ext.y, base.z+ext.z, 0.0, 0.0);
+      alltriangles.push_back(tri);
+
+      tri.set(0, base.x-ext.x, base.y-ext.y, base.z, 0.0, 0.0);
+      tri.set(2, base.x+ext.x, base.y-ext.y, base.z, 0.0, 0.0);
+      tri.set(1, base.x+ext.x, base.y+ext.y, base.z, 0.0, 0.0);
+      alltriangles.push_back(tri);
+
+      tri.set(0, base.x-ext.x, base.y-ext.y, base.z, 0.0, 0.0);
+      tri.set(2, base.x+ext.x, base.y+ext.y, base.z, 0.0, 0.0);
+      tri.set(1, base.x-ext.x, base.y+ext.y, base.z, 0.0, 0.0);
+      alltriangles.push_back(tri);
+   }
 }

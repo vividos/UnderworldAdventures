@@ -210,29 +210,16 @@ void ua_renderer_impl::render_object(const ua_level& level,
    const ua_object_info_ext& extinfo = obj.get_ext_object_info();
 
    // get base coordinates
-   double objxpos = static_cast<double>(x) + (extinfo.xpos)/7.0;
-   double objypos = static_cast<double>(y) + (extinfo.ypos)/7.0;
-   double height = extinfo.zpos;
+   ua_vector3d base = calc_object_pos(x,y,obj);
 
-   ua_vector3d base(objxpos, objypos, height);
-
-/*
    // check if a 3d model is available for that item
-   if (model_manager->model_avail(item_id))
+   if (get_model3d_manager().model_avail(item_id))
    {
       base.z = extinfo.zpos*height_scale;
 
-      // hack: set texture for bridge
-      if (item_id==0x0164)
-      {
-         // TODO move this to bridge rendering
-         texmgr->use(obj.get_object_info().flags);
-      }
-
-      modelmgr->render(obj,base);
+      get_model3d_manager().render(obj,texmgr,base);
    }
    else
-*/
    // critters
    if (item_id >= 0x0040 && item_id < 0x0080)
    {
@@ -569,3 +556,16 @@ void ua_renderer_impl::render_aligned_quad(const ua_object& obj, //const ua_vect
 {
 }
 */
+
+//! calculates object position in 3d world
+ua_vector3d ua_renderer_impl::calc_object_pos(unsigned int x, unsigned int y,
+   const ua_object& obj) const
+{
+   const ua_object_info_ext& extinfo = obj.get_ext_object_info();
+
+   double objxpos = static_cast<double>(x) + (extinfo.xpos)/8.0 + 1.0/8.0;
+   double objypos = static_cast<double>(y) + (extinfo.ypos)/8.0 + 1.0/8.0;
+   double height = extinfo.zpos;
+
+   return ua_vector3d(objxpos, objypos, height);
+}

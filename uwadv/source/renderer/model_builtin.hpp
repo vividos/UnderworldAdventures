@@ -38,7 +38,7 @@
 
 // classes
 
-//! 3d model base class
+//! builtin model class
 class ua_model3d_builtin: public ua_model3d
 {
 public:
@@ -48,10 +48,11 @@ public:
    virtual ~ua_model3d_builtin(){}
 
    //! renders model
-   virtual void render(ua_object& obj, ua_vector3d& base);
+   virtual void render(const ua_object& obj, ua_texture_manager& texmgr,
+      ua_vector3d& base);
 
    //! returns bounding triangles for collision detection
-   virtual void get_bounding_triangles(ua_object& obj,
+   virtual void get_bounding_triangles(const ua_object& obj,
       ua_vector3d& base, std::vector<ua_triangle3d_textured>& alltriangles);
 
 protected:
@@ -64,6 +65,25 @@ protected:
    // friend decoding function
    friend bool ua_model_decode_builtins(const char* filename,
       std::vector<ua_model3d_ptr>& allmodels, bool dump);
+};
+
+
+//! special model class
+class ua_model3d_special: public ua_model3d
+{
+public:
+   //! ctor
+   ua_model3d_special(){}
+   //! dtor
+   virtual ~ua_model3d_special(){}
+
+   //! renders model
+   virtual void render(const ua_object& obj, ua_texture_manager& texmgr,
+      ua_vector3d& base);
+
+   //! returns bounding triangles for collision detection
+   virtual void get_bounding_triangles(const ua_object& obj,
+      ua_vector3d& base, std::vector<ua_triangle3d_textured>& alltriangles);
 };
 
 
