@@ -31,8 +31,11 @@
 #include "settings.hpp"
 #include "start_splash.hpp"
 #ifdef HAVE_DEBUG
-// #include "screens/start_menu.hpp"
-// #include "screens/ingame_orig.hpp"
+ #include "screens/start_menu.hpp"
+ #include "screens/save_game.hpp"
+ #include "screens/ingame_new.hpp"
+ #include "screens/ingame_orig.hpp"
+ #include "underworld.hpp"
 #endif
 
 
@@ -75,24 +78,30 @@ void ua_uwadv_menu_screen::process_event(SDL_Event& event)
 */
 void ua_uwadv_menu_screen::tick()
 {
-/*
 #ifdef HAVE_DEBUG
-
-#if 0
-//   game->replace_screen(new ua_start_splash_screen,false);
    game->replace_screen(new ua_start_menu_screen,false);
-#else
+
+/*
+   paste one:
+   --------------------
+   game->get_underworld().import_savegame(game->get_settings(),"data/",true);
+   game->replace_screen(new ua_ingame_orig_screen,false);
+   --------------------
+   game->replace_screen(new ua_save_game_screen(false),false);
+   --------------------
+   game->replace_screen(new ua_start_menu_screen,false);
+   --------------------
+   game->replace_screen(new ua_start_splash_screen,false);
+   --------------------
    game->get_underworld().import_savegame(game->get_settings(),"data/",true);
    game->get_underworld().get_scripts().lua_started_newgame();
-
    game->replace_screen(new ua_ingame_orig_screen,false);
-#endif
-
-#else
+   --------------------
 */
+#else
 
    // for now, immediately start splash screen
    game->replace_screen(new ua_start_splash_screen,false);
 
-//#endif
+#endif
 }
