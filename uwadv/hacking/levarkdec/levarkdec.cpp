@@ -14,6 +14,62 @@
 
 const char *filename = UWPATH"Save3\\lev.ark";
 
+void follow_object_chain(FILE *out,unsigned int objlist[0x400*2],
+   std::vector<bool> &linked_by_obj, std::vector<bool> &link2_by_obj, int link1);
+
+void check_link2(FILE *out,unsigned int objlist[0x400*2],std::vector<bool> &link2_by_obj,int link1)
+{
+   int id = objlist[link1*2+0] & 0x000001ff;
+
+   if (
+      id==0x01a0 || id==0x01a2 || id==0x01a3 ||
+      id==0x0188 || id==0x017c || id==0x0142 || id==0x016e ||
+      id==0x0146 || id==0x014b || id==0x0149 || id==0x0141 ||
+      id==0x017f || id==0x0179 || id==0x0187 || id==0x0161 ||
+      id==0x014e || id==0x0146 || id==0x0171 || id==0x017d ||
+      id==0x015b || id==0x015d || id==0x008a || id==0x0080 ||
+      id==0x008e || id==0x01a5 ||
+      id==0x0098 || id==0x0099 || id==0x009a || id==0x009b ||
+      (id>=0x0040 && id<=0x007f) )
+   {
+      int link2 = (objlist[link1*2+1] & (0x3ff<<22))>>22;
+
+      if (link2==0) return;
+
+      if (link2_by_obj[link2])
+         fprintf(out,"hmm, object %04x already link2'ed\n",link2);
+
+      link2_by_obj[link2] = true;
+
+      // follow chain, marks all objects as "link2d" instead of "linked"
+      follow_object_chain(out,objlist,link2_by_obj,link2_by_obj,link2);
+   }
+}
+
+void follow_object_chain(FILE *out,unsigned int objlist[0x400*2],
+   std::vector<bool> &linked_by_obj, std::vector<bool> &link2_by_obj, int link1)
+{
+   while(link1 != 0)
+   {
+      check_link2(out,objlist,link2_by_obj,link1);
+
+      if (linked_by_obj[link1])
+         fprintf(out,"hmm, object %04x linked by two other objects\n",link1);
+      linked_by_obj[link1] = true;
+
+      int oldlink1 = link1;
+
+      // find out next link
+      link1 = ((objlist[link1*2+1] & (0x3ff<<6))>>6);
+
+      if (link1==oldlink1)
+      {
+         fprintf(out,"hmm, object %04x links to itself\n",link1);
+         break;
+      }
+   }
+}
+
 int main(int argc, char* argv[])
 {
    FILE *fd = fopen(filename,"rb");
@@ -68,10 +124,11 @@ int main(int argc, char* argv[])
    {
       fseek(fd,offsets[j],SEEK_SET);
 
-      char fname[256];
-
       unsigned int buffer[64*64];
       fread(buffer,4,64*64,fd);
+
+#if 0
+      char fname[256];
 
       // now open and write tga files
 
@@ -148,7 +205,53 @@ int main(int argc, char* argv[])
       }
 
       // more tga writing here
+#endif
 
+      // collect level map object list infos
+      std::vector<bool> ref_by_tile;
+      std::vector<bool> linked_by_obj;
+      std::vector<bool> link2_by_obj;
+
+      ref_by_tile.resize(0x400,false);
+      linked_by_obj.resize(0x400,false);
+      link2_by_obj.resize(0x400,false);
+
+      {
+         fseek(fd,offsets[j]+0x4000,SEEK_SET);
+         unsigned int objlist[0x400*2];
+
+         for(int n=0; n<0x400; n++)
+         {
+            fread(&objlist[n*2],8,1,fd);
+
+            if (n<0x100)
+               fseek(fd,0x1b-0x08,SEEK_CUR);
+         }
+
+
+         for(int i=0; i<64*64; i++)
+         {
+            unsigned int idx = (buffer[i] & 0xFFC00000) >> 22;
+
+            if (idx==0) continue;
+
+            if (ref_by_tile[idx])
+               fprintf(out,"hmm, object %04x used twice for tile\n",idx);
+
+            ref_by_tile[idx] = true;
+
+            // check for link2 targets of tile ref item first
+            check_link2(out,objlist,link2_by_obj,idx);
+
+            // for each tile, follow the link
+            int link1 = ((objlist[idx*2+1] & (0x3ff<<6))>>6);
+
+            if (link1==0)
+               continue;
+
+            follow_object_chain(out,objlist,linked_by_obj,link2_by_obj,link1);
+         }
+      }
 
       // level object dumping
       fseek(fd,offsets[j]+0x4000,SEEK_SET);
@@ -159,7 +262,7 @@ int main(int argc, char* argv[])
          unsigned int objval[2];
          fread(objval,4,2,fd);
 
-         fprintf(out,"object %03x: ",n);
+         fprintf(out,"object %04x: ",n);
 
          fprintf(out,"id=%04x ",objval[0] & 0x000001ff);
          fprintf(out,"unk1=%02x ",(objval[0] & 0x0000ff00)>>9 );
@@ -172,6 +275,21 @@ int main(int argc, char* argv[])
          fprintf(out,"link1=%04x ",(objval[1] & (0x3ff<<6))>>6);
          fprintf(out,"unk2=%02x ",(objval[1] & (0x3f<<16))>>16);
          fprintf(out,"quan/link2=%04x ",(objval[1] & (0x3ff<<22))>>22);
+
+         if (ref_by_tile[n])
+            fprintf(out,"tile   ");
+         else
+         {
+            if (linked_by_obj[n])
+               fprintf(out,"linked ");
+            else
+            {
+               if (link2_by_obj[n])
+                  fprintf(out,"link2d ");
+               else
+                  fprintf(out,"       ");
+            }
+         }
 
          if (n<0x100)
          {
