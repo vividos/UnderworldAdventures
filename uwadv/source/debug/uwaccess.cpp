@@ -50,15 +50,16 @@ unsigned int ua_uw_access_api::command_func(
    unsigned int cmd, unsigned int type,
    ua_debug_param* param1, ua_debug_param* param2)
 {
-   unsigned int ret = 1;
+   unsigned int ret = 0;
 
    ua_game_core_interface* core = cur_api->core;
    ua_debug_interface* debug = cur_api->debug;
+   ua_underworld& underw = core->get_underworld();
 
    switch(cmd)
    {
    case udc_nop: // do noting
-      ret = 0;
+      ret = 42;
       break;
 
    case udc_lock: // lock underworld
@@ -71,7 +72,7 @@ unsigned int ua_uw_access_api::command_func(
 
    case udc_player_get: // get player value
       {
-         ua_player& pl = core->get_underworld().get_player();
+         ua_player& pl = underw.get_player();
 
          unsigned int value = param1->val.i;
 
@@ -102,13 +103,13 @@ unsigned int ua_uw_access_api::command_func(
 
    case udc_player_set: // set player value
       {
-         ua_player& pl = core->get_underworld().get_player();
+         ua_player& pl = underw.get_player();
 
          unsigned int value = param1->val.i;
 
          if (value<4)
          {
-            ua_level& level = core->get_underworld().get_current_level();
+            ua_level& level = underw.get_current_level();
 
             switch(value)
             {
@@ -134,7 +135,7 @@ unsigned int ua_uw_access_api::command_func(
                pl.set_attr((ua_player_attributes)value,param2->val.i);
 
                if (value==ua_attr_maplevel)
-                  core->get_underworld().change_level(param2->val.i);
+                  underw.change_level(param2->val.i);
             }
             else
             {
@@ -144,6 +145,43 @@ unsigned int ua_uw_access_api::command_func(
          }
       }
       break;
+
+   case udc_objlist_get: // get master object list value
+      {
+         // get object info
+         ua_level& level = type > underw.get_num_levels() ? underw.get_current_level() :
+            underw.get_level(type);
+
+         ua_object& obj = level.get_mapobjects().get_object(static_cast<Uint16>(param1->val.i));
+         ua_object_info& objinfo = obj.get_object_info();
+
+         switch(param2->val.i)
+         {
+         case 0: // item_id
+            param1->set(static_cast<unsigned int>(objinfo.item_id));
+            break;
+
+         case 1:
+            param1->set(static_cast<unsigned int>(objinfo.link));
+         }
+      }
+      break;
+
+   case udc_objlist_set: // set master object list value
+      {
+      }
+      break;
+
+   case udc_strings_get: // returns string from given string block
+      {
+         std::string text;
+         text = underw.get_strings().get_string(param1->val.i,param2->val.i);
+         param1->set(text.c_str());
+      }
+      break;
+
+   default:
+      ret = 1;
    }
 
    return ret;

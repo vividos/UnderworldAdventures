@@ -42,17 +42,33 @@ class ua_debug_interface;
 //! uadebug commands
 enum
 {
-   udc_nop=0,
+   udc_nop=0,        //!< do nothing
+
    udc_lock=1,       //!< lock underworld object
    udc_unlock=2,     //!< unlock underworld
 
    udc_player_get=3, /*!< gets player value; param1.uint holds array index;
                           allowed types:
                           0: get player info
-                          0: get attribute
-                          1: get skill */
+                          1: get attribute
+                          2: get skill */
    udc_player_set=4, /*!< sets player value; param1.uint holds index;
                           types are the same as in udc_player_get */
+
+   udc_objlist_get=5, /*< gets master object list value
+                          type contains "level"
+                          param1 contains object list position to get
+                          param2 contains value index to get:
+                             0: item_id
+                             1: ?
+                          */
+   udc_objlist_set=6,
+
+   udc_tilemap_get=7,
+   udc_tilemap_set=8,
+
+   udc_strings_get=9,
+   udc_strings_set=10,
 };
 
 //! parameter types
@@ -60,7 +76,8 @@ enum
 {
    ua_param_unk=0,
    ua_param_int=1,
-   ua_param_double=2
+   ua_param_double=2,
+   ua_param_string=3
 };
 
 
@@ -69,19 +86,30 @@ enum
 //! parameter struct for command function
 struct ua_debug_param
 {
-   ua_debug_param(){ type = ua_param_unk; };
+   // ctors
+   ua_debug_param():type(ua_param_unk){}
    explicit ua_debug_param(unsigned int i){ set(i); }
    explicit ua_debug_param(double d){ set(d); }
+   explicit ua_debug_param(const char* str){ set(str); }
+   ~ua_debug_param(){ if (type==ua_param_string) delete val.str; }
 
+   // set functions
    void set(unsigned int i){ val.i = i; type = ua_param_int; }
    void set(double d){ val.d = d; type = ua_param_double; }
+   void set(const char* str)
+   {
+      if (type == ua_param_string) delete val.str;
+      val.str = new char[strlen(str)+1];
+      strcpy(val.str,str);
+      type = ua_param_string;
+   }
 
    // parameter variant
    union param
    {
       unsigned int i;
       double d;
-      //void* v;
+      char* str;
    } val;
 
    //! parameter type
