@@ -57,15 +57,39 @@ public:
    virtual void tick();
 
 protected:
+   //! does a button press
+   void press_button();
 
+   //! determines selected area by mouse coordinates
+   void get_selected_area();
+
+protected:
+   //! current stage
+   unsigned int stage;
+
+   //! current tickcount
+   unsigned int tickcount;
+
+   //! count for palette shifting
+   unsigned int shiftcount;
+
+   //! number of selected area, or -1 if none
+   int selected_area;
+
+   //! indicates if "journey onward" is available
+   bool journey_avail;
+
+   //! background image
    ua_image img;
+
+   //! texture object for background
    ua_texture tex;
 
-   //! current animation frame
-   unsigned int curframe;
+   //! image list with buttons
+   ua_image_list img_buttons;
 
-   //! animation frame count
-   unsigned int animcount;
+   //! background image palette
+   ua_onepalette palette;
 };
 
 #endif
