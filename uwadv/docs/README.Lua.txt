@@ -13,6 +13,7 @@ Contents
 2.0. Reference
 2.1. ua_underworld interfaces
 2.2. cutscenes control interface
+2.3. character creation interface
 
 
 1. Introduction
@@ -235,7 +236,7 @@ registered C functions to call from Lua:
 For all functions, the self parameter must be passed.
 
 
-2.1.3.1 Player access functions
+2.1.3.1. Player access functions
 
 * player_get_attr(self, attr_type)
   return values: attr_value
@@ -323,7 +324,7 @@ For all functions, the self parameter must be passed.
   sets new view angle.
 
 
-2.1.3.2 Object list access functions
+2.1.3.2. Object list access functions
 
 * objlist_get_obj_info(self, obj_handle)
   return values: item_id, quantity, obj_handle_next, obj_handle_special
@@ -352,7 +353,7 @@ For all functions, the self parameter must be passed.
   todo
 
 
-2.1.3.3 Tilemap access functions
+2.1.3.3. Tilemap access functions
 
 * tilemap_get_tile(self, level, xpos, ypos)
   return values: tile_handle
@@ -405,7 +406,7 @@ For all functions, the self parameter must be passed.
   returns handle to the first object in object list
 
 
-2.1.3.4
+2.1.3.4.
 
 todo
 
@@ -508,3 +509,6 @@ registered C functions to call from Lua:
 
 The "actionvalue" variable always must be passed to the function. For actions
 that doesn't use the value, it can be set to anything.
+
+
+2.3. Character creation interface
