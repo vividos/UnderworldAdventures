@@ -33,7 +33,6 @@
 // globals
 bool can_exit = false;
 const int tickrate = 8;
-SDL_Surface *screen;
 ua_cutscene cuts;
 unsigned int currentframe;
 unsigned int mode=0;
@@ -56,80 +55,72 @@ bool init_anim(const char *filename)
    return true;
 }
 
-// taken from a SDL tutorial
-void DrawPixel(SDL_Surface *screen, int x, int y,
-   Uint8 R, Uint8 G, Uint8 B)
+void setup_opengl(int width,int height)
 {
-  Uint32 color = SDL_MapRGB(screen->format, R, G, B);
-  switch (screen->format->BytesPerPixel)
-  {
-    case 1: // Assuming 8-bpp
-      {
-        Uint8 *bufp;
-        bufp = (Uint8 *)screen->pixels + y*screen->pitch + x;
-        *bufp = color;
-      }
-      break;
-    case 2: // Probably 15-bpp or 16-bpp
-      {
-        Uint16 *bufp;
-        bufp = (Uint16 *)screen->pixels + y*screen->pitch/2 + x;
-        *bufp = color;
-      }
-      break;
-    case 3: // Slow 24-bpp mode, usually not used
-      {
-        Uint8 *bufp;
-        bufp = (Uint8 *)screen->pixels + y*screen->pitch + x * 3;
-        if(SDL_BYTEORDER == SDL_LIL_ENDIAN)
-        {
-          bufp[0] = color;
-          bufp[1] = color >> 8;
-          bufp[2] = color >> 16;
-        } else {
-          bufp[2] = color;
-          bufp[1] = color >> 8;
-          bufp[0] = color >> 16;
-        }
-      }
-      break;
-    case 4: // Probably 32-bpp
-      {
-        Uint32 *bufp;
-        bufp = (Uint32 *)screen->pixels + y*screen->pitch/4 + x;
-        *bufp = color;
-      }
-      break;
-  }
+   float ratio = float(width)/height;
+
+   // set up viewport
+   glViewport(0,0,width,height);
+
+   // smooth shading
+   glShadeModel(GL_SMOOTH);
+
+   // culling
+   glCullFace(GL_BACK);
+   glFrontFace(GL_CCW);
+   glEnable(GL_CULL_FACE);
+
+   // z-buffer
+   glDisable(GL_DEPTH_TEST);
+
+   // enable texturing
+   glEnable(GL_TEXTURE_2D);
+
+   // clear color
+   glClearColor(0,0,0,0);
+
+   // camera setup
+
+   // set projection matrix
+   glMatrixMode(GL_PROJECTION);
+   glLoadIdentity();
+
+   gluOrtho2D(0.0, 1.0, 0.0, 1.0);
+
+   // switch back to modelview matrix
+   glMatrixMode(GL_MODELVIEW);
 }
 
 void draw_screen()
 {
-   // get frame and palette
-   const Uint8 *ptr = cuts.get_frame(currentframe);
-   const Uint8 *palette = cuts.get_palette();
+   // clear color and depth buffers
+   glClear(GL_COLOR_BUFFER_BIT);
 
-   if(SDL_MUSTLOCK(screen))
-      SDL_LockSurface(screen);
+   glLoadIdentity();
 
-   // draw pixels to screen
-   int width=cuts.get_width();
-   int size=width*cuts.get_height();
-   for(int i=0; i<size; i++)
-   {
-      int x=i%width;
-      int y=i/width;
+   // load texture with current animation frame
+   ua_texture tex;
+   cuts.get_frame(tex,currentframe);
 
-      Uint8 index = ptr[i];
+   // we can use the texture right after this preparation
+   tex.prepare(false);
 
-      DrawPixel(screen,x,y,palette[index*3+0],palette[index*3+1],palette[index*3+2]);
-   }
+   // draw quad
+   glBegin(GL_QUADS);
+   glColor3ub(255,255,255);
 
-   if(SDL_MUSTLOCK(screen))
-      SDL_UnlockSurface(screen);
+   double u = tex.get_tex_u(), v = tex.get_tex_v();
 
-   SDL_Flip(screen);
+   glTexCoord2d(0.0, v  ); glVertex3d(0.0, 0.0, 0.0);
+   glTexCoord2d(u  , v  ); glVertex3d(1.0, 0.0, 0.0);
+   glTexCoord2d(u  , 0.0); glVertex3d(1.0, 1.0, 0.0);
+   glTexCoord2d(0.0, 0.0); glVertex3d(0.0, 1.0, 0.0);
 
+   glEnd();
+
+   SDL_GL_SwapBuffers();
+
+   tex.clean();
 }
 
 void process_events()
@@ -199,19 +190,28 @@ int main(int argc, char* argv[])
       return 1;
    }
 
-   int width = cuts.get_width();
-   int height = cuts.get_height();
+   int width = 640;
+   int height = 480;
    int bpp = info->vfmt->BitsPerPixel;
 
    // set window caption
-   SDL_WM_SetCaption("Animation Viewer",NULL);
+   SDL_WM_SetCaption("Underworld Adventures: Animation Viewer",NULL);
+
+   // set OpenGL video attributes
+   SDL_GL_SetAttribute(SDL_GL_RED_SIZE,5);
+   SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,5);
+   SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,5);
+   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,16);
+   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,1);
 
    // set video mode
-   if((screen=SDL_SetVideoMode(width,height,bpp,SDL_HWSURFACE|SDL_DOUBLEBUF))==0)
+   if(SDL_SetVideoMode(width,height,bpp,SDL_OPENGL)==0)
    {
       fprintf(stderr,"failed to set video mode: %s\n", SDL_GetError());
       return 1;
    }
+
+   setup_opengl(width,height);
 
    Uint32 now,then;
    then = SDL_GetTicks();
@@ -223,12 +223,12 @@ int main(int argc, char* argv[])
    {
       process_events();
 
+      draw_screen();
+
       now = SDL_GetTicks();
       while ((now - then) > (1000.f/tickrate))
       {
          then += Uint32(1000.f/tickrate);
-
-         draw_screen();
 
          // next tick
          if (mode==1 || mode==2)
@@ -243,7 +243,7 @@ int main(int argc, char* argv[])
          // set window caption
          {
             char buffer[256];
-            sprintf(buffer,"Animation Viewer; frame: %u",currentframe);
+            sprintf(buffer,"Underworld Adventures: Animation Viewer; frame: %u",currentframe);
             SDL_WM_SetCaption(buffer,NULL);
          }
 

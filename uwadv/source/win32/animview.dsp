@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 sdl.lib sdlmain.lib /nologo /subsystem:windows /machine:I386 /out:"../../output/release/animview.exe"
+# ADD LINK32 sdl.lib sdlmain.lib opengl32.lib glu32.lib /nologo /subsystem:windows /machine:I386 /out:"../../output/release/animview.exe"
 
 !ELSEIF  "$(CFG)" == "animview - Win32 Debug"
 
@@ -79,7 +79,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 sdl.lib sdlmain.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"msvcrt" /out:"../../output/debug/animview.exe" /pdbtype:sept
+# ADD LINK32 sdl.lib sdlmain.lib opengl32.lib glu32.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"msvcrt" /out:"../../output/debug/animview.exe" /pdbtype:sept
 
 !ENDIF 
 
@@ -98,6 +98,14 @@ SOURCE=..\cutscene.cpp
 
 SOURCE=..\resource\cutsloader.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=..\image.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\texture.cpp
+# End Source File
 # End Group
 # Begin Group "uwadv header files"
 
@@ -114,10 +122,9 @@ SOURCE=..\cutscene.hpp
 
 SOURCE=..\resource\fread_endian.hpp
 # End Source File
-# End Group
 # Begin Source File
 
-SOURCE=..\tools\animview.cpp
+SOURCE=..\image.hpp
 # End Source File
 # Begin Source File
 
@@ -125,7 +132,16 @@ SOURCE=..\settings.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\texture.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\uatypes.hpp
+# End Source File
+# End Group
+# Begin Source File
+
+SOURCE=..\tools\animview.cpp
 # End Source File
 # End Target
 # End Project
