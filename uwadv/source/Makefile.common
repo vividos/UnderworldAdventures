@@ -47,6 +47,7 @@ uwadv_SOURCES = \
 	import/import.hpp io_endian.hpp \
 	import/stringsloader.cpp \
 	import/texloader.cpp \
+   linux/debug.cpp \
 	renderer/critter.cpp renderer/critter.hpp \
 	renderer/models.cpp renderer/models.hpp \
 	renderer/quadtree.cpp renderer/quadtree.hpp \
