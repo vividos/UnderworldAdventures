@@ -38,14 +38,15 @@
 class ua_player
 {
 public:
+   //! ctor
    ua_player(){}
 
-   void init(float x,float y){ move_player(x,y); }
+   void init(double x,double y){ move_player(x,y); }
 
-   float get_xpos(){ return xpos; }
-   float get_ypos(){ return ypos; }
+   double get_xpos(){ return xpos; }
+   double get_ypos(){ return ypos; }
 
-   void move_player(float x, float y){ xpos=x; ypos=y; }
+   void move_player(double x, double y){ xpos=x; ypos=y; }
 
 protected:
    float xpos,ypos;
