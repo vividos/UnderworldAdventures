@@ -28,13 +28,14 @@
 // needed includes
 #include "common.hpp"
 #include "mousecursor.hpp"
-#include "core.hpp"
+//#include "core.hpp"
 
 
 // ua_mousecursor methods
 
 void ua_mousecursor::init(ua_game_core_interface* core, int initialtype)
 {
+/*TODO
    screen_width = core->get_screen_width();
    screen_height = core->get_screen_height();
 
@@ -44,6 +45,7 @@ void ua_mousecursor::init(ua_game_core_interface* core, int initialtype)
    isvisible = false;
    settype(initialtype);
    updatepos();
+*/
 }
 
 void ua_mousecursor::settype(int type)

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Underworld Adventures Team
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@
 #include "common.hpp"
 #include "textscroll.hpp"
 #include "image.hpp"
-#include "core.hpp"
+//#include "core.hpp"
 
 
 // constants
@@ -44,10 +44,11 @@ void ua_textscroll::init(ua_game_core_interface& core, unsigned int xpos,
    unsigned int ypos, unsigned int width,
    unsigned int height, unsigned int lines, Uint8 my_bg_color)
 {
+/*TODO
    ua_image_quad::init(&core.get_texmgr(),xpos,ypos,width,height);
 
    font_normal.init(core.get_settings(),ua_font_normal);
-
+*/
    maxlines = lines;
    bg_color = my_bg_color;
    text_color = 11;
@@ -250,7 +251,7 @@ void ua_textscroll::clear_scroll()
    convert_upload();
 }
 
-bool ua_textscroll::handle_event(SDL_Event &event)
+bool ua_textscroll::handle_event(SDL_Event& event)
 {
    bool handled = false;
 

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Underworld Adventures Team
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -29,8 +29,8 @@
 */
 
 // include guard
-#ifndef __uwadv_textscroll_hpp_
-#define __uwadv_textscroll_hpp_
+#ifndef uwadv_textscroll_hpp_
+#define uwadv_textscroll_hpp_
 
 // needed includes
 #include <vector>
@@ -67,7 +67,7 @@ public:
    void clear_scroll();
 
    //! handles events needed for the text scroll; returns true when handled
-   bool handle_event(SDL_Event &event);
+   bool handle_event(SDL_Event& event);
 
    //! starts input mode on the current line
    void enter_input_mode(const char* text="");
