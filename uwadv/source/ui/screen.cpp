@@ -111,7 +111,7 @@ bool ua_screen::process_event(SDL_Event& event)
    }
 
    // key event
-   if (scr_keymap != NULL && event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
+   if (scr_keymap != NULL && (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP))
    {
       // mask out numlock mod key
       Uint16 mod = event.key.keysym.mod & ~KMOD_NUM;
