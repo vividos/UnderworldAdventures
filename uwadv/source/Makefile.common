@@ -41,12 +41,19 @@ uwadv_SOURCES = \
 	conv/codevm.cpp conv/codevm.hpp \
 	conv/convgraph.cpp conv/convgraph.hpp \
 	conv/opcodes.hpp \
+	import/critloader.cpp \
 	import/cutsloader.cpp \
 	import/fontloader.cpp \
 	import/imageloader.cpp \
 	import/import.hpp io_endian.hpp \
+	import/maploader.cpp \
+	import/objloader.cpp \
+	import/playerimport.cpp \
+	import/proploader.cpp \
 	import/stringsloader.cpp \
 	import/texloader.cpp \
+	import/tgaimport.cpp \
+	import/uw2dec.cpp \
 	linux/debug.cpp \
 	renderer/critter.cpp renderer/critter.hpp \
 	renderer/models.cpp renderer/models.hpp \
@@ -94,11 +101,8 @@ uwadv_SOURCES = \
 	main.cpp \
 	uwadv.cpp uwadv.hpp \
 	\
-	resource/codeloader.cpp resource/critloader.cpp \
-	resource/maploader.cpp resource/modeldecode.cpp \
-	resource/objloader.cpp resource/playerimport.cpp \
-	resource/proploader.cpp \
-	resource/tgaimport.cpp resource/uw2dec.cpp
+	resource/codeloader.cpp \
+	resource/modeldecode.cpp
 
 the_rest = \
 	debug/uwaccess.cpp debug/uwaccess.hpp \
@@ -108,7 +112,6 @@ the_rest = \
 	resource/model/wrllexer.cpp resource/model/wrllexer.hpp \
 	screens/conversation.cpp \
 	screens/map_view.cpp \
-	screens/save_game.cpp \
 	screens/panel.cpp \
 	screens/conversation.hpp \
 	screens/map_view.hpp \
