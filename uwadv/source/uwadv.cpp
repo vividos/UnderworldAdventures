@@ -132,6 +132,40 @@ void ua_game::init()
       throw ua_exception(text.c_str());
    }
 
+   // output some OpenGL diagnostics
+   {
+      GLint redbits, greenbits, bluebits, alphabits, depthbits;
+      glGetIntegerv(GL_RED_BITS,&redbits);
+      glGetIntegerv(GL_GREEN_BITS,&greenbits);
+      glGetIntegerv(GL_BLUE_BITS,&bluebits);
+      glGetIntegerv(GL_ALPHA_BITS,&alphabits);
+      glGetIntegerv(GL_DEPTH_BITS,&depthbits);
+
+      ua_trace("OpenGL stats:\n bit depths: red/green/blue/alpha = %u/%u/%u/%u, depth=%u\n",
+         redbits, greenbits, bluebits, alphabits, depthbits);
+
+      GLint maxtexsize, maxlights, maxnamestack, maxmodelstack, maxprojstack;
+      glGetIntegerv(GL_MAX_TEXTURE_SIZE,&maxtexsize);
+      glGetIntegerv(GL_MAX_LIGHTS,&maxlights);
+      glGetIntegerv(GL_MAX_NAME_STACK_DEPTH,&maxnamestack);
+      glGetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH,&maxmodelstack);
+      glGetIntegerv(GL_MAX_PROJECTION_STACK_DEPTH,&maxprojstack);
+
+      ua_trace(" max. texture size = %u x %u, max. lights = %u\n",
+         maxtexsize, maxtexsize, maxlights);
+
+      ua_trace(" stack depths: name stack = %u, modelview stack = %u, proj. stack = %u\n",
+         maxnamestack, maxmodelstack, maxprojstack);
+
+      const GLubyte* vendor,* renderer,* version;
+      vendor = glGetString(GL_VENDOR);
+      renderer = glGetString(GL_RENDERER);
+      version = glGetString(GL_VERSION);
+
+      ua_trace(" vendor: %s\n renderer: %s\n version: %s\n\n",
+         vendor,renderer,version);
+   }
+
    // setup OpenGL viewport
    glViewport(0, 0, width, height);
 
