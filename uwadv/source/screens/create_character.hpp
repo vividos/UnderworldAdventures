@@ -34,27 +34,32 @@
 
 // needed includes
 #include "screen.hpp"
+#include "imgquad.hpp"
 #include "font.hpp"
 #include "mousecursor.hpp"
+#include "script/luascript.hpp"
+
+
+// forward references
+class ua_player;
 
 
 // classes
 
-
 //! create character screen class
-class ua_create_character_screen: public ua_ui_screen_base
+/*! \todo reimplement using new ua_window and ua_screen features
+*/
+class ua_create_character_screen: public ua_screen
 {
 public:
    //! ctor
    ua_create_character_screen(){}
-   //! dtor
-   virtual ~ua_create_character_screen(){}
 
-   // virtual functions from ua_ui_screen_base
-   virtual void init(ua_game_core_interface* core);
-   virtual void done();
-   virtual void handle_event(SDL_Event &event);
-   virtual void render();
+   // virtual functions from ua_screen
+   virtual void init();
+   virtual void destroy();
+   virtual void draw();
+   virtual bool process_event(SDL_Event& event);
    virtual void tick();
 
    // registered lua C functions
@@ -64,7 +69,7 @@ public:
 
 protected:
    //! loads and initializes lua script
-   void initluascript();
+   void init_luascript();
 
    //! performs an action given by the script
    void do_action();
@@ -95,8 +100,11 @@ protected:
    void cchar_global(int globalaction, int seed);
 
 protected:
-   //! lua script state
-   lua_State *L;
+   //! lua scripting interface
+   ua_lua_scripting lua;
+
+   //! mouse cursor
+   ua_mousecursor mousecursor;
 
    //! string block for button and label text
    unsigned int strblock;
@@ -111,7 +119,7 @@ protected:
    bool newgame;
 
    //! the player
-   ua_player *pplayer;
+   ua_player* pplayer;
 
    //! buttons changed
    bool changed;
@@ -126,19 +134,13 @@ protected:
    bool buttondown;
 
    //! image
-   ua_image img;
+   ua_image_quad img_screen;
 
    //! bg image
    ua_image bgimg;
 
-   //! texture object for background
-   ua_texture tex;
-
    //! image list with buttons
-   ua_image_list img_buttons;
-
-   //! background image palette
-   ua_onepalette palette;
+   std::vector<ua_image> img_buttons;
 
    //! number of selected button, or -1 if none
    int selected_button;
@@ -147,10 +149,10 @@ protected:
    int prev_button;
 
    //! input text
-   char* inputtext;
+   std::string inputtext;
 
    //! button images
-   unsigned char* btnimgs;
+   std::vector<unsigned char> btnimgs;
 
    //! x-coordinate for center of buttongroup
    unsigned int bgxpos;
@@ -180,14 +182,13 @@ protected:
    int btng_buttonspercolumn;
 
    //! array of string numbers for buttons in current group
-   unsigned int* btng_buttons;
+   std::vector<unsigned int> btng_buttons;
 
    //! countdown time in seconds for timer buttons
    double countdowntime;
 
    //! tickcount for countdown timer
    unsigned int cdttickcount;
-
 };
 
 #endif

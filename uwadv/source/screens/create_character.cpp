@@ -23,14 +23,24 @@
 
    \brief character creation screen
 
+   \todo reimplement the whole screen, using own button window class, etc.
+   also use unicode mode to properly capture keys
+   get rid of the global variable to hold "this" pointer
+   use "relative" indexing for lua C call parameters
+   use fading helper class for fading purposes
+   put global constants as static members into class
+
 */
 
 // needed includes
-#include <time.h>
 #include "common.hpp"
 #include "create_character.hpp"
 #include "ingame_orig.hpp"
+#include "audio.hpp"
+#include "renderer.hpp"
+#include "underworld.hpp"
 #include <sstream>
+#include <ctime>
 
 
 // constants
@@ -83,49 +93,41 @@ enum ua_ebuttontype
 //! global variable that points to the current screen
 ua_create_character_screen *current_screen = 0;
 
+
 // ua_create_character_screen methods
 
-void ua_create_character_screen::init(ua_game_core_interface* thecore)
+void ua_create_character_screen::init()
 {
-   ua_ui_screen_base::init(thecore);
+   ua_screen::init();
 
    ua_trace("character creation screen started\n");
 
-   // get a pointer to to current player
-   pplayer = &(core->get_underworld().get_player());
+   // setup screen
+   game->get_renderer().setup_camera2d();
 
-   // setup orthogonal projection
-   glMatrixMode(GL_PROJECTION);
-   glLoadIdentity();
-   gluOrtho2D(0,320,0,200);
-   glMatrixMode(GL_MODELVIEW);
-
-   // set OpenGL flags
-   glEnable(GL_TEXTURE_2D);
-   glBindTexture(GL_TEXTURE_2D,0);
-
-   glDisable(GL_DEPTH_TEST);
-   glEnable(GL_BLEND);
+   glDisable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
-   // load background image
-   bgimg.load_raw(core->get_settings(),"data/chargen.byt",3);
+   // get a pointer to to current player
+   pplayer = &(game->get_underworld().get_player());
 
-   // init screen image
-   img.create(320, 200, 0, 3);
-   tex.init(&core->get_texmgr());
-   tex.convert(img);
-   tex.upload();
+   game->get_image_manager().load(bgimg,"data/chargen.byt", 0,3, ua_img_byt);
 
-   // init mouse cursor
-   mousecursor.init(core);
-   mousecursor.show(true);
-
-   // load button graphics
-   img_buttons.load(core->get_settings(),"chrbtns",0,0,3);
+   game->get_image_manager().load_list(img_buttons, "chrbtns", 0,0, 3);
 
    // init text
-   font.init(core->get_settings(), ua_font_chargen);
+   font.load(game->get_settings(), ua_font_chargen);
+
+   img_screen.init(*game,0,0);
+   img_screen.get_image() = bgimg;
+   img_screen.update();
+   register_window(&img_screen);
+
+   // init mouse cursor
+   mousecursor.init(*game);
+   mousecursor.show(true);
+
+   register_window(&mousecursor);
 
    // intial variable values
    ended = false;
@@ -144,94 +146,77 @@ void ua_create_character_screen::init(ua_game_core_interface* thecore)
    btng_buttoncount = 0;
    btng_buttonimg_normal = 0;
    btng_buttonimg_highlight = 0;
-   btng_buttons = new unsigned int[ua_maxbuttons];
-   inputtext = new char[32];
-   inputtext[0] = 0;
-   btnimgs = new unsigned char[5];
+
+   btng_buttons.resize(ua_maxbuttons);
+   btnimgs.resize(5);
 
    // init lua scripting
-   initluascript();
+   init_luascript();
 }
 
-void ua_create_character_screen::initluascript()
+void ua_create_character_screen::destroy()
 {
-   // get a new lua state
-   L = lua_open(128);
-
-   // open lualib libraries
-   lua_baselibopen(L);
-   lua_strlibopen(L);
-   lua_mathlibopen(L);
-
-   // register C functions
-   lua_register(L,"cchar_do_action", cchar_do_action);
-
-   // load lua interface script for constants
-   if (0!=core->get_filesmgr().load_lua_script(L,"uw1/scripts/uwinterface"))
-      ended = true;
-
-   // load lua cutscene script
-   if (0!=core->get_filesmgr().load_lua_script(L,"uw1/scripts/createchar"))
-      ended = true;
-
-   // store pointer to this instance in a global var
-   current_screen = this;
-
-   // Init script with seed value for random numbers
-   cchar_global(gactInit, clock());
-}
-
-void ua_create_character_screen::cchar_global(int globalaction, int seed)
-{
-    // call "cchar_global()"
-   lua_getglobal(L,"cchar_global");
-   lua_pushnumber(L, globalaction);
-   lua_pushnumber(L, seed);
-   int ret = lua_call(L,2,0);
-   if (ret!=0)
-   {
-      ua_trace("Lua function call cchar_global ended with error code %u\n", ret);
-      ended = true;
-   }
-
-}
-
-void ua_create_character_screen::done()
-{
-   delete[] btnimgs;
-   delete[] inputtext;
-   delete[] btng_buttons;
-
-   tex.done();
-   mousecursor.done();
-
-   // clear screen
-   glClearColor(0,0,0,0);
-   glClear(GL_COLOR_BUFFER_BIT);
-   SDL_GL_SwapBuffers();
-
    // close Lua
-   lua_close(L);
+   lua.done();
    ua_trace("character creation screen ended\n\n");
 
    current_screen = 0;
 }
 
-void ua_create_character_screen::handle_event(SDL_Event &event)
+void ua_create_character_screen::draw()
 {
+   glClear(GL_COLOR_BUFFER_BIT);
+
+   if (selected_button!=prev_button)
+   {
+      drawbuttongroup();
+      prev_button=selected_button;
+      changed = true;
+   }
+
+   if (changed || (fadingstage!=0))
+   {
+      // set brightness of texture quad
+      Uint8 light = 255;
+
+      switch (fadingstage)
+      {
+      case 1:
+         light = Uint8(255*(double(tickcount) / (game->get_tickrate()*ua_fade_time)));
+         break;
+
+      case -1:
+         light = Uint8(255-255*(double(tickcount) / (game->get_tickrate()*ua_fade_time)));
+         break;
+      }
+
+      glColor3ub(light,light,light);
+
+      img_screen.update();
+
+      changed = false;
+   }
+
+   ua_screen::draw();
+}
+
+bool ua_create_character_screen::process_event(SDL_Event& event)
+{
+   ua_screen::process_event(event);
+
    switch(event.type)
    {
    case SDL_KEYDOWN:
       // don't handle any keystroke if Alt or Ctrl is down
       if (((event.key.keysym.mod & KMOD_ALT)>0) || ((event.key.keysym.mod & KMOD_CTRL)>0))
-         return;
+         return false;
 
       // handle key presses
       if ((btng_buttontype==btInput) && 
-          (((event.key.keysym.sym>=SDLK_a) && (event.key.keysym.sym<=SDLK_z)) || 
+          (((event.key.keysym.sym>=SDLK_a) && (event.key.keysym.sym<=SDLK_z)) ||
            ((event.key.keysym.sym>=SDLK_0) && (event.key.keysym.sym<=SDLK_9)) ||
-           (event.key.keysym.sym==SDLK_BACKSPACE) || 
-           (event.key.keysym.sym==SDLK_SPACE) || 
+           (event.key.keysym.sym==SDLK_BACKSPACE) ||
+           (event.key.keysym.sym==SDLK_SPACE) ||
            (event.key.keysym.sym==SDLK_MINUS) ||
            (event.key.keysym.sym==SDLK_UNDERSCORE)))
       {
@@ -305,7 +290,6 @@ void ua_create_character_screen::handle_event(SDL_Event &event)
 
    case SDL_MOUSEMOTION:
       {
-         mousecursor.updatepos();
          if (buttondown)
          {
             int ret = getbuttonover();
@@ -325,29 +309,117 @@ void ua_create_character_screen::handle_event(SDL_Event &event)
       }
       break;
 
-   default: break;
+   default:
+      break;
+   }
+
+   return false;
+}
+
+void ua_create_character_screen::tick()
+{
+   if (fadingstage!=0)
+   { 
+      if (++tickcount >= (game->get_tickrate()*ua_fade_time))
+      {
+         if (ended)
+         {
+            if (newgame)
+            {
+               // load initial game
+               game->get_underworld().import_savegame(game->get_settings(),"data/",true);
+
+               // start original game
+               game->replace_screen(new ua_ingame_orig_screen,false);
+            }
+            else
+               game->remove_screen();
+
+            return;
+         } // else
+         changed = true;
+         fadingstage=0;
+         tickcount=0;
+      }
+   }
+
+   if ((btng_buttontype==btTimer) && (++cdttickcount >= (game->get_tickrate()*countdowntime)))
+   {
+      cdttickcount=0;
+      press_button(0);
+   }
+}
+
+/*! \todo store "this" pointer in userdata variable
+*/
+void ua_create_character_screen::init_luascript()
+{
+   // initialize Lua
+   lua.init();
+
+   lua_State* L = lua.get_lua_State();
+
+   // open lualib libraries
+   lua_baselibopen(L);
+   lua_strlibopen(L);
+   lua_mathlibopen(L);
+
+   // register C functions
+   lua_register(L,"cchar_do_action", cchar_do_action);
+
+   // load lua interface script for constants
+   if (0 != lua.load_script(*game, "uw1/scripts/uwinterface"))
+      ended = true;
+
+   // load lua cutscene script
+   if (0 != lua.load_script(*game, "uw1/scripts/createchar"))
+      ended = true;
+
+   // store pointer to this instance in a global var
+   current_screen = this;
+
+   // Init script with seed value for random numbers
+   cchar_global(gactInit, clock());
+}
+
+void ua_create_character_screen::cchar_global(int globalaction, int seed)
+{
+   lua_State* L = lua.get_lua_State();
+
+   // call "cchar_global()"
+   lua_getglobal(L,"cchar_global");
+   lua_pushnumber(L, globalaction);
+   lua_pushnumber(L, seed);
+   int ret = lua_call(L,2,0);
+   if (ret!=0)
+   {
+      ua_trace("Lua function call cchar_global ended with error code %u\n", ret);
+      ended = true;
    }
 }
 
 void ua_create_character_screen::handleinputchar(char c)
 {
-   int i = strlen(inputtext);
-   if (c==8) 
+   int i = inputtext.size();
+   if (c==8)
    {
       if (i>0)
-         inputtext[i-1] = 0;
+         inputtext.erase(i-1);
       return;
    }
    if (i>=31)
       return;
-   inputtext[i] = c;
-   inputtext[i+1] = 0;
+   inputtext += c;
 }
 
 void ua_create_character_screen::do_action()
 {
+   lua_State* L = lua.get_lua_State();
+
    int n=lua_gettop(L);
    unsigned int action = (n<1) ? 0 : static_cast<unsigned int>(lua_tonumber(L,1));
+
+   ua_image& img = img_screen.get_image();
 
    switch(static_cast<ua_elua_action>(action))
    {
@@ -357,7 +429,7 @@ void ua_create_character_screen::do_action()
       fadingstage = unsigned(-1);
 
       // fade out music
-      core->get_audio().fadeout_music(ua_fade_time);
+      game->get_audio_manager().fadeout_music(ua_fade_time);
 
       //ua_trace("end request by char. creation script\n");
       break;
@@ -371,7 +443,7 @@ void ua_create_character_screen::do_action()
       textcolor_highlight = static_cast<unsigned int>(lua_tonumber(L,5));
 
       // set different highlight color when features are enabled
-      if (core->get_settings().get_bool(ua_setting_uwadv_features))
+      if (game->get_settings().get_bool(ua_setting_uwadv_features))
          textcolor_highlight = 162; // orange, palette #3
 
       int ic = lua_getn(L, 6);
@@ -403,7 +475,7 @@ void ua_create_character_screen::do_action()
          btng_buttoncount = lua_getn(L, 4);
          if ((btng_buttontype==btInput) && (btng_buttoncount>0))
          {
-            inputtext[0] = 0;
+            inputtext.erase();
             btng_buttoncount = 1;
          }
          for (int i=0; i<btng_buttoncount; i++)
@@ -469,14 +541,16 @@ void ua_create_character_screen::do_action()
    case actSetUIImg:
    {
       if (n<4) break;
-      ua_image cimg = img_buttons.get_image(static_cast<unsigned int>(lua_tonumber(L,2)));
-      img.paste_image(cimg, static_cast<unsigned int>(lua_tonumber(L,3)) - cimg.get_xres()/2, 
-                            static_cast<unsigned int>(lua_tonumber(L,4)) - cimg.get_yres()/2, true);
+      ua_image& cimg = img_buttons[static_cast<unsigned int>(lua_tonumber(L,2))];
+      unsigned int destx, desty;
+      destx = static_cast<unsigned int>(lua_tonumber(L,3)) - cimg.get_xres()/2;
+      desty = static_cast<unsigned int>(lua_tonumber(L,4)) - cimg.get_yres()/2;
+      img.paste_rect(cimg, 0,0, cimg.get_xres(), cimg.get_yres(), destx,desty, true);
       break;
    }
 
    case actUIClear:
-      img.paste_image(bgimg, 0, 0, false);
+      img.paste_image(bgimg, 0,0);
       //ua_trace("buffered screen cleared by char. creation script\n");
       break;
 
@@ -529,7 +603,7 @@ unsigned int ua_create_character_screen::drawtext(const char* str, int x, int y,
           if (xalign==2)
              x -= textlength;
    }
-   img.paste_image(img_text, x, y, true);
+   img_screen.get_image().paste_rect(img_text, 0,0, img_text.get_xres(),img_text.get_yres(), x,y, true);
    return textlength;
 }
 
@@ -542,35 +616,37 @@ unsigned int ua_create_character_screen::drawnumber(unsigned int num, int x, int
 
 unsigned int ua_create_character_screen::drawtext(int strnum, int x, int y, int xalign, unsigned char color, int custstrblock)
 {
-   std::string text(core->get_strings().get_string(custstrblock>-1 ? custstrblock : strblock, strnum));
+   std::string text(game->get_underworld().get_strings().get_string(custstrblock>-1 ? custstrblock : strblock, strnum));
    return (!text.empty()) ? drawtext(text.c_str(), x, y, xalign, color) : 0;
 }
 
 void ua_create_character_screen::drawbutton(int buttontype, bool highlight, int strnum, int xc, int y)
 {
-   ua_image button = img_buttons.get_image(btng_buttonimg_normal);
+   ua_image& button = img_buttons[btng_buttonimg_normal];
    int x = xc - button.get_xres()/2;
-   img.paste_image(button, x, y, false);
+
+   img_screen.get_image().paste_image(button, x, y);
+
    if (buttontype==btText)
       drawtext(strnum, xc, y+3, 1, (highlight ? textcolor_highlight : textcolor_normal));
    else if (buttontype==btInput)
    {
       unsigned int labelwidth = drawtext(strnum, x+4, y+3, 0, textcolor_normal);
       unsigned int maxnamewidth = button.get_xres()-labelwidth-7;
-      unsigned int ip = strlen(inputtext);
-      while ((font.calc_length(inputtext)>maxnamewidth) && (ip>0))
-         inputtext[ip--] = 0;
-      drawtext(inputtext, x + labelwidth + 4, y + 3, 0, textcolor_highlight);
+      unsigned int ip = inputtext.size();
+      while ((font.calc_length(inputtext.c_str())>maxnamewidth) && (ip>0))
+         inputtext.erase(ip--);
+      drawtext(inputtext.c_str(), x + labelwidth + 4, y + 3, 0, textcolor_highlight);
    }
    else if (buttontype==btImage)
    {
-      button = img_buttons.get_image(strnum);
-      img.paste_image(button, x, y, true);
+      button = img_buttons[strnum];
+      img_screen.get_image().paste_rect(button, 0,0, button.get_xres(),button.get_yres(), x,y, true);
    }
    if (highlight && (buttontype!=btInput))
    {
-      button = img_buttons.get_image(btng_buttonimg_highlight);
-      img.paste_image(button, x, y, true);
+      button = img_buttons[btng_buttonimg_highlight];
+      img_screen.get_image().paste_rect(button, 0,0, button.get_xres(),button.get_yres(), x,y, true);
    }
 }
 
@@ -579,7 +655,7 @@ void ua_create_character_screen::drawbuttongroup()
    if (btng_buttontype==btTimer)
       return;
 
-   ua_image button = img_buttons.get_image(btng_buttonimg_normal);
+   ua_image& button = img_buttons[btng_buttonimg_normal];
    int inity = btng_buttonspercolumn*button.get_yres() + ((btng_buttonspercolumn-1)*5);
    if (btng_caption!=ccvNone)
        inity += 15;
@@ -614,14 +690,23 @@ int ua_create_character_screen::getbuttonover()
    if (btng_buttontype==btTimer)
       return -1;
 
+   // convert to 320x200 screen coordinates
    int xpos, ypos;
    SDL_GetMouseState(&xpos, &ypos);
-   xpos = int(double(xpos)/core->get_screen_width()*320);
-   ypos = int(double(ypos)/core->get_screen_height()*200);
+
+   SDL_Surface* surf = SDL_GetVideoSurface();
+
+   if (surf != NULL)
+   {
+      xpos = int(xpos * 320.0 / surf->w);
+      ypos = int(ypos * 200.0 / surf->h);
+   }
+   else
+      xpos = ypos = 0;
 
    // determine column
    int columns = btng_buttoncount/btng_buttonspercolumn;
-   int btnsize = img_buttons.get_image(btng_buttonimg_normal).get_xres();
+   int btnsize = img_buttons[btng_buttonimg_normal].get_xres();
    int bgsize = columns*btnsize + (columns-1)*6;
    xpos -= bgxpos-(bgsize/2);
    if ((xpos<0) || (xpos>bgsize) || (xpos%(btnsize+6) > btnsize))
@@ -629,7 +714,7 @@ int ua_create_character_screen::getbuttonover()
    int coffset = xpos/(btnsize+6) * btng_buttonspercolumn;
 
    // determine button in column
-   btnsize = img_buttons.get_image(btng_buttonimg_normal).get_yres();
+   btnsize = img_buttons[btng_buttonimg_normal].get_yres();
    bgsize = btng_buttonspercolumn*btnsize + ((btng_buttonspercolumn-1)*5);
    int mv = (btng_caption!=ccvNone) ? 15 : 0;
    ypos -= (200-(bgsize+mv))/2+mv;
@@ -637,97 +722,11 @@ int ua_create_character_screen::getbuttonover()
       ypos/(btnsize+5) + coffset : -1;
 }
 
-void ua_create_character_screen::render()
-{
-   glClear(GL_COLOR_BUFFER_BIT);
-   glLoadIdentity();
-
-   if (selected_button!=prev_button)
-   {
-      drawbuttongroup();
-      prev_button=selected_button;
-      changed = true;
-   }
-
-   if (changed || (fadingstage!=0))
-   {
-      // set brightness of texture quad
-      Uint8 light = 255;
-
-      switch (fadingstage)
-      {
-      case 1:
-         light = Uint8(255*(double(tickcount) / (core->get_tickrate()*ua_fade_time)));
-         break;
-
-      case -1:
-         light = Uint8(255-255*(double(tickcount) / (core->get_tickrate()*ua_fade_time)));
-         break;
-      }
-
-      glColor3ub(light,light,light);
-
-
-      // prepare image texture
-      tex.convert(img);
-      tex.upload();
-
-      changed = false;
-   }
-
-   double u = tex.get_tex_u(), v = tex.get_tex_v();
-
-   // draw screen quad
-   glBegin(GL_QUADS);
-   glTexCoord2d(0.0, v  ); glVertex2i(  0,  0);
-   glTexCoord2d(u  , v  ); glVertex2i(320,  0);
-   glTexCoord2d(u  , 0.0); glVertex2i(320,200);
-   glTexCoord2d(0.0, 0.0); glVertex2i(  0,200);
-   glEnd();
-
-   // draw the mouse cursor
-   mousecursor.draw();
-   tex.use();
-}
-
-void ua_create_character_screen::tick()
-{
-   if (fadingstage!=0)
-   { 
-      if (++tickcount >= (core->get_tickrate()*ua_fade_time))
-      {
-         if (ended)
-         {
-            if (newgame)
-            {
-               // load initial game
-               core->get_underworld().import_savegame(core->get_settings(),"data/",true);
-
-               // initalize new game
-               core->get_underworld().get_scripts().lua_started_newgame();
-
-               // start original game
-               core->replace_screen(new ua_ingame_orig_screen);
-            }
-            else
-               core->pop_screen();
-            return;
-         } // else
-         changed = true;
-         fadingstage=0;
-         tickcount=0;
-      }
-   } 
-   if ((btng_buttontype==btTimer) && (++cdttickcount >= (core->get_tickrate()*countdowntime)))
-   {
-      cdttickcount=0;
-      press_button(0);
-   }
-}
-
 void ua_create_character_screen::press_button(int button)
 {
    //ua_trace("character creation button %d pressed\n", button);
+
+   lua_State* L = lua.get_lua_State();
 
    // call "cchar_buttonclick(button)"
    lua_getglobal(L,"cchar_buttonclick");
@@ -735,7 +734,7 @@ void ua_create_character_screen::press_button(int button)
    int ret;
    if (btng_buttontype==btInput)
    {
-      lua_pushstring(L,inputtext);
+      lua_pushstring(L,inputtext.c_str());
       ret = lua_call(L,2,0);
    } else
       ret = lua_call(L,1,0);
