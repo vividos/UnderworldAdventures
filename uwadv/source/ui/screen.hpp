@@ -23,17 +23,8 @@
 
    \brief user interface screens base classes
 
-
-
-
    base class for user interface screens, e.g. main game screen, conversation screen,
    map screen etc.
-
-   note that a derived class should call at least the init() and done()
-   methods from their overridden methods
-
-   also note that ua_ui_screen_base has a mousecursor member, but the screen
-   must initialize it by itself to be usable.
 
 */
 
@@ -43,6 +34,7 @@
 
 // needed includes
 #include "window.hpp"
+#include "game_interface.hpp"
 
 
 // classes
@@ -57,7 +49,7 @@ public:
    virtual ~ua_screen();
 
    //! inits the screen
-   virtual void init(/*double ratio_x, double ratio_y*/);
+   virtual void init();
 
    //! destroys window
    virtual void destroy();
@@ -74,110 +66,23 @@ public:
    //! registers a window as subwindow
    void register_window(ua_window* window);
 
+   //! sets pointer to game interface
+   void set_game_interface(ua_game_interface* game_interface);
+
 protected:
    //! list of all subwindows controlled by the screen
    std::vector<ua_window*> subwindows;
+
+   //! game interface pointer
+   ua_game_interface* game;
 };
 
 
+// inline methods
 
-
-
-
-
-
-//#include "core.hpp"
-//#include "mousecursor.hpp"
-
-
-// forward references
-//class ua_game_core_interface;
-
-
-// structs
-/*
-//! screen area struct
-struct ua_screen_area_data
+inline void ua_screen::set_game_interface(ua_game_interface* game_interface)
 {
-   unsigned int area_id;
-   unsigned int xmin, xmax, ymin, ymax;
-};
-
-const unsigned int ua_area_none = 0;
-*/
-
-// classes
-/*
-//! screen/control base class
-class ua_screen_ctrl_base
-{
-public:
-   //! ctor
-   ua_screen_ctrl_base(){}
-   //! dtor
-   virtual ~ua_screen_ctrl_base(){}
-
-   // virtual methods
-
-   //! initializes screen/control
-   virtual void init(ua_game_core_interface* core);
-
-   //! handles event
-   virtual void handle_event(SDL_Event& event);
-
-   //! called for a given mouse action; click is false for mouse moves
-   virtual void mouse_action(bool click, bool left_button, bool pressed);
-
-   //! called when screen/control gets deactivated
-   virtual void suspend(){}
-
-   //! called when screen/control gets active again
-   virtual void resume(){}
-
-   //! clean up
-   virtual void done(){}
-
-   //! renders the screen
-   virtual void render(){}
-
-   //! called on every game tick
-   virtual void tick(){}
-
-   // static methods
-
-   //! returns area the given mouse coordinates is over
-   static unsigned int get_area(const ua_screen_area_data* table,
-      unsigned int xpos,unsigned int ypos);
-
-protected:
-   //! game core interface pointer
-   ua_game_core_interface *core;
-
-   //! mouse cursor coordinates in 320x200 window range
-   unsigned int cursorx,cursory;
-
-   //! mouse button states
-   bool leftbuttondown_old,rightbuttondown_old;
-};
-
-
-//! screen base class
-class ua_ui_screen_base: public ua_screen_ctrl_base
-{
-public:
-   //! ctor
-   ua_ui_screen_base(){}
-   //! dtor
-   virtual ~ua_ui_screen_base(){}
-
-
-   //! mouse cursor of screen
-   ua_mousecursor& get_mousecursor(){ return mousecursor; }
-
-protected:
-   //! mouse cursor for screen
-   ua_mousecursor mousecursor;
-};
-*/
+   game = game_interface;
+}
 
 #endif
