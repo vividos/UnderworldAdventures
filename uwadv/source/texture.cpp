@@ -58,12 +58,15 @@ void ua_texture::convert(ua_image &img, ua_onepalette &pal)
 
    texels.resize(xres*yres,0x00000000);
 
+   Uint32 *palptr = reinterpret_cast<Uint32*>(&pal);
+
    for(unsigned int y=0; y<origy; y++)
    for(unsigned int x=0; x<origx; x++)
    {
-      Uint8 idx = pix[y*origx+x];
-      Uint32 texel = *((Uint32*)pal[idx]);
-      texels[y*xres+x] = texel;
+//      Uint8 idx = pix[y*origx+x];
+      texels[y*xres+x] = palptr[pix[y*origx+x]];
+//      Uint32 texel = *((Uint32*)pal[idx]);
+//      texels[y*xres+x] = texel;
    }
 }
 
