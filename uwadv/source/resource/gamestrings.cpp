@@ -72,7 +72,8 @@ void ua_gamestrings::load(const char *filename) throw(ua_exception)
    Uint16 nodenum = fread16(fd);
 
    // read in node list
-   ua_huff_node *allnodes = new ua_huff_node[nodenum];
+   std::vector<ua_huff_node> allnodes;
+   allnodes.resize(nodenum);
    for(Uint16 k=0; k<nodenum; k++)
    {
       allnodes[k].symbol = fgetc(fd);
@@ -85,7 +86,8 @@ void ua_gamestrings::load(const char *filename) throw(ua_exception)
    Uint16 sblocks = fread16(fd);
 
    // read in all block infos
-   ua_block_info *allblocks = new ua_block_info[sblocks];
+   std::vector<ua_block_info> allblocks;
+   allblocks.resize(sblocks);
    for(int z=0; z<sblocks; z++)
    {
       allblocks[z].block_id = fread16(fd);
@@ -170,9 +172,6 @@ void ua_gamestrings::load(const char *filename) throw(ua_exception)
       allstrings.insert(
          std::make_pair<int,std::vector<std::string> >(allblocks[i].block_id,allblockstrings));
    }
-
-   delete[] allblocks;
-   delete[] allnodes;
 
    fclose(fd);
 }
