@@ -182,6 +182,10 @@ void ua_critter::load(const char* file, unsigned int used_auxpal)
                hoty = fgetc(fd);
                type = fgetc(fd);
 
+               // check if hotspot is in image
+               if (hotx>width) hotx = width;
+               if (hoty>height) hoty = height;
+
                if (pass==0)
                {
                   // pass 0: calculate maximum frame image width
