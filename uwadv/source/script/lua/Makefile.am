@@ -1,6 +1,6 @@
 INCLUDES = -Isrc -Iinclude
 
-noinst_LTLIBRARIES = liblua.la
+noinst_LTLIBRARIES = liblua.la liblualib.la
 
 liblua_la_SOURCES = \
 	src/lapi.c src/lapi.h \
@@ -28,6 +28,16 @@ liblua_la_SOURCES = \
 	include/lua.h \
 	include/lualib.h
 
+liblualib_la_SOURCES = \
+	src/lib/lauxlib.c \
+	src/lib/lbaselib.c \
+	src/lib/liolib.c \
+	src/lib/lmathlib.c \
+	src/lib/lstrlib.c
+
+liblualib_la_LIBADD = liblua.la
+liblualib_la_DEPENDENCIES = liblua.la
+
 noinst_PROGRAMS = luac
 
 luac_SOURCES = \
@@ -52,4 +62,5 @@ EXTRA_DIST = \
 	src/lib/README \
 	src/luac/README	\
 	src/luac/Makefile \
+	src/lib/Makefile \
 	src/Makefile

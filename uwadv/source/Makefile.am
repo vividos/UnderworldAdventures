@@ -50,7 +50,7 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 uwadv_LDADD = \
 	$(OPENGL_LIBS) \
 	$(SDL_LIBS) \
-	lua/liblua.la \
+	lua/liblualib.la \
 	resource/zziplib/libzziplib.la \
 	-lz
 
