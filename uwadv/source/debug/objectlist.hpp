@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Underworld Adventures Team
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -30,10 +30,33 @@
 #define uadebug_objectlist_hpp_
 
 // needed includes
+//#include "wx/listctrl.h" // list control
+#include "editlist.hpp"
 
 
 // classes
 
+//! list control for master object list
+class ua_objectlist_ctrl: public wxEditListCtrl
+{
+public:
+   //! ctor
+   ua_objectlist_ctrl(wxWindow* parent);
+
+protected:
+   // event handler
+   void OnBeginLabelEdit(wxListEvent& event);
+   void OnEndLabelEdit(wxListEvent& event);
+
+   // virtual functions
+   virtual wxString OnGetItemText(long item, long column) const;
+   virtual int OnGetItemImage(long item) const;
+
+   DECLARE_EVENT_TABLE()
+};
+
+
+//! frame for master object list
 class ua_objectlist_frame: public wxMDIChildFrame
 {
 public:
@@ -49,6 +72,8 @@ public:
    static const char* frame_name;
 
 protected:
+   //! list control for the master object list
+   ua_objectlist_ctrl* listctrl;
 };
 
 #endif
