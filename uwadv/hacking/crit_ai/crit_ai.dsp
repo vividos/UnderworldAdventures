@@ -79,7 +79,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 sdl.lib sdlmain.lib opengl32.lib glu32.lib toolslib.lib zlib.lib uaopt.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"msvcrt" /pdbtype:sept /libpath:"..\..\output\debug\toolslib" /libpath:"..\..\uwadv\debug\uaopt"
+# ADD LINK32 sdl.lib sdlmain.lib opengl32.lib glu32.lib toolslib.lib zlib.lib uaopt.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"msvcrt" /pdbtype:sept /libpath:"..\..\output\debug\toolslib" /libpath:"..\..\output\debug\uaopt"
 
 !ENDIF 
 
@@ -90,6 +90,10 @@ LINK32=link.exe
 # Begin Group "uwadv extra files"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source\win32\debug.cpp
+# End Source File
 # Begin Source File
 
 SOURCE=..\..\source\files.cpp
@@ -133,6 +137,10 @@ SOURCE=..\..\source\resource\proploader.cpp
 # Begin Source File
 
 SOURCE=..\..\source\underworld.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\debug\uwaccess.cpp
 # End Source File
 # Begin Source File
 
