@@ -99,7 +99,7 @@ registered C functions to call from Lua:
 
    objlist_get_obj_info
    objlist_set_obj_info
-   objlist_remove_obj
+   objlist_delete_obj
    objlist_insert_obj
 
    tilemap_get_tile
@@ -115,7 +115,7 @@ registered C functions to call from Lua:
    inv_get_objinfo
    inv_slot_get_num
    inv_slot_get_item
-   inv_slot_remove_item
+   inv_slot_delete_item
    inv_float_get_item
    inv_float_add_item
    inv_cont_calc_weight
@@ -458,7 +458,7 @@ is below 512 (0x0200).
 
   sets object infos in table "objinfo" for a given object handle.
 
-* objlist_remove_obj(obj_handle)
+* objlist_delete_obj(obj_handle)
   return values: none
 
   removes object from the object list and unlinks it.
@@ -565,7 +565,7 @@ is below 512 (0x0200).
   returns itemlist position of given slot item; for topmost container the
   item position may be lua_slot_no_item
 
-* inv_slot_remove_item(inv_pos)
+* inv_slot_delete_item(inv_pos)
   return values: none
 
   removes slot item on given slot position; if it was the floating item, the
