@@ -53,6 +53,13 @@ struct ua_hotspot_items
    { "Level 1: Gray Goblin Lair", 0, 54.5, 55.5 },
    { "Level 1: Lever Tile Puzzle (22)", 0, 47.5, 46.5 },
    { "Level 1: 's Grave (near 22)", 0, 49.5, 41.5 },
+   { "Level 1: Shrine (17)", 0, 46.5, 15.5 },
+
+
+   { "Ethereal Void: Starting point", 8, 29.5, 24.5 },
+   { "Ethereal Void: Green Pathway End", 8, 52.5, 48.5 },
+   { "Ethereal Void: Blue Pathway End", 8, 10.5, 16.5 },
+   { "Ethereal Void: Red Pathway End", 8, 7.5, 51.5 },
 
    { NULL, 0, 0.0, 0.0 } // end of list marker
 };
