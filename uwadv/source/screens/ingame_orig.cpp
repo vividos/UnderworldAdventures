@@ -39,6 +39,8 @@ void ua_ingame_orig_screen::init()
    fov = 90.0;
    playeryangle = 0.0;
    leftbuttondown = rightbuttondown = false;
+   cursor_image = 0;
+   cursorx = cursory = 0;
 
    setup_opengl();
 
@@ -52,17 +54,26 @@ void ua_ingame_orig_screen::init()
    if (core->get_settings().gtype == ua_game_uw_demo)
       mainscreenname = "data/dmain.byt";
 
-   img.load_raw(core->get_settings(),mainscreenname,0);
-   tex.convert(core->get_texmgr(),img);
+   SDL_ShowCursor(0);
+
+   ua_settings &settings = core->get_settings();
+
+   img_back.load_raw(settings,mainscreenname,0);
+   tex.convert(core->get_texmgr(),img_back);
    tex.prepare(false);
 
-   img_compass.load(core->get_settings(),"compass");
-   img_bodies.load(core->get_settings(),"bodies");
+   img_temp.create(img_back.get_xres(),img_back.get_yres(),0,
+      img_back.get_palette());
+
+   img_compass.load(settings,"compass");
+   img_bodies.load(settings,"bodies");
+//   img_cursors.load(settings,"cursors");
 }
 
 void ua_ingame_orig_screen::done()
 {
    glDisable(GL_SCISSOR_TEST);
+   glDisable(GL_FOG);
 }
 
 void ua_ingame_orig_screen::handle_event(SDL_Event &event)
@@ -182,13 +193,13 @@ void ua_ingame_orig_screen::render()
 
    {
       // rotation
-      glRotatef( playeryangle+270.0, 1.0, 0.0, 0.0 );
-      glRotatef( -xangle+90.0,  0.0, 0.0, 1.0 );
+      glRotated(playeryangle+270.0, 1.0, 0.0, 0.0);
+      glRotated(-xangle+90.0,  0.0, 0.0, 1.0);
 
       ua_player &pl = core->get_underworld().get_player();
 
       // move to position on map
-      glTranslatef(-pl.get_xpos(),-pl.get_ypos(),-plheight );
+      glTranslated(-pl.get_xpos(),-pl.get_ypos(),-plheight);
    }
 
    ua_frustum fr(pl.get_xpos(),pl.get_ypos(),plheight,xangle,-playeryangle,fov,16.0);
@@ -211,10 +222,12 @@ void ua_ingame_orig_screen::render()
    glDisable(GL_DEPTH_TEST);
    glEnable(GL_BLEND);
    glDisable(GL_SCISSOR_TEST);
+   glDisable(GL_FOG);
 
    render_ui();
 
    // restore old projection matrix and settings
+   glEnable(GL_FOG);
    glEnable(GL_SCISSOR_TEST);
    glDisable(GL_BLEND);
    glEnable(GL_DEPTH_TEST);
@@ -227,6 +240,7 @@ void ua_ingame_orig_screen::render()
 void ua_ingame_orig_screen::render_ui()
 {
    // do some replacements in the image
+   img_temp.paste_image(img_back,0,0);
 
    // compass
    ua_player &pl = core->get_underworld().get_player();
@@ -237,7 +251,7 @@ void ua_ingame_orig_screen::render_ui()
 
       // paste image to use
       unsigned int compassimg = ((compassdir+1)/2)&3;
-      img.paste_image(img_compass.get_image(compassimg),112,131);
+      img_temp.paste_image(img_compass.get_image(compassimg),112,131);
 
       // paste red tip facing north
       compassimg = ((compassdir+1)/2)&15;
@@ -251,17 +265,22 @@ void ua_ingame_orig_screen::render_ui()
          48,10, 44, 6, 40, 3, 32, 2,
       };
 
-      img.paste_image(tip,112+tip_coords[compassimg*2],131+tip_coords[compassimg*2+1]);
+      img_temp.paste_image(tip,112+tip_coords[compassimg*2],131+tip_coords[compassimg*2+1]);
    }
 
    // player appearance
    {
       unsigned int app = (pl.get_appearance() + pl.is_gender_male()? 0 : 5) % 10;
-      img.paste_image(img_bodies.get_image(app),260,11);
+      img_temp.paste_image(img_bodies.get_image(app),260,11);
+   }
+
+   // mouse cursor
+   {
+//      img_temp.paste_image(img_cursors.get_image(cursor_image),cursorx,cursory);
    }
 
    // upload ui texture
-   tex.convert(core->get_texmgr(),img);
+   tex.convert(core->get_texmgr(),img_temp);
    tex.use(core->get_texmgr());
    tex.upload();
 
@@ -280,6 +299,13 @@ void ua_ingame_orig_screen::render_ui()
 
 void ua_ingame_orig_screen::tick()
 {
+   // get cursor pos
+   int x,y;
+   SDL_GetMouseState(&x,&y);
+   cursorx=unsigned(double(x)/core->get_screen_width()*320.0)-5;
+   cursory=unsigned(double(y)/core->get_screen_height()*200.0)-5;
+
+   // movement
    if (walk)
       core->get_underworld().walk_player(
          core->get_underworld().get_player().get_angle()-walk_dir);
@@ -287,13 +313,13 @@ void ua_ingame_orig_screen::tick()
 
 void ua_ingame_orig_screen::setup_opengl()
 {
-   // smooth shading
-   glShadeModel(GL_SMOOTH);
-
    // culling
    glCullFace(GL_BACK);
    glFrontFace(GL_CCW);
    glEnable(GL_CULL_FACE);
+
+   // clear color
+   glClearColor(0,0,0,0);
 
    // z-buffer
    glEnable(GL_DEPTH_TEST);
@@ -301,12 +327,26 @@ void ua_ingame_orig_screen::setup_opengl()
    // enable texturing
    glEnable(GL_TEXTURE_2D);
 
+   // smooth shading
+   glShadeModel(GL_SMOOTH);
+
    // alpha blending
    glDisable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
-   // clear color
-   glClearColor(0,0,0,0);
+   // fog
+   glEnable(GL_FOG);
+   glFogi(GL_FOG_MODE,GL_EXP2);
+   glFogf(GL_FOG_DENSITY,0.5);
+   glFogf(GL_FOG_START,0.0);
+   glFogf(GL_FOG_END,1.0);
+   int fog_color[4] = { 0,0,0,0 };
+   glFogiv(GL_FOG_COLOR,fog_color);
+
+   // give some hints
+   glHint(GL_FOG_HINT,GL_DONT_CARE);
+   glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
+   glHint(GL_POLYGON_SMOOTH_HINT,GL_DONT_CARE);
 
    // camera setup
 
@@ -328,22 +368,20 @@ void ua_ingame_orig_screen::setup_opengl()
 
    // calculate scissor rectangle
    const unsigned int scissor_area[4] =
-   {
-      52,68, 174,114
-   };
+   { 52,68, 174,114 };
 
    unsigned int xres = core->get_screen_width(),
       yres = core->get_screen_height();
 
-   double x1,x2,y1,y2;
+   int x1,x2,y1,y2;
 
    // lower left coords
-   x1 = (scissor_area[0]/320.0) * xres;
-   y1 = (scissor_area[1]/200.0) * yres;
+   x1 = int((scissor_area[0]/320.0) * xres);
+   y1 = int((scissor_area[1]/200.0) * yres);
 
    // width/height
-   x2 = (scissor_area[2]/320.0) * xres;
-   y2 = (scissor_area[3]/200.0) * yres;
+   x2 = int((scissor_area[2]/320.0) * xres);
+   y2 = int((scissor_area[3]/200.0) * yres);
 
    glScissor(x1,y1,x2,y2);
 }

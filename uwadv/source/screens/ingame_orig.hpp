@@ -72,11 +72,16 @@ protected:
    double fov;
    double playeryangle;
 
-   ua_image img;
+   unsigned int cursor_image;
+   unsigned int cursorx,cursory;
+
+   ua_image img_back;
+   ua_image img_temp;
    ua_texture tex;
 
    ua_image_list img_compass;
    ua_image_list img_bodies;
+   ua_image_list img_cursors;
 };
 
 #endif
