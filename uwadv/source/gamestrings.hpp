@@ -52,7 +52,7 @@ public:
    void load(const char *filename) throw(ua_exception);
 
    //! returns a game string
-   std::string get_string(int block, int string_nr);
+   std::string get_string(unsigned int block, unsigned int string_nr);
 
 protected:
    //! game string container

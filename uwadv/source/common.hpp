@@ -33,6 +33,7 @@
 // get rid of warnings
 #ifdef WIN32
 # pragma warning( disable: 4786 ) // identifier was truncated to '255' characters in the debug information
+# pragma warning( disable : 4290 ) // C++ Exception Specification ignored
 #endif
 
 

@@ -36,24 +36,24 @@ int main(int argc, char* argv[])
 {
    ua_game_win32 ua;
 
+#ifndef _DEBUG
    try
+#endif
    {
       ua.init();
       ua.run();
       ua.done();
    }
+#ifndef _DEBUG
    catch (ua_exception e)
    {
-      printf(e.what());
+      printf("caught ua_exception: %s\n",e.what());
    }
    catch (std::exception e)
    {
-      printf(e.what());
+      printf("caught std::exception: %s\n",e.what());
    }
-   catch (...)
-   {
-      printf("unknown other exception!\n");
-   }
+#endif
 
    return 0;
 }

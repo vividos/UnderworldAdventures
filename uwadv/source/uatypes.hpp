@@ -21,7 +21,7 @@
 */
 /*! \file uatypes.hpp
 
-   commonly used typedefs
+   commonly used types
 
 */
 
@@ -34,8 +34,15 @@
 #include <exception>
 
 
-//! exception class
+// macros
 
+#define ua_min(a,b) ((a)<(b) ? (a) : (b))
+#define ua_max(a,b) ((a)>(b) ? (a) : (b))
+
+
+// classes
+
+//! exception class
 class ua_exception: public std::exception
 {
 public:
