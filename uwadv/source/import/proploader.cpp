@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -81,7 +81,7 @@ void ua_uw_import::load_properties(ua_object_properties& prop,
          comprop.can_have_owner = (data[7] & 0x80) != 0;
          comprop.can_be_looked_at = (data[10] & 0x10) != 0;
          comprop.can_be_picked_up = ((data[3]>>5) & 1) != 0;
-
+         comprop.is_container = ((data[3]>>7) & 1) != 0;
          prop.common_properties.push_back(comprop);
       }
 
@@ -90,5 +90,32 @@ void ua_uw_import::load_properties(ua_object_properties& prop,
 
    // import object properties
    {
+      std::string common_name(path);
+      common_name.append("data/objects.dat");
+
+      FILE* fd = fopen(common_name.c_str(),"rb");
+
+      if (fd==NULL)
+         throw ua_exception("could not open data/objects.dat");
+
+      // import armour and wearable properties
+      {
+         fseek(fd,0x00b2,SEEK_SET);
+         prop.armour_wearable_properties.clear();
+         prop.armour_wearable_properties.resize(0x0020);
+
+         for(unsigned int i=0; i<0x0020; i++)
+         {
+            ua_armour_wearable_property& aprop =
+               prop.armour_wearable_properties[i];
+
+            aprop.protection = fgetc(fd);
+            aprop.durability = fgetc(fd);
+            fgetc(fd); // unknown
+            aprop.category = (ua_armour_category)fgetc(fd);
+         }         
+      }
+
+      fclose(fd);
    }
 }
