@@ -80,6 +80,12 @@ public:
    unsigned int get_width() const { return wnd_width; }
    unsigned int get_height() const { return wnd_height; }
 
+   //! determines if point is inside window
+   bool in_window(unsigned int xpos, unsigned int ypos);
+
+   //! calculates mouse position from event.motion.x/y
+   void calc_mousepos(SDL_Event& event, unsigned int& xpos, unsigned int& ypos);
+
 protected:
    //! window position
    unsigned int wnd_xpos, wnd_ypos;

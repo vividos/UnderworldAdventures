@@ -67,3 +67,29 @@ void ua_window::mouse_event(bool button_clicked, bool left_button,
    bool button_down, unsigned int mousex, unsigned int mousey)
 {
 }
+
+bool ua_window::in_window(unsigned int xpos, unsigned int ypos)
+{
+   return (xpos >= wnd_xpos) && (xpos < wnd_xpos+wnd_width) &&
+          (ypos >= wnd_ypos) && (ypos < wnd_ypos+wnd_height);
+}
+
+/*! note: the necessary fields in event are only set if it holds an event of
+    type SDL_MOUSEMOTION, SDL_MOUSEBUTTONDOWN or SDL_MOUSEBUTTONUP */
+void ua_window::calc_mousepos(SDL_Event& event, unsigned int& xpos, unsigned int& ypos)
+{
+   // get coordinates
+   xpos = event.type == SDL_MOUSEMOTION ? event.motion.x : event.button.x;
+   ypos = event.type == SDL_MOUSEMOTION ? event.motion.y : event.button.y;
+
+   // convert to 320x200 screen coordinates
+   SDL_Surface* surf = SDL_GetVideoSurface();
+
+   if (surf != NULL)
+   {
+      xpos = unsigned(xpos * 320.0 / surf->w);
+      ypos = unsigned(ypos * 200.0 / surf->h);
+   }
+   else
+      xpos = ypos = 0;
+}
