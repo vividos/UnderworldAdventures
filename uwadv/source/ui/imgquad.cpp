@@ -36,7 +36,7 @@
 void ua_image_quad::init(ua_game_interface& game, unsigned int xpos,
    unsigned int ypos)
 {
-   ua_window::create(xpos,ypos,0,0);
+   ua_window::create(xpos,ypos,image.get_xres(),image.get_yres());
 
    tex.init(&game.get_renderer().get_texture_manager(), 2);
 }
