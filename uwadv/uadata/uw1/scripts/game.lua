@@ -48,8 +48,8 @@ function lua_started_newgame()
    player_set_height(24.0)
    player_set_attr(player_attr_maplevel,0)
 
-   player_set_attr(player_attr_gender,1)
-   player_set_attr(player_attr_appearance,1)
+   -- player_set_attr(player_attr_gender,1)
+   -- player_set_attr(player_attr_appearance,1)
 
 end
 
