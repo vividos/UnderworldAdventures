@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="uwadv"
-	ProjectGUID="{253FDC75-1CE6-48EF-951A-C3FB7A1D9B69}"
+	Name="uwdump"
+	ProjectGUID="{DF297B83-401B-452A-BE51-61357ECEC63A}"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform
@@ -12,14 +12,14 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="Debug\uwadv"
-			IntermediateDirectory="Debug\uwadv\intermediate"
+			OutputDirectory="Debug\uwdump"
+			IntermediateDirectory="Debug\uwdump\intermediate"
 			ConfigurationType="1"
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\source;..\..\source\base;..\..\source\conv;..\..\source\import;..\..\source\renderer;..\..\source\script;..\..\source\ui;..\..\source\underw"
+				AdditionalIncludeDirectories="..\..\source;..\..\source\base;..\..\source\conv;..\..\source\import;..\..\source\renderer;..\..\source\ui;..\..\source\underw"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -31,10 +31,10 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="audio.lib base.lib conv.lib import.lib renderer.lib screens.lib script.lib ui.lib underw.lib SDL.lib SDLmain.lib SDL_mixer.lib opengl32.lib glu32.lib zlib.lib winmm.lib"
-				OutputFile="$(OutDir)\..\uwadv.exe"
+				AdditionalDependencies="base.lib conv.lib import.lib renderer.lib ui.lib SDL.lib SDLmain.lib opengl32.lib glu32.lib "
+				OutputFile="$(OutDir)\..\uwdump.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(OutDir)\..\audio&quot;;&quot;$(OutDir)\..\base&quot;;&quot;$(OutDir)\..\conv&quot;;&quot;$(OutDir)\..\import&quot;;&quot;$(OutDir)\..\renderer&quot;;&quot;$(OutDir)\..\screens&quot;;&quot;$(OutDir)\..\script&quot;;&quot;$(OutDir)\..\ui&quot;;&quot;$(OutDir)\..\underw&quot;"
+				AdditionalLibraryDirectories="&quot;$(OutDir)\..\base&quot;;&quot;$(OutDir)\..\conv&quot;;&quot;$(OutDir)\..\import&quot;;&quot;$(OutDir)\..\renderer&quot;;&quot;$(OutDir)\..\ui&quot;"
 				IgnoreDefaultLibraryNames="msvcrt.lib"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)\..\$(ProjectName).pdb"
@@ -63,13 +63,13 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="Release\uwadv"
-			IntermediateDirectory="Release\uwadv\intermediate"
+			OutputDirectory="Release\uwdump"
+			IntermediateDirectory="Release\uwdump\intermediate"
 			ConfigurationType="1"
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\source;..\..\source\base;..\..\source\conv;..\..\source\import;..\..\source\renderer;..\..\source\script;..\..\source\ui;..\..\source\underw"
+				AdditionalIncludeDirectories="..\..\source;..\..\source\base;..\..\source\conv;..\..\source\import;..\..\source\renderer;..\..\source\ui;..\..\source\underw"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -79,10 +79,10 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="audio.lib base.lib conv.lib import.lib renderer.lib screens.lib script.lib ui.lib underw.lib SDL.lib SDLmain.lib SDL_mixer.lib opengl32.lib glu32.lib zlib.lib winmm.lib"
-				OutputFile="$(OutDir)\..\uwadv.exe"
+				AdditionalDependencies="base.lib conv.lib import.lib renderer.lib ui.lib SDL.lib SDLmain.lib opengl32.lib glu32.lib "
+				OutputFile="$(OutDir)\..\uwdump.exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(OutDir)\..\audio&quot;;&quot;$(OutDir)\..\base&quot;;&quot;$(OutDir)\..\conv&quot;;&quot;$(OutDir)\..\import&quot;;&quot;$(OutDir)\..\renderer&quot;;&quot;$(OutDir)\..\screens&quot;;&quot;$(OutDir)\..\script&quot;;&quot;$(OutDir)\..\ui&quot;;&quot;$(OutDir)\..\underw&quot;"
+				AdditionalLibraryDirectories="&quot;$(OutDir)\..\base&quot;;&quot;$(OutDir)\..\conv&quot;;&quot;$(OutDir)\..\import&quot;;&quot;$(OutDir)\..\renderer&quot;;&quot;$(OutDir)\..\ui&quot;"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)\..\$(ProjectName).pdb"
 				SubSystem="1"
@@ -119,25 +119,22 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
-				RelativePath="..\..\source\debug.cpp">
-			</File>
-			<File
-				RelativePath="..\..\source\win32\game_win32.cpp">
-			</File>
-			<File
-				RelativePath="..\..\source\gamecfg.cpp">
+				RelativePath="..\..\source\tools\uwdump\cnvdec.cpp">
 			</File>
 			<File
 				RelativePath="..\..\source\gamestrings.cpp">
 			</File>
 			<File
-				RelativePath="..\..\source\main.cpp">
+				RelativePath="..\..\source\tools\uwdump\levark.cpp">
 			</File>
 			<File
-				RelativePath="..\..\source\unittest.cpp">
+				RelativePath="..\..\source\tools\uwdump\mdldump.cpp">
 			</File>
 			<File
-				RelativePath="..\..\source\uwadv.cpp">
+				RelativePath="..\..\source\tools\uwdump\prop.cpp">
+			</File>
+			<File
+				RelativePath="..\..\source\tools\uwdump\uwdump.cpp">
 			</File>
 		</Filter>
 		<Filter
@@ -145,42 +142,22 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
-				RelativePath="..\..\source\common.hpp">
-			</File>
-			<File
-				RelativePath="..\..\source\dbgserver.hpp">
-			</File>
-			<File
-				RelativePath="..\..\source\debug.hpp">
-			</File>
-			<File
-				RelativePath="..\..\source\game_interface.hpp">
-			</File>
-			<File
-				RelativePath="..\..\source\win32\game_win32.hpp">
-			</File>
-			<File
-				RelativePath="..\..\source\gamecfg.hpp">
+				RelativePath="..\..\source\tools\uwdump\cnvdec.hpp">
 			</File>
 			<File
 				RelativePath="..\..\source\gamestrings.hpp">
 			</File>
 			<File
-				RelativePath="..\..\source\win32\resource.h">
+				RelativePath="..\..\source\tools\uwdump\levark.hpp">
 			</File>
 			<File
-				RelativePath="..\..\source\unittest.hpp">
+				RelativePath="..\..\source\tools\uwdump\mdldump.hpp">
 			</File>
 			<File
-				RelativePath="..\..\source\uwadv.hpp">
+				RelativePath="..\..\source\tools\uwdump\prop.hpp">
 			</File>
-		</Filter>
-		<Filter
-			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
-			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}">
 			<File
-				RelativePath="..\..\source\win32\uwadv_res.rc">
+				RelativePath="..\..\source\tools\uwdump\uwdump.hpp">
 			</File>
 		</Filter>
 	</Files>
