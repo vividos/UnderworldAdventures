@@ -73,7 +73,7 @@ Building from CVS:
    To build from CVS you will need several other tools, including:
 
     * autoconf 2.53 (or higher)
-    * automake 1.5 (or higher)
+    * automake 1.6.3 (or higher)
 
    To generate the required files, go to the main uwadv directory (containing
    configure.ac), and run
