@@ -36,26 +36,28 @@
 
 void ua_load_game_screen::init()
 {
+   ua_trace("load game screen started\n");
+
    // setup orthogonal projection
    glMatrixMode(GL_PROJECTION);
    glLoadIdentity();
    gluOrtho2D(0,320,0,200);
    glMatrixMode(GL_MODELVIEW);
+   glLoadIdentity();
 
    // set OpenGL flags
    glBindTexture(GL_TEXTURE_2D,0);
    glClearColor(140.0/256.0, 104.0/256.0, 84.0/256.0, 0.0);
 
    glDisable(GL_DEPTH_TEST);
+   glDisable(GL_BLEND);
 
    SDL_ShowCursor(1);
 
    scroll.init(*core,10,10, 300,180, 25, 42);
    scroll.set_color(1);
 
-   scroll.print("Underworld Adventures");
-   scroll.print("Load a Game:");
-   scroll.print("");
+   scroll.print("Underworld Adventures\nLoad a Game:\n\n");
 
    // list all games
    ua_savegames_manager& sgmgr = core->get_savegames_mgr();
@@ -88,6 +90,8 @@ void ua_load_game_screen::done()
    scroll.done();
 
    SDL_ShowCursor(0);
+
+   ua_trace("leaving load game screen\n");
 }
 
 void ua_load_game_screen::handle_event(SDL_Event &event)
@@ -126,11 +130,19 @@ void ua_load_game_screen::tick()
 {
    if (game_nr>=0)
    {
+      ua_trace("loading savegame ... ");
+
+      // load selected game
       ua_savegames_manager& sgmgr = core->get_savegames_mgr();
       ua_savegame sg = sgmgr.get_savegame_load(static_cast<unsigned int>(game_nr));
       core->get_underworld().load_game(sg);
 
-      // go to ingame screen
-      core->replace_screen(new ua_ingame_orig_screen);
+      ua_trace("done.\n");
+
+      // either return to previous screen or continue with next screen
+      if (next_screen==NULL)
+         core->pop_screen();
+      else
+         core->replace_screen(next_screen);
    }
 }

@@ -41,7 +41,10 @@ class ua_load_game_screen: public ua_ui_screen_base
 {
 public:
    //! ctor
-   ua_load_game_screen(){}
+   ua_load_game_screen():next_screen(NULL){}
+   //! ctor
+   ua_load_game_screen(ua_ui_screen_base* next):next_screen(next){}
+
    //! dtor
    virtual ~ua_load_game_screen(){}
 
@@ -59,6 +62,9 @@ protected:
 
    //! number of game to load
    int game_nr;
+
+   //! next screen to start after loading, or NULL
+   ua_ui_screen_base* next_screen;
 };
 
 #endif
