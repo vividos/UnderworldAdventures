@@ -2004,6 +2004,7 @@ Table of Contents
       14   texture map
       15   -
       16   ?texture map
+      17   
       18   table
       19   chest
       1A   nightstand
@@ -2021,16 +2022,24 @@ Table of Contents
    The list is parsed every frame and tests are done if some faces have to be
    rendered or not (depending if the player faces the polygon or not).
 
-   In general, node entries look as following:
-
-     0000   Int16   node id
-     0002           custom node data (may be omitted)
-
-   There are some data types that can be in the custom node data. These are:
+   There are some data types that are used in the model node data. These are:
 
      Int16   a simple 16 bit unsigned integer
      Fixed   fixed point number with 12 bits before the fraction point (12.4)
      VertNo  vertex number; lowest 3 bits are ignored
+
+   Every model has a header that looks like this:
+
+     0000   Int32   unknown
+     0004   Fixed   extents X value
+     0006   Fixed   extents Y value
+     0008   Fixed   extents Z value
+     000a           node entries follow
+
+   In general, node entries look as following:
+
+     0000   Int16   node id
+     0002           custom node data (may be omitted)
 
    Here's an overview of all node types used:
 
@@ -2149,6 +2158,16 @@ Table of Contents
    not. Usually a face normal vector is defined to verify. A length value
    is given to know how many bytes to omit in the node list.
 
+     0058   define face plane, arbitrary heading
+              0002   Int16     number of bytes to skip when not visible
+              0004   Fixed     normal vector X coordinate
+              0006   Fixed     distance "model origin -> face" X value
+              0008   Fixed     normal vector Y coordinate
+              000a   Fixed     distance "model origin -> face" Y value
+              000c   Fixed     normal vector Z coordinate
+              000e   Fixed     distance "model origin -> face" Z value
+            after this node usually face info nodes follow
+
      0064   define face plane X
             Y and Z coordinates of normal vector is 0 (YZ plane normal)
               0002   Int16     number of bytes to skip when not visible
@@ -2187,6 +2206,8 @@ Table of Contents
               0008             and so on
 
      00A8   define texture-mapped face
+            vertex u and v coordinates are stored as 0.16 fractional value.
+            just divide by 65535.0 to get coordinates in the range [0; 1]
               0002   Int16     texture number (?)
               0004   Int16     number of vertices (=nvert)
               0006   VertNo    vertex list index for first point
