@@ -36,7 +36,7 @@
 
 // classes
 
-//! dumps level archives
+//! dumps object properties
 class ua_dump_obj_properties
 {
 public:
