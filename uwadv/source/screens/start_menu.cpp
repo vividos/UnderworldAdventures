@@ -30,11 +30,12 @@
 #include "start_menu.hpp"
 #include "audio.hpp"
 #include "renderer.hpp"
-#include "cutscene_view.hpp"
-#include "acknowledgements.hpp"
+#include "savegame.hpp"
+//#include "cutscene_view.hpp"
+//#include "acknowledgements.hpp"
 //#include "create_character.hpp"
 //#include "ingame_orig.hpp"
-#include "save_game.hpp"
+//#include "save_game.hpp"
 
 
 // constants
@@ -59,13 +60,16 @@ void ua_start_menu_screen::init()
    ua_trace("start menu screen started\n");
 
    // load background image
-   img_screen.load_raw(game->get_settings(),"data/opscr.byt",2);
-   img_screen.init(&game->get_renderer().get_texture_manager(),0,0,320,200);
+   game->get_image_manager().load(img_screen.get_image(), "data/opscr.byt",
+      0, 2, ua_img_byt);
+
+   img_screen.init(*game, 0,0);
 
    // load button graphics
-   img_buttons.load(game->get_settings(),"opbtn",0,0,2);
+   game->get_image_manager().load_list(img_buttons, "opbtn", 0,8, 2);
 
-   mousecursor.init(game,0);
+   // set up mouse cursor
+   mousecursor.init(*game,0);
    mousecursor.show(true);
 
    register_window(&mousecursor);
@@ -77,25 +81,11 @@ void ua_start_menu_screen::resume()
 {
    ua_trace("resuming start menu screen\n");
 
-   // setup orthogonal projection
-   glMatrixMode(GL_PROJECTION);
-   glLoadIdentity();
-   gluOrtho2D(0,320,0,200);
-   glMatrixMode(GL_MODELVIEW);
-   glLoadIdentity();
+   game->get_renderer().setup_camera2d();
 
-   // set OpenGL flags
-   glEnable(GL_TEXTURE_2D);
-   glBindTexture(GL_TEXTURE_2D,0);
-
-   glDisable(GL_DEPTH_TEST);
-   glEnable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
-   glClearColor(0.0, 0.0, 0.0, 0.0);
-
-   // upload screen image quad
-   img_screen.convert_upload();
+   img_screen.update();
 
    fader.init(true,game->get_tickrate(),fade_time);
 
@@ -103,7 +93,7 @@ void ua_start_menu_screen::resume()
    stage = 0;
    journey_avail = game->get_savegames_manager().get_savegames_count() > 0;
    selected_area = -1;
-   shiftcount=0.0;
+   shiftcount = 0.0;
    reupload_image = true;
 }
 
@@ -111,7 +101,7 @@ void ua_start_menu_screen::destroy()
 {
    ua_trace("start menu screen ended\n\n");
 
-   img_screen.done();
+   img_screen.destroy();
 }
 
 void ua_start_menu_screen::draw()
@@ -133,11 +123,13 @@ void ua_start_menu_screen::draw()
          unsigned int btnnr = i*2;
          if (int(i)==selected_area) btnnr++;
 
-         img_screen.paste_image(img_buttons.get_image(btnnr),
+         ua_image& img = img_buttons[btnnr];
+         img_screen.get_image().paste_rect(img,
+            0,0, img.get_xres(), img.get_yres(),
             btn_coords[i*2],btn_coords[i*2+1]);
       }
 
-      img_screen.convert_upload();
+      img_screen.update();
 
       reupload_image = false;
    }
@@ -149,7 +141,7 @@ void ua_start_menu_screen::draw()
 
    // render screen image and mouse
    glDisable(GL_BLEND);
-   img_screen.render();
+   img_screen.draw();
 
    // draw subwindows
    glEnable(GL_BLEND);
@@ -225,13 +217,8 @@ void ua_start_menu_screen::tick()
    {
       shiftcount -= 1.0/palette_shifts_per_second;
 
-      ua_onepalette& palette = img_screen.get_quadpalette();
-
       // shift palette
-      Uint8 saved[4];
-      memcpy(saved,palette[127],4);
-      memmove(palette[65],palette[64],(127-64)*4);
-      memcpy(palette[64],saved,4);
+      img_screen.get_image().get_palette()->rotate(64,64,false);
 
       // initiate new upload
       reupload_image = true;
@@ -255,7 +242,7 @@ void ua_start_menu_screen::press_button()
    switch(selected_area)
    {
    case 0: // "introduction"
-      game->replace_screen(new ua_cutscene_view_screen(0),true);
+      //game->replace_screen(new ua_cutscene_view_screen(0),true);
       break;
 
    case 1: // "create character"
@@ -263,14 +250,14 @@ void ua_start_menu_screen::press_button()
       break;
 
    case 2: // "acknowledgements"
-      game->replace_screen(new ua_acknowledgements_screen,true);
+      //game->replace_screen(new ua_acknowledgements_screen,true);
       break;
 
    case 3: // "journey onward"
       if (journey_avail)
       {
          // "load game" screen (with later starting "orig. ingame ui")
-         game->replace_screen(new ua_save_game_screen(true),true);
+         //game->replace_screen(new ua_save_game_screen(true),true);
       }
       break;
    }
