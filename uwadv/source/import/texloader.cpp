@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ extern void ua_import_tga(SDL_RWops* rwops, unsigned int& xres, unsigned int& yr
 
 
 // ua_texture methods
-/*
+
 void ua_texture::load(SDL_RWops* rwops)
 {
    unsigned int origx,origy;
@@ -52,7 +52,7 @@ void ua_texture::load(SDL_RWops* rwops)
    u = ((double)origx)/xres;
    v = ((double)origy)/yres;
 }
-*/
+
 
 // ua_uw_import methods
 
