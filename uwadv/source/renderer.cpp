@@ -960,14 +960,14 @@ void ua_renderer::render_objects(unsigned int x, unsigned int y)
    ua_object_list& objlist = underw->get_current_level().get_mapobjects();
 
    // get first object link
-   Uint16 link1 = objlist.get_tile_list_start(x,y);
+   Uint16 link = objlist.get_tile_list_start(x,y);
 
-   while(link1 != 0)
+   while(link != 0)
    {
-      ua_object& obj = objlist.get_object(link1);
+      ua_object& obj = objlist.get_object(link);
 
       // remember object list position for picking
-      glPushName(link1);
+      glPushName(link);
 
       // render object
       render_object(obj,x,y);
@@ -975,7 +975,7 @@ void ua_renderer::render_objects(unsigned int x, unsigned int y)
       glPopName();
 
       // next object in link chain
-      link1 = obj.get_object_info().link1;
+      link = obj.get_object_info().link;
    }
 
    // disable alpha blending again
@@ -989,19 +989,20 @@ void ua_renderer::render_objects(unsigned int x, unsigned int y)
     "Cheating - Faster but not so easy" */
 void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
 {
-   // don't render invisible objects
+   Uint16 item_id = obj.get_object_info().item_id;
+
 #ifndef HAVE_DEBUG
-   if (obj.get_object_info().type==ua_obj_invisible)
+   // don't render invisible objects
+   if (item_id>0x0140 && item_id != 0x01ca)
       return;
 #endif
 
    ua_level& level = underw->get_current_level();
+   ua_object_info_ext& extinfo = obj.get_ext_object_info();
 
-   double objxpos = double(x) + (obj.get_xpos()+0.5)/8.0;
-   double objypos = double(y) + (obj.get_ypos()+0.5)/8.0;
+   double objxpos = static_cast<double>(x) + extinfo.xpos;
+   double objypos = static_cast<double>(y) + extinfo.ypos;
    double height = level.get_floor_height(objxpos,objypos)*height_scale;
-
-   Uint16 item_id = obj.get_object_info().item_id;
 
    ua_vector3d base(objxpos, objypos, height);
 
