@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Underworld Adventures Team
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -52,7 +52,8 @@ struct
    { 0x0004e910, 0x40064ab6, 0x0004e99e },
    { 0x0004ccd0, 0x40064ab6, 0x0004cd5e }, /* same models, different place */
    { 0x0004e370, 0x40064ab6, 0x0004e3fe }, /* ditto (reported Gerd Bitzer) */
-   { 0x00054cf0, 0x59aa64d4, 0x00054d8a },
+   { 0x0004ec70, 0x40064ab6, 0x0004ecfe }, /* uw_demo models */
+   { 0x00054cf0, 0x59aa64d4, 0x00054d8a }, /* UW2 */
    { 0x000550e0, 0x59aa64d4, 0x0005517a }, /* another UW2 build            */
 };
 
