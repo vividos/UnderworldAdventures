@@ -85,7 +85,10 @@ void ua_uwadv_menu_screen::tick()
    core->push_screen(new ua_start_splash_screen);
 
 //   core->get_underworld().import_savegame(core->get_settings(),"data/",true);
+//   core->get_underworld().get_scripts().lua_started_newgame();
+
 //   core->push_screen(new ua_ingame_orig_screen);
+
 #else
    // for now, immediately start splash screen
    core->replace_screen(new ua_start_splash_screen);
