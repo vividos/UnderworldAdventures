@@ -27,11 +27,6 @@ EXTRA_DIST = \
 	Makefile.common \
 	audio/midi_driver/win_midiout.cpp \
 	audio/midi_driver/win_midiout.h \
-	linux/uwadv.spec.in \
-	linux/uwadv.cfg.in \
-	linux/ua-lowercase-all.pl \
-	linux/uwadv.6.in \
-	linux/ua-lowercase-all.pl.6 \
 	resource/model/wrllexer.l \
 	resource/model/import3ds.cpp \
 	win32/animview.dsp \

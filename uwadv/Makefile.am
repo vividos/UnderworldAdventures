@@ -31,6 +31,11 @@ EXTRA_DIST =  \
 	docs/uw1-walkthrough.txt \
 	docs/uw2-walkthrough.txt \
 	docs/uw-formats.txt \
+	linux/uwadv.spec.in \
+	linux/uwadv.cfg.in \
+	linux/ua-lowercase-all.pl \
+	linux/uwadv.6.in \
+	linux/ua-lowercase-all.pl.6 \
 	misc/anmformt.zip \
 	misc/ua-objtex00.png \
 	misc/ua-objtex01.png \
