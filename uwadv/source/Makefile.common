@@ -91,30 +91,29 @@ uwadv_SOURCES = \
 	underw/objects.cpp underw/objects.hpp \
 	underw/pathfinder.cpp underw/pathfinder.hpp \
 	underw/physics.cpp underw/physics.hpp \
-	underw/physicsobject.cpp underw/physicsobject.hpp \
+	underw/physicsbody.cpp underw/physicsbody.hpp \
 	underw/player.cpp underw/player.hpp \
 	underw/properties.hpp \
 	underw/runes.hpp \
 	underw/underworld.cpp underw/underworld.hpp \
+	underw/test/physicstest.cpp \
 	common.hpp \
 	debug.cpp debug.hpp \
 	game_interface.hpp \
 	gamecfg.cpp gamecfg.hpp \
 	main.cpp \
+	unittest.cpp unittest.hpp \
 	uwadv.cpp uwadv.hpp \
 	\
 	resource/codeloader.cpp \
 	resource/modeldecode.cpp
 
 the_rest = \
-	debug/uwaccess.cpp debug/uwaccess.hpp \
 	resource/models_impl.hpp \
 	resource/model/FlexLexer.h \
 	resource/model/importwrl.cpp \
 	resource/model/wrllexer.cpp resource/model/wrllexer.hpp \
 	screens/conversation.cpp \
-	screens/map_view.cpp \
-	screens/panel.cpp \
 	screens/conversation.hpp \
-	screens/map_view.hpp \
-	screens/panel.hpp
+	screens/map_view.cpp \
+	screens/map_view.hpp
