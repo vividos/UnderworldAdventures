@@ -50,7 +50,7 @@ Uint8 ua_textscroll_colors[10] =
     \param xpos x position on screen
     \param ypos y position on screen
     \param width width of control
-    \param width height of control
+    \param height height of control
     \param my_bg_color background color index, from palette 0
 */
 void ua_textscroll::init(ua_game_interface& game, unsigned int xpos,
@@ -106,12 +106,15 @@ bool ua_textscroll::print(const char* text)
          line.assign(msgtext);
 
       // check if the line is too long for the window
-      unsigned int linewidth = image.get_xres()-2;
-      std::string part(line);
+      unsigned int linewidth = 0;
+      std::string part;
       do
       {
+         linewidth = image.get_xres()-2;
+         part = line;
+
          // do we have a line where we have to print "more"?
-         if (textlines.size()-start_line > maxlines)
+         if (textlines.size()+1-start_line >= maxlines)
          {
             // reduce the line width
             linewidth -= calc_colored_length(ua_textscroll_more_string);

@@ -91,7 +91,7 @@ public:
 
    //! initializes text scroll
    void init(ua_game_interface& game, unsigned int xpos, unsigned int ypos,
-      unsigned int width, unsigned int lines, Uint8 bg_color);
+      unsigned int width, unsigned int height, Uint8 bg_color);
 
    //! sets new foreground text color code
    void set_color_code(char color);
