@@ -62,6 +62,118 @@ void ua_object::save_object(ua_savegame &sg)
    // todo: write data
 }
 
+
+/* billboard tutorials:
+   http://www.lighthouse3d.com/opengl/billboarding/
+   http://nate.scuzzy.net/gltut/
+
+*/
+
+void billboardSphericalBegin(
+   ua_vector3d &cam,
+   ua_vector3d &objPos,
+   ua_vector3d &lookAt)
+{
+   ua_vector3d objToCam, objToCamProj, upAux;
+
+   double modelview[16],angleCosine;
+
+   glPushMatrix();
+
+// objToCamProj is the vector in world coordinates from the 
+// local origin to the camera projected in the XY plane
+   objToCamProj.x = cam.x - objPos.x;
+   objToCamProj.y = cam.y - objPos.y;
+   objToCamProj.z = 0;//cam.z - objPos.z;
+
+// This is the original lookAt vector for the object 
+// in world coordinates
+/*   lookAt.x = 0;
+   lookAt.y = -1;
+   lookAt.z = 0;
+*/
+
+// normalize both vectors to get the cosine directly afterwards
+   objToCamProj.normalize();
+
+// easy fix to determine wether the angle is negative or positive
+// for positive angles upAux will be a vector pointing in the 
+// positive y direction, otherwise upAux will point downwards
+// effectively reversing the rotation.
+
+// mathsCrossProduct(upAux,lookAt,objToCamProj);
+   upAux.cross(lookAt,objToCamProj);
+
+// compute the angle
+   angleCosine = lookAt.dot(objToCamProj);
+
+// perform the rotation. The if statement is used for stability reasons
+// if the lookAt and objToCamProj vectors are too close together then 
+// |angleCosine| could be bigger than 1 due to lack of precision
+   if ((angleCosine < 0.99990) && (angleCosine > -0.9999))
+      glRotatef(acos(angleCosine)*180/3.14,upAux.x, upAux.y, upAux.z);
+
+   return;
+/*
+// so far it is just like the cylindrical billboard. The code for the 
+// second rotation comes now
+// The second part tilts the object so that it faces the camera
+
+// objToCam is the vector in world coordinates from 
+// the local origin to the camera
+   objToCam.x = cam.x - objPos.x;
+   objToCam.y = cam.y - objPos.y;
+   objToCam.z = cam.z - objPos.z;
+
+// Normalize to get the cosine afterwards
+//   mathsNormalize(objToCam);
+   objToCam.normalize();
+
+// Compute the angle between objToCamProj and objToCam, 
+//i.e. compute the required angle for the lookup vector
+
+//   angleCosine = mathsInnerProduct(objToCamProj,objToCam);
+   angleCosine = objToCamProj.dot(objToCam);
+
+
+// Tilt the object. The test is done to prevent instability 
+// when objToCam and objToCamProj have a very small
+// angle between them
+
+   if ((angleCosine < 0.99990) && (angleCosine > -0.9999))
+      if (objToCam.y < 0)
+         glRotatef(acos(angleCosine)*180/3.14,1,0,0);
+      else
+         glRotatef(acos(angleCosine)*180/3.14,-1,0,0);
+*/
+}
+
+void billboardCheatSphericalBegin() {
+   
+   float modelview[16];
+   int i,j;
+
+   // save the current modelview matrix
+   glPushMatrix();
+
+   // get the current modelview matrix
+   glGetFloatv(GL_MODELVIEW_MATRIX , modelview);
+
+   // undo all rotations
+   // beware all scaling is lost as well 
+   for( i=0; i<3; i++ ) 
+       for( j=0; j<3; j++ ) {
+      if ( i==j )
+          modelview[i*4+j] = 1.0;
+      else
+          modelview[i*4+j] = 0.0;
+       }
+
+   // set the modelview with no rotations
+   glLoadMatrixf(modelview);
+}
+
+
 /*! each object is rendered using "view coordinates", that means the camera is
     at 0,0,0 and the camera views towards the positive y axis. objects that
     should be perpendicular to the view vector can just be rendered as quads
@@ -81,6 +193,8 @@ void ua_object::render(unsigned int x, unsigned int y,
    double objxpos = x + (xpos+0.5)/8.0;
    double objypos = y + (ypos+0.5)/8.0;
    double height = -fr.get_pos(2)+lev.get_floor_height(objxpos,objypos);
+
+#if 1 // enabled part
 
    // get object angle and distance, in respect to the camera
    double objdx = objxpos-fr.get_pos(0), objdy = objypos-fr.get_pos(1);
@@ -123,6 +237,75 @@ void ua_object::render(unsigned int x, unsigned int y,
 
    glDisable(GL_BLEND);
 //   glEnable(GL_DEPTH_TEST);
+
+#else // disabled part
+
+/*
+   ua_vector3d cam(fr.get_pos(0),fr.get_pos(1),fr.get_pos(2));
+   ua_vector3d objpos(objxpos,objypos,height);
+
+   ua_vector3d lookAt;
+   lookAt.set(0,1,0);
+
+   billboardSphericalBegin(cam,objpos,lookAt);
+*/
+
+   billboardCheatSphericalBegin();
+
+   // draw object quad
+   {
+      double boxwidth=0.13;
+
+      // get object texture coords
+      double u1,v1,u2,v2;
+      texmgr.object_tex(info.item_id,u1,v1,u2,v2);
+
+      glEnable(GL_BLEND);
+
+      glBegin(GL_QUADS);
+      glColor3ub(255,255,255);
+
+      glTexCoord2d(u1,v2); glVertex3d(objxpos-boxwidth, objypos, height);
+      glTexCoord2d(u2,v2); glVertex3d(objxpos+boxwidth, objypos, height);
+      glTexCoord2d(u2,v1); glVertex3d(objxpos+boxwidth, objypos, height+2*boxwidth);
+      glTexCoord2d(u1,v1); glVertex3d(objxpos-boxwidth, objypos, height+2*boxwidth);
+      glEnd();
+
+      glDisable(GL_BLEND);
+   }
+
+   glPopMatrix();
+
+/*
+   float modelview[16];
+   glGetFloatv(GL_MODELVIEW_MATRIX, modelview);
+
+   ua_vector3d xvec(modelview[0], modelview[4], modelview[8]), // right vector
+               yvec(modelview[1], modelview[5], modelview[9]); // up vector
+
+   // draw object quad
+   {
+      double boxwidth=0.13;
+
+      // get object texture coords
+      double u1,v1,u2,v2;
+      texmgr.object_tex(info.item_id,u1,v1,u2,v2);
+
+      glEnable(GL_BLEND);
+
+      glBegin(GL_QUADS);
+      glColor3ub(255,255,255);
+
+      glTexCoord2d(u1,v2); glVertex3d(objxpos+(-xvec.x-yvec.x)*boxwidth, objypos+(-xvec.y-yvec.y)*boxwidth, height+(-xvec.z-yvec.z)*boxwidth);
+      glTexCoord2d(u2,v2); glVertex3d(objxpos+(+xvec.x-yvec.x)*boxwidth, objypos+(+xvec.y-yvec.y)*boxwidth, height+(+xvec.z-yvec.z)*boxwidth);
+      glTexCoord2d(u2,v1); glVertex3d(objxpos+(+xvec.x+yvec.x)*boxwidth, objypos+(+xvec.y+yvec.y)*boxwidth, height+(+xvec.z+yvec.z)*boxwidth);
+      glTexCoord2d(u1,v1); glVertex3d(objxpos+(-xvec.x+yvec.x)*boxwidth, objypos+(-xvec.y+yvec.y)*boxwidth, height+(-xvec.z+yvec.z)*boxwidth);
+      glEnd();
+
+      glDisable(GL_BLEND);
+   }*/
+
+#endif
 }
 
 
