@@ -103,6 +103,9 @@ public:
    //! clears scroll contents
    void clear_scroll();
 
+   //! indicates if text scroll is waiting for a key press to show more text
+   bool is_waiting_more();
+
    // virtual methods from ua_window
    virtual bool process_event(SDL_Event& event);
 
@@ -151,6 +154,11 @@ protected:
 inline void ua_textscroll::set_color_code(char color)
 {
    color_code = color;
+}
+
+inline bool ua_textscroll::is_waiting_more()
+{
+   return more_mode;
 }
 
 
