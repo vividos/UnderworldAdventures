@@ -268,7 +268,7 @@ void ua_panel::update_panel_texture()
       // inventory weight
       {
          std::ostringstream buffer;
-         buffer << static_cast<unsigned int>(inv.get_weight_avail()) << std::ends;
+         buffer << static_cast<unsigned int>(inv.get_inventory_weight()) << std::ends;
 
          ua_image img_weight;
          font_normal.create_string(img_weight,buffer.str().c_str(),224);
