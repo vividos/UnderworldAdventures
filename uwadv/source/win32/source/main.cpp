@@ -30,6 +30,10 @@
 #include "game_win32.hpp"
 
 
+// undefine "main" mapping to "SDL_main", to get console output
+#undef main
+
+
 // main function
 
 int main(int argc, char* argv[])
