@@ -86,11 +86,11 @@ void ua_uw_import::load_cutscene(const char* filename, ua_image& image,
    // read in palette
    for(int n=0; n<256; n++)
    {
-      anim_palette[n][2] = fgetc(fd); // blue
-      anim_palette[n][1] = fgetc(fd); // green
-      anim_palette[n][0] = fgetc(fd); // red
+      anim_palette.set(n,2, fgetc(fd)); // blue
+      anim_palette.set(n,1, fgetc(fd)); // green
+      anim_palette.set(n,0, fgetc(fd)); // red
       fgetc(fd); // extra pad byte
-      anim_palette[n][3] = 0xff; // transparency
+      anim_palette.set(n,3, 0xff); // transparency
    }
 
    // now we are at the large page descriptor array

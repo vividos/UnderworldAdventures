@@ -263,17 +263,16 @@ void ua_uw_import::load_palettes(const char* allpalname,
    // palettes are stored in ancient vga color format
    for(unsigned int pal=0; pal<8; pal++)
    {
-      ua_palette256* newpal = (ua_palette256*)new ua_palette256;
-      allpalettes[pal] = ua_palette256_ptr(newpal);
+      allpalettes[pal] = ua_palette256_ptr(new ua_palette256);
 
       ua_palette256& palette = *allpalettes[pal];
 
       for(unsigned int color=0; color<256; color++)
       {
-         palette[color][0] = fgetc(fd)<<2;
-         palette[color][1] = fgetc(fd)<<2;
-         palette[color][2] = fgetc(fd)<<2;
-         palette[color][3] = color==0 ? 0 : 255;
+         palette.set(color,0, fgetc(fd)<<2);
+         palette.set(color,1, fgetc(fd)<<2);
+         palette.set(color,2, fgetc(fd)<<2);
+         palette.set(color,3, color==0 ? 0 : 255);
       }
    }
 
