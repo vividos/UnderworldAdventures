@@ -124,6 +124,11 @@ SOURCE=..\uwadv.hpp
 # PROP Default_Filter "*.lua"
 # Begin Source File
 
+SOURCE=..\..\uadata\uw1\scripts\createchar.lua
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\uadata\uw1\scripts\cutscene.lua
 # PROP Exclude_From_Build 1
 # End Source File
