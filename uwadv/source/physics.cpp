@@ -156,7 +156,13 @@ void ua_physics_model::eval_physics(double time)
       {
          double angle = ua_player_max_rotate_speed * (time-last_evaltime) *
             pl.get_movement_factor(ua_move_rotate);
-         pl.set_angle_rot(pl.get_angle_rot()+angle);
+         angle += pl.get_angle_rot();
+
+         // keep angle in range [0; 360]
+         while(angle>360.0) angle -= 360.0;
+         while(angle<0.0) angle += 360.0;
+
+         pl.set_angle_rot(angle);
       }
 
       // view up/down
