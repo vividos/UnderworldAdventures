@@ -232,7 +232,7 @@ void ua_ingame_orig_screen::init()
    register_window(&command_buttons);
 
    // init panel
-   panel.init(game,235,6);
+   panel.init(this,235,6);
    register_window(&panel);
 
    // init powergem

@@ -96,7 +96,8 @@ enum ua_screen_area_id
 // classes
 
 //! original ingame screen
-class ua_ingame_orig_screen: public ua_screen, public ua_underworld_callback
+class ua_ingame_orig_screen: public ua_screen, public ua_underworld_callback,
+   public ua_panel_parent_interface
 {
 public:
    //! ctor
@@ -124,14 +125,16 @@ public:
    //! sets game mode
    void set_gamemode(ua_ingame_game_mode my_gamemode){ gamemode = my_gamemode; }
 
-   //! returns game interface; for controls
-   ua_game_interface& get_game_interface(){ return game; }
-
    //! returns move state
    bool get_move_state(ua_ingame_move_state state);
 
    //! sets cursor image
    void set_cursor(int index, bool priority=false);
+
+   // virtual methods from ua_panel_parent
+
+   //! returns game interface; for controls
+   ua_game_interface& get_game_interface(){ return game; }
 
 protected:
    //! suspends game resources while showing another screen
