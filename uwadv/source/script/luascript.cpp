@@ -109,26 +109,20 @@ void ua_lua_scripting::checked_call(int nargs, int nresults)
 
 void ua_lua_scripting::init_new_game()
 {
-   //! \todo remove again
-   ua_player& pl = game->get_underworld().get_player();
-   //pl.set_pos(32.0, 2.0);
-   pl.set_pos(13.5, 53.5);
-   pl.set_height(96.0);
-
    lua_getglobal(L,"game_init_new");
    checked_call(0,0);
 }
 
-void ua_lua_scripting::eval_critter(unsigned int pos)
+void ua_lua_scripting::eval_critter(Uint16 pos)
 {
    lua_getglobal(L,"critter_eval");
    lua_pushnumber(L, static_cast<double>(pos));
    checked_call(1,0);
 }
 
-void ua_lua_scripting::do_trigger(unsigned int pos)
+void ua_lua_scripting::trigger_set_off(Uint16 pos)
 {
-   lua_getglobal(L,"trigger_do");
+   lua_getglobal(L,"trigger_set_off");
    lua_pushnumber(L, static_cast<double>(pos));
    checked_call(1,0);
 }
@@ -317,20 +311,75 @@ ua_lua_scripting& ua_lua_scripting::get_scripting_from_self(lua_State* L)
    return *self;
 }
 
-#define lua_ex_register_table(L, n, f) { \
+#define lua_register_table(L, n, f) { \
    lua_pushstring(L, n); lua_pushcfunction(L, f); lua_settable(L,-3); }
 
+/*! Functions that are callable via Lua are organized in global tables; this
+    way we simulate objects that can be accessed, e.g. in uw.print("text")
+*/
 void ua_lua_scripting::register_functions()
 {
-   // ui object
+   // uw object
    lua_newtable(L);
+   lua_register_table(L, "print", uw_print);
+   lua_register_table(L, "get_string", uw_get_string);
+   lua_register_table(L, "start_conv", uw_start_conv);
+   lua_setglobal(L, "uw");
 
-   lua_ex_register_table(L, "print", ui_print);
+   // player object
+   lua_newtable(L);
+   lua_register_table(L, "get_info", player_get_info);
+   lua_register_table(L, "set_info", player_set_info);
+   lua_register_table(L, "get_attr", player_get_attr);
+   lua_register_table(L, "set_attr", player_set_attr);
+   lua_register_table(L, "get_skill", player_get_skill);
+   lua_register_table(L, "set_skill", player_set_skill);
+   lua_setglobal(L, "player");
 
-   lua_setglobal(L, "ui");
+   // objlist object
+   lua_newtable(L);
+   lua_register_table(L, "print", uw_print);
+   lua_register_table(L, "get_info", objlist_get_info);
+   lua_register_table(L, "set_info", objlist_set_info);
+   lua_register_table(L, "delete", objlist_delete);
+   lua_register_table(L, "insert", objlist_insert);
+   lua_setglobal(L, "objlist");
+
+   // tilemap object
+   lua_newtable(L);
+   lua_register_table(L, "get_info", tilemap_get_info);
+   lua_register_table(L, "set_info", tilemap_set_info);
+   lua_register_table(L, "get_floor_height", tilemap_get_floor_height);
+   lua_register_table(L, "get_objlist_link", tilemap_get_objlist_link);
+   lua_setglobal(L, "tilemap");
+
+   // runes object
+   lua_newtable(L);
+   lua_register_table(L, "set", runes_set);
+   lua_register_table(L, "test", runes_test);
+   lua_setglobal(L, "runes");
+
+   // conv object
+   lua_newtable(L);
+   lua_register_table(L, "is_avail", conv_is_avail);
+   lua_register_table(L, "get_global", conv_get_global);
+   lua_register_table(L, "set_global", conv_set_global);
+   lua_setglobal(L, "conv");
+
+   // quest object
+   lua_newtable(L);
+   lua_register_table(L, "get_flag", quest_get_flag);
+   lua_register_table(L, "set_flag", quest_set_flag);
+   lua_setglobal(L, "quest");
+
+   // prop object
+   lua_newtable(L);
+   lua_register_table(L, "get_common", prop_get_common);
+   lua_register_table(L, "get_special", prop_get_special);
+   lua_setglobal(L, "prop");
 }
 
-int ua_lua_scripting::ui_print(lua_State* L)
+int ua_lua_scripting::uw_print(lua_State* L)
 {
    ua_lua_scripting& self = get_scripting_from_self(L);
 
@@ -341,4 +390,569 @@ int ua_lua_scripting::ui_print(lua_State* L)
       callback->uw_print(text);
    }
    return 0;
+}
+
+int ua_lua_scripting::uw_get_string(lua_State* L)
+{
+   ua_lua_scripting& self = get_scripting_from_self(L);
+
+   unsigned int block = static_cast<unsigned int>(lua_tonumber(L,-2));
+   unsigned int num = static_cast<unsigned int>(lua_tonumber(L,-1));
+
+   // retrieve game string
+   std::string str(self.game->get_underworld().get_strings().
+      get_string(block,num));
+   lua_pushstring(L,str.c_str());
+
+   return 1;
+}
+
+int ua_lua_scripting::uw_start_conv(lua_State* L)
+{
+   ua_lua_scripting& self = get_scripting_from_self(L);
+
+   ua_underworld_callback* callback = self.game->get_underworld().get_callback();
+   if (callback != NULL)
+   {
+      Uint16 conv_obj = static_cast<Uint16>(lua_tonumber(L, -1));
+      callback->uw_start_conversation(conv_obj);
+   }
+   return 0;
+}
+
+int ua_lua_scripting::player_get_info(lua_State* L)
+{
+   // retrieve player object
+   ua_lua_scripting& self = get_scripting_from_self(L);
+   ua_player& player = self.game->get_underworld().get_player();
+
+   // create new table and fill it with infos
+   lua_newtable(L);
+
+   lua_pushstring(L,"name");
+   lua_pushstring(L, player.get_name().c_str());
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"xpos");
+   lua_pushnumber(L,player.get_xpos());
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"ypos");
+   lua_pushnumber(L,player.get_ypos());
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"height");
+   lua_pushnumber(L,player.get_height());
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"angle");
+   lua_pushnumber(L,player.get_angle_rot());
+   lua_settable(L,-3);
+
+   // leave table on stack and return it
+   return 1;
+}
+
+/*! \todo implement */
+int ua_lua_scripting::player_set_info(lua_State* L)
+{
+   // retrieve player object
+   ua_lua_scripting& self = get_scripting_from_self(L);
+   ua_player& player = self.game->get_underworld().get_player();
+
+   return 0;
+}
+
+int ua_lua_scripting::player_get_attr(lua_State* L)
+{
+   // retrieve player object
+   ua_lua_scripting& self = get_scripting_from_self(L);
+   ua_player& player = self.game->get_underworld().get_player();
+
+   ua_player_attributes attr =
+      static_cast<ua_player_attributes>(static_cast<int>(lua_tonumber(L,-1)));
+
+   lua_pushnumber(L,static_cast<double>(player.get_attr(attr)));
+   return 1;
+}
+
+int ua_lua_scripting::player_set_attr(lua_State* L)
+{
+   // retrieve player object
+   ua_lua_scripting& self = get_scripting_from_self(L);
+   ua_player& player = self.game->get_underworld().get_player();
+
+   ua_player_attributes attr_type =
+      static_cast<ua_player_attributes>(static_cast<int>(lua_tonumber(L,-2)));
+   unsigned int attr_value = static_cast<unsigned int>(lua_tonumber(L,-1));
+
+   player.set_attr(attr_type,attr_value);
+   return 0;
+}
+
+int ua_lua_scripting::player_get_skill(lua_State* L)
+{
+   // retrieve player object
+   ua_lua_scripting& self = get_scripting_from_self(L);
+   ua_player& player = self.game->get_underworld().get_player();
+
+   ua_player_skills skill_type =
+      static_cast<ua_player_skills>(static_cast<int>(lua_tonumber(L,-1)));
+
+   lua_pushnumber(L,static_cast<double>(player.get_skill(skill_type)));
+   return 1;
+}
+
+int ua_lua_scripting::player_set_skill(lua_State* L)
+{
+   // retrieve player object
+   ua_lua_scripting& self = get_scripting_from_self(L);
+   ua_player& player = self.game->get_underworld().get_player();
+
+   ua_player_skills skill_type =
+      static_cast<ua_player_skills>(static_cast<int>(lua_tonumber(L,-2)));
+   unsigned int skill_value = static_cast<unsigned int>(lua_tonumber(L,-1));
+
+   player.set_skill(skill_type,skill_value);
+   return 0;
+}
+
+int ua_lua_scripting::objlist_get_info(lua_State* L)
+{
+   // retrieve object list
+   ua_lua_scripting& self = get_scripting_from_self(L);
+   ua_object_list& objlist =
+      self.game->get_underworld().get_current_level().get_mapobjects();
+
+   // get object pos and object
+   Uint16 obj_pos = static_cast<Uint16>(lua_tonumber(L,-1));
+
+   ua_object& obj = objlist.get_object(obj_pos);
+   ua_object_info& info = obj.get_object_info();
+   ua_object_info_ext& extinfo = obj.get_ext_object_info();
+
+   // create new table and fill it with infos
+   lua_newtable(L);
+
+   lua_pushstring(L,"obj_pos");
+   lua_pushnumber(L,static_cast<double>(obj_pos));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"item_id");
+   lua_pushnumber(L,static_cast<double>(info.item_id));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"enchanted");
+   lua_pushnumber(L,info.enchanted ? 1.0 : 0.0);
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"is_quantity");
+   lua_pushnumber(L,info.is_quantity ? 1.0 : 0.0);
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"is_hidden");
+   lua_pushnumber(L,info.is_hidden ? 1.0 : 0.0);
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"flags");
+   lua_pushnumber(L,static_cast<double>(info.flags));
+   lua_settable(L,-3);
+
+
+   lua_pushstring(L,"xpos");
+   lua_pushnumber(L,static_cast<double>(extinfo.xpos));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"ypos");
+   lua_pushnumber(L,static_cast<double>(extinfo.ypos));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"zpos");
+   lua_pushnumber(L,static_cast<double>(extinfo.zpos));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"heading");
+   lua_pushnumber(L,static_cast<double>(extinfo.heading));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"tilex");
+   lua_pushnumber(L,static_cast<double>(extinfo.tilex));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"tiley");
+   lua_pushnumber(L,static_cast<double>(extinfo.tiley));
+   lua_settable(L,-3);
+
+
+   lua_pushstring(L,"quality");
+   lua_pushnumber(L,static_cast<double>(info.quality));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"link_next");
+   lua_pushnumber(L,static_cast<double>(info.link));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"owner");
+   lua_pushnumber(L,static_cast<double>(info.owner));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"quantity");
+   lua_pushnumber(L,static_cast<double>(info.quantity));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"npc_used");
+   lua_pushnumber(L,extinfo.npc_used? 1.0 : 0.0);
+   lua_settable(L,-3);
+
+   // add npc infos
+   if (extinfo.npc_used)
+   {
+      lua_pushstring(L,"npc_hp");
+      lua_pushnumber(L,static_cast<double>(extinfo.npc_hp));
+      lua_settable(L,-3);
+
+      lua_pushstring(L,"npc_goal");
+      lua_pushnumber(L,static_cast<double>(extinfo.npc_goal));
+      lua_settable(L,-3);
+
+      lua_pushstring(L,"npc_gtarg");
+      lua_pushnumber(L,static_cast<double>(extinfo.npc_gtarg));
+      lua_settable(L,-3);
+
+      lua_pushstring(L,"npc_level");
+      lua_pushnumber(L,static_cast<double>(extinfo.npc_level));
+      lua_settable(L,-3);
+
+      lua_pushstring(L,"npc_talkedto");
+      lua_pushnumber(L,extinfo.npc_talkedto? 1.0 : 0.0);
+      lua_settable(L,-3);
+
+      lua_pushstring(L,"npc_attitude");
+      lua_pushnumber(L,static_cast<double>(extinfo.npc_attitude));
+      lua_settable(L,-3);
+
+      lua_pushstring(L,"npc_xhome");
+      lua_pushnumber(L,static_cast<double>(extinfo.npc_xhome));
+      lua_settable(L,-3);
+
+      lua_pushstring(L,"npc_yhome");
+      lua_pushnumber(L,static_cast<double>(extinfo.npc_yhome));
+      lua_settable(L,-3);
+
+      lua_pushstring(L,"npc_hunger");
+      lua_pushnumber(L,static_cast<double>(extinfo.npc_hunger));
+      lua_settable(L,-3);
+
+      lua_pushstring(L,"npc_whoami");
+      lua_pushnumber(L,static_cast<double>(extinfo.npc_whoami));
+      lua_settable(L,-3);
+   }
+
+   // leave table on stack and return it
+   return 1;
+}
+
+/*! \todo implement */
+int ua_lua_scripting::objlist_set_info(lua_State* L)
+{
+   return 0;
+}
+
+int ua_lua_scripting::objlist_delete(lua_State* L)
+{
+   // retrieve object list
+   ua_lua_scripting& self = get_scripting_from_self(L);
+   ua_object_list& objlist =
+      self.game->get_underworld().get_current_level().get_mapobjects();
+
+   // get object pos and object
+   Uint16 obj_pos = static_cast<Uint16>(lua_tonumber(L,-1));
+
+   objlist.delete_object(obj_pos);
+
+   return 0;
+}
+
+/*! \todo implement */
+int ua_lua_scripting::objlist_insert(lua_State* L)
+{
+   // retrieve object list
+   ua_lua_scripting& self = get_scripting_from_self(L);
+   ua_object_list& objlist =
+      self.game->get_underworld().get_current_level().get_mapobjects();
+
+   return 0;//1;
+}
+
+int ua_lua_scripting::tilemap_get_info(lua_State* L)
+{
+   // retrieve current level
+   ua_lua_scripting& self = get_scripting_from_self(L);
+   ua_level& level = self.game->get_underworld().get_current_level();
+
+   // get tilemap info
+   double xpos = lua_tonumber(L,-2);
+   double ypos = lua_tonumber(L,-1);
+
+   ua_levelmap_tile& tileinfo = level.get_tile(xpos,ypos);
+
+   // create new table and fill it with infos
+   lua_newtable(L);
+
+   lua_pushstring(L,"xpos");
+   lua_pushnumber(L,static_cast<double>(xpos));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"ypos");
+   lua_pushnumber(L,static_cast<double>(ypos));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"type");
+   lua_pushnumber(L,static_cast<double>(tileinfo.type));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"floor");
+   lua_pushnumber(L,static_cast<double>(tileinfo.floor));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"ceiling");
+   lua_pushnumber(L,static_cast<double>(tileinfo.ceiling));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"slope");
+   lua_pushnumber(L,static_cast<double>(tileinfo.slope));
+   lua_settable(L,-3);
+
+//   tileinfo.texture_floor
+//   tileinfo.texture_ceiling
+//   tileinfo.texture_wall;
+
+   // leave table on stack and return it
+   return 1;
+}
+
+/*! \todo implement */
+int ua_lua_scripting::tilemap_set_info(lua_State* L)
+{
+   // retrieve current level
+   ua_lua_scripting& self = get_scripting_from_self(L);
+   ua_level& level = self.game->get_underworld().get_current_level();
+
+   return 0;
+}
+
+int ua_lua_scripting::tilemap_get_floor_height(lua_State* L)
+{
+   // retrieve current level
+   ua_lua_scripting& self = get_scripting_from_self(L);
+   ua_level& level = self.game->get_underworld().get_current_level();
+
+   double xpos = lua_tonumber(L,-2);
+   double ypos = lua_tonumber(L,-1);
+
+   lua_pushnumber(L,level.get_floor_height(xpos,ypos));
+   return 1;
+}
+
+int ua_lua_scripting::tilemap_get_objlist_link(lua_State* L)
+{
+   // retrieve current level
+   ua_lua_scripting& self = get_scripting_from_self(L);
+   ua_level& level = self.game->get_underworld().get_current_level();
+
+   double xpos = lua_tonumber(L,-2);
+   double ypos = lua_tonumber(L,-1);
+   Uint16 objpos = level.get_mapobjects().get_tile_list_start(xpos,ypos);
+
+   lua_pushnumber(L,static_cast<double>(objpos));
+   return 1;
+}
+
+int ua_lua_scripting::runes_set(lua_State* L)
+{
+   // retrieve runes object
+   ua_lua_scripting& self = get_scripting_from_self(L);
+   ua_runes& runes = self.game->get_underworld().get_player().get_runes();
+
+   unsigned int rune = static_cast<unsigned int>(lua_tonumber(L,-2));
+   bool flag = lua_tonumber(L,-1) > 0.0;
+
+   runes.get_runebag().set(rune, flag);
+   return 0;
+}
+
+int ua_lua_scripting::runes_test(lua_State* L)
+{
+   // retrieve runes object
+   ua_lua_scripting& self = get_scripting_from_self(L);
+   ua_runes& runes = self.game->get_underworld().get_player().get_runes();
+
+   unsigned int rune = static_cast<unsigned int>(lua_tonumber(L,-1));
+
+   lua_pushnumber(L,runes.get_runebag().test(rune) ? 1.0 : 0.0);
+   return 1;
+}
+
+int ua_lua_scripting::conv_is_avail(lua_State* L)
+{
+   // retrieve game strings object
+   ua_lua_scripting& self = get_scripting_from_self(L);
+   ua_gamestrings& gstr = self.game->get_underworld().get_strings();
+
+   Uint16 slot = static_cast<Uint16>(lua_tonumber(L,-1));
+
+   std::map<int,std::vector<std::string> >& allstrings = gstr.get_allstrings();
+
+   if (allstrings.find(slot+0x0e00) == allstrings.end())
+      lua_pushnil(L);
+   else
+      lua_pushnumber(L,static_cast<double>(slot));
+
+   return 1;
+}
+
+int ua_lua_scripting::conv_get_global(lua_State* L)
+{
+   // retrieve conv globals object
+   ua_lua_scripting& self = get_scripting_from_self(L);
+
+   Uint16 slot = static_cast<Uint16>(lua_tonumber(L,-1));
+   unsigned int pos = static_cast<unsigned int>(lua_tonumber(L,-2));
+
+   std::vector<Uint16>& globals =
+      self.game->get_underworld().get_conv_globals().get_globals(slot);
+
+   if (pos >= globals.size())
+   {
+      ua_trace("conv.get_global: globals pos out of range!\n");
+      return 0;
+   }
+
+   lua_pushnumber(L,static_cast<double>(globals[pos]));
+   return 1;
+}
+
+int ua_lua_scripting::conv_set_global(lua_State* L)
+{
+   // retrieve conv globals object
+   ua_lua_scripting& self = get_scripting_from_self(L);
+
+   Uint16 slot = static_cast<Uint16>(lua_tonumber(L,-1));
+   unsigned int pos = static_cast<unsigned int>(lua_tonumber(L,-2));
+   Uint16 value = static_cast<Uint16>(lua_tonumber(L,-2));
+
+   std::vector<Uint16>& globals =
+      self.game->get_underworld().get_conv_globals().get_globals(slot);
+
+   if (pos >= globals.size())
+      ua_trace("conv.set_global: globals pos out of range!\n");
+   else
+      globals[pos] = value;
+
+   return 0;
+}
+
+int ua_lua_scripting::quest_get_flag(lua_State* L)
+{
+   // retrieve quest flags object
+   ua_lua_scripting& self = get_scripting_from_self(L);
+   std::vector<Uint16>& questflags =
+      self.game->get_underworld().get_questflags();
+
+   Uint16 flag_nr = static_cast<Uint16>(lua_tonumber(L,-1));
+
+   if(flag_nr >= questflags.size())
+   {
+      ua_trace("quest.get_flag: flag_nr out of range!\n");
+      return 0;
+   }
+
+   lua_pushnumber(L,static_cast<double>(questflags[flag_nr]));
+
+   return 1;
+}
+
+int ua_lua_scripting::quest_set_flag(lua_State* L)
+{
+   // retrieve quest flags object
+   ua_lua_scripting& self = get_scripting_from_self(L);
+   std::vector<Uint16>& questflags =
+      self.game->get_underworld().get_questflags();
+
+   Uint16 flag_nr = static_cast<Uint16>(lua_tonumber(L,-1));
+   Uint16 flag_val = static_cast<Uint16>(lua_tonumber(L,-2));
+
+   if(flag_nr >= questflags.size())
+      ua_trace("quest.set_flag: flag_nr out of range!\n");
+   else
+      questflags[flag_nr] = flag_val;
+
+   return 0;
+}
+
+int ua_lua_scripting::prop_get_common(lua_State* L)
+{
+   // retrieve common object properties
+   ua_lua_scripting& self = get_scripting_from_self(L);
+
+   Uint16 item_id = static_cast<Uint16>(lua_tonumber(L,-1));
+
+   ua_common_obj_property& prop = self.game->get_underworld().
+      get_obj_properties().get_common_property(item_id);
+
+   // create new table and fill it with infos
+   lua_newtable(L);
+
+   lua_pushstring(L,"item_id");
+   lua_pushnumber(L,static_cast<double>(item_id));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"height");
+   lua_pushnumber(L,static_cast<double>(prop.height));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"mass");
+   lua_pushnumber(L,static_cast<double>(prop.mass));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"radius");
+   lua_pushnumber(L,static_cast<double>(prop.radius));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"quality_class");
+   lua_pushnumber(L,static_cast<double>(prop.quality_class));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"quality_type");
+   lua_pushnumber(L,static_cast<double>(prop.quality_type));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"can_have_owner");
+   lua_pushnumber(L,prop.can_have_owner ? 1.0 : 0.0);
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"can_be_looked_at");
+   lua_pushnumber(L,prop.can_be_looked_at ? 1.0 : 0.0);
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"can_be_picked_up");
+   lua_pushnumber(L,prop.can_be_picked_up ? 1.0 : 0.0);
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"is_container");
+   lua_pushnumber(L,prop. is_container ? 1.0 : 0.0);
+   lua_settable(L,-3);
+
+   return 1;
+}
+
+/*! \todo implement */
+int ua_lua_scripting::prop_get_special(lua_State* L)
+{
+   // retrieve common object properties
+   ua_lua_scripting& self = get_scripting_from_self(L);
+   ua_object_properties prop =
+      self.game->get_underworld().get_obj_properties();
+
+   return 0;//1;
 }

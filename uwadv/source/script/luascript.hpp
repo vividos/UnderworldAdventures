@@ -68,13 +68,13 @@ public:
    virtual bool load_script(const char* basename);
    virtual void done();
    virtual void init_new_game();
-   virtual void eval_critter(unsigned int pos);
-   virtual void do_trigger(unsigned int pos);
+   virtual void eval_critter(Uint16 pos);
+   virtual void trigger_set_off(Uint16 pos);
    virtual void user_action(ua_underworld_user_action action,
       unsigned int param);
    virtual void on_changing_level();
-   virtual ua_item_combine_status item_combine(Uint16 item_id1, Uint16 item_id2,
-      Uint16& result_id);
+   virtual ua_item_combine_status item_combine(Uint16 item_id1,
+      Uint16 item_id2, Uint16& result_id);
 
 protected:
    //! loads a script
@@ -99,7 +99,39 @@ protected:
 protected:
    // registered C functions callable from Lua
    // prototype: static int xyz(lua_State* L);
-   static int ui_print(lua_State* L);
+   static int uw_print(lua_State* L);
+   static int uw_get_string(lua_State* L);
+   static int uw_start_conv(lua_State* L);
+
+   static int player_get_info(lua_State* L);
+   static int player_set_info(lua_State* L);
+   static int player_get_attr(lua_State* L);
+   static int player_get_skill(lua_State* L);
+   static int player_set_attr(lua_State* L);
+   static int player_set_skill(lua_State* L);
+
+   static int objlist_get_info(lua_State* L);
+   static int objlist_set_info(lua_State* L);
+   static int objlist_delete(lua_State* L);
+   static int objlist_insert(lua_State* L);
+
+   static int tilemap_get_info(lua_State* L);
+   static int tilemap_set_info(lua_State* L);
+   static int tilemap_get_floor_height(lua_State* L);
+   static int tilemap_get_objlist_link(lua_State* L);
+
+   static int runes_set(lua_State* L);
+   static int runes_test(lua_State* L);
+
+   static int conv_is_avail(lua_State* L);
+   static int conv_get_global(lua_State* L);
+   static int conv_set_global(lua_State* L);
+
+   static int quest_get_flag(lua_State* L);
+   static int quest_set_flag(lua_State* L);
+
+   static int prop_get_common(lua_State* L);
+   static int prop_get_special(lua_State* L);
 };
 
 
