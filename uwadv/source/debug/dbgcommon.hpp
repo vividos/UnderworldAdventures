@@ -39,7 +39,8 @@
 #include "wx/wx.h"
 #endif
 
-#include "wx/treectrl.h" // tree control
+// frame library headers
+#include "wx/fl/controlbar.h" // core API
 
 
 #endif
