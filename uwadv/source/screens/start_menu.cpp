@@ -91,7 +91,6 @@ void ua_start_menu_screen::resume()
    tex.use();
    tex.upload();
 
-   SDL_ShowCursor(0);
    mousecursor->show(true);
 
    stage = 0;

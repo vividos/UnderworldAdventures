@@ -157,17 +157,11 @@ void ua_ingame_orig_screen::suspend()
 
    glDisable(GL_SCISSOR_TEST);
    glDisable(GL_FOG);
-
-   // enable cursor again
-   SDL_ShowCursor(1);
 }
 
 void ua_ingame_orig_screen::resume()
 {
    setup_opengl();
-
-   // disable normal cursor
-   SDL_ShowCursor(0);
 
    // upload textures
    tex.init(&core->get_texmgr());

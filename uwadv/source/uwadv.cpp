@@ -134,6 +134,9 @@ void ua_game::init()
    glClear(GL_COLOR_BUFFER_BIT);
    SDL_GL_SwapBuffers();
 
+   // switch off cursor
+   SDL_ShowCursor(0);
+
    screenstack.clear();
 
    // start with uwadv menu
