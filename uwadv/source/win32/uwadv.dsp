@@ -127,7 +127,21 @@ SOURCE=..\uwadv.hpp
 SOURCE=..\..\uadata\uw1\scripts\cutscene.lua
 # PROP Exclude_From_Build 1
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\uadata\uw1\scripts\inventory.lua
+# PROP Exclude_From_Build 1
+# End Source File
 # End Group
+# Begin Source File
+
+SOURCE=..\..\docs\README.Lua.txt
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\uadata\uw1\scripts\uwinit.txt
+# PROP Exclude_From_Build 1
+# End Source File
 # End Group
 # Begin Group "win32 specific files"
 
@@ -617,6 +631,10 @@ SOURCE=..\player.cpp
 
 SOURCE=..\underworld.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=..\uwscript.cpp
+# End Source File
 # End Group
 # Begin Group "underworld header files"
 
@@ -644,6 +662,10 @@ SOURCE=..\player.hpp
 # Begin Source File
 
 SOURCE=..\underworld.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\uwscript.hpp
 # End Source File
 # End Group
 # End Group
