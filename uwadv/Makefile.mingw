@@ -320,6 +320,7 @@ update: uwadv data uaconfig
 
 install: update
 	cp uwadv.cfg $(UWADV_PATH)
+	cp uadata/uw1/keymap.cfg $(UWADV_PATH)
 
 
 installer: install
@@ -328,6 +329,8 @@ installer: install
 	cp Copying $(UWADV_PATH)
 	cp docs/README.uwadv.txt $(UWADV_PATH)
 	cp docs/uw1-keyboard.txt $(UWADV_PATH)
+	cp docs/Changes $(UWADV_PATH)/Changes.txt
+	cp docs/Authors.txt $(UWADV_PATH)
 	cd $(UWADV_PATH) && ./upx -9 uwadv.exe
 	cd $(UWADV_PATH) && ./upx -9 uaconfig.exe
 	cd $(UWADV_PATH) && ./makensis.exe uwadv.nsi
