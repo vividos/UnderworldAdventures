@@ -54,7 +54,7 @@ also found in the Start menu, in "Programs" and then Underworld Adventures).
 
 For Linux users (or the hardcore ones :) just open up the file "uwadv.cfg" in
 a text editor and follow the instructions in this file (on Linux the file can
-usually be found in "/usr/local/share/games/uwadv/" or similar path).
+usually be found in "/usr/local/share/games/uwadv/" or respective path).
 
 Linux users also can have per-user configurations that supersede the global
 options. Just copy the file "uwadv.cfg" to the folder "~/.uwadv/". The folder
@@ -63,8 +63,8 @@ is usually created at the first start of "uwadv".
 With Underworld Adventures you can customize the key mappings easily. Just
 open the file "keymap.cfg" and follow the instructions in the file (Linux
 users don't have a global "keymap.cfg", but the file that was installed to
-"/usr/share/games/uwadv/" can be copied to the folder "~/.uwadv/" to customize
-the mappings).
+"/usr/local/share/games/uwadv/" (or respective path) can be copied to the
+folder "~/.uwadv/" to customize the key mappings).
 
 There is a music pack with a digitally rearranged soundtrack for Ultima
 Underworld 1 available. It is also available at http://uwadv.sourceforge.net/
