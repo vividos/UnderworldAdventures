@@ -63,22 +63,10 @@ void ua_image::paste_image(const ua_image &img, unsigned int destx,unsigned int 
 
 // ua_image_list methods
 
-ua_image_list::ua_image_list()
-{
-}
-
-ua_image_list::~ua_image_list()
-{
-   // delete all images in list
-   int max=allimages.size();
-   for(int i=0; i<max; i++)
-      delete allimages[i];
-}
-
-const ua_image *ua_image_list::get_image(unsigned int num)
+const ua_image &ua_image_list::get_image(unsigned int num)
 {
    if (num>=allimages.size())
-      return NULL;
+      throw ua_exception("ua_image_list: index out of bounds");
 
    return allimages[num];
 }

@@ -43,6 +43,8 @@ class ua_image
 public:
    //! ctor
    ua_image();
+   //! dtor
+   virtual ~ua_image(){}
 
    //! loads a single image; name must be without the extension ".gr"
    void load(ua_settings &settings, const char *name, unsigned int which=0,
@@ -90,8 +92,8 @@ protected:
 class ua_image_list
 {
 public:
-   ua_image_list();
-   ~ua_image_list();
+   //! ctor
+   ua_image_list(){}
 
    //! loads a list of images
    void load(ua_settings &settings, const char *name, unsigned int from=0,
@@ -101,11 +103,11 @@ public:
    unsigned int size(){ return allimages.size(); };
 
    //! returns a single image
-   const ua_image *get_image(unsigned int num);
+   const ua_image &get_image(unsigned int num);
 
 protected:
    //! images in the list
-   std::vector<ua_image*> allimages;
+   std::vector<ua_image> allimages;
 };
 
 #endif
