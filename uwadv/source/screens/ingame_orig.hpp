@@ -38,6 +38,7 @@
 #include "mousecursor.hpp"
 #include "textscroll.hpp"
 
+#include "debug.hpp"
 
 // enums
 
@@ -225,7 +226,7 @@ protected:
    // test stuff
    GLuint hit;
    unsigned int test_vit;
-
+   ua_debug_interface* dbgint;
 
 
    ua_renderer renderer;

@@ -118,7 +118,7 @@ void ua_ingame_orig_screen::init()
 
    hit = 0;
    test_vit = 0;
-
+   dbgint = ua_debug_interface::get_new_debug_interface();
 
 
    keymap.init(core->get_settings());
@@ -324,6 +324,7 @@ void ua_ingame_orig_screen::resume()
 void ua_ingame_orig_screen::done()
 {
    suspend();
+   delete dbgint;
 }
 
 void ua_ingame_orig_screen::handle_event(SDL_Event &event)
@@ -502,6 +503,12 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
       if (type==SDL_KEYDOWN && textscroll.have_more_lines())
          textscroll.show_more_lines();
       break;
+
+   case SDLK_F4:
+      if (type==SDL_KEYDOWN)
+      {
+         dbgint->start_debugger();
+      }
    }
 
 #endif
