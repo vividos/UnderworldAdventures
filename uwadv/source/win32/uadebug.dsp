@@ -93,14 +93,22 @@ LINK32=link.exe
 # Begin Source File
 
 SOURCE=..\debug\dbgapp.cpp
+# ADD CPP /Yu"dbgcommon.hpp"
 # End Source File
 # Begin Source File
 
 SOURCE=..\debug\mainframe.cpp
+# ADD CPP /Yu"dbgcommon.hpp"
+# End Source File
+# Begin Source File
+
+SOURCE=..\debug\pch.cpp
+# ADD CPP /Yc"dbgcommon.hpp"
 # End Source File
 # Begin Source File
 
 SOURCE=..\debug\playerinfo.cpp
+# ADD CPP /Yu"dbgcommon.hpp"
 # End Source File
 # Begin Source File
 

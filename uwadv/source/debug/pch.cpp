@@ -19,33 +19,11 @@
    $Id$
 
 */
-/*! \file dbgcommon.hpp
+/*! \file pch.hpp
 
-   \brief debugger common includes
+   \brief precompiled header support file
 
 */
 
-// include guard
-#ifndef __uadebug_dbgcommon_hpp__
-#define __uadebug_dbgcommon_hpp__
-
-// uwadv includes
-#include "../common.hpp"
-#include "../debug.hpp"
-#include "uwaccess.hpp"
-
-
-#define NOMAIN
-
-// wxWindows includes
-#include "wx/wxprec.h"
-
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif
-
-// frame library headers
-#include "wx/fl/controlbar.h" // core API
-
-
-#endif
+// needed includes
+#include "dbgcommon.hpp"
