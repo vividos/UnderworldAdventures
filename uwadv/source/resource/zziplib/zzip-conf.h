@@ -12,7 +12,7 @@
 #define _ZZIP_CONF_H 1
 
 #if !defined ZZIP_OMIT_CONFIG_H
-# if defined _MSC_VER || defined __BORLANDC__ || defined __WATCOMC__ || __MINGW32__
+# if defined _MSC_VER || defined __BORLANDC__ || defined __WATCOMC__ || defined __MINGW32__
 # include <zzip-msvc.h>
 # else
 # include <zzip-config.h>
