@@ -31,6 +31,7 @@
 
 // needed includes
 #include <map>
+#include "keymap.hpp"
 
 
 // structs
