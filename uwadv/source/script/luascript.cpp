@@ -93,40 +93,114 @@ void ua_lua_scripting::done()
    lua_close(L);
 }
 
+void ua_lua_scripting::checked_call(int nargs, int nresults)
+{
+   lua_call(L,nargs,nresults);
+}
+
 void ua_lua_scripting::init_new_game()
 {
+   lua_getglobal(L,"game_init_new");
+   checked_call(0,0);
 }
 
 void ua_lua_scripting::eval_critter(unsigned int pos)
 {
+   lua_getglobal(L,"critter_eval");
+   lua_pushnumber(L, static_cast<double>(pos));
+   checked_call(1,0);
 }
 
 void ua_lua_scripting::do_trigger(unsigned int pos)
 {
+   lua_getglobal(L,"trigger_do");
+   lua_pushnumber(L, static_cast<double>(pos));
+   checked_call(1,0);
 }
 
-void ua_lua_scripting::cast_spell()
+void ua_lua_scripting::user_action(ua_underworld_user_action action,
+   unsigned int param)
 {
+   switch(action)
+   {
+   case ua_action_clicked_spells:
+      lua_getglobal(L,"spell_cast");
+      checked_call(0,0);
+      break;
+
+   case ua_action_clicked_runeshelf:
+      lua_getglobal(L,"spell_cancel");
+      lua_pushnumber(L, static_cast<double>(param));
+      checked_call(1,0);
+      break;
+
+   case ua_action_clicked_compass:
+      break;
+
+   case ua_action_clicked_vitality_flask:
+      break;
+
+   case ua_action_clicked_mana_flask:
+      break;
+
+   case ua_action_clicked_gargoyle:
+      break;
+
+   case ua_action_clicked_dragons:
+      break;
+
+   case ua_action_track_creatures:
+      lua_getglobal(L,"track_creatures");
+      checked_call(0,0);
+      break;
+
+   case ua_action_sleep:
+      lua_getglobal(L,"sleep");
+      checked_call(0,0);
+      break;
+   }
 }
 
 void ua_lua_scripting::on_changing_level()
 {
+   lua_getglobal(L,"on_change_level");
+   checked_call(0,0);
 }
 
 void ua_lua_scripting::object_look(unsigned int pos)
 {
+   lua_getglobal(L,"object_look");
+   lua_pushnumber(L, static_cast<double>(pos));
+   checked_call(1,0);
 }
 
 void ua_lua_scripting::object_use(unsigned int pos)
 {
-}
-
-void ua_lua_scripting::inventory_combine(unsigned int pos,unsigned int pos2)
-{
+   lua_getglobal(L,"object_look");
+   lua_pushnumber(L, static_cast<double>(pos));
+   checked_call(1,0);
 }
 
 void ua_lua_scripting::inventory_look(unsigned int pos)
 {
+   lua_getglobal(L,"inventory_look");
+   lua_pushnumber(L, static_cast<double>(pos));
+   checked_call(1,0);
+}
+
+void ua_lua_scripting::inventory_use(unsigned int pos)
+{
+   lua_getglobal(L,"inventory_use");
+   lua_pushnumber(L, static_cast<double>(pos));
+   checked_call(1,0);
+}
+
+void ua_lua_scripting::inventory_combine(unsigned int pos,unsigned int pos2)
+{
+   lua_getglobal(L,"inventory_combine");
+   lua_pushnumber(L, static_cast<double>(pos));
+   lua_pushnumber(L, static_cast<double>(pos2));
+   checked_call(2,2);
 }
 
 int ua_lua_scripting::load_script(SDL_RWops* rwops, const char* chunkname)
@@ -153,7 +227,6 @@ int ua_lua_scripting::load_script(SDL_RWops* rwops, const char* chunkname)
 
    return ret;
 }
-
 
 ua_scripting* ua_scripting::create_scripting(ua_scripting_language)
 {

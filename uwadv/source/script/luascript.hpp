@@ -56,6 +56,9 @@ public:
    //! returns lua state info struct
    lua_State* get_lua_State(){ return L; }
 
+   //! lua function call
+   void checked_call(int nargs, int nresults);
+
    // virtual methods from ua_scripting
    virtual void init(ua_game_interface* game);
    virtual bool load_script(const char* basename);
@@ -63,12 +66,14 @@ public:
    virtual void init_new_game();
    virtual void eval_critter(unsigned int pos);
    virtual void do_trigger(unsigned int pos);
-   virtual void cast_spell();
+   virtual void user_action(ua_underworld_user_action action,
+      unsigned int param);
    virtual void on_changing_level();
    virtual void object_look(unsigned int pos);
    virtual void object_use(unsigned int pos);
-   virtual void inventory_combine(unsigned int pos,unsigned int pos2);
    virtual void inventory_look(unsigned int pos);
+   virtual void inventory_use(unsigned int pos);
+   virtual void inventory_combine(unsigned int pos,unsigned int pos2);
 
 protected:
    //! loads a script
