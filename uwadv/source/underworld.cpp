@@ -86,7 +86,7 @@ ua_level &ua_underworld::get_current_level()
 
 void ua_underworld::change_level(unsigned int level)
 {
-   if (level>levels.size())
+   if (level>=levels.size())
       throw ua_exception("game wanted to change to unknown level");
 
    // set new level
