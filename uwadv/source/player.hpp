@@ -34,7 +34,23 @@
 
 // enums
 
+//! player attribute enum
+/*! player attributes are values that should never change during normal
+    gameplay */
+typedef enum
+{
+   ua_attr_gender=0,   // 0 means male
+   ua_attr_handedness, // 0 means left-handedness
+   ua_attr_appearance, // values from 0..4
+   ua_attr_profession, // values from 0..7
+
+   ua_attr_max
+
+} ua_player_attributes;
+
 //! player stats enum
+/*! player stats are values that may change over a while of game playing, and
+    may be used for combat/spell/etc. calculations */
 typedef enum
 {
    ua_stat_strength=0,
@@ -48,7 +64,15 @@ typedef enum
    ua_stat_mana,
    ua_stat_max_mana,
 
-   ua_stat_max=ua_stat_max_mana
+   ua_stat_weariness,
+   ua_stat_hungriness,
+
+   ua_stat_talks,
+   ua_stat_kills,
+   ua_stat_level,
+   ua_stat_exp_points,
+
+   ua_stat_max
 
 } ua_player_stats;
 
@@ -72,7 +96,8 @@ typedef enum
    ua_skill_acrobat,
    ua_skill_appraise,
    ua_skill_swimming,
-   ua_skill_max = ua_skill_swimming
+
+   ua_skill_max
 } ua_player_skills;
 
 
@@ -82,7 +107,7 @@ class ua_player
 {
 public:
    //! ctor
-   ua_player(){}
+   ua_player();
 
    //! initializes player object
    void init();
@@ -95,12 +120,14 @@ public:
    //! sets player view angle
    void set_angle(double theangle){ angle=theangle; }
 
-   //! sets gender of player
-   void set_gender(bool is_male){ gender_male=is_male; }
+   //! sets player attribute value
+   void set_attr(ua_player_attributes which, unsigned int value);
 
-   //! sets appearance (ranges from 0 to 4)
-   void set_appearance(unsigned int app){ appearance=app; }
+   //! sets player stat value
+   void set_stat(ua_player_stats which, unsigned int value);
 
+   //! sets player skill value
+   void set_skill(ua_player_skills which, unsigned int value);
 
    // get functions
 
@@ -113,20 +140,14 @@ public:
    //! returns view angle
    double get_angle(){ return angle; }
 
+   //! returns player attribute value
+   unsigned int get_attr(ua_player_attributes which);
+
    //! returns player stat value
    unsigned int get_stat(ua_player_stats which);
 
    //! returns player skill value
    unsigned int get_skill(ua_player_skills which);
-
-   //! returns true if the player's gender is male
-   bool is_gender_male(){ return gender_male; }
-
-   //! returns true if the player is left handed
-   bool is_left_handed(){ return left_handedness; }
-
-   //! returns the appearance number
-   unsigned int get_appearance(){ return appearance; }
 
 protected:
    //! the name of the player
@@ -143,6 +164,9 @@ protected:
 
    //! player appearance graphic (0..4)
    unsigned int appearance;
+
+   //! array with all player attributes
+   unsigned int attributes[ua_attr_max];
 
    //! array with all player stats
    unsigned int stats[ua_stat_max];

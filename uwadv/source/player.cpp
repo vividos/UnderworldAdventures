@@ -32,28 +32,49 @@
 
 // ua_player methods
 
+ua_player::ua_player()
+{
+}
+
 void ua_player::init()
 {
    xpos = ypos = 32.0;
    angle = 0.0;
-   gender_male = false;
-   left_handedness = true;
-   appearance = 0;
 
+   memset(attributes,0,sizeof(attributes));
    memset(stats,0,sizeof(stats));
    memset(skills,0,sizeof(skills));
 }
 
+void ua_player::set_attr(ua_player_attributes which, unsigned int value)
+{
+   if (which<ua_attr_max) attributes[static_cast<unsigned int>(which)];
+}
+
+void ua_player::set_stat(ua_player_stats which, unsigned int value)
+{
+   if (which<ua_stat_max) attributes[static_cast<unsigned int>(which)];
+}
+
+void ua_player::set_skill(ua_player_skills which, unsigned int value)
+{
+   if (which<ua_skill_max) attributes[static_cast<unsigned int>(which)];
+}
+
+unsigned int ua_player::get_attr(ua_player_attributes which)
+{
+   if (which>=ua_attr_max) return 0;
+   return attributes[static_cast<unsigned int>(which)];
+}
+
 unsigned int ua_player::get_stat(ua_player_stats which)
 {
-   if (unsigned(which)>=ua_stat_max)
-      return 0;
-   return stats[unsigned(which)];
+   if (which>=ua_stat_max) return 0;
+   return stats[static_cast<unsigned int>(which)];
 }
 
 unsigned int ua_player::get_skill(ua_player_skills which)
 {
-   if (unsigned(which)>=ua_skill_max)
-      return 0;
-   return skills[unsigned(which)];
+   if (which>=ua_skill_max) return 0;
+   return skills[static_cast<unsigned int>(which)];
 }
