@@ -79,17 +79,19 @@ void ua_audio_manager::init(ua_settings& settings, ua_files_manager& filesmgr)
 
    ua_trace(" %s\n", Mix_GetError());
 
+   // create midi player
    midipl = new ua_midi_player;
    midipl->init_player(settings);
    midipl->init_driver();
+
+   // get uw path for future use
+   uw_path = settings.get_string(ua_setting_uw_path);
 
    // do playlist pathname
    std::string playlist_name(settings.get_string(ua_setting_game_prefix));
    playlist_name.append("/audio/music.m3u");
 
    load_playlist(settings,filesmgr,playlist_name.c_str());
-
-   uw_path = settings.get_string(ua_setting_uw_path);
 
    // print out SDL_mixer version
    const SDL_version* mixer_ver = Mix_Linked_Version();
