@@ -19,9 +19,9 @@
    $Id$
 
 */
-/*! \file codevm.cpp
+/*! \file convglobals.cpp
 
-   \brief conv globals
+   \brief conversation globals
 
 */
 

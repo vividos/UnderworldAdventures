@@ -24,6 +24,9 @@
    \brief conversation globals
 
 */
+//! \ingroup conv
+
+//@{
 
 // include guard
 #ifndef uwadv_convglobals_hpp_
@@ -74,3 +77,4 @@ protected:
 
 
 #endif
+//@}
