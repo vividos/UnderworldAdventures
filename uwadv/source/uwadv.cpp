@@ -501,8 +501,14 @@ void ua_uwadv_game::init_sdl()
       renderer = glGetString(GL_RENDERER);
       version = glGetString(GL_VERSION);
 
-      ua_trace(" vendor: %s\n renderer: %s\n version: %s\n\n",
+      ua_trace(" vendor: %s\n renderer: %s\n version: %s\n",
          vendor,renderer,version);
+
+      GLboolean stereo;
+      glGetBooleanv(GL_STEREO, &stereo);
+
+      ua_trace(" supports stereo mode: %s\n\n",
+         stereo == GL_TRUE ? "yes" : "no");
    }
 
    // setup OpenGL viewport; doesn't change during game
