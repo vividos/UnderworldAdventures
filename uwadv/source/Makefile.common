@@ -8,7 +8,7 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	player.cpp quadtree.cpp texture.cpp underworld.cpp uwadv.cpp \
 	objects.cpp cutscene.cpp physics.cpp files.cpp keymap.cpp \
 	uwscript.cpp settings.cpp utils.cpp mousecursor.cpp \
-	renderer.cpp textscroll.cpp \
+	renderer.cpp textscroll.cpp critter.cpp \
 	audio.hpp common.hpp core.hpp font.hpp gamestrings.hpp \
 	image.hpp inventory.hpp level.hpp player.hpp quadtree.hpp \
 	screen.hpp settings.hpp texture.hpp utils.hpp \

@@ -773,6 +773,10 @@ SOURCE=..\resource\cfgfile.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\critter.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\cutscene.cpp
 # End Source File
 # Begin Source File
