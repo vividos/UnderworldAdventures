@@ -60,8 +60,7 @@ EXTRA_DIST = \
 	win32/source/uaconfig/uaconfig_res.rc
 
 cfgdir = $(datadir)/games/uwadv
-cfg_DATA = uwadv.cfg \
-	../uadata/uw1/keymap.cfg
+cfg_DATA = uwadv.cfg
 
 man6_MANS = linux/uwadv.6 \
 	linux/ua-lowercase-all.pl.6
