@@ -85,6 +85,8 @@ SDL_CFLAGS = @SDL_CFLAGS@
 SDL_CONFIG = @SDL_CONFIG@
 SDL_LIBS = @SDL_LIBS@
 STRIP = @STRIP@
+UADATAPATH = @UADATAPATH@
+UW1PATH = @UW1PATH@
 VERSION = @VERSION@
 X_CFLAGS = @X_CFLAGS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
@@ -98,11 +100,11 @@ AUTOMAKE_OPTIONS = foreign
 
 # compiler options
 CXXFLAGS = -I.. $(SDL_CFLAGS)
-LDFLAGS = $(SDL_LIBS)
+LDFLAGS = $(SDL_LIBS) -lSDL_mixer
 
 
 # automake build rules
-noinst_LIBRARIES = liblua.a
+noinst_LIBRARIES = liblua.a libzziplib.a
 
 liblua_a_SOURCES = lua/src/lapi.c lua/src/lcode.c lua/src/ldebug.c \
 	lua/src/ldo.c lua/src/lfunc.c lua/src/lgc.c \
@@ -114,19 +116,35 @@ liblua_a_SOURCES = lua/src/lapi.c lua/src/lcode.c lua/src/ldebug.c \
 
 liblua_a_CFLAGS = -Ilua/include
 
+libzziplib_a_SOURCES = resource/zziplib/SDL_rwops_zzip.c \
+	resource/zziplib/zzip-dir.c \
+	resource/zziplib/zzip-err.c \
+	resource/zziplib/zzip-file.c \
+	resource/zziplib/zzip-info.c \
+	resource/zziplib/zzip-io.c \
+	resource/zziplib/zzip-stat.c \
+	resource/zziplib/zzip-zip.c
+
+
+libzziplib_a_CFLAGS = -Iresource/zziplib $(SDL_CFLAGS)
+
 bin_PROGRAMS = uwadv
 
 uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	player.cpp quadtree.cpp texture.cpp underworld.cpp uwadv.cpp \
-	objects.cpp cutscene.cpp physics.cpp \
+	objects.cpp cutscene.cpp physics.cpp files.cpp keymap.cpp \
 	audio.hpp common.hpp core.hpp font.hpp gamestrings.hpp \
 	image.hpp inventory.hpp level.hpp player.hpp quadtree.hpp \
 	screen.hpp settings.hpp texture.hpp uatypes.hpp \
 	underworld.hpp uwadv.hpp objects.hpp cutscene.hpp physics.hpp \
+	files.hpp keymap.hpp \
 	linux/main.cpp \
 	audio/audio.cpp audio/midi.cpp audio/xmidi.cpp \
 	audio/midi.hpp audio/xmidi.hpp \
-	audio/midi_driver/uni_fmod.cpp audio/midi_driver/uni_fmod.hpp \
+	audio/midi_driver/uni_fmod.cpp \
+	audio/midi_driver/linux_sdl_mixer.cpp \
+	audio/midi_driver/uni_fmod.hpp \
+	audio/midi_driver/linux_sdl_mixer.hpp \
 	conv/codevm.cpp conv/codevm.hpp \
 	resource/codeloader.cpp resource/fontloader.cpp \
 	resource/gamestrings.cpp resource/imageloader.cpp \
@@ -135,14 +153,15 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	resource/cutsloader.cpp \
 	resource/fread_endian.hpp \
 	screens/ingame_orig.cpp screens/start_splash.cpp \
-	screens/start_menu.cpp \
+	screens/start_menu.cpp screens/cutscene_view.cpp \
+	screens/acknowledgements.cpp \
 	screens/ingame_orig.hpp screens/start_splash.hpp \
-	screens/start_menu.hpp
+	screens/start_menu.hpp screens/acknowledgements.hpp
 
 
-uwadv_LDADD = -lGL -lGLU $(SDL_LIBS) liblua.a
+uwadv_LDADD = -lGL -lGLU $(SDL_LIBS) liblua.a libzziplib.a -lz
 
-uwadv_DEPENDENCIES = liblua.a
+uwadv_DEPENDENCIES = liblua.a libzziplib.a
 
 EXTRA_DIST = audio/midi_driver/win_midiout.cpp \
 	audio/midi_driver/win_midiout.hpp \
@@ -168,6 +187,15 @@ am_liblua_a_OBJECTS = liblua_a-lapi.$(OBJEXT) liblua_a-lcode.$(OBJEXT) \
 	liblua_a-ltm.$(OBJEXT) liblua_a-lundump.$(OBJEXT) \
 	liblua_a-lvm.$(OBJEXT) liblua_a-lzio.$(OBJEXT)
 liblua_a_OBJECTS = $(am_liblua_a_OBJECTS)
+libzziplib_a_AR = $(AR) cru
+libzziplib_a_LIBADD =
+am_libzziplib_a_OBJECTS = libzziplib_a-SDL_rwops_zzip.$(OBJEXT) \
+	libzziplib_a-zzip-dir.$(OBJEXT) libzziplib_a-zzip-err.$(OBJEXT) \
+	libzziplib_a-zzip-file.$(OBJEXT) \
+	libzziplib_a-zzip-info.$(OBJEXT) libzziplib_a-zzip-io.$(OBJEXT) \
+	libzziplib_a-zzip-stat.$(OBJEXT) \
+	libzziplib_a-zzip-zip.$(OBJEXT)
+libzziplib_a_OBJECTS = $(am_libzziplib_a_OBJECTS)
 bin_PROGRAMS = uwadv$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
@@ -175,13 +203,15 @@ am_uwadv_OBJECTS = font.$(OBJEXT) image.$(OBJEXT) inventory.$(OBJEXT) \
 	level.$(OBJEXT) player.$(OBJEXT) quadtree.$(OBJEXT) \
 	texture.$(OBJEXT) underworld.$(OBJEXT) uwadv.$(OBJEXT) \
 	objects.$(OBJEXT) cutscene.$(OBJEXT) physics.$(OBJEXT) \
-	main.$(OBJEXT) audio.$(OBJEXT) midi.$(OBJEXT) xmidi.$(OBJEXT) \
-	uni_fmod.$(OBJEXT) codevm.$(OBJEXT) codeloader.$(OBJEXT) \
+	files.$(OBJEXT) keymap.$(OBJEXT) main.$(OBJEXT) audio.$(OBJEXT) \
+	midi.$(OBJEXT) xmidi.$(OBJEXT) uni_fmod.$(OBJEXT) \
+	linux_sdl_mixer.$(OBJEXT) codevm.$(OBJEXT) codeloader.$(OBJEXT) \
 	fontloader.$(OBJEXT) gamestrings.$(OBJEXT) \
 	imageloader.$(OBJEXT) maploader.$(OBJEXT) settings.$(OBJEXT) \
 	texloader.$(OBJEXT) objloader.$(OBJEXT) cutsloader.$(OBJEXT) \
 	ingame_orig.$(OBJEXT) start_splash.$(OBJEXT) \
-	start_menu.$(OBJEXT)
+	start_menu.$(OBJEXT) cutscene_view.$(OBJEXT) \
+	acknowledgements.$(OBJEXT)
 uwadv_OBJECTS = $(am_uwadv_OBJECTS)
 uwadv_LDFLAGS =
 
@@ -191,14 +221,17 @@ CPPFLAGS = @CPPFLAGS@
 LIBS = @LIBS@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/audio.Po ./$(DEPDIR)/codeloader.Po \
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/acknowledgements.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/audio.Po ./$(DEPDIR)/codeloader.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/codevm.Po ./$(DEPDIR)/cutscene.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/cutsloader.Po ./$(DEPDIR)/font.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/fontloader.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/cutscene_view.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/cutsloader.Po ./$(DEPDIR)/files.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/font.Po ./$(DEPDIR)/fontloader.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/gamestrings.Po ./$(DEPDIR)/image.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/imageloader.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/ingame_orig.Po ./$(DEPDIR)/inventory.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/level.Po ./$(DEPDIR)/liblua_a-lapi.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/keymap.Po ./$(DEPDIR)/level.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/liblua_a-lapi.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/liblua_a-lcode.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/liblua_a-ldebug.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/liblua_a-ldo.Po \
@@ -215,7 +248,16 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/liblua_a-ltm.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/liblua_a-lundump.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/liblua_a-lvm.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/liblua_a-lzio.Po ./$(DEPDIR)/main.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/liblua_a-lzio.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/libzziplib_a-SDL_rwops_zzip.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/libzziplib_a-zzip-dir.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/libzziplib_a-zzip-err.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/libzziplib_a-zzip-file.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/libzziplib_a-zzip-info.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/libzziplib_a-zzip-io.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/libzziplib_a-zzip-stat.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/libzziplib_a-zzip-zip.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/linux_sdl_mixer.Po ./$(DEPDIR)/main.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/maploader.Po ./$(DEPDIR)/midi.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/objects.Po ./$(DEPDIR)/objloader.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/physics.Po ./$(DEPDIR)/player.Po \
@@ -235,7 +277,8 @@ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-DIST_SOURCES = $(liblua_a_SOURCES) $(uwadv_SOURCES)
+DIST_SOURCES = $(liblua_a_SOURCES) $(libzziplib_a_SOURCES) \
+	$(uwadv_SOURCES)
 
 RECURSIVE_TARGETS = info-recursive dvi-recursive install-info-recursive \
 	uninstall-info-recursive all-recursive install-data-recursive \
@@ -243,7 +286,7 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive install-info-recursive \
 	uninstall-recursive check-recursive installcheck-recursive
 DIST_COMMON = Makefile.am Makefile.in
 DIST_SUBDIRS = $(SUBDIRS)
-SOURCES = $(liblua_a_SOURCES) $(uwadv_SOURCES)
+SOURCES = $(liblua_a_SOURCES) $(libzziplib_a_SOURCES) $(uwadv_SOURCES)
 
 all: all-recursive
 
@@ -281,6 +324,18 @@ liblua.a: $(liblua_a_OBJECTS) $(liblua_a_DEPENDENCIES)
 	-rm -f liblua.a
 	$(liblua_a_AR) liblua.a $(liblua_a_OBJECTS) $(liblua_a_LIBADD)
 	$(RANLIB) liblua.a
+libzziplib_a-SDL_rwops_zzip.$(OBJEXT): resource/zziplib/SDL_rwops_zzip.c
+libzziplib_a-zzip-dir.$(OBJEXT): resource/zziplib/zzip-dir.c
+libzziplib_a-zzip-err.$(OBJEXT): resource/zziplib/zzip-err.c
+libzziplib_a-zzip-file.$(OBJEXT): resource/zziplib/zzip-file.c
+libzziplib_a-zzip-info.$(OBJEXT): resource/zziplib/zzip-info.c
+libzziplib_a-zzip-io.$(OBJEXT): resource/zziplib/zzip-io.c
+libzziplib_a-zzip-stat.$(OBJEXT): resource/zziplib/zzip-stat.c
+libzziplib_a-zzip-zip.$(OBJEXT): resource/zziplib/zzip-zip.c
+libzziplib.a: $(libzziplib_a_OBJECTS) $(libzziplib_a_DEPENDENCIES) 
+	-rm -f libzziplib.a
+	$(libzziplib_a_AR) libzziplib.a $(libzziplib_a_OBJECTS) $(libzziplib_a_LIBADD)
+	$(RANLIB) libzziplib.a
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
@@ -312,6 +367,7 @@ audio.$(OBJEXT): audio/audio.cpp
 midi.$(OBJEXT): audio/midi.cpp
 xmidi.$(OBJEXT): audio/xmidi.cpp
 uni_fmod.$(OBJEXT): audio/midi_driver/uni_fmod.cpp
+linux_sdl_mixer.$(OBJEXT): audio/midi_driver/linux_sdl_mixer.cpp
 codevm.$(OBJEXT): conv/codevm.cpp
 codeloader.$(OBJEXT): resource/codeloader.cpp
 fontloader.$(OBJEXT): resource/fontloader.cpp
@@ -325,6 +381,8 @@ cutsloader.$(OBJEXT): resource/cutsloader.cpp
 ingame_orig.$(OBJEXT): screens/ingame_orig.cpp
 start_splash.$(OBJEXT): screens/start_splash.cpp
 start_menu.$(OBJEXT): screens/start_menu.cpp
+cutscene_view.$(OBJEXT): screens/cutscene_view.cpp
+acknowledgements.$(OBJEXT): screens/acknowledgements.cpp
 uwadv$(EXEEXT): $(uwadv_OBJECTS) $(uwadv_DEPENDENCIES) 
 	@rm -f uwadv$(EXEEXT)
 	$(CXXLINK) $(uwadv_LDFLAGS) $(uwadv_OBJECTS) $(uwadv_LDADD) $(LIBS)
@@ -335,11 +393,14 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/acknowledgements.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/audio.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/codeloader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/codevm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cutscene.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cutscene_view.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cutsloader.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/files.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/font.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fontloader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gamestrings.Po@am__quote@
@@ -347,6 +408,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/imageloader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ingame_orig.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/inventory.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/keymap.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/level.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblua_a-lapi.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblua_a-lcode.Po@am__quote@
@@ -366,6 +428,15 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblua_a-lundump.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblua_a-lvm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblua_a-lzio.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzziplib_a-SDL_rwops_zzip.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzziplib_a-zzip-dir.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzziplib_a-zzip-err.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzziplib_a-zzip-file.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzziplib_a-zzip-info.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzziplib_a-zzip-io.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzziplib_a-zzip-stat.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzziplib_a-zzip-zip.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/linux_sdl_mixer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/maploader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/midi.Po@am__quote@
@@ -614,6 +685,102 @@ liblua_a-lzio.obj: lua/src/lzio.c
 @AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-lzio.Po' tmpdepfile='$(DEPDIR)/liblua_a-lzio.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-lzio.obj `cygpath -w lua/src/lzio.c`
+
+libzziplib_a-SDL_rwops_zzip.o: resource/zziplib/SDL_rwops_zzip.c
+@AMDEP_TRUE@	source='resource/zziplib/SDL_rwops_zzip.c' object='libzziplib_a-SDL_rwops_zzip.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/libzziplib_a-SDL_rwops_zzip.Po' tmpdepfile='$(DEPDIR)/libzziplib_a-SDL_rwops_zzip.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzziplib_a_CFLAGS) $(CFLAGS) -c -o libzziplib_a-SDL_rwops_zzip.o `test -f 'resource/zziplib/SDL_rwops_zzip.c' || echo '$(srcdir)/'`resource/zziplib/SDL_rwops_zzip.c
+
+libzziplib_a-SDL_rwops_zzip.obj: resource/zziplib/SDL_rwops_zzip.c
+@AMDEP_TRUE@	source='resource/zziplib/SDL_rwops_zzip.c' object='libzziplib_a-SDL_rwops_zzip.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/libzziplib_a-SDL_rwops_zzip.Po' tmpdepfile='$(DEPDIR)/libzziplib_a-SDL_rwops_zzip.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzziplib_a_CFLAGS) $(CFLAGS) -c -o libzziplib_a-SDL_rwops_zzip.obj `cygpath -w resource/zziplib/SDL_rwops_zzip.c`
+
+libzziplib_a-zzip-dir.o: resource/zziplib/zzip-dir.c
+@AMDEP_TRUE@	source='resource/zziplib/zzip-dir.c' object='libzziplib_a-zzip-dir.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/libzziplib_a-zzip-dir.Po' tmpdepfile='$(DEPDIR)/libzziplib_a-zzip-dir.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzziplib_a_CFLAGS) $(CFLAGS) -c -o libzziplib_a-zzip-dir.o `test -f 'resource/zziplib/zzip-dir.c' || echo '$(srcdir)/'`resource/zziplib/zzip-dir.c
+
+libzziplib_a-zzip-dir.obj: resource/zziplib/zzip-dir.c
+@AMDEP_TRUE@	source='resource/zziplib/zzip-dir.c' object='libzziplib_a-zzip-dir.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/libzziplib_a-zzip-dir.Po' tmpdepfile='$(DEPDIR)/libzziplib_a-zzip-dir.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzziplib_a_CFLAGS) $(CFLAGS) -c -o libzziplib_a-zzip-dir.obj `cygpath -w resource/zziplib/zzip-dir.c`
+
+libzziplib_a-zzip-err.o: resource/zziplib/zzip-err.c
+@AMDEP_TRUE@	source='resource/zziplib/zzip-err.c' object='libzziplib_a-zzip-err.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/libzziplib_a-zzip-err.Po' tmpdepfile='$(DEPDIR)/libzziplib_a-zzip-err.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzziplib_a_CFLAGS) $(CFLAGS) -c -o libzziplib_a-zzip-err.o `test -f 'resource/zziplib/zzip-err.c' || echo '$(srcdir)/'`resource/zziplib/zzip-err.c
+
+libzziplib_a-zzip-err.obj: resource/zziplib/zzip-err.c
+@AMDEP_TRUE@	source='resource/zziplib/zzip-err.c' object='libzziplib_a-zzip-err.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/libzziplib_a-zzip-err.Po' tmpdepfile='$(DEPDIR)/libzziplib_a-zzip-err.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzziplib_a_CFLAGS) $(CFLAGS) -c -o libzziplib_a-zzip-err.obj `cygpath -w resource/zziplib/zzip-err.c`
+
+libzziplib_a-zzip-file.o: resource/zziplib/zzip-file.c
+@AMDEP_TRUE@	source='resource/zziplib/zzip-file.c' object='libzziplib_a-zzip-file.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/libzziplib_a-zzip-file.Po' tmpdepfile='$(DEPDIR)/libzziplib_a-zzip-file.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzziplib_a_CFLAGS) $(CFLAGS) -c -o libzziplib_a-zzip-file.o `test -f 'resource/zziplib/zzip-file.c' || echo '$(srcdir)/'`resource/zziplib/zzip-file.c
+
+libzziplib_a-zzip-file.obj: resource/zziplib/zzip-file.c
+@AMDEP_TRUE@	source='resource/zziplib/zzip-file.c' object='libzziplib_a-zzip-file.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/libzziplib_a-zzip-file.Po' tmpdepfile='$(DEPDIR)/libzziplib_a-zzip-file.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzziplib_a_CFLAGS) $(CFLAGS) -c -o libzziplib_a-zzip-file.obj `cygpath -w resource/zziplib/zzip-file.c`
+
+libzziplib_a-zzip-info.o: resource/zziplib/zzip-info.c
+@AMDEP_TRUE@	source='resource/zziplib/zzip-info.c' object='libzziplib_a-zzip-info.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/libzziplib_a-zzip-info.Po' tmpdepfile='$(DEPDIR)/libzziplib_a-zzip-info.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzziplib_a_CFLAGS) $(CFLAGS) -c -o libzziplib_a-zzip-info.o `test -f 'resource/zziplib/zzip-info.c' || echo '$(srcdir)/'`resource/zziplib/zzip-info.c
+
+libzziplib_a-zzip-info.obj: resource/zziplib/zzip-info.c
+@AMDEP_TRUE@	source='resource/zziplib/zzip-info.c' object='libzziplib_a-zzip-info.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/libzziplib_a-zzip-info.Po' tmpdepfile='$(DEPDIR)/libzziplib_a-zzip-info.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzziplib_a_CFLAGS) $(CFLAGS) -c -o libzziplib_a-zzip-info.obj `cygpath -w resource/zziplib/zzip-info.c`
+
+libzziplib_a-zzip-io.o: resource/zziplib/zzip-io.c
+@AMDEP_TRUE@	source='resource/zziplib/zzip-io.c' object='libzziplib_a-zzip-io.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/libzziplib_a-zzip-io.Po' tmpdepfile='$(DEPDIR)/libzziplib_a-zzip-io.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzziplib_a_CFLAGS) $(CFLAGS) -c -o libzziplib_a-zzip-io.o `test -f 'resource/zziplib/zzip-io.c' || echo '$(srcdir)/'`resource/zziplib/zzip-io.c
+
+libzziplib_a-zzip-io.obj: resource/zziplib/zzip-io.c
+@AMDEP_TRUE@	source='resource/zziplib/zzip-io.c' object='libzziplib_a-zzip-io.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/libzziplib_a-zzip-io.Po' tmpdepfile='$(DEPDIR)/libzziplib_a-zzip-io.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzziplib_a_CFLAGS) $(CFLAGS) -c -o libzziplib_a-zzip-io.obj `cygpath -w resource/zziplib/zzip-io.c`
+
+libzziplib_a-zzip-stat.o: resource/zziplib/zzip-stat.c
+@AMDEP_TRUE@	source='resource/zziplib/zzip-stat.c' object='libzziplib_a-zzip-stat.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/libzziplib_a-zzip-stat.Po' tmpdepfile='$(DEPDIR)/libzziplib_a-zzip-stat.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzziplib_a_CFLAGS) $(CFLAGS) -c -o libzziplib_a-zzip-stat.o `test -f 'resource/zziplib/zzip-stat.c' || echo '$(srcdir)/'`resource/zziplib/zzip-stat.c
+
+libzziplib_a-zzip-stat.obj: resource/zziplib/zzip-stat.c
+@AMDEP_TRUE@	source='resource/zziplib/zzip-stat.c' object='libzziplib_a-zzip-stat.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/libzziplib_a-zzip-stat.Po' tmpdepfile='$(DEPDIR)/libzziplib_a-zzip-stat.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzziplib_a_CFLAGS) $(CFLAGS) -c -o libzziplib_a-zzip-stat.obj `cygpath -w resource/zziplib/zzip-stat.c`
+
+libzziplib_a-zzip-zip.o: resource/zziplib/zzip-zip.c
+@AMDEP_TRUE@	source='resource/zziplib/zzip-zip.c' object='libzziplib_a-zzip-zip.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/libzziplib_a-zzip-zip.Po' tmpdepfile='$(DEPDIR)/libzziplib_a-zzip-zip.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzziplib_a_CFLAGS) $(CFLAGS) -c -o libzziplib_a-zzip-zip.o `test -f 'resource/zziplib/zzip-zip.c' || echo '$(srcdir)/'`resource/zziplib/zzip-zip.c
+
+libzziplib_a-zzip-zip.obj: resource/zziplib/zzip-zip.c
+@AMDEP_TRUE@	source='resource/zziplib/zzip-zip.c' object='libzziplib_a-zzip-zip.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/libzziplib_a-zzip-zip.Po' tmpdepfile='$(DEPDIR)/libzziplib_a-zzip-zip.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzziplib_a_CFLAGS) $(CFLAGS) -c -o libzziplib_a-zzip-zip.obj `cygpath -w resource/zziplib/zzip-zip.c`
 CCDEPMODE = @CCDEPMODE@
 
 .cpp.o:
@@ -687,6 +854,18 @@ uni_fmod.obj: audio/midi_driver/uni_fmod.cpp
 @AMDEP_TRUE@	depfile='$(DEPDIR)/uni_fmod.Po' tmpdepfile='$(DEPDIR)/uni_fmod.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o uni_fmod.obj `cygpath -w audio/midi_driver/uni_fmod.cpp`
+
+linux_sdl_mixer.o: audio/midi_driver/linux_sdl_mixer.cpp
+@AMDEP_TRUE@	source='audio/midi_driver/linux_sdl_mixer.cpp' object='linux_sdl_mixer.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/linux_sdl_mixer.Po' tmpdepfile='$(DEPDIR)/linux_sdl_mixer.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o linux_sdl_mixer.o `test -f 'audio/midi_driver/linux_sdl_mixer.cpp' || echo '$(srcdir)/'`audio/midi_driver/linux_sdl_mixer.cpp
+
+linux_sdl_mixer.obj: audio/midi_driver/linux_sdl_mixer.cpp
+@AMDEP_TRUE@	source='audio/midi_driver/linux_sdl_mixer.cpp' object='linux_sdl_mixer.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/linux_sdl_mixer.Po' tmpdepfile='$(DEPDIR)/linux_sdl_mixer.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o linux_sdl_mixer.obj `cygpath -w audio/midi_driver/linux_sdl_mixer.cpp`
 
 codevm.o: conv/codevm.cpp
 @AMDEP_TRUE@	source='conv/codevm.cpp' object='codevm.o' libtool=no @AMDEPBACKSLASH@
@@ -843,6 +1022,30 @@ start_menu.obj: screens/start_menu.cpp
 @AMDEP_TRUE@	depfile='$(DEPDIR)/start_menu.Po' tmpdepfile='$(DEPDIR)/start_menu.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o start_menu.obj `cygpath -w screens/start_menu.cpp`
+
+cutscene_view.o: screens/cutscene_view.cpp
+@AMDEP_TRUE@	source='screens/cutscene_view.cpp' object='cutscene_view.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/cutscene_view.Po' tmpdepfile='$(DEPDIR)/cutscene_view.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cutscene_view.o `test -f 'screens/cutscene_view.cpp' || echo '$(srcdir)/'`screens/cutscene_view.cpp
+
+cutscene_view.obj: screens/cutscene_view.cpp
+@AMDEP_TRUE@	source='screens/cutscene_view.cpp' object='cutscene_view.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/cutscene_view.Po' tmpdepfile='$(DEPDIR)/cutscene_view.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cutscene_view.obj `cygpath -w screens/cutscene_view.cpp`
+
+acknowledgements.o: screens/acknowledgements.cpp
+@AMDEP_TRUE@	source='screens/acknowledgements.cpp' object='acknowledgements.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/acknowledgements.Po' tmpdepfile='$(DEPDIR)/acknowledgements.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o acknowledgements.o `test -f 'screens/acknowledgements.cpp' || echo '$(srcdir)/'`screens/acknowledgements.cpp
+
+acknowledgements.obj: screens/acknowledgements.cpp
+@AMDEP_TRUE@	source='screens/acknowledgements.cpp' object='acknowledgements.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/acknowledgements.Po' tmpdepfile='$(DEPDIR)/acknowledgements.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o acknowledgements.obj `cygpath -w screens/acknowledgements.cpp`
 CXXDEPMODE = @CXXDEPMODE@
 uninstall-info-am:
 

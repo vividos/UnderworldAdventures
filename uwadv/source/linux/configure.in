@@ -84,6 +84,14 @@ FMOD not found. No midi playback available.
 FMOD is available at http://www.fmod.org/]))
 
 
+dnl checking for uwadv.cfg entries
+UW1PATH=/usr/local/games/uw1/
+AC_SUBST(UW1PATH)
+
+UADATAPATH=../uadata/
+AC_SUBST(UADATAPATH)
+
+
 dnl produce output files
 AC_CONFIG_FILES([../Makefile ../tools/Makefile uwadv.cfg])
 AC_OUTPUT

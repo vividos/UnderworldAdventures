@@ -5765,6 +5765,10 @@ fi
 
 
 
+UW1PATH=/usr/local/games/uw1/
+
+
+
 ac_config_files="$ac_config_files ../Makefile ../tools/Makefile uwadv.cfg"
 
 cat >confcache <<\_ACEOF
@@ -6400,6 +6404,7 @@ s,@X_EXTRA_LIBS@,$X_EXTRA_LIBS,;t t
 s,@SDL_CONFIG@,$SDL_CONFIG,;t t
 s,@SDL_CFLAGS@,$SDL_CFLAGS,;t t
 s,@SDL_LIBS@,$SDL_LIBS,;t t
+s,@UW1PATH@,$UW1PATH,;t t
 CEOF
 
 _ACEOF

@@ -12,7 +12,23 @@ uw1path     @UW1PATH@
 # path to the uwadv "uadata" dir
 #
 
-uadata-path @datadir@/uwadv/
+uadata-path @UADATAPATH@
+
+#
+# enables fullscreen gameplay
+# "yes" enables it, "no" disables it
+#
+
+fullscreen  no
+
+#
+# sets the narration type for cutscenes (including the intro)
+# "sound" for sound playback (spoken text) only
+# "subtitles" for subtitles only (no sound)
+# "both" for sound and subtitles
+#
+
+cutscene_narration   sound
 
 #
 # end of config

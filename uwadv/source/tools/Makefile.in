@@ -85,6 +85,8 @@ SDL_CFLAGS = @SDL_CFLAGS@
 SDL_CONFIG = @SDL_CONFIG@
 SDL_LIBS = @SDL_LIBS@
 STRIP = @STRIP@
+UADATAPATH = @UADATAPATH@
+UW1PATH = @UW1PATH@
 VERSION = @VERSION@
 X_CFLAGS = @X_CFLAGS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
@@ -133,6 +135,7 @@ mapdisp_SOURCES = mapdisp.cpp ../level.cpp ../resource/maploader.cpp \
 	../quadtree.cpp ../resource/texloader.cpp ../texture.cpp \
 	../resource/imageloader.cpp ../resource/objloader.cpp \
 	../image.cpp ../objects.cpp ../resource/codeloader.cpp \
+	../resource/settings.cpp \
 	../common.hpp ../resource/fread_endian.hpp ../image.hpp \
 	../level.hpp ../objects.hpp ../quadtree.hpp ../settings.hpp \
 	../texture.hpp ../uatypes.hpp
@@ -180,7 +183,8 @@ cnvdbg_LDFLAGS =
 am_mapdisp_OBJECTS = mapdisp.$(OBJEXT) level.$(OBJEXT) \
 	maploader.$(OBJEXT) quadtree.$(OBJEXT) texloader.$(OBJEXT) \
 	texture.$(OBJEXT) imageloader.$(OBJEXT) objloader.$(OBJEXT) \
-	image.$(OBJEXT) objects.$(OBJEXT) codeloader.$(OBJEXT)
+	image.$(OBJEXT) objects.$(OBJEXT) codeloader.$(OBJEXT) \
+	settings.$(OBJEXT)
 mapdisp_OBJECTS = $(am_mapdisp_OBJECTS)
 mapdisp_DEPENDENCIES =
 mapdisp_LDFLAGS =
@@ -207,9 +211,10 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/imageloader.Po ./$(DEPDIR)/level.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/mapdisp.Po ./$(DEPDIR)/maploader.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/objects.Po ./$(DEPDIR)/objloader.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/quadtree.Po ./$(DEPDIR)/strpak.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/texloader.Po ./$(DEPDIR)/texture.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/xmi2mid.Po ./$(DEPDIR)/xmidi.Po
+@AMDEP_TRUE@	./$(DEPDIR)/quadtree.Po ./$(DEPDIR)/settings.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/strpak.Po ./$(DEPDIR)/texloader.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/texture.Po ./$(DEPDIR)/xmi2mid.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/xmidi.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
@@ -257,6 +262,7 @@ texloader.$(OBJEXT): ../resource/texloader.cpp
 imageloader.$(OBJEXT): ../resource/imageloader.cpp
 objloader.$(OBJEXT): ../resource/objloader.cpp
 objects.$(OBJEXT): ../objects.cpp
+settings.$(OBJEXT): ../resource/settings.cpp
 mapdisp$(EXEEXT): $(mapdisp_OBJECTS) $(mapdisp_DEPENDENCIES) 
 	@rm -f mapdisp$(EXEEXT)
 	$(CXXLINK) $(mapdisp_LDFLAGS) $(mapdisp_OBJECTS) $(mapdisp_LDADD) $(LIBS)
@@ -290,6 +296,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/objects.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/objloader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/quadtree.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/settings.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strpak.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/texloader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/texture.Po@am__quote@
@@ -478,6 +485,18 @@ objects.obj: ../objects.cpp
 @AMDEP_TRUE@	depfile='$(DEPDIR)/objects.Po' tmpdepfile='$(DEPDIR)/objects.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o objects.obj `cygpath -w ../objects.cpp`
+
+settings.o: ../resource/settings.cpp
+@AMDEP_TRUE@	source='../resource/settings.cpp' object='settings.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/settings.Po' tmpdepfile='$(DEPDIR)/settings.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o settings.o `test -f '../resource/settings.cpp' || echo '$(srcdir)/'`../resource/settings.cpp
+
+settings.obj: ../resource/settings.cpp
+@AMDEP_TRUE@	source='../resource/settings.cpp' object='settings.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/settings.Po' tmpdepfile='$(DEPDIR)/settings.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o settings.obj `cygpath -w ../resource/settings.cpp`
 
 xmidi.o: ../audio/xmidi.cpp
 @AMDEP_TRUE@	source='../audio/xmidi.cpp' object='xmidi.o' libtool=no @AMDEPBACKSLASH@
