@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -1039,7 +1039,7 @@ void ua_ingame_orig_screen::do_savegame_screenshot(
    // read in scanlines
    glReadBuffer(GL_BACK);
 
-   for(int i=0; i<yres; i++)
+   for(unsigned int i=0; i<yres; i++)
    {
       glReadPixels(0, yres-i-1, xres, 1, GL_RGBA, GL_UNSIGNED_BYTE,
          &screenshot_rgba[i*xres]);
