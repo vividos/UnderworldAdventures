@@ -91,7 +91,9 @@ bool ua_midi_player::init_driver()
    ua_try_midi_driver<ua_uni_fmod_driver>(midi_driver);
 #endif
 
+#ifndef WIN32
    ua_try_midi_driver<ua_sdl_mixer_driver>(midi_driver);
+#endif
 
    if (midi_driver != NULL)
       ua_trace("audio: using midi driver \"%s\"\n",midi_driver->copyright());
