@@ -9,4 +9,5 @@ uwadv.cfg: uwadv.cfg.in
 	rm -f $@.tmp
 	mv $@.tmptmp $@
 
-data_DATA = uwadv.cfg
+cfgdir = $(datadir)/games/uwadv
+cfg_DATA = uwadv.cfg
