@@ -28,6 +28,7 @@
 // needed includes
 #include "common.hpp"
 #include "models.hpp"
+#include "resource/models_impl.hpp"
 #include "core.hpp"
 
 
@@ -42,37 +43,81 @@ extern bool ua_model_decode_builtins(const char* filename,
 void ua_model3d_builtin::render(ua_vector3d& base)
 {
    glDisable(GL_CULL_FACE);
+   glDisable(GL_TEXTURE_2D);
 
-   glColor3ub(255,255,255);
+   unsigned int max = coord_index.size();
 
-   // render all triangles
-   unsigned int max = alltriangles.size();
+   unsigned int col_cnt = 0;
+
    for(unsigned int i=0; i<max; i++)
    {
-      ua_triangle3d_textured& tri = alltriangles[i];
+      glColor3ub(face_colors[col_cnt],face_colors[col_cnt+1],face_colors[col_cnt+2]);
+      col_cnt+=3;
 
-//      texmgr->use(tri.texnum);
+      glBegin(GL_LINE_LOOP);
+      //glBegin(GL_POLYGON);
+      //glBegin(GL_TRIANGLE_STRIP);
 
-      glBegin(GL_TRIANGLES);
-      //glBegin(GL_LINE_LOOP);
-      for(int j=0; j<3; j++)
+      // TODO generate normal vector
+      unsigned int j=i;
+      do
       {
-         int k = j;//j==0 ? 0 : 1-(j-2);
-         glTexCoord2d(tri.tex_u[k]*256.0,tri.tex_v[k]*256.0);
-         glVertex3d(
-            base.x-origin.x+tri.points[k].x,
-            base.y-origin.y+tri.points[k].y,
-            base.z-origin.z+tri.points[k].z);
-      }
+         const ua_vector3d& vert = coords[coord_index[j]];
+
+         glVertex3d(base.x+vert.x-origin.x, base.y+vert.y-origin.y, base.z+vert.z-origin.z);
+
+      } while(coord_index[++j] != -1);
+
+      i = j + 1; // go to next indices
+
       glEnd();
    }
 
+#ifdef HAVE_DEBUG
+   // draw extents box
+   glColor3ub(255,255,255);
+
+   ua_vector3d ext(extents);
+   ext.x *= 0.5;
+   ext.y *= 0.5;
+
+   glBegin(GL_LINE_LOOP);
+   glVertex3d(base.x+ext.x,  base.y+ext.y, base.z+ext.z);
+   glVertex3d(base.x+ext.x,  base.y+ext.y, base.z+0);
+   glVertex3d(base.x+-ext.x, base.y+ext.y, base.z+0);
+   glVertex3d(base.x+-ext.x, base.y+ext.y, base.z+ext.z);
+   glEnd();
+
+   glBegin(GL_LINE_LOOP);
+   glVertex3d(base.x+ext.x,  base.y+-ext.y, base.z+ext.z);
+   glVertex3d(base.x+ext.x,  base.y+-ext.y, base.z+0);
+   glVertex3d(base.x+-ext.x, base.y+-ext.y, base.z+0);
+   glVertex3d(base.x+-ext.x, base.y+-ext.y, base.z+ext.z);
+   glEnd();
+
+   glBegin(GL_LINES);
+   glVertex3d(base.x+ext.x,  base.y+ ext.y, base.z+ext.z);
+   glVertex3d(base.x+ext.x,  base.y+-ext.y, base.z+ext.z);
+
+   glVertex3d(base.x+-ext.x, base.y+ ext.y, base.z+ext.z);
+   glVertex3d(base.x+-ext.x, base.y+-ext.y, base.z+ext.z);
+
+   glVertex3d(base.x+ext.x,  base.y+ ext.y, base.z+0);
+   glVertex3d(base.x+ext.x,  base.y+-ext.y, base.z+0);
+
+   glVertex3d(base.x+-ext.x, base.y+ ext.y, base.z+0);
+   glVertex3d(base.x+-ext.x, base.y+-ext.y, base.z+0);
+   glEnd();
+#endif
+
    glEnable(GL_CULL_FACE);
+   glEnable(GL_TEXTURE_2D);
 }
 
 void ua_model3d_builtin::get_bounding_triangles(ua_vector3d& base,
    std::vector<ua_triangle3d_textured>& trilist)
 {
+/*
    unsigned int max = alltriangles.size();
    for(unsigned int i=0; i<max; i++)
    {
@@ -93,6 +138,7 @@ void ua_model3d_builtin::get_bounding_triangles(ua_vector3d& base,
 
       trilist.push_back(tri);
    }
+*/
 }
 
 
