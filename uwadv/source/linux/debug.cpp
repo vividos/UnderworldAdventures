@@ -25,6 +25,8 @@
 
 */
 
+#ifndef WIN32
+
 // needed includes
 #include "common.hpp"
 #include "debug.hpp"
@@ -105,3 +107,5 @@ ua_uw_access_api* ua_debug_impl_linux::get_access_api()
 {
    return &api;
 }
+
+#endif // WIN32
