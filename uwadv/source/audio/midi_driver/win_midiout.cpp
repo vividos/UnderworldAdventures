@@ -686,5 +686,5 @@ bool Windows_MidiOut::is_playing(void)
 const char *Windows_MidiOut::copyright(void)
 {
    giveinfo();
-   return "Internal Win32 Midiout Midi Player for Exult and Pentagram.";
+   return "Win32 Midiout Midi Player for Underworld Adventures";
 }

@@ -21,7 +21,8 @@
 */
 /*! \file audio.cpp
 
-   audio interface implementation
+   audio interface implementation does an the interfacing with the audio part
+   of SDL and the ua_midi_player class.
 
 */
 
@@ -35,14 +36,19 @@
 // tables
 
 //! table with all midi file names
-const char *ua_audio_allmidis[] = 
+const char *ua_audio_allmidis[] =
 {
    "uw01.xmi", "uw02.xmi", "uw03.xmi", "uw04.xmi", "uw05.xmi",
    "uw06.xmi", "uw07.xmi", "uw10.xmi", "uw11.xmi", "uw12.xmi",
    "uw13.xmi", "uw15.xmi"
-/*   "aw01.xmi", "aw02.xmi", "aw03.xmi", "aw04.xmi", "aw05.xmi",
+};
+
+//! table with all midi file names, different versions (for awe cards?)
+const char *ua_audio_allmidis_awe[] =
+{
+   "aw01.xmi", "aw02.xmi", "aw03.xmi", "aw04.xmi", "aw05.xmi",
    "aw06.xmi", "aw07.xmi", "aw10.xmi", "aw11.xmi", "aw12.xmi",
-   "aw13.xmi", "aw15.xmi"*/
+   "aw13.xmi", "aw15.xmi"
 };
 
 
@@ -65,19 +71,19 @@ public:
    }
 
    //! plays a sound; stops when finished
-   void play_sound(int sound)
+   void play_sound(unsigned int sound)
    {
    }
 
    //! starts music playback
-   void start_music(int music)
+   void start_music(unsigned int music, bool repeat)
    {
       if (music>=SDL_TABLESIZE(ua_audio_allmidis)) return;
 
       std::string midiname(uw1path);
       midiname.append("sound/");
       midiname.append(ua_audio_allmidis[music]);
-      midipl.start_track(midiname.c_str(),0,true);
+      midipl.start_track(midiname.c_str(),0,repeat);
    }
 
    //! stops music playback
@@ -102,5 +108,6 @@ protected:
 
 ua_audio_interface *ua_audio_interface::get_audio_interface()
 {
+   // creates a new audio object
    return new ua_audio_impl;
 }

@@ -23,6 +23,12 @@
 
    midi playback class and driver
 
+   ua_midi_driver is a base class for a generic midi driver, so that the midi
+   player only has to access one interface.
+
+   ua_midi_player checks for available midi driver, extracts XMIDI data (via
+   the XMIDI class) and passes the event list to the apropriate driver.
+
 */
 
 // include guard
@@ -40,13 +46,16 @@
 class ua_midi_driver
 {
 public:
+   //! ctor
    ua_midi_driver(){}
+   //! dtor
    virtual ~ua_midi_driver(){}
 
    //! starts playing an event list
    virtual void start_track(XMIDIEventList *eventlist, bool repeat)=0;
+
+   //! stops track
    virtual void stop_track()=0;
-// virtual bool is_playing(void)=0;
 
    //! returns a copyright string
    virtual const char *copyright()=0;
@@ -58,9 +67,8 @@ class ua_midi_player
 {
 public:
    //! ctor
-   ua_midi_player()
+   ua_midi_player():midi_driver(NULL), init(false)
    {
-      midi_driver = NULL; init=false;
    }
 
    //! dtor
