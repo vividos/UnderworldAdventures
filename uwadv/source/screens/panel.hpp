@@ -108,7 +108,7 @@ protected:
    bool armor_female;
 
    //! tickrate in ticks/s
-   unsigned int tickrate;
+   double tickrate;
 
    //! start of scrollable stats area
    unsigned int stats_scrollstart;
