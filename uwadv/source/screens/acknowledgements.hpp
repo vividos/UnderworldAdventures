@@ -57,12 +57,25 @@ protected:
 
 protected:
 
+   // constants
+
+   //! time to show one credits page
+   static const double show_time;
+
+   //! time to crossfade between two screens
+   static const double xfade_time;
+
+
+   //! current view stage
    unsigned int stage;
 
+   //! tickcount for every stage
    unsigned int tickcount;
 
+   //! current visible frame
    unsigned int curframe;
 
+   //! indicates if ended
    bool ended;
 
    //! acknowledgements cutscene

@@ -23,6 +23,9 @@
 
    \brief acknowledgements implementation
 
+   stage 0: show animation frame
+   stage 1: crossfade to next frame
+
 */
 
 // needed includes
@@ -33,11 +36,11 @@
 
 // constants
 
-//! time to show one credits screen
-const double ua_ack_showtime = 3.0;
+//! time to show one credits image
+const double ua_acknowledgements_screen::show_time = 3.0;
 
 //! time to crossfade between two screens
-const double ua_ack_fadetime = 0.5;
+const double ua_acknowledgements_screen::xfade_time = 0.5;
 
 
 // ua_acknowledgements_screen methods
@@ -65,7 +68,7 @@ void ua_acknowledgements_screen::init()
    // setup misc. variables
    ended = false;
    stage = 0; // crossfade
-   tickcount = unsigned(ua_ack_showtime * core->get_tickrate()) - 3;
+   tickcount = unsigned(show_time * core->get_tickrate()) - 3;
    curframe = unsigned(-1);
 
    ack.load(core->get_settings(),"cuts/cs012.n01");
@@ -95,6 +98,12 @@ void ua_acknowledgements_screen::handle_event(SDL_Event &event)
 {
    switch(event.type)
    {
+   case SDL_MOUSEBUTTONDOWN:
+      // start crossfade immediately
+      if (stage==0)
+         tickcount = (core->get_tickrate()*show_time) + 1;
+      break;
+
    case SDL_KEYDOWN:
       // handle key presses
       switch(event.key.keysym.sym)
@@ -139,7 +148,7 @@ void ua_acknowledgements_screen::render()
       // render second quad; image to fade out
 
       // calculate alpha
-      Uint8 alpha = 255-Uint8(255*(double(tickcount)/(core->get_tickrate()*ua_ack_fadetime)));
+      Uint8 alpha = 255-Uint8(255*(double(tickcount)/(core->get_tickrate()*xfade_time)));
       glColor4ub(255,255,255,alpha);
 
       // prepare image texture
@@ -159,7 +168,7 @@ void ua_acknowledgements_screen::render()
 
 void ua_acknowledgements_screen::tick()
 {
-   if (stage==0 && double(tickcount)/core->get_tickrate() >= ua_ack_showtime)
+   if (stage==0 && double(tickcount)/core->get_tickrate() >= show_time)
    {
       // switch to crossfade
       stage = 1;
@@ -181,7 +190,7 @@ void ua_acknowledgements_screen::tick()
       return;
    }
 
-   if (stage==1 && double(tickcount)/core->get_tickrate() >= ua_ack_fadetime)
+   if (stage==1 && double(tickcount)/core->get_tickrate() >= xfade_time)
    {
       if (ended)
          core->pop_screen();
