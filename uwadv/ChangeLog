@@ -1,3 +1,417 @@
+2002-07-16 15:34  vividos
+
+	* source/uwadv.cpp (1.15):
+
+	done() and init() is called now for screens that are pushed onto or popped off the stack
+	
+2002-07-16 15:33  vividos
+
+	* source/: player.cpp (1.5), player.hpp (1.6):
+
+	moved some player values to an attributes array
+	added set_ functions for attr, stat and skill values
+	
+2002-07-16 15:33  vividos
+
+	* source/: objects.cpp (1.9), objects.hpp (1.6):
+
+	non-map dependent object info is now stored in struct ua_object_info
+	
+2002-07-16 15:33  vividos
+
+	* source/resource/imageloader.cpp (1.9):
+
+	fixed a loading bug that overwrote memory for 4-bit uncompressed images
+	
+2002-07-16 15:32  vividos
+
+	* source/: image.cpp (1.12), image.hpp (1.8):
+
+	added paste_image handle transparent palette index 0
+	
+2002-07-15 16:24  vividos
+
+	* docs/ua-doxygen.cfg (1.3):
+
+	excluded zziplib directory
+	
+2002-07-15 14:38  vividos
+
+	* docs/README.Lua.txt (1.2), source/screens/cutscene_view.cpp
+	(1.7):
+
+	added action "cuts_anim_continue"
+	
+2002-07-15 11:49  vividos
+
+	* source/resource/zziplib/zzip-conf.h (1.2):
+
+	enabled use of zzip-msvc.h for mingw32
+	
+2002-07-15 11:44  vividos
+
+	* source/: uwadv.cpp (1.14), screens/ingame_orig.cpp (1.21),
+	screens/start_menu.cpp (1.9), screens/start_splash.cpp (1.18):
+
+	added some ua_trace() calls
+	
+2002-07-15 11:44  vividos
+
+	* source/uatypes.hpp (1.12):
+
+	enabled ua_trace output for all builds; we can disable that on final release
+	
+2002-07-15 11:42  vividos
+
+	* source/resource/zziplib/zzip-config.h (1.1):
+
+	added needed file
+	
+2002-07-15 11:40  vividos
+
+	* source/screens/cutscene_view.cpp (1.6):
+
+	fixed bug where exiting cutscene with esc didn't work because animation wasn't shown
+	added ua_trace calls
+	stopped audio music for cutscene
+	fixed compiler warnings
+	
+2002-07-15 10:25  vividos
+
+	* source/win32/: Makefile.mingw (1.22), uwadv.dsp (1.13):
+
+	cvs commit win32/uwadv.dsp win32/Makefile.mingw
+	added zziplib and ua_files_manager files
+	
+2002-07-15 09:04  vividos
+
+	* source/uwadv.cpp (1.13):
+
+	removed some debugging code
+	
+2002-07-15 09:03  vividos
+
+	* source/screens/cutscene_view.cpp (1.5):
+
+	now uses ua_files_manager to load lua script
+	
+2002-07-15 09:02  vividos
+
+	* source/: core.hpp (1.5), files.cpp (1.1), files.hpp (1.1),
+	uwadv.cpp (1.12), uwadv.hpp (1.7):
+
+	added ua_files_manager
+	
+2002-07-15 08:56  vividos
+
+	* uadata/Makefile (1.3):
+
+	added building of uadata resource file; info-zip's zip is needed for that
+	
+2002-07-15 08:54  vividos
+
+	* source/resource/zziplib/: SDL_rwops_zzip.c (1.2),
+	SDL_rwops_zzip.h (1.2):
+
+	fixed SDL_RWFromZZIP() to only open zip files, and to be able to pass the whole zip filename in a call, e.g. "uadata/test.zip/sound/test.wav".
+	
+2002-07-15 08:52  vividos
+
+	* source/resource/zziplib/: COPYING.LGPL (1.1), COPYING.ZZIP (1.1),
+	SDL_rwops_zzip.c (1.1), SDL_rwops_zzip.h (1.1), zzip-conf.h (1.1),
+	zzip-dir.c (1.1), zzip-err.c (1.1), zzip-file.c (1.1), zzip-file.h
+	(1.1), zzip-info.c (1.1), zzip-io.c (1.1), zzip-io.h (1.1),
+	zzip-msvc.h (1.1), zzip-stat.c (1.1), zzip-stdint.h (1.1),
+	zzip-zip.c (1.1), zzip.h (1.1), zzipformat.h (1.1), zziplib.h
+	(1.1):
+
+	added zzlib-preview 0.10.57 from July 12, 2002
+	available from http://zziplib.sourceforge.net/
+	
+2002-07-14 18:41  vividos
+
+	* source/screens/cutscene_view.cpp (1.4):
+
+	changed animation fps to 5
+	fixed bug when doing a "cuts_text_show" action after a "cuts_text_fadeout" (fadeout was still active then)
+	
+2002-07-14 18:30  vividos
+
+	* misc/uw1-palette0.png (1.1):
+
+	added uw1 palette #0; the image has the palette itself as palette :)
+	
+2002-07-14 16:23  vividos
+
+	* source/conv/codevm.hpp (1.12):
+
+	added needed include
+	
+2002-07-14 16:21  vividos
+
+	* source/resource/settings.cpp (1.8):
+
+	fixed yet another occurence of that silly gcc-3.1 w/ libstd++ bug
+	error message was:
+	c++ -O2   -Ic:/mingw/include/sdl/   -I.. -I. -I../lua/include/  -c ../resource/settings.cpp -o ../resource/settings.o
+	c++ -mwindows -s  -o mapdisp.exe ../tools/mapdisp.o ../level.o ../resource/maploader.o ../quadtree.o ../texture.o ../resource/texloader.o ../resource/imageloader.o ../resource/objloader.o ../image.o ../objects.o ../resource/codeloader.o ../resource/settings.o -lmingw32 -lkernel32 -luser32 -lSDLmain -lSDL -lSDL_mixer  -lopengl32 -lglu32
+	c:/MINGW/BIN/../lib/gcc-lib/mingw32/3.1/../../../libstdc++.a(string-inst.o)(.text$_ZNSs6assignEPKcj+0x0): multiple definition of `std::string::assign(char const*, unsigned)'
+	d:/projekte/uwadv/source/resource/settings.o(.text+0xaa0):settings.cpp: first defined here
+	make: *** [mapdisp.exe] Error 1
+	
+2002-07-14 15:49  vividos
+
+	* source/resource/codeloader.cpp (1.11):
+
+	fixed very silly gcc-3.1 in combination with libgcc-v3 (STLport works) bug:
+	moved ua_conv_code_vm::load_imported_funcs() to the front of the file
+	
+	gcc error was:
+	c++ -O2   -Ic:/mingw/include/sdl/   -I.. -I. -I../lua/include/  -c ../resource/codeloader.cpp -o ../resource/codeloader.o
+	c++ -mwindows -s -mconsole -o cnvdbg.exe ../tools/cnvdbg.o ../conv/codevm.o ../resource/codeloader.o ../resource/gamestrings.o -lmingw32 -lkernel32 -luser32 -lSDLmain -lSDL -lSDL_mixer
+	c:/MINGW/BIN/../lib/gcc-lib/mingw32/3.1/../../../libstdc++.a(string-inst.o)(.text$_ZNSs6assignEPKcj+0x0): multiple definition of `std::string::assign(char const*, unsigned)'
+	d:/projekte/uwadv/source/resource/codeloader.o(.text+0x7b0):codeloader.cpp: first defined here
+	make: *** [cnvdbg.exe] Error 1
+	
+2002-07-14 12:59  vividos
+
+	* docs/README.Lua.txt (1.1):
+
+	added Lua interfaces readme file
+	
+2002-07-14 12:19  vividos
+
+	* source/screens/cutscene_view.cpp (1.3),
+	source/screens/cutscene_view.hpp (1.3),
+	uadata/uw1/scripts/cutscene.lua (1.4):
+
+	added animation fading, fading out for interrupted cutscenes, ability to set stopframe and some constants and variable names were renamed for consistency
+	
+2002-07-12 01:51  vividos
+
+	* source/lua/.cvsignore (1.1):
+
+	added ignore file for bin and lib
+	
+2002-07-12 01:50  vividos
+
+	* source/lua/lua-4.0-4.0.1.diff (1.1):
+
+	added diff file
+	
+2002-07-12 01:44  vividos
+
+	* source/win32/source/main.cpp (1.3):
+
+	added conditional define HAVE_CONSOLE to enable console output instead of stdout.txt/stderr.txt logging
+	
+2002-07-12 01:22  vividos
+
+	* docs/README.dev.txt (1.2):
+
+	added some more stuff
+	
+2002-07-12 00:21  vividos
+
+	* source/win32/Makefile.mingw (1.21):
+
+	don't try to use a C linker for C++ object files
+	
+2002-07-12 00:21  vividos
+
+	* source/win32/source/main.cpp (1.2):
+
+	undef'd define 'main', to get console output for printf's
+	
+2002-07-12 00:09  vividos
+
+	* source/win32/Makefile.mingw (1.20):
+
+	fixed some build problems (hopefully)
+	
+2002-07-11 23:33  vividos
+
+	* source/win32/Makefile.mingw (1.19):
+
+	added needed object file for mapdisp
+	
+2002-07-11 20:49  vividos
+
+	* uadata/uw1/scripts/cutscene.lua (1.3):
+
+	added more timetable entries, as well as functions to stop and hide the animation
+	
+2002-07-11 20:47  vividos
+
+	* source/screens/: cutscene_view.cpp (1.2), cutscene_view.hpp
+	(1.2):
+
+	implemented all cutscene actions that can be triggered by the lua cutscene script
+	
+2002-07-11 20:06  vividos
+
+	* source/texture.cpp (1.16):
+
+	in ua_texture::init(), last_used_tex is set so that a use() directly after it isn't needed
+	restricted texture size to be > 64 in any direction
+	
+2002-07-11 20:04  vividos
+
+	* source/: image.cpp (1.11), image.hpp (1.7):
+
+	added function ua_image::clear()
+	
+2002-07-11 17:15  vividos
+
+	* source/: audio.hpp (1.5), audio/audio.cpp (1.9):
+
+	changed function parameters of ua_audio_interface::play_sound()
+	
+2002-07-11 16:48  vividos
+
+	* uadata/uw1/scripts/cutscene.lua (1.2):
+
+	added working script, and some cutscene timetables (not finished yet)
+	
+2002-07-10 15:36  vividos
+
+	* source/uwadv.cpp (1.11):
+
+	added check for uw2, as suggested by Dominus Dragon
+	
+2002-07-10 15:11  vividos
+
+	* docs/README.dev.txt (1.1):
+
+	added file with developer's infos (not finished yet)
+	
+2002-07-10 13:40  vividos
+
+	* source/tools/animview.cpp (1.4):
+
+	fixed animview with new ua_texture usage
+	
+2002-07-10 13:29  vividos
+
+	* source/lua/src/luac/Makefile (1.2):
+
+	added two mkdir's to create lib and bin folders
+	
+2002-07-10 13:25  vividos
+
+	* source/lua/: config (1.1), src/Makefile (1.1):
+
+	added some files to build luac
+	
+2002-07-10 13:19  vividos
+
+	* source/lua/src/luac/: Makefile (1.1), README (1.1), dump.c (1.1),
+	luac.c (1.1), luac.h (1.1), opt.c (1.1), print.c (1.1), print.h
+	(1.1), stubs.c (1.1):
+
+	added luac files
+	
+2002-07-10 11:44  vividos
+
+	* docs/Authors.txt (1.4):
+
+	added some more people
+	
+2002-07-10 11:15  vividos
+
+	* source/win32/uwadv.dsp (1.12):
+
+	added SDL_mixer library and cutscene view screen files
+	
+2002-07-10 11:13  vividos
+
+	* source/screens/: cutscene_view.cpp (1.1), cutscene_view.hpp
+	(1.1), start_menu.cpp (1.8):
+
+	added cutscene view screen class
+	
+2002-07-10 11:12  vividos
+
+	* uadata/uw1/scripts/cutscene.lua (1.1):
+
+	added uw1 cutscene lua script
+	
+2002-07-10 11:11  vividos
+
+	* uadata/Makefile (1.2):
+
+	added some rules to compile lua scripts to lua objects
+	
+2002-07-10 10:49  vividos
+
+	* source/common.hpp (1.8):
+
+	added extern "C" statements for lua include
+	
+2002-07-10 10:44  vividos
+
+	* source/lua/: include/lua.h (1.3), src/lapi.c (1.3), src/ldo.c
+	(1.3), src/lgc.c (1.3), src/lgc.h (1.3), src/lparser.c (1.3),
+	src/lstring.c (1.3), src/lvm.c (1.3):
+
+	updated to lua-4.0.1
+	
+2002-07-09 18:37  vividos
+
+	* source/audio/midi_driver/: linux_sdl_mixer.cpp (1.2),
+	linux_sdl_mixer.h (1.2):
+
+	changed some class names to match ua_* naming
+	activated class in any case, since we're now using SDL_mixer
+	
+2002-07-09 18:37  vividos
+
+	* source/audio/: midi.cpp (1.13), midi_driver/uni_fmod.cpp (1.9),
+	midi_driver/uni_fmod.h (1.5), midi_driver/win_midiout.cpp (1.7),
+	midi_driver/win_midiout.h (1.5):
+
+	changed some class names to match ua_* naming
+	
+2002-07-09 18:36  vividos
+
+	* source/audio/audio.cpp (1.8):
+
+	added \brief documentation
+	
+2002-07-09 16:31  vividos
+
+	* source/audio/audio.cpp (1.7):
+
+	added voc file playback for cutscene speech
+	now SDL_mixer definitely is needed
+	
+2002-07-09 15:31  vividos
+
+	* docs/README.Linux.txt (1.5), source/linux/ua-lowercase-all.pl
+	(1.1):
+
+	added perl script to convert all ultima underworld files to lowercase
+	submitted by Cuneyt Cuneyitoglu
+	
+2002-07-09 11:51  vividos
+
+	* source/: settings.hpp (1.5), uwadv.cpp (1.10),
+	resource/settings.cpp (1.7), win32/uwadv.cfg (1.3):
+
+	added fullscreen mode and Alt+x as exit keyboard shortcut
+	
+2002-07-08 23:45  vividos
+
+	* docs/Authors.txt (1.3):
+
+	added Telemachos for collision detection
+	
+2002-07-08 22:42  vividos
+
+	* ChangeLog (1.12):
+
+	updated for release "poppypastry"
+	
 2002-07-08 22:17  vividos
 
 	* source/: Makefile.in (1.19), linux/mkinstalldirs (1.13),
