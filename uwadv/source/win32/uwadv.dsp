@@ -319,10 +319,6 @@ SOURCE="..\resource\zziplib\zzip-conf.h"
 # End Source File
 # Begin Source File
 
-SOURCE="..\resource\zziplib\zzip-config.h"
-# End Source File
-# Begin Source File
-
 SOURCE="..\resource\zziplib\zzip-file.h"
 # End Source File
 # Begin Source File
