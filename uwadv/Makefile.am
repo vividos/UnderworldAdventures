@@ -63,7 +63,7 @@ EXTRA_DIST =  \
 	win32/uwadv.dsp \
 	win32/uwadv.nsi \
 	win32/wrlview.dsp \
-	win32/xmi2mid.dsp \
+	win32/xmi2mid.dsp
 
 
 cfgdir = $(datadir)/games/uwadv
