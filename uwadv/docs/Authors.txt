@@ -1,5 +1,11 @@
-Michael Fink <vividos@users.sourceforge.net>
+Michael Fink <vividos at users.sourceforge.net>
 
 Underworld Adventures additionally contains code from:
 
-Ryan Nunn <triforce@merlin.net.au>    XMIDI and Windows MidiOut driver
+* XMIDI and Windows MidiOut driver:
+  Ryan Nunn <triforce at merlin.net.au>
+
+* Lua scripting language:
+  Waldemar Celes, Roberto Ierusalimschy, and Luiz Henrique de Figueiredo at
+  TeCGraf, PUC-Rio in Brazil.
+  http://www.lua.org/
