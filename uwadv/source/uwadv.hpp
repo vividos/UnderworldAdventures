@@ -53,6 +53,9 @@ public:
    //! initializes video, audio, etc.
    virtual void init();
 
+   //! parses command line arguments
+   void parse_args(unsigned int argc, const char**argv);
+
    //! runs the game's main loop
    void run();
 

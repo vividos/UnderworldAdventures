@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@ int main(int argc, char* argv[])
    try
    {
       ua.init();
+      ua.parse_args(static_cast<unsigned int>(argc),argv);
       ua.run();
       ua.done();
    }
