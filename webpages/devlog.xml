@@ -2,6 +2,19 @@
 <?xml-stylesheet type="text/xsl" href="devlog-rss.xsl"?>
 
 <devlog>
+ <entry date="2004-10-27">
+  <para>
+   Worked on the tilemap view and improved rendering. Drawing the diagonal tiles is painfully slow, though (GDI polygons). Here's a screenshot:
+  </para>
+  <para>
+   <a href="index.php?page=image&amp;image=/devel/uadebug05.png&amp;text=Tilemap view"><img src="/devel/uadebug05.jpg" alt="tilemap view"/></a><br/>
+   Clicking on any tile in the view lets you view the tile info. The button teleports the player to the new position (makes hotspot list almost useless). Later the objects in the current tile should be listed in the empty box below the tile's data. Each object should get it's 16x16 icon from the game, and object properties can then be edited in another dockable window for "object properties".
+  </para>
+  <para>
+   You can also see David Bowen's Tabbed MDI window magic. It has a tab for any MDI (non-dockable windows) that are in the app's working area. Unfortunately Sergey Klimov's Docking framework doesn't quite work together with the tabbing framework. And the XP style menu of course doesn't work together with all other frameworks. Oh well ...
+  </para>
+ </entry>
+
  <entry date="2004-10-18">
   <para>
    Improved RSS output a bit, Feedreader had some problems with RFC 822 dates without correct time. Also added a limiter so that html output is limited to the last 10 items, and RSS is limited to the last 8. I guess good RSS aggregators store the older articles somewhere. At the end of the html output is a link to retrieve the full log.
@@ -19,23 +32,23 @@
    I'm currently working (for the last month or so) on a new Underworld Adventures Debugger implementation using <a href="http://wtl.sourceforge.net" target="_blank">WTL</a> as UI library. This way I get much quicker to what I have planned to do. I've also done a "uastudio" project that basically is a cut-down uwadv executable that only contains the game engine, needed classes and runs the game's main loop. It additionally starts the debugger. "uastudio" is the "Underworld Adventures Studio" application and helps me to quickly develop the new uadebug.dll. Additionally to the debugger I'm extending the ua_debug_server_interface interface to extract the needed infos. I've done some screenshots to show off what I've done so far. Click on them to show the larger version.
   </para>
   <para>
-   <a href="/devel/uadebug01.png"><img src="/devel/uadebug01.jpg" alt="game strings view"/></a><br/>
+   <a href="index.php?page=image&amp;image=/devel/uadebug01.png&amp;text=Game strings view"><img src="/devel/uadebug01.jpg" alt="game strings view"/></a><br/>
    This is the game strings view. The shown text block can be selected with the combo box, and the list just shows the strings. The little black squares are newlines that should be replaced with \n soon. In general you have a menu bar (with cool XP style menus, yeah!) and a toolbar (technically a command bar). Notable is the "play" button which can suspend and resume the game loop in the game. You only will be allowed to change values when the engine is stopped. Next to the button are the ugly designed buttons that enable all the goodies the debugger can view. First one is "player info", then comes "object list", "hotspot list", "tilemap view" and "gamestrings view". If someone has better icons, just send them!
   </para>
   <para>
-   <a href="/devel/uadebug02.png"><img src="/devel/uadebug02.jpg" alt="tilemap view"/></a><br/>
+   <a href="index.php?page=image&amp;image=/devel/uadebug02.png&amp;text=Tilemap view"><img src="/devel/uadebug02.jpg" alt="tilemap view"/></a><br/>
    Shot 2 shows the tilemap viewer. It's still in the making, and it only shows the first map of the level (level map management will be added soon). Later you will be able to click on a square and see/modify its tile type, height, wall, ceiling and door textures. It is also planned to add an object editor into this view, so that objects can be conveniently placed.
   </para>
   <para>
-   <a href="/devel/uadebug03.png"><img src="/devel/uadebug03.jpg" alt="lua source file editor"/></a><br/>
+   <a href="index.php?page=image&amp;image=/devel/uadebug03.png&amp;text=Lua source file editor"><img src="/devel/uadebug03.jpg" alt="lua source file editor"/></a><br/>
    Shot 3 shows the Lua source file editor. The window uses <a href="http://www.scintilla.org" target="_blank">Scintilla</a> for editing and syntax highlighting. When Lua code debugging is built in (this has to wait a bit), you can set breakpoints on the gray area to the left, just like in Visual Studio. A "project" pane that docks to the left side is also planned. It lists all Lua files that a "game" currently has loaded.
   </para>
   <para>
-   <a href="/devel/uadebug04.png"><img src="/devel/uadebug04.jpg" alt="hotspot list and player info"/></a><br/>
+   <a href="index.php?page=image&amp;image=/devel/uadebug04.png&amp;text=Hotspot list and player info"><img src="/devel/uadebug04.jpg" alt="hotspot list and player info"/></a><br/>
    Finally, shot 4 shows the hotspot list and the player info, with no main window open. This means you certainly need more than a 800x600 screen resolution to conveniently work with uadebug. Player info even allows changing values, so modifying the "maplevel" teleports you to another level, and changing "xpos" and "ypos" moves you around in the level. Not very usable in uastudio, though :)
   </para>
   <para>
-   Used technologies were WTL (for the general UI stuff), David Bowen's Tabbing Framework (not shown yet), Sergey Klimov's Docking Framework, a hacked-up version of MenuXP (all three from <a href="http://codeproject.com/WTL/" target="_blank">www.codeproject.com/WTL/</a>
+   Used technologies were WTL (for the general UI stuff), David Bowen's Tabbing Framework (not shown yet), Sergey Klimov's Docking Framework, a hacked-up version of MenuXP (all three from <a href="http://codeproject.com/WTL/" target="_blank">www.codeproject.com/WTL/</a>).
   </para>
  </entry>
 
