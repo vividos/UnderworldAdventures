@@ -55,8 +55,6 @@ void ua_conv_graph::init(std::vector<Uint16> code,
 
    nglobals = myglob_reserved;
 
-//   ua_trace("converting to graph\n");
-
    // convert code segment to graph
    for(Uint16 i=codestart; i<codeend; i++)
    {
@@ -74,47 +72,7 @@ void ua_conv_graph::init(std::vector<Uint16> code,
       // add it to graph
       graph.push_back(item);
    }
-
-   // add all 
-//   add_intrinsic_functions();
-/*
-   ua_conv_func_info start_info;
-   std::string start_name("start");
-   start_info.intrinsic = false;
-   start_info.return_type = ua_dt_void;
-   start_info.start = 0;
-
-   functions.insert(std::make_pair<std::string, ua_conv_func_info>(start_name, start_info));
-*/
 }
-/*
-void ua_conv_graph::add_intrinsic_functions()
-{
-   ua_conv_func_info info;
-   info.intrinsic = true;
-   info.start = 0;
-
-   info.return_type = ua_dt_int;
-   info.param_types.push_back(ua_dt_int_array);
-   info.param_types.push_back(ua_dt_int_array);
-
-
-
-/*
-   // add "extern private[]" decl
-   {
-      ua_conv_graph_item declitem;
-      declitem.itemtype = gt_decl;
-
-      char buffer[256];
-      sprintf(buffer,"extern int private[%u];\n",imported_vars.size());
-      declitem.plaintext.append(buffer);
-
-      graph.insert(graph.begin(),declitem);
-   }
-* /
-}
-*/
 
 void ua_conv_graph::disassemble()
 {
@@ -150,7 +108,7 @@ void ua_conv_graph::decompile()
       // check if function was already analyzed
       if (functions.find(iter->label_name) == functions.end())
       {
-         ua_trace("analyzing function \"%s\" at %04x\n", iter->label_name.c_str(), info.start);
+//         ua_trace("analyzing function \"%s\" at %04x\n", iter->label_name.c_str(), info.start);
 
          analyze_function(info);
 
@@ -192,7 +150,7 @@ void ua_conv_graph::format_graph_item(std::string& item_text,
             ua_conv_instructions[item.operator_data.op_opcode].mnemonic <<
             ", needs " << item.operator_data.needed_expr << " expressions, yields " <<
             (item.operator_data.returns_expr ? "an" : "no") << " expression; level=" <<
-            item.operator_data.prec_level << std::ends;
+            item.operator_data.prec_level;
 
          item_text = buffer.str();
       }
@@ -206,7 +164,7 @@ void ua_conv_graph::format_graph_item(std::string& item_text,
             "expression: " <<
             item.expression_data.expression <<
             (item.expression_data.is_address ? " (address-of)" : " (value-of)") <<
-            "; level=" << item.expression_data.prec_level << std::ends;
+            "; level=" << item.expression_data.prec_level;
          item_text = buffer.str();
       }
       break;
@@ -271,8 +229,6 @@ void ua_conv_graph::format_opcode(std::string& opcode_text,
       }
    }
 
-   buffer << std::ends;
-
    opcode_text = buffer.str();
 }
 
@@ -316,7 +272,7 @@ void ua_conv_graph::collect_xrefs()
             // not a target yet, generate label name from pos
             std::ostringstream buffer;
             buffer << "label_" << std::setfill('0') <<
-               std::setw(4) << std::setbase(16) << target_item.pos << std::ends;
+               std::setw(4) << std::setbase(16) << target_item.pos;
             target_item.label_name = buffer.str();
          }
 
@@ -389,7 +345,7 @@ void ua_conv_graph::search_functions()
             // unused func
             std::ostringstream buffer;
             buffer << "unused_" << std::setfill('0') <<
-               std::setw(4) << std::setbase(16) << item.pos << std::ends;
+               std::setw(4) << std::setbase(16) << item.pos;
             item.label_name = buffer.str();
          }
          else
@@ -738,7 +694,9 @@ void ua_conv_graph::analyze_function(ua_conv_func_info& info)
          graph_iterator arr_iter = iter;
          Uint16 offset = arr_iter->opcode_data.arg;
          arr_iter->is_processed = true;
-         ua_assert(offset <= 0x7fff && offset > 0);
+
+         // TODO arrays with offset == 0 really allowed?
+         ua_assert(offset <= 0x7fff && offset >= 0);
          arr_iter++;
 
          // local var index
@@ -757,11 +715,12 @@ void ua_conv_graph::analyze_function(ua_conv_func_info& info)
 
          std::ostringstream buffer;
          buffer << "local_" << local_idx <<
-            "[" << offset << "]" << std::ends;
+            "[" << offset << "]";
 
          local_array_item.expression_data.expression = buffer.str();
 
-         // TODO add to info.array_info
+         // add to info.array_info
+         add_array_info(info, local_idx, offset);
 
          graph.insert(iter,local_array_item);
          iter++; iter++;
@@ -796,7 +755,7 @@ void ua_conv_graph::analyze_function(ua_conv_func_info& info)
             unsigned int param_num = (-(Sint16)local_idx)-1;
 
             // param value
-            buffer << "param" << param_num << std::ends;
+            buffer << "param" << param_num;
 
             // this expression is an address, since param values are always
             // passed by reference
@@ -808,7 +767,7 @@ void ua_conv_graph::analyze_function(ua_conv_func_info& info)
          }
          else
          {
-            buffer << "local_" << local_idx << std::ends;
+            buffer << "local_" << local_idx;
 
             // add local variable info
             if (local_idx >= info.locals_types.size())
@@ -857,7 +816,7 @@ void ua_conv_graph::analyze_function(ua_conv_func_info& info)
             {
                // might be an immediate or a global address
                std::ostringstream buffer;
-               buffer << iter->opcode_data.arg << std::ends;
+               buffer << iter->opcode_data.arg;
 
                immediate_item.expression_data.expression = buffer.str();
                immediate_item.expression_data.pushi_imm_value = iter->opcode_data.arg;
@@ -938,8 +897,31 @@ void ua_conv_graph::analyze_function(ua_conv_func_info& info)
 
    combine_operators(start,stop);
    find_control_structs(start,stop);
+   add_goto_jumps(start,stop);
 }
 
+void ua_conv_graph::add_array_info(ua_conv_func_info& info, Uint16 local_idx, Uint16 offset)
+{
+   unsigned int max = info.array_info.size();
+   for(unsigned int i=0; i<max; i++)
+   {
+      if (info.array_info[i].local_start == local_idx)
+      {
+         // found info; update array size
+         ua_conv_func_array_info& array_info = info.array_info[i];
+         array_info.array_size = ua_max(array_info.array_size,offset);
+
+         return;
+      }      
+   }
+
+   // new array
+   ua_conv_func_array_info array_info;
+   array_info.local_start = local_idx;
+   array_info.array_size = offset;
+
+   info.array_info.push_back(array_info);
+}
 
 /*!
     search operators and try to build new expressions until no operators are
@@ -1049,7 +1031,7 @@ void ua_conv_graph::combine_operators(/*ua_conv_func_info& info*/
             // decide if function call returns data
             if (oper->operator_data.returns_expr)
             {
-               buffer << ")" << std::ends;
+               buffer << ")";
 
                new_expression.itemtype = gt_expression;
                new_expression.expression_data.expression = buffer.str();
@@ -1057,7 +1039,7 @@ void ua_conv_graph::combine_operators(/*ua_conv_func_info& info*/
             }
             else
             {
-               buffer << ");" << std::ends;
+               buffer << ");";
 
                new_expression.itemtype = gt_statement;
                new_expression.statement_data.statement = buffer.str();
@@ -1074,8 +1056,7 @@ void ua_conv_graph::combine_operators(/*ua_conv_func_info& info*/
 
             std::ostringstream buffer;
             buffer << "return " <<
-               expressions[0]->expression_data.expression <<
-               ";" << std::ends;
+               expressions[0]->expression_data.expression << ";";
 
             new_expression.statement_data.statement = buffer.str();
          }
@@ -1109,8 +1090,7 @@ void ua_conv_graph::combine_operators(/*ua_conv_func_info& info*/
             std::ostringstream buffer;
 
             buffer << expressions[0]->expression_data.expression <<
-               "[" << expressions[1]->expression_data.expression << "]" <<
-               std::ends;
+               "[" << expressions[1]->expression_data.expression << "]";
 
             new_expression.expression_data.expression = buffer.str();
          }
@@ -1149,8 +1129,8 @@ void ua_conv_graph::combine_operators(/*ua_conv_func_info& info*/
             ua_assert(false == rvalue->expression_data.is_address);
 
             // do new expression
-            // when an expression used has a higher proecedence, put brackets
-            // around that expression
+            // when an expression used has a higher proecedence, put
+            // parenthesis around that expression
             std::ostringstream buffer;
 
             // lvalue
@@ -1231,7 +1211,7 @@ void ua_conv_graph::combine_operators(/*ua_conv_func_info& info*/
                outtext.replace(pos,1,"\\n");
 
             std::ostringstream buffer;
-            buffer << "say(\"" << outtext << "\");" << std::ends;
+            buffer << "say(\"" << outtext << "\");";
             new_expression.statement_data.statement = buffer.str();
          }
          break;
@@ -1253,19 +1233,17 @@ void ua_conv_graph::combine_operators(/*ua_conv_func_info& info*/
             // check if lvalue is from PUSHI opcode
             if (lvalue->expression_data.is_pushi_imm)
                pushi_immediate_to_global(lvalue);
-/*
-            ua_trace("lvalue: %s (%s)\n", lvalue->expression_data.expression.c_str(),
-               lvalue->expression_data.is_address?"address-of":"value-of");
-            ua_trace("rvalue: %s (%s)\n", rvalue->expression_data.expression.c_str(),
-               rvalue->expression_data.is_address?"address-of":"value-of");
-*/
+
+            // check if assignment is for call to babl_menu or babl_fmenu
+            check_babl_menu(oper, stop, lvalue, rvalue);
+
             // check that lvalue is address-of and rvalue is value-of
             ua_assert(true == lvalue->expression_data.is_address);
             ua_assert(false == rvalue->expression_data.is_address);
 
             std::ostringstream buffer;
             buffer << lvalue->expression_data.expression << " = " <<
-               rvalue->expression_data.expression << ";" << std::ends;
+               rvalue->expression_data.expression << ";";
 
             new_expression.statement_data.statement = buffer.str();
 
@@ -1295,6 +1273,62 @@ void ua_conv_graph::combine_operators(/*ua_conv_func_info& info*/
       ua_assert(insert_iter != graph.end());
 
       graph.insert(insert_iter,new_expression);
+   }
+}
+
+void ua_conv_graph::check_babl_menu(graph_iterator& start,
+   const graph_iterator& stop, graph_iterator& lvalue, graph_iterator& rvalue)
+{
+   ua_assert(rvalue->itemtype == gt_expression);
+   ua_assert(lvalue->itemtype == gt_expression);
+
+   if (!rvalue->expression_data.is_pushi_imm ||
+       lvalue->expression_data.expression.find("[") == std::string::npos)
+      return;
+
+   graph_iterator iter = start;
+   while(iter != stop && start != graph.end())
+   {
+      // search for babl_menu and babl_fmenu intrinsic calls
+      if (iter->itemtype == gt_opcode &&
+          iter->opcode_data.opcode == op_CALLI)
+      {
+         std::string intr_name(
+            imported_funcs.find(iter->opcode_data.arg)->second.name);
+
+         if (intr_name != "babl_menu"/* && intr_name != "babl_fmenu"*/)
+            break;
+
+         if (intr_name == "babl_menu")
+         {
+            // TODO check that lvalue array value matches arg0 of babl_menu
+         }
+/*
+         if (intr_name == "babl_fmenu")
+         {
+            // TODO check that lvalue array value matches arg0 of babl_fmenu
+         }
+*/
+         // determine string id and format string
+         Uint16 str_id = rvalue->expression_data.pushi_imm_value;
+
+         if (str_id >= strings.size())
+            break;
+
+         ua_assert(str_id < strings.size());
+
+         if (str_id > 0)
+         {
+            std::ostringstream buffer;
+            buffer << "\"" << strings[str_id].c_str() << "\"";
+
+            rvalue->expression_data.expression = buffer.str();
+            rvalue->expression_data.is_pushi_imm = false;
+         }
+         break;
+      }
+
+      iter++;
    }
 }
 
@@ -1382,15 +1416,11 @@ void ua_conv_graph::find_control_structs(const graph_iterator& start,
             // when we have JMP, it is "switch"
             if (is_opcode(op_iter, op_JMP))
             {
-               // check if expression contains "==" operator
-               std::string expr(expr_iter->expression_data.expression);
-               std::string::size_type pos = expr.find(" == ");
-
-               // TODO add function that checks it it really is switch
-               if (std::string::npos == pos || pos <= 3)
-                  process_if_else(false,expr_iter, graph.end(), label1_iter);
-               else
+               // determine if we have a switch statement
+               if (is_switch_statement(expr_iter, op_iter))
                   process_switch(expr_iter, op_iter);
+               else
+                  process_if_else(false, expr_iter, graph.end(), label1_iter);
             }
             else
             // unknown opcode
@@ -1420,8 +1450,7 @@ void ua_conv_graph::process_if_else(bool with_else,
       if_statement.pos = expr_iter->pos;
 
       std::ostringstream buffer;
-      buffer << "if (" << expr_iter->expression_data.expression << ")" <<
-         std::ends;
+      buffer << "if (" << expr_iter->expression_data.expression << ")";
 
       if_statement.statement_data.statement = buffer.str();
 
@@ -1429,7 +1458,7 @@ void ua_conv_graph::process_if_else(bool with_else,
 
       // opening brace
       if_statement.statement_data.statement = "{";
-      if_statement.statement_data.indent_change = 1;
+      if_statement.statement_data.indent_change_after = 1;
 
       graph.insert(expr_iter, if_statement);
    }
@@ -1444,17 +1473,17 @@ void ua_conv_graph::process_if_else(bool with_else,
       else_statement.itemtype = gt_statement;
       else_statement.pos = else_iter->pos;
       else_statement.statement_data.statement = "}";
-      else_statement.statement_data.indent_change = -1;
+      else_statement.statement_data.indent_change_before = -1;
 
       graph.insert(else_iter, else_statement);
 
       else_statement.statement_data.statement = "else";
-      else_statement.statement_data.indent_change = 0;
+      else_statement.statement_data.indent_change_before = 0;
 
       graph.insert(else_iter, else_statement);
 
       else_statement.statement_data.statement = "{";
-      else_statement.statement_data.indent_change = 1;
+      else_statement.statement_data.indent_change_after = 1;
 
       graph.insert(else_iter, else_statement);
    }
@@ -1474,7 +1503,7 @@ void ua_conv_graph::process_if_else(bool with_else,
 #endif
 
       endif_statement.statement_data.statement = buffer.str();
-      endif_statement.statement_data.indent_change = -1;
+      endif_statement.statement_data.indent_change_before = -1;
 
       graph.insert(endif_iter, endif_statement);
    }
@@ -1503,6 +1532,7 @@ void ua_conv_graph::process_switch(
 
       // opening brace
       switch_statement.statement_data.statement = "{";
+      switch_statement.statement_data.indent_change_after = 1;
 
       graph.insert(expr_iter, switch_statement);
    }
@@ -1526,7 +1556,8 @@ void ua_conv_graph::process_switch(
          buffer << "case " << expr.substr(pos) << ":";
 
          case_statement.statement_data.statement = buffer.str();
-         case_statement.statement_data.indent_change = 1;
+         case_statement.statement_data.indent_change_before = -1;
+         case_statement.statement_data.indent_change_after = 1;
 
          graph.insert(expr_iter, case_statement);
       }
@@ -1537,9 +1568,7 @@ void ua_conv_graph::process_switch(
          break_statement.itemtype = gt_statement;
          break_statement.pos = jmp_iter->pos;
 
-         break_statement.statement_data.statement = "   break;";
-
-         break_statement.statement_data.indent_change = -1;
+         break_statement.statement_data.statement = "break;";
 
          graph.insert(jmp_iter, break_statement);
       }
@@ -1581,14 +1610,19 @@ void ua_conv_graph::process_switch(
 
       op_beq_iter->is_processed = true;
 
-      jmp_iter = find_pos(op_beq_iter->opcode_data.jump_target_pos);
+      Uint16 jmp_item_pos = op_beq_iter->opcode_data.jump_target_pos;
+      jmp_iter = find_pos(jmp_item_pos);
       jmp_iter--;
 
-      // TODO debug code
       ua_conv_graph_item& jmp_item = *jmp_iter;
-      // TODO fix: no break statement in switch-case, conv 7
-      if (jmp_item.itemtype != gt_opcode)
-         break;
+
+      // search opcode before item
+      while(jmp_iter->itemtype != gt_opcode &&
+            jmp_iter->pos < jmp_item_pos)
+      {
+         jmp_iter--;
+         ua_conv_graph_item& jmp_item = *jmp_iter;
+      }
 
       ua_assert(jmp_iter->itemtype == gt_opcode);
       ua_assert(is_opcode(jmp_iter,op_JMP));
@@ -1611,9 +1645,90 @@ void ua_conv_graph::process_switch(
 #endif
 
       switch_statement.statement_data.statement = buffer.str();
+      switch_statement.statement_data.indent_change_before = -1;
 
       graph.insert(switch_end_iter, switch_statement);
    }
+}
+
+bool ua_conv_graph::is_switch_statement(graph_iterator expr_iter,
+   graph_iterator jmp_iter)
+{
+   // check if expression contains "==" operator
+   std::string expr_base(expr_iter->expression_data.expression);
+   std::string::size_type pos = expr_base.find(" == ");
+
+   // definitely no switch statement
+   if (std::string::npos == pos)
+      return false;
+
+   // collect all expressions
+   std::vector<std::string> allexpressions;
+
+   graph_iterator switch_end_iter =
+      find_pos(jmp_iter->opcode_data.jump_target_pos);
+
+   do
+   {
+      // remember expression
+      allexpressions.push_back(expr_iter->expression_data.expression);
+
+      // determine new expression iterator
+      expr_iter = jmp_iter;
+      expr_iter++;
+
+      // already at end of switch statement?
+      if (expr_iter == switch_end_iter)
+         break;
+
+      // switch with only one expression?
+      if (expr_iter->itemtype != gt_expression)
+         break;
+
+      graph_iterator op_beq_iter = expr_iter;
+      op_beq_iter++;
+
+      // search next BEQ opcode
+      while((op_beq_iter->itemtype != gt_opcode ||
+             op_beq_iter->is_processed) &&
+            op_beq_iter != switch_end_iter)
+         op_beq_iter++;
+
+      // special case for uw1, conversation 7:
+      if (op_beq_iter->itemtype != gt_opcode)
+         break;
+
+      ua_assert(op_beq_iter->itemtype == gt_opcode);
+      ua_assert(is_opcode(op_beq_iter, op_BEQ));
+
+      jmp_iter = find_pos(op_beq_iter->opcode_data.jump_target_pos);
+      jmp_iter--;
+
+      // special case for uw1, conversation 136, 144
+      if (jmp_iter->itemtype != gt_opcode || !is_opcode(jmp_iter,op_JMP))
+         break;
+
+      ua_assert(jmp_iter->itemtype == gt_opcode);
+      ua_assert(is_opcode(jmp_iter,op_JMP));
+
+   } while(expr_iter != switch_end_iter);
+
+   // only one expression?
+   unsigned int max = allexpressions.size();
+   if (max <= 1)
+      return false;
+
+   // compare all expressions for same pattern
+   for(unsigned int i=1; i<max; i++)
+   {
+      if (std::string::npos == allexpressions[i].find(" == "))
+         return false;
+
+      if (0 != allexpressions[i].find(expr_base.substr(0,pos)))
+         return false;
+   }
+
+   return true;
 }
 
 void ua_conv_graph::process_while(
@@ -1626,8 +1741,7 @@ void ua_conv_graph::process_while(
    while_statement.pos = expr_iter->pos;
 
    std::ostringstream buffer;
-   buffer << "while (" << expr_iter->expression_data.expression << ")" <<
-      std::ends;
+   buffer << "while (" << expr_iter->expression_data.expression << ")";
 
    while_statement.statement_data.statement = buffer.str();
 
@@ -1635,7 +1749,7 @@ void ua_conv_graph::process_while(
 
    // opening brace
    while_statement.statement_data.statement = "{";
-   while_statement.statement_data.indent_change = 1;
+   while_statement.statement_data.indent_change_before = 1;
 
    graph.insert(expr_iter, while_statement);
 
@@ -1648,7 +1762,8 @@ void ua_conv_graph::process_while(
 #endif
 
    while_statement.statement_data.statement = buffer2.str();
-   while_statement.statement_data.indent_change = -1;
+   while_statement.statement_data.indent_change_before = 0;
+   while_statement.statement_data.indent_change_after = -1;
    while_statement.pos = while_end_iter->pos-2;
 
    graph.insert(while_end_iter, while_statement);
@@ -1697,9 +1812,11 @@ void ua_conv_graph::post_process_function(ua_conv_func_info& info)
 
    // opening brace
    func_item.statement_data.statement = "{";
-   func_item.statement_data.indent_change = 1;
+   func_item.statement_data.indent_change_after = 1;
 
    graph.insert(func_start,func_item);
+
+   func_item.statement_data.indent_change_after = 0;
 
    // all locals and arrays
    ua_conv_graph_item locals_item;
@@ -1730,15 +1847,15 @@ void ua_conv_graph::post_process_function(ua_conv_func_info& info)
 
       std::ostringstream buffer;
 
-      ua_assert(array_info.local_start < info.locals_types.size());
+      ua_assert(array_info.local_start <= info.locals_types.size());
 
       buffer << ua_type_to_str(info.locals_types[array_info.local_start]) <<
-         "local_" << array_info.local_start <<
-         "[" << array_info.array_size << "]";
+         " local_" << array_info.local_start <<
+         "[" << array_info.array_size << "];";
 
       locals_item.statement_data.statement = buffer.str();
 
-      graph.insert(func_start,func_item);
+      graph.insert(func_start,locals_item);
    }
 
    // add function end
@@ -1752,68 +1869,67 @@ void ua_conv_graph::post_process_function(ua_conv_func_info& info)
    func_item.itemtype = gt_statement;
    func_item.pos = func_end->pos;
    func_item.statement_data.statement = "}";
-   func_item.statement_data.indent_change = -1;
+   func_item.statement_data.indent_change_before = -1;
 
    graph.insert(func_end,func_item);
 
    // empty line
    func_item.statement_data.statement = "";
-   func_item.statement_data.indent_change = 0;
+   func_item.statement_data.indent_change_before = 0;
 
    graph.insert(func_end,func_item);
 }
 
-/*
-void ua_conv_graph::find_control_structs()
+void ua_conv_graph::add_goto_jumps(const graph_iterator& start,
+   const graph_iterator& stop)
 {
-   // go through code and search for control structures
-   for(unsigned int i=0; i<graph.size(); i++)
+   graph_iterator iter;
+
+   // search for remaining opcodes
+   for(iter=start; iter!=stop; iter++)
    {
-      if (is_opcode(i,op_JMP))
+      // only examine opcodes that weren't processed yet
+      if (iter->itemtype != gt_opcode || iter->is_processed)
+         continue;
+
+      if (iter->opcode_data.opcode == op_JMP)
       {
-         graph[i].itemtype = gt_opcode_done;
+         iter->is_processed = true;
 
-         unsigned int pos = find_pos(graph[i].arg);
-         if (graph[pos+1].itemtype == gt_opcode_done &&
-             graph[pos+1].opcode == op_BPTOSP)
+         // insert goto statement
+         ua_conv_graph_item goto_item;
+         goto_item.itemtype = gt_statement;
+         goto_item.pos = iter->pos;
+
+         std::ostringstream buffer;
+         buffer << "goto " << iter->opcode_data.jump_target << ";";
+         goto_item.statement_data.statement = buffer.str();
+
+         graph.insert(iter,goto_item);
+
+         graph_iterator target_iter =
+            find_pos(iter->opcode_data.jump_target_pos);
+
+         // check if a label was already inserted
+         if (target_iter->itemtype != gt_statement ||
+            target_iter->statement_data.statement.find("label") != 0)
          {
-            // jump to end of function == "return;"
-            insert_control("return;",i,graph[i].pos,0);
-         }
-         else
-         {
-            // ugly "goto" to label
+            // insert goto target label
+            ua_conv_graph_item label_item;
+            label_item.itemtype = gt_statement;
+            label_item.pos = target_iter->pos;
 
-            std::string label_text;
-            {
-               char buffer[256];
-               sprintf(buffer,"label_%04x",graph[i].arg);
-               label_text.assign(buffer);
-            }
-            unsigned label_pos = find_pos(graph[i].arg);
+            std::ostringstream buffer2;
+            buffer2 << iter->opcode_data.jump_target << ":;";
+            label_item.statement_data.statement = buffer2.str();
+            label_item.statement_data.indent_change_before = -1;
+            label_item.statement_data.indent_change_after = 1;
 
-            // insert "goto label"
-            {
-               std::string goto_text("goto ");
-               goto_text.append(label_text);
-               goto_text.append(";");
-
-               insert_control(goto_text.c_str(),i,graph[i].pos,0);
-
-               if (label_pos>i) label_pos++;
-            }
-
-            // insert label
-            {
-               label_text.append(":;");
-
-               insert_control(label_text.c_str(),label_pos,graph[label_pos].pos,0);
-            }
+            graph.insert(target_iter,label_item);
          }
       }
    }
 }
-*/
 
 ua_conv_graph::graph_iterator ua_conv_graph::find_pos(Uint16 target)
 {
@@ -1878,7 +1994,7 @@ std::string ua_conv_graph::get_memory_varname(Uint16 mem_idx)
    else
    {
       std::ostringstream buffer;
-      buffer << "global_" << mem_idx << std::ends;
+      buffer << "global_" << mem_idx;
 
       return buffer.str();
    }

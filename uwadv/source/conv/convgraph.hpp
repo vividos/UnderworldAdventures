@@ -97,13 +97,16 @@ struct ua_conv_graph_item
    struct ua_statement_data
    {
       //! ctor
-      ua_statement_data():indent_change(0){}
+      ua_statement_data():indent_change_before(0), indent_change_after(0){}
 
       //! statement text
       std::string statement;
 
-      //! suggested indent change
-      int indent_change;
+      //! suggested indent change before this line
+      int indent_change_before;
+
+      //! suggested indent change after this line
+      int indent_change_after;
 
    } statement_data;
 
@@ -252,9 +255,17 @@ protected:
    //! analyzes function for expressions and operators
    void analyze_function(ua_conv_func_info& info);
 
+   //! adds array info to function
+   void add_array_info(ua_conv_func_info& info, Uint16 local_idx,
+      Uint16 offset);
+
    //! combines operators with needed expressions
    void combine_operators(const graph_iterator& start,
       const graph_iterator& stop);
+
+   //! checks if babl_menu or babl_fmenu follows STO operation
+   void check_babl_menu(graph_iterator& start, const graph_iterator& stop,
+      graph_iterator& lvalue, graph_iterator& rvalue);
 
    //! find out control structs
    void find_control_structs(const graph_iterator& start,
@@ -267,12 +278,19 @@ protected:
    //! adds switch-case statements
    void process_switch(graph_iterator expr_iter, graph_iterator jmp_iter);
 
+   //! determines if the expressions matches structure for a switch statement
+   bool is_switch_statement(graph_iterator expr_iter, graph_iterator op_iter);
+
    //! adds while statement
    void process_while(const graph_iterator& expr_iter,
       const graph_iterator& while_end_iter);
 
    //! does function post processing
    void post_process_function(ua_conv_func_info& info);
+
+   //! adds goto jumps
+   void add_goto_jumps(const graph_iterator& start,
+      const graph_iterator& stop);
 
 
    // helper functions
