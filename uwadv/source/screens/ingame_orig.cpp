@@ -350,8 +350,37 @@ void ua_ingame_orig_screen::render()
 
    glDisable(GL_DEPTH_TEST);
    glEnable(GL_BLEND);
-   glDisable(GL_SCISSOR_TEST);
    glDisable(GL_FOG);
+
+   // when fading in/out, lay a quad over the already rendered 3d view
+   if (fade_state==0 || fade_state==2)
+   {
+      Uint8 alpha = 255;
+
+      switch(fade_state)
+      {
+      case 0: // fade in
+         alpha = Uint8(255-255*(double(fade_ticks) / (core->get_tickrate()*fade_time)));
+         break;
+
+      case 2: // fade out
+         alpha = Uint8(255*(double(fade_ticks) / (core->get_tickrate()*fade_time)));
+         break;
+      }
+
+      glColor4ub(0,0,0,alpha);
+      glBindTexture(GL_TEXTURE_2D,0);
+
+      // draw quad
+      glBegin(GL_QUADS);
+      glVertex2d( 52.0/320.0,  68.0/200.0);
+      glVertex2d(226.0/320.0,  68.0/200.0);
+      glVertex2d(226.0/320.0, 182.0/200.0);
+      glVertex2d( 52.0/320.0, 182.0/200.0);
+      glEnd();
+   }
+
+   glDisable(GL_SCISSOR_TEST);
 
    // render all user interface graphics
    render_ui();
