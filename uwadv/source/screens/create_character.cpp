@@ -87,6 +87,8 @@ void ua_create_character_screen::init()
 {
    ua_trace("character creation screen started\n");
 
+   SDL_ShowCursor(0);
+
    // get a pointer to to current player
    pplayer = &(core->get_underworld().get_player());
 
@@ -101,7 +103,7 @@ void ua_create_character_screen::init()
    glBindTexture(GL_TEXTURE_2D,0);
 
    glDisable(GL_DEPTH_TEST);
-   glDisable(GL_BLEND);
+   glEnable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
    // load background image
@@ -113,6 +115,24 @@ void ua_create_character_screen::init()
    tex.convert(img);
    tex.use();
    tex.upload();
+
+   // init mouse cursor texture
+   ua_image_list img_cursors;
+   ua_settings &settings = core->get_settings();
+   img_cursors.load(settings,"cursors");
+   mousetex.init(&core->get_texmgr());
+   ua_image crosscursor = img_cursors.get_image(0);
+   cursorw = crosscursor.get_xres();
+   cursorh = crosscursor.get_yres();
+   mousetex.convert(crosscursor);
+   mousetex.use();
+   mousetex.upload();
+
+   // get current mouse position
+   int x,y;
+   SDL_GetMouseState(&x,&y);
+   cursorx = unsigned(double(x)/core->get_screen_width()*320.0)-cursorw/2.0;
+   cursory = unsigned(double(y)/core->get_screen_height()*200.0)+cursorh/2.0;
 
    // get palette #3
    memcpy(palette,core->get_texmgr().get_palette(3),sizeof(ua_onepalette));
@@ -199,6 +219,7 @@ void ua_create_character_screen::done()
    delete[] btng_buttons;
 
    tex.done();
+   mousetex.done();
 
    // clear screen
    glClearColor(0,0,0,0);
@@ -210,6 +231,7 @@ void ua_create_character_screen::done()
    ua_trace("character creation screen ended\n");
 
    current_screen = 0;
+   SDL_ShowCursor(1);
 }
 
 void ua_create_character_screen::handle_event(SDL_Event &event)
@@ -296,11 +318,17 @@ void ua_create_character_screen::handle_event(SDL_Event &event)
       break;
 
    case SDL_MOUSEMOTION:
-      if (buttondown)
       {
-         int ret = getbuttonover();
-         if (ret>=0)
-            selected_button = ret;
+         int x,y;
+         SDL_GetMouseState(&x,&y);
+         cursorx = unsigned(double(x)/core->get_screen_width()*320.0)-cursorw/2.0;
+         cursory = unsigned(double(y)/core->get_screen_height()*200.0)+cursorh/2.0;
+         if (buttondown)
+         {
+            int ret = getbuttonover();
+            if (ret>=0)
+               selected_button = ret;
+         }
       }
       break;
 
@@ -655,7 +683,7 @@ void ua_create_character_screen::render()
 
    double u = tex.get_tex_u(), v = tex.get_tex_v();
 
-   // draw quad
+   // draw screen quad
    glBegin(GL_QUADS);
    glTexCoord2d(0.0, v  ); glVertex2i(  0,  0);
    glTexCoord2d(u  , v  ); glVertex2i(320,  0);
@@ -663,6 +691,17 @@ void ua_create_character_screen::render()
    glTexCoord2d(0.0, 0.0); glVertex2i(  0,200);
    glEnd();
 
+   // draw mouse cursor quad
+   mousetex.use();
+   u = mousetex.get_tex_u(), v = mousetex.get_tex_v();
+   glBegin(GL_QUADS);
+   glTexCoord2d(0.0, v  ); glVertex2i(cursorx, 200-cursory);
+   glTexCoord2d(u  , v  ); glVertex2i(cursorx+cursorw, 200-cursory);
+   glTexCoord2d(u  , 0.0); glVertex2i(cursorx+cursorw, 200-cursory+cursorh);
+   glTexCoord2d(0.0, 0.0); glVertex2i(cursorx, 200-cursory+cursorh);
+   glEnd();
+
+   tex.use();
 }
 
 void ua_create_character_screen::tick()
