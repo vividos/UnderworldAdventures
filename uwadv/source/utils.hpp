@@ -19,22 +19,21 @@
    $Id$
 
 */
-/*! \file uatypes.hpp
+/*! \file utils.hpp
 
-   \brief commonly used types
+   \brief commonly used types, classes and functions
 
    ua_smart_ptr was inspired by boost::shared_ptr
 
 */
 
 // include guard
-#ifndef __uwadv_uatypes_hpp_
-#define __uwadv_uatypes_hpp_
+#ifndef __uwadv_utils_hpp_
+#define __uwadv_utils_hpp_
 
 // needed includes
 #include <string>
 #include <exception>
-#include <stdarg.h>
 
 
 // macros
@@ -45,17 +44,7 @@
 
 // trace messages
 
-// prints to stdout
-inline int ua_trace_printf(const char *fmt,...)
-{
-   va_list args;
-   va_start(args,fmt);
-
-   int ret = vfprintf(stdout,fmt,args);
-
-   va_end(args);
-   return ret;
-}
+int ua_trace_printf(const char *fmt,...);
 
 // debug trace
 #if 1 //defined(_DEBUG) || defined(DEBUG)

@@ -47,7 +47,7 @@
 
 
 // other includes
-#include "uatypes.hpp"
+#include "utils.hpp"
 
 
 // lua include
@@ -56,8 +56,6 @@ extern "C"
 #include "lua/include/lua.h"
 #include "lua/include/lualib.h"
 }
-
-
 
 
 #endif
