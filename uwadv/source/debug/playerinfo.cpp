@@ -31,13 +31,18 @@
 #include "dbgapp.hpp"
 
 
-// ua_playerinfo_list misc. stuff
+// ua_playerinfo_list event table
+
+BEGIN_EVENT_TABLE(ua_playerinfo_list, wxListCtrl)
+END_EVENT_TABLE()
+
+
+// static members
 
 const char* ua_playerinfo_list::frame_name = "Player Info";
 
-// event table
-BEGIN_EVENT_TABLE(ua_playerinfo_list, wxListCtrl)
-END_EVENT_TABLE()
+
+// global variables
 
 const char* ua_playerinfo_captions[] =
 {
@@ -100,6 +105,7 @@ ua_playerinfo_list::ua_playerinfo_list(wxWindow *parent,
    const wxWindowID id, const wxPoint& pos, const wxSize& size, long style)
 :wxListCtrl(parent, id, pos, size, style | wxLC_REPORT | wxLC_HRULES | wxLC_VRULES)
 {
+   // add columns
    wxListItem column;
    column.m_format = wxLIST_FORMAT_LEFT;
    column.m_width = 110;
@@ -111,22 +117,25 @@ ua_playerinfo_list::ua_playerinfo_list(wxWindow *parent,
    column.m_width = 200-column.m_width-30;
    column.m_text = "Value";
    InsertColumn(1,column);
+
+   // add all items
+   for(unsigned int i=0; i<SDL_TABLESIZE(ua_playerinfo_captions); i++)
+   {
+      wxString caption(ua_playerinfo_captions[i]);
+      InsertItem(i,caption);
+   }
 }
 
 void ua_playerinfo_list::UpdateData()
 {
    ua_debug_command_func cmd = wxGetApp().command;
 
+   // lock underworld
    cmd(udc_lock,0,NULL,NULL);
 
-   DeleteAllItems();
-
+   // update all items
    for(unsigned int i=0; i<SDL_TABLESIZE(ua_playerinfo_captions); i++)
    {
-      // set item caption
-      wxString caption(ua_playerinfo_captions[i]);
-      long nr = InsertItem(i,caption);
-
       // set value
       wxString value;
       ua_debug_param param1;
@@ -140,9 +149,10 @@ void ua_playerinfo_list::UpdateData()
       if (param1.type == ua_param_double)
          value.Printf("%3.2f",param1.val.d);
 
-      SetItem(nr,1,value);
+      SetItem(i,1,value);
    }
 
+   // unlock again
    cmd(udc_unlock,0,NULL,NULL);
 }
 
