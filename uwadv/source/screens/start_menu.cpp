@@ -60,6 +60,8 @@ void ua_start_menu_screen::init()
 
    // load background image
    img.load_raw(core->get_settings(),"data/opscr.byt",2);
+   tex.convert(core->get_texmgr(),img);
+   tex.prepare(false);
 
    // get palette #2 (needed for palette shifting)
    memcpy(palette,core->get_texmgr().get_palette(2),sizeof(ua_onepalette));
@@ -71,6 +73,7 @@ void ua_start_menu_screen::init()
    tickcount=0;
    shiftcount=0;
    journey_avail=true;
+   buttondown=false;
    selected_area=-1;
 }
 
@@ -111,17 +114,27 @@ void ua_start_menu_screen::handle_event(SDL_Event &event)
 
    case SDL_MOUSEBUTTONDOWN:
       // select the area where the mouse button is pressed
+      buttondown=true;
       if (stage==1)
-         get_selected_area();
+         selected_area = get_selected_area();
+      break;
+
+   case SDL_MOUSEMOTION:
+      if (stage==1 && buttondown)
+      {
+         int ret = get_selected_area();
+         if (ret!=-1)
+            selected_area = ret;
+      }
       break;
 
    case SDL_MOUSEBUTTONUP:
+      buttondown=false;
       if (stage==1)
       {
          // determine if user released the mouse button over the same area
-         int save = selected_area;
-         get_selected_area();
-         if (selected_area!=-1 && selected_area == save)
+         int ret = get_selected_area();
+         if (ret != -1 && ret == selected_area)
          {
             stage++;
             tickcount=0;
@@ -247,7 +260,7 @@ void ua_start_menu_screen::press_button()
    }
 }
 
-void ua_start_menu_screen::get_selected_area()
+int ua_start_menu_screen::get_selected_area()
 {
    // get mouse coordinates
    int x,y;
@@ -258,11 +271,13 @@ void ua_start_menu_screen::get_selected_area()
    ypos = unsigned(double(y)/core->get_screen_height()*200);
 
    // check for whole area
+   int ret;
    if ((ypos<81 || ypos > 180) || (xpos<64 || xpos>248))
-      selected_area=-1;
-   else
-   if (ypos<104) selected_area=0; else
-   if (ypos<128) selected_area=1; else
-   if (ypos<153) selected_area=2; else
-      selected_area=3;
+      ret=-1;
+   else if (ypos<104) ret=0;
+   else if (ypos<128) ret=1;
+   else if (ypos<153) ret=2;
+   else ret=3;
+
+   return ret;
 }

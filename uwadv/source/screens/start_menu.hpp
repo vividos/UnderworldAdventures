@@ -61,7 +61,7 @@ protected:
    void press_button();
 
    //! determines selected area by mouse coordinates
-   void get_selected_area();
+   int get_selected_area();
 
 protected:
    //! current stage
@@ -78,6 +78,9 @@ protected:
 
    //! indicates if "journey onward" is available
    bool journey_avail;
+
+   //! indicates if the mouse button is down
+   bool buttondown;
 
    //! background image
    ua_image img;
