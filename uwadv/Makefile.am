@@ -19,6 +19,7 @@ EXTRA_DIST =  \
 	docs/README.Linux.txt \
 	docs/README.Lua.txt \
 	docs/README.mingw32.txt \
+	docs/README.music.txt \
 	docs/README.tools.txt \
 	docs/README.uwadv.txt \
 	docs/ua-diffs.txt \
