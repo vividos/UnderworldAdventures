@@ -32,7 +32,7 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	resource/maploader.cpp resource/cfgfile.cpp \
 	resource/texloader.cpp resource/objloader.cpp \
 	resource/cutsloader.cpp resource/savegame.cpp \
-	resource/critloader.cpp \
+	resource/critloader.cpp resource/modeldecode.cpp \
 	resource/fread_endian.hpp \
 	screens/ingame_orig.cpp screens/start_splash.cpp \
 	screens/start_menu.cpp screens/cutscene_view.cpp \

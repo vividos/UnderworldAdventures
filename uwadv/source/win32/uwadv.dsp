@@ -938,6 +938,10 @@ SOURCE=..\resource\maploader.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\resource\modeldecode.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\resource\objloader.cpp
 # End Source File
 # Begin Source File
