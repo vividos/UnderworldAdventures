@@ -107,19 +107,6 @@ bool ua_conv_code_vm::load_code(const char *cnvfile, Uint16 conv)
       return false;
    }
 
-   // count valid conv slots up to the one to load
-   unsigned int slotcount=0;
-   fseek(fd,2,SEEK_SET);
-
-   for(Uint16 n=0; n<conv; n++)
-   {
-      Uint32 slotoffset = fread32(fd);
-      if (slotoffset!=0)
-         slotcount++;
-   }
-
-   strblock = slotcount+25;
-
    // read conversation header
    fseek(fd,offset,SEEK_SET);
 
@@ -129,7 +116,7 @@ bool ua_conv_code_vm::load_code(const char *cnvfile, Uint16 conv)
    // make sense
    codesize = static_cast<Uint16>(fread32(fd));
    Uint16 unk2 = fread16(fd); // always 0x0000
-   Uint16 unk3 = fread16(fd); // conv slot + 0x0e00
+   strblock = fread16(fd); // string block to use
 
    // seems to be superfluous, since we know the number of words from the globals file
    glob_reserved = fread16(fd); // number of stack words reserved for globals
