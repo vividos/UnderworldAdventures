@@ -35,11 +35,11 @@
 #include "mousecursor.hpp"
 #include "fading.hpp"
 #include "imgquad.hpp"
+#include "textscroll.hpp"
 /*
 #include "image.hpp"
 #include "font.hpp"
 #include "renderer.hpp"
-#include "textscroll.hpp"
 #include "uwscript.hpp"
 #include "debug.hpp"
 #include "panel.hpp"
@@ -134,6 +134,7 @@ enum ua_screen_area_id
 // forward references
 class ua_ingame_orig_screen;
 class ua_player;
+class ua_inventory;
 
 
 // classes
@@ -149,6 +150,7 @@ protected:
    //! parent screen
    ua_ingame_orig_screen* parent;
 };
+
 
 //! compass control
 class ua_ingame_compass: public ua_ingame_orig_ctrl
@@ -169,6 +171,41 @@ protected:
 
    //! player object to show compass direction
    ua_player* player;
+};
+
+
+//! runeshelf control
+class ua_ingame_runeshelf: public ua_ingame_orig_ctrl
+{
+public:
+   //! initializes runeshelf
+   virtual void init(ua_game_interface& game, unsigned int xpos, unsigned int ypos);
+
+   //! updates runeshelf
+   void update_runeshelf();
+
+protected:
+   //! all runestones
+   std::vector<ua_image> img_runestones;
+
+   //! pointer to inventory that has the runeshelf
+   ua_inventory* inventory;
+};
+
+
+//! active spell area control
+class ua_ingame_spell_area: public ua_ingame_orig_ctrl
+{
+public:
+   //! initializes active spells
+   virtual void init(ua_game_interface& game, unsigned int xpos, unsigned int ypos);
+
+   //! updates spell area
+   void update_spell_area();
+
+protected:
+   //! all runestones
+   std::vector<ua_image> img_spells;
 };
 
 
@@ -258,6 +295,15 @@ protected:
 
    //! compass window
    ua_ingame_compass compass;
+
+   //! message text scroll
+   ua_textscroll textscroll;
+
+   //! runeshelf
+   ua_ingame_runeshelf runeshelf;
+
+   //! spell area
+   ua_ingame_spell_area spellarea;
 
 
    // game related

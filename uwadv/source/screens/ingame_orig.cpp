@@ -116,8 +116,87 @@ void ua_ingame_compass::draw()
 }
 
 
+// ua_ingame_runeshelf methods
+
+void ua_ingame_runeshelf::init(ua_game_interface& game, unsigned int xpos,
+   unsigned int ypos)
+{
+   get_image().create(46,16);
+
+   // load images 232..255; A-Z without X and Z
+   game.get_image_manager().load_list(img_runestones, "objects", 232,256);
+
+   ua_image_quad::init(game,xpos,ypos);
+}
+
+/*! Updates the runeshelf image from runeshelf content.
+    \todo actually get runes on the self
+*/
+void ua_ingame_runeshelf::update_runeshelf()
+{
+   ua_image& img_shelf = get_image();
+   img_shelf.clear(0);
+
+   unsigned int rune[3] = { 0, 0, 0 };
+
+   for(unsigned int i=0; i<3; i++)
+   {
+      if (rune[i] == 0)
+         continue;
+
+      // paste appropriate rune image
+      ua_image& img_rune = img_runestones[(rune[i]-1)%24];
+
+      img_shelf.paste_rect(img_rune, 0,0, 14,14,
+         i*15, 0, true);
+   }
+
+   update();
+}
+
+
+// update_spell_area methods
+
+void ua_ingame_spell_area::init(ua_game_interface& game, unsigned int xpos,
+   unsigned int ypos)
+{
+   get_image().create(51,18);
+
+   // load images 232..255; A-Z without X and Z
+   game.get_image_manager().load_list(img_spells, "spells");
+
+   ua_image_quad::init(game,xpos,ypos);
+}
+
+/*! Updates the active spell area image.
+    \todo actually get spells from ua_underworld
+*/
+void ua_ingame_spell_area::update_spell_area()
+{
+   ua_image& img_area = get_image();
+   img_area.clear(0);
+
+   unsigned int spell[3] = { 0, 0, 0 };
+
+   for(unsigned int i=0; i<3; i++)
+   {
+      if (spell[i] == 0)
+         continue;
+
+      // paste appropriate spell image
+      ua_image& img_spell = img_spells[(spell[i]-1)%21];
+
+      img_area.paste_rect(img_spell, 0,0, 16,18,
+         i*17, 0, true);
+   }
+
+   update();
+}
+
+
 // ua_ingame_orig_screen methods
 
+/*! Constructor; sets parent pointers for ingame controls */
 ua_ingame_orig_screen::ua_ingame_orig_screen()
 {
    compass.set_parent(this);
@@ -221,7 +300,35 @@ void ua_ingame_orig_screen::init()
    compass.update();
    register_window(&compass);
 
+   // init textscroll
+   {
+      unsigned int scrollwidth = 290;
 
+      // adjust scroll width for uw_demo
+      if (game->get_settings().get_gametype() == ua_game_uw_demo)
+         scrollwidth = 218;
+
+      textscroll.init(*game, 15,169, scrollwidth,30, 42);
+      textscroll.set_color(46);
+
+      textscroll.print("Welcome to the Underworld Adventures!\n http://uwadv.sourceforge.net/");
+
+      register_window(&textscroll);
+   }
+
+   // runeshelf
+   runeshelf.init(*game, 176,138);
+   //runeshelf.add_border(img_background.get_image());
+   runeshelf.update_runeshelf();
+   register_window(&runeshelf);
+
+   // active spells
+   spellarea.init(*game, 52,136);
+   spellarea.update_spell_area();
+   register_window(&spellarea);
+
+
+   // dragons
 
    // init mouse cursor
    mousecursor.init(*game,0);
@@ -234,10 +341,16 @@ void ua_ingame_orig_screen::init()
 
 void ua_ingame_orig_screen::suspend()
 {
+   ua_trace("suspending orig. ingame user interface\n\n");
+
+   game->get_renderer().clear();
+
+
 }
 
 void ua_ingame_orig_screen::resume()
 {
+   ua_trace("resuming orig. ingame user interface\n");
 
 
    // setup fade-in
@@ -316,10 +429,11 @@ void ua_ingame_orig_screen::draw()
 
       // draw background
       img_background.draw();
-      glDisable(GL_BLEND);
 
       // all other registered windows
       ua_screen::draw();
+
+      glDisable(GL_BLEND);
    }
 }
 
@@ -705,11 +819,6 @@ void ua_ingame_orig_screen::init(ua_game_core_interface* thecore)
 
    fadeout_action = 0;
 
-   // adjust scroll width for uw_demo
-   scrollwidth = 289;
-
-   if (core->get_settings().get_gametype() == ua_game_uw_demo)
-      scrollwidth = 218;
 
    // load some images
    img_objects.load(settings,"objects");
@@ -774,8 +883,6 @@ void ua_ingame_orig_screen::init(ua_game_core_interface* thecore)
    }
 
    resume();
-
-   textscroll.print("Welcome to the Underworld Adventures!\n http://uwadv.sourceforge.net/");
 }
 
 void ua_ingame_orig_screen::suspend()
@@ -784,57 +891,26 @@ void ua_ingame_orig_screen::suspend()
 
    panel.suspend();
 
-   // clear screen
-   glClearColor(0,0,0,0);
-   glClear(GL_COLOR_BUFFER_BIT);
-   SDL_GL_SwapBuffers();
 
    // unregister script callbacks
    core->get_underworld().get_scripts().register_callback(NULL);
 
-   img_back.done();
-
    // clean up textures
    tex_flasks.done();
    tex_cmd_buttons.done();
-
-   mousecursor.done();
-   textscroll.done();
-
-   renderer.done();
-
-   // reset stock textures
-   core->get_texmgr().reset();
 
    glDisable(GL_SCISSOR_TEST);
 }
 
 void ua_ingame_orig_screen::resume()
 {
-   ua_trace("resuming orig. ingame user interface\n");
-
-   fade_state = 0;
-   fade_ticks = 0;
-
    setup_opengl();
-
-   // init mouse cursor
-   mousecursor.init(core,0);
-   mousecursor.show(true);
-
-   // init text scroll
-   textscroll.init(*core,15,169, scrollwidth,30, 5, 42);
-   textscroll.set_color(46);
 
    // register script callbacks
    core->get_underworld().get_scripts().register_callback(this);
 
    // prepare level textures
    ui_changed_level(core->get_underworld().get_player().get_attr(ua_attr_maplevel));
-
-   // background image
-   img_back.init(&core->get_texmgr(),0,0,320,320);
-   img_back.convert_upload();
 
    // init textures
 
@@ -895,34 +971,6 @@ void ua_ingame_orig_screen::render()
    glEnable(GL_BLEND);
    glDisable(GL_FOG);
 
-   // when fading in/out, lay a quad over the already rendered 3d view
-   if (fade_state==0 || fade_state==2)
-   {
-      Uint8 alpha = 255;
-
-      switch(fade_state)
-      {
-      case 0: // fade in
-         alpha = Uint8(255-255*(double(fade_ticks) / (core->get_tickrate()*fade_time)));
-         break;
-
-      case 2: // fade out
-         alpha = Uint8(255*(double(fade_ticks) / (core->get_tickrate()*fade_time)));
-         break;
-      }
-
-      glColor4ub(0,0,0,alpha);
-      glBindTexture(GL_TEXTURE_2D,0);
-
-      // draw quad
-      glBegin(GL_QUADS);
-      glVertex2i( 52,  68);
-      glVertex2i(226,  68);
-      glVertex2i(226, 182);
-      glVertex2i( 52, 182);
-      glEnd();
-   }
-
    glDisable(GL_SCISSOR_TEST);
 
    // render all user interface graphics
@@ -933,60 +981,10 @@ void ua_ingame_orig_screen::render()
    glEnable(GL_SCISSOR_TEST);
    glDisable(GL_BLEND);
    glEnable(GL_DEPTH_TEST);
-
-   glMatrixMode(GL_PROJECTION);
-   glPopMatrix(); // restore proj. matrix
-   glMatrixMode(GL_MODELVIEW);
-   glPopMatrix(); // restore modelview matrix
-   // note: modelview matrix is sometimes needed for selection
 }
 
 void ua_ingame_orig_screen::render_ui()
 {
-   // set texture brightness for all ui textures
-   {
-      Uint8 light = 255;
-
-      switch(fade_state)
-      {
-      case 0: // fade in
-         light = Uint8(255*(double(fade_ticks) / (core->get_tickrate()*fade_time)));
-         break;
-
-      case 2: // fade out
-         light = Uint8(255-255*(double(fade_ticks) / (core->get_tickrate()*fade_time)));
-         break;
-      }
-
-      glColor3ub(light,light,light);
-   }
-
-   // draw background image
-   img_back.render();
-
-   ua_player &pl = core->get_underworld().get_player();
-
-   // draw compass
-   {
-      double angle = fmod(-pl.get_angle_rot()+90.0+360.0,360.0);
-
-      unsigned int compassdir = (unsigned(angle/11.25)&31);
-      unsigned int compassimg = ((compassdir+1)/2)&15;
-
-      compassimg = unsigned((angle+11.25)/22.5)&15;
-
-      // prepare texture
-      if (compass_curimg != compassimg)
-      {
-         // reupload compass texture
-         compass_curimg = compassimg;
-         tex_compass.convert(img_compass.get_image(compass_curimg));
-         tex_compass.upload();
-      }
-      else
-         tex_compass.use();
-   }
-
    // vitality/mana/poisoned flasks
    {
       // vitality/poisoned flask
@@ -1081,12 +1079,6 @@ void ua_ingame_orig_screen::render_ui()
 
    // draw panel
    panel.render();
-
-   // draw text scroll
-   textscroll.render();
-
-   // draw mouse cursor
-   mousecursor.draw();
 }
 
 void ua_ingame_orig_screen::setup_opengl()
