@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX /O2 /I "..\source" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "WIN32_EXTRA_LEAN" /D "VC_EXTRALEAN" /D "NOSERVICE" /D "NOMCX" /D "NOIME" /D "NOSOUND" /D "NOCOMM" /D "NOKANJI" /D "NORPC" /D "NOPROXYSTUB" /D "NOTAPE" /D "NOCRYPT" /D "NOIMAGE" /D "_STLP_USE_STATIC_LIB" /YX"common.hpp" /FD /c
+# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "..\source" /I "..\source\audio" /I "..\source\base" /I "..\source\import" /I "..\source\renderer" /I "..\source\ui" /I "..\source\underw" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "WIN32_EXTRA_LEAN" /D "VC_EXTRALEAN" /D "NOSERVICE" /D "NOMCX" /D "NOIME" /D "NOSOUND" /D "NOCOMM" /D "NOKANJI" /D "NORPC" /D "NOPROXYSTUB" /D "NOTAPE" /D "NOCRYPT" /D "NOIMAGE" /D "_STLP_USE_STATIC_LIB" /YX"common.hpp" /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x407 /d "NDEBUG"
@@ -69,7 +69,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /Gm /GX /ZI /Od /I "..\source" /D "_DEBUG" /D "HAVE_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "WIN32_EXTRA_LEAN" /D "VC_EXTRALEAN" /D "NOSERVICE" /D "NOMCX" /D "NOIME" /D "NOSOUND" /D "NOCOMM" /D "NOKANJI" /D "NORPC" /D "NOPROXYSTUB" /D "NOTAPE" /D "NOCRYPT" /D "NOIMAGE" /D "_STLP_DEBUG" /D "_STLP_USE_STATIC_LIB" /D "_RTLDLL" /D "_STLP_USE_NEWALLOC" /D "_STLP_DEBUG_ALLOC" /D "_STLP_USE_SYSTEM_ASSERT" /YX"common.hpp" /FD /GZ /c
+# ADD CPP /nologo /MDd /Gm /GX /ZI /Od /I "..\source" /I "..\source\audio" /I "..\source\base" /I "..\source\import" /I "..\source\renderer" /I "..\source\ui" /I "..\source\underw" /D "_DEBUG" /D "HAVE_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "WIN32_EXTRA_LEAN" /D "VC_EXTRALEAN" /D "NOSERVICE" /D "NOMCX" /D "NOIME" /D "NOSOUND" /D "NOCOMM" /D "NOKANJI" /D "NORPC" /D "NOPROXYSTUB" /D "NOTAPE" /D "NOCRYPT" /D "NOIMAGE" /D "_STLP_DEBUG" /D "_STLP_USE_STATIC_LIB" /D "_RTLDLL" /D "_STLP_USE_NEWALLOC" /D "_STLP_DEBUG_ALLOC" /D "_STLP_USE_SYSTEM_ASSERT" /FR /YX"common.hpp" /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x407 /d "_DEBUG"
@@ -88,138 +88,7 @@ LINK32=link.exe
 
 # Name "uwadv - Win32 Release"
 # Name "uwadv - Win32 Debug"
-# Begin Group "main game files"
-
-# PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
-# Begin Source File
-
-SOURCE=..\source\common.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\core.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\uamath.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\uwadv.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\uwadv.hpp
-# End Source File
-# End Group
-# Begin Group "lua scripting files"
-
-# PROP Default_Filter ""
-# Begin Group "lua scripts"
-
-# PROP Default_Filter "*.lua"
-# Begin Source File
-
-SOURCE=..\source\..\uadata\uw1\scripts\createchar.lua
-# PROP Exclude_From_Build 1
-# End Source File
-# Begin Source File
-
-SOURCE=..\uadata\uw1\scripts\critter.lua
-# PROP Exclude_From_Build 1
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\..\uadata\uw1\scripts\cutscene.lua
-# PROP Exclude_From_Build 1
-# End Source File
-# Begin Source File
-
-SOURCE=..\uadata\uw1\scripts\dump.lua
-# PROP Exclude_From_Build 1
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\..\uadata\uw1\scripts\game.lua
-# PROP Exclude_From_Build 1
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\..\uadata\uw1\scripts\inventory.lua
-# PROP Exclude_From_Build 1
-# End Source File
-# Begin Source File
-
-SOURCE=..\uadata\uw1\scripts\lookat.lua
-# PROP Exclude_From_Build 1
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\..\uadata\uw1\scripts\objlist.lua
-# PROP Exclude_From_Build 1
-# End Source File
-# Begin Source File
-
-SOURCE=..\uadata\uw1\scripts\traps.lua
-# PROP Exclude_From_Build 1
-# End Source File
-# Begin Source File
-
-SOURCE=..\uadata\uw1\scripts\triggers.lua
-# PROP Exclude_From_Build 1
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\..\uadata\uw1\scripts\uwinterface.lua
-# PROP Exclude_From_Build 1
-# End Source File
-# End Group
-# Begin Source File
-
-SOURCE=..\source\..\docs\README.Lua.txt
-# End Source File
-# End Group
-# Begin Group "win32 specific files"
-
-# PROP Default_Filter ""
-# Begin Group "win32 sources"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\source\win32\game_win32.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\win32\main.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\win32\uwadv_res.rc
-# End Source File
-# End Group
-# Begin Group "win32 headers"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\source\win32\game_win32.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\win32\resource.h
-# End Source File
-# End Group
-# Begin Group "win32 resource files"
-
-# PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
-# Begin Source File
-
-SOURCE=..\source\win32\Uus.ico
-# End Source File
-# End Group
-# End Group
-# Begin Group "audio specific files"
+# Begin Group "audio files"
 
 # PROP Default_Filter ""
 # Begin Group "audio sources"
@@ -231,11 +100,11 @@ SOURCE=..\source\audio\audio.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\audio\midi_driver\linux_sdl_mixer.cpp
+SOURCE=..\source\audio\midi.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\audio\midi.cpp
+SOURCE=..\source\audio\midi_driver\midi_sdl_mixer.cpp
 # End Source File
 # Begin Source File
 
@@ -259,11 +128,15 @@ SOURCE=..\source\audio\xmidi.cpp
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\source\audio\midi_driver\linux_sdl_mixer.h
+SOURCE=..\source\audio\audio.hpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\source\audio\midi.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\audio\midi_driver\midi_sdl_mixer.hpp
 # End Source File
 # Begin Source File
 
@@ -278,24 +151,300 @@ SOURCE=..\source\audio\midi_driver\win_midiout.h
 SOURCE=..\source\audio\xmidi.hpp
 # End Source File
 # End Group
-# Begin Source File
-
-SOURCE=..\source\audio.hpp
-# End Source File
 # End Group
-# Begin Group "screen specific files"
+# Begin Group "base files"
 
 # PROP Default_Filter ""
-# Begin Group "screens sources"
+# Begin Group "base sources"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\source\base\cfgfile.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\base\files.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\base\keymap.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\base\savegame.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\base\settings.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\base\utils.cpp
+# End Source File
+# End Group
+# Begin Group "base headers"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\source\base\cfgfile.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\base\files.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\base\keymap.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\base\savegame.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\base\settings.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\base\uamath.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\base\utils.hpp
+# End Source File
+# End Group
+# Begin Source File
+
+SOURCE=..\source\common.hpp
+# End Source File
+# End Group
+# Begin Group "ui files"
+
+# PROP Default_Filter ""
+# Begin Group "ui sources"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\source\ui\cutscene.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\ui\font.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\ui\image.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\ui\imgquad.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\ui\mousecursor.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\ui\screen.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\ui\textscroll.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\ui\window.cpp
+# End Source File
+# End Group
+# Begin Group "ui headers"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\source\ui\cutscene.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\ui\fading.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\ui\font.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\ui\image.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\ui\imgquad.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\ui\mousecursor.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\ui\screen.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\ui\textscroll.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\ui\window.hpp
+# End Source File
+# End Group
+# End Group
+# Begin Group "main game files"
+
+# PROP Default_Filter ""
+# Begin Group "main game sources"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\source\win32\debug.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\win32\game_win32.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\gamecfg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\main.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\uwadv.cpp
+# End Source File
+# End Group
+# Begin Group "main game headers"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\source\debug.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\game_interface.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\win32\game_win32.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\gamecfg.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\uwadv.hpp
+# End Source File
+# End Group
+# Begin Group "win32 resource files"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\source\win32\resource.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\win32\Uus.ico
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\win32\uwadv_res.rc
+# End Source File
+# End Group
+# End Group
+# Begin Group "renderer files"
+
+# PROP Default_Filter ""
+# Begin Group "renderer sources"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\source\renderer\critter.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\renderer\models.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\renderer\quadtree.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\renderer\renderer.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\renderer\renderer_impl.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\renderer\tessellator.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\renderer\texture.cpp
+# End Source File
+# End Group
+# Begin Group "renderer headers"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\source\renderer\critter.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\renderer\models.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\renderer\quadtree.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\renderer\renderer.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\renderer\renderer_impl.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\renderer\tessellator.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\renderer\texture.hpp
+# End Source File
+# End Group
+# End Group
+# Begin Group "screen files"
+
+# PROP Default_Filter ""
+# Begin Group "screen sources"
 
 # PROP Default_Filter ""
 # Begin Source File
 
 SOURCE=..\source\screens\acknowledgements.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\screens\conversation.cpp
 # End Source File
 # Begin Source File
 
@@ -307,27 +456,20 @@ SOURCE=..\source\screens\cutscene_view.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\source\screens\ingame_ctrls.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\screens\ingame_new.cpp
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
 SOURCE=..\source\screens\ingame_orig.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\screens\map_view.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\screens\message_inl.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\screens\panel.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\source\screens\save_game.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\screens\screen.cpp
 # End Source File
 # Begin Source File
 
@@ -342,16 +484,12 @@ SOURCE=..\source\screens\start_splash.cpp
 SOURCE=..\source\screens\uwadv_menu.cpp
 # End Source File
 # End Group
-# Begin Group "screens headers"
+# Begin Group "screen headers"
 
 # PROP Default_Filter ""
 # Begin Source File
 
 SOURCE=..\source\screens\acknowledgements.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\screens\conversation.hpp
 # End Source File
 # Begin Source File
 
@@ -363,27 +501,19 @@ SOURCE=..\source\screens\cutscene_view.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\source\screens\ingame_ctrls.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\screens\ingame_new.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\source\screens\ingame_orig.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\screens\map_view.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\screens\message.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\screens\panel.hpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\source\screens\save_game.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\screen.hpp
 # End Source File
 # Begin Source File
 
@@ -402,96 +532,191 @@ SOURCE=..\source\screens\uwadv_menu.hpp
 # Begin Group "underworld files"
 
 # PROP Default_Filter ""
-# Begin Group "underworld source files"
+# Begin Group "underworld sources"
 
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\source\inventory.cpp
+SOURCE=..\source\underw\gamestrings.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\level.cpp
+SOURCE=..\source\underw\geometry.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\mapnotes.cpp
+SOURCE=..\source\underw\inventory.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\objects.cpp
+SOURCE=..\source\underw\level.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\physics.cpp
+SOURCE=..\source\underw\mapnotes.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\physicsobject.cpp
+SOURCE=..\source\underw\objects.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\player.cpp
+SOURCE=..\source\underw\pathfinder.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\underworld.cpp
+SOURCE=..\source\underw\physics.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\uwscript.cpp
+SOURCE=..\source\underw\physicsobject.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\underw\player.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\underw\underworld.cpp
 # End Source File
 # End Group
-# Begin Group "underworld header files"
+# Begin Group "underworld headers"
 
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\source\gamestrings.hpp
+SOURCE=..\source\underw\gamestrings.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\inventory.hpp
+SOURCE=..\source\underw\geometry.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\level.hpp
+SOURCE=..\source\underw\inventory.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\mapnotes.hpp
+SOURCE=..\source\underw\level.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\objects.hpp
+SOURCE=..\source\underw\mapnotes.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\physics.hpp
+SOURCE=..\source\underw\objects.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\physicsobject.hpp
+SOURCE=..\source\underw\pathfinder.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\player.hpp
+SOURCE=..\source\underw\physics.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\properties.hpp
+SOURCE=..\source\underw\physicsobject.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\underworld.hpp
+SOURCE=..\source\underw\player.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\uwscript.hpp
+SOURCE=..\source\underw\properties.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\underw\underworld.hpp
 # End Source File
 # End Group
 # End Group
-# Begin Group "conv code files"
+# Begin Group "import files"
+
+# PROP Default_Filter ""
+# Begin Group "import sources"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\source\import\critloader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\import\cutsloader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\import\fontloader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\import\imageloader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\import\maploader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\import\objloader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\import\playerimport.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\import\proploader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\import\stringsloader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\import\texloader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\import\tgaimport.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\import\uw2dec.cpp
+# End Source File
+# End Group
+# Begin Group "import headers"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\source\import\import.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\import\io_endian.hpp
+# End Source File
+# End Group
+# Begin Group "old import stuff"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\source\resource\codeloader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\resource\modeldecode.cpp
+# End Source File
+# End Group
+# End Group
+# Begin Group "conv files"
+
+# PROP Default_Filter ""
+# Begin Group "conv sources"
 
 # PROP Default_Filter ""
 # Begin Source File
@@ -500,12 +725,12 @@ SOURCE=..\source\conv\codevm.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\conv\codevm.hpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\source\conv\convgraph.cpp
 # End Source File
+# End Group
+# Begin Group "conv headers"
+
+# PROP Default_Filter ""
 # Begin Source File
 
 SOURCE=..\source\conv\convgraph.hpp
@@ -515,262 +740,30 @@ SOURCE=..\source\conv\convgraph.hpp
 SOURCE=..\source\conv\opcodes.hpp
 # End Source File
 # End Group
-# Begin Group "game support files"
+# End Group
+# Begin Group "scripting files"
 
 # PROP Default_Filter ""
-# Begin Group "game support sources"
+# Begin Group "script sources"
 
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\source\resource\cfgfile.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\critter.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\cutscene.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\win32\debug.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\files.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\font.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\gamecfg.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\imgquad.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\keymap.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\models.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\mousecursor.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\pathfinder.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\quadtree.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\renderer.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\resource\savegame.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\settings.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\textscroll.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\texture.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\utils.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\debug\uwaccess.cpp
+SOURCE=..\source\script\luascript.cpp
 # End Source File
 # End Group
-# Begin Group "game support headers"
+# Begin Group "script headers"
 
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\source\cfgfile.hpp
+SOURCE=..\source\script\luascript.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\critter.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\cutscene.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\debug.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\files.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\font.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\gamecfg.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\image.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\imgquad.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\keymap.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\models.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\mousecursor.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\pathfinder.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\quadtree.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\renderer.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\savegame.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\settings.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\textscroll.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\texture.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\utils.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\debug\uwaccess.hpp
+SOURCE=..\source\script\script.hpp
 # End Source File
 # End Group
-# End Group
-# Begin Group "resource loading files"
-
-# PROP Default_Filter ""
-# Begin Group "model loader"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\source\resource\model\importwrl.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\resource\model\wrllexer.cpp
-# ADD CPP /I "..\source\resource\model"
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\resource\model\wrllexer.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\resource\model\wrllexer.l
-# End Source File
-# End Group
-# Begin Source File
-
-SOURCE=..\source\resource\codeloader.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\resource\cutsloader.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\resource\fontloader.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\resource\fread_endian.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\resource\imageloader.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\resource\maploader.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\resource\modeldecode.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\resource\models_impl.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\resource\objloader.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\resource\playerimport.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\resource\proploader.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\resource\texloader.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\resource\tgaimport.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\resource\uw2dec.cpp
-# End Source File
 # End Group
 # Begin Source File
 
