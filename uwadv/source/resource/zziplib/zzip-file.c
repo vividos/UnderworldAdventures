@@ -3,7 +3,7 @@
  *      Guido Draheim <guidod@gmx.de>
  *      Tomi Ollila <Tomi.Ollila@iki.fi>
  *
- *      Copyright (c) 1999,2000,2001,2002 Guido Draheim
+ * Copyright (c) 1999,2000,2001,2002 Guido Draheim
  *          All rights reserved,
  *          use under the restrictions of the
  *          Lesser GNU General Public License
@@ -44,10 +44,10 @@
 /**
  * the direct function of => zzip_close(fp). it will cleanup the
  * inflate-portion of => zlib and free the structure given.
- * <p>
+ * 
  * it is called quite from the error-cleanup parts
  * of the various => _open functions. 
- * <p>
+ * 
  * the .refcount is decreased and if zero the fp->dir is closed just as well.
  */
 int 
@@ -101,7 +101,7 @@ static int zzip_inflate_init(ZZIP_FILE *, struct zzip_dir_hdr *);
  * open an => ZZIP_FILE from an already open => ZZIP_DIR handle. Since
  * we have a chance to reuse a cached => buf32k and => ZZIP_FILE memchunk
  * this is the best choice to unpack multiple files.
- * <p>
+ * 
  * Note: the zlib supports 2..15 bit windowsize, hence we provide a 32k
  *       memchunk here... just to be safe.
  */
@@ -181,8 +181,8 @@ zzip_file_open(ZZIP_DIR * dir, zzip_char_t* name, int o_mode)
             if (dir->io->seeks(dir->fd, hdr->d_off, SEEK_SET) < 0)
                 { err = ZZIP_DIR_SEEK; goto error; }
 
-            {   /* skip local header */
-                /* should test tons of other info, but trust that those are correct*/
+            {   /* skip local header - should test tons of other info, 
+		 * but trust that those are correct */
                 int dataoff;
                 struct zzip_file_header * p = (void*) fp->buf32k;
 
@@ -247,10 +247,11 @@ error:
     return err;
 }
 
-/**
- * close an ZZIP_FILE handle. If the ZZIP_FILE wraps a normal stat'fd then it
- * is just that int'fd that is being closed and the otherwise empty ZZIP_FILE
- * gets freed.
+/**                                                             
+ * This function closes the given ZZIP_FILE handle. 
+ *
+ * If the ZZIP_FILE wraps a normal stat'fd then it is just that int'fd 
+ * that is being closed and the otherwise empty ZZIP_FILE gets freed.
  */
 int 
 zzip_fclose(ZZIP_FILE * fp)
@@ -261,12 +262,7 @@ zzip_fclose(ZZIP_FILE * fp)
     else return zzip_file_close(fp);
 }
 
-/**
- * close an ZZIP_FILE handle. If the ZZIP_FILE wraps a normal stat'fd then it
- * is just that int'fd that is being closed and the otherwise empty ZZIP_FILE
- * gets freed.
- * <p>
- * it is actually a shallow wrapper around => zzip_fclose
+/** => zzip_fclose
  */
 int 
 zzip_close(ZZIP_FILE* fp)
@@ -274,14 +270,16 @@ zzip_close(ZZIP_FILE* fp)
     return zzip_fclose (fp);
 }
 
-/**
- * works like => read(2), it will fill the given buffer with bytes from
+/**                                                              
+ * This functions read data from zip-contained file.
+ *
+ * It works like => read(2) and will fill the given buffer with bytes from
  * the opened file. It will return the number of bytes read, so if the => EOF
  * is encountered you will be prompted with the number of bytes actually read.
- * <p>
+ * 
  * This is the routines that needs the => buf32k buffer, and it would have
  * need for much more polishing but it does already work quite well.
- * <p>
+ * 
  * Note: the 32K buffer is rather big. The original inflate-algorithm
  *       required just that but the latest zlib would work just fine with
  *       a smaller buffer.
@@ -364,11 +362,13 @@ zzip_file_read(ZZIP_FILE * fp, char * buf, int len)
      }
 }  
 
-/**
- * the replacement for => read(2), it will fill the given buffer with bytes from
+/**                                                               
+ * This function will read(2) data from a real/zipped file.
+ *
+ * the replacement for => read(2) will fill the given buffer with bytes from
  * the opened file. It will return the number of bytes read, so if the EOF
  * is encountered you will be prompted with the number of bytes actually read.
- * <p>
+ * 
  * If the file-handle is wrapping a stat'able file then it will actually just
  * perform a normal => read(2)-call, otherwise => zzip_file_read is called
  * to decompress the data stream and any error is mapped to => errno(3).
@@ -387,17 +387,7 @@ zzip_read(ZZIP_FILE * fp, char * buf, int len)
     }
 }
 
-/**
- * the replacement for => fread(3), it will fill the given buffer with bytes 
- * from the opened file. It will return the number of bytes read, so if the 
- * EOF is encountered you will be prompted with the number of bytes actually 
- * read.
- * <p>
- * If the file-handle is wrapping a stat'able file then it will actually just
- * perform a normal => read(2)-call, otherwise => zzip_file_read is called
- * to decompress the data stream and any error is mapped to => errno(3).
- * <p>
- * it is actually a minimal wrapper around => zzip_read
+/** => zzip_read
  */
 int 
 zzip_fread(void *ptr, int size, int nmemb, ZZIP_FILE *file)
@@ -424,53 +414,58 @@ zzip_fread(void *ptr, int size, int nmemb, ZZIP_FILE *file)
 #define ZZIP_NOCTTY             0
 #endif
 
+/* ------------------------------------------------------------------- */
 
-/**
- * see => fopen(3).
- * <p>
- * This functions has some magic builtin - it will first try to open
+/**                                                            
+ * This function will => fopen(3) a real/zipped file.
+ * 
+ * It has some magic functionality builtin - it will first try to open
  * the given <em>filename</em> as a normal file. If it does not
  * exist, the given path to the filename (if any) is split into
  * its directory-part and the file-part. A ".zip" extension is
  * then added to the directory-part to create the name of a
  * zip-archive. That zip-archive (if it exists) is being searched
  * for the file-part, and if found a zzip-handle is returned. 
- * <p>
+ * 
  * Note that if the file is found in the normal fs-directory the
  * returned structure is mostly empty and the => zzip_read call will
  * use the libc => read to obtain data. Otherwise a => zzip_file_open 
  * is performed and any error mapped to => errno(3).
- * <p>
+ * 
  * unlike the posix-wrapper => zzip_open the mode-argument is
  * a string which allows for more freedom to support the extra
  * zzip modes called ZZIP_CASEINSENSITIVE and ZZIP_IGNOREPATH.
  * Currently, this => zzip_fopen call will convert the following
- * characters in the mode-string into their corrsponding mode-bits:
- * <br><code> "r" : O_RDONLY : </code> read-only
- * <br><code> "b" : O_BINARY : </code> binary (win32 specific)
- * <br><code> "f" : O_NOCTTY : </code> no char device (unix)
- * <br><code> "i" : ZZIP_CASELESS : </code> inside zip file
- * <br><code> "*" : ZZIP_NOPATHS : </code> inside zip file only
- * <br> all other modes will be ignored for zip-contained entries
+ * characters in the mode-string into their corrsponding mode-bits: 
+ *  <ul><li><code> "r" : O_RDONLY : </code> read-only
+ * </li><li><code> "b" : O_BINARY : </code> binary (win32 specific)
+ * </li><li><code> "f" : O_NOCTTY : </code> no char device (unix)
+ * </li><li><code> "i" : ZZIP_CASELESS : </code> inside zip file
+ * </li><li><code> "*" : ZZIP_NOPATHS : </code> inside zip file only
+ * </ul> all other modes will be ignored for zip-contained entries
  * but they are transferred for compatibility and portability,
  * including these extra sugar bits:
- * <br><code> "x" : O_EXCL :</code> fail if file did exist
- * <br><code> "s" : O_SYNC :</code> synchronized access
- * <br><code> "n" : O_NONBLOCK :</code> nonblocking access
- * <br><code> "6" : access bits :</code> unix access mode
- * ... per default an umask 002 is simulated, so that "6" = 0664.
- * the next "0" will make that 0660 and a second "0" makes it 0600.
- * a second non-null number will set the group-access bits. That
- * way you can express arbitrary user-access and group-access modes
- * but world-access is limited - it is always either the group-mode
- * minus write-bit or just inaccessible.
+ *  <ul><li><code> "x" : O_EXCL :</code> fail if file did exist
+ * </li><li><code> "s" : O_SYNC :</code> synchronized access
+ * </li><li><code> "n" : O_NONBLOCK :</code> nonblocking access
+ * </li><li><code> "z#" : compression level :</code> for zlib
+ * </li><li><code> "g#" : group access :</code> unix access bits
+ * </li><li><code> "u#" : owner access :</code> unix access bits
+ * </li><li><code> "o#" : world access :</code> unix access bits
+ * </ul>... the access bits are in traditional unix bit format
+ * with 7 = read/write/execute, 6 = read/write, 4 = read-only.
+ *
+ * The default access mode is 0664, and the compression level
+ * is ignored since the lib can not yet write zip files, otherwise
+ * it would be the initialisation value for the zlib deflateInit
+ * where 0 = no-compression, 1 = best-speed, 9 = best-compression.
  */
 ZZIP_FILE*
 zzip_fopen(zzip_char_t* filename, zzip_char_t* mode)
 {
     
     int o_flags = 0;
-    int o_modes = 0;
+    int o_modes = 0664;
     if (!mode) mode = "rb";
 
 #   ifndef O_BINARY
@@ -490,15 +485,9 @@ zzip_fopen(zzip_char_t* filename, zzip_char_t* mode)
     {
         switch (*mode)
         {
-        case '0':
-            o_modes &= ((o_modes & 7) ? 0770 : 0700); break;
-        case '1': case '2': case '3': case '4': case '5': case '6': case '7':
-            {
-                register int x = *mode; x -= '0';
-                o_modes &= 0700;
-                o_modes |= x; x <<= 3; o_modes |= x; x <<= 3;
-                o_modes |= (o_modes & 0700) ? 0 : x;
-            } break;
+	case '0': case '1': case '2': case '3': case '4': 
+	case '5': case '6': case '7': case '8': case '9':
+	    continue; /* ignore if not attached to other info */
         case 'r': o_flags |= mode[1] == '+' ? O_RDWR : O_RDONLY; break;
         case 'w': o_flags |= mode[1] == '+' ? O_RDWR : O_WRONLY; 
                   o_flags |= O_TRUNC; break;
@@ -509,37 +498,46 @@ zzip_fopen(zzip_char_t* filename, zzip_char_t* mode)
         case 'x': o_flags |= O_EXCL; break;
         case 's': o_flags |= O_SYNC; break;
         case 'n': o_flags |= O_NONBLOCK; break;
+	case 'o': o_modes &=~ 07; 
+                  o_modes |= ((mode[1] - '0'))&07; continue;
+	case 'g': o_modes &=~ 070; 
+                  o_modes |= ((mode[1] - '0')<<3)&070; continue;
+	case 'u': o_modes &=~ 0700; 
+                  o_modes |= ((mode[1] - '0')<<6)&0700; continue;
+	case 'z': /* compression level */
+	    continue; /* currently ignored, just for write mode */
         }
     }
     
-    o_modes &= 0775; /* umask 002 */
     return zzip_open_ext_io(filename, o_flags, o_modes, 0, 0);
 }
 
-/**
- * see => open(2) and compare with => zzip_fopen
- * <p>
- * This functions has some magic builtin - it will first try to open
+/**                                                        
+ * This function will => open(2) a real/zipped file
+ *
+ * It has some magic functionality builtin - it will first try to open
  * the given <em>filename</em> as a normal file. If it does not
  * exist, the given path to the filename (if any) is split into
  * its directory-part and the file-part. A ".zip" extension is
  * then added to the directory-part to create the name of a
  * zip-archive. That zip-archive (if it exists) is being searched
  * for the file-part, and if found a zzip-handle is returned. 
- * <p>
+ * 
  * Note that if the file is found in the normal fs-directory the
  * returned structure is mostly empty and the => zzip_read call will
  * use the libc => read to obtain data. Otherwise a => zzip_file_open 
  * is performed and any error mapped to => errno(3).
- * <p>
+ * 
  * There was a possibility to transfer zziplib-specific openmodes
  * through o_flags but you should please not use them anymore and
  * look into => zzip_open_ext_io to submit them down. This function
- * is shallow in that it just extracts the zzipflags and calls <br><code>
- * zzip_open_ext_io(filename, o_flags, zzipflags|0664, 0, 0) </code><br>
+ * is shallow in that it just extracts the zzipflags and calls <ul><li><code>
+ * zzip_open_ext_io(filename, o_flags, zzipflags|0664, 0, 0) </code></li></ul>
  * you must stop using this extra functionality (not well known
  * anyway) since zzip_open might be later usable to open files
  * for writing in which case the _EXTRAFLAGS will get in conflict.
+ *
+ * compare with  => open(2) and => zzip_fopen
  */
 ZZIP_FILE*
 zzip_open(zzip_char_t* filename, int o_flags)
@@ -553,11 +551,16 @@ zzip_open(zzip_char_t* filename, int o_flags)
     return zzip_open_ext_io(filename, o_flags, o_modes, 0, 0);
 }
 
-/**
- * see => zzip_open and => zzip_fopen
- * <p>
- * uses explicit ext and io instead of the internal defaults
- * <p>
+/* ZZIP_ONLYZIP won't work on platforms with sizeof(int) == 16bit */
+#if ZZIP_SIZEOF_INT+0 == 2
+#undef ZZIP_ONLYZIP
+#endif
+
+/** => zzip_open
+ *
+ * This function uses explicit ext and io instead of the internal 
+ * defaults, setting them to zero is equivalent to => zzip_open
+ * 
  * note that the two flag types have been split into an o_flags
  * (for fcntl-like openflags) and o_modes where the latter shall
  * carry the zzip_flags and possibly accessmodes for unix filesystems.
@@ -570,7 +573,7 @@ zzip_open_ext_io(zzip_char_t* filename, int o_flags, int o_modes,
 {
     if (!io) io = zzip_get_default_io ();
 
-    if (o_modes & ZZIP_PREFERZIP) goto try_zzip;
+    if (o_modes & (ZZIP_PREFERZIP|ZZIP_ONLYZIP)) goto try_zzip;
  try_real:
     /* prefer an existing real file */
     {   int fd = io->open(filename, o_flags);
@@ -591,8 +594,8 @@ zzip_open_ext_io(zzip_char_t* filename, int o_flags, int o_modes,
      * we better defend this lib against illegal usage */
     if (o_flags & (O_CREAT|O_WRONLY))     { errno = EINVAL; return 0; }
     if (o_flags & (O_RDWR)) { o_flags ^= O_RDWR; o_flags |= O_RDONLY; }
-    /* this is not only for backward compatibility but it is also
-     * correct for the readonly case when zipwriting is possible: */
+    /* this is just for backward compatibility -and strictly needed to
+     * prepare ourselves for more options and more options later on... */
     if (o_modes & ZZIP_CASELESS) { o_flags |= ZZIP_CASEINSENSITIVE; }
     if (o_modes & ZZIP_NOPATHS)  { o_flags |= ZZIP_IGNOREPATH; }
     
@@ -627,16 +630,18 @@ zzip_open_ext_io(zzip_char_t* filename, int o_flags, int o_modes,
           return fp;
       } /*again*/
 
-      if (!(o_modes & ZZIP_PREFERZIP)) goto try_real;
+      if (o_modes & ZZIP_PREFERZIP) goto try_real;
       errno = ENOENT; return 0;
     }
 }
 
 /* ------------------------------------------------------------------- */
 
-/**
- * Rewind an ZZIP_FILE handle. Seeks to the beginning of this file's
- * data in the zip, or the beginning of the file for a stat'fd.
+/**                                                                
+ * This function will rewind a real/zipped file. 
+ *
+ * It seeks to the beginning of this file's data in the zip, 
+ * or the beginning of the file for a stat'fd.
  */
 int
 zzip_rewind(ZZIP_FILE *fp)
@@ -689,11 +694,12 @@ zzip_rewind(ZZIP_FILE *fp)
     return err;
 }
 
-/**
- * the replacement for => lseek(2), it will seek to the offset
- * specified by offset, relative to whence, which is one of
- * SEEK_SET, SEEK_CUR or SEEK_END.
- * <p>
+/**                                                                  
+ * This function will perform a => lseek(2) operation on a real/zipped file
+ *
+ * It will try to seek to the offset specified by offset, relative to whence, 
+ * which is one of SEEK_SET, SEEK_CUR or SEEK_END.
+ * 
  * If the file-handle is wrapping a stat'able file then it will actually just
  * perform a normal => lseek(2)-call. Otherwise the relative offset
  * is calculated, negative offsets are transformed into positive ones
@@ -806,10 +812,12 @@ zzip_seek(ZZIP_FILE * fp, int offset, int whence)
     return zzip_tell(fp);
 }
 
-/**
- * the replacement for => tell(2), it will return the current offset
- * in the file, in uncompressed bytes.
- * <p>
+/**                                                                  
+ * This function will => tell(2) the current position in a real/zipped file
+ *
+ * It will return the current offset within the real/zipped file, 
+ * measured in uncompressed bytes for the zipped-file case.
+ *
  * If the file-handle is wrapping a stat'able file then it will actually just
  * perform a normal => tell(2)-call, otherwise the offset is
  * calculated from the amount of data left and the total uncompressed
@@ -827,7 +835,6 @@ zzip_tell(ZZIP_FILE * fp)
     /* current uncompressed offset is uncompressed size - data left */
     return (fp->usize - fp->restlen);
 }
-
 
 /* 
  * Local variables:

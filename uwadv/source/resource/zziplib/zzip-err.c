@@ -75,9 +75,9 @@ zzip_strerror(int errcode)
   return strerror (errcode);
 }
 
-/**
- * read the errorcode from the => DIR-handle and run it
- * through => zzip_strerror to obtain the static string
+/** => zzip_strerror
+ * This function fetches the errorcode from the => DIR-handle and 
+ * runs it through => zzip_strerror to obtain the static string
  * describing the error.
  */
 zzip_char_t* 

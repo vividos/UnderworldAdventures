@@ -131,7 +131,7 @@
 
 /* Version number of package */
 #ifndef ZZIP_VERSION 
-#define ZZIP_VERSION  "0.10.57" 
+#define ZZIP_VERSION  "0.10.65" 
 #endif
 
 /* io-wrap needs to wrap systemcalls */

@@ -62,9 +62,8 @@ uint32_t __zzip_get32(unsigned char * s)
     |    ((uint32_t)s[1] << 8)  |  (uint32_t)s[0];
 }
 
-/**
- * Make 16 bit value in host byteorder from little-endian mapped octet-data
- * (works also on machines which SIGBUS on misaligned data access (eg. 68000))
+/** => __zzip_get16
+ * This function does the same for a 16 bit value.
  */
 uint16_t __zzip_get16(unsigned char * s)
 {
@@ -100,7 +99,7 @@ _zzip_inline void xbuf (unsigned char* p, int l)
 #endif
 
 /**
- * the function for use by => zzip_file_open. Tries to find
+ * This function is used by => zzip_file_open. It tries to find
  * the zip's central directory info that is usually a few
  * bytes off the end of the file.
  */
@@ -121,7 +120,7 @@ __zzip_find_disk_trailer(int fd, zzip_off_t filesize,
     zzip_off_t offset = 0;
     size_t maplen = 0;
     char* fd_map = 0;
-    
+
     if (!trailer)
         { return(EINVAL); }
   
@@ -223,7 +222,7 @@ _zzip_inline char* aligned4(char* p)
 }
 
 /**
- * the function for use by => zzip_file_open, it is usually called after
+ * This function is used by => zzip_file_open, it is usually called after
  * => __zzip_find_disk_trailer. It will parse the zip's central directory
  * information and create a zziplib private directory table in
  * memory.
@@ -271,7 +270,7 @@ __zzip_parse_root_directory(int fd,
     if (io_USE_MMAP)
     {
         fd_gap = u_rootseek & (8192-1) ;
-        DBG5("fd_gap=%d, maplen=%d, mapseek=%d, %s", 
+        DBG5("fd_gap=%ld, maplen=%ld, mapseek=%ld, %s", 
              fd_gap, u_rootsize+fd_gap, u_rootseek-fd_gap,"");
         fd_map = mmap(0, u_rootsize+fd_gap, PROT_READ, MAP_SHARED, 
                       fd, u_rootseek-fd_gap);
@@ -335,11 +334,11 @@ __zzip_parse_root_directory(int fd,
             break;
 
         DBG5("* file %d { compr=%d crc32=%d offset=%d", 
-            entries,  hdr->compr, hdr->crc32, hdr->offset);
+            entries,  hdr->d_compr, hdr->d_crc32, hdr->d_off);
         DBG5("* csize=%d usize=%d namlen=%d extras=%d", 
-            hdr->csize, hdr->usize, u_namlen, u_extras);
+            hdr->d_csize, hdr->d_usize, u_namlen, u_extras);
         DBG5("* comment=%d name='%s' %s <sizeof %d> } ", 
-            u_comment, hdr->name, "",sizeof(*d));
+            u_comment, hdr->d_name, "",sizeof(*d));
   
         p_reclen = &hdr->d_reclen;
     
@@ -406,14 +405,11 @@ zzip_dir_alloc_ext_io (zzip_strings_t* ext, const zzip_plugin_io_t io)
     return dir;
 }
 
-/**
- * allocate a new ZZIP_DIR handle and do basic 
- * initializations before usage by => zzip_dir_fdopen
- * => zzip_dir_open => zzip_file_open or through
- * => zzip_open
- * (fileext null flags uses { ".zip" , ".ZIP" } )
- * OBSOLETE:
- *  use zzip_dir_alloc_ext_io from now on - with two null arguments as default
+/** => zzip_dir_alloc_ext_io
+ * this function is obsolete - it was generally used for implementation
+ * and exported to let other code build on it. It is now advised to
+ * use => zzip_dir_alloc_ext_io now on explicitly, just set that second
+ * argument to zero to achieve the same functionality as the old style.
  */
 ZZIP_DIR*
 zzip_dir_alloc (zzip_strings_t* fileext)
@@ -465,8 +461,6 @@ zzip_dir_close(ZZIP_DIR * dir)
  * <p> 
  * NOTE: refcount is zero, so an _open/_close pair will also delete 
  *       this _dirhandle 
- * <p>
- * (=> zzip_dir_fdopen_ext_io)
  */
 ZZIP_DIR * 
 zzip_dir_fdopen(int fd, zzip_error_t * errcode_p)
@@ -474,10 +468,9 @@ zzip_dir_fdopen(int fd, zzip_error_t * errcode_p)
     return zzip_dir_fdopen_ext_io(fd, errcode_p, 0, 0);
 }
 
-/**
- * see => zzip_dir_fdopen
- * <p>
- * this one uses explicit ext and io instead of the internal defaults
+/** => zzip_dir_fdopen
+ * this function uses explicit ext and io instead of the internal 
+ * defaults, setting these to zero is equivalent to => zzip_dir_fdopen
  */
 ZZIP_DIR * 
 zzip_dir_fdopen_ext_io(int fd, zzip_error_t * errcode_p,
@@ -500,7 +493,7 @@ zzip_dir_fdopen_ext_io(int fd, zzip_error_t * errcode_p,
                                        dir->io)) != 0)
         { goto error; }
                 
-    DBG5("directory = { entries= %d/%d, size= %ld, seek= %ld } ", 
+    DBG5("directory = { entries= %d/%d, size= %d, seek= %d } ", 
         ZZIP_GET16(trailer.z_entries),  ZZIP_GET16(trailer.z_finalentries),
         ZZIP_GET32(trailer.z_rootsize), ZZIP_GET32(trailer.z_rootseek));
 
@@ -551,7 +544,6 @@ __zzip_try_open(zzip_char_t* filename, int filemode,
  * Opens the zip-archive (if available).
  * the two ext_io arguments will default to use posix io and 
  * a set of default fileext that can atleast add .zip ext itself.
- * (=> zzip_dir_open_ext_io)
  */
 ZZIP_DIR* 
 zzip_dir_open(zzip_char_t* filename, zzip_error_t* e)
@@ -559,10 +551,9 @@ zzip_dir_open(zzip_char_t* filename, zzip_error_t* e)
     return zzip_dir_open_ext_io (filename, e, 0, 0);
 }
 
-/**
- * see => zzip_dir_open
- * <p>
- * this one uses explicit ext and io instead of the internal defaults.
+/** => zzip_dir_open
+ * this function uses explicit ext and io instead of the internal 
+ * defaults. Setting these to zero is equivalent to => zzip_dir_open
  */
 ZZIP_DIR* 
 zzip_dir_open_ext_io(zzip_char_t* filename, zzip_error_t* e,
@@ -575,12 +566,12 @@ zzip_dir_open_ext_io(zzip_char_t* filename, zzip_error_t* e,
 
     fd = io->open(filename, O_RDONLY|O_BINARY);
     if (fd != -1) 
-      { return zzip_dir_fdopen(fd, e); }
+      { return zzip_dir_fdopen_ext_io(fd, e, ext, io); }
     else
     {
         fd = __zzip_try_open(filename, O_RDONLY|O_BINARY, ext, io);
         if (fd != -1) 
-          { return zzip_dir_fdopen(fd, e); }
+          { return zzip_dir_fdopen_ext_io(fd, e, ext, io); }
         else
         {
             if (e) { *e = ZZIP_DIR_OPEN; } 

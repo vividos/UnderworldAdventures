@@ -34,8 +34,11 @@
 #define offsetof(T,M) ((unsigned)(& ((T*)0)->M)))
 #endif
 
-/**
- * see => rewinddir(2), rewinds the DIR returned by => zzip_opendir
+/** 
+ * This function is the equivalent of a => rewinddir(2) for a realdir or
+ * the zipfile in place of a directory. The ZZIP_DIR handle returned from
+ * => zzip_opendir has a flag saying realdir or zipfile. As for a zipfile,
+ * the filenames will include the filesubpath, so take care.
  */
 void 
 zzip_rewinddir(ZZIP_DIR * dir)
@@ -81,7 +84,8 @@ real_readdir(ZZIP_DIR* dir)
         {
             dir->dirent.d_compr = st.st_mode;
             dir->dirent.d_compr |= 0x80000000; 
-                	/* makes it effectively negative, but can still be fed to S_ISXXX(x) */
+	    /* makes it effectively negative, 
+	     * but can still be fed to S_ISXXX(x) */
         }else
         {
             dir->dirent.d_compr = 0; /* stored */
@@ -96,7 +100,13 @@ real_readdir(ZZIP_DIR* dir)
 #endif
 
 /**
- * see => readdir(2), reads the DIR returned by => zzip_opendir
+ * This function is the equivalent of a => readdir(2) for a realdir 
+ * or a zipfile referenced by the ZZIP_DIR returned from => zzip_opendir.
+ *
+ * The ZZIP_DIR handle (as returned by => zzip_opendir) contains a few more 
+ * entries than being copied into the ZZIP_DIRENT. The only valid fields in
+ * a ZZIP_DIRENT are d_name (the file name), d_compr (compression), d_csize
+ * (compressed size), st_size (uncompressed size).
  */
 ZZIP_DIRENT* 
 zzip_readdir(ZZIP_DIR * dir)
@@ -125,8 +135,8 @@ zzip_readdir(ZZIP_DIR * dir)
     return &dir->dirent;
 }
 
-/**
- * see => telldir(2)
+/** => zzip_rewinddir
+ * This function is the equivalent of => telldir(2) for a realdir or zipfile.
  */
 zzip_off_t 
 zzip_telldir(ZZIP_DIR* dir)
@@ -144,8 +154,8 @@ zzip_telldir(ZZIP_DIR* dir)
     }
 }
 
-/**
- * see => seekdir(2)
+/** => zzip_rewinddir
+ * This function is the equivalent of => seekdir(2) for a realdir or zipfile.
  */
 void
 zzip_seekdir(ZZIP_DIR* dir, zzip_off_t offset)
@@ -167,28 +177,27 @@ zzip_seekdir(ZZIP_DIR* dir, zzip_off_t offset)
 }
 
 /**
- * see => opendir(3). 
+ * This function is the equivalent of => opendir(3) for a realdir or zipfile.
  * <p>
  * This function has some magic - if the given argument-path
  * is a directory, it will wrap a real => opendir(3) into the ZZIP_DIR
  * structure. Otherwise it will divert to => zzip_dir_open which 
- * can also attach a .zip extension if needed to find the archive.
+ * can also attach a ".zip" extension if needed to find the archive.
  * <p>
  * the error-code is mapped to => errno(3).
  */
 ZZIP_DIR* 
 zzip_opendir(zzip_char_t* filename)
 {
-    return zzip_opendir_ext_io (filename, 0, 0);
+    return zzip_opendir_ext_io (filename, 0, 0, 0);
 }
 
-/**
- * see => zzip_opendir magic function for => opendir(3)
- * <p>
- * here we use explicit ext and io instead of the internal defaults
+/** => zzip_opendir
+ * This function uses explicit ext and io instead of the internal 
+ * defaults, setting them to zero is equivalent to => zzip_opendir
  */
 ZZIP_DIR* 
-zzip_opendir_ext_io(zzip_char_t* filename, 
+zzip_opendir_ext_io(zzip_char_t* filename, int o_modes,
 		    zzip_strings_t* ext, zzip_plugin_io_t io)
 {
     zzip_error_t e;
@@ -196,14 +205,19 @@ zzip_opendir_ext_io(zzip_char_t* filename,
 
 #  ifdef ZZIP_HAVE_SYS_STAT_H
     struct stat st;
-    
-    if (stat(filename, &st) >= 0
+#  endif
+
+    if (o_modes & (ZZIP_PREFERZIP|ZZIP_ONLYZIP)) goto try_zzip;
+ try_real:
+
+#  ifdef ZZIP_HAVE_SYS_STAT_H
+    if (stat(filename, &st) >= 0 &&
 #ifdef _MSC_VER
-     && (st.st_mode & S_IFDIR))
+	(st.st_mode & S_IFDIR)
 #else
-     && S_ISDIR(st.st_mode))
+	S_ISDIR(st.st_mode)
 #endif
-    {
+    ){
 #     ifdef ZZIP_HAVE_DIRENT_H
     	DIR* realdir = opendir(filename);
         if (realdir)
@@ -221,17 +235,18 @@ zzip_opendir_ext_io(zzip_char_t* filename,
         }
 #     endif
         return 0;
-    }else
-#  endif
-    {
-        dir = zzip_dir_open_ext_io(filename, &e, ext, io);
-        if (! e) return dir;
-        errno = zzip_errno(e); return dir;
     }
+#  endif /* HAVE_SYS_STAT_H */
+
+ try_zzip:
+    dir = zzip_dir_open_ext_io (filename, &e, ext, io);
+    if (! dir && (o_modes & ZZIP_PREFERZIP)) goto try_real;
+    if (e) errno = zzip_errno(e); 
+    return dir;
 }
 
 /**
- * see => closedir(3).
+ * This function is the equivalent of => closedir(3) for a realdir or zipfile.
  * <p>
  * This function is magic - if the given arg-ZZIP_DIR
  * is a real directory, it will call the real => closedir(3) and then

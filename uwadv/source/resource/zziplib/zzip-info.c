@@ -10,7 +10,8 @@
 #endif
 
 /** 
- *  return dir->errcode 
+ *  just returns dir->errcode of the ZZIP_DIR handle 
+ *  see: => zzip_dir_open, => zzip_diropen, => zzip_readdir, => zzip_dir_read
  */
 int 
 zzip_error(ZZIP_DIR * dir)   
@@ -18,15 +19,18 @@ zzip_error(ZZIP_DIR * dir)
     return dir->errcode; 
 }
 
-/** 
- *  dir->errcode = errcode 
+/** => zzip_error
+ *  This function just does dir->errcode = errcode 
  */
 void 
 zzip_seterror(ZZIP_DIR * dir, int errcode)   
 { dir->errcode = errcode; }
 
 /** 
- * return fp->dir 
+ * This function will just return fp->dir 
+ *
+ * If a ZZIP_FILE is contained within a zip-file that one will be a valid
+ * pointer, otherwise a NULL is returned and the ZZIP_FILE wraps a real file.
  */
 ZZIP_DIR * 
 zzip_dirhandle(ZZIP_FILE * fp)   
@@ -34,8 +38,12 @@ zzip_dirhandle(ZZIP_FILE * fp)
     return fp->dir; 
 }
 
-/**
- *  return dir->fd 
+/** => zzip_dirhandle
+ *  This function will just return dir->fd 
+ *
+ * If a ZZIP_DIR does point to a zipfile then the file-descriptor of that
+ * zipfile is returned, otherwise a NULL is returned and the ZZIP_DIR wraps 
+ * a real directory DIR (if you have dirent on your system).
  */
 int 
 zzip_dirfd(ZZIP_DIR* dir)   
@@ -45,7 +53,7 @@ zzip_dirfd(ZZIP_DIR* dir)
 
 /**
  * return static const string of the known compression methods, 
- * otherwise "zipped" is returned
+ * otherwise just "zipped" is returned
  */
 zzip_char_t*
 zzip_compr_str(int compr)
@@ -90,10 +98,10 @@ zzip_compr_str(int compr)
     }/*switch*/
 }
 
-/**
- * return if the DIR-handle is wrapping a real directory
- * or a zip-archive. Returns 1 for a stat'able directory,
- * and 0 for a handle to zip-archive.
+/** => zzip_file_real
+ * This function checks if the ZZIP_DIR-handle is wrapping 
+ * a real directory or a zip-archive. 
+ * Returns 1 for a stat'able directory, and 0 for a handle to zip-archive.
  */ 
 int
 zzip_dir_real(ZZIP_DIR* dir)
@@ -102,9 +110,9 @@ zzip_dir_real(ZZIP_DIR* dir)
 }
 
 /**
- * return if the FILE-handle is wrapping a real file
- * or a zip-contained file. Returns 1 for a stat'able file,
- * and 0 for a file inside a zip-archive.
+ * This function checks if the ZZIP_FILE-handle is wrapping 
+ * a real file or a zip-contained file. 
+ * Returns 1 for a stat'able file, and 0 for a file inside a zip-archive.
  */
 int
 zzip_file_real(ZZIP_FILE* fp)
@@ -112,8 +120,8 @@ zzip_file_real(ZZIP_FILE* fp)
     return fp->dir == 0; /* ie. not dependent on a zip-arch-dir  */
 }
 
-/**
- * return the posix DIR* handle (if one exists).
+/** => zzip_file_real
+ * This function returns the posix DIR* handle (if one exists).
  * Check before with => zzip_dir_real if the
  * the ZZIP_DIR points to a real directory.
  */
@@ -123,8 +131,8 @@ zzip_realdir(ZZIP_DIR* dir)
     return dir->realdir;
 }
 
-/**
- * return the posix file descriptor (if one exists).
+/** => zzip_file_real
+ * This function returns the posix file descriptor (if one exists).
  * Check before with => zzip_file_real if the
  * the ZZIP_FILE points to a real file.
  */

@@ -22,9 +22,9 @@
 #include "zzip.h"
 
 /**
- * obtain information about a filename in a zip-archive without 
+ * obtain information about a filename in an opened zip-archive without 
  * opening that file first. Mostly used to obtain the uncompressed 
- * size of file inside a zip-archive.
+ * size of a file inside a zip-archive. see => zzip_dir_open.
  */
 int 
 zzip_dir_stat(ZZIP_DIR * dir, zzip_char_t* name, ZZIP_STAT * zs, int flags)

@@ -35,35 +35,15 @@ static int _zzip_close(SDL_RWops *context)
     return 0;
 }
 
-#ifndef O_BINARY
-#define O_BINARY 0
-#endif
-
-/* some ugly include file seemed to define this :( */
-#undef read
-
 SDL_RWops *SDL_RWFromZZIP(const char* file, const char* mode)
 {
-    register int mo = 0;
     register SDL_RWops* rwops;
     register ZZIP_FILE* zzip_file;
 
-    /* extension list; to open zip files using their full name */
-    zzip_strings_t exts[] = { "", 0 };
+    if (*mode != 'r')
+	return SDL_RWFromFile(file, mode);
 
-    for (; *mode; ++mode)
-	switch (*mode)
-	{
-	case 'r': mo |= O_RDONLY;  break;
-	case '+': mo |= ZZIP_CASEINSENSITIVE; break; /* == O_APPEND */
-	case 'b': mo |= O_BINARY; break;
-	case 't': /* skip */ break;
-	default: /* 'w', 'a', etc... */
-      break;
-	}
-
-    /* open file, only opening zip files */
-    zzip_file = zzip_open_ext_io (file, mo, ZZIP_PREFERZIP, exts, 0);
+    zzip_file = zzip_fopen (file, mode);
     if (! zzip_file) return 0;
 
     rwops = SDL_AllocRW ();
@@ -76,6 +56,3 @@ SDL_RWops *SDL_RWFromZZIP(const char* file, const char* mode)
     rwops->close = _zzip_close;
     return rwops;
 }
-
-
-

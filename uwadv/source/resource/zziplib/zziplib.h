@@ -53,6 +53,7 @@ typedef enum
 #define ZZIP_CASELESS           (1<<12) /* ignore filename case inside zips */
 #define ZZIP_NOPATHS            (1<<13) /* ignore subdir paths, just filename*/
 #define ZZIP_PREFERZIP          (1<<14) /* try first zipped file, then real*/
+#define ZZIP_ONLYZIP            (1<<16) /* try _only_ zipped file, skip real*/
 
 /*
  * zzip typedefs
@@ -211,7 +212,7 @@ ZZIP_FILE * zzip_open_ext_io(zzip_char_t* name, int o_flags, int o_modes,
 			     zzip_strings_t* ext, zzip_plugin_io_t io);
 
 _zzip_export
-ZZIP_DIR *  zzip_opendir_ext_io(zzip_char_t* name, 
+ZZIP_DIR *  zzip_opendir_ext_io(zzip_char_t* name, int o_modes,
 				zzip_strings_t* ext, zzip_plugin_io_t io);
 
 _zzip_export

@@ -16,15 +16,21 @@
 
 #include <SDL_rwops.h>
 
+#ifndef ZZIP_NO_DECLSPEC
+#define ZZIP_DECLSPEC
+#else /* use DECLSPEC from SDL/begin_code.h */
+#define ZZIP_DECLSPEC DECLSPEC
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-//extern DECLSPEC
+extern ZZIP_DECLSPEC
 SDL_RWops *SDL_RWFromZZIP(const char* file, const char* mode);
 
 #ifdef __cplusplus
-}
+} /* extern C */
 #endif
 
 #endif
