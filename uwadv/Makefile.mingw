@@ -12,7 +12,10 @@
 UWADV_PATH = c:/uwadv
 
 # set to "yes" for console or "no" to have stdout.txt/stderr.txt
-WITH_CONSOLE = yes
+WITH_CONSOLE = no
+
+# set to "yes" to have some debugging features
+WITH_DEBUGGING = no
 
 # path to SDL include
 SDL_INCLUDE = -Ic:/mingw/include/sdl/
@@ -30,7 +33,7 @@ STLPORT_LIB = -Lc:/mingw/stl/lib/ -lstlport_mingw32_static
 # compiler
 CC = gcc
 CXX = c++
-CFLAGS = -Wall -O2 #-g -O
+CFLAGS = -O2 #-Wall -g -O
 CXXFLAGS =
 LDFLAGS = -mwindows -s
 DEFINES = 
@@ -52,6 +55,11 @@ DEFINES += -DHAVE_CONSOLE
 else
 uwadv_SDL_LIB = -lSDLmain -lSDL -lSDL_mixer
 endif
+
+ifeq ("$(WITH_DEBUGGING)", "yes")
+DEFINES += -DHAVE_DEBUG
+endif
+
 
 INCLUDES = $(SDL_INCLUDE) $(STLPORT_INCLUDE) $(FMOD_INCLUDE) \
 	-Isource/ -Isource/lua/include/ -Isource/resource/zziplib/
