@@ -994,7 +994,8 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
 
 #ifndef HAVE_DEBUG
    // don't render invisible objects
-   if (item_id>0x0140 && item_id != 0x01ca && item_id != 0x0164)
+   if (item_id>0x0140 && item_id != 0x01ca && item_id != 0x0164 &&
+       item_id != 0x0166 && item_id != 0x016e && item_id != 0x0157)
       return;
 #endif
 
@@ -1013,7 +1014,7 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
       base.z = (extinfo.zpos/4.0)*height_scale;
 
       // hack: set texture for bridge
-      if (item_id==0x0164)
+      if (item_id==0x0164 || item_id==0x0157)
          texmgr->use(ua_tex_stock_floor+31);
 
       modelmgr->render(item_id,base);
@@ -1051,6 +1052,12 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
    }
    else
    {
+      if (item_id == 0x0166 || item_id == 0x016e)
+      {
+         render_tmap_decal(obj,x,y);
+         return;
+      }
+
       // normal object
       double quadwidth = 0.25;
 
@@ -1072,6 +1079,73 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
       draw_billboard_quad(base, 0.5*quadwidth, quadwidth,
          u1,v1,u2,v2);
    }
+}
+
+void ua_renderer::render_tmap_decal(ua_object& obj, unsigned int x, unsigned int y)
+{
+   // 0x0166 some writing, 0x016e special tmap object, 0x0177 pull chain
+
+   ua_object_info_ext& extinfo = obj.get_ext_object_info();
+
+   double xpos = x;
+   double ypos = y;
+   double zpos = extinfo.zpos*height_scale;
+   bool xdir = true;
+
+   double decalwidth = 0.15;
+
+   switch(extinfo.dir)
+   {
+   case 0: xpos += extinfo.xpos; ypos += 1.0;               break; // bottom side
+   case 2: ypos += extinfo.ypos; xpos += 1.0; xdir = false; decalwidth = -decalwidth; break; // left side
+   case 4: xpos += extinfo.xpos;                            decalwidth = -decalwidth; break; // top side
+   case 6: ypos += extinfo.ypos;              xdir = false; break; // right side
+   default:
+      return; // cannot render
+   }
+
+   glDisable(GL_TEXTURE_2D);
+
+   // enable polygon offset
+   glPolygonOffset(-2.0, -2.0);
+   glLineWidth(7.0);
+   glEnable(GL_POLYGON_OFFSET_FILL);
+
+   glColor3ub(255,255,255);
+
+   // render quad
+   glBegin(GL_TRIANGLES);
+   //glBegin(GL_QUADS);
+   glBegin(GL_LINE_LOOP);
+   if (xdir)
+   {
+      glVertex3d(xpos+decalwidth,ypos,zpos);
+      glVertex3d(xpos+decalwidth,ypos,zpos+0.2);
+      glVertex3d(xpos-decalwidth,ypos,zpos+0.2);
+
+      glVertex3d(xpos+decalwidth,ypos,zpos);
+      glVertex3d(xpos-decalwidth,ypos,zpos+0.2);
+      glVertex3d(xpos-decalwidth,ypos,zpos);
+/*
+      glVertex3d(xpos+0.15,ypos,zpos);
+      glVertex3d(xpos-0.15,ypos,zpos+0.2);
+      glVertex3d(xpos+0.15,ypos,zpos+0.2);
+*/
+   }
+   else
+   {
+      glVertex3d(xpos,ypos+decalwidth,zpos);
+      glVertex3d(xpos,ypos+decalwidth,zpos+0.2);
+      glVertex3d(xpos,ypos-decalwidth,zpos+0.2);
+
+      glVertex3d(xpos,ypos+decalwidth,zpos);
+      glVertex3d(xpos,ypos-decalwidth,zpos+0.2);
+      glVertex3d(xpos,ypos-decalwidth,zpos);
+   }
+   glEnd();
+
+   glDisable(GL_POLYGON_OFFSET_FILL);
+   glEnable(GL_TEXTURE_2D);
 }
 
 void ua_renderer::draw_billboard_quad(
