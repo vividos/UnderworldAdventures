@@ -144,11 +144,55 @@ function lua_game_tick(curtime)
 end
 
 
+
+level_pos = {
+   [0] = { -- starting positions for level 0
+      n = 4,
+      pos = {
+         { x = 32.5, y = 2.5 },  -- abyss doors
+         { x = 29.5, y = 18.5 }, -- human enclave
+         { x = 11.5, y = 44.5 }, -- green goblin camp
+         { x = 56.5, y = 59.5 }, -- gray goblin camp
+      }
+   },
+}
+
+
+function repos_player(newlevel)
+
+   targets = level_pos[newlevel]
+
+   if targets == nil then
+      return
+   end
+
+
+   newpos_idx = random(targets.n)
+
+   print( " newpos_idx = " .. newpos_idx )
+
+   local newx = targets.pos[newpos_idx].x
+   local newy = targets.pos[newpos_idx].y
+   local newz = tilemap_get_floor_height(newlevel, newx, newy)
+
+   player_set_pos( newx, newy )
+   player_set_height( newz )
+
+   print( " setting new player position to x = " ..
+      newx .. ", y = " .. newy ..
+      " and z = " .. newz )
+
+end
+
+
 -- called when changing to a new level
 function lua_change_level(newlevel)
 
    ui_print_string("Lua: changing to level " .. newlevel)
 
    -- fun_replace_tilemap_solids()
+
+   -- reposition player
+   repos_player(newlevel)
 
 end
