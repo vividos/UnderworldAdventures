@@ -583,3 +583,8 @@ int main(int argc, char *argv[])
 
    return 0;
 }
+
+
+// fake function to prevent linking with all the uwadv stuff
+#include "player.hpp"
+unsigned int ua_player::get_attr(ua_player_attributes) const { return 0; }
