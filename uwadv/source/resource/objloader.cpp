@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -28,12 +28,11 @@
 // needed includes
 #include "common.hpp"
 #include "objects.hpp"
-#include "fread_endian.hpp"
 
 
 // ua_object_list methods
 
-void ua_object_list::import_objs(FILE *fd)
+void ua_object_list::import_objs(SDL_RWops* rwops)
 {
    tile_index.resize(64*64,0);
    master_obj_list.resize(0x400);
@@ -41,7 +40,7 @@ void ua_object_list::import_objs(FILE *fd)
    // read in all tile indices
    for(unsigned int tile=0; tile<64*64; tile++)
    {
-      Uint32 tileword = fread32(fd);
+      Uint32 tileword = SDL_RWread32(rwops);
       tile_index[tile] = (tileword & 0xFFC00000) >> 22;
    }
 
@@ -51,14 +50,14 @@ void ua_object_list::import_objs(FILE *fd)
 
    for(Uint16 item=0; item<0x400; item++)
    {
-      objprop[item*2+0] = fread32(fd);
-      objprop[item*2+1] = fread32(fd);
+      objprop[item*2+0] = SDL_RWread32(rwops);
+      objprop[item*2+1] = SDL_RWread32(rwops);
 
       if (item<0x100)
       {
          // read NPC info bytes
          for(unsigned int n=0; n<19; n++)
-            npcinfo[item*19+n] = fgetc(fd);
+            npcinfo[item*19+n] = SDL_RWread8(rwops);
       }
    }
 
