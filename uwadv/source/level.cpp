@@ -27,7 +27,7 @@
 
 // needed includes
 #include "common.hpp"
-#include "levelmap.hpp"
+#include "level.hpp"
 #include <string>
 
 
@@ -36,9 +36,11 @@
 void ua_levelmap::prepare_textures(ua_texture_manager &texmgr)
 {
    int tex;
-   for(tex=0;tex<48;tex++) texmgr.prepare(true,wall_textures[tex]);
-   for(tex=0;tex<10;tex++) texmgr.prepare(false,floor_textures[tex]);
+   for(tex=0;tex<48;tex++) texmgr.prepare(wall_textures[tex]);
+   for(tex=0;tex<10;tex++) texmgr.prepare(floor_textures[tex]);
    // todo door textures?
+
+   texmgr.prepare(0x010f);
 }
 
 float ua_levelmap::get_floor_height(float xpos, float ypos)
@@ -83,16 +85,10 @@ void ua_levelmap::render(ua_texture_manager &texmgr)
    for(x=0; x<64; x++)
       render_ceiling(x,y,texmgr);
 
-//   if (ua_game::transparent_walls)
-//      glEnable(GL_BLEND);
-
    // draw all walls
    for(y=0; y<64; y++)
       for(x=0; x<64; x++)
          render_walls(x,y,texmgr);
-
-//   if (ua_game::transparent_walls)
-//      glDisable(GL_BLEND);
 }
 
 void ua_levelmap::render_floor(int x, int y, ua_texture_manager &texmgr)
@@ -102,7 +98,7 @@ void ua_levelmap::render_floor(int x, int y, ua_texture_manager &texmgr)
       return; // don't draw solid tiles
 
    // use texture
-   texmgr.use(false,tile.texture_floor);
+   texmgr.use(tile.texture_floor);
    glColor3ub(192,192,192);
 
    // draw floor tile
@@ -194,7 +190,7 @@ void ua_levelmap::render_ceiling(int x, int y, ua_texture_manager &texmgr)
       return; // don't draw solid tiles
 
    // use texture
-   texmgr.use(false,15);
+   texmgr.use(0x010f);
    glColor3ub(192,192,192);
 
    // draw ceiling tile; for simplicity, we only draw a square
@@ -215,7 +211,7 @@ void ua_levelmap::render_walls(int x, int y, ua_texture_manager &texmgr)
    Uint8 x1, y1, z1, x2, y2, z2, dummy, nz1, nz2;
 
    // use wall texture
-   texmgr.use(true,tile.texture_wall);
+   texmgr.use(tile.texture_wall);
 
    // draw diagonal walls
    switch(tile.type)
