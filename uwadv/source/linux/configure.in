@@ -1,0 +1,36 @@
+dnl
+dnl configure.in for Underworld Adventures
+dnl
+dnl $Id$
+dnl
+
+
+dnl initial stuff
+AC_INIT(../uwadv.cpp)
+AM_INIT_AUTOMAKE(uwadv,0.0.1)
+dnl AM_CONFIG_HEADER(config.h)
+AC_PREFIX_DEFAULT(/usr/local/games)
+
+
+dnl find and test the compiler
+AC_PROG_CC
+AC_LANG_C
+AC_PROG_CXX
+AC_LANG_CPLUSPLUS
+AC_REQUIRE_CPP
+
+
+dnl other needed programs
+AC_PROG_MAKE_SET
+AC_PROG_INSTALL
+
+
+dnl check header
+AC_HEADER_STDC
+AC_CHECK_HEADERS(SDL/SDL.h,,AC_MSG_ERROR([
+   Underworld Adventures needs SDL 1.2 or higher installed.]))
+dnl AC_CHECK_HEADERS(fmod.h fmoderr.h,,AC_MSG_ERROR)
+
+
+dnl produce output files
+AC_OUTPUT(../Makefile)

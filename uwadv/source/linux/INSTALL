@@ -1,0 +1,10 @@
+Underworld Adventures
+Linux install notes
+---------------------
+
+do
+   configure
+   cd ..
+   make
+   make install
+
