@@ -77,7 +77,7 @@ void ua_start_menu_screen::init()
 
    stage=0;
    tickcount=0;
-   shiftcount=0;
+   shiftcount=0.0;
    journey_avail=true;
    buttondown=false;
    selected_area=-1;
@@ -225,11 +225,12 @@ void ua_start_menu_screen::tick()
    }
 
    // do palette shifting
-   if (++shiftcount>=core->get_tickrate()/ua_start_menu_palette_shifts_per_second)
+   shiftcount += 1.0/core->get_tickrate();
+   if (shiftcount >= 1.0/ua_start_menu_palette_shifts_per_second)
    {
-      shiftcount=0;
-      // shift palette
+      shiftcount -= 1.0/ua_start_menu_palette_shifts_per_second;
 
+      // shift palette
       Uint8 saved[4];
       memcpy(saved,palette[127],4);
       memmove(palette[65],palette[64],(127-64)*4);

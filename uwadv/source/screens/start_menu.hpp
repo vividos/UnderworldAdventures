@@ -71,7 +71,7 @@ protected:
    unsigned int tickcount;
 
    //! count for palette shifting
-   unsigned int shiftcount;
+   double shiftcount;
 
    //! number of selected area, or -1 if none
    int selected_area;
