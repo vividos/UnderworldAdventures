@@ -4,6 +4,51 @@
 The dev log is the place where I write about the daily ongoings of the project. It is updated occasionally.
 </p>
 
+<span class="devlogHeading">2004-03-18</span>
+<p class="devlogBody">
+Scheduled new release date to be on 2004-04-10. There also will be a new musicpack, since I've found the "wanderer" and the "maps & legends" tracks on my hard disc, done by QQits long ago (in 2002). I don't know if the tracks are finished, but surely worth listening!
+</p>
+
+<span class="devlogHeading">2004-03-17</span>
+<p class="devlogBody">
+Started to refactor physics code. Telemachos has published a new version of his paper on collision detection and response. So far it seems he didn't change the whole concept, so it should be rather easy to implement his new ideas about swept-sphere stuff.
+</p>
+
+<span class="devlogHeading">2004-03-16</span>
+<p class="devlogBody">
+Finished mouse action code on inventory panel. Renamed script.hpp to scripting.hpp. Fixed getting item category and ua_inventory::is_container() implementation. Added unittest.hpp/.cpp that implements a ua_unittest_run() function. It is used to run all unit tests written using CppUnit and that are registered with the test suite registry. That way we can place test classes all over the source folder (in "test" subfolders) that should test different components of uwadv. Tests should be written for every new class and/or functionality. If a bug occurs, a test that fails should be written, then the bug is fixed and the test has to succeed then. This way we can assure our code always performs correctly, event when a class implementation changes.
+</p>
+
+<span class="devlogHeading">2004-03-15</span>
+<p class="devlogBody">
+Added is_container flag to common object properties; it indicates if an object can contain other items; the 3d barrel also has this flag, but cannot be picked up, but it can be emptied. Added armour and wearable properties. Fixed ua_inventory class by using the is_container flag, the item categories and the scripting method to combine items. Added inventory panel drawing and started to work on the mouse action code.
+</p>
+
+<span class="devlogHeading">2004-03-14</span>
+<p class="devlogBody">
+Tested uwadv on an older system using a 3dfx voodoo banshee card; fixed drawing textures bigger than 256x256 pixels.
+</p>
+
+<span class="devlogHeading">2004-03-11</span>
+<p class="devlogBody">
+Added text edit window ua_textedit_view. Added game events for text edit window to signal aborted or finished editing. Added entering savegame description and saving; screenshot taking has still to be done. Fixed drawing info area. Readded the transparent flag to ua_image::paste_image() to more simplify drawing. Since it's only an inline method, it should be optimized away. Implemented up/down buttons on player stats view.
+</p>
+
+<span class="devlogHeading">2004-03-10</span>
+<p class="devlogBody">
+Fixed bug on text scroll when trying to render an empty line. Added version info resource to uwadv.exe, uaconfig.exe and uadebug.dll; when later using .msi packages we have proper version info. Fixed a bug found in STLdebug mode while initializing savegame screen.
+</p>
+
+<span class="devlogHeading">2004-03-09</span>
+<p class="devlogBody">
+Fixed ua_debug_server_impl::get_message() implementation; A std::vector<char> is now used as temporary buffer to get the message string (and only when it's available at all). Added printing STLport version (when used). Removed code to load savegame format 0, since there are 2 different versions that we cannot distinguish from. Added usage of msxsl for xsl transformation used in docbook creation. Added usage of STLport's STLdebug mode when WITH_DEBUGGING is enabled. Ah, and wxWindows now is wxWidgets.
+</p>
+
+<span class="devlogHeading">2004-03-08</span>
+<p class="devlogBody">
+Implemented updating runeshelf window from data in ua_runes. Fixed some valgrind warnings reported by wjp. Fixed bug in critter frames loading; an array was allocated with new and put in an ua_smart_ptr<>, which deletes the array with delete, not delete[] -> memory leaks or undefined behavior! Added experimentally omitting 1st pass when loading, bit it's still buggy and only saves about 20% loading time. Enabled with define OMIT_1ST_PASS. Added on-the-fly critter frame texture uploading; hlps greatly in cutting time while preparing a level. Modified ua_smart_ptr to have a pointer to an internal struct that holds the managed pointer and the reference count. The smart pointer now has the same size as a normal pointer. Webpage: put html template code into own file that is included where needed.
+</p>
+
 <span class="devlogHeading">2004-03-04</span>
 <p class="devlogBody">
 Added message queue to debugger implementation. Implemented shutdown for debugger on debug server side. Client should then check for messages occasionally, either in the idle loop or via a timer. Other messages from possible code-debuggers are passed via the message queue, too. Implemented via an STL deque, where new messages get pushed at the back, and the debug client gets messages from the front.
