@@ -35,37 +35,41 @@
 #include "texture.hpp"
 
 
+//! forward references
+class ua_object;
+class ua_object_list;
+class ua_texture_manager;
+
+
 // classes
 
-//! critter animations
+//! critter animation frames for one critter
 class ua_critter
 {
 public:
    //! ctor
    ua_critter();
 
-   //! loads critter animations
-   void load(const char* file, unsigned int used_auxpal);
-
    //! prepares critter textures
    void prepare(ua_texture_manager& texmgr);
 
-   //! returns critter texture
-   inline ua_texture& get_texture();
+   //! returns critter texture index by frame
+   inline unsigned int get_frame(Uint8 animstate, Uint8 animframe);
+
+   //! returns texture object for a given frame
+   inline ua_texture& get_texture(unsigned int frame);
 
    //! returns hotspot u coordinate
-   inline double get_hotspot_u();
+   inline double get_hotspot_u(unsigned int frame);
 
    //! returns hotspot v coordinate
-   inline double get_hotspot_v();
+   inline double get_hotspot_v(unsigned int frame);
 
-   void set_currentframe(unsigned int frame){ currentframe=frame; }
+   //! updates animation frame of object
+   void update_frame(ua_object& obj);
 
-   // get current frame of animation
-   unsigned int get_currentframe();
-
-   //! called every game tick
-   void tick(double ticktime);
+   //! returns palette ptr
+   ua_palette256_ptr& get_palette(){ return palette; }
 
 protected:
    //! slot list with segment indices
@@ -92,57 +96,71 @@ protected:
    //! texture with all critter images
    std::vector<ua_texture> tex;
 
-   //! current animation segment
-   unsigned int currentanim;
+   //! palette to use
+   ua_palette256_ptr palette;
 
-   //! time counter for animated textures
-   double animcount;
-
-   //! current frame of animation being played for critter
-   unsigned int currentframe;
+   friend class ua_uw_import;
 };
 
 
-//! critter pool with all critter animations
-class ua_critter_pool
+//! critter frames manager class
+class ua_critter_frames_manager
 {
 public:
    //! ctor
-   ua_critter_pool(){}
+   ua_critter_frames_manager(){}
 
-   //! loads critter images
-   void load(ua_settings& settings);
+   //! initialize frames manager
+   void init(ua_settings& settings, ua_image_manager& img_manager);
 
-   //! prepares all critter textures
-   void prepare(ua_texture_manager& texmgr);
+   //! resets controlled object frames and prepares new critter objects
+   void prepare(ua_texture_manager& texmgr, ua_object_list* mapobjects);
+
+   //! does tick processing
+   void tick(double time);
 
    //! returns critter object
    ua_critter& get_critter(unsigned int idx){ return allcritters[idx]; }
 
-   //! called every game tick
-   void tick(double ticktime);
+protected:
+   //! frames per second for critter animations
+   static const double critter_fps;
 
 protected:
-   //! vector with critter animation imagelists
+   //! vector with critter animations
    std::vector<ua_critter> allcritters;
+
+   //! manages objects indices into master object list which objects to control
+   std::vector<Uint16> object_indices;
+
+   //! frame count for objects
+   std::vector<double> object_framecount;
+
+   //! currently managed map objects
+   ua_object_list* mapobjects;
 };
 
 
 // inline methods
 
-ua_texture& ua_critter::get_texture()
+unsigned int ua_critter::get_frame(Uint8 animstate, Uint8 animframe)
 {
-   return tex[currentframe];
+   return segmentlist[animstate][animframe];
 }
 
-double ua_critter::get_hotspot_u()
+ua_texture& ua_critter::get_texture(unsigned int frame)
 {
-   return double(hotxy_coords[currentframe*2+0])/tex[currentframe].get_xres();
+   return tex[frame];
 }
 
-double ua_critter::get_hotspot_v()
+double ua_critter::get_hotspot_u(unsigned int frame)
 {
-   return double(hotxy_coords[currentframe*2+1])/tex[currentframe].get_yres();
+   return double(hotxy_coords[frame*2+0])/tex[frame].get_xres();
+}
+
+double ua_critter::get_hotspot_v(unsigned int frame)
+{
+   return double(hotxy_coords[frame*2+1])/tex[frame].get_yres();
 }
 
 

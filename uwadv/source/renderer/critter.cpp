@@ -28,22 +28,20 @@
 // needed includes
 #include "common.hpp"
 #include "critter.hpp"
+#include "objects.hpp"
+#include "import.hpp"
 
 
 // constants
 
-// should make move this to a header
-//const double critter_fps = 1.0;
-const double critter_fps = 3.0;
+const double ua_critter_frames_manager::critter_fps = 3.0;
 
 
 // ua_critter methods
 
 ua_critter::ua_critter()
-:allframe_bytes(NULL)
+:xres(0), yres(0), maxframes(0), allframe_bytes(NULL)
 {
-   animcount = 0.0;
-   currentframe = 0;
 }
 
 void ua_critter::prepare(ua_texture_manager& texmgr)
@@ -56,6 +54,10 @@ void ua_critter::prepare(ua_texture_manager& texmgr)
 
       curtex.init(&texmgr,1);
 
+      unsigned int offset = 0;
+      curtex.convert(&allframe_bytes.get()[i*xres*yres],
+         xres,yres, *palette.get(), 0);
+
 //      curtex.convert(&allframe_bytes.get()[i*xres*yres],
 //         xres,yres,texmgr.get_palette(0),0);
 
@@ -63,57 +65,83 @@ void ua_critter::prepare(ua_texture_manager& texmgr)
       // using mipmapped textures (2nd param "true") disables the alpha
       // channel somehow; might be a driver problem
    }
-
-   // start with 1st frame of idle animation
-   currentanim = slotlist[0x24];
 }
 
-unsigned int ua_critter::get_currentframe()
+void ua_critter::update_frame(ua_object& obj)
 {
-   return currentframe;
-   //return segmentlist[currentanim][currentframe];
+   Uint8& animframe = obj.get_ext_object_info().animframe;
+   Uint8& animstate = obj.get_ext_object_info().animstate;
+
+   ++animframe;
+
+   if (segmentlist[animstate].size() > animframe ||
+       segmentlist[animstate][animframe] == 0xff)
+      animframe = 0;
 }
 
-void ua_critter::tick(double ticktime)
-{
-   animcount += ticktime;
 
-   if (animcount > 1.0/critter_fps)
+// ua_critter_frames_manager methods
+
+void ua_critter_frames_manager::init(ua_settings& settings, ua_image_manager& img_manager)
+{
+   // load all critters' frames
+   ua_uw_import import;
+   import.load_critters(allcritters,settings,img_manager.get_palette(0));
+}
+
+void ua_critter_frames_manager::prepare(ua_texture_manager& texmgr,
+   ua_object_list* new_mapobjects)
+{
+   mapobjects = new_mapobjects;
+   object_indices.clear();
+   object_framecount.clear();
+
+   if (mapobjects == NULL)
+      return;
+
+   // go through master object list and check which object frames have to be managed
+   const std::vector<ua_object>& objlist = mapobjects->get_master_obj_list();
+
+   unsigned int max = objlist.size();
+   for(unsigned int i=0; i<max; i++)
    {
-      animcount -= 1.0/critter_fps;
-      currentframe++;
+      const ua_object& obj = objlist[i];
 
-      // check if current frame needs to be reset
-      if (currentframe>=maxframes)
-         currentframe = 0;
-
-/*
-      // check if current frame needs to be reset
-      if( currentframe >= segmentlist[currentanim].size() ||
-          segmentlist[currentanim][currentframe] == 0xff)
+      // NPC object?
+      Uint16 item_id = obj.get_object_info().item_id;
+      if (item_id >= 0x0040 && item_id < 0x0080)
       {
-         currentframe = 0;
+         // remember object list pos
+         object_indices.push_back(i);
+         object_framecount.push_back(0.0);
 
-         // do new animation
-         Uint8 newslot = 0x23 + unsigned( (rand()*3.0)/double(RAND_MAX) );
-         currentanim = slotlist[newslot];
-      }*/
+         // prepare texture
+         allcritters[item_id-0x0040].prepare(texmgr);
+      }
    }
 }
 
-
-// ua_critter_pool methods
-
-void ua_critter_pool::tick(double ticktime)
+void ua_critter_frames_manager::tick(double time)
 {
-   unsigned int max = allcritters.size();
-   for(unsigned int i=0; i<max; i++)
-      allcritters[i].tick(ticktime);
-}
+   if (mapobjects == NULL)
+      return;
 
-void ua_critter_pool::prepare(ua_texture_manager& texmgr)
-{
-   unsigned int max = allcritters.size();
+   // check all objects if they have to be updated
+   unsigned int max = object_indices.size();
    for(unsigned int i=0; i<max; i++)
-      allcritters[i].prepare(texmgr);
+   {
+      double& framecount = object_framecount[i];
+      framecount += time;
+      if (framecount > 1.0/critter_fps)
+      {
+         // next frame
+         framecount -= 1.0/critter_fps;
+
+         Uint16 index = object_indices[i];
+         ua_object& obj = mapobjects->get_object(index);
+
+         // update
+         allcritters[(obj.get_object_info().item_id-0x0040)%0x003f].update_frame(obj);
+      }
+   }
 }
