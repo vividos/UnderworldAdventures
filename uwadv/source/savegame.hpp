@@ -45,9 +45,7 @@
 struct ua_savegame_info
 {
    //! ctor
-   ua_savegame_info():title("no savegame title"), type(0)
-   {
-   }
+   ua_savegame_info():title("no savegame title"),type(0) {}
 
    //! savegame title
    std::string title;
@@ -162,11 +160,12 @@ public:
    //! returns savegame object for loading
    ua_savegame get_savegame_load(unsigned int index);
 
-   //! creates a savegame in a new slot
-   ua_savegame get_savegame_save_new_slot();
+   //! creates a savegame in a new slot; uses savegame info for savegame
+   ua_savegame get_savegame_save_new_slot(const ua_savegame_info& info);
 
-   //! overwrites an existing savegame
-   ua_savegame get_savegame_save_overwrite(unsigned int index);
+   //! overwrites an existing savegame; uses savegame info
+   ua_savegame get_savegame_save_overwrite(unsigned int index,
+      const ua_savegame_info& info);
 
    //! returns true when a quicksave savegame is available
    bool quicksave_avail();

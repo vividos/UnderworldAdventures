@@ -96,7 +96,7 @@ void ua_save_game_screen::done()
 
    SDL_ShowCursor(0);
 
-   ua_trace("leaving save game screen\n");
+   ua_trace("leaving save game screen\n\n");
 }
 
 void ua_save_game_screen::handle_event(SDL_Event &event)
@@ -159,11 +159,14 @@ void ua_save_game_screen::tick()
    {
       ua_trace("saving over old savegame ... ");
 
+      // collect savegame info
+      ua_savegame_info sginfo;
+      sginfo.title = savegame_desc;
+
       // save over selected game
       ua_savegames_manager& sgmgr = core->get_savegames_mgr();
-      ua_savegame sg = sgmgr.get_savegame_save_overwrite(static_cast<unsigned int>(game_nr));
-
-      sg.get_savegame_info().title = savegame_desc;
+      ua_savegame sg = sgmgr.get_savegame_save_overwrite(
+         static_cast<unsigned int>(game_nr),sginfo);
 
       core->get_underworld().save_game(sg);
    }
@@ -172,12 +175,13 @@ void ua_save_game_screen::tick()
    {
       ua_trace("writing new savegame ... ");
 
+      // collect savegame info
+      ua_savegame_info sginfo;
+      sginfo.title = savegame_desc;
+
       // save over selected game
       ua_savegames_manager& sgmgr = core->get_savegames_mgr();
-      ua_savegame sg = sgmgr.get_savegame_save_new_slot();
-
-      sg.get_savegame_info().title = savegame_desc;
-
+      ua_savegame sg = sgmgr.get_savegame_save_new_slot(sginfo);
       core->get_underworld().save_game(sg);
    }
 

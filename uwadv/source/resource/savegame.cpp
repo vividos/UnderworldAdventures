@@ -245,6 +245,9 @@ void ua_savegames_manager::rescan()
 {
    savegames.clear();
 
+   if (quicksave_avail())
+      savegames.push_back("quicksave.uas");
+
    std::string pathname(savegame_folder);
    pathname.append("uasave*.uas");
 
@@ -261,9 +264,10 @@ unsigned int ua_savegames_manager::get_savegames_count()
 void ua_savegames_manager::get_savegame_info(unsigned int index,
    ua_savegame_info &info)
 {
-   info.title = "my savegame";
-
-   // TODO: retrieve image
+   // open savegame and retrieve info
+   ua_savegame sg = get_savegame_load(index);
+   info = sg.get_savegame_info();
+   sg.close();
 }
 
 std::string ua_savegames_manager::get_savegame_filename(unsigned int index)
@@ -282,7 +286,8 @@ ua_savegame ua_savegames_manager::get_savegame_load(unsigned int index)
    return sg;
 }
 
-ua_savegame ua_savegames_manager::get_savegame_save_new_slot()
+ua_savegame ua_savegames_manager::get_savegame_save_new_slot(
+   const ua_savegame_info& info)
 {
    std::string save_name;
 
@@ -306,17 +311,21 @@ ua_savegame ua_savegames_manager::get_savegame_save_new_slot()
 
    // open savegame for saving
    ua_savegame sg;
+   sg.get_savegame_info() = info; // set savegame info
    sg.open(save_name.c_str(),true);
 
    return sg;
 }
 
-ua_savegame ua_savegames_manager::get_savegame_save_overwrite(unsigned int index)
+ua_savegame ua_savegames_manager::get_savegame_save_overwrite(
+   unsigned int index, const ua_savegame_info& info)
 {
    std::string save_name(savegames[index]);
 
    // overwrites savegame with existing name
    ua_savegame sg;
+   sg.get_savegame_info() = info; // set savegame info
+
    sg.open(save_name.c_str(),true);
 
    return sg;
