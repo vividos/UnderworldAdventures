@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -337,8 +337,10 @@ void ua_renderer::prepare_level(ua_level& level)
       for(unsigned int n=0; n<0x01c0; n++) texmgr.prepare(ua_tex_stock_objects+n);
    }
 
-   // reset critters controlled by critter frames manager
-   //get_critter_frames_manager().prepare(get_texture_manager(),&level.get_mapobjects());
+   ua_trace("done\npreparing critter images... ");
+
+   // prepare critters controlled by critter frames manager
+   get_critter_frames_manager().prepare(&level.get_mapobjects());
 
    ua_trace("done\n");
 }
