@@ -90,7 +90,7 @@ void ua_start_menu_screen::resume()
 
    stage = 0;
    tickcount = 0;
-   journey_avail = core->get_filesmgr().get_savegames_count()>0;
+   journey_avail = core->get_savegames_mgr().get_savegames_count()>0;
    buttondown = false;
    selected_area = -1;
    shiftcount=0.0;

@@ -48,6 +48,9 @@ void ua_game::init()
    // init files mgr; loads all config files and inits settings, too
    filesmgr.init(settings);
 
+   // init savegames manager, too
+   savegames_mgr.init(settings);
+
    // first, initialize SDL's video subsystem
    if( SDL_Init(SDL_INIT_VIDEO) < 0 )
    {

@@ -37,6 +37,7 @@
 #include "gamestrings.hpp"
 #include "underworld.hpp"
 #include "screen.hpp"
+#include "savegame.hpp"
 
 
 // forward declarations
@@ -78,6 +79,9 @@ public:
 
    //! returns files manager object
    virtual ua_files_manager &get_filesmgr()=0;
+
+   //! returns savegames manager object
+   virtual ua_savegames_manager& get_savegames_mgr()=0;
 
    //! returns underworld object
    virtual ua_underworld &get_underworld()=0;

@@ -21,7 +21,7 @@
 */
 /*! \file savegame.hpp
 
-   \brief savegame class
+   \brief savegame class and savegames manager
 
 */
 
@@ -30,6 +30,7 @@
 #define __uwadv_savegame_hpp_
 
 // needed includes
+#include "settings.hpp"
 
 
 // classes
@@ -37,7 +38,7 @@
 //! savegame class
 class ua_savegame
 {
-   friend class ua_files_manager;
+   friend class ua_savegames_manager;
 public:
    // savegame loading functions
 
@@ -89,6 +90,39 @@ protected:
    FILE *sg;
    bool saving;
    Uint32 save_version;
+};
+
+
+//! savegames manager
+class ua_savegames_manager
+{
+public:
+   //! ctor
+   ua_savegames_manager();
+
+   //! inits savegame manager
+   void init(ua_settings &settings);
+
+   //! returns number of available savegames
+   unsigned int get_savegames_count();
+
+   //! returns title of savegame
+   std::string get_savegame_title(unsigned int index);
+
+   //! returns name of savegame file
+   std::string get_savegame_filename(unsigned int index);
+
+   //! returns savegame object for loading
+   ua_savegame get_savegame_load(unsigned int index);
+
+   // todo: get_savegame_save()
+
+   //! returns the quicksave savegame
+   ua_savegame get_quicksave(bool saving);
+
+protected:
+   //! savegame folder name
+   std::string savegame_folder;
 };
 
 #endif

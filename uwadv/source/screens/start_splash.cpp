@@ -107,7 +107,7 @@ void ua_start_splash_screen::init()
    curframe = 0;
    animcount = 0.0;
 
-   if (core->get_filesmgr().get_savegames_count()>0)
+   if (core->get_savegames_mgr().get_savegames_count()>0)
    {
       stage=1;
       tickcount = unsigned(ua_start_splash_show_time * core->get_tickrate()) + 1;

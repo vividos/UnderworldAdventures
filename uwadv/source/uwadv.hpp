@@ -78,6 +78,9 @@ protected:
    //! resource files manager
    ua_files_manager filesmgr;
 
+   //! savegames manager
+   ua_savegames_manager savegames_mgr;
+
    //! underworld object
    ua_underworld underworld;
 
@@ -114,6 +117,7 @@ protected:
    virtual ua_settings &get_settings(){ return settings; }
    virtual ua_texture_manager &get_texmgr(){ return texmgr; }
    virtual ua_files_manager &get_filesmgr(){ return filesmgr; }
+   virtual ua_savegames_manager& get_savegames_mgr(){ return savegames_mgr; };
    virtual ua_underworld &get_underworld(){ return underworld; }
 
    virtual void push_screen(ua_ui_screen_base *newscreen);

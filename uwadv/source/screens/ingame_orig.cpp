@@ -327,7 +327,7 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
       if (type==SDL_KEYDOWN)
       {
          ua_trace("quicksaving ... ");
-         ua_savegame &sg = core->get_filesmgr().get_quicksave(true);
+         ua_savegame &sg = core->get_savegames_mgr().get_quicksave(true);
          core->get_underworld().save_game(sg);
          ua_trace("done\n");
       }
@@ -337,7 +337,7 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
       if (type==SDL_KEYDOWN)
       {
          ua_trace("quickloading ... ");
-         ua_savegame &sg = core->get_filesmgr().get_quicksave(false);
+         ua_savegame &sg = core->get_savegames_mgr().get_quicksave(false);
          core->get_underworld().load_game(sg);
          ua_trace("done\n");
       }
