@@ -8,6 +8,8 @@ AUTOMAKE_OPTIONS = foreign
 
 SUBDIRS = hacking source uadata
 
+bin_SCRIPTS = linux/ua-lowercase-all.pl
+
 EXTRA_DIST =  \
 	autogen.sh \
 	Copying \
@@ -38,3 +40,15 @@ EXTRA_DIST =  \
 	misc/uw1-object-classes.txt \
 	misc/uw1-objects.png \
 	misc/uw1-palette0.png
+
+cfgdir = $(datadir)/games/uwadv
+cfg_DATA = linux/uwadv.cfg
+
+man6_MANS = linux/uwadv.6 \
+	linux/ua-lowercase-all.pl.6
+
+linux/uwadv.cfg linux/uwadv.6: %: %.in
+	rm -f $@
+	sed -e 's,@UW1PATH\@,@UW1PATH@,g' \
+            -e 's,@UADATAPATH\@,@UADATAPATH@,g' \
+            -e 's,@UADOCPATH\@,@datadir@/doc/uwadv,g' $< >$@

@@ -14,7 +14,6 @@ LDFLAGS = @LIBS@
 # automake build rules
 
 bin_PROGRAMS = uwadv
-bin_SCRIPTS = linux/ua-lowercase-all.pl
 
 # Makefile.common defines uwadv_SOURCES
 include Makefile.common
@@ -57,15 +56,3 @@ EXTRA_DIST = \
 	win32/source/uaconfig/uaconfig.cpp \
 	win32/source/uaconfig/uaconfig.hpp \
 	win32/source/uaconfig/uaconfig_res.rc
-
-cfgdir = $(datadir)/games/uwadv
-cfg_DATA = linux/uwadv.cfg
-
-man6_MANS = linux/uwadv.6 \
-	linux/ua-lowercase-all.pl.6
-
-linux/uwadv.cfg linux/uwadv.6: %: %.in
-	rm -f $@
-	sed -e 's,@UW1PATH\@,@UW1PATH@,g' \
-            -e 's,@UADATAPATH\@,@UADATAPATH@,g' \
-            -e 's,@UADOCPATH\@,@datadir@/doc/uwadv,g' $< >$@

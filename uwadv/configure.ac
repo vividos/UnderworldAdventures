@@ -168,7 +168,7 @@ source/resource/zziplib/Makefile
 source/lua/Makefile
 uadata/Makefile
 hacking/Makefile
-uwadv.spec:source/linux/uwadv.spec.in
+uwadv.spec:linux/uwadv.spec.in
 ])
 AC_OUTPUT
 
