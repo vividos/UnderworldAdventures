@@ -1,0 +1,72 @@
+diff -ur -x CVS lua/src/llex.c lua-hexdigit-patch/src/llex.c
+--- lua/src/llex.c	Wed Jul  3 17:09:00 2002
++++ lua-hexdigit-patch/src/llex.c	Thu Apr 10 16:05:30 2003
+@@ -151,6 +151,36 @@
+   size_t l = 0;
+   checkbuffer(L, 10, l);
+   if (comma) save(L, '.', l);
++
++  // mf: inserted to check for hexadecimal numbers
++  //     hope this is working properly ...
++  {
++    if (LS->current == '0')
++    {
++      checkbuffer(L, 10, l);
++      save_and_next(L, LS, l);
++      if (LS->current == 'x' || LS->current == 'X')
++      {
++        checkbuffer(L, 10, l);
++        save_and_next(L, LS, l);
++
++        // hex number!
++        while (isxdigit(LS->current)) {
++          checkbuffer(L, 10, l);
++          save_and_next(L, LS, l);
++        }
++
++        // convert to hex
++        save(L, '\0', l);
++
++        if (!luaO_hexstr2d(L->Mbuffer, &seminfo->r))
++          luaX_error(LS, "malformed hexadecimal number", TK_NUMBER);
++
++        return;
++      }
++    }
++  }
++
+   while (isdigit(LS->current)) {
+     checkbuffer(L, 10, l);
+     save_and_next(L, LS, l);
+diff -ur -x CVS lua/src/lobject.c lua-hexdigit-patch/src/lobject.c
+--- lua/src/lobject.c	Wed Jul  3 17:09:00 2002
++++ lua-hexdigit-patch/src/lobject.c	Thu Apr 10 16:05:30 2003
+@@ -68,6 +68,17 @@
+ int luaO_str2d (const char *s, Number *result) {  /* LUA_NUMBER */
+   char *endptr;
+   Number res = lua_str2number(s, &endptr);
++  if (endptr == s) return 0;  /* no conversion */
++  while (isspace((unsigned char)*endptr)) endptr++;
++  if (*endptr != '\0') return 0;  /* invalid trailing characters? */
++  *result = res;
++  return 1;
++}
++
++
++int luaO_hexstr2d (const char *s, Number *result) {  /* LUA_NUMBER */
++  char *endptr;
++  Number res = strtol(s, &endptr, 16);
+   if (endptr == s) return 0;  /* no conversion */
+   while (isspace((unsigned char)*endptr)) endptr++;
+   if (*endptr != '\0') return 0;  /* invalid trailing characters? */
+diff -ur -x CVS lua/src/lobject.h lua-hexdigit-patch/src/lobject.h
+--- lua/src/lobject.h	Wed Jul  3 17:09:00 2002
++++ lua-hexdigit-patch/src/lobject.h	Thu Apr 10 16:05:30 2003
+@@ -196,6 +196,7 @@
+ 
+ int luaO_equalObj (const TObject *t1, const TObject *t2);
+ int luaO_str2d (const char *s, Number *result);
++int luaO_hexstr2d (const char *s, Number *result);
+ 
+ void luaO_verror (lua_State *L, const char *fmt, ...);
+ void luaO_chunkid (char *out, const char *source, int len);
