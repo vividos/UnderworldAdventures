@@ -218,6 +218,17 @@ void ua_dump_level_archive::start(std::string& basepath,std::string& param)
 
 void ua_dump_level_archive::process_level()
 {
+   // fix is_quantity flag for all triggers and "a_delete object trap"
+   for(unsigned int j=0; j<0x0400; j++)
+   {
+      Uint16 item_id = get_bits(objinfos[j*4+0],0,9);
+      if ((item_id >= 0x01a0 && item_id <= 0x01bf) || item_id == 0x018b)
+      {
+         // clear is_quantity flag
+         objinfos[j*4+0] &= ~(1L<<15);
+      }
+   }
+
    // follow all links and special links, starting from the tilemap indices
    for(unsigned int i=0; i<64*64; i++)
    {
@@ -235,8 +246,6 @@ void ua_dump_level_archive::process_level()
 void ua_dump_level_archive::dump_infos()
 {
    printf("dumping infos for level %u\n\n",level);
-
-   process_level();
 
    // dump every object in list
    {
@@ -270,12 +279,12 @@ void ua_dump_level_archive::dump_infos()
          if (is_free) continue;
 
          // check if inventory
-         bool is_link = get_bits(objinfos[i*4+0],15,1) == 0;
+         bool is_quantity = get_bits(objinfos[i*4+0],15,1) != 0;
          Uint16 special = get_bits(objinfos[i*4+3],6,10);
 
          Uint16 item_id = get_bits(objinfos[i*4+0],0,9);
 
-         if (is_link && special != 0 && item_id>=0x0040 && item_id<0x0080)
+         if (!is_quantity && special != 0 && item_id>=0x0040 && item_id<0x0080)
          {
             printf("\ninventory for npc:\n");
             dump_npcinfos(i);
@@ -349,18 +358,19 @@ void ua_dump_level_archive::dump_infos()
 void ua_dump_level_archive::dump_special_link_chain(std::bitset<0x400>& visited, unsigned int pos,
                                                     unsigned int indent)
 {
-   unsigned int step=0;
+   unsigned int step = 0;
 
    Uint16 item_id = get_bits(objinfos[pos*4],0,9);
    bool is_free = freelist.find(pos)!=freelist.end();
 
    Uint16 special = get_bits(objinfos[pos*4+3],6,10);
-   bool is_link = get_bits(objinfos[pos*4+0],15,1) == 0;
+   bool is_quantity = get_bits(objinfos[pos*4+0],15,1) != 0;
 
-   while((pos!=0 && !visited.test(pos) && !is_free &&
-      is_link && special != 0 && (item_id < 0x0040 || item_id >= 0x0080))
-      || (item_id >= 0x01a0 && item_id <= 0x01a6) // all triggers have is_quantity set
-      )
+   if (item_id >= 0x0180 && item_id <= 0x019f)
+      return; // don't start with traps
+
+   while(pos != 0 && !visited.test(pos) && !is_free &&
+      !is_quantity && special != 0 && (item_id < 0x0040 || item_id >= 0x0080))
    {
       if (step==0 && indent==0)
          printf("\nnext chain:\n");
@@ -408,10 +418,14 @@ void ua_dump_level_archive::dump_special_link_chain(std::bitset<0x400>& visited,
       // get next object
       pos = special;
 
+      // prevent infinite loops for some trap types
+      if (item_id == 0x018b)
+         break;
+
       if (pos != 0)
       {
          special = get_bits(objinfos[pos*4+3],6,10);
-         is_link = get_bits(objinfos[pos*4+0],15,1) == 0;
+         is_quantity = get_bits(objinfos[pos*4+0],15,1) != 0;
          is_free = freelist.find(pos)!=freelist.end();
          item_id = get_bits(objinfos[pos*4+0],0,9);
       }
@@ -466,7 +480,7 @@ void ua_dump_level_archive::dump_item(Uint16 pos)
    printf("tile=%02x/%02x ",item_positions[pos].first,
       item_positions[pos].second);
 
-   bool is_link = get_bits(objptr[0],15,1) == 0;
+   bool is_quantity = get_bits(objptr[0],15,1) != 0;
    Uint16 special = get_bits(objptr[3],6,10);
 
    printf("[xpos=%u ypos=%u heading=%u zpos=%02x] ",
@@ -478,18 +492,20 @@ void ua_dump_level_archive::dump_item(Uint16 pos)
    switch(item_id)
    {
    case 0x016e: // special tmap object
-      printf("[texidx=%02x tex=%04x texname=\"%s\"]",owner,tex_wall[owner],
+      printf("[texidx=%02x tex=%04x texname=\"%s\"",owner,tex_wall[owner],
          gstr.get_string(10,tex_wall[owner]).c_str());
+      if (!is_quantity)
+         printf(" sp_link=%04x",special);
+      printf("] ");
       break;
 
    case 0x0181: // a_teleport trap
       printf("[level=%02x dest=%02x/%02x",
          get_bits(objptr[1],0,7),
          get_bits(objptr[2],0,6),
-         get_bits(objptr[3],0,6)
-         );
+         get_bits(objptr[3],0,6) );
 
-      if (is_link)
+      if (!is_quantity)
          printf(" sp_link=%04x",special);
 
       printf("] ");
@@ -504,7 +520,10 @@ void ua_dump_level_archive::dump_item(Uint16 pos)
          while( std::string::npos != (pos=text.find("\n")))
             text.replace(pos,1,"\\n");
 
-         printf("[string=%04x text=\"%s\"] ",id,text.c_str());
+         printf("[string=%04x text=\"%s\"",id,text.c_str());
+         if (!is_quantity)
+            printf(" sp_link=%04x",special);
+         printf("] ");
       }
       break;
 
@@ -563,7 +582,7 @@ void ua_dump_level_archive::dump_item(Uint16 pos)
       printf("owner=%02x ",owner);
 
       printf("%-8s=%04x] ",
-         is_link? "sp_link" : special < 0x200 ? "quantity" : "special",
+         !is_quantity ? "sp_link" : special < 0x200 ? "quantity" : "special",
          special);
       break;
    }
@@ -583,9 +602,9 @@ void ua_dump_level_archive::dump_npcinfos(Uint16 pos)
    printf("id=%04x ",item_id);
 
    // print inventory link
-   bool is_link = get_bits(objptr[0],15,1) == 0;
+   bool is_quantity = get_bits(objptr[0],15,1) != 0;
    Uint16 special = get_bits(objptr[3],6,10);
-   printf(is_link ? "inv=%04x " : "inv=no   ",special);
+   printf(is_quantity ? "inv=no   " : "inv=%04x ",special);
 
    printf("[hp=%02x ",infoptr[0]);
 
@@ -628,7 +647,7 @@ void ua_dump_level_archive::follow_link(Uint16 link, unsigned int tilepos, bool 
 {
    if (++follow_level>32)
    {
-      printf("follow_link(): recursion level too high\n");
+      printf("follow_link(): recursion level too high at objpos %04x\n",link);
       return;
    }
 
@@ -639,9 +658,6 @@ void ua_dump_level_archive::follow_link(Uint16 link, unsigned int tilepos, bool 
       // ref count
       linkcount[link]++;
 
-      // must be occupied
-      //freelist.erase(link);
-
       if (!special)
       {
          // store tilemap pos for that link
@@ -649,9 +665,14 @@ void ua_dump_level_archive::follow_link(Uint16 link, unsigned int tilepos, bool 
             std::make_pair<Uint8,Uint8>(tilepos&63,tilepos>>6);
       }
 
+      // don't recurse for some item types: "a_delete object trap"
+      Uint16 item_id = get_bits(objptr[0],0,9);
+      if (item_id==0x018b)
+         break;
+
       // check if we should follow special links
-      bool is_link = get_bits(objptr[0],15,1) == 0;
-      if (is_link)
+      bool is_quantity = get_bits(objptr[0],15,1) != 0;
+      if (!is_quantity)
       {
          Uint16 special = get_bits(objptr[3],6,10);
          if (special != 0)
