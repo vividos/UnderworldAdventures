@@ -225,6 +225,7 @@ void ua_textscroll::update_scroll()
 
       // create line string
       create_colored_string(img_temp, textlines[first_visible_line+i].c_str());
+      if (img_temp.get_xres()==0) continue; // empty line
 
       // calc y position
       unsigned int ypos = i * font_normal.get_charheight() + scroll_basey;
