@@ -68,6 +68,8 @@ public:
  
    CTileMapViewChildFrame m_tilemapChildFrame;
 
+   CImageList m_ilObjects;
+
 public:
    bool InitDebugClient(void* pDebugClient);
 

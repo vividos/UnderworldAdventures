@@ -70,6 +70,9 @@ bool CMainFrame::InitDebugClient(void* pDebugClient)
 
    UISetCheck(ID_UNDERWORLD_RUNNING, m_bStopped ? FALSE : TRUE);
 
+   // get object imagelist
+   m_ilObjects = m_debugClient.GetObjectImageList();
+
    return true;
 }
 
