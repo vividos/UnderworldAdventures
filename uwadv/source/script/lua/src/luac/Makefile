@@ -4,7 +4,7 @@ LUA= ../..
 
 include $(LUA)/config
 
-INCS= -I$(INC) $(EXTRA_INCS) -I..
+INCS= -I$(INC) $(EXTRA_INCS) -I.. -DNOSTUBS
 OBJS= dump.o luac.o opt.o print.o stubs.o
 SRCS= dump.c luac.c opt.c print.c stubs.c luac.h print.h
 
