@@ -28,128 +28,48 @@
 // needed includes
 #include "common.hpp"
 #include "cutscene.hpp"
-#include "../import/io_endian.hpp"
+#include "import.hpp"
 
 
-// global functions
+// ua_cutscene methods
 
-// dumps pixels to output buffer
-void ua_cuts_dump_pixel(Uint8 *&src,Uint8 *&dst,unsigned int &maxpix,unsigned int size)
+/*
+void ua_cutscene::load(ua_settings& settings, unsigned int main,
+   unsigned int sub)
 {
-   unsigned int len = ua_min(size,maxpix);
-   memcpy(dst,src,len);
-   dst += len;
-   src += len;
-   maxpix -= len;
+   char buffer[32];
+   sprintf(buffer,"cuts/cs%03o.n%02o",main,sub);
+
+   load(settings,buffer);
+}
+*/
+void ua_cutscene::load(ua_settings& settings, const char* relfilename)
+{
+   std::string filename(settings.get_string(ua_setting_uw_path));
+   filename.append(relfilename);
+
+   load(filename.c_str());
 }
 
-// does a run with a pixel to output buffer
-void ua_cuts_run_pixel(Uint8 *&src,Uint8 *&dst,unsigned int &maxpix,unsigned int size)
+void ua_cutscene::load(const char* filename)
 {
-   Uint8 pixel = *src++;
-   unsigned int len = ua_min(size,maxpix);
+   ua_uw_import import;
 
-   memset(dst,pixel,len);
-   dst += len;
-   maxpix -= len;
+   unsigned int xres, yres;
+   import.load_cutscene(filename, image, lpdarray, lpages, records);
+
+   curframe = (unsigned int)-1;
 }
 
-// skips some pixels in the output buffer
-void ua_cuts_skip_pixel(Uint8 *&dst,unsigned int &maxpix,unsigned int size)
-{
-   if (size>maxpix) size=maxpix;
-   dst += size;
-   maxpix -= size;
-}
-
-void ua_cuts_extract_data(Uint8 *src,Uint8 *dst,unsigned int maxpix)
-{
-   while(maxpix>0)
-   {
-      Sint8 cnt = static_cast<Sint8>(*src++);
-
-      // short operations
-
-      if (cnt>0)
-      {
-         // short dump
-         ua_cuts_dump_pixel(src,dst,maxpix,cnt);
-         continue;
-      }
-
-      if (cnt==0)
-      {
-         // short run
-         Uint8 wordcnt = *src++;
-         ua_cuts_run_pixel(src,dst,maxpix,wordcnt);
-         continue;
-      }
-
-      // remove sign bit
-      cnt &= 0x7f;
-
-      if (cnt!=0)
-      {
-         // short skip
-         ua_cuts_skip_pixel(dst,maxpix,cnt);
-         continue;
-      }
-
-      // long operations
-
-      // get next 16 bit word
-#if (SDL_BYTEORDER==SDL_BIG_ENDIAN)
-      Uint16 wordcnt = ua_endian_convert16(*(reinterpret_cast<Uint16*>(src)));
-#else
-      Uint16 wordcnt = *(reinterpret_cast<Uint16*>(src));
-#endif
-      src+=2;
-
-      // end of decoding?
-      if (wordcnt == 0)
-         break;
-
-      if (static_cast<Sint16>(wordcnt)>0)
-      {
-         // long skip
-         ua_cuts_skip_pixel(dst,maxpix,wordcnt);
-         continue;
-      }
-
-      // remove sign bit
-      wordcnt &= 0x7fff;
-
-      if (wordcnt>=0x4000)
-      {
-         // clear "longRun" bit
-         wordcnt -= 0x4000;
-
-         // long run
-         ua_cuts_run_pixel(src,dst,maxpix,wordcnt);
-      }
-      else
-      {
-         // long dump
-         ua_cuts_dump_pixel(src,dst,maxpix,wordcnt);
-      }
-   }
-}
-
-void ua_cutscene::init(ua_texture_manager* texmgr,
-   unsigned int xpos, unsigned int ypos)
-{
-   ua_image_quad::init(texmgr,xpos,ypos,ua_image::xres,ua_image::yres,false);
-}
-
-void ua_cutscene::get_frame(unsigned int framenum)
+void ua_cutscene::update_frame(unsigned int framenum)
 {
    if (curframe!=framenum)
    {
       // when we are at the max, start again from the first
       if (curframe>framenum)
       {
-         decode_frame(0);
          curframe=0;
+         decode_frame(0);
       }
 
       // decode all frames between the current and the wanted frame
@@ -159,10 +79,15 @@ void ua_cutscene::get_frame(unsigned int framenum)
          decode_frame(curframe);
       }
    }
+
+   // update image quad
+   update();
 }
 
 void ua_cutscene::decode_frame(unsigned int framenum)
 {
+   unsigned int largepages = lpdarray.size();
+
    // first, search large page to use
    unsigned int i=0;
    for(;i<largepages; i++)
@@ -173,8 +98,8 @@ void ua_cutscene::decode_frame(unsigned int framenum)
       throw ua_exception("could not find frame in large pages");
 
    // calculate large page pointer
-   Uint16 *curlp16 = reinterpret_cast<Uint16*>(&lpages[0x10000*i]);
-   Uint8 *curlp = reinterpret_cast<Uint8*>(curlp16);
+   Uint16* curlp16 = reinterpret_cast<Uint16*>(&lpages[0x10000*i]);
+   Uint8* curlp = reinterpret_cast<Uint8*>(curlp16);
 
    unsigned int destframe = framenum - lpdarray[i].base;
 
@@ -189,15 +114,17 @@ void ua_cutscene::decode_frame(unsigned int framenum)
 #endif
 
    // calculate start of "record" struct
-   Uint8 *src = curlp+8+lpdarray[i].records*2+offset;
-   Uint16 *src16 = reinterpret_cast<Uint16*>(src);
+   Uint8* src = curlp+8+lpdarray[i].records*2+offset;
+   Uint16* src16 = reinterpret_cast<Uint16*>(src);
 
    // add extra offset
    if(src[1])
       src += ( src16[1] + ( src16[1] & 1 ));
 
    // extract the pixel data
-   ua_cuts_extract_data(&src[4],&pixels[0],xres*yres);
+   ua_uw_import import;
+   import.extract_cutscene_data(&src[4], &image.get_pixels()[0],
+      image.get_xres()*image.get_yres());
 }
 
 

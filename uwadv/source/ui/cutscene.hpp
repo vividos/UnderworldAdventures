@@ -39,9 +39,21 @@
 #include "texture.hpp"
 
 
+// structs
+
+//! large page descriptor struct type
+struct ua_lp_descriptor
+{
+   Uint16 base;
+   Uint16 records;
+   Uint16 bytes;
+};
+
+
 // classes
 
 //! cutscene animation class
+/*! note: initialize via ua_image_quad::init(); before or after loading */
 class ua_cutscene: public ua_image_quad
 {
 public:
@@ -49,51 +61,34 @@ public:
    ua_cutscene(){ curframe=(unsigned int)-1; }
 
    //! loads a cutscene by main and sub number
-   void load(ua_settings& settings, unsigned int main, unsigned int sub);
+//   void load(ua_settings& settings, unsigned int main, unsigned int sub);
 
    //! loads a cutscene by relative filename
-   void load(ua_settings& settings, const char *filename);
+   void load(ua_settings& settings, const char* filename);
 
    //! loads a cutscene by absolute filename
-   void load(const char *filename);
+   void load(const char* filename);
 
-   //! initializes cutscene quad after loading
-   void init(ua_texture_manager* texmgr, unsigned int xpos=0, unsigned int ypos=0);
 
    //! returns maximum number of frames
    unsigned int get_maxframes(){ return records; }
 
    //! extracts a new frame into the current image
-   void get_frame(unsigned int framenum);
-
-   // TODO: remove that method when it's no longer needed
-   //! returns animation palette
-   ua_onepalette& get_anim_palette(){ return quadpalette; }
+   void update_frame(unsigned int framenum);
 
 protected:
    //! decodes one frame
    void decode_frame(unsigned int framenum);
 
 protected:
-   //! number of large pages in file
-   unsigned int largepages;
-
    //! number of records in file
    unsigned int records;
 
    //! number of current frame
    unsigned int curframe;
 
-   //! large page descriptor struct type
-   struct lp_descriptor
-   {
-      Uint16 base;
-      Uint16 records;
-      Uint16 bytes;
-   };
-
    //! large page descriptor array values
-   std::vector<lp_descriptor> lpdarray;
+   std::vector<ua_lp_descriptor> lpdarray;
 
    //! all large pages
    std::vector<Uint8> lpages;
