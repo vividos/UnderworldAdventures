@@ -51,7 +51,8 @@ typedef enum
 typedef enum
 {
    ua_obj_cmb_failed = 0,
-   ua_obj_cmb_dstr_dropped,
+   ua_obj_cmb_dstr_first,
+   ua_obj_cmb_dstr_second,
    ua_obj_cmb_dstr_both
 } ua_obj_combine_result;
 

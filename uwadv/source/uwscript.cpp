@@ -148,8 +148,10 @@ ua_inv_item_category ua_underworld_script_bindings::lua_inventory_categorize_ite
    ua_inv_item_category cat = ua_inv_cat_normal;
 
    if (lua_isnumber(L,-1))
+   {
       cat = static_cast<ua_inv_item_category>(
          static_cast<unsigned int>(lua_tonumber(L,-1)));
+   }
 
    lua_pop(L,1);
    return cat;
@@ -158,8 +160,33 @@ ua_inv_item_category ua_underworld_script_bindings::lua_inventory_categorize_ite
 ua_obj_combine_result ua_underworld_script_bindings::lua_obj_combine(
    Uint16 item_id1, Uint16 item_id2, Uint16 &result_id)
 {
-   result_id = 0x012b;
-   return ua_obj_cmb_failed;
+   // call Lua function
+   lua_getglobal(L,"lua_obj_combine");
+   lua_pushnumber(L,static_cast<double>(item_id1));
+   lua_pushnumber(L,static_cast<double>(item_id2));
+
+   checked_lua_call(2,2);
+
+   // retrieve return values
+   ua_obj_combine_result res = ua_obj_cmb_failed;
+
+   if (lua_isnumber(L,-2))
+   {
+      res = static_cast<ua_obj_combine_result>(
+         static_cast<unsigned int>(lua_tonumber(L,-2)));
+   }
+
+   result_id = 0xffff;
+   if (lua_isnumber(L,-1))
+   {
+      result_id = static_cast<Uint16>(lua_tonumber(L,-1));
+   }
+   else
+      res = ua_obj_cmb_failed;
+
+   lua_pop(L,2);
+
+   return res;
 }
 
 
