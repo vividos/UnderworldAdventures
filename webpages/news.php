@@ -6,6 +6,14 @@ Welcome to the Underworld Adventures home page. Underworld Adventures is a proje
 
 <h2>project news</h2>
 
+<span class="newsHeading">2004-10-12 - Developer Log updated; RSS feed available</span>
+
+<p class="newsBody">
+I updated the <a href="index.php?page=devlog">"devlog"</a> with some of the recent ongoings on the uwadv project. I also added some screenshots of the new Underworld Adventures Debugger I'm currently working on. And the Underworld Adventures Developer Log got a RSS 2.0 feed recently. So if you want to be up-to-date, just add the feed to your favourite aggregator. If there's a problem with the feed, just drop me a mail.
+</p>
+
+<hr size="1" width="80%"/>
+
 <span class="newsHeading">2004-04-23 - debian package for uwadv 0.9 "mojito" released</span>
 
 <p class="newsBody">
