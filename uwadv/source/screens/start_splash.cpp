@@ -268,6 +268,7 @@ void ua_start_splash_screen::tick()
       {
          // when we have the demo, we immediately go to the ingame
          core->get_underworld().import_savegame(core->get_settings(),"data/",true);
+         core->get_underworld().get_scripts().lua_started_newgame();
          core->replace_screen(new ua_ingame_orig_screen);
          return;
       }
