@@ -9,10 +9,12 @@
 #include "common.hpp"
 #include "settings.hpp"
 #include "gamestrings.hpp"
+#include <algorithm>
 
 #undef SDL_main
 
-const char *filename = UWPATH"Save3\\lev.ark";
+//const char *filename = UWPATH"Save3\\lev.ark";
+const char *filename = UWPATH"data\\lev.ark";
 
 void follow_object_chain(FILE *out,unsigned int objlist[0x400*2],
    std::vector<bool> &linked_by_obj, std::vector<bool> &link2_by_obj, int link1);
@@ -22,15 +24,17 @@ void check_link2(FILE *out,unsigned int objlist[0x400*2],std::vector<bool> &link
    int id = objlist[link1*2+0] & 0x000001ff;
 
    if (
-      id==0x01a0 || id==0x01a2 || id==0x01a3 ||
-      id==0x0188 || id==0x017c || id==0x0142 || id==0x016e ||
-      id==0x0146 || id==0x014b || id==0x0149 || id==0x0141 ||
-      id==0x017f || id==0x0179 || id==0x0187 || id==0x0161 ||
-      id==0x014e || id==0x0146 || id==0x0171 || id==0x017d ||
-      id==0x015b || id==0x015d || id==0x008a || id==0x0080 ||
-      id==0x008e || id==0x01a5 ||
-      id==0x0098 || id==0x0099 || id==0x009a || id==0x009b ||
-      (id>=0x0040 && id<=0x007f) )
+      (id>=0x0040 && id<=0x007f) ||
+      (id>=0x0080 && id<=0x008e) ||
+      (id>=0x0098 && id<=0x009f) ||
+      id==0x00aa ||
+      (id>=0x0140 && id<=0x014f) ||
+      (id>=0x0140 && id<=0x014f) ||
+      id==0x015b || id==0x015e || id==0x0161 || id==0x016e ||
+      (id>=0x0170 && id<=0x017f) ||
+      id==0x0187 || id==0x0188 ||
+      id==0x01a0 || id==0x01a2 || id==0x01a3 || id==0x01a5 || id==0x01a6
+      )
    {
       int link2 = (objlist[link1*2+1] & (0x3ff<<22))>>22;
 
@@ -85,36 +89,41 @@ int main(int argc, char* argv[])
    fseek(fd,0,SEEK_SET);
 
    FILE *out = fopen("uw-levelobjs.txt","w");
+   FILE *out2 = fopen("uw-misc.txt","w");
 
    // read in toc
 
    unsigned short entries;
    fread(&entries,sizeof(unsigned short),1,fd);
 
-   printf("lev.ark: %u entries\n",entries);
+   fprintf(out2,"lev.ark: %u entries\n",entries);
 
    unsigned int *offsets = new unsigned int[entries];
 
    // read all offset
    fread(offsets,sizeof(unsigned int),entries,fd);
 
-   int lastpos=-1;
-   for(int i=0; i<entries; i++)
+   // print sorted list of file parts
    {
-      if (offsets[i]!=0)
-      {
-         if (lastpos>0)
-         {
-            int size = offsets[i]-lastpos;
-            if (size<0) size = -size;
-            printf(", size=%08x\n",size);
-         }
+      std::vector<std::pair<unsigned int,int> > sortedoffsets;
 
-         printf("entry %02u: offset=%08x",i,offsets[i]);
-         lastpos = offsets[i];
+      for(int i=0; i<entries; i++)
+         if (offsets[i]!=0 && offsets[i]!=flen)
+            sortedoffsets.push_back(
+               std::make_pair<unsigned int,int>(offsets[i],i));
+
+      sortedoffsets.push_back(std::make_pair<unsigned int,int>(flen,0));
+      std::sort(sortedoffsets.begin(),sortedoffsets.end());
+
+      int max = sortedoffsets.size()-1;
+      for(int j=0; j<max;j++)
+      {
+         fprintf(out2,"entry %02u: offset=%08x size=%04x\n",
+            sortedoffsets[j].second,sortedoffsets[j].first,
+            sortedoffsets[j+1].first-sortedoffsets[j].first);
       }
+      fprintf(out2,"\n");
    }
-   printf(", size=%08x\n",flen-lastpos);
 
    // read in game strings
    ua_gamestrings gs;
@@ -309,12 +318,39 @@ int main(int argc, char* argv[])
          fprintf(out,"desc=%s\n",gs.get_string(3,objval[0] & 0x000001ff).c_str());
       }
       fprintf(out,"\n");
-   }
+
+      // unknown list dumping
+      fseek(fd,offsets[j+9],SEEK_SET);
+      {
+         fprintf(out2,"unknowns list at level %u, offset %08x\n",j,offsets[j+9]);
+
+         unsigned char unknowns[64*6];
+         fread(unknowns,64,6,fd);
+
+         for(int i=0; i<64; i++)
+         {
+            if (memcmp(&unknowns[i*6],"\0\0\0\0\0\0",6)==0)
+               break;
+
+            fprintf(out2,"x=%02x y=%02x ",unknowns[i*6+4],unknowns[i*6+5]);
+
+            int unk1 = (unknowns[i*6+0]<<8) | unknowns[i*6+1];
+            fprintf(out2,"unk1=%04x ",(unknowns[i*6+0]<<8) | unknowns[i*6+1]);
+            fprintf(out2,"unk2=%04x\n",(unknowns[i*6+2]<<8) | unknowns[i*6+3]);
+
+//            fprintf(out2,"desc1=%s",gs.get_string(3,unk1&0x01ff).c_str());
+         }
+      }
+      fprintf(out2,"\n");
+
+
+   } // end for
 
    delete[] offsets;
 
    fclose(fd);
    fclose(out);
+   fclose(out2);
 
    return 0;
 }
