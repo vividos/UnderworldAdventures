@@ -8,9 +8,11 @@ all: uadata
 
 # all lua scripts
 
-lua_SCRIPTS = uw1/scripts/cutscene.lua
+lua_SCRIPTS = uw1/scripts/cutscene.lua \
+	uw1/scripts/inventory.lua
 
-lua_OBJECTS = uw1/scripts/cutscene.lob
+lua_OBJECTS = uw1/scripts/cutscene.lob \
+	uw1/scripts/inventory.lob
 
 
 zip_DATA = $(lua_OBJECTS)
@@ -29,4 +31,4 @@ clean:
 # lua object (.lob) building rule
 
 %.lob: %.lua
-	./luac -o $(*).lob $(<)
+	luac -o $(*).lob $(<)
