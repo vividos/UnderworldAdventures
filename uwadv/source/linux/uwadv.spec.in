@@ -60,6 +60,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/uwadv
 %{_bindir}/ua-lowercase-all.pl
 %{_datadir}/games/uwadv/uwadv.cfg
+%{_datadir}/games/uwadv/keymap.cfg
 %{_datadir}/games/uwadv/uadata00.uar
 %{_mandir}/man6/uwadv.6.gz
-%{_mandir}/man6ua-lowercase-all.pl.6.gz
+%{_mandir}/man6/ua-lowercase-all.pl.6.gz
