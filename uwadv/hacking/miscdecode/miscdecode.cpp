@@ -337,6 +337,28 @@ int main(int argc, char* argv[])
 
    } while(false);
 
+   // decoding chrgen.dat
+   {
+      FILE *fd = fopen(UWPATH"data\\chrgen.dat","rb");
+      FILE *out = fopen("chrgen-dat.txt","w");
+
+      unsigned int linewidth = 34;
+      for(unsigned int j=0; j<238/2; j++)
+      {
+         unsigned short val;
+         val = fgetc(fd);
+         val |= fgetc(fd)<<8;
+         fprintf(out,"%04x ",val);
+
+         if (j>0 && (j%linewidth)==(linewidth-1))
+            fprintf(out,"\n");
+      }
+
+      fclose(fd);
+      fclose(out);
+
+   } while(false);
+
    // decoding sounds.dat
    do
    {
