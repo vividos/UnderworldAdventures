@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Underworld Adventures Team
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -31,8 +31,8 @@
 //@{
 
 // include guard
-#ifndef __uwadv_imgquad_hpp_
-#define __uwadv_imgquad_hpp_
+#ifndef uwadv_imgquad_hpp_
+#define uwadv_imgquad_hpp_
 
 // needed includes
 #include "image.hpp"
@@ -87,6 +87,5 @@ inline ua_onepalette& ua_image_quad::get_quadpalette()
 }
 
 
-//@}
-
 #endif
+//@}

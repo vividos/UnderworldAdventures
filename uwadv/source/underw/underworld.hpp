@@ -26,7 +26,7 @@
 */
 /*! \defgroup underworld Underworld Objects Documentation
 
-   abc 123
+   underworld objects documentation yet to come ...
 
 */
 //@{
@@ -178,6 +178,5 @@ protected:
 };
 
 
-//}@
-
 #endif
+//@}

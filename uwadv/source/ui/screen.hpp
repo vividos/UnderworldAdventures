@@ -88,6 +88,5 @@ inline void ua_screen::set_game_interface(ua_game_interface* game_interface)
 }
 
 
-//@}
-
 #endif
+//@}

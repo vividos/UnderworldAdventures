@@ -299,6 +299,5 @@ inline unsigned int ua_player::get_movement_mode() const
 }
 
 
-//}@
-
 #endif
+//@}

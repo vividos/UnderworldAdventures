@@ -92,6 +92,5 @@ protected:
 };
 
 
-//}@
-
 #endif
+//@}

@@ -106,6 +106,5 @@ protected:
 };
 
 
-//@}
-
 #endif
+//@}

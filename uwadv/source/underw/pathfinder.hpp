@@ -104,7 +104,5 @@ void ua_pathfinder::set_flag(ua_pathfind_flags flagtype, bool set_it)
 }
 
 
-
-//}@
-
 #endif
+//@}

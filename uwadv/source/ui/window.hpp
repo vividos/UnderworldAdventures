@@ -21,12 +21,12 @@
 */
 /*! \file window.hpp
 
-   \brief aaa
+   \brief window base class
 
 */
 /*! \defgroup userinterface User Interface Documentation
 
-   abc 123
+   user interface documentation yet to come ...
 
 */
 //@{
@@ -88,7 +88,5 @@ protected:
    unsigned int wnd_width, wnd_height;
 };
 
-
-//}@
-
 #endif
+//@}

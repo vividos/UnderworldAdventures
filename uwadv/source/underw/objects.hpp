@@ -238,6 +238,5 @@ protected:
 };
 
 
-//}@
-
 #endif
+//@}

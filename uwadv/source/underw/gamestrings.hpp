@@ -76,6 +76,5 @@ protected:
 };
 
 
-//}@
-
 #endif
+//@}

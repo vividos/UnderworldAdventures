@@ -21,9 +21,7 @@
 */
 /*! \file window.cpp
 
-   \brief aaa
-
-   aaa
+   \brief window base class implementation
 
 */
 

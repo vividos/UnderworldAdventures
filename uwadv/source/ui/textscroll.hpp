@@ -137,6 +137,5 @@ inline bool ua_textscroll::have_more_lines()
 }
 
 
-//!@}
-
 #endif
+//@}

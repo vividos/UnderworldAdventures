@@ -31,6 +31,9 @@
    value stays at it's value (either 0 or 255) after finishing fading.
 
 */
+//! \ingroup userinterface
+
+//@{
 
 // include guard
 #ifndef uwadv_fading_hpp_
@@ -92,4 +95,6 @@ inline Uint8 ua_fading_helper::get_fade_value()
       Uint8(255-255*(double(tickcount) / (fadetime * tickrate)));
 }
 
+
 #endif
+//@}

@@ -104,6 +104,5 @@ inline ua_common_obj_property& ua_object_properties::get_common_property(
 }
 
 
-//}@
-
 #endif
+//@}

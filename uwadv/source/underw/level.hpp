@@ -141,6 +141,5 @@ protected:
 };
 
 
-//}@
-
 #endif
+//@}
