@@ -83,8 +83,8 @@ bool ua_screen::process_event(SDL_Event& event)
    {
       SDL_Surface* surf = SDL_GetVideoSurface();
 
-      unsigned int xpos = event.motion.x * 320.0 / surf->w;
-      unsigned int ypos = event.motion.y * 200.0 / surf->h;
+      unsigned int xpos = unsigned(event.motion.x * 320.0 / surf->w);
+      unsigned int ypos = unsigned(event.motion.y * 200.0 / surf->h);
 
       // send event to subwindows that are in that area
       // TODO:
