@@ -724,15 +724,18 @@ bool ua_ingame_move_arrows::process_event(SDL_Event& event)
 {
    bool ret = ua_image_quad::process_event(event);
 
-   unsigned int xpos=0, ypos=0;
-   calc_mousepos(event, xpos, ypos);
-
-   // leaving window while move arrow is pressed?
-   if (selected_key != ua_key_nokey && !in_window(xpos,ypos))
+   if (event.type == SDL_MOUSEMOTION)
    {
-      // unpress (release) key
-      parent->key_event(false, selected_key);
-      selected_key = ua_key_nokey;
+      unsigned int xpos=0, ypos=0;
+      calc_mousepos(event, xpos, ypos);
+
+      // leaving window while move arrow is pressed?
+      if (selected_key != ua_key_nokey && !in_window(xpos,ypos))
+      {
+         // unpress (release) key
+         parent->key_event(false, selected_key);
+         selected_key = ua_key_nokey;
+      }
    }
 
    return ret;
