@@ -23,6 +23,8 @@
 
    \brief savegame reading/writing implementation
 
+   savegame naming scheme is "uasaveXXXXX.uas"
+
 */
 
 // needed includes
@@ -30,6 +32,9 @@
 #include "savegame.hpp"
 #include "fread_endian.hpp"
 #include <vector>
+#include <algorithm>
+#include <iomanip>
+#include <sstream>
 
 
 // constants
@@ -133,34 +138,99 @@ ua_savegames_manager::ua_savegames_manager()
 
 void ua_savegames_manager::init(ua_settings &settings)
 {
+   savegame_folder = settings.get_string(ua_setting_savegame_folder);
+
+   rescan();
+}
+
+void ua_savegames_manager::rescan()
+{
+   savegames.clear();
+
+   std::string pathname(savegame_folder);
+   pathname.append("uasave*.uas");
+
+   ua_find_files(pathname.c_str(),savegames);
+
+   std::sort(savegames.begin(),savegames.end());
 }
 
 unsigned int ua_savegames_manager::get_savegames_count()
 {
-   return 0;
+   return savegames.size();
 }
 
-std::string ua_savegames_manager::get_savegame_title(unsigned int index)
+void ua_savegames_manager::get_savegame_info(unsigned int index,
+   ua_savegame_info &info)
 {
-   std::string save_title("my savegame");
-   return save_title;
+   info.title = "my savegame";
+
+   // TODO: retrieve image
 }
 
 std::string ua_savegames_manager::get_savegame_filename(unsigned int index)
 {
-   std::string save_name(savegame_folder);
-   save_name.append("quicksave.uas");
-   return save_name;
+   return savegames[index];
 }
 
 ua_savegame ua_savegames_manager::get_savegame_load(unsigned int index)
 {
-   std::string save_name(get_savegame_filename(index));
+   std::string save_name(savegames[index]);
 
+   // open savegame for loading
    ua_savegame sg;
    sg.open(save_name.c_str(),false);
 
    return sg;
+}
+
+ua_savegame ua_savegames_manager::get_savegame_save_new_slot()
+{
+   std::string save_name;
+
+   // search for free savegame slot
+   unsigned int index = 0;
+   do
+   {
+      std::ostringstream buffer;
+
+      // create savegame name
+      buffer << savegame_folder.c_str() << "uasave"
+         << std::setfill('0')
+         << std::setw(5) << index
+         << ".uas" << std::ends;
+
+      save_name.assign(buffer.str().c_str());
+
+      index++;
+
+   } while( ua_file_exists(save_name.c_str()) );
+
+   // open savegame for saving
+   ua_savegame sg;
+   sg.open(save_name.c_str(),true);
+
+   return sg;
+}
+
+ua_savegame ua_savegames_manager::get_savegame_save_overwrite(unsigned int index)
+{
+   std::string save_name(savegames[index]);
+
+   // overwrites savegame with existing name
+   ua_savegame sg;
+   sg.open(save_name.c_str(),true);
+
+   return sg;
+}
+
+bool ua_savegames_manager::quicksave_avail()
+{
+   std::string quicksave_name(savegame_folder);
+   quicksave_name.append("quicksave.uas");
+
+   // check if quicksave savegame file is available
+   return ua_file_exists(quicksave_name.c_str());
 }
 
 ua_savegame ua_savegames_manager::get_quicksave(bool saving)
@@ -168,9 +238,9 @@ ua_savegame ua_savegames_manager::get_quicksave(bool saving)
    ua_savegame sg;
 
    std::string quicksave_name(savegame_folder);
-   quicksave_name.append("quicksave");
-   quicksave_name.append(".uas"); // extension
+   quicksave_name.append("quicksave.uas");
 
+   // open quicksave savegame in given mode
    sg.open(quicksave_name.c_str(),saving);
 
    return sg;

@@ -93,6 +93,19 @@ protected:
 };
 
 
+//! savegame info struct
+struct ua_savegame_info
+{
+   //! savegame title
+   std::string title;
+
+   //! game type; 0 = uw1, 1 = uw2
+   unsigned int type;
+
+//   ua_image preview;
+};
+
+
 //! savegames manager
 class ua_savegames_manager
 {
@@ -103,11 +116,14 @@ public:
    //! inits savegame manager
    void init(ua_settings &settings);
 
+   //! rescans for existing savegames
+   void rescan();
+
    //! returns number of available savegames
    unsigned int get_savegames_count();
 
    //! returns title of savegame
-   std::string get_savegame_title(unsigned int index);
+   void get_savegame_info(unsigned int index, ua_savegame_info &info);
 
    //! returns name of savegame file
    std::string get_savegame_filename(unsigned int index);
@@ -115,7 +131,14 @@ public:
    //! returns savegame object for loading
    ua_savegame get_savegame_load(unsigned int index);
 
-   // todo: get_savegame_save()
+   //! creates a savegame in a new slot
+   ua_savegame get_savegame_save_new_slot();
+
+   //! overwrites an existing savegame
+   ua_savegame get_savegame_save_overwrite(unsigned int index);
+
+   //! returns true when a quicksave savegame is available
+   bool quicksave_avail();
 
    //! returns the quicksave savegame
    ua_savegame get_quicksave(bool saving);
@@ -123,6 +146,9 @@ public:
 protected:
    //! savegame folder name
    std::string savegame_folder;
+
+   //! list of all current savegames
+   std::vector<std::string> savegames;
 };
 
 #endif
