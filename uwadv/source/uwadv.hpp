@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -159,6 +159,7 @@ protected:
    ua_debug_server debug;
 };
 
+
 // inline methods
 
 inline double ua_uwadv_game::get_tickrate()
@@ -209,6 +210,7 @@ inline ua_underworld& ua_uwadv_game::get_underworld()
 
 // macros
 
+//! defines a function ua_game_create() that creates an ua_uwadv_game object
 #define ua_uwadv_game_implement(gameclass) \
    ua_uwadv_game* ua_game_create(){ \
       return new gameclass; \

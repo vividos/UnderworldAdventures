@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2003 Underworld Adventures Team
+   Copyright (c) 2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -72,12 +72,14 @@ public:
    virtual void mouse_event(bool button_clicked, bool left_button,
       bool button_down, unsigned int mousex, unsigned int mousey);
 
-   //! access for window position
+   //! returns window position x coordinate
    unsigned int get_xpos() const { return wnd_xpos; }
+   //! returns window position y coordinate
    unsigned int get_ypos() const { return wnd_ypos; }
 
-   //! access for window size
+   //! returns window width
    unsigned int get_width() const { return wnd_width; }
+   //! returns window height
    unsigned int get_height() const { return wnd_height; }
 
    //! determines if point is inside window

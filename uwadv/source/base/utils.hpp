@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@
 int ua_trace_printf(const char *fmt,...);
 
 // debug trace
-/*! \function ua_trace
+/*! \fn ua_trace
     The function ua_trace is used to log text during the game. The text is
     printed on the console (the program has to be built with console support
     to show the text.

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,30 +23,21 @@
 
    \brief audio manager definition
 
-   The audio manager lets the user start and stop playing music tracks, sound
-   effects and *.voc sounds in the background. music tracks can be repeated
-   indefinitely.
-
-   To use the class, just call init() at program start and then call the play
-   functions to play music, sfx or *.voc files.
-
-   - play_sound(soundname) plays the file %uw-path%/sound/<soundname>.voc
-   - play_sfx() takes an enum defined below
-   - start_music() takes a playlist index; playlists are loaded from
-                   %uadata%<game-prefix>/audio/music.m3u.
-
-   The playlist is in m3u format, can contain comment lines starting with #
-   and playlist entries can also contain the placeholders %uw-path%, %uahome%
-   and %uadata%.
-
-   Be sure to only use the ua_audio_manager object only once, since it uses
-   the audio-part of SDL and SDL_mixer to play back audio.
-
 */
-/*! \defgroup audio Audio Documentation
+/*! \defgroup audio Audio Components
 
-   audio documentation yet to come ...
+   The audio subsystem takes care of all tasks that have to do with playing
+   back the sound track, sound effects (such as steps when walking) and the
+   cutscene speech.
 
+   The audio subsystem can be controlled via the ua_audio_manager class that
+   has functions to do these tasks. Sound track pieces are played back using
+   a playlist loaded at initialisation; they can be faded out, e.g. when a
+   screen ends. Sound effects are referenced by the enum ua_audio_sfx_type.
+   Cutscene speech is played back from uw's .voc files; they are internally
+   resampled to 22050 Hz because they are in an unusual format.
+
+   The Audio Components Module depends on the Base Components Module.
 */
 //@{
 
@@ -61,6 +52,7 @@
 class ua_files_manager;
 class ua_settings;
 class ua_midi_player;
+//! forward definition for the SDL_Mixer data structure
 typedef struct _Mix_Music Mix_Music;
 
 
@@ -88,6 +80,7 @@ enum ua_music_track_uw1
 
 
 //! enumeration of all sound effects
+/*! \todo add all needed audio sfx types */
 enum ua_audio_sfx_type
 {
    ua_sfx_steps=0,
@@ -98,6 +91,25 @@ enum ua_audio_sfx_type
 // classes
 
 //! audio interface class
+/*! The audio manager lets the user start and stop playing music tracks, sound
+    effects and *.voc sounds in the background. music tracks can be repeated
+    indefinitely.
+
+    To use the class, just call init() at program start and then call the play
+    functions to play music, sfx or *.voc files.
+
+    - play_sound(soundname) plays the file %uw-path%/sound/{soundname}.voc
+    - play_sfx() takes an enum defined below
+    - start_music() takes a playlist index; playlists are loaded from
+                    %uadata%/{game-prefix}/audio/music.m3u.
+
+    The playlist is in m3u format, can contain comment lines starting with #
+    and playlist entries can also contain the placeholders %uw-path%, %uahome%
+    and %uadata%.
+
+    Be sure to only use the ua_audio_manager object only once, since it uses
+    the audio-part of SDL and SDL_mixer to play back audio.
+*/
 class ua_audio_manager
 {
 public:

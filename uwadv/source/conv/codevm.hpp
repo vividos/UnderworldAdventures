@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -25,19 +25,6 @@
 
    much stuff for underworld conversations
 
-   ua_conv_globals contains all conversation globals for each conversation
-   slot and should be persisted when conversation or game exits.
-
-   ua_conv_stack implements the stack used in the virtual machine. it does
-   range checking and throws one of the exceptions in ua_conv_vm_exception
-   when needed.
-
-   ua_conv_code_vm is the virtual machine the whole code excutes. the function
-   ua_conv_code_vm::step() executes one opcode instruction and can be executed
-   in a loop to run the code. an exception of type ua_conv_vm_exception is
-   thrown on error. the virtual functions are called when a special event is
-   happening, such as printing a say string.
-
    for more info about the underworld conversation assembler script, look in
    the file docs/uw-formats.txt
 
@@ -47,8 +34,8 @@
 */
 
 // include guard
-#ifndef __uwadv_codevm_hpp_
-#define __uwadv_codevm_hpp_
+#ifndef uwadv_codevm_hpp_
+#define uwadv_codevm_hpp_
 
 // needed includes
 #include <string>
@@ -86,7 +73,7 @@ typedef struct
    //! type of the function/global memory location
    ua_conv_ret_type ret_type;
 
-   // name of imported item
+   //! name of imported item
    std::string name;
 
 } ua_conv_imported_item;
@@ -95,6 +82,9 @@ typedef struct
 // classes
 
 //! stores all conversation globals
+/*! The class contains all conversation globals for each conversation slot and
+    should be persisted when conversation or game exits.
+*/
 class ua_conv_globals
 {
 public:
@@ -126,9 +116,14 @@ protected:
 
 
 //! conversation code stack
+/*! ua_conv_stack implements the stack used in the virtual machine. It does
+    range checking and throws one of the exceptions in ua_conv_vm_exception
+    when needed.
+*/
 class ua_conv_stack
 {
 public:
+   //! ctor
    ua_conv_stack(){ stackp = 0xffff; };
 
    //! reserves stack space
@@ -183,8 +178,15 @@ protected:
 
 
 //! conversation code virtual machine
-/*! the order to call the member functions is: load_code(), then init(),
-    then step() (maybe in a for loop), and when done, done() */
+/*! ua_conv_code_vm is the virtual machine the whole code excutes. The
+    method step() executes one opcode instruction and can be executed in a
+    loop to run the code. An exception of type ua_conv_vm_exception is thrown
+    on error. The virtual functions are called when a special event is
+    happening, such as printing a "say" string.
+
+    The order to call the member functions is: load_code(), then init(),
+    then step() (maybe in a for loop), and when done, done()
+*/
 class ua_conv_code_vm
 {
 public:
@@ -269,10 +271,10 @@ protected:
    //! indicates if conversation has finished
    bool finished;
 
-   // all imported functions
+   //! all imported functions
    std::map<Uint16,ua_conv_imported_item> imported_funcs;
 
-   // names of all imported globals
+   //! names of all imported globals
    std::map<Uint16,ua_conv_imported_item> imported_globals;
 
    //! all current local strings

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -45,11 +45,15 @@ extern void ua_audio_resample_voc(Mix_Chunk* mc);
 
 
 // ua_audio_manager methods
+
 ua_audio_manager::ua_audio_manager()
 :midipl(NULL), curtrack(NULL)
 {
 }
 
+/*! Shuts down the SDL and SDL_mixer audio subsystem and deletes the midi
+    player instance.
+*/
 ua_audio_manager::~ua_audio_manager()
 {
    stop_sound();
@@ -62,6 +66,12 @@ ua_audio_manager::~ua_audio_manager()
    midipl = NULL;
 }
 
+/*! Initializes the audio manager using SDL and SDL_mixer. Creates the midi
+    player and loads the sound track playlist.
+
+    \param settings settings object
+    \param filesmgr files manager object
+*/
 void ua_audio_manager::init(ua_settings& settings, ua_files_manager& filesmgr)
 {
    ua_trace("init audio subsystem ... ");
@@ -99,6 +109,13 @@ void ua_audio_manager::init(ua_settings& settings, ua_files_manager& filesmgr)
       mixer_ver->major, mixer_ver->minor, mixer_ver->patch);
 }
 
+/*! Plays back a cutscene sound stored in a .voc file. The file resides in
+    the "sound" folder of uw. The audio samples are resampled to 22050 Hz
+    then. The soundname parameter is used to determine the filename:
+    %uwpath%/sound/{soundname}.voc
+
+    \param soundname base name of the sound file to play back
+*/
 void ua_audio_manager::play_sound(const char* soundname)
 {
    // construct filename
@@ -119,16 +136,34 @@ void ua_audio_manager::play_sound(const char* soundname)
    }
 }
 
+/*! stops a cutscene sound that is currently playing back. */
 void ua_audio_manager::stop_sound()
 {
    Mix_HaltChannel(-1);
 }
 
+/*! Plays back a sound effect specified. The playback stops when the sfx is
+    finished.
+
+    \param sfx sound effect type to play back
+
+    \todo implement
+*/
 void ua_audio_manager::play_sfx(ua_audio_sfx_type sfx)
 {
-   // TODO
 }
 
+/*! Starts playing back a sound track from the music playlist. Midi files with
+    extensions .mid or .xmi are played back using the appropriate midi driver
+    through ua_midi_player. Other file types are tried to load via SDL_mixer,
+    with the function Mix_LoadMUS(), so all music types that the SDL_mixer.dll
+    supports can be played back. The distributed SDL_mixer.dll can only play
+    back Ogg Vorbis and some tracker formats. mp3 files are not supported,
+    since SMPEG is not linked it (it's an ancient format anyway).
+
+    \param music the position in music playlist of the track to play back
+    \param repeat indicates if track should be repeated when it has stopped
+*/
 void ua_audio_manager::start_music(unsigned int music, bool repeat)
 {
    if (music>=music_playlist.size()) return;
@@ -169,11 +204,20 @@ void ua_audio_manager::start_music(unsigned int music, bool repeat)
    ua_trace("\n");
 }
 
+/*! Fades out the currently playing track using the time specified.
+    The method currently only fades out tracks playing back using SDL_mixer.
+    Other midi drivers are not supported.
+
+    \param time time to fade out music to null volume
+*/
 void ua_audio_manager::fadeout_music(double time)
 {
    Mix_FadeOutMusic(static_cast<int>(time*1000.0));
 }
 
+/*! Stops the current music track, either played back by SDL_mixer or the
+    current midi driver.
+*/
 void ua_audio_manager::stop_music()
 {
    if (curtrack)
@@ -186,6 +230,18 @@ void ua_audio_manager::stop_music()
       midipl->stop_track();
 }
 
+/*! Loads the music soundtrack playlist from the given filename. The file can
+    be stored in the uadata resource file or in the equivalent path. The file
+    can contain, among the placeholders recognized by
+    ua_files_manager::replace_system_vars(), the placeholder %uw-path%
+    that specifies the current uw path.
+
+    \param settings settings object
+    \param filesmgr files manager object
+    \param filename playlist filename
+
+    \todo maybe use ua_cfgfile to load playlist?
+*/
 void ua_audio_manager::load_playlist(ua_settings& settings,
    ua_files_manager& filesmgr, const char* filename)
 {
@@ -240,6 +296,11 @@ void ua_audio_manager::load_playlist(ua_settings& settings,
    }
 }
 
+/*! Callback function to get notified when a digital audio channel has
+    finished playing back; frees audio chunk played back.
+
+    \param channel channel number that stops playback
+*/
 void ua_audio_manager::mixer_channel_finished(int channel)
 {
    Mix_Chunk* mc = Mix_GetChunk(channel);

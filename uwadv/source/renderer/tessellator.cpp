@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -49,8 +49,6 @@ ua_poly_tessellator::~ua_poly_tessellator()
    combined_vertices.clear();
 }
 
-typedef void (UA_GL_CALLBACK* GLU_CALLBACK)();
-
 /*! Tessellates the polygon into triangles with the polygon vertices passed
     with add_poly_vertex().
 
@@ -62,6 +60,9 @@ const std::vector<ua_triangle3d_textured>& ua_poly_tessellator::tessellate(Uint1
    vert_cache.clear();
 
    gluTessProperty(tess,GLU_TESS_BOUNDARY_ONLY,GL_FALSE);
+
+   // glu callback function typedef
+   typedef void (UA_GL_CALLBACK* GLU_CALLBACK)();
 
    // register callbacks
    gluTessCallback(tess,GLU_TESS_BEGIN,NULL);

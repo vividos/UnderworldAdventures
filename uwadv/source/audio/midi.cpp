@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,9 +23,6 @@
 
    \brief midi playback class implementation
 
-   ua_midi_player::init_driver() checks for available midi drivers for each
-   platform, ua_midi_player::start_track() handles all the XMIDI stuff.
-
 */
 
 // needed includes
@@ -43,7 +40,7 @@
 
 // global functions
 
-// template function to try out midi driver
+//! function to try out midi driver if it is available
 void ua_try_midi_driver(ua_midi_driver*& mdrv, ua_midi_driver* newdrv)
 {
    if (mdrv!=NULL)
@@ -66,12 +63,11 @@ void ua_try_midi_driver(ua_midi_driver*& mdrv, ua_midi_driver* newdrv)
 
 // ua_midi_player methods
 
-void ua_midi_player::init_player(ua_settings &settings)
+void ua_midi_player::init_player(ua_settings& settings)
 {
-   // todo: retrieve these values from the settings
-
    win32_midi_device = settings.get_int(ua_setting_win32_midi_device);
 
+   // retrieve the music_conversion settings from settings?
    music_conversion = XMIDI_CONVERT_MT32_TO_GM;
 //   music_conversion = XMIDI_CONVERT_MT32_TO_GS;
 //   music_conversion = XMIDI_CONVERT_MT32_TO_GS127;
@@ -81,6 +77,7 @@ void ua_midi_player::init_player(ua_settings &settings)
    reverb_value = 16;
 }
 
+/*! Checks for available midi drivers for each platform. */
 bool ua_midi_player::init_driver()
 {
    // test every midi driver available
@@ -105,7 +102,10 @@ bool ua_midi_player::init_driver()
    return midi_driver != NULL;
 }
 
-void ua_midi_player::start_track(const char *filename, int num, bool repeat)
+/*! ua_midi_player::start_track() handles all the XMIDI loading and playing
+    stuff.
+*/
+void ua_midi_player::start_track(const char* filename, int num, bool repeat)
 {
    if (!init || filename==NULL || midi_driver==NULL)
       return;
@@ -116,7 +116,7 @@ void ua_midi_player::start_track(const char *filename, int num, bool repeat)
    if (!midifile.Load(filename,chorus_value,reverb_value))
       return;
 
-   XMIDIEventList *eventlist = midifile.GetEventList(num);
+   XMIDIEventList* eventlist = midifile.GetEventList(num);
 
    // start playing through midi driver; don't repeat
    if (eventlist!=NULL)

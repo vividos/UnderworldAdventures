@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -98,6 +98,7 @@ void ua_texture::convert(ua_image& img,unsigned int numtex)
     \param origx x resolution of image stored in pix
     \param origy y resolution of image stored in pix
     \param pal 256 color palette to use in conversion.
+    \param numtex number of texture image to convert to
 */
 void ua_texture::convert(Uint8* pix, unsigned int origx, unsigned int origy,
    ua_palette256& pal, unsigned int numtex)

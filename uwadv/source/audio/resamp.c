@@ -19,11 +19,6 @@
 * ANY KIND. See http://www.dspguru.com/wol.htm for more information.
 *
 *****************************************************************************/
-/*! \file resamp.c
-
-   function implementations to resample a signal
-
-*/
 
 #include "resamp.h"
 

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,12 +23,6 @@
 
    \brief midi playback class and driver
 
-   ua_midi_driver is a base class for a generic midi driver, so that the midi
-   player only has to access one interface.
-
-   ua_midi_player checks for available midi driver, extracts XMIDI data (via
-   the XMIDI class) and passes the event list to the apropriate driver.
-
 */
 //! \ingroup audio
 
@@ -46,6 +40,9 @@
 // classes
 
 //! abstract midi driver class
+/*! Base class for a generic midi driver, so that the midi player only has to
+    access one interface.
+*/
 class ua_midi_driver
 {
 public:
@@ -58,17 +55,21 @@ public:
    virtual bool init_driver()=0;
 
    //! starts playing an event list
-   virtual void start_track(XMIDIEventList *eventlist, bool repeat)=0;
+   virtual void start_track(XMIDIEventList* eventlist, bool repeat)=0;
 
    //! stops track
    virtual void stop_track()=0;
 
    //! returns a copyright string
-   virtual const char *copyright()=0;
+   virtual const char* copyright()=0;
 };
 
 
 //! midi player class
+/*! The midi player class checks for available midi driver, extracts XMIDI
+    data (via the XMIDI class) and passes the event list to the apropriate
+    driver.
+*/
 class ua_midi_player
 {
 public:
@@ -85,13 +86,13 @@ public:
    }
 
    //! initializes player
-   void init_player(ua_settings &settings);
+   void init_player(ua_settings& settings);
 
    //! initializes appropriate midi driver
    bool init_driver();
 
    //! starts playing midi file, with track number
-   void start_track(const char *filename, int num=0, bool repeat=false);
+   void start_track(const char* filename, int num=0, bool repeat=false);
 
    //! stops playing
    void stop_track();
@@ -101,12 +102,12 @@ protected:
    bool init;
 
    //! midi driver to use
-   ua_midi_driver *midi_driver;
+   ua_midi_driver* midi_driver;
 
    //! midi device for the win32 midi driver
    int win32_midi_device;
 
-   // music conversion type
+   //! music conversion type
    int music_conversion;
 
    //! chorus value; -1 means off

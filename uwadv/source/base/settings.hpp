@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -30,9 +30,11 @@
    is currently running. To load the settings, just use ua_cfgfile::load().
 
 */
-/*! \defgroup base Base Components Documentation
+/*! \defgroup base Base Components
 
-   base component documentation yet to com
+   base component documentation yet to come ...
+
+   The Base Components Module depends on no other modules.
 
 */
 //@{
@@ -85,7 +87,7 @@ enum ua_settings_key
    //! prefix for the uadata folder path to locate the game.cfg and other cfg files
    ua_setting_game_prefix,
 
-   //! screen resolution string, in the form <xres> x <yres>
+   //! screen resolution string, in the form "<xres> x <yres>"
    ua_setting_screen_resolution,
 
    //! boolean value that indicates if the ui is drawn with "smooth" pixels

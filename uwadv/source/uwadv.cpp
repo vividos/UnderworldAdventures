@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -36,19 +36,21 @@
 
 
 #ifndef WIN32
-// Generic game class. win32 has a specialization in game_win32
+//! Generic game class. win32 has a specialization in game_win32
 ua_uwadv_game_implement(ua_uwadv_game);
 #endif
 
 
 // tables
 
+//! command line argument type
 enum ua_game_arg_type
 {
-   ua_arg_help,
-   ua_arg_game,
+   ua_arg_help, //!< help option
+   ua_arg_game, //!< game option, to specify custom games
 };
 
+//! command line argument data
 struct ua_arg_entry
 {
    ua_game_arg_type type;  //!< type of argument
@@ -57,6 +59,7 @@ struct ua_arg_entry
    unsigned int numparams; //!< number of parameters for option
 };
 
+//! all command line arguments that uwadv understands
 static
 ua_arg_entry arg_params[] =
 {
@@ -119,12 +122,16 @@ void ua_uwadv_game::init()
    curscreen = NULL;
 }
 
-/*! reads in command line arguments
-    args can be of the form -<char> (short option) or --<string> (long option)
-    the table arg_params specifies all options that can be processed by uwadv
-    shortopt contains all chars which can be used for this option
-    longopt is the string that is used for the long option
-    numparams specifies how many parameters are used for the specific option
+/*! Reads in command line arguments
+    Args can be of the form "-<char>" (short option) or "--<string>" (long
+    option). The table arg_params specifies all options that can be processed
+    by uwadv.
+    \li shortopt contains all chars which can be used for this option
+    \li longopt is the string that is used for the long option
+    \li numparams specifies how many parameters are used for the specific option
+
+    \param argc number of arguments, just like in the main() call
+    \param argv argument strings
 */
 void ua_uwadv_game::parse_args(unsigned int argc, const char** argv)
 {

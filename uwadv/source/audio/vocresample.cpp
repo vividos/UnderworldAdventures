@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,17 +23,13 @@
 
    \brief voc file resample implementation
 
-   resamples a Mix_Chunk from 12048 Hz to 22088 Hz (almost the same as the
-   mixer samplerate of 22050 Hz. The resample code from
-   http://www.dspguru.com/sw/opendsp/alglib.htm was used, and the lowpass
-   filter was designed with FIRfilt.
-
 */
 
 // needed includes
 #include "common.hpp"
 #include "SDL_mixer.h"
 
+// resampling functions
 extern "C" {
 #include "resamp.h"
 }
@@ -152,14 +148,26 @@ double coeff[88] = {
 -9.273426038183077E-004      /* h[87] */
 };
 
-// interpolation factor
+//! interpolation factor
 const int interpolation = 11;
 
-// decimation factor
+//! decimation factor
 const int decimation = 6;
 
 
 //! resamples voc chunk to appropriate samplerate
+/*! Resamples a Mix_Chunk from 12048 Hz to 22088 Hz (almost the same as the
+    mixer samplerate of 22050 Hz. The resample code from
+    http://www.dspguru.com/sw/opendsp/alglib.htm was used, and the lowpass
+    filter was designed with FIRfilt.
+
+    The sample data is first upsampled to 132528 Hz, using the ::interpolation
+    factor and filtered with a FIR lowpass filter with coefficients ::coeff,
+    which cutoff frequency is at 11025 Hz. As last step the signal is
+    decimated by factor ::decimation to 22088 Hz.
+
+    \param mc the Mix_Chunk with voc samples to resample
+*/
 void ua_audio_resample_voc(Mix_Chunk* mc)
 {
    // assumes we got "16-bit signed int" samples from the call to

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -19,16 +19,7 @@
 */
 /*! \file midi_sdl_mixer.cpp
 
-   universal midi driver; plays midis via the SDL_mixer audio library.
-   available at http://www.libsdl.org/projects/SDL_mixer/
-
-   probably only works on linux, needs the Timidity patches from
-   http://www.libsdl.org/projects/SDL_mixer/timidity/timidity.tar.gz
-   untar into /usr/local/lib/timidity
-
-   midi driver implementation; to play a midi file, the driver
-   extracts a midi file from the XMIDI event list, loads and plays it via
-   the SDL_mixer calls.
+   \brief SDL_mixer midi driver implementation
 
 */
 
@@ -57,12 +48,14 @@ bool ua_sdl_mixer_midi_driver::init_driver()
    return true;
 }
 
-void ua_sdl_mixer_midi_driver::start_track(XMIDIEventList* eventlist, bool repeat)
+/*! Starts playing back the midi track using SDL_mixer. Since there is no way
+    to load midi data into SDL_mixer, we have to temporarily write out the
+    file to disk. It can then loaded by a call to Mix_LoadMUS().
+*/
+void ua_sdl_mixer_midi_driver::start_track(XMIDIEventList* eventlist,
+   bool repeat)
 {
    stop_track();
-
-   // find out midi file length
-   //int length = eventlist->Write(NULL);
 
    // convert XMIDI event list to midi file, into temp. file
    SDL_RWops* midifile = SDL_RWFromFile("uwadv.mid","wb");
@@ -72,6 +65,8 @@ void ua_sdl_mixer_midi_driver::start_track(XMIDIEventList* eventlist, bool repea
    // load the midi file
    mod = Mix_LoadMUS("uwadv.mid");
 
+   // we can remove the file here again since SDL_mixer has loaded the file
+   // or at least has an open handle to that file
    remove("uwadv.mid");
 
    if (mod == NULL)

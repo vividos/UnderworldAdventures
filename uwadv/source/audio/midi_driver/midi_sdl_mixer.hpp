@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -17,14 +17,9 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 */
-/*! \file midi_sdl_mixer.h
+/*! \file midi_sdl_mixer.hpp
 
-   universal midi driver; plays midis via the SDL_mixer audio library.
-   available at http://www.libsdl.org/projects/SDL_mixer/
-
-   works probably only on linux, needs the Timidity patches from
-   http://www.libsdl.org/projects/SDL_mixer/timidity/timidity.tar.gz
-   untar into /usr/local/lib/timidity
+   \brief midi driver for SDL_mixer
 
 */
 //! \ingroup audio
@@ -43,6 +38,14 @@
 // classes
 
 //! SDL_mixer midi driver
+/*! Universal midi driver; plays midis via the SDL_mixer audio library,
+    available at
+    http://www.libsdl.org/projects/SDL_mixer/
+
+    On Linux it needs the Timidity patches from
+    http://www.libsdl.org/projects/SDL_mixer/timidity/timidity.tar.gz
+    untar them into /usr/local/lib/timidity
+*/
 class ua_sdl_mixer_midi_driver: virtual public ua_midi_driver
 {
 public:
@@ -62,6 +65,7 @@ public:
    virtual const char* copyright();
 
 protected:
+   //! ptr to SDL_mixer music info to play
    Mix_Music* mod;
 };
 
