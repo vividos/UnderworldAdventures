@@ -1313,10 +1313,14 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
 
             if (!mouse_move)
             {
-               // disable all modes
+               // disable all modes (when possible)
+               if (!move_walk_forward && !move_run_forward && !move_walk_backwards)
+                  player.set_movement_mode(0,ua_move_walk);
+
+               if (!move_turn_left && !move_turn_right)
+                  player.set_movement_mode(0,ua_move_rotate);
+
                player.set_movement_mode(0,ua_move_slide);
-               player.set_movement_mode(0,ua_move_rotate);
-               player.set_movement_mode(0,ua_move_walk);
 
                // set new mouse cursor position
                Uint16 x = unsigned(cursorx*core->get_screen_width()/320.0);
@@ -1359,28 +1363,38 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
 
          if (mouse_move)
          {
-            // first, disable all modes
-            player.set_movement_mode(0,ua_move_slide);
-            player.set_movement_mode(0,ua_move_rotate);
-            player.set_movement_mode(0,ua_move_walk);
-
-            // update movement modes and factors
-            if (slide<10.0)
+            // disable all modes (when not active through keyboard movement)
+            // and update movement modes and factors
+            if (!move_walk_forward && !move_run_forward && !move_walk_backwards)
             {
-               player.set_movement_mode(ua_move_slide);
-               player.set_movement_factor(ua_move_slide,slide);
+               player.set_movement_mode(0,ua_move_walk);
+
+               if (walk<10.0)
+               {
+                  player.set_movement_mode(ua_move_walk);
+                  player.set_movement_factor(ua_move_walk,walk);
+               }
             }
 
-            if (rotate<10.0)
+            if (!move_turn_left && !move_turn_right)
             {
-               player.set_movement_mode(ua_move_rotate);
-               player.set_movement_factor(ua_move_rotate,rotate);
+               player.set_movement_mode(0,ua_move_rotate);
+
+               if (rotate<10.0)
+               {
+                  player.set_movement_mode(ua_move_rotate);
+                  player.set_movement_factor(ua_move_rotate,rotate);
+               }
             }
 
-            if (walk<10.0)
             {
-               player.set_movement_mode(ua_move_walk);
-               player.set_movement_factor(ua_move_walk,walk);
+               player.set_movement_mode(0,ua_move_slide);
+
+               if (slide<10.0)
+               {
+                  player.set_movement_mode(ua_move_slide);
+                  player.set_movement_factor(ua_move_slide,slide);
+               }
             }
          }
       }
