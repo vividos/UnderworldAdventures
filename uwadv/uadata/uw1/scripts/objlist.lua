@@ -178,8 +178,13 @@ function lua_objlist_look(obj_handle)
    ui_print_string(
      "You see " .. article .. attitude .. name .. named .. owner)
 
+   -- check for look trigger
+   trig_check_handle(trig_look,obj_handle)
+
 end
 
+
+-- called when talking to object in object list
 function lua_objlist_talk(obj_handle)
 
    objinfo = objlist_get_obj_info(obj_handle)
@@ -215,5 +220,17 @@ function lua_objlist_talk(obj_handle)
          ui_print_string(ui_get_gamestring(7,1))
       end
    end
+
+end
+
+
+-- called when using object in object list
+function lua_objlist_use(obj_handle)
+
+   print( "using object " .. format("%04x",obj_handle) .. " name=" ..
+      ui_get_gamestring(4, objlist_get_obj_info(obj_handle).item_id) )
+
+   -- check for use trigger
+   trig_check_handle(trig_use,obj_handle)
 
 end
