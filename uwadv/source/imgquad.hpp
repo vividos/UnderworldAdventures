@@ -44,7 +44,7 @@ public:
 
    //! initializes image quad
    void init(ua_texture_manager* texmgr, unsigned int xpos, unsigned int ypos,
-      unsigned int width, unsigned int height);
+      unsigned int width, unsigned int height, bool copy_pal=true);
 
    //! converts and uploads the image to texture
    void convert_upload();
@@ -64,6 +64,9 @@ protected:
 
    //! indicates if we use two textures to draw the quad
    bool split_textures;
+
+   //! image quad palette
+   ua_onepalette quadpalette;
 };
 
 #endif

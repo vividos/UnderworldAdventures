@@ -33,20 +33,23 @@
 // ua_image_quad methods
 
 void ua_image_quad::init(ua_texture_manager* texmgr, unsigned int myxpos,
-   unsigned int myypos, unsigned int mywidth, unsigned int myheight)
+   unsigned int myypos, unsigned int mywidth, unsigned int myheight, bool copy_pal)
 {
    xpos = myxpos;
    ypos = myypos;
    mywidth += (mywidth&1); // even width
 
    // init image
-   ua_image::create(mywidth,myheight,0,0);
+   ua_image::create(mywidth,myheight,0,ua_image::palette);
 
    // init texture
    split_textures = mywidth>254;
 
    tex.init(texmgr,split_textures ? 2 : 1,
       GL_LINEAR,GL_LINEAR,GL_CLAMP,GL_CLAMP);
+
+   if (copy_pal && texmgr!=NULL)
+      memcpy(quadpalette,texmgr->get_palette(ua_image::palette),sizeof(ua_onepalette));
 }
 
 void ua_image_quad::convert_upload()
@@ -63,11 +66,11 @@ void ua_image_quad::convert_upload()
       copy_rect(img_split2,texwidth-1,0, texwidth-1,ua_image::yres);
 
       // upload it to the texture
-      tex.convert(img_split1,0);
+      tex.convert(quadpalette,img_split1,0);
       tex.use(0);
       tex.upload();
 
-      tex.convert(img_split2,1);
+      tex.convert(quadpalette,img_split2,1);
       tex.use(1);
       tex.upload();
    }
