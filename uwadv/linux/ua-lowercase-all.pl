@@ -64,7 +64,7 @@ sub gointodir {
                         if (-d $newline) {
                                 gointodir($newline);
                         }
-                } else {
+                } elsif (/^[^.]/) {
                         $line = $dir . "/" . $_;
                         if (-d $line) {
                                 gointodir($line);
