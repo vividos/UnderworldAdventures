@@ -108,22 +108,27 @@ void ua_physics_model::calc_collision(ua_vector2d &pos, const ua_vector2d &dir)
       ua_vector2d newdir(dir);
       newdir *= 1.0-ua_physics_min_dist;
       pos+=newdir;
+         
       return;
    }
    else
    {
       // collision detected
 
-      // move close to where we hit something
-      ua_vector2d newdir(dir);
-      newdir.normalize();
-      newdir *= data.nearest_dist;
-      newdir *= 1.0-ua_physics_min_dist;
-
-      // calc new pos
+      // how far away:
       ua_vector2d newpos(pos);
-      newpos += newdir;
+      ua_vector2d newdir(dir);
+    
 
+      // move close to where we hit something (but not too close! (tm))
+      if (data.nearest_dist > ua_physics_min_dist) {
+        newdir.normalize();
+        newdir *= (data.nearest_dist - ua_physics_min_dist);
+      
+        // calc new pos
+        newpos += newdir;
+      }
+     
       // calc sliding line normal vector
       ua_vector2d sliding;
       sliding.set(data.line_inter,newpos);
@@ -141,6 +146,10 @@ void ua_physics_model::calc_collision(ua_vector2d &pos, const ua_vector2d &dir)
          proj_dir *= val;
       }
       newdir = proj_dir;
+
+      // scale new dir a bit (adjust this to get the sliding speed you like! (tm))
+      newdir *= 3;
+
 
 #ifdef DEBUG
       static level=0;
@@ -367,7 +376,8 @@ bool ua_physics_model::check_collision(const ua_vector2d &point1,const ua_vector
       }
    }
 
-   if (dist_to_inters<data.dir.length())
+   // dont accept collision if dist_to_inters is < 0.. collision is then behind you! (tm)
+   if (dist_to_inters<data.dir.length() && dist_to_inters >= 0) 
    {
       if (data.nearest_dist<0.0 || data.nearest_dist > dist_to_inters)
       {
