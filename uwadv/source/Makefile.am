@@ -24,6 +24,7 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	screen.hpp settings.hpp texture.hpp uatypes.hpp \
 	underworld.hpp uwadv.hpp objects.hpp cutscene.hpp physics.hpp \
 	files.hpp keymap.hpp uwscript.hpp uamath.hpp settings.hpp \
+	savegame.hpp \
 	linux/main.cpp \
 	audio/audio.cpp audio/midi.cpp audio/xmidi.cpp \
 	audio/midi.hpp audio/xmidi.hpp \
@@ -36,7 +37,7 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	resource/gamestrings.cpp resource/imageloader.cpp \
 	resource/maploader.cpp resource/settingsloader.cpp \
 	resource/texloader.cpp resource/objloader.cpp \
-	resource/cutsloader.cpp \
+	resource/cutsloader.cpp resource/savegame.cpp \
 	resource/fread_endian.hpp \
 	screens/ingame_orig.cpp screens/start_splash.cpp \
 	screens/start_menu.cpp screens/cutscene_view.cpp \
@@ -77,7 +78,12 @@ EXTRA_DIST = audio/midi_driver/win_midiout.cpp \
 	win32/source/main.cpp \
 	win32/source/resource.h \
 	win32/source/Uus.ico \
-	win32/source/uwadv.rc
+	win32/source/uwadv_res.rc \
+	win32/source/uaconfig/Corp.ico \
+	win32/source/uaconfig/resource.h \
+	win32/source/uaconfig/uaconfig.cpp \
+	win32/source/uaconfig/uaconfig.hpp \
+	win32/source/uaconfig/uaconfig_res.rc
 
 cfgdir = $(datadir)/games/uwadv
 cfg_DATA = uwadv.cfg
