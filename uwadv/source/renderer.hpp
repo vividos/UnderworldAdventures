@@ -149,4 +149,68 @@ protected:
 };
 
 
+#ifdef WIN32
+#define UA_GL_CALLBACK __stdcall
+#else
+#define UA_GL_CALLBACK
+#endif
+
+class ua_poly_tessellator
+{
+public:
+   //! ctor
+   ua_poly_tessellator();
+   //! dtor
+   ~ua_poly_tessellator();
+
+   //! adds polygon vertex
+   void add_poly_vertex(const ua_vertex3d& vertex)
+   {
+      poly_vertices.push_back(vertex);
+   }
+
+   //! tessellates the polygon and returns triangles
+   const std::vector<ua_triangle3d_textured>& tessellate(Uint16 texnum);
+
+protected:
+   // static callback functions
+
+   static void UA_GL_CALLBACK begin_data(GLenum type, ua_poly_tessellator* This);
+
+   static void UA_GL_CALLBACK end_data(ua_poly_tessellator* This);
+
+   static void UA_GL_CALLBACK vertex_data(
+      ua_vertex3d* vert, ua_poly_tessellator* This);
+
+   static void UA_GL_CALLBACK combine_data(GLdouble coords[3],
+      ua_vertex3d* vertex_data[4], GLfloat weight[4], ua_vertex3d** out_data,
+      ua_poly_tessellator* This);
+
+protected:
+   //! GLU tessellator object
+   GLUtesselator* tess;
+
+   //! current texture number
+   Uint16 cur_texnum;
+
+   //! current glBegin() parameter type
+   GLenum cur_type;
+
+   //! indicates a fresh triangle start
+   bool tri_start;
+
+   //! list of polygon vertices; only point 0 of triangle is valid
+   std::vector<ua_vertex3d> poly_vertices;
+
+   //! temporary vertex cache to combine 3 vertices to a triangle
+   std::vector<ua_vertex3d> vert_cache;
+
+   //! list with new triangles
+   std::vector<ua_triangle3d_textured> triangles;
+
+   //! list of pointer to vertices created using combining
+   std::vector<ua_vertex3d*> combined_vertices;
+};
+
+
 #endif
