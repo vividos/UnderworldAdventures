@@ -36,16 +36,21 @@
 
 
 // forward references
+class ua_settings;
 class ua_font;
 class ua_image;
 class ua_lp_descriptor;
+class ua_object_properties;
+class ua_player;
+class ua_level;
+class ua_object_list;
+class ua_object;
 
 
 //! imports common to uw1 and uw2
 class ua_uw_import
 {
 public:
-
    //! loads 8 main palettes
    void load_palettes(const char* allpalname,
       ua_palette256_ptr allpalettes[8]);
@@ -82,26 +87,72 @@ public:
    //! extracts cutscene data from source data
    void extract_cutscene_data(Uint8* src, Uint8* dst, unsigned int maxpix);
 
+
+   //! loads properties
+   void load_properties(ua_object_properties& prop, const char* path);
+
+   //! loads player info
+   void load_player(ua_player& player, const char* path);
+
+   //! loads map objects
+   void load_mapobjects(ua_object_list& objlist, SDL_RWops* rwops, Uint16 texmap[64]);
+
+   //! loads uw1, uw_demo or uw2 level maps
+   virtual void load_levelmaps(std::vector<ua_level> &levels, ua_settings &settings,
+      const char* folder);
+
 protected:
+
+   //! loads tilemap infos
+   void load_tilemap(ua_level& level, SDL_RWops* rwops, Uint16 textures[64], bool uw2_mode);
+
+   //! loads texture info
+   void load_texinfo(ua_level& level, SDL_RWops* rwops, Uint16 textures[64], bool uw2_mode);
+
+   //! adds object to master object list and follows link1 and link2 objs
+   void addobj_follow(std::vector<ua_object>& master_obj_list,
+      Uint32 objprop[0x400*2], Uint8 npcinfo[0x100*19],
+      Uint16 objpos, Uint16 texmap[64], Uint8 tilex, Uint8 tiley);
 
 private:
    //! loads *.gr image into pixels array
-   void load_image_gr_priv(ua_image& image, FILE* fd, Uint8 auxpalidx[32][16],
+   void load_image_gr_impl(ua_image& image, FILE* fd, Uint8 auxpalidx[32][16],
       bool special_panels);
 };
 
-//! uw1 imports
+//! uw1 specific imports
 class ua_uw1_import: public ua_uw_import
 {
 public:
-
+   //! loads uw1 or uw_demo level maps
+   virtual void load_levelmaps(std::vector<ua_level> &levels, ua_settings &settings,
+      const char* folder);
 };
 
-//! uw2 imports
-class ua_uw2_import
+//! uw2 specific imports
+class ua_uw2_import: public ua_uw_import
 {
 public:
+   //! loads uw2 levelmaps
+   virtual void load_levelmaps(std::vector<ua_level> &levels, ua_settings &settings,
+      const char* folder);
 
+protected:
+   //! creates SDL_RWops struct from compressed .ark file blocks (uw2 only)
+   SDL_RWops* get_rwops_uw2dec(FILE* fd,unsigned int blocknum, unsigned int destsize);
+
+   //! callback function to free uw2dec RWops memory
+   static int uw2dec_close(SDL_RWops* rwops);
 };
+
+
+// inline functions
+
+//! retrieves "count" bits from "value", starting at bit "start"
+inline Uint32 ua_get_bits(Uint32 value, unsigned int start, unsigned int count)
+{
+   return (value>>start) & ((1<<count)-1);
+}
+
 
 #endif
