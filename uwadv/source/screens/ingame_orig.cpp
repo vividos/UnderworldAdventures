@@ -1234,7 +1234,9 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
             if (relx>=0.66){ rotate = -(relx-0.66)/0.33; cursor_image = 8; } else
                cursor_image = 1;
 
-            walk = (0.6-rely)/0.6;
+            // walking speed increases in range [0.6; 0.2] only
+            walk = (0.6-rely)/0.4;
+            if (walk>1.0) walk = 1.0;
          }
 
          if (mouse_move)
