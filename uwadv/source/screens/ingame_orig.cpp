@@ -623,8 +623,6 @@ void ua_ingame_orig_screen::setup_opengl()
    glClearColor(0,0,0,0);
    glClear(GL_COLOR_BUFFER_BIT);
 
-   glEnable(GL_SCISSOR_TEST);
-
    // calculate scissor rectangle
    const unsigned int scissor_area[4] =
    { 52,68, 174,114 };
@@ -643,6 +641,8 @@ void ua_ingame_orig_screen::setup_opengl()
    y2 = int((scissor_area[3]/200.0) * yres);
 
    glScissor(x1,y1,x2,y2);
+
+   glEnable(GL_SCISSOR_TEST);
 }
 
 ua_ingame_orig_area ua_ingame_orig_screen::get_area(
