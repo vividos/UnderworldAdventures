@@ -256,7 +256,7 @@ void ua_start_menu_screen::press_button()
       if (journey_avail)
       {
          // "load game" screen (with later starting "orig. ingame ui")
-         game.replace_screen(new ua_save_game_screen(game,true),true);
+         game.replace_screen(new ua_save_game_screen(game,true,true),true);
       }
       break;
    }
