@@ -102,17 +102,24 @@ void ua_ingame_orig_screen::init()
    SDL_GL_SwapBuffers();
 
    cursor_image = 0;
+   cursor_image_current = 0;
    cursorx = cursory = 0;
    cursor_is_object = false;
-   cursor_object = 0;
+
    slot_start = 0;
    check_dragging = false;
 
    tickcount = 0;
    look_down = look_up = false;
    gamemode = ua_mode_default;
+   panel_type = 0;
+
+
 
    hit = 0;
+   test_vit = 0;
+
+
 
    keymap.init(core->get_settings());
 
@@ -126,32 +133,123 @@ void ua_ingame_orig_screen::init()
    // load some images
    ua_settings &settings = core->get_settings();
 
-   img_back.load_raw(settings,mainscreenname,0);
+   // background image
+   {
+      ua_image img_back;
+      img_back.load_raw(settings,mainscreenname,0);
 
-   img_temp.create(img_back.get_xres(),img_back.get_yres(),0,
-      img_back.get_palette());
+      img_back.copy_rect(img_back1,0,0, 256,200);
+      img_back.copy_rect(img_back2,256,0, 320-256,200);
+   }
 
-   img_compass.load(settings,"compass");
-   img_bodies.load(settings,"bodies");
-   img_cursors.load(settings,"cursors");
-   img_objects.load(settings,"objects");
+   // compass images
+   {
+      ua_image_list img_temp;
+      img_temp.load(settings,"compass");
 
-   bool female = core->get_underworld().get_player().get_attr(ua_attr_gender)!=0;
-   img_armor.load(settings,female ? "armor_f" : "armor_m");
+      std::vector<ua_image>& compass = img_compass.get_allimages();
 
+      // collect all compass images
+      for(unsigned int i=0; i<4; i++)
+      for(unsigned int j=0; j<4; j++)
+         compass.push_back(img_temp.get_image(j));
+
+      static int ua_compass_tip_coords[16*2] =
+      {
+         24, 0, 16, 2,  8, 3,  4, 6,
+          0,10,  0,14,  4,16, 12,19,
+         24,21, 32,19, 44,16, 48,14,
+         48,10, 44, 6, 40, 3, 32, 2,
+      };
+
+      // add compass needle tips
+      for(unsigned int n=0; n<16; n++)
+      {
+         ua_image& img = compass[n];
+
+         img.paste_image(img_temp.get_image(n+4),
+            ua_compass_tip_coords[n*2],ua_compass_tip_coords[n*2+1]);
+      }
+   }
+
+   // vitality/mana/poison flasks
+   {
+      ua_image_list flasks;
+      flasks.load(settings,"flasks");
+
+      ua_image& baseimg = flasks.get_image(75);
+
+      // load all 3 flasks
+      for(unsigned int i=0; i<3; i++)
+      {
+         std::vector<ua_image>& allimages = img_flasks[i].get_allimages();
+
+         ua_image img(baseimg);
+         allimages.push_back(img);
+
+         static unsigned int ua_flasks_pos[13] =
+         { 26, 24, 22, 20, 18, 16, 15, 14, 13, 11, 9, 7, 5 };
+
+         // generate all images
+         for(unsigned int j=0; j<13; j++)
+         {
+            img.paste_image(flasks.get_image(i*25+j), 0, ua_flasks_pos[j]);
+            allimages.push_back(img);
+         }
+      }
+   }
+
+   // command buttons
+   {
+      ua_image_list buttons;
+      buttons.load(settings,"lfti");
+
+      img_cmd_buttons.create(32,108);
+      img_back1.copy_rect(img_cmd_buttons,6,10,32,108);
+
+      static unsigned int ua_cmd_btn_offsets[] =
+      {
+         2,0, 1,17, 0,37, 0,55, 2,70, 2,89
+      };
+
+      for(unsigned int i=0; i<6; i++)
+      {
+         img_cmd_buttons.paste_image(
+            buttons.get_image(i*2+1),
+            ua_cmd_btn_offsets[i*2],ua_cmd_btn_offsets[i*2+1]);
+      }
+   }
+
+   // panels
+   {
+      img_panels.load(settings,"panels",0,3);
+      img_inv_bagpanel.load(settings,"inv",6);
+      img_inv_updown.load(settings,"buttons",27,29);
+
+      armor_female = core->get_underworld().get_player().get_attr(ua_attr_gender)!=0;
+      img_armor.load(settings,armor_female ? "armor_f" : "armor_m");
+
+      img_bodies.load(settings,"bodies");
+      img_objects.load(settings,"objects");
+   }
+
+   // fonts
    font_normal.init(settings,ua_font_normal);
-
-   img_cmd_btns.load(settings,"lfti");
-
-   img_inv_bagpanel.load(settings,"inv",6);
-   img_inv_updown.load(settings,"buttons",27,29);
 
    resume();
 }
 
 void ua_ingame_orig_screen::suspend()
 {
-   tex.done();
+   tex_back1.done();
+   tex_back2.done();
+
+   tex_compass.done();
+   tex_flasks.done();
+   tex_cmd_buttons.done();
+   tex_panel.done();
+
+   mousecursor.done();
 
    renderer.done();
 
@@ -160,16 +258,55 @@ void ua_ingame_orig_screen::suspend()
 
 void ua_ingame_orig_screen::resume()
 {
-   setup_opengl();
-
-   // upload textures
-   tex.init(&core->get_texmgr());
-   tex.convert(img_back);
-   tex.use();
-   tex.upload();
-
    fade_state = 0;
    fade_ticks = 0;
+
+   setup_opengl();
+
+   // init mouse cursor
+   mousecursor.init(core,0);
+   mousecursor.show(true);
+
+   // init some textures
+
+   // background textures
+   tex_back1.init(&core->get_texmgr(),1,GL_LINEAR,GL_LINEAR,GL_CLAMP,GL_CLAMP);
+   tex_back1.convert(img_back1);
+   tex_back1.use();
+   tex_back1.upload();
+
+   tex_back2.init(&core->get_texmgr(),1,GL_LINEAR,GL_LINEAR,GL_CLAMP,GL_CLAMP);
+   tex_back2.convert(img_back2);
+   tex_back2.use();
+   tex_back2.upload();
+
+   // compass texture
+   tex_compass.init(&core->get_texmgr(),1,GL_LINEAR,GL_LINEAR,GL_CLAMP,GL_CLAMP);
+   tex_compass.convert(img_compass.get_image(0));
+   tex_compass.use();
+   tex_compass.upload();
+   compass_curimg = 0;
+
+   // flasks textures
+   flasks_curimg[0] = flasks_curimg[1] = 0;
+   tex_flasks.init(&core->get_texmgr(),2,GL_LINEAR,GL_LINEAR,GL_CLAMP,GL_CLAMP);
+   tex_flasks.convert(img_flasks[0].get_image(flasks_curimg[0]),0);
+   tex_flasks.use(0);
+   tex_flasks.upload();
+
+   tex_flasks.convert(img_flasks[1].get_image(flasks_curimg[1]),1);
+   tex_flasks.use(1);
+   tex_flasks.upload();
+
+   // command buttons
+   tex_cmd_buttons.init(&core->get_texmgr(),1,GL_LINEAR,GL_LINEAR,GL_CLAMP,GL_CLAMP);
+   tex_cmd_buttons.convert(img_cmd_buttons);
+   tex_cmd_buttons.use();
+   tex_cmd_buttons.upload();
+
+   // panel texture
+   tex_panel.init(&core->get_texmgr(),1,GL_LINEAR,GL_LINEAR,GL_CLAMP,GL_CLAMP);
+   update_panel_texture();
 }
 
 void ua_ingame_orig_screen::done()
@@ -189,6 +326,8 @@ void ua_ingame_orig_screen::handle_event(SDL_Event &event)
 
    case SDL_MOUSEMOTION: // mouse has moved
       {
+         mousecursor.updatepos();
+
          // calculate cursor position
          int x,y;
          SDL_GetMouseState(&x,&y);
@@ -335,7 +474,18 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
          ua_trace("done\n");
       }
       break;
+
+   case SDLK_UP:
+      if (type==SDL_KEYDOWN)
+         test_vit++;
+      break;
+
+   case SDLK_DOWN:
+      if (type==SDL_KEYDOWN)
+         test_vit--;
+      break;
    }
+
 #endif
 }
 
@@ -357,7 +507,7 @@ void ua_ingame_orig_screen::render()
    glPushMatrix();
    glLoadIdentity();
 
-   gluOrtho2D(0.0, 1.0, 0.0, 1.0);
+   gluOrtho2D(0, 320, 0, 200);
 
    glMatrixMode(GL_MODELVIEW);
    glPushMatrix();
@@ -388,10 +538,10 @@ void ua_ingame_orig_screen::render()
 
       // draw quad
       glBegin(GL_QUADS);
-      glVertex2d( 52.0/320.0,  68.0/200.0);
-      glVertex2d(226.0/320.0,  68.0/200.0);
-      glVertex2d(226.0/320.0, 182.0/200.0);
-      glVertex2d( 52.0/320.0, 182.0/200.0);
+      glVertex2i( 52,  68);
+      glVertex2i(226,  68);
+      glVertex2i(226, 182);
+      glVertex2i( 52, 182);
       glEnd();
    }
 
@@ -415,68 +565,242 @@ void ua_ingame_orig_screen::render()
 
 void ua_ingame_orig_screen::render_ui()
 {
-   // do some replacements in the image
-   img_temp.paste_image(img_back,0,0);
-
-   // compass
-   ua_player &pl = core->get_underworld().get_player();
+   // set texture brightness for all ui textures
    {
-      // calculate angle
-      double angle = fmod(-pl.get_angle_rot()+90.0+360.0,360.0);
-      unsigned int compassdir = (unsigned(angle/11.25)&31);
+      Uint8 light = 255;
 
-      // paste image to use
-      unsigned int compassimg = ((compassdir+1)/2)&3;
-      img_temp.paste_image(img_compass.get_image(compassimg),112,131);
-
-      // paste red tip facing north
-      compassimg = ((compassdir+1)/2)&15;
-      ua_image &tip = img_compass.get_image(compassimg+4);
-
-      static int tip_coords[16*2] =
+      switch(fade_state)
       {
-         24, 0, 16, 2,  8, 3,  4, 6,
-          0,10,  0,14,  4,16, 12,19,
-         24,21, 32,19, 44,16, 48,14,
-         48,10, 44, 6, 40, 3, 32, 2,
-      };
+      case 0: // fade in
+         light = Uint8(255*(double(fade_ticks) / (core->get_tickrate()*fade_time)));
+         break;
 
-      img_temp.paste_image(tip,112+tip_coords[compassimg*2],131+tip_coords[compassimg*2+1]);
-   }
-
-   // player appearance
-   {
-      unsigned int app = ( pl.get_attr(ua_attr_appearance) +
-         (pl.get_attr(ua_attr_gender)==0? 0 : 5) ) % 10;
-      img_temp.paste_image(img_bodies.get_image(app),260,11);
-   }
-
-   // "command" buttons
-   if (gamemode != ua_mode_default)
-   {
-      static unsigned int btn_heights[] =
-      {
-         8,10, 7,27, 6,47, 6,65, 8,80, 8,99
-      };
-
-      unsigned int btn = 0;
-      switch(gamemode)
-      {
-      case ua_mode_options: btn = 1; break;
-      case ua_mode_talk:    btn = 3; break;
-      case ua_mode_get:     btn = 5; break;
-      case ua_mode_look:    btn = 7; break;
-      case ua_mode_fight:   btn = 9; break;
-      case ua_mode_use:     btn = 11; break;
+      case 2: // fade out
+         light = Uint8(255-255*(double(fade_ticks) / (core->get_tickrate()*fade_time)));
+         break;
       }
 
-      img_temp.paste_image(img_cmd_btns.get_image(btn),
-         btn_heights[btn&~1],btn_heights[btn|1]);
+      glColor3ub(light,light,light);
    }
 
-   // inventory
+   // draw background texture
    {
-      ua_inventory &inv = core->get_underworld().get_inventory();
+      // first quad (256x200)
+      double u = tex_back1.get_tex_u(), v = tex_back1.get_tex_v();
+      tex_back1.use();
+
+      glBegin(GL_QUADS);
+      glTexCoord2d(0.0, v  ); glVertex2i(0,  0);
+      glTexCoord2d(u  , v  ); glVertex2i(256,0);
+      glTexCoord2d(u  , 0.0); glVertex2i(256,200);
+      glTexCoord2d(0.0, 0.0); glVertex2i(0,  200);
+      glEnd();
+
+      // second quad (64x200)
+      u = tex_back2.get_tex_u(); v = tex_back2.get_tex_v();
+      tex_back2.use();
+
+      glBegin(GL_QUADS);
+      glTexCoord2d(0.0, v  ); glVertex2i(256,0);
+      glTexCoord2d(u  , v  ); glVertex2i(320,0);
+      glTexCoord2d(u  , 0.0); glVertex2i(320,200);
+      glTexCoord2d(0.0, 0.0); glVertex2i(256,200);
+      glEnd();
+   }
+
+   ua_player &pl = core->get_underworld().get_player();
+
+   // draw compass
+   {
+      double angle = fmod(-pl.get_angle_rot()+90.0+360.0,360.0);
+
+      unsigned int compassdir = (unsigned(angle/11.25)&31);
+      unsigned int compassimg = ((compassdir+1)/2)&15;
+
+      compassimg = unsigned((angle+11.25)/22.5)&15;
+
+      // prepare texture
+      if (compass_curimg != compassimg)
+      {
+         // reupload compass texture
+         compass_curimg = compassimg;
+         tex_compass.convert(img_compass.get_image(compass_curimg));
+         tex_compass.use();
+         tex_compass.upload();
+      }
+      else
+         tex_compass.use();
+
+      // draw compass quad
+      double u = tex_compass.get_tex_u(), v = tex_compass.get_tex_v();
+
+      glBegin(GL_QUADS);
+      glTexCoord2d(0.0, v  ); glVertex2i(112,   43);
+      glTexCoord2d(u  , v  ); glVertex2i(112+52,43);
+      glTexCoord2d(u  , 0.0); glVertex2i(112+52,43+26);
+      glTexCoord2d(0.0, 0.0); glVertex2i(112,   43+26);
+      glEnd();
+   }
+
+   // vitality/mana/poisoned flasks
+   {
+      // vitality/poisoned flask
+
+      // calculate relative vitality and flask image to use
+      double vit_rel = double(pl.get_attr(ua_attr_life)) / double(pl.get_attr(ua_attr_max_life));
+      if (vit_rel>1.0) vit_rel = 0;
+
+      unsigned int vit_flask_img = unsigned(13.0 * vit_rel)
+         + (pl.get_attr(ua_attr_poisoned)!=0 ? 14 : 0);
+
+      // prepare texture
+      if (flasks_curimg[0] != vit_flask_img)
+      {
+         // reupload flask texture
+         flasks_curimg[0] = vit_flask_img;
+
+         tex_flasks.convert(
+            img_flasks[ vit_flask_img>=14 ? 2 : 0 ].get_image(vit_flask_img%14),0);
+         tex_flasks.use(0);
+         tex_flasks.upload();
+      }
+      else
+         tex_flasks.use(0);
+
+      // draw vitality flask quad
+      double u = tex_flasks.get_tex_u(), v = tex_flasks.get_tex_v();
+
+      glBegin(GL_QUADS);
+      glTexCoord2d(0.0, v  ); glVertex2i(248,   42);
+      glTexCoord2d(u  , v  ); glVertex2i(248+24,42);
+      glTexCoord2d(u  , 0.0); glVertex2i(248+24,42+33);
+      glTexCoord2d(0.0, 0.0); glVertex2i(248,   42+33);
+      glEnd();
+
+      // mana flask
+
+      // calculate relative mana value and flask image to use
+      double mana_rel = double(pl.get_attr(ua_attr_mana)) / double(pl.get_attr(ua_attr_max_mana));
+      if (mana_rel>1.0) mana_rel = 1.0;
+
+      unsigned int mana_flask_img = unsigned(13.0 * mana_rel);
+
+      // prepare texture
+      if (flasks_curimg[1] != mana_flask_img)
+      {
+         // reupload flask texture
+         flasks_curimg[1] = mana_flask_img;
+
+         tex_flasks.convert(img_flasks[1].get_image(mana_flask_img%14),1);
+         tex_flasks.use(1);
+         tex_flasks.upload();
+      }
+      else
+         tex_flasks.use(1);
+
+      // draw mana flask quad
+      glBegin(GL_QUADS);
+      glTexCoord2d(0.0, v  ); glVertex2i(284,   42);
+      glTexCoord2d(u  , v  ); glVertex2i(284+24,42);
+      glTexCoord2d(u  , 0.0); glVertex2i(284+24,42+33);
+      glTexCoord2d(0.0, 0.0); glVertex2i(284,   42+33);
+      glEnd();
+   }
+
+   // command buttons
+   if (gamemode != ua_mode_default)
+   {
+      // command buttons quad
+      double u = tex_cmd_buttons.get_tex_u(), v = tex_cmd_buttons.get_tex_v();
+
+      tex_cmd_buttons.use();
+
+      unsigned int button = 0;
+      switch(gamemode)
+      {
+      case ua_mode_options: button = 0; break;
+      case ua_mode_talk:    button = 1; break;
+      case ua_mode_get:     button = 2; break;
+      case ua_mode_look:    button = 3; break;
+      case ua_mode_fight:   button = 4; break;
+      case ua_mode_use:     button = 5; break;
+      }
+
+      // draw mana flask quad
+      glBegin(GL_QUADS);
+      glTexCoord2d(0.0, v/6.0*(button+0.85)); glVertex2d(6,   190-button*18-15.3);
+      glTexCoord2d(u  , v/6.0*(button+0.85)); glVertex2d(6+32,190-button*18-15.3);
+      glTexCoord2d(u  , v/6.0*button);        glVertex2d(6+32,190-button*18);
+      glTexCoord2d(0.0, v/6.0*button);        glVertex2d(6,   190-button*18);
+      glEnd();
+   }
+
+   // draw panel
+   {
+      tex_panel.use();
+      double u = tex_panel.get_tex_u(), v = tex_panel.get_tex_v();
+
+      glBegin(GL_QUADS);
+      glTexCoord2d(0.0, v  ); glVertex2i(236,   79);
+      glTexCoord2d(u  , v  ); glVertex2i(236+83,79);
+      glTexCoord2d(u  , 0.0); glVertex2i(236+83,79+114);
+      glTexCoord2d(0.0, 0.0); glVertex2i(236,   79+114);
+      glEnd();
+   }
+
+/*
+#ifdef HAVE_DEBUG
+   // debug text quad
+   {
+      ua_image img_coords;
+      char buffer[256];
+      sprintf(buffer,"x=%u y=%u area=%u hit=%08x",cursorx,cursory,
+         get_area(cursorx,cursory),hit);
+      font_normal.create_string(img_coords,buffer,11);
+      img_temp.paste_image(img_coords,2,2,true);
+   }
+#endif
+*/
+
+   // draw mouse cursor
+   {
+      if (cursor_image_current != cursor_image && !cursor_is_object)
+      {
+         // change mouse cursor type
+         cursor_image_current = cursor_image;
+         mousecursor.settype(cursor_image);
+      }
+
+      mousecursor.draw();
+   }
+}
+
+void ua_ingame_orig_screen::update_panel_texture()
+{
+   ua_image panel(img_panels.get_image(panel_type));
+
+   // update inventory panel?
+   if (panel_type==0)
+   {
+      ua_inventory& inv = core->get_underworld().get_inventory();
+      ua_player& pl = core->get_underworld().get_player();
+
+      bool female = pl.get_attr(ua_attr_gender)!=0;
+
+      // player appearance
+      {
+         unsigned int bodyimg = pl.get_attr(ua_attr_appearance)%5
+            + female? 5 : 0;
+
+         panel.paste_image(this->img_bodies.get_image(bodyimg),24,4);
+      }
+
+      // check if paperdoll images should be reloaded
+      if (female != armor_female)
+      {
+         armor_female = female;
+         img_armor.load(core->get_settings(),armor_female ? "armor_f" : "armor_m");
+      }
 
       unsigned int start = 0;
 
@@ -485,18 +809,18 @@ void ua_ingame_orig_screen::render_ui()
          // inside a container
 
          // draw alternative inventory panel
-         img_temp.paste_image(img_inv_bagpanel,236,80);
+         panel.paste_image(img_inv_bagpanel,0,73);
 
          // draw up/down arrows
          if (slot_start>0)
-            img_temp.paste_image(img_inv_updown.get_image(0),296,70,true); // up
+            panel.paste_image(img_inv_updown.get_image(0),60,63,true); // up
 
          if (inv.get_num_slots()-slot_start>=8)
-            img_temp.paste_image(img_inv_updown.get_image(1),306,70,true); // down
+            panel.paste_image(img_inv_updown.get_image(1),70,63,true); // down
 
          // draw container we're in
          Uint16 cont_id = inv.get_container_item_id();
-         img_temp.paste_image(img_objects.get_image(cont_id),241,64,true);
+         panel.paste_image(img_objects.get_image(cont_id),5,57,true);
 
          // begin at current slot start
          start = slot_start;
@@ -514,10 +838,10 @@ void ua_ingame_orig_screen::render_ui()
             if (item_id != 0xffff)
             {
                unsigned int
-                  destx = 242 + (i&3)*19,
-                  desty = 82 + (i>>2)*18;
+                  destx = 6 + (i&3)*19,
+                  desty = 75 + (i>>2)*18;
 
-               img_temp.paste_image(img_objects.get_image(item_id),
+               panel.paste_image(img_objects.get_image(item_id),
                   destx,desty,true);
             }
          }
@@ -529,14 +853,14 @@ void ua_ingame_orig_screen::render_ui()
          // paperdoll image coordinates
          static unsigned int slot_coords[] =
          {
-            241,34, 295,34, // hand
-            244,12, 293,12, // shoulder
-            254,50, 284,50, // finger
-            268,26,         // legs
-            262,22,         // chest
-            261,42,         // hands
-            266,66,         // feet
-            267,10,         // head
+              5,27,  59,27, // hand
+              8, 5,  57, 5, // shoulder
+             18,43,  48,43, // finger
+             32,19,         // legs
+             26,15,         // chest
+             25,35,         // hands
+             30,59,         // feet
+             31, 3,         // head
          };
 
          unsigned int destx, desty;
@@ -550,7 +874,7 @@ void ua_ingame_orig_screen::render_ui()
             if (j<ua_slot_paperdoll_start)
             {
                // normal object
-               img_temp.paste_image(img_objects.get_image(item_id),
+               panel.paste_image(img_objects.get_image(item_id),
                   destx,desty,true);
             }
             else
@@ -561,7 +885,7 @@ void ua_ingame_orig_screen::render_ui()
                   ? (item_id-0x0020)+15*quality
                   : (item_id-0x002f+60);
 
-               img_temp.paste_image(img_armor.get_image(armorimg),
+               panel.paste_image(img_armor.get_image(armorimg),
                   destx,desty,true);
             }
          }
@@ -571,65 +895,14 @@ void ua_ingame_orig_screen::render_ui()
       {
          ua_image img_weight;
          font_normal.create_string(img_weight,"42",224);
-         img_temp.paste_image(img_weight,301,59,true);
+         panel.paste_image(img_weight,65,52,true);
       }
    }
 
-#ifdef HAVE_DEBUG
-   // mouse coords
-   {
-      ua_image img_coords;
-      char buffer[256];
-      sprintf(buffer,"x=%u y=%u area=%u hit=%08x",cursorx,cursory,
-         get_area(cursorx,cursory),hit);
-      font_normal.create_string(img_coords,buffer,11);
-      img_temp.paste_image(img_coords,2,2,true);
-   }
-#endif
-
-   // mouse cursor; should be the last one to paste
-   {
-      unsigned int posx,posy;
-      posx = cursorx<8 ? 0 : cursorx-8;
-      posy = cursory<8 ? 0 : cursory-8;
-
-      ua_image &img = cursor_is_object
-         ? img_objects.get_image(cursor_object)
-         : img_cursors.get_image(cursor_image);
-
-      img_temp.paste_image(img,posx,posy,true);
-   }
-
-   // upload ui texture
-   tex.convert(img_temp);
-   tex.use();
-   tex.upload();
-
-   double u = tex.get_tex_u(), v = tex.get_tex_v();
-
-   // set texture brightness
-   Uint8 light = 255;
-
-   switch(fade_state)
-   {
-   case 0: // fade in
-      light = Uint8(255*(double(fade_ticks) / (core->get_tickrate()*fade_time)));
-      break;
-
-   case 2: // fade out
-      light = Uint8(255-255*(double(fade_ticks) / (core->get_tickrate()*fade_time)));
-      break;
-   }
-
-   glColor3ub(light,light,light);
-
-   // draw user interface image quad
-   glBegin(GL_QUADS);
-   glTexCoord2d(0.0, v  ); glVertex2i(0,0);
-   glTexCoord2d(u  , v  ); glVertex2i(1,0);
-   glTexCoord2d(u  , 0.0); glVertex2i(1,1);
-   glTexCoord2d(0.0, 0.0); glVertex2i(0,1);
-   glEnd();
+   // upload new panel
+   tex_panel.convert(panel);
+   tex_panel.use();
+   tex_panel.upload();
 }
 
 void ua_ingame_orig_screen::tick()
@@ -789,170 +1062,222 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
    ua_ingame_orig_area area_save = area;
    do
    {
-      ua_inventory &inv = core->get_underworld().get_inventory();
+      ua_inventory& inv = core->get_underworld().get_inventory();
 
       if (click)
       {
-         // check clicks
-
-         // check scroll up/down buttons
-         if (!pressed && area==ua_area_inv_scroll_up && slot_start>0)
-         {
-            slot_start -= slot_start > 4? 4 : slot_start;
-            break;
-         }
-
-         if (!pressed && area==ua_area_inv_scroll_down &&
-            inv.get_num_slots()-slot_start>=8)
-         {
-            slot_start += 4;
-            break;
-         }
-
-         // find out itemlist pos
-         Uint16 item = ua_slot_no_item;
-         switch(area)
-         {
-         case ua_area_inv_slot0: item = inv.get_slot_item(slot_start+0); break;
-         case ua_area_inv_slot1: item = inv.get_slot_item(slot_start+1); break;
-         case ua_area_inv_slot2: item = inv.get_slot_item(slot_start+2); break;
-         case ua_area_inv_slot3: item = inv.get_slot_item(slot_start+3); break;
-         case ua_area_inv_slot4: item = inv.get_slot_item(slot_start+4); break;
-         case ua_area_inv_slot5: item = inv.get_slot_item(slot_start+5); break;
-         case ua_area_inv_slot6: item = inv.get_slot_item(slot_start+6); break;
-         case ua_area_inv_slot7: item = inv.get_slot_item(slot_start+7); break;
-
-         case ua_area_equip_left_hand: item = ua_slot_lefthand; break;
-         case ua_area_equip_left_shoulder: item = ua_slot_leftshoulder; break;
-         case ua_area_equip_left_ring: item = ua_slot_leftfinger; break;
-
-         case ua_area_equip_right_hand: item = ua_slot_righthand; break;
-         case ua_area_equip_right_shoulder: item = ua_slot_rightshoulder; break;
-         case ua_area_equip_right_ring: item = ua_slot_rightfinger; break;
-
-         case ua_area_paperdoll_head: item = ua_slot_paperdoll_head; break;
-         case ua_area_paperdoll_chest: item = ua_slot_paperdoll_chest; break;
-         case ua_area_paperdoll_hand: item = ua_slot_paperdoll_hands; break;
-         case ua_area_paperdoll_legs: item = ua_slot_paperdoll_legs; break;
-         case ua_area_paperdoll_feet: item = ua_slot_paperdoll_feet; break;
-
-         case ua_area_inv_container: break;
-         default: area = ua_area_none; break;
-         }
-
-         if (area == ua_area_none) break;
-
-         // left/right click pressed
-         if (pressed && !check_dragging && area!=ua_area_inv_container)
-         {
-            // start checking for dragging items
-            check_dragging = true;
-            drag_item = item;
-            drag_area = area;
-         }
-
-         // left/right click release
-         if (!pressed)
-         {
-            // stop dragging
-            check_dragging = false;
-
-            // check for floating items
-            if (inv.get_floating_item() != ua_slot_no_item)
-            {
-               // yes, floating
-
-               // check for container icon "slot"
-               if (area==ua_area_inv_container &&
-                  inv.get_container_item_id() != ua_slot_no_item)
-               {
-                  // put item into parent's container, if possible
-                  inv.drop_floating_item_parent();
-               }
-               else
-               {
-                  // normal inventory slot
-
-                  // just drop the item on that position
-                  // an item on that slot gets the next floating one
-                  // items dropped onto a container are put into that container
-                  // items that are combineable will be combined
-                  // items that don't fit into a paperdoll slot will be rejected
-                  inv.drop_floating_item(item);
-               }
-
-               // check if we still have a floating object
-               if (inv.get_floating_item() != ua_slot_no_item)
-               {
-                  // still floating? then set new cursor object
-                  cursor_object =  inv.get_item(inv.get_floating_item()).item_id;
-                  cursor_is_object = cursor_object != ua_slot_no_item;
-               }
-               else
-                  cursor_is_object = false;
-
-               break;
-            }
-
-            // no floating object
-
-            // click on container icon
-            if (area==ua_area_inv_container)
-            {
-               // close container when not topmost
-               if (inv.get_container_item_id() != ua_slot_no_item)
-                  inv.close_container();
-               break;
-            }
-
-            // check if container
-            if (item != ua_slot_no_item &&
-                inv.is_container(inv.get_item(item).item_id) &&
-                gamemode == ua_mode_default)
-            {
-               // open container
-               inv.open_container(item);
-               cursor_is_object = false;
-               slot_start = 0;
-               break;
-            }
-
-            // todo: perform left/right click action
-         }
+         inventory_click(inv,pressed,left_button,area);
       }
       else
       {
          // check item dragging
          if (check_dragging && drag_area != area)
-         {
-            // user dragged item out of area
-            check_dragging = false;
-            inv.float_item(drag_item);
-
-            // check if we still have a floating object
-            if (inv.get_floating_item() != ua_slot_no_item)
-            {
-               // still floating? then set new cursor object
-               cursor_object =  inv.get_item(inv.get_floating_item()).item_id;
-               cursor_is_object = cursor_object != ua_slot_no_item;
-            }
-            else
-               cursor_is_object = false;
-         }
+            inventory_dragged_item(inv);
       }
+
    } while (false);
    area = area_save;
 
    // check 3d view area
-   if (area == ua_area_screen3d && click && pressed)
+   if (area == ua_area_screen3d)
    {
-      int x,y;
-      SDL_GetMouseState(&x,&y);
+      // determine cursor image
+      double relx = double(cursorx-53)/(224-53);
+      double rely = double(cursory-20)/(131-20);
 
-      unsigned int tilex, tiley, id;
-      bool isobj;
+      // check click
+      if (click && pressed)
+      {
+         int x,y;
+         SDL_GetMouseState(&x,&y);
 
-      renderer.select_pick(x,y,tilex,tiley,isobj,id);
-      hit = ((id+(isobj?0:0x0400))<<16) | (tilex << 8) | tiley;
+         unsigned int tilex, tiley, id;
+         bool isobj;
+
+         renderer.select_pick(x,y,tilex,tiley,isobj,id);
+         hit = ((id+(isobj?0:0x0400))<<16) | (tilex << 8) | tiley;
+      }
    }
+}
+
+void ua_ingame_orig_screen::inventory_click(ua_inventory& inv,
+   bool pressed, bool left_button, ua_ingame_orig_area area)
+{
+   // check scroll up/down buttons
+   if (!pressed && area==ua_area_inv_scroll_up && slot_start>0)
+   {
+      slot_start -= slot_start > 4? 4 : slot_start;
+      update_panel_texture();
+      return;
+   }
+
+   if (!pressed && area==ua_area_inv_scroll_down &&
+      inv.get_num_slots()-slot_start>=8)
+   {
+      slot_start += 4;
+      update_panel_texture();
+      return;
+   }
+
+   // find out itemlist pos
+   Uint16 item = ua_slot_no_item;
+   {
+      switch(area)
+      {
+      case ua_area_inv_slot0: item = inv.get_slot_item(slot_start+0); break;
+      case ua_area_inv_slot1: item = inv.get_slot_item(slot_start+1); break;
+      case ua_area_inv_slot2: item = inv.get_slot_item(slot_start+2); break;
+      case ua_area_inv_slot3: item = inv.get_slot_item(slot_start+3); break;
+      case ua_area_inv_slot4: item = inv.get_slot_item(slot_start+4); break;
+      case ua_area_inv_slot5: item = inv.get_slot_item(slot_start+5); break;
+      case ua_area_inv_slot6: item = inv.get_slot_item(slot_start+6); break;
+      case ua_area_inv_slot7: item = inv.get_slot_item(slot_start+7); break;
+
+      case ua_area_equip_left_hand: item = ua_slot_lefthand; break;
+      case ua_area_equip_left_shoulder: item = ua_slot_leftshoulder; break;
+      case ua_area_equip_left_ring: item = ua_slot_leftfinger; break;
+
+      case ua_area_equip_right_hand: item = ua_slot_righthand; break;
+      case ua_area_equip_right_shoulder: item = ua_slot_rightshoulder; break;
+      case ua_area_equip_right_ring: item = ua_slot_rightfinger; break;
+
+      case ua_area_paperdoll_head: item = ua_slot_paperdoll_head; break;
+      case ua_area_paperdoll_chest: item = ua_slot_paperdoll_chest; break;
+      case ua_area_paperdoll_hand: item = ua_slot_paperdoll_hands; break;
+      case ua_area_paperdoll_legs: item = ua_slot_paperdoll_legs; break;
+      case ua_area_paperdoll_feet: item = ua_slot_paperdoll_feet; break;
+
+      case ua_area_inv_container: break;
+      default: area = ua_area_none; break;
+      }
+   }
+
+   if (area == ua_area_none)
+      return; // no pos that is interesting for us
+
+   // left/right button pressed
+   if (pressed && !check_dragging && area!=ua_area_inv_container)
+   {
+      // start checking for dragging items
+      check_dragging = true;
+      drag_item = item;
+      drag_area = area;
+      return;
+   }
+
+   if (pressed)
+      return; // no more checks for pressed mouse button
+
+   // left/right button release
+
+   // stop dragging
+   check_dragging = false;
+
+   // check if we have a floating item
+   if (inv.get_floating_item() != ua_slot_no_item)
+   {
+      // yes, floating
+
+      // check for container icon "slot"
+      if (area==ua_area_inv_container &&
+         inv.get_container_item_id() != ua_slot_no_item)
+      {
+         // put item into parent's container, if possible
+         inv.drop_floating_item_parent();
+      }
+      else
+      {
+         // normal inventory slot
+
+         // just drop the item on that position
+         // an item on that slot gets the next floating one
+         // items dropped onto a container are put into that container
+         // items that are combineable will be combined
+         // items that don't fit into a paperdoll slot will be rejected
+         inv.drop_floating_item(item);
+      }
+
+      Uint16 cursor_object = 0;
+      cursor_is_object = false;
+
+      // check if we still have a floating object
+      if (inv.get_floating_item() != ua_slot_no_item)
+      {
+         // still floating? then set new cursor object
+         cursor_object =  inv.get_item(inv.get_floating_item()).item_id;
+         cursor_is_object = cursor_object != ua_slot_no_item;
+      }
+
+      if (cursor_is_object)
+         mousecursor.set_custom(img_objects.get_image(cursor_object));
+      else
+         cursor_image_current = (unsigned int)-1;
+
+      update_panel_texture();
+      return;
+   }
+
+   // no floating object
+
+   // click on container icon
+   if (area==ua_area_inv_container)
+   {
+      // close container when not topmost
+      if (inv.get_container_item_id() != ua_slot_no_item)
+         inv.close_container();
+
+      update_panel_texture();
+      return;
+   }
+
+   // check if container
+   if (item != ua_slot_no_item &&
+       inv.is_container(inv.get_item(item).item_id) &&
+       gamemode == ua_mode_default)
+   {
+      // open container
+      inv.open_container(item);
+      cursor_is_object = false;
+      slot_start = 0;
+
+      update_panel_texture();
+      return;
+   }
+
+   // perform left/right click action
+   if (left_button)
+   {
+      // trigger "look" action
+      core->get_underworld().get_scripts().lua_inventory_look(item);
+   }
+   else
+   {
+      // trigger "use" action
+      core->get_underworld().get_scripts().lua_inventory_use(item);
+   }
+}
+
+void ua_ingame_orig_screen::inventory_dragged_item(ua_inventory &inv)
+{
+   // user dragged item out of area
+   check_dragging = false;
+   inv.float_item(drag_item);
+
+   Uint16 cursor_object = 0;
+   cursor_is_object = false;
+
+   // check if we still have a floating object
+   if (inv.get_floating_item() != ua_slot_no_item)
+   {
+      // still floating? then set new cursor object
+      cursor_object =  inv.get_item(inv.get_floating_item()).item_id;
+      cursor_is_object = cursor_object != ua_slot_no_item;
+   }
+
+   if (cursor_is_object)
+      mousecursor.set_custom(img_objects.get_image(cursor_object));
+   else
+      cursor_image_current = (unsigned int)-1;
+
+   update_panel_texture();
 }

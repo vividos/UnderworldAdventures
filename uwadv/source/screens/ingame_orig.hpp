@@ -35,6 +35,7 @@
 #include "font.hpp"
 #include "keymap.hpp"
 #include "renderer.hpp"
+#include "mousecursor.hpp"
 
 
 // enums
@@ -138,6 +139,9 @@ protected:
    //! renders 2d user interface
    void render_ui();
 
+   //! updates panel texture
+   void update_panel_texture();
+
    //! handles keyboard action
    void handle_key_action(Uint8 type, SDL_keysym &keysym);
 
@@ -150,6 +154,13 @@ protected:
    //! finds out selection on specific mouse cursor position
    GLuint get_selection(unsigned int xpos, unsigned int ypos);
 
+   //! inventory item was dragged from slot
+   void inventory_dragged_item(ua_inventory &inv);
+
+   //! button was pressed released or released in inventory
+   void inventory_click(ua_inventory& inv,
+      bool pressed, bool left_button, ua_ingame_orig_area area);
+
 protected:
 
    // constants
@@ -160,16 +171,26 @@ protected:
    //! speed of view angle change in degree / second
    static const double viewangle_speed;
 
-   //! current mouse cursor
+
+   // mouse cursor
+
+   //! mouse cursor image
    unsigned int cursor_image;
-   //! mouse cursor coordinates
+
+   //! current cursor image
+   unsigned int cursor_image_current;
+
+   //! mouse cursor coordinates in 320x200 window coordinates
    unsigned int cursorx,cursory;
 
    //! indicates if cursor is an object icon
    bool cursor_is_object;
 
-   //! object the cursor currently is
-   Uint16 cursor_object;
+   //! mouse cursor
+   ua_mousecursor mousecursor;
+
+
+   // inventory / item dragging
 
    //! start of inventory slots the user sees
    unsigned int slot_start;
@@ -199,7 +220,10 @@ protected:
    ua_ingame_orig_game_mode gamemode;
 
 
+
+   // test stuff
    GLuint hit;
+   unsigned int test_vit;
 
 
 
@@ -224,40 +248,76 @@ protected:
 
    // images, textures and fonts
 
-   //! 2d ui image background
-   ua_image img_back;
+   //! 2d ui background image
+   ua_image img_back1, img_back2;
 
-   //! temp image to assemble 2d ui image
-   ua_image img_temp;
-   //! main 2d ui texture
-   ua_texture tex;
+   //! 2d ui background texture
+   ua_texture tex_back1, tex_back2;
 
-   //! normal font
-   ua_font font_normal;
 
-   //! left "command" buttons
-   ua_image_list img_cmd_btns;
-
-   //! compass graphics
+   //! compass images
    ua_image_list img_compass;
 
-   //! player appearance body graphics
-   ua_image_list img_bodies;
+   //! compass texture
+   ua_texture tex_compass;
 
-   //! cursor images
-   ua_image_list img_cursors;
+   //! current compass image
+   unsigned int compass_curimg;
 
-   //! 2d object images
-   ua_image_list img_objects;
 
-   //! paperdoll armour images
-   ua_image_list img_armor;
+   //! vitality/mana/poisoned flasks
+   ua_image_list img_flasks[3];
 
-   //! alternative inventory panel for inside containers
+   //! flasks textures
+   ua_texture tex_flasks;
+
+   //! current flask image numbers
+   unsigned int flasks_curimg[2];
+
+
+   // command buttons
+
+   //! command buttons image
+   ua_image img_cmd_buttons;
+
+   //! command buttons texture
+   ua_texture tex_cmd_buttons;
+
+
+   // panels for inventory, runebag and stats
+
+   //! panels
+   ua_image_list img_panels;
+
+   //! panel texture
+   ua_texture tex_panel;
+
+   //! current panel type; 0 = inventory, 1 = runebag, 2 = stats
+   unsigned int panel_type;
+
+   //! alternative inventory panel when inside container
    ua_image img_inv_bagpanel;
 
    //! up/down button for scrollable inventory
    ua_image_list img_inv_updown;
+
+   //! paperdoll armor images
+   ua_image_list img_armor;
+
+   //! indicates if armor is female
+   bool armor_female;
+
+   //! player appearance body graphics
+   ua_image_list img_bodies;
+
+   //! all inventory objects
+   ua_image_list img_objects;
+
+
+   // needed fonts
+
+   // font for inventory weight and scroll messages
+   ua_font font_normal;
 };
 
 #endif
