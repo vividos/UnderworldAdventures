@@ -43,11 +43,11 @@ public:
    ua_model3d_builtin(){}
 
    //! renders model
-   virtual void render(ua_vector3d& base);
+   virtual void render(ua_object& obj, ua_vector3d& base);
 
    //! returns bounding triangles for collision detection
-   virtual void get_bounding_triangles(ua_vector3d& base,
-      std::vector<ua_triangle3d_textured>& alltriangles);
+   virtual void get_bounding_triangles(ua_object& obj,
+      ua_vector3d& base, std::vector<ua_triangle3d_textured>& alltriangles);
 
 protected:
    ua_vector3d origin, extents;

@@ -32,6 +32,7 @@
 // needed includes
 #include "uamath.hpp"
 #include "texture.hpp"
+#include "objects.hpp"
 #include <map>
 #include <vector>
 
@@ -56,11 +57,11 @@ public:
    const char* get_model_name();
 
    //! renders model
-   virtual void render(ua_vector3d& base){}
+   virtual void render(ua_object& obj, ua_vector3d& base){}
 
    //! returns bounding triangles for collision detection
-   virtual void get_bounding_triangles(ua_vector3d& base,
-      std::vector<ua_triangle3d_textured>& alltriangles){}
+   virtual void get_bounding_triangles(ua_object& obj,
+      ua_vector3d& base, std::vector<ua_triangle3d_textured>& alltriangles){}
 };
 
 
@@ -82,10 +83,10 @@ public:
    bool model_avail(Uint16 item_id);
 
    //! renders a model
-   void render(Uint16 item_id, ua_vector3d& base);
+   void render(ua_object& obj, ua_vector3d& base);
 
    //! returns bounding triangles for collision detection with given item_id
-   void get_bounding_triangles(Uint16 item_id, ua_vector3d& base,
+   void get_bounding_triangles(ua_object& obj, ua_vector3d& base,
       std::vector<ua_triangle3d_textured>& alltriangles);
 
    //! current model manager instance
