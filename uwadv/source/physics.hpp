@@ -48,18 +48,25 @@ public:
    ua_physics_model();
 
    //! inits physics model
-   void init(ua_underworld *uw){ underw = uw; }
-/*
-   //! sets movement speed of player; range: [-1.0; 1.0]
-   void set_player_movement_speed(double factor);
+   void init(ua_underworld *uw);
 
-   //! sets rotation speed of player; range: [0.0; 1.0]
-   void set_player_rotation_speed(double factor);
-*/
-   //! evaluates player movement
-   void eval_player_movement(double time);
+   //! evaluates physics of player and objects
+   void eval_physics(double time);
+
+
+   // functions for tracking objects in 3d space
+
+   //! returns number of objects that are tracked
+   unsigned int get_tracking_count();
+
+   //! tracks object with given index
+   void track_object(unsigned int index);
 
 protected:
+   //! tracks object by position and direction; vectors must be in ellipsoid space
+   void track_object(ua_vector3d& pos, const ua_vector3d& dir);
+
+
    //! calculates collision and response; recursively called
    void calc_collision(ua_vector2d &pos, const ua_vector2d &dir);
 
@@ -73,16 +80,10 @@ protected:
 
 protected:
    //! current underworld object
-   ua_underworld *underw;
+   ua_underworld* underw;
 
    //! last evaluation time
    double last_evaltime;
-/*
-   //! current player movement speed factor
-   double move_speed;
-
-   //! current player rotation speed factor
-   double rotate_speed;*/
 };
 
 #endif

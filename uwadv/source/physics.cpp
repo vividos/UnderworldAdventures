@@ -70,98 +70,95 @@ const double ua_player_max_walk_speed = 2.4;
 //! max speed a player can rotate, in degrees / second
 const double ua_player_max_rotate_speed = 90;
 
+//! max speed a player can rotate the view, in degrees / second
+const double ua_player_max_view_rotate_speed = 60;
+
 
 // ua_physics_model methods
 
 ua_physics_model::ua_physics_model()
-:last_evaltime(-0.1)//,player_speed(1.0)
+:last_evaltime(-0.1)
 {
 }
 
-/*void ua_physics_model::set_player_speed(double factor)
+void ua_physics_model::init(ua_underworld *uw)
 {
-   player_speed = factor>1.0 ? 1.0 : factor;
-}*/
+   underw = uw;
+}
 
-/*
-   // check for looking up or down
-   if (look_up || look_down)
-   {
-      double viewangle = core->get_underworld().get_player().get_angle_pan();
-
-      viewangle += (look_up ? -1.0 : 1.0)*(viewangle_speed/core->get_tickrate());
-
-      // view angle has to stay between -180 and 180 degree
-      while (viewangle > 180.0 || viewangle < -180.0 )
-         viewangle = fmod(viewangle-360.0,360.0);
-
-      double maxangle = 45.0;
-
-      if (core->get_settings().get_bool(ua_setting_uwadv_features))
-         maxangle = 75.0;
-
-      // restrict up-down view angle
-      if (viewangle < -maxangle) viewangle = -maxangle;
-      if (viewangle > maxangle) viewangle = maxangle;
-
-      core->get_underworld().get_player().set_angle_pan(viewangle);
-   }
-*/
-
-void ua_physics_model::eval_player_movement(double time)
+void ua_physics_model::eval_physics(double time)
 {
-   ua_player &player = underw->get_player();
-
-   unsigned int mode = underw->get_player().get_movement_mode();
-
-   if (mode & ua_move_walk)
+   // evaluate player movement
    {
-      double speed = ua_player_max_walk_speed*(time-last_evaltime) *
-         player.get_movement_factor(ua_move_walk);
-      double angle = underw->get_player().get_angle_rot();
+      ua_player &pl = underw->get_player();
 
-      ua_vector2d dir;
-      dir.set_polar(speed,angle);
-      ua_vector2d pos(player.get_xpos(),player.get_ypos());
+      unsigned int mode = underw->get_player().get_movement_mode();
 
-      // Get player height before collision:
-      double h1 = underw->get_player_height();
-      
-      // Perform collision detection:
-      calc_collision(pos,dir);
-   
-      // set new player 2D pos
-      player.set_pos(pos.x,pos.y);
- 
-      // Get the map height of the new 2d position:  
-      double h2 = underw->get_current_level().get_floor_height(pos.x, pos.y);
- 
-      double finalHeight = h2;
-      // a drop down? Check if player is allowed to fall down
-      if (h2 < h1) {
-        // TODO:
-        // - If edge, check whole player cylinder is over the edge.
-        // - if along a slope allow player to "fall"
-        
+      if (mode & ua_move_walk)
+      {
+         double speed = ua_player_max_walk_speed*(time-last_evaltime) *
+            pl.get_movement_factor(ua_move_walk);
+         double angle = underw->get_player().get_angle_rot();
+
+         ua_vector2d dir;
+         dir.set_polar(speed,angle);
+         ua_vector2d pos(pl.get_xpos(),pl.get_ypos());
+
+         // Get player height before collision:
+         double h1 = pl.get_height();
+
+         // Perform collision detection:
+         calc_collision(pos,dir);
+
+         // set new player 2D pos
+         pl.set_pos(pos.x,pos.y);
+
+         // Get the map height of the new 2d position:
+         double h2 = underw->get_current_level().get_floor_height(pos.x, pos.y);
+
+         double finalHeight = h2;
+         // a drop down? Check if player is allowed to fall down
+         if (h2 < h1) {
+           // TODO:
+           // - If edge, check whole player cylinder is over the edge.
+           // - if along a slope allow player to "fall"
+
+         }
+
+         // cache the player height
+         pl.set_height(finalHeight);
       }
 
-      // cache the player height
-      player.set_height(finalHeight);
-   }
-/*
-   if (mode & ua_move_rotate_left)
-   {
-      double angle = ua_player_max_rotate_speed*(time-last_evaltime);
-      player.set_angle_rot(player.get_angle_rot()+angle);
+      // player rotation
+      if (mode & ua_move_rotate)
+      {
+         double angle = ua_player_max_rotate_speed * (time-last_evaltime) *
+            pl.get_movement_factor(ua_move_rotate);
+         pl.set_angle_rot(pl.get_angle_rot()+angle);
+      }
+
+      // view up/down
+      if (mode & ua_move_lookup)
+      {
+         double viewangle = pl.get_angle_pan();
+         viewangle += ua_player_max_view_rotate_speed * (time-last_evaltime) *
+            pl.get_movement_factor(ua_move_lookup);
+
+         double maxangle = underw->have_enhanced_features() ? 45.0 : 75.0;
+
+         // restrict up-down view angle
+         if (viewangle < -maxangle) viewangle = -maxangle;
+         if (viewangle > maxangle) viewangle = maxangle;
+
+         pl.set_angle_pan(viewangle);
+      }
    }
 
-   if (mode & ua_move_rotate_right)
-   {
-      double angle = ua_player_max_rotate_speed*(time-last_evaltime);
-      player.set_angle_rot(player.get_angle_rot()-angle);
-   }
-*/
    last_evaltime = time;
+}
+
+void ua_physics_model::track_object(ua_vector3d& pos, const ua_vector3d& dir)
+{
 }
 
 /*! calculates new position for a given position and direction vector
