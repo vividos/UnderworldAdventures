@@ -132,8 +132,6 @@ void ua_ingame_orig_screen::init()
    if (core->get_settings().get_gametype() == ua_game_uw_demo)
       scrollwidth = 218;
 
-   dbgint = ua_debug_interface::get_new_debug_interface(&core->get_underworld());
-
    // load keymap
    ua_trace("loading keymaps ...\n");
    {
@@ -389,8 +387,6 @@ void ua_ingame_orig_screen::done()
 {
    suspend();
 
-   delete dbgint;
-
    ua_trace("leaving orig. ingame user interface\n");
 }
 
@@ -637,6 +633,7 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    if (keymap.is_key(ua_key_special_quicksave,keymod))
    {
       ua_trace("quicksaving ... ");
+      ui_print_string("quicksaving ...");
       ua_savegame sg = core->get_savegames_mgr().get_quicksave(true);
       core->get_underworld().save_game(sg);
       ua_trace("done\n");
@@ -646,6 +643,7 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    if (keymap.is_key(ua_key_special_quickload,keymod))
    {
       ua_trace("quickloading ... ");
+      ui_print_string("quickloading ...");
       ua_savegame sg = core->get_savegames_mgr().get_quicksave(false);
       core->get_underworld().load_game(sg);
       ua_trace("done\n");
@@ -670,7 +668,7 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    // check for "debugger" key
    if (keymap.is_key(ua_key_ua_debug,keymod))
    {
-      dbgint->start_debugger();
+      core->get_debug_interface()->start_debugger();
    }
 #endif
    else
@@ -1146,7 +1144,7 @@ void ua_ingame_orig_screen::setup_opengl()
    // camera setup
    ua_vector3d view_offset(0.0, 0.0, 0.0);
    renderer.init(&core->get_underworld(),&core->get_texmgr(),
-      &core->get_critter_pool(),
+      &core->get_critter_pool(),&core->get_model_manager(),
       view_offset);
 
    renderer.setup_camera(90.0,

@@ -39,6 +39,7 @@
 #include "underworld.hpp"
 #include "screen.hpp"
 #include "models.hpp"
+#include "debug.hpp"
 #include "savegame.hpp"
 
 
@@ -90,6 +91,9 @@ public:
 
    //! returns savegames manager object
    virtual ua_savegames_manager& get_savegames_mgr()=0;
+
+   //! returns debug interface
+   virtual ua_debug_interface* get_debug_interface()=0;
 
    //! returns underworld object
    virtual ua_underworld &get_underworld()=0;

@@ -276,6 +276,8 @@ void ua_game::done()
       delete screenstack[i];
    }
 
+   delete debug;
+
    underworld.done();
 
    delete audio;
@@ -359,10 +361,13 @@ void ua_game::init_core()
    critter_pool.prepare(texmgr);
 
    // init model manager
-   model_manager.init(settings);
+   model_manager.init(this);
 
    // initializes underworld
    underworld.init(settings,filesmgr);
+
+   // create debug interface instance
+   debug = ua_debug_interface::get_new_debug_interface(&underworld);
 }
 
 void ua_game::push_screen(ua_ui_screen_base *newscreen)

@@ -240,9 +240,6 @@ protected:
    //! selected game mode
    ua_ingame_orig_game_mode gamemode;
 
-   //! debug interface
-   ua_debug_interface* dbgint;
-
    //! underworld renderer
    ua_renderer renderer;
 

@@ -93,6 +93,9 @@ protected:
    //! underworld object
    ua_underworld underworld;
 
+   //! debug interface
+   ua_debug_interface* debug;
+
    //! indicates if game can be exited
    bool exit_game;
 
@@ -126,6 +129,7 @@ protected:
    virtual ua_critter_pool& get_critter_pool(){ return critter_pool; };
    virtual ua_model3d_manager& get_model_manager(){ return model_manager; };
    virtual ua_savegames_manager& get_savegames_mgr(){ return savegames_mgr; };
+   virtual ua_debug_interface* get_debug_interface(){ return debug; }
    virtual ua_underworld &get_underworld(){ return underworld; }
 
    virtual void push_screen(ua_ui_screen_base *newscreen);
