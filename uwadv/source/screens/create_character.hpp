@@ -91,7 +91,7 @@ protected:
    void handleinputchar(char c);
 
    //! call cchar_global in script 
-   void cchar_global(int globalaction);
+   void cchar_global(int globalaction, int seed);
 
 protected:
    //! lua script state
@@ -112,8 +112,8 @@ protected:
    //! buttons changed
    bool changed;
 
-   //! current stage
-   unsigned int stage;
+   //! current fading stage
+   unsigned int fadingstage;
 
    //! current tickcount
    unsigned int tickcount;

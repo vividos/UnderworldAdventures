@@ -26,6 +26,7 @@
 */
 
 // needed includes
+#include <time.h>
 #include "common.hpp"
 #include "create_character.hpp"
 
@@ -123,7 +124,7 @@ void ua_create_character_screen::init()
    selected_button=0;
    prev_button=0;
    changed=false;
-   stage=0;
+   fadingstage=1;
    tickcount=0;
    buttondown=false;
    strblock=2;
@@ -155,20 +156,26 @@ void ua_create_character_screen::initluascript()
    // register C functions
    lua_register(L,"cchar_do_action", cchar_do_action);
 
+   // load lua interface script for constants
+   if (0!=core->get_filesmgr().load_lua_script(L,"uw1/scripts/uwinterface"))
+      ended = true;
+
    // load lua cutscene script
    if (0!=core->get_filesmgr().load_lua_script(L,"uw1/scripts/createchar"))
       ended = true;
 
-   cchar_global(gactInit);
+   // Init script with seed value for random numbers
+   cchar_global(gactInit, clock());
 }
 
-void ua_create_character_screen::cchar_global(int globalaction)
+void ua_create_character_screen::cchar_global(int globalaction, int seed)
 {
     // call "cchar_global(this)"
    lua_getglobal(L,"cchar_global");
    lua_pushuserdata(L, this);
    lua_pushnumber(L, globalaction);
-   int ret = lua_call(L,2,0);
+   lua_pushnumber(L, seed);
+   int ret = lua_call(L,3,0);
    if (ret!=0)
    {
       ua_trace("Lua function call cchar_global(0x%08x) ended with error code %u\n",
@@ -225,7 +232,7 @@ void ua_create_character_screen::handle_event(SDL_Event &event)
       switch(event.key.keysym.sym)
       {
       case SDLK_ESCAPE:
-         cchar_global(gactDeinit);
+         cchar_global(gactDeinit,0);
          break;
 
       case SDLK_PAGEUP:
@@ -264,11 +271,7 @@ void ua_create_character_screen::handle_event(SDL_Event &event)
 
       case SDLK_RETURN:
          // simulate clicking on that area
-         if (stage==1)
-         {
-            stage++;
-            tickcount=0;
-         }
+         press_button(selected_button);
          break;
       }
       break;
@@ -276,7 +279,6 @@ void ua_create_character_screen::handle_event(SDL_Event &event)
    case SDL_MOUSEBUTTONDOWN:
       // select the area where the mouse button is pressed
       buttondown=true;
-      if (stage==1)
       {
          int ret = getbuttonover();
          if (ret>=0)
@@ -285,7 +287,7 @@ void ua_create_character_screen::handle_event(SDL_Event &event)
       break;
 
    case SDL_MOUSEMOTION:
-      if (stage==1 && buttondown)
+      if (buttondown)
       {
          int ret = getbuttonover();
          if (ret>=0)
@@ -295,15 +297,11 @@ void ua_create_character_screen::handle_event(SDL_Event &event)
 
    case SDL_MOUSEBUTTONUP:
       buttondown=false;
-      if (stage==1)
       {
          // determine if user released the mouse button over the same area
          int ret = getbuttonover();
          if ((ret>=0) && (ret==selected_button))
-         {
-            stage++;
-            tickcount=0;
-         }
+            press_button(selected_button);
       }
       break;
    }
@@ -333,6 +331,7 @@ void ua_create_character_screen::do_action()
    {
    case actEnd:
       ended = true;
+      fadingstage = -1;
       ua_trace("end request by char. creation script\n");
       break;
 
@@ -601,10 +600,24 @@ void ua_create_character_screen::render()
       changed = true;
    }
 
-   if (changed)
+   if (changed || (fadingstage!=0))
    {
-      // set brightness of texture quad
-      glColor3ub(255,255,255);
+       // set brightness of texture quad
+       Uint8 light = 255;
+
+       switch (fadingstage)
+       {
+       case 1:
+          light = Uint8(255*(double(tickcount) / (core->get_tickrate()*ua_fade_time)));
+          break;
+
+       case -1:
+          light = Uint8(255-255*(double(tickcount) / (core->get_tickrate()*ua_fade_time)));
+          break;
+       }
+
+       glColor3ub(light,light,light);
+
 
       // prepare image texture
       tex.convert(img);
@@ -628,28 +641,19 @@ void ua_create_character_screen::render()
 
 void ua_create_character_screen::tick()
 {
-   // when fading in or out, check if blend time is over
-   if ((stage==0 || stage==2) &&
-     (!ended || (++tickcount >= (core->get_tickrate()*ua_fade_time))))
-   {
-      // do next stage
-      stage++;
-      tickcount=0;
-   }
-
-   if (ended)
-   {
-      // finished
-      core->pop_screen();
-      return;
-   }
-
-   // in stage 3 the selected button is pressed
-   if (stage==3)
-   {
-      press_button(selected_button);
-      stage=0;
-      tickcount=0;
+   if (fadingstage!=0)
+   { 
+      if (++tickcount >= (core->get_tickrate()*ua_fade_time))
+      {
+         if (ended)
+         {
+            core->pop_screen();
+            return;
+         } // else
+         changed = true;
+         fadingstage=0;
+         tickcount=0;
+      }
    }
 }
 
