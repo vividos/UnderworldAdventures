@@ -735,7 +735,7 @@ int ua_lua_scripting::tilemap_get_info(lua_State* L)
    double xpos = lua_tonumber(L,-2);
    double ypos = lua_tonumber(L,-1);
 
-   ua_levelmap_tile& tileinfo = level.get_tile(xpos,ypos);
+   ua_levelmap_tile& tileinfo = level.get_tile(unsigned(xpos),unsigned(ypos));
 
    // create new table and fill it with infos
    lua_newtable(L);
@@ -803,7 +803,7 @@ int ua_lua_scripting::tilemap_get_objlist_link(lua_State* L)
 
    double xpos = lua_tonumber(L,-2);
    double ypos = lua_tonumber(L,-1);
-   Uint16 objpos = level.get_mapobjects().get_tile_list_start(xpos,ypos);
+   Uint16 objpos = level.get_mapobjects().get_tile_list_start(unsigned(xpos),unsigned(ypos));
 
    lua_pushnumber(L,static_cast<double>(objpos));
    return 1;
