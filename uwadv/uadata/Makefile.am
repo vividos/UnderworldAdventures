@@ -10,6 +10,7 @@ EXTRA_DIST = \
 	$(luaSCRIPTS) \
 	uw1/scripts/uwinit.txt \
 	uw1/audio/music.m3u \
+	uw1/keymap.cfg \
 	Makefile.common
 
 CLEANFILES = \

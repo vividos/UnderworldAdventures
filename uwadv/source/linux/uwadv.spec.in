@@ -36,7 +36,7 @@ Underworld Adventures is a project to recreate Ultima Underworld 1 on modern ope
 if [ ! -f configure ]; then
   ./autogen.sh
 fi
-CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{_prefix} --bindir=%{_bindir} --datadir=%{_datadir} --sysconfdir=$RPM_BUILD_ROOT/etc
+%configure --disable-tools
 
 if [ "$SMP" != "" ]; then
   (make "MAKE=make -k -j $SMP"; exit 0)
@@ -47,7 +47,7 @@ fi
 
 %install
 rm -rf $RPM_BUILD_ROOT
-make prefix=$RPM_BUILD_ROOT%{_prefix} bindir=$RPM_BUILD_ROOT%{_bindir} datadir=$RPM_BUILD_ROOT%{_datadir} install
+%makeinstall
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -56,6 +56,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-, root, root)
 %doc Copying ChangeLog
 %doc docs/Authors.txt docs/README.uwadv.txt
+%doc docs/uw1-keyboard.txt
 %{_bindir}/uwadv
+%{_bindir}/ua-lowercase-all.pl
 %{_datadir}/games/uwadv/uwadv.cfg
 %{_datadir}/games/uwadv/uadata00.uar
+%{_mandir}/man6/uwadv.6.gz

@@ -14,6 +14,7 @@ LDFLAGS = $(SDL_LIBS) $(X_LIBS) -lSDL_mixer
 # automake build rules
 
 bin_PROGRAMS = uwadv
+bin_SCRIPTS = linux/ua-lowercase-all.pl
 
 # Makefile.common defines uwadv_SOURCES
 include Makefile.common
@@ -32,6 +33,7 @@ EXTRA_DIST = \
 	linux/uwadv.spec.in \
 	linux/uwadv.cfg.in \
 	linux/ua-lowercase-all.pl \
+	linux/uwadv.6.in \
 	win32/animview.dsp \
 	win32/cnvdasm.dsp \
 	win32/cnvdbg.dsp \
@@ -59,6 +61,8 @@ EXTRA_DIST = \
 
 cfgdir = $(datadir)/games/uwadv
 cfg_DATA = uwadv.cfg
+
+man6_MANS = linux/uwadv.6
 
 uwadv.cfg: linux/uwadv.cfg.in
 	rm -f $@ $@.tmp $@.tmptmp

@@ -109,15 +109,6 @@ to compile and run Underworld Adventures.
 Check http://mesa3d.sourceforge.net/ for a good one.]))
 CPPFLAGS="$save_CPPFLAGS"
 
-
-# checking for FMOD
-AC_CHECK_HEADER(fmod.h,
-  AC_DEFINE(HAVE_FMOD_H,,[defined when the FMOD library is present]),
-  AC_MSG_WARN([
-FMOD not found. No midi playback available.
-FMOD is available at http://www.fmod.org/]))
-
-
 # checking for zlib
 AC_CHECK_HEADER(zlib.h,,AC_MSG_ERROR([
 zlib header not found. Zlib is required to compile and run
@@ -158,6 +149,7 @@ source/lua/Makefile
 uadata/Makefile
 hacking/Makefile
 uwadv.spec:source/linux/uwadv.spec.in
+source/linux/uwadv.6
 ])
 AC_OUTPUT
 
