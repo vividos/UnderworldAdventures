@@ -757,6 +757,10 @@ SOURCE=..\keymap.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\mousecursor.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\quadtree.cpp
 # End Source File
 # Begin Source File
@@ -802,6 +806,10 @@ SOURCE=..\image.hpp
 # Begin Source File
 
 SOURCE=..\keymap.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\mousecursor.hpp
 # End Source File
 # Begin Source File
 
