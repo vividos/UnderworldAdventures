@@ -58,14 +58,27 @@ public:
    //! loads a lua script
    int load_lua_script(lua_State *L, const char *basename);
 
-   //! returns true when savegames are available
-   bool savegames_avail();
-
-   //! returns a quicksave savegame
-   ua_savegame get_quicksave(bool saving);
-
    //! returns a list of all configuration files to load
    std::vector<std::string> &get_cfgfiles_list() { return cfgfiles_list; }
+
+   // savegames interface
+
+   //! returns number of available savegames
+   unsigned int get_savegames_count();
+
+   //! returns title of savegame
+   std::string get_savegame_title(unsigned int index);
+
+   //! returns name of savegame file
+   std::string get_savegame_filename(unsigned int index);
+
+   //! returns savegame object for loading
+   ua_savegame get_savegame_load(unsigned int index);
+
+   // todo: get_savegame_save()
+
+   //! returns the quicksave savegame
+   ua_savegame get_quicksave(bool saving);
 
 protected:
    //! initialize list of config files

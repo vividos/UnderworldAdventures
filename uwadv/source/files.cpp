@@ -344,13 +344,34 @@ int ua_files_manager::load_lua_script(lua_State *L, const char *basename)
    return ret;
 }
 
-bool ua_files_manager::savegames_avail()
+unsigned int ua_files_manager::get_savegames_count()
 {
-   // for now we pretend there always are some savegames
-   return true;
+   return 0;
 }
 
-//! returns a quicksave savegame
+std::string ua_files_manager::get_savegame_title(unsigned int index)
+{
+   std::string save_title("my savegame");
+   return save_title;
+}
+
+std::string ua_files_manager::get_savegame_filename(unsigned int index)
+{
+   std::string save_name(savegame_folder);
+   save_name.append("quicksave.uas");
+   return save_name;
+}
+
+ua_savegame ua_files_manager::get_savegame_load(unsigned int index)
+{
+   std::string save_name(get_savegame_filename(index));
+
+   ua_savegame sg;
+   sg.open(save_name.c_str(),false);
+
+   return sg;
+}
+
 ua_savegame ua_files_manager::get_quicksave(bool saving)
 {
    ua_savegame sg;
