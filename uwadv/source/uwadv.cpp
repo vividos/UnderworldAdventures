@@ -366,10 +366,11 @@ void ua_uwadv_game::run()
 void ua_uwadv_game::done()
 {
    // free current screen
-   if (screen!=NULL)
+   if (curscreen!=NULL)
    {
-      screen->done();
-      delete screen;
+      curscreen->destroy();
+      delete curscreen;
+      curscreen = NULL;
    }
 /*
    // free all screens on screen stack
