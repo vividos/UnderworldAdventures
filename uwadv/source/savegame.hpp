@@ -29,8 +29,14 @@
 #ifndef __uwadv_savegame_hpp_
 #define __uwadv_savegame_hpp_
 
+#define HAVE_ZLIB_SAVEGAME
+
 // needed includes
 #include "settings.hpp"
+
+#ifdef HAVE_ZLIB_SAVEGAME
+#include <zlib.h>
+#endif
 
 
 // structs
@@ -116,7 +122,13 @@ protected:
    void open(const char* filename, bool saving);
 
 protected:
+
+#ifdef HAVE_ZLIB_SAVEGAME
+   gzFile sg;
+#else
    FILE *sg;
+#endif
+
    bool saving;
    Uint32 save_version;
 

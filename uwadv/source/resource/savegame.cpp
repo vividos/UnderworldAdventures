@@ -52,17 +52,43 @@ Uint32 ua_savegame::get_version()
 
 Uint8 ua_savegame::read8()
 {
+#ifdef HAVE_ZLIB_SAVEGAME
+   return gzgetc(sg);
+#else
    return fgetc(sg);
+#endif
 }
 
 Uint16 ua_savegame::read16()
 {
+#ifdef HAVE_ZLIB_SAVEGAME
+
+   Uint16 data;
+   gzread(sg,&data,2);
+#if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
+   data = ua_endian_convert16(data);
+#endif
+   return data;
+
+#else
    return fread16(sg);
+#endif
 }
 
 Uint32 ua_savegame::read32()
 {
+#ifdef HAVE_ZLIB_SAVEGAME
+
+   Uint32 data;
+   gzread(sg,&data,4);
+#if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
+   data = ua_endian_convert32(data);
+#endif
+   return data;
+
+#else
    return fread32(sg);
+#endif
 }
 
 void ua_savegame::read_string(std::string& str)
@@ -75,21 +101,39 @@ void ua_savegame::read_string(std::string& str)
 
 void ua_savegame::write8(Uint8 value)
 {
+#ifdef HAVE_ZLIB_SAVEGAME
+   gzputc(sg,value);
+#else
    fputc(value,sg);
+#endif
 }
 
 void ua_savegame::write16(Uint16 value)
 {
-   fwrite16(sg,value);
-}
+#ifdef HAVE_ZLIB_SAVEGAME
 
-void read_string(std::string& str)
-{
+#if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
+   value = ua_endian_convert16(value);
+#endif
+   gzwrite(sg,&value,2);
+
+#else
+   fwrite16(sg,value);
+#endif
 }
 
 void ua_savegame::write32(Uint32 value)
 {
+#ifdef HAVE_ZLIB_SAVEGAME
+
+#if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
+   value = ua_endian_convert32(value);
+#endif
+   gzwrite(sg,&value,4);
+
+#else
    fwrite32(sg,value);
+#endif
 }
 
 void ua_savegame::write_string(const char* str)
@@ -102,7 +146,13 @@ void ua_savegame::write_string(const char* str)
 void ua_savegame::begin_section(const char* section_name)
 {
    if (saving)
+   {
+#ifdef HAVE_ZLIB_SAVEGAME
+      gzputs(sg,section_name);
+#else
       fputs(section_name,sg);
+#endif
+   }
    else
    {
       unsigned int len = strlen(section_name);
@@ -110,7 +160,11 @@ void ua_savegame::begin_section(const char* section_name)
       std::vector<char> buffer;
       buffer.resize(len+1);
 
+#ifdef HAVE_ZLIB_SAVEGAME
+      gzgets(sg,&buffer[0],len+1);
+#else
       fgets(&buffer[0],len+1,sg);
+#endif
       buffer[len]=0;
 
       // check if section names are the same
@@ -125,13 +179,24 @@ void ua_savegame::end_section()
 
 void ua_savegame::close()
 {
+#ifdef HAVE_ZLIB_SAVEGAME
+   gzclose(sg);
+#else
    fclose(sg);
+#endif
 }
 
 void ua_savegame::open(const char* filename, bool issaving)
 {
    saving = issaving;
+
+#ifdef HAVE_ZLIB_SAVEGAME
+   sg = gzopen(filename, saving ? "wb" : "rb");
+   if (saving)
+      gzsetparams(sg,9,Z_DEFAULT_STRATEGY);
+#else
    sg = fopen(filename, saving ? "wb" : "rb");
+#endif
 
    // read or write header
    begin_section("header");
@@ -139,7 +204,13 @@ void ua_savegame::open(const char* filename, bool issaving)
    {
       // write header
       write32(current_version);
+
+#ifdef HAVE_ZLIB_SAVEGAME
+      write8(1); // compression: zlib
+#else
       write8(0); // compression: none
+#endif
+
       write8(info.type); // game type: uw1
 
       write_string(info.title.c_str());
