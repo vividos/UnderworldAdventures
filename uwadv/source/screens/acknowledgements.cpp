@@ -32,6 +32,7 @@
 #include "common.hpp"
 #include "acknowledgements.hpp"
 #include "image.hpp"
+#include "renderer.hpp"
 
 
 // constants
@@ -45,9 +46,9 @@ const double ua_acknowledgements_screen::xfade_time = 0.5;
 
 // ua_acknowledgements_screen methods
 
-void ua_acknowledgements_screen::init(ua_game_core_interface* thecore)
+void ua_acknowledgements_screen::init()
 {
-   ua_ui_screen_base::init(thecore);
+   ua_screen::init();
 
    ua_trace("acknowledgements screen started\n");
 
@@ -70,17 +71,17 @@ void ua_acknowledgements_screen::init(ua_game_core_interface* thecore)
    // setup misc. variables
    ended = false;
    stage = 0; // crossfade
-   tickcount = unsigned(show_time * core->get_tickrate()) - 3;
+   tickcount = unsigned(show_time * game->get_tickrate()) - 3;
    curframe = unsigned(-1);
 
-   cuts_ack.load(core->get_settings(),"cuts/cs012.n01");
-   cuts_ack.init(&core->get_texmgr());
+   cuts_ack.load(game->get_settings(),"cuts/cs012.n01");
+   cuts_ack.init(&game->get_renderer().get_texture_manager());
 
    // trick to copy image properties and palette
-   img[0].init(&core->get_texmgr(),0,0,320,200,false);
+   img[0].init(&game->get_renderer().get_texture_manager(),0,0,320,200,false);
    memcpy(img[0].get_quadpalette(),cuts_ack.get_quadpalette(),sizeof(ua_onepalette));
 
-   img[1].init(&core->get_texmgr(),0,0,320,200,false);
+   img[1].init(&game->get_renderer().get_texture_manager(),0,0,320,200,false);
    memcpy(img[1].get_quadpalette(),cuts_ack.get_quadpalette(),sizeof(ua_onepalette));
 
    // tex 0 is a blank frame / fading-out frame
@@ -92,40 +93,13 @@ void ua_acknowledgements_screen::init(ua_game_core_interface* thecore)
    img[1].convert_upload();
 }
 
-void ua_acknowledgements_screen::done()
+void ua_acknowledgements_screen::destroy()
 {
    img[0].done();
    img[1].done();
 }
 
-void ua_acknowledgements_screen::handle_event(SDL_Event& event)
-{
-   switch(event.type)
-   {
-   case SDL_MOUSEBUTTONDOWN:
-      // start crossfade immediately
-      if (stage==0)
-         tickcount = unsigned(core->get_tickrate()*show_time) + 1;
-      break;
-
-   case SDL_KEYDOWN:
-      // handle key presses
-      switch(event.key.keysym.sym)
-      {
-      case SDLK_RETURN:
-      case SDLK_ESCAPE:
-         ua_trace("acknowledgements ended by return/escape\n");
-         ended = true;
-
-         fadeout_end();
-         break;
-      default: break;
-      }
-   default: break;
-   }
-}
-
-void ua_acknowledgements_screen::render()
+void ua_acknowledgements_screen::draw()
 {
    glClear(GL_COLOR_BUFFER_BIT);
    glDisable(GL_BLEND);
@@ -143,7 +117,7 @@ void ua_acknowledgements_screen::render()
       glEnable(GL_BLEND);
 
       // calculate alpha
-      Uint8 alpha = 255-Uint8(255*(double(tickcount)/(core->get_tickrate()*xfade_time)));
+      Uint8 alpha = 255-Uint8(255*(double(tickcount)/(game->get_tickrate()*xfade_time)));
       glColor4ub(255,255,255,alpha);
 
       // draw second quad
@@ -152,9 +126,38 @@ void ua_acknowledgements_screen::render()
    }
 }
 
+bool ua_acknowledgements_screen::process_event(SDL_Event& event)
+{
+   switch(event.type)
+   {
+   case SDL_MOUSEBUTTONDOWN:
+      // start crossfade immediately
+      if (stage==0)
+         tickcount = unsigned(game->get_tickrate()*show_time) + 1;
+      break;
+
+   case SDL_KEYDOWN:
+      // handle key presses
+      switch(event.key.keysym.sym)
+      {
+      case SDLK_RETURN:
+      case SDLK_ESCAPE:
+         ua_trace("acknowledgements ended by return/escape\n");
+         ended = true;
+
+         fadeout_end();
+         break;
+      default: break;
+      }
+   default: break;
+   }
+
+   return true;
+}
+
 void ua_acknowledgements_screen::tick()
 {
-   if (stage==0 && double(tickcount)/core->get_tickrate() >= show_time)
+   if (stage==0 && double(tickcount)/game->get_tickrate() >= show_time)
    {
       // switch to crossfade
       stage = 1;
@@ -182,12 +185,18 @@ void ua_acknowledgements_screen::tick()
       return;
    }
 
-   if (stage==1 && double(tickcount)/core->get_tickrate() >= xfade_time)
+   if (stage==1 && double(tickcount)/game->get_tickrate() >= xfade_time)
    {
       //ua_trace("showing image %u, current frame %u\n",1-(curframe&1),curframe);
 
       if (ended)
-         core->pop_screen();
+      {
+         SDL_Event event;
+         event.type = SDL_USEREVENT;
+         event.user.code = ua_event_destroy_screen;
+         SDL_PushEvent(&event);
+      }
+         //core->pop_screen();
 
       // switch to show mode
       stage = 0;

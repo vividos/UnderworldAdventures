@@ -38,17 +38,17 @@
 // classes
 
 //! cutscene view screen
-class ua_acknowledgements_screen: public ua_ui_screen_base
+class ua_acknowledgements_screen: public ua_screen
 {
 public:
    //! ctor
    ua_acknowledgements_screen(){}
 
-   // virtual functions from ua_ui_screen_base
-   virtual void init(ua_game_core_interface* core);
-   virtual void done();
-   virtual void handle_event(SDL_Event &event);
-   virtual void render();
+   // virtual functions from ua_screen
+   virtual void init();
+   virtual void destroy();
+   virtual void draw();
+   virtual bool process_event(SDL_Event& event);
    virtual void tick();
 
 protected:
