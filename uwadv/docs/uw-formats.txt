@@ -1024,43 +1024,56 @@ Table of Contents
 5.0 Critter Animation
 
    Critter animations are stored in the folder "crit". The file "assoc.anm"
-   holds data for each of the 32 animations. First, there are 8 char bytes
-   for the name of each of the 32 animations. If a string is not there,
-   the animation is not available.
+   holds data for each of the 32 animations. The file starts with 8 bytes for
+   the name of each animation. Shorter strings are padded with zeros. Empty
+   strings denote animations not available (for uw_demo).
 
    Next comes a table of infos for each animation:
 
    0000   Int8   anim
-   0001   Int8   variant (aux palette to use)
+   0001   Int8   auxpal
 
-   The anim field describes which critter page file(s) to take (=XX value,
-   below).
+   The meaning of the "anim" field is currently unknown.
 
-   The variant value describes which auxiliary palette to use. There are
+   The "auxpal" value describes which auxiliary palette to use. There are
    several critters that share the same animations but use different palettes,
    e.g. the bat and the vampire bat uses the same anim value, but different
    auxpals.
 
-   <another table, with what info?>
+   Next comes another table with 32 entries:
+
+   0000   Int16   unknown
+
+   The meaning of the field is currently unknown.
 
    Animation for each critter is stored in a file like "CrXXpage.nYY", where
       XX = animation number (=anim), YY = page number
       XX and YY are octal numbers
 
    There may be more than one page for each animation file.
-   The file starts with a segment directory:
+   The file starts with a header:
 
    pos     length          desc.
-   0000    Int8            segbase
-   0001    Int8            number of segments (=nsegs)
-   0002    nsegs*Int8      ?? list for segments
-           Int8            animation segments number (=nanimsegs)
-           8*nanimsegs     animation frame indices
-           Int8            number of auxiliary palettes (=npals)
-           npals*32        auxiliary palette indices
-           Int8            number of frames offsets (=noffsets)
-           Int8            unknown
-           noffsets*Int16  offsets to frame headers
+   0000    Int8            anim slot base
+   0001    Int8            number of anim slots (=nslot)
+   0002    nslot*Int8      list of segment indices
+
+   After this, a list of segment follows, which contains up to 8 frame indices
+   for every segment.
+
+   nslot+2 Int8            number of anim segments (=nsegs)
+           8*nsegs         anim frame indices
+
+   Then the auxiliary palettes follow:
+
+           Int8            number of aux palettes (=npals)
+           npals*32        allaux palette indices in blocks of 32
+
+   Next is a list of all frames and their offsets into the file:
+
+           Int8            number of frame offsets (=noffsets)
+           Int8            compression type? (always 06)
+           noffsets*Int16  absolute offsets to frame headers
 
    Each animation is stored in a segment, which can contain a number of
    frames (stored in the "animation frame indices"). Each list ends with a
@@ -1072,7 +1085,7 @@ Table of Contents
    0001    Int8       height
    0002    Int8       hotspot x
    0003    Int8       hotspot y
-   0004    Int8       type; (6: 5-bit word size)
+   0004    Int8       compression type; (06: 5-bit word size)
    0005    Int16      data length in number of words
    0007               start of rle-encoded image data (see 2.3)
 
