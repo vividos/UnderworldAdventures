@@ -32,6 +32,7 @@
 #define uwadv_import_hpp_
 
 // needed includes
+#include "image.hpp"
 
 
 // forward references
@@ -64,9 +65,13 @@ public:
    //! loads a *.byt image
    void load_image_byt(const char* imgname, Uint8* pixels);
 
+   //! loads texture images
+   void load_textures(std::vector<ua_image>& tex_images,
+      unsigned int startidx, const char* texname,
+      ua_smart_ptr<ua_palette256>& palette);
+
    //! loads a font
    void load_font(const char* fontname, ua_font& font);
-
 
 protected:
 
