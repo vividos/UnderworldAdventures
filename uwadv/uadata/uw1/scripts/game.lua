@@ -47,8 +47,8 @@ function lua_init_script()
 
    -- testing stuff
 
-   fun_replace_tilemap_solids()
-   fun_count_underworld_path()
+   -- fun_replace_tilemap_solids()
+   -- fun_count_underworld_path()
 
 end
 
