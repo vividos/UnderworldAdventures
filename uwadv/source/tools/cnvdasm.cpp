@@ -102,6 +102,8 @@ void ua_conv_dasm::disassemble(FILE *out)
    {
       const ua_conv_imported_item &func = imported_globals[i];
 
+      if (func.name.empty()) continue;
+
       fprintf(out,"; id=%04x: %s %s;\n",
          i,func.ret_type == ua_rt_void ? "void" :
             func.ret_type == ua_rt_int ? "int" : "string",
@@ -187,13 +189,21 @@ void ua_conv_dasm::decompile(FILE *out)
    fprintf(out,"\n#include <stdio.h>\n");
    fprintf(out,"\n// private and globals\n");
 
-   if (glob_reserved-imported_globals.size()>0)
-      fprintf(out,"int private[0x%04x];\n\n",glob_reserved+1);
+   fprintf(out,"int private[0x%04x];\n\n",glob_reserved+1);
 
    // print out globals
-   max = imported_globals.size();
+   max=imported_globals.size();
    for(i=0; i<max; i++)
-      fprintf(out,"int %s;\n",imported_globals.at(i).name.c_str());
+   {
+      const ua_conv_imported_item &func = imported_globals[i];
+
+      if (func.name.empty()) continue;
+
+      fprintf(out,"%s %s;\n",
+         func.ret_type == ua_rt_void ? "void" :
+            func.ret_type == ua_rt_int ? "int" : "string",
+         func.name.c_str());
+   }
 
    fprintf(out,"\n// forward declarations\n");
 
@@ -417,21 +427,7 @@ bool ua_conv_dasm::replace_constructs(unsigned int type, unsigned int entry, uns
          Uint16 ptr = dec_entries[entry].arg;
          Uint16 val = dec_entries[entry+1].arg;
 
-         if (ptr<imported_globals.size())
-         {
-            if (imported_globals[ptr].name.empty())
-               sprintf(buffer, "globals[0x%04x] = 0x%04x;",ptr,val);
-            else
-               sprintf(buffer,"%s = 0x%04x;",
-                  imported_globals[ptr].name.c_str(),val);
-         }
-         else
-         {
-            if (ptr<glob_reserved)
-               sprintf(buffer,"private[0x%04x] = 0x%04x;",ptr,val);
-            else
-               sprintf(buffer,"globals[0x%04x] = 0x%04x; // hmm, should not happen",ptr,val);
-         }
+         sprintf(buffer, "%s = 0x%04x;",format_global(ptr).c_str(),val);
 
          item.command.assign(buffer);
 
@@ -495,6 +491,7 @@ bool ua_conv_dasm::replace_constructs(unsigned int type, unsigned int entry, uns
             dec_entries[entry+3].arg);
 
          item.command.assign(buffer);
+         item.arg = dec_entries[entry+3].arg;
 
          // delete other entries
          dec_entries.erase(dec_entries.begin()+entry+1,dec_entries.begin()+entry+5);
@@ -538,6 +535,7 @@ bool ua_conv_dasm::replace_constructs(unsigned int type, unsigned int entry, uns
             dec_entries[entry].arg,dec_entries[entry+1].arg);
 
          item.command.assign(buffer);
+         item.arg = dec_entries[entry+1].arg;
 
          // delete other entries
          dec_entries.erase(dec_entries.begin()+entry+1,dec_entries.begin()+entry+3);
@@ -549,7 +547,7 @@ bool ua_conv_dasm::replace_constructs(unsigned int type, unsigned int entry, uns
       if (dec_entries[entry].code==op_CALLI ||
           dec_entries[entry].code==op_CALL)
       {
-         std::string cmd;
+         std::string cmd,funcname;
 
          if (dec_entries[entry].code==op_CALL)
          {
@@ -566,7 +564,6 @@ bool ua_conv_dasm::replace_constructs(unsigned int type, unsigned int entry, uns
          else
          {
             // find out function name
-            std::string funcname;
             if (dec_entries[entry].arg>imported_funcs.size())
                funcname.assign("unknown_exported");
             else
@@ -632,6 +629,33 @@ bool ua_conv_dasm::replace_constructs(unsigned int type, unsigned int entry, uns
          item.indent_level = 1;
          item.empty_line = true;
 
+         if (dec_entries[entry-argcount].code==op_CALLI && 
+            (funcname == "babl_menu" || funcname == "babl_fmenu" ))
+         {
+            entry -= argcount; entry--;
+            std::string comment;
+
+            while( dec_entries[entry].command.find("locals[") != std::string::npos )
+            {
+               if (dec_entries[entry].arg != 0)
+               {
+                  comment.assign(" // ");
+                  comment.append(gs.get_string(strblock,dec_entries[entry].arg));
+
+                  // replace newlines
+                  for(unsigned int i=0; i<comment.size(); i++)
+                  if (comment.at(i)=='\n')
+                  {
+                     comment.erase(i,1);
+                     comment.insert(i,"\\n");
+                  }
+
+                  dec_entries[entry].command.append(comment);
+               }
+               entry--;
+            }
+         }
+
          return true;
       }
       break;
@@ -674,34 +698,16 @@ bool ua_conv_dasm::replace_constructs(unsigned int type, unsigned int entry, uns
 
          ua_conv_dec_entry &item = dec_entries[entry];
 
-         item.translated=true;
-         item.indent_level = 1;
+         Uint16 ptr = dec_entries[pushi_pos].arg;
 
          if (dec_entries[pushi_pos].code == op_PUSHI)
-         {
-            Uint16 ptr = dec_entries[pushi_pos].arg;
-
-            if (ptr<imported_globals.size())
-            {
-               if (imported_globals[ptr].name.empty())
-                  sprintf(buffer, "globals[0x%04x] = reg;",ptr);
-               else
-                  sprintf(buffer,"%s = reg;",
-                     imported_globals[ptr].name.c_str());
-            }
-            else
-            {
-               if (ptr<glob_reserved)
-                  sprintf(buffer,"private[0x%04x] = reg;",ptr);
-               else
-                  sprintf(buffer,"globals[0x%04x] = reg; // hmm, should not happen",ptr);
-            }
-         }
+            sprintf(buffer, "%s = reg;",format_global(ptr).c_str());
          else
-         {
-            sprintf(buffer,"locals[0x%04x] = res;\n",dec_entries[entry+1].arg);
-         }
+            sprintf(buffer,"locals[0x%04x] = res;\n",ptr);
+
          item.command.assign(buffer);
+         item.translated=true;
+         item.indent_level = 1;
 
          // delete not needed entries
          dec_entries.erase(dec_entries.begin()+entry+1);
@@ -746,6 +752,30 @@ bool ua_conv_dasm::replace_constructs(unsigned int type, unsigned int entry, uns
    }
 
    return false;
+}
+
+std::string ua_conv_dasm::format_global(Uint16 offset)
+{
+   std::string ret;
+   char buffer[256];
+
+   if (offset<imported_globals.size())
+   {
+      if (imported_globals.at(offset).name.empty())
+      {
+         sprintf(buffer,"global[0x%04x]",offset);
+         ret = buffer;
+      }
+      else
+         ret = imported_globals.at(offset).name;
+   }
+   else
+   {
+      sprintf(buffer,"private[0x%04x]",offset);
+      ret = buffer;
+   }
+
+   return ret;
 }
 
 unsigned int ua_conv_dasm::search_instrp(unsigned int instrp)
@@ -794,19 +824,9 @@ bool ua_conv_dasm::if_switch_replace(unsigned int entry, unsigned int max)
             dec_entries[entry].arg,dec_entries[entry+2].arg);
       else
       {
-         Uint16 arg = if_item.arg;
-         if (arg<imported_globals.size())
-         {
-            if (imported_globals.at(arg).name.empty())
-               sprintf(buffer,"if (globals[0x%04x] == 0x%04x) {",
-                  arg,dec_entries[entry+2].arg);
-               else
-                  sprintf(buffer,"if (%s == 0x%04x) {",
-                     imported_globals.at(arg).name.c_str(),dec_entries[entry+2].arg);
-         }
-         else
-            sprintf(buffer,"if (private[0x%04x] == 0x%04x) {",
-               arg,dec_entries[entry+2].arg);
+         sprintf(buffer,"if (%s == 0x%04x) {",
+            format_global(dec_entries[entry].arg).c_str(),
+            dec_entries[entry+2].arg);
       }
 
       if_item.command.assign(buffer);
@@ -888,15 +908,8 @@ bool ua_conv_dasm::if_switch_replace(unsigned int entry, unsigned int max)
          sprintf(buffer,"switch (locals[0x%04x]) {",
             dec_entries[entry].arg);
       else
-      {
-         Uint16 arg = dec_entries[entry].arg;
-         if (arg<imported_globals.size())
-            sprintf(buffer,"switch (%s) {",
-               imported_globals.at(arg).name.c_str());
-         else
-            sprintf(buffer,"switch (private[0x%04x]) {",
-               arg);
-      }
+         sprintf(buffer,"switch (%s) {",
+            format_global(dec_entries[entry].arg).c_str());
 
       switch_item.command.assign(buffer);
       switch_item.translated = true;
@@ -1004,7 +1017,7 @@ int main(int argc, char *argv[])
    FILE *out = fopen("uw1-dasm.txt","wt");
 
    ua_conv_dasm dasm;
-   if (dasm.init("d:\\projekte\\uwadv\\uw1\\data\\cnv.ark",161))
+   if (dasm.init("d:\\projekte\\uwadv\\uw1\\data\\cnv.ark",2))
    {
 //      dasm.disassemble(out);
       dasm.decompile(out);

@@ -95,6 +95,9 @@ protected:
    // replaces constructs in the dec_entries list
    bool replace_constructs(unsigned int type, unsigned int entry, unsigned int max);
 
+   //! formats a string with the global's variable name
+   std::string format_global(Uint16 offset);
+
    //! searches for instrp and returns entry index in dec_entries
    unsigned int search_instrp(unsigned int instrp);
 
