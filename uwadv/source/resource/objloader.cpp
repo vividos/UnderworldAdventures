@@ -114,7 +114,7 @@ void ua_object_list::addobj_follow(Uint32 objprop[0x400*2],
          // todo categorize item
          info.type = ua_obj_item;
 
-         if ( (item_id >= 0x40 && item_id < 0x80) ||
+         if ( /*(item_id >= 0x40 && item_id < 0x80) ||*/
               (item_id >= 0x140 && item_id != 458) )
             info.type =  ua_obj_invisible;
       }
