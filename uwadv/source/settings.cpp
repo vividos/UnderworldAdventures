@@ -130,7 +130,7 @@ void ua_settings::dump()
    for (iter = settings.begin();
         iter != settings.end();
         ++iter)
-      ua_trace("%s = %s\n", iter->first, iter->second);
+      ua_trace("%s = %s\n", iter->first, iter->second.c_str());
 }
 
 bool ua_settings::search_key_from_string(const char* keyname, ua_settings_key& key)
