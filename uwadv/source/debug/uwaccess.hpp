@@ -58,8 +58,9 @@ enum
 //! parameter types
 enum
 {
-   ua_param_int=0,
-   ua_param_double=1
+   ua_param_unk=0,
+   ua_param_int=1,
+   ua_param_double=2
 };
 
 
@@ -68,6 +69,13 @@ enum
 //! parameter struct for command function
 struct ua_debug_param
 {
+   ua_debug_param(){ type = ua_param_unk; };
+   explicit ua_debug_param(unsigned int i){ set(i); }
+   explicit ua_debug_param(double d){ set(d); }
+
+   void set(unsigned int i){ val.i = i; type = ua_param_int; }
+   void set(double d){ val.d = d; type = ua_param_double; }
+
    // parameter variant
    union param
    {
