@@ -203,6 +203,7 @@ void ua_renderer::render()
 #else
 
    glColor3ub(192,192,192);
+   //glColor4ub(192,192,192,192);
 
    // draw floor tile polygons, for all visible tiles
    max = tilelist.size();
@@ -223,6 +224,9 @@ void ua_renderer::render()
       render_ceiling(tile,qtc.first,qtc.second);
    }
 
+   //glColor4ub(128,128,128,128);
+   glColor3ub(128,128,128);
+
    // draw all visible walls
    for(i=0;i<max;i++)
    {
@@ -231,6 +235,9 @@ void ua_renderer::render()
 
       render_walls(tile,qtc.first,qtc.second);
    }
+
+   //glColor4ub(192,192,192,255);
+   glColor3ub(192,192,192);
 
    // draw all visible objects
    for(i=0;i<max;i++)
@@ -1022,7 +1029,7 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
       modelmgr->render(item_id,base);
       return;
    }
-
+/*
    if (item_id >= 0x0040 && item_id < 0x0080)
    {
       // critter object
@@ -1052,7 +1059,7 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
 
       bb_up = bb_up_save;
    }
-   else
+   else*/
    {
       // switches/levers/buttons/pull chains
       if ((item_id >= 0x0170 && item_id <= 0x017f) ||
@@ -1068,7 +1075,9 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
       if (item_id == 0x016e || item_id == 0x016f)
       {
          render_tmap_obj(obj,x,y);
+#ifndef HAVE_DEBUG
          return;
+#endif
       }
 
       // normal object
@@ -1139,7 +1148,7 @@ void ua_renderer::render_decal(ua_object& obj, unsigned int x, unsigned int y)
    }
 
    // draw quad
-   glColor3ub(255,255,255);
+   //glColor3ub(255,255,255);
 
    // render quad
    glBegin(GL_QUADS);
@@ -1158,60 +1167,80 @@ void ua_renderer::render_tmap_obj(ua_object& obj, unsigned int x, unsigned int y
    // 0x016e / 0x016f special tmap object
    ua_object_info_ext& extinfo = obj.get_ext_object_info();
 
-   double xpos = static_cast<double>(x) + (extinfo.xpos+0.5)/8.0;
-   double ypos = static_cast<double>(y) + (extinfo.ypos+0.5)/8.0;
-   double zpos = extinfo.zpos/4.0*height_scale;
-   bool xdir = true;
+   ua_vector3d pos(static_cast<double>(x),static_cast<double>(y),
+      extinfo.zpos/4.0*height_scale);
 
-   double decalwidth = 0.15;
+   unsigned int x_fr = extinfo.xpos;
+   unsigned int y_fr = extinfo.xpos;
 
+   // determine direction
+   ua_vector3d dir;
    switch(extinfo.heading)
    {
-   case 0: xpos += extinfo.xpos; ypos += 1.0;               break; // bottom side
-   case 2: ypos += extinfo.ypos; xpos += 1.0; xdir = false; decalwidth = -decalwidth; break; // left side
-   case 4: xpos += extinfo.xpos;                            decalwidth = -decalwidth; break; // top side
-   case 6: ypos += extinfo.ypos;              xdir = false; break; // right side
-   default:
-      return; // cannot render
+   case 0: dir.set(1.0, 0.0, 0.0); break;
+   case 2: dir.set(0.0, 1.0, 0.0); break;
+   case 4: dir.set(-1.0, 0.0, 0.0); break;
+   case 6: dir.set(0.0, -1.0, 0.0); break;
+
+   case 1: dir.set(1.0, -1.0, 0.0); break;
+   case 3: dir.set(-1.0, -1.0, 0.0); break;
+   case 5: dir.set(-1.0, 1.0, 0.0); break;
+   case 7: dir.set(1.0, 1.0, 0.0); break;
    }
 
-   glDisable(GL_TEXTURE_2D);
+   dir.normalize();
+   dir *= 0.5;
+
+   // add fractional position
+   pos.x += x_fr / 8.0;
+   pos.y += y_fr / 8.0;
+
+   if (selection_mode)
+   {
+      // in selection mode, offset object pos
+      ua_vector3d offset(dir);
+      offset.rotate_z(-90.0);
+      offset *= 0.01;
+
+      pos += offset;
+   }
 
    // enable polygon offset
    glPolygonOffset(-2.0, -2.0);
-   glLineWidth(7.0);
    glEnable(GL_POLYGON_OFFSET_FILL);
 
-   glColor3ub(255,255,255);
+   double u1,v1,u2,v2;
 
-   // render quad
-   //glBegin(GL_TRIANGLES);
-   //glBegin(GL_QUADS);
-   glBegin(GL_LINE_LOOP);
-   if (xdir)
-   {
-      glVertex3d(xpos+decalwidth,ypos,zpos);
-      glVertex3d(xpos+decalwidth,ypos,zpos+0.2);
-      glVertex3d(xpos-decalwidth,ypos,zpos+0.2);
+#ifdef HAVE_DEBUG
+   // render "tmap_c" or "tmap_s" overlay
+   texmgr->object_tex(obj.get_object_info().item_id,u1,v1,u2,v2);
 
-      glVertex3d(xpos+decalwidth,ypos,zpos);
-      glVertex3d(xpos-decalwidth,ypos,zpos+0.2);
-      glVertex3d(xpos-decalwidth,ypos,zpos);
-   }
-   else
-   {
-      glVertex3d(xpos,ypos+decalwidth,zpos);
-      glVertex3d(xpos,ypos+decalwidth,zpos+0.2);
-      glVertex3d(xpos,ypos-decalwidth,zpos+0.2);
+   glBegin(GL_QUADS);
+   glTexCoord2d(u2,v2); glVertex3d(pos.x+dir.x, pos.y+dir.y, pos.z);
+   glTexCoord2d(u2,v1); glVertex3d(pos.x+dir.x, pos.y+dir.y, pos.z+1.0);
+   glTexCoord2d(u1,v1); glVertex3d(pos.x-dir.x, pos.y-dir.y, pos.z+1.0);
+   glTexCoord2d(u1,v2); glVertex3d(pos.x-dir.x, pos.y-dir.y, pos.z);
+   glEnd();
+#endif
 
-      glVertex3d(xpos,ypos+decalwidth,zpos);
-      glVertex3d(xpos,ypos-decalwidth,zpos+0.2);
-      glVertex3d(xpos,ypos-decalwidth,zpos);
-   }
+   texmgr->use(obj.get_object_info().owner);
+   u1 = v1 = 0.0;
+   u2 = v2 = 1.0;
+
+   // use wall color
+   glColor3ub(128,128,128);
+
+   glBegin(GL_QUADS);
+   glTexCoord2d(u2,v2); glVertex3d(pos.x+dir.x, pos.y+dir.y, pos.z);
+   glTexCoord2d(u2,v1); glVertex3d(pos.x+dir.x, pos.y+dir.y, pos.z+1.0);
+   glTexCoord2d(u1,v1); glVertex3d(pos.x-dir.x, pos.y-dir.y, pos.z+1.0);
+   glTexCoord2d(u1,v2); glVertex3d(pos.x-dir.x, pos.y-dir.y, pos.z);
    glEnd();
 
+   // switch back to object color
+   glColor3ub(192,192,192);
+
    glDisable(GL_POLYGON_OFFSET_FILL);
-   glEnable(GL_TEXTURE_2D);
 }
 
 void ua_renderer::draw_billboard_quad(
@@ -1230,8 +1259,6 @@ void ua_renderer::draw_billboard_quad(
 
    high1 += bb_up*quadheight;
    high2 += bb_up*quadheight;
-
-   glColor3ub(255,255,255);
 
    // render quad
    glBegin(GL_QUADS);
@@ -1309,8 +1336,6 @@ void ua_renderer::render_wall(unsigned int side,
    Uint16 x1, Uint16 y1, Uint16 z1, Uint16 x2, Uint16 y2, Uint16 z2,
    Uint16 nz1, Uint16 nz2, Uint16 ceiling)
 {
-   glColor4ub(128,128,128,128);
-
    // calculate texture coordinates
    double v1,v2,v3,v4;
    v1=(ceiling-z1)*height_scale;
