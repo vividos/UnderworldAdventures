@@ -23,6 +23,9 @@
 
    \brief general config file handling
 
+   note: after calling calling load(SDL_RWops*) the file is not closed using
+   SDL_RWclose()
+
 */
 
 // include guard
