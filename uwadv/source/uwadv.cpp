@@ -161,11 +161,9 @@ void ua_game::run()
    {
       now = SDL_GetTicks();
 
-      Uint32 elapsed = (now - then);
-
-      while ((now - then) > (1000.f/tickrate))
+      while ((now - then) > (1000.0/tickrate))
       {
-         then += Uint32(1000.f/tickrate);
+         then += Uint32(1000.0/tickrate);
 
          // do game logic
          screen->tick();
@@ -190,8 +188,8 @@ void ua_game::run()
       draw_screen();
       renders++;
 
-      if ((now - then) > (1000.f/tickrate))
-         then = now - Uint32(1000.f/tickrate);
+      if ((now - then) > (1000.0/tickrate))
+         then = now - Uint32(1000.0/tickrate);
 
 #ifdef HAVE_FRAMECOUNT
       now = SDL_GetTicks();
@@ -201,7 +199,7 @@ void ua_game::run()
          // set new caption
          char buffer[256];
          sprintf(buffer,"Underworld Adventures: %3.1f ticks/s, %3.1f frames/s",
-            ticks*1000.f/(now-fcstart),renders*1000.f/(now-fcstart));
+            ticks*1000.0/(now-fcstart),renders*1000.0/(now-fcstart));
 
          SDL_WM_SetCaption(buffer,NULL);
 
