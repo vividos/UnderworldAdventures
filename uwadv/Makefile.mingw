@@ -303,7 +303,7 @@ install: update
 
 installer: install
 	cp source/win32/uwadv.nsi $(UWADV_PATH)
-	cp source/win32/install/License.installer.txt $(UWADV_PATH)
+	cp source/win32/License.installer.txt $(UWADV_PATH)
 	cp Copying $(UWADV_PATH)
 	cp docs/README.uwadv.txt $(UWADV_PATH)
 	cd $(UWADV_PATH) && ./upx -9 uwadv.exe
