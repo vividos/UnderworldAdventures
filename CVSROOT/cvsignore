@@ -4,4 +4,6 @@ Makefile.in
 *.lo
 .deps
 .libs
+*.lob
+*.uar
 
