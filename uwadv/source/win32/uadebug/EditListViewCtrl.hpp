@@ -33,6 +33,8 @@
 
 // includes
 
+#define WM_DELETEME (WM_USER+11)
+
 // classes
 
 //! in-place edit control for editable list view control
@@ -71,13 +73,11 @@ public:
 
    BEGIN_MSG_MAP(CEditListViewCtrl)
       MESSAGE_HANDLER(WM_LBUTTONDOWN, OnLeftButtonDown)
+      MESSAGE_HANDLER(WM_DELETEME, OnDeleteMe)
    END_MSG_MAP()
 
    LRESULT OnLeftButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
-
-protected:
-   //! inplace edit control
-   CEditListInplaceEditCtrl* m_pEdit;
+   LRESULT OnDeleteMe(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 };
 
 //@}

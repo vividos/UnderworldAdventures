@@ -100,8 +100,8 @@ LRESULT CEditListInplaceEditCtrl::OnKillFocus(UINT /*uMsg*/, WPARAM wParam, LPAR
 
 LRESULT CEditListInplaceEditCtrl::OnNcDestroy(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 {
+   ::PostMessage(GetParent(), WM_DELETEME, 0, reinterpret_cast<LPARAM>(this));
    m_hWnd = NULL;
-   delete this;
    return 0;
 }
 
@@ -149,16 +149,16 @@ LRESULT CEditListViewCtrl::OnLeftButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM
    CEditListInplaceEditCtrl* pEdit = new CEditListInplaceEditCtrl(item,column);
 
    RECT rect;
-   GetItemRect(item, &rect, LVIR_BOUNDS);
+   GetItemRect(item, &rect, LVIR_LABEL);
 
    unsigned int startx = 0;
    for(int n=0; n<column; n++)
       startx += GetColumnWidth(n);
 
-   rect.left = startx+3;
+   rect.left = column == 0 ? rect.left : startx+3;
    rect.right = startx + GetColumnWidth(column);
-   rect.top;
-   rect.bottom--;
+//   rect.top;
+   rect.bottom++;
 
    _TCHAR szBuffer[256];
    GetItemText(item,column,szBuffer,256);
@@ -172,5 +172,12 @@ LRESULT CEditListViewCtrl::OnLeftButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM
    HFONT hFont = GetFont();
    pEdit->SetFont(hFont);
 
+   return 0;
+}
+
+LRESULT CEditListViewCtrl::OnDeleteMe(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
+{
+   CEditListInplaceEditCtrl* pEdit = reinterpret_cast<CEditListInplaceEditCtrl*>(lParam);
+   delete pEdit;
    return 0;
 }
