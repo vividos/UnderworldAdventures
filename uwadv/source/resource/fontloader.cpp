@@ -57,7 +57,7 @@ void ua_font::init(ua_settings &settings, ua_font_id fontid)
 
    // do font name
    std::string fontname;
-   fontname.assign(settings.uw1_path);
+   fontname.assign(settings.get_string(ua_setting_uw_path));
    fontname.append("data/");
    fontname.append(ua_font_names[fontid]);
 

@@ -292,7 +292,7 @@ void ua_image::load(ua_settings &settings, const char *name, unsigned int which,
 
    // load all auxiliary palettes
    {
-      std::string allauxpalname(settings.uw1_path);
+      std::string allauxpalname(settings.get_string(ua_setting_uw_path));
       allauxpalname.append("data/allpals.dat");
 
       FILE *fd = fopen(allauxpalname.c_str(),"rb");
@@ -304,7 +304,7 @@ void ua_image::load(ua_settings &settings, const char *name, unsigned int which,
    }
 
    // create filename
-   std::string filename(settings.uw1_path);
+   std::string filename(settings.get_string(ua_setting_uw_path));
    filename.append("data/");
    filename.append(name);
    filename.append(".gr");
@@ -363,7 +363,7 @@ void ua_image::load(ua_settings &settings, const char *name, unsigned int which,
 void ua_image::load_raw(ua_settings &settings, const char *name, unsigned int pal)
 {
    // create filename
-   std::string filename(settings.uw1_path);
+   std::string filename(settings.get_string(ua_setting_uw_path));
    filename.append(name);
 
    // open file
@@ -390,7 +390,7 @@ void ua_image_list::load(ua_settings &settings, const char *name, unsigned int f
 
    // load all auxiliary palettes
    {
-      std::string allauxpalname(settings.uw1_path);
+      std::string allauxpalname(settings.get_string(ua_setting_uw_path));
       allauxpalname.append("data/allpals.dat");
 
       FILE *fd = fopen(allauxpalname.c_str(),"rb");
@@ -402,7 +402,7 @@ void ua_image_list::load(ua_settings &settings, const char *name, unsigned int f
    }
 
    // create filename
-   std::string filename(settings.uw1_path);
+   std::string filename(settings.get_string(ua_setting_uw_path));
    filename.append("data/");
    filename.append(name);
    filename.append(".gr");

@@ -61,12 +61,12 @@ ua_levelmap_tiletype ua_tile_type_mapping[16] =
 void ua_import_levelmaps(ua_settings &settings, const char *folder,
    std::vector<ua_level> &levels)
 {
-   unsigned int numlevels = settings.gtype == ua_game_uw_demo ? 1 : 9;
+   unsigned int numlevels = settings.get_gametype() == ua_game_uw_demo ? 1 : 9;
    levels.reserve(numlevels);
 
    // open map file
-   std::string mapfile(settings.uw1_path);
-   if (settings.gtype == ua_game_uw_demo)
+   std::string mapfile(settings.get_string(ua_setting_uw_path));
+   if (settings.get_gametype() == ua_game_uw_demo)
       mapfile.append("data/level13.st");
    else
    {
@@ -83,13 +83,13 @@ void ua_import_levelmaps(ua_settings &settings, const char *folder,
    }
 
    // uw_demo is treated specially
-   if (settings.gtype == ua_game_uw_demo)
+   if (settings.get_gametype() == ua_game_uw_demo)
    {
       ua_level level;
 
       // import texture usage table
       {
-         mapfile.assign(settings.uw1_path);
+         mapfile.assign(settings.get_string(ua_setting_uw_path));
          mapfile.append("data/level13.txm");
 
          FILE *fd2 = fopen(mapfile.c_str(),"rb");
@@ -157,7 +157,7 @@ void ua_underworld::import_savegame(ua_settings &settings,const char *folder,boo
 
    // load conv globals
    {
-      std::string bgname(settings.uw1_path);
+      std::string bgname(settings.get_string(ua_setting_uw_path));
       bgname.append(folder);
       bgname.append(initial ? "babglobs.dat" : "bglobals.dat");
       conv_globals.import(bgname.c_str(),initial);

@@ -77,12 +77,12 @@ void ua_start_splash_screen::init()
 
    // load first image
    const char *first_img = "data/pres1.byt";
-   if (core->get_settings().gtype == ua_game_uw_demo)
+   if (core->get_settings().get_gametype() == ua_game_uw_demo)
       first_img = "data/presd.byt";
 
    img.load_raw(core->get_settings(),first_img,5);
 
-   if (core->get_settings().gtype == ua_game_uw_demo)
+   if (core->get_settings().get_gametype() == ua_game_uw_demo)
    {
       // write a string under the demo title
       ua_font font;
@@ -209,7 +209,7 @@ void ua_start_splash_screen::tick()
    tickcount++;
 
    // check if animation should be loaded
-   if ( (stage == 1 || (stage == 0 && core->get_settings().gtype == ua_game_uw_demo)) &&
+   if ( (stage == 1 || (stage == 0 && core->get_settings().get_gametype() == ua_game_uw_demo)) &&
       tickcount >= ua_start_splash_show_time * core->get_tickrate())
    {
       // load animation
@@ -266,7 +266,7 @@ void ua_start_splash_screen::tick()
       // finished
    case 5:
       // start next screen
-      if (core->get_settings().gtype == ua_game_uw_demo)
+      if (core->get_settings().get_gametype() == ua_game_uw_demo)
       {
          // when we have the demo, we immediately go to the ingame
          core->replace_screen(new ua_ingame_orig_screen);

@@ -46,7 +46,7 @@ void ua_cutscene::load(ua_settings &settings, unsigned int main,
 
 void ua_cutscene::load(ua_settings &settings, const char *relfilename)
 {
-   std::string filename(settings.uw1_path);
+   std::string filename(settings.get_string(ua_setting_uw_path));
    filename.append(relfilename);
 
    load(filename.c_str());

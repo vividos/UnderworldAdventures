@@ -122,7 +122,7 @@ void ua_ingame_orig_screen::init()
    const char *mainscreenname = "data/main.byt";
 
    // replace name when using uw_demo
-   if (core->get_settings().gtype == ua_game_uw_demo)
+   if (core->get_settings().get_gametype() == ua_game_uw_demo)
       mainscreenname = "data/dmain.byt";
 
    // disable normal cursor

@@ -48,23 +48,24 @@ void ua_game::init()
 {
    ua_trace("initializing game\n");
 
-   // load settings
-   settings.load();
+   // init files mgr; loads all config files and inits settings, too
+   filesmgr.init(settings);
 
    // trace output some settings
-   ua_trace("uw1-path: %s\nuadata-path: %s\n",
-      settings.uw1_path.c_str(),settings.uadata_path.c_str());
+   ua_trace("uw-path: %s\nuadata-path: %s\n",
+      settings.get_string(ua_setting_uw_path).c_str(),
+      settings.get_string(ua_setting_uadata_path).c_str());
 
    ua_trace("game detected: %s\n\n",
-      settings.gtype == ua_game_none? "none" :
-      settings.gtype == ua_game_uw1 ? "uw1" :
-      settings.gtype == ua_game_uw_demo ? "uw_demo" : "uw2");
+      settings.get_gametype() == ua_game_none? "none" :
+      settings.get_gametype() == ua_game_uw1 ? "uw1" :
+      settings.get_gametype() == ua_game_uw_demo ? "uw_demo" : "uw2");
 
    // check some settings
-   if (settings.gtype == ua_game_none)
+   if (settings.get_gametype() == ua_game_none)
       throw ua_exception("could not find relevant game files");
 
-   if (settings.gtype == ua_game_uw2)
+   if (settings.get_gametype() == ua_game_uw2)
       throw ua_exception("you can't play with Ultima Underworld 2 data files");
 
    // first, initialize SDL's video subsystem
@@ -104,9 +105,11 @@ void ua_game::init()
    width = 640;
    height = 480;
    int bpp = info->vfmt->BitsPerPixel;
-   int flags = SDL_OPENGL | (settings.fullscreen ? SDL_FULLSCREEN : 0);
+   int flags = SDL_OPENGL |
+      (settings.get_bool(ua_setting_fullscreen) ? SDL_FULLSCREEN : 0);
 
-   ua_trace("setting video mode%s\n",settings.fullscreen ? ", fullscreen" : "");
+   ua_trace("setting video mode%s\n",
+      settings.get_bool(ua_setting_fullscreen) ? ", fullscreen" : "");
 
    if(SDL_SetVideoMode(width, height, bpp, flags)==0)
    {
@@ -120,9 +123,6 @@ void ua_game::init()
 
    // init textures
    texmgr.init(settings);
-
-   // init files mgr
-   filesmgr.init(settings);
 
    // load game strings
    gstr.load(settings);

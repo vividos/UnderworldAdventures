@@ -45,9 +45,22 @@ void ua_cutscene_view_screen::init()
 {
    ua_trace("cutscene animation %u started\n",cutscene);
 
+   // determine cutscene type
    ua_settings &settings = core->get_settings();
-   canplaysound = (settings.cutsntype==ua_cutscenenar_sound) || (settings.cutsntype==ua_cutscenenar_both);
-   canshowtext = (settings.cutsntype==ua_cutscenenar_subtitles) || (settings.cutsntype==ua_cutscenenar_both);
+   {
+      std::string cutsntype(settings.get_string(ua_setting_cuts_narration));
+
+      canplaysound = canshowtext = false;
+
+      if (cutsntype.compare("both")==0)
+         canplaysound = canshowtext = true;
+
+      if (cutsntype.compare("sound")==0)
+         canplaysound = true;
+
+      if (cutsntype.compare("subtitles")==0)
+         canshowtext = true;
+   }
 
    ended = false;
    tickcount = 0;
@@ -115,7 +128,7 @@ void ua_cutscene_view_screen::init()
    tex_text.init(&core->get_texmgr());
 
    // init subtitle text
-   font_big.init(core->get_settings(),ua_font_big);
+   font_big.init(settings,ua_font_big);
 }
 
 void ua_cutscene_view_screen::done()

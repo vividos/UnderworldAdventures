@@ -57,7 +57,7 @@ typedef struct ua_block_info
 
 void ua_gamestrings::load(ua_settings &settings) throw(ua_exception)
 {
-   std::string filename(settings.uw1_path);
+   std::string filename(settings.get_string(ua_setting_uw_path));
    filename.append("data/strings.pak");
 
    load(filename.c_str());

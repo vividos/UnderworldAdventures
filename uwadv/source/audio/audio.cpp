@@ -74,7 +74,7 @@ public:
 
       midipl.init_player(settings);
       midipl.init_driver();
-      uw1path = settings.uw1_path;
+      uw1path = settings.get_string(ua_setting_uw_path);
    }
 
    //! plays a sound; stops when finished
