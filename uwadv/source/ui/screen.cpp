@@ -85,7 +85,7 @@ bool ua_screen::process_event(SDL_Event& event)
 
       // first, send mouse event to main screen window
       bool left_button = event.type != SDL_MOUSEMOTION &&
-         ((event.button.button & SDL_BUTTON_LEFT) != 0);
+         event.button.button == SDL_BUTTON_LEFT;
 
       mouse_event(event.type != SDL_MOUSEMOTION,
          left_button,
