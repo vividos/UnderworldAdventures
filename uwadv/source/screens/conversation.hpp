@@ -99,6 +99,9 @@ protected:
    //! current fade tickcount
    unsigned int fade_ticks;
 
+   //! font for panel names
+   ua_font font_normal;
+
 
    // conversation stuff
 

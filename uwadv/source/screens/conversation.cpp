@@ -63,7 +63,7 @@ void ua_conversation_screen::init()
 
    glEnable(GL_TEXTURE_2D);
 
-
+   font_normal.init(core->get_settings(),ua_font_normal);
 
    // background image
    {
@@ -76,6 +76,43 @@ void ua_conversation_screen::init()
       img_back.load_raw(core->get_settings(),mainscreenname);
       img_back.init(&core->get_texmgr(),0,0,320,200);
 
+      ua_image_list img_converse;
+      img_converse.load(core->get_settings(),"converse");
+
+      img_back.fill_rect(43,0,190,47,1);
+
+      // name panels
+      img_back.paste_image(img_converse.get_image(0),43,0);
+      img_back.paste_image(img_converse.get_image(0),139,0);
+
+      // names
+      std::string name1 = core->get_strings().get_string(7,16+convslot);
+      std::string name2 = core->get_underworld().get_player().get_name();
+
+      ua_image img_name;
+      font_normal.create_string(img_name,name1.c_str(),101);
+      img_back.paste_image(img_name,48,2,true);
+
+      font_normal.create_string(img_name,name2.c_str(),101);
+      img_back.paste_image(img_name,144,1,true);
+
+      // barter areas
+      img_back.paste_image(img_converse.get_image(1),82,9);
+      img_back.paste_image(img_converse.get_image(1),139,9);
+
+      // portrait frames/images
+      img_back.paste_image(img_converse.get_image(2),43,9);
+      img_back.paste_image(img_converse.get_image(2),195,9);
+
+      // todo portraits
+
+      // scroll frames up/down
+      img_back.paste_image(img_converse.get_image(3),42,48);
+      img_back.paste_image(img_converse.get_image(4),42,126);
+
+      // fill scroll area
+      img_back.fill_rect(56,51, 164,81,42);
+
       img_back.convert_upload();
    }
 
@@ -86,7 +123,7 @@ void ua_conversation_screen::init()
       scrollwidth = 218;
 
    // init text scrolls
-   scroll_conv.init(*core,58,52,161,79,13,42);
+   scroll_conv.init(*core,58,51,161,81,13,42);
    scroll_conv.set_color(46);
 
    scroll_menu.init(*core,15,169, scrollwidth,30, 5, 42);
