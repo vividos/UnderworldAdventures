@@ -23,6 +23,7 @@ The Underworld Adventures team always searches for more members. We currently se
 <ul>
  <li><b>MacOS X porter</b>: someone who ports uwadv to MacOS X</li>
  <li><b>developers</b>: C++ or Lua skills required</li>
+ <li><b>graphic artist</b>: some graphic artist to create some images, e.g. for the new splash screen (while loading the game) or for a new installer look</li>
  <li><b>continuity experts</b>: people that have in-depth knowledge of Ultima Underworld 1 (no other skills required)</li>
  <li>all people that want to test releases, lend a hand in various things or that want to promote Underworld Adventures</li>
 </ul>
