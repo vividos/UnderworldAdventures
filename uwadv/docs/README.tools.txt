@@ -101,7 +101,7 @@ Then modify some stuff inside the created text file, e.g. translate strings.
 
    strpak pack uw_demo-strings.txt data/strings.pak
 
-Be sure to keep a copy of the origina "strings.pak" around, in case anything
+Be sure to keep a copy of the original "strings.pak" around, in case anything
 bad happens.
 
 
@@ -184,5 +184,5 @@ program is:
 
    xmi2mid <xmi-file> <mid-file>
 
-The program prints out an error, if something strange occured, else the midi
+The program prints out an error if something strange occured, else the midi
 file is created.
