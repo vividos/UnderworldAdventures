@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Underworld Adventures Team
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -21,27 +21,31 @@
 */
 /*! \file save_game.hpp
 
-   \brief level map view
+   \brief save game screen
 
 */
 
 // include guard
-#ifndef __uwadv_save_game_hpp_
-#define __uwadv_save_game_hpp_
+#ifndef uwadv_save_game_hpp_
+#define uwadv_save_game_hpp_
 
 // needed includes
 #include "screen.hpp"
-#include "textscroll.hpp"
+#include "savegame.hpp"
+#include "imgquad.hpp"
+#include "font.hpp"
+//#include "textscroll.hpp"
+#include "mousecursor.hpp"
 
 
 // classes
 
-//! level map view screen class
+//! save game screen class
 class ua_save_game_screen: public ua_ui_screen_base
 {
 public:
    //! ctor
-   ua_save_game_screen(){}
+   ua_save_game_screen(bool from_menu);
 
    //! dtor
    virtual ~ua_save_game_screen(){}
@@ -55,6 +59,65 @@ public:
    virtual void tick();
 
 protected:
+   //! updates list of savegames
+   void update_list();
+
+   //! updates button look/states
+   void update_buttons();
+
+   //! presses button
+   void press_button();
+
+   //! updates savegame info with selected savegame
+   void update_info();
+
+protected:
+   // constants
+
+   //! time to fade in/out
+   static const double fade_time;
+
+
+   //! savegames manager
+   ua_savegames_manager* sgmgr;
+
+   //! left background image
+   ua_image_quad img_back1;
+
+   //! right background image
+   ua_image_quad img_back2;
+
+   //! image list with buttons / heads
+   ua_image_list img_buttons;
+
+   //! indicates if screen is called from start menu
+   bool from_menu;
+
+   //! button font
+   ua_font font_btns;
+
+   //! font for list entries
+   ua_font font_normal;
+
+   //! index of first game in list
+   unsigned int list_base_game;
+
+   //! index of selected savegame (or -1 when none)
+   int selected_savegame;
+
+   //! highlighted button (or -1 when none)
+   int button_highlight;
+
+   //! mouse cursor
+   ua_mousecursor mousecursor;
+
+   //! indicates if mouse button is pressed
+   bool button_pressed;
+
+   unsigned int fade_state;
+   unsigned int fade_ticks;
+
+/*
    //! text scroll
    ua_textscroll scroll;
 
@@ -67,6 +130,7 @@ protected:
    bool have_desc;
 
    std::string savegame_desc;
+*/
 };
 
 #endif
