@@ -45,6 +45,13 @@ Table of Contents
    Copyright (c) 2000,2001,2002 Jim Cameron
    Copyright (c) 2002 Michael Fink
 
+   Additional information from:
+
+   Alistair Brown (basic object format, via the Underworld II editor
+      <http://www.btinternet.com/~suzanne.barnard/>)
+
+   Ulf Wohlers (Objects and 3D models)
+
 
 1.1 Summary of data files
 
@@ -138,7 +145,7 @@ Table of Contents
    Here are all files found in a save game (e.g. "Save1") folder:
 
    lev.ark        modified level map
-   bglobals.dat   conversation globals
+   bglobals.dat   conversation globals (initialized)
    desc           savegame name
    player.dat     character info
 
@@ -226,7 +233,7 @@ Table of Contents
 
 2.1 Palettes
 
-   * 256 color auxiliary palettes
+   * 256 color palettes
 
      In "palette.dat" there are stored 8 different palettes. One palette has the
      following layout:
@@ -768,60 +775,100 @@ Table of Contents
    Critter animations are stored in the folder "crit". The file "assoc.anm"
    holds data for each of the 32 animations. First, there are 8 char bytes
    for the name of each of the 32 animations. If a string is not there,
-   animation is not available.
+   the animation is not available.
 
    Next comes a table of infos for each animation:
 
-   0000   Int8   anim (?)
-   0001   Int8   variant (aux palette?)
+   0000   Int8   anim
+   0001   Int8   variant (aux palette to use)
+
+   The anim field describes which critter page file(s) to take (=XX value,
+   below).
+
+   The variant value describes which auxiliary palette to use. There are
+   several critters that share the same animations but use different palettes,
+   e.g. the bat and the vampire bat uses the same anim value, but different
+   auxpals.
 
    <another table, with what info?>
 
    Animation for each critter is stored in a file like "CrXXpage.nYY", where
-      XX = animation number, YY = page number
+      XX = animation number (=anim), YY = page number
       XX and YY are octal numbers
 
    There may be more than one page for each animation file.
    The file starts with a segment directory:
 
-   pos     length     type         desc.
-   0000               Int8         segbase
-   0001               Int8         nsegs, number of segments
-   0002               nsegs*Int8   segment dir offset for segments;
-                                   255 means "no segment"
-           nsegs      Int8         number animation segments
-           8*nsegs                 animation frame index
-                      Int8         npals, number of auxiliary palettes
-           npals*32                auxiliary palette indices
-                      Int8         number of frames offsets
-                      Int8         unknown
-           2*n        Int16        offsets to segments header
+   pos     length          desc.
+   0000    Int8            segbase
+   0001    Int8            number of segments (=nsegs)
+   0002    nsegs*Int8      ?? list for segments
+           Int8            animation segments number (=nanimsegs)
+           8*nanimsegs     animation frame indices
+           Int8            number of auxiliary palettes (=npals)
+           npals*32        auxiliary palette indices
+           Int8            number of frames offsets (=noffsets)
+           Int8            unknown
+           noffsets*Int16  offsets to frame headers
 
-   segments header
+   Each animation is stored in a segment, which can contain a number of
+   frames (stored in the "animation frame indices"). Each list ends with a
+   0xFF entry.
+
+   frame header
 
    0000    Int8       width
    0001    Int8       height
-   0002    Int8       hotspot x (?)
-   0003    Int8       hotspot y (?)
+   0002    Int8       hotspot x
+   0003    Int8       hotspot y
    0004    Int8       type; (6: 5-bit word size)
    0005    Int16      data length in number of words
    0007               start of rle-encoded image data (see 2.3)
+
+   The hotspot coordinates are to "pin" the image at a specific position.
+
+   Here is a list of files and their contents:
+
+   crXX file   assoc name
+   cr00        gngob32, green goblin
+   cr01        skela, skeleton
+   cr02        lizman, green lizard man
+   cr03        bat
+   cr04        wiza, yellow male wizard
+   cr05        spider, brown spider
+   cr06        gazer
+   cr07        troll
+   cr10        femwiz, female wizard
+   cr11        slug, green slug
+   cr12        fire, fire elemental
+   cr13        ghoul
+   cr14        ?
+   cr15        ghost
+   cr16        ?
+   cr17        reaper
+   cr20        rat
+   cr21        femfite, female fighter
+   cr22        imp
+   cr23        golem, gray golem
+   cr24        hedless, headless
+   cr25        wizb, blue female wizard
+   cr26        rotgrub, green rotworm
+   cr27        wisp
+   cr30        batskull
+   cr32        fight32, male fighter
+   cr33        dwarf32
+   cr35        tybal, tyball
+
+
 
 
 5.1 Cutscene Animations
 
    Cutscene animations are stored in folder "cuts". Text strings for cutscenes
    can be found in string blocks 11 through 24.
-   
-   Contents of the "*.n01, *.n02" files:
 
-   0000   4*char   string "LPF "
-   0004   Int8     unknown
-   ...
-   0010   4*char   string "ANIM"
-   0014   Int16    x resolution
-   0016   Int16    y resolution
-   ...
+   The format of the cutscenes files is like the DeluxePaint Animation ".ANM"
+   files. The complete description is in the file "uw-cuts-animfile.txt".
 
 
 6.0 Savegame format
@@ -901,4 +948,3 @@ Table of Contents
 
 
 eof
-
