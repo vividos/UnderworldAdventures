@@ -246,6 +246,10 @@ void ua_underworld::import_savegame(ua_settings& settings,const char* folder,boo
    if (!initial)
       import.load_player(player,folder);
 
+   // init a new game
+   if (scripting != NULL)
+      scripting->init_new_game();
+
    // reload level
    change_level(player.get_attr(ua_attr_maplevel));
 }
