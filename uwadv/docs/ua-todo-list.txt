@@ -1,156 +1,69 @@
 Underworld Adventures Todo-List
 -------------------------------
 
-This file contains the todo-list for the uwadv project. Feel free to assign
-you to some tasks, as well as adding more. Priority scale goes from 1
-(serious) to 5 (might get in when we have time).
-
-And here it goes:
-
-technical/source
-----------------
-
-- add check for all needed files before starting uwadv
-  prio: 3  assigned: none
-
-- load/use music fallback playlist when file isn't found in normal one
-  prio: 4  assigned: none
-
-- win32: setting of different SDL audio backend driver (at SDL_AudioInit)
-  prio: 4  assigned: none
-
-- get rid of all -Wall warnings
-  prio: 5  assigned: none
-
-- port uwadv to MacOS X / other platforms
-  prio: 4  assigned: none
-
-- write an interactive debugger for Lua scripts and the ua_underworld object,
-  e.g. using wxWindows for platform independence
-  prio: 4  assigned: vividos
-
-- write conversation code disassembler for use in the interactive debugger, to
-  examine conv code, too
-  prio: 5  assigned: none
-
-- write map editor for uwadv savegames
-  prio: 5  assigned: none
-
-- replace all object 2d graphics with 3d low-poly models
-  prio: 4  assigned: none
-
-- load custom uwadv strings from packed gamestrings file
-  prio: 4  assigned: vividos
+This file contains the todo-list for the uwadv project. 
 
 
-game interface
---------------
+[renderer] using display lists for all tiles in current map; method to update
+a tile, e.g. when it's a moving one, or when debugger changed the tile
 
-- do a model manager class
-  prio: 2  assigned: vividos
+[misc] README.dev.txt: explain coding styles better, with examples, etc.
 
-- selection style mouse cursor on "start menu" and "create char." screens
-  prio: 3  assigned: none
+[misc] README.dev.txt: describe how to write unit tests and how to incorporate
+them
 
-- npc's animation
-  prio: 1  assigned: none
+[screens] ingame_orig screen: fix positions of dragons, or split them up to
+several ua_image_quad objects
 
-- level map view screen
-  prio: 2  assigned: none
+[screens] exit savegame screen with ESC
 
-- ingame: implementation of all keymap keys
-  prio: 2  assigned: vividos
+[uadebug] do code-debugger class
 
-- add eating via dropping on paperdoll head
-  prio: 3  assigned: none
+[uadebug] add project management, reading game.cfg, etc.
 
-- combat implementation (ingame screen)
-  prio: 2  assigned: none
+[misc] write ebuild script for gentoo
 
-- 3d model loading / rendering (from game files)
-  prio: 1  assigned: none
+[misc] write FreeBSD "ports" configuration
 
-- conversation screen implementation
-  prio: 2  assigned: none
+[renderer] get decal rendering to work, for switches, levers, etc., and tmap
+objects
+  
+[renderer] re-add 3d model rendering
 
-- meditating at shrines (object interaction)
-  prio: 3  assigned: none
+[renderer] properly animate critters
 
-- all remaining cutscenes
-  prio: 3  assigned: none
+[underworld] add global gametime to player, other needed infos from player
+savegame
 
-- ingame_new: design and implement new user interface
-  prio: 4  assigned: none
+[import] add importing uw1 and uw2 player info
 
-- add endgame screen implementation
-  prio: 4  assigned: none
+[underworld] add uw_status object or similar
 
+[import] tgaimport: add all needed tga image modes
 
-underworld ingame
------------------
+[screens] introduction: end with space key
 
-- complete Lua <--> underworld interface
-  prio: 1  assigned: vividos
+[screens] rewrite character creation
 
-- complete saving of all needed infos from the ua_underworld object (including
-  Lua script values)
-  prio: 1  assigned: vividos
+[screens] in character creation, only stop music when entering game, not when
+escaping/restarting
 
-- npc AI via Lua scripts
-  prio: 3  assigned: none
+[screens] adjust scroll size in uw_demo
 
-- add inventory weight count
-  prio: 3  assigned: none
+[game] added "check-files" keyword and implementation to ua_game_config
 
-- object interaction: picking up objects (stealing)
-  prio: 3  assigned: none
+[screens] properly implement map view screen; where do the images come from?
 
-- object interaction: throwing, dropping objects
-  prio: 3  assigned: none
+[screens] conversation: add bartering area interaction
 
-- traps / triggers handling
-  prio: 2  assigned: none
+[screens] conversation: add all imported functions implementation
 
-- combat implementation (lua scripts)
-  prio: 2  assigned: none
+[conv] do interface class for ua_conv_vm
 
-- conversation virtual machine implementation (all imported functions,
-  possible interface to Lua scripting)
-  prio: 2  assigned: none
+[screens] add endgame screen (with stats etc.)
 
-- meditating at shrines (lua scripts)
-  prio: 3  assigned: none
+[scripting] add implementation for all Lua C functions
 
-- physics: pathfinding algorithm (A*)
-  prio: 3  assigned: none
+[underworld] add object list alloc/dealloc/insert/delete methods
 
-- physics: tracing of objects in map, npc's, objects from objlist, avatar
-  prio: 2  assigned: none
-
-- physics: walking and floating (sinus) movement
-  prio: 4  assigned: none
-
-- physics: floating mode (ring)
-  prio: 3  assigned: none
-
-- physics: swimming mode
-  prio: 3  assigned: none
-
-- magic/spells system
-  prio: 2  assigned: none
-
-- sleeping, resting, w/ cutscenes
-  prio: 3  assigned: none
-
-
-finally
--------
-
-- verify story continuity
-  prio: 1  assigned: none
-
-- complete source code documentation
-  prio: 2  assigned: uwadv team
-
-- release 1.0 of uwadv and celebrate a big party!
-  prio: 1  assigned: uwadv team
+[screens] ingame_orig: add getting items
