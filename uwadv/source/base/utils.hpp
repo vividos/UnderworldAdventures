@@ -106,49 +106,55 @@ public:
    typedef T& reference_type; //!< reference type
 
    //! ctor
-   explicit ua_smart_ptr(T* ptr=0):px(ptr){ pn=new long(1); }
+   explicit ua_smart_ptr(T* ptr=0){ data=new ua_smart_ptr_data; data->px=ptr; }
    //! dtor
    ~ua_smart_ptr(){ dispose(); }
 
    //! copy ctor
-   ua_smart_ptr(const ua_smart_ptr& ptr):px(ptr.px){ ++*(pn = ptr.pn); }
+   ua_smart_ptr(const ua_smart_ptr& ptr):data(ptr.data){ ++(data->n); }
    //! assignment operator
-   ua_smart_ptr& operator =(const ua_smart_ptr& ptr){ share(ptr.px,ptr.pn); return *this; }
+   ua_smart_ptr& operator =(const ua_smart_ptr& ptr){ share(ptr.data); return *this; }
 
    //! member-selection operator
-   T* operator->() const { return px; }
+   T* operator->() const { return data->px; }
 
    //! indirection operator
-   T& operator*() const { return *px; }
+   T& operator*() const { return *data->px; }
 
    //! returns pointer
-   T* get(){ return px; }
+   T* get(){ return data->px; }
+
+protected:
+   //! smart ptr data
+   struct ua_smart_ptr_data
+   {
+      //! ctor
+      ua_smart_ptr_data():n(1), px(NULL){}
+
+      //! pointer to refcount
+      long n;
+      //! pointer to type object
+      T* px;
+   }* data;
 
 protected:
    //! deletes pointer
    void dispose()
    {
-      if (--*pn == 0)
-      { delete px; delete pn; }
+      if (--data->n == 0)
+      { delete data->px; delete data; }
    }
 
    //! shares pointer
-   void share(T* rpx, long* rpn)
+   void share(ua_smart_ptr_data* rdata)
    {
-      if (pn != rpn)
+      if (data != rdata)
       {
-         ++*rpn;
+         ++rdata->n;
          dispose();
-         px = rpx;
-         pn = rpn;
+         data = rdata;
       }
    }
-
-protected:
-   //! pointer to refcount
-   long* pn;
-   //! pointer to type object
-   T* px;
 };
 
 
