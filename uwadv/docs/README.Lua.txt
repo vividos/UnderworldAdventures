@@ -65,6 +65,7 @@ Lua functions callable from C:
    lua_obj_can_get
    lua_player_hit_floor
    lua_player_hit_wall
+   lua_inventory_is_container
    lua_inventory_categorize_item
    lua_track
    lua_sleep
@@ -182,6 +183,11 @@ registered C functions to call from Lua:
   height_unit/second.
 
 * lua_player_hit_wall
+
+* lua_inventory_is_container(item_id)
+  return values: is_cont
+
+  determines if given item is a container; returns nil when not
 
 * lua_inventory_categorize_item(item_id)
   return values: category

@@ -162,6 +162,20 @@ void ua_underworld_script_bindings::done()
 
 // Lua functions callable from C
 
+bool ua_underworld_script_bindings::lua_inventory_is_container(Uint16 item_id)
+{
+   // call Lua function
+   lua_getglobal(L,"lua_inventory_is_container");
+   lua_pushnumber(L,static_cast<double>(item_id));
+
+   checked_lua_call(1,1);
+
+   bool ret = lua_isnumber(L,-1);
+
+   lua_pop(L,1);
+   return ret;
+}
+
 ua_inv_item_category ua_underworld_script_bindings::lua_inventory_categorize_item(Uint16 item_id)
 {
    // call Lua function

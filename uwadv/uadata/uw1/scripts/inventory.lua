@@ -37,6 +37,19 @@ inv_cat_head = 6     -- all sorts of helmets/crowns
 
 -- functions
 
+-- checks if item_id is a container item
+function lua_inventory_is_container(item_id)
+
+   ret = nil
+
+   if item_id >= 8*16 + 0 and item_id <= 8*16 + 14
+   then
+      ret = 1
+   end
+
+   return ret
+end
+
 -- categorizes item by item id
 function lua_inventory_categorize_item(item_id)
 

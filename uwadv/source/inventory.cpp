@@ -108,7 +108,7 @@ Uint16 ua_inventory::get_container_item_id()
 
 bool ua_inventory::is_container(Uint16 item_id)
 {
-   return (item_id >= 0x0080 && item_id <= 0x008e);
+   return underw->get_scripts().lua_inventory_is_container(item_id);
 }
 
 void ua_inventory::open_container(Uint16 index)

@@ -78,6 +78,9 @@ public:
 
    // Lua script functions
 
+   //! returns true when a item_id is a container
+   bool lua_inventory_is_container(Uint16 item_id);
+
    //! categorizes item by item id
    ua_inv_item_category lua_inventory_categorize_item(Uint16 item_id);
 
