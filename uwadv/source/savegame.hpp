@@ -40,6 +40,10 @@
 #endif
 
 
+// forward references
+class ua_player;
+
+
 // structs
 
 //! savegame info struct
@@ -47,6 +51,9 @@ struct ua_savegame_info
 {
    //! ctor
    ua_savegame_info();
+
+   //! fills player infos from player object
+   void fill_infos(const ua_player& player);
 
    //! game type; 0 = uw1, 1 = uw2, 2 = custom
    unsigned int type;
@@ -56,6 +63,8 @@ struct ua_savegame_info
 
    //! name of game base folder; only needed for game type == 2
    std::string gamefolder;
+
+   // player infos
 
    //! player name
    std::string name;
@@ -74,6 +83,8 @@ struct ua_savegame_info
 
    //! basic player stats
    unsigned int strength,dexterity,intelligence,vitality;
+
+   // savegame preview screenshot
 
    //! screenshot bytes in RGBA format
    std::vector<Uint32> image_rgba;
@@ -206,8 +217,8 @@ public:
    //! returns true when a quicksave savegame is available
    bool quicksave_avail();
 
-   //! returns the quicksave savegame
-   ua_savegame get_quicksave(bool saving);
+   //! returns the quicksave savegame for loading or saving
+   ua_savegame get_quicksave(bool saving, const ua_player& player);
 
    //! sets screenshot for next save operation
    void set_save_screenshot(std::vector<Uint32>& image_rgba,

@@ -30,6 +30,7 @@
 // needed includes
 #include "common.hpp"
 #include "savegame.hpp"
+#include "player.hpp"
 #include "fread_endian.hpp"
 #include <vector>
 #include <algorithm>
@@ -49,6 +50,21 @@ ua_savegame_info::ua_savegame_info()
  maplevel(0),strength(0),dexterity(0),intelligence(0),vitality(0),
  image_xres(0), image_yres(0)
 {
+}
+
+void ua_savegame_info::fill_infos(const ua_player& player)
+{
+   name = player.get_name();
+
+   gender = player.get_attr(ua_attr_gender);
+   appearance = player.get_attr(ua_attr_appearance);
+   profession = player.get_attr(ua_attr_profession);
+   maplevel = player.get_attr(ua_attr_maplevel);
+
+   strength = player.get_attr(ua_attr_strength);
+   dexterity = player.get_attr(ua_attr_dexterity);
+   intelligence = player.get_attr(ua_attr_intelligence);
+   vitality = player.get_attr(ua_attr_life);
 }
 
 
@@ -419,7 +435,8 @@ bool ua_savegames_manager::quicksave_avail()
    return ua_file_exists(quicksave_name.c_str());
 }
 
-ua_savegame ua_savegames_manager::get_quicksave(bool saving)
+ua_savegame ua_savegames_manager::get_quicksave(bool saving,
+   const ua_player& player)
 {
    ua_savegame sg;
 
@@ -430,6 +447,8 @@ ua_savegame ua_savegames_manager::get_quicksave(bool saving)
    {
       ua_savegame_info info;
       info.title = "Quicksave Savegame";
+
+      info.fill_infos(player);
 
       // add savegame preview image to savegame info
       info.image_rgba.clear();
