@@ -115,10 +115,36 @@ void ua_conv_dasm::disassemble()
 
 void ua_conv_dasm::decompile(bool with_opcodes)
 {
-   ua_conv_graph cgraph;
+   // find number of globals
+   Uint16 nglobals = 0;
+   while(imported_globals.size()>0 && imported_globals[nglobals].name.empty())
+      nglobals++;
+
+   // create array with imported var names
+   std::vector<std::string> imported_vars;
+   {
+      unsigned int max = imported_globals.size();
+      for(unsigned int i=nglobals; i<max; i++)
+         imported_vars.push_back(imported_globals[i].name);
+   }
+
+   // create array with imported function names
+   std::vector<std::string> imported_functions;
+   {
+      unsigned int max = imported_funcs.size();
+      for(unsigned int i=0; i<max; i++)
+         imported_functions.push_back(imported_funcs[i].name);
+   }
 
    // load code into conversation graph and process
-   cgraph.init(code,0,code.size(),gs->get_block(strblock));
+   ua_conv_graph cgraph;
+
+   cgraph.init(code, 0, code.size(),
+      gs->get_block(strblock),
+      imported_functions,
+      imported_vars,
+      nglobals);
+
    cgraph.process();
 
    // output code
