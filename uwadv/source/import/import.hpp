@@ -39,7 +39,7 @@
 class ua_settings;
 class ua_font;
 class ua_image;
-class ua_lp_descriptor;
+struct ua_lp_descriptor;
 class ua_object_properties;
 class ua_player;
 class ua_level;
