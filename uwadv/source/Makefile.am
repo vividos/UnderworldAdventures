@@ -39,7 +39,9 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	resource/cutsloader.cpp \
 	resource/fread_endian.hpp \
 	screens/ingame_orig.cpp screens/start_splash.cpp \
-	screens/ingame_orig.hpp screens/start_splash.hpp
+	screens/start_menu.cpp \
+	screens/ingame_orig.hpp screens/start_splash.hpp \
+	screens/start_menu.hpp
 
 uwadv_LDADD = -lGL -lGLU $(SDL_LIBS)
 

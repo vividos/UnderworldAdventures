@@ -122,7 +122,9 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	resource/cutsloader.cpp \
 	resource/fread_endian.hpp \
 	screens/ingame_orig.cpp screens/start_splash.cpp \
-	screens/ingame_orig.hpp screens/start_splash.hpp
+	screens/start_menu.cpp \
+	screens/ingame_orig.hpp screens/start_splash.hpp \
+	screens/start_menu.hpp
 
 
 uwadv_LDADD = -lGL -lGLU $(SDL_LIBS)
@@ -149,7 +151,8 @@ am_uwadv_OBJECTS = font.$(OBJEXT) image.$(OBJEXT) inventory.$(OBJEXT) \
 	fontloader.$(OBJEXT) gamestrings.$(OBJEXT) \
 	imageloader.$(OBJEXT) maploader.$(OBJEXT) settings.$(OBJEXT) \
 	texloader.$(OBJEXT) objloader.$(OBJEXT) cutsloader.$(OBJEXT) \
-	ingame_orig.$(OBJEXT) start_splash.$(OBJEXT)
+	ingame_orig.$(OBJEXT) start_splash.$(OBJEXT) \
+	start_menu.$(OBJEXT)
 uwadv_OBJECTS = $(am_uwadv_OBJECTS)
 uwadv_DEPENDENCIES =
 uwadv_LDFLAGS =
@@ -172,6 +175,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/objects.Po ./$(DEPDIR)/objloader.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/physics.Po ./$(DEPDIR)/player.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/quadtree.Po ./$(DEPDIR)/settings.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/start_menu.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/start_splash.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/texloader.Po ./$(DEPDIR)/texture.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/underworld.Po ./$(DEPDIR)/uni_fmod.Po \
@@ -248,6 +252,7 @@ objloader.$(OBJEXT): resource/objloader.cpp
 cutsloader.$(OBJEXT): resource/cutsloader.cpp
 ingame_orig.$(OBJEXT): screens/ingame_orig.cpp
 start_splash.$(OBJEXT): screens/start_splash.cpp
+start_menu.$(OBJEXT): screens/start_menu.cpp
 uwadv$(EXEEXT): $(uwadv_OBJECTS) $(uwadv_DEPENDENCIES) 
 	@rm -f uwadv$(EXEEXT)
 	$(CXXLINK) $(uwadv_LDFLAGS) $(uwadv_OBJECTS) $(uwadv_LDADD) $(LIBS)
@@ -280,6 +285,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/player.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/quadtree.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/settings.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/start_menu.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/start_splash.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/texloader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/texture.Po@am__quote@
@@ -506,6 +512,18 @@ start_splash.obj: screens/start_splash.cpp
 @AMDEP_TRUE@	depfile='$(DEPDIR)/start_splash.Po' tmpdepfile='$(DEPDIR)/start_splash.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o start_splash.obj `cygpath -w screens/start_splash.cpp`
+
+start_menu.o: screens/start_menu.cpp
+@AMDEP_TRUE@	source='screens/start_menu.cpp' object='start_menu.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/start_menu.Po' tmpdepfile='$(DEPDIR)/start_menu.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o start_menu.o `test -f 'screens/start_menu.cpp' || echo '$(srcdir)/'`screens/start_menu.cpp
+
+start_menu.obj: screens/start_menu.cpp
+@AMDEP_TRUE@	source='screens/start_menu.cpp' object='start_menu.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/start_menu.Po' tmpdepfile='$(DEPDIR)/start_menu.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o start_menu.obj `cygpath -w screens/start_menu.cpp`
 CXXDEPMODE = @CXXDEPMODE@
 uninstall-info-am:
 
