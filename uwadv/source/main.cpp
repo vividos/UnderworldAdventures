@@ -41,8 +41,7 @@ extern ua_uwadv_game* ua_game_create();
 #endif
 
 
-// main function
-
+//! main function
 int main(int argc, char* argv[])
 {
    ua_uwadv_game* ua;
@@ -67,14 +66,14 @@ int main(int argc, char* argv[])
       ua->done();
    }
 #ifndef HAVE_DEBUG
-   catch (ua_exception e)
+   catch (ua_exception& e)
    {
       std::string text("caught ua_exception:\n\r");
       text.append(e.what());
 
       ua->error_msg(text.c_str());
    }
-   catch (std::exception e)
+   catch (std::exception& e)
    {
       ua_trace("caught std::exception\n");
       ua->error_msg("std::exception");
