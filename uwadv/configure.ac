@@ -158,7 +158,7 @@ fi
 
 
 #where to put configuration files?
-AC_ARG_WITH(confdir, [  --with-confdir=DIR          directory where UWADV configuration files will be placed], CONFDIR=$with_confdir, CONFDIR=$(datadir)/games/uwadv/)
+AC_ARG_WITH(confdir, [  --with-confdir=DIR          directory where UWADV configuration files will be placed], CONFDIR=$with_confdir, CONFDIR=${datadir}/games/uwadv/)
 
 # determining uwadv.cfg entries
 AC_ARG_WITH(uw1, [  --with-uw1=DIR          directory where UW1 is installed ],UW1PATH=$with_uw1,UW1PATH=${datadir}/games/uw1/)
@@ -204,6 +204,7 @@ echo
 echo "    CXXFLAGS = $CXXFLAGS"
 echo "    LIBS = $LIBS"
 echo
+echo "    CONFDIR = $CONFDIR"
 echo "    UW1PATH = $UW1PATH"
 echo "    UADATAPATH = $UADATAPATH"
 echo
