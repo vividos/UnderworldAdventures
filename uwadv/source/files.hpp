@@ -64,6 +64,9 @@ public:
    //! returns a list of all configuration files to load
    std::vector<std::string> &get_cfgfiles_list() { return cfgfiles_list; }
 
+   //! returns uahome path
+   const std::string& get_uahome_path(){ return uahome_path; }
+
 protected:
    //! initialize list of config files
    void init_cfgfiles_list();
