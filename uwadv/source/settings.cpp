@@ -32,6 +32,28 @@
 #include <iostream>
 
 
+// structs
+
+//! mapping of all settings keywords to keys
+struct
+{
+   const char *optname;
+   ua_settings_key key;
+} ua_settings_mapping[] =
+{
+   { "uw1-path", ua_setting_uw1_path },
+   { "uw2-path", ua_setting_uw2_path },
+   { "uadata-path", ua_setting_uadata_path },
+   { "savegame-folder", ua_setting_savegame_folder },
+   { "enable-uwadv-features", ua_setting_uwadv_features },
+   { "screen-resolution", ua_setting_screen_resolution },
+   { "fullscreen", ua_setting_fullscreen },
+   { "cutscene-narration", ua_setting_cuts_narration },
+   { "audio-enabled", ua_setting_audio_enabled },
+   { "win32-midi-device", ua_setting_win32_midi_device },
+};
+
+
 // ua_settings methods
 
 ua_settings::ua_settings()
@@ -113,4 +135,33 @@ void ua_settings::dump()
    {
       std::cout << iter->first << "=" << iter->second << std::endl;
    }
+}
+
+bool ua_settings::search_key_from_string(const char* keyname, ua_settings_key& key)
+{
+   // search the whole settings table
+   for(unsigned int i=0; i < SDL_TABLESIZE(ua_settings_mapping); i++)
+   {
+      // search through all option entries
+      if (strcmp(ua_settings_mapping[i].optname,keyname)==0)
+      {
+         // found
+         key = ua_settings_mapping[i].key;
+         return true;
+      }
+   }
+   return false;
+}
+
+void ua_settings::load_value(const std::string& name, const std::string& value)
+{
+   ua_trace("settings key/value: %s => %s\n",name.c_str(), value.c_str());
+
+   // retrieve settings key
+   ua_settings_key key;
+
+   if (!search_key_from_string(name.c_str(),key))
+      ua_trace("didn't find settings key \"%s\" in table.\n",name.c_str());
+   else
+      set_value(key,value);
 }

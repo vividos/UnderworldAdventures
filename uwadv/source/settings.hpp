@@ -32,6 +32,7 @@
 // needed includes
 #include <string>
 #include <map>
+#include "cfgfile.hpp"
 
 
 // enum
@@ -99,17 +100,11 @@ enum ua_game_type
 // classes
 
 //! config class
-class ua_settings
+class ua_settings: public ua_cfgfile
 {
 public:
    //! ctor
    ua_settings();
-
-   //! loads a config file
-   void load(const char *filename);
-
-   //! creates a new config file with the current settings and a original file as template
-   void write(const char *origfile, const char *newfile);
 
    // settings value access
 
@@ -141,7 +136,13 @@ public:
    void dump();
 
 protected:
+   //! searches key value from string name
+   bool search_key_from_string(const char* keyname, ua_settings_key& key);
 
+   //! called to load a specific value
+   virtual void load_value(const std::string& name, const std::string& value);
+
+protected:
    //! settings map typedef
    typedef std::map<ua_settings_key,std::string> ua_settings_map_type;
 
