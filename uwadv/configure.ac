@@ -123,6 +123,7 @@ CPPFLAGS="$save_CPPFLAGS"
 AC_CHECK_HEADER(zlib.h,,AC_MSG_ERROR([
 zlib header not found. Zlib is required to compile and run
 Underworld Adventures.]))
+ZLIB_LIBS="-lz"
 
 
 # Build the tools?
@@ -149,7 +150,7 @@ AC_SUBST(UADATAPATH)
 CPPFLAGS="$CPPFLAGS -DCONFIGDIR=\\\"${datadir}/games/uwadv/\\\""
 CXXFLAGS="$CXXFLAGS -I. -I${srcdir} $DEBUG_FLAGS  $SDL_CFLAGS $X_CFLAGS"
 CFLAGS="$CXXFLAGS"
-LIBS="$LIBS $SDL_LIBS $OPENGL_LIBS $X_LIBS"
+LIBS="$LIBS $SDL_LIBS $OPENGL_LIBS $X_LIBS $ZLIB_LIBS"
 
 
 # produce output files
