@@ -94,13 +94,7 @@ void ua_player::load_game(ua_savegame &sg)
    unsigned int n=0;
 
    // read in name
-   {
-      name.erase();
-
-      unsigned int len = sg.read8();
-      for(n=0; n<len; n++)
-         name.append(1,static_cast<char>(sg.read8()));
-   }
+   sg.read_string(name);
 
    // read position
    xpos = sg.read32()/256.0;
@@ -126,14 +120,7 @@ void ua_player::save_game(ua_savegame &sg)
    unsigned int n=0;
 
    // write name
-   {
-      unsigned int len = name.size();
-      if (len>255) len=255;
-      sg.write8(len);
-
-      for(n=0; n<len; n++)
-         sg.write8(static_cast<Uint8>(name[n]));
-   }
+   sg.write_string(name.c_str());
 
    // write position
    sg.write32(Uint32(xpos*256.0));
