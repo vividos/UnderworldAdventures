@@ -269,6 +269,8 @@ void ua_textscroll::update_scroll()
    {
       // image is small enough
       tex.convert(img_text);
+      tex.use(0);
+      tex.upload();
    }
 }
 
