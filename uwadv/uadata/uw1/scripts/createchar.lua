@@ -16,6 +16,7 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 --
+-- $Id$
 --
 
 --
@@ -39,14 +40,15 @@ gactDeinit = 1  -- deinitialize
 
 -- actions (outgoing param values for C function cchar_do_action)
 actEnd = 0            -- ends the character creation screen (no params)
-actSetInitVal = 1     -- sets init values (param1=stringblock, param2=buttongroup x-coord)
-actSetBtnGroup = 2    -- sets the specified button group (param1=heading, param2=buttontype, param3=buttontable)
-actSetText = 3        -- sets the specified text at the specified location (param1=stringno, param2=x-coord, param3=y-coord, param4=alignment)
-actSetName = 4        -- sets the specified name at the specified location (param1=name, param2=x-coord, param3=y-coord, param4=alignment)
-actSetNumber = 5      -- sets the specifed number at the specified location (param1=number, param2=right x-coord, param3=y-coord)
-actSetImg = 6         -- sets the specified image at the specified location (param1=imagenumber, param2=center x-coord, param3=center y-coord)
-actUpdate = 7         -- updates the screen after a change (no params)
-actClear = 8          -- clears all screen elements (not the background)
+actSetInitVal = 1     -- sets init values (param1=stringblock, param2=buttongroup x-coord, param3=normal text color, param4=highlighted text color, param5=table with button image indexes)
+actSetUIBtnGroup = 2  -- sets the specified button group (param1=heading, param2=buttontype, param3=buttontable)
+actSetUIText = 3      -- sets the specified text at the specified location (param1=stringno, param2=x-coord, param3=y-coord, param4=alignment)
+actSetUICustText = 4  -- sets the specified custom text at the specified location (param1=text, param2=x-coord, param3=y-coord, param4=alignment)
+actSetUINumber = 5    -- sets the specifed number at the specified location (param1=number, param2=right x-coord, param3=y-coord)
+actSetUIImg = 6       -- sets the specified image at the specified location (param1=imagenumber, param2=center x-coord, param3=center y-coord)
+actUIClear = 7        -- clears all screen elements (not the background)
+actUIUpdate = 8       -- updates the screen after a SetUIxxx/UIClear action (no params)
+actSetPlayerName = 9  -- guess what...
 
 -- labels/button values, these must match entries in string table 
 -- starting at block cchar_strblock.
@@ -103,8 +105,8 @@ ccvSwimming = 50
 
 -- button types
 btText = 0       -- standard button with text from string table, btns contains stringtable index
-btImage = 3      -- square button with image, btns contains index of image
-btInput = 6      -- input area, btns contains the stringtable index of the label of the input area
+btImage = 1      -- square button with image, btns contains index of image
+btInput = 2      -- input area, btns contains the stringtable index of the label of the input area
 
 -- text alignment types
 alLeft = 0
@@ -117,8 +119,11 @@ alRight = 2
 -- button groups
 
 ccharui = {
-   strblock = 2, -- string block for labels/buttons
-   btngxcoord = 240, -- x-coord for center of buttongroup
+   strblock = 2,                    -- string block for labels/buttons
+   btngxcoord = 240,                -- x-coord for center of buttongroup
+   textcolor_normal = 73,           -- palette index of normal text (labels and normal buttons)
+   textcolor_highlight = 68,        -- palette index of highlighted button text
+   btnimages = { 0, 2, 3, 5, 6 },   -- image indexes of buttons (textn,texth,imgn,imgh,inp)
 
    btngroups = -- table with all buttons groups (a.k.a. "screens")
    {
@@ -190,7 +195,8 @@ function cchar_global(this, globalaction)
    if globalaction==gactInit then
       self = this       -- sets "self" as userdata for all C function calls
       skills = {}
-      cchar_do_action(self, actSetInitVal, ccharui.strblock, ccharui.btngxcoord)
+      randomseed(1)
+      cchar_do_action(self, actSetInitVal, ccharui.strblock, ccharui.btngxcoord, ccharui.textcolor_normal, ccharui.textcolor_highlight, ccharui.btnimages)
    end
 
    -- end it all when we're at the first page and a deinit was received
@@ -201,17 +207,17 @@ function cchar_global(this, globalaction)
       curstep = 0 
       psex = 0
       pclass = 0
-      pstr = 15
-      pdex = 15
-      pint = 15
-      pvit = 15
-      pimg = 0
+      pstr = 0
+      pdex = 0
+      pint = 0
+      pvit = 0
+      img = 0
       pname = ""
       curgroup = 1
       numberofskills = 0
-      cchar_do_action(self, actClear)
-      cchar_do_action(self, actSetBtnGroup, ccharui.btngroups[curgroup].heading, ccharui.btngroups[curgroup].btntype, ccharui.btngroups[curgroup].btns)
-      cchar_do_action(self, actUpdate)
+      cchar_do_action(self, actUIClear)
+      cchar_do_action(self, actSetUIBtnGroup, ccharui.btngroups[curgroup].heading, ccharui.btngroups[curgroup].btntype, ccharui.btngroups[curgroup].btns)
+      cchar_do_action(self, actUIUpdate)
    end
 end
 
@@ -222,7 +228,7 @@ function cchar_addskill(skill, value)
    for csi = 1, numberofskills do
       -- increase the value if found and return
       if skills[csi].name==skill then
-         skills[csi].val = skills[csi].val + value
+         skills[csi].val = skills[csi].val + value/2
          return
       end
    end
@@ -256,9 +262,10 @@ function cchar_buttonclick(button, text)
 
       elseif curgroup==21 then
          if strlen(text)<1 then
-            return
+            return  -- don't accept an empty name   
          else
             pname = text
+            cchar_do_action(self, actSetPlayerName, pname)
          end
 
       elseif curgroup==22 then
@@ -278,24 +285,29 @@ function cchar_buttonclick(button, text)
          pclass = button
          curstep = 0
 
+         pstr = random(20,30)
+         pdex = random(15,25)
+         pint = random(12,22)
+         pvit = random(34,36)
+
          -- the attack and defence skill appear for all player classes
-         cchar_addskill(ccvAttack, 10)
-         cchar_addskill(ccvDefence, 10)
+         cchar_addskill(ccvAttack, random(4,13))
+         cchar_addskill(ccvDefence, random(4,13))
 
          -- add class specific inital skills
          if button==1 or button==4 then   -- fighter/druid
-            cchar_addskill(ccvMana, 10)
-            cchar_addskill(ccvCasting, 10)
+            cchar_addskill(ccvMana, random(4,13))
+            cchar_addskill(ccvCasting, random(4,13))
          elseif button==3 then            -- tinker
-            cchar_addskill(ccvRepair, 10)
+            cchar_addskill(ccvRepair, random(4,13))
          elseif button==5 then            -- palading
-            cchar_addskill(ccvCharm, 10)
+            cchar_addskill(ccvCharm, random(4,13))
          elseif button==6 then            -- ranger
-            cchar_addskill(ccvTrack, 10)
+            cchar_addskill(ccvTrack, random(4,13))
          end
 
       else   -- class specific skill selection button 
-         cchar_addskill(ccharui.btngroups[curgroup].btns[button+1], 10)
+         cchar_addskill(ccharui.btngroups[curgroup].btns[button+1], random(4,13))
          curstep = curstep + 1
       end
       curgroup = ccharui.skillorder[pclass][curstep]
@@ -312,37 +324,37 @@ function cchar_buttonclick(button, text)
 
    -- show the new button group and stats (or end)
    if curgroup>0 then
-      cchar_do_action(self, actClear)
+      cchar_do_action(self, actUIClear)
       if curgroup>1 then 
-         cchar_do_action(self, actSetText, psex+ccvMale, 18, 21, alLeft) 
+         cchar_do_action(self, actSetUIText, psex+ccvMale, 18, 21, alLeft) 
       end
       if curgroup>3 then
          -- common stats
-         cchar_do_action(self, actSetText, pclass+ccvFighter, 141, 21, alRight)
-         cchar_do_action(self, actSetText, ccvStrc, 93, 50, alLeft)
-         cchar_do_action(self, actSetNumber, pstr, 139, 50)
-         cchar_do_action(self, actSetText, ccvDexc, 93, 67, alLeft)
-         cchar_do_action(self, actSetNumber, pdex, 139, 67)
-         cchar_do_action(self, actSetText, ccvIntc, 93, 84, alLeft)
-         cchar_do_action(self, actSetNumber, pint, 139, 84)
-         cchar_do_action(self, actSetText, ccvVitc, 93, 101, alLeft)
-         cchar_do_action(self, actSetNumber, pvit, 139, 101)
+         cchar_do_action(self, actSetUIText, pclass+ccvFighter, 141, 21, alRight)
+         cchar_do_action(self, actSetUIText, ccvStrc, 93, 50, alLeft)
+         cchar_do_action(self, actSetUINumber, pstr, 139, 50)
+         cchar_do_action(self, actSetUIText, ccvDexc, 93, 67, alLeft)
+         cchar_do_action(self, actSetUINumber, pdex, 139, 67)
+         cchar_do_action(self, actSetUIText, ccvIntc, 93, 84, alLeft)
+         cchar_do_action(self, actSetUINumber, pint, 139, 84)
+         cchar_do_action(self, actSetUIText, ccvVitc, 93, 101, alLeft)
+         cchar_do_action(self, actSetUINumber, pvit, 139, 101)
       end
 
       -- class/skill specific stats
       for csi = 1, numberofskills do
-         cchar_do_action(self, actSetText, skills[csi].name, 30, 132+11*(csi-1), alLeft)
-         cchar_do_action(self, actSetNumber, skills[csi].val, 125, 132+11*(csi-1))
+         cchar_do_action(self, actSetUIText, skills[csi].name, 30, 132+11*(csi-1), alLeft)
+         cchar_do_action(self, actSetUINumber, skills[csi].val, 125, 132+11*(csi-1))
       end
 
       if curgroup>19 then
-         cchar_do_action(self, actSetImg, 17+pimg, 44, 81)
+         cchar_do_action(self, actSetUIImg, 17+pimg, 44, 81)
       end
       if curgroup>21 then
-         cchar_do_action(self, actSetName, pname, 80, 10, alCenter)
+         cchar_do_action(self, actSetUICustText, pname, 80, 10, alCenter)
       end
-      cchar_do_action(self, actSetBtnGroup, ccharui.btngroups[curgroup].heading, ccharui.btngroups[curgroup].btntype, ccharui.btngroups[curgroup].btns)
-      cchar_do_action(self, actUpdate)
+      cchar_do_action(self, actSetUIBtnGroup, ccharui.btngroups[curgroup].heading, ccharui.btngroups[curgroup].btntype, ccharui.btngroups[curgroup].btns)
+      cchar_do_action(self, actUIUpdate)
    else
       cchar_do_action(self, actEnd)
    end
