@@ -134,12 +134,22 @@ SOURCE=..\..\uadata\uw1\scripts\cutscene.lua
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\uadata\uw1\scripts\game.lua
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\uadata\uw1\scripts\inventory.lua
 # PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\uadata\uw1\scripts\objects.lua
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\uadata\uw1\scripts\uwinterface.lua
 # PROP Exclude_From_Build 1
 # End Source File
 # End Group
@@ -310,6 +320,10 @@ SOURCE=..\resource\zziplib\SDL_rwops_zzip.h
 # Begin Source File
 
 SOURCE="..\resource\zziplib\zzip-conf.h"
+# End Source File
+# Begin Source File
+
+SOURCE="..\resource\zziplib\zzip-config.h"
 # End Source File
 # Begin Source File
 
