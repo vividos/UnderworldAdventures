@@ -19,15 +19,15 @@
    $Id$
 
 */
-/*! \file levelmap.hpp
+/*! \file level.hpp
 
-   class to load the game map
+   class to load the game level map
 
 */
 
 // include guard
-#ifndef __uwadv_levelmap_hpp_
-#define __uwadv_levelmap_hpp_
+#ifndef __uwadv_level_hpp_
+#define __uwadv_level_hpp_
 
 // needed includes
 #include "settings.hpp"
@@ -56,7 +56,7 @@ typedef enum
 typedef enum
 {
    ua_left, ua_right, ua_front, ua_back
-} ua_wall_render_side;
+} ua_levelmap_wall_render_side;
 
 
 // structs
@@ -80,17 +80,17 @@ typedef struct
 
 // classes
 
-//! levelmap representation
-class ua_levelmap
+//! level map and object representation
+class ua_level
 {
 public:
    //! ctor
-   ua_levelmap(){ tiles=NULL; height_scale=0.125f; }
+   ua_level():tiles(NULL){ height_scale=0.125f; }
    //! dtor
-   ~ua_levelmap(){ delete[] tiles; tiles=NULL; };
+   ~ua_level(){ delete[] tiles; tiles=NULL; };
 
    //! loads the map of a specific level
-   void load(ua_settings &settings, int level);
+   void load(ua_settings &settings, unsigned int level);
 
    //! prepares textures used in map for OpenGL
    void prepare_textures(ua_texture_manager &texmgr);
@@ -113,13 +113,13 @@ protected:
 
 private:
    //! retrieves tile coordinates
-   void get_tile_coords(ua_wall_render_side side, ua_levelmap_tiletype type,
+   void get_tile_coords(ua_levelmap_wall_render_side side, ua_levelmap_tiletype type,
       Uint8 basex, Uint8 basey, Uint8 basez, Uint8 slope, Uint8 ceiling,
       Uint8 &x1, Uint8 &y1, Uint8 &z1,
       Uint8 &x2, Uint8 &y2, Uint8 &z2);
 
    //! renders a wall of a tile, dependent on the neighbour
-   void render_wall(ua_wall_render_side side,
+   void render_wall(ua_levelmap_wall_render_side side,
       Uint8 x1, Uint8 y1, Uint8 z1, Uint8 x2, Uint8 y2, Uint8 z2,
       Uint8 nz1, Uint8 nz2);
 

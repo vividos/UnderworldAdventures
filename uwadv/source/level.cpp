@@ -19,9 +19,9 @@
    $Id$
 
 */
-/*! \file levelmap.cpp
+/*! \file level.cpp
 
-   level map rendering implementation
+   level map and object implementation
 
 */
 
@@ -31,19 +31,21 @@
 #include <string>
 
 
-// ua_levelmap methods
+// ua_level methods
 
-void ua_levelmap::prepare_textures(ua_texture_manager &texmgr)
+void ua_level::prepare_textures(ua_texture_manager &texmgr)
 {
    int tex;
    for(tex=0;tex<48;tex++) texmgr.prepare(wall_textures[tex]);
    for(tex=0;tex<10;tex++) texmgr.prepare(floor_textures[tex]);
-   // todo door textures?
 
+   // prepare door textures
+
+   // ceiling texture, always #15
    texmgr.prepare(0x010f);
 }
 
-float ua_levelmap::get_floor_height(float xpos, float ypos)
+float ua_level::get_floor_height(float xpos, float ypos)
 {
    if (xpos<0.f || ypos<0.f || xpos>64.f || ypos>64.f)
       return 0.f;
@@ -72,7 +74,7 @@ float ua_levelmap::get_floor_height(float xpos, float ypos)
    return height;
 }
 
-void ua_levelmap::render(ua_texture_manager &texmgr)
+void ua_level::render(ua_texture_manager &texmgr)
 {
    int x,y;
    // draw floor tile polygons, for all (or for all visible)
@@ -91,7 +93,7 @@ void ua_levelmap::render(ua_texture_manager &texmgr)
          render_walls(x,y,texmgr);
 }
 
-void ua_levelmap::render_floor(int x, int y, ua_texture_manager &texmgr)
+void ua_level::render_floor(int x, int y, ua_texture_manager &texmgr)
 {
    ua_levelmap_tile &tile = tiles[y*64 + x];
    if (tile.type == ua_tile_solid)
@@ -183,7 +185,7 @@ void ua_levelmap::render_floor(int x, int y, ua_texture_manager &texmgr)
    }
 }
 
-void ua_levelmap::render_ceiling(int x, int y, ua_texture_manager &texmgr)
+void ua_level::render_ceiling(int x, int y, ua_texture_manager &texmgr)
 {
    ua_levelmap_tile &tile = tiles[y*64 + x];
    if (tile.type == ua_tile_solid)
@@ -202,7 +204,7 @@ void ua_levelmap::render_ceiling(int x, int y, ua_texture_manager &texmgr)
    glEnd();
 }
 
-void ua_levelmap::render_walls(int x, int y, ua_texture_manager &texmgr)
+void ua_level::render_walls(int x, int y, ua_texture_manager &texmgr)
 {
    ua_levelmap_tile &tile = tiles[y*64 + x];
    if (tile.type == ua_tile_solid)
@@ -261,7 +263,7 @@ void ua_levelmap::render_walls(int x, int y, ua_texture_manager &texmgr)
       }
 
       // get current tile coordinates
-      get_tile_coords((ua_wall_render_side)side,tile.type,
+      get_tile_coords((ua_levelmap_wall_render_side)side,tile.type,
          x,y,tile.floor,tile.slope,tile.ceiling,
          x1,y1,z1, x2,y2,z2);
 
@@ -287,7 +289,7 @@ void ua_levelmap::render_walls(int x, int y, ua_texture_manager &texmgr)
          else
          {
             // get z coordinates for the adjacent tile
-            ua_wall_render_side adjside;
+            ua_levelmap_wall_render_side adjside;
             if (side==ua_left) adjside = ua_right;
             else if (side==ua_right) adjside = ua_left;
             else if (side==ua_front) adjside = ua_back;
@@ -313,12 +315,12 @@ void ua_levelmap::render_walls(int x, int y, ua_texture_manager &texmgr)
          continue;
 
       // now that we have all info, draw the tile wall
-      render_wall((ua_wall_render_side)side,x1,y1,z1,x2,y2,z2,nz1,nz2);
+      render_wall((ua_levelmap_wall_render_side)side,x1,y1,z1,x2,y2,z2,nz1,nz2);
    }
 }
 
-void ua_levelmap::get_tile_coords(
-   ua_wall_render_side side, ua_levelmap_tiletype type,
+void ua_level::get_tile_coords(
+   ua_levelmap_wall_render_side side, ua_levelmap_tiletype type,
    Uint8 basex, Uint8 basey, Uint8 basez, Uint8 slope, Uint8 ceiling,
    Uint8 &x1, Uint8 &y1, Uint8 &z1,
    Uint8 &x2, Uint8 &y2, Uint8 &z2)
@@ -380,7 +382,7 @@ void ua_levelmap::get_tile_coords(
    }
 }
 
-void ua_levelmap::render_wall(ua_wall_render_side side,
+void ua_level::render_wall(ua_levelmap_wall_render_side side,
    Uint8 x1, Uint8 y1, Uint8 z1, Uint8 x2, Uint8 y2, Uint8 z2,
    Uint8 nz1, Uint8 nz2)
 {
