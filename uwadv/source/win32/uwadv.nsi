@@ -11,7 +11,7 @@
 # general installer config
 #
 OutFile "uwadv-${VERSION}-bin-win32.exe"
-Name "Underworld Adventures release ${VERSION}"
+Name "Underworld Adventures '${VERSION}'"
 CRCCheck on
 
 # install directory config
