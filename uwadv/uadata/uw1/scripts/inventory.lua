@@ -87,7 +87,7 @@ function lua_inventory_categorize_item(item_id)
    end
 
    -- feet item; [0x0029; 0x002b] and { 0x002f }
-   if (item_id >= 2*16+0 and item_id <= 2*16+2) or item_id == 2*16+15
+   if (item_id >= 2*16+9 and item_id <= 2*16+11) or item_id == 2*16+15
    then
       type = inv_cat_feet
    end
