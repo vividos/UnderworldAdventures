@@ -80,10 +80,14 @@ void ua_acknowledgements_screen::init()
 
    // init fadeout
    fader.init(false,game->get_tickrate(),xfade_time);
+
+   SDL_ShowCursor(1);
 }
 
 void ua_acknowledgements_screen::destroy()
 {
+   SDL_ShowCursor(0);
+
    cuts_ack.destroy();
    img_fadeout.destroy();
 
