@@ -91,6 +91,19 @@ SOURCE=.\critdec.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\gamestrings.cpp
+
+!IF  "$(CFG)" == "critdec - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "critdec - Win32 Debug"
+
+# SUBTRACT CPP /YX /Yc /Yu
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=..\hacking.h
 # End Source File
 # End Target

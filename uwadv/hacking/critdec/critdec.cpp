@@ -200,12 +200,11 @@ void decode_rle(FILE *fd,FILE *out,unsigned int bits,unsigned int datalen,unsign
 }
 
 
-const char *cr_fmt = UWPATH"crit\\cr%02opage.n%02o";
+const char* cr_fmt = UWPATH"crit\\cr%02opage.n%02o";
+const char* assocfilename = UWPATH"crit\\assoc.anm";
 
 int main(int argc, char* argv[])
 {
-   const char *assocfilename = UWPATH"crit\\assoc.anm";
-
    // get 256 colors palette
    char palette[256*3];
    {
@@ -225,35 +224,43 @@ int main(int argc, char* argv[])
       fclose(pal);
    }
 
+   // read in game strings
+   ua_gamestrings gs;
+   gs.load(UWPATH"data\\strings.pak");
+
+   // open log
    FILE* log = fopen("crit-log.txt","w");
+   fprintf(log,"critdec log file\n\n");
+
+   // get animation and critter lists
+   char critname[32][8];
+   {
+      FILE *assoc = fopen(assocfilename,"rb");
+
+      // read in animation names
+      fread(critname,32,8,assoc);
+
+      // read in critter infos
+      for(int i=0; i<64; i++)
+      {
+         unsigned int anim = fgetc(assoc);
+         unsigned int variant = fgetc(assoc);
+
+         fprintf(log,"critter 0x%04x: anim = 0%02o (%-8.8s), variant = %02x, critter = %s\n",
+            i+64,anim,critname[anim],variant,gs.get_string(4,i+64).c_str());
+      }
+
+      fprintf(log,"\n");
+
+      fclose(assoc);
+   }
 
    for(int crit=0; crit<32; crit++)
    {
-      // retrieve critter name
-      char critname[8]; critname[0]=0;
-      unsigned char anim=0;
-      unsigned char variant=0;
-      unsigned short unk1=0;
-
-      FILE *assoc = fopen(assocfilename,"rb");
-      fseek(assoc,crit*8,SEEK_SET);
-      fread(critname,1,8,assoc);
-
-      if (critname[0]==0)
-         strcpy(critname,"*unkn*");
-
-      fseek(assoc,32*8 + crit*2,SEEK_SET); // 0x0100 + x
-      anim = fgetc(assoc);
-      variant = fgetc(assoc);
-
-      fseek(assoc,32*8 + 32*2 + crit*2,SEEK_SET); // 0x0140 + x
-      fread(&unk1,2,1,assoc);
-
-      fclose(assoc);
-
+      // test first page file
       {
          char buffer[256];
-         sprintf(buffer,cr_fmt,anim,0);
+         sprintf(buffer,cr_fmt,crit,0);
 
          FILE *pfile = fopen(buffer,"rb");
          if (pfile==NULL)
@@ -262,17 +269,13 @@ int main(int argc, char* argv[])
          fclose(pfile);
       }
 
-      fprintf(log,"critter 0%02o: \"%-8.8s\", anim=%02u, variant=%02x unk1=%04x\n",crit,critname,anim,variant,unk1);
-
-   continue;
-
-      anim = crit;
+      fprintf(log,"anim 0%02o: \"%-8.8s\"\n",crit,critname[crit]);
 
       // read in all pages
       for(int page=0;;page++)
       {
          char buffer[256];
-         sprintf(buffer,cr_fmt,anim,page);
+         sprintf(buffer,cr_fmt,crit,page);
          FILE *pfile = fopen(buffer,"rb");
          if (pfile==NULL)
             break; // no more page files
@@ -292,7 +295,8 @@ int main(int argc, char* argv[])
 
          int nsegs = fgetc(pfile);
 
-         fprintf(log,"cr%02opage.n%02o: slotbase = %2u, nslots = %3u, nsegs = %2u\n",anim,page,slotbase,nslots,nsegs);
+         fprintf(log,"cr%02opage.n%02o\n slotbase = %2u, nslots = %3u, nsegs = %2u\n",
+            crit,page,slotbase,nslots,nsegs);
 
          // print slot list
          {
@@ -318,14 +322,10 @@ int main(int argc, char* argv[])
          }
 
          int nauxpals = fgetc(pfile);
+         fprintf(log," number of aux palettes: %u\n",nauxpals);
 
-
-         fprintf(log," number of aux palettes: %u%s\n",nauxpals,
-            variant>=nauxpals? " - warning! variant >= nauxpals" : "");
-
-         // in case of wrong "variant" value, choose first auxpal
-         if (variant>=nauxpals)
-            variant = 0;
+         // always choose first auxpal
+         int useauxpal = 0;
 
          unsigned char *auxpals = new unsigned char[32*nauxpals];
          fread(auxpals,32,nauxpals,pfile);
@@ -383,14 +383,14 @@ int main(int argc, char* argv[])
             if (top > maxtop) maxtop = top;
             if (bottom > maxbottom) maxbottom = bottom;
 
-      continue;
+      continue; // comment out to write all animation frames
 
             unsigned short datalen;
             fread(&datalen,1,2,pfile);
 
             // decode bitmap
             char buffer[256];
-            sprintf(buffer,"cr%02o-%.8s-page%02oframe%02x.tga",crit,critname,page,frame);
+            sprintf(buffer,"cr%02o-%.8s-page%02oframe%02x.tga",crit,critname[crit],page,frame);
 
             FILE *tga = fopen(buffer,"wb");
 
@@ -399,7 +399,7 @@ int main(int argc, char* argv[])
             // write palette
             fwrite(palette,1,256*3,tga);
 
-            decode_rle(pfile,tga,wsize,width*height,auxpals+32*variant);
+            decode_rle(pfile,tga,wsize,width*height,auxpals+32*useauxpal);
 
             fclose(tga);
          }
@@ -415,6 +415,7 @@ int main(int argc, char* argv[])
          fclose(pfile);
       }
 
+      printf(".");
       fprintf(log,"\n");
    }
 
