@@ -41,3 +41,5 @@ mapdisp_SOURCES = mapdisp.cpp
 animview_SOURCES = animview.cpp
 
 strpak_SOURCES = strpak.cpp
+
+uwmdlview_SOURCES = uwmdlview.cpp

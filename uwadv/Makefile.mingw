@@ -297,11 +297,21 @@ uwdump_LDFLAGS = -mconsole
 uwdump_LIBS = -lmingw32 -lkernel32 -luser32 libuatools.a $(SDL_LIB) $(STLPORT_LIB)
 
 
+# uw model view tool
+
+uwmdlview_EXEC = uwmdlview.exe
+uwmdlview_CPPs = $(filter %.cpp,$(uwmdlview_SOURCES))
+uwmdlview_OBJS = $(uwmdlview_CPPs:%.cpp=source/tools/%.o)
+
+uwmdlview_LDFLAGS = -mconsole
+uwmdlview_LIBS = -lmingw32 -lkernel32 -luser32 libuatools.a $(SDL_LIB) $(STLPORT_LIB)
+
+
 #
 # build rules
 #
 
-TOOLS = cnvdbg cnvdasm xmi2mid mapdisp animview strpak uwdump
+TOOLS = cnvdbg cnvdasm xmi2mid mapdisp animview strpak uwdump uwmdlview
 
 tools: libuatools $(TOOLS)
 
@@ -370,6 +380,10 @@ $(strpak_EXEC): libuatools $(strpak_OBJS)
 uwdump: $(uwdump_EXEC)
 $(uwdump_EXEC): libuatools $(uwdump_OBJS)
 	$(CXX) $(LDFLAGS) $(uwdump_LDFLAGS) -o $(@) $(uwdump_OBJS) $(uwdump_LIBS)
+
+uwmdlview: $(uwmdlview_EXEC)
+$(uwmdlview_EXEC): libuatools $(uwmdlview_OBJS)
+	$(CXX) $(LDFLAGS) $(uwmdlview_LDFLAGS) -o $(@) $(uwmdlview_OBJS) $(uwmdlview_LIBS)
 
 
 #
