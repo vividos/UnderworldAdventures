@@ -38,7 +38,7 @@ class ua_debug_impl_win32: public ua_debug_interface
 {
 public:
    //! ctor
-   ua_debug_impl_win32(ua_underworld* theunderw);
+   ua_debug_impl_win32(ua_game_core_interface* thecore);
    //! dtor
    virtual ~ua_debug_impl_win32();
 
@@ -46,8 +46,6 @@ public:
    virtual void start_debugger();
    virtual void lock();
    virtual void unlock();
-   virtual ua_underworld* get_underworld();
-   virtual ua_uw_access_api* get_access_api();
 
 protected:
    //! debugger thread procedure
@@ -66,10 +64,10 @@ protected:
    //! debug thread
    SDL_Thread* thread_debug;
 
-   //! underworld object
-   ua_underworld* underw;
+   //! game core object
+   ua_game_core_interface* core;
 
-   //! access api
+   //! access api object
    ua_uw_access_api api;
 };
 
@@ -77,21 +75,21 @@ protected:
 // ua_debug_interface methods
 
 ua_debug_interface* ua_debug_interface::get_new_debug_interface(
-   ua_underworld* underw)
+   ua_game_core_interface* core)
 {
-   return new ua_debug_impl_win32(underw);
+   return new ua_debug_impl_win32(core);
 }
 
 
 // typedefs
 
-typedef void (*uadebug_start_func)(ua_debug_interface*);
+typedef void (*uadebug_start_func)(ua_debug_command_func);
 
 
 // ua_debug_impl methods
 
-ua_debug_impl_win32::ua_debug_impl_win32(ua_underworld* theunderw)
-:underw(theunderw)
+ua_debug_impl_win32::ua_debug_impl_win32(ua_game_core_interface* thecore)
+:core(thecore)
 {
    // load library, check if functions are available
    {
@@ -109,13 +107,13 @@ ua_debug_impl_win32::ua_debug_impl_win32(ua_underworld* theunderw)
    thread_debug = NULL;
 
    // init access api
-   api.init();
+   api.init(core,this);
 }
 
 ua_debug_impl_win32::~ua_debug_impl_win32()
 {
    // free DLL instance
-   ::FreeLibrary(dll);
+   if (dll!=NULL) ::FreeLibrary(dll);
 
    avail = false;
 
@@ -151,7 +149,7 @@ int ua_debug_impl_win32::thread_proc(void* ptr)
          (uadebug_start_func)::GetProcAddress(This->dll,"uadebug_start");
 
       // start debugger
-      uadebug_start(This);
+      uadebug_start(This->api.get_command_func());
    }
 
    ua_trace("uadebug thread ended\n");
@@ -168,14 +166,4 @@ void ua_debug_impl_win32::lock()
 
 void ua_debug_impl_win32::unlock()
 {
-}
-
-ua_underworld* ua_debug_impl_win32::get_underworld()
-{
-   return underw;
-}
-
-ua_uw_access_api* ua_debug_impl_win32::get_access_api()
-{
-   return &api;
 }
