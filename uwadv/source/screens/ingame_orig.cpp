@@ -672,9 +672,14 @@ void ua_ingame_orig_screen::tick()
       while (viewangle > 180.0 || viewangle < -180.0 )
          viewangle = fmod(viewangle-360.0,360.0);
 
+      double maxangle = 45.0;
+
+      if (core->get_settings().get_bool(ua_setting_uwadv_features))
+         maxangle = 75.0;
+
       // restrict up-down view angle
-      if (viewangle < -75.0) viewangle = -75.0;
-      if (viewangle > 75.0) viewangle = 75.0;
+      if (viewangle < -maxangle) viewangle = -maxangle;
+      if (viewangle > maxangle) viewangle = maxangle;
    }
 
    // check for fading in/out
