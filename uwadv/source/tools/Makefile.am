@@ -52,7 +52,7 @@ xmi2mid_LDADD = $(SDL_LIBS)
 mapdisp_SOURCES = mapdisp.cpp ../level.cpp ../resource/maploader.cpp \
 	../quadtree.cpp ../resource/texloader.cpp ../texture.cpp \
 	../resource/imageloader.cpp ../resource/objloader.cpp \
-	../image.cpp ../objects.cpp \
+	../image.cpp ../objects.cpp ../resource/codeloader.cpp \
 	../common.hpp ../resource/fread_endian.hpp ../image.hpp \
 	../level.hpp ../objects.hpp ../quadtree.hpp ../settings.hpp \
 	../texture.hpp ../uatypes.hpp
