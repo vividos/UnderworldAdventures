@@ -218,7 +218,7 @@ void ua_cfgfile::write_start_section(const std::string& secname)
    line.append(secname);
    line.append("]");
 
-   write_raw_line(line)
+   write_raw_line(line);
 }
 
 
