@@ -23,6 +23,8 @@ EXTRA_DIST =  \
 	docs/uw2-walkthrough.txt \
 	docs/uw-formats.txt \
 	misc/anmformt.zip \
+	misc/ua-objtex00.png \
+	misc/ua-objtex01.png \
 	misc/uw1-combinations.txt \
 	misc/uw1-common-obj-prop.txt \
 	misc/uw1-levelobjs-level1.txt \
