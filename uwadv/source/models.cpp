@@ -197,10 +197,15 @@ void ua_model3d_manager::init(ua_game_core_interface* thecore)
    core = thecore;
 
    cur_modelmgr = this; 
+   ua_settings& settings = core->get_settings();
 
    // loading builtin models
-   std::string uwexe_filename(core->get_settings().get_string(ua_setting_uw_path));
-   uwexe_filename.append("uw.exe");
+   std::string uwexe_filename(settings.get_string(ua_setting_uw_path));
+
+   if (!settings.get_bool(ua_setting_uw1_is_uw_demo))
+      uwexe_filename.append("uw.exe");
+   else
+      uwexe_filename.append("uwdemo.exe");
 
    ua_model_decode_builtins(uwexe_filename.c_str(), allbuiltins);
 
