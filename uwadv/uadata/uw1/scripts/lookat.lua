@@ -88,7 +88,7 @@ function look_at_special(objinfo)
    if objinfo.item_id == 0x016e or objinfo.item_id == 0x016f
    then
       -- simulate "look at wall"
-      lua_wall_look(objinfo.owner)
+      look_at_wall(objinfo.owner)
 
       return 1
    end
@@ -181,7 +181,7 @@ function look_at_objinfo(objinfo,is_inv)
 end
 
 
-function lua_wall_look(tex_id)
+function look_at_wall(tex_id)
 
    if tex_id >= 256
    then

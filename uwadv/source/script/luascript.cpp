@@ -145,7 +145,7 @@ void ua_lua_scripting::user_action(ua_underworld_user_action action,
       break;
 
    case ua_action_look_wall:
-      lua_getglobal(L,"wall_look");
+      lua_getglobal(L,"look_at_wall");
       lua_pushnumber(L, static_cast<double>(param));
       checked_call(1,0);
       break;
@@ -338,7 +338,6 @@ void ua_lua_scripting::register_functions()
 
    // objlist object
    lua_newtable(L);
-   lua_register_table(L, "print", uw_print);
    lua_register_table(L, "get_info", objlist_get_info);
    lua_register_table(L, "set_info", objlist_set_info);
    lua_register_table(L, "delete", objlist_delete);
