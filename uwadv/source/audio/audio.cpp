@@ -190,10 +190,9 @@ void ua_audio_impl::start_music(unsigned int music, bool repeat)
       // start music track via SDL_mixer
       curtrack = Mix_LoadMUS(trackname.c_str());
       if (curtrack)
-      {
          Mix_PlayMusic(curtrack, repeat ? -1 : 0);
+      else
          ua_trace(" (%s)",Mix_GetError());
-      }
    }
    ua_trace("\n");
 }
