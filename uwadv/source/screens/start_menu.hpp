@@ -37,46 +37,39 @@
 #include "screen.hpp"
 #include "message.hpp"
 #include "imgquad.hpp"
+#include "mousecursor.hpp"
 
 
 // classes
 
 //! start menu screen class
-class ua_start_menu_screen: public ua_ui_screen_base,
-   ua_message_processor<ua_start_menu_screen>
+class ua_start_menu_screen: public ua_screen
 {
 public:
    //! ctor
-   ua_start_menu_screen(){}
+   ua_start_menu_screen();
    //! dtor
    virtual ~ua_start_menu_screen(){}
 
-   // virtual functions from ua_ui_screen_base
-
-   virtual void init(ua_game_core_interface* core);
-   virtual void suspend();
-   virtual void resume();
-   virtual void done();
-   virtual void handle_event(SDL_Event &event);
-   virtual void render();
+   // virtual functions from ua_screen
+   virtual void init();
+   virtual void destroy();
+   virtual void draw();
+   virtual bool process_event(SDL_Event& event);
    virtual void tick();
 
-protected:
-   void hdl_area_introduction(bool is_btn_click, bool left_btn, bool btn_pressed);
-   void hdl_area_createchar(bool is_btn_click, bool left_btn, bool btn_pressed);
-   void hdl_area_acknowledgements(bool is_btn_click, bool left_btn, bool btn_pressed);
-   void hdl_area_journey_onward(bool is_btn_click, bool left_btn, bool btn_pressed);
-   void hdl_area_none(bool is_btn_click, bool left_btn, bool btn_pressed);
-
-   void ua_start_menu_screen::handle_area(int area,bool is_btn_click,
-      bool left_btn, bool btn_pressed);
+   virtual void mouse_event(bool button_clicked, bool left_button, bool button_down,
+      unsigned int mousex, unsigned int mousey);
 
 protected:
+   //! called when resuming the screen
+   void resume();
+
    //! does a button press
    void press_button();
 
    //! determines selected area by mouse coordinates
-//   int get_selected_area();
+   int get_selected_area();
 
 protected:
    // constants
@@ -87,6 +80,9 @@ protected:
    //! palette shifts per second
    static const double palette_shifts_per_second;
 
+
+   //! mouse cursor
+   ua_mousecursor mousecursor;
 
    //! current stage
    unsigned int stage;
@@ -112,7 +108,8 @@ protected:
    //! indicates if image quad texture should be reuploaded
    bool reupload_image;
 
-   UA_MSG_CALL_HANDLER_IMPL()
+   //! indicates if left or right button is pressed down
+   bool leftbuttondown, rightbuttondown;
 };
 
 #endif

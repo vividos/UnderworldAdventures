@@ -28,14 +28,13 @@
 // needed includes
 #include "common.hpp"
 #include "start_menu.hpp"
-#include "cutscene_view.hpp"
-#include "acknowledgements.hpp"
-#include "create_character.hpp"
-#include "ingame_orig.hpp"
-#include "save_game.hpp"
-
-// get template instances for ua_start_menu_screen
-#include "message_inl.cpp"
+#include "audio.hpp"
+#include "renderer.hpp"
+//#include "cutscene_view.hpp"
+//#include "acknowledgements.hpp"
+//#include "create_character.hpp"
+//#include "ingame_orig.hpp"
+//#include "save_game.hpp"
 
 
 // constants
@@ -48,39 +47,30 @@ const double ua_start_menu_screen::palette_shifts_per_second = 20.0;
 
 
 // ua_start_menu_screen methods
-
-void ua_start_menu_screen::init(ua_game_core_interface* thecore)
+ua_start_menu_screen::ua_start_menu_screen()
+:leftbuttondown(false), rightbuttondown(false)
 {
-   ua_ui_screen_base::init(thecore);
+}
+
+void ua_start_menu_screen::init()
+{
+   ua_screen::init();
 
    ua_trace("start menu screen started\n");
 
-   // init message processor
-   message_init(thecore->get_screen_width(),thecore->get_screen_height());
-
-   // register some callbacks
-   ua_msg_area_coord coord;
-   coord = ua_msg_area_coord(64,248, 81,103); register_area_handler(coord,&ua_start_menu_screen::hdl_area_introduction);
-   coord = ua_msg_area_coord(64,248,104,127); register_area_handler(coord,&ua_start_menu_screen::hdl_area_createchar);
-   coord = ua_msg_area_coord(64,248,128,152); register_area_handler(coord,&ua_start_menu_screen::hdl_area_acknowledgements);
-   coord = ua_msg_area_coord(64,248,153,180); register_area_handler(coord,&ua_start_menu_screen::hdl_area_journey_onward);
-   coord = ua_msg_area_coord( 0,320,  0,200); register_area_handler(coord,&ua_start_menu_screen::hdl_area_none);
-
    // load background image
-   img_screen.load_raw(core->get_settings(),"data/opscr.byt",2);
-   img_screen.init(&core->get_texmgr(),0,0,320,200);
+   img_screen.load_raw(game->get_settings(),"data/opscr.byt",2);
+   img_screen.init(&game->get_renderer().get_texture_manager(),0,0,320,200);
 
    // load button graphics
-   img_buttons.load(core->get_settings(),"opbtn",0,0,2);
+   img_buttons.load(game->get_settings(),"opbtn",0,0,2);
+
+   mousecursor.init(game,0);
+   mousecursor.show(true);
+
+   register_window(&mousecursor);
 
    resume();
-}
-
-void ua_start_menu_screen::suspend()
-{
-   ua_trace("suspending start menu screen\n\n");
-
-   mousecursor.done();
 }
 
 void ua_start_menu_screen::resume()
@@ -107,71 +97,23 @@ void ua_start_menu_screen::resume()
    // upload screen image quad
    img_screen.convert_upload();
 
-   // mouse cursor
-   mousecursor.init(core,0);
-   mousecursor.show(true);
-
    // set other flags/values
    stage = 0;
    tickcount = 0;
-   journey_avail = core->get_savegames_mgr().get_savegames_count()>0;
+   journey_avail = game->get_savegames_manager().get_savegames_count() > 0;
    selected_area = -1;
    shiftcount=0.0;
    reupload_image = true;
 }
 
-void ua_start_menu_screen::done()
+void ua_start_menu_screen::destroy()
 {
    ua_trace("start menu screen ended\n\n");
-
-   suspend();
 
    img_screen.done();
 }
 
-void ua_start_menu_screen::handle_event(SDL_Event& event)
-{
-   message_handle_event(event);
-
-   int last_selected_area = selected_area;
-
-   if (event.type == SDL_KEYDOWN)
-   {
-      // handle key presses
-      switch(event.key.keysym.sym)
-      {
-      case SDLK_UP:
-         // select the area above, if possible
-         if (selected_area==-1) selected_area=0;
-         if (selected_area>0) selected_area--;
-         break;
-
-      case SDLK_DOWN:
-         // select the area below, if possible
-         if (selected_area+1<(journey_avail?4:3))
-            selected_area++;
-         break;
-
-      case SDLK_RETURN:
-         // simulate clicking on that area
-         if (stage==1)
-         {
-            stage++;
-            tickcount=0;
-         }
-         break;
-
-      default:
-         break;
-      }
-   }
-
-   // check if selected area changed
-   if (selected_area != last_selected_area)
-      reupload_image = true;
-}
-
-void ua_start_menu_screen::render()
+void ua_start_menu_screen::draw()
 {
    glClear(GL_COLOR_BUFFER_BIT);
 
@@ -205,11 +147,11 @@ void ua_start_menu_screen::render()
    switch(stage)
    {
    case 0:
-      light = Uint8(255*(double(tickcount) / (core->get_tickrate()*fade_time)));
+      light = Uint8(255*(double(tickcount) / (game->get_tickrate()*fade_time)));
       break;
 
    case 2:
-      light = Uint8(255-255*(double(tickcount) / (core->get_tickrate()*fade_time)));
+      light = Uint8(255-255*(double(tickcount) / (game->get_tickrate()*fade_time)));
       break;
 
    case 3:
@@ -217,19 +159,79 @@ void ua_start_menu_screen::render()
       break;
    }
 
+   glDisable(GL_BLEND);
+
    glColor3ub(light,light,light);
 
    // render screen image and mouse
    img_screen.render();
 
-   mousecursor.draw();
+   glEnable(GL_BLEND);
+
+   // draw subwindows
+   ua_screen::draw();
+}
+
+bool ua_start_menu_screen::process_event(SDL_Event& event)
+{
+   bool ret = false;
+
+   ret |= ua_screen::process_event(event);
+
+   int last_selected_area = selected_area;
+
+   if (event.type == SDL_KEYDOWN)
+   {
+      // handle key presses
+      switch(event.key.keysym.sym)
+      {
+      case SDLK_UP:
+         // select the area above, if possible
+         if (selected_area==-1) selected_area=0;
+         if (selected_area>0) selected_area--;
+         ret = true;
+         break;
+
+      case SDLK_DOWN:
+         // select the area below, if possible
+         if (selected_area+1<(journey_avail?4:3))
+            selected_area++;
+         ret = true;
+         break;
+
+      case SDLK_RETURN:
+         // simulate clicking on that area
+         if (stage==1)
+         {
+            stage++;
+            tickcount=0;
+            ret = true;
+         }
+         break;
+
+      default:
+         break;
+      }
+   }
+
+   // user event?
+   if (event.type == SDL_USEREVENT && event.user.code == ua_event_resume_screen)
+   {
+      resume();
+   }
+
+   // check if selected area changed
+   if (selected_area != last_selected_area)
+      reupload_image = true;
+
+   return ret;
 }
 
 void ua_start_menu_screen::tick()
 {
    // when fading in or out, check if blend time is over
    if ((stage==0 || stage==2) &&
-      ++tickcount >= (core->get_tickrate()*fade_time))
+      ++tickcount >= (game->get_tickrate()*fade_time))
    {
       // do next stage
       stage++;
@@ -237,7 +239,7 @@ void ua_start_menu_screen::tick()
    }
 
    // do palette shifting
-   shiftcount += 1.0/core->get_tickrate();
+   shiftcount += 1.0/game->get_tickrate();
    if (shiftcount >= 1.0/palette_shifts_per_second)
    {
       shiftcount -= 1.0/palette_shifts_per_second;
@@ -270,63 +272,54 @@ void ua_start_menu_screen::press_button()
    switch(selected_area)
    {
    case 0: // "introduction"
-      core->push_screen(new ua_cutscene_view_screen(0));
+      //core->replace_screen(new ua_cutscene_view_screen(0),true);
       break;
 
    case 1: // "create character"
-      core->push_screen(new ua_create_character_screen);
+      //core->replace_screen(new ua_create_character_screen,true);
       break;
 
    case 2: // "acknowledgements"
-      core->push_screen(new ua_acknowledgements_screen);
+      //core->replace_screen(new ua_acknowledgements_screen,true);
       break;
 
    case 3: // "journey onward"
       if (journey_avail)
       {
          // "load game" screen (with later starting "orig. ingame ui")
-         core->push_screen(new ua_save_game_screen(true));
+         //core->replace_screen(new ua_save_game_screen(true),true);
       }
       break;
    }
 }
 
-void ua_start_menu_screen::hdl_area_introduction(bool is_btn_click, bool left_btn, bool btn_pressed)
+void ua_start_menu_screen::mouse_event(bool button_clicked, bool left_button, bool button_down,
+   unsigned int mousex, unsigned int mousey)
 {
-   handle_area(0,is_btn_click,left_btn,btn_pressed);
-}
+   // check over which area we are
+   int area = -1;
 
-void ua_start_menu_screen::hdl_area_createchar(bool is_btn_click, bool left_btn, bool btn_pressed)
-{
-   handle_area(1,is_btn_click,left_btn,btn_pressed);
-}
-
-void ua_start_menu_screen::hdl_area_acknowledgements(bool is_btn_click, bool left_btn, bool btn_pressed)
-{
-   handle_area(2,is_btn_click,left_btn,btn_pressed);
-}
-
-void ua_start_menu_screen::hdl_area_journey_onward(bool is_btn_click, bool left_btn, bool btn_pressed)
-{
-   handle_area(3,is_btn_click,left_btn,btn_pressed);
-}
-
-void ua_start_menu_screen::hdl_area_none(bool is_btn_click, bool left_btn, bool btn_pressed)
-{
-   handle_area(-1,is_btn_click,left_btn,btn_pressed);
-}
-
-void ua_start_menu_screen::handle_area(int area,bool is_btn_click,
-   bool left_btn, bool btn_pressed)
-{
-   if (is_btn_click)
+   if (mousex > 64 && mousex < 240 && mousey >= 81 && mousey <= 180)
    {
-      // user clicked button
+      if (mousey < 104) area = 0;
+      else if (mousey < 128) area = 1;
+      else if (mousey < 153) area = 2;
+      else area = 3;
+   }
+
+   // a button click action?
+   if (button_clicked)
+   {
+      // remember what buttons are down
+      if (left_button)
+         leftbuttondown = button_down;
+      else
+         rightbuttondown = button_down;
 
       // only in stage 1
       if (stage==1)
       {
-         if (btn_pressed)
+         if (button_down)
          {
             // mouse button down
             selected_area = area;
@@ -343,16 +336,14 @@ void ua_start_menu_screen::handle_area(int area,bool is_btn_click,
 
                // fade out music when selecting "introduction"
                if (selected_area == 0)
-                  core->get_audio().fadeout_music(fade_time);
+                  game->get_audio_manager().fadeout_music(fade_time);
             }
          }
       }
    }
    else
    {
-      // user moved mouse
-
-      mousecursor.updatepos();
+      // a mouse move action
 
       if (stage==1 && (leftbuttondown || rightbuttondown) && area != -1)
          selected_area = area;
