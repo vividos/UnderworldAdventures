@@ -34,7 +34,7 @@
 // constants
 
 //! time to show one credits screen
-const double ua_ack_showtime = 4.0;
+const double ua_ack_showtime = 3.0;
 
 //! time to crossfade between two screens
 const double ua_ack_fadetime = 0.5;
