@@ -62,7 +62,8 @@ EXTRA_DIST = \
 cfgdir = $(datadir)/games/uwadv
 cfg_DATA = uwadv.cfg
 
-man6_MANS = linux/uwadv.6
+man6_MANS = linux/uwadv.6 \
+	linux/ua-lowercase-all.pl.6
 
 uwadv.cfg: linux/uwadv.cfg.in
 	rm -f $@ $@.tmp $@.tmptmp

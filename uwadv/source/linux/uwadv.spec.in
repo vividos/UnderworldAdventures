@@ -62,3 +62,4 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/games/uwadv/uwadv.cfg
 %{_datadir}/games/uwadv/uadata00.uar
 %{_mandir}/man6/uwadv.6.gz
+%{_mandir}/man6ua-lowercase-all.pl.6.gz
