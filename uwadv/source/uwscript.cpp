@@ -115,6 +115,7 @@ void ua_underworld_script_bindings::register_functions()
    lua_register(L,"ui_start_conv",ui_start_conv);
    lua_register(L,"ui_show_cutscene",ui_show_cutscene);
    lua_register(L,"ui_print_string",ui_print_string);
+   lua_register(L,"ui_get_gamestring",ui_get_gamestring);
    lua_register(L,"ui_show_ingame_anim",ui_show_ingame_anim);
    lua_register(L,"ui_cursor_use_item",ui_cursor_use_item);
    lua_register(L,"ui_cursor_target",ui_cursor_target);
@@ -469,29 +470,59 @@ int ua_underworld_script_bindings::objlist_get_obj_info(lua_State* L)
    ua_obj_handle_decode(obj_handle,objpos,level);
 
    ua_object& obj = uw.get_level(level).get_mapobjects().get_object(objpos);
-   ua_object_info& objinfo = obj.get_object_info();
+   ua_object_info& info = obj.get_object_info();
+   ua_object_info_ext& extinfo = obj.get_ext_object_info();
 
    // create new table and fill it with infos
    lua_newtable(L);
 
    lua_pushstring(L,"item_id");
-   lua_pushnumber(L,static_cast<double>(objinfo.item_id));
+   lua_pushnumber(L,static_cast<double>(info.item_id));
    lua_settable(L,-3);
 
-   lua_pushstring(L,"quantity");
-   lua_pushnumber(L,static_cast<double>(objinfo.quantity));
+   lua_pushstring(L,"enchanted");
+   lua_pushnumber(L,info.enchanted ? 1.0 : 0.0);
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"is_link");
+   lua_pushnumber(L,info.is_link ? 1.0 : 0.0);
+   lua_settable(L,-3);
+
+
+   lua_pushstring(L,"zpos");
+   lua_pushnumber(L,static_cast<double>(extinfo.zpos));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"dir");
+   lua_pushnumber(L,static_cast<double>(extinfo.dir));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"ypos");
+   lua_pushnumber(L,extinfo.ypos);
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"xpos");
+   lua_pushnumber(L,extinfo.xpos);
+   lua_settable(L,-3);
+
+
+   lua_pushstring(L,"quality");
+   lua_pushnumber(L,static_cast<double>(info.quality));
    lua_settable(L,-3);
 
    lua_pushstring(L,"handle_next");
-   lua_pushnumber(L,static_cast<double>(ua_obj_handle_encode(objinfo.link1,level)));
+   lua_pushnumber(L,static_cast<double>(ua_obj_handle_encode(info.link,level)));
    lua_settable(L,-3);
 
-/*
-   lua_pushstring(L,"handle_special");
-   lua_pushnumber(L,static_cast<double>(ua_obj_handle_encode(objinfo.quality,level)));
+   lua_pushstring(L,"owner");
+   lua_pushnumber(L,static_cast<double>(info.owner));
    lua_settable(L,-3);
-*/
-   // todo: add more table entries
+
+   lua_pushstring(L,"quantity");
+   lua_pushnumber(L,static_cast<double>(info.quantity));
+   lua_settable(L,-3);
+
+   // TODO: add data
 
    return 1;
 }
