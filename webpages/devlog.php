@@ -19,7 +19,7 @@
 
 <p>
 The dev log is the place where I write about the daily ongoings of the project. It is updated occasionally.
-An RSS feed is also available: <a href="devlog.php?type=rss"><img src="rss_xml.gif"/></a>
+An RSS feed is also available: <a href="devlog.php?type=rss"><img src="rss_xml.gif" border="0"/></a>
 </p>
 
 <?php
@@ -53,13 +53,22 @@ An RSS feed is also available: <a href="devlog.php?type=rss"><img src="rss_xml.g
 
    function cdata_handler($expat, $data)
    {
+      global $item_count;
+      if ($item_count == 0) return;
+
       echo htmlspecialchars($data);
    }
 
    function html_start_elem_handler($expat, $name, $attr)
    {
+      global $item_count;
+      if ($item_count == 0) return;
+
       if (0 == strcasecmp($name, "devlog")) echo ""; else
-      if (0 == strcasecmp($name, "entry")) echo "<span class=\"devlogHeading\">" . $attr['date'] ."</span>"; else
+      if (0 == strcasecmp($name, "entry"))
+      {
+         echo "<span class=\"devlogHeading\">" . $attr['date'] ."</span>";
+      } else
       if (0 == strcasecmp($name, "para")) echo "<p>"; else
       {
          echo "<" . $name;
@@ -71,14 +80,24 @@ An RSS feed is also available: <a href="devlog.php?type=rss"><img src="rss_xml.g
 
    function html_end_elem_handler($expat, $name)
    {
+      global $item_count;
+
       if (0 == strcasecmp($name, "devlog")) echo ""; else
-      if (0 == strcasecmp($name, "entry")) echo "</span>"; else
+      if ($item_count == 0) return; else
+      if (0 == strcasecmp($name, "entry"))
+      {
+         echo "</span>";
+         if ($item_count > 0) $item_count--;
+      } else
       if (0 == strcasecmp($name, "para")) echo "</p>"; else
       	echo "</" . $name . ">";
    }
 
    function rss_start_elem_handler($expat, $name, $attr)
    {
+      global $item_count;
+      if ($item_count == 0) return;
+
       if (0 == strcasecmp($name, "devlog"))
       {
          echo "<rss version=\"2.0\" xmlns:blogChannel=\"http://backend.userland.com/blogChannelModule\">\n" .
@@ -94,10 +113,11 @@ An RSS feed is also available: <a href="devlog.php?type=rss"><img src="rss_xml.g
       if (0 == strcasecmp($name, "entry"))
       {
          // convert to RFC-822 date
-         $date = $attr['date'];
+         $date = $attr['date'] . "  12:00:00";
          $date_rfc = date("r", strtotime($date));
 
          echo "<item>\n" .
+              "  <title>" . "Entry from " . $date_rfc . "</title>\n" .
               "  <pubDate>" . $date_rfc . "</pubDate>\n" .
               "  <guid isPermaLink=\"false\">date-" . $date ."</guid>\n" .
               "  <description>";
@@ -118,24 +138,23 @@ An RSS feed is also available: <a href="devlog.php?type=rss"><img src="rss_xml.g
 
    function rss_end_elem_handler($expat, $name)
    {
+      global $item_count;
+
       if (0 == strcasecmp($name, "devlog"))
-      {
-         echo "</channel>\n" .
-              "</rss>\n";
-      }
+         echo "</channel>\n" . "</rss>\n";
+      else
+      if ($item_count == 0) return;
       else
       if (0 == strcasecmp($name, "entry"))
       {
-         echo "  </description>" .
-              " </item>\n";
+         echo "  </description>" . " </item>\n";
+         if ($item_count > 0) $item_count--;
       }
       else
       if (0 == strcasecmp($name, "para"))
-      {
          echo "&lt;/p&gt;";
-      }
       else
-      	echo "&lt;/" . $name . "&gt;";
+      	 echo "&lt;/" . $name . "&gt;";
    }
 
    $expat = xml_parser_create();
@@ -146,14 +165,28 @@ An RSS feed is also available: <a href="devlog.php?type=rss"><img src="rss_xml.g
 
    xml_set_character_data_handler($expat, cdata_handler);
 
+   $show = $_GET['show'];
    if ($type == 'rss')
+   {
       xml_set_element_handler($expat, rss_start_elem_handler, rss_end_elem_handler);
+      $item_count = 5;
+   }
    else
+   {
       xml_set_element_handler($expat, html_start_elem_handler, html_end_elem_handler);
+      $item_count = 10;
+      if ($show == "all")
+         $item_count = -1;
+   }
 
    xml_parse($expat, $xml, TRUE);
 
    xml_parser_free($expat);
+
+   if ($type != 'rss' && $show != 'all')
+   {
+      echo "<p><a href=\"index.php?page=devlog&amp;show=all\">show all entries</a></p>";
+   }
 
 /* ------------------------------------------------------------------------ */
 ?>
