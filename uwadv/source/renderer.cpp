@@ -953,6 +953,10 @@ void ua_renderer::render_objects(unsigned int x, unsigned int y)
    // enable alpha blending
    glEnable(GL_BLEND);
 
+   // prevent pixels with alpha < 0.1 to write to color and depth buffer
+   glAlphaFunc(GL_GREATER, 0.1);
+   glEnable(GL_ALPHA_TEST);
+
    ua_object_list& objlist = underw->get_current_level().get_mapobjects();
 
    // get first object link
@@ -976,6 +980,7 @@ void ua_renderer::render_objects(unsigned int x, unsigned int y)
 
    // disable alpha blending again
    glDisable(GL_BLEND);
+   glDisable(GL_ALPHA_TEST);
 
    glPopName();
 }
@@ -1003,14 +1008,23 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
    if (item_id >= 0x0040 && item_id < 0x0080)
    {
       // critter object
-      ua_texture& tex = critpool->get_critter(item_id-0x0040).get_texture();
+      ua_critter& crit = critpool->get_critter(item_id-0x0040);
+      ua_texture& tex = crit.get_texture();
 
       double u = tex.get_tex_u(), v = tex.get_tex_v();
+      double hot_u = crit.get_hotspot_u(), hot_v = crit.get_hotspot_v();
+
+      double scale_x = 1.1*1.0/256.0;
+      double scale_z = 1.1*3.0/256.0;
+
+      base.x -= hot_u * 0.125;
+      base.z -= (1.0-hot_v)*scale_z*tex.get_xres()*u - 0.1;
 
       tex.use(0);
 
       draw_billboard_quad(base,
-         1.0/256.0*tex.get_xres(), 2.0/256.0*tex.get_yres(),
+         scale_x*tex.get_xres(),
+         scale_z*tex.get_yres(),
          0.0, 0.0, u,v);
    }
    else
