@@ -843,8 +843,15 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
             check_dragging = false;
             inv.float_item(drag_item);
 
-            cursor_object =  inv.get_item(inv.get_floating_item()).item_id;
-            cursor_is_object = cursor_object != ua_slot_no_item;
+            // check if we still have a floating object
+            if (inv.get_floating_item() != ua_slot_no_item)
+            {
+               // still floating? then set new cursor object
+               cursor_object =  inv.get_item(inv.get_floating_item()).item_id;
+               cursor_is_object = cursor_object != ua_slot_no_item;
+            }
+            else
+               cursor_is_object = false;
          }
       }
    } while (false);
