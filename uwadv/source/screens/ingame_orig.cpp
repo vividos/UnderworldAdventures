@@ -239,7 +239,22 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    if (keymap.is_key(ua_key_run_forward,keymod))
    {
       if (type==SDL_KEYDOWN)
+      {
+         core->get_underworld().get_physics().set_player_speed(1.0);
          pl.set_movement_mode(ua_move_walk_forward);
+      }
+      else
+         pl.set_movement_mode(0,ua_move_walk_forward);
+   }
+   else
+   // check for walk backwards
+   if (keymap.is_key(ua_key_walk_backwards,keymod))
+   {
+      if (type==SDL_KEYDOWN)
+      {
+         core->get_underworld().get_physics().set_player_speed(-1.0);
+         pl.set_movement_mode(ua_move_walk_forward);
+      }
       else
          pl.set_movement_mode(0,ua_move_walk_forward);
    }
