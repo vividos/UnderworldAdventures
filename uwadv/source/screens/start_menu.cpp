@@ -33,8 +33,8 @@
 #include "savegame.hpp"
 #include "cutscene_view.hpp"
 #include "acknowledgements.hpp"
-//#include "create_character.hpp"
-//#include "ingame_orig.hpp"
+#include "create_character.hpp"
+#include "ingame_orig.hpp"
 #include "save_game.hpp"
 
 
@@ -246,7 +246,7 @@ void ua_start_menu_screen::press_button()
       break;
 
    case 1: // "create character"
-      //game->replace_screen(new ua_create_character_screen,true);
+      game->replace_screen(new ua_create_character_screen,true);
       break;
 
    case 2: // "acknowledgements"
