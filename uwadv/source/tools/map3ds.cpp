@@ -49,7 +49,7 @@ static std::set<Uint16> allusedtextures;
 // create a big 3ds file with all levels in one file?
 static bool one_map = false;
 
-// create separate meshes for ceiling and water/lava
+// create seperate meshes for ceiling and water/lava
 static bool sep_meshes = false;
 
 #ifdef HAVE_LIB3DS
@@ -101,13 +101,19 @@ void write_level(unsigned int curlevel, ua_level& level)
       for(unsigned int xpos=0; xpos<64; xpos++)
          ua_renderer::get_tile_triangles(level,xpos,ypos,alltriangles);
 
+   if (alltriangles.empty())
+   {
+      printf("no triangles to write\n");
+      return;
+   }
+
    // sort triangles by texnum
    std::sort(alltriangles.begin(), alltriangles.end());
 
-   // separate meshes
+   // seperate meshes
    if (sep_meshes)
    {
-      printf("separating meshes ... ");
+      printf("seperating meshes ... ");
 
       for(int n = alltriangles.size()-1; n>=0; n--)
       {
@@ -134,12 +140,6 @@ void write_level(unsigned int curlevel, ua_level& level)
       printf("collecting triangles ...");
    else
       printf("writing 3ds file ... ");
-
-   if (alltriangles.empty())
-   {
-      printf("no triangles to write\n");
-      return;
-   }
 
    // write 3ds file
    char buffer[256];
@@ -360,7 +360,7 @@ int main(int argc, char* argv[])
    if (argc==2 && strcmp(argv[1],"sepmesh")==0)
       sep_meshes = true;
 
-   printf("separating meshes: %s\n\n",sep_meshes ? "on" : "off");
+   printf("seperating meshes: %s\n\n",sep_meshes ? "on" : "off");
 
    // init exporter
    init_map3ds("./");
