@@ -632,7 +632,16 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    {
       ua_trace("quicksaving ... ");
       ui_print_string("quicksaving ...");
-      ua_savegame sg = core->get_savegames_mgr().get_quicksave(true);
+
+      // TODO update scroll
+
+      // render savegame preview image
+      do_screenshot(false,80,50);
+      core->get_savegames_mgr().set_save_screenshot(
+         screenshot_rgba,screenshot_xres,screenshot_yres);
+
+      ua_savegame sg = core->get_savegames_mgr().get_quicksave(
+         true,core->get_underworld().get_player());
       core->get_underworld().save_game(sg);
       ua_trace("done\n");
    }
@@ -642,7 +651,11 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    {
       ua_trace("quickloading ... ");
       ui_print_string("quickloading ...");
-      ua_savegame sg = core->get_savegames_mgr().get_quicksave(false);
+
+      // TODO update scroll
+
+      ua_savegame sg = core->get_savegames_mgr().get_quicksave(
+         false,core->get_underworld().get_player());
       core->get_underworld().load_game(sg);
       ua_trace("done\n");
    }
@@ -653,6 +666,11 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
       fade_state = 2;
       fade_ticks = 0;
       fadeout_action = 1; // load game
+
+      // render savegame preview image
+      do_screenshot(false,80,50);
+      core->get_savegames_mgr().set_save_screenshot(
+         screenshot_rgba,screenshot_xres,screenshot_yres);
    }
    else
    // check for "save game" key
@@ -661,6 +679,11 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
       fade_state = 2;
       fade_ticks = 0;
       fadeout_action = 2; // save game
+
+      // render savegame preview image
+      do_screenshot(false,80,50);
+      core->get_savegames_mgr().set_save_screenshot(
+         screenshot_rgba,screenshot_xres,screenshot_yres);
    }
    else
    // check for "debugger" key
@@ -669,6 +692,15 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
       core->get_debug_interface()->start_debugger();
    }
    else
+   // check for "screenshot" key
+   if (keymap.is_key(ua_key_ua_screenshot,keymod))
+   {
+      // take a screenshot
+      do_screenshot(true,0,0);
+      //save_screenshot();
+   }
+   else
+//#ifdef HAVE_DEBUG
    // check for "level up" key
    if (keymap.is_key(ua_key_ua_level_up,keymod))
    {
@@ -688,6 +720,7 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
       if (curlevel+1<core->get_underworld().get_num_levels())
          core->get_underworld().change_level(++curlevel);
    }
+//#endif
 }
 
 void ua_ingame_orig_screen::render()
@@ -1667,4 +1700,46 @@ void ua_ingame_orig_screen::ui_cursor_use_item(Uint16 item_id)
 
 void ua_ingame_orig_screen::ui_cursor_target()
 {
+}
+
+void ua_ingame_orig_screen::do_screenshot(bool with_menu, unsigned int xres, unsigned int yres)
+{
+   if (xres==0) xres = core->get_screen_width();
+   if (yres==0) yres = core->get_screen_height();
+
+   // set up camera and viewport
+   glViewport(0,0,xres,yres);
+   renderer.setup_camera(90.0,double(xres)/yres,16.0);
+
+   glClear(GL_COLOR_BUFFER_BIT);
+
+   // render scene
+   if (with_menu)
+      render();
+   else
+   {
+      glDisable(GL_SCISSOR_TEST);
+      renderer.render();
+      glEnable(GL_SCISSOR_TEST);
+   }
+
+   // prepare screenshot
+   screenshot_xres = xres;
+   screenshot_yres = yres;
+
+   screenshot_rgba.clear();
+   screenshot_rgba.resize(xres,yres);
+
+   // read in scanlines
+   glReadBuffer(GL_BACK);
+
+//   glReadPixels(0, 0, xres, yres, GL_RGBA, GL_UNSIGNED_BYTE,
+//      &screenshot_rgba[0]);
+
+   // reset camera and viewport
+   glViewport(0,0,core->get_screen_width(),core->get_screen_height());
+
+   renderer.setup_camera(90.0,
+      double(core->get_screen_width())/core->get_screen_height(),
+      16.0);
 }

@@ -175,6 +175,9 @@ protected:
    void inventory_click(ua_inventory& inv,
       bool pressed, bool left_button, ua_ingame_orig_area area);
 
+   //! takes screenshot from current image
+   void do_screenshot(bool with_menu, unsigned int xres=0, unsigned int yres=0);
+
 protected:
 
    // constants
@@ -339,6 +342,13 @@ protected:
 
    // font for inventory weight and scroll messages
    ua_font font_normal;
+
+
+   //! screenshot image in rgba format
+   std::vector<Uint32> screenshot_rgba;
+
+   //! screenshot image resolution
+   unsigned int screenshot_xres,screenshot_yres;
 };
 
 #endif
