@@ -89,7 +89,7 @@ void ua_save_game_screen::init()
    edit_desc = false;
 
    // scan for savegames
-   core->get_savegames_mgr().rescan();
+   sgmgr->rescan();
 
    // load fonts
    font_btns.init(core->get_settings(), ua_font_chargen);
@@ -170,6 +170,7 @@ void ua_save_game_screen::handle_event(SDL_Event &event)
          // set up savegame info
          ua_savegame_info info;
          info.title = desc;
+         info.fill_infos(core->get_underworld().get_player());
 
          // saving game
          if (selected_savegame < sgmgr->get_savegames_count())
@@ -471,7 +472,10 @@ void ua_save_game_screen::press_button()
       {
          // check if user tries to load the "new slot" entry
          if (selected_savegame>=sgmgr->get_savegames_count())
+         {
+            button_highlight = -1;
             break;
+         }
 
          // fade out and do action
          fade_state = 2;
@@ -521,7 +525,18 @@ void ua_save_game_screen::press_button()
 
 void ua_save_game_screen::update_info()
 {
-   // TODO
+   if (selected_savegame < sgmgr->get_savegames_count())
+   {
+      // get savegame infos
+      ua_savegame_info info;
+      sgmgr->get_savegame_info(selected_savegame,info);
+
+      // show infos
+   }
+   else
+   {
+      // TODO empty info pane
+   }
 
    img_back2.convert_upload();
 }
