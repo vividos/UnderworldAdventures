@@ -310,6 +310,9 @@ void ua_ingame_orig_screen::suspend()
 
    renderer.done();
 
+   // reset stock textures
+   core->get_texmgr().reset();
+
    glDisable(GL_SCISSOR_TEST);
 }
 
@@ -334,7 +337,7 @@ void ua_ingame_orig_screen::resume()
    core->get_underworld().get_scripts().register_callback(this);
 
    // prepare level textures
-   ui_changed_level(core->get_underworld().get_player().get_attr(ua_attr_level));
+   ui_changed_level(core->get_underworld().get_player().get_attr(ua_attr_maplevel));
 
    // background image
    img_back.init(&core->get_texmgr(),0,0,320,320);
@@ -1410,6 +1413,9 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
                desc.append(core->get_underworld().get_strings().get_string(10,texid));
 
                ui_print_string(desc.c_str());
+
+               ua_trace("looked at wall/ceiling, tile=%u/%u id=%u\n",
+                  tilex,tiley,id);
 
                //core->get_underworld().get_scripts().lua_wall_look();
             }
