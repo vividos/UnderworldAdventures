@@ -35,7 +35,8 @@ const double ua_ellipsoid_y = 0.2;//0.3;
 const double ua_ellipsoid_z = 2.9;//3.2;//0.4*8;
 
 // ua_player methods
-ua_player::ua_player() : ua_physics_object()
+ua_player::ua_player()
+:ua_physics_object()
 {
    name.assign("GRONKEY");
 }
@@ -43,7 +44,7 @@ ua_player::ua_player() : ua_physics_object()
 void ua_player::init()
 {
    xpos = ypos = 32.0;
-   height = 24.0; // start height at entrance
+   height = 0.0;
    rotangle = panangle = 0.0;
    move_mode = 0;
 
@@ -56,7 +57,7 @@ void ua_player::init()
    move_factors[ua_move_jump] = 0.0;
    move_factors[ua_move_slide] = 0.0;
    move_factors[ua_move_float] = 0.0;
-   
+
    set_ellipsoid(ua_vector3d(ua_ellipsoid_x, ua_ellipsoid_y, ua_ellipsoid_z));
 }
 
@@ -94,7 +95,7 @@ unsigned int ua_player::get_skill(ua_player_skills which) const
    return skills[static_cast<unsigned int>(which)];
 }
 
-void ua_player::load_game(ua_savegame &sg)
+void ua_player::load_game(ua_savegame& sg)
 {
    sg.begin_section("player");
 
@@ -120,7 +121,7 @@ void ua_player::load_game(ua_savegame &sg)
    sg.end_section();
 }
 
-void ua_player::save_game(ua_savegame &sg)
+void ua_player::save_game(ua_savegame& sg)
 {
    sg.begin_section("player");
 
@@ -145,4 +146,3 @@ void ua_player::save_game(ua_savegame &sg)
 
    sg.end_section();
 }
-

@@ -119,7 +119,7 @@ typedef enum
 // classes
 
 //! player class
-class ua_player : public ua_physics_object
+class ua_player: public ua_physics_object
 {
 public:
    //! ctor
@@ -199,10 +199,10 @@ public:
    // loading/saving/importing
 
    //! loads a savegame
-   void load_game(ua_savegame &sg);
+   void load_game(ua_savegame& sg);
 
    //! saves to a savegame
-   void save_game(ua_savegame &sg);
+   void save_game(ua_savegame& sg);
 
    //! imports player info from savegame
    void import_player(ua_settings& settings, const char* folder);
