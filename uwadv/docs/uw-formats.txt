@@ -411,6 +411,9 @@ Table of Contents
       0011   Int8   unknown
       0012   Int8   npc_whoami, conversation slot to use (or 0 for none)
 
+   The conversation slot to use is  npc_whoami + 0x0e00. If the value is 0,
+   a generic conversation is used, starting from string blocks 0x0f00.
+
    Free list, mobile objects
    -------------------------
    This consists of an Int16 for each mobile object (critter) slot which is
