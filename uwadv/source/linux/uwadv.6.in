@@ -15,7 +15,7 @@ that recursively converts all file and folder names to lowercase.
 
 Before starting the game, you have to set up the path to the installed Ultima
 Underworld game files. Without them, the game won't run. The system wide config file for Underworld Adventures can be found in
-.B @UADATAPATH@/uwadv.cfg
+.B @UADATAPATH@uwadv.cfg
 Just edit the file with a text editor. There is also the possibility to have user-specific settings and keyboard mappings. Just copy the files uwadv.cfg and keymap.cfg to the folder
 .B ~/.uwadv/
 and adjust the settings in these two files.
@@ -23,7 +23,7 @@ and adjust the settings in these two files.
 The game should behave exactly as the original. Please consult your game manuals or reference card for instructions. A list of keyboard commands for the original Ultima Underworld 1 is available in the file
 .B uw1-keyboard.txt
 .SH FILES
-.B @UADATAPATH@/uwadv.cfg
+.B @UADATAPATH@uwadv.cfg
 .RS
 The system wide configuration file for Underworld Adventures.
 .RE
@@ -36,7 +36,7 @@ A per-user configuration file for Underworld Adventures. Options previously set 
 .B ~/.uwadv/keymap.cfg
 .RS
 A per-user keyboard mapping file for Underworld Adventures. Options previously set in the system wide keyboard mapping file are superseded by ones in this file. A template file to use can be found at
-.B @UADATAPATH@/keymap.cfg
+.B @UADATAPATH@keymap.cfg
 .RE
 
 .B uw1-keyboard.txt
