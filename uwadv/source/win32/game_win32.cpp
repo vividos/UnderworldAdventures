@@ -52,9 +52,6 @@ void ua_uwadv_game_win32::init()
 
    HINSTANCE inst = (HINSTANCE)GetModuleHandle(NULL);
 
-   // load menu and icon resources
-   menu = ::LoadMenu(NULL,MAKEINTRESOURCE(IDR_MENU));
-
    icon = ::LoadIcon(inst,MAKEINTRESOURCE(IDI_ICON));
    icon_small = (HICON)::LoadImage(inst,
       MAKEINTRESOURCE(IDI_ICON),IMAGE_ICON,16,16,LR_DEFAULTCOLOR);
