@@ -59,7 +59,7 @@ Here are some code guidelines for the uwadv project that every developer
 should consider when commiting code via CVS:
 
  - tabs should be converted to spaces, indendation size is 3 spaces
-   don't reindent code that wasn't changed
+   don't reindent code that wasn't changed by you
  - always document your code, use doxygen-style comments for functions
  - don't use "using namespace std;", use e.g. std::string instead
  - use C++ style casts when unsure
@@ -102,19 +102,27 @@ to do certain things.
 
 * ua_exception
 
-  todo
+  This is the standard exception that is used throughout uwadv. It takes a
+  std::string as argument, the description of the fatal error. It is derived
+  from std::exception, so catch() ua_exception before the parent class.
 
   implementation: source/uatypes.hpp
 
 * ua_smart_ptr
 
-  todo
+  The smart pointer template class wraps a normal pointer and adds reference
+  counting. when the class is copied (i.e. in an STL container), the reference
+  count is incremented, and the pointer is just copied. When the smart pointer
+  is destroyed, the real pointer is only deleted when the refcount is
+  decremented to zero.
 
   implementation: source/uatypes.hpp
 
 * ua_vector2d
 
-  todo
+  The 2d vector class just resembles a 2d vector. Some operators are
+  overloaded, and even the 2d inner (or dot) product can be calculated.
+  Nothing really exciting here. Angles are, as everywhere in uwadv, in degree.
 
   implementation: source/uamath.hpp
 
@@ -144,7 +152,27 @@ chapter "2.3. Game core interface".
 
 2.2. Os porter's guide
 
-todo
+uwadv has an abstract class for the game called ua_game, defined in
+"source/uwadv.hpp and .cpp". To start a game, derive from that class and
+implement all needed virtual methods. For examples, look at the file
+"source/win32/source/game_win32.hpp and .cpp" or "source/linux/main.cpp".
+
+These are the functions that can be customized:
+
+   virtual void init();
+   virtual void system_message(SDL_SysWMEvent &syswm);
+   virtual void done();
+   virtual void error_msg(const char *msg);
+
+for derived methods, it is recommended to call the parent's method first.
+
+system_message() is called for a system specific window manager event and can
+be used to handle window messages, etc. The ua_game implementation does
+nothing.
+
+error_msg() is called to display an error message, e.g. in a message box. The
+game exits after this function. The ua_game implementation prints out the
+message to stderr.
 
 
 2.3. Core interface
@@ -207,14 +235,19 @@ not found, an exception is thrown.
 4.1. Makefile
 
 The Makefile in the "uadata" folder creates packaged files that have all the
-files from the whole uadata tree in one file. There can be more files
+files from the whole uadata tree in one file. Just do a
+
+   make all
+
+to build all packaged files that are needed for distribution. For developing
+the raw files can be used.
 
 
 4.2. Lua scripts
 
 Lua scripts can have the extension ".lua" or ".lob". ".lua" files contain
 scripts as text, i.e. not precompiled. ".lob" files are "lua object" files,
-that is lua files compiled with "luac".
+that are lua files compiled with "luac".
 
 Lua scripts are searched in the same way as other files, but first  the".lua"
 one is searched, then the ".lob". That allows for changes to ".lua" files
