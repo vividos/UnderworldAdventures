@@ -29,8 +29,8 @@
 */
 
 // include guard
-#ifndef __uwadv_xmidi_hpp_
-#define __uwadv_xmidi_hpp_
+#ifndef uwadv_xmidi_hpp_
+#define uwadv_xmidi_hpp_
 
 // needed includes
 #include <SDL_types.h>
