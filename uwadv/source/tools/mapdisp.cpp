@@ -47,10 +47,13 @@ static bool can_exit = false;
 static double xpos = 0.0;
 static double ypos = 0.0;
 static double zpos = 32.0;
+static double midz = 0.0;
 static double xangle = 0.0;
 static double yangle = 0.0;
 static bool leftbuttondown = false;
 static bool rightbuttondown = false;
+
+static bool all_maps = false;
 
 static int curlevel=0;
 static std::vector<ua_level> levels;
@@ -98,6 +101,43 @@ void load_level(int level)
    std::sort(alltriangles.begin(), alltriangles.end());
 }
 
+void load_all_levels()
+{
+   texmgr.reset();
+
+   unsigned int maxlevels = levels.size();
+
+   alltriangles.clear();
+   alltriangles.reserve(12000*maxlevels);
+
+   for(unsigned int i=0; i<maxlevels; i++)
+   {
+      // prepare all used textures
+      const std::vector<Uint16>& used_textures =
+         levels[i].get_used_textures();
+
+      unsigned int max = used_textures.size();
+      for(unsigned int n=0; n<max; n++)
+         texmgr.prepare(used_textures[n]);
+
+      // collect all triangles
+      for(unsigned int x=0; x<64; x++)
+         for(unsigned int y=0; y<64; y++)
+            ua_renderer::get_tile_triangles(levels[i],x,y,alltriangles);
+
+      // translate all triangles up
+      unsigned int maxtri = alltriangles.size();
+      for(unsigned int t=0; t<maxtri; t++)
+      {
+         for(unsigned int k=0; k<3; k++)
+            alltriangles[t].points[k].z += 32.0;
+      }
+   }
+
+   // sort triangles by texnum
+//   std::sort(alltriangles.begin(), alltriangles.end());
+}
+
 void init_mapdisp()
 {
    // we don't load settings, just set the needed one
@@ -118,8 +158,18 @@ void init_mapdisp()
 
    ua_import_levelmaps(settings,"data/",levels);
 
-   // load first level
-   load_level(0);
+   if (all_maps)
+   {
+      // load all level maps
+      load_all_levels();
+      zpos = 64.0;
+      midz = -16.0;
+   }
+   else
+   {
+      // load first level
+      load_level(0);
+   }
 }
 
 void handle_key_down(SDL_keysym* keysym)
@@ -131,12 +181,12 @@ void handle_key_down(SDL_keysym* keysym)
       break;
 
    case SDLK_PAGEUP:
-      if (curlevel>0)
+      if (!all_maps && curlevel>0)
          load_level(curlevel-1);
       break;
 
    case SDLK_PAGEDOWN:
-      if (curlevel<levels.size()-1)
+      if (!all_maps && curlevel<levels.size()-1)
          load_level(curlevel+1);
       break;
 
@@ -223,7 +273,7 @@ void draw_screen()
    glRotated( xangle, 0.0, 0.0, 1.0 );
 
    // move to center of map
-   glTranslated( -32.0, -32.0, 0.0 );
+   glTranslated( -32.0, -32.0, midz );
 
    // draw ground square
    glBegin(GL_QUADS);
@@ -330,6 +380,10 @@ int main(int argc, char* argv[])
       return 1;
    }
 
+   // check if we have "allmaps" param
+   if (argc>1 && strcmp(argv[1],"allmaps")==0)
+      all_maps = true;
+
    // init more stuff
    setup_opengl(width,height);
    init_mapdisp();
@@ -351,7 +405,7 @@ int main(int argc, char* argv[])
          // set new caption
          char buffer[256];
          sprintf(buffer,"Underworld Adventures: Map Display, Level %u; %3.1f frames/s, %u triangles",
-            curlevel+1, renders*1000.f/(now-fcstart), alltriangles.size());
+            all_maps ? 0 : curlevel+1, renders*1000.f/(now-fcstart), alltriangles.size());
 
          SDL_WM_SetCaption(buffer,NULL);
 
