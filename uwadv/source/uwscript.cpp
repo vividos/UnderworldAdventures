@@ -240,6 +240,15 @@ ua_inv_item_category ua_underworld_script_bindings::lua_inventory_categorize_ite
    return cat;
 }
 
+void ua_underworld_script_bindings::lua_inventory_look(Uint16 item_pos)
+{
+}
+
+void ua_underworld_script_bindings::lua_inventory_use(Uint16 item_pos)
+{
+}
+
+
 ua_obj_combine_result ua_underworld_script_bindings::lua_obj_combine(
    Uint16 item_id1, Uint16 item_id2, Uint16 &result_id)
 {

@@ -94,6 +94,12 @@ public:
    //! categorizes item by item id
    ua_inv_item_category lua_inventory_categorize_item(Uint16 item_id);
 
+   //! prints "look" text of an inventory item
+   void lua_inventory_look(Uint16 item_pos);
+
+   //! uses inventory item
+   void lua_inventory_use(Uint16 item_pos);
+
    //! tries to combine items
    ua_obj_combine_result lua_obj_combine(Uint16 item_id1, Uint16 item_id2,
       Uint16 &result_id);
