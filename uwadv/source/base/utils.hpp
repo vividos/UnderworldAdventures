@@ -106,7 +106,7 @@ public:
    typedef T& reference_type; //!< reference type
 
    //! ctor
-   explicit ua_smart_ptr(T* ptr=0):px(ptr){ pn=new long(1);}
+   explicit ua_smart_ptr(T* ptr=0):px(ptr){ pn=new long(1); }
    //! dtor
    ~ua_smart_ptr(){ dispose(); }
 
@@ -195,8 +195,7 @@ inline Uint16 ua_endian_convert16(Uint16 x)
 
 //! endian-converts 32-bit value
 /*! Converts between host and network byte ordering by swapping the low and
-    high word.
-*/
+    high word. */
 inline Uint32 ua_endian_convert32(Uint32 x)
 {
    return ua_endian_convert16(((x)&0xffff0000)>>16) |
@@ -213,10 +212,9 @@ inline Uint8 SDL_RWread8(SDL_RWops* rwops)
    return val;
 }
 
-//! function to read 16-bit value from SDL_RWops structure
+//! function to read little-endian 16-bit value from SDL_RWops structure
 /*! The function always reads a little-endian value, even on big endian
-    machines.
-*/
+    machines. */
 inline Uint16 SDL_RWread16(SDL_RWops* rwops)
 {
    Uint16 val;
@@ -227,7 +225,7 @@ inline Uint16 SDL_RWread16(SDL_RWops* rwops)
    return val;
 }
 
-//! function to read 32-bit value from SDL_RWops structure
+//! function to read little-endian 32-bit value from SDL_RWops structure
 inline Uint32 SDL_RWread32(SDL_RWops* rwops)
 {
    Uint32 val;
@@ -244,7 +242,7 @@ inline void SDL_RWwrite8(SDL_RWops* rwops, Uint8 val)
    SDL_RWwrite(rwops,&val,1,1);
 }
 
-//! function to write 16-bit value from SDL_RWops structure
+//! function to write little-endian 16-bit value from SDL_RWops structure
 inline void SDL_RWwrite16(SDL_RWops* rwops, Uint16 val)
 {
 #if (SDL_BYTEORDER==SDL_BIG_ENDIAN)
@@ -253,7 +251,7 @@ inline void SDL_RWwrite16(SDL_RWops* rwops, Uint16 val)
    SDL_RWwrite(rwops,&val,2,1);
 }
 
-//! function to write 32-bit value from SDL_RWops structure
+//! function to write little-endian 32-bit value from SDL_RWops structure
 inline void SDL_RWwrite32(SDL_RWops* rwops, Uint32 val)
 {
 #if (SDL_BYTEORDER==SDL_BIG_ENDIAN)
