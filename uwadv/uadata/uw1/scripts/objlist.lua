@@ -72,8 +72,6 @@ function format_item_name(item_id,quantity)
       end
    end
 
-   print("format_item_name: using string " .. name .. ", quantity = " .. quantity )
-
    -- find out article
    local pos_us = strfind(name, "_", 1, 1)
 
