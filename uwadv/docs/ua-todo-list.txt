@@ -51,6 +51,9 @@ technical/source
 - replace all object 2d graphics with 3d low-poly models
   prio: 4  assigned: none
 
+- load custom uwadv strings from packed gamestrings file
+  prio: 3  assigned: vividos
+
 
 game interface
 --------------
