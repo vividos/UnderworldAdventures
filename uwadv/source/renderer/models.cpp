@@ -29,7 +29,7 @@
 #include "common.hpp"
 #include "models.hpp"
 #include "resource/models_impl.hpp"
-#include "core.hpp"
+//#include "core.hpp"
 
 
 // external functions
@@ -160,15 +160,17 @@ void ua_model3d_builtin::get_bounding_triangles(ua_object& obj,
 
 // ua_model3d_manager methods
 
-ua_model3d_manager* ua_model3d_manager::cur_modelmgr = NULL; 
+//TODO deprecated!
+ua_model3d_manager* ua_model3d_manager::cur_modelmgr = NULL;
 
 void ua_model3d_manager::init(ua_game_core_interface* thecore)
 {
+/*TODO
    ua_trace("initializing model3d manager\n");
 
    core = thecore;
 
-   cur_modelmgr = this; 
+   cur_modelmgr = this;
    ua_settings& settings = core->get_settings();
 
    // loading builtin models
@@ -187,6 +189,7 @@ void ua_model3d_manager::init(ua_game_core_interface* thecore)
 
    ua_trace(" loading config file: %s\n",cfgfile_name.c_str());
    ua_cfgfile::load(core->get_filesmgr().get_uadata_file(cfgfile_name.c_str()));
+*/
 }
 
 void ua_model3d_manager::load_value(const std::string& name, const std::string& value)
@@ -212,6 +215,7 @@ void ua_model3d_manager::load_value(const std::string& name, const std::string& 
    }
    else
    {
+/*
       std::string model_path(value);
 
       // load .wrl model
@@ -227,6 +231,7 @@ void ua_model3d_manager::load_value(const std::string& name, const std::string& 
 
       allmodels.insert(
          std::make_pair<Uint16,ua_model3d_ptr>(item_id,ua_model3d_ptr(model)) );
+*/
    }
 }
 
