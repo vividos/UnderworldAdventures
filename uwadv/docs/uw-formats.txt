@@ -2013,6 +2013,279 @@ Table of Contents
       1E   blackrock gem (UWII)
       1F   shelf (UWII)
 
+   Node list
+   ---------
+   Actual model data is stored as a list with various "nodes" that do
+   different things. There also is a vertex array that is filled at start of
+   the model, and then faces are defined, using points from the vertex list.
+   The list is parsed every frame and tests are done if some faces have to be
+   rendered or not (depending if the player faces the polygon or not).
+
+   In general, node entries look as following:
+
+     0000   Int16   node id
+     0002           custom node data (may be omitted)
+
+   There are some data types that can be in the custom node data. These are:
+
+     Int16   a simple 16 bit unsigned integer
+     Fixed   fixed point number with 12 bits before the fraction point (12.4)
+     VertNo  vertex number; lowest 3 bits are ignored
+
+   Here's an overview of all node types used:
+
+     node id  description
+     0000     end node
+     0006     define sort node, arbitrary heading
+     000C     define sort node, ZY plane
+     000E     define sort node, XY plane
+     0010     define sort node, XZ plane
+     0014     ??? colour definition
+     002E     ???
+     0040     ??? seems to do nothing but introduce a face definition
+     0044     ??? this one too
+     0058     define face plane, arbitrary heading
+     005E     define face plane Z/Y
+     0060     define face plane X/Y
+     0062     define face plane X/Z
+     0064     define face plane X
+     0066     define face plane Z
+     0068     define face plane Y
+     0078     define model center
+     007A     define initial vertex
+     007E     define face vertices
+     0082     define initial vertices
+     0086     define vertex offset X
+     0088     define vertex offset Z
+     008A     define vertex offset Y
+     008C     define vertex variable height
+     0090     define vertex offset X,Z
+     0092     define vertex offset X,Y
+     0094     define vertex offset Y,Z
+     00A0     ??? shorthand face definition
+     00A8     define texture-mapped face
+     00B4     define face vertices with u,v information
+     00BC     define face shade (6 bytes)
+     00BE     ??? seems to define 2 shades
+     00CE     ??? yet another texture-mapped face
+     00D2     ??? shorthand face definition
+     00D4     define dark vertex face (?)
+     00D6     define gouraud shading
+
+   Here's a detailed description of all nodes, sorted after functionality:
+
+   Misc. nodes
+   -----------
+     0000   end node
+            just ends current list; also ends sort node sublists
+
+     0078   define model center
+              0000   Int16     node id
+              0002   VertNo    vertex list index to use as origin (?)
+              0002   Fixed     origin X coordinate
+              0004   Fixed     origin Y coordinate
+              0006   Fixed     origin Z coordinate
+              0006   Int16     ???
+
+            because of the limited resolution available for specifying object
+            positions, the origin for model coordinates will typically need to
+            be offset from the center of the collision volume. This parameter
+            gives that center, in model coords.
+
+   Vertex nodes
+   ------------
+   Vertex node entries just set up the vertex list that is later used to take
+   points and draw faces (such as triangles, polygons, etc.)
+
+     007A   define initial vertex
+              0002   Fixed     vertex X coordinate
+              0004   Fixed     vertex Y coordinate
+              0006   Fixed     vertex Z coordinate
+              0008   VertNo    vertex list index to store new vertex
+
+     0082   define initial vertices
+              0002   Int16     number of vertices (=nvert)
+              0004   Int16     ???
+              0006   Fixed     vertex X coordinate for first vertex
+              0008   Fixed     vertex Y coordinate
+              000a   Fixed     vertex Z coordinate
+              000c   Fixed     vertex X coordinate for second vertex
+              000e             and so on, for nvert vertices
+
+     0086   define vertex offset X
+              0002   VertNo    reference vertex to modify
+              0004   Fixed     offset to add to X coordinate
+              0006   VertNo    new list index to store vertex
+
+     0088   define vertex offset Z
+            same as 0086, but for the Z coordinate
+
+     008A   define vertex offset Y
+            same as 0086, but for the Y coordinate
+
+     0090   define vertex offset X,Z
+              0002   Fixed     offset to add to X coordinate
+              0004   Fixed     offset to add to X coordinate
+              0002   VertNo    reference vertex to modify
+              0006   VertNo    new list index to store vertex
+
+     0092   define vertex offset X,Y
+            same as 0090, but for the X and Y coordinate
+
+     0094   define vertex offset Y,Z
+            same as 0090, but for the X and Y coordinate
+
+     008C   define vertex variable height
+            this is used for pillars and doorframes where the model must reach
+            up to the ceiling, wherever it be.
+              0002   VertNo    reference vertex to modify
+              0004   Int16     ???
+              0006   Int16     ???
+              0002   VertNo    new list index to store vertex
+
+   Face plane checks
+   -----------------
+   Face plane checks exist to check if a following face has to be drawn or
+   not. Usually a face normal vector is defined to verify. A length value
+   is given to know how many bytes to omit in the node list.
+
+     0064   define face plane X
+            Y and Z coordinates of normal vector is 0 (YZ plane normal)
+              0002   Int16     number of bytes to skip when not visible
+              0004   Fixed     normal vector X coordinate
+              0006   Fixed     distance "model origin -> face" X value
+            after this node usually face info nodes follow
+
+     0066   define face plane Z
+            same as 0064, but with Z coordinate (XY plane normal)
+
+     0068   define face plane Y
+            same as 0064, but with Y coordinate (XZ plane normal)
+
+     005E   define face plane Z/Y
+            X coordinate of normal vector is 0
+              0002   Int16     number of bytes to skip
+              0004   Fixed     normal vector Z coordinate
+              0006   Fixed     distance Z value
+              0008   Fixed     normal vector Y coordinate
+              000a   Fixed     distance Y value
+
+     0060   define face plane X/Y
+            same as 005E, but with X and Y coordinates/values (in this order)
+
+     0062   define face plane X/Z
+            same as 005E, but with X and Z coordinates/values
+
+   Face info nodes
+   ---------------
+   They just define a face (polygon) from some points of the vertex list.
+
+     007E   define face vertices
+              0002   Int16     number of vertices (=nvert)
+              0004   VertNo    vertex list index for first point
+              0006   VertNo    vertex list index for second point
+              0008             and so on
+
+     00A8   define texture-mapped face
+              0002   Int16     texture number (?)
+              0004   Int16     number of vertices (=nvert)
+              0006   VertNo    vertex list index for first point
+              0008   Fixed      first vertex u coordinate
+              000a   Fixed      first vertex v coordinate
+              000c   VertNo    vertex list index for second point
+              000e             and so on
+
+     00B4   define face vertices with u,v information
+            same structure as 00A8, but without the "texture number" field.
+
+   Sort nodes
+   ----------
+   Sort nodes are there to sort faces of a whole node list and the renderer
+   can determine if the list has to be rendered at all.
+
+     0006   define sort node, arbitrary heading
+              0002   Fixed     normal vector X coordinate
+              0004   Fixed     distance      X coordinate
+              0006   Fixed     normal vector Y coordinate
+              0008   Fixed     distance      Y coordinate
+              000a   Fixed     normal vector Z coordinate
+              000c   Fixed     distance      Z coordinate
+              000e   Int16     left node offset (starting at 0010)
+              0010   Int16     right node offset (starting at 0012)
+
+     000C   define sort node, ZY plane
+            the X coordinate values are assumed to be 0
+              0002   Fixed     normal vector Z coordinate
+              0004   Fixed     distance      Z coordinate
+              0006   Fixed     normal vector Y coordinate
+              0008   Fixed     distance      Y coordinate
+              000a   Int16     left node offset (starting at 000c)
+              000c   Int16     right node offset (starting at 000e)
+
+     000E   define sort node, XY plane
+            same as 000C, but with X and Y coordinates (in this order)
+
+     0010   define sort node, XZ plane
+            same as 000C, but with X and Z coordinates (in this order)
+
+   Unknown nodes
+   -------------
+     0014   ??? colour definition
+              0002   VertNo    vertex number
+              0004   Int8      c1 ???
+              0005   Int8      c2 ???
+              0002   VertNo    vertex number
+
+     002E   ???
+              0002   Int16     ???
+
+     0040   ??? seems to do nothing but introduce a face definition
+     0044   ??? this one too
+            no further node data
+
+     00BC   define face shade
+              0002   Int8      c1 ???
+              0003   Int8      c2 ???
+              0004   Int8      c3 ???
+              0005   Int8      ???
+
+     00BE   ???  seems to define 2 shades
+              0002   Int8      c1 ???
+              0003   Int8      ???
+              0004   Int8      ???
+              0005   Int8      ???
+
+     00CE   ??? yet another texture-mapped face
+            same data as 00B4
+
+     00A0   ??? shorthand face definition
+            seems to be a quick way to define a face with 4 vertices and
+            automatic texture coordinates; vertex list indices
+              0002   Int8      vertex list index 0
+              0003   Int8      vertex list index 1
+              0004   Int8      vertex list index 2
+              0005   Int8      vertex list index 3
+
+     00D2   ??? shorthand face definition
+            same as 00A0
+
+
+     00D4   define dark vertex face (?)
+              0002   Int16     number of vertices (=nvert)
+              0004   Int8      c1 ???
+              0005   Int8      c2 ???
+              0006   VertNo    vertex list index for first point
+              0008   Int8      dark value ???
+              0009   VertNo    vertex list index for first point
+                               and so on; if nvert is odd, read another empty
+                               byte to have 16 bit word align
+
+     00D6   define gouraud shading
+            no other info; may switch on gouraud shading
+
+   Ultima Underworld 2 models
+   --------------------------
+
    Notes from Fabian Pache (http://uw2rev.sourceforge.net) for UW2 models:
 
    I am not concerned with recreating the original 3D models because 
