@@ -215,6 +215,9 @@ public:
    //! saves to a savegame
    void save_game(ua_savegame& sg);
 
+   //! fills details into savegame info struct
+   void fill_savegame_infos(ua_savegame_info& info);
+
 protected:
    //! the name of the player
    std::string name;

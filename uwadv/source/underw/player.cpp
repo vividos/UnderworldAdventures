@@ -193,3 +193,18 @@ void ua_player::save_game(ua_savegame& sg)
 
    sg.end_section();
 }
+
+void ua_player::fill_savegame_infos(ua_savegame_info& info)
+{
+   info.name = name;
+
+   info.gender = get_attr(ua_attr_gender);
+   info.appearance = get_attr(ua_attr_appearance);
+   info.profession = get_attr(ua_attr_profession);
+   info.maplevel = get_attr(ua_attr_maplevel);
+
+   info.strength = get_attr(ua_attr_strength);
+   info.dexterity = get_attr(ua_attr_dexterity);
+   info.intelligence = get_attr(ua_attr_intelligence);
+   info.vitality = get_attr(ua_attr_vitality);
+}
