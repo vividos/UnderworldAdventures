@@ -34,25 +34,7 @@
 #include "midi.hpp"
 #include "SDL_mixer.h"
 #include <string>
-
-
-// tables
-
-//! table with all midi file names
-const char *ua_audio_allmidis[] =
-{
-   "uw01.xmi", "uw02.xmi", "uw03.xmi", "uw04.xmi", "uw05.xmi",
-   "uw06.xmi", "uw07.xmi", "uw10.xmi", "uw11.xmi", "uw12.xmi",
-   "uw13.xmi", "uw15.xmi"
-};
-
-//! table with all midi file names, different versions (for awe cards?)
-const char *ua_audio_allmidis_awe[] =
-{
-   "aw01.xmi", "aw02.xmi", "aw03.xmi", "aw04.xmi", "aw05.xmi",
-   "aw06.xmi", "aw07.xmi", "aw10.xmi", "aw11.xmi", "aw12.xmi",
-   "aw13.xmi", "aw15.xmi"
-};
+#include <algorithm>
 
 
 // classes
@@ -62,67 +44,30 @@ class ua_audio_impl: public ua_audio_interface
 {
 public:
    //! ctor
-   ua_audio_impl(){}
+   ua_audio_impl();
+   //! dtor
+   virtual ~ua_audio_impl();
 
    //! initializes audio
-   void init(ua_settings &settings)
-   {
-      // init mixer
-      SDL_Init(SDL_INIT_AUDIO);
-      Mix_OpenAudio(12000, MIX_DEFAULT_FORMAT, 2, 4096);
-      Mix_ChannelFinished(mixer_channel_finished);
-
-      midipl.init_player(settings);
-      midipl.init_driver();
-      uw1path = settings.get_string(ua_setting_uw_path);
-   }
+   void init(ua_settings &settings, ua_files_manager &filesmgr);
 
    //! plays a sound; stops when finished
-   void play_sound(const char *soundname)
-   {
-      // construct filename
-      std::string vocname(uw1path);
-      vocname.append("sound/");
-      vocname.append(soundname);
-      vocname.append(".voc");
-
-      // start playing
-      Mix_Chunk* mc = Mix_LoadWAV(vocname.c_str());
-      if (mc)
-         Mix_PlayChannel(-1, mc, 0);
-   }
+   void play_sound(const char *soundname);
 
    //! stops sound playback
-   void stop_sound()
-   {
-      Mix_HaltChannel(-1);
-   }
+   void stop_sound();
 
    //! starts music playback
-   void start_music(unsigned int music, bool repeat)
-   {
-      if (music>=SDL_TABLESIZE(ua_audio_allmidis)) return;
-
-      std::string midiname(uw1path);
-      midiname.append("sound/");
-      midiname.append(ua_audio_allmidis[music]);
-      midipl.start_track(midiname.c_str(),0,repeat);
-   }
+   void start_music(unsigned int music, bool repeat);
 
    //! stops music playback
-   void stop_music()
-   {
-      midipl.stop_track();
-   }
-
-   //! dtor
-   virtual ~ua_audio_impl()
-   {
-      Mix_CloseAudio();
-      SDL_QuitSubSystem(SDL_INIT_AUDIO);
-   }
+   void stop_music();
 
 protected:
+   //! loads music playlist
+   void load_playlist(ua_settings &settings, ua_files_manager &filesmgr,
+      const char *filename);
+
    //! frees audio chunk when channel stops playing (callback function)
    static void mixer_channel_finished(int channel)
    {
@@ -135,12 +80,165 @@ protected:
    //! midi player
    ua_midi_player midipl;
 
-   //! path to underworld files
-   std::string uw1path;
+   //! playlist with all music files
+   std::vector<std::string> music_playlist;
+
+   //! path to uw base folder
+   std::string uw_path;
+
+   Mix_Music* curtrack;
 };
+
+
+// ua_audio_interface methods
 
 ua_audio_interface *ua_audio_interface::get_audio_interface()
 {
    // creates a new audio object
    return new ua_audio_impl;
+}
+
+
+// ua_audio_impl methods
+
+ua_audio_impl::ua_audio_impl()
+:curtrack(NULL)
+{
+}
+
+ua_audio_impl::~ua_audio_impl()
+{
+   stop_sound();
+   stop_music();
+
+   Mix_CloseAudio();
+   SDL_QuitSubSystem(SDL_INIT_AUDIO);
+}
+
+void ua_audio_impl::init(ua_settings &settings, ua_files_manager &filesmgr)
+{
+   // init mixer
+   SDL_Init(SDL_INIT_AUDIO);
+   Mix_OpenAudio(12000, MIX_DEFAULT_FORMAT, 2, 4096);
+   Mix_ChannelFinished(mixer_channel_finished);
+
+   midipl.init_player(settings);
+   midipl.init_driver();
+
+   load_playlist(settings,filesmgr,"uw1/audio/music.m3u");
+
+   uw_path = settings.get_string(ua_setting_uw_path);
+}
+
+void ua_audio_impl::play_sound(const char *soundname)
+{
+   // construct filename
+   std::string vocname(uw_path);
+   vocname.append("sound/");
+   vocname.append(soundname);
+   vocname.append(".voc");
+
+   // start playing
+   Mix_Chunk* mc = Mix_LoadWAV(vocname.c_str());
+   if (mc)
+      Mix_PlayChannel(-1, mc, 0);
+}
+
+void ua_audio_impl::stop_sound()
+{
+   Mix_HaltChannel(-1);
+}
+
+void ua_audio_impl::start_music(unsigned int music, bool repeat)
+{
+   if (music>=music_playlist.size()) return;
+
+   std::string trackname = music_playlist[music];
+
+   // make lowercase
+   std::transform(trackname.begin(),trackname.end(),trackname.begin(),::tolower);
+
+   // check for midi tracks
+   if (trackname.find(".xmi") != std::string::npos ||
+       trackname.find(".mid") != std::string::npos)
+   {
+      // start midi player
+      midipl.start_track(trackname.c_str(),0,repeat);
+   }
+   else
+   {
+      if (curtrack)
+         Mix_FreeMusic(curtrack);
+
+      // start music track via SDL_mixer
+      curtrack = Mix_LoadMUS(trackname.c_str());
+      if (curtrack)
+         Mix_PlayMusic(curtrack, 0);
+   }
+}
+
+void ua_audio_impl::stop_music()
+{
+   if (curtrack)
+   {
+      Mix_FreeMusic(curtrack);
+      curtrack = NULL;
+   }
+
+   midipl.stop_track();
+}
+
+void ua_audio_impl::load_playlist(ua_settings &settings,
+   ua_files_manager &filesmgr, const char *filename)
+{
+   SDL_RWops *m3u = filesmgr.get_uadata_file(filename);
+
+   // load playlist into buffer
+   std::vector<char> buffer;
+   unsigned int len=0;
+   {
+      SDL_RWseek(m3u,0,SEEK_END);
+      len = SDL_RWtell(m3u);
+      SDL_RWseek(m3u,0,SEEK_SET);
+
+      buffer.resize(len+1,0);
+
+      SDL_RWread(m3u,&buffer[0],len,1);
+      buffer[len]=0;
+   }
+   SDL_RWclose(m3u);
+
+   // convert to string
+   std::string playlist(&buffer[0]);
+   playlist.append("\n"); // end guard
+
+   std::string::size_type pos;
+
+   while( std::string::npos != (pos = playlist.find('\n')) )
+   {
+      // extract one line
+      std::string line;
+      line.assign(playlist.c_str(),pos);
+      playlist.erase(0,pos+1);
+
+      // get rid of comments and newlines
+      pos = line.find_first_of("#\n\r");
+      if (pos != std::string::npos)
+         line.erase(pos);
+
+      // check for empty line
+      if (line.empty()) continue;
+
+      // replace %var% variables
+      pos = line.find("%uw-path%");
+      if (pos != std::string::npos)
+         line.replace(pos,9,settings.get_string(ua_setting_uw_path));
+
+      pos = line.find("%uadata%");
+      if (pos != std::string::npos)
+         line.replace(pos,8,settings.get_string(ua_setting_uadata_path));
+
+      // add to playlist
+      music_playlist.push_back(line);
+   }
 }

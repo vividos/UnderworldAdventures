@@ -42,6 +42,7 @@
 
 // needed includes
 #include "settings.hpp"
+#include "files.hpp"
 
 
 // classes
@@ -54,7 +55,7 @@ public:
    static ua_audio_interface *get_audio_interface();
 
    //! initializes audio
-   virtual void init(ua_settings &settings)=0;
+   virtual void init(ua_settings &settings, ua_files_manager &filesmgr)=0;
 
    //! plays a sound; stops when finished
    virtual void play_sound(const char *soundname)=0;
