@@ -91,10 +91,7 @@ protected:
    ua_font font_big;
 
    //! current text as image
-   ua_image img_text;
-
-   //! texture for cutscene text
-   ua_texture tex_text;
+   ua_image_quad img_text;
 
    //! text fadein/fadeout state
    unsigned int text_fade_state;
@@ -111,10 +108,7 @@ protected:
    bool loopanim;
 
    //! cutscene animation sequence
-   ua_cutscene cuts;
-
-   //! texture for animation
-   ua_texture tex_anim;
+   ua_cutscene cuts_anim;
 
    //! current animation frame
    unsigned int curframe;

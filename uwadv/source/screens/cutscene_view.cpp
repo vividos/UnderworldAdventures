@@ -131,12 +131,6 @@ void ua_cutscene_view_screen::init()
    glDisable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
-   // texture stuff
-
-   // init textures
-   tex_anim.init(&core->get_texmgr());
-   tex_text.init(&core->get_texmgr());
-
    // init subtitle text
    font_big.init(settings,ua_font_big);
 }
@@ -146,8 +140,8 @@ void ua_cutscene_view_screen::done()
    // stop audio track
    core->get_audio().stop_sound();
 
-   tex_text.done();
-   tex_anim.done();
+   img_text.done();
+   cuts_anim.done();
    core->get_texmgr().using_new_texname(0);
 
    lua_close(L);
@@ -187,12 +181,8 @@ void ua_cutscene_view_screen::render()
       // render animation frame
 
       // prepare image texture
-      cuts.get_frame(curframe);
-      tex_anim.convert(cuts.get_anim_palette(),cuts);
-      tex_anim.use();
-      tex_anim.upload();
-
-      double u = tex_anim.get_tex_u(), v = tex_anim.get_tex_v();
+      cuts_anim.get_frame(curframe);
+      cuts_anim.convert_upload();
 
       // set text color
       Uint8 light = 255;
@@ -214,13 +204,7 @@ void ua_cutscene_view_screen::render()
       }
       glColor3ub(light,light,light);
 
-      // draw animation quad
-      glBegin(GL_QUADS);
-      glTexCoord2d(0.0, v  ); glVertex2i(  0,  0);
-      glTexCoord2d(u  , v  ); glVertex2i(320,  0);
-      glTexCoord2d(u  , 0.0); glVertex2i(320,200);
-      glTexCoord2d(0.0, 0.0); glVertex2i(  0,200);
-      glEnd();
+      cuts_anim.render();
    }
 
    if (showtext)
@@ -229,16 +213,6 @@ void ua_cutscene_view_screen::render()
 
       // enable blending, in case text overlaps animation
       glEnable(GL_BLEND);
-
-      // prepare image texture
-      tex_text.use();
-
-      double u = tex_text.get_tex_u(), v = tex_text.get_tex_v();
-
-      unsigned int startx = (320-img_text.get_xres())/2;
-      unsigned int starty = static_cast<unsigned int>(
-         ( double(core->get_screen_width()) / (core->get_screen_height()*1.6) )*
-         img_text.get_yres()+10 );
 
       // set text color
       Uint8 light = 255;
@@ -260,13 +234,7 @@ void ua_cutscene_view_screen::render()
       }
       glColor3ub(light,light,light);
 
-      // draw animation quad
-      glBegin(GL_QUADS);
-      glTexCoord2d(0.0, v  ); glVertex2i(startx,    5);
-      glTexCoord2d(u  , v  ); glVertex2i(320-startx,5);
-      glTexCoord2d(u  , 0.0); glVertex2i(320-startx,starty);
-      glTexCoord2d(0.0, 0.0); glVertex2i(startx,    starty);
-      glEnd();
+      img_text.render();
 
       glDisable(GL_BLEND);
    }
@@ -294,7 +262,7 @@ void ua_cutscene_view_screen::tick()
 
          // count up frames
          curframe++;
-         if (curframe>=cuts.get_maxframes())
+         if (curframe>=cuts_anim.get_maxframes())
             curframe = 0;
 
          // check if we should stop at that frame
@@ -427,10 +395,16 @@ void ua_cutscene_view_screen::create_text_image(const char *str)
       }
    }
 
+   // calculate screen position
+   unsigned int startx = (320-img_text.get_xres())/2;
+   unsigned int starty = 200-5-img_text.get_yres();
+
+   // init after new creation
+   img_text.init(&core->get_texmgr(),startx,starty,img_text.get_xres(),
+      img_text.get_yres());
+
    // upload texture
-   tex_text.convert(img_text);
-   tex_text.use();
-   tex_text.upload();
+   img_text.convert_upload();
 }
 
 /*! stack indices/values:
@@ -511,7 +485,8 @@ void ua_cutscene_view_screen::do_action()
          animname.append(lua_tostring(L,-1));
 
          // load animation
-         cuts.load(core->get_settings(),animname.c_str());
+         cuts_anim.load(core->get_settings(),animname.c_str());
+         cuts_anim.init(&core->get_texmgr());
          showanim = true;
          loopanim = true;
          curframe = 0;
