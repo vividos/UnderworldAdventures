@@ -106,7 +106,7 @@ void ua_underworld_script_bindings::register_functions()
    lua_register(L,"tilemap_set_floor",tilemap_set_floor);
    lua_register(L,"tilemap_get_ceiling",tilemap_get_ceiling);
    lua_register(L,"tilemap_set_ceiling",tilemap_set_ceiling);
-   lua_register(L,"tilemap_get_height",tilemap_get_height);
+   lua_register(L,"tilemap_get_floor_height",tilemap_get_floor_height);
    lua_register(L,"tilemap_get_objlist_start",tilemap_get_objlist_start);
 
    lua_register(L,"conv_get_global",conv_get_global);
@@ -641,7 +641,7 @@ int ua_underworld_script_bindings::tilemap_set_ceiling(lua_State* L)
    return 0;
 }
 
-int ua_underworld_script_bindings::tilemap_get_height(lua_State* L)
+int ua_underworld_script_bindings::tilemap_get_floor_height(lua_State* L)
 {
    ua_underworld &uw = get_underworld_from_self(L);
 
