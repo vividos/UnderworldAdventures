@@ -104,6 +104,9 @@ void ua_ingame_orig_screen::init()
    glClear(GL_COLOR_BUFFER_BIT);
    SDL_GL_SwapBuffers();
 
+   // start ingame music
+   core->get_audio().start_music(2,true);
+
    cursor_image = 0;
    cursor_image_current = 0;
    cursorx = cursory = 0;
