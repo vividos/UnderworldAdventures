@@ -30,13 +30,13 @@
 // needed includes
 #include "common.hpp"
 #include "cutscene.hpp"
-#include "import.hpp"
+#include "importgfx.hpp"
 #include "io_endian.hpp"
 
 
-// ua_uw_import methods
+// ua_uw_import_gfx methods
 
-void ua_uw_import::load_cutscene(const char* filename, ua_image& image,
+void ua_uw_import_gfx::load_cutscene(const char* filename, ua_image& image,
    std::vector<ua_lp_descriptor>& lpdarray,
    std::vector<Uint8>& lpages, unsigned int& records)
 {
@@ -149,9 +149,9 @@ void ua_cuts_skip_pixel(Uint8*& dst,unsigned int& maxpix,unsigned int size)
 }
 
 
-// ua_uw_import methods
+// ua_uw_import_gfx methods
 
-void ua_uw_import::extract_cutscene_data(Uint8* src,Uint8* dst,unsigned int maxpix)
+void ua_uw_import_gfx::extract_cutscene_data(Uint8* src,Uint8* dst,unsigned int maxpix)
 {
    while(maxpix>0)
    {

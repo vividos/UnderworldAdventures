@@ -28,7 +28,7 @@
 // needed includes
 #include "common.hpp"
 #include "image.hpp"
-#include "import.hpp"
+#include "importgfx.hpp"
 #include "io_endian.hpp"
 
 
@@ -235,9 +235,9 @@ void ua_image_decode_rle(FILE *fd, Uint8* pixels, unsigned int bits,
 }
 
 
-// ua_uw_import methods
+// ua_uw_import_gfx methods
 
-void ua_uw_import::load_palettes(const char* allpalname,
+void ua_uw_import_gfx::load_palettes(const char* allpalname,
    ua_palette256_ptr allpalettes[8])
 {
    FILE* fd = fopen(allpalname,"rb");
@@ -267,7 +267,7 @@ void ua_uw_import::load_palettes(const char* allpalname,
    fclose(fd);
 }
 
-void ua_uw_import::load_aux_palettes(const char* auxpalname,
+void ua_uw_import_gfx::load_aux_palettes(const char* auxpalname,
    Uint8 allauxpals[32][16])
 {
    FILE *fd = fopen(auxpalname,"rb");
@@ -279,7 +279,7 @@ void ua_uw_import::load_aux_palettes(const char* auxpalname,
    fclose(fd);
 }
 
-void ua_uw_import::load_image_gr(ua_image& img, const char* imgname,
+void ua_uw_import_gfx::load_image_gr(ua_image& img, const char* imgname,
    unsigned int imgnum, Uint8 auxpalettes[32][16])
 {
    // open file
@@ -319,7 +319,7 @@ void ua_uw_import::load_image_gr(ua_image& img, const char* imgname,
    fclose(fd);
 }
 
-void ua_uw_import::load_image_byt(const char* imgname, Uint8* pixels)
+void ua_uw_import_gfx::load_image_byt(const char* imgname, Uint8* pixels)
 {
    // open file
    FILE* fd = fopen(imgname,"rb");
@@ -336,7 +336,7 @@ void ua_uw_import::load_image_byt(const char* imgname, Uint8* pixels)
    fclose(fd);
 }
 
-void ua_uw_import::load_image_gr_list(std::vector<ua_image>& imglist,
+void ua_uw_import_gfx::load_image_gr_list(std::vector<ua_image>& imglist,
    const char* imgname, unsigned int img_from, unsigned int img_to,
    Uint8 auxpalettes[32][16])
 {
@@ -394,7 +394,7 @@ void ua_uw_import::load_image_gr_list(std::vector<ua_image>& imglist,
    fclose(fd);
 }
 
-void ua_uw_import::load_image_gr_impl(ua_image& img, FILE* fd,
+void ua_uw_import_gfx::load_image_gr_impl(ua_image& img, FILE* fd,
    Uint8 auxpalidx[32][16], bool special_panels)
 {
    Uint8 type, width, height, auxpal=0;

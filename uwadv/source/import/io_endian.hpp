@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -21,9 +21,12 @@
 */
 /*! \file io_endian.hpp
 
-   \brief endian-aware 16- and 32-bit fread/fwrite routines
+   \brief endian-aware 16- and 32-bit fread/fwrite and SDL_RWops routines
 
 */
+//! \ingroup import
+
+//@{
 
 // include guard
 #ifndef uwadv_io_endian_hpp_

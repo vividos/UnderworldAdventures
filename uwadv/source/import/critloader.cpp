@@ -30,7 +30,7 @@
 // needed includes
 #include "common.hpp"
 #include "critter.hpp"
-#include "import.hpp"
+#include "importgfx.hpp"
 #include "io_endian.hpp"
 
 
@@ -50,19 +50,19 @@ extern void ua_image_decode_rle(FILE *fd, Uint8* pixels, unsigned int bits,
    unsigned int padding, unsigned int linewidth);
 
 
-// ua_uw_import methods
+// ua_uw_import_gfx methods
 
-void ua_uw_import::load_critters(std::vector<ua_critter>& allcritters,
+void ua_uw_import_gfx::load_critters(std::vector<ua_critter>& allcritters,
    ua_settings& settings, ua_palette256_ptr palette0)
 {
    if (settings.get_gametype() != ua_game_uw2)
    {
-      ua_uw1_import import;
+      ua_uw1_import_gfx import;
       import.load_critters(allcritters,settings,palette0);
    }
    else
    {
-//      ua_uw2_import import;
+//      ua_uw1_import_gfx import;
 //      import.load_critters(allcritters,settings);
    }
 }
@@ -71,7 +71,7 @@ void ua_uw_import::load_critters(std::vector<ua_critter>& allcritters,
 extern unsigned int memory_used;
 #endif
 
-void ua_uw_import::load_critter(ua_critter& critter, const char* file,
+void ua_uw_import_gfx::load_critter(ua_critter& critter, const char* file,
    unsigned int used_auxpal)
 {
    unsigned int& xres = critter.xres;
@@ -307,7 +307,7 @@ void ua_uw_import::load_critter(ua_critter& critter, const char* file,
 }
 
 
-void ua_uw1_import::load_critters(std::vector<ua_critter>& allcritters,
+void ua_uw1_import_gfx::load_critters(std::vector<ua_critter>& allcritters,
    ua_settings& settings, ua_palette256_ptr palette0)
 {
    allcritters.clear();

@@ -28,8 +28,8 @@
 // needed includes
 #include "common.hpp"
 #include "texture.hpp"
+#include "importgfx.hpp"
 #include "io_endian.hpp"
-#include "import.hpp"
 
 
 // extern texture import functions
@@ -54,9 +54,9 @@ void ua_texture::load(SDL_RWops* rwops)
 }
 
 
-// ua_uw_import methods
+// ua_uw_import_gfx methods
 
-void ua_uw_import::load_textures(std::vector<ua_image>& tex_images,
+void ua_uw_import_gfx::load_textures(std::vector<ua_image>& tex_images,
    unsigned int startidx, const char* texname,
    ua_palette256_ptr palette)
 {

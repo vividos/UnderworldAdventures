@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@
 
 // needed includes
 #include "common.hpp"
-#include "import.hpp"
+#include "importgfx.hpp"
 #include "font.hpp"
 #include "io_endian.hpp"
 
@@ -63,13 +63,13 @@ void ua_font::load(ua_settings& settings, ua_font_id fontid)
 
    // and load it
 #ifndef UA_NO_IMPORTS
-   ua_uw_import uw_import;
+   ua_uw_import_gfx uw_import;
 
    uw_import.load_font(fontname.c_str(),*this);
 #endif
 }
 
-void ua_uw_import::load_font(const char* fontname, ua_font& font)
+void ua_uw_import_gfx::load_font(const char* fontname, ua_font& font)
 {
    // open font file
    FILE* fd = fopen(fontname,"rb");
