@@ -92,6 +92,10 @@ LINK32=link.exe
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\resource\cfgfile.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\cutscene.cpp
 # End Source File
 # Begin Source File
@@ -110,10 +114,18 @@ SOURCE=..\settings.cpp
 
 SOURCE=..\texture.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=..\utils.cpp
+# End Source File
 # End Group
 # Begin Group "uwadv header files"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\cfgfile.hpp
+# End Source File
 # Begin Source File
 
 SOURCE=..\common.hpp
@@ -141,6 +153,10 @@ SOURCE=..\texture.hpp
 # Begin Source File
 
 SOURCE=..\uatypes.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\utils.hpp
 # End Source File
 # End Group
 # Begin Source File

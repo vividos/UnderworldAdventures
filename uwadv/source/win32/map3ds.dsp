@@ -50,7 +50,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 kernel32.lib user32.lib lib3ds-120s.lib opengl32.lib glu32.lib /nologo /subsystem:console /machine:I386 /out:"../../output/release/map3ds.exe"
+# ADD LINK32 lib3ds-120s.lib kernel32.lib user32.lib opengl32.lib glu32.lib sdl.lib /nologo /subsystem:console /machine:I386 /nodefaultlib:"LIBCMT" /out:"../../output/release/map3ds.exe"
 
 !ELSEIF  "$(CFG)" == "map3ds - Win32 Debug"
 
@@ -74,7 +74,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib lib3ds-120sd.lib opengl32.lib glu32.lib /nologo /subsystem:console /debug /machine:I386 /out:"../../output/debug/map3ds.exe" /pdbtype:sept
+# ADD LINK32 lib3ds-120sd.lib kernel32.lib user32.lib opengl32.lib glu32.lib sdl.lib /nologo /subsystem:console /debug /machine:I386 /out:"../../output/debug/map3ds.exe" /pdbtype:sept
 
 !ENDIF 
 
@@ -82,12 +82,12 @@ LINK32=link.exe
 
 # Name "map3ds - Win32 Release"
 # Name "map3ds - Win32 Debug"
-# Begin Group "uwadv files"
+# Begin Group "uwadv source files"
 
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\resource\codeloader.cpp
+SOURCE=..\resource\cfgfile.cpp
 # End Source File
 # Begin Source File
 
@@ -119,6 +119,10 @@ SOURCE=..\quadtree.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\renderer.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\resource\savegame.cpp
 # End Source File
 # Begin Source File
@@ -135,11 +139,19 @@ SOURCE=..\texture.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\texture.hpp
+SOURCE=..\utils.cpp
+# End Source File
+# End Group
+# Begin Group "uwadv header files"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\level.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\utils.cpp
+SOURCE=..\renderer.hpp
 # End Source File
 # End Group
 # Begin Source File

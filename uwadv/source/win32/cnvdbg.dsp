@@ -50,7 +50,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 kernel32.lib user32.lib /nologo /subsystem:console /machine:I386 /out:"../../output/release/cnvdbg.exe"
+# ADD LINK32 kernel32.lib user32.lib sdl.lib /nologo /subsystem:console /machine:I386 /out:"../../output/release/cnvdbg.exe"
 
 !ELSEIF  "$(CFG)" == "cnvdbg - Win32 Debug"
 
@@ -74,7 +74,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib /nologo /subsystem:console /debug /machine:I386 /out:"../../output/debug/cnvdbg.exe" /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib sdl.lib /nologo /subsystem:console /debug /machine:I386 /out:"../../output/debug/cnvdbg.exe" /pdbtype:sept
 
 !ENDIF 
 
@@ -82,9 +82,13 @@ LINK32=link.exe
 
 # Name "cnvdbg - Win32 Release"
 # Name "cnvdbg - Win32 Debug"
-# Begin Group "uwadv files"
+# Begin Group "uwadv source files"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\resource\cfgfile.cpp
+# End Source File
 # Begin Source File
 
 SOURCE=..\resource\codeloader.cpp
@@ -92,10 +96,6 @@ SOURCE=..\resource\codeloader.cpp
 # Begin Source File
 
 SOURCE=..\conv\codevm.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\conv\codevm.hpp
 # End Source File
 # Begin Source File
 
@@ -108,6 +108,46 @@ SOURCE=..\resource\savegame.cpp
 # Begin Source File
 
 SOURCE=..\settings.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\utils.cpp
+# End Source File
+# End Group
+# Begin Group "uwadv header files"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\cfgfile.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\conv\codevm.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\common.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\resource\fread_endian.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\gamestrings.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\savegame.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\settings.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\utils.hpp
 # End Source File
 # End Group
 # Begin Source File

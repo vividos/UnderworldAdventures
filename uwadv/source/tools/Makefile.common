@@ -1,20 +1,25 @@
+#
+# Makefile.common for tools
+#
+# $Id$
+#
+
 cnvdbg_SOURCES = cnvdbg.cpp cnvdbg.hpp instr.hpp \
 	../conv/codevm.cpp ../resource/codeloader.cpp \
 	../resource/gamestrings.cpp ../settings.cpp \
-	../resource/savegame.cpp ../utils.cpp \
-	cnvdbg.hpp instr.hpp ../conv/codevm.hpp \
+	../resource/savegame.cpp ../utils.cpp ../resource/cfgfile.cpp \
+	cnvdbg.hpp instr.hpp ../conv/codevm.hpp ../cfgfile.hpp \
 	../savegame.hpp ../utils.hpp
 
 
 cnvdasm_SOURCES = cnvdasm.cpp cnvdasm.hpp instr.hpp \
 	../conv/codevm.cpp ../resource/codeloader.cpp \
-	../resource/gamestrings.cpp ../settings.cpp \
-	../resource/savegame.cpp ../utils.cpp \
-	cnvdasm.hpp instr.hpp ../conv/codevm.hpp \
+	../resource/gamestrings.cpp ../settings.cpp ../utils.cpp \
+	../resource/savegame.cpp ../resource/cfgfile.cpp \
+	cnvdasm.hpp instr.hpp ../conv/codevm.hpp ../cfgfile.hpp\
 	../savegame.hpp ../utils.hpp
 
 xmi2mid_SOURCES = xmi2mid.cpp ../audio/xmidi.cpp ../audio/xmidi.hpp
-
 
 mapdisp_SOURCES = mapdisp.cpp ../level.cpp ../resource/maploader.cpp \
 	../quadtree.cpp ../resource/texloader.cpp ../texture.cpp \
@@ -26,11 +31,12 @@ mapdisp_SOURCES = mapdisp.cpp ../level.cpp ../resource/maploader.cpp \
 	../texture.hpp ../utils.hpp ../savegame.hpp ../level.hpp
 
 animview_SOURCES = animview.cpp ../cutscene.cpp ../resource/cutsloader.cpp \
-	../image.cpp ../texture.cpp ../settings.cpp \
-	../image.hpp ../texture.hpp \
-	../common.hpp ../cutscene.hpp ../settings.hpp ../utils.hpp \
-	../resource/fread_endian.hpp
+	../image.cpp ../texture.cpp ../settings.cpp ../resource/cfgfile.cpp \
+	../utils.cpp \
+	../image.hpp ../texture.hpp ../cfgfile.hpp ../common.hpp \
+	../cutscene.hpp ../settings.hpp ../utils.hpp ../resource/fread_endian.hpp
 
 strpak_SOURCES = strpak.cpp ../resource/gamestrings.cpp ../settings.cpp \
+	../resource/cfgfile.cpp ../utils.cpp \
 	../common.hpp ../resource/fread_endian.hpp ../gamestrings.hpp \
-	../settings.hpp ../utils.hpp
+	../settings.hpp ../cfgfile.hpp ../utils.hpp

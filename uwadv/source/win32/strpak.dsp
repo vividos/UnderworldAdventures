@@ -82,9 +82,33 @@ LINK32=link.exe
 
 # Name "strpak - Win32 Release"
 # Name "strpak - Win32 Debug"
-# Begin Group "uwadv files"
+# Begin Group "uwadv source files"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\resource\cfgfile.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\resource\gamestrings.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\settings.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\utils.cpp
+# End Source File
+# End Group
+# Begin Group "uwadv header files"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\cfgfile.hpp
+# End Source File
 # Begin Source File
 
 SOURCE=..\common.hpp
@@ -95,15 +119,7 @@ SOURCE=..\resource\fread_endian.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\resource\gamestrings.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\gamestrings.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\settings.cpp
 # End Source File
 # Begin Source File
 
@@ -112,6 +128,10 @@ SOURCE=..\settings.hpp
 # Begin Source File
 
 SOURCE=..\uatypes.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\utils.hpp
 # End Source File
 # End Group
 # Begin Source File

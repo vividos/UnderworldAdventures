@@ -205,7 +205,7 @@ strpak_CPPs = $(filter %.cpp,$(strpak_SOURCES))
 strpak_OBJS = $(strpak_CPPs:%.cpp=source/tools/%.o)
 
 strpak_LDFLAGS = -mconsole
-strpak_LIBS = -lmingw32 -lkernel32 -luser32 $(STLPORT_LIB)
+strpak_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB) $(STLPORT_LIB)
 
 
 
