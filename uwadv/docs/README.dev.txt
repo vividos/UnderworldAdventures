@@ -4,6 +4,8 @@ Underworld Adventures Developer's Readme
 This is the uwadv developer's readme file. It explains all stuff that is the
 uwadv program, and all associated stuff, as well as more stuff.
 
+Note: this document is slightly out of date!
+
 
 Table of Contents
 -----------------
@@ -21,6 +23,7 @@ Table of Contents
    2.3. Core interface
    2.4. Screens mechanism
    2.5. Resource loading
+   2.6. Game translation
 
    3. Underworld object
    3.1. Object members
@@ -96,14 +99,14 @@ doxygen is available from here:
 The source code and related files for Underworld Adventures is stored in CVS,
 using the SourceForge CVS repository services. Anonymous access:
 
-   cvs -d:pserver:anonymous@cvs.uwadv.sourceforge.net:/cvsroot/uwadv login
+   cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/uwadv login
    password:<return>
 
-   cvs -z9 -d:pserver:anonymous@cvs.uwadv.sourceforge.net:/cvsroot/uwadv co uwadv
+   cvs -z9 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/uwadv co uwadv
 
 Developer access (requires SF account and project membership):
 
-   cvs -z9 -d:ext:<username>@cvs.uwadv.sourceforge.net:/cvsroot/uwadv co uwadv
+   cvs -z9 -d:ext:<username>@cvs.sourceforge.net:/cvsroot/uwadv co uwadv
 
 Once the project files are checked out and have a CVS folder, the -d option
 can be omitted. That also means that developer commits for anon-cvs checkouts
@@ -300,6 +303,11 @@ todo
 todo
 
 
+2.6. Game translation
+
+todo
+
+
 3. Underworld object
 
 todo
@@ -359,10 +367,10 @@ Lua scripts can have the extension ".lua" or ".lob". ".lua" files contain
 scripts as text, i.e. not precompiled. ".lob" files are "lua object" files,
 that are lua files compiled with "luac".
 
-Lua scripts are searched in the same way as other files, but first  the".lua"
+Lua scripts are searched in the same way as other files, but first the ".lua"
 one is searched, then the ".lob". That allows for changes to ".lua" files
 while developing, but for releases the compiled ".lob" files inside ".uar"
 files are distributed only.
 
-For Lua to C interfaces or other informations about Lua with uwadv, look into
+For Lua to C interfaces or other information about Lua with uwadv, look into
 the file "README.Lua.txt".
