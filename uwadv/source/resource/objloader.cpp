@@ -145,7 +145,7 @@ void ua_object_list::addobj_follow(Uint32 objprop[0x400*2],
          ua_object_info_ext& extinfo = obj.get_ext_object_info();
          extinfo.xpos = (xpos+0.5)/8.0;
          extinfo.ypos = (ypos+0.5)/8.0;
-         extinfo.zpos = zpos;
+         extinfo.zpos = zpos/4.0;
          extinfo.dir = dir;
       }
 

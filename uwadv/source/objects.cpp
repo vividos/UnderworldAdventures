@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ ua_object_info::ua_object_info()
 // ua_object_info_ext methods
 
 ua_object_info_ext::ua_object_info_ext()
-:xpos(0.0), ypos(0.0), zpos(0), dir(0)
+:xpos(0.0), ypos(0.0), zpos(0.0), dir(0)
 {
 }
 
@@ -68,7 +68,7 @@ void ua_object::load_object(ua_savegame &sg)
    // read extended object info
    extinfo.xpos = sg.read32()/256.0;
    extinfo.ypos = sg.read32()/256.0;
-   extinfo.zpos = sg.read16();
+   extinfo.zpos = sg.read32()/256.0;
    extinfo.dir = sg.read16();
 
    // read data array
@@ -97,7 +97,7 @@ void ua_object::save_object(ua_savegame &sg)
    // write extended object info
    sg.write32(static_cast<Uint32>(extinfo.xpos*256.0));
    sg.write32(static_cast<Uint32>(extinfo.ypos*256.0));
-   sg.write16(extinfo.zpos);
+   sg.write32(static_cast<Uint32>(extinfo.zpos*256.0));
    sg.write16(extinfo.dir);
 
    // write data array

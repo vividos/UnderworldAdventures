@@ -511,7 +511,7 @@ int ua_underworld_script_bindings::objlist_get_obj_info(lua_State* L)
 
 
    lua_pushstring(L,"zpos");
-   lua_pushnumber(L,static_cast<double>(extinfo.zpos));
+   lua_pushnumber(L,extinfo.zpos);
    lua_settable(L,-3);
 
    lua_pushstring(L,"dir");

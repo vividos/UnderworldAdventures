@@ -347,7 +347,7 @@ void ua_physics_model::check_collision(ua_physics_object& object, int xpos, int 
 
          ua_vector3d base(
             xpos+extobjinfo.xpos, ypos+extobjinfo.ypos,
-            extobjinfo.zpos/4.0);
+            extobjinfo.zpos);
 
          // get triangles from model manager
          ua_model3d_manager::cur_modelmgr->get_bounding_triangles(
