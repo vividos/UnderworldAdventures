@@ -105,10 +105,6 @@ SOURCE=..\uamath.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\uatypes.hpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\uwadv.cpp
 # End Source File
 # Begin Source File
@@ -779,6 +775,10 @@ SOURCE=..\settings.cpp
 
 SOURCE=..\texture.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=..\utils.cpp
+# End Source File
 # End Group
 # Begin Group "game support headers"
 
@@ -826,6 +826,10 @@ SOURCE=..\settings.hpp
 # Begin Source File
 
 SOURCE=..\texture.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\utils.hpp
 # End Source File
 # End Group
 # End Group
