@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -33,7 +33,9 @@
 #include "screen.hpp"
 #include "imgquad.hpp"
 #include "textscroll.hpp"
+#include "mousecursor.hpp"
 #include "conv/codevm.hpp"
+#include "fading.hpp"
 
 
 // enums
@@ -53,25 +55,23 @@ enum ua_conv_screen_state
 
 //! conversation screen class
 class ua_conversation_screen:
-   public ua_ui_screen_base,
+   public ua_screen,
    public ua_conv_code_vm
 {
 public:
    //! ctor
-   ua_conversation_screen(unsigned int conv_level, Uint16 conv_objpos);
+   ua_conversation_screen(ua_game_interface& game, Uint16 conv_objpos);
    //! dtor
    virtual ~ua_conversation_screen(){}
 
-   // virtual functions from ua_ui_screen_base
-
-   virtual void init(ua_game_core_interface* core);
-   virtual void done();
-   virtual void handle_event(SDL_Event& event);
-   virtual void render();
+   // virtual functions from ua_screen
+   virtual void init();
+   virtual void destroy();
+   virtual void draw();
+   virtual bool process_event(SDL_Event& event);
    virtual void tick();
 
    // virtual functions from ua_conv_code_vm
-
    virtual void imported_func(const std::string& funcname);
    virtual void say_op(Uint16 str_id);
    virtual void store_value(Uint16 at, Uint16 val);
@@ -103,29 +103,23 @@ protected:
    //! menu text scroll
    ua_textscroll scroll_menu;
 
-   //! current fade tickcount
-   unsigned int fade_ticks;
+   //! mouse cursor
+   ua_mousecursor mousecursor;
 
-   //! counter to wait some ticks
-   unsigned int wait_count;
+   //! fading helper
+   ua_fading_helper fader;
 
    //! font for panel names
    ua_font font_normal;
 
+   //! counter to wait some ticks
+   unsigned int wait_count;
+
 
    // conversation stuff
 
-   //! level of underworld npc object is
-   unsigned int level;
-
    //! position in master object list of npc object
    Uint16 objpos;
-
-   //! npc data section
-   std::vector<Uint16> npcdata;
-
-   //! conversation slot to use
-//   unsigned int convslot;
 
    //! screen state
    ua_conv_screen_state state;

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -28,6 +28,10 @@
 // needed includes
 #include "common.hpp"
 #include "conversation.hpp"
+#include "objects.hpp"
+#include "underworld.hpp"
+#include "renderer.hpp"
+#include "audio.hpp"
 #include <sstream>
 
 
@@ -45,22 +49,22 @@ const double ua_conversation_screen::endconv_wait_time = 1.0;
 
 // ua_conversation_screen methods
 
-ua_conversation_screen::ua_conversation_screen(
-   unsigned int conv_level,Uint16 conv_objpos)
-:level(conv_level),objpos(conv_objpos)
+ua_conversation_screen::ua_conversation_screen(ua_game_interface& game,
+   Uint16 conv_objpos)
+:ua_screen(game), objpos(conv_objpos)
 {
 }
 
-void ua_conversation_screen::init(ua_game_core_interface* thecore)
+void ua_conversation_screen::init()
 {
-   ua_ui_screen_base::init(thecore);
+   ua_screen::init();
 
    ua_trace("conversation screen started\n");
-   ua_trace("talking to npc at level %u, objpos %u, ",level,objpos);
+   ua_trace("talking to npc at objpos %u, ",objpos);
 
    // get npc object to talk to
-   ua_object& npc_obj =
-      core->get_underworld().get_level(level).get_mapobjects().get_object(objpos);
+   ua_object& npc_obj = game.get_underworld().get_current_level().
+      get_mapobjects().get_object(objpos);
 
    Uint16 convslot = npc_obj.get_ext_object_info().npc_whoami;
 
@@ -72,60 +76,45 @@ void ua_conversation_screen::init(ua_game_core_interface* thecore)
 
    ua_trace("conversation slot 0x%04x\n",convslot);
 
-   // clear screen
-   glClearColor(0,0,0,0);
-   glClear(GL_COLOR_BUFFER_BIT);
-   SDL_GL_SwapBuffers();
+   // init renderer
+   game.get_renderer().setup_camera2d();
 
-   // init OpenGL
-   glMatrixMode(GL_PROJECTION);
-   glPushMatrix();
-   glLoadIdentity();
-
-   gluOrtho2D(0, 320, 0, 200);
-
-   glMatrixMode(GL_MODELVIEW);
-   glPushMatrix();
-   glLoadIdentity();
-
-   glDisable(GL_DEPTH_TEST);
    glDisable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
-   glEnable(GL_TEXTURE_2D);
-
-   font_normal.init(core->get_settings(),ua_font_normal);
+   font_normal.load(game.get_settings(),ua_font_normal);
 
    // background image
    {
-      ua_player& pl = core->get_underworld().get_player();
+      ua_player& pl = game.get_underworld().get_player();
 
-      const char *mainscreenname = "data/main.byt";
+      const char* mainscreenname = "data/main.byt";
 
       // replace name when using uw_demo
-      if (core->get_settings().get_gametype() == ua_game_uw_demo)
+      if (game.get_settings().get_gametype() == ua_game_uw_demo)
          mainscreenname = "data/dmain.byt";
 
-      img_back.load_raw(core->get_settings(),mainscreenname);
-      img_back.init(&core->get_texmgr(),0,0,320,200);
+      ua_image& img = img_back.get_image();
 
-      ua_image_list img_converse;
-      img_converse.load(core->get_settings(),"converse");
+      game.get_image_manager().load(img, mainscreenname,0,0,ua_img_byt);
 
-      img_back.fill_rect(43,0,190,47,1);
+      std::vector<ua_image> imgs_converse;
+      game.get_image_manager().load_list(imgs_converse, "converse");
+
+      img.fill_rect(43,0,190,47,1);
 
       // name panels
-      img_back.paste_image(img_converse.get_image(0),43,0);
-      img_back.paste_image(img_converse.get_image(0),139,0);
+      img.paste_image(imgs_converse[0],43,0);
+      img.paste_image(imgs_converse[0],139,0);
 
       // names
-      std::string name1 = core->get_strings().get_string(7,16+convslot);
+      std::string name1 = game.get_underworld().get_strings().get_string(7,16+convslot);
       std::string name2 = pl.get_name();
 
       if (convslot==0)
       {
          // generic conversation
-         name1 = core->get_strings().get_string(4,npc_obj.get_object_info().item_id);
+         name1 = game.get_underworld().get_strings().get_string(4,npc_obj.get_object_info().item_id);
 
          std::string::size_type pos;
          pos = name1.find('_');
@@ -137,112 +126,128 @@ void ua_conversation_screen::init(ua_game_core_interface* thecore)
 
       ua_image img_name;
       font_normal.create_string(img_name,name1.c_str(),101);
-      img_back.paste_image(img_name,48,2,true);
+      img.paste_image(img_name,48,2,true);
 
       font_normal.create_string(img_name,name2.c_str(),101);
-      img_back.paste_image(img_name,144,2,true);
+      img.paste_image(img_name,144,2,true);
 
       // barter areas
-      img_back.paste_image(img_converse.get_image(1),82,9);
-      img_back.paste_image(img_converse.get_image(1),139,9);
+      img.paste_image(imgs_converse[1],82,9);
+      img.paste_image(imgs_converse[1],139,9);
 
       // portrait frames/images
-      img_back.paste_image(img_converse.get_image(2),43,9);
-      img_back.paste_image(img_converse.get_image(2),195,9);
+      img.paste_image(imgs_converse[2],43,9);
+      img.paste_image(imgs_converse[2],195,9);
 
       // portrait images
 
       if (convslot<=28)
       {
          // portrait is in "charhead.gr"
-         ua_image_list img_charhead;
-         img_charhead.load(core->get_settings(),"charhead");
+         std::vector<ua_image> imgs_charhead;
+         game.get_image_manager().load_list(imgs_charhead, "charhead");
 
-         img_back.paste_image(img_charhead.get_image(convslot-1),45,11);
+         img.paste_image(imgs_charhead[convslot-1],45,11);
       }
       else
       {
          // portrait is in "genheads.gr"
-         ua_image_list img_genheads;
-         img_genheads.load(core->get_settings(),"genhead");
+         std::vector<ua_image> imgs_genheads;
+         game.get_image_manager().load_list(imgs_genheads, "genhead");
 
          unsigned int gen_head = npc_obj.get_object_info().item_id-64;
          if (gen_head>59) gen_head = 0;
 
-         img_back.paste_image(img_genheads.get_image(gen_head),45,11);
+         img.paste_image(imgs_genheads[gen_head],45,11);
       }
 
-      ua_image_list img_playerheads;
-      img_playerheads.load(core->get_settings(),"heads");
+      std::vector<ua_image> imgs_playerheads;
+      game.get_image_manager().load_list(imgs_playerheads, "heads");
 
       unsigned int appearance = pl.get_attr(ua_attr_appearance) +
          (pl.get_attr(ua_attr_gender)==0 ? 0 : 5);
 
-      img_back.paste_image(img_playerheads.get_image(appearance),197,11);
+      img.paste_image(imgs_playerheads[appearance],197,11);
 
 
       // scroll frames up/down
-      img_back.paste_image(img_converse.get_image(3),42,48);
-      img_back.paste_image(img_converse.get_image(4),42,126);
+      img.paste_image(imgs_converse[3],42,48);
+      img.paste_image(imgs_converse[4],42,126);
 
       // fill scroll area
-      img_back.fill_rect(56,51, 164,81,42);
+      img.fill_rect(56,51, 164,81,42);
 
-      img_back.convert_upload();
+      img_back.init(game,0,0);
+      img_back.update();
+      register_window(&img_back);
    }
 
    // adjust scroll width for uw_demo
    unsigned int scrollwidth = 289;
 
-   if (core->get_settings().get_gametype() == ua_game_uw_demo)
+   if (game.get_settings().get_gametype() == ua_game_uw_demo)
       scrollwidth = 218;
 
    // init text scrolls
-   scroll_conv.init(*core,58,51,161,81,13,42);
-   scroll_conv.set_color(46);
+   scroll_conv.init(game,58,51,161,81,42);
+   scroll_conv.set_color_code(ua_cc_black);
+   register_window(&scroll_conv);
 
-   scroll_menu.init(*core,15,169, scrollwidth,30, 5, 42);
-   scroll_menu.set_color(46);
+   scroll_menu.init(game,15,169, scrollwidth,30, 42);
+   scroll_menu.set_color_code(ua_cc_black);
+   register_window(&scroll_menu);
 
    // init mouse cursor
-   mousecursor.init(core,0);
+   mousecursor.init(game,0);
    mousecursor.show(true);
+   register_window(&mousecursor);
 
 
    // init conv. code virtual machine
    {
-      std::string cnv_name(core->get_settings().get_string(ua_setting_uw_path));
+      std::string cnv_name(game.get_settings().get_string(ua_setting_uw_path));
       cnv_name.append("data/cnv.ark");
 
       ua_conv_code_vm::load_code(cnv_name.c_str(),static_cast<Uint16>(convslot));
-      ua_conv_code_vm::init(core->get_underworld().get_conv_globals(),
-         core->get_strings().get_block(strblock));
+      ua_conv_code_vm::init(game.get_underworld().get_conv_globals(),
+         game.get_underworld().get_strings().get_block(strblock));
    }
 
    state = ua_state_fadein;
-   fade_ticks = 0;
+   fader.init(true,game.get_tickrate(),fade_time);
+   
    wait_count = 0;
 
    // start audio track "maps & legends" for conversations
-   core->get_audio().start_music(ua_music_uw1_maps_legends,false);
+   game.get_audio_manager().start_music(ua_music_uw1_maps_legends,false);
 }
 
-void ua_conversation_screen::done()
+void ua_conversation_screen::destroy()
 {
    // write back conv. globals
-   ua_conv_code_vm::done(core->get_underworld().get_conv_globals());
-
-   // clean up all ui elements
-   img_back.done();
-   scroll_conv.done();
-   scroll_menu.done();
-   mousecursor.done();
+   ua_conv_code_vm::done(game.get_underworld().get_conv_globals());
 
    ua_trace("conversation screen ended\n\n");
 }
 
-void ua_conversation_screen::handle_event(SDL_Event& event)
+void ua_conversation_screen::draw()
 {
+   // calculate quad brightness
+   Uint8 light = 255;
+   if (state == ua_state_fadein || state == ua_state_fadeout)
+      light = fader.get_fade_value();
+
+   glColor3ub(light,light,light);
+
+   // render ui elements
+   ua_screen::draw();
+}
+
+bool ua_conversation_screen::process_event(SDL_Event& event)
+{
+   if (ua_screen::process_event(event))
+      return true;
+/*
    if (scroll_menu.handle_event(event) || scroll_conv.handle_event(event))
    {
       // in user input mode?
@@ -260,18 +265,18 @@ void ua_conversation_screen::handle_event(SDL_Event& event)
             // clear menu scroll
             scroll_menu.clear_scroll();
 
-            wait_count = unsigned(answer_wait_time * core->get_tickrate());
+            wait_count = unsigned(answer_wait_time * game.get_tickrate());
          }
       }
 
       return;
    }
-
+*/
    switch(event.type)
    {
    case SDL_KEYDOWN:
       if (state == ua_state_wait_menu &&
-          event.key.keysym.sym > SDLK_0 && event.key.keysym.sym <= SDLK_9)
+          event.key.keysym.sym >= SDLK_1 && event.key.keysym.sym <= SDLK_9)
       {
          unsigned int selection = event.key.keysym.sym - (Uint32)SDLK_1;
 
@@ -283,9 +288,9 @@ void ua_conversation_screen::handle_event(SDL_Event& event)
             std::string answer(localstrings[answer_string_ids[selection]]);
             replace_placeholder(answer);
 
-            scroll_conv.set_color(38);
+            scroll_conv.set_color_code(ua_cc_orange);
             scroll_conv.print(answer.c_str());
-            scroll_conv.set_color(46);
+            scroll_conv.set_color_code(ua_cc_black);
 
             // continue processing
             state = ua_state_running;
@@ -293,49 +298,16 @@ void ua_conversation_screen::handle_event(SDL_Event& event)
             // clear menu scroll
             scroll_menu.clear_scroll();
 
-            wait_count = unsigned(answer_wait_time * core->get_tickrate());
+            wait_count = unsigned(answer_wait_time * game.get_tickrate());
          }
       }
       break;
 
-   case SDL_MOUSEMOTION: // mouse has moved
-      {
-         // calculate cursor position
-         int x,y;
-         SDL_GetMouseState(&x,&y);
-
-         unsigned int cursorx = unsigned(double(x)/core->get_screen_width()*320.0);
-         unsigned int cursory = unsigned(double(y)/core->get_screen_height()*200.0);
-
-         mousecursor.updatepos(cursorx,cursory);
-      }
+   default:
       break;
-   default: break;
    }
-}
 
-void ua_conversation_screen::render()
-{
-   // calculate quad brightness
-   Uint8 light = 255;
-   if (state == ua_state_fadein || state == ua_state_fadeout)
-   {
-      light = Uint8(255*(double(fade_ticks) / (core->get_tickrate()*fade_time)));
-
-      if (state == ua_state_fadeout)
-         light = 255-light;
-   }
-   glColor3ub(light,light,light);
-
-   // render images
-   img_back.render();
-   scroll_conv.render();
-   scroll_menu.render();
-
-   // render mouse cursor
-   glEnable(GL_BLEND);
-   mousecursor.draw();
-   glDisable(GL_BLEND);
+   return false;
 }
 
 void ua_conversation_screen::tick()
@@ -349,8 +321,8 @@ void ua_conversation_screen::tick()
 
    // execute code until finished, waiting for an action or have [MORE]
    // lines to scroll
-   while(state == ua_state_running && !finished &&
-         !scroll_menu.have_more_lines() && !scroll_conv.have_more_lines())
+   while(state == ua_state_running && !finished)//TODO &&
+         //!scroll_menu.have_more_lines() && !scroll_conv.have_more_lines())
    {
       try
       {
@@ -386,30 +358,24 @@ void ua_conversation_screen::tick()
 
       // wait a bit, then fade out
       state = ua_state_fadeout;
-      fade_ticks = 0;
+      fader.init(false,game.get_tickrate(),fade_time);
 
-      wait_count = unsigned(endconv_wait_time * core->get_tickrate());
+      wait_count = unsigned(endconv_wait_time * game.get_tickrate());
 
       // fade out music
-      core->get_audio().fadeout_music(fade_time);
+      game.get_audio_manager().fadeout_music(fade_time);
       return;
    }
 
    // check for fading in/out
-   if ((state == ua_state_fadein || state == ua_state_fadeout) &&
-      ++fade_ticks >= (core->get_tickrate()*fade_time))
+   if ((state == ua_state_fadein || state == ua_state_fadeout) && fader.tick())
    {
       if (state == ua_state_fadein)
          state = ua_state_running;
       else
       {
-         // clear screen
-         glClearColor(0,0,0,0);
-         glClear(GL_COLOR_BUFFER_BIT);
-         SDL_GL_SwapBuffers();
-
          // leave screen
-         core->pop_screen();
+         game.remove_screen();
       }
    }
 }
@@ -517,9 +483,9 @@ void ua_conversation_screen::imported_func(const std::string& funcname)
    if (funcname.compare("babl_ask")==0)
    {
       // start user input mode
-      scroll_menu.clear_scroll();
+/*TODO      scroll_menu.clear_scroll();
       scroll_menu.print(">");
-      scroll_menu.enter_input_mode();
+      scroll_menu.enter_input_mode();*/
 
       state = ua_state_wait_input;
 
@@ -569,7 +535,7 @@ void ua_conversation_screen::imported_func(const std::string& funcname)
       Uint16 arg = stack.at(argpos--);
       arg = stack.at(arg);
 
-      result_register = core->get_underworld().get_questflags()[arg];
+      result_register = game.get_underworld().get_questflags()[arg];
 
       ua_trace("get_quest[%u] = %u\n",arg,result_register);
 
@@ -583,7 +549,7 @@ void ua_conversation_screen::imported_func(const std::string& funcname)
       Uint16 arg2 = stack.at(argpos);
       arg2 = stack.at(arg2);
 
-      core->get_underworld().get_questflags()[arg2] = arg1;
+      game.get_underworld().get_questflags()[arg2] = arg1;
 
       ua_trace("set_quest[%u] = %u\n",arg2,arg1);
    
@@ -598,7 +564,7 @@ void ua_conversation_screen::imported_func(const std::string& funcname)
       arg2 = stack.at(arg2);
 
       // check player gender
-      if (core->get_underworld().get_player().get_attr(ua_attr_gender)==0)
+      if (game.get_underworld().get_player().get_attr(ua_attr_gender)==0)
          arg1 = arg2;
 
       result_register = arg1;
@@ -640,7 +606,7 @@ Uint16 ua_conversation_screen::get_global(const std::string& globname)
 
    if (globname.compare("play_name")==0)
    {
-      val = alloc_string(core->get_underworld().get_player().get_name());
+      val = alloc_string(game.get_underworld().get_player().get_name());
    }
 //   else
 //      ua_trace("get global: unhandled global %s\n",globname.c_str());
