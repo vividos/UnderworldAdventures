@@ -79,6 +79,9 @@ public:
 
    // Lua script functions
 
+   //! game functions called every tick
+   void lua_game_tick(double curtime);
+
    //! returns true when a item_id is a container
    bool lua_inventory_is_container(Uint16 item_id);
 

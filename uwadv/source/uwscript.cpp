@@ -171,6 +171,15 @@ void ua_underworld_script_bindings::done()
 
 // Lua functions callable from C
 
+void ua_underworld_script_bindings::lua_game_tick(double curtime)
+{
+   // call Lua function
+   lua_getglobal(L,"lua_game_tick");
+   lua_pushnumber(L,curtime);
+
+   checked_lua_call(1,0);
+}
+
 bool ua_underworld_script_bindings::lua_inventory_is_container(Uint16 item_id)
 {
    // call Lua function
@@ -179,8 +188,10 @@ bool ua_underworld_script_bindings::lua_inventory_is_container(Uint16 item_id)
 
    checked_lua_call(1,1);
 
+   // returns nil when no container
    bool ret = lua_isnumber(L,-1);
 
+   // remove return parameters
    lua_pop(L,1);
    return ret;
 }
