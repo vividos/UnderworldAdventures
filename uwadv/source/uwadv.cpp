@@ -21,7 +21,7 @@
 */
 /*! \file uwadv.cpp
 
-   \brief main game loop code
+   \brief main game and loop code
 
 */
 
@@ -34,8 +34,8 @@
 #include "screens/ingame_orig.hpp"
 #include "screens/start_splash.hpp"
 #include <iostream>
-#include <ctime>
 */
+#include <ctime>
 
 
 // tables
@@ -61,79 +61,27 @@ ua_arg_entry arg_params[] =
    { ua_arg_game, "g", "game", 1 },
 };
 
-/*
-// ua_game methods
 
-ua_game::ua_game():tickrate(20),exit_game(false),
-   reset_tick_timer(false),audio(NULL),screen(NULL),screen_to_destroy(NULL),
-   init_action(0)
+// ua_uwadv_game methods
+
+ua_uwadv_game::ua_uwadv_game()
+:tickrate(20.0), exit_game(false)
 {
-   printf("Underworld Adventures\n"
-      "http://uwadv.sourceforge.net/\n"
+   printf("Underworld Adventures"
 #ifdef HAVE_DEBUG
-      "- debug mode -\n"
+      " (debug mode)"
 #endif
-      "\n");
+      "\nhttp://uwadv.sourceforge.net/\n\n");
 
    srand((unsigned)time(NULL));
 }
-*/
+
 void ua_uwadv_game::init()
-{/*
-   ua_trace("initializing game\n");
+{
+   ua_trace("initializing game ...\n\n");
 
-   // output SDL version number
-   {
-      const SDL_version* ver = SDL_Linked_Version();
-      ua_trace("using SDL %u.%u.%u\n",ver->major, ver->minor, ver->patch);
-   }
-
-   // init files mgr; loads all config files and inits settings, too
+   // init files manager; settings are loaded here, too
    filesmgr.init(settings);
-
-   // init savegames manager, too
-   savegames_mgr.init(settings);
-
-   // first, initialize SDL's video subsystem
-   if( SDL_Init(SDL_INIT_VIDEO) < 0 )
-   {
-      std::string text("video initialization failed: ");
-      text.append(SDL_GetError());
-      throw ua_exception(text.c_str());
-   }
-
-   // Information about the current video settings
-   const SDL_VideoInfo* info = NULL;
-   info = SDL_GetVideoInfo();
-
-   if(!info)
-   {
-      // this should probably never happen
-      std::string text("video query failed: ");
-      text.append(SDL_GetError());
-      throw ua_exception(text.c_str());
-   }
-
-   // print video driver stats
-   {
-      char buffer[256];
-      SDL_VideoDriverName(buffer,256);
-      ua_trace("video driver: %s, ram available: %u k\n",
-         buffer,info->video_mem);
-   }
-
-   // enable system event messages
-   SDL_EventState(SDL_SYSWMEVENT,SDL_ENABLE);
-
-   // set window caption
-   SDL_WM_SetCaption("Underworld Adventures",NULL);
-
-   // set up GL attributes
-   SDL_GL_SetAttribute(SDL_GL_RED_SIZE,5);
-   SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,5);
-   SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,5);
-   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,16);
-   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,1);
 
    // find out selected screen resolution
    {
@@ -154,68 +102,25 @@ void ua_uwadv_game::init()
       }
    }
 
-   // setup video mode
-   int bpp = info->vfmt->BitsPerPixel;
-   int flags = SDL_OPENGL |
-      (settings.get_bool(ua_setting_fullscreen) ? SDL_FULLSCREEN : 0);
+   // init SDL window
+   init_sdl();
 
-   ua_trace("setting video mode: %u x %u, %u bits%s\n", width, height, bpp,
-      settings.get_bool(ua_setting_fullscreen) ? ", fullscreen" : "");
-
-   if(SDL_SetVideoMode(width, height, bpp, flags)==0)
-   {
-      std::string text("video mode set failed: ");
-      text.append(SDL_GetError());
-      throw ua_exception(text.c_str());
-   }
-
-   // output some OpenGL diagnostics
-   {
-      GLint redbits, greenbits, bluebits, alphabits, depthbits;
-      glGetIntegerv(GL_RED_BITS,&redbits);
-      glGetIntegerv(GL_GREEN_BITS,&greenbits);
-      glGetIntegerv(GL_BLUE_BITS,&bluebits);
-      glGetIntegerv(GL_ALPHA_BITS,&alphabits);
-      glGetIntegerv(GL_DEPTH_BITS,&depthbits);
-
-      ua_trace("OpenGL stats:\n bit depths: red/green/blue/alpha = %u/%u/%u/%u, depth=%u\n",
-         redbits, greenbits, bluebits, alphabits, depthbits);
-
-      GLint maxtexsize, maxlights, maxnamestack, maxmodelstack, maxprojstack;
-      glGetIntegerv(GL_MAX_TEXTURE_SIZE,&maxtexsize);
-      glGetIntegerv(GL_MAX_LIGHTS,&maxlights);
-      glGetIntegerv(GL_MAX_NAME_STACK_DEPTH,&maxnamestack);
-      glGetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH,&maxmodelstack);
-      glGetIntegerv(GL_MAX_PROJECTION_STACK_DEPTH,&maxprojstack);
-
-      ua_trace(" max. texture size = %u x %u, max. lights = %u\n",
-         maxtexsize, maxtexsize, maxlights);
-
-      ua_trace(" stack depths: name stack = %u, modelview stack = %u, proj. stack = %u\n",
-         maxnamestack, maxmodelstack, maxprojstack);
-
-      const GLubyte* vendor,* renderer,* version;
-      vendor = glGetString(GL_VENDOR);
-      renderer = glGetString(GL_RENDERER);
-      version = glGetString(GL_VERSION);
-
-      ua_trace(" vendor: %s\n renderer: %s\n version: %s\n\n",
-         vendor,renderer,version);
-   }
-
-   // setup OpenGL viewport
-   glViewport(0, 0, width, height);
+/*
+   // init savegames manager, too
+   savegames_mgr.init(settings);
 
    // clean screen
    glClearColor(0,0,0,0);
    glClear(GL_COLOR_BUFFER_BIT);
    SDL_GL_SwapBuffers();
+*/
 
    // switch off cursor
    SDL_ShowCursor(0);
 
-   screenstack.clear();
-*/
+   // set first screen
+   // TODO replace with first real screen
+   curscreen = new ua_screen;
 }
 
 /*! reads in command line arguments
@@ -225,7 +130,6 @@ void ua_uwadv_game::init()
     longopt is the string that is used for the long option
     numparams specifies how many parameters are used for the specific option
 */
-
 void ua_uwadv_game::parse_args(unsigned int argc, const char** argv)
 {
    ua_trace("parsing command line arguments\n");
@@ -317,7 +221,7 @@ void ua_uwadv_game::parse_args(unsigned int argc, const char** argv)
    }
 }
 
-//#define HAVE_FRAMECOUNT
+#define HAVE_FRAMECOUNT
 
 void ua_uwadv_game::run()
 {/*
@@ -367,14 +271,16 @@ void ua_uwadv_game::run()
       }
       break;
    }
-
+*/
    ua_trace("\nmain loop started\n");
 
    Uint32 now, then;
    Uint32 fcstart;
    fcstart = then = SDL_GetTicks();
 
-   unsigned int ticks=0,renders=0;
+   unsigned int ticks=0, renders=0;
+
+   exit_game = false;
 
    // main game loop
    while(!exit_game)
@@ -385,10 +291,11 @@ void ua_uwadv_game::run()
       {
          then += Uint32(1000.0/tickrate);
 
-         // do game logic
-         screen->tick();
          ticks++;
 
+         // do game logic
+         curscreen->tick();
+/*
          // check if there is a screen to destroy
          if (screen_to_destroy!=NULL)
          {
@@ -402,26 +309,32 @@ void ua_uwadv_game::run()
 
          //Johnm - need to do logic for critters
          critter_pool.tick(1.0/tickrate);
-
+*/
       }
 
       if (exit_game) break;
 
       // do debug processing (uwadv thread)
-      debug->tick();
+//      debug->tick();
 
       // process incoming events
       process_events();
-
+/*
       // reset timer when needed
       if (reset_tick_timer)
       {
          then = now = SDL_GetTicks();
          reset_tick_timer = false;
       }
-
+*/
       // draw the screen
-      draw_screen();
+      {
+         curscreen->draw();
+
+         // finished
+         // TODO move this to somewhere else
+         SDL_GL_SwapBuffers();
+      }
 
       renders++;
 
@@ -448,18 +361,17 @@ void ua_uwadv_game::run()
    }
 
    ua_trace("main loop ended\n\n");
-*/
 }
 
 void ua_uwadv_game::done()
-{/*
+{
    // free current screen
    if (screen!=NULL)
    {
       screen->done();
       delete screen;
    }
-
+/*
    // free all screens on screen stack
    int max = screenstack.size();
    for(int i=0; i<max; i++)
@@ -472,7 +384,9 @@ void ua_uwadv_game::done()
 
    underworld.done();
 
-   delete audio;*/
+   delete audio;
+*/
+
    SDL_Quit();
 }
 
@@ -482,28 +396,123 @@ void ua_uwadv_game::error_msg(const char* msg)
    //std::cerr << msg << std::endl;
 }
 
-/*
-// private ua_game methods
+void ua_uwadv_game::init_sdl()
+{
+   // output SDL version number
+   {
+      const SDL_version* ver = SDL_Linked_Version();
+      ua_trace("using SDL %u.%u.%u\n",ver->major, ver->minor, ver->patch);
+   }
 
-void ua_game::process_events()
+   // first, initialize SDL's video subsystem
+   if(SDL_Init(SDL_INIT_VIDEO) < 0)
+   {
+      std::string text("video initialization failed: ");
+      text.append(SDL_GetError());
+      throw ua_exception(text.c_str());
+   }
+
+   // Information about the current video settings
+   const SDL_VideoInfo* info = NULL;
+   info = SDL_GetVideoInfo();
+
+   if(!info)
+   {
+      // this should probably never happen
+      std::string text("video query failed: ");
+      text.append(SDL_GetError());
+      throw ua_exception(text.c_str());
+   }
+
+   // print video driver stats
+   {
+      char buffer[256];
+      SDL_VideoDriverName(buffer,256);
+      ua_trace("video driver: %s, ram available: %u k\n",
+         buffer,info->video_mem);
+   }
+
+   // set window caption
+   SDL_WM_SetCaption("Underworld Adventures",NULL);
+
+   // set up OpenGL attributes
+   SDL_GL_SetAttribute(SDL_GL_RED_SIZE,5);
+   SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,5);
+   SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,5);
+   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,16);
+   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,1);
+
+   // setup video mode
+   int bpp = info->vfmt->BitsPerPixel;
+   int flags = SDL_OPENGL |
+      (settings.get_bool(ua_setting_fullscreen) ? SDL_FULLSCREEN : 0);
+
+   ua_trace("setting video mode: %u x %u, %u bits%s\n", width, height, bpp,
+      settings.get_bool(ua_setting_fullscreen) ? ", fullscreen" : "");
+
+   if(SDL_SetVideoMode(width, height, bpp, flags)==0)
+   {
+      std::string text("video mode set failed: ");
+      text.append(SDL_GetError());
+      throw ua_exception(text.c_str());
+   }
+
+   ua_trace("\n");
+
+   // output some OpenGL diagnostics
+   {
+      GLint redbits, greenbits, bluebits, alphabits, depthbits;
+      glGetIntegerv(GL_RED_BITS,&redbits);
+      glGetIntegerv(GL_GREEN_BITS,&greenbits);
+      glGetIntegerv(GL_BLUE_BITS,&bluebits);
+      glGetIntegerv(GL_ALPHA_BITS,&alphabits);
+      glGetIntegerv(GL_DEPTH_BITS,&depthbits);
+
+      ua_trace("OpenGL stats:\n bit depths: red/green/blue/alpha = %u/%u/%u/%u, depth=%u\n",
+         redbits, greenbits, bluebits, alphabits, depthbits);
+
+      GLint maxtexsize, maxlights, maxnamestack, maxmodelstack, maxprojstack;
+      glGetIntegerv(GL_MAX_TEXTURE_SIZE,&maxtexsize);
+      glGetIntegerv(GL_MAX_LIGHTS,&maxlights);
+      glGetIntegerv(GL_MAX_NAME_STACK_DEPTH,&maxnamestack);
+      glGetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH,&maxmodelstack);
+      glGetIntegerv(GL_MAX_PROJECTION_STACK_DEPTH,&maxprojstack);
+
+      ua_trace(" max. texture size = %u x %u, max. lights = %u\n",
+         maxtexsize, maxtexsize, maxlights);
+
+      ua_trace(" stack depths: name stack = %u, modelview stack = %u, proj. stack = %u\n",
+         maxnamestack, maxmodelstack, maxprojstack);
+
+      const GLubyte* vendor,* renderer,* version;
+      vendor = glGetString(GL_VENDOR);
+      renderer = glGetString(GL_RENDERER);
+      version = glGetString(GL_VERSION);
+
+      ua_trace(" vendor: %s\n renderer: %s\n version: %s\n\n",
+         vendor,renderer,version);
+   }
+
+   // setup OpenGL viewport; doesn't change during game
+   glViewport(0, 0, width, height);
+}
+
+void ua_uwadv_game::process_events()
 {
    SDL_Event event;
 
    // get another event
    while(SDL_PollEvent(&event))
    {
-      screen->handle_event(event);
+      //screen->handle_event(event);
 
       switch(event.type)
       {
       case SDL_KEYDOWN:
          // handle key presses
-         handle_key_down(&event.key.keysym);
-         break;
-
-      case SDL_SYSWMEVENT:
-         // system message
-         system_message(event.syswm);
+         if (event.key.keysym.sym == SDLK_x &&
+            (event.key.keysym.mod & KMOD_ALT) != 0)
+            exit_game = true;
          break;
 
       case SDL_QUIT:
@@ -513,30 +522,7 @@ void ua_game::process_events()
       }
    }
 }
-
-void ua_game::handle_key_down(SDL_keysym *keysym)
-{
-   switch(keysym->sym)
-   {
-   case SDLK_x:
-      // exit when pressing Alt + x
-      if ((keysym->mod & KMOD_ALT)!=0)
-         exit_game = true;
-      break;
-
-   default:
-      break;
-   }
-}
-
-void ua_game::draw_screen()
-{
-   screen->render();
-
-   // finished
-   SDL_GL_SwapBuffers();
-}
-
+/*
 void ua_game::init_game()
 {
    std::string prefix(settings.get_string(ua_setting_game_prefix));

@@ -30,11 +30,12 @@
 #define uwadv_uwadv_hpp_
 
 // needed includes
+#include "settings.hpp"
+#include "files.hpp"
+#include "screen.hpp"
 /*
 #include <vector>
-#include "settings.hpp"
 #include "texture.hpp"
-#include "files.hpp"
 #include "gamestrings.hpp"
 #include "audio.hpp"
 #include "critter.hpp"
@@ -67,9 +68,18 @@ public:
    virtual void error_msg(const char* msg);
 
 protected:
-/*
-   //! controls how many ticks per second are done
-   const unsigned int tickrate;
+   //! initializes SDL and creates a window
+   void init_sdl();
+
+   //! processes SDL events
+   void process_events();
+
+protected:
+   //! resource files manager
+   ua_files_manager filesmgr;
+
+   //! game configuration
+   ua_settings settings;
 
    //! screen width
    unsigned int width;
@@ -77,14 +87,18 @@ protected:
    //! screen height
    unsigned int height;
 
-   //! game configuration
-   ua_settings settings;
+   //! controls how many ticks per second are done
+   const unsigned int tickrate;
 
+   //! indicates if game can be exited
+   bool exit_game;
+
+   //! current screen
+   ua_screen* curscreen;
+
+/*
    //! texture manager
    ua_texture_manager texmgr;
-
-   //! resource files manager
-   ua_files_manager filesmgr;
 
    //! savegames manager
    ua_savegames_manager savegames_mgr;
@@ -100,9 +114,6 @@ protected:
 
    //! debug interface
    ua_debug_interface* debug;
-
-   //! indicates if game can be exited
-   bool exit_game;
 
    //! true when tick timer should be resetted for the next cycle
    bool reset_tick_timer;
@@ -152,8 +163,6 @@ protected:
    virtual void pop_screen();
 
 private:
-   //! processes SDL events
-   void process_events();
 
    //! called when receiving a system dependent message
    virtual void system_message(SDL_SysWMEvent &syswm){}
