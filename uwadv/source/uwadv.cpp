@@ -601,6 +601,9 @@ void ua_uwadv_game::init_game()
    std::string gamecfg_name(prefix);
    gamecfg_name.append("/game.cfg");
 
+   // set new game prefix
+   savegames_manager.set_game_prefix(prefix.c_str());
+
    // try to load %prefix%/game.cfg
    {
       ua_gamecfg_loader cfgloader(*this,&scripting);
