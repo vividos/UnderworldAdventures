@@ -66,13 +66,19 @@ File SDL_mixer.dll
 File uwadv.cfg
 File Copying
 File README.uwadv.txt
+CreateDirectory "$INSTDIR\uasave"
 
 SetOutPath $INSTDIR\uadata
 File uadata\uadata00.uar
 
 SetOutPath $INSTDIR
 
+SetShellVarContext current
 CreateShortCut "$DESKTOP\Underworld Adventures.lnk" "$INSTDIR\uwadv.exe" "" "" "0"
+CreateDirectory "$SMPROGRAMS\Underworld Adventures"
+CreateShortCut "$SMPROGRAMS\Underworld Adventures\Underworld Adventures.lnk" "$INSTDIR\uwadv.exe" "" "" "0"
+CreateShortCut "$SMPROGRAMS\Underworld Adventures\Underworld Adventures Config.lnk" "$INSTDIR\uaconfig.exe" "" "" "0"
+
 WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\Underworld Adventures" "DisplayName" "Underworld Adventures '${VERSION}' (remove only)"
 WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\Underworld Adventures" "UninstallString" '"$INSTDIR\uninst-uwadv.exe"'
 
@@ -95,14 +101,28 @@ Delete $INSTDIR\uaconfig.exe
 Delete $INSTDIR\SDL.dll
 Delete $INSTDIR\SDL_mixer.dll
 Delete $INSTDIR\uwadv.cfg
+Delete $INSTDIR\uwadv.cfg.old
 Delete $INSTDIR\Copying
 Delete $INSTDIR\README.uwadv.txt
 Delete $INSTDIR\uninst-uwadv.exe
 Delete $INSTDIR\uadata\uadata00.uar
+RMDir $INSTDIR\uadata
+
+ClearErrors
+RMDir $INSTDIR\uasave
+
+IfErrors HaveError HaveNoError
+HaveError:
+   MessageBox MB_OK "The Underworld Adventures folder could not be deleted. There may be stored savegames in the folder."
+HaveNoError:
+
+RMDir $INSTDIR
 
 Delete "$DESKTOP\Underworld Adventures.lnk"
+Delete "$SMPROGRAMS\Underworld Adventures\Underworld Adventures.lnk"
+Delete "$SMPROGRAMS\Underworld Adventures\Underworld Adventures Config.lnk"
+RMDir "$SMPROGRAMS\Underworld Adventures"
+
 DeleteRegKey HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\Underworld Adventures"
 
-RMDir $INSTDIR\uadata
-RMDir $INSTDIR
 SectionEnd
