@@ -36,11 +36,8 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <set>
 #include "settings.hpp"
-
-
-// forward-references
-//class ua_strings_pak_file;
 #include "import.hpp"
 
 
@@ -72,6 +69,9 @@ public:
    //! returns a whole string block
    void get_stringblock(Uint16 block_id, std::vector<std::string>& strblock);
 
+   //! returns a list of all string blocks available
+   std::set<Uint16>& get_stringblock_set();
+
    //! returns a string from given block
    std::string get_string(Uint16 block_id, unsigned int string_nr);
 
@@ -91,7 +91,17 @@ protected:
 
    //! all strings.pak files available for loading strings
    std::vector<ua_strings_pak_file> allpakfiles;
+
+   //! set with all blocks that are available
+   std::set<Uint16> blockset;
 };
+
+// inline methods
+
+inline std::set<Uint16>& ua_gamestrings::get_stringblock_set()
+{
+   return blockset;
+}
 
 
 #endif

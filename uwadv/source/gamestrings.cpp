@@ -28,7 +28,6 @@
 // needed includes
 #include "common.hpp"
 #include "gamestrings.hpp"
-//#include "import.hpp"
 
 
 const unsigned int max_lifetime = 30;
@@ -43,6 +42,7 @@ void ua_gamestrings::init(ua_settings& settings)
 
    // load file strings.pak
    allpakfiles[0].open(settings);
+   allpakfiles[0].add_to_blockset(blockset);
 
    // add dummy vector for block 1
    std::vector<std::string> dummymap;
@@ -62,6 +62,7 @@ void ua_gamestrings::add_pak_file(const char* filename)
    // open .pak file
    ua_strings_pak_file& pakfile = allpakfiles.back();
    pakfile.open(filename);
+   pakfile.add_to_blockset(blockset);
 }
 
 /*! Adds strings.pak file to available files
@@ -76,6 +77,7 @@ void ua_gamestrings::add_pak_file(SDL_RWops* rwops)
    // open .pak file
    ua_strings_pak_file& pakfile = allpakfiles.back();
    pakfile.open(rwops);
+   pakfile.add_to_blockset(blockset);
 }
 
 bool ua_gamestrings::is_avail(Uint16 block_id)

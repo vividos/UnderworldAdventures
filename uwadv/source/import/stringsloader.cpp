@@ -235,3 +235,13 @@ void ua_strings_pak_file::load_stringblock(Uint16 block_id, std::vector<std::str
    // remove excess memory
    std::vector<std::string>(strblock).swap(strblock);
 }
+
+void ua_strings_pak_file::add_to_blockset(std::set<Uint16>& blockset)
+{
+   std::map<Uint16, Uint32>::iterator iter,stop;
+   iter = allblocks.begin();
+   stop = allblocks.end();
+
+   for(; iter!=stop; iter++)
+      blockset.insert(iter->first);
+}

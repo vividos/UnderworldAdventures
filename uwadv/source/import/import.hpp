@@ -40,6 +40,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
 
 
 // forward references
@@ -164,6 +165,9 @@ public:
 
    //! loads a single string block
    void load_stringblock(Uint16 block_id, std::vector<std::string>& strblock);
+
+   //! adds all blocks in the file to the block
+   void add_to_blockset(std::set<Uint16>& blockset);
 
 public:
    //! filename of .pak file
