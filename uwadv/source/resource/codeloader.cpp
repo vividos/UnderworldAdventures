@@ -23,9 +23,6 @@
 
    \brief conv code loading implementation
 
-   ua_conv_code_vm::load_code() loads the code into the virtual machine,
-   processing all globals and imported functions. it also determines which
-   string block to use, by counting valid conv slots.
 
    for more infos about conv code, see file docs/uw-formats.txt
 
@@ -33,8 +30,8 @@
 
 // needed includes
 #include "common.hpp"
-#include "../conv/codevm.hpp"
-#include "../import/io_endian.hpp"
+#include "codevm.hpp"
+#include "import/io_endian.hpp"
 
 
 // ua_conv_code_vm methods
@@ -134,7 +131,8 @@ bool ua_conv_code_vm::load_code(const char *cnvfile, Uint16 conv)
    // make sense
    codesize = static_cast<Uint16>(fread32(fd));
    Uint16 unk2 = fread16(fd); // always 0x0000
-   strblock = fread16(fd); // string block to use
+   Uint16 strblock = fread16(fd); // string block to use
+   vm.set_strblock(strblock);
 
    // seems to be superfluous, since we know the number of words from the globals file
    glob_reserved = fread16(fd); // number of stack words reserved for globals
