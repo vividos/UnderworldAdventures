@@ -33,7 +33,7 @@
 #include <set>
 #include <algorithm>
 
-#undef HAVE_LIB3DS
+#define HAVE_LIB3DS
 
 #ifdef HAVE_LIB3DS
 #include "lib3ds/file.h"
@@ -47,6 +47,14 @@ static std::vector<ua_level> levels;
 static ua_settings settings;
 static ua_texture_manager texmgr;
 static std::set<Uint16> allusedtextures;
+
+// create a big 3ds file with all levels in one file?
+static bool one_map = false;
+
+#ifdef HAVE_LIB3DS
+Lib3dsFile* file;
+#endif
+
 
 
 // dummy functions
@@ -102,15 +110,22 @@ void write_level(unsigned int curlevel, ua_level& level)
    // sort triangles by texnum
    std::sort(alltriangles.begin(), alltriangles.end());
 
-   printf("writing 3ds file ... ");
+   if (one_map)
+      printf("collecting triangles ...");
+   else
+      printf("writing 3ds file ... ");
 
    // write 3ds file
    char buffer[256];
-   sprintf(buffer,"./levels3ds/level%02u.3ds",curlevel,curlevel);
+   sprintf(buffer,"./levels3ds/level%02u.3ds",curlevel);
 
 #ifdef HAVE_LIB3DS
-   // create new 3ds file
-   Lib3dsFile* file = lib3ds_file_new();
+
+   if (!one_map)
+   {
+      // create new 3ds file
+      file = lib3ds_file_new();
+   }
 
    std::set<Uint16> usedtextures;
 
@@ -118,14 +133,15 @@ void write_level(unsigned int curlevel, ua_level& level)
    {
       unsigned int max = alltriangles.size();
 
-      Lib3dsMesh* mesh = lib3ds_mesh_new("alltriangles");
+      char buffer2[64];
+
+      sprintf(buffer2,"level%u",curlevel);
+      Lib3dsMesh* mesh = lib3ds_mesh_new(buffer2);
 
       // create points, texels and faces list
       lib3ds_mesh_new_point_list(mesh,max*3);
       lib3ds_mesh_new_texel_list(mesh,max*3);
       lib3ds_mesh_new_face_list(mesh,max);
-
-      char buffer2[64];
 
       // process every triangle
       for(unsigned int j=0; j<max; j++)
@@ -140,6 +156,9 @@ void write_level(unsigned int curlevel, ua_level& level)
             pt.pos[0] = tri.points[n].x;
             pt.pos[1] = tri.points[n].y;
             pt.pos[2] = tri.points[n].z*0.125;
+
+            if (one_map)
+               pt.pos[2] -= 4.0*curlevel;
 
             mesh->pointL[j*3+n] = pt;
 
@@ -200,22 +219,29 @@ void write_level(unsigned int curlevel, ua_level& level)
 
       for(;iter!=stop; iter++)
       {
-         Lib3dsMaterial* mat = lib3ds_material_new();
+         if (!one_map)
+         {
+            Lib3dsMaterial* mat = lib3ds_material_new();
 
-         // set name for material and first texture map
-         sprintf(mat->name,"tex%04x",*iter);
-         sprintf(mat->texture1_map.name,"tex%04x.tga",*iter);
+            // set name for material and first texture map
+            sprintf(mat->name,"tex%04x",*iter);
+            sprintf(mat->texture1_map.name,"tex%04x.tga",*iter);
 
-         lib3ds_file_insert_material(file,mat);
-
+            lib3ds_file_insert_material(file,mat);
+         }
          allusedtextures.insert(*iter);
       }
    }
 
-   // save and free 3ds file
-   lib3ds_file_save(file,buffer);
+   if (!one_map)
+   {
+      // save and free 3ds file
+      lib3ds_file_save(file,buffer);
 
-   lib3ds_file_free(file);
+      lib3ds_file_free(file);
+      file = NULL;
+   }
+
 #endif // HAVE_LIB3DS
 
    printf("done\n");
@@ -300,10 +326,40 @@ int main(int argc, char* argv[])
    // init exporter
    init_map3ds("./");
 
+   if (one_map)
+      file = lib3ds_file_new();
+
    // write all level maps
    unsigned int max = levels.size();
    for(unsigned int i=0; i<max; i++)
       write_level(i,levels[i]);
+
+   // insert all used materials
+   if (one_map)
+   {
+      std::set<Uint16>::iterator iter,stop;
+      iter = allusedtextures.begin();
+      stop = allusedtextures.end();
+
+      for(;iter!=stop; iter++)
+      {
+         Lib3dsMaterial* mat = lib3ds_material_new();
+
+         // set name for material and first texture map
+         sprintf(mat->name,"tex%04x",*iter);
+         sprintf(mat->texture1_map.name,"tex%04x.tga",*iter);
+
+         lib3ds_file_insert_material(file,mat);
+      }
+
+      printf("writing 3ds file ... ");
+
+      // save and free 3ds file
+      lib3ds_file_save(file,"./levels3ds/all_levels.3ds");
+      lib3ds_file_free(file);
+
+      printf("done!\n");
+   }
 
    // write textures
    write_textures();
