@@ -94,14 +94,17 @@ ua_debug_impl_win32::ua_debug_impl_win32(ua_underworld* theunderw)
 :underw(theunderw)
 {
    // load library, check if functions are available
-   dll = ::LoadLibrary("uadebug.dll");
-   avail = dll != NULL;
+   {
+      dll = ::LoadLibrary("uadebug.dll");
+      avail = dll != NULL;
 
-   avail &= (NULL != ::GetProcAddress(dll,"uadebug_start"));
+      avail &= (NULL != ::GetProcAddress(dll,"uadebug_start"));
 
-   ua_trace("win32 debug impl. started; debugger is %savailable\n",
-      avail ? "" : "not ");
+      ua_trace("win32 debug impl. started; debugger is %savailable\n",
+         avail ? "" : "not ");
+   }
 
+   // init semaphore and thread handle
    sem_debugger = SDL_CreateSemaphore(0);
    thread_debug = NULL;
 
