@@ -59,6 +59,9 @@ public:
    //! plays a sound; stops when finished
    virtual void play_sound(const char *soundname)=0;
 
+   //! stops sound playback
+   virtual void stop_sound()=0;
+
    //! starts music playback
    virtual void start_music(unsigned int music, bool repeat)=0;
 
