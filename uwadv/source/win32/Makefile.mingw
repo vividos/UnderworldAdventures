@@ -93,7 +93,9 @@ xmi2mid_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB)
 mapdisp_EXEC = mapdisp.exe
 
 mapdisp_OBJS = ../tools/mapdisp.o ../level.o ../resource/maploader.o \
-	../quadtree.o ../texture.o ../resource/texloader.o
+	../quadtree.o ../texture.o ../resource/texloader.o \
+	../resource/imageloader.o ../resource/objloader.o \
+	../image.o ../objects.o
 
 mapdisp_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB) $(STLPORT_LIB) -lopengl32 -lglu32
 

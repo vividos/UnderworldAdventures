@@ -37,7 +37,9 @@ cnvdbg_SOURCES = cnvdbg.cpp cnvdbg.hpp instr.hpp \
 xmi2mid_SOURCES = xmi2mid.cpp ../audio/xmidi.cpp
 
 mapdisp_SOURCES = mapdisp.cpp ../level.cpp ../resource/maploader.cpp \
-	../quadtree.cpp ../resource/texloader.cpp ../texture.cpp
+	../quadtree.cpp ../resource/texloader.cpp ../texture.cpp \
+	../resource/imageloader.cpp ../resource/objloader.cpp \
+	../image.cpp ../objects.cpp
 
 mapdisp_LDADD = -lGL -lGLU
 

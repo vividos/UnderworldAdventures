@@ -87,11 +87,27 @@ LINK32=link.exe
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\image.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\resource\imageloader.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\level.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\resource\maploader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\objects.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\resource\objloader.cpp
 # End Source File
 # Begin Source File
 
@@ -124,6 +140,10 @@ SOURCE=..\image.hpp
 # Begin Source File
 
 SOURCE=..\level.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\objects.hpp
 # End Source File
 # Begin Source File
 
