@@ -1,4 +1,4 @@
-2003-04-xx release 0.8-boring-version-number
+2003-04-24 release 0.8-hot-chili
 
 	* added simple NPC animation
 	* added picking up items from the underworld
@@ -7,7 +7,8 @@
 	* implemented some traps and triggers
 	* added bridges
 	* added savegames loading/saving
-	* adde quicksave functionality
+	* added quicksave functionality
+	* fixed 3d models sizes
 
 2003-02-11 release 0.7-muffin
 
