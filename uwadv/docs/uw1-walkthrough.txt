@@ -1,0 +1,789 @@
+         WALK-THROUGH for ULTIMA UNDERWORLD : The Stygian Abyss
+         ------------------------------------------------------
+         Version 1.6                               Mitch Aigner
+
+Yes folks, here it is. It starts with a run through of the highlights of each
+of the 8 levels, and goes on from there.
+
+* - indicates what you absolutely gotta have:
+% - indicates optional ventures, usually worth the reward
+
+Level 1
+-------
+* Recipe for Rotworm stew from Lanugo
+% Solve the puzzle of the 4 levers
+% Raid the treasuries of the Green and Grey goblins
+
+Level 2
+-------
+* Kill the Gazer in the mines for Goldthirst and collect the reward
+* Have Shak repair the Sword of Justice (after you find the pieces later on)
+% Get the blueprints for Ironwit. Key is in small room in the same area that you
+  must jump to, then follow the yellow brick road. Use Fly potion (green) to
+  take you to yet another part of same area (when you see a gap far too far to
+  jump). Do not fall off the elevated paths, monsters await below.
+% Raid Goldthirst's treasury. Offer him a gift (anything GOLD!) , and he will
+  give you the password. Use Fly, Levitate, or Gate Travel spell to get out.
+
+Level 3
+-------
+* Blade for Sword of Justice - secret door behind vines in SE corner
+* Taper of Sacrifice from Zak
+* Cup of Wonder - after learning flute tune, and how to use incense
+* Free the prisoner (Murgo) held by the lizardmen. Don't do this until the
+  prisoner has translated the complete lizard language for you.
+% Find the remains of Ossika (bring scroll back to Ishtass)
+% Give a red gem to Iss'leek
+% Kill all of the bandits, and find their treasury
+
+Level 4
+-------
+* Give gemcutter to Derek for code to Ring of Humility (used on level 5)
+* Kill Roderick and then collect Standard of Honor from Dorna Ironfist
+% Give Sethar the Rotworm Stew to get Dragon Scales
+% Join the knighthood (allows access to their Armory - great stuff!)
+% Find the Writ of Lorne (talk to Lakshi about Rawstag)
+% Find the Golden Plate behind secret door in Maze of Silas (door code is shown
+  on the two knights tombstones)
+% Solve the puzzle of the Bullfrog and find the illusionary wall to secret area
+
+Level 5
+-------
+* Ring of Humility (using code mentioned above)
+* Talk to Eyesnack to learn a flute tune.
+* Hilt of Sword of Justice from tombs
+* Give Judy the picture of Tom (after you find it below)
+* Re-bury Garamons' bones (after you find them below)
+% Have Marrowsuck make Dragon-skin boots (Dragon scales and spider thread)
+% Offer to fetch "zanite" for Anjor
+% Get code for mine dispatch chamber from Kneenibble
+
+Level 6
+-------
+* Talk to Dr. Owl about location of Wine of Compassion (after freeing Murgo)
+* Get book from Bronus to deliver to Morlock
+* Talk to Morlock about Book of Honesty (after completing above errand)
+* Defeat Golem to obtain the Shield of Valor
+* Talk to Fyrgen and Louvnon to get some clues to the six-letter mantra
+* Talk to Illomo (both BEFORE and AFTER you find his friend Gurstang below)
+% Talk to Gralwart about getting a "Vas" runestone
+% Get the book "Properties of Runestones" for Ranthru
+
+Level 7
+-------
+* Talk to Naruto about a key
+* Free the prisoners
+* Go down to level 8 (three places): Pick up a piece of Orb Rock in one of them
+                                     Get the Crown from the Imp in another
+* Use the crown to master the maze and defeat Tyball, then free Arial
+* Return to the prison and: get the Picture of Tom from Bolinard
+                            get the Key from Smonden
+                            talk to Gurstang (tell him Illomo sent you)
+* Use the Key on the door in the extreme NW corner. Proceed upward to get the
+  Key of Courage.
+% Find the Medallion of Passage in the SW quadrant to get through all of the
+  guard posts without having to do battle (though I preferred to battle  :-)
+% Destroy Tyballs' orb by throwing the Orb Rock you collected at it.
+% Raid the imps' treasury by killing the Golems. Make sure that you have a 
+  few Health potions handy, as some of the items are cursed.
+% Find the "Ring of Levitate" in the chasm of fire (real handy on level 8)
+% Visit the tombs (lots of secret doors, some good stuff, but must have the
+  Crystal Splinter from Kallistan to get in)
+% Go back to the prisons and kill all of the &^#$%! guards (just for revenge)
+
+Level 8
+-------
+* Talk to Carasso about the location of Garamons' bones
+* Open the central door with the tri-partite key and do what Garamon told you
+  to do when you re-buried his bones.
+% Find lots of really awesome weapons, armor, and magic stuff
+
+MoonGate Level
+--------------
+* Just run like hell, that is all you CAN do!
+
+
+GAME OBJECTIVES:
+---------------
+You have two goals in this game:
+
+1) Survival
+2) Find all 8 of the magic Talismans of Sir Cabrius
+
+You cannot finish the game until you have all 8 Talismans, and have re-buried
+the bones of the wizard Garamon. In addition, you will need to assemble the
+Tripartite key.
+
+
+General tips:
+------------
+
+- Don't kill anyone who is not actively trying to kill you (no matter how rude
+  they may be)
+- If anyone asks you to run an errand for them, do it (the reward is almost 
+  always worth it)
+- Trust the good guys (identified by the Banner of Cabrius at their door). They
+  will never steer you wrong.
+- Save your game often.
+- Talk to people more than once. There are different threads to most of the
+  conversations. Try different responses each time.
+- Write down what people tell you. It may not make any sense now, but could do
+  so in the future.
+
+
+Other useful stuff:
+------------------
+
+1. When using Fly or Levitate: pressing "E" makes you go up, pressing "Q" makes
+   you go down.
+2. You can make a fishing pole with a Pole and Spider Thread (who says there's
+   no such thing as a free lunch! Fresh fish are also great for payoffs and for
+   bartering).
+3. Make popcorn with corn and a torch.
+4. You can make a torch by pouring an oil flask onto a piece of wood.
+
+Undocumented spells:
+-------------------
+
+AS  - curse
+UP  - long jump
+KM  - summon monster
+VOG - sheet lightning
+ACM - smite undead
+IS  - thick skin (medium shield)
+YP  - walk on water
+VKC - armageddon (do not use, you won't like it)
+
+Documented spells (included primarily for the folks who just have the demo)
+----------------- (the demo documentation wasn't so hot IMHO)
+
+To find out which spells you can cast: Take your experience level, divide by 2,
+and then round up. This number is the maximum circle of spells you can use.
+
+To find out how much Mana you need: Take the circle number and multiply by 3.
+
+1st Circle:
+IMY - create food
+IL  - light
+OJ  - magic arrow
+BIS - resist blows (small shield)
+SH  - stealth
+
+2nd circle:
+QC  - cause fear
+WM  - detect monster
+IBM - lesser heal
+IJ  - rune of warding
+RDP - slow fall
+
+3rd circle:
+BSL - conceal (low level invisibility)
+OG  - lightning
+QL  - night vision
+RTP - speed
+SJ  - strengthen door (same as using spikes)
+
+4th circle:
+IM  - heal
+HP  - levitate
+NM  - poison
+AJ  - remove trap
+SF  - resist fire
+
+5th circle:
+AN  - cure poison
+PF  - fireball
+GSP - missile protection
+OWY - name enchantment (identify)
+EY  - open
+
+6th circle:
+VIL - daylight
+VRP - gate travel (to moonstone)
+VIM - greater heal
+AEP - paralyze
+OPY - telekinesis
+
+7th circle:
+IMR - ally
+VAW - confusion
+VHP - fly
+VSL - invisibility
+OAQ - reveal
+
+8th circle:
+FH  - flame wind
+AT  - freeze time
+IVS - iron flesh (major shield)
+OPW - roaming sight
+VPY - tremor
+
+
+Mantra chants:
+-------------
+
+I have included comments on the relative importance of each. NOTE: this is In
+My Humble Opinion (which is bound to be different from your opinion, or anyone
+elses).
+
+Chant   Skill      IMHO
+----- ---------- -----------------------------------
+FAL    Acrobat    Need a little to keep from getting hurt in falls/jumps
+HUNN   Appraise   worthless
+RA     Attack     Need LOTS!
+GAR    Axe        Need LOTS only if you are an Axe-man
+SOL    Casting    Need a little to keep from getting hurt when spells 'backfire'
+UN     Charm      worthless
+ANRA   Defense    Need LOTS!
+LAHN   Lore       Need LOTS! (to identify scrolls/potions/armor/wands/etc)
+KOH    Mace       Need LOTS only if you are a Mace-man
+IMU    Mana       Need LOTS!
+FAHM   Missile    Need LOTS only if you are a Missiles-man (bow/crossbow/sling)
+AAM    Picklock   Real handy on upper levels, not so handy on the lower ones
+LON    Repair     worthless, as Shak works cheap (and as fast as you can)
+LU     Search     Need a little to help find secret doors
+MUL    Sneak      mostly worthless
+ONO    Swimming   mostly worthless
+AMO    Sword      Need LOTS only if you are a swordsman
+ROMM   Traps      beyond worthless
+ORA    Unarmed    Need LOTS if you prefer not to carry around a weapon **
+
+** - The game CAN be won without the use of weapons or armor.
+
+Character Creation:
+------------------
+
+     Throw away all the characters in the beginning. For each character class
+there are a number of random skills assigned each time that you create a new
+character,... except that they aren't random!
+      Let's say I want to be a fighter. I create a bunch of fighter characters
+and throw them all away, but not after writing down each ones' attributes. Now
+I quit the game, and re-start the game. I again create a character. The exact
+same sequence of characters will appear in the exact same order, but now I know
+exactly which one to keep!!
+      Strength is the most important skill of all. Most of the rest can be im-
+proved later via shrine chants, but not Strength.
+      Fighters, Druids, and Tinkers generally have high Strength factors.
+      You will want to have a Strength factor of at least 25 in order to wear
+plate armor, and still be able to carry a fair amount of goodies. Your carry
+capacity (measured in units of "stones") is exactly twice your Strength rating.
+
+The three primary skills (Strength, Intel., Dexterity) are factored in with the
+other skill ratings. The final value used by the game seems to be proportional
+to the skill level multiplied by the primary skill level tied to it. These
+associations are as follows:
+
+Strength:     Attack Defense Unarmed Sword Mace Missile Axe
+Intelligence: Mana Casting Lore
+Dexterity:    Sneak Swim Search Lockpick Charm Acrobat Traps Repair Appraise
+
+For example: If you are trying to pick a lock, the game uses a number based on
+             your Dexterity TIMES your Lockpick skill.
+
+Maximum Vitality and Mana Capacities: These seem to depend on several factors.
+             The present theory is as follows:
+
+         Vitality: Depends on Strength and Experience level
+             Mana: Depends on Intelligence, Experience, and Mana skill rating
+
+             The precise equations using these numbers remain a mystery.
+
+
+Fun things to do:
+----------------
+
+On Level 4, NW corner (accessible only from level 7), there are two hostile
+mages. Kill one, and leave the other alive. Then get out of his way, as he will
+throw fireballs at you. Go find some safe corner in which to hide. The remaining
+mage will "summon" a wide variety of nasties for you to kill (hostile lizardmen,
+mountainmen, fighters, spiders, headlesses, etc), each with its usual assortment
+of goodies. This gives you the chance to sample battle with all of the various
+denizons of the abyss, as well as cover the floors with loot. Every once in a 
+while you may have to go back to the mage and push him around a bit, to keep him
+sufficiently pissed off.
+
+Drink lots of Ale and Port all at once - get drunk and pass out! (Just remember
+that you need to save at least 1 bottle of Port for rotworm stew.)
+
+
+Outright spoilers:
+-----------------
+
+Level 1 levers puzzle - with 0 being top position, then clockwise: Turn
+                        the lever farthest from the door to 1, the next to 2,
+                        next one 3, next one 4 (straight down).
+
+Level 2 Goldthirsts' password - "Deco morono"
+
+Level 3 Cup of Wonder - Flute tune is: 3 5 4 2 3 7 8 7 5
+                        Mantra for triangulation: "insahn"
+
+Level 4 Maze of Silas - flip the levers in the following order:
+                        Silver - Gold - Gold - Silver - Silver - Gold
+
+Level 4 Bullfrog puzzle - The floor area is an 8 by 8 grid of movable tiles.
+                          The two levers select the X and Y coordinates of the
+                          tile you wish to move. Pushing the upper button on-
+                          then-off raises the selected tile. Pushing the lower
+                          button on-then-off lowers the selected tile. The wand
+                          simply resets the floor to its original state for when
+                          you screw up too badly. Build two ramps to get to the
+                          two eastern-most corners. Jump through the wall to get
+                          into the secret area in the south.
+                          
+Level 5 Ring of Humility - hit NW lever, then SE, NE, SW. STAY OUT of the center
+                           of the room while doing this. Hug the walls.
+
+Level 5 Mine Control Code - with 0 being top position, then clockwise:
+                            Left to Right: 7 2 6
+
+Level 5 Garamon - wants you to throw the "talismans" into the "volcano". You 
+                  CANNOT complete the game unless you have found his bones on
+                  level 8 (Garamon was the brother of Tyball, and one heck of a
+                  mage. You will find several runestones (one is "Vas") and a
+                  magic ring by the right bones). The bones must be buried in
+                  the grave in the tombs on level 5 ("use" the bones on the
+                  gravestone). After the ghost appears, you must answer the
+                  questions correctly.
+                       Another way to tell if you have the right set of bones
+                  is to try to stack them on top of another set of bones in
+                  your inventory. Like coins, bones will stack,.. leaving one
+                  "bones" icon with a number next to it to indicate how many
+                  are stacked. Garamon's bones will not stack this way.
+
+Talismans:
+---------
+Taper of Sacrifice - Level 3, trade with Zak (food)
+
+Sword of Justice -   Level 3, Blade is in secret room. Lever to operate is be-
+                     hind a vine-covered wall in the extreme SE corner (Note:
+                     you must attempt to "pick up" the vines to reveal the
+                     secret door, just "looking" won't work).
+                     Level 5, Hilt is in the tombs area, accesible from either
+                     the Bullfrog area of Level 4, or a secret door on Level 5.
+                     Level 2, Shak will make the repairs for 20 coins.
+
+Cup of Wonder -      Level 3, room where Gazer is (that you have to swim to).
+                     Stand on the little pedastal in the corner and play your
+                     flute. The flute tune is taught by Eyesnack on level 5. The
+                     clues to the three-part mantra (and use of incense) are 
+                     taught by Fyrgen and Louvnon on level 6.
+
+Standard of Honor -  Level 4, from Dorna Ironfist, after slaying the Chaos
+                     Knight (aka Sir Roderick).
+
+Ring of Humility -   Level 5, room in NW quadrant with levers. Throw levers in
+                     following order: NW SE NE SW. Stay away from the center of
+                     the room when doing this. After last lever is thrown, ring 
+                     will be on the central pedastal. This is told by Derek on
+                     level 4 after you give him the Gem-cutter you got from
+                     Goldthirst on level 2 after you slew the Gazer in the mine.
+
+Shield of Valor -    Level 6, after defeating the Golem
+
+Wine of Compassion - Level 6, in checkerboard room with 2 headlesses (NW quad-
+                     rant of level 6, off room with dozens of worms). Wine is
+                     hidden under a floor tile in the SE corner. Try to
+                     "pick up" or "use" the tile. Told by dr. Owl on level 6
+                     after freeing his servant Murgo from the lizardmen on level
+                     3.
+
+Book of Honesty -    Level 6, is in the key behind the hourglass. There is an
+                     hour-glass shaped room (NW quadrant of level 6) with a
+                     secret door at the end of it. Go through the door and jump
+                     across the chasm to get to a key-shaped room. Told by
+                     Morlock on level 6 after you deliver the book from Bronus
+                     on level 6.
+
+Key of Love -        Level 5, from Judy after giving her the Picture of Tom
+
+Key of Truth -       Level 6, after chanting "fanlo" at a shrine. Found in the
+                     title of a book in the Library on Level 6, after talking to
+                     Illomo (level 6) after finding Gurstang (level 7) after
+                     talking to Illomo the first time.
+
+Key of Courage -     Level 3, NW corner (NW area accessible only from level 7)
+
+Key of Infinity (tri-partite key) - made by assembling the above three pieces.
+                                    Just drop them on top of each other in your
+                                    inventory, and they will bind.
+                        
+Lizard Language
+---------------
+
+bica           - hello, goodbye
+'click         - no
+'click-iriass  - Sir Cabrius
+eppa           - visit
+isili          - me (also means I)
+kri'kla        - lurker
+ossli          - enough
+sel'a          - give (also means trade)
+sor'click      - stranger
+sorr           - enemy
+sorra          - steal
+sseth          - yes
+sstresh        - help
+Thepa          - Lizardmen
+thes'click     - hate
+thesh          - like
+thit           - need
+tosa           - you
+Urgo           - Murgo (the prisoner: Dr. Owls' light-fingered assistant)
+yeshor'click   - friend
+yethe          - kill
+zekka          - food
+
+Assorted Notes:
+--------------
+
+There are fountains of healing only on levels 1, 2, and 3
+
+There is one shrine on every level (except level 3 which has three, and level 4
+which has two)
+
+Mandolins appear to be completely useless.
+
+Pieces of wood can be used to improvise a torch,.. just douse it with oil.
+
+Spikes are for pinning doors shut. Once a door is spiked, only you can open it.
+
+You cannot defeat Level 7 without making a few trips down to Level 8
+
+You cannot kill the "Slasher of Veils", no matter which side of the moongate
+you both happen to be on. (Even with Attack/Defense/and Sword ratings of 250+)
+(don't ask). You can get him to the "yellow" state, but not beyond.
+
+When you and the demon are sucked through the moongate, you must run down one of
+the three paths (red, green, blue) that go off the central area. That is all you
+can do. The Orb you found on Level 1 tells you which path to take.
+
+Maximum skill ratings depend upon the character-type selected (Example: Fighters
+can only go to 25 in Mana/Lore/Casting rating, while Druids can go to 30)
+
+Maximum Mana capacity also depends upon the type of character created. Druids 
+and Mages rate very high.
+
+Trick to get past all the Fire Elementals in the Chasm of Fire on level 7: When
+you come up from the NE part of level 8, you will find a Golem and a Key. There
+is a secret door leading to the Chasm of Fire. Open the door and familiarize
+yourself with the route from the door to level 8 and the Chasm. Go back down to
+level 8 and kill some time while your Mana re-charges. When you are up to about
+25 Mana points, fire up two "Sanct Flam" spells and cruise up to level 7 and the
+Chasm. The Fire Elementals will cease to be a problem.
+
+Trick to the prison area of level 7: Kill all of the guards ("medallion, I don't
+need no steenking medallion!"). The head guard has a key which will open all of
+the low-security prison cells,.. and all of the portcullises in the prison area,
+... and all of the portcullises in the other guard areas of level 7. Real handy.
+The alternative is unpleasant.
+
+There are at least 8 magic rings
+
+There are at least 15 magic wands
+
+Lots of goodies are hidden under bones, debris, etc.  If you see a pile of
+debris (of the variety that you can't pick up), look to make sure that every
+pixel is in its proper place. If not, carefully click on the offending pixel.
+
+Go swimming in the rivers in the mines of Level 2. Look carefully at any sewer
+pipes that you find. (he he he) (don't worry, it's not fatal).
+
+It is generally a bad idea to kill anyone who is not actively trying to kill you
+This is for 2 resons: 1) You may have needed to talk to them some more.
+                      2) Killing good guys gives you negligible exprience points
+                         and in some cases even REDUCES your experience points!
+There are more than enough hostile critters around to get you max. experience.
+
+There are a maximum of 16 experience levels. After the 16th level, that's it.
+
+There are a maximum of around 9600 experience points. After that the number will
+not increase. (Examples: 9646, 9714, 9688, etc.)
+
+There are 5 secret doors in the tombs of Level 7.
+
+There are 3 secret doors in the Maze of Silas on Level 4.
+
+On levels 3, 4, 5, and 6, there are areas in the extreme NW corner that you
+cannot get to other than through the door on level 7. This door cannot be opened
+until you have defeated Tyball (i.e. finished all of level 7), and freed the
+prisoners in the high-security cells.
+
+Talk to the knights on Level 4 repeatedly. They know lots of mantras you can use
+to increase your fighting and weapons skills. They do not neccessarily tell you
+these the first time that you talk to them.
+
+Using the Detail setting from the menu can really help if you have a slow 
+machine. Cranking the detail down allows much faster/smoother motion. Settings
+are as follows: Very High - full detail
+                High      - no detail on ceilings
+                Medium    - no detail on ceilings or floors
+                Low       - no detail on ceilings, floors, or walls
+For critical jumps, it is very handy to crank the detail to LOW, make the jump,
+and then crank it back up. Especially on slow machines.
+
+To make Rotworm Stew: Get the recipe from the green goblin Lanugo on level 1.
+                      Don't lose that recipe!
+                      Assemble the correct ingredients in a bowl
+                      Then "use" the recipe
+                      You will see the icon for the bowl change if succesful
+                      There are more bowls/ingredients on lower levels
+
+Moonstone: Once you have the ability to cast a Gate Travel spell (via scroll or
+           runestones) fire one up. This will teleport you to the moonstone area
+           on Level 2. There is a secret wall to get out of this area. Pick up
+           the moonstone and put it down where ever you want. Further Gate
+           Travel spells will teleport you to the stone.
+
+Tombs on level 7: You need to get the Crystal Splinter from Kallistan (in the
+                  prison cells). Then leave the prison area through the main
+                  gate and head south, until you can't go south any more. There
+                  is a secret wall (not a door) that will shatter when you run
+                  into it. This will not happen unless you have the Crystal
+                  Splinter in your possesion, and there is no other way to get
+                  into the tombs. There are 5 secret doors in the tombs area.
+                  Three of these are located at gravesites that do not have
+                  headstones. The other two lead back out into the main areas
+                  of level 7. These two are one-way-only secret doors. They can
+                  be opened only from the tombs area.
+
+Silver Sapling:
+      When you "pick up" the Silver Sapling on level 1, it turns into a seed.
+Find some "dirt" floors, and re-plant the seed. The Sapling will re-grow. This
+allows you to be re-incarnated if you die. Upon death, you will find yourself
+alive once more, at the location of the Sapling. The seed needs to be planted
+only once. Re-incarnations seem to be infinite. You can move the Sapling to a
+more convenient place by picking it up and re-planting (if you wish).
+
+Rawstag will only open the door if you give him a red gem (any type/condition)
+
+To free the prisoner (Murgo) from the Lizardmen, give Ssetharee lots of food (I
+used 10 fresh fish that I caught with my fishing pole).
+
+Give the giant gold nugget to Goldthirst. He will be really impressed.
+
+On level 6 there you will find "Warren" the upset ghost (spectre). There is
+nothing that you can do with him. His existance is an inside joke the game
+developers threw in. If you read the credits, you will find the name of the
+individual this is aimed at.
+
+To raid the Goblin treasuries on Level 1:
+   Grey goblins: Throw up a couple of shield spells and just walk in. The guard
+will immediately attack, so be quick. DO NOT counter-attack. If you attack any
+one of the goblins, the rest will all come running to his aid (and you will be
+up against 7 at once). Once you have all of the goodies, leave the goblins'
+area. If you return later, only the guard will be upset.
+   Green goblins: Don't let anyone see you. Push the guard into the next room
+and "spike" the door closed. Then wait until nobody else is looking. Open the
+door and close it behind you, as you will be in the treasure room for a while.
+Again, if attacked, DO NOT counter attack.
+
+To use incense: Wave a torch or candle over the block of incense. If done right,
+the block will change appearance to show that it is lit. Now "use" (left click)
+the block, and you will see a vision. Each vision gives you 2 letters of the 6-
+letter mantra. Once you have used incense 3 times, you will have all 6 letters.
+The pairs must now be re-arranged to get a workable mantra that you can chant
+at a shrine (3 pairs of letters, three positions = 6 possible combinations).
+
+There is NO TIME LIMIT to complete the game. You can take as long as you want.
+
+Weapons come in the following calibers: (from worst to best)
+Swords - dagger / short sword / long sword / broad sword
+Maces  - cudgel / light mace / mace
+Axes   - hand axe / axe / battle axe
+Missiles - sling / bow / crossbow
+Shields - buckler / small shield / wooden shield / tower shield
+Armor - leather / mail / plate
+
+Weapons/Armor/etc come in the following grades: (from worst to best)
+badly worn / worn / servicable / excellent
+
+
+Runestones:
+----------
+
+Numbers indicate the levels upon which they may be found. There may be more than
+one of the same kind of runestone on a level (as for the "AN" stone), a "*" by
+the level number means that you have to get it from someone (usually by going
+off on some weird quest).
+
+A  4, 4, 4   (means that there are a total of 3 stones, all on Level 4)
+B  1, 3
+C  4
+D  3
+E  6         (behind a barrel,... hard to spot)
+F  6, 6*
+G  3, 4, 5
+H  2, 3
+I  1, 4, 8
+J  1, 4, 4, 5
+K  6
+L  1
+M  1, 2, 4
+N  5, 6
+O  1, 3
+P  2, 3
+Q  4
+R  3, 5
+S  1, 3, 4, 8
+T  5, 8
+U  2
+V  6, 8
+W  3*
+Y  1, 2, 3
+ 
+
+Secret doors
+------------
+
+WARNING: Some secret doors (especially on level 7) are ONE-WAY ONLY. This means
+that if you are on on the wrong side of the door, it will not open (or even 
+appear to exist at all).
+
+Level 1:
+Door between Grey goblin area and room with levers/pedastals
+Door by Silver Sapling - leads to shrine area
+Door on north wall of hallway in extreme NW quadrant - leads to fountain
+
+Level 2:
+No secret doors
+Secret wall exposed after using Gate Travel to the Moonstone
+
+Level 3:
+Door along hallway in extreme SE quadrant, behind vines - leads to fountain
+    Note: you must try to "pick up" the vines in order to expose the secret door
+          just "looking" won't work. Fortunately, this is the only place that
+          this is neccessary. (Dirty trick IMHO)
+Door in store-room of thieves
+Door at end of hallway by lever in extreme NE quadrant
+Secret area behind waterfall in NE quadrant (swim to it)
+
+Level 4:
+2 doors behind Roderick
+3 doors in the Maze of Silas
+Door in room with skeletons/pedastals/switches
+Door behind chest in water area
+Secret area in SE corner of Bullfrog Maze (just jump THROUGH the wall)
+
+Level 5:
+Door in tombs area at extreme East-Central edge of map
+Door in extreme NE corner of map - leads to Cabrius' tomb
+
+Level 6:
+Door in library
+Door at end of hourglass-shaped room
+Door in extreme SE corner (walk down lava channel)
+Secret area accessed by running through wall in East Central area (between the
+     eyes). This place is just east of the stairway down from level 5.
+
+Level 7:
+Secret wall in cell of Dantes (allows escape from prison area)
+Doors to allow bypass of prison guards area (short hallway allows bypass)
+Door out of Imps/Golems/treasure area (takes you right to Tyballs' maze)
+Door in area in extreme NE quadrant (by Golem/key/Undead area) - to chasm
+5 doors in tombs area
+Door out of Tyballs quarters past fountain
+
+Level 8:
+There are no secret doors on level 8
+
+KEYS:
+-----
+
+Level 1:
+Red key in pack at beginning
+Gray keys in shrine area, and at bottom of spiral staircase in West Central area
+
+Level 2:
+Red gem key by stairway off South main hallway - fits Mountainmen doors
+Yellow gem key in Ironwit area - jump off platform through doorway in North area
+                               - fits door at bottom of spiral path
+
+Level 3:
+Red gem key in NE quadrant by Zak area - fits Red Lizardman doors
+Yellow E-W key in NE quadrant by Zak area - fits Thieves storerooms + door on L4
+Green gem key behind damaged door in West Central area of map - Green Liz. doors
+
+Level 4:
+Key from defeating Roderick - opens secret doors behind him
+
+Level 5:
+Key from defeating black ghost - opens tomb and portcullis
+
+Level 6:
+No keys
+
+Level 7:
+Grey key by Naruto - opens door in Chasm of Fire
+Yellow key in NE corner by Golem - opens door between Tyballs Maze and Lava Pit
+Grey key from main prison guard - opens cell doors, portcullises, etc. (also can
+   get this key from defeating Tyball).
+Skull key from defeating Tyball - opens Arial cell, and high-security prison
+   cells.
+Yellow key from Smonden - opens door in extreme NW corner to special area
+There is no known key to open doors to the "Evil Undead" area
+
+Level 8:
+Skull key from Carasso - opens door off main hallway in East-Central area
+
+
+RINGS:
+------
+
+Level 3 - Ring of Resist Blows  (obtained by killing one of the Bandits)
+Level 4 - Ring of Leap  (by boulders in South-central room)
+Level 7 - Ring of Levitate  (in short hallway off Chasm of Fire)
+Level 8 - Rings of Regeneration, Mana Regeneration, Invisibility, Poison
+          Resistance, Magic Protection
+Note: 2 of the rings on level 8 are in the small areas you get to from level 7.
+
+
+Unsolved Mysteries:
+------------------
+
+These are things that I just never figured out
+
+Level 3:
+There is a lever at the end of a long hallway in the NE qudrant. I never figured
+out what it does. (It doesn't have anything to do with the secret door nearby).
+
+Somewhere it is written that there is a secret way to Level 4. I never found it.
+
+Level 4:
+There is a pull-chain outside the entrance to the Knights area in the SW 
+quadrant that didn't seem to do anything.
+
+There is a Grey Lizardman running around, who claims that his leader is Iss'leek
+This is strange, because Iss'leek is the leader of the RED Lizardmen (Ishtass is
+the Grey leader). What is this lizardman doing on Level 4, and what do I say to
+him?
+
+
+BUGS
+----
+
+Unfortunately, there are several
+
+PROBLEM: Can't talk to anyone below level 1:
+         This seems to occur only when someone has the Demo of Underworld, and
+         then loads the real game into the same directory. Solution: backup
+         your "SAVEx" files, delete everything, re-install, restore "SAVEx"
+         files.
+
+PROBLEM: Inventory corruption. There is a patch available to "solve" this
+         problem from Orirgin (and available from some FTP sites). It seems
+         to help (but not entirely eliminate the problem). There has been 
+         some mention that reducing the number of items in a container (pack,
+         box, whatever) seems to help. There has also been mention that
+         nesting containers (i.e. an item in a box, in a bag, in a pack)
+         should be discouraged.
+
+PROBLEM: Game crashes when entering the NW corner areas (accessible only from
+         level 7). Solution: try dropping some items. Take only the barest
+         essentials. Also, if trapped in this area, you may be able to teleport
+         out using a "Gate Travel" spell.
+
+PROBLEM: Screen very dark. There is a file called "shades.dat" in the UW
+         directory. Rename it to something else (like "shadez.dat") and
+         delete "shades.dat". This should brighten things up a bit. NOTE:
+         I have not tried this personally, so I can make no guarantees.

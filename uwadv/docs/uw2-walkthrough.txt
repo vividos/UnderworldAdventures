@@ -1,0 +1,1551 @@
+Ultima Underworld II - Labyrinth of Worlds - Walk Through
+Version 1.4 -- Mitch Aigner
+
+Throughout this text, the following abbreviations will be used to
+reference which level of which world something is on:
+
+Worlds:
+    * Britannia (B1 - B5)
+    * Prison Tower (PT1 - PT8)
+    * Killorn Keep (KK1 - KK2) plus Alternate Dimension (KKA)
+    * Ice Caverns (IC1 - IC2)
+    * Talorus (T1 - T2)
+    * Scintillus Academy (SA1 - SA8) plus Vault (SAV)
+    * Pits of Carnage (PC1 - PC3)
+    * Loth's Tomb (LT1 - LT4)
+    * Ethereal Void (EVR, EVB, EVY, EVP) Red, Blue, Yellow, Purple
+
+
+Okay folks,... here we go. It starts with a Hint Sheet, to answer the most
+Frequently-Asked-Questions while giving away as little as possible. After
+that, you are on your own.
+
+
+HINT SHEET (what to do if you get stuck) and FAQ's
+----------
+
+    * Be extra sweet to Nanna to avoid "Servant Strike" bug in early
+      versions. If the servants are not officially all "on strike" you are
+      fine. LB never does resolve the unrest, but the servants are willing to
+      wait forever.
+
+    * Be nice to Praecor Loth to avoid "endgame" bug. Do not attack him.
+      He can be persuaded to give you what you want peacefully.
+
+    * The only speech in the entire game is when the Guardian taunts you.
+
+    * You cannot auto-map alternate dimensions like KKA, SAV, and the
+      Ethereal Void. Sorry.
+
+    * Progress in the game is event-driven. Waiting around won't help if
+      you get stuck. If you have explored every bit of every level that you
+      can access, and talked recently with everyone who will talk, you are
+      bound to find some clues that you haven't tracked down yet.
+
+    * Items needed for quests are often not in the world where the quest
+      was first mentioned. You will have re-visit many worlds.
+
+    * Talk to everyone (dead or alive) who isn't actively trying to kill
+      you.
+
+    * Re-visit all of the above very often for clues. Especially your
+      friends in the castle. Altara, Mokpo, and Zoranthus are often helpful.
+
+    * Spells above the 4th Circle cannot be cast in Britannia. Nystul
+      tells you why this is the case in one of his early conversations.
+
+    * More LORE skill will allow you to identify magic scrolls, wands,
+      potions, armor, and weapons much more convieniently.
+
+    * More skill with your weapon of choice (Sword, Axe, Mace, Missile, or
+      Unarmed) will quickly improve your combat capabilites. Generally, you
+      will want to pick one type of weapon and stick with it.
+
+    * More CASTING skill will greatly reduce "spell backfires".
+
+    * Skill levels in any category will not exceed 30. There is no limit
+      on experience points (or training points).
+
+    * If you see a purple flash, your screen starts rocking, the color map
+      goes nuts, and your health goes down,... it's not a bug. You're under
+      psionic attack by a hostile "Brain Creature"!
+
+    * If you see a yellow flash, either a spell has backfired on you, or
+      you have picked up a "cursed" item. If you are wearing a cursed item,
+      you will take damage each time that you change levels or worlds. Use the
+      "Name Enchantment" spell, or pay Merzam (KK1), to identify which item is
+      cursed, if your LORE skill isn't high enough.
+
+    * The strange object at the center of B5 is your transportation to the
+      other worlds. Notice how at least one of its facets is always a bit
+      brighter than the others.
+
+    * The "massive" double door on PT2 does not open. You cannot get
+      outside of the Prison Tower.
+
+    * The "Listener" is found in Britannia (not Killorn Keep).
+
+    * There are no keys to open any of the doors in Anodunos. Re-explore
+      the waterways after the flood.
+
+    * You find the wild dreams of Mokpo so bizarre that you have the
+      sudden urge to write them all down.
+
+    * No,... you never do find out what's the deal with the Eleomosynator.
+
+    * Turn the pyramid all one color and look around. Many times.
+
+    * "Use" the small Blackrock Gems on the larger one on B5.
+
+    * In each world, you will hear of a particular place where the
+      Guardian has worked some magic, or has some special influence. These
+      locations must be purified!
+
+    * Be sure to check out all of the sewer pipes, and the waterfalls.
+
+    * The key to the Armoury is hidden in a pile of debris, in a pit,
+      behind the Reaper on B4. It is VERY hard to find. You must be standing
+      in just the right place, and be looking at the pile of debris at just
+      the
+
+
+SUMMARY
+-------
+
+In each of the 8 alternate worlds (not Britannia) there are always two
+things you have to do:
+
+  1. Find the small Blackrock Gem
+  2. Destroy the Guardian's place of power
+
+*   - indicates what you absolutely gotta have
+%   - indicates optional ventures, usually worth the reward
+<T> - indicates quests that cannot be completed right away (i.e. you must
+      travel to other worlds, or wait for certain events to occur)
+
+
+Brittania
+* - Get the key to the Sewers from Dupre
+* - Find the large Blackrock Gem on the lowest level
+* - Talk to everyone in the castle often
+* - Kill the "Listener" <T>
+
+Prison Tower
+* - Free Bishop
+% - Free Milenus
+% - Get the Cornucopia from Felix (a "box" which generates food)
+% - Free Garg
+
+Killorn Keep
+* - Make friends with Altara often (she is helpful throughout the game)
+* - Recover the Spellbook of Mors Gotha for Nystul (appears near end) <T>
+% - Talk to Relk (make sure no one is around at your second meeting)
+% - Have a drink with Lobar
+% - Find the blue Banner of Killorn for Ogri <T>
+% - Discover the history of the Trilkhai for Blackie <T>
+
+Ice Caverns
+* - Find the lost city of Anodunos and talk to Beatrice the "dire ghost"
+% - Talk to Mokpo (he has some interesting visions of the Ethereal Void)
+
+Talorus
+% - Replace the Bliy Skup Ductosnore with an improved model
+
+Scintillus Academy
+* - Pass the Final Exam
+% - Raid the Vault
+
+Pits of Carnage
+* - Deal with Dorstag (many ways to do this, not all of them violent)
+* - Find the Sceptre of Deadly Seeker for Zoranthus <T>
+% - Find a spare "Flam" runestone for Zogith
+% - Play a few games with Blog
+
+Tomb of Praecor Loth
+* - Recover the Horn of Praecor Loth
+% - Find the 7 pieces of map (makes level 3 a lot easier)(No 8th piece!)
+
+Ethereal Void
+* - Conquer all four colored worlds
+* - Break into (and out of) the Shrine of Spirituality
+
+
+GENERAL NOTES
+-------------
+
+First, a word of warning: Everything doesn't happen the same way each
+time you play a new game. Some conversations and events in the castle vary
+(so talk to everyone often,.. yes everyone). Also, the locations of
+Runestones varies, sometimes they are not found where indicated (this
+seems to depend on the character type that you selected,... my Druid
+seemed to find them all where they should be,... my Fighter didn't).
+Trainers don't always award the same number of points per Skill Point (and
+sometimes using two skill points in one conversation will pay off better
+than using one point in each of two conversations). All in all, there
+seems to be quite a bit a variability.
+
+A LOT depends upon your character type. For Example:
+
+FIGHTER: Found 3 Runestones and a Short Sword in secret room (bedroom)
+PALADIN: Found 5 Runestones and a Short Sword
+SHEPARD: Found 5 Runestones and a Short Sword
+DRUID:   Found 6 Runestones and a Dagger
+FIGHTER: Found 1 Runestone and a wand after killing Liche (PC3) the
+         first time. Replaying the battle from the prior saved game
+         produced 1 runestone, a wand, and a scroll. Re-playing the
+         same scenario the third time produce a wand and a scroll. The
+         fourth time yeilded 2 runestones, a wand, and a scroll.
+
+
+The game is very non-linear. This means that you can't necessarily
+complete each level and go on to the next. Instead, you will find that you
+spend a lot of time re-visiting places. Examples are the nasty monsters in
+the first few levels of the Britannia sewers (you will have to bypass some
+of these battles and return when you are strong enough to deal with them),
+or the requirement that you return to the first three alternate worlds to
+destroy the Guardians place of power once you gain the Wand of Altara.
+In addition, re-visiting these early worlds later in the game can result
+in conversation options with the residents that were not available
+previousely.
+
+There is no time limit in the game. All occurances in the worlds are
+event-driven (not time dependent). If you are stuck at some point, waiting
+around or sleeping won't help. The game progresses only as certain quests
+are fulfilled.
+
+Spells of the 4th Circle and above may not be cast in Britannia. This
+is due to the fact that giant Blackrock gem impedes the operation of magic
+(Nystul tells you about this in your 1st conversation with him). Magic
+works fine in all of the other worlds.
+
+Upon start-up, the contents of the secret room attached to your bedroom
+will vary according to the type of character selected.
+
+The large Blackrock Gem on level 5 will transport you to the other
+worlds. Look for one facet of the gem that is brighter than the others. If
+you walk into the lit facet, it will take you to that world. Only one
+facet at a time is illuminated, and it will change to another if you watch
+it for a while. Not all worlds are accessible at first. As certain quests
+are completed, more worlds will become available to you.
+
+If you are killed while in an alternate world, you are sent back to the
+large Blackrock Gem in Britannia. You are also given full health and Mana
+points. However,... lots of Experience points are deducted (up to 500). So
+save your game often.
+
+Skill levels will not go above 30 in any given category.
+
+You would be well advised to:
+
+1. Improve your Search skills early in the game. (10 to 20 points
+   should be adequate).
+2. Save your game before talking to someone.
+3. Talk to all of the folks in the castle often. (and be REALLY nice to
+   Nanna !! --- see "BUGS" section below).
+4. Visit with Altara (KK1) often.
+
+
+YOUR MISSION
+------------
+
+1) Find the small Blackrock Gem in each world. Have them treated by
+   Nystul, and then "use" them on the large Blackrock Gem (B5).
+2) Find the place where the Guardian draws power in each world (and
+   disable it with the Wand of Altara).
+3) Find the Horn of Praecor Loth.
+4) Trap an air-Djinn within your body.
+5) Destroy the massive Blackrock Gem which surrounds the castle.
+
+
+THINGS TO DO
+------------
+
+Use a "torch" on "corn" to make popcorn.
+Use an "oil flask" on a "piece of wood" to make a torch.
+Use "pole" (not fishing) to activate switches you cannot reach.
+Use some "thread" on a "pole" to make a "fishing pole" (fish for barter)
+    (warning: only do this if you have a second "pole").
+Use "rock hammer" to reduce boulders to sling stones.
+Use "lump of wax" on "thread" to make a candle.
+
+
+POTIONS
+-------
+         Yellow    - Healing
+         Red       - Cure Poison or Restoration
+         Purple    - Protection (Fire, missile, shield, etc.)
+         Brown     - Speed or Freeze Time
+         Black     - Invisibility
+         Colorless - Restore Mana or other (not listed above)
+         Green     - Hallucination or Poison
+Note: "Basilisk Oil" appears as a "colorless potion" until identified.
+
+
+GEM ENTRY - Approach Blackrock Gem from just left of:
+---------
+
+from N  : Prison Tower       - Small Round Gem
+from NE : Killorn Keep       - Square Gem
+from E  : Ice Caverns        - Diamond gem
+from SE : Talorus            - Large Round Gem
+from S  : Scintillus Academy - Circular prism (OK,.. it's a cylinder)
+from SW : Pits of Carnage    - Triangular prism
+from W  : Loth's Tomb        - Rectangle gem
+from NW : Ethereal Void      - Heart shape gem
+
+
+TRAINERS
+--------
+
+NOTE: Some trainers are better than some of the others some of the time.
+      You may wish to save your game before training sessions to try to
+shop around for the best deal. One Skill Point can be worth anywhere
+from 1 - 3 improvement points.
+
+Castle: Syria        - Sword, Unarmed
+        Nystul       - Mana, Casting
+        Julia        - Traps, Picklock, Repair
+        Lady Tory    - Charisma (do it quick, she may not be around long)
+        Patterson    - Charisma
+        Dupre        - Axe, Mace
+        Nelson       - Lore, Search (do it quick,.. )
+        Iolo         - Swimming, Appraise, Missile
+        Geoffrey     - Attack, Defense
+        Fissif       - Picklock, Stealth, Traps, Acrobat (in prison)
+        Goblin (B4)  - Track (not Rogwump, not Dripper,.. the other guy)
+Tower:  Garg         - Unarmed
+Keep:   Lobar        - Sword (seems better than Syria)
+        Altara       - Mana, Casting
+        Ogri         - Lore
+Pits:   Fighters     - Axe, Mace (after earning their respect)
+
+
+ARMOR/WEAPONS
+-------------
+
+Listed from worst to best:
+
+Swords   : Dagger / Short Sword / Long Sword / Broad Sword
+Maces    : Cudgel / Light Mace  / Mace
+Axes     : Hand Axe / Axe / Battle Axe
+Missiles : Sling / Bow / Crossbow
+Shields  : Buckler / Small Shield / Wooden Shield / Tower Shield
+Armor    : Leather / Mail (Chain) / Plate
+
+Weapons/Armor condition (from worst to best):
+Badly worn / Worn / Servicable / Excellent
+
+Jewelled weapons/sheilds are more powerful than regular. In addition, a
+"black" long-sword is better than an ordinary one.
+
+Magical Armor/Weapons rating (from worst to best):
+
+Minor        Protection/Toughness/Damage/Accuracy
+             Protection/Toughness/Damage/Accuracy (no adjective)
+Additional   Protection/Toughness/Damage/Accuracy
+Major        Protection/Toughness/Damage/Accuracy
+Great        Protection/Toughness/Damage/Accuracy
+Very Great   Protection/Toughness/Damage/Accuracy
+Tremendous   Protection/Toughness/Damage/Accuracy
+Unsurpassed  Protection/Toughness/Damage/Accuracy
+
+
+THINGS TO KEEP AN EYE OUT FOR
+-----------------------------
+
+"Pole" (comes in handy for flippimg remote switches, levers, etc.)
+"Fishing Pole" (unlimited free food + use fish for barter)
+"Rock Hammer" (reduces boulders to sling stones)
+"Black Eggshell" from a spider
+"Amethyst Rod"
+"Grey Rock"
+"Basilisk Oil" (looks like a "colorless potion" at first)
+Anything made from "Fraznium"
+"Horn"
+"Banner"
+"Purple potion of Iron Flesh"
+Dream "plants" (unusual looking plants found at gravesites)
+
+
+RINGS (magical)
+-----
+
+Ring of Protection   - IC1, Fall off Dam Control tower and enter pipe
+Ring of Regeneration - LT3, In large pit with fireballs (secret room)
+Ring of Poison Resist. - LT4 (1st Liche room - Morphius)
+
+
+RUNES
+-----
+
+      Note: not all runes are at the locations given, there seems to
+be some variability in the game, which may be somewhat random (or
+may depend on the type of character created: my personal theory). If
+a rune isn't found where indicated, try one of the other places.
+
+
+A - KK1 (Altara after quests), PC2 (pentagram room), SA8 (pentagram)
+B - PC1 (after death of Zaria), SA8 (in 3529 puzzle area)
+C - T1 (among all the Kal stones), KK1 (Altara after quests)
+D - B2 (Nystul's lab), PC1 (after death of Zaria), PC1 (Zaria's chest)
+E - B3 (in chest with two Gazers), LT3 (by exit to level 4)
+F - PC3 (From liche), SAV (chest), LT4 (Lord Umbria), LT4 (Lethe)
+G - IC2 (Anodunos), SA8 (pentagram), PC2 (Earth Golem)
+H - PC3 (from Liche), SAV (pentagram), LT4 (Lord Umbria)
+I - IC2 (Anodunos), PC1 (after Zaria's death)
+J - PC2 (Earth Golem)
+K - T1, PC2 (pentagram room), PC1 (after Zaria's death), B1 (Tory dead)
+L - B3 (by Fissif), IC1
+M - IC2 (Anodunos), PC2 (pentagram room)
+N - PC1 (after Zaria's death), LT4 (Morphius), B3 (chest near "haunt")
+O - IC1, PC1 (after Zaria's death), B3 (chest near "haunt")
+P - B2 (Nystul's lab), PC1 (Zaria's chest), B5 (above waterfall)
+Q - IC2 (Anodunos), KK1 (Altara after quests)
+R - PT5, IC2 (Anodunos), B2 (Nystul's lab), PC2 (Earth Golem)
+S - PT5, SA8 (chest in bedroom)
+T - SAV
+U - IC2 (Anodunos), B2 (Nystul's lab), SA8 (pentagram)
+V - PC3 (behind grey Reaper), SAV, LT4 (Lord Umbria)
+W - IC1 (pack by skeletons),SA8 (pentagram), LT3 (by exit to level 4)
+Y - PT5, B2 (Nystul's lab), SA8 (pentagram)
+
+
+UNLISTED SPELLS
+---------------
+
+NOTE: Unlike the UW1 walkthru (which listed all spells), this version
+      does not list all spells. This is in the interest of discouraging
+      piracy.
+
+1st Circle:
+UDP - Bounce (from Nystul's Lab) elastic collisions jumping/moving
+BWE - Locate (from scroll in Anodunos) Puts you back on the map if lost
+             (Note: typically, this occurs when telporting to new area)
+
+2nd Circle:
+QMY - Dispel Hunger (PC1 - from Zaria) gives you that "well fed" feeling
+QAC - Valor (PC1 - from Zogith after "Flam" stone) improves combat
+
+3rd Circle:
+AKC - Repel Undead (KK1 - from Merzan)
+
+4th Circle:
+IAF - Frost (PC1 - from scroll) shoots "cold" balls at multiple opponents
+IS  - Thick Skin (from UW1) provides medium protection
+
+5th Circle:
+ITJ - Rune of Stasis (KK1 - from Merzan) sets time trap
+RSY - Mending (PT5 - from scroll) repairs armour/weapons to "excellent"
+
+6th Circle:
+WE  - Map Area, puts your immediate surroundings on your map
+
+7th Circle:
+VPY - Tremor (from UW1) causes small earthquake
+KAM - Summon Demon (creates hostile demon i.e. Hordling, Destroyer)
+VOY - Enchant Item (KK1 - from Altara) turns weapons/armour "magical"
+      Note: "Enchant" can be cast multiple times on the same weapon or
+            armor for improved effects, also works to recharge wands.
+
+8th Circle:
+VKC - Armageddon (from UW1) destroys everything, everywhere (not good)
+VJM - Smite Foe (kills just about anything)
+
+IMPORTANT NOTE: When using the "Levitate" or "Fly" spells:
+                Press "E" key to go UP
+                Press "Q" key to go DOWN
+
+
+SHOPPING: (Prices may be lower, depending on Charisma skill rating)
+--------
+
+Merzan (KK1) Spells: $175 Repel Undead
+                     $175 Rune of Stasis
+             Potions: $75 Invisibility
+                      $50 Restore Mana
+                      $35 Greater Heal
+                      $30 Mana Boost
+                      $20 Resist Blows
+                      $15 Lesser Heal
+            Services: $60 Recharge Item
+                      $25 Identify item
+
+Note: Merzan will also sell you a Potion of Iron Flesh ($100), or
+      Flameproof ($60 + 10 bottles of water) if you ask for it special.
+
+Note: Merzan will also accept gemstones, goblets, and sceptres in
+      place of cash.
+
+Beware of anyone peddling "Dragon skin boots".
+
+
+CHARACTER CREATION
+------------------
+
+      I would suggest spending some effort up front in creating a good
+character. Pay particular attention to the Strength attribute. If you
+do not have a Strength of 25 or more, you will not be able to wear a
+full set of neat "Plate Armor", and still have enough carrying capacity
+for all your other nifty stuff.
+      Create some characters and throw them all away, until you get an
+idea of what a "good" set of stats looks like.
+      I found Druids, Paladins, Shepherds, and Fighters to be pretty
+good bets.
+      NOTE: When you create a character, you will start with certain
+skills at certain levels. There is a rumor to the effect that if
+"Casting" is your highest initial skill, a "Mani" runestone will be
+in your secret room upon game start-up. This will allow you to cast
+the popular "Lesser Heal" spell right away.
+
+Recommended Skills
+------------------
+
+     This is MY opinion about what skills to concentrate upon
+developing. Your opinion will certainly be different.
+
+Attack  - LOTS
+Defense - LOTS
+Weapon  - LOTS (choose only 1 of Sword / Axe / Mace / Missile)
+Mana    - LOTS
+Lore    - LOTS (so you can identify all these neat magical items)
+Casting - LOTS (so you don't get so many "backfires")
+Search  - Little
+Acrobat - Little (so you don't get hurt in falls)
+
+You can win the game with no weapons (UNARMED skill only).
+
+Note: Weapon skill is very important (especially in the early game).
+      When you are engaged in battle, your effective attack, and
+      defense are both based on your Weapon skill (in addition to
+      Attack and Defense). In other words, extra points in Weapon
+      improve BOTH attack and defense, in battle. It also lessens
+      the chances of damaging your weapon.
+
+
+EXPERIENCE LEVELS: This lists how many experience points you need to
+    reach each character level. You cannot get above 15th level. You
+    can, however, continue to get experience points (and thus Skill
+    Points) beyond this level. There appears to be no limit. After
+    you hit 15th level, you continue to get 1 Skill Point for every
+    150 Experience Points.
+
+Level   Exp. Points    Exp./Skill pt.
+-----   -----------    --------------
+ 1           0           50
+ 2          50           |
+ 3         100           |
+ 4         150           |
+ 5         200          \|/
+ 6         300          100
+ 7         400           |
+ 8         600           |
+ 9         800          \|/
+10        1200          150
+11        1600           |
+12        2400           |
+13        3200           |
+14        4800           |
+15        6400          \|/
+
+
+
+BRITANNIA
+---------
+
+1) Get Sewer Key from Dupre (B1)
+2) Convince Fissif (B3) to go quietly (he then becomes a Trainer).
+3) Get Armoury Key - In debris pile in pit behind Reaper (B4) (It's
+   there,.. keep looking), also a magical longsword (pick up the plants).
+4) Find large Blackrock Gem (B5). This is used to teleport to the
+   other worlds.
+
+   There are two locked "massive" doors on level 3. One you can get to
+both sides of easily, the other requires a key which Charles will find
+for you about midway through the game.
+
+Castle Events: Water shortage (resolved after you visit IC2)
+               Servant's strike (avoided by taking complaints of Nanna
+                    to Lord British). NOTE: See "BUGS" !!!
+               Lady Tory murdered (unresolved until later)
+               Charles finds a key
+               Nelson murdered (murderer obvious)
+
+
+PRISON TOWER
+------------
+
+Quests: Free Bishop and Milenus
+        Free Felix and Marcus (and get the Cornucopia)
+        Free Garg
+
+FAQ: No you can't get through those big double doors on PT2.
+
+1) Pick up the "Food Delivery Voucher" and pass yourself off as the
+   grocery boy.
+2) Talk to Felix (PT4) about eliminating Freemis.
+3) Talk to the goblin armourer. Many possibilities here. One option is
+   to tell him how to make Fraznium gauntlets the easy way (without
+   asking anything in return). After this, he will lend you a pair on
+   subsequent conversation.
+4) Talk to Borne (PT6) and pass yourself off as the new interrogator
+   that he is expecting to arrive. He will give you a pair of "Fraznium
+   Gauntlets", and the password (password varies from game to game).
+5) Talk to Borne again and demand the set of keys. He will give you
+   another password and send you to Janar (PT4). Go to Janar and get
+   the set of keys.
+6) Talk to Bishop (PT8), using the Fraznium Gauntlets to penetrate the
+   force field. Give him the second pair of Fraznium Gauntlets. Bishop
+   will then tell you about the Gem that you are looking for.
+7) Go back down to Borne and demand that he hand over the Blackrock Gem.
+8) Use the keys to release Garg (PT6). Garg will kill every goblin in
+   the entire tower. You may now pillage at your leisure.
+9) Go back to Felix to collect the Cornucopia (box). This box will
+   generate food each time that you open it (food will appear on the
+   floor in front of you). The box will operate only for a limited
+   number of uses.
+
+Super shorcut: Talk to Felix (PT4). Kill Janar (PT4), and take his keys.
+               Use keys to release Garg (PT6). You now have free run
+               of the Prison Tower.
+
+
+KILLORN KEEP
+------------
+
+Quests: Find the Blue Banner of Killorn for Ogri (Praecor Loth's grave).
+        Find out the history of the Trilkhai for Blackie. (Wisp in EVB)
+        Find Amethyst Rod (T1) and Black Eggshell (B4 or LT1) for Altara.
+
+FAQ: "The Listener" is to be found in Britannia (not KK). If you
+     pay close attention when Altara gives you the special dagger,
+     she will pinpoint the spot.
+
+Blow out candles and throw away to avoid trap to alternate dimension.
+An alternative is to cast an "Open" spell on the locked portcullis.
+This will allow you to explore the Alternate Dimension later, without
+destroying the trap.
+
+    DON'T kill any Brain Creatures that you may find. They are what
+is keeping the Keep up in the air. If you crash the Keep, you can still
+win the game (assuming that you have the Wand of Altara), however if
+you do, Altara will be dead, and you will miss some of the other nice
+things that she can do for you.
+
+    Talk to everyone (keep in mind that all but one works for the
+infamous Guardian). You will have fun with Relk (he attacks you on
+your second meeting). Kintara and Lobar can help you to answer the
+questions of Mystell.
+
+    Ask Altara if she knows Bishop.
+    Altara is helpful throughout the game, you will want to go back
+to her many times. She provides you with:
+A) A magic dagger, with which to kill the "Listener" in Britannia.
+B) A special wand (made with a "black pearl", "amethyst rod", and a
+   "black eggshell" from a spider). This wand will destroy the place
+   of power in each world.
+C) Some nice runestones.  (A, C, Q).
+D) The "enchant item" spell.
+E) Lots of good advice.
+
+NOTE: Fans of the game "Wing Commander" may notice a striking
+      resemblance between the story of the Trilkhai (Blackie), and the
+      Kilrathi cat-warriors of WC. In fact,... if you re-arrange the
+      letters in Trilkhai,......
+
+KKA: There is a trap (carpet with candles) that will teleport you to
+     an alternate dimension. This place is designed solely to kill you,
+     and there is nothing of value to be found (except maybe a little
+     experience and a couple of coins). The first part is a narrow
+     hallway with rising/falling pillars. The hazard here is that they
+     rise all the way to the ceiling and squash you (dead). The second
+     part has numerous fireballs flying around. Since you will not have
+     a "Flam" stone at this stage of the game, you cannot cast the
+     "Fire protection" spell (result: death). If you ride the pillar
+     up in the fireball area, there are two buttons and a chain. If
+     you manipulate these correctly, a third area opens up,... filled
+     with slippery floors and hostile imps. Walking into the large pit
+     you find will teleport you back to the beginning of this nightmare.
+     Walking into either one of the lava-falls will get you out.
+
+
+ICE CAVERNS
+-----------
+
+Quests: Find the lost city of Anodunos
+
+FAQ: There are no keys to open any of the doors in Anodunos. You
+     will have to bash down the "sturdy" ones, and lockpick or
+     use the "Open" spell on the "massive" ones.
+
+      Jump up and down to stop slipping on the ice. "Walk on Water"
+spell comes in really handy in this world.
+
+1) Find your way down to level 2 and visit with Mokpo. He has some
+   interesting visions. When you get to the Ethereal Void, you will
+   wish that you had written these down.
+
+2) Find the Dam Control Tower and make your way through the maze to
+   find the key, and the door (A two step process). Release the
+   floodgates.
+
+3) Re-explore the waterways to find the Lost City of Anodonus. Talk
+   to the "dire ghost" there,... and keep an eye out for a secret
+   door. Use the Orb many times, for a clue. (Note: the many visions
+   you see in the Orb are not all from the past,... one of them is of
+   the very near future,... and tells you of your ultimate objective).
+
+4) Pick up the Blackrock Gem on the ice plains by the river in the
+   south-central areas.
+
+    Don't forget to locate the Filanium deposits. You will need to
+    know where they are later. (Note: they appear as "watery mud").
+
+Dam maze controls - Key: Chain, switch, lever all up, pushbutton light
+                         (flip switch &amp; push button to achieve this)
+                   Door: Chain still up, Switch &amp; lever down, button
+                         dark (flip lever &amp; switch down, and push button)
+
+Instructions for Dam control:
+  "Manipulating the controls causes the maze to change in a two step
+process. To get the key, make sure the lever, switch, and chain are
+all up. To reach the door, lower the lever and switch, and press the
+button. Walk through the force field to get to maze. Destroy this
+note afterwards, else we'll both hang."
+
+
+TALORUS
+-------
+
+FAQ: No,... you never do find out what's the deal with the Eleomosynator.
+
+      The brass plates in the floor propel you upwards. This is used
+to travel between levels, and to leave Talorus. You just have to run
+over the plates at the right speed.
+      Don't forget to pick up any "Nutritious Wafers" you find (light
+weight,... and very filling), or any "Light Sphere"s (brighter than
+the lantern,... but shorter duration).
+
+1) Talk to the Historian
+2) Talk to the Futurian and get Control Crystal M4Y8
+3) Talk to the Data Integrator (this conversation doesn't go well)
+4) Talk to the Dialogicians and get scroll
+5) Talk to the Data Integrator again (goes much better this time)
+6) Go down to level 2 and get the Delgnizator, and crystal E0Y2
+7) Go to Bliy Skup Chamber and kill Bliy Skup Ductosnore
+8) In chamber: place M4Y8 control crystal in yellow input hopper
+               place E0Y2 pattern crystal in purple input hopper
+               place Delgnizator on blue repulsor circle
+               pull the chain
+9) Go back to the Historian, and he will teleport you to the gem
+   that you are looking for (if you haven't found it already).
+
+NOTE: There is a small room with a switch and a brass plate, located
+      right next to the Bliy Skup chamber. This is the "Light Sphere"
+      re-charging station! Real handy!
+
+
+SCINTILLUS ACADEMY (Final Exam)
+-------------------------------
+
+Note: Mana will NOT regenerate on levels 2 thru 7. These levels CAN
+      be solved without it,... but it sure makes life easier in a few
+      places. You will need some magic in the Vault, but that is on
+      level 8 (where Mana DOES regenerate).
+
+Interesting stuff: Try out the vending machines. (bring some coins).
+
+Level 1: Drop the Gold Coffer on the Pressure Plates to open the
+         three Portcullises. The right-hand Portcullis is the exit. The
+         other two are traps.
+Level 2: Push button to open Portcullis. In hallway with arrow traps,
+         timing is everything.
+Level 3: Use "Telekinesis" (wand provided in hallway as you enter).
+         First, jump on the pillars and head to the west wall, push
+                the button.
+         Then, jump north 2 pillars,.... then west 2 pillars.
+         Then, use "Telekinesis" to activate the pushbutton for the
+               row NEXT to the one you are in. You must be standing on
+               the very edge of your pillar to reach, and look around
+               in the dark (or use "Daylight" or a "Light Sphere")
+               to find the button. Then jump to exit. Unfortunately,
+               the cool Wand of Telekinesis disappears when you exit
+               this level.
+Level 4: Find the two keys on the NW and SE corner towers. Exit in NE.
+Level 5: Use pole provided to flip all switches up. Be careful not to
+         step on the Pressure Plates in front of each switch. Then go
+         through the door and jump for the Key. Do not hit the button
+         or pull the chain. Also, don't forget to pick up the Moonstone.
+Level 6: Walk over plates to get key (arrow traps). Stepping on any of
+         the plates results in a "headless" appearing at that plate. The
+         arrow traps are triggered when you attempt to take the items
+         in the center. The peacful headlesses will get hit by the
+         arrows meant for you. After that, it's just a matter of good
+         mapping notes (and determination).
+Level 7: "Levitate" spell is nice,... otherwise:   MAP:
+
+                 Exit
+                  |
+                 P|            First swim for the Key and the potion.
+              X-X-X X X
+              |                K - Key
+              X X X X X        P - potion
+             K|                X - Pillars
+North >-      X X X-X-X
+              |   |   |        Save your game after each successful
+              X-X-X X X        jump to avoid irritation. The "Shift-J"
+                      |        key combination makes these jumps much
+              X X X X Enter    easier (Read about it in your manual).
+
+      Each column has an arrow symbol on the top. The arrow points
+to another column, which will disappear permanently once you step on
+the first column. If you can land on the very edge of a column (this
+is difficult, but not impossible) without stepping on the arrow, then
+the column it points to will not disappear.
+
+
+Level 8: 3.5.2.9 Count the alcoves from the red carpet (clockwise)
+         Don't miss the key behind a bed, or the secret room.
+
+Vault  : Yikes! First, cast "Dispel Rune" to avoid time trap, or use
+                       the "Flameproof" spell, or toss a coin through.
+                Then, cast "Telekinesis" to activate button. Or you can
+                      shoot the button with a "Magic Arrow" spell.
+                Then, swim to find a switch, then swim to find the door.
+                      Hint: take a left initially, then a right at the
+                            first intersection (This gets you close).
+                Then, walk through walls to find the door switch.
+                      Hint: go straight in, and straight out.
+                Then, swim into the Red Moongate. (Or, you may use
+                      "Fly" or "Bounce" here to bypass the next step).
+                Then, cast "Flameproof", open all 3 doors, and go
+                      through purple Moongate in the center building.
+                Then, swim to the path and find the hidden room, go
+                      too far and you will hit a nasty teleport trap.
+                Then, find the hidden room behind the hidden room, if
+                      you have some form of "Fraznium". Examine the
+                      floor here carefully.
+
+
+PITS OF CARNAGE
+---------------
+
+Quests:  Get a Flam Runestone for Zogith (see Runestone locations)
+         Get Sceptre of Deadly Seeker for Zoranthus (EVR)
+
+There are several ways to do this world:
+
+EASY WAY: 1) Talk to Dorstag (he refuses to give you the stone)
+          2) Play the game with Blog (PC3), use a "Grey Stone", and he
+             will become your friend (or pick up one of his "black
+             stone"s you see laying there and let him win a few). Ask
+             for his help in obtaining the Gem.
+          3) Talk to Dorstag again, and ask for the stone.
+
+HARD WAY: 1) Talk to Dorstag (he declines your challenge)
+          2) Talk to Krilner
+          3) Challenge Zaria (and defeat her)
+          4) Challenge Dorstag (and defeat him)
+             Note: You may have to challenge a few more fighters in
+                   order to establish your reputation as a bad dude.
+
+REAL HARD: 1) Push Dorstag out of his rooms and down the hallway
+           2) Kill him (Hint: He has trouble with Flame Strike, as well
+              as Frost).
+           3) Repeat with all of his guards. If you push them far
+              enough away from Dorstag's Quarters, the others will
+              not attack you.
+           4) Raid the secret room in his quarters.
+
+Don't forget to visit Zoranthus (PC2). Just hit the silver button (the
+second one you find). You will need the Djinn-bottle he has. Pay close
+attention to the instructions.
+
+Note: I was able to kill Dorstag and all his guards in his quarters. I
+      used up two Wands of Frost while standing in one of the doorways.
+      By the time both wands had been used up, the only one standing
+      was Dorstag (and he was in really rough shape).
+
+Note: check the graffiti on the walls in the central area of level 1
+      after you defeat Dorstag!
+
+Note: Jospur will arrange arena fights for you. Winning a few of these
+      will improve your social standing, as well as provide lots of
+      experience points. Not to mention $$$.
+
+
+TOMB OF PRAECOR LOTH
+--------------------
+
+Quests: Find Trystero's bones for him (by jewelled axe and Gem)
+        Talk to Praecor Loth for Helena
+        Get Horn and Banner
+
+
+Level 1: Get all 8 pieces of the map for level 3.
+         * By skeletons
+         * By Fire Elemental
+         * Golem has one (on him)
+         * Push button by stairway
+         * Behind secret door by locked door
+         * Behind door with 5 switches (flip all down, right-to-left)
+         * Behind locked Portcullis (note press. plate on pillar nearby).
+         * There is no 8th piece (sorry).
+
+Level 2: Talk to the ghosts, and then do a little "Walk on Water"
+
+Level 3: Hope to hell you have most of the map. Exit is at North-
+         center edge of level. Life is much easier if you have a key,..
+         Head for the NE quadrant, and two places with water. One place
+         has a hidden switch on the opposite wall (near water-level),
+         which will open a secret door (key). The other place has some
+         buttons,... push them to unlock secret door (or just bash it).
+         This second water area provides a shortcut through level 3.
+         NOTE: You have to activate the Flood control switch in the
+         Southeast quadrant in order to do this, else the second water
+         area doesn't have any water in it, eliminating the shortcut.
+
+Level 4: Kill the "Three" (Morphius, Lord Umbria, and Lethe).
+
+         Throw away candles from pentagram to get through "Outer Space"
+         To get across pillars, use "Fly" or locate the four pillars that
+         aren't teleporters (Southmost, then NE, then E, then SE). There
+         is a teleport trap in the water to take you back to the start,
+         if you should fall in.
+
+         Switch in area behind waterfall will open the big double doors.
+         The "Despoiler" has the key that you will need.
+
+         Fire Pit: just walk right over (invisible walkway).
+         Talk to Praecor Loth and convince him that he's really dead.
+         He will give you the Horn. Pick up the blue Banner while you
+         are there.
+
+
+ETHEREAL VOID
+-------------
+
+      If you have any LSD,... this would be a good time to take it.
+
+FAQ: If your screen starts rocking, the color map goes nuts, and
+     your health goes down,... it's not a bug. You're under psionic
+     attack by a hostile "Brain Creature".
+
+      The levels are divided into colors (Red, Yellow, Blue, Purple)
+
+      When you complete each color, you will be dumped on top of a
+white pyramid. Each time you step on one of the blocks of the pyramid,
+it will change colors. When all of the blocks are the same color, a
+moongate of that color will appear on the ramps above. This will take
+you to some interesting places. When all 4 basic colors have been
+completed, a fifth color (orange) becomes available. Do the pyramid
+thing one more time, in orange, and the moongate will take you to the
+base of the Shrine of Spirituality. Die-hard fans of the arcade game
+"Q-bert" may find this whole pyramid thing strangely familiar. Also, in
+the treasure area found as a result of turning the pyramid red,
+Underworld 1 fans will recognize Rawstag the troll.
+
+
+RED: Cast "Flameproof" before entering. A "Destroyer" guards the "Sceptre
+     of Deadly Seeker" that you will need. Lots of Imps and Fire
+     Elementals around. This is definitely the nastiest level in the
+     Void,... so prepare. You will also need some form of "Cure Poison".
+
+YELLOW: Climb up on top of the maze. There is an "etched brass wall"
+        where this is easy to do. Cruise around the highest level of
+        the maze until you see a pillar/elevator in one corner (just
+        like the moving pillars in Britannia level 3) Past this
+        pillar is where you want to be. Remember what old Mokpo told
+        you in the Ice Caverns? ("golden maze" "climb up on top of the
+        walls").
+
+BLUE: Barter with Prinx (he wants 2 "eyeballs" from a flying Brain).
+      Talk to a Wisp (white sparkles) to find out the history of the
+      Trilkhai.
+      Cruise down the exit hallway (more moving pillars) to the outer
+      ring. Nasties await,... so prepare. In the center of the ring
+      is an orange moongate on a pillar. Jump into the central pit,
+      and use the "Bullseye" to bounce up to the gate. Mokpo: "an
+      endless walkway, glowing blue" "jump and you are thrown high in
+      in the air".
+
+PURPLE: Swim up the slippery hill and over the edge, follow the double
+        arrow and use the "Bullseye"s to travel straight ahead. You
+        will wind up on a narrow, slippery path,... that will lead
+        through an image of the Guardian,... and into the Stick Maze.
+        Past the maze (keep to the left,.. mostly), lies the goal.
+
+SHRINE: For some reason, you are not put in the Shrine of Spirituality,
+        but are teleported to the base of the tower that it lies on top
+        of. There are several ways to get in (and out):
+        A) Use "Levitate" of "Fly" to get to the top of the tower. Lower
+           yourself until you are standing at floor level of the Shrine.
+           Cast "Portal" to get through the bars (and back out).
+        B) "Levitate" or "Fly" to the top of the tower. Throw one of the
+           Moonstones through the bars. Throw the other Moonstone on
+           the ground at the base. Cast "Gate Travel" on this
+           Moonstone to get in (and "Gate Travel" again on the moonstone
+           at the Shrine to get out,.. after remembering to pick it up).
+        C) Use the "dream" plants just before bedtime. In your dream,
+           pick up the blackrock gem at the Shrine and throw it through
+           the bars. It will be there when you arrive later. To disable
+           the Shrine with Altara's wand, you must merely get close to
+           the bars.
+
+
+ENDGAME
+-------
+
+      Okay, now that you have found all 8 gems (and "used" them on the
+big gem on B5),.... and destroyed all 8 places the Guardian was drawing
+power from (with Altara's wand),... and you have the "Horn" of Praecor
+Loth,... and the Djinn bottle from Zoranthus,... we're ready to go:
+
+1) Cruise to the Filanium mud deposits (IC2, SE corner, "watery mud")
+   and toss in a "colorless potion" of Basilisk oil. You will notice
+   that "the thick oil permeates the mud".
+2) Take a swim in the mud ("The oily mud coats your skin").
+3) Cruise to EVR (Ethereal Void - Red) and take a bath in the lava pit
+   you are dropped into ("The oily mud bakes on your skin"). You can
+   also do this in the lava pit in the Brain Creature room on KK2, or
+   anywhere else that there is lava to stand in.
+4) Cruise to the "Sigil of Binding" (go through a few White moongates
+   in the void until you get there,... there is a sign).
+5) Cast an "Iron Flesh" spell, or drink a potion if you have one. ("The
+   baked mud hardens into a clear glaze").
+6) Stand in the center of the pentagram and set the Djinn bottle down.
+   Break it with your weapon. If all goes well, the Djinn will enter
+   your body,... otherwise you're dead (so SAVE before you try this).
+7) Cruise to Killorn Keep and check out the soldiers barracks. Behind
+   the door on the north wall you will find Mors Gotha. After a little
+   verbal banter, she will attack you (along with about 6 guards). Once
+   you have beat her up some, the Guardian will teleport her out of
+   there (but you still have to deal with all of the guards).
+   NOTE: if you haven't bashed down this door yet,.. it's about time.
+   NOTE: If Mors gives you trouble, just crash the keep (by killing
+         the Brain Creatures in the basement).
+8) Pick up the Spellbook she leaves behind, and return it to Nystul.
+   He will ask two questions. Nell has the answers ("Throne room" and
+   "4:00"). Note: Fissif said 4:15 ("4:15" or "4" also work).
+9) Mors Gotha will re-appear in YOUR castle, and you will have to deal
+   with her again (in a permanent fashion). She will also have a few
+   more guards with her,... who will also have to be dealt with.
+10) Cruise to the Throne Room of Lord British. You will find the whole
+   castle crew assembled. Tell Nystul that you are ready.
+11) The rest is automatic,... Nystul casts a major spell, while you
+   blow the horn (with the added "Oomph" provided by the air-Djinn).
+   The castle is free, and Britannia is once again safe for Democracy.
+   At least it would be except for that pin-head Lord British. Oh well,..
+   you never really did care for politics anyway........
+
+
+GEM LOCATIONS
+-------------
+
+Prison Tower          - Borne has it (PT6)
+Killorn Keep          - guarded by headlesses (KK2)
+Ice Caverns           - On ice plain by river in south-central area (IC2)
+Talorus               - Island in center of lava lake (T2)
+Scintillus Academy    - In pentagram (SA8)
+Pits of Carnage       - Dorstag has it (PC1)
+Loth's Tomb           - Behind row of boulders (LT1) (use "rock hammer")
+Ethereal Void         - In Shrine of Spirituality
+
+
+GUARDIANS' POWER LOCATIONS
+--------------------------
+
+Prison Tower          - Bishop's cell (PT8)
+Killorn Keep          - lava pit in Brain Creature room (KK2)
+Ice Caverns           - fountains of Anodunos (IC2)
+Talorus               - Bliy Skup Chamber (T1)
+Scintillus Academy    - Pentagram (SA8)
+Pits of Carnage       - room with bloodstained walls (PC1) (Northmost)
+Loth's Tomb           - Behind row of boulders (LT1) (use "rock hammer")
+Ethereal void         - Shrine of Spirituality
+
+
+INTERESTING THINGS
+------------------
+
+Get Mokpo hooked on drugs!  After you have used the dream plants in
+your sleep, take some to old Mokpo. He will provide you with more
+clues as to how to conquer the Ethereal Void.
+
+Find out what old Nystul is hiding in his locked chest in the Library.
+
+Talk to all of the folks at the castle after you have been dipped in
+Filanium mud / Basilisk oil.
+
+Re-visit Garg on PT6 later in the game, he has a letter for you.
+
+You will find some dream "plants" in your travels. These are typically
+found at gravesites, and have little pale green flowers that look
+like "X"s. Eat one of these just before sleep for visions of the
+Ethereal Void. WARNING: You CAN die in your dreams.
+
+Check out the graffiti on the walls in the center of PC1 after you
+defeat Dorstag.
+
+Cast "Tremor" in the Ethereal Void. The best place I found is on the
+multi-colored floor area right at the exit.
+
+Cast "Mending" (RSY) on an empty lantern to re-fill it.
+
+Dorstag has an unlimited supply of "crossbow bolt"s. The problem is
+that to get them, you have to let him shoot you for a while. The
+"missile protection" spell works well for this.
+
+Fissif (once in jail) has an unlimited supply of "lockpick"s for sale.
+
+If the screen flashes:
+    RED    - You have been hit (injured)
+    BLUE   - You are drowning (get out of the water,... fast)
+    PURPLE - You are under psionic attack by a Brain Creature (yikes!)
+    YELLOW - You have picked up a "cursed" item, or a spell has backfired
+             on you.
+
+Cursed items cannot be used (or "uncursed"). If you are wearing a
+"cursed" item, you will take damage each time that you change levels
+or worlds. Get rid of the item! You may have to have high LORE skill,
+or use an "Name enchantment" spell to find out which items are cursed.
+
+Be sure to check out the area above the waterfall on B3.
+
+It seems that nobody in any of the worlds knows how to swim, except
+you, and the Lurkers. Try pushing a monster into any nearby water.
+
+TRAP DOORS - every once in a while, you will discover a trap-door in
+the ceiling somewhere. You can do nothing with these. Should you fall
+into a bottomless pit elsewhere in the same world, this is where you
+will end up.
+
+Time and Flame traps: If you see a glowing "Tym" or "Flam" symbol, it
+      is a trap. You can either cast "Dispel Rune" to destroy it,...
+      or just pick any object from your inventory (like a "coin") and
+      throw it at the trap. The trap will be disarmed, and you can pick
+      up your object (with no damage done). Warning: do not throw any
+      weapons/armor that are already in a "badly damaged" state.
+
+Moonstones: There are two of these: One on B3 in a chest guarded by a
+      "haunt" (red ghost) behind a locked door, the other just lying
+      in a hallway in the Scintillus Academy (SA5). To use them, you
+      cast "Gate Travel" on one, and it teleports you to the other. A
+      good example of their usefullness is if you ever want to return
+      to SA8 (Scintillus Academy). Drop one stone there, and keep the
+      other one with you.
+
+Way to get Armoury key: Walk up to the Reaper (to get its interest)
+      and then lure it back to the entryway (where you came in). Now
+      turn off your light source, and swim around the Reaper to get
+      back to the pit it was guarding. The key is in a pile of debris
+      in the pit (really! it's there! keep looking!). If you're quick,
+      you can get in and out without a fight. Also, there is a nice
+      sword behind a large plant (you have to try to "pick up" the
+      plant, and suddenly the sword falls out where you can see it).
+
+Way to get past locked things in Britannia: Since you cannot cast an
+      "Open" spell while in Britannia, you take advantage of the way
+      that targeted spells operate. Go to any alternate world and
+      cast your "Open" spell. The cursor will change to indicate that
+      the spell has been cast, and will then wait for you to target
+      the spell. At this time, run back to Britannia, and find the
+      locked object you wish to open,... then release the spell.
+
+Blackrock Gem (B5): You will notice that one of the 8 facets is a bit
+      brighter than the rest. This is the one that you can walk into
+      to teleport to alternate worlds. The active facet is constantly
+      changing (you can see this if you watch the gem later in the
+      game.)
+
+      Initially, only one facet will be lit (Prison Tower).
+
+      The next two facets (Killorn Keep, and Ice Caverns) will open
+      up when:
+          A) You have set foot on level 6 of the Prison Tower
+          B) You have talked to Miranda afterwards (where she tells you
+             the servants have become "increasingly rude and irritable").
+
+      The next three facets (Talorus, Scintillus Academy, and Pits of
+      Carnage) will open up after the murder of Lady Tory. This event
+      is triggered when:
+          A) You possess the small blackrock gem from Ice Caverns.
+          B) You have killed "The Listener".
+          C) You have talked with Miranda after doing all of the above
+             (this conversation is interrupted by a guard).
+
+      The last two facets (Tomb of Praecor Loth and the Ethereal Void)
+      become available after the murder of Nelson. This event is
+      triggered when:
+          A) You have talked with Zoranthus (PC2).
+          B) You possess the blackrock gem from the Scintillus Academy.
+          C) You have "Used" the blackrock gem from Talorus on the larger
+             one (B5).
+          D) You have talked with Miranda after doing all of the above
+             (she tells you that Nelson wishes to see you right away).
+          E) Nelson is dead.
+          F) Patterson is dead (No, you can't leave him hanging around).
+
+      The next trigger-point is the appearance of Mors Gotha in
+      Killorn Keep. This event is triggered by succesfully containing
+      an Air-Djinn in your body. When you return from the Ethereal
+      Void after accomplishing this, you should be met by four soldiers
+      from KK at the big blackrock gem on B5. Once you have dispatched
+      them, go to the soldiers barracks area of KK1. In the room with
+      the locked door, you will find Mors Gotha. When you have defeated
+      her (and her soldiers), she will leave behind a spellbook. Take
+      this book to Nystul. You will also find that Altara has fled
+      from the Keep at this time.
+
+      The final trigger-point occurs when Nystul has studied the
+      spellbook of Mors Gotha, and asks you to find the answers to
+      some questions. This is triggered by:
+
+          A) "Using" all 8 small gems on the larger (it will start
+             flashing when this is done).
+          B) Destroying the Guardians place of power in each of the
+             8 worlds.
+          C) Posessing the Horn of Praecor Loth.
+          D) Talking to the right people after all of the above (however,
+             I am not entirely sure who they are at this writing).
+
+      The center of level B5 will change to icy walls when you return
+from the Ice Caverns for the first time. This area will remain frozen
+until you eliminate the Guardian's influence from Anodunos.
+
+      Don't forget to "use" the small blackrock gems you find (after
+treatment by Nystul) on the large gem. This will lock these worlds open,
+so you don't have to wait around.
+
+Quick experience: In the Scintillus Academy (SA1), there are those
+      Portcullises that you opened by placing the Gold Coffer on the
+      correct Pressure Plate. Open the center Portcullis. Inside you
+      will find an endless supply of "hostile mongbat"s to kill. They
+      just keep coming! (and they are pretty easy to deal with by this
+      time). You can keep this up until the game starts to slow down,
+      from rendering all those countless bloodstains on the floor that
+      you are generating (I noticed this after about 500 kills).
+          Also, on SA5, there is a pull-chain near a portcullis which
+      produces skeletons each time that you pull it.
+          Also, on SA8, a new monster will appear in the center of the
+      puzzle each time you screw up (the 3:5:2:9 puzzle).
+          Talk to Jospur on PC1. He will be happy to arrange some fights
+      for you (you make some $$$ as well).
+          Also, if you are really looking for some action,... try the
+      "Summon Demon" spell (KAM).
+
+
+LOCKED DOORS: Unless a door or chest is "massive", it can be bashed
+      in. It is best to remove your weapon (to avoid damage to it),
+      and use your bare hand (which seems impossible to damage). This
+      also works for locked "secret door"s. NOTE: "locked secret doors"
+      are always accompanied by a hidden switch nearby. Search the walls
+      carefully to reveal it.
+
+BASILISK OIL: Appears as a "colorless potion". You only need one.
+              B3  - in chest guarded by two Gazers
+              SAV - in chest at the end of the vault
+              PC1 - in Zaria's chest
+              PC3 - in Really Secret room behind Liche
+
+Don't forget to check out any sewer pipes that you find, and waterfalls.
+
+An extra Djinn Bottle may be found in the Ethereal Void in the bonus
+area accessed by turning the pyramid all purple. Works just fine.
+
+"Grey Stone" (PT1), (T1) Futurians back room, (LT1) near gem.
+"Amethyst rod" in Talorus (T1), room with many crystals. Don't forget
+      to score the "Nutritious Wafers" here. Lightweight, and filling.
+      Note: another "amethyst rod" can be obtained in the Ethereal Void.
+"Spider Eggshell" in B4, and LT1
+"Horn" (LT4) Loth's gravesite
+"Banner" (LT4) Loth's gravesite
+
+      You cannot auto-map alternate dimensions like KKA, SAV, and the
+Ethereal Void. Sorry.
+
+STEALING: If you find something "belonging to a XXXX", tread with
+      caution. If the XXXX is upset, taking its belongings will almost
+      certainly turn it to the "hostile" state,... IF it sees you do
+      it (and that's the trick). If something is "peaceful", you may
+      get away with taking things from under their nose, but I would
+      recommend saving your game first!
+
+CRASHING the KEEP: If you kill the Brain Creatures in the room on
+    KK2, the Keep will fall from the sky and crash. You will find
+    that much has changed upon your next visit. Since this results
+    in the death of Altara (very bad), I would not recommend it.
+    But, when Mors Gotha arrives, Altara leaves the Keep of her own
+    accord. At this point, feel free to experiment. In fact, this is
+    a great way to get rid of Mors and her flunkies (her spellbook
+    will remain).
+
+LIGHT SOURCES: Tired of torches going out when you least expect it?
+    Having trouble finding more oil for your lantern? Not to worry!
+    Go into the "data" sub-directory and find a file called "shades.dat".
+    Re-name it to something like "shadez.dat" and delete the original.
+    When you fire up the game, all lighting will be like "Daylight".
+    No torches, no lanterns required ever again!
+
+
+
+SECRET DOORS
+------------
+
+    * B1 - Seven (one in your bedroom, six around perimeter of castle)
+    * B4 - One (between rats area and goblins area)
+    * KK1 - Two (in barracks area)
+    * KK2 - One (in room near portcullis)
+    * IC2 - One (Anodunos) (locked - hidden switch)
+    * SA6 - One
+    * SA8 - One (in one of the bedrooms) (locked - hidden switch)
+    * PC1 - Two (Dorstag's quarters) (Zaria's quarters)
+    * PC2 - Two
+    * PC3 - One (near area with 3 reapers) (locked - hidden switch)
+    * LT1 - One (near massive door)
+    * LT3 - Three (two by water) (one in bottom of fire pit)
+    * LT4 - Two (in Morphius area)
+
+
+REALLY SECRET ROOMS
+-------------------
+
+These areas are found if you use the "Roaming Sight" spell. We're
+talking REALLY secret:
+
+KK2 - when you come down the stairs to get to the Brain creature room,
+    walk straight until you are facing the wall (just a few steps forward
+    after you arrive on level 2). Turn 45 degrees to the left so that you face
+    the corner. Cast "Portal". Nothing worthwhile here (unless you need some
+    sling stones). NOTE: this area does become available to you if you crash
+    the Keep.
+
+IC2 - Anodunos. Go to NW corner of map (Anodunos). There is a piece of
+    a building in the ice by a table and chair. Go to the SW wall of this
+    building and face North. Cast "Portal". Good scrolls here!
+
+PC3 - behind the room with the Liche. Face the east wall and cast a
+    "Reveal" or "Portal" spell. Basilisk Oil, Book, Orb here!
+
+SA6 - Teleport maze. There is a rest area in the red-carpet section of
+    the maze (bench, chair, and vending machine). Stand in the SW corner of
+    this area (chair) and face SW. Cast "Portal". There is nothing in here.
+
+LT2 - Head for the NE corner of the level. Head directly south, down
+    this hallway until you face a "cave-in". Cast "Portal". Nice wand and
+    magic leather vest!
+
+LT4 - Jump down into the fire pit just outside of Praecor Loth's grave
+    site. You will know that you are in the right place when a bunch of "Fire
+    Elementals" attack you. At either end of the pit are "spacey twinkles",
+    which teleport you out of the pit. The twinkles are under a ledge. Walk
+    towards the twinkles until just before you go under the ledge. Cast
+    "Levitate" of "Fly" and rise all the way to the ceiling. There are two of
+    these. The one to the west has neat stuff.
+
+
+COOL WEAPONS AND OTHER STUFF
+----------------------------
+
+Note: Not everything appears where it should be. There seems to be
+some variability from game to game here. All is disclaimed.
+
+Sword of Stone Strike          - LT1 (in pack behind portcullis)
+Jewelled Axe of Fire Doom      - SAV (under floor tile with Vas, Tym)
+Jewelled Mace of Undead Bane   - LT4 (Loth's gravesite)
+Cudgel of Entry                - PC1 (Dorstag's secret room)("Open")
+Leather leggings of Stealth    - B2  (Armory - in chest)
+Broadsword of Poison Weapon    - IC2 (Anodunos - caution: badly worn)
+Battle Axe of LifeStealer      - EVP (behind hidden wall in stick maze)
+Leather Boots of Bounce        - T2  (among many other boots)
+Leather vest of Flameproof     - LT3 (South-center room by ladder up)
+Chain Cowl of Valor            - B3 (ghost above waterfall)
+Plate Gauntlets of Missile Protection - LT4 (Morphius area)
+Leather cap of Missile Protection - PC3 (behind "Dire Reaper")
+
+Jewelled Sword of Major Damage - B4  (in large plant in Reaper area)
+Jewelled Sheild of Unsurpassed Protection - LT4 (Really secret area)
+Jewelled Mace of Unsurpassed Damage - LT4 (Really secret area)
+Jewelled Dagger of Unsurpassed Damage - LT3 (room S-SW at map edge)
+Leather Vest of Unsurpassed Protection - LT2 (Really secret area)
+Chain Gauntlets of Unsurpassed Protection - LT2 (northmost area)
+Plate Boots of Unsurpassed Toughness - LT3 (in big fire pit)
+Tower Shield of Very Great Toughness - LT2 (by stairs to LT3)
+Black Sword of Great Accuracy  - LT4 (Lethe has it)
+Jewelled Axe of Great Damage   - LT1 (next to Blackrock Gem)
+Long Sword of Great Accuracy   - LT1 (in debris pile as you enter)
+Broadsword of Great Damage     - EVB (below orange moongate)
+Mail Shirt of Tremendous Protection - EVB (below orange moongate)
+Mace of Major Damage           - IC2 (Anodunos - caution: badly worn)
+Sceptre of Shockwave - T2 (behind wall panel (North), use "Telekinesis")
+Wand of Flame Wind             - LT2 (Really secret area)
+Piece of wood of Lightning     - PC3 (Arm of the "Dire Reaper")
+
+
+BUGS
+----
+
+1. Jerky motion (display pauses). Solutions:
+   1. Turn of the sound.
+   2. Quit the game, and restore where you left off.
+   3. Wield your weapon briefly (un-verified rumor).
+
+2. Servants on strike. You're out of luck. Start over :-(
+   NOTE: when the servants (Nanna) first start complaining, you must agree with
+   everything they say, and then take their concerns to Lord British. If
+   you do not take care of this quickly, the servants go on strike
+   permanently,... and you are screwed. Fixed by Patch.
+
+3. Game locks up when talking to Wisp in EVB. Make sure that you have
+   talked to Blackie (Trilkhun in KK1) before engaging Wisp.
+
+4. Can't add more notes to map. Solution: Need more free space on your
+   hard drive.
+
+5. Sleeping with moonstone on cursor to break into Ethereal Void. DO
+   NOT do this. It really hoses up the plotline, which can cause you
+   problems, missing conversations, etc.
+
+6. Nystul won't complete the endgame. When given the Spellbook from
+   Mors Gotha, Nystul should ask you two questions. If not, it could be the
+   result of how you obtained the Horn fron Praecor Loth. If you got it by
+   killing him (instead of waiting for him to give it to you), you may get
+   this problem. Fixed by Patch.
+
+7. E001, E002 errors - Need more space on your hard drive. The
+   requirments for free hard drive space as published don't seem to be
+   correct. When you do a SAVE, many temporary files are created in the
+   process of making a new SAVE file set. This will require more free space
+   than you might think.
+
+8. Color palette screwed up. Seems to happen primarily on systems with
+   a local bus. Fixed by Patch.
+
+9. Moongate not found (or only half there) in room with two hostile
+   Brain Creatures, in Yellow maze area of Ethereal Void. No fix yet. But
+   you can get to the Shrine of Spirituality another way, and be able to
+   finish the game. When you first fall into the Void, you will be facing a
+   huge orange wall. Just walk right up to this wall and cast "Portal"
+
+
+UNANSWERED QUESTIONS
+--------------------
+
+1. SA6 - The vending machine has a Pressure Plate here, what does it
+   do? (none of the other vending machines have such a plate).
+
+2. Is there any way to up your Search skill after Nelson is murdered?
+
+3. Why does the pile of bones near Krilner (PC1) keep getting smaller?
+   In fact, a lot of stuff on the floors seems to dissappear over time in
+   the Pits.
+
+4. In the Scintillus Academy, level 5; There is a pushbutton high on
+   the wall by the Portcullis. What does it do?
+
+5. How do I get a "lotus turbo esprit", or a "serpent statue"? And
+   where the heck is "Jerry the Rat"?
+
+
+Spell List
+----------
+
+The following is a large list of spells for Ultima Underworld 2. The
+list does NOT include ALL the spells for the game (at least, not for
+sure), because the only way to have them all should be trying 24^2*23
+different combinations. Many of these spells were found on the user manual
+of the game; others can be discovered through the game, talking with
+people or reading some scrolls or books; few of them can be achieved by
+triyng different combinations of two or three runes, when you find them by
+a corpse (if someone kept them till the end, they should probably be
+useful for something...); finally, one or two of these spells must be
+found through trial and error, when you only know that the spell EXIST
+(for example, if you find a scroll, a wand, or a potion with that power,
+in Ultima Underworld II you are sure that the spell can be obtained also
+through rune-spelling).
+
+This last way become much easier if you know the different meanings of
+the 24 runes:
+
+-------------------------------------------------------------------
+|AN   - Negate  |BET  - Small  |CORP  - Death     |DES  - Down    |
+|EX   - Freedom |FLAM - Flame  |GRAV  - Energy    |HUR  - Wind    |
+|IN   - Cause   |JUX  - Harm   |KAL   - Summon    |LOR  - Light   |
+|MANI - Life    |NOX  - Poison |ORT   - Magic     |POR  - Movement|
+|QUAS - Illusion|REL  - Change |SANCT - Protection|TYM  - Time    |
+|UUS  - Raise   |VAS  - Great  |WIS   - Knowledge |YLEM - Matter  |
+-------------------------------------------------------------------
+
+
+Ultima Underworld II Magic Book
+-------------------------------
+
+--------------------------------------------------------------------
+| Spells of the 1st Circle       | Spells of the 2nd Circle        |
+|                                |                                 |
+| IN MANI YLEM   Create Food     | QUAS CORP      Cause Fear       |
+| IN LOR         Light           | QUAS MANI YLEM Dispel Hunger    |
+| ORT JUX        Magic Arrow     | IN BET MANI    Lesser Heal      |
+| BET IN SANCT   Resist Blows    | UUS POR        Jump             |
+| UUS DES POR    Bounce          | REL DES POR    Slow Fall        |
+| WIS JUX        Detect Traps    | ORT WIS JUX    Deadly Seeker    |
+| BET ORT IN     Luck            | IN FLAM JUX    Flame Rune       |
+| BET WIS EX     Locate          | QUAS AN CORP   Valor            |
+|                                |                                 |
+--------------------------------------------------------------------
+| Spells of the 3rd Circle       | Spells of the 4th Circle        |
+|                                |                                 |
+| AN NOX         Cure Poison     | IN MANI        Heal             |
+| ORT GRAV       Lightning       | IN AN FLAM     Frost            |
+| QUAS LOR       Night Vision    | NOX JUX YLEM   Poison Weapon    |
+| REL TYM POR    Speed           | AN JUX         Remove Trap      |
+| AN JUX ORT     Dispel Rune     | SANCT FLAM     Flameproof       |
+| JUX MANI       Bleeding        | GRAV SANCT POR Missle Protection|
+| YLEM POR       Water Walk      | WIS MANI       Study Monster    |
+| AN KAL CORP    Repel Undead    |                                 |
+|                                |                                 |
+--------------------------------------------------------------------
+| Spells of the 5th Circle       | Spells of the 6th Circle        |
+|                                |                                 |
+| REL SANCT YLEM Mending         | VAS IN LOR     Daylight         |
+| POR FLAM       Fireball        | VAS REL POR    Gate Travel      |
+| ORT WIS YLEM   Name Enchantment| VAS IN MANI    Greater Heal     |
+| EX YLEM        Open            | AN EX POR      Paralyze         |
+| AN CORP MANI   Smite Undead    | QUAS REL WIS   Charm            |
+| ORT POR YLEM   Telekenisis     | VAS SANCT LOR  Invisibility     |
+| IN TYM JUX     Time Trap       | VAS ORT GRAV   Sheet Lightning  |
+| UUS HUR POR    Levitate        |                                 |
+|                                |                                 |
+--------------------------------------------------------------------
+| Spells of the 7th Circle       | Spells of the 8th Circle        |
+|                                |                                 |
+| KAL AN MANI    Summon Demon    | FLAM HUR       Flame Wind       |
+| VAS AN WIS     Mass Confusion  | AN TYM         Freeze Time      |
+| ORT AN QUAS    Reveal          | IN VAS SANCT   Iron Flesh       |
+| ORT POR GRAV   Magic Satellite | VAS MANI       Restoration      |
+| VAS EX YLEM    Portal          | ORT POR WIS    Roaming Sight    |
+| JUX HUR        Shockwave       | VAS JUX MANI   Smite Foe        |
+| WIS EX         Map Area        | VAS HUR POR    Fly              |
+| VAS ORT YLEM   Enchant Item    |                                 |
+| VAS POR YLEM   Tremor          |                                 |
+|                                |                                 |
+--------------------------------------------------------------------
+
+
+ABOUT UNKNOWN LEVEL SPELLS
+--------------------------
+
+If you find any new spells, and you are not sure about its level or
+name, remember that every spell costs 3 mana points per Circle, so that an
+EX YLEM casting will spend 15 mana points, and if you look at your mana
+flask before and after you do the magic, you get the level.
+
+For the name, if the spell is a duration one, an icon will appear after
+the casting, on the spells shelf, to the left of the compass: right-click
+on it (a left-click should deactivate the magic), in order to have an
+evaluation of the quality of the casting, with the stability (Stable,
+Unstable, or Nearly Done) and the name of the spell.
+
+This list was possible only due to the work of Extreme A.I., who
+compiled the original list I modified and corrected.
+-] StH [-
+For suggestions or questions post to morandin@genio.sns.it

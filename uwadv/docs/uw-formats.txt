@@ -1,0 +1,835 @@
+Ultima Underworld Formats Specification
+---------------------------------------
+
+
+Table of Contents
+
+1.0   General stuff
+1.1   Summary of data files
+
+2.0   Level Map File
+2.1   Palettes
+2.2   Textures
+2.3   Graphics
+2.4   Fonts
+2.5   Bitmaps
+
+3.0   Object IDs
+3.1   Common object properties
+3.2   Object class properties
+3.3   Traps
+
+4.0   Game strings
+4.1   Conversations
+
+5.0   Critter Animation
+5.1   Cutscene Animations
+
+6.0   Savegame format
+
+
+1.0 General stuff
+
+   In this document, all integers are refered as Int8, Int16 or Int32,
+   depending on their number of bits.
+
+   All files from Ultima Underworld are in little endian format, that means
+   that the low-byte of an Int16 intever comes first in the file, and is
+   followed by the high-byte.
+
+   Most of the stuff in this file is from the original "uw-specs.txt" found
+   in "The System Shock Hack Project". System Shock uses almost the same
+   data structures for the game. Many thanks to Jim Cameron!
+
+   Copyright (c) 2000,2001,2002 Jim Cameron
+   Copyright (c) 2002 Michael Fink
+
+
+1.1 Summary of data files
+
+   Here are all files found in the "data" folder:
+
+   3dwin.gr       3d window graphics
+   allpals.dat    auxilliary 4-bit palette indices
+   animo.gr       small animations
+   armor_f.gr     female paperdoll armor graphics
+   armor_m.gr     male paperdoll armor graphics
+   babglobs.dat   initial conversation globals
+   blnkmap.byt    blank map bitmap, palette #1
+   bodies.gr      paperdoll bodies
+   buttons.gr     buttons, seems to be from some map editor
+   chains.gr      rotating chains for the stats window
+   chargen.byt    character generation bitmap, palette #3
+   charhead.gr    character images, for conversations
+   chrbtns.gr     character generation graphics, palette #3
+   chrgen.dat
+   cmb.dat
+   cnv.ark        conversation scripts
+   comobj.dat     common object properties
+   compass.gr     compass graphics
+   conv.byt       seems to be a conversation screenshot, palette #0
+   converse.gr    conversation screen bitmaps
+   cursors.gr     mouse cursor images
+   doors.gr       doors textures (may be decals)
+   dragons.gr     scroll dragons animations
+   eyes.gr        eyes from top screen
+   f16.tr         floor/ceiling textures, size 16x16
+   f32.tr         floor/ceiling textures, size 32x32
+   flasks.gr      health and mana flask graphics
+   font4x5p.sys   small font
+   font5x6i.sys   italic font, used in character stats screen
+   font5x6p.sys   normal font, used for scroll messages
+   fontbig.sys    big font, for cutscenes
+   fontbutn.sys   font for buttons (?)
+   fontchar.sys   character generation font (?)
+   genhead.gr     heads images
+   grave.dat      (?) grave IDs
+   heads.gr       avatar character generation heads
+   inv.gr         inventory graphics, scroll backgrounds (?)
+   lev.ark        level maps, texture indices and object list
+   lfti.gr        left menu buttons
+   light.dat
+   lights.dat
+   main.byt       main game screen bitmap, palette #0
+   mono.dat
+   objects.dat    object data specific to an object class
+   objects.gr     object graphics, some never seen in inventory (460 objects!)
+   opbtn.gr       opening screen buttons, create new game, etc.; other palette
+   opscr.byt      opening screen, palette #2
+   optb.gr        some options buttons
+   optbtns.gr     all options buttons from the left menu
+   pals.dat       eight palettes (#0 to #7, #5 and #6 are the same)
+   panels.gr      some invalid type, 0x0 and 1x1 resolution images
+   player.dat     initial player character called "gronkey"
+   power.gr       hit power indicator graphics
+   pres1.byt      "origin presents" screen, palette #5
+   pres2.byt      "a blue sky prod. game" screen, palette #5
+   question.gr    a single question mark
+   scrledge.gr    scroll paper edges
+   shades.dat
+   skills.dat
+   spells.gr      spells graphics
+   strings.pak    all the game strings
+   terrain.dat
+   tmflat.gr      wall switches and other decals
+   tmobj.gr       more wall decals
+   uw.cfg         underworld configuration (audio, cut scenes)
+   views.gr       the letters "mv", probably not used
+   w16.tr         wall textures, size 16x16
+   w64.tr         wall textures, size 64x64
+   weapons.cm
+   weapons.dat
+   weapons.gr     weapon hit animations, for left and right handedness
+   win1.byt       winning screen, with text, palette #7
+   win2.byt       winning screen, without text, palette #7
+   xfer.dat
+
+   Here are all files found in the "sound" folder:
+
+   XX.voc         all cutscene audio files
+   uwXX.xmi       underworld extended midi music
+   awXX.xmi       the same, for adlib music (?)
+   sounds.dat
+   uw.mt          MT32 sysex data
+   uw.ad          adlib stuff
+   *.adv          device driver for midi/wave output
+
+   Here are all files found in a save game (e.g. "Save1") folder:
+
+   lev.ark        modified level map
+   bglobals.dat   conversation globals
+   desc           savegame name
+   player.dat     character info
+
+
+2.0 Level Map File
+
+   Level maps are stored in file "lev.ark".
+
+   0000  Int16  Number of offset entries
+   0002  Int32  Offset #0
+   0006  Int32  Offset #1
+   ...
+
+   When the offset is a value of 0, the block contains no data For Ultima
+   Underworld 1, there are 45 offsets which point to different data:
+
+   <9 blocks level map info>
+   <9 blocks level object info>
+   <9 blocks level texture usage>
+   <9 blocks of level automap flags>
+   <9 blocks of level comment entries>
+
+   The first 9 blocks describe the 9 level maps (Abyss levels 1 - 8 and the
+   Ethereal Void). The next 9 blocks list the objects in the corresponding
+   map. The next 9 blocks describe the used textures for wall, floor and
+   doors. Then come 9 blocks for automap flags, ending with 9 blocks for
+   comment entries.
+
+   * Level map info
+
+     Levels are always 64 x 64 tiles. Map origin is at the lower left tile,
+     going to the right, each line in turn. For each tile there is an Int32
+     stored in the block. The value can be split into bits:
+
+     bits           description
+      0 -  3    4   tile type (see below)
+      4 -  7    4   floor height
+      8 -  9        unknown, always 0
+     10 - 13    4   floor/ceiling texture info
+     14             unknown, only used on level 6, by the shrine
+     15         1   door bit (when 1, a door is present)
+     16 - 21    6   wall texture index (from level texture usage)
+     22 - 31   10   index (?) probably a tile ID
+
+     Size of the map is 0x4000 bytes, although there seems to be a gap between
+     the maps of 0x3c08 bytes that seems to contain garbage only.
+
+   * Level object info
+
+     they are stored as two Int32 words, which can be split into these bits:
+
+     word 1, bytes 0..3
+     bits          description
+      0 -  8    9   object ID
+      9 - 15    7   unknown1
+     16 - 22    7   object z position (0-127)
+     23 - 25    3   orientation (*45 degree)
+     26 - 28    3   object x position (0-7)
+     29 - 31    3   object y position (0-7)
+
+     word 2, bytes 4..7
+     bits           description
+      0 -  5    6   quality
+      6 - 15   10   link1 (object chain) (?)
+     16 - 21    6   unknown2
+     22 - 31   10   quantity / link2
+
+     length of the object info always is 0x0180, which leads to 48 objects
+
+   * Level texture usage
+
+     0000  48 x Int16   wall texture number (from w64.tr)
+     0060  10 x Int16   floor texture number (from f32.tr)
+     0074   6 x Int16   door decal number (from doors.gr (?))
+
+   * level automap flags
+
+     each block contains the "visited" bytes for each level. each byte
+     describes a tile on the main map.
+
+   * level comment entries
+
+     not decoded yet
+
+
+2.1 Palettes
+
+   * 256 color auxiliary palettes
+
+     In "palette.dat" there are stored 8 different palettes. One palette has the
+     following layout:
+
+     0000  Int8  blue  intensity, index 0, range [0..63]
+     0001  Int8  green intensity, index 0, range [0..63]
+     0002  Int8  red   intensity, index 0, range [0..63]
+
+     0003  Int8  blue  intensity, index 0, range [0..63]
+     ...
+
+     In each palette there are stored color intensities for 256 colors. All 8
+     palettes are stored sequentially in the file.
+
+     Palette index 0 always is a transparent pixel.
+
+   * 16 color auxiliary palettes
+
+     In "allpals.dat" there are several auxiliary palettes, used for 4-bit
+     graphics. All indices use palette #0.
+
+     0000  Int8  index to first color
+     0001  Int8  index to second color
+     ...
+
+     There are 16 values that are indices for palette #0. They build a 16 color
+     palette from selected colors of the palette #0.
+
+     In the file "allpals.dat" there are stored 0x1f (=31) such palettes.
+
+   * palette rotation animations
+
+     In the game, in several places the palette is used to create animated
+     effects, such as the lava and water textures. Here are described the
+     palette indices that have to be rotated to produce the animations:
+
+     - Palette #0: in game graphics
+
+       indices 16 through 23: lava fire effect
+       indices 48 through 51: water effect
+
+     - Palette #2: game start screen
+
+       indices 64 through 127: "Ultima Underworld" logo warping effect
+
+
+2.2 Textures
+
+   Textures are stored in "*.tr" files, where "f??.tr" files are floor
+   textures, and "w??.tr" are wall textures.
+
+   0000  Int8   unknown, always seems to be 2
+   0001  Int8   x and y resolution (textures always square)
+   0002  Int16  number of textures
+   0004  Int32  offset to texture #0
+   0008  Int32  offset to texture #1
+   ...
+
+   The offset of each texture points to the actual texture palette indices,
+   which are xyres^2 bytes long. Textures always use palette #0
+
+
+2.3 Graphics
+
+   Graphics are stored in "*.gr" files and can be 8-bit or 4-bit.
+
+   0000  Int8   unknown, always seems to be 1
+   0001  Int16  number of bitmaps
+   0003  Int32  offset to bitmap #0
+   0007  Int32  offset to bitmap #1
+   ...
+
+   Each bitmap has its own header:
+
+   0000  Int8   bitmap type:
+                04: 8-bit uncompressed
+                08: 4-bit run-length
+                0A: 4-bit uncompressed
+   0001  Int8   width
+   0002  Int8   height
+
+   For the 4-bit formats, there follows another Int8 that selects the
+   auxiliary palette to use (see 2.1).
+
+   000n  Int16  size of data for the bitmap.
+                in 4-bit formats, this is the number of 4-bit nibbles, not
+                bytes.
+
+   * uncompressed bitmaps (04: 8-bit, 0A: 4-bit)
+
+     all palette indices are stored sequentially, first one line, then the
+     next, and so on. For the 4-bit format, first take the upper nibble, then
+     the lower nibble.
+
+   * compressed bitmaps (type 08)
+
+     All pixels are run-length encoded. when a new byte has to be retrieved,
+     first take the high nibble, then the low nibble of that byte.
+
+     Data consists of repeat and run records. Repeat records let the decoder
+     repeat a single nibble a certain number of times. The run record takes
+     a certain number of next nibbles to be as uncompressed. The two records
+     alternate in the bitmap, starting with a repeat record.
+
+     For every record, first there is a count to retrieve. Get a nibble; if
+     it is not 0, it is a count. Otherwise, get two more nibbles, n1 and n2.
+     The count is  c = (n1 << nibblesize) | n2. If the count is still zero,
+     take another three nibbles, and calculate the count:
+       c = (((n1 << nibblesize) | n2) << nibblesize) | n3;
+     A count is at most 6 nibbles long.
+
+     A run record consists of a count and then follows 'count' nibbles,
+     that are the raw pixel data. A repeat record consists of a count and
+     a single nibble, the nibble is then repeated 'count' times.
+
+     As there is no point in repeating a nibble <3 times, there are some
+     special meanings for count:
+     1: skip this record, the next one is a run record again. may be used at
+        the beginning of a file, when it should start with a run rather than
+        a repeat.
+     2: multiple repeats. get another count, and process 'count' times a
+        repeat record.
+
+     NOTE that there also exists a 5-bit compressed format which is exactly
+     the same as the above except that the word length is 5 bits instead of 4.
+     This is used for critter animation frames in the crit/ folder. The
+     auxiliary palette contains 32 entries and is stored with the animation.
+
+
+2.4 Fonts
+
+   Fonts are stored in "font*.sys" files, and can be non-proportional (chars
+   can have different lengths). The header looks as this:
+
+   0000  Int16   unknown, always 1 (might be size of character width field)
+   0002  Int16   size of single character, in bytes (=charsize)
+   0004  Int16   width of the blank (space) character, in pixels
+   0006  Int16   font height in pixels
+   0008  Int16   width of a character row in bytes
+   000A  Int16   maximum width of a character in pixels
+
+   Then follow all bitmaps for each character. The number of chars can be
+   determined by (filelen-12) / (charsize+1). Bitmaps are stored as 1-bit
+   patterns, starting at the most significant bit in the current byte. When
+   a new line in character bitmap begins, a new byte in the file is taken.
+
+   After 'charsize' number of bytes, there is another Int8 that says the width
+   for the current character.
+
+
+2.5 Bitmaps
+   "*.byt" files are just 320x200 bitmaps, using palette indices from
+   different main palettes.
+
+
+3.0 Object IDs
+
+   0000-001F  Weapons and missiles
+   0020-003F  Armour and clothing
+   0040-007F  Monsters
+   0080-008F  Containers
+   0090-0097  Light sources
+   0098-009F  Wands
+   00A0-00AF  Treasure
+   00B0-00BF  Comestibles
+   00C0-00DF  Scenery and junk
+   00E0-00FF  Runes and bits of the Key of Infinity
+   0100-010F  Keys, lockpick, lock
+   0110-011F  Quest items
+   0120-012F  Inventory items, misc stuff
+   0130-013F  Books and scrolls
+   0140-014F  Doors
+   0150-015F  Furniture
+   0160-016F  Pillar, some decals, force field, special tmap (?)
+   0170-017F  Switches
+   0180-019F  Traps
+   01A0-01BF  Triggers
+   01C0-01CF  Explosions/splats, fountain, silver tree, moving things
+
+   descriptions for each object is in game strings, block 3
+
+
+3.1 Common object properties
+
+   These are stored in the file "comobj.dat". The number of object properties
+   is determined by (filelen-2) / 11  (each entry is 11 bytes long)
+
+   The first two bytes contain unknown information. Each entry has the
+   following format:
+
+   0000  Int8    armour (ID?)
+   0001  Int16   mass in 0.1 stones; (lower 4 bits are stuff2, ??)
+   0003  Int8    flags (lower 4 bits only)
+                 0/2: object in range [336, 368[ seem to be 3d objects
+                 4:   decal object
+   0004  Int16   value (?)
+   0005  Int24   unknown1
+   0008  Int8    scale value (?)
+   0009  Int16   unknown2
+
+
+3.2 Object class properties
+
+   These are stored in the file "objects.dat". It contains infos about
+   different classes of objects, e.g. weapons, armor etc. The file is split
+   in several tables. Here is an overview:
+
+   pos   size     desc
+   0000  Int16    unknown, always 0x010f
+   0002  0x80     melee weapons table; 16 entries, 8 bytes per entry
+   0082  0x30     ranged weapons table; 16 entries, 3 bytes per entry
+   00b2  0x80     armour and wearables table; 32 entries, 4 bytes per entry
+   0132  0x0c00   critters table; 64 entries, 48 bytes per entry
+   0d32  0x30     containers table; 16 entries, 3 bytes per entry
+   0d62  0x60     unknown, maybe lighting and a food info table
+   0da2  0x40     animation object table; 16 entries, 4 bytes per entry
+   0de2           end
+
+   * melee weapons table
+
+     0000   Int8   damage modifier for Slash attack
+     0001   Int8   damage modifier for Bash attack
+     0002   Int8   damage modifier for Stab attack
+     0003   3       unknown
+     0006   Int8   skill type (3 sword, 4 axe, 5 mace, 6 unarmed)
+     0007   Int8   durability
+
+   * ranged weapons table
+
+     0000   Int8   unknown
+     0001   Int8   unknown
+     0002   Int8   durability
+
+   * armour and wearables table
+
+     0000   Int8   protection
+     0001   Int8   durability
+     0002   Int8   unknown
+     0003   Int8   category:
+                   00: shield
+                   01: body armour
+                   03: leggings
+                   04: gloves
+                   05: boots
+                   08: hat
+                   09: ring
+
+   * critters table
+
+     0000   Int8   unknown
+
+   * containers table
+
+     0000   Int8   capacity
+     0001   Int8   objects accepted (0xFF means any)
+     0002   Int8   unknown
+
+   * lighting and food info table (?)
+
+   * animation object table
+
+     0000   Int8   unknown
+     0001   Int8   start frame (int animo.gr)
+     0002   Int8   number of frames
+     0003   Int8   unknown
+
+3.3 Traps
+
+   Traps have various effects on the game world. Traps have object IDs from
+   0x0180 to 0x0190
+
+   0180  Damage trap
+   0181  Teleport trap
+   0182  Arrow trap
+   0183  "Do" trap
+   0184  Pit trap
+   0185  Change terrain trap
+   0186  Spell trap
+   0187  Create object trap
+   0188  Door trap
+   0189  Ward trap
+   018A  "Tell" trap
+   018B  Delete object trap
+   018C  Inventory trap
+   018D  Set variable trap
+   018E  Check variable trap
+   018F  Combination trap
+   0190  Text string trap
+
+
+   * Teleport trap (ID 0181)
+
+     This trap teleports the player. The destination level is given by the
+     trap z position (0 ==> remain on the current level). The destination
+     tile coordinates are given by the "Unk2" and "quality" fields.
+
+   * Pit trap (ID 0184)
+
+     This is probably a bottomless pit that drops the player through to the
+     next level.
+
+   * Create object trap (ID 0187)
+
+     This trap creates an object when it is set off. The quantity/link field
+     points at the object to create.
+
+   * Door trap (ID 0188)
+
+     When set off, this trap opens or shuts a door. The quantity/link field
+     points at the lock, if the door has one.
+
+   * Text string trap (ID 0190)
+
+     This trap causes the player to get a text message when it is set off. The
+     "Unk2" field of the object definition contains the string number per
+     level, in game string block 8. The actual string number printed is
+     (64*level + unk2).
+
+
+4.0 Game strings
+
+
+
+
+   * conversation escape codes
+
+     strings used for conversation can contain special character sequences.
+     A "\m" shows a "[more]" string and waits for user interaction. "@SS1" is
+     replaced by a gender specific string that is stored in the string block as
+     string number 1 and 2 (if the symbol doesn't appear in the block,
+     conversation strings start a string 1)
+
+   * game strings contents
+
+     block 0: general UI strings
+     block 1: character creation strings, mantras (?)
+     block 2: wall text/scroll/book/book title strings
+     block 3: object descriptions; articles separated by _, & starts plural
+     block 4: object "look" descriptions
+     block 5: spell names
+     block 6: conversation partner names, starting at string 17
+     block 8: text trap messages
+     block 10: debugging strings
+     block 11: intro cutscene text
+     block 12: ending cutscene text
+     block 13: tyball cutscene text (?)
+     block 14: arial cuscene text (?)
+     block 15: dream cutscene 1 text
+     block 16: dream cutscene 2 text
+     block 17-24: garamon cutscene texts
+     block 25-121: conversation strings
+
+
+4.1 Conversations
+
+   Conversations are stored in the file cnv.ark. File header:
+
+   0000   Int16   number of conversation slots in file
+   0002   Int32   offset to conversation slot #0
+   ...
+
+   If an offset is 0, the conversation slot is empty and no conversation is
+   available. The name of the conversation partner is stored in string block
+   6, as string number (conversation slot number+17).
+
+   The conversation header looks like this:
+
+   0000   Int32   unknown1
+   0004   Int32   code size in number of instructions (16-bit words)
+   0008   Int32   unknown2, always seems to be 0x0000
+   000C   Int16   seems to be conversation number + 0x0E00
+   000E   Int16   number of stack space reserved for private globals
+   0010   Int16   number of imported globals (functions + variables)
+   0012           start of imported functions list
+
+   One import record describes builtin (or imported) functions and game
+   global variables used by the conversation:
+
+   0000   Int16   length of function name
+   0002   n*char  name of function
+   n+02   Int16   ID (builtin) / memory address (variable)
+   n+04   Int16   unknown, always seems to be 1
+   n+06   Int16   import type (0x010F=variable, 0x0111=builtin)
+   n+08   Int16   return type (0x0000=void, 0x0129=int, 0x012B=string)
+
+   Each conversation has a set of private global variables that are saved
+   across conversations. The initial size of them are stored in the file
+   babglobals.dat. When a game is saved, the globals are in the file
+   bglobals.dat. The layout of both is as follows:
+
+   0000   Int16     number of conversation slot
+   0002   Int16     size of private global data for that conv.
+   0004   n*Int16   all globals for that slot (omitted in babglobals.dat)
+   ...              repeat until file end
+
+   On conversation start the game globals listed in the import table is
+   copied to the memory address in the private globals. At end of conversation
+   they are copied back to the game globals.
+
+   * Conversation assembler language
+
+   The conversation code is an assembler-like languages with a set of opcodes.
+   It runs on a 16-bit virtual machine with a stack and a result register for
+   imported functions. The language set is described here:
+
+   Opcode         no. immediate operands
+   |   Name       | no. stack operands
+   |   |          | | No. values saved to stack
+   |   |          | | |  Action
+   |   |          | | |  |
+   00  NOP        0 0 0  do nothing.
+   01  OPADD      0 2 1  push s[0] + s[1]
+   02  OPMUL      0 2 1  push s[0] * s[1]
+   03  OPSUB      0 2 1  push s[1] - s[0]
+   04  OPDIV      0 2 1  push s[1] / s[0]
+   05  OPMOD      0 2 1  push s[1] % s[0]
+   06  OPOR       0 2 1  logical OR of top two values.
+   07  OPAND      0 2 1  logical AND of top two values.
+   08  OPNOT      0 1 1  logical NOT of top value.
+   09  TSTGT      0 2 1  greater-than, nonzero if s[1] > s[0].
+   0A  TSTGE      0 2 1  greater-than-or-equal.
+   0B  TSTLT      0 2 1  less-than.
+   0C  TSTLE      0 2 1  less-than-or-equal.
+   0D  TSTEQ      0 2 1  equality. Nonzero if s[1] == s[0].
+   0E  TSTNE      0 2 1  non-equal.
+   0F  JMP        1 0 0  jump absolute. address is measured in words from the
+                         start of the code.
+   10  BEQ        1 1 0  branch on equal. Pop a value, branch relative if zero.
+   11  BNE        1 1 0  branch on Not Equal. As BEQ but branch if the value
+                         popped is non-zero.
+   12  BRA        1 0 0  branch. Always branch relative to the offset address.
+   13  CALL       1 0 1  call subroutine. Push the next instruction address and
+                         jump to the absolute address (in words) given.
+   14  CALLI      1 0 0  call imported subroutine.
+   15  RET        0 1 0  return from subroutine. Pop the return address off the
+                         stack and jump to it.
+   16  PUSHI      1 0 1  push immediate value onto the stack.
+   17  PUSHI_EFF  1 0 1  push effective address onto the stack. The value
+                         pushed is the current frame pointer address plus the
+                         immediate operand. This allows local variables and
+                         function parameters.
+   18  POP        0 1 0  pop a value from the stack (and throw it away).
+   19  SWAP       0 2 2  swap the top two stack values.
+   1A  PUSHBP     0 0 1  push the current frame pointer onto the stack.
+   1B  POPBP      0 1 0  pop the frame pointer from the stack
+   1C  SPTOBP     0 0 0  new frame. Set the frame pointer to the stack pointer.
+   1D  BPTOSP     0 0 0  exit frame. Set the stack pointer to the frame pointer.
+   1E  ADDSP      0 1 *  pop a value, add to the stack pointer. Used
+                         to reserve stack space for variables.
+   1F  FETCHM     0 1 1  pop address, push the value of the variable pointed to.
+   20  STO        0 2 0  store s[0] in the variable pointed to by s[1].
+   21  OFFSET     0 2 1  array offset. Add s[1] - 1 to the effective address in
+                         s[0], push this as a new effective address.
+   22  START      0 0 0  start program.
+   23  SAVE_REG   0 1 0  pop a value from the stack and store it in the result
+                         register.
+   24  PUSH_REG   0 0 1  push the value of the result register on the stack.
+   25  STRCMP     ? ? ?  string compare.
+   26  EXIT_OP    0 0 0  end program (?)
+   27  SAY_OP     0 1 0  NPC says something. Print a conversation string (from
+                         the stack).
+   28  RESPOND_OP ? ? ?  respond (?)
+   29  OPNEG      0 1 1  negate. s[0] -> -s[0].
+
+   (*) ADDSP, of course, doesn't actually push anything onto the stack, but its
+       effect on the stack pointer is of pushing as many values as its operand
+       specifies.
+   (?) I haven't yet encountered these in the wild, so don't know exactly what
+       they do.
+
+   * Conversation builtin functions
+
+     Here are listed all builtin functions:
+
+     id=0000 name="babl_menu" ret_type=int
+     parameters:   s[0]: unknown
+                   s[1]: pointer to list of string id's; ends with id == 0
+     description:  shows a menu of further questions the user can select
+     return value: number of selected question
+
+
+5.0 Critter Animation
+
+   Critter animations are stored in the folder "crit". The file "assoc.anm"
+   holds data for each of the 32 animations. First, there are 8 char bytes
+   for the name of each of the 32 animations. If a string is not there,
+   animation is not available.
+
+   Next comes a table of infos for each animation:
+
+   0000   Int8   anim (?)
+   0001   Int8   variant (aux palette?)
+
+   <another table, with what info?>
+
+   Animation for each critter is stored in a file like "CrXXpage.nYY", where
+      XX = animation number, YY = page number
+      XX and YY are octal numbers
+
+   There may be more than one page for each animation file.
+   The file starts with a segment directory:
+
+   pos     length     type         desc.
+   0000               Int8         segbase
+   0001               Int8         nsegs, number of segments
+   0002               nsegs*Int8   segment dir offset for segments;
+                                   255 means "no segment"
+           nsegs      Int8         number animation segments
+           8*nsegs                 animation frame index
+                      Int8         npals, number of auxiliary palettes
+           npals*32                auxiliary palette indices
+                      Int8         number of frames offsets
+                      Int8         unknown
+           2*n        Int16        offsets to segments header
+
+   segments header
+
+   0000    Int8       width
+   0001    Int8       height
+   0002    Int8       hotspot x (?)
+   0003    Int8       hotspot y (?)
+   0004    Int8       type (?)
+
+
+5.1 Cutscene Animations
+
+   Cutscene animations are stored in folder "cuts". Text strings for cutscenes
+   can be found in string blocks 11 through 24.
+
+
+6.0 Savegame format
+
+   Savegames are stored in folders called "SaveN", where N is the number
+   of the save game. Ultima Underworld only allows 4 save game slots.
+
+   The file "player.dat" contains the main character data. The first 220 bytes
+   are encrypted with a rather simple algorithm. Byte 0 in the file is the
+   starting xor value. Byte 1 is xor'ed with xorvalue + 3, and for each next
+   byte, the xorvalue is incremented by 3. A simple implementation in C is here:
+
+      // descramble data
+      unsigned char xorvalue = data[0];
+      unsigned char incrnum = 3;
+
+      for(int i=1; i<=220; i++)
+      {
+         if (i==81) incrnum = 3;
+         data[i] ^= (xorvalue+incrnum);
+         incrnum += 3;
+      }
+
+   After decryption, the file contains the following:
+
+   0000   Uint8   unused (was starting xor value)
+   0001   14*char character name
+   ...
+   001F   Uint8   Strength
+   0020   Uint8   Dexterity
+   0021   Uint8   Intelligence
+   0022   Uint8   Attack
+   0023   Uint8   Defense
+   0024   Uint8   Unarmed
+   0025   Uint8   Sword
+   0026   Uint8   Axe
+   0027   Uint8   Mace
+   0028   Uint8   Missile
+   0029   Uint8   Mana
+   002A   Uint8   Lore
+   002B   Uint8   Casting
+   002C   Uint8   Traps
+   002D   Uint8   Search
+   002E   Uint8   Track
+   002F   Uint8   Sneak
+   0030   Uint8   Repair
+   0031   Uint8   Charm
+   0032   Uint8   Picklock
+   0033   Uint8   Acrobat
+   0034   Uint8   Appraise
+   0035   Uint8   Swimming
+   ...
+   0037   Uint8   max. vitality
+   0038   Uint8   current mana
+   0039   Uint8   max. mana
+   ...
+   003E   Uint8   character level
+   ...
+   0045   3*8bits rune flags (*)
+   ...
+   004D   Int16   weight in 0.1 stones
+   004F   Int32   experience in 0.1 points
+   ...
+   0055   Int16   x-position in level
+   0057   Int16   y-position
+   0057   Int16   z-position
+   005B   Int16   heading
+   005D   Int16   dungeon level
+   ...
+   00DD   Uint8   current vitality
+
+   (*) the rune field is a bitfield, where an 1 indicates an available
+       rune. bits are seen from most to least significant. The 'A' rune is
+       stored in bit 7 of the first field.
+
+   todo: how items are stored
+
+
+eof
