@@ -161,6 +161,13 @@ void ua_underworld::change_level(unsigned int level)
 
    // clear activated move triggers
    trigger_active.clear();
+
+   // tell callback and scripting about change
+   if (callback != NULL)
+      callback->uw_notify(ua_notify_level_change);
+
+   if (scripting != 0)
+      scripting->on_changing_level();
 }
 
 void ua_underworld::load_game(ua_savegame &sg)
@@ -174,7 +181,6 @@ void ua_underworld::load_game(ua_savegame &sg)
    // load all levels
    {
       sg.begin_section("tilemaps");
-
       Uint32 max = sg.read32();
 
       levels.clear();
@@ -190,10 +196,6 @@ void ua_underworld::load_game(ua_savegame &sg)
 
       sg.end_section();
    }
-
-   // load map annotations
-
-   // load objects list
 
    // load inventory
    inventory.load_game(sg);
@@ -214,9 +216,6 @@ void ua_underworld::load_game(ua_savegame &sg)
 
       sg.end_section();
    }
-
-   // load map notes
-   mapnotes.load_game(sg);
 
    // load conv. globals
    conv_globals.load_game(sg);
@@ -266,9 +265,6 @@ void ua_underworld::save_game(ua_savegame &sg)
 
       sg.end_section();
    }
-
-   // save map notes
-   mapnotes.save_game(sg);
 
    // save conv. globals
    conv_globals.save_game(sg);

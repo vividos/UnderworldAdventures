@@ -48,7 +48,6 @@
 #include "gamestrings.hpp"
 #include "savegame.hpp"
 #include "properties.hpp"
-#include "mapnotes.hpp"
 
 
 // forward declaration
@@ -247,9 +246,6 @@ public:
    //! returns object property object
    ua_object_properties& get_obj_properties(){ return properties; }
 
-   //! returns map notes object
-   ua_map_notes& get_map_notes(){ return mapnotes; }
-
    // loading / saving / importing
 
    //! loads a savegame
@@ -306,9 +302,6 @@ protected:
 
    //! object property class
    ua_object_properties properties;
-
-   //! map notes
-   ua_map_notes mapnotes;
 
    //! hey, it's all the game strings!
    ua_gamestrings gstr;
