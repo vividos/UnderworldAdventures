@@ -1001,29 +1001,25 @@ bool ua_conv_dasm::if_switch_replace(unsigned int entry, unsigned int max)
 
 int main(int argc, char *argv[])
 {
-   printf("cnvdasm %s - ultima underworld 1 conversation script disassembler\n\n",
-      "0.1");
-/*
+   printf("cnvdasm - ultima underworld 1 conversation script disassembler\n\n");
+
    if (argc<4)
    {
-      printf("syntax: cnvdbg <cnv-file> <str-file> <bglobals-file>\n");
-      printf("example: cnvdbg \"data\\cnv.ark\" "
-         "\"data\\strings.ark\""
-         "\"save1\\bglobals.dat\"\n\n");
+      printf("syntax: cnvdasm <command> <cnv-archive> <conv-slot>\n"
+         "   command can either be \"dasm\" (=disassembler) or \"dec\" (=decompiler).");
+      printf("examples: cnvdasm dasm data/cnv.ark 1\n"
+         "   cnvdasm dec data/cnv.ark 3\n\n");
       return 0;
-   }*/
-
-
-   FILE *out = fopen("uw1-dasm.txt","wt");
-
-   ua_conv_dasm dasm;
-   if (dasm.init("d:\\projekte\\uwadv\\uw1\\data\\cnv.ark",2))
-   {
-//      dasm.disassemble(out);
-      dasm.decompile(out);
    }
 
-   fclose(out);
+   ua_conv_dasm dasm;
+   if (dasm.init(argv[2],atoi(argv[3])))
+   {
+      if (0==strcmp(argv[1],"dasm"))
+         dasm.disassemble(stdout);
+      else
+         dasm.decompile(stdout);
+   }
 
    return 0;
 }
