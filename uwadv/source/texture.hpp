@@ -77,8 +77,9 @@ public:
    ua_texture():texmgr(NULL){}
 
    //! allocates and initializes OpenGL texture object
-   void init(ua_texture_manager *texmgr, unsigned int numtex=1,
-      GLenum min_filt=GL_LINEAR, GLenum max_filt=GL_LINEAR);
+   void init(ua_texture_manager* texmgr, unsigned int numtex=1,
+      GLenum min_filt=GL_LINEAR, GLenum max_filt=GL_LINEAR,
+      GLenum wrap_s=GL_REPEAT, GLenum wrap_t=GL_REPEAT);
 
    //! converts image to texture
    void convert(ua_image &img, unsigned int numtex=0);
@@ -97,10 +98,10 @@ public:
    void upload(bool mipmaps=false);
 
    //! returns u texture coordinate
-   double get_tex_u(){ return u;}
+   double get_tex_u();
 
    //! returns v texture coordinate
-   double get_tex_v(){ return v; }
+   double get_tex_v();
 
    //! cleans up texture name(s) after usage
    void done();
@@ -111,10 +112,10 @@ public:
    const Uint32* get_texels(unsigned int numtex=0);
 
    //! returns x resolution
-   unsigned int get_xres(){ return xres; }
+   unsigned int get_xres();
 
    //! returns y resolution
-   unsigned int get_yres(){ return yres; }
+   unsigned int get_yres();
 
 protected:
    //! pointer to texture manager, or NULL if none available
@@ -165,7 +166,7 @@ public:
    void object_tex(Uint16 id,double &u1,double &v1,double &u2,double &v2);
 
    //! returns a specific palette
-   ua_onepalette &get_palette(unsigned int pal){ return allpals[pal]; };
+   ua_onepalette &get_palette(unsigned int pal);
 
    //! should be called when a new texname is about to be used
    bool using_new_texname(GLuint new_texname);
@@ -199,5 +200,34 @@ protected:
    //! all main palettes
    ua_onepalette allpals[8];
 };
+
+
+// inline methods
+
+inline double ua_texture::get_tex_u()
+{
+   return u;
+}
+
+inline double ua_texture::get_tex_v()
+{
+   return v;
+}
+
+inline unsigned int ua_texture::get_xres()
+{
+   return xres;
+}
+
+inline unsigned int ua_texture::get_yres()
+{
+   return yres;
+}
+
+inline ua_onepalette& ua_texture_manager::get_palette(unsigned int pal)
+{
+   return allpals[pal];
+};
+
 
 #endif

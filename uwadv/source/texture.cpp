@@ -34,7 +34,7 @@
 // ua_texture methods
 
 void ua_texture::init(ua_texture_manager *thetexmgr,unsigned int numtex,
-   GLenum min_filt,GLenum max_filt)
+   GLenum min_filt,GLenum max_filt, GLenum wrap_s, GLenum wrap_t)
 {
    texmgr = thetexmgr;
 
