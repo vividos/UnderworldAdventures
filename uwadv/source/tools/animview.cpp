@@ -28,6 +28,7 @@
 // needed includes
 #include "common.hpp"
 #include "cutscene.hpp"
+#include "resource/fread_endian.hpp"
 
 
 // globals
@@ -59,6 +60,53 @@ bool init_anim(const char *filename)
 void done_anim()
 {
    tex.done();
+}
+
+void decode_anim()
+{
+   unsigned int max = cuts.get_maxframes();
+   for(unsigned int n=0; n<max; n++)
+   {
+      cuts.get_frame(n);
+
+      // write out tga
+      char buffer[32];
+      sprintf(buffer,"anim%04u.tga",n);
+
+      FILE *fd = fopen(buffer,"wb");
+      {
+         // write header
+         fputc(0,fd); // id length
+         fputc(1,fd); // color map flag
+         fputc(1,fd); // tga type (1=color-mapped)
+         fwrite16(fd,0); // color map origin
+         fwrite16(fd,256); // color map length
+         fputc(24,fd); // color map depth
+         fwrite16(fd,0); // x origin
+         fwrite16(fd,0); // y origin
+         fwrite16(fd,cuts.get_xres()); // width
+         fwrite16(fd,cuts.get_yres()); // height
+         fputc(8,fd); // bits per pixel
+         fputc(0x20,fd); // image descriptor; 0x00 = bottomup
+      }
+
+      // write palette
+      ua_onepalette& pal = cuts.get_anim_palette();
+      for(unsigned i=0; i<256; i++)
+      {
+         fputc(pal[i][2],fd);         
+         fputc(pal[i][1],fd);
+         fputc(pal[i][0],fd);
+      }
+
+      // write image
+      fwrite(&cuts.get_pixels()[0],cuts.get_xres()*cuts.get_yres(),1,fd);
+
+      fclose(fd);
+
+      //tex.convert(cuts.get_anim_palette(),cuts);
+      //tex.get_texels(
+   }
 }
 
 void setup_opengl(int width,int height)
@@ -167,11 +215,11 @@ void process_events()
 int main(int argc, char* argv[])
 {
    // check for proper number of arguments
-   if (argc!=2)
+   if (argc<2)
    {
       printf("Underworld Adventures: Animation Viewer\n");
-      printf(" syntax: cutsdec <cutscene-file>\n");
-      printf(" example: cutsdec cs011.n01\n");
+      printf(" syntax: cutsdec <cutscene-file> [decode]\n");
+      printf(" example: cutsdec cs011.n01 decode\n");
       return 1;
    }
 
@@ -181,6 +229,13 @@ int main(int argc, char* argv[])
       printf("Underworld Adventures: Animation Viewer\n");
       printf("could not open/process file %s\n",argv[1]);
       return 1;
+   }
+
+   if (argc==3 && strcmp(argv[2],"decode")==0)
+   {
+      // just decoding to tga
+      decode_anim();
+      return 0;
    }
 
    // init SDL
