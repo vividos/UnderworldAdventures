@@ -60,8 +60,6 @@ enum ua_conv_datatype
    ua_dt_void,
    ua_dt_int,
    ua_dt_string,
-   ua_dt_int_array,
-   ua_dt_string_array,
 };
 
 
@@ -162,6 +160,8 @@ public:
 
    //! sets number of globals reserved at start of memory
    void set_globals_reserved(Uint16 numglobals){ glob_reserved = numglobals; }
+
+   Uint16 get_globals_reserved(){ return glob_reserved; }
 
 protected:
    //! called when an imported function is executed
