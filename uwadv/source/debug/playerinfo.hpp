@@ -38,7 +38,7 @@ class ua_playerinfo_list: public wxListCtrl
 {
 public:
    //! ctor
-   ua_playerinfo_list(wxWindow *parent, const wxWindowID id, const wxPoint& pos,
+   ua_playerinfo_list(wxWindow* parent, const wxWindowID id, const wxPoint& pos,
       const wxSize& size, long style);
 
    //! updates data from underworld
