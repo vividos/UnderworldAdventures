@@ -5188,6 +5188,7 @@ Underworld Adventures needs at least SDL 1.2.3 or higher installed." >&2;}
 
 
 
+CPPFLAGS="$CXXFLAGS"
 # On IRIX 5.3, sys/types and inttypes.h are conflicting.
 
 
@@ -5362,58 +5363,6 @@ Check http://mesa3d.sourceforge.net/ for a good one." >&2;}
 fi
 
 
-
-echo "$as_me:$LINENO: checking for working OpenGL" >&5
-echo $ECHO_N "checking for working OpenGL... $ECHO_C" >&6
-cat >conftest.$ac_ext <<_ACEOF
-#line $LINENO "configure"
-#include "confdefs.h"
-
-  #include <GL/gl.h>
-  #include <GL/glu.h>
-
-#ifdef F77_DUMMY_MAIN
-#  ifdef __cplusplus
-     extern "C"
-#  endif
-   int F77_DUMMY_MAIN() { return 1; }
-#endif
-int
-main ()
-{
-
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext
-if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
-  (eval $ac_compile) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-         { ac_try='test -s conftest.$ac_objext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-
-  LIBS="$LIBS -lGL -lGLU"
-  echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6
-else
-  echo "$as_me: failed program was:" >&5
-cat conftest.$ac_ext >&5
-{ { echo "$as_me:$LINENO: error:
-OpenGL support does not work. Please reinstall your OpenGL library and include files.
-" >&5
-echo "$as_me: error:
-OpenGL support does not work. Please reinstall your OpenGL library and include files.
-" >&2;}
-   { (exit 1); exit 1; }; }
-fi
-rm -f conftest.$ac_objext conftest.$ac_ext
 
 
 

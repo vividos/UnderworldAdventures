@@ -66,20 +66,11 @@ Underworld Adventures needs at least SDL 1.2.3 or higher installed.]))
 
 dnl checking for working OpenGL
 
+CPPFLAGS="$CXXFLAGS"
 AC_CHECK_HEADER(GL/gl.h,,AC_MSG_ERROR([
 OpenGL header not found. An OpenGL graphics library is required
 to compile and run Underworld Adventures.
 Check http://mesa3d.sourceforge.net/ for a good one.]))
-
-AC_MSG_CHECKING(for working OpenGL)
-AC_TRY_COMPILE([
-  #include <GL/gl.h>
-  #include <GL/glu.h>
-],,[
-  LIBS="$LIBS -lGL -lGLU"
-  AC_MSG_RESULT(yes)],AC_MSG_ERROR([
-OpenGL support does not work. Please reinstall your OpenGL library and include files.
-]))
 
 
 dnl checking for FMOD
