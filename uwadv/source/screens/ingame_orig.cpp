@@ -69,6 +69,7 @@ void ua_ingame_orig_screen::init(ua_game_core_interface* thecore)
 
    cursor_image = 0;
    mouse_move = false;
+   prio_cursor = false;
 
    move_turn_left = move_turn_right = move_walk_forward =
       move_walk_backwards = move_run_forward = false;
@@ -1344,9 +1345,10 @@ void ua_ingame_orig_screen::set_cursor_image(bool is_object, Uint16 image,
       prio_cursor = false;
       image = 0;
    }
+   else
+      prio_cursor = prio;
 
    cursor_image = image;
-   prio_cursor = prio;
 
    if (!is_object)
    {
