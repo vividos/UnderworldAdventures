@@ -49,39 +49,12 @@ void ua_image::create(unsigned int width, unsigned int height, unsigned int init
     non-transparent pastes are only successful when the source and target
     areas don't overlap
 */
-void ua_image::paste_image(const ua_image &img, unsigned int destx,unsigned int desty,
+void ua_image::paste_image(const ua_image &from_img, unsigned int destx,unsigned int desty,
    bool transparent)
 {
-   // get resolution and pixel vectors
-   unsigned int sxres = img.get_xres(), swidth=sxres;
-   unsigned int syres = img.get_yres(), sheight=syres;
-
-   // adjust source image if pasting would cross dest image borders
-   if (destx+swidth>xres) swidth = xres-destx;
-   if (desty+sheight>yres) sheight = yres-desty;
-
-   const std::vector<Uint8> &src = img.pixels;
-   Uint8 *dest = &pixels[0];
-
-   if (!transparent)
-   {
-      // non-transparent paste
-      for(unsigned int y=0; y<sheight; y++)
-      {
-         memcpy(&dest[(y+desty)*xres+destx], &src[y*sxres], swidth);
-      }
-   }
-   else
-   {
-      // paste that omits transparent parts
-      for(unsigned int y=0; y<sheight; y++)
-      for(unsigned int x=0; x<swidth; x++)
-      {
-         Uint8 pixel = src[y*sxres+x];
-         if (pixel!=0)
-            dest[(y+desty)*xres+(x+destx)] = pixel;
-      }
-   }
+   paste_rect(from_img,0,0,
+      from_img.get_xres(), from_img.get_yres(),
+      destx,desty,transparent);
 }
 
 void ua_image::copy_rect(ua_image &img, unsigned int startx, unsigned int starty,
@@ -98,6 +71,45 @@ void ua_image::copy_rect(ua_image &img, unsigned int startx, unsigned int starty
    {
       memcpy(dest,&src[y*xres],width);
       dest += width;
+   }
+}
+
+void ua_image::paste_rect(const ua_image& from_img, unsigned int fromx, unsigned int fromy,
+   unsigned width, unsigned height, unsigned int destx,unsigned int desty, bool transparent)
+{
+   // get resolution and pixel vectors
+   unsigned int sxres = from_img.get_xres(), swidth=sxres;
+   unsigned int syres = from_img.get_yres(), sheight=syres;
+
+   // adjust source image if pasting would cross dest image borders
+   if (destx+width>xres) swidth = xres-destx;
+   if (desty+height>yres) sheight = yres-desty;
+
+   // get source and dest pointer
+   const Uint8* src = &from_img.get_pixels()[fromx+fromy*sxres];
+   Uint8* dest = &pixels[destx+desty*xres];
+
+   if (!transparent)
+   {
+      // non-transparent paste
+      for(unsigned int y=0; y<sheight; y++)
+         memcpy(&dest[y*xres], &src[y*sxres], swidth);
+   }
+   else
+   {
+      // paste that omits transparent parts
+      for(unsigned int y=0; y<sheight; y++)
+      {
+         const Uint8* src_line = &src[y*sxres];
+         Uint8* dest_line = &dest[y*xres];
+
+         for(unsigned int x=0; x<swidth; x++)
+         {
+            Uint8 pixel = src_line[x];
+            if (pixel!=0)
+               dest_line[x] = pixel;
+         }
+      }
    }
 }
 

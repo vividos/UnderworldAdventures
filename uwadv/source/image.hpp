@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -47,11 +47,11 @@ public:
    virtual ~ua_image(){}
 
    //! loads a single image; name must be without the extension ".gr"
-   void load(ua_settings &settings, const char *name, unsigned int which=0,
+   void load(ua_settings& settings, const char *name, unsigned int which=0,
       unsigned int palette=0);
 
    //! loads a raw image (*.byt)
-   void load_raw(ua_settings &settings, const char *name, unsigned int palette=0);
+   void load_raw(ua_settings& settings, const char *name, unsigned int palette=0);
 
    //! returns image x resolution
    unsigned int get_xres() const { return xres; }
@@ -67,15 +67,20 @@ public:
       unsigned int palette=0);
 
    //! returns the pixel vector
-   std::vector<Uint8> &get_pixels(){ return pixels; }
+   std::vector<Uint8>& get_pixels(){ return pixels; }
 
    //! pastes a image on a specific pos
-   void paste_image(const ua_image &img, unsigned int destx,unsigned int desty,
+   void paste_image(const ua_image& from_img, unsigned int destx,unsigned int desty,
       bool transparent=false);
 
    //! copies a rectangular area to the given image
-   void copy_rect(ua_image &img, unsigned int startx, unsigned int starty,
+   void copy_rect(ua_image& to_img, unsigned int startx, unsigned int starty,
       unsigned int width, unsigned int height);
+
+   //! pastes a rectangular area from given image
+   void paste_rect(const ua_image& from_img, unsigned int fromx, unsigned int fromy,
+      unsigned width, unsigned height, unsigned int destx,unsigned int desty,
+      bool transparent=false);
 
    //! fills a specific rectangle with a color
    void fill_rect(unsigned int startx, unsigned int starty,
@@ -86,7 +91,10 @@ public:
 
 protected:
    //! private image loader
-   void load_image(FILE *fd,Uint8 auxpalidx[32][16], bool special_panels);
+   void load_image(FILE* fd,Uint8 auxpalidx[32][16], bool special_panels);
+
+   //! const version of the get_pixels() function; used internally
+   const std::vector<Uint8>& get_pixels() const { return pixels; }
 
 protected:
    //! used palette
