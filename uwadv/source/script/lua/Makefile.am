@@ -2,37 +2,8 @@ INCLUDES = -Isrc -Iinclude
 
 noinst_LTLIBRARIES = liblua.la liblualib.la
 
-liblua_la_SOURCES = \
-	src/lapi.c src/lapi.h \
-	src/lcode.c src/lcode.h \
-	src/ldebug.c src/ldebug.h \
-	src/ldo.c src/ldo.h \
-	src/lfunc.c src/lfunc.h \
-	src/lgc.c src/lgc.h \
-	src/llex.c src/llex.h \
-	src/lmem.c src/lmem.h \
-	src/lobject.c src/lobject.h \
-	src/lparser.c src/lparser.h \
-	src/lstate.c src/lstate.h \
-	src/lstring.c src/lstring.h \
-	src/ltable.c src/ltable.h \
-	src/ltests.c \
-	src/ltm.c src/ltm.h \
-	src/lundump.c src/lundump.h \
-	src/lvm.c src/lvm.h \
-	src/lzio.c src/lzio.h \
-        src/llimits.h \
-        src/lopcodes.h \
-	include/lauxlib.h \
-	include/luadebug.h \
-	include/lua.h \
-	include/lualib.h
-
-liblualib_la_SOURCES = \
-	src/lib/lauxlib.c \
-	src/lib/lbaselib.c \
-	src/lib/lmathlib.c \
-	src/lib/lstrlib.c
+# Makefile.comman defines lublua_la_SOURCES and liblualib_la_SOURCES
+include Makefile.common
 
 liblualib_la_LIBADD = liblua.la
 liblualib_la_DEPENDENCIES = liblua.la
