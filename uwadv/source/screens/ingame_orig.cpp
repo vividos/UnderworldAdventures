@@ -28,7 +28,7 @@
 // needed includes
 #include "common.hpp"
 #include "ingame_orig.hpp"
-#include <cmath>
+#include "uamath.hpp"
 
 
 // ua_ingame_orig_screen methods
@@ -141,7 +141,7 @@ void ua_ingame_orig_screen::handle_mouse_action(SDL_Event &event)
 void ua_ingame_orig_screen::render()
 {
    // clear color and depth buffers
-   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
    glLoadIdentity();
 
@@ -151,7 +151,7 @@ void ua_ingame_orig_screen::render()
    {
       // rotation
       glRotatef( playeryangle+270.0, 1.0, 0.0, 0.0 );
-      glRotatef( playerxangle+90.0, 0.0, 0.0, 1.0 );
+      glRotatef( playerxangle+90.0,  0.0, 0.0, 1.0 );
 
       ua_player &pl = core->get_underworld().get_player();
 
