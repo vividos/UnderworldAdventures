@@ -25,6 +25,16 @@ uadata-path @UADATAPATH@
 savegame-folder ./uasave/
 
 #
+# sets the screen resolution to use
+# resolution must be specified in the form "<xres> x <yres>", # e.g. "800 x 600"
+#
+# if using "fullscreen" mode, selected screen resolution must be available
+# for the used graphics card
+#
+
+screen-resolution 800 x 600
+
+#
 # enables fullscreen gameplay
 # "yes" enables it, "no" disables it
 #
@@ -39,6 +49,13 @@ fullscreen  no
 #
 
 cutscene-narration   sound
+
+#
+# selects if the audio system should be init'ed and used
+# can be "true" or "false"
+#
+
+audio-enabled true
 
 #
 # win32: midi device selection

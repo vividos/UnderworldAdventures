@@ -68,6 +68,14 @@ void ua_game::init()
       throw ua_exception(text.c_str());
    }
 
+   // print video driver stats
+   {
+      char buffer[256];
+      SDL_VideoDriverName(buffer,256);
+      ua_trace("video driver: %s, ram available: %u k\n",
+         buffer,info->video_mem);
+   }
+
    // enable system event messages
    SDL_EventState(SDL_SYSWMEVENT,SDL_ENABLE);
 
@@ -81,14 +89,31 @@ void ua_game::init()
    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,16);
    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,1);
 
+   // find out selected screen resolution
+   {
+      // predefined is 640x480
+      width = 640;
+      height = 480;
+
+      std::string screen_res(settings.get_string(ua_setting_screen_resolution));
+
+      // parse resolution string, format is <xres> x <yres>
+      std::string::size_type pos = screen_res.find('x');
+      if (pos != std::string::npos)
+      {
+         std::string yres_str(screen_res.c_str()+pos+1);
+
+         width = static_cast<unsigned int>( strtol(screen_res.c_str(),NULL,10) );
+         height = static_cast<unsigned int>( strtol(yres_str.c_str(),NULL,10) );
+      }
+   }
+
    // setup video mode
-   width = 640;
-   height = 480;
    int bpp = info->vfmt->BitsPerPixel;
    int flags = SDL_OPENGL |
       (settings.get_bool(ua_setting_fullscreen) ? SDL_FULLSCREEN : 0);
 
-   ua_trace("setting video mode%s\n",
+   ua_trace("setting video mode: %u x %u, %u bits%s\n", width, height, bpp,
       settings.get_bool(ua_setting_fullscreen) ? ", fullscreen" : "");
 
    if(SDL_SetVideoMode(width, height, bpp, flags)==0)

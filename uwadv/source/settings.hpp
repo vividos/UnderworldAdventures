@@ -63,11 +63,17 @@ enum ua_settings_key
    //! path to the savegame folder
    ua_setting_savegame_folder,
 
+   //! screen resolution string, in the form <xres> x <yres>
+   ua_setting_screen_resolution,
+
    //! boolean value that indicates fullscreen mode
    ua_setting_fullscreen,
 
    //! string with narration type
    ua_setting_cuts_narration,
+
+   //! boolean value that is true when audio system should be enabled
+   ua_setting_audio_enabled,
 
    //! int value with midi device to use
    ua_setting_win32_midi_device,
