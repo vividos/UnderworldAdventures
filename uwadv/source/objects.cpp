@@ -51,8 +51,10 @@ void ua_object::render(unsigned int x, unsigned int y,
    ua_texture_manager &texmgr, ua_frustum &fr, ua_level &lev)
 {
    // don't render invisible objects
+#ifndef HAVE_DEBUG
    if (type==ua_obj_invisible)
       return;
+#endif
 
    // get object position
    double objxpos = x + (xpos+0.5)/8.0;
