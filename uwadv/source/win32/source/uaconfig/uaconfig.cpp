@@ -158,7 +158,31 @@ LRESULT ua_config_prog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
    ::SendDlgItemMessage(m_hWnd,IDC_COMBO_CUTS_NARRATION,CB_ADDSTRING,0,(LPARAM)"Subtitles");
    ::SendDlgItemMessage(m_hWnd,IDC_COMBO_CUTS_NARRATION,CB_ADDSTRING,0,(LPARAM)"Sound+Subtitles");
 
-   // todo: add all available resolutions to IDC_COMBO_SCREEN_RESOLUTION
+   // add all available resolutions to screen resolution combo box
+   {
+      DWORD iModeNum=0;
+      DEVMODE devmode;
+      devmode.dmSize = sizeof(DEVMODE);
+      devmode.dmDriverExtra = 0;
+
+      while(0 != ::EnumDisplaySettings(NULL,iModeNum++,&devmode))
+      {
+         // only add hi-/truecolor modes
+         if (devmode.dmBitsPerPel<16) continue;
+
+         char buffer[32];
+         sprintf(buffer,"%u x %u",devmode.dmPelsWidth,devmode.dmPelsHeight);
+
+         // check if we already have that one
+         if (CB_ERR == ::SendDlgItemMessage(m_hWnd,IDC_COMBO_SCREEN_RESOLUTION,
+            CB_FINDSTRINGEXACT,-1,(LPARAM)buffer))
+         {
+            // add it
+            ::SendDlgItemMessage(m_hWnd,IDC_COMBO_SCREEN_RESOLUTION,CB_ADDSTRING,
+               0,(LPARAM)buffer);
+         }
+      }
+   }
 
    // load configuration
    load_config();
@@ -189,7 +213,7 @@ LRESULT ua_config_prog::OnSetUw1Path(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
 
    // setup struct
    BROWSEINFO bi = {0};
-   bi.lpszTitle = "select Ultima Underworld I folder:";
+   bi.lpszTitle = "Please select the Ultima Underworld I folder:";
    bi.pszDisplayName = buffer;
    bi.pidlRoot = NULL;
    bi.lpfn = ua_browse_callback;
@@ -237,7 +261,9 @@ void ua_config_prog::load_config()
 
    // set screen resolution text
    text = settings.get_string(ua_setting_screen_resolution);
-   ::SetDlgItemText(m_hWnd,IDC_COMBO_SCREEN_RESOLUTION,text.c_str());
+   ::SendDlgItemMessage(m_hWnd,IDC_COMBO_SCREEN_RESOLUTION,
+      CB_INSERTSTRING,0,(LPARAM)text.c_str());
+   ::SendDlgItemMessage(m_hWnd,IDC_COMBO_SCREEN_RESOLUTION,CB_SETCURSEL,0,0);
 
    // set "fullscreen" check
    ::SendDlgItemMessage(m_hWnd,IDC_CHECK_FULLSCREEN,BM_SETCHECK,
@@ -277,13 +303,61 @@ bool ua_config_prog::check_config()
 
       if (!uw1_avail)
       {
-         ::MessageBox(m_hWnd,"couldn't find Ultima Underworld I game files in specified folder!",
+         ::MessageBox(m_hWnd,"Couldn't find Ultima Underworld I game files in specified folder!",
             "Underworld Adventures Configuration",MB_OK);
          return false;
       }
    }
 
-   // todo: when fullscreen, check if resolution is available
+   // check screen resolution
+   {
+      ::GetDlgItemText(m_hWnd,IDC_COMBO_SCREEN_RESOLUTION,buffer,MAX_PATH);
+      std::string screen_res(buffer);
+
+      // parse resolution string, format is <xres> x <yres>
+      std::string::size_type pos = screen_res.find('x');
+      if (pos == std::string::npos)
+      {
+         ::MessageBox(m_hWnd,"Screen resolution is not in format <xres> x <yres>!",
+            "Underworld Adventures Configuration",MB_OK);
+         return false;
+      }
+
+      // check if fullscreen mode was checked
+      if (BST_CHECKED == ::SendDlgItemMessage(m_hWnd,IDC_CHECK_FULLSCREEN,BM_GETCHECK,0,0))
+      {
+         unsigned int width = static_cast<unsigned int>( strtol(screen_res.c_str(),NULL,10) );
+         unsigned int height = static_cast<unsigned int>( strtol(screen_res.c_str()+pos+1,NULL,10) );
+
+         // check all display settings if screen resolution is available
+         bool found = false;
+         {
+            DWORD iModeNum=0;
+            DEVMODE devmode;
+            devmode.dmSize = sizeof(DEVMODE);
+            devmode.dmDriverExtra = 0;
+
+            while(0 != ::EnumDisplaySettings(NULL,iModeNum++,&devmode))
+            {
+               if (devmode.dmBitsPerPel<16) continue;
+
+               if (devmode.dmPelsWidth == width && devmode.dmPelsHeight == height)
+               {
+                  // mode found
+                  found = true;
+                  break;
+               }
+            }
+         }
+
+         if (!found)
+         {
+            ::MessageBox(m_hWnd,"Selected screen resolution is not available in fullscreen mode!",
+               "Underworld Adventures Configuration",MB_OK);
+            return false;
+         }
+      }
+   }
 
    return true;
 }
