@@ -185,6 +185,7 @@ void ua_save_game_screen::handle_event(SDL_Event& event)
          // set up savegame info
          ua_savegame_info info;
          info.title = desc;
+         info.game_prefix = core->get_settings().get_string(ua_setting_game_prefix);
          info.fill_infos(core->get_underworld().get_player());
 
          // saving game
