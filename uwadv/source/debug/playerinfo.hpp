@@ -19,55 +19,37 @@
    $Id$
 
 */
-/*! \file mainframe.hpp
+/*! \file __uadebug_playerinfo_hpp_.hpp
 
-   \brief debugger main frame: MDI parent window
+   \brief player info list control
 
 */
 
 // include guard
-#ifndef __uadebug__mainframe_hpp__
-#define __uadebug__mainframe_hpp__
+#ifndef __uadebug_playerinfo_hpp_
+#define __uadebug_playerinfo_hpp_
 
 // needed includes
+#include "wx/listctrl.h" // list control
 
 
-// classes
-
-//! MDI parent frame
-class ua_debugger_main_frame: public wxMDIParentFrame
+//! player info list control
+class ua_playerinfo_list: public wxListCtrl
 {
 public:
    //! ctor
-   ua_debugger_main_frame(wxWindow *parent, const wxWindowID id,
-      const wxString& title,const wxPoint& pos, const wxSize& size,
-      const long style);
+   ua_playerinfo_list(wxWindow *parent, const wxWindowID id, const wxPoint& pos,
+      const wxSize& size, long style);
+
+
+   //! adds bar to frame layout
+   void AddBar(wxFrameLayout* pLayout);
+
+   //! frame name for "player info" control
+   static const char* frame_name;
 
 protected:
-   //! returns false when bar with given name is not found; else activates bar
-   bool CheckBarAvail(wxString& barname);
-
-   // message handler
-
-   //! menu handler: Underworld | Player Info
-   void OnMenuUnderwPlayer(wxCommandEvent &event);
-
-protected:
-   //! frame layout object
-   wxFrameLayout* m_pLayout;
-
-   //! menu bar
-   wxMenuBar *m_pMenuBar;
-
-   //! underworld menu
-   wxMenu *m_pUnderwMenu;
-
-   //! menu id's
-   enum
-   {
-      MENU_UNDERW_PLAYER=1000, // shows player info
-   };
-
+   // event table
    DECLARE_EVENT_TABLE()
 };
 

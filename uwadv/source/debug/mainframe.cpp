@@ -28,9 +28,9 @@
 // needed includes
 #include "dbgcommon.hpp"
 #include "mainframe.hpp"
+#include "playerinfo.hpp"
 
-// fl headers
-#include "wx/fl/controlbar.h"     // core API
+// frame layout library
 
 // extra plugins
 #include "wx/fl/barhintspl.h"    // beveal for bars with "X"s and grooves
@@ -48,6 +48,7 @@
 // event table
 
 BEGIN_EVENT_TABLE(ua_debugger_main_frame, wxMDIParentFrame)
+   EVT_MENU(MENU_UNDERW_PLAYER, ua_debugger_main_frame::OnMenuUnderwPlayer)
 END_EVENT_TABLE()
 
 
@@ -58,6 +59,71 @@ ua_debugger_main_frame::ua_debugger_main_frame(wxWindow *parent,
    const wxPoint& pos, const wxSize& size, const long style)
 :wxMDIParentFrame(parent, id, title, pos, size, style)
 {
+   // frame layout manager
+   m_pLayout = new wxFrameLayout(this, GetClientWindow());
+
+   m_pLayout->SetUpdatesManager(new cbGCUpdatesMgr());
+
+   // setup plugins
+   m_pLayout->PushDefaultPlugins();
+
+   m_pLayout->AddPlugin( CLASSINFO(cbBarHintsPlugin) );
+   m_pLayout->AddPlugin( CLASSINFO(cbHintAnimationPlugin) );
+//   m_pLayout->AddPlugin( CLASSINFO(cbRowDragPlugin) );
+   m_pLayout->AddPlugin( CLASSINFO(cbAntiflickerPlugin) );
+   m_pLayout->AddPlugin( CLASSINFO(cbSimpleCustomizationPlugin) );
+
+   m_pLayout->EnableFloating(TRUE);
+
+
+
+   // menu stuff
+   m_pMenuBar = new wxMenuBar();
+
+   // underworld menu
+   m_pUnderwMenu = new wxMenu();
+   m_pUnderwMenu->Append(MENU_UNDERW_PLAYER, "&Player Info", "shows Player Infos");
+   m_pUnderwMenu->AppendSeparator();
+   m_pMenuBar->Append(m_pUnderwMenu, "&Underworld");
+
+   SetMenuBar(m_pMenuBar);
+
+
+   // status bar
    CreateStatusBar(3);
-   SetStatusText("Ready", 0);
+   SetStatusText("ready.", 0);
+}
+
+bool ua_debugger_main_frame::CheckBarAvail(wxString& barname)
+{
+   // check if bar frame already exists
+   cbBarInfo* barinfo = m_pLayout->FindBarByName(barname);
+   if (barinfo != NULL)
+   {
+      // bar exists
+      if (barinfo->mState == wxCBAR_HIDDEN)
+      {
+         // unhide bar when necessary
+         barinfo->mState = wxCBAR_DOCKED_HORIZONTALLY;
+
+         m_pLayout->DoSetBarState(barinfo);
+         m_pLayout->RefreshNow();
+      }
+   }
+
+   return barinfo != NULL;
+}
+
+void ua_debugger_main_frame::OnMenuUnderwPlayer(wxCommandEvent &event)
+{
+   if (!CheckBarAvail(wxString(ua_playerinfo_list::frame_name)))
+   {
+      // create new player info list and add it
+      ua_playerinfo_list* pilist = new ua_playerinfo_list(
+         this, -1, wxDefaultPosition, wxSize(0,0), wxLC_REPORT);
+
+      pilist->AddBar(m_pLayout);
+
+      m_pLayout->RefreshNow();
+   }
 }
