@@ -251,6 +251,11 @@ void ua_ingame_orig_screen::suspend()
 {
    ua_trace("suspending orig. ingame user interface\n\n");
 
+   // clear screen
+   glClearColor(0,0,0,0);
+   glClear(GL_COLOR_BUFFER_BIT);
+   SDL_GL_SwapBuffers();
+
    // unregister script callbacks
    core->get_underworld().get_scripts().register_callback(NULL);
 
