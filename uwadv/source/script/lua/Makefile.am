@@ -20,9 +20,6 @@ luac_SOURCES = \
 luac_LDADD = liblua.la
 luac_DEPENDENCIES = liblua.la
 
-# lua configuration
-#include config
-
 EXTRA_DIST = \
 	Makefile.common \
 	config \
@@ -36,4 +33,4 @@ EXTRA_DIST = \
 	src/lib/Makefile \
 	src/Makefile \
 	src/lib/ldblib.c \
-	src/lib/liolib.c \
+	src/lib/liolib.c
