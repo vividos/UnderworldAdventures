@@ -1,3 +1,592 @@
+2002-07-05 01:24  vividos
+
+	* source/: conv/codevm.hpp (1.10), resource/codeloader.cpp (1.9),
+	resource/maploader.cpp (1.9):
+
+	added conv globals loading
+	
+2002-07-05 01:07  vividos
+
+	* docs/ua-doxygen.cfg (1.2):
+
+	added some more exclude paths
+	
+2002-07-05 00:46  vividos
+
+	* docs/README.Linux.txt (1.3):
+
+	added some infos about line endings in fmod includes
+	
+2002-07-05 00:41  vividos
+
+	* source/screens/ingame_orig.cpp (1.17):
+
+	now uses ua_underworld::import_savegame() to import a game
+	added experimental page-up and page-down to change levels
+	
+2002-07-05 00:41  vividos
+
+	* source/: level.hpp (1.10), objects.hpp (1.4), underworld.cpp
+	(1.10), underworld.hpp (1.7), resource/maploader.cpp (1.8),
+	resource/objloader.cpp (1.6):
+
+	map tiles and objects are now imported via ua_underworld::import_savegame()
+	ua_underworld now supports multiple levels
+	
+2002-07-04 23:06  vividos
+
+	* source/uamath.hpp (1.3):
+
+	added some more functions to ua_vector2d
+	
+2002-07-04 23:05  vividos
+
+	* source/: level.cpp (1.15), level.hpp (1.9):
+
+	improved floor height calculation for diagonal walls (needed for collision detection)
+	added ua_level::get_tile()
+	
+2002-07-03 17:52  vividos
+
+	* source/: Makefile.am (1.18), Makefile.in (1.18), linux/configure
+	(1.11), linux/configure.in (1.14), linux/mkinstalldirs (1.12),
+	linux/uwadv.cfg (1.2), linux/uwadv.cfg.in (1.1), tools/Makefile.in
+	(1.13):
+
+	uwadv.cfg is now created at configure time
+	
+2002-07-03 17:45  vividos
+
+	* source/resource/cutsloader.cpp (1.7):
+
+	fixed a gcc warning
+	
+2002-07-03 15:09  vividos
+
+	* source/lua/: include/lauxlib.h (1.2), include/lua.h (1.2),
+	include/luadebug.h (1.2), include/lualib.h (1.2), src/lapi.c (1.2),
+	src/lapi.h (1.2), src/lcode.c (1.2), src/lcode.h (1.2),
+	src/ldebug.c (1.2), src/ldebug.h (1.2), src/ldo.c (1.2), src/ldo.h
+	(1.2), src/lfunc.c (1.2), src/lfunc.h (1.2), src/lgc.c (1.2),
+	src/lgc.h (1.2), src/llex.c (1.2), src/llex.h (1.2), src/llimits.h
+	(1.2), src/lmem.c (1.2), src/lmem.h (1.2), src/lobject.c (1.2),
+	src/lobject.h (1.2), src/lopcodes.h (1.2), src/lparser.c (1.2),
+	src/lparser.h (1.2), src/lstate.c (1.2), src/lstate.h (1.2),
+	src/lstring.c (1.2), src/lstring.h (1.2), src/ltable.c (1.2),
+	src/ltable.h (1.2), src/ltests.c (1.2), src/ltm.c (1.2), src/ltm.h
+	(1.2), src/lundump.c (1.2), src/lundump.h (1.2), src/lvm.c (1.2),
+	src/lvm.h (1.2), src/lzio.c (1.2), src/lzio.h (1.2):
+
+	re-commited with linux line feeds; gcc apparently doesn't like the ^M at the end of lines continued with '\'
+	
+2002-07-03 14:53  vividos
+
+	* source/: Makefile.in (1.17), tools/Makefile.am (1.10),
+	tools/Makefile.in (1.12):
+
+	updated makefiles
+	
+2002-07-03 14:41  vividos
+
+	* source/linux/.cvsignore (1.6):
+
+	added some automake files that almost never change
+	
+2002-07-03 13:59  vividos
+
+	* source/win32/Makefile.mingw (1.16):
+
+	added strpak output files to clean target
+	
+2002-07-03 13:51  vividos
+
+	* source/tools/strpak.cpp (1.5):
+
+	removed debug code
+	
+2002-07-03 13:37  vividos
+
+	* source/win32/uwadv.dsp (1.11):
+
+	added missing inventory.cpp
+	
+2002-07-03 13:35  vividos
+
+	* source/screens/: ingame_orig.cpp (1.16), ingame_orig.hpp (1.8):
+
+	added user interface rendering
+	compass and player paperdoll image is now rendered
+	removed playerxangle (now stored in ua_player)
+	
+2002-07-03 13:35  vividos
+
+	* source/: physics.cpp (1.4), player.cpp (1.4), player.hpp (1.5),
+	underworld.cpp (1.9):
+
+	implemented most of ua_player class
+	
+2002-07-03 13:34  vividos
+
+	* source/texture.cpp (1.13):
+
+	some optimizations in image to texture conversion
+	
+2002-07-03 00:20  vividos
+
+	* source/screens/start_splash.cpp (1.16):
+
+	texture for new image is uploaded only. no new texture object is created
+	
+2002-07-03 00:05  vividos
+
+	* source/screens/: start_menu.cpp (1.5), start_menu.hpp (1.4):
+
+	improved menu to behave as in the original
+	
+2002-07-01 20:50  vividos
+
+	* source/screens/ingame_orig.cpp (1.15):
+
+	enabled scissor test so that OpenGL only draws in the little window where 3d graphics appeared in the original
+	
+2002-07-01 19:49  vividos
+
+	* source/screens/: start_menu.cpp (1.4), start_menu.hpp (1.3):
+
+	added start menu implementation
+	
+2002-07-01 19:48  vividos
+
+	* source/uwadv.cpp (1.9):
+
+	used proper screen at startup
+	
+2002-07-01 19:09  vividos
+
+	* source/: texture.cpp (1.12), texture.hpp (1.9):
+
+	removed ua_texture::convert() for ua_image_list's
+	
+2002-07-01 19:06  vividos
+
+	* source/screens/start_splash.cpp (1.15):
+
+	fixed a minor OpenGL problem
+	
+2002-07-01 19:06  vividos
+
+	* source/: level.cpp (1.14), level.hpp (1.8):
+
+	added variable for ceiling texture number
+	
+2002-07-01 19:06  vividos
+
+	* source/: image.cpp (1.8), image.hpp (1.6):
+
+	changed const'ness of ua_image_list::get_image()
+	
+2002-07-01 19:06  vividos
+
+	* source/: core.hpp (1.4), uwadv.hpp (1.5), screens/ingame_orig.cpp
+	(1.14):
+
+	replaced get_aspect_ratio() with get_screen_width() and get_screen_height()
+	
+2002-07-01 19:00  vividos
+
+	* source/common.hpp (1.7):
+
+	added lua include
+	
+2002-07-01 18:19  vividos
+
+	* source/: lua/COPYRIGHT (1.1), lua/HISTORY (1.1), lua/README
+	(1.1), lua/include/lauxlib.h (1.1), lua/include/lua.h (1.1),
+	lua/include/luadebug.h (1.1), lua/include/lualib.h (1.1),
+	lua/src/lapi.c (1.1), lua/src/lapi.h (1.1), lua/src/lcode.c (1.1),
+	lua/src/lcode.h (1.1), lua/src/ldebug.c (1.1), lua/src/ldebug.h
+	(1.1), lua/src/ldo.c (1.1), lua/src/ldo.h (1.1), lua/src/lfunc.c
+	(1.1), lua/src/lfunc.h (1.1), lua/src/lgc.c (1.1), lua/src/lgc.h
+	(1.1), lua/src/llex.c (1.1), lua/src/llex.h (1.1),
+	lua/src/llimits.h (1.1), lua/src/lmem.c (1.1), lua/src/lmem.h
+	(1.1), lua/src/lobject.c (1.1), lua/src/lobject.h (1.1),
+	lua/src/lopcodes.h (1.1), lua/src/lparser.c (1.1),
+	lua/src/lparser.h (1.1), lua/src/lstate.c (1.1), lua/src/lstate.h
+	(1.1), lua/src/lstring.c (1.1), lua/src/lstring.h (1.1),
+	lua/src/ltable.c (1.1), lua/src/ltable.h (1.1), lua/src/ltests.c
+	(1.1), lua/src/ltm.c (1.1), lua/src/ltm.h (1.1), lua/src/lundump.c
+	(1.1), lua/src/lundump.h (1.1), lua/src/lvm.c (1.1), lua/src/lvm.h
+	(1.1), lua/src/lzio.c (1.1), lua/src/lzio.h (1.1),
+	win32/Makefile.mingw (1.15), win32/uwadv.dsp (1.10):
+
+	added Lua 4.0
+	http://www.lua.org/
+	
+2002-07-01 14:20  vividos
+
+	* source/screens/ingame_orig.cpp (1.13):
+
+	added support for uw_demo's user interface bitmap
+	
+2002-07-01 14:19  vividos
+
+	* source/screens/: start_splash.cpp (1.14), start_splash.hpp (1.5):
+
+	adding a splash sequence list for uw_demo, too
+	
+2002-07-01 14:15  vividos
+
+	* source/win32/Makefile.mingw (1.14):
+
+	fix for compiling resources
+	
+2002-07-01 13:55  vividos
+
+	* source/win32/: Makefile.mingw (1.13), Uus.ico (1.2),
+	game_win32.cpp (1.4), game_win32.hpp (1.4), main.cpp (1.5),
+	resource.h (1.3), uwadv.dsp (1.9), uwadv.rc (1.3),
+	source/.cvsignore (1.1), source/Uus.ico (1.1),
+	source/game_win32.cpp (1.1), source/game_win32.hpp (1.1),
+	source/main.cpp (1.1), source/resource.h (1.1), source/uwadv.rc
+	(1.1):
+
+	moved win32 source files to "source" subfolder
+	
+2002-07-01 13:11  vividos
+
+	* source/: audio.hpp (1.4), common.hpp (1.6), core.hpp (1.3),
+	cutscene.cpp (1.8), cutscene.hpp (1.5), font.cpp (1.6), font.hpp
+	(1.4), gamestrings.hpp (1.5), image.cpp (1.7), image.hpp (1.5),
+	inventory.cpp (1.2), inventory.hpp (1.2), level.cpp (1.13),
+	level.hpp (1.7), objects.cpp (1.6), objects.hpp (1.3), physics.cpp
+	(1.3), physics.hpp (1.2), player.cpp (1.3), player.hpp (1.4),
+	quadtree.cpp (1.8), quadtree.hpp (1.5), screen.hpp (1.4),
+	settings.hpp (1.4), texture.cpp (1.11), texture.hpp (1.8),
+	uamath.hpp (1.2), uatypes.hpp (1.10), underworld.cpp (1.8),
+	underworld.hpp (1.6), uwadv.cpp (1.8), uwadv.hpp (1.4),
+	audio/audio.cpp (1.6), audio/midi.cpp (1.12), audio/midi.hpp (1.6),
+	audio/xmidi.cpp (1.10), audio/xmidi.hpp (1.6),
+	audio/midi_driver/uni_fmod.cpp (1.8), audio/midi_driver/uni_fmod.h
+	(1.4), audio/midi_driver/win_midiout.cpp (1.6), conv/codevm.cpp
+	(1.9), conv/codevm.hpp (1.9), linux/main.cpp (1.2),
+	resource/codeloader.cpp (1.8), resource/cutsloader.cpp (1.6),
+	resource/fontloader.cpp (1.5), resource/fread_endian.hpp (1.5),
+	resource/gamestrings.cpp (1.9), resource/imageloader.cpp (1.7),
+	resource/maploader.cpp (1.7), resource/objloader.cpp (1.5),
+	resource/settings.cpp (1.6), resource/texloader.cpp (1.8),
+	screens/ingame_orig.cpp (1.12), screens/ingame_orig.hpp (1.7),
+	screens/start_menu.cpp (1.3), screens/start_menu.hpp (1.2),
+	screens/start_splash.cpp (1.13), screens/start_splash.hpp (1.4),
+	win32/game_win32.cpp (1.3), win32/game_win32.hpp (1.3),
+	win32/main.cpp (1.4):
+
+	added more \brief documentation, as well as some documentation fixes
+	
+2002-07-01 12:51  vividos
+
+	* docs/ua-doxygen.cfg (1.1):
+
+	added doxygen config file
+	
+2002-07-01 12:49  vividos
+
+	* source/: cutscene.cpp (1.7), font.cpp (1.5), image.cpp (1.6),
+	level.cpp (1.12), objects.cpp (1.5), physics.cpp (1.2), player.cpp
+	(1.2), quadtree.cpp (1.7), texture.cpp (1.10), underworld.cpp
+	(1.7), uwadv.cpp (1.7), audio/audio.cpp (1.5), audio/midi.cpp
+	(1.11), audio/xmidi.cpp (1.9), audio/midi_driver/uni_fmod.cpp
+	(1.7), audio/midi_driver/win_midiout.cpp (1.5), conv/codevm.cpp
+	(1.8), resource/codeloader.cpp (1.7), resource/cutsloader.cpp
+	(1.5), resource/fontloader.cpp (1.4), resource/gamestrings.cpp
+	(1.8), resource/imageloader.cpp (1.6), resource/maploader.cpp
+	(1.6), resource/objloader.cpp (1.4), resource/settings.cpp (1.5),
+	resource/texloader.cpp (1.7), screens/ingame_orig.cpp (1.11),
+	screens/start_menu.cpp (1.2), screens/start_splash.cpp (1.12):
+
+	added \brief documentation for doxygen
+	
+2002-06-27 21:39  vividos
+
+	* source/tools/strpak.cpp (1.4):
+
+	removed string in syntax description
+	
+2002-06-27 21:38  vividos
+
+	* docs/README.tools.txt (1.3):
+
+	updated with info about the "strpak" tool
+	
+2002-06-27 21:24  vividos
+
+	* source/tools/strpak.cpp (1.3):
+
+	much bug fixes
+	
+2002-06-27 21:24  vividos
+
+	* source/win32/strpak.dsp (1.2):
+
+	added debug defiles for use with STLport
+	
+2002-06-27 21:23  vividos
+
+	* source/resource/gamestrings.cpp (1.7):
+
+	changes to use std::vector instead of dynamically allocated arrays
+	
+2002-06-27 13:59  vividos
+
+	* source/tools/: cnvdasm.cpp (1.7), cnvdbg.cpp (1.9):
+
+	changed string block printout to hex
+	fixed string block usage for npc names
+	
+2002-06-27 13:58  vividos
+
+	* source/tools/strpak.cpp (1.2):
+
+	added possibility to use a huffman node list from another file
+	
+2002-06-27 13:57  vividos
+
+	* source/resource/codeloader.cpp (1.6):
+
+	string block to use in conversation is now much easier
+	
+2002-06-27 13:57  vividos
+
+	* source/resource/gamestrings.cpp (1.6):
+
+	fixed a major bug: string block id were the for() loop index, not the real block_id from the file
+	
+2002-06-27 12:58  vividos
+
+	* docs/uw-formats.txt (1.18):
+
+	corrected big misunderstanding of game strings block id's
+	
+2002-06-27 11:44  vividos
+
+	* source/win32/Makefile.mingw (1.12):
+
+	updated
+	
+2002-06-27 10:40  vividos
+
+	* source/: tools/strpak.cpp (1.1), win32/strpak.dsp (1.1),
+	win32/tools.dsw (1.5):
+
+	added uw game strings pack/unpack tool
+	
+2002-06-27 10:39  vividos
+
+	* source/gamestrings.hpp (1.4):
+
+	added function to return the allstrings map
+	
+2002-06-27 10:39  vividos
+
+	* source/resource/fread_endian.hpp (1.4):
+
+	added fwrite*() functions
+	
+2002-06-26 13:37  vividos
+
+	* uadata/Makefile (1.1):
+
+	added makefile to build uadata packages
+	
+2002-06-26 13:36  vividos
+
+	* misc/: anmformt.zip (1.1), uw1-combinations.txt (1.1),
+	uw1-common-obj-prop.txt (1.1), uw1-levelobjs-level1.txt (1.1),
+	uw1-object-classes.txt (1.1), uw1-objects.png (1.1):
+
+	added some misc. files
+	
+2002-06-25 21:14  vividos
+
+	* source/: screens/start_splash.cpp (1.11), tools/animview.cpp
+	(1.3):
+
+	fixed texname consumption by using direct texture upload
+	
+2002-06-25 21:14  vividos
+
+	* source/: texture.cpp (1.9), texture.hpp (1.7):
+
+	added ua_texture::upload() for direct texture upload to OpenGL
+	
+2002-06-25 17:59  vividos
+
+	* source/: Makefile.am (1.17), Makefile.in (1.16),
+	tools/Makefile.in (1.11):
+
+	updated makefiles
+	
+2002-06-25 17:40  vividos
+
+	* source/win32/uwadv.dsp (1.8):
+
+	added two more files
+	
+2002-06-25 17:31  vividos
+
+	* source/win32/uwadv.dsp (1.7):
+
+	added some missing files
+	
+2002-06-25 17:31  vividos
+
+	* source/screens/: start_splash.cpp (1.10), start_splash.hpp (1.3):
+
+	implemented splash screen sequence
+	
+2002-06-25 17:31  vividos
+
+	* source/screens/: start_menu.cpp (1.1), start_menu.hpp (1.1):
+
+	added start menu screen
+	
+2002-06-25 17:31  vividos
+
+	* source/: cutscene.cpp (1.6), cutscene.hpp (1.4),
+	resource/cutsloader.cpp (1.4):
+
+	optimized animation frame decompression
+	
+2002-06-25 17:30  vividos
+
+	* source/screens/ingame_orig.cpp (1.10):
+
+	some indendation/spacing changes
+	
+2002-06-25 15:32  vividos
+
+	* source/: cutscene.hpp (1.3), resource/cutsloader.cpp (1.3):
+
+	slight interface change
+	
+2002-06-25 15:32  vividos
+
+	* source/cutscene.cpp (1.5):
+
+	added profiling test code
+	
+2002-06-25 00:52  vividos
+
+	* source/: Makefile.am (1.16), Makefile.in (1.15),
+	tools/Makefile.am (1.9), tools/Makefile.in (1.10):
+
+	updated linux makefiles
+	
+2002-06-24 20:59  vividos
+
+	* source/win32/Makefile.mingw (1.11):
+
+	added compilation of physics.cpp
+	added OpenGL libs for animview
+	
+2002-06-24 20:50  vividos
+
+	* source/: tools/animview.cpp (1.2), win32/animview.dsp (1.3):
+
+	animation frames are now shown using OpenGL
+	
+2002-06-24 20:50  vividos
+
+	* source/: texture.cpp (1.8), texture.hpp (1.6):
+
+	modified for use in cutscene frame to texture conversion
+	
+2002-06-24 20:49  vividos
+
+	* source/: cutscene.cpp (1.4), cutscene.hpp (1.2),
+	resource/cutsloader.cpp (1.2):
+
+	added extraction of frames to texture object
+	
+2002-06-24 20:49  vividos
+
+	* source/core.hpp (1.2):
+
+	added comment
+	
+2002-06-21 13:00  vividos
+
+	* docs/uw-cuts-animfile.txt (1.2):
+
+	removed; all needed infos about decoding are in uw-formats.txt now
+	
+2002-06-21 12:59  vividos
+
+	* docs/uw-formats.txt (1.17):
+
+	added jim's findings on the "quantity" bit
+	
+2002-06-21 12:52  vividos
+
+	* hacking/miscdecode/miscdecode.cpp (1.4):
+
+	added decoding of common.dat and objects.dat
+	
+2002-06-21 12:51  vividos
+
+	* docs/uw-formats.txt (1.16):
+
+	updated object class properties info
+	
+2002-06-21 08:05  vividos
+
+	* source/common.hpp (1.5):
+
+	added space
+	
+2002-06-21 08:05  vividos
+
+	* source/screens/ingame_orig.hpp (1.6):
+
+	removed some unused variables
+	
+2002-06-21 08:05  vividos
+
+	* source/: physics.cpp (1.1), physics.hpp (1.1), underworld.cpp
+	(1.6), underworld.hpp (1.5):
+
+	added physics model for underworld
+	
+2002-06-21 08:05  vividos
+
+	* source/player.hpp (1.3):
+
+	doubles are used for all values now
+	
+2002-06-21 08:04  vividos
+
+	* source/: quadtree.cpp (1.6), quadtree.hpp (1.4):
+
+	simplified quad by using integer quad coordinates
+	
+2002-06-21 08:04  vividos
+
+	* source/: objects.cpp (1.4), uamath.hpp (1.1), uatypes.hpp (1.9):
+
+	added math stuff header
+	
+2002-06-20 22:11  vividos
+
+	* source/win32/: animview.dsp (1.2), cnvdasm.dsp (1.2), cnvdbg.dsp
+	(1.2), mapdisp.dsp (1.4), xmi2mid.dsp (1.2):
+
+	fixed runtime library used in release builds
+	
+2002-06-20 21:57  vividos
+
+	* source/screens/start_splash.cpp (1.9):
+
+	last fix for grainroll, the second try
+	
 2002-06-20 21:38  vividos
 
 	* source/screens/start_splash.cpp (1.8):
@@ -101,12 +690,6 @@
 
 	added cutscene decoding code
 	
-2002-06-16 16:56  vividos
-
-	* ChangeLog (1.8):
-
-	updated
-	
 2002-06-15 18:55  vividos
 
 	* docs/uw-formats.txt (1.15):
@@ -194,12 +777,6 @@
 
 	added ua_rad2deg and ua_trace macro
 	
-2002-06-13 18:57  vividos
-
-	* ChangeLog (1.7):
-
-	updated
-	
 2002-06-13 18:55  vividos
 
 	* source/audio/: midi.cpp (1.10), midi_driver/linux_sdl_mixer.cpp
@@ -269,12 +846,6 @@
 	* source/audio/midi_driver/uni_fmod.cpp (1.5):
 
 	forgot to include common.hpp
-	
-2002-05-28 12:12  vividos
-
-	* ChangeLog (1.6):
-
-	updated
 	
 2002-05-28 12:10  vividos
 
@@ -514,12 +1085,6 @@
 	updated with terrain texture properties
 	added NPC info desc. for master object list
 	
-2002-05-16 01:08  vividos
-
-	* ChangeLog (1.5):
-
-	updated
-	
 2002-05-16 01:06  vividos
 
 	* source/quadtree.cpp (1.3):
@@ -611,12 +1176,6 @@
 
 	more fixes for autobuild system
 	
-2002-05-10 11:51  vividos
-
-	* ChangeLog (1.4):
-
-	updated just for fun
-	
 2002-05-10 10:07  vividos
 
 	* docs/uw-formats.txt (1.11):
@@ -702,12 +1261,6 @@
 	* source/uatypes.hpp (1.5):
 
 	more precision for constants and macros
-	
-2002-05-05 21:21  vividos
-
-	* ChangeLog (1.3):
-
-	updated for release 'ricecraecker'
 	
 2002-05-05 21:02  vividos
 
@@ -884,12 +1437,6 @@
 	(1.1), linux/mkinstalldirs (1.1), linux/uwadv.cfg (1.1):
 
 	added linux build files
-	
-2002-04-29 14:10  vividos
-
-	* ChangeLog (1.2):
-
-	updated
 	
 2002-04-29 14:08  vividos
 
@@ -1338,52 +1885,27 @@
 	
 2002-04-11 11:49  vividos
 
-	* .cvsignore (1.1), hacking/.cvsignore (1.1), hacking/hacking.dsw
-	(1.1), hacking/cnvdec/.cvsignore (1.1), hacking/cnvdec/cnvdec.cpp
-	(1.1), hacking/cnvdec/cnvdec.dsp (1.1), hacking/critdec/.cvsignore
-	(1.1), hacking/critdec/critdec.cpp (1.1),
-	hacking/critdec/critdec.dsp (1.1), hacking/fontdecode/.cvsignore
-	(1.1), hacking/fontdecode/fontdecode.cpp (1.1),
-	hacking/fontdecode/fontdecode.dsp (1.1),
-	hacking/grdecode/.cvsignore (1.1), hacking/grdecode/grdecode.cpp
-	(1.1), hacking/grdecode/grdecode.dsp (1.1),
-	hacking/levarkdec/.cvsignore (1.1), hacking/levarkdec/levarkdec.cpp
-	(1.1), hacking/levarkdec/levarkdec.dsp (1.1),
-	hacking/miscdecode/.cvsignore (1.1),
-	hacking/miscdecode/miscdecode.cpp (1.1),
-	hacking/miscdecode/miscdecode.dsp (1.1),
-	hacking/sgdecode/.cvsignore (1.1), hacking/sgdecode/sgdecode.cpp
-	(1.1), hacking/sgdecode/sgdecode.dsp (1.1),
-	hacking/stringextract/.cvsignore (1.1),
-	hacking/stringextract/stringextract.cpp (1.1),
-	hacking/stringextract/stringextract.dsp (1.1),
-	hacking/trdecode/.cvsignore (1.1), hacking/trdecode/trdecode.cpp
-	(1.1), hacking/trdecode/trdecode.dsp (1.1):
+	* hacking/: .cvsignore (1.1), hacking.dsw (1.1), cnvdec/.cvsignore
+	(1.1), cnvdec/cnvdec.cpp (1.1), cnvdec/cnvdec.dsp (1.1),
+	critdec/.cvsignore (1.1), critdec/critdec.cpp (1.1),
+	critdec/critdec.dsp (1.1), fontdecode/.cvsignore (1.1),
+	fontdecode/fontdecode.cpp (1.1), fontdecode/fontdecode.dsp (1.1),
+	grdecode/.cvsignore (1.1), grdecode/grdecode.cpp (1.1),
+	grdecode/grdecode.dsp (1.1), levarkdec/.cvsignore (1.1),
+	levarkdec/levarkdec.cpp (1.1), levarkdec/levarkdec.dsp (1.1),
+	miscdecode/.cvsignore (1.1), miscdecode/miscdecode.cpp (1.1),
+	miscdecode/miscdecode.dsp (1.1), sgdecode/.cvsignore (1.1),
+	sgdecode/sgdecode.cpp (1.1), sgdecode/sgdecode.dsp (1.1),
+	stringextract/.cvsignore (1.1), stringextract/stringextract.cpp
+	(1.1), stringextract/stringextract.dsp (1.1), trdecode/.cvsignore
+	(1.1), trdecode/trdecode.cpp (1.1), trdecode/trdecode.dsp (1.1):
 
 	added hacking projects
-	
-2002-04-10 22:52  vividos
-
-	* ChangeLog (1.1):
-
-	always created with `cvs2cl.pl -r -S --no-wrap --gmt'
 	
 2002-04-10 22:50  vividos
 
 	* docs/: uw-formats.txt (1.1), uw1-walkthrough.txt (1.1),
 	uw2-walkthrough.txt (1.1):
-
-	initial import
-	
-2002-04-10 22:32  vividos
-
-	* Copying (1.1):
-
-	Initial revision
-	
-2002-04-10 22:32  vividos
-
-	* Copying (1.1.1.1):
 
 	initial import
 	
