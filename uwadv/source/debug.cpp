@@ -128,3 +128,13 @@ int ua_debug_server::thread_proc(void* ptr)
 
    return 0;
 }
+
+#ifndef WIN32
+
+// dummy implementation for non-win32 implementations
+ua_debug_server_impl* ua_create_debug_server_impl()
+{
+   return NULL;
+}
+
+#endif // !WIN32
