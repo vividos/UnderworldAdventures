@@ -366,16 +366,29 @@ void ua_level::render_walls(unsigned int x, unsigned int y, ua_texture_manager &
          {
             // get z coordinates for the adjacent tile
             ua_levelmap_wall_render_side adjside;
-            if (side==ua_left) adjside = ua_right;
-            else if (side==ua_right) adjside = ua_left;
-            else if (side==ua_front) adjside = ua_back;
-            else adjside = ua_front;
+            switch(side)
+            {
+            case ua_left: adjside=ua_right; break;
+            case ua_right: adjside=ua_left; break;
+            case ua_front: adjside=ua_back; break;
+            default: adjside=ua_front; break;
+            }
 
             get_tile_coords(adjside,ntile.type,nx,ny,
                ntile.floor,ntile.slope,ntile.ceiling,
                dummy,dummy,nz1, dummy,dummy,nz2);
 
-            if (side==ua_right || side==ua_back)
+            // determine if neighbour tile was a diagonal one
+            bool diag = ntile.type == ua_tile_diagonal_se || 
+               ntile.type == ua_tile_diagonal_sw|| 
+               ntile.type == ua_tile_diagonal_nw|| 
+               ntile.type == ua_tile_diagonal_ne;
+
+            // additionally check if we face the non-diagonal side
+            diag &= (nz1 == nz2 && nz2 == ntile.ceiling);
+
+            // only draw diag-adjacent sides, or right- and back-walls
+            if (!diag && (side==ua_right || side==ua_back))
                continue;
          }
       }
