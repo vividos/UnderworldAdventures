@@ -21,7 +21,7 @@
 # $Id$
 #
 
-SUBDIRS = base tools resource lua debug
+SUBDIRS = base tools lua debug
 
 # compiler options
 INCLUDES = -I$(srcdir)/base -I$(srcdir)/audio -I$(srcdir)/ui -I$(srcdir)/renderer -I$(srcdir)/underw -I$(srcdir)/import
