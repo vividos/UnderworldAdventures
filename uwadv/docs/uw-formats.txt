@@ -344,6 +344,10 @@ Table of Contents
    cs404.n01   anvil graphics
    cs410.n01   map piece showing some traps
 
+   Files in the "crit" folder:
+
+   assoc.anm     animation associations
+
    Files in a save game folder (e.g. "Save1"):
 
    lev.ark        modified level map
@@ -395,9 +399,9 @@ Table of Contents
 
    Files in the "crit" folder:
 
-   as.an
-   cr.an
-   pg.mp
+   as.an          animation associations
+   cr.an          
+   pg.mp          
    crXX.YY        critter animations, XX=animation(octal) YY=page
 
    Files in the "sound" folder:
@@ -699,12 +703,16 @@ Table of Contents
    0001   Int8   auxpal
 
    The "anim" field specifies which one of the 32 animations to take for a
-   given NPC number (NPC object ID - 0x0040).
+   given NPC number (NPC object ID - 0x0040). A value of 0xff indicates that
+   no animation is available.
 
    The "auxpal" value describes which auxiliary palette to use. There are
    several critters that share the same animations but use different palettes,
    e.g. the bat and the vampire bat uses the same anim value, but different
    auxiliary palettes.
+
+   [uw2] The critter associations are stored in the file "as.an"; it doesn't contain
+   the critter names, only the 64 entries for "anim" and "auxpal" are stored.
 
    Animation for each critter is stored in a file named "CrXXpage.nYY", where
       XX = animation number (=anim), YY = page number
