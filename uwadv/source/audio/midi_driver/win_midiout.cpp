@@ -24,6 +24,9 @@
 
 */
 
+// only compile for win32
+#ifdef WIN32
+
 // neded includes
 #include "common.hpp"
 #include "win_midiout.h"
@@ -691,8 +694,10 @@ bool ua_win_midiout::is_playing(void)
    return playing!=0;
 }
 
-const char *ua_win_midiout::copyright(void)
+const char* ua_win_midiout::copyright(void)
 {
    giveinfo();
    return "Win32 Midiout Midi Player for Underworld Adventures";
 }
+
+#endif // WIN32
