@@ -29,7 +29,7 @@ Released on 2004-04-10
  <li><a href="http://prdownloads.sourceforge.net/uwadv/uwadv-0.9-mojito-win32.exe?download" target="_blank">uwadv-0.9-mojito-win32.exe</a> (win32 installer)</li>
  <li><a href="http://prdownloads.sourceforge.net/uwadv/uwadv-0.9_mojito-1.i386.rpm?download" target="_blank">uwadv-0.9_mojito-1.i386.rpm</a> (Linux binary RPM)</li>
  <li><a href="http://prdownloads.sourceforge.net/uwadv/uwadv-0.9_mojito-1.src.rpm?download" target="_blank">uwadv-0.9_mojito-1.src.rpm</a> (Linux source RPM)</li>
- <!-- li><a href="" target="_blank"></a> (Debian binary package)</li -->
+ <li><a href="http://prdownloads.sourceforge.net/uwadv/uwadv_0.9-mojito-1_i386.deb" target="_blank">uwadv_0.9-mojito-1_i386.deb</a> (Debian/unstable binary package)</li>
 </ul>
 
 <p>
