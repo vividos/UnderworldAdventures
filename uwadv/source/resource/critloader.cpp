@@ -237,8 +237,8 @@ void ua_critter::load(const char* file, unsigned int used_auxpal)
    // end of all passes
 
    // remember new hotspot
-   hot_u = double(maxleft)/double(maxleft+maxright);
-   hot_v = double(maxtop)/double(maxtop+maxbottom);
+   hot_x = maxleft;
+   hot_y = maxtop;
 }
 
 void ua_critter_pool::load(ua_settings& settings)
