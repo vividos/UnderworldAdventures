@@ -1171,9 +1171,9 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
             {
                // user clicked on a texture
                ua_trace("looking at wall/ceiling, tile=%02x/%02x, id=%04x\n",
-                  tilex,tiley,texid);
+                  tilex,tiley,id);
 
-               core->get_underworld().get_scripts().lua_wall_look(texid);
+               core->get_underworld().get_scripts().lua_wall_look(id);
             }
          }
          else
