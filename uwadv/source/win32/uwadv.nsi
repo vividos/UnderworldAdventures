@@ -21,17 +21,17 @@ InstallDir "$PROGRAMFILES\Underworld Adventures"
 # license page config
 #
 LicenseText "You should read the following license before installing."
-LicenseData ..\..\docs\License.installer.txt
+LicenseData "install\License.installer.txt"
 
 # component page config
 #
-ComponentText "This will install Underworld Adventures ${VERSION} on your system."
+ComponentText "This will install Underworld Adventures version '${VERSION}' on your system."
 InstType Typical
 
 # directory page config
 #
 DirShow show
-DirText "Please select a location to install Underworld Adventures ${VERSION} (or use the default)."
+DirText "Please select a location to install Underworld Adventures version '${VERSION}' (or use the default)."
 
 # install page config
 #
@@ -40,7 +40,7 @@ ShowInstDetails show
 
 # uninstall config
 #
-UninstallText "This will uninstall Underworld Adventures ${VERSION} from your system."
+UninstallText "This will uninstall Underworld Adventures version '${VERSION}' from your system."
 ShowUninstDetails show
 
 # compiler flags
@@ -56,7 +56,7 @@ SetDateSave on
 
 ComponentText
 Section -
-SectionIn 0
+#SectionIn 0
 SetOutPath $INSTDIR
 File ..\..\output\release\uwadv.exe
 File install\SDL.dll
@@ -65,7 +65,7 @@ File uwadv.cfg
 File ..\..\Copying
 File ..\..\docs\readme.txt
 CreateShortCut "$DESKTOP\Underworld Adventures.lnk" "$INSTDIR\uwadv.exe" "" "" "0"
-WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\uwadv" "DisplayName" "Underworld Adventures ${VERSION} (remove only)"
+WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\uwadv" "DisplayName" "Underworld Adventures version '${VERSION}' (remove only)"
 WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\uwadv" "UninstallString" '"$INSTDIR\uninst-uwadv.exe"'
 WriteUninstaller $INSTDIR\uninst-uwadv.exe
 SectionEnd
