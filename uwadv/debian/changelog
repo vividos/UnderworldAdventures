@@ -1,8 +1,21 @@
+uwadv (0.9-mojito-1) unstable; urgency=low
+
+  * Lintian: Double conffiles issue fixed
+  * Lintian: Unquoted strings in menu file issue fixed
+
+ -- Radoslaw Grzanka <sad@rpg.pl>  Sun, 11 Apr 2004 12:17:00 +0100
+
+uwadv (0.9-mojito-0) unstable; urgency=low
+
+  * New upstream release
+
+ -- Radoslaw Grzanka <sad@rpg.pl>  Sun, 11 Apr 2004 10:10:51 +0100
+
 uwadv (0.8a.CVS-2003-04-30) unstable; urgency=low
 
   * CVS build
 
- -- root <root@rybki>  Wed, 30 Apr 2003 17:14:51 +0200
+ -- Radoslaw Grzanka <sad@rpg.pl>  Wed, 30 Apr 2003 17:14:51 +0200
 
 uwadv (0.8a.0-HotChili-1) unstable; urgency=low
 
@@ -21,4 +34,3 @@ uwadv (0.8.0-HotChili-1) unstable; urgency=low
   * Initial Release.
 
  -- Radoslaw Grzanka <sad@rpg.pl>  Sun, 27 Apr 2003 18:39:02 +0200
-

@@ -2,7 +2,7 @@ Source: uwadv
 Section: contrib/games
 Priority: optional
 Maintainer: Radoslaw Grzanka <sad@rpg.pl>
-Build-Depends: debhelper (>> 3.0.0), binutils (>= 2.12.90.0.1-4), gcc-2.95, libc6 (>=2.2.5-11.2), libncurses5 (>=5.2.20020112a-7), libsdl1.2debian-oss (>=1.2.4-1), libsdl1.2-dev (>=1.2.4-1), libstdc++2.10-glibc2.2, xlibs(>=4.1.0-16)
+Build-Depends: binutils (>= 2.14.90 ), libc6 (>= 2.3.2 ), libc6-dev (>=2.3.2 ), libncurses5 (>= 5.4 ), libsdl1.2debian-oss (>= 1.2.7 ), libsdl1.2-dev (>=1.2.7 ), libx11-6 (>= 4.3.0 ), libxext6 (>= 4.3.0 ), linux-kernel-headers (>=2.5.999-test7-bk-15 ), locales (>= 2.3.2 ), libsdl-mixer1.2-dev (>=1.2.1 )
 Standards-Version: 3.5.2
 
 Package: uwadv
