@@ -27,6 +27,8 @@
 
 */
 
+#ifdef HAVE_FMOD_H
+
 // neded includes
 #include "uni_fmod.h"
 
@@ -86,3 +88,5 @@ const char *uni_fmod_driver::copyright()
 {
    return "FMOD midi driver for Underworld Adventures";
 }
+
+#endif
