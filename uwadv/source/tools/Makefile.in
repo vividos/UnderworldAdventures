@@ -95,11 +95,17 @@ LDFLAGS = $(SDL_LIBS)
 # automake rules
 EXTRA_PROGRAMS = cnvdasm cnvdbg xmi2mid mapdisp
 
-cnvdasm_SOURCES = cnvdasm.cpp cnvdasm.hpp instr.hpp
+cnvdasm_SOURCES = cnvdasm.cpp cnvdasm.hpp instr.hpp \
+	../conv/codevm.cpp ../resource/codeloader.cpp \
+	../resource/gamestrings.cpp
 
-cnvdbg_SOURCES = cnvdbg.cpp cnvdbg.hpp instr.hpp
 
-xmi2mid_SOURCES = xmi2mid.cpp
+cnvdbg_SOURCES = cnvdbg.cpp cnvdbg.hpp instr.hpp \
+	../conv/codevm.cpp ../resource/codeloader.cpp \
+	../resource/gamestrings.cpp
+
+
+xmi2mid_SOURCES = xmi2mid.cpp ../audio/xmidi.cpp
 
 mapdisp_SOURCES = mapdisp.cpp ../level.cpp ../resource/maploader.cpp \
 	../quadtree.cpp ../resource/texloader.cpp ../texture.cpp
@@ -116,12 +122,14 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 EXTRA_PROGRAMS = cnvdasm$(EXEEXT) cnvdbg$(EXEEXT) xmi2mid$(EXEEXT) \
 	mapdisp$(EXEEXT)
-am_cnvdasm_OBJECTS = cnvdasm.$(OBJEXT)
+am_cnvdasm_OBJECTS = cnvdasm.$(OBJEXT) codevm.$(OBJEXT) \
+	codeloader.$(OBJEXT) gamestrings.$(OBJEXT)
 cnvdasm_OBJECTS = $(am_cnvdasm_OBJECTS)
 cnvdasm_LDADD = $(LDADD)
 cnvdasm_DEPENDENCIES =
 cnvdasm_LDFLAGS =
-am_cnvdbg_OBJECTS = cnvdbg.$(OBJEXT)
+am_cnvdbg_OBJECTS = cnvdbg.$(OBJEXT) codevm.$(OBJEXT) \
+	codeloader.$(OBJEXT) gamestrings.$(OBJEXT)
 cnvdbg_OBJECTS = $(am_cnvdbg_OBJECTS)
 cnvdbg_LDADD = $(LDADD)
 cnvdbg_DEPENDENCIES =
@@ -132,7 +140,7 @@ am_mapdisp_OBJECTS = mapdisp.$(OBJEXT) level.$(OBJEXT) \
 mapdisp_OBJECTS = $(am_mapdisp_OBJECTS)
 mapdisp_DEPENDENCIES =
 mapdisp_LDFLAGS =
-am_xmi2mid_OBJECTS = xmi2mid.$(OBJEXT)
+am_xmi2mid_OBJECTS = xmi2mid.$(OBJEXT) xmidi.$(OBJEXT)
 xmi2mid_OBJECTS = $(am_xmi2mid_OBJECTS)
 xmi2mid_LDADD = $(LDADD)
 xmi2mid_DEPENDENCIES =
@@ -144,10 +152,12 @@ LIBS = @LIBS@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/cnvdasm.Po ./$(DEPDIR)/cnvdbg.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/level.Po ./$(DEPDIR)/mapdisp.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/maploader.Po ./$(DEPDIR)/quadtree.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/texloader.Po ./$(DEPDIR)/texture.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/xmi2mid.Po
+@AMDEP_TRUE@	./$(DEPDIR)/codeloader.Po ./$(DEPDIR)/codevm.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/gamestrings.Po ./$(DEPDIR)/level.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/mapdisp.Po ./$(DEPDIR)/maploader.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/quadtree.Po ./$(DEPDIR)/texloader.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/texture.Po ./$(DEPDIR)/xmi2mid.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/xmidi.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
@@ -179,6 +189,9 @@ $(srcdir)/Makefile.in:  Makefile.am  $(top_srcdir)/configure.in $(ACLOCAL_M4)
 	  $(AUTOMAKE) --foreign  ../tools/Makefile
 Makefile:  $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)
+codevm.$(OBJEXT): ../conv/codevm.cpp
+codeloader.$(OBJEXT): ../resource/codeloader.cpp
+gamestrings.$(OBJEXT): ../resource/gamestrings.cpp
 cnvdasm$(EXEEXT): $(cnvdasm_OBJECTS) $(cnvdasm_DEPENDENCIES) 
 	@rm -f cnvdasm$(EXEEXT)
 	$(CXXLINK) $(cnvdasm_LDFLAGS) $(cnvdasm_OBJECTS) $(cnvdasm_LDADD) $(LIBS)
@@ -193,6 +206,7 @@ texture.$(OBJEXT): ../texture.cpp
 mapdisp$(EXEEXT): $(mapdisp_OBJECTS) $(mapdisp_DEPENDENCIES) 
 	@rm -f mapdisp$(EXEEXT)
 	$(CXXLINK) $(mapdisp_LDFLAGS) $(mapdisp_OBJECTS) $(mapdisp_LDADD) $(LIBS)
+xmidi.$(OBJEXT): ../audio/xmidi.cpp
 xmi2mid$(EXEEXT): $(xmi2mid_OBJECTS) $(xmi2mid_DEPENDENCIES) 
 	@rm -f xmi2mid$(EXEEXT)
 	$(CXXLINK) $(xmi2mid_LDFLAGS) $(xmi2mid_OBJECTS) $(xmi2mid_LDADD) $(LIBS)
@@ -205,6 +219,9 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cnvdasm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cnvdbg.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/codeloader.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/codevm.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gamestrings.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/level.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mapdisp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/maploader.Po@am__quote@
@@ -212,6 +229,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/texloader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/texture.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xmi2mid.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xmidi.Po@am__quote@
 
 distclean-depend:
 	-rm -rf ./$(DEPDIR)
@@ -227,6 +245,42 @@ distclean-depend:
 @AMDEP_TRUE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(CXXCOMPILE) -c -o $@ `cygpath -w $<`
+
+codevm.o: ../conv/codevm.cpp
+@AMDEP_TRUE@	source='../conv/codevm.cpp' object='codevm.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/codevm.Po' tmpdepfile='$(DEPDIR)/codevm.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o codevm.o `test -f '../conv/codevm.cpp' || echo '$(srcdir)/'`../conv/codevm.cpp
+
+codevm.obj: ../conv/codevm.cpp
+@AMDEP_TRUE@	source='../conv/codevm.cpp' object='codevm.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/codevm.Po' tmpdepfile='$(DEPDIR)/codevm.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o codevm.obj `cygpath -w ../conv/codevm.cpp`
+
+codeloader.o: ../resource/codeloader.cpp
+@AMDEP_TRUE@	source='../resource/codeloader.cpp' object='codeloader.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/codeloader.Po' tmpdepfile='$(DEPDIR)/codeloader.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o codeloader.o `test -f '../resource/codeloader.cpp' || echo '$(srcdir)/'`../resource/codeloader.cpp
+
+codeloader.obj: ../resource/codeloader.cpp
+@AMDEP_TRUE@	source='../resource/codeloader.cpp' object='codeloader.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/codeloader.Po' tmpdepfile='$(DEPDIR)/codeloader.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o codeloader.obj `cygpath -w ../resource/codeloader.cpp`
+
+gamestrings.o: ../resource/gamestrings.cpp
+@AMDEP_TRUE@	source='../resource/gamestrings.cpp' object='gamestrings.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/gamestrings.Po' tmpdepfile='$(DEPDIR)/gamestrings.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gamestrings.o `test -f '../resource/gamestrings.cpp' || echo '$(srcdir)/'`../resource/gamestrings.cpp
+
+gamestrings.obj: ../resource/gamestrings.cpp
+@AMDEP_TRUE@	source='../resource/gamestrings.cpp' object='gamestrings.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/gamestrings.Po' tmpdepfile='$(DEPDIR)/gamestrings.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gamestrings.obj `cygpath -w ../resource/gamestrings.cpp`
 
 level.o: ../level.cpp
 @AMDEP_TRUE@	source='../level.cpp' object='level.o' libtool=no @AMDEPBACKSLASH@
@@ -287,6 +341,18 @@ texture.obj: ../texture.cpp
 @AMDEP_TRUE@	depfile='$(DEPDIR)/texture.Po' tmpdepfile='$(DEPDIR)/texture.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o texture.obj `cygpath -w ../texture.cpp`
+
+xmidi.o: ../audio/xmidi.cpp
+@AMDEP_TRUE@	source='../audio/xmidi.cpp' object='xmidi.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/xmidi.Po' tmpdepfile='$(DEPDIR)/xmidi.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o xmidi.o `test -f '../audio/xmidi.cpp' || echo '$(srcdir)/'`../audio/xmidi.cpp
+
+xmidi.obj: ../audio/xmidi.cpp
+@AMDEP_TRUE@	source='../audio/xmidi.cpp' object='xmidi.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/xmidi.Po' tmpdepfile='$(DEPDIR)/xmidi.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o xmidi.obj `cygpath -w ../audio/xmidi.cpp`
 CXXDEPMODE = @CXXDEPMODE@
 uninstall-info-am:
 

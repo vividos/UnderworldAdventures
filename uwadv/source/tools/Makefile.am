@@ -26,11 +26,15 @@ tools: cnvdasm cnvdbg xmi2mid mapdisp
 # automake rules
 EXTRA_PROGRAMS = cnvdasm cnvdbg xmi2mid mapdisp
 
-cnvdasm_SOURCES = cnvdasm.cpp cnvdasm.hpp instr.hpp
+cnvdasm_SOURCES = cnvdasm.cpp cnvdasm.hpp instr.hpp \
+	../conv/codevm.cpp ../resource/codeloader.cpp \
+	../resource/gamestrings.cpp
 
-cnvdbg_SOURCES = cnvdbg.cpp cnvdbg.hpp instr.hpp
+cnvdbg_SOURCES = cnvdbg.cpp cnvdbg.hpp instr.hpp \
+	../conv/codevm.cpp ../resource/codeloader.cpp \
+	../resource/gamestrings.cpp
 
-xmi2mid_SOURCES = xmi2mid.cpp
+xmi2mid_SOURCES = xmi2mid.cpp ../audio/xmidi.cpp
 
 mapdisp_SOURCES = mapdisp.cpp ../level.cpp ../resource/maploader.cpp \
 	../quadtree.cpp ../resource/texloader.cpp ../texture.cpp
