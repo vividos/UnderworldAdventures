@@ -1,3 +1,556 @@
+2002-11-21 20:40  vividos
+
+	* source/win32/uwadv.nsi (1.16):
+
+	added some files to install
+	
+2002-11-21 20:39  vividos
+
+	* Makefile.mingw (1.42):
+
+	copied some more files for install/installer target
+	
+2002-11-21 20:39  vividos
+
+	* docs/README.uwadv.txt (1.9):
+
+	looking is done with the right mouse button
+	
+2002-11-21 20:11  vividos
+
+	* uadata/uw1/scripts/objlist.lua (1.4):
+
+	removed debug output
+	
+2002-11-21 20:06  vividos
+
+	* source/textscroll.cpp (1.13):
+
+	forgot to upload textscroll texture when not using two texture parts
+	fixes empty scroll in uw_demo
+	
+2002-11-21 19:49  vividos
+
+	* uadata/uw1/scripts/game.lua (1.17):
+
+	change on the wrong place, fixed
+	
+2002-11-21 19:48  vividos
+
+	* uadata/uw1/scripts/game.lua (1.16):
+
+	printed out user-friendly level number when changing levels
+	
+2002-11-21 19:46  vividos
+
+	* docs/README.uwadv.txt (1.8):
+
+	corrected Linux paths
+	
+2002-11-21 19:43  vividos
+
+	* docs/README.uwadv.txt (1.7):
+
+	added note about uw_demo users and changing levels
+	
+2002-11-21 19:41  vividos
+
+	* source/screens/ingame_orig.cpp (1.107):
+
+	added the possibility for uw_demo users to change places in the first level
+	
+2002-11-21 19:37  vividos
+
+	* docs/README.uwadv.txt (1.6):
+
+	updated readme with new text
+	added release notes for 0.6-rotworm-stew
+	
+2002-11-21 18:42  vividos
+
+	* docs/README.music.txt (1.3):
+
+	rewrote a passage
+	
+2002-11-21 13:44  vividos
+
+	* docs/README.music.txt (1.2):
+
+	added install instructions
+	renumbered topics
+	
+2002-11-21 12:46  vividos
+
+	* docs/Changes (1.2):
+
+	fixed release date
+	
+2002-11-21 12:27  vividos
+
+	* configure.ac (1.21), source/win32/uwadv.nsi (1.15):
+
+	updated version number to 0.6-rotworm-stew
+	
+2002-11-21 12:24  vividos
+
+	* README (1.2):
+
+	added Changes file
+	
+2002-11-21 12:21  vividos
+
+	* docs/Changes (1.1):
+
+	added Changes file
+	
+2002-11-21 12:19  vividos
+
+	* docs/uw-formats.txt (1.40):
+
+	corrected some typos
+	
+2002-11-21 00:29  vividos
+
+	* uadata/uw1/scripts/game.lua (1.15):
+
+	changed printed string when changing levels
+	
+2002-11-20 23:09  vividos
+
+	* source/screens/ingame_orig.cpp (1.106):
+
+	fixed mouse button recognition
+	"look at" action for objects is only done when in "default" or "look" mode
+	mouse movement is now left-click only
+	
+2002-11-20 20:46  vividos
+
+	* uadata/uw1/scripts/objlist.lua (1.3):
+
+	fixed looking at object
+	
+2002-11-20 20:45  vividos
+
+	* source/uwscript.cpp (1.22):
+
+	object data is now put in a lua table
+	
+2002-11-20 20:35  vividos
+
+	* source/screens/ingame_orig.cpp (1.105):
+
+	fixed bug where player walked forward when pressing the backward key as first action (a variable wasn't initialized)
+	
+2002-11-20 19:32  vividos
+
+	* source/keymap.cpp (1.11):
+
+	re-added needed include
+	
+2002-11-20 19:27  vividos
+
+	* source/resource/cfgfile.cpp (1.8):
+
+	re-added needed include file
+	
+2002-11-20 19:10  vividos
+
+	* source/resource/objloader.cpp (1.12):
+
+	added byte to object data array that has conversation slot to use
+	
+2002-11-20 18:38  vividos
+
+	* source/uwadv.cpp (1.40):
+
+	added some trace output of OpenGL stats
+	
+2002-11-20 17:41  vividos
+
+	* source/resource/cfgfile.cpp (1.7):
+
+	removed unneeded include
+	
+2002-11-20 17:38  vividos
+
+	* source/resource/critloader.cpp (1.7):
+
+	fixed rare circumstance that hotspot coordinates were outside of the image
+	fixes the NPC sprites of fighters being only partly shown/loaded
+	
+2002-11-20 17:04  vividos
+
+	* source/utils.cpp (1.11):
+
+	added needed include
+	
+2002-11-20 17:04  vividos
+
+	* source/: audio/audio.cpp (1.26), keymap.cpp (1.10), settings.cpp
+	(1.11):
+
+	used ua_str_lowercase() instead of std::transform() construct
+	removed unneeded includes of algorithm and cctype
+	
+2002-11-20 16:59  vividos
+
+	* source/: utils.cpp (1.10), utils.hpp (1.7):
+
+	added function to make a std::string lowercase
+	
+2002-11-20 16:52  vividos
+
+	* source/renderer.cpp (1.21):
+
+	fixed rendering of objects on the ceiling
+	
+2002-11-20 16:51  vividos
+
+	* source/renderer.cpp (1.20):
+
+	fixed size of NPC sprites
+	
+2002-11-20 16:50  vividos
+
+	* source/: critter.hpp (1.5), resource/critloader.cpp (1.6):
+
+	corrected meaning of get_hotspot_u/v functions
+	
+2002-11-20 09:35  vividos
+
+	* source/resource/modeldecode.cpp (1.2):
+
+	fixed compiler error: wrong for loop counter was used
+	reported by QQtis
+	
+2002-11-20 01:07  vividos
+
+	* source/screens/uwadv_menu.cpp (1.3):
+
+	changed startup behaviour to be like in release mode
+	
+2002-11-20 01:05  vividos
+
+	* docs/.cvsignore (1.1):
+
+	ignored some files and folders
+	
+2002-11-20 00:59  vividos
+
+	* source/: mousecursor.hpp (1.6), audio/xmidi.hpp (1.8),
+	conv/codevm.hpp (1.15), physics.hpp (1.15), physicsobject.hpp
+	(1.3), player.hpp (1.21), uwadv.hpp (1.15),
+	resource/gamestrings.cpp (1.14):
+
+	fixed all remaining doxygen warnings
+	
+2002-11-20 00:52  vividos
+
+	* source/debug/: dbgapp.cpp (1.3), mainframe.cpp (1.4), pch.cpp
+	(1.2), playerinfo.cpp (1.3), playerinfo.hpp (1.3):
+
+	fixed doxygen comment sections
+	
+2002-11-20 00:45  vividos
+
+	* docs/uw-formats.txt (1.39):
+
+	corrected some errors in 3d model "unknown node" section
+	
+2002-11-20 00:44  vividos
+
+	* source/: Makefile.common (1.20), win32/uwadv.dsp (1.46):
+
+	added modeldecode.cpp
+	
+2002-11-20 00:42  vividos
+
+	* source/resource/modeldecode.cpp (1.1):
+
+	added first try at 3d model decoding
+	
+2002-11-19 23:41  vividos
+
+	* docs/uw-formats.txt (1.38):
+
+	fixed some file offsets for model nodes
+	corrected info for node "008C define vertex variable height"
+	
+2002-11-19 23:29  vividos
+
+	* docs/uw-formats.txt (1.37):
+
+	added changes from LoW project's uw-formats.txt
+	
+2002-11-19 21:42  vividos
+
+	* Makefile.mingw (1.41), source/Makefile.common (1.19),
+	source/audio/midi.cpp (1.18), source/win32/uwadv.dsp (1.45),
+	source/audio/midi_driver/uni_fmod.cpp (1.11),
+	source/audio/midi_driver/uni_fmod.h (1.7):
+
+	removed FMOD support altogether
+	
+2002-11-19 00:27  vividos
+
+	* source/texture.cpp (1.26):
+
+	changed wrap_s param for wall textures
+	
+2002-11-19 00:26  vividos
+
+	* docs/ua-todo-list.txt (1.6):
+
+	removed some tasks that are done
+	
+2002-11-18 23:39  vividos
+
+	* source/linux/uwadv.6.in (1.6):
+
+	changed text for "diagnostics" section
+	added Telemachos to the dev list
+	
+2002-11-18 23:17  vividos
+
+	* source/linux/uwadv.6.in (1.5):
+
+	removed superfluous slashes
+	
+2002-11-18 23:06  vividos
+
+	* docs/Authors.txt (1.8):
+
+	updated Underworld Adventures Team list
+	
+2002-11-18 22:44  wjpalenstijn
+
+	* source/linux/uwadv.6.in (1.4):
+
+	removed faulty docdir
+	
+2002-11-18 22:42  wjpalenstijn
+
+	* source/linux/uwadv.spec.in (1.9):
+
+	don't package README.music.txt after all
+	
+2002-11-18 21:25  wjpalenstijn
+
+	* configure.ac (1.20):
+
+	removed some arguably-not-so-useful tests from configure
+	
+2002-11-18 21:24  wjpalenstijn
+
+	* source/Makefile.am (1.47), uadata/Makefile.am (1.8):
+
+	fixed make dist and make install
+	
+2002-11-18 21:03  wjpalenstijn
+
+	* source/linux/uwadv.spec.in (1.8):
+
+	add README.music.txt to .spec
+	
+2002-11-18 21:00  wjpalenstijn
+
+	* source/: .cvsignore (1.8), linux/.cvsignore (1.13):
+
+	updated .cvsignore
+	
+2002-11-18 20:58  wjpalenstijn
+
+	* configure.ac (1.19), source/Makefile.am (1.46),
+	source/linux/uwadv.6.in (1.3):
+
+	fixed typo in manpage; properly replace paths in manpage
+	
+2002-11-18 20:56  vividos
+
+	* Makefile.am (1.9):
+
+	added README.music.txt
+	
+2002-11-18 20:55  vividos
+
+	* docs/README.music.txt (1.1):
+
+	added initial "digital music" readme from QQtis
+	
+2002-11-18 20:48  vividos
+
+	* source/: physics.cpp (1.23), physics.hpp (1.14):
+
+	removed all old 2d collision detection/response code
+	
+2002-11-18 17:48  vividos
+
+	* hacking/uwmdldec/uwmdldec.cpp (1.2):
+
+	added more chunks to parse
+	
+2002-11-18 17:43  vividos
+
+	* docs/uw-formats.txt (1.36):
+
+	some additions to the 3d model infos
+	
+2002-11-18 17:25  vividos
+
+	* docs/uw-formats.txt (1.35):
+
+	added infos about 3d model nodes
+	
+2002-11-18 15:27  vividos
+
+	* docs/uw-formats.txt (1.34):
+
+	added file list of uw_demo
+	added infos about sound effects file
+	
+2002-11-18 15:27  vividos
+
+	* hacking/miscdecode/miscdecode.cpp (1.8):
+
+	added "sounds.dat" info extraction
+	
+2002-11-15 19:42  vividos
+
+	* docs/README.Lua.txt (1.18):
+
+	updated objlist table format to contain all object properties
+	
+2002-11-15 19:07  vividos
+
+	* source/tools/cnvdasm.cpp (1.13):
+
+	retrieved lists of imported functions and globals for call to ua_conv_graph::init()
+	
+2002-11-15 19:03  vividos
+
+	* source/conv/: convgraph.cpp (1.2), convgraph.hpp (1.2):
+
+	removed function xref_labels()
+	modified how function format_global() works
+	
+2002-11-15 18:58  vividos
+
+	* source/tools/cnvdasm.cpp (1.12):
+
+	added output for decompiled graph
+	
+2002-11-15 17:51  vividos
+
+	* source/player.cpp (1.22):
+
+	made collision ellipsoid a bit smaller to climb on tiles up to height 26.0 (32.0 is the ceiling)
+	
+2002-11-15 17:02  vividos
+
+	* source/screens/ingame_orig.cpp (1.104):
+
+	made moving with keyboard while clicking/using mouse movement smoother
+	
+2002-11-15 16:50  vividos
+
+	* source/screens/ingame_orig.cpp (1.103):
+
+	implemented looking at objects (via Lua script) and looking at walls/floor/ceiling
+	
+2002-11-15 16:40  vividos
+
+	* uadata/uw1/scripts/objlist.lua (1.2):
+
+	added first implementation for function lua_objlist_look
+	
+2002-11-15 15:47  vividos
+
+	* source/uwscript.cpp (1.21):
+
+	fixed error in ua_obj_handle_decode: "level" param was not passed by reference
+	
+2002-11-15 15:33  vividos
+
+	* source/uwscript.cpp (1.20):
+
+	wrong parameter order in ui_get_gamestring
+	
+2002-11-15 15:21  vividos
+
+	* source/uwscript.cpp (1.19):
+
+	added all object properties in function objlist_get_obj_info
+	registered ui_get_gamestring function to use in Lua
+	
+2002-11-15 15:19  vividos
+
+	* source/renderer.cpp (1.19):
+
+	fixed rendering of objects with new ua_object members
+	
+2002-11-15 15:18  vividos
+
+	* source/: inventory.cpp (1.21), inventory.hpp (1.10):
+
+	fixed usage of ua_object_info struct members
+	
+2002-11-15 15:13  vividos
+
+	* source/: objects.cpp (1.19), objects.hpp (1.14),
+	resource/objloader.cpp (1.11):
+
+	changed ua_object to support all object properties
+	
+2002-11-15 14:32  vividos
+
+	* configure.ac (1.18):
+
+	added define of HAVE_DEBUG when configuring with --enable-debug
+	
+2002-11-15 13:42  vividos
+
+	* docs/README.tools.txt (1.6):
+
+	fixed some typos
+	
+2002-11-15 13:41  vividos
+
+	* source/tools/mapdisp.cpp (1.10):
+
+	triangle list is now cleared before refilling
+	added level number and triangle count to window caption output
+	
+2002-11-15 13:39  vividos
+
+	* source/resource/maploader.cpp (1.18):
+
+	ceiling texture for level 8 (ethereal void) is now 26 (black)
+	ceiling texture is added to used textures for level when importing
+	
+2002-11-15 13:38  vividos
+
+	* source/level.cpp (1.32):
+
+	ceiling texture is now added to used textures when loading a level
+	
+2002-11-15 13:15  vividos
+
+	* uadata/uw1/scripts/game.lua (1.14):
+
+	added some more coordinates
+	
+2002-11-14 17:53  vividos
+
+	* uadata/uw1/scripts/game.lua (1.13):
+
+	added level starting positions for levels 1 to 5
+	
+2002-11-13 18:53  vividos
+
+	* ChangeLog (1.29):
+
+	updated
+	
 2002-11-13 15:40  vividos
 
 	* source/tools/Makefile.am (1.24):
