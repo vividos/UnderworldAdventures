@@ -37,6 +37,70 @@
 #include "fread_endian.hpp"
 
 
+// ua_conv_code_vm methods
+
+void ua_conv_code_vm::load_imported_funcs(FILE *fd)
+{
+   imported_funcs.clear();
+   imported_globals.clear();
+
+   // read number of imported funcs
+   Uint16 funcs = fread16(fd);
+
+   for(int i=0; i<funcs; i++)
+   {
+      // length of function name
+      Uint16 fname_len = fread16(fd);
+      if (fname_len>255) fname_len = 255;
+
+      char funcname[256];
+      fread(funcname,1,fname_len,fd);
+      funcname[fname_len]=0;
+
+      // function ID
+      Uint16 func_id = fread16(fd);
+      Uint16 fn_unknown1 = fread16(fd); // always seems to be 1
+      Uint16 import_type = fread16(fd);
+      Uint16 ret_type = fread16(fd);
+
+      // fill imported item struct
+      ua_conv_imported_item iitem;
+
+      // determine return type
+      if (ret_type == 0x0000) iitem.ret_type = ua_rt_void;
+      else
+      if (ret_type == 0x0129) iitem.ret_type = ua_rt_int;
+      else
+      if (ret_type == 0x012b) iitem.ret_type = ua_rt_string;
+      else
+         throw ua_exception("unknown return type in conv imports list");
+
+      iitem.name = funcname;
+
+      // store imported item in appropriate list
+      if (import_type == 0x0111)
+      {
+         // imported function
+         if (imported_funcs.size()<func_id)
+            imported_funcs.resize(func_id+1);
+
+         imported_funcs[func_id] = iitem;
+      }
+      else
+      if (import_type == 0x010F)
+      {
+         // imported global
+         if (imported_globals.size()<func_id)
+            imported_globals.resize(func_id+1);
+
+         imported_globals[func_id] = iitem;
+      }
+      else
+         throw ua_exception("unknown import type in conv imports list");
+   }
+}
+
+
 // ua_conv_globals methods
 
 /*! when init is set to true, the file to load only contains size entries, and no
@@ -132,65 +196,4 @@ bool ua_conv_code_vm::load_code(const char *cnvfile, Uint16 conv)
       code[i] = fread16(fd);
 
    return true;
-}
-
-void ua_conv_code_vm::load_imported_funcs(FILE *fd)
-{
-   imported_funcs.clear();
-   imported_globals.clear();
-
-   // read number of imported funcs
-   Uint16 funcs = fread16(fd);
-
-   for(int i=0; i<funcs; i++)
-   {
-      // length of function name
-      Uint16 fname_len = fread16(fd);
-      if (fname_len>255) fname_len = 255;
-
-      char funcname[256];
-      fread(funcname,1,fname_len,fd);
-      funcname[fname_len]=0;
-
-      // function ID
-      Uint16 func_id = fread16(fd);
-      Uint16 fn_unknown1 = fread16(fd); // always seems to be 1
-      Uint16 import_type = fread16(fd);
-      Uint16 ret_type = fread16(fd);
-
-      // fill imported item struct
-      ua_conv_imported_item iitem;
-
-      // determine return type
-      if (ret_type == 0x0000) iitem.ret_type = ua_rt_void;
-      else
-      if (ret_type == 0x0129) iitem.ret_type = ua_rt_int;
-      else
-      if (ret_type == 0x012b) iitem.ret_type = ua_rt_string;
-      else
-         throw ua_exception("unknown return type in conv imports list");
-
-      iitem.name = funcname;
-
-      // store imported item in appropriate list
-      if (import_type == 0x0111)
-      {
-         // imported function
-         if (imported_funcs.size()<func_id)
-            imported_funcs.resize(func_id+1);
-
-         imported_funcs[func_id] = iitem;
-      }
-      else
-      if (import_type == 0x010F)
-      {
-         // imported global
-         if (imported_globals.size()<func_id)
-            imported_globals.resize(func_id+1);
-
-         imported_globals[func_id] = iitem;
-      }
-      else
-         throw ua_exception("unknown import type in conv imports list");
-   }
 }
