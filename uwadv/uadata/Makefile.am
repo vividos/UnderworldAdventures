@@ -17,7 +17,9 @@ CLEANFILES = \
 	$(luaOBJECTS)
 
 uadata00.uar: $(uarFILES)
-	zip uadata00.uar $(uarFILES)
+	@mkdir -p $(@D)
+	zip $@ $+
 
 %.lob : %.lua
+	@mkdir -p $(@D)
 	$(LUAC) -o $@ $<

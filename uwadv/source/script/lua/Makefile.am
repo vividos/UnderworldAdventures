@@ -1,4 +1,4 @@
-INCLUDES = -Isrc -Iinclude
+INCLUDES = -I$(srcdir)/src -I$(srcdir)/include
 
 noinst_LTLIBRARIES = liblua.la liblualib.la
 

@@ -7,7 +7,7 @@
 SUBDIRS = tools resource lua
 
 # compiler options
-CXXFLAGS = -I. $(SDL_CFLAGS) $(X_CFLAGS) -Wall
+CXXFLAGS = -I. -I$(srcdir) $(SDL_CFLAGS) $(X_CFLAGS) -Wall
 LDFLAGS = $(SDL_LIBS) $(X_LIBS) -lSDL_mixer
 
 

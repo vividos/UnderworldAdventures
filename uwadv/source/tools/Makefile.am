@@ -5,7 +5,7 @@
 #
 
 # compiler options
-CXXFLAGS = -I.. $(SDL_CFLAGS) $(X_CFLAGS)
+CXXFLAGS = -I.. -I$(srcdir)/.. $(SDL_CFLAGS) $(X_CFLAGS)
 LDFLAGS = $(SDL_LIBS) $(X_LIBS)
 
 
