@@ -42,8 +42,8 @@ struct
    ua_settings_key key;
 } ua_settings_mapping[] =
 {
-   { "uw1path", ua_setting_uw1_path },
-// { "uw2path", ua_setting_uw2_path },
+   { "uw1-path", ua_setting_uw1_path },
+// { "uw2-path", ua_setting_uw2_path },
    { "uadata-path", ua_setting_uadata_path },
    { "fullscreen", ua_setting_fullscreen },
    { "cutscene-narration", ua_setting_cuts_narration },
