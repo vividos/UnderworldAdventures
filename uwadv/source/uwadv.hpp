@@ -85,6 +85,7 @@ public:
    virtual ua_image_manager& get_image_manager();
    virtual ua_renderer& get_renderer();
    virtual ua_scripting& get_scripting();
+   virtual ua_debug_server& get_debugger();
    virtual ua_underworld& get_underworld();
    virtual void replace_screen(ua_screen* new_screen, bool save_current);
    virtual void remove_screen();
@@ -200,6 +201,11 @@ inline ua_renderer& ua_uwadv_game::get_renderer()
 inline ua_scripting& ua_uwadv_game::get_scripting()
 {
    return scripting;
+}
+
+inline ua_debug_server& ua_uwadv_game::get_debugger()
+{
+   return debug;
 }
 
 inline ua_underworld& ua_uwadv_game::get_underworld()

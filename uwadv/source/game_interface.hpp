@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -44,6 +44,7 @@ class ua_image_manager;
 class ua_renderer;
 class ua_scripting;
 class ua_underworld;
+class ua_debug_server;
 class ua_screen;
 
 
@@ -95,6 +96,9 @@ public:
 
    //! returns scripting object
    virtual ua_scripting& get_scripting()=0;
+   
+   //! returns debugger object
+   virtual ua_debug_server& get_debugger()=0;
 
    //! returns underworld object
    virtual ua_underworld& get_underworld()=0;
