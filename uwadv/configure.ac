@@ -143,7 +143,7 @@ fi
 
 
 # Build the debugger?
-AC_ARG_ENABLE(uadebug,    [  --enable-uadebug         Enables building the tools; note that wxWindows is needed],,enable_uadebug=no)
+AC_ARG_ENABLE(uadebug,    [  --enable-uadebug        Enables building the tools; note that wxWindows is needed],,enable_uadebug=no)
 AC_MSG_CHECKING(whether to build the underworld debugger)
 if test x$enable_uadebug = xyes; then
         AC_MSG_RESULT(yes)
@@ -174,6 +174,7 @@ AC_SUBST(OPENGL_LIBS)
 AC_CONFIG_FILES([
 Makefile
 source/Makefile
+source/debug/Makefile
 source/tools/Makefile
 source/resource/Makefile
 source/resource/zziplib/Makefile
