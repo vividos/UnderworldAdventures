@@ -183,12 +183,19 @@ void ua_audio_impl::start_music(unsigned int music, bool repeat)
 
    ua_trace("audio: playing back %s",trackname.c_str());
 
-   // make lowercase
-   std::transform(trackname.begin(),trackname.end(),trackname.begin(),::tolower);
+   // find extension
+   std::string ext;
+   std::string::size_type pos = trackname.find_last_of('.');
+
+   if (pos != std::string::npos)
+      ext.assign(trackname.substr(pos));
+
+   // make extension lowercase
+   std::transform(ext.begin(),ext.end(),ext.begin(),::tolower);
 
    // check for midi tracks
-   if (trackname.find(".xmi") != std::string::npos ||
-       trackname.find(".mid") != std::string::npos)
+   if (ext.find(".xmi") != std::string::npos ||
+       ext.find(".mid") != std::string::npos)
    {
       // start midi player
       midipl.start_track(trackname.c_str(),0,repeat);
