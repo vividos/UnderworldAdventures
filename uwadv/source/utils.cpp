@@ -25,14 +25,21 @@
 
 */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 // needed includes
 #include <string>
 #include <cstdarg>
+#include <cstdio>
 
 #ifdef WIN32
 #include <direct.h> // for mkdir
 #endif
-
+#ifdef HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
 
 //! creates a folder
 /*! borrowed from Exult, files/utils.cc */
