@@ -72,6 +72,9 @@ public:
    virtual void mouse_event(bool button_clicked, bool left_button,
       bool button_down, unsigned int mousex, unsigned int mousey);
 
+   //! called every game tick
+   virtual void tick();
+
    //! returns window position x coordinate
    unsigned int get_xpos() const { return wnd_xpos; }
    //! returns window position y coordinate

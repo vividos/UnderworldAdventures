@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2003 Underworld Adventures Team
+   Copyright (c) 2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -68,6 +68,10 @@ bool ua_window::process_event(SDL_Event& event)
     left. */
 void ua_window::mouse_event(bool button_clicked, bool left_button,
    bool button_down, unsigned int mousex, unsigned int mousey)
+{
+}
+
+void ua_window::tick()
 {
 }
 
