@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@
 
 // ua_font methods
 
-unsigned int ua_font::calc_length(const char *str)
+unsigned int ua_font::calc_length(const char* str)
 {
    unsigned int width=0, len=strlen(str);
    for(unsigned int i=0; i<len; i++)
@@ -64,14 +64,14 @@ unsigned int ua_font::calc_length(const char *str)
    return width;
 }
 
-void ua_font::create_string(ua_image &image, const char *str, Uint8 fg_idx)
+void ua_font::create_string(ua_image& image, const char* str, Uint8 fg_idx)
 {
    // create image with proper size
-   unsigned int width=calc_length(str), len = strlen(str);
+   unsigned int width = calc_length(str), len = strlen(str);
 
    image.create(width,charheight);
 
-   std::vector<Uint8> &pixels = image.get_pixels();
+   std::vector<Uint8>& pixels = image.get_pixels();
 
    unsigned int pos=0;
 

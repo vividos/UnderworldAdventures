@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,8 +26,8 @@
 */
 
 // include guard
-#ifndef __uwadv_font_hpp_
-#define __uwadv_font_hpp_
+#ifndef uwadv_font_hpp_
+#define uwadv_font_hpp_
 
 // needed includes
 #include <vector>
@@ -59,19 +59,19 @@ public:
    //~ua_font();
 
    //! initializes and loads a font
-   void init(ua_settings &settings, ua_font_id fontid);
+   void init(ua_settings& settings, ua_font_id fontid);
 
    //! initializes and loads a font from file
-   void init(const char *fontname);
+   void init(const char* fontname);
 
    //! returns height of chars in pixels
    unsigned int get_charheight(){ return charheight; }
 
    //! calculates and returns length of string in pixel
-   unsigned int calc_length(const char *str);
+   unsigned int calc_length(const char* str);
 
    //! creates image from string, using the font, using a foreground palette index
-   void create_string(ua_image &image, const char *str, Uint8 fg_idx);
+   void create_string(ua_image& image, const char* str, Uint8 fg_idx);
 
 protected:
    //! font data
