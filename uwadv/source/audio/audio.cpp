@@ -198,7 +198,6 @@ void ua_audio_impl::start_music(unsigned int music, bool repeat)
    {
       // start midi player
       midipl.start_track(trackname.c_str(),0,repeat);
-      ua_trace(" (%s)",Mix_GetError());
    }
    else
    {
