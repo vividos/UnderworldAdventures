@@ -59,6 +59,8 @@ ua_player::ua_player()
 {
    name.assign("GRONKEY");
    ellipsoid = ua_vector3d(ua_ellipsoid_x, ua_ellipsoid_y, ua_ellipsoid_z);
+   fall_time = 0.0;
+   fall_height_start = 0.0;
 }
 
 void ua_player::init(ua_underworld& underw)
@@ -254,6 +256,7 @@ void ua_player::rotate_move(double time_elapsed)
 
 void ua_player::set_new_elapsed_time(double time_elapsed)
 {
+   fall_time += time_elapsed;
 }
 
 ua_vector3d ua_player::get_pos()
@@ -301,15 +304,23 @@ ua_vector3d ua_player::get_dir()
 
 void ua_player::reset_gravity()
 {
+   fall_time = 0.0;
+   fall_height_start = height;
 }
 
 ua_vector3d ua_player::get_gravity_force()
 {
-   return ua_vector3d(0.0, 0.0, -1.0);
+   double gravity = 15.0*fall_time*fall_time;
+
+   // limit gravity for falling
+   if (gravity > 10.0)
+      gravity = 10.0;
+
+   return ua_vector3d(0.0, 0.0, -gravity);
 }
 
 /*! \todo hurt player when falling from too high */
 void ua_player::hit_floor()
 {
-//   fall_time = 0.0;
+   double fall_height = fall_height_start - height;
 }

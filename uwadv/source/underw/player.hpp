@@ -259,6 +259,12 @@ protected:
 
    //! runes object
    ua_runes runes;
+
+   //! current fall time
+   double fall_time;
+
+   //! player height at fall start
+   double fall_height_start;
 };
 
 
