@@ -26,14 +26,13 @@
 */
 
 // include guard
-#ifndef __uwadv_conversation_hpp_
-#define __uwadv_conversation_hpp_
+#ifndef uwadv_conversation_hpp_
+#define uwadv_conversation_hpp_
 
 // needed includes
 #include "screen.hpp"
 #include "imgquad.hpp"
 #include "textscroll.hpp"
-#include "mousecursor.hpp"
 #include "conv/codevm.hpp"
 
 
@@ -65,9 +64,9 @@ public:
 
    // virtual functions from ua_ui_screen_base
 
-   virtual void init();
+   virtual void init(ua_game_core_interface* core);
    virtual void done();
-   virtual void handle_event(SDL_Event &event);
+   virtual bool handle_event(SDL_Event& event);
    virtual void render();
    virtual void tick();
 
@@ -103,9 +102,6 @@ protected:
 
    //! menu text scroll
    ua_textscroll scroll_menu;
-
-   //! mouse cursor
-   ua_mousecursor mousecursor;
 
    //! current fade tickcount
    unsigned int fade_ticks;

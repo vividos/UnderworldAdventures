@@ -51,9 +51,11 @@ ua_conversation_screen::ua_conversation_screen(
 {
 }
 
-void ua_conversation_screen::init()
+void ua_conversation_screen::init(ua_game_core_interface* thecore)
 {
-   ua_trace("started conversation screen\n");
+   ua_ui_screen_base::init(thecore);
+
+   ua_trace("conversation screen started\n");
    ua_trace("talking to npc at level %u, objpos %u, ",level,objpos);
 
    // get npc object to talk to
@@ -236,10 +238,10 @@ void ua_conversation_screen::done()
    scroll_menu.done();
    mousecursor.done();
 
-   ua_trace("ended conversation screen\n");
+   ua_trace("conversation screen ended\n\n");
 }
 
-void ua_conversation_screen::handle_event(SDL_Event &event)
+bool ua_conversation_screen::handle_event(SDL_Event& event)
 {
    if (scroll_menu.handle_event(event) || scroll_conv.handle_event(event))
    {
@@ -262,7 +264,7 @@ void ua_conversation_screen::handle_event(SDL_Event &event)
          }
       }
 
-      return;
+      return true;
    }
 
    switch(event.type)
@@ -310,6 +312,7 @@ void ua_conversation_screen::handle_event(SDL_Event &event)
       break;
    default: break;
    }
+   return true;
 }
 
 void ua_conversation_screen::render()
