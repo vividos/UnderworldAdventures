@@ -278,7 +278,7 @@ Table of Contents
    mobile objects (NPCs, critters) and have 8 + 19 bytes each.
 
    0000   Int16*4   general object infos
-   0008   19        mobile object infos (see below)
+   0008   19        mobile object extra infos (see below)
 
    The reamaining 768 object entries starting at 0x100 only have general
    object infos and are 8 bytes long each.
@@ -378,6 +378,31 @@ Table of Contents
     01a3: a_look trigger
     01a5: an_open trigger
     01a6: an_unlock trigger
+
+   Mobile object extra infos
+   -------------------------
+   The infos are 19 bytes long each and can be split up like this:
+
+      0000   Int8   unknown
+      0001   Int8   unknown
+      0002   Int8   unknown
+      0003   Int8   unknown
+      0004   Int8   unknown
+      0005   Int8   unknown
+      0006   Int8   unknown
+      0007   Int8   unknown
+      0008   Int8   unknown
+      0009   Int8   unknown
+      000a   Int8   unknown
+      000b   Int8   unknown
+      000c   Int8   unknown
+      000d   Int8   unknown
+      000e   Int16  npc home coordinates:
+                       bits 0-5:  npc_yhome
+                       bits 6-11: npc_xhome
+      0010   Int8   unknown
+      0011   Int8   unknown
+      0012   Int8   npc_whoami, conversation slot to use (or 0 for none)
 
    Free list, mobile objects
    -------------------------
