@@ -35,7 +35,15 @@
 #include "objects.hpp"
 
 
+// constants
+
+//! item position or item id that indicates "no item"
+const Uint16 ua_slot_no_item = 0xffff;
+
+
 // enums
+
+//! inventory slot enum
 typedef enum
 {
    ua_slot_topmost_first_item=0, // topmost inventory; first item list pos
@@ -86,11 +94,17 @@ public:
    //! returns number of slots
    unsigned int get_num_slots();
 
-   //! returns one of the 8 item slots
+   //! returns position of one of the item slots
    Uint16 get_slot_item(unsigned int index);
 
-   //! returns current container item id; 0xffff when topmost
+   //! returns current container item pos, or ua_slot_no_item when topmost
+   Uint16 get_container_item();
+
+   //! returns current container item id, or ua_slot_no_item when topmost
    Uint16 get_container_item_id();
+
+   //! returns true if the given item id is a container
+   bool is_container(Uint16 item_id);
 
    //! opens a container and sets it as current
    void open_container(Uint16 index);
@@ -100,7 +114,7 @@ public:
 
    // floating object functionality
 
-   //! returns currently floating item, or 0xffff when none floats
+   //! returns currently floating item, or ua_slot_no_item when none floats
    Uint16 get_floating_item();
 
    //! makes an item "floating", by slot index
@@ -115,12 +129,21 @@ public:
    //! drops a floating item onto the given itemlist index
    bool drop_floating_item(Uint16 index);
 
+   //! drops a floating item into the parent's list
+   bool drop_floating_item_parent();
+
 protected:
    //! builds new slot link list
    void build_slot_link_list(Uint16 link1);
 
-   //! allocates a new item; returns 0xffff when no itemlist position is free
+   //! allocates a new item; returns ua_slot_no_item when no itemlist position is free
    Uint16 allocate_item();
+
+   //! removes an object from current inventory by unlinking it
+   void unlink_object(Uint16 item);
+
+   //! appends item to link1'ed container list
+   void append_item(Uint16 cont, Uint16 item);
 
 protected:
    //! rune bag
