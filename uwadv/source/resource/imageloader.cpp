@@ -43,7 +43,7 @@
 // needed includes
 #include "common.hpp"
 #include "image.hpp"
-#include "fread_endian.hpp"
+#include "../import/io_endian.hpp"
 
 
 // global methods

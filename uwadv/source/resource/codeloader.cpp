@@ -34,7 +34,7 @@
 // needed includes
 #include "common.hpp"
 #include "../conv/codevm.hpp"
-#include "fread_endian.hpp"
+#include "../import/io_endian.hpp"
 
 
 // ua_conv_code_vm methods

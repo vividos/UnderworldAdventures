@@ -30,7 +30,7 @@
 // needed includes
 #include "common.hpp"
 #include "cutscene.hpp"
-#include "fread_endian.hpp"
+#include "../import/io_endian.hpp"
 
 
 // ua_cutscene methods

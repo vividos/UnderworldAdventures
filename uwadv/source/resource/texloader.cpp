@@ -28,7 +28,7 @@
 // needed includes
 #include "common.hpp"
 #include "texture.hpp"
-#include "fread_endian.hpp"
+#include "../import/io_endian.hpp"
 
 
 // extern texture import functions

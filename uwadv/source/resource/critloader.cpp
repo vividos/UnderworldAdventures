@@ -30,7 +30,7 @@
 // needed includes
 #include "common.hpp"
 #include "critter.hpp"
-#include "fread_endian.hpp"
+#include "../import/io_endian.hpp"
 
 
 // external functions

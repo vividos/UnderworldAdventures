@@ -28,7 +28,7 @@
 // needed includes
 #include "common.hpp"
 #include <vector>
-#include "fread_endian.hpp"
+#include "../import/io_endian.hpp"
 
 
 // global functions
