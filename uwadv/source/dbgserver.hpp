@@ -112,6 +112,15 @@ public:
    virtual bool check_interface_version(
       unsigned int interface_ver=ua_debug_server_interface_version)=0;
 
+   //! returns server flag
+   virtual unsigned int get_flag(unsigned int flag_id)=0;
+
+   //! returns current game path, or "" when none
+   virtual const char* get_game_path()=0;
+
+   //! loads new game, or unloads game when "" is set as path
+   virtual void load_game(const char* path)=0;
+
    //! locks/unlocks underworld
    virtual void lock(bool set_lock)=0;
 

@@ -95,6 +95,12 @@ protected:
 
    virtual bool check_interface_version(unsigned int interface_ver);
 
+   virtual unsigned int get_flag(unsigned int flag_id);
+
+   virtual const char* get_game_path();
+
+   virtual void load_game(const char* path);
+
    virtual unsigned int get_message_num();
 
    virtual bool get_message(unsigned int& msg_type,

@@ -228,6 +228,41 @@ bool ua_debug_server::check_interface_version(unsigned int interface_ver)
    return interface_ver == ua_debug_server_interface_version;
 }
 
+unsigned int ua_debug_server::get_flag(unsigned int flag_id)
+{
+   unsigned int flag = 0;
+   switch(flag_id)
+   {
+   case 0:
+#ifdef COMPILE_UASTUDIO
+      flag = 1; // in uastudio mode
+#else
+      flag = 0;
+#endif
+      break;
+
+   default:
+      ua_assert(false);
+      break;
+   }
+   return flag;
+}
+
+const char* ua_debug_server::get_game_path()
+{
+   return "";//game->get_settings().get_string(ua_setting_game_prefix);
+}
+
+void ua_debug_server::load_game(const char* path)
+{
+   game->done_game();
+
+   std::string strpath(path);
+   game->get_settings().set_value(ua_setting_game_prefix, strpath);
+
+   game->init_game();
+}
+
 unsigned int ua_debug_server::get_message_num()
 {
    return message_queue.size();
