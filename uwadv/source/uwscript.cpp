@@ -138,14 +138,33 @@ void ua_underworld_script_bindings::register_functions()
    lua_register(L,"player_get_angle",player_get_angle);
    lua_register(L,"player_set_angle",player_set_angle);
 
+   lua_register(L,"objlist_get_obj_info",objlist_get_obj_info);
+   lua_register(L,"objlist_set_obj_info",objlist_set_obj_info);
+   lua_register(L,"objlist_remove_obj",objlist_remove_obj);
+   lua_register(L,"objlist_obj_is_npc",objlist_obj_is_npc);
+   lua_register(L,"objlist_insert_obj",objlist_insert_obj);
+
    lua_register(L,"tilemap_get_tile",tilemap_get_tile);
    lua_register(L,"tilemap_get_type",tilemap_get_type);
    lua_register(L,"tilemap_set_type",tilemap_set_type);
    lua_register(L,"tilemap_get_floor",tilemap_get_floor);
    lua_register(L,"tilemap_set_floor",tilemap_set_floor);
-   lua_register(L,"tilemap_get_automap_visible",tilemap_get_automap_visible);
-   lua_register(L,"tilemap_set_automap_visible",tilemap_set_automap_visible)  ;
+   lua_register(L,"tilemap_get_ceiling",tilemap_get_ceiling);
+   lua_register(L,"tilemap_set_ceiling",tilemap_set_ceiling);
    lua_register(L,"tilemap_get_objlist_start",tilemap_get_objlist_start);
+
+   lua_register(L,"conv_get_global",conv_get_global);
+   lua_register(L,"conv_set_global",conv_set_global);
+
+   lua_register(L,"ui_start_conv",ui_start_conv);
+   lua_register(L,"ui_show_cutscene",ui_show_cutscene);
+   lua_register(L,"ui_print_string",ui_print_string);
+   lua_register(L,"ui_show_ingame_anim",ui_show_ingame_anim);
+   lua_register(L,"ui_cursor_use_item",ui_cursor_use_item);
+   lua_register(L,"ui_cursor_target",ui_cursor_target);
+
+   lua_register(L,"savegame_store_value",savegame_store_value);
+   lua_register(L,"savegame_restore_value",savegame_restore_value);
 }
 
 void ua_underworld_script_bindings::checked_lua_call(int params, int retvals)
@@ -168,6 +187,11 @@ double ua_underworld_script_bindings::get_lua_constant(const char *name)
    return val;
 }
 
+void ua_underworld_script_bindings::register_callback(ua_underworld_script_callback* cback)
+{
+   callback = cback;
+}
+
 void ua_underworld_script_bindings::done()
 {
    // call function lua_done_script()
@@ -181,12 +205,21 @@ void ua_underworld_script_bindings::load_game(ua_savegame &sg)
 {
    sg.begin_section("luascript");
 
+   lua_getglobal(L,"lua_savegame_load");
+   lua_pushuserdata(L,&sg);
+   lua_pushnumber(L,static_cast<double>(sg.get_version()));
+   checked_lua_call(2,0);
+
    sg.end_section();
 }
 
 void ua_underworld_script_bindings::save_game(ua_savegame &sg)
 {
    sg.begin_section("luascript");
+
+   lua_getglobal(L,"lua_savegame_save");
+   lua_pushuserdata(L,&sg);
+   checked_lua_call(1,0);
 
    sg.end_section();
 }
@@ -202,6 +235,22 @@ void ua_underworld_script_bindings::lua_game_tick(double curtime)
 
    checked_lua_call(1,0);
 }
+
+void ua_underworld_script_bindings::lua_track()
+{
+   lua_getglobal(L,"lua_track");
+   checked_lua_call(0,0);
+}
+
+bool ua_underworld_script_bindings::lua_sleep(bool start)
+{
+   lua_getglobal(L,"lua_sleep");
+   checked_lua_call(1,1);
+   return true;
+}
+
+
+// lua_inventory_* functions
 
 bool ua_underworld_script_bindings::lua_inventory_is_container(Uint16 item_id)
 {
@@ -248,12 +297,11 @@ void ua_underworld_script_bindings::lua_inventory_use(Uint16 item_pos)
 {
 }
 
-
-ua_obj_combine_result ua_underworld_script_bindings::lua_obj_combine(
-   Uint16 item_id1, Uint16 item_id2, Uint16 &result_id)
+ua_obj_combine_result ua_underworld_script_bindings::lua_inventory_combine_obj(
+   Uint16 item_id1, Uint16 item_id2, Uint16& result_id)
 {
    // call Lua function
-   lua_getglobal(L,"lua_obj_combine");
+   lua_getglobal(L,"lua_inventory_combine_obj");
    lua_pushnumber(L,static_cast<double>(item_id1));
    lua_pushnumber(L,static_cast<double>(item_id2));
 
@@ -401,15 +449,107 @@ int ua_underworld_script_bindings::player_set_angle(lua_State *L)
    return 0;
 }
 
+
+// objlist_* functions
+
+Uint32 ua_obj_handle_encode(Uint32 objpos, Uint32 level)
+{
+   return objpos | (level<<10);
+}
+
+void ua_obj_handle_decode(Uint32 obj_handle, Uint32 &objpos,
+   Uint32 level)
+{
+   objpos = obj_handle & 0x03ff;
+   level = obj_handle>>10;
+}
+
+int ua_underworld_script_bindings::objlist_get_obj_info(lua_State* L)
+{
+   ua_underworld &uw = get_underworld_from_self(L);
+
+   Uint32 obj_handle = static_cast<Uint32>(lua_tonumber(L,-1));
+
+   // decode handle
+   Uint32 objpos=0,level=0;
+   ua_obj_handle_decode(obj_handle,objpos,level);
+
+   ua_object& obj = uw.get_level(level).get_mapobjects().get_object(objpos);
+   ua_object_info& objinfo = obj.get_object_info();
+
+   // create new table and fill it with infos
+   lua_newtable(L);
+
+   lua_pushstring(L,"item_id");
+   lua_pushnumber(L,static_cast<double>(objinfo.item_id));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"quantity");
+   lua_pushnumber(L,static_cast<double>(objinfo.quantity));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"handle_next");
+   lua_pushnumber(L,static_cast<double>(ua_obj_handle_encode(objinfo.link1,level)));
+   lua_settable(L,-3);
+
+/*
+   lua_pushstring(L,"handle_special");
+   lua_pushnumber(L,static_cast<double>(ua_obj_handle_encode(objinfo.quality,level)));
+   lua_settable(L,-3);
+*/
+   // todo: add more table entries
+
+   return 1;
+}
+
+int ua_underworld_script_bindings::objlist_set_obj_info(lua_State* L)
+{
+   // todo: implement
+   return 0;
+}
+
+int ua_underworld_script_bindings::objlist_remove_obj(lua_State* L)
+{
+   // todo: implement
+   return 0;
+}
+
+int ua_underworld_script_bindings::objlist_obj_is_npc(lua_State* L)
+{
+   // todo: implement
+   return 1;
+}
+
+int ua_underworld_script_bindings::objlist_insert_obj(lua_State* L)
+{
+   // todo: implement
+   return 0;
+}
+
+
 // tilemap_* functions
+
+Uint32 ua_tile_handle_encode(Uint32 xpos, Uint32 ypos, Uint32 level)
+{
+   // the tile_handle is just a hash of level, xpos and ypos, but don't tell
+   // the Lua programmers :-)
+   return (level << 12) | (ypos << 6) | xpos;
+}
+
+void ua_tile_handle_decode(Uint32 tile_handle, Uint32& xpos,
+   Uint32& ypos, Uint32& level)
+{
+   // decode the tile_handle hash, as seen in ua_tile_handle_encode()
+   xpos = tile_handle & 63;
+   ypos = (tile_handle >> 6) & 63;
+   level = tile_handle >> 12;
+}
 
 ua_levelmap_tile& ua_underworld_script_bindings::get_tile_per_handle(
    ua_underworld& uw, unsigned int tile_handle)
 {
-   // decode the tile_handle hash, as seen from tilemap_get_tile()
-   unsigned int xpos = tile_handle & 63;
-   unsigned int ypos = (tile_handle >> 6) & 63;
-   unsigned int level = tile_handle >> 12;
+   Uint32 xpos=0,ypos=0,level=0;
+   ua_tile_handle_decode(tile_handle,xpos,ypos,level);
 
    ua_level& levelmap = uw.get_level(level);
    return levelmap.get_tile(xpos,ypos);
@@ -420,16 +560,14 @@ int ua_underworld_script_bindings::tilemap_get_tile(lua_State* L)
    ua_underworld &uw = get_underworld_from_self(L);
 
    int level = static_cast<int>(lua_tonumber(L,-3));
-   unsigned int xpos = static_cast<unsigned int>(lua_tonumber(L,-1));
-   unsigned int ypos = static_cast<unsigned int>(lua_tonumber(L,-2));
+   unsigned int xpos = static_cast<unsigned int>(lua_tonumber(L,-2));
+   unsigned int ypos = static_cast<unsigned int>(lua_tonumber(L,-1));
 
    // get current level, when level is negative
    if (level<0)
       level = uw.get_player().get_attr(ua_attr_maplevel);
 
-   // the tile_handle is just a hash of level, xpos and ypos, but don't tell
-   // the Lua programmers :-)
-   unsigned int tile_handle = (level << 12) | (ypos << 6) | xpos;
+   Uint32 tile_handle = ua_tile_handle_encode(xpos,ypos,level);
 
    lua_pushnumber(L,static_cast<double>(tile_handle));
 
@@ -485,23 +623,179 @@ int ua_underworld_script_bindings::tilemap_set_floor(lua_State* L)
    return 0;
 }
 
-int ua_underworld_script_bindings::tilemap_get_automap_visible(lua_State* L)
+int ua_underworld_script_bindings::tilemap_get_ceiling(lua_State* L)
 {
    ua_underworld &uw = get_underworld_from_self(L);
-   // TODO
+
+   unsigned int tile_handle = static_cast<unsigned int>(lua_tonumber(L,-1));
+   ua_levelmap_tile& tile = get_tile_per_handle(uw,tile_handle);
+
+   lua_pushnumber(L,static_cast<double>(tile.ceiling));
    return 1;
 }
 
-int ua_underworld_script_bindings::tilemap_set_automap_visible(lua_State* L)
+int ua_underworld_script_bindings::tilemap_set_ceiling(lua_State* L)
 {
    ua_underworld &uw = get_underworld_from_self(L);
-   // TODO
+
+   unsigned int tile_handle = static_cast<unsigned int>(lua_tonumber(L,-2));
+   ua_levelmap_tile& tile = get_tile_per_handle(uw,tile_handle);
+
+   tile.ceiling = static_cast<ua_levelmap_tiletype>(
+      static_cast<unsigned int>(lua_tonumber(L,-1) ));
+
    return 0;
 }
 
 int ua_underworld_script_bindings::tilemap_get_objlist_start(lua_State* L)
 {
    ua_underworld &uw = get_underworld_from_self(L);
-   // TODO
+
+   Uint32 tile_handle = static_cast<unsigned int>(lua_tonumber(L,-1));
+
+   // decode tile handle
+   Uint32 xpos=0,ypos=0,level=0;
+   ua_tile_handle_decode(tile_handle,xpos,ypos,level);
+
+   // get first object handle in list
+   Uint16 link1 = uw.get_level(level).get_mapobjects().get_tile_list_start(xpos,ypos);
+   lua_pushnumber(L,static_cast<double>(ua_obj_handle_encode(link1,level)));
+
+   return 1;
+}
+
+
+// inventory_* functions
+
+int ua_underworld_script_bindings::inventory_rune_avail(lua_State* L)
+{
+   // todo: implement
+   return 1;
+}
+
+int ua_underworld_script_bindings::inventory_rune_add(lua_State* L)
+{
+   // todo: implement
+   return 0;
+}
+
+
+// conv_* functions
+
+int ua_underworld_script_bindings::conv_get_global(lua_State* L)
+{
+   // todo: implement
+   return 1;
+}
+
+int ua_underworld_script_bindings::conv_set_global(lua_State* L)
+{
+   // todo: implement
+   return 0;
+}
+
+
+// ui_* functions
+
+int ua_underworld_script_bindings::ui_start_conv(lua_State* L)
+{
+   ua_underworld &uw = get_underworld_from_self(L);
+
+   unsigned int convslot = static_cast<unsigned int>(lua_tonumber(L,-1));
+
+   ua_underworld_script_callback* cback = uw.get_scripts().callback;
+   if (cback)
+      cback->ui_start_conv(convslot);
+
+   return 0;
+}
+
+int ua_underworld_script_bindings::ui_show_cutscene(lua_State* L)
+{
+   ua_underworld &uw = get_underworld_from_self(L);
+
+   unsigned int cutscene = static_cast<unsigned int>(lua_tonumber(L,-1));
+
+   ua_underworld_script_callback* cback = uw.get_scripts().callback;
+   if (cback)
+      cback->ui_show_cutscene(cutscene);
+
+   return 0;
+}
+
+int ua_underworld_script_bindings::ui_print_string(lua_State* L)
+{
+   ua_underworld &uw = get_underworld_from_self(L);
+
+   const char* text = lua_tostring(L,-1);
+
+   ua_underworld_script_callback* cback = uw.get_scripts().callback;
+   if (cback)
+      cback->ui_print_string(text);
+
+   return 0;
+}
+
+int ua_underworld_script_bindings::ui_show_ingame_anim(lua_State* L)
+{
+   ua_underworld &uw = get_underworld_from_self(L);
+
+   unsigned int anim = static_cast<unsigned int>(lua_tonumber(L,-1));
+
+   ua_underworld_script_callback* cback = uw.get_scripts().callback;
+   if (cback)
+      cback->ui_show_ingame_anim(anim);
+
+   return 0;
+}
+
+int ua_underworld_script_bindings::ui_cursor_use_item(lua_State* L)
+{
+   ua_underworld &uw = get_underworld_from_self(L);
+
+   Uint16 item_id = static_cast<Uint16>(lua_tonumber(L,-1));
+
+   ua_underworld_script_callback* cback = uw.get_scripts().callback;
+   if (cback)
+      cback->ui_cursor_use_item(item_id);
+
+   return 0;
+}
+
+int ua_underworld_script_bindings::ui_cursor_target(lua_State* L)
+{
+   ua_underworld &uw = get_underworld_from_self(L);
+
+   ua_underworld_script_callback* cback = uw.get_scripts().callback;
+   if (cback)
+      cback->ui_cursor_target();
+
+   return 0;
+}
+
+
+// savegame_* functions
+
+int ua_underworld_script_bindings::savegame_store_value(lua_State* L)
+{
+   ua_savegame* sg = reinterpret_cast<ua_savegame*>(lua_touserdata(L,-1));
+   double value = lua_tonumber(L,-1);
+
+   sg->write32(static_cast<Uint32>(value));
+   double fract = value-static_cast<int>(value);
+   sg->write16(static_cast<Uint16>( static_cast<Sint16>(32768.0*fract) ));
+
+   return 0;
+}
+
+int ua_underworld_script_bindings::savegame_restore_value(lua_State* L)
+{
+   ua_savegame* sg = reinterpret_cast<ua_savegame*>(lua_touserdata(L,-1));
+
+   double value = static_cast<double>(sg->read32());
+   value += static_cast<Sint16>(sg->read16())/32768.0;
+
+   lua_pushnumber(L,value);
+
    return 1;
 }

@@ -64,6 +64,33 @@ struct ua_levelmap_tile;
 
 // classes
 
+//! abstract script callback interface class
+class ua_underworld_script_callback
+{
+public:
+   //! ctor
+   ua_underworld_script_callback(){}
+
+   //! starts conversation with NPC
+   virtual void ui_start_conv(unsigned int convslot)=0;
+
+   //! starts viewing a cutscene
+   virtual void ui_show_cutscene(unsigned int cutscene)=0;
+
+   //! prints string to text scroll
+   virtual void ui_print_string(const char* str)=0;
+
+   //! shows ingame animation
+   virtual void ui_show_ingame_anim(unsigned int anim)=0;
+
+   //! uses item as cursor
+   virtual void ui_cursor_use_item(Uint16 item_id)=0;
+
+   //! changes cursor to target cursor
+   virtual void ui_cursor_target()=0;
+};
+
+
 //! underworld script bindings
 class ua_underworld_script_bindings
 {
@@ -72,21 +99,36 @@ public:
    ua_underworld_script_bindings(){}
 
    //! initialize underworld scripting
-   void init(ua_underworld *uw);
+   void init(ua_underworld* uw);
+
+   //! registers script callback interface
+   void register_callback(ua_underworld_script_callback* cback=NULL);
 
    //! cleans up underworld scripting
    void done();
 
    //! loads a savegame
-   void load_game(ua_savegame &sg);
+   void load_game(ua_savegame& sg);
 
    //! saves to a savegame
-   void save_game(ua_savegame &sg);
+   void save_game(ua_savegame& sg);
 
    // Lua script functions
 
+
+   // general functions
+
    //! game functions called every tick
    void lua_game_tick(double curtime);
+
+   //! performs "track" skill
+   void lua_track();
+
+   //! starts (or ends, when start==false) sleeping; returns true when starting sleeping
+   bool lua_sleep(bool start);
+
+
+   // inventory functions
 
    //! returns true when a item_id is a container
    bool lua_inventory_is_container(Uint16 item_id);
@@ -101,8 +143,9 @@ public:
    void lua_inventory_use(Uint16 item_pos);
 
    //! tries to combine items
-   ua_obj_combine_result lua_obj_combine(Uint16 item_id1, Uint16 item_id2,
-      Uint16 &result_id);
+   ua_obj_combine_result lua_inventory_combine_obj(Uint16 item_id1, Uint16 item_id2,
+      Uint16& result_id);
+
 
 protected:
    //! registers all ua_underworld functions
@@ -112,7 +155,7 @@ protected:
    void checked_lua_call(int params, int retvals);
 
    //! returns a lua constant value
-   double get_lua_constant(const char *name);
+   double get_lua_constant(const char* name);
 
 protected:
 
@@ -135,19 +178,43 @@ protected:
    static int player_get_angle(lua_State* L);
    static int player_set_angle(lua_State* L);
 
+   static int objlist_get_obj_info(lua_State* L);
+   static int objlist_set_obj_info(lua_State* L);
+   static int objlist_remove_obj(lua_State* L);
+   static int objlist_obj_is_npc(lua_State* L);
+   static int objlist_insert_obj(lua_State* L);
+
    static int tilemap_get_tile(lua_State* L);
    static int tilemap_get_type(lua_State* L);
    static int tilemap_set_type(lua_State* L);
    static int tilemap_get_floor(lua_State* L);
    static int tilemap_set_floor(lua_State* L);
-   static int tilemap_get_automap_visible(lua_State* L);
-   static int tilemap_set_automap_visible(lua_State* L);
+   static int tilemap_get_ceiling(lua_State* L);
+   static int tilemap_set_ceiling(lua_State* L);
    static int tilemap_get_objlist_start(lua_State* L);
 
+   static int inventory_rune_avail(lua_State* L);
+   static int inventory_rune_add(lua_State* L);
+
+   static int conv_get_global(lua_State* L);
+   static int conv_set_global(lua_State* L);
+
+   static int ui_start_conv(lua_State* L);
+   static int ui_show_cutscene(lua_State* L);
+   static int ui_print_string(lua_State* L);
+   static int ui_show_ingame_anim(lua_State* L);
+   static int ui_cursor_use_item(lua_State* L);
+   static int ui_cursor_target(lua_State* L);
+
+   static int savegame_store_value(lua_State* L);
+   static int savegame_restore_value(lua_State* L);
 
 protected:
    //! lua script state
-   lua_State *L;
+   lua_State* L;
+
+   //! script callback interface
+   ua_underworld_script_callback* callback;
 };
 
 #endif
