@@ -41,14 +41,16 @@ FMOD_INCLUDE = #-DHAVE_FMOD_H -Ic:/mingw/include/fmod/api/inc/
 FMOD_LIB = #-Lc:/mingw/include/fmod/api/lib/ -lfmod
 
 # library configure stuff
-SDL_LIB = -lSDL -lSDL_mixer
+SDL_LIB = -lSDLmain -lSDL -lSDL_mixer
 WIN32_LIB = -lmingw32 -lkernel32 -luser32
 OPENGL_LIB = -lopengl32 -lglu32
+
+uwadv_SDL_LIB = -lSDL -lSDL_mixer
 
 ifeq ("$(WITH_CONSOLE)", "yes")
 DEFINES += -DHAVE_CONSOLE
 else
-SDL_LIB = -lSDLmain -lSDL -lSDL_mixer
+uwadv_SDL_LIB = -lSDLmain -lSDL -lSDL_mixer
 endif
 
 INCLUDES = $(SDL_INCLUDE) $(STLPORT_INCLUDE) $(FMOD_INCLUDE) \
@@ -104,7 +106,7 @@ uwadv_OBJS = $(uwadv_CPPs:%.cpp=source/%.o) \
 
 
 uwadv_LIBS = $(WIN32_LIB) -lwinmm $(OPENGL_LIB) \
-	$(SDL_LIB) $(FMOD_LIB) $(STLPORT_LIB) -lz
+	$(uwadv_SDL_LIB) $(FMOD_LIB) $(STLPORT_LIB) -lz
 
 
 ifeq ("$(WITH_CONSOLE)", "yes")
