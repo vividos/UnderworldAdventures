@@ -35,6 +35,9 @@
 #include "fread_endian.hpp"
 
 
+#define HAVE_CORRECT_STRINGS_FILE
+
+
 // structs
 
 //! huffman node structure
@@ -147,6 +150,7 @@ void ua_gamestrings::load(SDL_RWops *rwops)
                   bit=8;
                   raw=SDL_RWread8(rwops);
 
+#ifndef HAVE_CORRECT_STRINGS_FILE
                   if (SDL_RWtell(rwops)>=filesize)
                   {
                      // premature end of file, should not happen
@@ -154,6 +158,7 @@ void ua_gamestrings::load(SDL_RWops *rwops)
                      i=sblocks;
                      break;
                   }
+#endif
                }
 
                // decide which node is next
@@ -163,9 +168,10 @@ void ua_gamestrings::load(SDL_RWops *rwops)
                raw<<=1;
                bit--;
             }
-
+#ifndef HAVE_CORRECT_STRINGS_FILE
             if (SDL_RWtell(rwops)>=filesize)
                break;
+#endif
 
             // have a new symbol
             c = allnodes[node].symbol;
