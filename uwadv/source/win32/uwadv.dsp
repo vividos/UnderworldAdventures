@@ -837,6 +837,10 @@ SOURCE=..\cfgfile.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\critter.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\cutscene.hpp
 # End Source File
 # Begin Source File
@@ -911,6 +915,10 @@ SOURCE=..\debug\uwaccess.hpp
 # Begin Source File
 
 SOURCE=..\resource\codeloader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\resource\critloader.cpp
 # End Source File
 # Begin Source File
 
