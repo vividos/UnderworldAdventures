@@ -225,23 +225,30 @@ int main(int argc, char* argv[])
       fclose(pal);
    }
 
+   FILE* log = fopen("crit-log.txt","w");
+
    for(int crit=0; crit<32; crit++)
    {
       // retrieve critter name
       char critname[8]; critname[0]=0;
       unsigned char anim=0;
       unsigned char variant=0;
+      unsigned short unk1=0;
 
       FILE *assoc = fopen(assocfilename,"rb");
       fseek(assoc,crit*8,SEEK_SET);
       fread(critname,1,8,assoc);
 
       if (critname[0]==0)
-         strcpy(critname,"unkn");
+         strcpy(critname,"*unkn*");
 
-      fseek(assoc,256+crit*2,SEEK_SET);
+      fseek(assoc,32*8 + crit*2,SEEK_SET); // 0x0100 + x
       anim = fgetc(assoc);
       variant = fgetc(assoc);
+
+      fseek(assoc,32*8 + 32*2 + crit*2,SEEK_SET); // 0x0140 + x
+      fread(&unk1,2,1,assoc);
+
       fclose(assoc);
 
       {
@@ -255,7 +262,9 @@ int main(int argc, char* argv[])
          fclose(pfile);
       }
 
-      printf("critter #%u: \"%.8s\", anim=%02x, variant=%02x\n",crit,critname,anim,variant);
+      fprintf(log,"critter 0%02o: \"%-8.8s\", anim=%02u, variant=%02x unk1=%04x\n",crit,critname,anim,variant,unk1);
+
+   continue;
 
       anim = crit;
 
@@ -266,57 +275,84 @@ int main(int argc, char* argv[])
          sprintf(buffer,cr_fmt,anim,page);
          FILE *pfile = fopen(buffer,"rb");
          if (pfile==NULL)
-            break;
+            break; // no more page files
 
-         // read in segment directory
-         int segbase = fgetc(pfile);
-         int nsegs = fgetc(pfile);
+         // read in slot list
+         int slotbase = fgetc(pfile);
+         int nslots = fgetc(pfile);
 
-         if (nsegs==0)
+         if (nslots==0)
          {
-            printf("no segments in file\n");
+            fprintf(log,"no slots in file\n");
             continue;
          }
 
-         unsigned char *segdiroffsets = new unsigned char[nsegs];
-         fread(segdiroffsets,1,nsegs,pfile);
+         unsigned char *segoffsets = new unsigned char[nslots];
+         fread(segoffsets,1,nslots,pfile);
 
-         int nanimsegs = fgetc(pfile);
+         int nsegs = fgetc(pfile);
 
-         printf("cr%02opage.n%02o: %u segments, %u animsegs\n",anim,page,nsegs,nanimsegs);
+         fprintf(log,"cr%02opage.n%02o: slotbase = %2u, nslots = %3u, nsegs = %2u\n",anim,page,slotbase,nslots,nsegs);
 
-         for(int i=0; i<nanimsegs; i++)
+         // print slot list
          {
-            printf("segment #%u (%02x): ",i,segdiroffsets[i]);
+            fprintf(log," slot list:");
+
+            for(int i=0; i<nslots; i++)
+            {
+               if ((i&15)==0) fprintf(log,"\n  %04x:",i+slotbase);
+               fprintf(log," %02x",segoffsets[i]);
+            }
+
+            fprintf(log,"\n");
+         }
+
+         // print segment list
+         for(int i=0; i<nsegs; i++)
+         {
+            fprintf(log," segment #%u:",i);
 
             for(int n=0; n<8; n++)
-               printf("%02x ",fgetc(pfile));
-            printf("\n");
+               fprintf(log," %02x",fgetc(pfile));
+            fprintf(log,"\n");
          }
 
          int nauxpals = fgetc(pfile);
-         if (nauxpals==-1) continue;
 
+
+         fprintf(log," number of aux palettes: %u%s\n",nauxpals,
+            variant>=nauxpals? " - warning! variant >= nauxpals" : "");
+
+         // in case of wrong "variant" value, choose first auxpal
          if (variant>=nauxpals)
-         {
-            printf("error! auxpal to use isn't available!");
-            continue;
-         }
+            variant = 0;
 
          unsigned char *auxpals = new unsigned char[32*nauxpals];
          fread(auxpals,32,nauxpals,pfile);
 
          int noffsets = fgetc(pfile);
-         int unk1 = fgetc(pfile);
+         int unknown1 = fgetc(pfile);
 
          unsigned short *alloffsets = new unsigned short[noffsets];
          fread(alloffsets,2,noffsets,pfile);
 
-         int pos = ftell(pfile);
+         // print all file offsets
+         {
+            fprintf(log," noffsets = %u, unk1 = %02x", noffsets,unknown1);
 
-         printf("content: %u segs, %u auxpals, %u frames\n",
-            nsegs,nauxpals,noffsets);
+            for(unsigned int i=0; i<noffsets; i++)
+            {
+               if ((i&15)==0) fprintf(log,"\n ");
+               fprintf(log," %04x",alloffsets[i]);
+            }
 
+            fprintf(log,"\n\n");
+         }
+
+         unsigned int maxleft,maxright,maxtop,maxbottom;
+         maxleft = maxright = maxtop = maxbottom = 0;
+
+         // decode all frames
          for(int frame=0; frame<noffsets; frame++)
          {
             fseek(pfile,alloffsets[frame],SEEK_SET);
@@ -332,15 +368,29 @@ int main(int argc, char* argv[])
             if (type!=6)
                wsize=4;
 
-            printf("frame #%d, %ux%u, hot:(%u,%u), type=%u\n",
+            fprintf(log," frame #%02x, %ux%u, hot:(%u,%u), type=%u\n",
                frame,width,height,hotx,hoty,type);
+
+            unsigned int left,right,top,bottom;
+
+            right = width-hotx;
+            left = hotx;
+            top = hoty;
+            bottom = height-hoty;
+
+            if (right > maxright) maxright = right;
+            if (left > maxleft) maxleft = left;
+            if (top > maxtop) maxtop = top;
+            if (bottom > maxbottom) maxbottom = bottom;
+
+      continue;
 
             unsigned short datalen;
             fread(&datalen,1,2,pfile);
 
             // decode bitmap
             char buffer[256];
-            sprintf(buffer,"cr%0o2-%.8s-page%02oframe%02u.tga",crit,critname,page,frame);
+            sprintf(buffer,"cr%02o-%.8s-page%02oframe%02x.tga",crit,critname,page,frame);
 
             FILE *tga = fopen(buffer,"wb");
 
@@ -354,14 +404,21 @@ int main(int argc, char* argv[])
             fclose(tga);
          }
 
+         fprintf(log," x/y range for all frames: %u x %u - "
+            "new hot spot: (%u,%u)\n\n",
+            maxleft+maxright,maxtop+maxbottom,
+            maxleft,maxtop);
+
          delete[] alloffsets;
          delete[] auxpals;
-         delete[] segdiroffsets;
+         delete[] segoffsets;
          fclose(pfile);
       }
 
-      printf("\n");
+      fprintf(log,"\n");
    }
+
+   fclose(log);
 
    return 0;
 }
