@@ -155,8 +155,7 @@ void ua_cutscene::get_frame(ua_texture &tex, unsigned int framenum)
    }
 
    // now copy the bytes to the image
-   memcpy(&img.get_pixels()[0],&outbuffer[0],width*height);
-   tex.convert(img,palette);
+   tex.convert(&outbuffer[0],width,height,palette,0);
 }
 
 void ua_cutscene::decode_frame(unsigned int framenum)
