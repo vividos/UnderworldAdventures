@@ -66,7 +66,14 @@ protected:
    //! tracks object by position and direction; vectors must be in ellipsoid space
    void track_object(ua_vector3d& pos, const ua_vector3d& dir);
 
+   //! recursive collision response calculation
+   void collide_with_world(ua_vector3d& pos, const ua_vector3d& dir);
 
+   //! checks mesh for collision
+   void check_collision(int xpos, int ypos, ua_collision_data& data);
+
+
+#if 0
    //! calculates collision and response; recursively called
    void calc_collision(ua_vector2d &pos, const ua_vector2d &dir);
 
@@ -77,10 +84,14 @@ protected:
    //! does collision check; returns true when line was hit
    bool check_collision(const ua_vector2d &point1,const ua_vector2d &point2,
       ua_collision_data &data, bool check_height);
+#endif
 
 protected:
    //! current underworld object
    ua_underworld* underw;
+
+   //! ellipsoid radius for currently tracked object (for use in track_object())
+   ua_vector3d radius;
 
    //! last evaluation time
    double last_evaltime;
