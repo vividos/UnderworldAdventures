@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
 // needed includes
 #include "common.hpp"
 #include "gamestrings.hpp"
-#include "../import/io_endian.hpp"
+#include "io_endian.hpp"
 
 
 // structs
@@ -57,7 +57,7 @@ void strpak_unpack_strings(const char *infile,const char *outfile)
    try
    {
       printf("loading game strings from file %s ...\n",infile);
-      gs.load(infile);
+      gs.add_pak_file(infile);
    }
    catch(...)
    {
@@ -84,26 +84,27 @@ void strpak_unpack_strings(const char *infile,const char *outfile)
       }
 
       printf("%u huffman tree nodes, %u string blocks.\n",
-         nodes,gs.get_allstrings().size());
+         nodes,gs.get_stringblock_set().size());
    }
 
    printf("writing output file %s ...\n",outfile);
 
    // get "all strings" map
-   std::map<int,std::vector<std::string> > &allstrings = gs.get_allstrings();
+   std::set<Uint16> stringblocks = gs.get_stringblock_set();
 
-   fprintf(out,"%s: %u string blocks.\n",infile,allstrings.size());
+   fprintf(out,"%s: %u string blocks.\n",infile,stringblocks.size());
 
    // dump all blocks
-   std::map<int,std::vector<std::string> >::iterator iter,stop;
-   iter = allstrings.begin(); stop = allstrings.end();
+   std::set<Uint16>::iterator iter,stop;
+   iter = stringblocks.begin(); stop = stringblocks.end();
 
    for(;iter!=stop; iter++)
    {
-      const std::pair<int,std::vector<std::string> > &block = *iter;
-      const std::vector<std::string> &stringlist = block.second;
+      Uint16 block_id = *iter;
+      std::vector<std::string> stringlist;
+      gs.get_stringblock(block_id, stringlist);
 
-      fprintf(out,"\nblock: %04x; %u strings.\n",block.first,stringlist.size());
+      fprintf(out,"\nblock: %04x; %u strings.\n",block_id,stringlist.size());
 
       // print all strings in list
       unsigned int i,max=stringlist.size();
