@@ -39,7 +39,7 @@ void ua_mousecursor::init(ua_game_core_interface* core, int initialtype)
 
    ua_settings &settings = core->get_settings();
    img_cursors.load(settings,"cursors");
-   mousetex.init(&core->get_texmgr());
+   mousetex.init(&core->get_texmgr(),1,GL_LINEAR,GL_LINEAR,GL_CLAMP,GL_CLAMP);
    isvisible = false;
    settype(initialtype);
    updatepos();
@@ -47,7 +47,11 @@ void ua_mousecursor::init(ua_game_core_interface* core, int initialtype)
 
 void ua_mousecursor::settype(int type)
 {
-   ua_image cursorimg = img_cursors.get_image(type);
+   set_custom(img_cursors.get_image(type));
+}
+
+void ua_mousecursor::set_custom(ua_image& cursorimg)
+{
    cursorw = cursorimg.get_xres();
    cursorh = cursorimg.get_yres();
    mousetex.convert(cursorimg);

@@ -55,6 +55,9 @@ public:
    //! set the type of cursor (the image used)
    void settype(int type);
 
+   //! sets custom image as cursor
+   void set_custom(ua_image& cursorimg);
+
    //! update the current position of the mouse
    void updatepos();
 
