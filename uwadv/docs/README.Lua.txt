@@ -117,6 +117,7 @@ registered C functions to call from Lua:
    ui_start_conv
    ui_show_cutscene
    ui_print_string
+   ui_get_gamestring
    ui_show_ingame_anim
    ui_cursor_use_item
    ui_cursor_target
@@ -172,7 +173,7 @@ registered C functions to call from Lua:
 * lua_objlist_look(obj_handle)
   return values: none
 
-  prints the look description for a given object
+  prints the look description for a given object.
 
 * lua_objlist_use(obj_handle)
   return values: none
@@ -504,6 +505,11 @@ todo
   return values: none
 
   prints a string "text" to the message scroll
+
+* ui_get_gamestring(block, num)
+  return values: string
+
+  returns a string from given string block and number
 
 * ui_show_ingame_anim(anim)
   return values: none
