@@ -15,7 +15,7 @@ SDL_CFLAGS = `sdl-config --cflags`
 SDL_LIBS = `sdl-config --libs`
 
 CPPFLAGS = -I.. $(SDL_CFLAGS)
-LDFLAGS = $(SDL_LIBS) -lGL
+LDFLAGS = $(SDL_LIBS) -lGL -lGLU
 
 bin_PROGRAMS = uwadv
 
