@@ -47,7 +47,81 @@
 const double ua_ingame_orig_screen::fade_time = 0.5;
 
 
+// ua_ingame_compass methods
+
+void ua_ingame_compass::init(ua_game_interface& game, unsigned int xpos, unsigned int ypos)
+{
+   // init image
+   get_image().create(52,26);
+
+   ua_image_quad::init(game,xpos,ypos);
+
+   // load compass images
+   {
+      std::vector<ua_image> temp_compass;
+      game.get_image_manager().load_list(temp_compass,"compass");
+
+      ua_palette256_ptr pal0 = temp_compass[0].get_palette();
+
+      img_compass.resize(16);
+
+      static unsigned int compass_tip_coords[16*2] =
+      {
+         24, 0, 16, 2,  8, 3,  4, 6,
+          0,10,  0,14,  4,16, 12,19,
+         24,21, 32,19, 44,16, 48,14,
+         48,10, 44, 6, 40, 3, 32, 2,
+      };
+
+      // create compass images and add needle tips and right/bottom borders
+      for(unsigned int n=0; n<16; n++)
+      {
+         ua_image& img = img_compass[n];
+         img.create(52,26);
+         img.get_palette() = pal0;
+
+         img.paste_image(temp_compass[n&3],0,0);
+
+         // compass needle
+         img.paste_image(temp_compass[n+4],
+            compass_tip_coords[n*2],compass_tip_coords[n*2+1]);
+      }
+   }
+
+   // remember player object
+   player = &game.get_underworld().get_player();
+
+   compass_curimg = 16;
+}
+
+void ua_ingame_compass::draw()
+{
+   // check if we have to reupload the image
+
+   // calculate current angle and images
+   double angle = fmod(-player->get_angle_rot()+90.0+360.0,360.0);
+   unsigned int compassimg = unsigned((angle+11.25)/22.5)&15;
+
+   // prepare texture
+   if (compass_curimg != compassimg)
+   {
+      // reupload compass texture
+      compass_curimg = compassimg;
+      get_image().paste_image(img_compass[compassimg],1,1);
+
+      update();
+   }
+
+   ua_image_quad::draw();
+}
+
+
 // ua_ingame_orig_screen methods
+
+ua_ingame_orig_screen::ua_ingame_orig_screen()
+{
+   compass.set_parent(this);
+}
 
 void ua_ingame_orig_screen::init()
 {
@@ -140,6 +214,12 @@ void ua_ingame_orig_screen::init()
 
       //register_window(&img_background);
    }
+
+   // init compass
+   compass.init(*game, 112,131);
+   compass.add_border(img_background.get_image());
+   compass.update();
+   register_window(&compass);
 
 
 
@@ -645,42 +725,6 @@ void ua_ingame_orig_screen::init(ua_game_core_interface* thecore)
       }
    }
 
-   // compass images
-   {
-      ua_image_list img_temp;
-      img_temp.load(settings,"compass");
-
-      static int ua_compass_tip_coords[16*2] =
-      {
-         24, 0, 16, 2,  8, 3,  4, 6,
-          0,10,  0,14,  4,16, 12,19,
-         24,21, 32,19, 44,16, 48,14,
-         48,10, 44, 6, 40, 3, 32, 2,
-      };
-
-      std::vector<ua_image>& compass = img_compass.get_allimages();
-
-      // create compass images and add needle tips and right/bottom borders
-      for(unsigned int n=0; n<16; n++)
-      {
-         ua_image img;
-         img.create(52+1,26+1);
-         img.paste_image(img_temp.get_image(n&3),0,0);
-
-         // compass needle
-         img.paste_image(img_temp.get_image(n+4),
-            ua_compass_tip_coords[n*2],ua_compass_tip_coords[n*2+1]);
-
-         // right border
-         img.paste_rect(img,51,0, 1,img.get_yres(), 52,0);
-
-         // bottom border
-         img.paste_rect(img,0,25, img.get_xres(),1, 0,26);
-
-         compass.push_back(img);
-      }
-   }
-
    // vitality/mana/poison flasks
    {
       ua_image_list flasks;
@@ -751,7 +795,6 @@ void ua_ingame_orig_screen::suspend()
    img_back.done();
 
    // clean up textures
-   tex_compass.done();
    tex_flasks.done();
    tex_cmd_buttons.done();
 
@@ -794,12 +837,6 @@ void ua_ingame_orig_screen::resume()
    img_back.convert_upload();
 
    // init textures
-
-   // compass texture
-   tex_compass.init(&core->get_texmgr(),1,GL_LINEAR,GL_LINEAR);
-   tex_compass.convert(img_compass.get_image(0));
-   tex_compass.upload();
-   compass_curimg = 0;
 
    // flasks textures
    flasks_curimg[0] = flasks_curimg[1] = 0;
@@ -948,18 +985,6 @@ void ua_ingame_orig_screen::render_ui()
       }
       else
          tex_compass.use();
-
-      // draw compass quad
-      double u = tex_compass.get_tex_u(), v = tex_compass.get_tex_v();
-      u -= tex_compass.get_tex_u()/tex_compass.get_xres();
-      v -= tex_compass.get_tex_v()/tex_compass.get_yres();
-
-      glBegin(GL_QUADS);
-      glTexCoord2d(0.0, v  ); glVertex2i(112,   43);
-      glTexCoord2d(u  , v  ); glVertex2i(112+52,43);
-      glTexCoord2d(u  , 0.0); glVertex2i(112+52,43+26);
-      glTexCoord2d(0.0, 0.0); glVertex2i(112,   43+26);
-      glEnd();
    }
 
    // vitality/mana/poisoned flasks

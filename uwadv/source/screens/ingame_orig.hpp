@@ -131,13 +131,53 @@ enum ua_screen_area_id
 };
 */
 
+// forward references
+class ua_ingame_orig_screen;
+class ua_player;
+
+
 // classes
 
+//! ingame screen control base class
+class ua_ingame_orig_ctrl: public ua_image_quad
+{
+public:
+   //! sets parent window
+   void set_parent(ua_ingame_orig_screen* orig){ parent = orig; }
+
+protected:
+   //! parent screen
+   ua_ingame_orig_screen* parent;
+};
+
+//! compass control
+class ua_ingame_compass: public ua_ingame_orig_ctrl
+{
+public:
+   //! initializes compass
+   virtual void init(ua_game_interface& game, unsigned int xpos, unsigned int ypos);
+
+   //! draws compass
+   virtual void draw();
+
+protected:
+   //! current compass image
+   unsigned int compass_curimg;
+
+   //! compass images
+   std::vector<ua_image> img_compass;
+
+   //! player object to show compass direction
+   ua_player* player;
+};
+
+
+//! original ingame screen
 class ua_ingame_orig_screen: public ua_screen
 {
 public:
    //! ctor
-   ua_ingame_orig_screen(){}
+   ua_ingame_orig_screen();
    //! dtor
    virtual ~ua_ingame_orig_screen(){}
 
@@ -213,6 +253,11 @@ protected:
    //! optional parameter for fadeout action
    unsigned int fadeout_param;
 
+
+   // controls
+
+   //! compass window
+   ua_ingame_compass compass;
 
 
    // game related
