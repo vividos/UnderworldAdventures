@@ -165,7 +165,8 @@ void ua_image::fill_rect(unsigned int startx, unsigned int starty,
 
 void ua_image::clear(Uint8 index)
 {
-   memset(&pixels[0],index,pixels.size());
+   if (pixels.size()>0)
+      memset(&pixels[0],index,pixels.size());
 }
 
 void ua_image::create_new_palette()
