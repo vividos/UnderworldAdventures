@@ -63,6 +63,9 @@ public:
    //! evaluates whole underworld for a given time point
    void eval_underworld(double time);
 
+   //! returns if enhanced features are turned on
+   bool have_enhanced_features(){ return enhanced_features; }
+
    //! returns the height of the player
    double get_player_height();
 
@@ -104,6 +107,9 @@ public:
    void import_savegame(ua_settings &settings,const char *folder,bool initial);
 
 protected:
+   //! indicates if enhanced features are enabled
+   bool enhanced_features;
+
    //! the player object
    ua_player player;
 

@@ -36,6 +36,8 @@
 
 void ua_underworld::init(ua_game_core_interface* core)
 {
+   enhanced_features = core->get_settings().get_bool(ua_setting_uwadv_features);
+
    levels.clear();
 
    physics.init(this);
