@@ -94,7 +94,7 @@ void ua_renderer::done()
    delete modelmgr;
    delete renderer_impl;
 
-//   glDisable(GL_FOG);
+   glDisable(GL_FOG);
 }
 
 void ua_renderer::clear()
@@ -121,7 +121,7 @@ void ua_renderer::setup_camera2d()
    glDisable(GL_DEPTH_TEST);
    glDisable(GL_BLEND);
 
-//   glDisable(GL_FOG);
+   glDisable(GL_FOG);
 }
 
 void ua_renderer::setup_camera3d(const ua_vector3d& the_view_offset,
@@ -148,7 +148,6 @@ void ua_renderer::setup_camera3d(const ua_vector3d& the_view_offset,
 
    glEnable(GL_DEPTH_TEST);
 
-/*
    // fog
    glEnable(GL_FOG);
    glFogi(GL_FOG_MODE,GL_EXP2);
@@ -157,7 +156,6 @@ void ua_renderer::setup_camera3d(const ua_vector3d& the_view_offset,
    glFogf(GL_FOG_END,1.0);
    GLint fog_color[4] = { 0,0,0,0 };
    glFogiv(GL_FOG_COLOR,fog_color);
-*/
 }
 
 void ua_renderer::render_underworld(const ua_underworld& underw)
