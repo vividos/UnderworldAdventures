@@ -1004,6 +1004,9 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
    }
 }
 
+/*! picking tutorial:
+    http://www.lighthouse3d.com/opengl/picking/index.php3
+*/
 GLuint ua_ingame_orig_screen::get_selection(unsigned int xpos, unsigned int ypos)
 {
    // set selection buffer
