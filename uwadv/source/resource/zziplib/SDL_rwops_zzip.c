@@ -26,6 +26,13 @@ static int _zzip_write(SDL_RWops *context, const void *ptr, int size, int num)
     return 0; /* ignored */
 }
 
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
+
+/* some ugly include file seemed to define this :( */
+#undef read
+
 static int _zzip_close(SDL_RWops *context)
 {
     if (! context) return 0; /* may be SDL_RWclose is called by atexit */
@@ -40,10 +47,11 @@ SDL_RWops *SDL_RWFromZZIP(const char* file, const char* mode)
     register SDL_RWops* rwops;
     register ZZIP_FILE* zzip_file;
 
-    if (*mode != 'r')
-	return SDL_RWFromFile(file, mode);
+    /* extension list; to open zip files using their full name */
+    zzip_strings_t exts[] = { "", 0 };
 
-    zzip_file = zzip_fopen (file, mode);
+    /* open file, only opening zip files */
+    zzip_file = zzip_open_ext_io (file, O_RDONLY|O_BINARY, ZZIP_ONLYZIP, exts, 0);
     if (! zzip_file) return 0;
 
     rwops = SDL_AllocRW ();
