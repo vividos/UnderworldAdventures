@@ -59,6 +59,12 @@ enum ua_game_events
    //! event sent when a screen resumes processing, e.g. when getting popped off the screen stack
    ua_event_resume_screen,
 
+   //! sent to current screen when an text edit window finished editing
+   ua_event_textedit_finished,
+
+   //! sent to screen when user aborted text editing
+   ua_event_textedit_aborted,
+
    //! last (dummy) event
    ua_event_last
 };
