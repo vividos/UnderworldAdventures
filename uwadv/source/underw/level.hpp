@@ -108,7 +108,7 @@ public:
    ua_object_list &get_mapobjects(){ return allobjects; }
 
    //! returns vector of used stock texture ids
-   const std::vector<Uint16>& get_used_textures(){ return used_textures; }
+   const std::vector<Uint16>& get_used_textures() const { return used_textures; }
 
    // loading / saving / importing
 
