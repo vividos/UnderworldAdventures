@@ -2601,6 +2601,8 @@ Table of Contents
       uw1  0x0004ccd0    b6 4a 06 40   0x0004cd5e  same models, different place
       uw1  0x0004e370    b6 4a 06 40   0x0004e3fe  ditto (reported Gerd Bitzer)
 
+      demo 0x0004ec70    b6 4a 06 40   0x0004ecfe  uw_demo
+
       uw2  0x00054cf0    d4 64 aa 59   0x00054d8a
       uw2  0x000550e0    d4 64 aa 59   0x0005517a  another UW2 build
 
