@@ -341,6 +341,7 @@ void ua_save_game_screen::init()
 
    show_preview = false;
    edit_desc = false;
+   pressed_button = ua_button_none;
 
    if (game.get_settings().get_bool(ua_setting_uw1_is_uw_demo))
    {
@@ -432,7 +433,6 @@ void ua_save_game_screen::init()
    img_infoarea.get_image().create(128,105);
    img_infoarea.get_image().set_palette(img_back.get_image().get_palette());
    img_infoarea.init(game,160+16,8);
-   update_info();
 
    // init savegames list
    savegames_list.init(this, game, 19,13, disable_save);
@@ -448,6 +448,9 @@ void ua_save_game_screen::init()
    // init fadein
    fader.init(true, game.get_tickrate(), fade_time);
    fade_state = 0;
+
+   // update info area
+   update_info();
 }
 
 void ua_save_game_screen::destroy()
@@ -588,6 +591,9 @@ void ua_save_game_screen::tick()
 
          case ua_button_exit:
             game.remove_screen();
+            break;
+
+         default:
             break;
          }
       }

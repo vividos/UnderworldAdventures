@@ -61,7 +61,8 @@ enum ua_save_game_button_id
    ua_button_save=0,  //!< save button
    ua_button_load,    //!< load button
    ua_button_refresh, //!< refresh button
-   ua_button_exit     //!< exit button
+   ua_button_exit,    //!< exit button
+   ua_button_none     //!< no button
 };
 
 
@@ -194,8 +195,11 @@ protected:
 
    //! save button
    ua_save_game_button button_save;
+   //! load button
    ua_save_game_button button_load;
+   //! refresh button
    ua_save_game_button button_refresh;
+   //! exit button
    ua_save_game_button button_exit;
 
    //! button id pressed
