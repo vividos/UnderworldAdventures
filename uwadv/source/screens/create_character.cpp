@@ -348,7 +348,7 @@ void ua_create_character_screen::do_action()
    case actEnd:
       ended = true;
       newgame = (n>1) && (static_cast<unsigned int>(lua_tonumber(L,2))==1);
-      fadingstage = -1;
+      fadingstage = unsigned(-1);
       ua_trace("end request by char. creation script\n");
       break;
 
@@ -428,7 +428,7 @@ void ua_create_character_screen::do_action()
                static_cast<unsigned int>(lua_tonumber(L,4)),
                static_cast<unsigned int>(lua_tonumber(L,5)),
                textcolor_normal,
-               (n>5) ? static_cast<unsigned int>(lua_tonumber(L,6)) : -1);
+               (n>5) ? static_cast<unsigned int>(lua_tonumber(L,6)) : unsigned(-1));
       break;
    }
 
