@@ -1,3 +1,1419 @@
+2003-02-11 13:38  vividos
+
+	* hacking/hacking.h (1.7):
+
+	changed path
+	
+2003-02-11 13:36  vividos
+
+	* source/physics.cpp (1.26):
+
+	view angle is kept in range 0 .. 360 degree
+	
+2003-02-11 13:32  vividos
+
+	* uadata/uw1/scripts/createchar.lua (1.11):
+
+	fixed bug where pressing return when text "... enters the abyss..." was shown led to returning to main menu
+	
+2003-02-11 13:30  vividos
+
+	* source/screens/create_character.cpp (1.28):
+
+	using different highlight color when uwadv features are enabled
+	
+2003-02-11 13:00  vividos
+
+	* source/screens/uwadv_menu.cpp (1.5):
+
+	simplified (for debug builds) which screens are shown at startup
+	
+2003-02-11 12:59  vividos
+
+	* source/screens/ingame_orig.cpp (1.117):
+
+	enabled debug key for all builds
+	
+2003-02-11 12:58  vividos
+
+	* source/debug/: objectlist.cpp (1.3), uwaccess.cpp (1.6):
+
+	reordered some list columns
+	
+2003-02-11 12:57  vividos
+
+	* source/imgquad.cpp (1.4):
+
+	fixed texture conversion and rendering of image quad
+	(this should fix wrongly positioned command buttons and flask images)
+	
+2003-02-10 19:44  vividos
+
+	* source/win32/main.cpp (1.7):
+
+	showing message box for ua_exception, too
+	
+2003-02-10 19:35  vividos
+
+	* uadata/uw1/scripts/game.lua (1.19):
+
+	disabled setting attributes already set in char. creation
+	
+2003-02-10 19:27  vividos
+
+	* source/screens/create_character.cpp (1.27):
+
+	added keypad "enter" key to proceed, too
+	
+2003-02-10 18:53  vividos
+
+	* configure.ac (1.25):
+
+	disabled check for X11
+	disabled building uadebug
+	added warning when using --enable-uadebug
+	
+2003-02-10 18:52  vividos
+
+	* uadata/Makefile.common (1.11):
+
+	added remaining model files
+	
+2003-02-10 18:49  vividos
+
+	* uadata/: Makefile.am (1.10), Makefile.common (1.10):
+
+	fixed make dist for uadata files
+	
+2003-02-10 18:39  vividos
+
+	* source/debug/Makefile.am (1.4):
+
+	forgot a slash
+	
+2003-02-10 18:39  vividos
+
+	* source/debug/Makefile.common (1.5):
+
+	added objectlist.cpp/.hpp
+	
+2003-02-10 18:22  vividos
+
+	* source/debug/Makefile.am (1.3):
+
+	trying to fix make dist
+	
+2003-02-10 18:07  vividos
+
+	* configure.ac (1.24):
+
+	added generating of sources/debug/Makefile
+	
+2003-02-10 17:54  vividos
+
+	* Makefile.am (1.13):
+
+	fixed warning about trailing backslash
+	
+2003-02-10 17:52  vividos
+
+	* source/debug/Makefile.am (1.2):
+
+	using proper autoconf define
+	
+2003-02-10 17:48  vividos
+
+	* configure.ac (1.23):
+
+	added switch to enable building the underworld debugger
+	
+2003-02-10 17:43  vividos
+
+	* source/Makefile.am (1.55):
+
+	added "debug" subdir
+	
+2003-02-10 17:42  vividos
+
+	* source/debug/Makefile.am (1.1):
+
+	added automake makefile to build uadebug
+	
+2003-02-10 17:37  vividos
+
+	* source/win32/License.installer.txt (1.5):
+
+	removed file (was moved to docs folder)
+	
+2003-02-10 17:28  vividos
+
+	* source/Makefile.am (1.54), source/tools/Makefile.am (1.26),
+	source/tools/Makefile.common (1.8), uadata/Makefile.am (1.9),
+	uadata/Makefile.common (1.9):
+
+	fixed make dist (hopefully)
+	
+2003-02-10 16:58  vividos
+
+	* Makefile.am (1.12), source/Makefile.am (1.53):
+
+	more changes due to moved linux and win32 folders
+	
+2003-02-10 16:34  vividos
+
+	* Makefile.am (1.11), source/Makefile.am (1.52):
+
+	moved linux extra files to top level Makefile.am
+	
+2003-02-10 16:26  vividos
+
+	* source/Makefile.common (1.25):
+
+	removed deleted file that prevents make dist
+	
+2003-02-04 07:41  vividos
+
+	* docs/ua-doxygen.cfg (1.6):
+
+	updated doxygen config file format to version 1.3-rc3
+	
+2003-02-04 07:37  vividos
+
+	* uadata/models/static/: apple.wrl (1.2), backpack.wrl (1.2),
+	bag.wrl (1.2), barrel.wrl (1.2), bed_frame.wrl (1.2), bone1.wrl
+	(1.2), bread.wrl (1.2), candle.wrl (1.2), chair.wrl (1.3),
+	chest.wrl (1.3), flute.wrl (1.2), grass1.wrl (1.3), grass3.wrl
+	(1.3), skull.wrl (1.2), table.wrl (1.3), water.wrl (1.2):
+
+	fixed texture paths to lowercase
+	textures couldn't be read inside of zipped resource files because of this
+	
+2003-02-02 19:33  vividos
+
+	* docs/ua-doxygen.cfg (1.5):
+
+	added some more paths/files to exclude
+	
+2003-02-02 19:19  vividos
+
+	* source/debug/: mainframe.cpp (1.8), mainframe.hpp (1.5),
+	uwaccess.cpp (1.5), uwaccess.hpp (1.5):
+
+	added debugger commands to suspend and resume game (e.g. underworld evaluation)
+	
+2003-01-31 20:20  vividos
+
+	* source/debug/: uwaccess.cpp (1.4), uwaccess.hpp (1.4):
+
+	added command implementations for udc_objlist_get and udc_strings_get
+	
+2003-01-31 20:19  vividos
+
+	* source/debug/: objectlist.cpp (1.2), objectlist.hpp (1.2):
+
+	used wxEditListCtrl for master object list control
+	
+2003-01-31 15:42  vividos
+
+	* source/resource/zziplib/zzip-zip.c (1.3):
+
+	removed warning
+	
+2003-01-31 15:41  vividos
+
+	* source/debug/Makefile.common (1.4), win32/uadebug.dsp (1.5):
+
+	added editlist.cpp/.hpp
+	
+2003-01-31 15:40  vividos
+
+	* source/debug/uwaccess.cpp (1.3):
+
+	implemented udc_player_set command
+	
+2003-01-31 15:40  vividos
+
+	* source/debug/uwaccess.hpp (1.3):
+
+	added ctors and set() functions to ua_debug_param struct
+	
+2003-01-31 15:39  vividos
+
+	* source/debug/: playerinfo.cpp (1.6), playerinfo.hpp (1.6):
+
+	wxEditListCtrl is now used to display / edit player properties
+	
+2003-01-31 15:38  vividos
+
+	* source/debug/: editlist.cpp (1.1), editlist.hpp (1.1):
+
+	added implementation of a editable list control
+	
+2003-01-30 20:31  vividos
+
+	* source/debug/playerinfo.cpp (1.5):
+
+	made updating player info faster by not inserting items at every update
+	
+2003-01-30 20:26  wjpalenstijn
+
+	* source/Makefile.am (1.51):
+
+	added top-level build rules for libs
+	
+2003-01-30 19:51  vividos
+
+	* source/tools/Makefile.am (1.25):
+
+	added building libuatools.la
+	
+2003-01-30 19:43  vividos
+
+	* source/win32/debug.cpp (1.3):
+
+	documentation fix
+	
+2003-01-30 19:42  vividos
+
+	* source/linux/debug.cpp (1.4):
+
+	fixed linux dummy debug implementation
+	
+2003-01-30 15:47  vividos
+
+	* source/debug/: mainframe.cpp (1.7), mainframe.hpp (1.4):
+
+	added menu entries for master object list frame
+	
+2003-01-30 15:46  vividos
+
+	* source/debug/: objectlist.cpp (1.1), objectlist.hpp (1.1):
+
+	added master object list frame (not finished yet)
+	
+2003-01-30 15:34  vividos
+
+	* source/physics.cpp (1.25):
+
+	trying to fix a warning
+	
+2003-01-30 15:29  vividos
+
+	* source/debug/playerinfo.hpp (1.5):
+
+	minor change
+	
+2003-01-29 15:47  vividos
+
+	* uadata/Makefile.common (1.8):
+
+	added more needed files to the uadata resource file
+	
+2003-01-29 15:17  vividos
+
+	* source/win32/uaconfig/: resource.h (1.2), uaconfig.cpp (1.2),
+	uaconfig_res.rc (1.2):
+
+	added "uwadv features" check to config dialog
+	
+2003-01-29 15:10  vividos
+
+	* Makefile.mingw (1.47):
+
+	added error message when doing "make uadebug" and now wxWindows settings are made
+	used release libraries for uadebug.dll
+	
+2003-01-29 15:08  vividos
+
+	* source/debug/mainframe.cpp (1.6):
+
+	fixed error with gcc
+	
+2003-01-29 15:07  vividos
+
+	* source/debug/Makefile.common (1.3):
+
+	added more files
+	
+2003-01-29 14:03  vividos
+
+	* Makefile.mingw (1.46):
+
+	added wxWindows config options
+	added build options to make uadebug.dll
+	
+2003-01-29 11:52  vividos
+
+	* source/debug/dbgcommon.hpp (1.5):
+
+	added fix for compiling under mingw32
+	
+2003-01-29 00:45  vividos
+
+	* win32/uadebug.dsp (1.4):
+
+	added uwaccess.hpp
+	
+2003-01-29 00:28  vividos
+
+	* source/debug/: dbgapp.cpp (1.4), dbgapp.hpp (1.3), dbgcommon.hpp
+	(1.4), mainframe.cpp (1.5), playerinfo.cpp (1.4), playerinfo.hpp
+	(1.4):
+
+	changed underworld debugger to use new access api
+	
+2003-01-29 00:22  vividos
+
+	* source/debug/: uwaccess.cpp (1.2), uwaccess.hpp (1.2):
+
+	implemented new underworld access api
+	
+2003-01-29 00:19  vividos
+
+	* source/win32/debug.cpp (1.2):
+
+	fixed win32 debug implementation for use with new debug access api
+	
+2003-01-29 00:18  vividos
+
+	* source/: debug.hpp (1.4), uwadv.cpp (1.43):
+
+	debug interface is now initialized with game core pointer
+	
+2003-01-28 19:04  vividos
+
+	* source/tools/wrlview.cpp (1.2):
+
+	forgot to close input file
+	
+2003-01-28 19:04  vividos
+
+	* source/tools/animview.cpp (1.9):
+
+	adding some output when decoding images
+	
+2003-01-28 18:56  vividos
+
+	* source/debug.hpp (1.3):
+
+	removed uw access api
+	testing another approach
+	
+2003-01-28 18:53  vividos
+
+	* source/resource/model/: importwrl.cpp (1.5), wrllexer.cpp (1.3),
+	wrllexer.l (1.4):
+
+	added support for vrml "translation", "rotation" and "scale" keywords
+	
+2003-01-28 18:51  vividos
+
+	* source/uamath.hpp (1.15):
+
+	added 3d rotation around given axis to ua_vector3d
+	
+2003-01-28 18:49  vividos
+
+	* uadata/uw1/model3d.cfg (1.5):
+
+	changed objects mapping somewhat
+	
+2003-01-28 18:49  vividos
+
+	* uadata/models/static/: chair.wrl (1.2), chest.wrl (1.2),
+	grass1.wrl (1.2), grass3.wrl (1.2), muffin.wrl (1.3), mushroom.wrl
+	(1.2), steak.wrl (1.3), table.wrl (1.2):
+
+	sort of fixed object transformations
+	
+2003-01-28 18:48  vividos
+
+	* uadata/models/static/textures/: apple.tga (1.1), backpack.tga
+	(1.1), barrel.tga (1.1), bone.tga (1.1), bread.tga (1.1),
+	candle.tga (1.1), flute.tga (1.1), grass.tga (1.1), plank.tga
+	(1.1), skull.tga (1.1), water.tga (1.1), wood.tga (1.1):
+
+	added some more textures
+	
+2003-01-20 22:43  vividos
+
+	* source/resource/codeloader.cpp (1.14):
+
+	forgot closing file
+	
+2003-01-20 21:43  vividos
+
+	* docs/README.tools.txt (1.8):
+
+	updated animview documentation
+	
+2003-01-20 21:38  vividos
+
+	* source/tools/animview.cpp (1.8):
+
+	added decoding to tga
+	
+2003-01-20 21:18  vividos
+
+	* win32/wrlview.dsp (1.1):
+
+	added project file for wrlview
+	
+2003-01-20 21:15  vividos
+
+	* source/tools/wrlview.cpp (1.1):
+
+	added .wrl file viewer
+	
+2003-01-20 21:14  vividos
+
+	* uadata/models/static/: apple.wrl (1.1), backpack.wrl (1.1),
+	barrel.wrl (1.1), bed_frame.wrl (1.1), bone1.wrl (1.1), bread.wrl
+	(1.1), candle.wrl (1.1), chair.wrl (1.1), flute.wrl (1.1),
+	grass1.wrl (1.1), grass2.wrl (1.1), grass3.wrl (1.1), rune_a.wrl
+	(1.1), skull.wrl (1.1), table.wrl (1.1), water.wrl (1.1):
+
+	added most objects from Servus
+	
+2003-01-20 20:58  vividos
+
+	* uadata/: uw1/model3d.cfg (1.4), models/static/bag.wrl (1.1),
+	models/static/chest.wrl (1.1), models/static/mushroom.wrl (1.1),
+	models/static/textures/bag.tga (1.1),
+	models/static/textures/mushroom.tga (1.1),
+	models/static/textures/wdchest.tga (1.1):
+
+	added some more objects
+	
+2003-01-20 20:25  vividos
+
+	* source/resource/model/importwrl.cpp (1.4):
+
+	using standard values when core pointer is NULL
+	
+2003-01-20 20:11  vividos
+
+	* source/tools/map3ds.cpp (1.5):
+
+	added fake function to get linking to work
+	
+2003-01-20 20:09  vividos
+
+	* Makefile.mingw (1.45):
+
+	libuatools.a is generated for the tools now
+	
+2003-01-20 20:08  vividos
+
+	* source/resource/model/unistd.h (1.2):
+
+	removed unistd.h again (not needed anymore in wrllexer.cpp)
+	
+2003-01-20 20:05  vividos
+
+	* win32/toolslib.dsp (1.2):
+
+	added more files to the tools libs
+	
+2003-01-20 20:02  vividos
+
+	* source/resource/model/import3ds.cpp (1.1):
+
+	added example 3ds importer (not used in uwadv)
+	
+2003-01-20 20:02  vividos
+
+	* source/Makefile.am (1.50):
+
+	added import3ds.cpp
+	
+2003-01-20 19:57  vividos
+
+	* source/tools/Makefile.common (1.7):
+
+	added central library for all tools to use
+	
+2003-01-20 19:57  vividos
+
+	* source/tools/mapdisp.cpp (1.11):
+
+	added fake function needed for linking
+	
+2003-01-17 20:29  wjpalenstijn
+
+	* source/: critter.cpp (1.3), image.cpp (1.21), quadtree.cpp
+	(1.11), renderer.cpp (1.23), conv/convgraph.cpp (1.3),
+	resource/imageloader.cpp (1.15), resource/tgaimport.cpp (1.2),
+	screens/ingame_orig.cpp (1.116), screens/start_menu.cpp (1.29):
+
+	warnings
+	
+2003-01-17 19:47  vividos
+
+	* docs/README.Linux.txt (1.11):
+
+	added required libtool version number
+	
+2003-01-17 17:06  vividos
+
+	* docs/Changes (1.3):
+
+	added some changes
+	
+2003-01-17 17:04  vividos
+
+	* docs/README.Linux.txt (1.10):
+
+	updated needed automake version
+	
+2003-01-17 17:00  vividos
+
+	* source/resource/texloader.cpp (1.17):
+
+	improved texture loading
+	
+2003-01-17 16:59  vividos
+
+	* source/models.hpp (1.5):
+
+	added some comments
+	
+2003-01-17 16:58  vividos
+
+	* source/Makefile.common (1.24), win32/uwadv.dsp (1.7):
+
+	added tgaimport.cpp
+	
+2003-01-17 16:57  vividos
+
+	* source/resource/tgaimport.cpp (1.1):
+
+	added tga file import
+	
+2003-01-17 16:55  vividos
+
+	* source/resource/modeldecode.cpp (1.5):
+
+	fixed trace output
+	
+2003-01-17 16:54  vividos
+
+	* source/resource/model/importwrl.cpp (1.3):
+
+	fixed texture loading/rendering
+	
+2003-01-17 13:59  vividos
+
+	* source/: models.hpp (1.4), resource/model/importwrl.cpp (1.2):
+
+	added texture loading for .wrl models
+	
+2003-01-17 13:58  vividos
+
+	* source/: resource/texloader.cpp (1.16), texture.hpp (1.18):
+
+	added ua_texture::load() to load textures from external files
+	
+2003-01-17 13:56  vividos
+
+	* uadata/models/static/: muffin.wrl (1.2), steak.wrl (1.2):
+
+	changed texture url to use tga textures
+	
+2003-01-17 13:55  vividos
+
+	* uadata/models/static/textures/: muffin.tga (1.1), steak.tga
+	(1.1):
+
+	added textures
+	
+2003-01-17 13:46  vividos
+
+	* source/models.cpp (1.5), uadata/uw1/model3d.cfg (1.3):
+
+	models must be relative to uadata-path now
+	
+2003-01-16 13:46  vividos
+
+	* source/models.cpp (1.4):
+
+	fixed slash at start of model path
+	
+2003-01-16 13:42  vividos
+
+	* uadata/uw1/model3d.cfg (1.2):
+
+	changed path slashes
+	
+2003-01-16 13:36  vividos
+
+	* source/resource/model/wrllexer.l (1.3):
+
+	added note about how to regenerate wrllexer.cpp
+	
+2003-01-16 13:33  vividos
+
+	* source/resource/model/wrllexer.cpp (1.2):
+
+	regenerated from wrllexer.l and the modified flex.skl
+	used command:
+	flex -Sflex.skl wrllexer.l
+	
+	changed inclusion of FlexLexer.h from <> brackets to ""
+	
+2003-01-16 13:31  vividos
+
+	* source/resource/model/flex.skl (1.3):
+
+	modified further to not having to include unistd.h on msvc compile
+	
+2003-01-16 13:30  vividos
+
+	* source/resource/model/wrllexer.l (1.2):
+
+	added more options to omit functions
+	
+2003-01-16 13:29  vividos
+
+	* source/resource/model/: FlexLexer.h (1.2), flex.skl (1.2):
+
+	modified to get rid of old-style C++ iostream classes
+	
+2003-01-16 13:27  vividos
+
+	* source/resource/model/flex.skl (1.1):
+
+	added flex skeleton file from flex-2.5.4a
+	downloaded from http://gnuwin32.sourceforge.net/
+	
+2003-01-16 12:55  vividos
+
+	* uadata/uw1/scripts/objlist.lua (1.7):
+
+	added output of npc attitude when looking at it
+	improved rejecting of non-existant conversations
+	
+2003-01-16 12:52  vividos
+
+	* source/: core.hpp (1.11), uwadv.cpp (1.42), uwadv.hpp (1.17),
+	screens/ingame_orig.cpp (1.115), screens/ingame_orig.hpp (1.32):
+
+	moved debug interface to game core class
+	
+2003-01-16 12:50  vividos
+
+	* source/: renderer.cpp (1.22), renderer.hpp (1.11):
+
+	using model manager to render 3d models when available
+	
+2003-01-16 12:49  vividos
+
+	* source/: models.cpp (1.3), models.hpp (1.3),
+	resource/modeldecode.cpp (1.4):
+
+	reworked model manager to support wrl model importing
+	added usage of model config file model3d.cfg
+	
+2003-01-16 12:46  vividos
+
+	* source/: Makefile.am (1.49), Makefile.common (1.23):
+
+	added new files for model import
+	
+2003-01-16 12:43  vividos
+
+	* uadata/Makefile.common (1.7):
+
+	added model files to uadata archive
+	
+2003-01-16 12:41  vividos
+
+	* win32/uwadv.dsp (1.6):
+
+	added .wrl import files
+	
+2003-01-16 12:37  vividos
+
+	* source/resource/model/: FlexLexer.h (1.1), importwrl.cpp (1.1),
+	unistd.h (1.1), wrllexer.cpp (1.1), wrllexer.hpp (1.1), wrllexer.l
+	(1.1):
+
+	added first .wrl file parser
+	
+2003-01-16 12:19  vividos
+
+	* uadata/uw1/model3d.cfg (1.1):
+
+	added 3d model config file for uw1
+	
+2003-01-16 12:18  vividos
+
+	* uadata/models/static/: muffin.wrl (1.1), steak.wrl (1.1):
+
+	added first two static models
+	
+2003-01-13 16:03  vividos
+
+	* source/uwscript.cpp (1.27):
+
+	fixed conv_is_avail() function
+	
+2003-01-13 16:01  vividos
+
+	* source/resource/objloader.cpp (1.13):
+
+	storing more npc attributes
+	
+2003-01-13 16:00  vividos
+
+	* source/screens/conversation.cpp (1.13):
+
+	added support for generic npc conversations
+	
+2003-01-13 14:32  vividos
+
+	* docs/uw-formats.txt (1.47):
+
+	added infos about generic conversations
+	
+2003-01-09 13:56  vividos
+
+	* win32/: uaconfig.dsp (1.3), uadebug.dsp (1.3):
+
+	fixed output paths
+	
+2003-01-09 12:54  vividos
+
+	* win32/uwadv.dsp (1.5):
+
+	fixed include paths for zziplib and lua libraries
+	
+2003-01-09 11:55  vividos
+
+	* source/screens/uwadv_menu.cpp (1.4):
+
+	lua_start_newgame() is called for debug code (commented out)
+	
+2003-01-09 11:52  vividos
+
+	* docs/ua-diffs.txt (1.3):
+
+	added another difference
+	
+2003-01-08 12:15  vividos
+
+	* source/: core.hpp (1.10), uwadv.cpp (1.41), uwadv.hpp (1.16):
+
+	added ua_model3d_manager object to main game object
+	
+2003-01-08 12:03  vividos
+
+	* source/: models.cpp (1.2), models.hpp (1.2):
+
+	changed init() function
+	
+2003-01-08 11:44  vividos
+
+	* source/screens/ingame_orig.cpp (1.114):
+
+	fixed preparing level textures on resume()
+	
+2003-01-08 11:42  vividos
+
+	* source/screens/create_character.cpp (1.26), source/uwscript.cpp
+	(1.26), source/uwscript.hpp (1.19), uadata/uw1/scripts/game.lua
+	(1.18):
+
+	added function lua_started_newgame()
+	
+2003-01-08 11:12  vividos
+
+	* uadata/uw1/scripts/objlist.lua (1.6):
+
+	ui_start_conv now gets object handle
+	
+2003-01-08 11:11  vividos
+
+	* source/: screens/conversation.cpp (1.12), uwscript.cpp (1.25),
+	screens/conversation.hpp (1.10), screens/ingame_orig.cpp (1.113),
+	screens/ingame_orig.hpp (1.31), uwscript.hpp (1.18):
+
+	ua_conversation_screen now gets exact position of npc object in underworld
+	fixed generic portraits
+	
+2003-01-07 20:55  vividos
+
+	* win32/uwadv.nsi (1.4):
+
+	deleting stderr.txt at uninstall, too
+	
+2003-01-07 20:44  vividos
+
+	* win32/uwadv.nsi (1.3):
+
+	removing stdout.txt and uninstaller link on uninstall
+	
+2003-01-07 20:43  vividos
+
+	* hacking/miscdecode/miscdecode.cpp (1.9):
+
+	added decoding of weapons.dat
+	
+2003-01-07 20:43  vividos
+
+	* docs/uw-formats.txt (1.46):
+
+	minor changes
+	
+2003-01-07 20:40  vividos
+
+	* docs/README.tools.txt (1.7):
+
+	fixed typo
+	
+2002-12-04 10:39  telemachos
+
+	* source/: physics.cpp (1.24), physicsobject.cpp (1.4):
+
+	tweaked gravity a little (not too different from before im afraid)
+	
+2002-11-30 22:22  vividos
+
+	* source/Makefile.common (1.22), win32/uwadv.dsp (1.4):
+
+	added models.cpp/.hpp
+	
+2002-11-30 22:20  vividos
+
+	* source/: models.cpp (1.1), models.hpp (1.1):
+
+	added basic model management classes
+	
+2002-11-30 22:18  vividos
+
+	* source/resource/modeldecode.cpp (1.3):
+
+	added triangle retrieving
+	added test program at the end of file
+	
+2002-11-30 18:28  vividos
+
+	* win32/uwadv.dsp (1.3):
+
+	fixed some file paths
+	
+2002-11-30 18:19  vividos
+
+	* win32/map3ds.dsp (1.3):
+
+	ignored some import libs
+	
+2002-11-30 18:18  vividos
+
+	* source/tools/map3ds.cpp (1.4):
+
+	added option to write a single 3ds file with all levels in it
+	
+2002-11-30 16:19  wjpalenstijn
+
+	* Makefile.am (1.10), configure.ac (1.22), source/Makefile.am
+	(1.48):
+
+	fixed linux build; make install is still broken
+	
+2002-11-30 16:08  vividos
+
+	* source/tools/map3ds.cpp (1.3):
+
+	fixed 3ds file generation
+	
+2002-11-30 13:09  vividos
+
+	* source/tools/cnvdasm.cpp (1.14):
+
+	enhanced output a bit
+	
+2002-11-30 13:09  vividos
+
+	* source/tools/cnvdbg.cpp (1.14):
+
+	fixed tools compiling
+	
+2002-11-30 13:02  vividos
+
+	* Makefile.mingw (1.44), win32/uwadv.nsi (1.2):
+
+	fixed mingw32 compiling and installer creation
+	
+2002-11-30 12:58  vividos
+
+	* source/screens/conversation.cpp (1.11):
+
+	fixed cast warnings
+	
+2002-11-30 12:43  vividos
+
+	* uwadv.dsw (1.5), win32/uaconfig.dsp (1.2), win32/uadebug.dsp
+	(1.2), win32/uaopt.dsp (1.2), win32/uwadv.dsp (1.2):
+
+	fixed win32 msvc project files
+	
+2002-11-30 12:38  vividos
+
+	* win32/: animview.dsp (1.2), cnvdasm.dsp (1.2), cnvdbg.dsp (1.2),
+	map3ds.dsp (1.2), mapdisp.dsp (1.2), strpak.dsp (1.2), tools.dsw
+	(1.2), toolslib.dsp (1.1), xmi2mid.dsp (1.2):
+
+	fixed tools projects and added toolslib static library
+	
+2002-11-30 12:13  vividos
+
+	* source/win32/: .cvsignore (1.3), Uus.ico (1.3), debug.cpp (1.1),
+	game_win32.cpp (1.5), game_win32.hpp (1.5), main.cpp (1.6),
+	resource.h (1.4), uaconfig/.cvsignore (1.1), uwadv_res.rc (1.1),
+	uaconfig/Corp.ico (1.1), uaconfig/resource.h (1.1),
+	uaconfig/uaconfig.cpp (1.1), uaconfig/uaconfig.hpp (1.1),
+	uaconfig/uaconfig_res.rc (1.1), source/.cvsignore (1.2),
+	source/Uus.ico (1.2), source/debug.cpp (1.8), source/game_win32.cpp
+	(1.3), source/game_win32.hpp (1.3), source/main.cpp (1.6),
+	source/resource.h (1.3), source/uaconfig/.cvsignore (1.2),
+	source/uaconfig/Corp.ico (1.2), source/uaconfig/resource.h (1.4),
+	source/uaconfig/uaconfig.cpp (1.7), source/uaconfig/uaconfig.hpp
+	(1.3), source/uwadv_res.rc (1.3), source/uaconfig/uaconfig_res.rc
+	(1.5):
+
+	moved all source files one level up
+	
+2002-11-30 12:02  vividos
+
+	* source/win32/: cnvdbg.dsp (1.9), map3ds.dsp (1.4), mapdisp.dsp
+	(1.11), strpak.dsp (1.7), tools.dsw (1.8), uaconfig.dsp (1.4),
+	uadebug.def (1.2), uadebug.dsp (1.4), uaopt.dsp (1.3), uwadv.cfg
+	(1.14), uwadv.dsp (1.49), uwadv.nsi (1.18), xmi2mid.dsp (1.4):
+
+	moved win32 msvc build files not directly related to source code to ./win32 folder
+	history is not copied, but old file history is available at
+	http://cvs.uwadv.sourceforge.net/cgi-bin/viewcvs.cgi/uwadv/uwadv/source/win32/Attic/
+	
+2002-11-30 11:59  vividos
+
+	* docs/License.installer.txt (1.3), win32/.cvsignore (1.1),
+	win32/animview.dsp (1.1), win32/cnvdasm.dsp (1.1), win32/cnvdbg.dsp
+	(1.1), win32/map3ds.dsp (1.1), win32/mapdisp.dsp (1.1),
+	win32/strpak.dsp (1.1), win32/tools.dsw (1.1), win32/uaconfig.dsp
+	(1.1), win32/uadebug.def (1.1), win32/uadebug.dsp (1.1),
+	win32/uaopt.dsp (1.1), win32/uwadv.cfg (1.1), win32/uwadv.dsp
+	(1.1), win32/uwadv.nsi (1.1), win32/xmi2mid.dsp (1.1),
+	source/win32/.cvsignore (1.2), source/win32/animview.dsp (1.7),
+	source/win32/cnvdasm.dsp (1.9):
+
+	moved win32 msvc build files not directly related to source code to ./win32 folder
+	history is not copied, but old file history is available at
+	http://cvs.uwadv.sourceforge.net/cgi-bin/viewcvs.cgi/uwadv/uwadv/source/win32/Attic/
+	
+2002-11-30 11:53  vividos
+
+	* docs/uw-formats.txt (1.45):
+
+	updated info about ceiling texture
+	
+2002-11-30 11:48  vividos
+
+	* linux/.cvsignore (1.1), linux/ua-lowercase-all.pl (1.1),
+	linux/ua-lowercase-all.pl.6 (1.1), linux/uwadv.6.in (1.1),
+	linux/uwadv.cfg.in (1.1), linux/uwadv.spec.in (1.1),
+	source/linux/.cvsignore (1.14), source/linux/ua-lowercase-all.pl
+	(1.2), source/linux/ua-lowercase-all.pl.6 (1.2),
+	source/linux/uwadv.6.in (1.7), source/linux/uwadv.cfg.in (1.10),
+	source/linux/uwadv.spec.in (1.10):
+
+	moved linux build files not directly related to source code to ./linux folder
+	history is not copied, but old file history is available at
+	http://cvs.uwadv.sourceforge.net/cgi-bin/viewcvs.cgi/uwadv/uwadv/source/linux/Attic/
+	
+2002-11-30 11:44  vividos
+
+	* source/: level.hpp (1.20), resource/maploader.cpp (1.19):
+
+	level ceiling texture is always the last texture number in texture mapping
+	
+2002-11-30 11:43  vividos
+
+	* docs/uw-formats.txt (1.44):
+
+	removed id values from imported functions, since the id's could be other ones in uw2
+	
+2002-11-30 11:42  vividos
+
+	* hacking/levarkdec/levarkdec.cpp (1.10):
+
+	added dumping of texture mappings
+	
+2002-11-30 01:54  vividos
+
+	* docs/ua-todo-list.txt (1.8):
+
+	repriorized most tasks
+	added some new tasks
+	
+2002-11-29 21:57  vividos
+
+	* source/screens/conversation.cpp (1.10):
+
+	added more imported functions: babl_ask, contains and length
+	
+2002-11-29 00:03  vividos
+
+	* Makefile.mingw (1.43):
+
+	added flags "-g -O" when compiling with WITH_DEBUGGING = "on"
+	
+2002-11-28 23:58  vividos
+
+	* source/conv/codevm.cpp (1.18):
+
+	fixed replace_placeholder() function
+	removed debug code
+	
+2002-11-28 23:57  vividos
+
+	* source/screens/: conversation.cpp (1.9), ingame_orig.cpp (1.112):
+
+	added playing music when entering screens
+	minor other changes
+	
+2002-11-28 23:46  vividos
+
+	* source/audio/audio.cpp (1.27):
+
+	removed trace error output for midi playback
+	
+2002-11-28 23:31  vividos
+
+	* source/screens/: conversation.cpp (1.8), conversation.hpp (1.9):
+
+	fixed most bugs in conversation screen
+	
+2002-11-28 23:15  vividos
+
+	* source/resource/cutsloader.cpp (1.13):
+
+	initial image is created at load() now
+	
+2002-11-28 23:07  vividos
+
+	* source/audio/: resamp.c (1.2), resamp.h (1.2):
+
+	added doxygen comments
+	
+2002-11-28 20:59  vividos
+
+	* source/: textscroll.cpp (1.16), textscroll.hpp (1.6):
+
+	fixed clear_scroll() to actually clear the image and reupload it
+	
+2002-11-28 20:24  vividos
+
+	* source/settings.cpp (1.13):
+
+	fixed error in dump() function
+	
+2002-11-28 16:54  vividos
+
+	* docs/uw-formats.txt (1.43):
+
+	added more to the mobile object extra data info
+	
+2002-11-27 22:14  vividos
+
+	* docs/uw-formats.txt (1.42):
+
+	addd infos about mobile object extra data
+	
+2002-11-27 19:20  vividos
+
+	* source/screens/: conversation.cpp (1.7), conversation.hpp (1.8):
+
+	added some background graphics
+	adjusted width of upper text scroll
+	
+2002-11-27 17:51  vividos
+
+	* source/win32/uwadv.dsp (1.48):
+
+	added convgraph.cpp/.hpp and opcodes.hpp
+	
+2002-11-27 17:43  vividos
+
+	* docs/uw-formats.txt (1.41):
+
+	added some quest flags
+	rephrased some infos about imported functions
+	
+2002-11-27 17:42  vividos
+
+	* docs/README.dev.txt (1.6):
+
+	added some things to the code guidelines
+	
+2002-11-27 17:39  vividos
+
+	* docs/README.Lua.txt (1.19):
+
+	added quest_* functions
+	added conv_is_avail function
+	
+2002-11-27 17:38  vividos
+
+	* source/: uwscript.cpp (1.24), uwscript.hpp (1.17):
+
+	added implementation for conv_* and quest_* functions
+	
+2002-11-27 17:20  vividos
+
+	* source/screens/: conversation.cpp (1.6), conversation.hpp (1.7):
+
+	added fade in/out
+	added imported functions set_quest()/get_quest()
+	added player name to localstrings
+	
+2002-11-27 17:18  vividos
+
+	* source/conv/: codevm.cpp (1.17), codevm.hpp (1.18):
+
+	added alloc_string() method
+	fixed BRA opcode target address
+	
+2002-11-27 17:15  vividos
+
+	* source/player.cpp (1.23):
+
+	gave the standard player a name
+	
+2002-11-27 17:14  vividos
+
+	* source/player.hpp (1.22):
+
+	added get_name() method
+	
+2002-11-27 17:13  vividos
+
+	* source/: textscroll.cpp (1.15), textscroll.hpp (1.5):
+
+	added list with line colors
+	
+2002-11-27 17:12  vividos
+
+	* source/: underworld.cpp (1.33), underworld.hpp (1.21):
+
+	added quest flags vector
+	
+2002-11-27 13:14  vividos
+
+	* source/screens/: conversation.cpp (1.5), conversation.hpp (1.6):
+
+	added debug output for storing global variables
+	
+2002-11-27 13:13  vividos
+
+	* source/conv/: codevm.cpp (1.16), codevm.hpp (1.17):
+
+	changed name of callback functions
+	
+2002-11-27 12:41  vividos
+
+	* source/settings.cpp (1.12):
+
+	used std::ostringstream instead of sprintf
+	used ua_trace instead of std::cout for debug output
+	
+2002-11-27 12:41  vividos
+
+	* source/textscroll.hpp (1.4):
+
+	added function to clear scroll text
+	made have_more_lines() public
+	
+2002-11-27 12:39  vividos
+
+	* source/screens/ingame_orig.cpp (1.111):
+
+	removed debug output
+	
+2002-11-27 12:39  vividos
+
+	* source/screens/: conversation.cpp (1.4), conversation.hpp (1.5):
+
+	added screen states to handle user input
+	added first imported functions to handle
+	
+2002-11-27 12:37  vividos
+
+	* source/: conv/codevm.cpp (1.15), conv/codevm.hpp (1.16),
+	resource/codeloader.cpp (1.13):
+
+	major update to get conversations to work
+	
+2002-11-26 22:57  vividos
+
+	* source/screens/ingame_orig.cpp (1.110):
+
+	changed text scroll foreground color to index 46
+	
+2002-11-26 22:56  vividos
+
+	* source/screens/: conversation.cpp (1.3), conversation.hpp (1.4):
+
+	set up basic conversation screen
+	
+2002-11-26 20:41  vividos
+
+	* docs/ua-todo-list.txt (1.7):
+
+	another task done
+	
+2002-11-26 20:40  vividos
+
+	* source/screens/: ingame_orig.cpp (1.109), ingame_orig.hpp (1.30):
+
+	used ua_image_quad class for background image
+	
+2002-11-26 20:35  vividos
+
+	* source/imgquad.hpp (1.4):
+
+	added comment
+	
+2002-11-26 20:29  vividos
+
+	* source/imgquad.cpp (1.3):
+
+	image is only created when not already done
+	
+2002-11-26 18:13  vividos
+
+	* source/screens/ingame_orig.cpp (1.108):
+
+	added call to lua_objlist_talk() when attempting to talk with object
+	
+2002-11-26 18:12  vividos
+
+	* source/: uwscript.cpp (1.23), uwscript.hpp (1.16):
+
+	added lua_objlist_talk() function
+	
+2002-11-26 18:03  vividos
+
+	* uadata/uw1/scripts/objlist.lua (1.5):
+
+	added function lua_objlist_talk()
+	
+2002-11-26 16:59  vividos
+
+	* source/screens/: cutscene_view.cpp (1.24), cutscene_view.hpp
+	(1.6):
+
+	fixed cutscene rendering via ua_image_quad functionality
+	
+2002-11-26 16:42  vividos
+
+	* source/screens/: start_menu.cpp (1.28), start_menu.hpp (1.11):
+
+	used ua_image_quad for start menu image
+	
+2002-11-25 22:29  vividos
+
+	* source/: Makefile.common (1.21), win32/uwadv.dsp (1.47):
+
+	added imgquad.cpp/.hpp
+	
+2002-11-25 22:27  vividos
+
+	* source/screens/acknowledgements.cpp (1.11):
+
+	fixed fading in/out of pages
+	
+2002-11-25 22:26  vividos
+
+	* source/imgquad.hpp (1.3):
+
+	added method to retrieve image quad palette
+	
+2002-11-25 21:43  vividos
+
+	* source/screens/: acknowledgements.cpp (1.10),
+	acknowledgements.hpp (1.5):
+
+	used ua_image_quad methods to render animations
+	
+2002-11-25 20:56  vividos
+
+	* source/screens/: start_splash.cpp (1.32), start_splash.hpp (1.9):
+
+	used new ua_image_quad class and functionality to render splash screen still image and animations
+	
+2002-11-25 20:55  vividos
+
+	* source/: cutscene.cpp (1.14), cutscene.hpp (1.10),
+	resource/cutsloader.cpp (1.12):
+
+	ua_cutscene class also uses ua_image_quad class now
+	
+2002-11-25 20:51  vividos
+
+	* source/: imgquad.cpp (1.2), imgquad.hpp (1.2):
+
+	ua_image_quad has its own palette now (to support cutscene animations)
+	
+2002-11-25 20:50  vividos
+
+	* source/image.cpp (1.20):
+
+	ua_image::palette is now initialized in ctor
+	
+2002-11-25 20:14  vividos
+
+	* source/: textscroll.cpp (1.14), textscroll.hpp (1.3):
+
+	moved quad drawing stuff to ua_image_quad class
+	
+2002-11-25 20:12  vividos
+
+	* source/: imgquad.cpp (1.1), imgquad.hpp (1.1):
+
+	added general image quad class
+	
+2002-11-25 01:37  vividos
+
+	* hacking/cnvdec/cnvdec.cpp (1.7):
+
+	fixed unpacking
+	
+2002-11-25 00:35  vividos
+
+	* hacking/cnvdec/cnvdec.cpp (1.6):
+
+	added unpacking and dumping of uw2 cnv.ark (not quite correct yet)
+	
+2002-11-25 00:35  vividos
+
+	* hacking/hacking.h (1.6):
+
+	added HAVE_UW2 define to also decode uw2 data
+	
+2002-11-21 22:04  vividos
+
+	* source/win32/uwadv.nsi (1.17):
+
+	added some files to uninstall
+	changed exe name
+	
+2002-11-21 20:53  vividos
+
+	* ChangeLog (1.30):
+
+	updated for release 0.6-rotworm-stew
+	
 2002-11-21 20:40  vividos
 
 	* source/win32/uwadv.nsi (1.16):
