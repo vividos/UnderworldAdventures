@@ -8,7 +8,7 @@
 CXXFLAGS = @CXXFLAGS@
 LDFLAGS = @LIBS@
 
-SUBDIRS = uwdump
+SUBDIRS = . uwdump
 
 if BUILD_TOOLS
  noinst_PROGRAMS = cnvdasm cnvdbg xmi2mid mapdisp animview strpak
