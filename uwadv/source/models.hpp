@@ -30,48 +30,112 @@
 #define uwadv_models_hpp_
 
 // needed includes
-#include "renderer.hpp"
+#include "uamath.hpp"
+#include "texture.hpp"
 #include <map>
 #include <vector>
 
 
+// forward declarations
+class ua_game_core_interface;
+
+
 // classes
 
-//! 3d model class
+//! 3d model base class
 class ua_model3d
 {
 public:
    //! ctor
    ua_model3d(){}
 
-   //! renders model
-   void render();
+   //! dtor
+   virtual ~ua_model3d(){}
 
-   //! returns list of triangles
-   std::vector<ua_triangle3d_textured>& get_triangles(){ return alltriangles; }
+   //! returns unique model name
+   const char* get_model_name();
+
+   //! renders model
+   virtual void render(ua_vector3d& base){}
+
+   //! returns bounding triangles for collision detection
+/*   virtual void get_bounding_triangles(
+      std::vector<ua_triangle3d_textured>& alltriangles){}*/
+};
+
+
+//! smart pointer to model object
+typedef ua_smart_ptr<ua_model3d> ua_model3d_ptr;
+
+
+class ua_model3d_builtin: public ua_model3d
+{
+public:
+   ua_model3d_builtin(){}
+
+   virtual void render(ua_vector3d& base);
+};
+
+
+//! static object model
+class ua_model3d_wrl: public ua_model3d
+{
+public:
+   //! ctor
+   ua_model3d_wrl(){}
+
+   //! dtor
+   virtual ~ua_model3d_wrl(){}
+
+   //! loads vrml97 .wrl file
+   void import_wrl(ua_game_core_interface* core, SDL_RWops* rwops);
+
+   //! renders model
+   virtual void render(ua_vector3d& base);
 
 protected:
-   //! list of triangles
-   std::vector<ua_triangle3d_textured> alltriangles;
+
+   std::vector<ua_vector3d> coords;
+
+   std::vector<ua_vector2d> texcoords;
+
+   std::vector<unsigned int> coord_index;
+
+   std::vector<unsigned int> texcoord_index;
+
+   ua_texture tex;
 };
 
 
 //! 3d model manager
-class ua_model3d_manager
+class ua_model3d_manager: private ua_cfgfile
 {
 public:
    //! ctor
    ua_model3d_manager(){}
 
    //! init manager
-   void init(ua_settings& settings);
+   void init(ua_game_core_interface* core);
+
+   //! returns if a 3d model for a certain item_id is available
+   bool model_avail(Uint16 item_id);
 
    //! renders a model
-   void render(Uint16 model);
+   void render(Uint16 item_id, ua_vector3d& base);
+
+protected:
+   //! called to load a specific value
+   virtual void load_value(const std::string& name, const std::string& value);
 
 protected:
    //! map with all 3d model objects
-   std::map<Uint16,ua_model3d> allmodels;
+   std::map<Uint16,ua_model3d_ptr> allmodels;
+
+   //! all builtin models from the exe
+   std::vector<ua_model3d_ptr> allbuiltins;
+
+   //! files manager used while loading cfg files
+   ua_game_core_interface* core;
 };
 
 #endif

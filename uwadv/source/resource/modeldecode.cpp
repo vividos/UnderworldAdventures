@@ -28,6 +28,7 @@
 // needed includes
 #include "common.hpp"
 #include "models.hpp"
+#include "renderer.hpp"
 #include "fread_endian.hpp"
 #include "uamath.hpp"
 #include <vector>
@@ -476,8 +477,8 @@ void ua_model_parse_node(FILE* fd, std::vector<ua_vector3d>& vertex_list,
    }
 }
 
-bool ua_model_decode_all(const char* filename,
-   std::map<Uint16,ua_model3d>& allmodels)
+bool ua_model_decode_builtins(const char* filename,
+   std::vector<ua_model3d_ptr>& allmodels)
 {
    // open file
    FILE* fd = fopen(filename,"rb");
@@ -534,13 +535,14 @@ bool ua_model_decode_all(const char* filename,
       ua_trace(" loading model %u, offset=0x%08x {unk1=0x%04x, e=(%3.2f, %3.2f, %3.2f) }\n",
          n,base + offsets[n],unk1,ex,ey,ez);
 
-      ua_model3d model;
+      // TODO: fix loading
+      //ua_model3d_ptr model_ptr(new ua_model3d_builtin);
 
       // parse root node
       std::vector<ua_vector3d> vertex_list;
-      ua_model_parse_node(fd,vertex_list,model.get_triangles());
+      //ua_model_parse_node(fd,vertex_list,model.get_triangles());
 
-      allmodels.insert( std::make_pair<Uint16,ua_model3d>(n,model) );
+      //allmodels.push_back(model_ptr);
    }
 
    fclose(fd);
