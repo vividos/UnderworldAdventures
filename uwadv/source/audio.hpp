@@ -21,7 +21,16 @@
 */
 /*! \file audio.hpp
 
-   audio interface definition
+   audio interface definition; the audio interface lets the user start and
+   stop playing music tracks and sound effects in the background. sound
+   effects are played once, until they end.
+
+   a new audio 'object' must be created with
+
+      ua_audio_interface::get_audio_interface();
+
+   which returns a pointer to the audio interface. when done, the interface
+   pointer must be destroyed with the delete operator.
 
 */
 
@@ -46,10 +55,10 @@ public:
    virtual void init(ua_settings &settings)=0;
 
    //! plays a sound; stops when finished
-   virtual void play_sound(int sound)=0;
+   virtual void play_sound(unsigned int sound)=0;
 
    //! starts music playback
-   virtual void start_music(int music)=0;
+   virtual void start_music(unsigned int music, bool repeat)=0;
 
    //! stops music playback
    virtual void stop_music()=0;
