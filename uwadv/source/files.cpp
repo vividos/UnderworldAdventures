@@ -41,10 +41,10 @@ ua_files_manager::ua_files_manager()
 }
 
 //! checks if a file with given filename is available
-bool ua_file_isavail(const char *base, const char *fname)
+bool ua_file_isavail(std::string base, std::string fname)
 {
-   std::string filename(base);
-   filename.append(fname);
+   std::string filename = base;
+   filename += fname;
 
    FILE *fd = fopen(filename.c_str(),"rb");
    if (fd==NULL)
