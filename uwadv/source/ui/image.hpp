@@ -124,7 +124,7 @@ public:
    const std::vector<Uint8>& get_pixels() const { return pixels; }
 
    //! sets palette
-   void set_palette(ua_palette256_ptr& pal){ palette = pal; }
+   void set_palette(ua_palette256_ptr pal){ palette = pal; }
 
    //! returns palette
    ua_palette256_ptr& get_palette(){ return palette; };
