@@ -58,6 +58,9 @@ void ua_start_menu_screen::init()
    // load button graphics
    img_buttons.load(core->get_settings(),"opbtn",0,0,2);
 
+   // init mouse cursor
+   mousecursor = new ua_mousecursor(core);
+
    resume();
 }
 
@@ -79,7 +82,7 @@ void ua_start_menu_screen::resume()
    glBindTexture(GL_TEXTURE_2D,0);
 
    glDisable(GL_DEPTH_TEST);
-   glDisable(GL_BLEND);
+   glEnable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
    // init texture
@@ -87,6 +90,9 @@ void ua_start_menu_screen::resume()
    tex.convert(img);
    tex.use();
    tex.upload();
+
+   SDL_ShowCursor(0);
+   mousecursor->show(true);
 
    stage = 0;
    tickcount = 0;
@@ -98,6 +104,8 @@ void ua_start_menu_screen::resume()
 
 void ua_start_menu_screen::done()
 {
+   delete mousecursor;
+
    suspend();
 
    // clear screen
@@ -145,6 +153,7 @@ void ua_start_menu_screen::handle_event(SDL_Event &event)
       break;
 
    case SDL_MOUSEMOTION:
+      mousecursor->updatepos();
       if (stage==1 && buttondown)
       {
          int ret = get_selected_area();
@@ -224,6 +233,9 @@ void ua_start_menu_screen::render()
    glTexCoord2d(u  , 0.0); glVertex2i(320,200);
    glTexCoord2d(0.0, 0.0); glVertex2i(  0,200);
    glEnd();
+
+   mousecursor->draw();
+   tex.use();
 }
 
 void ua_start_menu_screen::tick()

@@ -35,6 +35,7 @@
 
 // needed includes
 #include "screen.hpp"
+#include "mousecursor.hpp"
 
 
 // classes
@@ -89,6 +90,9 @@ protected:
 
    //! indicates if "journey onward" is available
    bool journey_avail;
+
+   //! mouse cursor
+   ua_mousecursor* mousecursor;
 
    //! indicates if the mouse button is down
    bool buttondown;

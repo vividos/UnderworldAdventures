@@ -35,6 +35,7 @@
 // needed includes
 #include "screen.hpp"
 #include "font.hpp"
+#include "mousecursor.hpp"
 
 
 // classes
@@ -139,14 +140,8 @@ protected:
    //! background image palette
    ua_onepalette palette;
 
-   //! mouse cursor coordinates
-   unsigned int cursorx,cursory;
-
-   //! mouse cursor height/width
-   unsigned int cursorw, cursorh;
-
-   //! texture object for mouse
-   ua_texture mousetex;
+   //! mouse cursor
+   ua_mousecursor* mousecursor;
 
    //! number of selected button, or -1 if none
    int selected_button;
