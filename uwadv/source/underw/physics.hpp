@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Underworld Adventures Team
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,13 +26,14 @@
 */
 
 // include guard
-#ifndef __uwadv_physics_hpp_
-#define __uwadv_physics_hpp_
+#ifndef uwadv_physics_hpp_
+#define uwadv_physics_hpp_
 
 // needed includes
 #include "uamath.hpp"
 #include "physicsobject.hpp"
 #include <vector>
+
 
 // forward declarations
 class ua_underworld;

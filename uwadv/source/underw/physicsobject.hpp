@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,8 +26,8 @@
 */
 
 // include guard
-#ifndef __uwadv_physicsobject_hpp_
-#define __uwadv_physicsobject_hpp_
+#ifndef uwadv_physicsobject_hpp_
+#define uwadv_physicsobject_hpp_
 
 // needed includes
 #include "uamath.hpp"
@@ -38,24 +38,25 @@ class ua_physics_object
 {
 public:
    //! ctor
-  ua_physics_object();
+   ua_physics_object();
 
-  void set_ellipsoid(ua_vector3d size);
-  ua_vector3d get_ellipsoid() const;
-    
-  void push_safe_spot(ua_vector3d spot);
-  ua_vector3d pop_safe_spot(); 
-  ua_vector3d get_fall_velocity() const;
-  void reset_fall_velocity();
-  void accellerate_fall_velocity(double time);
+   void set_ellipsoid(ua_vector3d size);
+   ua_vector3d get_ellipsoid() const;
+
+   void push_safe_spot(ua_vector3d spot);
+   ua_vector3d pop_safe_spot(); 
+   ua_vector3d get_fall_velocity() const;
+   void reset_fall_velocity();
+   void accellerate_fall_velocity(double time);
+
 protected:
-  ua_vector3d fall_velocity;
-  ua_vector3d ellipsoid;
-  
-  // Cyclic safe spot buffer:
-  ua_vector3d safeSpots[100];
-  int safeSpotHead;
-  int safeSpotTail;
+   ua_vector3d fall_velocity;
+   ua_vector3d ellipsoid;
+
+   // Cyclic safe spot buffer:
+   ua_vector3d safeSpots[100];
+   int safeSpotHead;
+   int safeSpotTail;
 };
 
 #endif

@@ -34,6 +34,7 @@
 #include "underworld.hpp"
 #include "renderer.hpp"
 
+
 // typedefs
 
 //! collision check data
@@ -55,7 +56,7 @@ typedef struct ua_collision_data
 
 
 //! Trick to get smoother CD
-const double ua_cd_liftoff   = 0.07;
+const double ua_cd_liftoff = 0.07;
 
 //! minimum distance
 const double ua_physics_min_dist = 0.05;
@@ -207,7 +208,8 @@ void ua_physics_model::eval_physics(double time)
    last_evaltime = time;
 }
 
-void ua_physics_model::track_object(ua_physics_object& object, ua_vector3d& pos, const ua_vector3d& dir, bool gravity_call, double time)
+void ua_physics_model::track_object(ua_physics_object& object,
+   ua_vector3d& pos, const ua_vector3d& dir, bool gravity_call, double time)
 {
    ua_vector3d dir2(dir);
    // transform to ellipsoid space
@@ -219,20 +221,24 @@ void ua_physics_model::track_object(ua_physics_object& object, ua_vector3d& pos,
    collision_recursion_depth = 0;
    bool collided = collide_with_world(object, pos,dir2);
 
-   if (gravity_call) {
-     if (collided) {
-      object.reset_fall_velocity();
-     } 
-     else {
-      object.accellerate_fall_velocity(time);
-     } 
+   if (gravity_call)
+   {
+      if (collided)
+      {
+         object.reset_fall_velocity();
+      } 
+      else
+      {
+         object.accellerate_fall_velocity(time);
+      }
    }
 
    // transform back to normal space
    pos *= ellipsoid;
 }
 
-bool ua_physics_model::collide_with_world(ua_physics_object& object, ua_vector3d& pos, const ua_vector3d& dir)
+bool ua_physics_model::collide_with_world(ua_physics_object& object,
+   ua_vector3d& pos, const ua_vector3d& dir)
 {
    // do we need to worry?
    if (dir.length()<ua_physics_min_dist || collision_recursion_depth > 15)
@@ -255,14 +261,15 @@ bool ua_physics_model::collide_with_world(ua_physics_object& object, ua_vector3d
    // check triangle mesh collision
    ua_vector3d ellipsoid = object.get_ellipsoid();
    check_collision( object, static_cast<int>(pos.x*ellipsoid.x), static_cast<int>(pos.y*ellipsoid.y), data);
-  
-   if (data.stuck) {
+
+   if (data.stuck)
+   {
      // recovery code here:
      ua_vector3d safeSpot = object.pop_safe_spot();
      pos = safeSpot;
      return true; // if stuck we definitly collides
    }
-  
+
    if (!data.found)
    {
       // no collision occured
@@ -274,7 +281,7 @@ bool ua_physics_model::collide_with_world(ua_physics_object& object, ua_vector3d
 
       // push 'pos' as a safe spot:
       object.push_safe_spot(pos);
-      
+
       // return the final position
       pos += dir2;
       return false; // no collision found
@@ -314,7 +321,7 @@ bool ua_physics_model::collide_with_world(ua_physics_object& object, ua_vector3d
       // generate slide vector
       // it becomes our new velocity vector for the next iteration
       ua_vector3d newdir = newdest - data.nearest_poly_inter;
-      
+
       // call the function with the new position and velocity
       collide_with_world(object, newpos,newdir);
       pos = newpos;
@@ -388,7 +395,7 @@ void ua_physics_model::check_collision(ua_physics_object& object, int xpos, int 
            
         
       // calculate sphere intersection point
-#ifdef CD_DEBUG_INFO       
+#ifdef CD_DEBUG_INFO
       printf("sphere pos (%f,%f,%f)\n", data.pos.x, data.pos.y,data.pos.z); 
 #endif      
       ua_vector3d sphere_inter(data.pos);
@@ -438,7 +445,7 @@ void ua_physics_model::check_collision(ua_physics_object& object, int xpos, int 
 
       double dist_ell_inter = dist_plane_inter;
 
-#ifdef CD_DEBUG_INFO 
+#ifdef CD_DEBUG_INFO
       printf("sphere (%f,%f,%f) - normDir (%f,%f,%f)\n",sphere_inter.x,sphere_inter.y,sphere_inter.z,normdir.x, normdir.y, normdir.z); 
       printf("planeO (%f,%f,%f) - planeNorm (%f,%f,%f)\n", p_origin.x,p_origin.y,p_origin.z, p_normal.x,p_normal.y,p_normal.z);
       printf("triangle (%f,%f,%f) - (%f,%f,%f) - (%f,%f,%f)\n", p1.x,p1.y,p1.z, p2.x,p2.y,p2.z, p3.x, p3.y, p3.z);
@@ -508,9 +515,9 @@ void ua_physics_model::check_collision(ua_physics_object& object, int xpos, int 
       */
       }
       else {
-#ifdef CD_DEBUG_INFO         
-        printf("in triangle..\n"); 
-#endif        
+#ifdef CD_DEBUG_INFO
+        printf("in triangle..\n");
+#endif
       }
 
       // here we do the error checking to see if we got ourself stuck last frame
@@ -518,16 +525,16 @@ void ua_physics_model::check_collision(ua_physics_object& object, int xpos, int 
 //         colPackage->stuck = TRUE;
 
       // ok, now we might update the collision data if we hit something
-#ifdef CD_DEBUG_INFO       
+#ifdef CD_DEBUG_INFO
       printf("dist to ell %f  - velocity length %f\n", dist_ell_inter, data.dir.length());
-#endif      
+#endif
       if (dist_ell_inter > 0 && dist_ell_inter <= data.dir.length() )
       {
          if (!data.found || dist_ell_inter < data.nearest_dist)
          {
-#ifdef CD_DEBUG_INFO           
+#ifdef CD_DEBUG_INFO
             printf("CD accepted..\n");
-#endif            
+#endif
             // if we are hit we have a closest hit so far; we save the information
             data.nearest_dist = dist_ell_inter;
             data.nearest_poly_inter = poly_inter;
@@ -579,37 +586,40 @@ double ua_physics_intersect_ray_sphere(const ua_vector3d& r_orig,
 
 bool ua_physics_insersect_sphere_triangle(ua_vector3d sO, float sR, ua_vector3d a, ua_vector3d b, ua_vector3d c, ua_vector3d& ip) {
 
-  // Check the 3 edges:
+   // Check the 3 edges:
 
-  // A -> B
-  ua_vector3d rayDir = b - a;
-  float edgeLength = rayDir.length();
-  rayDir.normalize();
-  float dist = ua_physics_intersect_ray_sphere(a,rayDir, sO, sR);
-  if (dist > 0 && dist <= edgeLength) {
-    ip = a + rayDir*dist;
-    return true;
-  }
+   // A -> B
+   ua_vector3d rayDir = b - a;
+   float edgeLength = rayDir.length();
+   rayDir.normalize();
+   float dist = ua_physics_intersect_ray_sphere(a,rayDir, sO, sR);
+   if (dist > 0 && dist <= edgeLength)
+   {
+      ip = a + rayDir*dist;
+      return true;
+   }
 
-  // B -> C
-  rayDir = c - b;
-  edgeLength = rayDir.length();
-  rayDir.normalize();
-  dist = ua_physics_intersect_ray_sphere(b,rayDir, sO, sR);
-  if (dist > 0 && dist <= edgeLength) {
-    ip = b + rayDir*dist;
-    return true;
-  }
+   // B -> C
+   rayDir = c - b;
+   edgeLength = rayDir.length();
+   rayDir.normalize();
+   dist = ua_physics_intersect_ray_sphere(b,rayDir, sO, sR);
+   if (dist > 0 && dist <= edgeLength)
+   {
+      ip = b + rayDir*dist;
+      return true;
+   }
 
-  // C -> A
-  rayDir = a - c;
-  edgeLength = rayDir.length();
-  rayDir.normalize();
-  dist = ua_physics_intersect_ray_sphere(c,rayDir, sO, sR);
-  if (dist > 0 && dist <= edgeLength) {
-    ip = c + rayDir*dist;
-    return true;
-  }
+   // C -> A
+   rayDir = a - c;
+   edgeLength = rayDir.length();
+   rayDir.normalize();
+   dist = ua_physics_intersect_ray_sphere(c,rayDir, sO, sR);
+   if (dist > 0 && dist <= edgeLength)
+   {
+     ip = c + rayDir*dist;
+     return true;
+   }
 
   return false;
 }
@@ -618,33 +628,34 @@ bool ua_physics_insersect_sphere_triangle(ua_vector3d sO, float sR, ua_vector3d 
 
 typedef unsigned int uint32;
 #define in(a) ((uint32&) a)
-bool ua_physics_check_point_in_triangle(const ua_vector3d& point, const ua_vector3d& pa, const ua_vector3d& pb, const ua_vector3d& pc) {
+bool ua_physics_check_point_in_triangle(const ua_vector3d& point, const ua_vector3d& pa, const ua_vector3d& pb, const ua_vector3d& pc)
+{
+   ua_vector3d e10=pb-pa;
+   ua_vector3d e20=pc-pa;
+     
+   float a,b,c,ac_bb;
 
-  ua_vector3d e10=pb-pa;
-  ua_vector3d e20=pc-pa;
-    
-  float a,b,c,ac_bb;
+   a = e10.dot(e10);
+   b = e10.dot(e20);
+   c = e20.dot(e20);
+   ac_bb=(a*c)-(b*b);
 
-  a = e10.dot(e10);
-  b = e10.dot(e20);
-  c = e20.dot(e20);
-  ac_bb=(a*c)-(b*b);
+   ua_vector3d vp = ua_vector3d(point.x-pa.x, point.y-pa.y, point.z-pa.z);
 
-  ua_vector3d vp = ua_vector3d(point.x-pa.x, point.y-pa.y, point.z-pa.z);
+   float d = vp.dot(e10);
+   float e = vp.dot(e20);
 
-  float d = vp.dot(e10);
-  float e = vp.dot(e20);
+   float x = (d*c)-(e*b);
+   float y = (e*a)-(d*b);
+   float z = x+y-ac_bb;
 
-  float x = (d*c)-(e*b);
-  float y = (e*a)-(d*b);
-  float z = x+y-ac_bb;
-
-  return (( in(z)& ~(in(x)|in(y)) ) & 0x80000000)!=0;
+   return (( in(z)& ~(in(x)|in(y)) ) & 0x80000000)!=0;
 }
 
-double ua_physics_dist_point_plane(ua_vector3d point, ua_vector3d pO, ua_vector3d pN) {
-  ua_vector3d dir = pO - point;
-  return (dir.dot(pN));
+double ua_physics_dist_point_plane(ua_vector3d point, ua_vector3d pO, ua_vector3d pN)
+{
+   ua_vector3d dir = pO - point;
+   return (dir.dot(pN));
 }
 
 
