@@ -48,7 +48,8 @@ class ua_lua_scripting: public ua_scripting
 {
 public:
    //! ctor
-   ua_lua_scripting(){}
+   ua_lua_scripting():L(NULL), game(NULL){}
+   virtual ~ua_lua_scripting(){}
 
    //! loads a script from uadata
    int load_script(ua_game_interface& game, const char* basename);
