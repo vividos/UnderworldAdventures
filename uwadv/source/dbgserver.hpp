@@ -125,10 +125,13 @@ public:
       unsigned int text_size=0;
       bool ret = get_message(msg.msg_type, msg.msg_arg1, msg.msg_arg2,
          msg.msg_arg3, text_size);
-      if (ret)
+      if (ret && text_size>0)
       {
-         msg.msg_text.resize(text_size+1);
-         ret = get_message_text(msg.msg_text.begin(), text_size);
+         std::vector<char> buffer(text_size+1);
+         ret = get_message_text(&buffer[0], text_size);
+
+         buffer[text_size]=0;
+         msg.msg_text.assign(&buffer[0]);
       }
       return ret;
    }
