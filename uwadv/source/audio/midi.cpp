@@ -26,7 +26,8 @@
 */
 
 // needed includes
-#include <stdio.h>
+#include "common.hpp"
+#include <cstdio>
 #include "midi.hpp"
 
 // driver includes
