@@ -178,8 +178,10 @@ function lua_inventory_look(inv_pos)
 
    inv_objinfo = inv_get_objinfo(inv_pos)
 
-   look_at_objinfo(inv_objinfo,1)
-
+   if inv_objinfo.item_id ~= inv_item_none
+   then
+      look_at_objinfo(inv_objinfo,1)
+   end
 end
 
 
