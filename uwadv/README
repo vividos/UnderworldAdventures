@@ -13,12 +13,11 @@ General documents
   README.tools.txt
      Document describing all Underworld Adventures tools
 
+  README.music.txt
+     Readme for the music pack
+
   Changes
      Lists all changes of Underworld Adventures between releases
-
-  ua-diffs.txt
-     A list of differences between the original games and Underworld
-     Adventures
 
   uw1-keyboard.txt
      Keyboard reference list for Ultima Underworld 1
@@ -37,8 +36,8 @@ Compiling Guides
      Windows
 
   README.Linux.txt
-     Informations for Linux (and related operating systems) users to compile
-     Underworld Adventures.
+     Informations for Linux (and similar operating systems) users to compile
+     Underworld Adventures
 
 For Developers
 --------------
@@ -53,7 +52,10 @@ For Developers
      A list of things to do for Underworld Adventures
 
   README.dev.txt
-     Infos for developers relating to the Underworld Adventures source code.
+     Infos for developers relating to the Underworld Adventures source code
+
+  ua-doxygen.cfg
+     Doxygen configuration file to build source documentation
 
   Authors.txt
      A list of all authors that contributed to Underworld Adventures
