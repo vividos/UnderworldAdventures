@@ -49,21 +49,23 @@ struct ua_object_info
    //! struct ctor
    ua_object_info();
 
+   //! reads struct from savegame
+   void load_info(ua_savegame& sg);
+
+   //! writes struct to savegame
+   void save_info(ua_savegame& sg);
+
+
+   // item properties
+
    //! object item id
    Uint16 item_id;
 
-   //! true when object is enchanted
-   bool enchanted;
-
-   //! true when "quantity" is a special link
-   bool is_link;
-
+   //! object chain link
+   Uint16 link;
 
    //! item quality
    Uint16 quality;
-
-   //! object chain link
-   Uint16 link;
 
    //! object owner
    Uint16 owner;
@@ -72,8 +74,13 @@ struct ua_object_info
    Uint16 quantity;
 
 
-   //! custom object data
-   std::vector<Uint16> data;
+   // flags
+
+   //! true when object is enchanted
+   bool enchanted;
+
+   //! true when "quantity" is a special link
+   bool is_link;
 };
 
 
@@ -83,6 +90,15 @@ struct ua_object_info_ext
    //! struct ctor
    ua_object_info_ext();
 
+   //! reads struct from savegame
+   void load_extinfo(ua_savegame& sg);
+
+   //! writes struct to savegame
+   void save_extinfo(ua_savegame& sg);
+
+
+   // position info
+
    //! fractional x and y positions in tile
    double xpos, ypos;
 
@@ -91,6 +107,21 @@ struct ua_object_info_ext
 
    //! direction (0..7)
    Uint16 dir;
+
+   // npc infos
+
+   //! indicates if npc infos are used
+   bool npc_used;
+
+   Uint8 npc_whoami;
+   Uint8 npc_attitude;
+   Uint8 npc_hp;
+
+   Uint8 npc_xhome;
+   Uint8 npc_yhome;
+   Uint8 extra1;
+
+   // add more flags here
 };
 
 

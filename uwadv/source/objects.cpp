@@ -38,12 +38,107 @@ ua_object_info::ua_object_info()
 {
 }
 
+void ua_object_info::load_info(ua_savegame& sg)
+{
+   // read basic object info
+   item_id = sg.read16();
+
+   if (item_id == ua_item_none)
+      return; // nothing more to read
+
+   link = sg.read16();
+   quality = sg.read16();
+   owner = sg.read16();
+   quantity = sg.read16();
+
+   enchanted = sg.read8()==1;
+   is_link = sg.read8()==1;
+}
+
+void ua_object_info::save_info(ua_savegame& sg)
+{
+   // write basic object info
+   sg.write16(item_id);
+
+   if (item_id == ua_item_none)
+      return; // nothing more to write
+
+   sg.write16(link);
+   sg.write16(quality);
+   sg.write16(owner);
+   sg.write16(quantity);
+
+   sg.write8(enchanted? 1 : 0);
+   sg.write8(is_link? 1 : 0);
+
+   // TODO write unknown flags
+}
+
 
 // ua_object_info_ext methods
 
 ua_object_info_ext::ua_object_info_ext()
-:xpos(0.0), ypos(0.0), zpos(0.0), dir(0)
+:xpos(0.0), ypos(0.0), zpos(0.0), dir(0),
+ npc_used(false)
 {
+}
+
+void ua_object_info_ext::load_extinfo(ua_savegame& sg)
+{
+   // read extended object info
+   xpos = sg.read32()/256.0;
+   ypos = sg.read32()/256.0;
+   zpos = sg.read32()/256.0;
+   dir = sg.read8();
+
+   npc_used = sg.read8()!=0;
+   if (npc_used)
+   {
+      npc_whoami = sg.read16();
+      npc_attitude = sg.read16();
+      npc_hp = sg.read16();
+      npc_xhome = sg.read8();
+      npc_yhome = sg.read8();
+
+      // read placeholder values
+      sg.read16();
+      sg.read16();
+      sg.read16();
+      sg.read16();
+      sg.read16();
+      sg.read16();
+
+      // TODO read more npc values
+   }
+}
+
+void ua_object_info_ext::save_extinfo(ua_savegame& sg)
+{
+   // write extended object info
+   sg.write32(static_cast<Uint32>(xpos*256.0));
+   sg.write32(static_cast<Uint32>(ypos*256.0));
+   sg.write32(static_cast<Uint32>(zpos*256.0));
+   sg.write8(dir);
+
+   sg.write8(npc_used? 1 : 0);
+   if (npc_used)
+   {
+      sg.write16(npc_whoami);
+      sg.write16(npc_attitude);
+      sg.write16(npc_hp);
+      sg.write8(npc_xhome);
+      sg.write8(npc_yhome);
+
+      // write placeholder values
+      sg.write16(0);
+      sg.write16(0);
+      sg.write16(0);
+      sg.write16(0);
+      sg.write16(0);
+      sg.write16(0);
+
+      // TODO write more npc values
+   }
 }
 
 
@@ -51,60 +146,18 @@ ua_object_info_ext::ua_object_info_ext()
 
 void ua_object::load_object(ua_savegame &sg)
 {
-   // read basic object info
-   info.item_id = sg.read16();
+   info.load_info(sg);
 
-   if (info.item_id == ua_item_none)
-      return; // nothing more to read
-
-   info.enchanted = sg.read8()==1;
-   info.is_link = sg.read8()==1;
-
-   info.quality = sg.read16();
-   info.link = sg.read16();
-   info.owner = sg.read16();
-   info.quantity = sg.read16();
-
-   // read extended object info
-   extinfo.xpos = sg.read32()/256.0;
-   extinfo.ypos = sg.read32()/256.0;
-   extinfo.zpos = sg.read32()/256.0;
-   extinfo.dir = sg.read16();
-
-   // read data array
-   info.data.clear();
-   Uint16 max = sg.read16();
-   for(Uint16 i=0; i<max; i++)
-      info.data.push_back(sg.read16());
+   if (info.item_id != ua_item_none)
+      extinfo.load_extinfo(sg);
 }
 
 void ua_object::save_object(ua_savegame &sg)
 {
-   // write basic object info
-   sg.write16(info.item_id);
+   info.save_info(sg);
 
-   if (info.item_id == ua_item_none)
-      return; // nothing more to write
-
-   sg.write8(info.enchanted? 1 : 0);
-   sg.write8(info.is_link? 1 : 0);
-
-   sg.write16(info.quality);
-   sg.write16(info.link);
-   sg.write16(info.owner);
-   sg.write16(info.quantity);
-
-   // write extended object info
-   sg.write32(static_cast<Uint32>(extinfo.xpos*256.0));
-   sg.write32(static_cast<Uint32>(extinfo.ypos*256.0));
-   sg.write32(static_cast<Uint32>(extinfo.zpos*256.0));
-   sg.write16(extinfo.dir);
-
-   // write data array
-   Uint16 max = info.data.size();
-   sg.write16(max);
-   for(Uint16 i=0; i<max; i++)
-      sg.write16(info.data[i]);
+   if (info.item_id != ua_item_none)
+      extinfo.save_extinfo(sg);
 }
 
 
@@ -152,8 +205,5 @@ void ua_object_list::save_game(ua_savegame &sg)
 
    // write all objects in master object list
    for(n=0; n<0x400; n++)
-   {
-      ua_object& obj = master_obj_list[n];
-      obj.save_object(sg);
-   }
+      master_obj_list[n].save_object(sg);
 }
