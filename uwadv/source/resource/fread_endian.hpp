@@ -37,22 +37,6 @@
 // inline functions
 
 
-// endian conversion
-
-//! converts a 16-bit int
-inline Uint16 ua_endian_convert16(Uint16 x)
-{
-   return (((x)&0x00ff)<<8) | (((x)&0xff00)>>8);
-}
-
-//! converts a 32-bit int
-inline Uint32 ua_endian_convert32(Uint32 x)
-{
-   return ua_endian_convert16(((x)&0xffff0000)>>16) |
-      ua_endian_convert16((x)&0x0000ffff)<<16;
-}
-
-
 // fread/fwrite functions
 
 //! reads a 16-bit int

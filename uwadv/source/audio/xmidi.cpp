@@ -34,74 +34,12 @@
 #include <cstring>
 #include <cstdlib>
 #include <cmath>
+#include "utils.hpp"
 
 #ifndef _MSC_VER
 using namespace std;
 #endif
 
-
-// endian conversion
-
-inline Uint16 ua_endian_convert16(Uint16 x)
-{
-   return (((x)&0x00ff)<<8) | (((x)&0xff00)>>8);
-}
-
-inline Uint32 ua_endian_convert32(Uint32 x)
-{
-   return ua_endian_convert16(((x)&0xffff0000)>>16) |
-      ua_endian_convert16((x)&0x0000ffff)<<16;
-}
-
-// SDL_RWops helper functions
-
-inline Uint8 SDL_RWread8(SDL_RWops *rwops)
-{
-   Uint8 val;
-   SDL_RWread(rwops,&val,1,1);
-   return val;
-}
-
-inline Uint16 SDL_RWread16(SDL_RWops *rwops)
-{
-   Uint16 val;
-   SDL_RWread(rwops,&val,2,1);
-#ifdef SDL_BIG_ENDIAN
-   val = ua_endian_convert16(val)
-#endif
-   return val;
-}
-
-inline Uint32 SDL_RWread32(SDL_RWops *rwops)
-{
-   Uint32 val;
-   SDL_RWread(rwops,&val,4,1);
-#ifdef SDL_BIG_ENDIAN
-   val = ua_endian_convert32(val)
-#endif
-   return val;
-}
-
-inline void SDL_RWwrite8(SDL_RWops *rwops, Uint8 val)
-{
-   SDL_RWwrite(rwops,&val,1,1);
-}
-
-inline void SDL_RWwrite16(SDL_RWops *rwops, Uint16 val)
-{
-#ifdef SDL_BIG_ENDIAN
-   val = ua_endian_convert16(val)
-#endif
-   SDL_RWwrite(rwops,&val,2,1);
-}
-
-inline void SDL_RWwrite32(SDL_RWops *rwops, Uint32 val)
-{
-#ifdef SDL_BIG_ENDIAN
-   val = ua_endian_convert32(val)
-#endif
-   SDL_RWwrite(rwops,&val,4,1);
-}
 
 //! gamma table template class
 template <class T> class GammaTable
