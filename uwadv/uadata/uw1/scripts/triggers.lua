@@ -1,6 +1,6 @@
 --
 -- Underworld Adventures - an Ultima Underworld hacking project
--- Copyright (c) 2002,2003,2004 Underworld Adventures Team
+-- Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ function trigger_check_handle(trig_id,objpos)
 
    if objinfo2.item_id == trig_id and objinfo2.is_quantity == 0
    then
-      print( "trigger set off: " .. ui.get_string(4,objinfo2.item_id))
+      print( "trigger set off: " .. uw.get_string(4,objinfo2.item_id))
 
       trap_set_off(objinfo2.quantity,objpos)
    end
