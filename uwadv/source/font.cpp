@@ -57,7 +57,7 @@ unsigned int ua_font::calc_length(const char *str)
          if (ch==0x20)
             width += spacewidth;
          else
-            width += charlengths.at(ch);
+            width += charlengths[ch];
    }
    return width;
 }
@@ -86,7 +86,7 @@ void ua_font::create_string(ua_image &image, const char *str, Uint8 fg_idx)
             continue;
          }
 
-         unsigned int clen = charlengths.at(ch);
+         unsigned int clen = charlengths[ch];
 
          for(unsigned int y=0; y<charheight; y++)
          for(unsigned int x=0; x<clen; x++)

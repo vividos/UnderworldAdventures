@@ -166,7 +166,7 @@ void ua_image_decode_rle(FILE *fd,std::vector<Uint8> &pixels,unsigned int bits,
             // repeat 'nibble' color 'count' times
             for(int n=0; n<count; n++)
             {
-               pixels.at(pixcount++) = auxpalidx[nibble];
+               pixels[pixcount++] = auxpalidx[nibble];
             }
          }
 
@@ -205,7 +205,7 @@ void ua_image_decode_rle(FILE *fd,std::vector<Uint8> &pixels,unsigned int bits,
          // run record stage 2
 
          // now we have a nibble to write
-         pixels.at(pixcount++) = auxpalidx[nibble];
+         pixels[pixcount++] = auxpalidx[nibble];
          pixcount++;
 
          if (--count==0)
@@ -341,7 +341,7 @@ void ua_image::load(ua_settings &settings, const char *name, unsigned int which,
    fseek(fd,offset,SEEK_SET);
 
    // special case for "panels.gr" file
-   if (stricmp("panels",name)==0)
+   if (strcmp("panels",name)==0)
    {
       // files are 8-bit uncompressed, but have no header
       create(83,114,0,pal);

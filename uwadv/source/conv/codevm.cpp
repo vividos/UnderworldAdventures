@@ -65,7 +65,7 @@ void ua_conv_code_vm::init(ua_conv_globals &cg)
 
    unsigned int max=glob.size();
    for(unsigned int i=0; i<max; i++)
-      stack.push(glob.at(i));
+      stack.push(glob[i]);
 }
 
 void ua_conv_code_vm::done(ua_conv_globals &cg)
@@ -78,7 +78,7 @@ void ua_conv_code_vm::done(ua_conv_globals &cg)
 
    unsigned int max=glob.size();
    for(unsigned int i=0; i<max; i++)
-      glob.at(i) = stack.at(i);
+      glob[i] = stack.at(i);
 }
 
 void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
@@ -87,7 +87,7 @@ void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
       throw ua_ex_code_access;
 
    // execute one instruction
-   switch(code.at(instrp))
+   switch(code[instrp])
    {
    case 0x0000: // NOP
       break;

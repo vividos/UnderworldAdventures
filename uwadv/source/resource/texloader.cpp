@@ -108,7 +108,7 @@ void ua_texture_manager::load_textures(unsigned int startidx, const char *texfna
 
    // read in all offsets
    std::vector<Uint32> offsets(entries);
-   for(int i=0; i<entries; i++) offsets.at(i) = fread32(fd);
+   for(int i=0; i<entries; i++) offsets[i] = fread32(fd);
 
    // read in all textures
    for(int tex=0; tex<entries; tex++)
@@ -119,7 +119,7 @@ void ua_texture_manager::load_textures(unsigned int startidx, const char *texfna
       // alloc memory for texture
       unsigned int datalen = xyres*xyres;
 
-      ua_stock_texture &stex = allstocktex.at(startidx+tex);
+      ua_stock_texture &stex = allstocktex[startidx+tex];
       stex.pixels.resize(datalen);
 
       unsigned int idx = 0;

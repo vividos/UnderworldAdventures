@@ -101,7 +101,7 @@ public:
    std::vector<Uint8> &get_globals(Uint16 conv)
    {
       if (conv>allglobals.size()) throw ua_ex_globals_access;
-      return allglobals.at(conv);
+      return allglobals[conv];
    }
 
 protected:
@@ -131,21 +131,21 @@ public:
    Uint16 pop()
    {
       if (stackp>stack.size()) throw ua_ex_stack_access;
-      return stack.at(stackp--);
+      return stack[stackp--];
    }
 
    //! returns value at stack position
    Uint16 at(Uint16 pos)
    {
       if (pos>stack.size()) throw ua_ex_stack_access;
-      return stack.at(pos);
+      return stack[pos];
    }
 
    //! returns value at stack position
    void set(Uint16 pos, Uint16 val)
    {
       if (pos>stack.size()) throw ua_ex_stack_access;
-      stack.at(pos)=val;
+      stack[pos]=val;
    }
 
    //! gets new stack pointer

@@ -130,7 +130,7 @@ void ua_texture_manager::reset()
    int max = allstocktex.size();
    for(int i=0; i<max; i++)
    {
-      ua_stock_texture &stex = allstocktex.at(i);
+      ua_stock_texture &stex = allstocktex[i];
       if (stex.texname!=0)
          glDeleteTextures(1,&stex.texname);
    }
@@ -141,7 +141,7 @@ void ua_texture_manager::prepare(unsigned int idx)
    if (idx>=allstocktex.size())
       return;
 
-   ua_stock_texture &stex = allstocktex.at(idx);
+   ua_stock_texture &stex = allstocktex[idx];
    unsigned int texsize = stex.pixels.size();
 
    if (texsize==0)
@@ -174,12 +174,12 @@ void ua_texture_manager::prepare(unsigned int idx)
 
    for(int i=0; i<texsize; i++)
    {
-      texels[i] = *(Uint32*)(pal+stex.pixels.at(i));
+      texels[i] = *(Uint32*)(pal+stex.pixels[i]);
    }
 
    // build texture and mipmaps
    gluBuild2DMipmaps(GL_TEXTURE_2D, 3, xyres, xyres, GL_RGBA,
-      GL_UNSIGNED_BYTE, &texels.at(0));
+      GL_UNSIGNED_BYTE, &texels[0]);
 
    // remember texture name
    stex.texname = texname;
@@ -190,7 +190,7 @@ void ua_texture_manager::use(unsigned int idx)
    if (idx>=allstocktex.size())
       return;
 
-   ua_stock_texture &stex = allstocktex.at(idx);
+   ua_stock_texture &stex = allstocktex[idx];
 
    if (last_texname != stex.texname)
    {

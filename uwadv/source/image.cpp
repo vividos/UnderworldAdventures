@@ -37,7 +37,7 @@ void ua_image::create(unsigned int width, unsigned int height, unsigned int init
 {
    xres = width; yres = height;
    pixels.resize(width*height,initial);
-   for(int i=0; i<pixels.size(); i++) pixels.at(i)=initial;
+   for(int i=0; i<pixels.size(); i++) pixels[i]=initial;
    palette = pal;
 }
 
@@ -60,5 +60,5 @@ const ua_image *ua_image_list::get_image(unsigned int num)
    if (num>=allimages.size())
       return NULL;
 
-   return allimages.at(num);
+   return allimages[num];
 }
