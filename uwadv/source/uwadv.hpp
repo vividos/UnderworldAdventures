@@ -84,6 +84,9 @@ protected:
    //! indicates if game can be exited
    bool exit_game;
 
+   //! true when tick timer should be resetted for the next cycle
+   bool reset_tick_timer;
+
    //! hey, it's all the game strings!
    ua_gamestrings gstr;
 

@@ -39,7 +39,7 @@
 // ua_game methods
 
 ua_game::ua_game():tickrate(20),exit_game(false),audio(NULL),screen(NULL),
-   screen_to_destroy(NULL)
+   screen_to_destroy(NULL),reset_tick_timer(false)
 {
    printf("Underworld Adventures\n");
    printf("http://uwadv.sourceforge.net/\n\n");
@@ -185,6 +185,13 @@ void ua_game::run()
       // process incoming events
       process_events();
 
+      // reset timer when needed
+      if (reset_tick_timer)
+      {
+         then = now;
+         reset_tick_timer = false;
+      }
+
       // draw the screen
       draw_screen();
       renders++;
@@ -308,6 +315,9 @@ void ua_game::push_screen(ua_ui_screen_base *newscreen)
 
    screen->set_core(this);
    screen->init();
+
+   // reset tick timer
+   reset_tick_timer = true;
 }
 
 void ua_game::replace_screen(ua_ui_screen_base *newscreen)
@@ -335,4 +345,7 @@ void ua_game::pop_screen()
       screenstack.pop_back();
       screen->resume();
    }
+
+   // reset tick timer
+   reset_tick_timer = true;
 }
