@@ -203,6 +203,9 @@ public:
    //! inits savegame manager
    void init(ua_settings& settings);
 
+   //! sets new game prefix
+   void set_game_prefix(const char* new_game_prefix);
+
    //! rescans for existing savegames
    void rescan();
 

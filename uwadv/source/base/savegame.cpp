@@ -252,6 +252,11 @@ void ua_savegames_manager::init(ua_settings& settings)
    rescan();
 }
 
+void ua_savegames_manager::set_game_prefix(const char* new_game_prefix)
+{
+   game_prefix = new_game_prefix;
+}
+
 void ua_savegames_manager::rescan()
 {
    savegames.clear();
@@ -260,7 +265,9 @@ void ua_savegames_manager::rescan()
    if (quicksave_avail())
    {
       std::string quicksave_name(savegame_folder);
-      quicksave_name.append("quicksave.uas");
+      quicksave_name.append("quicksave_");
+      quicksave_name.append(game_prefix);
+      quicksave_name.append(".uas");
       savegames.push_back(quicksave_name);
    }
 
@@ -379,7 +386,9 @@ ua_savegame ua_savegames_manager::get_savegame_save_overwrite(
 bool ua_savegames_manager::quicksave_avail()
 {
    std::string quicksave_name(savegame_folder);
-   quicksave_name.append("quicksave.uas");
+   quicksave_name.append("quicksave_");
+   quicksave_name.append(game_prefix);
+   quicksave_name.append(".uas");
 
    // check if quicksave savegame file is available
    return ua_file_exists(quicksave_name.c_str());
@@ -389,7 +398,9 @@ ua_savegame ua_savegames_manager::get_quicksave_savegame(bool saving,
    ua_savegame_info& the_info)
 {
    std::string quicksave_name(savegame_folder);
-   quicksave_name.append("quicksave.uas");
+   quicksave_name.append("quicksave_");
+   quicksave_name.append(game_prefix);
+   quicksave_name.append(".uas");
 
    ua_savegame sg;
 
