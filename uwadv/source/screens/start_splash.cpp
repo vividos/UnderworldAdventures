@@ -123,7 +123,7 @@ void ua_start_splash_screen::render()
    glColor3ub(light,light,light);
 
    // draw first quad with screen background
-/*   tex.use();
+   tex.use();
 
    glBegin(GL_QUADS);
    glTexCoord2d(0.0,tex.get_tex_v());
@@ -138,32 +138,14 @@ void ua_start_splash_screen::render()
    glTexCoord2d(0.0,0.0);
    glVertex3i(0,200,0);
 
-   glEnd();*/
-
-   double u1,v1,u2,v2;
-   core->get_texmgr().object_tex(0x0000,u1,v1,u2,v2);
-
-   glBegin(GL_QUADS);
-   glTexCoord2d(0.0,1.0); glVertex3i(  0,  8,0);
-   glTexCoord2d(1.0,1.0); glVertex3i(160,  8,0);
-   glTexCoord2d(1.0,0.0); glVertex3i(160,200,0);
-   glTexCoord2d(0.0,0.0); glVertex3i(  0,200,0);
    glEnd();
 
-   core->get_texmgr().object_tex(0x0100,u1,v1,u2,v2);
 
-   glBegin(GL_QUADS);
-   glTexCoord2d(0.0,1.0); glVertex3i(160,  8,0);
-   glTexCoord2d(1.0,1.0); glVertex3i(320,  8,0);
-   glTexCoord2d(1.0,0.0); glVertex3i(320,200,0);
-   glTexCoord2d(0.0,0.0); glVertex3i(160,200,0);
-   glEnd();
-/*
    if (core->get_settings().gtype == ua_game_uw_demo)
    {
       // above background, draw font text
       glEnable(GL_BLEND);
-      tex2.use(core->get_texmgr());
+      tex2.use();
 
       float scale = 0.9f;
       int xpos=int((320-img2.get_xres()*scale)/2), ypos=3;
@@ -184,7 +166,7 @@ void ua_start_splash_screen::render()
       glEnd();
 
       glDisable(GL_BLEND);
-   }*/
+   }
 }
 
 void ua_start_splash_screen::tick()
