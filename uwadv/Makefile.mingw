@@ -130,10 +130,10 @@ uaconfig_EXEC = uaconfig.exe
 
 uaconfig_OBJS = source/win32/source/uaconfig/uaconfig.o \
 	source/win32/source/uaconfig/uaconfig_res.o \
-	source/settings.o source/resource/settingsloader.o \
+	source/settings.o source/resource/cfgfile.o \
 	source/utils.o
 
-uaconfig_LIBS = $(WIN32_LIB) -lwinmm $(STLPORT_LIB)
+uaconfig_LIBS = $(WIN32_LIB) $(SDL_LIB) -lwinmm $(STLPORT_LIB)
 
 
 

@@ -54,7 +54,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib comdlg32.lib shell32.lib winmm.lib /nologo /subsystem:windows /machine:I386 /out:"../../output/release/uaconfig.exe"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib comdlg32.lib shell32.lib winmm.lib sdl.lib /nologo /subsystem:windows /machine:I386 /out:"../../output/release/uaconfig.exe"
 
 !ELSEIF  "$(CFG)" == "uaconfig - Win32 Debug"
 
@@ -81,7 +81,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib comdlg32.lib shell32.lib winmm.lib /nologo /subsystem:windows /debug /machine:I386 /out:"../../output/debug/uaconfig.exe" /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib comdlg32.lib shell32.lib winmm.lib sdl.lib /nologo /subsystem:windows /debug /machine:I386 /out:"../../output/debug/uaconfig.exe" /pdbtype:sept
 
 !ENDIF 
 
@@ -110,6 +110,14 @@ SOURCE=.\source\uaconfig\uaconfig_res.rc
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\resource\cfgfile.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\cfgfile.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\settings.cpp
 # End Source File
 # Begin Source File
@@ -118,7 +126,11 @@ SOURCE=..\settings.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\resource\settingsloader.cpp
+SOURCE=..\utils.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\utils.hpp
 # End Source File
 # End Group
 # Begin Source File
