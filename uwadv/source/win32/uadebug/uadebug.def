@@ -1,0 +1,6 @@
+; uadebug.def : Declares the module parameters.
+
+LIBRARY      "uadebug.dll"
+
+EXPORTS
+	uadebug_start @1
