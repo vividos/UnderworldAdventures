@@ -31,7 +31,7 @@ CFLAGS = -O2 #-g -O
 
 DEFINES = -DHAVE_CONSOLE
 INCLUDES = $(SDL_INCLUDE) $(STLPORT_INCLUDE) $(FMOD_INCLUDE) \
-	-I.. -I. -I../lua/include/ -I../resource/zziplib/
+	-Isource/ -Isource/lua/include/ -Isource/resource/zziplib/
 CFLAGS += $(DEFINES) $(INCLUDES)
 CXXFLAGS =
 LDFLAGS = -mwindows -s
@@ -46,26 +46,26 @@ all: uwadv tools
 
 # lua objects
 
-lua_OBJS = ../lua/src/lapi.o ../lua/src/lcode.o ../lua/src/ldebug.o \
-	../lua/src/ldo.o ../lua/src/lfunc.o ../lua/src/lgc.o \
-	../lua/src/llex.o ../lua/src/lmem.o ../lua/src/lobject.o \
-	../lua/src/lparser.o ../lua/src/lstate.o ../lua/src/lstring.o \
-	../lua/src/ltable.o ../lua/src/ltests.o ../lua/src/ltm.o \
-	../lua/src/lundump.o ../lua/src/lvm.o ../lua/src/lzio.o
+lua_OBJS = source/lua/src/lapi.o source/lua/src/lcode.o source/lua/src/ldebug.o \
+	source/lua/src/ldo.o source/lua/src/lfunc.o source/lua/src/lgc.o \
+	source/lua/src/llex.o source/lua/src/lmem.o source/lua/src/lobject.o \
+	source/lua/src/lparser.o source/lua/src/lstate.o source/lua/src/lstring.o \
+	source/lua/src/ltable.o source/lua/src/ltests.o source/lua/src/ltm.o \
+	source/lua/src/lundump.o source/lua/src/lvm.o source/lua/src/lzio.o
 
 lua: $(lua_OBJS)
 
 
 # zziplib objects
 
-zziplib_OBJS = ../resource/zziplib/SDL_rwops_zzip.o \
-	../resource/zziplib/zzip-dir.o \
-	../resource/zziplib/zzip-err.o \
-	../resource/zziplib/zzip-file.o \
-	../resource/zziplib/zzip-info.o \
-	../resource/zziplib/zzip-io.o \
-	../resource/zziplib/zzip-stat.o \
-	../resource/zziplib/zzip-zip.o
+zziplib_OBJS = source/resource/zziplib/SDL_rwops_zzip.o \
+	source/resource/zziplib/zzip-dir.o \
+	source/resource/zziplib/zzip-err.o \
+	source/resource/zziplib/zzip-file.o \
+	source/resource/zziplib/zzip-info.o \
+	source/resource/zziplib/zzip-io.o \
+	source/resource/zziplib/zzip-stat.o \
+	source/resource/zziplib/zzip-zip.o
 
 zziplib: $(zziplib_OBJS)
 
@@ -74,25 +74,27 @@ zziplib: $(zziplib_OBJS)
 
 uwadv_EXEC = uwadv.exe
 
-uwadv_OBJS = source/main.o source/game_win32.o source/uwadv_res.o \
-	../font.o ../image.o ../inventory.o ../level.o \
-	../texture.o ../underworld.o ../uwadv.o ../player.o \
-	../quadtree.o ../objects.o ../physics.o ../cutscene.o \
-	../files.o ../keymap.o \
-	../audio/audio.o ../audio/midi.o ../audio/xmidi.o \
-	../audio/midi_driver/uni_fmod.o \
-	../audio/midi_driver/win_midiout.o \
-	../audio/midi_driver/linux_sdl_mixer.o \
-	../conv/codevm.o \
-	../resource/codeloader.o ../resource/fontloader.o \
-	../resource/gamestrings.o ../resource/imageloader.o \
-	../resource/maploader.o ../resource/settings.o \
-	../resource/texloader.o ../resource/objloader.o \
-	../resource/cutsloader.o \
-	../screens/ingame_orig.o ../screens/start_splash.o \
-	../screens/start_menu.o ../screens/cutscene_view.o \
-	../screens/acknowledgements.o ../screens/create_character.o \
-	../screens/conversation.o ../screens/map_view.o \
+uwadv_OBJS = source/win32/source/main.o \
+	source/win32/source/game_win32.o \
+	source/win32/source/uwadv_res.o \
+	source/font.o source/image.o source/inventory.o source/level.o \
+	source/texture.o source/underworld.o source/uwadv.o source/player.o \
+	source/quadtree.o source/objects.o source/physics.o source/cutscene.o \
+	source/files.o source/keymap.o source/uwscript.o \
+	source/audio/audio.o source/audio/midi.o source/audio/xmidi.o \
+	source/audio/midi_driver/uni_fmod.o \
+	source/audio/midi_driver/win_midiout.o \
+	source/audio/midi_driver/linux_sdl_mixer.o \
+	source/conv/codevm.o \
+	source/resource/codeloader.o source/resource/fontloader.o \
+	source/resource/gamestrings.o source/resource/imageloader.o \
+	source/resource/maploader.o source/resource/settings.o \
+	source/resource/texloader.o source/resource/objloader.o \
+	source/resource/cutsloader.o \
+	source/screens/ingame_orig.o source/screens/start_splash.o \
+	source/screens/start_menu.o source/screens/cutscene_view.o \
+	source/screens/acknowledgements.o source/screens/create_character.o \
+	source/screens/conversation.o source/screens/map_view.o \
 	$(lua_OBJS) $(zziplib_OBJS)
 
 
@@ -106,8 +108,8 @@ uwadv_LDFLAGS = -mconsole
 
 cnvdbg_EXEC = cnvdbg.exe
 
-cnvdbg_OBJS = ../tools/cnvdbg.o ../conv/codevm.o \
-	../resource/codeloader.o ../resource/gamestrings.o
+cnvdbg_OBJS = source/tools/cnvdbg.o source/conv/codevm.o \
+	source/resource/codeloader.o source/resource/gamestrings.o
 
 cnvdbg_LIBS = -lmingw32 -lkernel32 -luser32 \
 	$(SDL_LIB) $(STLPORT_LIB)
@@ -119,8 +121,8 @@ cnvdbg_LDFLAGS = -mconsole
 
 cnvdasm_EXEC = cnvdasm.exe
 
-cnvdasm_OBJS = ../tools/cnvdasm.o ../conv/codevm.o \
-	../resource/codeloader.o ../resource/gamestrings.o
+cnvdasm_OBJS = source/tools/cnvdasm.o source/conv/codevm.o \
+	source/resource/codeloader.o source/resource/gamestrings.o
 
 cnvdasm_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB) $(STLPORT_LIB)
 
@@ -131,7 +133,7 @@ cnvdasm_LDFLAGS = -mconsole
 
 xmi2mid_EXEC = xmi2mid.exe
 
-xmi2mid_OBJS = ../tools/xmi2mid.o ../audio/xmidi.o
+xmi2mid_OBJS = source/tools/xmi2mid.o source/audio/xmidi.o
 
 xmi2mid_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB)
 
@@ -142,11 +144,11 @@ xmi2mid_LDFLAGS = -mconsole
 
 mapdisp_EXEC = mapdisp.exe
 
-mapdisp_OBJS = ../tools/mapdisp.o ../level.o ../resource/maploader.o \
-	../quadtree.o ../texture.o ../resource/texloader.o \
-	../resource/imageloader.o ../resource/objloader.o \
-	../image.o ../objects.o ../resource/codeloader.o \
-	../resource/settings.o
+mapdisp_OBJS = source/tools/mapdisp.o source/level.o source/resource/maploader.o \
+	source/quadtree.o source/texture.o source/resource/texloader.o \
+	source/resource/imageloader.o source/resource/objloader.o \
+	source/image.o source/objects.o source/resource/codeloader.o \
+	source/resource/settings.o
 
 mapdisp_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB) $(STLPORT_LIB) $(OPENGL_LIB)
 
@@ -157,8 +159,8 @@ mapdisp_LDFLAGS =
 
 animview_EXEC = animview.exe
 
-animview_OBJS = ../tools/animview.o ../cutscene.o ../resource/cutsloader.o \
-	../image.o ../texture.o
+animview_OBJS = source/tools/animview.o source/cutscene.o source/resource/cutsloader.o \
+	source/image.o source/texture.o
 
 animview_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB) $(STLPORT_LIB) $(OPENGL_LIB)
 
@@ -169,7 +171,7 @@ animview_LDFLAGS =
 
 strpak_EXEC = strpak.exe
 
-strpak_OBJS = ../tools/strpak.o ../resource/gamestrings.o
+strpak_OBJS = source/tools/strpak.o source/resource/gamestrings.o
 
 strpak_LIBS = -lmingw32 -lkernel32 -luser32 $(STLPORT_LIB)
 
@@ -182,12 +184,15 @@ strpak_LDFLAGS = -mconsole
 
 tools: cnvdbg cnvdasm xmi2mid mapdisp animview strpak
 
-uwadv: $(uwadv_EXEC)
+uwadv: $(uwadv_EXEC) uwadv.cfg
 $(uwadv_EXEC): $(uwadv_OBJS)
 	$(CXX) $(LDFLAGS) $(uwadv_LDFLAGS) -o $(@) $(uwadv_OBJS) $(uwadv_LIBS)
 
-source/uwadv_res.o: source/uwadv.rc source/Uus.ico
-	cd source && windres -i uwadv.rc -o uwadv_res.o
+source/win32/source/uwadv_res.o: source/win32/source/uwadv.rc source/win32/source/Uus.ico
+	cd source/win32/source && windres -i uwadv.rc -o uwadv_res.o
+	
+uwadv.cfg: source/win32/uwadv.cfg
+	cp source/win32/uwadv.cfg .
 
 
 cnvdbg: $(cnvdbg_EXEC)
@@ -221,9 +226,9 @@ $(strpak_EXEC): $(strpak_OBJS)
 
 
 installer: uwadv
-	mkdir -p ../../output/release/
-	cp uwadv.exe ../../output/release/uwadv.exe
-	install/makensis.exe uwadv.nsi
+	rem mkdir -p output/release/
+	rem cp uwadv.exe output/release/uwadv.exe
+	rem source/win32/install/makensis.exe uwadv.nsi
 
 clean:
 	rm -f $(uwadv_EXEC) $(cnvdbg_EXEC) $(cnvdasm_EXEC) $(xmi2mid_EXEC) \
