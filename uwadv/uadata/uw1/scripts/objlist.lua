@@ -30,9 +30,114 @@
 -- functions
 
 
+-- dumps objlist table entries
+function dump_objinfo_table(objinfo,obj_handle)
+
+   print( " lua_objlist_look(" .. obj_handle ..")\n" ..
+      "  item_id   = " .. objinfo.item_id .. " (" ..
+         ui_get_gamestring(4,objinfo.item_id) .. ")\n" ..
+      "  enchanted = " .. objinfo.enchanted .. "\n" ..
+      "  is_link   = " .. objinfo.is_link .. "\n\n" ..
+
+      "  zpos = " .. objinfo.zpos .. "\n" ..
+      "  dir  = " .. objinfo.dir .. "\n" ..
+      "  ypos = " .. objinfo.ypos .. "\n" ..
+      "  xpos = " .. objinfo.xpos .. "\n\n" ..
+
+      "  quality     = " .. objinfo.quality .. "\n" ..
+      "  handle_next = " .. objinfo.handle_next .. "\n" ..
+      "  owner       = " .. objinfo.owner .. "\n" ..
+      "  quantity    = " .. objinfo.quantity .. "\n\n"
+   )
+end
+
+
+-- function to format item name and return
+function format_item_name(item_id,quantity)
+
+   local article, name
+
+   name = ui_get_gamestring(4,item_id)
+
+   local pos_amp = strfind(name, "&", 1, 1)
+
+   -- more than one object?
+   if quantity < 2 then
+
+      if pos_amp ~= nil then
+
+         -- take "plural" part of description
+         name = strsub(name, pos_amp+1)
+      end
+   end
+
+   -- delete plural part of string
+   if pos_amp ~= nil then
+
+      name = strsub(name, 1, pos_amp)
+   end
+
+   print("format_item_name: using string " .. name )
+
+   -- find out article
+   local pos_us = strfind(name, "_", 1, 1)
+
+   if pos_us == nil then
+      article = ""
+   else
+      -- take article
+      article = strsub(name, 1, pos_us-1)
+
+      -- delete article from name
+      name = strsub(name, pos_us+1)
+   end
+
+   return article, name
+end
+
+
 -- called when looking at object in object list
 function lua_objlist_look(obj_handle)
 
-   ui_print_string( "lua_objlist_look not implemented yet.")
+   objinfo = objlist_get_obj_info(obj_handle)
+
+   dump_objinfo_table(objinfo,obj_handle)
+
+   local article, name = format_item_name(objinfo.item_id, objinfo.quantity)
+
+   -- is NPC?
+   mood = ""
+   named = ""
+   if objinfo.item_id >= 64 and objinfo.item_id < 128 then
+      -- do mood string
+
+      -- ui_get_gamestring(5,96-99) (99=friendly)
+
+      -- do "named" string
+
+      -- named = " named xyz"
+
+   end
+
+   -- object owned by someone?
+   owner = ""
+   if (objinfo.item_id < 64 or objinfo.item_id >= 128) and
+      objinfo.item_id < 320  and objinfo.owner > 0 then
+
+      local quantity = 0
+
+      if not objinfo.is_link then
+         quantity = objinfo.quantity
+      end
+
+      local article,name = format_item_name(objinfo.owner-1+64, quantity)
+
+      -- do owner string
+      owner = " belonging to " .. article .. " " .. name
+   end
+
+   ui_print_string(
+     "You see " .. article .. " " ..
+     mood .. name .. named .. owner)
 
 end
