@@ -1015,8 +1015,8 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
    ua_level& level = underw->get_current_level();
    ua_object_info_ext& extinfo = obj.get_ext_object_info();
 
-   double objxpos = static_cast<double>(x) + (extinfo.xpos+0.5)/8.0;
-   double objypos = static_cast<double>(y) + (extinfo.ypos+0.5)/8.0;
+   double objxpos = static_cast<double>(x) + (extinfo.xpos)/7.0;
+   double objypos = static_cast<double>(y) + (extinfo.ypos)/7.0;
    double height = extinfo.zpos/4.0*height_scale;
 
    ua_vector3d base(objxpos, objypos, height);
