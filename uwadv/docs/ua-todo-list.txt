@@ -64,13 +64,7 @@ game interface
 - ingame_orig: split up areas into more textures to reduce texture uploads
   prio: 2  assigned: vividos
 
-- do message scroll, do Lua function to print texts
-  prio: 2  assigned: vividos
-
-- do vitality/mana flask from values in ua_player
-  prio: 2  assigned: vividos
-
-- savegame loading screen implementation
+- improve savegame loading screen implementation
   prio: 2  assigned: phlask
 
 - savegame saving screen implementation (together into loading screen?)
@@ -82,8 +76,8 @@ game interface
 - level map view screen
   prio: 3  assigned: none
 
-- implementation of all keymap keys
-  prio: 2  assigned: vividos
+- ingame: implementation of all keymap keys
+  prio: 3  assigned: vividos
 
 - add eating via dropping on paperdoll head
   prio: 3  assigned: none
