@@ -6,4 +6,8 @@ stamp-h*
 config.h
 confdefs.h
 libtool
+depcomp
+install-sh
+missing
+mkinstalldirs
 
