@@ -77,6 +77,8 @@ typedef enum
    ua_attr_level=19,
    ua_attr_exp_points=20,
 
+   ua_attr_difficulty=21, // 0=easy, 1=normal
+
    ua_attr_max
 
 } ua_player_attributes;

@@ -50,6 +50,7 @@ player_attr_talks=17
 player_attr_kills=18
 player_attr_level=19
 player_attr_exp_points=20
+player_attr_difficulty=21
 
 -- skills
 player_skill_attack=0
