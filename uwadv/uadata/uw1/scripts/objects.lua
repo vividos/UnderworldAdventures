@@ -26,10 +26,10 @@
 -- constants
 
 -- combine result values
-lua_obj_cmb_failed = 0        -- items couldn't be combined
-lua_obj_cmb_dstr_first = 1  -- first (dropped) item is destroyed
+lua_obj_cmb_failed = 0       -- items couldn't be combined
+lua_obj_cmb_dstr_first = 1   -- first (dropped) item is destroyed
 lua_obj_cmb_dstr_second = 2  -- second (dropped) item is destroyed
-lua_obj_cmb_dstr_both = 3     -- both the two objects are destroyed
+lua_obj_cmb_dstr_both = 3    -- both the two objects are destroyed
 
 obj_cmb_recurse_flag = 0
 
@@ -38,6 +38,8 @@ obj_cmb_recurse_flag = 0
 -- table with all possible object combinations
 -- objects that are destroyed when combined are marked with (*)
 obj_cmb_list = {
+
+   -- misc. objects
 
    -- 0x0095 + 0x0116(*) = 0x0115
    -- "a lit torch" + "a block of incense" = "a block of burning incense"
@@ -50,9 +52,42 @@ obj_cmb_list = {
      result_id =         11*16 +  7, success_code = lua_obj_cmb_dstr_second },
 
    -- 0x011c(*) + 0x00d8(*) = 0x012b
-   -- "some_strong thread&pieces of strong thread" + "a pole" = "a fishing pole"
+   -- "some_strong thread" + "a pole" = "a fishing pole"
    { item_id1  = 1*256 +  1*16 + 12, item_id2 =         13*16 +  8,
      result_id = 1*256 +  2*16 + 11, success_code = lua_obj_cmb_dstr_both },
+
+   -- key of infinity
+
+   -- 0x00e1(*) + 0x00e2(*) = 0x00e6
+   -- "the Key of Truth" + "the Key of Love" = "a two part key"
+   { item_id1  =         14*16 +  1, item_id2 =         14*16 +  2,
+     result_id =         14*16 +  6, success_code = lua_obj_cmb_dstr_both },
+
+   -- 0x00e1(*) + 0x00e3(*) = 0x00e4
+   -- "the Key of Truth" + "the Key of Courage" = "a two part key"
+   { item_id1  =         14*16 +  1, item_id2 =         14*16 +  3,
+     result_id =         14*16 +  4, success_code = lua_obj_cmb_dstr_both },
+
+   -- 0x00e2(*) + 0x00e3(*) = 0x00e5
+   -- "the Key of Love" + "the Key of Courage" = "a two part key"
+   { item_id1  =         14*16 +  2, item_id2 =         14*16 +  3,
+     result_id =         14*16 +  5, success_code = lua_obj_cmb_dstr_both },
+
+   -- 0x00e1(*) + 0x00e5(*) = 0x00e7
+   -- "the Key of Truth" + "a two part key" = "the Key of Infinity"
+   { item_id1  =         14*16 +  1, item_id2 =         14*16 +  5,
+     result_id =         14*16 +  7, success_code = lua_obj_cmb_dstr_both },
+
+   -- 0x00e2(*) + 0x00e4(*) = 0x00e7
+   -- "the Key of Love" + "a two part key" = "the Key of Infinity"
+   { item_id1  =         14*16 +  2, item_id2 =         14*16 +  4,
+     result_id =         14*16 +  7, success_code = lua_obj_cmb_dstr_both },
+
+   -- 0x00e3(*) + 0x00e6(*) = 0x00e7
+   -- "the Key of Courage" + "a two part key" = "the Key of Infinity"
+   { item_id1  =         14*16 +  3, item_id2 =         14*16 +  6,
+     result_id =         14*16 +  7, success_code = lua_obj_cmb_dstr_both },
+
 
    -- stop entry
    { item_id1  = -1, item_id2 = -1, result_id = -1, success_code = 0 },
@@ -84,20 +119,22 @@ function lua_obj_combine(item_id1, item_id2)
       idx = idx + 1
    end
 
-   -- check for objects using swapped item id's
+   -- check for combining objects using swapped item id's
    if success_code == lua_obj_cmb_failed and obj_cmb_recurse_flag ~= 1
    then
 
-     obj_cmb_recurse_flag = 1
+      obj_cmb_recurse_flag = 1
 
-     success_code, result_id = lua_obj_combine(item_id2, item_id1)
+      -- check with swapped item id's
+      success_code, result_id = lua_obj_combine(item_id2, item_id1)
 
-     obj_cmb_recurse_flag = 0
+      obj_cmb_recurse_flag = 0
 
-     if success_code == lua_obj_cmb_dstr_second
-     then
-        success_code = lua_obj_cmb_dstr_first
-     end
+      -- revers success code when only one item is destroyed
+      if success_code == lua_obj_cmb_dstr_second
+      then
+         success_code = lua_obj_cmb_dstr_first
+      end
    end
 
    return success_code, result_id
