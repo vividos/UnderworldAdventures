@@ -202,8 +202,8 @@ void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
          vz = ua_mdl_read_fixed(fd);
 
          unk1 = fread16(fd);
-         ua_mdl_trace("[origin] vertno=%u origin=%u unk1=%04x origin=(%f,%f,%f)",
-            vertno,origin,unk1,vx,vy,vz);
+         ua_mdl_trace("[origin] vertno=%u unk1=%04x origin=(%f,%f,%f)",
+            vertno,unk1,vx,vy,vz);
          break;
 
          // vertex definition nodes
