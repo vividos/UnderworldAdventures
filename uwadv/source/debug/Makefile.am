@@ -23,6 +23,5 @@ else
 endif
 
 EXTRA_DIST = \
-	$(dist_add)
+	$(dist_add) \
 	Makefile.common
-
