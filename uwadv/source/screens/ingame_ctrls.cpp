@@ -256,9 +256,9 @@ void ua_ingame_flask::draw()
    is_poisoned = player.get_attr(ua_attr_poisoned) != 0;
 
    unsigned int curval = player.get_attr(
-      vitality_flask ? ua_attr_life : ua_attr_mana);
+      vitality_flask ? ua_attr_vitality : ua_attr_mana);
    unsigned int maxval = player.get_attr(
-      vitality_flask ? ua_attr_max_life : ua_attr_max_mana);
+      vitality_flask ? ua_attr_max_vitality : ua_attr_max_mana);
    unsigned int curimg = unsigned((curval*13.0)/maxval);
 
    // check if flask image has to be update
