@@ -64,7 +64,7 @@ public:
    bool print(const char* text);
 
    //! clears scroll contents
-   inline void clear_scroll();
+   void clear_scroll();
 
    //! handles events needed for the text scroll; returns true when handled
    bool handle_event(SDL_Event &event);
@@ -126,13 +126,6 @@ protected:
 inline void ua_textscroll::set_color(Uint8 color)
 {
    text_color = color;
-}
-
-inline void ua_textscroll::clear_scroll()
-{
-   linestack.clear();
-   linehistory.clear();
-   morestack.clear();
 }
 
 inline bool ua_textscroll::have_more_lines()

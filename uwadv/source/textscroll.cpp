@@ -235,6 +235,18 @@ void ua_textscroll::update_scroll()
    convert_upload();
 }
 
+void ua_textscroll::clear_scroll()
+{
+   // clear contents
+   linestack.clear();
+   linehistory.clear();
+   morestack.clear();
+
+   // update and upload image
+   update_scroll();
+   convert_upload();
+}
+
 bool ua_textscroll::handle_event(SDL_Event &event)
 {
    bool handled = false;
