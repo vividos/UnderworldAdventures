@@ -12,11 +12,12 @@ top_builddir = linux
 
 # SDL stuff
 SDL_CFLAGS = `sdl-config --cflags`
-SDL_LIBS = `sdl-config --libs` -lSDLmain
+SDL_LIBS = `sdl-config --libs`
 
 CPPFLAGS = -I.. $(SDL_CFLAGS)
 LDFLAGS = $(SDL_LIBS) -lGL -lGLU
 
+# automake build rules
 bin_PROGRAMS = uwadv
 
 uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
@@ -41,4 +42,6 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 EXTRA_DIST = audio/midi_driver/win_midiout.cpp \
 	audio/midi_driver/win_midiout.hpp \
 	linux/uwadv.cfg
+
+SUBDIRS = tools
 

@@ -87,18 +87,25 @@ AUTOMAKE_OPTIONS = foreign
 
 # SDL stuff
 SDL_CFLAGS = `sdl-config --cflags`
-SDL_LIBS = `sdl-config --libs` -lSDLmain
+SDL_LIBS = `sdl-config --libs`
 
 CPPFLAGS = -I.. $(SDL_CFLAGS)
-LDFLAGS = $(SDL_LIBS) -lGL -lGLU
+LDFLAGS = $(SDL_LIBS)
 
-EXTRA_PROGRAMS = cnvdasm cnvdbg xmi2mid
+# automake rules
+EXTRA_PROGRAMS = cnvdasm cnvdbg xmi2mid mapdisp
 
 cnvdasm_SOURCES = cnvdasm.cpp cnvdasm.hpp instr.hpp
 
 cnvdbg_SOURCES = cnvdbg.cpp cnvdbg.hpp instr.hpp
 
 xmi2mid_SOURCES = xmi2mid.cpp
+
+mapdisp_SOURCES = mapdisp.cpp ../level.cpp ../resource/maploader.cpp \
+	../quadtree.cpp ../resource/texloader.cpp ../texture.cpp
+
+
+mapdisp_LDADD = -lGL -lGLU
 
 EXTRA_DIST = 
 
@@ -107,7 +114,8 @@ subdir = ../tools
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
-EXTRA_PROGRAMS = cnvdasm$(EXEEXT) cnvdbg$(EXEEXT) xmi2mid$(EXEEXT)
+EXTRA_PROGRAMS = cnvdasm$(EXEEXT) cnvdbg$(EXEEXT) xmi2mid$(EXEEXT) \
+	mapdisp$(EXEEXT)
 am_cnvdasm_OBJECTS = cnvdasm.$(OBJEXT)
 cnvdasm_OBJECTS = $(am_cnvdasm_OBJECTS)
 cnvdasm_LDADD = $(LDADD)
@@ -118,6 +126,12 @@ cnvdbg_OBJECTS = $(am_cnvdbg_OBJECTS)
 cnvdbg_LDADD = $(LDADD)
 cnvdbg_DEPENDENCIES =
 cnvdbg_LDFLAGS =
+am_mapdisp_OBJECTS = mapdisp.$(OBJEXT) level.$(OBJEXT) \
+	maploader.$(OBJEXT) quadtree.$(OBJEXT) texloader.$(OBJEXT) \
+	texture.$(OBJEXT)
+mapdisp_OBJECTS = $(am_mapdisp_OBJECTS)
+mapdisp_DEPENDENCIES =
+mapdisp_LDFLAGS =
 am_xmi2mid_OBJECTS = xmi2mid.$(OBJEXT)
 xmi2mid_OBJECTS = $(am_xmi2mid_OBJECTS)
 xmi2mid_LDADD = $(LDADD)
@@ -130,6 +144,9 @@ LIBS = @LIBS@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/cnvdasm.Po ./$(DEPDIR)/cnvdbg.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/level.Po ./$(DEPDIR)/mapdisp.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/maploader.Po ./$(DEPDIR)/quadtree.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/texloader.Po ./$(DEPDIR)/texture.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/xmi2mid.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -142,7 +159,8 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-DIST_SOURCES = $(cnvdasm_SOURCES) $(cnvdbg_SOURCES) $(xmi2mid_SOURCES)
+DIST_SOURCES = $(cnvdasm_SOURCES) $(cnvdbg_SOURCES) $(mapdisp_SOURCES) \
+	$(xmi2mid_SOURCES)
 
 RECURSIVE_TARGETS = info-recursive dvi-recursive install-info-recursive \
 	uninstall-info-recursive all-recursive install-data-recursive \
@@ -150,7 +168,7 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive install-info-recursive \
 	uninstall-recursive check-recursive installcheck-recursive
 DIST_COMMON = Makefile.am Makefile.in
 DIST_SUBDIRS = $(SUBDIRS)
-SOURCES = $(cnvdasm_SOURCES) $(cnvdbg_SOURCES) $(xmi2mid_SOURCES)
+SOURCES = $(cnvdasm_SOURCES) $(cnvdbg_SOURCES) $(mapdisp_SOURCES) $(xmi2mid_SOURCES)
 
 all: all-recursive
 
@@ -167,6 +185,14 @@ cnvdasm$(EXEEXT): $(cnvdasm_OBJECTS) $(cnvdasm_DEPENDENCIES)
 cnvdbg$(EXEEXT): $(cnvdbg_OBJECTS) $(cnvdbg_DEPENDENCIES) 
 	@rm -f cnvdbg$(EXEEXT)
 	$(CXXLINK) $(cnvdbg_LDFLAGS) $(cnvdbg_OBJECTS) $(cnvdbg_LDADD) $(LIBS)
+level.$(OBJEXT): ../level.cpp
+maploader.$(OBJEXT): ../resource/maploader.cpp
+quadtree.$(OBJEXT): ../quadtree.cpp
+texloader.$(OBJEXT): ../resource/texloader.cpp
+texture.$(OBJEXT): ../texture.cpp
+mapdisp$(EXEEXT): $(mapdisp_OBJECTS) $(mapdisp_DEPENDENCIES) 
+	@rm -f mapdisp$(EXEEXT)
+	$(CXXLINK) $(mapdisp_LDFLAGS) $(mapdisp_OBJECTS) $(mapdisp_LDADD) $(LIBS)
 xmi2mid$(EXEEXT): $(xmi2mid_OBJECTS) $(xmi2mid_DEPENDENCIES) 
 	@rm -f xmi2mid$(EXEEXT)
 	$(CXXLINK) $(xmi2mid_LDFLAGS) $(xmi2mid_OBJECTS) $(xmi2mid_LDADD) $(LIBS)
@@ -179,6 +205,12 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cnvdasm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cnvdbg.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/level.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mapdisp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/maploader.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/quadtree.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/texloader.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/texture.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xmi2mid.Po@am__quote@
 
 distclean-depend:
@@ -195,6 +227,66 @@ distclean-depend:
 @AMDEP_TRUE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(CXXCOMPILE) -c -o $@ `cygpath -w $<`
+
+level.o: ../level.cpp
+@AMDEP_TRUE@	source='../level.cpp' object='level.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/level.Po' tmpdepfile='$(DEPDIR)/level.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o level.o `test -f '../level.cpp' || echo '$(srcdir)/'`../level.cpp
+
+level.obj: ../level.cpp
+@AMDEP_TRUE@	source='../level.cpp' object='level.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/level.Po' tmpdepfile='$(DEPDIR)/level.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o level.obj `cygpath -w ../level.cpp`
+
+maploader.o: ../resource/maploader.cpp
+@AMDEP_TRUE@	source='../resource/maploader.cpp' object='maploader.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/maploader.Po' tmpdepfile='$(DEPDIR)/maploader.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o maploader.o `test -f '../resource/maploader.cpp' || echo '$(srcdir)/'`../resource/maploader.cpp
+
+maploader.obj: ../resource/maploader.cpp
+@AMDEP_TRUE@	source='../resource/maploader.cpp' object='maploader.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/maploader.Po' tmpdepfile='$(DEPDIR)/maploader.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o maploader.obj `cygpath -w ../resource/maploader.cpp`
+
+quadtree.o: ../quadtree.cpp
+@AMDEP_TRUE@	source='../quadtree.cpp' object='quadtree.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/quadtree.Po' tmpdepfile='$(DEPDIR)/quadtree.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o quadtree.o `test -f '../quadtree.cpp' || echo '$(srcdir)/'`../quadtree.cpp
+
+quadtree.obj: ../quadtree.cpp
+@AMDEP_TRUE@	source='../quadtree.cpp' object='quadtree.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/quadtree.Po' tmpdepfile='$(DEPDIR)/quadtree.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o quadtree.obj `cygpath -w ../quadtree.cpp`
+
+texloader.o: ../resource/texloader.cpp
+@AMDEP_TRUE@	source='../resource/texloader.cpp' object='texloader.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/texloader.Po' tmpdepfile='$(DEPDIR)/texloader.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o texloader.o `test -f '../resource/texloader.cpp' || echo '$(srcdir)/'`../resource/texloader.cpp
+
+texloader.obj: ../resource/texloader.cpp
+@AMDEP_TRUE@	source='../resource/texloader.cpp' object='texloader.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/texloader.Po' tmpdepfile='$(DEPDIR)/texloader.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o texloader.obj `cygpath -w ../resource/texloader.cpp`
+
+texture.o: ../texture.cpp
+@AMDEP_TRUE@	source='../texture.cpp' object='texture.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/texture.Po' tmpdepfile='$(DEPDIR)/texture.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o texture.o `test -f '../texture.cpp' || echo '$(srcdir)/'`../texture.cpp
+
+texture.obj: ../texture.cpp
+@AMDEP_TRUE@	source='../texture.cpp' object='texture.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/texture.Po' tmpdepfile='$(DEPDIR)/texture.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o texture.obj `cygpath -w ../texture.cpp`
 CXXDEPMODE = @CXXDEPMODE@
 uninstall-info-am:
 
@@ -417,8 +509,8 @@ uninstall-info: uninstall-info-recursive
 	uninstall-info-recursive uninstall-recursive
 
 
-#
-tools: cnvdasm cnvdbg xmi2mid
+# tools build rule
+tools: cnvdasm cnvdbg xmi2mid mapdisp
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
