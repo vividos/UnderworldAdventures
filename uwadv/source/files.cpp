@@ -280,7 +280,7 @@ int ua_files_manager::load_lua_script(lua_State *L, const char *basename)
    SDL_RWclose(script);
 
    // execute script
-   int ret = lua_dobuffer(L,&buffer[0],len,"");
+   int ret = lua_dobuffer(L,&buffer[0],len,basename);
 
    if (ret!=0)
       ua_trace("Lua script ended with error code %u\n",ret);
