@@ -138,10 +138,10 @@ Here are the steps for a successful uwadv release:
 1. Think about the next funny release name
 
 2. Be sure that the project (uwadv, tools) compiles AND works on all systems
-   where build files exist. be sure to test against uw1 and uw_demo
-   for uwadv systems are: mingw32, MSVC, Linux configure.ac, Linux RPM
+   where build files exist. Be sure to test against uw1 and uw_demo.
+   Build systems to test for are: mingw32, MSVC, Linux configure.ac, Linux RPM
 
-3. Adjust version numbers in configure.ac and source/win32/uwadv.nsi
+3. Adjust version numbers in configure.ac and win32/uwadv.nsi
 
 4. Create latest ChangeLog and commit it
 
