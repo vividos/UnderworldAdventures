@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+<book>
+  <bookinfo>
+    <author>
+      <firstname>Michael</firstname>
+      <surname>Fink</surname>
+    </author>
+    <copyright>
+      <year>2004</year>
+      <holder>Michael Fink</holder>
+    </copyright>
+  </bookinfo>
+  <title>Underworld Adventures Manual</title>
+
+  <preface><title>Introduction</title>
+    <para>
+    For Underworld Adventures to run you need a version of Ultima Underworld 1
+    installed on your hard disk.
+    </para>
+
+    <section><title>System Requirements</title>
+    <para>
+    <itemizedlist>
+      <listitem>3D-Graphics card with OpenGL drivers</listitem>
+      <listitem>Sound card</listitem>
+      <listitem>Operating System: Linux, Windows</listitem>
+    </itemizedlist>
+    </para>
+    </section>
+  </preface>
+
+  <chapter><title>Configuration</title>
+    <para>
+    Prerequisites are...
+    </para>
+
+    <section><title>Command line options</title>
+    </section>
+
+    <section><title>Configuration file</title>
+    </section>
+  </chapter>
+
+  <chapter><title>Miscellaneous Information</title>
+    <section><title>Differences to the original game</title>
+    <para>
+    While creating Underworld Adventures there were some things that were
+    done differently than in the original games. Reasons for this are mainly
+    to simplify the game, or to implement things another way that would have
+    to be much more difficult to do.
+    </para>
+
+    <para>
+    Here is the list of things that are different than in Ultima Underworld 1.
+    Some of the options can be switched off with the "enable-uwadv-features"
+    setting in the configure file. See Section x for that.
+    <itemizedlist>
+      <listitem>
+        up/down view angle can be varied between -75 and 75 degree, as opposed
+        to something like 45 degrees in the original (can be switched off).
+      </listitem>
+      <listitem>
+      cutscene speech is played a bit too slow (due to some technical reasons
+      the audio samples isn't exactly converted to the proper frequency).
+      </listitem>
+      <listitem>
+      the input cursor in text scrolls (e.g. in conversations) is a vertical
+      line, and not a blinking cursor square
+      </listitem>
+    </itemizedlist>
+    </para>
+    </section>
+
+    <section><title>Contributors</title>
+    <para>
+    This section lists all contributors that contributed to the making of
+    Underworld Adventures in some or other way.
+    </para>
+    <para>
+    <itemizedlist>
+      <listitem>Michael Fink (vividos)</listitem>
+      <listitem>Willem Jan Palenstijn (wjp)</listitem>
+      <listitem>Dirk Manders (phlask)</listitem>
+      <listitem>Jim Cameron (hairyjim)</listitem>
+      <listitem>Kasper Fauerby (Telemachos)</listitem>
+      <listitem>Martin Gircys-Shetty (QQtis)</listitem>
+      <listitem>Ryan Nunn (Colourless Dragon)</listitem>
+      <listitem>Tels</listitem>
+      <listitem>Cuneyt Cuneyitoglu</listitem>
+      <listitem>Radoslaw Grzanka</listitem>
+      <listitem>Sam Matthews (servus)</listitem>
+    </itemizedlist>
+    </para>
+    </section>
+  </chapter>
+
+</book>

@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+<book>
+  <bookinfo>
+    <author>
+      <firstname>Michael</firstname>
+      <surname>Fink</surname>
+    </author>
+    <copyright>
+      <year>2004</year>
+      <holder>Michael Fink</holder>
+    </copyright>
+  </bookinfo>
+  <title>Underworld Adventures Debugger Manual</title>
+
+  <epigraph><attribution>Douglas N. Adams</attribution>
+    <para>
+      We are stuck with technology when what we really want is just stuff that
+      works. How do you recognize something that is still technology? A good
+      clue is if it comes with a manual.
+    </para>
+  </epigraph>
+
+  <preface><title>Introduction</title>
+    <para>
+      This Manual describes the Underworld Adventures Debugger, an add-on piece
+      of software for Underworld Adventures, the project that tries to recreate
+      the old Ultima[tm] Underworld games on modern operating systems and
+      platforms.
+    </para>
+    <para>
+      The Underworld Adventures Debugger mainly exists to create custom games
+      using the Underworld Adventures engine and one of the Underworld games as
+      a "template". It helps creating maps, placing objects and critters,
+      writing conversation scripts and debugging Lua scripts that further help
+      to customize the game.
+    </para>
+    <para>
+      The Manual describes the all features of the Debugger and what you can do
+      with it. It also shows you how you create a new game with it. The
+      conversation script language is described in detail.
+    </para>
+  </preface>
+
+  <chapter><title>The debugger user interface</title>
+
+    <section><title>The main debugger window</title>
+    <para>
+      The Debugger main window that appears after pressing the debug key (see
+      the Underworld Adventures Manual) consists of several user interface items:
+      The title bar, the menu, the toolbar, the work area and the status bar. The
+      work area can contain windows that show game info and the like.
+    </para>
+    <para>
+      There are two different type of windows: dockable windows and normal
+      windows. Dockable windows can be docked at every side of the work area, as
+      well as just "floating" in the work area. When the window is docked, it
+      makes the work area smaller. Dockable windows cannot be resized to the
+      whole screen (at least they were not designed as such). Normal windows can
+      be resized in any direction and they can be minimized to an icon or
+      maximized to the whole size of the work area.
+    </para>
+    </section>
+
+    <section><title>Debugger concepts</title>
+    <para>
+      This section explains how the debugger works in relation to the main
+      application, the Underworld Adventures engine.
+    </para>
+
+    <para>
+    </para>
+    </section>
+
+    <section><title>Window types</title>
+    <para>
+      This section describes the various windows that can be shown in the work
+      area of the debugger.
+    </para>
+
+    <section><title>Player Info</title>
+      <para>
+      </para>
+    </section>
+
+    <section><title>Master Object List</title>
+      <para>
+      </para>
+    </section>
+
+    </section>
+  </chapter>
+
+  <chapter><title>Creating a new custom game</title>
+    <section><title>Creating a project</title>
+      <para>
+      </para>
+    </section>
+  </chapter>
+</book>
