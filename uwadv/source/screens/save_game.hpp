@@ -35,12 +35,13 @@
 #include "imgquad.hpp"
 #include "font.hpp"
 #include "textscroll.hpp"
+#include "mousecursor.hpp"
 
 
 // classes
 
 //! save game screen class
-class ua_save_game_screen: public ua_ui_screen_base
+class ua_save_game_screen: public ua_screen
 {
 public:
    //! ctor
@@ -50,10 +51,10 @@ public:
 
    // virtual functions from ua_ui_screen_base
 
-   virtual void init(ua_game_core_interface* core);
-   virtual void done();
-   virtual void handle_event(SDL_Event& event);
-   virtual void render();
+   virtual void init();
+   virtual void destroy();
+   virtual void draw();
+   virtual bool process_event(SDL_Event& event);
    virtual void tick();
 
 protected:
@@ -99,6 +100,8 @@ protected:
 
    //! indicates if screen is called from start menu
    bool from_menu;
+
+   ua_mousecursor mousecursor;
 
    //! button font
    ua_font font_btns;

@@ -33,7 +33,9 @@
 // needed includes
 #include "common.hpp"
 #include "save_game.hpp"
-#include "ingame_orig.hpp"
+//#include "ingame_orig.hpp"
+#include "renderer.hpp"
+#include "underworld.hpp"
 #include <sstream>
 
 
@@ -63,9 +65,9 @@ ua_save_game_screen::ua_save_game_screen(bool myfrom_menu)
 {
 }
 
-void ua_save_game_screen::init(ua_game_core_interface* thecore)
+void ua_save_game_screen::init()
 {
-   ua_ui_screen_base::init(thecore);
+   ua_screen::init();
 
    ua_trace("save game screen started\n");
 
@@ -85,7 +87,7 @@ void ua_save_game_screen::init(ua_game_core_interface* thecore)
 
    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
-   sgmgr = &core->get_savegames_mgr();
+   sgmgr = &game->get_savegames_manager();
 
    list_base_game = 0;
    button_highlight = -1;
@@ -99,15 +101,17 @@ void ua_save_game_screen::init(ua_game_core_interface* thecore)
    sgmgr->rescan();
 
    // load fonts
-   font_btns.init(core->get_settings(), ua_font_chargen);
-   font_normal.init(core->get_settings(), ua_font_normal);
+   ua_settings& settings = game->get_settings();
 
-   img_buttons.load(core->get_settings(),"chrbtns",0,0,3);
+   font_btns.load(settings, ua_font_chargen);
+   font_normal.load(settings, ua_font_normal);
+
+   img_buttons.load(settings,"chrbtns",0,0,3);
 
    // load background images
    {
       ua_image img_back;
-      img_back.load_raw(core->get_settings(),"data/chargen.byt",3);
+      img_back.load_raw(game->get_settings(),"data/chargen.byt",3);
 
       // shorten buttons
       ua_image& button0 = img_buttons.get_image(0);
@@ -120,7 +124,7 @@ void ua_save_game_screen::init(ua_game_core_interface* thecore)
 
       // prepare left image (savegames list)
       img_back1.create(160,200,0,3);
-      img_back1.init(&core->get_texmgr(),0,0, 160,200);
+      img_back1.init(&game->get_renderer().get_texture_manager(),0,0, 160,200);
       img_back1.paste_rect(img_back,160,0, 160,200, 0,0);
 
       // add some buttons
@@ -145,7 +149,7 @@ void ua_save_game_screen::init(ua_game_core_interface* thecore)
 
       // prepare right image (savegame info)
       img_back2.create(160,200,0,3);
-      img_back2.init(&core->get_texmgr(),160,0, 160,200);
+      img_back2.init(&game->get_renderer().get_texture_manager(),160,0, 160,200);
       img_back2.paste_rect(img_back,0,0, 160,200, 0,0);
 
       img_back2_orig.create(160,200,0,3);
@@ -157,16 +161,16 @@ void ua_save_game_screen::init(ua_game_core_interface* thecore)
    }
 
    // init mouse cursor
-   mousecursor.init(core,10);
+   mousecursor.init(game,10);
    mousecursor.show(true);
+
+   register_window(&mousecursor);
 }
 
-void ua_save_game_screen::done()
+void ua_save_game_screen::destroy()
 {
    img_back1.done();
    img_back2.done();
-
-   mousecursor.done();
 
    if (edit_desc)
       desc_scroll.done();
@@ -176,7 +180,7 @@ void ua_save_game_screen::done()
    ua_trace("leaving save game screen\n\n");
 }
 
-void ua_save_game_screen::handle_event(SDL_Event& event)
+bool ua_save_game_screen::process_event(SDL_Event& event)
 {
    if (edit_desc && desc_scroll.handle_event(event))
    {
@@ -185,8 +189,8 @@ void ua_save_game_screen::handle_event(SDL_Event& event)
          // set up savegame info
          ua_savegame_info info;
          info.title = desc;
-         info.game_prefix = core->get_settings().get_string(ua_setting_game_prefix);
-         info.fill_infos(core->get_underworld().get_player());
+         info.game_prefix = game->get_settings().get_string(ua_setting_game_prefix);
+         //TODOinfo.fill_infos(core->get_underworld().get_player());
 
          // saving game
          if (selected_savegame < sgmgr->get_savegames_count())
@@ -196,7 +200,7 @@ void ua_save_game_screen::handle_event(SDL_Event& event)
 
             // saving over selected game
             ua_savegame sg = sgmgr->get_savegame_save_overwrite(selected_savegame,info);
-            core->get_underworld().save_game(sg);
+            game->get_underworld().save_game(sg);
          }
          else
          {
@@ -204,7 +208,7 @@ void ua_save_game_screen::handle_event(SDL_Event& event)
 
             // saving to new slot
             ua_savegame sg = sgmgr->get_savegame_save_new_slot(info);
-            core->get_underworld().save_game(sg);
+            game->get_underworld().save_game(sg);
          }
 
          // refresh list
@@ -218,7 +222,7 @@ void ua_save_game_screen::handle_event(SDL_Event& event)
          selected_savegame = -1;
          update_list();
       }
-      return;
+      return true;
    }
 
    // calculate cursor position
@@ -229,8 +233,8 @@ void ua_save_game_screen::handle_event(SDL_Event& event)
    {
       int x,y;
       SDL_GetMouseState(&x,&y);
-      unsigned int cursorx = unsigned(double(x)/core->get_screen_width()*320.0);
-      unsigned int cursory = unsigned(double(y)/core->get_screen_height()*200.0);
+      unsigned int cursorx = 0;//TODOunsigned(double(x)/game->get_screen_width()*320.0);
+      unsigned int cursory = 0;//TODOunsigned(double(y)/game->get_screen_height()*200.0);
 
       // check if a button was pressed
       button_highlight = -1;
@@ -304,10 +308,6 @@ void ua_save_game_screen::handle_event(SDL_Event& event)
          }
       }
 
-   case SDL_MOUSEMOTION: // mouse has moved
-      mousecursor.updatepos();
-      break;
-
    case SDL_KEYDOWN: // key was pressed
       switch(event.key.keysym.sym)
       {
@@ -326,9 +326,11 @@ void ua_save_game_screen::handle_event(SDL_Event& event)
    default:
       break;
    }
+
+   return true;
 }
 
-void ua_save_game_screen::render()
+void ua_save_game_screen::draw()
 {
    // determine brightness of images
    {
@@ -336,11 +338,11 @@ void ua_save_game_screen::render()
       switch(fade_state)
       {
       case 0: // fading in
-         light = Uint8(255*(double(fade_ticks) / (core->get_tickrate()*fade_time)));
+         light = Uint8(255*(double(fade_ticks) / (game->get_tickrate()*fade_time)));
          break;
 
       case 2: // fading out
-         light = Uint8(255-255*(double(fade_ticks) / (core->get_tickrate()*fade_time)));
+         light = Uint8(255-255*(double(fade_ticks) / (game->get_tickrate()*fade_time)));
          break;
 
       case 3: // exiting
@@ -379,14 +381,15 @@ void ua_save_game_screen::render()
 
    // draw mouse cursor
    glEnable(GL_BLEND);
-   mousecursor.draw();
+
+   ua_screen::draw();
 }
 
 void ua_save_game_screen::tick()
 {
    // check for fading in/out
    if ((fade_state==0 || fade_state==2) &&
-      ++fade_ticks >= (core->get_tickrate()*fade_time))
+      ++fade_ticks >= (game->get_tickrate()*fade_time))
    {
       fade_state++;
       fade_ticks=0;
@@ -408,18 +411,18 @@ void ua_save_game_screen::tick()
 
             // load savegame
             ua_savegame sg = sgmgr->get_savegame_load(selected_savegame,true);
-            core->get_underworld().load_game(sg);
-
+            game->get_underworld().load_game(sg);
+/*
             // next screen
             if (from_menu)
                core->replace_screen(new ua_ingame_orig_screen);
-            else
-               core->pop_screen();
+            else*/
+               game->remove_screen();
             break;
          }
 
          case 3: // exit
-            core->pop_screen();
+            game->remove_screen();
             break;
          }
       }
@@ -575,7 +578,7 @@ void ua_save_game_screen::press_button()
             desc.assign(info.title);
          }
 
-         desc_scroll.init(*core,19,ypos,119,height+1,1,162);
+         //TODOdesc_scroll.init(*core,19,ypos,119,height+1,1,162);
          desc_scroll.set_color(73);
          desc_scroll.clear_scroll();
          desc_scroll.enter_input_mode(desc.c_str());
@@ -609,12 +612,12 @@ void ua_save_game_screen::update_info()
       img_back2.paste_image(temp,(160-width)/2,10,true);
 
       // gender
-      std::string text(core->get_strings().get_string(2,info.gender+9));
+      std::string text(""/*TODOcore->get_strings().get_string(2,info.gender+9)*/);
       font_btns.create_string(temp,text.c_str(),textcolor);
       img_back2.paste_image(temp,18,21,true);
 
       // profession
-      text = core->get_strings().get_string(2,info.profession+23);
+      //TODOtext = game->get_strings().get_string(2,info.profession+23);
       font_btns.create_string(temp,text.c_str(),textcolor);
       img_back2.paste_image(temp,141-temp.get_xres(),21,true);
 
@@ -622,7 +625,7 @@ void ua_save_game_screen::update_info()
       for(unsigned int i=0; i<4; i++)
       {
          // text
-         text = core->get_strings().get_string(2,i+17);
+         //TODOtext = core->get_strings().get_string(2,i+17);
          font_btns.create_string(temp,text.c_str(),textcolor);
          img_back2.paste_image(temp,93,50+i*17,true);
 
@@ -660,7 +663,7 @@ void ua_save_game_screen::update_info()
 #endif
 
       // do preview image
-      tex_preview.init(&core->get_texmgr());
+      tex_preview.init(&game->get_renderer().get_texture_manager());
       tex_preview.convert(info.image_xres, info.image_yres, &info.image_rgba[0]);
       tex_preview.upload();
 
