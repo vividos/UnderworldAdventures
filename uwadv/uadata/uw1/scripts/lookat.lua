@@ -144,6 +144,11 @@ end
 
 function lua_wall_look(tilex,tiley,tex_id)
 
+   if id >= 256
+   then
+      tex_id = 510-(tex_id-256)
+   end
+
    -- print description
    ui_print_string( "You see " .. ui_get_gamestring(10,tex_id) )
 
