@@ -36,11 +36,8 @@
 
 // typedefs
 
-//! a GL_RGBA compatible palette
-typedef Uint8 ua_palette256[256][4];
-
 //! smart ptr to palette
-typedef ua_smart_ptr<ua_palette256> ua_palette256_ptr;
+typedef ua_smart_ptr<class ua_palette256> ua_palette256_ptr;
 
 
 // enums
@@ -54,6 +51,31 @@ enum ua_image_type
 
 
 // classes
+
+//! palette with 256 entries, 4 color values per entry
+class ua_palette256
+{
+public:
+   //! ctor
+   ua_palette256();
+   //! copy ctor
+   ua_palette256(const ua_palette256& pal2);
+   // assignment operator
+   const ua_palette256& operator=(const ua_palette256& pal2);
+
+   //! set value
+   void set(Uint8 idx, Uint8 component, Uint8 val){ pal[idx][component] = val; }
+
+   //! returns pointer to palette data
+   Uint8* get(){ return &pal[0][0]; }
+
+   //! rotates palette indices
+   void rotate(Uint8 start, Uint8 len, bool forward);
+
+protected:
+   //! a GL_RGBA compatible palette
+   Uint8 pal[256][4];
+};
 
 //! single image
 class ua_image

@@ -31,6 +31,47 @@
 #include "import.hpp"
 
 
+// ua_palette256 methods
+
+ua_palette256::ua_palette256()
+{
+   memset(pal,0,sizeof(pal));
+}
+
+ua_palette256::ua_palette256(const ua_palette256& pal2)
+{
+   if (&pal2 == this) return;
+
+   memcpy(pal,pal2.pal,sizeof(pal));
+}
+
+const ua_palette256& ua_palette256::operator=(const ua_palette256& pal2)
+{
+   if (&pal2 == this) return *this;
+
+   memcpy(pal,pal2.pal,sizeof(pal));
+
+   return *this;
+}
+
+void ua_palette256::rotate(Uint8 start, Uint8 len, bool forward)
+{
+   Uint8 save[4];
+   if (forward)
+   {
+      memcpy(save,&pal[start],sizeof(pal[0]));
+      memmove(&pal[start],&pal[start+1],(len-1)*sizeof(pal[0]));
+      memcpy(pal[start+len-1],save,sizeof(pal[0]));
+   }
+   else
+   {
+      memcpy(save,&pal[start+len-1],sizeof(pal[0]));
+      memmove(&pal[start+1],&pal[start],(len-1)*sizeof(pal[0]));
+      memcpy(pal[start],save,sizeof(pal[0]));
+   }
+}
+
+
 // ua_image methods
 
 ua_image::ua_image()
@@ -129,11 +170,7 @@ void ua_image::clear(Uint8 index)
 
 void ua_image::create_new_palette()
 {
-   Uint8* pal = (Uint8*)new ua_palette256;
-
-   memset(pal, 0, sizeof(ua_palette256));
-
-   palette = ua_palette256_ptr((ua_palette256*)pal);
+   palette = ua_palette256_ptr(new ua_palette256);
 }
 
 void ua_image::clone_palette()
@@ -141,11 +178,7 @@ void ua_image::clone_palette()
    if (palette.get() == NULL)
       return;
 
-   Uint8* pal = (Uint8*)new ua_palette256;
-
-   memcpy(pal,palette.get(), sizeof(ua_palette256));
-
-   palette = ua_palette256_ptr((ua_palette256*)pal);
+   palette = ua_palette256_ptr(new ua_palette256(*palette));
 }
 
 
@@ -215,7 +248,9 @@ void ua_image_manager::load(ua_image& img, const char* basename, unsigned int im
    img.get_palette() = allpalettes[palette];
 }
 
-/*! just specify the filename without the .gr and without path */
+/*! just specify the filename without the .gr and without path.
+    img_to is the image number after the last image loaded
+ */
 void ua_image_manager::load_list(std::vector<ua_image>& imgs, const char* basename,
    unsigned int img_from, unsigned int img_to,
    unsigned int palette)
