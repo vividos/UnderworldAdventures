@@ -63,7 +63,8 @@ function dump_objinfo_table(obj_handle)
       ", height = " .. objinfo.zpos .. ", heading  = " .. objinfo.heading .. "\n" ..
 
       " enchanted = " .. objinfo.enchanted ..
-      ", is_quantity   = " .. objinfo.is_quantity .. "\n"
+      ", is_quantity = " .. objinfo.is_quantity ..
+      ", flags = " .. format("%04x\n",objinfo.flags)
    )
 
    if objinfo.npc_used > 0
