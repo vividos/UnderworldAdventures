@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -37,6 +37,7 @@
 
 // ua_gamecfg_loader methods
 
+/*! \todo implement keyword "check-files" */
 void ua_gamecfg_loader::load_value(const std::string& name, const std::string& value)
 {
    if (name.compare("game-name")==0)
@@ -44,6 +45,16 @@ void ua_gamecfg_loader::load_value(const std::string& name, const std::string& v
       game_name = value;
    }
    else
+   if (name.compare("init-scripting")==0)
+   {
+/*
+      if (value == "lua")
+      {
+      }
+      else
+         ua_trace("unsupported scripting language \"%s\"\n", value.c_str());
+*/
+   }
    if (name.compare("load-script")==0)
    {
       // load given lua script name
@@ -95,5 +106,10 @@ void ua_gamecfg_loader::load_value(const std::string& name, const std::string& v
       // TODO check if gstr == NULL
 
       game->get_underworld().get_strings().load(gstr);
+   }
+   else
+   if (name.compare("check-files")==0)
+   {
+      // TODO implement
    }
 }
