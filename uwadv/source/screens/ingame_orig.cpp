@@ -700,6 +700,7 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
       //save_screenshot();
    }
    else
+   {
 #ifdef HAVE_DEBUG
    // check for "level up" key
    if (keymap.is_key(ua_key_ua_level_up,keymod))
@@ -727,6 +728,7 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
       lua_call(L,0,0);
    }
 #endif
+   }
 }
 
 void ua_ingame_orig_screen::render()
