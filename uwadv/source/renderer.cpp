@@ -1044,7 +1044,7 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
       if (item_id == 0x00d3 || item_id == 0x00d4)
       {
          // adjust height
-         height = level.get_tile(x,y).ceiling*height_scale - quadwidth;
+         base.z = level.get_tile(x,y).ceiling*height_scale - quadwidth;
       }
 
       // rune items?
