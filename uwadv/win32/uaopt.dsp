@@ -88,43 +88,43 @@ LIB32=link.exe -lib
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\source\resource\zziplib\SDL_rwops_zzip.c
-# ADD CPP /I "..\source\resource\zziplib"
+SOURCE=..\source\base\zziplib\SDL_rwops_zzip.c
+# ADD CPP /I "..\source\base\zziplib"
 # End Source File
 # Begin Source File
 
-SOURCE="..\source\resource\zziplib\zzip-dir.c"
-# ADD CPP /I "..\source\resource\zziplib"
+SOURCE="..\source\base\zziplib\zzip-dir.c"
+# ADD CPP /I "..\source\base\zziplib"
 # End Source File
 # Begin Source File
 
-SOURCE="..\source\resource\zziplib\zzip-err.c"
-# ADD CPP /I "..\source\resource\zziplib"
+SOURCE="..\source\base\zziplib\zzip-err.c"
+# ADD CPP /I "..\source\base\zziplib"
 # End Source File
 # Begin Source File
 
-SOURCE="..\source\resource\zziplib\zzip-file.c"
-# ADD CPP /I "..\source\resource\zziplib"
+SOURCE="..\source\base\zziplib\zzip-file.c"
+# ADD CPP /I "..\source\base\zziplib"
 # End Source File
 # Begin Source File
 
-SOURCE="..\source\resource\zziplib\zzip-info.c"
-# ADD CPP /I "..\source\resource\zziplib"
+SOURCE="..\source\base\zziplib\zzip-info.c"
+# ADD CPP /I "..\source\base\zziplib"
 # End Source File
 # Begin Source File
 
-SOURCE="..\source\resource\zziplib\zzip-io.c"
-# ADD CPP /I "..\source\resource\zziplib"
+SOURCE="..\source\base\zziplib\zzip-io.c"
+# ADD CPP /I "..\source\base\zziplib"
 # End Source File
 # Begin Source File
 
-SOURCE="..\source\resource\zziplib\zzip-stat.c"
-# ADD CPP /I "..\source\resource\zziplib"
+SOURCE="..\source\base\zziplib\zzip-stat.c"
+# ADD CPP /I "..\source\base\zziplib"
 # End Source File
 # Begin Source File
 
-SOURCE="..\source\resource\zziplib\zzip-zip.c"
-# ADD CPP /I "..\source\resource\zziplib"
+SOURCE="..\source\base\zziplib\zzip-zip.c"
+# ADD CPP /I "..\source\base\zziplib"
 # End Source File
 # End Group
 # Begin Group "zziplib headers"
@@ -132,39 +132,39 @@ SOURCE="..\source\resource\zziplib\zzip-zip.c"
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\source\resource\zziplib\SDL_rwops_zzip.h
+SOURCE=..\source\base\zziplib\SDL_rwops_zzip.h
 # End Source File
 # Begin Source File
 
-SOURCE="..\source\resource\zziplib\zzip-conf.h"
+SOURCE="..\source\base\zziplib\zzip-conf.h"
 # End Source File
 # Begin Source File
 
-SOURCE="..\source\resource\zziplib\zzip-file.h"
+SOURCE="..\source\base\zziplib\zzip-file.h"
 # End Source File
 # Begin Source File
 
-SOURCE="..\source\resource\zziplib\zzip-io.h"
+SOURCE="..\source\base\zziplib\zzip-io.h"
 # End Source File
 # Begin Source File
 
-SOURCE="..\source\resource\zziplib\zzip-msvc.h"
+SOURCE="..\source\base\zziplib\zzip-msvc.h"
 # End Source File
 # Begin Source File
 
-SOURCE="..\source\resource\zziplib\zzip-stdint.h"
+SOURCE="..\source\base\zziplib\zzip-stdint.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\resource\zziplib\zzip.h
+SOURCE=..\source\base\zziplib\zzip.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\resource\zziplib\zzipformat.h
+SOURCE=..\source\base\zziplib\zzipformat.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\resource\zziplib\zziplib.h
+SOURCE=..\source\base\zziplib\zziplib.h
 # End Source File
 # End Group
 # Begin Group "lua headers"
@@ -175,96 +175,96 @@ SOURCE=..\source\resource\zziplib\zziplib.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\source\lua\src\lapi.h
+SOURCE=..\source\script\lua\src\lapi.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\lcode.h
+SOURCE=..\source\script\lua\src\lcode.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\ldebug.h
+SOURCE=..\source\script\lua\src\ldebug.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\ldo.h
+SOURCE=..\source\script\lua\src\ldo.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\lfunc.h
+SOURCE=..\source\script\lua\src\lfunc.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\lgc.h
+SOURCE=..\source\script\lua\src\lgc.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\llex.h
+SOURCE=..\source\script\lua\src\llex.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\llimits.h
+SOURCE=..\source\script\lua\src\llimits.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\lmem.h
+SOURCE=..\source\script\lua\src\lmem.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\lobject.h
+SOURCE=..\source\script\lua\src\lobject.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\lopcodes.h
+SOURCE=..\source\script\lua\src\lopcodes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\lparser.h
+SOURCE=..\source\script\lua\src\lparser.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\lstate.h
+SOURCE=..\source\script\lua\src\lstate.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\lstring.h
+SOURCE=..\source\script\lua\src\lstring.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\ltable.h
+SOURCE=..\source\script\lua\src\ltable.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\ltm.h
+SOURCE=..\source\script\lua\src\ltm.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\lundump.h
+SOURCE=..\source\script\lua\src\lundump.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\lvm.h
+SOURCE=..\source\script\lua\src\lvm.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\lzio.h
+SOURCE=..\source\script\lua\src\lzio.h
 # End Source File
 # End Group
 # Begin Source File
 
-SOURCE=..\source\lua\include\lauxlib.h
+SOURCE=..\source\script\lua\include\lauxlib.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\include\lua.h
+SOURCE=..\source\script\lua\include\lua.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\include\luadebug.h
+SOURCE=..\source\script\lua\include\luadebug.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\include\lualib.h
+SOURCE=..\source\script\lua\include\lualib.h
 # End Source File
 # End Group
 # Begin Group "lua sources"
@@ -275,128 +275,116 @@ SOURCE=..\source\lua\include\lualib.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\source\lua\src\lib\lauxlib.c
-# ADD CPP /I "..\source\lua\include"
+SOURCE=..\source\script\lua\src\lib\lauxlib.c
+# ADD CPP /I "..\source\script\lua\include"
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\lib\lbaselib.c
-# ADD CPP /I "..\source\lua\include"
+SOURCE=..\source\script\lua\src\lib\lbaselib.c
+# ADD CPP /I "..\source\script\lua\include"
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\lib\lmathlib.c
-# ADD CPP /I "..\source\lua\include"
+SOURCE=..\source\script\lua\src\lib\lmathlib.c
+# ADD CPP /I "..\source\script\lua\include"
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\lib\lstrlib.c
-# ADD CPP /I "..\source\lua\include"
+SOURCE=..\source\script\lua\src\lib\lstrlib.c
+# ADD CPP /I "..\source\script\lua\include"
 # End Source File
 # End Group
 # Begin Source File
 
-SOURCE=..\source\lua\src\lapi.c
-# ADD CPP /I "..\source\lua\include"
+SOURCE=..\source\script\lua\src\lapi.c
+# ADD CPP /I "..\source\script\lua\include"
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\lcode.c
-# ADD CPP /I "..\source\lua\include"
+SOURCE=..\source\script\lua\src\lcode.c
+# ADD CPP /I "..\source\script\lua\include"
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\ldebug.c
-# ADD CPP /I "..\source\lua\include"
+SOURCE=..\source\script\lua\src\ldebug.c
+# ADD CPP /I "..\source\script\lua\include"
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\ldo.c
-# ADD CPP /I "..\source\lua\include"
+SOURCE=..\source\script\lua\src\ldo.c
+# ADD CPP /I "..\source\script\lua\include"
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\lfunc.c
-# ADD CPP /I "..\source\lua\include"
+SOURCE=..\source\script\lua\src\lfunc.c
+# ADD CPP /I "..\source\script\lua\include"
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\lgc.c
-# ADD CPP /I "..\source\lua\include"
+SOURCE=..\source\script\lua\src\lgc.c
+# ADD CPP /I "..\source\script\lua\include"
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\llex.c
-# ADD CPP /I "..\source\lua\include"
+SOURCE=..\source\script\lua\src\llex.c
+# ADD CPP /I "..\source\script\lua\include"
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\lmem.c
-# ADD CPP /I "..\source\lua\include"
+SOURCE=..\source\script\lua\src\lmem.c
+# ADD CPP /I "..\source\script\lua\include"
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\lobject.c
-# ADD CPP /I "..\source\lua\include"
+SOURCE=..\source\script\lua\src\lobject.c
+# ADD CPP /I "..\source\script\lua\include"
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\lparser.c
-# ADD CPP /I "..\source\lua\include"
+SOURCE=..\source\script\lua\src\lparser.c
+# ADD CPP /I "..\source\script\lua\include"
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\lstate.c
-# ADD CPP /I "..\source\lua\include"
+SOURCE=..\source\script\lua\src\lstate.c
+# ADD CPP /I "..\source\script\lua\include"
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\lstring.c
-# ADD CPP /I "..\source\lua\include"
+SOURCE=..\source\script\lua\src\lstring.c
+# ADD CPP /I "..\source\script\lua\include"
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\ltable.c
-# ADD CPP /I "..\source\lua\include"
+SOURCE=..\source\script\lua\src\ltable.c
+# ADD CPP /I "..\source\script\lua\include"
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\ltests.c
-# ADD CPP /I "..\source\lua\include"
+SOURCE=..\source\script\lua\src\ltests.c
+# ADD CPP /I "..\source\script\lua\include"
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\ltm.c
-# ADD CPP /I "..\source\lua\include"
+SOURCE=..\source\script\lua\src\ltm.c
+# ADD CPP /I "..\source\script\lua\include"
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\lundump.c
-# ADD CPP /I "..\source\lua\include"
+SOURCE=..\source\script\lua\src\lundump.c
+# ADD CPP /I "..\source\script\lua\include"
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\lvm.c
-# ADD CPP /I "..\source\lua\include"
+SOURCE=..\source\script\lua\src\lvm.c
+# ADD CPP /I "..\source\script\lua\include"
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\lua\src\lzio.c
-# ADD CPP /I "..\source\lua\include"
+SOURCE=..\source\script\lua\src\lzio.c
+# ADD CPP /I "..\source\script\lua\include"
 # End Source File
 # End Group
 # End Group
-# Begin Source File
-
-SOURCE=..\source\resource\critloader.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\resource\gamestrings.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\image.cpp
-# End Source File
 # End Target
 # End Project
