@@ -100,7 +100,6 @@ enum ua_key_value
    ua_key_game_change_sfx,     // ctrl f
    ua_key_game_change_lod,     // ctrl d
    ua_key_game_return_to_game, // esc
-   ua_key_game_quit_game,      // ctrl q
 
    // mouse cursor movement keys
    ua_key_cursor_hotarea_right, // tab
@@ -120,8 +119,11 @@ enum ua_key_value
    ua_key_cursor_button_right, // .
 
    // special uwadv keys
-   ua_key_debug,
-   ua_key_cheat_menu,
+   ua_key_ua_debug,        // alt d, starts debugger application
+   ua_key_ua_return_menu,  // alt q, returns to main menu
+   ua_key_ua_screenshot,   // alt c, takes screenshot
+   ua_key_ua_level_up,     // page up, only in debug mode
+   ua_key_ua_level_down,   // page down, only in debug mode
 };
 
 

@@ -59,7 +59,11 @@ void ua_keymap::init(ua_settings &settings)
    keymap[ua_key_standing_long_jump] = ua_make_keymod(SDLK_j,KMOD_SHIFT);
    keymap[ua_key_jump] = SDLK_j;
 
-   keymap[ua_key_game_quit_game] = ua_make_keymod(SDLK_q,KMOD_ALT|KMOD_NUM);
+   keymap[ua_key_ua_debug] = ua_make_keymod(SDLK_q,KMOD_ALT);
+   keymap[ua_key_ua_return_menu] = ua_make_keymod(SDLK_q,KMOD_ALT);
+   keymap[ua_key_ua_screenshot] = ua_make_keymod(SDLK_c,KMOD_ALT);
+   keymap[ua_key_ua_level_up] = SDLK_PAGEUP;
+   keymap[ua_key_ua_level_down] = SDLK_PAGEDOWN;
 }
 
 bool ua_keymap::is_key(ua_key_value key, Uint32 keymod)
