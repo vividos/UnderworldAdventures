@@ -117,11 +117,8 @@ void ua_create_character_screen::init()
    tex.upload();
 
    // init mouse cursor
-   mousecursor = new ua_mousecursor(core);
-   mousecursor->show(true);
-
-   // get palette #3
-   memcpy(palette,core->get_texmgr().get_palette(3),sizeof(ua_onepalette));
+   mousecursor.init(core);
+   mousecursor.show(true);
 
    // load button graphics
    img_buttons.load(core->get_settings(),"chrbtns",0,0,3);
@@ -205,7 +202,7 @@ void ua_create_character_screen::done()
    delete[] btng_buttons;
 
    tex.done();
-   delete mousecursor;
+   mousecursor.done();
 
    // clear screen
    glClearColor(0,0,0,0);
@@ -304,7 +301,7 @@ void ua_create_character_screen::handle_event(SDL_Event &event)
 
    case SDL_MOUSEMOTION:
       {
-         mousecursor->updatepos();
+         mousecursor.updatepos();
          if (buttondown)
          {
             int ret = getbuttonover();
@@ -674,7 +671,7 @@ void ua_create_character_screen::render()
    glEnd();
 
    // draw the mouse cursor
-   mousecursor->draw();
+   mousecursor.draw();
    tex.use();
 }
 

@@ -92,7 +92,7 @@ protected:
    bool journey_avail;
 
    //! mouse cursor
-   ua_mousecursor* mousecursor;
+   ua_mousecursor mousecursor;
 
    //! indicates if the mouse button is down
    bool buttondown;

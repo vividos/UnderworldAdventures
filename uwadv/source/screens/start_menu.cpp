@@ -58,9 +58,6 @@ void ua_start_menu_screen::init()
    // load button graphics
    img_buttons.load(core->get_settings(),"opbtn",0,0,2);
 
-   // init mouse cursor
-   mousecursor = new ua_mousecursor(core);
-
    resume();
 }
 
@@ -91,7 +88,8 @@ void ua_start_menu_screen::resume()
    tex.use();
    tex.upload();
 
-   mousecursor->show(true);
+   mousecursor.init(core,0);
+   mousecursor.show(true);
 
    stage = 0;
    tickcount = 0;
@@ -103,8 +101,6 @@ void ua_start_menu_screen::resume()
 
 void ua_start_menu_screen::done()
 {
-   delete mousecursor;
-
    suspend();
 
    // clear screen
@@ -152,7 +148,7 @@ void ua_start_menu_screen::handle_event(SDL_Event &event)
       break;
 
    case SDL_MOUSEMOTION:
-      mousecursor->updatepos();
+      mousecursor.updatepos();
       if (stage==1 && buttondown)
       {
          int ret = get_selected_area();
@@ -233,7 +229,7 @@ void ua_start_menu_screen::render()
    glTexCoord2d(0.0, 0.0); glVertex2i(  0,200);
    glEnd();
 
-   mousecursor->draw();
+   mousecursor.draw();
    tex.use();
 }
 

@@ -141,7 +141,7 @@ protected:
    ua_onepalette palette;
 
    //! mouse cursor
-   ua_mousecursor* mousecursor;
+   ua_mousecursor mousecursor;
 
    //! number of selected button, or -1 if none
    int selected_button;
