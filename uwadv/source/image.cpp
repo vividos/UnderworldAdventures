@@ -81,6 +81,10 @@ void ua_image::paste_rect(const ua_image& from_img, unsigned int fromx, unsigned
    unsigned int sxres = from_img.get_xres();
    unsigned int syres = from_img.get_yres();
 
+   // check if width and height is in range
+   if (width>sxres) width = sxres;
+   if (height>syres) height = syres;
+
    // adjust source image if pasting would cross dest image borders
    if (destx+width>xres) width = xres-destx;
    if (desty+height>yres) height = yres-desty;
