@@ -1452,6 +1452,12 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
                //core->get_underworld().get_scripts().lua_wall_look();
             }
          }
+
+         if (gamemode == ua_mode_talk && isobj)
+         {
+            Uint32 level = core->get_underworld().get_player().get_attr(ua_attr_maplevel);
+            core->get_underworld().get_scripts().lua_objlist_talk(level,id);
+         }
       }
    }
 }
