@@ -10,12 +10,6 @@ And here it goes:
 technical/source
 ----------------
 
-- savegame manager API
-  prio: 1  assigned: vividos
-
-- levelmap annotations list API
-  prio: 2  assigned: vividos
-
 - add check for all needed files before starting uwadv
   prio: 3  assigned: none
 
@@ -55,17 +49,8 @@ game interface
 - do a model manager class
   prio: 2  assigned: vividos
 
-- factor out panel as ui element to reuse on more places
-  prio: 2  assigned: vividos
-
 - selection style mouse cursor on "start menu" and "create char." screens
   prio: 3  assigned: none
-
-- improve savegame loading/saving screen implementation
-  prio: 1  assigned: none
-
-- savegame saving screen implementation (together into loading screen?)
-  prio: 1  assigned: none
 
 - npc's animation
   prio: 1  assigned: none
@@ -83,9 +68,6 @@ game interface
   prio: 2  assigned: none
 
 - 3d model loading / rendering (from game files)
-  prio: 1  assigned: none
-
-- decals rendering (tmap objects)
   prio: 1  assigned: none
 
 - conversation screen implementation
