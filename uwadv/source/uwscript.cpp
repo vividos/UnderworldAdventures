@@ -110,6 +110,19 @@ void ua_underworld_script_bindings::register_functions()
    lua_register(L,"tilemap_get_floor_height",tilemap_get_floor_height);
    lua_register(L,"tilemap_get_objlist_start",tilemap_get_objlist_start);
 
+   lua_register(L,"inv_get_objinfo",inv_get_objinfo);
+   lua_register(L,"inv_slot_get_num",inv_slot_get_num);
+   lua_register(L,"inv_slot_get_item",inv_slot_get_item);
+   lua_register(L,"inv_slot_remove_item",inv_slot_remove_item);
+   lua_register(L,"inv_float_get_item",inv_float_get_item);
+   lua_register(L,"inv_float_add_item",inv_float_add_item);
+   lua_register(L,"inv_cont_calc_weight",inv_cont_calc_weight);
+   lua_register(L,"inv_cont_get_cur",inv_cont_get_cur);
+   lua_register(L,"inv_cont_open",inv_cont_open);
+   lua_register(L,"inv_cont_close",inv_cont_close);
+   lua_register(L,"inv_rune_avail",inv_rune_avail);
+   lua_register(L,"inv_rune_set",inv_rune_set);
+
    lua_register(L,"quest_get_flag",quest_get_flag);
    lua_register(L,"quest_set_flag",quest_set_flag);
 
@@ -280,6 +293,16 @@ void ua_underworld_script_bindings::lua_objlist_use(Uint32 level, Uint32 objpos)
    checked_lua_call(1,0);
 }
 
+void ua_underworld_script_bindings::lua_objlist_get(Uint32 level, Uint32 objpos)
+{
+   Uint32 objhandle = ua_obj_handle_encode(objpos,level);
+
+   // call Lua function
+   lua_getglobal(L,"lua_objlist_get");
+   lua_pushnumber(L,static_cast<double>(objhandle));
+   checked_lua_call(1,0);
+}
+
 
 // lua_inventory_* functions
 
@@ -320,12 +343,20 @@ ua_inv_item_category ua_underworld_script_bindings::lua_inventory_categorize_ite
    return cat;
 }
 
-void ua_underworld_script_bindings::lua_inventory_look(Uint16 item_pos)
+void ua_underworld_script_bindings::lua_inventory_look(Uint16 inv_pos)
 {
+   // call Lua function
+   lua_getglobal(L,"lua_inventory_look");
+   lua_pushnumber(L,static_cast<double>(inv_pos));
+   checked_lua_call(1,0);
 }
 
-void ua_underworld_script_bindings::lua_inventory_use(Uint16 item_pos)
+void ua_underworld_script_bindings::lua_inventory_use(Uint16 inv_pos)
 {
+   // call Lua function
+   lua_getglobal(L,"lua_inventory_use");
+   lua_pushnumber(L,static_cast<double>(inv_pos));
+   checked_lua_call(1,0);
 }
 
 ua_obj_combine_result ua_underworld_script_bindings::lua_inventory_combine_obj(
@@ -818,21 +849,181 @@ int ua_underworld_script_bindings::tilemap_get_objlist_start(lua_State* L)
 
    // get first object handle in list
    Uint16 link1 = uw.get_level(level).get_mapobjects().get_tile_list_start(xpos,ypos);
-   lua_pushnumber(L,static_cast<double>(ua_obj_handle_encode(link1,level)));
+   lua_pushnumber(L,static_cast<double>( ua_obj_handle_encode(link1,level) ));
 
    return 1;
 }
 
 
-// inventory_* functions
+// inv_* functions
 
-int ua_underworld_script_bindings::inventory_rune_avail(lua_State* L)
+int ua_underworld_script_bindings::inv_get_objinfo(lua_State* L)
+{
+   ua_inventory& inv = get_underworld_from_self(L).get_inventory();
+
+   Uint16 inv_pos = static_cast<Uint16>(lua_tonumber(L,-1));
+   ua_object_info& info = inv.get_item(inv_pos);
+
+   // create new table and fill it with infos
+   lua_newtable(L);
+
+   lua_pushstring(L,"item_id");
+   lua_pushnumber(L,static_cast<double>(info.item_id));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"link");
+   lua_pushnumber(L,static_cast<double>(info.link));
+   lua_settable(L,-3);
+
+
+   lua_pushstring(L,"quality");
+   lua_pushnumber(L,static_cast<double>(info.quality));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"owner");
+   lua_pushnumber(L,static_cast<double>(info.owner));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"quantity");
+   lua_pushnumber(L,static_cast<double>(info.quantity));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"enchanted");
+   lua_pushnumber(L,info.enchanted ? 1.0 : 0.0);
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"is_quantity");
+   lua_pushnumber(L,info.is_quantity ? 1.0 : 0.0);
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"is_hidden");
+   lua_pushnumber(L,info.is_hidden ? 1.0 : 0.0);
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"flags");
+   lua_pushnumber(L,static_cast<double>(info.flags));
+   lua_settable(L,-3);
+
+   return 1;
+}
+
+int ua_underworld_script_bindings::inv_slot_get_num(lua_State* L)
+{
+   ua_inventory& inv = get_underworld_from_self(L).get_inventory();
+
+   lua_pushnumber(L,static_cast<double>( inv.get_num_slots() ));
+
+   return 1;
+}
+
+int ua_underworld_script_bindings::inv_slot_get_item(lua_State* L)
+{
+   ua_inventory& inv = get_underworld_from_self(L).get_inventory();
+
+   unsigned int slot_pos = static_cast<unsigned int>(lua_tonumber(L,-1));
+
+   lua_pushnumber(L,static_cast<double>( inv.get_slot_item(slot_pos) ));
+
+   return 1;
+}
+
+int ua_underworld_script_bindings::inv_slot_remove_item(lua_State* L)
+{
+   // TODO
+   return 0;
+}
+
+int ua_underworld_script_bindings::inv_float_get_item(lua_State* L)
+{
+   ua_inventory& inv = get_underworld_from_self(L).get_inventory();
+
+   lua_pushnumber(L,static_cast<double>( inv.get_floating_item() ));
+
+   return 1;
+}
+
+int ua_underworld_script_bindings::inv_float_add_item(lua_State* L)
+{
+   ua_underworld& uw = get_underworld_from_self(L);
+   ua_inventory& inv = uw.get_inventory();
+
+   if (inv.get_floating_item() != ua_slot_no_item)
+   {
+      // user already has floating item
+      lua_pushnumber(L,static_cast<double>( ua_slot_no_item ));
+      return 1;
+   }
+
+   Uint32 obj_handle = static_cast<Uint32>(lua_tonumber(L,-1));
+
+   // decode handle
+   Uint32 objpos=0,level=0;
+   ua_obj_handle_decode(obj_handle,objpos,level);
+
+   ua_object& obj = uw.get_level(level).get_mapobjects().get_object(objpos);
+   ua_object_info& info = obj.get_object_info();
+
+   Uint16 pos = inv.insert_floating_item(info);
+
+   // modify special link value to remember level
+   if (!info.is_quantity)
+      inv.get_item(pos).quantity = ua_obj_handle_encode(info.quantity,level);
+
+   // check if we are picking up a container
+   if (inv.is_container(inv.get_item(pos).item_id))
+   {
+      inv.get_item(pos).quantity = 0; // TODO fix for now; empty bag
+
+      // TODO recursive object addition
+   }
+
+   lua_pushnumber(L,static_cast<double>( pos ));
+   return 1;
+}
+
+int ua_underworld_script_bindings::inv_cont_calc_weight(lua_State* L)
+{
+   ua_inventory& inv = get_underworld_from_self(L).get_inventory();
+
+   lua_pushnumber(L,inv.get_container_weight( inv.get_container_item() ));
+   return 1;
+}
+
+int ua_underworld_script_bindings::inv_cont_get_cur(lua_State* L)
+{
+   ua_inventory& inv = get_underworld_from_self(L).get_inventory();
+
+   lua_pushnumber(L,static_cast<double>( inv.get_container_item() ));
+   return 1;
+}
+
+int ua_underworld_script_bindings::inv_cont_open(lua_State* L)
+{
+   ua_inventory& inv = get_underworld_from_self(L).get_inventory();
+
+   Uint16 inv_pos = static_cast<Uint16>(lua_tonumber(L,-1));
+
+   inv.open_container(inv_pos);
+
+   return 0;
+}
+
+int ua_underworld_script_bindings::inv_cont_close(lua_State* L)
+{
+   ua_inventory& inv = get_underworld_from_self(L).get_inventory();
+
+   inv.close_container();
+
+   return 0;
+}
+
+int ua_underworld_script_bindings::inv_rune_avail(lua_State* L)
 {
    // todo: implement
    return 1;
 }
 
-int ua_underworld_script_bindings::inventory_rune_add(lua_State* L)
+int ua_underworld_script_bindings::inv_rune_set(lua_State* L)
 {
    // todo: implement
    return 0;

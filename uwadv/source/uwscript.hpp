@@ -159,6 +159,9 @@ public:
    //! does "use" action to object
    void lua_objlist_use(Uint32 level, Uint32 objpos);
 
+   //! does "get" action to object
+   void lua_objlist_get(Uint32 level, Uint32 objpos);
+
 
    // inventory functions
 
@@ -169,10 +172,10 @@ public:
    ua_inv_item_category lua_inventory_categorize_item(Uint16 item_id);
 
    //! prints "look" text of an inventory item
-   void lua_inventory_look(Uint16 item_pos);
+   void lua_inventory_look(Uint16 inv_pos);
 
    //! uses inventory item
-   void lua_inventory_use(Uint16 item_pos);
+   void lua_inventory_use(Uint16 inv_pos);
 
    //! tries to combine items
    ua_obj_combine_result lua_inventory_combine_obj(Uint16 item_id1, Uint16 item_id2,
@@ -233,8 +236,18 @@ protected:
    static int tilemap_get_floor_height(lua_State* L);
    static int tilemap_get_objlist_start(lua_State* L);
 
-   static int inventory_rune_avail(lua_State* L);
-   static int inventory_rune_add(lua_State* L);
+   static int inv_get_objinfo(lua_State* L);
+   static int inv_slot_get_num(lua_State* L);
+   static int inv_slot_get_item(lua_State* L);
+   static int inv_slot_remove_item(lua_State* L);
+   static int inv_float_get_item(lua_State* L);
+   static int inv_float_add_item(lua_State* L);
+   static int inv_cont_calc_weight(lua_State* L);
+   static int inv_cont_get_cur(lua_State* L);
+   static int inv_cont_open(lua_State* L);
+   static int inv_cont_close(lua_State* L);
+   static int inv_rune_avail(lua_State* L);
+   static int inv_rune_set(lua_State* L);
 
    static int quest_get_flag(lua_State* L);
    static int quest_set_flag(lua_State* L);
