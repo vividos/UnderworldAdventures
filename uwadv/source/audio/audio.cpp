@@ -194,6 +194,7 @@ void ua_audio_impl::load_playlist(ua_settings &settings,
    ua_files_manager &filesmgr, const char *filename)
 {
    SDL_RWops *m3u = filesmgr.get_uadata_file(filename);
+   if (m3u==NULL) return;
 
    // load playlist into buffer
    std::vector<char> buffer;
