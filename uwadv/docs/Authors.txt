@@ -1,7 +1,7 @@
 Michael Fink <vividos at users.sourceforge.net>
-Dirk Manders <phlask@users.sourceforge.net>
-Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
-Kasper Fauerby <telemachos@peroxide.dk>
+Dirk Manders <phlask at users.sourceforge.net>
+Willem Jan Palenstijn <wjpalenstijn at users.sourceforge.net>
+Kasper Fauerby <telemachos at peroxide.dk>
 
 Underworld Adventures additionally contains code from:
 
