@@ -108,6 +108,11 @@ protected:
    //! renders a single object
    void render_object(ua_object& obj, unsigned int x, unsigned int y);
 
+   //! draws a billboarded quad
+   void ua_renderer::draw_billboard_quad(ua_vector3d base,
+      double quadwidth, double quadheight,
+      double u1,double v1,double u2,double v2);
+
    //! retrieves tile coordinates
    static void get_tile_coords(unsigned int side, ua_levelmap_tiletype type,
       unsigned int basex, unsigned int basey, Uint16 basez, Uint16 slope, Uint16 ceiling,
@@ -134,6 +139,9 @@ protected:
 
    //! distance of far plane
    double farplane;
+
+   //! billboard right and up vectors
+   ua_vector3d bb_right, bb_up;
 
    //! rendering height scale
    static const double height_scale;

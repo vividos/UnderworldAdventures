@@ -927,6 +927,21 @@ void ua_renderer::render_objects(unsigned int x, unsigned int y)
 {
    glPushName((y<<8) + x);
 
+   // find out billboard right and up vectors
+   {
+      float modelview[16];
+
+      // get the current modelview matrix
+      glGetFloatv(GL_MODELVIEW_MATRIX , modelview);
+
+      // retrieve right and up vectors
+      bb_right.set(modelview[0],modelview[4],modelview[8]);
+      bb_up.set(modelview[1],modelview[5],modelview[9]);
+
+      bb_right.normalize();
+      bb_up.normalize();
+   }
+
    ua_object_list& objlist = underw->get_current_level().get_mapobjects();
 
    // get first object link
@@ -963,75 +978,77 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
 
    ua_level& level = underw->get_current_level();
 
-   double quadwidth = 0.25;
    double objxpos = double(x) + (obj.get_xpos()+0.5)/8.0;
    double objypos = double(y) + (obj.get_ypos()+0.5)/8.0;
    double height = level.get_floor_height(objxpos,objypos)*height_scale;
 
-   ua_vector3d right, up;
-
-   {
-      float modelview[16];
-
-      // get the current modelview matrix
-      glGetFloatv(GL_MODELVIEW_MATRIX , modelview);
-
-      // retrieve right and up vectors
-      right.set(modelview[0],modelview[4],modelview[8]);
-      up.set(modelview[1],modelview[5],modelview[9]);
-   }
-
    Uint16 item_id = obj.get_object_info().item_id;
 
-   // items that have to be drawn at the ceiling?
-   if (item_id == 0x00d3 || item_id == 0x00d4)
+   ua_vector3d base(objxpos, objypos, height);
+
+   if (item_id >= 0x0040 && item_id < 0x0080)
    {
-      // adjust height
-      height = level.get_tile(x,y).ceiling * height_scale - quadwidth;
+      // critter object
+
+      // TODO
    }
-
-   // rune items?
-   if (item_id>=0x00e8 && item_id<0x0100)
-      item_id = 0x00e0; // generic rune-on-the-floor item
-
-   right.normalize();
-   up.normalize();
-
-   right *= 0.5*quadwidth;
-   up *= quadwidth;
-
-   ua_vector3d base1(objxpos, objypos, height);
-   ua_vector3d base2(base1);
-
-   base1 -= right;
-   base2 += right;
-
-   ua_vector3d high1(base1);
-   ua_vector3d high2(base2);
-
-   high1 += up;
-   high2 += up;
-
-   // draw object quad
+   else
    {
+      // normal object
+
+      double quadwidth = 0.25;
+
+      // items that have to be drawn at the ceiling?
+      if (item_id == 0x00d3 || item_id == 0x00d4)
+      {
+         // adjust height
+         height = level.get_tile(x,y).ceiling * height_scale - quadwidth;
+      }
+
+      // rune items?
+      if (item_id>=0x00e8 && item_id<0x0100)
+         item_id = 0x00e0; // generic rune-on-the-floor item
+
       // get object texture coords
       double u1,v1,u2,v2;
       texmgr->object_tex(item_id,u1,v1,u2,v2);
 
-      glEnable(GL_BLEND);
-
-      glColor3ub(255,255,255);
-
-      // render quad
-      glBegin(GL_QUADS);
-      glTexCoord2d(u1,v2); glVertex3d(base1.x,base1.y,base1.z);
-      glTexCoord2d(u2,v2); glVertex3d(base2.x,base2.y,base2.z);
-      glTexCoord2d(u2,v1); glVertex3d(high2.x,high2.y,high2.z);
-      glTexCoord2d(u1,v1); glVertex3d(high1.x,high1.y,high1.z);
-      glEnd();
-
-      glDisable(GL_BLEND);
+      draw_billboard_quad(base, 0.5*quadwidth, quadwidth,
+         u1,v1,u2,v2);
    }
+}
+
+void ua_renderer::draw_billboard_quad(
+   ua_vector3d base,
+   double quadwidth, double quadheight,
+   double u1,double v1,double u2,double v2)
+{
+   // calculate vectors for that quad
+   ua_vector3d base2(base);
+
+   base  -= bb_right*quadwidth;
+   base2 += bb_right*quadwidth;
+
+   ua_vector3d high1(base);
+   ua_vector3d high2(base2);
+
+   high1 += bb_up*quadheight;
+   high2 += bb_up*quadheight;
+
+   // draw quad
+   glEnable(GL_BLEND);
+
+   glColor3ub(255,255,255);
+
+   // render quad
+   glBegin(GL_QUADS);
+   glTexCoord2d(u1,v2); glVertex3d(base .x,base .y,base .z);
+   glTexCoord2d(u2,v2); glVertex3d(base2.x,base2.y,base2.z);
+   glTexCoord2d(u2,v1); glVertex3d(high2.x,high2.y,high2.z);
+   glTexCoord2d(u1,v1); glVertex3d(high1.x,high1.y,high1.z);
+   glEnd();
+
+   glDisable(GL_BLEND);
 }
 
 void ua_renderer::get_tile_coords(
