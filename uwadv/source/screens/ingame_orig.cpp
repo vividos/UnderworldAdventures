@@ -29,6 +29,8 @@
 #include "common.hpp"
 #include "ingame_orig.hpp"
 #include "uamath.hpp"
+#include "cutscene_view.hpp"
+#include "conversation.hpp"
 
 
 // constants
@@ -249,6 +251,10 @@ void ua_ingame_orig_screen::init()
 
 void ua_ingame_orig_screen::suspend()
 {
+   // unregister script callbacks
+   core->get_underworld().get_scripts().register_callback(NULL);
+
+   // clean up textures
    tex_back1.done();
    tex_back2.done();
 
@@ -279,7 +285,13 @@ void ua_ingame_orig_screen::resume()
    textscroll.init(*core,16+1,169+2, 289,30+2, 4, 42);
    textscroll.set_color(1);
 
-   // init some textures
+   // register script callbacks
+   core->get_underworld().get_scripts().register_callback(this);
+
+   // prepare level textures
+   ui_changed_level(core->get_underworld().get_player().get_attr(ua_attr_level));
+
+   // init textures
 
    // background textures
    tex_back1.init(&core->get_texmgr(),1,GL_LINEAR,GL_LINEAR,GL_CLAMP,GL_CLAMP);
@@ -1293,4 +1305,50 @@ void ua_ingame_orig_screen::inventory_dragged_item(ua_inventory &inv)
       cursor_image_current = (unsigned int)-1;
 
    update_panel_texture();
+}
+
+
+// virtual functions from ua_underworld_script_callback
+
+void ua_ingame_orig_screen::ui_changed_level(unsigned int level)
+{
+   ua_texture_manager& texmgr = core->get_texmgr();
+
+   // prepare all used textures
+   const std::vector<Uint16>& used_textures =
+      core->get_underworld().get_level(level).get_used_textures();
+
+   unsigned int max = used_textures.size();
+   for(unsigned int n=0; n<max; n++)
+      texmgr.prepare(used_textures[n]);
+}
+
+void ua_ingame_orig_screen::ui_start_conv(unsigned int convslot)
+{
+   // start conversation
+   core->push_screen(new ua_conversation_screen(convslot));
+}
+
+void ua_ingame_orig_screen::ui_show_cutscene(unsigned int cutscene)
+{
+   // show cutscene
+   core->push_screen(new ua_cutscene_view_screen(cutscene));
+}
+
+void ua_ingame_orig_screen::ui_print_string(const char* str)
+{
+   // print to text scroll
+   textscroll.print(str);
+}
+
+void ua_ingame_orig_screen::ui_show_ingame_anim(unsigned int anim)
+{
+}
+
+void ua_ingame_orig_screen::ui_cursor_use_item(Uint16 item_id)
+{
+}
+
+void ua_ingame_orig_screen::ui_cursor_target()
+{
 }

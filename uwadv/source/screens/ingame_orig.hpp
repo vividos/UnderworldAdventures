@@ -37,8 +37,9 @@
 #include "renderer.hpp"
 #include "mousecursor.hpp"
 #include "textscroll.hpp"
-
+#include "uwscript.hpp"
 #include "debug.hpp"
+
 
 // enums
 
@@ -118,14 +119,16 @@ typedef enum
 // classes
 
 //! user interface abstract base class
-class ua_ingame_orig_screen: public ua_ui_screen_base
+class ua_ingame_orig_screen:
+   public ua_ui_screen_base,
+   public ua_underworld_script_callback
 {
 public:
    //! ctor
    ua_ingame_orig_screen(){}
    virtual ~ua_ingame_orig_screen(){}
 
-   // virtual functions
+   // virtual functions from ua_ui_screen_base
    virtual void init();
    virtual void suspend();
    virtual void resume();
@@ -133,6 +136,15 @@ public:
    virtual void handle_event(SDL_Event &event);
    virtual void render();
    virtual void tick();
+
+   // virtual functions from ua_underworld_script_callback
+   virtual void ui_changed_level(unsigned int level);
+   virtual void ui_start_conv(unsigned int convslot);
+   virtual void ui_show_cutscene(unsigned int cutscene);
+   virtual void ui_print_string(const char* str);
+   virtual void ui_show_ingame_anim(unsigned int anim);
+   virtual void ui_cursor_use_item(Uint16 item_id);
+   virtual void ui_cursor_target();
 
 protected:
    //! sets up OpenGL stuff, flags, etc.
