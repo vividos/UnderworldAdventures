@@ -53,6 +53,8 @@ void ua_textscroll::init(ua_game_core_interface& core, unsigned int xpos,
    this->maxlines = lines;
    this->bg_color = bg_color;
    text_color = 11;
+   input_mode = false;
+   input_line = 0;
 
    // init texture
    split_textures = width>254;
