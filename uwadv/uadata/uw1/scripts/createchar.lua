@@ -27,7 +27,7 @@
 --
 -- registered C functions:
 --
--- cuts_do_action(self, actioncode, actionparam_1...actionparam_n)
+-- cuts_do_action(actioncode, actionparam_1...actionparam_n)
 --   actioncode is one of the values below; number and type of actionparams 
 --   depend on the action.
 --
@@ -224,17 +224,16 @@ ccharui = {
 -- functions
 
 -- initializes/deinitializes create character screen
-function cchar_global(this, globalaction, seed)
+function cchar_global(globalaction, seed)
    if globalaction==gactInit then
-      self = this       -- sets "self" as userdata for all C function calls
       skills = {}
       randomseed(seed)
-      cchar_do_action(self, actSetInitVal, ccharui.strblock, ccharui.btngxcoord, ccharui.textcolor_normal, ccharui.textcolor_highlight, ccharui.btnimages)
+      cchar_do_action(actSetInitVal, ccharui.strblock, ccharui.btngxcoord, ccharui.textcolor_normal, ccharui.textcolor_highlight, ccharui.btnimages)
    end
 
    -- end it all when we're at the first page and a deinit was received
    if globalaction==gactDeinit and curgroup==1 then
-      cchar_do_action(self, actEnd)
+      cchar_do_action(actEnd)
    else
       -- show the first button group
       curstep = 0 
@@ -248,9 +247,9 @@ function cchar_global(this, globalaction, seed)
       pname = ""
       curgroup = 1
       numberofskills = 0
-      cchar_do_action(self, actUIClear)
-      cchar_do_action(self, actSetUIBtnGroup, ccharui.btngroups[curgroup].heading, ccharui.btngroups[curgroup].btntype, ccharui.btngroups[curgroup].btns)
-      cchar_do_action(self, actUIUpdate)
+      cchar_do_action(actUIClear)
+      cchar_do_action(actSetUIBtnGroup, ccharui.btngroups[curgroup].heading, ccharui.btngroups[curgroup].btntype, ccharui.btngroups[curgroup].btns)
+      cchar_do_action(actUIUpdate)
    end
 end
 
@@ -262,14 +261,14 @@ function cchar_addskill(skill, value)
       -- increase the value if found and return
       if skills[csi].name==skill then
          skills[csi].val = skills[csi].val + value/2
-         cchar_do_action(self, actSetPlayerSkill, ccharui.skilltrans[skill], skills[csi].val)
+         cchar_do_action(actSetPlayerSkill, ccharui.skilltrans[skill], skills[csi].val)
          return
       end
    end
    -- not found? add the skill
    numberofskills = numberofskills + 1
    skills[numberofskills] = { name = skill, val = value };
-   cchar_do_action(self, actSetPlayerSkill, ccharui.skilltrans[skill], value)
+   cchar_do_action(actSetPlayerSkill, ccharui.skilltrans[skill], value)
 end
 
 
@@ -280,41 +279,41 @@ function cchar_buttonclick(button, text)
    if curgroup<=2 or curgroup>=18 then
 
       if curgroup==1 then
-        cchar_do_action(self, actSetPlayerAttr, player_attr_gender, button)
+        cchar_do_action(actSetPlayerAttr, player_attr_gender, button)
         psex = button
 
       elseif curgroup==2 then
-        cchar_do_action(self, actSetPlayerAttr, player_attr_handedness, button)
+        cchar_do_action(actSetPlayerAttr, player_attr_handedness, button)
 
       elseif curgroup==18 then
-         cchar_do_action(self, actSetPlayerAttr, player_attr_appearance, button)
+         cchar_do_action(actSetPlayerAttr, player_attr_appearance, button)
          pimg = button
          curgroup = curgroup + 1
 
       elseif curgroup==19 then
-         cchar_do_action(self, actSetPlayerAttr, player_attr_appearance, button)
+         cchar_do_action(actSetPlayerAttr, player_attr_appearance, button)
          pimg = button + 5
 
       elseif curgroup==20 then
-         cchar_do_action(self, actSetPlayerAttr, player_attr_difficulty, button)
+         cchar_do_action(actSetPlayerAttr, player_attr_difficulty, button)
 
       elseif curgroup==21 then
          if strlen(text)<1 then
             return  -- don't accept an empty name   
          else
             pname = text
-            cchar_do_action(self, actSetPlayerName, pname)
+            cchar_do_action(actSetPlayerName, pname)
          end
 
       elseif curgroup==22 then
          if button==1 then
-            cchar_global(self, gactDeinit)
+            cchar_global(gactDeinit)
             return
          end
 
       elseif curgroup==23 then
          curgroup = -1
-         cchar_do_action(self, actEnd, eaNewGame)
+         cchar_do_action(actEnd, eaNewGame)
          return
       end
       curgroup = curgroup + 1
@@ -323,7 +322,7 @@ function cchar_buttonclick(button, text)
    elseif curgroup>=3 and curgroup<=17 then
 
       if curgroup==3 then   -- player class selection button 
-         cchar_do_action(self, actSetPlayerAttr, player_attr_profession, button)
+         cchar_do_action(actSetPlayerAttr, player_attr_profession, button)
          pclass = button
          curstep = 0
 
@@ -331,18 +330,35 @@ function cchar_buttonclick(button, text)
          pdex = random(15,25)
          pint = random(12,22)
          pvit = random(33,36)
-         cchar_do_action(self, actSetPlayerAttr, player_attr_strength, pstr)
-         cchar_do_action(self, actSetPlayerAttr, player_attr_dexterity, pdex)
-         cchar_do_action(self, actSetPlayerAttr, player_attr_intelligence, pint)
-         cchar_do_action(self, actSetPlayerAttr, player_attr_max_life, pvit)
-         cchar_do_action(self, actSetPlayerAttr, player_attr_life, pvit)
+         cchar_do_action(actSetPlayerAttr, player_attr_strength, pstr)
+         cchar_do_action(actSetPlayerAttr, player_attr_dexterity, pdex)
+         cchar_do_action(actSetPlayerAttr, player_attr_intelligence, pint)
+         cchar_do_action(actSetPlayerAttr, player_attr_max_life, pvit)
+         cchar_do_action(actSetPlayerAttr, player_attr_life, pvit)
+
+         -- set mana/max_mana attribute (note: this is not the same as mana skill)
+         local max_mana = 0
+         if button==0 or button==3 or button==6 or button==7 then   -- fighter/tinker/ranger/shepard
+            max_mana = 2
+         elseif button==1 then  -- mage
+            max_mana = 35
+         elseif button==2 then  -- bard
+            max_mana = 15
+         elseif button==4 then  -- druid
+            max_mana = 27
+         elseif button==5 then  -- paladin
+            max_mana = 3
+         end
+         cchar_do_action(actSetPlayerAttr, player_attr_max_mana, max_mana)
+         cchar_do_action(actSetPlayerAttr, player_attr_mana, max_mana)
+
 
          -- the attack and defence skill appear for all player classes
          cchar_addskill(ccvAttack, random(4,13))
          cchar_addskill(ccvDefence, random(4,13))
 
          -- add class specific inital skills
-         if button==1 or button==4 then   -- fighter/druid
+         if button==1 or button==4 then   -- mage/druid
             cchar_addskill(ccvMana, random(4,13))
             cchar_addskill(ccvCasting, random(4,13))
          elseif button==3 then            -- tinker
@@ -371,48 +387,48 @@ function cchar_buttonclick(button, text)
 
    -- show the new button group and stats (or end)
    if curgroup>0 then
-      cchar_do_action(self, actUIClear)
+      cchar_do_action(actUIClear)
 
       if curgroup>1 then 
-         cchar_do_action(self, actSetUIText, psex+ccvMale, 18, 21, alLeft) 
+         cchar_do_action(actSetUIText, psex+ccvMale, 18, 21, alLeft) 
       end
       if curgroup>3 then
          -- common stats
-         cchar_do_action(self, actSetUIText, pclass+ccvFighter, 141, 21, alRight)
-         cchar_do_action(self, actSetUIText, ccvStrc, 93, 50, alLeft)
-         cchar_do_action(self, actSetUINumber, pstr, 139, 50)
-         cchar_do_action(self, actSetUIText, ccvDexc, 93, 67, alLeft)
-         cchar_do_action(self, actSetUINumber, pdex, 139, 67)
-         cchar_do_action(self, actSetUIText, ccvIntc, 93, 84, alLeft)
-         cchar_do_action(self, actSetUINumber, pint, 139, 84)
-         cchar_do_action(self, actSetUIText, ccvVitc, 93, 101, alLeft)
-         cchar_do_action(self, actSetUINumber, pvit, 139, 101)
+         cchar_do_action(actSetUIText, pclass+ccvFighter, 141, 21, alRight)
+         cchar_do_action(actSetUIText, ccvStrc, 93, 50, alLeft)
+         cchar_do_action(actSetUINumber, pstr, 139, 50)
+         cchar_do_action(actSetUIText, ccvDexc, 93, 67, alLeft)
+         cchar_do_action(actSetUINumber, pdex, 139, 67)
+         cchar_do_action(actSetUIText, ccvIntc, 93, 84, alLeft)
+         cchar_do_action(actSetUINumber, pint, 139, 84)
+         cchar_do_action(actSetUIText, ccvVitc, 93, 101, alLeft)
+         cchar_do_action(actSetUINumber, pvit, 139, 101)
       end
 
       -- class/skill specific stats
       for csi = 1, numberofskills do
-         cchar_do_action(self, actSetUIText, skills[csi].name, 30, 132+11*(csi-1), alLeft)
-         cchar_do_action(self, actSetUINumber, skills[csi].val, 125, 132+11*(csi-1))
+         cchar_do_action(actSetUIText, skills[csi].name, 30, 132+11*(csi-1), alLeft)
+         cchar_do_action(actSetUINumber, skills[csi].val, 125, 132+11*(csi-1))
       end
 
       if curgroup>19 then
-         cchar_do_action(self, actSetUIImg, 17+pimg, 44, 81)
+         cchar_do_action(actSetUIImg, 17+pimg, 44, 81)
       end
 
       if curgroup>21 then
-         cchar_do_action(self, actSetUICustText, pname, 80, 10, alCenter)
+         cchar_do_action(actSetUICustText, pname, 80, 10, alCenter)
       end
 
       if curgroup>22 then
          -- show "playname enters the abyss..."
-         cchar_do_action(self, actSetUICustText, pname, 240, 90, alCenter)
+         cchar_do_action(actSetUICustText, pname, 240, 90, alCenter)
          -- we need one string (#256) from stringblock 1
-         cchar_do_action(self, actSetUIText, 256, 240, 100, alCenter, 1)
+         cchar_do_action(actSetUIText, 256, 240, 100, alCenter, 1)
       end
 
-      cchar_do_action(self, actSetUIBtnGroup, ccharui.btngroups[curgroup].heading, ccharui.btngroups[curgroup].btntype, ccharui.btngroups[curgroup].btns)
-      cchar_do_action(self, actUIUpdate)
+      cchar_do_action(actSetUIBtnGroup, ccharui.btngroups[curgroup].heading, ccharui.btngroups[curgroup].btntype, ccharui.btngroups[curgroup].btns)
+      cchar_do_action(actUIUpdate)
    else
-      cchar_do_action(self, actEnd, eaCancel)
+      cchar_do_action(actEnd, eaCancel)
    end
 end

@@ -78,6 +78,8 @@ enum ua_ebuttontype
    btTimer = 3      // virtual button acting as a countdown timer
 };
 
+//! global variable that points to the current screen
+ua_create_character_screen *current_screen = 0;
 
 // ua_create_character_screen methods
 
@@ -168,22 +170,23 @@ void ua_create_character_screen::initluascript()
    if (0!=core->get_filesmgr().load_lua_script(L,"uw1/scripts/createchar"))
       ended = true;
 
+   // store pointer to this instance in a global var
+   current_screen = this;
+
    // Init script with seed value for random numbers
    cchar_global(gactInit, clock());
 }
 
 void ua_create_character_screen::cchar_global(int globalaction, int seed)
 {
-    // call "cchar_global(this)"
+    // call "cchar_global()"
    lua_getglobal(L,"cchar_global");
-   lua_pushuserdata(L, this);
    lua_pushnumber(L, globalaction);
    lua_pushnumber(L, seed);
-   int ret = lua_call(L,3,0);
+   int ret = lua_call(L,2,0);
    if (ret!=0)
    {
-      ua_trace("Lua function call cchar_global(0x%08x) ended with error code %u\n",
-         this,ret);
+      ua_trace("Lua function call cchar_global ended with error code %u\n", ret);
       ended = true;
    }
 
@@ -205,6 +208,8 @@ void ua_create_character_screen::done()
    // close Lua
    lua_close(L);
    ua_trace("character creation screen ended\n");
+
+   current_screen = 0;
 }
 
 void ua_create_character_screen::handle_event(SDL_Event &event)
@@ -329,42 +334,41 @@ void ua_create_character_screen::handleinputchar(char c)
 void ua_create_character_screen::do_action()
 {
    int n=lua_gettop(L);
-   unsigned int action = (n<2) ? 0 : static_cast<unsigned int>(lua_tonumber(L,2));
+   unsigned int action = (n<1) ? 0 : static_cast<unsigned int>(lua_tonumber(L,1));
 
    switch(static_cast<ua_elua_action>(action))
    {
    case actEnd:
       ended = true;
-      newgame = (n>2) && (static_cast<unsigned int>(lua_tonumber(L,3))==1);
+      newgame = (n>1) && (static_cast<unsigned int>(lua_tonumber(L,2))==1);
       fadingstage = -1;
       ua_trace("end request by char. creation script\n");
       break;
 
    case actSetInitVal:
    {
-      if (n<6) break;
-      strblock = static_cast<unsigned int>(lua_tonumber(L,3));
-      bgxpos = static_cast<unsigned int>(lua_tonumber(L,4));
-      textcolor_normal = static_cast<unsigned int>(lua_tonumber(L,5));
-      textcolor_highlight = static_cast<unsigned int>(lua_tonumber(L,6));
-      int ic = lua_getn(L, 7);
+      if (n<5) break;
+      strblock = static_cast<unsigned int>(lua_tonumber(L,2));
+      bgxpos = static_cast<unsigned int>(lua_tonumber(L,3));
+      textcolor_normal = static_cast<unsigned int>(lua_tonumber(L,4));
+      textcolor_highlight = static_cast<unsigned int>(lua_tonumber(L,5));
+      int ic = lua_getn(L, 6);
       if (ic>5) ic = 5;
       for (int i=0; i<ic; i++)
       {
-         lua_rawgeti(L, 7, i+1);
-         btnimgs[i] = static_cast<unsigned int>(lua_tonumber(L,8));
+         lua_rawgeti(L, 6, i+1);
+         btnimgs[i] = static_cast<unsigned int>(lua_tonumber(L,7));
          lua_pop(L, 1);
       }
-
       ua_trace("init values set by char. creation script\n");
       break;
    }
 
    case actSetUIBtnGroup:
    {
-      if (n<4) break;
-      btng_caption = static_cast<unsigned int>(lua_tonumber(L,3));
-      btng_buttontype = static_cast<unsigned int>(lua_tonumber(L,4));
+      if (n<3) break;
+      btng_caption = static_cast<unsigned int>(lua_tonumber(L,2));
+      btng_buttontype = static_cast<unsigned int>(lua_tonumber(L,3));
       if (btng_buttontype==btTimer)
       {
          countdowntime = btng_caption/1000.0;
@@ -374,7 +378,7 @@ void ua_create_character_screen::do_action()
       } 
       else
       {
-         btng_buttoncount = lua_getn(L, 5);
+         btng_buttoncount = lua_getn(L, 4);
          if ((btng_buttontype==btInput) && (btng_buttoncount>0))
          {
             inputtext[0] = 0;
@@ -382,8 +386,8 @@ void ua_create_character_screen::do_action()
          }
          for (int i=0; i<btng_buttoncount; i++)
          {
-            lua_rawgeti(L, 5, i+1);
-            btng_buttons[i] = static_cast<unsigned int>(lua_tonumber(L,6));
+            lua_rawgeti(L, 4, i+1);
+            btng_buttons[i] = static_cast<unsigned int>(lua_tonumber(L,5));
             lua_pop(L, 1);
          }
 
@@ -411,41 +415,41 @@ void ua_create_character_screen::do_action()
 
    case actSetUIText:
    {
-      if (n<6) break;
-      drawtext(static_cast<unsigned int>(lua_tonumber(L,3)),
+      if (n<5) break;
+      drawtext(static_cast<unsigned int>(lua_tonumber(L,2)),
+               static_cast<unsigned int>(lua_tonumber(L,3)),
                static_cast<unsigned int>(lua_tonumber(L,4)),
                static_cast<unsigned int>(lua_tonumber(L,5)),
-               static_cast<unsigned int>(lua_tonumber(L,6)),
                textcolor_normal,
-               (n>6) ? static_cast<unsigned int>(lua_tonumber(L,7)) : -1);
+               (n>5) ? static_cast<unsigned int>(lua_tonumber(L,6)) : -1);
       break;
    }
 
    case actSetUICustText:
    {
-      if (n<6) break;
-      drawtext(lua_tostring(L,3),
-               static_cast<unsigned int>(lua_tonumber(L,4)),
-               static_cast<unsigned int>(lua_tonumber(L,5)),
-               static_cast<unsigned int>(lua_tonumber(L,6)));
-      break;
-   }
-
-   case actSetUINumber:
-   {
       if (n<5) break;
-      drawnumber(static_cast<unsigned int>(lua_tonumber(L,3)),
+      drawtext(lua_tostring(L,2),
+               static_cast<unsigned int>(lua_tonumber(L,3)),
                static_cast<unsigned int>(lua_tonumber(L,4)),
                static_cast<unsigned int>(lua_tonumber(L,5)));
       break;
    }
 
+   case actSetUINumber:
+   {
+      if (n<4) break;
+      drawnumber(static_cast<unsigned int>(lua_tonumber(L,2)),
+               static_cast<unsigned int>(lua_tonumber(L,3)),
+               static_cast<unsigned int>(lua_tonumber(L,4)));
+      break;
+   }
+
    case actSetUIImg:
    {
-      if (n<5) break;
-      ua_image cimg = img_buttons.get_image(static_cast<unsigned int>(lua_tonumber(L,3)));
-      img.paste_image(cimg, static_cast<unsigned int>(lua_tonumber(L,4)) - cimg.get_xres()/2, 
-                            static_cast<unsigned int>(lua_tonumber(L,5)) - cimg.get_yres()/2, true);
+      if (n<4) break;
+      ua_image cimg = img_buttons.get_image(static_cast<unsigned int>(lua_tonumber(L,2)));
+      img.paste_image(cimg, static_cast<unsigned int>(lua_tonumber(L,3)) - cimg.get_xres()/2, 
+                            static_cast<unsigned int>(lua_tonumber(L,4)) - cimg.get_yres()/2, true);
       break;
    }
 
@@ -460,22 +464,22 @@ void ua_create_character_screen::do_action()
       break;
 
    case actSetPlayerName:
-      if (n<3) break;
-      pplayer->set_name(lua_tostring(L,3));
-      ua_trace("player name set to \"%s\" by char. creation script\n", lua_tostring(L,3));
+      if (n<2) break;
+      pplayer->set_name(lua_tostring(L,2));
+      ua_trace("player name set to \"%s\" by char. creation script\n", lua_tostring(L,2));
       break;
 
    case actSetPlayerAttr:
-      if (n<4) break;
-      pplayer->set_attr(static_cast<ua_player_attributes>(static_cast<unsigned int>(lua_tonumber(L,3))), 
-                        static_cast<unsigned int>(lua_tonumber(L,4)));
+      if (n<3) break;
+      pplayer->set_attr(static_cast<ua_player_attributes>(static_cast<unsigned int>(lua_tonumber(L,2))), 
+                        static_cast<unsigned int>(lua_tonumber(L,3)));
       ua_trace("player attribute set\n");
       break;
 
    case actSetPlayerSkill:
-      if (n<4) break;
-      pplayer->set_skill(static_cast<ua_player_skills>(static_cast<unsigned int>(lua_tonumber(L,3))), 
-                         static_cast<unsigned int>(lua_tonumber(L,4)));
+      if (n<3) break;
+      pplayer->set_skill(static_cast<ua_player_skills>(static_cast<unsigned int>(lua_tonumber(L,2))), 
+                         static_cast<unsigned int>(lua_tonumber(L,3)));
       ua_trace("player skill set\n");
       break;
 
@@ -714,21 +718,7 @@ void ua_create_character_screen::press_button(int button)
 
 int ua_create_character_screen::cchar_do_action(lua_State *L)
 {
-   // check for "self" parameter being userdata
-   int n=lua_gettop(L);
-   if ((n>0) && lua_isuserdata(L,1))
-   {
-      // get pointer to object
-      ua_create_character_screen *self =
-         reinterpret_cast<ua_create_character_screen*>(lua_touserdata(L,1));
-
-      if (self->L != L)
-         throw ua_exception("wrong 'self' parameter in Lua script");
-
-      // perform action
-      self->do_action();
-
-      return 0;
-   }
-   return 1;
+   if (current_screen!=0)
+      current_screen->do_action();
+   return 0;
 }
