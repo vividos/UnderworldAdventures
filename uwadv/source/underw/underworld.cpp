@@ -159,8 +159,6 @@ void ua_underworld::change_level(unsigned int level)
    // set new level
    player.set_attr(ua_attr_maplevel,level);
 
-//TODO   script.lua_change_level(level);
-
    // clear activated move triggers
    trigger_active.clear();
 }
@@ -359,7 +357,8 @@ void ua_underworld::check_move_trigger()
                   ua_trace("move trigger: activate trigger at %04x\n",pos);
 
                   unsigned int curlevel = player.get_attr(ua_attr_maplevel);
-//TODO                  script.lua_trigger_set_off(curlevel,pos);
+                  if (scripting != NULL)
+                     scripting->trigger_set_off(pos);
                }
                else
                {
