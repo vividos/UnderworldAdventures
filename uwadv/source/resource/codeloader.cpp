@@ -41,7 +41,7 @@
 
 /*! when init is set to true, the file to load only contains size entries, and no
     actual data; globals are initalized with 0 then. */
-void ua_conv_globals::load(const char *bgname, bool init)
+void ua_conv_globals::import(const char *bgname, bool init)
 {
    // try to open file
    FILE *fd = fopen(bgname,"rb");
@@ -58,19 +58,21 @@ void ua_conv_globals::load(const char *bgname, bool init)
       Uint16 slot = fread16(fd);
       Uint16 size = fread16(fd);
 
+      std::vector<Uint8> globals;
+      globals.resize(size,0);
+
       if (!init)
       {
          // read in globals
-         std::vector<Uint8> globals;
-
          for(Uint16 i=0; i<size; i++)
             globals.push_back(fread16(fd));
-
-         if (slot>allglobals.size())
-            allglobals.resize(slot);
-
-         allglobals.insert(allglobals.begin()+slot,globals);
       }
+
+      // put globals in allglobals list
+      if (slot>allglobals.size())
+         allglobals.resize(slot);
+
+      allglobals.insert(allglobals.begin()+slot,globals);
    }
 
    fclose(fd);

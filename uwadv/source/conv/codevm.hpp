@@ -96,15 +96,17 @@ public:
    //! ctor
    ua_conv_globals(){}
 
-   //! loads a globals file; init=true: load file without actual globals
-   void load(const char *bgname, bool init);
-
    //! returns a list of globals for a given conv slot
    std::vector<Uint8> &get_globals(Uint16 conv)
    {
       if (conv>allglobals.size()) throw ua_ex_globals_access;
       return allglobals[conv];
    }
+
+   // loading / saving / importing
+
+   //! imports a globals file; init=true: load file without actual globals
+   void import(const char *bgname, bool init);
 
 protected:
    //! list with all globals from all conversations

@@ -116,10 +116,9 @@ void ua_underworld::import_savegame(ua_settings &settings,const char *folder,boo
       level.get_mapobjects().import_objs(fd);
 
       levels.push_back(level);
-      fclose(fd);
-
-      return;
    }
+   else
+   {
 
    // read in offsets
    std::vector<Uint32> offsets;
@@ -149,8 +148,18 @@ void ua_underworld::import_savegame(ua_settings &settings,const char *folder,boo
       levels.push_back(level);
    }
 
+   } // end if
    fclose(fd);
+
+   // load conv globals
+   {
+      std::string bgname(settings.uw1_path);
+      bgname.append(folder);
+      bgname.append(initial ? "babglobs.dat" : "bglobals.dat");
+      conv_globals.import(bgname.c_str(),initial);
+   }
 }
+
 
 // ua_level methods
 
