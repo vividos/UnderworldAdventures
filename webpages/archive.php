@@ -1,5 +1,16 @@
 <h2>news archive</h2>
 
+<p>
+Here are listed older news bits that were once on the main news page. They are here for history purposes; note that some links may be outdated.
+</p>
+
+<span class="newsHeading">2003-11-17 - code restructuring</span>
+<p class="newsBody">
+For those of you who keep reloading the uwadv page for months and not a single new release - the project is not dead! In fact there's some major code restructuring going on in the depths of CVS. This gives me the chance to keep the source code structured and maintainable when uwadv is expanding its features. If you're interested in the technical details, head over to the <a href="index.php?page=devlog">developer's log</a> where the daily ongoings are logged.
+</p>
+
+<hr size="1" width="80%"/>
+
 <span class="newsHeading">2003-04-30 - debian package released</span>
 <p class="newsBody">
 Today the first debian binary package is released. In the future both RPM and Debian packages will be released to the Linux community.
