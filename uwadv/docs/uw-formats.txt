@@ -150,7 +150,7 @@ Table of Contents
    XX.voc         all cutscene audio files
    uwXX.xmi       underworld extended midi music
    awXX.xmi       the same, for adlib music (?)
-   sounds.dat
+   sounds.dat     sound effect midi commands (?)
    uw.mt          MT32 sysex data
    uw.ad          adlib stuff
    *.adv          device driver for midi/wave output
@@ -176,6 +176,20 @@ Table of Contents
    bglobals.dat   conversation globals (initialized)
    desc           savegame name
    player.dat     character info
+
+   Here is a list of files that only appear in the uw_demo "data" folder:
+
+   df??.tr        floor textures
+   dmain.byt      main screen
+   dplayer.???    encoded player character info for self-running demo
+   dscript.???    scripts for the self-running demo
+   dterrain.dat   terrain texture properties for the demo
+   dw??.tr        wall textures
+   level13.anx    object animation overlay info
+   level13.st     tilemap and master object list for first level
+   level13.txm    level texture usage for first level
+   newobj.dat
+   presd.byt      "... presents a demo of ..." screen for the demo
 
 
 2.0 Level Map File
@@ -2116,5 +2130,12 @@ Table of Contents
     00E8    Ice walls (crumbling?)
     0080    Lavafall       - UW2
     00F8    Ice            - UW2
+
+8.4 Sound effects
+
+   The file "sounds.dat" in the "sound" folder contains sound effect data.
+   The file starts with an Int8 value that is the number of data entries in
+   the file. Then 5 Int8 bytes for each entry in the file follow.
+   It is supposed that the data may be midi commands to play back the sfx.
 
 eof
