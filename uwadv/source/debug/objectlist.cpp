@@ -43,11 +43,17 @@ const char* ua_objectlist_captions[] =
    "pos",
    "item_id",
    "name",
+   "link",
+   "quality",
+   "owner",
+   "quantity",
+   "enchanted",
+   "is_link",
    "x",
    "y",
    "height",
    "angle",
-   "link",
+   "extra"
 };
 
 unsigned int ua_objectlist_widths[] =
@@ -58,6 +64,10 @@ unsigned int ua_objectlist_widths[] =
    50,
    50,
    50,
+   50,
+   60,
+   50,
+   60,
    60,
    60,
    60,
@@ -78,7 +88,7 @@ END_EVENT_TABLE()
 
 ua_objectlist_ctrl::ua_objectlist_ctrl(wxWindow* parent)
 :wxEditListCtrl(parent, -1, wxDefaultPosition, wxDefaultSize,
-   wxLC_VIRTUAL | wxLC_HRULES | wxLC_VRULES)
+   wxLC_VIRTUAL | wxLC_HRULES | wxLC_VRULES | wxLC_SINGLE_SEL)
 {
    for(unsigned int i=0; i<SDL_TABLESIZE(ua_objectlist_captions); i++)
    {
@@ -96,9 +106,17 @@ ua_objectlist_ctrl::ua_objectlist_ctrl(wxWindow* parent)
 
 void ua_objectlist_ctrl::OnBeginLabelEdit(wxListEvent& event)
 {
+   int column = event.m_item.GetColumn();
+
    // do not allow editing column 0 and 2
-   if (event.m_item.GetColumn()==0 || event.m_item.GetColumn()==2)
+   if (column==0 || column==2 || column==7)
+   {
+      // select new item when clicking on column 0
+      if (column==0)
+         SetItemState(event.m_item.GetId(),wxLIST_STATE_SELECTED,wxLIST_STATE_SELECTED);
+
       event.Veto();
+   }
 }
 
 void ua_objectlist_ctrl::OnEndLabelEdit(wxListEvent& event)
@@ -130,13 +148,16 @@ wxString ua_objectlist_ctrl::OnGetItemText(long item, long column) const
    // get string
    switch(column)
    {
-   case 1:
+   case 1: // item_id
       param2.set(static_cast<unsigned int>(0));
       cmd(udc_objlist_get,level,&param1,&param2);
-      text.Printf("%04x",param1.val.i);
+      if (param1.val.i == 0xffff)
+         text = "none";
+      else
+         text.Printf("%04x",param1.val.i);
       break;
 
-   case 2:
+   case 2: // name
       // get item_id
       param2.set(static_cast<unsigned int>(0));
       cmd(udc_objlist_get,level,&param1,&param2);
@@ -148,7 +169,21 @@ wxString ua_objectlist_ctrl::OnGetItemText(long item, long column) const
       text = param1.val.str;
       break;
 
-   default:
+   case 7: // enchanted
+   case 8: // is_link
+      param2.set(static_cast<unsigned int>(column-2));
+      cmd(udc_objlist_get,level,&param1,&param2);
+      text = param1.val.i == 1 ? "yes" : "no";
+      break;
+
+   case 9:  // x
+   case 10: // y
+      param2.set(static_cast<unsigned int>(column-2));
+      cmd(udc_objlist_get,level,&param1,&param2);
+      text.Printf("%.3f",param1.val.d);
+      break;
+
+   default: // other fields
       param2.set(static_cast<unsigned int>(column-2));
       cmd(udc_objlist_get,level,&param1,&param2);
       text.Printf("%04x",param1.val.i);

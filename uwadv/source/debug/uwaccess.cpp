@@ -162,6 +162,7 @@ unsigned int ua_uw_access_api::command_func(
 
          ua_object& obj = level.get_mapobjects().get_object(static_cast<Uint16>(param1->val.i));
          ua_object_info& objinfo = obj.get_object_info();
+         ua_object_info_ext& extobjinfo = obj.get_ext_object_info();
 
          switch(param2->val.i)
          {
@@ -169,8 +170,46 @@ unsigned int ua_uw_access_api::command_func(
             param1->set(static_cast<unsigned int>(objinfo.item_id));
             break;
 
-         case 1:
+         case 1: // link
             param1->set(static_cast<unsigned int>(objinfo.link));
+            break;
+
+         case 2: // quality
+            param1->set(static_cast<unsigned int>(objinfo.quality));
+            break;
+
+         case 3: // owner
+            param1->set(static_cast<unsigned int>(objinfo.owner));
+            break;
+
+         case 4: // quantity
+            param1->set(static_cast<unsigned int>(objinfo.quantity));
+            break;
+
+         case 5: // enchanted
+            param1->set(static_cast<unsigned int>(objinfo.enchanted?1:0));
+            break;
+
+         case 6: // is_link
+            param1->set(static_cast<unsigned int>(objinfo.is_link));
+            break;
+
+         case 7: // x
+            param1->set(extobjinfo.xpos);
+            break;
+
+         case 8: // y
+            param1->set(extobjinfo.ypos);
+            break;
+
+         case 9: // z
+            param1->set(static_cast<unsigned int>(extobjinfo.zpos));
+            break;
+
+         case 10: // angle
+            param1->set(static_cast<unsigned int>(extobjinfo.dir));
+            break;
+
          }
       }
       break;
