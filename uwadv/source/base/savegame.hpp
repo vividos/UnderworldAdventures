@@ -32,15 +32,12 @@
 #ifndef uwadv_savegame_hpp_
 #define uwadv_savegame_hpp_
 
-// we have zlib compressed savegames
-#define HAVE_ZLIB_SAVEGAME
-
 // needed includes
 #include "settings.hpp"
 
-#ifdef HAVE_ZLIB_SAVEGAME
-#include <zlib.h>
-#endif
+
+// forward typedef
+typedef void* gzFile;
 
 
 // structs
@@ -179,11 +176,7 @@ protected:
 protected:
 
    //! input file
-#ifdef HAVE_ZLIB_SAVEGAME
    gzFile sg;
-#else
-   FILE* sg;
-#endif
 
    //! true when currently saving
    bool saving;
@@ -237,6 +230,9 @@ public:
 
    //! returns true when a quicksave savegame is available
    bool quicksave_avail();
+
+   //! returns quicksave savegame for loading or writing
+   ua_savegame get_quicksave_savegame(bool saving);
 
    //! sets screenshot for next save operation
    void set_save_screenshot(std::vector<Uint32>& image_rgba,

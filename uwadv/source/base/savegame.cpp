@@ -32,6 +32,7 @@
 #include <algorithm>
 #include <iomanip>
 #include <sstream>
+#include <zlib.h>
 
 
 // constants
@@ -57,8 +58,6 @@ Uint32 ua_savegame::get_version()
 {
    return save_version;
 }
-
-#ifdef HAVE_ZLIB_SAVEGAME
 
 Uint8 ua_savegame::read8()
 {
@@ -106,40 +105,6 @@ void ua_savegame::write32(Uint32 value)
    gzwrite(sg,&value,4);
 }
 
-#else // HAVE_ZLIB_SAVEGAME
-
-Uint8 ua_savegame::read8()
-{
-   return fgetc(sg);
-}
-
-Uint16 ua_savegame::read16()
-{
-   return fread16(sg);
-}
-
-Uint32 ua_savegame::read32()
-{
-   return fread32(sg);
-}
-
-void ua_savegame::write8(Uint8 value)
-{
-   fputc(value,sg);
-}
-
-void ua_savegame::write16(Uint16 value)
-{
-   fwrite16(sg,value);
-}
-
-void ua_savegame::write32(Uint32 value)
-{
-   fwrite32(sg,value);
-}
-
-#endif // HAVE_ZLIB_SAVEGAME
-
 void ua_savegame::read_string(std::string& str)
 {
    str.erase();
@@ -179,24 +144,16 @@ void ua_savegame::end_section()
 
 void ua_savegame::close()
 {
-#ifdef HAVE_ZLIB_SAVEGAME
    gzclose(sg);
-#else
-   fclose(sg);
-#endif
 }
 
 void ua_savegame::open(const char* filename, bool issaving)
 {
    saving = issaving;
 
-#ifdef HAVE_ZLIB_SAVEGAME
    sg = gzopen(filename, saving ? "wb" : "rb");
    if (saving)
       gzsetparams(sg,9,Z_DEFAULT_STRATEGY);
-#else
-   sg = fopen(filename, saving ? "wb" : "rb");
-#endif
 
    // read or write header
    begin_section("header");
@@ -286,6 +243,9 @@ ua_savegames_manager::ua_savegames_manager()
 
 void ua_savegames_manager::init(ua_settings& settings)
 {
+   // print zlib version
+   ua_trace("savegames manager is using zlib %s\n", ZLIB_VERSION);
+
    savegame_folder = settings.get_string(ua_setting_savegame_folder);
    game_prefix = settings.get_string(ua_setting_game_prefix);
 
@@ -423,6 +383,33 @@ bool ua_savegames_manager::quicksave_avail()
 
    // check if quicksave savegame file is available
    return ua_file_exists(quicksave_name.c_str());
+}
+
+ua_savegame ua_savegames_manager::get_quicksave_savegame(bool saving)
+{
+   std::string quicksave_name(savegame_folder);
+   quicksave_name.append("quicksave.uas");
+
+   ua_savegame sg;
+
+   if (saving)
+   {
+      // set up infos
+      ua_savegame_info& info = sg.get_savegame_info();
+      info.title = "Quicksave Savegame";
+      info.game_prefix = game_prefix;
+      info.type = 0;
+
+      // set preview image data
+      info.image_rgba.clear();
+      info.image_rgba = image_savegame;
+      info.image_xres = image_xres;
+      info.image_yres = image_yres;
+   }
+
+   // open for loading/saving
+   sg.open(quicksave_name.c_str(),saving);
+   return sg;
 }
 
 void ua_savegames_manager::set_save_screenshot(
