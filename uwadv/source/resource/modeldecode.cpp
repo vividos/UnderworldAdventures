@@ -28,6 +28,7 @@
 // needed includes
 #include "common.hpp"
 #include "models.hpp"
+#include "models_impl.hpp"
 #include "renderer.hpp"
 #include "fread_endian.hpp"
 #include "uamath.hpp"
@@ -125,7 +126,8 @@ void ua_mdl_store_vertex(const ua_vector3d& vertex, Uint16 vertno,
 
 void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
    std::vector<ua_vector3d>& vertex_list,
-   std::vector<ua_triangle3d_textured>& tri_list)
+   std::vector<int>& vertex_indices,
+   std::vector<unsigned char>& face_colors)
 {
    // parse node until end node
    bool loop = true;
@@ -293,32 +295,18 @@ void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
          {
             Uint16 nvert = fread16(fd);
 
-            // read first two vertices
-            Uint16 vertno0 = ua_mdl_read_vertno(fd);
-            Uint16 vertno1 = ua_mdl_read_vertno(fd);
-
-            ua_triangle3d_textured tri;
-
-            // base point is the same for all triangles of the triangle
-            tri.set(0,vertex_list[vertno0].x,vertex_list[vertno0].y,
-               vertex_list[vertno0].z, 0.0,0.0);
-
-            for(Uint16 n=2; n<nvert; n++)
+            for(Uint16 i=0; i<nvert; i++)
             {
-               vertno = ua_mdl_read_vertno(fd);
-
-               // generate two other coordinates
-               tri.set(1,vertex_list[vertno1].x,vertex_list[vertno1].y,
-                  vertex_list[vertno1].z, 0.0,0.0);
-
-               tri.set(2,vertex_list[vertno].x,vertex_list[vertno].y,
-                  vertex_list[vertno].z, 0.0,0.0);
-
-               // insert triangle
-               tri_list.push_back(tri);
-
-               vertno1 = vertno;
+               Uint16 vertno = ua_mdl_read_vertno(fd);
+               vertex_indices.push_back(vertno);
             }
+
+            vertex_indices.push_back(-1);
+
+            // do color indices
+            face_colors.push_back(0xff);
+            face_colors.push_back(0x00);
+            face_colors.push_back(0x00);
          }
          break;
 
@@ -327,45 +315,26 @@ void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
          {
             // read texture number
             if (cmd==M3_UW_TEXTURE_FACE)
-               fread16(fd);
+               fread16(fd); // texture number?
 
             Uint16 nvert = fread16(fd);
 
-            // read first two vertices
-            Uint16 vertno0 = ua_mdl_read_vertno(fd);
-            double u0 = ua_mdl_read_fixed(fd);
-            double v0 = ua_mdl_read_fixed(fd);
-
-            Uint16 vertno1 = ua_mdl_read_vertno(fd);
-            double u1 = ua_mdl_read_fixed(fd);
-            double v1 = ua_mdl_read_fixed(fd);
-
-            ua_triangle3d_textured tri;
-
-            // base point is the same for all triangles of the triangle
-            tri.set(0,vertex_list[vertno0].x,vertex_list[vertno0].y,
-               vertex_list[vertno0].z, u0, v0);
-
-            for(Uint16 n=2; n<nvert; n++)
+            for(Uint16 i=0; i<nvert; i++)
             {
-               vertno = ua_mdl_read_vertno(fd);
-               double u = ua_mdl_read_fixed(fd);
-               double v = ua_mdl_read_fixed(fd);
+               Uint16 vertno = ua_mdl_read_vertno(fd);
+               vertex_indices.push_back(vertno);
 
-               // generate two other coordinates
-               tri.set(1,vertex_list[vertno1].x,vertex_list[vertno1].y,
-                  vertex_list[vertno1].z, u1,v1);
-
-               tri.set(2,vertex_list[vertno].x,vertex_list[vertno].y,
-                  vertex_list[vertno].z, u,v);
-
-               // insert triangle
-               tri_list.push_back(tri);
-
-               vertno1 = vertno;
-               u1 = u;
-               v1 = v;
+               double u0 = ua_mdl_read_fixed(fd);
+               double v0 = ua_mdl_read_fixed(fd);
             }
+
+            vertex_indices.push_back(-1);
+
+            // do color indices
+            face_colors.push_back(0x00);
+            face_colors.push_back(0x00);
+            face_colors.push_back(0xff);
+
          }
          break;
 
@@ -394,11 +363,11 @@ void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
 
             // parse left nodes
             fseek(fd,left,SEEK_SET);
-            ua_model_parse_node(fd,origin,vertex_list,tri_list);
+            ua_model_parse_node(fd,origin,vertex_list,vertex_indices,face_colors);
 
             // parse right nodes
             fseek(fd,right,SEEK_SET);
-            ua_model_parse_node(fd,origin,vertex_list,tri_list);
+            ua_model_parse_node(fd,origin,vertex_list,vertex_indices,face_colors);
 
             // return to "here"
             fseek(fd,here,SEEK_SET);
@@ -445,12 +414,41 @@ void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
          break;
 
       case M3_UW_FACE_SHORT: // 00A0 ??? shorthand face definition
-         vertno = ua_mdl_read_vertno(fd);
-         unk1 = fgetc(fd);
-         unk1 = fgetc(fd);
-         unk1 = fgetc(fd);
-         unk1 = fgetc(fd);
-         // TODO generate triangles
+         {
+            vertno = ua_mdl_read_vertno(fd);
+
+            for(Uint16 i=0; i<4; i++)
+            {
+               Uint8 vertno = fgetc(fd);
+               vertex_indices.push_back(vertno);
+            }
+
+            vertex_indices.push_back(-1);
+
+            // do color indices
+            face_colors.push_back(0x00);
+            face_colors.push_back(0xff);
+            face_colors.push_back(0x00);
+         }
+         break;
+
+      case 0x00d2: // 00D2 ??? shorthand face definition
+         {
+            vertno = ua_mdl_read_vertno(fd);
+
+            for(Uint16 i=0; i<4; i++)
+            {
+               Uint8 vertno = fgetc(fd);
+               vertex_indices.push_back(vertno);
+            }
+
+            vertex_indices.push_back(-1);
+
+            // do color indices
+            face_colors.push_back(0x00);
+            face_colors.push_back(0xff);
+            face_colors.push_back(0xff);
+         }
          break;
 
       case M3_UW_FACE_UNK16: // 0016 ???
@@ -536,6 +534,8 @@ bool ua_model_decode_builtins(const char* filename,
       double ey = ua_mdl_read_fixed(fd);
       double ez = ua_mdl_read_fixed(fd);
 
+      ua_vector3d extents(ex,ez,ey);
+
       //ua_trace(" loading builtin model %u, offset=0x%08x {unk1=0x%04x, e=(%3.2f, %3.2f, %3.2f) }\n",
       //   n,base + offsets[n],unk1,ex,ey,ez);
 
@@ -544,7 +544,14 @@ bool ua_model_decode_builtins(const char* filename,
       // parse root node
       //std::vector<ua_vector3d> vertex_list;
       //ua_model_parse_node(fd,vertex_list,model.get_triangles());
-      ua_model_parse_node(fd,model->origin,model->coords,model->alltriangles);
+      ua_model_parse_node(fd,
+         model->origin,
+         model->coords,
+         model->coord_index,
+         model->face_colors);
+
+      model->origin.z -= extents.z/2.0;
+      model->extents = extents;
 
       // insert model
       ua_model3d_ptr model_ptr(model);
