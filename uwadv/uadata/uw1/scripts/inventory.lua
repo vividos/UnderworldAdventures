@@ -126,43 +126,43 @@ end
 -- categorizes item by item id
 function lua_inventory_categorize_item(item_id)
 
-   type = inv_cat_normal
+   type = lua_inv_cat_normal
 
    -- ring item; [0x0033; 0x003a] / { 0x0037 }
    if item_id >= 3*16+3 and item_id <= 3*16+10 and item_id ~= 3*16+7
    then
-      type = inv_cat_ring
+      type = lua_inv_cat_ring
    end
 
    -- head item; [0x002c; 0x002e] and [0x0030; 0x0032]
    if (item_id >= 2*16+12 and item_id <= 2*16+14) or
       (item_id >= 3*16+0 and item_id <= 3*16+2)
    then
-      type = inv_cat_head
+      type = lua_inv_cat_head
    end
 
    -- chest item; [0x0020; 0x0022]
    if item_id >= 2*16+0 and item_id <= 2*16+2
    then
-      type = inv_cat_chest
+      type = lua_inv_cat_chest
    end
 
    -- hands item; [0x0026; 0x0028]
    if item_id >= 2*16+6 and item_id <= 2*16+8
    then
-      type = inv_cat_hands
+      type = lua_inv_cat_hands
    end
 
    -- legs item; [0x0023; 0x0025]
    if item_id >= 2*16+3 and item_id <= 2*16+5
    then
-      type = inv_cat_legs
+      type = lua_inv_cat_legs
    end
 
    -- feet item; [0x0029; 0x002b] and { 0x002f }
    if (item_id >= 2*16+9 and item_id <= 2*16+11) or item_id == 2*16+15
    then
-      type = inv_cat_feet
+      type = lua_inv_cat_feet
    end
 
    return type
