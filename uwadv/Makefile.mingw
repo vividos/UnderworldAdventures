@@ -49,7 +49,7 @@ LDFLAGS = -mwindows -s
 #
 
 
-all: uwadv tools
+all: uwadv tools data
 
 
 # lua objects
