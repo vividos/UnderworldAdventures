@@ -28,13 +28,13 @@
 // needed includes
 #include "common.hpp"
 #include "texture.hpp"
-#include <cmath>
 
 
 // ua_texture methods
 
-void ua_texture::init(ua_texture_manager *the_texmgr,unsigned int numtex,
-   GLenum the_min_filt, GLenum the_max_filt, GLenum the_wrap_s, GLenum the_wrap_t)
+void ua_texture::init(ua_texture_manager* the_texmgr,unsigned int numtex,
+   GLenum the_min_filt, GLenum the_max_filt,
+   GLenum the_wrap_s, GLenum the_wrap_t)
 {
    done();
 
@@ -46,25 +46,23 @@ void ua_texture::init(ua_texture_manager *the_texmgr,unsigned int numtex,
    wrap_s = the_wrap_s;
    wrap_t = the_wrap_t;
 
-   last_used_tex_idx = (unsigned)-1;
-
    // create texture names
    texname.resize(numtex,0);
    if (numtex>0)
       glGenTextures(numtex,&texname[0]);
 }
 
-void ua_texture::convert(ua_image &img,unsigned int numtex)
+void ua_texture::convert(ua_image& img,unsigned int numtex)
 {
    if (texmgr==NULL || img.get_palette()>=8) return;
 
    convert(texmgr->get_palette(img.get_palette()),img,numtex);
 }
 
-void ua_texture::convert(ua_onepalette &pal, ua_image &img,
+void ua_texture::convert(ua_onepalette& pal, ua_image& img,
    unsigned int numtex)
 {
-   Uint8 *pix = &img.get_pixels()[0];
+   Uint8* pix = &img.get_pixels()[0];
 
    unsigned int origx = img.get_xres();
    unsigned int origy = img.get_yres();
@@ -72,8 +70,8 @@ void ua_texture::convert(ua_onepalette &pal, ua_image &img,
    convert(pix,origx,origy,pal,numtex);
 }
 
-void ua_texture::convert(Uint8 *pix, unsigned int origx, unsigned int origy,
-   ua_onepalette &pal, unsigned int numtex)
+void ua_texture::convert(Uint8* pix, unsigned int origx, unsigned int origy,
+   ua_onepalette& pal, unsigned int numtex)
 {
    // only do resolution determination for the first texture
    if (numtex==0 || xres==0 || yres==0)
@@ -92,12 +90,12 @@ void ua_texture::convert(Uint8 *pix, unsigned int origx, unsigned int origy,
    }
 
    // convert color indices to 32-bit texture
-   Uint32 *palptr = reinterpret_cast<Uint32*>(&pal);
-   Uint32 *texptr = &texels[numtex*xres*yres];
+   Uint32* palptr = reinterpret_cast<Uint32*>(&pal);
+   Uint32* texptr = &texels[numtex*xres*yres];
 
    for(unsigned int y=0; y<origy; y++)
    {
-      Uint32 *texptr2 = &texptr[y*xres];
+      Uint32* texptr2 = &texptr[y*xres];
       for(unsigned int x=0; x<origx; x++)
          *texptr2++ = palptr[pix[y*origx+x]];
    }
@@ -133,8 +131,6 @@ void ua_texture::use(unsigned int numtex)
    if (numtex>=texname.size())
       return; // invalid texture index
 
-   last_used_tex_idx = numtex;
-
    // invalidates currently used texture
    if (texmgr == NULL || texmgr->using_new_texname(texname[numtex]))
    {
@@ -149,9 +145,11 @@ void ua_texture::use(unsigned int numtex)
    }
 }
 
-void ua_texture::upload(bool mipmaps)
+void ua_texture::upload(unsigned int numtex, bool mipmaps)
 {
-   Uint32 *tex = &texels[last_used_tex_idx*xres*yres];
+   use(numtex);
+
+   Uint32* tex = &texels[numtex*xres*yres];
 
    if (mipmaps)
    {
@@ -191,7 +189,6 @@ const Uint32* ua_texture::get_texels(unsigned int numtex)
 
 ua_texture_manager::ua_texture_manager()
 {
-   stocktex_count[0]=stocktex_count[1]=0;
 }
 
 ua_texture_manager::~ua_texture_manager()
@@ -203,12 +200,12 @@ void ua_texture_manager::reset()
 {
    glBindTexture(GL_TEXTURE_2D,0);
 
-   // delete all stock textures
-   stocktex[0].done();
-   stocktex[1].done();
-   stocktex[0].init(this,stocktex_count[0],GL_LINEAR,GL_NEAREST_MIPMAP_LINEAR,GL_CLAMP,GL_REPEAT);
-   stocktex[1].init(this,stocktex_count[1],GL_LINEAR,GL_NEAREST_MIPMAP_LINEAR,GL_REPEAT,GL_REPEAT);
-   last_texname = 0;
+   // call "done" for all stock textures
+   unsigned int max = stock_textures.size();
+   for(unsigned int i=0; i<max; i++)
+      stock_textures[i].done();
+
+   last_texname = (GLuint)-1;
 }
 
 void ua_texture_manager::prepare(unsigned int idx)
@@ -216,48 +213,41 @@ void ua_texture_manager::prepare(unsigned int idx)
    if (idx>=allstocktex_imgs.size())
       return; // not a valid index
 
-   unsigned int stock = 0;
-   unsigned int stockidx = idx;
-   if (idx>=ua_tex_stock_floor)
-   {
-      stockidx -= ua_tex_stock_floor;
-      stock = 1;
-   }
+   unsigned int pal_max = stock_animinfo[idx].second > 0;
+   if (pal_max<1)
+      return; // not an available texture
 
-   // convert to texture object
-   stocktex[stock].convert(allstocktex_imgs.get_image(idx),stockidx);
-   stocktex[stock].use(stockidx);
-   stocktex[stock].upload(true); // upload texture with mipmaps
+   stock_textures[idx].init(this,pal_max,
+      GL_LINEAR,GL_NEAREST_MIPMAP_LINEAR,GL_CLAMP,GL_REPEAT);
+
+   if (pal_max==1)
+   {
+      // unanimated texture
+      // convert to texture object
+      stock_textures[idx].convert(allstocktex_imgs.get_image(idx),0);
+      stock_textures[idx].upload(0,true); // upload texture with mipmaps
+   }
+   else
+   {
+      // animated texture
+      // TODO upload
+      ;
+   }
 }
 
 void ua_texture_manager::use(unsigned int idx)
 {
-   if (idx>=allstocktex_imgs.size())
+   if (idx>=stock_textures.size())
       return; // not a valid index
 
-   unsigned int stock=0;
-   if (idx>=ua_tex_stock_floor)
-   {
-      idx -= ua_tex_stock_floor;
-      stock = 1;
-   }
-
-   stocktex[stock].use(idx);
+   stock_textures[idx].use();
 }
 
-void ua_texture_manager::object_tex(Uint16 id,double &u1,double &v1,double &u2,double &v2)
+void ua_texture_manager::object_tex(Uint16 id,double& u1,double& v1,double& u2,double& v2)
 {
-   // select texture
-   objtex.use(id<0x100 ? 0 : 1);
-
-   // calculate texture coordinates
-   double delta = 1.0/256;
-
-   u1 = ((id&0x0f)<<4)*delta;
-   v1 = (id&0xf0)*delta;
-
-   u2 = (((id&0x0f)<<4)+16)*delta;
-   v2 = ((id&0xf0)+16)*delta;
+   obj_textures.use(id);
+   u1 = v1 = 0.0;
+   u2 = v2 = 1.0;
 }
 
 bool ua_texture_manager::using_new_texname(GLuint new_texname)
@@ -269,7 +259,7 @@ bool ua_texture_manager::using_new_texname(GLuint new_texname)
    return true;
 }
 
-void ua_texture_manager::stock_to_external(unsigned int idx, ua_texture &tex)
+void ua_texture_manager::stock_to_external(unsigned int idx, ua_texture& tex)
 {
    tex.convert(allstocktex_imgs.get_image(idx),0);
 }

@@ -31,13 +31,6 @@
 #include "fread_endian.hpp"
 
 
-#undef DEV_EXPORT_OBJTEXS
-
-#ifdef DEV_EXPORT_OBJTEXS
-#include "../../hacking/hacking.h"
-#endif
-
-
 // extern texture import functions
 
 extern void ua_import_tga(SDL_RWops* rwops, unsigned int& xres, unsigned int& yres,
@@ -62,7 +55,7 @@ void ua_texture::load(SDL_RWops* rwops)
 
 // ua_texture_manager methods
 
-void ua_texture_manager::init(ua_settings &settings)
+void ua_texture_manager::init(ua_settings& settings)
 {
    // load palettes
    {
@@ -88,6 +81,31 @@ void ua_texture_manager::init(ua_settings &settings)
          settings.get_gametype() == ua_game_uw1 ? "data/f32.tr" : "data/df32.tr");
       load_textures(ua_tex_stock_floor,floortexfname.c_str());
 
+      // load switches/levers/pull chains
+      {
+         ua_image_list il;
+         il.load(settings,"tmflat");
+
+         load_imgtextures(ua_tex_stock_switches,il);
+      }
+
+      // load door textures
+      {
+         ua_image_list il;
+         il.load(settings,"doors");
+
+         load_imgtextures(ua_tex_stock_door,il);
+      }
+
+      // load tmobj textures
+      {
+         ua_image_list il;
+         il.load(settings,"tmobj");
+
+         load_imgtextures(ua_tex_stock_tmobj,il);
+      }
+
+
       // init stock texture objects
       reset();
    }
@@ -104,10 +122,7 @@ void ua_texture_manager::init(ua_settings &settings)
       reset();
    }
 
-   // load object texture graphics
-   if (settings.get_gametype() == ua_game_uw1 ||
-       settings.get_gametype() == ua_game_uw2 ||
-       settings.get_gametype() == ua_game_uw_demo)
+   // load object sprite textures
    {
       // load image list
       ua_image_list il;
@@ -117,89 +132,25 @@ void ua_texture_manager::init(ua_settings &settings)
       if (il.size()<460)
          throw ua_exception("expected 460 images in data/objects.gr");
 
-      // create object textures
-      ua_image part1,part2;
-      part1.create(256,256);
-      part2.create(256,256);
+      // copy images to object textures
+      obj_textures.init(this,il.size());
 
-      // create first texture
-      Uint16 id;
-      for(id=0; id<256; id++)
+      unsigned int max = il.size();
+      for(unsigned int id=0; id<max; id++)
       {
-         // objects 218 thru 223 have different size
-         if (id<218 || id>=224)
-            part1.paste_image(il.get_image(id),(id&0x0f)<<4,id&0xf0);
+         // objects [218..223] and 302 have different sizes
+         if ((id>=218 && id<=223) || id==302 )
+            continue;
+
+         obj_textures.convert(il.get_image(id),id);
+         obj_textures.upload(id);
       }
-
-      // create first texture
-      for(id=0; id<(460-256); id++)
-      {
-         if (id!=(302-256))
-            part2.paste_image(il.get_image(id+256),(id&0x0f)<<4,id&0xf0);
-      }
-
-      // TODO paste images 218 to 223 and 302 into remaining space
-
-      // convert to textures
-      objtex.init(this,2,GL_LINEAR,GL_LINEAR);
-      objtex.convert(part1,0);
-      objtex.convert(part2,1);
-
-#ifdef DEV_EXPORT_OBJTEXS
-
-      Uint32 tex[256*256];
-
-      memcpy(tex,objtex.get_texels(0),256*256*4);
-
-      for(int i=0; i<256*256; i++)
-      {
-         if (tex[i]==0x00040000)
-            tex[i] = 0x00ffffff;
-         else
-         {
-            Uint8* texel = reinterpret_cast<Uint8*>(&tex[i]);
-            Uint8 temp = texel[0];
-            texel[0] = texel[2];
-            texel[2] = temp;
-         }
-      }
-
-      FILE* fd = fopen("objtex00.tga","wb");
-      tga_writeheader(fd,256,256);
-      fwrite(tex,256*256,4,fd);
-      fclose(fd);
-
-      memcpy(tex,objtex.get_texels(1),256*256*4);
-
-      for(i=0; i<256*256; i++)
-      {
-         if (tex[i]==0x00040000)
-            tex[i] = 0x00ffffff;
-         else
-         {
-            Uint8* texel = reinterpret_cast<Uint8*>(&tex[i]);
-            Uint8 temp = texel[0];
-            texel[0] = texel[2];
-            texel[2] = temp;
-         }
-      }
-
-      fd = fopen("objtex01.tga","wb");
-      tga_writeheader(fd,256,256);
-      fwrite(tex,256*256,4,fd);
-      fclose(fd);
-
-#endif
-
-      // prepare textures
-      objtex.use(0); objtex.upload(false);
-      objtex.use(1); objtex.upload(false);
    }
 }
 
-void ua_texture_manager::load_textures(unsigned int startidx, const char *texfname)
+void ua_texture_manager::load_textures(unsigned int startidx, const char* texfname)
 {
-   FILE *fd = fopen(texfname,"rb");
+   FILE* fd = fopen(texfname,"rb");
    if (fd==NULL)
    {
       std::string text("could not open texture file: ");
@@ -219,15 +170,21 @@ void ua_texture_manager::load_textures(unsigned int startidx, const char *texfna
    Uint16 entries = fread16(fd);
 
    // reserve needed entries
-   allstocktex_imgs.get_allimages().resize(startidx+entries);
-   stocktex_count[startidx==ua_tex_stock_wall ? 0 : 1] = entries;
+   if (startidx+entries>stock_textures.size())
+   {
+      allstocktex_imgs.get_allimages().resize(startidx+entries);
+      stock_textures.resize(startidx+entries);
+      stock_animinfo.resize(startidx+entries,
+         std::make_pair<unsigned int, unsigned int>(0,0));
+   }
 
    // read in all offsets
    std::vector<Uint32> offsets(entries);
-   for(int i=0; i<entries; i++) offsets[i] = fread32(fd);
+   for(unsigned int i=0; i<entries; i++)
+      offsets[i] = fread32(fd);
 
    // read in all textures
-   for(int tex=0; tex<entries; tex++)
+   for(unsigned int tex=0; tex<entries; tex++)
    {
       if (offsets[tex]>=flen)
          continue;
@@ -239,9 +196,11 @@ void ua_texture_manager::load_textures(unsigned int startidx, const char *texfna
       unsigned int datalen = xyres*xyres;
 
       // create new image
-      ua_image &teximg = allstocktex_imgs.get_image(startidx+tex);
+      ua_image& teximg = allstocktex_imgs.get_image(startidx+tex);
       teximg.create(xyres,xyres);
-      Uint8 *pixels = &teximg.get_pixels()[0];
+      Uint8* pixels = &teximg.get_pixels()[0];
+
+      stock_animinfo[startidx+tex].second = 1; // we have one texture
 
       unsigned int idx = 0;
       while(datalen>0)
@@ -256,9 +215,28 @@ void ua_texture_manager::load_textures(unsigned int startidx, const char *texfna
    fclose(fd);
 }
 
-void ua_texture_manager::load_palettes(const char *allpalname)
+void ua_texture_manager::load_imgtextures(unsigned int startidx,
+   ua_image_list& il)
 {
-   FILE *fd = fopen(allpalname,"rb");
+   unsigned int max = il.size();
+
+   // reserve needed entries
+   if (startidx+max>stock_textures.size())
+   {
+      allstocktex_imgs.get_allimages().resize(startidx+max);
+      stock_textures.resize(startidx+max);
+      stock_animinfo.resize(startidx+max,
+         std::make_pair<unsigned int, unsigned int>(0,1));
+   }
+
+   // copy images
+   for(unsigned int i=0; i<max; i++)
+      allstocktex_imgs.get_image(startidx+i) = il.get_image(i);
+}
+
+void ua_texture_manager::load_palettes(const char* allpalname)
+{
+   FILE* fd = fopen(allpalname,"rb");
    if (fd==NULL)
    {
       std::string text("could not open file ");

@@ -29,8 +29,8 @@
 
    ua_texture::init() allocates texture names from OpenGL
    ua_texture::convert() converts image pixels to 32-bit texture data
-   ua_texture::use() activates a texture name for use, e.g. upload or rendering
-   ua_texture::upload() uploads converted texture to the graphics card
+   ua_texture::use() activates a texture name for use in rendering
+   ua_texture::upload() uploads a converted texture to the graphics card
    ua_texture::done() deletes the used texture names
 
    note: texture size for multiple textures is calculated when convert()ing
@@ -39,8 +39,8 @@
 */
 
 // include guard
-#ifndef __uwadv_texture_hpp_
-#define __uwadv_texture_hpp_
+#ifndef uwadv_texture_hpp_
+#define uwadv_texture_hpp_
 
 // needed includes
 #include <vector>
@@ -54,6 +54,12 @@
 const unsigned int ua_tex_stock_wall = 0x0000;
 //! start of stock floor textures
 const unsigned int ua_tex_stock_floor = 0x0100;
+//! switch/lever/pull chain textures
+const unsigned int ua_tex_stock_switches = 0x0200;
+//! door textures
+const unsigned int ua_tex_stock_door = 0x0210;
+//! tmobj textures
+const unsigned int ua_tex_stock_tmobj = 0x0220;
 
 
 // typedefs
@@ -81,14 +87,14 @@ public:
       GLenum wrap_s=GL_CLAMP_TO_EDGE, GLenum wrap_t=GL_CLAMP_TO_EDGE);
 
    //! converts image to texture
-   void convert(ua_image &img, unsigned int numtex=0);
+   void convert(ua_image& img, unsigned int numtex=0);
 
    //! converts image with custom palette to texture
-   void convert(ua_onepalette &pal, ua_image &img, unsigned int numtex=0);
+   void convert(ua_onepalette& pal, ua_image& img, unsigned int numtex=0);
 
    //! convert image pixels to texture
-   void convert(Uint8 *pix, unsigned int origx, unsigned int origy,
-      ua_onepalette &pal, unsigned int numtex);
+   void convert(Uint8* pix, unsigned int origx, unsigned int origy,
+      ua_onepalette& pal, unsigned int numtex);
 
    //! convert 32-bit RGBA values to texture
    void convert(unsigned int xres, unsigned int yres, Uint32* pix,
@@ -101,7 +107,7 @@ public:
    void use(unsigned int numtex=0);
 
    //! uploads a converted texture to OpenGL
-   void upload(bool mipmaps=false);
+   void upload(unsigned int numtex=0, bool mipmaps=false);
 
    //! returns u texture coordinate
    double get_tex_u() const;
@@ -125,16 +131,13 @@ public:
 
 protected:
    //! pointer to texture manager, or NULL if none available
-   ua_texture_manager *texmgr;
+   ua_texture_manager* texmgr;
 
    //! upper left texture coordinates
    double u,v;
 
    //! x and y resolution of the texture
    unsigned int xres,yres;
-
-   //! texture index last use()d
-   unsigned int last_used_tex_idx;
 
    //! texture pixels for all images
    std::vector<Uint32> texels;
@@ -160,7 +163,7 @@ public:
    ~ua_texture_manager();
 
    //! initializes texture manager; loads stock textures
-   void init(ua_settings &settings);
+   void init(ua_settings& settings);
 
    //! resets usage of stock textures in OpenGL
    void reset();
@@ -169,13 +172,13 @@ public:
    void prepare(unsigned int idx);
 
    //! prepares an external texture for usage in OpenGL
-   void prepare(ua_texture &tex);
+   void prepare(ua_texture& tex);
 
    //! use a stock texture in OpenGL
    void use(unsigned int idx);
 
    //! prepares texture for object drawing
-   void object_tex(Uint16 id,double &u1,double &v1,double &u2,double &v2);
+   void object_tex(Uint16 id,double& u1,double& v1,double& u2,double& v2);
 
    //! returns a specific palette
    ua_onepalette &get_palette(unsigned int pal);
@@ -184,14 +187,17 @@ public:
    bool using_new_texname(GLuint new_texname);
 
    //! converts stock texture to external one
-   void stock_to_external(unsigned int idx, ua_texture &tex);
+   void stock_to_external(unsigned int idx, ua_texture& tex);
 
 private:
    //! loads textures from file
-   void load_textures(unsigned int startidx, const char *texfname);
+   void load_textures(unsigned int startidx, const char* texfname);
+
+   //! loads textures from image list
+   void load_imgtextures(unsigned int startidx, ua_image_list& il);
 
    //! loads all palettes
-   void load_palettes(const char *allpalname);
+   void load_palettes(const char* allpalname);
 
 protected:
    //! last bound texture name
@@ -200,14 +206,14 @@ protected:
    //! image list of all stock textures
    ua_image_list allstocktex_imgs;
 
-   //! count of stock textures
-   unsigned int stocktex_count[2];
-
    //! stock textures
-   ua_texture stocktex[2];
+   std::vector<ua_texture> stock_textures;
 
-   //! object textures
-   ua_texture objtex;
+   //! infos about current/max texture frame for all stock textures
+   std::vector<std::pair<unsigned int, unsigned int> > stock_animinfo;
+
+   //! object sprite textures
+   ua_texture obj_textures;
 
    //! all main palettes
    ua_onepalette allpals[8];
