@@ -201,7 +201,28 @@ void ua_conversation_screen::done()
 void ua_conversation_screen::handle_event(SDL_Event &event)
 {
    if (scroll_menu.handle_event(event) || scroll_conv.handle_event(event))
+   {
+      // in user input mode?
+      if (state == ua_state_wait_input)
+      {
+         // check if string was given
+         std::string answer;
+         if (scroll_menu.is_input_done(answer))
+         {
+            result_register = alloc_string(answer);
+
+            // continue processing
+            state = ua_state_running;
+
+            // clear menu scroll
+            scroll_menu.clear_scroll();
+
+            wait_count = answer_wait_time * core->get_tickrate();
+         }
+      }
+
       return;
+   }
 
    switch(event.type)
    {
@@ -358,14 +379,15 @@ void ua_conversation_screen::imported_func(const std::string& funcname)
 
    if (funcname.compare("babl_menu")==0)
    {
+      // get pointer to list
       argpos = stack.at(argpos);
+
+      answer_values.clear();
+      answer_string_ids.clear();
+      scroll_menu.clear_scroll();
 
       unsigned int ask_count = 0;
       Uint16 arg = stack.at(argpos++);
-      answer_values.clear();
-      answer_string_ids.clear();
-
-      scroll_menu.clear_scroll();
 
       while (arg!=0)
       {
@@ -395,6 +417,46 @@ void ua_conversation_screen::imported_func(const std::string& funcname)
 
    if (funcname.compare("babl_fmenu")==0)
    {
+      // get pointer to the two lists
+      Uint16 argpos1 = stack.at(argpos--);
+      Uint16 argpos2 = stack.at(argpos);
+
+      answer_values.clear();
+      answer_string_ids.clear();
+      scroll_menu.clear_scroll();
+
+      unsigned int ask_count = 0;
+      Uint16 arg1 = stack.at(argpos1++);
+      Uint16 arg2 = stack.at(argpos2++);
+
+      while (arg1!=0)
+      {
+         if (arg2!=0)
+         {
+            ask_count++;
+
+            // format menu entry string
+            std::ostringstream buffer;
+            buffer << ask_count << ". " << localstrings[arg1] << std::ends;
+
+            std::string menuentry(buffer.str());
+            replace_placeholder(menuentry);
+
+            // print menu entry
+            scroll_menu.print(menuentry.c_str());
+
+            // remember answer value/string id
+            answer_values.push_back(arg1);
+            answer_string_ids.push_back(arg1);
+         }
+
+         // get next arguments
+         arg1 = stack.at(argpos1++);
+         arg2 = stack.at(argpos2++);
+      }
+
+      state = ua_state_wait_menu;
+
    } else
 
    if (funcname.compare("print")==0)
@@ -409,12 +471,64 @@ void ua_conversation_screen::imported_func(const std::string& funcname)
 
    } else
 
+   if (funcname.compare("babl_ask")==0)
+   {
+      // start user input mode
+      scroll_menu.clear_scroll();
+      scroll_menu.print(">");
+      scroll_menu.enter_input_mode();
+
+      state = ua_state_wait_input;
+
+   } else
+
+   if (funcname.compare("compare")==0)
+   {
+   } else
+
+   if (funcname.compare("random")==0)
+   {
+   } else
+
+   if (funcname.compare("contains")==0)
+   {
+      // get arguments
+      Uint16 arg1 = stack.at(argpos--);
+      arg1 = stack.at(arg1);
+
+      Uint16 arg2 = stack.at(argpos);
+      arg2 = stack.at(arg2);
+
+      // get strings
+      std::string str1(localstrings[arg1]), str2(localstrings[arg2]);
+
+      ua_str_lowercase(str1);
+      ua_str_lowercase(str2);
+
+      // check if first string contains second
+      result_register = str1.find(str2) != std::string::npos;
+
+   } else
+
+   if (funcname.compare("length")==0)
+   {
+      // get argument
+      Uint16 arg = stack.at(argpos--);
+      arg = stack.at(arg);
+
+      // return string length
+      result_register = localstrings[arg].size();
+
+   } else
+
    if (funcname.compare("get_quest")==0)
    {
       Uint16 arg = stack.at(argpos--);
       arg = stack.at(arg);
 
       result_register = core->get_underworld().get_questflags()[arg];
+
+      ua_trace("get_quest[%u] = %u\n",arg,result_register);
 
    } else
 
@@ -427,6 +541,8 @@ void ua_conversation_screen::imported_func(const std::string& funcname)
       arg2 = stack.at(arg2);
 
       core->get_underworld().get_questflags()[arg2] = arg1;
+
+      ua_trace("set_quest[%u] = %u\n",arg2,arg1);
    
    } else
 
