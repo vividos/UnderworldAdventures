@@ -249,7 +249,7 @@ function repos_player(newlevel)
    player_set_pos( newx, newy )
    player_set_height( newz )
 
-   print( " changing to level " .. newlevel .. ", player position to x = " ..
+   print( " changing to level " .. newlevel+1 .. ", player position to x = " ..
       newx .. ", y = " .. newy .. " and z = " .. newz )
 
 end
