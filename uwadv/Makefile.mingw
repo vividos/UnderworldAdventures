@@ -119,7 +119,8 @@ uwadv_LDFLAGS = -mconsole
 cnvdbg_EXEC = cnvdbg.exe
 
 cnvdbg_OBJS = source/tools/cnvdbg.o source/conv/codevm.o \
-	source/resource/codeloader.o source/resource/gamestrings.o
+	source/resource/codeloader.o source/resource/gamestrings.o \
+	source/settings.o
 
 cnvdbg_LIBS = -lmingw32 -lkernel32 -luser32 \
 	$(SDL_LIB) $(STLPORT_LIB)
@@ -132,7 +133,8 @@ cnvdbg_LDFLAGS = -mconsole
 cnvdasm_EXEC = cnvdasm.exe
 
 cnvdasm_OBJS = source/tools/cnvdasm.o source/conv/codevm.o \
-	source/resource/codeloader.o source/resource/gamestrings.o
+	source/resource/codeloader.o source/resource/gamestrings.o \
+	source/settings.o
 
 cnvdasm_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB) $(STLPORT_LIB)
 
@@ -158,7 +160,7 @@ mapdisp_OBJS = source/tools/mapdisp.o source/level.o source/resource/maploader.o
 	source/quadtree.o source/texture.o source/resource/texloader.o \
 	source/resource/imageloader.o source/resource/objloader.o \
 	source/image.o source/objects.o source/resource/codeloader.o \
-	source/resource/settings.o
+	source/settings.o
 
 mapdisp_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB) $(STLPORT_LIB) $(OPENGL_LIB)
 
@@ -170,7 +172,7 @@ mapdisp_LDFLAGS =
 animview_EXEC = animview.exe
 
 animview_OBJS = source/tools/animview.o source/cutscene.o source/resource/cutsloader.o \
-	source/image.o source/texture.o
+	source/image.o source/texture.o source/settings.o
 
 animview_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB) $(STLPORT_LIB) $(OPENGL_LIB)
 
@@ -181,7 +183,7 @@ animview_LDFLAGS =
 
 strpak_EXEC = strpak.exe
 
-strpak_OBJS = source/tools/strpak.o source/resource/gamestrings.o
+strpak_OBJS = source/tools/strpak.o source/resource/gamestrings.o source/settings.o
 
 strpak_LIBS = -lmingw32 -lkernel32 -luser32 $(STLPORT_LIB)
 
