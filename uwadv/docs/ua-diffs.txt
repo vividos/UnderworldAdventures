@@ -1,0 +1,9 @@
+Underworld Adventures differences
+---------------------------------
+
+This file explains what differences between Underworld Adventures and the
+original games there are. Some differences can be switched off with the
+"enable-uwadv-features" set to "no" or "false". These are specially marked.
+
+- up/down view angle can be between -75 and 75 degree, as opposed to something
+  like 45 degrees in the original (can be switched off)
