@@ -66,11 +66,12 @@ ua_renderer::ua_renderer()
 }
 
 void ua_renderer::init(ua_underworld* uw, ua_texture_manager* thetexmgr,
-   ua_critter_pool* thecritpool, const ua_vector3d& view_offset)
+   ua_critter_pool* thecritpool, ua_model3d_manager* themodelmgr, const ua_vector3d& view_offset)
 {
    underw = uw;
    texmgr = thetexmgr;
    critpool = thecritpool;
+   modelmgr = themodelmgr;
 
    // culling
    glCullFace(GL_BACK);
@@ -1005,6 +1006,13 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
    double height = level.get_floor_height(objxpos,objypos)*height_scale;
 
    ua_vector3d base(objxpos, objypos, height);
+
+   // check if a 3d model is available for that item
+   if (modelmgr->model_avail(item_id))
+   {
+      modelmgr->render(item_id,base);
+      return;
+   }
 
    if (item_id >= 0x0040 && item_id < 0x0080)
    {
