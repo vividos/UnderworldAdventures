@@ -13,6 +13,7 @@ SDL_INCLUDE = -Ic:/mingw/include/sdl/
 STLPORT_INCLUDE = -Ic:/mingw/stl/stlport/
 STLPORT_LIB = -Lc:/mingw/stl/lib/ -lstlport_mingw32_static
 
+# fmod isn't needed for Win32, since we have a native midi driver
 FMOD_INCLUDE = #-DHAVE_FMOD_H -Ic:/mingw/include/fmod/api/inc/
 FMOD_LIB = #-Lc:/mingw/include/fmod/api/lib/ -lfmod
 
@@ -28,9 +29,9 @@ CC = gcc
 CXX = c++
 CFLAGS = -O2 #-g -O
 
-DEFINES =
-INCLUDES = $(SDL_INCLUDE) $(STLPORT_INCLUDE) $(FMOD_INCLUDE) -I.. -I. \
-	-I../lua/include/
+DEFINES = -DHAVE_CONSOLE
+INCLUDES = $(SDL_INCLUDE) $(STLPORT_INCLUDE) $(FMOD_INCLUDE) \
+	-I.. -I. -I../lua/include/ -I../resource/zziplib/
 CFLAGS += $(DEFINES) $(INCLUDES)
 CXXFLAGS =
 LDFLAGS = -mwindows -s
@@ -51,7 +52,22 @@ lua_OBJS = ../lua/src/lapi.o ../lua/src/lcode.o ../lua/src/ldebug.o \
 	../lua/src/lparser.o ../lua/src/lstate.o ../lua/src/lstring.o \
 	../lua/src/ltable.o ../lua/src/ltests.o ../lua/src/ltm.o \
 	../lua/src/lundump.o ../lua/src/lvm.o ../lua/src/lzio.o
+
 lua: $(lua_OBJS)
+
+
+# zziplib objects
+
+zziplib_OBJS = ../resource/zziplib/SDL_rwops_zzip.o \
+	../resource/zziplib/zzip-dir.o \
+	../resource/zziplib/zzip-err.o \
+	../resource/zziplib/zzip-file.o \
+	../resource/zziplib/zzip-info.o \
+	../resource/zziplib/zzip-io.o \
+	../resource/zziplib/zzip-stat.o \
+	../resource/zziplib/zzip-zip.o
+
+zziplib: $(zziplib_OBJS)
 
 
 # underworld adventures
@@ -62,6 +78,7 @@ uwadv_OBJS = source/main.o source/game_win32.o source/uwadv_res.o \
 	../font.o ../image.o ../inventory.o ../level.o \
 	../texture.o ../underworld.o ../uwadv.o ../player.o \
 	../quadtree.o ../objects.o ../physics.o ../cutscene.o \
+	../files.o \
 	../audio/audio.o ../audio/midi.o ../audio/xmidi.o \
 	../audio/midi_driver/uni_fmod.o \
 	../audio/midi_driver/win_midiout.o \
@@ -74,11 +91,11 @@ uwadv_OBJS = source/main.o source/game_win32.o source/uwadv_res.o \
 	../resource/cutsloader.o \
 	../screens/ingame_orig.o ../screens/start_splash.o \
 	../screens/start_menu.o ../screens/cutscene_view.o \
-	$(lua_OBJS)
+	$(lua_OBJS) $(zziplib_OBJS)
 
 
 uwadv_LIBS = $(WIN32_LIB) -lwinmm $(OPENGL_LIB) \
-	$(SDL_LIB) $(FMOD_LIB) $(STLPORT_LIB)
+	$(SDL_LIB) $(FMOD_LIB) $(STLPORT_LIB) -lz
 
 uwadv_LDFLAGS = -mconsole
 

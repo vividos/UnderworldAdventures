@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib sdl.lib sdlmain.lib opengl32.lib glu32.lib winmm.lib sdl_mixer.lib /nologo /subsystem:windows /machine:I386
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib sdl.lib sdlmain.lib opengl32.lib glu32.lib winmm.lib sdl_mixer.lib zlib.lib /nologo /subsystem:windows /machine:I386
 
 !ELSEIF  "$(CFG)" == "uwadv - Win32 Debug"
 
@@ -79,7 +79,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib sdl.lib sdlmain.lib opengl32.lib glu32.lib winmm.lib sdl_mixer.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib sdl.lib sdlmain.lib opengl32.lib glu32.lib winmm.lib sdl_mixer.lib zlib.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /pdbtype:sept
 
 !ENDIF 
 
@@ -296,9 +296,57 @@ SOURCE=..\lua\src\lzio.c
 # ADD CPP /I "..\lua\include"
 # End Source File
 # End Group
+# Begin Group "zziplib sources"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\resource\zziplib\SDL_rwops_zzip.c
+# ADD CPP /I "..\resource\zziplib"
+# End Source File
+# Begin Source File
+
+SOURCE="..\resource\zziplib\zzip-dir.c"
+# ADD CPP /I "..\resource\zziplib"
+# End Source File
+# Begin Source File
+
+SOURCE="..\resource\zziplib\zzip-err.c"
+# ADD CPP /I "..\resource\zziplib"
+# End Source File
+# Begin Source File
+
+SOURCE="..\resource\zziplib\zzip-file.c"
+# ADD CPP /I "..\resource\zziplib"
+# End Source File
+# Begin Source File
+
+SOURCE="..\resource\zziplib\zzip-info.c"
+# ADD CPP /I "..\resource\zziplib"
+# End Source File
+# Begin Source File
+
+SOURCE="..\resource\zziplib\zzip-io.c"
+# ADD CPP /I "..\resource\zziplib"
+# End Source File
+# Begin Source File
+
+SOURCE="..\resource\zziplib\zzip-stat.c"
+# ADD CPP /I "..\resource\zziplib"
+# End Source File
+# Begin Source File
+
+SOURCE="..\resource\zziplib\zzip-zip.c"
+# ADD CPP /I "..\resource\zziplib"
+# End Source File
+# End Group
 # Begin Source File
 
 SOURCE=..\cutscene.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\files.cpp
 # End Source File
 # Begin Source File
 
@@ -512,6 +560,46 @@ SOURCE=..\lua\include\luadebug.h
 SOURCE=..\lua\include\lualib.h
 # End Source File
 # End Group
+# Begin Group "zziplib headers"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\resource\zziplib\SDL_rwops_zzip.h
+# End Source File
+# Begin Source File
+
+SOURCE="..\resource\zziplib\zzip-conf.h"
+# End Source File
+# Begin Source File
+
+SOURCE="..\resource\zziplib\zzip-file.h"
+# End Source File
+# Begin Source File
+
+SOURCE="..\resource\zziplib\zzip-io.h"
+# End Source File
+# Begin Source File
+
+SOURCE="..\resource\zziplib\zzip-msvc.h"
+# End Source File
+# Begin Source File
+
+SOURCE="..\resource\zziplib\zzip-stdint.h"
+# End Source File
+# Begin Source File
+
+SOURCE=..\resource\zziplib\zzip.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\resource\zziplib\zzipformat.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\resource\zziplib\zziplib.h
+# End Source File
+# End Group
 # Begin Source File
 
 SOURCE=..\audio.hpp
@@ -527,6 +615,10 @@ SOURCE=..\core.hpp
 # Begin Source File
 
 SOURCE=..\cutscene.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\files.hpp
 # End Source File
 # Begin Source File
 
@@ -610,7 +702,7 @@ SOURCE=.\source\Uus.ico
 # PROP Default_Filter "*.lua"
 # Begin Source File
 
-SOURCE=..\..\uadata\scripts\cutscene.lua
+SOURCE=..\..\uadata\uw1\scripts\cutscene.lua
 # PROP Exclude_From_Build 1
 # End Source File
 # End Group
