@@ -335,7 +335,7 @@ void ua_ingame_orig_screen::done()
 
 bool ua_ingame_orig_screen::handle_event(SDL_Event& event)
 {
-   ua_screen_ctrl_base::handle_event(event);
+   ua_ui_screen_base::handle_event(event);
 
    if (textscroll.handle_event(event))
       return true;
@@ -353,7 +353,7 @@ bool ua_ingame_orig_screen::handle_event(SDL_Event& event)
       break;
 
    default:
-      ua_screen_ctrl_base::handle_event(event);
+//      ua_screen_ctrl_base::handle_event(event);
       break;
    }
 
