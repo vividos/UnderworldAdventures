@@ -56,7 +56,7 @@ Willem Jan Palenstijn <wjpalenstijn at sourceforge dot net>
 .br
 
 More authors and contributors are listed in the file
-.B @datadir@/doc/uwadv/Authors.txt
+.B Authors.txt
 .SH NOTES
 Underworld Adventures is available from the Underworld Adventures home page, at
 .I http://uwadv.sourceforge.net/
