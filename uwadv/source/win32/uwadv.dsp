@@ -97,6 +97,10 @@ SOURCE=..\common.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\core.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\uamath.hpp
 # End Source File
 # Begin Source File
@@ -110,14 +114,6 @@ SOURCE=..\uwadv.cpp
 # Begin Source File
 
 SOURCE=..\uwadv.hpp
-# End Source File
-# End Group
-# Begin Group "resource files"
-
-# PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
-# Begin Source File
-
-SOURCE=.\source\Uus.ico
 # End Source File
 # End Group
 # Begin Group "lua scripting files"
@@ -162,6 +158,14 @@ SOURCE=.\source\game_win32.hpp
 # Begin Source File
 
 SOURCE=.\source\resource.h
+# End Source File
+# End Group
+# Begin Group "win32 resource files"
+
+# PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+# Begin Source File
+
+SOURCE=.\source\Uus.ico
 # End Source File
 # End Group
 # End Group
@@ -695,10 +699,6 @@ SOURCE=..\texture.cpp
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\core.hpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\cutscene.hpp
 # End Source File
 # Begin Source File
@@ -739,7 +739,7 @@ SOURCE=..\texture.hpp
 # End Source File
 # End Group
 # End Group
-# Begin Group "resource loading sources"
+# Begin Group "resource loading files"
 
 # PROP Default_Filter ""
 # Begin Source File
