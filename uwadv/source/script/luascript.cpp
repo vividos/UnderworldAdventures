@@ -323,6 +323,7 @@ void ua_lua_scripting::register_functions()
    lua_newtable(L);
    lua_register_table(L, "print", uw_print);
    lua_register_table(L, "get_string", uw_get_string);
+   lua_register_table(L, "change_level", uw_change_level);
    lua_register_table(L, "start_conv", uw_start_conv);
    lua_setglobal(L, "uw");
 
@@ -406,6 +407,17 @@ int ua_lua_scripting::uw_get_string(lua_State* L)
    return 1;
 }
 
+int ua_lua_scripting::uw_change_level(lua_State* L)
+{
+   ua_lua_scripting& self = get_scripting_from_self(L);
+
+   unsigned int level = static_cast<unsigned int >(lua_tonumber(L, -1));
+
+   self.game->get_underworld().change_level(level);
+
+   return 0;
+}
+
 int ua_lua_scripting::uw_start_conv(lua_State* L)
 {
    ua_lua_scripting& self = get_scripting_from_self(L);
@@ -458,6 +470,36 @@ int ua_lua_scripting::player_set_info(lua_State* L)
    // retrieve player object
    ua_lua_scripting& self = get_scripting_from_self(L);
    ua_player& player = self.game->get_underworld().get_player();
+
+   if (!lua_istable(L,-1))
+   {
+      ua_trace("player_set_info: got wrong parameter\n");
+      return 0;
+   }
+
+   // table is on stack, at -1
+   lua_pushstring(L,"name");
+   lua_gettable(L, -2);
+   std::string name = lua_tostring(L,-1);
+   player.set_name(name);
+   lua_pop(L,1);
+
+   lua_pushstring(L,"xpos");
+   lua_gettable(L, -2);
+   lua_pushstring(L,"ypos");
+   lua_gettable(L, -3);
+   player.set_pos(lua_tonumber(L,-2), lua_tonumber(L,-1));
+   lua_pop(L,2);
+   
+   lua_pushstring(L,"height");
+   lua_gettable(L, -2);
+   player.set_height(lua_tonumber(L,-1));
+   lua_pop(L,1);
+
+   lua_pushstring(L,"angle");
+   lua_gettable(L, -2);
+   player.set_angle_rot(lua_tonumber(L,-1));
+   lua_pop(L,1);
 
    return 0;
 }

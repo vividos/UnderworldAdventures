@@ -101,6 +101,7 @@ protected:
    // prototype: static int xyz(lua_State* L);
    static int uw_print(lua_State* L);
    static int uw_get_string(lua_State* L);
+   static int uw_change_level(lua_State* L);
    static int uw_start_conv(lua_State* L);
 
    static int player_get_info(lua_State* L);
