@@ -58,7 +58,7 @@ void ua_gamecfg_loader::load_value(const std::string& name, const std::string& v
       // check if resources to use are available
       if (value.compare("uw1")==0)
       {
-            // TODO check if all games are available here
+            // TODO check if all game files are available here
             // TODO delete setting ua_setting_uw1_avail, not needed then
             if (!settings.get_bool(ua_setting_uw1_avail))
                throw ua_exception("could not find relevant uw1 game files");
@@ -77,6 +77,7 @@ void ua_gamecfg_loader::load_value(const std::string& name, const std::string& v
       {
          // set generic uw path
          settings.set_value(ua_setting_uw_path,settings.get_string(ua_setting_uw2_path));
+         settings.set_gametype(ua_game_uw2);
       }
       else
       {
