@@ -4,12 +4,15 @@
 
 #
 # path to Ultima Underworld folder (where the uw.exe lives)
+# must end with a /
+# uw_demo path works, too
 #
 
-uw1path     @UW1PATH@
+uw1-path @UW1PATH@
 
 #
 # path to the uwadv "uadata" dir
+# must end with a /
 #
 
 uadata-path @UADATAPATH@
@@ -28,7 +31,14 @@ fullscreen  no
 # "both" for sound and subtitles
 #
 
-cutscene_narration   sound
+cutscene-narration   sound
+
+#
+# win32: midi device selection
+# determines the midi device to use for the win32 midi driver
+#
+
+win32-midi-device -1
 
 #
 # end of config
