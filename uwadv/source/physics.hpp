@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -25,10 +25,6 @@
 
 */
 
-// new collision detection is off
-//#undef HAVE_NEW_CD
-#define HAVE_NEW_CD
-
 // include guard
 #ifndef __uwadv_physics_hpp_
 #define __uwadv_physics_hpp_
@@ -48,18 +44,15 @@ struct ua_collision_data;
 class ua_physics_model
 {
 public:
-   
    //! ctor
    ua_physics_model();
 
    //! inits physics model
-   void init(ua_underworld *uw);
+   void init(ua_underworld* uw);
 
    //! evaluates physics of player and objects
    void eval_physics(double time);
 
-
-#ifdef HAVE_NEW_CD
 
    // functions for tracking objects in 3d space
 
@@ -71,36 +64,23 @@ public:
 
 protected:
    //! tracks object by position and direction; vectors must be in ellipsoid space
-   void track_object(ua_physics_object& object, ua_vector3d& pos, const ua_vector3d& dir, bool gravity_call, double time);
+   void track_object(ua_physics_object& object, ua_vector3d& pos,
+      const ua_vector3d& dir, bool gravity_call, double time);
 
    //! recursive collision response calculation
-   bool collide_with_world(ua_physics_object& object, ua_vector3d& pos, const ua_vector3d& dir);
+   bool collide_with_world(ua_physics_object& object, ua_vector3d& pos,
+      const ua_vector3d& dir);
 
    //! checks mesh for collision
-   void check_collision(ua_physics_object& object, int xpos, int ypos, ua_collision_data& data);
-
-#else // HAVE_NEW_CD
-
-protected:
-
-   //! calculates collision and response; recursively called
-   void calc_collision(ua_vector2d &pos, const ua_vector2d &dir);
-
-   //! checks a tile for collision with walls
-   bool check_collision_tile(unsigned int tilex, unsigned int tiley,
-      ua_collision_data &data);
-
-   //! does collision check; returns true when line was hit
-   bool check_collision(const ua_vector2d &point1,const ua_vector2d &point2,
-      ua_collision_data &data, bool check_height);
-
-#endif // HAVE_NEW_CD
+   void check_collision(ua_physics_object& object, int xpos, int ypos,
+      ua_collision_data& data);
 
 protected:
    //! current underworld object
    ua_underworld* underw;
-  
-   int collision_recursion_depth;
+
+   //! current recursion depth for function collide_with_world()
+   unsigned int collision_recursion_depth;
 
    //! last evaluation time
    double last_evaltime;
