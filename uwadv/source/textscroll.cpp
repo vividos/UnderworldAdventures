@@ -298,11 +298,16 @@ bool ua_textscroll::handle_event(SDL_Event &event)
       {
          SDLKey key = event.key.keysym.sym;
          if ((key>=SDLK_a && key<=SDLK_z) ||
-            (key>=SDLK_0 && key<=SDLK_9) )
+            (key>=SDLK_SPACE && key<=SDLK_QUESTION) )
          {
             char c = key;
             if ((event.key.keysym.mod & KMOD_SHIFT)!=0)
-               c = toupper(c);
+            {
+               if (key>=SDLK_0 && key<=SDLK_9)
+                  c -= 16;
+               else
+                  c = toupper(c);
+            }
 
             input_text.append(1,c);
 
