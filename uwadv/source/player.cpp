@@ -30,9 +30,9 @@
 #include "player.hpp"
 
 //! Size of the player ellipsoid
-const double ua_ellipsoid_x = 0.3;
-const double ua_ellipsoid_y = 0.3;
-const double ua_ellipsoid_z = 0.4*8;
+const double ua_ellipsoid_x = 0.2;//0.3;
+const double ua_ellipsoid_y = 0.2;//0.3;
+const double ua_ellipsoid_z = 2.9;//3.2;//0.4*8;
 
 // ua_player methods
 ua_player::ua_player() : ua_physics_object()
