@@ -53,6 +53,12 @@ public:
    //! returns critter texture
    ua_texture& get_texture(){ return tex; }
 
+   //! returns hotspot u coordinate
+   double get_hotspot_u(){ return hot_u; }
+
+   //! returns hotspot v coordinate
+   double get_hotspot_v(){ return hot_v; }
+
 protected:
    //! slot list with segment indices
    std::vector<Uint8> slotlist;
@@ -63,8 +69,8 @@ protected:
    //! all critter animation frames
    ua_image_list allframes;
 
-   //! hotspot point in image
-   unsigned int hotspot_x, hotspot_y;
+   //! relative hotspot point in image
+   double hot_u, hot_v;
 
    //! texture with all critter images
    ua_texture tex;
