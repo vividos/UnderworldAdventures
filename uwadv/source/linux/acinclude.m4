@@ -50,6 +50,8 @@ AC_ARG_ENABLE(sdltest, [  --disable-sdltest       Do not try to compile and run 
     sdl_micro_version=`$SDL_CONFIG $sdl_config_args --version | \
            sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
     if test "x$enable_sdltest" = "xyes" ; then
+      AC_LANG_SAVE
+      AC_LANG_C
       ac_save_CFLAGS="$CFLAGS"
       ac_save_LIBS="$LIBS"
       CFLAGS="$CFLAGS $SDL_CFLAGS"
@@ -119,6 +121,7 @@ int main (int argc, char *argv[])
 ],, no_sdl=yes,[echo $ac_n "cross compiling; assumed OK... $ac_c"])
        CFLAGS="$ac_save_CFLAGS"
        LIBS="$ac_save_LIBS"
+       AC_LANG_RESTORE
      fi
   fi
   if test "x$no_sdl" = x ; then
