@@ -38,6 +38,22 @@
 #endif
 
 
+// extern texture import functions
+
+extern void ua_import_tga(SDL_RWops* rwops,unsigned int& xres, unsigned int& yres,
+   std::vector<Uint32>& texels);
+
+
+// ua_texture methods
+
+void ua_texture::load(SDL_RWops* rwops)
+{
+   // currently we only have tga texture import
+   // TODO: check for file type and load accordingly
+   //ua_import_tga(rwops,xres,yres,texels);
+}
+
+
 // ua_texture_manager methods
 
 void ua_texture_manager::init(ua_settings &settings)

@@ -68,7 +68,6 @@ class ua_texture_manager;
 
 // classes
 
-
 //! texture class; represents one or more texture images
 class ua_texture
 {
@@ -90,6 +89,9 @@ public:
    //! convert image pixels to texture
    void convert(Uint8 *pix, unsigned int origx, unsigned int origy,
       ua_onepalette &pal, unsigned int numtex);
+
+   //! loads texture from (seekable) rwops stream
+   void load(SDL_RWops* rwops);
 
    //! uses texture in OpenGL
    void use(unsigned int numtex=0);
