@@ -28,8 +28,7 @@
 // needed includes
 #include "common.hpp"
 #include "cnvdbg.hpp"
-#include "resource/fread_endian.hpp"
-#include "instr.hpp"
+#include "conv/opcodes.hpp"
 #include <cctype>
 
 
