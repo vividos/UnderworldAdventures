@@ -92,4 +92,4 @@ tilemap_type_slope_w = 9
 
 
 -- inventory constants
-lua_slot_no_item = 0xffff
+inv_item_none = 0xffff
