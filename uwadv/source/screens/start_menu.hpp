@@ -106,7 +106,7 @@ protected:
    ua_image_quad img_screen;
 
    //! image list with buttons
-   ua_image_list img_buttons;
+   std::vector<ua_image> img_buttons;
 
    //! indicates if image quad texture should be reuploaded
    bool reupload_image;
