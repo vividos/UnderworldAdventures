@@ -556,6 +556,11 @@ ua_level& ua_underworld::get_current_level()
    return levels[curlevel];
 }
 
+unsigned int ua_player::get_attr(ua_player_attributes) const
+{
+   return 0;
+}
+
 #include "files.hpp"
 
 SDL_RWops* ua_files_manager::get_uadata_file(const char *filename)
