@@ -353,6 +353,10 @@ void ua_create_character_screen::do_action()
       ended = true;
       newgame = (n>1) && (static_cast<unsigned int>(lua_tonumber(L,2))==1);
       fadingstage = unsigned(-1);
+
+      // fade out music
+      core->get_audio().fadeout_music(ua_fade_time);
+
       //ua_trace("end request by char. creation script\n");
       break;
 
