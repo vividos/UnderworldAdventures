@@ -106,6 +106,9 @@ public:
       unsigned width, unsigned height, unsigned int destx,unsigned int desty,
       bool transparent=false);
 
+   //! pastes whole given image to position
+   void paste_image(const ua_image& from_img, unsigned int destx,unsigned int desty);
+
    //! fills a specific rectangle with a color
    void fill_rect(unsigned int startx, unsigned int starty,
       unsigned int width, unsigned int height, unsigned int color);
@@ -185,6 +188,13 @@ inline unsigned int ua_image::get_xres() const
 inline unsigned int ua_image::get_yres() const
 {
    return yres;
+}
+
+inline void ua_image::paste_image(const ua_image& from_img, unsigned int destx,
+   unsigned int desty)
+{
+   paste_rect(from_img, 0,0, from_img.get_xres(), from_img.get_yres(),
+      destx,desty, false);
 }
 
 inline ua_palette256_ptr ua_image_manager::get_palette(
