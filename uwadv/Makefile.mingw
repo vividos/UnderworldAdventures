@@ -124,7 +124,7 @@ uaconfig_OBJS = source/win32/source/uaconfig/uaconfig.o \
 	source/win32/source/uaconfig/uaconfig_res.o \
 	source/settings.o source/resource/settingsloader.o
 
-uaconfig_LIBS = $(WIN32_LIB) $(STLPORT_LIB)
+uaconfig_LIBS = $(WIN32_LIB) -lwinmm $(STLPORT_LIB)
 
 
 
