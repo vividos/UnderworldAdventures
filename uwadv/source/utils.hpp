@@ -35,6 +35,7 @@
 #include <string>
 #include <vector>
 #include <exception>
+#include "SDL_byteorder.h"
 
 
 // macros
@@ -177,7 +178,7 @@ inline Uint16 SDL_RWread16(SDL_RWops *rwops)
 {
    Uint16 val;
    SDL_RWread(rwops,&val,2,1);
-#if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
+#if (SDL_BYTEORDER==SDL_BIG_ENDIAN)
    val = ua_endian_convert16(val);
 #endif
    return val;
@@ -187,7 +188,7 @@ inline Uint32 SDL_RWread32(SDL_RWops *rwops)
 {
    Uint32 val;
    SDL_RWread(rwops,&val,4,1);
-#if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
+#if (SDL_BYTEORDER==SDL_BIG_ENDIAN)
    val = ua_endian_convert32(val);
 #endif
    return val;
@@ -200,7 +201,7 @@ inline void SDL_RWwrite8(SDL_RWops *rwops, Uint8 val)
 
 inline void SDL_RWwrite16(SDL_RWops *rwops, Uint16 val)
 {
-#ifdef SDL_BIG_ENDIAN
+#if (SDL_BYTEORDER==SDL_BIG_ENDIAN)
    val = ua_endian_convert16(val);
 #endif
    SDL_RWwrite(rwops,&val,2,1);
@@ -208,7 +209,7 @@ inline void SDL_RWwrite16(SDL_RWops *rwops, Uint16 val)
 
 inline void SDL_RWwrite32(SDL_RWops *rwops, Uint32 val)
 {
-#ifdef SDL_BIG_ENDIAN
+#if (SDL_BYTEORDER==SDL_BIG_ENDIAN)
    val = ua_endian_convert32(val);
 #endif
    SDL_RWwrite(rwops,&val,4,1);
