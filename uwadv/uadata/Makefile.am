@@ -21,7 +21,7 @@
 # $Id$
 #
 
-LUAC = ../source/lua/luac
+LUAC = ../source/script/lua/luac
 
 # this defines luaSCRIPTS, luaOBJECTS and uarFILES
 include Makefile.common
