@@ -31,7 +31,6 @@
 
 // needed includes
 #include <vector>
-#include "core.hpp"
 #include "level.hpp"
 #include "player.hpp"
 #include "inventory.hpp"
@@ -56,7 +55,7 @@ public:
    ua_underworld(){}
 
    //! initializes underworld
-   void init(ua_game_core_interface *core);
+   void init(ua_game_core_interface* core);
 
    //! clean up the underworld
    void done();
@@ -90,9 +89,6 @@ public:
    //! returns script bindings object
    ua_underworld_script_bindings &get_scripts(){ return script; }
 
-   //! returns game core interface
-   ua_game_core_interface* get_game_core(){ return core; }
-
    //! changes current level
    void change_level(unsigned int level);
 
@@ -108,9 +104,6 @@ public:
    void import_savegame(ua_settings &settings,const char *folder,bool initial);
 
 protected:
-   //! interface to core game class
-   ua_game_core_interface *core;
-
    //! the player object
    ua_player player;
 

@@ -28,15 +28,14 @@
 // needed includes
 #include "common.hpp"
 #include "underworld.hpp"
+#include "core.hpp"
 #include "uamath.hpp"
 
 
 // ua_underworld methods
 
-void ua_underworld::init(ua_game_core_interface *thecore)
+void ua_underworld::init(ua_game_core_interface* core)
 {
-   core=thecore;
-
    levels.clear();
 
    physics.init(this);
@@ -45,8 +44,14 @@ void ua_underworld::init(ua_game_core_interface *thecore)
 
    player.init();
 
-   // init the scripts as last step
+   // init and load the scripts as last step
    script.init(this);
+   if (core!=NULL)
+   {
+      core->get_filesmgr().load_underworld_scripts(script.get_lua_State(),
+         "uw1/scripts/uwinit.txt"); // TODO use proper uadata name
+      script.lua_init_script();
+   }
 }
 
 void ua_underworld::done()
@@ -86,7 +91,7 @@ void ua_underworld::change_level(unsigned int level)
    // set new level
    player.set_attr(ua_attr_maplevel,level);
 
-   get_current_level().prepare_textures(core->get_texmgr());
+   script.lua_change_level(level);
 }
 
 //! loads a savegame

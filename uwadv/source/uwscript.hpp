@@ -70,6 +70,11 @@ class ua_underworld_script_callback
 public:
    //! ctor
    ua_underworld_script_callback(){}
+   //! dtor
+   virtual ~ua_underworld_script_callback(){}
+
+   //! called when current level has changed
+   virtual void ui_changed_level(unsigned int level)=0;
 
    //! starts conversation with NPC
    virtual void ui_start_conv(unsigned int convslot)=0;
@@ -96,13 +101,16 @@ class ua_underworld_script_bindings
 {
 public:
    //! ctor
-   ua_underworld_script_bindings(){}
+   ua_underworld_script_bindings();
 
    //! initialize underworld scripting
    void init(ua_underworld* uw);
 
    //! registers script callback interface
    void register_callback(ua_underworld_script_callback* cback=NULL);
+
+   //! returns lua state
+   lua_State* get_lua_State(){ return L; }
 
    //! cleans up underworld scripting
    void done();
@@ -118,6 +126,9 @@ public:
 
    // general functions
 
+   //! inits scripts after loading all underworld scripts
+   void lua_init_script();
+
    //! game functions called every tick
    void lua_game_tick(double curtime);
 
@@ -126,6 +137,9 @@ public:
 
    //! starts (or ends, when start==false) sleeping; returns true when starting sleeping
    bool lua_sleep(bool start);
+
+   //! called when changing to a new level
+   void lua_change_level(unsigned int level);
 
 
    // inventory functions
@@ -158,7 +172,6 @@ protected:
    double get_lua_constant(const char* name);
 
 protected:
-
    //! returns underworld object reference from lua state
    static ua_underworld& get_underworld_from_self(lua_State* L);
 

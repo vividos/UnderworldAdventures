@@ -39,6 +39,11 @@ const char* ua_uwscript_lua_thisptr_name = "self";
 
 // ua_underworld_script_bindings methods
 
+ua_underworld_script_bindings::ua_underworld_script_bindings()
+:callback(NULL)
+{
+}
+
 void ua_underworld_script_bindings::init(ua_underworld *uw)
 {
    // init lua state
@@ -49,78 +54,11 @@ void ua_underworld_script_bindings::init(ua_underworld *uw)
    lua_strlibopen(L);
    lua_mathlibopen(L);
 
-   // load all lua scripts
-   ua_files_manager &fmgr = uw->get_game_core()->get_filesmgr();
-
-   // read init text file
-   std::string initlist_str;
-   {
-      SDL_RWops *uwinit = fmgr.get_uadata_file("uw1/scripts/uwinit.txt");
-
-      if (uwinit==NULL)
-         throw ua_exception("could not find underworld Lua scripts init file");
-
-      // read in all of the file
-      std::vector<char> initlist;
-
-      SDL_RWseek(uwinit,0,SEEK_END);
-      int size = SDL_RWtell(uwinit);
-      SDL_RWseek(uwinit,0,SEEK_SET);
-
-      if (size<=0)
-         throw ua_exception("could not read underworld Lua scripts init file");
-
-      initlist.resize(size+1,0);
-      SDL_RWread(uwinit,&initlist[0],size,1);
-      initlist[size]=0;
-
-      initlist_str.assign(reinterpret_cast<char *>(&initlist[0]));
-   }
-
-   std::string::size_type pos=0;
-
-   // remove '\r' chars
-   do
-   {
-      pos = initlist_str.find_first_of('\r');
-      if (pos != std::string::npos)
-         initlist_str.erase(pos,1);
-
-   } while (pos != std::string::npos);
-
-   // load all scripts mentioned in init text file
-   do
-   {
-      pos = initlist_str.find_first_of('\n');
-
-      if (pos != std::string::npos)
-      {
-         // load single script
-         std::string basename;
-         basename.assign(initlist_str.c_str(),pos);
-
-         if (basename.size()>0)
-         {
-            int ret = fmgr.load_lua_script(L,basename.c_str());
-            if (ret!=0)
-               throw ua_exception("could not execute underworld Lua script");
-         }
-
-         // remove from list
-         initlist_str.erase(0,pos+1);
-      }
-
-   } while (pos != std::string::npos);
-
    register_functions();
 
    // set "this" pointer userdata
    lua_pushuserdata(L,uw);
    lua_setglobal(L,ua_uwscript_lua_thisptr_name);
-
-   // call init function lua_init_script()
-   lua_getglobal(L,"lua_init_script");
-   checked_lua_call(0,0);
 }
 
 void ua_underworld_script_bindings::register_functions()
@@ -227,6 +165,13 @@ void ua_underworld_script_bindings::save_game(ua_savegame &sg)
 
 // Lua functions callable from C
 
+void ua_underworld_script_bindings::lua_init_script()
+{
+   // call init function lua_init_script()
+   lua_getglobal(L,"lua_init_script");
+   checked_lua_call(0,0);
+}
+
 void ua_underworld_script_bindings::lua_game_tick(double curtime)
 {
    // call Lua function
@@ -247,6 +192,18 @@ bool ua_underworld_script_bindings::lua_sleep(bool start)
    lua_getglobal(L,"lua_sleep");
    checked_lua_call(1,1);
    return true;
+}
+
+void ua_underworld_script_bindings::lua_change_level(unsigned int level)
+{
+   // call Lua function
+   lua_getglobal(L,"lua_change_level");
+   lua_pushnumber(L,static_cast<double>(level));
+   checked_lua_call(1,0);
+
+   // call user interface function
+   if (callback!=NULL)
+      callback->ui_changed_level(level);
 }
 
 
