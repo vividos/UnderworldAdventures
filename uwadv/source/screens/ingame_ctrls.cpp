@@ -48,7 +48,7 @@ void ua_ingame_compass::init(ua_game_interface& game, unsigned int xpos,
       std::vector<ua_image> temp_compass;
       game.get_image_manager().load_list(temp_compass,"compass");
 
-      ua_palette256_ptr pal0 = temp_compass[0].get_palette();
+      ua_palette256_ptr pal0 = game.get_image_manager().get_palette(0);
 
       img_compass.resize(16);
 
@@ -65,7 +65,7 @@ void ua_ingame_compass::init(ua_game_interface& game, unsigned int xpos,
       {
          ua_image& img = img_compass[n];
          img.create(52,26);
-         img.get_palette() = pal0;
+         img.set_palette(pal0);
 
          img.paste_image(temp_compass[n&3],0,0);
 
@@ -337,7 +337,7 @@ void ua_ingame_dragon::init(ua_game_interface& game, unsigned int xpos,
    ua_image& img = get_image();
 
    img.create(37,104);
-   img.get_palette() = img_dragon[0].get_palette();
+   img.set_palette(game.get_image_manager().get_palette(0));
    img.clear(0);
 
 
@@ -693,7 +693,7 @@ void ua_ingame_command_buttons::init(ua_game_interface& game, unsigned int xpos,
 
    // create image
    ua_image& img = get_image();
-   img.get_palette() = img_buttons[0].get_palette();
+   img.set_palette(game.get_image_manager().get_palette(0));
 
    ua_image_quad::init(game,xpos,ypos);
 

@@ -105,7 +105,7 @@ void ua_uw_import::load_textures(std::vector<ua_image>& tex_images,
       teximg.create(xyres,xyres);
       Uint8* pixels = &teximg.get_pixels()[0];
 
-      teximg.get_palette() = palette;
+      teximg.set_palette(palette);
 
       unsigned int idx = 0;
       while(datalen>0)

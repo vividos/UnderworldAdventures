@@ -59,7 +59,7 @@ void ua_save_game_button::init(ua_save_game_screen* my_screen,
 
    // create window
    image.create(button_width, img_buttons[0].get_yres());
-   image.get_palette() = img_buttons[0].get_palette();
+   image.set_palette(game.get_image_manager().get_palette(3));
 
    ua_image_quad::init(game, xpos, ypos);
 
@@ -317,7 +317,7 @@ void ua_save_game_screen::init()
       ua_image& img = img_back.get_image();
 
       img.create(320,200);
-      img.get_palette() = temp_back.get_palette();
+      img.set_palette(game.get_image_manager().get_palette(0));
       img.paste_rect(temp_back,160,0, 160,200, 0,0);
 
       // add frame
@@ -361,7 +361,7 @@ void ua_save_game_screen::init()
 
    // init info area
    img_infoarea.get_image().create(20,20);
-   img_infoarea.get_image().get_palette() = img_back.get_image().get_palette();
+   img_infoarea.get_image().set_palette(img_back.get_image().get_palette());
    img_infoarea.init(game,160,0);
 //   register_window(&img_infoarea);
 
