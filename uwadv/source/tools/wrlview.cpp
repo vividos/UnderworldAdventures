@@ -55,6 +55,8 @@ void init_wrlview(const char* filename)
    std::string relpath(filename);
 
    model.import_wrl(NULL,rwops,relpath);
+
+   SDL_RWclose(rwops);
 }
 
 void handle_key_down(SDL_keysym* keysym)
