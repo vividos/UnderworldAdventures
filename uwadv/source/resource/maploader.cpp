@@ -114,9 +114,9 @@ void ua_level::load(ua_settings &settings, unsigned int level)
       }
 
       Uint16 tex;
-      for(tex=0; tex<48; tex++) wall_textures[tex]  = fread16(fd)+ua_tex_stock_wall;
-      for(tex=0; tex<10; tex++) floor_textures[tex] = fread16(fd)+ua_tex_stock_floor;
-      for(tex=0; tex<6; tex++)  door_textures[tex]  = fread16(fd);
+      for(tex=0; tex<48; tex++) wall_textures[tex]  = fread16(fd2)+ua_tex_stock_wall;
+      for(tex=0; tex<10; tex++) floor_textures[tex] = fread16(fd2)+ua_tex_stock_floor;
+      for(tex=0; tex<6; tex++)  door_textures[tex]  = fread16(fd2);
 
       fclose(fd2);
    }
