@@ -2,7 +2,7 @@
 # Underworld Adventures install script
 #
 
-!define VERSION "0.7-muffin"
+!define VERSION "0.8-hot-chili"
 
 # compiler utility commands
 #

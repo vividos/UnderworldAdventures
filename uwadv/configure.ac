@@ -11,7 +11,7 @@ AC_INIT(source/uwadv.cpp)
 
 # version info
 PACKAGE=uwadv
-VERSION=0.7_muffin
+VERSION=0.7_hot_chili
 
 
 AC_CANONICAL_BUILD
