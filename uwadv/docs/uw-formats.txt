@@ -1141,7 +1141,8 @@ Table of Contents
 
    The hotspot coordinates are to "pin" the image at a specific position. The
    hotspot coordinates in the image should always be on the same place when
-   rendered.
+   rendered. The compression type can be 06, which is 5-bit run-length
+   encoding, or 08, which is 4-bit run-length encoding (see 2.3. for more).
 
    The Slot lists group together segments of animations for various actions.
    Here's a list of slots and their actions:
