@@ -286,7 +286,7 @@ void ua_ingame_orig_screen::render_ui()
    // upload ui texture
    tex.convert(core->get_texmgr(),img_temp);
    tex.use(core->get_texmgr());
-   tex.upload(false);
+   tex.upload();
 
    double u = tex.get_tex_u(), v = tex.get_tex_v();
 
@@ -341,7 +341,7 @@ void ua_ingame_orig_screen::setup_opengl()
    // fog
    glEnable(GL_FOG);
    glFogi(GL_FOG_MODE,GL_EXP2);
-   glFogf(GL_FOG_DENSITY,0.5);
+   glFogf(GL_FOG_DENSITY,0.65);
    glFogf(GL_FOG_START,0.0);
    glFogf(GL_FOG_END,1.0);
    int fog_color[4] = { 0,0,0,0 };
