@@ -39,12 +39,12 @@
 #define W32MO_THREAD_COM_EXIT        -1
 
 
-// Windows_MidiOut static variables
+// ua_win_midiout static variables
 
-const unsigned short Windows_MidiOut::centre_value = 0x2000;
-const unsigned char Windows_MidiOut::fine_value = centre_value & 127;
-const unsigned char Windows_MidiOut::coarse_value = centre_value >> 7;
-const unsigned short Windows_MidiOut::combined_value = (coarse_value << 8) | fine_value;
+const unsigned short ua_win_midiout::centre_value = 0x2000;
+const unsigned char ua_win_midiout::fine_value = centre_value & 127;
+const unsigned char ua_win_midiout::coarse_value = centre_value >> 7;
+const unsigned short ua_win_midiout::combined_value = (coarse_value << 8) | fine_value;
 
 
 //#define DO_SMP_TEST
@@ -56,9 +56,9 @@ const unsigned short Windows_MidiOut::combined_value = (coarse_value << 8) | fin
 #endif
 
 
-// Windows_MidiOut methods
+// ua_win_midiout methods
 
-Windows_MidiOut::Windows_MidiOut() : dev_num(-1)
+ua_win_midiout::ua_win_midiout() : dev_num(-1)
 {
    giveinfo();
    InterlockedExchange (&playing, false);
@@ -69,7 +69,7 @@ Windows_MidiOut::Windows_MidiOut() : dev_num(-1)
    giveinfo();
 }
 
-Windows_MidiOut::~Windows_MidiOut()
+ua_win_midiout::~ua_win_midiout()
 {
    giveinfo();
    if (!is_available) return;
@@ -109,13 +109,13 @@ Windows_MidiOut::~Windows_MidiOut()
    giveinfo();
 }
 
-bool Windows_MidiOut::init_driver()
+bool ua_win_midiout::init_driver()
 {
    init_device();
    return (thread_com != W32MO_THREAD_COM_INIT_FAILED);
 }
 
-void Windows_MidiOut::init_device()
+void ua_win_midiout::init_device()
 {
 //   string s;
 
@@ -142,15 +142,15 @@ void Windows_MidiOut::init_device()
    giveinfo();
 }
 
-DWORD __stdcall Windows_MidiOut::thread_start(void *data)
+DWORD __stdcall ua_win_midiout::thread_start(void *data)
 {
    giveinfo();
-   Windows_MidiOut *ptr=static_cast<Windows_MidiOut *>(data);
+   ua_win_midiout *ptr=static_cast<ua_win_midiout *>(data);
    giveinfo();
    return ptr->thread_main();
 }
 
-DWORD Windows_MidiOut::thread_main()
+DWORD ua_win_midiout::thread_main()
 {
    int i;
    thread_data = NULL;
@@ -219,7 +219,7 @@ DWORD Windows_MidiOut::thread_main()
    return 0;
 }
 
-void Windows_MidiOut::thread_play ()
+void ua_win_midiout::thread_play ()
 {
    int            repeat = false;
    Uint32         aim = 0;
@@ -558,7 +558,7 @@ void Windows_MidiOut::thread_play ()
    midiOutReset (midi_port);
 }
 
-void Windows_MidiOut::reset_channel (int i)
+void ua_win_midiout::reset_channel (int i)
 {
    // Pitch Wheel
    midiOutShortMsg (midi_port, i | (MIDI_STATUS_PITCH_WHEEL << 4) | (combined_value << 8));
@@ -597,7 +597,7 @@ void Windows_MidiOut::reset_channel (int i)
    midiOutShortMsg (midi_port, i | (MIDI_STATUS_CONTROLLER << 4) | (93 << 8));
 }
 
-void Windows_MidiOut::start_track (XMIDIEventList *xmidi, bool repeat)
+void ua_win_midiout::start_track (XMIDIEventList *xmidi, bool repeat)
 {
    giveinfo();
    if (!is_available)
@@ -623,7 +623,7 @@ void Windows_MidiOut::start_track (XMIDIEventList *xmidi, bool repeat)
    giveinfo();
 }
 
-void Windows_MidiOut::start_sfx(XMIDIEventList *xmidi)
+void ua_win_midiout::start_sfx(XMIDIEventList *xmidi)
 {
    giveinfo();
    if (!is_available)
@@ -649,7 +649,7 @@ void Windows_MidiOut::start_sfx(XMIDIEventList *xmidi)
 }
 
 
-void Windows_MidiOut::stop_track(void)
+void ua_win_midiout::stop_track(void)
 {
    giveinfo();
    if (!is_available)
@@ -667,7 +667,7 @@ void Windows_MidiOut::stop_track(void)
    giveinfo();
 }
 
-void Windows_MidiOut::stop_sfx(void)
+void ua_win_midiout::stop_sfx(void)
 {
    giveinfo();
    if (!is_available)
@@ -683,13 +683,13 @@ void Windows_MidiOut::stop_sfx(void)
    giveinfo();
 }
 
-bool Windows_MidiOut::is_playing(void)
+bool ua_win_midiout::is_playing(void)
 {
    giveinfo();
    return playing!=0;
 }
 
-const char *Windows_MidiOut::copyright(void)
+const char *ua_win_midiout::copyright(void)
 {
    giveinfo();
    return "Win32 Midiout Midi Player for Underworld Adventures";

@@ -42,13 +42,13 @@
 // classes
 
 //! fmod midi driver
-class uni_fmod_driver : virtual public ua_midi_driver
+class ua_uni_fmod_driver : virtual public ua_midi_driver
 {
 public:
    //! ctor
-   uni_fmod_driver();
+   ua_uni_fmod_driver();
    //! dtor
-   virtual ~uni_fmod_driver();
+   virtual ~ua_uni_fmod_driver();
 
    //! initializes driver
    virtual bool init_driver();

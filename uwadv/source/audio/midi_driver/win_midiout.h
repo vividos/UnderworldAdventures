@@ -45,7 +45,7 @@
 
 #include "../midi.hpp"
 
-class	Windows_MidiOut : virtual public ua_midi_driver
+class	ua_win_midiout : virtual public ua_midi_driver
 {
 public:
 	virtual void start_track(XMIDIEventList *, bool repeat);
@@ -55,8 +55,8 @@ public:
 	virtual bool is_playing(void);
 	virtual const char *copyright(void);
 
-	Windows_MidiOut();
-	virtual ~Windows_MidiOut();
+	ua_win_midiout();
+	virtual ~ua_win_midiout();
 
    //! initializes driver
    virtual bool init_driver();

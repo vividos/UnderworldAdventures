@@ -37,31 +37,31 @@
 #include "uni_fmod.h"
 
 
-// win32 linker options
+// msvc win32 linker option
 #pragma comment(lib, "fmodvc.lib")
 
 
-// uni_fmod_driver methods
+// ua_uni_fmod_driver methods
 
-uni_fmod_driver::uni_fmod_driver()
+ua_uni_fmod_driver::ua_uni_fmod_driver()
 {
    mod = NULL;
 }
 
-uni_fmod_driver::~uni_fmod_driver()
+ua_uni_fmod_driver::~ua_uni_fmod_driver()
 {
    // clean up
    stop_track();
    FSOUND_Close();
 }
 
-bool uni_fmod_driver::init_driver()
+bool ua_uni_fmod_driver::init_driver()
 {
    // hmm, have to init sound part of FMOD to get midi to play
    FSOUND_Init(44100,2,0);
 }
 
-void uni_fmod_driver::start_track(XMIDIEventList *eventlist, bool repeat)
+void ua_uni_fmod_driver::start_track(XMIDIEventList *eventlist, bool repeat)
 {
    stop_track();
 
@@ -82,7 +82,7 @@ void uni_fmod_driver::start_track(XMIDIEventList *eventlist, bool repeat)
    FMUSIC_PlaySong(mod);
 }
 
-void uni_fmod_driver::stop_track()
+void ua_uni_fmod_driver::stop_track()
 {
    if (mod!=NULL)
    {
@@ -93,7 +93,7 @@ void uni_fmod_driver::stop_track()
    }
 }
 
-const char *uni_fmod_driver::copyright()
+const char *ua_uni_fmod_driver::copyright()
 {
    return "FMOD midi driver for Underworld Adventures";
 }
