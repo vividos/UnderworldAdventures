@@ -846,8 +846,9 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
             }
 
             // check if container
-            if (inv.is_container(inv.get_item(item).item_id) &&
-               gamemode == ua_mode_default)
+            if (item != ua_slot_no_item &&
+                inv.is_container(inv.get_item(item).item_id) &&
+                gamemode == ua_mode_default)
             {
                // open container
                inv.open_container(item);

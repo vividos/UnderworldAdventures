@@ -304,6 +304,10 @@ bool ua_inventory::drop_floating_item(Uint16 index)
          // put floating item
          get_item(index) = get_item(floating_object);
 
+         // correct link1 list
+         get_item(index).link1 = temp.link1;
+         temp.link1 = 0;
+
          // put new floating item
          get_item(floating_object) = temp;
       }

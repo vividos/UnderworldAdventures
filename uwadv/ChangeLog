@@ -1,3 +1,7 @@
+2007-08-02 20:45  wjpalenstijn
+	* source/inventory.cpp: fixed link1-list corruption when dropping obj.
+	* source/screens/ingame_orig.cpp: fixed crash (bug #590321)
+
 2007-07-31 22:50  wjpalenstijn
 	* source/linux/various: removed generated files from CVS to .cvsignore
 
