@@ -155,6 +155,7 @@ void ua_ingame_orig_screen::render()
       glTranslatef( -32.0, -32.0, 0.0 );
    }
    else*/
+   ua_player &pl = core->get_underworld().get_player();
    {
       // rotation
       glRotatef( playeryangle, 1.0, 0.0, 0.0 );
@@ -176,8 +177,10 @@ void ua_ingame_orig_screen::render()
    glVertex3f(0,64,-0.1f);
    glEnd();
 
+   ua_frustum fr(pl.get_xpos(),pl.get_ypos(),-playerxangle+90.0,90.f,16.0);
+
    // render underworld
-   core->get_underworld().render();
+   core->get_underworld().render(fr);
 }
 
 void ua_ingame_orig_screen::tick()
