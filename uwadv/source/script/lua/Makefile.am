@@ -23,6 +23,7 @@ luac_SOURCES = \
 	src/luac/print.c src/luac/print.h \
 	src/luac/stubs.c
 
+luac_CFLAGS = -DNOSTUBS
 luac_LDADD = liblua.la
 luac_DEPENDENCIES = liblua.la
 
