@@ -59,11 +59,14 @@ public:
    //! prints a string to the text scroll; returns true when text had to scroll
    bool print(const char* text);
 
-   //! returns true when more lines to show are available
-   bool have_more_lines();
+   //! handles events needed for the text scroll; returns true when handled
+   bool handle_event(SDL_Event &event);
 
-   //! scroll more lines
-   void show_more_lines();
+   //! starts input mode on the current line
+   void enter_input_mode();
+
+   //! returns true when text was entered; "text" is updated then
+   bool is_input_done(std::string& text);
 
    //! renders text scroll
    void render();
@@ -72,6 +75,14 @@ public:
    void done();
 
 protected:
+   //! updates scroll texture
+   void update_scroll();
+
+   //! returns true when more lines to show are available
+   bool have_more_lines();
+
+   //! scroll more lines
+   void show_more_lines();
 
 protected:
    //! stack with currently shown lines
@@ -103,6 +114,15 @@ protected:
 
    //! current text color
    Uint8 text_color;
+
+   //! indicates if text scroll is in input mode
+   bool input_mode;
+
+   //! text the user typed in so far
+   std::string input_text;
+
+   //! line with cursor to input text
+   unsigned int input_line;
 };
 
 

@@ -185,6 +185,13 @@ bool ua_textscroll::print(const char* text)
       } while(!msgtext.empty());
    }
 
+   update_scroll();
+
+   return needed_scrolling;
+}
+
+void ua_textscroll::update_scroll()
+{
    // redo scroll texture
    ua_image img_text,img_temp;
    img_text.create(width,height,bg_color,0);
@@ -196,7 +203,10 @@ bool ua_textscroll::print(const char* text)
       font_normal.create_string(img_temp,
          linestack[i].c_str(),text_color);
 
-      img_text.paste_image(img_temp,1,i*(img_temp.get_yres()+1)+1,true);
+      // calc y position
+      unsigned int ypos = i*(img_temp.get_yres()+1)+1;
+
+      img_text.paste_image(img_temp,1,ypos,true);
 
       if (i==maxlines-1 && morestack.size()!=0)
       {
@@ -206,7 +216,26 @@ bool ua_textscroll::print(const char* text)
 
          // paste string after end of last line
          img_text.paste_image(img_more,
-            img_temp.get_xres(),i*(img_temp.get_yres()+1)+1,true);
+            img_temp.get_xres(),ypos,true);
+      }
+
+      if (input_mode && i == input_line)
+      {
+         // paste input text after the text in this line
+         ua_image img_input, img_line;
+
+         font_normal.create_string(img_input,
+            input_text.c_str(),1); // color black for now
+
+         unsigned int xpos = img_temp.get_xres();
+         img_text.paste_image(img_input,xpos,ypos,true);
+
+         xpos += img_input.get_xres();
+
+         // draw a cursor line after the text
+         img_line.create(1,img_input.get_yres()+2,1,0);
+
+         img_text.paste_image(img_line,xpos+1,ypos-1,true);
       }
 
       img_temp.clear();
@@ -237,8 +266,86 @@ bool ua_textscroll::print(const char* text)
       // image is small enough
       tex.convert(img_text);
    }
+}
 
-   return needed_scrolling;
+bool ua_textscroll::handle_event(SDL_Event &event)
+{
+   bool handled = false;
+
+   // check event type
+   switch(event.type)
+   {
+   case SDL_KEYDOWN:
+      // key down event
+      switch(event.key.keysym.sym)
+      {
+      case SDLK_SPACE:
+      case SDLK_RETURN:
+         // "more" continuation
+         if (have_more_lines())
+         {
+            show_more_lines();
+            handled = true;
+         }
+         break;
+      }
+
+      // check type'able keys when in input mode
+      if (input_mode)
+      {
+         SDLKey key = event.key.keysym.sym;
+         if ((key>=SDLK_a && key<=SDLK_z) ||
+            (key>=SDLK_0 && key<=SDLK_9) )
+         {
+            char c = key;
+            if ((event.key.keysym.mod & KMOD_SHIFT)!=0)
+               c = toupper(c);
+
+            input_text.append(1,c);
+
+            update_scroll();
+            handled = true;
+         }
+
+         // handle "delete" key
+         if ((key==SDLK_BACKSPACE || key==SDLK_DELETE) && !input_text.empty())
+         {
+            input_text.erase(input_text.size()-1);
+            update_scroll();
+            handled = true;
+         }
+
+         // "return" key
+         if (key==SDLK_RETURN)
+         {
+            input_mode = false;
+            handled = true;
+         }
+      }
+   }
+
+   return handled;
+}
+
+void ua_textscroll::enter_input_mode()
+{
+   // set up input mode
+   input_mode = true;
+   input_text.erase();
+   input_line = linestack.size()-1;
+
+   update_scroll();
+}
+
+bool ua_textscroll::is_input_done(std::string& text)
+{
+   // still in input mode?
+   if (input_mode)
+      return false;
+
+   text.assign(input_text);
+
+   return true;
 }
 
 void ua_textscroll::show_more_lines()
