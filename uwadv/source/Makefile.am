@@ -43,6 +43,7 @@ EXTRA_DIST = \
 	win32/uwadv.nsi \
 	win32/xmi2mid.dsp \
 	win32/uaconfig.dsp \
+	win32/uaopt.dsp \
 	win32/License.installer.txt \
 	win32/source/game_win32.cpp \
 	win32/source/game_win32.hpp \
