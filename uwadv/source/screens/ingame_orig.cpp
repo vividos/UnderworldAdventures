@@ -37,7 +37,7 @@ void ua_ingame_orig_screen::init()
 {
    uworld.init(core->get_settings(),core->get_texmgr());
 
-   setup_opengl(core->get_screen_width(),core->get_screen_height());
+   setup_opengl();
 
    // pos values
    xangle = 0.f;
@@ -58,6 +58,23 @@ void ua_ingame_orig_screen::init()
 void ua_ingame_orig_screen::done()
 {
    uworld.done();
+}
+
+void ua_ingame_orig_screen::handle_event(SDL_Event &event)
+{
+   switch(event.type)
+   {
+   case SDL_KEYDOWN:
+      // handle key presses
+      handle_key_down(event.key.keysym);
+      break;
+
+   case SDL_MOUSEMOTION:
+   case SDL_MOUSEBUTTONDOWN:
+   case SDL_MOUSEBUTTONUP:
+      handle_mouse_action(event);
+      break;
+   }
 }
 
 void ua_ingame_orig_screen::handle_key_down(SDL_keysym &keysym)
@@ -206,14 +223,19 @@ void ua_ingame_orig_screen::render()
    uworld.render(core->get_texmgr());
 }
 
+int tickcount=0;
+
 void ua_ingame_orig_screen::tick()
 {
+/*   if (tickcount++>200)
+   {
+      core->pop_screen();
+   }*/
+   xangle+=1.f;
 }
 
-void ua_ingame_orig_screen::setup_opengl(unsigned int width, unsigned int height)
+void ua_ingame_orig_screen::setup_opengl()
 {
-   float ratio = float(width)/height;
-
    // smooth shading
    glShadeModel(GL_SMOOTH);
 
@@ -234,16 +256,4 @@ void ua_ingame_orig_screen::setup_opengl(unsigned int width, unsigned int height
 
    // clear color
    glClearColor(0, 0, 0, 0);
-
-   // viewport
-   glViewport(0, 0, width, height);
-
-   // set projection matrix
-   glMatrixMode(GL_PROJECTION);
-   glLoadIdentity();
-
-   gluPerspective(90.0, ratio, 0.25, 256.0);
-
-   // switch back to modelview matrix
-   glMatrixMode(GL_MODELVIEW);
 }

@@ -30,7 +30,7 @@
 #define __uwadv_ingame_orig_hpp_
 
 // needed includes
-#include "screenbase.hpp"
+#include "screen.hpp"
 #include "underworld.hpp"
 
 
@@ -47,15 +47,16 @@ public:
    // virtual functions
    virtual void init();
    virtual void done();
-   virtual bool should_render3d(){ return true; };
-   virtual void handle_key_down(SDL_keysym &keysym);
-   virtual void handle_mouse_action(SDL_Event &event);
+   virtual void handle_event(SDL_Event &event);
    virtual void render();
    virtual void tick();
 
 protected:
    //! sets up OpenGL stuff, viewport, flags, etc.
-   void setup_opengl(unsigned int width, unsigned int height);
+   void setup_opengl();
+
+   void handle_key_down(SDL_keysym &keysym);
+   void handle_mouse_action(SDL_Event &event);
 
 protected:
    ua_underworld uworld;

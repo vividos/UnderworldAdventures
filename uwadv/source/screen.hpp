@@ -19,7 +19,7 @@
    $Id$
 
 */
-/*! \file screenbase.hpp
+/*! \file screen.hpp
 
    base class for user interface screens, e.g. main game screen, conversation screen,
    map screen etc.
@@ -27,8 +27,8 @@
 */
 
 // include guard
-#ifndef __uwadv_screenbase_hpp_
-#define __uwadv_screenbase_hpp_
+#ifndef __uwadv_screen_hpp_
+#define __uwadv_screen_hpp_
 
 // needed includes
 #include "audio.hpp"
@@ -58,14 +58,8 @@ public:
    //! clean up
    virtual void done()=0;
 
-   //! returns true if 3d world should be rendered
-   virtual bool should_render3d()=0;
-
-   //! handles key presses
-   virtual void handle_key_down(SDL_keysym &keysym)=0;
-
-   //! handles mouse actions
-   virtual void handle_mouse_action(SDL_Event &event)=0;
+   //! handles events
+   virtual void handle_event(SDL_Event &event)=0;
 
    //! renders the screen
    virtual void render()=0;
@@ -105,10 +99,13 @@ public:
 
 
    //! sets new screen as top screen stack
-   virtual void push_screen(ua_ui_screen_base *screen)=0;
+   virtual void push_screen(ua_ui_screen_base *newscreen)=0;
 
    //! replaces current screen with new one
-   virtual void replace_screen(ua_ui_screen_base *screen)=0;
+   virtual void replace_screen(ua_ui_screen_base *newscreen)=0;
+
+   //! destroys current screen (when finished tick()) and uses the last one
+   virtual void pop_screen()=0;
 };
 
 #endif
