@@ -68,7 +68,8 @@ public:
    ua_renderer();
 
    //! initializes renderer
-   void init(ua_underworld* uw, const ua_vector3d& view_offset);
+   void init(ua_underworld* uw, ua_texture_manager* texmgr,
+      const ua_vector3d& view_offset);
 
    //! cleans up renderer
    void done();
@@ -92,26 +93,21 @@ protected:
    void setup_camera_priv(bool pick,unsigned int xpos, unsigned int ypos);
 
    //! renders tile floor
-   void render_floor(ua_levelmap_tile& tile, unsigned int x,
-      unsigned int y, ua_texture_manager& texmgr);
+   void render_floor(ua_levelmap_tile& tile, unsigned int x, unsigned int y);
 
    //! renders tile ceiling
-   void render_ceiling(ua_levelmap_tile& tile, unsigned int x,
-      unsigned int y, ua_texture_manager& texmgr);
+   void render_ceiling(ua_levelmap_tile& tile, unsigned int x, unsigned int y);
 
    //! renders tile walls
-   void render_walls(ua_levelmap_tile& tile, unsigned int x,
-      unsigned int y, ua_texture_manager& texmgr);
+   void render_walls(ua_levelmap_tile& tile, unsigned int x, unsigned int y);
 
    //! renders the objects of a tile
-   void render_objects(unsigned int x, unsigned int y,
-      ua_texture_manager &texmgr);
+   void render_objects(unsigned int x, unsigned int y);
 
 protected:
 
    //! renders a single object
-   void render_object(ua_object& obj, unsigned int x, unsigned int y,
-      ua_texture_manager &texmgr);
+   void render_object(ua_object& obj, unsigned int x, unsigned int y);
 
    //! retrieves tile coordinates
    void get_tile_coords(unsigned int side, ua_levelmap_tiletype type,
@@ -127,6 +123,9 @@ protected:
 protected:
    //! underworld object
    ua_underworld* underw;
+
+   //! texture manager to use for rendering
+   ua_texture_manager* texmgr;
 
    //! field of view in degrees
    double fov;

@@ -59,9 +59,11 @@ ua_renderer::ua_renderer()
 {
 }
 
-void ua_renderer::init(ua_underworld* uw, const ua_vector3d& view_offset)
+void ua_renderer::init(ua_underworld* uw, ua_texture_manager* thetexmgr,
+   const ua_vector3d& view_offset)
 {
    underw = uw;
+   texmgr = thetexmgr;
 
    // culling
    glCullFace(GL_BACK);
@@ -154,7 +156,7 @@ void ua_renderer::render()
    q.get_visible_tiles(fr,tilelist);
 
    ua_level &level = underw->get_current_level();
-   ua_texture_manager& texmgr = underw->get_game_core()->get_texmgr();
+//   ua_texture_manager& texmgr = underw->get_game_core()->get_texmgr();
 
    int i,max;
 
@@ -201,7 +203,7 @@ void ua_renderer::render()
       const ua_quad_tile_coord &qtc = tilelist[i];
       ua_levelmap_tile& tile = level.get_tile(qtc.first,qtc.second);
 
-      render_floor(tile,qtc.first,qtc.second,texmgr);
+      render_floor(tile,qtc.first,qtc.second);
    }
 
    // draw visible tile ceilings
@@ -210,7 +212,7 @@ void ua_renderer::render()
       const ua_quad_tile_coord &qtc = tilelist[i];
       ua_levelmap_tile& tile = level.get_tile(qtc.first,qtc.second);
 
-      render_ceiling(tile,qtc.first,qtc.second,texmgr);
+      render_ceiling(tile,qtc.first,qtc.second);
    }
 
    // draw all visible walls
@@ -219,14 +221,14 @@ void ua_renderer::render()
       const ua_quad_tile_coord &qtc = tilelist[i];
       ua_levelmap_tile& tile = level.get_tile(qtc.first,qtc.second);
 
-      render_walls(tile,qtc.first,qtc.second,texmgr);
+      render_walls(tile,qtc.first,qtc.second);
    }
 
    // draw all visible objects
    for(i=0;i<max;i++)
    {
       const ua_quad_tile_coord &qtc = tilelist[i];
-      render_objects(qtc.first,qtc.second,texmgr);
+      render_objects(qtc.first,qtc.second);
    }
 
 #endif
@@ -657,13 +659,13 @@ void ua_renderer::render(ua_texture_manager &texmgr)
 //}
 
 void ua_renderer::render_floor(ua_levelmap_tile& tile, unsigned int x,
-   unsigned int y, ua_texture_manager &texmgr)
+   unsigned int y)
 {
    if (tile.type == ua_tile_solid)
       return; // don't draw solid tiles
 
    // use texture
-   texmgr.use(tile.texture_floor);
+   texmgr->use(tile.texture_floor);
    glPushName((y<<8) + x);
    glPushName(tile.texture_floor+0x0400);
 
@@ -753,13 +755,13 @@ void ua_renderer::render_floor(ua_levelmap_tile& tile, unsigned int x,
 }
 
 void ua_renderer::render_ceiling(ua_levelmap_tile& tile, unsigned int x,
-   unsigned int y, ua_texture_manager& texmgr)
+   unsigned int y)
 {
    if (tile.type == ua_tile_solid)
       return; // don't draw solid tiles
 
    // use ceiling texture
-   texmgr.use(tile.texture_ceiling);
+   texmgr->use(tile.texture_ceiling);
    glPushName((y<<8) + x);
    glPushName(tile.texture_ceiling+0x0400);
 
@@ -776,7 +778,7 @@ void ua_renderer::render_ceiling(ua_levelmap_tile& tile, unsigned int x,
 }
 
 void ua_renderer::render_walls(ua_levelmap_tile& tile, unsigned int x,
-   unsigned int y, ua_texture_manager& texmgr)
+   unsigned int y)
 {
    if (tile.type == ua_tile_solid)
       return; // don't draw solid tiles
@@ -784,7 +786,7 @@ void ua_renderer::render_walls(ua_levelmap_tile& tile, unsigned int x,
    Uint16 x1, y1, z1, x2, y2, z2;
 
    // use wall texture
-   texmgr.use(tile.texture_wall);
+   texmgr->use(tile.texture_wall);
    glPushName((y<<8) + x);
    glPushName(tile.texture_wall+0x0400);
 
@@ -917,8 +919,7 @@ void ua_renderer::render_walls(ua_levelmap_tile& tile, unsigned int x,
    glPopName();
 }
 
-void ua_renderer::render_objects(unsigned int x, unsigned int y,
-   ua_texture_manager &texmgr)
+void ua_renderer::render_objects(unsigned int x, unsigned int y)
 {
    glPushName((y<<8) + x);
 
@@ -935,7 +936,7 @@ void ua_renderer::render_objects(unsigned int x, unsigned int y,
       glPushName(link1);
 
       // render object
-      render_object(obj,x,y,texmgr);
+      render_object(obj,x,y);
 
       glPopName();
 
@@ -948,8 +949,7 @@ void ua_renderer::render_objects(unsigned int x, unsigned int y,
 
 /*! objects are drawn using the method described in the billboarding tutorial,
     "Cheating - Faster but not so easy" */
-void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y,
-   ua_texture_manager &texmgr)
+void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
 {
    // don't render invisible objects
 #ifndef HAVE_DEBUG
@@ -1008,7 +1008,7 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y,
    {
       // get object texture coords
       double u1,v1,u2,v2;
-      texmgr.object_tex(obj.get_object_info().item_id,u1,v1,u2,v2);
+      texmgr->object_tex(obj.get_object_info().item_id,u1,v1,u2,v2);
 
       glEnable(GL_BLEND);
 
