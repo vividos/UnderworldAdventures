@@ -46,10 +46,13 @@
 // enums
 
 //! imported function return type
-typedef enum
+//TODO change to datatype
+enum ua_conv_ret_type
 {
-   ua_rt_void, ua_rt_int, ua_rt_string
-} ua_conv_ret_type;
+   ua_rt_void,
+   ua_rt_int,
+   ua_rt_string
+};
 
 
 //! conv code virtual machine code exceptions
@@ -92,13 +95,13 @@ public:
    ua_conv_globals(){}
 
    //! returns a list of globals for a given conv slot
-   std::vector<Uint16> &get_globals(Uint16 conv)
+   std::vector<Uint16>& get_globals(Uint16 conv)
    {
       if (conv>allglobals.size()) throw ua_ex_globals_access;
       return allglobals[conv];
    }
 
-   // loading / saving / importing
+   // loading / saving
 
    //! loads a savegame
    void load_game(ua_savegame &sg);
@@ -106,8 +109,11 @@ public:
    //! saves to a savegame
    void save_game(ua_savegame &sg);
 
-   //! imports a globals file; init=true: load file without actual globals
-   void import(const char *bgname, bool init);
+protected:
+   friend class ua_uw_import;
+
+   //! returns list of all globals
+   std::vector< std::vector<Uint16> >& get_allglobals(){ return allglobals; }
 
 protected:
    //! list with all globals from all conversations

@@ -95,48 +95,6 @@ void ua_conv_code_vm::load_imported_funcs(FILE *fd)
 }
 
 
-// ua_conv_globals methods
-
-/*! when init is set to true, the file to load only contains size entries, and no
-    actual data; globals are initalized with 0 then. */
-void ua_conv_globals::import(const char *bgname, bool init)
-{
-   // try to open file
-   FILE *fd = fopen(bgname,"rb");
-   if (fd==NULL)
-   {
-      std::string text("error loading private globals file: ");
-      text.append(bgname);
-      throw ua_exception(text.c_str());
-   }
-
-   // read in all slot/size/[globals] infos
-   while (!feof(fd))
-   {
-      Uint16 slot = fread16(fd);
-      Uint16 size = fread16(fd);
-
-      std::vector<Uint16> globals;
-      globals.resize(size,0);
-
-      if (!init)
-      {
-         // read in globals
-         for(Uint16 i=0; i<size; i++)
-            globals.push_back(fread16(fd));
-      }
-
-      // put globals in allglobals list
-      if (slot>allglobals.size())
-         allglobals.resize(slot);
-
-      allglobals.insert(allglobals.begin()+slot,globals);
-   }
-
-   fclose(fd);
-}
-
-
 // ua_conv_vm methods
 
 bool ua_conv_code_vm::load_code(const char *cnvfile, Uint16 conv)
