@@ -23,9 +23,6 @@
 
    \brief menu at game start
 
-   TODO: replace get_selected_area() with usage of ua_screen_ctrl_base::get_area()
-   functionality
-
 */
 
 // needed includes
@@ -36,6 +33,9 @@
 #include "create_character.hpp"
 #include "ingame_orig.hpp"
 #include "save_game.hpp"
+
+// get template instances for ua_start_menu_screen
+#include "message_inl.cpp"
 
 
 // constants
@@ -54,6 +54,17 @@ void ua_start_menu_screen::init(ua_game_core_interface* thecore)
    ua_ui_screen_base::init(thecore);
 
    ua_trace("start menu screen started\n");
+
+   // init message processor
+   message_init(thecore->get_screen_width(),thecore->get_screen_height());
+
+   // register some callbacks
+   ua_msg_area_coord coord;
+   coord = ua_msg_area_coord(64,248, 81,103); register_area_handler(coord,&ua_start_menu_screen::hdl_area_introduction);
+   coord = ua_msg_area_coord(64,248,104,127); register_area_handler(coord,&ua_start_menu_screen::hdl_area_createchar);
+   coord = ua_msg_area_coord(64,248,128,152); register_area_handler(coord,&ua_start_menu_screen::hdl_area_acknowledgements);
+   coord = ua_msg_area_coord(64,248,153,180); register_area_handler(coord,&ua_start_menu_screen::hdl_area_journey_onward);
+   coord = ua_msg_area_coord( 0,320,  0,200); register_area_handler(coord,&ua_start_menu_screen::hdl_area_none);
 
    // load background image
    img_screen.load_raw(core->get_settings(),"data/opscr.byt",2);
@@ -104,7 +115,6 @@ void ua_start_menu_screen::resume()
    stage = 0;
    tickcount = 0;
    journey_avail = core->get_savegames_mgr().get_savegames_count()>0;
-   buttondown = false;
    selected_area = -1;
    shiftcount=0.0;
    reupload_image = true;
@@ -121,11 +131,12 @@ void ua_start_menu_screen::done()
 
 void ua_start_menu_screen::handle_event(SDL_Event& event)
 {
+   message_handle_event(event);
+
    int last_selected_area = selected_area;
 
-   switch(event.type)
+   if (event.type == SDL_KEYDOWN)
    {
-   case SDL_KEYDOWN:
       // handle key presses
       switch(event.key.keysym.sym)
       {
@@ -150,45 +161,9 @@ void ua_start_menu_screen::handle_event(SDL_Event& event)
          }
          break;
 
-      default: break;
+      default:
+         break;
       }
-      break;
-
-   case SDL_MOUSEBUTTONDOWN:
-      // select the area where the mouse button is pressed
-      buttondown=true;
-      if (stage==1)
-         selected_area = get_selected_area();
-      break;
-
-   case SDL_MOUSEMOTION:
-      mousecursor.updatepos();
-      if (stage==1 && buttondown)
-      {
-         int ret = get_selected_area();
-         if (ret!=-1)
-            selected_area = ret;
-      }
-      break;
-
-   case SDL_MOUSEBUTTONUP:
-      buttondown=false;
-      if (stage==1)
-      {
-         // determine if user released the mouse button over the same area
-         int ret = get_selected_area();
-         if (ret != -1 && ret == selected_area)
-         {
-            stage++;
-            tickcount=0;
-         }
-
-         // fade out music when selecting "introduction"
-         if (stage==2 && selected_area == 0)
-            core->get_audio().fadeout_music(fade_time);
-      }
-      break;
-   default: break;
    }
 
    // check if selected area changed
@@ -316,25 +291,70 @@ void ua_start_menu_screen::press_button()
    }
 }
 
-int ua_start_menu_screen::get_selected_area()
+void ua_start_menu_screen::hdl_area_introduction(bool is_btn_click, bool left_btn, bool btn_pressed)
 {
-   // get mouse coordinates
-   int x,y;
-   SDL_GetMouseState(&x,&y);
+   handle_area(0,is_btn_click,left_btn,btn_pressed);
+}
 
-   unsigned int xpos,ypos;
-   xpos = unsigned(double(x)/core->get_screen_width()*320);
-   ypos = unsigned(double(y)/core->get_screen_height()*200);
+void ua_start_menu_screen::hdl_area_createchar(bool is_btn_click, bool left_btn, bool btn_pressed)
+{
+   handle_area(1,is_btn_click,left_btn,btn_pressed);
+}
 
-   // check for whole area
-   int ret;
-   if ((ypos<81 || ypos > 180) || (xpos<64 || xpos>248))
-      ret=-1;
-   else if (ypos<104) ret=0;
-   else if (ypos<128) ret=1;
-   else if (ypos<153) ret=2;
+void ua_start_menu_screen::hdl_area_acknowledgements(bool is_btn_click, bool left_btn, bool btn_pressed)
+{
+   handle_area(2,is_btn_click,left_btn,btn_pressed);
+}
+
+void ua_start_menu_screen::hdl_area_journey_onward(bool is_btn_click, bool left_btn, bool btn_pressed)
+{
+   handle_area(3,is_btn_click,left_btn,btn_pressed);
+}
+
+void ua_start_menu_screen::hdl_area_none(bool is_btn_click, bool left_btn, bool btn_pressed)
+{
+   handle_area(-1,is_btn_click,left_btn,btn_pressed);
+}
+
+void ua_start_menu_screen::handle_area(int area,bool is_btn_click,
+   bool left_btn, bool btn_pressed)
+{
+   if (is_btn_click)
+   {
+      // user clicked button
+
+      // only in stage 1
+      if (stage==1)
+      {
+         if (btn_pressed)
+         {
+            // mouse button down
+            selected_area = area;
+         }
+         else
+         {
+            // mouse button up
+
+            // determine if user released the mouse button over the same area
+            if (area != -1 && selected_area == area)
+            {
+               stage++; // next stage
+               tickcount=0;
+
+               // fade out music when selecting "introduction"
+               if (selected_area == 0)
+                  core->get_audio().fadeout_music(fade_time);
+            }
+         }
+      }
+   }
    else
-      if (journey_avail) ret=3; else ret=-1;
+   {
+      // user moved mouse
 
-   return ret;
+      mousecursor.updatepos();
+
+      if (stage==1 && (leftbuttondown || rightbuttondown) && area != -1)
+         selected_area = area;
+   }
 }

@@ -35,13 +35,15 @@
 
 // needed includes
 #include "screen.hpp"
+#include "message.hpp"
 #include "imgquad.hpp"
 
 
 // classes
 
 //! start menu screen class
-class ua_start_menu_screen: public ua_ui_screen_base
+class ua_start_menu_screen: public ua_ui_screen_base,
+   ua_message_processor<ua_start_menu_screen>
 {
 public:
    //! ctor
@@ -60,11 +62,21 @@ public:
    virtual void tick();
 
 protected:
+   void hdl_area_introduction(bool is_btn_click, bool left_btn, bool btn_pressed);
+   void hdl_area_createchar(bool is_btn_click, bool left_btn, bool btn_pressed);
+   void hdl_area_acknowledgements(bool is_btn_click, bool left_btn, bool btn_pressed);
+   void hdl_area_journey_onward(bool is_btn_click, bool left_btn, bool btn_pressed);
+   void hdl_area_none(bool is_btn_click, bool left_btn, bool btn_pressed);
+
+   void ua_start_menu_screen::handle_area(int area,bool is_btn_click,
+      bool left_btn, bool btn_pressed);
+
+protected:
    //! does a button press
    void press_button();
 
    //! determines selected area by mouse coordinates
-   int get_selected_area();
+//   int get_selected_area();
 
 protected:
    // constants
@@ -91,9 +103,6 @@ protected:
    //! indicates if "journey onward" is available
    bool journey_avail;
 
-   //! indicates if the mouse button is down
-   bool buttondown;
-
    //! start screen image
    ua_image_quad img_screen;
 
@@ -102,6 +111,8 @@ protected:
 
    //! indicates if image quad texture should be reuploaded
    bool reupload_image;
+
+   UA_MSG_CALL_HANDLER_IMPL()
 };
 
 #endif
