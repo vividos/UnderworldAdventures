@@ -28,7 +28,7 @@ AC_INIT(source/uwadv.cpp)
 
 # version info
 PACKAGE=uwadv
-VERSION=0.9-mojito
+VERSION=0.9_mojito
 
 
 AC_CANONICAL_BUILD
