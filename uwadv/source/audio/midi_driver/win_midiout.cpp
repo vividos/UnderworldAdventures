@@ -65,7 +65,7 @@ Windows_MidiOut::Windows_MidiOut() : dev_num(-1)
    InterlockedExchange (&s_playing, false);
    InterlockedExchange (&is_available, false);
    giveinfo();
-   init_device();
+//   init_device();
    giveinfo();
 }
 
@@ -107,6 +107,12 @@ Windows_MidiOut::~Windows_MidiOut()
    giveinfo();
    InterlockedExchange (&is_available, false);
    giveinfo();
+}
+
+bool Windows_MidiOut::init_driver()
+{
+   init_device();
+   return (thread_com != W32MO_THREAD_COM_INIT_FAILED);
 }
 
 void Windows_MidiOut::init_device()

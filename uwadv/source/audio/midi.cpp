@@ -43,6 +43,24 @@
 #endif
 
 
+// global functions
+
+// template function to try out midi driver
+template <typename T>
+void ua_try_midi_driver(ua_midi_driver *&mdrv)
+{
+   if (mdrv!=NULL) return;
+
+   mdrv = new T;
+
+   if (!mdrv->init_driver())
+   {
+      delete mdrv;
+      mdrv = NULL;
+   }
+}
+
+
 // ua_midi_player methods
 
 void ua_midi_player::init_player(ua_settings &settings)
@@ -60,15 +78,19 @@ void ua_midi_player::init_player(ua_settings &settings)
 
 bool ua_midi_player::init_driver()
 {
+   // test every midi driver available
+   midi_driver = NULL;
+
 #ifdef WIN32
-   midi_driver = new Windows_MidiOut;
-#elif defined(HAVE_FMOD_H)
-   midi_driver = new uni_fmod_driver;
-#else
-  midi_driver = NULL;
+   ua_try_midi_driver<Windows_MidiOut>(midi_driver);
 #endif
+
+#ifdef HAVE_FMOD_H
+   ua_try_midi_driver<uni_fmod_driver>(midi_driver);
+#endif
+
    init=true;
-   return true;
+   return midi_driver != NULL;
 }
 
 void ua_midi_player::start_track(const char *filename, int num, bool repeat)

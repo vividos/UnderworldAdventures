@@ -49,6 +49,9 @@ public:
    //! dtor
    virtual ~uni_fmod_driver();
 
+   //! initializes driver
+   virtual bool init_driver();
+
    //! starts playing an event list
    virtual void start_track(XMIDIEventList *eventlist, bool repeat);
    virtual void stop_track();

@@ -51,6 +51,9 @@ public:
    //! dtor
    virtual ~ua_midi_driver(){}
 
+   //! initializes driver; returns true if driver can be used
+   virtual bool init_driver()=0;
+
    //! starts playing an event list
    virtual void start_track(XMIDIEventList *eventlist, bool repeat)=0;
 

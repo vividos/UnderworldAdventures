@@ -41,8 +41,6 @@
 uni_fmod_driver::uni_fmod_driver()
 {
    mod = NULL;
-   // hmm, have to init sound part of FMOD to get midi to play
-   FSOUND_Init(44010,2,0);
 }
 
 uni_fmod_driver::~uni_fmod_driver()
@@ -50,6 +48,12 @@ uni_fmod_driver::~uni_fmod_driver()
    // clean up
    stop_track();
    FSOUND_Close();
+}
+
+bool uni_fmod_driver::init_driver()
+{
+   // hmm, have to init sound part of FMOD to get midi to play
+   FSOUND_Init(44010,2,0);
 }
 
 void uni_fmod_driver::start_track(XMIDIEventList *eventlist, bool repeat)

@@ -58,6 +58,9 @@ public:
 	Windows_MidiOut();
 	virtual ~Windows_MidiOut();
 
+   //! initializes driver
+   virtual bool init_driver();
+
 private:
 
 	struct mid_data {
