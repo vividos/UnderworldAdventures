@@ -40,8 +40,30 @@ extern bool ua_model_decode_builtins(const char* filename,
 
 // ua_model3d_builtin methods
 
-void ua_model3d_builtin::render(ua_vector3d& base)
+void ua_model3d_builtin::render(ua_object& obj, ua_vector3d& base)
 {
+   // hack: implementation for a_bridge
+   if (obj.get_object_info().item_id == 0x0164)
+   {
+      ua_object_info_ext& extinfo = obj.get_ext_object_info();
+
+      base.x = extinfo.tilex + 0.5;
+      base.y = extinfo.tiley + 0.5;
+      base.z += 0.06;
+
+      glBegin(GL_TRIANGLES);
+      glTexCoord2d(0.0,0.0); glVertex3d(base.x-0.5, base.y-0.5, base.z);
+      glTexCoord2d(1.0,0.0); glVertex3d(base.x+0.5, base.y-0.5, base.z);
+      glTexCoord2d(1.0,1.0); glVertex3d(base.x+0.5, base.y+0.5, base.z);
+
+      glTexCoord2d(0.0,0.0); glVertex3d(base.x-0.5, base.y-0.5, base.z);
+      glTexCoord2d(1.0,1.0); glVertex3d(base.x+0.5, base.y+0.5, base.z);
+      glTexCoord2d(0.0,1.0); glVertex3d(base.x-0.5, base.y+0.5, base.z);
+      glEnd();
+
+      return;
+   }
+
    glDisable(GL_CULL_FACE);
    glDisable(GL_TEXTURE_2D);
 
@@ -114,9 +136,31 @@ void ua_model3d_builtin::render(ua_vector3d& base)
    glEnable(GL_TEXTURE_2D);
 }
 
-void ua_model3d_builtin::get_bounding_triangles(ua_vector3d& base,
-   std::vector<ua_triangle3d_textured>& trilist)
+void ua_model3d_builtin::get_bounding_triangles(ua_object& obj,
+   ua_vector3d& base, std::vector<ua_triangle3d_textured>& trilist)
 {
+   // hack: implementation for a_bridge
+   if (obj.get_object_info().item_id == 0x0164)
+   {
+      ua_object_info_ext& extinfo = obj.get_ext_object_info();
+
+      base.x = extinfo.tilex + 0.5;
+      base.y = extinfo.tiley + 0.5;
+      base.z += 0.06*4.0;
+
+      ua_triangle3d_textured tri1,tri2;
+      tri1.set(0, base.x-0.5, base.y-0.5, base.z, 0.0,0.0);
+      tri1.set(1, base.x+0.5, base.y-0.5, base.z, 0.0,0.0);
+      tri1.set(2, base.x+0.5, base.y+0.5, base.z, 0.0,0.0);
+
+      tri2.set(0, base.x-0.5, base.y-0.5, base.z, 0.0,0.0);
+      tri2.set(1, base.x+0.5, base.y+0.5, base.z, 0.0,0.0);
+      tri2.set(2, base.x-0.5, base.y+0.5, base.z, 0.0,0.0);
+
+      trilist.push_back(tri1);
+      trilist.push_back(tri2);
+   }
+
 /*
    unsigned int max = alltriangles.size();
    for(unsigned int i=0; i<max; i++)
@@ -214,21 +258,28 @@ bool ua_model3d_manager::model_avail(Uint16 item_id)
    return allmodels.find(item_id) != allmodels.end();
 }
 
-void ua_model3d_manager::render(Uint16 item_id, ua_vector3d& base)
+void ua_model3d_manager::render(ua_object& obj, ua_vector3d& base)
 {
+   Uint16 item_id = obj.get_object_info().item_id;
+
+   // try to find model object
    std::map<Uint16,ua_model3d_ptr>::iterator iter =
       allmodels.find(item_id);
 
+   // render
    if (iter != allmodels.end())
-      iter->second->render(base);
+      iter->second->render(obj,base);
 }
 
-void ua_model3d_manager::get_bounding_triangles(Uint16 item_id,
+void ua_model3d_manager::get_bounding_triangles(ua_object& obj,
    ua_vector3d& base, std::vector<ua_triangle3d_textured>& alltriangles)
 {
+   Uint16 item_id = obj.get_object_info().item_id;
+
+   // try to find model object
    std::map<Uint16,ua_model3d_ptr>::iterator iter =
       allmodels.find(item_id);
 
    if (iter != allmodels.end())
-      iter->second->get_bounding_triangles(base,alltriangles);
+      iter->second->get_bounding_triangles(obj,base,alltriangles);
 }
