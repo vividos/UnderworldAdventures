@@ -101,7 +101,7 @@ void ua_acknowledgements_screen::handle_event(SDL_Event &event)
    case SDL_MOUSEBUTTONDOWN:
       // start crossfade immediately
       if (stage==0)
-         tickcount = (core->get_tickrate()*show_time) + 1;
+         tickcount = unsigned(core->get_tickrate()*show_time) + 1;
       break;
 
    case SDL_KEYDOWN:
