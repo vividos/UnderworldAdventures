@@ -70,7 +70,8 @@ public:
    std::vector<Uint8> &get_pixels(){ return pixels; }
 
    //! pastes a image on a specific pos
-   void paste_image(const ua_image &img, unsigned int destx,unsigned int desty);
+   void paste_image(const ua_image &img, unsigned int destx,unsigned int desty,
+      bool transparent=false);
 
    //! clears bitmap with one palette index
    void clear(Uint8 index=0);

@@ -45,18 +45,33 @@ void ua_image::create(unsigned int width, unsigned int height, unsigned int init
    palette = pal;
 }
 
-void ua_image::paste_image(const ua_image &img, unsigned int destx,unsigned int desty)
+void ua_image::paste_image(const ua_image &img, unsigned int destx,unsigned int desty,
+   bool transparent)
 {
+   // get resolution and pixel vectors
    unsigned int sxres = img.get_xres();
    unsigned int syres = img.get_yres();
 
    const std::vector<Uint8> &src = img.pixels;
    Uint8 *dest = &pixels[0];
 
-   for(unsigned int y=0; y<syres; y++)
-   for(unsigned int x=0; x<sxres; x++)
+   if (!transparent)
    {
-      dest[(y+desty)*xres+(x+destx)] = src[y*sxres+x];
+      // non-transparent paste
+      for(unsigned int y=0; y<syres; y++)
+      for(unsigned int x=0; x<sxres; x++)
+         dest[(y+desty)*xres+(x+destx)] = src[y*sxres+x];
+   }
+   else
+   {
+      // paste that omits transparent parts
+      for(unsigned int y=0; y<syres; y++)
+      for(unsigned int x=0; x<sxres; x++)
+      {
+         Uint8 pixel = src[y*sxres+x];
+         if (pixel!=0)
+            dest[(y+desty)*xres+(x+destx)] = pixel;
+      }
    }
 }
 
