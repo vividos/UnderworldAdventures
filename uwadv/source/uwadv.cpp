@@ -45,6 +45,12 @@ void ua_game::init()
 {
    ua_trace("initializing game\n");
 
+   // output SDL version number
+   {
+      const SDL_version* ver = SDL_Linked_Version();
+      ua_trace("using SDL %u.%u.%u\n",ver->major, ver->minor, ver->patch);
+   }
+
    // init files mgr; loads all config files and inits settings, too
    filesmgr.init(settings);
 
