@@ -104,9 +104,6 @@ void ua_ingame_orig_screen::init()
    glClear(GL_COLOR_BUFFER_BIT);
    SDL_GL_SwapBuffers();
 
-   // start ingame music
-   core->get_audio().start_music(2,true);
-
    cursor_image = 0;
    cursor_image_current = 0;
    cursorx = cursory = 0;
@@ -126,6 +123,8 @@ void ua_ingame_orig_screen::init()
    tickcount = 0;
    gamemode = ua_mode_default;
    panel_type = 0;
+
+   fadeout_action = 0;
 
    // adjust scroll width for uw_demo
    scrollwidth = 289;
@@ -370,6 +369,17 @@ void ua_ingame_orig_screen::resume()
    // panel texture
    tex_panel.init(&core->get_texmgr(),1,GL_LINEAR,GL_LINEAR,GL_CLAMP,GL_CLAMP);
    update_panel_texture();
+
+   if (fadeout_action == 3)
+   {
+      // after conversations, play "Dark Abyss"
+      core->get_audio().start_music(1,true);
+   }
+   else
+   {
+      // normal start, play "Descent"
+      core->get_audio().start_music(2,true);
+   }
 }
 
 void ua_ingame_orig_screen::done()
@@ -1124,6 +1134,7 @@ void ua_ingame_orig_screen::setup_opengl()
 {
    // clear color
    glClearColor(0,0,0,0);
+   glClear(GL_COLOR_BUFFER_BIT);
 
    // alpha blending
    glDisable(GL_BLEND);
@@ -1140,8 +1151,6 @@ void ua_ingame_orig_screen::setup_opengl()
       16.0);
 
    // set up scissor test
-   glClearColor(0,0,0,0);
-   glClear(GL_COLOR_BUFFER_BIT);
 
    // calculate scissor rectangle
    const unsigned int scissor_area[4] =
@@ -1625,6 +1634,9 @@ void ua_ingame_orig_screen::ui_start_conv(unsigned int convslot)
    fade_ticks = 0;
    fadeout_action = 3; // start conversation
    fadeout_param = convslot;
+
+   // fade out audio track
+   core->get_audio().fadeout_music(fade_time);
 }
 
 void ua_ingame_orig_screen::ui_show_cutscene(unsigned int cutscene)

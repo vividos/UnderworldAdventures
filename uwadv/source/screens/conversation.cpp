@@ -47,6 +47,8 @@ const double ua_conversation_screen::endconv_wait_time = 1.0;
 
 void ua_conversation_screen::init()
 {
+   ua_trace("started conversation screen, conversation #%u\n",convslot);
+
    // clear screen
    glClearColor(0,0,0,0);
    glClear(GL_COLOR_BUFFER_BIT);
@@ -177,6 +179,9 @@ void ua_conversation_screen::init()
    state = ua_state_fadein;
    fade_ticks = 0;
    wait_count = 0;
+
+   // start audio track "maps & legends" for conversations
+   core->get_audio().start_music(11,false);
 }
 
 void ua_conversation_screen::done()
@@ -189,6 +194,8 @@ void ua_conversation_screen::done()
    scroll_conv.done();
    scroll_menu.done();
    mousecursor.done();
+
+   ua_trace("ended conversation screen\n",convslot);
 }
 
 void ua_conversation_screen::handle_event(SDL_Event &event)
@@ -281,7 +288,31 @@ void ua_conversation_screen::tick()
    while(state == ua_state_running && !finished &&
          !scroll_menu.have_more_lines() && !scroll_conv.have_more_lines())
    {
-      ua_conv_code_vm::step();
+      try
+      {
+         ua_conv_code_vm::step();
+      }
+      catch(ua_conv_vm_exception e)
+      {
+         ua_trace("caught ua_conv_vm_exception: ip=%04x, type: ",instrp);
+         switch(e)
+         {
+         case ua_ex_error_loading: ua_trace("error while loading"); break;
+         case ua_ex_div_by_zero: ua_trace("division by zero"); break;
+         case ua_ex_code_access: ua_trace("code access"); break;
+         case ua_ex_globals_access: ua_trace("globals access"); break;
+         case ua_ex_stack_access: ua_trace("stack access"); break;
+         case ua_ex_unk_opcode: ua_trace("unknown opcode"); break;
+         case ua_ex_imported_na: ua_trace("imported function not available"); break;
+         default: ua_trace("unknown exception number %u",e); break;
+         }
+         finished = true;
+      }
+      catch(...)
+      {
+         ua_trace("caught unknown exception from ua_conv_code_vm::step()\n");
+         finished = true;
+      }
    }
 
    if (finished && state == ua_state_running)
@@ -294,6 +325,9 @@ void ua_conversation_screen::tick()
       fade_ticks = 0;
 
       wait_count = endconv_wait_time * core->get_tickrate();
+
+      // fade out music
+      core->get_audio().fadeout_music(fade_time);
       return;
    }
 
