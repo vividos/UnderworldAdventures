@@ -50,13 +50,11 @@ void ua_screen::destroy()
    // destroy all subwindows
    unsigned int max = subwindows.size();
    for(unsigned int i=0; i<max; i++)
-      subwindows[i]->draw();
+      subwindows[i]->destroy();
 }
 
 void ua_screen::draw()
 {
-//   ua_window::draw();
-
    // draw all subwindows
    unsigned int max = subwindows.size();
    for(unsigned int i=0; i<max; i++)
@@ -65,15 +63,14 @@ void ua_screen::draw()
 
 bool ua_screen::process_event(SDL_Event& event)
 {
-//   if (ua_window::process_event(event))
-//      return;
-
    // send event to all subwindows
-   unsigned int max = subwindows.size();
-   for(unsigned int i=0; i<max; i++)
    {
-      if (subwindows[i]->process_event(event))
-         break; // no further processing
+      unsigned int max = subwindows.size();
+      for(unsigned int i=0; i<max; i++)
+      {
+         if (subwindows[i]->process_event(event))
+            break; // no further processing
+      }
    }
 
    // check if a mouse event occured
@@ -81,15 +78,41 @@ bool ua_screen::process_event(SDL_Event& event)
        event.type == SDL_MOUSEBUTTONDOWN ||
        event.type == SDL_MOUSEBUTTONUP)
    {
+      // get coordinates
+      unsigned int xpos = event.type == SDL_MOUSEMOTION ? event.motion.x : event.button.x;
+      unsigned int ypos = event.type == SDL_MOUSEMOTION ? event.motion.y : event.button.y;
+
+      // convert to 320x200 screen coordinates
       SDL_Surface* surf = SDL_GetVideoSurface();
 
-      unsigned int xpos = unsigned(event.motion.x * 320.0 / surf->w);
-      unsigned int ypos = unsigned(event.motion.y * 200.0 / surf->h);
+      xpos = unsigned(xpos * 320.0 / surf->w);
+      ypos = unsigned(ypos * 200.0 / surf->h);
+
+      // first, send mouse event to main screen window
+      bool left_button = event.type != SDL_MOUSEMOTION &&
+         ((event.button.button & SDL_BUTTON_LEFT) != 0);
+
+      mouse_event(event.type != SDL_MOUSEMOTION,
+         left_button,
+         event.type == SDL_MOUSEBUTTONDOWN,
+         xpos,ypos);
 
       // send event to subwindows that are in that area
-      // TODO:
-      // check SDL_MouseMotionEvent::motion and SDL_MouseButtonEvent::button for that
-      // call ua_screen::mouse_event() when found
+      unsigned int max = subwindows.size();
+      for(unsigned int i=0; i<max; i++)
+      {
+         ua_window& wnd = *subwindows[i];
+
+         // mouse in area?
+         if (xpos > wnd.get_xpos() && xpos < wnd.get_xpos()+wnd.get_width() &&
+             ypos > wnd.get_ypos() && ypos < wnd.get_ypos()+wnd.get_height())
+         {
+            wnd.mouse_event(event.type != SDL_MOUSEMOTION,
+               left_button,
+               event.type == SDL_MOUSEBUTTONDOWN,
+               xpos,ypos);
+         }
+      }
    }
 
    return true;
