@@ -60,7 +60,8 @@ function dump_objinfo_table(obj_handle)
       category .. format(" = %04x\n",objinfo.quantity) ..
 
       " pos = " .. objinfo.xpos .. " / " .. objinfo.ypos ..
-      ", height = " .. objinfo.zpos .. ", heading  = " .. objinfo.heading .. "\n" ..
+      ", height = " .. objinfo.zpos .. ", heading  = " .. objinfo.heading ..
+      format(", tile = %02x/%02x\n", objinfo.tilex, objinfo.tiley) ..
 
       " enchanted = " .. objinfo.enchanted ..
       ", is_quantity = " .. objinfo.is_quantity ..
