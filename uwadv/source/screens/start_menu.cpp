@@ -32,7 +32,7 @@
 #include "renderer.hpp"
 #include "savegame.hpp"
 //#include "cutscene_view.hpp"
-//#include "acknowledgements.hpp"
+#include "acknowledgements.hpp"
 //#include "create_character.hpp"
 //#include "ingame_orig.hpp"
 //#include "save_game.hpp"
@@ -250,7 +250,7 @@ void ua_start_menu_screen::press_button()
       break;
 
    case 2: // "acknowledgements"
-      //game->replace_screen(new ua_acknowledgements_screen,true);
+      game->replace_screen(new ua_acknowledgements_screen,true);
       break;
 
    case 3: // "journey onward"
