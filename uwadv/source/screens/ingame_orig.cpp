@@ -1140,8 +1140,8 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
          int x,y;
          SDL_GetMouseState(&x,&y);
 
-         unsigned int tilex, tiley, id;
-         bool isobj;
+         unsigned int tilex=0, tiley=0, id=0;
+         bool isobj = true;
 
          renderer.select_pick(x,y,tilex,tiley,isobj,id);
 
@@ -1150,9 +1150,12 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
             // "look" action
             if (isobj)
             {
-               // user clicked on an object
-               Uint32 level = core->get_underworld().get_player().get_attr(ua_attr_maplevel);
-               core->get_underworld().get_scripts().lua_objlist_look(level,id);
+               if (id != 0)
+               {
+                  // user clicked on an object
+                  Uint32 level = core->get_underworld().get_player().get_attr(ua_attr_maplevel);
+                  core->get_underworld().get_scripts().lua_objlist_look(level,id);
+               }
             }
             else
             {
@@ -1173,7 +1176,19 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
                //core->get_underworld().get_scripts().lua_wall_look();
             }
          }
-
+         else
+         if (gamemode == ua_mode_use)
+         {
+            if (isobj)
+            {
+               // use object in map
+               Uint32 level = core->get_underworld().get_player().get_attr(ua_attr_maplevel);
+               core->get_underworld().get_scripts().lua_objlist_use(level,id);
+            }
+            else
+            {
+            }
+         }
          if (gamemode == ua_mode_talk && isobj)
          {
             Uint32 level = core->get_underworld().get_player().get_attr(ua_attr_maplevel);
