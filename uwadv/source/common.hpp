@@ -47,8 +47,11 @@
 #include "SDL_opengl.h"
 
 
-// other includes
+// uwadv includes
 #include "utils.hpp"
+#include "uamath.hpp"
+#include "settings.hpp"
+#include "game_interface.hpp"
 
 
 #endif
