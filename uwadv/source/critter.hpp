@@ -72,8 +72,14 @@ protected:
    //! segment list with list of used frames
    std::vector<std::vector<Uint8> > segmentlist;
 
-   //! all critter animation frames
-   ua_image_list allframes;
+   //! array with all frame bytes
+   ua_smart_ptr<Uint8> allframe_bytes;
+
+   //! frame resolution
+   unsigned int xres, yres;
+
+   //! max. number of frames stored in allframe_bytes
+   unsigned int maxframes;
 
    //! hotspot point in image
    unsigned int hot_x, hot_y;

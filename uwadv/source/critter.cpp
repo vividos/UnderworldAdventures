@@ -39,6 +39,7 @@ const double critter_fps = 1.0;
 // ua_critter methods
 
 ua_critter::ua_critter()
+:allframe_bytes(NULL)
 {
    animcount = 0.0;
    currentframe = 0;
@@ -46,13 +47,13 @@ ua_critter::ua_critter()
 
 void ua_critter::prepare(ua_texture_manager& texmgr)
 {
-   unsigned int max = allframes.size();
+   tex.init(&texmgr,maxframes);
 
-   tex.init(&texmgr,max);
-
-   for(unsigned int i=0; i<max; i++)
+   for(unsigned int i=0; i<maxframes; i++)
    {
-      tex.convert(allframes.get_image(i),i);
+      tex.convert(&allframe_bytes.get()[i*xres*yres],         
+         xres,yres,texmgr.get_palette(0),i);
+
       tex.upload(i,false);
       // using mipmapped textures (2nd param "true") disables the alpha
       // channel somehow; might be a driver problem

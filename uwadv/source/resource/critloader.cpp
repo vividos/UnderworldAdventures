@@ -35,24 +35,24 @@
 
 // external functions
 
-extern void ua_image_decode_rle(FILE *fd,std::vector<Uint8> &pixels,unsigned int bits,
+extern void ua_image_decode_rle(FILE *fd,Uint8* pixels,unsigned int bits,
    unsigned int datalen,unsigned int maxpix,unsigned char *auxpalidx);
 
 
 // ua_critter methods
 
+extern unsigned int memory_used;
+
 void ua_critter::load(const char* file, unsigned int used_auxpal)
 {
-   std::vector<ua_image>& allframes_list = allframes.get_allimages();
-
    unsigned int maxleft,maxright,maxtop,maxbottom;
    maxleft = maxright = maxtop = maxbottom = 0;
 
-   ua_image img_frame;
+   maxframes = 0;
 
    // do 2-pass loading:
-   // pass 0:  determine max. frame image size
-   // pass 1:  load frame images
+   // pass 0: determine max. frame image size
+   // pass 1: load frame images
    for(unsigned int pass=0; pass<2; pass++)
    {
       unsigned int curpage = 0;
@@ -62,7 +62,19 @@ void ua_critter::load(const char* file, unsigned int used_auxpal)
       if (pass==1)
       {
          // pass 1: init frame image
-         img_frame.create(maxleft+maxright,maxtop+maxbottom);
+
+         xres = maxleft+maxright;
+         yres = maxtop+maxbottom;
+
+#ifdef DO_CRITLOAD_DEBUG
+         unsigned int used_bytes = maxframes * xres * yres;
+
+         printf("allocating %u frames (%ux%u), %u bytes\n",maxframes,xres,yres,used_bytes);
+
+         memory_used += used_bytes;
+#endif
+
+         allframe_bytes = ua_smart_ptr<Uint8>(new Uint8[maxframes * xres * yres]);
       }
 
       while(true)
@@ -129,11 +141,8 @@ void ua_critter::load(const char* file, unsigned int used_auxpal)
                   for(unsigned int j=0; j<8; j++)
                   {
                      Uint8 frame = fgetc(fd);
-#ifdef HAVE_DEBUG
-                     cursegment[j] = j==0 ? 0 : 0xff;
-#else
+
                      cursegment[j] = frame == 0xff ? frame : (frame + frame_offset);
-#endif
                   }
                }
 
@@ -164,14 +173,11 @@ void ua_critter::load(const char* file, unsigned int used_auxpal)
             unsigned int noffsets = fgetc(fd);
             unsigned int unknown1 = fgetc(fd);
 
-            if (pass==1)
+            if (pass==0)
             {
-               // resize image list to gain a little performance
-#ifdef HAVE_DEBUG
-               allframes_list.resize(1);
-#else
-               allframes_list.resize(noffsets+frame_offset);
-#endif
+               // determine number of frames in critter
+               if (maxframes < noffsets+frame_offset)
+                  maxframes = noffsets+frame_offset;
             }
 
             // read in frame offsets
@@ -183,11 +189,6 @@ void ua_critter::load(const char* file, unsigned int used_auxpal)
 
             for(unsigned int n=0; n<noffsets; n++)
             {
-#ifdef HAVE_DEBUG
-               if (pass==1 && n+frame_offset>0)
-                  break; // only load first frame
-#endif
-
                // seek to frame header
                fseek(fd,alloffsets[n],SEEK_SET);
                unsigned int width,height,hotx,hoty,type;
@@ -223,21 +224,13 @@ void ua_critter::load(const char* file, unsigned int used_auxpal)
 
                   Uint16 datalen = fread16(fd);
 
-                  ua_image img_temp;
-                  img_temp.create(width,height);
-
                   // rle-decode image
-                  ua_image_decode_rle(fd,img_temp.get_pixels(),
+                  // TODO pass pitch and line length
+                  Uint8* curpos = &allframe_bytes.get()[0];
+                     //&allframe_bytes.get()[(frame_offset+n)*xres*yres];
+
+                  ua_image_decode_rle(fd,curpos,
                      type==6 ? 5 : 4, datalen, width*height, auxpal);
-
-                  // copy to frame
-                  img_frame.clear();
-
-                  // paste to frame
-                  img_frame.paste_image(img_temp,
-                     maxleft-hotx, maxtop-hoty);
-
-                  allframes_list[frame_offset+n] = img_frame;
                }
                // end of current frame
             }
