@@ -2,7 +2,6 @@ Makefile
 .deps
 uwadv
 Makefile.in
-uwadv.cfg
 config.h
 config.h.in
 stamp-h*
