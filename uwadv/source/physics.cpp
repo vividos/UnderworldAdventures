@@ -132,6 +132,7 @@ void ua_physics_model::calc_collision(ua_vector2d &pos, const ua_vector2d &dir)
 
    // check all lines in all nearby tiles
    for(int tx=-1; tx<2; tx++) for(int ty=-1; ty<2; ty++)
+//   int tx=0,ty=0;
    {
       unsigned int tilex = unsigned(pos.x)+tx, tiley = unsigned(pos.y)+ty;
       collide |= check_collision_tile(tilex,tiley,data);
@@ -143,7 +144,7 @@ void ua_physics_model::calc_collision(ua_vector2d &pos, const ua_vector2d &dir)
       ua_vector2d newdir(dir);
       newdir *= 1.0-ua_physics_min_dist;
       pos+=newdir;
-         
+
       return;
    }
    else
@@ -153,17 +154,16 @@ void ua_physics_model::calc_collision(ua_vector2d &pos, const ua_vector2d &dir)
       // how far away:
       ua_vector2d newpos(pos);
       ua_vector2d newdir(dir);
-    
 
       // move close to where we hit something (but not too close! (tm))
       if (data.nearest_dist > ua_physics_min_dist) {
         newdir.normalize();
         newdir *= (data.nearest_dist - ua_physics_min_dist);
-      
+
         // calc new pos
         newpos += newdir;
       }
-     
+
       // calc sliding line normal vector
       ua_vector2d sliding;
       sliding.set(data.line_inter,newpos);
@@ -186,7 +186,7 @@ void ua_physics_model::calc_collision(ua_vector2d &pos, const ua_vector2d &dir)
       newdir *= 4;
 
 
-#ifdef DEBUG
+#ifdef HAVE_DEBUG
       static level=0;
 
       if (level>10)
@@ -197,7 +197,7 @@ void ua_physics_model::calc_collision(ua_vector2d &pos, const ua_vector2d &dir)
       // check new pos and dir, recursively
       calc_collision(newpos,newdir);
 
-#ifdef DEBUG
+#ifdef HAVE_DEBUG
       level--;
 #endif
 
@@ -290,7 +290,7 @@ bool ua_physics_model::check_collision(const ua_vector2d &point1,const ua_vector
       double height2 = level.get_floor_height(testpt2.x,testpt2.y);
 
       if (height2<height1+ua_physics_max_step_height)
-         return false;
+         return false; // no need to test
    }
 
    // step 1: calculate player circle intersection point
@@ -319,20 +319,23 @@ bool ua_physics_model::check_collision(const ua_vector2d &point1,const ua_vector
       // -2*ua_player_radius < dist < 0 : circle spans line
       // dist < -2*ua_player_radius :     circle behind line
 
-      // ignore back of lines
+      // ignore when behind line
       if (dist<-2*ua_player_radius)
          return false;
 
       ua_vector2d ray(data.dir);
       if (dist < 0 && dist > -2*ua_player_radius)
+      {
          ray = norm;
+         ray *= ua_player_radius;
+      }
 
       // find plane intersection point
       ua_vector2d pos1(circle_inter);
       ua_vector2d pos2(pos1);
       pos2+=ray;
 
-      /* we have to lines, g and h (all vars are vectors):
+      /* we have two lines, g and h (all vars are vectors):
 
          g: x = point1 + lambda * line
          h: x = circle_inter + mu * ray
@@ -371,6 +374,11 @@ bool ua_physics_model::check_collision(const ua_vector2d &point1,const ua_vector
          ua_vector2d temp;
          temp.set(line_inter,circle_inter);
          dist_to_inters = temp.length();
+
+         // check if temp and norm vector point in the opposite direction
+         double d = temp.dot(norm);
+         if (d<-0.99*dist_to_inters)
+            dist_to_inters *= -1.0;
       }
 
       // step 3: correct line intersection point, if we didn't hit the line
