@@ -115,7 +115,7 @@ class ua_save_game_savegames_list: public ua_image_quad
 {
 public:
    //! ctor
-   ua_save_game_savegames_list(){}
+   ua_save_game_savegames_list():selected_savegame(-1){}
 
    //! initializes savegames list
    void init(ua_save_game_screen* screen, ua_game_interface& game,
