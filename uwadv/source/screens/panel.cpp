@@ -343,11 +343,11 @@ void ua_panel::update_runebag()
    ua_image& img = get_image();
    img.paste_image(img_panels[1],1,1);
 
-   ua_inventory& inv = panel_parent->get_game_interface().
-      get_underworld().get_inventory();
+   std::bitset<24>& runebag = panel_parent->get_game_interface().
+      get_underworld().get_player().get_runes().get_runebag();
 
    for(unsigned int i=0; i<24; i++)
-      if (inv.get_runebag().test(i))
+      if (runebag.test(i))
          img.paste_rect(img_objects[0x00e8+i], 0,0, 14,14,
             (i&3)*18+9, (i>>2)*15+6, true);
 }
