@@ -35,10 +35,21 @@
 
 void ua_conv_graph::init(std::vector<Uint16> code,
    Uint16 codestart, Uint16 codeend,
-   std::vector<std::string>& mystrings)
+   std::vector<std::string>& mystrings,
+   std::vector<std::string>& myimported_funcs,
+   std::vector<std::string>& myimported_vars,
+   Uint16 mynumglobals)
 {
    strings.clear();
    strings = mystrings;
+
+   imported_funcs.clear();
+   imported_funcs = myimported_funcs;
+
+   imported_vars.clear();
+   imported_vars = myimported_vars;
+
+   nglobals = mynumglobals;
 
    printf("converting to graph\n");
 
@@ -60,16 +71,16 @@ void ua_conv_graph::init(std::vector<Uint16> code,
    }
 
    // add "extern private[]" decl
-   /* TODO: {
+   {
       ua_conv_graph_item declitem;
       declitem.itemtype = gt_decl;
 
       char buffer[256];
-      sprintf(buffer,"extern int private[%u];\n",imported_globals.size());
+      sprintf(buffer,"extern int private[%u];\n",imported_vars.size());
       declitem.plaintext.append(buffer);
 
       graph.insert(graph.begin(),declitem);
-   }*/
+   }
 }
 
 void ua_conv_graph::process()
@@ -89,54 +100,6 @@ void ua_conv_graph::process()
    printf("fixing up functions\n");
    fixup_functions();
 }
-
-#if 0
-void ua_conv_graph::xref_labels()
-{
-   // go through code and search for label targets
-   for(unsigned int i=0; i<graph.size(); i++)
-   {
-      ua_conv_graph_item& item = graph[i];
-
-      // check out jumps
-      if (item.opcode == op_JMP || item.opcode == op_BEQ || item.opcode == op_BNE ||
-          item.opcode == op_BRA || item.opcode == op_CALL)
-      {
-         // calc jump target
-         Uint16 target = item.arg;
-
-         // correct relative targets for branch instructions
-         if (item.opcode == op_BEQ || item.opcode == op_BNE || item.opcode == op_BRA)
-            target += item.pos + 1;
-
-         Uint16 itempos = item.pos;
-
-         unsigned int pos = find_pos(target);
-/*
-         // create new label item
-         {
-            ua_conv_graph_item labelitem;
-
-            labelitem.itemtype = gt_label;
-            labelitem.pos = target;
-
-            // set label name
-            char buffer[32];
-            sprintf(buffer,"label_%04x",target);
-            labelitem.plaintext.assign(buffer);
-
-            graph.insert(graph.begin()+i,labelitem);
-         }
-
-         if (pos<i)
-            i++; // label item was inserted before current code place, so correct i
-
-         graph[pos].label_xref.push_back(itempos);
-*/
-      }
-   }
-}
-#endif
 
 
 /* replace function entry code:
@@ -510,7 +473,7 @@ void ua_conv_graph::fold_expressions()
                else
                {
                   // value is global/private
-                  ptrtext.assign(format_global(opitem0.arg));
+                  format_global(opitem0.arg,ptrtext);
                }
 
                char buffer[256];
@@ -545,7 +508,8 @@ void ua_conv_graph::fold_expressions()
                }
                else
                   // fetch global/private value
-                  new_plaintext.assign(format_global(opitem.arg));
+                  new_plaintext.erase();
+                  format_global(opitem.arg,new_plaintext);
             }
             else
             {
@@ -620,7 +584,8 @@ void ua_conv_graph::fold_expressions()
             if (!lvalue.expr_address)
             {
                // store to global/private
-               lstr.assign(format_global(lvalue.arg));
+               lstr.erase();
+               format_global(lvalue.arg,lstr);
             }
             else
             {
@@ -1108,28 +1073,19 @@ bool ua_conv_graph::is_opcode(unsigned int pos, Uint16 opcode)
    return (graph[pos].itemtype == gt_opcode && graph[pos].opcode == opcode);
 }
 
-const std::string& ua_conv_graph::format_global(Uint16 offset)
+void ua_conv_graph::format_global(Uint16 offset,std::string& str)
 {
-/*TODO
    char buffer[256];
-
-   if (offset<imported_globals.size())
-   {
-      if (imported_globals[offset].name.empty())
-      {
-         sprintf(buffer,"global[%u]",offset);
-         format_global_str = buffer;
-      }
-      else
-         format_global_str = imported_globals[offset].name;
-   }
+   if (offset<nglobals)
+      sprintf(buffer,"global[%u]",offset);
    else
    {
-      sprintf(buffer,"private[%u]",offset-imported_globals.size());
-      format_global_str = buffer;
-   }*/
-
-   return format_global_str;
+      if (offset<nglobals+imported_vars.size())
+         strcpy(buffer,imported_vars[offset-nglobals].c_str());
+      else
+         sprintf(buffer,"private[%u]",offset-nglobals-imported_vars.size());
+   }
+   str.append(buffer);
 }
 
 void ua_conv_graph::insert_control(const char* str, unsigned int graph_pos,

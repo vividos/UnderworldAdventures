@@ -71,13 +71,13 @@ struct ua_conv_graph_item
    //! indicates if expression is finished or has a result value on stack
    bool expr_finished;
 
-   //! indicates if expression is an address
+   //! indicates if expression is an address or a value
    bool expr_address;
 
    //! operator: number of operands needed
    unsigned int oper_needed;
 
-   //! number of indendations to change
+   //! number of indendation steps to change
    int indent_change;
 
    //! plain text of "transformed" item
@@ -113,7 +113,9 @@ public:
    //! initializes conversation graph
    void init(std::vector<Uint16> code,
       Uint16 codestart, Uint16 codeend,
-      std::vector<std::string>& strings);
+      std::vector<std::string>& strings,
+      std::vector<std::string>& imported_funcs,
+      std::vector<std::string>& imported_vars, Uint16 numglobals);
 
    //! processes graph
    void process();
@@ -149,7 +151,7 @@ protected:
    bool is_opcode(unsigned int pos, Uint16 opcode);
 
    //! formats a global string from an immediate value
-   const std::string& format_global(Uint16 offset);
+   void format_global(Uint16 offset,std::string& str);
 
    //! inserts a control item
    void insert_control(const char* str, unsigned int graph_pos,
@@ -168,8 +170,11 @@ protected:
    //! name of all imported functions
    std::vector<std::string> imported_funcs;
 
-   //! temp. string used by format_global()
-   std::string format_global_str;
+   //! name of all imported variables
+   std::vector<std::string> imported_vars;
+
+   //! number of globals before imported vars
+   Uint16 nglobals;
 };
 
 
