@@ -203,6 +203,10 @@ protected:
    //! indicates that mouse movement is currently on
    bool mouse_move;
 
+   //! indicates if there is a movement key pressed
+   bool move_turn_left, move_turn_right,
+      move_walk_forward, move_run_forward, move_walk_backwards;
+
 
    // inventory / item dragging
 

@@ -110,6 +110,8 @@ void ua_ingame_orig_screen::init()
    cursor_is_object = false;
    mouse_move = false;
 
+   move_turn_left = move_turn_right = move_walk_forward = move_walk_backwards = false;
+
    slot_start = 0;
    check_dragging = false;
 
@@ -434,52 +436,83 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    if (keymap.is_key(ua_key_run_forward,keymod) ||
        keymap.is_key(ua_key_run_forward_easymove,keymod) )
    {
+      move_run_forward = (type==SDL_KEYDOWN);
       if (type==SDL_KEYDOWN)
       {
          pl.set_movement_factor(ua_move_walk,1.0);
          pl.set_movement_mode(ua_move_walk);
       }
       else
-         pl.set_movement_mode(0,ua_move_walk);
+      {
+         if (move_walk_backwards)
+            pl.set_movement_factor(ua_move_walk,-0.4);
+         else
+            if (move_walk_forward)
+               pl.set_movement_factor(ua_move_walk,0.6);
+            else
+               pl.set_movement_mode(0,ua_move_walk);
+      }
    }
    else
    // check for walk forward keys
    if (keymap.is_key(ua_key_walk_forward,keymod) ||
        keymap.is_key(ua_key_walk_forward_easymove,keymod) )
    {
+      move_walk_forward = (type==SDL_KEYDOWN);
       if (type==SDL_KEYDOWN)
       {
          pl.set_movement_factor(ua_move_walk,0.6);
          pl.set_movement_mode(ua_move_walk);
+         
       }
       else
-         pl.set_movement_mode(0,ua_move_walk);
+      {
+         if (move_walk_backwards)
+            pl.set_movement_factor(ua_move_walk,-0.4);
+         else
+            if (move_run_forward)
+               pl.set_movement_factor(ua_move_walk,1.0);
+            else
+               pl.set_movement_mode(0,ua_move_walk);
+      }
    }
    else
    // check for turn left key
    if (keymap.is_key(ua_key_turn_left,keymod) ||
        keymap.is_key(ua_key_turn_left_easymove,keymod) )
    {
+      move_turn_left = (type==SDL_KEYDOWN);
       if (type==SDL_KEYDOWN)
       {
          pl.set_movement_factor(ua_move_rotate,1.0);
          pl.set_movement_mode(ua_move_rotate);
       }
       else
-         pl.set_movement_mode(0,ua_move_rotate);
+      {
+         if (move_turn_right)
+            pl.set_movement_factor(ua_move_rotate,-1.0);
+         else
+            pl.set_movement_mode(0,ua_move_rotate);
+      }
    }
    else
    // check for turn right key
    if (keymap.is_key(ua_key_turn_right,keymod) ||
        keymap.is_key(ua_key_turn_right_easymove,keymod) )
    {
+      move_turn_right = (type==SDL_KEYDOWN);
       if (type==SDL_KEYDOWN)
       {
          pl.set_movement_factor(ua_move_rotate,-1.0);
          pl.set_movement_mode(ua_move_rotate);
       }
       else
-         pl.set_movement_mode(0,ua_move_rotate);
+      {
+         if (move_turn_left)
+            pl.set_movement_factor(ua_move_rotate,1.0);
+         else
+            pl.set_movement_mode(0,ua_move_rotate);
+      }
    }
    else
    // check for slide left
@@ -510,13 +543,20 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    if (keymap.is_key(ua_key_walk_backwards,keymod) ||
        keymap.is_key(ua_key_walk_backwards_easymove,keymod) )
    {
+      move_walk_backwards = (type==SDL_KEYDOWN);
+
       if (type==SDL_KEYDOWN)
       {
          pl.set_movement_factor(ua_move_walk,-0.4);
          pl.set_movement_mode(ua_move_walk);
       }
       else
-         pl.set_movement_mode(0,ua_move_walk);
+      {
+         if (move_walk_forward || move_run_forward)
+            pl.set_movement_factor(ua_move_walk,move_run_forward ? 1.0 : 0.6);
+         else
+            pl.set_movement_mode(0,ua_move_walk);
+      }
    }
    else
    // check for look up key
