@@ -79,7 +79,7 @@ void strpak_unpack_strings(const char *infile,const char *outfile)
       Uint16 nodes = 0;
       if (test!=NULL)
       {
-         fread16(test);
+         nodes = fread16(test);
          fclose(test);
       }
 
