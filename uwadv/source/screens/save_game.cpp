@@ -307,6 +307,20 @@ void ua_save_game_screen::handle_event(SDL_Event& event)
    case SDL_MOUSEMOTION: // mouse has moved
       mousecursor.updatepos();
       break;
+
+   case SDL_KEYDOWN: // key was pressed
+      switch(event.key.keysym.sym)
+      {
+      case SDLK_ESCAPE:
+         // simulate press on exit button
+         if (fade_state == 1)
+         {
+            button_highlight = 3;
+            press_button();
+         }
+         break;
+      }
+      break;
    }
 }
 
@@ -379,7 +393,7 @@ void ua_save_game_screen::tick()
          switch(button_highlight)
          {
          case 0: // load
-		 {
+         {
             ua_trace("loading saved game, filename %s\n",
                sgmgr->get_savegame_filename(selected_savegame).c_str());
 
@@ -398,7 +412,8 @@ void ua_save_game_screen::tick()
             else
                core->pop_screen();
             break;
-		 }
+         }
+
          case 3: // exit
             core->pop_screen();
             break;
