@@ -1171,7 +1171,7 @@ void ua_renderer::render_tmap_obj(ua_object& obj, unsigned int x, unsigned int y
       extinfo.zpos/4.0*height_scale);
 
    unsigned int x_fr = extinfo.xpos;
-   unsigned int y_fr = extinfo.xpos;
+   unsigned int y_fr = extinfo.ypos;
 
    // determine direction
    ua_vector3d dir;
