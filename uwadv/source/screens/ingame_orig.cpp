@@ -36,14 +36,16 @@
 void ua_ingame_orig_screen::init()
 {
    walk = false;
-
    fov = 90.0;
    playeryangle = 0.0;
-
    leftbuttondown = rightbuttondown = false;
 
    setup_opengl();
 
+   core->get_underworld().import_savegame(core->get_settings(),"data/",true);
+   core->get_underworld().change_level(0);
+
+   // load all needed images
    const char *mainscreenname = "data/main.byt";
 
    // replace name for uw_demo
@@ -83,6 +85,8 @@ void ua_ingame_orig_screen::handle_event(SDL_Event &event)
 
 void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
 {
+   static int curlevel = 0;
+
    switch(keysym.sym)
    {
    case SDLK_UP:
@@ -100,6 +104,16 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    case SDLK_LEFT:
       walk = (type==SDL_KEYDOWN);
       walk_dir = 270.0;
+      break;
+
+   case SDLK_PAGEUP:
+      if (curlevel>0 && type==SDL_KEYDOWN)
+         core->get_underworld().change_level(--curlevel);
+      break;
+
+   case SDLK_PAGEDOWN:
+      if (curlevel<9 && type==SDL_KEYDOWN)
+         core->get_underworld().change_level(++curlevel);
       break;
    }
 }
