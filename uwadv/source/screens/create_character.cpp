@@ -213,7 +213,7 @@ void ua_create_character_screen::done()
 
    // close Lua
    lua_close(L);
-   ua_trace("character creation screen ended\n");
+   ua_trace("character creation screen ended\n\n");
 
    current_screen = 0;
 }
