@@ -561,16 +561,19 @@ void ua_uwadv_game::init_game()
 
    ua_trace("initializing game; prefix: %s\n",prefix.c_str());
 
-   // load game config file
-   std::string gamecfg_name(prefix);
-   gamecfg_name.append("/game.cfg");
-
-   // init scripting
+   // init Lua scripting
    scripting = ua_scripting::create_scripting(ua_script_lang_lua);
+
+   // check if scripting was set
    if (scripting == NULL)
       throw ua_exception("could not create scripting object");
 
    scripting->init(this);
+   underworld.set_scripting(scripting);
+
+   // load game config file
+   std::string gamecfg_name(prefix);
+   gamecfg_name.append("/game.cfg");
 
    // try to load %prefix%/game.cfg
    {
