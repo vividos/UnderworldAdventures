@@ -544,6 +544,8 @@ void ua_level::render(ua_texture_manager &texmgr,ua_frustum &fr)
 
 #else
 
+   glColor3ub(192,192,192);
+
    // draw floor tile polygons, for all visible tiles
    max = tilelist.size();
    for(i=0;i<max;i++)
@@ -568,8 +570,6 @@ void ua_level::render(ua_texture_manager &texmgr,ua_frustum &fr)
 
 #endif
 
-   glLoadName(0);
-
    // set up new viewpoint, "view coordinates" used in ua_object::render()
    glPushMatrix();
    glLoadIdentity();
@@ -590,6 +590,8 @@ void ua_level::render(ua_texture_manager &texmgr,ua_frustum &fr)
 void ua_level::render(ua_texture_manager &texmgr)
 {
    int x,y;
+
+   glColor3ub(192,192,192);
 
    for(y=0; y<64;y++) for(x=0; x<64;x++)
       render_floor(x,y,texmgr);
@@ -626,9 +628,8 @@ void ua_level::render_floor(unsigned int x, unsigned int y, ua_texture_manager &
 
    // use texture
    texmgr.use(tile.texture_floor);
-   glLoadName(tile.texture_floor+0x0400);
-
-   glColor3ub(192,192,192);
+//   glPushName(tile.texture_floor+0x0400);
+   glPushName(((tile.texture_floor+0x0400)<<16)+(y<<8) + x);
 
    // draw floor tile
    switch(tile.type)
@@ -710,6 +711,8 @@ void ua_level::render_floor(unsigned int x, unsigned int y, ua_texture_manager &
       glEnd();
       break;
    }
+
+   glPopName();
 }
 
 void ua_level::render_ceiling(unsigned int x, unsigned int y, ua_texture_manager &texmgr)
@@ -720,9 +723,8 @@ void ua_level::render_ceiling(unsigned int x, unsigned int y, ua_texture_manager
 
    // use ceiling texture
    texmgr.use(ceiling_texture);
-   glLoadName(ceiling_texture+0x0400);
-
-   glColor3ub(192,192,192);
+//   glPushName(ceiling_texture+0x0400);
+   glPushName(((ceiling_texture+0x0400)<<16)+(y<<8) + x);
 
    // draw ceiling tile; for simplicity, we only draw a square
    glBegin(GL_QUADS);
@@ -731,6 +733,8 @@ void ua_level::render_ceiling(unsigned int x, unsigned int y, ua_texture_manager
    glTexCoord2d(1.0,1.0); glVertex3d(x+1,y+1,tile.ceiling*height_scale);
    glTexCoord2d(0.0,1.0); glVertex3d(x+1,y,tile.ceiling*height_scale);
    glEnd();
+
+   glPopName();
 }
 
 void ua_level::render_walls(unsigned int x, unsigned int y, ua_texture_manager &texmgr)
@@ -743,8 +747,9 @@ void ua_level::render_walls(unsigned int x, unsigned int y, ua_texture_manager &
 
    // use wall texture
    texmgr.use(tile.texture_wall);
-   glLoadName(tile.texture_wall+0x0400);
-
+//   glPushName(tile.texture_wall+0x0400);
+   glPushName(((tile.texture_wall+0x0400)<<16)+(y<<8) + x);
+ 
    // draw diagonal walls
    switch(tile.type)
    {
@@ -868,13 +873,13 @@ void ua_level::render_walls(unsigned int x, unsigned int y, ua_texture_manager &
       // now that we have all info, draw the tile wall
       render_wall((ua_levelmap_wall_render_side)side,x1,y1,z1,x2,y2,z2,nz1,nz2,tile.ceiling);
    }
+
+   glPopName();
 }
 
 void ua_level::render_objs(unsigned int x, unsigned int y,
    ua_texture_manager &texmgr, ua_frustum &fr)
 {
-   glLoadName(0);
-
    ua_object obj;
 
    if (allobjects.get_first_tile_object(x,y,obj))

@@ -383,6 +383,7 @@ void ua_ingame_orig_screen::render()
    gluOrtho2D(0.0, 1.0, 0.0, 1.0);
 
    glMatrixMode(GL_MODELVIEW);
+   glPushMatrix();
    glLoadIdentity();
 
    glDisable(GL_DEPTH_TEST);
@@ -422,15 +423,17 @@ void ua_ingame_orig_screen::render()
    // render all user interface graphics
    render_ui();
 
-   // restore old projection matrix and settings
+   // restore old settings
    glEnable(GL_FOG);
    glEnable(GL_SCISSOR_TEST);
    glDisable(GL_BLEND);
    glEnable(GL_DEPTH_TEST);
 
    glMatrixMode(GL_PROJECTION);
-   glPopMatrix();
+   glPopMatrix(); // restore proj. matrix
    glMatrixMode(GL_MODELVIEW);
+   glPopMatrix(); // restore modelview matrix
+   // note: modelview matrix is sometimes needed for selection
 }
 
 void ua_ingame_orig_screen::render_ui()
@@ -600,7 +603,7 @@ void ua_ingame_orig_screen::render_ui()
    {
       ua_image img_coords;
       char buffer[256];
-      sprintf(buffer,"x=%u y=%u area=%u hit=%04x",cursorx,cursory,
+      sprintf(buffer,"x=%u y=%u area=%u hit=%08x",cursorx,cursory,
          get_area(cursorx,cursory),hit);
       font_normal.create_string(img_coords,buffer,11);
       img_temp.paste_image(img_coords,2,2,true);
@@ -992,9 +995,12 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
    area = area_save;
 
    // check 3d view area
-   if (area == ua_area_screen3d && click /* && left_button && pressed*/)
+   if (area == ua_area_screen3d && click && pressed)
    {
-      hit = get_selection(cursorx,cursory);
+      int x,y;
+      SDL_GetMouseState(&x,&y);
+
+      hit = get_selection(x,y);
    }
 }
 
@@ -1010,7 +1016,6 @@ GLuint ua_ingame_orig_screen::get_selection(unsigned int xpos, unsigned int ypos
 
       // init name stack
       glInitNames();
-      glPushName(0);
    }
 
    // set picking projection matrix
@@ -1022,7 +1027,7 @@ GLuint ua_ingame_orig_screen::get_selection(unsigned int xpos, unsigned int ypos
       // calculate pick region
       GLint viewport[4];
       glGetIntegerv(GL_VIEWPORT, viewport);
-      gluPickMatrix(GLdouble(xpos), GLdouble(viewport[3]-ypos), 3.0, 3.0, viewport);
+      gluPickMatrix(GLdouble(xpos), GLdouble(viewport[3]-ypos), 5.0, 5.0, viewport);
 
       // set up perspective view frustum
       double aspect = double(core->get_screen_width())/core->get_screen_height();
@@ -1030,39 +1035,21 @@ GLuint ua_ingame_orig_screen::get_selection(unsigned int xpos, unsigned int ypos
 
       // switch back to modelview matrix
       glMatrixMode(GL_MODELVIEW);
-      glLoadIdentity();
    }
 
-   // transform modelview matrix and render
+   // render using name stack
    {
       ua_player &pl = core->get_underworld().get_player();
       double plheight = 0.6+core->get_underworld().get_player_height();
       double xangle = pl.get_angle();
 
-      {
-         // rotation
-         glRotated(viewangle+270.0, 1.0, 0.0, 0.0);
-         glRotated(-xangle+90.0, 0.0, 0.0, 1.0);
-
-         // move to position on map
-         glTranslated(-pl.get_xpos(),-pl.get_ypos(),-plheight);
-      }
-
-      // render using name stack
       ua_frustum fr(pl.get_xpos(),pl.get_ypos(),plheight,xangle,-viewangle,fov,16.0);
 
       core->get_underworld().render(fr);
    }
 
    // switch off selection mode
-   GLint hits = 0;
-   {
-      glPopName();
-
-      glFlush();
-
-      hits = glRenderMode(GL_RENDER);
-   }
+   GLint hits = glRenderMode(GL_RENDER);
 
    // restore previous projection matrix
    {
@@ -1072,29 +1059,33 @@ GLuint ua_ingame_orig_screen::get_selection(unsigned int xpos, unsigned int ypos
    }
 
    // find out hit object
-   GLint thehit = 0;
+   GLint hitid = 0;
    if (hits>0)
    {
-      // now examine the selection buffer
-      int j=0;
-      int ptr=0;
-      GLint lastnear=0x7fffffff;
-      while(j<hits)
+      GLuint min = 0xffffffff;
+      unsigned int idx = 0;
+
+      for(unsigned int i=0; i<hits && idx<64; i++)
       {
-         int nr = select_buf[ptr++]; // number of names
-         GLint mynear = ((GLint*)select_buf)[ptr++];
-         GLint myfar = ((GLint*)select_buf)[ptr++];
+         // get count of names stored in this record
+         GLuint namecount = select_buf[idx++];
 
-         if (mynear<lastnear)
+         // check min. hit dist.
+         if (select_buf[idx] < min)
          {
-            lastnear = mynear;
-            thehit = select_buf[ptr];
+            // new min. hit dist.
+            min = select_buf[idx++];
+            idx++; // jump over max. hit dist.
+            if (namecount>0)
+               hitid = select_buf[idx]; // hit id (assumes we only have one)
          }
+         else
+            idx+=2; // jump over min./max. hit dist.
 
-         ptr += nr;
-         j++;
+         // move idx to next record
+         idx += namecount;
       }
    }
 
-   return thehit;
+   return hitid;
 }
