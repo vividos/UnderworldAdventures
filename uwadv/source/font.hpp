@@ -64,6 +64,9 @@ public:
    //! initializes and loads a font from file
    void init(const char *fontname);
 
+   //! returns height of chars in pixels
+   unsigned int get_charheight(){ return charheight; }
+
    //! calculates and returns length of string in pixel
    unsigned int calc_length(const char *str);
 
