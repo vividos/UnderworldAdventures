@@ -602,6 +602,9 @@ void ua_save_game_screen::tick()
 
 void ua_save_game_screen::press_button(ua_save_game_button_id id)
 {
+   if (fade_state != 1)
+      return; // don't allow button presses in fadein/fadeout
+
    pressed_button = id;
 
    switch(id)
