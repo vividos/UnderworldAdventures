@@ -25,6 +25,7 @@
 */
 
 // neded includes
+#include "common.hpp"
 #include "win_midiout.h"
 #include "../xmidi.hpp"
 
