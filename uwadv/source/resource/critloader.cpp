@@ -43,9 +43,6 @@ extern void ua_image_decode_rle(FILE *fd,std::vector<Uint8> &pixels,unsigned int
 
 void ua_critter::load(const char* file, unsigned int used_auxpal)
 {
-//   ua_trace(" loading frames from file %s ... ",file);
-//   unsigned int now = SDL_GetTicks();
-
    std::vector<ua_image>& allframes_list = allframes.get_allimages();
 
    unsigned int maxleft,maxright,maxtop,maxbottom;
@@ -53,6 +50,9 @@ void ua_critter::load(const char* file, unsigned int used_auxpal)
 
    ua_image img_frame;
 
+   // do 2-pass loading:
+   // pass 0:  determine max. frame image size
+   // pass 1:  load frame images
    for(unsigned int pass=0; pass<2; pass++)
    {
       unsigned int curpage = 0;
@@ -157,7 +157,7 @@ void ua_critter::load(const char* file, unsigned int used_auxpal)
             if (pass==1)
             {
                // resize image list, to gain a little performance
-               allframes_list.resize(noffsets+frame_offset);
+               allframes_list.resize(1/*noffsets+frame_offset*/);
             }
 
             // read in frame offsets
@@ -169,6 +169,9 @@ void ua_critter::load(const char* file, unsigned int used_auxpal)
 
             for(unsigned int n=0; n<noffsets; n++)
             {
+               if (pass==1 && n+frame_offset>0)
+                  break; // only load first frame - for now
+
                // seek to frame header
                fseek(fd,alloffsets[n],SEEK_SET);
 
@@ -215,7 +218,7 @@ void ua_critter::load(const char* file, unsigned int used_auxpal)
                   img_frame.paste_image(img_temp,
                      maxleft-hotx, maxtop-hoty);
 
-                  allframes_list.push_back(img_frame);
+                  allframes_list[frame_offset+n] = img_frame;
                }
                // end of current frame
             }
@@ -236,8 +239,6 @@ void ua_critter::load(const char* file, unsigned int used_auxpal)
    // remember new hotspot
    hotspot_x = maxleft;
    hotspot_y = maxtop;
-
-//   ua_trace("done, needed %u ms\n",SDL_GetTicks()-now);
 }
 
 void ua_critter_pool::load(ua_settings& settings)
