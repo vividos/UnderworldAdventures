@@ -37,6 +37,44 @@
 const double ua_ingame_orig_viewangle_speed = 60;
 
 
+// tables
+
+struct
+{
+   ua_ingame_orig_area areacode;
+   unsigned int xmin, xmax, ymin, ymax;
+
+} ua_ingame_orig_area_table[] =
+{
+   { ua_area_screen3d, 53,224, 20,131 },
+
+   { ua_area_inv_slot0, 242, 260,  83,  99 },
+   { ua_area_inv_slot1, 261, 279,  83,  99 },
+   { ua_area_inv_slot2, 280, 298,  83,  99 },
+   { ua_area_inv_slot3, 299, 317,  83,  99 },
+   { ua_area_inv_slot4, 242, 260, 100, 116 },
+   { ua_area_inv_slot5, 261, 279, 100, 116 },
+   { ua_area_inv_slot6, 280, 298, 100, 116 },
+   { ua_area_inv_slot7, 299, 317, 100, 116 },
+
+   { ua_area_equip_left_hand,     243, 258, 36, 51 },
+   { ua_area_equip_left_shoulder, 246, 261, 14, 28 },
+   { ua_area_equip_left_ring,     260, 265, 56, 63 },
+
+   { ua_area_equip_right_hand,     297, 311, 36, 51 },
+   { ua_area_equip_right_shoulder, 295, 309, 14, 28 },
+   { ua_area_equip_right_ring,     292, 297, 56, 63 },
+
+   { ua_area_paperdoll_head,  271, 285, 13, 31 },
+   { ua_area_paperdoll_chest, 270, 285, 31, 53 },
+   { ua_area_paperdoll_hand,  265, 271, 46, 55 },
+   { ua_area_paperdoll_hand,  286, 292, 46, 55 },
+   { ua_area_paperdoll_legs,  271, 286, 54, 65 },
+   { ua_area_paperdoll_feet,  270, 286, 66, 80 },
+
+   { ua_area_none, 0,0, 320,200 }
+};
+
 
 // ua_ingame_orig_screen methods
 
@@ -203,10 +241,8 @@ void ua_ingame_orig_screen::handle_mouse_action(SDL_Event &event)
       {
          int x,y;
          SDL_GetMouseState(&x,&y);
-         x = int(double(x)/core->get_screen_width()*320.0);
-         y = int(double(y)/core->get_screen_height()*200.0);
-         cursorx = x<8 ? 0 : x-8;
-         cursory = y<8 ? 0 : y-8;
+         cursorx = unsigned(double(x)/core->get_screen_width()*320.0);
+         cursory = unsigned(double(y)/core->get_screen_height()*200.0);
       }
       break;
 
@@ -419,9 +455,25 @@ void ua_ingame_orig_screen::render_ui()
       }
    }
 
+#ifdef HAVE_DEBUG
+   // mouse coords
+   {
+      ua_image img_coords;
+      char buffer[256];
+      sprintf(buffer,"x=%u y=%u area=%u",cursorx,cursory,
+         get_area(cursorx,cursory));
+      font_normal.create_string(img_coords,buffer,11);
+      img_temp.paste_image(img_coords,2,2,true);
+   }
+#endif
+
    // mouse cursor; should be the last one to paste
    {
-      img_temp.paste_image(img_cursors.get_image(cursor_image),cursorx,cursory,true);
+      unsigned int posx,posy;
+      posx = cursorx<8 ? 0 : cursorx-8;
+      posy = cursory<8 ? 0 : cursory-8;
+
+      img_temp.paste_image(img_cursors.get_image(cursor_image),posx,posy,true);
    }
 
    // upload ui texture
@@ -538,4 +590,24 @@ void ua_ingame_orig_screen::setup_opengl()
    y2 = int((scissor_area[3]/200.0) * yres);
 
    glScissor(x1,y1,x2,y2);
+}
+
+ua_ingame_orig_area ua_ingame_orig_screen::get_current_area(
+   unsigned int xpos,unsigned int ypos)
+{
+   // search for area that first matches the coordinate range
+   unsigned int idx=0;
+   while(ua_ingame_orig_area_table[idx].areacode != ua_area_none)
+   {
+      // check ranges
+      if (xpos >= ua_ingame_orig_area_table[idx].xmin &&
+          xpos <= ua_ingame_orig_area_table[idx].xmax &&
+          ypos >= ua_ingame_orig_area_table[idx].ymin &&
+          ypos <= ua_ingame_orig_area_table[idx].ymax)
+         break;
+
+      idx++;
+   }
+
+   return ua_ingame_orig_area_table[idx].areacode;
 }

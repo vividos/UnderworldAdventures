@@ -36,6 +36,64 @@
 #include "keymap.hpp"
 
 
+// enums
+
+//! screen area values
+typedef enum
+{
+   ua_area_screen3d=0,
+   ua_area_textscroll,
+   ua_area_gargoyle,
+   ua_area_powergem,
+
+   ua_area_menu_button0,
+   ua_area_menu_button1,
+   ua_area_menu_button2,
+   ua_area_menu_button3,
+   ua_area_menu_button4,
+   ua_area_menu_button5,
+
+   ua_area_compass,
+   ua_area_move_left,
+   ua_area_move_foreward,
+   ua_area_move_right,
+
+   ua_area_spell0,
+   ua_area_spell1,
+   ua_area_spell2,
+   ua_area_bookshelf,
+   ua_area_flask_vitality,
+   ua_area_flask_mana,
+   ua_area_stats_chain,
+
+   ua_area_inv_slot0,
+   ua_area_inv_slot1,
+   ua_area_inv_slot2,
+   ua_area_inv_slot3,
+   ua_area_inv_slot4,
+   ua_area_inv_slot5,
+   ua_area_inv_slot6,
+   ua_area_inv_slot7,
+
+   ua_area_equip_left_hand,
+   ua_area_equip_left_shoulder,
+   ua_area_equip_left_ring,
+
+   ua_area_equip_right_hand,
+   ua_area_equip_right_shoulder,
+   ua_area_equip_right_ring,
+
+   ua_area_paperdoll_head,
+   ua_area_paperdoll_chest,
+   ua_area_paperdoll_hand,
+   ua_area_paperdoll_legs,
+   ua_area_paperdoll_feet,
+
+   ua_area_none
+
+} ua_ingame_orig_area;
+
+
 // classes
 
 //! user interface abstract base class
@@ -62,6 +120,9 @@ protected:
 
    void handle_key_action(Uint8 type, SDL_keysym &keysym);
    void handle_mouse_action(SDL_Event &event);
+
+   //! returns area the given mouse coordinates is over
+   ua_ingame_orig_area get_area(unsigned int xpos,unsigned int ypos);
 
 protected:
 
