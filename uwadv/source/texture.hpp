@@ -79,7 +79,7 @@ public:
    //! allocates and initializes OpenGL texture object
    void init(ua_texture_manager* texmgr, unsigned int numtex=1,
       GLenum min_filt=GL_LINEAR, GLenum max_filt=GL_LINEAR,
-      GLenum wrap_s=GL_REPEAT, GLenum wrap_t=GL_REPEAT);
+      GLenum wrap_s=GL_CLAMP_TO_EDGE, GLenum wrap_t=GL_CLAMP_TO_EDGE);
 
    //! converts image to texture
    void convert(ua_image &img, unsigned int numtex=0);
