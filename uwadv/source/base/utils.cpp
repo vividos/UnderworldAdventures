@@ -36,6 +36,7 @@
 #include <cstdio>
 #include <algorithm>
 #include <cctype>
+#include <sstream>
 
 
 #if defined(__MINGW32__) && !defined(HAVE_CONFIG_H)
@@ -128,6 +129,17 @@ int ua_trace_printf(const char* fmt,...)
 
    va_end(args);
    return ret;
+}
+
+void ua_assert_check(bool cond, const char* cond_str, const char* file, int line)
+{
+   if (!cond)
+   {
+      std::ostringstream buffer;
+      buffer << "ua_assert failed (" << cond_str << ") at " << file << ":" << line << std::ends;
+      ua_trace("%s\n", buffer.str().c_str());
+      throw ua_exception(buffer.str().c_str());
+   }
 }
 
 bool ua_file_exists(const char* filename)

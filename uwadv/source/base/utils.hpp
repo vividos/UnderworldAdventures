@@ -68,6 +68,15 @@ int ua_trace_printf(const char *fmt,...);
 #endif
 
 
+// assert messages
+
+//! checks for assert
+void ua_assert_check(bool cond, const char* cond_str, const char* file, int line);
+
+//! macro to check for conditions and pass source filename and line
+#define ua_assert(cond) ua_assert_check(cond, "", __FILE__, __LINE__);
+
+
 // functions
 
 //! creates a folder with given mode
