@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,8 +26,8 @@
 */
 
 // include guard
-#ifndef __uwadv_level_hpp_
-#define __uwadv_level_hpp_
+#ifndef uwadv_level_hpp_
+#define uwadv_level_hpp_
 
 // needed includes
 #include "settings.hpp"
@@ -93,9 +93,7 @@ class ua_level
 {
 public:
    //! ctor
-   ua_level(){}
-   //! dtor
-   ~ua_level(){}
+   ua_level();
 
    //! returns floor height on specific position
    double get_floor_height(double xpos, double ypos);
@@ -118,12 +116,12 @@ public:
    void save_game(ua_savegame &sg);
 
    //! imports a level map
-   void import_map(FILE *fd, Uint16 wall_textures[48],
-      Uint16 floor_textures[10]);
+   void import_map(SDL_RWops* rwops, Uint16 textures[64],
+      bool uw2_mode=false);
 
    //! imports texture usage info
-   void import_texinfo(FILE *fd, Uint16 wall_textures[48],
-      Uint16 floor_textures[10]);
+   void import_texinfo(SDL_RWops* rwops, Uint16 textures[64],
+      bool uw2_mode=false);
 
 protected:
    //! all levelmap tiles; 64x64 tiles assumed
@@ -134,6 +132,9 @@ protected:
 
    //! numbers of all used stock textures
    std::vector<Uint16> used_textures;
+
+   //! indicates if level map is in use
+   bool used;
 };
 
 #endif
