@@ -28,7 +28,6 @@
 // needed includes
 #include "common.hpp"
 #include "cfgfile.hpp"
-#include <cctype>
 
 
 // ua_cfgfile methods
