@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -29,8 +29,8 @@
 */
 
 // include guard
-#ifndef __uwadv_start_splash_hpp_
-#define __uwadv_start_splash_hpp_
+#ifndef uwadv_start_splash_hpp_
+#define uwadv_start_splash_hpp_
 
 // needed includes
 #include "screen.hpp"
@@ -52,13 +52,25 @@ public:
 
    // virtual functions from ua_ui_screen_base
 
-   virtual void init();
+   virtual void init(ua_game_core_interface* core);
    virtual void done();
-   virtual void handle_event(SDL_Event &event);
+   virtual bool handle_event(SDL_Event &event);
    virtual void render();
    virtual void tick();
 
 protected:
+   // constants
+
+   //! number of seconds the splash screen images are shown
+   static const double show_time;
+
+   //! fade in/out time in seconds
+   static const double blend_time;
+
+   //! animation frame rate, in frames per second
+   static const double anim_framerate;
+
+
    //! current stage we are in
    unsigned int stage;
 

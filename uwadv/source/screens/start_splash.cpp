@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -44,19 +44,21 @@
 // constants
 
 //! number of seconds the splash screen images are shown
-const double ua_start_splash_show_time = 4.0;
+const double ua_start_splash_screen::show_time = 4.0;
 
 //! fade in/out time in seconds
-const double ua_start_splash_blend_time = 0.8;
+const double ua_start_splash_screen::blend_time = 0.8;
 
 //! animation frame rate, in frames per second
-const double ua_splash_anim_framerate = 5.0;
+const double ua_start_splash_screen::anim_framerate = 5.0;
 
 
 // ua_start_splash_screen methods
 
-void ua_start_splash_screen::init()
+void ua_start_splash_screen::init(ua_game_core_interface* thecore)
 {
+   ua_ui_screen_base::init(thecore);
+
    ua_trace("start splash screen started\n");
 
    // start intro midi music
@@ -76,6 +78,7 @@ void ua_start_splash_screen::init()
    glDisable(GL_BLEND);
 
    // load first image
+   ua_trace("loading first image\n");
    ua_image img;
 
    const char *first_img_name = "data/pres1.byt";
@@ -111,20 +114,26 @@ void ua_start_splash_screen::init()
    if (core->get_settings().get_gametype() != ua_game_uw_demo &&
        core->get_savegames_mgr().get_savegames_count()>0)
    {
+      ua_trace("skipping images (savegames available)\n");
+
       stage=1;
-      tickcount = unsigned(ua_start_splash_show_time * core->get_tickrate()) + 1;
+      tickcount = unsigned(show_time * core->get_tickrate()) + 1;
       tick();
    }
 }
 
 void ua_start_splash_screen::done()
 {
+   ua_trace("start splash screen ended\n\n");
+
    img_still.done();
    cuts_anim.done();
 }
 
-void ua_start_splash_screen::handle_event(SDL_Event &event)
+bool ua_start_splash_screen::handle_event(SDL_Event &event)
 {
+   bool handled = false;
+
    switch(event.type)
    {
    case SDL_KEYDOWN:
@@ -134,12 +143,14 @@ void ua_start_splash_screen::handle_event(SDL_Event &event)
       {
       case 0:
       case 1:
-         tickcount = unsigned(ua_start_splash_show_time * core->get_tickrate()) + 1;
+         tickcount = unsigned(show_time * core->get_tickrate()) + 1;
+         handled = true;
          break;
 
       case 2:
          stage=4;
-         tickcount = unsigned(ua_start_splash_blend_time * core->get_tickrate()) - tickcount;
+         tickcount = unsigned(blend_time * core->get_tickrate()) - tickcount;
+         handled = true;
          break;
 
       case 3:
@@ -148,12 +159,15 @@ void ua_start_splash_screen::handle_event(SDL_Event &event)
 
          // fade out music when we have the demo (ingame starts after this)
          if (core->get_settings().get_gametype() == ua_game_uw_demo)
-            core->get_audio().fadeout_music(ua_start_splash_blend_time);
+            core->get_audio().fadeout_music(blend_time);
 
+         handled = true;
          break;
       }
       break;
    }
+
+   return handled;
 }
 
 void ua_start_splash_screen::render()
@@ -165,7 +179,7 @@ void ua_start_splash_screen::render()
    {
       // anim fade-in
    case 2:
-      light = Uint8(255*(double(tickcount) / (core->get_tickrate()*ua_start_splash_blend_time)));
+      light = Uint8(255*(double(tickcount) / (core->get_tickrate()*blend_time)));
       break;
 
       // still image / anim
@@ -177,7 +191,7 @@ void ua_start_splash_screen::render()
 
       // anim fade-out
    case 4:
-      light = Uint8(255-255*(double(tickcount) / (core->get_tickrate()*ua_start_splash_blend_time)));
+      light = Uint8(255-255*(double(tickcount) / (core->get_tickrate()*blend_time)));
       break;
 
       // finished
@@ -209,8 +223,10 @@ void ua_start_splash_screen::tick()
 
    // check if animation should be loaded
    if ( (stage == 1 || (stage == 0 && core->get_settings().get_gametype() == ua_game_uw_demo)) &&
-      tickcount >= ua_start_splash_show_time * core->get_tickrate())
+      tickcount >= show_time * core->get_tickrate())
    {
+      ua_trace("loading animation\n");
+
       // load animation
       cuts_anim.load(core->get_settings(),"cuts/cs011.n01");
       cuts_anim.init(&core->get_texmgr());
@@ -225,8 +241,10 @@ void ua_start_splash_screen::tick()
    switch(stage)
    {
    case 0:
-      if (tickcount >= ua_start_splash_show_time * core->get_tickrate())
+      if (tickcount >= show_time * core->get_tickrate())
       {
+         ua_trace("loading second image\n");
+
          // load second image
          img_still.load_raw(core->get_settings(),"data/pres2.byt",5);
          img_still.convert_upload();
@@ -239,7 +257,7 @@ void ua_start_splash_screen::tick()
       // fade-in / out
    case 2:
    case 4:
-      if (tickcount >= ua_start_splash_blend_time * core->get_tickrate())
+      if (tickcount >= blend_time * core->get_tickrate())
       {
          stage++;
          tickcount=0;
@@ -251,11 +269,11 @@ void ua_start_splash_screen::tick()
    case 3:
       // check if we have to do a new animation frame
       animcount += 1.0/core->get_tickrate();
-      if (animcount >= 1.0/ua_splash_anim_framerate)
+      if (animcount >= 1.0/anim_framerate)
       {
          // do next frame
          curframe++;
-         animcount -= 1.0/ua_splash_anim_framerate;
+         animcount -= 1.0/anim_framerate;
          if (curframe>=cuts_anim.get_maxframes()-2)
             curframe=0;
       }
