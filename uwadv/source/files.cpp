@@ -95,6 +95,17 @@ void ua_files_manager::init(ua_settings &settings)
       ua_mkdir(savegame_folder.c_str(),0700);
    }
 
+   // expand variable placeholders (%uahome%, etc.) in custom keymap value
+   {
+      std::string custom_keymap(settings.get_string(ua_setting_custom_keymap));
+
+      // replace strings in savegame folder
+      replace_system_vars(custom_keymap);
+
+      // store back value
+      settings.set_value(ua_setting_custom_keymap,custom_keymap);
+   }
+
    // check for available games
 
    // check for uw1
