@@ -68,6 +68,7 @@ void ua_object_properties::init(ua_settings& settings)
          comprop.quality_type = data[10] & 15;
          comprop.can_have_owner = (data[7] & 0x80) != 0;
          comprop.can_be_looked_at = (data[10] & 0x10) != 0;
+         comprop.can_be_picked_up = ((data[3]>>5) & 1) != 0;
 
          common_properties.push_back(comprop);
       }

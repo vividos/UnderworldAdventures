@@ -107,6 +107,8 @@ void ua_dump_obj_properties::start(std::string& basepath)
       printf("unk1=%01x ",(word1>>3)&1);
       printf("mass=%03x] ",word1>>4 );
 
+      printf("pick_up=%01x ",(data[3]>>5)&1);
+
       Uint16 word4 = data[4]|(data[5]<<8);
       printf("value4=%04x ",word4);
 

@@ -1190,6 +1190,10 @@ int ua_underworld_script_bindings::prop_get_common(lua_State* L)
    lua_pushnumber(L,prop.can_be_looked_at ? 1.0 : 0.0);
    lua_settable(L,-3);
 
+   lua_pushstring(L,"can_be_picked_up");
+   lua_pushnumber(L,prop.can_be_picked_up? 1.0 : 0.0);
+   lua_settable(L,-3);
+
    return 1;
 }
 

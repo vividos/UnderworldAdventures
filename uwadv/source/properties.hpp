@@ -46,9 +46,14 @@ struct ua_common_obj_property
    Uint8 quality_class;
    Uint8 quality_type;
 
+   //! indicates if object can have owner ("belonging to ...")
    bool can_have_owner;
 
+   //! indicates if object can be looked at
    bool can_be_looked_at;
+
+   //! indicates if object can be picked up
+   bool can_be_picked_up;
 };
 
 //! info for melee weapons (ids 0x0000-0x000f)
@@ -57,8 +62,10 @@ struct ua_melee_weapon_property
    //! damage modifier for attack types
    Uint8 dm_slash,dm_bash,dm_stab;
 
+   //! skill type needed for melee weapon
    Uint8 skill_type;
 
+   //! weapon durability
    Uint8 durability;
 };
 
