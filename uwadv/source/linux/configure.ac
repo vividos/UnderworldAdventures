@@ -14,7 +14,7 @@ AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
 
 AM_INIT_AUTOMAKE(uwadv,0.0.1)
-AC_CONFIG_HEADERS([config.h])
+AM_CONFIG_HEADER(config.h)
 
 dnl initial variable values
 CFLAGS="$CFLAGS -O2"
@@ -112,6 +112,6 @@ CPPFLAGS="$CPPFLAGS -DCONFIGDIR=\\\"\$(datadir)/games/uwadv/\\\""
 
 dnl produce output files
 AC_SUBST(OPENGL_LIBS)
-AC_CONFIG_FILES([Makefile ../Makefile ../tools/Makefile uwadv.cfg])
+AC_CONFIG_FILES([Makefile ../Makefile ../tools/Makefile])
 AC_OUTPUT
 
