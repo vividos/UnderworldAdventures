@@ -838,6 +838,7 @@ Table of Contents
    018E  Check variable trap
    018F  Combination trap
    0190  Text string trap
+   0192  Jump trap (uw2)
 
 
    * Teleport trap (ID 0181)
@@ -850,6 +851,10 @@ Table of Contents
 
      This is probably a bottomless pit that drops the player through to the
      next level.
+
+     (uw2) This is a special effect trap, that triggers 'visual' effects like
+     earthquakes, or blurry vision. In UW2, 'pits' are interpreted in terms
+     of teleport traps in all cases.
 
    * Create object trap (ID 0187)
 
@@ -867,6 +872,12 @@ Table of Contents
      "Owner / special" field of the object definition contains the string number per
      level, in game string block 0009. The actual string number printed is
      (64*level + unk2).
+
+   * Jump trap (ID 0192) (uw2)
+
+     Causes the player to get an upward velocity according to the quality
+     field; where '24' would be the velocity one would get from a standing
+     jump.
 
 
 4.0 Game strings
