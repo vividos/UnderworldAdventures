@@ -72,7 +72,7 @@ uwadv_SOURCES = \
 	screens/start_splash.cpp screens/start_splash.hpp \
 	screens/uwadv_menu.cpp screens/uwadv_menu.hpp \
 	script/luascript.cpp script/luascript.hpp \
-	script/script.hpp \
+	script/scripting.hpp \
 	ui/cutscene.cpp ui/cutscene.hpp \
 	ui/fading.hpp \
 	ui/font.cpp ui/font.hpp \
