@@ -84,6 +84,7 @@ public:
 
    //! returns player
    ua_player &get_player(){ return player; }
+   const ua_player &get_player() const { return player; }
 
    //! returns player's inventory
    ua_inventory &get_inventory(){ return inventory; }
@@ -99,6 +100,7 @@ public:
 
    //! returns current level
    ua_level &get_current_level();
+   const ua_level &get_current_level() const;
 
    //! returns script bindings object
 //   ua_underworld_script_bindings &get_scripts(){ return script; }
