@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -104,13 +104,13 @@ void ua_cutscene_view_screen::init()
    // init lua scripting
 
    // get a new lua state
-   lua.init();
+   lua.init(game);
 
    // register C functions
    lua_register(lua.get_lua_State(),"cuts_do_action",cuts_do_action);
 
    // load lua cutscene script
-   if (0 != lua.load_script(*game,"uw1/scripts/cutscene"))
+   if (0 != lua.load_script("uw1/scripts/cutscene"))
       ended = true;
 
    lua_State* L = lua.get_lua_State();

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -355,7 +355,7 @@ void ua_create_character_screen::tick()
 void ua_create_character_screen::init_luascript()
 {
    // initialize Lua
-   lua.init();
+   lua.init(game);
 
    lua_State* L = lua.get_lua_State();
 
@@ -368,11 +368,11 @@ void ua_create_character_screen::init_luascript()
    lua_register(L,"cchar_do_action", cchar_do_action);
 
    // load lua interface script for constants
-   if (0 != lua.load_script(*game, "uw1/scripts/uwinterface"))
+   if (0 != lua.load_script("uw1/scripts/uwinterface"))
       ended = true;
 
    // load lua cutscene script
-   if (0 != lua.load_script(*game, "uw1/scripts/createchar"))
+   if (0 != lua.load_script("uw1/scripts/createchar"))
       ended = true;
 
    // store pointer to this instance in a global var
