@@ -43,7 +43,8 @@
 // needed includes
 #include "common.hpp"
 #include "image.hpp"
-#include "../import/io_endian.hpp"
+#include "import.hpp"
+#include "io_endian.hpp"
 
 
 // global methods
@@ -246,11 +247,177 @@ void ua_image_decode_rle(FILE *fd, Uint8* pixels, unsigned int bits,
 }
 
 
-// ua_image methods
+// ua_uw_import methods
 
-void ua_image::load_image(FILE *fd,Uint8 auxpalidx[32][16], bool special_panels)
+void ua_uw_import::load_palettes(const char* allpalname,
+   ua_smart_ptr<ua_palette256> allpalettes[8])
 {
-   Uint8 type, width, height,auxpal=0;
+   FILE* fd = fopen(allpalname,"rb");
+   if (fd==NULL)
+   {
+      std::string text("could not open palette file ");
+      text.append(allpalname);
+      throw ua_exception(text.c_str());
+   }
+
+   // palettes are stored in ancient vga color format
+   for(unsigned int pal=0; pal<8; pal++)
+   {
+      //ua_smart_ptr<ua_palette256> ppal =
+      ua_palette256* ppp = (ua_palette256*)new ua_palette256;
+      allpalettes[pal] = ua_smart_ptr<ua_palette256>(ppp);
+
+//         ua_smart_ptr<ua_palette256>((ua_palette256*)new ua_palette256);
+
+//      ua_smart_ptr<ua_palette256> ppal = ua_smart_ptr<ua_palette256>(ppp);
+//      ua_palette256 ppp = new ua_palette256;
+//      allpalettes[pal] = ppp;
+
+      ua_palette256& palette = *allpalettes[pal];
+
+      for(unsigned int color=0; color<256; color++)
+      {
+         palette[color][0] = fgetc(fd)<<2;
+         palette[color][1] = fgetc(fd)<<2;
+         palette[color][2] = fgetc(fd)<<2;
+         palette[color][3] = color==0 ? 0 : 255;
+      }
+   }
+
+   fclose(fd);
+}
+
+void ua_uw_import::load_aux_palettes(const char* auxpalname,
+   Uint8 allauxpals[32][16])
+{
+   FILE *fd = fopen(auxpalname,"rb");
+   if (fd==NULL)
+      throw ua_exception("could not open file allpals.dat");
+
+   // the standard guarantees me that the [32][16] array is contiguous
+   fread(allauxpals, 32*16, 1, fd);
+   fclose(fd);
+}
+
+void ua_uw_import::load_image_gr(ua_image& img, const char* imgname,
+   unsigned int imgnum, Uint8 auxpalettes[32][16])
+{
+   // open file
+   FILE* fd = fopen(imgname,"rb");
+   if (fd==NULL)
+   {
+      std::string text("could not open image: ");
+      text.append(imgname);
+      throw ua_exception(text.c_str());
+   }
+
+   // get file length
+   fseek(fd,0,SEEK_END);
+   unsigned long filelen = ftell(fd);
+   fseek(fd,0,SEEK_SET);
+
+   // read in toc
+   Uint8 id = fgetc(fd); // always 1 for .gr files
+   Uint16 entries = fread16(fd);
+
+   if (imgnum >= entries)
+      imgnum = 0; // image number not valid
+
+   // seek to offset
+   fseek(fd,4*imgnum,SEEK_CUR);
+   Uint32 offset = fread32(fd);
+
+   if (offset >= filelen)
+      return;
+
+   fseek(fd,offset,SEEK_SET);
+
+   // load image into pixel vector
+   bool special_panels = (strstr("panels.gr",imgname) != NULL);
+   load_image_gr_priv(img,fd,auxpalettes,special_panels);
+
+   fclose(fd);
+}
+
+void ua_uw_import::load_image_byt(const char* imgname, Uint8* pixels)
+{
+   // open file
+   FILE* fd = fopen(imgname,"rb");
+   if (fd == NULL)
+   {
+      std::string text("could not open raw image: ");
+      text.append(imgname);
+      throw ua_exception(text.c_str());
+   }
+
+   // raw image
+   fread(&pixels[0],1,320*200,fd);
+
+   fclose(fd);
+}
+
+void ua_uw_import::load_image_gr_list(std::vector<ua_image>& imglist,
+   const char* imgname, unsigned int img_from, unsigned int img_to,
+   Uint8 auxpalettes[32][16])
+{
+   // open file
+   FILE* fd = fopen(imgname,"rb");
+   if (fd==NULL)
+   {
+      std::string text("could not open image list: ");
+      text.append(imgname);
+      throw ua_exception(text.c_str());
+   }
+
+   // get file length
+   fseek(fd,0,SEEK_END);
+   unsigned long filelen = ftell(fd);
+   fseek(fd,0,SEEK_SET);
+
+   // read in toc
+   Uint8 id = fgetc(fd); // always 1
+   Uint16 entries = fread16(fd);
+
+   if (img_to==0) img_to=entries;
+
+   if (img_from >= entries || img_to < img_from)
+   {
+      fclose(fd);
+      return;
+   }
+
+   // read in all offsets
+   std::vector<Uint32> offsets;
+   offsets.resize(entries,0);
+
+   for(Uint16 i=0; i<entries; i++)
+      offsets[i]=fread32(fd);
+
+   bool special_panels = (strstr("panels.gr",imgname) != NULL);
+
+   for(Uint16 j=img_from; j<img_to; j++)
+   {
+      if (offsets[j]>=filelen)
+         continue;
+
+      fseek(fd,offsets[j],SEEK_SET);
+
+      ua_image img;
+      imglist.push_back(img);
+
+      ua_image& lastimg = imglist.back();//[imglist.size()-1];
+
+      // load image
+      load_image_gr_priv(lastimg,fd,auxpalettes,special_panels);
+   }
+
+   fclose(fd);
+}
+
+void ua_uw_import::load_image_gr_priv(ua_image& img, FILE* fd,
+   Uint8 auxpalidx[32][16], bool special_panels)
+{
+   Uint8 type, width, height, auxpal=0;
    Uint16 datalen;
 
    if (special_panels)
@@ -278,7 +445,7 @@ void ua_image::load_image(FILE *fd,Uint8 auxpalidx[32][16], bool special_panels)
       datalen = fread16(fd);
    }
 
-   create(width,height);
+   img.create(width,height);
 
    switch(type)
    {
@@ -290,7 +457,7 @@ void ua_image::load_image(FILE *fd,Uint8 auxpalidx[32][16], bool special_panels)
          {
             unsigned int size = ua_min(datalen,1024);
 
-            fread(&pixels[pixcount],1,size,fd);
+            fread(&img.get_pixels()[pixcount],1,size,fd);
 
             datalen -= size;
             pixcount += size;
@@ -299,14 +466,15 @@ void ua_image::load_image(FILE *fd,Uint8 auxpalidx[32][16], bool special_panels)
       break;
 
    case 0x08: // 4-bit rle compressed
-      ua_image_decode_rle(fd,&pixels[0],4,datalen,width*height,auxpalidx[auxpal],0,0);
+      ua_image_decode_rle(fd,&img.get_pixels()[0],4,datalen,width*height,auxpalidx[auxpal],0,0);
       break;
 
    case 0x0a: // 4-bit uncompressed
       {
          unsigned int pixcount=0, maxpix = width*height;
-         Uint8 *pal = auxpalidx[auxpal];
+         Uint8* pal = auxpalidx[auxpal];
          Uint8 rawbyte;
+         Uint8* pixels = &img.get_pixels()[0];
 
          while (datalen>0)
          {
@@ -319,169 +487,4 @@ void ua_image::load_image(FILE *fd,Uint8 auxpalidx[32][16], bool special_panels)
       }
       break;
    }
-}
-
-void ua_image::load(ua_settings &settings, const char *name, unsigned int which,
-   unsigned int pal)
-{
-   Uint8 auxpalidx[32][16];
-
-   // load all auxiliary palettes
-   {
-      std::string allauxpalname(settings.get_string(ua_setting_uw_path));
-      allauxpalname.append("data/allpals.dat");
-
-      FILE *fd = fopen(allauxpalname.c_str(),"rb");
-      if (fd==NULL)
-         throw ua_exception("could not open file allpals.dat");
-
-      fread(auxpalidx,1,32*16,fd);
-      fclose(fd);
-   }
-
-   // create filename
-   std::string filename(settings.get_string(ua_setting_uw_path));
-   filename.append("data/");
-   filename.append(name);
-   filename.append(".gr");
-
-   // open file
-   FILE *fd = fopen(filename.c_str(),"rb");
-   if (fd==NULL)
-   {
-      std::string text("could not open image: ");
-      text.append(filename);
-      throw ua_exception(text.c_str());
-   }
-
-   // get file length
-   fseek(fd,0,SEEK_END);
-   unsigned long filelen = ftell(fd);
-   fseek(fd,0,SEEK_SET);
-
-   // read in toc
-   Uint8 id = fgetc(fd); // always 1 (?)
-   Uint16 entries = fread16(fd);
-
-   if (which>=entries)
-   {
-      fclose(fd);
-      return;
-   }
-
-   // seek to offset
-   fseek(fd,4*which,SEEK_CUR);
-   Uint32 offset = fread32(fd);
-
-   if (offset>=filelen)
-      return;
-
-   fseek(fd,offset,SEEK_SET);
-
-   // load image into pixel vector
-   bool special_panels = (strcmp("panels",name)==0);
-   load_image(fd,auxpalidx,special_panels);
-   palette = pal;
-
-   fclose(fd);
-}
-
-void ua_image::load_raw(ua_settings &settings, const char *name, unsigned int pal)
-{
-   // create filename
-   std::string filename(settings.get_string(ua_setting_uw_path));
-   filename.append(name);
-
-   // open file
-   FILE *fd = fopen(filename.c_str(),"rb");
-   if (fd==NULL)
-   {
-      std::string text("could not open raw image: ");
-      text.append(filename);
-      throw ua_exception(text.c_str());
-   }
-
-   // create and load raw image
-   create(320,200,0,pal);
-
-   fread(&pixels[0],1,320*200,fd);
-
-   fclose(fd);
-}
-
-void ua_image_list::load(ua_settings &settings, const char *name, unsigned int from,
-   unsigned int to, unsigned int palette)
-{
-   Uint8 auxpalidx[32][16];
-
-   // load all auxiliary palettes
-   {
-      std::string allauxpalname(settings.get_string(ua_setting_uw_path));
-      allauxpalname.append("data/allpals.dat");
-
-      FILE *fd = fopen(allauxpalname.c_str(),"rb");
-      if (fd==NULL)
-         throw ua_exception("could not open file allpals.dat");
-
-      fread(auxpalidx,1,32*16,fd);
-      fclose(fd);
-   }
-
-   // create filename
-   std::string filename(settings.get_string(ua_setting_uw_path));
-   filename.append("data/");
-   filename.append(name);
-   filename.append(".gr");
-
-   // open file
-   FILE *fd = fopen(filename.c_str(),"rb");
-   if (fd==NULL)
-   {
-      std::string text("could not open image list: ");
-      text.append(filename);
-      throw ua_exception(text.c_str());
-   }
-
-   // get file length
-   fseek(fd,0,SEEK_END);
-   unsigned long filelen = ftell(fd);
-   fseek(fd,0,SEEK_SET);
-
-   // read in toc
-   Uint8 id = fgetc(fd); // always 1 (?)
-   Uint16 entries = fread16(fd);
-
-   if (to==0) to=entries;
-
-   if (from>=entries || to<from)
-   {
-      fclose(fd);
-      return;
-   }
-
-   // read in all offsets
-   std::vector<Uint32> offsets;
-   offsets.resize(entries,0);
-
-   for(Uint16 i=0; i<entries; i++)
-      offsets[i]=fread32(fd);
-
-   bool special_panels = (strcmp("panels",name)==0);
-
-   for(Uint16 j=from; j<to; j++)
-   {
-      if (offsets[j]>=filelen)
-         continue;
-
-      fseek(fd,offsets[j],SEEK_SET);
-
-      // load image into pixel vector
-      ua_image img;
-      img.load_image(fd,auxpalidx,special_panels);
-      img.palette = palette;
-
-      allimages.push_back(img);
-   }
-
-   fclose(fd);
 }
