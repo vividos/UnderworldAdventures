@@ -181,8 +181,9 @@ void ua_cutscene_view_screen::render()
       // render animation frame
 
       // prepare image texture
+      cuts.get_frame(curframe);
+      tex_anim.convert(cuts.get_anim_palette(),cuts);
       tex_anim.use();
-      cuts.get_frame(tex_anim,curframe);
       tex_anim.upload();
 
       double u = tex_anim.get_tex_u(), v = tex_anim.get_tex_v();
