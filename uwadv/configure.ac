@@ -11,7 +11,7 @@ AC_INIT(source/uwadv.cpp)
 
 # version info
 PACKAGE=uwadv
-VERSION=0.4
+VERSION=0.4a-cheesecake
 
 
 AC_CANONICAL_BUILD
@@ -43,7 +43,7 @@ esac
 AC_DEFINE(HAVE_HOME,,[Users have home directories on this OS])
 
 
-dnl find and test the compiler
+# find and test the compiler
 AC_PROG_CC
 AC_PROG_CPP
 AC_C_INLINE
@@ -53,14 +53,14 @@ AC_PROG_CXX
 AC_LANG_CPLUSPLUS
 
 
-dnl other needed programs
+# other needed programs
 AC_PROG_MAKE_SET
 AC_PROG_INSTALL
 AC_PROG_RANLIB
 
 AM_PROG_LIBTOOL
 
-dnl X config
+# X config
 AC_PATH_X
 AC_PATH_XTRA
 CFLAGS="$CFLAGS $X_CFLAGS"
@@ -68,11 +68,12 @@ CXXFLAGS="$CXXFLAGS $X_CFLAGS"
 LIBS="$LIBS $X_LIBS"
 
 
-dnl check standard C header
+# check standard C header
 AC_HEADER_STDC
 
 
-dnl checking for --enable-debug
+
+# checking for --enable-debug
 AC_MSG_CHECKING(for debug options)
 
 AC_ARG_ENABLE(debug,
@@ -82,14 +83,14 @@ AC_ARG_ENABLE(debug,
   ], AC_MSG_RESULT(no))
 
 
-dnl checking for SDL
+# checking for SDL
 AM_PATH_SDL(1.2.3,,AC_MSG_ERROR([
 Underworld Adventures needs at least SDL 1.2.3 or higher installed.
 SDL is available here: http://www.libsdl.org/
 ]))
 
 
-dnl checking for working OpenGL
+# checking for working OpenGL
 save_CPPFLAGS="$CPPFLAGS"
 CPPFLAGS="$CXXFLAGS"
 AC_CHECK_HEADER(GL/gl.h,,AC_MSG_ERROR([
@@ -99,15 +100,21 @@ Check http://mesa3d.sourceforge.net/ for a good one.]))
 CPPFLAGS="$save_CPPFLAGS"
 
 
-dnl checking for FMOD
+# checking for FMOD
 AC_CHECK_HEADER(fmod.h,
   AC_DEFINE(HAVE_FMOD_H,,[defined when the FMOD library is present]),
   AC_MSG_WARN([
 FMOD not found. No midi playback available.
 FMOD is available at http://www.fmod.org/]))
 
-dnl checking for uwadv.cfg entries
 
+# checking for zlib
+AC_CHECK_HEADER(zlib.h,,AC_MSG_ERROR([
+zlib header not found. Zlib is required to compile and run
+Underworld Adventures.]))
+
+
+# checking for uwadv.cfg entries
 AC_ARG_WITH(uw1, [  --with-uw1=DIR          directory where UW1 is installed ],UW1PATH=$with_uw1,UW1PATH=${datadir}/games/uw1/)
 AC_SUBST(UW1PATH)
 
@@ -116,7 +123,7 @@ AC_SUBST(UADATAPATH)
 
 CPPFLAGS="$CPPFLAGS -DCONFIGDIR=\\\"${datadir}/games/uwadv/\\\""
 
-dnl produce output files
+# produce output files
 AC_SUBST(OPENGL_LIBS)
 AC_CONFIG_FILES([
 Makefile
