@@ -9,7 +9,10 @@
 #
 
 # path to place where uwadv should be installed
-UWADV_PATH = c:/uwadv/
+UWADV_PATH = c:/uwadv
+
+# set to "yes" for console or "no" to have stdout.txt/stderr.txt
+WITH_CONSOLE = yes
 
 # path to SDL include
 SDL_INCLUDE = -Ic:/mingw/include/sdl/
@@ -24,25 +27,34 @@ STLPORT_LIB = -Lc:/mingw/stl/lib/ -lstlport_mingw32_static
 # build variables
 #
 
-# fmod isn't needed for Win32, since uwadv have a native midi driver
-FMOD_INCLUDE = #-DHAVE_FMOD_H -Ic:/mingw/include/fmod/api/inc/
-FMOD_LIB = #-Lc:/mingw/include/fmod/api/lib/ -lfmod
-
-
-SDL_LIB = -lSDLmain -lSDL -lSDL_mixer
-WIN32_LIB = -lmingw32 -lkernel32 -luser32
-OPENGL_LIB = -lopengl32 -lglu32
-
+# compiler
 CC = gcc
 CXX = c++
 CFLAGS = -O2 #-g -O
-
-DEFINES = -DHAVE_CONSOLE
-INCLUDES = $(SDL_INCLUDE) $(STLPORT_INCLUDE) $(FMOD_INCLUDE) \
-	-Isource/ -Isource/lua/include/ -Isource/resource/zziplib/
-CFLAGS += $(DEFINES) $(INCLUDES)
 CXXFLAGS =
 LDFLAGS = -mwindows -s
+DEFINES =
+
+
+# fmod isn't needed for Win32, since uwadv has a native midi driver
+FMOD_INCLUDE = #-DHAVE_FMOD_H -Ic:/mingw/include/fmod/api/inc/
+FMOD_LIB = #-Lc:/mingw/include/fmod/api/lib/ -lfmod
+
+# library configure stuff
+SDL_LIB = -lSDL -lSDL_mixer
+WIN32_LIB = -lmingw32 -lkernel32 -luser32
+OPENGL_LIB = -lopengl32 -lglu32
+
+ifeq ("$(WITH_CONSOLE)", "yes")
+DEFINES += -DHAVE_CONSOLE
+else
+SDL_LIB = -lSDLmain -lSDL -lSDL_mixer
+endif
+
+INCLUDES = $(SDL_INCLUDE) $(STLPORT_INCLUDE) $(FMOD_INCLUDE) \
+	-Isource/ -Isource/lua/include/ -Isource/resource/zziplib/
+
+CFLAGS += $(DEFINES) $(INCLUDES)
 
 #
 # build targets
@@ -112,7 +124,12 @@ uwadv_OBJS = source/win32/source/main.o \
 uwadv_LIBS = $(WIN32_LIB) -lwinmm $(OPENGL_LIB) \
 	$(SDL_LIB) $(FMOD_LIB) $(STLPORT_LIB) -lz
 
+
+ifeq ("$(WITH_CONSOLE)", "yes")
 uwadv_LDFLAGS = -mconsole
+else
+uwadv_LDFLAGS =
+endif
 
 
 # conv debugger
