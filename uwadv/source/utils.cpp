@@ -31,9 +31,14 @@
 #include <cstdarg>
 #include <cstdio>
 
+#ifdef __MINGW32__
+#define HAVE_SYS_STAT_H
+#endif
+
 #ifdef WIN32
 #include <direct.h> // for mkdir
 #endif
+
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
@@ -71,6 +76,7 @@ int ua_mkdir(const char *dirname, int mode)
          (ret & FILE_ATTRIBUTE_DIRECTORY) != 0;
 #else
       // every other sane system
+      struct stat sbuf;
       bool exists =
          (stat(parent.c_str(), &sbuf) == 0) &&
          S_ISDIR(sbuf.st_mode);

@@ -109,6 +109,8 @@ public:
    ua_object():xpos(0.0),ypos(0.0){}
    //! ctor
    ua_object(double objxpos, double objypos):xpos(objxpos),ypos(objypos){}
+   //! dtor
+   virtual ~ua_object(){}
 
    //! returns object xpos
    double get_xpos(){ return xpos; }

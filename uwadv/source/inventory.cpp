@@ -373,6 +373,9 @@ bool ua_inventory::drop_floating_item(Uint16 index)
                   get_item(floating_object).item_id = ua_slot_no_item;
                   floating_object = ua_slot_no_item;
                   break;
+
+               default:
+                  break;
                }
 
                return true; // combining was successful

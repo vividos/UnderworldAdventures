@@ -35,7 +35,7 @@
 // ua_game methods
 
 ua_game::ua_game():tickrate(20),exit_game(false),audio(NULL),screen(NULL),
-   screen_to_destroy(NULL),reset_tick_timer(false)
+   reset_tick_timer(false),screen_to_destroy(NULL)
 {
    printf("Underworld Adventures\n");
    printf("http://uwadv.sourceforge.net/\n\n");
@@ -281,6 +281,9 @@ void ua_game::handle_key_down(SDL_keysym *keysym)
       // exit when pressing Alt + x
       if ((keysym->mod & KMOD_ALT)!=0)
          exit_game = true;
+      break;
+
+   default:
       break;
    }
 }

@@ -227,17 +227,17 @@ void ua_level::get_tile_triangles(unsigned int xpos, unsigned int ypos,
 
          // get current tile coordinates
          get_tile_coords((ua_levelmap_wall_render_side)side,tile.type,
-            x,y,tile.floor,tile.slope,tile.ceiling,
+            Uint16(x),Uint16(y),Uint16(tile.floor),Uint16(tile.slope),Uint16(tile.ceiling),
             x1,y1,z1, x2,y2,z2);
 
          // get adjacent tile coordinates
          Uint16 nx, ny, nz1, nz2;
          switch(side)
          {
-         case ua_left:  nx=x-1; ny=y; break;
-         case ua_right: nx=x+1; ny=y; break;
-         case ua_front: ny=y+1; nx=x; break;
-         case ua_back:  ny=y-1; nx=x; break;
+         case ua_left:  nx=Uint16(x)-1; ny=Uint16(y); break;
+         case ua_right: nx=Uint16(x)+1; ny=Uint16(y); break;
+         case ua_front: ny=Uint16(y)+1; nx=Uint16(x); break;
+         case ua_back:  ny=Uint16(y)-1; nx=Uint16(x); break;
          }
 
          if (nx<64 && ny<64)
