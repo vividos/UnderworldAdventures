@@ -19,11 +19,35 @@
    $Id$
 
 */
+// game strings loading
 
 // needed includes
-#include "SDL_types.h"
 #include "hacking.h"
-#include "../source/resource/fread_endian.hpp"
+
+
+// needed SDL stuff
+
+typedef unsigned short Uint16;
+typedef unsigned long Uint32;
+
+
+// fread/fwrite functions
+
+//! reads a 16-bit int
+inline Uint16 fread16(FILE *fd)
+{
+   Uint16 data;
+   fread(&data,1,2,fd);
+   return data;
+}
+
+//! reads a 32-bit int
+inline Uint32 fread32(FILE *fd)
+{
+   Uint32 data;
+   fread(&data,1,4,fd);
+   return data;
+}
 
 
 // structs
