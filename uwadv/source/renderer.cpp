@@ -32,11 +32,17 @@
 
 */
 
+// not using the alt. renderer
+#undef HAVE_ALTERNATE_RENDERER
+
 // needed includes
 #include "common.hpp"
 #include "renderer.hpp"
 #include "quadtree.hpp"
-//#include <algorithm>
+
+#ifdef HAVE_ALTERNATE_RENDERER
+#include <algorithm>
+#endif
 
 
 // constants
@@ -156,7 +162,6 @@ void ua_renderer::render()
    q.get_visible_tiles(fr,tilelist);
 
    ua_level &level = underw->get_current_level();
-//   ua_texture_manager& texmgr = underw->get_game_core()->get_texmgr();
 
    int i,max;
 
@@ -181,7 +186,7 @@ void ua_renderer::render()
    {
       ua_triangle3d_textured &tri = alltriangles[i];
 
-      texmgr.use(tri.texnum);
+      texmgr->use(tri.texnum);
 
       glBegin(GL_TRIANGLES);
       for(int j=0; j<3; j++)
