@@ -50,6 +50,7 @@ uwadv_SOURCES = \
 	import/imageloader.cpp \
 	import/import.hpp import/importgfx.hpp import/io_endian.hpp \
 	import/maploader.cpp \
+	import/modeldecode.cpp \
 	import/objloader.cpp \
 	import/playerimport.cpp \
 	import/proploader.cpp \
@@ -59,6 +60,7 @@ uwadv_SOURCES = \
 	import/uw2dec.cpp \
 	import/uwloader.cpp \
 	renderer/critter.cpp renderer/critter.hpp \
+	renderer/model_builtin.cpp renderer/model_builtin.hpp \
 	renderer/models.cpp renderer/models.hpp \
 	renderer/quadtree.cpp renderer/quadtree.hpp \
 	renderer/renderer.cpp renderer/renderer.hpp \
@@ -110,7 +112,6 @@ uwadv_SOURCES = \
 	main.cpp \
 	unittest.cpp unittest.hpp \
 	uwadv.cpp uwadv.hpp \
-	resource/modeldecode.cpp \
 	resource/models_impl.hpp
 
 the_rest = \
