@@ -31,6 +31,13 @@
 #include "fread_endian.hpp"
 
 
+#undef DEV_EXPORT_OBJTEXS
+
+#ifdef DEV_EXPORT_OBJTEXS
+#include "../../hacking/hacking.h"
+#endif
+
+
 // ua_texture_manager methods
 
 void ua_texture_manager::init(ua_settings &settings)
@@ -101,6 +108,52 @@ void ua_texture_manager::init(ua_settings &settings)
       objtex.init(this,2,GL_LINEAR,GL_LINEAR,GL_CLAMP,GL_CLAMP);
       objtex.convert(part1,0);
       objtex.convert(part2,1);
+
+#ifdef DEV_EXPORT_OBJTEXS
+
+      Uint32 tex[256*256];
+
+      memcpy(tex,objtex.get_texels(0),256*256*4);
+
+      for(int i=0; i<256*256; i++)
+      {
+         if (tex[i]==0x00040000)
+            tex[i] = 0x00ffffff;
+         else
+         {
+            Uint8* texel = reinterpret_cast<Uint8*>(&tex[i]);
+            Uint8 temp = texel[0];
+            texel[0] = texel[2];
+            texel[2] = temp;
+         }
+      }
+
+      FILE* fd = fopen("objtex00.tga","wb");
+      tga_writeheader(fd,256,256);
+      fwrite(tex,256*256,4,fd);
+      fclose(fd);
+
+      memcpy(tex,objtex.get_texels(1),256*256*4);
+
+      for(i=0; i<256*256; i++)
+      {
+         if (tex[i]==0x00040000)
+            tex[i] = 0x00ffffff;
+         else
+         {
+            Uint8* texel = reinterpret_cast<Uint8*>(&tex[i]);
+            Uint8 temp = texel[0];
+            texel[0] = texel[2];
+            texel[2] = temp;
+         }
+      }
+
+      fd = fopen("objtex01.tga","wb");
+      tga_writeheader(fd,256,256);
+      fwrite(tex,256*256,4,fd);
+      fclose(fd);
+
+#endif
 
       // prepare textures
       objtex.use(0); objtex.upload(false);
