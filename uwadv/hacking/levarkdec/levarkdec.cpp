@@ -26,6 +26,7 @@
 
 
 //const char *filename = UWPATH"Save3\\lev.ark";
+//const char *filename = UWPATH"Save4\\lev.ark";
 const char *filename = UWPATH"data\\lev.ark";
 
 void follow_object_chain(FILE *out,unsigned int objlist[0x400*2],
@@ -103,6 +104,7 @@ int main(int argc, char* argv[])
    FILE *out = fopen("uw-levelobjs.txt","w");
    FILE *out2 = fopen("uw-misc.txt","w");
    FILE *out3 = fopen("uw-unknowns.txt","w");
+   FILE *out4 = fopen("uw-texmaps.txt","w");
 
    // read in toc
 
@@ -343,7 +345,7 @@ int main(int argc, char* argv[])
       }
       fprintf(out,"\n");
 
-      // unknown list dumping
+      // animation overlay list dumping
       fseek(fd,offsets[j+9],SEEK_SET);
       {
          fprintf(out2,"animation overlay list at level %u, offset %08x\n",j,offsets[j+9]);
@@ -389,6 +391,31 @@ int main(int argc, char* argv[])
          fprintf(out3,"\n");
       }
 
+      // dump texture usage
+      {
+         fseek(fd,offsets[j+18],SEEK_SET);
+
+         unsigned short usages[48+10+6];
+
+         fread(usages,48+10+6,2,fd);
+
+         fprintf(out4,"level %u\n",j);
+         fprintf(out4,"wall textures\n");
+         int n=0;
+         for(n=0; n<48; n++)
+            fprintf(out4," %04x",usages[n]);
+
+         fprintf(out4,"\nfloor textures\n");
+         for(n=48; n<48+10; n++)
+            fprintf(out4," %04x",usages[n]);
+
+         fprintf(out4,"\ndoor textures\n");
+         for(n=48+10; n<48+10+6; n++)
+            fprintf(out4," %04x",usages[n]);
+
+         fprintf(out4,"\n\n");
+      }
+
    } // end for
 
    delete[] offsets;
@@ -397,6 +424,7 @@ int main(int argc, char* argv[])
    fclose(out);
    fclose(out2);
    fclose(out3);
+   fclose(out4);
 
    return 0;
 }
