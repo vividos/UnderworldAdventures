@@ -31,40 +31,20 @@
 #include "fread_endian.hpp"
 
 
-// ua_palettes methods
-
-void ua_palettes::load(ua_settings &settings)
-{
-   // load main palettes
-   std::string allpalname(settings.uw1_path);
-   allpalname.append("data/pals.dat");
-
-   FILE *fd = fopen(allpalname.c_str(),"rb");
-   if (fd==NULL)
-      throw ua_exception("could not open file pals.dat");
-
-   // palettes are stored in ancient vga color format
-   for(int pal=0; pal<8; pal++)
-   {
-      for(int color=0; color<256; color++)
-      {
-         allpals[pal][color][0] = fgetc(fd)<<2;
-         allpals[pal][color][1] = fgetc(fd)<<2;
-         allpals[pal][color][2] = fgetc(fd)<<2;
-         allpals[pal][color][3] = color==0 ? 0 : 255;
-      }
-   }
-   fclose(fd);
-}
-
-
 // ua_texture_manager methods
 
 void ua_texture_manager::init(ua_settings &settings)
 {
    // load palettes
-   pals.load(settings);
+   {
+      // load main palettes
+      std::string allpalname(settings.uw1_path);
+      allpalname.append("data/pals.dat");
 
+      load_palettes(allpalname.c_str());
+   }
+
+   // load stock textures
    if (settings.gtype == ua_game_uw1 || settings.gtype == ua_game_uw_demo)
    {
       // load all wall textures
@@ -93,11 +73,11 @@ void ua_texture_manager::init(ua_settings &settings)
          throw ua_exception("expected 460 images in data/objects.gr");
 
       // create object textures
-      objteximg[0].create(256,256);
-      objteximg[1].create(256,256);
+      ua_image part1,part2;
+      part1.create(256,256);
+      part2.create(256,256);
 
       // create first texture
-      ua_image &part1 = objteximg[0];
       Uint16 id;
       for(id=0; id<256; id++)
       {
@@ -107,7 +87,6 @@ void ua_texture_manager::init(ua_settings &settings)
       }
 
       // create first texture
-      ua_image &part2 = objteximg[1];
       for(id=0; id<(460-256); id++)
       {
          if (id!=(302-256))
@@ -125,12 +104,15 @@ void ua_texture_manager::init(ua_settings &settings)
       // TODO paste images 218 to 223 and 302 into remaining space
 
       // convert to textures
-      objtexs[0].convert(*this,objteximg[0]);
-      objtexs[1].convert(*this,objteximg[1]);
+      objtex.init(2);
+      objtex.convert(*this,part1,0);
+      objtex.convert(*this,part2,1);
 
       // prepare textures
-      objtexs[0].prepare(false);
-      objtexs[1].prepare(false);
+      objtex.use(*this,0);
+      objtex.upload(false);
+      objtex.use(*this,1);
+      objtex.upload(false);
    }
 }
 
@@ -184,5 +166,29 @@ void ua_texture_manager::load_textures(unsigned int startidx, const char *texfna
       }
    }
 
+   fclose(fd);
+}
+
+void ua_texture_manager::load_palettes(const char *allpalname)
+{
+   FILE *fd = fopen(allpalname,"rb");
+   if (fd==NULL)
+   {
+      std::string text("could not open file ");
+      text.append(allpalname);
+      throw ua_exception(text.c_str());
+   }
+
+   // palettes are stored in ancient vga color format
+   for(int pal=0; pal<8; pal++)
+   {
+      for(int color=0; color<256; color++)
+      {
+         allpals[pal][color][0] = fgetc(fd)<<2;
+         allpals[pal][color][1] = fgetc(fd)<<2;
+         allpals[pal][color][2] = fgetc(fd)<<2;
+         allpals[pal][color][3] = color==0 ? 0 : 255;
+      }
+   }
    fclose(fd);
 }

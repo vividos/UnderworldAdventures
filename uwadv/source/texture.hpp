@@ -23,8 +23,18 @@
 
    \brief texture management classes
 
-   stock textures: wall textures start at index 0x0000, floor textures at
-   0x0100
+   ua_texture can be used in several ways. either an image is converted to
+   texture once and used from there on, or a texture is converted and uploaded
+   for every rendered frame (e.g. for animations).
+
+   ua_texture::init() allocates texture names from OpenGL
+   ua_texture::convert() converts image pixels to 32-bit texture data
+   ua_texture::use() activates a texture name for use, e.g. upload or rendering
+   ua_texture::upload() uploads converted texture to the graphics card
+   ua_texture::done() deletes the used texture names
+
+   note: texture size for multiple textures is calculated when convert()ing
+   the first texture. all other textures must have the same size.
 
 */
 
@@ -40,37 +50,23 @@
 
 // constants
 
+//! start of stock wall textures
 const unsigned int ua_tex_stock_wall = 0x0000;
+//! start of stock floor textures
 const unsigned int ua_tex_stock_floor = 0x0100;
 
 
 // typedefs
+
+//! a GL_RGBA compatible palette
 typedef Uint8 ua_onepalette[256][4];
-
-
-// classes
-
-//! palette class
-class ua_palettes
-{
-public:
-   //! ctor
-   ua_palettes(){}
-
-   //! loads main palettes and all auxiliary palette tables
-   void load(ua_settings &settings);
-
-   //! returns an auxiliary palette table; type is Uint8 [256][4]
-   ua_onepalette &get_palette(Uint8 pal){ return allpals[pal]; }
-
-protected:
-   //! all main palettes
-   ua_onepalette allpals[8];
-};
 
 
 // forward declaration
 class ua_texture_manager;
+
+
+// classes
 
 
 //! texture class; represents one or more texture images
@@ -80,41 +76,44 @@ public:
    //! ctor
    ua_texture(){}
 
+   //! allocates and initializes OpenGL texture object
+   void init(unsigned int numtex=1, GLenum min_filt=GL_LINEAR,
+      GLenum max_filt=GL_LINEAR);
+
    //! converts image to texture
-   void convert(ua_texture_manager &texmgr, ua_image &img);
+   void convert(ua_texture_manager &texmgr, ua_image &img, unsigned int numtex=0);
 
    //! converts image with custom palette to texture
-   void convert(ua_image &img, ua_onepalette &pal);
+   void convert(ua_image &img, ua_onepalette &pal, unsigned int numtex=0);
 
-   //! prepares texture for usage
-   void prepare(bool mipmaps=false, GLenum min_filt = GL_LINEAR,
-      GLenum max_filt = GL_LINEAR);
+   //! convert image pixels to texture
+   void convert(Uint8 *pix, unsigned int origx, unsigned int origy,
+      ua_onepalette &pal, unsigned int numtex);
 
-   //! binds texture to use it in OpenGL
-   void use(ua_texture_manager &texmgr, unsigned int animstep=0);
+   //! uses texture in OpenGL
+   void use(ua_texture_manager &texmgr, unsigned int numtex=0);
+
+   //! uploads the converted texture to OpenGL
+   void upload(bool mipmaps=false);
 
    //! returns u texture coordinate
-   float get_tex_u(){ return u;}
+   double get_tex_u(){ return u;}
 
    //! returns v texture coordinate
-   float get_tex_v(){ return v; }
+   double get_tex_v(){ return v; }
 
-   //! cleans up texture name(s) after use
-   void clean();
-
-   //! uploads the texture directly, without using a texture name
-   void upload(bool mipmaps=false, unsigned int texnr=0,
-      GLenum min_filt = GL_LINEAR, GLenum max_filt = GL_LINEAR);
+   //! cleans up texture name(s) after usage
+   void done();
 
 protected:
    //! upper left texture coordinates
-   float u,v;
+   double u,v;
 
    //! x and y resolution of the texture
    unsigned int xres,yres;
 
-   //! number of textures stored in 'texels'
-   unsigned int texcount;
+   //! texture last use()d
+   unsigned int last_used_tex;
 
    //! texels for all images
    std::vector<Uint32> texels;
@@ -162,22 +161,19 @@ public:
    void object_tex(Uint16 id,double &u1,double &v1,double &u2,double &v2);
 
    //! returns a specific palette
-   ua_onepalette &get_palette(unsigned int pal){ return pals.get_palette(pal); };
+   ua_onepalette &get_palette(unsigned int pal){ return allpals[pal]; };
 
    //! invalidates last bound texture name
    void invalidate_tex(){ last_texname=0; }
 
 private:
-   //! loads all palettes
-   void load_palettes(const char *allpalname);
-
    //! loads textures from file
    void load_textures(unsigned int startidx, const char *texfname);
 
-protected:
-   //! all palettes
-   ua_palettes pals;
+   //! loads all palettes
+   void load_palettes(const char *allpalname);
 
+protected:
    //! last bound texture name
    GLuint last_texname;
 
@@ -185,10 +181,10 @@ protected:
    std::vector<ua_stock_texture> allstocktex;
 
    //! object textures
-   ua_image objteximg[2];
+   ua_texture objtex;
 
-   //! object texture names
-   ua_texture objtexs[2];
+   //! all main palettes
+   ua_onepalette allpals[8];
 };
 
 #endif

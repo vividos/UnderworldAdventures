@@ -33,92 +33,109 @@
 
 // ua_texture methods
 
-void ua_texture::convert(ua_texture_manager &texmgr,ua_image &img)
+void ua_texture::init(unsigned int numtex,GLenum min_filt,GLenum max_filt)
 {
-   if (img.get_palette()>=8)
-      return;
+   texname.resize(numtex,0);
+   xres = yres = 0;
 
-   convert(img,texmgr.get_palette(img.get_palette()));
+   // create texture names
+   glGenTextures(numtex,&texname[0]);
+
+   // set texture parameters for all texture names
+   for(unsigned int i=0; i<numtex; i++)
+   {
+      glBindTexture(GL_TEXTURE_2D,texname[i]);
+
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, min_filt);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, max_filt);
+
+      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+   }
 }
 
-void ua_texture::convert(ua_image &img, ua_onepalette &pal)
+void ua_texture::convert(ua_texture_manager &texmgr, ua_image &img,
+   unsigned int numtex)
+{
+   if (img.get_palette()>=8) return;
+
+   convert(img,texmgr.get_palette(img.get_palette()),numtex);
+}
+
+void ua_texture::convert(ua_image &img, ua_onepalette &pal,
+   unsigned int numtex)
 {
    Uint8 *pix = &img.get_pixels()[0];
 
    unsigned int origx = img.get_xres();
    unsigned int origy = img.get_yres();
 
-   // determine texture resolution (must be 2^n)
-   xres = (unsigned int)pow(2,int(log(origx)/log(2)+0.9999));
-   yres = (unsigned int)pow(2,int(log(origy)/log(2)+0.9999));
-   texcount = 1;
+   convert(pix,origx,origy,pal,numtex);
+}
 
-   u = float(origx)/xres;
-   v = float(origy)/yres;
+void ua_texture::convert(Uint8 *pix, unsigned int origx, unsigned int origy,
+   ua_onepalette &pal, unsigned int numtex)
+{
+   // only do resolution determination for the first texture
+   if (numtex==0)
+   {
+      // determine texture resolution (must be 2^n)
+      xres = (unsigned int)pow(2,int(log(origx)/log(2)+0.9999));
+      yres = (unsigned int)pow(2,int(log(origy)/log(2)+0.9999));
 
-   texels.resize(xres*yres,0x00000000);
+      u = double(origx)/xres;
+      v = double(origy)/yres;
 
+      texels.resize(texname.size()*xres*yres,0x00000000);
+   }
+
+   // convert color indices to 32-bit texture
    Uint32 *palptr = reinterpret_cast<Uint32*>(&pal);
+   Uint32 *texptr = &texels[numtex*xres*yres];
 
    for(unsigned int y=0; y<origy; y++)
-   for(unsigned int x=0; x<origx; x++)
    {
-//      Uint8 idx = pix[y*origx+x];
-      texels[y*xres+x] = palptr[pix[y*origx+x]];
-//      Uint32 texel = *((Uint32*)pal[idx]);
-//      texels[y*xres+x] = texel;
-   }
+      Uint32 *texptr2 = &texptr[y*xres];
+      for(unsigned int x=0; x<origx; x++)
+         *texptr2++ = palptr[pix[y*origx+x]];
+   }/*
+   for(unsigned int y=0; y<origy; y++)
+      for(unsigned int x=0; x<origx; x++)
+         texptr[y*xres+x] = palptr[pix[y*origx+x]];*/
 }
 
-void ua_texture::prepare(bool mipmaps, GLenum min_filt, GLenum max_filt)
+void ua_texture::use(ua_texture_manager &texmgr, unsigned int numtex)
 {
-   texname.resize(texcount,0);
+   if (numtex>=texname.size()) return;
 
-   // create texture names
-   glGenTextures(texcount,&texname[0]);
-
-   for(unsigned int i=0; i<texcount; i++)
-   {
-      glBindTexture(GL_TEXTURE_2D, texname[i]);
-      upload(mipmaps,i,min_filt,max_filt);
-   }
-}
-
-void ua_texture::use(ua_texture_manager &texmgr, unsigned int animstep)
-{
-   if (animstep>=texname.size())
-      return;
+   last_used_tex = numtex;
 
    // invalidates currently used texture
    texmgr.invalidate_tex();
-
-   glBindTexture(GL_TEXTURE_2D,texname[animstep]);
+   glBindTexture(GL_TEXTURE_2D,texname[numtex]);
 }
 
-void ua_texture::clean()
+void ua_texture::upload(bool mipmaps)
 {
-   glDeleteTextures(texcount,&texname[0]);
-}
-
-void ua_texture::upload(bool mipmaps, unsigned int texnr, GLenum min_filt, GLenum max_filt)
-{
-   Uint32 *tex = &texels[texnr*xres*yres];
-
-   // set texture parameters
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, min_filt);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, max_filt);
-
-   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+   Uint32 *tex = &texels[last_used_tex*xres*yres];
 
    // build mipmaps/single texture
    if (mipmaps)
+   {
       gluBuild2DMipmaps(GL_TEXTURE_2D, 3, xres, yres, GL_RGBA,
          GL_UNSIGNED_BYTE, tex);
+   }
    else
+   {
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, xres, yres, 0, GL_RGBA,
          GL_UNSIGNED_BYTE, tex);
+   }
+}
+
+void ua_texture::done()
+{
+   glDeleteTextures(texname.size(),&texname[0]);
 }
 
 
@@ -179,7 +196,7 @@ void ua_texture_manager::prepare(unsigned int idx)
    texels.resize(stex.pixels.size()*4,0);
 
    // use texture #0, stock textures always use these
-   ua_onepalette &pal = pals.get_palette(0);
+   ua_onepalette &pal = get_palette(0);
 
    for(unsigned int i=0; i<texsize; i++)
    {
@@ -212,8 +229,8 @@ void ua_texture_manager::use(unsigned int idx)
 void ua_texture_manager::object_tex(Uint16 id,double &u1,double &v1,double &u2,double &v2)
 {
    // select texture
-   if (id<0x100) objtexs[0].use(*this);
-   else objtexs[1].use(*this);
+   if (id<0x100) objtex.use(*this,0);
+   else objtex.use(*this,1);
 
    // calculate texture coordinates
    double delta = 1.0/256;
