@@ -45,6 +45,7 @@ class ua_player;
 class ua_level;
 class ua_object_list;
 class ua_object;
+class ua_critter;
 
 
 //! imports common to uw1 and uw2
@@ -87,6 +88,13 @@ public:
    //! extracts cutscene data from source data
    void extract_cutscene_data(Uint8* src, Uint8* dst, unsigned int maxpix);
 
+   //! loads all critters
+   void load_critters(std::vector<ua_critter>& allcritters,
+      ua_settings& settings, ua_palette256_ptr palette0);
+
+   //! loads all frames of a critter
+   void load_critter(ua_critter& critter, const char* file,
+      unsigned int used_auxpal);
 
    //! loads properties
    void load_properties(ua_object_properties& prop, const char* path);
@@ -125,8 +133,12 @@ class ua_uw1_import: public ua_uw_import
 {
 public:
    //! loads uw1 or uw_demo level maps
-   virtual void load_levelmaps(std::vector<ua_level> &levels, ua_settings &settings,
-      const char* folder);
+   virtual void load_levelmaps(std::vector<ua_level> &levels,
+      ua_settings &settings, const char* folder);
+
+   //! loads all uw1 critters
+   void load_critters(std::vector<ua_critter>& allcritters,
+      ua_settings& settings, ua_palette256_ptr palette0);
 };
 
 //! uw2 specific imports
@@ -134,8 +146,12 @@ class ua_uw2_import: public ua_uw_import
 {
 public:
    //! loads uw2 levelmaps
-   virtual void load_levelmaps(std::vector<ua_level> &levels, ua_settings &settings,
-      const char* folder);
+   virtual void load_levelmaps(std::vector<ua_level> &levels,
+      ua_settings &settings, const char* folder);
+
+   //! loads all uw2 critters
+   void load_critters(std::vector<ua_critter>& allcritters,
+      ua_settings& settings, ua_palette256_ptr palette0);
 
 protected:
    //! creates SDL_RWops struct from compressed .ark file blocks (uw2 only)
