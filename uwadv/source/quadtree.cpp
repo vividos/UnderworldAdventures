@@ -96,11 +96,11 @@ void ua_quad::get_visible_tiles(ua_frustum &fr, std::vector<ua_quad_tile_coord> 
       // all quad coordinates were in the view frustum
 
       unsigned int x,y,xmax,ymax;
-      xmax = x1; ymax = y1;
+      xmax = unsigned(x1); ymax = unsigned(y1);
 
       // add all tiles in the quad
-      for(x=x0;x<xmax; x++)
-      for(y=y0;y<ymax; y++)
+      for(x=unsigned(x0);x<xmax; x++)
+      for(y=unsigned(y0);y<ymax; y++)
       {
          tilelist.push_back(
             std::make_pair<unsigned int,unsigned int>(x,y) );
@@ -158,6 +158,7 @@ void ua_quad::get_visible_tiles(ua_frustum &fr, std::vector<ua_quad_tile_coord> 
 
     also look at:
     http://www.flipcode.com/cgi-bin/knowledge.cgi?showunit=0
+    http://www.flipcode.com/portal/issue07.shtml
 */
 bool ua_quad::does_intersect(ua_frustum &fr)
 {
