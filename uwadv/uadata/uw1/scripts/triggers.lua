@@ -60,7 +60,7 @@ function trig_check_handle(trig_id,obj_handle)
    then
       print( "trigger set off: " .. ui_get_gamestring(4,objinfo2.item_id))
 
-      trap_set_off(objinfo2.quantity)
+      trap_set_off(objinfo2.quantity,obj_handle)
    end
 
 end
@@ -78,6 +78,6 @@ function lua_trigger_set_off(obj_handle)
       return -- no known trigger to set off
    end
 
-   trap_set_off(objinfo.quantity)
+   trap_set_off(objinfo.quantity,obj_handle)
 
 end

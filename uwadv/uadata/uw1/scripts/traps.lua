@@ -53,7 +53,7 @@ trap_last = trap_text_string
 -- functions
 
 -- sets off effect of a trap
-function trap_set_off(obj_handle)
+function trap_set_off(obj_handle,trig_obj_handle)
 
    -- dump_objinfo_table(obj_handle)
 
@@ -95,6 +95,12 @@ function trap_set_off(obj_handle)
    else
       print( "set off unknown trap:\n" )
       dump_objinfo_table(obj_handle)
+   end
+
+   -- set off possible additional triggers/traps
+   if objinfo.is_quantity == 0
+   then
+      lua_trigger_set_off(objinfo.quantity)
    end
 
 end
