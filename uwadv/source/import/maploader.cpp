@@ -112,7 +112,7 @@ void ua_uw1_import::load_levelmaps(std::vector<ua_level> &levels, ua_settings &s
 
       // import objects
       SDL_RWseek(rwops,0,SEEK_SET);
-//      load_mapobjects(level.get_mapobjects(),rwops,textures);
+      load_mapobjects(level.get_mapobjects(),rwops,textures);
       SDL_RWclose(rwops);
    }
    else
@@ -155,8 +155,7 @@ void ua_uw1_import::load_levelmaps(std::vector<ua_level> &levels, ua_settings &s
 
          // load object list
          SDL_RWseek(rwops,offsets[i],SEEK_SET);
-//         load_mapobjects(level.get_mapobjects(),rwops,textures);
-
+         load_mapobjects(level.get_mapobjects(),rwops,textures);
       }
 
       SDL_RWclose(rwops);
@@ -166,7 +165,7 @@ void ua_uw1_import::load_levelmaps(std::vector<ua_level> &levels, ua_settings &s
 
 // ua_uw2_import methods
 
-void ua_uw2_import::load_levelmaps(std::vector<ua_level> &levels, ua_settings &settings,
+void ua_uw2_import::load_levelmaps(std::vector<ua_level>& levels, ua_settings& settings,
    const char* folder)
 {
    // load uw2 maps
@@ -216,7 +215,7 @@ void ua_uw2_import::load_levelmaps(std::vector<ua_level> &levels, ua_settings &s
 
       // load object list
       SDL_RWseek(rwops,0,SEEK_SET);
-//      load_mapobjects(level.get_mapobjects(),rwops,textures);
+      load_mapobjects(level.get_mapobjects(),rwops,textures);
 
       SDL_RWclose(rwops);
    }
@@ -227,10 +226,20 @@ void ua_uw2_import::load_levelmaps(std::vector<ua_level> &levels, ua_settings &s
 
 // ua_uw_import methods
 
-void ua_uw_import::load_levelmaps(std::vector<ua_level> &levels, ua_settings &settings,
+void ua_uw_import::load_levelmaps(std::vector<ua_level>& levels, ua_settings& settings,
    const char* folder)
 {
-   throw ua_exception("cannot call ua_uw_import::load_levelmaps() directly!");
+   // decide which method to call
+   if (settings.get_gametype() != ua_game_uw2)
+   {
+      ua_uw1_import import;
+      import.load_levelmaps(levels,settings,folder);
+   }
+   else
+   {
+      ua_uw2_import import;
+      import.load_levelmaps(levels,settings,folder);
+   }
 }
 
 void ua_uw_import::load_tilemap(ua_level& level, SDL_RWops* rwops, Uint16 textures[64], bool uw2_mode)
