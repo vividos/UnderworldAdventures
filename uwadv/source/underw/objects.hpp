@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -130,21 +130,17 @@ struct ua_object_info_ext
    //! hit points
    Uint8 npc_hp;
 
-   Uint8 npc_goal;
-   Uint8 npc_gtarg;
-   Uint8 npc_level;
-   bool  npc_talkedto;
-   Uint8 npc_attitude;
+   Uint8 npc_goal;      //!< goal of the npc
+   Uint8 npc_gtarg;     //!< goal target
+   Uint8 npc_level;     //!< experience level
+   bool  npc_talkedto;  //!< is true when player talked to npc
+   Uint8 npc_attitude;  //!< attitude
 
-   Uint8 npc_xhome;
-   Uint8 npc_yhome;
+   Uint8 npc_xhome;     //!< home tile x coordinate
+   Uint8 npc_yhome;     //!< home tile y coordinate
 
-   Uint8 npc_hunger;
-   Uint8 npc_whoami;
-
-   // extra (unknown) values
-   //Uint8 extra1,extra2,extra5,extra7,extra8,extra9,extra10;
-   //Uint8 extra11,extra12,extra13,extra14,extra15,extra16,extra17;
+   Uint8 npc_hunger;    //!< hungriness of the npc
+   Uint8 npc_whoami;    //!< conversation slot of npc, or 0 for generic
 
    //! animation state (used in ua_critter)
    Uint8 animstate;

@@ -60,7 +60,7 @@ public:
    ua_palette256();
    //! copy ctor
    ua_palette256(const ua_palette256& pal2);
-   // assignment operator
+   //! assignment operator
    const ua_palette256& operator=(const ua_palette256& pal2);
 
    //! set value

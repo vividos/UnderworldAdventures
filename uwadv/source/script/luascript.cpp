@@ -311,6 +311,7 @@ ua_lua_scripting& ua_lua_scripting::get_scripting_from_self(lua_State* L)
    return *self;
 }
 
+//! registers a C function inside a table
 #define lua_register_table(L, n, f) { \
    lua_pushstring(L, n); lua_pushcfunction(L, f); lua_settable(L,-3); }
 

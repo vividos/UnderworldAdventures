@@ -33,8 +33,10 @@
 
 // constants
 
+//! string to output when scroll is full but more output is available
 const char* ua_textscroll_more_string = "\\2 [MORE]";
 
+//! mapping from color code to palette #0 indices
 Uint8 ua_textscroll_colors[10] =
 {
    46, 38, 11, 48, 180, 21, 212, 251, 24, 192
@@ -80,7 +82,7 @@ void ua_textscroll::init(ua_game_interface& game, unsigned int xpos,
 }
 
 /*! Prints text to the scroll. The text may contain newline characters and
-    color change codes (like \1, \0 etc.). When the scroll is full, a "[MORE]"
+    color change codes (like "\1", "\0" etc.). When the scroll is full, a "[MORE]"
     text is shown and the window waits for a keypress.
 
     \param text text to print to the scroll

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -86,6 +86,7 @@ protected:
 class ua_pathfinder_astar: public ua_pathfinder
 {
 public:
+   //! ctor
    ua_pathfinder_astar(ua_level& thelevel):ua_pathfinder(thelevel){}
 
    //! finds path using A* algorithm

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -119,7 +119,7 @@ void ua_uw_import::load_cutscene(const char* filename, ua_image& image,
 
 // global functions
 
-// dumps pixels to output buffer
+//! dumps pixels to output buffer
 void ua_cuts_dump_pixel(Uint8*& src,Uint8*& dst,unsigned int& maxpix,unsigned int size)
 {
    unsigned int len = ua_min(size,maxpix);
@@ -129,7 +129,7 @@ void ua_cuts_dump_pixel(Uint8*& src,Uint8*& dst,unsigned int& maxpix,unsigned in
    maxpix -= len;
 }
 
-// does a run with a pixel to output buffer
+//! does a run with a pixel to output buffer
 void ua_cuts_run_pixel(Uint8*& src,Uint8*& dst,unsigned int& maxpix,unsigned int size)
 {
    Uint8 pixel = *src++;
@@ -140,7 +140,7 @@ void ua_cuts_run_pixel(Uint8*& src,Uint8*& dst,unsigned int& maxpix,unsigned int
    maxpix -= len;
 }
 
-// skips some pixels in the output buffer
+//! skips some pixels in the output buffer
 void ua_cuts_skip_pixel(Uint8*& dst,unsigned int& maxpix,unsigned int size)
 {
    if (size>maxpix) size=maxpix;

@@ -45,6 +45,14 @@ const double ua_save_game_screen::fade_time = 0.5;
 
 // global methods
 
+/*! Draws edges into an image.
+    \param img image to draw to
+    \param xpos x start position
+    \param ypos y start position
+    \param width width of the edged area to draw
+    \param height height of the edged area
+    \param inner indicates if the edge is a sunken edge (true)
+*/
 void ua_image_draw_edge(ua_image& img, unsigned int xpos, unsigned int ypos,
    unsigned int width, unsigned int height, bool inner)
 {

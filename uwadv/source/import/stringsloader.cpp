@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -39,17 +39,17 @@
 //! huffman node structure
 typedef struct ua_huff_node
 {
-  int symbol;
-  int parent;
-  int left;
-  int right;
+  int symbol; //!< character symbol in that node
+  int parent; //!< parent node
+  int left;   //!< left node (-1 when no node)
+  int right;  //!< right node
 } ua_huff_node;
 
 //! strings block info
 typedef struct ua_block_info
 {
-   Uint16 block_id;
-   Uint32 offset;
+   Uint16 block_id; //!< block id of current block
+   Uint32 offset;   //!< offset into strings.pak of block
 } ua_block_info;
 
 

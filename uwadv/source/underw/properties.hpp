@@ -47,8 +47,8 @@ struct ua_common_obj_property
 
    Uint16 mass; //!< mass of object in 0.1 kg
 
-   Uint8 quality_class;
-   Uint8 quality_type;
+   Uint8 quality_class; //!< quality class
+   Uint8 quality_type;  //!< quality type
 
    //! indicates if object can have owner ("belonging to ...")
    bool can_have_owner;

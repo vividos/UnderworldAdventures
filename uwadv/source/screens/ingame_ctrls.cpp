@@ -788,12 +788,13 @@ void ua_ingame_move_arrows::mouse_event(bool button_clicked, bool left_button,
 
 // ua_ingame_command_buttons tables
 
+//! menu info table struct for command panels
 struct ua_ingame_command_menu_info
 {
-   int base_image;
-   unsigned int images[7];
-   bool selectable[7];
-   int opt_index[7];
+   int base_image;         //!< number of the base image in optbtns.gr
+   unsigned int images[7]; //!< button images numbers
+   bool selectable[7];     //!< indicates if a button can be pressed
+   int opt_index[7];       //!< index to add to image number when selected
 
 } ua_ingame_command_menu_table[8] =
 {

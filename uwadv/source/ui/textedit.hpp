@@ -68,12 +68,19 @@ public:
    virtual bool process_event(SDL_Event& event);
 
 protected:
+   //! background color
    Uint8 bg_color;
+
+   //! color of prefix text
    Uint8 prefix_color;
+
+   //! text color
    Uint8 text_color;
 
+   //! cursor position; index into text string
    unsigned int cursor_pos;
 
+   //! indicates if the edit window has a border
    bool border;
 
    //! prefix text

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -36,6 +36,7 @@
 
 // tables
 
+//! maps numbers read from lev.ark to level map tile type enum
 ua_levelmap_tiletype ua_tile_type_mapping[16] =
 {
    ua_tile_solid,

@@ -45,10 +45,12 @@ const double ua_player_max_rotate_speed = 90;
 //! max speed a player can rotate the view, in degrees / second
 const double ua_player_max_view_rotate_speed = 60;
 
-//! size of the player ellipsoid
+//! x size of the player ellipsoid
 const double ua_ellipsoid_x = 0.2;
+//! y size of the player ellipsoid
 const double ua_ellipsoid_y = 0.2;
-const double ua_ellipsoid_z = 12.0-0.1;
+//! z size of the player ellipsoid
+const double ua_ellipsoid_z = 11.9;
 
 
 // ua_player methods

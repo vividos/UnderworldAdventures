@@ -82,6 +82,7 @@ protected:
 
    //! draws text at a coordinate (xalign: 0=left, 1=center, 2=right), returns width of text in pixels
    unsigned int drawtext(const char *str, int x, int y, int xalign = 0, unsigned char color = 0);
+   //! draws a text with given text id and string block
    unsigned int drawtext(int strnum, int x, int y, int xalign = 0, unsigned char color = 0, int custstrblock = -1);
 
    //! draw a number at a coordinate, number is always right-aligned, returns width of text in pixels

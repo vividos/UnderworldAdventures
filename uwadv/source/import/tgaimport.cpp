@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -63,22 +63,29 @@ struct ua_tga_info
 {
    // tga header
 
+   //! length of id area
    unsigned int idlength;        // 1 byte
+   //! color map type;
    unsigned int colormaptype;    // 1 byte
+   //! tga type; 2: uncompressed RGB image
    unsigned int tgatype;         // 1 byte
 
    // colormap (not used)
+   //! start of color map
    unsigned int colormaporigin;  // 2 byte
+   //! length of color map
    unsigned int colormaplength;  // 2 byte
+   //! bit depth of color map
    unsigned int colormapdepth;   // 1 byte
 
-   // x and y origin
+   //! x and y origin
    unsigned int xorigin,yorigin; // 2 byte
-   // width and height
+   //! width and height
    unsigned int width,height;    // 2 byte
 
-   // bits per pixel, either 16, 24 or 32
+   //! bits per pixel, either 16, 24 or 32
    unsigned int bitsperpixel;    // 1 byte
+   //! image descriptor
    unsigned int imagedescriptor; // 1 byte
 
    // tga decoding data
@@ -86,18 +93,18 @@ struct ua_tga_info
    //! texture resolution (must be 2^n each)
    unsigned int xres,yres;
 
-   // current scanline
+   //! current scanline
    std::vector<Uint8> scanline;
 
-   // number of bytes per pixel
+   //! number of bytes per pixel
    unsigned int bytesperpixel;
 
-   // count of raw bytes to pass
+   //! count of raw bytes to pass
    unsigned int rawcount;
-   // count of bytes to repeat
+   //! count of bytes to repeat
    int repeatcount;
 
-   // bytes to repeat (length depends on bytesperpixel)
+   //! bytes to repeat (length depends on bytesperpixel)
    Uint8 repeatbytes[4];
 };
 

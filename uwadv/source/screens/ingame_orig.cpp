@@ -43,7 +43,9 @@
 //! time to fade in/out
 const double ua_ingame_orig_screen::fade_time = 0.5;
 
+//! x resolution of savegame screenshot
 const unsigned int ua_ingame_screenshot_xres = 160;
+//! y resolution of savegame screenshot
 const unsigned int ua_ingame_screenshot_yres = 100;
 
 

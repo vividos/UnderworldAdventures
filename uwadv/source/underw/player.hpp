@@ -239,7 +239,7 @@ protected:
    //! the name of the player
    std::string name;
 
-   // positional values
+   //! positional values
    double xpos, ypos, rotangle, panangle, height;
 
    //! maximum pan angle

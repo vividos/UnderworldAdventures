@@ -63,7 +63,7 @@ enum ua_textscroll_colorcode
     stops when the scroll is full and shows a "[MORE]" text, waiting for a key
     press. The text scroll understands some color codes that controls the
     text color. The color codes consist of a \ (backslash) and a following
-    number, e.g. \0 or \3. These numbers are available:
+    number, e.g. "\0" or "\3". These numbers are available:
     0: black
     1: orange
     2: white

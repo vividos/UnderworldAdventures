@@ -158,6 +158,7 @@ bool ua_physics_model::track_object(ua_physics_body& body, ua_vector3d dir,
 }
 
 /*! 
+    \param data collision data package
     \param pos current position in eSpace
     \param dir current direction vector in eSpace
     \return true when a collision occured

@@ -213,6 +213,7 @@ public:
 
    //! returns player
    ua_player& get_player(){ return player; }
+   //! returns player
    const ua_player& get_player() const { return player; }
 
    //! returns player's inventory
@@ -229,6 +230,7 @@ public:
 
    //! returns current level
    ua_level &get_current_level();
+   //! returns current level
    const ua_level &get_current_level() const;
 
    //! returns game strings object

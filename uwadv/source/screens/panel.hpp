@@ -55,11 +55,15 @@ enum ua_panel_type
 class ua_panel_parent_interface
 {
 public:
+   //! ctor
    ua_panel_parent_interface(){}
+   //! dtor
    virtual ~ua_panel_parent_interface(){}
 
+   //! sets cursor image
    virtual void set_cursor(int index, bool priority=false)=0;
 
+   //! returns game interface
    virtual ua_game_interface& get_game_interface()=0;
 };
 
