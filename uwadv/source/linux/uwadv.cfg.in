@@ -19,10 +19,10 @@ uadata-path @UADATAPATH@
 
 #
 # path to a folder where the savegames are stored
-# must end with a \ or /
+# must end with a /
 #
 
-savegame-folder ./uasave/
+savegame-folder ~/.uwadv/savegame/
 
 #
 # enables or disables Underworld Adventures specific features and
