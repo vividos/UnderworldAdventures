@@ -52,7 +52,7 @@ void decode_rle(FILE *fd,FILE *out,unsigned int bits,unsigned int datalen,unsign
    int pixcount=0;
    int stage=0; // we start in stage 0
    int count;
-   int record=3; // we start with record 0=repeat (3=run)
+   int record=0; // we start with record 0=repeat (3=run)
    int repeatcount=0;
 
    while(pixcount<datalen)
@@ -333,11 +333,15 @@ int main(int argc, char* argv[])
             hoty = fgetc(pfile);
             type = fgetc(pfile);
 
+            int wsize=5;
+            if (type!=6)
+               wsize=4;
+
             printf("frame #%d, %ux%u, hot:(%u,%u), type=%u\n",
                frame,width,height,hotx,hoty,type);
 
-            // seek to bitmap data
-            fseek(pfile,alloffsets[frame],SEEK_SET);
+            unsigned short datalen;
+            fread(&datalen,1,2,pfile);
 
             // decode bitmap
             char buffer[256];
@@ -350,7 +354,7 @@ int main(int argc, char* argv[])
             // write palette
             fwrite(palette,1,256*3,tga);
 
-            decode_rle(pfile,tga,5,width*height,auxpals);
+            decode_rle(pfile,tga,wsize,width*height,auxpals);
 
             fclose(tga);
          }
