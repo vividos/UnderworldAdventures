@@ -161,7 +161,7 @@ void ua_ingame_orig_screen::init()
 
       img_background.init(game, 0,0);
 
-      img_background.get_image().fill_rect(236,7, 83,114, 0);
+      img_background.get_image().fill_rect(236,7, 83,114, 0); // panel area
       img_background.get_image().fill_rect(272,3, 10,4, 0);
       img_background.get_image().fill_rect(272,121, 10,18, 0);
 
@@ -189,11 +189,16 @@ void ua_ingame_orig_screen::init()
          scrollwidth = 218;
 
       textscroll.init(game, 15,169, scrollwidth,30, 42);
-      textscroll.set_color(46);
+      //textscroll.init(game, 11,169, 299,29, 42);
+      textscroll.set_color_code(ua_cc_black);
 
-      textscroll.print("Welcome to the Underworld Adventures!\n http://uwadv.sourceforge.net/");
+      textscroll.print("Welcome to the Underworld Adventures!\n"
+         " \\3http://uwadv.sourceforge.net/\\0\n");
 
       register_window(&textscroll);
+
+      // fill message scroll background area
+      img_background.get_image().fill_rect(16,169, scrollwidth,30, 42);
    }
 
    // runeshelf
@@ -1000,22 +1005,6 @@ void ua_ingame_orig_screen::uw_start_conversation(unsigned int list_pos)
 }
 
 /*
-void ua_ingame_orig_screen::init(ua_game_core_interface* thecore)
-{
-   panel.init_panel(core,this);
-
-   // background image
-   {
-      // fill message scroll area
-      img_back.fill_rect(16,169, scrollwidth,30, 42);
-
-      // fill panel area
-      img_back.fill_rect(236,7, 83,114, 1);
-
-      }
-   }
-}
-
 void ua_ingame_orig_screen::do_screenshot(bool with_menu, unsigned int xres, unsigned int yres)
 {
    if (xres==0) xres = core->get_screen_width();
