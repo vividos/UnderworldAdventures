@@ -17,3 +17,6 @@ endif
 
 # Makefile.common defines all the _SOURCES
 include Makefile.common
+
+
+EXTRA_DIST = Makefile.common
