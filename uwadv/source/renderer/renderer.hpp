@@ -34,8 +34,12 @@
 #include "quadtree.hpp"
 #include "critter.hpp"
 #include "models.hpp"
-#include "underworld.hpp"
+//#include "underworld.hpp"
 #include "settings.hpp"
+
+
+// forward references
+class ua_underworld;
 
 
 // classes
@@ -53,17 +57,25 @@ public:
       ua_critter_pool* thecritpool, ua_model3d_manager* modelmgr,
       const ua_vector3d& view_offset*/);
 
-   ua_texture_manager& get_texture_manager(){ return texmgr2;}
-
    //! cleans up renderer
    void done();
 
-   //! sets up camera
-   void setup_camera(double fov, double aspect, double farplane=16.0);
+   //! cleans screen with black color and updates frame
+   void clear();
 
-   //! renders underworld
-   void render();
+   //! returns texture manager
+   ua_texture_manager& get_texture_manager();
 
+   //! sets up camera for 2d user interface rendering
+   void setup_camera2d();
+
+   //! sets up camera for 3d scene rendering
+   void setup_camera3d(double fov, double farplane=16.0);
+
+   //! renders current view of the underworld
+   void render_underworld(const ua_underworld& underw);
+
+/*
    //! renders underworld
    void ua_renderer::render(ua_level& level, ua_vector3d& pos,
       double panangle, double rotangle,
@@ -76,8 +88,9 @@ public:
    //! returns the list of all triangles for a given tile
    static void get_tile_triangles(ua_level& level, unsigned int xpos, unsigned int ypos,
       std::vector<ua_triangle3d_textured>& alltriangles);
-
+*/
 protected:
+/*
    //! private method to set up camera
    void setup_camera_priv(bool pick,unsigned int xpos, unsigned int ypos);
 
@@ -125,16 +138,10 @@ protected:
       double x1, double y1, double z1,
       double x2, double y2, double z2,
       double nz1, double nz2, double ceiling);
-
+*/
 protected:
-
-   ua_texture_manager texmgr2;
-
-   //! underworld object
-   ua_underworld* underw;
-
    //! texture manager to use for rendering
-   ua_texture_manager* texmgr;
+   ua_texture_manager texmgr;
 
    //! critter pool
    ua_critter_pool* critpool;
@@ -162,68 +169,11 @@ protected:
 };
 
 
-#ifdef WIN32
-#define UA_GL_CALLBACK __stdcall
-#else
-#define UA_GL_CALLBACK
-#endif
+// inline methods
 
-class ua_poly_tessellator
+inline ua_texture_manager& ua_renderer::get_texture_manager()
 {
-public:
-   //! ctor
-   ua_poly_tessellator();
-   //! dtor
-   ~ua_poly_tessellator();
-
-   //! adds polygon vertex
-   void add_poly_vertex(const ua_vertex3d& vertex)
-   {
-      poly_vertices.push_back(vertex);
-   }
-
-   //! tessellates the polygon and returns triangles
-   const std::vector<ua_triangle3d_textured>& tessellate(Uint16 texnum);
-
-protected:
-   // static callback functions
-
-   static void UA_GL_CALLBACK begin_data(GLenum type, ua_poly_tessellator* This);
-
-   static void UA_GL_CALLBACK end_data(ua_poly_tessellator* This);
-
-   static void UA_GL_CALLBACK vertex_data(
-      ua_vertex3d* vert, ua_poly_tessellator* This);
-
-   static void UA_GL_CALLBACK combine_data(GLdouble coords[3],
-      ua_vertex3d* vertex_data[4], GLfloat weight[4], ua_vertex3d** out_data,
-      ua_poly_tessellator* This);
-
-protected:
-   //! GLU tessellator object
-   GLUtesselator* tess;
-
-   //! current texture number
-   Uint16 cur_texnum;
-
-   //! current glBegin() parameter type
-   GLenum cur_type;
-
-   //! indicates a fresh triangle start
-   bool tri_start;
-
-   //! list of polygon vertices; only point 0 of triangle is valid
-   std::vector<ua_vertex3d> poly_vertices;
-
-   //! temporary vertex cache to combine 3 vertices to a triangle
-   std::vector<ua_vertex3d> vert_cache;
-
-   //! list with new triangles
-   std::vector<ua_triangle3d_textured> triangles;
-
-   //! list of pointer to vertices created using combining
-   std::vector<ua_vertex3d*> combined_vertices;
-};
-
+   return texmgr;
+}
 
 #endif

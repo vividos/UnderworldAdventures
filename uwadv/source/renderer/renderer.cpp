@@ -69,19 +69,19 @@ void ua_renderer::init(ua_settings& settings
 /*ua_underworld* uw, ua_texture_manager* thetexmgr,
    ua_critter_pool* thecritpool, ua_model3d_manager* themodelmgr, const ua_vector3d& view_offset*/)
 {
-   texmgr2.init(settings);
+   texmgr.init(settings);
 /*
    underw = uw;
    texmgr = thetexmgr;
    critpool = thecritpool;
    modelmgr = themodelmgr;
-
-   // culling
+*/
+   // culling: only render front face, counter clockwise
    glCullFace(GL_BACK);
    glFrontFace(GL_CCW);
    glEnable(GL_CULL_FACE);
 
-   // z-buffer
+   // enable z-buffer
    glEnable(GL_DEPTH_TEST);
 
    // enable texturing
@@ -90,6 +90,7 @@ void ua_renderer::init(ua_settings& settings
    // smooth shading
    glShadeModel(GL_SMOOTH);
 
+/*
    // fog
    glEnable(GL_FOG);
    glFogi(GL_FOG_MODE,GL_EXP2);
@@ -98,18 +99,30 @@ void ua_renderer::init(ua_settings& settings
    glFogf(GL_FOG_END,1.0);
    GLint fog_color[4] = { 0,0,0,0 };
    glFogiv(GL_FOG_COLOR,fog_color);
-
-   // give some hints
+*/
+   // give some rendering hints
    glHint(GL_FOG_HINT,GL_DONT_CARE);
    glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
    glHint(GL_POLYGON_SMOOTH_HINT,GL_DONT_CARE);
-*/
 }
 
 void ua_renderer::done()
 {
-   glDisable(GL_FOG);
+//   glDisable(GL_FOG);
 }
+
+void ua_renderer::clear()
+{
+   glClearColor(0,0,0,0);
+   glClear(GL_COLOR_BUFFER_BIT);
+   SDL_GL_SwapBuffers();
+}
+
+void ua_renderer::render_underworld(const ua_underworld& underw)
+{
+}
+
+#if 0
 
 void ua_renderer::setup_camera(double myfov, double myaspect, double myfarplane)
 {
@@ -1409,137 +1422,4 @@ void ua_renderer::render_wall(unsigned int side,
    glEnd();
 }
 
-
-// ua_poly_tessellator methods
-
-ua_poly_tessellator::ua_poly_tessellator()
-{
-   tess = gluNewTess();
-}
-
-ua_poly_tessellator::~ua_poly_tessellator()
-{
-   gluDeleteTess(tess);
-
-   // free vertices created through combining
-   unsigned int max=combined_vertices.size();
-   for(unsigned int i=0; i<max; i++)
-      delete combined_vertices[i];
-
-   combined_vertices.clear();
-}
-
-typedef void (UA_GL_CALLBACK *GLU_CALLBACK)();
-
-const std::vector<ua_triangle3d_textured>& ua_poly_tessellator::tessellate(Uint16 texnum)
-{
-   cur_texnum = texnum;
-   vert_cache.clear();
-
-   gluTessProperty(tess,GLU_TESS_BOUNDARY_ONLY,GL_FALSE);
-
-   // register callbacks
-   gluTessCallback(tess,GLU_TESS_BEGIN,NULL);
-   gluTessCallback(tess,GLU_TESS_BEGIN_DATA,
-      reinterpret_cast<GLU_CALLBACK>(begin_data));
-
-   gluTessCallback(tess,GLU_TESS_END,NULL);
-   gluTessCallback(tess,GLU_TESS_END_DATA,
-      reinterpret_cast<GLU_CALLBACK>(end_data));
-
-   gluTessCallback(tess,GLU_TESS_VERTEX,NULL);
-   gluTessCallback(tess,GLU_TESS_VERTEX_DATA,
-      reinterpret_cast<GLU_CALLBACK>(vertex_data));
-
-   gluTessCallback(tess,GLU_TESS_COMBINE,NULL);
-   gluTessCallback(tess,GLU_TESS_COMBINE_DATA,
-      reinterpret_cast<GLU_CALLBACK>(combine_data));
-
-   gluTessBeginPolygon(tess,this);
-   gluTessBeginContour(tess);
-
-   // put all polygon vertices into tesselator
-   unsigned int max = poly_vertices.size();
-   for(unsigned int i=0; i<max; i++)
-   {
-      ua_vertex3d& vertex = poly_vertices[i];
-      GLdouble coords[3] = { vertex.pos.x, vertex.pos.y, vertex.pos.z };
-
-      gluTessVertex(tess, coords, &poly_vertices[i]);
-   }
-
-   gluTessEndContour(tess);
-   gluTessEndPolygon(tess);
-
-   return triangles;
-}
-
-void UA_GL_CALLBACK ua_poly_tessellator::begin_data(GLenum type, ua_poly_tessellator* This)
-{
-   This->cur_type = type;
-   This->tri_start = true;
-}
-
-void UA_GL_CALLBACK ua_poly_tessellator::end_data(ua_poly_tessellator* This)
-{
-   This->cur_type = 0;
-}
-
-void UA_GL_CALLBACK ua_poly_tessellator::vertex_data(ua_vertex3d* vert, ua_poly_tessellator* This)
-{
-   if (This->vert_cache.size()==2)
-   {
-      // construct triangle
-      ua_triangle3d_textured tri;
-      tri.vertices[0] = This->vert_cache[0];
-      tri.vertices[1] = This->vert_cache[1];
-      tri.vertices[2] = *vert;
-      tri.texnum = This->cur_texnum;
-
-      This->triangles.push_back(tri);
-
-      // check which vertices to throw away
-      switch(This->cur_type)
-      {
-      case GL_TRIANGLES: // clear all; new set of vertices
-         This->vert_cache.clear();
-         break;
-
-      case GL_TRIANGLE_STRIP: // erase first vertex, insert second
-         This->vert_cache.erase(This->vert_cache.begin());
-         This->vert_cache.push_back(*vert);
-         break;
-
-      case GL_TRIANGLE_FAN: // delete second vertex, insert second
-         This->vert_cache.pop_back();
-         This->vert_cache.push_back(*vert);
-         break;
-      default:
-         break; // should not happen
-      }
-   }
-   else
-      This->vert_cache.push_back(*vert);
-}
-
-void UA_GL_CALLBACK ua_poly_tessellator::combine_data(GLdouble coords[3],
-   ua_vertex3d* vertex_data[4], GLfloat weight[4], ua_vertex3d** out_data, ua_poly_tessellator* This)
-{
-   ua_vertex3d* vert = new ua_vertex3d;
-
-   vert->pos.set(coords[0],coords[1],coords[2]);
-   vert->u =
-      weight[0]*vertex_data[0]->u +
-      weight[1]*vertex_data[1]->u +
-      weight[2]*vertex_data[2]->u +
-      weight[3]*vertex_data[3]->u;
-
-   vert->v =
-      weight[0]*vertex_data[0]->v +
-      weight[1]*vertex_data[1]->v +
-      weight[2]*vertex_data[2]->v +
-      weight[3]*vertex_data[3]->v;
-
-   This->combined_vertices.push_back(vert);
-   *out_data = vert;
-}
+#endif
