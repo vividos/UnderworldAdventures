@@ -417,9 +417,6 @@ void strpak_pack_strings(const char *infile,const char *outfile,const char *node
          Uint16 numstrings = stringlist.size();
          fwrite16(out,numstrings);
 
-         if (numstrings==0x0032)
-            _asm nop;
-
          // remember start of string offsets
          long str_offsets_pos = ftell(out);
 
