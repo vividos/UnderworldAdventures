@@ -53,6 +53,21 @@ typedef enum
 } ua_game_type;
 
 
+//! cutscene narration enum
+typedef enum
+{
+   //! sound (spoken text) only
+   ua_cutscenenar_sound=0,
+
+   //! subtitles only
+   ua_cutscenenar_subtitles,
+
+   //! sound and subtitles 
+   ua_cutscenenar_both
+
+} ua_cutscenenar_type;
+
+
 // classes
 
 //! config class
@@ -76,6 +91,9 @@ public:
 
    //! game type
    ua_game_type gtype;
+
+   //! cutscene narration type
+   ua_cutscenenar_type cutsntype;
 
 protected:
    //! initializes more stuff after loading

@@ -45,6 +45,10 @@ void ua_cutscene_view_screen::init()
 {
    ua_trace("cutscene animation %u started\n",cutscene);
 
+   ua_settings &settings = core->get_settings();
+   canplaysound = (settings.cutsntype==ua_cutscenenar_sound) || (settings.cutsntype==ua_cutscenenar_both);
+   canshowtext = (settings.cutsntype==ua_cutscenenar_subtitles) || (settings.cutsntype==ua_cutscenenar_both);
+
    ended = false;
    tickcount = 0;
 
@@ -456,6 +460,7 @@ void ua_cutscene_view_screen::do_action()
       break;
 
    case 2: // cuts_sound_play
+      if (canplaysound)
       {
          const char *str = lua_tostring(L,n);
          core->get_audio().play_sound(str);
@@ -467,6 +472,7 @@ void ua_cutscene_view_screen::do_action()
       break;
 
    case 4: // cuts_text_fadein
+      if (canshowtext)
       {
          unsigned int strnum = static_cast<unsigned int>(lua_tonumber(L,n));
          create_text_image( core->get_strings().get_string(strblock,strnum).c_str() );
@@ -477,12 +483,16 @@ void ua_cutscene_view_screen::do_action()
       break;
 
    case 5: // cuts_text_fadeout
-      text_fade_state = 2; // fade out
-      text_fadecount = 0;
-      showtext = true;
+      if (canshowtext)
+      {
+         text_fade_state = 2; // fade out
+         text_fadecount = 0;
+         showtext = true;
+      }
       break;
 
    case 6: // cuts_text_show
+      if (canshowtext)
       {
          unsigned int strnum = static_cast<unsigned int>(lua_tonumber(L,n));
          create_text_image( core->get_strings().get_string(strblock,strnum).c_str() );

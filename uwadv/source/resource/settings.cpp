@@ -44,7 +44,8 @@ enum
 {
    ua_setting_uw1path,
    ua_setting_uadata_path,
-   ua_setting_fullscreen
+   ua_setting_fullscreen,
+   ua_setting_cutscene_narration
 };
 
 
@@ -60,6 +61,7 @@ struct
    { "uw1path", ua_setting_uw1path },
    { "uadata-path", ua_setting_uadata_path },
    { "fullscreen", ua_setting_fullscreen },
+   { "cutscene_narration", ua_setting_cutscene_narration },
 };
 
 
@@ -71,7 +73,7 @@ inline bool ua_istab(char c){ return c=='\t'; }
 // ua_settings methods
 
 ua_settings::ua_settings()
-:uw1_path("./"), uadata_path("./uadata/"), fullscreen(false)
+:uw1_path("./"), uadata_path("./uadata/"), fullscreen(false), cutsntype(ua_cutscenenar_subtitles)
 {
 }
 
@@ -94,6 +96,16 @@ void ua_settings::process_option(int option, const char *value)
             (strstr("yes",value) != NULL);
       }
       break;
+
+   case ua_setting_cutscene_narration:
+      {
+         cutsntype = (strstr("sound",value) != NULL) ? ua_cutscenenar_sound :
+            (strstr("both",value) != NULL) ? ua_cutscenenar_both : 
+            // default to subtitles only when some weird value is specified
+            ua_cutscenenar_subtitles;
+      }
+      break;
+
    }
 }
 

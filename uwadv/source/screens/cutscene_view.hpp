@@ -130,6 +130,12 @@ protected:
 
    //! count for anim fadein/fadeout
    unsigned int anim_fadecount;
+
+   //! can playback sound
+   bool canplaysound;
+
+   //! can show text
+   bool canshowtext;
 };
 
 #endif
