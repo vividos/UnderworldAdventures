@@ -21,7 +21,7 @@
 */
 /*! \file files.hpp
 
-   \brief resource files management
+   \brief resource files manager
 
 */
 
@@ -30,10 +30,10 @@
 #define uwadv_files_hpp_
 
 // needed includes
-#include "settings.hpp"
-#include "SDL_rwops.h"
 #include <string>
 #include <vector>
+#include "settings.hpp"
+#include "SDL_rwops.h"
 #include "savegame.hpp"
 
 
@@ -47,19 +47,16 @@ public:
    ua_files_manager();
 
    //! initializes files manager; loads all config files; also sets gametype in ua_settings
-   void init(ua_settings &settings);
+   void init(ua_settings& settings);
 
    //! replaces %xxx% variables and ~ in file system paths
    void replace_system_vars(std::string& path);
 
    //! returns "uadata" file
-   SDL_RWops *get_uadata_file(const char *relpath);
-
-   //! loads a lua script
-   int load_lua_script(lua_State* L, const char* basename);
+   SDL_RWops* get_uadata_file(const char* relpath);
 
    //! returns a list of all configuration files to load
-   std::vector<std::string> &get_cfgfiles_list() { return cfgfiles_list; }
+   std::vector<std::string>& get_cfgfiles_list(){ return cfgfiles_list; }
 
    //! returns uahome path
    const std::string& get_uahome_path(){ return uahome_path; }

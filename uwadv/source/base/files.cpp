@@ -28,8 +28,7 @@
 // needed includes
 #include "common.hpp"
 #include "files.hpp"
-#include "resource/zziplib/SDL_rwops_zzip.h"
-#include <iostream>
+#include "zziplib/SDL_rwops_zzip.h"
 
 
 // ua_files_manager methods
@@ -39,7 +38,7 @@ ua_files_manager::ua_files_manager()
 }
 
 //! checks if a file with given filename is available
-bool ua_file_isavail(std::string base, std::string fname)
+bool ua_file_isavail(const std::string& base, const char* fname)
 {
    std::string filename = base;
    filename += fname;
@@ -47,7 +46,7 @@ bool ua_file_isavail(std::string base, std::string fname)
    return ua_file_exists(filename.c_str());
 }
 
-void ua_files_manager::init(ua_settings &settings)
+void ua_files_manager::init(ua_settings& settings)
 {
    // init config files list
    init_cfgfiles_list();
@@ -216,7 +215,7 @@ void ua_files_manager::replace_system_vars(std::string& path)
    while( std::string::npos != (pos = path.find("%uadata%") ) )
       path.replace(pos,8,uadata_path.c_str());
 
-   // replace any double-slashes occured from past replacements
+   // replace any double-slashes occured from previous replacements
    while( std::string::npos != (pos = path.find("//") ) ||
           std::string::npos != (pos = path.find("\\\\") )    )
       path.replace(pos,2,"/");
@@ -226,7 +225,7 @@ void ua_files_manager::init_cfgfiles_list()
 {
    // determine uahome path
    {
-   #ifdef HAVE_HOME
+#ifdef HAVE_HOME
 
       const char *homedir = getenv("HOME");
       if (homedir != NULL)
@@ -234,23 +233,23 @@ void ua_files_manager::init_cfgfiles_list()
          // User has a home directory
          uahome_path = homedir;
 
-   #ifndef BEOS
+#ifndef BEOS
          uahome_path += "/.uwadv/";
-   #else
+#else
          uahome_path += "/config/settings/uwadv/";
-   #endif
+#endif
       }
 
       // try to create home folder
       ua_trace("creating uahome folder \"%s\"\n",uahome_path.c_str());
       ua_mkdir(uahome_path.c_str(),0700);
 
-   #else // !HAVE_HOME
+#else // !HAVE_HOME
 
       // assume current working folder as home dir
       uahome_path = "./";
 
-   #endif // HAVE_HOME
+#endif // HAVE_HOME
    }
 
    // set up config files list
@@ -272,14 +271,14 @@ void ua_files_manager::init_cfgfiles_list()
    cfgfiles_list.push_back(homecfgfile);
 }
 
-SDL_RWops *ua_files_manager::get_uadata_file(const char *relpath)
+SDL_RWops* ua_files_manager::get_uadata_file(const char* relpath)
 {
    // first, we search for the real
    std::string filename(uadata_path);
    filename.append(relpath);
 
    // try to open file
-   SDL_RWops *ret = SDL_RWFromFile(filename.c_str(),"rb");
+   SDL_RWops* ret = SDL_RWFromFile(filename.c_str(),"rb");
 
    if (ret == NULL)
    {
@@ -318,61 +317,6 @@ SDL_RWops *ua_files_manager::get_uadata_file(const char *relpath)
       }
       while(found);
    }
-
-   return ret;
-}
-
-int ua_files_manager::load_lua_script(lua_State* L, const char* basename)
-{
-   std::string scriptname(basename);
-   scriptname.append(".lua");
-
-   bool compiled = false;
-
-   // load lua script
-   SDL_RWops *script = get_uadata_file(scriptname.c_str());
-
-   // not found? try binary one
-   if (script==NULL)
-   {
-      scriptname.assign(basename);
-      scriptname.append(".lob");
-      compiled = true;
-
-      script = get_uadata_file(scriptname.c_str());
-   }
-
-   // still not found? exception
-   if (script==NULL)
-   {
-      std::string text("could not load Lua script from uadata: ");
-      text.append(scriptname.c_str());
-      throw ua_exception(text.c_str());
-   }
-
-   ua_trace("loaded Lua %sscript \"%s\"\n",
-      compiled ? "compiled " : "", scriptname.c_str());
-
-   // load script into buffer
-   std::vector<char> buffer;
-   unsigned int len=0;
-   {
-      SDL_RWseek(script,0,SEEK_END);
-      len = SDL_RWtell(script);
-      SDL_RWseek(script,0,SEEK_SET);
-
-      buffer.resize(len+1,0);
-
-      SDL_RWread(script,&buffer[0],len,1);
-      buffer[len]=0;
-   }
-   SDL_RWclose(script);
-
-   // execute script
-   int ret = lua_dobuffer(L,&buffer[0],len,basename);
-
-   if (ret!=0)
-      ua_trace("Lua script ended with error code %u\n",ret);
 
    return ret;
 }
