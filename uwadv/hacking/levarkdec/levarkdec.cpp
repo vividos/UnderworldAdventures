@@ -398,6 +398,23 @@ int main(int argc, char* argv[])
          fprintf(out3,"\n");
       }
 
+      // dump block at 7afc (260 bytes)
+      {
+         fseek(fd,offsets[j]+0x6383,SEEK_SET);
+
+         fprintf(out3,"unk260 list for level %u\n\n",j);
+
+         for(unsigned int k=0; k<260; k++)
+         {
+            unsigned char value = fgetc(fd);
+
+            fprintf(out3," %02x",value);
+            if ((k&15)==15) fprintf(out3,"\n");
+         }
+
+         fprintf(out3,"\n");
+      }
+
       // dump texture usage
       {
          fseek(fd,offsets[j+18],SEEK_SET);
