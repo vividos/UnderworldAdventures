@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -30,12 +30,13 @@
 #include "underworld.hpp"
 #include "uamath.hpp"
 #include "import.hpp"
+#include "script.hpp"
 
 
 // ua_underworld methods
 
 ua_underworld::ua_underworld()
-:callback(NULL)
+:callback(NULL), scripting(NULL)
 {
 }
 
@@ -66,7 +67,8 @@ void ua_underworld::init(ua_settings& settings, ua_files_manager& filesmgr)
 
 void ua_underworld::done()
 {
-//TODO   script.done();
+   if (scripting != NULL)
+      scripting->done();
 }
 
 void ua_underworld::eval_underworld(double time)
@@ -77,16 +79,15 @@ void ua_underworld::eval_underworld(double time)
    // evaluate physics
    physics.eval_physics(time);
 
-   // call Lua tick script
-//TODO   script.lua_game_tick(time);
-
    check_move_trigger();
 }
 
-bool ua_underworld::user_action(ua_underworld_user_action action,
+void ua_underworld::user_action(ua_underworld_user_action action,
    unsigned int param)
 {
-   return true;
+   if (scripting == NULL) return;
+
+   scripting->user_action(action, param);
 }
 
 ua_level &ua_underworld::get_current_level()

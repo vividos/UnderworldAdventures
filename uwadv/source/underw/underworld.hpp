@@ -53,6 +53,7 @@
 
 // forward declaration
 class ua_game_core_interface;
+class ua_scripting;
 
 
 // enums
@@ -60,15 +61,34 @@ class ua_game_core_interface;
 /*! actions that the user performs */
 enum ua_underworld_user_action
 {
-   ua_action_nothing=0,    //!< dummy action
+   //! dummy action
+   ua_action_nothing=0,
+
+   //! clicked on active spell; param is the spell that is clicked on
+   ua_action_clicked_spells,
 
    //! user clicked on runeshelf to cast a spell
-   ua_action_cast_spell,
+   ua_action_clicked_runeshelf,
+
+   //! user clicked on compass
+   ua_action_clicked_compass,
+
+   //! user clicked on vitality flask
+   ua_action_clicked_vitality_flask,
+
+   //! user clicked on mana flask
+   ua_action_clicked_mana_flask,
+
+   //! user clicked on gargoyle
+   ua_action_clicked_gargoyle,
+
+   //! user clicked on dragons
+   ua_action_clicked_dragons,
 
    //! user tracks creatures
    ua_action_track_creatures,
 
-   //! user tries to sleep
+   //! user tries to sleep, using bedroll or bed
    ua_action_sleep,
 
    /*! enters combat mode; the function returns false when it's not possible
@@ -143,7 +163,7 @@ public:
    void eval_underworld(double time);
 
    //! user performed an action
-   bool user_action(ua_underworld_user_action action, unsigned int param=0);
+   void user_action(ua_underworld_user_action action, unsigned int param=0);
 
    //! returns if enhanced features are turned on
    bool have_enhanced_features(){ return enhanced_features; }
@@ -153,6 +173,12 @@ public:
 
    //! registers a callback
    void register_callback(ua_underworld_callback* cb=NULL){ callback = cb; }
+
+   //! returns callback interface
+   ua_underworld_callback* get_callback(){ return callback; };
+
+   //! sets scripting interface
+   void set_scripting(ua_scripting* script){ scripting = script; }
 
    // access to underworld components
 
@@ -248,6 +274,9 @@ protected:
 
    //! pointer to underworld callback class
    ua_underworld_callback* callback;
+
+   //! pointer to scripting class
+   ua_scripting* scripting;
 };
 
 
