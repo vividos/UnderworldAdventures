@@ -46,7 +46,8 @@ void ua_gamestrings::init(ua_settings& settings)
 
    // add dummy vector for block 1
    std::vector<std::string> dummymap;
-   allstrings.insert(std::make_pair<Uint16, std::vector<std::string> >(1,dummymap));
+   allstrings.insert(
+      std::make_pair<Uint16, std::vector<std::string> >(1,dummymap));
 
    // manually load block 1
    std::vector<std::string>& block1 = allstrings[1];
@@ -87,13 +88,15 @@ bool ua_gamestrings::is_avail(Uint16 block_id)
    return false;
 }
 
-void ua_gamestrings::get_stringblock(Uint16 block_id, std::vector<std::string>& strblock)
+void ua_gamestrings::get_stringblock(Uint16 block_id,
+   std::vector<std::string>& strblock)
 {
-   if (!is_avail(block_id))
-      load_stringblock(block_id);
-
    if (is_avail(block_id))
    {
+      // load string block when not paged in
+      if (allstrings.find(block_id) == allstrings.end())
+         load_stringblock(block_id);
+
       strblock = allstrings[block_id];
 
       // decrease lifetime for other blocks, except for this one
@@ -103,7 +106,8 @@ void ua_gamestrings::get_stringblock(Uint16 block_id, std::vector<std::string>& 
       ua_trace("string block %04x cannot be found", block_id);
 }
 
-std::string ua_gamestrings::get_string(Uint16 block_id, unsigned int string_nr)
+std::string ua_gamestrings::get_string(Uint16 block_id,
+   unsigned int string_nr)
 {
    std::string text;
    if (is_avail(block_id))
@@ -120,7 +124,8 @@ std::string ua_gamestrings::get_string(Uint16 block_id, unsigned int string_nr)
          decrease_lifetimes(block_id);
       }
       else
-         ua_trace("string %u in block %04x cannot be found", string_nr, block_id);
+         ua_trace("string %u in block %04x cannot be found", string_nr,
+            block_id);
    }
    else
       ua_trace("string block %04x cannot be found", block_id);
@@ -139,7 +144,8 @@ void ua_gamestrings::load_stringblock(Uint16 block_id)
       {
          // add dummy vector for block
          std::vector<std::string> dummymap;
-         allstrings.insert(std::make_pair<Uint16, std::vector<std::string> >(block_id,dummymap));
+         allstrings.insert(std::make_pair<Uint16, std::vector<std::string> >(
+            block_id,dummymap));
 
          // load block
          std::vector<std::string>& block = allstrings[block_id];
@@ -158,9 +164,12 @@ void ua_gamestrings::load_stringblock(Uint16 block_id)
 void ua_gamestrings::decrease_lifetimes(Uint16 except_for_block_id)
 {
    // only decrease lifetimes when the excepted block is in lifetimes map
-   std::map<Uint16, unsigned int>::iterator iter = lifetimes.find(except_for_block_id);
+   std::map<Uint16, unsigned int>::iterator iter =
+      lifetimes.find(except_for_block_id);
    if (iter == lifetimes.end())
       return;
+
+   std::vector<Uint16> list_dump_ids;
 
    // age blocks except given one
    iter = lifetimes.begin();
@@ -174,45 +183,21 @@ void ua_gamestrings::decrease_lifetimes(Uint16 except_for_block_id)
          if (--iter->second == 0)
          {
             // erase block
-            ua_trace("garbage-collected block %04x\n", iter->first);
-            allstrings.erase(iter->first);
-            iter = lifetimes.erase(iter);
+            ua_trace("garbage-collecing block %04x\n", iter->first);
+            list_dump_ids.push_back(iter->first);
          }
       }
    }
-}
 
-
-/*
-
-std::vector<std::string>& ua_gamestrings::get_block(unsigned int block)
-{
-   // try to find string block
-   std::map<int,std::vector<std::string> >::iterator iter =
-      allstrings.find(block);
-
-   if (iter==allstrings.end())
-      throw ua_exception("string block not found!");
-
-   return iter->second;
-}
-
-std::string ua_gamestrings::get_string(unsigned int block, unsigned int string_nr)
-{
-   std::string res;
-
-   // try to find string block
-   std::map<int,std::vector<std::string> >::iterator iter =
-      allstrings.find(block);
-
-   if (iter!=allstrings.end())
+   // remove blocks
+   unsigned int max = list_dump_ids.size();
+   for(unsigned int i=0; i<max; i++)
    {
-      // try to find string in vector
-      std::vector<std::string> &stringlist = iter->second;
-      if (string_nr<stringlist.size())
-         res = stringlist[string_nr];
-   }
+      // remove from strings list
+      allstrings.erase(list_dump_ids[i]);
 
-   return res;
+      // and from lifetimes map
+      iter = lifetimes.find(list_dump_ids[i]);
+      lifetimes.erase(iter);
+   }
 }
-*/
