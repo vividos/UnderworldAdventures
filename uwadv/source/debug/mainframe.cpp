@@ -33,6 +33,7 @@
 #include "objectlist.hpp"
 #include "hotspotlist.hpp"
 #include "tilemapview.hpp"
+#include "luasrcframe.hpp"
 
 // frame layout library
 
@@ -52,6 +53,7 @@
 // ua_debugger_main_frame event table
 
 BEGIN_EVENT_TABLE(ua_debugger_main_frame, wxMDIParentFrame)
+   EVT_MENU(MENU_FILE_OPEN, ua_debugger_main_frame::OnMenuFileOpen)
    EVT_MENU(MENU_FILE_QUIT, ua_debugger_main_frame::OnMenuFileQuit)
    EVT_MENU(MENU_UNDERW_UPDATE, ua_debugger_main_frame::OnMenuUnderwUpdate)
    EVT_MENU(MENU_UNDERW_SUSPEND, ua_debugger_main_frame::OnMenuUnderwSuspend)
@@ -105,6 +107,8 @@ void ua_debugger_main_frame::AddFrameMenus(wxMenuBar* menubar)
 {
    // file menu
    wxMenu* filemenu = new wxMenu();
+   filemenu->Append(MENU_FILE_OPEN, "&Open", "opens a Lua source file");
+   filemenu->AppendSeparator();
    filemenu->Append(MENU_FILE_QUIT, "&Quit", "quits the debugger");
    menubar->Append(filemenu, "&File");
 
@@ -160,6 +164,12 @@ bool ua_debugger_main_frame::CheckBarAvail(wxString& barname)
    }
 
    return barinfo != NULL;
+}
+
+void ua_debugger_main_frame::OnMenuFileOpen(wxCommandEvent& event)
+{
+   new ua_lua_source_frame(this, -1, wxDefaultPosition, wxDefaultSize,
+      wxDEFAULT_FRAME_STYLE);
 }
 
 void ua_debugger_main_frame::OnMenuFileQuit(wxCommandEvent& event)

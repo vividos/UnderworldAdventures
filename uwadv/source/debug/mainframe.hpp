@@ -59,6 +59,9 @@ protected:
 
    // message handler
 
+   //! menu handler: File | Open
+   void OnMenuFileOpen(wxCommandEvent& event);
+
    //! menu handler: File | Quit
    void OnMenuFileQuit(wxCommandEvent& event);
 
@@ -96,6 +99,7 @@ protected:
    enum
    {
       MENU_FILE_QUIT=1000,
+      MENU_FILE_OPEN,
       MENU_UNDERW_SUSPEND,
       MENU_UNDERW_RESUME,
       MENU_UNDERW_UPDATE,
