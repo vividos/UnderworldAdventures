@@ -71,12 +71,18 @@ function format_item_name(item_id,quantity)
 end
 
 
--- called to print a generic "look at" description
-function look_at_objinfo(objinfo,is_inv)
+-- called to handle special cases for "look at"
+function look_at_special(objinfo)
 
-   local quantity = 0
+   -- some_writing
+   if objinfo.item_id == 256+6*16+6
+   then
+      -- print more detailed string
+      ui_print_string( ui_get_gamestring(8,objinfo.flags + 368) )
+      ui_print_string( ui_get_gamestring(8,objinfo.quantity-512) )
 
-   -- treat some objects specially
+      return 1
+   end
 
    -- special tmap object
    if objinfo.item_id == 366 or objinfo.item_id == 367
@@ -84,15 +90,28 @@ function look_at_objinfo(objinfo,is_inv)
       -- simulate "look at wall"
       lua_wall_look(objinfo.owner)
 
+      return 1
+   end
+
+   return 0
+end
+
+
+-- called to print a generic "look at" description
+function look_at_objinfo(objinfo,is_inv)
+
+   local quantity = 0
+
+   -- treat some objects specially
+   if look_at_special(objinfo) > 0
+   then
       return
    end
 
-   if objinfo.is_link ~= 1
+   if objinfo.is_quantity > 0.0
    then
       quantity = objinfo.quantity
    end
-
-   print(" quantity=" .. quantity)
 
    local article, name = format_item_name(objinfo.item_id, quantity)
 
@@ -102,8 +121,8 @@ function look_at_objinfo(objinfo,is_inv)
    end
 
    -- is NPC?
-   attitude = ""
-   named = ""
+   local attitude = ""
+   local named = ""
    if objinfo.item_id >= 64 and objinfo.item_id < 128
    then
       -- get attitude string
@@ -123,13 +142,13 @@ function look_at_objinfo(objinfo,is_inv)
    end
 
    -- object owned by someone?
-   owner = ""
+   local owner = ""
    if is_inv <= 0
    then
       -- check item properties
       prop_item = prop_get_common(objinfo.item_id)
 
-      if prop_item.can_have_owner > 0 and objinfo.owner > 0
+      if prop_item.can_have_owner > 0 and objinfo.owner > 0 and objinfo.owner <= 28
       then
          -- do owner string
          owner = " belonging to" .. ui_get_gamestring(1,objinfo.owner+370)
@@ -139,12 +158,33 @@ function look_at_objinfo(objinfo,is_inv)
    ui_print_string(
      "You see " .. article .. attitude .. name .. named .. owner)
 
+   if is_inv > 0 - 1
+   then
+      -- take a more in-depth look at some objects
+
+      if objinfo.item_id >= 256+3*16 and objinfo.item_id < 256+4*16
+      then
+         -- read book, 0x013x
+         if objinfo.item_id == 256+3*16+11
+         then
+            -- map scroll, "Enscribed upon the scroll is your map."
+            ui_print_string(ui_get_gamestring(1,151))
+         else
+            -- normal book
+            ui_print_string("You read the " .. name .. "...")
+            ui_print_string(ui_get_gamestring(3,objinfo.quantity-512))
+         end
+      end
+
+      -- TODO more look stuff
+   end
+
 end
 
 
-function lua_wall_look(tilex,tiley,tex_id)
+function lua_wall_look(tex_id)
 
-   if id >= 256
+   if tex_id >= 256
    then
       tex_id = 510-(tex_id-256)
    end
