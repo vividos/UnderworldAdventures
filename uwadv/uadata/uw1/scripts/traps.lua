@@ -53,6 +53,46 @@ trap_last = trap_text_string
 -- functions
 
 -- sets off effect of a trap
-function trap_setoff(objlist_handle)
+function trap_set_off(obj_handle)
+
+   dump_objinfo_table(obj_handle)
+
+   objinfo = objlist_get_obj_info(obj_handle)
+
+   if objinfo.item_id == trap_damage
+   then
+      -- a_damage trap
+
+   elseif objinfo.item_id == trap_teleport
+   then
+      -- a_teleport trap
+
+      local newlevel = player_get_attr(player_attr_maplevel)
+
+      if objinfo.zpos ~= 0
+      then
+         -- change level
+         newlevel = objinfo.zpos-1
+
+         underw_change_level(newlevel)
+      end
+
+      player_set_pos(objinfo.quality+0.5, objinfo.owner+0.5)
+
+      player_set_height(
+         tilemap_get_floor_height(newlevel, player_get_pos() )+0.1 )
+
+   elseif objinfo.item_id == trap_text_string
+   then
+      -- a_text string trap
+      local str_id = player_get_attr(player_attr_maplevel) * 64 +
+         objinfo.owner
+
+      ui_print_string( ui_get_gamestring(9, str_id) )
+
+   else
+      print( "set off unknown trap:\n" )
+      dump_objinfo_table(obj_handle)
+   end
 
 end
