@@ -56,14 +56,14 @@ public:
    void done();
 
    //! loads a script from uadata
-   void load_script(ua_game_interface& game, const char* basename);
+   int load_script(ua_game_interface& game, const char* basename);
 
    //! returns lua state info struct
    lua_State* get_lua_State(){ return L; }
 
 protected:
    //! loads a script
-   void load_script(SDL_RWops* rwops, const char* chunkname);
+   int load_script(SDL_RWops* rwops, const char* chunkname);
 
    //! lua state information
    lua_State* L;

@@ -50,7 +50,7 @@ void ua_lua_scripting::done()
    lua_close(L);
 }
 
-void ua_lua_scripting::load_script(ua_game_interface& game,
+int ua_lua_scripting::load_script(ua_game_interface& game,
    const char* basename)
 {
    std::string scriptname(basename);
@@ -80,15 +80,17 @@ void ua_lua_scripting::load_script(ua_game_interface& game,
       throw ua_exception(text.c_str());
    }
 
-   load_script(script, basename);
+   int ret = load_script(script, basename);
 
    ua_trace("loaded Lua %sscript \"%s\"\n",
       compiled ? "compiled " : "", scriptname.c_str());
 
    SDL_RWclose(script);
+
+   return ret;
 }
 
-void ua_lua_scripting::load_script(SDL_RWops* rwops, const char* chunkname)
+int ua_lua_scripting::load_script(SDL_RWops* rwops, const char* chunkname)
 {
    // load script into buffer
    std::vector<char> buffer;
@@ -109,4 +111,6 @@ void ua_lua_scripting::load_script(SDL_RWops* rwops, const char* chunkname)
 
    if (ret!=0)
       ua_trace("Lua script loading ended with error code %u\n",ret);
+
+   return ret;
 }
