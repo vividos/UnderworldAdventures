@@ -51,6 +51,7 @@ function lua_init_script(this)
    -- testing stuff
 
    -- fun_replace_tilemap_solids()
+   -- fun_count_underworld_path()
 
 end
 
@@ -70,6 +71,50 @@ function fun_replace_tilemap_solids()
          end
       end
    end
+end
+
+function fun_count_underworld_path()
+
+   local length = 0.0
+
+   for level = 0, 7
+   do
+      for xpos = 1, 63
+      do
+         for ypos = 1, 63
+         do
+            local tile_handle = tilemap_get_tile(self, level, xpos, ypos)
+
+            -- all normal tiles
+            if tilemap_get_type(self, tile_handle) == tilemap_type_open
+            then
+               length = length + 1.0
+            end
+
+            -- all diagonal tiles
+            if tilemap_get_type(self, tile_handle) == tilemap_type_diagonal_se or
+               tilemap_get_type(self, tile_handle) == tilemap_type_diagonal_sw or
+               tilemap_get_type(self, tile_handle) == tilemap_type_diagonal_nw or
+               tilemap_get_type(self, tile_handle) == tilemap_type_diagonal_ne
+            then
+               length = length + 0.5
+            end
+
+            -- all diagonal tiles
+            if tilemap_get_type(self, tile_handle) == tilemap_type_slope_n or
+               tilemap_get_type(self, tile_handle) == tilemap_type_slope_e or
+               tilemap_get_type(self, tile_handle) == tilemap_type_slope_s or
+               tilemap_get_type(self, tile_handle) == tilemap_type_slope_w
+            then
+               length = length + 1.2
+            end
+
+         end
+      end
+   end
+
+   print ("length of paths in underworld: " .. floor(length)/1000 ..
+      " km or " .. floor(length/1.60935)/1000 .. " miles (and not 25 :)" )
 end
 
 
