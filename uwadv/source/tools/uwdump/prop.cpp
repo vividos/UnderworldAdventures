@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2003 Underworld Adventures Team
+   Copyright (c) 2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -45,7 +45,10 @@ void ua_dump_obj_properties::start(std::string& basepath)
       strpak.append("data/strings.pak");
       try
       {
-         gstr.load(strpak.c_str());
+         ua_settings settings;
+         settings.set_value(ua_setting_uw_path, basepath);
+
+         gstr.init(settings);
       }
       catch(...)
       {
