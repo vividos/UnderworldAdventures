@@ -78,7 +78,7 @@ AC_CHECK_HEADERS(glob.h)
 AC_CHECK_HEADERS(cstdio cstdlib cstring cmath cctype)
 AC_CHECK_HEADERS(vector string map iostream set bitset)
 AC_CHECK_HEADERS(utility algorithm exception fstream)
-AC_CHECK_HEADERS(sstream)
+AC_CHECK_HEADERS(sstream iomanip)
 
 
 # checking for --enable-debug
