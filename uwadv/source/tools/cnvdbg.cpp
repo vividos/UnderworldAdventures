@@ -134,8 +134,8 @@ void ua_conv_debugger::start()
             printf("loaded conversation #%u.\n",conv);
             ua_conv_code_vm::init(cg);
             printf("conversation partner: \"%s\"\n",
-               gs.get_string(6,16+conv_nr).c_str());
-            printf("using strings from string block #%u\n",strblock);
+               gs.get_string(7,16+conv_nr).c_str());
+            printf("using strings from string block #%04x\n",strblock);
             loaded=true;
          }
          else
@@ -161,7 +161,7 @@ void ua_conv_debugger::start()
          }
 
          // print some infos
-         printf("infos about conversation #%u (string block %u):\n\n",
+         printf("infos about conversation #%u (string block %04x):\n\n",
             conv_nr,strblock);
 
          printf("code size: %04x, call/ret level: %u, verbose mode: %s\n",
@@ -574,7 +574,7 @@ int main(int argc, char *argv[])
    }
    catch(std::exception e)
    {
-      printf("caught an exception: \"%s\"\n",e.what());
+      printf("caught a std::exception: \"%s\"\n",e.what());
    }
    catch(...)
    {

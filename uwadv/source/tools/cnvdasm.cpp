@@ -79,7 +79,7 @@ void ua_conv_dasm::disassemble(FILE *out)
 {
    if (fd==NULL) return;
 
-   fprintf(out,";\n; conversation #%u (string block %u)\n"
+   fprintf(out,";\n; conversation #%u (string block 0x%04x)\n"
       "; disassembled by cnvdasm\n;\n",conv_nr,strblock);
 
    // now list all imported funcs and globals
@@ -153,10 +153,10 @@ void ua_conv_dasm::decompile(FILE *out)
    if (fd==NULL) return;
 
    fprintf(out,"/*\n   ultima underworld 1 - conversation #%u\n"
-      "   string block: %u\n"
+      "   string block: 0x%04x\n"
       "   conversation partner: \"%s\"\n\n"
       "   decompiled by cnvdasm\n*/\n",conv_nr,strblock,
-      gs.get_string(6,conv_nr+16).c_str());
+      gs.get_string(7,conv_nr+16).c_str());
 
    load_dec();
    resolve_labels();
