@@ -33,7 +33,7 @@
 // constants
 
 //! frames per second for cutscene animation
-const double ua_cutscene_view_anim_fps = 8.0;
+const double ua_cutscene_view_anim_fps = 5.0;
 
 //! time needed to fade in/out text
 const double ua_cutscene_view_fade_time = 0.5;
@@ -427,6 +427,7 @@ void ua_cutscene_view_screen::do_action()
          unsigned int strnum = static_cast<unsigned int>(lua_tonumber(L,n));
          create_text_image( core->get_strings().get_string(strblock,strnum).c_str() );
          showtext = true;
+         text_fade_state = 0;
       }
       break;
 
