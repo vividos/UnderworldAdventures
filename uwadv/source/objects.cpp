@@ -34,11 +34,32 @@
 
 // ua_object methods
 
-ua_object::ua_object(unsigned int myxpos,unsigned int myypos,Uint16 link1,Uint16 item_id)
-:type(ua_obj_invisible),xpos(myxpos),ypos(myypos)
+void ua_object::load_object(ua_savegame &sg)
 {
-   info.item_id = item_id;
-   info.link1 = link1;
+   xpos = sg.read32()/256.0;
+   ypos = sg.read32()/256.0;
+
+   info.type = static_cast<ua_obj_type>(sg.read8());
+   info.item_id = sg.read16();
+   info.quality = sg.read16();
+   info.link1 = sg.read16();
+   info.quantity = sg.read16();
+
+   // todo: read data
+}
+
+void ua_object::save_object(ua_savegame &sg)
+{
+   sg.write32(Uint32(xpos*256));
+   sg.write32(Uint32(ypos*256));
+
+   sg.write8(info.type);
+   sg.write16(info.item_id);
+   sg.write16(info.quality);
+   sg.write16(info.link1);
+   sg.write16(info.quantity);
+
+   // todo: write data
 }
 
 /*! each object is rendered using "view coordinates", that means the camera is
@@ -105,53 +126,69 @@ void ua_object::render(unsigned int x, unsigned int y,
 }
 
 
-// ua_npc_object methods
+// ua_object_list methods
 
-ua_npc_object::ua_npc_object(unsigned int xpos,unsigned int ypos,Uint16 link1,Uint16 id)
-:ua_object(xpos,ypos,link1,id)
+ua_object_list::ua_object_list()
 {
 }
-
-
-// ua_object_list methods
 
 ua_object_list::~ua_object_list()
 {
    master_obj_list.clear();
 }
 
-void ua_object_list::get_object_list(unsigned int xpos, unsigned int ypos,
-   std::vector<ua_object_ptr> &objlist)
+bool ua_object_list::get_first_tile_object(unsigned int xpos,
+   unsigned int ypos, ua_object &obj)
 {
-   // collect all object in that tile
-   Uint16 idx=tile_index[ypos*64+xpos];
+   // get first object in tile
+   Uint16 idx = tile_index[ypos*64+xpos];
+   if (idx==0) return false; // no object in tile
 
-   while(idx!=0)
-   {
-      ua_object_ptr objptr = master_obj_list[idx];
-      if (objptr.get()==0)
-      {
-         idx=0; break;
-      }
+   obj = master_obj_list[idx];
+   return true;
+}
 
-      // remember that object
-      objlist.push_back(objptr);
+bool ua_object_list::get_next_tile_object(ua_object &obj)
+{
+   Uint16 link1 = obj.get_object_info().link1;
+   if (link1==0) return false; // no more objects in tile
 
-      // follow link
-      idx = objptr->get_object_info().link1;
-   }
+   obj = master_obj_list[link1];
+   return true;
 }
 
 void ua_object_list::load_game(ua_savegame &sg)
 {
-   sg.begin_section("objlist");
+   // read tile index table
+   tile_index.clear();
+   tile_index.resize(64*64,0);
+   unsigned int n=0;
 
-   sg.end_section();
+   for(n=0; n<64*64; n++)
+      tile_index[n] = sg.read16();
+
+   // read master object list
+   master_obj_list.clear();
+   master_obj_list.resize(0x400);
+
+   for(n=0; n<0x400; n++)
+   {
+      master_obj_list[n].load_object(sg);
+   }
 }
 
 void ua_object_list::save_game(ua_savegame &sg)
 {
-   sg.begin_section("objlist");
+   // write tile index table
+   unsigned int n=0;
 
-   sg.end_section();
+   for(n=0; n<64*64; n++)
+      sg.write16(tile_index[n]);
+
+   // write all objects in master object list
+   for(n=0; n<0x400; n++)
+   {
+      ua_object& obj = master_obj_list[n];
+      obj.save_object(sg);
+   }
 }

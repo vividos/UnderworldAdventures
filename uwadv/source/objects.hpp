@@ -37,90 +37,103 @@
 #include "savegame.hpp"
 
 
+// constants
+
+const Uint16 ua_item_none = 0xffff;
+
+
 // enums
 
 enum ua_obj_type
 {
-   //! npc object
+   //! no object
+   ua_obj_none=0,
+
+   //! item object, can be picked up
+   ua_obj_item,
+
+   //! NPC object
    ua_obj_npc,
-   //! normal object, can be picked up
-   ua_obj_object,
-   //! unmovable object, decoration, doors etc.
-   ua_obj_immobile,
-   //! invisible, e.g. traps etc.
+
+   //! decal objects
+   ua_obj_decal,
+
+   //! 3d objects
+   ua_obj_3d,
+   //! invisible, e.g. traps, etc.
    ua_obj_invisible
 };
 
 
-// forward references
+// structs
+
+//! basic object info
+struct ua_object_info
+{
+   //! struct ctor
+   ua_object_info():type(ua_obj_none),item_id(ua_item_none){}
+
+   //! object type
+   ua_obj_type type;
+
+   //! object item id
+   Uint16 item_id;
+
+   //! item quantity
+   Uint16 quantity;
+
+   //! item quality
+   Uint16 quality;
+
+   //! object chain link
+   Uint16 link1;
+
+   //! custom object data
+   std::vector<Uint16> data;
+};
+
+
+// forward declarations
 class ua_level;
 
 
 // classes
 
-struct ua_object_info
-{
-   //! struct ctor
-   ua_object_info():item_id(0xffff){}
-
-   //! object item id
-   Uint16 item_id;
-   //! link to next object in chain
-   Uint16 link1;
-   //! quantity of object
-   Uint16 quantity;
-};
-
-
-//! object
+//! object in levelmap
 class ua_object
 {
 public:
    //! ctor
-   ua_object(unsigned int xpos,unsigned int ypos,Uint16 link1,Uint16 id);
-   //! dtor
-   virtual ~ua_object(){}
+   ua_object():xpos(0.0),ypos(0.0){}
+   //! ctor
+   ua_object(double objxpos, double objypos):xpos(objxpos),ypos(objypos){}
+
+   //! returns object xpos
+   double get_xpos(){ return xpos; }
+
+   //! returns object ypos
+   double get_ypos(){ return ypos; }
+
+   //! returns object info
+   ua_object_info &get_object_info(){ return info; }
+
+   //! loads object from savegame
+   void load_object(ua_savegame &sg);
+
+   //! saves object to savegame
+   void save_object(ua_savegame &sg);
 
    //! renders object to OpenGL
    virtual void render(unsigned int x, unsigned int y,
       ua_texture_manager &texmgr, ua_frustum &fr, ua_level &lev);
 
-   //! sets object type
-   void set_type(ua_obj_type tp){ type=tp; };
-
-   //! returns object type
-   ua_obj_type get_type(){ return type; }
-
-   //! returns object xpos
-   unsigned int get_xpos(){ return xpos; }
-   //! returns object ypos
-   unsigned int get_ypos(){ return ypos; }
-
-   //! returns object info
-   ua_object_info &get_object_info(){ return info; }
-
 protected:
-   //! object info
+   //! basic object info
    ua_object_info info;
 
-   //! object type
-   ua_obj_type type;
-
-   //! object position within tile
-   unsigned int xpos,ypos;
+   //! object coordinates
+   double xpos,ypos;
 };
-
-
-//! npc object
-class ua_npc_object: public ua_object
-{
-public:
-   //! ctor
-   ua_npc_object(unsigned int xpos,unsigned int ypos,Uint16 link1,Uint16 id);
-};
-
-
-typedef ua_smart_ptr<ua_object> ua_object_ptr;
 
 
 //! object list class
@@ -128,16 +141,20 @@ class ua_object_list
 {
 public:
    //! ctor
-   ua_object_list(){}
+   ua_object_list();
    //! dtor
    ~ua_object_list();
 
-   //! returns list of objects on a tile
-   void get_object_list(unsigned int xpos, unsigned int ypos,
-      std::vector<ua_object_ptr> &objlist);
+   // master object list access
+
+   //! returns first object in a specific tile
+   bool get_first_tile_object(unsigned int xpos, unsigned int ypos, ua_object &obj);
+
+   //! returns next object in object chain
+   bool get_next_tile_object(ua_object &obj);
 
    //! returns an object at a specific list pos
-   ua_object_ptr get_object(Uint16 at){ return master_obj_list[at]; }
+   ua_object &get_object(Uint16 at){ return master_obj_list[at]; }
 
    // loading / saving / importing
 
@@ -152,14 +169,15 @@ public:
 
 private:
    //! adds object to master object list and follows link1 and link2 objs
-   void addobj_follow(std::vector<Uint32> &objprop,Uint16 objpos);
+   void addobj_follow(Uint32 objprop[0x400*2], Uint8 npcinfo[0x100*19],
+      Uint16 objpos);
 
 protected:
    //! indices for each tile into master object list
-   std::vector<unsigned int> tile_index;
+   std::vector<Uint16> tile_index;
 
    //! master object list
-   std::vector<ua_object_ptr> master_obj_list;
+   std::vector<ua_object> master_obj_list;
 };
 
 #endif
