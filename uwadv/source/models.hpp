@@ -88,7 +88,8 @@ public:
    virtual ~ua_model3d_wrl(){}
 
    //! loads vrml97 .wrl file
-   void import_wrl(ua_game_core_interface* core, SDL_RWops* rwops);
+   void import_wrl(ua_game_core_interface* core, SDL_RWops* rwops,
+      std::string relpath);
 
    //! renders model
    virtual void render(ua_vector3d& base);

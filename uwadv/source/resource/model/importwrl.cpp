@@ -36,7 +36,8 @@
 
 // ua_model3d_wrl methods
 
-void ua_model3d_wrl::import_wrl(ua_game_core_interface* core, SDL_RWops* rwops)
+void ua_model3d_wrl::import_wrl(ua_game_core_interface* core, SDL_RWops* rwops,
+   std::string relpath)
 {
    ua_wrl_lexer lexer(rwops);
    int level = 0;
@@ -73,6 +74,10 @@ void ua_model3d_wrl::import_wrl(ua_game_core_interface* core, SDL_RWops* rwops)
 
                lexer.yylex(); // url string
                texture_url.assign(lexer.get_string());
+
+               // remove enclosing " chars
+               texture_url.erase(0,1);
+               texture_url.erase(texture_url.size()-1);
 
                lexer.yylex(); // bracket close
             }
@@ -215,8 +220,23 @@ void ua_model3d_wrl::import_wrl(ua_game_core_interface* core, SDL_RWops* rwops)
    // load texture
    if (res==0)
    {
-//      core->get_texmgr().load_textures();
-//      tex.load();
+      tex.init(&core->get_texmgr());
+
+      // construct texture name
+      std::string::size_type pos = relpath.find_last_of("\\/");
+
+      if (pos==std::string::npos) pos = 0;
+      else pos++;
+
+      relpath.erase(pos);
+      relpath.append(texture_url);
+
+      // load texture
+      SDL_RWops* rwops = core->get_filesmgr().get_uadata_file(relpath.c_str());
+
+      tex.load(rwops);
+
+      SDL_RWclose(rwops);
    }
 }
 
