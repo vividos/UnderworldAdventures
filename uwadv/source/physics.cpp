@@ -62,7 +62,7 @@ const double ua_physics_min_dist = 0.05;
 const double ua_player_radius = 0.4;
 
 //! max height the player can step
-const double ua_physics_max_step_height = 1.1;
+const double ua_physics_max_step_height = 2.1;
 
 //! max speed a player can walk, in tiles / second
 const double ua_player_max_walk_speed = 2.4;
