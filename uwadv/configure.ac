@@ -1,10 +1,10 @@
-dnl
-dnl configure.ac for Underworld Adventures
-dnl
-dnl $Id$
-dnl
+#
+# configure.ac for Underworld Adventures
+#
+# $Id$
+#
 
-dnl initial stuff
+# initial stuff
 AC_PREREQ(2.53)
 AC_INIT(source/uwadv.cpp)
 
@@ -23,21 +23,11 @@ AM_CONFIG_HEADER(source/config.h)
 
 AC_CONFIG_SUBDIRS(source/resource/zziplib)
 
-dnl initial variable values
-CFLAGS="$CFLAGS -O2"
-CXXFLAGS="$CXXFLAGS -O2"
-OPENGL_LIBS=""
 
-# OS specific options
-case "$host_os" in
-   darwin*)
-      OPENGL_LIBS=""
-      ;;
-   *)
-      OPENGL_LIBS="-lGL -lGLU"
-      ;;
+# initial variable values
+CFLAGS="$CFLAGS"
+CXXFLAGS="$CXXFLAGS"
 
-esac
 
 # this is technically OS-specific, but for now all OS-es that use configure
 # do have a home-dir (specifically that the 'HOME' environment var. is set)
@@ -62,20 +52,11 @@ AC_PROG_RANLIB
 
 AM_PROG_LIBTOOL
 
-# X config
-AC_PATH_X
-AC_PATH_XTRA
-CFLAGS="$CFLAGS $X_CFLAGS"
-CXXFLAGS="$CXXFLAGS $X_CFLAGS"
-LIBS="$LIBS $X_LIBS"
-
 
 # check standard C headers
 AC_HEADER_STDC
 
 # check other headers
-
-# TODO: check which ones are required, and which ones are optional
 AC_CHECK_HEADERS(glob.h)
 AC_CHECK_HEADERS(cstdio cstdlib cstring cmath cctype)
 AC_CHECK_HEADERS(vector string map iostream set bitset)
@@ -86,11 +67,26 @@ AC_CHECK_HEADERS(sstream iomanip)
 # checking for --enable-debug
 AC_MSG_CHECKING(for debug options)
 
+DEBUG_FLAGS="-O2"
 AC_ARG_ENABLE(debug,
   [  --enable-debug          enable debugging (disables optimizations)],
-  [ CXXFLAGS="-O -g -Wall $CXXFLAGS"
+  [ DEBUG_FLAGS="-O -g -Wall"
     AC_MSG_RESULT(yes)
   ], AC_MSG_RESULT(no))
+
+
+# checking for X11
+case "$host_os" in
+   darwin*)
+      X_CFLAGS=""
+      X_LIB=""
+      ;;
+   *)
+      AC_PATH_X
+      AC_PATH_XTRA
+      ;;
+
+esac
 
 
 # checking for SDL
@@ -99,21 +95,34 @@ Underworld Adventures needs at least SDL 1.2.3 or higher installed.
 SDL is available here: http://www.libsdl.org/
 ]))
 
+# todo: check for SDL_mixer
+SDL_LIBS="$SDL_LIBS -lSDL_mixer"
 
-# checking for working OpenGL
+
+# checking for OpenGL
 save_CPPFLAGS="$CPPFLAGS"
 CPPFLAGS="$CXXFLAGS"
-AC_CHECK_HEADER(GL/gl.h,,AC_MSG_ERROR([
+
+case "$host_os" in
+   darwin*)
+      OPENGL_LIBS=""
+      ;;
+   *)
+      OPENGL_LIBS="-lGL -lGLU"
+      AC_CHECK_HEADER(GL/gl.h,,AC_MSG_ERROR([
 OpenGL header not found. An OpenGL graphics library is required
 to compile and run Underworld Adventures.
 Check http://mesa3d.sourceforge.net/ for a good one.]))
+      ;;
+
+esac
 CPPFLAGS="$save_CPPFLAGS"
+
 
 # checking for zlib
 AC_CHECK_HEADER(zlib.h,,AC_MSG_ERROR([
 zlib header not found. Zlib is required to compile and run
 Underworld Adventures.]))
-
 
 
 # Build the tools?
@@ -135,7 +144,13 @@ AC_SUBST(UW1PATH)
 UADATAPATH=${datadir}/games/uwadv/
 AC_SUBST(UADATAPATH)
 
+
+# set compiler variables
 CPPFLAGS="$CPPFLAGS -DCONFIGDIR=\\\"${datadir}/games/uwadv/\\\""
+CXXFLAGS="$CXXFLAGS -I. -I${srcdir} $DEBUG_FLAGS  $SDL_CFLAGS $X_CFLAGS"
+CFLAGS="$CXXFLAGS"
+LIBS="$LIBS $SDL_LIBS $OPENGL_LIBS $X_LIBS"
+
 
 # produce output files
 AC_SUBST(OPENGL_LIBS)
@@ -152,4 +167,22 @@ uwadv.spec:source/linux/uwadv.spec.in
 source/linux/uwadv.6
 ])
 AC_OUTPUT
+
+# output status
+echo
+echo " Underworld Adventures is now ready to be built. Your current settings are:"
+echo
+echo "    host_os = $host_os"
+echo "    prefix = ${prefix}"
+echo "    datadir = ${datadir}"
+echo
+echo "    CXXFLAGS = $CXXFLAGS"
+echo "    LIBS = $LIBS"
+echo
+echo "    UW1PATH = $UW1PATH"
+echo "    UADATAPATH = $UADATAPATH"
+echo
+echo " start compiling with the command:"
+echo "    make"
+echo
 
