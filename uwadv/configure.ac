@@ -19,7 +19,7 @@ AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
 
 AM_INIT_AUTOMAKE($PACKAGE,$VERSION,no-define)
-AM_CONFIG_HEADER(config.h)
+AM_CONFIG_HEADER(source/config.h)
 
 dnl initial variable values
 CFLAGS="$CFLAGS -O2"

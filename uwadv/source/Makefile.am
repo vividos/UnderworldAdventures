@@ -7,7 +7,7 @@
 SUBDIRS = tools
 
 # compiler options
-CXXFLAGS = -I.. $(SDL_CFLAGS) -Wall
+CXXFLAGS = -I. -I.. $(SDL_CFLAGS) -Wall
 LDFLAGS = $(SDL_LIBS) -lSDL_mixer
 
 

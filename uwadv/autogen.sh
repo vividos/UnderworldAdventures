@@ -39,7 +39,7 @@ fi
 
 # clean up generated files
 rm -f configure config.log config.guess config.sub config.status
-rm -f config.h.in config.h
+rm -f source/config.h.in source/config.h
 rm -f depcomp compile
 rm -f aclocal.m4
 rm -f install-sh ltmain.sh missing mkinstalldirs

@@ -29,6 +29,10 @@
 #ifndef __uwadv_common_hpp_
 #define __uwadv_common_hpp_
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 
 // get rid of warnings
 #ifdef WIN32
@@ -54,10 +58,6 @@ extern "C"
 }
 
 
-// linux config file
-#ifdef HAVE_CONFIG_H
-#include "linux/config.h"
-#endif
 
 
 #endif

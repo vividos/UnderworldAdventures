@@ -238,7 +238,7 @@ void ua_game::done()
 
 void ua_game::error_msg(const char *msg)
 {
-   fprintf(stderr,msg);
+   std::cerr << msg << std::endl;
 }
 
 

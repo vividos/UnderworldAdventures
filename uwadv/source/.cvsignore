@@ -3,3 +3,5 @@ Makefile
 uwadv
 Makefile.in
 uwadv.cfg
+config.h
+config.h.in
