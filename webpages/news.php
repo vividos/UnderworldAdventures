@@ -6,7 +6,7 @@ Welcome to the Underworld Adventures home page. Underworld Adventures is a proje
 
 <h2>project news</h2>
 
-<span class="newsHeading">2004-04-10 - debian package for uwadv 0.9 "mojito" released</span>
+<span class="newsHeading">2004-04-23 - debian package for uwadv 0.9 "mojito" released</span>
 
 <p class="newsBody">
 Today the debian package for the 0.9 version was released. The packages were prepared for Debian/testing (the package should work for unstable, too). Grab it on the <a href="index.php?page=download">download page</a>.
