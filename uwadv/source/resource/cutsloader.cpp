@@ -85,9 +85,9 @@ void ua_cutscene::load(const char *filename)
       throw ua_exception("wrong cutscene file type");
 
    // width and height
-   width = fread16(fd);
-   height = fread16(fd);
-   outbuffer.resize(width*height,0);
+   xres = fread16(fd);
+   yres = fread16(fd);
+   create(xres,yres);
 
    // skip color cycling infos
    fseek(fd,0x0100,SEEK_SET);
@@ -95,11 +95,11 @@ void ua_cutscene::load(const char *filename)
    // read in palette
    for(int n=0; n<256; n++)
    {
-      palette[n][2] = fgetc(fd); // blue
-      palette[n][1] = fgetc(fd); // green
-      palette[n][0] = fgetc(fd); // red
+      anim_palette[n][2] = fgetc(fd); // blue
+      anim_palette[n][1] = fgetc(fd); // green
+      anim_palette[n][0] = fgetc(fd); // red
       fgetc(fd); // extra pad byte
-      palette[n][3] = 0xff; // transparency
+      anim_palette[n][3] = 0xff; // transparency
    }
 
    // now we are at the large page descriptor array

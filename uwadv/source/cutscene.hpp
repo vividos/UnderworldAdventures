@@ -32,48 +32,42 @@
 // needed includes
 #include <vector>
 #include "settings.hpp"
+#include "image.hpp"
 #include "texture.hpp"
 
 
 // classes
 
 //! cutscene animation class
-class ua_cutscene
+class ua_cutscene: public ua_image
 {
 public:
    //! ctor
    ua_cutscene(){ curframe=(unsigned int)-1; }
 
    //! loads a cutscene by main and sub number
-   void load(ua_settings &settings, unsigned int main, unsigned int sub);
+   void load(ua_settings& settings, unsigned int main, unsigned int sub);
 
    //! loads a cutscene by relative filename
-   void load(ua_settings &settings, const char *filename);
+   void load(ua_settings& settings, const char *filename);
 
    //! loads a cutscene by absolute filename
    void load(const char *filename);
 
-   //! returns width of animation
-   unsigned int get_width(){ return width; }
-   //! returns height of animation
-   unsigned int get_height(){ return height; }
-
    //! returns maximum number of frames
    unsigned int get_maxframes(){ return records; }
 
-   //! extracts a new frame into a texture
-   void get_frame(ua_texture &tex, unsigned int framenum, unsigned int texnum=0);
+   //! extracts a new frame into the current image
+   void get_frame(unsigned int framenum);
+
+   //! returns animation palette
+   ua_onepalette& get_anim_palette(){ return anim_palette; }
 
 protected:
    //! decodes one frame
    void decode_frame(unsigned int framenum);
 
 protected:
-   //! width of animation bitmap
-   unsigned int width;
-   //! height of animation bitmap
-   unsigned int height;
-
    //! number of large pages in file
    unsigned int largepages;
    //! number of records in file
@@ -83,7 +77,7 @@ protected:
    unsigned int curframe;
 
    //! animation palette
-   Uint8 palette[256][4];
+   ua_onepalette anim_palette;
 
    //! large page descriptor struct type
    struct lp_descriptor
@@ -98,9 +92,6 @@ protected:
 
    //! all large pages
    std::vector<Uint8> lpages;
-
-   //! output buffer
-   std::vector<Uint8> outbuffer;
 };
 
 #endif
