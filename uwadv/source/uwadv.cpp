@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -344,10 +344,11 @@ void ua_game::draw_screen()
    SDL_GL_SwapBuffers();
 }
 
-void ua_game::init_core()
+void ua_game::init_game()
 {
-   ua_trace("initializing core objects\n"
-      "uw-path: %s\n",settings.get_string(ua_setting_uw_path).c_str());
+   ua_trace("initializing game\n prefix: %s\n uw-path: %s\n",
+      settings.get_string(ua_setting_game_prefix).c_str(),
+      settings.get_string(ua_setting_uw_path).c_str());
 
    // init textures
    texmgr.init(settings);

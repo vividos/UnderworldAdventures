@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,8 +26,8 @@
 */
 
 // include guard
-#ifndef __uwadv_core_hpp_
-#define __uwadv_core_hpp_
+#ifndef uwadv_core_hpp_
+#define uwadv_core_hpp_
 
 // needed includes
 #include "audio.hpp"
@@ -58,7 +58,7 @@ public:
    virtual ~ua_game_core_interface(){}
 
    //! called as soon as a game path is available
-   virtual void init_core()=0;
+   virtual void init_game()=0;
 
    //! returns screen width
    virtual unsigned int get_screen_width()=0;
