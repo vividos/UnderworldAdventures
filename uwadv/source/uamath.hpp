@@ -182,28 +182,34 @@ public:
 };
 
 
-//! 3d triangle struct
-struct ua_triangle3d
+//! vertex in 3d space
+struct ua_vertex3d
 {
-   //! triangle points
-   ua_vector3d points[3];
+   //! struct ctor
+   ua_vertex3d():u(0.0),v(0.0){}
+
+   //! vertex position
+   ua_vector3d pos;
+
+   //! texture coordinates
+   double u, v;
 };
 
 
 //! textured triangle
-struct ua_triangle3d_textured: public ua_triangle3d
+struct ua_triangle3d_textured
 {
    //! stock texture number used
    Uint16 texnum;
 
-   //! u/v texture coordinates
-   double tex_u[3];
-   double tex_v[3];
+   //! vertices
+   ua_vertex3d vertices[3];
 
    //! sets triangle point properties
    void set(unsigned int point, double x, double y, double z, double u, double v)
    {
-      points[point].set(x,y,z); tex_u[point] = u; tex_v[point] = v;
+      vertices[point].pos.set(x,y,z); vertices[point].u = u; vertices[point].v = v;
+      //points[point].set(x,y,z); tex_u[point] = u; tex_v[point] = v;
    }
 
    //! compare operator for std::sort
