@@ -23,6 +23,11 @@
 
    \brief settings functions
 
+   settings loading implementation; the ua_settings_mapping table contains
+   the mapping between actual key strings and the enum values defined in the
+   header. Ther rest of the functions are to read from the config file or
+   delivering values to the user.
+
 */
 
 // needed includes
@@ -127,9 +132,7 @@ void ua_settings::dump()
 {
    std::map<ua_settings_key,std::string>::iterator iter;
 
-   for (iter = settings.begin();
-        iter != settings.end();
-        ++iter)
+   for (iter = settings.begin(); iter != settings.end(); ++iter)
       ua_trace("%s = %s\n", iter->first, iter->second.c_str());
 }
 
@@ -151,7 +154,7 @@ bool ua_settings::search_key_from_string(const char* keyname, ua_settings_key& k
 
 void ua_settings::load_value(const std::string& name, const std::string& value)
 {
-   ua_trace("settings key/value: %s => %s\n",name.c_str(), value.c_str());
+   ua_trace("settings key/value: %s => %s\n",name.c_str(),value.c_str());
 
    // retrieve settings key
    ua_settings_key key;

@@ -23,11 +23,17 @@
 
    \brief game settings class
 
+   The ua_settings class manages uwadv's global settings values. The values
+   can have the types "boolean", "int" or "std::string". The values are stored
+   in a config file that is read via the ua_cfgfile class. The ua_settings
+   class also manages a game type value that determines which type of game
+   is currently running. To load the settings, just use ua_cfgfile::load().
+
 */
 
 // include guard
-#ifndef __uwadv_settings_hpp_
-#define __uwadv_settings_hpp_
+#ifndef uwadv_settings_hpp_
+#define uwadv_settings_hpp_
 
 // needed includes
 #include <string>
@@ -35,7 +41,7 @@
 #include "cfgfile.hpp"
 
 
-// enum
+// enums
 
 //! settings value key
 enum ua_settings_key
