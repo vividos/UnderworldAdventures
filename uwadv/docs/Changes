@@ -1,3 +1,14 @@
+2003-04-xx release 0.8-boring-version-number
+
+	* added simple NPC animation
+	* added picking up items from the underworld
+	* added animated lava and water textures
+	* added switches, levers and pull chains
+	* implemented some traps and triggers
+	* added bridges
+	* added savegames loading/saving
+	* adde quicksave functionality
+
 2003-02-11 release 0.7-muffin
 
 	* added support for 3d models for static objects
