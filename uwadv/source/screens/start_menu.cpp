@@ -172,6 +172,10 @@ void ua_start_menu_screen::handle_event(SDL_Event &event)
             stage++;
             tickcount=0;
          }
+
+         // fade out music when selecting "introduction"
+         if (stage==2 && selected_area == 0)
+            core->get_audio().fadeout_music(fade_time);
       }
       break;
    }
