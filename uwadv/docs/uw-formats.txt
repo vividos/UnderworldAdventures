@@ -21,13 +21,13 @@ Table of Contents
    2.2.2  Ultima Underworld 2 files
 
    3      Graphics and visuals
-   3.1    Images and palettes
-   3.1.1  Images
-   3.1.2  Palettes
-   3.2    Textures
-   3.3    Fonts
-   3.4    Critter animations
-   3.5    Cutscene animations
+   3.1    Palettes
+   3.2    Images
+   3.3    Bitmaps
+   3.4    Textures
+   3.5    Fonts
+   3.6    Critter animations
+   3.7    Cutscene animations
 
    4      Level maps and object lists
    4.1    Level map
@@ -258,6 +258,27 @@ Table of Contents
    cs404.n01   anvil graphics
    cs410.n01   map piece showing some traps
 
+   Files in a save game folder (e.g. "Save1"):
+
+   lev.ark        modified level map
+   bglobals.dat   conversation globals (initialized)
+   desc           savegame name
+   player.dat     character info
+
+   Files that only appear in the uw_demo "data" folder:
+
+   df??.tr        floor textures
+   dmain.byt      main screen
+   dplayer.???    encrypted player character info for self-running demo
+   dscript.???    scripts for self-running demo sequences
+   dterrain.dat   terrain texture properties for the demo
+   dw??.tr        wall textures
+   level13.anx    object animation overlay info
+   level13.st     tilemap and master object list for first level
+   level13.txm    level texture usage for first level
+   newobj.dat
+   presd.byt      "... presents a demo of ..." screen for the demo
+
 
 2.2.2  Ultima Underworld 2 files
 
@@ -266,12 +287,562 @@ Table of Contents
 
    Files in the main folder:
 
+   uinstall.exe   game installer (LZEXE 0.91 compressed)
+   uw2.exe        Ultima Underworld 2 game
+
+   Files in the "data" folder:
+
+   byt.ark
+   cnv.ark        compressed conversation archive
+   dl.dat
+   gempt.gr       red gem parts (?)
+   ghed.gr
+   lev.ark        compressed levelmap archive
+   lighting.dat
+   pals.dat       11 palettes
+   scd.ark
+   weap.cm
+   weap.dat
+
+   Files in the "cuts" folder:
+   lback00x.byt   (?) (x = 0..8)
+
+   Files in the "crit" folder:
+
+   as.an
+   cr.an
+   pg.mp
+   crXX.YY        critter animations, XX=animation(octal) YY=page
+
+   Files in the "sound" folder:
+
+   bsp??.voc
+   dd??.adv       digital sound drivers
+   dm??.adv       digital music drivers
+   sample.opl
+   sp??.voc
+   uw.opl
+   uw??.voc
+   uwa??.xmi
+   uwr??.xmi
+
+   Here's a list of song names for the .xmi files:
+
+   uwa01.xmi
+   uwa02.xmi
+   uwa03.xmi
+   uwa04.xmi
+   uwa05.xmi
+   uwa06.xmi
+   uwa07.xmi
+   uwa10.xmi
+   uwa11.xmi
+   uwa12.xmi
+   uwa13.xmi
+   uwa14.xmi
+   uwa15.xmi
+   uwa16.xmi
+   uwa17.xmi
+   uwa30.xmi
+   uwa31.xmi
 
  +--------------------------------------------------------------------------+
 
 
 3  Graphics and visuals
 
+   This chapter explains all visual formats used, e.g. wall/floor/ceiling
+   textures, user interface images or animations.
+
+
+3.1  Palettes
+
+   Ultima Underworld uses several palettes for different purposes. There are
+   palettes with 256 indices, as well as auxiliary meta-palettes that have
+   16 or 32 entries that map indices to the 256-index map. As the original
+   games directly load the palettes into the VGA registers, effects as color
+   flashs done with palette rotating is possible.
+
+
+3.1.1  256 color palettes
+
+   In the file "palette.dat" there are stored 8 different palettes. A palette
+   has the following layout:
+
+   0000  Int8  blue  intensity, index 0, range [0..63]
+   0001  Int8  green intensity, index 0, range [0..63]
+   0002  Int8  red   intensity, index 0, range [0..63]
+
+   0003  Int8  blue  intensity, index 1, range [0..63]
+   0004  Int8  green intensity, index 1, range [0..63]
+   ...
+
+   In each palette there are stored color intensities for 256 colors. All 8
+   palettes are stored sequentially in the file.
+
+   Palette index 0 always means a transparent color.
+
+
+3.1.2  16 color auxiliary palette mappings
+
+   In "allpals.dat" there are several auxiliary palettes, used for 4-bit
+   images. All indices use palette #0.
+
+   0000  Int8  index to first color
+   0001  Int8  index to second color
+   ...
+
+   There are 16 values that are indices for palette #0. They build a 16 color
+   palette from selected colors of the palette #0.
+
+   In the file "allpals.dat" there are stored 0x1f (=31) such palettes.
+
+   The critter animations (explained in chapter 3.6) use 32 color auxiliary
+   palette mappings. They are stored withun the animation files.
+
+
+3.1.3 Palette mappings
+
+   Palette mappings for different light/darkness levels are stored in the
+   file "light.dat". The file consists of 16 blocks of palette mappings. Each
+   block contains 256 Int8 values which map colors to their palette indices in
+   the game palette. The first block is the mapping for original colors, and
+   the last one is for "almost black".
+
+   The file "mono.dat" contains palette mappings that maps colors to grayscale
+   values. It has the same format as the "light.dat" file and can be
+   interchanged to get a gray underworld look. It is used for the spell
+   "invisibility".
+
+
+3.1.4  Palette rotation animations
+
+   In several places of the game the palette is used to create animated
+   effects, such as the lava and water textures. Here are the palette indices
+   that have to be rotated to produce the animations:
+
+   - Palette #0: in game graphics
+
+    indices 16 through 23: lava fire effect
+    indices 48 through 51: water effect
+
+   - Palette #2: game start screen
+
+    indices 64 through 127: "Ultima Underworld" logo warping effect
+
+
+3.2  Images
+
+   Graphics are stored in "*.gr" files and can be stored with 8-bit or 4-bit
+   indices.
+
+   0000  Int8   unknown, always seems to be 1
+   0001  Int16  number of bitmaps
+   0003  Int32  offset to bitmap #0
+   0007  Int32  offset to bitmap #1
+   ...
+
+   Each bitmap has its own header:
+
+   0000  Int8   bitmap type:
+                04: 8-bit uncompressed
+                08: 4-bit run-length
+                0A: 4-bit uncompressed
+   0001  Int8   width
+   0002  Int8   height
+
+   For the 4-bit formats, there follows another Int8 that selects the
+   auxiliary palette to use (see 2.1).
+
+   000n  Int16  size of data for the bitmap.
+                in 4-bit formats, this is the number of 4-bit nibbles, not
+                bytes.
+
+   The file "panels.gr" contains bitmaps that don't have a bitmap header, but
+   immediately starts with image data. The bitmaps are of type 04 and have
+   a width of 83 and a height of 114 pixels.
+
+
+3.2.1  Uncompressed bitmaps (04: 8-bit, 0A: 4-bit)
+
+   All palette indices are stored sequentially, first one line, then the
+   next, and so on. For the 4-bit format, first take the upper nibble, then
+   the lower nibble.
+
+
+3.2.2  Compressed bitmaps (type 08)
+
+   All pixels are run-length encoded. when a new byte has to be retrieved,
+   first take the high nibble, then the low nibble of that byte.
+
+   Data consists of repeat and run records. Repeat records let the decoder
+   repeat a single nibble a certain number of times. The run record takes
+   a certain number of next nibbles to be as uncompressed. The two records
+   alternate in the bitmap, starting with a repeat record.
+
+   For every record, first there is a count to retrieve. Get a nibble; if
+   it is not 0, it is a count. Otherwise, get two more nibbles, n1 and n2.
+   The count is  c = (n1 << nibblesize) | n2. If the count is still zero,
+   take another three nibbles, and calculate the count:
+
+     c = (((n1 << nibblesize) | n2) << nibblesize) | n3;
+
+   A count is at most 6 nibbles long.
+
+   A run record consists of a count and then follows 'count' nibbles,
+   that are the raw pixel data. A repeat record consists of a count and
+   a single nibble, the nibble is then repeated 'count' times.
+
+   As there is no point in repeating a nibble <3 times, there are some
+   special meanings for count:
+   1: skip this record, the next one is a run record again. may be used at
+      the beginning of a file, when it should start with a run rather than
+      a repeat.
+   2: multiple repeats. get another count, and process 'count' times a
+      repeat record.
+
+   NOTE that there also exists a 5-bit compressed format which is exactly
+   the same as the above except that the word length is 5 bits instead of 4.
+   This is used for critter animation frames in the crit/ folder. The
+   auxiliary palette contains 32 entries and is stored with the animation.
+
+
+3.3  Bitmaps
+
+   Bitmaps in Ultima Underworld 1 are stored in "*.byt" files. They just are
+   320x200 bitmaps using different palettes. Here's a list of all bitmap
+   files:
+
+   blnkmap.byt    blank map bitmap, palette #1
+   chargen.byt    character generation bitmap, palette #3
+   conv.byt       seems to be a conversation screenshot, palette #0
+   main.byt       main game screen bitmap, palette #0
+   opscr.byt      opening screen, palette #2
+   pres1.byt      "origin presents" screen, palette #5
+   pres2.byt      "a blue sky prod. game" screen, palette #5
+   win1.byt       winning screen with text, palette #7
+   win2.byt       blank winning screen for character info, palette #7
+
+   Underworld 2 has no "*.byt" files. Instead there is one "byt.ark" that
+   contains all images. Like every other "*.ark" file this starts with some
+   tables followed by the data, in this case the images themselves. There are
+   11 entries, of which only 9 are valid:
+
+   entry   palette   usage
+    0       1        Map framework - background, crystal, and the like
+    1       0        Character generation
+    2       0        Bartering
+    3                -unused-
+    4       0        HUD - the frame, bottles, scroll
+    5       0        Underworld 2 Main menu - without menu entries
+    6       5        Origin presents
+    7       5        Looking Glass Technologies
+    8       0        Congratulation screen
+    9       0        like the above but without the text
+   10                -unused-
+
+
+3.4  Textures
+
+   Textures are stored in "*.tr" files, where "fXX.tr" files are floor/ceiling
+   textures, and "wXX.tr" are wall textures. XX describes the width and height
+   resolution of the texture (textures are always square).
+
+   0000  Int8   unknown, always seems to be 2
+   0001  Int8   x and y resolution
+   0002  Int16  number of textures in file
+   0004  Int32  offset to texture #0
+   0008  Int32  offset to texture #1
+   ...
+
+   The offset of each texture points to the actual texture palette indices,
+   which are xyres^2 bytes long. Textures always use palette #0.
+
+   Texture names are stored in string block 10, where wall textures start at
+   position 0, and ceiling textures start at 510, going backwards. The string
+   at position 511 is reserved for the ceiling.
+
+
+3.5  Fonts
+
+   Fonts are stored in "font*.sys" files, and can be non-proportional (chars
+   can have different lengths). The header looks as this:
+
+   0000  Int16   unknown, always 1 (might be size of character width field)
+   0002  Int16   size of single character, in bytes (=charsize)
+   0004  Int16   width of the blank (space) character, in pixels
+   0006  Int16   font height in pixels
+   0008  Int16   width of a character row in bytes
+   000A  Int16   maximum width of a character in pixels (=maxwidth)
+
+   Then follow all bitmaps for each character. The number of chars can be
+   determined by (filelen-12) / (charsize+1). Bitmaps are stored as 1-bit
+   patterns, starting at the most significant bit in the current byte. When
+   a new line in character bitmap begins, remaining bits are unused and a new
+   byte in the file is taken.
+
+   After 'charsize' number of bytes, there is another Int8 that says the width
+   for the current character in pixels.
+
+   Note: at least the fonts "fontbig.sys" and "font5x6p.sys" contain overly
+   large characters, and for these the remaining bits at a line are used. The
+   maxwidth field should be corrected for loading.
+
+
+3.6  Critter animations
+
+   Critter animations are stored in the folder "crit". The file "assoc.anm"
+   holds data for each of the 32 animations and for the 64 NPC types. The file
+   starts with 8 bytes for the name of each animation. Shorter strings are
+   padded with zeros. Empty strings denote animations not available (in
+   the "uw_demo").
+
+   Next comes a table of infos for each NPC. The table is 64 entries (0x0080)
+   long:
+
+   0000   Int8   anim
+   0001   Int8   auxpal
+
+   The "anim" field specifies which one of the 32 animations to take for a
+   given NPC number (NPC object ID - 0x0040).
+
+   The "auxpal" value describes which auxiliary palette to use. There are
+   several critters that share the same animations but use different palettes,
+   e.g. the bat and the vampire bat uses the same anim value, but different
+   auxiliary palettes.
+
+   Animation for each critter is stored in a file like "CrXXpage.nYY", where
+      XX = animation number (=anim), YY = page number
+      XX and YY are octal numbers
+
+   There may be more than one page for each animation file.
+   The file starts with a header:
+
+   pos     length          desc.
+   0000    Int8            anim slot base
+   0001    Int8            number of anim slots (=nslot)
+   0002    nslot*Int8      list of segment indices
+
+   After this, a list of segment follows which contains up to 8 frame indices
+   for every segment.
+
+   nslot+2 Int8            number of anim segments (=nsegs)
+           8*nsegs         anim frame indices
+
+   Then the auxiliary palettes follow:
+
+           Int8            number of aux palettes (=npals)
+           npals*32        allaux palette indices in blocks of 32
+
+   Next is a list of all frames and their offsets into the file:
+
+           Int8            number of frame offsets (=noffsets)
+           Int8            compression type? (always 06)
+           noffsets*Int16  absolute offsets to frame headers
+
+   Each animation is stored in a segment which can contain a number of
+   frames (stored in the "animation frame indices"). Each list is padded with
+   0xFF entries.
+
+   frame header
+
+   0000    Int8       width
+   0001    Int8       height
+   0002    Int8       hotspot x
+   0003    Int8       hotspot y
+   0004    Int8       compression type; (06: 5-bit word size)
+   0005    Int16      data length in number of words
+   0007               start of rle-encoded image data (see 2.3)
+
+   The hotspot coordinates are to "pin" the image at a specific position. The
+   hotspot coordinates in the image should always be on the same place when
+   rendered. The compression type can be 06, which is 5-bit run-length
+   encoding, or 08, which is 4-bit run-length encoding (see 2.3. for more).
+
+   The Slot lists group together segments of animations for various actions.
+   Here's a list of slots and their actions:
+
+      slot   action
+       00    combat idle
+       01    attack, bash (?)
+       02    attack, slash (?)
+       03    attack, thrust
+       05    second weapon attach
+       07    walking / running towards player
+       0c    death
+       0d    ??
+
+       20    idle, facing away from player (180 degrees)
+       21    idle, 135 deg.
+       22    idle, angle 90 deg.
+       23    idle, angle 45 deg.
+       24    idle, facing towards player, 0 deg.
+       25    idle, angle -45 deg.
+       26    idle, angle -90 deg.
+       27    idle, angle -135 deg.
+
+   Segment indices at 80-87 are the same as above, except that these are the
+   walking animations. For the animations used in the Ethereal Void (level 9)
+   the slot list is somewhat different.
+
+   Here is a list of animation files and their contents:
+
+      file   assoc name   auxpals   used in
+      cr00 * "gngob32"    4         green goblin
+      cr01   "skela"      1         skeleton
+      cr02   "lizman"     3         green, red and gray lizardman
+      cr03 * "bat"        3         cave bat, vampire bat
+      cr04   "wiza"       5         yellow male mage
+      cr05 * "spider"     3         giant, wolf, dread spider
+      cr06   "gazer"      1         gazer
+      cr07   "troll"      3         troll, fereal troll, great troll
+      cr10   "femwiz"     4         female mage
+      cr11 * "slug"       2         flesh slug, acid slug
+      cr12   "fire"       2         fire elemental
+      cr13   "ghoul"      3         ghoul, dark ghoul
+      cr14   "demon"      1         Slasher of the Veils
+      cr15 * "ghost"      4         ghost, dire ghost
+      cr16 * "graygob"    2         gray goblin
+      cr17   "reaper"     1         reaper
+      cr20 * "rat"        2         giant rat
+      cr21   "femfite"    3         female fighter
+      cr22 * "imp"        2         imp, mongbat
+      cr23   "golem"      3         earth, stone and metal golem
+      cr24 * "hedless"    1         headless
+      cr25   "wizb"       3         blue female mage
+      cr26 * "rotgrub"    2         green rotworm, bloodworm
+      cr27   "wisp"       1         wisp
+      cr30   "batskull"   2         bat, teeth, vortex, hound (level 9)
+      cr31 * "Lurk"       2         lurker, deep lurker
+      cr32 * "fight32"    4         male fighter, outcast, adventurer
+      cr33   "dwarf32"    3         mountainman
+      cr34   "shadow"     2         shadow beast
+      cr35   "tybal"      1         tyball
+      cr36   "eye"        1         eye, skull (level 9)
+      cr37   "litening"   1         lightning, fish (level 9)
+
+   The animations marked with * are available in the uw_demo, too.
+
+
+3.7  Cutscene animations
+
+   Cutscene animations are stored in folder "cuts". Text strings for cutscenes
+   can be found in string blocks 0c00 through 0c21. Chapter 2.2.1 lists all
+   animations available in Ultima Underworld 1.
+
+   The cutscene files are done with Amiga's DeluxePaint Animator (file
+   extension *.anm). The complete description can be found in the zip file
+   "anmformt.zip" in the "misc" folder. Here's a short overview for usage in
+   Ultima Underworld 1:
+
+   The files, "large page files", consist of a header, followed by one or
+   more large pages, where each page can store one or more animation frames.
+   A large page is always 64k big, except for the last page (which is
+   truncated at the end of usable data).
+
+   The file starts with a "large page file header":
+
+      0000   Int32   file ID, always contains "LPF "
+      ...
+      0006   Int16   number of large pages in the file
+      0008   Int32   number of records in the file
+      ...
+      0010   Int32   content type, always contains "ANIM"
+      0014   Int16   width in pixels
+      0016   Int16   height in pixels
+
+   The whole header is 128 bytes long. After the header color cycling info
+   follows (which also is 128 bytes long), which is not used in uw1. Then
+   comes the color palette:
+
+      0000   Int8    intensity for blue, ranges from 0..255
+      0001   Int8    intensity for green
+      0002   Int8    intensity for red
+      0003   Int8    padding byte
+      ...            repeated for all 256 color indices
+
+   After the palette an array with 256 "large page descriptors" follow:
+
+      0000   Int16   number of first record in the large page
+      0002   Int16   number of records in the large page
+      0004   Int16   total number of bytes, excluding header
+
+   Unused descriptors contain no information. After the array, the large pages
+   start. A "large page" has the following layout:
+
+      0000   lpdesc  large page descriptor
+      0006   Int16   empty
+      0008   Int16   length of first record
+      000A   Int16   length of second record
+      ...
+
+   The large page descriptor is repeated for the current large page. A record
+   contains a frame (which may depend on the previous frame). The start can be
+   calculated by summing up the length of the previous records. A "record" has
+   the following structure:
+
+      0000   Int8    unknown
+      0001   Int8    flag
+      0002   Int16   extra offset, when flag != 0
+      0004           start of compressed data
+
+   The extra offset must be even (when odd, add an extra 1).
+
+   The compression scheme is a variation of run-length encoding, with some
+   extras. There are "dump", "run" and "skip" records. "dump" records just
+   copy the next bytes to the output buffer. "run" records get the next byte
+   and repeat them according to the count. A "skip" record skips pixels in the
+   output buffer (it is assumed that the previous decoded image is still in
+   the buffer).
+
+   First, read a signed Int8. If it is positive, dump that many bytes.
+   If it is 0, the next two Int8's are the count and the pixel byte for a
+   "run" record. For negative values, remove the sign bit. If the resulting
+   byte is != 0, skip that many bytes in the output, else a "long" operation
+   is started.
+
+   For the long operation, retrieve the next two Int8's, treating as a little
+   endian signed Int16. If the value is 0, the decoding ends. If the value
+   is > 0, skip that many bytes in the output. For values < 0, remove the sign
+   bit. If the resulting value is >= 0x4000, we have a "run" record with
+   count = value & 0x3fff and the next Int8 as the pixel index. If the value
+   is <= 0x4000, we have a long "dump" record.
+
+   Here is some C code to describe the decoding:
+
+      while(true)
+      {
+         Int8 cnt = get_next_src8();
+
+         if (cnt>0) dump_pixels(cnt);
+         if (cnt==0) run_pixels(get_next_src8(),get_next_src8());
+         if (cnt<0)
+         {
+            cnt &= 0x7f;
+            if (cnt!=0) skip_pixels(cnt);
+            else
+            {
+               // we have a "long" operation
+               Int8 cnt2 = get_next_src16();
+               if (cnt2>0)
+                  skip_pixels(cnt2);
+               else
+               if (cnt2==0)
+                  break;
+               else
+               {
+                  cnt2 &= 0x7fff;
+
+                  if (cnt2>=0x4000)
+                     run_pixels(cnt2-0x4000,get_next_src());
+                  else
+                     dump_pixels(cnt2);
+               }
+            }
+         }
+      }
+
+ +--------------------------------------------------------------------------+
 
 
 6  Objects and items
@@ -353,131 +924,6 @@ Table of Contents
    Ulf Wohlers (Objects and 3D models)
 
 
-
-1.1 Summary of data files
-
-   Here are all files found in the "data" folder:
-
-   3dwin.gr       3d window graphics
-   allpals.dat    auxilliary 4-bit palette indices
-   animo.gr       small animations
-   armor_f.gr     female paperdoll armor graphics
-   armor_m.gr     male paperdoll armor graphics
-   babglobs.dat   initial conversation globals
-   blnkmap.byt    blank map bitmap, palette #1
-   bodies.gr      paperdoll bodies
-   buttons.gr     buttons, seems to be from some map editor
-   chains.gr      rotating chains for the stats window
-   chargen.byt    character generation bitmap, palette #3
-   charhead.gr    character images, for conversations
-   chrbtns.gr     character generation graphics, palette #3
-   chrgen.dat
-   cmb.dat        combining rules (see 8.1)
-   cnv.ark        conversation scripts
-   comobj.dat     common object properties
-   compass.gr     compass graphics
-   conv.byt       seems to be a conversation screenshot, palette #0
-   converse.gr    conversation screen bitmaps
-   cursors.gr     mouse cursor images
-   doors.gr       doors textures (may be decals)
-   dragons.gr     scroll dragons animations
-   eyes.gr        eyes from top screen
-   f16.tr         floor/ceiling textures, size 16x16
-   f32.tr         floor/ceiling textures, size 32x32
-   flasks.gr      health and mana flask graphics
-   font4x5p.sys   small font
-   font5x6i.sys   italic font, used in character stats screen
-   font5x6p.sys   normal font, used for scroll messages
-   fontbig.sys    big font, for cutscenes
-   fontbutn.sys   font for buttons (?)
-   fontchar.sys   character generation font (?)
-   genhead.gr     heads images
-   grave.dat      grave IDs
-   heads.gr       avatar character generation heads
-   inv.gr         inventory graphics, scroll backgrounds (?)
-   lev.ark        level maps, texture indices and object list
-   lfti.gr        left menu buttons
-   light.dat      palette mappings for 16 different light levels
-   lights.dat
-   main.byt       main game screen bitmap, palette #0
-   mono.dat       palette mapping for grayscale colors
-   objects.dat    object data specific to an object class
-   objects.gr     object graphics, some never seen in inventory (460 objects!)
-   opbtn.gr       opening screen buttons, create new game, etc.; other palette
-   opscr.byt      opening screen, palette #2
-   optb.gr        some options buttons
-   optbtns.gr     all options buttons from the left menu
-   pals.dat       eight palettes (#0 to #7, #5 and #6 are the same)
-   panels.gr      some invalid type, 0x0 and 1x1 resolution images
-   player.dat     initial player character called "gronkey"
-   power.gr       hit power indicator graphics
-   pres1.byt      "origin presents" screen, palette #5
-   pres2.byt      "a blue sky prod. game" screen, palette #5
-   question.gr    a single question mark
-   scrledge.gr    scroll paper edges
-   shades.dat
-   skills.dat
-   spells.gr      spells graphics
-   strings.pak    all the game strings
-   terrain.dat    terrain texture properties (see 8.3)
-   tmflat.gr      wall switches and other decals
-   tmobj.gr       more wall decals, 3d model textures
-   uw.cfg         underworld configuration (audio, cut scenes)
-   views.gr       the letters "mv", probably not used
-   w16.tr         wall textures, size 16x16
-   w64.tr         wall textures, size 64x64
-   weapons.cm
-   weapons.dat
-   weapons.gr     weapon hit animations, for left and right handedness
-   win1.byt       winning screen with text, palette #7
-   win2.byt       blank winning screen for character info, palette #7
-   xfer.dat
-
-   Here are all files found in the "sound" folder:
-
-   XX.voc         all cutscene audio files
-   uwXX.xmi       underworld extended midi music
-   awXX.xmi       the same, for adlib music (?)
-   sounds.dat     sound effect midi commands (?)
-   uw.mt          MT32 sysex data
-   uw.ad          adlib stuff
-   *.adv          device driver for midi/wave output
-
-   Here's a list of song names for the .xmi files:
-
-   uw01.xmi       Introduction
-   uw02.xmi       Dark Abyss
-   uw03.xmi       Descent
-   uw04.xmi       Wanderer
-   uw05.xmi       Battlefield
-   uw06.xmi       Combat
-   uw07.xmi       Injured
-   uw10.xmi       Armed
-   uw11.xmi       Victory
-   uw12.xmi       Death
-   uw13.xmi       Fleeing
-   uw15.xmi       Maps & Legends
-
-   Here are all files found in a save game (e.g. "Save1") folder:
-
-   lev.ark        modified level map
-   bglobals.dat   conversation globals (initialized)
-   desc           savegame name
-   player.dat     character info
-
-   Here is a list of files that only appear in the uw_demo "data" folder:
-
-   df??.tr        floor textures
-   dmain.byt      main screen
-   dplayer.???    encoded player character info for self-running demo
-   dscript.???    scripts for the self-running demo
-   dterrain.dat   terrain texture properties for the demo
-   dw??.tr        wall textures
-   level13.anx    object animation overlay info
-   level13.st     tilemap and master object list for first level
-   level13.txm    level texture usage for first level
-   newobj.dat
-   presd.byt      "... presents a demo of ..." screen for the demo
 
 
 2.0 Level Map File
@@ -799,223 +1245,6 @@ Table of Contents
 
      the last 6 bytes appear to be some kind of checksum, always 00 01 02 03 04 05 
 
-
-2.1 Palettes
-
-   * 256 color palettes
-
-     In "palette.dat" there are stored 8 different palettes. One palette has the
-     following layout:
-
-     0000  Int8  blue  intensity, index 0, range [0..63]
-     0001  Int8  green intensity, index 0, range [0..63]
-     0002  Int8  red   intensity, index 0, range [0..63]
-
-     0003  Int8  blue  intensity, index 0, range [0..63]
-     ...
-
-     In each palette there are stored color intensities for 256 colors. All 8
-     palettes are stored sequentially in the file.
-
-     Palette index 0 always is a transparent pixel.
-
-   * 16 color auxiliary palettes
-
-     In "allpals.dat" there are several auxiliary palettes, used for 4-bit
-     graphics. All indices use palette #0.
-
-     0000  Int8  index to first color
-     0001  Int8  index to second color
-     ...
-
-     There are 16 values that are indices for palette #0. They build a 16 color
-     palette from selected colors of the palette #0.
-
-     In the file "allpals.dat" there are stored 0x1f (=31) such palettes.
-
-   * palette rotation animations
-
-     In the game, in several places the palette is used to create animated
-     effects, such as the lava and water textures. Here are described the
-     palette indices that have to be rotated to produce the animations:
-
-     - Palette #0: in game graphics
-
-       indices 16 through 23: lava fire effect
-       indices 48 through 51: water effect
-
-     - Palette #2: game start screen
-
-       indices 64 through 127: "Ultima Underworld" logo warping effect
-
-
-2.2 Textures
-
-   Textures are stored in "*.tr" files, where "fXX.tr" files are floor
-   textures, and "wXX.tr" are wall textures. XX describes the width and height
-   resolution of the texture.
-
-   0000  Int8   unknown, always seems to be 2
-   0001  Int8   x and y resolution (textures always square)
-   0002  Int16  number of textures
-   0004  Int32  offset to texture #0
-   0008  Int32  offset to texture #1
-   ...
-
-   The offset of each texture points to the actual texture palette indices,
-   which are xyres^2 bytes long. Textures always use palette #0.
-
-   Texture names are stored in string block 10, where wall textures start at
-   position 0, and ceiling textures start at 510, but reversed. The string at
-   position 511 is reserved for the ceiling.
-
-   For the ceiling, floor texture 15 is used in uw1, texture 9 in uw_demo and
-   texture #32 in uw2.
-
-
-2.3 Graphics
-
-   Graphics are stored in "*.gr" files and can be 8-bit or 4-bit.
-
-   0000  Int8   unknown, always seems to be 1
-   0001  Int16  number of bitmaps
-   0003  Int32  offset to bitmap #0
-   0007  Int32  offset to bitmap #1
-   ...
-
-   Each bitmap has its own header:
-
-   0000  Int8   bitmap type:
-                04: 8-bit uncompressed
-                08: 4-bit run-length
-                0A: 4-bit uncompressed
-   0001  Int8   width
-   0002  Int8   height
-
-   For the 4-bit formats, there follows another Int8 that selects the
-   auxiliary palette to use (see 2.1).
-
-   000n  Int16  size of data for the bitmap.
-                in 4-bit formats, this is the number of 4-bit nibbles, not
-                bytes.
-
-   The file "panels.gr" contains bitmaps that don't have a bitmap header, but
-   immediately starts with image data. The bitmaps are of type 04 and have
-   width of 83 and height of 114.
-
-   * uncompressed bitmaps (04: 8-bit, 0A: 4-bit)
-
-     all palette indices are stored sequentially, first one line, then the
-     next, and so on. For the 4-bit format, first take the upper nibble, then
-     the lower nibble.
-
-   * compressed bitmaps (type 08)
-
-     All pixels are run-length encoded. when a new byte has to be retrieved,
-     first take the high nibble, then the low nibble of that byte.
-
-     Data consists of repeat and run records. Repeat records let the decoder
-     repeat a single nibble a certain number of times. The run record takes
-     a certain number of next nibbles to be as uncompressed. The two records
-     alternate in the bitmap, starting with a repeat record.
-
-     For every record, first there is a count to retrieve. Get a nibble; if
-     it is not 0, it is a count. Otherwise, get two more nibbles, n1 and n2.
-     The count is  c = (n1 << nibblesize) | n2. If the count is still zero,
-     take another three nibbles, and calculate the count:
-       c = (((n1 << nibblesize) | n2) << nibblesize) | n3;
-     A count is at most 6 nibbles long.
-
-     A run record consists of a count and then follows 'count' nibbles,
-     that are the raw pixel data. A repeat record consists of a count and
-     a single nibble, the nibble is then repeated 'count' times.
-
-     As there is no point in repeating a nibble <3 times, there are some
-     special meanings for count:
-     1: skip this record, the next one is a run record again. may be used at
-        the beginning of a file, when it should start with a run rather than
-        a repeat.
-     2: multiple repeats. get another count, and process 'count' times a
-        repeat record.
-
-     NOTE that there also exists a 5-bit compressed format which is exactly
-     the same as the above except that the word length is 5 bits instead of 4.
-     This is used for critter animation frames in the crit/ folder. The
-     auxiliary palette contains 32 entries and is stored with the animation.
-
-
-2.4 Fonts
-
-   Fonts are stored in "font*.sys" files, and can be non-proportional (chars
-   can have different lengths). The header looks as this:
-
-   0000  Int16   unknown, always 1 (might be size of character width field)
-   0002  Int16   size of single character, in bytes (=charsize)
-   0004  Int16   width of the blank (space) character, in pixels
-   0006  Int16   font height in pixels
-   0008  Int16   width of a character row in bytes
-   000A  Int16   maximum width of a character in pixels (=maxwidth)
-
-   Then follow all bitmaps for each character. The number of chars can be
-   determined by (filelen-12) / (charsize+1). Bitmaps are stored as 1-bit
-   patterns, starting at the most significant bit in the current byte. When
-   a new line in character bitmap begins, remaining bits are unused and a new
-   byte in the file is taken.
-
-   After 'charsize' number of bytes, there is another Int8 that says the width
-   for the current character in pixels.
-
-   Note: at least the fonts "fontbig.sys" and "font5x6p.sys" contain overly
-   large characters, and for these the remaining bits at a line are used. The
-   maxwidth field should be corrected for loading.
-
-
-2.5 Bitmaps
-
-   "*.byt" files are just 320x200 bitmaps, using palette indices from
-   different main palettes. Here's a list of all bitmap files:
-
-    blnkmap.byt    blank map bitmap, palette #1
-    chargen.byt    character generation bitmap, palette #3
-    conv.byt       seems to be a conversation screenshot, palette #0
-    main.byt       main game screen bitmap, palette #0
-    opscr.byt      opening screen, palette #2
-    pres1.byt      "origin presents" screen, palette #5
-    pres2.byt      "a blue sky prod. game" screen, palette #5
-    win1.byt       winning screen with text, palette #7
-    win2.byt       blank winning screen for character info, palette #7
-
-   Underworld 2 has no .byt files. Instead there is one "byt.ark". Like every
-   other ark file this starts with some tables followed by the data, in this
-   case the images themselves. There are 11 entries, of which only 9 are
-   valid:
-
-     entry   palette   usage
-      0       1        Map framework - background, crystal, and the like
-      1       0        Character generation
-      2       0        Bartering
-      3                -unused-
-      4       0        HUD - the frame, bottles, scroll
-      5       0        Underworld 2 Main menu - without menu entries
-      6       5        Origin presents
-      7       5        Looking Glass Technologies
-      8       0        Congratulation screen
-      9       0        like the above but without the text
-     10                -unused-
-
-
-2.6 Palette mappings
-
-   Palette mappings for different light/darkness levels are stored in the
-   file "light.dat". The file consists of 16 blocks of palette mappings. Each
-   block contains 256 Int8 values who map colors to their palette indices in
-   the game palette. The first block is the mapping for original colors, and
-   the last one is for "almost black".
-
-   The file "mono.dat" contains palette mappings that maps colors to grayscale
-   values. It has the same format as the "light.dat" file and can be
-   interchanged to get a gray underworld look. It is used for the spell
-   "invisibility".
 
 
 3.0 Object IDs
@@ -1909,262 +2138,6 @@ Table of Contents
                2: started quest to search the "writ of Lorne"
                3: found writ
                4: door to armoury opened
-
-
-5.0 Critter Animation
-
-   Critter animations are stored in the folder "crit". The file "assoc.anm"
-   holds data for each of the 32 animations and for the 64 NPC types. The file
-   starts with 8 bytes for the name of each animation. Shorter strings are
-   padded with zeros. Empty strings denote animations not available (in
-   the "uw_demo").
-
-   Next comes a table of infos for each NPC. The table is 64 entries (0x0080)
-   long:
-
-   0000   Int8   anim
-   0001   Int8   auxpal
-
-   The "anim" field specifies which one of the 32 animations to take for a
-   given NPC number (NPC object ID - 0x0040).
-
-   The "auxpal" value describes which auxiliary palette to use. There are
-   several critters that share the same animations but use different palettes,
-   e.g. the bat and the vampire bat uses the same anim value, but different
-   auxiliary palettes.
-
-   Animation for each critter is stored in a file like "CrXXpage.nYY", where
-      XX = animation number (=anim), YY = page number
-      XX and YY are octal numbers
-
-   There may be more than one page for each animation file.
-   The file starts with a header:
-
-   pos     length          desc.
-   0000    Int8            anim slot base
-   0001    Int8            number of anim slots (=nslot)
-   0002    nslot*Int8      list of segment indices
-
-   After this, a list of segment follows which contains up to 8 frame indices
-   for every segment.
-
-   nslot+2 Int8            number of anim segments (=nsegs)
-           8*nsegs         anim frame indices
-
-   Then the auxiliary palettes follow:
-
-           Int8            number of aux palettes (=npals)
-           npals*32        allaux palette indices in blocks of 32
-
-   Next is a list of all frames and their offsets into the file:
-
-           Int8            number of frame offsets (=noffsets)
-           Int8            compression type? (always 06)
-           noffsets*Int16  absolute offsets to frame headers
-
-   Each animation is stored in a segment which can contain a number of
-   frames (stored in the "animation frame indices"). Each list is padded with
-   0xFF entries.
-
-   frame header
-
-   0000    Int8       width
-   0001    Int8       height
-   0002    Int8       hotspot x
-   0003    Int8       hotspot y
-   0004    Int8       compression type; (06: 5-bit word size)
-   0005    Int16      data length in number of words
-   0007               start of rle-encoded image data (see 2.3)
-
-   The hotspot coordinates are to "pin" the image at a specific position. The
-   hotspot coordinates in the image should always be on the same place when
-   rendered. The compression type can be 06, which is 5-bit run-length
-   encoding, or 08, which is 4-bit run-length encoding (see 2.3. for more).
-
-   The Slot lists group together segments of animations for various actions.
-   Here's a list of slots and their actions:
-
-      slot   action
-       00    combat idle
-       01    attack, bash (?)
-       02    attack, slash (?)
-       03    attack, thrust
-       05    second weapon attach
-       07    walking / running towards player
-       0c    death
-       0d    ??
-
-       20    idle, facing away from player (180 degrees)
-       21    idle, 135 deg.
-       22    idle, angle 90 deg.
-       23    idle, angle 45 deg.
-       24    idle, facing towards player, 0 deg.
-       25    idle, angle -45 deg.
-       26    idle, angle -90 deg.
-       27    idle, angle -135 deg.
-
-   Segment indices at 80-87 are the same as above, except that these are the
-   walking animations. For the animations used in the Ethereal Void (level 9)
-   the slot list is somewhat different.
-
-   Here is a list of animation files and their contents:
-
-      file   assoc name   auxpals   used in
-      cr00 * "gngob32"    4         green goblin
-      cr01   "skela"      1         skeleton
-      cr02   "lizman"     3         green, red and gray lizardman
-      cr03 * "bat"        3         cave bat, vampire bat
-      cr04   "wiza"       5         yellow male mage
-      cr05 * "spider"     3         giant, wolf, dread spider
-      cr06   "gazer"      1         gazer
-      cr07   "troll"      3         troll, fereal troll, great troll
-      cr10   "femwiz"     4         female mage
-      cr11 * "slug"       2         flesh slug, acid slug
-      cr12   "fire"       2         fire elemental
-      cr13   "ghoul"      3         ghoul, dark ghoul
-      cr14   "demon"      1         Slasher of the Veils
-      cr15 * "ghost"      4         ghost, dire ghost
-      cr16 * "graygob"    2         gray goblin
-      cr17   "reaper"     1         reaper
-      cr20 * "rat"        2         giant rat
-      cr21   "femfite"    3         female fighter
-      cr22 * "imp"        2         imp, mongbat
-      cr23   "golem"      3         earth, stone and metal golem
-      cr24 * "hedless"    1         headless
-      cr25   "wizb"       3         blue female mage
-      cr26 * "rotgrub"    2         green rotworm, bloodworm
-      cr27   "wisp"       1         wisp
-      cr30   "batskull"   2         bat, teeth, vortex, hound (level 9)
-      cr31 * "Lurk"       2         lurker, deep lurker
-      cr32 * "fight32"    4         male fighter, outcast, adventurer
-      cr33   "dwarf32"    3         mountainman
-      cr34   "shadow"     2         shadow beast
-      cr35   "tybal"      1         tyball
-      cr36   "eye"        1         eye, skull (level 9)
-      cr37   "litening"   1         lightning, fish (level 9)
-
-   The animations marked with * are available in the uw_demo, too.
-
-
-5.1 Cutscene Animations
-
-   Cutscene animations are stored in folder "cuts". Text strings for cutscenes
-   can be found in string blocks 0c00 through 0c21. Here is an overview of
-   files contents:
-
-
-
-   The cutscene files are done with Amiga's DeluxePaint Animator (file
-   extension *.anm). The complete description can be found in the zip file
-   "anmformt.zip" in the "misc" folder. Here's a short overview for usage in
-   uw1:
-
-   The files, "large page files", consist of a header, followed by one or
-   more large pages, where each page can store one or more animation frames.
-   A large page is always 64k big, except for the last page (which is
-   truncated at the end of usable data).
-
-   The file starts with a "large page file header":
-
-      0000   Int32   file ID, always contains "LPF "
-      ...
-      0006   Int16   number of large pages in the file
-      0008   Int32   number of records in the file
-      ...
-      0010   Int32   content type, always contains "ANIM"
-      0014   Int16   width in pixels
-      0016   Int16   height in pixels
-
-   The whole header is 128 bytes long. After the header color cycling info
-   follows (which also is 128 bytes long), which is not used in uw1. Then
-   comes the color palette:
-
-      0000   Int8    intensity for blue, ranges from 0..255
-      0001   Int8    intensity for green
-      0002   Int8    intensity for red
-      0003   Int8    padding byte
-      ...            repeated for all 256 color indices
-
-   After the palette an array with 256 "large page descriptors" follow:
-
-      0000   Int16   number of first record in the large page
-      0002   Int16   number of records in the large page
-      0004   Int16   total number of bytes, excluding header
-
-   Unused descriptors contain no information. After the array, the large pages
-   start. A "large page" has the following layout:
-
-      0000   lpdesc  large page descriptor
-      0006   Int16   empty
-      0008   Int16   length of first record
-      000A   Int16   length of second record
-      ...
-
-   The large page descriptor is repeated for the current large page. A record
-   contains a frame (which may depend on the previous frame). The start can be
-   calculated by summing up the length of the previous records. A "record" has
-   the following structure:
-
-      0000   Int8    unknown
-      0001   Int8    flag
-      0002   Int16   extra offset, when flag != 0
-      0004           start of compressed data
-
-   The extra offset must be even (when odd, add an extra 1).
-
-   The compression scheme is a variation of run-length encoding, with some
-   extras. There are "dump", "run" and "skip" records. "dump" records just
-   copy the next bytes to the output buffer. "run" records get the next byte
-   and repeat them according to the count. A "skip" record skips pixels in the
-   output buffer (it is assumed that the previous decoded image is still in
-   the buffer).
-
-   First, read a signed Int8. If it is positive, dump that many bytes.
-   If it is 0, the next two Int8's are the count and the pixel byte for a
-   "run" record. For negative values, remove the sign bit. If the resulting
-   byte is != 0, skip that many bytes in the output, else a "long" operation
-   is started.
-
-   For the long operation, retrieve the next two Int8's, treating as a little
-   endian signed Int16. If the value is 0, the decoding ends. If the value
-   is > 0, skip that many bytes in the output. For values < 0, remove the sign
-   bit. If the resulting value is >= 0x4000, we have a "run" record with
-   count = value & 0x3fff and the next Int8 as the pixel index. If the value
-   is <= 0x4000, we have a long "dump" record.
-
-   Here is some C code to describe the decoding:
-
-      while(true)
-      {
-         Int8 cnt = get_next_src8();
-
-         if (cnt>0) dump_pixels(cnt);
-         if (cnt==0) run_pixels(get_next_src8(),get_next_src8());
-         if (cnt<0)
-         {
-            cnt &= 0x7f;
-            if (cnt!=0) skip_pixels(cnt);
-            else
-            {
-               // we have a "long" operation
-               Int8 cnt2 = get_next_src16();
-               if (cnt2>0)
-                  skip_pixels(cnt2);
-               else
-               if (cnt2==0)
-                  break;
-               else
-               {
-                  cnt2 &= 0x7fff;
-
-                  if (cnt2>=0x4000)
-                     run_pixels(cnt2-0x4000,get_next_src());
-                  else
-                     dump_pixels(cnt2);
-               }
-            }
-         }
-      }
 
 
 6.0 Savegame format
