@@ -21,7 +21,7 @@
 */
 /*! \file texture.hpp
 
-   a
+   texture management classes.
 
    stock textures: wall textures start at index 0x0000, floor textures at
    0x0100
@@ -92,7 +92,7 @@ public:
       GLenum max_filt = GL_LINEAR);
 
    //! binds texture to use it in OpenGL
-   void use(unsigned int animstep=0);
+   void use(ua_texture_manager &texmgr, unsigned int animstep=0);
 
    //! returns u texture coordinate
    float get_tex_u(){ return u;}
@@ -152,8 +152,14 @@ public:
    //! use a stock texture in OpenGL
    void use(unsigned int idx);
 
+   //! prepares texture for object drawing
+   void object_tex(Uint16 id,double &u1,double &v1,double &u2,double &v2);
+
    //! returns a specific palette
    ua_onepalette &get_palette(unsigned int pal){ return pals.get_palette(pal); };
+
+   //! invalidates last bound texture name
+   void invalidate_tex(){ last_texname=-1; }
 
 private:
    //! loads all palettes
@@ -169,8 +175,14 @@ protected:
    //! last bound texture name
    GLuint last_texname;
 
-   // all stock textures
+   //! all stock textures
    std::vector<ua_stock_texture> allstocktex;
+
+   //! object textures
+   ua_image objteximg[2];
+
+   //! object texture names
+   ua_texture objtexs[2];
 };
 
 #endif

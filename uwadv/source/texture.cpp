@@ -44,8 +44,8 @@ void ua_texture::convert(ua_texture_manager &texmgr,ua_image &img)
    unsigned int origy = img.get_yres();
 
    // determine texture resolution (must be 2^n)
-   xres = (unsigned int)pow(2,int(log(origx)/log(2)+1.0));
-   yres = (unsigned int)pow(2,int(log(origy)/log(2)+1.0));
+   xres = (unsigned int)pow(2,int(log(origx)/log(2)+0.9999));
+   yres = (unsigned int)pow(2,int(log(origy)/log(2)+0.9999));
    texcount = 1;
 
    u = float(origx)/xres;
@@ -67,6 +67,7 @@ void ua_texture::convert(ua_texture_manager &texmgr,ua_image &img)
 void ua_texture::convert(ua_texture_manager &texmgr,ua_image_list &imglist,
    unsigned int start, unsigned int until)
 {
+   // TODO implement
 //   if (until==-1)
 //      until = imglist.size();
 
@@ -104,13 +105,17 @@ void ua_texture::prepare(bool mipmaps, GLenum min_filt, GLenum max_filt)
    }
 }
 
-void ua_texture::use(unsigned int animstep)
+void ua_texture::use(ua_texture_manager &texmgr, unsigned int animstep)
 {
    if (animstep>=texname.size())
       return;
 
+   // invalidates currently used texture
+   texmgr.invalidate_tex();
+
    glBindTexture(GL_TEXTURE_2D,texname[animstep]);
 }
+
 
 // ua_texture_manager methods
 
@@ -120,6 +125,7 @@ ua_texture_manager::ua_texture_manager()
 
 ua_texture_manager::~ua_texture_manager()
 {
+   reset();
    allstocktex.clear();
 }
 
@@ -164,8 +170,6 @@ void ua_texture_manager::prepare(unsigned int idx)
    // generate 32-bit truecolor texture
    Uint8 xyres = texsize==64*64 ? 64 : texsize==32*32 ? 32 : texsize/64;
 
-//   Uint8 *indexed = wall ? allwalltex[idx] : allfloortex[idx];
-
    std::vector<Uint32> texels;
    texels.resize(stex.pixels.size()*4,0);
 
@@ -198,4 +202,20 @@ void ua_texture_manager::use(unsigned int idx)
       glBindTexture(GL_TEXTURE_2D,stex.texname);
       last_texname = stex.texname;
    }
+}
+
+void ua_texture_manager::object_tex(Uint16 id,double &u1,double &v1,double &u2,double &v2)
+{
+   // select texture
+   if (id<0x100) objtexs[0].use(*this);
+   else objtexs[1].use(*this);
+
+   // calculate texture coordinates
+   double delta = 1.0/256;
+
+   u1 = ((id&0x0f)<<4)*delta;
+   v1 = (id&0xf0)*delta;
+
+   u2 = (((id&0x0f)+1)<<4)*delta;
+   v2 = ((id&0xf0)+16)*delta;
 }
