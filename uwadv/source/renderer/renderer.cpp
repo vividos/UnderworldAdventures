@@ -115,12 +115,42 @@ ua_critter_frames_manager& ua_renderer::get_critter_frames_manager()
    return renderer_impl->get_critter_frames_manager();
 }
 
+/*! Sets the viewport to use in 3d window; for 2d the whole surface size is
+    set as viewport. The viewport only has to be set once and is used in
+    setup_camera3d().
+
+    \param xpos x position of viewport, in image coordinates (320x200 max.)
+    \param ypos y position of viewport
+    \param width width of viewport
+    \param height height of viewport
+*/
+void ua_renderer::set_viewport3d(unsigned int xpos, unsigned int ypos,
+   unsigned int width, unsigned int height)
+{
+   SDL_Surface* surf = SDL_GetVideoSurface();
+
+   // calculate viewport for given window
+   xpos = unsigned((surf->w / 320.0) * double(xpos));
+   ypos = unsigned((surf->h / 200.0) * double(ypos));
+   width = unsigned((surf->w / 320.0) * double(width));
+   height = unsigned((surf->h / 200.0) * double(height));
+
+   viewport[0] = xpos;
+   viewport[1] = surf->h-ypos-height;
+   viewport[2] = width;
+   viewport[3] = height;
+}
+
 /*! Sets up camera for 2d user interface rendering. All triangles (e.g. quads)
     should be rendered with z coordinate = 0. Also disables fog, blending and
     depth test.
 */
 void ua_renderer::setup_camera2d()
 {
+   // set viewport
+   SDL_Surface* surf = SDL_GetVideoSurface();
+   glViewport(0,0,surf->w, surf->h);
+
    // setup orthogonal projection
    glMatrixMode(GL_PROJECTION);
    glLoadIdentity();
@@ -149,16 +179,16 @@ void ua_renderer::setup_camera3d(const ua_vector3d& the_view_offset,
    far_dist = the_far_dist;
    fov = the_fov;
 
-   // todo
-   view_offset.z += 20.0;
+   // set viewport
+   glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
 
    // set projection matrix
    glMatrixMode(GL_PROJECTION);
    glLoadIdentity();
 
    SDL_Surface* surf = SDL_GetVideoSurface();
-   double aspect = surf->w / surf->h;
 
+   double aspect = double(viewport[2])/viewport[3];
    gluPerspective(fov, aspect, near_dist, far_dist);
 
    // switch back to modelview matrix
@@ -232,17 +262,14 @@ void ua_renderer::select_pick(const ua_underworld& underw, unsigned int xpos,
 
    // set up projection matrix for selection rendering
    {
-      //glMatrixMode(GL_PROJECTION);
+      glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+
       glLoadIdentity();
-
-      // calculate pick matrix
-      GLint viewport[4];
-      glGetIntegerv(GL_VIEWPORT, viewport);
-      gluPickMatrix(GLdouble(xpos), GLdouble(viewport[3]-ypos), 5.0, 5.0, viewport);
-
+      
       SDL_Surface* surf = SDL_GetVideoSurface();
-      double aspect = surf->w / surf->h;
+      gluPickMatrix(xpos,surf->h-ypos, 5.0, 5.0, viewport);
 
+      double aspect = double(viewport[2])/viewport[3];
       gluPerspective(fov, aspect, near_dist, far_dist);
 
       // switch back to modelview matrix
