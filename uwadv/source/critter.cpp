@@ -42,7 +42,9 @@ void ua_critter::prepare(ua_texture_manager& texmgr)
    {
       tex.convert(allframes.get_image(i),i);
       tex.use(i);
-      tex.upload(true);
+      tex.upload(false);
+      // using true for mipmapped textures disabled the alpha channel somehow
+      // might be a driver problem
    }
 }
 
