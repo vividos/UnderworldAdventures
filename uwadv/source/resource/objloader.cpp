@@ -121,7 +121,10 @@ void ua_object_list::addobj_follow(Uint32 objprop[0x400*2],
 
          if (objpos<0x0100)
          {
-            // store data from NPC, at //&npcinfo[objpos*19]
+            // TODO: store data from NPC, at //&npcinfo[objpos*19]
+
+            // store NPC name as first data value
+            info.data.push_back(npcinfo[objpos*19+18]);
          }
       }
 
