@@ -67,7 +67,8 @@ Table of Contents
    9      Miscellaneous stuff
    9.1    Ultima Underworld 2 compression scheme
    9.2    Savegame format
-   9.4    Unknown files
+   9.3    Unknown files
+   9.4    Error codes
 
  +--------------------------------------------------------------------------+
 
@@ -621,6 +622,10 @@ Table of Contents
    pres2.byt      "a blue sky prod. game" screen, palette #5
    win1.byt       winning screen with text, palette #7
    win2.byt       blank winning screen for character info, palette #7
+
+   Ultima Underworld demo contains two separate bitmaps:
+   dmain.byt      main demo screen bitmap, palette #0
+   presd.byt      "origin and blue sky prod. present..." screen, palette #5
 
    Underworld 2 has no "*.byt" files. Instead there is one "byt.ark" that
    contains all images. Like every other "*.ark" file this starts with some
@@ -1784,10 +1789,11 @@ Table of Contents
                  bits 0-2:  radius
                  bit 3: 1 for npc's, 3d objects and misc. items (animated flg?)
                  bits 4-15: mass in 0.1 kg (stones?)
-   0003  Int8    flags (lower 4 bits only)
+   0003  Int8    flags
                  0/2: object in range [336, 368[ seem to be 3d objects
                  4: decal object
                  5: is set when object can be picked up
+                 7: is set when object is a container
    0004  Int16   monetary value (?)
    0006  Int8    bits 2..3: quality class (this value*6+quality gives index
                             into string block 5
@@ -1823,7 +1829,7 @@ Table of Contents
    0da2  0x40     animation object table      16         4 bytes
    0de2           end
 
-   * Melee weapons table
+   * Melee weapons table (0x0000-0x000f)
 
    0000   Int8   damage modifier for Slash attack
    0001   Int8   damage modifier for Bash attack
@@ -1832,13 +1838,13 @@ Table of Contents
    0006   Int8   skill type (3: sword, 4: axe, 5: mace, 6: unarmed)
    0007   Int8   durability
 
-   * Ranged weapons table
+   * Ranged weapons table (0x0010-0x001f)
 
    0000   Int16  unknown
                  bits 9-15: ammunition needed (+0x10)
    0002   Int8   durability
 
-   * Armour and wearables table
+   * Armour and wearables table (0x0020-0x003f)
 
    0000   Int8   protection
    0001   Int8   durability
@@ -1852,12 +1858,12 @@ Table of Contents
                  08: hat
                  09: ring
 
-   * Critters table
+   * Critters table  (0x0040-0x007f)
 
    0000   Int8   unknown
    0005   Int8   npc_power
 
-   * Containers table
+   * Containers table (0x0080-0x008f)
 
    0000   Int8   capacity in 0.1 stones
    0001   Int8   objects accepted (0xFF means any)
@@ -3121,6 +3127,19 @@ Table of Contents
    translation table to RGBA values using a hairy little program of my own
    devising. They look "about right", so I'm inclined to leave them.]
    (description from TSSHP CVS)
+
+
+9.4  Error codes
+
+   Ultima Underworld has some error codes printed out when the game
+   unexpectedly quits. The format is Nxxx where N is an uppercase letter from
+   A to D and xxx is a decimal (?) number. Error codes:
+
+      1: out of low memory
+      2: out of EMS mem
+      3: could not read
+      4: could not write
+      5: resource/internal problem
 
 
  +--------------------------------------------------------------------------+
