@@ -16,6 +16,8 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+   $Id$
+
 */
 /*! \file create_character.hpp
 
@@ -143,14 +145,29 @@ protected:
    //! input text
    char* inputtext;
 
+   //! button images
+   unsigned char* btnimgs;
+
    //! x-coordinate for center of buttongroup
    unsigned int bgxpos;
+
+   //! palette color index of normal text
+   unsigned char textcolor_normal;
+
+   //! palette color index of highlighted text
+   unsigned char textcolor_highlight;
 
    //! string number of caption in current button group (0 if none)
    unsigned int btng_caption;
 
    //! button type of current button group
    unsigned int btng_buttontype;
+
+   //! normal button image for current button group
+   unsigned char btng_buttonimg_normal;
+
+   //! highlighted button image for current button group
+   unsigned char btng_buttonimg_highlight;
 
    //! number of buttons in current group
    unsigned int btng_buttoncount;
