@@ -62,14 +62,9 @@ const unsigned int ua_tex_stock_door = 0x0210;
 const unsigned int ua_tex_stock_tmobj = 0x0220;
 
 
-// typedefs
-
-//! a GL_RGBA compatible palette
-typedef Uint8 ua_onepalette[256][4];
-
-
 // forward declaration
 class ua_texture_manager;
+class ua_game_interface;
 
 
 // classes
@@ -79,29 +74,29 @@ class ua_texture
 {
 public:
    //! ctor
-   ua_texture():texmgr(NULL){}
+   ua_texture();
+
+
+   // texture preparation
 
    //! allocates and initializes OpenGL texture object
-   void init(ua_texture_manager* texmgr, unsigned int numtex=1,
-      GLenum min_filt=GL_LINEAR, GLenum max_filt=GL_LINEAR,
-      GLenum wrap_s=GL_CLAMP_TO_EDGE, GLenum wrap_t=GL_CLAMP_TO_EDGE);
+   void init(ua_texture_manager* texmgr, unsigned int numtex=1);
+
+   //! cleans up texture name(s) after usage
+   void done();
 
    //! converts image to texture
    void convert(ua_image& img, unsigned int numtex=0);
 
-   //! converts image with custom palette to texture
-   void convert(ua_onepalette& pal, ua_image& img, unsigned int numtex=0);
-
-   //! convert image pixels to texture
-   void convert(Uint8* pix, unsigned int origx, unsigned int origy,
-      ua_onepalette& pal, unsigned int numtex);
-
-   //! convert 32-bit RGBA values to texture
+   //! converts 32-bit RGBA values to texture
    void convert(unsigned int xres, unsigned int yres, Uint32* pix,
       unsigned int numtex=0);
 
    //! loads texture from (seekable) rwops stream
    void load(SDL_RWops* rwops);
+
+
+   // texture usage
 
    //! uses texture in OpenGL
    void use(unsigned int numtex=0);
@@ -109,25 +104,31 @@ public:
    //! uploads a converted texture to OpenGL
    void upload(unsigned int numtex=0, bool mipmaps=false);
 
+
+   // texture information
+
    //! returns u texture coordinate
    double get_tex_u() const;
 
    //! returns v texture coordinate
    double get_tex_v() const;
 
-   //! cleans up texture name(s) after usage
-   void done();
 
    // raw texture access
 
    //! returns array of texels
-   const Uint32* get_texels(unsigned int numtex=0);
+   const Uint32* get_texels(unsigned int numtex=0) const;
 
    //! returns x resolution
    unsigned int get_xres() const;
 
    //! returns y resolution
    unsigned int get_yres() const;
+
+protected:
+   //! converts pixels and a palette to texture
+   void convert(Uint8* pix, unsigned int origx, unsigned int origy,
+      ua_palette256& pal, unsigned int numtex);
 
 protected:
    //! pointer to texture manager, or NULL if none available
@@ -145,11 +146,7 @@ protected:
    //! texture name(s)
    std::vector<GLuint> texname;
 
-   //! texture min./max. filter parameter
-   GLenum min_filt, max_filt;
-
-   //! texture wrapping parameter
-   GLenum wrap_s, wrap_t;
+   friend class ua_texture_manager;
 };
 
 
@@ -163,7 +160,7 @@ public:
    ~ua_texture_manager();
 
    //! initializes texture manager; loads stock textures
-   void init(ua_settings& settings);
+   void init(ua_game_interface& game/*ua_settings& settings*/);
 
    //! called every game tick
    void tick(double ticktime);
@@ -183,31 +180,18 @@ public:
    //! prepares texture for object drawing
    void object_tex(Uint16 id,double& u1,double& v1,double& u2,double& v2);
 
-   //! returns a specific palette
-   ua_onepalette &get_palette(unsigned int pal);
-
    //! should be called when a new texname is about to be used
    bool using_new_texname(GLuint new_texname);
 
    //! converts stock texture to external one
    void stock_to_external(unsigned int idx, ua_texture& tex);
 
-private:
-   //! loads textures from file
-   void load_textures(unsigned int startidx, const char* texfname);
-
-   //! loads textures from image list
-   void load_imgtextures(unsigned int startidx, ua_image_list& il);
-
-   //! loads all palettes
-   void load_palettes(const char* allpalname);
-
 protected:
    //! last bound texture name
    GLuint last_texname;
 
-   //! image list of all stock textures
-   ua_image_list allstocktex_imgs;
+   //! image array of all stock textures
+   std::vector<ua_image> allstocktex_imgs;
 
    //! stock textures
    std::vector<ua_texture> stock_textures;
@@ -218,8 +202,8 @@ protected:
    //! object sprite textures
    ua_texture obj_textures;
 
-   //! all main palettes
-   ua_onepalette allpals[8];
+   //! palette 0 from image manager
+   ua_smart_ptr<ua_palette256> palette0;
 
    //! time counter for animated textures
    double animcount;
@@ -247,11 +231,6 @@ inline unsigned int ua_texture::get_yres() const
 {
    return yres;
 }
-
-inline ua_onepalette& ua_texture_manager::get_palette(unsigned int pal)
-{
-   return allpals[pal];
-};
 
 
 #endif

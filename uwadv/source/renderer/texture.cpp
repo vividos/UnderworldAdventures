@@ -28,6 +28,7 @@
 // needed includes
 #include "common.hpp"
 #include "texture.hpp"
+#include "game_interface.hpp"
 
 
 // constants
@@ -37,19 +38,16 @@ const double ua_texture_anim_fps = 1.5;
 
 // ua_texture methods
 
-void ua_texture::init(ua_texture_manager* the_texmgr,unsigned int numtex,
-   GLenum the_min_filt, GLenum the_max_filt,
-   GLenum the_wrap_s, GLenum the_wrap_t)
+ua_texture::ua_texture()
+:texmgr(NULL), xres(0), yres(0), u(0.0), v(0.0)
+{
+}
+
+void ua_texture::init(ua_texture_manager* the_texmgr,unsigned int numtex)
 {
    done();
 
-   xres = yres = 0;
-
    texmgr = the_texmgr;
-   min_filt = the_min_filt;
-   max_filt = the_max_filt;
-   wrap_s = the_wrap_s;
-   wrap_t = the_wrap_t;
 
    // create texture names
    texname.resize(numtex,0);
@@ -57,26 +55,28 @@ void ua_texture::init(ua_texture_manager* the_texmgr,unsigned int numtex,
       glGenTextures(numtex,&texname[0]);
 }
 
-void ua_texture::convert(ua_image& img,unsigned int numtex)
+void ua_texture::done()
 {
-   if (texmgr==NULL || img.get_palette()>=8) return;
+   texels.clear();
 
-   convert(texmgr->get_palette(img.get_palette()),img,numtex);
+   // delete all texture names
+   if (texname.size()>0)
+      glDeleteTextures(texname.size(),&texname[0]);
+   texname.clear();
+
+   // invalidate current texture
+   if (texmgr != NULL)
+      texmgr->using_new_texname(0);
 }
 
-void ua_texture::convert(ua_onepalette& pal, ua_image& img,
-   unsigned int numtex)
+void ua_texture::convert(ua_image& img,unsigned int numtex)
 {
-   Uint8* pix = &img.get_pixels()[0];
-
-   unsigned int origx = img.get_xres();
-   unsigned int origy = img.get_yres();
-
-   convert(pix,origx,origy,pal,numtex);
+   convert(&img.get_pixels()[0], img.get_xres(), img.get_yres(),
+      *img.get_palette(), numtex);
 }
 
 void ua_texture::convert(Uint8* pix, unsigned int origx, unsigned int origy,
-   ua_onepalette& pal, unsigned int numtex)
+   ua_palette256& pal, unsigned int numtex)
 {
    // only do resolution determination for the first texture
    if (numtex==0 || xres==0 || yres==0)
@@ -138,16 +138,7 @@ void ua_texture::use(unsigned int numtex)
 
    // invalidates currently used texture
    if (texmgr == NULL || texmgr->using_new_texname(texname[numtex]))
-   {
       glBindTexture(GL_TEXTURE_2D,texname[numtex]);
-
-      // set texture parameter
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap_s);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap_t);
-
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, min_filt);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, max_filt);
-   }
 }
 
 void ua_texture::upload(unsigned int numtex, bool mipmaps)
@@ -170,21 +161,7 @@ void ua_texture::upload(unsigned int numtex, bool mipmaps)
    }
 }
 
-void ua_texture::done()
-{
-   texels.clear();
-
-   // delete all texture names
-   if (texname.size()>0)
-      glDeleteTextures(texname.size(),&texname[0]);
-   texname.clear();
-
-   // invalidate current texture
-   if (texmgr != NULL)
-      texmgr->using_new_texname(0);
-}
-
-const Uint32* ua_texture::get_texels(unsigned int numtex)
+const Uint32* ua_texture::get_texels(unsigned int numtex) const
 {
    return &texels[numtex*xres*yres];
 }
@@ -200,6 +177,108 @@ ua_texture_manager::ua_texture_manager()
 ua_texture_manager::~ua_texture_manager()
 {
    reset();
+}
+
+void ua_texture_manager::init(ua_game_interface& game)
+{
+   palette0 = game.get_image_manager().get_palette(0);
+
+/*
+   // load stock textures
+   if (settings.get_gametype() == ua_game_uw1 || settings.get_gametype() == ua_game_uw_demo)
+   {
+      // load all wall textures
+      std::string walltexfname(settings.get_string(ua_setting_uw_path));
+      walltexfname.append(
+         settings.get_gametype() == ua_game_uw1 ? "data/w64.tr" : "data/dw64.tr");
+      load_textures(ua_tex_stock_wall,walltexfname.c_str());
+
+      // load all floor textures
+      std::string floortexfname(settings.get_string(ua_setting_uw_path));
+      floortexfname.append(
+         settings.get_gametype() == ua_game_uw1 ? "data/f32.tr" : "data/df32.tr");
+      load_textures(ua_tex_stock_floor,floortexfname.c_str());
+
+      // set some animated textures
+      {
+         stock_animinfo[0x00ce].second = 8; // 206 lavafall
+         stock_animinfo[0x0129].second = 8; // 469 rivulets of lava
+         stock_animinfo[0x0117].second = 8; // 487 rivulets of lava
+         stock_animinfo[0x0118].second = 8; // 486 lava
+         stock_animinfo[0x0119].second = 8; // 485 lava
+
+         stock_animinfo[0x0120].second = 4; // 478 water
+         stock_animinfo[0x0121].second = 4; // 477 water
+         stock_animinfo[0x0122].second = 4; // 476 water
+         stock_animinfo[0x0110].second = 4; // 493 water
+         stock_animinfo[0x0111].second = 4; // 494 water
+      }
+
+      // load switches/levers/pull chains
+      {
+         ua_image_list il;
+         il.load(settings,"tmflat");
+
+         load_imgtextures(ua_tex_stock_switches,il);
+      }
+
+      // load door textures
+      {
+         ua_image_list il;
+         il.load(settings,"doors");
+
+         load_imgtextures(ua_tex_stock_door,il);
+      }
+
+      // load tmobj textures
+      {
+         ua_image_list il;
+         il.load(settings,"tmobj");
+
+         load_imgtextures(ua_tex_stock_tmobj,il);
+      }
+
+      // init stock texture objects
+      reset();
+   }
+   else
+   if (settings.get_gametype() == ua_game_uw2)
+   { 
+      // load all textures
+      std::string texfname(settings.get_string(ua_setting_uw_path));
+      texfname.append("data/t64.tr");
+
+      load_textures(0,texfname.c_str());
+
+      // init stock texture objects
+      reset();
+   }
+
+   // load object sprite textures
+   {
+      // load image list
+      ua_image_list il;
+      il.load(settings,"objects");
+
+      // make sure we have at least have 460 images
+      if (il.size()<460)
+         throw ua_exception("expected 460 images in data/objects.gr");
+
+      // copy images to object textures
+      obj_textures.init(this,il.size());
+
+      unsigned int max = il.size();
+      for(unsigned int id=0; id<max; id++)
+      {
+         // objects [218..223] and 302 have different sizes
+         if ((id>=218 && id<=223) || id==302 )
+            continue;
+
+         obj_textures.convert(il.get_image(id),id);
+         obj_textures.upload(id);
+      }
+   }
+*/
 }
 
 void ua_texture_manager::tick(double tickrate)
@@ -239,7 +318,7 @@ void ua_texture_manager::reset()
 }
 
 //! rotates palette indices
-void ua_palette_rotate(ua_onepalette& pal,Uint8 start, Uint8 len, bool forward)
+void ua_palette_rotate(ua_palette256& pal,Uint8 start, Uint8 len, bool forward)
 {
    Uint8 save[4];
    if (forward)
@@ -265,20 +344,23 @@ void ua_texture_manager::prepare(unsigned int idx)
    if (pal_max<1)
       return; // not an available texture
 
-   stock_textures[idx].init(this,pal_max,
-      GL_LINEAR,GL_NEAREST_MIPMAP_LINEAR,GL_REPEAT,GL_REPEAT);
+   stock_textures[idx].init(this,pal_max);
 
    if (pal_max==1)
    {
       // unanimated texture
       // convert to texture object
-      stock_textures[idx].convert(allstocktex_imgs.get_image(idx),0);
+      stock_textures[idx].convert(allstocktex_imgs[idx],0);
       stock_textures[idx].upload(0,true); // upload texture with mipmaps
    }
    else
    {
-      ua_onepalette pal;
-      memcpy(pal,allpals[0],sizeof(ua_onepalette));
+      ua_palette256 pal;
+      memcpy(pal,*palette0,sizeof(ua_palette256));
+
+      unsigned int xres = allstocktex_imgs[idx].get_xres();
+      unsigned int yres = allstocktex_imgs[idx].get_xres();
+      Uint8* pixels = &allstocktex_imgs[idx].get_pixels()[0];
 
       // animated texture
       if (pal_max == 8)
@@ -286,7 +368,7 @@ void ua_texture_manager::prepare(unsigned int idx)
          // lava texture: indices 16 through 23
          for(unsigned int i=0; i<8; i++)
          {
-            stock_textures[idx].convert(pal,allstocktex_imgs.get_image(idx),i);
+            stock_textures[idx].convert(pixels, xres, yres, pal, i);
             stock_textures[idx].upload(i,true); // upload texture with mipmaps
 
             // rotate entries
@@ -299,7 +381,7 @@ void ua_texture_manager::prepare(unsigned int idx)
          // water texture: indices 48 through 51
          for(unsigned int i=0; i<4; i++)
          {
-            stock_textures[idx].convert(pal,allstocktex_imgs.get_image(idx),i);
+            stock_textures[idx].convert(pixels, xres, yres, pal, i);
             stock_textures[idx].upload(i,true); // upload texture with mipmaps
 
             // rotate entries
@@ -335,5 +417,5 @@ bool ua_texture_manager::using_new_texname(GLuint new_texname)
 
 void ua_texture_manager::stock_to_external(unsigned int idx, ua_texture& tex)
 {
-   tex.convert(allstocktex_imgs.get_image(idx),0);
+   tex.convert(allstocktex_imgs[idx],0);
 }
