@@ -597,10 +597,6 @@ SOURCE=..\source\screens\ingame_orig.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\screens\load_game.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\source\screens\map_view.cpp
 # End Source File
 # Begin Source File
@@ -642,10 +638,6 @@ SOURCE=..\source\screens\cutscene_view.hpp
 # Begin Source File
 
 SOURCE=..\source\screens\ingame_orig.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\screens\load_game.hpp
 # End Source File
 # Begin Source File
 
