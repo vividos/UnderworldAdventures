@@ -39,8 +39,9 @@ void ua_ingame_orig_screen::init()
 
    walk = false;
 
-   playerxangle = 0.f;
-   playeryangle = 270.f;
+   fov = 90.0;
+   playerxangle = 90.f;
+   playeryangle = 0.f;
 
    leftbuttondown = rightbuttondown = false;
 }
@@ -105,17 +106,19 @@ void ua_ingame_orig_screen::handle_mouse_action(SDL_Event &event)
             playeryangle += y*0.2;
          }
 
+         // view rotate angle has to stay between 0 and 360 degree
          while (playerxangle > 360.f || playerxangle < 0.f )
             playerxangle = fmod(playerxangle+360.0,360.0);
 
-         while (playeryangle > 360.f || playeryangle < 0.f )
-            playeryangle = fmod(playeryangle+360.0,360.0);
+         while (playeryangle > 180.f || playeryangle < -180.f )
+            playeryangle = fmod(playeryangle-360.0,360.0);
 
-         if (playeryangle < 230.f)
-            playeryangle = 230.f;
+         // restrict up-down view angle
+         if (playeryangle < -40.f)
+            playeryangle = -40.f;
 
-         if (playeryangle > 330.f)
-            playeryangle = 330.f;
+         if (playeryangle > 40.f)
+            playeryangle = 40.f;
       }
       break;
 
@@ -143,19 +146,20 @@ void ua_ingame_orig_screen::render()
    glLoadIdentity();
 
    ua_player &pl = core->get_underworld().get_player();
+   double plheight = 0.6+core->get_underworld().get_player_height();
+
    {
       // rotation
-      glRotatef( playeryangle, 1.0, 0.0, 0.0 );
-      glRotatef( playerxangle, 0.0, 0.0, 1.0 );
+      glRotatef( playeryangle+270.0, 1.0, 0.0, 0.0 );
+      glRotatef( playerxangle+90.0, 0.0, 0.0, 1.0 );
 
       ua_player &pl = core->get_underworld().get_player();
 
       // move to position on map
-      glTranslatef(-pl.get_xpos(),-pl.get_ypos(),
-         -(0.6f+core->get_underworld().get_player_height()) );
+      glTranslatef(-pl.get_xpos(),-pl.get_ypos(),-plheight );
    }
 
-   ua_frustum fr(pl.get_xpos(),pl.get_ypos(),-playerxangle+90.0,-playeryangle,90.f,16.0);
+   ua_frustum fr(pl.get_xpos(),pl.get_ypos(),plheight,-playerxangle,-playeryangle,fov,16.0);
 
    // render underworld
    core->get_underworld().render(fr);
@@ -196,7 +200,7 @@ void ua_ingame_orig_screen::setup_opengl()
    glMatrixMode(GL_PROJECTION);
    glLoadIdentity();
 
-   gluPerspective(90.0, core->get_aspect_ratio(), 0.25, 256.0);
+   gluPerspective(fov, core->get_aspect_ratio(), 0.25, 16.0*16.0);
 
    // switch back to modelview matrix
    glMatrixMode(GL_MODELVIEW);

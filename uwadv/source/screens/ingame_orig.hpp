@@ -73,6 +73,7 @@ protected:
 
    float playerx,playery;
 
+   double fov;
    float playerxangle,playeryangle;
 
    bool mapmode;

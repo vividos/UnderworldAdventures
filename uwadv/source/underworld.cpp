@@ -64,8 +64,6 @@ void ua_underworld::walk_player(float angle)
    // speed: 1.2 tiles per second
    float speed = 1.8f / core->get_tickrate();
 
-   angle+=90.f;
-
    player.move_player(
       player.get_xpos()+speed*cos(ua_deg2rad(angle)),
       player.get_ypos()+speed*sin(ua_deg2rad(angle)) );
