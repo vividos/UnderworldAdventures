@@ -108,7 +108,6 @@ void ua_cutscene_view_screen::init()
          buffer[len]=0;
       }
       SDL_RWclose(script);
-      SDL_FreeRW(script);
 
       // execute script
       int ret = lua_dobuffer(L,&buffer[0],len,"");
