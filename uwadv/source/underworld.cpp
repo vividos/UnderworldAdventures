@@ -64,19 +64,10 @@ void ua_underworld::done()
 void ua_underworld::eval_underworld(double time)
 {
    // evaluate physics
-   physics.eval_player_movement(time);
+   physics.eval_physics(time);
 
    // call Lua tick script
    script.lua_game_tick(time);
-}
-
-double ua_underworld::get_player_height()
-{
-   // TODO: ask physics model about player height
-   //return get_current_level().get_floor_height(player.get_xpos(),player.get_ypos());
-   
-   // Height is now stored in player object after collision detection.
-   return player.get_height();
 }
 
 ua_level &ua_underworld::get_current_level()

@@ -66,9 +66,6 @@ public:
    //! returns if enhanced features are turned on
    bool have_enhanced_features(){ return enhanced_features; }
 
-   //! returns the height of the player
-   double get_player_height();
-
    // access to underworld components
 
    //! returns player
