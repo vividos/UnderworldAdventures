@@ -29,7 +29,7 @@
 #include "common.hpp"
 #include "inventory.hpp"
 #include "underworld.hpp"
-#include "script.hpp"
+#include "scripting.hpp"
 
 
 // ua_inventory methods
@@ -127,7 +127,7 @@ Uint16 ua_inventory::get_container_item_id()
 bool ua_inventory::is_container(Uint16 item_id)
 {
    ua_object_properties& prop = underw->get_obj_properties();
-   ua_common_obj_property& cprop = prop.get_common_property(itemlist[item_id].item_id);
+   ua_common_obj_property& cprop = prop.get_common_property(item_id);
    return cprop.is_container;
 }
 
@@ -339,23 +339,30 @@ bool ua_inventory::drop_floating_item(Uint16 index)
    // check if object can be placed in that slot
    {
       // get inventory object category
+      Uint16 item_id = get_item(floating_object).item_id;
 
-      ua_armour_wearable_property& prop =
-      underw->get_obj_properties().
-         get_armour_property(get_item(floating_object).item_id);
+      ua_armour_category category = ua_armour_none;
+
+      if (item_id>=0x0020 && item_id<0x0040)
+      {
+         ua_armour_wearable_property& prop =
+            underw->get_obj_properties().get_armour_property(item_id);
+
+         category = prop.category;
+      }
 
       // check for rings
-      if ( (index == ua_slot_rightfinger || index == ua_slot_leftfinger ) &&
-         prop.category != ua_armour_ring)
+      if ((index == ua_slot_rightfinger || index == ua_slot_leftfinger ) &&
+          category != ua_armour_ring)
          return false;
 
       // check for paperdoll items
-      if ( (index == ua_slot_paperdoll_head && prop.category != ua_armour_hat) ||
-           (index == ua_slot_paperdoll_chest && prop.category != ua_armour_body_armour) ||
-           (index == ua_slot_paperdoll_hands && prop.category != ua_armour_gloves) ||
-           (index == ua_slot_paperdoll_legs &&  prop.category != ua_armour_leggings) ||
-           (index == ua_slot_paperdoll_feet &&  prop.category != ua_armour_boots) )
-              return false;
+      if ( (index == ua_slot_paperdoll_head && category != ua_armour_hat) ||
+           (index == ua_slot_paperdoll_chest && category != ua_armour_body_armour) ||
+           (index == ua_slot_paperdoll_hands && category != ua_armour_gloves) ||
+           (index == ua_slot_paperdoll_legs &&  category != ua_armour_leggings) ||
+           (index == ua_slot_paperdoll_feet &&  category != ua_armour_boots) )
+         return false;
    }
 
    if (obj.item_id == ua_slot_no_item)
@@ -376,6 +383,8 @@ bool ua_inventory::drop_floating_item(Uint16 index)
       if (is_container(get_item(index).item_id))
       {
          // yes, a container
+
+         //! \todo check if container likes that type of object
 
          // add it to the container's list
          append_item(index,floating_object);
