@@ -23,6 +23,10 @@
 
    \brief game config loader
 
+   game configuration file loader that processes directives from the
+   %game-prefix%/game.cfg files; start parsing the file using
+   ua_cfgfile::load().
+
 */
 
 // include guard
@@ -31,8 +35,11 @@
 
 // needed includes
 #include "cfgfile.hpp"
-#include "core.hpp"
 #include <string>
+
+
+// forward references
+class ua_game_interface;
 
 
 // classes
@@ -45,7 +52,7 @@ public:
    ua_gamecfg_loader(){}
 
    //! inits reader
-   void init(ua_game_core_interface* core);
+   void init(ua_game_interface* game);
 
 protected:
    //! called to load a specific value
@@ -53,10 +60,19 @@ protected:
 
 protected:
    //! core interface pointer
-   ua_game_core_interface* core;
+   ua_game_interface* game;
 
    //! game name
    std::string game_name;
 };
+
+
+// inline methods
+
+inline void ua_gamecfg_loader::init(ua_game_interface* thegame)
+{
+   game = thegame;
+}
+
 
 #endif

@@ -28,14 +28,13 @@
 // needed includes
 #include "common.hpp"
 #include "gamecfg.hpp"
+#include "game_interface.hpp"
+#include "settings.hpp"
+#include "files.hpp"
+#include "underworld.hpp"
 
 
 // ua_gamecfg_loader methods
-
-void ua_gamecfg_loader::init(ua_game_core_interface* thecore)
-{
-   core = thecore;
-}
 
 void ua_gamecfg_loader::load_value(const std::string& name, const std::string& value)
 {
@@ -47,13 +46,13 @@ void ua_gamecfg_loader::load_value(const std::string& name, const std::string& v
    if (name.compare("lua-script")==0)
    {
       // load given lua script name
-      lua_State* L = core->get_underworld().get_scripts().get_lua_State();
-      core->get_filesmgr().load_lua_script(L,value.c_str());
+//TODO      lua_State* L = core->get_underworld().get_scripts().get_lua_State();
+//TODO      core->get_filesmgr().load_lua_script(L,value.c_str());
    }
    else
    if (name.compare("use-resources")==0)
    {
-      ua_settings &settings = core->get_settings();
+      ua_settings &settings = game->get_settings();
 
       // check if resources to use are available
       if (value.compare("uw1")==0)
@@ -91,10 +90,10 @@ void ua_gamecfg_loader::load_value(const std::string& name, const std::string& v
    if (name.compare("import-strings")==0)
    {
       // load game strings
-      SDL_RWops* gstr = core->get_filesmgr().get_uadata_file(value.c_str());
+      SDL_RWops* gstr = game->get_files_manager().get_uadata_file(value.c_str());
 
       // TODO check if gstr == NULL
 
-      core->get_strings().load(gstr);
+      game->get_underworld().get_strings().load(gstr);
    }
 }
