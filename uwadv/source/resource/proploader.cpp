@@ -63,7 +63,7 @@ void ua_object_properties::init(ua_settings& settings)
 
          comprop.radius = data[1] & 7;
          comprop.height = data[0];
-         comprop.mass = ((data[1]<<8) | data[0]) >> 4;
+         comprop.mass = ((data[2]<<8) | data[1]) >> 4;
          comprop.quality_class = (data[6] >> 2) & 3;
          comprop.quality_type = data[10] & 15;
          comprop.can_have_owner = (data[7] & 0x80) != 0;
