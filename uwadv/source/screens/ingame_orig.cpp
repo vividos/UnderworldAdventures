@@ -1190,9 +1190,21 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
                // get object from map
                Uint32 level = core->get_underworld().get_player().get_attr(ua_attr_maplevel);
                core->get_underworld().get_scripts().lua_objlist_get(level,id);
+
+               ua_inventory& inv = core->get_underworld().get_inventory();
+
+               // set appropriate cursor
+               if (inv.get_floating_item() != ua_item_none)
+               {
+                  Uint16 item_id = inv.get_item(inv.get_floating_item()).item_id;
+                  set_cursor_image(true,item_id,true);
+               }
+               else
+                  set_cursor_image(false,0xffff,true);
             }
             else
             {
+               // getting tilemap wall/ceiling/floor? not possible
             }
          }
 
