@@ -8,18 +8,26 @@
 # user-configurable stuff
 #
 
+# path to place where uwadv should be installed
+UWADV_PATH = c:/uwadv/
+
+# path to SDL include
 SDL_INCLUDE = -Ic:/mingw/include/sdl/
 
+# path to STLport
 STLPORT_INCLUDE = -Ic:/mingw/stl/stlport/
 STLPORT_LIB = -Lc:/mingw/stl/lib/ -lstlport_mingw32_static
 
-# fmod isn't needed for Win32, since we have a native midi driver
-FMOD_INCLUDE = #-DHAVE_FMOD_H -Ic:/mingw/include/fmod/api/inc/
-FMOD_LIB = #-Lc:/mingw/include/fmod/api/lib/ -lfmod
+# no servicable parts beyond here.
 
 #
 # build variables
 #
+
+# fmod isn't needed for Win32, since uwadv have a native midi driver
+FMOD_INCLUDE = #-DHAVE_FMOD_H -Ic:/mingw/include/fmod/api/inc/
+FMOD_LIB = #-Lc:/mingw/include/fmod/api/lib/ -lfmod
+
 
 SDL_LIB = -lSDLmain -lSDL -lSDL_mixer
 WIN32_LIB = -lmingw32 -lkernel32 -luser32
@@ -194,13 +202,6 @@ source/win32/source/uwadv_res.o: source/win32/source/uwadv.rc source/win32/sourc
 uwadv.cfg: source/win32/uwadv.cfg
 	cp source/win32/uwadv.cfg .
 
-data: luac
-	cd uadata && make
-
-luac:
-	cd source/lua/src/luac && make
-	cp source/lua/bin/luac.exe* uadata
-
 
 cnvdbg: $(cnvdbg_EXEC)
 $(cnvdbg_EXEC): $(cnvdbg_OBJS)
@@ -232,7 +233,22 @@ $(strpak_EXEC): $(strpak_OBJS)
 	$(CXX) $(LDFLAGS) $(strpak_LDFLAGS) -o $(@) $(strpak_OBJS) $(strpak_LIBS)
 
 
-installer: uwadv
+data: luac
+	cd uadata && make
+
+luac:
+	cd source/lua/src/luac && make
+	cp source/lua/bin/luac.exe* uadata
+
+install: uwadv tools data
+	strip $(uwadv_EXEC)
+	mkdir -p $(UWADV_PATH)
+	cp $(uwadv_EXEC) $(UWADV_PATH)
+	cp uwadv.cfg $(UWADV_PATH)
+	mkdir -p $(UWADV_PATH)uadata/
+	cp uadata/uadata00.uar $(UWADV_PATH)uadata/
+
+installer: uwadv data
 	rem mkdir -p output/release/
 	rem cp uwadv.exe output/release/uwadv.exe
 	rem source/win32/install/makensis.exe uwadv.nsi
@@ -244,8 +260,12 @@ clean:
 		$(mapdisp_OBJS) $(animview_OBJS) $(strpak_OBJS)
 	cd uadata && make clean
 
-.c.o:
+#
+# compile rules
+#
+
+%.o: %.c
 	$(CC) $(CFLAGS) -c $(<) -o $*.o
 
-.cpp.o:
+%.o: %.cpp
 	$(CXX) $(CFLAGS) $(CXXFLAGS) -c $(<) -o $*.o
