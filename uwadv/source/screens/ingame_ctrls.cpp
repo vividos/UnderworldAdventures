@@ -28,8 +28,9 @@
 // needed includes
 #include "common.hpp"
 #include "ingame_ctrls.hpp"
-#include "underworld.hpp"
 #include "ingame_orig.hpp"
+#include "underworld.hpp"
+#include "renderer.hpp"
 
 
 // ua_ingame_compass methods
@@ -74,9 +75,6 @@ void ua_ingame_compass::init(ua_game_interface& game, unsigned int xpos,
       }
    }
 
-   // remember player object
-   player = &game.get_underworld().get_player();
-
    compass_curimg = 16;
 }
 
@@ -85,7 +83,10 @@ void ua_ingame_compass::draw()
    // check if we have to reupload the image
 
    // calculate current angle and images
-   double angle = fmod(-player->get_angle_rot()+90.0+360.0,360.0);
+   ua_player& player = parent->get_game_interface().get_underworld().
+      get_player();
+
+   double angle = fmod(-player.get_angle_rot()+90.0+360.0,360.0);
    unsigned int compassimg = unsigned((angle+11.25)/22.5)&15;
 
    // prepare texture
@@ -107,7 +108,7 @@ void ua_ingame_compass::mouse_event(bool button_clicked, bool left_button,
    bool button_down, unsigned int mousex, unsigned int mousey)
 {
    if (button_clicked && !button_down)
-      parent->get_underworld().user_action(ua_action_clicked_compass);
+      parent->get_game_interface().get_underworld().user_action(ua_action_clicked_compass);
 }
 
 
@@ -154,7 +155,7 @@ void ua_ingame_runeshelf::mouse_event(bool button_clicked, bool left_button,
    bool button_down, unsigned int mousex, unsigned int mousey)
 {
    if (button_clicked && !button_down)
-      parent->get_underworld().user_action(ua_action_clicked_runeshelf);
+      parent->get_game_interface().get_underworld().user_action(ua_action_clicked_runeshelf);
 }
 
 
@@ -201,7 +202,7 @@ void ua_ingame_spell_area::mouse_event(bool button_clicked, bool left_button,
    bool button_down, unsigned int mousex, unsigned int mousey)
 {
    if (button_clicked && !button_down)
-      parent->get_underworld().user_action(ua_action_clicked_spells);
+      parent->get_game_interface().get_underworld().user_action(ua_action_clicked_spells);
 }
 
 
@@ -244,20 +245,19 @@ void ua_ingame_flask::init(ua_game_interface& game, unsigned int xpos,
 
    ua_image_quad::init(game,xpos,ypos);
 
-   // remember player object
-   player = &game.get_underworld().get_player();
-
    last_image = 14*2;
    is_poisoned = false;
 }
 
 void ua_ingame_flask::draw()
 {
-   is_poisoned = player->get_attr(ua_attr_poisoned) != 0;
+   ua_player& player = parent->get_game_interface().get_underworld().
+      get_player();
+   is_poisoned = player.get_attr(ua_attr_poisoned) != 0;
 
-   unsigned int curval = player->get_attr(
+   unsigned int curval = player.get_attr(
       vitality_flask ? ua_attr_life : ua_attr_mana);
-   unsigned int maxval = player->get_attr(
+   unsigned int maxval = player.get_attr(
       vitality_flask ? ua_attr_max_life : ua_attr_max_mana);
    unsigned int curimg = unsigned((curval*13.0)/maxval);
 
@@ -284,7 +284,7 @@ void ua_ingame_flask::mouse_event(bool button_clicked, bool left_button,
    bool button_down, unsigned int mousex, unsigned int mousey)
 {
    if (button_clicked && !button_down)
-      parent->get_underworld().user_action(
+      parent->get_game_interface().get_underworld().user_action(
          vitality_flask ? ua_action_clicked_vitality_flask : ua_action_clicked_mana_flask);
 }
 
@@ -315,7 +315,7 @@ void ua_ingame_gargoyle_eyes::mouse_event(bool button_clicked, bool left_button,
    bool button_down, unsigned int mousex, unsigned int mousey)
 {
    if (button_clicked && !button_down)
-      parent->get_underworld().user_action(ua_action_clicked_gargoyle);
+      parent->get_game_interface().get_underworld().user_action(ua_action_clicked_gargoyle);
 }
 
 
@@ -367,7 +367,7 @@ void ua_ingame_dragon::mouse_event(bool button_clicked, bool left_button,
    bool button_down, unsigned int mousex, unsigned int mousey)
 {
    if (button_clicked && !button_down)
-      parent->get_underworld().user_action(ua_action_clicked_dragons);
+      parent->get_game_interface().get_underworld().user_action(ua_action_clicked_dragons);
 }
 
 
@@ -378,8 +378,8 @@ void ua_ingame_3dview::init(ua_game_interface& game, unsigned int xpos,
 {
    ua_image_quad::init(game,xpos,ypos);
 
-   wnd_width = 224-54;
-   wnd_height = 131-20;
+   wnd_width = 224-54+1;
+   wnd_height = 131-20+1;
 
    mouse_move = false;
 }
@@ -398,9 +398,31 @@ bool ua_ingame_3dview::process_event(SDL_Event& event)
       calc_mousepos(event, xpos, ypos);
       if (in_view3d && !in_window(xpos,ypos))
       {
-         // user left the window
-         in_view3d = false;
-//         set_cursor_image(false,0);
+         if (mouse_move)
+         {
+            // limit mouse position
+            if (xpos<wnd_xpos) xpos=wnd_xpos;
+            if (xpos>=wnd_xpos+wnd_width) xpos=wnd_xpos+wnd_width-1;
+            if (ypos<wnd_ypos) ypos=wnd_ypos;
+            if (ypos>=wnd_ypos+wnd_height) ypos=wnd_ypos+wnd_height-1;
+
+            // calculate real screen coordinates
+            SDL_Surface* surf = SDL_GetVideoSurface();
+
+            if (surf != NULL)
+            {
+               xpos = unsigned((xpos / 320.0) * surf->w);
+               ypos = unsigned((ypos / 200.0) * surf->h);
+
+               SDL_WarpMouse(xpos,ypos);
+            }
+         }
+         else
+         {
+            // user left the window
+            in_view3d = false;
+            parent->set_cursor(0,false);
+         }
       }
    }
 
@@ -410,7 +432,6 @@ bool ua_ingame_3dview::process_event(SDL_Event& event)
 void ua_ingame_3dview::mouse_event(bool button_clicked, bool left_button,
    bool button_down, unsigned int mousex, unsigned int mousey)
 {
-/*
    // we only get this call when we're inside the window
    in_view3d = true;
 
@@ -418,35 +439,33 @@ void ua_ingame_3dview::mouse_event(bool button_clicked, bool left_button,
    double relx = double(mousex-wnd_xpos)/(wnd_width-wnd_xpos);
    double rely = double(mousey-wnd_ypos)/(wnd_height-wnd_ypos);
 
-   ua_player& player = game->get_underworld().get_player();
+   ua_player& pl = parent->get_game_interface().get_underworld().get_player();
 
    // when pressing left mouse button, start mouse move mode
-   if (button_click && (SDL_GetMouseState(NULL, NULL) & (SDL_BUTTON_LMASK)) != 0))
+   if (button_clicked && left_button)
    {
       // mouse move is started on pressing mouse button
-      mouse_move = pressed;
+      mouse_move = (SDL_GetMouseState(NULL, NULL) & (SDL_BUTTON_LMASK)) != 0;
 
       if (!mouse_move)
       {
          // disable all modes (when possible)
-         if (!move_walk_forward && !move_run_forward && !move_walk_backwards)
-            player.set_movement_mode(0,ua_move_walk);
+         if (!parent->get_move_state(ua_move_walk_forward) &&
+             !parent->get_move_state(ua_move_run_forward) &&
+             !parent->get_move_state(ua_move_walk_backwards))
+            pl.set_movement_mode(0,ua_move_walk);
 
-         if (!move_turn_left && !move_turn_right)
-            player.set_movement_mode(0,ua_move_rotate);
+         if (!parent->get_move_state(ua_move_turn_left) &&
+             !parent->get_move_state(ua_move_turn_right))
+            pl.set_movement_mode(0,ua_move_rotate);
 
-         player.set_movement_mode(0,ua_move_slide);
-
-         // set new mouse cursor position
-//         Uint16 x = unsigned(cursorx*core->get_screen_width()/320.0);
-//         Uint16 y = unsigned(cursory*core->get_screen_height()/200.0);
-//         SDL_WarpMouse(x,y);
+         pl.set_movement_mode(0,ua_move_slide);
       }
    }
 
    // determine new cursor image
+   double slide, rotate, walk;
    {
-      double slide, rotate, walk;
       slide = rotate = walk = 10.0;
 
       int new_cursor_image = -1;
@@ -477,6 +496,9 @@ void ua_ingame_3dview::mouse_event(bool button_clicked, bool left_button,
          walk = (0.6-rely)/0.4;
          if (walk>1.0) walk = 1.0;
       }
+
+      if (new_cursor_image != -1)
+         parent->set_cursor(new_cursor_image,false);
    }
 
    // mouse move mode?
@@ -484,39 +506,113 @@ void ua_ingame_3dview::mouse_event(bool button_clicked, bool left_button,
    {
       // disable all modes (when not active through keyboard movement)
       // and update movement modes and factors
-      if (!move_walk_forward && !move_run_forward && !move_walk_backwards)
+      if (!parent->get_move_state(ua_move_walk_forward) &&
+          !parent->get_move_state(ua_move_run_forward) &&
+          !parent->get_move_state(ua_move_walk_backwards))
       {
-         player.set_movement_mode(0,ua_move_walk);
+         pl.set_movement_mode(0,ua_move_walk);
 
          if (walk<10.0)
          {
-            player.set_movement_mode(ua_move_walk);
-            player.set_movement_factor(ua_move_walk,walk);
+            pl.set_movement_mode(ua_move_walk);
+            pl.set_movement_factor(ua_move_walk,walk);
          }
       }
 
-      if (!move_turn_left && !move_turn_right)
+      if (!parent->get_move_state(ua_move_turn_left) &&
+          !parent->get_move_state(ua_move_turn_right))
       {
-         player.set_movement_mode(0,ua_move_rotate);
+         pl.set_movement_mode(0,ua_move_rotate);
 
          if (rotate<10.0)
          {
-            player.set_movement_mode(ua_move_rotate);
-            player.set_movement_factor(ua_move_rotate,rotate);
+            pl.set_movement_mode(ua_move_rotate);
+            pl.set_movement_factor(ua_move_rotate,rotate);
          }
       }
 
       {
-         player.set_movement_mode(0,ua_move_slide);
+         pl.set_movement_mode(0,ua_move_slide);
 
          if (slide<10.0)
          {
-            player.set_movement_mode(ua_move_slide);
-            player.set_movement_factor(ua_move_slide,slide);
+            pl.set_movement_mode(ua_move_slide);
+            pl.set_movement_factor(ua_move_slide,slide);
          }
       }
    }
-*/
+
+   // check right mouse button down
+   if (button_clicked && button_down && !left_button)
+   {
+      int x,y;
+      SDL_GetMouseState(&x,&y);
+
+      unsigned int tilex=0, tiley=0, id=0;
+      bool is_object = true;
+
+      ua_renderer& renderer = parent->get_game_interface().get_renderer();
+      renderer.select_pick(parent->get_game_interface().get_underworld(),
+         x,y,tilex,tiley,is_object,id);
+
+      switch(parent->get_gamemode())
+      {
+         // "look" or default action
+      case ua_mode_default:
+      case ua_mode_look:
+         if (is_object)
+         {
+            if (id != 0)
+               parent->get_game_interface().get_underworld().
+                  user_action(ua_action_look_object, id);
+         }
+         else
+         {
+            // user clicked on a texture
+            ua_trace("looking at wall/ceiling, tile=%02x/%02x, id=%04x\n",
+               tilex,tiley,id);
+
+            parent->get_game_interface().get_underworld().
+               user_action(ua_action_look_wall, id);
+         }
+         break;
+
+         // "use" action
+      case ua_mode_use:
+         if (is_object)
+         {
+            parent->get_game_interface().get_underworld().
+               user_action(ua_action_use_object, id);
+         }
+         else
+         {
+            parent->get_game_interface().get_underworld().
+               user_action(ua_action_use_wall, id);
+         }
+         break;
+
+         // "get" action
+      case ua_mode_get:
+         if (is_object)
+         {
+            parent->get_game_interface().get_underworld().
+               user_action(ua_action_get_object, id);
+         }
+         break;
+
+         // "talk" action
+      case ua_mode_talk:
+         if (is_object)
+         {
+            parent->get_game_interface().get_underworld().
+               user_action(ua_action_talk_object, id);
+         }
+         break;
+
+      default:
+         break;
+      }
+   }
 }
 
 

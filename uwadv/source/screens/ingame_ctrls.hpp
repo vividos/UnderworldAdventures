@@ -38,8 +38,6 @@
 
 // forward references
 class ua_ingame_orig_screen;
-class ua_player;
-class ua_inventory;
 
 
 // classes
@@ -78,9 +76,6 @@ protected:
 
    //! compass images
    std::vector<ua_image> img_compass;
-
-   //! player object to show compass direction
-   ua_player* player;
 };
 
 
@@ -102,9 +97,6 @@ public:
 protected:
    //! all runestones
    std::vector<ua_image> img_runestones;
-
-   //! pointer to inventory that has the runeshelf
-   ua_inventory* inventory;
 };
 
 
@@ -167,9 +159,6 @@ protected:
 
    //! flask images
    std::vector<ua_image> img_flask;
-
-   //! player object to show compass direction
-   ua_player* player;
 };
 
 
@@ -239,6 +228,9 @@ public:
    //! initializes 3d view window
    virtual void init(ua_game_interface& game, unsigned int xpos,
       unsigned int ypos);
+
+   //! returns if 3d view is in mouse move mode
+   bool get_mouse_move(){ return mouse_move; }
 
    // virtual methods from ua_window
    virtual void draw();
