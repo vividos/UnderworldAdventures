@@ -82,6 +82,12 @@ void ua_mousecursor::draw()
    if (!isvisible)
       return;
 
+   bool blend_enabled = glIsEnabled(GL_BLEND) == GL_TRUE;
+
+   // mouse cursor must be drawn with blending enabled
+   if (!blend_enabled)
+      glEnable(GL_BLEND);
+
    mousetex.use();
    double u = mousetex.get_tex_u(), v = mousetex.get_tex_v();
    u -= mousetex.get_tex_u()/mousetex.get_xres();
@@ -100,6 +106,9 @@ void ua_mousecursor::draw()
    glTexCoord2d(u  , 0.0); glVertex2i(wnd_xpos+wnd_width, 200-wnd_ypos+wnd_height);
    glTexCoord2d(0.0, 0.0); glVertex2i(wnd_xpos,           200-wnd_ypos+wnd_height);
    glEnd();
+
+   if (!blend_enabled)
+      glDisable(GL_BLEND);
 }
 
 bool ua_mousecursor::process_event(SDL_Event& event)
