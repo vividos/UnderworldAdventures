@@ -108,9 +108,10 @@ void draw_screen()
    glLoadIdentity();
 
    // load texture with current animation frame
-   cuts.get_frame(tex,currentframe);
+   cuts.get_frame(currentframe);
 
    // upload texture to graphics card
+   tex.convert(cuts.get_anim_palette(),cuts);
    tex.use();
    tex.upload(false);
 
