@@ -36,11 +36,13 @@
 ua_game::ua_game():tickrate(20),exit_game(false),audio(NULL),screen(NULL),
    screen_to_destroy(NULL)
 {
+   printf("Underworld Adventures\n");
+   printf("http://uwadv.sourceforge.net/\n\n");
 }
 
 void ua_game::init()
 {
-   // First, initialize SDL's video subsystem. */
+   // First, initialize SDL's video subsystem
    if( SDL_Init(SDL_INIT_VIDEO) < 0 )
    {
       std::string text("video initialization failed: ");
