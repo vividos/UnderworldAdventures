@@ -27,6 +27,10 @@ the folders to the mingw folder tree, so that folders match. The SDL headers
 should go into "c:\mingw\include\SDL\" (for our example). The SDL libraries
 ("libsdl.a" and "libsdlmain.a") can go in "c:\mingw\lib\".
 
+Additionally, SDL_mixer is needed. The development package can be obtained
+from http://www.libsdl.org/projects/SDL_mixer/. The MSVC dev package also
+works for mingw32, as the mingw32 seems to be able to link in SDL_mixer.lib.
+
 STLport Setup
 -------------
 
@@ -43,6 +47,16 @@ and type:
 
 The library "libstlport_mingw32_static.a" should have been built in the "lib"
 folder which is needed later.
+
+zlib Setup
+----------
+
+The zlib library to compress and decompress files is also needed. A
+development package for zlib-1.1.4 is available here:
+
+   http://uwadv.sourceforge.net/devel/zlib-1.1.4-devel-uwadv.zip
+
+The Readme.txt file in the zip archive explains the contents of the file.
 
 Compiling
 ---------
@@ -61,8 +75,9 @@ To compile the project, just type:
 
    make -f Makefile.mingw
 
-The executable "uwadv.exe" will be built. It additionally needs the SDL.DLL to
-run. The DLL is available at http://www.libsdl.org/
+The executable "uwadv.exe" will be built. It additionally needs the SDL.DLL
+and SDL_mixer.DLL to run. The DLLs are available at http://www.libsdl.org/ or
+http://www.libsdl.org/projects/SDL_mixer/
 
 To build the tools, type:
 
