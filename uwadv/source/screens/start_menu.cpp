@@ -23,6 +23,9 @@
 
    \brief menu at game start
 
+   TODO: replace get_selected_area() with usage of ua_screen_ctrl_base::get_area()
+   functionality
+
 */
 
 // needed includes
@@ -46,8 +49,10 @@ const double ua_start_menu_screen::palette_shifts_per_second = 20.0;
 
 // ua_start_menu_screen methods
 
-void ua_start_menu_screen::init()
+void ua_start_menu_screen::init(ua_game_core_interface* thecore)
 {
+   ua_ui_screen_base::init(thecore);
+
    ua_trace("start menu screen started\n");
 
    // load background image
@@ -62,11 +67,15 @@ void ua_start_menu_screen::init()
 
 void ua_start_menu_screen::suspend()
 {
+   ua_trace("suspending start menu screen\n\n");
+
    mousecursor.done();
 }
 
 void ua_start_menu_screen::resume()
 {
+   ua_trace("resuming start menu screen\n");
+
    // setup orthogonal projection
    glMatrixMode(GL_PROJECTION);
    glLoadIdentity();
@@ -103,17 +112,14 @@ void ua_start_menu_screen::resume()
 
 void ua_start_menu_screen::done()
 {
+   ua_trace("start menu screen ended\n\n");
+
    suspend();
 
    img_screen.done();
-
-   // clear screen
-   glClearColor(0,0,0,0);
-   glClear(GL_COLOR_BUFFER_BIT);
-   SDL_GL_SwapBuffers();
 }
 
-void ua_start_menu_screen::handle_event(SDL_Event &event)
+bool ua_start_menu_screen::handle_event(SDL_Event &event)
 {
    int last_selected_area = selected_area;
 
@@ -188,6 +194,8 @@ void ua_start_menu_screen::handle_event(SDL_Event &event)
    // check if selected area changed
    if (selected_area != last_selected_area)
       reupload_image = true;
+
+   return true;
 }
 
 void ua_start_menu_screen::render()
@@ -284,10 +292,7 @@ void ua_start_menu_screen::tick()
 
 void ua_start_menu_screen::press_button()
 {
-   // clear screen
-   glClearColor(0,0,0,0);
-   glClear(GL_COLOR_BUFFER_BIT);
-   SDL_GL_SwapBuffers();
+   ua_trace("button %u was pressed\n",selected_area);
 
    switch(selected_area)
    {

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -30,13 +30,12 @@
 */
 
 // include guard
-#ifndef __uwadv_start_menu_hpp_
-#define __uwadv_start_menu_hpp_
+#ifndef uwadv_start_menu_hpp_
+#define uwadv_start_menu_hpp_
 
 // needed includes
-#include "imgquad.hpp"
 #include "screen.hpp"
-#include "mousecursor.hpp"
+#include "imgquad.hpp"
 
 
 // classes
@@ -52,11 +51,11 @@ public:
 
    // virtual functions from ua_ui_screen_base
 
-   virtual void init();
+   virtual void init(ua_game_core_interface* core);
    virtual void suspend();
    virtual void resume();
    virtual void done();
-   virtual void handle_event(SDL_Event &event);
+   virtual bool handle_event(SDL_Event &event);
    virtual void render();
    virtual void tick();
 
@@ -76,6 +75,7 @@ protected:
    //! palette shifts per second
    static const double palette_shifts_per_second;
 
+
    //! current stage
    unsigned int stage;
 
@@ -90,9 +90,6 @@ protected:
 
    //! indicates if "journey onward" is available
    bool journey_avail;
-
-   //! mouse cursor
-   ua_mousecursor mousecursor;
 
    //! indicates if the mouse button is down
    bool buttondown;
