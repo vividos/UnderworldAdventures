@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -166,6 +166,9 @@ protected:
 
    virtual unsigned int get_game_string(unsigned int block, unsigned int nr,
       char* buffer, unsigned int maxsize);
+
+   virtual bool get_object_list_imagelist(unsigned int& num_objects,
+      unsigned char* buffer, unsigned int size);
 
    virtual void add_message(ua_debug_server_message& msg);
 

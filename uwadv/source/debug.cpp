@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@
 #include "game_interface.hpp"
 #include "underworld.hpp"
 #include "gamestrings.hpp"
+#include "image.hpp"
 
 
 // impl. classes
@@ -102,7 +103,7 @@ public:
 
 ua_debug_server::ua_debug_server()
 :debug_lib(NULL), thread_debugger(NULL), sem_debugger(NULL), mutex_lock(NULL),
- schedule_prepare(false)
+ game(NULL), schedule_prepare(false)
 {
    // init mutex, semaphore and thread handle
    mutex_lock = SDL_CreateMutex();
@@ -431,6 +432,10 @@ unsigned int ua_debug_server::get_tile_info_value(unsigned int level,
    case ua_tile_info_tex_ceil:
       val = tile.texture_ceiling;
       break;
+   case ua_tile_info_objlist_start:
+      val = game->get_underworld().get_levelmaps_list().
+         get_level(level).get_mapobjects().get_tile_list_start(xpos,ypos);
+      break;
 
    default:
       ua_assert(false);
@@ -501,7 +506,59 @@ unsigned int ua_debug_server::get_objlist_info(unsigned int level,
 void ua_debug_server::set_objlist_info(unsigned int level,
    unsigned int pos, unsigned int type, unsigned int value)
 {
-   ua_assert(false);
+   unsigned int val = 0;
+
+   ua_object& obj = game->get_underworld().get_levelmaps_list().
+      get_level(level).get_mapobjects().get_object(pos);
+
+   ua_object_info& objinfo = obj.get_object_info();
+   ua_object_info_ext& extobjinfo = obj.get_ext_object_info();
+   switch(type)
+   {
+   case ua_objlist_info_item_id:
+      objinfo.item_id = value;
+      break;
+   case ua_objlist_info_link:
+      objinfo.link = value;
+      break;
+   case ua_objlist_info_quality:
+      objinfo.quality = value;
+      break;
+   case ua_objlist_info_owner:
+      objinfo.owner = value;
+      break;
+   case ua_objlist_info_quantity:
+      objinfo.quantity = value;
+      break;
+   case ua_objlist_info_xpos:
+      val = extobjinfo.xpos = value;
+      break;
+   case ua_objlist_info_ypos:
+      val = extobjinfo.ypos = value;
+      break;
+   case ua_objlist_info_zpos:
+      val = extobjinfo.zpos = value;
+      break;
+   case ua_objlist_info_heading:
+      val = extobjinfo.heading = value;
+      break;
+   case ua_objlist_info_flags:
+      objinfo.flags = value;
+      break;
+   case ua_objlist_info_ench:
+      objinfo.enchanted = value;
+      break;
+   case ua_objlist_info_is_quant:
+      objinfo.is_quantity = value;
+      break;
+   case ua_objlist_info_hidden:
+      objinfo.is_hidden = value;
+      break;
+
+   default:
+      ua_assert(false);
+      break;
+   }
 }
 
 bool ua_debug_server::enum_gamestr_block(unsigned int index,
@@ -547,6 +604,43 @@ unsigned int ua_debug_server::get_game_string(unsigned int block,
       strncpy(buffer,str.c_str(), str.size());
 
    return ua_min(maxsize, str.size());
+}
+
+bool ua_debug_server::get_object_list_imagelist(unsigned int& num_objects, unsigned char* buffer, unsigned int size)
+{
+   ua_image_manager img_manager;
+   std::vector<ua_image> img_list;
+
+   img_manager.init(game->get_settings());
+   img_manager.load_list(img_list, "objects");
+
+   if (buffer == NULL || size == 0)
+   {
+      num_objects = img_list.size();
+      return true;
+   }
+
+   unsigned int xres = img_list[0].get_xres(), yres = img_list[0].get_yres(), max = img_list.size();
+
+   unsigned int needed_space = max*xres*yres*4;
+   if (size < needed_space)
+      return false;
+
+   Uint8* pixels = new Uint8[xres*yres*max];
+
+   for(unsigned int n=0; n<max; n++)
+      memcpy(&pixels[n*xres*yres], &img_list[n].get_pixels()[0], xres*yres);
+
+   // convert color indices to 32-bit texture
+   Uint32* palptr = reinterpret_cast<Uint32*>(img_list[0].get_palette().get());
+   Uint32* texptr = reinterpret_cast<Uint32*>(buffer);
+
+   for(unsigned int n=0; n<xres*yres*max; n++)
+      *texptr++ = palptr[pixels[n]];
+
+   delete[] pixels;
+
+   return true;
 }
 
 void ua_debug_server::add_message(ua_debug_server_message& msg)

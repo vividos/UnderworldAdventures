@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2004 Underworld Adventures Team
+   Copyright (c) 2004,2005 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -74,7 +74,8 @@ enum ua_debug_server_tile_info
    ua_tile_info_slope,
    ua_tile_info_tex_wall,
    ua_tile_info_tex_floor,
-   ua_tile_info_tex_ceil
+   ua_tile_info_tex_ceil,
+   ua_tile_info_objlist_start
 };
 
 //! object list info type for get_objlist_info
@@ -199,6 +200,10 @@ public:
    //! returns game string
    virtual unsigned int get_game_string(unsigned int block, unsigned int nr,
       char* buffer, unsigned int maxsize)=0;
+
+   //! retrieves an object list imagelist in 32-bit RGBA format
+   virtual bool get_object_list_imagelist(unsigned int& num_objects,
+      unsigned char* buffer, unsigned int size)=0;
 };
 
 
