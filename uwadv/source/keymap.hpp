@@ -31,6 +31,7 @@
 
 // needed includes
 #include "settings.hpp"
+#include "cfgfile.hpp"
 #include "SDL_keysym.h"
 #include <map>
 
@@ -124,13 +125,15 @@ enum ua_key_value
    ua_key_ua_screenshot,   // alt c, takes screenshot
    ua_key_ua_level_up,     // alt page up, only in debug mode
    ua_key_ua_level_down,   // alt page down, only in debug mode
+
+   ua_key_nokey
 };
 
 
 // classes
 
 //! keymap class
-class ua_keymap
+class ua_keymap: public ua_cfgfile
 {
 public:
    //! ctor
@@ -144,6 +147,10 @@ public:
 
    //! returns SDL keysym value for a given key
    Uint32 get_key(ua_key_value key);
+
+protected:
+   //! called to load a specific value
+   virtual void load_value(const std::string& name, const std::string& value);
 
 protected:
    //! mapping from key value to SDL keysym value
