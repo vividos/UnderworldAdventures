@@ -57,18 +57,34 @@ struct ua_hotspot_items
    { "Level 1: Shrine (17)", 0, 46.5, 15.5 },
 
    { "Level 2: Brawnclan (3)", 1, 13.5, 28.5 },
+   { "Level 2: Hall of the Mountain King", 1, 13.5, 8.5 },
+   { "Level 2: Shak", 1, 60.5, 8.5 },
+   { "Level 2: Evil Gray Goblins", 1, 45.5, 58.5 },
 
    { "Level 3: Sseetharee (2)", 2, 24.5, 22.5 },
+   { "Level 3: Gray Lizardmen", 2, 11.5, 10.5 },
+   { "Level 3: Starting Place (stairs)", 2, 5.5, 1.5 },
+   { "Level 3: Lizardman Lair", 2, 37.5, 30.5 },
 
    { "Level 4: Sethar Strongarm (11)", 3, 50.5, 22.5 },
+   { "Level 4: Rodrick's Hall", 3, 32.5, 52.5 },
+   { "Level 4: Knight's Home", 3, 8.5, 29.5 },
 
    { "Level 5: Shanclick and Eyesnack (1)", 4, 52.5, 23.5 },
+   { "Level 5: On a box", 4, 37.5, 12.5 },
+   { "Level 5: Pac-Man maze", 4, 8.5, 2.5 },
+   { "Level 5: Level stairs", 4, 34.5, 47.5 },
 
    { "Level 6: Wine of Compassion (16)", 5, 26.5, 51.5 },
+   { "Level 6: Golem Test", 5, 6.5, 24.5 },
+   { "Level 6: Seer's Storeroom", 5, 3.5, 11.5 },
+   { "Level 6: Level stairs", 5, 57.5, 31.5 },
 
    { "Level 7: Crystal Splinter passage", 6, 20.5, 44.5 },
+   { "Level 7: Prison?", 6, 6.5, 30.5 },
 
    { "Level 8: Before the Chamber of Virtue", 7, 32.0, 25.5 },
+   { "Level 8: Monster pit?", 7, 23.0, 49.5 },
 
    { "Ethereal Void: Starting point", 8, 29.5, 24.5 },
    { "Ethereal Void: Green Pathway End", 8, 52.5, 48.5 },
