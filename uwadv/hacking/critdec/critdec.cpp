@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -203,6 +203,8 @@ void decode_rle(FILE *fd,FILE *out,unsigned int bits,unsigned int datalen,unsign
 const char* cr_fmt = UWPATH"crit\\cr%02opage.n%02o";
 const char* assocfilename = UWPATH"crit\\assoc.anm";
 
+const char* assocfilename_uw2 = UWPATH"crit\\As.an";
+
 int main(int argc, char* argv[])
 {
    // get 256 colors palette
@@ -234,6 +236,7 @@ int main(int argc, char* argv[])
 
    // get animation and critter lists
    char critname[32][8];
+#ifndef HAVE_UW2
    {
       FILE *assoc = fopen(assocfilename,"rb");
 
@@ -254,6 +257,49 @@ int main(int argc, char* argv[])
 
       fclose(assoc);
    }
+#else
+   {
+      FILE* assoc = fopen(assocfilename_uw2,"rb");
+
+      // read in critter infos
+      for(int i=0; i<64; i++)
+      {
+         unsigned int anim = fgetc(assoc);
+         unsigned int variant = fgetc(assoc);
+
+         fprintf(log,"critter 0x%04x: anim = 0%02o (0x%02x), variant = %02x, critter = %s\n",
+            i+64,anim,anim,variant,gs.get_string(4,i+64).c_str());
+      }
+
+      fprintf(log,"\n");
+
+      fclose(assoc);
+   }
+#endif
+
+#ifdef HAVE_UW2
+   {
+      FILE* fd = fopen(UWPATH"\\crit\\Cr.an","rb");
+
+      unsigned char buffer[16384];
+
+      fread(buffer,16384,1,fd);
+      for(unsigned int i=0; i<64; i++)
+      {
+         fprintf(log,"%s\n",gs.get_string(4,i+64).c_str());
+
+         for(unsigned int j=0; j<256; j++)
+         {
+            fprintf(log,"%02x%c",buffer[i*256+j],(j&7)==7 ? '\n' : ' ');
+         }
+
+         fprintf(log,"\n");
+      }
+
+      fclose(fd);
+   }
+   return 0;
+#endif
 
    for(int crit=0; crit<32; crit++)
    {
