@@ -90,11 +90,8 @@ void ua_font::init(const char *fontname)
    nchars = (flen-12) / (charsize+1);
 
    // allocate memory for new data
-   delete fontdata;
-   fontdata = new Uint8[nchars*charheight*maxwidth];
-
-   delete charlengths;
-   charlengths = new Uint8[nchars];
+   fontdata.resize(nchars*charheight*maxwidth);
+   charlengths.resize(nchars);
 
    for(unsigned int n=0; n<nchars; n++)
    {

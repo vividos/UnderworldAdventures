@@ -28,18 +28,65 @@
 // needed includes
 #include "common.hpp"
 #include "font.hpp"
+#include <cstring>
 
 
 // ua_font methods
 
-ua_font::ua_font()
+unsigned int ua_font::calc_length(const char *str)
 {
-   fontdata = NULL;
-   charlengths = NULL;
+   unsigned int width=0, len=strlen(str);
+   for(unsigned int i=0; i<len; i++)
+   {
+      // count length for each char
+      unsigned char ch = static_cast<unsigned char>(str[i]);
+
+      if (ch>=nchars)
+         width += maxwidth;
+      else
+         if (ch==0x20)
+            width += spacewidth;
+         else
+            width += charlengths.at(ch);
+   }
+   return width;
 }
 
-ua_font::~ua_font()
+void ua_font::create_string(ua_image &image, const char *str, Uint8 fg_idx)
 {
-   delete[] fontdata;
-   delete[] charlengths;
+   // create image
+   unsigned int width=calc_length(str), len = strlen(str);
+
+   image.create(width,charheight);
+
+   std::vector<Uint8> &pixels = image.get_pixels();
+
+   unsigned int pos=0;
+
+   // store all chars in the image
+   for(unsigned int i=0; i<len; i++)
+   {
+      unsigned char ch = static_cast<unsigned char>(str[i]);
+
+      if (ch<nchars)
+      {
+         if (ch==0x20)
+         {
+            pos+=spacewidth;
+            continue;
+         }
+
+         unsigned int clen = charlengths.at(ch);
+
+         for(unsigned int y=0; y<charheight; y++)
+         for(unsigned int x=0; x<clen; x++)
+         {
+            bool pixset =
+               fontdata[ch*charheight*maxwidth + y*maxwidth + x] == 1;
+            pixels[y*width+x] = pixset ? fg_idx : 0;
+         }
+
+         pos += clen;
+      }
+   }
 }

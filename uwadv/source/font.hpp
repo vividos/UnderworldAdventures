@@ -31,6 +31,7 @@
 
 // needed includes
 #include "settings.hpp"
+#include "image.hpp"
 
 
 // typedefs
@@ -47,14 +48,14 @@ typedef enum
 
 // classes
 
-//! 
+//! font class
 class ua_font
 {
 public:
    //! ctor
-   ua_font();
+   ua_font(){}
    //! dtor
-   ~ua_font();
+   //~ua_font();
 
    //! initializes and loads a font
    void init(ua_settings &settings, ua_font_id fontid);
@@ -62,12 +63,18 @@ public:
    //! initializes and loads a font from file
    void init(const char *fontname);
 
+   //! calculates and returns length of string in pixel
+   unsigned int calc_length(const char *str);
+
+   //! creates image from string, using the font, using a foreground palette index
+   void create_string(ua_image &image, const char *str, Uint8 fg_idx);
+
 protected:
    //! font data
-   Uint8 *fontdata;
+   std::vector<Uint8> fontdata;
 
    //! length info for every char in font
-   Uint8 *charlengths;
+   std::vector<Uint8> charlengths;
 
    //! size of a character in bytes
    Uint16 charsize;
