@@ -203,12 +203,12 @@ public:
    void save_game(ua_savegame &sg);
 
    //! imports an object list
-   void import_objs(SDL_RWops* rwops);
+   void import_objs(SDL_RWops* rwops, Uint16 texmap[64]);
 
 private:
    //! adds object to master object list and follows link1 and link2 objs
    void addobj_follow(Uint32 objprop[0x400*2], Uint8 npcinfo[0x100*19],
-      Uint16 objpos);
+      Uint16 objpos, Uint16 texmap[64]);
 
 protected:
    //! indices for each tile into master object list

@@ -32,7 +32,7 @@
 
 // ua_object_list methods
 
-void ua_object_list::import_objs(SDL_RWops* rwops)
+void ua_object_list::import_objs(SDL_RWops* rwops, Uint16 texmap[64])
 {
    tile_index.resize(64*64,0);
    master_obj_list.resize(0x400);
@@ -64,7 +64,7 @@ void ua_object_list::import_objs(SDL_RWops* rwops)
    // now that we have the two lists, follow each tile ref
    for(unsigned int n=0; n<64*64; n++)
       if (tile_index[n] != 0)
-         addobj_follow(objprop,npcinfo,tile_index[n]);
+         addobj_follow(objprop,npcinfo,tile_index[n],texmap);
 }
 
 //! retrieves "count" bits from "value", starting at bit "start"
@@ -74,7 +74,7 @@ Uint32 ua_get_bits(Uint32 value, unsigned int start, unsigned int count)
 }
 
 void ua_object_list::addobj_follow(Uint32 objprop[0x400*2],
-   Uint8 npcinfo[0x100*19],Uint16 objpos)
+   Uint8 npcinfo[0x100*19],Uint16 objpos, Uint16 texmap[64])
 {
    while(objpos!=0)
    {
@@ -163,12 +163,24 @@ void ua_object_list::addobj_follow(Uint32 objprop[0x400*2],
          }
       }
 
+      // object modifications
+      {
+         // "special tmap object"
+         if (item_id == 0x016e || item_id == 0x016f)
+         {
+            Uint16& owner = obj.get_object_info().owner;
+            if (owner > 64)
+               owner = 0;
+            owner = texmap[owner]; // resolve texture
+         }
+      }
+
       // add to master object list
       master_obj_list[objpos] = obj;
 
       // examine special property and add recursively
       if (is_quantity==0)
-         addobj_follow(objprop,npcinfo,quantity);
+         addobj_follow(objprop,npcinfo,quantity,texmap);
 
       // add next object in chain
       objpos = link;
