@@ -777,6 +777,10 @@ SOURCE=..\settings.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\textscroll.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\texture.cpp
 # End Source File
 # Begin Source File
@@ -834,6 +838,10 @@ SOURCE=..\screen.hpp
 # Begin Source File
 
 SOURCE=..\settings.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\textscroll.hpp
 # End Source File
 # Begin Source File
 
