@@ -88,9 +88,54 @@ LINK32=link.exe
 
 # Name "uwadv - Win32 Release"
 # Name "uwadv - Win32 Debug"
-# Begin Group "source files"
+# Begin Group "main game files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+# Begin Source File
+
+SOURCE=..\common.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\uamath.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\uatypes.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\uwadv.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\uwadv.hpp
+# End Source File
+# End Group
+# Begin Group "resource files"
+
+# PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+# Begin Source File
+
+SOURCE=.\source\Uus.ico
+# End Source File
+# End Group
+# Begin Group "lua scripting files"
+
+# PROP Default_Filter ""
+# Begin Group "lua scripts"
+
+# PROP Default_Filter "*.lua"
+# Begin Source File
+
+SOURCE=..\..\uadata\uw1\scripts\cutscene.lua
+# PROP Exclude_From_Build 1
+# End Source File
+# End Group
+# End Group
+# Begin Group "win32 specific files"
+
+# PROP Default_Filter ""
 # Begin Group "win32 sources"
 
 # PROP Default_Filter ""
@@ -107,46 +152,22 @@ SOURCE=.\source\main.cpp
 SOURCE=.\source\uwadv.rc
 # End Source File
 # End Group
-# Begin Group "resource loading sources"
+# Begin Group "win32 headers"
 
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\resource\codeloader.cpp
+SOURCE=.\source\game_win32.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\resource\cutsloader.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\resource\fontloader.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\resource\gamestrings.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\resource\imageloader.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\resource\maploader.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\resource\objloader.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\resource\settings.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\resource\texloader.cpp
+SOURCE=.\source\resource.h
 # End Source File
 # End Group
+# End Group
+# Begin Group "audio specific files"
+
+# PROP Default_Filter ""
 # Begin Group "audio sources"
 
 # PROP Default_Filter ""
@@ -175,132 +196,38 @@ SOURCE=..\audio\midi_driver\win_midiout.cpp
 SOURCE=..\audio\xmidi.cpp
 # End Source File
 # End Group
-# Begin Group "conv code sources"
+# Begin Group "audio headers"
 
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\conv\codevm.cpp
+SOURCE=..\audio\midi_driver\linux_sdl_mixer.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\audio\midi.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\audio\midi_driver\uni_fmod.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\audio\midi_driver\win_midiout.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\audio\xmidi.hpp
 # End Source File
 # End Group
-# Begin Group "screens sources"
+# Begin Source File
+
+SOURCE=..\audio.hpp
+# End Source File
+# End Group
+# Begin Group "library files"
 
 # PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\screens\acknowledgements.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\screens\cutscene_view.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\screens\ingame_orig.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\screens\start_menu.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\screens\start_splash.cpp
-# End Source File
-# End Group
-# Begin Group "lua sources"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\lua\src\lapi.c
-# ADD CPP /I "..\lua\include"
-# End Source File
-# Begin Source File
-
-SOURCE=..\lua\src\lcode.c
-# ADD CPP /I "..\lua\include"
-# End Source File
-# Begin Source File
-
-SOURCE=..\lua\src\ldebug.c
-# ADD CPP /I "..\lua\include"
-# End Source File
-# Begin Source File
-
-SOURCE=..\lua\src\ldo.c
-# ADD CPP /I "..\lua\include"
-# End Source File
-# Begin Source File
-
-SOURCE=..\lua\src\lfunc.c
-# ADD CPP /I "..\lua\include"
-# End Source File
-# Begin Source File
-
-SOURCE=..\lua\src\lgc.c
-# ADD CPP /I "..\lua\include"
-# End Source File
-# Begin Source File
-
-SOURCE=..\lua\src\llex.c
-# ADD CPP /I "..\lua\include"
-# End Source File
-# Begin Source File
-
-SOURCE=..\lua\src\lmem.c
-# ADD CPP /I "..\lua\include"
-# End Source File
-# Begin Source File
-
-SOURCE=..\lua\src\lobject.c
-# ADD CPP /I "..\lua\include"
-# End Source File
-# Begin Source File
-
-SOURCE=..\lua\src\lparser.c
-# ADD CPP /I "..\lua\include"
-# End Source File
-# Begin Source File
-
-SOURCE=..\lua\src\lstate.c
-# ADD CPP /I "..\lua\include"
-# End Source File
-# Begin Source File
-
-SOURCE=..\lua\src\lstring.c
-# ADD CPP /I "..\lua\include"
-# End Source File
-# Begin Source File
-
-SOURCE=..\lua\src\ltable.c
-# ADD CPP /I "..\lua\include"
-# End Source File
-# Begin Source File
-
-SOURCE=..\lua\src\ltests.c
-# ADD CPP /I "..\lua\include"
-# End Source File
-# Begin Source File
-
-SOURCE=..\lua\src\ltm.c
-# ADD CPP /I "..\lua\include"
-# End Source File
-# Begin Source File
-
-SOURCE=..\lua\src\lundump.c
-# ADD CPP /I "..\lua\include"
-# End Source File
-# Begin Source File
-
-SOURCE=..\lua\src\lvm.c
-# ADD CPP /I "..\lua\include"
-# End Source File
-# Begin Source File
-
-SOURCE=..\lua\src\lzio.c
-# ADD CPP /I "..\lua\include"
-# End Source File
-# End Group
 # Begin Group "zziplib sources"
 
 # PROP Default_Filter ""
@@ -345,132 +272,44 @@ SOURCE="..\resource\zziplib\zzip-zip.c"
 # ADD CPP /I "..\resource\zziplib"
 # End Source File
 # End Group
-# Begin Source File
-
-SOURCE=..\cutscene.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\files.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\font.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\image.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\inventory.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\keymap.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\level.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\objects.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\physics.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\player.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\quadtree.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\texture.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\underworld.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\uwadv.cpp
-# End Source File
-# End Group
-# Begin Group "header files"
-
-# PROP Default_Filter "h;hpp;hxx;hm;inl"
-# Begin Group "win32 headers"
+# Begin Group "zziplib headers"
 
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\source\game_win32.hpp
+SOURCE=..\resource\zziplib\SDL_rwops_zzip.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\source\resource.h
-# End Source File
-# End Group
-# Begin Group "audio headers"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\audio\midi_driver\linux_sdl_mixer.h
+SOURCE="..\resource\zziplib\zzip-conf.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\audio\midi.hpp
+SOURCE="..\resource\zziplib\zzip-file.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\audio\midi_driver\uni_fmod.h
+SOURCE="..\resource\zziplib\zzip-io.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\audio\midi_driver\win_midiout.h
+SOURCE="..\resource\zziplib\zzip-msvc.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\audio\xmidi.hpp
-# End Source File
-# End Group
-# Begin Group "conv code headers"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\conv\codevm.hpp
-# End Source File
-# End Group
-# Begin Group "screens headers"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\screens\acknowledgements.hpp
+SOURCE="..\resource\zziplib\zzip-stdint.h"
 # End Source File
 # Begin Source File
 
-SOURCE=..\screens\cutscene_view.hpp
+SOURCE=..\resource\zziplib\zzip.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\screens\ingame_orig.hpp
+SOURCE=..\resource\zziplib\zzipformat.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\screens\start_menu.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\screens\start_splash.hpp
+SOURCE=..\resource\zziplib\zziplib.h
 # End Source File
 # End Group
 # Begin Group "lua headers"
@@ -573,89 +412,214 @@ SOURCE=..\lua\include\luadebug.h
 SOURCE=..\lua\include\lualib.h
 # End Source File
 # End Group
-# Begin Group "zziplib headers"
+# Begin Group "lua sources"
 
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\resource\zziplib\SDL_rwops_zzip.h
+SOURCE=..\lua\src\lapi.c
+# ADD CPP /I "..\lua\include"
 # End Source File
 # Begin Source File
 
-SOURCE="..\resource\zziplib\zzip-conf.h"
+SOURCE=..\lua\src\lcode.c
+# ADD CPP /I "..\lua\include"
 # End Source File
 # Begin Source File
 
-SOURCE="..\resource\zziplib\zzip-file.h"
+SOURCE=..\lua\src\ldebug.c
+# ADD CPP /I "..\lua\include"
 # End Source File
 # Begin Source File
 
-SOURCE="..\resource\zziplib\zzip-io.h"
+SOURCE=..\lua\src\ldo.c
+# ADD CPP /I "..\lua\include"
 # End Source File
 # Begin Source File
 
-SOURCE="..\resource\zziplib\zzip-msvc.h"
+SOURCE=..\lua\src\lfunc.c
+# ADD CPP /I "..\lua\include"
 # End Source File
 # Begin Source File
 
-SOURCE="..\resource\zziplib\zzip-stdint.h"
+SOURCE=..\lua\src\lgc.c
+# ADD CPP /I "..\lua\include"
 # End Source File
 # Begin Source File
 
-SOURCE=..\resource\zziplib\zzip.h
+SOURCE=..\lua\src\llex.c
+# ADD CPP /I "..\lua\include"
 # End Source File
 # Begin Source File
 
-SOURCE=..\resource\zziplib\zzipformat.h
+SOURCE=..\lua\src\lmem.c
+# ADD CPP /I "..\lua\include"
 # End Source File
 # Begin Source File
 
-SOURCE=..\resource\zziplib\zziplib.h
+SOURCE=..\lua\src\lobject.c
+# ADD CPP /I "..\lua\include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\lparser.c
+# ADD CPP /I "..\lua\include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\lstate.c
+# ADD CPP /I "..\lua\include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\lstring.c
+# ADD CPP /I "..\lua\include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\ltable.c
+# ADD CPP /I "..\lua\include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\ltests.c
+# ADD CPP /I "..\lua\include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\ltm.c
+# ADD CPP /I "..\lua\include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\lundump.c
+# ADD CPP /I "..\lua\include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\lvm.c
+# ADD CPP /I "..\lua\include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\lzio.c
+# ADD CPP /I "..\lua\include"
 # End Source File
 # End Group
+# End Group
+# Begin Group "screen specific files"
+
+# PROP Default_Filter ""
+# Begin Group "screens sources"
+
+# PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\audio.hpp
+SOURCE=..\screens\acknowledgements.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\common.hpp
+SOURCE=..\screens\conversation.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\core.hpp
+SOURCE=..\screens\create_character.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\cutscene.hpp
+SOURCE=..\screens\cutscene_view.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\files.hpp
+SOURCE=..\screens\ingame_orig.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\font.hpp
+SOURCE=..\screens\map_view.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\resource\fread_endian.hpp
+SOURCE=..\screens\start_menu.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\gamestrings.hpp
+SOURCE=..\screens\start_splash.cpp
+# End Source File
+# End Group
+# Begin Group "screens headers"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\screens\acknowledgements.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\image.hpp
+SOURCE=..\screens\conversation.hpp
 # End Source File
+# Begin Source File
+
+SOURCE=..\screens\create_character.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\screens\cutscene_view.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\screens\ingame_orig.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\screens\map_view.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\screens\start_menu.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\screens\start_splash.hpp
+# End Source File
+# End Group
+# End Group
+# Begin Group "underworld files"
+
+# PROP Default_Filter ""
+# Begin Group "underworld source files"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\inventory.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\level.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\objects.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\physics.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\player.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\underworld.cpp
+# End Source File
+# End Group
+# Begin Group "underworld header files"
+
+# PROP Default_Filter ""
 # Begin Source File
 
 SOURCE=..\inventory.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\keymap.hpp
 # End Source File
 # Begin Source File
 
@@ -675,6 +639,90 @@ SOURCE=..\player.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\underworld.hpp
+# End Source File
+# End Group
+# End Group
+# Begin Group "conv code files"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\conv\codevm.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\conv\codevm.hpp
+# End Source File
+# End Group
+# Begin Group "game support files"
+
+# PROP Default_Filter ""
+# Begin Group "game support sources"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\cutscene.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\files.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\font.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\image.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\keymap.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\quadtree.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\texture.cpp
+# End Source File
+# End Group
+# Begin Group "game support headers"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\core.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\cutscene.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\files.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\font.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\gamestrings.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\image.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\keymap.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\quadtree.hpp
 # End Source File
 # Begin Source File
@@ -689,38 +737,50 @@ SOURCE=..\settings.hpp
 
 SOURCE=..\texture.hpp
 # End Source File
-# Begin Source File
-
-SOURCE=..\uamath.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\uatypes.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\underworld.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\uwadv.hpp
-# End Source File
 # End Group
-# Begin Group "resource files"
-
-# PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
-# Begin Source File
-
-SOURCE=.\source\Uus.ico
-# End Source File
 # End Group
-# Begin Group "lua scripts"
+# Begin Group "resource loading sources"
 
-# PROP Default_Filter "*.lua"
+# PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\uadata\uw1\scripts\cutscene.lua
-# PROP Exclude_From_Build 1
+SOURCE=..\resource\codeloader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\resource\cutsloader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\resource\fontloader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\resource\fread_endian.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\resource\gamestrings.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\resource\imageloader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\resource\maploader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\resource\objloader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\resource\settings.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\resource\texloader.cpp
 # End Source File
 # End Group
 # Begin Source File
