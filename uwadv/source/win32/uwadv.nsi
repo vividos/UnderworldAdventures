@@ -2,7 +2,7 @@
 # Underworld Adventures install script
 #
 
-!define VERSION "0.4c-cheesecake"
+!define VERSION "0.5-butterfinger"
 
 # compiler utility commands
 #
