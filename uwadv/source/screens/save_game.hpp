@@ -158,6 +158,9 @@ public:
    //! called from ua_save_game_button when a button is pressed
    void press_button(ua_save_game_button_id id);
 
+   //! updates savegame info with selected savegame
+   void update_info();
+
    // virtual functions from ua_screen
    virtual void init();
    virtual void destroy();
@@ -174,9 +177,6 @@ protected:
 
    //! presses button
    void press_button();
-
-   //! updates savegame info with selected savegame
-   void update_info();
 
 protected:
    // constants
@@ -202,24 +202,18 @@ protected:
    //! indicates if screen is called from start menu
    bool from_menu;
 
-   //! left background image
-   ua_image_quad img_back1;
+   //! background image
+   ua_image_quad img_back;
 
-   //! right background image
-   ua_image_quad img_back2;
-/*
-   //! original image contents for right background image
-   ua_image img_back2_orig;
-*/
+   //! savegame info area
+   ua_image_quad img_infoarea;
+
    //! indicates if preview image is shown
    bool show_preview;
 
    //! savegame preview image
    ua_texture tex_preview;
-/*
-   //! image list with buttons / heads
-   ua_image_list img_buttons;
-*/
+
 
    //! mouse cursor
    ua_mousecursor mousecursor;

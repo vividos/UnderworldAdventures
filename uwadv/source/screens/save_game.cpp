@@ -30,20 +30,16 @@
 // needed includes
 #include "common.hpp"
 #include "save_game.hpp"
-//#include "ingame_orig.hpp"
+#include "ingame_orig.hpp"
 #include "renderer.hpp"
 #include "underworld.hpp"
 #include <sstream>
 
 
-// globals
+// constants
 
 const unsigned int ua_save_game_button::button_width = 55;
 
-
-// constants
-
-//! time to fade in/out
 const double ua_save_game_screen::fade_time = 0.5;
 
 
@@ -251,13 +247,13 @@ void ua_save_game_savegames_list::update_list()
 
    update();
 
-   // screen->update_info();
+   screen->update_info();
 }
 
 void ua_save_game_savegames_list::mouse_event(bool button_clicked, bool left_button,
    bool button_down, unsigned int mousex, unsigned int mousey)
 {
-   if ((button_clicked && button_down) || !button_clicked)
+   if (button_clicked && button_down)
    {
       // determine 
       unsigned int item = (mousey-wnd_ypos-2) / (font_normal.get_charheight()+1);
@@ -281,21 +277,6 @@ void ua_save_game_savegames_list::mouse_event(bool button_clicked, bool left_but
       if (last_selected != selected_savegame)
          update_list();
    }
-
-/*
-   // calculate cursor position
-   if (fade_state == 1 && (
-       event.type == SDL_MOUSEBUTTONDOWN ||
-       event.type == SDL_MOUSEBUTTONUP ||
-       (event.type == SDL_MOUSEMOTION && button_pressed)))
-   {
-      int x,y;
-      SDL_GetMouseState(&x,&y);
-      unsigned int cursorx = 0;//TODOunsigned(double(x)/game->get_screen_width()*320.0);
-      unsigned int cursory = 0;//TODOunsigned(double(y)/game->get_screen_height()*200.0);
-
-  }
-*/
 }
 
 
@@ -324,52 +305,37 @@ void ua_save_game_screen::init()
    // scan for savegames
    game->get_savegames_manager().rescan();
 
-//   font_normal.load(settings, ua_font_normal);
-
-   // load background images
+   // load background image
    {
-      ua_image img_back;
+      ua_image temp_back;
       game->get_image_manager().
-         load(img_back, "data/chargen.byt",0, 3, ua_img_byt);
+         load(temp_back, "data/chargen.byt",0, 3, ua_img_byt);
 
       // prepare left image (savegames list)
-      ua_image& img1 = img_back1.get_image();
+      ua_image& img = img_back.get_image();
 
-      img1.create(160,200);
-      img1.get_palette() = img_back.get_palette();
-      img1.paste_rect(img_back, 160,0, 160,200, 0,0);
+      img.create(320,200);
+      img.get_palette() = temp_back.get_palette();
+      img.paste_rect(temp_back,160,0, 160,200, 0,0);
 
       // add frame
-      img1.paste_rect(img_back,11,124, 138,6, 10,4);
-      img1.paste_rect(img_back,10,130, 6,56, 9,10);
-      img1.paste_rect(img_back,10,130, 6,56, 9,66);
-      img1.paste_rect(img_back,10,130, 6,19, 9,122);
+      img.paste_rect(temp_back,11,124, 138,6, 10,4);
+      img.paste_rect(temp_back,10,130, 6,56, 9,10);
+      img.paste_rect(temp_back,10,130, 6,56, 9,66);
+      img.paste_rect(temp_back,10,130, 6,19, 9,122);
 
-      img1.paste_rect(img_back,144,130, 6,56, 143,10);
-      img1.paste_rect(img_back,144,130, 6,56, 143,66);
-      img1.paste_rect(img_back,144,130, 6,19, 143,122);
+      img.paste_rect(temp_back,144,130, 6,56, 143,10);
+      img.paste_rect(temp_back,144,130, 6,56, 143,66);
+      img.paste_rect(temp_back,144,130, 6,19, 143,122);
 
-      img1.paste_rect(img_back,10,186, 140,6, 9,141);
+      img.paste_rect(temp_back,10,186, 140,6, 9,141);
 
-      img_back1.init(*game, 0,0);
-      img_back1.update();
+      img.paste_rect(temp_back, 0,0, 160,200, 159,0);
 
-      register_window(&img_back1);
+      img_back.init(*game, 0,0);
+      img_back.update();
 
-      // prepare right image (savegame info)
-      ua_image& img2 = img_back2.get_image();
-
-      img2.create(160,200);
-      img2.get_palette() = img_back.get_palette();
-      img2.paste_rect(img_back, 0,0, 160,200, 0,0);
-
-      img_back2.init(*game, 160,0);
-      img_back2.update();
-
-      register_window(&img_back2);
-
-//      img_back2_orig.create(160,200,0,3);
-//      img_back2_orig.paste_rect(img_back,0,0, 160,200, 0,0);
+      register_window(&img_back);
    }
 
    // init buttons
@@ -390,6 +356,14 @@ void ua_save_game_screen::init()
    savegames_list.update_list();
 
    register_window(&savegames_list);
+
+   // init info area
+   img_infoarea.get_image().create(20,20);
+   img_infoarea.get_image().get_palette() = img_back.get_image().get_palette();
+   img_infoarea.init(*game,160,0);
+//   register_window(&img_infoarea);
+
+   update_info();
 
    // init mouse cursor
    mousecursor.init(*game,10);
@@ -503,6 +477,9 @@ void ua_save_game_screen::draw()
 //   if (edit_desc)
 //      desc_scroll.render();
 
+   // draw registered windows
+   ua_screen::draw();
+
    // render savegame preview image
    if (show_preview)
    {
@@ -519,9 +496,6 @@ void ua_save_game_screen::draw()
       glTexCoord2d(0.0, 0.0); glVertex2i(200,   200-133);
       glEnd();
    }
-
-   // draw registered windows
-   ua_screen::draw();
 }
 
 void ua_save_game_screen::tick()
@@ -550,10 +524,10 @@ void ua_save_game_screen::tick()
             game->get_underworld().load_game(sg);
 
             // next screen
-//            if (from_menu)
-//               core->replace_screen(new ua_ingame_orig_screen);
-//            else
-//               game->remove_screen();
+            if (from_menu)
+               game->replace_screen(new ua_ingame_orig_screen,false);
+            else
+               game->remove_screen();
             break;
          }
 
@@ -636,16 +610,21 @@ void ua_save_game_screen::press_button(ua_save_game_button_id id)
 
 void ua_save_game_screen::update_info()
 {
-/*
-   // restore original image
-   img_back2.paste_image(img_back2_orig,0,0);
+   int selected_savegame = savegames_list.get_selected_savegame();
 
-   if (selected_savegame < sgmgr->get_savegames_count())
+   ua_image& img_info = img_infoarea.get_image();
+
+   // restore original image
+   img_info.paste_rect(img_back.get_image(), 160,0, 20,20, 0,0);
+
+
+   if (selected_savegame >= 0 &&
+       selected_savegame < game->get_savegames_manager().get_savegames_count())
    {
       // get savegame infos
       ua_savegame_info info;
-      sgmgr->get_savegame_info(selected_savegame,info);
-
+      game->get_savegames_manager().get_savegame_info(selected_savegame,info);
+/*
       // show infos
       ua_image temp;
       unsigned int textcolor = 73;
@@ -689,9 +668,10 @@ void ua_save_game_screen::update_info()
          font_btns.create_string(temp,buffer.str().c_str(),textcolor);
          img_back2.paste_image(temp,126,50+i*17,true);
       }
-
+*/
+/*
       // appearance
-      ua_image& appimg = img_buttons.get_image(
+      ua_image& appimg = img_faces.get_image(
          info.appearance+(info.gender==0 ? 0 : 5)+17);
       img_back2.paste_image(appimg,31+(info.gender),47,true);
 
@@ -705,7 +685,7 @@ void ua_save_game_screen::update_info()
       font_normal.create_string(temp,text.c_str(),162);
       img_back2.paste_image(temp,5,192,true);
 #endif
-
+*/
       // do preview image
       tex_preview.init(&game->get_renderer().get_texture_manager());
       tex_preview.convert(info.image_xres, info.image_yres, &info.image_rgba[0]);
@@ -719,6 +699,6 @@ void ua_save_game_screen::update_info()
       show_preview = false;
    }
 
-   img_back2.convert_upload();
-*/
+//   img_infoarea.add_border(img_back.get_image());
+//   img_infoarea.update();
 }
