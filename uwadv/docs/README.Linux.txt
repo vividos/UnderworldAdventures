@@ -39,11 +39,15 @@ finished, the executable "uwadv" is built. Now type (as root now):
 
    make install
 
-The built files are now installed into their proper folders. More infos about
-running Underworld Adventures can be found in the file "README.uwadv.txt". For
-running Underworld Adventures under Linux, make sure that all Ultima
+The built files are now installed into their proper folders.
+
+To run Underworld Adventures under Linux, make sure that all Ultima
 Underworld files and folders have lowercase names, or else the files cannot
-be found.
+be found. There is a perl script called "ua-lowercase-all.pl" in the
+"source/linux" folder hat does the needed conversion.
+
+More infos about running Underworld Adventures can be found in the file
+"README.uwadv.txt".
 
 Note: make install may not work yet!
 
