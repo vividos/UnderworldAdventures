@@ -35,7 +35,7 @@ esac
 # this is technically OS-specific, but for now all OS-es that use configure
 # do have a home-dir
 
-AC_DEFINE(HAVE_HOME, 1, "Users have home directories on this OS")
+AC_DEFINE(HAVE_HOME,,[Users have home directories on this OS])
 
 
 dnl find and test the compiler
@@ -100,17 +100,18 @@ AC_CHECK_HEADER(fmod.h,
 FMOD not found. No midi playback available.
 FMOD is available at http://www.fmod.org/]))
 
-
 dnl checking for uwadv.cfg entries
-UW1PATH=/usr/local/games/uw1/
+
+AC_ARG_WITH(uw1, [  --with-uw1=DIR          directory where UW1 is installed ],UW1PATH=$with_uw1,UW1PATH=/usr/local/games/uw1/)
 AC_SUBST(UW1PATH)
 
 UADATAPATH=../uadata/
 AC_SUBST(UADATAPATH)
 
-AC_SUBST(OPENGL_LIBS)
+CPPFLAGS="$CPPFLAGS -DCONFIGDIR=\\\"\$(datadir)/games/uwadv/\\\""
 
 dnl produce output files
+AC_SUBST(OPENGL_LIBS)
 AC_CONFIG_FILES([Makefile ../Makefile ../tools/Makefile uwadv.cfg])
 AC_OUTPUT
 

@@ -51,9 +51,10 @@ void ua_files_manager::init_cfgfiles_list()
    cfgfiles_list.clear();
 
 
-#ifdef GLOBAL_CONFIG_FILE
+#ifdef CONFIGDIR
 
-   std::string globalcfgfile = GLOBAL_CONFIG_FILE;
+   std::string globalcfgfile = CONFIGDIR;
+   globalcfgfile += "uwadv.cfg";
 
    cfgfiles_list.push_back(globalcfgfile);
 

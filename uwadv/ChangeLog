@@ -1,3 +1,7 @@
+2007-08-05 20:15  wjpalenstijn
+	* source/linux/configure.ac: define CONFIGDIR, --with-uw1=DIR
+	* source/files.cpp: use CONFIGDIR for config file list
+
 2007-08-05 19:35  wjpalenstijn
 	* source/linux/configure.ac: define HAVE_HOME
 	* source/files.*: initialize config files list
