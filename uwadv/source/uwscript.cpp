@@ -399,6 +399,14 @@ void ua_underworld_script_bindings::lua_trigger_set_off(Uint32 level, Uint32 obj
    checked_lua_call(1,0);
 }
 
+void ua_underworld_script_bindings::lua_critter_evaluate(Uint32 level, Uint32 objpos)
+{
+   lua_getglobal(L,"lua_critter_evaluate");
+   lua_pushnumber(L,static_cast<double>(ua_obj_handle_encode(objpos,level)));
+
+   checked_lua_call(1,0);
+}
+
 
 /*! params is the number of parameters the current registered function
     expects. it is needed to determine where the "self" userdata value is

@@ -186,6 +186,10 @@ public:
    //! sets off trigger pointed to
    void lua_trigger_set_off(Uint32 level, Uint32 objpos);
 
+
+   // critter functions
+   void lua_critter_evaluate(Uint32 level, Uint32 objpos);
+
 protected:
    //! registers all ua_underworld functions
    void register_functions();
