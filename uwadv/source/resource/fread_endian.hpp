@@ -70,4 +70,22 @@ inline Uint32 fread32(FILE *fd)
    return data;
 }
 
+
+inline void fwrite16(FILE *fd,Uint16 data)
+{
+#if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
+   data = ua_endian_convert16(data);
+#endif
+   fwrite(&data,1,2,fd);
+}
+
+inline void fwrite32(FILE *fd,Uint32 data)
+{
+#if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
+   data = ua_endian_convert32(data);
+#endif
+   fwrite(&data,1,4,fd);
+}
+
+
 #endif
