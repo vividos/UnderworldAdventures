@@ -35,6 +35,8 @@
 #define uwadv_imgquad_hpp_
 
 // needed includes
+#include "window.hpp"
+#include "game_interface.hpp"
 #include "image.hpp"
 #include "texture.hpp"
 
@@ -42,48 +44,42 @@
 // classes
 
 //! image quad class
-class ua_image_quad: public ua_image
+class ua_image_quad: public ua_window
 {
 public:
    //! ctor
    ua_image_quad(){}
 
-   //! initializes image quad
-   void init(ua_texture_manager* texmgr, unsigned int xpos, unsigned int ypos,
-      unsigned int width, unsigned int height, bool copy_pal=true);
+   //! initializes image quad window
+   void init(ua_game_interface& game, unsigned int xpos, unsigned int ypos);
 
-   //! converts and uploads the image to texture
-   void convert_upload();
+   //! returns image to draw
+   ua_image& get_image();
 
-   //! renders image quad
-   void render();
+   //! updates internal texture when image was changed
+   void update();
 
-   //! cleans up image quad
-   void done();
-
-   //! returns image quad palette
-   ua_onepalette& get_quadpalette();
+   // virtual functions from ua_window
+   virtual void destroy();
+   virtual void draw();
 
 protected:
+   //! the image to draw
+   ua_image image;
+
    //! image quad texture
    ua_texture tex;
 
-   //! starting pos on screen
-   unsigned int xpos, ypos;
-
    //! indicates if we use two textures to draw the quad
    bool split_textures;
-
-   //! image quad palette
-   ua_onepalette quadpalette;
 };
 
 
 // inline methods
 
-inline ua_onepalette& ua_image_quad::get_quadpalette()
+inline ua_image& ua_image_quad::get_image()
 {
-   return quadpalette;
+   return image;
 }
 
 
