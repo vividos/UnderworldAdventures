@@ -31,10 +31,21 @@
 #include <sstream>
 
 
+// constants
+
+//! time to fade in / out screen
+const double ua_conv_screen_fade_time = 0.5;
+
+
 // ua_conversation_screen methods
 
 void ua_conversation_screen::init()
 {
+   // clear screen
+   glClearColor(0,0,0,0);
+   glClear(GL_COLOR_BUFFER_BIT);
+   SDL_GL_SwapBuffers();
+
    // init OpenGL
    glMatrixMode(GL_PROJECTION);
    glPushMatrix();
@@ -48,6 +59,11 @@ void ua_conversation_screen::init()
 
    glDisable(GL_DEPTH_TEST);
    glDisable(GL_BLEND);
+   glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+
+   glEnable(GL_TEXTURE_2D);
+
+
 
    // background image
    {
@@ -91,7 +107,8 @@ void ua_conversation_screen::init()
          core->get_strings().get_block(strblock));
    }
 
-   state = ua_state_running;
+   state = ua_state_fadein;
+   fade_ticks = 0;
 }
 
 void ua_conversation_screen::done()
@@ -111,6 +128,15 @@ void ua_conversation_screen::handle_event(SDL_Event &event)
    if (scroll_menu.handle_event(event) || scroll_conv.handle_event(event))
       return;
 
+   if (state == ua_state_conv_ended &&
+       (event.type == SDL_KEYDOWN || event.type == SDL_MOUSEBUTTONDOWN) )
+   {
+      scroll_menu.clear_scroll();
+
+      state = ua_state_fadeout;
+      fade_ticks = 0;
+   }
+
    switch(event.type)
    {
    case SDL_KEYDOWN:
@@ -127,7 +153,7 @@ void ua_conversation_screen::handle_event(SDL_Event &event)
             std::string answer(localstrings[answer_string_ids[selection]]);
             replace_placeholder(answer);
 
-            scroll_conv.set_color(1);
+            scroll_conv.set_color(38);
             scroll_conv.print(answer.c_str());
             scroll_conv.set_color(46);
 
@@ -155,13 +181,26 @@ void ua_conversation_screen::handle_event(SDL_Event &event)
 
 void ua_conversation_screen::render()
 {
-   glColor3ub(255,255,255);
+   // calculate quad brightness
+   Uint8 light = 255;
+   if (state == ua_state_fadein || state == ua_state_fadeout)
+   {
+      light = Uint8(255*(double(fade_ticks) / (core->get_tickrate()*ua_conv_screen_fade_time)));
 
+      if (state == ua_state_fadeout)
+         light = 255-light;
+   }
+   glColor3ub(light,light,light);
+
+   // render images
    img_back.render();
    scroll_conv.render();
    scroll_menu.render();
 
+   // render mouse cursor
+   glEnable(GL_BLEND);
    mousecursor.draw();
+   glDisable(GL_BLEND);
 }
 
 void ua_conversation_screen::tick()
@@ -172,8 +211,18 @@ void ua_conversation_screen::tick()
          ua_conv_code_vm::step();
    }
 
-   if (finished)
-      core->pop_screen();
+   if (finished && state == ua_state_running)
+      state = ua_state_conv_ended;
+
+   // check for fading in/out
+   if ((state == ua_state_fadein || state == ua_state_fadeout) &&
+      ++fade_ticks >= (core->get_tickrate()*ua_conv_screen_fade_time))
+   {
+      if (state == ua_state_fadein)
+         state = ua_state_running;
+      else
+         core->pop_screen();
+   }
 }
 
 void ua_conversation_screen::imported_func(const std::string& funcname)
@@ -217,6 +266,43 @@ void ua_conversation_screen::imported_func(const std::string& funcname)
 
       state = ua_state_wait_menu;
 
+   } else
+
+   if (funcname.compare("babl_fmenu")==0)
+   {
+   } else
+
+   if (funcname.compare("print")==0)
+   {
+      Uint16 arg = stack.at(argpos++);
+      arg = stack.at(arg);
+
+      std::string printtext(localstrings[arg]);
+      replace_placeholder(printtext);
+
+      scroll_conv.print(printtext.c_str());
+
+   } else
+
+   if (funcname.compare("get_quest")==0)
+   {
+      Uint16 arg = stack.at(argpos--);
+      arg = stack.at(arg);
+
+      result_register = core->get_underworld().get_questflags()[arg];
+
+   } else
+
+   if (funcname.compare("set_quest")==0)
+   {
+      Uint16 arg1 = stack.at(argpos--);
+      arg1 = stack.at(arg1);
+
+      Uint16 arg2 = stack.at(argpos);
+      arg2 = stack.at(arg2);
+
+      core->get_underworld().get_questflags()[arg2] = arg1;
+   
    } else
 
    if (funcname.compare("sex")==0)
@@ -268,7 +354,16 @@ void ua_conversation_screen::fetch_value(Uint16 at)
 
 Uint16 ua_conversation_screen::get_global(const std::string& globname)
 {
-   return 0;
+   Uint16 val = 0;
+
+   if (globname.compare("play_name")==0)
+   {
+      val = alloc_string(core->get_underworld().get_player().get_name());
+   }
+//   else
+//      ua_trace("get global: unhandled global %s\n",globname.c_str());
+
+   return val;
 }
 
 void ua_conversation_screen::set_global(const std::string& globname, Uint16 val)

@@ -45,6 +45,9 @@ enum ua_conv_screen_state
    ua_state_running=0,  // vm code can run
    ua_state_wait_menu,  // waiting for menu selection
    ua_state_wait_input, // waiting for string input
+   ua_state_conv_ended, // conversation ended, waiting for keypress
+   ua_state_fadein,     // fading in screen
+   ua_state_fadeout,    // fading out screen
 };
 
 
@@ -92,6 +95,10 @@ protected:
 
    //! mouse cursor
    ua_mousecursor mousecursor;
+
+   //! current fade tickcount
+   unsigned int fade_ticks;
+
 
    // conversation stuff
 
