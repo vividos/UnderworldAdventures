@@ -38,6 +38,7 @@
 // forward references
 class ua_font;
 class ua_image;
+class ua_lp_descriptor;
 
 
 //! imports common to uw1 and uw2
@@ -47,7 +48,7 @@ public:
 
    //! loads 8 main palettes
    void load_palettes(const char* allpalname,
-      ua_smart_ptr<ua_palette256> allpalettes[8]);
+      ua_palette256_ptr allpalettes[8]);
 
    //! loads all 32 auxiliary palettes with 16 indices each
    void load_aux_palettes(const char* auxpalname,
@@ -68,10 +69,18 @@ public:
    //! loads texture images
    void load_textures(std::vector<ua_image>& tex_images,
       unsigned int startidx, const char* texname,
-      ua_smart_ptr<ua_palette256>& palette);
+      ua_palette256_ptr palette);
 
    //! loads a font
    void load_font(const char* fontname, ua_font& font);
+
+   //! loads cutscene data
+   void load_cutscene(const char* filename, ua_image& image,
+      std::vector<ua_lp_descriptor>& lpdarray,
+      std::vector<Uint8>& lpages, unsigned int& records);
+
+   //! extracts cutscene data from source data
+   void extract_cutscene_data(Uint8* src, Uint8* dst, unsigned int maxpix);
 
 protected:
 
