@@ -147,9 +147,8 @@ int ua_debug_impl_win32::thread_proc(void* ptr)
    if (This->avail)
    {
       // get function pointer
-      void* funcptr = ::GetProcAddress(This->dll,"uadebug_start");
-
-      uadebug_start_func uadebug_start = (uadebug_start_func)funcptr;
+      uadebug_start_func uadebug_start =
+         (uadebug_start_func)::GetProcAddress(This->dll,"uadebug_start");
 
       // start debugger
       uadebug_start(This);
