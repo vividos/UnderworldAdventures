@@ -40,9 +40,14 @@ uwadv_SOURCES = \
 	conv/codevm.cpp conv/codevm.hpp \
 	conv/convgraph.cpp conv/convgraph.hpp \
 	conv/opcodes.hpp \
+	import/fontloader.cpp \
+	import/import.hpp io_endian.hpp \
+	import/stringsloader.cpp \
 	renderer/quadtree.cpp renderer/quadtree.hpp \
 	renderer/renderer.cpp renderer/renderer.hpp \
 	renderer/texture.cpp renderer/texture.hpp \
+	screens/start_splash.cpp screens/start_splash.hpp \
+	screens/uwadv_menu.cpp screens/uwadv_menu.hpp \
 	ui/cutscene.cpp ui/cutscene.hpp \
 	ui/font.cpp ui/font.hpp \
 	ui/imgquad.cpp ui/imgquad.hpp \
@@ -58,10 +63,19 @@ uwadv_SOURCES = \
 	underw/player.cpp underw/player.hpp \
 	underw/properties.hpp \
 	underw/underworld.cpp underw/underworld.hpp \
-	underw/.cpp underw/.hpp \
 	uwadv.cpp uwadv.hpp \
 	main.cpp \
-	common.hpp
+	common.hpp \
+	\
+	\
+	critter.cpp image.cpp keymap.cpp  \
+	renderer/models.cpp \
+	resource/codeloader.cpp resource/critloader.cpp \
+	resource/cutsloader.cpp resource/imageloader.cpp \
+	resource/maploader.cpp resource/modeldecode.cpp \
+	resource/objloader.cpp resource/playerimport.cpp \
+	resource/proploader.cpp resource/texloader.cpp \
+	resource/tgaimport.cpp resource/uw2dec.cpp
 
 the_rest = \
 	image.cpp \
