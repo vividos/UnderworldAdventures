@@ -350,10 +350,6 @@ void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
          break;
 
    case op_PUSHI_EFF:
-/*      if (code[instrp+1]>0xf000)
-         _asm nop;
-      if (instrp&~3==0x03b0)
-         _asm nop;*/
       stack.push(basep + (Sint16)code[++instrp]);
       break;
 
@@ -501,10 +497,10 @@ void ua_conv_code_vm::replace_placeholder(std::string& str)
          value = stack.at(static_cast<unsigned int>(param));
          break;
       case 'S':
-         value = stack.at(static_cast<unsigned int>(basep+param-1));
+         value = stack.at(static_cast<unsigned int>(basep+param));
          break;
       case 'P':
-         param = stack.at(static_cast<unsigned int>(basep+param-1));
+         param = stack.at(static_cast<unsigned int>(basep+param));
          value = stack.at(static_cast<unsigned int>(param));
          break;
       }
