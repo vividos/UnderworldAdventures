@@ -406,8 +406,9 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
 
    Uint32 keymod = ua_make_keymod(keysym.sym,keysym.mod & ~KMOD_NUM);
 
-   // check for run forward key
-   if (keymap.is_key(ua_key_run_forward,keymod))
+   // check for run forward keys
+   if (keymap.is_key(ua_key_run_forward,keymod) ||
+       keymap.is_key(ua_key_run_forward_easymove,keymod) )
    {
       if (type==SDL_KEYDOWN)
       {
@@ -418,12 +419,13 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
          pl.set_movement_mode(0,ua_move_walk);
    }
    else
-   // check for walk backwards
-   if (keymap.is_key(ua_key_walk_backwards,keymod))
+   // check for walk forward keys
+   if (keymap.is_key(ua_key_walk_forward,keymod) ||
+       keymap.is_key(ua_key_walk_forward_easymove,keymod) )
    {
       if (type==SDL_KEYDOWN)
       {
-         pl.set_movement_factor(ua_move_walk,-1.0);
+         pl.set_movement_factor(ua_move_walk,0.6);
          pl.set_movement_mode(ua_move_walk);
       }
       else
@@ -431,7 +433,8 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    }
    else
    // check for turn left key
-   if (keymap.is_key(ua_key_turn_left,keymod))
+   if (keymap.is_key(ua_key_turn_left,keymod) ||
+       keymap.is_key(ua_key_turn_left_easymove,keymod) )
    {
       if (type==SDL_KEYDOWN)
       {
@@ -443,7 +446,8 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    }
    else
    // check for turn right key
-   if (keymap.is_key(ua_key_turn_right,keymod))
+   if (keymap.is_key(ua_key_turn_right,keymod) ||
+       keymap.is_key(ua_key_turn_right_easymove,keymod) )
    {
       if (type==SDL_KEYDOWN)
       {
@@ -452,6 +456,43 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
       }
       else
          pl.set_movement_mode(0,ua_move_rotate);
+   }
+   else
+   // check for slide left
+   if (keymap.is_key(ua_key_slide_left,keymod))
+   {
+      if (type==SDL_KEYDOWN)
+      {
+         pl.set_movement_factor(ua_move_slide,-1.0);
+         pl.set_movement_mode(ua_move_slide);
+      }
+      else
+         pl.set_movement_mode(0,ua_move_slide);
+   }
+   else
+   // check for slide right
+   if (keymap.is_key(ua_key_slide_right,keymod))
+   {
+      if (type==SDL_KEYDOWN)
+      {
+         pl.set_movement_factor(ua_move_slide,1.0);
+         pl.set_movement_mode(ua_move_slide);
+      }
+      else
+         pl.set_movement_mode(0,ua_move_slide);
+   }
+   else
+   // check for walk backwards
+   if (keymap.is_key(ua_key_walk_backwards,keymod) ||
+       keymap.is_key(ua_key_walk_backwards_easymove,keymod) )
+   {
+      if (type==SDL_KEYDOWN)
+      {
+         pl.set_movement_factor(ua_move_walk,-1.0);
+         pl.set_movement_mode(ua_move_walk);
+      }
+      else
+         pl.set_movement_mode(0,ua_move_walk);
    }
    else
    // check for look up key
