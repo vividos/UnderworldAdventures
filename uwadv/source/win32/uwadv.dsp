@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX /O2 /I ".." /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "WIN32_EXTRA_LEAN" /D "VC_EXTRALEAN" /D "NOSERVICE" /D "NOMCX" /D "NOIME" /D "NOSOUND" /D "NOCOMM" /D "NOKANJI" /D "NORPC" /D "NOPROXYSTUB" /D "NOTAPE" /D "NOCRYPT" /D "NOIMAGE" /YX"common.hpp" /FD /c
+# ADD CPP /nologo /MD /W3 /GX /O2 /I ".." /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "WIN32_EXTRA_LEAN" /D "VC_EXTRALEAN" /D "NOSERVICE" /D "NOMCX" /D "NOIME" /D "NOSOUND" /D "NOCOMM" /D "NOKANJI" /D "NORPC" /D "NOPROXYSTUB" /D "NOTAPE" /D "NOCRYPT" /D "NOIMAGE" /D "_STLP_USE_STATIC_LIB" /YX"common.hpp" /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x407 /d "NDEBUG"
@@ -69,7 +69,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I ".." /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "WIN32_EXTRA_LEAN" /D "VC_EXTRALEAN" /D "NOSERVICE" /D "NOMCX" /D "NOIME" /D "NOSOUND" /D "NOCOMM" /D "NOKANJI" /D "NORPC" /D "NOPROXYSTUB" /D "NOTAPE" /D "NOCRYPT" /D "NOIMAGE" /YX"common.hpp" /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I ".." /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "WIN32_EXTRA_LEAN" /D "VC_EXTRALEAN" /D "NOSERVICE" /D "NOMCX" /D "NOIME" /D "NOSOUND" /D "NOCOMM" /D "NOKANJI" /D "NORPC" /D "NOPROXYSTUB" /D "NOTAPE" /D "NOCRYPT" /D "NOIMAGE" /D "_STLP_DEBUG" /D "_STLP_USE_STATIC_LIB" /YX"common.hpp" /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x407 /d "_DEBUG"
@@ -123,7 +123,15 @@ SOURCE=..\resource\gamestrings.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\resource\imageloader.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\resource\maploader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\resource\settings.cpp
 # End Source File
 # Begin Source File
 
@@ -140,6 +148,11 @@ SOURCE=..\audio\audio.cpp
 # Begin Source File
 
 SOURCE=..\audio\midi.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\audio\midi_driver\uni_fmod.cpp
+# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
@@ -165,18 +178,26 @@ SOURCE=..\conv\codevm.cpp
 
 SOURCE=..\screens\ingame_orig.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=..\screens\start_splash.cpp
+# End Source File
 # End Group
+# Begin Source File
+
+SOURCE=..\character.cpp
+# End Source File
 # Begin Source File
 
 SOURCE=..\font.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\levelmap.cpp
+SOURCE=..\image.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\settings.cpp
+SOURCE=..\level.cpp
 # End Source File
 # Begin Source File
 
@@ -215,6 +236,10 @@ SOURCE=..\audio\midi.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\audio\midi_driver\uni_fmod.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\audio\midi_driver\win_midiout.h
 # End Source File
 # Begin Source File
@@ -237,10 +262,18 @@ SOURCE=..\conv\codevm.hpp
 
 SOURCE=..\screens\ingame_orig.hpp
 # End Source File
+# Begin Source File
+
+SOURCE=..\screens\start_splash.hpp
+# End Source File
 # End Group
 # Begin Source File
 
 SOURCE=..\audio.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\character.hpp
 # End Source File
 # Begin Source File
 
@@ -260,11 +293,15 @@ SOURCE=..\gamestrings.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\levelmap.hpp
+SOURCE=..\image.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\screenbase.hpp
+SOURCE=..\level.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\screen.hpp
 # End Source File
 # Begin Source File
 
