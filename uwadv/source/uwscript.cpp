@@ -109,6 +109,10 @@ void ua_underworld_script_bindings::register_functions()
    lua_register(L,"tilemap_get_floor_height",tilemap_get_floor_height);
    lua_register(L,"tilemap_get_objlist_start",tilemap_get_objlist_start);
 
+   lua_register(L,"quest_get_flag",quest_get_flag);
+   lua_register(L,"quest_set_flag",quest_set_flag);
+
+   lua_register(L,"conv_is_avail",conv_is_avail);
    lua_register(L,"conv_get_global",conv_get_global);
    lua_register(L,"conv_set_global",conv_set_global);
 
@@ -753,17 +757,95 @@ int ua_underworld_script_bindings::inventory_rune_add(lua_State* L)
 }
 
 
+// quest_* functions
+
+int ua_underworld_script_bindings::quest_get_flag(lua_State* L)
+{
+   ua_underworld &uw = get_underworld_from_self(L);
+
+   Uint16 flag_nr = static_cast<Uint16>(lua_tonumber(L,-1));
+
+   if(flag_nr>=uw.get_questflags().size())
+   {
+      ua_trace("quest_get_flag: flag_nr out of range!\n");
+      return 0;
+   }
+
+   lua_pushnumber(L,static_cast<double>(uw.get_questflags()[flag_nr]));
+
+   return 1;
+}
+
+int ua_underworld_script_bindings::quest_set_flag(lua_State* L)
+{
+   ua_underworld &uw = get_underworld_from_self(L);
+
+   Uint16 flag_nr = static_cast<Uint16>(lua_tonumber(L,-1));
+   Uint16 flag_val = static_cast<Uint16>(lua_tonumber(L,-2));
+
+   if(flag_nr>=uw.get_questflags().size())
+      ua_trace("quest_set_flag: flag_nr out of range!\n");
+   else
+      uw.get_questflags()[flag_nr] = flag_val;
+
+   return 0;
+}
+
 // conv_* functions
+
+int ua_underworld_script_bindings::conv_is_avail(lua_State* L)
+{
+   ua_underworld &uw = get_underworld_from_self(L);
+
+   Uint16 slot = static_cast<Uint16>(lua_tonumber(L,-1));
+
+   std::map<int,std::vector<std::string> >& allstrings = uw.get_strings().get_allstrings();
+
+   if (allstrings.find(slot)  == allstrings.end())
+      lua_pushnil(L);
+   else
+      lua_pushnumber(L,static_cast<double>(slot));
+
+   return 1;
+}
 
 int ua_underworld_script_bindings::conv_get_global(lua_State* L)
 {
-   // todo: implement
+   ua_underworld &uw = get_underworld_from_self(L);
+
+   Uint16 slot = static_cast<Uint16>(lua_tonumber(L,-1));
+   unsigned int pos = static_cast<unsigned int>(lua_tonumber(L,-2));
+
+   std::vector<Uint16>& globals = uw.get_conv_globals().get_globals(slot);
+
+   if(pos>=globals.size())
+   {
+      ua_trace("conv_get_global: globals pos out of range!\n");
+      return 0;
+   }
+
+   lua_pushnumber(L,static_cast<double>(globals[pos]));
+
    return 1;
 }
 
 int ua_underworld_script_bindings::conv_set_global(lua_State* L)
 {
-   // todo: implement
+   ua_underworld &uw = get_underworld_from_self(L);
+
+   Uint16 slot = static_cast<Uint16>(lua_tonumber(L,-1));
+   unsigned int pos = static_cast<unsigned int>(lua_tonumber(L,-2));
+   Uint16 value = static_cast<Uint16>(lua_tonumber(L,-2));
+
+   std::vector<Uint16>& globals = uw.get_conv_globals().get_globals(slot);
+
+   if(pos>=globals.size())
+      ua_trace("conv_set_global: globals pos out of range!\n");
+   else
+   {
+      globals[pos] = value;
+   }
+
    return 0;
 }
 

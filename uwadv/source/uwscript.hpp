@@ -221,6 +221,10 @@ protected:
    static int inventory_rune_avail(lua_State* L);
    static int inventory_rune_add(lua_State* L);
 
+   static int quest_get_flag(lua_State* L);
+   static int quest_set_flag(lua_State* L);
+
+   static int conv_is_avail(lua_State* L);
    static int conv_get_global(lua_State* L);
    static int conv_set_global(lua_State* L);
 
