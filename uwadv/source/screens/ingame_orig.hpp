@@ -38,6 +38,19 @@
 
 // enums
 
+//! game modes
+typedef enum
+{
+   ua_mode_default=0, // nothing selected
+   ua_mode_options,
+   ua_mode_talk,
+   ua_mode_get,
+   ua_mode_look,
+   ua_mode_fight,
+   ua_mode_use,
+
+} ua_ingame_orig_game_mode;
+
 //! screen area values
 typedef enum
 {
@@ -118,11 +131,14 @@ protected:
    //! renders 2d user interface
    void render_ui();
 
+   //! handles keyboard action
    void handle_key_action(Uint8 type, SDL_keysym &keysym);
-   void handle_mouse_action(SDL_Event &event);
 
    //! returns area the given mouse coordinates is over
    ua_ingame_orig_area get_area(unsigned int xpos,unsigned int ypos);
+
+   //! called for a given mouse action
+   void mouse_action(bool left_button, bool pressed);
 
 protected:
 
@@ -146,13 +162,18 @@ protected:
    //! key mappings
    ua_keymap keymap;
 
-   bool look_down;
-   bool look_up;
+   //! look up/down states
+   bool look_down,look_up;
+
+   //! selected game mode
+   ua_ingame_orig_game_mode gamemode;
 
 
-   // temp. variables
+   // mouse button states
    bool leftbuttondown,rightbuttondown;
 
+
+   // images, textures and fonts
 
    //! 2d ui image background
    ua_image img_back;
@@ -164,6 +185,9 @@ protected:
 
    //! normal font
    ua_font font_normal;
+
+   //! left "command" buttons
+   ua_image_list img_cmd_btns;
 
    //! compass graphics
    ua_image_list img_compass;

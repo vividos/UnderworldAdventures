@@ -48,6 +48,13 @@ struct
 {
    { ua_area_screen3d, 53,224, 20,131 },
 
+   { ua_area_menu_button0, 7, 38,  11,  28 },
+   { ua_area_menu_button1, 7, 38,  29,  45 },
+   { ua_area_menu_button2, 7, 38,  46,  64 },
+   { ua_area_menu_button3, 7, 38,  65,  82 },
+   { ua_area_menu_button4, 7, 38,  83, 100 },
+   { ua_area_menu_button5, 7, 38, 101, 119 },
+
    { ua_area_inv_slot0, 242, 260,  83,  99 },
    { ua_area_inv_slot1, 261, 279,  83,  99 },
    { ua_area_inv_slot2, 280, 298,  83,  99 },
@@ -94,6 +101,7 @@ void ua_ingame_orig_screen::init()
    slot_start = 0;
    tickcount = 0;
    look_down = look_up = false;
+   gamemode = ua_mode_default;
 
    setup_opengl();
 
@@ -133,6 +141,8 @@ void ua_ingame_orig_screen::init()
    img_armor.load(settings,female ? "armor_f" : "armor_m");
 
    font_normal.init(core->get_settings(),ua_font_normal);
+
+   img_cmd_btns.load(settings,"lfti");
 }
 
 void ua_ingame_orig_screen::done()
@@ -153,10 +163,36 @@ void ua_ingame_orig_screen::handle_event(SDL_Event &event)
       handle_key_action(event.type,event.key.keysym);
       break;
 
-   case SDL_MOUSEMOTION:
-   case SDL_MOUSEBUTTONDOWN:
-   case SDL_MOUSEBUTTONUP:
-      handle_mouse_action(event);
+   case SDL_MOUSEMOTION: // mouse has moved
+      {
+         // calculate cursor position
+         int x,y;
+         SDL_GetMouseState(&x,&y);
+         cursorx = unsigned(double(x)/core->get_screen_width()*320.0);
+         cursory = unsigned(double(y)/core->get_screen_height()*200.0);
+      }
+      break;
+
+   case SDL_MOUSEBUTTONDOWN: // mouse button was pressed down
+      {
+         Uint8 state = SDL_GetRelativeMouseState(NULL,NULL);
+
+         if (SDL_BUTTON(state)==SDL_BUTTON_LEFT) leftbuttondown = true;
+         else rightbuttondown = true;
+
+         mouse_action(SDL_BUTTON(state)==SDL_BUTTON_LEFT,true);
+      }
+      break;
+
+   case SDL_MOUSEBUTTONUP: // mouse button was released
+      {
+         Uint8 state = SDL_GetRelativeMouseState(NULL,NULL);
+
+         if (SDL_BUTTON(state)==SDL_BUTTON_LEFT) leftbuttondown = false;
+         else rightbuttondown = false;
+
+         mouse_action(SDL_BUTTON(state)==SDL_BUTTON_LEFT,false);
+      }
       break;
    }
 }
@@ -226,38 +262,6 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    case SDLK_PAGEDOWN:
       if (curlevel<9 && type==SDL_KEYDOWN)
          core->get_underworld().change_level(++curlevel);
-      break;
-   }
-}
-
-void ua_ingame_orig_screen::handle_mouse_action(SDL_Event &event)
-{
-   switch(event.type)
-   {
-   case SDL_MOUSEMOTION:
-      // mouse has moved
-
-      // calculate cursor position
-      {
-         int x,y;
-         SDL_GetMouseState(&x,&y);
-         cursorx = unsigned(double(x)/core->get_screen_width()*320.0);
-         cursory = unsigned(double(y)/core->get_screen_height()*200.0);
-      }
-      break;
-
-   case SDL_MOUSEBUTTONDOWN:
-      {
-         Uint8 state = SDL_GetRelativeMouseState(NULL,NULL);
-         if (SDL_BUTTON(state)==SDL_BUTTON_LEFT)
-            leftbuttondown = true;
-         else
-            leftbuttondown = false;
-      }
-      break;
-
-   case SDL_MOUSEBUTTONUP:
-      leftbuttondown = false;
       break;
    }
 }
@@ -342,7 +346,7 @@ void ua_ingame_orig_screen::render_ui()
       compassimg = ((compassdir+1)/2)&15;
       ua_image &tip = img_compass.get_image(compassimg+4);
 
-      int tip_coords[16*2] =
+      static int tip_coords[16*2] =
       {
          24, 0, 16, 2,  8, 3,  4, 6,
           0,10,  0,14,  4,16, 12,19,
@@ -358,6 +362,29 @@ void ua_ingame_orig_screen::render_ui()
       unsigned int app = (pl.get_attr(ua_attr_appearance) +
          pl.get_attr(ua_attr_gender)==0? 0 : 5) % 10;
       img_temp.paste_image(img_bodies.get_image(app),260,11);
+   }
+
+   // "command" buttons
+   if (gamemode != ua_mode_default)
+   {
+      static unsigned int btn_heights[] =
+      {
+         8,10, 7,27, 6,47, 6,65, 8,80, 8,99
+      };
+
+      unsigned int btn = 0;
+      switch(gamemode)
+      {
+      case ua_mode_options: btn = 1; break;
+      case ua_mode_talk:    btn = 3; break;
+      case ua_mode_get:     btn = 5; break;
+      case ua_mode_look:    btn = 7; break;
+      case ua_mode_fight:   btn = 9; break;
+      case ua_mode_use:     btn = 11; break;
+      }
+
+      img_temp.paste_image(img_cmd_btns.get_image(btn),
+         btn_heights[btn&~1],btn_heights[btn|1]);
    }
 
    // inventory
@@ -407,7 +434,7 @@ void ua_ingame_orig_screen::render_ui()
       for(unsigned int j=ua_slot_lefthand; j<ua_slot_max; j++)
       {
          // paperdoll image coordinates
-         unsigned int slot_coords[] =
+         static unsigned int slot_coords[] =
          {
             241,34, 295,34, // hand
             244,12, 293,12, // shoulder
@@ -497,8 +524,13 @@ void ua_ingame_orig_screen::render_ui()
 void ua_ingame_orig_screen::tick()
 {
    // evaluate underworld
-   core->get_underworld().eval_underworld(double(tickcount)/core->get_tickrate());
+   if (gamemode != ua_mode_options)
+   {
+      // only evaluate when the user is not in the options menu
+      core->get_underworld().eval_underworld(double(tickcount)/core->get_tickrate());
 
+      tickcount++;
+   }
 
    // check for looking up or down
    if (look_up || look_down)
@@ -513,8 +545,6 @@ void ua_ingame_orig_screen::tick()
       if (viewangle < -40.0) viewangle = -40.0;
       if (viewangle > 40.0) viewangle = 40.0;
    }
-
-   tickcount++;
 }
 
 void ua_ingame_orig_screen::setup_opengl()
@@ -610,4 +640,40 @@ ua_ingame_orig_area ua_ingame_orig_screen::get_area(
    }
 
    return ua_ingame_orig_area_table[idx].areacode;
+}
+
+void ua_ingame_orig_screen::mouse_action(bool left_button, bool pressed)
+{
+   ua_ingame_orig_area area = get_area(cursorx,cursory);
+
+   // check which area was clicked
+
+   // check "command" buttons
+   if (pressed)
+   switch(area)
+   {
+   case ua_area_menu_button0: // "options" button
+      gamemode = (gamemode == ua_mode_options) ? ua_mode_default : ua_mode_options;
+      break;
+
+   case ua_area_menu_button1: // "talk" button
+      gamemode = (gamemode == ua_mode_talk) ? ua_mode_default : ua_mode_talk;
+      break;
+
+   case ua_area_menu_button2: // "get" button
+      gamemode = (gamemode == ua_mode_get) ? ua_mode_default : ua_mode_get;
+      break;
+
+   case ua_area_menu_button3: // "look" button
+      gamemode = (gamemode == ua_mode_look) ? ua_mode_default : ua_mode_look;
+      break;
+
+   case ua_area_menu_button4: // "fight" button
+      // todo: check if we can fight (e.g. when swimming)
+      gamemode = (gamemode == ua_mode_fight) ? ua_mode_default : ua_mode_fight;
+      break;
+   case ua_area_menu_button5: // "use" button
+      gamemode = (gamemode == ua_mode_use) ? ua_mode_default : ua_mode_use;
+      break;
+   }
 }
