@@ -142,13 +142,7 @@ public:
    //! initializes keymap
    void init(ua_settings& settings);
 
-   //! returns true when key equals the keymod value
-   bool is_key(ua_key_value key, Uint32 keymod);
-
-   //! returns SDL keysym value for a given key
-   Uint32 get_key(ua_key_value key);
-
-   //! finds key by given keymod
+   //! finds key by given keymod value
    ua_key_value find_key(Uint32 keymod);
 
 protected:
@@ -157,7 +151,7 @@ protected:
 
 protected:
    //! mapping from key value to SDL keysym value
-   std::map<ua_key_value,Uint32> keymap;
+   std::map<Uint32,ua_key_value> keymap;
 };
 
 
@@ -166,7 +160,7 @@ protected:
 //! creates a combined keymod value from a SDLKey and a SDLMod value
 inline Uint32 ua_make_keymod(Uint16 key, Uint16 mod)
 {
-   return key | (Uint32(mod)<<16);
+   return Uint32(key) | (Uint32(mod)<<16);
 };
 
 

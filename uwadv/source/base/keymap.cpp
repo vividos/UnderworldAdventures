@@ -23,9 +23,6 @@
 
    \brief keyboard key mappings
 
-   \todo optimize key-keymod mapping so that find_key() doesn't have to search
-   the whole map
-
 */
 
 // needed includes
@@ -189,36 +186,12 @@ void ua_keymap::init(ua_settings& settings)
 {
 }
 
-bool ua_keymap::is_key(ua_key_value key, Uint32 keymod)
-{
-   Uint32 keymod2 = get_key(key);
-
-   // compare keysym and keymod values separately
-   return (( keymod&0xffff) == (keymod2&0xffff) &&
-      (keymod2>>16 == 0 || ((keymod>>16) & (keymod2>>16)) != 0));
-}
-
-Uint32 ua_keymap::get_key(ua_key_value key)
-{
-   std::map<ua_key_value,unsigned int>::iterator iter =
-      keymap.find(key);
-
-   if (iter==keymap.end())
-      throw ua_exception("unknown keymap value queried");
-
-   return iter->second;
-}
-
 ua_key_value ua_keymap::find_key(Uint32 keymod)
 {
-   std::map<ua_key_value,unsigned int>::iterator iter, stop = keymap.end();
+   std::map<Uint32,ua_key_value>::iterator iter =
+      keymap.find(keymod);
 
-   // search for keymod in map
-   for(iter = keymap.begin(); iter != stop; iter++)
-      if (is_key(iter->first,keymod))
-         return iter->first;
-
-   return ua_key_nokey;
+   return iter == keymap.end() ? ua_key_nokey : iter->second;
 }
 
 void ua_keymap::load_value(const std::string& name, const std::string& value)
@@ -312,5 +285,5 @@ void ua_keymap::load_value(const std::string& name, const std::string& value)
    }
 
    // insert key
-   keymap[key] = keymod;
+   keymap[keymod] = key;
 }
