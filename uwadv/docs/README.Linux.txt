@@ -20,7 +20,7 @@ Additionally, you can install FMOD to hear MIDI music.
 Compiling
 ---------
 
-To start compiling, go into the folder source/linux, and type:
+To start compiling, go into the folder "source/linux" and type:
 
    ./configure
 
@@ -39,8 +39,8 @@ finished, the executable "uwadv" is built. Now type (as root now):
 
    make install
 
-The appropriate files are now installed into their proper folders. More infos
-about running Underworld Adventures is in the file README.uwadv.txt
+The built files are now installed into their proper folders. More infos about
+running Underworld Adventures can be found in the file "README.uwadv.txt".
 
 Remarks
 -------
@@ -48,12 +48,12 @@ Remarks
 Installing FMOD:
 
    FMOD comes with some header files and a shared library. There's no install
-   script, so it's a bit harder to install it.
+   script, so it's a bit harder to install.
 
    To install the two header files ("fmod.h" and "fmod_errors.h"), you have to
-   be root. Just copy them to /usr/local/include/ or /usr/include/
+   be root. Just copy them to "/usr/local/include/" or "/usr/include/"
 
    To install the shared library, you have to copy the file ("libfmod-3.5.so"
-   in the latest release at this time) to /usr/lib/ (or again /usr/local/lib/)
-   and run ldconfig in that directory, to let the linker know that a new
-   library is available.
+   in the latest release at this time) to "/usr/lib/" (or again
+   "/usr/local/lib/") and run ldconfig in that directory, to let the linker
+   know that a new library is available.
