@@ -13,9 +13,11 @@ T= $(BIN)/luac
 all: $T
 
 $T: $(OBJS) $(LIB)/liblua.a
+	mkdir -p $(BIN)
 	$(CC) -o $@ $(OBJS) -L$(LIB) -llua
 
 $(LIB)/liblua.a:
+	mkdir -p $(LIB)
 	cd ..; $(MAKE)
 
 clean:
