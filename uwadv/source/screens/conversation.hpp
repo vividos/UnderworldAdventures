@@ -73,6 +73,8 @@ public:
 
    virtual void imported_func(const std::string& funcname);
    virtual void say_op(Uint16 str_id);
+   virtual void store_value(Uint16 at, Uint16 val);
+   virtual void fetch_value(Uint16 at);
    virtual Uint16 get_global(const std::string& globname);
    virtual void set_global(const std::string& globname, Uint16 val);
 

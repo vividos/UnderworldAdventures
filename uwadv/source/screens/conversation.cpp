@@ -248,6 +248,24 @@ void ua_conversation_screen::say_op(Uint16 str_id)
 //      process_code = false;
 }
 
+void ua_conversation_screen::store_value(Uint16 at, Uint16 val)
+{
+   std::map<Uint16,ua_conv_imported_item>::iterator iter =
+      imported_globals.find(at);
+
+   if (iter!=imported_globals.end())
+      ua_trace("storing: %s = %04x\n",iter->second.name.c_str(),val);
+}
+
+void ua_conversation_screen::fetch_value(Uint16 at)
+{
+   std::map<Uint16,ua_conv_imported_item>::iterator iter =
+      imported_globals.find(at);
+
+   if (iter!=imported_globals.end())
+      ua_trace("fetching: %s = %04x\n",iter->second.name.c_str(),stack.at(at));
+}
+
 Uint16 ua_conversation_screen::get_global(const std::string& globname)
 {
    return 0;
