@@ -60,6 +60,9 @@ protected:
    //! DLL module handle
    HMODULE dll;
 
+   //! mutex to lock/unlock underworld object
+   SDL_mutex* mutex_lock;
+
    //! semaphore that indicates if debugger still runs
    SDL_sem* sem_debugger;
 
@@ -104,7 +107,8 @@ ua_debug_impl_win32::ua_debug_impl_win32(ua_game_core_interface* thecore)
          avail ? "" : "not ");
    }
 
-   // init semaphore and thread handle
+   // init mutex, semaphore and thread handle
+   mutex_lock = SDL_CreateMutex();
    sem_debugger = SDL_CreateSemaphore(0);
    thread_debug = NULL;
 
@@ -118,6 +122,8 @@ ua_debug_impl_win32::~ua_debug_impl_win32()
    if (dll!=NULL) ::FreeLibrary(dll);
 
    avail = false;
+
+   SDL_DestroyMutex(mutex_lock);
 
    SDL_DestroySemaphore(sem_debugger);
 
@@ -164,10 +170,12 @@ int ua_debug_impl_win32::thread_proc(void* ptr)
 
 void ua_debug_impl_win32::lock()
 {
+   SDL_LockMutex(mutex_lock);
 }
 
 void ua_debug_impl_win32::unlock()
 {
+   SDL_UnlockMutex(mutex_lock);
 }
 
 void ua_debug_impl_win32::tick()
