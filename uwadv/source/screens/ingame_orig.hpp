@@ -117,13 +117,13 @@ public:
    //! returns move state
    bool get_move_state(ua_ingame_move_state state);
 
-   //! sets cursor image
-   void set_cursor(int index, bool priority=false);
-
    // virtual methods from ua_panel_parent
 
+   //! sets cursor image
+   virtual void set_cursor(int index, bool priority=false);
+
    //! returns game interface; for controls
-   ua_game_interface& get_game_interface(){ return game; }
+   virtual ua_game_interface& get_game_interface(){ return game; }
 
 protected:
    //! suspends game resources while showing another screen
