@@ -33,35 +33,25 @@
 
 // ua_texture methods
 
-void ua_texture::init(ua_texture_manager *thetexmgr,unsigned int numtex,
-   GLenum min_filt,GLenum max_filt, GLenum wrap_s, GLenum wrap_t)
+void ua_texture::init(ua_texture_manager *the_texmgr,unsigned int numtex,
+   GLenum the_min_filt, GLenum the_max_filt, GLenum the_wrap_s, GLenum the_wrap_t)
 {
-   texmgr = thetexmgr;
-
    done();
-   texname.resize(numtex,0);
+
    xres = yres = 0;
 
-   if (numtex==0)
-      return;
+   texmgr = the_texmgr;
+   min_filt = the_min_filt;
+   max_filt = the_max_filt;
+   wrap_s = the_wrap_s;
+   wrap_t = the_wrap_t;
+
+   last_used_tex_idx = (unsigned)-1;
 
    // create texture names
-   glGenTextures(numtex,&texname[0]);
-
-   // set texture parameters for all texture names
-   for(unsigned int i=0; i<numtex; i++)
-   {
-      glBindTexture(GL_TEXTURE_2D,texname[i]);
-
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap_s);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap_t);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, min_filt);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, max_filt);
-
-      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
-      last_used_tex_idx = i;
-   }
+   texname.resize(numtex,0);
+   if (numtex>0)
+      glGenTextures(numtex,&texname[0]);
 }
 
 void ua_texture::convert(ua_image &img,unsigned int numtex)
@@ -124,6 +114,12 @@ void ua_texture::use(unsigned int numtex)
    if (texmgr == NULL || texmgr->using_new_texname(texname[numtex]))
    {
       glBindTexture(GL_TEXTURE_2D,texname[numtex]);
+
+      // set texture parameter
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap_s);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap_t);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, min_filt);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, max_filt);
    }
 }
 

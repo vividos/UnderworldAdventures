@@ -135,6 +135,12 @@ protected:
 
    //! texture name(s)
    std::vector<GLuint> texname;
+
+   //! texture min./max. filter parameter
+   GLenum min_filt, max_filt;
+
+   //! texture wrapping parameter
+   GLenum wrap_s, wrap_t;
 };
 
 
