@@ -78,41 +78,30 @@ void ua_start_splash_screen::init()
    // load first image
    ua_image img;
 
-   const char *first_img = "data/pres1.byt";
+   const char *first_img_name = "data/pres1.byt";
    if (core->get_settings().get_gametype() == ua_game_uw_demo)
-      first_img = "data/presd.byt";
+      first_img_name = "data/presd.byt";
 
-   img.load_raw(core->get_settings(),first_img,5);
+   img_still.load_raw(core->get_settings(),first_img_name,5);
+   img_still.init(&core->get_texmgr(),0,0,320,200);
 
    if (core->get_settings().get_gametype() == ua_game_uw_demo)
    {
       // write a string under the demo title
       ua_font font;
-      ua_image img2;
+      ua_image img_temp;
       font.init(core->get_settings(),ua_font_big);
-      font.create_string(img2,"Underworld Adventures",198);
+      font.create_string(img_temp,"Underworld Adventures",198);
 
       double scale = 0.9;
-      unsigned int xpos = unsigned((320-img2.get_xres()*scale)/2);
+      unsigned int xpos = unsigned((320-img_temp.get_xres()*scale)/2);
 
-      img.paste_image(img2,xpos,200-16);
+      img_still.paste_image(img_temp,xpos,200-16);
    }
 
+   img_still.convert_upload();
+
    // split image in two images
-   img.copy_rect(img1,0,0, 256,200);
-   img.copy_rect(img2,256,0, 64,200);
-
-   // convert to textures
-   tex1.init(&core->get_texmgr(),1,GL_LINEAR,GL_LINEAR,GL_CLAMP,GL_CLAMP);
-   tex1.convert(img1);
-   tex1.use();
-   tex1.upload();
-
-   tex2.init(&core->get_texmgr(),1,GL_LINEAR,GL_LINEAR,GL_CLAMP,GL_CLAMP);
-   tex2.convert(img2);
-   tex2.use();
-   tex2.upload();
-
    stage = 0;
    tickcount = 0;
    curframe = 0;
@@ -130,8 +119,8 @@ void ua_start_splash_screen::init()
 
 void ua_start_splash_screen::done()
 {
-   tex1.done();
-   tex2.done();
+   img_still.done();
+   cuts_anim.done();
 }
 
 void ua_start_splash_screen::handle_event(SDL_Event &event)
@@ -201,49 +190,17 @@ void ua_start_splash_screen::render()
 
    if (stage>=2)
    {
-      // prepare animation frame
-      cuts.get_frame(curframe);
+      // prepare and convert animation frame
+      cuts_anim.get_frame(curframe);
+      cuts_anim.convert_upload();
 
-      // split image in two images
-      cuts.copy_rect(img1,0,0, 256,200);
-      cuts.copy_rect(img2,256,0, 64,200);
-
-      // upload textures
-      tex1.convert(cuts.get_anim_palette(),img1);
-      tex1.use();
-      tex1.upload();
-
-      tex2.convert(cuts.get_anim_palette(),img2);
-      tex2.use();
-      tex2.upload();
+      // render quad
+      cuts_anim.render();
    }
    else
    {
-      // prepare image texture
-      tex1.use();
+      img_still.render();
    }
-
-   // draw first quad (256x200)
-   tex1.use();
-   double u = tex1.get_tex_u(), v = tex1.get_tex_v();
-
-   glBegin(GL_QUADS);
-   glTexCoord2d(0.0, v  ); glVertex2i(  0,  0);
-   glTexCoord2d(u  , v  ); glVertex2i(256,  0);
-   glTexCoord2d(u  , 0.0); glVertex2i(256,200);
-   glTexCoord2d(0.0, 0.0); glVertex2i(  0,200);
-   glEnd();
-
-   // draw second quad (64x200)
-   tex2.use();
-   u = tex2.get_tex_u(); v = tex2.get_tex_v();
-
-   glBegin(GL_QUADS);
-   glTexCoord2d(0.0, v  ); glVertex2i(256,  0);
-   glTexCoord2d(u  , v  ); glVertex2i(320,  0);
-   glTexCoord2d(u  , 0.0); glVertex2i(320,200);
-   glTexCoord2d(0.0, 0.0); glVertex2i(256,200);
-   glEnd();
 }
 
 void ua_start_splash_screen::tick()
@@ -255,7 +212,9 @@ void ua_start_splash_screen::tick()
       tickcount >= ua_start_splash_show_time * core->get_tickrate())
    {
       // load animation
-      cuts.load(core->get_settings(),"cuts/cs011.n01");
+      cuts_anim.load(core->get_settings(),"cuts/cs011.n01");
+      cuts_anim.init(&core->get_texmgr());
+
       curframe = 0;
       animcount = 0.0;
       stage = 2;
@@ -269,20 +228,8 @@ void ua_start_splash_screen::tick()
       if (tickcount >= ua_start_splash_show_time * core->get_tickrate())
       {
          // load second image
-         ua_image img;
-         img.load_raw(core->get_settings(),"data/pres2.byt",5);
-
-         // split image in two images
-         img.copy_rect(img1,0,0, 256,200);
-         img.copy_rect(img2,256,0, 64,200);
-
-         tex1.convert(img1);
-         tex1.use();
-         tex1.upload();
-
-         tex2.convert(img2);
-         tex2.use();
-         tex2.upload();
+         img_still.load_raw(core->get_settings(),"data/pres2.byt",5);
+         img_still.convert_upload();
 
          stage++;
          tickcount=0;
@@ -309,7 +256,7 @@ void ua_start_splash_screen::tick()
          // do next frame
          curframe++;
          animcount -= 1.0/ua_splash_anim_framerate;
-         if (curframe>=cuts.get_maxframes()-2)
+         if (curframe>=cuts_anim.get_maxframes()-2)
             curframe=0;
       }
       break;

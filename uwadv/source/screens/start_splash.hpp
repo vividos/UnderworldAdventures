@@ -34,7 +34,7 @@
 
 // needed includes
 #include "screen.hpp"
-#include "image.hpp"
+#include "imgquad.hpp"
 #include "font.hpp"
 #include "cutscene.hpp"
 
@@ -66,13 +66,10 @@ protected:
    unsigned int tickcount;
 
    //! current still image
-   ua_image img1,img2;
-
-   //! texture objects for current image / anim
-   ua_texture tex1,tex2;
+   ua_image_quad img_still;
 
    //! current cutscene
-   ua_cutscene cuts;
+   ua_cutscene cuts_anim;
 
    //! current animation frame
    unsigned int curframe;
