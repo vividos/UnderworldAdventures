@@ -209,7 +209,7 @@ void ua_playerinfo_list::OnEndLabelEdit(wxListEvent& event)
    {
       unsigned long ul;
       text.ToULong(&ul);
-      param2.set(static_cast<unsigned int>(ul));
+      param2.set_int(ul);
    }
 
    cmd(udc_lock,0,NULL,NULL);
