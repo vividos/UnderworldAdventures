@@ -313,6 +313,7 @@ void ua_start_splash_screen::tick()
       if (core->get_settings().get_gametype() == ua_game_uw_demo)
       {
          // when we have the demo, we immediately go to the ingame
+         core->get_underworld().import_savegame(core->get_settings(),"data/",true);
          core->replace_screen(new ua_ingame_orig_screen);
          return;
       }
