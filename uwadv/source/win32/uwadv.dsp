@@ -179,7 +179,7 @@ SOURCE=.\source\main.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\source\uwadv.rc
+SOURCE=.\source\uwadv_res.rc
 # End Source File
 # End Group
 # Begin Group "win32 headers"
