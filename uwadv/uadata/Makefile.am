@@ -9,6 +9,7 @@ uadatadir = $(datadir)/games/uwadv
 EXTRA_DIST = \
 	$(luaSCRIPTS) \
 	uw1/scripts/uwinit.txt \
+	uw1/audio/music.m3u \
 	Makefile.common
 
 CLEANFILES = \
