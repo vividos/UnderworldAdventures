@@ -12,7 +12,8 @@ uw_demo
 uw1
 uw2
 webpages
-uwadv.cfgconfig.cache
+uwadv.cfg
+config.cache
 config.log
 config.status
 autom4te*.cache
