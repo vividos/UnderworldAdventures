@@ -89,6 +89,7 @@ void ua_textscroll::init(ua_game_interface& game, unsigned int xpos,
 bool ua_textscroll::print(const char* text)
 {
    unsigned int start_line = textlines.size();
+   unsigned int last_textlines_size = start_line;
    std::string line, msgtext(text);
    std::string::size_type pos = 0;
    do
@@ -179,6 +180,19 @@ bool ua_textscroll::print(const char* text)
 
    } while(pos != std::string::npos);
 
+   // scroll lines
+   if (textlines.size()-last_textlines_size >= maxlines)
+   {
+      // printed more lines than visible; set new first line tostart
+      first_visible_line = last_textlines_size;
+   }
+   else
+   {
+      // printed less than maxlines, adjust when enough lines
+      if (textlines.size()>maxlines)
+         first_visible_line = textlines.size()-maxlines;
+   }
+
    update_scroll();
 
    return more_mode;
@@ -221,7 +235,7 @@ void ua_textscroll::update_scroll()
    for(unsigned int i=0; i<max; i++)
    {
       // check if we are at the end of the textlines vector
-      if (i+first_visible_line > textlines.size()) break;
+      if (i+first_visible_line >= textlines.size()) break;
 
       // create line string
       create_colored_string(img_temp, textlines[first_visible_line+i].c_str());
