@@ -37,6 +37,7 @@
 //! savegame class
 class ua_savegame
 {
+   friend class ua_files_manager;
 public:
    // savegame loading functions
 
@@ -74,9 +75,20 @@ public:
    //! finally closes savegame file
    void close();
 
+   //! current version
+   static const Uint32 current_version;
+
 protected:
    //! ctor
-   ua_savegame(){}
+   ua_savegame():save_version(current_version){}
+
+   //! opens savegame
+   void open(const char* filename, bool saving);
+
+protected:
+   FILE *sg;
+   bool saving;
+   Uint32 save_version;
 };
 
 #endif

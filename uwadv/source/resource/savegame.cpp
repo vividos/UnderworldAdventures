@@ -28,44 +28,71 @@
 // needed includes
 #include "common.hpp"
 #include "savegame.hpp"
+#include "fread_endian.hpp"
+#include <vector>
+
+
+// constants
+
+//! current version
+const Uint32 ua_savegame::current_version = 0;
 
 
 // ua_savegame methods
 
 Uint32 ua_savegame::get_version()
 {
-   return 0;
+   return save_version;
 }
 
 Uint8 ua_savegame::read8()
 {
-   return 0;
+   return fgetc(sg);
 }
 
 Uint16 ua_savegame::read16()
 {
-   return 0;
+   return fread16(sg);
 }
 
 Uint32 ua_savegame::read32()
 {
-   return 0;
+   return fread32(sg);
 }
 
 void ua_savegame::write8(Uint8 value)
 {
+   fputc(value,sg);
 }
 
 void ua_savegame::write16(Uint16 value)
 {
+   fwrite16(sg,value);
 }
 
 void ua_savegame::write32(Uint32 value)
 {
+   fwrite32(sg,value);
 }
 
 void ua_savegame::begin_section(const char* section_name)
 {
+   if (saving)
+      fputs(section_name,sg);
+   else
+   {
+      unsigned int len = strlen(section_name);
+
+      std::vector<char> buffer;
+      buffer.resize(len+1);
+
+      fgets(&buffer[0],len+1,sg);
+      buffer[len]=0;
+
+      // check if section names are the same
+      if (strcmp(&buffer[0],section_name)!=0)
+         throw ua_exception("savegame loading: section name mismatch");
+   }
 }
 
 void ua_savegame::end_section()
@@ -74,4 +101,17 @@ void ua_savegame::end_section()
 
 void ua_savegame::close()
 {
+   fclose(sg);
+}
+
+void ua_savegame::open(const char* filename, bool issaving)
+{
+   saving = issaving;
+   sg = fopen(filename, saving ? "wb" : "rb");
+
+   // read version
+   if (saving)
+      write32(current_version);
+   else
+      save_version = read32();
 }
