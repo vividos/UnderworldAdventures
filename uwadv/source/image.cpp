@@ -49,8 +49,12 @@ void ua_image::paste_image(const ua_image &img, unsigned int destx,unsigned int 
    bool transparent)
 {
    // get resolution and pixel vectors
-   unsigned int sxres = img.get_xres();
-   unsigned int syres = img.get_yres();
+   unsigned int sxres = img.get_xres(), swidth=sxres;
+   unsigned int syres = img.get_yres(), sheight=syres;
+
+   // adjust source image if pasting would cross dest image borders
+   if (destx+swidth>xres) swidth = xres-destx;
+   if (desty+sheight>yres) sheight = yres-desty;
 
    const std::vector<Uint8> &src = img.pixels;
    Uint8 *dest = &pixels[0];
@@ -58,15 +62,15 @@ void ua_image::paste_image(const ua_image &img, unsigned int destx,unsigned int 
    if (!transparent)
    {
       // non-transparent paste
-      for(unsigned int y=0; y<syres; y++)
-      for(unsigned int x=0; x<sxres; x++)
+      for(unsigned int y=0; y<sheight; y++)
+      for(unsigned int x=0; x<swidth; x++)
          dest[(y+desty)*xres+(x+destx)] = src[y*sxres+x];
    }
    else
    {
       // paste that omits transparent parts
-      for(unsigned int y=0; y<syres; y++)
-      for(unsigned int x=0; x<sxres; x++)
+      for(unsigned int y=0; y<sheight; y++)
+      for(unsigned int x=0; x<swidth; x++)
       {
          Uint8 pixel = src[y*sxres+x];
          if (pixel!=0)
