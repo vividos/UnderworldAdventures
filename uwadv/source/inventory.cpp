@@ -45,7 +45,7 @@ void ua_inventory::init(ua_underworld *theunderw)
    Uint16 test_inv[] =
    {
       0x0080, 0x0082, 0x008f, 0x0088, // 8 top slots
-      0xffff, 0x012b, 0x013b, 0x0080,
+      0x0095, 0x0116, 0x00b4, 0x0080,
       0x000e, 0x0037, // hands
       0xffff, 0x0094, // shoulder
       0x0038, 0xffff, // finger
@@ -337,8 +337,7 @@ bool ua_inventory::drop_floating_item(Uint16 index)
                {
                case ua_obj_cmb_dstr_first:
                   // existing item is to be erased; just replace item id
-                  obj.item_id = get_item(floating_object).item_id;
-                  get_item(floating_object).item_id = result_id;
+                  obj.item_id = result_id;
                   break;
 
                case ua_obj_cmb_dstr_second:
