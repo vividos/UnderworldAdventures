@@ -11,6 +11,7 @@ libuatools_la_SOURCES = \
 	../resource/codeloader.cpp ../conv/opcodes.hpp \
 	../conv/codevm.cpp ../conv/codevm.hpp \
 	../conv/convgraph.cpp ../conv/convgraph.hpp \
+	../critter.cpp ../critter.hpp \
 	../cutscene.cpp ../cutscene.hpp ../resource/cutsloader.cpp \
 	../resource/gamestrings.cpp ../gamestrings.hpp \
 	../image.cpp ../image.hpp ../resource/imageloader.cpp \

@@ -101,6 +101,10 @@ SOURCE=..\source\conv\convgraph.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\source\critter.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\source\cutscene.cpp
 # End Source File
 # Begin Source File
