@@ -1,5 +1,14 @@
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="devlog-rss.xsl"?>
+
+<devlog>
+ <entry date="2004-10-10">
+  <para>
+   uwadv's devlog now conforms to RSS 2.0 and Feedvalidator confirms this: <a href="http://feedvalidator.org/check.cgi?url=http://uwadv.sourceforge.net/devlog.php?type=rss">check</a>. The date wasn't RFC 822 conform, and the description tag must encode html chars like &lt; and &gt; as entities.
+  </para>
+ </entry>
+</devlog>
+
 <devlog>
  <entry date="2004-09-08">
   <para>
@@ -1652,7 +1661,7 @@ adapted the Exult xmidi playing code written by Colourless Dragon for my project
   </para>
  </entry>
 
- <entry date="2002-03-later">
+ <entry date="2002-03-12">
   <para>
 started some hacking projects to find out more infos about the files, as well as testing to extract needed data for the game. ongoing discussions with Jim about various aspects of the game's files.
   </para>
