@@ -144,12 +144,12 @@ Table of Contents
    specification that only refer to either Ultima Underworld 1 or 2 are marked
    with [uw1] or [uw2].
 
-   All integer data values are refered in the documentation are refered as
-   Int8 for 8-bit values, Int16 and Int32 for 16-bit and 32-bit values. All
-   values are unsigned, unless noted otherwise. As the game was written and
-   run on PC machines, all variables are stored in little-endian format, where
-   the lower byte of e.g. a 16-bit value is stored first, then the higher
-   byte. All data structures found so far use this scheme.
+   All integer data values in the documentation are referred as Int8 for 8-bit
+   values, Int16 and Int32 for 16-bit and 32-bit values. All values are
+   unsigned unless noted otherwise. As the game was written and run on x86 PC
+   machines, all variables are stored in little-endian format, where e.g. the
+   lower byte of a 16-bit value is stored first, then the higher byte. All
+   data structures found so far use this scheme.
 
 
 2.3  Summary of game files
@@ -175,7 +175,7 @@ Table of Contents
    Files in the "data" folder:
 
    3dwin.gr       3d window graphics
-   allpals.dat    auxilliary 4-bit palette indices
+   allpals.dat    auxiliary 4-bit palette indices
    animo.gr       small animations
    armor_f.gr     female paperdoll armor graphics
    armor_m.gr     male paperdoll armor graphics
@@ -448,7 +448,7 @@ Table of Contents
    palettes with 256 indices, as well as auxiliary meta-palettes that have
    16 or 32 entries that map indices to the 256-index palette. As the original
    games directly load the palettes into the VGA registers, effects as color
-   flashs done with palette rotating are possible.
+   flashes done with palette rotating are possible.
 
 
 3.1.1  256 color palettes
@@ -463,11 +463,13 @@ Table of Contents
    0003  Int8  blue  intensity, index 1, range [0..63]
    0004  Int8  green intensity, index 1, range [0..63]
    ...
+   02fe  Int8  green intensity, index 255, range [0..63]
+   02ff  Int8  red   intensity, index 255, range [0..63]
 
    In each palette there are stored color intensities for 256 colors. All 8
    palettes are stored sequentially in the file.
 
-   Palette index 0 always means a transparent color.
+   Palette index 0 always means transparent color.
 
 
 3.1.2  16 color auxiliary palette mappings
@@ -478,6 +480,7 @@ Table of Contents
    0000  Int8  index to first color
    0001  Int8  index to second color
    ...
+   000f  Int8  index to 16th color
 
    There are 16 values that are indices for palette #0. They build a 16 color
    palette from selected colors of the palette #0.
@@ -485,7 +488,7 @@ Table of Contents
    In the file "allpals.dat" there are stored 0x1f (=31) such palettes.
 
    The critter animations (explained in chapter 3.6) use 32 color auxiliary
-   palette mappings. They are stored withun the animation files.
+   palette mappings. They are stored within the animation files.
 
 
 3.1.3 Palette mappings
@@ -686,7 +689,7 @@ Table of Contents
    Critter animations are stored in the folder "crit". The file "assoc.anm"
    holds data for each of the 32 animations and for the 64 NPC types. The file
    starts with 8 bytes for the name of each animation. Shorter strings are
-   padded with zeros. Empty strings denote animations not available (in
+   padded with zeros. Empty strings denote animations not available (e.g. in
    the "uw_demo").
 
    Next comes a table of infos for each NPC. The table is 64 entries (0x0080)
@@ -703,7 +706,7 @@ Table of Contents
    e.g. the bat and the vampire bat uses the same anim value, but different
    auxiliary palettes.
 
-   Animation for each critter is stored in a file like "CrXXpage.nYY", where
+   Animation for each critter is stored in a file named "CrXXpage.nYY", where
       XX = animation number (=anim), YY = page number
       XX and YY are octal numbers
 
@@ -751,7 +754,7 @@ Table of Contents
    rendered. The compression type can be 06, which is 5-bit run-length
    encoding, or 08, which is 4-bit run-length encoding (see 2.3. for more).
 
-   The Slot lists group together segments of animations for various actions.
+   The slot lists group together segments of animations for various actions.
    Here's a list of slots and their actions:
 
       slot   action
@@ -759,7 +762,7 @@ Table of Contents
        01    attack, bash (?)
        02    attack, slash (?)
        03    attack, thrust
-       05    second weapon attach
+       05    second weapon attack
        07    walking / running towards player
        0c    death
        0d    ??
@@ -940,7 +943,7 @@ Table of Contents
 
 4  Level maps and object lists
 
-   Level map informations are stored in the file "lev.ark". A default map is
+   Level map information is stored in the file "lev.ark". A default map is
    in the "data" folder and is loaded after character creation. During
    gameplay, the map is stored in the folder "Save0".
 
@@ -968,7 +971,7 @@ Table of Contents
    <9 blocks object animation overlay info>
    <9 blocks texture mapping>
    <9 blocks automap infos>
-   <9 blocks map comment infos>
+   <9 blocks map notes>
 
    The Ultima Underworld Demo uses three separate files to store the map.
    Here's a list of the files and what blocks they contain:
@@ -977,7 +980,13 @@ Table of Contents
    level13.txm   texture mapping
    level13.anx   object animation overlay info
 
-   Ultima Underworld 2 has 320 (0x0140) entries (50 levels x 6 blocks).
+   Ultima Underworld 2 has 320 (0x0140) entries (80 levels x 4 blocks). These
+   can be split into 4 sets of 80 entries each:
+
+       0.. 79  level maps
+      80..159  texture mappings
+     160..239  automap infos
+     240..319  map notes
 
    Data blocks for Ultima Underworld 2 are compressed using the uw2
    compression scheme described in chapter 9.1.
@@ -1266,7 +1275,7 @@ Table of Contents
    Each block contains the "visited" bytes for each level. Each byte
    describes a tile on the main map. The block size always is 0x1000.
 
-   rest not decoded yet
+   <TODO> rest not decoded yet
 
 
 4.7  Terrain texture properties
@@ -1377,7 +1386,7 @@ Table of Contents
 
 6  Objects and items
 
-   This chapter contains informations about the objects in Ultima Underworld.
+   This chapter contains information about the objects in Ultima Underworld.
    Objects (or items) are grouped by type. Here's a short overview of all
    object groups:
 
@@ -1397,7 +1406,7 @@ Table of Contents
    0130-013f  Books and scrolls
    0140-014f  Doors
    0150-015f  Furniture
-   0160-016f  Pillar, some decals, force field, special tmap (?)
+   0160-016f  Pillar, some decals, force field, special tmap obj
    0170-017f  Switches
    0180-019f  Traps
    01a0-01bf  Triggers
@@ -1417,11 +1426,11 @@ Table of Contents
    of some classes:
 
    class  item_id  description
-   1      0040     npc's
-   6      0180     traps/triggers
+    1     0040     npc's
+    6     0180     traps/triggers
                    subclass 0/1: traps
                    subclass 2: triggers
-   7      01c0     sprites, animated objects
+    7     01c0     sprites, animated objects
 
 
 6.1  List of all objects and items
@@ -1429,14 +1438,24 @@ Table of Contents
    This chapter lists and describes all objects that are available in Ultima
    Underworld. Descriptions for obvious items are omitted.
 
-   000f: a_fist
+   000f  a_fist
          this is not really an item, but is used for fist combat
 
    002f  a_pair of dragon skin boots
          player doesn't get hurt when walking on lava
 
+   0040..0x007e  NPC's
+         "sp_link" points to the inventory start
+
    007f  an_adventurer
          the player as object; isn't used ingame
+
+   008f  a_rune bag
+         looking at the bag shows the rune bag panel; available runes are
+         stored in the savegame
+
+   0098  a_wand (and other wands)
+         "sp_link" points to a_spell object
 
    00c6  a_pile of bones
          the "owner" field determines from whom the bones are; strings are
@@ -1457,7 +1476,8 @@ Table of Contents
          block 1, string 151 is printed, too.
 
    0140  a_door (and up to 0147)
-         if bit 1 of the "owner" field is set, the door is spiked.
+         if bit 1 of the "owner" field is set, the door is spiked. if the
+         "sp_link" field points to a_lock object, the door is locked.
 
    0160  a_pillar
          3d object. texture is determined by the lower 2 bits of the "flags"
@@ -1487,16 +1507,17 @@ Table of Contents
          strings block 0008, indexed by "quantity" - 0x200. the index also
          serves as offset into the file "grave.dat" which gives a unique grave
          id. It is used for large gravestone images that are stored in
-         "cuts/cs401.n01", indexed by the grave id. texture of the gravestone
-         is determined by <TODO>
+         "cuts/cs401.n01", one frame each, indexed by the grave id. texture of
+         the gravestone is image "flags" + 28 from "tmobj.gr".
 
          the text printed when looking at it is determined by the "flags"
-         field. text printed is from strings block 8, 352 + flags
+         field. gravestone/tombstone description text is from strings block
+         0008, string 352 + flags.
 
    0166  some_writing
          wall decal; text is determined through "quantity" field,
-         game strings block 8. the texture used is determined from "tmobj.gr",
-         image "flags" + 20 (?).
+         game strings block 0008. the texture used is determined from
+         "tmobj.gr", image "flags" + 20 (?).
 
          the plaque description printed when looking at it is determined by
          the "flags" field. text printed is from strings block 8, 368 + flags
@@ -1535,7 +1556,7 @@ Table of Contents
    trigger "target" coordinates.
 
    0180  a_damage trap
-         player vitality is decrease; number of hit points are in "quality"
+         player vitality is decreased; number of hit points are in "quality"
          field; if the "owner" field is != 0, the hit points are added
          instead. the trap is only set of when a random value [0..10] is >= 7.
 
@@ -1568,7 +1589,7 @@ Table of Contents
           32
           39       (not used in uw1)
           3c..3e   (not used in uw1)
-          3f
+          3f       ends game, shows end sequence
 
    0183  a_hack trap [uw2]
 
@@ -1764,7 +1785,7 @@ Table of Contents
    Each possible value of "quality type" maps onto a group of 6 strings in
    block 4 from lowest to highest quality. Items which have a quality are
    always described as "a/an <quality> <item>", with the exception of group D
-   which is for armour items which are gramatically plural even if there is
+   which is for armour items which are grammatically plural even if there is
    only one of the object, e.g. "leather leggings".
 
 
@@ -1826,7 +1847,7 @@ Table of Contents
 
    * Lights info table
 
-   0000   Int8   light brightneess
+   0000   Int8   light brightness
    0001   Int8   duration (00: doesn't go out, e.g. taper of sacrifice)
 
    * Jewelry info table (?)
@@ -1893,7 +1914,10 @@ Table of Contents
 
 7.1  Conversation file format
 
-   Conversations are stored in the file "cnv.ark". File header:
+   Conversations are stored in the file "cnv.ark". Note that in Ultima
+   Underworld 2 .ark files are compressed. See Chapter 9.1 for details.
+
+   The File header looks like this:
 
    0000   Int16   number of conversation slots in file
    0002   Int32   offset to conversation slot #0
@@ -2056,7 +2080,7 @@ Table of Contents
 
    For pointer variables, the num value determines the location of the
    pointer relative to the stack. It usually refers to variables passed
-   to a function (since they were push'ed onto the stack).
+   to a function (since they were pushed onto the stack).
 
    For stack variables, the num value determines which stack value is taken
    from the current local variables. The value to take is basep + <num>
@@ -2576,35 +2600,36 @@ Table of Contents
 
    Models are:
 
-      00   -
-      01   door frame
-      02   bridge
-      03   bench
-      04   Lotus Turbo Esprit (no, really!)
-      05   small boulder
-      06   medium boulder
-      07   large boulder
-      08   arrow
-      09   beam
-      0A   pillar
-      0B   shrine
-      0D   painting
-      10   texture map (8-way lever)
-      11   texture map (8-way switch)
-      12   texture map (writing)
-      13   gravestone
-      14   texture map
-      15   -
-      16   ?texture map
-      17   moongate
-      18   table
-      19   chest
-      1A   nightstand
-      1B   barrel
-      1C   chair
-      1D   bed (UWII)
-      1E   blackrock gem (UWII)
-      1F   shelf (UWII)
+   index   item_id   description
+    00               -
+    01     014x      door frame
+    02     0164      bridge
+    03     0150      bench
+    04     015f      Lotus Turbo Esprit (no, really!)
+    05     0156      small boulder
+    06     0155?     medium boulder
+    07     0154?     large boulder
+    08     0151      arrow
+    09     0159      beam
+    0A     0160      pillar
+    0B     0157      shrine
+    0D     0163      painting [uw2]
+    10     0161      texture map (8-way lever)
+    11     0162      texture map (8-way switch)
+    12     0166      texture map (writing)
+    13     0165      gravestone
+    14     016e?     texture map
+    15               -
+    16     016f?     ?texture map
+    17     015a      moongate
+    18     0158      table
+    19     015d      chest
+    1A     015e      nightstand
+    1B     015b      barrel
+    1C     015c      chair
+    1D     0167      bed [uw2]
+    1E     0168      blackrock gem [uw2]
+    1F     0169      shelf [uw2]
 
    Node list
    ---------
@@ -2909,7 +2934,51 @@ Table of Contents
 
 9.1  Ultima Underworld 2 compression scheme
 
-   <TODO>
+   The second game uses a new compression scheme to crunch data in .ark files
+   together. The file header has a slightly different format than in uw1's
+   files:
+
+     0000  Int16  number of blocks in file (=nblocks)
+     0004  Int32  unknown (always 0)
+
+   Now follow 4 tables, each one is "nblocks" long and consists of Int32's.
+
+     Table 1: offset table
+       absolute file offset to block
+       an offset of 0 means the entry is not (yet) used
+
+     Table 2: flags for the datachunk
+       Bit 0: block should be compressed
+       Bit 1: actually is compressed
+       Bit 2: the chunk has extra space allocated in case the compression
+              isn't as effective next time. The "available space" value is
+              valid for such chunks.
+
+     Table 3: data size
+       this gives the actual space occupied by the chunks on disk, either
+       compressed or uncompressed data size, according to the flags.
+
+     Table 4: available space
+       This is valid for chunks with extra space (bit 2 in table 2 set). It
+       gives the total space available for the chunk in the archive file.
+
+   If a block is actually compressed, it can be divided into subblocks.
+   Each compressed subblock starts with an Int8 number; the bits from LSB to
+   MSB describe if the following byte is just transferred to the target buffer
+   (bit set) or if we have a copy record (bit cleared). After 8 bytes or copy
+   record, the next subblock begins with an Int8 again.
+
+   The copy record starts with two Int8's:
+   0000   Int8   0..7: position, bits 0..7
+   0001   Int8   0..3: copy count
+                 4..7: position, bits 8..11
+
+   The copy count is 4 bits long and an offset of 3 is added to it. The
+   position has 12 bits (accessing the last 4k bytes) and an offset of 18 is
+   added. The sign bit is bit 11 and should be treated appropriate. As the
+   position field refers to a position in the current 4k segment, pointers
+   have to be adjusted, too. Then "copy count" bytes are copied from the
+   relative "position" to the current one.
 
 
 9.2  Savegame format
@@ -2992,7 +3061,7 @@ Table of Contents
        rune. Bits are seen from most to least significant. The 'A' rune is
        stored in bit 7 of the first field.
 
-   <TODO>: how items are stored
+   <TODO> how items are stored
 
 
 9.3  Unknown files
@@ -3024,90 +3093,9 @@ Table of Contents
    table). [The numbers here are an attempt to back-convert from the
    translation table to RGBA values using a hairy little program of my own
    devising. They look "about right", so I'm inclined to leave them.]
-   (from TSSHP CVS)
+   (description from TSSHP CVS)
 
 
  +--------------------------------------------------------------------------+
 
 end of file
-
-
-+--------------------------+
-+ old document starts here +
-+--------------------------+
-
-2.0.1 Level map info
-
-   Links
-   -----
-   When the link field is a link (link flag NOT set), it links to another
-   object(s). Here's a list of IDs and the link meanings:
-
-    0040 - 007f: all sorts of NPCs (link points to inventory start)
-    0080 - 008e: all sorts of container (points to content)
-    008f: a_rune bag (specially treated)
-    0098 - 009f,00aa: all sorts of wands (points to a "a_spell" object)
-    0140 - 014f: doors (points to a "a_lock" object, when locked)
-    015b, 015e: a_chest, a_barrel (3d objects)
-    0161: a_lever (mostly points to "a_use trigger" object)
-    016e: special tmap obj (?)
-    0170 - 017f: button, switches etc. (points to "a_use trigger" object)
-    0187: a_create object trap (points at object to create)
-    0188: a_door trap (usually points to "a_lock" object)
-    01a0: a_move trigger
-    01a2: a_use trigger
-    01a3: a_look trigger
-    01a5: an_open trigger
-    01a6: an_unlock trigger
-
-
-2.0.6 Underworld 2 differences
-
-   The file "lev.ark" has a silightly different format here:
-
-     0000  Int16  number of chunks in file (0x0140 = 320)
-     0004  Int32  unknown
-
-   Now follow 4 tables, each for the number of directory entries
-   every table entry is a Int32
-
-     Table 1: offset table
-       number of bytes from bof to datachunk.
-       an offset of 0 means the entry is not (yet) used
-
-     Table 2: flags for the datachunk
-       Bit 0 is always set
-       Bit 1 is set for compressed entries
-       Bit 2 is set for entries where data size is not maxsize,
-             might be chunks that are writen to when the game is saved
-
-     Table 3: data size
-       either compressed or uncompressed data, according to the flags
-
-     Table 4: maxsize
-       this is mainly a guess
-       maxsize is always greater or equal to data size.
-       If it is greater the exess bytes are zeros
-
-     there are 320 entries in the standard lev.ark
-     these can be split into 4 sets of 80 entries each
-       0.. 79  level maps
-      80..159  texture mappings
-     160..239  map visibility flags
-     240..319  ??? strings, entered on map ???
-
-
-8.2 Graves
-
-   Graves. (Dig those graves!) There are 2 bitmaps available for graves: 28
-   and 29 in tmobj.gr. Which one is drawn in the model depends on the low bits
-   of the "state" field, as usual. Headstone text is determined by the "link"
-   field: the high (512) bit seems always to be set, the rest is the string
-   index in the object message block 0008. This also serves as an index into
-   grave.dat which in turn gives a unique grave ID.
-
-   Large headstone images live in the cutscene file cuts/cs401.n01, one frame
-   each, indexed by grave ID.
-
-
-eof
