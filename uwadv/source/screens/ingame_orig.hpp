@@ -194,6 +194,9 @@ protected:
    //! mouse cursor coordinates in 320x200 window coordinates
    unsigned int cursorx,cursory;
 
+   //! mouse button states
+   bool leftbuttondown,rightbuttondown;
+
    //! indicates if cursor is an object icon
    bool cursor_is_object;
 
@@ -244,10 +247,6 @@ protected:
    ua_renderer renderer;
 
 
-   // mouse button states
-   bool leftbuttondown,rightbuttondown;
-
-
    // fading in/out
 
    //! current fade state
@@ -265,12 +264,8 @@ protected:
 
    // images, textures and fonts
 
-   //! 2d ui background image
-   ua_image img_back1, img_back2;
-
-   //! 2d ui background texture
-   ua_texture tex_back1, tex_back2;
-
+   //! background image quad
+   ua_image_quad img_back;
 
    //! compass images
    ua_image_list img_compass;
@@ -280,7 +275,6 @@ protected:
 
    //! current compass image
    unsigned int compass_curimg;
-
 
    //! vitality/mana/poisoned flasks
    ua_image_list img_flasks[3];

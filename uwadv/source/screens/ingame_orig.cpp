@@ -161,19 +161,17 @@ void ua_ingame_orig_screen::init()
       ua_trace("\n");
    }
 
-   // load all needed images
-   const char *mainscreenname = "data/main.byt";
-
-   // replace name when using uw_demo
-   if (core->get_settings().get_gametype() == ua_game_uw_demo)
-      mainscreenname = "data/dmain.byt";
-
    // load some images
    ua_settings &settings = core->get_settings();
 
    // background image
    {
-      ua_image img_back;
+      const char *mainscreenname = "data/main.byt";
+
+      // replace name when using uw_demo
+      if (core->get_settings().get_gametype() == ua_game_uw_demo)
+         mainscreenname = "data/dmain.byt";
+
       img_back.load_raw(settings,mainscreenname,0);
 
       // fill message scroll area
@@ -181,9 +179,6 @@ void ua_ingame_orig_screen::init()
 
       // fill panel area
       img_back.fill_rect(236,7, 83,114, 1);
-
-      img_back.copy_rect(img_back1,0,0, 256,200);
-      img_back.copy_rect(img_back2,256,0, 320-256,200);
    }
 
    // compass images
@@ -255,7 +250,7 @@ void ua_ingame_orig_screen::init()
       buttons.load(settings,"lfti");
 
       img_cmd_buttons.create(32,108);
-      img_back1.copy_rect(img_cmd_buttons,6,10,32,108);
+      img_back.copy_rect(img_cmd_buttons,6,10,32,108);
 
       static unsigned int ua_cmd_btn_offsets[] =
       {
@@ -303,10 +298,9 @@ void ua_ingame_orig_screen::suspend()
    // unregister script callbacks
    core->get_underworld().get_scripts().register_callback(NULL);
 
-   // clean up textures
-   tex_back1.done();
-   tex_back2.done();
+   img_back.done();
 
+   // clean up textures
    tex_compass.done();
    tex_flasks.done();
    tex_cmd_buttons.done();
@@ -343,18 +337,11 @@ void ua_ingame_orig_screen::resume()
    // prepare level textures
    ui_changed_level(core->get_underworld().get_player().get_attr(ua_attr_level));
 
+   // background image
+   img_back.init(&core->get_texmgr(),0,0,320,320);
+   img_back.convert_upload();
+
    // init textures
-
-   // background textures
-   tex_back1.init(&core->get_texmgr(),1,GL_LINEAR,GL_LINEAR,GL_CLAMP,GL_CLAMP);
-   tex_back1.convert(img_back1);
-   tex_back1.use();
-   tex_back1.upload();
-
-   tex_back2.init(&core->get_texmgr(),1,GL_LINEAR,GL_LINEAR,GL_CLAMP,GL_CLAMP);
-   tex_back2.convert(img_back2);
-   tex_back2.use();
-   tex_back2.upload();
 
    // compass texture
    tex_compass.init(&core->get_texmgr(),1,GL_LINEAR,GL_LINEAR);
@@ -388,6 +375,7 @@ void ua_ingame_orig_screen::resume()
 void ua_ingame_orig_screen::done()
 {
    suspend();
+
    delete dbgint;
 
    ua_trace("leaving orig. ingame user interface\n");
@@ -788,30 +776,8 @@ void ua_ingame_orig_screen::render_ui()
       glColor3ub(light,light,light);
    }
 
-   // draw background texture
-   {
-      // first quad (256x200)
-      double u = tex_back1.get_tex_u(), v = tex_back1.get_tex_v();
-      tex_back1.use();
-
-      glBegin(GL_QUADS);
-      glTexCoord2d(0.0, v  ); glVertex2i(0,  0);
-      glTexCoord2d(u  , v  ); glVertex2i(256,0);
-      glTexCoord2d(u  , 0.0); glVertex2i(256,200);
-      glTexCoord2d(0.0, 0.0); glVertex2i(0,  200);
-      glEnd();
-
-      // second quad (64x200)
-      u = tex_back2.get_tex_u(); v = tex_back2.get_tex_v();
-      tex_back2.use();
-
-      glBegin(GL_QUADS);
-      glTexCoord2d(0.0, v  ); glVertex2i(256,0);
-      glTexCoord2d(u  , v  ); glVertex2i(320,0);
-      glTexCoord2d(u  , 0.0); glVertex2i(320,200);
-      glTexCoord2d(0.0, 0.0); glVertex2i(256,200);
-      glEnd();
-   }
+   // draw background image
+   img_back.render();
 
    ua_player &pl = core->get_underworld().get_player();
 
