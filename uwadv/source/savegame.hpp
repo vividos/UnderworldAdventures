@@ -205,7 +205,7 @@ public:
    std::string get_savegame_filename(unsigned int index);
 
    //! returns savegame object for loading
-   ua_savegame get_savegame_load(unsigned int index);
+   ua_savegame get_savegame_load(unsigned int index, bool save_image=false);
 
    //! creates a savegame in a new slot; uses savegame info for savegame
    ua_savegame get_savegame_save_new_slot(ua_savegame_info& info);

@@ -354,7 +354,8 @@ std::string ua_savegames_manager::get_savegame_filename(unsigned int index)
    return savegames[index];
 }
 
-ua_savegame ua_savegames_manager::get_savegame_load(unsigned int index)
+ua_savegame ua_savegames_manager::get_savegame_load(unsigned int index,
+   bool save_image)
 {
    std::string save_name(savegames[index]);
 
@@ -363,8 +364,11 @@ ua_savegame ua_savegames_manager::get_savegame_load(unsigned int index)
    sg.open(save_name.c_str(),false);
 
    // set loaded image as new savegame image
-   ua_savegame_info& info = sg.get_savegame_info();
-   set_save_screenshot(info.image_rgba, info.image_xres, info.image_yres);
+   if (save_image)
+   {
+      ua_savegame_info& info = sg.get_savegame_info();
+      set_save_screenshot(info.image_rgba, info.image_xres, info.image_yres);
+   }
 
    return sg;
 }
