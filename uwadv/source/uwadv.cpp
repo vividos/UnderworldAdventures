@@ -312,7 +312,7 @@ void ua_uwadv_game::run()
          replace_screen(new ua_start_splash_screen(*this),false);
 #else
          // for uw2 testing; splash screens don't work yet
-         underworld.import_savegame(settings,"data/",true);
+         //underworld.import_savegame(settings,"data/",true);
          replace_screen(new ua_ingame_orig_screen(*this),false);
 #endif
       }
