@@ -38,6 +38,7 @@
 #include "conv/codevm.hpp"
 #include "level.hpp"
 #include "quadtree.hpp"
+#include "physics.hpp"
 
 
 // forward declaration
@@ -68,7 +69,7 @@ public:
    void done();
 
    //! moves player according to the direction angle
-   void walk_player(float angle);
+   void walk_player(double angle);
 
    //! transfers player to other location
 //   void move_player(float x, float y, int level=-1);
@@ -92,13 +93,19 @@ protected:
    //! interface to core game class
    ua_game_core_interface *core;
 
+   //! the player object
    ua_player player;
 
+   //! player's inventory
    ua_inventory inventory;
 
+   //! conversation globals of the current underworld
    ua_conv_globals conv_globals;
 
    ua_level level;
+
+   //! physics model to use in underworld
+   ua_physics_model physics;
 
    //! current level
 //   unsigned int curlevel;

@@ -28,7 +28,7 @@
 // needed includes
 #include "common.hpp"
 #include "underworld.hpp"
-#include <cmath>
+#include "uamath.hpp"
 
 
 // ua_underworld methods
@@ -39,6 +39,8 @@ void ua_underworld::init(ua_game_core_interface *thecore)
 
    level.load(core->get_settings(),0);
    level.prepare_textures(core->get_texmgr());
+
+   physics.init(this);
 
    player.init(32.f,2.f);
 }
@@ -59,14 +61,15 @@ void ua_underworld::done()
 {
 }
 
-void ua_underworld::walk_player(float angle)
+void ua_underworld::walk_player(double angle)
 {
-   // speed: 1.2 tiles per second
-   float speed = 1.8f / core->get_tickrate();
+   // speed: 1.8 tiles per second
+   double speed = 1.8 / core->get_tickrate();
 
-   player.move_player(
-      player.get_xpos()+speed*cos(ua_deg2rad(angle)),
-      player.get_ypos()+speed*sin(ua_deg2rad(angle)) );
+   ua_vector2d dir;
+   dir.set_polar(speed,angle);
+
+   physics.walk_player(dir);
 }
 
 float ua_underworld::get_player_height()
