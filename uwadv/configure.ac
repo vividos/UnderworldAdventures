@@ -11,7 +11,7 @@ AC_INIT(source/uwadv.cpp)
 
 # version info
 PACKAGE=uwadv
-VERSION=0.4a-cheesecake
+VERSION=0.4c_cheesecake
 
 
 AC_CANONICAL_BUILD

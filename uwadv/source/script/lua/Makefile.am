@@ -24,6 +24,7 @@ luac_DEPENDENCIES = liblua.la
 #include config
 
 EXTRA_DIST = \
+	Makefile.common \
 	config \
 	COPYRIGHT \
 	HISTORY \

@@ -25,7 +25,9 @@ uwadv_LDADD = \
 	resource/zziplib/libzzip.la \
 	-lz
 
-EXTRA_DIST = audio/midi_driver/win_midiout.cpp \
+EXTRA_DIST = \
+	Makefile.common \
+	audio/midi_driver/win_midiout.cpp \
 	audio/midi_driver/win_midiout.h \
 	linux/uwadv.spec.in \
 	linux/uwadv.cfg.in \

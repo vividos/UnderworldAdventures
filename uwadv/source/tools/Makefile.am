@@ -27,5 +27,6 @@ animview_LDADD = -lGL -lGLU $(SDL_LIBS)
 strpak_LDADD = $(SDL_LIBS)
 
 
-EXTRA_DIST =
+EXTRA_DIST = \
+	Makefile.common
 
