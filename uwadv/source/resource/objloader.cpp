@@ -109,8 +109,8 @@ void ua_object_list::addobj_follow(std::vector<Uint32> &objprop,Uint16 objpos)
    {
       // get object properties
       Uint16 objid = objprop[objpos*2+0] & 0x000001ff;
-      Uint16 xpos = (objprop[objpos*2+0] & (7<<26))>>26;
-      Uint16 ypos = (objprop[objpos*2+0] & (7<<29))>>29;
+      Uint16 ypos = (objprop[objpos*2+0] & (7<<26))>>26;
+      Uint16 xpos = (objprop[objpos*2+0] & (7<<29))>>29;
       Uint16 link1 = (objprop[objpos*2+1] & (0x3ff<<6))>>6;
 
       ua_object *obj;
