@@ -27,6 +27,7 @@
 
 // new collision detection is off
 #undef HAVE_NEW_CD
+//#define HAVE_NEW_CD
 
 // include guard
 #ifndef __uwadv_physics_hpp_
@@ -47,6 +48,7 @@ struct ua_collision_data;
 class ua_physics_model
 {
 public:
+   
    //! ctor
    ua_physics_model();
 

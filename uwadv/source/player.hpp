@@ -31,7 +31,7 @@
 
 // needed includes
 #include "savegame.hpp"
-
+#include "uamath.hpp"
 
 // enums
 
@@ -199,7 +199,18 @@ public:
    //! saves to a savegame
    void save_game(ua_savegame &sg);
 
+
+   // Physics:
+   void push_safe_spot(ua_vector3d spot);
+   ua_vector3d pop_safe_spot(); 
+
 protected:
+   // Cyclic safe spot buffer:
+   ua_vector3d safeSpots[100];
+   int safeSpotHead;
+   int safeSpotTail;
+
+
    //! the name of the player
    std::string name;
 

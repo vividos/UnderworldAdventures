@@ -23,17 +23,16 @@ WITH_DEBUGGING = no
 MINGW_PATH = c:/mingw
 
 # set to "yes" if you have STLport (and modify STLPORT_PATH then)
-WITH_STLPORT = yes
+WITH_STLPORT = no
 
 # path to where STLport was installed and built
-STLPORT_PATH = c:/mingw/stlport
-
-
+STLPORT_PATH = c:/mingw/stl
+             
 # change these values only if you have a non-standard mingw32 setup
 # (i.e. when the uwadv-mingw32-source-setup-?.zip wasn't used)
 
 # path to SDL include
-SDL_INCLUDE = -I$(MINGW_PATH)/include/sdl/
+SDL_INCLUDE = -Ic:/mingw/include/sdl/
 
 
 # no servicable parts beyond here.

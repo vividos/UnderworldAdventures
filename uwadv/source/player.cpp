@@ -34,6 +34,8 @@
 
 ua_player::ua_player()
 {
+  safeSpotHead = -1;
+  safeSpotTail = -1;
 }
 
 void ua_player::init()
@@ -139,3 +141,44 @@ void ua_player::save_game(ua_savegame &sg)
 
    sg.end_section();
 }
+
+
+// Physics:
+void ua_player::push_safe_spot(ua_vector3d spot) {
+  // first insertion
+  if (safeSpotHead == -1) {
+     safeSpotHead = 0;
+     safeSpotTail = 0;
+     safeSpots[safeSpotHead] = spot;
+  }
+  else {
+    // only insert new spot if it's far enough away from the last inserted one
+    double dist = (safeSpots[safeSpotHead] - spot).length();
+    if (dist < 0.1)
+      return;
+    
+    // move tail if needed (full buffer)
+    if ((safeSpotHead + 1) % 100 == safeSpotTail)
+      safeSpotTail = (safeSpotTail + 1) % 100;
+  
+    safeSpotHead = (safeSpotHead + 1) % 100;
+    safeSpots[safeSpotHead] = spot;
+  }  
+}
+
+ua_vector3d ua_player::pop_safe_spot() {
+  ua_vector3d spot(0,0,0);
+  
+  if (safeSpotHead > 0) {
+    spot = safeSpots[safeSpotHead];
+    
+    // Check we have not reached the tail yet.
+    if (safeSpotHead != safeSpotTail) {
+       safeSpotHead--;
+       if (safeSpotHead < 0)
+          safeSpotHead = safeSpotHead + 100;
+    }
+  }
+    
+  return spot;
+} 

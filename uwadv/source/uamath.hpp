@@ -141,6 +141,11 @@ public:
    //! division assignment with vector
    ua_vector3d& operator/=(const ua_vector3d& vec);
 
+   inline ua_vector3d operator-(const ua_vector3d &v) const {return ua_vector3d(x-v.x, y-v.y, z-v.z);}
+   inline ua_vector3d operator+(const ua_vector3d &v) const {return ua_vector3d(x+v.x, y+v.y, z+v.z);}
+   inline ua_vector3d operator*(const float f) const {return ua_vector3d(x*f, y*f, z*f);} 
+   inline ua_vector3d operator-() {return ua_vector3d(-x, -y, -z);} // unary minus 
+
    //! sets vector by giving vector elements
    void set(double nx, double ny, double nz);
 

@@ -128,7 +128,7 @@ void ua_renderer::setup_camera_priv(bool pick,unsigned int xpos, unsigned int yp
       gluPickMatrix(GLdouble(xpos), GLdouble(viewport[3]-ypos), 5.0, 5.0, viewport);
    }
 
-   gluPerspective(fov, aspect, 0.25, farplane);
+   gluPerspective(fov, aspect, 0.05, farplane);
 
    // switch back to modelview matrix
    glMatrixMode(GL_MODELVIEW);
