@@ -223,9 +223,10 @@ Table of Contents
      word 1, bytes 0..3
      bits          description
       0 -  8    9   object ID
-      9 - 14    6   flags, unknown
-          15    1   quantity flag: if 1, "quantity" field is quantity/special,
-                    else it's a link
+      9 - 11    3   flags, unknown
+	  12	1   Enchantment flag (only if item is enchantable)
+     13 - 14	2   flags, unknown
+          15    1   Link flag (link field is quantity/special)
      16 - 22    7   object z position (0-127)
      23 - 25    3   orientation (*45 degree) (0-7)
      26 - 28    3   object x position (0-7)
@@ -254,9 +255,47 @@ Table of Contents
      bytes long. After these two lists, 0x3c08 - 0x3b00 = 0x0108 bytes unknown
      data follows.
 
-     Normally the field "quantity / link2" indicates how much items there are,
-     but with some objects, it links to another object(s). Here's a list of
-     IDs:
+     The link field can be used for various things. If the link flag is unset,
+     it contains the index of an associated object. The exact meaning varies,
+     but is generally a "has-a" type relationship (contents, trap to set off,
+     spell).
+
+     If the link flag is set, this field is a quantity or special property.
+     Quantity is straightforward; if the value is less than 512 it gives the
+     number of a stackable item that are present in the stack, so identical
+     items may be combined into one object definition.
+
+     Quantities >= 512 are special properties. The value is the link field
+     minus 512 (unsurprisingly), the meaning depends on object type and flags.
+
+     Enchantments
+     If the enchantment flag is set and the object is enchantable, then the
+     link field (less 512) determines the enchantment. Enchantment names are
+     stored in strings chunk 5. The way in which the link value maps onto
+     spells in this chunk depends on the object type.
+
+     Most objects seem to use spells 256-320 (add 256) if the enchantment
+     number is in the range 0-63, otherwise they add 144 to use spells 208 and
+     up. Healing fountains, however, don't use a correction at all.
+
+     Weapons and armour have a more complex mapping. Most enchanted weapons and
+     pieces of armour have an enhancement for Accuracy, Damage, Protection or
+     Toughness, which are spells 448-479 in the main spell list. These map to
+     special property values 192-207. Yes, there are only 16 values for 32
+     spells; enchanted armour adds another 16 to the spell index to bring it
+     into the armour enchantment range. However, these items may also carry
+     generic enchantments, in which case the special properties map to spells
+     0-255 (and armour doesn't apply a special correction).
+
+     Wands don't hold their enchantments directly in the quantity field, since
+     they also need to store the number of charges remaining. Instead, they
+     link to a spell object which holds the enchantment; it seems here that
+     the "quality" field of the spell object determines the number of charges.
+     Other objects may also carry spells in this way.
+
+     Links
+     When the link field is a link (link flag NOT set), it links to another
+     object(s). Here's a list of IDs:
 
       0040 - 007f: all sorts of NPCs (link2 point to inventory start)
       0080 - 008e: all sorts of container (points to content)
@@ -525,8 +564,14 @@ Table of Contents
    0004  Int16   value (?)
    0005  Int24   unknown1
    0008  Int8    scale value (?)
-   0009  Int16   unknown2
+   0009  Int8	 unknown2
+   000A	 Int8	 lower 4 bits are quality type 0-f
 
+   Each possible value of "quality type" maps onto a group of 6 strings in
+   chunk 4 from lowest to highest quality. Items which have a quality are
+   always described as "a/an <quality> <item>", with the exception of group D
+   which is for armour items which are gramatically plural even if there is
+   only one of the object, e.g. "leather leggings".
 
 3.2 Object class properties
 
