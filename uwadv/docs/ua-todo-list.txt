@@ -91,9 +91,6 @@ game interface
 - meditating at shrines(object interaction)
   prio: 3  assigned: none
 
-- ingame_orig: mouse cursor movement
-  prio: 2  assigned: vividos
-
 - all remaining cutscenes
   prio: 3  assigned: none
 
@@ -159,9 +156,6 @@ underworld ingame
 
 - sleeping, resting, w/ cutscenes
   prio: 3  assigned: none
-
-- fix collision detection with real 3d model from Peroxide tutorial
-  prio: 3  assigned: telemachos
 
 
 finally
