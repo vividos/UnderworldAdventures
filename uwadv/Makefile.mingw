@@ -216,7 +216,8 @@ mapdisp_CPPs = $(filter %.cpp,$(mapdisp_SOURCES))
 mapdisp_OBJS = $(mapdisp_CPPs:%.cpp=source/tools/%.o)
 
 mapdisp_LDFLAGS =
-mapdisp_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB) $(STLPORT_LIB) $(OPENGL_LIB)
+mapdisp_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB) $(STLPORT_LIB) \
+	$(OPENGL_LIB) -lz
 
 
 # animation viewer
