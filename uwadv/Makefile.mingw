@@ -30,7 +30,7 @@ STLPORT_LIB = -Lc:/mingw/stl/lib/ -lstlport_mingw32_static
 # compiler
 CC = gcc
 CXX = c++
-CFLAGS = -O2 #-g -O
+CFLAGS = -Wall -O2 #-g -O
 CXXFLAGS =
 LDFLAGS = -mwindows -s
 DEFINES = 
