@@ -80,6 +80,8 @@ Function .onInstSuccess
     IDNO NoReadme
     ExecShell open '$INSTDIR\README.uwadv.txt'
   NoReadme:
+   MessageBox MB_OK "Please configure Underworld Adventures in the next dialog."
+   Exec $INSTDIR\uaconfig.exe
 FunctionEnd
 
 Section Uninstall
