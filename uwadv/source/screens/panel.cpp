@@ -440,12 +440,14 @@ void ua_panel::inventory_click(
    if (left_button)
    {
       // trigger "look" action
-      core->get_underworld().get_scripts().lua_inventory_look(item);
+      if (item != ua_item_none)
+         core->get_underworld().get_scripts().lua_inventory_look(item);
    }
    else
    {
       // trigger "use" action
-      core->get_underworld().get_scripts().lua_inventory_use(item);
+      if (item != ua_item_none)
+         core->get_underworld().get_scripts().lua_inventory_use(item);
    }
 }
 
