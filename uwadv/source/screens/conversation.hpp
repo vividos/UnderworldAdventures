@@ -40,7 +40,7 @@ class ua_conversation_screen: public ua_ui_screen_base
 {
 public:
    //! ctor
-   ua_conversation_screen(){}
+   ua_conversation_screen(unsigned int convslot){}
    //! dtor
    virtual ~ua_conversation_screen(){}
 
