@@ -351,7 +351,7 @@ void ua_physics_model::check_collision(ua_physics_object& object, int xpos, int 
 
          // get triangles from model manager
          ua_model3d_manager::cur_modelmgr->get_bounding_triangles(
-            obj.get_object_info().item_id,base,alltriangles);
+            obj,base,alltriangles);
 
          // next object in link chain
          link = obj.get_object_info().link;
