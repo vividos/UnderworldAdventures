@@ -39,10 +39,10 @@ Table of Contents
    * OpenGL 1.1 (or later), http://www.opengl.org/
      3D graphics rendering library
 
-   * SDL 1.2.3 (or later), http://www.libsdl.org/
+   * SDL 1.2.6, http://www.libsdl.org/
      a cross-platform support library
 
-   * SDL_Mixer 1.2.4 (or greater), http://www.libsdl.org/projects/SDL_mixer/
+   * SDL_Mixer 1.2.5, http://www.libsdl.org/projects/SDL_mixer/
      cross-platform audio mixer and playback library
 
    * Lua 4.0.1, http://www.lua.org/
@@ -50,6 +50,9 @@ Table of Contents
 
    * ZZipLib 0.10.65, http://zziplib.sourceforge.net/
      zip file reading library
+
+   * STLPort 4.6.1, http://www.stlport.com/
+     STL implementation
 
 
 1.2 Code guidelines
@@ -128,8 +131,10 @@ Table of Contents
       uw_demo. Build systems to test for are: mingw32, mingw32 configure.ac,
       MSVC, Linux configure.ac, Linux RPM
 
-   3. Adjust version numbers in configure.ac, win32/uwadv.nsi and
-      docs/ua-doxygen.cfg
+   3. Adjust version numbers in configure.ac, source/Makefile.mingw,
+      docs/ua-doxygen.cfg, source/win32/uwadv_res.rc,
+      source/win32/uadebug/uadebug_res.rc and
+      source/win32/uaconfig/uaconfig_res.rc
 
    4. Create latest ChangeLog and commit it
 
