@@ -46,7 +46,7 @@ struct
 // { "uw2path", ua_setting_uw2_path },
    { "uadata-path", ua_setting_uadata_path },
    { "fullscreen", ua_setting_fullscreen },
-   { "cutscene_narration", ua_setting_cuts_narration },
+   { "cutscene-narration", ua_setting_cuts_narration },
 //   { "audio-enabled",  },
    { "win32-midi-device", ua_setting_win32_midi_device },
 };
