@@ -54,6 +54,12 @@ public:
    //! initialization
    virtual void init()=0;
 
+   //! called when screen gets deactivated
+   virtual void suspend(){}
+
+   //! called when screen gets active again
+   virtual void resume(){}
+
    //! clean up
    virtual void done()=0;
 
