@@ -39,6 +39,9 @@ LDFLAGS = -mwindows -s
 #
 
 
+all: uwadv tools
+
+
 # lua objects
 
 lua_OBJS = ../lua/src/lapi.o ../lua/src/lcode.o ../lua/src/ldebug.o \
@@ -154,8 +157,6 @@ strpak_LDFLAGS = -mconsole
 #
 # build rules
 #
-
-all: uwadv tools
 
 tools: cnvdbg cnvdasm xmi2mid mapdisp animview strpak
 
