@@ -1,3 +1,17 @@
+2007-07-30 21:08  wjpalenstijn
+
+	* source/inventory.cpp, source/screens/acknowledgements.cpp,
+	* source/objects.cpp, source/audio/midi.hpp, source/audio/audio.cpp:
+	removed some warnings
+
+	* source/resource/fontloader.cpp:
+	fixed off-by-one in fontid range check
+
+	* source/uamath.hpp:
+	enclosed MSVC-specific pragma's in #ifdef _MSC_VER
+
+	
+	
 2002-07-30 11:14  vividos
 
 	* docs/Authors.txt (1.5):

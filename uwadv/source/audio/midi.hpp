@@ -70,7 +70,7 @@ class ua_midi_player
 {
 public:
    //! ctor
-   ua_midi_player():midi_driver(NULL), init(false)
+   ua_midi_player():init(false), midi_driver(NULL)
    {
    }
 

@@ -35,7 +35,7 @@
 // ua_object methods
 
 ua_object::ua_object(unsigned int myxpos,unsigned int myypos,Uint16 link1,Uint16 item_id)
-:xpos(myxpos),ypos(myypos),type(ua_obj_invisible)
+:type(ua_obj_invisible),xpos(myxpos),ypos(myypos)
 {
    info.item_id = item_id;
    info.link1 = link1;

@@ -32,10 +32,12 @@
 // needed includes
 #include <cmath>
 
+#ifdef _MSC_VER
 // pragmas for visual c++
 #pragma inline_depth( 255 )
 #pragma inline_recursion( on )
 #pragma auto_inline( on )
+#endif
 
 
 // constants

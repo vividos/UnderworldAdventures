@@ -87,8 +87,8 @@ public:
       vocname.append(".voc");
 
       // start playing
-      Mix_Chunk* mc;
-      if (mc = Mix_LoadWAV(vocname.c_str()))
+      Mix_Chunk* mc = Mix_LoadWAV(vocname.c_str());
+	  if (mc)
           Mix_PlayChannel(-1, mc, 0);
    }
 
@@ -120,9 +120,9 @@ protected:
    //! frees audio chunk when channel stops playing (callback function)
    static void mixer_channel_finished(int channel)
    {
-      Mix_Chunk* mc;
-      if (mc = Mix_GetChunk(channel))
-          Mix_FreeChunk(mc);
+	   Mix_Chunk* mc = Mix_GetChunk(channel);
+	   if (mc)
+		   Mix_FreeChunk(mc);
    }
 
 protected:
