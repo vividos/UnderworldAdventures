@@ -4,30 +4,36 @@
 # $Id$
 #
 
-cnvdbg_SOURCES = cnvdbg.cpp cnvdbg.hpp ../conv/opcodes.hpp \
-	../conv/codevm.cpp ../resource/codeloader.cpp \
-	../resource/gamestrings.cpp ../settings.cpp \
-	../resource/savegame.cpp ../utils.cpp ../resource/cfgfile.cpp \
-	cnvdbg.hpp ../conv/opcodes.hpp ../conv/codevm.hpp ../cfgfile.hpp \
-	../savegame.hpp ../utils.hpp
+cnvdbg_SOURCES = cnvdbg.cpp cnvdbg.hpp \
+	../conv/opcodes.hpp ../conv/codevm.cpp ../conv/codevm.hpp \
+	../settings.cpp ../utils.cpp \
+	../savegame.hpp ../cfgfile.hpp ../utils.hpp \
+	../resource/codeloader.cpp ../resource/gamestrings.cpp \
+	../resource/savegame.cpp ../resource/cfgfile.cpp
 
-cnvdasm_SOURCES = cnvdasm.cpp cnvdasm.hpp ../conv/opcodes.hpp \
-	../conv/codevm.cpp ../resource/codeloader.cpp \
-	../resource/gamestrings.cpp ../settings.cpp ../utils.cpp \
-	../resource/savegame.cpp ../resource/cfgfile.cpp \
-	cnvdasm.hpp ../conv/opcodes.hpp ../conv/codevm.hpp ../cfgfile.hpp\
-	../savegame.hpp ../utils.hpp
+cnvdasm_SOURCES = cnvdasm.cpp cnvdasm.hpp \
+	../conv/opcodes.hpp ../conv/codevm.cpp ../conv/codevm.hpp \
+	../conv/convgraph.cpp ../conv/convgraph.hpp \
+	../settings.cpp ../utils.cpp \
+	../savegame.hpp ../cfgfile.hpp ../utils.hpp \
+	../resource/codeloader.cpp ../resource/gamestrings.cpp \
+	../resource/savegame.cpp ../resource/cfgfile.cpp
 
-xmi2mid_SOURCES = xmi2mid.cpp ../audio/xmidi.cpp ../audio/xmidi.hpp
+xmi2mid_SOURCES = xmi2mid.cpp \
+	../audio/xmidi.cpp ../audio/xmidi.hpp
 
-mapdisp_SOURCES = mapdisp.cpp ../level.cpp ../resource/maploader.cpp \
-	../quadtree.cpp ../resource/texloader.cpp ../texture.cpp \
-	../resource/imageloader.cpp ../resource/objloader.cpp \
-	../image.cpp ../objects.cpp ../resource/codeloader.cpp \
-	../settings.cpp ../resource/savegame.cpp ../level.cpp \
-	../common.hpp ../resource/fread_endian.hpp ../image.hpp \
-	../level.hpp ../objects.hpp ../quadtree.hpp ../settings.hpp \
-	../texture.hpp ../utils.hpp ../savegame.hpp ../level.hpp
+mapdisp_SOURCES = mapdisp.cpp \
+	../settings.hpp ../settings.cpp ../resource/cfgfile.cpp \
+	../utils.cpp ../utils.hpp \
+	../texture.hpp ../texture.cpp ../resource/texloader.cpp \
+	../renderer.hpp ../renderer.cpp \
+	../quadtree.hpp ../quadtree.cpp \
+	../level.hpp ../level.cpp ../resource/maploader.cpp \
+	../objects.hpp ../objects.cpp ../resource/objloader.cpp \
+	../image.hpp ../image.cpp ../resource/imageloader.cpp \
+	../savegame.hpp ../resource/savegame.cpp \
+	../resource/codeloader.cpp \
+	../resource/fread_endian.hpp
 
 animview_SOURCES = animview.cpp ../cutscene.cpp ../resource/cutsloader.cpp \
 	../image.cpp ../texture.cpp ../settings.cpp ../resource/cfgfile.cpp \
