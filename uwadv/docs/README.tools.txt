@@ -57,6 +57,54 @@ Background info: The cutscene animations were done with Deluxe Paint on Amiga,
 using the Deluxe Paint Animator file format (*.anm).
 
 
+strpak - Underworld Game Strings Pack/Unpack Tool
+-------------------------------------------------
+
+strpak is a tool that lets you unpack the game strings in the file
+"strings.pak" to a raw text file. It also can take a raw text file that is
+properly formatted (like the output of unpacking) and produce a new packed
+game strings file.
+
+The program needs some parameters to work. Here's the syntax:
+
+   strpak <command> <input-file> <output-file>
+
+<command> can either be "unpack" or "pack". Unpacking expects a "strings.pak"-
+like file, and writes to the output-file as text. Packing wants a raw text
+file as input (see below) and writes a new "strings.pak"-like output file.
+
+The file format for the input file for the "pack" command is the same as the
+output of the "unpack" command:
+
+block: <block-id>; <ignored stuff>
+<number>: string number one
+<number>: this one contains a newline: \n there, it is
+<number>: and this is another one
+block: <block-id>; <ignored stuff>
+<number>: yes, another block
+
+Note that empty lines are ignored, as well as the very first line in the file.
+After the block-id, which must be a four-digit hexadecimal number, there must
+be a semicolon. A string line contains a number followed by a ':' and exactly
+one space. All stuff that is after that space counts as valid string data.
+Newlines are expressed as "\n".
+
+For more info about game strings and how they are used in Ultima Underworld,
+especially in the conversations, just look into the "docs/uw-formats.txt" in
+the source distribution of Underworld Adventures.
+
+Short example (strpak is placed in the uw_demo folder of the Underworld Demo):
+
+   strpak unpack data/strings.pak uw_demo-strings.txt
+
+Then modify some stuff inside the created text file, e.g. translate strings.
+
+   strpak pack uw_demo-strings.txt data/strings.pak
+
+Be sure to keep a copy of the origina "strings.pak" around, in case anything
+bad happens.
+
+
 cnvdbg - Underworld Conversation Debugger
 -----------------------------------------
 
