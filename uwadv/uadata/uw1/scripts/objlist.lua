@@ -1,6 +1,6 @@
 --
 -- Underworld Adventures - an Ultima Underworld hacking project
--- Copyright (c) 2002 Michael Fink
+-- Copyright (c) 2002,2003 Underworld Adventures Team
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -161,7 +161,7 @@ function lua_objlist_talk(obj_handle)
 
       if conv > 0 and conv < 255
       then
-         ui_start_conv(conv)
+         ui_start_conv(obj_handle)
       end
    end
 
