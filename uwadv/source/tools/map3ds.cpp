@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -32,8 +32,6 @@
 #include "resource/fread_endian.hpp"
 #include <set>
 #include <algorithm>
-
-#define HAVE_LIB3DS
 
 #ifdef HAVE_LIB3DS
 #include "lib3ds/file.h"
@@ -76,13 +74,14 @@ void init_map3ds(const char* uwpath)
    settings.set_value(ua_setting_uw_path,uw_path);
 
    // check if we only have the demo
-   FILE *fd = fopen("./data/level13.st","rb");
-   if (fd!=NULL)
-   {
+   if (ua_file_exists("./data/level13.st"))
       settings.set_gametype(ua_game_uw_demo);
-      fclose(fd);
-   }
 
+   // check if we have uw2
+   if (ua_file_exists("./uw2.exe"))
+      settings.set_gametype(ua_game_uw2);
+
+   // init texture manager
    texmgr.init(settings);
 
    // import all levelmaps
@@ -135,6 +134,12 @@ void write_level(unsigned int curlevel, ua_level& level)
       printf("collecting triangles ...");
    else
       printf("writing 3ds file ... ");
+
+   if (alltriangles.empty())
+   {
+      printf("no triangles to write\n");
+      return;
+   }
 
    // write 3ds file
    char buffer[256];
@@ -262,8 +267,8 @@ void write_level(unsigned int curlevel, ua_level& level)
    {
       // save and free 3ds file
       lib3ds_file_save(file,buffer);
-
       lib3ds_file_free(file);
+
       file = NULL;
    }
 
@@ -346,10 +351,18 @@ void write_textures()
 
 int main(int argc, char* argv[])
 {
-   printf("underworld adventures - level map to 3ds exporter\n\n");
+   printf("Underworld Adventures - level map to 3ds exporter\n\n");
+
+#ifndef HAVE_LIB3DS
+   printf("Warning! This version of map3ds wasn't compiled with lib3ds; this means that\n"
+          "the program doesn't really do anything! Please get a version that is compiled\n"
+          "with lib3ds.\n\n");
+#endif
 
    if (argc==2 && strcmp(argv[1],"sepmesh")==0)
       sep_meshes = true;
+
+   printf("separating meshes: %s\n\n",sep_meshes ? "on" : "off");
 
    // init exporter
    init_map3ds("./");
