@@ -33,22 +33,27 @@
 #include "screen.hpp"
 #include "cutscene.hpp"
 #include "font.hpp"
+#include "script/luascript.hpp"
+
+
+// forward references
+struct lua_State;
 
 
 // classes
 
 //! cutscene view screen
-class ua_cutscene_view_screen: public ua_ui_screen_base
+class ua_cutscene_view_screen: public ua_screen
 {
 public:
    //! ctor
    ua_cutscene_view_screen(unsigned int cuts=0):cutscene(cuts){}
 
    // virtual functions from ua_ui_screen_base
-   virtual void init(ua_game_core_interface* core);
-   virtual void done();
-   virtual void handle_event(SDL_Event& event);
-   virtual void render();
+   virtual void init();
+   virtual void destroy();
+   virtual void draw();
+   virtual bool process_event(SDL_Event& event);
    virtual void tick();
 
 protected:
@@ -76,8 +81,8 @@ protected:
    static const char* lua_thisptr_name;
 
 
-   //! lua script state
-   lua_State* L;
+   //! lua scripting interface
+   ua_lua_scripting lua;
 
    //! cutscene number to show
    unsigned int cutscene;
