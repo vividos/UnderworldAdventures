@@ -39,8 +39,10 @@
 //! single image
 class ua_image
 {
+   friend class ua_image_list;
 public:
-   ua_image(){}
+   //! ctor
+   ua_image();
 
    //! loads a single image; name must be without the extension ".gr"
    void load(ua_settings &settings, const char *name, unsigned int which=0,
@@ -49,9 +51,12 @@ public:
    //! loads a raw image (*.byt)
    void load_raw(ua_settings &settings, const char *name, unsigned int palette=0);
 
-   unsigned int get_xres(){ return xres; }
-   unsigned int get_yres(){ return yres; }
-   unsigned int get_palette(){ return palette; }
+   //! returns image x resolution
+   unsigned int get_xres() const { return xres; }
+   //! returns image y resolution
+   unsigned int get_yres() const { return yres; }
+   //! returns palette number
+   unsigned int get_palette() const { return palette; }
 
    // image manipulation
 
@@ -63,7 +68,11 @@ public:
    std::vector<Uint8> &get_pixels(){ return pixels; }
 
    //! pastes a image on a specific pos
-   void paste_image(ua_image &img, unsigned int destx,unsigned int desty);
+   void paste_image(const ua_image &img, unsigned int destx,unsigned int desty);
+
+protected:
+   //! private image loader
+   void load_image(FILE *fd,Uint8 auxpalidx[32][16]);
 
 protected:
    //! used palette
@@ -86,7 +95,7 @@ public:
 
    //! loads a list of images
    void load(ua_settings &settings, const char *name, unsigned int from=0,
-      unsigned int to=-1, unsigned int palette=0);
+      unsigned int to=0, unsigned int palette=0);
 
    //! returns size of list
    unsigned int size(){ return allimages.size(); };

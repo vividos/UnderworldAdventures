@@ -21,7 +21,7 @@
 */
 /*! \file image.cpp
 
-   a
+   image creation and manipulation
 
 */
 
@@ -32,6 +32,11 @@
 
 // ua_image methods
 
+ua_image::ua_image()
+{
+   xres=yres=0;
+}
+
 void ua_image::create(unsigned int width, unsigned int height, unsigned int initial,
    unsigned int pal)
 {
@@ -41,8 +46,19 @@ void ua_image::create(unsigned int width, unsigned int height, unsigned int init
    palette = pal;
 }
 
-void ua_image::paste_image(ua_image &img, unsigned int destx,unsigned int desty)
+void ua_image::paste_image(const ua_image &img, unsigned int destx,unsigned int desty)
 {
+   unsigned int sxres = img.get_xres();
+   unsigned int syres = img.get_yres();
+
+   const std::vector<Uint8> &src = img.pixels;
+   Uint8 *dest = &pixels[0];
+
+   for(int y=0; y<syres; y++)
+   for(int x=0; x<sxres; x++)
+   {
+      dest[(y+desty)*xres+(x+destx)] = src[y*sxres+x];
+   }
 }
 
 // ua_image_list methods
@@ -53,6 +69,10 @@ ua_image_list::ua_image_list()
 
 ua_image_list::~ua_image_list()
 {
+   // delete all images in list
+   int max=allimages.size();
+   for(int i=0; i<max; i++)
+      delete allimages[i];
 }
 
 const ua_image *ua_image_list::get_image(unsigned int num)

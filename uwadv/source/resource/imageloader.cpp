@@ -49,7 +49,7 @@
 // global methods
 
 void ua_image_decode_rle(FILE *fd,std::vector<Uint8> &pixels,unsigned int bits,
-   unsigned int datalen,unsigned char *auxpalidx)
+   unsigned int datalen,unsigned int maxpix,unsigned char *auxpalidx)
 {
    // bit extraction variables
    unsigned int bits_avail=0;
@@ -64,7 +64,7 @@ void ua_image_decode_rle(FILE *fd,std::vector<Uint8> &pixels,unsigned int bits,
    int record=0; // we start with record 0=repeat (3=run)
    int repeatcount=0;
 
-   while(pixcount<datalen)
+   while(datalen>0 && pixcount<maxpix)
    {
       // get new bits
       if (bits_avail<bits)
@@ -103,6 +103,7 @@ void ua_image_decode_rle(FILE *fd,std::vector<Uint8> &pixels,unsigned int bits,
 //      printf("nibble: %02x\n",nibble);
 
       // now that we have a nibble
+      datalen--;
 
       switch(stage)
       {
@@ -206,7 +207,6 @@ void ua_image_decode_rle(FILE *fd,std::vector<Uint8> &pixels,unsigned int bits,
 
          // now we have a nibble to write
          pixels[pixcount++] = auxpalidx[nibble];
-         pixcount++;
 
          if (--count==0)
          {
@@ -223,7 +223,10 @@ void ua_image_decode_rle(FILE *fd,std::vector<Uint8> &pixels,unsigned int bits,
    }
 }
 
-void ua_image_load(FILE *fd, ua_image &img, Uint8 auxpalidx[32][16])
+
+// ua_image methods
+
+void ua_image::load_image(FILE *fd,Uint8 auxpalidx[32][16])
 {
    Uint8 type, width, height,auxpal=0;
 
@@ -231,6 +234,8 @@ void ua_image_load(FILE *fd, ua_image &img, Uint8 auxpalidx[32][16])
    type = fgetc(fd);
    width = fgetc(fd);
    height = fgetc(fd);
+
+   create(width,height);
 
    if (type==0x08 || type==0x0a)
       auxpal = fgetc(fd);
@@ -245,13 +250,11 @@ void ua_image_load(FILE *fd, ua_image &img, Uint8 auxpalidx[32][16])
       {
          unsigned int pixcount=0;
 
-         std::vector<Uint8> &pix = img.get_pixels();
-
          while (datalen>0)
          {
             unsigned int size = ua_min(datalen,1024);
 
-            fread(&pix[pixcount],1,size,fd);
+            fread(&pixels[pixcount],1,size,fd);
 
             datalen -= size;
             pixcount += size;
@@ -259,13 +262,12 @@ void ua_image_load(FILE *fd, ua_image &img, Uint8 auxpalidx[32][16])
       }
       break;
    case 0x08: // 4-bit rle compressed
-      ua_image_decode_rle(fd,img.get_pixels(),4,datalen,auxpalidx[auxpal]);
+      ua_image_decode_rle(fd,pixels,4,datalen,width*height,auxpalidx[auxpal]);
       break;
    case 0x0a: // 4-bit uncompressed
       {
          unsigned int pixcount=0;
 
-         std::vector<Uint8> &pix = img.get_pixels();
          Uint8 *pal = auxpalidx[auxpal];
 
          Uint8 rawbyte;
@@ -273,8 +275,8 @@ void ua_image_load(FILE *fd, ua_image &img, Uint8 auxpalidx[32][16])
          while (datalen>0)
          {
             rawbyte = fgetc(fd);
-            pix[pixcount++] = pal[rawbyte >> 4];
-            pix[pixcount++] = pal[rawbyte&0x0f];
+            pixels[pixcount++] = pal[rawbyte >> 4];
+            pixels[pixcount++] = pal[rawbyte&0x0f];
             datalen--;
          }
       }
@@ -282,24 +284,23 @@ void ua_image_load(FILE *fd, ua_image &img, Uint8 auxpalidx[32][16])
    }
 }
 
-
-// ua_image methods
-
 void ua_image::load(ua_settings &settings, const char *name, unsigned int which,
    unsigned int pal)
 {
-   // load all auxiliary palettes
    Uint8 auxpalidx[32][16];
 
-   std::string allauxpalname(settings.uw1_path);
-   allauxpalname.append("data/allpals.dat");
+   // load all auxiliary palettes
+   {
+      std::string allauxpalname(settings.uw1_path);
+      allauxpalname.append("data/allpals.dat");
 
-   FILE *fd = fopen(allauxpalname.c_str(),"rb");
-   if (fd==NULL)
-      throw ua_exception("could not open file allpals.dat");
+      FILE *fd = fopen(allauxpalname.c_str(),"rb");
+      if (fd==NULL)
+         throw ua_exception("could not open file allpals.dat");
 
-   fread(auxpalidx,1,32*16,fd);
-   fclose(fd);
+      fread(auxpalidx,1,32*16,fd);
+      fclose(fd);
+   }
 
    // create filename
    std::string filename(settings.uw1_path);
@@ -308,7 +309,7 @@ void ua_image::load(ua_settings &settings, const char *name, unsigned int which,
    filename.append(".gr");
 
    // open file
-   fd = fopen(filename.c_str(),"rb");
+   FILE *fd = fopen(filename.c_str(),"rb");
    if (fd==NULL)
    {
       std::string text("could not open image: ");
@@ -351,7 +352,7 @@ void ua_image::load(ua_settings &settings, const char *name, unsigned int which,
    else
    {
       // load image into pixel vector
-      ua_image_load(fd,*this,auxpalidx);
+      load_image(fd,auxpalidx);
       palette = pal;
    }
 
@@ -384,4 +385,74 @@ void ua_image::load_raw(ua_settings &settings, const char *name, unsigned int pa
 void ua_image_list::load(ua_settings &settings, const char *name, unsigned int from,
    unsigned int to, unsigned int palette)
 {
+   Uint8 auxpalidx[32][16];
+
+   // load all auxiliary palettes
+   {
+      std::string allauxpalname(settings.uw1_path);
+      allauxpalname.append("data/allpals.dat");
+
+      FILE *fd = fopen(allauxpalname.c_str(),"rb");
+      if (fd==NULL)
+         throw ua_exception("could not open file allpals.dat");
+
+      fread(auxpalidx,1,32*16,fd);
+      fclose(fd);
+   }
+
+   // create filename
+   std::string filename(settings.uw1_path);
+   filename.append("data/");
+   filename.append(name);
+   filename.append(".gr");
+
+   // open file
+   FILE *fd = fopen(filename.c_str(),"rb");
+   if (fd==NULL)
+   {
+      std::string text("could not open image list: ");
+      text.append(filename);
+      throw ua_exception(text.c_str());
+   }
+
+   // get file length
+   fseek(fd,0,SEEK_END);
+   unsigned long filelen = ftell(fd);
+   fseek(fd,0,SEEK_SET);
+
+   // read in toc
+   Uint8 id = fgetc(fd); // always 1 (?)
+   Uint16 entries = fread16(fd);
+
+   if (to==0) to=entries;
+
+   if (from>=entries || to<from)
+   {
+      fclose(fd);
+      return;
+   }
+
+   // read in all offsets
+   std::vector<Uint32> offsets;
+   offsets.resize(entries,0);
+
+   for(Uint16 i=0; i<entries; i++)
+      offsets[i]=fread32(fd);
+
+   for(Uint16 j=from; j<to; j++)
+   {
+      if (offsets[j]>=filelen)
+         continue;
+
+      fseek(fd,offsets[j],SEEK_SET);
+
+      // load image into pixel vector
+      ua_image *img = new ua_image;
+      img->load_image(fd,auxpalidx);
+      img->palette = palette;
+
+      allimages.push_back(img);
+   }
+
+   fclose(fd);
 }
