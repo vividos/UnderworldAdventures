@@ -55,7 +55,7 @@ Table of Contents
    Additional information from:
 
    Alistair Brown (basic object format, via the Underworld II editor
-      <http://www.btinternet.com/~suzanne.barnard/>)
+      <http://bearcity.pwp.blueyonder.co.uk/>)
 
    Ulf Wohlers (Objects and 3D models)
 
