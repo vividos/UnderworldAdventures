@@ -9,16 +9,27 @@ dnl initial stuff
 AC_PREREQ(2.53)
 AC_INIT(../uwadv.cpp)
 
+AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
 
 AM_INIT_AUTOMAKE(uwadv,0.0.1)
-AM_CONFIG_HEADER(config.h)
-
+AC_CONFIG_HEADERS([config.h])
 
 dnl initial variable values
 CFLAGS="$CFLAGS -O2"
 CXXFLAGS="$CXXFLAGS -O2"
+OPENGL_LIBS=""
+
+# OS specific options
+case "$host_os" in
+   darwin*)
+      OPENGL_LIBS=""
+      ;;
+   *)
+      OPENGL_LIBS="-lGL -lGLU"
+      ;;
+esac
 
 
 dnl find and test the compiler
@@ -91,8 +102,9 @@ AC_SUBST(UW1PATH)
 UADATAPATH=../uadata/
 AC_SUBST(UADATAPATH)
 
+AC_SUBST(OPENGL_LIBS)
 
 dnl produce output files
-AC_CONFIG_FILES([../Makefile ../tools/Makefile uwadv.cfg])
+AC_CONFIG_FILES([../Makefile ../tools/Makefile Makefile uwadv.cfg])
 AC_OUTPUT
 
