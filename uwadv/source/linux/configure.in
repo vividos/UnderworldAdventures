@@ -34,7 +34,6 @@ AC_PROG_INSTALL
 
 dnl X config
 AC_PATH_X
-AC_PATH_XTRA
 
 
 dnl check header
@@ -50,14 +49,6 @@ AC_CHECK_HEADER(SDL/SDL_opengl.h,,AC_MSG_ERROR([
 File SDL_opengl.h is missing. Please install at least SDL 1.2.3 (or newer).]))
 
 
-dnl MacOsX needs another include path
-
-case "$target" in
-  *-*-darwin*)
-    CFLAGS=$CFLAGS -I/sw/include/
-esac
-
-
 dnl checking for working OpenGL
 
 AC_CHECK_HEADER(GL/gl.h,,AC_MSG_ERROR([
@@ -65,14 +56,13 @@ OpenGL header not found. An OpenGL graphics library is required
 to compile and run Underworld Adventures.
 Check http://mesa3d.sourceforge.net]))
 
-dnl AC_MSG_CHECKING(for working OpenGL)
-dnl AC_TRY_COMPILE([
-dnl   #include <GL/gl.h>
-dnl   #include <GL/glu.h>
-dnl ],[
-dnl ],AC_MSG_RESULT(yes),AC_MSG_ERROR([
-dnl OpenGL support does not work, please reinstall your OpenGL driver.
-dnl ])
+AC_MSG_CHECKING(for working OpenGL)
+AC_TRY_COMPILE([
+  #include <GL/gl.h>
+  #include <GL/glu.h>
+],,AC_MSG_RESULT(yes),AC_MSG_ERROR([
+OpenGL support does not work. Please reinstall your OpenGL driver.
+]))
 
 
 dnl checking for FMOD
