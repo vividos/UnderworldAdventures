@@ -178,9 +178,6 @@ void ua_save_game_savegames_list::init(ua_save_game_screen* my_screen,
 
 void ua_save_game_savegames_list::update_list()
 {
-   // \todo move to object members
-   unsigned int list_base = 0;
-
    get_image().clear(142);
 
    unsigned int charheight = font_normal.get_charheight();
@@ -201,7 +198,7 @@ void ua_save_game_savegames_list::update_list()
       if (!show_new && i==numitems-1)
       {
          // last entry: new game slot
-         // \todo move to strings
+         //! \todo move to strings
          desc.assign("new savegame slot");
       }
       else
@@ -301,8 +298,11 @@ void ua_save_game_screen::init()
    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
    show_preview = false;
+   edit_desc = false;
 
-//   edit_desc = false;
+   font_btns.load(game.get_settings(), ua_font_chargen);
+
+   game.get_image_manager().load_list(img_faces, "chrbtns", 17, 0, 3);
 
    // scan for savegames
    game.get_savegames_manager().rescan();
@@ -346,26 +346,22 @@ void ua_save_game_screen::init()
    button_refresh.init(this, game, 84,155, "Refresh", ua_button_refresh);
    button_exit.init(this, game, 84,177, "Exit", ua_button_exit);
 
-   if (from_menu)
+   if (!from_menu)
       register_window(&button_save);
    register_window(&button_load);
    register_window(&button_refresh);
    register_window(&button_exit);
 
    // init info area
-   img_infoarea.get_image().create(20,20);
+   img_infoarea.get_image().create(128,105);
    img_infoarea.get_image().set_palette(img_back.get_image().get_palette());
-   img_infoarea.init(game,160,0);
-//   register_window(&img_infoarea);
+   img_infoarea.init(game,160+16,8);
+   update_info();
 
    // init savegames list
    savegames_list.init(this, game, 19,13, from_menu);
-
    savegames_list.update_list();
-
    register_window(&savegames_list);
-
-   update_info();
 
    // init mouse cursor
    mousecursor.init(game,10);
@@ -380,9 +376,6 @@ void ua_save_game_screen::init()
 
 void ua_save_game_screen::destroy()
 {
-//   if (edit_desc)
-//      desc_scroll.done();
-
    tex_preview.done();
 
    ua_trace("leaving save game screen\n\n");
@@ -393,50 +386,26 @@ bool ua_save_game_screen::process_event(SDL_Event& event)
    if (ua_screen::process_event(event))
       return true;
 
-/*
-   if (edit_desc && desc_scroll.handle_event(event))
+   if (edit_desc)
+      if (textedit.process_event(event))
+         return true;
+
+   // user event?
+   if (edit_desc && event.type == SDL_USEREVENT &&
+       (event.user.code == ua_event_textedit_finished ||
+        event.user.code == ua_event_textedit_aborted))
    {
-      if (desc_scroll.is_input_done(desc))
-      {
-         // set up savegame info
-         ua_savegame_info info;
-         info.title = desc;
-         info.game_prefix = game.get_settings().get_string(ua_setting_game_prefix);
-         //TODOinfo.fill_infos(core->get_underworld().get_player());
+      // end edit mode
+      edit_desc = false;
 
-         // saving game
-         if (selected_savegame < sgmgr->get_savegames_count())
-         {
-            ua_trace("saving game over old savegame slot, filename %s\n",
-               sgmgr->get_savegame_filename(selected_savegame).c_str());
+      textedit.done();
 
-            // saving over selected game
-            ua_savegame sg = sgmgr->get_savegame_save_overwrite(selected_savegame,info);
-            game.get_underworld().save_game(sg);
-         }
-         else
-         {
-            ua_trace("saving game to new savegame slot\n");
+      if (event.user.code == ua_event_textedit_finished)
+         save_savegame();
 
-            // saving to new slot
-            ua_savegame sg = sgmgr->get_savegame_save_new_slot(info);
-            game.get_underworld().save_game(sg);
-         }
-
-         // refresh list
-         sgmgr->rescan();
-
-         desc_scroll.done();
-         edit_desc = false;
-         desc.erase();
-         button_highlight = -1;
-
-         selected_savegame = -1;
-         update_list();
-      }
-      return true;
+      // refresh list
+      savegames_list.update_list();
    }
-*/
 
    switch(event.type)
    {
@@ -447,8 +416,6 @@ bool ua_save_game_screen::process_event(SDL_Event& event)
          // simulate press on exit button
          if (fade_state == 1)
          {
-            //TODObutton_exit.
-
             press_button(ua_button_exit);
          }
          break;
@@ -475,16 +442,20 @@ void ua_save_game_screen::draw()
       glColor3ub(light,light,light);
    }
 
-   // render edit field when needed
-//   if (edit_desc)
-//      desc_scroll.render();
-
    // draw registered windows
    ua_screen::draw();
+
+   // render edit field when needed
+   if (edit_desc)
+      textedit.draw();
 
    // render savegame preview image
    if (show_preview)
    {
+      glEnable(GL_BLEND);
+      img_infoarea.draw();
+      glDisable(GL_BLEND);
+
       tex_preview.use();
 
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -553,15 +524,14 @@ void ua_save_game_screen::press_button(ua_save_game_button_id id)
 
    switch(id)
    {
+      // load button
    case ua_button_load:
       {
          // check if user tries to load the "new slot" entry
-         if (savegames_list.get_selected_savegame() >=
-            game.get_savegames_manager().get_savegames_count())
-         {
-            //TODO button_highlight = -1;
+         if (savegames_list.get_selected_savegame() == -1 ||
+             savegames_list.get_selected_savegame() >=
+             game.get_savegames_manager().get_savegames_count())
             break;
-         }
 
          // fade out and do action
          fade_state = 2;
@@ -569,47 +539,23 @@ void ua_save_game_screen::press_button(ua_save_game_button_id id)
       }
       break;
 
+      // refresh button
    case ua_button_refresh:
       {
          // refresh list
          game.get_savegames_manager().rescan();
-
-         //button_highlight = -1;
          savegames_list.update_list();
       }
       break;
 
-   case ua_button_save: // save
+      // save button
+   case ua_button_save:
       if (!from_menu)
-      {
-/*
-         // ask for a savegame name
-         edit_desc = true;
-
-         // select new slot when no savegame was selected
-         if (selected_savegame==-1)
-            selected_savegame = sgmgr->get_savegames_count();
-
-         unsigned int height = font_normal.get_charheight();
-         unsigned int ypos = selected_savegame*(height+1)+13+2;
-
-         // get title string as description
-         if (selected_savegame < sgmgr->get_savegames_count())
-         {
-            ua_savegame_info info;
-            sgmgr->get_savegame_info(selected_savegame,info);
-            desc.assign(info.title);
-         }
-
-         desc_scroll.init(*core,19,ypos,119,height+1,1,162);
-         desc_scroll.set_color(73);
-         desc_scroll.clear_scroll();
-         desc_scroll.enter_input_mode(desc.c_str());
-*/
-      }
+         ask_savegame_desc();
       break;
 
-   case ua_button_exit: // exit
+      // exit button
+   case ua_button_exit:
       fade_state = 2;
       fader.init(false, game.get_tickrate(), fade_time);
       break;
@@ -623,8 +569,7 @@ void ua_save_game_screen::update_info()
    ua_image& img_info = img_infoarea.get_image();
 
    // restore original image
-   img_info.paste_rect(img_back.get_image(), 160,0, 20,20, 0,0);
-
+   img_info.clear(0);
 
    if (selected_savegame >= 0 &&
        selected_savegame < game.get_savegames_manager().get_savegames_count())
@@ -632,33 +577,38 @@ void ua_save_game_screen::update_info()
       // get savegame infos
       ua_savegame_info info;
       game.get_savegames_manager().get_savegame_info(selected_savegame,info);
-/*
+
       // show infos
-      ua_image temp;
+      ua_image img_temp;
       unsigned int textcolor = 73;
 
       // player name
       unsigned int width = font_btns.calc_length(info.name.c_str());
-      font_btns.create_string(temp,info.name.c_str(),162);
-      img_back2.paste_image(temp,(160-width)/2,10,true);
+      unsigned int xpos = width > 128 ? 0 : (128-width)/2;
+      font_btns.create_string(img_temp,info.name.c_str(),162);
+      img_info.paste_image(img_temp,xpos,2,true);
+      img_temp.clear();
 
       // gender
-      std::string text(""/ *TODOcore->get_strings().get_string(2,info.gender+9)* /);
-      font_btns.create_string(temp,text.c_str(),textcolor);
-      img_back2.paste_image(temp,18,21,true);
+      std::string text(game.get_underworld().get_strings().
+         get_string(2,info.gender+9));
+      font_btns.create_string(img_temp, text.c_str(), textcolor);
+      img_info.paste_image(img_temp,2,13,true);
+      img_temp.clear();
 
       // profession
-      //TODOtext = game.get_strings().get_string(2,info.profession+23);
-      font_btns.create_string(temp,text.c_str(),textcolor);
-      img_back2.paste_image(temp,141-temp.get_xres(),21,true);
+      text = game.get_underworld().get_strings().
+         get_string(2,info.profession+23);
+      font_btns.create_string(img_temp,text.c_str(),textcolor);
+      img_info.paste_image(img_temp,125-img_temp.get_xres(),13,true);
 
       // basic attributes
       for(unsigned int i=0; i<4; i++)
       {
          // text
-         //TODOtext = core->get_strings().get_string(2,i+17);
-         font_btns.create_string(temp,text.c_str(),textcolor);
-         img_back2.paste_image(temp,93,50+i*17,true);
+         text = game.get_underworld().get_strings().get_string(2,i+17);
+         font_btns.create_string(img_temp, text.c_str(), textcolor);
+         img_info.paste_image(img_temp,75,42+i*17,true);
 
          // number
          unsigned int val=0;
@@ -673,16 +623,15 @@ void ua_save_game_screen::update_info()
          std::ostringstream buffer;
          buffer << val << std::ends;
 
-         font_btns.create_string(temp,buffer.str().c_str(),textcolor);
-         img_back2.paste_image(temp,126,50+i*17,true);
+         font_btns.create_string(img_temp, buffer.str().c_str(), textcolor);
+         img_info.paste_image(img_temp,110,42+i*17,true);
       }
-*/
-/*
-      // appearance
-      ua_image& appimg = img_faces.get_image(
-         info.appearance+(info.gender==0 ? 0 : 5)+17);
-      img_back2.paste_image(appimg,31+(info.gender),47,true);
 
+      // appearance
+      unsigned int app = info.appearance+(info.gender==0 ? 0 : 5);
+      img_info.paste_image(img_faces[app],13,39,true);
+
+/*
 #ifdef HAVE_DEBUG
       // savegame filename
       text = sgmgr->get_savegame_filename(selected_savegame);
@@ -707,6 +656,68 @@ void ua_save_game_screen::update_info()
       show_preview = false;
    }
 
-//   img_infoarea.add_border(img_back.get_image());
-//   img_infoarea.update();
+   img_infoarea.update();
+}
+
+void ua_save_game_screen::ask_savegame_desc()
+{
+   // ask for a savegame name
+   std::string savegame_name;
+
+   ua_savegames_manager& sgmgr = game.get_savegames_manager();
+
+   // select new slot when no savegame was selected
+   int selected_savegame = savegames_list.get_selected_savegame();
+   if (selected_savegame!=-1 && selected_savegame < sgmgr.get_savegames_count())
+   {
+      // retrieve savegame title
+      ua_savegame_info info;
+      sgmgr.get_savegame_info(selected_savegame, info);
+      savegame_name = info.title;
+   }
+   else
+      selected_savegame = sgmgr.get_savegames_count();
+
+   //! \todo change
+   unsigned int height = 6;
+   unsigned int ypos = selected_savegame*(height+1)+13+2;
+
+   // init text edit window
+   textedit.init(game, 19,ypos, 119, 162, 1, 73,
+      "", savegame_name.c_str(), true);
+
+   edit_desc = true;
+}
+
+void ua_save_game_screen::save_savegame()
+{
+   // set up savegame info
+   ua_savegame_info info;
+   info.title = textedit.get_text();
+   info.game_prefix = game.get_settings().get_string(ua_setting_game_prefix);
+   game.get_underworld().get_player().fill_savegame_infos(info);
+
+   ua_savegames_manager& sgmgr = game.get_savegames_manager();
+
+   // saving over existing game?
+   int selected_savegame = savegames_list.get_selected_savegame();
+   if (selected_savegame != -1 && selected_savegame < sgmgr.get_savegames_count())
+   {
+      ua_trace("saving game over old savegame slot, filename %s\n",
+         sgmgr.get_savegame_filename(selected_savegame).c_str());
+
+      // saving over selected game
+      ua_savegame sg = sgmgr.get_savegame_save_overwrite(selected_savegame,info);
+      game.get_underworld().save_game(sg);
+   }
+   else
+   {
+      ua_trace("saving game to new savegame slot\n");
+
+      // saving to new slot
+      ua_savegame sg = sgmgr.get_savegame_save_new_slot(info);
+      game.get_underworld().save_game(sg);
+   }
+
+   sgmgr.rescan();
 }

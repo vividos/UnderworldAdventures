@@ -39,6 +39,7 @@
 #include "fading.hpp"
 #include "font.hpp"
 #include "textscroll.hpp"
+#include "textedit.hpp"
 #include "mousecursor.hpp"
 
 
@@ -169,14 +170,11 @@ public:
    virtual void tick();
 
 protected:
-   //! updates list of savegames
-   void update_list();
+   //! starts asking for a savegame name
+   void ask_savegame_desc();
 
-   //! updates button look/states
-   void update_buttons();
-
-   //! presses button
-   void press_button();
+   //! saves game to disk
+   void save_savegame();
 
 protected:
    // constants
@@ -214,6 +212,18 @@ protected:
    //! savegame preview image
    ua_texture tex_preview;
 
+   //! indicates that we're editing the savegame description
+   bool edit_desc;
+
+   //! textedit window for entering savegame description
+   ua_textedit_window textedit;
+
+   //! font for info area
+   ua_font font_btns;
+
+   //! appearance images
+   std::vector<ua_image> img_faces;
+
 
    //! mouse cursor
    ua_mousecursor mousecursor;
@@ -223,20 +233,6 @@ protected:
 
    //! fade in/out state
    unsigned int fade_state;
-
-/*
-   //! indicates if mouse button is pressed
-   bool button_pressed;
-
-   //! indicates if we're editing the savegame description
-   bool edit_desc;
-
-   //! text scroll to edit savegame description
-   ua_textscroll desc_scroll;
-
-   //! savegame description text
-   std::string desc;
-*/
 };
 
 
