@@ -1,0 +1,513 @@
+512 objects.
+000: armour=00 mass=018 stuff2=2 flags=60 value=0014 unknown1=a0c5 scale=00 unknown2=7114 name=a_hand axe
+001: armour=00 mass=028 stuff2=2 flags=60 value=003c unknown1=a0c9 scale=00 unknown2=7118 name=a_battle axe
+002: armour=00 mass=020 stuff2=2 flags=60 value=0064 unknown1=a0c9 scale=00 unknown2=7118 name=an_axe
+003: armour=00 mass=008 stuff2=2 flags=60 value=0014 unknown1=a0c1 scale=00 unknown2=7110 name=a_dagger
+004: armour=00 mass=010 stuff2=2 flags=60 value=0032 unknown1=a0c5 scale=00 unknown2=7114 name=a_shortsword
+005: armour=00 mass=018 stuff2=2 flags=60 value=0050 unknown1=a0c5 scale=00 unknown2=7118 name=a_longsword
+006: armour=00 mass=020 stuff2=2 flags=60 value=0064 unknown1=a0c9 scale=00 unknown2=7118 name=a_broadsword
+007: armour=00 mass=010 stuff2=2 flags=60 value=000f unknown1=a0c5 scale=00 unknown2=7114 name=a_cudgel
+008: armour=00 mass=018 stuff2=2 flags=60 value=0037 unknown1=a0c5 scale=00 unknown2=7118 name=a_light mace
+009: armour=00 mass=020 stuff2=2 flags=60 value=005a unknown1=a0c9 scale=00 unknown2=7118 name=a_mace
+00a: armour=00 mass=022 stuff2=2 flags=60 value=0000 unknown1=b40d scale=00 unknown2=713c name=a_shiny sword
+00b: armour=00 mass=020 stuff2=2 flags=60 value=00fa unknown1=a0c9 scale=00 unknown2=7128 name=a_jeweled axe
+00c: armour=00 mass=024 stuff2=2 flags=60 value=00c8 unknown1=a0cd scale=00 unknown2=7130 name=a_black sword
+00d: armour=00 mass=01c stuff2=2 flags=60 value=00fa unknown1=a0c9 scale=00 unknown2=7128 name=a_jeweled sword
+00e: armour=00 mass=01c stuff2=2 flags=60 value=00fa unknown1=a0c9 scale=00 unknown2=7128 name=a_jeweled mace
+00f: armour=00 mass=000 stuff2=2 flags=60 value=0000 unknown1=a0c1 scale=00 unknown2=713c name=a_fist
+010: armour=00 mass=001 stuff2=1 flags=20 value=0001 unknown1=a937 scale=00 unknown2=7f08 name=a_sling stone
+011: armour=00 mass=002 stuff2=1 flags=20 value=0004 unknown1=a897 scale=00 unknown2=7f0a name=a_crossbow bolt
+012: armour=00 mass=001 stuff2=1 flags=20 value=0002 unknown1=a697 scale=00 unknown2=7f0a name=an_arrow
+013: armour=00 mass=004 stuff2=1 flags=20 value=0000 unknown1=ab37 scale=00 unknown2=7f0a name=a_stone
+014: armour=00 mass=000 stuff2=1 flags=08 value=0000 unknown1=921f scale=00 unknown2=7f0c name=a_fireball
+015: armour=00 mass=000 stuff2=1 flags=08 value=0000 unknown1=921f scale=00 unknown2=7f0c name=a_lightning bolt
+016: armour=00 mass=000 stuff2=1 flags=00 value=0000 unknown1=901f scale=00 unknown2=7f0c name=acid
+017: armour=00 mass=000 stuff2=1 flags=08 value=0000 unknown1=901f scale=00 unknown2=7f0c name=a_magic missile
+018: armour=00 mass=004 stuff2=1 flags=60 value=000a unknown1=a025 scale=00 unknown2=7118 name=a_sling
+019: armour=00 mass=00c stuff2=1 flags=60 value=0032 unknown1=a025 scale=00 unknown2=7118 name=a_bow
+01a: armour=00 mass=018 stuff2=1 flags=60 value=0046 unknown1=a025 scale=00 unknown2=7118 name=a_crossbow
+01b: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7100 name=
+01c: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7100 name=
+01d: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7100 name=
+01e: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7100 name=
+01f: armour=00 mass=010 stuff2=1 flags=60 value=0096 unknown1=a025 scale=00 unknown2=7128 name=a_jeweled bow
+020: armour=00 mass=014 stuff2=2 flags=60 value=0014 unknown1=a025 scale=00 unknown2=711c name=a_leather vest
+021: armour=00 mass=028 stuff2=2 flags=60 value=002d unknown1=a029 scale=00 unknown2=7120 name=a_mail shirt
+022: armour=00 mass=050 stuff2=2 flags=60 value=0046 unknown1=a029 scale=00 unknown2=7124 name=a_breastplate
+023: armour=00 mass=010 stuff2=2 flags=60 value=000f unknown1=a025 scale=00 unknown2=7d10 name=leather leggings&pairs of leather leggings
+024: armour=00 mass=020 stuff2=2 flags=60 value=0023 unknown1=a029 scale=00 unknown2=7d14 name=mail leggings&pairs of mail leggings
+025: armour=00 mass=040 stuff2=2 flags=60 value=003c unknown1=a029 scale=00 unknown2=7d18 name=plate leggings&pairs of plate leggings
+026: armour=00 mass=008 stuff2=2 flags=60 value=000a unknown1=a025 scale=00 unknown2=7d0c name=leather gloves&pairs of leather gloves
+027: armour=00 mass=00c stuff2=2 flags=60 value=0014 unknown1=a029 scale=00 unknown2=7d10 name=chain gauntlets&pairs of chain gauntlets
+028: armour=00 mass=010 stuff2=2 flags=60 value=001e unknown1=a029 scale=00 unknown2=7d14 name=plate gauntlets&pairs of plate gauntlets
+029: armour=00 mass=00c stuff2=2 flags=60 value=000c unknown1=a045 scale=00 unknown2=7d0c name=leather boots&pairs of leather boots
+02a: armour=00 mass=010 stuff2=2 flags=60 value=0019 unknown1=a089 scale=00 unknown2=7d10 name=chain boots&pairs of chain boots
+02b: armour=00 mass=014 stuff2=2 flags=60 value=0028 unknown1=a089 scale=00 unknown2=7d14 name=plate boots&pairs of plate boots
+02c: armour=00 mass=008 stuff2=2 flags=60 value=000f unknown1=a085 scale=00 unknown2=7110 name=a_leather cap
+02d: armour=00 mass=00c stuff2=2 flags=60 value=001e unknown1=a0c9 scale=00 unknown2=7114 name=a_chain cowl
+02e: armour=00 mass=010 stuff2=2 flags=60 value=0032 unknown1=a0e9 scale=00 unknown2=7118 name=a_helmet
+02f: armour=00 mass=020 stuff2=2 flags=60 value=0096 unknown1=a02d scale=08 unknown2=7f3c name=a_pair of dragon skin boots&pairs of dragon skin boots
+030: armour=00 mass=004 stuff2=2 flags=60 value=005a unknown1=a0a1 scale=00 unknown2=7728 name=a_crown
+031: armour=00 mass=010 stuff2=2 flags=60 value=0078 unknown1=a0e1 scale=00 unknown2=7728 name=a_crown
+032: armour=00 mass=010 stuff2=2 flags=60 value=0078 unknown1=a0e1 scale=00 unknown2=773c name=a_crown
+033: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=6000 name=
+034: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=6000 name=
+035: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=6000 name=
+036: armour=00 mass=001 stuff2=1 flags=60 value=0000 unknown1=b40d scale=00 unknown2=773c name=an_iron ring
+037: armour=00 mass=030 stuff2=1 flags=60 value=0000 unknown1=b40d scale=00 unknown2=7f3c name=a_shiny shield
+038: armour=00 mass=001 stuff2=2 flags=60 value=003c unknown1=a101 scale=00 unknown2=7720 name=a_gold ring
+039: armour=00 mass=001 stuff2=2 flags=60 value=0028 unknown1=a101 scale=00 unknown2=7720 name=a_silver ring
+03a: armour=00 mass=001 stuff2=2 flags=60 value=0019 unknown1=a101 scale=00 unknown2=7620 name=a_red ring
+03b: armour=00 mass=030 stuff2=2 flags=60 value=0032 unknown1=a049 scale=00 unknown2=711c name=a_tower shield
+03c: armour=00 mass=01c stuff2=2 flags=60 value=0023 unknown1=a065 scale=00 unknown2=711c name=a_wooden shield
+03d: armour=00 mass=016 stuff2=2 flags=60 value=0014 unknown1=a0a9 scale=00 unknown2=711c name=a_small shield
+03e: armour=00 mass=01c stuff2=2 flags=60 value=000f unknown1=a089 scale=00 unknown2=711c name=a_buckler
+03f: armour=00 mass=034 stuff2=2 flags=60 value=0096 unknown1=a045 scale=00 unknown2=7128 name=a_jeweled shield
+040: armour=09 mass=028 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f21 name=a_rotworm
+041: armour=09 mass=028 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f21 name=a_flesh slug
+042: armour=09 mass=028 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f21 name=a_cave bat
+043: armour=09 mass=028 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f21 name=a_giant rat
+044: armour=0e mass=12c stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f21 name=a_giant spider
+045: armour=09 mass=028 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f21 name=a_acid slug
+046: armour=14 mass=258 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f35 name=a_goblin
+047: armour=14 mass=258 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f35 name=a_goblin
+048: armour=09 mass=028 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f21 name=a_giant rat
+049: armour=09 mass=028 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f21 name=a_vampire bat
+04a: armour=14 mass=1f4 stuff2=a flags=40 value=0000 unknown1=0021 scale=80 unknown2=7f29 name=a_skeleton
+04b: armour=09 mass=064 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f21 name=an_imp
+04c: armour=14 mass=258 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f35 name=a_goblin
+04d: armour=14 mass=258 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f35 name=a_goblin
+04e: armour=14 mass=258 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f35 name=a_goblin
+04f: armour=00 mass=000 stuff2=a flags=40 value=0000 unknown1=0020 scale=00 unknown2=6f35 name=
+050: armour=14 mass=258 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f35 name=a_goblin
+051: armour=09 mass=028 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f21 name=a_mongbat
+052: armour=09 mass=028 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f21 name=a_bloodworm
+053: armour=0e mass=12c stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f21 name=a_wolf spider
+054: armour=12 mass=2bc stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f35 name=a_mountainman&mountainmen
+055: armour=17 mass=320 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f35 name=a_green lizardman&green lizardmen
+056: armour=12 mass=2bc stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f35 name=a_mountainman&mountainmen
+057: armour=09 mass=7d0 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f21 name=a_lurker
+058: armour=17 mass=320 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f35 name=a_red lizardman&red lizardmen
+059: armour=17 mass=320 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f35 name=a_gray lizardman&red lizardmen
+05a: armour=17 mass=320 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f35 name=an_outcast
+05b: armour=17 mass=3e8 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f21 name=a_headless&headlesses
+05c: armour=0e mass=12c stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f21 name=a_dread spider
+05d: armour=17 mass=320 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f35 name=a_fighter
+05e: armour=17 mass=320 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f35 name=a_fighter
+05f: armour=17 mass=320 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f35 name=a_fighter
+060: armour=1c mass=514 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f35 name=a_troll
+061: armour=17 mass=001 stuff2=a flags=40 value=0000 unknown1=0021 scale=90 unknown2=7f21 name=a_ghost
+062: armour=17 mass=320 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f35 name=a_fighter
+063: armour=14 mass=258 stuff2=a flags=40 value=0000 unknown1=0021 scale=80 unknown2=7f35 name=a_ghoul
+064: armour=17 mass=001 stuff2=a flags=40 value=0000 unknown1=0021 scale=90 unknown2=7f21 name=a_ghost
+065: armour=17 mass=001 stuff2=a flags=40 value=0000 unknown1=0021 scale=90 unknown2=7f21 name=a_ghost
+066: armour=12 mass=12c stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f21 name=a_gazer
+067: armour=16 mass=1f4 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f35 name=a_mage
+068: armour=17 mass=320 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f35 name=a_fighter
+069: armour=14 mass=258 stuff2=a flags=40 value=0000 unknown1=0021 scale=80 unknown2=7f35 name=a_dark ghoul
+06a: armour=16 mass=1f4 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f35 name=a_mage
+06b: armour=16 mass=1f4 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f35 name=a_mage
+06c: armour=16 mass=1f4 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f35 name=a_mage
+06d: armour=16 mass=1f4 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f35 name=a_mage
+06e: armour=14 mass=258 stuff2=a flags=40 value=0000 unknown1=0021 scale=80 unknown2=7f35 name=a_ghoul
+06f: armour=1c mass=514 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f21 name=a_feral troll
+070: armour=1c mass=640 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f35 name=a_great troll
+071: armour=17 mass=001 stuff2=a flags=40 value=0000 unknown1=0021 scale=90 unknown2=7f21 name=a_dire ghost
+072: armour=20 mass=fa0 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f21 name=an_earth golem
+073: armour=16 mass=1f4 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f35 name=a_mage
+074: armour=09 mass=7d0 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f21 name=a_deep lurker
+075: armour=17 mass=3e8 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f21 name=a_shadow beast
+076: armour=1a mass=5dc stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f21 name=a_reaper
+077: armour=20 mass=fa0 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f21 name=a_stone golem
+078: armour=1a mass=3e8 stuff2=a flags=40 value=0000 unknown1=0021 scale=08 unknown2=7f21 name=a_fire elemental
+079: armour=20 mass=fa0 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f21 name=a_metal golem
+07a: armour=09 mass=001 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f35 name=a_wisp
+07b: armour=17 mass=258 stuff2=a flags=40 value=0000 unknown1=0021 scale=08 unknown2=7f3d name=
+07c: armour=20 mass=7d0 stuff2=a flags=40 value=0000 unknown1=0021 scale=7f unknown2=7f3d name=
+07d: armour=00 mass=000 stuff2=a flags=40 value=0000 unknown1=0020 scale=00 unknown2=6f21 name=
+07e: armour=00 mass=000 stuff2=a flags=40 value=0000 unknown1=0020 scale=00 unknown2=6f3d name=
+07f: armour=17 mass=265 stuff2=a flags=40 value=0000 unknown1=0021 scale=00 unknown2=7f3d name=an_adventurer
+080: armour=00 mass=002 stuff2=1 flags=e0 value=0004 unknown1=a02d scale=00 unknown2=7f20 name=a_sack
+081: armour=00 mass=002 stuff2=1 flags=e0 value=0004 unknown1=a02d scale=00 unknown2=7f20 name=an_open sack
+082: armour=00 mass=004 stuff2=1 flags=e0 value=0008 unknown1=a02d scale=00 unknown2=7f20 name=a_pack
+083: armour=00 mass=004 stuff2=1 flags=e0 value=0008 unknown1=a02d scale=00 unknown2=7f20 name=an_open pack
+084: armour=00 mass=006 stuff2=1 flags=e0 value=0006 unknown1=a02d scale=00 unknown2=7f20 name=a_box&boxes
+085: armour=00 mass=006 stuff2=1 flags=e0 value=0006 unknown1=a02d scale=00 unknown2=7f20 name=an_open box&open boxes
+086: armour=00 mass=001 stuff2=1 flags=e0 value=0003 unknown1=a02d scale=00 unknown2=7f20 name=a_pouch&pouches
+087: armour=00 mass=001 stuff2=1 flags=e0 value=0003 unknown1=a02d scale=00 unknown2=7f20 name=an_open pouch&pouches
+088: armour=00 mass=001 stuff2=1 flags=e0 value=0003 unknown1=a02d scale=00 unknown2=7f20 name=a_map case
+089: armour=00 mass=001 stuff2=1 flags=e0 value=0003 unknown1=a02d scale=00 unknown2=7f20 name=an_open map case
+08a: armour=00 mass=00c stuff2=1 flags=e0 value=0028 unknown1=a02d scale=00 unknown2=7f20 name=a_gold coffer
+08b: armour=00 mass=00c stuff2=1 flags=e0 value=0028 unknown1=a02d scale=00 unknown2=7f20 name=an_open gold coffer
+08c: armour=00 mass=00c stuff2=1 flags=e0 value=0005 unknown1=802d scale=00 unknown2=7f20 name=an_urn
+08d: armour=00 mass=008 stuff2=1 flags=e0 value=000a unknown1=a021 scale=00 unknown2=7f20 name=a_quiver
+08e: armour=00 mass=004 stuff2=1 flags=e0 value=0003 unknown1=a0a1 scale=00 unknown2=7f20 name=a_bowl
+08f: armour=00 mass=004 stuff2=1 flags=e0 value=0000 unknown1=a02d scale=00 unknown2=7f3c name=a_rune bag
+090: armour=00 mass=006 stuff2=1 flags=20 value=001e unknown1=a029 scale=00 unknown2=7b1c name=a_lantern
+091: armour=00 mass=002 stuff2=1 flags=20 value=0005 unknown1=a025 scale=00 unknown2=7a14 name=a_torch&torches
+092: armour=00 mass=001 stuff2=1 flags=20 value=0002 unknown1=a021 scale=00 unknown2=7a0c name=a_candle
+093: armour=00 mass=004 stuff2=1 flags=20 value=0001 unknown1=b40d scale=00 unknown2=7a3c name=a_taper
+094: armour=00 mass=006 stuff2=1 flags=20 value=001e unknown1=a029 scale=00 unknown2=7b1c name=a_lit lantern
+095: armour=00 mass=002 stuff2=1 flags=20 value=0005 unknown1=a025 scale=00 unknown2=7a14 name=a_lit torch
+096: armour=00 mass=001 stuff2=1 flags=20 value=0002 unknown1=a021 scale=00 unknown2=7a0c name=a_lit candle
+097: armour=00 mass=004 stuff2=1 flags=20 value=0001 unknown1=b40d scale=00 unknown2=7a3c name=a_lit taper
+098: armour=00 mass=000 stuff2=1 flags=20 value=0046 unknown1=a081 scale=00 unknown2=7c28 name=a_wand
+099: armour=00 mass=000 stuff2=1 flags=20 value=0046 unknown1=a081 scale=00 unknown2=7c28 name=a_wand
+09a: armour=00 mass=000 stuff2=1 flags=20 value=0046 unknown1=a081 scale=00 unknown2=7c28 name=a_wand
+09b: armour=00 mass=000 stuff2=1 flags=20 value=0046 unknown1=a081 scale=00 unknown2=7c28 name=a_wand
+09c: armour=00 mass=000 stuff2=1 flags=20 value=0000 unknown1=a041 scale=00 unknown2=7f08 name=a_broken wand
+09d: armour=00 mass=000 stuff2=1 flags=20 value=0000 unknown1=a041 scale=00 unknown2=7f08 name=a_broken wand
+09e: armour=00 mass=000 stuff2=1 flags=20 value=0000 unknown1=a041 scale=00 unknown2=7f08 name=a_broken wand
+09f: armour=00 mass=000 stuff2=1 flags=20 value=0000 unknown1=a041 scale=00 unknown2=7f08 name=a_broken wand
+0a0: armour=00 mass=001 stuff2=1 flags=20 value=0003 unknown1=a065 scale=00 unknown2=7f20 name=a_coin
+0a1: armour=00 mass=004 stuff2=1 flags=20 value=0003 unknown1=a0c5 scale=00 unknown2=7f20 name=a_gold coin
+0a2: armour=00 mass=001 stuff2=1 flags=20 value=0019 unknown1=a121 scale=00 unknown2=7624 name=a_ruby&rubies
+0a3: armour=00 mass=001 stuff2=1 flags=20 value=000f unknown1=a121 scale=00 unknown2=762c name=a_red gem
+0a4: armour=00 mass=001 stuff2=1 flags=20 value=0014 unknown1=a121 scale=00 unknown2=762c name=a_small blue gem
+0a5: armour=00 mass=001 stuff2=1 flags=20 value=001e unknown1=a121 scale=00 unknown2=762c name=a_large blue gem
+0a6: armour=00 mass=001 stuff2=1 flags=20 value=0028 unknown1=a121 scale=00 unknown2=762c name=a_sapphire
+0a7: armour=00 mass=001 stuff2=1 flags=20 value=0023 unknown1=a121 scale=00 unknown2=762c name=an_emerald
+0a8: armour=00 mass=004 stuff2=1 flags=20 value=003c unknown1=a121 scale=00 unknown2=763c name=an_amulet
+0a9: armour=00 mass=008 stuff2=1 flags=20 value=0032 unknown1=a0a1 scale=00 unknown2=772c name=a_goblet
+0aa: armour=00 mass=00c stuff2=1 flags=20 value=0032 unknown1=a081 scale=00 unknown2=762c name=a_sceptre
+0ab: armour=00 mass=008 stuff2=1 flags=20 value=004b unknown1=a061 scale=00 unknown2=772c name=a_gold chain
+0ac: armour=00 mass=010 stuff2=1 flags=20 value=0064 unknown1=a081 scale=00 unknown2=772c name=a_gold plate
+0ad: armour=00 mass=000 stuff2=1 flags=20 value=0019 unknown1=a061 scale=00 unknown2=753c name=an_ankh pendant
+0ae: armour=00 mass=000 stuff2=1 flags=20 value=0000 unknown1=b40d scale=00 unknown2=7f3c name=a_shiny cup
+0af: armour=00 mass=010 stuff2=1 flags=20 value=0032 unknown1=a081 scale=00 unknown2=7f3c name=a_large gold nugget
+0b0: armour=00 mass=007 stuff2=1 flags=20 value=0004 unknown1=a021 scale=00 unknown2=7318 name=a_piece of meat&pieces of meat
+0b1: armour=00 mass=005 stuff2=1 flags=20 value=0003 unknown1=a021 scale=00 unknown2=7314 name=a_loaf of bread&loaves of bread
+0b2: armour=00 mass=002 stuff2=1 flags=20 value=0002 unknown1=a021 scale=00 unknown2=7410 name=a_piece of cheese&pieces of cheese
+0b3: armour=00 mass=001 stuff2=1 flags=20 value=0002 unknown1=a021 scale=00 unknown2=7310 name=an_apple
+0b4: armour=00 mass=001 stuff2=1 flags=20 value=0002 unknown1=a021 scale=00 unknown2=7314 name=an_ear of corn&ears of corn
+0b5: armour=00 mass=004 stuff2=1 flags=20 value=0002 unknown1=a021 scale=00 unknown2=7410 name=a_loaf of bread&loaves of bread
+0b6: armour=00 mass=00a stuff2=1 flags=20 value=0003 unknown1=a021 scale=00 unknown2=731c name=a_fish&fish
+0b7: armour=00 mass=001 stuff2=1 flags=20 value=0001 unknown1=a021 scale=00 unknown2=7f0c name=some_popcorn&bunches of popcorn
+0b8: armour=00 mass=002 stuff2=1 flags=20 value=0001 unknown1=a021 scale=00 unknown2=7f10 name=a_mushroom
+0b9: armour=00 mass=002 stuff2=1 flags=20 value=0001 unknown1=a021 scale=00 unknown2=7f18 name=a_toadstool
+0ba: armour=00 mass=004 stuff2=1 flags=20 value=0005 unknown1=a02d scale=00 unknown2=7f18 name=a_bottle of ale&bottles of ale
+0bb: armour=00 mass=003 stuff2=1 flags=20 value=0014 unknown1=a021 scale=00 unknown2=7f18 name=a_red potion
+0bc: armour=00 mass=003 stuff2=1 flags=20 value=0014 unknown1=a021 scale=00 unknown2=7f18 name=a_green potion
+0bd: armour=00 mass=004 stuff2=1 flags=20 value=0003 unknown1=a021 scale=00 unknown2=7f18 name=a_bottle of water&bottles of water
+0be: armour=00 mass=004 stuff2=1 flags=20 value=0005 unknown1=a021 scale=00 unknown2=7f18 name=a_flask of port&flasks of port
+0bf: armour=00 mass=004 stuff2=1 flags=20 value=0000 unknown1=b40d scale=00 unknown2=7f3c name=a_bottle of wine&bottles of wine
+0c0: armour=00 mass=004 stuff2=1 flags=00 value=0000 unknown1=0001 scale=00 unknown2=7f10 name=a_plant
+0c1: armour=00 mass=004 stuff2=1 flags=00 value=0000 unknown1=0001 scale=00 unknown2=7f0c name=some_grass&bunches of grass
+0c2: armour=00 mass=004 stuff2=1 flags=20 value=0000 unknown1=20c1 scale=00 unknown2=7f14 name=a_skull
+0c3: armour=00 mass=004 stuff2=1 flags=20 value=0000 unknown1=20e1 scale=00 unknown2=7f10 name=a_skull
+0c4: armour=00 mass=004 stuff2=1 flags=20 value=0000 unknown1=20c1 scale=00 unknown2=7f0c name=a_bone
+0c5: armour=00 mass=004 stuff2=1 flags=20 value=0000 unknown1=2081 scale=00 unknown2=7f14 name=a_bone
+0c6: armour=00 mass=004 stuff2=2 flags=20 value=0000 unknown1=2061 scale=00 unknown2=7f0c name=a_pile of bones&piles of bones
+0c7: armour=00 mass=004 stuff2=1 flags=00 value=0000 unknown1=0001 scale=00 unknown2=7f10 name=some_vines&bunches of vines
+0c8: armour=00 mass=004 stuff2=1 flags=20 value=0000 unknown1=20a1 scale=00 unknown2=7f10 name=a_broken axe
+0c9: armour=00 mass=004 stuff2=1 flags=20 value=0000 unknown1=2081 scale=00 unknown2=7f10 name=a_broken sword
+0ca: armour=00 mass=004 stuff2=1 flags=20 value=0000 unknown1=20a1 scale=00 unknown2=7f10 name=a_broken mace
+0cb: armour=00 mass=004 stuff2=1 flags=20 value=0000 unknown1=2081 scale=00 unknown2=7f10 name=a_broken shield
+0cc: armour=00 mass=004 stuff2=1 flags=20 value=0000 unknown1=2061 scale=00 unknown2=7f0c name=a_piece of wood&pieces of wood
+0cd: armour=00 mass=004 stuff2=1 flags=20 value=0000 unknown1=2061 scale=00 unknown2=7f10 name=a_piece of wood&pieces of wood
+0ce: armour=00 mass=004 stuff2=1 flags=20 value=0000 unknown1=2001 scale=00 unknown2=7f10 name=a_plant
+0cf: armour=00 mass=004 stuff2=1 flags=20 value=0000 unknown1=2001 scale=00 unknown2=7f10 name=a_plant
+0d0: armour=00 mass=004 stuff2=2 flags=00 value=0000 unknown1=0001 scale=00 unknown2=7f10 name=a_pile of debris&piles of debris
+0d1: armour=00 mass=004 stuff2=2 flags=00 value=0000 unknown1=0001 scale=00 unknown2=7f14 name=a_pile of debris&piles of debris
+0d2: armour=00 mass=004 stuff2=2 flags=00 value=0000 unknown1=0001 scale=00 unknown2=7f10 name=a_pile of debris&piles of debris
+0d3: armour=00 mass=004 stuff2=2 flags=00 value=0000 unknown1=0001 scale=00 unknown2=7f20 name=a_stalactite
+0d4: armour=00 mass=004 stuff2=2 flags=00 value=0000 unknown1=0001 scale=00 unknown2=7f18 name=a_plant
+0d5: armour=00 mass=004 stuff2=1 flags=20 value=0000 unknown1=2001 scale=00 unknown2=7f0c name=a_pile of debris&piles of debris
+0d6: armour=00 mass=004 stuff2=1 flags=20 value=0000 unknown1=2001 scale=00 unknown2=7f0c name=a_pile of debris&piles of debris
+0d7: armour=00 mass=004 stuff2=4 flags=00 value=0000 unknown1=8001 scale=00 unknown2=7f3c name=an_anvil
+0d8: armour=00 mass=004 stuff2=2 flags=20 value=000a unknown1=a001 scale=00 unknown2=7f24 name=a_pole
+0d9: armour=00 mass=004 stuff2=1 flags=20 value=0001 unknown1=2001 scale=00 unknown2=7f24 name=a_dead rotworm
+0da: armour=00 mass=004 stuff2=1 flags=00 value=0000 unknown1=0001 scale=00 unknown2=7f1c name=some_rubble&piles of rubble
+0db: armour=00 mass=004 stuff2=1 flags=00 value=0000 unknown1=0001 scale=00 unknown2=7f18 name=a_pile of wood chips&piles of wood chips
+0dc: armour=00 mass=004 stuff2=1 flags=00 value=0000 unknown1=0001 scale=00 unknown2=7f14 name=a_pile of bones&piles of bones
+0dd: armour=00 mass=004 stuff2=1 flags=00 value=0000 unknown1=0001 scale=00 unknown2=7f10 name=a_blood stain
+0de: armour=00 mass=004 stuff2=1 flags=00 value=0000 unknown1=0001 scale=00 unknown2=7f10 name=a_blood stain
+0df: armour=00 mass=004 stuff2=1 flags=00 value=0000 unknown1=0001 scale=00 unknown2=7f10 name=a_blood stain
+0e0: armour=00 mass=000 stuff2=1 flags=00 value=0000 unknown1=80cd scale=00 unknown2=7f28 name=a_runestone
+0e1: armour=00 mass=000 stuff2=1 flags=20 value=0000 unknown1=a0cd scale=00 unknown2=7f3c name=the_Key of Truth
+0e2: armour=00 mass=001 stuff2=1 flags=20 value=0000 unknown1=a0cd scale=00 unknown2=7f3c name=the_Key of Love
+0e3: armour=00 mass=001 stuff2=1 flags=20 value=0000 unknown1=a0cd scale=00 unknown2=7f3c name=the_Key of Courage
+0e4: armour=00 mass=001 stuff2=1 flags=20 value=0000 unknown1=a0cd scale=00 unknown2=7f3c name=a_two part key
+0e5: armour=00 mass=001 stuff2=1 flags=20 value=0000 unknown1=a0cd scale=00 unknown2=7f3c name=a_two part key
+0e6: armour=00 mass=001 stuff2=1 flags=20 value=0000 unknown1=a0cd scale=00 unknown2=7f3c name=a_two part key
+0e7: armour=00 mass=001 stuff2=1 flags=20 value=0000 unknown1=a0cd scale=00 unknown2=7f3c name=the_Key of Infinity
+0e8: armour=00 mass=000 stuff2=1 flags=20 value=0000 unknown1=a0cd scale=00 unknown2=7f28 name=an_An stone
+0e9: armour=00 mass=000 stuff2=1 flags=20 value=0000 unknown1=a0cd scale=00 unknown2=7f28 name=a_Bet stone
+0ea: armour=00 mass=000 stuff2=1 flags=20 value=0000 unknown1=a0cd scale=00 unknown2=7f28 name=a_Corp stone
+0eb: armour=00 mass=000 stuff2=1 flags=20 value=0000 unknown1=a0cd scale=00 unknown2=7f28 name=a_Des stone
+0ec: armour=00 mass=000 stuff2=1 flags=20 value=0000 unknown1=a0cd scale=00 unknown2=7f28 name=an_Ex stone
+0ed: armour=00 mass=000 stuff2=1 flags=20 value=0000 unknown1=a0cd scale=00 unknown2=7f28 name=a_Flam stone
+0ee: armour=00 mass=000 stuff2=1 flags=20 value=0000 unknown1=a0cd scale=00 unknown2=7f28 name=a_Grav stone
+0ef: armour=00 mass=000 stuff2=1 flags=20 value=0000 unknown1=a0cd scale=00 unknown2=7f28 name=a_Hur stone
+0f0: armour=00 mass=000 stuff2=1 flags=20 value=0000 unknown1=a0cd scale=00 unknown2=7f28 name=an_In stone
+0f1: armour=00 mass=000 stuff2=1 flags=20 value=0000 unknown1=a0cd scale=00 unknown2=7f28 name=a_Jux stone
+0f2: armour=00 mass=000 stuff2=1 flags=20 value=0000 unknown1=a0cd scale=00 unknown2=7f28 name=a_Kal stone
+0f3: armour=00 mass=000 stuff2=1 flags=20 value=0000 unknown1=a0cd scale=00 unknown2=7f28 name=a_Lor stone
+0f4: armour=00 mass=000 stuff2=1 flags=20 value=0000 unknown1=a0cd scale=00 unknown2=7f28 name=a_Mani stone
+0f5: armour=00 mass=000 stuff2=1 flags=20 value=0000 unknown1=a0cd scale=00 unknown2=7f28 name=a_Nox stone
+0f6: armour=00 mass=000 stuff2=1 flags=20 value=0000 unknown1=a0cd scale=00 unknown2=7f28 name=an_Ort stone
+0f7: armour=00 mass=000 stuff2=1 flags=20 value=0000 unknown1=a0cd scale=00 unknown2=7f28 name=a_Por stone
+0f8: armour=00 mass=000 stuff2=1 flags=20 value=0000 unknown1=a0cd scale=00 unknown2=7f28 name=a_Quas stone
+0f9: armour=00 mass=000 stuff2=1 flags=20 value=0000 unknown1=a0cd scale=00 unknown2=7f28 name=a_Rel stone
+0fa: armour=00 mass=000 stuff2=1 flags=20 value=0000 unknown1=a0cd scale=00 unknown2=7f28 name=a_Sanct stone
+0fb: armour=00 mass=000 stuff2=1 flags=20 value=0000 unknown1=a0cd scale=00 unknown2=7f28 name=a_Tym stone
+0fc: armour=00 mass=000 stuff2=1 flags=20 value=0000 unknown1=a0cd scale=00 unknown2=7f28 name=an_Uus stone
+0fd: armour=00 mass=000 stuff2=1 flags=20 value=0000 unknown1=a0cd scale=00 unknown2=7f28 name=a_Vas stone
+0fe: armour=00 mass=000 stuff2=1 flags=20 value=0000 unknown1=a0cd scale=00 unknown2=7f28 name=a_Wis stone
+0ff: armour=00 mass=000 stuff2=1 flags=20 value=0000 unknown1=a0cd scale=00 unknown2=7f28 name=a_Ylem stone
+100: armour=00 mass=001 stuff2=1 flags=20 value=0005 unknown1=20cd scale=00 unknown2=7f30 name=a_key
+101: armour=00 mass=001 stuff2=1 flags=20 value=000a unknown1=20c9 scale=00 unknown2=7f28 name=a_lockpick
+102: armour=00 mass=001 stuff2=1 flags=20 value=0005 unknown1=20cd scale=00 unknown2=7f30 name=a_key
+103: armour=00 mass=001 stuff2=1 flags=20 value=0005 unknown1=20cd scale=00 unknown2=7f30 name=a_key
+104: armour=00 mass=001 stuff2=1 flags=20 value=0005 unknown1=20cd scale=00 unknown2=7f30 name=a_key
+105: armour=00 mass=001 stuff2=1 flags=20 value=0005 unknown1=20cd scale=00 unknown2=7f30 name=a_key
+106: armour=00 mass=001 stuff2=1 flags=20 value=0005 unknown1=20cd scale=00 unknown2=7f30 name=a_key
+107: armour=00 mass=001 stuff2=1 flags=20 value=0005 unknown1=20cd scale=00 unknown2=7f30 name=a_key
+108: armour=00 mass=001 stuff2=1 flags=20 value=0005 unknown1=20cd scale=00 unknown2=7f30 name=a_key
+109: armour=00 mass=001 stuff2=1 flags=20 value=0005 unknown1=20cd scale=00 unknown2=7f30 name=a_key
+10a: armour=00 mass=001 stuff2=1 flags=20 value=0005 unknown1=20cd scale=00 unknown2=7f30 name=a_key
+10b: armour=00 mass=001 stuff2=1 flags=20 value=0005 unknown1=20cd scale=00 unknown2=7f30 name=a_key
+10c: armour=00 mass=001 stuff2=1 flags=20 value=0005 unknown1=20cd scale=00 unknown2=7f30 name=a_key
+10d: armour=00 mass=001 stuff2=1 flags=20 value=0005 unknown1=20cd scale=00 unknown2=7f30 name=a_key
+10e: armour=00 mass=001 stuff2=1 flags=20 value=0005 unknown1=20cd scale=00 unknown2=7f30 name=a_key
+10f: armour=00 mass=000 stuff2=1 flags=00 value=0000 unknown1=000d scale=00 unknown2=7f3c name=a_lock
+110: armour=00 mass=004 stuff2=1 flags=20 value=0000 unknown1=200d scale=00 unknown2=7f3c name=a_picture of Tom
+111: armour=00 mass=004 stuff2=1 flags=20 value=0000 unknown1=20cd scale=00 unknown2=7f3c name=a_crystal splinter
+112: armour=00 mass=004 stuff2=1 flags=20 value=0000 unknown1=208f scale=00 unknown2=7f3c name=an_orb rock
+113: armour=00 mass=004 stuff2=1 flags=20 value=0000 unknown1=206d scale=00 unknown2=7f3c name=the_Gem Cutter of Coulnes
+114: armour=00 mass=004 stuff2=1 flags=20 value=0000 unknown1=204d scale=00 unknown2=7f3c name=a_book
+115: armour=00 mass=004 stuff2=1 flags=20 value=0000 unknown1=204d scale=00 unknown2=7f18 name=a_block of burning incense&blocks of burning incense
+116: armour=00 mass=004 stuff2=1 flags=20 value=0004 unknown1=204d scale=00 unknown2=7f18 name=a_block of incense&blocks of incense
+117: armour=04 mass=004 stuff2=1 flags=20 value=0000 unknown1=000d scale=00 unknown2=7f3c name=an_orb
+118: armour=00 mass=014 stuff2=1 flags=20 value=0000 unknown1=20ad scale=00 unknown2=7f3c name=a_broken blade
+119: armour=00 mass=00c stuff2=1 flags=20 value=0000 unknown1=20ad scale=00 unknown2=7f3c name=a_broken hilt
+11a: armour=00 mass=028 stuff2=1 flags=20 value=0000 unknown1=20ad scale=00 unknown2=7f20 name=a_figurine
+11b: armour=00 mass=008 stuff2=1 flags=20 value=0000 unknown1=200d scale=00 unknown2=7f20 name=some_rotworm stew&servings of rotworm stew
+11c: armour=00 mass=001 stuff2=1 flags=20 value=0000 unknown1=200d scale=08 unknown2=7f20 name=some_strong thread&pieces of strong thread
+11d: armour=00 mass=01e stuff2=1 flags=20 value=0000 unknown1=200d scale=08 unknown2=7f3c name=dragon scales&bunches of dragon scales
+11e: armour=00 mass=003 stuff2=1 flags=20 value=0002 unknown1=21a1 scale=00 unknown2=7f20 name=a_resilient sphere&some_resilient spheres
+11f: armour=00 mass=004 stuff2=1 flags=20 value=0000 unknown1=340d scale=00 unknown2=7f3c name=a_standard
+120: armour=00 mass=004 stuff2=0 flags=20 value=0000 unknown1=2001 scale=00 unknown2=7f3c name=a_spell
+121: armour=00 mass=00c stuff2=1 flags=20 value=000a unknown1=a041 scale=00 unknown2=7f18 name=a_bedroll
+122: armour=00 mass=000 stuff2=1 flags=20 value=0000 unknown1=20ad scale=00 unknown2=7f3c name=a_silver seed
+123: armour=00 mass=004 stuff2=1 flags=20 value=003c unknown1=a061 scale=00 unknown2=7f28 name=a_mandolin
+124: armour=00 mass=010 stuff2=1 flags=20 value=0028 unknown1=a041 scale=00 unknown2=7f28 name=a_flute
+125: armour=00 mass=004 stuff2=1 flags=20 value=0005 unknown1=a001 scale=00 unknown2=7f28 name=some_leeches&bunches of leeches
+126: armour=00 mass=008 stuff2=1 flags=20 value=0000 unknown1=20c1 scale=00 unknown2=7f3c name=a_moonstone
+127: armour=00 mass=004 stuff2=1 flags=20 value=0002 unknown1=a101 scale=00 unknown2=7f1c name=a_spike
+128: armour=00 mass=004 stuff2=1 flags=20 value=001e unknown1=a061 scale=00 unknown2=7f24 name=a_rock hammer
+129: armour=04 mass=000 stuff2=1 flags=20 value=0001 unknown1=a102 scale=00 unknown2=7f3c name=a_glowing rock
+12a: armour=00 mass=004 stuff2=1 flags=20 value=0000 unknown1=0001 scale=00 unknown2=7f20 name=a_campfire
+12b: armour=00 mass=004 stuff2=1 flags=20 value=000f unknown1=2001 scale=00 unknown2=7f20 name=a_fishing pole
+12c: armour=00 mass=004 stuff2=1 flags=20 value=001e unknown1=2061 scale=00 unknown2=7f3c name=a_medallion
+12d: armour=00 mass=004 stuff2=1 flags=20 value=0005 unknown1=2001 scale=00 unknown2=7f20 name=an_oil flask
+12e: armour=14 mass=000 stuff2=2 flags=20 value=0000 unknown1=800d scale=00 unknown2=7f3c name=a_fountain
+12f: armour=00 mass=000 stuff2=2 flags=20 value=0005 unknown1=800d scale=00 unknown2=7f3c name=a_cauldron
+130: armour=00 mass=004 stuff2=1 flags=20 value=0014 unknown1=a001 scale=00 unknown2=7920 name=a_book
+131: armour=00 mass=004 stuff2=1 flags=20 value=0014 unknown1=a001 scale=00 unknown2=7920 name=a_book
+132: armour=00 mass=004 stuff2=1 flags=20 value=0014 unknown1=a001 scale=00 unknown2=7920 name=a_book
+133: armour=00 mass=004 stuff2=1 flags=20 value=0014 unknown1=a001 scale=00 unknown2=7920 name=a_book
+134: armour=00 mass=004 stuff2=1 flags=20 value=0014 unknown1=a001 scale=00 unknown2=7920 name=a_book
+135: armour=00 mass=004 stuff2=1 flags=20 value=0014 unknown1=a001 scale=00 unknown2=7920 name=a_book
+136: armour=00 mass=008 stuff2=1 flags=20 value=0000 unknown1=b40d scale=00 unknown2=793c name=a_book
+137: armour=00 mass=004 stuff2=1 flags=20 value=0014 unknown1=a001 scale=00 unknown2=7920 name=a_book
+138: armour=00 mass=002 stuff2=1 flags=20 value=000a unknown1=a001 scale=00 unknown2=7220 name=a_scroll
+139: armour=00 mass=002 stuff2=1 flags=20 value=000a unknown1=a001 scale=00 unknown2=7220 name=a_scroll
+13a: armour=00 mass=002 stuff2=1 flags=20 value=000a unknown1=a001 scale=00 unknown2=7220 name=a_scroll
+13b: armour=00 mass=002 stuff2=1 flags=20 value=0008 unknown1=a001 scale=00 unknown2=7220 name=a_map
+13c: armour=00 mass=002 stuff2=1 flags=20 value=000a unknown1=a001 scale=00 unknown2=7220 name=a_scroll
+13d: armour=00 mass=002 stuff2=1 flags=20 value=000a unknown1=a001 scale=00 unknown2=7220 name=a_scroll
+13e: armour=00 mass=002 stuff2=1 flags=20 value=000a unknown1=a001 scale=00 unknown2=7220 name=a_scroll
+13f: armour=00 mass=002 stuff2=1 flags=20 value=000a unknown1=a001 scale=00 unknown2=7220 name=a_scroll
+140: armour=80 mass=000 stuff2=3 flags=40 value=0000 unknown1=0001 scale=00 unknown2=703e name=a_door
+141: armour=80 mass=000 stuff2=3 flags=40 value=0000 unknown1=0005 scale=00 unknown2=703e name=a_door
+142: armour=80 mass=000 stuff2=3 flags=40 value=0000 unknown1=0005 scale=00 unknown2=703e name=a_door
+143: armour=80 mass=000 stuff2=3 flags=40 value=0000 unknown1=0009 scale=00 unknown2=703e name=a_door
+144: armour=80 mass=000 stuff2=3 flags=40 value=0000 unknown1=0009 scale=00 unknown2=703e name=a_door
+145: armour=80 mass=000 stuff2=3 flags=40 value=0000 unknown1=000d scale=00 unknown2=703e name=a_door
+146: armour=80 mass=000 stuff2=3 flags=40 value=0000 unknown1=000d scale=00 unknown2=7f3e name=a_portcullis&portcullises
+147: armour=80 mass=000 stuff2=3 flags=40 value=0000 unknown1=0009 scale=00 unknown2=7f3e name=a_secret door
+148: armour=80 mass=000 stuff2=3 flags=40 value=0000 unknown1=0001 scale=00 unknown2=703e name=an_open door
+149: armour=80 mass=000 stuff2=3 flags=40 value=0000 unknown1=0005 scale=00 unknown2=703e name=an_open door
+14a: armour=80 mass=000 stuff2=3 flags=40 value=0000 unknown1=0005 scale=00 unknown2=703e name=an_open door
+14b: armour=80 mass=000 stuff2=3 flags=40 value=0000 unknown1=0009 scale=00 unknown2=703e name=an_open door
+14c: armour=80 mass=000 stuff2=3 flags=40 value=0000 unknown1=0009 scale=00 unknown2=703e name=an_open door
+14d: armour=80 mass=000 stuff2=3 flags=40 value=0000 unknown1=000d scale=00 unknown2=703e name=an_open door
+14e: armour=80 mass=000 stuff2=3 flags=40 value=0000 unknown1=000d scale=00 unknown2=7f3e name=an_open portcullis
+14f: armour=80 mass=000 stuff2=3 flags=40 value=0000 unknown1=0009 scale=00 unknown2=7f3e name=a_secret door
+150: armour=06 mass=000 stuff2=a flags=42 value=0000 unknown1=0009 scale=00 unknown2=7f36 name=a_bench&benches
+151: armour=00 mass=000 stuff2=9 flags=00 value=0002 unknown1=8695 scale=00 unknown2=7f1a name=an_arrow
+152: armour=00 mass=000 stuff2=9 flags=00 value=0004 unknown1=8895 scale=00 unknown2=7f1e name=a_crossbow bolt
+153: armour=0c mass=000 stuff2=b flags=42 value=0000 unknown1=008d scale=00 unknown2=7f22 name=a_large boulder
+154: armour=0f mass=000 stuff2=b flags=42 value=0000 unknown1=002d scale=00 unknown2=7f22 name=a_large boulder
+155: armour=07 mass=080 stuff2=a flags=62 value=0000 unknown1=20cd scale=00 unknown2=7f1a name=a_boulder
+156: armour=00 mass=020 stuff2=9 flags=62 value=0000 unknown1=2189 scale=00 unknown2=7f22 name=a_small boulder
+157: armour=1c mass=000 stuff2=a flags=42 value=0000 unknown1=000d scale=00 unknown2=7f3e name=a_shrine
+158: armour=0c mass=000 stuff2=a flags=42 value=0000 unknown1=0009 scale=00 unknown2=7f36 name=a_table
+159: armour=00 mass=000 stuff2=a flags=42 value=0000 unknown1=0009 scale=00 unknown2=7f36 name=a_beam
+15a: armour=00 mass=000 stuff2=8 flags=42 value=0000 unknown1=000d scale=00 unknown2=7f3e name=a_moongate
+15b: armour=09 mass=000 stuff2=a flags=c2 value=0000 unknown1=8005 scale=00 unknown2=7022 name=a_barrel
+15c: armour=06 mass=050 stuff2=a flags=42 value=0000 unknown1=0009 scale=00 unknown2=7f36 name=a_chair
+15d: armour=06 mass=000 stuff2=a flags=c2 value=0000 unknown1=8009 scale=00 unknown2=7036 name=a_chest
+15e: armour=06 mass=000 stuff2=a flags=42 value=0000 unknown1=0009 scale=00 unknown2=7f36 name=a_nightstand
+15f: armour=06 mass=000 stuff2=a flags=62 value=0384 unknown1=20cd scale=00 unknown2=7f3e name=a_lotus turbo esprit
+160: armour=80 mass=000 stuff2=9 flags=40 value=0000 unknown1=000d scale=00 unknown2=7f36 name=a_pillar
+161: armour=08 mass=000 stuff2=1 flags=44 value=0000 unknown1=000d scale=00 unknown2=7f3e name=a_lever
+162: armour=08 mass=000 stuff2=1 flags=44 value=0000 unknown1=000d scale=00 unknown2=7f3e name=a_switch&switches
+163: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0001 scale=00 unknown2=7f3e name=
+164: armour=02 mass=000 stuff2=4 flags=42 value=0000 unknown1=000d scale=00 unknown2=6f3e name=a_bridge
+165: armour=0c mass=000 stuff2=1 flags=40 value=0000 unknown1=000d scale=00 unknown2=6f3e name=a_gravestone
+166: armour=00 mass=000 stuff2=1 flags=40 value=0000 unknown1=000d scale=00 unknown2=6f3e name=some_writing
+167: armour=00 mass=000 stuff2=1 flags=40 value=0000 unknown1=0001 scale=00 unknown2=7f3e name=
+168: armour=00 mass=000 stuff2=1 flags=40 value=0000 unknown1=0001 scale=00 unknown2=7f3e name=
+169: armour=00 mass=000 stuff2=1 flags=40 value=0000 unknown1=0001 scale=00 unknown2=7f3e name=
+16a: armour=00 mass=000 stuff2=1 flags=40 value=0000 unknown1=0001 scale=00 unknown2=7f3e name=
+16b: armour=00 mass=000 stuff2=1 flags=40 value=0000 unknown1=0001 scale=00 unknown2=7f3e name=
+16c: armour=00 mass=000 stuff2=1 flags=40 value=0000 unknown1=0001 scale=00 unknown2=7f3e name=
+16d: armour=80 mass=000 stuff2=3 flags=40 value=0000 unknown1=000d scale=00 unknown2=6f3f name=force field
+16e: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=000c scale=00 unknown2=6f3f name=special tmap obj
+16f: armour=20 mass=000 stuff2=3 flags=40 value=0000 unknown1=000d scale=00 unknown2=6f3f name=special tmap obj
+170: armour=08 mass=000 stuff2=2 flags=44 value=0000 unknown1=000f scale=00 unknown2=7f3f name=a_button
+171: armour=08 mass=000 stuff2=2 flags=44 value=0000 unknown1=000f scale=00 unknown2=7f3f name=a_button
+172: armour=08 mass=000 stuff2=2 flags=44 value=0000 unknown1=000f scale=00 unknown2=7f3f name=a_button
+173: armour=08 mass=000 stuff2=2 flags=44 value=0000 unknown1=000d scale=00 unknown2=7f3f name=a_switch
+174: armour=08 mass=000 stuff2=2 flags=44 value=0000 unknown1=000d scale=00 unknown2=7f3f name=a_switch
+175: armour=08 mass=000 stuff2=2 flags=44 value=0000 unknown1=000d scale=00 unknown2=7f3f name=a_lever
+176: armour=08 mass=000 stuff2=2 flags=44 value=0000 unknown1=000f scale=00 unknown2=7f3f name=a_pull chain
+177: armour=08 mass=000 stuff2=2 flags=44 value=0000 unknown1=000f scale=00 unknown2=7f3f name=a_pull chain
+178: armour=08 mass=000 stuff2=2 flags=44 value=0000 unknown1=000f scale=00 unknown2=7f3f name=a_button
+179: armour=08 mass=000 stuff2=2 flags=44 value=0000 unknown1=000f scale=00 unknown2=7f3f name=a_button
+17a: armour=08 mass=000 stuff2=2 flags=44 value=0000 unknown1=000f scale=00 unknown2=7f3f name=a_button
+17b: armour=08 mass=000 stuff2=2 flags=44 value=0000 unknown1=000d scale=00 unknown2=7f3f name=a_switch
+17c: armour=08 mass=000 stuff2=2 flags=44 value=0000 unknown1=000d scale=00 unknown2=7f3f name=a_switch
+17d: armour=08 mass=000 stuff2=2 flags=44 value=0000 unknown1=000d scale=00 unknown2=7f3f name=a_lever
+17e: armour=08 mass=000 stuff2=2 flags=44 value=0000 unknown1=000f scale=00 unknown2=7f3f name=a_pull chain
+17f: armour=08 mass=000 stuff2=2 flags=44 value=0000 unknown1=000f scale=00 unknown2=7f3f name=a_pull chain
+180: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0002 scale=00 unknown2=7f3c name=a_damage trap
+181: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7f3c name=a_teleport trap
+182: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7f3c name=a_arrow trap
+183: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7f3c name=a_do trap
+184: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7f3c name=a_pit trap
+185: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7f3c name=a_change terrain trap
+186: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7f3c name=a_spelltrap
+187: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7f3c name=a_create object trap
+188: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7f3c name=a_door trap
+189: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7f3c name=a_ward trap
+18a: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7f3c name=a_tell trap
+18b: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7f3c name=a_delete object trap
+18c: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7f3c name=an_inventory trap
+18d: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7f3c name=a_set variable trap
+18e: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7f3c name=a_check variable trap
+18f: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7f3c name=a_combination trap
+190: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7f3c name=a_text string trap
+191: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+192: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+193: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+194: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+195: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+196: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+197: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+198: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+199: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+19a: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+19b: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+19c: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+19d: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+19e: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+19f: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1a0: armour=20 mass=000 stuff2=2 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7f3c name=a_move trigger
+1a1: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0002 scale=00 unknown2=7f3c name=a_pick up trigger
+1a2: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0002 scale=00 unknown2=7f3c name=a_use trigger
+1a3: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7f3c name=a_look trigger
+1a4: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7f3c name=a_step on trigger
+1a5: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7f3c name=an_open trigger
+1a6: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7f3c name=an_unlock trigger
+1a7: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7f00 name=
+1a8: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7f00 name=
+1a9: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7f00 name=
+1aa: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7f00 name=
+1ab: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7f00 name=
+1ac: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7f00 name=
+1ad: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7f00 name=
+1ae: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7f00 name=
+1af: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7f00 name=
+1b0: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1b1: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1b2: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1b3: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1b4: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1b5: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1b6: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1b7: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1b8: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1b9: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1ba: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1bb: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1bc: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1bd: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1be: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1bf: armour=00 mass=000 stuff2=0 flags=40 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1c0: armour=00 mass=000 stuff2=b flags=08 value=0000 unknown1=000c scale=7f unknown2=7f3c name=some_blood
+1c1: armour=00 mass=000 stuff2=b flags=08 value=0000 unknown1=000c scale=7f unknown2=7f28 name=a_mist cloud
+1c2: armour=00 mass=000 stuff2=0 flags=08 value=0000 unknown1=000c scale=7f unknown2=7f3c name=an_explosion
+1c3: armour=00 mass=000 stuff2=0 flags=08 value=0000 unknown1=000c scale=7f unknown2=7f3c name=an_explosion
+1c4: armour=00 mass=000 stuff2=0 flags=08 value=0000 unknown1=000c scale=7f unknown2=7f3c name=an_explosion
+1c5: armour=00 mass=000 stuff2=0 flags=08 value=0000 unknown1=000c scale=7f unknown2=7f3c name=a_splash&splashes
+1c6: armour=00 mass=000 stuff2=0 flags=08 value=0000 unknown1=000c scale=7f unknown2=7f3c name=a_splash&splahes
+1c7: armour=00 mass=000 stuff2=0 flags=08 value=0000 unknown1=000c scale=7f unknown2=7f3c name=a_spell effect
+1c8: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=000c scale=7f unknown2=7f3c name=some_smoke
+1c9: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=000c scale=7f unknown2=7f3c name=a_fountain
+1ca: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=000d scale=7f unknown2=7f3c name=a_silver tree
+1cb: armour=00 mass=000 stuff2=b flags=08 value=0000 unknown1=000c scale=7f unknown2=7f3c name=some_damage
+1cc: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=000c scale=00 unknown2=7f30 name=
+1cd: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=000c scale=00 unknown2=7f3c name=a_sound source
+1ce: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=000c scale=00 unknown2=7f3c name=some_changing terrain
+1cf: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=000c scale=7f unknown2=7f3e name=a_moving door
+1d0: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1d1: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1d2: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1d3: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1d4: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1d5: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1d6: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1d7: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1d8: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1d9: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1da: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1db: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1dc: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1dd: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1de: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1df: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1e0: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1e1: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1e2: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1e3: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1e4: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1e5: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1e6: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1e7: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1e8: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1e9: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1ea: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1eb: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1ec: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1ed: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1ee: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1ef: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1f0: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1f1: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1f2: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1f3: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1f4: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1f5: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1f6: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1f7: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1f8: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1f9: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1fa: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1fb: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1fc: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1fd: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1fe: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=
+1ff: armour=00 mass=000 stuff2=0 flags=00 value=0000 unknown1=0000 scale=00 unknown2=7000 name=

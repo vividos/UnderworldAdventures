@@ -1,0 +1,198 @@
+melee weapons table
+
+type can be: 03: sword, 04: axe, 05: mace, 06: unarmed
+0000: slash=06 bash=04 stab=02 type=04 durability=0a unknowns=5a 19 a0 name=a_hand axe
+0001: slash=0e bash=07 stab=02 type=04 durability=22 unknowns=46 05 dc name=a_battle axe
+0002: slash=0a bash=06 stab=08 type=04 durability=19 unknowns=50 0d be name=an_axe
+0003: slash=04 bash=02 stab=05 type=03 durability=05 unknowns=64 1e 91 name=a_dagger
+0004: slash=06 bash=03 stab=06 type=03 durability=12 unknowns=5a 14 aa name=a_shortsword
+0005: slash=0a bash=04 stab=08 type=03 durability=1c unknowns=50 0f be name=a_longsword
+0006: slash=0d bash=06 stab=0a type=03 durability=22 unknowns=46 09 cd name=a_broadsword
+0007: slash=03 bash=06 stab=02 type=05 durability=02 unknowns=5f 14 91 name=a_cudgel
+0008: slash=06 bash=0a stab=04 type=05 durability=0f unknowns=55 0f af name=a_light mace
+0009: slash=08 bash=10 stab=05 type=05 durability=19 unknowns=4b 09 be name=a_mace
+000a: slash=0e bash=07 stab=0b type=03 durability=ff unknowns=46 0b be name=a_shiny sword
+000b: slash=0d bash=08 stab=05 type=04 durability=ff unknowns=4b 08 c8 name=a_jeweled axe
+000c: slash=0f bash=07 stab=0c type=03 durability=ff unknowns=3c 05 c8 name=a_black sword
+000d: slash=0e bash=07 stab=0b type=03 durability=ff unknowns=46 0b be name=a_jeweled sword
+000e: slash=09 bash=11 stab=05 type=05 durability=ff unknowns=41 06 dc name=a_jeweled mace
+000f: slash=02 bash=04 stab=03 type=06 durability=ff unknowns=5a 0f 8c name=a_fist
+
+ranged weapons table
+
+0010: durability=05 unknown1=0f unknown2=c0 name=a_sling stone
+0011: durability=0a unknown1=1a unknown2=c0 name=a_crossbow bolt
+0012: durability=08 unknown1=16 unknown2=c0 name=an_arrow
+0013: durability=08 unknown1=0a unknown2=c0 name=a_stone
+0014: durability=1c unknown1=18 unknown2=f5 name=a_fireball
+0015: durability=10 unknown1=14 unknown2=dd name=a_lightning bolt
+0016: durability=08 unknown1=0d unknown2=f0 name=acid
+0017: durability=08 unknown1=0f unknown2=bd name=a_magic missile
+0018: durability=03 unknown1=0f unknown2=00 name=a_sling
+0019: durability=03 unknown1=0f unknown2=02 name=a_bow
+001a: durability=03 unknown1=0f unknown2=01 name=a_crossbow
+001b: durability=03 unknown1=0f unknown2=ff name=
+001c: durability=03 unknown1=0f unknown2=ff name=
+001d: durability=03 unknown1=0f unknown2=ff name=
+001e: durability=03 unknown1=0f unknown2=ff name=
+001f: durability=03 unknown1=0f unknown2=02 name=a_jeweled bow
+
+armour and wearables table
+
+category can be: 00: shield, 01: body armour, 03: leggings, 04: gloves, 05: boots, 08: hat, 09: ring
+0020: protection=02 durability=08 unknown1=04 category=01 name=a_leather vest
+0021: protection=04 durability=16 unknown1=04 category=01 name=a_mail shirt
+0022: protection=06 durability=22 unknown1=04 category=01 name=a_breastplate
+0023: protection=02 durability=04 unknown1=05 category=03 name=leather leggings&pairs of leather leggings
+0024: protection=04 durability=0c unknown1=05 category=03 name=mail leggings&pairs of mail leggings
+0025: protection=06 durability=14 unknown1=05 category=03 name=plate leggings&pairs of plate leggings
+0026: protection=01 durability=02 unknown1=06 category=04 name=leather gloves&pairs of leather gloves
+0027: protection=03 durability=09 unknown1=06 category=04 name=chain gauntlets&pairs of chain gauntlets
+0028: protection=05 durability=0f unknown1=06 category=04 name=plate gauntlets&pairs of plate gauntlets
+0029: protection=01 durability=03 unknown1=07 category=05 name=leather boots&pairs of leather boots
+002a: protection=03 durability=0a unknown1=07 category=05 name=chain boots&pairs of chain boots
+002b: protection=05 durability=11 unknown1=07 category=05 name=plate boots&pairs of plate boots
+002c: protection=02 durability=06 unknown1=07 category=08 name=a_leather cap
+002d: protection=04 durability=0f unknown1=07 category=08 name=a_chain cowl
+002e: protection=06 durability=18 unknown1=07 category=08 name=a_helmet
+002f: protection=03 durability=ff unknown1=04 category=05 name=a_pair of dragon skin boots&pairs of dragon skin boots
+0030: protection=00 durability=ff unknown1=04 category=08 name=a_crown
+0031: protection=00 durability=ff unknown1=04 category=08 name=a_crown
+0032: protection=00 durability=ff unknown1=04 category=08 name=a_crown
+0033: protection=00 durability=ff unknown1=00 category=00 name=
+0034: protection=00 durability=ff unknown1=00 category=00 name=
+0035: protection=00 durability=ff unknown1=00 category=00 name=
+0036: protection=00 durability=ff unknown1=00 category=09 name=an_iron ring
+0037: protection=03 durability=ff unknown1=00 category=00 name=a_shiny shield
+0038: protection=00 durability=ff unknown1=00 category=09 name=a_gold ring
+0039: protection=00 durability=ff unknown1=00 category=09 name=a_silver ring
+003a: protection=00 durability=ff unknown1=00 category=09 name=a_red ring
+003b: protection=03 durability=1e unknown1=00 category=00 name=a_tower shield
+003c: protection=01 durability=05 unknown1=00 category=00 name=a_wooden shield
+003d: protection=02 durability=11 unknown1=00 category=00 name=a_small shield
+003e: protection=01 durability=09 unknown1=00 category=00 name=a_buckler
+003f: protection=02 durability=ff unknown1=00 category=00 name=a_jeweled shield
+
+critters table
+
+40: 01 ff ff ff 05 00 07 00 28 01 01 02 03 00 00 00 05 01 00 02 03 64 00 00 00 00 00 00 2f 84 34 43 00 00 00 00 00 00 00 00 06 00 00 00 00 00 00 49 name=a_rotworm
+41: 00 ff ff ff 07 00 06 00 c8 02 01 01 01 00 00 00 05 02 00 02 03 32 00 00 00 02 03 32 2d 85 23 33 00 00 00 00 00 00 00 00 06 00 00 00 00 00 00 49 name=a_flesh slug
+42: 01 ff ff ff 07 00 1e 02 08 03 81 08 0c 00 00 00 02 04 07 03 04 64 00 00 00 00 00 00 74 83 ae ce 00 00 00 00 00 00 00 00 07 00 00 00 00 00 00 49 name=a_cave bat
+43: 01 ff ff ff 08 00 0f 04 c8 04 21 04 06 00 00 00 04 04 06 04 04 64 00 00 00 00 00 00 3b 84 88 8a 00 00 00 00 00 00 00 00 08 00 00 00 00 00 00 49 name=a_giant rat
+44: 02 01 01 01 14 00 09 07 e8 05 21 03 05 00 00 00 04 03 06 04 07 32 03 09 32 00 00 00 39 85 56 65 00 00 00 00 00 00 00 00 09 00 00 00 00 00 00 49 name=a_giant spider
+45: 01 ff ff ff 0c 00 0c 00 a8 02 01 01 01 00 00 00 05 03 03 03 06 32 00 00 00 04 05 32 2c 83 34 33 00 00 00 00 00 00 00 00 0c 00 31 31 ff 31 00 49 name=a_acid slug
+46: 03 02 02 02 15 00 11 0a a8 06 38 04 08 41 69 00 51 05 08 05 06 28 07 04 1e 06 05 1e 57 8a 99 89 0f 59 07 01 87 01 85 05 05 00 00 00 00 00 01 49 name=a_goblin
+47: 03 02 02 02 15 00 11 0a a8 06 38 04 08 41 69 00 51 06 09 04 08 28 08 05 1e 05 07 1e 58 8a 99 89 09 59 07 02 87 01 a6 65 05 00 00 00 00 00 01 49 name=a_goblin
+48: 01 ff ff ff 0d 00 0f 04 c8 04 21 04 06 00 00 02 04 04 08 04 06 64 00 00 00 00 00 00 3d 84 88 9b 00 00 00 00 00 00 00 00 16 00 00 00 00 00 00 49 name=a_giant rat
+49: 01 ff ff ff 0a 00 1c 02 08 03 81 08 0c 00 00 04 02 05 09 05 05 64 00 00 00 00 00 00 7f 83 ad ce 00 00 00 00 00 00 00 00 1b 00 00 00 00 00 00 49 name=a_vampire bat
+4a: 03 03 03 03 14 00 0d 08 80 07 0c 03 05 00 00 00 51 07 07 05 08 32 07 06 32 00 00 00 4f 86 45 35 09 59 91 02 00 00 22 00 1d 00 00 00 00 00 01 49 name=a_skeleton
+4b: 02 ff ff ff 0f 00 18 0a 08 08 81 05 07 00 00 00 02 05 06 06 05 64 00 00 00 00 00 00 68 88 8a ad 00 00 00 00 00 00 84 00 25 00 02 02 ff 0b 05 49 name=an_imp
+4c: 03 02 02 02 19 00 0e 0a a8 09 38 04 06 42 69 00 51 07 0b 04 08 28 08 05 1e 06 07 1e 5c 8a 79 78 0f 79 c7 02 87 01 83 05 0b 00 00 00 00 00 01 49 name=a_goblin
+4d: 03 02 02 02 1b 00 11 0a a8 1c 38 04 08 41 69 00 51 05 08 05 08 28 07 04 1e 06 05 1e 5b 8a 99 89 21 0f 07 02 8f 01 85 05 19 00 00 00 00 00 01 49 name=a_goblin
+4e: 03 02 02 02 1f 00 0e 0a a8 1c 38 04 06 42 69 00 51 07 0b 04 08 28 08 05 1e 06 07 1e 5c 8a 79 78 21 0f c7 02 8f 01 83 05 2b 00 00 00 00 00 01 49 name=a_goblin
+4f: 00 00 00 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 49 name=
+50: 03 02 02 02 19 00 0e 0a a8 09 38 04 06 42 69 00 51 07 0b 05 09 28 09 06 1e 07 08 1e 59 8a 79 78 09 7b 27 01 35 02 84 65 0c 00 00 00 00 00 01 49 name=a_goblin
+51: 01 ff ff ff 14 00 17 08 c8 03 81 08 0c 00 00 00 02 0a 0a 00 00 00 08 06 64 00 00 00 78 87 ac 6e 00 00 00 00 00 00 00 00 39 00 00 00 00 00 00 49 name=a_mongbat
+52: 01 ff ff ff 12 00 08 00 a8 01 00 02 03 00 00 04 05 08 05 04 07 64 00 00 00 00 00 00 2c 84 54 34 00 00 00 00 00 00 00 00 36 00 00 00 00 00 00 49 name=a_bloodworm
+53: 02 01 01 01 14 00 0b 05 c8 05 21 03 05 00 00 05 04 0a 0a 05 08 32 04 0a 32 00 00 00 46 83 56 43 00 00 00 00 00 00 00 00 49 00 00 00 00 00 00 49 name=a_wolf spider
+54: 04 03 03 03 1e 00 0d 0f c8 0a 34 04 07 e3 e8 00 51 0b 0b 05 0b 28 07 08 1e 08 06 1e 57 89 78 87 01 5b 44 0a a7 02 c8 0c 14 00 00 00 00 00 04 49 name=a_mountainman&mountainmen
+55: 02 02 02 02 28 00 0c 0e e8 0b 20 03 05 74 65 00 01 0a 0d 05 0b 46 04 0a 1e 00 00 00 59 89 67 75 00 00 05 0b 65 0b 65 d8 17 00 00 00 00 00 03 49 name=a_green lizardman&green lizardmen
+56: 04 03 03 03 21 00 0d 0f c8 0a 34 04 07 e3 e8 00 51 0b 0f 06 0c 28 08 09 1e 09 07 1e 57 89 78 87 01 5b 37 0a 85 03 c8 5c 19 00 00 00 00 00 04 49 name=a_mountainman&mountainmen
+57: 02 ff ff ff 14 00 0a 02 08 0c 41 02 03 00 00 00 03 0a 13 04 0c 19 05 08 23 06 06 28 3c 87 68 a4 00 00 00 00 00 00 00 00 73 00 00 00 00 00 00 49 name=a_lurker
+58: 02 02 02 02 2a 00 0c 0e e8 0b 20 04 07 75 65 00 01 0c 0e 06 0c 46 05 0b 1e 00 00 00 56 89 67 75 00 00 09 0b 67 0b 76 d8 20 00 00 00 00 00 03 49 name=a_red lizardman&red lizardmen
+59: 02 02 02 02 2c 00 0c 0e e8 0b 20 04 07 75 65 00 01 0c 0e 07 0d 46 06 0c 1e 00 00 00 56 89 67 75 00 00 05 0b 66 0b 76 d7 24 00 00 00 00 00 03 49 name=a_gray lizardman&red lizardmen
+5a: 05 04 04 04 2d 00 1b 14 c8 1b 2c 04 08 a5 98 00 51 0c 13 09 08 28 06 0a 1e 0a 06 1e 58 88 79 98 0b 41 04 09 17 09 c9 0d 32 00 00 00 00 00 06 49 name=an_outcast
+5b: 03 03 03 08 32 00 09 08 c8 0e 18 03 06 00 00 00 01 09 0e 05 0d 46 04 0c 1e 00 00 00 6d 8a 24 48 00 00 00 00 00 00 43 00 a2 00 00 00 00 00 01 49 name=a_headless&headlesses
+5c: 03 02 02 02 23 00 0b 08 a8 05 20 03 05 00 00 08 04 0d 11 07 0a 32 06 0c 32 00 00 00 45 83 66 52 00 00 00 00 00 00 00 00 a7 00 00 00 00 00 00 49 name=a_dread spider
+5d: 05 04 04 04 2d 00 1b 14 c8 0d 2c 04 08 a5 98 00 51 0d 14 0b 0a 28 08 0c 1e 0c 08 1e 58 88 79 98 0b 53 17 09 03 09 d9 54 37 00 00 00 00 00 07 49 name=a_fighter
+5e: 05 04 04 04 2d 00 1b 14 c8 0d 2c 04 08 a5 98 00 51 0d 14 0b 0a 28 08 0c 1e 0c 08 1e 58 88 79 98 0b 47 17 09 03 09 d9 54 37 00 00 00 00 00 07 49 name=a_fighter
+5f: 05 04 04 04 2d 00 1b 14 c8 0d 2c 04 08 a5 98 00 51 0d 14 0b 0a 28 08 0c 1e 0c 08 1e 58 88 79 98 0b 4f 17 09 03 09 d9 54 37 00 00 00 00 00 07 49 name=a_fighter
+60: 04 04 04 04 37 00 0a 0c e8 0f 28 04 08 66 4d 00 01 12 0f 0a 12 46 0c 10 1e 00 00 00 89 8b 66 67 00 00 22 0c 55 0c a9 0d 2d 00 ff ff 08 08 02 49 name=a_troll
+61: 01 01 01 01 28 00 19 05 00 10 81 04 06 00 00 00 00 0b 14 08 0a 64 00 00 00 00 00 00 38 81 98 a8 00 00 00 00 00 00 00 00 ca 00 00 00 00 00 01 49 name=a_ghost
+62: 05 04 04 04 32 00 1b 14 c8 0d 2c 04 08 a5 98 00 51 0d 14 0b 0a 28 08 0c 1e 0c 08 1e 58 88 79 98 0b 55 17 09 03 09 d9 54 37 00 00 00 00 00 07 49 name=a_fighter
+63: 02 02 02 01 32 00 0d 0c a8 11 10 03 04 55 b5 00 01 0a 12 0c 0c 32 08 0b 1e 08 0d 14 4e 87 45 55 00 00 44 0c 35 0c 57 03 ec 00 00 00 00 00 02 49 name=a_ghoul
+64: 02 ff ff ff 32 00 19 05 00 10 81 04 06 00 00 00 00 0b 17 08 0c 64 00 00 00 00 00 00 3a 81 98 a8 00 00 00 00 00 00 00 00 fa 00 00 00 00 00 01 49 name=a_ghost
+65: 02 ff ff ff 05 00 19 05 00 10 81 04 06 00 00 00 00 0b 16 06 06 64 00 00 00 00 00 00 3a 81 98 a8 00 00 00 00 00 00 00 00 11 01 00 00 00 00 01 49 name=a_ghost
+66: 02 ff ff ff 3c 00 0d 16 08 12 80 03 04 00 00 00 00 0d 17 0d 0c 28 0c 0a 28 0b 0d 14 67 82 f2 fa 00 00 00 00 00 00 00 00 18 01 0f 0f 00 11 00 49 name=a_gazer
+67: 04 04 04 04 37 00 0f 19 c8 13 20 03 08 86 67 00 01 0e 16 10 0f 32 13 19 32 00 00 00 55 86 78 a6 07 00 42 12 18 0b 99 25 4e 00 0f 02 08 11 0a 49 name=a_mage
+68: 06 05 05 04 5f 00 1a 14 c8 0d 2c 04 08 a6 a9 00 51 13 1b 11 10 28 0e 11 1e 11 0d 1e 5a 88 78 a8 0d 43 03 09 1a 09 cb 18 45 01 00 00 00 00 0e 49 name=a_fighter
+69: 03 03 03 03 50 00 0d 0c a8 11 10 03 05 55 b5 05 01 0e 16 0f 10 32 0c 0d 1e 0b 11 14 4f 87 46 55 00 00 66 0c 27 0c 54 07 5e 01 00 00 00 00 03 49 name=a_dark ghoul
+6a: 04 04 04 04 3c 00 10 19 c8 13 38 03 08 87 57 00 01 0f 16 0d 10 64 00 00 00 00 00 00 55 86 78 a6 00 00 04 0f 3a 0f 9a a6 5e 00 18 18 26 13 09 49 name=a_mage
+6b: 04 04 04 04 37 00 11 19 c8 13 38 03 08 87 57 00 01 0f 17 0d 10 64 00 00 00 00 00 00 57 86 78 a6 00 00 95 0e a7 0f 9a 27 64 00 02 0f 13 10 0c 49 name=a_mage
+6c: 04 04 04 04 3c 00 0e 19 c8 13 38 03 08 87 57 00 01 0e 16 0c 11 32 13 19 32 00 00 00 55 86 78 a6 07 00 45 12 17 0b ab a8 68 00 18 18 ff 15 08 49 name=a_mage
+6d: 04 04 04 04 37 00 0f 19 c8 13 20 03 08 86 67 00 01 0e 16 0c 0f 32 13 19 32 00 00 00 55 86 78 a6 07 00 42 12 18 0b 99 25 4e 00 0f 02 08 11 0a 49 name=a_mage
+6e: 02 02 02 01 3c 00 0d 0c a8 1c 10 03 04 55 b5 00 01 0f 12 0e 0c 32 0a 0b 1e 0a 0f 14 4f 87 45 55 00 00 44 0c 35 0c 57 03 ec 00 00 00 00 00 02 49 name=a_ghoul
+6f: 04 04 04 04 41 00 0a 0c e8 1c 28 04 08 66 4d 00 01 12 0f 0a 12 46 0c 10 1e 00 00 00 8c 8b 66 67 00 00 22 0c 55 0c a9 0d bf 00 ff ff 08 08 02 49 name=a_feral troll
+70: 05 04 04 04 64 00 09 0c e8 0f 28 03 07 67 fd 00 01 19 19 11 16 32 14 14 32 00 00 00 7a 8a 67 77 00 00 34 0c 68 0c b8 0d b6 01 ff ff 13 10 02 49 name=a_great troll
+71: 02 ff ff ff 46 00 19 05 00 10 81 04 06 00 00 00 00 10 18 0c 0f 64 00 00 00 00 00 00 5c 82 98 ba 00 00 00 00 00 00 00 00 cc 01 00 00 00 00 01 49 name=a_dire ghost
+72: 04 04 04 03 50 00 06 0a 00 14 00 03 04 00 00 00 11 17 17 0f 12 46 0f 0f 1e 00 00 00 4f 8a 65 42 00 00 00 00 00 00 00 00 e4 01 00 00 00 00 01 49 name=an_earth golem
+73: 04 04 04 04 46 00 10 1c c8 13 38 03 08 98 57 00 01 10 15 19 0f 64 00 00 00 00 00 00 56 87 78 a6 00 00 a9 0f 4c 0f dc 28 7d 00 1f 2d 13 11 0f 49 name=a_mage
+74: 02 ff ff ff 50 00 0a 04 08 0c 41 03 04 00 00 0a 03 12 19 0c 14 19 0f 0f 23 11 0a 28 69 86 67 87 00 00 00 00 00 00 00 00 1c 02 00 00 00 00 00 49 name=a_deep lurker
+75: 04 04 04 04 50 00 16 0a 00 15 01 04 08 00 00 00 00 14 19 0a 0b 28 0a 0b 1e 0a 0b 1e 89 82 9b 99 00 00 00 00 00 00 00 00 37 02 00 00 00 00 01 49 name=a_shadow beast
+76: 04 04 04 04 64 00 0c 12 60 16 00 01 01 00 00 00 05 19 19 14 12 32 16 10 32 00 00 00 28 88 37 31 00 00 ca 0c da 0c 65 00 49 02 00 00 00 00 00 49 name=a_reaper
+77: 05 05 05 04 7d 00 06 0e 40 14 00 03 04 00 00 00 51 19 1b 12 14 46 0f 12 1e 00 00 00 4f 8b 65 42 00 00 59 15 67 15 00 00 64 02 00 00 00 00 01 49 name=a_stone golem
+78: 03 03 03 03 50 00 14 0c 00 17 00 05 0a 00 00 00 05 10 23 14 12 3c 00 00 00 0f 16 28 38 8c 84 8b 00 00 00 00 00 00 00 00 76 02 18 18 ff 0b 00 49 name=a_fire elemental
+79: 07 07 07 07 c8 00 05 12 40 14 00 03 04 00 00 00 51 1e 20 19 19 32 16 19 32 00 00 00 4f 8c 65 42 00 00 79 12 76 12 00 00 ad 02 00 00 00 00 01 49 name=a_metal golem
+7a: 0f ff ff ff c8 00 13 1e 00 18 83 04 0a 00 00 00 00 1e 32 14 0f 64 00 00 00 00 00 00 81 81 88 89 00 00 00 00 00 00 00 00 d0 02 ff ff 32 04 1e 49 name=a_wisp
+7b: 06 06 06 06 78 00 11 1e 08 19 a0 04 08 00 00 00 01 1e 20 17 14 28 14 23 1e 14 11 1e 8c 86 78 c5 00 00 00 00 00 00 ff 00 46 05 18 1f 13 21 14 49 name=
+7c: 14 14 14 14 fa 00 15 1e a8 1a 20 04 0c 00 00 00 51 28 32 32 50 64 00 00 00 00 00 00 8f 8c cc c8 00 00 00 00 00 00 00 00 00 00 ff ff 2b 10 00 49 name=
+7d: 00 00 00 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 49 name=
+7e: 00 00 00 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 49 name=
+7f: 00 00 00 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 49 name=an_adventurer
+
+containers table
+
+0080: capacity=7d accept=ff unknown=ff name=a_sack
+0081: capacity=7d accept=ff unknown=ff name=an_open sack
+0082: capacity=fa accept=ff unknown=ff name=a_pack
+0083: capacity=fa accept=ff unknown=ff name=an_open pack
+0084: capacity=7d accept=ff unknown=ff name=a_box&boxes
+0085: capacity=7d accept=ff unknown=ff name=an_open box&open boxes
+0086: capacity=14 accept=ff unknown=ff name=a_pouch&pouches
+0087: capacity=14 accept=ff unknown=ff name=an_open pouch&pouches
+0088: capacity=1e accept=02 unknown=02 name=a_map case
+0089: capacity=1e accept=02 unknown=02 name=an_open map case
+008a: capacity=7d accept=ff unknown=ff name=a_gold coffer
+008b: capacity=7d accept=ff unknown=ff name=an_open gold coffer
+008c: capacity=c8 accept=ff unknown=ff name=an_urn
+008d: capacity=00 accept=01 unknown=02 name=a_quiver
+008e: capacity=32 accept=03 unknown=02 name=a_bowl
+008f: capacity=00 accept=00 unknown=02 name=a_rune bag
+
+lighting and food info table
+
+90: brightness=00 duration=00 name=a_lantern
+91: brightness=00 duration=00 name=a_torch&torches
+92: brightness=00 duration=00 name=a_candle
+93: brightness=00 duration=00 name=a_taper
+94: brightness=04 duration=0a name=a_lit lantern
+95: brightness=02 duration=03 name=a_lit torch
+96: brightness=01 duration=0c name=a_lit candle
+97: brightness=03 duration=00 name=a_lit taper
+98: brightness=00 duration=00 name=a_wand
+99: brightness=00 duration=00 name=a_wand
+9a: brightness=00 duration=00 name=a_wand
+9b: brightness=00 duration=00 name=a_wand
+9c: brightness=00 duration=00 name=a_broken wand
+9d: brightness=00 duration=00 name=a_broken wand
+9e: brightness=00 duration=00 name=a_broken wand
+9f: brightness=00 duration=00 name=a_broken wand
+
+animation object table
+
+01c0: startframe=00 numframes=00 unknown1=21 unknown2=05 name=some_blood
+01c1: startframe=00 numframes=11 unknown1=21 unknown2=04 name=a_mist cloud
+01c2: startframe=00 numframes=15 unknown1=21 unknown2=05 name=an_explosion
+01c3: startframe=00 numframes=1a unknown1=21 unknown2=05 name=an_explosion
+01c4: startframe=00 numframes=1f unknown1=21 unknown2=05 name=an_explosion
+01c5: startframe=00 numframes=32 unknown1=21 unknown2=03 name=a_splash&splashes
+01c6: startframe=00 numframes=24 unknown1=21 unknown2=04 name=a_splash&splahes
+01c7: startframe=00 numframes=28 unknown1=21 unknown2=05 name=a_spell effect
+01c8: startframe=00 numframes=09 unknown1=21 unknown2=04 name=some_smoke
+01c9: startframe=00 numframes=05 unknown1=21 unknown2=04 name=a_fountain
+01ca: startframe=00 numframes=0d unknown1=21 unknown2=04 name=a_silver tree
+01cb: startframe=00 numframes=2d unknown1=21 unknown2=05 name=some_damage
+01cc: startframe=00 numframes=32 unknown1=21 unknown2=04 name=
+01cd: startframe=00 numframes=00 unknown1=00 unknown2=00 name=a_sound source
+01ce: startframe=00 numframes=00 unknown1=00 unknown2=00 name=some_changing terrain
+01cf: startframe=00 numframes=ff unknown1=84 unknown2=00 name=a_moving door
