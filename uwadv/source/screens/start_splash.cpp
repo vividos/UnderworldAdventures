@@ -96,7 +96,7 @@ void ua_start_splash_screen::init()
       // write a string under the demo title
       ua_font font;
       ua_image img_temp;
-      font.load(game->get_settings().get_string(ua_setting_uw_path).c_str(),ua_font_big);
+      font.load(game->get_settings(),ua_font_big);
       font.create_string(img_temp,"Underworld Adventures",198);
 
       double scale = 0.9;
