@@ -78,12 +78,12 @@ void ua_image::paste_rect(const ua_image& from_img, unsigned int fromx, unsigned
    unsigned width, unsigned height, unsigned int destx,unsigned int desty, bool transparent)
 {
    // get resolution and pixel vectors
-   unsigned int sxres = from_img.get_xres(), swidth=sxres;
-   unsigned int syres = from_img.get_yres(), sheight=syres;
+   unsigned int sxres = from_img.get_xres();
+   unsigned int syres = from_img.get_yres();
 
    // adjust source image if pasting would cross dest image borders
-   if (destx+width>xres) swidth = xres-destx;
-   if (desty+height>yres) sheight = yres-desty;
+   if (destx+width>xres) width = xres-destx;
+   if (desty+height>yres) height = yres-desty;
 
    // get source and dest pointer
    const Uint8* src = &from_img.get_pixels()[fromx+fromy*sxres];
@@ -92,18 +92,18 @@ void ua_image::paste_rect(const ua_image& from_img, unsigned int fromx, unsigned
    if (!transparent)
    {
       // non-transparent paste
-      for(unsigned int y=0; y<sheight; y++)
-         memcpy(&dest[y*xres], &src[y*sxres], swidth);
+      for(unsigned int y=0; y<height; y++)
+         memcpy(&dest[y*xres], &src[y*sxres], width);
    }
    else
    {
       // paste that omits transparent parts
-      for(unsigned int y=0; y<sheight; y++)
+      for(unsigned int y=0; y<height; y++)
       {
          const Uint8* src_line = &src[y*sxres];
          Uint8* dest_line = &dest[y*xres];
 
-         for(unsigned int x=0; x<swidth; x++)
+         for(unsigned int x=0; x<width; x++)
          {
             Uint8 pixel = src_line[x];
             if (pixel!=0)
