@@ -55,25 +55,6 @@ void ua_palettes::load(ua_settings &settings)
       }
    }
    fclose(fd);
-
-/*
-   // load all auxiliary palettes
-   std::string allauxpalname(settings.uw1_path);
-   allauxpalname.append("data/allpals.dat");
-
-   fd = fopen(allauxpalname.c_str(),"rb");
-   if (fd==NULL)
-      throw ua_exception("could not open file allpals.dat");
-
-   for(int entries=0; entries<32; entries++)
-   {
-      for(int color=0; color<16; color++)
-      {
-         allauxpals[entries][color] = fgetc(fd);
-      }
-   }
-   fclose(fd);
-*/
 }
 
 
@@ -84,15 +65,21 @@ void ua_texture_manager::init(ua_settings &settings)
    // load palettes
    pals.load(settings);
 
-   // load all wall textures
-   std::string walltexfname(settings.uw1_path);
-   walltexfname.append("data/w64.tr");
-   load_textures(0x0000,walltexfname.c_str());
+   if (settings.gtype == ua_game_uw1 || settings.gtype == ua_game_uw_demo)
+   {
+      // load all wall textures
+      std::string walltexfname(settings.uw1_path);
+      walltexfname.append(
+         settings.gtype == ua_game_uw1 ? "data/w64.tr" : "data/dw64.tr");
+      load_textures(ua_tex_stock_wall,walltexfname.c_str());
 
-   // load all floor textures
-   std::string floortexfname(settings.uw1_path);
-   floortexfname.append("data/f32.tr");
-   load_textures(0x0100,floortexfname.c_str());
+      // load all floor textures
+      std::string floortexfname(settings.uw1_path);
+      floortexfname.append(
+         settings.gtype == ua_game_uw1 ? "data/f32.tr" : "data/df32.tr");
+
+      load_textures(ua_tex_stock_floor,floortexfname.c_str());
+   }
 }
 
 void ua_texture_manager::load_textures(unsigned int startidx, const char *texfname)

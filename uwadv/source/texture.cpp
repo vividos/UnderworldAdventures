@@ -28,18 +28,89 @@
 // needed includes
 #include "common.hpp"
 #include "texture.hpp"
+#include <cmath>
 
 
 // ua_texture methods
 
-void ua_texture::use()
+void ua_texture::convert(ua_texture_manager &texmgr,ua_image &img)
 {
+   if (img.get_palette()>=8)
+      return;
+
+   Uint8 *pix = &img.get_pixels()[0];
+
+   unsigned int origx = img.get_xres();
+   unsigned int origy = img.get_yres();
+
+   // determine texture resolution (must be 2^n)
+   xres = pow(2,int(log(origx)/log(2)+1.0));
+   yres = pow(2,int(log(origy)/log(2)+1.0));
+   texcount = 1;
+
+   u = float(origx)/xres;
+   v = float(origy)/yres;
+
+   texels.resize(xres*yres,0x00000000);
+
+   ua_onepalette &pal = texmgr.get_palette(img.get_palette());
+
+   for(unsigned int y=0; y<origy; y++)
+   for(unsigned int x=0; x<origx; x++)
+   {
+      Uint8 idx = pix[y*origx+x];
+      Uint32 texel = *((Uint32*)pal[idx]);
+      texels[y*xres+x] = texel;
+   }
 }
 
-void ua_texture::set_anim_step(unsigned int step)
+void ua_texture::convert(ua_texture_manager &texmgr,ua_image_list &imglist,
+   unsigned int start, unsigned int until)
 {
+//   if (until==-1)
+//      until = imglist.size();
+
+//   texcount = until-start;
 }
 
+void ua_texture::prepare(bool mipmaps, GLenum min_filt, GLenum max_filt)
+{
+   texname.resize(texcount,0);
+
+   // create texture names
+   glGenTextures(texcount,&texname[0]);
+
+   for(unsigned int i=0; i<texcount; i++)
+   {
+      Uint32 *tex = &texels[i*xres*yres];
+
+      glBindTexture(GL_TEXTURE_2D, texname[i]);
+
+      // set texture parameters
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, min_filt);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, max_filt);
+
+      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+      // build mipmaps/single texture
+      if (mipmaps)
+         gluBuild2DMipmaps(GL_TEXTURE_2D, 3, xres, yres, GL_RGBA,
+            GL_UNSIGNED_BYTE, tex);
+      else
+         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, xres, yres, 0, GL_RGBA,
+            GL_UNSIGNED_BYTE, tex);
+   }
+}
+
+void ua_texture::use(unsigned int animstep)
+{
+   if (animstep>=texname.size())
+      return;
+
+   glBindTexture(GL_TEXTURE_2D,texname[animstep]);
+}
 
 // ua_texture_manager methods
 
@@ -86,7 +157,7 @@ void ua_texture_manager::prepare(unsigned int idx)
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR/*GL_LINEAR*/);
 
    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 

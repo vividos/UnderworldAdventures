@@ -33,8 +33,15 @@
 #define __uwadv_texture_hpp_
 
 // needed includes
-#include "settings.hpp"
 #include <vector>
+#include "settings.hpp"
+#include "image.hpp"
+
+
+// constants
+
+const unsigned int ua_tex_stock_wall = 0x0000;
+const unsigned int ua_tex_stock_floor = 0x0100;
 
 
 // typedefs
@@ -56,16 +63,14 @@ public:
    //! returns an auxiliary palette table; type is Uint8 [256][4]
    ua_onepalette &get_palette(Uint8 pal){ return allpals[pal]; }
 
-   //! returns an auxiliary palette table; type is Uint8 [16]
-//   Uint8 *get_auxpal(Uint8 idx){ return allauxpals[idx]; }
-
 protected:
    //! all main palettes
    ua_onepalette allpals[8];
-
-   //! all auxiliary palettes
-//   Uint8 allauxpals[32][16];
 };
+
+
+// forward declaration
+class ua_texture_manager;
 
 
 //! texture class; represents one or more texture images
@@ -75,8 +80,19 @@ public:
    //! ctor
    ua_texture(){}
 
+   //! converts image to texture
+   void convert(ua_texture_manager &texmgr, ua_image &img);
+
+   //! converts a list of images to textures
+   void convert(ua_texture_manager &texmgr, ua_image_list &imglist,
+      unsigned int start=0, unsigned int until=-1);
+
+   //! prepares texture for usage
+   void prepare(bool mipmaps=false, GLenum min_filt = GL_LINEAR,
+      GLenum max_filt = GL_LINEAR);
+
    //! binds texture to use it in OpenGL
-   void use();
+   void use(unsigned int animstep=0);
 
    //! returns u texture coordinate
    float get_tex_u(){ return u;}
@@ -84,12 +100,18 @@ public:
    //! returns v texture coordinate
    float get_tex_v(){ return v; }
 
-   //! sets animation step to use
-   void set_anim_step(unsigned int step);
-
 protected:
    //! upper left texture coordinates
    float u,v;
+
+   //! x and y resolution of the texture
+   unsigned int xres,yres;
+
+   //! number of textures stored in 'texels'
+   unsigned int texcount;
+
+   //! texels for all images
+   std::vector<Uint32> texels;
 
    //! texture name(s)
    std::vector<GLuint> texname;
@@ -129,6 +151,9 @@ public:
 
    //! use a stock texture in OpenGL
    void use(unsigned int idx);
+
+   //! returns a specific palette
+   ua_onepalette &get_palette(unsigned int pal){ return pals.get_palette(pal); };
 
 private:
    //! loads all palettes
