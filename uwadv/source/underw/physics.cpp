@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -56,10 +56,10 @@ typedef struct ua_collision_data
 
 
 //! Trick to get smoother CD
-const double ua_cd_liftoff = 0.07;
+const double ua_cd_liftoff = 0.07*4;
 
 //! minimum distance
-const double ua_physics_min_dist = 0.05;
+const double ua_physics_min_dist = 0.05*4;
 
 //! max speed a player can walk, in tiles / second
 const double ua_player_max_walk_speed = 2.4;

@@ -35,7 +35,7 @@
 //! Size of the player ellipsoid
 const double ua_ellipsoid_x = 0.2;
 const double ua_ellipsoid_y = 0.2;
-const double ua_ellipsoid_z = 2.9;
+const double ua_ellipsoid_z = 2.9+2.5;
 
 // ua_player methods
 

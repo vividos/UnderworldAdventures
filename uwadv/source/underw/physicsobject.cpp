@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -30,9 +30,12 @@
 #include "physicsobject.hpp"
 
 
-//! default initial gravity pull
-const double ua_default_gravity_pull = -0.03*8;
-const double ua_max_gravity_pull = -0.5*8; // TODO - tweak
+/*! default initial gravity pull; the value is chosen so that the player
+    just doesn't slide along sloped tiles. */
+const double ua_default_gravity_pull = --01.0;
+
+/*! maximum gravity pull value */
+const double ua_max_gravity_pull = -12.0;
 
 
 // ua_physics_object methods
