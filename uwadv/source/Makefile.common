@@ -39,7 +39,9 @@ uwadv_SOURCES = \
 	base/uamath.hpp \
 	base/utils.cpp base/utils.hpp \
 	conv/codevm.cpp conv/codevm.hpp \
+	conv/convglobals.cpp conv/convglobals.hpp \
 	conv/convgraph.cpp conv/convgraph.hpp \
+	conv/convstack.hpp \
 	conv/opcodes.hpp \
 	import/convloader.cpp \
 	import/critloader.cpp \
