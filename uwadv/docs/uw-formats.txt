@@ -532,7 +532,8 @@ Table of Contents
    00b2  0x80     armour and wearables table; 32 entries, 4 bytes per entry
    0132  0x0c00   critters table; 64 entries, 48 bytes per entry
    0d32  0x30     containers table; 16 entries, 3 bytes per entry
-   0d62  0x60     unknown, maybe lighting and food info table
+   0d62  0x20     lights info table, 16 entries, 2 bytes per entry
+   0d82  0x20     unknown, maybe jewelry info table
    0da2  0x40     animation object table; 16 entries, 4 bytes per entry
    0de2           end
 
@@ -575,7 +576,12 @@ Table of Contents
      0001   Int8   objects accepted (0xFF means any)
      0002   Int8   unknown
 
-   * lighting and food info table (?)
+   * lights info table
+   
+     0000   Int8   light brightneess
+     0001   Int8   duration (00: does't go out, e.g. taper of sacrifice)
+
+   * jewelry info table (?)
 
    * animation object table
 
