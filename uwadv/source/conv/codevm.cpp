@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,9 +23,6 @@
 
    \brief conv code execution functions
 
-   ua_conv_code_vm::step() executes one opcode per call, hopefully mimic'ing
-   the original virtual machine as best as possible
-
 */
 
 // needed includes
@@ -35,64 +32,11 @@
 #include <sstream>
 
 
-// ua_conv_globals methods
-
-void ua_conv_globals::load_game(ua_savegame &sg)
-{
-   sg.begin_section("conv.globals");
-
-   allglobals.clear();
-
-   // get number of slots
-   Uint16 max1 = sg.read16();
-
-   for(Uint16 i=0; i<max1; i++)
-   {
-      // get number of slot globals
-      Uint16 max2 = sg.read16();
-
-      std::vector<Uint16> slotglobals;
-
-      // get all slot globals
-      for(Uint16 j=0; j<max2; j++)
-         slotglobals.push_back(sg.read16());
-
-      allglobals.push_back(slotglobals);
-   }
-
-   sg.end_section();
-}
-
-void ua_conv_globals::save_game(ua_savegame &sg)
-{
-   sg.begin_section("conv.globals");
-
-   // write number of conv slots
-   unsigned int max1 = allglobals.size();
-   sg.write16(max1);
-
-   // for each slot ...
-   for(unsigned int i=0; i<max1; i++)
-   {
-      // write number of slot globals
-      unsigned int max2 = allglobals[i].size();
-      sg.write16(max2);
-
-      // write all globals
-      for(unsigned int j=0; j<max2; j++)
-         sg.write16(allglobals[i][j]);
-   }
-
-   sg.end_section();
-}
-
-
 // ua_conv_code_vm methods
 
 ua_conv_code_vm::ua_conv_code_vm()
 :code_callback(NULL)
 {
-   conv_slot = codesize = 0xffff;
    instrp = basep = result_register = 0xffff;
    call_level = glob_reserved = 0;
    finished = true;
@@ -160,75 +104,74 @@ void ua_conv_code_vm::done(ua_conv_globals &cg)
       glob[i] = stack.at(i);
 }
 
-void ua_conv_code_vm::step()
+bool ua_conv_code_vm::step()
 {
-   if (instrp>code.size())
-      throw ua_ex_code_access;
+   if (finished)
+      return false;
+
+   ua_assert(instrp<code.size());
+
+   Uint16 arg1=0,arg2=0;
+   Uint16 opcode = code[instrp];
 
    // execute one instruction
-   switch(code[instrp])
+   switch(opcode)
    {
    case op_NOP:
       break;
 
    case op_OPADD:
-      {
-         Uint16 arg1 = stack.pop();
-         Uint16 arg2 = stack.pop();
-         stack.push(arg1 + arg2);
-      }
+      arg1 = stack.pop();
+      arg2 = stack.pop();
+      stack.push(arg1 + arg2);
       break;
 
    case op_OPMUL:
-      {
-         Uint16 arg1 = stack.pop();
-         Uint16 arg2 = stack.pop();
-         stack.push(arg1 * arg2);
-      }
+      arg1 = stack.pop();
+      arg2 = stack.pop();
+      stack.push(arg1 * arg2);
       break;
 
    case op_OPSUB:
-      {
-         Uint16 arg1 = stack.pop();
-         Uint16 arg2 = stack.pop();
-         stack.push(arg2 - arg1);
-      }
+      arg1 = stack.pop();
+      arg2 = stack.pop();
+      stack.push(arg2 - arg1);
       break;
 
    case op_OPDIV:
+      arg1 = stack.pop();
+      arg2 = stack.pop();
+      if (arg1==0)
       {
-         Uint16 arg1 = stack.pop();
-         Uint16 arg2 = stack.pop();
-         if (arg1==0)
-            throw ua_ex_div_by_zero;
-         stack.push(arg2 / arg1);
+         ua_trace("code_vm: OPDIV: division by zero\n");
+         finished = true;
+         return false;
       }
+      stack.push(arg2 / arg1);
       break;
 
    case op_OPMOD:
+      arg1 = stack.pop();
+      arg2 = stack.pop();
+      if (arg1==0)
       {
-         Uint16 arg1 = stack.pop();
-         Uint16 arg2 = stack.pop();
-         if (arg1==0)
-            throw ua_ex_div_by_zero;
-         stack.push(arg2 % arg1);
+         ua_trace("code_vm: OPMOD: division by zero\n");
+         finished = true;
+         return false;
       }
+      stack.push(arg2 % arg1);
       break;
 
    case op_OPOR:
-      {
-         Uint16 arg1 = stack.pop();
-         Uint16 arg2 = stack.pop();
-         stack.push(arg2 || arg1);
-      }
+      arg1 = stack.pop();
+      arg2 = stack.pop();
+      stack.push(arg2 || arg1);
       break;
 
    case op_OPAND:
-      {
-         Uint16 arg1 = stack.pop();
-         Uint16 arg2 = stack.pop();
-         stack.push(arg2 && arg1);
-      }
+      arg1 = stack.pop();
+      arg2 = stack.pop();
+      stack.push(arg2 && arg1);
       break;
 
    case op_OPNOT:
@@ -236,51 +179,39 @@ void ua_conv_code_vm::step()
       break;
 
    case op_TSTGT:
-      {
-         Uint16 arg1 = stack.pop();
-         Uint16 arg2 = stack.pop();
-         stack.push(arg2 > arg1);
-      }
+      arg1 = stack.pop();
+      arg2 = stack.pop();
+      stack.push(arg2 > arg1);
       break;
 
    case op_TSTGE:
-      {
-         Uint16 arg1 = stack.pop();
-         Uint16 arg2 = stack.pop();
-         stack.push(arg2 >= arg1);
-      }
+      arg1 = stack.pop();
+      arg2 = stack.pop();
+      stack.push(arg2 >= arg1);
       break;
 
    case op_TSTLT:
-      {
-         Uint16 arg1 = stack.pop();
-         Uint16 arg2 = stack.pop();
-         stack.push(arg2 < arg1);
-      }
+      arg1 = stack.pop();
+      arg2 = stack.pop();
+      stack.push(arg2 < arg1);
       break;
 
    case op_TSTLE:
-      {
-         Uint16 arg1 = stack.pop();
-         Uint16 arg2 = stack.pop();
-         stack.push(arg2 <= arg1);
-      }
+      arg1 = stack.pop();
+      arg2 = stack.pop();
+      stack.push(arg2 <= arg1);
       break;
 
    case op_TSTEQ:
-      {
-         Uint16 arg1 = stack.pop();
-         Uint16 arg2 = stack.pop();
-         stack.push(arg2 == arg1);
-      }
+      arg1 = stack.pop();
+      arg2 = stack.pop();
+      stack.push(arg2 == arg1);
       break;
 
    case op_TSTNE:
-      {
-         Uint16 arg1 = stack.pop();
-         Uint16 arg2 = stack.pop();
-         stack.push(arg2 != arg1);
-      }
+      arg1 = stack.pop();
+      arg2 = stack.pop();
+      stack.push(arg2 != arg1);
       break;
 
    case op_JMP:
@@ -288,23 +219,19 @@ void ua_conv_code_vm::step()
       break;
 
    case op_BEQ:
-      {
-         Uint16 arg1 = stack.pop();
-         if (arg1 == 0)
-            instrp += code[instrp+1];
-         else
-            instrp++;
-      }
+      arg1 = stack.pop();
+      if (arg1 == 0)
+         instrp += code[instrp+1];
+      else
+         instrp++;
       break;
 
    case op_BNE:
-      {
-         Uint16 arg1 = stack.pop();
-         if (arg1 != 0)
-            instrp += code[instrp+1];
-         else
-            instrp++;
-      }
+      arg1 = stack.pop();
+      if (arg1 != 0)
+         instrp += code[instrp+1];
+      else
+         instrp++;
       break;
 
    case op_BRA:
@@ -320,28 +247,30 @@ void ua_conv_code_vm::step()
 
    case op_CALLI: // imported function
       {
-         Uint16 arg1 = code[++instrp];
+         arg1 = code[++instrp];
 
          std::string funcname;
          if (imported_funcs.find(arg1) == imported_funcs.end())
-            throw ua_ex_imported_na;
+         {
+            ua_trace("code_vm: couldn't find imported function 0x%04x\n",arg1);
+            finished = true;
+            return false;
+         }
 
          imported_func(imported_funcs[arg1].name.c_str());
       }
       break;
 
    case op_RET:
+      if (--call_level)
       {
-         if (--call_level)
-         {
-            // conversation ended
-            finished = true;
-         }
-         else
-         {
-            Uint16 arg1 = stack.pop();
-            instrp = arg1;
-         }
+         // conversation ended
+         finished = true;
+      }
+      else
+      {
+         arg1 = stack.pop();
+         instrp = arg1;
       }
       break;
 
@@ -358,12 +287,10 @@ void ua_conv_code_vm::step()
       break;
 
    case op_SWAP:
-      {
-         Uint16 arg1 = stack.pop();
-         Uint16 arg2 = stack.pop();
-         stack.push(arg1);
-         stack.push(arg2);
-      }
+      arg1 = stack.pop();
+      arg2 = stack.pop();
+      stack.push(arg1);
+      stack.push(arg2);
       break;
 
    case op_PUSHBP:
@@ -371,10 +298,8 @@ void ua_conv_code_vm::step()
       break;
 
    case op_POPBP:
-      {
-         Uint16 arg1 = stack.pop();
-         basep = arg1;
-      }
+      arg1 = stack.pop();
+      basep = arg1;
       break;
 
    case op_SPTOBP:
@@ -387,7 +312,7 @@ void ua_conv_code_vm::step()
 
    case op_ADDSP:
       {
-         Uint16 arg1 = stack.pop();
+         arg1 = stack.pop();
 
          // fill reserved stack space with dummy values
          for(int i=0; i<arg1; i++)
@@ -396,33 +321,27 @@ void ua_conv_code_vm::step()
       break;
 
    case op_FETCHM:
-      {
-         Uint16 arg1 = stack.pop();
+      arg1 = stack.pop();
 
-         fetch_value(arg1);
+      fetch_value(arg1);
 
-         stack.push(stack.at(arg1));
-      }
+      stack.push(stack.at(arg1));
       break;
 
    case op_STO:
-      {
-         Uint16 arg1 = stack.pop();
-         Uint16 arg2 = stack.pop();
+      arg1 = stack.pop();
+      arg2 = stack.pop();
 
-         store_value(arg2,arg1);
+      store_value(arg2,arg1);
 
-         stack.set(arg2,arg1);
-      }
+      stack.set(arg2,arg1);
       break;
 
    case op_OFFSET:
-      {
-         Uint16 arg1 = stack.pop();
-         Uint16 arg2 = stack.pop();
-         arg1 += arg2 - 1 ;
-         stack.push(arg1);
-      }
+      arg1 = stack.pop();
+      arg2 = stack.pop();
+      arg1 += arg2 - 1 ;
+      stack.push(arg1);
       break;
 
    case op_START:
@@ -430,10 +349,8 @@ void ua_conv_code_vm::step()
       break;
 
    case op_SAVE_REG:
-      {
-         Uint16 arg1 = stack.pop();
-         result_register = arg1;
-      }
+      arg1 = stack.pop();
+      result_register = arg1;
       break;
 
    case op_PUSH_REG:
@@ -446,10 +363,8 @@ void ua_conv_code_vm::step()
       break;
 
    case op_SAY_OP:
-      {
-         Uint16 arg1 = stack.pop();
-         say_op(arg1);
-      }
+      arg1 = stack.pop();
+      say_op(arg1);
       break;
 
    case op_RESPOND_OP:
@@ -457,19 +372,20 @@ void ua_conv_code_vm::step()
       break;
 
    case op_OPNEG:
-      {
-         Uint16 arg1 = stack.pop();
-         stack.push(-arg1);
-      }
+      arg1 = stack.pop();
+      stack.push(-arg1);
       break;
 
    default: // unknown opcode
-      throw ua_ex_unk_opcode;
+      ua_trace("code_vm: unknown opcode 0x%04x\n",opcode);
+      finished=true;
       break;
    }
 
    // process next instruction
    ++instrp;
+
+   return !finished;
 }
 
 void ua_conv_code_vm::replace_placeholder(std::string& str)

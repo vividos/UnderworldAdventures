@@ -32,6 +32,12 @@
    decompiler (produces C-like code) is available in the "tools" folder.
 
 */
+/*! \defgroup conv Conversation Code Virtual Machine
+
+   conversation documentation yet to come ...
+
+*/
+//@{
 
 // include guard
 #ifndef uwadv_codevm_hpp_
@@ -45,31 +51,15 @@
 #include "convglobals.hpp"
 
 
-// forward references
-class ua_conv_code_vm;
-
-
 // enums
 
 //! function types
 enum ua_conv_datatype
 {
-   ua_rt_void,
-   ua_rt_int,
-   ua_rt_string
+   ua_dt_void,
+   ua_dt_int,
+   ua_dt_string
 };
-
-//! conv code virtual machine code exceptions
-typedef enum
-{
-   ua_ex_error_loading, //!< error while loading
-   ua_ex_div_by_zero,   //!< division by 0
-   ua_ex_code_access,   //!< invalid code segment access
-   ua_ex_globals_access,//!< invalid globals access
-   ua_ex_stack_access,  //!< invalid stack access
-   ua_ex_unk_opcode,    //!< unknown opcode
-   ua_ex_imported_na,   //!< imported function not available
-} ua_conv_vm_exception;
 
 
 // structs
@@ -111,15 +101,19 @@ public:
 };
 
 
-//! conversation code virtual machine
-/*! ua_conv_code_vm is the virtual machine the whole code excutes. The
-    method step() executes one opcode instruction and can be executed in a
-    loop to run the code. An exception of type ua_conv_vm_exception is thrown
-    on error. The virtual functions are called when a special event is
-    happening, such as printing a "say" string.
+//! Conversation code virtual machine
+/*! Virtual machine to run conversation code loaded from cnv.ark files. It
+    emulates a forth-like stack-based opcode language with intrinsic functions
+    (called imported functions). The code segment contains 16-bit opcodes that
+    are executed one by one using the step() method. It returns false when the
+    execution is stopped due to an error or when conversation has finished.
+    The class uses the ua_conv_code_callback to let the user respond to
+    higher-level actions in the virtual machine.
 
-    The order to call the member functions is: load_code(), then init(),
-    then step() (maybe in a for loop), and when done, done()
+    The conversation code first has to be loaded using
+    ua_uw_import::load_conv_code(), then init() can be called. When exiting,
+    done() should be called to write back conversation globals for the given
+    conversation.
 */
 class ua_conv_code_vm
 {
@@ -129,14 +123,11 @@ public:
    //! dtor
    virtual ~ua_conv_code_vm();
 
-   //! conv code loader; returns false if there is no conversation slot
-//   bool load_code(const char* cnvfile, Uint16 conv);
-
    //! inits virtual machine after filling code segment
    void init(ua_conv_code_callback* code_callback, ua_conv_globals& cg);
 
-   //! does a step in code
-   void step();
+   //! does a step in code; returns false when program has stopped
+   bool step();
 
    //! writes back conv globals
    void done(ua_conv_globals& cg);
@@ -146,6 +137,28 @@ public:
 
    //! sets result register
    void set_result_register(Uint16 val);
+
+   // access functions
+
+   //! returns code segment
+   std::vector<Uint16>& get_code_segment(){ return code; }
+
+   //! returns map with imported functions
+   std::map<Uint16,ua_conv_imported_item>& get_imported_funcs(){ return imported_globals; }
+   //! returns map with imported globals
+   std::map<Uint16,ua_conv_imported_item>& get_imported_globals(){ return imported_funcs ; }
+
+   //! returns string block to use for this conversation
+   Uint16 get_strblock(){ return strblock; }
+
+   //! sets conversation slot
+   void set_conv_slot(Uint16 the_conv_slot){ conv_slot = the_conv_slot; }
+
+   //! sets string block to use
+   void set_strblock(Uint16 stringblock){ strblock = stringblock; }
+
+   //! sets number of globals reserved at start of memory
+   void set_globals_reserved(Uint16 numglobals){ glob_reserved = numglobals; }
 
 protected:
    //! called when an imported function is executed
@@ -170,18 +183,11 @@ protected:
    void fetch_value(Uint16 at);
 
 protected:
-   //! reads all imported function entries
-//   void load_imported_funcs(FILE *fd);
-
-protected:
-   //! number of conversation slot
+   //! conversation slot number
    Uint16 conv_slot;
 
    //! number of string block to use
    Uint16 strblock;
-
-   //! size of code
-   Uint16 codesize;
 
    //! code bytes
    std::vector<Uint16> code;
@@ -217,4 +223,6 @@ protected:
    ua_conv_code_callback* code_callback;
 };
 
+
 #endif
+//@}
