@@ -113,6 +113,9 @@ public:
    //! returns map object list ref
    ua_object_list& get_mapobjects(){ return allobjects; }
 
+   //! returns map object list ref
+   const ua_object_list& get_mapobjects() const { return allobjects; }
+
    //! returns vector of used stock texture ids
    const std::vector<Uint16>& get_used_textures() const { return used_textures; }
 
