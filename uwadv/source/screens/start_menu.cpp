@@ -78,7 +78,7 @@ void ua_start_menu_screen::init()
    stage=0;
    tickcount=0;
    shiftcount=0.0;
-   journey_avail=true;
+   journey_avail=core->get_filesmgr().savegames_avail();
    buttondown=false;
    selected_area=-1;
 }
@@ -248,6 +248,11 @@ void ua_start_menu_screen::tick()
 
 void ua_start_menu_screen::press_button()
 {
+   // clear screen
+   glClearColor(0,0,0,0);
+   glClear(GL_COLOR_BUFFER_BIT);
+   SDL_GL_SwapBuffers();
+
    switch(selected_area)
    {
    case 0: // "introduction"
@@ -290,7 +295,8 @@ int ua_start_menu_screen::get_selected_area()
    else if (ypos<104) ret=0;
    else if (ypos<128) ret=1;
    else if (ypos<153) ret=2;
-   else ret=3;
+   else
+      if (journey_avail) ret=3; else ret=-1;
 
    return ret;
 }
