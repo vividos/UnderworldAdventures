@@ -32,6 +32,7 @@
 #include "settings.hpp"
 #include "files.hpp"
 #include "underworld.hpp"
+#include "script.hpp"
 
 
 // ua_gamecfg_loader methods
@@ -43,11 +44,10 @@ void ua_gamecfg_loader::load_value(const std::string& name, const std::string& v
       game_name = value;
    }
    else
-   if (name.compare("lua-script")==0)
+   if (name.compare("load-script")==0)
    {
       // load given lua script name
-//TODO      lua_State* L = core->get_underworld().get_scripts().get_lua_State();
-//TODO      core->get_filesmgr().load_lua_script(L,value.c_str());
+      game->get_scripting().load_script(value.c_str());
    }
    else
    if (name.compare("use-resources")==0)
