@@ -40,7 +40,7 @@ case "$host_os" in
 esac
 
 # this is technically OS-specific, but for now all OS-es that use configure
-# do have a home-dir
+# do have a home-dir (specifically that the 'HOME' environment var. is set)
 
 AC_DEFINE(HAVE_HOME,,[Users have home directories on this OS])
 
@@ -74,6 +74,8 @@ LIBS="$LIBS $X_LIBS"
 AC_HEADER_STDC
 
 # check other headers
+
+# TODO: check which ones are required, and which ones are optional
 AC_CHECK_HEADERS(glob.h)
 AC_CHECK_HEADERS(cstdio cstdlib cstring cmath cctype)
 AC_CHECK_HEADERS(vector string map iostream set bitset)
@@ -86,7 +88,7 @@ AC_MSG_CHECKING(for debug options)
 
 AC_ARG_ENABLE(debug,
   [  --enable-debug          enable debugging (disables optimizations)],
-  [ CXXFLAGS="-O -g -wall $CXXFLAGS"
+  [ CXXFLAGS="-O -g -Wall $CXXFLAGS"
     AC_MSG_RESULT(yes)
   ], AC_MSG_RESULT(no))
 
