@@ -52,7 +52,7 @@ cuts_anim_set_stopframe = 10 -- sets frame to stop at; value is stopframe
 cuts_anim_fadeout = 11       -- fades out current animation frame
 cuts_anim_stop = 12          -- stops animation looping
 cuts_anim_hide = 13          -- hides animation
-cuts_anim_continue = 14  	 -- continues animation after stop
+cuts_anim_continue = 14      -- continues animation after stop
 
 -- string block base for cutscenes
 cuts_strbase = 12*256
@@ -62,7 +62,7 @@ cuts_strbase = 12*256
 
 -- cutscene timetables
 cutscenes = {
-   [0] =  -- cutscene 0 : introduction
+   [0] =  -- cutscene 0 : introduction (by Dirk Manders)
    { 
       strblock = cuts_strbase + 0,
       timetable =
@@ -83,7 +83,7 @@ cutscenes = {
          { time = 0.0, action = cuts_text_fadein,        value = 2 },
          { time = 0.5, action = cuts_anim_fadein,        value = "cs000.n02" },
 
-         { time = 3.5, action = cuts_sound_play,         value = "29" },
+         { time = 4.0, action = cuts_sound_play,         value = "29" },
          { time = 0.0, action = cuts_text_show,          value = 3 },
 
          -- 1.3: Garamon speaks
@@ -104,7 +104,7 @@ cutscenes = {
          { time = 0.0, action = cuts_anim_set_stopframe, value = 15 },
          
          -- 1.4: Garamon vanishes, narrator speaks again
-         { time = 5.0, action = cuts_sound_play,         value = "30" },
+         { time = 4.0, action = cuts_sound_play,         value = "30" },
          { time = 0.0, action = cuts_text_set_color,     value = 147 },
          { time = 0.0, action = cuts_text_fadein,        value = 7 },
          { time = 0.0, action = cuts_anim_show,          value = "cs000.n07" },
@@ -147,10 +147,10 @@ cutscenes = {
          { time = 0.0, action = cuts_text_show,          value = 13 },
 
          -- 2.5: Single guards speaks (close-up)
-         { time = 3.5, action = cuts_anim_show,          value = "cs000.n15" },
-         { time = 0.0, action = cuts_anim_set_stopframe, value = 13 },
-         { time = 0.0, action = cuts_sound_play,         value = "13" },
+         { time = 3.5, action = cuts_sound_play,         value = "13" },
          { time = 0.0, action = cuts_text_show,          value = 14 },
+         { time = 0.5, action = cuts_anim_show,          value = "cs000.n15" },
+         { time = 0.0, action = cuts_anim_set_stopframe, value = 13 },
 
          { time = 3.5, action = cuts_anim_show,          value = "cs000.n16" },
          { time = 0.0, action = cuts_anim_set_stopframe, value = 21 },
@@ -227,14 +227,14 @@ cutscenes = {
          { time = 0.0, action = cuts_text_set_color,     value = 251 },
          { time = 0.0, action = cuts_text_show,          value = 26 },
 
-         { time = 3.0, action = cuts_anim_show,          value = "cs000.n14" },
-         { time = 0.0, action = cuts_sound_play,         value = "02" },
+         { time = 3.0, action = cuts_sound_play,         value = "02" },
+         { time = 0.3, action = cuts_anim_show,          value = "cs000.n14" },
          { time = 0.0, action = cuts_anim_set_stopframe, value = 29 },
          { time = 0.0, action = cuts_text_show,          value = 27 },
 
-         { time = 5.5, action = cuts_anim_show,          value = "cs000.n14" },
+         { time = 5.5, action = cuts_sound_play,         value = "03" },
+         { time = 0.3, action = cuts_anim_show,          value = "cs000.n14" },
          { time = 0.0, action = cuts_anim_set_stopframe, value = 22 },
-         { time = 0.0, action = cuts_sound_play,         value = "03" },
          { time = 0.0, action = cuts_text_show,          value = 28 },
          { time = 4.5, action = cuts_anim_show,          value = "cs000.n14" },
          { time = 0.0, action = cuts_anim_set_stopframe, value = 5 },
@@ -256,29 +256,29 @@ cutscenes = {
          { time = 0.5, action = cuts_sound_play,         value = "36" },
          { time = 0.0, action = cuts_text_set_color,     value = 147 },
          { time = 0.0, action = cuts_text_fadein,        value = 31 },
-         { time = 4.0, action = cuts_text_fadeout,       value = 0 },
+         { time = 3.5, action = cuts_text_fadeout,       value = 0 },
 
          -- 3.8: Almric speaks, close-up
-         { time = 1.0, action = cuts_anim_show,          value = "cs000.n13" },
-         { time = 0.0, action = cuts_sound_play,         value = "06" },
+         { time = 0.5, action = cuts_sound_play,         value = "06" },
+         { time = 0.3, action = cuts_anim_show,          value = "cs000.n13" },
          { time = 0.0, action = cuts_anim_set_stopframe, value = 21 },
          { time = 0.0, action = cuts_text_set_color,     value = 251 },
          { time = 0.0, action = cuts_text_show,          value = 32 },
 
-         { time = 5.0, action = cuts_anim_show,          value = "cs000.n14" },
-         { time = 0.0, action = cuts_sound_play,         value = "07" },
+         { time = 5.0, action = cuts_sound_play,         value = "07" },
+         { time = 0.3, action = cuts_anim_show,          value = "cs000.n14" },
          { time = 0.0, action = cuts_anim_set_stopframe, value = 29 },
          { time = 0.0, action = cuts_text_show,          value = 33 },
 
-         { time = 6.0, action = cuts_anim_show,          value = "cs000.n12" },
-         { time = 0.0, action = cuts_sound_play,         value = "08" },
+         { time = 6.0, action = cuts_sound_play,         value = "08" },
+         { time = 0.3, action = cuts_anim_show,          value = "cs000.n12" },
          { time = 0.0, action = cuts_anim_set_stopframe, value = 13 },
          { time = 0.0, action = cuts_text_show,          value = 34 },
          { time = 2.0, action = cuts_anim_show,          value = "cs000.n12" },
          { time = 0.0, action = cuts_anim_set_stopframe, value = 10 },
 
-         { time = 3.0, action = cuts_anim_show,          value = "cs000.n13" },
-         { time = 0.0, action = cuts_sound_play,         value = "58" },
+         { time = 3.0, action = cuts_sound_play,         value = "58" },
+         { time = 0.3, action = cuts_anim_show,          value = "cs000.n13" },
          { time = 0.0, action = cuts_anim_set_stopframe, value = 21 },
          { time = 0.0, action = cuts_text_show,          value = 35 },
 
@@ -298,7 +298,7 @@ cutscenes = {
          { time = 0.0, action = cuts_text_show,          value = 38 },
          { time = 2.0, action = cuts_anim_show,          value = "cs000.n13" },
          { time = 0.0, action = cuts_anim_set_stopframe, value = 21 },
-         { time = 6.0, action = cuts_text_hide,          value = 0 },
+         { time = 5.0, action = cuts_text_hide,          value = 0 },
          { time = 1.0, action = cuts_anim_fadeout,       value = 0 },
 
       -- Part 4: Into the abyss
@@ -313,9 +313,9 @@ cutscenes = {
          { time = 3.5, action = cuts_anim_fadeout,       value = 0 },
 
          -- 4.3: Guard says some final words
-         { time = 0.5, action = cuts_anim_fadein,        value = "cs000.n24" },
+         { time = 0.5, action = cuts_sound_play,         value = "19" },
+         { time = 0.0, action = cuts_anim_fadein,        value = "cs000.n24" },
          { time = 0.0, action = cuts_anim_set_stopframe, value = 21 },
-         { time = 0.0, action = cuts_sound_play,         value = "19" },
          { time = 0.0, action = cuts_text_set_color,     value = 163 },
          { time = 0.5, action = cuts_text_show,          value = 39 },
          { time = 5.0, action = cuts_text_hide,          value = 0 },
