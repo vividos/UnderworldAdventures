@@ -46,6 +46,8 @@ typedef enum
 {
    ua_ex_error_loading, // error while loading
    ua_ex_div_by_zero,   // division by 0
+   ua_ex_code_access,   // invalid code segment access
+   ua_ex_globals_access,// invalid globals access
    ua_ex_stack_access,  // invalid stack access
    ua_ex_unk_opcode,    // unknown opcode
 } ua_conv_vm_exception;
@@ -65,6 +67,28 @@ typedef struct
 
 
 // classes
+
+//! stores all conversation globals
+class ua_conv_globals
+{
+public:
+   //! ctor
+   ua_conv_globals(){}
+
+   //! loads a globals file; init=true: load file without actual globals
+   void load(const char *bgname, bool init);
+
+   //! returns a list of globals for a given conv slot
+   std::vector<Uint8> &get_globals(Uint16 conv)
+   {
+      if (conv>allglobals.size()) throw ua_ex_globals_access;
+      return allglobals.at(conv);
+   }
+
+protected:
+   //! list with all globals from all conversations
+   std::vector< std::vector<Uint8> > allglobals;
+};
 
 
 //! conversation code stack
@@ -120,7 +144,8 @@ protected:
 
 
 //! conversation code virtual machine
-
+/*! the order to call the member functions is: load_code(), then init(),
+    then step() (maybe in a for loop), and when done, done() */
 class ua_conv_code_vm
 {
 public:
@@ -132,14 +157,14 @@ public:
    //! conv code loader; returns false if there is no conversation slot
    bool load_code(const char *cnvfile, Uint16 conv);
 
-   //! reserves bytes for code segment and returns a pointer to the bytes
-   Uint16 *reserve(Uint16 thecodesize);
-
    //! inits virtual machine after filling code segment
-   void init();
+   void init(ua_conv_globals &cg);
 
    //! does a step in code
    void step() throw(ua_conv_vm_exception);
+
+   //! writes back conv globals
+   void done(ua_conv_globals &cg);
 
    // virtual functions
 
@@ -170,7 +195,7 @@ protected:
    Uint16 codesize;
 
    //! code bytes
-   Uint16 *code;
+   std::vector<Uint16> code;
 
    //! instruction pointer
    Uint16 instrp;

@@ -34,27 +34,15 @@
 
 ua_conv_code_vm::ua_conv_code_vm()
 {
-   code = NULL;
+   conv_nr = 0xffff;
    finished = true;
 }
 
 ua_conv_code_vm::~ua_conv_code_vm()
 {
-   delete code;
-   code = NULL;
 }
 
-Uint16 *ua_conv_code_vm::reserve(Uint16 thecodesize)
-{
-   codesize = thecodesize;
-
-   delete code;
-   code = new Uint16[codesize+1];
-
-   return code;
-}
-
-void ua_conv_code_vm::init()
+void ua_conv_code_vm::init(ua_conv_globals &cg)
 {
    // reset pointer
    instrp = 0;
@@ -66,12 +54,31 @@ void ua_conv_code_vm::init()
 
    // init stack
    stack.init(4096);
+
+   // load globals into stack
+   const std::vector<Uint8> &glob = cg.get_globals(conv_nr);
+
+   unsigned int max=glob.size();
+   for(unsigned int i=0; i<max; i++)
+      stack.push(glob.at(i));
 }
 
-//! \todo check stack and instruction pointer range
+void ua_conv_code_vm::done(ua_conv_globals &cg)
+{
+   // store back globals from stack
+   std::vector<Uint8> &glob = cg.get_globals(conv_nr);
+
+   unsigned int max=glob.size();
+   for(unsigned int i=0; i<max; i++)
+      glob.at(i) = stack.at(i);
+}
+
 void ua_conv_code_vm::step()
 {
-   switch(code[instrp])
+   if (instrp>code.size())
+      throw ua_ex_code_access;
+
+   switch(code.at(instrp))
    {
    case 0x0000: // NOP
       break;
