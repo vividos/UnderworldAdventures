@@ -38,8 +38,7 @@ void ua_ingame_orig_screen::init()
    walk = false;
 
    fov = 90.0;
-   playerxangle = 90.f;
-   playeryangle = 0.f;
+   playeryangle = 0.0;
 
    leftbuttondown = rightbuttondown = false;
 
@@ -54,6 +53,9 @@ void ua_ingame_orig_screen::init()
    img.load_raw(core->get_settings(),mainscreenname,0);
    tex.convert(core->get_texmgr(),img);
    tex.prepare(false);
+
+   img_compass.load(core->get_settings(),"compass");
+   img_bodies.load(core->get_settings(),"bodies");
 }
 
 void ua_ingame_orig_screen::done()
@@ -85,19 +87,19 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    {
    case SDLK_UP:
       walk = (type==SDL_KEYDOWN);
-      walk_dir = 0.f;
+      walk_dir = 0.0;
       break;
    case SDLK_DOWN:
       walk = (type==SDL_KEYDOWN);
-      walk_dir = 180.f;
+      walk_dir = 180.0;
       break;
    case SDLK_RIGHT:
       walk = (type==SDL_KEYDOWN);
-      walk_dir = 90.f;
+      walk_dir = 90.0;
       break;
    case SDLK_LEFT:
       walk = (type==SDL_KEYDOWN);
-      walk_dir = 270.f;
+      walk_dir = 270.0;
       break;
    }
 }
@@ -110,26 +112,30 @@ void ua_ingame_orig_screen::handle_mouse_action(SDL_Event &event)
       // mouse has moved
       if (leftbuttondown)
       {
+         double playerxangle = core->get_underworld().get_player().get_angle();
+
          int x,y;
          SDL_GetRelativeMouseState(&x,&y);
          {
-            playerxangle -= x*0.2;
+            playerxangle += x*0.2;
             playeryangle += y*0.2;
          }
 
          // view rotate angle has to stay between 0 and 360 degree
-         while (playerxangle > 360.f || playerxangle < 0.f )
+         while (playerxangle > 360.0 || playerxangle < 0.0 )
             playerxangle = fmod(playerxangle+360.0,360.0);
 
-         while (playeryangle > 180.f || playeryangle < -180.f )
+         core->get_underworld().get_player().set_angle(playerxangle);
+
+         while (playeryangle > 180.0 || playeryangle < -180.0 )
             playeryangle = fmod(playeryangle-360.0,360.0);
 
          // restrict up-down view angle
-         if (playeryangle < -40.f)
-            playeryangle = -40.f;
+         if (playeryangle < -40.0)
+            playeryangle = -40.0;
 
-         if (playeryangle > 40.f)
-            playeryangle = 40.f;
+         if (playeryangle > 40.0)
+            playeryangle = 40.0;
       }
       break;
 
@@ -158,11 +164,12 @@ void ua_ingame_orig_screen::render()
 
    ua_player &pl = core->get_underworld().get_player();
    double plheight = 0.6+core->get_underworld().get_player_height();
+   double xangle = pl.get_angle();
 
    {
       // rotation
       glRotatef( playeryangle+270.0, 1.0, 0.0, 0.0 );
-      glRotatef( playerxangle+90.0,  0.0, 0.0, 1.0 );
+      glRotatef( -xangle+90.0,  0.0, 0.0, 1.0 );
 
       ua_player &pl = core->get_underworld().get_player();
 
@@ -170,13 +177,12 @@ void ua_ingame_orig_screen::render()
       glTranslatef(-pl.get_xpos(),-pl.get_ypos(),-plheight );
    }
 
-   ua_frustum fr(pl.get_xpos(),pl.get_ypos(),plheight,-playerxangle,-playeryangle,fov,16.0);
+   ua_frustum fr(pl.get_xpos(),pl.get_ypos(),plheight,xangle,-playeryangle,fov,16.0);
 
    // render underworld
    core->get_underworld().render(fr);
 
    // render user interface
-   tex.use(core->get_texmgr());
 
    // set up new orthogonal projection matrix
    glMatrixMode(GL_PROJECTION);
@@ -192,22 +198,9 @@ void ua_ingame_orig_screen::render()
    glEnable(GL_BLEND);
    glDisable(GL_SCISSOR_TEST);
 
-   // draw user interface
+   render_ui();
 
-   double u = tex.get_tex_u(), v = tex.get_tex_v();
-
-   glColor3ub(255,255,255);
-
-   glBegin(GL_QUADS);
-
-   glTexCoord2d(0.0, v  ); glVertex2i(0,0);
-   glTexCoord2d(u  , v  ); glVertex2i(1,0);
-   glTexCoord2d(u  , 0.0); glVertex2i(1,1);
-   glTexCoord2d(0.0, 0.0); glVertex2i(0,1);
-
-   glEnd();
-
-   // restore old projection matrix
+   // restore old projection matrix and settings
    glEnable(GL_SCISSOR_TEST);
    glDisable(GL_BLEND);
    glEnable(GL_DEPTH_TEST);
@@ -217,10 +210,65 @@ void ua_ingame_orig_screen::render()
    glMatrixMode(GL_MODELVIEW);
 }
 
+void ua_ingame_orig_screen::render_ui()
+{
+   // do some replacements in the image
+
+   // compass
+   ua_player &pl = core->get_underworld().get_player();
+   {
+      // calculate angle
+      double angle = fmod(-pl.get_angle()+90.0+360.0,360.0);
+      unsigned int compassdir = (unsigned(angle/11.25)&31);
+
+      // paste image to use
+      unsigned int compassimg = ((compassdir+1)/2)&3;
+      img.paste_image(img_compass.get_image(compassimg),112,131);
+
+      // paste red tip facing north
+      compassimg = ((compassdir+1)/2)&15;
+      ua_image &tip = img_compass.get_image(compassimg+4);
+
+      int tip_coords[16*2] =
+      {
+         24, 0, 16, 2,  8, 3,  4, 6,
+          0,10,  0,14,  4,16, 12,19,
+         24,21, 32,19, 44,16, 48,14,
+         48,10, 44, 6, 40, 3, 32, 2,
+      };
+
+      img.paste_image(tip,112+tip_coords[compassimg*2],131+tip_coords[compassimg*2+1]);
+   }
+
+   // player appearance
+   {
+      unsigned int app = (pl.get_appearance() + pl.is_gender_male()? 0 : 5) % 10;
+      img.paste_image(img_bodies.get_image(app),260,11);
+   }
+
+   // upload ui texture
+   tex.convert(core->get_texmgr(),img);
+   tex.use(core->get_texmgr());
+   tex.upload();
+
+   double u = tex.get_tex_u(), v = tex.get_tex_v();
+
+   glColor3ub(255,255,255);
+
+   // draw user interface image quad
+   glBegin(GL_QUADS);
+   glTexCoord2d(0.0, v  ); glVertex2i(0,0);
+   glTexCoord2d(u  , v  ); glVertex2i(1,0);
+   glTexCoord2d(u  , 0.0); glVertex2i(1,1);
+   glTexCoord2d(0.0, 0.0); glVertex2i(0,1);
+   glEnd();
+}
+
 void ua_ingame_orig_screen::tick()
 {
    if (walk)
-      core->get_underworld().walk_player(-(playerxangle+walk_dir));
+      core->get_underworld().walk_player(
+         core->get_underworld().get_player().get_angle()-walk_dir);
 }
 
 void ua_ingame_orig_screen::setup_opengl()

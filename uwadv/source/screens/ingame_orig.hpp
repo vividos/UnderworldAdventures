@@ -55,6 +55,9 @@ protected:
    //! sets up OpenGL stuff, flags, etc.
    void setup_opengl();
 
+   //! renders 2d user interface
+   void render_ui();
+
    void handle_key_action(Uint8 type, SDL_keysym &keysym);
    void handle_mouse_action(SDL_Event &event);
 
@@ -67,10 +70,13 @@ protected:
    bool leftbuttondown,rightbuttondown;
 
    double fov;
-   double playerxangle,playeryangle;
+   double playeryangle;
 
    ua_image img;
    ua_texture tex;
+
+   ua_image_list img_compass;
+   ua_image_list img_bodies;
 };
 
 #endif
