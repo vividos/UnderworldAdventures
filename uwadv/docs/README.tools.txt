@@ -11,7 +11,7 @@ folder as the .exe file.
 mapdisp - Underworld Map Display
 --------------------------------
 
-mapdisp is a program to view a "eagle's eye" view of each level of the
+mapdisp is a program to show an "eagle's eye" view of each level of the
 underworld. The user can rotate and move the level to view all details of a
 specific level.
 

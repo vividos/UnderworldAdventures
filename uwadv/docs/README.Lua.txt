@@ -3,13 +3,14 @@ Underworld Adventures Lua Readme File
 
 This file describes all interfaces for the scripting language Lua to the
 Underworld Adventures game and it's objects (especially the ua_underworld
-object that represents the whold underworld).
+object that represents the whold underworld). No knowledge of other
+programming languages or internals of the uwadv program is needed.
 
 
 Contents
 
 1. Introduction
-2. Reference
+2.0. Reference
 2.1. ua_underworld interfaces
 2.2. cutscenes control interface
 
@@ -37,6 +38,11 @@ one resource file, just go into the "uadata" folder and type:
 The Underworld Adventures Resource file uadata00.uar should have been built
 then.
 
+
+2.0. Reference
+
+This is a reference for all functions that can be called from the main program
+or from within the Lua script.
 
 2.1. ua_underworld interfaces
 
@@ -135,8 +141,7 @@ C functions to call from Lua:
 
   - cuts_anim_continue
     continues a stopped animation (either with "cuts_anim_set_stopframe" or
-    "cuts_anim_stop". It also clears the stopframe.
+    "cuts_anim_stop". It doesn't clear the stopframe.
 
 The "actionvalue" variable always must be passed to the function. For actions
 that doesn't use the value, it can be set to anything.
-
