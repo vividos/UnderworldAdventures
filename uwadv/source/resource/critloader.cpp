@@ -110,7 +110,10 @@ void ua_critter::load(const char* file, unsigned int used_auxpal)
 
                // read in segment indices
                for(unsigned int i=0; i<nslots; i++)
-                  slotlist[i+slotbase] = fgetc(fd) + segment_offset;
+               {
+                  Uint8 segment = fgetc(fd);
+                  slotlist[i+slotbase] = segment == 0xff ? segment : (segment + segment_offset);
+               }
             }
 
             // read in segment lists
@@ -124,7 +127,14 @@ void ua_critter::load(const char* file, unsigned int used_auxpal)
                   cursegment.resize(8);
 
                   for(unsigned int j=0; j<8; j++)
-                     cursegment[j] = fgetc(fd) + frame_offset;
+                  {
+                     Uint8 frame = fgetc(fd);
+#ifdef HAVE_DEBUG
+                     cursegment[j] = j==0 ? 0 : 0xff;
+#else
+                     cursegment[j] = frame == 0xff ? frame : (frame + frame_offset);
+#endif
+                  }
                }
 
                segment_offset += nsegs;
@@ -156,8 +166,12 @@ void ua_critter::load(const char* file, unsigned int used_auxpal)
 
             if (pass==1)
             {
-               // resize image list, to gain a little performance
-               allframes_list.resize(1/*noffsets+frame_offset*/);
+               // resize image list to gain a little performance
+#ifdef HAVE_DEBUG
+               allframes_list.resize(1);
+#else
+               allframes_list.resize(noffsets+frame_offset);
+#endif
             }
 
             // read in frame offsets
@@ -169,12 +183,13 @@ void ua_critter::load(const char* file, unsigned int used_auxpal)
 
             for(unsigned int n=0; n<noffsets; n++)
             {
+#ifdef HAVE_DEBUG
                if (pass==1 && n+frame_offset>0)
-                  break; // only load first frame - for now
+                  break; // only load first frame
+#endif
 
                // seek to frame header
                fseek(fd,alloffsets[n],SEEK_SET);
-
                unsigned int width,height,hotx,hoty,type;
                width = fgetc(fd);
                height = fgetc(fd);
