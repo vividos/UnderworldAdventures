@@ -141,7 +141,7 @@ void ua_physics_model::eval_physics(double time)
       if (mode & ua_move_lookup)
       {
          double viewangle = pl.get_angle_pan();
-         viewangle += ua_player_max_view_rotate_speed * (time-last_evaltime) *
+         viewangle -= ua_player_max_view_rotate_speed * (time-last_evaltime) *
             pl.get_movement_factor(ua_move_lookup);
 
          double maxangle = underw->have_enhanced_features() ? 45.0 : 75.0;
