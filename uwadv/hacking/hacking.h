@@ -37,6 +37,9 @@
 
 #define UWPATH "d:\\projekte\\uwadv\\uw1\\"
 
+//#define HAVE_UW2
+#undef HAVE_UW2
+
 //! game string container class
 class ua_gamestrings
 {
