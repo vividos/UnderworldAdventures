@@ -36,11 +36,13 @@ function game_init_new()
 
    print("Lua: game_init_new() called")
 
-   player.set_pos(32.0, 2.0)
-   player.set_height(96.0)
-player.set_pos(13.5, 53.5) player.height(96.01)
+   local info = player.get_info()
+   info.xpos = 32.0
+   info.ypos = 2.0
+   info.height = 96.0;
+   info.angle = 90.0;
+   player.set_info(info)
 
-   player.set_angle(90.0)
    player.set_attr(player_attr_maplevel,0)
 
 end
