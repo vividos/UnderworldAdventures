@@ -87,6 +87,9 @@ public:
    //! returns current level
    ua_level &get_current_level();
 
+   //! returns script bindings object
+   ua_underworld_script_bindings &get_scripts(){ return script; }
+
    //! returns game core interface
    ua_game_core_interface* get_game_core(){ return core; }
 
