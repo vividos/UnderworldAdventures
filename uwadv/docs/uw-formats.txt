@@ -159,11 +159,11 @@ Table of Contents
    0006  Int32  Offset #1
    ...
 
-   When the offset is a value of 0, the block contains no data For Ultima
+   When the offset is a value of 0, the block contains no data for Ultima
    Underworld 1, there are 45 offsets which point to different data:
 
-   <9 blocks level map info>
-   <9 blocks level object info>
+   <9 blocks level map/object info>
+   <9 blocks unknown info>
    <9 blocks level texture usage>
    <9 blocks of level automap flags>
    <9 blocks of level comment entries>
@@ -181,21 +181,36 @@ Table of Contents
      stored in the block. The value can be split into bits:
 
      bits           description
-      0 -  3    4   tile type (see below)
+      0 -  3    4   tile type (0-9, see below)
       4 -  7    4   floor height
       8 -  9        unknown, always 0
      10 - 13    4   floor/ceiling texture info
-     14             unknown, only used on level 6, at the shrine
+     14             unknown, only used on level 6, near the shrine
      15         1   door bit (when 1, a door is present)
      16 - 21    6   wall texture index (from level texture usage)
-     22 - 31   10   index (?) probably a tile ID
+     22 - 31   10   first object in tile (index into object list)
 
-     Size of the map is 0x4000 bytes, although there seems to be a gap between
-     the maps of 0x3c08 bytes that seems to contain garbage only.
+     Underworld tile types are:
+      00      Solid (wall tile)
+      01      Open (square tile of empty space)
+      02      Diagonal, open SE
+      03      Diagonal, open SW
+      04      Diagonal, open NE
+      05      Diagonal, open NW
+      06      Sloping up to the north
+      07      Sloping up to the south
+      08      Sloping up to the east
+      09      Sloping up to the west
 
    * Level object info
 
-     they are stored as two Int32 words, which can be split into these bits:
+     They are stored after the tile map data. First come 256 entries for
+     critters, each 0x1b (=27) bytes long. The first 8 bytes form two Int32
+     that describe general critter info (see below). The remaining bytes are
+     unknown.
+
+     Then follows 0x400 (=1024) entries for objects, the master object list.
+     They only consist of the two Int32's, the general object info:
 
      word 1, bytes 0..3
      bits          description
@@ -213,7 +228,12 @@ Table of Contents
      16 - 21    6   unknown2
      22 - 31   10   quantity / link2
 
-     length of the object info always is 0x0180, which leads to 48 objects
+     After these two lists, unknown data follows
+
+   * Unknown info
+
+     The 9 blocks contain entries with length of 6 bytes with unknown content.
+     It always is 0x0180 bytes long, which leads to 64 entries.
 
    * Level texture usage
 
