@@ -443,6 +443,30 @@ SOURCE=..\lua\include\lualib.h
 # Begin Group "lua sources"
 
 # PROP Default_Filter ""
+# Begin Group "lualib sources"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\lua\src\lib\lauxlib.c
+# ADD CPP /I "..\lua\include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\lib\lbaselib.c
+# ADD CPP /I "..\lua\include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\lib\lmathlib.c
+# ADD CPP /I "..\lua\include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\lib\lstrlib.c
+# ADD CPP /I "..\lua\include"
+# End Source File
+# End Group
 # Begin Source File
 
 SOURCE=..\lua\src\lapi.c
