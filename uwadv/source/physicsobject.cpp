@@ -31,7 +31,7 @@
 
 
 //! default initial gravity pull
-const double ua_default_gravity_pull = -0.04*8;
+const double ua_default_gravity_pull = -0.03*8;
 const double ua_max_gravity_pull = -0.5*8; // TODO - tweak
 
 

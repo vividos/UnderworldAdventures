@@ -55,7 +55,7 @@ typedef struct ua_collision_data
 
 
 //! Trick to get smoother CD
-const double ua_cd_liftoff   = 0.05;
+const double ua_cd_liftoff   = 0.07;
 
 //! minimum distance
 const double ua_physics_min_dist = 0.05;
