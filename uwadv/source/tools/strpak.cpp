@@ -36,21 +36,21 @@
 
 // structs
 
-//! huffman node structure
-typedef struct ua_huff_node
+//! huffman extended node structure
+struct ua_huff_node_ext
 {
   int symbol;
   int parent;
   int left;
   int right;
   unsigned int freq;
-} ua_huff_node;
+};
 
 
 // global functions
 
 //! unpacks a string pack file
-void ua_strpak_unpack_strings(const char *infile,const char *outfile)
+void strpak_unpack_strings(const char *infile,const char *outfile)
 {
    // load game strings
    ua_gamestrings gs;
@@ -71,6 +71,20 @@ void ua_strpak_unpack_strings(const char *infile,const char *outfile)
    {
       printf("could not open output file!\n");
       return;
+   }
+
+   // print out some more infos
+   {
+      FILE *test = fopen(infile,"rb");
+      Uint16 nodes = 0;
+      if (test!=NULL)
+      {
+         fread16(test);
+         fclose(test);
+      }
+
+      printf("%u huffman tree nodes, %u string blocks.\n",
+         nodes,gs.get_allstrings().size());
    }
 
    printf("writing output file %s ...\n",outfile);
@@ -112,7 +126,7 @@ void ua_strpak_unpack_strings(const char *infile,const char *outfile)
 }
 
 //! repacks a string pack file
-void ua_strpak_pack_strings(const char *infile,const char *outfile,const char *nodefile)
+void strpak_pack_strings(const char *infile,const char *outfile,const char *nodefile=NULL)
 {
    // open input file
    FILE *in = fopen(infile,"r");
@@ -130,8 +144,8 @@ void ua_strpak_pack_strings(const char *infile,const char *outfile,const char *n
    int curblock=-1;
 
    // initialize character frequency info
-   std::vector<unsigned int> char_freq;
-   char_freq.resize(256,0);
+   unsigned int char_freq[256];
+   { for(unsigned int i=0; i<256; char_freq[i++]=0); }
 
    // read over first line
    char buffer[2048];
@@ -186,9 +200,9 @@ void ua_strpak_pack_strings(const char *infile,const char *outfile,const char *n
       // calculate char frequencies for that string
       unsigned int max = strlen(pos);
       for(unsigned int i=0; i<max; i++)
-         char_freq[pos[i]]++;
+         char_freq[static_cast<Uint8>(pos[i])]++;
 
-      char_freq['|']++;
+      char_freq[static_cast<Uint8>('|')]++;
 
       // add string to block
       std::string thestring(pos);
@@ -205,26 +219,26 @@ void ua_strpak_pack_strings(const char *infile,const char *outfile,const char *n
    printf("building huffman tree ...\n");
 
    // reverse char lookup table
-   std::vector<unsigned int> char_lookup;
-   char_lookup.resize(256,0);
+   unsigned int char_lookup[256];
+   { for(unsigned int i=0; i<256; char_lookup[i++]=0); }
 
    // build up list with all leaf nodes
    // use all characters that have frequencies above 0
-   std::vector<ua_huff_node> huffnodes;
+   std::vector<ua_huff_node_ext> huffnodes;
    {
+      unsigned int j=0;
       for(unsigned int i=0; i<256; i++)
       if (char_freq[i]>0)
       {
-         ua_huff_node node;
+         ua_huff_node_ext node;
          node.symbol = i;
          node.parent = 0; // we don't know yet
          node.left = -1;  // no children
          node.right = -1;
          node.freq = char_freq[i];
-
          huffnodes.push_back(node);
 
-         char_lookup[i] = huffnodes.size()-1;
+         char_lookup[i] = j++;
       }
    }
 
@@ -274,7 +288,7 @@ void ua_strpak_pack_strings(const char *infile,const char *outfile,const char *n
 
       // we have a new node
       {
-         ua_huff_node node;
+         ua_huff_node_ext node;
          node.symbol = 0;
          node.parent = 0; // we don't know yet
          node.left = node1;
@@ -283,18 +297,19 @@ void ua_strpak_pack_strings(const char *infile,const char *outfile,const char *n
          huffnodes.push_back(node);
       }
 
-      unsigned int parent = huffnodes.size()-1;
-      huffnodes[node1].parent=parent;
-      huffnodes[node2].parent=parent;
+      unsigned int last = huffnodes.size()-1;
+      huffnodes[node1].parent=last;
+      huffnodes[node2].parent=last;
    }
 
 
-   // load nodes from template node file
+   // load nodes from template node file, when available
    if (nodefile!=NULL)
    {
+      printf("loading external huffman node list from file %s ...\n",nodefile);
+
       huffnodes.clear();
-      char_lookup.clear();
-      char_lookup.resize(256,0);
+      { for(int i=0; i<256; char_lookup[i++]=0); }
 
       FILE *fd = fopen(nodefile,"rb");
 
@@ -313,8 +328,16 @@ void ua_strpak_pack_strings(const char *infile,const char *outfile,const char *n
       // build lookup table
       for(Uint16 n=0; n<=nodenum/2; n++)
       {
-         char_lookup[huffnodes[n].symbol]=n;
+         char_lookup[static_cast<Uint8>(huffnodes[n].symbol)]=n;
       }
+/*
+      // dump external huffman tree list
+      FILE *dump = fopen("uw-huffnodes-list.txt","w");
+      for(Uint16 z=0; z<nodenum; z++)
+         fprintf(dump,"%04x: symbol=%02x parent=%02x left=%02x right=%02x\n",
+            z,huffnodes[z].symbol,huffnodes[z].parent,huffnodes[z].left,huffnodes[z].right);
+      fclose(dump);
+*/
    }
 
 
@@ -349,7 +372,7 @@ void ua_strpak_pack_strings(const char *infile,const char *outfile,const char *n
       // write all nodes
       for(Uint16 i=0; i<max; i++)
       {
-         const ua_huff_node &curnode = huffnodes[i];
+         const ua_huff_node_ext &curnode = huffnodes[i];
          fputc(curnode.symbol,out);
          fputc(curnode.parent,out);
          fputc(curnode.left,out);
@@ -394,6 +417,9 @@ void ua_strpak_pack_strings(const char *infile,const char *outfile,const char *n
          Uint16 numstrings = stringlist.size();
          fwrite16(out,numstrings);
 
+         if (numstrings==0x0032)
+            _asm nop;
+
          // remember start of string offsets
          long str_offsets_pos = ftell(out);
 
@@ -410,7 +436,7 @@ void ua_strpak_pack_strings(const char *infile,const char *outfile,const char *n
          for(Uint16 i=0; i<numstrings; i++)
          {
             // remember relative offset
-            string_offsets.push_back(ftell(out)-rel_string_offset);
+            string_offsets.push_back(static_cast<Uint16>(ftell(out)-rel_string_offset));
 
             unsigned int bits=0;
             Uint16 raw=0;
@@ -421,8 +447,8 @@ void ua_strpak_pack_strings(const char *infile,const char *outfile,const char *n
             unsigned int len = strlen(str);
             for(unsigned int n=0; n<len; n++)
             {
-               char c = str[n];
-               unsigned int pos = char_lookup[c];
+               Uint8 c = static_cast<Uint8>(str[n]);
+               unsigned int pos = char_lookup[c],pos2;
 
                // all bits to encode the char
                std::vector<bool> allbits;
@@ -430,8 +456,8 @@ void ua_strpak_pack_strings(const char *infile,const char *outfile,const char *n
                do
                {
                   // check which way 'up' the tree we use
-                  unsigned int pos2 = huffnodes[pos].parent;
-                  if (huffnodes[pos2].left == pos)
+                  pos2 = huffnodes[pos].parent;
+                  if (unsigned(huffnodes[pos2].left) == pos)
                      allbits.push_back(false); // we used the left path
                   else
                      allbits.push_back(true); // we used the right path
@@ -462,8 +488,11 @@ void ua_strpak_pack_strings(const char *infile,const char *outfile,const char *n
             // end of string
 
             // write all pending bits
-            raw <<=(8-bits);
-            fputc( (raw>>8)&0xff, out);
+            if (bits>0)
+            {
+               raw <<=(8-bits);
+               fputc( (raw>>8)&0xff, out);
+            }
          }
 
          // remember current end of file
@@ -496,7 +525,7 @@ void ua_strpak_pack_strings(const char *infile,const char *outfile,const char *n
 }
 
 
-// we don't need SDL's main here
+// we don't need SDL's main() here
 #undef main
 
 
@@ -511,19 +540,18 @@ int main(int argc, char *argv[])
       printf("syntax: strpak <command> <input-file> <output-file> [<huffnode-basefile>]\n"
              "   command can either be \"pack\" or \"unpack\".\n");
       printf("example: strpak unpack strings.pak uw-strings.txt\n"
-             "         strpak pack uw-strings.txt strings2.pak\n");
-             "         strpak pack uw-strings.txt strings2.pak strings.pak\n\n");
+             "         strpak pack uw-strings.txt strings2.pak\n\n");
       return 1;
    }
 
    if (strcmp("unpack",argv[1])==0)
    {
-      ua_strpak_unpack_strings(argv[2],argv[3]);
+      strpak_unpack_strings(argv[2],argv[3]);
    }
    else
    if (strcmp("pack",argv[1])==0)
    {
-      ua_strpak_pack_strings(argv[2],argv[3],argc>4 ? argv[4] : NULL);
+      strpak_pack_strings(argv[2],argv[3]);
    }
    else
       printf("unknown command \"%s\"\n",argv[1]);
