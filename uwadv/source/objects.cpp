@@ -51,7 +51,7 @@ void ua_object_info::load_info(ua_savegame& sg)
    owner = sg.read16();
    quantity = sg.read16();
 
-   flags = sg.read8();
+   flags = sg.read16();
 
    enchanted = sg.read8() != 0;
    is_hidden = sg.read8() != 0;
@@ -75,7 +75,7 @@ void ua_object_info::save_info(ua_savegame& sg)
    sg.write16(owner);
    sg.write16(quantity);
 
-   sg.write8(flags);
+   sg.write16(flags);
 
    sg.write8(enchanted ? 1 : 0);
    sg.write8(is_hidden ? 1 : 0);

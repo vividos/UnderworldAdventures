@@ -74,7 +74,7 @@ struct ua_object_info
    Uint16 quantity;
 
    //! object flags
-   Uint8 flags;
+   Uint16 flags;
 
 
    // flags
