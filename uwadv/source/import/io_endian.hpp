@@ -26,8 +26,8 @@
 */
 
 // include guard
-#ifndef __uwadv_fread_endian_hpp_
-#define __uwadv_fread_endian_hpp_
+#ifndef uwadv_io_endian_hpp_
+#define uwadv_io_endian_hpp_
 
 // needed includes
 #include "SDL.h"
@@ -40,7 +40,7 @@
 // fread/fwrite functions
 
 //! reads a 16-bit int
-inline Uint16 fread16(FILE *fd)
+inline Uint16 fread16(FILE* fd)
 {
    Uint16 data;
    fread(&data,1,2,fd);
@@ -51,7 +51,7 @@ inline Uint16 fread16(FILE *fd)
 }
 
 //! reads a 32-bit int
-inline Uint32 fread32(FILE *fd)
+inline Uint32 fread32(FILE* fd)
 {
    Uint32 data;
    fread(&data,1,4,fd);
@@ -63,7 +63,7 @@ inline Uint32 fread32(FILE *fd)
 
 
 //! writes a 16-bit int
-inline void fwrite16(FILE *fd,Uint16 data)
+inline void fwrite16(FILE* fd,Uint16 data)
 {
 #if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
    data = ua_endian_convert16(data);
@@ -72,7 +72,7 @@ inline void fwrite16(FILE *fd,Uint16 data)
 }
 
 //! writes a 32-bit int
-inline void fwrite32(FILE *fd,Uint32 data)
+inline void fwrite32(FILE* fd,Uint32 data)
 {
 #if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
    data = ua_endian_convert32(data);
