@@ -142,6 +142,18 @@ else
 fi
 
 
+# Build the debugger?
+AC_ARG_ENABLE(uadebug,    [  --enable-uadebug         Enables building the tools; note that wxWindows is needed],,enable_uadebug=no)
+AC_MSG_CHECKING(whether to build the underworld debugger)
+if test x$enable_uadebug = xyes; then
+        AC_MSG_RESULT(yes)
+        AM_CONDITIONAL(BUILD_UADEBUG, true)
+else
+        AC_MSG_RESULT(no)
+        AM_CONDITIONAL(BUILD_UADEBUG, false)
+fi
+
+
 # determining uwadv.cfg entries
 AC_ARG_WITH(uw1, [  --with-uw1=DIR          directory where UW1 is installed ],UW1PATH=$with_uw1,UW1PATH=${datadir}/games/uw1/)
 AC_SUBST(UW1PATH)
