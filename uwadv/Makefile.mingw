@@ -51,6 +51,16 @@ WITH_WXWINDOWS = no
 # path to wxWindows base dir (only needed for uadebug.dll)
 WXWIN_PATH = d:/projekte/wxMSW
 
+# set to "yes if you have docbook-xsl installed somewhere
+WITH_DOCBOOK_XSL = yes
+
+# base path to docbook-xsl package
+# note: for some reasons xsltproc doesn't like all slashes in the path
+DOCBOOK_XSL_BASEPATH = d:\\uwadv/docbook/docbook-xsl-1.64.0
+
+# path and filename for the xsltproc utility
+XSLTPROC_PATH = d:/uwadv/docbook/xsltproc.exe
+
 
 # change this value only if you have a non-standard mingw32 setup
 # (i.e. when the uwadv-mingw32-source-setup-?.zip wasn't used)
@@ -133,7 +143,7 @@ CFLAGS += $(DEFINES) $(INCLUDES)
 #
 
 
-all: uwadv tools data
+all: uwadv tools data manual
 
 
 # lua objects
@@ -322,6 +332,18 @@ uwmdlview_LIBS = -lmingw32 -lkernel32 -luser32 libuatools.a \
 	$(SDL_LIB) $(STLPORT_LIB) $(OPENGL_LIB) -lz
 
 
+# manuals
+
+ifeq ("$(WITH_DOCBOOK_XSL)", "yes")
+
+manual_SOURCES = docs/docbook/uwadv-manual.xml docs/docbook/uadebug-manual.xml
+manual_TARGETS = $(manual_SOURCES:%.xml=%.html)
+
+endif
+
+
+
+
 #
 # build rules
 #
@@ -411,6 +433,7 @@ $(uwmdlview_EXEC): libuatools $(uwmdlview_OBJS)
 	$(CXX) $(LDFLAGS) $(uwmdlview_LDFLAGS) -o $(@) $(uwmdlview_OBJS) $(uwmdlview_LIBS)
 
 
+
 #
 # general build rules
 #
@@ -426,12 +449,16 @@ uadata/uadata00.uar: $(uadata_uarFILES)
 data-clean:
 	cd uadata; rm -f $(luaOBJECTS) uadata00.uar
 
+manual: $(manual_TARGETS)
+
+manual-clean:
+	rm -f $(manual_TARGETS)
+
 luac:
 	cd source/script/lua/src/luac && make
 
 luac-clean:
 	cd source/script/lua/src/luac && make clean
-
 
 update: uwadv data uaconfig
 	strip $(uwadv_EXEC)
@@ -463,7 +490,7 @@ installer: install
 	cd $(UWADV_PATH) && ./upx -9 uaconfig.exe
 	cd $(UWADV_PATH) && ./makensis.exe uwadv.nsi
 
-clean: data-clean luac-clean
+clean: data-clean luac-clean manual-clean
 	rm -f $(uwadv_EXEC) $(cnvdbg_EXEC) $(cnvdasm_EXEC) $(xmi2mid_EXEC) \
 		$(mapdisp_EXEC) $(animview_EXEC) $(strpak_EXEC) \
 		$(uaconfig_EXEC) $(libuatools_EXT) $(uwdump_EXEC) \
@@ -489,3 +516,11 @@ clean: data-clean luac-clean
 
 %.lob: %.lua luac
 	source/script/lua/bin/luac -o $@ $<
+
+
+ifeq ("$(WITH_DOCBOOK_XSL)", "yes")
+
+docs/docbook/%.html: docs/docbook/%.xml
+	$(XSLTPROC_PATH) --nonet $(DOCBOOK_XSL_BASEPATH)/html/docbook.xsl docs/docbook/$*.xml > $@
+
+endif
