@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -24,12 +24,19 @@
    \brief underworld debugger interface
 
 */
+/*! \defgroup debug Underworld Adventures Debugger
+
+   uadebug documentation yet to come ...
+
+*/
+//@{
 
 // include guard
 #ifndef uwadv_debug_hpp_
 #define uwadv_debug_hpp_
 
 // needed includes
+#include <SDL_thread.h>
 
 
 // forward references
@@ -57,40 +64,27 @@ public:
    //! waits for the debugger client to shutdown
    void shutdown();
 
-protected:
-   //! pointer to server implementation
-   ua_debug_server_impl* server_impl;
-};
-
-/*
-
-//! debug interface
-class ua_debug_interface
-{
-public:
-   //! returns a new debug interface
-   static ua_debug_interface* get_debug_interface(
-      ua_game_interface* game);
-
-   //! starts visual debugger
-   virtual void start_debugger()=0;
-
-   //! locks underworld object
-   virtual void lock()=0;
-
-   //! unlocks underworld object
-   virtual void unlock()=0;
-
-   //! does debugger processing on uwadv side
-   virtual void tick()=0;
-
-   //! dtor
-   virtual ~ua_debug_interface(){}
+   //! locks or unlocks debugger access to underworld
+   void lock(bool set_lock);
 
 protected:
-   //! ctor
-   ua_debug_interface(){}
+   //! debugger thread procedure
+   static int thread_proc(void* ptr);
+
+protected:
+   //! debug server implementation
+   ua_debug_server_impl* debug_impl;
+
+   //! debug thread
+   SDL_Thread* thread_debugger;
+
+   //! semaphore that indicates if debugger still runs
+   SDL_sem* sem_debugger;
+
+   //! mutex to lock/unlock underworld object
+   SDL_mutex* mutex_lock;
 };
-*/
+
 
 #endif
+//@}
