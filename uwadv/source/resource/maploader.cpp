@@ -81,54 +81,48 @@ void ua_import_levelmaps(ua_settings& settings, const char* folder,
 
    // open map file
    std::string mapfile(settings.get_string(ua_setting_uw_path));
-   if (settings.get_gametype() == ua_game_uw_demo)
-      mapfile.append("data/level13.st");
-   else
-   {
-      mapfile.append(folder);
-      mapfile.append("lev.ark");
-   }
-
-   FILE *fd = fopen(mapfile.c_str(),"rb");
-   if (fd==NULL)
-   {
-      std::string text("could not open file ");
-      text.append(mapfile);
-      throw ua_exception(text.c_str());
-   }
 
    Uint16 textures[64];
 
-   // uw_demo is treated specially
    if (settings.get_gametype() == ua_game_uw_demo)
    {
       // load uw_demo maps
-
+      SDL_RWops* rwops;
       ua_level level;
 
       // import texture usage table
       {
-         mapfile.assign(settings.get_string(ua_setting_uw_path));
          mapfile.append("data/level13.txm");
 
-         SDL_RWops* rwops = SDL_RWFromFile(mapfile.c_str(),"rb");
+         rwops = SDL_RWFromFile(mapfile.c_str(),"rb");
          if (rwops == NULL)
          {
             std::string text("could not open file ");
             text.append(mapfile);
             throw ua_exception(text.c_str());
          }
+
          level.import_texinfo(rwops,textures);
          SDL_RWclose(rwops);
       }
 
       // import map
-      SDL_RWops* rwops = SDL_RWFromFP(fd,0);
+      mapfile.assign(settings.get_string(ua_setting_uw_path));
+      mapfile.append("data/level13.st");
+
+      rwops = SDL_RWFromFile(mapfile.c_str(),"rb");
+      if (rwops==NULL)
+      {
+         std::string text("could not open file ");
+         text.append(mapfile);
+         throw ua_exception(text.c_str());
+      }
+
       level.import_map(rwops,textures);
 
       // import objects
       SDL_RWseek(rwops,0,SEEK_SET);
-      level.get_mapobjects().import_objs(rwops);
+      level.get_mapobjects().import_objs(rwops,textures);
       SDL_RWclose(rwops);
 
       levels.push_back(level);
@@ -138,15 +132,24 @@ void ua_import_levelmaps(ua_settings& settings, const char* folder,
    {
       // load uw1 maps
 
+      mapfile.append(folder);
+      mapfile.append("lev.ark");
+
+      SDL_RWops* rwops = SDL_RWFromFile(mapfile.c_str(),"rb");
+      if (rwops==NULL)
+      {
+         std::string text("could not open file ");
+         text.append(mapfile);
+         throw ua_exception(text.c_str());
+      }
+
       // read in offsets
       std::vector<Uint32> offsets;
-      Uint16 noffsets = fread16(fd);
+      Uint16 noffsets = SDL_RWread16(rwops);
       offsets.resize(noffsets,0);
 
       for(Uint16 n=0; n<noffsets; n++)
-         offsets[n] = fread32(fd);
-
-      SDL_RWops* rwops = SDL_RWFromFP(fd,0);
+         offsets[n] = SDL_RWread32(rwops);
 
       // load all levels
       for(unsigned int i=0; i<numlevels; i++)
@@ -163,7 +166,7 @@ void ua_import_levelmaps(ua_settings& settings, const char* folder,
 
          // load object list
          SDL_RWseek(rwops,offsets[i],SEEK_SET);
-         level.get_mapobjects().import_objs(rwops);
+         level.get_mapobjects().import_objs(rwops,textures);
 
          levels.push_back(level);
       }
@@ -174,6 +177,17 @@ void ua_import_levelmaps(ua_settings& settings, const char* folder,
    if (settings.get_gametype() == ua_game_uw2)
    {
       // load uw2 maps
+
+      mapfile.append(folder);
+      mapfile.append("lev.ark");
+
+      FILE* fd = fopen(mapfile.c_str(),"rb");
+      if (fd==NULL)
+      {
+         std::string text("could not open file ");
+         text.append(mapfile);
+         throw ua_exception(text.c_str());
+      }
 
       // resize; uw2 has some unused level blocks
       levels.resize(numlevels);
@@ -203,16 +217,16 @@ void ua_import_levelmaps(ua_settings& settings, const char* folder,
 
          // load object list
          SDL_RWseek(rwops,0,SEEK_SET);
-         level.get_mapobjects().import_objs(rwops);
+         level.get_mapobjects().import_objs(rwops,textures);
 
          SDL_RWclose(rwops);
 
          // put into vector
          levels[i] = level;
       }
-   }
 
-   fclose(fd);
+      fclose(fd);
+   }
 }
 
 
