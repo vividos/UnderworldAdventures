@@ -155,7 +155,7 @@ void ua_ingame_orig_screen::render()
          -(0.6f+core->get_underworld().get_player_height()) );
    }
 
-   ua_frustum fr(pl.get_xpos(),pl.get_ypos(),-playerxangle+90.0,90.f,16.0);
+   ua_frustum fr(pl.get_xpos(),pl.get_ypos(),-playerxangle+90.0,-playeryangle,90.f,16.0);
 
    // render underworld
    core->get_underworld().render(fr);
