@@ -219,7 +219,15 @@ SOURCE=..\audio\midi.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\audio\resamp.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\audio\midi_driver\uni_fmod.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\audio\vocresample.cpp
 # End Source File
 # Begin Source File
 
@@ -240,6 +248,10 @@ SOURCE=..\audio\midi_driver\linux_sdl_mixer.h
 # Begin Source File
 
 SOURCE=..\audio\midi.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\audio\resamp.h
 # End Source File
 # Begin Source File
 

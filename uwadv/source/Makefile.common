@@ -18,6 +18,8 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	debug.hpp cfgfile.hpp \
 	linux/main.cpp linux/debug.cpp \
 	audio/audio.cpp audio/midi.cpp audio/xmidi.cpp \
+	audio/resamp.c audio/resamp.h \
+	audio/vocresample.cpp \
 	audio/midi.hpp audio/xmidi.hpp \
 	audio/midi_driver/uni_fmod.cpp \
 	audio/midi_driver/linux_sdl_mixer.cpp \
