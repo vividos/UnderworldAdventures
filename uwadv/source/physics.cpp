@@ -608,7 +608,7 @@ bool ua_physics_check_point_in_triangle(const ua_vector3d& point, const ua_vecto
   float y = (e*a)-(d*b);
   float z = x+y-ac_bb;
 
-  return (( in(z)& ~(in(x)|in(y)) ) & 0x80000000);
+  return (( in(z)& ~(in(x)|in(y)) ) & 0x80000000)!=0;
 }
 
 double ua_physics_dist_point_plane(ua_vector3d point, ua_vector3d pO, ua_vector3d pN) {
