@@ -24,6 +24,12 @@
    \brief underworld adventures menu
 
 */
+/*! \defgroup screens Game Screens Documentation
+
+   screens documentation yet to come ...
+
+*/
+//@{
 
 // include guard
 #ifndef uwadv_uwadv_menu_hpp_
@@ -57,3 +63,4 @@ protected:
 
 
 #endif
+//@}

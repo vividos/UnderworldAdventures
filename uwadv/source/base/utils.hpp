@@ -48,6 +48,9 @@
    values, even on big endian machines.
 
 */
+//! \ingroup base
+
+//@{
 
 // include guard
 #ifndef uwadv_utils_hpp_
@@ -241,3 +244,4 @@ inline void SDL_RWwrite32(SDL_RWops* rwops, Uint32 val)
 
 
 #endif
+//@}

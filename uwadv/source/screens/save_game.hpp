@@ -24,6 +24,9 @@
    \brief save game screen
 
 */
+//! \ingroup screens
+
+//@{
 
 // include guard
 #ifndef uwadv_save_game_hpp_
@@ -137,4 +140,6 @@ protected:
    std::string desc;
 };
 
+
 #endif
+//@}

@@ -28,6 +28,9 @@
    be loaded).
 
 */
+//! \ingroup screens
+
+//@{
 
 // include guard
 #ifndef uwadv_start_menu_hpp_
@@ -112,4 +115,6 @@ protected:
    bool leftbuttondown, rightbuttondown;
 };
 
+
 #endif
+//@}

@@ -27,6 +27,9 @@
    untar into /usr/local/lib/timidity
 
 */
+//! \ingroup audio
+
+//@{
 
 // include guard
 #ifndef uwadv_midi_sdl_mixer_h_
@@ -62,4 +65,6 @@ protected:
    Mix_Music* mod;
 };
 
+
 #endif
+//@}

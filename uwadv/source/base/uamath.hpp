@@ -37,6 +37,9 @@
    Note: all angle params should be passed in degrees, not radians.
 
 */
+//! \ingroup base
+
+//@{
 
 // include guard
 #ifndef uwadv_uamath_hpp_
@@ -474,3 +477,4 @@ inline void ua_vector3d::rotate(const ua_vector3d& axis, double angle)
 
 
 #endif
+//@}

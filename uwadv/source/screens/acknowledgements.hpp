@@ -24,6 +24,9 @@
    \brief acknowledgements screen
 
 */
+//! \ingroup screens
+
+//@{
 
 // include guard
 #ifndef uwadv_acknowledgements_hpp_
@@ -85,4 +88,6 @@ protected:
    ua_image_quad img[2];
 };
 
+
 #endif
+//@}

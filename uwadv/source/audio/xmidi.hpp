@@ -27,6 +27,9 @@
    in many Ultima games.
 
 */
+//! \ingroup audio
+
+//@{
 
 // include guard
 #ifndef uwadv_xmidi_hpp_
@@ -313,4 +316,6 @@ private:
    static GammaTable<unsigned char> VolumeCurve;
 };
 
+
 #endif
+//@}

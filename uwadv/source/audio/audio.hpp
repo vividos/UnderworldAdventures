@@ -43,6 +43,12 @@
    the audio-part of SDL and SDL_mixer to play back audio.
 
 */
+/*! \defgroup audio Audio Documentation
+
+   audio documentation yet to come ...
+
+*/
+//@{
 
 // include guard
 #ifndef uwadv_audio_hpp_
@@ -123,4 +129,6 @@ protected:
    Mix_Music* curtrack;
 };
 
+
 #endif
+//@}

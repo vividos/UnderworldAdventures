@@ -47,6 +47,9 @@
    using SDL_RWclose()
 
 */
+//! \ingroup base
+
+//@{
 
 // include guard
 #ifndef uwadv_cfgfile_hpp_
@@ -106,4 +109,6 @@ protected:
    FILE* newfp;
 };
 
+
 #endif
+//@}

@@ -47,6 +47,9 @@
    The savegame naming scheme is "uasaveXXXXX.uas".
 
 */
+//! \ingroup base
+
+//@{
 
 // include guard
 #ifndef uwadv_savegame_hpp_
@@ -257,4 +260,6 @@ protected:
    unsigned int image_xres,image_yres;
 };
 
+
 #endif
+//@}

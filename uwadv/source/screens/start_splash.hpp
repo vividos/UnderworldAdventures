@@ -27,6 +27,9 @@
    underworld
 
 */
+//! \ingroup screens
+
+//@{
 
 // include guard
 #ifndef uwadv_start_splash_hpp_
@@ -93,4 +96,6 @@ protected:
    double animcount;
 };
 
+
 #endif
+//@}

@@ -24,6 +24,9 @@
    \brief resource files manager
 
 */
+//! \ingroup base
+
+//@{
 
 // include guard
 #ifndef uwadv_files_hpp_
@@ -76,4 +79,6 @@ protected:
    std::vector<std::string> cfgfiles_list;
 };
 
+
 #endif
+//@}

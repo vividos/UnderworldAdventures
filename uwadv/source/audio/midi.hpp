@@ -30,6 +30,9 @@
    the XMIDI class) and passes the event list to the apropriate driver.
 
 */
+//! \ingroup audio
+
+//@{
 
 // include guard
 #ifndef uwadv_midi_hpp_
@@ -113,4 +116,6 @@ protected:
    int reverb_value;
 };
 
+
 #endif
+//@}

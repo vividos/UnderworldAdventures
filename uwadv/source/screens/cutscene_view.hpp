@@ -24,6 +24,9 @@
    \brief cutscene view screen
 
 */
+//! \ingroup screens
+
+//@{
 
 // include guard
 #ifndef uwadv_cutscene_view_hpp_
@@ -149,4 +152,6 @@ protected:
    bool canshowtext;
 };
 
+
 #endif
+//@}

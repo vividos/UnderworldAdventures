@@ -30,6 +30,12 @@
    is currently running. To load the settings, just use ua_cfgfile::load().
 
 */
+/*! \defgroup base Base Components Documentation
+
+   base component documentation yet to com
+
+*/
+//@{
 
 // include guard
 #ifndef uwadv_settings_hpp_
@@ -168,4 +174,6 @@ protected:
    ua_settings_map_type settings;
 };
 
+
 #endif
+//@}
