@@ -1,7 +1,7 @@
 config.cache
 config.log
 config.status
-autom4te.cache
+autom4te*.cache
 stamp-h*
 config.h
 confdefs.h
@@ -21,3 +21,4 @@ depcomp
 install-sh
 missing
 mkinstalldirs
+ltmain.sh
