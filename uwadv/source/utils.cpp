@@ -124,6 +124,15 @@ int ua_trace_printf(const char *fmt,...)
    return ret;
 }
 
+bool ua_file_exists(const char* filename)
+{
+   FILE *fd = fopen(filename,"rb");
+   if (fd==NULL)
+      return false;
+
+   fclose(fd);
+   return true;
+}
 
 // ua_find_files implementation for various platforms
 
