@@ -21,9 +21,10 @@
 # $Id$
 #
 
-SUBDIRS = tools resource lua debug
+SUBDIRS = base tools resource lua debug
 
 # compiler options
+INCLUDES = -I$(srcdir)/base -I$(srcdir)/audio -I$(srcdir)/ui -I$(srcdir)/renderer -I$(srcdir)/underw -I$(srcdir)/import
 CXXFLAGS = @CXXFLAGS@
 LDFLAGS = @LIBS@
 
@@ -37,7 +38,7 @@ include Makefile.common
 
 uwadv_LDADD = \
 	lua/liblualib.la \
-	resource/zziplib/libzzip.la \
+	base/zziplib/libzzip.la \
 	-lz
 
 EXTRA_DIST = \
@@ -63,5 +64,5 @@ EXTRA_DIST = \
 lua/liblualib.la:
 	cd lua; $(MAKE)
 
-resource/zziplib/libzzip.la:
-	cd resource/zziplib; $(MAKE)
+base/zziplib/libzzip.la:
+	cd base/zziplib; $(MAKE)
