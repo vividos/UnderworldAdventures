@@ -54,8 +54,6 @@ void ua_cutscene::load(ua_settings& settings, const char* relfilename)
 void ua_cutscene::load(const char* filename)
 {
    ua_uw_import import;
-
-   unsigned int xres, yres;
    import.load_cutscene(filename, image, lpdarray, lpages, records);
 
    curframe = (unsigned int)-1;
