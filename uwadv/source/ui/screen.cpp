@@ -81,12 +81,15 @@ bool ua_screen::process_event(SDL_Event& event)
        event.type == SDL_MOUSEBUTTONDOWN ||
        event.type == SDL_MOUSEBUTTONUP)
    {
+      SDL_Surface* surf = SDL_GetVideoSurface();
+
+      unsigned int xpos = event.motion.x * 320.0 / surf->w;
+      unsigned int ypos = event.motion.y * 200.0 / surf->h;
+
       // send event to subwindows that are in that area
-      // TODO
-      event.motion.x;
-      event.motion.y;
-//      SDL_MouseMotionEvent motion;
-//      SDL_MouseButtonEvent button;
+      // TODO:
+      // check SDL_MouseMotionEvent::motion and SDL_MouseButtonEvent::button for that
+      // call ua_screen::mouse_event() when found
    }
 
    return true;
