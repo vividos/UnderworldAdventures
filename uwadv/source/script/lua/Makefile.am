@@ -1,8 +1,14 @@
+#
+# Makefile.am for liblua.la, liblualib.la and luac
+#
+# $Id$
+#
+
 INCLUDES = -I$(srcdir)/src -I$(srcdir)/include
 
 noinst_LTLIBRARIES = liblua.la liblualib.la
 
-# Makefile.common defines lublua_la_SOURCES and liblualib_la_SOURCES
+# Makefile.common defines liblua_la_SOURCES and liblualib_la_SOURCES
 include Makefile.common
 
 liblualib_la_LIBADD = liblua.la
