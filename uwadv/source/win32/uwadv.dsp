@@ -747,6 +747,10 @@ SOURCE=..\quadtree.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\settings.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\texture.cpp
 # End Source File
 # End Group
@@ -832,7 +836,7 @@ SOURCE=..\resource\objloader.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\resource\settings.cpp
+SOURCE=..\resource\settingsloader.cpp
 # End Source File
 # Begin Source File
 
