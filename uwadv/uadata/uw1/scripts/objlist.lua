@@ -118,7 +118,7 @@ function lua_objlist_get(obj_handle)
    if inv_float_add_item(obj_handle) ~= ua_slot_no_item
    then
       -- remove from master object list
-      objlist_remove_obj(obj_handle)
+      objlist_delete_obj(obj_handle)
    end
 
 end
