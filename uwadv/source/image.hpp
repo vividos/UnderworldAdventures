@@ -77,6 +77,10 @@ public:
    void copy_rect(ua_image &img, unsigned int startx, unsigned int starty,
       unsigned int width, unsigned int height);
 
+   //! fills a specific rectangle with a color
+   void fill_rect(unsigned int startx, unsigned int starty,
+      unsigned int width, unsigned int height, unsigned int color);
+
    //! clears bitmap with one palette index
    void clear(Uint8 index=0);
 

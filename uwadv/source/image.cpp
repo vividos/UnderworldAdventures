@@ -101,6 +101,17 @@ void ua_image::copy_rect(ua_image &img, unsigned int startx, unsigned int starty
    }
 }
 
+void ua_image::fill_rect(unsigned int startx, unsigned int starty,
+   unsigned int width, unsigned int height, unsigned int color)
+{
+   // get pixel and ptr
+   Uint8* ptr = &pixels[0]+starty*xres+startx;
+
+   // fill line by line
+   for(unsigned int y=0; y<height; y++)
+      memset(&ptr[y*xres],color,width);
+}
+
 void ua_image::clear(Uint8 index)
 {
    unsigned int max = pixels.size();
