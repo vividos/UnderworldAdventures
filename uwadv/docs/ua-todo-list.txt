@@ -55,9 +55,6 @@ game interface
 - selection style mouse cursor on "start menu" and "create char." screens
   prio: 3  assigned: phlask
 
-- ingame_orig: split up areas into more textures to reduce texture uploads
-  prio: 2  assigned: vividos
-
 - improve savegame loading/saving screen implementation
   prio: 2  assigned: phlask
 
