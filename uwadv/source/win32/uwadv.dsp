@@ -765,6 +765,10 @@ SOURCE=..\quadtree.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\renderer.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\resource\savegame.cpp
 # End Source File
 # Begin Source File
@@ -814,6 +818,10 @@ SOURCE=..\mousecursor.hpp
 # Begin Source File
 
 SOURCE=..\quadtree.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\renderer.hpp
 # End Source File
 # Begin Source File
 
