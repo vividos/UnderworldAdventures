@@ -601,8 +601,8 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
       fade_ticks = 0;
       fadeout_action = 0; // return to menu
    }
-   else
 #ifdef HAVE_DEBUG
+   else
    // check for quicksave key
    if (keymap.is_key(ua_key_special_quicksave,keymod))
    {
