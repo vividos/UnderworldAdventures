@@ -63,6 +63,9 @@ bool ua_window::process_event(SDL_Event& event)
    return false;
 }
 
+/*! note: mousex and mousey parameters are in virtual screen coordinates,
+    where the screen is a 320x200 pixel screen, with the origin in the upper
+    left. */
 void ua_window::mouse_event(bool button_clicked, bool left_button,
    bool button_down, unsigned int mousex, unsigned int mousey)
 {
