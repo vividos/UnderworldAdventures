@@ -50,7 +50,7 @@ class ua_frustum
 {
 public:
    //! ctor
-   ua_frustum(double xpos,double ypos,double xangle,double yangle,double fov,double farplane);
+   ua_frustum(double xpos,double ypos,double zpos,double xangle,double yangle,double fov,double farplane);
 
    //! calculates if a point is in the view frustum
    bool is_in_frustum(double xpos,double ypos);
@@ -60,12 +60,15 @@ public:
    //! returns triangle y coordinate
    double get_y(unsigned int at){ return y[at]; }
 
+   double get_pos(int i){ return pos[i]; }
+
    double get_xangle(){ return xangle; }
    double get_yangle(){ return yangle; }
 
 protected:
    //! frustum triangle points
    double x[3],y[3];
+   double pos[3];
    double xangle,yangle;
 };
 
