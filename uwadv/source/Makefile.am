@@ -1,6 +1,6 @@
 #
 # Underworld Adventures - an Ultima Underworld hacking project
-# Copyright (c) 2002,2003 Underworld Adventures Team
+# Copyright (c) 2002,2003,2004 Underworld Adventures Team
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 SUBDIRS = base tools script debug
 
 # compiler options
-INCLUDES = -I$(srcdir)/base -I$(srcdir)/audio -I$(srcdir)/ui -I$(srcdir)/renderer -I$(srcdir)/underw -I$(srcdir)/import
+INCLUDES = -I$(srcdir)/base -I$(srcdir)/audio -I$(srcdir)/ui -I$(srcdir)/renderer -I$(srcdir)/underw -I$(srcdir)/import -I$(srcdir)/script
 CXXFLAGS = @CXXFLAGS@
 LDFLAGS = @LIBS@
 
