@@ -24,6 +24,12 @@
    \brief game class definition
 
 */
+/*! \defgroup game Game Documentation
+
+   game documentation yet to come ...
+
+*/
+//@{
 
 // include guard
 #ifndef uwadv_uwadv_hpp_
@@ -210,3 +216,4 @@ inline ua_underworld& ua_uwadv_game::get_underworld()
 
 
 #endif
+//@}

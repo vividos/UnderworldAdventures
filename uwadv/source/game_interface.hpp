@@ -26,6 +26,9 @@
    a
 
 */
+//! \ingroup game
+
+//@{
 
 // include guard
 #ifndef uwadv_game_interface_hpp_
@@ -107,3 +110,4 @@ protected:
 
 
 #endif
+//@}

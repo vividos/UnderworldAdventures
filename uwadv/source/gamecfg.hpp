@@ -28,6 +28,9 @@
    ua_cfgfile::load().
 
 */
+//! \ingroup game
+
+//@{
 
 // include guard
 #ifndef uwadv_gamecfg_hpp_
@@ -76,3 +79,4 @@ inline void ua_gamecfg_loader::init(ua_game_interface* thegame)
 
 
 #endif
+//@}

@@ -27,6 +27,9 @@
    icon loading.
 
 */
+//! \ingroup game
+
+//@{
 
 // include guard
 #ifndef uwadv_game_win32_hpp_
@@ -57,4 +60,6 @@ protected:
    HICON icon_small;
 };
 
+
 #endif
+//@}
