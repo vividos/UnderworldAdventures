@@ -14,6 +14,10 @@ Mail address:<?php insert_mail(); ?>
 </p>
 
 <p>
+<b><a href="http://sourceforge.net/users/aishafenton">Aisha Fenton</a></b>, lives in New Zealand and works for a local software company there. Aisha is working on the Mac-OS X port.
+</p>
+
+<p>
 <b><a href="http://sourceforge.net/users/hairyjim">Jim Cameron (hairyjim)</a></b> TSSHP <a href="http://tsshp.sourceforge.net/" target="_blank">(The System Shock Hack Project)</a> is also interested in decoding Ultima Underworld data structures and helps out with the <a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/uwadv/uwadv/docs/uw-formats.txt?rev=HEAD&amp;content-type=text/vnd.viewcvs-markup" target="_blank">uw-formats.txt</a> file. Jim is located in the UK.
 </p>
 
