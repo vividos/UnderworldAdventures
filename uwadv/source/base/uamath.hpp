@@ -192,9 +192,31 @@ public:
 };
 
 
+//! plane in 3d
+class ua_plane3d
+{
+public:
+   //! ctor; takes origin and normal vector
+   ua_plane3d(const ua_vector3d& the_origin, const ua_vector3d& the_normal);
+
+   //! ctor; constructs plane from triangle
+   ua_plane3d(ua_vector3d p1, ua_vector3d p2, ua_vector3d p3);
+
+   //! calculates if plane is front-facing to given direction vector
+   bool is_front_facing_to(const ua_vector3d& dir) const;
+
+   //! calculates signed distance to plane
+   double signed_dist_to(const ua_vector3d& point) const;
+
+   ua_vector3d origin; //!< plane origin
+   ua_vector3d normal; //!< plane normal
+   double equation_3;  //!< 3rd plane equation param
+};
+
+
 //! vertex in 3d space
-/*! Represents a vertex in 3d space, which can form a triangle. Additionally
-    the vertex has texture coordinates associated with them. */
+/*! Represents a vertex in 3d space, which can form a triangle. The vertex
+    additionally has texture coordinates associated with them. */
 struct ua_vertex3d
 {
    //! struct ctor
@@ -209,8 +231,8 @@ struct ua_vertex3d
 
 
 //! textured triangle
-/*! Represents a textured triangle, made up with 3 ua_vertex3d objects. There
-    also is a texnum member to specify texture to use.
+/*! Represents a textured triangle made up with 3 ua_vertex3d objects. There
+    also is a texnum member to specify used texture.
 */
 struct ua_triangle3d_textured
 {
@@ -460,7 +482,7 @@ inline void ua_vector3d::rotate_z(double angle)
    y = x_temp*sin(angle_rad) + y*cos(angle_rad);
 }
 
-/*! calculates rotated vector using the rotation matrix at
+/*! calculates rotated vector using the rotation matrix given at
     http://www.makegames.com/3drotation/
 */
 inline void ua_vector3d::rotate(const ua_vector3d& axis, double angle)
@@ -474,6 +496,37 @@ inline void ua_vector3d::rotate(const ua_vector3d& axis, double angle)
    set( (t*ax*ax+c   )*x + (t*ax*ay-s*az)*y + (t*ax*az+s*ay)*z,
         (t*ax*ay+s*az)*x + (t*ay*ay+c   )*y + (t*ay*az-s*ax)*z,
         (t*ax*az-s*ay)*x + (t*ay*az+s*ax)*y + (t*az*az+c   )*z );
+}
+
+
+// ua_plane3d methods
+
+inline ua_plane3d::ua_plane3d(const ua_vector3d& the_origin,
+   const ua_vector3d& the_normal)
+:origin(the_origin), normal(the_normal)
+{
+   equation_3 = -(normal.x*origin.x + normal.y*origin.y + normal.z*origin.z);
+}
+
+inline ua_plane3d::ua_plane3d(ua_vector3d p1, ua_vector3d p2, ua_vector3d p3)
+:origin(p1)
+{
+   p2 -= p1;
+   p3 -= p1;
+   normal.cross(p2,p3);
+   normal.normalize();
+   equation_3 = -(normal.x*origin.x+normal.y*origin.y+normal.z*origin.z);
+}
+
+inline bool ua_plane3d::is_front_facing_to(const ua_vector3d& dir) const
+{
+   double dot = normal.dot(dir);
+   return dot <= 0.0;
+}
+
+inline double ua_plane3d::signed_dist_to(const ua_vector3d& point) const
+{
+   return point.dot(normal) + equation_3;
 }
 
 
