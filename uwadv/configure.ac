@@ -157,16 +157,20 @@ else
 fi
 
 
+#where to put configuration files?
+AC_ARG_WITH(confdir, [  --with-confdir=DIR          directory where UWADV configuration files will be placed], CONFDIR=$with_confdir, CONFDIR=$(datadir)/games/uwadv/)
+
 # determining uwadv.cfg entries
 AC_ARG_WITH(uw1, [  --with-uw1=DIR          directory where UW1 is installed ],UW1PATH=$with_uw1,UW1PATH=${datadir}/games/uw1/)
 AC_SUBST(UW1PATH)
+
 
 UADATAPATH=${datadir}/games/uwadv/
 AC_SUBST(UADATAPATH)
 
 
 # set compiler variables
-CPPFLAGS="$CPPFLAGS -DCONFIGDIR=\\\"${datadir}/games/uwadv/\\\""
+CPPFLAGS="$CPPFLAGS -DCONFIGDIR=\\\"$CONFDIR\\\""
 CXXFLAGS="$CXXFLAGS -I. -I${srcdir} $DEBUG_FLAGS  $SDL_CFLAGS $X_CFLAGS"
 CFLAGS="$CXXFLAGS"
 LIBS="$LIBS $SDL_LIBS $OPENGL_LIBS $X_LIBS $ZLIB_LIBS"
