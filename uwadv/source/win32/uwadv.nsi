@@ -10,7 +10,7 @@
 
 # general installer config
 #
-OutFile "uwadv-bin-${VERSION}-win32.exe"
+OutFile "uwadv-${VERSION}-win32.exe"
 Name "Underworld Adventures '${VERSION}'"
 CRCCheck on
 
@@ -119,9 +119,12 @@ Delete $INSTDIR\SDL.dll
 Delete $INSTDIR\SDL_mixer.dll
 Delete $INSTDIR\uwadv.cfg
 Delete $INSTDIR\uwadv.cfg.old
+Delete $INSTDIR\keymap.cfg
 Delete $INSTDIR\Copying
 Delete $INSTDIR\README.uwadv.txt
 Delete $INSTDIR\uw1-keyboard.txt
+Delete $INSTDIR\Authors.txt
+Delete $INSTDIR\Changes.txt
 Delete $INSTDIR\uninst-uwadv.exe
 Delete $INSTDIR\uadata\uadata00.uar
 RMDir $INSTDIR\uadata
