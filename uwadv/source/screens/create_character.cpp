@@ -282,6 +282,7 @@ void ua_create_character_screen::handle_event(SDL_Event &event)
             selected_button -= btng_buttonspercolumn;
          break;
 
+      case SDLK_KP_ENTER:
       case SDLK_RETURN:
          // simulate clicking on that area
          press_button(selected_button);
