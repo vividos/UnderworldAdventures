@@ -101,7 +101,12 @@ void ua_load_game_screen::handle_event(SDL_Event &event)
          game_nr = strtol(text.c_str(),NULL,10);
 
          if (unsigned(game_nr)>=core->get_savegames_mgr().get_savegames_count())
+         {
             game_nr = -1;
+            scroll.print("wrong game number");
+            scroll.print("enter number of game to load: ");
+            scroll.enter_input_mode();
+         }
          else
             scroll.print("loading game ...");
       }
