@@ -22,14 +22,14 @@ mapdisp_SOURCES = mapdisp.cpp ../level.cpp ../resource/maploader.cpp \
 	../settings.cpp ../resource/savegame.cpp \
 	../common.hpp ../resource/fread_endian.hpp ../image.hpp \
 	../level.hpp ../objects.hpp ../quadtree.hpp ../settings.hpp \
-	../texture.hpp ../uatypes.hpp ../savegame.hpp
+	../texture.hpp ../utils.hpp ../savegame.hpp
 
 animview_SOURCES = animview.cpp ../cutscene.cpp ../resource/cutsloader.cpp \
 	../image.cpp ../texture.cpp ../settings.cpp \
 	../image.hpp ../texture.hpp \
-	../common.hpp ../cutscene.hpp ../settings.hpp ../uatypes.hpp \
+	../common.hpp ../cutscene.hpp ../settings.hpp ../utils.hpp \
 	../resource/fread_endian.hpp
 
 strpak_SOURCES = strpak.cpp ../resource/gamestrings.cpp ../settings.cpp \
 	../common.hpp ../resource/fread_endian.hpp ../gamestrings.hpp \
-	../settings.hpp ../uatypes.hpp
+	../settings.hpp ../utils.hpp
