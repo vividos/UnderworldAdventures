@@ -592,7 +592,7 @@ void ua_ingame_orig_screen::setup_opengl()
    glScissor(x1,y1,x2,y2);
 }
 
-ua_ingame_orig_area ua_ingame_orig_screen::get_current_area(
+ua_ingame_orig_area ua_ingame_orig_screen::get_area(
    unsigned int xpos,unsigned int ypos)
 {
    // search for area that first matches the coordinate range
