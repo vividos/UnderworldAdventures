@@ -177,7 +177,6 @@ void ua_image_quad::draw()
    unsigned int quadwidth = wnd_width;
    unsigned int quadheight = wnd_height;
    double dx = 0.0, dy = 0.0;
-   unsigned int dpx, dpy;
 
    unsigned int x0, x1, y0, y1;
    x0 = wnd_xpos;
