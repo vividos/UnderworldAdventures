@@ -121,7 +121,7 @@ void ua_level::load_game(ua_savegame &sg)
 
    for(n=0; n<64*64; n++)
    {
-      ua_levelmap_tile tile;
+      ua_levelmap_tile &tile = tiles[n];
       tile.type = static_cast<ua_levelmap_tiletype>(sg.read8());
       tile.floor = sg.read16();
       tile.ceiling = sg.read16();
@@ -129,12 +129,16 @@ void ua_level::load_game(ua_savegame &sg)
       tile.texture_wall = sg.read16();
       tile.texture_floor = sg.read16();
 
-      tiles.push_back(tile);
    }
 
    // read texture info
    for(n=0; n<48; n++) wall_textures[n] = sg.read16();
    for(n=0; n<10; n++) floor_textures[n] = sg.read16();
+
+   // read objects list
+   allobjects.load_game(sg);
+
+   // read annotations list
 }
 
 void ua_level::save_game(ua_savegame &sg)
@@ -156,6 +160,11 @@ void ua_level::save_game(ua_savegame &sg)
    // write texture info
    for(n=0; n<48; n++) sg.write16(wall_textures[n]);
    for(n=0; n<10; n++) sg.write16(floor_textures[n]);
+
+   // write objects list
+   allobjects.save_game(sg);
+
+   // write annotations list
 }
 
 void ua_level::render(ua_texture_manager &texmgr,ua_frustum &fr)
@@ -487,15 +496,14 @@ void ua_level::render_walls(unsigned int x, unsigned int y, ua_texture_manager &
 void ua_level::render_objs(unsigned int x, unsigned int y,
    ua_texture_manager &texmgr, ua_frustum &fr)
 {
-   std::vector<ua_object_ptr> objlist;
-   allobjects.get_object_list(x,y,objlist);
+   ua_object obj;
 
-   int max=objlist.size();
-   for(int i=0; i<max; i++)
+   if (allobjects.get_first_tile_object(x,y,obj))
+   do
    {
-      ua_object_ptr obj=objlist[i];
-      obj->render(x,y,texmgr,fr,*this);
-   }
+      obj.render(x,y,texmgr,fr,*this);
+
+   } while(allobjects.get_next_tile_object(obj));
 }
 
 void ua_level::get_tile_coords(
