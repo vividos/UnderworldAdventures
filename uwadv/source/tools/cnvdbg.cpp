@@ -532,13 +532,9 @@ void ua_conv_debugger::fetchm_priv(Uint16 at)
 }
 
 
-// we don't need SDL's main here
-#undef main
-
-
 // main function
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
    printf("cnvdbg - ultima underworld 1 conversation script debugger\n\n");
 

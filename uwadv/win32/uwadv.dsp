@@ -724,6 +724,10 @@ SOURCE=..\source\resource\modeldecode.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\source\resource\models_impl.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\source\resource\objloader.cpp
 # End Source File
 # Begin Source File

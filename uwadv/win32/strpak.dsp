@@ -50,7 +50,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 kernel32.lib user32.lib sdl.lib toolslib.lib /nologo /subsystem:console /machine:I386 /out:"../output/release/strpak.exe" /libpath:"../output/release/toolslib"
+# ADD LINK32 sdl.lib sdlmain.lib toolslib.lib /nologo /subsystem:console /machine:I386 /out:"../output/release/strpak.exe" /libpath:"../output/release/toolslib"
 
 !ELSEIF  "$(CFG)" == "strpak - Win32 Debug"
 
@@ -66,7 +66,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "..\source" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /D "_STLP_DEBUG" /D "_STLP_USE_SYSTEM_ASSERT" /D "_STLP_USE_NEWALLOC" /D "_STLP_DEBUG_ALLOC" /D "_STLP_USE_STATIC_LIB" /YX /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "..\source" /D "_CONSOLE" /D "_STLP_DEBUG" /D "_STLP_USE_SYSTEM_ASSERT" /D "_STLP_USE_NEWALLOC" /D "_STLP_DEBUG_ALLOC" /D "_STLP_USE_STATIC_LIB" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "HAVE_DEBUG" /YX /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -74,7 +74,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib sdl.lib toolslib.lib /nologo /subsystem:console /debug /machine:I386 /out:"../output/debug/strpak.exe" /pdbtype:sept /libpath:"../output/debug/toolslib"
+# ADD LINK32 sdl.lib sdlmain.lib toolslib.lib /nologo /subsystem:console /debug /machine:I386 /nodefaultlib:"msvcrt" /out:"../output/debug/strpak.exe" /pdbtype:sept /libpath:"../output/debug/toolslib"
 
 !ENDIF 
 

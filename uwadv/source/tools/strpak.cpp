@@ -522,13 +522,9 @@ void strpak_pack_strings(const char *infile,const char *outfile,const char *node
 }
 
 
-// we don't need SDL's main() here
-#undef main
-
-
 // main function
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
    printf("strpak - ultima underworld game strings pack and unpack tool\n\n");
 

@@ -347,8 +347,6 @@ void write_textures()
 }
 
 
-#undef main
-
 int main(int argc, char* argv[])
 {
    printf("Underworld Adventures - level map to 3ds exporter\n\n");

@@ -285,11 +285,7 @@ void ua_conv_dasm::print_opcode(Uint16 opcode, Uint16 arg, Uint16 pos)
 
 // main function
 
-// we don't need SDL's main here
-#undef main
-
-
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
    printf("cnvdasm - ultima underworld conversation script disassembler / decompiler\n\n");
 

@@ -32,7 +32,7 @@
 #include "../audio/xmidi.hpp"
 
 
-int main(int argc, char **argv)
+int main(int argc, char* argv[])
 {
    printf("xmidi to midi converter\n\n");
 
