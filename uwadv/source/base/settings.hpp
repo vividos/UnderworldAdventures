@@ -88,6 +88,9 @@ enum ua_settings_key
    //! screen resolution string, in the form <xres> x <yres>
    ua_setting_screen_resolution,
 
+   //! boolean value that indicates if the ui is drawn with "smooth" pixels
+   ua_setting_ui_smooth,
+
    //! boolean value that indicates fullscreen mode
    ua_setting_fullscreen,
 

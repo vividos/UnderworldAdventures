@@ -51,6 +51,7 @@ struct
    { "custom-keymap", ua_setting_custom_keymap },
    { "enable-uwadv-features", ua_setting_uwadv_features },
    { "screen-resolution", ua_setting_screen_resolution },
+   { "smooth-ui", ua_setting_ui_smooth },
    { "fullscreen", ua_setting_fullscreen },
    { "cutscene-narration", ua_setting_cuts_narration },
    { "audio-enabled", ua_setting_audio_enabled },

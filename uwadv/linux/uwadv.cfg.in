@@ -67,6 +67,14 @@ screen-resolution 800 x 600
 fullscreen no
 
 #
+# enables the "smooth" drawing of the user interface graphics
+# when disabled, the graphics look more "pixely"
+# "yes" enables it, "no" disables it
+#
+
+smooth-ui yes
+
+#
 # sets the narration type for cutscenes (including the intro)
 # "sound" for sound playback (spoken text) only
 # "subtitles" for subtitles only (no sound)
