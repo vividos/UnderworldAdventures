@@ -8,7 +8,8 @@ uadatadir = $(datadir)/games/uwadv
 
 EXTRA_DIST = \
 	$(luaSCRIPTS) \
-	uw1/scripts/uwinit.txt
+	uw1/scripts/uwinit.txt \
+	Makefile.common
 
 CLEANFILES = \
 	uadata00.uar \
