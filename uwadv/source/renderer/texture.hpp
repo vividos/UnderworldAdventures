@@ -72,6 +72,11 @@ class ua_game_interface;
 // classes
 
 //! texture class; represents one or more texture images
+/*! The ua_texture class can be used to store and upload textures to OpenGL.
+    Textures are usually of size 2^n x 2^m (where n and m are integral numbers).
+    The ua_texture class can be used in two ways; a) uploading texture once and
+    using it consecutively and b) uploading texture each rendered frame.
+*/
 class ua_texture
 {
 public:
