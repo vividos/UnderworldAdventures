@@ -128,6 +128,8 @@ void ua_renderer::setup_camera_priv(bool pick,unsigned int xpos, unsigned int yp
 
 void ua_renderer::render()
 {
+   glLoadIdentity();
+
    ua_player &pl = underw->get_player();
    double plheight = 0.6+underw->get_player_height()*height_scale;
    double rotangle = pl.get_angle_rot();
@@ -264,7 +266,7 @@ void ua_renderer::select_pick(unsigned int xpos, unsigned int ypos,
    glMatrixMode(GL_MODELVIEW);
 
    // find out hit object
-   GLint hitid = 0;
+   GLint hitidx = 0;
    if (hits>0)
    {
       GLuint min = 0xffffffff;
@@ -281,8 +283,8 @@ void ua_renderer::select_pick(unsigned int xpos, unsigned int ypos,
             // new min. hit dist.
             min = select_buf[idx++];
             idx++; // jump over max. hit dist.
-            if (namecount>0)
-               hitid = select_buf[idx]; // hit id (assumes we only have one)
+            if (namecount>0 && namecount==2)
+               hitidx = idx; // hit index
          }
          else
             idx+=2; // jump over min./max. hit dist.
@@ -291,10 +293,21 @@ void ua_renderer::select_pick(unsigned int xpos, unsigned int ypos,
          idx += namecount;
       }
    }
+
+   if (hitidx!=0)
+   {
+      GLuint coords = select_buf[hitidx];
+      GLuint renderid = select_buf[hitidx+1];
+
+      tilex = coords & 0x00ff;
+      tiley = (coords>>8) & 0x00ff;
+      isobj = renderid<0x0400;
+      id = renderid - (isobj ? 0 : 0x0400);
+   }
 }
 
 void add_wall(ua_triangle3d_textured& tri1, ua_triangle3d_textured& tri2,
-   ua_levelmap_wall_render_side side,
+   unsigned int side,
    double x1, double y1, double z1,
    double x2, double y2, double z2,
    double nz1, double nz2, double ceiling)
@@ -329,10 +342,11 @@ void add_wall(ua_triangle3d_textured& tri1, ua_triangle3d_textured& tri2,
    }
 }
 
-void ua_level::get_tile_triangles(unsigned int xpos, unsigned int ypos,
+void ua_renderer::get_tile_triangles(unsigned int xpos, unsigned int ypos,
    std::vector<ua_triangle3d_textured>& alltriangles)
 {
-   ua_levelmap_tile& tile = get_tile(xpos,ypos);
+   ua_level& level = underw->get_current_level();
+   ua_levelmap_tile& tile = level.get_tile(xpos,ypos);
 
    if (tile.type == ua_tile_solid)
       return; // no triangles to generate
@@ -402,7 +416,7 @@ void ua_level::get_tile_triangles(unsigned int xpos, unsigned int ypos,
          Uint16 x1, y1, z1, x2, y2, z2;
 
          // get current tile coordinates
-         get_tile_coords((ua_levelmap_wall_render_side)side,tile.type,
+         get_tile_coords(side,tile.type,
             Uint16(x),Uint16(y),Uint16(tile.floor),Uint16(tile.slope),Uint16(tile.ceiling),
             x1,y1,z1, x2,y2,z2);
 
@@ -420,7 +434,7 @@ void ua_level::get_tile_triangles(unsigned int xpos, unsigned int ypos,
          {
             // tile inside map
 
-            ua_levelmap_tile &ntile = tiles[ny*64 + nx];
+            ua_levelmap_tile &ntile = level.get_tile(nx,ny);
 
             if (ntile.type == ua_tile_solid)
             {
@@ -430,7 +444,7 @@ void ua_level::get_tile_triangles(unsigned int xpos, unsigned int ypos,
             else
             {
                // get z coordinates for the adjacent tile
-               ua_levelmap_wall_render_side adjside;
+               unsigned int adjside;
                switch(side)
                {
                case ua_left: adjside=ua_right; break;
@@ -479,8 +493,7 @@ void ua_level::get_tile_triangles(unsigned int xpos, unsigned int ypos,
 
          // now that we have all info, draw the tile wall
 //         render_wall((ua_levelmap_wall_render_side)side,x1,y1,z1,x2,y2,z2,nz1,nz2,tile.ceiling);
-         add_wall(tri1,tri2,
-            (ua_levelmap_wall_render_side)side,
+         add_wall(tri1,tri2, side,
             x1,y1,z1*height_scale,
             x2,y2,z2*height_scale,
             nz1*height_scale,nz2*height_scale,ceil_height);
@@ -500,7 +513,7 @@ void ua_level::get_tile_triangles(unsigned int xpos, unsigned int ypos,
       bool tri2_used = true;
 
       // set texnums
-      ceil_tri1.texnum = ceil_tri2.texnum = ceiling_texture;
+      ceil_tri1.texnum = ceil_tri2.texnum = tile.texture_ceiling;
       floor_tri1.texnum = floor_tri2.texnum = tile.texture_floor;
 
       // common ceiling quad
