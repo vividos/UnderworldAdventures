@@ -186,11 +186,12 @@ void ua_object::save_object(ua_savegame &sg)
 
 ua_object_list::ua_object_list()
 {
+   // do empty object list
+   master_obj_list.resize(0x400);
 }
 
 ua_object_list::~ua_object_list()
 {
-   master_obj_list.clear();
 }
 
 Uint16 ua_object_list::get_tile_list_start(unsigned int xpos, unsigned int ypos)
