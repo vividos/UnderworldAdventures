@@ -366,3 +366,12 @@ int main(int argc, char* argv[])
 
    return 0;
 }
+
+// fake function to prevent linking with all the uwadv stuff
+
+#include "files.hpp"
+
+SDL_RWops* ua_files_manager::get_uadata_file(const char *filename)
+{
+   return SDL_RWFromFile(filename,"rb");
+}
