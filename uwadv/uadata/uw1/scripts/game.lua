@@ -43,6 +43,8 @@ function lua_init_script(this)
 
    player_set_pos(self, 32.0, 2.0)
    player_set_angle(self, 90.0)
+   player_set_attr(self,ua_attr_maplevel,1)
+
    player_set_attr(self,player_attr_gender,1)
    player_set_attr(self,player_attr_appearance,1)
 
