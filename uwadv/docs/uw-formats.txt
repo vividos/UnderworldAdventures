@@ -29,6 +29,7 @@ Table of Contents
    3.5    Fonts
    3.6    Critter animations
    3.7    Cutscene animations
+   3.8    Weapon animations
 
    4      Level maps and object lists
    4.1    File format
@@ -107,12 +108,16 @@ Table of Contents
    models) and Fabian Pache (about map details and 3d models, uw2 related,
    http://uw2rev.sourceforge.net).
 
+   Further infos about weapon animation and miscellaneous bits about uw were
+   contributed by Telemachos from peroxide.dk.
+
    I also like to thank Telemachos who pointed me to the TSSHP's file formats
    file at the start of all of this.
 
    This file is probably:
    Copyright (c) 2000,2001,2002,2003 Jim Cameron
-   Copyright (c) 2002,2003 Michael Fink
+   Copyright (c) 2002,2003,2004 Michael Fink
+   Copyright (c) 2004 Kasper Fauerby
 
 
  +--------------------------------------------------------------------------+
@@ -243,12 +248,12 @@ Table of Contents
    views.gr       the letters "mv", probably not used
    w16.tr         wall textures, size 16x16
    w64.tr         wall textures, size 64x64
-   weapons.cm
-   weapons.dat
+   weapons.cm     weapon animation auxiliary palettes (see 3.8)
+   weapons.dat    weapon animation x and y coordinates (see 3.8)
    weapons.gr     weapon hit animations, for left and right handedness
    win1.byt       winning screen with text, palette #7
    win2.byt       blank winning screen for character info, palette #7
-   xfer.dat
+   xfer.dat       color index translation tables (see 9.3)
 
    Files in the "sound" folder:
 
@@ -392,8 +397,8 @@ Table of Contents
    lighting.dat
    pals.dat       11 palettes
    scd.ark
-   weap.cm
-   weap.dat
+   weap.cm        weapon animation auxiliary palettes (see 3.8)
+   weap.dat       weapon animation x and y coordinates (see 3.8)
 
    Files in the "cuts" folder:
    lback00x.byt   (?) (x = 0..8)
@@ -951,6 +956,52 @@ Table of Contents
          }
       }
 
+3.9  Weapon animations
+
+   Attack animations:
+   ------------------
+   The file weapons.gr contains animation frames for attacks with the various
+   weapon types.
+
+   The file contains 224 image frames, split into 112 for right-handed attacks
+   and 112 for left handed.
+
+   For each weapon, including the fist, 3 animations are stored: slash, stab
+   and hack - even if identical. After these three animations one "ready"
+   frame is stored.
+
+   Each animation has 4 "power-up" frames and 5 "attack frames", some of which
+   can be black (a small 2x2 image)
+   Therefore, each weapon type has 3*9+1 = 28 frames, 4 attack types gives 112
+   images.
+
+   TODO: mace seems not to fit this exactly!!!
+
+   Weapons.dat:
+   ------------
+   This file stores 8-bit coordinates for the frames of the various attack
+   animations. For each attack type first 28 x-coordinates are stored, then
+   28 y-coordinates. There are 8 such sets of coordinates:
+
+   right hand sword
+   right hand axe
+   right hand mace
+   right hand fist
+   left  hand sword
+   left  hand axe
+   left  hand mace
+   left  hand fist
+
+   Coordinates pin-point the upper-left corner of the attack frame and are
+   relative to the lower left corner of the 3d-view area.
+
+   Weapons.cm:
+   -----------
+   This file stores two aux 16-color pallettes for the attack animation
+   frames. These are needed to tint the weapon attack frames according to the
+   skin color of the selected character. I haven't checked, but probably one
+   of these match the "standard" aux pallette used for the .gr files...
+
 
  +--------------------------------------------------------------------------+
 
@@ -1114,7 +1165,7 @@ Table of Contents
 
    0006 link / special
         0- 5   6   "owner"     Owner / special
-        6-15   10  (*)         Quantity / link / special property
+        6-15   10  (*)         Quantity / special link / special property
 
    All field names listed are used later to refer to these fields in the
    object's information words.
@@ -1474,6 +1525,17 @@ Table of Contents
          the "owner" field determines from whom the bones are; strings are
          taken from block 4; a value of 63 means "an adventurer"
 
+   0100  a_key (and up to 010e)
+         the key ID that is needed to unlock a door with an associated lock
+         object is stored in the "owner" field.
+
+   010f  a_lock
+         the lock object is associated with a door or portcullis and
+         determines the lock state and the lock ID. bit 9 of the flags
+         indicates if the lock is locked (1) or unlocked (0). the lower 6 bits
+         of the "link/special" field determines the lock ID. when unlocking a
+         door with a key, the lock ID must match the key ID on the key.
+
    0110  a_picture of Tom
 
    0114  a_book
@@ -1488,9 +1550,13 @@ Table of Contents
          the map is shown when looked at the map in inventory. The string at
          block 1, string 151 is printed, too.
 
-   0140  a_door (and up to 0147)
+   0140  a_door (and up to 014f)
          if bit 1 of the "owner" field is set, the door is spiked. if the
          "sp_link" field points to a_lock object, the door is locked.
+         0146 is a portcullis and 0147 is a secret door. doors from 0148
+         to 014f are the open versions of the closed doors.
+         the textures for the doors come from the 6 bytes at the end of the
+         texture mapping info from lev.ark.
 
    0160  a_pillar
          3d object. texture is determined by the lower 2 bits of the "flags"
@@ -1566,7 +1632,9 @@ Table of Contents
    Traps are set off by triggers, which are triggered by the player coming
    near them. Traps can also be set off by switches or buttons, etc. All
    triggers contain tilemap coords in "quality" and "owner" field called
-   trigger "target" coordinates.
+   trigger "target" coordinates. All triggers also have the "special link"
+   set that points to the trap(s) to set off. If a trap also has the "special
+   link" field set, then another trap is set off, allowing trap chaining.
 
    0180  a_damage trap
          player vitality is decreased; number of hit points are in "quality"
@@ -1637,8 +1705,11 @@ Table of Contents
          "sp_link" field. as the door points to a lock, there can't be another
          trigger associated with it.
 
-         the "quality" value can have the values 1,2,3 and determines opening
-         animation (?)
+	 the "quality" value decides if a door trap only opens, closes or
+	 toggles doors.
+	 1: try open
+	 2: try close
+         3: toggle door state
 
    0189  a_ward trap
          not used in uw1
@@ -1954,11 +2025,13 @@ Table of Contents
 
    The conversation header looks like this:
 
-   0000   Int32   unknown1, always seems to be 0x0828, or 28 08
-   0004   Int32   code size in number of instructions (16-bit words)
-   0008   Int16   unknown2, always seems to be 0x0000
-   000A   Int16   game strings block to use
-   000C   Int16   number of memory reserved for variables (*)
+   0000   Int16   unknown, always seems to be 0x0828, or 28 08
+   0002   Int16   unknown, always 0x0000
+   0004   Int16   code size in number of instructions (16-bit words)
+   0006   Int16   unknown, always 0x0000
+   0008   Int16   unknown, always 0x0000
+   000A   Int16   game strings block to use for conversation strings
+   000C   Int16   number of memory slots reserved for variables (*)
    000E   Int16   number of imported globals (functions + variables)
    0010           start of imported functions list
 
@@ -2100,7 +2173,7 @@ Table of Contents
       S: value is a string number into current string block
       I: value is an integer value
    <num>: decimal value
-   <extension>: format: C<number>, might be fractional part
+   <extension>: format: C<number>: use array index <number>
 
    For pointer variables, the num value determines the location of the
    pointer relative to the stack. It usually refers to variables passed
@@ -2127,7 +2200,7 @@ Table of Contents
    the first one is the number of arguments additionally passed (some times
    this rule seems to be violated, e.g. function "babl_menu", see (*)
    below). First argument is always pushed last on stack. All values are
-   passed by reference.
+   passed by reference (as pointer to the actual value or array).
 
    Here is a quick overview of all builtin functions ("args" is the number
    of arguments without the mandatory first one):
@@ -2190,15 +2263,15 @@ Table of Contents
    number of arguments passed.
 
    id=0000 name="babl_menu" ret_type=int
-   parameters:   arg1: pointer to a list of string id's; ends with id == 0
+   parameters:   arg1: array of string id's; ends with id == 0
    description:  shows a menu of further questions the user can select;
                  string id's are stored in list in arg1
    return value: number of selected response (one-based index of arg1 list)
    -------------------------------------------------------------------------
 
    id=0001 name="babl_fmenu" ret_type=int
-   parameters:   arg1: pointer to list of string id's; ends with id == 0
-                 arg2: pointer to list with on/off values (1==on)
+   parameters:   arg1: array of string id's; ends with id == 0
+                 arg2: array with on/off values (1==on)
    description:  shows a menu with questions from list in arg1; the list in
                  arg2 indicates if the question is available (0 means not
                  available).
@@ -2206,7 +2279,7 @@ Table of Contents
    -------------------------------------------------------------------------
 
    id=0002 name="print" ret_type=void
-   parameters:   arg1: pointer to string id
+   parameters:   arg1: string id
    description:  prints a string that is not spoken by anyone (e.g. scene
                  description).
    -------------------------------------------------------------------------
@@ -2220,14 +2293,14 @@ Table of Contents
    -------------------------------------------------------------------------
 
    id=0004 name="compare" ret_type=int
-   parameters:   arg1: pointer to string handle
-                 arg2: pointer to string handle
+   parameters:   arg1: string id
+                 arg2: string id
    description:  compares strings for equality, case independent
    return value: returns 1 when strings are equal, 0 when not
    -------------------------------------------------------------------------
 
    id=0005 name="random" ret_type=int
-   parameters:   arg1: highest value
+   parameters:   arg1: highest random value
    description:  generates a random number in the range of [1..arg1]
    return value: the generated random number
    -------------------------------------------------------------------------
@@ -2237,12 +2310,12 @@ Table of Contents
    description:  (as this function is not used in uw1, I only can guess)
                  the function returns a newly allocated string with the
                  plural of the description string of a given item id.
-   return value: string handle (guessed)
+   return value: string id (guessed)
    -------------------------------------------------------------------------
 
    id=0007 name="contains" ret_type=int
-   parameters:   arg1: pointer to first string handle
-                 arg2: pointer to second string handle
+   parameters:   arg1: pointer to first string id
+                 arg2: pointer to second string id
    description:  checks if the first string contains the second string
                  (case-independent).
    return value: returns 1 when the string was found
@@ -2267,9 +2340,9 @@ Table of Contents
    -------------------------------------------------------------------------
 
    id=000b name="length" ret_type=int
-   parameters:   arg1: pointer to string handle
+   parameters:   arg1: string id
    description:  calculates length of string
-   return value: returns length of string
+   return value: returns length
    -------------------------------------------------------------------------
 
    id=000c name="val" ret_type=int
@@ -2299,7 +2372,7 @@ Table of Contents
    id=0010 name="set_quest" ret_type=void
    parameters:   arg1: new flag value
                  arg2: quest flag number
-   description:  sets a quest value
+   description:  sets a quest flag value
    return value: none
    -------------------------------------------------------------------------
 
@@ -2313,22 +2386,22 @@ Table of Contents
    -------------------------------------------------------------------------
 
    id=0012 name="show_inv" ret_type=int
-   parameters:   arg1: unknown
-                 arg2: unknown
-   description:  lets the player show an item to the NPC, the player gets
+   parameters:   arg1: list with inventory item positions
+                 arg2: list with object ids shown in player's barter area
+   description:  lets the player show an item to the npc, the player gets
                  the item back (?)
-   return value: unknown
+   return value: returns number of items
    -------------------------------------------------------------------------
 
    id=0013 name="give_to_npc" ret_type=int
-   parameters:   arg1: item id
-                 arg2: item quantity
-   description:  
-   return value: unknown, ignored
+   parameters:   arg1: list of item inventory positions to give to npc
+                 arg2: number of items in list in arg1
+   description:  transfers a number of items to the npc's inventory
+   return value: returns 0 if there were no items, and 1 if there were some
    -------------------------------------------------------------------------
 
    id=0014 name="give_ptr_npc" ret_type=int
-   parameters:   arg1: quantity?
+   parameters:   arg1: quantity?, or -1 for ignore
                  arg2: master object list position? (got from find_barter)
    description:  player hands over an item to NPC (?)
    return value: unused
@@ -2347,7 +2420,10 @@ Table of Contents
    -------------------------------------------------------------------------
 
    id=0017 name="identify_inv" ret_type=int
-   parameters:   unknown
+   parameters:   arg1:
+                 arg2:
+                 arg3:
+                 arg4: inventory item position
    description:  unknown
    return value: unknown
    -------------------------------------------------------------------------
@@ -2359,25 +2435,29 @@ Table of Contents
    -------------------------------------------------------------------------
 
    id=0019 name="do_demand" ret_type=int
-   parameters:   unknown
-   description:  unknown
-   return value: unknown
+   parameters:   arg1: string handle with text to print if NPC is not
+                        willing to give the item
+                 arg2: string handle with text if NPC gives the player the
+                      item
+   description:  decides if the player can "persuade" the NPC to give away
+                 the items in barter area, e.g. using karma.
+   return value: returns 1 when player persuaded the NPC, 0 else
    -------------------------------------------------------------------------
 
    id=001a name="do_inv_create" ret_type=int
    parameters:   arg1: item id
    description:  creates item in npc inventory
-   return value: unknown
+   return value: inventory slot
    -------------------------------------------------------------------------
 
    id=001b name="do_inv_delete" ret_type=int
    parameters:   arg1: item id
-   description:  deletes item in npc inventory
+   description:  deletes item from npc inventory
    return value: unknown
    -------------------------------------------------------------------------
 
    id=001c name="check_inv_quality" ret_type=int
-   parameters:   unknown
+   parameters:   arg1: inventory item position
    description:  returns "quality" field of npc? inventory item
    return value: "quality" field
    -------------------------------------------------------------------------
@@ -2443,8 +2523,9 @@ Table of Contents
    id=0027 name="place_object" ret_type=void
    parameters:   arg1: x tile pos
                  arg2: y tile pos
-                 arg3: item pointer (from do_inv_create)
-   description:  places a generated object in underworld (?)
+                 arg3: inventory item slot number (from do_inv_create)
+   description:  places a generated object in underworld
+                 used in Judy's conversation, #23
    -------------------------------------------------------------------------
 
    id=0028 name="take_from_npc_inv" ret_type=void
@@ -2485,22 +2566,31 @@ Table of Contents
    -------------------------------------------------------------------------
 
    id=002f name="x_obj_stuff" ret_type=void
-   parameters:   unknown
-   description:  unknown
+   parameters:   arg1: not used
+                 arg2: not used
+                 arg3: 0, (upper bit of quality field?)
+                 arg4: quantity field, 115
+                 arg5: not used
+                 arg6: not used
+                 arg7: quality?
+                 arg8: identified flag?
+                 arg9: position in master object list
+   description:  sets object properties for object in master object list. if
+                 a property shouldn't be set, -1 can be passed for the
+                 property.
    -------------------------------------------------------------------------
 
    id=0030 name="find_inv" ret_type=int
-   parameters:   arg1: unknown
+   parameters:   arg1: 0: npc inventory; 1: player inventory
                  arg2: item id
-   description:  searches item in npc inventory
-   return value: position in master object list
+   description:  searches item in npc or player inventory
+   return value: position in master object list, or 0 if not found
    -------------------------------------------------------------------------
 
    id=0031 name="find_barter" ret_type=int
    parameters:   arg1: item id to find
    description:  searches for item in barter area
-   return value: returns pos in master object list of item, or 0 if none
-                 found
+   return value: returns pos in master object list of item, or 0 if not found
    -------------------------------------------------------------------------
 
    id=0032 name="find_barter_total" ret_type=int
@@ -2542,9 +2632,9 @@ Table of Contents
     npc_hp
     npc_arms           (not used in uw1)
     npc_power
-    npc_goal
-    npc_attitude
-    npc_gtarg
+    npc_goal           goal that NPC has; 5:kill player 6:? 9:?
+    npc_attitude       attitude; 0:hostile, 1:upset, 2:mellow, 3:friendly
+    npc_gtarg          goal target; 1:player
     npc_talkedto       is 1 when player already talked to npc
     npc_level
     npc_name           (not used in uw1)
@@ -2586,7 +2676,7 @@ Table of Contents
            4: door to armoury opened
 
    flags 0..31 are stored in a 32-bit integer bit field, flags 32..35 are
-   stored as Int8 values. See chapter 9.1. where the values are stored in the
+   stored as Int8 values. See chapter 9.2. where the values are stored in the
    savegame.
 
 
@@ -3110,7 +3200,9 @@ Table of Contents
 
    shades.dat
    ----------
-   contains 12 entries, 8 byte long each
+   Contains 12 entries, 8 byte long each. When renamed to shadez.dat (or
+   deleted) uw runs in bright colors all the time without using candles and
+   such.
 
    sounds.dat
    ----------
