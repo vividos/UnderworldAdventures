@@ -42,7 +42,7 @@ uwadv_EXEC = uwadv.exe
 uwadv_OBJS = main.o game_win32.o uwadv_res.o \
 	../font.o ../image.o ../inventory.o ../level.o \
 	../texture.o ../underworld.o ../uwadv.o ../player.o \
-	../quadtree.o \
+	../quadtree.o ../objects.o \
 	../audio/audio.o ../audio/midi.o ../audio/xmidi.o \
 	../audio/midi_driver/uni_fmod.o \
 	../audio/midi_driver/win_midiout.o \
@@ -50,7 +50,7 @@ uwadv_OBJS = main.o game_win32.o uwadv_res.o \
 	../resource/codeloader.o ../resource/fontloader.o \
 	../resource/gamestrings.o ../resource/imageloader.o \
 	../resource/maploader.o ../resource/settings.o \
-	../resource/texloader.o \
+	../resource/texloader.o ../resource/objloader.o \
 	../screens/ingame_orig.o ../screens/start_splash.o
 
 uwadv_LIBS = -lmingw32 -lkernel32 -luser32 -lwinmm -lopengl32 -lglu32 \
