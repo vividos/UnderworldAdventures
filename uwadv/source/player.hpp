@@ -34,6 +34,15 @@
 
 // enums
 
+//! player movement enum
+enum ua_player_movement_mode
+{
+   ua_move_walk_forward = 1,
+   ua_move_rotate_left  = 2,
+   ua_move_rotate_right = 4,
+};
+
+
 //! player attribute enum
 /*! player attributes are values that should never change during normal
     gameplay */
@@ -120,6 +129,10 @@ public:
    //! sets player view angle
    void set_angle(double theangle){ angle=theangle; }
 
+   //! sets and delete movement mode values
+   void set_movement_mode(unsigned int set,unsigned int del=0);
+
+
    //! sets player attribute value
    void set_attr(ua_player_attributes which, unsigned int value);
 
@@ -140,6 +153,10 @@ public:
    //! returns view angle
    double get_angle(){ return angle; }
 
+   //! returns movement mode
+   unsigned int get_movement_mode(){ return move_mode; }
+
+
    //! returns player attribute value
    unsigned int get_attr(ua_player_attributes which);
 
@@ -153,17 +170,11 @@ protected:
    //! the name of the player
    std::string name;
 
-   // positional
+   // positional values
    double xpos,ypos,angle;
 
-   //! true when the player is male
-   bool gender_male;
-
-   //! true when the player is left handed
-   bool left_handedness;
-
-   //! player appearance graphic (0..4)
-   unsigned int appearance;
+   //! current movement mode
+   unsigned int move_mode;
 
    //! array with all player attributes
    unsigned int attributes[ua_attr_max];

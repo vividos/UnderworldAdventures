@@ -40,10 +40,16 @@ void ua_player::init()
 {
    xpos = ypos = 32.0;
    angle = 0.0;
+   move_mode = 0;
 
    memset(attributes,0,sizeof(attributes));
    memset(stats,0,sizeof(stats));
    memset(skills,0,sizeof(skills));
+}
+
+void ua_player::set_movement_mode(unsigned int set,unsigned int del)
+{
+   move_mode = (move_mode | set) & (~del);
 }
 
 void ua_player::set_attr(ua_player_attributes which, unsigned int value)
