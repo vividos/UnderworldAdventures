@@ -7,4 +7,5 @@
 
 uwdump_SOURCES = \
 	uwdump.hpp uwdump.cpp \
-	levark.hpp levark.cpp
+	levark.hpp levark.cpp \
+	prop.hpp prop.cpp
