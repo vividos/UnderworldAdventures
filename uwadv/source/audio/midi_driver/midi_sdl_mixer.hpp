@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Tels
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 */
-/*! \file sdl_mixer.h
+/*! \file midi_sdl_mixer.h
 
    universal midi driver; plays midis via the SDL_mixer audio library.
    available at http://www.libsdl.org/projects/SDL_mixer/
@@ -29,8 +29,8 @@
 */
 
 // include guard
-#ifndef __sdl_mixer_h_
-#define __sdl_mixer_h_
+#ifndef uwadv_midi_sdl_mixer_h_
+#define uwadv_midi_sdl_mixer_h_
 
 // needed includes
 #include "SDL_mixer.h"
@@ -40,27 +40,26 @@
 // classes
 
 //! SDL_mixer midi driver
-class ua_sdl_mixer_driver : virtual public ua_midi_driver
+class ua_sdl_mixer_midi_driver: virtual public ua_midi_driver
 {
 public:
    //! ctor
-   ua_sdl_mixer_driver();
+   ua_sdl_mixer_midi_driver();
    //! dtor
-   virtual ~ua_sdl_mixer_driver();
+   virtual ~ua_sdl_mixer_midi_driver();
 
    //! initializes driver
    virtual bool init_driver();
 
    //! starts playing an event list
-   virtual void start_track(XMIDIEventList *eventlist, bool repeat);
+   virtual void start_track(XMIDIEventList* eventlist, bool repeat);
    virtual void stop_track();
-// virtual bool is_playing(void)=0;
 
    //! returns a copyright string
-   virtual const char *copyright();
+   virtual const char* copyright();
 
 protected:
-   Mix_Music *mod;
+   Mix_Music* mod;
 };
 
 #endif
