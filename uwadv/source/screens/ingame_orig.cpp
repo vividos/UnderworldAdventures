@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -34,8 +34,8 @@
 #include "audio.hpp"
 #include "save_game.hpp"
 #include "cutscene_view.hpp"
+#include "debug.hpp"
 /*
-#include "uamath.hpp"
 #include "conversation.hpp"
 #include <sstream>
 #include <iomanip>
@@ -283,7 +283,7 @@ void ua_ingame_orig_screen::draw()
       // calculate viewport for window at 52/68 to 226/182
       unsigned int xpos, ypos, width, height;
       xpos = unsigned((surf->w / 320.0) * 52.0);
-      ypos = unsigned((surf->h / 200.0) * 68);
+      ypos = unsigned((surf->h / 200.0) * 68.0);
       width = unsigned((surf->w / 320.0) * (226.0-52.0));
       height = unsigned((surf->h / 200.0) * (182.0-68.0));
 
@@ -687,7 +687,7 @@ void ua_ingame_orig_screen::key_event(bool key_down, ua_key_value key)
       // "debugger" key
    case ua_key_ua_debug:
       if (key_down)
-//         game->get_debug_interface().start_debugger();
+         game->get_debugger().start_debugger(game);
       break;
 
       // exit screen key
