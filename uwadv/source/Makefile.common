@@ -13,6 +13,7 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	image.hpp inventory.hpp level.hpp player.hpp quadtree.hpp \
 	screen.hpp settings.hpp texture.hpp utils.hpp \
 	underworld.hpp uwadv.hpp objects.hpp cutscene.hpp physics.hpp \
+	physicsobject.hpp \
 	files.hpp keymap.hpp uwscript.hpp uamath.hpp settings.hpp \
 	savegame.hpp mousecursor.hpp renderer.hpp textscroll.hpp \
 	debug.hpp cfgfile.hpp critter.hpp \
