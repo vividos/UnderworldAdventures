@@ -27,6 +27,7 @@
 
 // needed includes
 #include "common.hpp"
+#include "models.hpp"
 #include "fread_endian.hpp"
 #include "uamath.hpp"
 #include <vector>
@@ -121,7 +122,8 @@ void ua_mdl_store_vertex(const ua_vector3d& vertex, Uint16 vertno,
 
 // global functions
 
-void ua_model_parse_node(FILE* fd, std::vector<ua_vector3d>& vertex_list)
+void ua_model_parse_node(FILE* fd, std::vector<ua_vector3d>& vertex_list,
+   std::vector<ua_triangle3d_textured>& tri_list)
 {
    // parse node until end node
    bool loop = true;
@@ -285,9 +287,32 @@ void ua_model_parse_node(FILE* fd, std::vector<ua_vector3d>& vertex_list)
       case M3_UW_FACE_VERTICES: // 007e define face vertices
          {
             Uint16 nvert = fread16(fd);
-            for(Uint16 n=0; n<nvert; n++)
+
+            // read first two vertices
+            Uint16 vertno0 = ua_mdl_read_vertno(fd);
+            Uint16 vertno1 = ua_mdl_read_vertno(fd);
+
+            ua_triangle3d_textured tri;
+
+            // base point is the same for all triangles of the triangle
+            tri.set(0,vertex_list[vertno0].x,vertex_list[vertno0].y,
+               vertex_list[vertno0].z, 0.0,0.0);
+
+            for(Uint16 n=2; n<nvert; n++)
             {
                vertno = ua_mdl_read_vertno(fd);
+
+               // generate two other coordinates
+               tri.set(1,vertex_list[vertno1].x,vertex_list[vertno1].y,
+                  vertex_list[vertno1].z, 0.0,0.0);
+
+               tri.set(2,vertex_list[vertno].x,vertex_list[vertno].y,
+                  vertex_list[vertno].z, 0.0,0.0);
+
+               // insert triangle
+               tri_list.push_back(tri);
+
+               vertno1 = vertno;
             }
          }
          break;
@@ -301,11 +326,40 @@ void ua_model_parse_node(FILE* fd, std::vector<ua_vector3d>& vertex_list)
 
             Uint16 nvert = fread16(fd);
 
-            for(Uint16 n=0; n<nvert; n++)
+            // read first two vertices
+            Uint16 vertno0 = ua_mdl_read_vertno(fd);
+            double u0 = ua_mdl_read_fixed(fd);
+            double v0 = ua_mdl_read_fixed(fd);
+
+            Uint16 vertno1 = ua_mdl_read_vertno(fd);
+            double u1 = ua_mdl_read_fixed(fd);
+            double v1 = ua_mdl_read_fixed(fd);
+
+            ua_triangle3d_textured tri;
+
+            // base point is the same for all triangles of the triangle
+            tri.set(0,vertex_list[vertno0].x,vertex_list[vertno0].y,
+               vertex_list[vertno0].z, u0, v0);
+
+            for(Uint16 n=2; n<nvert; n++)
             {
                vertno = ua_mdl_read_vertno(fd);
                double u = ua_mdl_read_fixed(fd);
                double v = ua_mdl_read_fixed(fd);
+
+               // generate two other coordinates
+               tri.set(1,vertex_list[vertno1].x,vertex_list[vertno1].y,
+                  vertex_list[vertno1].z, u1,v1);
+
+               tri.set(2,vertex_list[vertno].x,vertex_list[vertno].y,
+                  vertex_list[vertno].z, u,v);
+
+               // insert triangle
+               tri_list.push_back(tri);
+
+               vertno1 = vertno;
+               u1 = u;
+               v1 = v;
             }
          }
          break;
@@ -335,11 +389,11 @@ void ua_model_parse_node(FILE* fd, std::vector<ua_vector3d>& vertex_list)
 
             // parse left nodes
             fseek(fd,left,SEEK_SET);
-            ua_model_parse_node(fd,vertex_list);
+            ua_model_parse_node(fd,vertex_list,tri_list);
 
             // parse right nodes
             fseek(fd,right,SEEK_SET);
-            ua_model_parse_node(fd,vertex_list);
+            ua_model_parse_node(fd,vertex_list,tri_list);
 
             // return to "here"
             fseek(fd,here,SEEK_SET);
@@ -391,6 +445,7 @@ void ua_model_parse_node(FILE* fd, std::vector<ua_vector3d>& vertex_list)
          unk1 = fgetc(fd);
          unk1 = fgetc(fd);
          unk1 = fgetc(fd);
+         // TODO generate triangles
          break;
 
       case M3_UW_FACE_UNK16: // 0016 ???
@@ -421,7 +476,8 @@ void ua_model_parse_node(FILE* fd, std::vector<ua_vector3d>& vertex_list)
    }
 }
 
-bool ua_model_decode_all(const char* filename)
+bool ua_model_decode_all(const char* filename,
+   std::map<Uint16,ua_model3d>& allmodels)
 {
    // open file
    FILE* fd = fopen(filename,"rb");
@@ -478,9 +534,13 @@ bool ua_model_decode_all(const char* filename)
       ua_trace(" loading model %u, offset=0x%08x {unk1=0x%04x, e=(%3.2f, %3.2f, %3.2f) }\n",
          n,base + offsets[n],unk1,ex,ey,ez);
 
+      ua_model3d model;
+
       // parse root node
       std::vector<ua_vector3d> vertex_list;
-      ua_model_parse_node(fd,vertex_list);
+      ua_model_parse_node(fd,vertex_list,model.get_triangles());
+
+      allmodels.insert( std::make_pair<Uint16,ua_model3d>(n,model) );
    }
 
    fclose(fd);
@@ -491,10 +551,240 @@ bool ua_model_decode_all(const char* filename)
 
 #ifdef DEV_DO_DEBUGGING
 
+// needed includes
+#include "models.hpp"
+
+// globals
+
+ua_model3d_manager mdl_mgr;
+unsigned int curmodel = 0;
+bool can_exit = false;
+bool force_fps_update = false;
+
+double xpos = 0.0;
+double ypos = 0.0;
+double zpos = 32.0;
+double xangle = 30.0;
+double yangle = -60.0;
+bool leftbuttondown = false;
+bool rightbuttondown = false;
+
+// functions
+
+void draw_screen()
+{
+   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+
+   glLoadIdentity();
+
+   // position move
+   glTranslated( xpos, -ypos, -zpos );
+
+   // rotation
+   glRotated( yangle, 1.0, 0.0, 0.0 );
+   glRotated( xangle, 0.0, 0.0, 1.0 );
+
+   // draw ground square
+   glBegin(GL_QUADS);
+   glColor3ub(32,32,32);
+   glVertex3d(-32,-32,-0.1);
+   glVertex3d(32,-32,-0.1);
+   glVertex3d(32,32,-0.1);
+   glVertex3d(-32,32,-0.1);
+   glEnd();
+
+   mdl_mgr.render(curmodel);
+
+   SDL_GL_SwapBuffers();
+}
+
+void process_events()
+{
+   SDL_Event event;
+
+   // check for new event
+   while(SDL_PollEvent(&event))
+   {
+      switch(event.type)
+      {
+      case SDL_QUIT:
+         can_exit = true;
+         break;
+
+      case SDL_KEYDOWN:
+         switch(event.key.keysym.sym)
+         {
+         case SDLK_PAGEUP:
+            if (curmodel<31)
+            {
+               curmodel++;
+               force_fps_update = true;
+            }
+            break;
+
+         case SDLK_PAGEDOWN:
+            if (curmodel>0)
+            {
+               curmodel--;
+               force_fps_update = true;
+            }
+            break;
+
+         case SDLK_UP:
+            zpos+=2.0;
+            break;
+
+         case SDLK_DOWN:
+            zpos-=2.0;
+            break;
+         }
+         break;
+
+      case SDL_MOUSEBUTTONDOWN:
+         {
+            // check which mouse button was pressed
+            Uint8 state = SDL_GetRelativeMouseState(NULL,NULL);
+            if (SDL_BUTTON(state)==SDL_BUTTON_LEFT)
+               leftbuttondown = true;
+            else
+               rightbuttondown = true;
+         }
+         break;
+
+      case SDL_MOUSEBUTTONUP:
+         leftbuttondown = false;
+         rightbuttondown = false;
+         break;
+
+      case SDL_MOUSEMOTION:
+         {
+            // adjust values according to mouse movement
+            int x,y;
+            SDL_GetRelativeMouseState(&x,&y);
+            if (leftbuttondown)
+            {
+               xangle += x*0.2;
+               yangle += y*0.2;
+            }
+            else
+            if (rightbuttondown)
+            {
+               xpos += x*0.2;
+               ypos += y*0.2;
+            }
+         }
+         break;
+      }
+   }
+}
+
+#undef main
+
 int main()
 {
-//   ua_model_decode_all("e:\\uw1\\uw.exe");
-   ua_model_decode_all("d:\\projekte\\uwadv\\uw1\\uw.exe");
+   // init SDL
+   if(SDL_Init(SDL_INIT_VIDEO)<0)
+   {
+      fprintf(stderr,"error initializing video: %s\n", SDL_GetError());
+      return 1;
+   }
+
+   // get info about video
+   const SDL_VideoInfo* info = SDL_GetVideoInfo();
+   if(!info)
+   {
+      fprintf(stderr,"error getting video info: %s\n", SDL_GetError());
+      return 1;
+   }
+
+   int width = 640;
+   int height = 480;
+   int bpp = info->vfmt->BitsPerPixel;
+
+   // set OpenGL video attributes
+   SDL_GL_SetAttribute(SDL_GL_RED_SIZE,5);
+   SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,5);
+   SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,5);
+   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,16);
+   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,1);
+
+   // set video mode
+   if(SDL_SetVideoMode(width,height,bpp,SDL_OPENGL)==0)
+   {
+      fprintf(stderr,"failed to set video mode: %s\n", SDL_GetError());
+      return 1;
+   }
+
+
+   // OpenGL setup
+
+   float ratio = float(width)/height;
+   // set up viewport
+   glViewport(0,0,width,height);
+
+   // smooth shading
+   glShadeModel(GL_SMOOTH);
+
+   // culling
+   glCullFace(GL_BACK);
+   glFrontFace(GL_CCW);
+   glDisable(GL_CULL_FACE);
+
+   // z-buffer
+   glEnable(GL_DEPTH_TEST);
+
+   // clear color
+   glClearColor(0,0,0,0);
+
+   // camera setup
+
+   // set projection matrix
+   glMatrixMode(GL_PROJECTION);
+   glLoadIdentity();
+
+   gluPerspective(90.0, ratio, 0.5, 256.0);
+
+   // switch back to modelview matrix
+   glMatrixMode(GL_MODELVIEW);
+
+
+   // init rest of stuff
+
+   mdl_mgr.init("d:\\projekte\\uwadv\\uw1\\uw.exe");
+
+
+   // main loop
+   Uint32 now, fcstart = SDL_GetTicks();
+   unsigned int renders=0;
+
+   // main loop
+   while(!can_exit)
+   {
+      process_events();
+      draw_screen();
+      renders++;
+
+      now = SDL_GetTicks();
+
+      if (now-fcstart > 2000 || force_fps_update)
+      {
+         // set new caption
+         char buffer[256];
+         sprintf(buffer,"model viewer - current model: %u - %3.1f frames/s",
+            curmodel,renders*1000.f/(now-fcstart));
+
+         SDL_WM_SetCaption(buffer,NULL);
+
+         // restart counting
+         renders = 0;
+         fcstart = now;
+         force_fps_update = false;
+      }
+   }
+
+   // finish off SDL
+   SDL_Quit();
+
    return 0;
 }
 
