@@ -49,32 +49,33 @@ enum ua_player_movement_mode
     may be used for combat/spell/etc. calculations */
 typedef enum
 {
-   ua_attr_gender=0,   // 0 means male
-   ua_attr_handedness, // 0 means left-handedness
-   ua_attr_appearance, // values from 0..4
-   ua_attr_profession, // values from 0..7
+   // note: scripts depend on numeral values, they must be in-sync with uwinterface.lua
+   ua_attr_gender=0,     // 0 means male
+   ua_attr_handedness=1, // 0 means left-handedness
+   ua_attr_appearance=2, // values from 0..4
+   ua_attr_profession=3, // values from 0..7
 
-   ua_attr_maplevel,
+   ua_attr_maplevel=4,
 
-   ua_attr_strength,
-   ua_attr_dexterity,
-   ua_attr_intelligence,
-   ua_attr_attack,
-   ua_attr_defense,
+   ua_attr_strength=5,
+   ua_attr_dexterity=6,
+   ua_attr_intelligence=7,
 
-   ua_attr_life,
-   ua_attr_max_life,
-   ua_attr_mana,
-   ua_attr_max_mana,
+   ua_attr_life=8,
+   ua_attr_max_life=9,
+   ua_attr_mana=10,
+   ua_attr_max_mana=11,
 
-   ua_attr_weariness,
-   ua_attr_hungriness,
-   ua_attr_poisoned,
+   ua_attr_weariness=12,
+   ua_attr_hungriness=13,
+   ua_attr_poisoned=14,
+   ua_attr_mentalstate=15, // drunk, tripping, etc. 0 means normal
+   ua_attr_nightvision=16,
 
-   ua_attr_talks,
-   ua_attr_kills,
-   ua_attr_level,
-   ua_attr_exp_points,
+   ua_attr_talks=17,
+   ua_attr_kills=18,
+   ua_attr_level=19,
+   ua_attr_exp_points=20,
 
    ua_attr_max
 
@@ -83,23 +84,26 @@ typedef enum
 //! player skills enum
 typedef enum
 {
-   ua_skill_unarmed=0,
-   ua_skill_sword,
-   ua_skill_axe,
-   ua_skill_mace,
-   ua_skill_missile,
-   ua_skill_lore,
-   ua_skill_casting,
-   ua_skill_traps,
-   ua_skill_search,
-   ua_skill_track,
-   ua_skill_sneak,
-   ua_skill_repair,
-   ua_skill_charm,
-   ua_skill_picklock,
-   ua_skill_acrobat,
-   ua_skill_appraise,
-   ua_skill_swimming,
+   // note: scripts depend on numeral values, they must be in-sync with uwinterface.lua
+   ua_skill_attack=0,
+   ua_skill_defense=1,
+   ua_skill_unarmed=2,
+   ua_skill_sword=3,
+   ua_skill_axe=4,
+   ua_skill_mace=5,
+   ua_skill_missile=6,
+   ua_skill_lore=7,
+   ua_skill_casting=8,
+   ua_skill_traps=9,
+   ua_skill_search=10,
+   ua_skill_track=11,
+   ua_skill_sneak=12,
+   ua_skill_repair=13,
+   ua_skill_charm=14,
+   ua_skill_picklock=15,
+   ua_skill_acrobat=16,
+   ua_skill_appraise=17,
+   ua_skill_swimming=18,
 
    ua_skill_max
 } ua_player_skills;
