@@ -43,7 +43,6 @@ EXTRA_DIST =  \
 	misc/ua-objtex01.png \
 	misc/uw1-combinations.txt \
 	misc/uw1-common-obj-prop.txt \
-	misc/uw1-levelobjs-level1.txt \
 	misc/uw1-object-classes.txt \
 	misc/uw1-objects.png \
 	misc/uw1-palette0.png \
