@@ -13,6 +13,7 @@ Table of Contents
 2.3   Graphics
 2.4   Fonts
 2.5   Bitmaps
+2.6   Palette mappings
 
 3.0   Object IDs
 3.1   Common object properties
@@ -88,10 +89,10 @@ Table of Contents
    inv.gr         inventory graphics, scroll backgrounds (?)
    lev.ark        level maps, texture indices and object list
    lfti.gr        left menu buttons
-   light.dat
+   light.dat      palette mappings for 16 different light levels
    lights.dat
    main.byt       main game screen bitmap, palette #0
-   mono.dat
+   mono.dat       palette mapping for grayscale colors
    objects.dat    object data specific to an object class
    objects.gr     object graphics, some never seen in inventory (460 objects!)
    opbtn.gr       opening screen buttons, create new game, etc.; other palette
@@ -120,8 +121,8 @@ Table of Contents
    weapons.cm
    weapons.dat
    weapons.gr     weapon hit animations, for left and right handedness
-   win1.byt       winning screen, with text, palette #7
-   win2.byt       winning screen, without text, palette #7
+   win1.byt       winning screen with text, palette #7
+   win2.byt       blank winning screen for character info, palette #7
    xfer.dat
 
    Here are all files found in the "sound" folder:
@@ -314,6 +315,10 @@ Table of Contents
                 in 4-bit formats, this is the number of 4-bit nibbles, not
                 bytes.
 
+   The file "panels.gr" contains bitmaps that don't have a bitmap header, but
+   immediately starts with image data. The bitmaps are of type 04 and have
+   width of 83 and height of 114.
+
    * uncompressed bitmaps (04: 8-bit, 0A: 4-bit)
 
      all palette indices are stored sequentially, first one line, then the
@@ -370,15 +375,30 @@ Table of Contents
    Then follow all bitmaps for each character. The number of chars can be
    determined by (filelen-12) / (charsize+1). Bitmaps are stored as 1-bit
    patterns, starting at the most significant bit in the current byte. When
-   a new line in character bitmap begins, a new byte in the file is taken.
+   a new line in character bitmap begins, remaining bits are unused and a new
+   byte in the file is taken.
 
    After 'charsize' number of bytes, there is another Int8 that says the width
-   for the current character.
+   for the current character in pixels.
 
 
 2.5 Bitmaps
+
    "*.byt" files are just 320x200 bitmaps, using palette indices from
    different main palettes.
+
+
+2.6 Palette mappings
+
+   Palette mappings for different light/darkness levels are stored in the
+   file "light.dat". The file consists of 16 blocks of palette mappings. Each
+   block contains 256 Int8 values who map colors to their palette indices in
+   the game palette. The first block is the mapping for original colors, and
+   the last one is for "almost black".
+   
+   The file "mono.dat" contains palette mappings that maps colors to grayscale
+   values. It has the same format as the "light.dat" file and can be
+   interchanged to get a gray underworld look.
 
 
 3.0 Object IDs
@@ -405,7 +425,7 @@ Table of Contents
    01A0-01BF  Triggers
    01C0-01CF  Explosions/splats, fountain, silver tree, moving things
 
-   descriptions for each object is in game strings, block 3
+   Description for each object is in game strings, block 3
 
 
 3.1 Common object properties
@@ -440,7 +460,7 @@ Table of Contents
    00b2  0x80     armour and wearables table; 32 entries, 4 bytes per entry
    0132  0x0c00   critters table; 64 entries, 48 bytes per entry
    0d32  0x30     containers table; 16 entries, 3 bytes per entry
-   0d62  0x60     unknown, maybe lighting and a food info table
+   0d62  0x60     unknown, maybe lighting and food info table
    0da2  0x40     animation object table; 16 entries, 4 bytes per entry
    0de2           end
 
@@ -449,7 +469,7 @@ Table of Contents
      0000   Int8   damage modifier for Slash attack
      0001   Int8   damage modifier for Bash attack
      0002   Int8   damage modifier for Stab attack
-     0003   3       unknown
+     0003   3      unknown
      0006   Int8   skill type (3 sword, 4 axe, 5 mace, 6 unarmed)
      0007   Int8   durability
 
@@ -488,7 +508,7 @@ Table of Contents
    * animation object table
 
      0000   Int8   unknown
-     0001   Int8   start frame (int animo.gr)
+     0001   Int8   start frame (from animo.gr)
      0002   Int8   number of frames
      0003   Int8   unknown
 
@@ -579,18 +599,18 @@ Table of Contents
 
    * conversation escape codes
 
-     strings used for conversation can contain special character sequences.
+     Strings used for conversation can contain special character sequences.
      A "\m" shows a "[more]" string and waits for user interaction. "@SS1" is
      replaced by a gender specific string that is stored in the string block as
      string number 1 and 2 (if the symbol doesn't appear in the block,
-     conversation strings start a string 1)
+     conversation strings start a string 1, else with string 3)
 
    * game strings contents
 
      block 0: general UI strings
      block 1: character creation strings, mantras (?)
      block 2: wall text/scroll/book/book title strings
-     block 3: object descriptions; articles separated by _, & starts plural
+     block 3: object descriptions (*)
      block 4: object "look" descriptions
      block 5: spell names
      block 6: conversation partner names, starting at string 17
@@ -604,6 +624,10 @@ Table of Contents
      block 16: dream cutscene 2 text
      block 17-24: garamon cutscene texts
      block 25-121: conversation strings
+     
+     Block 3 contains the object descriptions. The article (e.g. 'a' or 'an')
+     is separated with an underscore '_'. When a '&' is in the string, it
+     separates the plural of the object's name.
 
 
 4.1 Conversations
@@ -786,6 +810,16 @@ Table of Contents
 
    Cutscene animations are stored in folder "cuts". Text strings for cutscenes
    can be found in string blocks 11 through 24.
+   
+   Contents of the "*.n01, *.n02" files:
+
+   0000   4*char   string "LPF "
+   0004   Int8     unknown
+   ...
+   0010   4*char   string "ANIM"
+   0014   Int16    x resolution
+   0016   Int16    y resolution
+   ...
 
 
 6.0 Savegame format
@@ -811,38 +845,38 @@ Table of Contents
 
    After decryption, the file contains the following:
 
-   0000   Uint8   unused (was starting xor value)
+   0000   Int8    unused (was starting xor value)
    0001   14*char character name
    ...
-   001F   Uint8   Strength
-   0020   Uint8   Dexterity
-   0021   Uint8   Intelligence
-   0022   Uint8   Attack
-   0023   Uint8   Defense
-   0024   Uint8   Unarmed
-   0025   Uint8   Sword
-   0026   Uint8   Axe
-   0027   Uint8   Mace
-   0028   Uint8   Missile
-   0029   Uint8   Mana
-   002A   Uint8   Lore
-   002B   Uint8   Casting
-   002C   Uint8   Traps
-   002D   Uint8   Search
-   002E   Uint8   Track
-   002F   Uint8   Sneak
-   0030   Uint8   Repair
-   0031   Uint8   Charm
-   0032   Uint8   Picklock
-   0033   Uint8   Acrobat
-   0034   Uint8   Appraise
-   0035   Uint8   Swimming
+   001F   Int8    Strength
+   0020   Int8    Dexterity
+   0021   Int8    Intelligence
+   0022   Int8    Attack
+   0023   Int8    Defense
+   0024   Int8    Unarmed
+   0025   Int8    Sword
+   0026   Int8    Axe
+   0027   Int8    Mace
+   0028   Int8    Missile
+   0029   Int8    Mana
+   002A   Int8    Lore
+   002B   Int8    Casting
+   002C   Int8    Traps
+   002D   Int8    Search
+   002E   Int8    Track
+   002F   Int8    Sneak
+   0030   Int8    Repair
+   0031   Int8    Charm
+   0032   Int8    Picklock
+   0033   Int8    Acrobat
+   0034   Int8    Appraise
+   0035   Int8    Swimming
    ...
-   0037   Uint8   max. vitality
-   0038   Uint8   current mana
-   0039   Uint8   max. mana
+   0037   Int8    max. vitality
+   0038   Int8    current mana
+   0039   Int8    max. mana
    ...
-   003E   Uint8   character level
+   003E   Int8    character level
    ...
    0045   3*8bits rune flags (*)
    ...
@@ -855,13 +889,14 @@ Table of Contents
    005B   Int16   heading
    005D   Int16   dungeon level
    ...
-   00DD   Uint8   current vitality
+   00DD   Int8    current vitality
 
-   (*) the rune field is a bitfield, where an 1 indicates an available
-       rune. bits are seen from most to least significant. The 'A' rune is
+   (*) The rune field is a bitfield, where an 1 indicates an available
+       rune. Bits are seen from most to least significant. The 'A' rune is
        stored in bit 7 of the first field.
 
    todo: how items are stored
 
 
 eof
+
