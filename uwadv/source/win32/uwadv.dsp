@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib sdl.lib sdlmain.lib opengl32.lib glu32.lib winmm.lib sdl_mixer.lib zlib.lib /nologo /subsystem:windows /machine:I386
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib sdl.lib sdlmain.lib opengl32.lib glu32.lib winmm.lib sdl_mixer.lib zlib.lib uaopt.lib /nologo /subsystem:windows /machine:I386 /libpath:"../../output/release/uaopt"
 
 !ELSEIF  "$(CFG)" == "uwadv - Win32 Debug"
 
@@ -79,7 +79,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib sdl.lib sdlmain.lib opengl32.lib glu32.lib winmm.lib sdl_mixer.lib zlib.lib /nologo /subsystem:console /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib sdl.lib sdlmain.lib opengl32.lib glu32.lib winmm.lib sdl_mixer.lib zlib.lib uaopt.lib /nologo /subsystem:console /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /pdbtype:sept /libpath:"../../output/debug/uaopt"
 # SUBTRACT LINK32 /pdb:none
 
 !ENDIF 
@@ -785,10 +785,6 @@ SOURCE=..\font.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\image.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\keymap.cpp
 # End Source File
 # Begin Source File
@@ -918,10 +914,6 @@ SOURCE=..\resource\codeloader.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\resource\critloader.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\resource\cutsloader.cpp
 # End Source File
 # Begin Source File
@@ -931,10 +923,6 @@ SOURCE=..\resource\fontloader.cpp
 # Begin Source File
 
 SOURCE=..\resource\fread_endian.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\resource\gamestrings.cpp
 # End Source File
 # Begin Source File
 
