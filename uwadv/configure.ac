@@ -102,9 +102,12 @@ Underworld Adventures needs at least SDL 1.2.3 or higher installed.
 SDL is available here: http://www.libsdl.org/
 ]))
 
-# todo: check for SDL_mixer
-SDL_LIBS="$SDL_LIBS -lSDL_mixer"
+# check for SDL_mixer
+AC_CHECK_HEADER(SDL/SDL_mixer.h,,AC_MSG_ERROR([
+SDL_mixer isn't installed. Please install SDL_mixer, available from
+http://www.libsdl.org/projects/SDL_mixer/]))
 
+SDL_LIBS="$SDL_LIBS -lSDL_mixer"
 
 # checking for OpenGL
 save_CPPFLAGS="$CPPFLAGS"
@@ -134,13 +137,14 @@ ZLIB_LIBS="-lz"
 
 
 # Build the tools?
-AC_ARG_ENABLE(tools,    [  --enable-tools          Don't build the tools],,enable_tools=no)
+AC_ARG_ENABLE(tools,    [  --enable-tools          Don't build the tools],,
+   enable_tools=no)
 AC_MSG_CHECKING(whether to build the tools)
 if test x$enable_tools = xno; then
-   AC_MSG_RESULT(yes)
+   AC_MSG_RESULT(no)
    AM_CONDITIONAL(BUILD_TOOLS, false)
 else
-   AC_MSG_RESULT(no)
+   AC_MSG_RESULT(yes)
    AM_CONDITIONAL(BUILD_TOOLS, true)
 fi
 
