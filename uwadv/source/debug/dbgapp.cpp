@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -31,20 +31,20 @@
 #include "mainframe.hpp"
 
 
-// macros
+// wxWindows macros
 
 IMPLEMENT_APP(ua_debugger)
 
-
-// static members
-
-ua_debug_command_func ua_debugger::command = NULL;
+void* ua_init_debug_data;
 
 
 // ua_debugger methods
 
 bool ua_debugger::OnInit()
 {
+   // init client interface
+   client.init_client(ua_init_debug_data);
+
    // create document manager
    doc_manager = new wxDocManager;
 
@@ -65,14 +65,18 @@ bool ua_debugger::OnInit()
 // global functions
 
 //! debugger start
-void uadebug_start(ua_debug_command_func command_func)
+/*! Starts debugger instance. This function is called from Underworld
+    Adventures when the user presses the debugger key. This function (and in
+    fact the whole debugger) runs in another thread.
+*/
+void uadebug_start(void* data)
 {
-   wxGetApp().command = command_func;
-   //wxGetApp().command(udc_nop,0,NULL,NULL);
+   if (data == NULL) return;
+   ua_init_debug_data = data;
 
 #ifdef WIN32
-   // call win32 generic entry function
-   HMODULE mod = ::GetModuleHandle("uadebug.dll");
+   // call win32 specific entry function
+   HMODULE mod = ::GetModuleHandle(NULL);
    wxEntry((HINSTANCE)mod,NULL,"",0);
 #else
    // generic entry function

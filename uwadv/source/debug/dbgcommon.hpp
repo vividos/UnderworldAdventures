@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -30,9 +30,15 @@
 #define uadebug_dbgcommon_hpp_
 
 // uwadv includes
-#include "../common.hpp"
-#include "uwaccess.hpp"
+//#include "dbgclient.hpp"
 
+// STL includes
+#pragma warning(disable: 4786)
+#include <string>
+#include <vector>
+
+// SDL includes
+#include <SDL.h>
 
 // don't create main (we do ourselves)
 #define NOMAIN

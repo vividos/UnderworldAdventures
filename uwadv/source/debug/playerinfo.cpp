@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -131,6 +131,7 @@ ua_playerinfo_list::ua_playerinfo_list(wxWindow *parent,
 
 void ua_playerinfo_list::UpdateData()
 {
+/*
    ua_debug_command_func cmd = wxGetApp().command;
 
    // lock underworld
@@ -157,6 +158,7 @@ void ua_playerinfo_list::UpdateData()
 
    // unlock again
    cmd(udc_unlock,0,NULL,NULL);
+*/
 }
 
 void ua_playerinfo_list::AddBar(wxFrameLayout* pLayout)
@@ -193,7 +195,7 @@ void ua_playerinfo_list::OnEndLabelEdit(wxListEvent& event)
 
    unsigned int item = event.m_itemIndex;;
    wxString text = event.m_item.GetText();
-
+/*
    ua_debug_command_func cmd = wxGetApp().command;
 
    ua_debug_param param1,param2;
@@ -215,4 +217,5 @@ void ua_playerinfo_list::OnEndLabelEdit(wxListEvent& event)
    cmd(udc_lock,0,NULL,NULL);
    cmd(udc_player_set,0,&param1,&param2);
    cmd(udc_unlock,0,NULL,NULL);
+*/
 }

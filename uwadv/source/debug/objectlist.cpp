@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -97,6 +97,7 @@ ua_objectlist_ctrl::ua_objectlist_ctrl(wxWindow* parent, int mylevel)
    // determine level to show
    if (mylevel<0)
    {
+/*
       ua_debug_command_func cmd = wxGetApp().command;
 
       cmd(udc_lock,0,NULL,NULL);
@@ -107,6 +108,7 @@ ua_objectlist_ctrl::ua_objectlist_ctrl(wxWindow* parent, int mylevel)
 
       level = param1.val.i;
       cmd(udc_unlock,0,NULL,NULL);
+*/
    }
    else
       level = static_cast<unsigned int>(mylevel);
@@ -130,6 +132,7 @@ ua_objectlist_ctrl::ua_objectlist_ctrl(wxWindow* parent, int mylevel)
 
 void ua_objectlist_ctrl::UpdateData()
 {
+/*
    ua_debug_command_func cmd = wxGetApp().command;
    unsigned int ncol = SDL_TABLESIZE(ua_objectlist_captions);
 
@@ -213,7 +216,7 @@ void ua_objectlist_ctrl::UpdateData()
    }
 
    cmd(udc_unlock,0,NULL,NULL);
-
+*/
    // refresh view
    RefreshItems(0,0x03ff);
 }
@@ -241,7 +244,7 @@ void ua_objectlist_ctrl::OnEndLabelEdit(wxListEvent& event)
 wxString ua_objectlist_ctrl::OnGetItemText(long item, long column) const
 {
    wxString text;
-   text = table[item*SDL_TABLESIZE(ua_objectlist_captions)+column].c_str();
+//   text = table[item*SDL_TABLESIZE(ua_objectlist_captions)+column].c_str();
    return text;
 }
 

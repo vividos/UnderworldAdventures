@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -133,7 +133,7 @@ ua_debugger_main_frame::ua_debugger_main_frame(
    CreateStatusBar(3);
    SetStatusText("ready.", 0);
 
-
+/*
    // toolbar
    {
       wxToolBar* tb = CreateToolBar(wxTB_FLAT | wxTB_HORIZONTAL,-1,"toolbar");
@@ -144,13 +144,13 @@ ua_debugger_main_frame::ua_debugger_main_frame(
       toolBarBitmaps[1] = wxBitmap("open");
       toolBarBitmaps[2] = wxBitmap("save");
 
-      tb->AddTool(MENU_FILE_NEW/*wxID_NEW*/, _T("New"),   toolBarBitmaps[0], _T("New file"));
-      tb->AddTool(MENU_FILE_OPEN/*wxID_OPEN*/, _T("Open"), toolBarBitmaps[1], _T("Open file"));
-      tb->AddTool(MENU_FILE_SAVE/*wxID_SAVE*/, _T("Save"), toolBarBitmaps[2], _T("Save file"), wxITEM_CHECK);
+      tb->AddTool(MENU_FILE_NEW/ *wxID_NEW* /, _T("New"),   toolBarBitmaps[0], _T("New file"));
+      tb->AddTool(MENU_FILE_OPEN/ *wxID_OPEN* /, _T("Open"), toolBarBitmaps[1], _T("Open file"));
+      tb->AddTool(MENU_FILE_SAVE/ *wxID_SAVE* /, _T("Save"), toolBarBitmaps[2], _T("Save file"), wxITEM_CHECK);
 
       tb->Realize();
    }
-
+*/
 
    // update all bars and windows
    UpdateAll();
@@ -281,12 +281,12 @@ void ua_debugger_main_frame::OnMenuUnderwUpdate(wxCommandEvent& event)
 
 void ua_debugger_main_frame::OnMenuUnderwSuspend(wxCommandEvent& event)
 {
-   wxGetApp().command(udc_game_suspend,0,NULL,NULL);
+//   wxGetApp().command(udc_game_suspend,0,NULL,NULL);
 }
 
 void ua_debugger_main_frame::OnMenuUnderwResume(wxCommandEvent& event)
 {
-   wxGetApp().command(udc_game_resume,0,NULL,NULL);
+//   wxGetApp().command(udc_game_resume,0,NULL,NULL);
 }
 
 void ua_debugger_main_frame::OnMenuUnderwTilemapView(wxCommandEvent& event)

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@
 #include "dbgcommon.hpp"
 #include "hotspotlist.hpp"
 #include "dbgapp.hpp"
+#include "player.hpp"
 
 
 // static variables
@@ -128,35 +129,22 @@ void ua_hotspotlist_frame::OnListItemActivated(wxListEvent& event)
 {
    unsigned int pos = event.m_itemIndex;
 
-   ua_debug_command_func cmd = wxGetApp().command;
+   ua_debug_client_interface& client = wxGetApp().get_client_interface();
 
    // lock underworld
-   cmd(udc_lock,0,NULL,NULL);
+   client.lock(true);
 
    // set new level
-   ua_debug_param param1,param2;
+   client.set_player_attr(ua_attr_maplevel,hotspot_items[pos].level);
 
-   param1.set_int(8);
-   param2.set_int(hotspot_items[pos].level);
-   cmd(udc_player_set,0,&param1,&param2);
+   // set position
+   client.set_player_pos_info(0,hotspot_items[pos].xpos);
+   client.set_player_pos_info(1,hotspot_items[pos].ypos);
 
-   // xpos
-   param1.set_int(0);
-   param2.set(hotspot_items[pos].xpos);
-   cmd(udc_player_set,0,&param1,&param2);
-
-   // ypos
-   param1.set_int(1);
-   param2.set(hotspot_items[pos].ypos);
-   cmd(udc_player_set,0,&param1,&param2);
-
-   // set proper height
-
-   // set to 24.0 for now
-   param1.set_int(2);
-   param2.set(24.0);
-   cmd(udc_player_set,0,&param1,&param2);
+   double height = client.get_tile_height(hotspot_items[pos].level,
+      hotspot_items[pos].xpos, hotspot_items[pos].ypos);
+   client.set_player_pos_info(2,height);
 
    // unlock again
-   cmd(udc_unlock,0,NULL,NULL);
+   client.lock(false);
 }

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@
 
 // needed includes
 #include <wx/docview.h>
+#include "dbgclient.hpp"
 
 
 // classes
@@ -45,14 +46,19 @@ public:
    //! called on initialisation
    virtual bool OnInit();
 
-   //! command function
-   static ua_debug_command_func command;
+   //! returns client interface
+   ua_debug_client_interface& get_client_interface(){ return client; }
 
 protected:
+   //! debugger client interface
+   ua_debug_client_interface client;
+
    //! document manager
    wxDocManager* doc_manager;
 };
 
+
+// wxWindows macros
 
 DECLARE_APP(ua_debugger)
 

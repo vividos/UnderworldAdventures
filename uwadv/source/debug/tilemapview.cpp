@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -55,12 +55,14 @@ ua_tilemapview_canvas::ua_tilemapview_canvas(wxWindow *parent, const wxWindowID 
 
 ua_tilemapview_canvas::~ua_tilemapview_canvas()
 {
+/*
    // deinit tilemap renderer
    ua_debug_command_func cmd = wxGetApp().command;
 
    cmd(udc_lock,0,NULL,NULL);
    cmd(udc_render,1,NULL,NULL);
    cmd(udc_unlock,0,NULL,NULL);
+*/
 }
 
 void ua_tilemapview_canvas::InitGL()
@@ -87,7 +89,7 @@ void ua_tilemapview_canvas::InitGL()
    glFrustum(-0.5F, 0.5F, -0.5F, 0.5F, 1.0F, 3.0F);
    glMatrixMode(GL_MODELVIEW);
 
-
+/*
    // init tilemap renderer
    {
       ua_debug_command_func cmd = wxGetApp().command;
@@ -101,18 +103,20 @@ void ua_tilemapview_canvas::InitGL()
 
       cmd(udc_unlock,0,NULL,NULL);
    }
+*/
 }
 
 void ua_tilemapview_canvas::Render()
 {
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+/*
    ua_debug_command_func cmd = wxGetApp().command;
 
    // render underworld
    cmd(udc_lock,0,NULL,NULL);
    cmd(udc_render,2,NULL,NULL);
    cmd(udc_unlock,0,NULL,NULL);
+*/
 }
 
 void ua_tilemapview_canvas::OnSize(wxSizeEvent& event)
