@@ -58,7 +58,7 @@ inline int ua_trace_printf(const char *fmt,...)
 }
 
 // debug trace
-#if defined(_DEBUG) || defined(DEBUG)
+#if 1 //defined(_DEBUG) || defined(DEBUG)
 # define ua_trace ua_trace_printf
 #else
 # define ua_trace true ? 0 : ua_trace_printf
