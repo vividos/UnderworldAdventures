@@ -16,7 +16,7 @@ SDL_CFLAGS = `sdl-config --cflags`
 SDL_LIBS = `sdl-config --libs`
 
 CPPFLAGS = -I.. $(SDL_CFLAGS)
-LDFLAGS = $(SDL_LIBS)
+LDFLAGS = $(SDL_LIBS) $(X_LIBS)
 
 
 # tools build rule
