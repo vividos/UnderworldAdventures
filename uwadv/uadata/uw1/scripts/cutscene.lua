@@ -35,6 +35,7 @@
 -- constants
 
 -- action codes that can be passed to cuts_do_action()
+-- these must be in sync with the code in "source/screens/cutscene_view.cpp"
 cuts_finished = 0            -- indicates that cutscene is at it's end
 cuts_set_string_block = 1    -- sets game strings block to use
 cuts_play_sound = 2          -- plays a sound, "sound/XX.voc"
@@ -44,6 +45,8 @@ cuts_text_fadeout = 5        -- fades out text
 cuts_text_show = 6           -- shows text instantly
 cuts_text_hide = 7           -- hides text instantly
 cuts_anim_show = 8           -- loads animation and loops it
+cuts_anim_stop = 9           -- stops animation looping
+cuts_anim_hide = 10          -- hides animation
 
 -- string block base for cutscenes
 cuts_strbase = 12*256
@@ -58,16 +61,26 @@ cutscenes = {
       strblock = cuts_strbase + 0,
       timetable =
       {
-         { time = 0.0, action = cuts_set_text_color, value = 1 },
+         { time = 0.0, action = cuts_set_text_color, value = 11 },
          { time = 1.0, action = cuts_play_sound,     value = "26" },
-         { time = 3.0, action = cuts_play_sound,     value = "27" },
+         { time = 0.0, action = cuts_text_fadein,    value = 0 },
+         { time = 2.8, action = cuts_text_fadeout,   value = 0 },
+         { time = 0.8, action = cuts_play_sound,     value = "27" },
+         { time = 0.0, action = cuts_text_fadein,    value = 1 },
          { time = 8.5, action = cuts_play_sound,     value = "28" },
+         { time = 0.0, action = cuts_text_show,      value = 2 },
          { time = 4.5, action = cuts_play_sound,     value = "29" },
+         { time = 0.0, action = cuts_text_show,      value = 3 },
          { time = 0.3, action = cuts_anim_show,      value = "cs000.n02" },
          { time = 4.5, action = cuts_play_sound,     value = "30" },
+         { time = 0.0, action = cuts_text_show,      value = 7 },
          { time = 5.0, action = cuts_anim_show,      value = "cs000.n03" },
-         { time = 0.1, action = cuts_play_sound,     value = "25" },
-         { time = 4.0, action = cuts_finished,       value = 0 }
+         { time = 0.1, action = cuts_play_sound,     value = "23" },
+         { time = 0.0, action = cuts_text_show,      value = 4 },
+         { time = 2.5, action = cuts_anim_stop,      value = 0 },
+         { time = 0.0, action = cuts_text_fadeout,   value = 0 },
+         { time = 4.0, action = cuts_anim_hide,      value = 0 },
+         { time = 1.0, action = cuts_finished,       value = 0 }
       }
    },
 
