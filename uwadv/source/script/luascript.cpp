@@ -100,6 +100,11 @@ void ua_lua_scripting::checked_call(int nargs, int nresults)
 
 void ua_lua_scripting::init_new_game()
 {
+   //! \todo remove again
+   ua_player& pl = game->get_underworld().get_player();
+   pl.set_pos(32.0, 2.0);
+   pl.set_height(26.0*4.0);
+
    lua_getglobal(L,"game_init_new");
    checked_call(0,0);
 }
