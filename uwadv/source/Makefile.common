@@ -93,6 +93,7 @@ uwadv_SOURCES = \
 	underw/physicsobject.cpp underw/physicsobject.hpp \
 	underw/player.cpp underw/player.hpp \
 	underw/properties.hpp \
+	underw/runes.hpp \
 	underw/underworld.cpp underw/underworld.hpp \
 	common.hpp \
 	debug.cpp debug.hpp \
