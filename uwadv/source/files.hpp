@@ -56,7 +56,10 @@ public:
    SDL_RWops *get_uadata_file(const char *relpath);
 
    //! loads a lua script
-   int load_lua_script(lua_State *L, const char *basename);
+   int load_lua_script(lua_State* L, const char* basename);
+
+   //! loads all underworld scripts
+   void load_underworld_scripts(lua_State* L, const char* initfile);
 
    //! returns a list of all configuration files to load
    std::vector<std::string> &get_cfgfiles_list() { return cfgfiles_list; }
