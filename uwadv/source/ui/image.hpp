@@ -127,7 +127,7 @@ public:
       unsigned int palette = 0, ua_image_type type = ua_img_gr);
 
    //! loads an array of images
-   void load_list(std::vector<ua_image> imgs, const char* basename,
+   void load_list(std::vector<ua_image>& imgs, const char* basename,
       unsigned int img_from = 0, unsigned int img_to = 0,
       unsigned int palette = 0);
 

@@ -28,7 +28,7 @@
 // needed includes
 #include "common.hpp"
 #include "image.hpp"
-#include "import/import.hpp"
+#include "import.hpp"
 
 
 // ua_image methods
@@ -195,7 +195,7 @@ void ua_image_manager::load(ua_image& img, const char* basename, unsigned int im
 }
 
 /*! just specify the filename without the .gr and without path */
-void ua_image_manager::load_list(std::vector<ua_image> imgs, const char* basename,
+void ua_image_manager::load_list(std::vector<ua_image>& imgs, const char* basename,
    unsigned int img_from, unsigned int img_to,
    unsigned int palette)
 {
