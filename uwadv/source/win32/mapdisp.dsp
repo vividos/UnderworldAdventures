@@ -172,6 +172,18 @@ SOURCE=..\objects.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\quadtree.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\renderer.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\savegame.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\settings.hpp
 # End Source File
 # Begin Source File
@@ -180,7 +192,15 @@ SOURCE=..\texture.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\uamath.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\uatypes.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\utils.hpp
 # End Source File
 # End Group
 # Begin Source File
