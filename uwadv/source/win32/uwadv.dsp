@@ -745,6 +745,10 @@ SOURCE=..\conv\codevm.hpp
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\resource\cfgfile.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\cutscene.cpp
 # End Source File
 # Begin Source File
@@ -803,6 +807,10 @@ SOURCE=..\utils.cpp
 # Begin Group "game support headers"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\cfgfile.hpp
+# End Source File
 # Begin Source File
 
 SOURCE=..\cutscene.hpp
@@ -903,10 +911,6 @@ SOURCE=..\resource\maploader.cpp
 # Begin Source File
 
 SOURCE=..\resource\objloader.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\resource\settingsloader.cpp
 # End Source File
 # Begin Source File
 
