@@ -76,7 +76,7 @@ void ua_object::render(unsigned int x, unsigned int y,
    texmgr.object_tex(id,u1,v1,u2,v2);
 
    // calculate quad y rotation (e.g. when looking at it from above)
-   double boxwidth=0.1;
+   double boxwidth=0.13;
    double camangle2 = fr.get_yangle();
    double rely2 = rely-boxwidth*sin(ua_deg2rad(camangle2));
    double height2 = height+boxwidth*2*cos(ua_deg2rad(camangle2));
