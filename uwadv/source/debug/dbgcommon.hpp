@@ -34,7 +34,14 @@
 #include "uwaccess.hpp"
 
 
+// don't create main (we do ourselves)
 #define NOMAIN
+
+// mingw32 hack: this seemed to be defined somewhere (bad bad!)
+#ifdef __MINGW32__
+#undef CreateDialog
+#undef Yield
+#endif
 
 // wxWindows includes
 #include "wx/wxprec.h"
