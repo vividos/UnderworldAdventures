@@ -48,261 +48,15 @@
 const double ua_ingame_orig_screen::fade_time = 0.5;
 
 
-// ua_ingame_compass methods
-
-void ua_ingame_compass::init(ua_game_interface& game, unsigned int xpos, unsigned int ypos)
-{
-   // init image
-   get_image().create(52,26);
-
-   ua_image_quad::init(game,xpos,ypos);
-
-   // load compass images
-   {
-      std::vector<ua_image> temp_compass;
-      game.get_image_manager().load_list(temp_compass,"compass");
-
-      ua_palette256_ptr pal0 = temp_compass[0].get_palette();
-
-      img_compass.resize(16);
-
-      static unsigned int compass_tip_coords[16*2] =
-      {
-         24, 0, 16, 2,  8, 3,  4, 6,
-          0,10,  0,14,  4,16, 12,19,
-         24,21, 32,19, 44,16, 48,14,
-         48,10, 44, 6, 40, 3, 32, 2,
-      };
-
-      // create compass images and add needle tips and right/bottom borders
-      for(unsigned int n=0; n<16; n++)
-      {
-         ua_image& img = img_compass[n];
-         img.create(52,26);
-         img.get_palette() = pal0;
-
-         img.paste_image(temp_compass[n&3],0,0);
-
-         // compass needle
-         img.paste_image(temp_compass[n+4],
-            compass_tip_coords[n*2],compass_tip_coords[n*2+1]);
-      }
-   }
-
-   // remember player object
-   player = &game.get_underworld().get_player();
-
-   compass_curimg = 16;
-}
-
-void ua_ingame_compass::draw()
-{
-   // check if we have to reupload the image
-
-   // calculate current angle and images
-   double angle = fmod(-player->get_angle_rot()+90.0+360.0,360.0);
-   unsigned int compassimg = unsigned((angle+11.25)/22.5)&15;
-
-   // prepare texture
-   if (compass_curimg != compassimg)
-   {
-      // reupload compass texture
-      compass_curimg = compassimg;
-
-      unsigned int dest = ua_image_quad::has_border ? 1 : 0;
-      get_image().paste_image(img_compass[compassimg],dest,dest);
-
-      update();
-   }
-
-   ua_image_quad::draw();
-}
-
-
-// ua_ingame_runeshelf methods
-
-void ua_ingame_runeshelf::init(ua_game_interface& game, unsigned int xpos,
-   unsigned int ypos)
-{
-   get_image().create(46,16);
-
-   // load images 232..255; A-Z without X and Z
-   game.get_image_manager().load_list(img_runestones, "objects", 232,256);
-
-   ua_image_quad::init(game,xpos,ypos);
-}
-
-/*! Updates the runeshelf image from runeshelf content.
-    \todo actually get runes on the self
-*/
-void ua_ingame_runeshelf::update_runeshelf()
-{
-   ua_image& img_shelf = get_image();
-   img_shelf.clear(0);
-
-   unsigned int rune[3] = { 0, 0, 0 };
-
-   for(unsigned int i=0; i<3; i++)
-   {
-      if (rune[i] == 0)
-         continue;
-
-      // paste appropriate rune image
-      ua_image& img_rune = img_runestones[(rune[i]-1)%24];
-
-      unsigned int dest = ua_image_quad::has_border ? 1 : 0;
-      img_shelf.paste_rect(img_rune, 0,0, 14,14,
-         i*15+dest, dest, true);
-   }
-
-   update();
-}
-
-
-// ua_ingame_spell_area methods
-
-void ua_ingame_spell_area::init(ua_game_interface& game, unsigned int xpos,
-   unsigned int ypos)
-{
-   get_image().create(51,18);
-
-   // load images 232..255; A-Z without X and Z
-   game.get_image_manager().load_list(img_spells, "spells");
-
-   ua_image_quad::init(game,xpos,ypos);
-}
-
-/*! Updates the active spell area image.
-    \todo actually get spells from ua_underworld
-*/
-void ua_ingame_spell_area::update_spell_area()
-{
-   ua_image& img_area = get_image();
-   img_area.clear(0);
-
-   unsigned int spell[3] = { 0, 0, 0 };
-
-   for(unsigned int i=0; i<3; i++)
-   {
-      if (spell[i] == 0)
-         continue;
-
-      // paste appropriate spell image
-      ua_image& img_spell = img_spells[(spell[i]-1)%21];
-
-      unsigned int dest = ua_image_quad::has_border ? 1 : 0;
-      img_area.paste_rect(img_spell, 0,0, 16,18,
-         i*17+dest, dest, true);
-   }
-
-   update();
-}
-
-
-// ua_ingame_flask methods
-
-void ua_ingame_flask::init(ua_game_interface& game, unsigned int xpos,
-   unsigned int ypos)
-{
-   get_image().create(24,33);
-
-   // load flask images
-   {
-      std::vector<ua_image> temp_flasks;
-      game.get_image_manager().load_list(temp_flasks, "flasks");
-
-      unsigned int maximg = vitality_flask ? 28 : 14;
-      img_flask.resize(maximg);
-
-      // paste together all flask fill heights
-      for(unsigned int i=0; i<maximg; i+=14)
-      {
-         ua_image base_img = temp_flasks[75];
-
-         static unsigned int flask_pos[13] =
-         { 26, 24, 22, 20, 18, 16, 15, 14, 13, 11, 9, 7, 5 };
-
-         unsigned int offset = vitality_flask ? (i==0 ? 0 : 50) : 25;
-
-         // image 0 is the empty flask
-         img_flask[i] = base_img;
-
-         // generate all images
-         for(unsigned int j=0; j<13; j++)
-         {
-            base_img.paste_image(temp_flasks[offset+j], 0, flask_pos[j]);
-            img_flask[i+j+1] = base_img;
-         }
-      }
-   }
-
-   ua_image_quad::init(game,xpos,ypos);
-
-   // remember player object
-   player = &game.get_underworld().get_player();
-
-   last_image = 14*2;
-   is_poisoned = false;
-}
-
-void ua_ingame_flask::draw()
-{
-   is_poisoned = player->get_attr(ua_attr_poisoned) != 0;
-
-   unsigned int curval = player->get_attr(vitality_flask ? ua_attr_life : ua_attr_mana);
-   unsigned int maxval = player->get_attr(vitality_flask ? ua_attr_max_life : ua_attr_max_mana);
-   unsigned int curimg = unsigned((curval*13.0)/maxval);
-
-   // check if flask image has to be update
-   unsigned int new_image = vitality_flask && is_poisoned ? curimg+14 : curimg;
-
-   if (last_image != new_image)
-   {
-      last_image = new_image;
-      update_flask();
-   }
-
-   ua_image_quad::draw();
-}
-
-void ua_ingame_flask::update_flask()
-{
-   unsigned int dest = ua_image_quad::has_border ? 1 : 0;
-   get_image().paste_image(img_flask[last_image], dest,dest);
-   update();
-}
-
-
-// ua_ingame_gargoyle_eyes methods
-
-void ua_ingame_gargoyle_eyes::init(ua_game_interface& game, unsigned int xpos,
-   unsigned int ypos)
-{
-   get_image().create(20,3);
-
-   game.get_image_manager().load_list(img_eyes, "eyes");
-
-   ua_image_quad::init(game,xpos,ypos);
-}
-
-/*! \todo update eyes from data in ua_underworld */
-void ua_ingame_gargoyle_eyes::update_eyes()
-{
-   unsigned int new_image = 0;
-
-   unsigned int dest = ua_image_quad::has_border ? 1 : 0;
-   get_image().paste_image(img_eyes[new_image], dest,dest);
-   update();
-}
-
-
 // ua_ingame_orig_screen methods
 
 /*! Constructor; sets parent pointers for ingame controls */
 ua_ingame_orig_screen::ua_ingame_orig_screen()
-:vitality_flask(true), mana_flask(false)
+:vitality_flask(true), mana_flask(false),
+ dragon_left(true), dragon_right(false)
 {
    compass.set_parent(this);
+   command_buttons.set_parent(this);
 }
 
 void ua_ingame_orig_screen::init()
@@ -440,12 +194,20 @@ void ua_ingame_orig_screen::init()
 
    // gargoyle eyes
    gargoyle_eyes.init(*game, 128,4);
-   gargoyle_eyes.add_border(img_background.get_image());
+   //gargoyle_eyes.add_border(img_background.get_image());
    gargoyle_eyes.update_eyes();
    register_window(&gargoyle_eyes);
 
+   // left and right side dragons
+   dragon_left.init(*game, 36,65);
+   register_window(&dragon_left);
 
-   // dragons
+   dragon_right.init(*game, 204,65);
+   register_window(&dragon_right);
+
+   // init command buttons
+   command_buttons.init(*game, 0,0); // buttons are self-repositioning
+   register_window(&command_buttons);
 
    // init mouse cursor
    mousecursor.init(*game,0);

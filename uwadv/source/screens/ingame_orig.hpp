@@ -39,6 +39,7 @@
 #include "fading.hpp"
 #include "imgquad.hpp"
 #include "textscroll.hpp"
+#include "ingame_ctrls.hpp"
 /*
 #include "image.hpp"
 #include "font.hpp"
@@ -84,13 +85,6 @@ enum ua_screen_area_id
    ua_area_gargoyle,
    ua_area_powergem,
 
-   ua_area_menu_button0,
-   ua_area_menu_button1,
-   ua_area_menu_button2,
-   ua_area_menu_button3,
-   ua_area_menu_button4,
-   ua_area_menu_button5,
-
    ua_area_compass,
    ua_area_move_left,
    ua_area_move_foreward,
@@ -134,140 +128,7 @@ enum ua_screen_area_id
 };
 */
 
-// forward references
-class ua_ingame_orig_screen;
-class ua_player;
-class ua_inventory;
-
-
 // classes
-
-//! ingame screen control base class
-class ua_ingame_orig_ctrl: public ua_image_quad
-{
-public:
-   //! sets parent window
-   void set_parent(ua_ingame_orig_screen* orig){ parent = orig; }
-
-protected:
-   //! parent screen
-   ua_ingame_orig_screen* parent;
-};
-
-
-//! compass control
-class ua_ingame_compass: public ua_ingame_orig_ctrl
-{
-public:
-   //! initializes compass
-   virtual void init(ua_game_interface& game, unsigned int xpos,
-      unsigned int ypos);
-
-   //! draws compass
-   virtual void draw();
-
-protected:
-   //! current compass image
-   unsigned int compass_curimg;
-
-   //! compass images
-   std::vector<ua_image> img_compass;
-
-   //! player object to show compass direction
-   ua_player* player;
-};
-
-
-//! runeshelf control
-class ua_ingame_runeshelf: public ua_ingame_orig_ctrl
-{
-public:
-   //! initializes runeshelf
-   virtual void init(ua_game_interface& game, unsigned int xpos,
-      unsigned int ypos);
-
-   //! updates runeshelf
-   void update_runeshelf();
-
-protected:
-   //! all runestones
-   std::vector<ua_image> img_runestones;
-
-   //! pointer to inventory that has the runeshelf
-   ua_inventory* inventory;
-};
-
-
-//! active spell area control
-class ua_ingame_spell_area: public ua_ingame_orig_ctrl
-{
-public:
-   //! initializes active spells area
-   virtual void init(ua_game_interface& game, unsigned int xpos,
-      unsigned int ypos);
-
-   //! updates spell area
-   void update_spell_area();
-
-protected:
-   //! all runestones
-   std::vector<ua_image> img_spells;
-};
-
-
-//! vitality / mana flask
-/*! \todo implement flask fluid bubbling (remaining images in flasks.gr)
-*/
-class ua_ingame_flask: public ua_ingame_orig_ctrl
-{
-public:
-   //! ctor
-   ua_ingame_flask(bool is_vitality_flask):vitality_flask(is_vitality_flask){}
-
-   //! initializes flask
-   virtual void init(ua_game_interface& game, unsigned int xpos,
-      unsigned int ypos);
-
-   //! draws compass
-   virtual void draw();
-
-   //! updates flask image
-   void update_flask();
-
-protected:
-   //! indicates if showing a vitality or mana flask
-   bool vitality_flask;
-
-   //! indicates if player is poisoned (only when vitality flask)
-   bool is_poisoned;
-
-   //! indicates last flask image
-   unsigned int last_image;
-
-   //! flask images
-   std::vector<ua_image> img_flask;
-
-   //! player object to show compass direction
-   ua_player* player;
-};
-
-
-//! gargoyle eyes
-class ua_ingame_gargoyle_eyes: public ua_ingame_orig_ctrl
-{
-public:
-   //! initializes flask
-   virtual void init(ua_game_interface& game, unsigned int xpos,
-      unsigned int ypos);
-
-   //! updates eyes image
-   void update_eyes();
-
-protected:
-   //! eyes images
-   std::vector<ua_image> img_eyes;
-};
-
 
 //! original ingame screen
 class ua_ingame_orig_screen: public ua_screen
@@ -286,18 +147,18 @@ public:
    virtual void key_event(bool key_down, ua_key_value key);
    virtual void tick();
 
+   //! schedules action and starts fadeout if specified
+   void schedule_action(ua_ingame_orig_action action, bool fadeout_before);
+
+   //! actually performs scheduled action
+   void do_action(ua_ingame_orig_action action);
+
 protected:
    //! suspends game resources while showing another screen
    void suspend();
 
    //! resumes gameplay and restores resources
    void resume();
-
-   //! schedules action and starts fadeout if specified
-   void schedule_action(ua_ingame_orig_action action, bool fadeout_before);
-
-   //! actually performs scheduled action
-   void do_action(ua_ingame_orig_action action);
 
 /*
    // virtual functions from ua_underworld_script_callback
@@ -373,6 +234,15 @@ protected:
 
    //! gargoyle eyes
    ua_ingame_gargoyle_eyes gargoyle_eyes;
+
+   //! dragon on the left side
+   ua_ingame_dragon dragon_left;
+
+   //! dragon on the right side
+   ua_ingame_dragon dragon_right;
+
+   //! command buttons
+   ua_ingame_command_buttons command_buttons;
 
 
    // game related
@@ -453,6 +323,10 @@ protected:
    //! screenshot image resolution
    unsigned int screenshot_xres,screenshot_yres;
 */
+
+   // classes that need direct access to this class
+
+   friend class ua_ingame_command_buttons;
 };
 
 
