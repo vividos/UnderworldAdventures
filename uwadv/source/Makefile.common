@@ -67,6 +67,7 @@ uwadv_SOURCES = \
 	screens/cutscene_view.cpp screens/cutscene_view.hpp \
 	screens/ingame_orig.cpp screens/ingame_orig.hpp \
 	screens/ingame_ctrls.cpp screens/ingame_ctrls.hpp \
+	screens/panel.cpp screens/panel.hpp \
 	screens/save_game.cpp screens/save_game.hpp \
 	screens/start_menu.cpp screens/start_menu.hpp \
 	screens/start_splash.cpp screens/start_splash.hpp \
