@@ -76,7 +76,7 @@ void ua_uwadv_menu_screen::done()
 {
 }
 
-bool ua_uwadv_menu_screen::handle_event(SDL_Event &event)
+void ua_uwadv_menu_screen::handle_event(SDL_Event &event)
 {
 }
 
@@ -89,8 +89,8 @@ void ua_uwadv_menu_screen::tick()
 #ifdef HAVE_DEBUG
 
 #if 0
-   core->push_screen(new ua_start_splash_screen);
-//   core->push_screen(new ua_start_menu_screen);
+//   core->push_screen(new ua_start_splash_screen);
+   core->push_screen(new ua_start_menu_screen);
 #else
    core->get_underworld().import_savegame(core->get_settings(),"data/",true);
    core->get_underworld().get_scripts().lua_started_newgame();

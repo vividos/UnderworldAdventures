@@ -52,7 +52,7 @@ public:
    virtual void suspend();
    virtual void resume();
    virtual void done();
-   virtual bool mouse_action(bool click, bool left_button, bool pressed);
+   virtual void mouse_action(bool click, bool left_button, bool pressed);
    virtual void render();
    virtual void tick();
 

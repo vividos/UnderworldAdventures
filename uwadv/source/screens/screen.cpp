@@ -40,10 +40,8 @@ void ua_screen_ctrl_base::init(ua_game_core_interface *thecore)
    leftbuttondown = rightbuttondown = false;
 }
 
-bool ua_screen_ctrl_base::handle_event(SDL_Event &event)
+void ua_screen_ctrl_base::handle_event(SDL_Event& event)
 {
-   bool handled = false;
-
    switch(event.type)
    {
    case SDL_MOUSEMOTION: // mouse has moved
@@ -54,7 +52,7 @@ bool ua_screen_ctrl_base::handle_event(SDL_Event &event)
          cursorx = unsigned(double(x)/core->get_screen_width()*320.0);
          cursory = unsigned(double(y)/core->get_screen_height()*200.0);
 
-         handled = mouse_action(false,false,false);
+         mouse_action(false,false,false);
       }
       break;
 
@@ -69,7 +67,7 @@ bool ua_screen_ctrl_base::handle_event(SDL_Event &event)
          leftbuttondown = (state&SDL_BUTTON_LMASK) != 0;
          rightbuttondown = (state&SDL_BUTTON_RMASK) != 0;
 
-         handled = mouse_action(true,left_changed,true);
+         mouse_action(true,left_changed,true);
       }
       break;
 
@@ -84,20 +82,17 @@ bool ua_screen_ctrl_base::handle_event(SDL_Event &event)
          leftbuttondown = (state&SDL_BUTTON_LMASK) != 0;
          rightbuttondown = (state&SDL_BUTTON_RMASK) != 0;
 
-         handled = mouse_action(true,left_changed,false);
+         mouse_action(true,left_changed,false);
       }
       break;
 
    default:
       break;
    }
-
-   return handled;
 }
 
-bool ua_screen_ctrl_base::mouse_action(bool click, bool left_button, bool pressed)
+void ua_screen_ctrl_base::mouse_action(bool click, bool left_button, bool pressed)
 {
-   return false;
 }
 
 unsigned int ua_screen_ctrl_base::get_area(

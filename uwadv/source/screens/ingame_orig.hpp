@@ -132,7 +132,7 @@ public:
    virtual void suspend();
    virtual void resume();
    virtual void done();
-   virtual bool handle_event(SDL_Event& event);
+   virtual void handle_event(SDL_Event& event);
    virtual void render();
    virtual void tick();
 
@@ -156,7 +156,7 @@ protected:
    void handle_key_action(Uint8 type, SDL_keysym &keysym);
 
    //! called for a given mouse action; click is false for mouse moves
-   virtual bool mouse_action(bool click, bool left_button, bool pressed);
+   virtual void mouse_action(bool click, bool left_button, bool pressed);
 
    //! finds out selection on specific mouse cursor position
    GLuint get_selection(unsigned int xpos, unsigned int ypos);

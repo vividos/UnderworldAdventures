@@ -152,7 +152,7 @@ void ua_cutscene_view_screen::done()
    lua_close(L);
 }
 
-bool ua_cutscene_view_screen::handle_event(SDL_Event& event)
+void ua_cutscene_view_screen::handle_event(SDL_Event& event)
 {
    switch(event.type)
    {
@@ -175,7 +175,6 @@ bool ua_cutscene_view_screen::handle_event(SDL_Event& event)
       }
    default: break;
    }
-   return true;
 }
 
 void ua_cutscene_view_screen::render()

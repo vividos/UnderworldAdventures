@@ -41,9 +41,8 @@ void ua_map_view_screen::done()
 {
 }
 
-bool ua_map_view_screen::handle_event(SDL_Event &event)
+void ua_map_view_screen::handle_event(SDL_Event &event)
 {
-   return false;
 }
 
 void ua_map_view_screen::render()

@@ -119,7 +119,7 @@ void ua_start_menu_screen::done()
    img_screen.done();
 }
 
-bool ua_start_menu_screen::handle_event(SDL_Event &event)
+void ua_start_menu_screen::handle_event(SDL_Event& event)
 {
    int last_selected_area = selected_area;
 
@@ -194,8 +194,6 @@ bool ua_start_menu_screen::handle_event(SDL_Event &event)
    // check if selected area changed
    if (selected_area != last_selected_area)
       reupload_image = true;
-
-   return true;
 }
 
 void ua_start_menu_screen::render()

@@ -218,14 +218,14 @@ void ua_create_character_screen::done()
    current_screen = 0;
 }
 
-bool ua_create_character_screen::handle_event(SDL_Event &event)
+void ua_create_character_screen::handle_event(SDL_Event &event)
 {
    switch(event.type)
    {
    case SDL_KEYDOWN:
       // don't handle any keystroke if Alt or Ctrl is down
       if (((event.key.keysym.mod & KMOD_ALT)>0) || ((event.key.keysym.mod & KMOD_CTRL)>0))
-         return true;
+         return;
 
       // handle key presses
       if ((btng_buttontype==btInput) && 
@@ -328,7 +328,6 @@ bool ua_create_character_screen::handle_event(SDL_Event &event)
 
    default: break;
    }
-   return true;
 }
 
 void ua_create_character_screen::handleinputchar(char c)

@@ -130,10 +130,8 @@ void ua_start_splash_screen::done()
    cuts_anim.done();
 }
 
-bool ua_start_splash_screen::handle_event(SDL_Event &event)
+void ua_start_splash_screen::handle_event(SDL_Event& event)
 {
-   bool handled = false;
-
    switch(event.type)
    {
    case SDL_KEYDOWN:
@@ -144,13 +142,11 @@ bool ua_start_splash_screen::handle_event(SDL_Event &event)
       case 0:
       case 1:
          tickcount = unsigned(show_time * core->get_tickrate()) + 1;
-         handled = true;
          break;
 
       case 2:
          stage=4;
          tickcount = unsigned(blend_time * core->get_tickrate()) - tickcount;
-         handled = true;
          break;
 
       case 3:
@@ -160,14 +156,10 @@ bool ua_start_splash_screen::handle_event(SDL_Event &event)
          // fade out music when we have the demo (ingame starts after this)
          if (core->get_settings().get_gametype() == ua_game_uw_demo)
             core->get_audio().fadeout_music(blend_time);
-
-         handled = true;
          break;
       }
       break;
    }
-
-   return handled;
 }
 
 void ua_start_splash_screen::render()

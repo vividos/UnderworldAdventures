@@ -76,10 +76,10 @@ public:
    virtual void init(ua_game_core_interface* core);
 
    //! handles event
-   virtual bool handle_event(SDL_Event& event);
+   virtual void handle_event(SDL_Event& event);
 
    //! called for a given mouse action; click is false for mouse moves
-   virtual bool mouse_action(bool click, bool left_button, bool pressed);
+   virtual void mouse_action(bool click, bool left_button, bool pressed);
 
    //! called when screen/control gets deactivated
    virtual void suspend(){}

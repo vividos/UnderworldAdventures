@@ -55,7 +55,7 @@ public:
    virtual void suspend();
    virtual void resume();
    virtual void done();
-   virtual bool handle_event(SDL_Event &event);
+   virtual void handle_event(SDL_Event &event);
    virtual void render();
    virtual void tick();
 

@@ -98,7 +98,7 @@ void ua_acknowledgements_screen::done()
    img[1].done();
 }
 
-bool ua_acknowledgements_screen::handle_event(SDL_Event &event)
+void ua_acknowledgements_screen::handle_event(SDL_Event& event)
 {
    switch(event.type)
    {
@@ -123,8 +123,6 @@ bool ua_acknowledgements_screen::handle_event(SDL_Event &event)
       }
    default: break;
    }
-
-   return true;
 }
 
 void ua_acknowledgements_screen::render()

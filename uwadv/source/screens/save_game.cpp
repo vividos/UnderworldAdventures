@@ -176,7 +176,7 @@ void ua_save_game_screen::done()
    ua_trace("leaving save game screen\n\n");
 }
 
-bool ua_save_game_screen::handle_event(SDL_Event& event)
+void ua_save_game_screen::handle_event(SDL_Event& event)
 {
    if (edit_desc && desc_scroll.handle_event(event))
    {
@@ -217,7 +217,7 @@ bool ua_save_game_screen::handle_event(SDL_Event& event)
          selected_savegame = -1;
          update_list();
       }
-      return true;
+      return;
    }
 
    // calculate cursor position
@@ -307,8 +307,6 @@ bool ua_save_game_screen::handle_event(SDL_Event& event)
       mousecursor.updatepos();
       break;
    }
-
-   return true;
 }
 
 void ua_save_game_screen::render()

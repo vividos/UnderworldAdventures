@@ -333,12 +333,12 @@ void ua_ingame_orig_screen::done()
    ua_trace("leaving orig. ingame user interface\n");
 }
 
-bool ua_ingame_orig_screen::handle_event(SDL_Event& event)
+void ua_ingame_orig_screen::handle_event(SDL_Event& event)
 {
    ua_ui_screen_base::handle_event(event);
 
    if (textscroll.handle_event(event))
-      return true;
+      return;
 
    switch(event.type)
    {
@@ -356,8 +356,6 @@ bool ua_ingame_orig_screen::handle_event(SDL_Event& event)
 //      ua_screen_ctrl_base::handle_event(event);
       break;
    }
-
-   return false;
 }
 
 void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
@@ -981,7 +979,7 @@ void ua_ingame_orig_screen::setup_opengl()
    glEnable(GL_SCISSOR_TEST);
 }
 
-bool ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pressed)
+void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pressed)
 {
    // restrict area when movement mode is on
    if (mouse_move && !click)
@@ -1195,8 +1193,6 @@ bool ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
          }
       }
    }
-
-   return false;
 }
 
 

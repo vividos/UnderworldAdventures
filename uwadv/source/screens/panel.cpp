@@ -117,7 +117,7 @@ void ua_panel::done()
 {
 }
 
-bool ua_panel::mouse_action(bool click, bool left_button, bool pressed)
+void ua_panel::mouse_action(bool click, bool left_button, bool pressed)
 {
    // check inventory item areas
    unsigned int area = get_area(ua_panel_area_table,cursorx,cursory);
@@ -132,8 +132,6 @@ bool ua_panel::mouse_action(bool click, bool left_button, bool pressed)
       if (check_dragging && drag_area != area)
          inventory_dragged_item();
    }
-
-   return true;
 }
 
 void ua_panel::render()

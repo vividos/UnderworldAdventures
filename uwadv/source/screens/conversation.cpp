@@ -61,6 +61,7 @@ void ua_conversation_screen::init(ua_game_core_interface* thecore)
    // get npc object to talk to
    ua_object& npc_obj =
       core->get_underworld().get_level(level).get_mapobjects().get_object(objpos);
+
    npcdata = npc_obj.get_object_info().data;
    Uint16 convslot = npcdata[0];
 
@@ -241,7 +242,7 @@ void ua_conversation_screen::done()
    ua_trace("conversation screen ended\n\n");
 }
 
-bool ua_conversation_screen::handle_event(SDL_Event& event)
+void ua_conversation_screen::handle_event(SDL_Event& event)
 {
    if (scroll_menu.handle_event(event) || scroll_conv.handle_event(event))
    {
@@ -264,7 +265,7 @@ bool ua_conversation_screen::handle_event(SDL_Event& event)
          }
       }
 
-      return true;
+      return;
    }
 
    switch(event.type)
@@ -312,7 +313,6 @@ bool ua_conversation_screen::handle_event(SDL_Event& event)
       break;
    default: break;
    }
-   return true;
 }
 
 void ua_conversation_screen::render()
