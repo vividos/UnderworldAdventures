@@ -135,6 +135,10 @@ void ua_assert_check(bool cond, const char* cond_str, const char* file, int line
 {
    if (!cond)
    {
+      // write out all messages
+      fflush(stdout);
+      fflush(stderr);
+
       std::ostringstream buffer;
       buffer << "ua_assert failed (" << cond_str << ") at " << file << ":" << line << std::ends;
       ua_trace("%s\n", buffer.str().c_str());
