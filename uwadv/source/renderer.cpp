@@ -38,7 +38,6 @@
 // needed includes
 #include "common.hpp"
 #include "renderer.hpp"
-#include "quadtree.hpp"
 
 #ifdef HAVE_ALTERNATE_RENDERER
 #include <algorithm>
@@ -142,9 +141,32 @@ void ua_renderer::render()
    glLoadIdentity();
 
    ua_player &pl = underw->get_player();
+
    double plheight = 0.6+pl.get_height()*height_scale;
+   ua_vector3d pos(pl.get_xpos(),pl.get_ypos(),plheight);
+
    double rotangle = pl.get_angle_rot();
    double panangle = pl.get_angle_pan();
+
+   // render level
+   ua_frustum2d fr(pos.x,pos.y,rotangle,fov,16.0);
+
+   // determine list of visible tiles
+   std::vector<ua_quad_tile_coord> tilelist;
+   ua_quad q(0,64, 0,64);
+
+   q.get_visible_tiles(fr,tilelist);
+
+   // render map
+   render(underw->get_current_level(),pos,pl.get_angle_pan(),
+      pl.get_angle_rot(),tilelist);
+}
+
+void ua_renderer::render(ua_level& level, ua_vector3d& pos,
+   double panangle, double rotangle,
+   std::vector<ua_quad_tile_coord>&  tilelist)
+{
+   int i,max;
 
    {
       // rotation
@@ -152,21 +174,8 @@ void ua_renderer::render()
       glRotated(-rotangle+90.0, 0.0, 0.0, 1.0);
 
       // move to position on map
-      glTranslated(-pl.get_xpos(),-pl.get_ypos(),-plheight);
+      glTranslated(-pos.x, -pos.y, -pos.z);
    }
-
-   // render level
-   ua_frustum fr(pl.get_xpos(),pl.get_ypos(),plheight,rotangle,-panangle,fov,16.0);
-
-   // determine list of visible tiles
-   std::vector<ua_quad_tile_coord> tilelist;
-   ua_quad q(0, 0, 64, 64);
-
-   q.get_visible_tiles(fr,tilelist);
-
-   ua_level &level = underw->get_current_level();
-
-   int i,max;
 
 #ifdef HAVE_ALTERNATE_RENDERER
 

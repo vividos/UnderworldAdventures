@@ -31,6 +31,7 @@
 
 // needed includes
 #include "uamath.hpp"
+#include "quadtree.hpp"
 #include "critter.hpp"
 #include "models.hpp"
 #include "underworld.hpp"
@@ -58,6 +59,11 @@ public:
 
    //! renders underworld
    void render();
+
+   //! renders underworld
+   void ua_renderer::render(ua_level& level, ua_vector3d& pos,
+      double panangle, double rotangle,
+      std::vector<ua_quad_tile_coord>& tilelist);
 
    //! does selection/picking
    void select_pick(unsigned int xpos, unsigned int ypos,
