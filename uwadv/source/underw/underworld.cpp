@@ -55,7 +55,7 @@ void ua_underworld::init(ua_settings& settings, ua_files_manager& filesmgr)
    attack_power = 0;
 
    // init underworld members
-   levels.clear();
+   levelmaps.init();
 
    physics.init(this);
 
@@ -143,22 +143,27 @@ void ua_underworld::user_action(ua_underworld_user_action action,
    }
 }
 
+ua_levelmaps_list& ua_underworld::get_levelmaps_list()
+{
+   return levelmaps;
+}
+
 ua_level &ua_underworld::get_current_level()
 {
    unsigned int curlevel = player.get_attr(ua_attr_maplevel);
-   return levels[curlevel];
+   return levelmaps.get_level(curlevel);
 }
 
 const ua_level &ua_underworld::get_current_level() const
 {
    unsigned int curlevel = player.get_attr(ua_attr_maplevel);
-   return levels[curlevel];
+   return levelmaps.get_level(curlevel);
 }
 
 void ua_underworld::change_level(unsigned int level)
 {
-   if (level>=levels.size())
-      throw ua_exception("game wanted to change to unknown level");
+   // check if game wants to change to unknown level
+   ua_assert(level<levelmaps.get_num_levels());
 
    // set new level
    player.set_attr(ua_attr_maplevel,level);
@@ -182,24 +187,8 @@ void ua_underworld::load_game(ua_savegame &sg)
       return;
    }
 
-   // load all levels
-   {
-      sg.begin_section("tilemaps");
-      Uint32 max = sg.read32();
-
-      levels.clear();
-      levels.resize(max);
-
-      for(Uint32 i=0; i<max; i++)
-      {
-         ua_level& newlevel = levels[i];
-
-         // load tilemap / objects list / annotations
-         newlevel.load_game(sg);
-      }
-
-      sg.end_section();
-   }
+   // load levelmaps
+   levelmaps.load_game(sg);
 
    // load inventory
    inventory.load_game(sg);
@@ -236,20 +225,7 @@ void ua_underworld::load_game(ua_savegame &sg)
 void ua_underworld::save_game(ua_savegame &sg)
 {
    // save all levels
-   {
-      sg.begin_section("tilemaps");
-
-      unsigned int max = levels.size();
-      sg.write32(max);
-
-      for(unsigned int i=0; i<max; i++)
-      {
-         // save tilemap / objects list / annotations
-         levels[i].save_game(sg);
-      }
-
-      sg.end_section();
-   }
+   levelmaps.save_game(sg);
 
    // save inventory
    inventory.save_game(sg);
@@ -277,37 +253,6 @@ void ua_underworld::save_game(ua_savegame &sg)
 //TODO   script.save_game(sg);
 
    sg.close();
-}
-
-void ua_underworld::import_savegame(ua_settings& settings,const char* folder,bool initial)
-{
-#ifdef DISABLE_IMPORTS
-   ua_trace("imports were disabled in this build\n");
-#else
-   ua_uw_import import;
-
-   // load level maps
-   import.load_levelmaps(levels,settings,folder);
-
-   // load conv globals
-   {
-      std::string bgname(settings.get_string(ua_setting_uw_path));
-      bgname.append(folder);
-      bgname.append(initial ? "babglobs.dat" : "bglobals.dat");
-      conv_globals.import(bgname.c_str(),initial);
-   }
-
-   // load player infos
-   if (!initial)
-      import.load_player(player,folder);
-
-   // init a new game
-   if (scripting != NULL)
-      scripting->init_new_game();
-
-   // reload level
-   change_level(player.get_attr(ua_attr_maplevel));
-#endif
 }
 
 void ua_underworld::check_move_trigger()

@@ -228,8 +228,8 @@ public:
    //! returns conversation globals
    ua_conv_globals &get_conv_globals(){ return conv_globals; }
 
-   //! returns a levelmap
-   ua_level &get_level(unsigned int level){ return levels[level]; }
+   //! returns list of level maps
+   ua_levelmaps_list& get_levelmaps_list();
 
    //! returns current level
    ua_level &get_current_level();
@@ -242,25 +242,19 @@ public:
    //! changes current level
    void change_level(unsigned int level);
 
-   //! returns number of levels available
-   unsigned int get_num_levels(){ return levels.size(); }
-
    //! returns quest flag vector
    std::vector<Uint16>& get_questflags(){ return questflags; }
 
    //! returns object property object
    ua_object_properties& get_obj_properties(){ return properties; }
 
-   // loading / saving / importing
+   // loading / saving
 
    //! loads a savegame
    void load_game(ua_savegame& sg);
 
    //! saves to a savegame
    void save_game(ua_savegame& sg);
-
-   //! imports a saved game
-   void import_savegame(ua_settings& settings,const char* folder,bool initial);
 
 protected:
    // ua_physics_model_callback virtual methods
@@ -296,11 +290,11 @@ protected:
    //! conversation globals of the current underworld
    ua_conv_globals conv_globals;
 
+   //! list of all levelmaps
+   ua_levelmaps_list levelmaps;
+
    //! physics model to use in underworld
    ua_physics_model physics;
-
-   //! all underworld levels
-   std::vector<ua_level> levels;
 
    //! list of all quest flags
    std::vector<Uint16> questflags;

@@ -122,7 +122,7 @@ public:
    //! returns vector of used stock texture ids
    std::vector<Uint16>& get_used_textures(){ return used_textures; }
 
-   // loading / saving / importing
+   // loading / saving
 
    //! loads a savegame
    void load_game(ua_savegame &sg);
@@ -146,6 +146,62 @@ protected:
    //! indicates if level map is in use
    bool used;
 };
+
+
+//! list of all levelmaps
+class ua_levelmaps_list
+{
+public:
+   //! ctor
+   ua_levelmaps_list();
+
+   //! inits levelmaps list
+   void init();
+
+   //! returns number of levels in list
+   unsigned int get_num_levels() const;
+
+   //! returns level
+   ua_level& get_level(unsigned int level);
+   //! returns level
+   const ua_level& get_level(unsigned int level) const;
+
+   // loading/saving
+
+   //! loads a savegame
+   void load_game(ua_savegame &sg);
+
+   //! saves to a savegame
+   void save_game(ua_savegame &sg);
+
+protected:
+   friend class ua_uw_import;
+   std::vector<ua_level>& get_list(){ return all_levels; }
+
+protected:
+   //! all underworld levels
+   std::vector<ua_level> all_levels;
+};
+
+
+// inline methods
+
+inline unsigned int ua_levelmaps_list::get_num_levels() const
+{
+   return all_levels.size();
+}
+
+inline ua_level& ua_levelmaps_list::get_level(unsigned int level)
+{
+   ua_assert(level<all_levels.size());
+   return all_levels[level];
+}
+
+inline const ua_level& ua_levelmaps_list::get_level(unsigned int level) const
+{
+   ua_assert(level<all_levels.size());
+   return all_levels[level];
+}
 
 
 #endif

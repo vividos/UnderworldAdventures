@@ -196,3 +196,52 @@ void ua_level::save_game(ua_savegame& sg)
 
    sg.end_section();
 }
+
+
+// ua_levelmaps_list methods
+
+ua_levelmaps_list::ua_levelmaps_list()
+{
+}
+
+void ua_levelmaps_list::init()
+{
+   all_levels.clear();
+}
+
+void ua_levelmaps_list::load_game(ua_savegame &sg)
+{
+   // load all levels
+   sg.begin_section("tilemaps");
+   Uint32 max = sg.read32();
+
+   all_levels.clear();
+   all_levels.resize(max);
+
+   for(Uint32 i=0; i<max; i++)
+   {
+      ua_level& newlevel = all_levels[i];
+
+      // load tilemap / objects list / annotations
+      newlevel.load_game(sg);
+   }
+
+   sg.end_section();
+}
+
+void ua_levelmaps_list::save_game(ua_savegame &sg)
+{
+   // save all levels
+   sg.begin_section("tilemaps");
+
+   unsigned int max = all_levels.size();
+   sg.write32(max);
+
+   for(unsigned int i=0; i<max; i++)
+   {
+      // save tilemap / objects list / annotations
+      all_levels[i].save_game(sg);
+   }
+
+   sg.end_section();
+}
