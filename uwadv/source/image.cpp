@@ -33,8 +33,8 @@
 // ua_image methods
 
 ua_image::ua_image()
+:xres(0), yres(0), palette(0)
 {
-   xres=yres=0;
 }
 
 void ua_image::create(unsigned int width, unsigned int height, unsigned int initial,
