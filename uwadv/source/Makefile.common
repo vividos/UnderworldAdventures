@@ -34,6 +34,9 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	resource/cutsloader.cpp resource/savegame.cpp \
 	resource/critloader.cpp resource/modeldecode.cpp \
 	resource/fread_endian.hpp \
+	resource/model/FlexLexer.h resource/model/unistd.h \
+	resource/model/importwrl.cpp \
+	resource/model/wrllexer.cpp resource/model/wrllexer.hpp \
 	screens/ingame_orig.cpp screens/start_splash.cpp \
 	screens/start_menu.cpp screens/cutscene_view.cpp \
 	screens/acknowledgements.cpp screens/conversation.cpp \
