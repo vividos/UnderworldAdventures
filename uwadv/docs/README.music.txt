@@ -49,8 +49,8 @@ and unzip the whole zip file, preserving the folder structure. When using
 a zip frontend (such as Winzip, etc.), "extract" the files and specify the
 "uadata" folder as target.
 
-The extracted package will have an "uw1" folder, this Readme file and a .m3u
-playlist extracted. The playlist can be used to listen to the tracks, using
+After extraction, there should be an "uw1" folder, this Readme file and a
+.m3u playlist. The playlist can be used to listen to the tracks using
 e.g. Winamp. (The playlist "music.m3u" in the uw1/audio/ folder is the
 playlist used by Underworld Adventures and cannot be used for playback).
 
