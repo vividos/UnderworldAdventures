@@ -2,6 +2,48 @@
 <?xml-stylesheet type="text/xsl" href="devlog-rss.xsl"?>
 
 <devlog>
+ <entry date="2005-02-16">
+  <para>
+   Started working on code debuggers by adding the ability to send messages to the client and send "start" and "end" messages for code debuggers. On the client side one or more code debuggers can be active, all with their own breakpoint lists, etc. Actually in uwadv there will be two different code debuggers, one for conversation code, and one for Lua code. A code debugger can be set in one of several states, such as running, stopped, single-stepping, stepping out. The client can set and query breakpoints. When in "running" mode it gets a message when a breakpoint is reached. Also fixed the ua_physics_check_point_in_triangle() where I introduced a bug that shows in physics code when fixing some compiler warnings.
+  </para>
+ </entry>
+
+ <entry date="2005-01-22">
+  <para>
+   Improved master object list viewing and client interface. Added editing for all values.
+  </para>
+ </entry>
+
+ <entry date="2005-01-19">
+  <para>
+   Added common base class for docking and child windows. Added project info docking window that later should show all Lua source files and all active code debuggers.
+  </para>
+ </entry>
+
+ <entry date="2005-01-18">
+  <para>
+   Added the new Underworld Adventures Debugger that is done using WTL and uses several third-party source libs such as docking windows, tabbed windows and xp-style menus. Added needed project files. Updated version info of all generated binaries.
+  </para>
+ </entry>
+
+ <entry date="2005-01-17">
+  <para>
+   Many minor changes at several places. Removed some tools and added project files for some tools.
+  </para>
+ </entry>
+
+ <entry date="2005-01-11">
+  <para>
+   Added sources for Underworld Adventures Studio project. The uastudio basically is a stripped-down game that doesn't display graphics and has no user interaction, but it hosts a full game. The debugger is started automatically, so in the end it looks as the user has started a "Studio" application to develop and test custom games. Also enabled new-style browsing for folders to the "Underworld Adventures Config" program.
+  </para>
+ </entry>
+
+ <entry date="2005-01-10">
+  <para>
+   Started adding project files for vc71. Now every subfolder (and "component", such as "base", etc.) gets its own project file and thus static library.
+  </para>
+ </entry>
+
  <entry date="2004-11-27">
   <para>
    Worked on the underworld debugger and put tabbed MDI browsing, XP Menu and docked windows together. Here's a screenshot showing the look of the program so far:
