@@ -125,23 +125,24 @@ void ua_ingame_runeshelf::init(ua_game_interface& game, unsigned int xpos,
    ua_image_quad::init(game,xpos,ypos);
 }
 
-/*! Updates the runeshelf image from runeshelf content.
-    \todo actually get runes on the self
-*/
+/*! Updates the runeshelf image from runeshelf content. */
 void ua_ingame_runeshelf::update_runeshelf()
 {
    ua_image& img_shelf = get_image();
    img_shelf.clear(0);
 
+   ua_runes& runes = parent->get_game_interface().get_underworld().
+      get_player().get_runes();
+
    unsigned int rune[3] = { 0, 0, 0 };
 
-   for(unsigned int i=0; i<3; i++)
+   unsigned int max = runes.get_runeshelf_count()%3;
+   for(unsigned int i=0; i<max; i++)
    {
-      if (rune[i] == 0)
-         continue;
+      Uint8 rune = runes.get_runeshelf_rune(i)%24;
 
       // paste appropriate rune image
-      ua_image& img_rune = img_runestones[(rune[i]-1)%24];
+      ua_image& img_rune = img_runestones[rune];
 
       unsigned int dest = has_border ? 1 : 0;
       img_shelf.paste_rect(img_rune, 0,0, 14,14,
@@ -382,6 +383,7 @@ void ua_ingame_3dview::init(ua_game_interface& game, unsigned int xpos,
    wnd_height = 131-20+1;
 
    mouse_move = false;
+   in_view3d = false;
 }
 
 void ua_ingame_3dview::draw()
@@ -394,7 +396,7 @@ bool ua_ingame_3dview::process_event(SDL_Event& event)
    if (event.type == SDL_MOUSEMOTION)
    {
       // check if user leaves the 3d view
-      unsigned int xpos,ypos;
+      unsigned int xpos=0, ypos=0;
       calc_mousepos(event, xpos, ypos);
       if (in_view3d && !in_window(xpos,ypos))
       {
@@ -722,7 +724,7 @@ bool ua_ingame_move_arrows::process_event(SDL_Event& event)
 {
    bool ret = ua_image_quad::process_event(event);
 
-   unsigned int xpos,ypos;
+   unsigned int xpos=0, ypos=0;
    calc_mousepos(event, xpos, ypos);
 
    // leaving window while move arrow is pressed?
