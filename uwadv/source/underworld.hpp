@@ -43,6 +43,7 @@
 #include "gamestrings.hpp"
 #include "savegame.hpp"
 #include "properties.hpp"
+#include "mapnotes.hpp"
 
 
 // forward declaration
@@ -111,16 +112,19 @@ public:
    //! returns object property object
    ua_object_properties& get_obj_properties(){ return properties; }
 
+   //! returns map notes object
+   ua_map_notes& get_map_notes(){ return mapnotes; }
+
    // loading / saving / importing
 
    //! loads a savegame
-   void load_game(ua_savegame &sg);
+   void load_game(ua_savegame& sg);
 
    //! saves to a savegame
-   void save_game(ua_savegame &sg);
+   void save_game(ua_savegame& sg);
 
    //! imports a saved game
-   void import_savegame(ua_settings &settings,const char *folder,bool initial);
+   void import_savegame(ua_settings& settings,const char* folder,bool initial);
 
 protected:
    //! checks if player is near move triggers
@@ -153,6 +157,9 @@ protected:
 
    //! object property class
    ua_object_properties properties;
+
+   //! map notes
+   ua_map_notes mapnotes;
 
    //! underworld script bindings;
    ua_underworld_script_bindings script;

@@ -145,6 +145,9 @@ void ua_underworld::load_game(ua_savegame &sg)
       sg.end_section();
    }
 
+   // load map notes
+   mapnotes.load_game(sg);
+
    // load conv. globals
    conv_globals.load_game(sg);
 
@@ -193,6 +196,9 @@ void ua_underworld::save_game(ua_savegame &sg)
 
       sg.end_section();
    }
+
+   // save map notes
+   mapnotes.save_game(sg);
 
    // save conv. globals
    conv_globals.save_game(sg);
