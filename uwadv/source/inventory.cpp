@@ -335,7 +335,13 @@ bool ua_inventory::drop_floating_item(Uint16 index)
             {
                switch(ret)
                {
-               case ua_obj_cmb_dstr_dropped:
+               case ua_obj_cmb_dstr_first:
+                  // existing item is to be erased; just replace item id
+                  obj.item_id = get_item(floating_object).item_id;
+                  get_item(floating_object).item_id = result_id;
+                  break;
+
+               case ua_obj_cmb_dstr_second:
                   // dropped item is to be erased; just replace item id
                   get_item(floating_object).item_id = result_id;
                   break;
