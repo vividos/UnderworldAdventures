@@ -47,10 +47,11 @@ void ua_model3d_wrl::import_wrl(ua_game_core_interface* core, SDL_RWops* rwops,
 
    ua_vector3d translate;
    ua_vector3d rotate_axis;
-   double rotate_angle;
+   double rotate_angle = 0.0;
    ua_vector3d scale;
 
    scale.set(1.0,1.0,1.0);
+   rotate_axis.set(1.0,0.0,0.0);
 
    std::string texture_url;
 
@@ -287,18 +288,10 @@ void ua_model3d_wrl::import_wrl(ua_game_core_interface* core, SDL_RWops* rwops,
       for(unsigned int i=0; i<max; i++)
       {
          coords[i] *= scale;
+         coords[i].z*= -1.0;
          coords[i].rotate(rotate_axis,rotate_angle);
          coords[i] += translate;
       }
-/*
-   std::vector<ua_vector3d> coords;
-
-   std::vector<ua_vector2d> texcoords;
-
-   std::vector<unsigned int> coord_index;
-
-   std::vector<unsigned int> texcoord_index;
-*/
    }
 
    // load texture
