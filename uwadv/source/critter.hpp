@@ -21,7 +21,7 @@
 */
 /*! \file critter.hpp
 
-   \brief critter loading
+   \brief critter animation loading
 
 */
 
@@ -36,7 +36,7 @@
 
 // classes
 
-//! single critter animations
+//! critter animations
 class ua_critter
 {
 public:
@@ -44,11 +44,20 @@ public:
    ua_critter(){}
 
    //! loads critter animations
-   void load(const char* file, Uint8 auxpal);
+   void load(const char* file, unsigned int used_auxpal);
 
 protected:
-   //! all critter images
-   ua_image_list allimgs;
+   //! slot list with segment indices
+   std::vector<Uint8> slotlist;
+
+   //! segment list with list of used frames
+   std::vector<std::vector<Uint8> > segmentlist;
+
+   //! all critter animation frames
+   ua_image_list allframes;
+
+   //! hotspot point in image
+   unsigned int hotspot_x, hotspot_y;
 };
 
 

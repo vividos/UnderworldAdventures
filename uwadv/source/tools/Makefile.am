@@ -17,9 +17,9 @@ endif
 # Makefile.common defines all the _SOURCES
 include Makefile.common
 
-cnvdbg_LDADD = $(SDL_LIBS)
+cnvdbg_LDADD = $(SDL_LIBS) -lz
 
-cnvdasm_LDADD = $(SDL_LIBS)
+cnvdasm_LDADD = $(SDL_LIBS) -lz
 
 xmi2mid_LDADD = $(SDL_LIBS)
 

@@ -172,7 +172,7 @@ cnvdbg_OBJS = $(cnvdbg_CPPs:%.cpp=source/tools/%.o)
 
 cnvdbg_LDFLAGS = -mconsole
 cnvdbg_LIBS = -lmingw32 -lkernel32 -luser32 \
-	$(SDL_LIB) $(STLPORT_LIB)
+	$(SDL_LIB) $(STLPORT_LIB) -lz
 
 
 # conv decompiler
@@ -183,7 +183,8 @@ cnvdasm_CPPs = $(filter %.cpp,$(cnvdasm_SOURCES))
 cnvdasm_OBJS = $(cnvdasm_CPPs:%.cpp=source/tools/%.o)
 
 cnvdasm_LDFLAGS = -mconsole
-cnvdasm_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB) $(STLPORT_LIB)
+cnvdasm_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB) \
+	$(STLPORT_LIB) -lz
 
 
 # xmidi to midi converter
