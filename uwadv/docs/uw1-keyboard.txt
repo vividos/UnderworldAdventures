@@ -51,9 +51,9 @@ Moving around:
 Looking Around: (useful for attacking enemies above or below you)
 --------------------------------------------------------------------------------
 
-'1' - will look up incrementally (the more you press it, the more up you look!)
+'1' - will look down incrementally (the more you press it, the more down you look!)
 '2' - will look forward (undoing looking up or down)
-'3' - will look down
+'3' - will look up
 
 
 Attacking:
