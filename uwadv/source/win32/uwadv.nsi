@@ -2,7 +2,7 @@
 # Underworld Adventures install script
 #
 
-!define VERSION "0.0.1"
+!define VERSION "ricecraecker"
 
 # compiler utility commands
 #
@@ -63,12 +63,20 @@ File install\SDL.dll
 #File install\fmod.dll
 File uwadv.cfg
 File ..\..\Copying
-#File ..\readme.txt
+File ..\..\docs\readme.txt
 CreateShortCut "$DESKTOP\Underworld Adventures.lnk" "$INSTDIR\uwadv.exe" "" "" "0"
 WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\uwadv" "DisplayName" "Underworld Adventures ${VERSION} (remove only)"
 WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\uwadv" "UninstallString" '"$INSTDIR\uninst-uwadv.exe"'
 WriteUninstaller $INSTDIR\uninst-uwadv.exe
 SectionEnd
+
+Function .onInstSuccess
+  MessageBox MB_YESNO|MB_ICONQUESTION \
+    "Setup has completed. View readme file now?" \
+    IDNO NoReadme
+    ExecShell open '$INSTDIR\readme.txt'
+  NoReadme:
+FunctionEnd
 
 Section Uninstall
 Delete $INSTDIR\uwadv.exe
@@ -76,6 +84,7 @@ Delete $INSTDIR\SDL.dll
 #Delete $INSTDIR\fmod.dll
 Delete $INSTDIR\uwadv.cfg
 Delete $INSTDIR\Copying
+Delete $INSTDIR\readme.txt
 Delete $INSTDIR\uninst-uwadv.exe
 Delete "$DESKTOP\Underworld Adventures.lnk"
 DeleteRegKey HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\uwadv"
