@@ -1,9 +1,10 @@
-// cnvdec.cpp : Defines the entry point for the console application.
+// cnvdec.cpp
 //
 
+#include "../hacking.h"
 #include <stdio.h>
 
-const char *fname = "..\\..\\uw1\\data\\Cnv.ark";
+const char *fname = UWPATH "data\\Cnv.ark";
 
 void dump_import_funcs(FILE *fd, FILE *dest)
 {

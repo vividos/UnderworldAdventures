@@ -1,43 +1,9 @@
 // critdec.cpp
 //
 
+#include "../hacking.h"
 #include <stdio.h>
 #include <string>
-
-
-void tga_writeheader(FILE *fd, int width, int height, int type=2, int colmap=0)
-{
-   #pragma pack(push,1)
-
-   // tga header struct
-   struct tgaheader
-   {
-      unsigned char idlength;     // length of id field after header
-      unsigned char colormaptype; // 1 if a color map is present
-      unsigned char tgatype;      // tga type
-
-      // colormap not used
-      unsigned short colormaporigin;
-      unsigned short colormaplength;
-      unsigned char colormapdepth;
-
-      // x and y origin
-      unsigned short xorigin,yorigin;
-      // width and height
-      unsigned short width,height;
-
-      // bits per pixel, either 16, 24 or 32
-      unsigned char bitsperpixel;
-      unsigned char imagedescriptor;
-   } tgaheader =
-   {
-      0, colmap, type,   0, (colmap==1?256:0), (colmap==1?24:0),
-      0, 0, width, height, colmap==1?8:32, 0x20
-   };
-#pragma pack(pop)
-
-   fwrite(&tgaheader,1,18,fd);
-}
 
 
 void decode_rle(FILE *fd,FILE *out,unsigned int bits,unsigned int datalen,unsigned char *auxpalidx)
@@ -216,16 +182,16 @@ void decode_rle(FILE *fd,FILE *out,unsigned int bits,unsigned int datalen,unsign
 }
 
 
-const char *cr_fmt = "d:\\store\\uw_demo\\crit\\cr%02opage.n%02o";
+const char *cr_fmt = UWPATH"crit\\cr%02opage.n%02o";
 
 int main(int argc, char* argv[])
 {
-   const char *assocfilename = "d:\\store\\uw_demo\\crit\\dassoc.anm";
+   const char *assocfilename = UWPATH"crit\\assoc.anm";
 
    // get 256 colors palette
    char palette[256*3];
    {
-      FILE *pal = fopen("d:\\store\\uw_demo\\data\\pals.dat","rb");
+      FILE *pal = fopen(UWPATH"data\\pals.dat","rb");
 
       fread(palette,1,256*3,pal);
 
@@ -252,6 +218,9 @@ int main(int argc, char* argv[])
       fseek(assoc,crit*8,SEEK_SET);
       fread(critname,1,8,assoc);
 
+      if (critname[0]==0)
+         strcpy(critname,"unkn");
+
       fseek(assoc,256+crit*2,SEEK_SET);
       anim = fgetc(assoc);
       variant = fgetc(assoc);
@@ -259,7 +228,7 @@ int main(int argc, char* argv[])
 
       {
          char buffer[256];
-         sprintf(buffer,cr_fmt,crit,0);
+         sprintf(buffer,cr_fmt,anim,0);
 
          FILE *pfile = fopen(buffer,"rb");
          if (pfile==NULL)
@@ -270,11 +239,13 @@ int main(int argc, char* argv[])
 
       printf("critter #%u: \"%.8s\", anim=%02x, variant=%02x\n",crit,critname,anim,variant);
 
+      anim = crit;
+
       // read in all pages
       for(int page=0;;page++)
       {
          char buffer[256];
-         sprintf(buffer,cr_fmt,crit,page);
+         sprintf(buffer,cr_fmt,anim,page);
          FILE *pfile = fopen(buffer,"rb");
          if (pfile==NULL)
             break;
@@ -292,9 +263,9 @@ int main(int argc, char* argv[])
          unsigned char *segdiroffsets = new unsigned char[nsegs];
          fread(segdiroffsets,1,nsegs,pfile);
 
-         printf("cr%02opage.n%02o:\n",crit,page);
-
          int nanimsegs = fgetc(pfile);
+
+         printf("cr%02opage.n%02o: %u segments, %u animsegs\n",anim,page,nsegs,nanimsegs);
 
          for(int i=0; i<nanimsegs; i++)
          {
@@ -307,6 +278,12 @@ int main(int argc, char* argv[])
 
          int nauxpals = fgetc(pfile);
          if (nauxpals==-1) continue;
+
+         if (variant>=nauxpals)
+         {
+            printf("error! auxpal to use isn't available!");
+            continue;
+         }
 
          unsigned char *auxpals = new unsigned char[32*nauxpals];
          fread(auxpals,32,nauxpals,pfile);
@@ -345,7 +322,7 @@ int main(int argc, char* argv[])
 
             // decode bitmap
             char buffer[256];
-            sprintf(buffer,"crit%03opage%02oframe%02u.tga",crit,page,frame);
+            sprintf(buffer,"cr%0o2-%.8s-page%02oframe%02u.tga",crit,critname,page,frame);
 
             FILE *tga = fopen(buffer,"wb");
 
@@ -354,7 +331,7 @@ int main(int argc, char* argv[])
             // write palette
             fwrite(palette,1,256*3,tga);
 
-            decode_rle(pfile,tga,wsize,width*height,auxpals);
+            decode_rle(pfile,tga,wsize,width*height,auxpals+32*variant);
 
             fclose(tga);
          }

@@ -1,6 +1,7 @@
 // grdecode.cpp
 //
 
+#include "../hacking.h"
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
@@ -365,41 +366,6 @@ void decode_4bit(int datalen, FILE *fd, FILE *tga, unsigned char auxpalidx[16])
    }
 }
 
-void tga_writeheader(FILE *fd, int width, int height, int type=2, int colmap=0)
-{
-   #pragma pack(push,1)
-
-   // tga header struct
-   struct tgaheader
-   {
-      unsigned char idlength;     // length of id field after header
-      unsigned char colormaptype; // 1 if a color map is present
-      unsigned char tgatype;      // tga type
-
-      // colormap not used
-      unsigned short colormaporigin;
-      unsigned short colormaplength;
-      unsigned char colormapdepth;
-
-      // x and y origin
-      unsigned short xorigin,yorigin;
-      // width and height
-      unsigned short width,height;
-
-      // bits per pixel, either 16, 24 or 32
-      unsigned char bitsperpixel;
-      unsigned char imagedescriptor;
-   } tgaheader =
-   {
-      0, colmap, type,   0, (colmap==1?256:0), (colmap==1?24:0),
-      0, 0, width, height, colmap==1?8:32, 0x20
-   };
-#pragma pack(pop)
-
-   fwrite(&tgaheader,1,18,fd);
-}
-
-
 int main(int argc, char* argv[])
 {
    time_t starttime = time(NULL);
@@ -410,7 +376,7 @@ int main(int argc, char* argv[])
    // get 256 colors palette
    char palette[256*3];
    {
-      FILE *pal = fopen("d:\\store\\uw_demo\\data\\pals.dat","rb");
+      FILE *pal = fopen(UWPATH"data\\pals.dat","rb");
 
       fread(palette,1,256*3,pal);
 
@@ -429,7 +395,7 @@ int main(int argc, char* argv[])
    // get 16 bit aux palette index table
    unsigned char auxpalidx[32][16];
    {
-      FILE *pal = fopen("d:\\store\\uw_demo\\data\\allpals.dat","rb");
+      FILE *pal = fopen(UWPATH"data\\allpals.dat","rb");
 
       fread(auxpalidx,1,32*16,pal);
       fclose(pal);
@@ -438,7 +404,7 @@ int main(int argc, char* argv[])
 
 
    _finddata_t find;
-   long hnd = _findfirst("d:\\store\\uw_demo\\data\\*.gr",&find);
+   long hnd = _findfirst(UWPATH"data\\*.gr",&find);
 
    if (hnd==-1)
    {
@@ -459,7 +425,7 @@ int main(int argc, char* argv[])
 
 
       // construct name
-      sprintf(fname,"d:\\store\\uw_demo\\data\\%s.gr",basename);
+      sprintf(fname,UWPATH"data\\%s.gr",basename);
 
       FILE *fd = fopen(fname,"rb");
 

@@ -1,44 +1,10 @@
-// levarkdec.cpp : Defines the entry point for the console application.
+// levarkdec.cpp
 //
 
+#include "../hacking.h"
 #include <stdio.h>
 
-void tga_writeheader(FILE *fd, int width, int height, int type=2, int colmap=0)
-{
-   #pragma pack(push,1)
-
-   // tga header struct
-   struct tgaheader
-   {
-      unsigned char idlength;     // length of id field after header
-      unsigned char colormaptype; // 1 if a color map is present
-      unsigned char tgatype;      // tga type
-
-      // colormap not used
-      unsigned short colormaporigin;
-      unsigned short colormaplength;
-      unsigned char colormapdepth;
-
-      // x and y origin
-      unsigned short xorigin,yorigin;
-      // width and height
-      unsigned short width,height;
-
-      // bits per pixel, either 16, 24 or 32
-      unsigned char bitsperpixel;
-      unsigned char imagedescriptor;
-   } tgaheader =
-   {
-      0, colmap, type,   0, (colmap==1?256:0), (colmap==1?24:0),
-      0, 0, width, height, colmap==1?8:32, 0x00
-   };
-#pragma pack(pop)
-
-   fwrite(&tgaheader,1,18,fd);
-}
-
-//const char *filename = "..\\..\\uw1\\data\\lev.ark";
-const char *filename = "..\\..\\uw1\\Save3\\lev.ark";
+const char *filename = UWPATH"Save3\\lev.ark";
 
 int main(int argc, char* argv[])
 {
@@ -54,7 +20,7 @@ int main(int argc, char* argv[])
    unsigned int flen = ftell(fd);
    fseek(fd,0,SEEK_SET);
 
-   FILE *out = fopen("levelobjs.txt","w");
+   FILE *out = fopen("uw-levelobjs.txt","w");
 
    // read in toc
 
@@ -101,7 +67,7 @@ int main(int argc, char* argv[])
       {
          sprintf(fname,"level%03u-type.tga",j);
          FILE *tga = fopen(fname,"wb");
-         tga_writeheader(tga,64,64);
+         tga_writeheader(tga,64,64,2,0,true);
 
          int mapping[16] =
          {
@@ -121,7 +87,7 @@ int main(int argc, char* argv[])
       {
          sprintf(fname,"level%03u-floor.tga",j);
          FILE *tga = fopen(fname,"wb");
-         tga_writeheader(tga,64,64);
+         tga_writeheader(tga,64,64,2,0,true);
 
          for(int i=0; i<64*64; i++)
          {
@@ -140,7 +106,7 @@ int main(int argc, char* argv[])
       {
          sprintf(fname,"level%03u-index.tga",j);
          FILE *tga = fopen(fname,"wb");
-         tga_writeheader(tga,64,64);
+         tga_writeheader(tga,64,64,2,0,true);
 
          for(int i=0; i<64*64; i++)
          {
@@ -156,7 +122,7 @@ int main(int argc, char* argv[])
       {
          sprintf(fname,"level%03u-unk.tga",j);
          FILE *tga = fopen(fname,"wb");
-         tga_writeheader(tga,64,64);
+         tga_writeheader(tga,64,64,2,0,true);
 
          for(int i=0; i<64*64; i++)
          {

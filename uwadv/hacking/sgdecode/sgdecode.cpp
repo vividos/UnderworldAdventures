@@ -1,9 +1,10 @@
-// cnvdec.cpp : Defines the entry point for the console application.
+// sgdecode.cpp
 //
 
+#include "../hacking.h"
 #include <stdio.h>
 
-const char *fname = "..\\..\\uw1\\Save1\\player.dat";
+const char *fname = UWPATH"Save1\\player.dat";
 
 char *statsnskills[23] =
 {

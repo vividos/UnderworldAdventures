@@ -1,6 +1,7 @@
 // stringextract.cpp
 //
 
+#include "../hacking.h"
 #include <stdio.h>
 #include <string>
 
@@ -25,7 +26,7 @@ typedef struct block_info
 
 int main(int argc, char* argv[])
 {
-   const char *filename = "..\\..\\uw1\\data\\strings.pak";
+   const char *filename = UWPATH"data\\strings.pak";
 
    FILE *fd = fopen(filename,"rb");
    if (fd==NULL)
