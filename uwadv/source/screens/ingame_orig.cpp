@@ -115,9 +115,6 @@ void ua_ingame_orig_screen::init()
 
    keymap.init(core->get_settings());
 
-   core->get_underworld().import_savegame(core->get_settings(),"data/",true);
-   core->get_underworld().change_level(0);
-
    // load all needed images
    const char *mainscreenname = "data/main.byt";
 
