@@ -142,6 +142,9 @@ protected:
    //! called to load a specific value
    virtual void load_value(const std::string& name, const std::string& value);
 
+   //! called to replace a value
+   virtual void write_replace(const std::string& name, std::string& value);
+
 protected:
    //! settings map typedef
    typedef std::map<ua_settings_key,std::string> ua_settings_map_type;

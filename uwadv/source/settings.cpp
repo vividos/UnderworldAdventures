@@ -165,3 +165,15 @@ void ua_settings::load_value(const std::string& name, const std::string& value)
    else
       set_value(key,value);
 }
+
+void ua_settings::write_replace(const std::string& name, std::string& value)
+{
+   // search for key by name
+   ua_settings_key key;
+
+   if (search_key_from_string(name.c_str(),key))
+   {
+      // retrieve new value for that setting
+      value.assign(settings[key]);
+   }
+}
