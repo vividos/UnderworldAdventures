@@ -316,11 +316,6 @@ void ua_game::init_core()
    // init textures
    texmgr.init(settings);
 
-   ua_trace("loading game strings ... ");
-   // load game strings
-   gstr.load(settings);
-   ua_trace("done\n");
-
    // init audio
    audio = ua_audio_interface::get_audio_interface();
    audio->init(settings,filesmgr);
@@ -329,7 +324,7 @@ void ua_game::init_core()
    critter_pool.load(settings);
 
    // initializes underworld
-   underworld.init(this);
+   underworld.init(settings,filesmgr);
 }
 
 void ua_game::push_screen(ua_ui_screen_base *newscreen)

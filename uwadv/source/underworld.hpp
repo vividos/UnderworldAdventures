@@ -31,6 +31,7 @@
 
 // needed includes
 #include <vector>
+#include "files.hpp"
 #include "level.hpp"
 #include "player.hpp"
 #include "inventory.hpp"
@@ -38,6 +39,7 @@
 #include "level.hpp"
 #include "physics.hpp"
 #include "uwscript.hpp"
+#include "gamestrings.hpp"
 #include "savegame.hpp"
 
 
@@ -55,7 +57,7 @@ public:
    ua_underworld(){}
 
    //! initializes underworld
-   void init(ua_game_core_interface* core);
+   void init(ua_settings& settings, ua_files_manager& filesmgr);
 
    //! clean up the underworld
    void done();
@@ -88,6 +90,9 @@ public:
 
    //! returns script bindings object
    ua_underworld_script_bindings &get_scripts(){ return script; }
+
+   //! returns game strings object
+   ua_gamestrings& get_strings(){ return gstr; }
 
    //! changes current level
    void change_level(unsigned int level);
@@ -124,6 +129,9 @@ protected:
 
    //! underworld script bindings;
    ua_underworld_script_bindings script;
+
+   //! hey, it's all the game strings!
+   ua_gamestrings gstr;
 };
 
 #endif

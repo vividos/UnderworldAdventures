@@ -94,9 +94,6 @@ protected:
    //! true when tick timer should be resetted for the next cycle
    bool reset_tick_timer;
 
-   //! hey, it's all the game strings!
-   ua_gamestrings gstr;
-
    //! audio interface
    ua_audio_interface *audio;
 
@@ -117,7 +114,7 @@ protected:
    virtual unsigned int get_screen_height(){ return height; }
    virtual unsigned int get_tickrate(){ return tickrate; }
    virtual ua_audio_interface &get_audio(){ return *audio; }
-   virtual ua_gamestrings &get_strings(){ return gstr; }
+   virtual ua_gamestrings &get_strings(){ return underworld.get_strings(); }
    virtual ua_settings &get_settings(){ return settings; }
    virtual ua_texture_manager &get_texmgr(){ return texmgr; }
    virtual ua_files_manager &get_filesmgr(){ return filesmgr; }

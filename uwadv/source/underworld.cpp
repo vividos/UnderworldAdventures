@@ -34,10 +34,11 @@
 
 // ua_underworld methods
 
-void ua_underworld::init(ua_game_core_interface* core)
+void ua_underworld::init(ua_settings& settings, ua_files_manager& filesmgr)
 {
-   enhanced_features = core->get_settings().get_bool(ua_setting_uwadv_features);
+   enhanced_features = settings.get_bool(ua_setting_uwadv_features);
 
+   // init underworld members
    levels.clear();
 
    physics.init(this);
@@ -46,14 +47,18 @@ void ua_underworld::init(ua_game_core_interface* core)
 
    player.init();
 
+   // load game strings
+   ua_trace("loading game strings ... ");
+   gstr.load(settings);
+   ua_trace("done\n");
+
    // init and load the scripts as last step
    script.init(this);
-   if (core!=NULL)
-   {
-      core->get_filesmgr().load_underworld_scripts(script.get_lua_State(),
-         "uw1/scripts/uwinit.txt"); // TODO use proper uadata name
-      script.lua_init_script();
-   }
+
+   filesmgr.load_underworld_scripts(script.get_lua_State(),
+      "uw1/scripts/uwinit.txt"); // TODO use proper uadata name
+
+   script.lua_init_script();
 }
 
 void ua_underworld::done()
