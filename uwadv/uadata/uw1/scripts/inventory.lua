@@ -57,49 +57,49 @@ inv_cmb_list = {
    -- 0x0095 + 0x0116(*) = 0x0115
    -- "a lit torch" + "a block of incense" = "a block of burning incense"
    { item_id1  =          9*16 +  5, item_id2 = 1*256 +  1*16 +  6,
-     result_id = 1*256 +  1*16 +  5, success_code = lua_obj_cmb_dstr_second },
+     result_id = 1*256 +  1*16 +  5, success_code = lua_inv_cmb_dstr_second },
 
    -- 0x0095 + 0x00b4(*) = 0x00b7
    -- "a lit torch" + "an ear of corn" = "some_popcorn"
    { item_id1  =          9*16 +  5, item_id2 =         11*16 +  4,
-     result_id =         11*16 +  7, success_code = lua_obj_cmb_dstr_second },
+     result_id =         11*16 +  7, success_code = lua_inv_cmb_dstr_second },
 
    -- 0x011c(*) + 0x00d8(*) = 0x012b
    -- "some_strong thread" + "a pole" = "a fishing pole"
    { item_id1  = 1*256 +  1*16 + 12, item_id2 =         13*16 +  8,
-     result_id = 1*256 +  2*16 + 11, success_code = lua_obj_cmb_dstr_both },
+     result_id = 1*256 +  2*16 + 11, success_code = lua_inv_cmb_dstr_both },
 
    -- key of infinity
 
    -- 0x00e1(*) + 0x00e2(*) = 0x00e6
    -- "the Key of Truth" + "the Key of Love" = "a two part key"
    { item_id1  =         14*16 +  1, item_id2 =         14*16 +  2,
-     result_id =         14*16 +  6, success_code = lua_obj_cmb_dstr_both },
+     result_id =         14*16 +  6, success_code = lua_inv_cmb_dstr_both },
 
    -- 0x00e1(*) + 0x00e3(*) = 0x00e4
    -- "the Key of Truth" + "the Key of Courage" = "a two part key"
    { item_id1  =         14*16 +  1, item_id2 =         14*16 +  3,
-     result_id =         14*16 +  4, success_code = lua_obj_cmb_dstr_both },
+     result_id =         14*16 +  4, success_code = lua_inv_cmb_dstr_both },
 
    -- 0x00e2(*) + 0x00e3(*) = 0x00e5
    -- "the Key of Love" + "the Key of Courage" = "a two part key"
    { item_id1  =         14*16 +  2, item_id2 =         14*16 +  3,
-     result_id =         14*16 +  5, success_code = lua_obj_cmb_dstr_both },
+     result_id =         14*16 +  5, success_code = lua_inv_cmb_dstr_both },
 
    -- 0x00e1(*) + 0x00e5(*) = 0x00e7
    -- "the Key of Truth" + "a two part key" = "the Key of Infinity"
    { item_id1  =         14*16 +  1, item_id2 =         14*16 +  5,
-     result_id =         14*16 +  7, success_code = lua_obj_cmb_dstr_both },
+     result_id =         14*16 +  7, success_code = lua_inv_cmb_dstr_both },
 
    -- 0x00e2(*) + 0x00e4(*) = 0x00e7
    -- "the Key of Love" + "a two part key" = "the Key of Infinity"
    { item_id1  =         14*16 +  2, item_id2 =         14*16 +  4,
-     result_id =         14*16 +  7, success_code = lua_obj_cmb_dstr_both },
+     result_id =         14*16 +  7, success_code = lua_inv_cmb_dstr_both },
 
    -- 0x00e3(*) + 0x00e6(*) = 0x00e7
    -- "the Key of Courage" + "a two part key" = "the Key of Infinity"
    { item_id1  =         14*16 +  3, item_id2 =         14*16 +  6,
-     result_id =         14*16 +  7, success_code = lua_obj_cmb_dstr_both },
+     result_id =         14*16 +  7, success_code = lua_inv_cmb_dstr_both },
 
 
    -- stop entry
@@ -185,8 +185,8 @@ end
 function lua_inventory_combine_obj(item_id1, item_id2)
 
    -- initial return values
-   success_code = lua_inv_cmb_failed
-   result_id = 0
+   local success_code = lua_inv_cmb_failed
+   local result_id = 0
 
    -- check for all combinable items in table
    idx = 1;
