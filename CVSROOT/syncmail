@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/env python
 
 # NOTE: Until SourceForge installs a modern version of Python on the cvs
 # servers, this script MUST be compatible with Python 1.5.2.
