@@ -297,6 +297,10 @@ void ua_config_prog::load_config()
       (text.compare("both")==0 ? 2 : text.compare("sound")==0 ? 0 : 1),
       0);
 
+   // set "uwadv features" check
+   ::SendDlgItemMessage(m_hWnd,IDC_CHECK_ENABLE_FEATURES,BM_SETCHECK,
+      settings.get_bool(ua_setting_uwadv_features) ? BST_CHECKED : BST_UNCHECKED, 0);
+
    // set screen resolution text
    text = settings.get_string(ua_setting_screen_resolution);
 
@@ -434,6 +438,10 @@ void ua_config_prog::save_config()
    sel = ::SendDlgItemMessage(m_hWnd,IDC_COMBO_CUTS_NARRATION,CB_GETCURSEL,0,0);
    value = (sel==0 ? "sound" : (sel==1 ? "subtitles" : "both"));
    settings.set_value(ua_setting_cuts_narration,value);
+
+   // "uwadv features" check
+   sel = ::SendDlgItemMessage(m_hWnd,IDC_CHECK_ENABLE_FEATURES,BM_GETCHECK,0,0);
+   settings.set_value(ua_setting_uwadv_features, bool(sel==BST_CHECKED));
 
    // screen resolution text
    ::GetDlgItemText(m_hWnd,IDC_COMBO_SCREEN_RESOLUTION,buffer,MAX_PATH);
