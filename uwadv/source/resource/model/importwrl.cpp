@@ -207,7 +207,8 @@ void ua_model3d_wrl::import_wrl(ua_game_core_interface* core, SDL_RWops* rwops,
          break;
 
       case ua_wt_invalid:
-         ua_trace("unknown character in .wrl file\n");
+         ua_trace("failed loading model: unknown character in %s\n",
+            relpath.c_str());
          res = -1;
          break;
 
@@ -220,7 +221,8 @@ void ua_model3d_wrl::import_wrl(ua_game_core_interface* core, SDL_RWops* rwops,
    // load texture
    if (res==0)
    {
-      tex.init(&core->get_texmgr());
+      tex.init(&core->get_texmgr(),1,
+         GL_LINEAR,GL_LINEAR,GL_REPEAT,GL_REPEAT);
 
       // construct texture name
       std::string::size_type pos = relpath.find_last_of("\\/");
@@ -235,6 +237,8 @@ void ua_model3d_wrl::import_wrl(ua_game_core_interface* core, SDL_RWops* rwops,
       SDL_RWops* rwops = core->get_filesmgr().get_uadata_file(relpath.c_str());
 
       tex.load(rwops);
+      tex.use();
+      tex.upload();
 
       SDL_RWclose(rwops);
    }
@@ -243,6 +247,10 @@ void ua_model3d_wrl::import_wrl(ua_game_core_interface* core, SDL_RWops* rwops,
 void ua_model3d_wrl::render(ua_vector3d& base)
 {
    // render object
+
+   tex.use();
+
+   // render all triangles in list
    unsigned int max = coord_index.size();
    for(unsigned int i=0; i<max; i+=3)
    {
@@ -258,6 +266,8 @@ void ua_model3d_wrl::render(ua_vector3d& base)
          ua_vector2d vec2d(texcoords[t_idx]);
 
          vec3d *= 0.008;
+         vec2d.x *= tex.get_tex_u();
+         vec2d.y *= tex.get_tex_v();
 
          glTexCoord2d(vec2d.x,vec2d.y);
          glVertex3d(vec3d.x+base.x,vec3d.y+base.y,vec3d.z+base.z);
