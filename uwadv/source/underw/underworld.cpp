@@ -84,6 +84,12 @@ ua_level &ua_underworld::get_current_level()
    return levels[curlevel];
 }
 
+const ua_level &ua_underworld::get_current_level() const
+{
+   unsigned int curlevel = player.get_attr(ua_attr_maplevel);
+   return levels[curlevel];
+}
+
 void ua_underworld::change_level(unsigned int level)
 {
    if (level>=levels.size())
