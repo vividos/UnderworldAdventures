@@ -96,20 +96,6 @@ AC_ARG_ENABLE(debug,
   ], AC_MSG_RESULT(no))
 
 
-# checking for X11
-#case "$host_os" in
-#   darwin*)
-#      X_CFLAGS=""
-#      X_LIB=""
-#      ;;
-#   *)
-#      AC_PATH_X
-#      AC_PATH_XTRA
-#      ;;
-#
-#esac
-
-
 # checking for SDL
 AM_PATH_SDL(1.2.3,,AC_MSG_ERROR([
 Underworld Adventures needs at least SDL 1.2.3 or higher installed.
@@ -151,26 +137,62 @@ ZLIB_LIBS="-lz"
 AC_ARG_ENABLE(tools,    [  --disable-tools         Don't build the tools],,enable_tools=yes)
 AC_MSG_CHECKING(whether to build the tools)
 if test x$enable_tools = xno; then
-        AC_MSG_RESULT(yes)
-        AM_CONDITIONAL(BUILD_TOOLS, false)
+   AC_MSG_RESULT(yes)
+   AM_CONDITIONAL(BUILD_TOOLS, false)
 else
-        AC_MSG_RESULT(no)
-        AM_CONDITIONAL(BUILD_TOOLS, true)
+   AC_MSG_RESULT(no)
+   AM_CONDITIONAL(BUILD_TOOLS, true)
 fi
 
 
 # Build the debugger?
 AC_ARG_ENABLE(uadebug,    [  --enable-uadebug        Enables building the Underworld Debugger;
 note that wxWindows is needed],,enable_uadebug=no)
+
 AC_MSG_CHECKING(whether to build the underworld debugger)
 if test x$enable_uadebug = xyes; then
-        AC_MSG_RESULT(yes)
-        AC_MSG_WARN([ building the Underworld Debugger is currently not implemented!
-        Nothing is built. ])
-        AM_CONDITIONAL(BUILD_UADEBUG, false)
+   AC_MSG_RESULT(yes)
+
+   # check for wxWindows
+   AM_OPTIONS_WXCONFIG
+
+   AM_PATH_WXCONFIG(2.4.0, wxWin=1)
+   if test "$wxWin" != 1; then
+      AC_MSG_ERROR([
+         wxWindows must be installed on your system
+         but wx-config script couldn't be found.
+
+         Please check that wx-config is in path, the directory
+         where wxWindows libraries are installed (returned by
+         'wx-config --libs' command) is in LD_LIBRARY_PATH or
+         equivalent variable and wxWindows version is 2.3.4 or above.
+      ])
+   fi
+
+   CPPFLAGS="$CPPFLAGS $WX_CPPFLAGS"
+   CXXFLAGS="$CXXFLAGS $WX_CXXFLAGS_ONLY"
+   CFLAGS="$CFLAGS $WX_CFLAGS_ONLY"
+
+   # add compiler flags dependent on host system
+   case "$host_os" in
+      *mingw32)
+         CFLAGS="$CFLAGS -D__GNUWIN32__"
+         CXXFLAGS="$CXXFLAGS -D__GNUWIN32__"
+         ;;
+   esac
+
+   # wxwin.m4 suggested putting $WX_LIBS to LDFLAGS, which clearly is the
+   # wrong place. it belongs into LIBS, because it appears after the object
+   # files in the linker command line
+   LIBS="$LIBS $WX_LIBS"
+
+   AC_MSG_WARN([ building the Underworld Debugger is currently not implemented!
+      Nothing is built. ])
+
+   AM_CONDITIONAL(BUILD_UADEBUG, false)
 else
-        AC_MSG_RESULT(no)
-        AM_CONDITIONAL(BUILD_UADEBUG, false)
+   AC_MSG_RESULT(no)
+   AM_CONDITIONAL(BUILD_UADEBUG, false)
 fi
 
 
