@@ -32,13 +32,10 @@
 
 // ua_image methods
 
-void ua_image::to_texture(ua_texture &tex)
-{
-}
-
 void ua_image::create(unsigned int width, unsigned int height, unsigned int initial,
    unsigned int pal)
 {
+   xres = width; yres = height;
    pixels.resize(width*height,initial);
    for(int i=0; i<pixels.size(); i++) pixels.at(i)=initial;
    palette = pal;
@@ -58,19 +55,10 @@ ua_image_list::~ua_image_list()
 {
 }
 
-void ua_image_list::load(ua_settings &settings, const char *name, unsigned int from,
-   unsigned int to, unsigned int palette)
-{
-}
-
 const ua_image *ua_image_list::get_image(unsigned int num)
 {
    if (num>=allimages.size())
       return NULL;
 
    return allimages.at(num);
-}
-
-void ua_image_list::to_texture(ua_texture &tex, unsigned int from, unsigned int to)
-{
 }

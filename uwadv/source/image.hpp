@@ -30,7 +30,8 @@
 #define __uwadv_image_hpp_
 
 // needed includes
-#include "texture.hpp"
+#include <vector>
+#include "settings.hpp"
 
 
 // classes
@@ -48,8 +49,9 @@ public:
    //! loads a raw image (*.byt)
    void load_raw(ua_settings &settings, const char *name, unsigned int palette=0);
 
-   //! converts image to texture
-   void to_texture(ua_texture &tex);
+   unsigned int get_xres(){ return xres; }
+   unsigned int get_yres(){ return yres; }
+   unsigned int get_palette(){ return palette; }
 
    // image manipulation
 
@@ -91,9 +93,6 @@ public:
 
    //! returns a single image
    const ua_image *get_image(unsigned int num);
-
-   //! converts images to texture set
-   void to_texture(ua_texture &tex, unsigned int from, unsigned int to);
 
 protected:
    //! images in the list
