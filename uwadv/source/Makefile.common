@@ -1,3 +1,9 @@
+#
+# common makefile for Underworld Adventures
+#
+# $Id$
+#
+
 uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	player.cpp quadtree.cpp texture.cpp underworld.cpp uwadv.cpp \
 	objects.cpp cutscene.cpp physics.cpp files.cpp keymap.cpp \
@@ -36,4 +42,5 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 uwadv_win32objects = \
         win32/source/main.o \
 	win32/source/game_win32.o \
-	win32/source/uwadv_res.o
+	win32/source/uwadv_res.o \
+	audio/midi_driver/win_midiout.o
