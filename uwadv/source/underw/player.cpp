@@ -137,7 +137,7 @@ void ua_player::load_game(ua_savegame& sg)
 
       Uint32 bagbits = sg.read32();
       for(unsigned int i=0; i<24; i++)
-         if (bagbits & (1L << i) != 0)
+         if ((bagbits & (1L << i)) != 0)
             runebag.set(i);
 
       // load runeshelf
