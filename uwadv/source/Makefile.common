@@ -91,7 +91,7 @@ uwadv_SOURCES = \
 	underw/objects.cpp underw/objects.hpp \
 	underw/pathfinder.cpp underw/pathfinder.hpp \
 	underw/physics.cpp underw/physics.hpp \
-	underw/physicsbody.cpp underw/physicsbody.hpp \
+	underw/physicsbody.hpp \
 	underw/player.cpp underw/player.hpp \
 	underw/properties.hpp \
 	underw/runes.hpp \
