@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,8 +26,8 @@
 */
 
 // include guard
-#ifndef __uwadv_player_hpp_
-#define __uwadv_player_hpp_
+#ifndef uwadv_player_hpp_
+#define uwadv_player_hpp_
 
 // needed includes
 #include "savegame.hpp"
@@ -203,7 +203,10 @@ public:
 
    //! saves to a savegame
    void save_game(ua_savegame &sg);
- 
+
+   //! imports player info from savegame
+   void import_player(ua_settings& settings, const char* folder);
+
 protected:
    //! the name of the player
    std::string name;

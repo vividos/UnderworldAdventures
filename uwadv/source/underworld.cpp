@@ -185,6 +185,10 @@ void ua_underworld::import_savegame(ua_settings &settings,const char *folder,boo
       conv_globals.import(bgname.c_str(),initial);
    }
 
+   // load player infos
+   if (!initial)
+      player.import_player(settings,folder);
+
    // reload level
    change_level(player.get_attr(ua_attr_maplevel));
 }
