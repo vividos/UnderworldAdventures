@@ -84,12 +84,59 @@ void ua_player::load_game(ua_savegame &sg)
 {
    sg.begin_section("player");
 
+   unsigned int n=0;
+
+   // read in name
+   {
+      name.erase();
+
+      unsigned int len = sg.read8();
+      for(n=0; n<len; n++)
+         name.append(1,static_cast<char>(sg.read8()));
+   }
+
+   // read position
+   xpos = sg.read32()/256.0;
+   ypos = sg.read32()/256.0;
+   angle = sg.read32()/256.0;
+
+   // read attributes and skills
+   for(n=0; n<SDL_TABLESIZE(attributes); n++)
+      attributes[n] = sg.read16();
+
+   for(n=0; n<SDL_TABLESIZE(skills); n++)
+      skills[n] = sg.read16();
+
    sg.end_section();
 }
 
 void ua_player::save_game(ua_savegame &sg)
 {
    sg.begin_section("player");
+
+   unsigned int n=0;
+
+   // write name
+   {
+      unsigned int len = name.size();
+      if (len>255) len=255;
+      sg.write8(len);
+
+      for(n=0; n<len; n++)
+         sg.write8(static_cast<Uint8>(name[n]));
+   }
+
+   // write position
+   sg.write32(Uint32(xpos*256.0));
+   sg.write32(Uint32(ypos*256.0));
+   sg.write32(Uint32(angle*256.0));
+
+   // write attributes and skills
+   for(n=0; n<SDL_TABLESIZE(attributes); n++)
+      sg.write16(attributes[n]);
+
+   for(n=0; n<SDL_TABLESIZE(skills); n++)
+      sg.write16(skills[n]);
 
    sg.end_section();
 }
