@@ -34,7 +34,6 @@
 
 // needed includes
 #include "uwadv.hpp"
-#include <SDL_syswm.h>
 
 
 // win32 specific game class
@@ -50,7 +49,7 @@ public:
    // customized virtual methods
    virtual void init();
    virtual void done();
-   virtual void error_msg(const char *msg);
+   virtual void error_msg(const char* msg);
 
 protected:
    // application icon

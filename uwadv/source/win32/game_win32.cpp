@@ -29,6 +29,7 @@
 #include "common.hpp"
 #include "game_win32.hpp"
 #include "resource.h"
+#include <SDL_syswm.h>
 
 
 // implement win32 game object
