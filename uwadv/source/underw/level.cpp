@@ -107,6 +107,12 @@ ua_levelmap_tile& ua_level::get_tile(unsigned int xpos, unsigned int ypos)
    return tiles[ypos*64 + xpos];
 }
 
+const ua_levelmap_tile& ua_level::get_tile(unsigned int xpos, unsigned int ypos) const
+{
+   xpos%=64; ypos%=64;
+   return tiles[ypos*64 + xpos];
+}
+
 void ua_level::load_game(ua_savegame &sg)
 {
    used = sg.read8() != 0;

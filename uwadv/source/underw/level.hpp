@@ -102,10 +102,13 @@ public:
    double get_floor_height(double xpos, double ypos);
 
    //! returns a tile info struct
-   ua_levelmap_tile &get_tile(unsigned int xpos, unsigned int ypos);
+   ua_levelmap_tile& get_tile(unsigned int xpos, unsigned int ypos);
+
+   //! returns a tile info struct
+   const ua_levelmap_tile& get_tile(unsigned int xpos, unsigned int ypos) const;
 
    //! returns map object list ref
-   ua_object_list &get_mapobjects(){ return allobjects; }
+   ua_object_list& get_mapobjects(){ return allobjects; }
 
    //! returns vector of used stock texture ids
    const std::vector<Uint16>& get_used_textures() const { return used_textures; }
