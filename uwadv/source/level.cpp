@@ -116,7 +116,7 @@ void ua_level::render(ua_texture_manager &texmgr,ua_frustum &fr)
 {
    // determine list of visible tiles
    std::vector<ua_quad_tile_coord> tilelist;
-   ua_quad q(0.0,0.0,64.0,64.0);
+   ua_quad q(0, 0, 64, 64);
 
    q.get_visible_tiles(fr,tilelist);
 
@@ -146,7 +146,7 @@ void ua_level::render(ua_texture_manager &texmgr,ua_frustum &fr)
    // set up new viewpoint, "view coordinates" used in ua_object::render()
    glPushMatrix();
    glLoadIdentity();
-   glRotatef(-fr.get_yangle()+270, 1.0, 0.0, 0.0);
+   glRotated(-fr.get_yangle()+270.0, 1.0, 0.0, 0.0);
 
    // draw all objects in tile
    for(i=0;i<max;i++)
@@ -308,7 +308,7 @@ void ua_level::render_walls(unsigned int x, unsigned int y, ua_texture_manager &
    if (tile.type == ua_tile_solid)
       return; // don't draw solid tiles
 
-   Uint8 x1, y1, z1, x2, y2, z2;
+   Uint16 x1, y1, z1, x2, y2, z2;
 
    // use wall texture
    texmgr.use(tile.texture_wall);
@@ -366,7 +366,7 @@ void ua_level::render_walls(unsigned int x, unsigned int y, ua_texture_manager &
          x1,y1,z1, x2,y2,z2);
 
       // get adjacent tile coordinates
-      Uint8 nx, ny, nz1, nz2;
+      Uint16 nx, ny, nz1, nz2;
       switch(side)
       {
       case ua_left:  nx=x-1; ny=y; break;
@@ -398,7 +398,7 @@ void ua_level::render_walls(unsigned int x, unsigned int y, ua_texture_manager &
             default: adjside=ua_front; break;
             }
 
-            Uint8 dummy=0;
+            Uint16 dummy=0;
             get_tile_coords(adjside,ntile.type,nx,ny,
                ntile.floor,ntile.slope,ntile.ceiling,
                dummy,dummy,nz1, dummy,dummy,nz2);
@@ -452,9 +452,9 @@ void ua_level::render_objs(unsigned int x, unsigned int y,
 
 void ua_level::get_tile_coords(
    ua_levelmap_wall_render_side side, ua_levelmap_tiletype type,
-   Uint8 basex, Uint8 basey, Uint8 basez, Uint8 slope, Uint8 ceiling,
-   Uint8 &x1, Uint8 &y1, Uint8 &z1,
-   Uint8 &x2, Uint8 &y2, Uint8 &z2)
+   unsigned int basex, unsigned int basey, Uint16 basez, Uint16 slope, Uint16 ceiling,
+   Uint16 &x1, Uint16 &y1, Uint16 &z1,
+   Uint16 &x2, Uint16 &y2, Uint16 &z2)
 {
    // determine x and y coordinates
    switch(side)
@@ -514,8 +514,8 @@ void ua_level::get_tile_coords(
 }
 
 void ua_level::render_wall(ua_levelmap_wall_render_side side,
-   Uint8 x1, Uint8 y1, Uint8 z1, Uint8 x2, Uint8 y2, Uint8 z2,
-   Uint8 nz1, Uint8 nz2, Uint8 ceiling)
+   Uint16 x1, Uint16 y1, Uint16 z1, Uint16 x2, Uint16 y2, Uint16 z2,
+   Uint16 nz1, Uint16 nz2, Uint16 ceiling)
 {
    glColor4ub(128,128,128,128);
 

@@ -162,9 +162,9 @@ void ua_cutscene::get_frame(ua_texture &tex, unsigned int framenum)
 void ua_cutscene::decode_frame(unsigned int framenum)
 {
    // first, search large page to use
-   int i=0;
+   unsigned int i=0;
    for(;i<largepages; i++)
-      if(lpdarray[i].base <= framenum && lpdarray[i].base + lpdarray[i].records > framenum)
+      if(lpdarray[i].base <= framenum && unsigned(lpdarray[i].base + lpdarray[i].records) > framenum)
          break;
 
    if (i>=largepages)

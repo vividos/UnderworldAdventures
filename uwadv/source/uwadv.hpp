@@ -112,9 +112,6 @@ protected:
    virtual void pop_screen();
 
 private:
-   //! sets up general OpenGL stuff
-   void setup_opengl();
-
    //! processes SDL events
    void process_events();
 

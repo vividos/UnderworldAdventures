@@ -150,10 +150,10 @@ void ua_quad::get_visible_tiles(ua_frustum &fr, std::vector<ua_quad_tile_coord> 
    for(unsigned int i=0; i<4; i++)
    {
       ua_quad q(
-         x0+xhalf*quad_coords[i][0],
-         y0+yhalf*quad_coords[i][1],
-         x0+xhalf*quad_coords[i][2],
-         y0+yhalf*quad_coords[i][3]);
+         unsigned(x0+xhalf*quad_coords[i][0]),
+         unsigned(y0+yhalf*quad_coords[i][1]),
+         unsigned(x0+xhalf*quad_coords[i][2]),
+         unsigned(y0+yhalf*quad_coords[i][3]));
 
       q.get_visible_tiles(fr,tilelist);
    }

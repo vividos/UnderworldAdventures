@@ -181,7 +181,7 @@ void ua_texture_manager::prepare(unsigned int idx)
    // use texture #0, stock textures always use these
    ua_onepalette &pal = pals.get_palette(0);
 
-   for(int i=0; i<texsize; i++)
+   for(unsigned int i=0; i<texsize; i++)
    {
       texels[i] = *(Uint32*)(pal+stex.pixels[i]);
    }

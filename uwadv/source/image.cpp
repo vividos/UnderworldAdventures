@@ -42,7 +42,7 @@ void ua_image::create(unsigned int width, unsigned int height, unsigned int init
 {
    xres = width; yres = height;
    pixels.resize(width*height,initial);
-   for(int i=0; i<pixels.size(); i++) pixels[i]=initial;
+   for(unsigned int i=0; i<pixels.size(); i++) pixels[i]=initial;
    palette = pal;
 }
 
@@ -54,8 +54,8 @@ void ua_image::paste_image(const ua_image &img, unsigned int destx,unsigned int 
    const std::vector<Uint8> &src = img.pixels;
    Uint8 *dest = &pixels[0];
 
-   for(int y=0; y<syres; y++)
-   for(int x=0; x<sxres; x++)
+   for(unsigned int y=0; y<syres; y++)
+   for(unsigned int x=0; x<sxres; x++)
    {
       dest[(y+desty)*xres+(x+destx)] = src[y*sxres+x];
    }

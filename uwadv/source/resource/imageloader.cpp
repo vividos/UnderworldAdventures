@@ -58,11 +58,11 @@ void ua_image_decode_rle(FILE *fd,std::vector<Uint8> &pixels,unsigned int bits,
    unsigned int nibble;
 
    // rle decoding vars
-   int pixcount=0;
-   int stage=0; // we start in stage 0
-   int count;
-   int record=0; // we start with record 0=repeat (3=run)
-   int repeatcount=0;
+   unsigned int pixcount=0;
+   unsigned int stage=0; // we start in stage 0
+   unsigned int count;
+   unsigned int record=0; // we start with record 0=repeat (3=run)
+   unsigned int repeatcount=0;
 
    while(datalen>0 && pixcount<maxpix)
    {
@@ -165,7 +165,7 @@ void ua_image_decode_rle(FILE *fd,std::vector<Uint8> &pixels,unsigned int bits,
 
          {
             // repeat 'nibble' color 'count' times
-            for(int n=0; n<count; n++)
+            for(unsigned int n=0; n<count; n++)
             {
                pixels[pixcount++] = auxpalidx[nibble];
                if (pixcount>=maxpix)

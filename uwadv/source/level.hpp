@@ -143,14 +143,14 @@ protected:
 private:
    //! retrieves tile coordinates
    void get_tile_coords(ua_levelmap_wall_render_side side, ua_levelmap_tiletype type,
-      Uint8 basex, Uint8 basey, Uint8 basez, Uint8 slope, Uint8 ceiling,
-      Uint8 &x1, Uint8 &y1, Uint8 &z1,
-      Uint8 &x2, Uint8 &y2, Uint8 &z2);
+      unsigned int basex, unsigned int basey, Uint16 basez, Uint16 slope, Uint16 ceiling,
+      Uint16 &x1, Uint16 &y1, Uint16 &z1,
+      Uint16 &x2, Uint16 &y2, Uint16 &z2);
 
    //! renders a wall of a tile, dependent on the neighbour
    void render_wall(ua_levelmap_wall_render_side side,
-      Uint8 x1, Uint8 y1, Uint8 z1, Uint8 x2, Uint8 y2, Uint8 z2,
-      Uint8 nz1, Uint8 nz2, Uint8 ceiling);
+      Uint16 x1, Uint16 y1, Uint16 z1, Uint16 x2, Uint16 y2, Uint16 z2,
+      Uint16 nz1, Uint16 nz2, Uint16 ceiling);
 
 protected:
    //! all levelmap tiles; 64x64 tiles assumed

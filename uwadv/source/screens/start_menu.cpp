@@ -159,7 +159,7 @@ void ua_start_menu_screen::render()
    for(unsigned int i=0; i<max; i++)
    {
       unsigned int btnnr = i*2;
-      if (i==selected_area) btnnr++;
+      if (int(i)==selected_area) btnnr++;
 
       img.paste_image(img_buttons.get_image(btnnr),
          btn_coords[i*2],btn_coords[i*2+1]);
@@ -186,7 +186,6 @@ void ua_start_menu_screen::render()
    glColor3ub(light,light,light);
 
    // prepare image texture
-   ua_texture_manager &texmgr = core->get_texmgr();
    tex.convert(img,palette);
    tex.upload();
 
