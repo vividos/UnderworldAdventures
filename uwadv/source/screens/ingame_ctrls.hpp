@@ -269,10 +269,21 @@ public:
    virtual void mouse_event(bool button_clicked, bool left_button,
       bool button_down, unsigned int mousex, unsigned int mousey);
 
-protected:
-   void update_menu();
+   //! selects (but doesn't press) specified button
+   void select_button(int button=-1);
 
+   //! select previous button (if any)
+   void select_previous_button(bool jump_to_start=false);
+
+   //! select next button (if any)
+   void select_next_button(bool jump_to_end=false);
+
+   //! performs button action
    void do_button_action();
+
+protected:
+   //! updates menu image
+   void update_menu();
 
 protected:
    //! button images

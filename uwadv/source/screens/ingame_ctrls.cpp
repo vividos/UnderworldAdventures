@@ -417,6 +417,56 @@ void ua_ingame_command_buttons::init(ua_game_interface& game, unsigned int xpos,
    update_menu();
 }
 
+void ua_ingame_command_buttons::select_button(int button)
+{
+   button_selected = button;
+
+   update_menu();
+}
+
+void ua_ingame_command_buttons::select_previous_button(bool jump_to_start)
+{
+   if (button_selected == -1 || menu == ua_cmd_menu_actions)
+      return;
+
+   ua_ingame_command_menu_info& menuinfo = ua_ingame_command_menu_table[menu];
+
+   if (jump_to_start)
+   {
+      while (button_selected>0 && menuinfo.selectable[button_selected-1])
+         button_selected--;
+   }
+   else
+   {
+      if (button_selected>0 && menuinfo.selectable[button_selected-1])
+         button_selected--;
+   }
+
+   update_menu();
+}
+
+void ua_ingame_command_buttons::select_next_button(bool jump_to_end)
+{
+   if (button_selected == -1 || menu == ua_cmd_menu_actions)
+      return;
+
+   ua_ingame_command_menu_info& menuinfo = ua_ingame_command_menu_table[menu];
+
+   if (jump_to_end)
+   {
+      while (button_selected<7 && menuinfo.selectable[button_selected+1])
+         button_selected++;
+   }
+   else
+   {
+      if (button_selected<7 && menuinfo.selectable[button_selected+1])
+         button_selected++;
+   }
+
+   update_menu();
+}
+
+
 void ua_ingame_command_buttons::update_menu()
 {
    // check if in range
@@ -500,8 +550,6 @@ void ua_ingame_command_buttons::mouse_event(bool button_clicked,
 
    unsigned int ypos = mousey-wnd_ypos;
 
-   ua_trace("ypos=%u\n", ypos);
-
    static unsigned int button_pos[8] = { 2, 17, 32, 47, 62, 77, 92, 107 };
    static unsigned int action_pos[8] = { 0, 17, 35, 54, 70, 90, 107, 107 };
 
@@ -544,11 +592,14 @@ void ua_ingame_command_buttons::do_button_action()
          // button "options"
       case 0:
          menu = ua_cmd_menu_options;
+         parent->set_gamemode(ua_mode_options);
          break;
 
          // all other buttons just toggle the game mode
       default:
-         // todo update game mode
+         // update game mode; note: the code assumes that ua_ingame_game_mode
+         // values are contiguous
+         parent->set_gamemode(ua_ingame_game_mode(button_selected-1+ua_mode_talk));
          break;
       }
       break;
