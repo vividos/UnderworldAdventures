@@ -153,7 +153,8 @@ void ua_debugger_main_frame::OnMenuUnderwUpdate(wxCommandEvent &event)
 
 void ua_debugger_main_frame::OnMenuUnderwPlayer(wxCommandEvent &event)
 {
-   if (!CheckBarAvail(wxString(ua_playerinfo_list::frame_name)))
+   wxString name(ua_playerinfo_list::frame_name);
+   if (!CheckBarAvail(name))
    {
       // create new player info list and add it
       ua_playerinfo_list* pilist = new ua_playerinfo_list(
