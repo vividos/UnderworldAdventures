@@ -31,6 +31,7 @@
 #include "files.hpp"
 #include "renderer.hpp"
 #include "underworld.hpp"
+#include "audio.hpp"
 /*
 #include "uamath.hpp"
 #include "save_game.hpp"
@@ -107,7 +108,9 @@ void ua_ingame_compass::draw()
    {
       // reupload compass texture
       compass_curimg = compassimg;
-      get_image().paste_image(img_compass[compassimg],1,1);
+
+      unsigned int dest = ua_image_quad::has_border ? 1 : 0;
+      get_image().paste_image(img_compass[compassimg],dest,dest);
 
       update();
    }
@@ -147,15 +150,16 @@ void ua_ingame_runeshelf::update_runeshelf()
       // paste appropriate rune image
       ua_image& img_rune = img_runestones[(rune[i]-1)%24];
 
+      unsigned int dest = ua_image_quad::has_border ? 1 : 0;
       img_shelf.paste_rect(img_rune, 0,0, 14,14,
-         i*15, 0, true);
+         i*15+dest, dest, true);
    }
 
    update();
 }
 
 
-// update_spell_area methods
+// ua_ingame_spell_area methods
 
 void ua_ingame_spell_area::init(ua_game_interface& game, unsigned int xpos,
    unsigned int ypos)
@@ -186,10 +190,108 @@ void ua_ingame_spell_area::update_spell_area()
       // paste appropriate spell image
       ua_image& img_spell = img_spells[(spell[i]-1)%21];
 
+      unsigned int dest = ua_image_quad::has_border ? 1 : 0;
       img_area.paste_rect(img_spell, 0,0, 16,18,
-         i*17, 0, true);
+         i*17+dest, dest, true);
    }
 
+   update();
+}
+
+
+// ua_ingame_flask methods
+
+void ua_ingame_flask::init(ua_game_interface& game, unsigned int xpos,
+   unsigned int ypos)
+{
+   get_image().create(24,33);
+
+   // load flask images
+   {
+      std::vector<ua_image> temp_flasks;
+      game.get_image_manager().load_list(temp_flasks, "flasks");
+
+      unsigned int maximg = vitality_flask ? 28 : 14;
+      img_flask.resize(maximg);
+
+      // paste together all flask fill heights
+      for(unsigned int i=0; i<maximg; i+=14)
+      {
+         ua_image base_img = temp_flasks[75];
+
+         static unsigned int flask_pos[13] =
+         { 26, 24, 22, 20, 18, 16, 15, 14, 13, 11, 9, 7, 5 };
+
+         unsigned int offset = vitality_flask ? (i==0 ? 0 : 50) : 25;
+
+         // image 0 is the empty flask
+         img_flask[i] = base_img;
+
+         // generate all images
+         for(unsigned int j=0; j<13; j++)
+         {
+            base_img.paste_image(temp_flasks[offset+j], 0, flask_pos[j]);
+            img_flask[i+j+1] = base_img;
+         }
+      }
+   }
+
+   ua_image_quad::init(game,xpos,ypos);
+
+   // remember player object
+   player = &game.get_underworld().get_player();
+
+   last_image = 14*2;
+   is_poisoned = false;
+}
+
+void ua_ingame_flask::draw()
+{
+   is_poisoned = player->get_attr(ua_attr_poisoned) != 0;
+
+   unsigned int curval = player->get_attr(vitality_flask ? ua_attr_life : ua_attr_mana);
+   unsigned int maxval = player->get_attr(vitality_flask ? ua_attr_max_life : ua_attr_max_mana);
+   unsigned int curimg = unsigned((curval*13.0)/maxval);
+
+   // check if flask image has to be update
+   unsigned int new_image = vitality_flask && is_poisoned ? curimg+14 : curimg;
+
+   if (last_image != new_image)
+   {
+      last_image = new_image;
+      update_flask();
+   }
+
+   ua_image_quad::draw();
+}
+
+void ua_ingame_flask::update_flask()
+{
+   unsigned int dest = ua_image_quad::has_border ? 1 : 0;
+   get_image().paste_image(img_flask[last_image], dest,dest);
+   update();
+}
+
+
+// ua_ingame_gargoyle_eyes methods
+
+void ua_ingame_gargoyle_eyes::init(ua_game_interface& game, unsigned int xpos,
+   unsigned int ypos)
+{
+   get_image().create(20,3);
+
+   game.get_image_manager().load_list(img_eyes, "eyes");
+
+   ua_image_quad::init(game,xpos,ypos);
+}
+
+/*! \todo update eyes from data in ua_underworld */
+void ua_ingame_gargoyle_eyes::update_eyes()
+{
+   unsigned int new_image = 0;
+
+   unsigned int dest = ua_image_quad::has_border ? 1 : 0;
+   get_image().paste_image(img_eyes[new_image], dest,dest);
    update();
 }
 
@@ -198,6 +300,7 @@ void ua_ingame_spell_area::update_spell_area()
 
 /*! Constructor; sets parent pointers for ingame controls */
 ua_ingame_orig_screen::ua_ingame_orig_screen()
+:vitality_flask(true), mana_flask(false)
 {
    compass.set_parent(this);
 }
@@ -291,7 +394,7 @@ void ua_ingame_orig_screen::init()
       img_background.init(*game, 0,0);
       img_background.update();
 
-      //register_window(&img_background);
+      register_window(&img_background);
    }
 
    // init compass
@@ -318,7 +421,6 @@ void ua_ingame_orig_screen::init()
 
    // runeshelf
    runeshelf.init(*game, 176,138);
-   //runeshelf.add_border(img_background.get_image());
    runeshelf.update_runeshelf();
    register_window(&runeshelf);
 
@@ -326,6 +428,21 @@ void ua_ingame_orig_screen::init()
    spellarea.init(*game, 52,136);
    spellarea.update_spell_area();
    register_window(&spellarea);
+
+   // vitality/mana flasks
+   vitality_flask.init(*game, 248,125);
+   vitality_flask.add_border(img_background.get_image());
+   register_window(&vitality_flask);
+
+   mana_flask.init(*game, 284,125);
+   mana_flask.add_border(img_background.get_image());
+   register_window(&mana_flask);
+
+   // gargoyle eyes
+   gargoyle_eyes.init(*game, 128,4);
+   gargoyle_eyes.add_border(img_background.get_image());
+   gargoyle_eyes.update_eyes();
+   register_window(&gargoyle_eyes);
 
 
    // dragons
@@ -353,9 +470,21 @@ void ua_ingame_orig_screen::resume()
    ua_trace("resuming orig. ingame user interface\n");
 
 
+
    // setup fade-in
    fade_state = 0;
    fading.init(true, game->get_tickrate(), fade_time);
+
+   if (fadeout_action == ua_action_conversation)
+   {
+      // after conversations, play "Dark Abyss"
+      game->get_audio_manager().start_music(ua_music_uw1_dark_abyss,true);
+   }
+   else
+   {
+      // normal start, play "Descent"
+      game->get_audio_manager().start_music(ua_music_uw1_descent,true);
+   }
 }
 
 void ua_ingame_orig_screen::destroy()
@@ -427,10 +556,7 @@ void ua_ingame_orig_screen::draw()
       else
          glColor3ub(255,255,255);
 
-      // draw background
-      img_background.draw();
-
-      // all other registered windows
+      // draw all registered windows
       ua_screen::draw();
 
       glDisable(GL_BLEND);
@@ -834,33 +960,6 @@ void ua_ingame_orig_screen::init(ua_game_core_interface* thecore)
       }
    }
 
-   // vitality/mana/poison flasks
-   {
-      ua_image_list flasks;
-      flasks.load(settings,"flasks");
-
-      ua_image& baseimg = flasks.get_image(75);
-
-      // load all 3 flasks
-      for(unsigned int i=0; i<3; i++)
-      {
-         std::vector<ua_image>& allimages = img_flasks[i].get_allimages();
-
-         ua_image img(baseimg);
-         allimages.push_back(img);
-
-         static unsigned int ua_flasks_pos[13] =
-         { 26, 24, 22, 20, 18, 16, 15, 14, 13, 11, 9, 7, 5 };
-
-         // generate all images
-         for(unsigned int j=0; j<13; j++)
-         {
-            img.paste_image(flasks.get_image(i*25+j), 0, ua_flasks_pos[j]);
-            allimages.push_back(img);
-         }
-      }
-   }
-
    // command buttons
    {
       ua_image_list buttons;
@@ -904,8 +1003,6 @@ void ua_ingame_orig_screen::suspend()
 
 void ua_ingame_orig_screen::resume()
 {
-   setup_opengl();
-
    // register script callbacks
    core->get_underworld().get_scripts().register_callback(this);
 
@@ -914,15 +1011,6 @@ void ua_ingame_orig_screen::resume()
 
    // init textures
 
-   // flasks textures
-   flasks_curimg[0] = flasks_curimg[1] = 0;
-   tex_flasks.init(&core->get_texmgr(),2,GL_LINEAR,GL_LINEAR);
-   tex_flasks.convert(img_flasks[0].get_image(flasks_curimg[0]),0);
-   tex_flasks.upload(0);
-
-   tex_flasks.convert(img_flasks[1].get_image(flasks_curimg[1]),1);
-   tex_flasks.upload(1);
-
    // command buttons
    tex_cmd_buttons.init(&core->get_texmgr(),1,GL_LINEAR,GL_LINEAR,GL_CLAMP,GL_CLAMP);
    tex_cmd_buttons.convert(img_cmd_buttons);
@@ -930,124 +1018,10 @@ void ua_ingame_orig_screen::resume()
 
    // panel texture
    panel.resume();
-
-   if (fadeout_action == 3)
-   {
-      // after conversations, play "Dark Abyss"
-      core->get_audio().start_music(1,true);
-   }
-   else
-   {
-      // normal start, play "Descent"
-      core->get_audio().start_music(2,true);
-   }
-}
-
-void ua_ingame_orig_screen::render()
-{
-   // clear color and depth buffers
-   glDisable(GL_SCISSOR_TEST);
-   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-   glEnable(GL_SCISSOR_TEST);
-
-   glLoadIdentity();
-
-   renderer.render();
-
-   // render user interface
-
-   // set up new orthogonal projection matrix
-   glMatrixMode(GL_PROJECTION);
-   glPushMatrix();
-   glLoadIdentity();
-
-   gluOrtho2D(0, 320, 0, 200);
-
-   glMatrixMode(GL_MODELVIEW);
-   glPushMatrix();
-   glLoadIdentity();
-
-   glDisable(GL_DEPTH_TEST);
-   glEnable(GL_BLEND);
-   glDisable(GL_FOG);
-
-   glDisable(GL_SCISSOR_TEST);
-
-   // render all user interface graphics
-   render_ui();
-
-   // restore old settings
-   glEnable(GL_FOG);
-   glEnable(GL_SCISSOR_TEST);
-   glDisable(GL_BLEND);
-   glEnable(GL_DEPTH_TEST);
 }
 
 void ua_ingame_orig_screen::render_ui()
 {
-   // vitality/mana/poisoned flasks
-   {
-      // vitality/poisoned flask
-
-      // calculate relative vitality and flask image to use
-      double vit_rel = double(pl.get_attr(ua_attr_life)) / double(pl.get_attr(ua_attr_max_life));
-      if (vit_rel>1.0) vit_rel = 0;
-
-      unsigned int vit_flask_img = unsigned(13.0 * vit_rel)
-         + (pl.get_attr(ua_attr_poisoned)!=0 ? 14 : 0);
-
-      // prepare texture
-      if (flasks_curimg[0] != vit_flask_img)
-      {
-         // reupload flask texture
-         flasks_curimg[0] = vit_flask_img;
-
-         tex_flasks.convert(
-            img_flasks[ vit_flask_img>=14 ? 2 : 0 ].get_image(vit_flask_img%14),0);
-         tex_flasks.upload(0);
-      }
-      else
-         tex_flasks.use(0);
-
-      // draw vitality flask quad
-      double u = tex_flasks.get_tex_u(), v = tex_flasks.get_tex_v();
-
-      glBegin(GL_QUADS);
-      glTexCoord2d(0.0, v  ); glVertex2i(248,   42);
-      glTexCoord2d(u  , v  ); glVertex2i(248+24,42);
-      glTexCoord2d(u  , 0.0); glVertex2i(248+24,42+33);
-      glTexCoord2d(0.0, 0.0); glVertex2i(248,   42+33);
-      glEnd();
-
-      // mana flask
-
-      // calculate relative mana value and flask image to use
-      double mana_rel = double(pl.get_attr(ua_attr_mana)) / double(pl.get_attr(ua_attr_max_mana));
-      if (mana_rel>1.0) mana_rel = 1.0;
-
-      unsigned int mana_flask_img = unsigned(13.0 * mana_rel);
-
-      // prepare texture
-      if (flasks_curimg[1] != mana_flask_img)
-      {
-         // reupload flask texture
-         flasks_curimg[1] = mana_flask_img;
-
-         tex_flasks.convert(img_flasks[1].get_image(mana_flask_img%14),1);
-         tex_flasks.upload(1);
-      }
-      else
-         tex_flasks.use(1);
-
-      // draw mana flask quad
-      glBegin(GL_QUADS);
-      glTexCoord2d(0.0, v  ); glVertex2i(284,   42);
-      glTexCoord2d(u  , v  ); glVertex2i(284+24,42);
-      glTexCoord2d(u  , 0.0); glVertex2i(284+24,42+33);
-      glTexCoord2d(0.0, 0.0); glVertex2i(284,   42+33);
-      glEnd();
-   }
-
    // command buttons
    if (gamemode != ua_mode_default)
    {
@@ -1079,32 +1053,6 @@ void ua_ingame_orig_screen::render_ui()
 
    // draw panel
    panel.render();
-}
-
-void ua_ingame_orig_screen::setup_opengl()
-{
-   // set up scissor test
-
-   // calculate scissor rectangle
-   const unsigned int scissor_area[4] =
-   { 52,68, 174,114 };
-
-   unsigned int xres = core->get_screen_width(),
-      yres = core->get_screen_height();
-
-   int x1,x2,y1,y2;
-
-   // lower left coords
-   x1 = int((scissor_area[0]/320.0) * xres);
-   y1 = int((scissor_area[1]/200.0) * yres);
-
-   // width/height
-   x2 = int((scissor_area[2]/320.0) * xres);
-   y2 = int((scissor_area[3]/200.0) * yres);
-
-   glScissor(x1,y1,x2,y2);
-
-   glEnable(GL_SCISSOR_TEST);
 }
 
 void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pressed)

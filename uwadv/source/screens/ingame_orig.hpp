@@ -24,6 +24,9 @@
    \brief original, old style game screen user interface
 
 */
+//! \ingroup screens
+
+//@{
 
 // include guard
 #ifndef uwadv_ingame_orig_hpp_
@@ -157,7 +160,8 @@ class ua_ingame_compass: public ua_ingame_orig_ctrl
 {
 public:
    //! initializes compass
-   virtual void init(ua_game_interface& game, unsigned int xpos, unsigned int ypos);
+   virtual void init(ua_game_interface& game, unsigned int xpos,
+      unsigned int ypos);
 
    //! draws compass
    virtual void draw();
@@ -179,7 +183,8 @@ class ua_ingame_runeshelf: public ua_ingame_orig_ctrl
 {
 public:
    //! initializes runeshelf
-   virtual void init(ua_game_interface& game, unsigned int xpos, unsigned int ypos);
+   virtual void init(ua_game_interface& game, unsigned int xpos,
+      unsigned int ypos);
 
    //! updates runeshelf
    void update_runeshelf();
@@ -197,8 +202,9 @@ protected:
 class ua_ingame_spell_area: public ua_ingame_orig_ctrl
 {
 public:
-   //! initializes active spells
-   virtual void init(ua_game_interface& game, unsigned int xpos, unsigned int ypos);
+   //! initializes active spells area
+   virtual void init(ua_game_interface& game, unsigned int xpos,
+      unsigned int ypos);
 
    //! updates spell area
    void update_spell_area();
@@ -206,6 +212,60 @@ public:
 protected:
    //! all runestones
    std::vector<ua_image> img_spells;
+};
+
+
+//! vitality / mana flask
+/*! \todo implement flask fluid bubbling (remaining images in flasks.gr)
+*/
+class ua_ingame_flask: public ua_ingame_orig_ctrl
+{
+public:
+   //! ctor
+   ua_ingame_flask(bool is_vitality_flask):vitality_flask(is_vitality_flask){}
+
+   //! initializes flask
+   virtual void init(ua_game_interface& game, unsigned int xpos,
+      unsigned int ypos);
+
+   //! draws compass
+   virtual void draw();
+
+   //! updates flask image
+   void update_flask();
+
+protected:
+   //! indicates if showing a vitality or mana flask
+   bool vitality_flask;
+
+   //! indicates if player is poisoned (only when vitality flask)
+   bool is_poisoned;
+
+   //! indicates last flask image
+   unsigned int last_image;
+
+   //! flask images
+   std::vector<ua_image> img_flask;
+
+   //! player object to show compass direction
+   ua_player* player;
+};
+
+
+//! gargoyle eyes
+class ua_ingame_gargoyle_eyes: public ua_ingame_orig_ctrl
+{
+public:
+   //! initializes flask
+   virtual void init(ua_game_interface& game, unsigned int xpos,
+      unsigned int ypos);
+
+   //! updates eyes image
+   void update_eyes();
+
+protected:
+   //! eyes images
+   std::vector<ua_image> img_eyes;
 };
 
 
@@ -305,6 +365,15 @@ protected:
    //! spell area
    ua_ingame_spell_area spellarea;
 
+   //! vitality flask
+   ua_ingame_flask vitality_flask;
+
+   //! mana flask
+   ua_ingame_flask mana_flask;
+
+   //! gargoyle eyes
+   ua_ingame_gargoyle_eyes gargoyle_eyes;
+
 
    // game related
 
@@ -316,12 +385,6 @@ protected:
 
 
 /*
-   //! sets up OpenGL stuff, flags, etc.
-   void setup_opengl();
-
-   //! renders 2d user interface
-   void render_ui();
-
    //! called for a given mouse action; click is false for mouse moves
    virtual void mouse_action(bool click, bool left_button, bool pressed);
 
@@ -363,24 +426,6 @@ protected:
    //! all inventory objects
    ua_image_list img_objects;
 
-   //! compass images
-   ua_image_list img_compass;
-
-   //! compass texture
-   ua_texture tex_compass;
-
-   //! current compass image
-   unsigned int compass_curimg;
-
-   //! vitality/mana/poisoned flasks
-   ua_image_list img_flasks[3];
-
-   //! flasks textures
-   ua_texture tex_flasks;
-
-   //! current flask image numbers
-   unsigned int flasks_curimg[2];
-
 
    // command buttons
 
@@ -410,4 +455,6 @@ protected:
 */
 };
 
+
 #endif
+//@}
