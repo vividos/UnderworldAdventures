@@ -1,3 +1,213 @@
+2002-07-30 11:14  vividos
+
+	* docs/Authors.txt (1.5):
+
+	added Dirk Manders to main developers
+	
+2002-07-29 23:30  vividos
+
+	* source/.cvsignore (1.3):
+
+	added uwadv linux binary to ignore list
+	
+2002-07-29 23:20  vividos
+
+	* source/screens/ingame_orig.cpp (1.31):
+
+	added restrictions when dropping inventory items on paperdoll where they not belong
+	
+2002-07-29 20:18  phlask
+
+	* source/screens/: create_character.cpp (1.1), create_character.hpp
+	(1.1):
+
+	initial version, character sex, handedness and class can be selected
+	
+2002-07-29 13:59  vividos
+
+	* source/tools/.cvsignore (1.1):
+
+	added linux binaries
+	
+2002-07-29 13:37  vividos
+
+	* source/: Makefile.am (1.19), Makefile.in (1.20), linux/configure
+	(1.12), linux/configure.in (1.15), linux/uwadv.cfg.in (1.2),
+	tools/Makefile.am (1.12), tools/Makefile.in (1.15):
+
+	updated linux makefiles
+	added some variables in uwadv.cfg.in
+	
+2002-07-29 13:05  vividos
+
+	* source/inventory.cpp (1.6):
+
+	replaced calls to std::vector::at()
+	
+2002-07-29 13:00  vividos
+
+	* source/linux/.cvsignore (1.8):
+
+	ignored uwadv.cfg; automatically built at configure time
+	
+2002-07-29 12:34  vividos
+
+	* source/linux/.cvsignore (1.7):
+
+	added "compile" script
+	
+2002-07-29 12:18  vividos
+
+	* source/screens/: ingame_orig.cpp (1.30), ingame_orig.hpp (1.14):
+
+	added inventory interaction and graphical appearance
+	
+2002-07-29 12:17  vividos
+
+	* source/: inventory.cpp (1.5), inventory.hpp (1.4):
+
+	added more inventory interaction
+	
+2002-07-29 09:55  vividos
+
+	* source/audio/audio.cpp (1.10):
+
+	fixed SourceForge bug #587777, submitted by Willem Jan Palenstijn:
+	audio.cpp includes sdl_mixer.h (case)
+	It should include SDL_mixer.h, or it won't work on case
+	sensitive filesystems.
+	
+2002-07-28 20:55  vividos
+
+	* source/screens/ingame_orig.cpp (1.29):
+
+	fixed a compiler error on MacOS X reported by Max Horn
+	
+2002-07-24 23:55  vividos
+
+	* source/screens/: ingame_orig.cpp (1.28), ingame_orig.hpp (1.13):
+
+	added "command" buttons and game mode functionality
+	added separate mouse handler
+	
+2002-07-24 12:59  vividos
+
+	* source/screens/ingame_orig.cpp (1.27):
+
+	fixed compiler error
+	
+2002-07-24 01:10  vividos
+
+	* source/screens/: ingame_orig.cpp (1.26), ingame_orig.hpp (1.12):
+
+	added some code to recognize different areas on screen
+	
+2002-07-24 01:08  vividos
+
+	* source/audio/midi.cpp (1.14):
+
+	don't use SDL_mixer midi driver when we have win32
+	some strange template instanciation bug of msvc prevents to create correct midi driver
+	
+2002-07-23 18:17  vividos
+
+	* source/win32/: Makefile.mingw (1.24), uwadv.dsp (1.16):
+
+	added keymap.cpp and .hpp
+	
+2002-07-23 15:04  vividos
+
+	* source/physics.cpp (1.8):
+
+	possible fix for collision detection bug when jumping off a high position
+	
+2002-07-23 14:06  vividos
+
+	* source/screens/: ingame_orig.cpp (1.25), ingame_orig.hpp (1.11):
+
+	cleanup; now uses ua_keymap to recognize keys
+	added look up/center/down movement
+	
+2002-07-23 14:05  vividos
+
+	* source/: physics.cpp (1.7), physics.hpp (1.4):
+
+	added function eval_player_movement() that handles all player movement calculations
+	
+2002-07-23 14:04  vividos
+
+	* source/: player.cpp (1.7), player.hpp (1.7):
+
+	added player movement modes
+	removed some obsolete variables
+	
+2002-07-23 14:04  vividos
+
+	* source/: underworld.cpp (1.12), underworld.hpp (1.8):
+
+	added function eval_underworld to evaluate all underworld things
+	
+2002-07-23 14:04  vividos
+
+	* source/: keymap.cpp (1.2), keymap.hpp (1.2):
+
+	added look up/center/down keys
+	
+2002-07-22 19:03  vividos
+
+	* source/: keymap.cpp (1.1), keymap.hpp (1.1):
+
+	added initial ua_keymap implementation
+	
+2002-07-22 17:43  vividos
+
+	* source/: screen.hpp (1.5), uwadv.cpp (1.17):
+
+	added two methods suspend() and resume() to ua_ui_screen_base
+	these are called when a screen is pushed onto the screen stack
+	
+2002-07-22 17:26  vividos
+
+	* source/: screens/acknowledgements.cpp (1.3),
+	screens/cutscene_view.cpp (1.14), screens/ingame_orig.cpp (1.24),
+	screens/start_menu.cpp (1.11), screens/start_splash.cpp (1.19),
+	tools/animview.cpp (1.5):
+
+	changes to use the new ua_texture and ua_texture_manager interface
+	
+2002-07-22 17:21  vividos
+
+	* source/: texture.cpp (1.17), texture.hpp (1.11),
+	resource/texloader.cpp (1.10):
+
+	reworked ua_texture and ua_texture_manager interface
+	textures can have a pointer to the texture manager, but need not to have one
+	stock textures are stored in ua_texture objects now
+	
+2002-07-22 17:21  vividos
+
+	* source/image.hpp (1.9):
+
+	added function to access whole image list
+	
+2002-07-21 21:02  vividos
+
+	* source/screens/cutscene_view.cpp (1.13):
+
+	fixed a possible bug for cutscenes lockup/crash
+	
+2002-07-19 18:49  vividos
+
+	* source/screens/cutscene_view.cpp (1.12):
+
+	correct size of subtitle text quad for resolutions other than 640x480
+	
+2002-07-19 15:38  vividos
+
+	* ChangeLog (1.14):
+
+	updated
+	
 2002-07-19 14:32  phlask
 
 	* uadata/uw1/scripts/cutscene.lua (1.6):
