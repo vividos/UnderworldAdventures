@@ -147,6 +147,9 @@ public:
    //! prints "look" text for object in objlist
    void lua_objlist_look(Uint32 level, Uint32 objpos);
 
+   //! does "talk" action to object
+   void lua_objlist_talk(Uint32 level, Uint32 objpos);
+
 
    // inventory functions
 
