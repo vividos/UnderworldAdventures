@@ -52,7 +52,7 @@ public:
    //! ctor
    ua_cutscene_view_screen(unsigned int cuts=0):cutscene(cuts){}
 
-   // virtual functions from ua_ui_screen_base
+   // virtual functions from ua_screen
    virtual void init();
    virtual void destroy();
    virtual void draw();
