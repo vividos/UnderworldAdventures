@@ -288,7 +288,7 @@ Table of Contents
    They contain 4 Int16 words which can be split into bits:
 
    00 objid / flags:      0- 8   Object ID (see below)
-                          9-10   ?? index for 3D-object-textures ??
+                          9-15   Flags
                             12   Enchantment flag (enchantable objects only)
                             14   Set only for traps, triggers and locks -
                                  "Effects The World Flag?"
@@ -330,6 +330,12 @@ Table of Contents
 
    Quantities >= 512 are special properties. The value is the link field
    minus 512 (unsurprisingly), the meaning depends on object type and flags.
+
+   Flags
+   -----
+   For item 0x164 (a_bridge) the "flags" value specifies the bridge texture
+   number to use. For item 0x16e (special tmap obj) the decal to use comes
+   from the "special" field.
 
    Enchantments
    ------------
@@ -390,7 +396,7 @@ Table of Contents
       0004   Int8   unknown
       0005   Int8   unknown
       0006   Int8   flags:
-                       bits 7-8: mood (string block 5, pos 96..99)
+                       bits 7-8: npc_attitude (string block 5, pos 96..99)
       0007   Int8   unknown
       0008   Int8   unknown
       0009   Int8   unknown
@@ -1329,7 +1335,7 @@ Table of Contents
      id=0010 name="set_quest" ret_type=void
      parameters:   arg1: new flag value
                    arg2: quest flag number
-     description:  sets a quest value (??)
+     description:  sets a quest value
      return value: none
      -------------------------------------------------------------------------
 
