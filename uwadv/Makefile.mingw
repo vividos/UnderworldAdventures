@@ -109,7 +109,7 @@ endif
 INCLUDES = $(SDL_INCLUDE) $(STLPORT_INCLUDE) $(FMOD_INCLUDE) \
 	-Isource/ -Isource/audio -Isource/base -Isource/import \
 	-Isource/renderer -Isource/ui -Isource/underw \
-	-Isource/lua/include/ -Isource/base/zziplib/
+	-Isource/script/lua/include/ -Isource/base/zziplib/
 
 # wxWindows
 ifeq ("$(WITH_WXWINDOWS)", "yes")
@@ -138,12 +138,12 @@ all: uwadv tools data
 
 # lua objects
 
-include source/lua/Makefile.common
+include source/script/lua/Makefile.common
 
 lua_Cs = \
 	$(filter %.c,$(liblua_la_SOURCES)) \
 	$(filter %.c,$(liblualib_la_SOURCES))
-lua_OBJS = $(lua_Cs:%.c=source/lua/%.o)
+lua_OBJS = $(lua_Cs:%.c=source/script/lua/%.o)
 
 
 
@@ -210,10 +210,12 @@ uadebug_LDFLAGS =
 
 uaconfig_EXEC = uaconfig.exe
 
-uaconfig_OBJS = source/win32/uaconfig/uaconfig.o \
+uaconfig_OBJS = \
+	source/win32/uaconfig/uaconfig.o \
 	source/win32/uaconfig/uaconfig_res.o \
-	source/settings.o source/resource/cfgfile.o \
-	source/utils.o
+	source/base/cfgfile.o \
+	source/base/settings.o \
+	source/base/utils.o
 
 uaconfig_LIBS = $(WIN32_LIB) $(SDL_LIB) -lwinmm $(STLPORT_LIB)
 
@@ -421,10 +423,10 @@ data-clean:
 	cd uadata; rm -f $(luaOBJECTS) uadata00.uar
 
 luac:
-	cd source/lua/src/luac && make
+	cd source/script/lua/src/luac && make
 
 luac-clean:
-	cd source/lua/src/luac && make clean
+	cd source/script/lua/src/luac && make clean
 
 
 update: uwadv data uaconfig
@@ -482,4 +484,4 @@ clean: data-clean luac-clean
 	windres -i $(<) -o $*.o --output-format=coff --include-dir=$(@D)
 
 %.lob: %.lua luac
-	source/lua/bin/luac -o $@ $<
+	source/script/lua/bin/luac -o $@ $<
