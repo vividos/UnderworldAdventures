@@ -31,16 +31,22 @@
 
 // needed includes
 #include "screen.hpp"
+#include "imgquad.hpp"
+#include "textscroll.hpp"
+#include "mousecursor.hpp"
+#include "conv/codevm.hpp"
 
 
 // classes
 
 //! conversation screen class
-class ua_conversation_screen: public ua_ui_screen_base
+class ua_conversation_screen:
+   public ua_ui_screen_base,
+   public ua_conv_code_vm
 {
 public:
    //! ctor
-   ua_conversation_screen(unsigned int convslot){}
+   ua_conversation_screen(unsigned int conv):convslot(conv){}
    //! dtor
    virtual ~ua_conversation_screen(){}
 
@@ -51,6 +57,34 @@ public:
    virtual void handle_event(SDL_Event &event);
    virtual void render();
    virtual void tick();
+
+   // virtual functions from ua_conv_code_vm
+
+   virtual void imported_func(Uint16 number);
+   virtual void say_op(Uint16 str_id);
+
+protected:
+   // ui elements
+
+   //! background image
+   ua_image_quad img_back;
+
+   //! conversation scroll
+   ua_textscroll scroll_conv;
+
+   //! menu text scroll
+   ua_textscroll scroll_menu;
+
+   //! mouse cursor
+   ua_mousecursor mousecursor;
+
+   // conversation stuff
+
+   //! conversation slot to use
+   unsigned int convslot;
+
+   //! indicates if code can be processed
+   bool process_code;
 };
 
 #endif
