@@ -354,6 +354,12 @@ void ua_uwadv_game::run()
          // restart counting
          ticks = renders = 0;
          fcstart = now;
+#ifdef HAVE_DEBUG
+         // reset time count when rendering lasted longer than 5 seconds
+         // it's likely that we just debugged through some code
+         if (now-then > 5000)
+            then = now;
+#endif
       }
 #endif
    }
