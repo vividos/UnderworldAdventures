@@ -52,7 +52,7 @@ public:
    ua_underworld(){}
 
    //! initializes underworld
-   void init(ua_settings &settings, ua_game_core_interface *core);
+   void init(ua_game_core_interface *core);
 
    //! loads complete game state from savegame
    void load_game(/*...*/);
@@ -66,11 +66,13 @@ public:
    //! clean up the underworld
    void done();
 
-   //! moves player according to the speed vector
-   void walk_player(float angle){}
+   //! moves player according to the direction angle
+   void walk_player(float angle);
 
    //! transfers player to other location
 //   void move_player(float x, float y, int level=-1);
+
+   float get_player_height();
 
    //! renders the current game map and all objects
    void render();
@@ -95,11 +97,13 @@ protected:
 
    ua_conv_globals conv_globals;
 
+   ua_level level;
+
    //! current level
-   unsigned int curlevel;
+//   unsigned int curlevel;
 
    //! all underworld levels
-   std::vector<ua_level*> levels;
+//   std::vector<ua_level*> levels;
 };
 
 #endif

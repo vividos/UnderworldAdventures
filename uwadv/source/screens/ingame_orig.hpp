@@ -55,10 +55,16 @@ protected:
    //! sets up OpenGL stuff, flags, etc.
    void setup_opengl();
 
-   void handle_key_down(SDL_keysym &keysym);
+   void handle_key_action(Uint8 type, SDL_keysym &keysym);
    void handle_mouse_action(SDL_Event &event);
 
 protected:
+
+   //! indicates if player moves forward
+   bool walk;
+
+   float walk_dir;
+
    float xangle,yangle;
 
    bool leftbuttondown,rightbuttondown;

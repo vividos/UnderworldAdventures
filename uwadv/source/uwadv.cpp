@@ -102,7 +102,7 @@ void ua_game::init()
    gstr.load(settings);
 
    // initializes underworld
-   underworld.init(settings,this);
+   underworld.init(this);
 
    // init audio
    audio = ua_audio_interface::get_audio_interface();

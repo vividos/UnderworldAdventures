@@ -39,6 +39,16 @@ class ua_player
 {
 public:
    ua_player(){}
+
+   void init(float x,float y){ move_player(x,y); }
+
+   float get_xpos(){ return xpos; }
+   float get_ypos(){ return ypos; }
+
+   void move_player(float x, float y){ xpos=x; ypos=y; }
+
+protected:
+   float xpos,ypos;
 };
 
 #endif
