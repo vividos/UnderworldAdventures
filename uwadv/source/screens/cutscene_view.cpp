@@ -246,7 +246,8 @@ void ua_cutscene_view_screen::render()
 
       unsigned int startx = (320-img_text.get_xres())/2;
       unsigned int starty = static_cast<unsigned int>(
-         (400.0/480.0)*img_text.get_yres()+10 );
+         ( double(core->get_screen_width()) / (core->get_screen_height()*1.6) )*
+         img_text.get_yres()+10 );
 
       // set text color
       Uint8 light = 255;
