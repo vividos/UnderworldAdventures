@@ -368,6 +368,11 @@ void ua_create_character_screen::do_action()
       bgxpos = static_cast<unsigned int>(lua_tonumber(L,3));
       textcolor_normal = static_cast<unsigned int>(lua_tonumber(L,4));
       textcolor_highlight = static_cast<unsigned int>(lua_tonumber(L,5));
+
+      // set different highlight color when features are enabled
+      if (core->get_settings().get_bool(ua_setting_uwadv_features))
+         textcolor_highlight = 162; // orange, palette #3
+
       int ic = lua_getn(L, 6);
       if (ic>5) ic = 5;
       for (int i=0; i<ic; i++)
@@ -549,12 +554,12 @@ void ua_create_character_screen::drawbutton(int buttontype, bool highlight, int 
       drawtext(strnum, xc, y+3, 1, (highlight ? textcolor_highlight : textcolor_normal));
    else if (buttontype==btInput)
    {
-      unsigned int labelwidth = drawtext(strnum, x+4, y+3, 0, textcolor_highlight);
+      unsigned int labelwidth = drawtext(strnum, x+4, y+3, 0, textcolor_normal);
       unsigned int maxnamewidth = button.get_xres()-labelwidth-7;
       unsigned int ip = strlen(inputtext);
       while ((font.calc_length(inputtext)>maxnamewidth) && (ip>0))
          inputtext[ip--] = 0;
-      drawtext(inputtext, x + labelwidth + 4, y + 3, 0, textcolor_normal);
+      drawtext(inputtext, x + labelwidth + 4, y + 3, 0, textcolor_highlight);
    }
    else if (buttontype==btImage)
    {
