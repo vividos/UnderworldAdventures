@@ -1,3 +1,6 @@
+2007-07-30 22:30  wjpalenstijn
+	removed Makefile.in from CVS, added to .cvsignore
+
 2007-07-30 22:23  wjpalenstijn
 
 	* source/Makefile.am: added new screens/* files
