@@ -95,15 +95,15 @@ LINK32=link.exe
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\game_win32.cpp
+SOURCE=.\source\game_win32.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\main.cpp
+SOURCE=.\source\main.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\uwadv.rc
+SOURCE=.\source\uwadv.rc
 # End Source File
 # End Group
 # Begin Group "resource loading sources"
@@ -247,11 +247,11 @@ SOURCE=..\uwadv.cpp
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\game_win32.hpp
+SOURCE=.\source\game_win32.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\resource.h
+SOURCE=.\source\resource.h
 # End Source File
 # End Group
 # Begin Group "audio headers"
@@ -388,7 +388,7 @@ SOURCE=..\uwadv.hpp
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 # Begin Source File
 
-SOURCE=.\Uus.ico
+SOURCE=.\source\Uus.ico
 # End Source File
 # End Group
 # Begin Source File
