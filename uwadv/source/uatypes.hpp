@@ -32,6 +32,7 @@
 // needed includes
 #include <string>
 #include <exception>
+#include <stdarg.h>
 
 
 // constants
@@ -45,6 +46,29 @@ const double ua_pi = 3.141592653589793;
 #define ua_max(a,b) ((a)>(b) ? (a) : (b))
 
 #define ua_deg2rad(a) ((double(a)/180.0)*ua_pi)
+#define ua_rad2deg(a) ((double(a)/ua_pi)*180.0)
+
+
+// trace messages
+
+// prints to stdout
+inline int ua_trace_printf(const char *fmt,...)
+{
+   va_list args;
+   va_start(args,fmt);
+
+   int ret = vfprintf(stdout,fmt,args);
+
+   va_end(args);
+   return ret;
+}
+
+// debug trace
+#if defined(_DEBUG) || defined(DEBUG)
+# define ua_trace ua_trace_printf
+#else
+# define ua_trace true ? 0 : ua_trace_printf
+#endif
 
 
 // classes
