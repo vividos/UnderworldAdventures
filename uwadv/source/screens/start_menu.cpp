@@ -30,11 +30,11 @@
 #include "start_menu.hpp"
 #include "audio.hpp"
 #include "renderer.hpp"
-//#include "cutscene_view.hpp"
-//#include "acknowledgements.hpp"
+#include "cutscene_view.hpp"
+#include "acknowledgements.hpp"
 //#include "create_character.hpp"
 //#include "ingame_orig.hpp"
-//#include "save_game.hpp"
+#include "save_game.hpp"
 
 
 // constants
@@ -255,22 +255,22 @@ void ua_start_menu_screen::press_button()
    switch(selected_area)
    {
    case 0: // "introduction"
-      //core->replace_screen(new ua_cutscene_view_screen(0),true);
+      game->replace_screen(new ua_cutscene_view_screen(0),true);
       break;
 
    case 1: // "create character"
-      //core->replace_screen(new ua_create_character_screen,true);
+      //game->replace_screen(new ua_create_character_screen,true);
       break;
 
    case 2: // "acknowledgements"
-      //core->replace_screen(new ua_acknowledgements_screen,true);
+      game->replace_screen(new ua_acknowledgements_screen,true);
       break;
 
    case 3: // "journey onward"
       if (journey_avail)
       {
          // "load game" screen (with later starting "orig. ingame ui")
-         //core->replace_screen(new ua_save_game_screen(true),true);
+         game->replace_screen(new ua_save_game_screen(true),true);
       }
       break;
    }
