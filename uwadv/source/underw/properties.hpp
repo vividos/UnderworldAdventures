@@ -81,14 +81,16 @@ public:
    //! ctor
    ua_object_properties(){}
 
-   //! inits object properties
-   void init(ua_settings& settings);
+   //! imports object properties from current uw path
+   void import(ua_settings& settings);
 
    //! returns common object properties about specific object
    inline ua_common_obj_property& get_common_property(Uint16 item_id);
 
 protected:
    std::vector<ua_common_obj_property> common_properties;
+
+   friend class ua_uw_import;
 };
 
 

@@ -203,6 +203,12 @@ public:
    //! returns an object at a specific list pos
    ua_object &get_object(Uint16 at){ return master_obj_list[at]; }
 
+   //! returns master object list
+   std::vector<ua_object>& get_master_obj_list(){ return master_obj_list; }
+
+   //! returns tile index map
+   std::vector<Uint16>& get_tile_index(){ return tile_index; }
+
    // todo: object insert, remove, etc.
 
 
@@ -217,14 +223,6 @@ public:
 
    //! saves to a savegame
    void save_game(ua_savegame &sg);
-
-   //! imports an object list
-   void import_objs(SDL_RWops* rwops, Uint16 texmap[64]);
-
-private:
-   //! adds object to master object list and follows link1 and link2 objs
-   void addobj_follow(Uint32 objprop[0x400*2], Uint8 npcinfo[0x100*19],
-      Uint16 objpos, Uint16 texmap[64], Uint8 tilex, Uint8 tiley);
 
 protected:
    //! indices for each tile into master object list

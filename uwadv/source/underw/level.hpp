@@ -107,11 +107,17 @@ public:
    //! returns a tile info struct
    const ua_levelmap_tile& get_tile(unsigned int xpos, unsigned int ypos) const;
 
+   //! returns tiles list
+   std::vector<ua_levelmap_tile>& get_tileslist(){ return tiles; }
+
    //! returns map object list ref
    ua_object_list& get_mapobjects(){ return allobjects; }
 
    //! returns vector of used stock texture ids
    const std::vector<Uint16>& get_used_textures() const { return used_textures; }
+
+   //! returns vector of used stock texture ids
+   std::vector<Uint16>& get_used_textures(){ return used_textures; }
 
    // loading / saving / importing
 
@@ -120,14 +126,6 @@ public:
 
    //! saves to a savegame
    void save_game(ua_savegame &sg);
-
-   //! imports a level map
-   void import_map(SDL_RWops* rwops, Uint16 textures[64],
-      bool uw2_mode=false);
-
-   //! imports texture usage info
-   void import_texinfo(SDL_RWops* rwops, Uint16 textures[64],
-      bool uw2_mode=false);
 
 protected:
    //! all levelmap tiles; 64x64 tiles assumed
