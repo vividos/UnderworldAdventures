@@ -165,9 +165,11 @@ unsigned int ua_uw_access_api::command_func(
             if (value<ua_attr_max)
             {
                // setting attribute
+               unsigned int prev_val = pl.get_attr((ua_player_attributes)value);
+
                pl.set_attr((ua_player_attributes)value,param2->val.i);
 
-               if (value==ua_attr_maplevel)
+               if (value==ua_attr_maplevel && prev_val != param2->val.i)
                   cur_api->change_level = true; // schedule change_level() call
             }
             else
