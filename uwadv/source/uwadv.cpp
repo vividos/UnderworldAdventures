@@ -30,13 +30,40 @@
 #include "uwadv.hpp"
 #include "gamecfg.hpp"
 #include "screens/uwadv_menu.hpp"
+#include "screens/ingame_orig.hpp"
+#include "screens/start_splash.hpp"
 #include <iostream>
+
+
+// tables
+
+enum ua_game_arg_type
+{
+   ua_arg_help,
+   ua_arg_game,
+};
+
+struct ua_arg_entry
+{
+   ua_game_arg_type type;  //!< type of argument
+   const char* shortopt;   //!< short option chars
+   const char* longopt;    //!< long option string
+   unsigned int numparams; //!< number of parameters for option
+};
+
+static
+ua_arg_entry arg_params[] =
+{
+   { ua_arg_help, "hH?", "help", 0 },
+   { ua_arg_game, "g", "game", 1 },
+};
 
 
 // ua_game methods
 
 ua_game::ua_game():tickrate(20),exit_game(false),
-   reset_tick_timer(false),audio(NULL),screen(NULL),screen_to_destroy(NULL)
+   reset_tick_timer(false),audio(NULL),screen(NULL),screen_to_destroy(NULL),
+   init_action(0)
 {
    printf("Underworld Adventures\n"
       "http://uwadv.sourceforge.net/\n"
@@ -183,15 +210,151 @@ void ua_game::init()
    SDL_ShowCursor(0);
 
    screenstack.clear();
+}
 
-   // start with uwadv menu
-   push_screen(new ua_uwadv_menu_screen);
+/*! reads in command line arguments
+    args can be of the form -<char> (short option) or --<string> (long option)
+    the table arg_params specifies all options that can be processed by uwadv
+    shortopt contains all chars which can be used for this option
+    longopt is the string that is used for the long option
+    numparams specifies how many parameters are used for the specific option
+*/
+void ua_game::parse_args(unsigned int argc, const char** argv)
+{
+   ua_trace("parsing command line arguments\n");
+
+   for(unsigned int i=1; i<argc; i++)
+   {
+      std::string arg(argv[i]);
+      if (arg.size()==0)
+         continue;
+
+      bool use_shortopt = true;
+
+      // check if short or long arg
+      if (arg.at(0)=='-')
+      {
+         if (arg.size()>1 && arg.at(1)=='-')
+         {
+            // long option
+            use_shortopt = false;
+            arg.erase(0,2);
+         }
+         else
+            arg.erase(0,1);
+      }
+      else
+      {
+         // TODO support "" arguments
+
+         // user specified a savegame to load
+         init_action = 1;
+         savegame_name = arg;
+         continue;
+      }
+
+      // search for arg in table
+      unsigned int entry=0;
+      for(;entry<SDL_TABLESIZE(arg_params); entry++)
+      {
+         std::string::size_type pos = 0;
+
+         // search for parameter
+         if (use_shortopt)
+            pos = arg.find_first_of(arg_params[entry].shortopt);
+         else
+            pos = arg.find(arg_params[entry].longopt);
+
+         if (pos != std::string::npos && pos ==0)
+            break; // found entry
+      }
+
+      if (entry==SDL_TABLESIZE(arg_params))
+      {
+         ua_trace(" %s option not found in table: %s\n",
+            use_shortopt ? "short" : "long",
+            arg.c_str());
+         continue;
+      }
+
+      // check if enough parameters were passed
+      if (i+arg_params[entry].numparams>=argc)
+      {
+         ua_trace(" not enough parameters for option %s (%u required)\n",
+            argv[i],arg_params[entry].numparams);
+         return;
+      }
+
+      // check actual parameter
+      switch(arg_params[entry].type)
+      {
+      case ua_arg_help:
+         // print help string
+         printf(
+            "Underworld Adventures command line options\n"
+            " available options:\n"
+            "  -h -? -H  --help           shows help\n"
+            "  -g <game> --game <game>    starts custom game\n"
+            );
+         return;
+         break;
+
+      case ua_arg_game:
+         init_action = 2;
+         custom_game_prefix = argv[i+1];
+         break;
+      }
+
+      // jump over arguments
+      i += arg_params[entry].numparams;
+   }
 }
 
 #define HAVE_FRAMECOUNT
 
 void ua_game::run()
 {
+   switch(init_action)
+   {
+   case 0: // normal start
+      // start uwadv menu screen
+      push_screen(new ua_uwadv_menu_screen);
+      break;
+
+   case 1: // load savegame
+      {
+         ua_trace("loading savegame from file %s\n",savegame_name.c_str());
+
+         ua_savegame sg = savegames_mgr.get_savegame_from_file(
+            savegame_name.c_str());
+
+         // set game prefix
+         settings.set_value(ua_setting_game_prefix,
+            sg.get_savegame_info().game_prefix);
+
+         init_game();
+
+         underworld.load_game(sg);
+
+         // immediately start game
+         push_screen(new ua_ingame_orig_screen);
+      }
+      break;
+
+   case 2: // start custom game
+      {
+         // set prefix
+         ua_trace("start custom game; prefix: %s\n",custom_game_prefix.c_str());
+         settings.set_value(ua_setting_game_prefix,custom_game_prefix);
+
+         init_game();
+
+         // start splash screen
+         push_screen(new ua_start_splash_screen);
+      }
+      break;
+   }
+
    ua_trace("\nmain loop started\n");
 
    Uint32 now, then;
@@ -359,12 +522,12 @@ void ua_game::init_game()
       prefix.c_str(),
       settings.get_string(ua_setting_uw_path).c_str());
 
-   // init underworld
-   underworld.init(settings,filesmgr);
-
    // load game config file
    std::string gamecfg_name(prefix);
    gamecfg_name.append("/game.cfg");
+
+   // init scripting before loading game.cfg (lua_State is needed)
+   underworld.get_scripts().init(&underworld);
 
    // try to load %prefix%/game.cfg
    {
@@ -382,10 +545,13 @@ void ua_game::init_game()
       }
 
       cfgloader.load(gamecfg);
-
-      // after loading all scripts, init the stuff
-      underworld.get_scripts().lua_init_script();
    }
+
+   // init underworld
+   underworld.init(settings,filesmgr);
+
+   // after loading all scripts, init the stuff
+   underworld.get_scripts().lua_init_script();
 
    // init textures
    texmgr.init(settings);

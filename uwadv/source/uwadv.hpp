@@ -115,7 +115,17 @@ protected:
    std::vector<ua_ui_screen_base*> screenstack;
 
    //! screen queued to destroy
-   ua_ui_screen_base *screen_to_destroy;
+   ua_ui_screen_base* screen_to_destroy;
+
+   //! action to carry out after init
+   /*! actions: 0=normal game start, 1=load savegame, 2=load custom game */
+   unsigned int init_action;
+
+   //! savegame to load
+   std::string savegame_name;
+
+   //! custom game prefix to use
+   std::string custom_game_prefix;
 
 protected:
    // ua_game_core_interface virtual methods
