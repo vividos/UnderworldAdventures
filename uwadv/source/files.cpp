@@ -83,7 +83,7 @@ void ua_files_manager::init(ua_settings &settings)
 
    // check for available games
 
-   std::string base = settings.get_string(ua_setting_uw_path)
+   std::string base = settings.get_string(ua_setting_uw_path);
 
    // check for files that have to be available in all games
    if (!ua_file_isavail(base,"data/cnv.ark") &&
