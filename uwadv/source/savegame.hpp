@@ -44,13 +44,13 @@ public:
    Uint32 get_version();
 
    //! reads a 8-bit value
-   void read8(Uint8 &value);
+   Uint8 read8();
 
    //! reads a 16-bit value
-   void read16(Uint16 &value);
+   Uint16 read16();
 
    //! reads a 32-bit value
-   void read32(Uint32 &value);
+   Uint32 read32();
 
    // savegame saving functions
 
