@@ -159,15 +159,9 @@ void ua_files_manager::replace_system_vars(std::string& path)
          path.replace(pos,1,home);
    }
 
-   // replace %home%
-   while( std::string::npos != (pos = path.find("%home%") ) )
-   {
-      const char* home = getenv("HOME");
-      if (home != NULL)
-         path.replace(pos,6,home);
-      else
-         break;
-   }
+   // replace %uahome%
+   while( std::string::npos != (pos = path.find("%uahome%") ) )
+      path.replace(pos,8,uahome_path.c_str());
 
    // replace %uadata%
    while( std::string::npos != (pos = path.find("%uadata%") ) )
@@ -176,8 +170,38 @@ void ua_files_manager::replace_system_vars(std::string& path)
 
 void ua_files_manager::init_cfgfiles_list()
 {
-   cfgfiles_list.clear();
+   // determine uahome path
+   {
+   #ifdef HAVE_HOME
 
+      const char *homedir = getenv("HOME");
+      if (homedir != NULL)
+      {
+         // User has a home directory
+         uahome_path = homedir;
+
+   #ifndef BEOS
+         uahome_path += "/.uwadv/";
+   #else
+         uahome_path += "/config/settings/uwadv/";
+   #endif
+      }
+
+      // try to create home folder
+      ua_trace("creating uahome folder \"%s\"\n",uahome_path.c_str());
+      ua_mkdir(uahome_path.c_str(),0700);
+
+   #else // !HAVE_HOME
+
+      // assume current working folder as home dir
+      uahome_path = "./";
+
+   #endif // HAVE_HOME
+   }
+
+   // set up config files list
+
+   cfgfiles_list.clear();
 
 #ifdef CONFIGDIR
 
@@ -188,50 +212,10 @@ void ua_files_manager::init_cfgfiles_list()
 
 #endif
 
-
-#ifdef HAVE_HOME
-
-   std::string homecfgfile;
-
-   const char *homedir = getenv("HOME");
-   if(homedir)
-   {
-      // User has a home directory
-      homecfgfile = homedir;
-
-#ifndef BEOS
-      homecfgfile += "/.";
-#else
-      homecfgfile += "/config/settings/";
-#endif
-
-      homecfgfile += "uwadv.cfg";
-   }
-   else
-   {
-      homecfgfile = "uwadv.cfg";
-   }
-
+   // add cfg file in uahome path
+   std::string homecfgfile(uahome_path);
+   homecfgfile += "uwadv.cfg";
    cfgfiles_list.push_back(homecfgfile);
-
-#endif
-
-   // last resort: get file from local directory
-
-   cfgfiles_list.push_back("uwadv.cfg");
-
-
-#if 0
-   // some debugging info
-
-   std::cout << "Trying the following config files:" << std::endl;
-   std::vector<std::string>::iterator iter;
-   for (iter = cfgfiles_list.begin();
-        iter != cfgfiles_list.end();
-        ++iter)
-      std::cout << *iter << std::endl;
-   std::cout << std::endl;
-#endif
 }
 
 SDL_RWops *ua_files_manager::get_uadata_file(const char *relpath)

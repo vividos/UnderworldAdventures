@@ -72,6 +72,9 @@ protected:
    //! path to "uadata" dir
    std::string uadata_path;
 
+   //! path to ua home (system dependent)
+   std::string uahome_path;
+
    //! list of all config files to load
    std::vector<std::string> cfgfiles_list;
 };
