@@ -69,8 +69,6 @@ void ua_underworld::init(ua_settings& settings, ua_files_manager& filesmgr)
 
 void ua_underworld::done()
 {
-   if (scripting != NULL)
-      scripting->done();
 }
 
 void ua_underworld::eval_underworld(double time)
