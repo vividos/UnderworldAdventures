@@ -46,6 +46,7 @@ uwadv_SOURCES = \
 	renderer/quadtree.cpp renderer/quadtree.hpp \
 	renderer/renderer.cpp renderer/renderer.hpp \
 	renderer/texture.cpp renderer/texture.hpp \
+	screens/start_menu.cpp screens/start_menu.hpp \
 	screens/start_splash.cpp screens/start_splash.hpp \
 	screens/uwadv_menu.cpp screens/uwadv_menu.hpp \
 	ui/cutscene.cpp ui/cutscene.hpp \
