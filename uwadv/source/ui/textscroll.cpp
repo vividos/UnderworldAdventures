@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -33,7 +33,12 @@
 
 // constants
 
-const char* ua_textscroll_more_string = " [MORE]";
+const char* ua_textscroll_more_string = "\\2 [MORE]";
+
+Uint8 ua_textscroll_colors[10] =
+{
+   46, 38, 11, 48, 180, 21, 212, 251, 24, 192
+};
 
 
 // ua_textscroll methods
@@ -53,12 +58,14 @@ void ua_textscroll::init(ua_game_interface& game, unsigned int xpos,
    Uint8 my_bg_color)
 {
    bg_color = my_bg_color;
-   text_color = 11;
-   input_mode = false;
-   input_line = 0;
+   color_code = '0'; // default color
+   first_visible_line = 0;
+   more_mode = false;
+   more_line = 0;
+   scroll_basex = scroll_basey = 0;
 
    // load font
-   font_normal.load(game.get_settings(),ua_font_normal);
+   font_normal.load(game.get_settings(), ua_font_normal);
 
    // calculate number of lines
    maxlines = unsigned(height/font_normal.get_charheight());
@@ -72,79 +79,60 @@ void ua_textscroll::init(ua_game_interface& game, unsigned int xpos,
    update();
 }
 
-/*! Prints a text to the scroll. The text may contain newline characters and
+/*! Prints text to the scroll. The text may contain newline characters and
     color change codes (like \1, \0 etc.). When the scroll is full, a "[MORE]"
-    text is shown and the window waits for a keypress
+    text is shown and the window waits for a keypress.
 
     \param text text to print to the scroll
-    \todo implement color code changes
+    \return true when the user has to press a key and a "[MORE]" text is shown
 */
 bool ua_textscroll::print(const char* text)
 {
-   std::string msgtext(text);
-   bool needed_scrolling = false;
-
-   // check text length
-   unsigned int len = font_normal.calc_length(text);
-
-   if (strchr(text,'\n') == 0 && len <= image.get_xres()-2)
+   unsigned int start_line = textlines.size();
+   std::string line, msgtext(text);
+   std::string::size_type pos = 0;
+   do
    {
-      // fits into a single line
+      // divide into lines with separator 'newline'
+      pos = msgtext.find('\n');
 
-      if (linestack.size()>=maxlines)
+      if (pos != std::string::npos)
       {
-         // needed to scroll
-         needed_scrolling = true;
-
-         // remember line in history
-         linehistory.push_back(linestack.front());
-
-         // delete old line
-         linestack.erase(linestack.begin());
-         linecolors.erase(linecolors.begin());
+         line.assign(msgtext, 0, pos);
+         msgtext.erase(0, pos+1);
       }
+      else
+         line.assign(msgtext);
 
-      // add line
-      linestack.push_back(msgtext);
-      linecolors.push_back(text_color);
-   }
-   else
-   {
-      // multiple line text
-      unsigned int curline = 0;
-
-      std::string part;
-
-      // collect all strings
+      // check if the line is too long for the window
+      unsigned int linewidth = image.get_xres()-2;
+      std::string part(line);
       do
       {
-         part.assign(msgtext);
-
-         std::string::size_type pos = std::string::npos;
-
-         unsigned int linewidth = image.get_xres()-2;
-
-         if (curline==maxlines-1)
+         // do we have a line where we have to print "more"?
+         if (textlines.size()-start_line > maxlines)
          {
-            // subtract size of a "[MORE]" string
-            linewidth -= font_normal.calc_length(ua_textscroll_more_string);
+            // reduce the line width
+            linewidth -= calc_colored_length(ua_textscroll_more_string);
+
+            // calc new start line
+            start_line += maxlines;
+
+            // switch to 'more mode' when not already done
+            if (!more_mode)
+               more_line = start_line-1;
+            more_mode = true;
          }
 
-         // search for newlines
-         pos = part.find_first_of('\n');
-
-         if (pos != std::string::npos)
-            part.erase(pos);
-
-         // cut down string on ' ' boundaries, until it fits into an image
-         while(font_normal.calc_length(part.c_str()) > linewidth)
+         // cut down string on ' ' boundaries, until it fits into the image
+         while (calc_colored_length(part.c_str()) > linewidth)
          {
-            pos = part.find_last_of(' ');
+            std::string::size_type pos2 = part.find_last_of(' ');
 
-            if (pos != std::string::npos)
+            if (pos2 != std::string::npos)
             {
-               // cut at newline or space
-               part.erase(pos);
+               // cut at space char
+               part.erase(pos2);
             }
             else
             {
@@ -154,256 +142,223 @@ bool ua_textscroll::print(const char* text)
             }
          }
 
-         // insert line in linestack or morestack
-         if (curline<maxlines)
+         // move part over to textlines vector
+         textlines.push_back(part);
+         line.erase(0,part.size());
+
          {
-            if (linestack.size()>=maxlines)
+            // add color code to line start
+            std::string& lastline = textlines.back();
+            lastline.insert(lastline.begin(), 1, '\\');
+            lastline.insert(lastline.begin()+1, 1, color_code);
+
+            // search for new color code
+            std::string::size_type pos3 = std::string::npos;
+            do
             {
-               // needed to scroll
-               needed_scrolling = true;
+               pos3 = lastline.find_last_of('\\',pos3);
 
-               // remember line in history
-               linehistory.push_back(linestack.front());
+               if (pos3 != std::string::npos && pos3+1 < lastline.size() &&
+                  lastline.at(pos3+1) >= '0' && lastline.at(pos3+1) <= '9')
+               {
+                  // found new last color code
+                  color_code = lastline.at(pos3+1);               
+                  break;
+               }
 
-               // delete old line
-               linestack.erase(linestack.begin());
-               linecolors.erase(linecolors.begin());
-            }
+               --pos3;
 
-            // add line
-            linestack.push_back(part);
-            linecolors.push_back(text_color);
-         }
-         else
-         {
-            std::string morestr(part);
-
-            // add newline when line ended in a newline
-            if (pos!=std::string::npos && msgtext.at(pos)=='\n')
-               morestr.append(1,'\n');
-
-            // add to "[MORE]" stack
-            morestack.push_back(morestr);
+            } while(pos3 != std::string::npos && pos3+1 < lastline.size());
          }
 
-         curline++;
+         // trim space when needed
+         if (line.size()>0 && line.at(0) == ' ')
+            line.erase(0,1);
 
-         // cut down string
-         msgtext.erase(0,part.size()+1);
+      } while(line.size()>0);
 
-      } while(!msgtext.empty());
-   }
+   } while(pos != std::string::npos);
 
    update_scroll();
 
-   return needed_scrolling;
+   return more_mode;
 }
 
-/*! Updates the scroll's image and updates the image quad. When in input mode,
-    it shows the input cursor.
+bool ua_textscroll::process_event(SDL_Event& event)
+{
+   // user pressed space or return in 'more mode'?
+   if (more_mode && event.type == SDL_KEYDOWN &&
+       (event.key.keysym.sym == SDLK_SPACE || event.key.keysym.sym == SDLK_RETURN))
+   {
+      // check if we have even more lines that don't fit into the scroll
+      more_mode = textlines.size() > more_line + maxlines;
+
+      // still in 'more mode'? then calc new 'more line'
+      if (more_mode)
+         more_line += maxlines;
+
+      // either way, show more lines
+      first_visible_line += ua_min(textlines.size()-first_visible_line-maxlines,maxlines);
+
+      update_scroll();
+      return true;
+   }
+
+   return ua_image_quad::process_event(event);
+}
+
+/*! Updates the scroll's image and updates the image quad. When in 'more mode'
+    it shows the text "[MORE]" at the end of the line.
 */
 void ua_textscroll::update_scroll()
 {
-   // redo scroll texture
-   ua_image img_temp;
-   unsigned int imgheight = maxlines * font_normal.get_charheight() + 1;
-   //img_text.create(width,imgheight,bg_color,0);
    image.clear(bg_color);
 
-   unsigned int max = ua_min(maxlines,linestack.size());
+   ua_image img_temp;
+
+   // process all lines visible in the scroll
+   unsigned int max = ua_min(maxlines,textlines.size());
    for(unsigned int i=0; i<max; i++)
    {
-      // create line string and paste it into final image
-      font_normal.create_string(img_temp,
-         linestack[i].c_str(),linecolors[i]);
+      // check if we are at the end of the textlines vector
+      if (i+first_visible_line > textlines.size()) break;
+
+      // create line string
+      create_colored_string(img_temp, textlines[first_visible_line+i].c_str());
 
       // calc y position
-      unsigned int ypos = i * font_normal.get_charheight() + 1;
+      unsigned int ypos = i * font_normal.get_charheight() + scroll_basey;
 
+      // paste it into final image
       image.paste_rect(img_temp, 0,0, img_temp.get_xres(), img_temp.get_yres(),
-         1,ypos,true);
+         scroll_basex,ypos,true);
 
-      if (i==maxlines-1 && morestack.size()!=0)
+      // add [MORE] string on proper line
+      if (more_mode && more_line == i+first_visible_line)
       {
-         // add a "[MORE]" string at the end of the line
          ua_image img_more;
-         font_normal.create_string(img_more,ua_textscroll_more_string,11);
+         create_colored_string(img_more, ua_textscroll_more_string);
 
          // paste string after end of last line
          image.paste_rect(img_more, 0,0, img_more.get_xres(), img_more.get_yres(),
             img_temp.get_xres(),ypos,true);
       }
 
-      if (input_mode && i == input_line)
-      {
-         // paste input text after the text in this line
-         ua_image img_input, img_line;
-
-         font_normal.create_string(img_input,
-            input_text.c_str(),1); // color black for now
-
-         unsigned int xpos = img_temp.get_xres()+1;
-         image.paste_rect(img_input, 0,0, img_input.get_xres(), img_input.get_yres(),
-            xpos,ypos,true);
-
-         xpos += img_input.get_xres();
-
-         if (xpos+1<img_line.get_xres())
-         {
-            // draw a cursor line after the text
-            img_line.create(1,img_input.get_yres()+2);
-            img_line.clear(1);
-
-            image.paste_rect(img_line, 0,0, img_line.get_xres(), img_line.get_yres(),
-               xpos+1,ypos-1,true);
-         }
-      }
-
       img_temp.clear();
    }
 
-   // update texture
+   // update quad texture
    ua_image_quad::update();
+}
+
+/*! Calculates the width of an image that contains the given text. The method
+    recognizes and filters out color codes that might be in the string.
+
+    \param text string with text
+    \return width of image in pixels
+*/
+unsigned int ua_textscroll::calc_colored_length(const char* text)
+{
+   std::string line(text);
+   std::string::size_type pos = 0;
+   
+   // remove color codes
+   while((pos = line.find('\\',pos)) != std::string::npos)
+   {
+      if (pos+1 < line.size() && line.at(pos+1) >= '0' && line.at(pos+1) <= '9')
+         line.erase(pos,2);
+      else
+         pos++;
+   }
+
+   return font_normal.calc_length(line.c_str());
+}
+
+/*! Creates an image from given text. Recognizes color codes and creates
+    appropriately colored text.
+
+    \todo check for color codes
+*/
+void ua_textscroll::create_colored_string(ua_image& img, const char* text)
+{
+   std::string line(text);
+
+   // no color code?
+   if (line.find_first_of('\\') == std::string::npos)
+   {
+      font_normal.create_string(img,text,ua_textscroll_colors[0]);
+      return;
+   }
+
+   unsigned int width = calc_colored_length(text);
+   img.create(width, font_normal.get_charheight());
+
+   ua_image img_temp;
+
+   // no color code at start? then insert one
+   if (line.size() > 0 && line.at(0) != '\\' &&
+       !(line.at(1) >= '0' && line.at(1) <= '9'))
+      line.insert(0, "\\0");
+
+   // loop assumes that 'line' always start with a color code
+   char color = '0';
+   unsigned int img_xpos = 0;
+   do
+   {
+      // get color code
+      if (line.size() >= 2 && line.at(0) == '\\' &&
+          line.at(1) >= '0' && line.at(1) <= '9')
+         color = line.at(1);
+
+      line.erase(0,2);
+
+      // find string until next color code (or end)
+      std::string part = line;
+      std::string::size_type pos = 0;
+      do
+      {
+         pos = line.find_first_of('\\',pos);
+         if (pos != std::string::npos && pos+1 < line.size() &&
+            line.at(pos+1) >= '0' && line.at(pos+1) <= '9')
+         {
+            part.assign(line.c_str(), 0, pos);
+            break;
+         }
+         else
+            if (pos != std::string::npos)
+               pos++;
+
+      } while(pos != std::string::npos && pos+1 < line.size());
+
+      if (part.size() > 0)
+      {
+         // create substring with color
+         Uint8 text_color = ua_textscroll_colors[(color-'0')%10];
+         font_normal.create_string(img_temp, part.c_str(), text_color);
+
+         // paste into image
+         img.paste_rect(img_temp, 0,0, img_temp.get_xres(),img_temp.get_yres(),
+            img_xpos,0, true);
+
+         img_xpos += img_temp.get_xres();
+
+         img_temp.clear();
+      }
+
+      // remove processed text
+      line.erase(0, part.size());
+
+   } while(line.size()>0);
 }
 
 /*! Clears the scroll's contents and updates the image quad. */
 void ua_textscroll::clear_scroll()
 {
-   // clear contents
-   linestack.clear();
-   linehistory.clear();
-   morestack.clear();
+   // clear lines
+   textlines.clear();
+   more_mode = false;
+   first_visible_line = more_line = 0;
 
    // update and upload image
    update_scroll();
-}
-
-bool ua_textscroll::handle_event(SDL_Event& event)
-{
-   bool handled = false;
-
-   // check event type
-   switch(event.type)
-   {
-   case SDL_KEYDOWN:
-      // key down event
-      switch(event.key.keysym.sym)
-      {
-      case SDLK_SPACE:
-      case SDLK_RETURN:
-         // "more" continuation
-         if (have_more_lines())
-         {
-            show_more_lines();
-            handled = true;
-         }
-         break;
-      default: break;
-      }
-
-      // check type'able keys when in input mode
-      if (input_mode)
-      {
-         // check for unicode key
-         char ch;
-         if ((event.key.keysym.unicode & 0xFF80) == 0)
-         {
-            // normal (but translated) key
-            ch = event.key.keysym.unicode & 0x7F;
-
-            // check range
-            if (ch>=SDLK_SPACE && ch<=SDLK_z)
-            {
-               // add to text and update
-               input_text.append(1,ch);
-
-               update_scroll();
-               handled = true;
-            }
-         }
-
-         SDLKey key = event.key.keysym.sym;
-
-         // handle "delete" key
-         if ((key==SDLK_BACKSPACE || key==SDLK_DELETE) && !input_text.empty())
-         {
-            input_text.erase(input_text.size()-1);
-            update_scroll();
-            handled = true;
-         }
-
-         // "return" key
-         if (key==SDLK_RETURN)
-         {
-            // add string to current line
-            linestack[input_line].append(input_text);
-
-            // end input mode
-            input_mode = false;
-            handled = true;
-
-            update_scroll();
-
-            // disable unicode key support
-            SDL_EnableUNICODE(0);
-            ua_trace("unicode keyboard support disabled\n");
-         }
-      }
-   }
-
-   return handled;
-}
-
-void ua_textscroll::enter_input_mode(const char* text)
-{
-   // set up input mode
-   input_mode = true;
-   input_text.assign(text);
-
-   if (linestack.size()>0)
-      input_line = linestack.size()-1;
-   else
-   {
-      print("");
-      input_line = 0;
-   }
-
-   update_scroll();
-
-   // enable unicode key support
-   SDL_EnableUNICODE(1);
-   ua_trace("unicode keyboard support enabled\n");
-}
-
-bool ua_textscroll::is_input_done(std::string& text)
-{
-   // still in input mode?
-   if (input_mode)
-      return false;
-
-   text.assign(input_text);
-
-   return true;
-}
-
-void ua_textscroll::show_more_lines()
-{
-   std::string msgtext;
-
-   // assemble morestack into one string
-   unsigned int max = morestack.size();
-   for(unsigned int i=0; i<max; i++)
-   {
-      std::string& morestr = morestack[i];
-      msgtext.append(morestr.c_str());
-
-      // append space, but only when last string didn't end with newline
-      if (morestr.size()>0 && morestr.at(morestr.size()-1)!='\n')
-         msgtext.append(1,' ');
-   }
-
-   morestack.clear();
-
-   // print the string
-   print(msgtext.c_str());
 }

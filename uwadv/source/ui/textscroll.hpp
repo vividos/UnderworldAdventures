@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,9 +23,6 @@
 
    \brief text scroll
 
-   the text scroll class is based on the generic image quad rendering class
-   ua_image_quad
-
 */
 //! \ingroup userinterface
 
@@ -41,13 +38,44 @@
 #include "font.hpp"
 
 
+// enums
+
+/*! textscroll color codes for call to ua_textscroll::set_color_code() */
+enum ua_textscroll_colorcode
+{
+   ua_cc_black='0',  //!< black (46) (normal text and conversation)
+   ua_cc_orange,     //!< orange (38) (conversation answer)
+   ua_cc_white,      //!< white (11) (not used in uw1)
+   ua_cc_blue,       //!< blue (48) (not used in uw1)
+   ua_cc_red,        //!< red (180) (restore game failed)
+   ua_cc_yellow,     //!< yellow (21) (not used in uw1)
+   ua_cc_green,      //!< green (212) (save file description)
+   ua_cc_violet,     //!< violet (251) (not used in uw1)
+   ua_cc_gray,       //!< gray (24) (not used in uw1)
+   ua_cc_light_blue  //!< light-blue (192) (not used in uw1)
+};
+
+
 // classes
 
 //! text scroll class
 /*! Text scroll window that can be used to show text messages. The scroll
     stops when the scroll is full and shows a "[MORE]" text, waiting for a key
-    press. It also has a built-in input mode, e.g. for conversation answers
-    and such.
+    press. The text scroll understands some color codes that controls the
+    text color. The color codes consist of a \ (backslash) and a following
+    number, e.g. \0 or \3. These numbers are available:
+    0: black
+    1: orange
+    2: white
+    3: blue
+    4: red
+    5: yellow
+    6: green
+    7: violet
+    8: gray
+    9: light-blue
+    The enumeration ua_textscroll_colorcode can be used in the call to
+    set_color_code().
 
     \todo factor out input mode into own ua_input_ctrl or ua_text_edit_ctrl
     \todo add up/down buttons from buttons.gr, images 0/ or 27/28, to go
@@ -65,80 +93,63 @@ public:
    void init(ua_game_interface& game, unsigned int xpos, unsigned int ypos,
       unsigned int width, unsigned int lines, Uint8 bg_color);
 
-   //! sets new color
-   inline void set_color(Uint8 color);
+   //! sets new foreground text color code
+   void set_color_code(char color);
 
-   //! prints a string to the text scroll; returns true when text had to scroll
+   //! prints a string to the text scroll
    bool print(const char* text);
 
    //! clears scroll contents
    void clear_scroll();
 
-   //! handles events needed for the text scroll; returns true when handled
-   bool handle_event(SDL_Event& event);
-
-   //! starts input mode on the current line
-   void enter_input_mode(const char* text="");
-
-   //! returns true when text was entered; "text" is updated then
-   bool is_input_done(std::string& text);
-
-   //! returns true when more lines to show are available
-   inline bool have_more_lines();
+   // virtual methods from ua_window
+   virtual bool process_event(SDL_Event& event);
 
 protected:
    //! updates scroll texture
    void update_scroll();
 
-   //! scroll more lines
-   void show_more_lines();
+   //! calculates image width of a string; ignores color codes
+   unsigned int calc_colored_length(const char* text);
+
+   //! creates image from string; processes color codes
+   void create_colored_string(ua_image& img, const char* text);
 
 protected:
-   //! stack with currently shown lines
-   std::vector<std::string> linestack;
+   //! background color
+   Uint8 bg_color;
 
-   //! color values for all shown lines
-   std::vector<Uint8> linecolors;
+   //! current color code (from '0' to '9')
+   char color_code;
 
-   //! stack with lines to show after "[MORE]"
-   std::vector<std::string> morestack;
-
-   //! history of lines printed
-   std::vector<std::string> linehistory;
-
-   //! font to render lines
+   //! font to render text
    ua_font font_normal;
 
    //! maximal number of lines to show
    unsigned int maxlines;
 
-   //! background color
-   Uint8 bg_color;
+   //! number of first visible line
+   unsigned int first_visible_line;
 
-   //! current text color
-   Uint8 text_color;
+   //! indicates if user has to press a key to see the rest of the scroll text
+   bool more_mode;
 
-   //! indicates if text scroll is in input mode
-   bool input_mode;
+   //! line where the [MORE] is shown; only valid in 'more mode'
+   unsigned int more_line;
 
-   //! text the user typed in so far
-   std::string input_text;
+   //! all text lines printed so far
+   std::vector<std::string> textlines;
 
-   //! line with cursor to input text
-   unsigned int input_line;
+   //! scroll start base coordinates
+   unsigned int scroll_basex, scroll_basey;
 };
 
 
 // inline methods
 
-inline void ua_textscroll::set_color(Uint8 color)
+inline void ua_textscroll::set_color_code(char color)
 {
-   text_color = color;
-}
-
-inline bool ua_textscroll::have_more_lines()
-{
-   return morestack.size()>0;
+   color_code = color;
 }
 
 
