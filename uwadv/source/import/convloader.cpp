@@ -146,6 +146,19 @@ bool ua_uw_import::load_conv_code(ua_conv_code_vm& vm, const char* cnvfile,
 
    fclose(fd);
 
+   // fix for Marrowsuck conversation; it has a wrong opcode on 0x076e
+   if (conv == 6)
+   {
+      code[0x076e] = 0x0016; //op_PUSHI;
+   }
+
+   // fix for Sseetharee conversation; call to function at 0xffff
+   if (conv == 15)
+   {
+      // just take another function that may seem reasonable
+      code[0x0584] = 0x0666;
+   }
+
    vm.set_conv_slot(conv);
 
    return true;
