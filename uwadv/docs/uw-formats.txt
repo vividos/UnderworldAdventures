@@ -244,7 +244,7 @@ Table of Contents
      value (see above, at "Level map info").
 
      For normal objects, the "unknown2" field is the NPC type the object
-     belongs to. NPC ID = unknown2 + 1 + 0x0040. unknown2 == 0 means the
+     belongs to. NPC ID = unknown2 - 1 + 0x0040. unknown2 == 0 means the
      object doesn't belong to anyone.
 
      After the objects list, another lists starts at offset base+0x7300. The
