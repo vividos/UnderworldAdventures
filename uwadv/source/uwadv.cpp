@@ -557,11 +557,11 @@ void ua_uwadv_game::init_game()
    std::string prefix(settings.get_string(ua_setting_game_prefix));
 
    ua_trace("initializing game; prefix: %s\n",prefix.c_str());
-/*
+
    // load game config file
    std::string gamecfg_name(prefix);
    gamecfg_name.append("/game.cfg");
-
+/*
    // init scripting before loading game.cfg (lua_State is needed)
    underworld.get_scripts().init(&underworld);
 
@@ -595,12 +595,11 @@ void ua_uwadv_game::init_game()
 
    // after loading all scripts, init the stuff
    underworld.get_scripts().lua_init_script();
-
-   // init textures
-   texmgr.init(settings);
 */
+
    // init audio
    audio_manager.init(settings,files_manager);
+
 /*
    // load critters
    critter_pool.load(settings);
@@ -611,6 +610,7 @@ void ua_uwadv_game::init_game()
 
    // create debug interface instance
    debug = ua_debug_interface::get_new_debug_interface(this);
+*/
 
    // load language specific .pak file
    {
@@ -619,27 +619,28 @@ void ua_uwadv_game::init_game()
       std::string langpak_name(prefix);
       langpak_name.append("/lang.pak");
 
-      SDL_RWops* rwops = filesmgr.get_uadata_file(langpak_name.c_str());
+      SDL_RWops* rwops = files_manager.get_uadata_file(langpak_name.c_str());
       if (rwops != NULL)
       {
-         get_strings().load(rwops);
+         underworld.get_strings().load(rwops);
          SDL_RWclose(rwops);
 
          ua_trace("language \"%s\"\n",
-            get_strings().get_string(0x0a00,0).c_str());
+            underworld.get_strings().get_string(0x0a00,0).c_str());
       }
       else
          ua_trace("not available\n");
    }
-*/
+
    // reset tick timer
    reset_tick_timer = true;
 }
 
 void ua_uwadv_game::pop_screen()
 {
-   // handle destroying of current screen
-   // TODO clear screen
+   // clear screen; this can take a while
+   renderer.clear();
+
    curscreen->destroy();
    delete curscreen;
 
@@ -667,12 +668,9 @@ void ua_uwadv_game::pop_screen()
 
 void ua_uwadv_game::replace_screen(ua_screen* new_screen, bool save_current)
 {
-   // TODO clear screen; this could take a while
-/*
-   glClearColor(0,0,0,0);
-   glClear(GL_COLOR_BUFFER_BIT);
-   SDL_GL_SwapBuffers();
-*/
+   // clear screen; this can take a while
+   renderer.clear();
+
    if (save_current)
    {
       // save on screenstack
@@ -693,4 +691,13 @@ void ua_uwadv_game::replace_screen(ua_screen* new_screen, bool save_current)
 
    // reset tick timer
    reset_tick_timer = true;
+}
+
+void ua_uwadv_game::remove_screen()
+{
+   // send "destroy screen" event
+   SDL_Event event;
+   event.type = SDL_USEREVENT;
+   event.user.code = ua_event_destroy_screen;
+   SDL_PushEvent(&event);
 }

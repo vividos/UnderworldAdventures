@@ -67,16 +67,17 @@ public:
 
    // ua_game_interface methods
 
-   double get_tickrate();
-   void init_game();
-   ua_audio_manager& get_audio_manager();
-   ua_settings& get_settings();
-   ua_files_manager& get_files_manager();
-   ua_savegames_manager& get_savegames_manager();
-   ua_renderer& get_renderer();
-   ua_scripting& get_scripting();
-   ua_underworld& get_underworld();
-   void replace_screen(ua_screen* new_screen, bool save_current);
+   virtual double get_tickrate();
+   virtual void init_game();
+   virtual ua_audio_manager& get_audio_manager();
+   virtual ua_settings& get_settings();
+   virtual ua_files_manager& get_files_manager();
+   virtual ua_savegames_manager& get_savegames_manager();
+   virtual ua_renderer& get_renderer();
+   virtual ua_scripting& get_scripting();
+   virtual ua_underworld& get_underworld();
+   virtual void replace_screen(ua_screen* new_screen, bool save_current);
+   virtual void remove_screen();
 
 protected:
    //! initializes SDL and creates a window
@@ -85,7 +86,7 @@ protected:
    //! processes SDL events
    void process_events();
 
-   //! pops off next screen from screenstack
+   //! deletes current screen and pops off last screen from screenstack
    void pop_screen();
 
 protected:
