@@ -96,7 +96,7 @@ ua_object_info_ext::ua_object_info_ext()
  npc_hp(0), npc_goal(0), npc_gtarg(0), npc_level(0),
  npc_talkedto(0), npc_attitude(0), npc_xhome(0), npc_yhome(0), 
  npc_hunger(0), npc_whoami(0),
- state(0), animframe(0)
+ animstate(0), animframe(0)
 {
 }
 
@@ -128,7 +128,7 @@ void ua_object_info_ext::load_extinfo(ua_savegame& sg)
       npc_hunger = sg.read8();
       npc_whoami = sg.read8();
 
-      state = sg.read8();
+      animstate = sg.read8();
       animframe = sg.read8();
 
       // read placeholder values
@@ -166,7 +166,7 @@ void ua_object_info_ext::save_extinfo(ua_savegame& sg)
       sg.write8(npc_hunger);
       sg.write8(npc_whoami);
 
-      sg.write8(state);
+      sg.write8(animstate);
       sg.write8(animframe);
 
       // write placeholder values
@@ -208,7 +208,7 @@ ua_object_list::~ua_object_list()
 {
 }
 
-Uint16 ua_object_list::get_tile_list_start(unsigned int xpos, unsigned int ypos)
+Uint16 ua_object_list::get_tile_list_start(unsigned int xpos, unsigned int ypos) const
 {
    return tile_index[ypos*64+xpos];
 }

@@ -146,10 +146,10 @@ struct ua_object_info_ext
    //Uint8 extra1,extra2,extra5,extra7,extra8,extra9,extra10;
    //Uint8 extra11,extra12,extra13,extra14,extra15,extra16,extra17;
 
-   //! npc state
-   Uint8 state;
+   //! animation state (used in ua_critter)
+   Uint8 animstate;
 
-   //! current animation frame
+   //! current animation frame (used in ua_critter)
    Uint8 animframe;
 };
 
@@ -168,8 +168,14 @@ public:
    //! returns object info
    ua_object_info &get_object_info(){ return info; }
 
+   //! returns object info
+   const ua_object_info &get_object_info() const { return info; }
+
    //! returns extended object info
    ua_object_info_ext &get_ext_object_info(){ return extinfo; }
+
+   //! returns extended object info
+   const ua_object_info_ext &get_ext_object_info() const { return extinfo; }
 
    //! loads object from savegame
    void load_object(ua_savegame &sg);
@@ -198,13 +204,19 @@ public:
    // master object list access
 
    //! returns list pos of first object in element
-   Uint16 get_tile_list_start(unsigned int xpos, unsigned int ypos);
+   Uint16 get_tile_list_start(unsigned int xpos, unsigned int ypos) const;
 
    //! returns an object at a specific list pos
    ua_object &get_object(Uint16 at){ return master_obj_list[at]; }
 
+   //! returns an object at a specific list pos
+   const ua_object &get_object(Uint16 at) const { return master_obj_list[at]; }
+
    //! returns master object list
    std::vector<ua_object>& get_master_obj_list(){ return master_obj_list; }
+
+   //! returns master object list
+   const std::vector<ua_object>& get_master_obj_list() const { return master_obj_list; }
 
    //! returns tile index map
    std::vector<Uint16>& get_tile_index(){ return tile_index; }
