@@ -50,6 +50,7 @@
 extern "C"
 {
 #include "lua/include/lua.h"
+#include "lua/include/lualib.h"
 }
 
 
