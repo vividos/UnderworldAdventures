@@ -38,7 +38,8 @@ In Game
 -------
 
 The game should behave exactly as the original. Please consult your game
-manuals or reference card for instructions.
+manuals or reference card for instructions. A list of keyboard commands for
+the original Ultima Underworld 1 is available in the file "uw1-keyboard.txt".
 
 Remarks
 -------
