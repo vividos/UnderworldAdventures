@@ -84,7 +84,7 @@ ua_uwadv_game::ua_uwadv_game()
 #ifdef _STLPORT_VERSION
    ua_trace("using STLport %u.%u.%u"
 #ifdef _STLP_DEBUG
-      " (debug)
+      " (debug)"
 #endif
       "\n",
       _STLPORT_VERSION>>8, (_STLPORT_VERSION>>4)&15, _STLPORT_VERSION&15);
