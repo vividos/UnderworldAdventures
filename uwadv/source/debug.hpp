@@ -21,7 +21,7 @@
 */
 /*! \file debug.hpp
 
-   \brief debug interface
+   \brief underworld debugger interface
 
 */
 
@@ -33,19 +33,44 @@
 
 
 // forward references
-class ua_game_core_interface;
-class ua_underworld;
+class ua_game_interface;
+class ua_debug_server_impl;
 
 
 // classes
+
+//! server side class for underworld debugger
+class ua_debug_server
+{
+public:
+   //! ctor
+   ua_debug_server();
+   //! dtor
+   ~ua_debug_server();
+
+   //! starts debugger client; returns if debugger was already running
+   bool start_debugger(ua_game_interface* game);
+
+   //! does tick processing
+   void tick();
+
+   //! waits for the debugger client to shutdown
+   void shutdown();
+
+protected:
+   //! pointer to server implementation
+   ua_debug_server_impl* server_impl;
+};
+
+/*
 
 //! debug interface
 class ua_debug_interface
 {
 public:
    //! returns a new debug interface
-   static ua_debug_interface* get_new_debug_interface(
-      ua_game_core_interface* core);
+   static ua_debug_interface* get_debug_interface(
+      ua_game_interface* game);
 
    //! starts visual debugger
    virtual void start_debugger()=0;
@@ -66,5 +91,6 @@ protected:
    //! ctor
    ua_debug_interface(){}
 };
+*/
 
 #endif

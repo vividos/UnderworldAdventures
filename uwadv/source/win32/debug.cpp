@@ -28,6 +28,34 @@
 // needed includes
 #include "common.hpp"
 #include "debug.hpp"
+
+
+// ua_debug_server methods
+
+ua_debug_server::ua_debug_server()
+:server_impl(NULL)
+{
+}
+
+ua_debug_server::~ua_debug_server()
+{
+   delete server_impl;
+}
+
+bool ua_debug_server::start_debugger(ua_game_interface* game)
+{
+   return false;
+}
+
+void ua_debug_server::tick()
+{
+}
+
+void ua_debug_server::shutdown()
+{
+}
+
+/*
 #include "debug/uwaccess.hpp"
 #include <SDL_thread.h>
 
@@ -79,7 +107,7 @@ protected:
 
 // ua_debug_interface methods
 
-ua_debug_interface* ua_debug_interface::get_new_debug_interface(
+ua_debug_interface* ua_debug_interface::get_debug_interface(
    ua_game_core_interface* core)
 {
    return new ua_debug_impl_win32(core);
@@ -182,3 +210,4 @@ void ua_debug_impl_win32::tick()
 {
    api.tick();
 }
+*/
