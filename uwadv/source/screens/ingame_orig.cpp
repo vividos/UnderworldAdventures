@@ -284,7 +284,7 @@ void ua_ingame_orig_screen::resume()
    mousecursor.init(core,0);
    mousecursor.show(true);
 
-   textscroll.init(*core,16+1,169+2, 289,30+2, 4, 42);
+   textscroll.init(*core,15,169, 289,30, 5, 42);
    textscroll.set_color(1);
 
    // register script callbacks
