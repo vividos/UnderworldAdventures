@@ -991,6 +991,10 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
       height = level.get_tile(x,y).ceiling * height_scale - quadwidth;
    }
 
+   // rune items?
+   if (item_id>=0x00e8 && item_id<0x0100)
+      item_id = 0x00e0; // generic rune-on-the-floor item
+
    right.normalize();
    up.normalize();
 
@@ -1013,7 +1017,7 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
    {
       // get object texture coords
       double u1,v1,u2,v2;
-      texmgr->object_tex(obj.get_object_info().item_id,u1,v1,u2,v2);
+      texmgr->object_tex(item_id,u1,v1,u2,v2);
 
       glEnable(GL_BLEND);
 
