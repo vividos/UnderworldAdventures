@@ -317,13 +317,6 @@ void ua_uwadv_game::run()
             reset_tick_timer = true;
             break;
          }
-/*
-         // do texmgr tick
-         texmgr.tick(1.0/tickrate);
-
-         //Johnm - need to do logic for critters
-         critter_pool.tick(1.0/tickrate);
-*/
       }
 
       // do debug processing (uwadv thread)
