@@ -65,7 +65,7 @@ void ua_start_splash_screen::init()
    ua_trace("start splash screen started\n");
 
    // start intro midi music
-   game->get_audio_manager().start_music(0,false);
+   game->get_audio_manager().start_music(ua_music_uw1_introduction,false);
 
    game->get_renderer().setup_camera2d();
 
