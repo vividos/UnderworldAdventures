@@ -251,7 +251,8 @@ void ua_critter_pool::load(ua_settings& settings)
 
    // open assoc.anm file
    std::string assocname(settings.get_string(ua_setting_uw_path));
-   assocname.append("crit/assoc.anm");
+   assocname.append(
+      settings.get_bool(ua_setting_uw1_is_uw_demo) ? "crit/dassoc.anm" : "crit/assoc.anm");
 
    FILE* assoc = fopen(assocname.c_str(),"rb");
    if (assoc==NULL)
