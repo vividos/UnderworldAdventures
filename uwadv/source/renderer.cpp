@@ -994,7 +994,7 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
 
 #ifndef HAVE_DEBUG
    // don't render invisible objects
-   if (item_id>0x0140 && item_id != 0x01ca)
+   if (item_id>0x0140 && item_id != 0x01ca && item_id != 0x0164)
       return;
 #endif
 
