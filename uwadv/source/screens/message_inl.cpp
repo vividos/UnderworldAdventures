@@ -85,7 +85,7 @@ void ua_message_processor<T>::message_handle_event(SDL_Event& event)
       // search for area handler
       ua_msg_area_handler_func_type handler = NULL;
       {
-         ua_msg_area_map::iterator iter,stop;
+         typename ua_msg_area_map::iterator iter,stop;
          iter = area_map.begin();
          stop = area_map.end();
 
