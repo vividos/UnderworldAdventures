@@ -171,9 +171,10 @@ end
 
 -- prints "look" description
 function lua_inventory_look(inv_pos)
-   -- ui_print_string("lua_inventory_look(): look not implemented yet!")
 
    print("looking at object in inventory")
+
+   dump_invinfo_table(inv_pos)
 
    -- inv_objinfo = inv_get_objinfo(inv_pos)
 
@@ -185,7 +186,9 @@ end
 -- prints "use" description
 function lua_inventory_use(inv_pos)
 
-   ui_print_string("lua_inventory_use(): use not implemented yet!")
+   print("using object in inventory")
+
+   dump_invinfo_table(inv_pos)
 
 end
 
