@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -46,12 +46,12 @@ class ua_settings;
 //! available fonts
 typedef enum
 {
-   ua_font_small = 0,   //!< for ???
-   ua_font_italic = 1,  //!< for character stats screen
-   ua_font_normal = 2,  //!< for scroll messages
-   ua_font_big = 3,     //!< for cutscenes
-   ua_font_buttons = 4, //!< for buttons
-   ua_font_chargen = 5  //!< for character generation
+   ua_font_small = 0,   //!< "font4x5p.sys", height 4px, for inventory object count
+   ua_font_italic = 1,  //!< "font5x6i.sys", height 7px, for character stats screen
+   ua_font_normal = 2,  //!< "font5x6p.sys", height 6px, for scroll messages
+   ua_font_big = 3,     //!< "fontbig.sys",  height 15px, for cutscenes
+   ua_font_buttons = 4, //!< "fontbutn.sys", height 6px,  for buttons
+   ua_font_chargen = 5  //!< "fontchar.sys", height 10px, for character generation
 } ua_font_id;
 
 
