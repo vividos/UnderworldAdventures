@@ -63,6 +63,12 @@ void ua_level_tile_renderer::visible_tile(unsigned int xpos, unsigned int ypos)
       ua_triangle3d_textured& tri = alltriangles[i];
 
       renderer_impl.get_texture_manager().use(tri.texnum);
+
+      // set texture parameter
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+      // remember used texture number
       glPushName(tri.texnum+0x0400);
 
       glBegin(GL_TRIANGLES);
@@ -512,6 +518,10 @@ void ua_renderer_impl::render_tmap_obj(const ua_object& obj, unsigned int x, uns
 void ua_renderer_impl::render_sprite(ua_vector3d base,
    double width, double height, bool ignore_upvector, double u, double v)
 {
+   // set texture parameter
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
    // calculate vectors for quad
    ua_vector3d base2(base);
 
