@@ -48,7 +48,7 @@ class ua_image_quad: public ua_window
 {
 public:
    //! ctor
-   ua_image_quad(){}
+   ua_image_quad():split_textures(false){}
 
    //! initializes image quad window
    void init(ua_game_interface& game, unsigned int xpos, unsigned int ypos);
