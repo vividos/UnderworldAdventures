@@ -31,7 +31,7 @@ INCLUDES = $(SDL_INCLUDE) $(STLPORT_INCLUDE) $(FMOD_INCLUDE) -I.. -I.
 CPPFLAGS = $(DEFINES) $(INCLUDES)
 
 LDFLAGS = -mwindows -mconsole -s
-LIBS = -lmingw32 -lkernel32 -luser32 -lwinmm -lopengl32 -lglu32 \
+uwadv_LIBS = -lmingw32 -lkernel32 -luser32 -lwinmm -lopengl32 -lglu32 \
 	-lstlport_mingw32_static \
 	$(SDL_LIB) $(FMOD_LIB) $(STLPORT_LIB)
 
@@ -61,7 +61,7 @@ uwadv_OBJS = main.o game_win32.o uwadv_res.o \
 all: $(uwadv_EXEC)
 
 $(uwadv_EXEC): $(uwadv_OBJS)
-	$(CC) $(LDFLAGS) -o $(@) $(OBJS) $(LIBS)
+	$(CC) $(LDFLAGS) -o $(@) $(uwadv_OBJS) $(uwadv_LIBS)
 
 installer: $(uwadv_EXEC)
 	mkdir -p ../../output/release/
