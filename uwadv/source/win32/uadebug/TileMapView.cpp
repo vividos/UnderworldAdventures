@@ -29,6 +29,7 @@
 #include "stdatl.hpp"
 #include "TileMapView.hpp"
 #include "DebugClient.hpp"
+#include "MainFrame.hpp"
 
 // methods
 
@@ -121,17 +122,23 @@ void CTileMapViewWindow::UpdateObjectInfo()
    m_objectList.LockWindowUpdate();
    m_objectList.DeleteAllItems();
 
+   m_pDebugClient->Lock(true);
+
+   CDebugClientObjectInterface objectInfo = m_pDebugClient->GetObjectInterface();
+
    while(nPos != 0)
    {
-      unsigned int nItemId = m_pDebugClient->GetObjectListInfo(nPos, 0);
+      unsigned int nItemId = objectInfo.GetItemId(nPos);
 
       CString cszItemName(m_pDebugClient->GetGameString(4, nItemId));
 
-      int nItem = m_objectList.InsertItem(m_objectList.GetItemCount(), cszItemName);
+      int nItem = m_objectList.InsertItem(m_objectList.GetItemCount(), cszItemName, nItemId);
       m_objectList.SetItemData(nItem, nItemId);
 
-      nPos = m_pDebugClient->GetObjectListInfo(nPos, 1);
+      nPos = objectInfo.GetItemNext(nPos);
    }
+
+   m_pDebugClient->Lock(false);
 
    m_objectList.LockWindowUpdate(FALSE);
 }
@@ -146,7 +153,12 @@ LRESULT CTileMapViewWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
    m_tileInfoList.InsertColumn(1, _T("Value"), LVCFMT_LEFT, 100, -1);
 
    m_objectList.SubclassWindow(GetDlgItem(IDC_LIST_OBJECTS));
+   m_objectList.ModifyStyle(0, LVS_SHAREIMAGELISTS);
+
    m_objectList.InsertColumn(0, _T("Objects"), LVCFMT_LEFT, 190, -1);
+
+   m_objectList.SetImageList(m_pMainFrame->m_ilObjects, LVSIL_NORMAL);
+   m_objectList.SetImageList(m_pMainFrame->m_ilObjects, LVSIL_SMALL);
 
    SetDlgItemText(IDC_EDIT_TILEPOS, _T("info"));
 

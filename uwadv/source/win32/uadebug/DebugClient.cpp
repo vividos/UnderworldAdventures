@@ -86,6 +86,35 @@ LPCTSTR g_aszAttrNames[] =
 };
 
 
+// pos and name don't count as columns in CDebugClient
+const int g_nObjListColumns = 15-2;
+
+struct SObjectListColumnInfo
+{
+   LPCTSTR pszColumnName;
+   int nColumnSize;
+   bool bFormatHex;
+   unsigned nFormatHexLength;
+} g_aColumnInfo[] =
+{
+   { _T("pos"),      70,   true,    4 },
+   { _T("item_id"),  55,   true,    4 },
+   { _T("name"),     170,  false,   0 },
+   { _T("link"),     55,   true,    4 },
+   { _T("quality"),  50,   true,    3 },
+   { _T("owner"),    50,   true,    2 },
+   { _T("quantity"), 55,   true,    3 },
+   { _T("x"),        35,   false,   1 },
+   { _T("y"),        35,   false,   1 },
+   { _T("z"),        35,   false,   1 },
+   { _T("heading"),  50,   false,   1 },
+   { _T("flags"),    40,   true,    1 },
+   { _T("ench"),     40,   true,    1 },
+   { _T("is_quant"), 55,   false,   1 },
+   { _T("hidden"),   55,   false,   1 },
+};
+
+
 // CDebugClientPlayerInterface methods
 
 unsigned int CDebugClientPlayerInterface::GetAttrCount()
@@ -137,6 +166,75 @@ void CDebugClientPlayerInterface::Teleport(unsigned int level, double xpos, doub
 
    double height = m_pDebugInterface->get_tile_height(level, xpos, ypos);
    m_pDebugInterface->set_player_pos_info(2, height);
+}
+
+
+// CDebugClientObjectInterface methods
+
+unsigned int CDebugClientObjectInterface::GetColumnCount() const
+{
+   return sizeof(g_aColumnInfo)/sizeof(g_aColumnInfo[0]);
+}
+
+LPCTSTR CDebugClientObjectInterface::GetColumnName(unsigned int nColumn) const
+{
+   ATLASSERT(nColumn < GetColumnCount());
+   return g_aColumnInfo[nColumn].pszColumnName;
+}
+
+unsigned int CDebugClientObjectInterface::GetColumnSize(unsigned int nColumn) const
+{
+   ATLASSERT(nColumn < GetColumnCount());
+   return g_aColumnInfo[nColumn].nColumnSize;
+}
+
+bool CDebugClientObjectInterface::ViewColumnAsHex(unsigned int nColumn) const
+{
+   ATLASSERT(nColumn < GetColumnCount());
+   return g_aColumnInfo[nColumn].bFormatHex;
+}
+
+unsigned int CDebugClientObjectInterface::ColumnHexDigitCount(unsigned int nColumn) const
+{
+   ATLASSERT(nColumn < GetColumnCount());
+   return g_aColumnInfo[nColumn].nFormatHexLength;
+}
+
+unsigned int CDebugClientObjectInterface::GetItemId(unsigned int nPos)
+{
+   ATLASSERT(nPos < 0x400);
+   return GetItemInfo(nPos, 1); // 1 currently is the item_id field
+}
+
+unsigned int CDebugClientObjectInterface::GetItemNext(unsigned int nPos)
+{
+   ATLASSERT(nPos < 0x400);
+   return GetItemInfo(nPos, 3); // 3 currently is the next field
+}
+
+unsigned int CDebugClientObjectInterface::GetItemInfo(unsigned int nPos, unsigned int nSubcode)
+{
+   ATLASSERT(nPos < 0x400);
+   ATLASSERT(nSubcode != 2); // can't get name
+
+   if (nSubcode == 0)
+      return nPos;
+
+   // remap to fields
+   nSubcode = nSubcode == 1 ? 0 : nSubcode-2;
+
+   return m_pDebugInterface->get_objlist_info(m_nLevel, nPos, nSubcode);
+}
+
+void CDebugClientObjectInterface::SetItemInfo(unsigned int nPos, unsigned int nSubcode, unsigned int nInfo)
+{
+   ATLASSERT(nPos < 0x400);
+   ATLASSERT(nSubcode != 0 && nSubcode != 2); // can't set pos and name
+
+   // remap to fields
+   nSubcode = nSubcode == 1 ? 0 : nSubcode-2;
+
+   m_pDebugInterface->set_objlist_info(m_nLevel, nPos, nSubcode, nInfo);
 }
 
 
@@ -212,17 +310,14 @@ CDebugClientPlayerInterface CDebugClientInterface::GetPlayerInterface()
    return playerInterface;
 }
 
-
-unsigned int CDebugClientInterface::GetObjectListInfo(unsigned int pos, unsigned int subcode)
+CDebugClientObjectInterface CDebugClientInterface::GetObjectInterface()
 {
-   return m_pDebugInterface->get_objlist_info(m_nLevel, pos, subcode);
+   CDebugClientObjectInterface objectInterface;
+   objectInterface.m_pDebugInterface = m_pDebugInterface;
+   objectInterface.m_nLevel = m_nLevel;
+   return objectInterface;
 }
 
-void CDebugClientInterface::SetObjectListInfo(unsigned int pos, unsigned int subcode, unsigned int info)
-{
-   // TODO
-   ATLASSERT(FALSE);
-}
 
 unsigned int CDebugClientInterface::GetTileInfo(unsigned int xpos, unsigned int ypos, unsigned int type)
 {
@@ -252,6 +347,45 @@ CString CDebugClientInterface::GetGameString(unsigned int block, unsigned int nr
    cszText.ReleaseBuffer();
 
    return cszText;
+}
+
+CImageList CDebugClientInterface::GetObjectImageList()
+{
+   unsigned int num_objects = 0;
+   m_pDebugInterface->get_object_list_imagelist(num_objects, NULL, 0);
+
+   BYTE* pBitmapData = new BYTE[num_objects*16*16*4];
+
+   m_pDebugInterface->get_object_list_imagelist(num_objects, pBitmapData, num_objects*16*16*4);
+
+   // convert from RGBA to BGRA; CImageList needs this
+   for(unsigned int i=0; i<num_objects*16*16; i++)
+   {
+      BYTE nSwap = pBitmapData[i*4+0];
+      pBitmapData[i*4+0] = pBitmapData[i*4+2];
+      pBitmapData[i*4+2] = nSwap;
+   };
+
+//   CBitmap bitmap;
+//   bitmap.CreateBitmap(num_objects*16,  16, 1, 32, pBitmapData);
+
+   CImageList imageList;
+   imageList.Create(16, 16, ILC_COLOR32, 0, num_objects);
+
+   for(unsigned int n=0; n<num_objects; n++)
+   {
+      BYTE buffer[16*16*4];
+
+      memcpy(buffer, &pBitmapData[n*16*16*4], 16*16*4);
+
+      CBitmap bitmap;
+      bitmap.CreateBitmap(16,  16, 1, 32, buffer);
+      imageList.Add(bitmap, RGB(255,255,255));
+   }
+
+   delete[] pBitmapData;
+
+   return imageList;
 }
 
 /*

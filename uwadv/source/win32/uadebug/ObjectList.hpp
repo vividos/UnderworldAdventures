@@ -36,6 +36,22 @@
 
 // classes
 
+
+class CObjectListInfo
+{
+public:
+   CObjectListInfo():m_pObjectList(NULL), m_nColumns(0){}
+   ~CObjectListInfo(){ delete m_pObjectList; }
+
+   void Init(unsigned int nColumns);
+   unsigned int GetItem(unsigned int nPos, unsigned int nIndex);
+   void SetItem(unsigned int nPos, unsigned int nIndex, unsigned int nValue);
+
+protected:
+   unsigned int m_nColumns;
+   unsigned int* m_pObjectList;
+};
+
 class CObjectListWindow : public CDockingWindowBase
 {
    typedef CObjectListWindow thisClass;
@@ -69,7 +85,9 @@ protected:
 protected:
    CEditListViewCtrl m_listCtrl;
 
-   unsigned int* m_pObjectList;
+   bool m_bObjlistInfoInited;
+
+   CObjectListInfo m_objectList;
    CSimpleArray<CString>* m_pItemNameList;
 };
 

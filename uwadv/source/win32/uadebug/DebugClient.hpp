@@ -79,8 +79,38 @@ public:
    void Teleport(unsigned int level, double xpos, double ypos);
 
 private:
+   CDebugClientPlayerInterface(){}
+
    //! pointer to debug server interface
    ua_debug_server_interface* m_pDebugInterface;
+
+   friend class CDebugClientInterface;
+};
+
+
+class CDebugClientObjectInterface
+{
+public:
+   unsigned int GetColumnCount() const;
+
+   LPCTSTR GetColumnName(unsigned int nColumn) const;
+   unsigned int GetColumnSize(unsigned int nColumn) const;
+   bool ViewColumnAsHex(unsigned int nColumn) const;
+   unsigned int ColumnHexDigitCount(unsigned int nColumn) const;
+
+   unsigned int GetItemId(unsigned int nPos);
+   unsigned int GetItemNext(unsigned int nPos);
+
+   unsigned int GetItemInfo(unsigned int nPos, unsigned int nSubcode);
+   void SetItemInfo(unsigned int nPos, unsigned int nSubcode, unsigned int nInfo);
+
+private:
+   CDebugClientObjectInterface(){}
+
+   //! pointer to debug server interface
+   ua_debug_server_interface* m_pDebugInterface;
+
+   unsigned int m_nLevel;
 
    friend class CDebugClientInterface;
 };
@@ -112,9 +142,8 @@ public:
 
    CDebugClientPlayerInterface GetPlayerInterface();
 
+   CDebugClientObjectInterface GetObjectInterface();
 
-   unsigned int GetObjectListInfo(unsigned int pos, unsigned int subcode);
-   void SetObjectListInfo(unsigned int pos, unsigned int subcode, unsigned int info);
 
    unsigned int GetTileInfo(unsigned int xpos, unsigned int ypos, unsigned int type);
    void SetTileInfo(unsigned int xpos, unsigned int ypos, unsigned int type, unsigned int val);
@@ -123,6 +152,9 @@ public:
    bool EnumGameStringsBlock(int index, unsigned int& block);
    unsigned int GetGameStringBlockSize(unsigned int block);
    CString GetGameString(unsigned int block, unsigned int nr);
+
+
+   CImageList GetObjectImageList();
 
 //   bool GetMessage(CDebugClientMessage& msg);
 
