@@ -68,6 +68,12 @@ public:
    //! ctor with x and y coordinates
    ua_vector2d(double ax, double ay){ x=ax; y=ay; }
 
+   //! sets vector by giving vector elements
+   void set(double nx, double ny){ x=nx; y=ny; }
+
+   //! sets vector by giving two vectors
+   void set(const ua_vector2d &v1,const ua_vector2d &v2){ x=v2.x-v1.x; y=v2.y-v1.y; }
+
    //! sets vector by giving polar coordinates (angle in degree, not radians)
    void set_polar(double len, double angle)
    { x=len*cos(ua_deg2rad(angle)); y=len*sin(ua_deg2rad(angle)); }
@@ -75,14 +81,20 @@ public:
    //! add assignment
    ua_vector2d& operator +=(const ua_vector2d &vec){ x+=vec.x; y+=vec.y; return *this; }
 
+   //! subtract assignment
+   ua_vector2d& operator -=(const ua_vector2d &vec){ x-=vec.x; y-=vec.y; return *this; }
+
    // multiplication assignment
    ua_vector2d& operator *=(double sc){ x*=sc; y*=sc; return *this; }
 
    //! returns length of vector
-   double length(){ sqrt(x*x+y*y); }
+   double length(){ return sqrt(x*x+y*y); }
 
    //! normalizes vector
    void normalize(){ (*this)*=(1.0/length()); }
+
+   //! calculates the inner (dot) product
+   double dot(const ua_vector2d &vec){ return x*vec.x + y*vec.y; }
 };
 
 
