@@ -69,7 +69,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W1 /Gm /GX /ZI /Od /I ".." /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "WIN32_EXTRA_LEAN" /D "VC_EXTRALEAN" /D "NOSERVICE" /D "NOMCX" /D "NOIME" /D "NOSOUND" /D "NOCOMM" /D "NOKANJI" /D "NORPC" /D "NOPROXYSTUB" /D "NOTAPE" /D "NOCRYPT" /D "NOIMAGE" /D "_STLP_DEBUG" /D "_STLP_USE_STATIC_LIB" /YX"common.hpp" /FD /GZ /c
+# ADD CPP /nologo /MDd /Gm /GX /ZI /Od /I ".." /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "WIN32_EXTRA_LEAN" /D "VC_EXTRALEAN" /D "NOSERVICE" /D "NOMCX" /D "NOIME" /D "NOSOUND" /D "NOCOMM" /D "NOKANJI" /D "NORPC" /D "NOPROXYSTUB" /D "NOTAPE" /D "NOCRYPT" /D "NOIMAGE" /D "_STLP_DEBUG" /D "_STLP_USE_STATIC_LIB" /YX"common.hpp" /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x407 /d "_DEBUG"
@@ -112,6 +112,10 @@ SOURCE=.\uwadv.rc
 # Begin Source File
 
 SOURCE=..\resource\codeloader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\resource\cutsloader.cpp
 # End Source File
 # Begin Source File
 
@@ -183,9 +187,17 @@ SOURCE=..\screens\ingame_orig.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\screens\start_menu.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\screens\start_splash.cpp
 # End Source File
 # End Group
+# Begin Source File
+
+SOURCE=..\cutscene.cpp
+# End Source File
 # Begin Source File
 
 SOURCE=..\font.cpp
@@ -201,6 +213,10 @@ SOURCE=..\level.cpp
 # Begin Source File
 
 SOURCE=..\objects.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\physics.cpp
 # End Source File
 # Begin Source File
 
@@ -275,6 +291,10 @@ SOURCE=..\screens\ingame_orig.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\screens\start_menu.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\screens\start_splash.hpp
 # End Source File
 # End Group
@@ -289,6 +309,10 @@ SOURCE=..\common.hpp
 # Begin Source File
 
 SOURCE=..\core.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\cutscene.hpp
 # End Source File
 # Begin Source File
 
@@ -313,6 +337,10 @@ SOURCE=..\level.hpp
 # Begin Source File
 
 SOURCE=..\objects.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\physics.hpp
 # End Source File
 # Begin Source File
 
