@@ -113,9 +113,15 @@ bool ua_screen::process_event(SDL_Event& event)
    // key event
    if (scr_keymap != NULL && event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
    {
-      // make keymod value; mask out numlock mod key
-      Uint32 keymod = ua_make_keymod(event.key.keysym.sym,
-         event.key.keysym.mod & ~KMOD_NUM);
+      // mask out numlock mod key
+      Uint16 mod = event.key.keysym.mod & ~KMOD_NUM;
+
+      // be sure to set left and right keys for alt and ctrl
+      if ((mod & KMOD_ALT) != 0) mod |= KMOD_ALT;
+      if ((mod & KMOD_CTRL) != 0) mod |= KMOD_CTRL;
+
+      // make keymod value
+      Uint32 keymod = ua_make_keymod(event.key.keysym.sym, mod);
 
       ua_key_value key = scr_keymap->find_key(keymod);
 
