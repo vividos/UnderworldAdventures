@@ -803,7 +803,9 @@ Table of Contents
    0001    Int8       height
    0002    Int8       hotspot x (?)
    0003    Int8       hotspot y (?)
-   0004    Int8       type (?)
+   0004    Int8       type; (6: 5-bit word size)
+   0005    Int16      data length in number of words
+   0007               start of rle-encoded image data (see 2.3)
 
 
 5.1 Cutscene Animations
