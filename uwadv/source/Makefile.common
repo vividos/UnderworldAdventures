@@ -63,6 +63,7 @@ uwadv_SOURCES = \
 	renderer/texture.cpp renderer/texture.hpp \
 	screens/acknowledgements.cpp screens/acknowledgements.hpp \
 	screens/create_character.cpp screens/create_character.hpp \
+	screens/conversation.cpp screens/conversation.hpp \
 	screens/cutscene_view.cpp screens/cutscene_view.hpp \
 	screens/ingame_orig.cpp screens/ingame_orig.hpp \
 	screens/ingame_ctrls.cpp screens/ingame_ctrls.hpp \
@@ -113,7 +114,5 @@ the_rest = \
 	resource/model/FlexLexer.h \
 	resource/model/importwrl.cpp \
 	resource/model/wrllexer.cpp resource/model/wrllexer.hpp \
-	screens/conversation.cpp \
-	screens/conversation.hpp \
 	screens/map_view.cpp \
 	screens/map_view.hpp

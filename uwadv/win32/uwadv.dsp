@@ -465,6 +465,10 @@ SOURCE=..\source\screens\acknowledgements.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\source\screens\conversation.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\source\screens\create_character.cpp
 # End Source File
 # Begin Source File
@@ -511,6 +515,10 @@ SOURCE=..\source\screens\uwadv_menu.cpp
 # Begin Source File
 
 SOURCE=..\source\screens\acknowledgements.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\screens\conversation.hpp
 # End Source File
 # Begin Source File
 
@@ -591,10 +599,6 @@ SOURCE=..\source\underw\pathfinder.cpp
 # Begin Source File
 
 SOURCE=..\source\underw\physics.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\source\underw\physicsbody.cpp
 # End Source File
 # Begin Source File
 
