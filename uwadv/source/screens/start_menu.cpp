@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Underworld Adventures Team
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 #include "acknowledgements.hpp"
 #include "create_character.hpp"
 #include "ingame_orig.hpp"
-#include "load_game.hpp"
+#include "save_game.hpp"
 
 
 // constants
@@ -307,7 +307,7 @@ void ua_start_menu_screen::press_button()
       if (journey_avail)
       {
          // "load game" screen (with later starting "orig. ingame ui")
-         core->push_screen(new ua_load_game_screen(new ua_ingame_orig_screen));
+         core->push_screen(new ua_save_game_screen(true));
       }
       break;
    }
