@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -27,18 +27,18 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE 
 BEGIN
     "#include ""winresrc.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE 
 BEGIN
     "\r\n"
     "\0"
@@ -52,8 +52,8 @@ END
 // Dialog
 //
 
-IDD_DIALOG_UACONFIG DIALOG DISCARDABLE  0, 0, 282, 164
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_DIALOG_UACONFIG DIALOG  0, 0, 282, 164
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Underworld Adventures Configuration"
 FONT 8, "Tahoma"
 BEGIN
@@ -96,7 +96,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
+GUIDELINES DESIGNINFO 
 BEGIN
     IDD_DIALOG_UACONFIG, DIALOG
     BEGIN
@@ -123,9 +123,8 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_ICON_UACONFIG       ICON    DISCARDABLE     "Corp.ico"
+IDI_ICON_UACONFIG       ICON                    "Corp.ico"
 
-#ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
@@ -140,7 +139,7 @@ VS_VERSION_INFO VERSIONINFO
 #else
  FILEFLAGS 0x28L
 #endif
- FILEOS 0x40004L
+ FILEOS 0x4L
  FILETYPE 0x2L
  FILESUBTYPE 0x0L
 BEGIN
@@ -148,18 +147,18 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "Comments", "Underworld Adventures is a project to recreate Ultima Underworld 1 on modern operating systems.\0"
-            VALUE "CompanyName", "Underworld Adventures Team\0"
-            VALUE "FileDescription", "Underworld Adventures Config program\0"
-            VALUE "FileVersion", "0.9-mojito\0"
-            VALUE "InternalName", "uaconfig\0"
-            VALUE "LegalCopyright", "Copyright © 2004 Underworld Adventures Team\0"
-            VALUE "LegalTrademarks", " \0"
-            VALUE "OriginalFilename", "uaconfig.exe\0"
-            VALUE "PrivateBuild", " \0"
-            VALUE "ProductName", "Underworld Adventures Config\0"
-            VALUE "ProductVersion", "0.9-mojito\0"
-            VALUE "SpecialBuild", " \0"
+            VALUE "Comments", "Underworld Adventures is a project to recreate Ultima Underworld 1 on modern operating systems."
+            VALUE "CompanyName", "Underworld Adventures Team"
+            VALUE "FileDescription", "Underworld Adventures Config application"
+            VALUE "FileVersion", "0.9-mojito"
+            VALUE "InternalName", "uaconfig"
+            VALUE "LegalCopyright", "Copyright © 2004,2005 Underworld Adventures Team"
+            VALUE "LegalTrademarks", " "
+            VALUE "OriginalFilename", "uaconfig.exe"
+            VALUE "PrivateBuild", " "
+            VALUE "ProductName", "Underworld Adventures"
+            VALUE "ProductVersion", "0.9-mojito"
+            VALUE "SpecialBuild", " "
         END
     END
     BLOCK "VarFileInfo"
@@ -168,21 +167,19 @@ BEGIN
     END
 END
 
-#endif    // !_MAC
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // String Table
 //
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE 
 BEGIN
     IDOK                    "Leaves Underworld Adventures Configuration dialog and saves settings made so far."
     IDCANCEL                "Leaves Underworld Adventures Configuration dialog and dismisses all changes made."
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE 
 BEGIN
     IDC_EDIT_UW1_PATH       "Contains the full path to a folder where Ultima Underworld I is installed."
     IDC_BUTTON_SET_UW1_PATH "Lets you browse for a folder where Ultima Underworld I is installed."
@@ -197,7 +194,7 @@ BEGIN
                             "When checked, Underworld Adventures features are enabled. Please read the documentation for more information."
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE 
 BEGIN
     IDC_CHECK_SMOOTHUI      "When checked, the in-game user interface graphics are smoothed to prevent a 'pixely' appearance."
 END
