@@ -741,6 +741,10 @@ SOURCE=..\cutscene.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\source\debug.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\files.cpp
 # End Source File
 # Begin Source File
@@ -794,6 +798,10 @@ SOURCE=..\utils.cpp
 # Begin Source File
 
 SOURCE=..\cutscene.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\debug.hpp
 # End Source File
 # Begin Source File
 
