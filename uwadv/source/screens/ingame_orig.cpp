@@ -1339,10 +1339,16 @@ void ua_ingame_orig_screen::set_cursor_image(bool is_object, Uint16 image,
    if (!prio && prio_cursor)
       return; // do nothing; priority cursor in effect
 
-   if (image==0xffff && prio_cursor)
+//   ua_trace("set_cursor_image(%s, %04x, %s)\n",
+//      is_object?"true":"false", image, prio?"true":"false");
+
+   if (image==0xffff)
    {
-      // reset cursor image
-      prio_cursor = false;
+      if (prio_cursor)
+      {
+         // reset cursor image
+         prio_cursor = false;
+      }
       image = 0;
    }
    else
@@ -1353,10 +1359,12 @@ void ua_ingame_orig_screen::set_cursor_image(bool is_object, Uint16 image,
    if (!is_object)
    {
       // change mouse cursor type
+//      ua_trace("mousecursor.settype(%04x);\n",cursor_image);
       mousecursor.settype(cursor_image);
    }
    else
    {
+//      ua_trace("mousecursor.set_custom(img_objects.get_image(%04x));\n",cursor_image);
       mousecursor.set_custom(img_objects.get_image(cursor_image));
    }
 }
