@@ -126,13 +126,27 @@ void ua_underworld::load_game(ua_savegame &sg)
    // load inventory
    inventory.load_game(sg);
 
-   // save player infos
+   // load player infos
    player.load_game(sg);
 
-   // conv. globals
+   // load quest flags
+   {
+      sg.begin_section("questflags");
+
+      unsigned int max = sg.read16();
+      questflags.clear();
+      questflags.resize(max,0);
+
+      for(unsigned int i=0; i<max; i++)
+         questflags[i] = sg.read16();
+
+      sg.end_section();
+   }
+
+   // load conv. globals
    conv_globals.load_game(sg);
 
-   // Lua script values
+   // load Lua script values
    script.load_game(sg);
 
    sg.close();
@@ -165,10 +179,23 @@ void ua_underworld::save_game(ua_savegame &sg)
    // save player infos
    player.save_game(sg);
 
-   // conv. globals
+   // save quest flags
+   {
+      sg.begin_section("questflags");
+
+      unsigned int max = questflags.size();
+      sg.write16(max);
+
+      for(unsigned int i=0; i<max; i++)
+         sg.write16(questflags[i]);
+
+      sg.end_section();
+   }
+
+   // save conv. globals
    conv_globals.save_game(sg);
 
-   // Lua script values
+   // save Lua script values
    script.save_game(sg);
 
    sg.close();
