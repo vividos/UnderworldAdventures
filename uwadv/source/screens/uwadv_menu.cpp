@@ -54,6 +54,9 @@ void ua_uwadv_menu_screen::init()
       settings.get_gametype() == ua_game_uw1 ? "uw1" :
       settings.get_gametype() == ua_game_uw_demo ? "uw_demo" : "uw2");
 
+   // set generic uw path
+   settings.set_value(ua_setting_uw_path,settings.get_string(ua_setting_uw1_path));
+
    // now that we know the generic uw path, we can init the whole game stuff
    game->init_game();
 }
