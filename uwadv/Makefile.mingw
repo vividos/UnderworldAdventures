@@ -132,6 +132,17 @@ uwadv_LDFLAGS =
 endif
 
 
+# ua config program
+
+uaconfig_EXEC = uaconfig.exe
+
+uaconfig_OBJS = source/win32/source/uaconfig/uaconfig.o \
+	source/win32/source/uaconfig/uaconfig_res.o \
+	source/settings.o source/resource/settingsloader.o
+
+uaconfig_LIBS = $(WIN32_LIB) $(STLPORT_LIB)
+
+
 # conv debugger
 
 cnvdbg_EXEC = cnvdbg.exe
@@ -222,6 +233,11 @@ uwadv.cfg: source/win32/uwadv.cfg
 	cp source/win32/uwadv.cfg .
 
 
+uaconfig: $(uaconfig_EXEC)
+$(uaconfig_EXEC): $(uaconfig_OBJS)
+	$(CXX) $(LDFLAGS) $(uaconfig_LDFLAGS) -o $(@) $(uaconfig_OBJS) $(uaconfig_LIBS)
+
+
 cnvdbg: $(cnvdbg_EXEC)
 $(cnvdbg_EXEC): $(cnvdbg_OBJS)
 	$(CXX) $(LDFLAGS) $(cnvdbg_LDFLAGS) -o $(@) $(cnvdbg_OBJS) $(cnvdbg_LIBS)
@@ -273,10 +289,11 @@ luac-clean:
 	cd source/lua/src/luac && make clean
 
 
-update: uwadv data
+update: uwadv data uaconfig
 	strip $(uwadv_EXEC)
 	mkdir -p $(UWADV_PATH)
 	cp $(uwadv_EXEC) $(UWADV_PATH)
+	cp $(uaconfig_EXEC) $(UWADV_PATH)
 	mkdir -p $(UWADV_PATH)/uadata/
 	cp uadata/uadata00.uar $(UWADV_PATH)/uadata/
 
@@ -292,8 +309,10 @@ installer: uwadv data
 clean: data-clean luac-clean
 	rm -f $(uwadv_EXEC) $(cnvdbg_EXEC) $(cnvdasm_EXEC) $(xmi2mid_EXEC) \
 		$(mapdisp_EXEC) $(animview_EXEC) $(strpak_EXEC) \
+		$(uaconfig_EXEC) \
 		$(uwadv_OBJS) $(cnvdbg_OBJS) $(cnvdasm_OBJS) $(xmi2mid_OBJS) \
-		$(mapdisp_OBJS) $(animview_OBJS) $(strpak_OBJS)
+		$(mapdisp_OBJS) $(animview_OBJS) $(strpak_OBJS) \
+		$(uaconfig_OBJS)
 
 
 #
