@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -21,41 +21,120 @@
 */
 /*! \file panel.hpp
 
-   \brief inventory/stats/rune bag panel
+   \brief panel for inventory/stats/rune bag
 
 */
+//! \ingroup screens
+
+//@{
 
 // include guard
 #ifndef uwadv_panel_hpp_
 #define uwadv_panel_hpp_
 
 // needed includes
-#include "core.hpp"
-#include "font.hpp"
-#include "screen.hpp"
+#include "panel.hpp"
+#include "imgquad.hpp"
+//#include "font.hpp"
 
 
-// forward references
-//enum ua_screen_area_id;
-class ua_ingame_orig_screen;
+// enums
+
+//! panel types
+enum ua_panel_type
+{
+   ua_panel_inventory=0, //!< inventory panel
+   ua_panel_stats,       //!< stats panel
+   ua_panel_runebag,     //!< runebag panel
+};
 
 
 // classes
 
 //! panel
-class ua_panel: public ua_screen_ctrl_base
+class ua_panel: public ua_image_quad
 {
 public:
+   //! ctor
    ua_panel();
 
-   void init_panel(ua_game_core_interface* core, ua_ingame_orig_screen* ingame_orig);
-   virtual void suspend();
-   virtual void resume();
-   virtual void done();
-   virtual void mouse_action(bool click, bool left_button, bool pressed);
-   virtual void render();
+   //! initializes panel
+   virtual void init(ua_game_interface& game, unsigned int xpos,
+      unsigned int ypos);
+
+   // virtual functions from ua_window
+   virtual void destroy();
+   virtual void draw();
+   virtual bool process_event(SDL_Event& event);
+   virtual void mouse_event(bool button_clicked, bool left_button,
+      bool button_down, unsigned int mousex, unsigned int mousey);
    virtual void tick();
 
+
+protected:
+   //! updates panel image
+   void update_panel();
+
+   //! update chain images only
+   void update_chains();
+
+protected:
+   //! panel type
+   ua_panel_type panel_type;
+
+   //! indicates if female armor images are used
+   bool armor_female;
+
+   //! tickrate in ticks/s
+   unsigned int tickrate;
+
+
+   // images / image lists
+
+   //! panel background images
+   std::vector<ua_image> img_panels;
+
+   //! chains images
+   std::vector<ua_image> img_chains;
+
+   //! inventory background for bags
+   ua_image img_inv_bagpanel;
+
+   //! up/down buttons for inventory
+   std::vector<ua_image> img_inv_updown;
+
+   //! armor pieces for paperdoll
+   std::vector<ua_image> img_armor;
+
+   //! paperdoll body images
+   std::vector<ua_image> img_bodies;
+
+   //! inventory objects
+   std::vector<ua_image> img_objects;
+
+
+
+   //! chains image on top
+   ua_image_quad img_chains_top;
+
+   //! chains image on bottom
+   ua_image_quad img_chains_bottom;
+
+
+   //! indicates if panel is currently rotating
+   bool rotate_panel;
+
+   //! rotation angle
+   double rotate_angle;
+
+   //! new panel that is shown when rotation completes
+   ua_panel_type rotate_panel_type;
+
+   //! indicates if old-style "jerky" rotation should be used
+   bool rotation_oldstyle;
+
+
+/*
 protected:
    //! updates panel texture
    void update_panel_texture();
@@ -69,10 +148,6 @@ protected:
    void inventory_dragged_item();
 
 protected:
-   //! ingame screen
-   ua_ingame_orig_screen* ingame_orig;
-
-
    // inventory / item dragging
 
    //! start of inventory slots the user sees
@@ -90,35 +165,11 @@ protected:
 
    // panel graphics
 
-   //! panels
-   ua_image_list img_panels;
-
-   //! panel texture
-   ua_texture tex_panel;
-
-   //! current panel type; 0 = inventory, 1 = runebag, 2 = stats
-   unsigned int panel_type;
-
-   //! alternative inventory panel when inside container
-   ua_image img_inv_bagpanel;
-
-   //! up/down button for scrollable inventory
-   ua_image_list img_inv_updown;
-
-   //! paperdoll armor images
-   ua_image_list img_armor;
-
-   //! indicates if armor is female
-   bool armor_female;
-
-   //! player appearance body graphics
-   ua_image_list img_bodies;
-
-   //! all inventory objects
-   ua_image_list img_objects;
-
    //! normal font for inventory weight
    ua_font font_normal;
+*/
 };
 
+
 #endif
+//@}

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -28,12 +28,216 @@
 // needed includes
 #include "common.hpp"
 #include "panel.hpp"
-#include "ingame_orig.hpp"
-#include <sstream>
+#include "underworld.hpp"
+//#include "ingame_orig.hpp"
+//#include <sstream>
+
+
+//! time to rotate panel
+const double ua_panel_rotate_time = 2.5;
+
+
+// ua_panel methods
+
+ua_panel::ua_panel()
+{
+}
+
+void ua_panel::init(ua_game_interface& game, unsigned int xpos,
+   unsigned int ypos)
+{
+   panel_type = ua_panel_inventory;
+   armor_female = game.get_underworld().get_player().get_attr(ua_attr_gender) != 0;
+   tickrate = game.get_tickrate();
+   rotate_panel = false;
+   rotate_angle = 0.0;
+   rotation_oldstyle = !game.get_settings().get_bool(ua_setting_uwadv_features);
+
+   // load image lists
+   ua_image_manager& img_manager = game.get_image_manager();
+
+   img_manager.load_list(img_panels, "panels", 0,3);
+   img_manager.load_list(img_chains, "chains");
+   img_manager.load(img_inv_bagpanel, "inv", 6);
+   img_manager.load_list(img_inv_updown, "buttons", 27,28);
+
+   img_manager.load_list(img_armor, armor_female ? "armor_f" : "armor_m");
+
+   img_manager.load_list(img_bodies, "bodies");
+   img_manager.load_list(img_objects, "objects");
+
+   // create image
+   get_image().create(85,116);
+   get_image().set_palette(img_manager.get_palette(0));
+
+   ua_image_quad::init(game,xpos,ypos);
+
+   {
+      img_chains_top.init(game,xpos+37, ypos-4);
+      img_chains_top.get_image().create(10,4);
+      img_chains_top.get_image().set_palette(game.get_image_manager().get_palette(0));
+
+      img_chains_bottom.init(game,xpos+37, ypos+114);
+      img_chains_bottom.get_image().create(10,18);
+      img_chains_bottom.get_image().set_palette(game.get_image_manager().get_palette(0));
+
+      update_chains();
+   }
+
+   update_panel();
+}
+
+void ua_panel::destroy()
+{
+   ua_image_quad::destroy();
+}
+
+void ua_panel::draw()
+{
+   if (rotate_panel)
+   {
+      // save position
+      unsigned int save_xpos = wnd_xpos;
+      unsigned int save_width = wnd_width;
+
+      // calculate new position
+      if (rotation_oldstyle)
+      {
+         // old-style: calculate angles in steps of 22.5
+         double angle = (unsigned(rotate_angle / 180.0 * 8.0) / 8.0 * 180.0);
+
+         // ensure at least a small panel
+         if (angle > 89.0 && angle < 91.0) angle = 87.0;
+
+         wnd_width = unsigned(save_width*fabs(cos(ua_deg2rad(angle))));
+      }
+      else
+      {
+         // new-style: smooth
+         wnd_width = unsigned(save_width*fabs(cos(ua_deg2rad(rotate_angle))));
+      }
+
+      wnd_xpos = save_xpos+save_width/2-wnd_width/2;
+
+      ua_image_quad::draw();
+
+      wnd_xpos = save_xpos;
+      wnd_width = save_width;
+   }
+   else
+      ua_image_quad::draw();
+
+   // also draw chains
+   img_chains_top.draw();
+   img_chains_bottom.draw();
+}
+
+/*! \todo when pressing bottom chain, check if user has an item on cursor
+    and prevent switching then. */
+bool ua_panel::process_event(SDL_Event& event)
+{
+   // don't process events when in rotate mode
+   if (rotate_panel)
+      return ua_image_quad::process_event(event);
+
+   // check if bottom chain was pressed
+   if (event.type == SDL_MOUSEBUTTONUP)
+   {
+      unsigned int xpos,ypos;
+      calc_mousepos(event, xpos, ypos);
+
+      // in window?
+      if (img_chains_bottom.in_window(xpos,ypos))
+      {
+         rotate_panel = true;
+         rotate_angle = 0.0;
+
+         // change to stats when in inventory, and to inventory when not
+         if (panel_type != ua_panel_inventory)
+            rotate_panel_type = ua_panel_inventory;
+         else
+            rotate_panel_type = ua_panel_stats;
+      }
+   }
+
+   return ua_image_quad::process_event(event);
+}
+
+void ua_panel::mouse_event(bool button_clicked, bool left_button,
+   bool button_down, unsigned int mousex, unsigned int mousey)
+{
+}
+
+void ua_panel::tick()
+{
+   if (rotate_panel)
+   {
+      double old_angle = rotate_angle;
+      rotate_angle += 180.0 / (ua_panel_rotate_time * tickrate);
+
+      // check if we have to update the chains
+      if (unsigned(old_angle/180.0*8.0) != unsigned(rotate_angle/180.0*8.0))
+         update_chains();
+
+      // do we have to change panel image?
+      if (rotate_angle >= 90.0)
+      {
+         panel_type = rotate_panel_type;
+         update_panel();
+      }
+
+      // check for rotation end
+      if (rotate_angle >= 180.0)
+      {
+         rotate_panel = false;
+         update_chains();
+      }
+   }
+}
+
+void ua_panel::update_panel()
+{
+   ua_image& img = get_image();
+
+   // inventory panel?
+   if (panel_type == ua_panel_inventory)
+   {
+      img.paste_image(img_panels[0],1,1);
+   }
+   else
+   if (panel_type == ua_panel_stats)
+   {
+      img.paste_image(img_panels[2],1,1);
+   }
+   else
+   if (panel_type == ua_panel_runebag)
+   {
+      img.paste_image(img_panels[1],1,1);
+   }
+
+   update();
+}
+
+void ua_panel::update_chains()
+{
+   unsigned int chain_add = rotate_panel ?
+      unsigned(rotate_angle/180.0*8.0)%8 : 0;
+
+   // set chains images
+   img_chains_top.get_image().paste_image(img_chains[8+(chain_add)%8], 0,0);
+   img_chains_bottom.get_image().paste_image(img_chains[chain_add%8], 0,0);
+
+   img_chains_top.update();
+   img_chains_bottom.update();
+}
+
+
+
+// old stuff
 
 
 // tables
-
+/*
 ua_screen_area_data ua_panel_area_table[] =
 {
    { ua_area_inv_slot0, 242, 260,  83,  99 },
@@ -67,54 +271,16 @@ ua_screen_area_data ua_panel_area_table[] =
    { ua_area_none, 0,0, 320,200 }
 };
 
-
 // ua_panel methods
-
-ua_panel::ua_panel()
-{
-}
 
 void ua_panel::init_panel(ua_game_core_interface* thecore,
    ua_ingame_orig_screen* theingame_orig)
 {
-   init(thecore);
-
-   ingame_orig = theingame_orig;
-
-   panel_type = 0;
    slot_start = 0;
    check_dragging = false;
 
-   ua_settings& settings = core->get_settings();
-
-   // load images
-   img_panels.load(settings,"panels",0,3);
-   img_inv_bagpanel.load(settings,"inv",6);
-   img_inv_updown.load(settings,"buttons",27,29);
-
-   armor_female = core->get_underworld().get_player().get_attr(ua_attr_gender)!=0;
-   img_armor.load(settings,armor_female ? "armor_f" : "armor_m");
-
-   img_bodies.load(settings,"bodies");
-   img_objects.load(settings,"objects");
-
    // fonts
    font_normal.init(settings,ua_font_normal);
-}
-
-void ua_panel::suspend()
-{
-   tex_panel.done();
-}
-
-void ua_panel::resume()
-{
-   tex_panel.init(&core->get_texmgr(),1,GL_LINEAR,GL_LINEAR,GL_CLAMP,GL_CLAMP);
-   update_panel_texture();
-}
-
-void ua_panel::done()
-{
 }
 
 void ua_panel::mouse_action(bool click, bool left_button, bool pressed)
@@ -130,23 +296,6 @@ void ua_panel::mouse_action(bool click, bool left_button, bool pressed)
       if (check_dragging && drag_area != area)
          inventory_dragged_item();
    }
-}
-
-void ua_panel::render()
-{
-   tex_panel.use();
-   double u = tex_panel.get_tex_u(), v = tex_panel.get_tex_v();
-
-   glBegin(GL_QUADS);
-   glTexCoord2d(0.0, v  ); glVertex2i(236,   79);
-   glTexCoord2d(u  , v  ); glVertex2i(236+83,79);
-   glTexCoord2d(u  , 0.0); glVertex2i(236+83,79+114);
-   glTexCoord2d(0.0, 0.0); glVertex2i(236,   79+114);
-   glEnd();
-}
-
-void ua_panel::tick()
-{
 }
 
 void ua_panel::update_panel_texture()
@@ -462,3 +611,4 @@ void ua_panel::inventory_dragged_item()
 
    update_panel_texture();
 }
+*/
