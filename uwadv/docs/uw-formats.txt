@@ -172,8 +172,8 @@ Table of Contents
    <9 blocks level map/object info>
    <9 blocks unknown info>
    <9 blocks level texture usage>
-   <9 blocks of level automap flags>
-   <9 blocks of level comment entries>
+   <9 blocks level automap flags>
+   <9 blocks level comment entries>
 
    The first 9 blocks describe the 9 level maps (Abyss levels 1 - 8 and the
    Ethereal Void). The next 9 blocks list the objects in the corresponding
@@ -216,8 +216,9 @@ Table of Contents
      that describe general critter info (see below). The remaining bytes is
      be NPC data (like xhome, yhome etc.).
 
-     Then follows 0x400 (=1024) entries for objects, the master object list.
-     They only consist of the two Int32's, the general object info:
+     Then follows 0x300 (=768) entries for remaining objects, the master
+     object list. They only consist of the two Int32's, the general object
+     info:
 
      word 1, bytes 0..3
      bits          description
@@ -231,16 +232,49 @@ Table of Contents
      word 2, bytes 4..7
      bits           description
       0 -  5    6   quality
-      6 - 15   10   link1 (object chain) (?)
+      6 - 15   10   link1 (object chain)
      16 - 21    6   unknown2
      22 - 31   10   quantity / link2
 
-     After these two lists, unknown data follows
+     Objects in a tile are stored as a linked list, where link1 points to the
+     next object in list, or contains 0x0000 for the end of the linked list.
+     The first object in the list is determined by the tile's object index
+     value (see above, at "Level map info").
+
+     The whole list is 0x100*0x1b + 0x300*0x08 = 0x1b00 + 0x1800 = 0x3300
+     bytes long. After these two lists, 0x3c08 - 0x3300 = 0x0908 bytes unknown
+     data follows.
+
+     Normally the field "quantity / link2" indicates how much items there are,
+     but with some objects, it links to another object(s). Here's a list of
+     IDs:
+
+      0040 - 007f: all sorts of NPCs (link2 point to inventory start)
+      0080 - 008e: all sorts of container (points to content)
+      008f: a_rune bag (specially treated)
+      0098 - 009f,00aa: all sorts of wands (points to a a_spell object)
+      0140 - 014f: doors (points to a a_lock object, when locked)
+      015b, 015e: a_chest, a_barrel (3d objects)
+      0161: a_lever (mostly points to "a_use trigger" object)
+      016e: special tmap obj (?)
+      0170 - 017f: button, switches etc. (points to "a_use trigger" object)
+      0187: a_create object trap (points at object to create)
+      0188: a_door trap (usually points to "a_lock" object)
+      01a0: a_move trigger
+      01a2: a_use trigger
+      01a3: a_look trigger
+      01a5: an_open trigger
+      01a6: an_unlock trigger
 
    * Unknown info
 
      The 9 blocks contain entries with length of 6 bytes with unknown content.
      It always is 0x0180 bytes long, which leads to 64 entries.
+
+     0000   Int16   unk1
+     0002   Int16   unk2
+     0004   Int8    tile x coordinate
+     0005   Int8    tile y coordinate
 
    * Level texture usage
 
@@ -248,12 +282,12 @@ Table of Contents
      0060  10 x Int16   floor texture number (from f32.tr)
      0074   6 x Int16   door decal number (from doors.gr (?))
 
-   * level automap flags
+   * Level automap flags
 
-     each block contains the "visited" bytes for each level. each byte
-     describes a tile on the main map.
+     each block contains the "visited" bytes for each level. Each byte
+     describes a tile on the main map. The block size always is 0x1000.
 
-   * level comment entries
+   * Level comment entries
 
      not decoded yet
 
@@ -643,7 +677,7 @@ Table of Contents
 
      block 0: general UI strings
      block 1: character creation strings, mantras (?)
-     block 2: wall text/scroll/book/book title strings
+     block 2: wall text/scroll/book/book title strings (*)
      block 3: object descriptions (*)
      block 4: object "look" descriptions
      block 5: spell names
@@ -658,7 +692,11 @@ Table of Contents
      block 16: dream cutscene 2 text
      block 17-24: garamon cutscene texts
      block 25-121: conversation strings
-     
+
+     Block 2 contains text/scroll etc. strings. The exact string to use for a
+     book, scroll or other text object is in the link2 field. It is calculated
+     as link2 - 0x0200.
+
      Block 3 contains the object descriptions. The article (e.g. 'a' or 'an')
      is separated with an underscore '_'. When a '&' is in the string, it
      separates the plural of the object's name.
