@@ -21,7 +21,9 @@
 */
 /*! \file codevm.hpp
 
-   conversation code virtual machine - much stuff for underworld conversations
+   \brief conversation code virtual machine
+
+   much stuff for underworld conversations
 
    ua_conv_globals contains all conversation globals for each conversation
    slot and should be persisted when conversation or game exits.

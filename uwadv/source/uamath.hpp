@@ -21,7 +21,7 @@
 */
 /*! \file uamath.hpp
 
-   math stuff
+   \brief math stuff
 
 */
 

@@ -21,14 +21,16 @@
 */
 /*! \file xmidi.hpp
 
+   \brief XMIDI loading and processing
+
    functionaliy for loading and processing XMIDI (*.xmi) files that are used
    in many Ultima games.
 
 */
 
 // include guard
-#ifndef __uwadv_xmidi_h_
-#define __uwadv_xmidi_h_
+#ifndef __uwadv_xmidi_hpp_
+#define __uwadv_xmidi_hpp_
 
 // needed includes
 #include <SDL_types.h>

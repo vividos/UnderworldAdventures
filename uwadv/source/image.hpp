@@ -21,7 +21,7 @@
 */
 /*! \file image.hpp
 
-   image loading and handling, image lists
+   \brief image loading and handling, image lists
 
 */
 

@@ -21,7 +21,7 @@
 */
 /*! \file start_menu.hpp
 
-   start menu screen
+   \brief start menu screen
 
    shows the menu where the user can select "introduction", "create
    character", "acknowledgements" or "journey onward" (if a game can

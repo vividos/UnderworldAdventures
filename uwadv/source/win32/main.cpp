@@ -19,9 +19,9 @@
    $Id$
 
 */
-/*! \file main.cpp
+/*! \file win32/main.cpp
 
-   win32 specific main function
+   \brief win32 specific main function
 
 */
 

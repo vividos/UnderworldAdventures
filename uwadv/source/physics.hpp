@@ -21,7 +21,7 @@
 */
 /*! \file physics.hpp
 
-   game physics model
+   \brief game physics model
 
 */
 

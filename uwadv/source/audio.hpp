@@ -21,9 +21,11 @@
 */
 /*! \file audio.hpp
 
-   audio interface definition; the audio interface lets the user start and
-   stop playing music tracks and sound effects in the background. sound
-   effects are played once, until they end.
+   \brief audio interface definition
+
+   the audio interface lets the user start and stop playing music tracks and
+   sound effects in the background. sound effects are played once, until they
+   end.
 
    a new audio 'object' must be created with
 

@@ -21,7 +21,7 @@
 */
 /*! \file ingame_orig.hpp
 
-   original, old style game screen user interface
+   \brief original, old style game screen user interface
 
 */
 
@@ -68,6 +68,9 @@ protected:
 
    double fov;
    double playerxangle,playeryangle;
+
+   ua_image img;
+   ua_texture tex;
 };
 
 #endif

@@ -21,7 +21,7 @@
 */
 /*! \file inventory.cpp
 
-   a
+   \brief inventory implementation
 
 */
 

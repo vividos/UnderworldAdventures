@@ -21,7 +21,7 @@
 */
 /*! \file underworld.hpp
 
-   underworld class
+   \brief underworld class
 
 */
 

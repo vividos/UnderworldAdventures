@@ -21,7 +21,7 @@
 */
 /*! \file player.hpp
 
-   player character representation
+   \brief player character representation
 
 */
 

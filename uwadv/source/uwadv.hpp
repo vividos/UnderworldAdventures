@@ -21,7 +21,7 @@
 */
 /*! \file uwadv.hpp
 
-   game class definition
+   \brief game class definition
 
 */
 

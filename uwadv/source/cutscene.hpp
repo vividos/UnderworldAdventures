@@ -21,7 +21,7 @@
 */
 /*! \file cutscene.hpp
 
-   cutscene handling class
+   \brief cutscene handling class
 
 */
 

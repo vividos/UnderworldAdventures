@@ -21,9 +21,11 @@
 */
 /*! \file gamestrings.hpp
 
-   game strings class; game strings are contained in blocks that contain a
-   list of strings. each block contains specific strings, for item
-   descriptions, cutscene text or conversation strings.
+   \brief game strings class
+
+   game strings are contained in blocks that contain a list of strings. each
+   block contains specific strings, for item descriptions, cutscene text
+   or conversation strings.
 
 */
 

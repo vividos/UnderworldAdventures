@@ -21,7 +21,7 @@
 */
 /*! \file core.hpp
 
-   game core interface
+   \brief game core interface to access all game objects
 
 */
 

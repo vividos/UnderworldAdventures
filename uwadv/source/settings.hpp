@@ -21,7 +21,7 @@
 */
 /*! \file settings.hpp
 
-   config file loader class
+   \brief config file loader class
 
 */
 

@@ -21,7 +21,7 @@
 */
 /*! \file font.hpp
 
-   font class
+   \brief font class
 
 */
 

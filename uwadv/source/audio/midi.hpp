@@ -21,7 +21,7 @@
 */
 /*! \file midi.hpp
 
-   midi playback class and driver
+   \brief midi playback class and driver
 
    ua_midi_driver is a base class for a generic midi driver, so that the midi
    player only has to access one interface.

@@ -21,7 +21,7 @@
 */
 /*! \file start_splash.hpp
 
-   start splash screen
+   \brief start splash screen
 
    displays the first few splash screens seen at the start of ultima
    underworld

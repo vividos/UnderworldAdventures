@@ -21,6 +21,8 @@
 */
 /*! \file screen.hpp
 
+   \brief user interface screens base class
+
    base class for user interface screens, e.g. main game screen, conversation screen,
    map screen etc.
 

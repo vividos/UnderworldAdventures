@@ -21,9 +21,10 @@
 */
 /*! \file game_win32.hpp
 
-   win32 specific game class; implements some virtual functions to override
-   win32 specific stuff, as menu or icon loading/handling or system message
-   processing.
+   \brief win32 specific game class
+
+   overrides some virtual functions to implement win32 specific stuff, as menu
+   or icon loading/handling or system message processing.
 
 */
 

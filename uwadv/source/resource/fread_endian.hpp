@@ -21,7 +21,7 @@
 */
 /*! \file fread_endian.hpp
 
-   endian-aware 16-bit and 32-bit fread routines
+   \brief endian-aware 16- and 32-bit fread/fwrite routines
 
 */
 
@@ -34,13 +34,18 @@
 #include <cstdio>
 
 
+// inline functions
+
+
 // endian conversion
 
+//! converts a 16-bit int
 inline Uint16 ua_endian_convert16(Uint16 x)
 {
    return (((x)&0x00ff)<<8) | (((x)&0xff00)>>8);
 }
 
+//! converts a 32-bit int
 inline Uint32 ua_endian_convert32(Uint32 x)
 {
    return ua_endian_convert16(((x)&0xffff0000)>>16) |
@@ -48,8 +53,9 @@ inline Uint32 ua_endian_convert32(Uint32 x)
 }
 
 
-// inline functions
+// fread/fwrite functions
 
+//! reads a 16-bit int
 inline Uint16 fread16(FILE *fd)
 {
    Uint16 data;
@@ -60,6 +66,7 @@ inline Uint16 fread16(FILE *fd)
    return data;
 }
 
+//! reads a 32-bit int
 inline Uint32 fread32(FILE *fd)
 {
    Uint32 data;
@@ -71,6 +78,7 @@ inline Uint32 fread32(FILE *fd)
 }
 
 
+//! writes a 16-bit int
 inline void fwrite16(FILE *fd,Uint16 data)
 {
 #if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
@@ -79,6 +87,7 @@ inline void fwrite16(FILE *fd,Uint16 data)
    fwrite(&data,1,2,fd);
 }
 
+//! writes a 32-bit int
 inline void fwrite32(FILE *fd,Uint32 data)
 {
 #if (SDL_BYTEORDER == SDL_BIG_ENDIAN)

@@ -21,7 +21,7 @@
 */
 /*! \file inventory.hpp
 
-   inventory representation
+   \brief inventory representation
 
 */
 

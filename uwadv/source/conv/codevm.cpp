@@ -19,7 +19,7 @@
    $Id$
 
 */
-/*! \file conversation.cpp
+/*! \file codevm.cpp
 
    \brief conv code execution functions
 

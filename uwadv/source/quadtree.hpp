@@ -21,7 +21,7 @@
 */
 /*! \file quadtree.hpp
 
-   quadtree definitions
+   \brief quadtree definitions
 
 */
 

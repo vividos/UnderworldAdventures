@@ -21,8 +21,9 @@
 */
 /*! \file uni_fmod.h
 
-   universal midi fmod driver; plays midis via the FMOD audio library.
-   available at http://www.fmod.org
+   \brief universal midi fmod driver
+
+   plays midis via the FMOD audio library, available at http://www.fmod.org
 
    on windows, automatically links with the import library "fmodvc.lib". for
    linux, one has to add -lfmod somewhere in the makefiles.

@@ -21,7 +21,7 @@
 */
 /*! \file level.hpp
 
-   class to load the game level map
+   \brief game level map class
 
 */
 

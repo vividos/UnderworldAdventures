@@ -21,7 +21,7 @@
 */
 /*! \file texture.hpp
 
-   texture management classes.
+   \brief texture management classes
 
    stock textures: wall textures start at index 0x0000, floor textures at
    0x0100

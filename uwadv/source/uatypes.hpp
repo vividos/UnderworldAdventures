@@ -21,7 +21,7 @@
 */
 /*! \file uatypes.hpp
 
-   commonly used types
+   \brief commonly used types
 
 */
 

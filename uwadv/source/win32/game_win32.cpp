@@ -21,7 +21,7 @@
 */
 /*! \file game_win32.cpp
 
-   win32 specific game base class implementation
+   \brief win32 specific game base class implementation
 
 */
 
@@ -53,7 +53,7 @@ void ua_game_win32::init()
       MAKEINTRESOURCE(IDI_ICON),IMAGE_ICON,16,16,LR_DEFAULTCOLOR);
 
    // set menu and icons
-   ::SetMenu(info.window,menu);
+//   ::SetMenu(info.window,menu);
    ::SendMessage(info.window,WM_SETICON,ICON_BIG,(LPARAM)icon);
    ::SendMessage(info.window,WM_SETICON,ICON_SMALL,(LPARAM)icon_small);
 }

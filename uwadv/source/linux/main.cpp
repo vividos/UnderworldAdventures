@@ -19,9 +19,9 @@
    $Id$
 
 */
-/*! \file main.cpp
+/*! \file linux/main.cpp
 
-   linux specific main function
+   \brief linux specific main function
 
 */
 

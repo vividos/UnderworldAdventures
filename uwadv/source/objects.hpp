@@ -21,7 +21,7 @@
 */
 /*! \file objects.hpp
 
-   objects management
+   \brief objects management
 
 */
 

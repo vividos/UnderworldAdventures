@@ -21,7 +21,7 @@
 */
 /*! \file common.hpp
 
-   commonly used includes and definitions
+   \brief commonly used includes and definitions
 
 */
 

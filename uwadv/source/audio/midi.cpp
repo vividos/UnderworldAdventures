@@ -19,7 +19,7 @@
    $Id$
 
 */
-/*! \file midi.hpp
+/*! \file midi.cpp
 
    \brief midi playback class implementation
 
