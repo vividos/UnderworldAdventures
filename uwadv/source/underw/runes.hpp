@@ -41,7 +41,7 @@
 
 //! runes class
 /*! The runes class contains the runeshelf and the runebag contents. Note that
-    there are only 24 runes, since X and Y don't have associated rune stones.
+    there are only 24 runes, since X and Z don't have associated rune stones.
 */
 class ua_runes
 {
