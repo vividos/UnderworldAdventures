@@ -50,6 +50,15 @@ void ua_image_quad::update()
 
    split_textures = wnd_width > 254;
 
+   if (split_textures)
+   {
+      // check if textures > 256 x 256 are supported
+      GLint maxtexsize;
+      glGetIntegerv(GL_MAX_TEXTURE_SIZE,&maxtexsize);
+
+      split_textures = maxtexsize <= 256;
+   }
+
    // upload image
    if (split_textures)
    {
@@ -101,36 +110,40 @@ void ua_image_quad::draw()
    unsigned int quadheight = wnd_height;
    double dx = split_textures ? 0.5/quadwidth : 0.0;
 
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+//   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+//   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR/*GL_NEAREST*/);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR/*GL_NEAREST*/);
 
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT/*GL_CLAMP*//*_TO_EDGE*/);
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
    // render (first) quad
    glBegin(GL_QUADS);
-   glTexCoord2d(0.0,  v);   glVertex2i(wnd_xpos+0,        200-wnd_ypos-quadheight);
-   glTexCoord2d(u-dx, v);   glVertex2i(wnd_xpos+quadwidth,200-wnd_ypos-quadheight);
-   glTexCoord2d(u-dx, 0.0); glVertex2i(wnd_xpos+quadwidth,200-wnd_ypos);
-   glTexCoord2d(0.0,  0.0); glVertex2i(wnd_xpos+0,        200-wnd_ypos);
+   glTexCoord2d(0.0,  v);   glVertex2d(wnd_xpos+0,        200-wnd_ypos-quadheight);
+   glTexCoord2d(u-dx, v);   glVertex2d(wnd_xpos+quadwidth,200-wnd_ypos-quadheight);
+   glTexCoord2d(u-dx, 0.0); glVertex2d(wnd_xpos+quadwidth,200-wnd_ypos);
+   glTexCoord2d(0.0,  0.0); glVertex2d(wnd_xpos+0,        200-wnd_ypos);
    glEnd();
 
    if (split_textures)
    {
       tex.use(1);
 
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+//      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+//      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
       // render second quad
       glBegin(GL_QUADS);
-      glTexCoord2d(0.0, v  ); glVertex2i(wnd_xpos+quadwidth,  200-wnd_ypos-quadheight);
-      glTexCoord2d(u  , v  ); glVertex2i(wnd_xpos+quadwidth*2,200-wnd_ypos-quadheight);
-      glTexCoord2d(u  , 0.0); glVertex2i(wnd_xpos+quadwidth*2,200-wnd_ypos);
-      glTexCoord2d(0.0, 0.0); glVertex2i(wnd_xpos+quadwidth,  200-wnd_ypos);
+      glTexCoord2d(0.0,  v  ); glVertex2d(wnd_xpos+quadwidth,  200-wnd_ypos-quadheight);
+      glTexCoord2d(u-dx, v  ); glVertex2d(wnd_xpos+quadwidth*2,200-wnd_ypos-quadheight);
+      glTexCoord2d(u-dx, 0.0); glVertex2d(wnd_xpos+quadwidth*2,200-wnd_ypos);
+      glTexCoord2d(0.0,  0.0); glVertex2d(wnd_xpos+quadwidth,  200-wnd_ypos);
       glEnd();
    }
 }
