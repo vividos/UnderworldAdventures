@@ -165,6 +165,9 @@ public:
    //! initializes texture manager; loads stock textures
    void init(ua_settings& settings);
 
+   //! called every game tick
+   void tick(double ticktime);
+
    //! resets usage of stock textures in OpenGL
    void reset();
 
@@ -217,6 +220,9 @@ protected:
 
    //! all main palettes
    ua_onepalette allpals[8];
+
+   //! time counter for animated textures
+   double animcount;
 };
 
 

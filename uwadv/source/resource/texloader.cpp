@@ -81,6 +81,21 @@ void ua_texture_manager::init(ua_settings& settings)
          settings.get_gametype() == ua_game_uw1 ? "data/f32.tr" : "data/df32.tr");
       load_textures(ua_tex_stock_floor,floortexfname.c_str());
 
+      // set some animated textures
+      {
+         stock_animinfo[0x00ce].second = 8; // 206 lavafall
+         stock_animinfo[0x0129].second = 8; // 469 rivulets of lava
+         stock_animinfo[0x0117].second = 8; // 487 rivulets of lava
+         stock_animinfo[0x0118].second = 8; // 486 lava
+         stock_animinfo[0x0119].second = 8; // 485 lava
+
+         stock_animinfo[0x0120].second = 4; // 478 water
+         stock_animinfo[0x0121].second = 4; // 477 water
+         stock_animinfo[0x0122].second = 4; // 476 water
+         stock_animinfo[0x0110].second = 4; // 493 water
+         stock_animinfo[0x0111].second = 4; // 494 water
+      }
+
       // load switches/levers/pull chains
       {
          ua_image_list il;
@@ -104,7 +119,6 @@ void ua_texture_manager::init(ua_settings& settings)
 
          load_imgtextures(ua_tex_stock_tmobj,il);
       }
-
 
       // init stock texture objects
       reset();

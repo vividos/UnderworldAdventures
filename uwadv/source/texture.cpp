@@ -30,6 +30,11 @@
 #include "texture.hpp"
 
 
+// constants
+
+const double ua_texture_anim_fps = 1.5;
+
+
 // ua_texture methods
 
 void ua_texture::init(ua_texture_manager* the_texmgr,unsigned int numtex,
@@ -188,12 +193,37 @@ const Uint32* ua_texture::get_texels(unsigned int numtex)
 // ua_texture_manager methods
 
 ua_texture_manager::ua_texture_manager()
+:animcount(0.0)
 {
 }
 
 ua_texture_manager::~ua_texture_manager()
 {
    reset();
+}
+
+void ua_texture_manager::tick(double tickrate)
+{
+   animcount += tickrate;
+
+   if (animcount > 1.0/ua_texture_anim_fps)
+   {
+      animcount -= 1.0/ua_texture_anim_fps;
+
+      // next animation frame
+      unsigned int max = stock_animinfo.size();
+      for(unsigned int i=0; i<max; i++)
+      {
+         std::pair<unsigned int, unsigned int>& info = stock_animinfo[i];
+
+         if (info.second > 1)
+         {
+            // this one has animation
+            if ((++info.first) >= info.second)
+               info.first = 0;
+         }
+      }
+   }
 }
 
 void ua_texture_manager::reset()
@@ -205,7 +235,25 @@ void ua_texture_manager::reset()
    for(unsigned int i=0; i<max; i++)
       stock_textures[i].done();
 
-   last_texname = (GLuint)-1;
+   last_texname = 0;
+}
+
+//! rotates palette indices
+void ua_palette_rotate(ua_onepalette& pal,Uint8 start, Uint8 len, bool forward)
+{
+   Uint8 save[4];
+   if (forward)
+   {
+      memcpy(save,&pal[start],sizeof(pal[0]));
+      memmove(&pal[start],&pal[start+1],(len-1)*sizeof(pal[0]));
+      memcpy(pal[start+len-1],save,sizeof(pal[0]));
+   }
+   else
+   {
+      memcpy(save,&pal[start+len-1],sizeof(pal[0]));
+      memmove(&pal[start+1],&pal[start],(len-1)*sizeof(pal[0]));
+      memcpy(pal[start],save,sizeof(pal[0]));
+   }
 }
 
 void ua_texture_manager::prepare(unsigned int idx)
@@ -213,12 +261,12 @@ void ua_texture_manager::prepare(unsigned int idx)
    if (idx>=allstocktex_imgs.size())
       return; // not a valid index
 
-   unsigned int pal_max = stock_animinfo[idx].second > 0;
+   unsigned int pal_max = stock_animinfo[idx].second;
    if (pal_max<1)
       return; // not an available texture
 
    stock_textures[idx].init(this,pal_max,
-      GL_LINEAR,GL_NEAREST_MIPMAP_LINEAR,GL_CLAMP,GL_REPEAT);
+      GL_LINEAR,GL_NEAREST_MIPMAP_LINEAR,GL_REPEAT,GL_REPEAT);
 
    if (pal_max==1)
    {
@@ -229,9 +277,35 @@ void ua_texture_manager::prepare(unsigned int idx)
    }
    else
    {
+      ua_onepalette pal;
+      memcpy(pal,allpals[0],sizeof(ua_onepalette));
+
       // animated texture
-      // TODO upload
-      ;
+      if (pal_max == 8)
+      {
+         // lava texture: indices 16 through 23
+         for(unsigned int i=0; i<8; i++)
+         {
+            stock_textures[idx].convert(pal,allstocktex_imgs.get_image(idx),i);
+            stock_textures[idx].upload(i,true); // upload texture with mipmaps
+
+            // rotate entries
+            ua_palette_rotate(pal,16,8,false);
+         }
+      }
+      else
+      if (pal_max == 4)
+      {
+         // water texture: indices 48 through 51
+         for(unsigned int i=0; i<4; i++)
+         {
+            stock_textures[idx].convert(pal,allstocktex_imgs.get_image(idx),i);
+            stock_textures[idx].upload(i,true); // upload texture with mipmaps
+
+            // rotate entries
+            ua_palette_rotate(pal,48,4,true);
+         }
+      }
    }
 }
 
@@ -240,7 +314,7 @@ void ua_texture_manager::use(unsigned int idx)
    if (idx>=stock_textures.size())
       return; // not a valid index
 
-   stock_textures[idx].use();
+   stock_textures[idx].use(stock_animinfo[idx].first);
 }
 
 void ua_texture_manager::object_tex(Uint16 id,double& u1,double& v1,double& u2,double& v2)
