@@ -66,7 +66,7 @@ public:
    void write(const char *origfile, const char *newfile);
 
    //! called when a new "[section]" starts
-   virtual void write_start_section(const std::string& secname){}
+   virtual void write_start_section(const std::string& secname);
 
    //! called to replace a value
    virtual void write_replace(const std::string& name, std::string& value){}

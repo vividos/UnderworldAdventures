@@ -212,6 +212,16 @@ void ua_cfgfile::write(const char *origfile, const char *newfile)
    newfp = NULL;
 }
 
+void ua_cfgfile::write_start_section(const std::string& secname)
+{
+   std::string line("[");
+   line.append(secname);
+   line.append("]");
+
+   write_raw_line(line)
+}
+
+
 void ua_cfgfile::write_raw_line(const std::string& line)
 {
    fputs(line.c_str(),newfp);
