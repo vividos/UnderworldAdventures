@@ -33,7 +33,7 @@
 #include <algorithm>
 #include <cctype>
 
-#ifdef __MINGW32__
+#if defined(__MINGW32__) && !defined(HAVE_CONFIG_H)
 #define HAVE_SYS_STAT_H
 #endif
 
