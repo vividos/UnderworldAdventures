@@ -103,6 +103,10 @@ SOURCE=..\resource\gamestrings.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\resource\savegame.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\settings.cpp
 # End Source File
 # End Group

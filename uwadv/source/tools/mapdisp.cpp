@@ -76,7 +76,7 @@ void init_mapdisp()
 {
    // we don't load settings, just set the needed one
    settings.set_gametype(ua_game_uw1);
-   settings.insert_value(ua_setting_uw_path,"./");
+   settings.set_value(ua_setting_uw_path,"./");
 
    // check if we only have the demo
    FILE *fd = fopen("./data/level13.st","rb");

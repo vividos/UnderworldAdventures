@@ -15,7 +15,9 @@ noinst_PROGRAMS = cnvdasm cnvdbg xmi2mid mapdisp animview strpak
 cnvdasm_SOURCES = cnvdasm.cpp cnvdasm.hpp instr.hpp \
 	../conv/codevm.cpp ../resource/codeloader.cpp \
 	../resource/gamestrings.cpp ../settings.cpp \
-	cnvdasm.hpp instr.hpp ../conv/codevm.hpp
+	../resource/savegame.cpp \
+	cnvdasm.hpp instr.hpp ../conv/codevm.hpp \
+	../savegame.hpp
 
 cnvdasm_LDADD = $(SDL_LIBS)
 
@@ -23,7 +25,9 @@ cnvdasm_LDADD = $(SDL_LIBS)
 cnvdbg_SOURCES = cnvdbg.cpp cnvdbg.hpp instr.hpp \
 	../conv/codevm.cpp ../resource/codeloader.cpp \
 	../resource/gamestrings.cpp ../settings.cpp \
-	cnvdbg.hpp instr.hpp ../conv/codevm.hpp
+	../resource/savegame.cpp \
+	cnvdbg.hpp instr.hpp ../conv/codevm.hpp \
+	../savegame.hpp
 
 cnvdbg_LDADD = $(SDL_LIBS)
 
@@ -37,10 +41,10 @@ mapdisp_SOURCES = mapdisp.cpp ../level.cpp ../resource/maploader.cpp \
 	../quadtree.cpp ../resource/texloader.cpp ../texture.cpp \
 	../resource/imageloader.cpp ../resource/objloader.cpp \
 	../image.cpp ../objects.cpp ../resource/codeloader.cpp \
-	../settings.cpp \
+	../settings.cpp ../resource/savegame.cpp \
 	../common.hpp ../resource/fread_endian.hpp ../image.hpp \
 	../level.hpp ../objects.hpp ../quadtree.hpp ../settings.hpp \
-	../texture.hpp ../uatypes.hpp
+	../texture.hpp ../uatypes.hpp ../savegame.hpp
 
 mapdisp_LDADD = -lGL -lGLU $(SDL_LIBS)
 

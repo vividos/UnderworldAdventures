@@ -105,7 +105,7 @@ uwadv_OBJS = source/win32/source/main.o \
 	source/screens/start_menu.o source/screens/cutscene_view.o \
 	source/screens/acknowledgements.o source/screens/create_character.o \
 	source/screens/conversation.o source/screens/map_view.o \
-	source/screens/uwadv_menu.o
+	source/screens/uwadv_menu.o \
 	$(lua_OBJS) $(zziplib_OBJS)
 
 
@@ -121,7 +121,7 @@ cnvdbg_EXEC = cnvdbg.exe
 
 cnvdbg_OBJS = source/tools/cnvdbg.o source/conv/codevm.o \
 	source/resource/codeloader.o source/resource/gamestrings.o \
-	source/settings.o
+	source/settings.o source/resource/savegame.o
 
 cnvdbg_LIBS = -lmingw32 -lkernel32 -luser32 \
 	$(SDL_LIB) $(STLPORT_LIB)
@@ -135,7 +135,7 @@ cnvdasm_EXEC = cnvdasm.exe
 
 cnvdasm_OBJS = source/tools/cnvdasm.o source/conv/codevm.o \
 	source/resource/codeloader.o source/resource/gamestrings.o \
-	source/settings.o
+	source/settings.o source/resource/savegame.o
 
 cnvdasm_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB) $(STLPORT_LIB)
 
@@ -161,7 +161,7 @@ mapdisp_OBJS = source/tools/mapdisp.o source/level.o source/resource/maploader.o
 	source/quadtree.o source/texture.o source/resource/texloader.o \
 	source/resource/imageloader.o source/resource/objloader.o \
 	source/image.o source/objects.o source/resource/codeloader.o \
-	source/settings.o
+	source/settings.o source/resource/savegame.o
 
 mapdisp_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB) $(STLPORT_LIB) $(OPENGL_LIB)
 
