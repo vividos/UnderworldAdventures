@@ -37,7 +37,7 @@ void ua_screen_ctrl_base::init(ua_game_core_interface *thecore)
 {
    core = thecore;
    cursorx = cursory = 0;
-   leftbuttondown = rightbuttondown = false;
+   leftbuttondown_old = rightbuttondown_old = false;
 }
 
 void ua_screen_ctrl_base::handle_event(SDL_Event& event)
@@ -62,10 +62,10 @@ void ua_screen_ctrl_base::handle_event(SDL_Event& event)
          Uint8 state2 = SDL_GetMouseState(NULL,NULL);
 
          bool left_changed =
-            (state&SDL_BUTTON_LMASK) != 0 && !leftbuttondown;
+            (state&SDL_BUTTON_LMASK) != 0 && !leftbuttondown_old;
 
-         leftbuttondown = (state&SDL_BUTTON_LMASK) != 0;
-         rightbuttondown = (state&SDL_BUTTON_RMASK) != 0;
+         leftbuttondown_old = (state&SDL_BUTTON_LMASK) != 0;
+         rightbuttondown_old = (state&SDL_BUTTON_RMASK) != 0;
 
          mouse_action(true,left_changed,true);
       }
@@ -77,10 +77,10 @@ void ua_screen_ctrl_base::handle_event(SDL_Event& event)
          Uint8 state2 = SDL_GetMouseState(NULL,NULL);
 
          bool left_changed =
-            (state&SDL_BUTTON_LMASK) == 0 && leftbuttondown;
+            (state&SDL_BUTTON_LMASK) == 0 && leftbuttondown_old;
 
-         leftbuttondown = (state&SDL_BUTTON_LMASK) != 0;
-         rightbuttondown = (state&SDL_BUTTON_RMASK) != 0;
+         leftbuttondown_old = (state&SDL_BUTTON_LMASK) != 0;
+         rightbuttondown_old = (state&SDL_BUTTON_RMASK) != 0;
 
          mouse_action(true,left_changed,false);
       }

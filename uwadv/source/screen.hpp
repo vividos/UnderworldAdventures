@@ -110,7 +110,7 @@ protected:
    unsigned int cursorx,cursory;
 
    //! mouse button states
-   bool leftbuttondown,rightbuttondown;
+   bool leftbuttondown_old,rightbuttondown_old;
 };
 
 
