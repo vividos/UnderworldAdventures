@@ -178,6 +178,9 @@ public:
    //! returns player height
    double get_height();
 
+   //! returns player name
+   std::string& get_name();
+
 
    //! returns movement mode
    unsigned int get_movement_mode();
@@ -277,6 +280,11 @@ inline double ua_player::get_angle_pan()
 inline double ua_player::get_height()
 {
    return height;
+}
+
+inline std::string& ua_player::get_name()
+{
+   return name;
 }
 
 inline unsigned int ua_player::get_movement_mode()
