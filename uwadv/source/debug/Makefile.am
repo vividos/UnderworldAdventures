@@ -17,7 +17,7 @@ include Makefile.common
 
 
 EXTRA_DIST = \
-if BUILD_TOOLS
+if BUILD_UADEBUG
 else
 	$(libuadebug_la_SOURCES) \
 endif
