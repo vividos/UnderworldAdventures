@@ -601,6 +601,10 @@ SOURCE=..\screens\map_view.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\screens\save_game.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\screens\start_menu.cpp
 # End Source File
 # Begin Source File
@@ -642,6 +646,10 @@ SOURCE=..\screens\load_game.hpp
 # Begin Source File
 
 SOURCE=..\screens\map_view.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\screens\save_game.hpp
 # End Source File
 # Begin Source File
 
