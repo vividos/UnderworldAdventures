@@ -33,6 +33,7 @@
 #include "../import/io_endian.hpp"
 #include "uamath.hpp"
 #include <vector>
+#include "tessellator.hpp"
 
 
 // tables

@@ -36,6 +36,7 @@
 #include "audio/audio.hpp"
 #include "renderer/renderer.hpp"
 #include "script/script.hpp"
+#include "underworld.hpp"
 #include "game_interface.hpp"
 
 

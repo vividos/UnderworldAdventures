@@ -30,6 +30,7 @@
 #include "cutscene_view.hpp"
 #include "audio.hpp"
 #include "renderer.hpp"
+#include "underworld.hpp"
 
 
 // constants
