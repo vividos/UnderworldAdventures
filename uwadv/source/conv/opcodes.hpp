@@ -83,6 +83,22 @@ enum ua_conv_opcodes
 // text opcodes list
 
 //! instruction list
+/*!
+    operator precedence (the numbers are straight out of the C64 basic ROM):
+    prec name    (opcode)
+    ??   array subscript [] (OFFSET)
+    ??   function call (CALL, CALLI), "say" opcode (SAY_OP)
+    ??   dereference (FETCHM)
+    0x7d unary - (OPNEG)
+    0x7b mul div (OPMUL, OPDIV)
+    ??   modulo (OPMOD)
+    0x79 add sub (OPADD, OPSUB)
+    0x64 all comparisons (TSTxx)
+    0x5a not (in C "not" comes before "mul" and "div") (OPNOT)
+    0x50 and (OPAND)
+    0x46 or (OPOR)
+    ??   = (STO) (in C assignment comes below "or")
+*/
 static struct
 {
    //! mnemonic name
@@ -91,52 +107,57 @@ static struct
    int args;
    //! opcode format string
    const char* argcode;
-} ua_conv_instructions[0x002a] = 
+   //! operator text
+   const char* operator_text;
+   //! operator precedence level
+   int op_prec_level;
+} ua_conv_instructions[0x002a] =
 {
-   { "NOP",    0, "" },
-   { "OPADD",  0, "" },
-   { "OPMUL",  0, "" },
-   { "OPSUB",  0, "" },
-   { "OPDIV",  0, "" },
-   { "OPMOD",  0, "" },
-   { "OPOR",   0, "" },
-   { "OPAND",  0, "" },
-   { "OPNOT",  0, "" },
-   { "TSTGT",  0, "" },
-   { "TSTGE",  0, "" },
-   { "TSTLT",  0, "" },
-   { "TSTLE",  0, "" },
-   { "TSTEQ",  0, "" },
-   { "TSTNE",  0, "" },
-   { "JMP",    1, " $%04x" },
-   { "BEQ",    1, " +%04x" },
-   { "BNE",    1, " +%04x" },
-   { "BRA",    1, " +%04x" },
-   { "CALL",   1, " $%04x" },
-   { "CALLI",  1, " $%04x" },
-   { "RET",    0, "" },
-   { "PUSHI",  1, " #%04x" },
-   { "PUSHI_EFF", 1, " #%04x" },
-   { "POP",    0, "" },
-   { "SWAP",   0, "" },
-   { "PUSHBP", 0, "" },
-   { "POPBP",  0, "" },
-   { "SPTOBP", 0, "" },
-   { "BPTOSP", 0, "" },
-   { "ADDSP",  0, "" },
-   { "FETCHM", 0, "" },
-   { "STO",    0, "" },
-   { "OFFSET", 0, "" },
-   { "START",  0, "" },
-   { "SAVE_REG",  0, "" },
-   { "PUSH_REG",  0, "" },
-   { "STRCMP",    0, "" },
-   { "EXIT_OP",   0, "" },
-   { "SAY_OP",    0, "" },
-   { "RESPOND_OP",   0, "" },
-   { "OPNEG",     0, "" },
+   { "NOP",       0, "",       "",   -1 },
+   { "OPADD",     0, "",       "+",  0x79 },
+   { "OPMUL",     0, "",       "*",  0x7b },
+   { "OPSUB",     0, "",       "-",  0x79 },
+   { "OPDIV",     0, "",       "/",  0x7b },
+   { "OPMOD",     0, "",       "%",  0x7a },
+   { "OPOR",      0, "",       "||", 0x46 },
+   { "OPAND",     0, "",       "&&", 0x50 },
+   { "OPNOT",     0, "",       "!",  0x5a },
+   { "TSTGT",     0, "",       ">",  0x64 },
+   { "TSTGE",     0, "",       ">=", 0x64 },
+   { "TSTLT",     0, "",       "<",  0x64 },
+   { "TSTLE",     0, "",       "<=", 0x64 },
+   { "TSTEQ",     0, "",       "==", 0x64 },
+   { "TSTNE",     0, "",       "!=", 0x64 },
+   { "JMP",       1, " $%04x", "",   -1 },
+   { "BEQ",       1, " +%04x", "",   -1 },
+   { "BNE",       1, " +%04x", "",   -1 },
+   { "BRA",       1, " +%04x", "",   -1 },
+   { "CALL",      1, " $%04x", "",   0x90 },
+   { "CALLI",     1, " $%04x", "",   0x90 },
+   { "RET",       0, "",       "",   -1 },
+   { "PUSHI",     1, " #%04x", "",   -1 },
+   { "PUSHI_EFF", 1, " #%04x", "",   -1 },
+   { "POP",       0, "",       "",   -1 },
+   { "SWAP",      0, "",       "",   -1 },
+   { "PUSHBP",    0, "",       "",   -1 },
+   { "POPBP",     0, "",       "",   -1 },
+   { "SPTOBP",    0, "",       "",   -1 },
+   { "BPTOSP",    0, "",       "",   -1 },
+   { "ADDSP",     0, "",       "",   -1 },
+   { "FETCHM",    0, "",       "",   0x85 },
+   { "STO",       0, "",       "",   0x20 },
+   { "OFFSET",    0, "",       "",   0xa0 },
+   { "START",     0, "",       "",   -1 },
+   { "SAVE_REG",  0, "",       "",   -1 },
+   { "PUSH_REG",  0, "",       "",   -1 },
+   { "STRCMP",    0, "",       "",   -1 },
+   { "EXIT_OP",   0, "",       "",   -1 },
+   { "SAY_OP",    0, "",       "",   0x90 },
+   { "RESPOND_OP",0, "",       "",   -1 },
+   { "OPNEG",     0, "",       "",   0x7d },
 };
 
 
 #endif
 //@}
+
