@@ -193,7 +193,7 @@ void ua_ingame_orig_screen::init()
       textscroll.set_color_code(ua_cc_black);
 
       textscroll.print("Welcome to the Underworld Adventures!\n"
-         " \\3http://uwadv.sourceforge.net/\\0\n");
+         " \\3http://uwadv.sourceforge.net/\\0");
 
       register_window(&textscroll);
 
