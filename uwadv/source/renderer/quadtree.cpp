@@ -23,7 +23,7 @@
 
    \brief quadtree and view frustum implementation
 
-   there also is a test main() function, just define TEST_QUADTREE and compile
+   there is also a test main() function, just define TEST_QUADTREE and compile
    as a single project.
 
 */
@@ -64,7 +64,7 @@ ua_frustum2d::ua_frustum2d(double xpos, double ypos,
     more info at:
     http://research.microsoft.com/~hollasch/cgindex/math/barycentric.html
 */
-bool ua_frustum2d::is_in_frustum(double xpos,double ypos)
+bool ua_frustum2d::is_in_frustum(double xpos,double ypos) const
 {
    double b0 =  (points[1].x - points[0].x) * (points[2].y - points[0].y) - (points[2].x - points[0].x) * (points[1].y - points[0].y);
    double b1 = ((points[1].x - xpos) * (points[2].y - ypos) - (points[2].x - xpos) * (points[1].y - ypos)) / b0;
@@ -77,11 +77,18 @@ bool ua_frustum2d::is_in_frustum(double xpos,double ypos)
 
 // ua_quad methods
 
+ua_quad::ua_quad(unsigned int my_xmin, unsigned int my_xmax,
+   unsigned int my_ymin, unsigned int my_ymax)
+:xmin(my_xmin), xmax(my_xmax), ymin(my_ymin), ymax(my_ymax)
+{
+}
+
 #ifdef TEST_QUADTREE
 static int used_iter;
+static unsigned int quad_type[64*64];
 #endif
 
-void ua_quad::get_visible_tiles(ua_frustum2d& fr, std::vector<ua_quad_tile_coord>& tilelist)
+void ua_quad::find_visible_tiles(const ua_frustum2d& fr, ua_quad_callback& callback)
 {
 #ifdef TEST_QUADTREE
    used_iter++;
@@ -96,33 +103,38 @@ void ua_quad::get_visible_tiles(ua_frustum2d& fr, std::vector<ua_quad_tile_coord
 
    if (all)
    {
-      // all quad points are in the view frustum
-
-      // add all tiles in the quad
+      // all quad points are in the view frustum, and thus visible
       for(unsigned int x=xmin; x<xmax; x++)
          for(unsigned int y=ymin; y<ymax; y++)
-            tilelist.push_back(
-               std::make_pair<unsigned int,unsigned int>(x,y) );
+         {
+            callback.visible_tile(x,y);
+#ifdef TEST_QUADTREE
+            quad_type[x*64+y] = 1;
+#endif
+         }
 
       return;
    }
 
-   if (!one)
+   // check quad size
+   if (xmax-xmin >= 2)
    {
       // no quad coordinates were in the view frustum
-
       // check if frustum triangle does intersect otherwise
-      if (!does_intersect(fr))
-         return;
+      if (!one && !does_intersect(fr))
+         return; // no, so don't subdivide further
    }
-
-   // quad is partly visible
-
-   // check if quad is one tile wide
-   if (!one && xmax-xmin <= 4)
+   else
    {
-      tilelist.push_back(
-         std::make_pair<unsigned int,unsigned int>(xmin,ymin) );
+      // quad is single tile
+      if (one)
+      {
+         // and is partly visible
+         callback.visible_tile(xmin,ymin);
+#ifdef TEST_QUADTREE
+         quad_type[xmin*64+ymin] = 2;
+#endif
+      }
       return;
    }
 
@@ -147,7 +159,7 @@ void ua_quad::get_visible_tiles(ua_frustum2d& fr, std::vector<ua_quad_tile_coord
          unsigned(ymin+ynew*quad_coords[i][2]),
          unsigned(ymin+ynew*quad_coords[i][3]));
 
-      q.get_visible_tiles(fr,tilelist);
+      q.find_visible_tiles(fr,callback);
    }
 }
 
@@ -159,13 +171,13 @@ void ua_quad::get_visible_tiles(ua_frustum2d& fr, std::vector<ua_quad_tile_coord
     http://www.flipcode.com/cgi-bin/knowledge.cgi?showunit=0
     http://www.flipcode.com/portal/issue07.shtml
 */
-bool ua_quad::does_intersect(ua_frustum2d& fr)
+bool ua_quad::does_intersect(const ua_frustum2d& fr) const
 {
    // check how much triangle points are in the quad
    int i,count=0;
    for(i=0; i<3; i++)
    {
-      ua_vector2d& point = fr.get_point(i);
+      const ua_vector2d& point = fr.get_point(i);
 
       if (point.x >= xmin && point.x <= xmax &&
           point.y >= ymin && point.y <= ymax)
@@ -182,8 +194,8 @@ bool ua_quad::does_intersect(ua_frustum2d& fr)
    {
       int j = (i+1)%3;
 
-      ua_vector2d& pt1 = fr.get_point(i);
-      ua_vector2d& pt2 = fr.get_point(j);
+      const ua_vector2d& pt1 = fr.get_point(i);
+      const ua_vector2d& pt2 = fr.get_point(j);
 
       for(int k=0; k<4; k++)
       {
@@ -232,6 +244,14 @@ bool ua_quad::does_intersect(ua_frustum2d& fr)
 }
 
 
+// ua_quad_tile_collector methods
+
+void ua_quad_tile_collector::visible_tile(unsigned int xpos, unsigned int ypos)
+{
+   tilelist.push_back(std::make_pair<unsigned int, unsigned int>(xpos,ypos));
+}
+
+   
 // quadtree test case
 
 #ifdef TEST_QUADTREE
@@ -248,7 +268,9 @@ void runtime_test()
 {
    const int loops = 5000;
 
-   std::vector<ua_quad_tile_coord> tilelist;
+   ua_quad_tile_collector coll;
+
+//   std::vector<ua_quad_tile_coord> tilelist;
 
 //   ua_frustum2d fr(5.0, 5.0, 30.0, 90.0, 48.0);
    ua_frustum2d fr(33.0, 35.0, 290.0, 60.0, 32.0);
@@ -258,8 +280,8 @@ void runtime_test()
 
    for(int i=0; i<loops; i++)
    {
-      tilelist.clear();
-      q.get_visible_tiles(fr,tilelist);
+      coll.get_tilelist().clear();
+      q.find_visible_tiles(fr,coll);
    }
 
    Uint32 then = SDL_GetTicks();
@@ -268,23 +290,28 @@ void runtime_test()
 }
 
 
-#undef SDL_main
+#undef main
 
 int main(int argc, char* argv[])
 {
    double xpos = 33.0;
    double ypos = 33.0;
    //double angle = 20.0;
-   double angle = 45.0;
+   double angle = 360.0-45.0;
 
-   std::vector<ua_quad_tile_coord> tilelist;
+//   std::vector<ua_quad_tile_coord> tilelist;
+   ua_quad_tile_collector coll;
 
    //runtime_test();
 
    ua_quad q(0,64,0,64);
 
+   const unsigned int res = 128;
+
    SDL_Init(SDL_INIT_VIDEO);
-   SDL_Surface *screen = SDL_SetVideoMode(64, 64, 16 , 0);
+   SDL_Surface *screen = SDL_SetVideoMode(res, res, 16 , 0);
+
+   SDL_ShowCursor(0);
 
    SDL_Event event;
    while(SDL_WaitEvent(&event) != 0)
@@ -302,23 +329,41 @@ int main(int argc, char* argv[])
             SDL_GetMouseState(&x,&y);
 
             unsigned short *pix = (unsigned short *)screen->pixels;
-            memset(pix,0,64*64*2);
+            memset(pix,0,res*res*2);
 
-            tilelist.clear();
-            ua_frustum2d fr(x, 64-y, angle, 60.0, 16.0);
+            memset(quad_type,0,sizeof(unsigned int)*64*64);
+
+            coll.get_tilelist().clear();
+            ua_frustum2d fr(x/2.0, 64.0-y/2.0, angle, 60.0, 16.0);
             //ua_frustum2d fr(32, 32, 45.0, 69.2307692, 32.0);
 
-            used_iter = 0;
-            q.get_visible_tiles(fr,tilelist);
+            Uint32 now = SDL_GetTicks();
 
-            printf("used iter: %u\tquads: %u\n",used_iter,tilelist.size());
+            used_iter = 0;
+            q.find_visible_tiles(fr,coll);
+
+            Uint32 then = SDL_GetTicks();
+
+            std::vector<ua_quad_tile_coord>& tilelist = coll.get_tilelist();
+
+            printf("pos:%2.1f/%2.1f\tused iter: %u\tquads: %u\tneeded %u ms\n",
+               x/2.0, 64.0-y/2.0,
+               used_iter,tilelist.size(),
+               then-now);
 
             int max = tilelist.size();
             for(int j=0; j<max; j++)
             {
                const ua_quad_tile_coord &co = tilelist[j];
-               pix[(64-co.second)*64 + co.first] = 0xffff;
+               for(unsigned int a=0; a<2; a++)
+                  for(unsigned int b=0; b<2; b++)
+                     pix[(res-co.second*(res/64)-b)*res + co.first*(res/64)+a] =
+                     quad_type[co.first*64+co.second] == 1 ? 0xffff : 0xf00f;
             }
+
+            for(unsigned int a=0; a<2; a++)
+               for(unsigned int b=0; b<2; b++)
+                  pix[(unsigned(y)+b)*res + unsigned(x)+a] = 0;
 
             SDL_UnlockSurface(screen);
             SDL_UpdateRect(screen , 0 , 0 , 0 , 0 );

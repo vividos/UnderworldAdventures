@@ -35,12 +35,6 @@
 #include "uamath.hpp"
 
 
-// typedefs
-
-//! coordinate of a tile
-typedef std::pair<unsigned int, unsigned int> ua_quad_tile_coord;
-
-
 // classes
 
 //! view frustum
@@ -54,14 +48,23 @@ public:
    ua_frustum2d(double xpos,double ypos,double xangle,double fov,double farplane);
 
    //! calculates if a point is in the view frustum
-   bool is_in_frustum(double xpos,double ypos);
+   bool is_in_frustum(double xpos,double ypos) const;
 
    //! returns triangle point
-   ua_vector2d& get_point(unsigned int at){ return points[at]; }
+   const ua_vector2d& get_point(unsigned int at) const { return points[at]; }
 
 protected:
    //! frustum triangle points
    ua_vector2d points[3];
+};
+
+
+//! callback class interface
+class ua_quad_callback
+{
+public:
+   //! callback method
+   virtual void visible_tile(unsigned int xpos, unsigned int ypos)=0;
 };
 
 
@@ -70,18 +73,39 @@ class ua_quad
 {
 public:
    //! ctor
-   ua_quad(unsigned int my_xmin,unsigned int my_xmax,unsigned int my_ymin,unsigned int my_ymax)
-      :xmin(my_xmin), xmax(my_xmax), ymin(my_ymin), ymax(my_ymax){}
+   ua_quad(unsigned int xmin,unsigned int xmax,
+      unsigned int ymin,unsigned int ymax);
 
-   //! calculates all visible tiles from given view frustum
-   void get_visible_tiles(ua_frustum2d& fr, std::vector<ua_quad_tile_coord>& tilelist);
+   //! finds all visible tiles in given view frustum
+   void find_visible_tiles(const ua_frustum2d& fr, ua_quad_callback& callback);
 
    //! returns true when the quad intersects the frustum
-   bool does_intersect(ua_frustum2d& fr);
+   bool does_intersect(const ua_frustum2d& fr) const;
 
 protected:
    //! quad coordinates
    unsigned int xmin, xmax, ymin, ymax;
 };
+
+
+//! coordinate of a tile
+typedef std::pair<unsigned int, unsigned int> ua_quad_tile_coord;
+
+
+//! visible tile collector helper class
+class ua_quad_tile_collector: public ua_quad_callback
+{
+public:
+   // method from ua_quad_callback
+   virtual void visible_tile(unsigned int xpos, unsigned int ypos);
+
+   //! returns tile list
+   std::vector<ua_quad_tile_coord>& get_tilelist(){ return tilelist; }
+
+protected:
+   //! tile list
+   std::vector<ua_quad_tile_coord> tilelist;
+};
+
 
 #endif
