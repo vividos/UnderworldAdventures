@@ -78,7 +78,7 @@ uwadv_OBJS = source/main.o source/game_win32.o source/uwadv_res.o \
 	../font.o ../image.o ../inventory.o ../level.o \
 	../texture.o ../underworld.o ../uwadv.o ../player.o \
 	../quadtree.o ../objects.o ../physics.o ../cutscene.o \
-	../files.o \
+	../files.o ../keymap.o \
 	../audio/audio.o ../audio/midi.o ../audio/xmidi.o \
 	../audio/midi_driver/uni_fmod.o \
 	../audio/midi_driver/win_midiout.o \

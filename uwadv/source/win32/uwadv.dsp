@@ -367,6 +367,10 @@ SOURCE=..\inventory.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\keymap.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\level.cpp
 # End Source File
 # Begin Source File
@@ -648,6 +652,10 @@ SOURCE=..\image.hpp
 # Begin Source File
 
 SOURCE=..\inventory.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\keymap.hpp
 # End Source File
 # Begin Source File
 
