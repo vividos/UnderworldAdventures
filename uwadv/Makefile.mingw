@@ -107,7 +107,8 @@ else
 endif
 
 INCLUDES = $(SDL_INCLUDE) $(STLPORT_INCLUDE) $(FMOD_INCLUDE) \
-	-Isource/ -Isource/base -Isource/ui \
+	-Isource/ -Isource/audio -Isource/base -Isource/import \
+	-Isource/renderer -Isource/ui -Isource/underw \
 	-Isource/lua/include/ -Isource/base/zziplib/
 
 # wxWindows
