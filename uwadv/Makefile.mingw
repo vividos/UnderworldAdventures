@@ -1,6 +1,6 @@
 #
 # Underworld Adventures - an Ultima Underworld hacking project
-# Copyright (c) 2002,2003 Underworld Adventures Team
+# Copyright (c) 2002,2003,2004 Underworld Adventures Team
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ WITH_DEBUGGING = no
 MINGW_PATH = c:/mingw
 
 # set to "yes" if you have STLport (and modify STLPORT_PATH then)
-WITH_STLPORT = no #yes
+WITH_STLPORT = yes
 
 # path to where STLport was installed and built
 STLPORT_PATH = c:/mingw/stlport
@@ -52,7 +52,7 @@ WITH_WXWINDOWS = no
 WXWIN_PATH = d:/projekte/wxMSW
 
 
-# change these values only if you have a non-standard mingw32 setup
+# change this value only if you have a non-standard mingw32 setup
 # (i.e. when the uwadv-mingw32-source-setup-?.zip wasn't used)
 
 # path to SDL include
@@ -140,49 +140,43 @@ all: uwadv tools data
 
 include source/script/lua/Makefile.common
 
-lua_Cs = \
+liblua_EXT = liblua.a
+
+liblua_Cs = \
 	$(filter %.c,$(liblua_la_SOURCES)) \
 	$(filter %.c,$(liblualib_la_SOURCES))
-lua_OBJS = $(lua_Cs:%.c=source/script/lua/%.o)
-
-
-
-lua: $(lua_OBJS)
+liblua_OBJS = $(liblua_Cs:%.c=source/script/lua/%.o)
 
 
 # zziplib objects
 
-zziplib_OBJS = source/base/zziplib/SDL_rwops_zzip.o \
-	source/base/zziplib/zzip-dir.o \
-	source/base/zziplib/zzip-err.o \
-	source/base/zziplib/zzip-file.o \
-	source/base/zziplib/zzip-info.o \
-	source/base/zziplib/zzip-io.o \
-	source/base/zziplib/zzip-stat.o \
-	source/base/zziplib/zzip-zip.o
+include source/base/zziplib/Makefile.common
 
-zziplib: $(zziplib_OBJS)
+libzziplib_EXT = libzziplib.a
+
+libzziplib_Cs = $(filter %.c,$(libzzip_la_SOURCES))
+libzziplib_OBJS = $(libzziplib_Cs:%.c=source/base/zziplib/%.o)
 
 
 # underworld adventures
 
-uwadv_EXEC = uwadv.exe
-
 include source/Makefile.common
+
+uwadv_EXEC = uwadv.exe
 
 uwadv_win32objects = \
 	source/win32/game_win32.o \
 	source/win32/uwadv_res.o \
-	source/win32/debug.o
+	source/win32/debug_impl.o
 
 uwadv_CPPs = $(filter %.cpp,$(uwadv_SOURCES))
 uwadv_Cs = $(filter %.c,$(uwadv_SOURCES))
 uwadv_OBJS = $(uwadv_CPPs:%.cpp=source/%.o) \
 	$(uwadv_Cs:%.c=source/%.o) \
-	$(uwadv_win32objects) \
-	$(lua_OBJS) $(zziplib_OBJS)
+	$(uwadv_win32objects)
 
 uwadv_LIBS = $(WIN32_LIB) -lwinmm $(OPENGL_LIB) \
+	-L. -lzziplib -llua \
 	$(uwadv_SDL_LIB) $(FMOD_LIB) $(STLPORT_LIB) -lz
 
 
@@ -337,7 +331,7 @@ TOOLS = cnvdbg cnvdasm xmi2mid mapdisp animview strpak uwdump uwmdlview
 tools: libuatools $(TOOLS)
 
 uwadv: $(uwadv_EXEC) uwadv.cfg
-$(uwadv_EXEC): $(uwadv_OBJS)
+$(uwadv_EXEC): $(uwadv_OBJS) $(liblua_EXT) $(libzziplib_EXT)
 	$(CXX) $(LDFLAGS) $(uwadv_LDFLAGS) -o $(@) $(uwadv_OBJS) $(uwadv_LIBS)
 
 uwadv.cfg: win32/uwadv.cfg
@@ -354,15 +348,25 @@ $(uadebug_EXEC): $(uadebug_OBJS)
 else
 uadebug:
 	@echo.
-	@echo "to build uadebug.dll, you need to compile wxWindows with mingw32"
-	@echo "then enable the wxWindows options in Makefile.mingw and try again."
-	@echo "more infos are available in the file docs/README.mingw32.txt"
+	@echo "To build uadebug.dll, you need to compile wxWindows with mingw32"
+	@echo "Then enable the wxWindows options in Makefile.mingw and try again."
+	@echo "More infos are available in the file docs/README.mingw32.txt"
 endif
 
 uaconfig: $(uaconfig_EXEC)
 $(uaconfig_EXEC): $(uaconfig_OBJS)
 	$(CXX) $(LDFLAGS) $(uaconfig_LDFLAGS) -o $(@) $(uaconfig_OBJS) $(uaconfig_LIBS)
 
+
+lua: liblua
+liblua: $(liblua_EXT)
+$(liblua_EXT): $(liblua_OBJS)
+	$(AR) r $(liblua_EXT) $(liblua_OBJS)
+
+zziplib: libzziplib
+libzziplib: $(libzziplib_EXT)
+$(libzziplib_EXT): $(libzziplib_OBJS)
+	$(AR) r $(libzziplib_EXT) $(libzziplib_OBJS)
 
 libuatools: $(libuatools_EXT)
 $(libuatools_EXT): $(libuatools_OBJS)
@@ -463,11 +467,11 @@ clean: data-clean luac-clean
 	rm -f $(uwadv_EXEC) $(cnvdbg_EXEC) $(cnvdasm_EXEC) $(xmi2mid_EXEC) \
 		$(mapdisp_EXEC) $(animview_EXEC) $(strpak_EXEC) \
 		$(uaconfig_EXEC) $(libuatools_EXT) $(uwdump_EXEC) \
-		$(uwmdlview_EXEC) \
+		$(uwmdlview_EXEC) $(liblua_EXT) $(libzziplib_EXT) \
 		$(uwadv_OBJS) $(cnvdbg_OBJS) $(cnvdasm_OBJS) $(xmi2mid_OBJS) \
 		$(mapdisp_OBJS) $(animview_OBJS) $(strpak_OBJS) \
 		$(uaconfig_OBJS) $(libuatools_OBJS) $(uwdump_OBJS) \
-		$(uwmdlview_OBJS)
+		$(uwmdlview_OBJS) $(liblua_OBJS) $(libzziplib_OBJS)
 
 
 #
