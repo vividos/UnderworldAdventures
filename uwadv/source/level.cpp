@@ -568,6 +568,8 @@ void ua_level::render(ua_texture_manager &texmgr,ua_frustum &fr)
 
 #endif
 
+   glLoadName(0);
+
    // set up new viewpoint, "view coordinates" used in ua_object::render()
    glPushMatrix();
    glLoadIdentity();
@@ -624,6 +626,8 @@ void ua_level::render_floor(unsigned int x, unsigned int y, ua_texture_manager &
 
    // use texture
    texmgr.use(tile.texture_floor);
+   glLoadName(tile.texture_floor+0x0400);
+
    glColor3ub(192,192,192);
 
    // draw floor tile
@@ -716,6 +720,7 @@ void ua_level::render_ceiling(unsigned int x, unsigned int y, ua_texture_manager
 
    // use ceiling texture
    texmgr.use(ceiling_texture);
+   glLoadName(ceiling_texture+0x0400);
 
    glColor3ub(192,192,192);
 
@@ -738,6 +743,7 @@ void ua_level::render_walls(unsigned int x, unsigned int y, ua_texture_manager &
 
    // use wall texture
    texmgr.use(tile.texture_wall);
+   glLoadName(tile.texture_wall+0x0400);
 
    // draw diagonal walls
    switch(tile.type)
@@ -867,6 +873,8 @@ void ua_level::render_walls(unsigned int x, unsigned int y, ua_texture_manager &
 void ua_level::render_objs(unsigned int x, unsigned int y,
    ua_texture_manager &texmgr, ua_frustum &fr)
 {
+   glLoadName(0);
+
    ua_object obj;
 
    if (allobjects.get_first_tile_object(x,y,obj))

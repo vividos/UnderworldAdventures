@@ -146,6 +146,9 @@ protected:
    //! called for a given mouse action; click is false for mouse moves
    void mouse_action(bool click, bool left_button, bool pressed);
 
+   //! finds out selection on specific mouse cursor position
+   GLuint get_selection(unsigned int xpos, unsigned int ypos);
+
 protected:
 
    // constants
@@ -200,6 +203,9 @@ protected:
 
    //! selected game mode
    ua_ingame_orig_game_mode gamemode;
+
+
+   GLuint hit;
 
 
    // mouse button states

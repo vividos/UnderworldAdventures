@@ -114,6 +114,8 @@ void ua_ingame_orig_screen::init()
    look_down = look_up = false;
    gamemode = ua_mode_default;
 
+   hit = 0;
+
    keymap.init(core->get_settings());
 
    // load all needed images
@@ -362,8 +364,6 @@ void ua_ingame_orig_screen::render()
       glRotated(viewangle+270.0, 1.0, 0.0, 0.0);
       glRotated(-xangle+90.0, 0.0, 0.0, 1.0);
 
-      ua_player &pl = core->get_underworld().get_player();
-
       // move to position on map
       glTranslated(-pl.get_xpos(),-pl.get_ypos(),-plheight);
    }
@@ -600,8 +600,8 @@ void ua_ingame_orig_screen::render_ui()
    {
       ua_image img_coords;
       char buffer[256];
-      sprintf(buffer,"x=%u y=%u area=%u",cursorx,cursory,
-         get_area(cursorx,cursory));
+      sprintf(buffer,"x=%u y=%u area=%u hit=%04x",cursorx,cursory,
+         get_area(cursorx,cursory),hit);
       font_normal.create_string(img_coords,buffer,11);
       img_temp.paste_image(img_coords,2,2,true);
    }
@@ -834,6 +834,7 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
    }
 
    // check inventory items
+   ua_ingame_orig_area area_save = area;
    do
    {
       ua_inventory &inv = core->get_underworld().get_inventory();
@@ -988,4 +989,112 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
          }
       }
    } while (false);
+   area = area_save;
+
+   // check 3d view area
+   if (area == ua_area_screen3d && click /* && left_button && pressed*/)
+   {
+      hit = get_selection(cursorx,cursory);
+   }
+}
+
+GLuint ua_ingame_orig_screen::get_selection(unsigned int xpos, unsigned int ypos)
+{
+   // set selection buffer
+   GLuint select_buf[64];
+   {
+      glSelectBuffer(64,select_buf);
+
+      // render objects in selection mode
+      glRenderMode(GL_SELECT);
+
+      // init name stack
+      glInitNames();
+      glPushName(0);
+   }
+
+   // set picking projection matrix
+   {
+      glMatrixMode(GL_PROJECTION);
+      glPushMatrix();
+      glLoadIdentity();
+
+      // calculate pick region
+      GLint viewport[4];
+      glGetIntegerv(GL_VIEWPORT, viewport);
+      gluPickMatrix(GLdouble(xpos), GLdouble(viewport[3]-ypos), 3.0, 3.0, viewport);
+
+      // set up perspective view frustum
+      double aspect = double(core->get_screen_width())/core->get_screen_height();
+      gluPerspective(fov, aspect, 0.25, 16.0);
+
+      // switch back to modelview matrix
+      glMatrixMode(GL_MODELVIEW);
+      glLoadIdentity();
+   }
+
+   // transform modelview matrix and render
+   {
+      ua_player &pl = core->get_underworld().get_player();
+      double plheight = 0.6+core->get_underworld().get_player_height();
+      double xangle = pl.get_angle();
+
+      {
+         // rotation
+         glRotated(viewangle+270.0, 1.0, 0.0, 0.0);
+         glRotated(-xangle+90.0, 0.0, 0.0, 1.0);
+
+         // move to position on map
+         glTranslated(-pl.get_xpos(),-pl.get_ypos(),-plheight);
+      }
+
+      // render using name stack
+      ua_frustum fr(pl.get_xpos(),pl.get_ypos(),plheight,xangle,-viewangle,fov,16.0);
+
+      core->get_underworld().render(fr);
+   }
+
+   // switch off selection mode
+   GLint hits = 0;
+   {
+      glPopName();
+
+      glFlush();
+
+      hits = glRenderMode(GL_RENDER);
+   }
+
+   // restore previous projection matrix
+   {
+      glMatrixMode(GL_PROJECTION);
+      glPopMatrix();
+      glMatrixMode(GL_MODELVIEW);
+   }
+
+   // find out hit object
+   GLint thehit = 0;
+   if (hits>0)
+   {
+      // now examine the selection buffer
+      int j=0;
+      int ptr=0;
+      GLint lastnear=0x7fffffff;
+      while(j<hits)
+      {
+         int nr = select_buf[ptr++]; // number of names
+         GLint mynear = ((GLint*)select_buf)[ptr++];
+         GLint myfar = ((GLint*)select_buf)[ptr++];
+
+         if (mynear<lastnear)
+         {
+            lastnear = mynear;
+            thehit = select_buf[ptr];
+         }
+
+         ptr += nr;
+         j++;
+      }
+   }
+
+   return thehit;
 }
