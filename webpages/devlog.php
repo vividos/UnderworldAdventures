@@ -4,7 +4,67 @@
 The dev log is the place where I write about the daily ongoings of the project. It is updated occasionally.
 </p>
 
-<span class="devlogHeading">2004-04-07</span>
+<span class="devlogHeading">2004-07-13</span>
+<p class="devlogBody">
+Flushing out stdout and stderr when an ua_assert condition is false. This helps in debugging when the output files at least have *some* output. Worked on improving decompiling conversation code all day and it really gets nice. The opcodes are first put in a "graph" with different graph item types, the first being "opcode". Opcodes are then examined, function starts and ends are added, and additional "expression" and "operator" items are put in, too. Processed opcodes are marked done. Operators consume zero or more expressions and may yield no or one expression. Expressions are things like local variable value or pointer to memory location. They can have the attribute "value-of" and "address-of". In the next step operations search their needed expression from the graph and combine them to new expressions or a new type of graph item, a statement. The statement doesn't need expressions and doesn't yield one. The items are properly inserted in the graph and used items are marked done. Dumping the graph then shows the work already done on the graph. Currently there are only some opcodes left that are rarely used. And control structures like "if", "while" and "switch" aren't put in yet. Another problem is with temporary local variables that are set and directly used in function calls then (in conv. code all parameters are passed by-reference). The function call is inserted before all temporary parameters are set, but this should be easily fixed.
+</p>
+
+<span class="devlogHeading">2004-06-29</span>
+<p class="devlogBody">
+Added some code to debug server to load new games and to retrieve current game.cfg path. Added done_game() function to clean up a game in the main game object.
+</p>
+
+<span class="devlogHeading">2004-06-17</span>
+<p class="devlogBody">
+Reworked debug server and client architecture. All function calls are now made through a vtable ptr that the client gets when starting up. This also should work under linux and probably other OSes when the uwadv application and the uadebug shared library are compiled with the same compiler. Introduced class ua_debug_lib_context which can be customized for different OSes to load the shared library and start up the debugger. Removed win32 specific file with debugger implementation. All targets now share the same code. Fixed/changed some debugger code.
+</p>
+
+<span class="devlogHeading">2004-06-05</span>
+<p class="devlogBody">
+Aisha Fenton sent an image of the MacOS X port, running uwadv on a mac desktop. Nice!
+</p>
+
+<span class="devlogHeading">2004-05-18</span>
+<p class="devlogBody">
+Fixed drawing text edit window when using prefix text. Re-added intrinsic "babl_ask" to conversation screen to type in custom answers, e.g. when talking to Lakshi Longtooth. The string is then allocated in the local strings list and the handle is passed back to the code vm. Added getting npc global variables.
+</p>
+
+<span class="devlogHeading">2004-05-17</span>
+<p class="devlogBody">
+Fixed some gamestrings loading bugs. Separated conv. code loading into ua_uw_import class, changed data types enum and removed exception usage when vm errors occur. Separated graphics import functions into ua_uw_import_gfx class to not having a dependency on including "image.hpp" (needed for ua_palette256).
+</p>
+
+<span class="devlogHeading">2004-05-06</span>
+<p class="devlogBody">
+Moved game strings class from underworld to game object and fixed usage throughout the sourcecode. Moved conv. globals and conv. stack classes to own header files. Partly commented out conversation functionality, which will be reworked later.
+</p>
+
+<span class="devlogHeading">2004-04-29</span>
+<p class="devlogBody">
+Added ua_assert macro that checks for users errors and game conditions and throws an exception when needed. Added ua_levelmaps_list class which contains the list of ua_level objects in the underworld. Separated conversation globals loading into own file and updated conversation class accordingly.
+</p>
+
+<span class="devlogHeading">2004-04-28</span>
+<p class="devlogBody">
+Fixed bug where one couldn't exit savegame screen. Added leaving cutscenes with space key. Added getting and setting savegame infos when quicksaving. Fixed fading in on ingame screen when reentering screen.
+</p>
+
+<span class="devlogHeading">2004-04-22</span>
+<p class="devlogBody">
+Removed section support in ua_cfgfile, moved uw1 files check to ua_gamecfg file reader. Enhanced game strings loading by only loading string blocks "on demand", e.g. when a string in a block not available is requested. Blocks have a "lifetime" counter and some blocks are never paged out again, e.g. the block 1 with strings that are commonly used. The loader supports loading from multiple SDL_RWops structures now. Splitted basic methods of the ua_game_interface into ua_basic_game_interface, which lacks stuff not needed, e.g. for the debugger or when building an "Underworld Adventures Studio" application. Scripting now also only gets an ua_basic_game_interface pointer. Audio playlist is loaded via ua_cfgfile now. Updated player info list in uadebug to show player values again. Several other source code cleanups. Updated debian build files with those from Radoslaw and released the package.
+</p>
+
+<span class="devlogHeading">2004-04-21</span>
+<p class="devlogBody">
+Aisha Fenton from New Zealand wants to tackle the Mac OS X port. Very nice!
+</p>
+
+<span class="devlogHeading">2004-04-10</span>
+<p class="devlogBody">
+Released "0.9-mojito" today.
+</p>
+
+<span class="devlogHeading">2004-04-09</span>
 <p class="devlogBody">
 Fixed most doxygen warnings and updated copyright string on modified files. Added uw-formats.txt contribution from Max Gilead. Already released the mingw32 setup packages for compiling and building the installer. And released the music pack. Currently we have two separate packages "uwadv" and "uwadv-src" to release files; maybe we should just use "uwadv"?
 </p>
