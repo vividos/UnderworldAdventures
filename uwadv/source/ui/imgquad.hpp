@@ -50,6 +50,9 @@
     The image quad can be registered using ua_screen::register_window() just
     like any ua_window object. The underlying image can be retrieved via
     get_image().
+
+    The settings value in ua_setting_ui_smooth determines if the image quad is
+    drawn using smooth (filtered) pixels.
 */
 class ua_image_quad: public ua_window
 {
@@ -85,6 +88,9 @@ protected:
 
    //! indicates if we use two textures to draw the quad
    bool split_textures;
+
+   //! indicates if images are drawn using smooth (filtered) pixels
+   bool smooth_ui;
 };
 
 
