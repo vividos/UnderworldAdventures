@@ -128,21 +128,8 @@ void ua_object_info_ext::load_extinfo(ua_savegame& sg)
       npc_hunger = sg.read8();
       npc_whoami = sg.read8();
 
-      if (sg.get_version()>0)
-      {
-         animstate = sg.read8();
-         animframe = sg.read8();
-      }
-      else
-      {
-         animframe = animstate = 0;
-         sg.read8(); // state
-      }
-
-      // read placeholder values
-      sg.read16();
-      sg.read16();
-      sg.read16();
+      animstate = sg.read8();
+      animframe = sg.read8();
    }
 }
 
@@ -176,11 +163,6 @@ void ua_object_info_ext::save_extinfo(ua_savegame& sg)
 
       sg.write8(animstate);
       sg.write8(animframe);
-
-      // write placeholder values
-      sg.write16(0);
-      sg.write16(0);
-      sg.write16(0);
    }
 }
 

@@ -138,13 +138,6 @@ void ua_level::load_game(ua_savegame &sg)
       tile.texture_floor = sg.read16();
       tile.texture_ceiling = sg.read16();
 
-      if (sg.get_version()<1)
-      {
-         tile.floor <<= 2;
-         tile.ceiling <<= 2;
-         tile.slope <<= 2;
-      }
-
       textures_used.insert(tile.texture_wall);
       textures_used.insert(tile.texture_floor);
       textures_used.insert(tile.texture_ceiling);

@@ -156,22 +156,27 @@ void ua_underworld::change_level(unsigned int level)
 
 void ua_underworld::load_game(ua_savegame &sg)
 {
+   if (sg.get_version()<1)
+   {
+      ua_trace("cannot load savegames prior version 1!\n");
+      return;
+   }
+
    // load all levels
    {
-      levels.clear();
-
       sg.begin_section("tilemaps");
 
       Uint32 max = sg.read32();
 
+      levels.clear();
+      levels.resize(max);
+
       for(Uint32 i=0; i<max; i++)
       {
-         ua_level newlevel;
+         ua_level& newlevel = levels[i];
 
          // load tilemap / objects list / annotations
          newlevel.load_game(sg);
-
-         levels.push_back(newlevel);
       }
 
       sg.end_section();

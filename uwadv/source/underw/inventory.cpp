@@ -622,19 +622,11 @@ void ua_inventory::load_game(ua_savegame& sg)
 {
    sg.begin_section("inventory");
 
-   if (sg.get_version()==0)
-   {
-      std::bitset<24>& runebag = underw->get_player().get_runes().get_runebag();
-      // load runebag; only in version 0
-      for(unsigned int r=0; r<24; r++)
-         runebag.set(r, sg.read8()!=0);
-   }
-
    // load itemlist
    for(unsigned int i=0; i<256; i++)
       itemlist[i].load_info(sg);
 
-   // restore slot_links, container_stack (?)
+   // store slot_links, container_stack (?)
 
    sg.end_section();
 }
@@ -643,18 +635,6 @@ void ua_inventory::load_game(ua_savegame& sg)
 void ua_inventory::save_game(ua_savegame& sg)
 {
    sg.begin_section("inventory");
-
-   if (sg.get_version()==0)
-   {
-      // save runebag; only in version 0
-      std::bitset<24>& runebag = underw->get_player().get_runes().get_runebag();
-      for(unsigned int r=0; r<24; r++) {
-         // Hope this doesn't break anything but bitset::at() is not available in gcc/mingw..
-         // 'test' should be the 'official' function to use (telemachos)
-         // sg.write8(runebag.at(r) ? 1 : 0);
-         sg.write8(runebag.test(r) ? 1 : 0);
-      }
-   }
 
    // save itemlist
    for(unsigned int i=0; i<256; i++)

@@ -129,7 +129,6 @@ void ua_player::load_game(ua_savegame& sg)
       skills[n] = sg.read16();
 
    // load runes
-   if (sg.get_version()>0)
    {
       // load runebag
       std::bitset<24>& runebag = runes.get_runebag();
@@ -174,7 +173,6 @@ void ua_player::save_game(ua_savegame& sg)
       sg.write16(skills[n]);
 
    // save runes
-   if (sg.get_version()>0)
    {
       // store runebag
       // note: we could use std::bitset::to_ulong(), but it probably isn't
