@@ -2,6 +2,16 @@
 <?xml-stylesheet type="text/xsl" href="devlog-rss.xsl"?>
 
 <devlog>
+ <entry date="2004-11-27">
+  <para>
+   Worked on the underworld debugger and put tabbed MDI browsing, XP Menu and docked windows together. Here's a screenshot showing the look of the program so far:
+   <a href="index.php?page=image&amp;image=/devel/uadebug06.png&amp;text=User Interface"><img src="/devel/uadebug06.jpg" alt="user interface"/></a><br/>
+  </para>
+  <para>
+   Fixed tilemap rendering slowness by using a memory DC. And on the tilemap view there are now two boxes with infos about the currently clicked tile and it's objects. I plan to use icons directly from the games for the objects.
+  </para>
+ </entry>
+
  <entry date="2004-10-27">
   <para>
    Worked on the tilemap view and improved rendering. Drawing the diagonal tiles is painfully slow, though (GDI polygons). Here's a screenshot:
