@@ -58,10 +58,14 @@ AC_HEADER_STDC
 
 # check other headers
 AC_CHECK_HEADERS(glob.h)
-AC_CHECK_HEADERS(cstdio cstdlib cstring cmath cctype)
-AC_CHECK_HEADERS(vector string map iostream set bitset)
-AC_CHECK_HEADERS(utility algorithm exception fstream)
-AC_CHECK_HEADERS(sstream iomanip)
+
+dnl is it really necessary to check for these? it slows down configure a lot
+dnl maybe only do bitset/sstream?
+dnl AC_CHECK_HEADERS(cstdio cstdlib cstring cmath cctype)
+dnl AC_CHECK_HEADERS(vector string map iostream set bitset)
+dnl AC_CHECK_HEADERS(utility algorithm exception fstream)
+dnl AC_CHECK_HEADERS(sstream iomanip)
+AC_CHECK_HEADERS(bitset sstream,,AC_MSG_ERROR([A required C++ header file is not found.]))
 
 
 # checking for --enable-debug
