@@ -31,6 +31,7 @@
 
 // needed includes
 #include <vector>
+#include <set>
 #include "files.hpp"
 #include "level.hpp"
 #include "player.hpp"
@@ -118,6 +119,10 @@ public:
    void import_savegame(ua_settings &settings,const char *folder,bool initial);
 
 protected:
+   //! checks if player is near move triggers
+   void check_move_trigger();
+
+protected:
    //! indicates if enhanced features are enabled
    bool enhanced_features;
 
@@ -147,6 +152,9 @@ protected:
 
    //! hey, it's all the game strings!
    ua_gamestrings gstr;
+
+   //! list with active triggers
+   std::set<Uint16> trigger_active;
 };
 
 #endif

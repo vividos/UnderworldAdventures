@@ -72,6 +72,8 @@ void ua_underworld::eval_underworld(double time)
 
    // call Lua tick script
    script.lua_game_tick(time);
+
+   check_move_trigger();
 }
 
 ua_level &ua_underworld::get_current_level()
@@ -89,6 +91,9 @@ void ua_underworld::change_level(unsigned int level)
    player.set_attr(ua_attr_maplevel,level);
 
    script.lua_change_level(level);
+
+   // clear activated move triggers
+   trigger_active.clear();
 }
 
 void ua_underworld::load_game(ua_savegame &sg)
@@ -193,3 +198,77 @@ void ua_underworld::import_savegame(ua_settings &settings,const char *folder,boo
    change_level(player.get_attr(ua_attr_maplevel));
 }
 
+void ua_underworld::check_move_trigger()
+{
+   ua_vector3d pl_pos(player.get_xpos(),player.get_ypos(),player.get_height());
+
+   unsigned int tilex, tiley;
+   tilex = static_cast<unsigned int>(pl_pos.x);
+   tiley = static_cast<unsigned int>(pl_pos.y);
+
+   // check all surrounding tiles
+   for(int i=-1; i<2; i++)
+   for(int j=-1; j<2; j++)
+   {
+      int x = static_cast<int>(tilex) + i;
+      int y = static_cast<int>(tiley) + j;
+      if (x<0 || y<0 || x>64-1 || y>64-1) continue;
+
+      ua_object_list& objlist = get_current_level().get_mapobjects();
+
+      // check tile objects for move trigger
+      Uint16 pos =
+         objlist.get_tile_list_start(
+            static_cast<unsigned int>(x),static_cast<unsigned int>(y));
+
+      while (pos != 0)
+      {
+         // check if move trigger
+         ua_object& obj = objlist.get_object(pos);
+         if (obj.get_object_info().item_id == 0x01a0)
+         {
+            // found move trigger; check if it's in range
+            ua_object_info_ext& extinfo = obj.get_ext_object_info();
+            ua_vector3d trig_pos(
+               static_cast<double>(x)+(extinfo.xpos+0.5)/8.0,
+               static_cast<double>(y)+(extinfo.ypos+0.5)/8.0,
+               extinfo.zpos/4.0);
+
+            trig_pos -= pl_pos;
+
+            if (trig_pos.length()<0.5)
+            {
+               // trigger in range
+
+               // check if trigger already active
+               if (trigger_active.find(pos) == trigger_active.end())
+               {
+                  // not active yet
+                  trigger_active.insert(pos);
+
+                  ua_trace("move trigger: activate trigger at %04x\n",pos);
+
+                  unsigned int curlevel = player.get_attr(ua_attr_maplevel);
+                  script.lua_trigger_set_off(curlevel,pos);
+               }
+               else
+               {
+                  // trigger is active; do nothing
+               }
+            }
+            else
+            {
+               // not in range; check if we can deactivate it
+               if (trigger_active.find(pos) != trigger_active.end())
+               {
+                  ua_trace("move trigger: deactivate trigger at %04x\n",pos);
+                  trigger_active.erase(pos);
+               }
+            }
+         }
+
+         // next object in chain
+         pos = obj.get_object_info().link;
+      }
+   }
+}
