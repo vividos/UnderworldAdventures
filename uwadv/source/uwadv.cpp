@@ -73,12 +73,24 @@ ua_arg_entry arg_params[] =
 ua_uwadv_game::ua_uwadv_game()
 :tickrate(20), exit_game(false), screen_to_destroy(NULL), scripting(NULL)
 {
+   // print game name
    printf("Underworld Adventures"
 #ifdef HAVE_DEBUG
       " (debug mode)"
 #endif
       "\nhttp://uwadv.sourceforge.net/\n\n");
 
+   // print STLport version, if applicable
+#ifdef _STLPORT_VERSION
+   ua_trace("using STLport %u.%u.%u"
+#ifdef _STLP_DEBUG
+      " (debug)
+#endif
+      "\n",
+      _STLPORT_VERSION>>8, (_STLPORT_VERSION>>4)&15, _STLPORT_VERSION&15);
+#endif
+
+   // init random number generator
    srand((unsigned)time(NULL));
 }
 
