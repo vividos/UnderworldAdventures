@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -61,10 +61,18 @@ void ua_image_quad::convert_upload()
       // split text image into two
       ua_image img_split1,img_split2;
 
-      unsigned int texwidth = ua_image::xres/2+1;
+      unsigned int texwidth = ua_image::xres/2;
+      unsigned int texheight = ua_image::yres;
 
-      copy_rect(img_split1,0,0, texwidth,ua_image::yres);
-      copy_rect(img_split2,texwidth-1,0, texwidth-1,ua_image::yres);
+      // create images
+      img_split1.create(texwidth+1,texheight);
+      img_split2.create(texwidth+1,texheight);
+
+      // paste contents
+      img_split1.paste_rect(*this,0,0, texwidth+1,texheight, 0,0);
+      img_split2.paste_rect(*this,texwidth,0, texwidth,texheight, 0,0);
+
+      img_split2.paste_rect(*this,ua_image::xres-1,0, 1,texheight, texwidth,0); // copy border
 
       // upload it to the texture
       tex.convert(quadpalette,img_split1,0);
@@ -89,7 +97,7 @@ void ua_image_quad::render()
    double u = tex.get_tex_u(), v = tex.get_tex_v();
    tex.use(0);
 
-   unsigned int quadwidth = split_textures ? ua_image::xres/2+2 : ua_image::xres+2;
+   unsigned int quadwidth = split_textures ? ua_image::xres/2 : ua_image::xres+2;
    unsigned int quadheight = ua_image::yres;
    double dx = split_textures ? 0.5/quadwidth : 0.0;
 
