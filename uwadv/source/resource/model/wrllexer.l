@@ -27,10 +27,17 @@
 %option yyclass="ua_wrl_lexer"
 
 %option never-interactive
+%option nostdinit
 %option noyywrap
 
 %option nounput
 %option noinput
+%option noyy_push_state
+%option noyy_pop_state
+%option noyy_top_state
+%option noyy_scan_buffer
+%option noyy_scan_bytes
+%option noyy_scan_string
 
 /* prefix code */
 %{
