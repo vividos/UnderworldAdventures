@@ -45,6 +45,11 @@ function lua_init_script()
    player_set_attr(player_attr_gender,1)
    player_set_attr(player_attr_appearance,1)
 
+   player_set_attr(player_attr_life,31)
+   player_set_attr(player_attr_max_life,31)
+   player_set_attr(player_attr_mana,17)
+   player_set_attr(player_attr_max_mana,31)
+
    -- testing stuff
 
    -- fun_replace_tilemap_solids()
