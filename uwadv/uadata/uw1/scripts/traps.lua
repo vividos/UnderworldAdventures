@@ -55,7 +55,7 @@ trap_last = trap_text_string
 -- sets off effect of a trap
 function trap_set_off(objpos,trig_objpos)
 
-   objinfo = objlist_get_obj_info(objpos)
+   objinfo = objlist.get_info(objpos)
 
    print( "trap set off: " .. uw.get_string(4,objinfo.item_id))
 
@@ -79,10 +79,11 @@ function trap_set_off(objpos,trig_objpos)
          uw.change_level(newlevel)
       end
 
-      player.set_pos(objinfo.quality+0.5, objinfo.owner+0.5)
-
-      player.set_height(
-         tilemap.get_floor_height(newlevel, player.get_pos() )+0.1 )
+      local info = player.get_info()
+      info.xpos = objinfo.quality + 0.5
+      info.ypos = objinfo.owner + 0.5
+      info.height = tilemap.get_floor_height(info.xpos, info.ypos ) + 0.01
+      player.set_info(info);
 
    -- --------------------------------------------------------------
    elseif objinfo.item_id == trap_delete_obj
