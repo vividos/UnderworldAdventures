@@ -134,6 +134,9 @@ public:
    //! sets player skill value
    void set_skill(ua_player_skills which, unsigned int value);
 
+   //! sets player name
+   void set_name(std::string name);
+
    // get functions
 
    //! returns x position

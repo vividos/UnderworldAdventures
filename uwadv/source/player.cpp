@@ -63,6 +63,11 @@ void ua_player::set_skill(ua_player_skills which, unsigned int value)
       skills[static_cast<unsigned int>(which)]=value;
 }
 
+void ua_player::set_name(std::string name)
+{
+    this->name = name;
+}
+
 unsigned int ua_player::get_attr(ua_player_attributes which)
 {
    if (which>=ua_attr_max) return 0;
