@@ -165,6 +165,9 @@ void ua_underworld::import_savegame(ua_settings &settings,const char *folder,boo
       bgname.append(initial ? "babglobs.dat" : "bglobals.dat");
       conv_globals.import(bgname.c_str(),initial);
    }
+
+   // reload level
+   change_level(player.get_attr(ua_attr_maplevel));
 }
 
 

@@ -684,7 +684,13 @@ void ua_create_character_screen::tick()
          if (ended)
          {
             if (newgame)
+            {
+               // load initial game
+               core->get_underworld().import_savegame(core->get_settings(),"data/",true);
+
+               // start original game
                core->replace_screen(new ua_ingame_orig_screen);
+            }
             else
                core->pop_screen();
             return;

@@ -45,13 +45,8 @@ void ua_underworld::init(ua_game_core_interface *thecore)
 
    player.init();
 
-   // load all levels
-   import_savegame(core->get_settings(),"data/",true);
-
    // init the scripts as last step
    script.init(this);
-
-   change_level(player.get_attr(ua_attr_maplevel));
 }
 
 void ua_underworld::done()
