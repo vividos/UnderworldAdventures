@@ -35,6 +35,7 @@ Table of Contents
    4.3    Free lists
 
    5      String resources
+   5.1    String block contents
 
    6      Objects and items
    6.1    List of all objects and items
@@ -43,8 +44,17 @@ Table of Contents
    6.4    Item combining
 
    7      Conversations
+   7.1    Conversation file format
+   7.2    Private global variables
+   7.3    Memory layout
+   7.4    Assembler language opcodes
+   7.5    Text substitutions
+   7.6    Intrinsic functions
+   7.7    Imported variables
+   7.8    Quest flags
 
    8      3d models
+   8.1    List of all nodes
 
    9      Miscellaneous stuff
 
@@ -846,6 +856,88 @@ Table of Contents
          }
       }
 
+
+ +--------------------------------------------------------------------------+
+
+
+4  Level maps and object lists
+
+
+ +--------------------------------------------------------------------------+
+
+
+5  String resources
+
+   Game strings are stored in the file "strings.pak", and uses a Huffman
+   compression scheme to store its strings. The first 2 bytes of the file give
+   the number of nodes in the tree. Then follow the nodes themselves, 4 bytes
+   each:
+
+   0000   Int8   char symbol
+   0001   Int8   parent node
+   0002   Int8   left child
+   0003   Int8   right child
+
+   The last node stored in the file is the head of the tree. Following the
+   nodes is a 16-bit word giving the number of string blocks in the
+   file. Then follows the block directory, 6 bytes per block as follows:
+
+   0000   Int16   block number
+   0002   Int32   offset in file of start of block
+
+   Each block contains a variable number of strings. The block header is:
+
+   0000   Int16   no. of strings
+   0002   Int16   relative offset from end of block header to first string
+   0004   Int16   relative offset to second string
+   ...
+
+   Strings are compressed using the Huffman tree in the usual way. Bits are
+   extracted big-endian i.e. rotated out of the top of each byte in turn.
+   Starting with the root node (last node), if a 1 bit is encountered the right
+   branch is taken, otherwise take the left. Repeat until a leaf (node with -1
+   for its children) is reached, at which point output the symbol for that node.
+   For the next bit we start again from the root. End of string is marked with a
+   `|' character. The remaining bits in the last byte are unused.
+
+
+5.1  String block contents
+
+   block   description
+   0001    general UI strings
+   0002    character creation strings, mantras (?)
+   0003    wall text/scroll/book/book title strings (*)
+   0004    object descriptions (*)
+   0005    object "look" descriptions, object quality states
+   0006    spell names
+   0007    conversation partner names, starting at string 17 for conv 1
+   0008    text on walls, signs
+   0009    text trap messages
+   000a    wall/floor description text
+   0018    debugging strings (not used ingame)
+   0c00    intro cutscene text
+   0c01    ending cutscene text
+   0c02    tyball cutscene text
+   0c03    arial cuscene text (?)
+   0c18    dream cutscene 1 text "arrived"
+   0c19    dream cutscene 2 text "talismans"
+   0c1a-0c21  garamon cutscene texts
+   0e01-0f3a  conversation strings
+
+   Block 0003 contains text/scroll etc. strings. The exact string to use for
+   books, scrolls or other text object is in the link2 field. It is calculated
+   as link2 - 0x0200. For each level, 32 string slots are available.
+
+   Block 0004 contains the object descriptions. The article (e.g. 'a' or
+   'an') is separated with an underscore '_'. When a '&' is in the string,
+   it separates the plural of the object's name. The complete text string is
+   "you see <article> <mood> <description> [named <npc-name>]. <mood> can be
+   one of "mellow" or "upset".
+
+   In the uw_demo, the 0cXX blocks and many of the conversation string
+   blocks aren't available.
+
+
  +--------------------------------------------------------------------------+
 
 
@@ -1067,6 +1159,1047 @@ Table of Contents
 
 
  +--------------------------------------------------------------------------+
+
+
+7  Conversations
+
+   Conversations in Ultima Underworld are controlled using an assembler-like
+   opcode-language that seemed to originate from Forth sourcecode. There are
+   256 conversation "slots" available that can contain code (but doesn't need
+   to). The field "npc_whoami" of the "Mobile obect extra data" (see 4.x.x)
+   decides which slot to take. If it is 0, a generic NPC-conversation is used
+   instead.
+
+   To persist conversation info, there are several places to store variables.
+
+   * Quest Flags store infos needed by more than one NPC; they probably can be
+     modified by the game, e.g. when something happens (killing Tyball). Think
+     of them as global variables.
+
+   * Private Globals store infos saved after exiting conversations. Sizes of
+     this area are determined by the file "babglobals.dat".
+
+   * Local Variables store infos during conversation. They are lost when
+     conversation ends.
+
+   * NPC infos are stored along with the NPC's data in the Master Object List
+     and contain infos like npc_gtarg or npc_goal. See chapter 7.x for more.
+
+   * Game globals are variables that are global to the game, e.g. game time,
+     current dungeon level or player properties
+
+   The conversation code can call "intrinsic" (or imported) functions to use
+   functionality built into the game, e.g. bartering or player inventory
+   access.
+
+
+7.1  Conversation file format
+
+   Conversations are stored in the file "cnv.ark". File header:
+
+   0000   Int16   number of conversation slots in file
+   0002   Int32   offset to conversation slot #0
+   0006   Int32   offset to conversation slot #1
+   ...
+
+   If an offset is 0, the conversation slot is empty and no conversation is
+   available. The name of the conversation partner is stored in string block
+   0007, string number = (conversation slot number - 0x0e00 + 16).
+
+   The conversation header looks like this:
+
+   0000   Int32   unknown1, always seems to be 0x0828, or 28 08
+   0004   Int32   code size in number of instructions (16-bit words)
+   0008   Int16   unknown2, always seems to be 0x0000
+   000A   Int16   game strings block to use
+   000C   Int16   number of memory reserved for variables (*)
+   000E   Int16   number of imported globals (functions + variables)
+   0010           start of imported functions list
+
+   (*) This number includes all variables not belonging to stack, e.g. unnamed
+   globals, imported globals and private conversation globals.
+
+   An import record describes imported functions and game global variables
+   used by the conversation:
+
+   0000   Int16   length of function name
+   0002   n*char  name of function
+   n+02   Int16   ID (imported func.) / memory address (variable)
+   n+04   Int16   unknown, always seems to be 1
+   n+06   Int16   import type (0x010F=variable, 0x0111=imported func.)
+   n+08   Int16   return type (0x0000=void, 0x0129=int, 0x012B=string)
+
+   After this table the code section follows.
+
+
+7.2  Private global variables
+
+   Each conversation has a set of private global variables that are saved
+   across conversations. The initial size of them are stored in the file
+   "babglobals.dat". When a game is saved, the globals are stored in the file
+   "bglobals.dat". The layout of both files is as follows:
+
+   0000   Int16     number of conversation slot
+   0002   Int16     size of private global data for that conv.
+   0004   n*Int16   all globals for that slot (omitted in "babglobals.dat")
+   ...              repeat until file end
+
+   On conversation start the game globals listed in the import table is
+   copied to the memory address in the private globals. At end of conversation
+   they are copied back to the game globals.
+
+
+7.3  Memory layout
+
+   Conversation memory is set up at start like this:
+
+   0000    local (unnamed) variables (may be empty, size nglobals)
+   000n    game globals (copied on start) (usually 0x001f long)
+   0020    private conversation globals (of size nprivglobals)
+   0020+n  stack begin (ascends up)
+
+   There may be unnamed globals that start at memory location 0. The game
+   globals then start at a higher address (the exact positions of the game
+   globals are noted in the "import records list".
+
+   For the memory, a full range of 16-bit memory (64k) should be available,
+   which gives plenty of stack memory.
+
+
+7.4  Assembler language opcodes
+
+   The conversation code is an assembler-like languages with a set of opcodes.
+   It runs on a 16-bit virtual machine with a stack and a result register for
+   imported functions. The language set is described here:
+
+   Opcode         no. immediate operands
+   |   Name       | no. stack operands
+   |   |          | | No. values saved to stack
+   |   |          | | |  Action
+   |   |          | | |  |
+   00  NOP        0 0 0  do nothing.
+   01  OPADD      0 2 1  push s[0] + s[1]
+   02  OPMUL      0 2 1  push s[0] * s[1]
+   03  OPSUB      0 2 1  push s[1] - s[0]
+   04  OPDIV      0 2 1  push s[1] / s[0]
+   05  OPMOD      0 2 1  push s[1] % s[0]
+   06  OPOR       0 2 1  logical OR of top two values.
+   07  OPAND      0 2 1  logical AND of top two values.
+   08  OPNOT      0 1 1  logical NOT of top value.
+   09  TSTGT      0 2 1  greater-than, nonzero if s[1] > s[0].
+   0A  TSTGE      0 2 1  greater-than-or-equal.
+   0B  TSTLT      0 2 1  less-than.
+   0C  TSTLE      0 2 1  less-than-or-equal.
+   0D  TSTEQ      0 2 1  equality. Nonzero if s[1] == s[0].
+   0E  TSTNE      0 2 1  non-equal.
+   0F  JMP        1 0 0  jump absolute. address is measured in words from the
+                         start of the code.
+   10  BEQ        1 1 0  branch on equal. Pop a value, branch relative if zero.
+   11  BNE        1 1 0  branch on Not Equal. As BEQ but branch if the value
+                         popped is non-zero.
+   12  BRA        1 0 0  branch. Always branch relative to the offset address.
+   13  CALL       1 0 1  call subroutine. Push the next instruction address and
+                         jump to the absolute address (in words) given.
+   14  CALLI      1 0 0  call imported subroutine. Argument is the function ID.
+   15  RET        0 1 0  return from subroutine. Pop the return address off the
+                         stack and jump to it.
+   16  PUSHI      1 0 1  push immediate value onto the stack.
+   17  PUSHI_EFF  1 0 1  push effective address onto the stack. The value
+                         pushed is the current frame pointer address plus the
+                         immediate operand. This allows local variables and
+                         function parameters.
+   18  POP        0 1 0  pop a value from the stack (and throw it away).
+   19  SWAP       0 2 2  swap the top two stack values.
+   1A  PUSHBP     0 0 1  push the current frame pointer onto the stack.
+   1B  POPBP      0 1 0  pop the frame pointer from the stack
+   1C  SPTOBP     0 0 0  new frame. Set the frame pointer to the stack pointer.
+   1D  BPTOSP     0 0 0  exit frame. Set the stack pointer to the frame pointer.
+   1E  ADDSP      0 1 *  pop a value, add to the stack pointer. Used
+                         to reserve stack space for variables.
+   1F  FETCHM     0 1 1  pop address, push the value of the variable pointed to.
+   20  STO        0 2 0  store s[0] in the variable pointed to by s[1].
+   21  OFFSET     0 2 1  array offset. Add s[1] - 1 to the effective address in
+                         s[0], push this as a new effective address.
+   22  START      0 0 0  start program.
+   23  SAVE_REG   0 1 0  pop a value from the stack and store it in the result
+                         register.
+   24  PUSH_REG   0 0 1  push the value of the result register on the stack.
+   25  STRCMP     ? ? ?  string compare.
+   26  EXIT_OP    0 0 0  end program (?)
+   27  SAY_OP     0 1 0  NPC says something. Print a conversation string (from
+                         the stack).
+   28  RESPOND_OP ? ? ?  respond (?)
+   29  OPNEG      0 1 1  negate. s[0] -> -s[0].
+
+   (*) ADDSP, of course, doesn't actually push anything onto the stack, but its
+       effect on the stack pointer is of pushing as many values as its operand
+       specifies.
+   (?) I haven't yet encountered these in the wild, so don't know exactly what
+       they do.
+
+
+7.5  Text substitutions
+
+   In text strings printed by SAY_OP or a imported function (like
+   "babl_menu") there may be strings like @SS1 or @GS8 that are substituted
+   with other text. The format of the "format string" is like this:
+
+   @XY<num>[<extension>]
+
+   X: source of variable to substitute, one of these: GSP
+      G: game global variable
+      S: stack variable
+      P: pointer variable
+   Y: type of variable, one of these: SI
+      S: value is a string number into current string block
+      I: value is an integer value
+   <num>: decimal value
+   <extension>: format: C<number>, might be fractional part
+
+   For pointer variables, the num value determines the location of the
+   pointer relative to the stack. It usually refers to variables passed
+   to a function (since they were push'ed onto the stack).
+
+   For stack variables, the num value determines which stack value is taken
+   from the current local variables. The value to take is basep + <num>
+
+   For global variables, the value describes the globals position in memory,
+   at the front where the imported game globals and private globals are
+   stored.
+
+   Example:
+   @SS2 means: print string with string number found at basep + 2
+   @PI-3 means: print int value pointed to by pointer at basep - 3
+   @GS8 means: print string from global var #8
+
+
+7.6  Intrinsic functions
+
+   Each imported function has an ID (the argument of the CALLI opcode), and
+   the "import table" (see above) usually imports all available functions,
+   even unused ones. All imported functions have at least one argument, and
+   the first one is the number of arguments additionally passed (some times
+   this rule seems to be violated, e.g. function "babl_menu", see (*)
+   below). First argument is always pushed last on stack. All values are
+   passed by reference.
+
+   Here is a quick overview of all builtin functions ("args" is the number
+   of arguments without the mandatory first one):
+
+    type    args     function name
+    int      1 (*)   babl_menu
+    int      2 (*)   babl_fmenu
+    void     1       print
+    int      0       babl_ask
+    int      2       compare
+    int      1       random
+    string   ?       plural
+    int      2       contains
+    string   ?       append
+    string   ?       copy
+    int      ?       find
+    int      1       length
+    int      ?       val
+    void     ?       say
+    void     ?       respond
+    int      1       get_quest
+    void     2       set_quest
+    string   2       sex
+    int      2       show_inv
+    int      2       give_to_npc
+    int      2       give_ptr_npc
+    int      1       take_from_npc
+    int      1       take_id_from_npc
+    int      4       identify_inv
+    int      *       do_offer
+    int      2       do_demand
+    int      1       do_inv_create
+    int      1       do_inv_delete
+    int      1       check_inv_quality
+    int      2       set_inv_quality
+    int      1       count_inv
+    void     0       setup_to_barter
+    void     ?       end_barter
+    void     0       do_judgement
+    void     0       do_decline
+    void     ?       pause
+    void     2       set_likes_dislikes
+    int      3       gronk_door
+    void     1/3     set_race_attitude
+    void     3       place_object
+    void     1       take_from_npc_inv
+    void     ?       add_to_npc_inv
+    void     0       remove_talker
+    void     2       set_attitude
+    int      2       x_skills
+    int      2       x_traps
+    void     ?       x_obj_pos
+    void     9       x_obj_stuff
+    int      2       find_inv
+    int      1       find_barter
+    int      4       find_barter_total
+
+   Here is a detailed description of every builtin function. arg0 is always
+   the first argument (the last value pushed on the stack) and specifies the
+   number of arguments passed.
+
+   id=0000 name="babl_menu" ret_type=int
+   parameters:   arg1: pointer to a list of string id's; ends with id == 0
+   description:  shows a menu of further questions the user can select;
+                 string id's are stored in list in arg1
+   return value: number of selected response (one-based index of arg1 list)
+   -------------------------------------------------------------------------
+
+   id=0001 name="babl_fmenu" ret_type=int
+   parameters:   arg1: pointer to list of string id's; ends with id == 0
+                 arg2: pointer to list with on/off values (1==on)
+   description:  shows a menu with questions from list in arg1; the list in
+                 arg2 indicates if the question is available (0 means not
+                 available).
+   return value: number of selected response string (from the arg1 list)
+   -------------------------------------------------------------------------
+
+   id=0002 name="print" ret_type=void
+   parameters:   arg1: pointer to string id
+   description:  prints a string that is not spoken by anyone (e.g. scene
+                 description).
+   -------------------------------------------------------------------------
+
+   id=0003 name="babl_ask" ret_type=int
+   parameters:   none
+   description:  lets the user type in a string; the string typed in is
+                 stored in a newly allocated string slot. The string is not
+                 stored after conversation ended.
+   return value: string handle of allocated string
+   -------------------------------------------------------------------------
+
+   id=0004 name="compare" ret_type=int
+   parameters:   arg1: pointer to string handle
+                 arg2: pointer to string handle
+   description:  compares strings for equality, case independent
+   return value: returns 1 when strings are equal, 0 when not
+   -------------------------------------------------------------------------
+
+   id=0005 name="random" ret_type=int
+   parameters:   arg1: highest value
+   description:  generates a random number in the range of [1..arg1]
+   return value: the generated random number
+   -------------------------------------------------------------------------
+
+   id=0006 name="plural" ret_type=string
+   parameters:   arg1: item id to retrieve plural string (guessed)
+   description:  (as this function is not used in uw1, I only can guess)
+                 the function returns a newly allocated string with the
+                 plural of the description string of a given item id.
+   return value: string handle (guessed)
+   -------------------------------------------------------------------------
+
+   id=0007 name="contains" ret_type=int
+   parameters:   arg1: pointer to first string handle
+                 arg2: pointer to second string handle
+   description:  checks if the first string contains the second string
+                 (case-independent).
+   return value: returns 1 when the string was found
+   -------------------------------------------------------------------------
+
+   id=0008 name="append" ret_type=string
+   parameters:   unknown
+   description:  (not used in uw1)
+   return value: unknown
+   -------------------------------------------------------------------------
+
+   id=0009 name="copy" ret_type=string
+   parameters:   unknown
+   description:  (not used in uw1)
+   return value: unknown
+   -------------------------------------------------------------------------
+
+   id=000a name="find" ret_type=int
+   parameters:   unknown
+   description:  (not used in uw1)
+   return value: unknown
+   -------------------------------------------------------------------------
+
+   id=000b name="length" ret_type=int
+   parameters:   arg1: pointer to string handle
+   description:  calculates length of string
+   return value: returns length of string
+   -------------------------------------------------------------------------
+
+   id=000c name="val" ret_type=int
+   parameters:   unknown
+   description:  (not used in uw1)
+   return value: unknown
+   -------------------------------------------------------------------------
+
+   id=000d name="say" ret_type=void
+   parameters:   unknown
+   description:  (not used in uw1)
+   return value: unknown
+   -------------------------------------------------------------------------
+
+   id=000e name="respond" ret_type=void
+   parameters:   unknown
+   description:  (not used in uw1)
+   return value: unknown
+   -------------------------------------------------------------------------
+
+   id=000f name="get_quest" ret_type=int
+   parameters:   arg1: quest flag number
+   description:  returns a quest flag value
+   return value: quest flag value
+   -------------------------------------------------------------------------
+
+   id=0010 name="set_quest" ret_type=void
+   parameters:   arg1: new flag value
+                 arg2: quest flag number
+   description:  sets a quest value
+   return value: none
+   -------------------------------------------------------------------------
+
+   id=0011 name="sex" ret_type=string
+   parameters:   arg1: pointer to first string handle
+                 arg2: pointer to second string handle
+   description:  decides on the gender of the avatar which string handle to
+                 return. for a male avatar, the second handle is taken,
+                 otherwise the first handle is taken
+   return value: selected string handle
+   -------------------------------------------------------------------------
+
+   id=0012 name="show_inv" ret_type=int
+   parameters:   arg1: unknown
+                 arg2: unknown
+   description:  lets the player show an item to the NPC, the player gets
+                 the item back (?)
+   return value: unknown
+   -------------------------------------------------------------------------
+
+   id=0013 name="give_to_npc" ret_type=int
+   parameters:   arg1: item id
+                 arg2: item quantity
+   description:  
+   return value: unknown, ignored
+   -------------------------------------------------------------------------
+
+   id=0014 name="give_ptr_npc" ret_type=int
+   parameters:   arg1: quantity?
+                 arg2: master object list position? (got from find_barter)
+   description:  player hands over an item to NPC (?)
+   return value: unused
+   -------------------------------------------------------------------------
+
+   id=0015 name="take_from_npc" ret_type=int
+   parameters:   arg1: item id
+   description:  gives the player an item
+   return value: 1: ok, 2: player has no space left
+   -------------------------------------------------------------------------
+
+   id=0016 name="take_id_from_npc" ret_type=int
+   parameters:   unknown
+   description:  unknown
+   return value: unknown
+   -------------------------------------------------------------------------
+
+   id=0017 name="identify_inv" ret_type=int
+   parameters:   unknown
+   description:  unknown
+   return value: unknown
+   -------------------------------------------------------------------------
+
+   id=0018 name="do_offer" ret_type=int
+   parameters:   unknown
+   description:  unknown
+   return value: unknown
+   -------------------------------------------------------------------------
+
+   id=0019 name="do_demand" ret_type=int
+   parameters:   unknown
+   description:  unknown
+   return value: unknown
+   -------------------------------------------------------------------------
+
+   id=001a name="do_inv_create" ret_type=int
+   parameters:   arg1: item id
+   description:  creates item in npc inventory
+   return value: unknown
+   -------------------------------------------------------------------------
+
+   id=001b name="do_inv_delete" ret_type=int
+   parameters:   arg1: item id
+   description:  deletes item in npc inventory
+   return value: unknown
+   -------------------------------------------------------------------------
+
+   id=001c name="check_inv_quality" ret_type=int
+   parameters:   unknown
+   description:  unknown
+   return value: unknown
+   -------------------------------------------------------------------------
+
+   id=001d name="set_inv_quality" ret_type=int
+   parameters:   unknown
+   description:  unknown
+   return value: unknown
+   -------------------------------------------------------------------------
+
+   id=001e name="count_inv" ret_type=int
+   parameters:   unknown
+   description:  unknown
+   return value: unknown
+   -------------------------------------------------------------------------
+
+   id=001f name="setup_to_barter" ret_type=void
+   parameters:   none
+   description:  starts bartering
+   -------------------------------------------------------------------------
+
+   id=0020 name="end_barter" ret_type=void
+   parameters:   unknown
+   description:  (not used in uw1), ends bartering
+   -------------------------------------------------------------------------
+
+   id=0021 name="do_judgement" ret_type=void
+   parameters:   none
+   description:  judges current trade (using the "appraise" skill) and
+                 prints result
+   -------------------------------------------------------------------------
+
+   id=0022 name="do_decline" ret_type=void
+   parameters:   none
+   description:  declines trade offer (?)
+   -------------------------------------------------------------------------
+
+   id=0023 name="pause" ret_type=void
+   parameters:   unknown
+   description:  (not used in uw1)
+   -------------------------------------------------------------------------
+
+   id=0024 name="set_likes_dislikes" ret_type=void
+   parameters:   arg1: pointer to list of things the npc likes to trade
+                 arg2: pointer to list of things the npc dislikes to trade
+   description:  sets list of items that a npc likes or dislikes to trade;
+                 the list is terminated with a -1 (0xffff) entry
+   -------------------------------------------------------------------------
+
+   id=0025 name="gronk_door" ret_type=int
+   parameters:   arg1: x tile coordinate with door to open
+                 arg2: y tile coordinate
+   description:  opens closed door or portcullis
+   return value: unknown
+   -------------------------------------------------------------------------
+
+   id=0026 name="set_race_attitude" ret_type=void
+   parameters:   unknown
+   description:  sets attitude for a whole race (?)
+   -------------------------------------------------------------------------
+
+   id=0027 name="place_object" ret_type=void
+   parameters:   arg1: x tile pos
+                 arg2: y tile pos
+                 arg3: item pointer (from do_inv_create)
+   description:  places a generated object in underworld (?)
+   -------------------------------------------------------------------------
+
+   id=0028 name="take_from_npc_inv" ret_type=void
+   parameters:   unknown
+   description:  unknown
+   -------------------------------------------------------------------------
+
+   id=0029 name="add_to_npc_inv" ret_type=void
+   parameters:   unknown
+   description:  (not used in uw1)
+   -------------------------------------------------------------------------
+
+   id=002a name="remove_talker" ret_type=void
+   parameters:   none
+   description:  removes npc the player is talking to (?)
+   -------------------------------------------------------------------------
+
+   id=002b name="set_attitude" ret_type=void
+   parameters:   unknown
+   description:  unknown
+   -------------------------------------------------------------------------
+
+   id=002c name="x_skills" ret_type=int
+   parameters:   unknown
+   description:  unknown
+   return value: unknown
+   -------------------------------------------------------------------------
+
+   id=002d name="x_traps" ret_type=int
+   parameters:   unknown
+   description:  unknown
+   return value: unknown
+   -------------------------------------------------------------------------
+
+   id=002e name="x_obj_pos" ret_type=void
+   parameters:   unknown
+   description:  (not used in uw1)
+   -------------------------------------------------------------------------
+
+   id=002f name="x_obj_stuff" ret_type=void
+   parameters:   unknown
+   description:  unknown
+   -------------------------------------------------------------------------
+
+   id=0030 name="find_inv" ret_type=int
+   parameters:   arg1: unknown
+                 arg2: item id
+   description:  searches item in npc inventory
+   return value: position in master object list
+   -------------------------------------------------------------------------
+
+   id=0031 name="find_barter" ret_type=int
+   parameters:   arg1: item id to find
+   description:  searches for item in barter area
+   return value: returns pos in master object list of item, or 0 if none
+                 found
+   -------------------------------------------------------------------------
+
+   id=0032 name="find_barter_total" ret_type=int
+   parameters:   s[0]: ???
+                 s[1]: pointer to number of found items
+                 s[2]: pointer to
+                 s[3]: pointer to
+                 s[4]: pointer to item ID to find
+   description:  searches for item in barter area
+   return value: 1 when found (?)
+   -------------------------------------------------------------------------
+
+
+7.7  Imported variables
+
+   All imported variables have type int (except for "npc_name" and
+   "play_name", which are strings). Here's a list of all imported game
+   variables:
+
+   variable name       description
+
+    play_hunger
+    play_health
+    play_arms
+    play_power
+    play_hp
+    play_mana
+    play_level
+    new_player_exp     (not used in uw1)
+    play_name          player name
+    play_poison        (not used in uw1)
+    play_drawn         is 1 when player has drawn his weapon (?)
+    play_sex           (not used in uw1)
+    npc_xhome          x coord of home tile
+    npc_yhome          y coord of home tile
+    npc_whoami         npc conversation slot number
+    npc_hunger
+    npc_health
+    npc_hp
+    npc_arms           (not used in uw1)
+    npc_power
+    npc_goal
+    npc_attitude
+    npc_gtarg
+    npc_talkedto       is 1 when player already talked to npc
+    npc_level
+    npc_name           (not used in uw1)
+    dungeon_level      (not used in uw1)
+    riddlecounter      (not used in uw1)
+    game_time
+    game_days
+    game_mins
+
+
+7.8  Quest flags
+
+   There are quest flags that are kept during gameplay to implement
+   interaction between NPC's. Flags can be get/set using get_quest() and
+   set_quest() or during gameplay, triggered by actions. Here's a list of
+   flags and their meanings (when no values for the flag are specified, 1
+   means yes or true, and 0 means no or false):
+
+   flag   description
+
+     0    Dr. Owl's assistant Murgo freed
+     1    talked to Hagbard
+     2    met Dr. Owl?
+     3    permission to speak to king Ketchaval
+     4    Goldthirst's quest to kill the gazer (1: gazer killed)
+     5    Garamon, magic source
+     6    friend of Lizardman folk
+     7    ?? (conv #24, Murgo)
+     8    book from Bronus for Morlock
+     9    "find Gurstang" quest?
+    10    where to find Zak, for Delanrey
+    11    Rodrick killed
+
+    32    status of "Knight of the Crux" quest
+           0: no knight
+           1: seek out Dorna Ironfist
+           2: started quest to search the "writ of Lorne"
+           3: found writ
+           4: door to armoury opened
+
+
+ +--------------------------------------------------------------------------+
+
+
+8  3d models
+
+   These are stored within the executable (bad! bad!). From Doug Church, on
+   the 3d models:
+
+     We'd take a 3ds model, convert it to an internal ASCII format, and then
+     run a "model builder" which would generate an inlined BSP tree for it.
+     This would be expressed in a byte code, or, really, as a set of simple
+     ASM like codes.  Things like "Vtx 56.7, 435, 35.3" or "Color 153" or
+     "Norm 0.6, 0.8, 0.0, front04" or whatever.  Then, we used the Macro
+     Assembler (well, Optasm, really) to generate a bunch of "db" statements
+     out of all this, and give it a label, and put it in the data segment. 3D
+     models were then drawn by calling a little "model interpreter" in the
+     game, which was given the address of this data block, which it then
+     interpreted. i.e. when it got to the byte for "Norm", it would fetch the
+     normal, dot it verse the eye vector, and jump or not based on the sign.
+
+   There is a table of 2-byte model offsets, with room for 64 models.
+   Positions of the table differ, as there are several builds of the uw.exe,
+   ultimau1.exe or uw2.exe.
+
+     game  table start   first bytes   table base offset
+      uw1  0x0004e910    b6 4a 06 40   0x0004e99e
+      uw1  0x0004ccd0    b6 4a 06 40   0x0004cd5e  same models, different place
+      uw1  0x0004e370    b6 4a 06 40   0x0004e3fe  ditto (reported Gerd Bitzer)
+
+      uw2  0x00054cf0    d4 64 aa 59   0x00054d8a
+      uw2  0x000550e0    d4 64 aa 59   0x0005517a  another UW2 build
+
+   Models are:
+
+      00   -
+      01   door frame
+      02   bridge
+      03   bench
+      04   Lotus Turbo Esprit (no, really!)
+      05   small boulder
+      06   medium boulder
+      07   large boulder
+      08   arrow
+      09   beam
+      0A   pillar
+      0B   shrine
+      0D   painting
+      10   texture map
+      11   texture map
+      12   texture map
+      13   gravestone
+      14   texture map
+      15   -
+      16   ?texture map
+      17   
+      18   table
+      19   chest
+      1A   nightstand
+      1B   barrel
+      1C   chair
+      1D   bed (UWII)
+      1E   blackrock gem (UWII)
+      1F   shelf (UWII)
+
+   Node list
+   ---------
+   Actual model data is stored as a list with various "nodes" that do
+   different things. There also is a vertex array that is filled at start of
+   the model, and then faces are defined, using points from the vertex list.
+   The list is parsed every frame and tests are done if some faces have to be
+   rendered or not (depending if the player faces the polygon or not).
+
+   There are some data types that are used in the model node data. These are:
+
+     Int16   a simple 16 bit unsigned integer
+     Fixed   fixed point number with 12 bits before the fraction point (12.4)
+     VertNo  vertex number; lowest 3 bits are ignored
+
+   Every model has a header that looks like this:
+
+     0000   Int32   unknown
+     0004   Fixed   extents X value
+     0006   Fixed   extents Y value
+     0008   Fixed   extents Z value
+     000a           node entries follow
+
+   In general, node entries look as following:
+
+     0000   Int16   node id
+     0002           custom node data (may be omitted)
+
+
+8.1  List of all nodes
+
+   Here's an overview of all node types used:
+
+     node id  description
+     0000     end node
+     0006     define sort node, arbitrary heading
+     000C     define sort node, ZY plane
+     000E     define sort node, XY plane
+     0010     define sort node, XZ plane
+     0014     ??? colour definition
+     002E     ???
+     0040     ??? seems to do nothing but introduce a face definition
+     0044     ??? this one too
+     0058     define face plane, arbitrary heading
+     005E     define face plane Z/Y
+     0060     define face plane X/Y
+     0062     define face plane X/Z
+     0064     define face plane X
+     0066     define face plane Z
+     0068     define face plane Y
+     0078     define model center
+     007A     define initial vertex
+     007E     define face vertices
+     0082     define initial vertices
+     0086     define vertex offset X
+     0088     define vertex offset Z
+     008A     define vertex offset Y
+     008C     define vertex variable height
+     0090     define vertex offset X,Z
+     0092     define vertex offset X,Y
+     0094     define vertex offset Y,Z
+     00A0     ??? shorthand face definition
+     00A8     define texture-mapped face
+     00B4     define face vertices with u,v information
+     00BC     define face shade (6 bytes)
+     00BE     ??? seems to define 2 shades
+     00CE     ??? yet another texture-mapped face
+     00D2     ??? shorthand face definition
+     00D4     define dark vertex face (?)
+     00D6     define gouraud shading
+
+   Here's a detailed description of all nodes, sorted after functionality:
+
+   Misc. nodes
+   -----------
+     0000   end node
+            just ends current list; also ends sort node sublists
+
+     0078   define model center
+              0000   Int16     node id
+              0002   VertNo    vertex list index to use as origin (?)
+              0004   Fixed     origin X coordinate
+              0006   Fixed     origin Y coordinate
+              0008   Fixed     origin Z coordinate
+              000a   Int16     ???
+
+            because of the limited resolution available for specifying object
+            positions, the origin for model coordinates will typically need to
+            be offset from the center of the collision volume. This parameter
+            gives that center, in model coords.
+
+   Vertex nodes
+   ------------
+   Vertex node entries just set up the vertex list that is later used to take
+   points and draw faces (such as triangles, polygons, etc.)
+
+     007A   define initial vertex
+              0002   Fixed     vertex X coordinate
+              0004   Fixed     vertex Y coordinate
+              0006   Fixed     vertex Z coordinate
+              0008   VertNo    vertex list index to store new vertex
+
+     0082   define initial vertices
+              0002   Int16     number of vertices (=nvert)
+              0004   Int16     ???
+              0006   Fixed     vertex X coordinate for first vertex
+              0008   Fixed     vertex Y coordinate
+              000a   Fixed     vertex Z coordinate
+              000c   Fixed     vertex X coordinate for second vertex
+              000e             and so on, for nvert vertices
+
+     0086   define vertex offset X
+              0002   VertNo    reference vertex to modify
+              0004   Fixed     offset to add to X coordinate
+              0006   VertNo    new list index to store vertex
+
+     0088   define vertex offset Z
+            same as 0086, but for the Z coordinate
+
+     008A   define vertex offset Y
+            same as 0086, but for the Y coordinate
+
+     0090   define vertex offset X,Z
+              0002   Fixed     offset to add to X coordinate
+              0004   Fixed     offset to add to X coordinate
+              0006   VertNo    reference vertex to modify
+              0008   VertNo    new list index to store vertex
+
+     0092   define vertex offset X,Y
+            same as 0090, but for the X and Y coordinate
+
+     0094   define vertex offset Y,Z
+            same as 0090, but for the X and Y coordinate
+
+     008C   define vertex variable height
+            this is used for pillars and doorframes where the model must reach
+            up to the ceiling, wherever it be.
+              0002   VertNo    reference vertex to modify
+              0004   Int16     ???
+              0006   VertNo    new list index to store vertex
+
+   Face plane checks
+   -----------------
+   Face plane checks exist to check if a following face has to be drawn or
+   not. Usually a face normal vector is defined to verify. A length value
+   is given to know how many bytes to omit in the node list.
+
+     0058   define face plane, arbitrary heading
+              0002   Int16     number of bytes to skip when not visible
+              0004   Fixed     normal vector X coordinate
+              0006   Fixed     distance "model origin -> face" X value
+              0008   Fixed     normal vector Y coordinate
+              000a   Fixed     distance "model origin -> face" Y value
+              000c   Fixed     normal vector Z coordinate
+              000e   Fixed     distance "model origin -> face" Z value
+            after this node usually face info nodes follow
+
+     0064   define face plane X
+            Y and Z coordinates of normal vector is 0 (YZ plane normal)
+              0002   Int16     number of bytes to skip when not visible
+              0004   Fixed     normal vector X coordinate
+              0006   Fixed     distance "model origin -> face" X value
+            after this node usually face info nodes follow
+
+     0066   define face plane Z
+            same as 0064, but with Z coordinate (XY plane normal)
+
+     0068   define face plane Y
+            same as 0064, but with Y coordinate (XZ plane normal)
+
+     005E   define face plane Z/Y
+            X coordinate of normal vector is 0
+              0002   Int16     number of bytes to skip
+              0004   Fixed     normal vector Z coordinate
+              0006   Fixed     distance Z value
+              0008   Fixed     normal vector Y coordinate
+              000a   Fixed     distance Y value
+
+     0060   define face plane X/Y
+            same as 005E, but with X and Y coordinates/values (in this order)
+
+     0062   define face plane X/Z
+            same as 005E, but with X and Z coordinates/values
+
+   Face info nodes
+   ---------------
+   They just define a face (polygon) from some points of the vertex list.
+
+     007E   define face vertices
+              0002   Int16     number of vertices (=nvert)
+              0004   VertNo    vertex list index for first point
+              0006   VertNo    vertex list index for second point
+              0008             and so on
+
+     00A8   define texture-mapped face
+            vertex u and v coordinates are stored as 0.16 fractional value.
+            just divide by 65535.0 to get coordinates in the range [0; 1]
+              0002   Int16     texture number (?)
+              0004   Int16     number of vertices (=nvert)
+              0006   VertNo    vertex list index for first point
+              0008   Fixed      first vertex u coordinate
+              000a   Fixed      first vertex v coordinate
+              000c   VertNo    vertex list index for second point
+              000e             and so on
+
+     00B4   define face vertices with u,v information
+            same structure as 00A8, but without the "texture number" field.
+
+   Sort nodes
+   ----------
+   Sort nodes are there to sort faces of a whole node list and the renderer
+   can determine if the list has to be rendered at all.
+
+     0006   define sort node, arbitrary heading
+              0002   Fixed     normal vector X coordinate
+              0004   Fixed     distance      X coordinate
+              0006   Fixed     normal vector Y coordinate
+              0008   Fixed     distance      Y coordinate
+              000a   Fixed     normal vector Z coordinate
+              000c   Fixed     distance      Z coordinate
+              000e   Int16     left node offset (starting at 0010)
+              0010   Int16     right node offset (starting at 0012)
+
+     000C   define sort node, ZY plane
+            the X coordinate values are assumed to be 0
+              0002   Fixed     normal vector Z coordinate
+              0004   Fixed     distance      Z coordinate
+              0006   Fixed     normal vector Y coordinate
+              0008   Fixed     distance      Y coordinate
+              000a   Int16     left node offset (starting at 000c)
+              000c   Int16     right node offset (starting at 000e)
+
+     000E   define sort node, XY plane
+            same as 000C, but with X and Y coordinates (in this order)
+
+     0010   define sort node, XZ plane
+            same as 000C, but with X and Z coordinates (in this order)
+
+   Unknown nodes
+   -------------
+     0014   ??? colour definition
+              0002   VertNo    vertex number
+              0004   Int8      c1 ???
+              0005   Int8      c2 ???
+              0006   VertNo    vertex number
+
+     002E   ???
+              0002   Int16     ???
+
+     0040   ??? seems to do nothing but introduce a face definition
+     0044   ??? this one too
+            no further node data
+
+     00BC   define face shade
+              0002   Int8      c1 ???
+              0003   Int8      c2 ???
+              0004   Int8      c3 ???
+              0005   Int8      ???
+
+     00BE   ??? seems to define 2 shades
+              0002   Int8      c1 ???
+              0003   Int8      ???
+              0004   Int8      ???
+              0005   Int8      ???
+
+     00CE   ??? yet another texture-mapped face
+            same data as 00B4
+
+     00A0   ??? shorthand face definition
+            seems to be a quick way to define a face with 4 vertices and
+            automatic texture coordinates; vertex list indices
+              0002   VertNo    ???
+              0004   Int8      vertex list index 0
+              0005   Int8      vertex list index 1
+              0006   Int8      vertex list index 2
+              0007   Int8      vertex list index 3
+
+     00D2   ??? shorthand face definition
+            same as 00A0
+
+     00D4   define dark vertex face (?)
+              0002   Int16     number of vertices (=nvert)
+              0004   Int8      c1 ???
+              0005   Int8      c2 ???
+              0006   VertNo    vertex list index for first point
+              0008   Int8      dark value for first point ???
+              0009   VertNo    vertex list index for second point
+              000b   Int8      dark value for second point ???
+                               and so on; if nvert is odd, read another empty
+                               byte to have 16 bit word align
+
+     00D6   define gouraud shading
+            no other info; may switch on gouraud shading
+
+
+ +--------------------------------------------------------------------------+
+
+end of file
 
 
 +--------------------------+
@@ -1507,709 +2640,6 @@ Table of Contents
      jump.
 
 
-4.0 Game strings
-
-   Game strings are stored in the file "strings.pak", and uses a Huffman
-   compression scheme to store its strings. The first 2 bytes of the file give
-   the number of nodes in the tree. Then follow the nodes themselves, 4 bytes
-   each:
-
-   0000   Int8   char symbol
-   0001   Int8   parent node
-   0002   Int8   left child
-   0003   Int8   right child
-
-   The last node stored in the file is the head of the tree. Following the
-   nodes is a 16-bit word giving the number of string blocks in the
-   file. Then follows the block directory, 6 bytes per block as follows:
-
-   0000   Int16   block number
-   0002   Int32   offset in file of start of block
-
-   Each block contains a variable number of strings. The block header is:
-
-   0000   Int16   no. of strings
-   0002   Int16   relative offset from end of block header to first string
-   0004   Int16   relative offset to second string
-   ...
-
-   Strings are compressed using the Huffman tree in the usual way. Bits are
-   extracted big-endian i.e. rotated out of the top of each byte in turn.
-   Starting with the root node (last node), if a 1 bit is encountered the right
-   branch is taken, otherwise take the left. Repeat until a leaf (node with -1
-   for its children) is reached, at which point output the symbol for that node.
-   For the next bit we start again from the root. End of string is marked with a
-   `|' character. The remaining bits in the last byte are unused.
-
-   * game strings contents
-
-     block 0001: general UI strings
-     block 0002: character creation strings, mantras (?)
-     block 0003: wall text/scroll/book/book title strings (*)
-     block 0004: object descriptions (*)
-     block 0005: object "look" descriptions, object quality states
-     block 0006: spell names
-     block 0007: conversation partner names, starting at string 17 for conv 1
-     block 0008: text on walls, signs
-     block 0009: text trap messages
-     block 000a: wall/floor description text
-     block 0018: debugging strings (not used ingame)
-     block 0c00: intro cutscene text
-     block 0c01: ending cutscene text
-     block 0c02: tyball cutscene text
-     block 0c03: arial cuscene text (?)
-     block 0c18: dream cutscene 1 text "arrived"
-     block 0c19: dream cutscene 2 text "talismans"
-     block 0c1a-0c21: garamon cutscene texts
-     block 0e01-0f3a: conversation strings
-
-     Block 0003 contains text/scroll etc. strings. The exact string to use for
-     books, scrolls or other text object is in the link2 field. It is calculated
-     as link2 - 0x0200. For each level, 32 string slots are available.
-
-     Block 0004 contains the object descriptions. The article (e.g. 'a' or
-     'an') is separated with an underscore '_'. When a '&' is in the string,
-     it separates the plural of the object's name. The complete text string is
-     "you see <article> <mood> <description> [named <npc-name>]. <mood> can be
-     one of "mellow" or "upset".
-
-     In the uw_demo, the 0cXX blocks and many of the conversation string
-     blocks aren't available.
-
-
-4.1 Conversations
-
-   Conversations are stored in the file "cnv.ark". File header:
-
-   0000   Int16   number of conversation slots in file
-   0002   Int32   offset to conversation slot #0
-   ...
-
-   If an offset is 0, the conversation slot is empty and no conversation is
-   available. The name of the conversation partner is stored in string block
-   0007, as string number (conversation slot number - 0x0e00 +16).
-
-   The conversation header looks like this:
-
-   0000   Int32   unknown1, always seems to be 0x0828, or 28 08
-   0004   Int32   code size in number of instructions (16-bit words)
-   0008   Int16   unknown2, always seems to be 0x0000
-   000A   Int16   game strings block to use
-   000C   Int16   number of memory reserved for variables (*)
-   000E   Int16   number of imported globals (functions + variables)
-   0010           start of imported functions list
-
-   (*) This number includes all variables not belonging to stack, e.g. unnamed
-   globals, imported globals and private conversation globals.
-
-   An import record describes imported functions and game global variables
-   used by the conversation:
-
-   0000   Int16   length of function name
-   0002   n*char  name of function
-   n+02   Int16   ID (imported func.) / memory address (variable)
-   n+04   Int16   unknown, always seems to be 1
-   n+06   Int16   import type (0x010F=variable, 0x0111=imported func.)
-   n+08   Int16   return type (0x0000=void, 0x0129=int, 0x012B=string)
-
-   After this table the code section follows.
-
-   Each conversation has a set of private global variables that are saved
-   across conversations. The initial size of them are stored in the file
-   "babglobals.dat". When a game is saved, the globals are stored in the file
-   "bglobals.dat". The layout of both files is as follows:
-
-   0000   Int16     number of conversation slot
-   0002   Int16     size of private global data for that conv.
-   0004   n*Int16   all globals for that slot (omitted in "babglobals.dat")
-   ...              repeat until file end
-
-   On conversation start the game globals listed in the import table is
-   copied to the memory address in the private globals. At end of conversation
-   they are copied back to the game globals.
-
-   * Memory layout
-
-     0000    unnamed globals (may be empty, size nglobals)
-     000n    imported globals (copied on start) (usually 0x001f long)
-     0020    private conversation globals (of size nprivglobals)
-     0020+n  stack begin (ascends up)
-
-     There may be unnamed globals that start at memory location 0. The
-     imported globals then start at a higher address (the exact positions
-     of the imported globals are noted in the "import records list".
-
-     For the memory, a full range of 16-bit memory (64k) should be available,
-     which gives plenty of stack memory.
-
-   * Conversation assembler language
-
-   The conversation code is an assembler-like languages with a set of opcodes.
-   It runs on a 16-bit virtual machine with a stack and a result register for
-   imported functions. The language set is described here:
-
-   Opcode         no. immediate operands
-   |   Name       | no. stack operands
-   |   |          | | No. values saved to stack
-   |   |          | | |  Action
-   |   |          | | |  |
-   00  NOP        0 0 0  do nothing.
-   01  OPADD      0 2 1  push s[0] + s[1]
-   02  OPMUL      0 2 1  push s[0] * s[1]
-   03  OPSUB      0 2 1  push s[1] - s[0]
-   04  OPDIV      0 2 1  push s[1] / s[0]
-   05  OPMOD      0 2 1  push s[1] % s[0]
-   06  OPOR       0 2 1  logical OR of top two values.
-   07  OPAND      0 2 1  logical AND of top two values.
-   08  OPNOT      0 1 1  logical NOT of top value.
-   09  TSTGT      0 2 1  greater-than, nonzero if s[1] > s[0].
-   0A  TSTGE      0 2 1  greater-than-or-equal.
-   0B  TSTLT      0 2 1  less-than.
-   0C  TSTLE      0 2 1  less-than-or-equal.
-   0D  TSTEQ      0 2 1  equality. Nonzero if s[1] == s[0].
-   0E  TSTNE      0 2 1  non-equal.
-   0F  JMP        1 0 0  jump absolute. address is measured in words from the
-                         start of the code.
-   10  BEQ        1 1 0  branch on equal. Pop a value, branch relative if zero.
-   11  BNE        1 1 0  branch on Not Equal. As BEQ but branch if the value
-                         popped is non-zero.
-   12  BRA        1 0 0  branch. Always branch relative to the offset address.
-   13  CALL       1 0 1  call subroutine. Push the next instruction address and
-                         jump to the absolute address (in words) given.
-   14  CALLI      1 0 0  call imported subroutine. Argument is the function ID.
-   15  RET        0 1 0  return from subroutine. Pop the return address off the
-                         stack and jump to it.
-   16  PUSHI      1 0 1  push immediate value onto the stack.
-   17  PUSHI_EFF  1 0 1  push effective address onto the stack. The value
-                         pushed is the current frame pointer address plus the
-                         immediate operand. This allows local variables and
-                         function parameters.
-   18  POP        0 1 0  pop a value from the stack (and throw it away).
-   19  SWAP       0 2 2  swap the top two stack values.
-   1A  PUSHBP     0 0 1  push the current frame pointer onto the stack.
-   1B  POPBP      0 1 0  pop the frame pointer from the stack
-   1C  SPTOBP     0 0 0  new frame. Set the frame pointer to the stack pointer.
-   1D  BPTOSP     0 0 0  exit frame. Set the stack pointer to the frame pointer.
-   1E  ADDSP      0 1 *  pop a value, add to the stack pointer. Used
-                         to reserve stack space for variables.
-   1F  FETCHM     0 1 1  pop address, push the value of the variable pointed to.
-   20  STO        0 2 0  store s[0] in the variable pointed to by s[1].
-   21  OFFSET     0 2 1  array offset. Add s[1] - 1 to the effective address in
-                         s[0], push this as a new effective address.
-   22  START      0 0 0  start program.
-   23  SAVE_REG   0 1 0  pop a value from the stack and store it in the result
-                         register.
-   24  PUSH_REG   0 0 1  push the value of the result register on the stack.
-   25  STRCMP     ? ? ?  string compare.
-   26  EXIT_OP    0 0 0  end program (?)
-   27  SAY_OP     0 1 0  NPC says something. Print a conversation string (from
-                         the stack).
-   28  RESPOND_OP ? ? ?  respond (?)
-   29  OPNEG      0 1 1  negate. s[0] -> -s[0].
-
-   (*) ADDSP, of course, doesn't actually push anything onto the stack, but its
-       effect on the stack pointer is of pushing as many values as its operand
-       specifies.
-   (?) I haven't yet encountered these in the wild, so don't know exactly what
-       they do.
-
-   * Conversation text substitutions
-
-     In text strings printed by SAY_OP or a imported function (like
-     "babl_menu") there may be strings like @SS1 or @GS8 that are substituted
-     with other text. The format of the "format string" is like this:
-
-     @XY<num>[<extension>]
-
-     X: source of variable to substitute, one of these: GSP
-        G: game global variable
-        S: stack variable
-        P: pointer variable
-     Y: type of variable, one of these: SI
-        S: value is a string number into current string block
-        I: value is an integer value
-     <num>: decimal value
-     <extension>: format: C<number>, might be fractional part
-
-     For pointer variables, the num value determines the location of the
-     pointer relative to the stack. It usually refers to variables passed
-     to a function (since they were push'ed onto the stack).
-
-     For stack variables, the num value determines which stack value is taken
-     from the current local variables. The value to take is basep + <num>
-
-     For global variables, the value describes the globals position in memory,
-     at the front where the imported game globals and private globals are
-     stored.
-
-     Example:
-     @SS2 means: print string with string number found at basep + 2
-     @PI-3 means: print int value pointed to by pointer at basep - 3
-     @GS8 means: print string from global var #8
-
-   * Conversation imported functions
-
-     Each imported function has an ID (the argument of the CALLI opcode), and
-     the "import table" (see above) usually imports all available functions,
-     even unused ones. All imported functions have at least one argument, and
-     the first one is the number of arguments additionally passed (some times
-     this rule seems to be violated, e.g. function "babl_menu", see (*)
-     below). First argument is always pushed last on stack. All values are
-     passed by reference.
-
-     Here is a quick overview of all builtin functions ("args" is the number
-     of arguments without the mandatory first one):
-
-      type    args     function name
-      int      1 (*)   babl_menu
-      int      2 (*)   babl_fmenu
-      void     1       print
-      int      0       babl_ask
-      int      2       compare
-      int      1       random
-      string   ?       plural
-      int      2       contains
-      string   ?       append
-      string   ?       copy
-      int      ?       find
-      int      1       length
-      int      ?       val
-      void     ?       say
-      void     ?       respond
-      int      1       get_quest
-      void     2       set_quest
-      string   2       sex
-      int      2       show_inv
-      int      2       give_to_npc
-      int      2       give_ptr_npc
-      int      1       take_from_npc
-      int      1       take_id_from_npc
-      int      4       identify_inv
-      int      *       do_offer
-      int      2       do_demand
-      int      1       do_inv_create
-      int      1       do_inv_delete
-      int      1       check_inv_quality
-      int      2       set_inv_quality
-      int      1       count_inv
-      void     0       setup_to_barter
-      void     ?       end_barter
-      void     0       do_judgement
-      void     0       do_decline
-      void     ?       pause
-      void     2       set_likes_dislikes
-      int      3       gronk_door
-      void     1/3     set_race_attitude
-      void     3       place_object
-      void     1       take_from_npc_inv
-      void     ?       add_to_npc_inv
-      void     0       remove_talker
-      void     2       set_attitude
-      int      2       x_skills
-      int      2       x_traps
-      void     ?       x_obj_pos
-      void     9       x_obj_stuff
-      int      2       find_inv
-      int      1       find_barter
-      int      4       find_barter_total
-
-     Here is a detailed description of every builtin function. arg0 is always
-     the first argument (the last value pushed on the stack) and specifies the
-     number of arguments passed.
-
-     id=0000 name="babl_menu" ret_type=int
-     parameters:   arg1: pointer to a list of string id's; ends with id == 0
-     description:  shows a menu of further questions the user can select;
-                   string id's are stored in list in arg1
-     return value: number of selected response (one-based index of arg1 list)
-     -------------------------------------------------------------------------
-
-     id=0001 name="babl_fmenu" ret_type=int
-     parameters:   arg1: pointer to list of string id's; ends with id == 0
-                   arg2: pointer to list with on/off values (1==on)
-     description:  shows a menu with questions from list in arg1; the list in
-                   arg2 indicates if the question is available (0 means not
-                   available).
-     return value: number of selected response string (from the arg1 list)
-     -------------------------------------------------------------------------
-
-     id=0002 name="print" ret_type=void
-     parameters:   arg1: pointer to string id
-     description:  prints a string that is not spoken by anyone (e.g. scene
-                   description).
-     -------------------------------------------------------------------------
-
-     id=0003 name="babl_ask" ret_type=int
-     parameters:   none
-     description:  lets the user type in a string; the string typed in is
-                   stored in a newly allocated string slot. The string is not
-                   stored after conversation ended.
-     return value: string handle of allocated string
-     -------------------------------------------------------------------------
-
-     id=0004 name="compare" ret_type=int
-     parameters:   arg1: pointer to string handle
-                   arg2: pointer to string handle
-     description:  compares strings for equality, case independent
-     return value: returns 1 when strings are equal, 0 when not
-     -------------------------------------------------------------------------
-
-     id=0005 name="random" ret_type=int
-     parameters:   arg1: highest value
-     description:  generates a random number in the range of [1..arg1]
-     return value: the generated random number
-     -------------------------------------------------------------------------
-
-     id=0006 name="plural" ret_type=string
-     parameters:   arg1: item id to retrieve plural string (guessed)
-     description:  (as this function is not used in uw1, I only can guess)
-                   the function returns a newly allocated string with the
-                   plural of the description string of a given item id.
-     return value: string handle (guessed)
-     -------------------------------------------------------------------------
-
-     id=0007 name="contains" ret_type=int
-     parameters:   arg1: pointer to first string handle
-                   arg2: pointer to second string handle
-     description:  checks if the first string contains the second string
-                   (case-independent).
-     return value: returns 1 when the string was found
-     -------------------------------------------------------------------------
-
-     id=0008 name="append" ret_type=string
-     parameters:   unknown
-     description:  (not used in uw1)
-     return value: unknown
-     -------------------------------------------------------------------------
-
-     id=0009 name="copy" ret_type=string
-     parameters:   unknown
-     description:  (not used in uw1)
-     return value: unknown
-     -------------------------------------------------------------------------
-
-     id=000a name="find" ret_type=int
-     parameters:   unknown
-     description:  (not used in uw1)
-     return value: unknown
-     -------------------------------------------------------------------------
-
-     id=000b name="length" ret_type=int
-     parameters:   arg1: pointer to string handle
-     description:  calculates length of string
-     return value: returns length of string
-     -------------------------------------------------------------------------
-
-     id=000c name="val" ret_type=int
-     parameters:   unknown
-     description:  (not used in uw1)
-     return value: unknown
-     -------------------------------------------------------------------------
-
-     id=000d name="say" ret_type=void
-     parameters:   unknown
-     description:  (not used in uw1)
-     return value: unknown
-     -------------------------------------------------------------------------
-
-     id=000e name="respond" ret_type=void
-     parameters:   unknown
-     description:  (not used in uw1)
-     return value: unknown
-     -------------------------------------------------------------------------
-
-     id=000f name="get_quest" ret_type=int
-     parameters:   arg1: quest flag number
-     description:  returns a quest flag value
-     return value: quest flag value
-     -------------------------------------------------------------------------
-
-     id=0010 name="set_quest" ret_type=void
-     parameters:   arg1: new flag value
-                   arg2: quest flag number
-     description:  sets a quest value
-     return value: none
-     -------------------------------------------------------------------------
-
-     id=0011 name="sex" ret_type=string
-     parameters:   arg1: pointer to first string handle
-                   arg2: pointer to second string handle
-     description:  decides on the gender of the avatar which string handle to
-                   return. for a male avatar, the second handle is taken,
-                   otherwise the first handle is taken
-     return value: selected string handle
-     -------------------------------------------------------------------------
-
-     id=0012 name="show_inv" ret_type=int
-     parameters:   arg1: unknown
-                   arg2: unknown
-     description:  lets the player show an item to the NPC, the player gets
-                   the item back (?)
-     return value: unknown
-     -------------------------------------------------------------------------
-
-     id=0013 name="give_to_npc" ret_type=int
-     parameters:   arg1: item id
-                   arg2: item quantity
-     description:  
-     return value: unknown, ignored
-     -------------------------------------------------------------------------
-
-     id=0014 name="give_ptr_npc" ret_type=int
-     parameters:   arg1: quantity?
-                   arg2: master object list position? (got from find_barter)
-     description:  player hands over an item to NPC (?)
-     return value: unused
-     -------------------------------------------------------------------------
-
-     id=0015 name="take_from_npc" ret_type=int
-     parameters:   arg1: item id
-     description:  gives the player an item
-     return value: 1: ok, 2: player has no space left
-     -------------------------------------------------------------------------
-
-     id=0016 name="take_id_from_npc" ret_type=int
-     parameters:   unknown
-     description:  unknown
-     return value: unknown
-     -------------------------------------------------------------------------
-
-     id=0017 name="identify_inv" ret_type=int
-     parameters:   unknown
-     description:  unknown
-     return value: unknown
-     -------------------------------------------------------------------------
-
-     id=0018 name="do_offer" ret_type=int
-     parameters:   unknown
-     description:  unknown
-     return value: unknown
-     -------------------------------------------------------------------------
-
-     id=0019 name="do_demand" ret_type=int
-     parameters:   unknown
-     description:  unknown
-     return value: unknown
-     -------------------------------------------------------------------------
-
-     id=001a name="do_inv_create" ret_type=int
-     parameters:   arg1: item id
-     description:  creates item in npc inventory
-     return value: unknown
-     -------------------------------------------------------------------------
-
-     id=001b name="do_inv_delete" ret_type=int
-     parameters:   arg1: item id
-     description:  deletes item in npc inventory
-     return value: unknown
-     -------------------------------------------------------------------------
-
-     id=001c name="check_inv_quality" ret_type=int
-     parameters:   unknown
-     description:  unknown
-     return value: unknown
-     -------------------------------------------------------------------------
-
-     id=001d name="set_inv_quality" ret_type=int
-     parameters:   unknown
-     description:  unknown
-     return value: unknown
-     -------------------------------------------------------------------------
-
-     id=001e name="count_inv" ret_type=int
-     parameters:   unknown
-     description:  unknown
-     return value: unknown
-     -------------------------------------------------------------------------
-
-     id=001f name="setup_to_barter" ret_type=void
-     parameters:   none
-     description:  starts bartering
-     -------------------------------------------------------------------------
-
-     id=0020 name="end_barter" ret_type=void
-     parameters:   unknown
-     description:  (not used in uw1), ends bartering
-     -------------------------------------------------------------------------
-
-     id=0021 name="do_judgement" ret_type=void
-     parameters:   none
-     description:  judges current trade (using the "appraise" skill) and
-                   prints result
-     -------------------------------------------------------------------------
-
-     id=0022 name="do_decline" ret_type=void
-     parameters:   none
-     description:  declines trade offer (?)
-     -------------------------------------------------------------------------
-
-     id=0023 name="pause" ret_type=void
-     parameters:   unknown
-     description:  (not used in uw1)
-     -------------------------------------------------------------------------
-
-     id=0024 name="set_likes_dislikes" ret_type=void
-     parameters:   arg1: pointer to list of things the npc likes to trade
-                   arg2: pointer to list of things the npc dislikes to trade
-     description:  sets list of items that a npc likes or dislikes to trade;
-                   the list is terminated with a -1 (0xffff) entry
-     -------------------------------------------------------------------------
-
-     id=0025 name="gronk_door" ret_type=int
-     parameters:   arg1: x tile coordinate with door to open
-                   arg2: y tile coordinate
-     description:  opens closed door or portcullis
-     return value: unknown
-     -------------------------------------------------------------------------
-
-     id=0026 name="set_race_attitude" ret_type=void
-     parameters:   unknown
-     description:  sets attitude for a whole race (?)
-     -------------------------------------------------------------------------
-
-     id=0027 name="place_object" ret_type=void
-     parameters:   arg1: x tile pos
-                   arg2: y tile pos
-                   arg3: item pointer (from do_inv_create)
-     description:  places a generated object in underworld (?)
-     -------------------------------------------------------------------------
-
-     id=0028 name="take_from_npc_inv" ret_type=void
-     parameters:   unknown
-     description:  unknown
-     -------------------------------------------------------------------------
-
-     id=0029 name="add_to_npc_inv" ret_type=void
-     parameters:   unknown
-     description:  (not used in uw1)
-     -------------------------------------------------------------------------
-
-     id=002a name="remove_talker" ret_type=void
-     parameters:   none
-     description:  removes npc the player is talking to (?)
-     -------------------------------------------------------------------------
-
-     id=002b name="set_attitude" ret_type=void
-     parameters:   unknown
-     description:  unknown
-     -------------------------------------------------------------------------
-
-     id=002c name="x_skills" ret_type=int
-     parameters:   unknown
-     description:  unknown
-     return value: unknown
-     -------------------------------------------------------------------------
-
-     id=002d name="x_traps" ret_type=int
-     parameters:   unknown
-     description:  unknown
-     return value: unknown
-     -------------------------------------------------------------------------
-
-     id=002e name="x_obj_pos" ret_type=void
-     parameters:   unknown
-     description:  (not used in uw1)
-     -------------------------------------------------------------------------
-
-     id=002f name="x_obj_stuff" ret_type=void
-     parameters:   unknown
-     description:  unknown
-     -------------------------------------------------------------------------
-
-     id=0030 name="find_inv" ret_type=int
-     parameters:   arg1: unknown
-                   arg2: item id
-     description:  searches item in npc inventory
-     return value: position in master object list
-     -------------------------------------------------------------------------
-
-     id=0031 name="find_barter" ret_type=int
-     parameters:   arg1: item id to find
-     description:  searches for item in barter area
-     return value: returns pos in master object list of item, or 0 if none
-                   found
-     -------------------------------------------------------------------------
-
-     id=0032 name="find_barter_total" ret_type=int
-     parameters:   s[0]: ???
-                   s[1]: pointer to number of found items
-                   s[2]: pointer to
-                   s[3]: pointer to
-                   s[4]: pointer to item ID to find
-     description:  searches for item in barter area
-     return value: 1 when found (?)
-     -------------------------------------------------------------------------
-
-   * Conversation imported variable
-
-     All imported variables have type int (except for "npc_name" and
-     "play_name", which are strings). Here's a list of all imported game
-     variables:
-
-       variable name       description
-
-        play_hunger
-        play_health
-        play_arms
-        play_power
-        play_hp
-        play_mana
-        play_level
-        new_player_exp     (not used in uw1)
-        play_name          player name
-        play_poison        (not used in uw1)
-        play_drawn         is 1 when player has drawn his weapon (?)
-        play_sex           (not used in uw1)
-        npc_xhome          x coord of home tile
-        npc_yhome          y coord of home tile
-        npc_whoami         npc conversation slot number
-        npc_hunger
-        npc_health
-        npc_hp
-        npc_arms           (not used in uw1)
-        npc_power
-        npc_goal
-        npc_attitude
-        npc_gtarg
-        npc_talkedto       is 1 when player already talked to npc
-        npc_level
-        npc_name           (not used in uw1)
-        dungeon_level      (not used in uw1)
-        riddlecounter      (not used in uw1)
-        game_time
-        game_days
-        game_mins
-
-   * Quest flags
-
-     There are quest flags that are kept during gameplay to implement
-     interaction between NPC's. flags can be get/set using get_quest() and
-     set_quest() or during gameplay, triggered by actions. Here's a list of
-     flags and their meanings (when no values for the flag are specified, 1
-     means yes or true, and 0 means no or false):
-
-       flag   description
-
-         0    Dr. Owl's assistant Murgo freed
-         1    talked to Hagbard
-         2    met Dr. Owl?
-         3    permission to speak to king Ketchaval
-         4    Goldthirst's quest to kill the gazer (1: gazer killed)
-         5    Garamon, magic source
-         6    friend of Lizardman folk
-         7    ?? (conv #24, Murgo)
-         8    book from Bronus for Morlock
-         9    "find Gurstang" quest?
-        10    where to find Zak, for Delanrey
-        11    Rodrick killed
-
-        32    status of "Knight of the Crux" quest
-               0: no knight
-               1: seek out Dorna Ironfist
-               2: started quest to search the "writ of Lorne"
-               3: found writ
-               4: door to armoury opened
-
 
 6.0 Savegame format
 
@@ -2287,356 +2717,6 @@ Table of Contents
    todo: how items are stored
 
 
-7.0 3D object models
-
-   These are stored within the executable (bad! bad!). From Doug Church, on
-   the 3d models:
-
-     We'd take a 3ds model, convert it to an internal ASCII format, and then
-     run a "model builder" which would generate an inlined BSP tree for it.
-     This would be expressed in a byte code, or, really, as a set of simple
-     ASM like codes.  Things like "Vtx 56.7, 435, 35.3" or "Color 153" or
-     "Norm 0.6, 0.8, 0.0, front04" or whatever.  Then, we used the Macro
-     Assembler (well, Optasm, really) to generate a bunch of "db" statements
-     out of all this, and give it a label, and put it in the data segment. 3D
-     models were then drawn by calling a little "model interpreter" in the
-     game, which was given the address of this data block, which it then
-     interpreted. i.e. when it got to the byte for "Norm", it would fetch the
-     normal, dot it verse the eye vector, and jump or not based on the sign.
-
-   There is a table of 2-byte model offsets, with room for 64 models.
-   Positions of the table differ, as there are several builds of the uw.exe,
-   ultimau1.exe or uw2.exe.
-
-     game  table start   first bytes   table base offset
-      uw1  0x0004e910    b6 4a 06 40   0x0004e99e
-      uw1  0x0004ccd0    b6 4a 06 40   0x0004cd5e  same models, different place
-      uw1  0x0004e370    b6 4a 06 40   0x0004e3fe  ditto (reported Gerd Bitzer)
-
-      uw2  0x00054cf0    d4 64 aa 59   0x00054d8a
-      uw2  0x000550e0    d4 64 aa 59   0x0005517a  another UW2 build
-
-   Models are:
-
-      00   -
-      01   door frame
-      02   bridge
-      03   bench
-      04   Lotus Turbo Esprit (no, really!)
-      05   small boulder
-      06   medium boulder
-      07   large boulder
-      08   arrow
-      09   beam
-      0A   pillar
-      0B   shrine
-      0D   painting
-      10   texture map
-      11   texture map
-      12   texture map
-      13   gravestone
-      14   texture map
-      15   -
-      16   ?texture map
-      17   
-      18   table
-      19   chest
-      1A   nightstand
-      1B   barrel
-      1C   chair
-      1D   bed (UWII)
-      1E   blackrock gem (UWII)
-      1F   shelf (UWII)
-
-   Node list
-   ---------
-   Actual model data is stored as a list with various "nodes" that do
-   different things. There also is a vertex array that is filled at start of
-   the model, and then faces are defined, using points from the vertex list.
-   The list is parsed every frame and tests are done if some faces have to be
-   rendered or not (depending if the player faces the polygon or not).
-
-   There are some data types that are used in the model node data. These are:
-
-     Int16   a simple 16 bit unsigned integer
-     Fixed   fixed point number with 12 bits before the fraction point (12.4)
-     VertNo  vertex number; lowest 3 bits are ignored
-
-   Every model has a header that looks like this:
-
-     0000   Int32   unknown
-     0004   Fixed   extents X value
-     0006   Fixed   extents Y value
-     0008   Fixed   extents Z value
-     000a           node entries follow
-
-   In general, node entries look as following:
-
-     0000   Int16   node id
-     0002           custom node data (may be omitted)
-
-   Here's an overview of all node types used:
-
-     node id  description
-     0000     end node
-     0006     define sort node, arbitrary heading
-     000C     define sort node, ZY plane
-     000E     define sort node, XY plane
-     0010     define sort node, XZ plane
-     0014     ??? colour definition
-     002E     ???
-     0040     ??? seems to do nothing but introduce a face definition
-     0044     ??? this one too
-     0058     define face plane, arbitrary heading
-     005E     define face plane Z/Y
-     0060     define face plane X/Y
-     0062     define face plane X/Z
-     0064     define face plane X
-     0066     define face plane Z
-     0068     define face plane Y
-     0078     define model center
-     007A     define initial vertex
-     007E     define face vertices
-     0082     define initial vertices
-     0086     define vertex offset X
-     0088     define vertex offset Z
-     008A     define vertex offset Y
-     008C     define vertex variable height
-     0090     define vertex offset X,Z
-     0092     define vertex offset X,Y
-     0094     define vertex offset Y,Z
-     00A0     ??? shorthand face definition
-     00A8     define texture-mapped face
-     00B4     define face vertices with u,v information
-     00BC     define face shade (6 bytes)
-     00BE     ??? seems to define 2 shades
-     00CE     ??? yet another texture-mapped face
-     00D2     ??? shorthand face definition
-     00D4     define dark vertex face (?)
-     00D6     define gouraud shading
-
-   Here's a detailed description of all nodes, sorted after functionality:
-
-   Misc. nodes
-   -----------
-     0000   end node
-            just ends current list; also ends sort node sublists
-
-     0078   define model center
-              0000   Int16     node id
-              0002   VertNo    vertex list index to use as origin (?)
-              0004   Fixed     origin X coordinate
-              0006   Fixed     origin Y coordinate
-              0008   Fixed     origin Z coordinate
-              000a   Int16     ???
-
-            because of the limited resolution available for specifying object
-            positions, the origin for model coordinates will typically need to
-            be offset from the center of the collision volume. This parameter
-            gives that center, in model coords.
-
-   Vertex nodes
-   ------------
-   Vertex node entries just set up the vertex list that is later used to take
-   points and draw faces (such as triangles, polygons, etc.)
-
-     007A   define initial vertex
-              0002   Fixed     vertex X coordinate
-              0004   Fixed     vertex Y coordinate
-              0006   Fixed     vertex Z coordinate
-              0008   VertNo    vertex list index to store new vertex
-
-     0082   define initial vertices
-              0002   Int16     number of vertices (=nvert)
-              0004   Int16     ???
-              0006   Fixed     vertex X coordinate for first vertex
-              0008   Fixed     vertex Y coordinate
-              000a   Fixed     vertex Z coordinate
-              000c   Fixed     vertex X coordinate for second vertex
-              000e             and so on, for nvert vertices
-
-     0086   define vertex offset X
-              0002   VertNo    reference vertex to modify
-              0004   Fixed     offset to add to X coordinate
-              0006   VertNo    new list index to store vertex
-
-     0088   define vertex offset Z
-            same as 0086, but for the Z coordinate
-
-     008A   define vertex offset Y
-            same as 0086, but for the Y coordinate
-
-     0090   define vertex offset X,Z
-              0002   Fixed     offset to add to X coordinate
-              0004   Fixed     offset to add to X coordinate
-              0006   VertNo    reference vertex to modify
-              0008   VertNo    new list index to store vertex
-
-     0092   define vertex offset X,Y
-            same as 0090, but for the X and Y coordinate
-
-     0094   define vertex offset Y,Z
-            same as 0090, but for the X and Y coordinate
-
-     008C   define vertex variable height
-            this is used for pillars and doorframes where the model must reach
-            up to the ceiling, wherever it be.
-              0002   VertNo    reference vertex to modify
-              0004   Int16     ???
-              0006   VertNo    new list index to store vertex
-
-   Face plane checks
-   -----------------
-   Face plane checks exist to check if a following face has to be drawn or
-   not. Usually a face normal vector is defined to verify. A length value
-   is given to know how many bytes to omit in the node list.
-
-     0058   define face plane, arbitrary heading
-              0002   Int16     number of bytes to skip when not visible
-              0004   Fixed     normal vector X coordinate
-              0006   Fixed     distance "model origin -> face" X value
-              0008   Fixed     normal vector Y coordinate
-              000a   Fixed     distance "model origin -> face" Y value
-              000c   Fixed     normal vector Z coordinate
-              000e   Fixed     distance "model origin -> face" Z value
-            after this node usually face info nodes follow
-
-     0064   define face plane X
-            Y and Z coordinates of normal vector is 0 (YZ plane normal)
-              0002   Int16     number of bytes to skip when not visible
-              0004   Fixed     normal vector X coordinate
-              0006   Fixed     distance "model origin -> face" X value
-            after this node usually face info nodes follow
-
-     0066   define face plane Z
-            same as 0064, but with Z coordinate (XY plane normal)
-
-     0068   define face plane Y
-            same as 0064, but with Y coordinate (XZ plane normal)
-
-     005E   define face plane Z/Y
-            X coordinate of normal vector is 0
-              0002   Int16     number of bytes to skip
-              0004   Fixed     normal vector Z coordinate
-              0006   Fixed     distance Z value
-              0008   Fixed     normal vector Y coordinate
-              000a   Fixed     distance Y value
-
-     0060   define face plane X/Y
-            same as 005E, but with X and Y coordinates/values (in this order)
-
-     0062   define face plane X/Z
-            same as 005E, but with X and Z coordinates/values
-
-   Face info nodes
-   ---------------
-   They just define a face (polygon) from some points of the vertex list.
-
-     007E   define face vertices
-              0002   Int16     number of vertices (=nvert)
-              0004   VertNo    vertex list index for first point
-              0006   VertNo    vertex list index for second point
-              0008             and so on
-
-     00A8   define texture-mapped face
-            vertex u and v coordinates are stored as 0.16 fractional value.
-            just divide by 65535.0 to get coordinates in the range [0; 1]
-              0002   Int16     texture number (?)
-              0004   Int16     number of vertices (=nvert)
-              0006   VertNo    vertex list index for first point
-              0008   Fixed      first vertex u coordinate
-              000a   Fixed      first vertex v coordinate
-              000c   VertNo    vertex list index for second point
-              000e             and so on
-
-     00B4   define face vertices with u,v information
-            same structure as 00A8, but without the "texture number" field.
-
-   Sort nodes
-   ----------
-   Sort nodes are there to sort faces of a whole node list and the renderer
-   can determine if the list has to be rendered at all.
-
-     0006   define sort node, arbitrary heading
-              0002   Fixed     normal vector X coordinate
-              0004   Fixed     distance      X coordinate
-              0006   Fixed     normal vector Y coordinate
-              0008   Fixed     distance      Y coordinate
-              000a   Fixed     normal vector Z coordinate
-              000c   Fixed     distance      Z coordinate
-              000e   Int16     left node offset (starting at 0010)
-              0010   Int16     right node offset (starting at 0012)
-
-     000C   define sort node, ZY plane
-            the X coordinate values are assumed to be 0
-              0002   Fixed     normal vector Z coordinate
-              0004   Fixed     distance      Z coordinate
-              0006   Fixed     normal vector Y coordinate
-              0008   Fixed     distance      Y coordinate
-              000a   Int16     left node offset (starting at 000c)
-              000c   Int16     right node offset (starting at 000e)
-
-     000E   define sort node, XY plane
-            same as 000C, but with X and Y coordinates (in this order)
-
-     0010   define sort node, XZ plane
-            same as 000C, but with X and Z coordinates (in this order)
-
-   Unknown nodes
-   -------------
-     0014   ??? colour definition
-              0002   VertNo    vertex number
-              0004   Int8      c1 ???
-              0005   Int8      c2 ???
-              0006   VertNo    vertex number
-
-     002E   ???
-              0002   Int16     ???
-
-     0040   ??? seems to do nothing but introduce a face definition
-     0044   ??? this one too
-            no further node data
-
-     00BC   define face shade
-              0002   Int8      c1 ???
-              0003   Int8      c2 ???
-              0004   Int8      c3 ???
-              0005   Int8      ???
-
-     00BE   ??? seems to define 2 shades
-              0002   Int8      c1 ???
-              0003   Int8      ???
-              0004   Int8      ???
-              0005   Int8      ???
-
-     00CE   ??? yet another texture-mapped face
-            same data as 00B4
-
-     00A0   ??? shorthand face definition
-            seems to be a quick way to define a face with 4 vertices and
-            automatic texture coordinates; vertex list indices
-              0002   VertNo    ???
-              0004   Int8      vertex list index 0
-              0005   Int8      vertex list index 1
-              0006   Int8      vertex list index 2
-              0007   Int8      vertex list index 3
-
-     00D2   ??? shorthand face definition
-            same as 00A0
-
-     00D4   define dark vertex face (?)
-              0002   Int16     number of vertices (=nvert)
-              0004   Int8      c1 ???
-              0005   Int8      c2 ???
-              0006   VertNo    vertex list index for first point
-              0008   Int8      dark value for first point ???
-              0009   VertNo    vertex list index for second point
-              000b   Int8      dark value for second point ???
-                               and so on; if nvert is odd, read another empty
-                               byte to have 16 bit word align
-
-     00D6   define gouraud shading
-            no other info; may switch on gouraud shading
 
    Ultima Underworld 2 models
    --------------------------
