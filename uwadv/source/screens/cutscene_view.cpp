@@ -43,6 +43,8 @@ const double ua_cutscene_view_fade_time = 0.5;
 
 void ua_cutscene_view_screen::init()
 {
+   ua_trace("cutscene animation %u started\n",cutscene);
+
    ended = false;
    tickcount = 0;
 
@@ -58,6 +60,9 @@ void ua_cutscene_view_screen::init()
    textcolor = 11;
    text_fade_state = 0;
    text_fadecount = 0;
+
+   // stop audio track
+   core->get_audio().stop_music();
 
    // init lua scripting
 
@@ -75,9 +80,13 @@ void ua_cutscene_view_screen::init()
       // not found? try another
       if (script==NULL)
          script = core->get_filesmgr().get_uadata_file("uw1/scripts/cutscene.lob");
+      else
+         ua_trace("loaded Lua script \"uw1/scripts/cutscene.lua\"\n");
 
       if (script==NULL)
          throw ua_exception("could not load cutscene script from uadata");
+      else
+         ua_trace("loaded Lua compiled script \"uw1/scripts/cutscene.lob\"\n");
 
       // load script into buffer
       std::vector<char> buffer;
@@ -97,14 +106,24 @@ void ua_cutscene_view_screen::init()
 
       // execute script
       int ret = lua_dobuffer(L,&buffer[0],len,"");
-      if (ret!=0){ ended = true; return; }
+      if (ret!=0)
+      {
+         ua_trace("Lua script ended with error code %u\n",ret);
+         ended = true;
+      }
    }
 
    // call "cuts_init(this,cutscene)"
    lua_getglobal(L,"cuts_init");
    lua_pushuserdata(L,this);
    lua_pushnumber(L,static_cast<double>(cutscene));
-   lua_call(L,2,0);
+   int ret = lua_call(L,2,0);
+   if (ret!=0)
+   {
+      ua_trace("Lua function call cuts_init(0x%08x,%u) ended with error code %u\n",
+         this,cutscene,ret);
+      ended = true;
+   }
 
    // init opengl
 
@@ -150,6 +169,7 @@ void ua_cutscene_view_screen::handle_event(SDL_Event &event)
       {
       case SDLK_RETURN:
       case SDLK_ESCAPE:
+         ua_trace("cutscene ended by return/escape\n");
          ended = true;
 
          // initiate text and anim fadeout
@@ -186,13 +206,13 @@ void ua_cutscene_view_screen::render()
          break;
 
       case 1: // fade in
-         light = 255*double(anim_fadecount) /
-            (ua_cutscene_view_fade_time*core->get_tickrate());
+         light = static_cast<Uint8>( 255*double(anim_fadecount) /
+            (ua_cutscene_view_fade_time*core->get_tickrate()) );
          break;
 
       case 2: // fade out
-         light = 255-255*double(anim_fadecount) /
-            (ua_cutscene_view_fade_time*core->get_tickrate());
+         light = 255-static_cast<Uint8>( 255*double(anim_fadecount) /
+            (ua_cutscene_view_fade_time*core->get_tickrate()) );
          break;
       }
       glColor3ub(light,light,light);
@@ -219,7 +239,8 @@ void ua_cutscene_view_screen::render()
       double u = tex_text.get_tex_u(), v = tex_text.get_tex_v();
 
       unsigned int startx = (320-img_text.get_xres())/2;
-      unsigned int starty = (400.0/480.0)*img_text.get_yres()+10;
+      unsigned int starty = static_cast<unsigned int>(
+         (400.0/480.0)*img_text.get_yres()+10 );
 
       // set text color
       Uint8 light = 255;
@@ -230,13 +251,13 @@ void ua_cutscene_view_screen::render()
          break;
 
       case 1: // fade in
-         light = 255*double(text_fadecount) /
-            (ua_cutscene_view_fade_time*core->get_tickrate());
+         light = static_cast<Uint8>( 255*double(text_fadecount) /
+            (ua_cutscene_view_fade_time*core->get_tickrate()) );
          break;
 
       case 2: // fade out
-         light = 255-255*double(text_fadecount) /
-            (ua_cutscene_view_fade_time*core->get_tickrate());
+         light = 255-static_cast<Uint8>( 255*double(text_fadecount) /
+            (ua_cutscene_view_fade_time*core->get_tickrate()) );
          break;
       }
       glColor3ub(light,light,light);
@@ -288,7 +309,7 @@ void ua_cutscene_view_screen::tick()
    }
 
    // check anim fading
-   if (showanim && (anim_fade_state == 1 || anim_fade_state == 2))
+   if ((showanim || ended) && (anim_fade_state == 1 || anim_fade_state == 2))
    {
       ++anim_fadecount;
 
@@ -322,9 +343,19 @@ void ua_cutscene_view_screen::tick()
    double ticktime = double(tickcount) / core->get_tickrate();
 
    // call lua "cuts_tick(ticktime)" function
-   lua_getglobal(L,"cuts_tick");
-   lua_pushnumber(L,ticktime);
-   lua_call(L,1,0);
+   if (!ended)
+   {
+      lua_getglobal(L,"cuts_tick");
+      lua_pushnumber(L,ticktime);
+      int ret = lua_call(L,1,0);
+      if (ret!=0)
+      {
+         ua_trace("Lua function call cuts_tick(%3.2f) ended with error code %u\n",
+            ticktime,ret);
+         ended = true;
+         return;
+      }
+   }
 
    ++tickcount;
 }
@@ -414,7 +445,8 @@ void ua_cutscene_view_screen::do_action()
    {
    case 0: // cuts_finished
       ended = true;
-      anim_fadecount = ua_cutscene_view_fade_time*core->get_tickrate() + 1;
+      anim_fadecount = static_cast<unsigned int>(
+         ua_cutscene_view_fade_time*core->get_tickrate() ) + 1;
       break;
 
    case 1: // cuts_set_string_block
@@ -516,7 +548,7 @@ int ua_cutscene_view_screen::cuts_do_action(lua_State *L)
          reinterpret_cast<ua_cutscene_view_screen*>(lua_touserdata(L,n-2));
 
       if (self->L != L)
-         throw ua_exception("wrong 'self' parameter in lua script!");
+         throw ua_exception("wrong 'self' parameter in Lua script");
 
       // perform action
       self->do_action();
