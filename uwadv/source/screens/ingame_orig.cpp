@@ -1591,6 +1591,9 @@ void ua_ingame_orig_screen::ui_changed_level(unsigned int level)
 {
    ua_texture_manager& texmgr = core->get_texmgr();
 
+   // reset stock texture usage
+   texmgr.reset();
+
    // prepare all used textures
    const std::vector<Uint16>& used_textures =
       core->get_underworld().get_level(level).get_used_textures();
