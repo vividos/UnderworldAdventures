@@ -59,6 +59,7 @@ public:
    void init(ua_settings &settings)
    {
       SDL_Init(SDL_INIT_AUDIO);
+      midipl.init_player(settings);
       midipl.init_driver();
       uw1path = settings.uw1_path;
    }

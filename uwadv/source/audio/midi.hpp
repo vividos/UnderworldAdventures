@@ -31,6 +31,7 @@
 
 // needed includes
 #include "xmidi.hpp"
+#include "settings.hpp"
 
 
 // classes
@@ -69,6 +70,9 @@ public:
       midi_driver = NULL;
    }
 
+   //! initializes player
+   void init_player(ua_settings &settings);
+
    //! initializes appropriate midi driver
    bool init_driver();
 
@@ -84,6 +88,15 @@ protected:
 
    //! midi driver to use
    ua_midi_driver *midi_driver;
+
+   // music conversion type
+   int music_conversion;
+
+   //! chorus value; -1 means off
+   int chorus_value;
+
+   //! reverb value; -1 means off
+   int reverb_value;
 };
 
 #endif

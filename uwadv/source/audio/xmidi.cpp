@@ -480,17 +480,25 @@ XMIDI::~XMIDI()
    }
 }
 
-bool XMIDI::Load(const char *filename)
+bool XMIDI::Load(const char *filename, int reverb, int chorus)
 {
    SDL_RWops *file = SDL_RWFromFile(filename,"rb");
    if (file==NULL)
       return false;
 
-   ExtractTracks(file);
+   // set midi properties
+   do_reverb = reverb>=0;
+   reverb_value = do_reverb ? reverb : 0;
+   do_chorus = chorus>=0;
+   chorus_value = do_chorus ? chorus : 0;
+   VolumeCurve.set_gamma(1.0);
+
+   // extract
+   int ntracks = ExtractTracks(file);
 
    SDL_RWclose(file);
 
-   return true;
+   return ntracks>0;
 }
 
 XMIDIEventList *XMIDI::GetEventList(Uint32 track)
@@ -1208,7 +1216,6 @@ int XMIDI::ExtractTracksFromMid (SDL_RWops *source, const Uint32 ppqn, const int
    return num;
 }
 
-//! \todo get do_reverb, reverb_value, do_chorus, chorus_value from somewhere
 int XMIDI::ExtractTracks(SDL_RWops *source)
 {
    Uint32 i = 0;
@@ -1217,12 +1224,6 @@ int XMIDI::ExtractTracks(SDL_RWops *source)
    Uint32 chunk_len;
    int    count;
    char   buf[32];
-
-   do_reverb = true;
-   reverb_value = 64;
-   do_chorus = true;
-   chorus_value = 16;
-   VolumeCurve.set_gamma(1.0);
 
    // Read first 4 bytes of header
    SDL_RWread(source,buf,1,4);

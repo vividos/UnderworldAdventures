@@ -242,12 +242,12 @@ public:
    ~XMIDI();
 
    //! loads midi file
-   bool Load(const char *filename);
+   bool Load(const char *filename, int reverb=-1, int chorus=-1);
 
-   int number_of_tracks() { return num_tracks; }
+   int number_of_tracks(){ return num_tracks; }
 
    //! External Event list functions
-   XMIDIEventList *GetEventList (Uint32 track);
+   XMIDIEventList *GetEventList(Uint32 track);
 
    // Not yet implimented
    // int apply_patch (int track, SDL_RWops *source);
@@ -263,25 +263,25 @@ private:
    };
 
    //! List manipulation
-   void CreateNewEvent (int time);
+   void CreateNewEvent(int time);
 
    // Variable length quantity
-   int GetVLQ (SDL_RWops *source, Uint32 &quant);
-   int GetVLQ2 (SDL_RWops *source, Uint32 &quant);
+   int GetVLQ(SDL_RWops *source, Uint32 &quant);
+   int GetVLQ2(SDL_RWops *source, Uint32 &quant);
 
    void AdjustTimings(Uint32 ppqn);   // This is used by Midi's ONLY!
    void ApplyFirstState(first_state &fs, int chan_mask);
 
-   int ConvertNote (const int time, const unsigned char status, SDL_RWops *source, const int size);
-   int ConvertEvent (const int time, const unsigned char status, SDL_RWops *source, const int size, first_state& fs);
+   int ConvertNote(const int time, const unsigned char status, SDL_RWops *source, const int size);
+   int ConvertEvent(const int time, const unsigned char status, SDL_RWops *source, const int size, first_state& fs);
    int ConvertSystemMessage (const int time, const unsigned char status, SDL_RWops *source);
 
-   int ConvertFiletoList (SDL_RWops *source, const bool is_xmi, first_state& fs);
+   int ConvertFiletoList(SDL_RWops *source, const bool is_xmi, first_state& fs);
 
-   int ExtractTracksFromXmi (SDL_RWops *source);
-   int ExtractTracksFromMid (SDL_RWops *source, const Uint32 ppqn, const int num_tracks, const bool type1);
+   int ExtractTracksFromXmi(SDL_RWops *source);
+   int ExtractTracksFromMid(SDL_RWops *source, const Uint32 ppqn, const int num_tracks, const bool type1);
    
-   int ExtractTracks (SDL_RWops *source);
+   int ExtractTracks(SDL_RWops *source);
 
 protected:
    Uint16 num_tracks;

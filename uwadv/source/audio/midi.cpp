@@ -40,32 +40,36 @@
 
 // ua_midi_player methods
 
+void ua_midi_player::init_player(ua_settings &settings)
+{
+   // todo: retrieve these values from the settings
+
+   music_conversion = XMIDI_CONVERT_MT32_TO_GM;
+//   music_conversion = XMIDI_CONVERT_MT32_TO_GS;
+//   music_conversion = XMIDI_CONVERT_MT32_TO_GS127;
+//   music_conversion = XMIDI_CONVERT_NOCONVERSION;
+
+   chorus_value = 64;
+   reverb_value = 16;
+}
+
 bool ua_midi_player::init_driver()
 {
-//   midi_driver = new Windows_MidiOut;
-   midi_driver = new uni_fmod_driver;
+   midi_driver = new Windows_MidiOut;
+//   midi_driver = new uni_fmod_driver;
    init=true;
    return true;
 }
 
 void ua_midi_player::start_track(const char *filename, int num, bool repeat)
 {
-   if (!init)
-      init_driver();
-
-   if (filename==NULL || midi_driver==NULL)
+   if (!init || filename==NULL || midi_driver==NULL)
       return;
-
-   int music_conversion;
-   music_conversion = XMIDI_CONVERT_MT32_TO_GM;
-//   music_conversion = XMIDI_CONVERT_MT32_TO_GS;
-//   music_conversion = XMIDI_CONVERT_MT32_TO_GS127;
-//   music_conversion = XMIDI_CONVERT_NOCONVERSION;
 
    // load xmi file
    XMIDI midifile(music_conversion);
 
-   if (!midifile.Load(filename))
+   if (!midifile.Load(filename,chorus_value,reverb_value))
       return;
 
    XMIDIEventList *eventlist = midifile.GetEventList(num);
