@@ -28,6 +28,7 @@
 // needed includes
 #include "common.hpp"
 #include "keymap.hpp"
+#include <cctype>
 
 
 // tables
