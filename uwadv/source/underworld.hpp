@@ -97,6 +97,9 @@ public:
    //! changes current level
    void change_level(unsigned int level);
 
+   //! returns number of levels available
+   unsigned int get_num_levels(){ return levels.size(); }
+
    // loading / saving / importing
 
    //! loads a savegame
