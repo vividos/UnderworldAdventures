@@ -162,6 +162,56 @@ protected:
 };
 
 
+// strings loading
+
+//! strings.pak huffman node structure
+struct ua_strings_pak_huff_node
+{
+  int symbol; //!< character symbol in that node
+  int parent; //!< parent node
+  int left;   //!< left node (-1 when no node)
+  int right;  //!< right node
+};
+
+//! strings.pak wrapper class
+class ua_strings_pak_file
+{
+public:
+   //! ctor
+   ua_strings_pak_file();
+   //! dtor
+   ~ua_strings_pak_file();
+
+   //! opens strings.pak file in data folder of current game
+   void open(ua_settings& settings);
+
+   //! opens a strings.pak file with given name
+   void open(const char* filename);
+
+   //! opens from rwops structure; file is kept open permanently
+   void open(SDL_RWops* rwops);
+
+   //! returns if a given block id is available)
+   bool is_avail(Uint16 block_id);
+
+   //! loads a single string block
+   void load_stringblock(Uint16 block_id, std::vector<std::string>& strblock);
+
+public:
+   //! filename of .pak file
+   std::string filename;
+
+   //! rwops structure when we're loading from an rwops file
+   SDL_RWops* rwops_file;
+
+   //! a vector with all huffman nodes for the given .pak file
+   std::vector<ua_strings_pak_huff_node> allnodes;
+
+   //! a map of all blocks available in the file
+   std::map<Uint16, Uint32> allblocks;
+};
+
+
 // inline functions
 
 //! retrieves "count" bits from "value", starting at bit "start"

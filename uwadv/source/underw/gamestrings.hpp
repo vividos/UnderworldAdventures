@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,10 +23,6 @@
 
    \brief game strings class
 
-   game strings are contained in blocks that contain a list of strings. each
-   block contains specific strings, for item descriptions, cutscene text
-   or conversation strings.
-
 */
 //! \ingroup underworld
 
@@ -43,36 +39,66 @@
 #include "settings.hpp"
 
 
+// forward-references
+//class ua_strings_pak_file;
+#include "import.hpp"
+
+
 // classes
 
-//! game string container class
+//! game strings class
+/* Game strings are contained in blocks that contain a list of strings. Each
+   block contains specific strings, for item descriptions, cutscene text or
+   conversations.
+*/
 class ua_gamestrings
 {
 public:
    //! ctor
    ua_gamestrings(){}
 
-   //! loads all game strings
-   void load(ua_settings& settings) throw(ua_exception);
+   //! inits game strings object
+   void init(ua_settings& settings);
 
-   //! loads all game strings from a file
-   void load(const char* filename) throw(ua_exception);
+   //! adds an external .pak file
+   void add_pak_file(const char* filename);
 
+   //! adds an external .pak file from rwops structure
+   void add_pak_file(SDL_RWops* rwops);
+
+   //! returns if block id is available
+   bool is_avail(Uint16 block_id);
+
+   //! returns a whole string block
+   void get_stringblock(Uint16 block_id, std::vector<std::string>& strblock);
+
+   //! returns a string from given block
+   std::string get_string(Uint16 block_id, unsigned int string_nr);
+
+protected:
+   //! loads string block into allstrings map
+   void load_stringblock(Uint16 block_id);
+
+   //! decrease lifetime of all blocks in map lifetimes
+   void decrease_lifetimes(Uint16 except_for_block_id);
+
+protected:
+   //! a map with all string blocks
+   std::map<Uint16, std::vector<std::string> > allstrings;
+
+   //! lifetimes for blocks that can be garbage-collected
+   std::map<Uint16, unsigned int> lifetimes;
+
+   //! all strings.pak files available for loading strings
+   std::vector<ua_strings_pak_file> allpakfiles;
+
+/*
    //! loads all game strings from a RWops
    void load(SDL_RWops* rwops);
 
    //! returns the whole strings block
    std::map<int,std::vector<std::string> >& get_allstrings(){ return allstrings; }
-
-   //! returns a whole string block
-   std::vector<std::string>& get_block(unsigned int block);
-
-   //! returns a game string
-   std::string get_string(unsigned int block, unsigned int string_nr);
-
-protected:
-   //! game string container
-   std::map<int,std::vector<std::string> > allstrings;
+*/
 };
 
 

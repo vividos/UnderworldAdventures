@@ -27,65 +27,75 @@
 
 // needed includes
 #include "common.hpp"
-#include "gamestrings.hpp"
+#include "import.hpp"
+#include "settings.hpp"
 #include "io_endian.hpp"
 
 
+//! define this when you can be sure the strings.pak is correct;
+//! speeds up loading a bit
 #define HAVE_CORRECT_STRINGS_FILE
 
 
-// structs
+// ua_strings_pak_file methods
 
-//! huffman node structure
-typedef struct ua_huff_node
+ua_strings_pak_file::ua_strings_pak_file()
+:rwops_file(NULL)
 {
-  int symbol; //!< character symbol in that node
-  int parent; //!< parent node
-  int left;   //!< left node (-1 when no node)
-  int right;  //!< right node
-} ua_huff_node;
-
-//! strings block info
-typedef struct ua_block_info
-{
-   Uint16 block_id; //!< block id of current block
-   Uint32 offset;   //!< offset into strings.pak of block
-} ua_block_info;
-
-
-// ua_gamestrings methods
-
-void ua_gamestrings::load(ua_settings& settings) throw(ua_exception)
-{
-   std::string filename(settings.get_string(ua_setting_uw_path));
-   filename.append("data/strings.pak");
-
-   load(filename.c_str());
 }
 
-void ua_gamestrings::load(const char* filename) throw(ua_exception)
+ua_strings_pak_file::~ua_strings_pak_file()
 {
-   SDL_RWops* rwops = SDL_RWFromFile(filename,"rb");
+   if (rwops_file != NULL)
+   {
+      SDL_RWclose(rwops_file);
+      rwops_file = NULL;
+   }
+}
+
+/*! Opens the strings.pak file in the data folder of the game. Files for uw1
+    and uw2 have the same format.
+    \param settings settings object
+*/
+void ua_strings_pak_file::open(ua_settings& settings)
+{
+   filename = settings.get_string(ua_setting_uw_path);
+   filename += "data/strings.pak";
+
+   open(filename.c_str());
+}
+
+/*! Opens a strings.pak file or a file that has the same format (e.g. created
+    with the "strpak" tool).
+    \param the_filename filename of the strings.pak file
+*/
+void ua_strings_pak_file::open(const char* the_filename)
+{
+   filename = the_filename;
+
+   allnodes.clear();
+   allblocks.clear();
+
+   // open file
+   SDL_RWops* rwops = SDL_RWFromFile(filename.c_str(),"rb");
    if (rwops==NULL)
       throw ua_exception("could not open file strings.pak");
 
-   load(rwops);
+   open(rwops);
 
    SDL_RWclose(rwops);
 }
 
-void ua_gamestrings::load(SDL_RWops *rwops)
+void ua_strings_pak_file::open(SDL_RWops* rwops)
 {
-   // determine filesize
-   SDL_RWseek(rwops,0,SEEK_END);
-   long filesize = SDL_RWtell(rwops);
-   SDL_RWseek(rwops,0,SEEK_SET);
+   // not calling from open() above
+   if (filename.empty())
+      rwops_file = rwops;
 
    // number of huffman nodes
    Uint16 nodenum = SDL_RWread16(rwops);
 
    // read in node list
-   std::vector<ua_huff_node> allnodes;
    allnodes.resize(nodenum);
    for(Uint16 k=0; k<nodenum; k++)
    {
@@ -99,94 +109,129 @@ void ua_gamestrings::load(SDL_RWops *rwops)
    Uint16 sblocks = SDL_RWread16(rwops);
 
    // read in all block infos
-   std::vector<ua_block_info> allblocks;
-   allblocks.resize(sblocks);
    for(int z=0; z<sblocks; z++)
    {
-      allblocks[z].block_id = SDL_RWread16(rwops);
-      allblocks[z].offset = SDL_RWread32(rwops);
-   }
+      Uint16 block_id = SDL_RWread16(rwops);
+      Uint32 offset = SDL_RWread32(rwops);
 
-   for(Uint16 i=0; i<sblocks; i++)
+      allblocks.insert(std::make_pair<Uint16, Uint32>(block_id, offset));
+   }
+}
+
+/*! Checks if a block with given block id is available.
+    \param block_id block id
+    \return if block is available
+*/
+bool ua_strings_pak_file::is_avail(Uint16 block_id)
+{
+   return allblocks.find(block_id) != allblocks.end();
+}
+
+/*! Loads a single string block from file. Please check with is_avail() if the
+    block is available.
+
+    \param block_id block id of string block to load
+    \param strblock strings array that gets filled
+*/
+void ua_strings_pak_file::load_stringblock(Uint16 block_id, std::vector<std::string>& strblock)
+{
+   std::map<Uint16, Uint32>::iterator iter = allblocks.find(block_id);
+   if (iter == allblocks.end())
    {
-      std::vector<std::string> allblockstrings;
-
-      SDL_RWseek(rwops,allblocks[i].offset,SEEK_SET);
-
-      // number of strings
-      Uint16 numstrings = SDL_RWread16(rwops);
-
-      // all string offsets
-      std::vector<Uint16> stroffsets;
-      stroffsets.resize(numstrings);
-
-      for(int j=0; j<numstrings; j++)
-         stroffsets[j] = SDL_RWread16(rwops);
-
-      Uint32 curoffset = allblocks[i].offset + (numstrings+1)*sizeof(Uint16);
-
-      for(Uint16 n=0; n<numstrings; n++)
-      {
-         SDL_RWseek(rwops,curoffset+stroffsets[n],SEEK_SET);
-
-         char c;
-         std::string str;
-
-         int bit=0;
-         int raw=0;
-
-         do
-         {
-            int node=nodenum-1; // starting node
-
-            // huffman tree decode loop
-            while (char(allnodes[node].left) != -1 && char(allnodes[node].left) != -1)
-            {
-               if (bit==0)
-               {
-                  bit=8;
-                  raw=SDL_RWread8(rwops);
-
-#ifndef HAVE_CORRECT_STRINGS_FILE
-                  if (SDL_RWtell(rwops)>=filesize)
-                  {
-                     // premature end of file, should not happen
-                     n=numstrings;
-                     i=sblocks;
-                     break;
-                  }
-#endif
-               }
-
-               // decide which node is next
-               node = raw & 0x80 ? short(allnodes[node].right)
-                  : short(allnodes[node].left);
-
-               raw<<=1;
-               bit--;
-            }
-#ifndef HAVE_CORRECT_STRINGS_FILE
-            if (SDL_RWtell(rwops)>=filesize)
-               break;
-#endif
-
-            // have a new symbol
-            c = allnodes[node].symbol;
-            if (c!='|')
-               str.append(1,c);
-
-         } while (c!='|');
-
-         allblockstrings.push_back(str);
-         str.erase();
-      }
-
-      // check if string block already exists
-      if (allstrings.find(allblocks[i].block_id)!=allstrings.end())
-         allstrings.erase(allblocks[i].block_id);
-
-      // insert string block
-      allstrings.insert(
-         std::make_pair<int,std::vector<std::string> >(allblocks[i].block_id,allblockstrings));
+      ua_trace("loading string block %04x failed\n",block_id);
+      return;
    }
+
+   Uint32 offset = allblocks[block_id];
+
+   SDL_RWops* rwops = filename.empty() ? rwops_file :
+      SDL_RWFromFile(filename.c_str(),"rb");
+   if (rwops==NULL)
+   {
+      std::string text("could not open file ");
+      text += filename;
+      throw ua_exception(text.c_str());
+   }
+
+   // determine filesize
+   SDL_RWseek(rwops,0,SEEK_END);
+   long filesize = SDL_RWtell(rwops);
+   SDL_RWseek(rwops,0,SEEK_SET);
+
+   SDL_RWseek(rwops,offset,SEEK_SET);
+
+   // number of strings
+   Uint16 numstrings = SDL_RWread16(rwops);
+
+   // all string offsets
+   std::vector<Uint16> stroffsets;
+   stroffsets.resize(numstrings);
+
+   for(int j=0; j<numstrings; j++)
+      stroffsets[j] = SDL_RWread16(rwops);
+
+   Uint32 curoffset = offset + (numstrings+1)*sizeof(Uint16);
+   unsigned int nodenum = allnodes.size();
+
+   for(Uint16 n=0; n<numstrings; n++)
+   {
+      SDL_RWseek(rwops,curoffset+stroffsets[n],SEEK_SET);
+
+      char c;
+      std::string str;
+
+      int bit=0;
+      int raw=0;
+
+      do
+      {
+         int node=nodenum-1; // starting node
+
+         // huffman tree decode loop
+         while (char(allnodes[node].left) != -1 && char(allnodes[node].left) != -1)
+         {
+            if (bit==0)
+            {
+               bit=8;
+               raw=SDL_RWread8(rwops);
+
+#ifndef HAVE_CORRECT_STRINGS_FILE
+               if (SDL_RWtell(rwops)>=filesize)
+               {
+                  // premature end of file, should not happen
+                  n=numstrings;
+                  //block_id=sblocks;
+                  break;
+               }
+#endif
+            }
+
+            // decide which node is next
+            node = raw & 0x80 ? short(allnodes[node].right)
+               : short(allnodes[node].left);
+
+            raw<<=1;
+            bit--;
+         }
+#ifndef HAVE_CORRECT_STRINGS_FILE
+         if (SDL_RWtell(rwops)>=filesize)
+            break;
+#endif
+
+         // have a new symbol
+         c = allnodes[node].symbol;
+         if (c!='|')
+            str.append(1,c);
+
+      } while (c!='|');
+
+      strblock.push_back(str);
+      str.erase();
+   }
+
+   if (!filename.empty())
+      SDL_RWclose(rwops);
+
+   // remove excess memory
+   std::vector<std::string>(strblock).swap(strblock);
 }
