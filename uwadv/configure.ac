@@ -124,6 +124,7 @@ source/Makefile
 source/tools/Makefile
 source/resource/Makefile
 source/resource/zziplib/Makefile
+source/lua/Makefile
 uadata/Makefile
 uwadv.spec:source/linux/uwadv.spec.in
 ])

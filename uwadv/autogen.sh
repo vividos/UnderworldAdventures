@@ -46,8 +46,9 @@ rm -f uwadv.spec source/uwadv.cfg
 rm -f Makefile.in Makefile
 rm -f source/Makefile.in source/Makefile 
 rm -f source/tools/Makefile.in source/tools/Makefile
-rm -f source/resource/Makefile.in source/resource/Makefile.in
-rm -f source/resource/zziplib/Makefile.in sourc/resource/zziplib/Makefile.in
+rm -f source/resource/Makefile.in source/resource/Makefile
+rm -f source/resource/zziplib/Makefile.in source/resource/zziplib/Makefile
+rm -f source/lua/Makefile.in source/lua/Makefile
 rm -f uadata/Makefile.in uadata/Makefile
 # maybe change this last line into some fancy
 # 'find all Makefile.am and delete corresponding Makefile and Makefile.in'

@@ -1,4 +1,4 @@
-LUAC = ../source/lua/bin/luac
+LUAC = ../source/lua/luac
 
 # this defines luaSCRIPTS, luaOBJECTS and uarFILES
 include Makefile.common

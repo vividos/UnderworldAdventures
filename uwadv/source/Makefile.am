@@ -4,7 +4,7 @@
 # $Id$
 #
 
-SUBDIRS = tools resource
+SUBDIRS = tools resource lua
 
 # compiler options
 CXXFLAGS = -I. $(SDL_CFLAGS) -Wall
@@ -12,28 +12,6 @@ LDFLAGS = $(SDL_LIBS) -lSDL_mixer
 
 
 # automake build rules
-
-noinst_LIBRARIES = liblua.a
-
-liblua_a_SOURCES = lua/src/lapi.c lua/src/lcode.c lua/src/ldebug.c \
-	lua/src/ldo.c lua/src/lfunc.c lua/src/lgc.c \
-	lua/src/llex.c lua/src/lmem.c lua/src/lobject.c \
-	lua/src/lparser.c lua/src/lstate.c lua/src/lstring.c \
-	lua/src/ltable.c lua/src/ltests.c lua/src/ltm.c \
-	lua/src/lundump.c lua/src/lvm.c lua/src/lzio.c \
-	lua/src/lib/lauxlib.c lua/src/lib/lbaselib.c \
-	lua/src/lib/lmathlib.c lua/src/lib/lstrlib.c \
-	lua/src/lapi.h lua/src/lcode.h lua/src/ldebug.h \
-	lua/src/ldo.h lua/src/lfunc.h lua/src/lgc.h \
-	lua/src/llex.h lua/src/llimits.h lua/src/lmem.h \
-	lua/src/lobject.h lua/src/lopcodes.h lua/src/lparser.h \
-	lua/src/lstate.h lua/src/lstring.h lua/src/ltable.h \
-	lua/src/ltm.h lua/src/lundump.h lua/src/lvm.h \
-	lua/src/lzio.h \
-	lua/include/lauxlib.h lua/include/lua.h \
-	lua/include/luadebug.h lua/include/lualib.h
-
-liblua_a_CFLAGS = -Ilua/include -Wall
 
 bin_PROGRAMS = uwadv
 
@@ -72,11 +50,9 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 uwadv_LDADD = \
 	$(OPENGL_LIBS) \
 	$(SDL_LIBS) \
-	liblua.a \
+	lua/liblua.la \
 	resource/zziplib/libzziplib.la \
 	-lz
-
-uwadv_DEPENDENCIES = liblua.a
 
 EXTRA_DIST = audio/midi_driver/win_midiout.cpp \
 	audio/midi_driver/win_midiout.h \
