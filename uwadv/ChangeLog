@@ -1,3 +1,265 @@
+2002-08-22 19:18  vividos
+
+	* configure.ac (1.10):
+
+	updated version number
+	
+2002-08-22 19:15  vividos
+
+	* source/tools/mapdisp.cpp (1.6):
+
+	fix for wrong param type in ua_settings::set_value()
+	
+2002-08-22 17:28  wjpalenstijn
+
+	* Makefile.am (1.5), source/Makefile.am (1.38):
+
+	dist fixes
+	
+2002-08-22 16:35  vividos
+
+	* Makefile.mingw (1.27):
+
+	added needed utils.cpp for uaconfig
+	added stripping of uaconfig.exe
+	
+2002-08-22 16:33  wjpalenstijn
+
+	* source/utils.cpp (1.2):
+
+	added includes for mkdir/vfprintf
+	
+2002-08-22 16:25  wjpalenstijn
+
+	* source/tools/Makefile.common (1.2):
+
+	uatypes.h -> utils.h
+	
+2002-08-22 16:18  vividos
+
+	* source/win32/uwadv.dsp (1.30):
+
+	removed zzip-config.h
+	
+2002-08-22 16:16  wjpalenstijn
+
+	* source/resource/zziplib/zzip-config.h (1.3):
+
+	removed generated file from CVS
+	
+2002-08-22 16:05  vividos
+
+	* source/: Makefile.common (1.3), utils.cpp (1.1), win32/uwadv.dsp
+	(1.29):
+
+	added utils.cpp/.hpp
+	
+2002-08-22 16:02  vividos
+
+	* source/: common.hpp (1.12), uatypes.hpp (1.14), utils.hpp (1.1):
+
+	renamed uatypes.hpp to utils.hpp
+	
+2002-08-21 23:05  wjpalenstijn
+
+	* source/linux/main.cpp (1.4):
+
+	#ifndef WIN32 around linux/main.cpp
+	
+2002-08-21 23:02  wjpalenstijn
+
+	* source/lua/Makefile.am (1.8):
+
+	more make dist fixes
+	
+2002-08-21 22:51  wjpalenstijn
+
+	* source/resource/zziplib/zzip-stdint.h (1.4):
+
+	(hopefully) fixed for freebsd
+	
+2002-08-21 22:51  wjpalenstijn
+
+	* source/lua/Makefile.am (1.7):
+
+	typo
+	
+2002-08-21 22:31  wjpalenstijn
+
+	* configure.ac (1.9), source/Makefile.am (1.37),
+	source/lua/Makefile.am (1.6), source/tools/Makefile.am (1.19):
+
+	add Makefile.common to dist
+	
+2002-08-21 22:18  wjpalenstijn
+
+	* source/resource/zziplib/: .cvsignore (1.3), zzip-config.in (1.1):
+
+	added a missing file for zziplib
+	
+2002-08-21 22:15  wjpalenstijn
+
+	* uadata/Makefile.am (1.4):
+
+	small make dist fix
+	
+2002-08-21 22:12  wjpalenstijn
+
+	* .cvsignore (1.7), autogen.sh (1.7), configure.ac (1.8),
+	source/Makefile.am (1.36), source/resource/zziplib/.cvsignore
+	(1.2), source/resource/zziplib/Makefile.am (1.3),
+	source/resource/zziplib/acinclude.m4 (1.1),
+	source/resource/zziplib/configure.ac (1.2):
+
+	use zziplib's configure
+	
+2002-08-21 20:17  wjpalenstijn
+
+	* docs/README.Linux.txt (1.8):
+
+	mention 'make uninstall'
+	
+2002-08-21 17:30  vividos
+
+	* source/win32/License.installer.txt (1.3):
+
+	changed copyright holders to "Underworld Adventures Team"
+	
+2002-08-21 17:01  vividos
+
+	* docs/README.uwadv.txt (1.5):
+
+	updated text to mention uwadv config program
+	
+2002-08-21 15:57  vividos
+
+	* source/win32/License.installer.txt (1.2):
+
+	changed installer license text a bit
+	
+2002-08-21 15:14  vividos
+
+	* source/win32/uwadv.nsi (1.12):
+
+	added separate section for start menu and desktop icons
+	added uw1-keyboard.txt to installer
+	added start menu links for the text files
+	
+2002-08-21 15:08  vividos
+
+	* Makefile.mingw (1.26):
+
+	installer: uw1-keyboard.txt is copied to output folder, too
+	
+2002-08-21 14:45  vividos
+
+	* source/: screens/ingame_orig.cpp (1.49), uwscript.cpp (1.10):
+
+	removed compiler warning in release mode
+	
+2002-08-21 14:37  vividos
+
+	* Makefile.mingw (1.25), source/win32/uaconfig.dsp (1.2):
+
+	added needed link library winmm.lib
+	
+2002-08-21 14:32  phlask
+
+	* uadata/uw1/scripts/createchar.lua (1.9):
+
+	Game difficulty level and inital vitality are now set for the player.
+	Pressing Yes for "Keep character" at the end will now take you directly to the game after a message.
+	
+2002-08-21 14:29  phlask
+
+	* source/screens/: create_character.cpp (1.13),
+	create_character.hpp (1.9):
+
+	Added support for a timer, drawtext with a custom stringblock and starting a new game directly
+	
+2002-08-21 14:22  vividos
+
+	* source/resource/settingsloader.cpp (1.11):
+
+	added checking for eof condition after reading a line (config file writing)
+	
+2002-08-21 12:48  vividos
+
+	* hacking/: cnvdec/cnvdec.cpp (1.5), critdec/critdec.cpp (1.6),
+	cutsdec/cutsdec.cpp (1.4), fontdecode/fontdecode.cpp (1.4),
+	grdecode/grdecode.cpp (1.5), levarkdec/levarkdec.cpp (1.9),
+	miscdecode/miscdecode.cpp (1.7), sgdecode/sgdecode.cpp (1.4),
+	stringextract/stringextract.cpp (1.4), trdecode/trdecode.cpp (1.4):
+
+	added GPL header
+	simplified needed includes
+	
+2002-08-21 12:46  vividos
+
+	* hacking/: cnvdec/cnvdec.dsp (1.3), critdec/critdec.dsp (1.3),
+	cutsdec/cutsdec.dsp (1.4), fontdecode/fontdecode.dsp (1.3),
+	grdecode/grdecode.dsp (1.3), levarkdec/levarkdec.dsp (1.4),
+	miscdecode/miscdecode.dsp (1.4), sgdecode/sgdecode.dsp (1.3),
+	stringextract/stringextract.dsp (1.3), trdecode/trdecode.dsp (1.3):
+
+	removed precompiled header usage
+	removed SDL dependency where not needed
+	used new gamestrings.cpp where needed
+	
+2002-08-21 12:45  vividos
+
+	* hacking/Makefile.am (1.3):
+
+	added gamestrings.cpp file
+	
+2002-08-21 12:44  vividos
+
+	* hacking/hacking.h (1.5):
+
+	added another needed include
+	
+2002-08-21 12:30  vividos
+
+	* hacking/: gamestrings.cpp (1.2), hacking.h (1.4):
+
+	removed the need for SDL.dll
+	
+2002-08-21 12:25  vividos
+
+	* hacking/: gamestrings.cpp (1.1), hacking.h (1.3):
+
+	added hacked-up version of ua_gamestrings class for use in "hacking" projects
+	
+2002-08-21 12:17  vividos
+
+	* hacking/: cnvdec/cnvdec.cpp (1.4), critdec/critdec.cpp (1.5),
+	hacking.h (1.2), cutsdec/cutsdec.cpp (1.3),
+	fontdecode/fontdecode.cpp (1.3), grdecode/grdecode.cpp (1.4),
+	levarkdec/levarkdec.cpp (1.8), miscdecode/miscdecode.cpp (1.6),
+	sgdecode/sgdecode.cpp (1.3), stringextract/stringextract.cpp (1.3),
+	trdecode/trdecode.cpp (1.3):
+
+	converted to proper cr-lf modes
+	
+2002-08-21 11:49  phlask
+
+	* source/player.hpp (1.14), uadata/uw1/scripts/uwinterface.lua
+	(1.4):
+
+	Added difficulty player attribute
+	
+2002-08-21 11:32  vividos
+
+	* source/screens/ingame_orig.cpp (1.48):
+
+	increased range of look up/down view angle
+	
+2002-08-21 10:08  vividos
+
+	* ChangeLog (1.26):
+
+	updated
+	
 2002-08-20 22:48  phlask
 
 	* uadata/uw1/scripts/createchar.lua (1.8):
