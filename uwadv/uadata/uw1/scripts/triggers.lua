@@ -53,17 +53,17 @@ end
 
 
 -- handles all triggers that are set off
-function lua_trigger_setoff(obj_handle)
+function lua_trigger_set_off(obj_handle)
 
-   objinfo = objlist_get_obj_info(obj_handle)
+   dump_objinfo_table(obj_handle)
 
-   if objinfo.item_id < trig_last or objinfo.item_id > trig_last
+   local objinfo = objlist_get_obj_info(obj_handle)
+
+   if objinfo.item_id < trig_first or objinfo.item_id > trig_last
    then
       return -- no known trigger to set off
    end
 
-   print( "trigger was set off:\n" )
-
-   dump_objinfo_table(obj_handle)
+   trap_set_off(objinfo.quantity)
 
 end
