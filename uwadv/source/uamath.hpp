@@ -53,6 +53,7 @@ const double ua_pi = 3.141592653589793;
 
 // classes
 
+//! 2d vector class
 class ua_vector2d
 {
 public:
@@ -107,5 +108,55 @@ public:
    }
 };
 
+
+//! 3d vector class
+class ua_vector3d
+{
+public:
+   //! vector elements
+   double x,y,z;
+
+public:
+   //! ctor
+   ua_vector3d(){ x=y=z=0.0; }
+
+   //! copy ctor
+   ua_vector3d(const ua_vector3d &vec){ x=vec.x; y=vec.y; z=vec.z; }
+
+   //! assign operator
+   ua_vector3d& operator =(const ua_vector3d &vec){ x=vec.x; y=vec.y; z=vec.z; return *this; }
+
+   //! ctor with x, y and z coordinates
+   ua_vector3d(double ax, double ay, double az){ x=ax; y=ay; z=az; }
+
+   //! add assignment
+   ua_vector3d& operator +=(const ua_vector3d &vec){ x+=vec.x; y+=vec.y; z+=vec.z; return *this; }
+
+   //! subtract assignment
+   ua_vector3d& operator -=(const ua_vector3d &vec){ x-=vec.x; y-=vec.y; z-=vec.z; return *this; }
+
+   // multiplication assignment
+   ua_vector3d& operator *=(double sc){ x*=sc; y*=sc; z*=sc; return *this; }
+
+   //! sets vector by giving vector elements
+   void set(double nx, double ny, double nz){ x=nx; y=ny; z=nz; }
+
+   //! returns length of vector
+   double length() const { return sqrt(x*x+y*y+z*z); }
+
+   //! normalizes vector
+   void normalize(){ (*this)*=(1.0/length()); }
+
+   //! calculates the inner (dot) product
+   double dot(const ua_vector3d &vec) const { return x*vec.x + y*vec.y + z*vec.z; }
+};
+
+
+//! 3d triangle struct
+struct ua_triangle3d
+{
+   //! triangle points
+   ua_vector3d points[3];
+};
 
 #endif
