@@ -33,6 +33,7 @@
  #include "screens/ingame_orig.hpp"
  #include "screens/start_menu.hpp"
 #endif
+#include <iostream>
 
 
 // ua_game methods
