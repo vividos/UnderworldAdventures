@@ -65,7 +65,7 @@ void ua_object_list::import_objs(SDL_RWops* rwops, Uint16 texmap[64])
    // now that we have the two lists, follow each tile ref
    for(unsigned int n=0; n<64*64; n++)
       if (tile_index[n] != 0)
-         addobj_follow(objprop,npcinfo,tile_index[n],texmap);
+         addobj_follow(objprop,npcinfo,tile_index[n],texmap,n&63,n>>6);
 }
 
 //! retrieves "count" bits from "value", starting at bit "start"
@@ -75,7 +75,7 @@ Uint32 ua_get_bits(Uint32 value, unsigned int start, unsigned int count)
 }
 
 void ua_object_list::addobj_follow(Uint32 objprop[0x400*2],
-   Uint8 npcinfo[0x100*19],Uint16 objpos, Uint16 texmap[64])
+   Uint8 npcinfo[0x100*19],Uint16 objpos, Uint16 texmap[64],Uint8 tilex, Uint8 tiley)
 {
    while(objpos!=0)
    {
@@ -138,6 +138,9 @@ void ua_object_list::addobj_follow(Uint32 objprop[0x400*2],
          extinfo.zpos = zpos;
          extinfo.heading = heading;
 
+         extinfo.tilex = tilex;
+         extinfo.tiley = tiley;
+
          // npc infos
          if (objpos<0x0100)
          {
@@ -188,7 +191,7 @@ void ua_object_list::addobj_follow(Uint32 objprop[0x400*2],
 
       // examine special property and add recursively
       if (is_quantity==0)
-         addobj_follow(objprop,npcinfo,quantity,texmap);
+         addobj_follow(objprop,npcinfo,quantity,texmap,0,0);
 
       // add next object in chain
       objpos = link;

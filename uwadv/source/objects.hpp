@@ -114,6 +114,9 @@ struct ua_object_info_ext
    //! direction (0..7)
    Uint8 heading;
 
+   //! tilemap coordinates
+   Uint8 tilex, tiley;
+
    // npc infos
 
    //! indicates if npc infos are used
@@ -200,6 +203,10 @@ public:
    // todo: object insert, remove, etc.
 
 
+   //! deletes object at given position
+   void delete_object(Uint16 pos);
+
+
    // loading / saving / importing
 
    //! loads a savegame
@@ -214,7 +221,7 @@ public:
 private:
    //! adds object to master object list and follows link1 and link2 objs
    void addobj_follow(Uint32 objprop[0x400*2], Uint8 npcinfo[0x100*19],
-      Uint16 objpos, Uint16 texmap[64]);
+      Uint16 objpos, Uint16 texmap[64], Uint8 tilex, Uint8 tiley);
 
 protected:
    //! indices for each tile into master object list
@@ -222,6 +229,9 @@ protected:
 
    //! master object list
    std::vector<ua_object> master_obj_list;
+
+   //! object tilemap position xref table
+   std::vector<std::pair<Uint8,Uint8> > xref_tilepos;
 };
 
 #endif

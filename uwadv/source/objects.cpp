@@ -91,6 +91,7 @@ void ua_object_info::save_info(ua_savegame& sg)
 
 ua_object_info_ext::ua_object_info_ext()
 :xpos(0), ypos(0), zpos(0), heading(0),
+ tilex(0xff),tiley(0xff),
  npc_used(false),
  npc_hp(0), npc_goal(0), npc_gtarg(0), npc_level(0),
  npc_talkedto(0), npc_attitude(0), npc_xhome(0), npc_yhome(0), 
@@ -105,6 +106,9 @@ void ua_object_info_ext::load_extinfo(ua_savegame& sg)
    ypos = sg.read8() & 7;
    zpos = sg.read8();
    heading = sg.read8() & 7;
+
+   tilex = sg.read8();
+   tiley = sg.read8();
 
    npc_used = sg.read8()!=0;
    if (npc_used)
@@ -140,6 +144,9 @@ void ua_object_info_ext::save_extinfo(ua_savegame& sg)
    sg.write8(ypos & 7);
    sg.write8(zpos);
    sg.write8(heading & 7);
+
+   sg.write8(tilex);
+   sg.write8(tiley);
 
    sg.write8(npc_used ? 1 : 0);
    if (npc_used)
@@ -203,6 +210,46 @@ ua_object_list::~ua_object_list()
 Uint16 ua_object_list::get_tile_list_start(unsigned int xpos, unsigned int ypos)
 {
    return tile_index[ypos*64+xpos];
+}
+
+void ua_object_list::delete_object(Uint16 pos)
+{
+   ua_object_info_ext& ext = get_object(pos).get_ext_object_info();
+
+   Uint16 startobj = get_tile_list_start(ext.tilex,ext.tiley);
+   Uint16 prevpos = 0;
+   Uint16 curpos = startobj;
+
+   // go through chain to find given 'pos'
+   while(curpos != pos && curpos != 0)
+   {
+      prevpos = curpos;
+      curpos = get_object(curpos).get_object_info().link;
+   }
+
+   if (curpos == 0)
+      return; // didn't find object to delete
+
+   // get next object pos
+   Uint16 nextpos = get_object(curpos).get_object_info().link;
+
+   if (curpos == startobj)
+   {
+      // delete first object in chain
+
+      // set new chain start
+      tile_index[ext.tiley*64+ext.tilex] = nextpos;
+   }
+   else
+   {
+      // delete object somewhere in the chain
+
+      // set link of previous object to nextpos
+      get_object(prevpos).get_object_info().link = nextpos;
+   }
+
+   // free object by setting item_id to none
+   get_object(curpos).get_object_info().item_id = ua_item_none;
 }
 
 void ua_object_list::load_game(ua_savegame &sg)
