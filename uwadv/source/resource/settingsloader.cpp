@@ -117,6 +117,9 @@ void ua_settings::load(const char *filename)
             for(;line.size()>0 && isspace(line.at(0));)
                line.erase(0,1);
 
+            ua_trace("settings key/value: %s => %s\n",
+               ua_settings_mapping[i].optname,line.c_str());
+
             insert_value(ua_settings_mapping[i].key,line.c_str());
 
             break;
