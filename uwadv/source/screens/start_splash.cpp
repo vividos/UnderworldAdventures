@@ -31,6 +31,7 @@
 #include "audio.hpp"
 #include "savegame.hpp"
 #include "renderer.hpp"
+#include "scripting.hpp"
 #include "start_menu.hpp"
 #include "ingame_orig.hpp"
 
@@ -288,7 +289,15 @@ void ua_start_splash_screen::tick()
       if (game.get_settings().get_bool(ua_setting_uw1_is_uw_demo))
       {
          // when we have the demo, we immediately go to the ingame screen
-         game.get_underworld().import_savegame(game.get_settings(),"data/",true);
+
+         // load and init new game
+         ua_uw_import import;
+         import.load_underworld(game.get_underworld(), game.get_settings(),
+            "data/", true);
+
+         game.get_scripting().init_new_game();
+
+         // to ingame screen
          game.replace_screen(new ua_ingame_orig_screen(game),false);
          return;
       }

@@ -328,7 +328,12 @@ void ua_create_character_screen::tick()
             if (newgame)
             {
                // load initial game
-               game.get_underworld().import_savegame(game.get_settings(),"data/",true);
+               ua_uw_import import;
+               import.load_underworld(game.get_underworld(), game.get_settings(),
+                  "data/", true);
+
+               // init new game
+               game.get_scripting().init_new_game();
 
                // start original game
                game.replace_screen(new ua_ingame_orig_screen(game),false);
