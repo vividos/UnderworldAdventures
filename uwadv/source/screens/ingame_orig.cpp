@@ -329,7 +329,7 @@ void ua_ingame_orig_screen::resume()
 
    // init text scroll
    textscroll.init(*core,15,169, scrollwidth,30, 5, 42);
-   textscroll.set_color(1);
+   textscroll.set_color(46);
 
    // register script callbacks
    core->get_underworld().get_scripts().register_callback(this);
