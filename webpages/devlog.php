@@ -4,6 +4,46 @@
 The dev log is the place where I write about the daily ongoings of the project. It is updated occasionally.
 </p>
 
+<span class="devlogHeading">2004-04-07</span>
+<p class="devlogBody">
+Fixed most doxygen warnings and updated copyright string on modified files. Added uw-formats.txt contribution from Max Gilead. Already released the mingw32 setup packages for compiling and building the installer. And released the music pack. Currently we have two separate packages "uwadv" and "uwadv-src" to release files; maybe we should just use "uwadv"?
+</p>
+
+<span class="devlogHeading">2004-04-07</span>
+<p class="devlogBody">
+Fixed some bugs found through valgrind warnings. My mingw32 compile crashed unexpected when first saving a quicksave savegame and then entering the savegame screen. The error was initialisation order; the info area accessed the ua_savegames_list before it was initialized. Fixed another bug when exiting savegames screen via "exit" button and immediately pressing another button. Updated Underworld Adventures manual. Added lift-off to physics code; should fix walking slopes; it's better now but still a bit jerky. wjp fixed rpm .spec file; libxslt and docbook-xsl is needed for building RPMs. Updated some texts. Fixed debug symbols for mingw32 builds when WITH_DEBUGGING is on (hopefully). My gdb still told me that no debug symbols were found. Added wish from Dominus: the manuals are now only built when doing "make installer".
+</p>
+
+<span class="devlogHeading">2004-04-06</span>
+<p class="devlogBody">
+Updated version info; new version is codenamed <a href="http://www.webtender.com/db/drink/1435" target="_blank">"mojito"</a>. wjp added docbook building to automake Makefiles.
+</p>
+
+<span class="devlogHeading">2004-04-01</span>
+<p class="devlogBody">
+Fixed conversation screen and enabled it. Fixed taking screenshots; also increased screenshot size to 160x100. Removed "save" button on savegame screen when entering with Ctrl+R (restore game). Fixed printing on textscroll when output is longer than a line. Savegames are now made up a bit differently. All tilemaps and objlists now have their own section, with a "tilemaps" section at start that tells how many tilemaps we have. Mapnotes are per-level now. Added notification of underworld callback about level change (to prepare new textures and stuff). Fixed player start position, now set per Lua script. Fixed traps. wjp fixed make dist. And sorry, no april fools this year :-)
+</p>
+
+<span class="devlogHeading">2004-03-30</span>
+<p class="devlogBody">
+Moved setting 3d window viewport into ua_renderer class. Fixed text scroll printing and scrolling. Fixed looking at walls.
+</p>
+
+<span class="devlogHeading">2004-03-25</span>
+<p class="devlogBody">
+Implemented taking screenshots for savegames. Lua: implemented most Lua C functions; they are now callable like C++ objects: "tilemap.get_info()" or "uw.print()". The trick is to put the C functions into global tables. Implemented objects "uw", "player", "tilemap", "objlist", "runes", "conv", "quest", "prop". Updated Lua code to use the new functions.
+</p>
+
+<span class="devlogHeading">2004-03-22</span>
+<p class="devlogBody">
+Removed #if'ed-out savegame code that was once there to save unpacked savegames. The savegame file can be unpacked using gunzip anyhow. Fixed loading level maps. Updated physics code to use the stuff found in Telemachos' new <a href="http://www.peroxide.dk/papers/collision/collision.pdf" target="_blank">paper</a> (well, he released it in July, but I only found it now). Walking slopes still hangs on some occasions. Also added a test suite for physics code. Changed Lua scripting interface a bit to support looking at and using objects.
+</p>
+
+<span class="devlogHeading">2004-03-22</span>
+<p class="devlogBody">
+Fixed savegame dialog under uw_demo; the character creation bitmap I'm using isn't available there, so I only draw some edged boxes that should do. Added Alt-key shortcuts to all controls on uaconfig.
+</p>
+
 <span class="devlogHeading">2004-03-18</span>
 <p class="devlogBody">
 Scheduled new release date to be on 2004-04-10. There also will be a new musicpack, since I've found the "wanderer" and the "maps & legends" tracks on my hard disc, done by QQits long ago (in 2002). I don't know if the tracks are finished, but surely worth listening!
@@ -57,6 +97,10 @@ Added message queue to debugger implementation. Implemented shutdown for debugge
 <span class="devlogHeading">2004-03-03</span>
 <p class="devlogBody">
 Prevented mipmap texture generation for object textures, removing the black squares in object sprites. Added preparing of all critter textures for now. In the future texture preparation will be done on-the-fly, to speed up things. Fixed render_sprite() method and added critter rendering. Finally fixed the savegame preview image rendering on savegame screen. Also added the "smooth ui" option to uaconfig. And added the website to CVS repository.
+</p>
+
+<p class="devlogBody">
+I'm very sad to tell that <a href="http://www.samandmax.net/" target="_blank">www.samandmax.net</a> reported today that Sam &amp; Max 2 - Freelance Police was cancelled. Darn! That could have been the next game I've bought and played (I'm not playing much games, except for uwadv and uw1, and a bit of Diablo 2). Well, have to start up <a href="http://www.scummvm.org/" target="_blank">ScummVM</a> with the classic Sam &amp; Max then.
 </p>
 
 <span class="devlogHeading">2004-03-02</span>
