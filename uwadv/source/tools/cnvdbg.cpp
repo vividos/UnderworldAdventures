@@ -181,7 +181,7 @@ void ua_conv_debugger::start()
          {
             printf("all breakpoints:\n");
             for(unsigned int i=0; i<bps; i++)
-               printf("%04x%c",allbreakpoints.at(i),i%8==7 ? '\n' : ' ');
+               printf("%04x%c",allbreakpoints[i],i%8==7 ? '\n' : ' ');
          }
 
          printf("\n");
@@ -281,7 +281,7 @@ void ua_conv_debugger::start()
 
                int i,max = allbreakpoints.size();
                for(i=0; i<max; i++)
-               if (allbreakpoints.at(i)==bpt)
+               if (allbreakpoints[i]==bpt)
                {
                   allbreakpoints.erase(allbreakpoints.begin()+i);
                   printf("deleted breakpoint at %04x\n",bpt);
@@ -353,7 +353,7 @@ void ua_conv_debugger::start()
          int max = allbreakpoints.size();
          for(int i=0; i<max; i++)
          {
-            if (allbreakpoints.at(i)==instrp)
+            if (allbreakpoints[i]==instrp)
             {
                printf("breakpoint at %04x reached\n",instrp);
                n=0;
@@ -404,7 +404,7 @@ void ua_conv_debugger::imported_func(Uint16 number)
       return;
    }
 
-   const ua_conv_imported_item &iitem = imported_funcs.at(number);
+   const ua_conv_imported_item &iitem = imported_funcs[number];
 
    if (verbose)
       printf("%04x: CALLI %04x: \"%s\"\n",instrp-1,number,iitem.name.c_str());
@@ -502,7 +502,7 @@ void ua_conv_debugger::sto_priv(Uint16 at, Uint16 val)
    {
       if (at<imported_globals.size())
       {
-         const ua_conv_imported_item &iitem = imported_globals.at(at);
+         const ua_conv_imported_item &iitem = imported_globals[at];
          printf("%04x: STO: \"%s\" (%04x) = %04x\n",instrp,iitem.name.c_str(),at,val);
       }
       else
@@ -521,7 +521,7 @@ void ua_conv_debugger::fetchm_priv(Uint16 at)
    {
       if (at<imported_globals.size())
       {
-         const ua_conv_imported_item &iitem = imported_globals.at(at);
+         const ua_conv_imported_item &iitem = imported_globals[at];
          printf("%04x: FETCHM: \"%s\" (%04x)\n",instrp,iitem.name.c_str(),at);
       }
       else

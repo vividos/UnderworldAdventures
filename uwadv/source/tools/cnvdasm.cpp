@@ -48,8 +48,8 @@ bool ua_conv_dasm::init(const char *cnvfile,unsigned int conv)
    }
 
    // global '0' string is empty
-   if (imported_globals.size()>0 && imported_globals.at(0).name.empty())
-      imported_globals.at(0).name.assign("value0");
+   if (imported_globals.size()>0 && imported_globals[0].name.empty())
+      imported_globals[0].name.assign("value0");
 
    // try to load game strings
    std::string gstrname(cnvfile);
@@ -138,7 +138,7 @@ void ua_conv_dasm::disassemble(FILE *out)
       if (entry.code == op_CALLI)
       {
          fprintf(out,"        ; \"%s\"",
-            imported_funcs.at(entry.arg).name.c_str());
+            imported_funcs[entry.arg].name.c_str());
       }
 
       fprintf(out,"\n");
@@ -210,7 +210,7 @@ void ua_conv_dasm::decompile(FILE *out)
    // print out forward declarations
    max=forward_decl.size();
    for(i=0; i<max; i++)
-      fprintf(out,"void %s();\n",forward_decl.at(i).c_str());
+      fprintf(out,"void %s();\n",forward_decl[i].c_str());
 
    fprintf(out,"\n// functions\n");
 
@@ -261,8 +261,8 @@ void ua_conv_dasm::load_dec()
    {
       ua_conv_dec_entry entry;
 
-      entry.code = code.at(instrp);
-      entry.arg = (ua_conv_instructions[entry.code].args==1) ? code.at(instrp+1) : 0;
+      entry.code = code[instrp];
+      entry.arg = (ua_conv_instructions[entry.code].args==1) ? code[instrp+1] : 0;
       entry.instrp = instrp;
       entry.translated = false;
       entry.indent_level = 0;
@@ -455,7 +455,7 @@ bool ua_conv_dasm::replace_constructs(unsigned int type, unsigned int entry, uns
 
          for(unsigned int i=0; i<say_string.size(); i++)
          {
-            if (say_string.at(i)=='\n')
+            if (say_string[i]=='\n')
             {
                say_string.erase(i,1);
                say_string.insert(i,"\\n\"\n      \"");
@@ -567,7 +567,7 @@ bool ua_conv_dasm::replace_constructs(unsigned int type, unsigned int entry, uns
             if (dec_entries[entry].arg>imported_funcs.size())
                funcname.assign("unknown_exported");
             else
-               funcname.assign(imported_funcs.at(dec_entries[entry].arg).name);
+               funcname.assign(imported_funcs[dec_entries[entry].arg].name);
 
             cmd.assign("res = ");
             cmd.append(funcname);
@@ -644,7 +644,7 @@ bool ua_conv_dasm::replace_constructs(unsigned int type, unsigned int entry, uns
 
                   // replace newlines
                   for(unsigned int i=0; i<comment.size(); i++)
-                  if (comment.at(i)=='\n')
+                  if (comment[i]=='\n')
                   {
                      comment.erase(i,1);
                      comment.insert(i,"\\n");
@@ -761,13 +761,13 @@ std::string ua_conv_dasm::format_global(Uint16 offset)
 
    if (offset<imported_globals.size())
    {
-      if (imported_globals.at(offset).name.empty())
+      if (imported_globals[offset].name.empty())
       {
          sprintf(buffer,"global[0x%04x]",offset);
          ret = buffer;
       }
       else
-         ret = imported_globals.at(offset).name;
+         ret = imported_globals[offset].name;
    }
    else
    {
