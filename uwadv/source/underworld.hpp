@@ -126,9 +126,6 @@ protected:
    //! physics model to use in underworld
    ua_physics_model physics;
 
-   //! current level
-   unsigned int curlevel;
-
    //! all underworld levels
    std::vector<ua_level> levels;
 
