@@ -1,3 +1,383 @@
+2003-04-24 19:03  vividos
+
+	* source/screens/panel.cpp (1.8):
+
+	reversed left and right mouse actions; left: use, right: look
+	
+2003-04-24 19:03  vividos
+
+	* uadata/models/static/: muffin.wrl (1.4), steak.wrl (1.4):
+
+	fixed models
+	
+2003-04-24 19:03  vividos
+
+	* source/textscroll.cpp (1.18):
+
+	fixed crash when input line gets too long
+	
+2003-04-24 19:03  vividos
+
+	* source/screens/ingame_orig.cpp (1.138):
+
+	fixed priority cursor reset; fixes mouse-move mode cursor images
+	
+2003-04-24 16:42  vividos
+
+	* source/underworld.cpp (1.42):
+
+	(kind of) fixed crash when changing levels in uw_demo
+	an exception is now generated
+	
+2003-04-24 16:40  vividos
+
+	* source/resource/: model/importwrl.cpp (1.9), models_impl.hpp
+	(1.3):
+
+	fixed .wrl 3d model rendering
+	
+2003-04-24 16:38  vividos
+
+	* source/resource/modeldecode.cpp (1.9):
+
+	added uw_demo build to model offset table, fixing uw_demo usage
+	
+2003-04-24 16:37  vividos
+
+	* source/debug/hotspotlist.cpp (1.3):
+
+	added some more hotspots
+	
+2003-04-24 16:36  vividos
+
+	* source/models.cpp (1.11):
+
+	fixed builtin models loading when using uw_demo
+	
+2003-04-24 16:33  vividos
+
+	* Makefile.mingw (1.56):
+
+	cleaning uwmdlview object files, too
+	
+2003-04-24 16:31  vividos
+
+	* configure.ac (1.28), win32/uwadv.nsi (1.6):
+
+	updated version number for next release
+	
+2003-04-24 16:29  vividos
+
+	* docs/README.dev.txt (1.8):
+
+	added note that file is slightly out of date
+	
+2003-04-24 16:29  vividos
+
+	* docs/uw-formats.txt (1.60):
+
+	added uw_demo 3d models position
+	
+2003-04-24 16:28  vividos
+
+	* docs/README.uwadv.txt (1.11):
+
+	updated readme file
+	added release notes for next release
+	
+2003-04-24 16:27  vividos
+
+	* docs/Changes (1.6):
+
+	finished changes list
+	updated version name
+	
+2003-04-24 13:41  vividos
+
+	* source/tools/uwmdlview.cpp (1.3):
+
+	fixed compiling
+	
+2003-04-24 13:39  vividos
+
+	* Makefile.mingw (1.55):
+
+	added needed libz for uwmdlview
+	
+2003-04-24 13:31  wjpalenstijn
+
+	* source/tools/uwdump/Makefile.am (1.2):
+
+	dist source/tools/uwdump/Makefile.common
+	
+2003-04-24 12:48  vividos
+
+	* docs/README.Lua.txt (1.24):
+
+	added "can_be_picked_up" flag for common object properties
+	
+2003-04-24 12:48  vividos
+
+	* docs/uw-formats.txt (1.59):
+
+	added another common object property flag
+	
+2003-04-24 12:45  vividos
+
+	* uadata/uw1/scripts/uwinterface.lua (1.6):
+
+	fixed lua inventory constant name
+	
+2003-04-24 12:45  vividos
+
+	* uadata/uw1/scripts/inventory.lua (1.11):
+
+	fixed looking at empty inventory slots
+	
+2003-04-24 12:44  vividos
+
+	* uadata/uw1/scripts/game.lua (1.23):
+
+	removed superfluous "changing to level" message
+	
+2003-04-24 12:42  vividos
+
+	* uadata/uw1/scripts/objlist.lua (1.17):
+
+	added checks if object can be picked up and if it is range
+	
+2003-04-24 12:40  vividos
+
+	* source/physics.cpp (1.30):
+
+	passing ua_object to ua_model_manager::get_bounding_triangles()
+	
+2003-04-24 12:39  vividos
+
+	* source/renderer.cpp (1.36):
+
+	omit rendering some objects where images are not 16x16
+	passing ua_object to ua_model_manager::render()
+	
+2003-04-24 12:38  vividos
+
+	* source/objects.cpp (1.27):
+
+	added default init values for state and animframe members
+	
+2003-04-24 12:35  vividos
+
+	* source/models.cpp (1.10):
+
+	added functions to draw bridges nicely (until builtin models are completely fixed)
+	added ua_object to render() functions
+	
+2003-04-24 12:35  vividos
+
+	* source/: models.hpp (1.9), resource/models_impl.hpp (1.2):
+
+	added ua_object to render() functions; needed for some objects
+	
+2003-04-24 12:33  vividos
+
+	* source/resource/objloader.cpp (1.23):
+
+	fixed tilex/tiley coordinates for objects visited more than once, e.g. by sp_link's
+	
+2003-04-24 12:32  vividos
+
+	* source/: properties.hpp (1.2), uwscript.cpp (1.39),
+	resource/proploader.cpp (1.3), tools/uwdump/prop.cpp (1.3):
+
+	added "can_be_picked_up" flag
+	
+2003-04-24 12:27  vividos
+
+	* uadata/uw1/scripts/traps.lua (1.8):
+
+	implemented a_delete object trap
+	
+2003-04-24 11:17  wjpalenstijn
+
+	* source/tools/Makefile.common (1.15):
+
+	adding critter.cpp/hpp once is enough :-)
+	
+2003-04-24 10:17  vividos
+
+	* docs/uw-formats.txt (1.58):
+
+	added info about inventory traps
+	other small additions
+	
+2003-04-24 10:15  vividos
+
+	* uadata/uw1/scripts/traps.lua (1.7):
+
+	added dummy handling of inventory traps for now
+	
+2003-04-24 10:15  vividos
+
+	* source/tools/uwdump/prop.cpp (1.2):
+
+	added "type" flag to common obj properties dump
+	
+2003-04-24 10:14  vividos
+
+	* source/tools/uwdump/levark.cpp (1.3):
+
+	added inventory trap dumping
+	
+2003-04-24 05:20  vividos
+
+	* source/screens/panel.cpp (1.7):
+
+	fixed case when trying to look or use empty inventory slots
+	
+2003-04-24 05:20  vividos
+
+	* source/screens/ingame_orig.cpp (1.137):
+
+	added cursor image changing when getting objects from map
+	
+2003-04-24 05:15  vividos
+
+	* source/tools/uwdump/uwdump.cpp (1.3):
+
+	added help when no command was executed
+	
+2003-04-24 05:14  vividos
+
+	* source/tools/Makefile.common (1.14), win32/toolslib.dsp (1.5):
+
+	added critter.cpp/.hpp to fix tools linking
+	
+2003-04-24 05:14  vividos
+
+	* source/tools/map3ds.cpp (1.9):
+
+	prevent mesh separating for meshes with no triangles
+	spelling fixes
+	
+2003-04-24 05:12  vividos
+
+	* uadata/uw1/scripts/dump.lua (1.4):
+
+	added object tile coords dumping
+	
+2003-04-24 05:11  vividos
+
+	* uadata/uw1/scripts/objlist.lua (1.16):
+
+	renamed an objlist function
+	
+2003-04-24 05:05  vividos
+
+	* docs/README.tools.txt (1.9):
+
+	added description for new tools
+	fixed old descriptions
+	
+2003-04-24 05:04  vividos
+
+	* docs/README.Lua.txt (1.23):
+
+	renamed some Lua functions
+	
+2003-04-23 23:49  wjpalenstijn
+
+	* source/tools/Makefile.common (1.13):
+
+	added critter.cpp/.hpp to libuatools
+	
+2003-04-23 23:06  vividos
+
+	* source/: uwscript.cpp (1.38), uwscript.hpp (1.25):
+
+	renamed *_remove functions to *_delete
+	added tilex/tiley to objlist_get_obj_info()
+	
+2003-04-23 23:04  vividos
+
+	* source/: objects.cpp (1.26), objects.hpp (1.22),
+	resource/objloader.cpp (1.22):
+
+	added tilex and tiley coordinate variables
+	
+2003-04-23 13:58  vividos
+
+	* source/resource/model/importwrl.cpp (1.8):
+
+	finally fixed the 3d-objects-too-small problem in mingw32 compiles: rotation angle and axis weren't initialized properly
+	
+2003-04-23 13:56  vividos
+
+	* source/screens/save_game.cpp (1.17):
+
+	added handling of escape key to leave savegame screen
+	
+2003-04-23 13:48  vividos
+
+	* uadata/uw1/scripts/inventory.lua (1.10):
+
+	enabled looking at inventory objects
+	
+2003-04-23 13:30  vividos
+
+	* docs/README.mingw32.txt (1.11):
+
+	added "toolsinstall" description
+	
+2003-04-23 13:28  vividos
+
+	* docs/uw-formats.txt (1.57):
+
+	added chapter about uw2 compression scheme
+	finished incorporating old document
+	many small language fixes
+	
+2003-04-23 10:37  vividos
+
+	* misc/uw1-levelobjs-level1.txt (1.4):
+
+	removed; superseded by output of uwdump tool
+	
+2003-04-23 10:36  vividos
+
+	* Makefile.am (1.14):
+
+	removed uw1-levelobjs-level1.txt; no longer needed
+	
+2003-04-23 10:35  vividos
+
+	* uadata/uw1/scripts/traps.lua (1.6):
+
+	fixed case where traps don't have another trigger associated
+	
+2003-04-23 10:34  vividos
+
+	* uadata/uw2/game.cfg (1.2):
+
+	added some more lua scripts
+	
+2003-04-23 10:32  vividos
+
+	* source/screens/panel.cpp (1.6):
+
+	properly centered inventory weight number
+	
+2003-04-23 10:26  vividos
+
+	* ChangeLog (1.34):
+
+	updated: cvs2cl.pl was run on a working copy checked out with -P (prune empty dirs); files in the attic weren't considered
+	
+2003-04-23 10:25  vividos
+
+	* source/debug/hotspotlist.cpp (1.2):
+
+	added some "ethereal void" hotspots
+	
 2003-04-23 10:22  vividos
 
 	* docs/Changes (1.5):
