@@ -2280,7 +2280,7 @@ Table of Contents
               0004   Int8      c3 ???
               0005   Int8      ???
 
-     00BE   ???  seems to define 2 shades
+     00BE   ??? seems to define 2 shades
               0002   Int8      c1 ???
               0003   Int8      ???
               0004   Int8      ???
@@ -2292,22 +2292,23 @@ Table of Contents
      00A0   ??? shorthand face definition
             seems to be a quick way to define a face with 4 vertices and
             automatic texture coordinates; vertex list indices
-              0002   Int8      vertex list index 0
-              0003   Int8      vertex list index 1
-              0004   Int8      vertex list index 2
-              0005   Int8      vertex list index 3
+              0002   VertNo    ???
+              0004   Int8      vertex list index 0
+              0005   Int8      vertex list index 1
+              0006   Int8      vertex list index 2
+              0007   Int8      vertex list index 3
 
      00D2   ??? shorthand face definition
             same as 00A0
-
 
      00D4   define dark vertex face (?)
               0002   Int16     number of vertices (=nvert)
               0004   Int8      c1 ???
               0005   Int8      c2 ???
               0006   VertNo    vertex list index for first point
-              0008   Int8      dark value ???
-              0009   VertNo    vertex list index for first point
+              0008   Int8      dark value for first point ???
+              0009   VertNo    vertex list index for second point
+              000b   Int8      dark value for second point ???
                                and so on; if nvert is odd, read another empty
                                byte to have 16 bit word align
 
