@@ -63,9 +63,16 @@ void ua_model3d::render()
 
 // ua_model3d_manager methods
 
-void ua_model3d_manager::init(const char* uwexe_filename)
+   void init(const char* uwexe_filename);
+
+void ua_model3d_manager::init(ua_settings& settings)
 {
-   ua_model_decode_all(uwexe_filename, allmodels);
+   ua_trace("initializing model3d manager\n");
+
+   std::string uwexe_filename(settings.get_string(ua_setting_uw_path));
+   uwexe_filename.append("uw.exe");
+
+   //ua_model_decode_all(uwexe_filename.c_str(), allmodels);
 }
 
 void ua_model3d_manager::render(Uint16 model)

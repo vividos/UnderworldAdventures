@@ -64,7 +64,7 @@ public:
    ua_model3d_manager(){}
 
    //! init manager
-   void init(const char* uwexe_filename);
+   void init(ua_settings& settings);
 
    //! renders a model
    void render(Uint16 model);
