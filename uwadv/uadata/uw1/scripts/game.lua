@@ -127,11 +127,17 @@ end
 -- called to load lua values from savegame
 function lua_savegame_load(savegame,version)
 
+   -- example:
+   -- val = savegame_restore_value(savegame);
+
 end
 
 
 -- called to load lua values from savegame
 function lua_savegame_save(savegame)
+
+   -- example:
+   -- savegame_store_value(savegame,42)
 
 end
 
