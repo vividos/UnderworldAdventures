@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -1052,7 +1052,8 @@ void ua_conv_graph::fixup_functions()
       // create function decl.
       char buffer[256];
       sprintf(buffer,"%s %s(%s) {",
-         funcinfo.rettype==ua_rt_string? "string" : funcinfo.rettype == ua_rt_int ? "int" : "void",
+         funcinfo.return_type == ua_dt_string? "string" :
+         funcinfo.return_type == ua_dt_int ? "int" : "void",
          funcname.c_str(), params.c_str());
 
       graph[pos].plaintext.assign(buffer);

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -24,10 +24,13 @@
    \brief conversation graph
 
 */
+//! \ingroup conv
+
+//@{
 
 // include guard
-#ifndef __uwadv_convgraph_hpp_
-#define __uwadv_convgraph_hpp_
+#ifndef uwadv_convgraph_hpp_
+#define uwadv_convgraph_hpp_
 
 // needed includes
 #include <vector>
@@ -88,10 +91,10 @@ struct ua_conv_graph_item
 struct ua_conv_func_info
 {
    ua_conv_func_info()
-      :rettype(ua_rt_void), numparam(0), start(0){}
+      :return_type(ua_dt_void), numparam(0), start(0){}
 
    //! return type
-   ua_conv_datatype rettype;
+   ua_conv_datatype return_type;
 
    //! number of parameter
    unsigned int numparam;
@@ -187,3 +190,4 @@ const std::vector<ua_conv_graph_item>& ua_conv_graph::get_graph()
 
 
 #endif
+//@}
