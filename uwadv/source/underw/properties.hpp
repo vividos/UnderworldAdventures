@@ -86,7 +86,7 @@ struct ua_ranged_weapon_property
 //! armour category
 enum ua_armour_category
 {
-   ua_armour_shield = 0,     //!< also: may not be worn on paperdoll
+   ua_armour_none = 0,     //!< also: may not be worn on paperdoll
    ua_armour_body_armour = 1,
    ua_armour_leggings = 3,
    ua_armour_gloves = 4,
@@ -150,15 +150,16 @@ inline ua_common_obj_property& ua_object_properties::get_common_property(
    return common_properties[item_id];
 }
 
+/*! \todo throw exception when item_id out of range? */
 inline ua_armour_wearable_property& ua_object_properties::get_armour_property(
    Uint16 item_id)
 {
    item_id-=0x0020;
 
-   if (item_id+0x0020 >= common_properties.size())
-      item_id = common_properties.size()-1;
+   if (item_id >= armour_wearable_properties.size())
+      item_id = armour_wearable_properties.size()-1;
 
-   return armour_wearable_properties[item_id-0x0020];
+   return armour_wearable_properties[item_id];
 }
 
 
