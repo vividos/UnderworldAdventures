@@ -489,7 +489,6 @@ bool XMIDI::Load(const char *filename)
    ExtractTracks(file);
 
    SDL_RWclose(file);
-   SDL_FreeRW(file);
 
    return true;
 }
@@ -739,10 +738,10 @@ void XMIDI::AdjustTimings(Uint32 ppqn)
 
       time_prev = event->time;
       event->time = (hs*6)/5 + (6*hs_rem)/(5*ppqn);
-         
-      // Note on and note off handling
-      if (event->status <= 0x9F) {
 
+      // Note on and note off handling
+      if (event->status <= 0x9F)
+      {
          // Add if it's a note on and remove if it's a note off
          if ((event->status>>4) == MIDI_STATUS_NOTE_ON && event->data[1])
             notes.Push(event);
@@ -756,7 +755,7 @@ void XMIDI::AdjustTimings(Uint32 ppqn)
          tempo = (event->buffer[0] << 16) +
             (event->buffer[1] << 8) +
             event->buffer[2];
-            
+
          event->buffer[0] = 0x07;
          event->buffer[1] = 0xA1;
          event->buffer[2] = 0x20;
@@ -771,7 +770,6 @@ void XMIDI::AdjustTimings(Uint32 ppqn)
    ConvertSystemMessage(0, 0xFF, tbuf);
 
    SDL_RWclose(tbuf);
-   SDL_FreeRW(tbuf);
 }
 
 /*! Source is at the first data byte
@@ -940,7 +938,7 @@ int XMIDI::ConvertNote (const int time, const unsigned char status, SDL_RWops *s
    return i + 2;
 }
 
-// Simple routine to convert system messages
+//! Simple routine to convert system messages
 int XMIDI::ConvertSystemMessage (const int time, const unsigned char status, SDL_RWops *source)
 {
    int i=0;
@@ -970,7 +968,7 @@ int XMIDI::ConvertSystemMessage (const int time, const unsigned char status, SDL
    return i+current->len;
 }
 
-// XMIDI and Midi to List. Returns bit mask of channels used
+//! XMIDI and Midi to List. Returns bit mask of channels used
 int XMIDI::ConvertFiletoList(SDL_RWops *source, const bool is_xmi, first_state &fs)
 {
    int      time = 0; // 120th of a second
@@ -1005,7 +1003,7 @@ int XMIDI::ConvertFiletoList(SDL_RWops *source, const bool is_xmi, first_state &
             status = data;
          }
          else
-            SDL_RWseek(source,-1,SEEK_CUR); // source->skip(-1);
+            SDL_RWseek(source,-1,SEEK_CUR);
       }
       else
       {
@@ -1093,7 +1091,6 @@ int XMIDI::ExtractTracksFromXmi(SDL_RWops *source)
 
       len = SDL_RWread32(source);
       len = ua_endian_convert32(len); // caution! macro arg is evaluated twice
-      //len = source->read4high();
 
       // Skip the FORM entries
       if (!memcmp(buf,"FORM",4))
@@ -1103,12 +1100,11 @@ int XMIDI::ExtractTracksFromXmi(SDL_RWops *source)
 
          len = SDL_RWread32(source);
          len = ua_endian_convert32(len);
-         //len = source->read4high();
       }
 
       if (memcmp(buf,"EVNT",4))
       {
-         SDL_RWseek(source,((len+1)&~1),SEEK_CUR); // source->skip ((len+1)&~1);
+         SDL_RWseek(source,((len+1)&~1),SEEK_CUR);
          continue;
       }
 
@@ -1131,7 +1127,6 @@ int XMIDI::ExtractTracksFromXmi(SDL_RWops *source)
       ConvertSystemMessage(0, 0xFF, tbuf);
 
       SDL_RWclose(tbuf);
-      SDL_FreeRW(tbuf);
 
       // Set the list
       events[num]->events = list;
@@ -1141,7 +1136,6 @@ int XMIDI::ExtractTracksFromXmi(SDL_RWops *source)
 
       // go to start of next track
       SDL_RWseek(source,(begin + ((len+1)&~1)),SEEK_SET);
-      //source->seek (begin + ((len+1)&~1));
    }
 
    // Return how many were converted
@@ -1187,7 +1181,8 @@ int XMIDI::ExtractTracksFromMid (SDL_RWops *source, const Uint32 ppqn, const int
       // Convert it
       chan_mask |= ConvertFiletoList(source, false, fs);
 
-      if (!type1) {
+      if (!type1)
+      {
          ApplyFirstState(fs, chan_mask);
          AdjustTimings(ppqn);
          events[num]->events = list;
@@ -1213,6 +1208,7 @@ int XMIDI::ExtractTracksFromMid (SDL_RWops *source, const Uint32 ppqn, const int
    return num;
 }
 
+//! \todo get do_reverb, reverb_value, do_chorus, chorus_value from somewhere
 int XMIDI::ExtractTracks(SDL_RWops *source)
 {
    Uint32 i = 0;
@@ -1222,12 +1218,11 @@ int XMIDI::ExtractTracks(SDL_RWops *source)
    int    count;
    char   buf[32];
 
-   do_reverb = false;//true;
+   do_reverb = true;
    reverb_value = 64;
-   do_chorus = false;//true;
+   do_chorus = true;
    chorus_value = 16;
    VolumeCurve.set_gamma(1.0);
-
 
    // Read first 4 bytes of header
    SDL_RWread(source,buf,1,4);
@@ -1299,7 +1294,6 @@ int XMIDI::ExtractTracks(SDL_RWops *source)
          // Ok now to start part 2
          // Goto the right place
          SDL_RWseek(source,(start+((len+1)&~1)),SEEK_SET);
-         //source->seek (start+((len+1)&~1));
 
          // Read 4 bytes of type
          SDL_RWread(source,buf,1,4);
@@ -1439,7 +1433,6 @@ int XMIDI::ExtractTracks(SDL_RWops *source)
          {   
             // Must allign
             SDL_RWseek(source,((chunk_len+1)&~1),SEEK_CUR);
-            //source->skip ((chunk_len+1)&~1);
 
             i+= (chunk_len+1)&~1;
             continue;
