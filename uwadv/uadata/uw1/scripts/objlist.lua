@@ -34,31 +34,47 @@
 -- dumps objlist table entries
 function dump_objinfo_table(objinfo,obj_handle)
 
+   local category = "quantity"
+   if objinfo.is_quantity > 0
+   then
+      if objinfo.quantity >= 512
+      then
+         category = "special"
+      end
+   else
+      category = "sp_link"
+   end
+
    print( "dumping object info, obj_handle = " .. format("%04x",obj_handle) .."\n" ..
 
-      " item_id   = " .. format("%04x",objinfo.item_id) ..
+      " item_id = " .. format("%04x",objinfo.item_id) ..
       " (" .. ui_get_gamestring(4,objinfo.item_id) .. ")," ..
 
       " handle_next = " .. format("%04x",objinfo.handle_next) .. "\n" ..
 
-      " pos = " .. objinfo.xpos .. " / " .. objinfo.ypos ..
-      ", height = " .. objinfo.zpos .. ", dir  = " .. objinfo.dir .. "\n" ..
+      format(" quality = %04x,",objinfo.quality) ..
+      format(" owner = %04x, ",objinfo.owner) ..
+      category .. format(" = %04x\n",objinfo.quantity) ..
 
-      " quality     = " .. format("%04x",objinfo.quality) .. "," ..
-      " owner       = " .. format("%04x",objinfo.owner) .. "," ..
-      " quantity    = " .. format("%04x",objinfo.quantity) .. "\n" ..
+      " pos = " .. objinfo.xpos .. " / " .. objinfo.ypos ..
+      ", height = " .. objinfo.zpos .. ", heading  = " .. objinfo.heading .. "\n" ..
 
       " enchanted = " .. objinfo.enchanted ..
-      ", is_link   = " .. objinfo.is_link .. "\n"
+      ", is_quantity   = " .. objinfo.is_quantity .. "\n"
    )
 
-   if objinfo.item_id >= 64 and objinfo.item_id < 128
+   if objinfo.npc_used > 0
    then
-      print( " npc_whoami = " .. objinfo.npc_whoami .. "\n" ..
+      print( " npc_hp = " .. objinfo.npc_hp .. "\n" ..
+         " npc_goal = " .. objinfo.npc_goal .. "\n" ..
+         " npc_gtarg = " .. objinfo.npc_gtarg .. "\n" ..
+         " npc_level = " .. objinfo.npc_level .. "\n" ..
+         " npc_talkedto = " .. objinfo.npc_talkedto .. "\n" ..
          " npc_attitude = " .. objinfo.npc_attitude .. "\n" ..
-         " npc_hp = " .. objinfo.npc_hp .. "\n" ..
          " npc_xhome = " .. objinfo.npc_xhome .. "\n" ..
-         " npc_yhome = " .. objinfo.npc_yhome .. "\n"
+         " npc_yhome = " .. objinfo.npc_yhome .. "\n" ..
+         " npc_hunger = " .. objinfo.npc_hunger .. "\n" ..
+         " npc_whoami = " .. objinfo.npc_whoami .. "\n"
        )
    end
 end
