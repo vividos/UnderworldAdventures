@@ -36,6 +36,11 @@ function lua_init_script()
 
    print ("Lua: lua_init_script() called")
 
+end
+
+-- called when a new game is started, e.g. after character generation
+function lua_started_newgame()
+
    -- init player position
 
    player_set_pos(32.0, 2.0)
@@ -46,16 +51,8 @@ function lua_init_script()
    player_set_attr(player_attr_gender,1)
    player_set_attr(player_attr_appearance,1)
 
-   player_set_attr(player_attr_life,31)
-   player_set_attr(player_attr_max_life,31)
-   player_set_attr(player_attr_mana,17)
-   player_set_attr(player_attr_max_mana,31)
-
-   -- testing stuff
-
-   -- fun_count_underworld_path()
-
 end
+
 
 -- replaces all solid tiles with open ones
 function fun_replace_tilemap_solids()
@@ -230,8 +227,8 @@ function repos_player(newlevel)
 
    local targets = level_pos[newlevel]
 
-   if targets == nil then
-
+   if targets == nil
+   then
       -- set player to height of current tile
       player_set_height(
          tilemap_get_floor_height(newlevel, player_get_pos() )+0.1 )

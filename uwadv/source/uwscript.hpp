@@ -129,6 +129,9 @@ public:
    //! inits scripts after loading all underworld scripts
    void lua_init_script();
 
+   //! called when starting a new game
+   void lua_started_newgame();
+
    //! game functions called every tick
    void lua_game_tick(double curtime);
 

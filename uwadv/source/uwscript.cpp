@@ -195,6 +195,12 @@ void ua_underworld_script_bindings::lua_init_script()
    checked_lua_call(0,0);
 }
 
+void ua_underworld_script_bindings::lua_started_newgame()
+{
+   lua_getglobal(L,"lua_started_newgame");
+   checked_lua_call(0,0);
+}
+
 void ua_underworld_script_bindings::lua_game_tick(double curtime)
 {
    // call Lua function

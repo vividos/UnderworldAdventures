@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Dirk Manders
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -696,6 +696,9 @@ void ua_create_character_screen::tick()
             {
                // load initial game
                core->get_underworld().import_savegame(core->get_settings(),"data/",true);
+
+               // initalize new game
+               core->get_underworld().get_scripts().lua_started_newgame();
 
                // start original game
                core->replace_screen(new ua_ingame_orig_screen);
