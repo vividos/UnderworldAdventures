@@ -728,7 +728,7 @@ void ua_ingame_orig_screen::tick()
       tickcount++;
 
       // do renderer-specific tick processing
-      game->get_renderer().tick(1.0/game->get_tickrate());
+      game->get_renderer().tick(game->get_tickrate());
    }
 
    // action to perform?
