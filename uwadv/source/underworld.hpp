@@ -39,6 +39,7 @@
 #include "level.hpp"
 #include "quadtree.hpp"
 #include "physics.hpp"
+#include "uwscript.hpp"
 
 
 // forward declaration
@@ -86,6 +87,9 @@ public:
    //! returns current level
    ua_level &get_current_level();
 
+   //! returns game core interface
+   ua_game_core_interface* get_game_core(){ return core; }
+
    //! changes current level
    void change_level(unsigned int level);
 
@@ -124,6 +128,9 @@ protected:
 
    //! all underworld levels
    std::vector<ua_level> levels;
+
+   //! underworld script bindings;
+   ua_underworld_script_bindings script;
 };
 
 #endif
