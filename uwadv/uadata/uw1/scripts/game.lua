@@ -202,12 +202,33 @@ level_pos = {
          { x = 57.5, y = 31.5 },  -- level stairs
       }
    },
+
+   [6] = { -- starting positions for level 6
+      n = 1,
+      pos = {
+         { x =  6.5, y = 30.5 },  -- prison?
+      }
+   },
+
+   [7] = { -- starting positions for level 7
+      n = 1,
+      pos = {
+         { x = 23.5, y = 49.5 },  -- monster pit?
+      }
+   },
+
+   [8] = { -- starting positions for level 8
+      n = 1,
+      pos = {
+         { x = 28.5, y = 24.5 },  -- level start
+      }
+   },
 }
 
 
 function repos_player(newlevel)
 
-   targets = level_pos[newlevel]
+   local targets = level_pos[newlevel]
 
    if targets == nil then
 
@@ -228,9 +249,8 @@ function repos_player(newlevel)
    player_set_pos( newx, newy )
    player_set_height( newz )
 
-   print( " setting player position to x = " ..
-      newx .. ", y = " .. newy ..
-      " and z = " .. newz )
+   print( " changing to level " .. newlevel .. ", player position to x = " ..
+      newx .. ", y = " .. newy .. " and z = " .. newz )
 
 end
 
