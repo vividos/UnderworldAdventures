@@ -126,6 +126,11 @@ void ua_game::init()
    // setup OpenGL viewport
    glViewport(0, 0, width, height);
 
+   // clean screen
+   glClearColor(0,0,0,0);
+   glClear(GL_COLOR_BUFFER_BIT);
+   SDL_GL_SwapBuffers();
+
    screenstack.clear();
 
    // start with uwadv menu
