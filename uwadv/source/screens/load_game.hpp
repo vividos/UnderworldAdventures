@@ -31,6 +31,7 @@
 
 // needed includes
 #include "screen.hpp"
+#include "textscroll.hpp"
 
 
 // classes
@@ -51,6 +52,9 @@ public:
    virtual void handle_event(SDL_Event &event);
    virtual void render();
    virtual void tick();
+
+protected:
+   ua_textscroll scroll;
 };
 
 #endif
