@@ -36,19 +36,22 @@
 #include "screen.hpp"
 #include "image.hpp"
 #include "font.hpp"
+#include "cutscene.hpp"
 
 
 // classes
 
-//! user interface abstract base class
+//! start splash screen class
 class ua_start_splash_screen: public ua_ui_screen_base
 {
 public:
    //! ctor
    ua_start_splash_screen(){}
+   //! dtor
    virtual ~ua_start_splash_screen(){}
 
-   // virtual functions
+   // virtual functions from ua_ui_screen_base
+
    virtual void init();
    virtual void done();
    virtual void handle_event(SDL_Event &event);
@@ -56,14 +59,32 @@ public:
    virtual void tick();
 
 protected:
+   //! current stage we are in
+   unsigned int stage;
 
-   int stage;
+   //! count of ticks since last stage-start
+   unsigned int tickcount;
 
-   int tickcount;
+   //! indicates if the current image is already loaded
+   bool img_loaded;
 
-   ua_image img,img2;
-   ua_font font;
-   ua_texture tex,tex2;
+   //! indicates if next stage features a cutscene animation
+   bool is_animation;
+
+   //! current image
+   ua_image img;
+
+   //! texture object for current image
+   ua_texture tex;
+
+   //! current cutscene
+   ua_cutscene cuts;
+
+   //! current animation frame
+   unsigned int curframe;
+
+   //! animation frame count
+   unsigned int animcount;
 };
 
 #endif

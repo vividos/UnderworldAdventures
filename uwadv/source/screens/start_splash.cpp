@@ -28,19 +28,65 @@
 // needed includes
 #include "common.hpp"
 #include "start_splash.hpp"
+#include "start_menu.hpp"
 #include "ingame_orig.hpp"
 
 
 // constants
 
-const float ua_splash_blend_time = 0.8f;
+//! fade in/out time in seconds
+const double ua_start_splash_blend_time = 0.8;
+//! animation frame rate, in frames per second
+const double ua_splash_anim_framerate = 5.0;
+
+
+// enums
+
+//! action types for the splash screen
+enum ua_start_splash_action
+{
+   ua_fadein,
+   ua_showimg,
+   ua_fadeout,
+   ua_showanim,
+   ua_endseq
+};
+
+
+// structs
+
+//! list with splash sequence actions
+struct ua_start_splash_sequence
+{
+   ua_start_splash_action type;
+   const char *moreinfo;
+} splash_seq[] =
+{
+   // first image
+   { ua_fadein, NULL },
+   { ua_showimg, "data/pres1.byt" },
+   { ua_fadeout, NULL },
+
+   // second image
+   { ua_fadein, NULL },
+   { ua_showimg, "data/pres2.byt" },
+   { ua_fadeout, NULL },
+
+   // title animation
+   { ua_fadein, NULL },
+   { ua_showanim, "cuts/cs011.n01" },
+   { ua_fadeout, NULL },
+
+   // finished
+   { ua_endseq, NULL }
+};
 
 
 // ua_start_splash_screen methods
 
 void ua_start_splash_screen::init()
 {
-   // start midi music
+   // start intro midi music
    core->get_audio().start_music(0,true);
 
    // setup orthogonal projection
@@ -49,27 +95,40 @@ void ua_start_splash_screen::init()
    gluOrtho2D(0,320,0,200);
    glMatrixMode(GL_MODELVIEW);
 
+   // set OpenGL flags
    glEnable(GL_TEXTURE_2D);
    glDisable(GL_DEPTH_TEST);
 
    glDisable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
-   // load/create stuff
-
-   font.init(core->get_settings(),ua_font_big);
-
+   // load first image
    if (core->get_settings().gtype == ua_game_uw_demo)
+   {
       img.load_raw(core->get_settings(),"data/presd.byt",5);
-   else
-      img.load_raw(core->get_settings(),"data/opscr.byt",2);
 
+      // write a string under the demo title
+      ua_font font;
+      ua_image img2;
+      font.init(core->get_settings(),ua_font_big);
+      font.create_string(img2,"Underworld Adventures",198);
+
+      float scale = 0.9f;
+      int xpos=int((320-img2.get_xres()*scale)/2);
+
+      img.paste_image(img2,xpos,200-16);
+   }
+   else
+   {
+      img.load_raw(core->get_settings(),splash_seq[1].moreinfo,5);
+   }
+
+   img_loaded = true;
+   is_animation = false;
+
+   // convert to texture
    tex.convert(core->get_texmgr(),img);
    tex.prepare(false,GL_NEAREST,GL_NEAREST);
-
-   font.create_string(img2,"Underworld Adventures",21);
-   tex2.convert(core->get_texmgr(),img2);
-   tex2.prepare();
 
    stage=0;
    tickcount=0;
@@ -85,8 +144,9 @@ void ua_start_splash_screen::handle_event(SDL_Event &event)
    {
    case SDL_KEYDOWN:
    case SDL_MOUSEBUTTONDOWN:
-      // ends start screen
-      if (stage==1)
+      // when a key or mouse button was pressed, go to next stage
+      if (splash_seq[stage].type==ua_fadein || splash_seq[stage].type==ua_showimg ||
+          splash_seq[stage].type==ua_showanim)
       {
          stage++;
          tickcount=0;
@@ -99,90 +159,129 @@ void ua_start_splash_screen::render()
 {
    glLoadIdentity();
 
-   // calculate light'ness of texture quad
+   // calculate brightness of texture quad
    Uint8 light = 255;
 
-   switch(stage)
+   switch(splash_seq[stage].type)
    {
-   case 0:
-      light = Uint8(255*(float(tickcount) / (core->get_tickrate()*ua_splash_blend_time)));
+   case ua_fadein:
+      light = Uint8(255*(float(tickcount) / (core->get_tickrate()*ua_start_splash_blend_time)));
       break;
 
-   case 1:
+   case ua_showimg:
+   case ua_showanim:
       light=255;
       break;
 
-   case 2:
-      light = Uint8(255-255*(float(tickcount) / (core->get_tickrate()*ua_splash_blend_time)));
+   case ua_fadeout:
+      light = Uint8(255-255*(float(tickcount) / (core->get_tickrate()*ua_start_splash_blend_time)));
       break;
 
-   case 3:
+   case ua_endseq:
       light=0;
    }
 
    glColor3ub(light,light,light);
 
-   // draw first quad with screen background
-   ua_texture_manager &texmgr = core->get_texmgr();
-   tex.use(texmgr);
-
-   glBegin(GL_QUADS);
-   glTexCoord2d(0.0,tex.get_tex_v());
-   glVertex3i(0,0,0);
-
-   glTexCoord2d(tex.get_tex_u(),tex.get_tex_v());
-   glVertex3i(320,0,0);
-
-   glTexCoord2d(tex.get_tex_u(),0.0);
-   glVertex3i(320,200,0);
-
-   glTexCoord2d(0.0,0.0);
-   glVertex3i(0,200,0);
-
-   glEnd();
-
-
-   if (core->get_settings().gtype == ua_game_uw_demo)
+   if (is_animation)
    {
-      // above background, draw font text
-      glEnable(GL_BLEND);
-      tex2.use(texmgr);
-
-      float scale = 0.9f;
-      int xpos=int((320-img2.get_xres()*scale)/2), ypos=3;
-
-      glBegin(GL_QUADS);
-      glTexCoord2d(0.0,tex2.get_tex_v());
-      glVertex3i(xpos,ypos,0);
-
-      glTexCoord2d(tex2.get_tex_u(),tex2.get_tex_v());
-      glVertex3i(int(xpos+img2.get_xres()*scale),ypos,0);
-
-      glTexCoord2d(tex2.get_tex_u(),0.0);
-      glVertex3i(int(xpos+img2.get_xres()*scale),int(ypos+img2.get_yres()*scale),0);
-
-      glTexCoord2d(0.0,0.0);
-      glVertex3i(xpos,int(ypos+img2.get_yres()*scale),0);
-
-      glEnd();
-
-      glDisable(GL_BLEND);
+      // prepare animation frame
+      cuts.get_frame(tex,curframe);
+      tex.prepare(false);
    }
+   else
+   {
+      // prepare image texture
+      tex.use(core->get_texmgr());
+   }
+
+   double u = tex.get_tex_u(), v = tex.get_tex_v();
+
+   // draw quad with image or animation
+   glBegin(GL_QUADS);
+   glTexCoord2d(0.0, v  ); glVertex2i(  0,  0);
+   glTexCoord2d(u  , v  ); glVertex2i(320,  0);
+   glTexCoord2d(u  , 0.0); glVertex2i(320,200);
+   glTexCoord2d(0.0, 0.0); glVertex2i(  0,200);
+   glEnd();
 }
 
 void ua_start_splash_screen::tick()
 {
-   switch(stage)
+   ++tickcount;
+
+   switch(splash_seq[stage].type)
    {
-   case 0:
-   case 2:
-      if (++tickcount >= (core->get_tickrate()*ua_splash_blend_time))
+   case ua_fadein:
+      if (!img_loaded)
+      {
+         if (splash_seq[stage+1].type==ua_showanim)
+         {
+            // load new animation
+            cuts.load(core->get_settings(),splash_seq[stage+1].moreinfo);
+            curframe = 0;
+            animcount = 0;
+            is_animation = true;
+         }
+         else
+         {
+            // load new image and texture
+            img.load_raw(core->get_settings(),splash_seq[stage+1].moreinfo,5);
+            tex.convert(core->get_texmgr(),img);
+            tex.prepare(false,GL_NEAREST,GL_NEAREST);
+            is_animation = false;
+         }
+         img_loaded = true;
+         tickcount=0;
+      }
+
+      if (tickcount >= (core->get_tickrate()*ua_start_splash_blend_time))
+      {
          stage++;
+         tickcount=0;
+      }
       break;
 
-   case 3:
-      // start next screen
-      core->replace_screen(new ua_ingame_orig_screen);
+   case ua_fadeout:
+      // do next stage when blend time is over
+      if (tickcount >= (core->get_tickrate()*ua_start_splash_blend_time))
+      {
+         if (core->get_settings().gtype == ua_game_uw_demo)
+         {
+            // when we have the demo, we immediately go to the ingame
+            core->replace_screen(new ua_ingame_orig_screen);
+            return;
+         }
+
+         tex.clean();
+
+         stage++;
+         img_loaded = false;
+
+         // do another tick to load the next one
+         ua_start_splash_screen::tick();
+      }
       break;
+
+   case ua_showanim:
+      break;
+
+   case ua_endseq:
+      // start next screen
+      core->replace_screen(new ua_start_menu_screen);
+      break;
+   }
+
+   if (is_animation)
+   {
+      // check if we have to do a new animation frame
+      if (++animcount >= (core->get_tickrate()/ua_splash_anim_framerate))
+      {
+         // do next frame
+         curframe++;
+         animcount=0;
+         if (curframe>=cuts.get_maxframes()-2)
+            curframe=0;
+      }
    }
 }
