@@ -28,7 +28,7 @@ Table of Contents
 
 6.0   Savegame format
 
-7.0   3D objects
+7.0   3D object models
 
 8.0   Misc. stuff
 8.1   Combining objects
@@ -1079,7 +1079,7 @@ Table of Contents
    Critter animations are stored in the folder "crit". The file "assoc.anm"
    holds data for each of the 32 animations and for the 64 NPC types. The file
    starts with 8 bytes for the name of each animation. Shorter strings are
-   padded with zeros. Empty strings denote animations not available (for
+   padded with zeros. Empty strings denote animations not available (in
    the "uw_demo").
 
    Next comes a table of infos for each NPC. The table is 64 entries (0x0080)
@@ -1094,7 +1094,7 @@ Table of Contents
    The "auxpal" value describes which auxiliary palette to use. There are
    several critters that share the same animations but use different palettes,
    e.g. the bat and the vampire bat uses the same anim value, but different
-   auxpals.
+   auxiliary palettes.
 
    Animation for each critter is stored in a file like "CrXXpage.nYY", where
       XX = animation number (=anim), YY = page number
@@ -1108,7 +1108,7 @@ Table of Contents
    0001    Int8            number of anim slots (=nslot)
    0002    nslot*Int8      list of segment indices
 
-   After this, a list of segment follows, which contains up to 8 frame indices
+   After this, a list of segment follows which contains up to 8 frame indices
    for every segment.
 
    nslot+2 Int8            number of anim segments (=nsegs)
@@ -1125,9 +1125,9 @@ Table of Contents
            Int8            compression type? (always 06)
            noffsets*Int16  absolute offsets to frame headers
 
-   Each animation is stored in a segment, which can contain a number of
-   frames (stored in the "animation frame indices"). Each list ends with a
-   0xFF entry.
+   Each animation is stored in a segment which can contain a number of
+   frames (stored in the "animation frame indices"). Each list is padded with
+   0xFF entries.
 
    frame header
 
@@ -1139,39 +1139,73 @@ Table of Contents
    0005    Int16      data length in number of words
    0007               start of rle-encoded image data (see 2.3)
 
-   The hotspot coordinates are to "pin" the image at a specific position.
+   The hotspot coordinates are to "pin" the image at a specific position. The
+   hotspot coordinates in the image should always be on the same place when
+   rendered.
 
-   Here is a list of files and their contents:
+   The Slot lists group together segments of animations for various actions.
+   Here's a list of slots and their actions:
 
-   crXX file   assoc name
-   cr00        gngob32, green goblin
-   cr01        skela, skeleton
-   cr02        lizman, green lizard man
-   cr03        bat
-   cr04        wiza, yellow male wizard
-   cr05        spider, brown spider
-   cr06        gazer
-   cr07        troll
-   cr10        femwiz, female wizard
-   cr11        slug, green slug
-   cr12        fire, fire elemental
-   cr13        ghoul
-   cr14        ?
-   cr15        ghost
-   cr16        ?
-   cr17        reaper
-   cr20        rat
-   cr21        femfite, female fighter
-   cr22        imp
-   cr23        golem, gray golem
-   cr24        hedless, headless
-   cr25        wizb, blue female wizard
-   cr26        rotgrub, green rotworm
-   cr27        wisp
-   cr30        batskull
-   cr32        fight32, male fighter
-   cr33        dwarf32
-   cr35        tybal, tyball
+      slot   action
+       00    combat idle
+       01    attack, bash (?)
+       02    attack, slash (?)
+       03    attack, thrust
+       05    second weapon attach
+       07    walking / running towards player
+       0c    death
+       0d    ??
+
+       20    idle, facing away from player (180 degrees)
+       21    idle, 135 deg.
+       22    idle, angle 90 deg.
+       23    idle, angle 45 deg.
+       24    idle, facing towards player, 0 deg.
+       25    idle, angle -45 deg.
+       26    idle, angle -90 deg.
+       27    idle, angle -135 deg.
+
+   Segment indices at 80-87 are the same as above, except that these are the
+   walking animations. For the animations used in the Ethereal Void (level 9)
+   the slot list is somewhat different.
+
+   Here is a list of animation files and their contents:
+
+      file   assoc name   auxpals   used in
+      cr00 * "gngob32"    4         green goblin
+      cr01   "skela"      1         skeleton
+      cr02   "lizman"     3         green, red and gray lizardman
+      cr03 * "bat"        3         cave bat, vampire bat
+      cr04   "wiza"       5         yellow male mage
+      cr05 * "spider"     3         giant, wolf, dread spider
+      cr06   "gazer"      1         gazer
+      cr07   "troll"      3         troll, fereal troll, great troll
+      cr10   "femwiz"     4         female mage
+      cr11 * "slug"       2         flesh slug, acid slug
+      cr12   "fire"       2         fire elemental
+      cr13   "ghoul"      3         ghoul, dark ghoul
+      cr14   "demon"      1         Slasher of the Veils
+      cr15 * "ghost"      4         ghost, dire ghost
+      cr16 * "graygob"    2         gray goblin
+      cr17   "reaper"     1         reaper
+      cr20 * "rat"        2         giant rat
+      cr21   "femfite"    3         female fighter
+      cr22 * "imp"        2         imp, mongbat
+      cr23   "golem"      3         earth, stone and metal golem
+      cr24 * "hedless"    1         headless
+      cr25   "wizb"       3         blue female mage
+      cr26 * "rotgrub"    2         green rotworm, bloodworm
+      cr27   "wisp"       1         wisp
+      cr30   "batskull"   2         bat, teeth, vortex, hound (level 9)
+      cr31 * "Lurk"       2         lurker, deep lurker
+      cr32 * "fight32"    4         male fighter, outcast, adventurer
+      cr33   "dwarf32"    3         mountainman
+      cr34   "shadow"     2         shadow beast
+      cr35   "tybal"      1         tyball
+      cr36   "eye"        1         eye, skull (level 9)
+      cr37   "litening"   1         lightning, fish (level 9)
+
+   The animations marked with * are available in the uw_demo, too.
 
 
 5.1 Cutscene Animations
@@ -1426,9 +1460,67 @@ Table of Contents
    todo: how items are stored
 
 
-7.0 3D objects
+7.0 3D object models
 
-   todo
+   These are stored within the executable (bad! bad!). From Doug Church, on
+   the 3d models:
+
+     We'd take a 3ds model, convert it to an internal ASCII format, and then
+     run a "model builder" which would generate an inlined BSP tree for it.
+     This would be expressed in a byte code, or, really, as a set of simple
+     ASM like codes.  Things like "Vtx 56.7, 435, 35.3" or "Color 153" or
+     "Norm 0.6, 0.8, 0.0, front04" or whatever.  Then, we used the Macro
+     Assembler (well, Optasm, really) to generate a bunch of "db" statements
+     out of all this, and give it a label, and put it in the data segment. 3D
+     models were then drawn by calling a little "model interpreter" in the
+     game, which was given the address of this data block, which it then
+     interpreted. i.e. when it got to the byte for "Norm", it would fetch the
+     normal, dot it verse the eye vector, and jump or not based on the sign.
+
+   There is a table of 2-byte model offsets, with room for 64 models.
+   Positions of the table differ, as there are several builds of the uw.exe,
+   ultimau1.exe or uw2.exe.
+
+     game  table start   first bytes   table base offset
+      uw1  0x0004e910    b6 4a 06 40   0x0004e99e
+      uw1  0x0004ccd0    b6 4a 06 40   0x0004cd5e  same models, different place
+      uw1  0x0004e370    b6 4a 06 40   0x0004e3fe  ditto (reported Gerd Bitzer)
+
+      uw2  0x00054cf0    d4 64 aa 59   0x00054d8a
+      uw2  0x000550e0    d4 64 aa 59   0x0005517a  another UW2 build
+
+   Models are:
+
+      00   -
+      01   door frame
+      02   bridge
+      03   bench
+      04   Lotus Turbo Esprit (no, really!)
+      05   small boulder
+      06   medium boulder
+      07   large boulder
+      08   arrow
+      09   beam
+      0A   pillar
+      0B   shrine
+      0D   painting
+      10   texture map
+      11   texture map
+      12   texture map
+      13   gravestone
+      14   texture map
+      15   -
+      16   ?texture map
+      18   table
+      19   chest
+      1A   nightstand
+      1B   barrel
+      1C   chair
+      1D   bed (UWII)
+      1E   blackrock gem (UWII)
+      1F   shelf (UWII)
+
+   todo more
 
 
 8.0 Misc. stuff
