@@ -200,6 +200,9 @@ protected:
    //! mouse cursor
    ua_mousecursor mousecursor;
 
+   //! indicates that mouse movement is currently on
+   bool mouse_move;
+
 
    // inventory / item dragging
 

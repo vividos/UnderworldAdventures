@@ -488,7 +488,7 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    {
       if (type==SDL_KEYDOWN)
       {
-         pl.set_movement_factor(ua_move_walk,-1.0);
+         pl.set_movement_factor(ua_move_walk,-0.4);
          pl.set_movement_mode(ua_move_walk);
       }
       else
@@ -1186,9 +1186,84 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
    // check 3d view area
    if (area == ua_area_screen3d)
    {
-      // determine cursor image
       double relx = double(cursorx-53)/(224-53);
       double rely = double(cursory-20)/(131-20);
+
+      {
+         ua_player& player = core->get_underworld().get_player();
+
+         // when pressing mouse, start mouse move mode
+         if (click)
+         {
+            // mouse move is started on pressing mouse button
+            mouse_move = pressed;
+
+            if (!mouse_move)
+            {
+               // disable all modes
+               player.set_movement_mode(0,ua_move_slide);
+               player.set_movement_mode(0,ua_move_rotate);
+               player.set_movement_mode(0,ua_move_walk);
+            }
+         }
+
+         // determine cursor image
+         double slide, rotate, walk;
+
+         slide = rotate = walk = 10.0;
+
+         if (rely>=0.75)
+         {
+            // lower part of screen
+            if (relx<0.33){ slide = -1.0; cursor_image = 3; } else
+            if (relx>=0.66){ slide = 1.0; cursor_image = 4; } else
+               { walk = -0.4*(rely-0.75)/0.25; cursor_image = 2; }
+         }
+         else
+         if (rely>=0.6)
+         {
+            // middle part
+            if (relx<0.33){ rotate = (0.33-relx)/0.33; cursor_image = 5; } else
+            if (relx>=0.66){ rotate = -(relx-0.66)/0.33; cursor_image = 6; } else
+               cursor_image = 0;
+         }
+         else
+         {
+            // upper part
+            if (relx<0.33){ rotate = (0.33-relx)/0.33; cursor_image = 7; } else
+            if (relx>=0.66){ rotate = -(relx-0.66)/0.33; cursor_image = 8; } else
+               cursor_image = 1;
+
+            walk = (0.6-rely)/0.6;
+         }
+
+         if (mouse_move)
+         {
+            // first, disable all modes
+            player.set_movement_mode(0,ua_move_slide);
+            player.set_movement_mode(0,ua_move_rotate);
+            player.set_movement_mode(0,ua_move_walk);
+
+            // update movement modes and factors
+            if (slide<10.0)
+            {
+               player.set_movement_mode(ua_move_slide);
+               player.set_movement_factor(ua_move_slide,slide);
+            }
+
+            if (rotate<10.0)
+            {
+               player.set_movement_mode(ua_move_rotate);
+               player.set_movement_factor(ua_move_rotate,rotate);
+            }
+
+            if (walk<10.0)
+            {
+               player.set_movement_mode(ua_move_walk);
+               player.set_movement_factor(ua_move_walk,walk);
+            }
+         }
+      }
 
       // check click
       if (click && pressed)
