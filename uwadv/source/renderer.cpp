@@ -1015,18 +1015,25 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
       double u = tex.get_tex_u(), v = tex.get_tex_v();
       double hot_u = crit.get_hotspot_u(), hot_v = crit.get_hotspot_v();
 
-      double scale_x = 1.1*1.0/256.0;
-      double scale_z = 1.1*3.0/256.0;
+      double scale_x = 0.4*u*tex.get_xres()/64.0;
+      double scale_z = 0.9*v*tex.get_yres()/64.0;
 
-      base.x -= hot_u * 0.125;
-      base.z -= (1.0-hot_v)*scale_z*tex.get_xres()*u - 0.1;
+      // modify base point
+      base.z -= (v-hot_v)/v*scale_z*bb_up.length();
+      // TODO: modify x/y coords according to hot_u
+
+      ua_vector3d bb_up_save(bb_up);
+      bb_up.x = bb_up.y = 0.0; // NPC's up vector 
+      bb_up.normalize();
 
       tex.use(0);
 
       draw_billboard_quad(base,
-         scale_x*tex.get_xres(),
-         scale_z*tex.get_yres(),
+         scale_x,
+         scale_z,
          0.0, 0.0, u,v);
+
+      bb_up = bb_up_save;
    }
    else
    {
@@ -1037,7 +1044,7 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
       if (item_id == 0x00d3 || item_id == 0x00d4)
       {
          // adjust height
-         height = level.get_tile(x,y).ceiling * height_scale - quadwidth;
+         height = level.get_tile(x,y).ceiling*height_scale - quadwidth;
       }
 
       // rune items?
