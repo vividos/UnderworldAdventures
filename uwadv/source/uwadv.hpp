@@ -33,6 +33,7 @@
 #include <vector>
 #include "settings.hpp"
 #include "texture.hpp"
+#include "files.hpp"
 #include "gamestrings.hpp"
 #include "audio.hpp"
 #include "screen.hpp"
@@ -74,6 +75,9 @@ protected:
    //! texture manager
    ua_texture_manager texmgr;
 
+   //! resource files manager
+   ua_files_manager filesmgr;
+
    //! underworld object
    ua_underworld underworld;
 
@@ -105,6 +109,7 @@ protected:
    virtual ua_gamestrings &get_strings(){ return gstr; }
    virtual ua_settings &get_settings(){ return settings; }
    virtual ua_texture_manager &get_texmgr(){ return texmgr; }
+   virtual ua_files_manager &get_filesmgr(){ return filesmgr; }
    virtual ua_underworld &get_underworld(){ return underworld; }
 
    virtual void push_screen(ua_ui_screen_base *newscreen);

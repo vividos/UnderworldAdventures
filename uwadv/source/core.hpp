@@ -33,6 +33,7 @@
 #include "audio.hpp"
 #include "texture.hpp"
 #include "settings.hpp"
+#include "files.hpp"
 #include "gamestrings.hpp"
 #include "underworld.hpp"
 #include "screen.hpp"
@@ -71,6 +72,9 @@ public:
 
    //! returns texture manager object
    virtual ua_texture_manager &get_texmgr()=0;
+
+   //! returns files manager object
+   virtual ua_files_manager &get_filesmgr()=0;
 
    //! returns underworld object
    virtual ua_underworld &get_underworld()=0;

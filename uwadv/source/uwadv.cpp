@@ -103,6 +103,9 @@ void ua_game::init()
    // init textures
    texmgr.init(settings);
 
+   // init files mgr
+   filesmgr.init(settings);
+
    // load game strings
    gstr.load(settings);
 
@@ -252,6 +255,18 @@ void ua_game::handle_key_down(SDL_keysym *keysym)
       // exit when pressing Alt + x
       if ((keysym->mod & KMOD_ALT)!=0)
          exit_game = true;
+      break;
+
+   case SDLK_1:
+      audio->play_sound("01");
+      break;
+
+   case SDLK_2:
+      audio->play_sound("26");
+      break;
+
+   case SDLK_3:
+      audio->play_sound("03");
       break;
    }
 }
