@@ -30,13 +30,8 @@
 #include "uwadv.hpp"
 #include "gamecfg.hpp"
 #include "screens/uwadv_menu.hpp"
-//#include "screens/ingame_orig.hpp" // TODO use screens/ingame.hpp
-//#include "screens/start_splash.hpp"
-/*
-#include "screens/uwadv_menu.hpp"
-
-#include <iostream>
-*/
+#include "screens/ingame_orig.hpp"
+#include "screens/start_splash.hpp"
 #include <ctime>
 
 
@@ -115,13 +110,6 @@ void ua_uwadv_game::init()
 
    // init SDL window
    init_sdl();
-
-/*
-   // clean screen
-   glClearColor(0,0,0,0);
-   glClear(GL_COLOR_BUFFER_BIT);
-   SDL_GL_SwapBuffers();
-*/
 
    // switch off cursor
    SDL_ShowCursor(0);
@@ -258,7 +246,7 @@ void ua_uwadv_game::run()
          underworld.load_game(sg);
 
          // immediately start game
-         //replace_screen(new ua_ingame_orig_screen,false);
+         replace_screen(new ua_ingame_orig_screen,false);
       }
       break;
 
@@ -272,13 +260,16 @@ void ua_uwadv_game::run()
 
 #ifndef HAVE_DEBUG
          // start splash screen
-         //replace_screen(new ua_start_splash_screen,false);
+         replace_screen(new ua_start_splash_screen,false);
 #else
          // for uw2 testing; splash screens don't work yet
          underworld.import_savegame(settings,"data/",true);
-         //replace_screen(new ua_ingame_orig_screen,false);
+         replace_screen(new ua_ingame_orig_screen,false);
 #endif
       }
+      break;
+
+   default:
       break;
    }
 
@@ -319,8 +310,8 @@ void ua_uwadv_game::run()
          }
       }
 
-      // do debug processing (uwadv thread)
-//      debug->tick();
+      // do server side debug processing
+      debug.tick();
 
       // process incoming events
       process_events();
@@ -387,11 +378,9 @@ void ua_uwadv_game::done()
       screenstack[i]->destroy();
       delete screenstack[i];
    }
-/*
-   delete debug;
 
+   debug.shutdown();
    underworld.done();
-*/
 
    SDL_Quit();
 }
@@ -538,6 +527,8 @@ void ua_uwadv_game::process_events()
          {
          case ua_event_destroy_screen:
             pop_screen();
+            if (curscreen == NULL)
+               return; // don't process events anymore
             break;
 
          default:

@@ -45,6 +45,7 @@
 #include "script/script.hpp"
 #include "underw/underworld.hpp"
 #include "game_interface.hpp"
+#include "debug.hpp"
 
 
 // classes
@@ -154,9 +155,8 @@ protected:
    //! screen queued to destroy
    ua_screen* screen_to_destroy;
 
-
-   //! debug interface
-//   ua_debug_interface* debug;
+   //! underworld debugger - server side
+   ua_debug_server debug;
 };
 
 // inline methods
