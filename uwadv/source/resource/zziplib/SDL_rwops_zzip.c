@@ -59,7 +59,7 @@ SDL_RWops *SDL_RWFromZZIP(const char* file, const char* mode)
 	case 'b': mo |= O_BINARY; break;
 	case 't': /* skip */ break;
 	default: /* 'w', 'a', etc... */
-	    return SDL_RWFromFile(file, mode);
+      break;
 	}
 
     /* open file, only opening zip files */
