@@ -793,6 +793,10 @@ SOURCE=..\font.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\imgquad.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\keymap.cpp
 # End Source File
 # Begin Source File
@@ -862,6 +866,10 @@ SOURCE=..\font.hpp
 # Begin Source File
 
 SOURCE=..\image.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\imgquad.hpp
 # End Source File
 # Begin Source File
 
