@@ -54,13 +54,15 @@ void ua_ingame_orig_screen::init()
    if (core->get_settings().gtype == ua_game_uw_demo)
       mainscreenname = "data/dmain.byt";
 
-   SDL_ShowCursor(0);
+//   SDL_ShowCursor(0);
 
    ua_settings &settings = core->get_settings();
 
    img_back.load_raw(settings,mainscreenname,0);
+   tex.init();
    tex.convert(core->get_texmgr(),img_back);
-   tex.prepare(false);
+   tex.use(core->get_texmgr());
+   tex.upload();
 
    img_temp.create(img_back.get_xres(),img_back.get_yres(),0,
       img_back.get_palette());
@@ -72,6 +74,8 @@ void ua_ingame_orig_screen::init()
 
 void ua_ingame_orig_screen::done()
 {
+   tex.done();
+
    glDisable(GL_SCISSOR_TEST);
    glDisable(GL_FOG);
 }
@@ -282,7 +286,7 @@ void ua_ingame_orig_screen::render_ui()
    // upload ui texture
    tex.convert(core->get_texmgr(),img_temp);
    tex.use(core->get_texmgr());
-   tex.upload();
+   tex.upload(false);
 
    double u = tex.get_tex_u(), v = tex.get_tex_v();
 

@@ -60,8 +60,10 @@ void ua_start_menu_screen::init()
 
    // load background image
    img.load_raw(core->get_settings(),"data/opscr.byt",2);
+   tex.init();
    tex.convert(core->get_texmgr(),img);
-   tex.prepare(false);
+   tex.use(core->get_texmgr());
+   tex.upload(false);
 
    // get palette #2 (needed for palette shifting)
    memcpy(palette,core->get_texmgr().get_palette(2),sizeof(ua_onepalette));
@@ -79,6 +81,7 @@ void ua_start_menu_screen::init()
 
 void ua_start_menu_screen::done()
 {
+   tex.done();
 }
 
 void ua_start_menu_screen::handle_event(SDL_Event &event)
@@ -187,6 +190,7 @@ void ua_start_menu_screen::render()
 
    // prepare image texture
    tex.convert(img,palette);
+   tex.use(core->get_texmgr());
    tex.upload();
 
    double u = tex.get_tex_u(), v = tex.get_tex_v();

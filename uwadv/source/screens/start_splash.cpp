@@ -148,8 +148,10 @@ void ua_start_splash_screen::init()
    is_animation = false;
 
    // convert to texture
+   tex.init();
    tex.convert(core->get_texmgr(),img);
-   tex.prepare(false,GL_NEAREST,GL_NEAREST);
+   tex.use(core->get_texmgr());
+   tex.upload();
 
    stage=0;
    tickcount=0;
@@ -157,7 +159,7 @@ void ua_start_splash_screen::init()
 
 void ua_start_splash_screen::done()
 {
-   tex.clean();
+   tex.done();
 }
 
 void ua_start_splash_screen::handle_event(SDL_Event &event)
@@ -209,7 +211,8 @@ void ua_start_splash_screen::render()
    {
       // prepare animation frame
       cuts.get_frame(tex,curframe);
-      tex.upload(false);
+      tex.use(core->get_texmgr());
+      tex.upload();
    }
    else
    {
@@ -250,6 +253,7 @@ void ua_start_splash_screen::tick()
             // load new image and texture
             img.load_raw(core->get_settings(),splash_seq[stage+1].moreinfo,5);
             tex.convert(core->get_texmgr(),img);
+            tex.use(core->get_texmgr());
             tex.upload();
             is_animation = false;
          }
