@@ -136,6 +136,9 @@ public:
    //! drops a floating item into the parent's list
    bool drop_floating_item_parent();
 
+   //! calculates available weight of inventory in stones
+   double get_weight_avail();
+
    // loading / saving / importing
 
    //! loads a savegame

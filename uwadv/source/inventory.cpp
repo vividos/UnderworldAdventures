@@ -548,6 +548,11 @@ void ua_inventory::append_item(Uint16 cont, Uint16 item)
    }
 }
 
+double ua_inventory::get_weight_avail()
+{
+   return 42.0;
+}
+
 void ua_inventory::load_game(ua_savegame &sg)
 {
    sg.begin_section("inventory");
