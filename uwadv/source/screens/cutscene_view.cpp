@@ -536,7 +536,6 @@ void ua_cutscene_view_screen::do_action()
 
    case 14: // cuts_anim_continue
       loopanim = true;
-      stopframe = -1;
       break;
    }
 }
