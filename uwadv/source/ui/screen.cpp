@@ -79,14 +79,8 @@ bool ua_screen::process_event(SDL_Event& event)
        event.type == SDL_MOUSEBUTTONUP)
    {
       // get coordinates
-      unsigned int xpos = event.type == SDL_MOUSEMOTION ? event.motion.x : event.button.x;
-      unsigned int ypos = event.type == SDL_MOUSEMOTION ? event.motion.y : event.button.y;
-
-      // convert to 320x200 screen coordinates
-      SDL_Surface* surf = SDL_GetVideoSurface();
-
-      xpos = unsigned(xpos * 320.0 / surf->w);
-      ypos = unsigned(ypos * 200.0 / surf->h);
+      unsigned int xpos,ypos;
+      calc_mousepos(event, xpos, ypos);
 
       // first, send mouse event to main screen window
       bool left_button = event.type != SDL_MOUSEMOTION &&
@@ -122,94 +116,9 @@ void ua_screen::tick()
 {
 }
 
+/*! note that for all subwindows the draw() and destroy() functions are
+    called */
 void ua_screen::register_window(ua_window* window)
 {
    subwindows.push_back(window);
 }
-
-
-/*
-
-// ua_screen_ctrl_base methods
-
-void ua_screen_ctrl_base::init(ua_game_core_interface *thecore)
-{
-   core = thecore;
-   cursorx = cursory = 0;
-   leftbuttondown_old = rightbuttondown_old = false;
-}
-
-void ua_screen_ctrl_base::handle_event(SDL_Event& event)
-{
-   switch(event.type)
-   {
-   case SDL_MOUSEMOTION: // mouse has moved
-      {
-         // calculate cursor position
-         int x,y;
-         SDL_GetMouseState(&x,&y);
-         cursorx = unsigned(double(x)/core->get_screen_width()*320.0);
-         cursory = unsigned(double(y)/core->get_screen_height()*200.0);
-
-         mouse_action(false,false,false);
-      }
-      break;
-
-   case SDL_MOUSEBUTTONDOWN: // mouse button was pressed down
-      {
-         Uint8 state = SDL_GetRelativeMouseState(NULL,NULL);
-         Uint8 state2 = SDL_GetMouseState(NULL,NULL);
-
-         bool left_changed =
-            (state&SDL_BUTTON_LMASK) != 0 && !leftbuttondown_old;
-
-         leftbuttondown_old = (state&SDL_BUTTON_LMASK) != 0;
-         rightbuttondown_old = (state&SDL_BUTTON_RMASK) != 0;
-
-         mouse_action(true,left_changed,true);
-      }
-      break;
-
-   case SDL_MOUSEBUTTONUP: // mouse button was released
-      {
-         Uint8 state = SDL_GetRelativeMouseState(NULL,NULL);
-         Uint8 state2 = SDL_GetMouseState(NULL,NULL);
-
-         bool left_changed =
-            (state&SDL_BUTTON_LMASK) == 0 && leftbuttondown_old;
-
-         leftbuttondown_old = (state&SDL_BUTTON_LMASK) != 0;
-         rightbuttondown_old = (state&SDL_BUTTON_RMASK) != 0;
-
-         mouse_action(true,left_changed,false);
-      }
-      break;
-
-   default:
-      break;
-   }
-}
-
-void ua_screen_ctrl_base::mouse_action(bool click, bool left_button, bool pressed)
-{
-}
-
-unsigned int ua_screen_ctrl_base::get_area(
-   const ua_screen_area_data* table,
-   unsigned int xpos,unsigned int ypos)
-{
-   // search for area that first matches the coordinate range
-   unsigned int idx=0;
-   while(table[idx].area_id != ua_area_none)
-   {
-      // check ranges
-      if (xpos >= table[idx].xmin && xpos <= table[idx].xmax &&
-          ypos >= table[idx].ymin && ypos <= table[idx].ymax)
-         break;
-
-      idx++;
-   }
-
-   return table[idx].area_id;
-}
-*/
