@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -34,8 +34,10 @@
 
 // ua_lua_scripting methods
 
-void ua_lua_scripting::init()
+void ua_lua_scripting::init(ua_game_interface* the_game)
 {
+   game = the_game;
+
    // init lua state
    L = lua_open(256);
 
@@ -43,15 +45,11 @@ void ua_lua_scripting::init()
    lua_baselibopen(L);
    lua_strlibopen(L);
    lua_mathlibopen(L);
+
+//   register_functions();
 }
 
-void ua_lua_scripting::done()
-{
-   lua_close(L);
-}
-
-int ua_lua_scripting::load_script(ua_game_interface& game,
-   const char* basename)
+bool ua_lua_scripting::load_script(const char* basename)
 {
    std::string scriptname(basename);
    scriptname.append(".lua");
@@ -60,7 +58,7 @@ int ua_lua_scripting::load_script(ua_game_interface& game,
 
    // load lua script
    SDL_RWops* script =
-      game.get_files_manager().get_uadata_file(scriptname.c_str());
+      game->get_files_manager().get_uadata_file(scriptname.c_str());
 
    // not found? try binary one
    if (script==NULL)
@@ -69,7 +67,7 @@ int ua_lua_scripting::load_script(ua_game_interface& game,
       scriptname.append(".lob");
       compiled = true;
 
-      script = game.get_files_manager().get_uadata_file(scriptname.c_str());
+      script = game->get_files_manager().get_uadata_file(scriptname.c_str());
    }
 
    // still not found? exception
@@ -87,7 +85,48 @@ int ua_lua_scripting::load_script(ua_game_interface& game,
 
    SDL_RWclose(script);
 
-   return ret;
+   return ret == 0;
+}
+
+void ua_lua_scripting::done()
+{
+   lua_close(L);
+}
+
+void ua_lua_scripting::init_new_game()
+{
+}
+
+void ua_lua_scripting::eval_critter(unsigned int pos)
+{
+}
+
+void ua_lua_scripting::do_trigger(unsigned int pos)
+{
+}
+
+void ua_lua_scripting::cast_spell()
+{
+}
+
+void ua_lua_scripting::on_changing_level()
+{
+}
+
+void ua_lua_scripting::object_look(unsigned int pos)
+{
+}
+
+void ua_lua_scripting::object_use(unsigned int pos)
+{
+}
+
+void ua_lua_scripting::inventory_combine(unsigned int pos,unsigned int pos2)
+{
+}
+
+void ua_lua_scripting::inventory_look(unsigned int pos)
+{
 }
 
 int ua_lua_scripting::load_script(SDL_RWops* rwops, const char* chunkname)
@@ -113,4 +152,10 @@ int ua_lua_scripting::load_script(SDL_RWops* rwops, const char* chunkname)
       ua_trace("Lua script loading ended with error code %u\n",ret);
 
    return ret;
+}
+
+
+ua_scripting* ua_scripting::create_scripting(ua_scripting_language)
+{
+   return new ua_lua_scripting;
 }

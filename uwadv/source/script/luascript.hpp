@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,34 +26,29 @@
 */
 
 // include guard
-#ifndef uwadv_script_hpp_
-#define uwadv_script_hpp_
+#ifndef uwadv_luascript_hpp_
+#define uwadv_luascript_hpp_
 
 // needed includes
+#include "script.hpp"
 extern "C"
 {
 #include "lua/include/lua.h"
 #include "lua/include/lualib.h"
 }
 
+
 // forward references
-class ua_game_interface;
 
 
 // classes
 
 //! lua scripting class
-class ua_lua_scripting
+class ua_lua_scripting: public ua_scripting
 {
 public:
    //! ctor
    ua_lua_scripting(){}
-
-   //! initializes scripting
-   void init();
-
-   //! cleans up scripting
-   void done();
 
    //! loads a script from uadata
    int load_script(ua_game_interface& game, const char* basename);
@@ -61,12 +56,29 @@ public:
    //! returns lua state info struct
    lua_State* get_lua_State(){ return L; }
 
+   // virtual methods from ua_scripting
+   virtual void init(ua_game_interface* game);
+   virtual bool load_script(const char* basename);
+   virtual void done();
+   virtual void init_new_game();
+   virtual void eval_critter(unsigned int pos);
+   virtual void do_trigger(unsigned int pos);
+   virtual void cast_spell();
+   virtual void on_changing_level();
+   virtual void object_look(unsigned int pos);
+   virtual void object_use(unsigned int pos);
+   virtual void inventory_combine(unsigned int pos,unsigned int pos2);
+   virtual void inventory_look(unsigned int pos);
+
 protected:
    //! loads a script
    int load_script(SDL_RWops* rwops, const char* chunkname);
 
    //! lua state information
    lua_State* L;
+
+   //! ptr to game interface
+   ua_game_interface* game;
 };
 
 
