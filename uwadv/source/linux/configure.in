@@ -52,5 +52,5 @@ FMOD is available at http://www.fmod.org]))
 
 
 dnl produce output files
-AC_OUTPUT(../Makefile)
+AC_OUTPUT(../Makefile ../tools/Makefile)
 
