@@ -118,6 +118,7 @@ protected:
    virtual ua_settings &get_settings(){ return settings; }
    virtual ua_texture_manager &get_texmgr(){ return texmgr; }
    virtual ua_files_manager &get_filesmgr(){ return filesmgr; }
+   virtual ua_critter_pool& get_critter_pool(){ return critter_pool; };
    virtual ua_savegames_manager& get_savegames_mgr(){ return savegames_mgr; };
    virtual ua_underworld &get_underworld(){ return underworld; }
 

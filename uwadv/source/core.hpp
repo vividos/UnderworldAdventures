@@ -34,6 +34,7 @@
 #include "texture.hpp"
 #include "settings.hpp"
 #include "files.hpp"
+#include "critter.hpp"
 #include "gamestrings.hpp"
 #include "underworld.hpp"
 #include "screen.hpp"
@@ -79,6 +80,9 @@ public:
 
    //! returns files manager object
    virtual ua_files_manager &get_filesmgr()=0;
+
+   //! returns critter pool object
+   virtual ua_critter_pool& get_critter_pool()=0;
 
    //! returns savegames manager object
    virtual ua_savegames_manager& get_savegames_mgr()=0;
