@@ -1728,13 +1728,13 @@ void ua_ingame_orig_screen::do_screenshot(bool with_menu, unsigned int xres, uns
    screenshot_yres = yres;
 
    screenshot_rgba.clear();
-   screenshot_rgba.resize(xres,yres);
+   screenshot_rgba.resize(xres*yres,0);
 
    // read in scanlines
    glReadBuffer(GL_BACK);
 
-//   glReadPixels(0, 0, xres, yres, GL_RGBA, GL_UNSIGNED_BYTE,
-//      &screenshot_rgba[0]);
+   glReadPixels(0, 0, xres, yres, GL_RGBA, GL_UNSIGNED_BYTE,
+      &screenshot_rgba[0]);
 
    // reset camera and viewport
    glViewport(0,0,core->get_screen_width(),core->get_screen_height());
