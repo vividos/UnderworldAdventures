@@ -160,9 +160,6 @@ void ua_model3d_builtin::get_bounding_triangles(ua_object& obj,
 
 // ua_model3d_manager methods
 
-//TODO deprecated!
-ua_model3d_manager* ua_model3d_manager::cur_modelmgr = NULL;
-
 void ua_model3d_manager::init(ua_game_core_interface* thecore)
 {
 /*TODO
