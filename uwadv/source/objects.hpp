@@ -57,6 +57,20 @@ class ua_level;
 
 // classes
 
+struct ua_object_info
+{
+   //! struct ctor
+   ua_object_info():item_id(0xffff){}
+
+   //! object item id
+   Uint16 item_id;
+   //! link to next object in chain
+   Uint16 link1;
+   //! quantity of object
+   Uint16 quantity;
+};
+
+
 //! object
 class ua_object
 {
@@ -80,23 +94,19 @@ public:
    unsigned int get_xpos(){ return xpos; }
    //! returns object ypos
    unsigned int get_ypos(){ return ypos; }
-   //! returns object id
-   Uint16 get_id(){ return id; }
-   //! returns link to next object
-   Uint16 get_link1(){ return link1; }
+
+   //! returns object info
+   ua_object_info &get_object_info(){ return info; }
 
 protected:
+   //! object info
+   ua_object_info info;
+
    //! object type
    ua_obj_type type;
 
    //! object position within tile
    unsigned int xpos,ypos;
-
-   //! link to next object in chain
-   Uint16 link1;
-
-   //! object id
-   Uint16 id;
 };
 
 

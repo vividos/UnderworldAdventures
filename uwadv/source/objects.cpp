@@ -34,9 +34,11 @@
 
 // ua_object methods
 
-ua_object::ua_object(unsigned int myxpos,unsigned int myypos,Uint16 mylink1,Uint16 myid)
-:xpos(myxpos),ypos(myypos),link1(mylink1),id(myid),type(ua_obj_invisible)
+ua_object::ua_object(unsigned int myxpos,unsigned int myypos,Uint16 link1,Uint16 item_id)
+:xpos(myxpos),ypos(myypos),type(ua_obj_invisible)
 {
+   info.item_id = item_id;
+   info.link1 = link1;
 }
 
 /*! each object is rendered using "view coordinates", that means the camera is
@@ -73,7 +75,7 @@ void ua_object::render(unsigned int x, unsigned int y,
 
    // get object texture coords
    double u1,v1,u2,v2;
-   texmgr.object_tex(id,u1,v1,u2,v2);
+   texmgr.object_tex(info.item_id,u1,v1,u2,v2);
 
    // calculate quad y rotation (e.g. when looking at it from above)
    double boxwidth=0.13;
@@ -134,6 +136,6 @@ void ua_object_list::get_object_list(unsigned int xpos, unsigned int ypos,
       objlist.push_back(objptr);
 
       // follow link
-      idx = objptr->get_link1();
+      idx = objptr->get_object_info().link1;
    }
 }
