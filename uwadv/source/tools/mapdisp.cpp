@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -155,12 +155,12 @@ void init_mapdisp()
    settings.set_value(ua_setting_uw_path,uw_path);
 
    // check if we only have the demo
-   FILE *fd = fopen("./data/level13.st","rb");
-   if (fd!=NULL)
-   {
+   if (ua_file_exists("./data/level13.st"))
       settings.set_gametype(ua_game_uw_demo);
-      fclose(fd);
-   }
+
+   // check if we have uw2
+   if (ua_file_exists("./uw2.exe"))
+      settings.set_gametype(ua_game_uw2);
 
    // init texture manager
    texmgr.init(settings);
