@@ -79,7 +79,7 @@ void ua_object_list::addobj_follow(Uint32 objprop[0x400*2],
 {
    while(objpos!=0)
    {
-      if (ua_obj_none != master_obj_list[objpos].get_object_info().type)
+      if (master_obj_list[objpos].get_object_info().item_id != ua_item_none)
          break; // we already had that object
 
       // get object properties
@@ -88,7 +88,8 @@ void ua_object_list::addobj_follow(Uint32 objprop[0x400*2],
 
       // word 1
       Uint16 item_id =     ua_get_bits(word1, 0, 9);
-      Uint16 unk1 =        ua_get_bits(word1, 9, 6);
+      //Uint16 flags =       ua_get_bits(word1, 9, 6);
+      Uint16 enchanted =   ua_get_bits(word1, 12, 1);
       Uint16 is_quantity = ua_get_bits(word1, 15, 1);
 
       Uint16 zpos = ua_get_bits(word1, 16, 7);
@@ -98,37 +99,49 @@ void ua_object_list::addobj_follow(Uint32 objprop[0x400*2],
 
       // word 2
       Uint16 quality =  ua_get_bits(word2, 0, 6);
-      Uint16 link1 =    ua_get_bits(word2, 6, 10);
-      Uint16 unk2 =     ua_get_bits(word2, 16, 6);
+      Uint16 link  =    ua_get_bits(word2, 6, 10);
+      Uint16 owner =    ua_get_bits(word2, 16, 6);
       Uint16 quantity = ua_get_bits(word2, 22, 10);
 
       // generate object
-      ua_object obj(xpos,ypos);
+      ua_object obj;
+
+      // basic object info
       {
          ua_object_info& info = obj.get_object_info();
+
          info.item_id = item_id;
-         info.link1 = link1;
+         info.enchanted = enchanted == 1;
+         info.is_link = is_quantity == 0;
+
          info.quality = quality;
+         info.link = link;
+         info.owner = owner;
          info.quantity = quantity;
 
-         // todo categorize item
-         info.type = ua_obj_item;
+         if (objpos<0x0100)
+         {
+            // store data from NPC, at //&npcinfo[objpos*19]
+         }
+      }
 
-         if ( /*(item_id >= 0x40 && item_id < 0x80) ||*/
-              (item_id >= 0x140 && item_id != 458) )
-            info.type =  ua_obj_invisible;
+      // extended object info
+      {
+         ua_object_info_ext& extinfo = obj.get_ext_object_info();
+         extinfo.xpos = (xpos+0.5)/8.0;
+         extinfo.ypos = (ypos+0.5)/8.0;
+         extinfo.zpos = zpos;
+         extinfo.dir = dir;
       }
 
       // add to master object list
       master_obj_list[objpos] = obj;
 
-      // todo: examine link2 and add where appropriate/known
+      // examine special property and add recursively
       if (is_quantity==0)
-      {
          addobj_follow(objprop,npcinfo,quantity);
-      }
 
-      // examine next object in chain
-      objpos = link1;
+      // add next object in chain
+      objpos = link;
    }
 }

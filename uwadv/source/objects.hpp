@@ -37,30 +37,8 @@
 
 // constants
 
+//! item id for unused object
 const Uint16 ua_item_none = 0xffff;
-
-
-// enums
-
-enum ua_obj_type
-{
-   //! no object
-   ua_obj_none=0,
-
-   //! item object, can be picked up
-   ua_obj_item,
-
-   //! NPC object
-   ua_obj_npc,
-
-   //! decal objects
-   ua_obj_decal,
-
-   //! 3d objects
-   ua_obj_3d,
-   //! invisible, e.g. traps, etc.
-   ua_obj_invisible
-};
 
 
 // structs
@@ -69,32 +47,51 @@ enum ua_obj_type
 struct ua_object_info
 {
    //! struct ctor
-   ua_object_info()
-      :type(ua_obj_none),item_id(ua_item_none),quantity(0),
-      quality(0),link1(0){}
-
-   //! object type
-   ua_obj_type type;
+   ua_object_info();
 
    //! object item id
    Uint16 item_id;
 
-   //! item quantity
-   Uint16 quantity;
+   //! true when object is enchanted
+   bool enchanted;
+
+   //! true when "quantity" is a special link
+   bool is_link;
+
 
    //! item quality
    Uint16 quality;
 
    //! object chain link
-   Uint16 link1;
+   Uint16 link;
+
+   //! object owner
+   Uint16 owner;
+
+   //! item quantity / special
+   Uint16 quantity;
+
 
    //! custom object data
    std::vector<Uint16> data;
 };
 
 
-// forward declarations
-class ua_level;
+//! extended infos for object
+struct ua_object_info_ext
+{
+   //! struct ctor
+   ua_object_info_ext();
+
+   //! fractional x and y positions in tile
+   double xpos, ypos;
+
+   //! z position
+   Uint16 zpos;
+
+   //! direction (0..7)
+   Uint16 dir;
+};
 
 
 // classes
@@ -104,20 +101,15 @@ class ua_object
 {
 public:
    //! ctor
-   ua_object():xpos(0.0),ypos(0.0){}
-   //! ctor
-   ua_object(double objxpos, double objypos):xpos(objxpos),ypos(objypos){}
+   ua_object(){}
    //! dtor
    virtual ~ua_object(){}
 
-   //! returns object xpos
-   double get_xpos(){ return xpos; }
-
-   //! returns object ypos
-   double get_ypos(){ return ypos; }
-
    //! returns object info
    ua_object_info &get_object_info(){ return info; }
+
+   //! returns extended object info
+   ua_object_info_ext &get_ext_object_info(){ return extinfo; }
 
    //! loads object from savegame
    void load_object(ua_savegame &sg);
@@ -129,8 +121,8 @@ protected:
    //! basic object info
    ua_object_info info;
 
-   //! object coordinates inside current tile
-   double xpos,ypos;
+   //! extended object info
+   ua_object_info_ext extinfo;
 };
 
 
