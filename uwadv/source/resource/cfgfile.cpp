@@ -49,6 +49,8 @@ void ua_cfgfile::load(const char *filename)
    }
 
    load(rwops);
+
+   SDL_RWclose(rwops);
 }
 
 void ua_cfgfile::load(SDL_RWops* rwops)
@@ -225,4 +227,5 @@ void ua_cfgfile::write_start_section(const std::string& secname)
 void ua_cfgfile::write_raw_line(const std::string& line)
 {
    fputs(line.c_str(),newfp);
+   fputs("\n",newfp);
 }
