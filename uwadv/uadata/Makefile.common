@@ -76,6 +76,7 @@ modelFILES = \
 	models/static/textures/water.tga
 
 uarEXTRA = \
+	uwadv-loading.tga \
 	uw1/game.cfg \
 	uw1/keymap.cfg \
 	uw1/model3d.cfg \
