@@ -30,6 +30,7 @@
 #include "dbgapp.hpp"
 #include "mainframe.hpp"
 #include "playerinfo.hpp"
+#include "objectlist.hpp"
 
 // frame layout library
 
@@ -46,18 +47,19 @@
 #include "wx/fl/dyntbarhnd.h"    // control-bar dimension handler for it
 
 
-// event table
+// ua_debugger_main_frame event table
 
 BEGIN_EVENT_TABLE(ua_debugger_main_frame, wxMDIParentFrame)
    EVT_MENU(MENU_FILE_QUIT, ua_debugger_main_frame::OnMenuFileQuit)
    EVT_MENU(MENU_UNDERW_UPDATE, ua_debugger_main_frame::OnMenuUnderwUpdate)
    EVT_MENU(MENU_UNDERW_PLAYER, ua_debugger_main_frame::OnMenuUnderwPlayer)
+   EVT_MENU(MENU_UNDERW_OBJECTLIST, ua_debugger_main_frame::OnMenuUnderwObjectList)
 END_EVENT_TABLE()
 
 
 // ua_debugger_main_frame methods
 
-ua_debugger_main_frame::ua_debugger_main_frame(wxWindow *parent,
+ua_debugger_main_frame::ua_debugger_main_frame(wxWindow* parent,
    const wxWindowID id, const wxString& title,
    const wxPoint& pos, const wxSize& size, const long style)
 :wxMDIParentFrame(parent, id, title, pos, size, style)
@@ -93,6 +95,7 @@ ua_debugger_main_frame::ua_debugger_main_frame(wxWindow *parent,
    m_pUnderwMenu->Append(MENU_UNDERW_UPDATE, "&Update", "updates all windows");
    m_pUnderwMenu->AppendSeparator();
    m_pUnderwMenu->Append(MENU_UNDERW_PLAYER, "&Player Info", "shows Player Infos");
+   m_pUnderwMenu->Append(MENU_UNDERW_OBJECTLIST, "Master &Object List", "shows Master Object List");
    m_pMenuBar->Append(m_pUnderwMenu, "&Underworld");
 
    SetMenuBar(m_pMenuBar);
@@ -141,28 +144,46 @@ bool ua_debugger_main_frame::CheckBarAvail(wxString& barname)
    return barinfo != NULL;
 }
 
-void ua_debugger_main_frame::OnMenuFileQuit(wxCommandEvent &event)
+void ua_debugger_main_frame::OnMenuFileQuit(wxCommandEvent& event)
 {
    Close(TRUE);
 }
 
-void ua_debugger_main_frame::OnMenuUnderwUpdate(wxCommandEvent &event)
+void ua_debugger_main_frame::OnMenuUnderwUpdate(wxCommandEvent& event)
 {
    UpdateAll();
 }
 
-void ua_debugger_main_frame::OnMenuUnderwPlayer(wxCommandEvent &event)
+void ua_debugger_main_frame::OnMenuUnderwPlayer(wxCommandEvent& event)
 {
    wxString name(ua_playerinfo_list::frame_name);
    if (!CheckBarAvail(name))
    {
       // create new player info list and add it
       ua_playerinfo_list* pilist = new ua_playerinfo_list(
-         this, -1, wxDefaultPosition, wxSize(0,0), 0);
+         this, -1, wxDefaultPosition, wxDefaultSize, 0);
 
       pilist->AddBar(m_pLayout);
       pilist->UpdateData();
 
       m_pLayout->RefreshNow();
+   }
+}
+
+void ua_debugger_main_frame::OnMenuUnderwObjectList(wxCommandEvent& event)
+{
+   // find window using FindWindowByName
+   wxString name(ua_objectlist_frame::frame_name);
+   wxWindow* wnd = wxWindow::FindWindowByName(name);
+   if (wnd==NULL)
+   {
+      new ua_objectlist_frame(this,-1,wxDefaultPosition, wxDefaultSize,
+         wxDEFAULT_FRAME_STYLE);
+   }
+   else
+   {
+      // show the window
+      wnd->Raise();
+      wnd->Show();
    }
 }

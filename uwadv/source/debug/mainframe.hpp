@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Underworld Adventures Team
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,10 +26,14 @@
 */
 
 // include guard
-#ifndef __uadebug_mainframe_hpp_
-#define __uadebug_mainframe_hpp_
+#ifndef uadebug_mainframe_hpp_
+#define uadebug_mainframe_hpp_
 
 // needed includes
+
+
+// forward references
+class wxMDIChildWindow;
 
 
 // classes
@@ -39,7 +43,7 @@ class ua_debugger_main_frame: public wxMDIParentFrame
 {
 public:
    //! ctor
-   ua_debugger_main_frame(wxWindow *parent, const wxWindowID id,
+   ua_debugger_main_frame(wxWindow* parent, const wxWindowID id,
       const wxString& title,const wxPoint& pos, const wxSize& size,
       const long style);
 
@@ -53,34 +57,37 @@ protected:
    // message handler
 
    //! menu handler: File | Quit
-   void OnMenuFileQuit(wxCommandEvent &event);
+   void OnMenuFileQuit(wxCommandEvent& event);
 
    //! menu handler: Underworld | Update
-   void OnMenuUnderwUpdate(wxCommandEvent &event);
+   void OnMenuUnderwUpdate(wxCommandEvent& event);
 
    //! menu handler: Underworld | Player Info
-   void OnMenuUnderwPlayer(wxCommandEvent &event);
+   void OnMenuUnderwPlayer(wxCommandEvent& event);
+
+   //! menu handler: Underworld | Master Object List
+   void OnMenuUnderwObjectList(wxCommandEvent& event);
 
 protected:
-   //! debug interface
-   ua_debug_interface* inter;
+   // layout / menu stuff
 
    //! frame layout object
    wxFrameLayout* m_pLayout;
 
    //! menu bar
-   wxMenuBar *m_pMenuBar;
+   wxMenuBar* m_pMenuBar;
 
    //! underworld menu
-   wxMenu *m_pUnderwMenu;
-   wxMenu *m_pFileMenu;
+   wxMenu* m_pUnderwMenu;
+   wxMenu* m_pFileMenu;
 
    //! menu id's
    enum
    {
       MENU_FILE_QUIT=1000,
       MENU_UNDERW_UPDATE,
-      MENU_UNDERW_PLAYER, // shows player info
+      MENU_UNDERW_PLAYER,     //!< shows player info
+      MENU_UNDERW_OBJECTLIST, //!< shows master object list
    };
 
    DECLARE_EVENT_TABLE()
