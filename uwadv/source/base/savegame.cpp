@@ -28,8 +28,6 @@
 // needed includes
 #include "common.hpp"
 #include "savegame.hpp"
-#include "player.hpp"
-#include "fread_endian.hpp"
 #include <vector>
 #include <algorithm>
 #include <iomanip>
