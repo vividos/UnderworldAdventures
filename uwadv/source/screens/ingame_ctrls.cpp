@@ -371,7 +371,156 @@ void ua_ingame_dragon::mouse_event(bool button_clicked, bool left_button,
 }
 
 
-// tables
+// ua_ingame_3dview methods
+
+void ua_ingame_3dview::init(ua_game_interface& game, unsigned int xpos,
+   unsigned int ypos)
+{
+   ua_image_quad::init(game,xpos,ypos);
+
+   wnd_width = 224-54;
+   wnd_height = 131-20;
+
+   mouse_move = false;
+}
+
+void ua_ingame_3dview::draw()
+{
+   // do nothing
+}
+
+bool ua_ingame_3dview::process_event(SDL_Event& event)
+{
+   if (event.type == SDL_MOUSEMOTION)
+   {
+      // check if user leaves the 3d view
+      unsigned int xpos,ypos;
+      calc_mousepos(event, xpos, ypos);
+      if (in_view3d && !in_window(xpos,ypos))
+      {
+         // user left the window
+         in_view3d = false;
+//         set_cursor_image(false,0);
+      }
+   }
+
+   return ua_image_quad::process_event(event);
+}
+
+void ua_ingame_3dview::mouse_event(bool button_clicked, bool left_button,
+   bool button_down, unsigned int mousex, unsigned int mousey)
+{
+/*
+   // we only get this call when we're inside the window
+   in_view3d = true;
+
+   // calculate relative mouse pos in window
+   double relx = double(mousex-wnd_xpos)/(wnd_width-wnd_xpos);
+   double rely = double(mousey-wnd_ypos)/(wnd_height-wnd_ypos);
+
+   ua_player& player = game->get_underworld().get_player();
+
+   // when pressing left mouse button, start mouse move mode
+   if (button_click && (SDL_GetMouseState(NULL, NULL) & (SDL_BUTTON_LMASK)) != 0))
+   {
+      // mouse move is started on pressing mouse button
+      mouse_move = pressed;
+
+      if (!mouse_move)
+      {
+         // disable all modes (when possible)
+         if (!move_walk_forward && !move_run_forward && !move_walk_backwards)
+            player.set_movement_mode(0,ua_move_walk);
+
+         if (!move_turn_left && !move_turn_right)
+            player.set_movement_mode(0,ua_move_rotate);
+
+         player.set_movement_mode(0,ua_move_slide);
+
+         // set new mouse cursor position
+//         Uint16 x = unsigned(cursorx*core->get_screen_width()/320.0);
+//         Uint16 y = unsigned(cursory*core->get_screen_height()/200.0);
+//         SDL_WarpMouse(x,y);
+      }
+   }
+
+   // determine new cursor image
+   {
+      double slide, rotate, walk;
+      slide = rotate = walk = 10.0;
+
+      int new_cursor_image = -1;
+
+      if (rely>=0.75)
+      {
+         // lower part of screen
+         if (relx<0.33){ slide = -1.0; new_cursor_image = 3; } else
+         if (relx>=0.66){ slide = 1.0; new_cursor_image = 4; } else
+            { walk = -0.4*(rely-0.75)/0.25; new_cursor_image = 2; }
+      }
+      else
+      if (rely>=0.6)
+      {
+         // middle part
+         if (relx<0.33){ rotate = (0.33-relx)/0.33; new_cursor_image = 5; } else
+         if (relx>=0.66){ rotate = -(relx-0.66)/0.33; new_cursor_image = 6; } else
+            new_cursor_image = 0;
+      }
+      else
+      {
+         // upper part
+         if (relx<0.33){ rotate = (0.33-relx)/0.33; new_cursor_image = 7; } else
+         if (relx>=0.66){ rotate = -(relx-0.66)/0.33; new_cursor_image = 8; } else
+            new_cursor_image = 1;
+
+         // walking speed increases in range [0.6; 0.2] only
+         walk = (0.6-rely)/0.4;
+         if (walk>1.0) walk = 1.0;
+      }
+   }
+
+   // mouse move mode?
+   if (mouse_move)
+   {
+      // disable all modes (when not active through keyboard movement)
+      // and update movement modes and factors
+      if (!move_walk_forward && !move_run_forward && !move_walk_backwards)
+      {
+         player.set_movement_mode(0,ua_move_walk);
+
+         if (walk<10.0)
+         {
+            player.set_movement_mode(ua_move_walk);
+            player.set_movement_factor(ua_move_walk,walk);
+         }
+      }
+
+      if (!move_turn_left && !move_turn_right)
+      {
+         player.set_movement_mode(0,ua_move_rotate);
+
+         if (rotate<10.0)
+         {
+            player.set_movement_mode(ua_move_rotate);
+            player.set_movement_factor(ua_move_rotate,rotate);
+         }
+      }
+
+      {
+         player.set_movement_mode(0,ua_move_slide);
+
+         if (slide<10.0)
+         {
+            player.set_movement_mode(ua_move_slide);
+            player.set_movement_factor(ua_move_slide,slide);
+         }
+      }
+   }
+*/
+}
+
+
+// ua_ingame_command_buttons tables
 
 struct ua_ingame_command_menu_info
 {

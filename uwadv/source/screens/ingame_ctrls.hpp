@@ -232,6 +232,29 @@ protected:
 };
 
 
+//! nonvisible 3d view window area
+class ua_ingame_3dview: public ua_ingame_orig_ctrl
+{
+public:
+   //! initializes 3d view window
+   virtual void init(ua_game_interface& game, unsigned int xpos,
+      unsigned int ypos);
+
+   // virtual methods from ua_window
+   virtual void draw();
+   virtual bool process_event(SDL_Event& event);
+   virtual void mouse_event(bool button_clicked, bool left_button,
+      bool button_down, unsigned int mousex, unsigned int mousey);
+
+protected:
+   //! is true when the mouse cursor is in 3d view
+   bool in_view3d;
+
+   //! indicates that mouse movement is currently on
+   bool mouse_move;
+};
+
+
 //! menu currently shown by ua_ingame_command_buttons
 enum ua_ingame_command_menu
 {
@@ -247,7 +270,7 @@ enum ua_ingame_command_menu
 };
 
 //! command buttons
-/*! images from optbtns.gr:
+/*! images from optbtns.gr: <pre>
     image 0: game actions, not selected, at 4/10, size 35/108
     image 1: options menu, at 4/10, size 35/108
     image 2: save game menu, at 4/10
@@ -284,6 +307,7 @@ enum ua_ingame_command_menu
     image 6/7: look
     image 8/9: fight
     image 10/11: use
+</pre>
 */
 class ua_ingame_command_buttons: public ua_ingame_orig_ctrl
 {
