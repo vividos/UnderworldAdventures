@@ -130,6 +130,8 @@ void ua_audio_impl::init(ua_settings &settings, ua_files_manager &filesmgr)
    Mix_OpenAudio(12000, MIX_DEFAULT_FORMAT, 2, 4096);
    Mix_ChannelFinished(mixer_channel_finished);
 
+   ua_trace(" %s\n",Mix_GetError());
+
    midipl.init_player(settings);
    midipl.init_driver();
 
@@ -137,7 +139,10 @@ void ua_audio_impl::init(ua_settings &settings, ua_files_manager &filesmgr)
 
    uw_path = settings.get_string(ua_setting_uw_path);
 
-   ua_trace("done\n");
+   // print out SDL_mixer version
+   const SDL_version* mixer_ver = Mix_Linked_Version();
+   ua_trace("using SDL_mixer version %u.%u.%u\n",
+      mixer_ver->major,mixer_ver->minor,mixer_ver->patch);
 }
 
 void ua_audio_impl::play_sound(const char *soundname)
@@ -165,7 +170,7 @@ void ua_audio_impl::start_music(unsigned int music, bool repeat)
 
    std::string trackname = music_playlist[music];
 
-   ua_trace("audio: playing back %s\n",trackname.c_str());
+   ua_trace("audio: playing back %s",trackname.c_str());
 
    // make lowercase
    std::transform(trackname.begin(),trackname.end(),trackname.begin(),::tolower);
@@ -185,8 +190,12 @@ void ua_audio_impl::start_music(unsigned int music, bool repeat)
       // start music track via SDL_mixer
       curtrack = Mix_LoadMUS(trackname.c_str());
       if (curtrack)
-         Mix_PlayMusic(curtrack, 0);
+      {
+         Mix_PlayMusic(curtrack, repeat ? -1 : 0);
+         ua_trace(" (%s)",Mix_GetError());
+      }
    }
+   ua_trace("\n");
 }
 
 void ua_audio_impl::stop_music()
