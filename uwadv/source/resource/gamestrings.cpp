@@ -172,7 +172,7 @@ void ua_gamestrings::load(const char *filename)
    fclose(fd);
 }
 
-std::string ua_gamestrings::get_string(int block, int string_nr)
+std::string ua_gamestrings::get_string(unsigned int block, unsigned int string_nr)
 {
    std::map<int,std::vector<std::string> >::iterator iter =
       allstrings.find(block);

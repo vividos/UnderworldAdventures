@@ -37,6 +37,7 @@
 
 const char *ua_settings_file = "./uwadv.cfg";
 
+
 // settings enum
 
 enum
@@ -45,8 +46,9 @@ enum
 };
 
 
-// all settings
+// structs
 
+// list of all settings
 struct
 {
    const char *opt;
