@@ -395,6 +395,13 @@ void ua_uwadv_game::done()
    debug.shutdown();
    underworld.done();
 
+   if (scripting != NULL)
+   {
+      scripting->done();
+      delete scripting;
+      scripting = NULL;
+   }
+
    SDL_Quit();
 }
 
