@@ -111,7 +111,6 @@ registered C functions to call from Lua:
    ui_start_conv
    ui_show_cutscene
    ui_show_ingame_anim
-   ui_get_rand
    ui_persist_put
    ui_persist_get
 
@@ -365,7 +364,7 @@ For all functions, the self parameter must be passed.
   return values: tile_handle
 
   returns a tile handle for a given level and position. "level" can be -1 and
-  is a placeholder for the current level.
+  is a placeholder for the current level then.
 
 * tilemap_get_type(self, tile_handle)
   return values: tile_type
