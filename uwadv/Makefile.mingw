@@ -46,11 +46,18 @@ SDL_INCLUDE = -I$(MINGW_PATH)/include/sdl/
 # compiler
 CC = gcc
 CXX = c++
-CFLAGS = -O2 #-Wall -g -O
+CFLAGS =
 CXXFLAGS =
 LDFLAGS = -mwindows -s
 DEFINES = 
 
+# debug options
+ifeq ("$(WITH_DEBUGGING)", "yes")
+ CFLAGS = -g -O #-Wall
+ DEFINES += -DHAVE_DEBUG
+else
+ CFLAGS = -O2
+endif
 
 # library configure stuff
 SDL_LIB = -lSDLmain -lSDL -lSDL_mixer
@@ -64,11 +71,6 @@ ifeq ("$(WITH_CONSOLE)", "yes")
  DEFINES += -DHAVE_CONSOLE
 else
  uwadv_SDL_LIB = -lSDLmain -lSDL -lSDL_mixer
-endif
-
-# debug options
-ifeq ("$(WITH_DEBUGGING)", "yes")
- DEFINES += -DHAVE_DEBUG
 endif
 
 # STLport
