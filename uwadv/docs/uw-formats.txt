@@ -360,9 +360,9 @@ Table of Contents
    Links
    -----
    When the link field is a link (link flag NOT set), it links to another
-   object(s). Here's a list of IDs and the lin meanings:
+   object(s). Here's a list of IDs and the link meanings:
 
-    0040 - 007f: all sorts of NPCs (link point to inventory start)
+    0040 - 007f: all sorts of NPCs (link points to inventory start)
     0080 - 008e: all sorts of container (points to content)
     008f: a_rune bag (specially treated)
     0098 - 009f,00aa: all sorts of wands (points to a "a_spell" object)
