@@ -444,6 +444,7 @@ clean: data-clean luac-clean
 	rm -f $(uwadv_EXEC) $(cnvdbg_EXEC) $(cnvdasm_EXEC) $(xmi2mid_EXEC) \
 		$(mapdisp_EXEC) $(animview_EXEC) $(strpak_EXEC) \
 		$(uaconfig_EXEC) $(libuatools_EXT) $(uwdump_EXEC) \
+		$(uwmdlview_EXEC) \
 		$(uwadv_OBJS) $(cnvdbg_OBJS) $(cnvdasm_OBJS) $(xmi2mid_OBJS) \
 		$(mapdisp_OBJS) $(animview_OBJS) $(strpak_OBJS) \
 		$(uaconfig_OBJS) $(libuatools_OBJS) $(uwdump_OBJS)
