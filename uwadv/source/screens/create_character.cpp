@@ -362,9 +362,9 @@ void ua_create_character_screen::drawnumber(unsigned int num, int x, int y, unsi
 
 void ua_create_character_screen::drawtext(int strnum, int x, int y, int xalign, unsigned char color)
 {
-   const char* ptext = core->get_strings().get_string(strblock, strnum).c_str();
-   if (ptext)
-      drawtext(ptext, x, y, xalign, color);
+   std::string text(core->get_strings().get_string(strblock, strnum));
+   if (!text.empty())
+      drawtext(text.c_str(), x, y, xalign, color);
 }
 
 void ua_create_character_screen::drawbutton(int buttontype, bool highlight, int strnum, int xc, int y)
