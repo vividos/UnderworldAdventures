@@ -60,11 +60,22 @@ void ua_files_manager::init(ua_settings &settings)
    init_cfgfiles_list();
 
    // load all settings
+   bool foundconfig = false;
+
    unsigned int max = cfgfiles_list.size();
    for(unsigned int i=0; i<max; i++)
    {
-      settings.load(cfgfiles_list[i].c_str());
+      bool fileok = true;
+      try {
+         settings.load(cfgfiles_list[i].c_str());
+      } catch (ua_exception e) {
+         fileok = false;
+      }
+      foundconfig |= fileok;
    }
+
+   if (!foundconfig)
+      throw ua_exception("Could not find any config files");
 
    settings.init();
 
@@ -147,24 +158,23 @@ void ua_files_manager::init_cfgfiles_list()
 
    cfgfiles_list.push_back(homecfgfile);
 
-#else
+#endif
 
-   // no home dir? get file from local directory
+   // last resort: get file from local directory
 
    cfgfiles_list.push_back("uwadv.cfg");
-
-#endif
 
 
 #if 1
    // some debugging info
 
-   std::cout << "Config files:" << std::endl;
+   std::cout << "Trying the following config files:" << std::endl;
    std::vector<std::string>::iterator iter;
    for (iter = cfgfiles_list.begin();
         iter != cfgfiles_list.end();
         ++iter)
       std::cout << *iter << std::endl;
+   std::cout << std::endl;
 #endif
 
 }
