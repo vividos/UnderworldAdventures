@@ -75,7 +75,7 @@ end
 function look_at_special(objinfo)
 
    -- some_writing
-   if objinfo.item_id == 256+6*16+6
+   if objinfo.item_id == 0x0166
    then
       -- print more detailed string
       ui_print_string( ui_get_gamestring(8,objinfo.flags + 368) )
@@ -85,7 +85,7 @@ function look_at_special(objinfo)
    end
 
    -- special tmap object
-   if objinfo.item_id == 366 or objinfo.item_id == 367
+   if objinfo.item_id == 0x016e or objinfo.item_id == 0x016f
    then
       -- simulate "look at wall"
       lua_wall_look(objinfo.owner)
@@ -123,7 +123,7 @@ function look_at_objinfo(objinfo,is_inv)
    -- is NPC?
    local attitude = ""
    local named = ""
-   if objinfo.item_id >= 64 and objinfo.item_id < 128
+   if objinfo.item_id >= 0x0040 and objinfo.item_id < 0x0080
    then
       -- get attitude string
       attitude = ui_get_gamestring(5,96+objinfo.npc_attitude) .. " ";
@@ -162,10 +162,10 @@ function look_at_objinfo(objinfo,is_inv)
    then
       -- take a more in-depth look at some objects
 
-      if objinfo.item_id >= 256+3*16 and objinfo.item_id < 256+4*16
+      if objinfo.item_id >= 0x0130 and objinfo.item_id < 0x0140
       then
          -- read book, 0x013x
-         if objinfo.item_id == 256+3*16+11
+         if objinfo.item_id == 0x013b
          then
             -- map scroll, "Enscribed upon the scroll is your map."
             ui_print_string(ui_get_gamestring(1,151))

@@ -26,23 +26,23 @@
 -- constants
 
 -- trap item_id's
-trap_damage = 384       -- a_damage trap
-trap_teleport = 385     -- a_teleport trap
-trap_arrow = 386        -- a_arrow trap
-trap_do = 387           -- a_do trap
-trap_pit = 388          -- a_pit trap
-trap_change_terrain = 389  -- a_change terrain trap
-trap_spelltrap = 390    -- a_spelltrap
-trap_create_obj = 391   -- a_create object trap
-trap_door = 392         -- a_door trap
-trap_ward = 393         -- a_ward trap
-trap_tell = 394         -- a_tell trap
-trap_delete_obj = 395   -- a_delete object trap
-trap_inventory = 396    -- an_inventory trap
-trap_set_var = 397      -- a_set variable trap
-trap_check_var = 398    -- a_check variable trap
-trap_combination = 399  -- a_combination trap
-trap_text_string = 400  -- a_text string trap
+trap_damage = 0x0180       -- a_damage trap
+trap_teleport = 0x0181     -- a_teleport trap
+trap_arrow = 0x0182        -- a_arrow trap
+trap_do = 0x0183           -- a_do trap
+trap_pit = 0x0184          -- a_pit trap
+trap_change_terrain = 0x0185  -- a_change terrain trap
+trap_spelltrap = 0x0186    -- a_spelltrap
+trap_create_obj = 0x0187   -- a_create object trap
+trap_door = 0x0188         -- a_door trap
+trap_ward = 0x0189         -- a_ward trap
+trap_tell = 0x018a         -- a_tell trap
+trap_delete_obj = 0x018b   -- a_delete object trap
+trap_inventory = 0x018c    -- an_inventory trap
+trap_set_var = 0x018d      -- a_set variable trap
+trap_check_var = 0x018e    -- a_check variable trap
+trap_combination = 0x018f  -- a_combination trap
+trap_text_string = 0x0190  -- a_text string trap
 
 trap_first = trap_damage
 trap_last = trap_text_string

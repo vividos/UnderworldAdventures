@@ -26,13 +26,13 @@
 -- constants
 
 -- trigger item_id's
-trig_move = 416     -- a_move trigger
-trig_pick_up = 417  -- a_pick up trigger
-trig_use = 418      -- a_use trigger
-trig_look = 419     -- a_look trigger
-trig_step_on = 420  -- a_step on trigger
-trig_open = 421     -- an_open trigger
-trig_unlock = 422   -- an_unlock trigger
+trig_move = 0x01a0     -- a_move trigger
+trig_pick_up = 0x01a1  -- a_pick up trigger
+trig_use = 0x01a2      -- a_use trigger
+trig_look = 0x01a3     -- a_look trigger
+trig_step_on = 0x01a4  -- a_step on trigger
+trig_open = 0x01a5     -- an_open trigger
+trig_unlock = 0x01a6   -- an_unlock trigger
 
 trig_first = trig_move
 trig_last = trig_unlock

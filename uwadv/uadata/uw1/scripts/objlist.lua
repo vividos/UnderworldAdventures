@@ -58,7 +58,7 @@ function lua_objlist_talk(obj_handle)
    dump_objinfo_table(obj_handle)
 
    -- check if npc
-   if objinfo.item_id < 64 or objinfo.item_id >= 128
+   if objinfo.item_id < 0x0040 or objinfo.item_id >= 0x0080
    then
       -- no, print "You cannot talk to that!"
       ui_print_string(ui_get_gamestring(7,0))
