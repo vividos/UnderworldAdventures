@@ -151,7 +151,7 @@ void ua_cutscene_view_screen::init()
 
    // init textures
    tex_anim.init();
-   tex_text.init(1,GL_NEAREST,GL_NEAREST);
+   tex_text.init(1,GL_LINEAR,GL_NEAREST);
 
    // init subtitle text
    font_big.init(core->get_settings(),ua_font_big);
