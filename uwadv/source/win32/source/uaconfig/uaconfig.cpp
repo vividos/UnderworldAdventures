@@ -175,7 +175,7 @@ LRESULT ua_config_prog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 
          // check if we already have that one
          if (CB_ERR == ::SendDlgItemMessage(m_hWnd,IDC_COMBO_SCREEN_RESOLUTION,
-            CB_FINDSTRINGEXACT,-1,(LPARAM)buffer))
+            CB_FINDSTRINGEXACT,(WPARAM)-1,(LPARAM)buffer))
          {
             // add it
             ::SendDlgItemMessage(m_hWnd,IDC_COMBO_SCREEN_RESOLUTION,CB_ADDSTRING,
