@@ -41,30 +41,34 @@
 #include <string>
 #include <vector>
 #include "savegame.hpp"
+#include "convstack.hpp"
+#include "convglobals.hpp"
+
+
+// forward references
+class ua_conv_code_vm;
 
 
 // enums
 
-//! imported function return type
-//TODO change to datatype
-enum ua_conv_ret_type
+//! function types
+enum ua_conv_datatype
 {
    ua_rt_void,
    ua_rt_int,
    ua_rt_string
 };
 
-
 //! conv code virtual machine code exceptions
 typedef enum
 {
-   ua_ex_error_loading, // error while loading
-   ua_ex_div_by_zero,   // division by 0
-   ua_ex_code_access,   // invalid code segment access
-   ua_ex_globals_access,// invalid globals access
-   ua_ex_stack_access,  // invalid stack access
-   ua_ex_unk_opcode,    // unknown opcode
-   ua_ex_imported_na,   // imported function not available
+   ua_ex_error_loading, //!< error while loading
+   ua_ex_div_by_zero,   //!< division by 0
+   ua_ex_code_access,   //!< invalid code segment access
+   ua_ex_globals_access,//!< invalid globals access
+   ua_ex_stack_access,  //!< invalid stack access
+   ua_ex_unk_opcode,    //!< unknown opcode
+   ua_ex_imported_na,   //!< imported function not available
 } ua_conv_vm_exception;
 
 
@@ -74,7 +78,7 @@ typedef enum
 typedef struct
 {
    //! type of the function/global memory location
-   ua_conv_ret_type ret_type;
+   ua_conv_datatype datatype;
 
    //! name of imported item
    std::string name;
@@ -84,102 +88,26 @@ typedef struct
 
 // classes
 
-//! stores all conversation globals
-/*! The class contains all conversation globals for each conversation slot and
-    should be persisted when conversation or game exits.
-*/
-class ua_conv_globals
+class ua_conv_code_callback
 {
 public:
    //! ctor
-   ua_conv_globals(){}
+   ua_conv_code_callback(){}
 
-   //! returns a list of globals for a given conv slot
-   std::vector<Uint16>& get_globals(Uint16 conv)
-   {
-      if (conv>allglobals.size()) throw ua_ex_globals_access;
-      return allglobals[conv];
-   }
+   //! prints "say" string
+   virtual void say(Uint16 index)=0;
 
-   // loading / saving
+   //! returns string in local string block
+   virtual const char* get_local_string(Uint16 index)=0;
 
-   //! loads a savegame
-   void load_game(ua_savegame &sg);
+   //! executes external function
+   virtual Uint16 external_func(const char* funcname, ua_conv_stack& stack)=0;
 
-   //! saves to a savegame
-   void save_game(ua_savegame &sg);
+   //! returns global value
+   virtual Uint16 get_global(const char* globname)=0;
 
-protected:
-   friend class ua_uw_import;
-
-   //! returns list of all globals
-   std::vector< std::vector<Uint16> >& get_allglobals(){ return allglobals; }
-
-protected:
-   //! list with all globals from all conversations
-   std::vector< std::vector<Uint16> > allglobals;
-};
-
-
-//! conversation code stack
-/*! ua_conv_stack implements the stack used in the virtual machine. It does
-    range checking and throws one of the exceptions in ua_conv_vm_exception
-    when needed.
-*/
-class ua_conv_stack
-{
-public:
-   //! ctor
-   ua_conv_stack(){ stackp = 0xffff; };
-
-   //! reserves stack space
-   void init(Uint16 stacksize){ stack.clear(); stackp = 0xffff; stack.resize(stacksize,0); }
-
-   //! pushes a value onto the stack
-   void push(Uint16 val)
-   {
-      if (Uint16(stackp+1)>stack.size())
-         throw ua_ex_stack_access;
-      stack[++stackp] = val;
-   }
-
-   //! pops a value from the stack
-   Uint16 pop()
-   {
-      if (stackp>stack.size()) throw ua_ex_stack_access;
-      return stack[stackp--];
-   }
-
-   //! returns value at stack position
-   Uint16 at(Uint16 pos)
-   {
-      if (pos>stack.size()) throw ua_ex_stack_access;
-      return stack[pos];
-   }
-
-   //! returns value at stack position
-   void set(Uint16 pos, Uint16 val)
-   {
-      if (pos>stack.size()) throw ua_ex_stack_access;
-      stack[pos]=val;
-   }
-
-   //! gets new stack pointer
-   Uint16 get_stackp(){ return stackp; }
-
-   //! sets new stack pointer
-   void set_stackp(Uint16 val)
-   {
-      if (val>stack.size()) throw ua_ex_stack_access;
-      stackp = val;
-   }
-
-protected:
-   //! stack pointer; always points to top element of stack
-   Uint16 stackp;
-
-   //! the stack itself
-   std::vector<Uint16> stack;
+   //! sets global value
+   virtual void set_global(const char* globname, Uint16 val)=0;
 };
 
 
@@ -202,50 +130,52 @@ public:
    virtual ~ua_conv_code_vm();
 
    //! conv code loader; returns false if there is no conversation slot
-   bool load_code(const char *cnvfile, Uint16 conv);
+//   bool load_code(const char* cnvfile, Uint16 conv);
 
    //! inits virtual machine after filling code segment
-   void init(ua_conv_globals &cg, std::vector<std::string>& stringblock);
+   void init(ua_conv_code_callback* code_callback, ua_conv_globals& cg);
 
    //! does a step in code
-   void step() throw(ua_conv_vm_exception);
+   void step();
 
    //! writes back conv globals
-   void done(ua_conv_globals &cg);
+   void done(ua_conv_globals& cg);
 
    //! replaces all @ placeholder in the given string
    void replace_placeholder(std::string& str);
 
-   //! allocates new string on local strings heap and returns handle
-   Uint16 alloc_string(const std::string& str);
+   //! sets result register
+   void set_result_register(Uint16 val);
 
-   // virtual functions
-
-   //! called when calling an imported function
-   virtual void imported_func(const std::string& funcname);
+protected:
+   //! called when an imported function is executed
+   void imported_func(const std::string& funcname);
 
    //! called when saying a string
-   virtual void say_op(Uint16 str_id);
+   void say_op(Uint16 str_id);
+
+   //! executes an imported function
+   void imported_func(const char* funcname);
 
    //! queries for a global variable value
-   virtual Uint16 get_global(const std::string& globname);
+   Uint16 get_global(const char* globname);
 
    //! sers global variable value
-   virtual void set_global(const std::string& globname, Uint16 val);
+   void set_global(const char* globname, Uint16 val);
 
-   //! called when storing a value at the stack
-   virtual void store_value(Uint16 at, Uint16 val);
+   //! called when storing a value to the stack
+   void store_value(Uint16 at, Uint16 val);
 
    //! called when fetching a value from stack
-   virtual void fetch_value(Uint16 at);
+   void fetch_value(Uint16 at);
 
 protected:
    //! reads all imported function entries
-   void load_imported_funcs(FILE *fd);
+//   void load_imported_funcs(FILE *fd);
 
 protected:
-   //! number of conversation
-   Uint16 conv_nr;
+   //! number of conversation slot
+   Uint16 conv_slot;
 
    //! number of string block to use
    Uint16 strblock;
@@ -283,8 +213,8 @@ protected:
    //! names of all imported globals
    std::map<Uint16,ua_conv_imported_item> imported_globals;
 
-   //! all current local strings
-   std::vector<std::string> localstrings;
+   //! code callback pointer
+   ua_conv_code_callback* code_callback;
 };
 
 #endif

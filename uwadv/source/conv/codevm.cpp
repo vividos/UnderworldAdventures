@@ -90,8 +90,9 @@ void ua_conv_globals::save_game(ua_savegame &sg)
 // ua_conv_code_vm methods
 
 ua_conv_code_vm::ua_conv_code_vm()
+:code_callback(NULL)
 {
-   conv_nr = codesize = 0xffff;
+   conv_slot = codesize = 0xffff;
    instrp = basep = result_register = 0xffff;
    call_level = glob_reserved = 0;
    finished = true;
@@ -101,18 +102,17 @@ ua_conv_code_vm::~ua_conv_code_vm()
 {
 }
 
-void ua_conv_code_vm::init(ua_conv_globals &cg, std::vector<std::string>& stringblock)
+void ua_conv_code_vm::init(ua_conv_code_callback* the_code_callback,
+   ua_conv_globals &cg)
 {
+   code_callback = the_code_callback;
+
    // reset pointer
    instrp = 0;
    basep = 0xffff;
    result_register = 0;
    finished = false;
    call_level=1;
-
-   // store string block on local strings heap
-   localstrings.clear();
-   localstrings = stringblock;
 
    // init stack: 4k should be enough for anybody.
    stack.init(4096);
@@ -122,7 +122,7 @@ void ua_conv_code_vm::init(ua_conv_globals &cg, std::vector<std::string>& string
 
    // load private globals onto stack
    {
-      const std::vector<Uint16> &glob = cg.get_globals(conv_nr);
+      const std::vector<Uint16>& glob = cg.get_globals(conv_slot);
 
       unsigned int max=glob.size();
       for(unsigned int i=0; i<max; i++)
@@ -140,7 +140,7 @@ void ua_conv_code_vm::init(ua_conv_globals &cg, std::vector<std::string>& string
          Uint16 pos = (*iter).first;
          ua_conv_imported_item& iitem = (*iter).second;
 
-         Uint16 val = get_global(iitem.name);
+         Uint16 val = get_global(iitem.name.c_str());
 
          stack.set(pos,val);
       }
@@ -149,11 +149,11 @@ void ua_conv_code_vm::init(ua_conv_globals &cg, std::vector<std::string>& string
 
 void ua_conv_code_vm::done(ua_conv_globals &cg)
 {
-   if (conv_nr==0xffff)
+   if (conv_slot==0xffff)
       return;
 
    // store back globals from stack
-   std::vector<Uint16> &glob = cg.get_globals(conv_nr);
+   std::vector<Uint16>& glob = cg.get_globals(conv_slot);
 
    unsigned int max=glob.size();
    for(unsigned int i=0; i<max; i++)
@@ -510,7 +510,7 @@ void ua_conv_code_vm::replace_placeholder(std::string& str)
       switch(vartype)
       {
       case 'S':
-         varstr = localstrings[value];
+         varstr = code_callback->get_local_string(value);
          break;
       case 'I':
          {
@@ -526,34 +526,51 @@ void ua_conv_code_vm::replace_placeholder(std::string& str)
    }
 }
 
-Uint16 ua_conv_code_vm::alloc_string(const std::string& str)
+void ua_conv_code_vm::set_result_register(Uint16 val)
 {
-   Uint16 pos = localstrings.size();
-   localstrings.push_back(str);
-   return pos;
+   result_register = val;
 }
 
-void ua_conv_code_vm::imported_func(const std::string& funcname)
+void ua_conv_code_vm::imported_func(const char* funcname)
 {
+   ua_trace("code_vm: executing function \"%s\" with %u arguments\n",
+      funcname, stack.at(stack.get_stackp()));
+
+   result_register = code_callback->external_func(funcname, stack);
 }
 
-void ua_conv_code_vm::say_op(Uint16 str_id)
+void ua_conv_code_vm::say_op(Uint16 index)
 {
+   code_callback->say(index);
 }
 
-Uint16 ua_conv_code_vm::get_global(const std::string& globname)
+Uint16 ua_conv_code_vm::get_global(const char* globname)
 {
-   return 0;
+   Uint16 val = code_callback->get_global(globname);
+   ua_trace("code_vm: get_global %s returned %04x\n",globname, val);
+   return val;
 }
 
-void ua_conv_code_vm::set_global(const std::string& globname, Uint16 val)
+void ua_conv_code_vm::set_global(const char* globname, Uint16 val)
 {
+   ua_trace("code_vm: set_global %s = %04x\n", globname, val);
+   code_callback->set_global(globname, val);
 }
 
 void ua_conv_code_vm::store_value(Uint16 at, Uint16 val)
 {
+   std::map<Uint16,ua_conv_imported_item>::iterator iter =
+      imported_globals.find(at);
+
+   if (iter!=imported_globals.end())
+      ua_trace("code_vm: storing: %s = %04x\n",iter->second.name.c_str(),val);
 }
 
 void ua_conv_code_vm::fetch_value(Uint16 at)
 {
+   std::map<Uint16,ua_conv_imported_item>::iterator iter =
+      imported_globals.find(at);
+
+   if (iter!=imported_globals.end())
+      ua_trace("code_vm: fetching %s returned %04x\n",iter->second.name.c_str(),stack.at(at));
 }
