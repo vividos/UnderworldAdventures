@@ -89,6 +89,11 @@ LINK32=link.exe
 # Name "uwmdlview - Win32 Debug"
 # Begin Source File
 
+SOURCE=..\source\resource\modeldecode.cpp
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
 SOURCE=..\source\models.cpp
 # PROP Exclude_From_Build 1
 # End Source File

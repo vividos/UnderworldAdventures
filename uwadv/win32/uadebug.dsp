@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib wxmsw.lib png.lib zlib.lib jpeg.lib tiff.lib regex.lib fl.lib /nologo /dll /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libci.lib" /nodefaultlib:"msvcrtd.lib" /out:"../output/release/uadebug.dll" /libpath:"$(wxwin)/lib"
+# ADD LINK32 wxmsw.lib png.lib zlib.lib jpeg.lib tiff.lib regex.lib fl.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib opengl32.lib glu32.lib /nologo /dll /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libci.lib" /nodefaultlib:"msvcrtd.lib" /out:"../output/release/uadebug.dll" /libpath:"$(wxwin)/lib"
 
 !ELSEIF  "$(CFG)" == "uadebug - Win32 Debug"
 
@@ -79,7 +79,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib wxmswd.lib pngd.lib zlibd.lib jpegd.lib tiffd.lib regexd.lib fld.lib /nologo /dll /debug /machine:I386 /nodefaultlib:"libcd.lib" /nodefaultlib:"libcid.lib" /nodefaultlib:"msvcrt.lib" /out:"../output/debug/uadebug.dll" /pdbtype:sept /libpath:"$(wxwin)/lib"
+# ADD LINK32 wxmswd.lib pngd.lib zlibd.lib jpegd.lib tiffd.lib regexd.lib fld.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib opengl32.lib glu32.lib /nologo /dll /debug /machine:I386 /nodefaultlib:"libcd.lib" /nodefaultlib:"libcid.lib" /nodefaultlib:"msvcrt.lib" /out:"../output/debug/uadebug.dll" /pdbtype:sept /libpath:"$(wxwin)/lib"
 
 !ENDIF 
 
@@ -132,6 +132,11 @@ SOURCE=..\source\debug\playerinfo.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\source\debug\tilemapview.cpp
+# ADD CPP /Yu"dbgcommon.hpp"
+# End Source File
+# Begin Source File
+
 SOURCE=.\uadebug.def
 # End Source File
 # End Group
@@ -169,6 +174,10 @@ SOURCE=..\source\debug\objectlist.hpp
 # Begin Source File
 
 SOURCE=..\source\debug\playerinfo.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\debug\tilemapview.hpp
 # End Source File
 # Begin Source File
 

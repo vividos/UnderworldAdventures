@@ -310,6 +310,10 @@ SOURCE=..\source\screens\map_view.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\source\screens\message_inl.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\source\screens\panel.cpp
 # End Source File
 # Begin Source File
@@ -359,6 +363,10 @@ SOURCE=..\source\screens\ingame_orig.hpp
 # Begin Source File
 
 SOURCE=..\source\screens\map_view.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\screens\message.hpp
 # End Source File
 # Begin Source File
 
