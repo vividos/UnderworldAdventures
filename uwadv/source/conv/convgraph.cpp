@@ -1749,7 +1749,7 @@ void ua_conv_graph::process_while(
 
    // opening brace
    while_statement.statement_data.statement = "{";
-   while_statement.statement_data.indent_change_before = 1;
+   while_statement.statement_data.indent_change_after = 1;
 
    graph.insert(expr_iter, while_statement);
 
@@ -1762,8 +1762,8 @@ void ua_conv_graph::process_while(
 #endif
 
    while_statement.statement_data.statement = buffer2.str();
-   while_statement.statement_data.indent_change_before = 0;
-   while_statement.statement_data.indent_change_after = -1;
+   while_statement.statement_data.indent_change_before = -1;
+   while_statement.statement_data.indent_change_after = 0;
    while_statement.pos = while_end_iter->pos-2;
 
    graph.insert(while_end_iter, while_statement);
