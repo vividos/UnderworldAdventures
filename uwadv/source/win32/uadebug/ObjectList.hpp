@@ -32,46 +32,35 @@
 #pragma once
 
 // includes
-#include "EditListViewCtrl.hpp"
-
-// forward references
-class CDebugClientInterface;
-class CMainFrame;
+#include "WindowBase.hpp"
 
 // classes
 
-class CObjectListWindow :
-   public dockwins::CBoxedDockingWindowImpl< CObjectListWindow,CWindow,dockwins::CVC7LikeExBoxedDockingWindowTraits>
+class CObjectListWindow : public CDockingWindowBase
 {
    typedef CObjectListWindow thisClass;
-   typedef dockwins::CBoxedDockingWindowImpl< CObjectListWindow,CWindow,dockwins::CVC7LikeExBoxedDockingWindowTraits> baseClass;
+   typedef CDockingWindowBase baseClass;
 public:
    CObjectListWindow();
    virtual ~CObjectListWindow();
-
-   void InitWindow(CMainFrame* pMainFrame){ m_pMainFrame = pMainFrame; }
-   void SetClient(CDebugClientInterface* pDebugClient){ m_pDebugClient = pDebugClient; }
 
    void UpdateData();
 
    DECLARE_WND_CLASS(_T("CObjectListWindow"))
    BEGIN_MSG_MAP(thisClass)   
       MESSAGE_HANDLER(WM_CREATE, OnCreate)
-      MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
       MESSAGE_HANDLER(WM_SIZE, OnSize)
+      MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus)
       NOTIFY_CODE_HANDLER(LVN_BEGINLABELEDIT, OnBeginLabelEdit)
       NOTIFY_CODE_HANDLER(LVN_ENDLABELEDIT, OnEndLabelEdit)
       NOTIFY_CODE_HANDLER(LVN_GETDISPINFO, OnGetDispInfo)
-      REFLECT_NOTIFICATIONS()
       CHAIN_MSG_MAP(baseClass)      
    END_MSG_MAP()
 
-   void OnUndocked(HDOCKBAR hBar);
-
 protected:
    LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-   LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
    LRESULT OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
+   LRESULT OnSetFocus(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 
    LRESULT OnBeginLabelEdit(WPARAM /*wParam*/, NMHDR* pNMHDR, BOOL& /*bHandled*/);
    LRESULT OnEndLabelEdit(WPARAM /*wParam*/, NMHDR* pNMHDR, BOOL& /*bHandled*/);
@@ -79,10 +68,6 @@ protected:
 
 protected:
    CEditListViewCtrl m_listCtrl;
-
-   CDebugClientInterface* m_pDebugClient;
-
-   CMainFrame* m_pMainFrame;
 
    unsigned int* m_pObjectList;
    CSimpleArray<CString>* m_pItemNameList;

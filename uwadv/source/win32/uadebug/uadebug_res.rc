@@ -35,6 +35,13 @@ END
 
 #endif    // APSTUDIO_INVOKED
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_TREE_PROJECT        BITMAP                  "res\\tree_project.bmp"
 #endif    // German (Germany) resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -88,6 +95,7 @@ BEGIN
     SEPARATOR
     BUTTON      ID_UNDERWORLD_RUNNING
     SEPARATOR
+    BUTTON      ID_VIEW_PROJECT
     BUTTON      ID_VIEW_PLAYERINFO
     BUTTON      ID_VIEW_OBJECTLIST
     BUTTON      ID_VIEW_HOTSPOT
@@ -210,6 +218,7 @@ BEGIN
         MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
         MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
         MENUITEM SEPARATOR
+        MENUITEM "Project",                     32791
         MENUITEM "&Player Info",                ID_VIEW_PLAYERINFO
         MENUITEM "Master &Object List",         ID_VIEW_OBJECTLIST
         MENUITEM "&Hotspot List",               ID_VIEW_HOTSPOT
@@ -374,7 +383,7 @@ BEGIN
                     WS_TABSTOP,356,132,130,116
 END
 
-IDD_GAMESTRINGSVIEW_FORM DIALOGEX 0, 0, 433, 295
+IDD_GAMESTRINGSVIEW DIALOGEX 0, 0, 433, 295
 STYLE DS_SETFONT | WS_CHILD | WS_VISIBLE
 EXSTYLE WS_EX_CLIENTEDGE
 FONT 8, "Tahoma", 0, 0, 0x1
@@ -414,7 +423,7 @@ BEGIN
         BOTTOMMARGIN, 263
     END
 
-    IDD_GAMESTRINGSVIEW_FORM, DIALOG
+    IDD_GAMESTRINGSVIEW, DIALOG
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 426

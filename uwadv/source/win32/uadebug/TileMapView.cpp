@@ -175,7 +175,7 @@ LRESULT CTileMapViewWindow::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lPara
 
 LRESULT CTileMapViewWindow::OnButtonBeam(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-   m_pDebugClient->TeleportPlayer(m_pDebugClient->GetWorkingLevel(),
+   m_pDebugClient->GetPlayerInterface().Teleport(m_pDebugClient->GetWorkingLevel(),
       m_nTileX+0.5, m_nTileY+0.5);
    return 0;
 }

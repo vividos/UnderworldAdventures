@@ -29,7 +29,118 @@
 #include "stdatl.hpp"
 #include "DebugClient.hpp"
 
-// methods
+// data
+
+LPCTSTR g_aszAttrNames[] =
+{
+   _T("xpos"),
+   _T("ypos"),
+   _T("zpos"),
+   _T("angle"),
+
+   // attributes
+   _T("gender"),
+   _T("handedness"),
+   _T("appearance"),
+   _T("profession"),
+   _T("maplevel"),
+   _T("strength"),
+   _T("dexterity"),
+   _T("intelligence"),
+   _T("life"),
+   _T("max_life"),
+   _T("mana"),
+   _T("max_mana"),
+   _T("weariness"),
+   _T("hungriness"),
+   _T("poisoned"),
+   _T("mentalstate"),
+   _T("nightvision"),
+   _T("talks"),
+   _T("kills"),
+   _T("level"),
+   _T("exp_points"),
+   _T("difficulty"),
+
+   // skills
+   _T("attack"),
+   _T("defense"),
+   _T("unarmed"),
+   _T("sword"),
+   _T("axe"),
+   _T("mace"),
+   _T("missile"),
+   _T("mana"),
+   _T("lore"),
+   _T("casting"),
+   _T("traps"),
+   _T("search"),
+   _T("track"),
+   _T("sneak"),
+   _T("repair"),
+   _T("charm"),
+   _T("picklock"),
+   _T("acrobat"),
+   _T("appraise"),
+   _T("swimming")
+};
+
+
+// CDebugClientPlayerInterface methods
+
+unsigned int CDebugClientPlayerInterface::GetAttrCount()
+{
+   return sizeof(g_aszAttrNames)/sizeof(g_aszAttrNames[0])-4;
+}
+
+LPCTSTR CDebugClientPlayerInterface::GetPosInfoName(unsigned int info)
+{
+   ATLASSERT(info < 4);
+   return g_aszAttrNames[info];
+}
+
+LPCTSTR CDebugClientPlayerInterface::GetAttrName(unsigned int attr)
+{
+   ATLASSERT(attr < GetAttrCount());
+   return g_aszAttrNames[attr+4];
+}
+
+unsigned int CDebugClientPlayerInterface::GetAttribute(unsigned int attr)
+{
+   ATLASSERT(attr < GetAttrCount());
+   return m_pDebugInterface->get_player_attr(attr);
+}
+
+double CDebugClientPlayerInterface::GetPosInfo(unsigned int info)
+{
+   ATLASSERT(info < 4);
+   return m_pDebugInterface->get_player_pos_info(info);
+}
+
+void CDebugClientPlayerInterface::SetAttribute(unsigned int attr, unsigned int val)
+{
+   ATLASSERT(attr < GetAttrCount());
+   m_pDebugInterface->set_player_attr(attr, val);
+}
+
+void CDebugClientPlayerInterface::SetPosInfo(unsigned int info, double val)
+{
+   ATLASSERT(info < 4);
+   m_pDebugInterface->set_player_pos_info(info, val);
+}
+
+void CDebugClientPlayerInterface::Teleport(unsigned int level, double xpos, double ypos)
+{
+   m_pDebugInterface->set_player_attr(4, level);
+   m_pDebugInterface->set_player_pos_info(0, xpos);
+   m_pDebugInterface->set_player_pos_info(1, ypos);
+
+   double height = m_pDebugInterface->get_tile_height(level, xpos, ypos);
+   m_pDebugInterface->set_player_pos_info(2, height);
+}
+
+
+// CDebugClientInterface methods
 
 bool CDebugClientInterface::Init(ua_debug_server_interface* pDebugInterface)
 {
@@ -94,35 +205,13 @@ void CDebugClientInterface::SetWorkingLevel(unsigned int level)
    m_nLevel = level;
 }
 
-unsigned int CDebugClientInterface::GetPlayerAttribute(unsigned int attr)
+CDebugClientPlayerInterface CDebugClientInterface::GetPlayerInterface()
 {
-   return m_pDebugInterface->get_player_attr(attr);
+   CDebugClientPlayerInterface playerInterface;
+   playerInterface.m_pDebugInterface = m_pDebugInterface;
+   return playerInterface;
 }
 
-double CDebugClientInterface::GetPlayerPosInfo(unsigned int info)
-{
-   return m_pDebugInterface->get_player_pos_info(info);
-}
-
-void CDebugClientInterface::SetPlayerAttribute(unsigned int attr, unsigned int val)
-{
-   m_pDebugInterface->set_player_attr(attr, val);
-}
-
-void CDebugClientInterface::SetPlayerPosInfo(unsigned int info, double val)
-{
-   m_pDebugInterface->set_player_pos_info(info, val);
-}
-
-void CDebugClientInterface::TeleportPlayer(unsigned int level, double xpos, double ypos)
-{
-   m_pDebugInterface->set_player_attr(4, level);
-   m_pDebugInterface->set_player_pos_info(0, xpos);
-   m_pDebugInterface->set_player_pos_info(1, ypos);
-
-   double height = m_pDebugInterface->get_tile_height(level, xpos, ypos);
-   m_pDebugInterface->set_player_pos_info(2, height);
-}
 
 unsigned int CDebugClientInterface::GetObjectListInfo(unsigned int pos, unsigned int subcode)
 {

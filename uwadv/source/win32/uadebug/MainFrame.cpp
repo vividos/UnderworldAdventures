@@ -36,10 +36,11 @@
 
 bool CMainFrame::InitDebugClient(void* pDebugClient)
 {
+   // check debug interface version
    if (!m_debugClient.Init(reinterpret_cast<ua_debug_server_interface*>(pDebugClient)))
    {
       ::MessageBox(NULL,
-         _T("This version of Underworld Adventures Debugger isn't compatible to the version of ")
+         _T("This version of Underworld Adventures Debugger isn't compatible with the version of ")
          _T("Underworld Adventures you are currently using.\n")
          _T("Please use the appropriate version or update the Underworld Debugger. ")
          _T("The debugger is now exiting."),
@@ -50,9 +51,11 @@ bool CMainFrame::InitDebugClient(void* pDebugClient)
 
    m_bStopped = false;
 
-   m_playerInfoWindow.SetClient(&m_debugClient);
-   m_objectListWindow.SetClient(&m_debugClient);
-   m_hotspotListWindow.SetClient(&m_debugClient);
+   // init docking windows
+   m_playerInfoWindow.InitDebugWindow(&m_debugClient, this);
+   m_objectListWindow.InitDebugWindow(&m_debugClient, this);
+   m_hotspotListWindow.InitDebugWindow(&m_debugClient, this);
+   m_projectInfoWindow.InitDebugWindow(&m_debugClient, this);
 
    m_tilemapChildFrame.GetView().SetClient(&m_debugClient);
 
@@ -112,10 +115,6 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
    pLoop->AddMessageFilter(this);
    pLoop->AddIdleHandler(this);
 
-
-   m_playerInfoWindow.InitWindow(this);
-   m_objectListWindow.InitWindow(this);
-   m_hotspotListWindow.InitWindow(this);
    m_tilemapChildFrame.GetView().InitWindow(this);
 
    // floating stuff
@@ -128,18 +127,18 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
 {
-   if(pMsg == NULL)
+   if (pMsg == NULL)
    {
       return FALSE;
    }
 
    bool bCalledBaseClass = false;
 
-   if(pMsg->hwnd == m_hWnd || pMsg->hwnd == m_hWndMDIClient)
+   if (pMsg->hwnd == m_hWnd || pMsg->hwnd == m_hWndMDIClient)
    {
       // Message is sent directly to main frame or
       // to the MDIClient window
-      if(baseClass::PreTranslateMessage(pMsg))
+      if (baseClass::PreTranslateMessage(pMsg))
          return TRUE;
 
       bCalledBaseClass = true;
@@ -148,44 +147,29 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
    HWND hWndFocus = ::GetFocus();
    HWND hWndMDIActive = this->MDIGetActive();
    
-   if((hWndMDIActive == hWndFocus) || (::IsChild(hWndMDIActive, hWndFocus)))
+   if ((hWndMDIActive == hWndFocus) || (::IsChild(hWndMDIActive, hWndFocus)))
    {
       // Message is sent to Active MDI child frame
       // or a descendant
       // NOTE: IsChild checks if the window is a direct child or a descendant
 
-      if(baseClass::PreTranslateMessage(pMsg))
+      if (baseClass::PreTranslateMessage(pMsg))
          return TRUE;
 
       bCalledBaseClass = true;
 
-      if(hWndMDIActive != NULL)
+      if (hWndMDIActive != NULL)
       {
          return (BOOL)::SendMessage(hWndMDIActive, WM_FORWARDMSG, 0, (LPARAM)pMsg);
       }
    }
-   else
-   {
-      /*
-      for(_PaneWindowIter iter=m_PaneWindows.begin(); iter!=m_PaneWindows.end(); iter++)
-      {
-         CTabbedAutoHideDockingWindow* pPaneWindow = *iter;
-         if(pPaneWindow->IsChild(hWndFocus))
-         {
-            if(pPaneWindow->PreTranslateMessage(pMsg))
-            {
-               return TRUE;
-            }
-         }
-      }*/
-   }
 
-   if(!bCalledBaseClass)
+   if (!bCalledBaseClass)
    {
       // If the base class hasn't already had a shot at doing
       // PreTranslateMessage (because the main frame or an
       // MDI child didn't have focus), call it now
-      if(baseClass::PreTranslateMessage(pMsg))
+      if (baseClass::PreTranslateMessage(pMsg))
          return TRUE;
 
       // Give active MDI child a chance.
@@ -249,83 +233,142 @@ LRESULT CMainFrame::OnViewStatusBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 LRESULT CMainFrame::OnViewPlayerInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-   BOOL bVisible = ::IsWindowVisible(m_playerInfoWindow);
+   bool bVisible = m_playerInfoWindow.IsWindow() && m_playerInfoWindow.IsWindowVisible() &&
+       (m_playerInfoWindow.IsDocking() || m_playerInfoWindow.IsFloating());
 
-   if (!bVisible)
+   if (bVisible)
    {
-      CRect rcDef(0,0,100,100);
-      DWORD dwStyle=WS_OVERLAPPEDWINDOW | WS_POPUP| WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
-      m_playerInfoWindow.Create(m_hWnd,rcDef,_T("Player Info"),dwStyle);
+      if (m_playerInfoWindow.IsDocking())
+         m_playerInfoWindow.Undock();
+      else
+         m_playerInfoWindow.Hide();
+      SetFocus();
+   }
+   else
+   {
+      if (m_playerInfoWindow.m_hWnd == NULL)
+      {
+         CRect rcDef(0,0,100,100);
+         DWORD dwStyle = WS_OVERLAPPEDWINDOW | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
+         m_playerInfoWindow.Create(m_hWnd, rcDef, _T("Player Info"), dwStyle);
+      }
+
+      int nBar = 0; // TODO ::IsWindowVisible(m_playerInfoWindow) ? 1 : 0;
 
       DockWindow(m_playerInfoWindow,dockwins::CDockingSide(dockwins::CDockingSide::sRight),
-                  0/*nBar*/,float(0.0)/*fPctPos*/,200/*nWidth*/,100/* nHeight*/);
+					         0/*nBar*/,float(0.0)/*fPctPos*/,200/*nWidth*/,100/* nHeight*/);
 
       if (!m_bStopped)
          m_playerInfoWindow.UpdateData();
    }
-   else
-   {
-      m_playerInfoWindow.Undock();
-      m_playerInfoWindow.DestroyWindow();
-   }
 
    UISetCheck(ID_VIEW_PLAYERINFO, !bVisible);
-   UpdateLayout();
+
    return 0;
 }
 
 LRESULT CMainFrame::OnViewObjectList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-   BOOL bVisible = ::IsWindowVisible(m_objectListWindow);
+   bool bVisible = m_objectListWindow.IsWindow() && m_objectListWindow.IsWindowVisible() &&
+       (m_objectListWindow.IsDocking() || m_objectListWindow.IsFloating());
 
-   if (!bVisible)
+   if (bVisible)
    {
-      CRect rcDef(0,0,100,100);
-      DWORD dwStyle = WS_OVERLAPPEDWINDOW | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
-      m_objectListWindow.Create(m_hWnd,rcDef,_T("Master Object List"),dwStyle);
+      if (m_objectListWindow.IsDocking())
+         m_objectListWindow.Undock();
+      else
+         m_objectListWindow.Hide();
+      SetFocus();
+   }
+   else
+   {
+      if (m_objectListWindow.m_hWnd == NULL)
+      {
+         CRect rcDef(0,0,100,100);
+         DWORD dwStyle = WS_OVERLAPPEDWINDOW | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
+         m_objectListWindow.Create(m_hWnd,rcDef,_T("Master Object List"),dwStyle);
+      }
 
-      int nBar = ::IsWindowVisible(m_objectListWindow) ? 1 : 0;
+      int nBar = 0; // TODO ::IsWindowVisible(m_objectListWindow) ? 1 : 0;
 
-      DockWindow(m_objectListWindow,dockwins::CDockingSide(dockwins::CDockingSide::sBottom),
-                  nBar,float(0.0)/*fPctPos*/,200/*nWidth*/,100/* nHeight*/);
+	   DockWindow(m_objectListWindow,dockwins::CDockingSide(dockwins::CDockingSide::sBottom),
+					   nBar,float(0.0)/*fPctPos*/,200/*nWidth*/,100/* nHeight*/);
 
       if (!m_bStopped)
          m_objectListWindow.UpdateData();
    }
-   else
-   {
-      m_objectListWindow.Undock();
-      m_objectListWindow.DestroyWindow();
-   }
 
    UISetCheck(ID_VIEW_OBJECTLIST, !bVisible);
-   UpdateLayout();
+
    return 0;
 }
 
 LRESULT CMainFrame::OnViewHotspotList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-   BOOL bVisible = ::IsWindowVisible(m_hotspotListWindow);
+   bool bVisible = m_hotspotListWindow.IsWindow() && m_hotspotListWindow.IsWindowVisible() &&
+       (m_hotspotListWindow.IsDocking() || m_hotspotListWindow.IsFloating());
 
-   if (!bVisible)
+   if (bVisible)
    {
-      CRect rcDef(0,0,100,100);
-      DWORD dwStyle = WS_OVERLAPPEDWINDOW | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
-      m_hotspotListWindow.Create(m_hWnd,rcDef,_T("Master Object List"),dwStyle);
-
-      int nBar = ::IsWindowVisible(m_hotspotListWindow) ? 1 : 0;
-
-      DockWindow(m_hotspotListWindow,dockwins::CDockingSide(dockwins::CDockingSide::sLeft),
-                  nBar,float(0.0)/*fPctPos*/,200/*nWidth*/,100/* nHeight*/);
+      if (m_hotspotListWindow.IsDocking())
+         m_hotspotListWindow.Undock();
+      else
+         m_hotspotListWindow.Hide();
+      SetFocus();
    }
    else
    {
-      m_hotspotListWindow.Undock();
-      m_hotspotListWindow.DestroyWindow();
+      if (m_hotspotListWindow.m_hWnd == NULL)
+      {
+         CRect rcDef(0,0,100,100);
+         DWORD dwStyle = WS_OVERLAPPEDWINDOW | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
+         m_hotspotListWindow.Create(m_hWnd, rcDef, _T("Hotspot List"), dwStyle);
+      }
+
+      int nBar = 0; // TODO ::IsWindowVisible(m_hotspotListWindow) ? 1 : 0;
+
+      DockWindow(m_hotspotListWindow,dockwins::CDockingSide(dockwins::CDockingSide::sLeft),
+					   nBar,float(0.0)/*fPctPos*/,200/*nWidth*/,100/* nHeight*/);
    }
 
    UISetCheck(ID_VIEW_HOTSPOT, !bVisible);
-   UpdateLayout();
+
+   return 0;
+}
+
+LRESULT CMainFrame::OnViewProjectInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+   bool bVisible = m_projectInfoWindow.IsWindow() && m_projectInfoWindow.IsWindowVisible() &&
+       (m_projectInfoWindow.IsDocking() || m_projectInfoWindow.IsFloating());
+
+   if (bVisible)
+   {
+      if (m_projectInfoWindow.IsDocking())
+         m_projectInfoWindow.Undock();
+      else
+         m_projectInfoWindow.Hide();
+      SetFocus();
+   }
+   else
+   {
+      if (m_projectInfoWindow.m_hWnd == NULL)
+      {
+         CRect rcDef(0,0,100,100);
+         DWORD dwStyle = WS_OVERLAPPEDWINDOW | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
+         m_projectInfoWindow.Create(m_hWnd, rcDef, _T("Project"), dwStyle);
+      }
+
+      int nBar = 0; // TODO ::IsWindowVisible(m_projectInfoWindow) ? 1 : 0;
+
+      DockWindow(m_projectInfoWindow,dockwins::CDockingSide(dockwins::CDockingSide::sLeft),
+					   nBar,float(0.0)/*fPctPos*/,200/*nWidth*/,100/* nHeight*/);
+
+      if (!m_bStopped)
+         m_projectInfoWindow.UpdateData();
+   }
+
+   UISetCheck(ID_VIEW_PROJECT, !bVisible);
+
    return 0;
 }
 
@@ -353,8 +396,8 @@ LRESULT CMainFrame::OnViewTilemap(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 LRESULT CMainFrame::OnViewGameStrings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
    CGameStringsViewChildFrame* pChild = new CGameStringsViewChildFrame;
-   pChild->GetView().InitWindow(this);
-   pChild->GetView().SetClient(&m_debugClient);
+   pChild->InitDebugWindow(&m_debugClient, this);
+   pChild->GetView().InitDebugWindow(&m_debugClient, this);
 
    pChild->CreateEx(m_hWndClient);
    return 0;
@@ -369,26 +412,29 @@ LRESULT CMainFrame::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 
 LRESULT CMainFrame::OnUndockWindow(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
-   CDockWindowID id = (CDockWindowID)wParam;
+   enDockingWindowID id = static_cast<enDockingWindowID>(wParam);
 
    switch(id)
    {
    case idPlayerInfoWindow:
-      if (m_playerInfoWindow.m_hWnd != NULL)
-         m_playerInfoWindow.DestroyWindow();
-      UISetCheck(ID_VIEW_PLAYERINFO, FALSE);
+      if (!m_playerInfoWindow.IsWindowVisible())
+      //if (!m_playerInfoWindow.IsDocking() && !m_playerInfoWindow.IsFloating())
+         UISetCheck(ID_VIEW_PLAYERINFO, FALSE);
       break;
 
    case idObjectListWindow:
-      if (m_objectListWindow.m_hWnd != NULL)
-         m_objectListWindow.DestroyWindow();
-      UISetCheck(ID_VIEW_OBJECTLIST, FALSE);
+      if (!m_objectListWindow.IsFloating())
+         UISetCheck(ID_VIEW_OBJECTLIST, FALSE);
       break;
 
    case idHotspotListWindow:
-      if (m_hotspotListWindow.m_hWnd != NULL)
-         m_hotspotListWindow.DestroyWindow();
-      UISetCheck(ID_VIEW_HOTSPOT, FALSE);
+      if (!m_hotspotListWindow.IsFloating())
+         UISetCheck(ID_VIEW_HOTSPOT, FALSE);
+      break;
+
+   case idProjectInfoWindow:
+      if (!m_projectInfoWindow.IsFloating())
+         UISetCheck(ID_VIEW_PROJECT, FALSE);
       break;
 
    default:

@@ -88,27 +88,9 @@ extern CAppModule _Module;
 // Underworld Adventures includes
 #include "dbgserver.hpp"
 
-
-// handles notifications reflected by the parent back to the control
-// (?) needs REFLECT_NOTIFICATIONS() in the parent's message map
-#define NOTIFY_REFLECT_CODE_HANDLER(cd, func) \
-   if(uMsg == OCM_NOTIFY && cd == ((LPNMHDR)lParam)->code) \
-   { \
-      bHandled = TRUE; \
-      lResult = func((int)wParam, (LPNMHDR)lParam, bHandled); \
-      if(bHandled) \
-         return TRUE; \
-   }
-
-#define WM_UNDOCK_WINDOW (WM_USER+10)
-
-enum CDockWindowID
-{
-   idPlayerInfoWindow = 1,
-   idObjectListWindow,
-   idHotspotListWindow,
-};
-
+// project-specific includes
+// #include "WindowBase.hpp" // TODO put back in
+#include "EditListViewCtrl.hpp"
 
 
 //{{AFX_INSERT_LOCATION}}

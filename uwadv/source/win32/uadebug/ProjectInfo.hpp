@@ -19,9 +19,9 @@
    $Id$
 
 */
-/*! \file HotspotList.hpp
+/*! \file ProjectInfo.hpp
 
-   \brief hotspot list
+   \brief project info docking window
 
 */
 //! \ingroup uadebug
@@ -36,31 +36,36 @@
 
 // classes
 
-class CHotspotListWindow : public CDockingWindowBase
+//! player info docking window
+class CProjectInfoWindow : public CDockingWindowBase
 {
-   typedef CHotspotListWindow thisClass;
+   typedef CProjectInfoWindow thisClass;
    typedef CDockingWindowBase baseClass;
 public:
-   CHotspotListWindow():baseClass(idHotspotListWindow){}
-   virtual ~CHotspotListWindow(){}
+   //! ctor
+   CProjectInfoWindow():baseClass(idProjectInfoWindow){}
 
-   DECLARE_WND_CLASS(_T("CHotspotListWindow"))
-   BEGIN_MSG_MAP(thisClass)
+   //! updates project info data
+   void UpdateData();
+
+   DECLARE_WND_CLASS(_T("CProjectInfoWindow"))
+   BEGIN_MSG_MAP(thisClass)   
       MESSAGE_HANDLER(WM_CREATE, OnCreate)
       MESSAGE_HANDLER(WM_SIZE, OnSize)
       MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus)
-      NOTIFY_CODE_HANDLER(NM_DBLCLK, OnDblClick);
-      CHAIN_MSG_MAP(baseClass)
+      CHAIN_MSG_MAP(baseClass)      
    END_MSG_MAP()
 
    LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
    LRESULT OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
    LRESULT OnSetFocus(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 
-   LRESULT OnDblClick(WPARAM /*wParam*/, NMHDR* pNMHDR, BOOL& /*bHandled*/);
-
 protected:
-   CListViewCtrl m_listCtrl;
+   //! project info tree
+   CTreeViewCtrl m_treeCtrl;
+
+   //! tree image list
+   CImageList m_ilIcons;
 };
 
 //@}

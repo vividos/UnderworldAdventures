@@ -32,25 +32,21 @@
 #pragma once
 
 // includes
+#include "WindowBase.hpp"
 #include "Resource.h"
-
-// forward references
-class CMainFrame;
-class CDebugClientInterface;
 
 // classes
 
-
-class CGameStringsView: public CDialogImpl<CGameStringsView>
+//! gamestrings view form
+class CGameStringsView:
+   public CDialogImpl<CGameStringsView>,
+   public CDebugWindowBase
 {
 public:
    CGameStringsView(){}
    virtual ~CGameStringsView();
 
-   void InitWindow(CMainFrame* pMainFrame){ m_pMainFrame = pMainFrame; }
-   void SetClient(CDebugClientInterface* pDebugClient){ m_pDebugClient = pDebugClient; }
-
-   enum { IDD = IDD_GAMESTRINGSVIEW_FORM };
+   enum { IDD = IDD_GAMESTRINGSVIEW };
 
    BOOL PreTranslateMessage(MSG* pMsg)
    {
@@ -61,7 +57,6 @@ protected:
    BEGIN_MSG_MAP(CGameStringsView)
       MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
       MESSAGE_HANDLER(WM_SIZE, OnSize)
-      //NOTIFY_CODE_HANDLER(CBN_SELCHANGE, OnComboSelChange);
       COMMAND_CODE_HANDLER(CBN_SELCHANGE, OnComboSelChange);
    END_MSG_MAP()
 
@@ -70,22 +65,18 @@ protected:
    LRESULT OnComboSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 protected:
+   //! list view with all strings
    CListViewCtrl m_listStrings;
-   CComboBox m_comboBlocks;
 
-   CMainFrame* m_pMainFrame;
-   CDebugClientInterface* m_pDebugClient;
+   //! combobox to select string blocks
+   CComboBox m_comboBlocks;
 };
 
-
-class CGameStringsViewChildFrame:
-//   public CMDIChildWindowImpl<CGameStringsViewChildFrame>
-   public CTabbedMDIChildWindowImpl<CGameStringsViewChildFrame>
+//! gamestrings 
+class CGameStringsViewChildFrame: public CChildWindowBase
 {
-public:
    typedef CGameStringsViewChildFrame thisClass;
-   //typedef CMDIChildWindowImpl<CGameStringsViewChildFrame> baseClass;
-   typedef CTabbedMDIChildWindowImpl<CGameStringsViewChildFrame> baseClass;
+   typedef CChildWindowBase baseClass;
 public:
    DECLARE_FRAME_WND_CLASS(NULL, IDR_GAME_STRINGS)
 
@@ -117,7 +108,7 @@ protected:
    {
       LPMSG pMsg = (LPMSG)lParam;
 
-      if(baseClass::PreTranslateMessage(pMsg))
+      if (baseClass::PreTranslateMessage(pMsg))
          return TRUE;
 
       return m_view.PreTranslateMessage(pMsg);

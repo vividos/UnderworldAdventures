@@ -96,7 +96,8 @@ LRESULT CHotspotListWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 {
    CRect rcDef;
    GetClientRect(rcDef);
-   m_listCtrl.Create(m_hWnd, rcDef, NULL, WS_CHILD | WS_VISIBLE | LVS_REPORT | LVS_SHOWSELALWAYS );
+   m_listCtrl.Create(m_hWnd, rcDef, NULL,
+      WS_CHILD | WS_VISIBLE | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER );
 
    m_listCtrl.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES);
 
@@ -133,6 +134,15 @@ LRESULT CHotspotListWindow::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam
    return 1;
 }
 
+LRESULT CHotspotListWindow::OnSetFocus(UINT, WPARAM, LPARAM, BOOL& bHandled)
+{
+   if (m_listCtrl.m_hWnd != NULL && m_listCtrl.IsWindowVisible())
+      m_listCtrl.SetFocus();
+
+   bHandled = FALSE;
+   return 1;
+}
+
 LRESULT CHotspotListWindow::OnDblClick(WPARAM /*wParam*/, NMHDR* pNMHDR, BOOL& /*bHandled*/)
 {
    LPNMITEMACTIVATE lpnmitem = (LPNMITEMACTIVATE)pNMHDR;
@@ -142,15 +152,9 @@ LRESULT CHotspotListWindow::OnDblClick(WPARAM /*wParam*/, NMHDR* pNMHDR, BOOL& /
 
    m_pDebugClient->Lock(true);
 
-   m_pDebugClient->TeleportPlayer(g_aHotspotItems[nItem].level,
+   m_pDebugClient->GetPlayerInterface().Teleport(g_aHotspotItems[nItem].level,
       g_aHotspotItems[nItem].xpos, g_aHotspotItems[nItem].ypos);
 
    m_pDebugClient->Lock(false);
    return 0;
-}
-
-void CHotspotListWindow::OnUndocked(HDOCKBAR hBar)
-{
-   baseClass::OnUndocked(hBar);
-   ::PostMessage(GetParent(),WM_UNDOCK_WINDOW, idHotspotListWindow, 0);
 }

@@ -64,6 +64,7 @@ struct ObjectListColumnInfo
 // CObjectListWindow methods
 
 CObjectListWindow::CObjectListWindow()
+:baseClass(idObjectListWindow)
 {
    m_pObjectList = new unsigned int[0x400*g_nColumns];
    ZeroMemory(m_pObjectList, 0x400*g_nColumns);
@@ -119,11 +120,6 @@ LRESULT CObjectListWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
    return 0;
 }
 
-LRESULT CObjectListWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
-   return 0;
-}
-
 LRESULT CObjectListWindow::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 {
    if(wParam != SIZE_MINIMIZED )
@@ -132,6 +128,15 @@ LRESULT CObjectListWindow::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*
       GetClientRect(&rc);
       m_listCtrl.SetWindowPos(NULL, &rc ,SWP_NOZORDER | SWP_NOACTIVATE );
    }      
+   bHandled = FALSE;
+   return 1;
+}
+
+LRESULT CObjectListWindow::OnSetFocus(UINT, WPARAM, LPARAM, BOOL& bHandled)
+{
+   if (m_listCtrl.m_hWnd != NULL && m_listCtrl.IsWindowVisible())
+      m_listCtrl.SetFocus();
+
    bHandled = FALSE;
    return 1;
 }
@@ -236,10 +241,4 @@ LRESULT CObjectListWindow::OnGetDispInfo(WPARAM /*wParam*/, NMHDR* pNMHDR, BOOL&
       pDispInfo->item.pszText[pDispInfo->item.cchTextMax-1] = 0;
    }
    return 0;
-}
-
-void CObjectListWindow::OnUndocked(HDOCKBAR hBar)
-{
-   baseClass::OnUndocked(hBar);
-   ::PostMessage(GetParent(),WM_UNDOCK_WINDOW, idObjectListWindow, 0);
 }

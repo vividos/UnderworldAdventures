@@ -35,11 +35,13 @@
 
 // classes
 
+//! in-place edit control for editable list view control
 class CEditListInplaceEditCtrl: public CWindowImpl<CEditListInplaceEditCtrl, CEdit>
 {
 public:
+   //! ctor
    CEditListInplaceEditCtrl(int nItem, int nColumn)
-      :m_bFinished(false),m_nItem(nItem),m_nColumn(nColumn){}
+      :m_bFinished(false), m_nItem(nItem), m_nColumn(nColumn){}
 
    BEGIN_MSG_MAP(CEditListViewCtrl)
       MESSAGE_HANDLER(WM_CHAR, OnChar)
@@ -60,20 +62,21 @@ protected:
    int m_nItem, m_nColumn;
 };
 
-
+//! editable list view control
 class CEditListViewCtrl: public CWindowImpl<CEditListViewCtrl, CListViewCtrl>
 {
 public:
+   //! ctor
    CEditListViewCtrl(){}
-   virtual ~CEditListViewCtrl(){}
 
    BEGIN_MSG_MAP(CEditListViewCtrl)
       MESSAGE_HANDLER(WM_LBUTTONDOWN, OnLeftButtonDown)
    END_MSG_MAP()
 
    LRESULT OnLeftButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
+
 protected:
-   // inplace edit control
+   //! inplace edit control
    CEditListInplaceEditCtrl* m_pEdit;
 };
 

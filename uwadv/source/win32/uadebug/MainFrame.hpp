@@ -34,6 +34,7 @@
 // includes
 #include "DebugClient.hpp"
 #include "ProjectManager.hpp"
+#include "ProjectInfo.hpp"
 #include "PlayerInfo.hpp"
 #include "ObjectList.hpp"
 #include "HotspotList.hpp"
@@ -63,6 +64,7 @@ public:
    CPlayerInfoWindow m_playerInfoWindow;
    CObjectListWindow m_objectListWindow;
    CHotspotListWindow m_hotspotListWindow;
+   CProjectInfoWindow m_projectInfoWindow;
  
    CTileMapViewChildFrame m_tilemapChildFrame;
 
@@ -87,6 +89,7 @@ public:
       COMMAND_ID_HANDLER(ID_VIEW_PLAYERINFO, OnViewPlayerInfo)
       COMMAND_ID_HANDLER(ID_VIEW_OBJECTLIST, OnViewObjectList)
       COMMAND_ID_HANDLER(ID_VIEW_HOTSPOT, OnViewHotspotList)
+      COMMAND_ID_HANDLER(ID_VIEW_PROJECT, OnViewProjectInfo)
       COMMAND_ID_HANDLER(ID_VIEW_TILEMAP, OnViewTilemap)
       COMMAND_ID_HANDLER(ID_VIEW_GAMESTRINGS, OnViewGameStrings)
       COMMAND_ID_HANDLER(ID_APP_ABOUT, OnAppAbout)
@@ -120,6 +123,7 @@ public:
    LRESULT OnViewPlayerInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
    LRESULT OnViewObjectList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
    LRESULT OnViewHotspotList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+   LRESULT OnViewProjectInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
    LRESULT OnViewTilemap(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
    LRESULT OnViewGameStrings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 

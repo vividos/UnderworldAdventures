@@ -100,8 +100,8 @@ LRESULT CEditListInplaceEditCtrl::OnKillFocus(UINT /*uMsg*/, WPARAM wParam, LPAR
 
 LRESULT CEditListInplaceEditCtrl::OnNcDestroy(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 {
-//   delete this;
-   // TODO delete control
+   m_hWnd = NULL;
+   delete this;
    return 0;
 }
 
@@ -155,7 +155,7 @@ LRESULT CEditListViewCtrl::OnLeftButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM
    for(int n=0; n<column; n++)
       startx += GetColumnWidth(n);
 
-   rect.left = startx+6;
+   rect.left = startx+3;
    rect.right = startx + GetColumnWidth(column);
    rect.top;
    rect.bottom--;
@@ -174,103 +174,3 @@ LRESULT CEditListViewCtrl::OnLeftButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM
 
    return 0;
 }
-
-/*
-void CEditListViewCtrl::TraceMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-   if (uMsg == WM_NOTIFY)
-   {
-      LPNMHDR pNMHDR = (LPNMHDR)lParam;
-      LPCTSTR pszType = _T("unknown");
-      signed long code = (signed long)pNMHDR->code;
-
-      switch(code)
-      {
-      case NM_OUTOFMEMORY          : pszType = _T("NM_OUTOFMEMORY    "); break;
-      case NM_CLICK                : pszType = _T("NM_CLICK          "); break;
-      case NM_DBLCLK               : pszType = _T("NM_DBLCLK         "); break;
-      case NM_RETURN               : pszType = _T("NM_RETURN         "); break;
-      case NM_RCLICK               : pszType = _T("NM_RCLICK         "); break;
-      case NM_RDBLCLK              : pszType = _T("NM_RDBLCLK        "); break;
-      case NM_SETFOCUS             : pszType = _T("NM_SETFOCUS       "); break;
-      case NM_KILLFOCUS            : pszType = _T("NM_KILLFOCUS      "); break;
-      case NM_CUSTOMDRAW           : pszType = _T("NM_CUSTOMDRAW     "); break;
-      case NM_HOVER                : pszType = _T("NM_HOVER          "); break;
-      case NM_NCHITTEST            : pszType = _T("NM_NCHITTEST      "); break;
-      case NM_KEYDOWN              : pszType = _T("NM_KEYDOWN        "); break;
-      case NM_RELEASEDCAPTURE      : pszType = _T("NM_RELEASEDCAPTURE"); break;
-      case NM_SETCURSOR            : pszType = _T("NM_SETCURSOR      "); break;
-      case NM_CHAR                 : pszType = _T("NM_CHAR           "); break;
-
-      case LVN_ITEMCHANGING        : pszType = _T("LVN_ITEMCHANGING   "); break;
-      case LVN_ITEMCHANGED         : pszType = _T("LVN_ITEMCHANGED    "); break;
-      case LVN_INSERTITEM          : pszType = _T("LVN_INSERTITEM     "); break;
-      case LVN_DELETEITEM          : pszType = _T("LVN_DELETEITEM     "); break;
-      case LVN_DELETEALLITEMS      : pszType = _T("LVN_DELETEALLITEMS "); break;
-      case LVN_BEGINLABELEDITA     : pszType = _T("LVN_BEGINLABELEDITA"); break;
-      case LVN_BEGINLABELEDITW     : pszType = _T("LVN_BEGINLABELEDITW"); break;
-      case LVN_ENDLABELEDITA       : pszType = _T("LVN_ENDLABELEDITA  "); break;
-      case LVN_ENDLABELEDITW       : pszType = _T("LVN_ENDLABELEDITW  "); break;
-      case LVN_COLUMNCLICK         : pszType = _T("LVN_COLUMNCLICK    "); break;
-      case LVN_BEGINDRAG           : pszType = _T("LVN_BEGINDRAG      "); break;
-      case LVN_BEGINRDRAG          : pszType = _T("LVN_BEGINRDRAG     "); break;
-      }
-
-      ATLTRACE("NOTIFY: %d, %s\n", code, pszType);
-   }
-   else
-   {
-      if (uMsg >= WM_USER && uMsg < OCM__BASE)
-      {
-         ATLTRACE("MESSAGE: WM_USER+0x%04x\n", uMsg-WM_USER);
-      }
-      else
-      if (uMsg == OCM_NOTIFY)
-      {
-         LPNMHDR pNMHDR = (LPNMHDR)lParam;
-         LPCTSTR pszType = _T("unknown");
-         signed long code = (signed long)pNMHDR->code;
-         switch(code)
-         {
-         case NM_OUTOFMEMORY          : pszType = _T("NM_OUTOFMEMORY    "); break;
-         case NM_CLICK                : pszType = _T("NM_CLICK          "); break;
-         case NM_DBLCLK               : pszType = _T("NM_DBLCLK         "); break;
-         case NM_RETURN               : pszType = _T("NM_RETURN         "); break;
-         case NM_RCLICK               : pszType = _T("NM_RCLICK         "); break;
-         case NM_RDBLCLK              : pszType = _T("NM_RDBLCLK        "); break;
-         case NM_SETFOCUS             : pszType = _T("NM_SETFOCUS       "); break;
-         case NM_KILLFOCUS            : pszType = _T("NM_KILLFOCUS      "); break;
-         case NM_CUSTOMDRAW           : pszType = _T("NM_CUSTOMDRAW     "); break;
-         case NM_HOVER                : pszType = _T("NM_HOVER          "); break;
-         case NM_NCHITTEST            : pszType = _T("NM_NCHITTEST      "); break;
-         case NM_KEYDOWN              : pszType = _T("NM_KEYDOWN        "); break;
-         case NM_RELEASEDCAPTURE      : pszType = _T("NM_RELEASEDCAPTURE"); break;
-         case NM_SETCURSOR            : pszType = _T("NM_SETCURSOR      "); break;
-         case NM_CHAR                 : pszType = _T("NM_CHAR           "); break;
-
-         case LVN_ITEMCHANGING        : pszType = _T("LVN_ITEMCHANGING   "); break;
-         case LVN_ITEMCHANGED         : pszType = _T("LVN_ITEMCHANGED    "); break;
-         case LVN_INSERTITEM          : pszType = _T("LVN_INSERTITEM     "); break;
-         case LVN_DELETEITEM          : pszType = _T("LVN_DELETEITEM     "); break;
-         case LVN_DELETEALLITEMS      : pszType = _T("LVN_DELETEALLITEMS "); break;
-         case LVN_BEGINLABELEDITA     : pszType = _T("LVN_BEGINLABELEDITA"); break;
-         case LVN_BEGINLABELEDITW     : pszType = _T("LVN_BEGINLABELEDITW"); break;
-         case LVN_ENDLABELEDITA       : pszType = _T("LVN_ENDLABELEDITA  "); break;
-         case LVN_ENDLABELEDITW       : pszType = _T("LVN_ENDLABELEDITW  "); break;
-         case LVN_COLUMNCLICK         : pszType = _T("LVN_COLUMNCLICK    "); break;
-         case LVN_BEGINDRAG           : pszType = _T("LVN_BEGINDRAG      "); break;
-         case LVN_BEGINRDRAG          : pszType = _T("LVN_BEGINRDRAG     "); break;
-         }
-
-         ATLTRACE("NOTIFY_REFLECT: %d, %s\n", code, pszType);
-      }
-      else
-      if (uMsg >= OCM__BASE && uMsg < OCM__BASE+0x200)
-      {
-         ATLTRACE("MESSAGE: OCM__BASE+0x%04x\n", uMsg-OCM__BASE);
-      }
-      else
-         ATLTRACE("MESSAGE: %04x\n", uMsg);
-   }
-}
-*/

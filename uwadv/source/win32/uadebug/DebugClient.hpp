@@ -60,6 +60,32 @@ struct CDebugClientMessage
 };
 
 
+class CDebugClientPlayerInterface
+{
+public:
+   unsigned int GetAttrCount();
+   LPCTSTR GetPosInfoName(unsigned int info);
+   LPCTSTR GetAttrName(unsigned int attr);
+
+   double GetPosInfo(unsigned int info);
+   unsigned int GetAttribute(unsigned int attr);
+
+   //! retrieves positional info; info can be 0..3
+   void SetPosInfo(unsigned int info, double val);
+
+   //! retrieves attributes info; attr can be 0..3
+   void SetAttribute(unsigned int attr, unsigned int val);
+
+   void Teleport(unsigned int level, double xpos, double ypos);
+
+private:
+   //! pointer to debug server interface
+   ua_debug_server_interface* m_pDebugInterface;
+
+   friend class CDebugClientInterface;
+};
+
+
 //! debugger client interface
 class CDebugClientInterface  
 {
@@ -83,12 +109,9 @@ public:
    void SetWorkingLevel(unsigned int level);
    unsigned int GetWorkingLevel() const { return m_nLevel; }
 
-   unsigned int GetPlayerAttribute(unsigned int attr);
-   double GetPlayerPosInfo(unsigned int info);
-   void SetPlayerAttribute(unsigned int attr, unsigned int val);
-   void SetPlayerPosInfo(unsigned int info, double val);
 
-   void TeleportPlayer(unsigned int level, double xpos, double ypos);
+   CDebugClientPlayerInterface GetPlayerInterface();
+
 
    unsigned int GetObjectListInfo(unsigned int pos, unsigned int subcode);
    void SetObjectListInfo(unsigned int pos, unsigned int subcode, unsigned int info);
