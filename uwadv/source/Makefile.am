@@ -7,8 +7,8 @@
 SUBDIRS = tools resource lua
 
 # compiler options
-CXXFLAGS = -I. -I$(srcdir) $(SDL_CFLAGS) $(X_CFLAGS) -Wall
-LDFLAGS = $(SDL_LIBS) $(X_LIBS) -lSDL_mixer
+CXXFLAGS = @CXXFLAGS@
+LDFLAGS = @LIBS@
 
 
 # automake build rules
@@ -20,8 +20,6 @@ bin_SCRIPTS = linux/ua-lowercase-all.pl
 include Makefile.common
 
 uwadv_LDADD = \
-	$(OPENGL_LIBS) \
-	$(SDL_LIBS) \
 	lua/liblualib.la \
 	resource/zziplib/libzzip.la \
 	-lz
