@@ -587,7 +587,7 @@ void ua_uwadv_game::init_game()
       settings.get_string(ua_setting_uw_path).c_str());
 
    // init renderer
-   renderer.init(settings);
+   renderer.init(*this);
 
 
    // init underworld
