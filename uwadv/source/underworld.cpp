@@ -92,7 +92,6 @@ void ua_underworld::change_level(unsigned int level)
    script.lua_change_level(level);
 }
 
-//! loads a savegame
 void ua_underworld::load_game(ua_savegame &sg)
 {
    // load all levels
@@ -138,7 +137,6 @@ void ua_underworld::load_game(ua_savegame &sg)
    change_level(player.get_attr(ua_attr_maplevel));
 }
 
-//! saves to a savegame
 void ua_underworld::save_game(ua_savegame &sg)
 {
    // save all levels
@@ -171,3 +169,24 @@ void ua_underworld::save_game(ua_savegame &sg)
 
    sg.close();
 }
+
+extern void ua_import_levelmaps(ua_settings &settings, const char *folder,
+   std::vector<ua_level> &levels);
+
+void ua_underworld::import_savegame(ua_settings &settings,const char *folder,bool initial)
+{
+   // load level maps
+   ua_import_levelmaps(settings,folder,levels);
+
+   // load conv globals
+   {
+      std::string bgname(settings.get_string(ua_setting_uw_path));
+      bgname.append(folder);
+      bgname.append(initial ? "babglobs.dat" : "bglobals.dat");
+      conv_globals.import(bgname.c_str(),initial);
+   }
+
+   // reload level
+   change_level(player.get_attr(ua_attr_maplevel));
+}
+

@@ -153,26 +153,6 @@ void ua_import_levelmaps(ua_settings &settings, const char *folder,
 }
 
 
-// ua_underworld methods
-
-void ua_underworld::import_savegame(ua_settings &settings,const char *folder,bool initial)
-{
-   // load level maps
-   ua_import_levelmaps(settings,folder,levels);
-
-   // load conv globals
-   {
-      std::string bgname(settings.get_string(ua_setting_uw_path));
-      bgname.append(folder);
-      bgname.append(initial ? "babglobs.dat" : "bglobals.dat");
-      conv_globals.import(bgname.c_str(),initial);
-   }
-
-   // reload level
-   change_level(player.get_attr(ua_attr_maplevel));
-}
-
-
 // ua_level methods
 
 void ua_level::import_map(FILE *fd, Uint16 ceil_tex, Uint16 wall_textures[48],
