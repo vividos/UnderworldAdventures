@@ -1,1 +1,2 @@
 uw1/scripts/inventory
+uw1/scripts/objects
