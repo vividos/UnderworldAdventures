@@ -29,13 +29,13 @@ bin_SCRIPTS = linux/ua-lowercase-all.pl
 
 docbookdir = $(prefix)/share/doc/uwadv
 if have_xsltproc
-dist_docbook_DATA = docs/docbook/uwadv-manual.html
+docbook_html = docs/docbook/uwadv-manual.html
 DOCBOOKXSL=http://docbook.sourceforge.net/release/xsl/current/html/docbook.xsl
 
 docs/docbook/uwadv-manual.html: ${top_srcdir}/docs/docbook/uwadv-manual.xml
 	$(XSLTPROC) $(XSLTPROC_FLAGS) -o $@ $(DOCBOOKXSL) $<
 else
-dist_docbook_DATA =
+docbook_html =
 endif
 
 EXTRA_DIST =  \
@@ -60,6 +60,7 @@ EXTRA_DIST =  \
 	docs/uw1-walkthrough.txt \
 	docs/uw2-walkthrough.txt \
 	docs/uw-formats.txt \
+	docs/docbook/uwadv-manual.xml $(docbook_html) \
 	linux/uwadv.spec.in \
 	linux/uwadv.cfg.in \
 	linux/ua-lowercase-all.pl \
