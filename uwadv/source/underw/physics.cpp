@@ -125,6 +125,9 @@ bool ua_physics_model::track_object(ua_physics_body& body, ua_vector3d dir,
 
    ua_vector3d pos = body.get_pos();
 
+   if (!gravity_force)
+      pos.z += 0.5;
+
    // transform to ellipsoid space
    pos /= data.ellipsoid;
    dir /= data.ellipsoid;
@@ -142,6 +145,9 @@ bool ua_physics_model::track_object(ua_physics_body& body, ua_vector3d dir,
 
    // transform position back to normal space and set it
    pos *= data.ellipsoid;
+
+   if (!gravity_force)
+      pos.z -= 0.5;
 
    // limit height when falling out of the map
    if (pos.z<0.0) pos.z = 0.0;
