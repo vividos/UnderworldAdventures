@@ -711,7 +711,7 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
 
       // call "repos_player()" function to reposition player in level
       lua_State* L = core->get_underworld().get_scripts().get_lua_State();
-      lua_pushstring(L,"repos_player");
+      lua_getglobal(L,"repos_player");
       lua_call(L,0,0);
    }
    else
@@ -724,7 +724,7 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
 
       // call "repos_player()" function to reposition player in level
       lua_State* L = core->get_underworld().get_scripts().get_lua_State();
-      lua_pushstring(L,"repos_player");
+      lua_getglobal(L,"repos_player");
       lua_call(L,0,0);
    }
 #endif
