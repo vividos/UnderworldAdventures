@@ -276,8 +276,8 @@ Table of Contents
      00 objid / flags:      0- 8   Object ID (see below)
                             9-10   ?? index for 3D-object-textures ??
                               12   Enchantment flag (enchantable objects only)
-                              14   Set for only for traps, triggers and locks
-                                   - "Effects The World Flag?"
+                              14   Set only for traps, triggers and locks -
+                                   "Effects The World Flag?"
                               15   Link flag (link field is quantity/special)
 
      02 position:           0- 6   Object Z position (0-127)
@@ -523,6 +523,13 @@ Table of Contents
 
    The offset of each texture points to the actual texture palette indices,
    which are xyres^2 bytes long. Textures always use palette #0.
+
+   Texture names are stored in string block 10, where wall textures start at
+   position 0, and ceiling textures start at 510, but reversed. The string at
+   position 511 is reserved for the ceiling.
+
+   For the ceiling, floor texture 15 is used in uw1, texture 9 in uw_demo and
+   texture #32 in uw2.
 
 
 2.3 Graphics
