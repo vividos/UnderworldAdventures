@@ -21,9 +21,10 @@
 */
 /*! \file fontloader.cpp
 
-   contains the font loading implementation. fonts are loaded via an
-   ua_font_id, to simplify interface. more infos about font file layout can be
-   found in the file docs/ua-formats.txt
+   \brief font loading implementation
+
+   to simplify interface, fonts are loaded via an ua_font_id. more infos about
+   font file layout can be found in the file docs/ua-formats.txt
 
 */
 

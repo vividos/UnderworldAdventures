@@ -21,7 +21,7 @@
 */
 /*! \file physics.cpp
 
-   game physics implementation
+   \brief game physics implementation
 
 */
 

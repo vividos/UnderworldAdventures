@@ -22,7 +22,7 @@
 */
 /*! \file xmidi.cpp
 
-   XMIDI loading and processing implementation
+   \brief XMIDI loading and processing implementation
 
    2002-04-08: mfink: made XMIDI use SDL_RWops instead of DataSource
                       other minor changes to get the stuff to work

@@ -21,7 +21,7 @@
 */
 /*! \file midi.hpp
 
-   midi playback class implementation.
+   \brief midi playback class implementation
 
    ua_midi_player::init_driver() checks for available midi drivers for each
    platform, ua_midi_player::start_track() handles all the XMIDI stuff.

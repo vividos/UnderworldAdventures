@@ -21,7 +21,7 @@
 */
 /*! \file image.cpp
 
-   image creation and manipulation
+   \brief image creation and manipulation
 
 */
 

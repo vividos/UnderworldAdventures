@@ -21,7 +21,7 @@
 */
 /*! \file objects.cpp
 
-   object method implementation
+   \brief object method implementation
 
 */
 

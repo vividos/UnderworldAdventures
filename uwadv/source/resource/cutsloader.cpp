@@ -21,6 +21,8 @@
 */
 /*! \file cutsloader.cpp
 
+   \brief cutscenes loader
+
    for more infos about the cutscene format, see the file docs/uw-formats.txt
 
 */

@@ -21,7 +21,7 @@
 */
 /*! \file imageloader.cpp
 
-   *.gr and *.byt files loading implementation
+   \brief *.gr and *.byt files loading implementation
 
    ua_image_decode_rle() decodes the underworld rle format, for word lengths
    up to 8 bit and stores the pixels in an array.

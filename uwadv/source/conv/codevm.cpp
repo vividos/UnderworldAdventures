@@ -21,7 +21,7 @@
 */
 /*! \file conversation.cpp
 
-   conv code execution functions
+   \brief conv code execution functions
 
    ua_conv_code_vm::step() executes one opcode per call, hopefully mimic'ing
    the original virtual machine as best as possible

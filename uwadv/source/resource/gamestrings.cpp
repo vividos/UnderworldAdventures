@@ -21,7 +21,7 @@
 */
 /*! \file gamestrings.cpp
 
-   game strings loading implementation
+   \brief game strings loading implementation
 
    loads all the game strings into a map of arrays of strings. strings are
    stored in a huffman-like tree. for more infos about string storage and

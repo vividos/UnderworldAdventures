@@ -21,7 +21,7 @@
 */
 /*! \file texloader.cpp
 
-   texture loading implementation
+   \brief texture loading implementation
 
 */
 

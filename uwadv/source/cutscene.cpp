@@ -21,7 +21,7 @@
 */
 /*! \file cutscene.cpp
 
-   cutscene frame extraction
+   \brief cutscene frame extraction
 
 */
 

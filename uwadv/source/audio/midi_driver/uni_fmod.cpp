@@ -21,9 +21,10 @@
 */
 /*! \file uni_fmod.cpp
 
-   universal midi fmod driver implementation; to play a midi file, the driver
-   extracts a midi file from the XMIDI event list and loads and plays it via
-   the FMOD API calls.
+   \brief universal midi fmod driver implementation
+
+   to play a midi file, the driver extracts a midi file from the XMIDI event
+   list and loads and plays it via the FMOD API calls.
 
 */
 

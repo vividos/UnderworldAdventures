@@ -21,7 +21,7 @@
 */
 /*! \file ingame_orig.cpp
 
-   ingame user interface, from the original uw1
+   \brief ingame user interface, from the original uw1
 
 */
 
@@ -44,6 +44,10 @@ void ua_ingame_orig_screen::init()
    leftbuttondown = rightbuttondown = false;
 
    setup_opengl();
+
+   img.load_raw(core->get_settings(),"data/main.byt",0);
+   tex.convert(core->get_texmgr(),img);
+   tex.prepare(false);
 }
 
 void ua_ingame_orig_screen::done()
@@ -163,6 +167,45 @@ void ua_ingame_orig_screen::render()
 
    // render underworld
    core->get_underworld().render(fr);
+
+   // render user interface
+   tex.use(core->get_texmgr());
+
+   // set up new orthogonal projection matrix
+   glMatrixMode(GL_PROJECTION);
+   glPushMatrix();
+   glLoadIdentity();
+
+   gluOrtho2D(0.0, 1.0, 0.0, 1.0);
+
+   glMatrixMode(GL_MODELVIEW);
+   glLoadIdentity();
+
+   glDisable(GL_DEPTH_TEST);
+   glEnable(GL_BLEND);
+
+   // draw user interface
+
+   double u = tex.get_tex_u(), v = tex.get_tex_v();
+
+   glColor3ub(255,255,255);
+
+   glBegin(GL_QUADS);
+
+   glTexCoord2d(0.0, v  ); glVertex2i(0,0);
+   glTexCoord2d(u  , v  ); glVertex2i(1,0);
+   glTexCoord2d(u  , 0.0); glVertex2i(1,1);
+   glTexCoord2d(0.0, 0.0); glVertex2i(0,1);
+
+   glEnd();
+
+   // restore old projection matrix
+   glDisable(GL_BLEND);
+   glEnable(GL_DEPTH_TEST);
+
+   glMatrixMode(GL_PROJECTION);
+   glPopMatrix();
+   glMatrixMode(GL_MODELVIEW);
 }
 
 void ua_ingame_orig_screen::tick()

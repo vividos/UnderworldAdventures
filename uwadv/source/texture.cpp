@@ -21,7 +21,7 @@
 */
 /*! \file texture.cpp
 
-   texture manager implementation
+   \brief texture manager implementation
 
 */
 

@@ -21,14 +21,15 @@
 */
 /*! \file uwadv.cpp
 
-   main game loop code
+   \brief main game loop code
 
 */
 
 // needed includes
 #include "common.hpp"
 #include "uwadv.hpp"
-#include "screens/start_splash.hpp"
+//#include "screens/start_splash.hpp"
+#include "screens/ingame_orig.hpp"
 
 
 // ua_game methods
@@ -113,7 +114,8 @@ void ua_game::init()
    screenstack.clear();
 
    // create new user interface screen
-   push_screen(new ua_start_splash_screen);
+//   push_screen(new ua_start_splash_screen);
+   push_screen(new ua_ingame_orig_screen);
 }
 
 #define HAVE_FRAMECOUNT
@@ -245,18 +247,7 @@ void ua_game::handle_key_down(SDL_keysym *keysym)
 {
    switch(keysym->sym)
    {
-   case SDLK_0:
-   case SDLK_1:
-   case SDLK_2:
-   case SDLK_3:
-   case SDLK_4:
-   case SDLK_5:
-   case SDLK_6:
-   case SDLK_7:
-   case SDLK_8:
-   case SDLK_9:
-      // play a midi track
-      audio->start_music(keysym->sym-SDLK_0,false);
+   default:
       break;
    }
 }

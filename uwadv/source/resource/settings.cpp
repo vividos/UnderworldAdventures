@@ -21,7 +21,7 @@
 */
 /*! \file settings.cpp
 
-   loading functions for the config file
+   \brief loading functions for the config file
 
 */
 

@@ -21,7 +21,7 @@
 */
 /*! \file start_menu.cpp
 
-   menu at game start
+   \brief menu at game start
 
 */
 

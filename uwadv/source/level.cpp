@@ -21,7 +21,7 @@
 */
 /*! \file level.cpp
 
-   level map and object implementation
+   \brief level map and object implementation
 
 */
 

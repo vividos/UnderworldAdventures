@@ -21,6 +21,8 @@
 */
 /*! \file audio.cpp
 
+   \brief audio interface implementation
+
    audio interface implementation does an the interfacing with the audio part
    of SDL and the ua_midi_player class.
 

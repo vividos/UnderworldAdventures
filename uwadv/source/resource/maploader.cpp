@@ -21,7 +21,7 @@
 */
 /*! \file maploader.cpp
 
-   game level map loading implementation
+   \brief game level map loading implementation
 
 */
 

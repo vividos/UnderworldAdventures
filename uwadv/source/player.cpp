@@ -21,7 +21,7 @@
 */
 /*! \file player.cpp
 
-   a
+   \brief player object
 
 */
 

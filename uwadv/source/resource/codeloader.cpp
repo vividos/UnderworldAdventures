@@ -21,7 +21,7 @@
 */
 /*! \file codeloader.cpp
 
-   conv code loading implementation
+   \brief conv code loading implementation
 
    ua_conv_code_vm::load_code() loads the code into the virtual machine,
    processing all globals and imported functions. it also determines which

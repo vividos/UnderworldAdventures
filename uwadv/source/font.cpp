@@ -21,6 +21,8 @@
 */
 /*! \file font.cpp
 
+   \brief font creation and handling
+
    functions to create a image from a string, in a specific font. fonts are
    loaded in ua_font::init() (in resource/fontloader.cpp).
 

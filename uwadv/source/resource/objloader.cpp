@@ -21,7 +21,7 @@
 */
 /*! \file objloader.cpp
 
-   level objects loader
+   \brief level objects loader
 
 */
 

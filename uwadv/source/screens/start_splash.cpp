@@ -21,7 +21,7 @@
 */
 /*! \file start_splash.cpp
 
-   start splash screen
+   \brief start splash screens
 
 */
 

@@ -21,7 +21,7 @@
 */
 /*! \file quadtree.cpp
 
-   quadtree and view frustum implementation
+   \brief quadtree and view frustum implementation
 
    there also is a test main() function, just define TEST_QUADTREE and compile
    as a single project.

@@ -20,7 +20,7 @@
 */
 /*! \file win_midiout.cpp
 
-   windows midi driver
+   \brief windows midi driver
 
 */
 
