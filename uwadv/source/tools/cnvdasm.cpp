@@ -121,7 +121,78 @@ void ua_conv_dasm::decompile(bool with_opcodes)
    cgraph.init(code,0,code.size(),gs->get_block(strblock));
    cgraph.process();
 
-   // TODO: output code
+   // output code
+   int indent_level = 0;
+   const std::vector<ua_conv_graph_item>& graph = cgraph.get_graph();
+
+   unsigned int max = graph.size();
+   for(unsigned int i=0; i<max; i++)
+   {
+      const ua_conv_graph_item& item = graph[i];
+
+      if (with_opcodes)
+         printf("%04x:",item.pos);
+
+      if (item.itemtype == gt_control && item.indent_change < 0)
+         indent_level += item.indent_change;
+
+      if (!with_opcodes &&
+         (item.itemtype == gt_opcode_done || item.itemtype == gt_label) )
+         continue;
+
+      // indendation
+      {
+         for(int i=0; i<indent_level; i++)
+            printf("   ");
+      }
+
+      // print according to item type
+      switch(item.itemtype)
+      {
+      case gt_decl:
+         printf(item.plaintext.c_str());
+         break;
+
+      case gt_expression:
+         printf("%s;",item.plaintext.c_str());
+         if (!item.expr_finished)
+            printf("  // expr. has value on stack!");
+         break;
+
+      case gt_operator:
+         printf("operator ");
+         print_opcode(item.opcode,0,item.pos);
+         break;
+
+      case gt_control:
+         printf("%s\n",item.plaintext.c_str());
+
+         if (item.indent_change > 0)
+            indent_level += item.indent_change;
+
+         if (item.plaintext.find("else") != std::string::npos)
+            indent_level++;
+         break;
+
+      case gt_opcode:
+         printf("_asm ");
+         print_opcode(item.opcode,item.arg,item.pos);
+         break;
+
+      case gt_opcode_done:
+         printf("  ;| ");
+         print_opcode(item.opcode,item.arg,item.pos);
+
+         if (i+1<max && graph[i+1].itemtype != gt_opcode_done)
+            printf("\n");
+         break;
+
+      default:
+         printf("// unknown graph item type!\n");
+      }
+
+      printf("\n");
+   }
 }
 
 
