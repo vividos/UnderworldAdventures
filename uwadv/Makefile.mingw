@@ -40,7 +40,7 @@ WITH_DEBUGGING = no
 MINGW_PATH = c:/mingw
 
 # version stored in installer
-UWADV_VERSION = 0.9-test3
+UWADV_VERSION = 0.9-mojito
 
 # -------------------------------------------------------------------
 # STLport configuration
@@ -115,6 +115,7 @@ DEFINES =
 ifeq ("$(WITH_DEBUGGING)", "yes")
  CFLAGS = -g -O #-Wall
  DEFINES += -DHAVE_DEBUG
+ LDFLAGS += -g
 else
  CFLAGS = -O2
 endif
@@ -494,7 +495,7 @@ luac:
 luac-clean:
 	cd source/script/lua/src/luac && make clean
 
-update: uwadv data uaconfig manual
+update: uwadv data uaconfig
 	strip $(uwadv_EXEC)
 	strip $(uaconfig_EXEC)
 	mkdir -p $(UWADV_PATH)
@@ -512,7 +513,7 @@ toolsinstall: tools
 	cp $(TOOLS) $(UWADV_PATH)/tools/
 	cp docs/README.tools.txt $(UWADV_PATH)/tools/
 
-installer: install
+installer: install manual
 	cp win32/uwadv.nsi $(UWADV_PATH)
 	cp docs/License.installer.txt $(UWADV_PATH)
 	cp Copying $(UWADV_PATH)
