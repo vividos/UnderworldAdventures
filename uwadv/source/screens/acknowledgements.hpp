@@ -81,8 +81,8 @@ protected:
    //! acknowledgements cutscene
    ua_cutscene ack;
 
-   //! fading textures
-   ua_texture tex;
+   //! fading textures (two parts, two textures)
+   ua_texture tex1,tex2;
 };
 
 #endif

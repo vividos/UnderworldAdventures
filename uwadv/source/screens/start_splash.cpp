@@ -76,6 +76,8 @@ void ua_start_splash_screen::init()
    glDisable(GL_BLEND);
 
    // load first image
+   ua_image img;
+
    const char *first_img = "data/pres1.byt";
    if (core->get_settings().get_gametype() == ua_game_uw_demo)
       first_img = "data/presd.byt";
@@ -96,11 +98,20 @@ void ua_start_splash_screen::init()
       img.paste_image(img2,xpos,200-16);
    }
 
-   // convert to texture
-   tex.init(&core->get_texmgr());
-   tex.convert(img);
-   tex.use();
-   tex.upload();
+   // split image in two images
+   img.copy_rect(img1,0,0, 256,200);
+   img.copy_rect(img2,256,0, 64,200);
+
+   // convert to textures
+   tex1.init(&core->get_texmgr(),1,GL_LINEAR,GL_LINEAR,GL_CLAMP,GL_CLAMP);
+   tex1.convert(img1);
+   tex1.use();
+   tex1.upload();
+
+   tex2.init(&core->get_texmgr(),1,GL_LINEAR,GL_LINEAR,GL_CLAMP,GL_CLAMP);
+   tex2.convert(img2);
+   tex2.use();
+   tex2.upload();
 
    stage = 0;
    tickcount = 0;
@@ -117,7 +128,8 @@ void ua_start_splash_screen::init()
 
 void ua_start_splash_screen::done()
 {
-   tex.done();
+   tex1.done();
+   tex2.done();
 }
 
 void ua_start_splash_screen::handle_event(SDL_Event &event)
@@ -183,24 +195,47 @@ void ua_start_splash_screen::render()
    if (stage>=2)
    {
       // prepare animation frame
-      cuts.get_frame(tex,curframe);
-      tex.use();
-      tex.upload();
+      cuts.get_frame(curframe);
+
+      // split image in two images
+      cuts.copy_rect(img1,0,0, 256,200);
+      cuts.copy_rect(img2,256,0, 64,200);
+
+      // upload textures
+      tex1.convert(cuts.get_anim_palette(),img1);
+      tex1.use();
+      tex1.upload();
+
+      tex2.convert(cuts.get_anim_palette(),img2);
+      tex2.use();
+      tex2.upload();
    }
    else
    {
       // prepare image texture
-      tex.use();
+      tex1.use();
    }
 
-   double u = tex.get_tex_u(), v = tex.get_tex_v();
+   // draw first quad (256x200)
+   tex1.use();
+   double u = tex1.get_tex_u(), v = tex1.get_tex_v();
 
-   // draw quad with image or animation
    glBegin(GL_QUADS);
    glTexCoord2d(0.0, v  ); glVertex2i(  0,  0);
+   glTexCoord2d(u  , v  ); glVertex2i(256,  0);
+   glTexCoord2d(u  , 0.0); glVertex2i(256,200);
+   glTexCoord2d(0.0, 0.0); glVertex2i(  0,200);
+   glEnd();
+
+   // draw second quad (64x200)
+   tex2.use();
+   u = tex2.get_tex_u(); v = tex2.get_tex_v();
+
+   glBegin(GL_QUADS);
+   glTexCoord2d(0.0, v  ); glVertex2i(256,  0);
    glTexCoord2d(u  , v  ); glVertex2i(320,  0);
    glTexCoord2d(u  , 0.0); glVertex2i(320,200);
-   glTexCoord2d(0.0, 0.0); glVertex2i(  0,200);
+   glTexCoord2d(0.0, 0.0); glVertex2i(256,200);
    glEnd();
 }
 
@@ -227,11 +262,20 @@ void ua_start_splash_screen::tick()
       if (tickcount >= ua_start_splash_show_time * core->get_tickrate())
       {
          // load second image
+         ua_image img;
          img.load_raw(core->get_settings(),"data/pres2.byt",5);
 
-         tex.convert(img);
-         tex.use();
-         tex.upload();
+         // split image in two images
+         img.copy_rect(img1,0,0, 256,200);
+         img.copy_rect(img2,256,0, 64,200);
+
+         tex1.convert(img1);
+         tex1.use();
+         tex1.upload();
+
+         tex2.convert(img2);
+         tex2.use();
+         tex2.upload();
 
          stage++;
          tickcount=0;

@@ -66,10 +66,10 @@ protected:
    unsigned int tickcount;
 
    //! current still image
-   ua_image img;
+   ua_image img1,img2;
 
-   //! texture object for current image / anim
-   ua_texture tex;
+   //! texture objects for current image / anim
+   ua_texture tex1,tex2;
 
    //! current cutscene
    ua_cutscene cuts;
