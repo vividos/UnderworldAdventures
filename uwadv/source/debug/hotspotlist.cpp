@@ -55,6 +55,9 @@ struct ua_hotspot_items
    { "Level 1: 's Grave (near 22)", 0, 49.5, 41.5 },
    { "Level 1: Shrine (17)", 0, 46.5, 15.5 },
 
+   { "Level 6: Wine of Compassion (16)", 5, 26.5, 51.5 },
+
+   { "Level 7: Crystal Splinter passage", 6, 20.5, 44.5 },
 
    { "Ethereal Void: Starting point", 8, 29.5, 24.5 },
    { "Ethereal Void: Green Pathway End", 8, 52.5, 48.5 },
