@@ -173,6 +173,26 @@ bool ua_panel::process_event(SDL_Event& event)
 void ua_panel::mouse_event(bool button_clicked, bool left_button,
    bool button_down, unsigned int mousex, unsigned int mousey)
 {
+   if (panel_type == ua_panel_stats && button_clicked && !button_down)
+   {
+      mousex -= wnd_xpos; mousey -= wnd_ypos;
+      if (mousex >= 29 && mousex <= 56 && mousey >= 106 && mousey <= 114)
+      {
+         bool leftbutton = mousex < 43;
+         if (leftbutton)
+         {
+            if (stats_scrollstart>0)
+               stats_scrollstart--;
+         }
+         else
+         {
+            if (stats_scrollstart<14)
+               stats_scrollstart++;
+         }
+         update_panel();
+      }
+   }
+
    if (panel_type == ua_panel_runebag && button_clicked && !button_down)
    {
       mousex -= wnd_xpos; mousey -= wnd_ypos;
