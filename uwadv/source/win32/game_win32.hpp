@@ -23,8 +23,8 @@
 
    \brief win32 specific game class
 
-   overrides some virtual functions to implement win32 specific stuff, as menu
-   or icon loading/handling or system message processing.
+   overrides some virtual functions to implement win32 specific stuff, e.g.
+   icon loading.
 
 */
 
@@ -44,6 +44,8 @@ class ua_uwadv_game_win32: public ua_uwadv_game
 public:
    //! ctor
    ua_uwadv_game_win32(){}
+   //! dtor
+   virtual ~ua_uwadv_game_win32(){}
 
    // customized virtual methods
    virtual void init();
@@ -51,9 +53,6 @@ public:
    virtual void error_msg(const char *msg);
 
 protected:
-   // menu resource
-   HMENU menu;
-
    // application icon
    HICON icon;
    HICON icon_small;
