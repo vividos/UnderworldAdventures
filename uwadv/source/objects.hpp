@@ -71,7 +71,9 @@ enum ua_obj_type
 struct ua_object_info
 {
    //! struct ctor
-   ua_object_info():type(ua_obj_none),item_id(ua_item_none){}
+   ua_object_info()
+      :type(ua_obj_none),item_id(ua_item_none),quantity(0),
+      quality(0),link1(0){}
 
    //! object type
    ua_obj_type type;
