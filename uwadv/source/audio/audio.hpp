@@ -66,6 +66,27 @@ typedef struct _Mix_Music Mix_Music;
 
 // enums
 
+//! all uw1 music tracks
+/*! The enum value can be used in a call to ua_audio_manager::start_music()
+    and reflects the position in the music playlist, not the actual filenames
+    in the sound folder */
+enum ua_music_track_uw1
+{
+   ua_music_uw1_introduction=0,
+   ua_music_uw1_dark_abyss,
+   ua_music_uw1_descent,
+   ua_music_uw1_wanderer,
+   ua_music_uw1_battlefield,
+   ua_music_uw1_combat,
+   ua_music_uw1_injured,
+   ua_music_uw1_armed,
+   ua_music_uw1_victory,
+   ua_music_uw1_death,
+   ua_music_uw1_fleeing,
+   ua_music_uw1_maps_legends
+};
+
+
 //! enumeration of all sound effects
 enum ua_audio_sfx_type
 {
