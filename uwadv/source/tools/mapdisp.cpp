@@ -365,3 +365,11 @@ int main(int argc, char* argv[])
 
    return 0;
 }
+
+
+// fake function to prevent linking with all the ua_underworld stuff
+
+ua_level& ua_underworld::get_current_level()
+{
+   return levels[curlevel];
+}
