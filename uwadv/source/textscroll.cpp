@@ -55,14 +55,14 @@ void ua_textscroll::init(ua_game_core_interface& core, unsigned int xpos,
    text_color = 11;
 
    // init texture
-   split_textures = width>256;
+   split_textures = width>254;
 
    tex.init(&core.get_texmgr(),split_textures ? 2 : 1,
       GL_LINEAR,GL_LINEAR,GL_CLAMP,GL_CLAMP);
 
    // fill with blank texture
    ua_image img_blank;
-   img_blank.create((split_textures ? width/2 : width),height,0,0);
+   img_blank.create((split_textures ? width/2+2 : width+2),height+2,bg_color,0);
    tex.convert(img_blank,0);
    tex.use(0);
    tex.upload();
@@ -83,7 +83,7 @@ bool ua_textscroll::print(const char* text)
    // check text length
    unsigned int len = font_normal.calc_length(text);
 
-   if (strchr(text,'\n')==0 && len<=width)
+   if (strchr(text,'\n')==0 && len<=width-2)
    {
       // fits into a single line
 
@@ -116,7 +116,7 @@ bool ua_textscroll::print(const char* text)
 
          std::string::size_type pos = std::string::npos;
 
-         unsigned int linewidth = width;
+         unsigned int linewidth = width-2;
 
          if (curline==maxlines-1)
          {
@@ -196,7 +196,7 @@ bool ua_textscroll::print(const char* text)
       font_normal.create_string(img_temp,
          linestack[i].c_str(),text_color);
 
-      img_text.paste_image(img_temp,0,i*(img_temp.get_yres()+1),true);
+      img_text.paste_image(img_temp,1,i*(img_temp.get_yres()+1)+1,true);
 
       if (i==maxlines-1 && morestack.size()!=0)
       {
@@ -206,7 +206,7 @@ bool ua_textscroll::print(const char* text)
 
          // paste string after end of last line
          img_text.paste_image(img_more,
-            img_temp.get_xres(),i*(img_temp.get_yres()+1),true);
+            img_temp.get_xres(),i*(img_temp.get_yres()+1)+1,true);
       }
 
       img_temp.clear();
@@ -218,8 +218,10 @@ bool ua_textscroll::print(const char* text)
       // split text image into two
       ua_image img_split1,img_split2;
 
-      img_text.copy_rect(img_split1,0,0,width/2,height);
-      img_text.copy_rect(img_split2,width/2,0,width/2,height);
+      unsigned int texwidth = width/2+1;
+
+      img_text.copy_rect(img_split1,0,0, texwidth,height);
+      img_text.copy_rect(img_split2,texwidth-1,0, texwidth-1,height);
 
       // upload it to the texture
       tex.convert(img_split1,0);
@@ -266,16 +268,15 @@ void ua_textscroll::render()
    double u = tex.get_tex_u(), v = tex.get_tex_v();
    tex.use(0);
 
-   unsigned int quadwidth = width;
-   if (split_textures)
-      quadwidth /= 2;
+   unsigned int quadwidth = split_textures ? width/2+2 : width+2;
+   double dx = split_textures ? 0.5/quadwidth : 0.0;
 
    // render (first) quad
    glBegin(GL_QUADS);
-   glTexCoord2d(0.0, v  ); glVertex2i(xpos+0,        200-ypos-height);
-   glTexCoord2d(u  , v  ); glVertex2i(xpos+quadwidth,200-ypos-height);
-   glTexCoord2d(u  , 0.0); glVertex2i(xpos+quadwidth,200-ypos);
-   glTexCoord2d(0.0, 0.0); glVertex2i(xpos+0,        200-ypos);
+   glTexCoord2d(0.0,  v);   glVertex2i(xpos+0,        200-ypos-height);
+   glTexCoord2d(u-dx, v);   glVertex2i(xpos+quadwidth,200-ypos-height);
+   glTexCoord2d(u-dx, 0.0); glVertex2i(xpos+quadwidth,200-ypos);
+   glTexCoord2d(0.0,  0.0); glVertex2i(xpos+0,        200-ypos);
    glEnd();
 
    if (split_textures)
