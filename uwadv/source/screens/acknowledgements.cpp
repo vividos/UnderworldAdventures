@@ -147,9 +147,12 @@ bool ua_acknowledgements_screen::process_event(SDL_Event& event)
 
          fadeout_end();
          break;
-      default: break;
+
+      default:
+         break;
       }
-   default: break;
+   default:
+      break;
    }
 
    return true;
@@ -189,14 +192,7 @@ void ua_acknowledgements_screen::tick()
    {
       //ua_trace("showing image %u, current frame %u\n",1-(curframe&1),curframe);
 
-      if (ended)
-      {
-         SDL_Event event;
-         event.type = SDL_USEREVENT;
-         event.user.code = ua_event_destroy_screen;
-         SDL_PushEvent(&event);
-      }
-         //core->pop_screen();
+      game->remove_screen();
 
       // switch to show mode
       stage = 0;
