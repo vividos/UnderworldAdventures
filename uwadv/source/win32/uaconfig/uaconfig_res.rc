@@ -52,39 +52,41 @@ END
 // Dialog
 //
 
-IDD_DIALOG_UACONFIG DIALOG DISCARDABLE  0, 0, 282, 150
+IDD_DIALOG_UACONFIG DIALOG DISCARDABLE  0, 0, 282, 164
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Underworld Adventures Configuration"
 FONT 8, "Tahoma"
 BEGIN
     LTEXT           "General Settings",IDC_STATIC,4,2,53,8
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,60,6,218,1
-    LTEXT           "Ultima Underworld I Path",IDC_STATIC,9,16,79,8
+    LTEXT           "Ultima Underworld I Path",IDC_STATIC,9,16,82,8
     EDITTEXT        IDC_EDIT_UW1_PATH,92,12,137,12,ES_AUTOHSCROLL | WS_GROUP
     PUSHBUTTON      "Browse ...",IDC_BUTTON_SET_UW1_PATH,233,12,43,13
-    LTEXT           "Cutscenes Narration",IDC_STATIC,9,31,65,8
+    LTEXT           "Cutscenes Narration",IDC_STATIC,9,31,82,8
     COMBOBOX        IDC_COMBO_CUTS_NARRATION,92,27,90,46,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
     CONTROL         "enable Underworld Adventures features",
                     IDC_CHECK_ENABLE_FEATURES,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,9,44,141,10
-    LTEXT           "Graphics Settings",IDC_STATIC,4,56,56,8
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,64,60,212,1
-    LTEXT           "Screen Resolution",IDC_STATIC,9,71,59,8
-    COMBOBOX        IDC_COMBO_SCREEN_RESOLUTION,92,67,90,103,CBS_DROPDOWN | 
+                    WS_TABSTOP,9,44,173,10
+    LTEXT           "Graphics Settings",IDC_STATIC,4,57,56,8
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,64,61,212,1
+    LTEXT           "Screen Resolution",IDC_STATIC,9,72,82,8
+    COMBOBOX        IDC_COMBO_SCREEN_RESOLUTION,92,68,90,103,CBS_DROPDOWN | 
                     WS_VSCROLL | WS_GROUP | WS_TABSTOP
     CONTROL         "Fullscreen Mode",IDC_CHECK_FULLSCREEN,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,193,69,68,10
-    LTEXT           "Audio Settings",IDC_STATIC,4,85,46,8
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,54,89,223,1
+                    BS_AUTOCHECKBOX | WS_TABSTOP,193,70,85,10
+    LTEXT           "Audio Settings",IDC_STATIC,4,98,46,8
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,54,102,223,1
     CONTROL         "enable audio output",IDC_CHECK_ENABLE_AUDIO,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,9,97,79,10
-    LTEXT           "MIDI device",IDC_STATIC,9,111,40,8
-    COMBOBOX        IDC_COMBO_MIDI_DEVICE,92,109,137,83,CBS_DROPDOWNLIST | 
+                    BS_AUTOCHECKBOX | WS_TABSTOP,9,110,134,10
+    LTEXT           "MIDI device",IDC_STATIC,9,124,82,8
+    COMBOBOX        IDC_COMBO_MIDI_DEVICE,92,122,137,83,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,4,126,274,1
-    PUSHBUTTON      "&Cancel",IDCANCEL,172,132,50,14
-    PUSHBUTTON      "&OK",IDOK,228,132,50,14
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,4,140,274,1
+    PUSHBUTTON      "&Cancel",IDCANCEL,172,146,50,14
+    PUSHBUTTON      "&OK",IDOK,228,146,50,14
+    CONTROL         "Smooth User Interface",IDC_CHECK_SMOOTHUI,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,9,85,151,10
 END
 
 
@@ -106,7 +108,7 @@ BEGIN
         VERTGUIDE, 193
         VERTGUIDE, 229
         TOPMARGIN, 2
-        BOTTOMMARGIN, 146
+        BOTTOMMARGIN, 160
         HORZGUIDE, 24
         HORZGUIDE, 39
     END
@@ -147,6 +149,11 @@ BEGIN
     IDC_COMBO_MIDI_DEVICE   "Sets MIDI device to use for MIDI playback; doesn't have an effect when using the digital soundtrack."
     IDC_CHECK_ENABLE_FEATURES 
                             "When checked, Underworld Adventures features are enabled. Please read the documentation for more information."
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDC_CHECK_SMOOTHUI      "When checked, the in-game user interface graphics are smoothed to prevent a 'pixely' appearance."
 END
 
 #endif    // English (U.S.) resources

@@ -293,6 +293,8 @@ void ua_config_prog::load_config()
 
    std::string text;
 
+   // general settings
+
    // sets uw1 path
    text = settings.get_string(ua_setting_uw1_path);
    ::SetDlgItemText(m_hWnd,IDC_EDIT_UW1_PATH,text.c_str());
@@ -306,6 +308,8 @@ void ua_config_prog::load_config()
    // set "uwadv features" check
    ::SendDlgItemMessage(m_hWnd,IDC_CHECK_ENABLE_FEATURES,BM_SETCHECK,
       settings.get_bool(ua_setting_uwadv_features) ? BST_CHECKED : BST_UNCHECKED, 0);
+
+   // graphics settings
 
    // set screen resolution text
    text = settings.get_string(ua_setting_screen_resolution);
@@ -327,6 +331,12 @@ void ua_config_prog::load_config()
    // set "fullscreen" check
    ::SendDlgItemMessage(m_hWnd,IDC_CHECK_FULLSCREEN,BM_SETCHECK,
       settings.get_bool(ua_setting_fullscreen) ? BST_CHECKED : BST_UNCHECKED, 0);
+
+   // set "smooth ui" check
+   ::SendDlgItemMessage(m_hWnd,IDC_CHECK_SMOOTHUI,BM_SETCHECK,
+      settings.get_bool(ua_setting_ui_smooth) ? BST_CHECKED : BST_UNCHECKED, 0);
+
+   // audio settings
 
    // set "audio enabled" check
    ::SendDlgItemMessage(m_hWnd,IDC_CHECK_ENABLE_AUDIO,BM_SETCHECK,
@@ -435,34 +445,38 @@ void ua_config_prog::save_config()
    std::string value;
    int sel;
 
-   // uw1 path
+   // get uw1 path
    ::GetDlgItemText(m_hWnd,IDC_EDIT_UW1_PATH,buffer,MAX_PATH);
    value.assign(buffer);
    settings.set_value(ua_setting_uw1_path,value);
 
-   // cutscene narration
+   // get cutscene narration type
    sel = ::SendDlgItemMessage(m_hWnd,IDC_COMBO_CUTS_NARRATION,CB_GETCURSEL,0,0);
    value = (sel==0 ? "sound" : (sel==1 ? "subtitles" : "both"));
    settings.set_value(ua_setting_cuts_narration,value);
 
-   // "uwadv features" check
+   // get "uwadv features" check
    sel = ::SendDlgItemMessage(m_hWnd,IDC_CHECK_ENABLE_FEATURES,BM_GETCHECK,0,0);
    settings.set_value(ua_setting_uwadv_features, bool(sel==BST_CHECKED));
 
-   // screen resolution text
+   // get "screen resolution" text
    ::GetDlgItemText(m_hWnd,IDC_COMBO_SCREEN_RESOLUTION,buffer,MAX_PATH);
    value.assign(buffer);
    settings.set_value(ua_setting_screen_resolution,value);
 
-   // fullscreen check
+   // get "fullscreen" check
    sel = ::SendDlgItemMessage(m_hWnd,IDC_CHECK_FULLSCREEN,BM_GETCHECK,0,0);
    settings.set_value(ua_setting_fullscreen, bool(sel==BST_CHECKED));
 
-   // "audio enabled" check
+   // get "smooth ui" check
+   sel = ::SendDlgItemMessage(m_hWnd,IDC_CHECK_SMOOTHUI,BM_GETCHECK,0,0);
+   settings.set_value(ua_setting_ui_smooth, bool(sel==BST_CHECKED));
+
+   // get "audio enabled" check
    sel = ::SendDlgItemMessage(m_hWnd,IDC_CHECK_ENABLE_AUDIO,BM_GETCHECK,0,0);
    settings.set_value(ua_setting_audio_enabled, bool(sel==BST_CHECKED));
 
-   // midi device
+   // get midi device
    sel = ::SendDlgItemMessage(m_hWnd,IDC_COMBO_MIDI_DEVICE,CB_GETCURSEL,0,0);
    settings.set_value(ua_setting_win32_midi_device, sel-1);
 

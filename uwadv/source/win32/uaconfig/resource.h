@@ -12,6 +12,7 @@
 #define IDC_CHECK_ENABLE_AUDIO          1005
 #define IDC_COMBO_MIDI_DEVICE           1006
 #define IDC_CHECK_ENABLE_FEATURES       1007
+#define IDC_CHECK_SMOOTHUI              1008
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
