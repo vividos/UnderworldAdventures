@@ -47,7 +47,8 @@ class ua_fading_helper
 {
 public:
    //! ctor
-   ua_fading_helper():finished(true),fade_in(false),tickrate(20.0),fadetime(){}
+   ua_fading_helper():fade_in(false),finished(true),tickrate(20.0),
+      fadetime(0.0),tickcount(0){}
 
    //! (re)initialize fading helper
    void init(bool fade_in, double tickrate, double fadetime,
@@ -62,10 +63,14 @@ public:
 protected:
    //! indicates if a fade-in is done
    bool fade_in;
+   //! indicates if fading is finished
    bool finished;
 
+   //! ticks per second
    double tickrate;
+   //! time the fadein/out should take
    double fadetime;
+   //! tickcount
    unsigned int tickcount;
 };
 
