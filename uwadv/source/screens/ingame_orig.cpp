@@ -56,6 +56,13 @@ ua_ingame_orig_screen::ua_ingame_orig_screen()
  dragon_left(true), dragon_right(false)
 {
    compass.set_parent(this);
+   runeshelf.set_parent(this);
+   spellarea.set_parent(this);
+   vitality_flask.set_parent(this);
+   mana_flask.set_parent(this);
+   gargoyle_eyes.set_parent(this);
+   dragon_left.set_parent(this);
+   dragon_right.set_parent(this);
    command_buttons.set_parent(this);
 }
 
@@ -497,31 +504,35 @@ void ua_ingame_orig_screen::key_event(bool key_down, ua_key_value key)
       break;
 
    case ua_key_menu_up:
-//      if (key_down && gamemode == ua_mode_options)
-//         command_buttons.select_previous_button();
+      if (key_down && gamemode == ua_mode_options)
+         command_buttons.select_previous_button();
       break;
 
    case ua_key_menu_down:
-//      if (key_down && gamemode == ua_mode_options)
-//         command_buttons.select_next_button();
+      if (key_down && gamemode == ua_mode_options)
+         command_buttons.select_next_button();
       break;
 
    case ua_key_menu_left:
-      break;
-
    case ua_key_menu_right:
+      // note: as we don't have menus with 2 columns, these are unused here
       break;
 
    case ua_key_menu_top_of_list:
    case ua_key_menu_top_of_list2:
-//      if (key_down && gamemode == ua_mode_options)
-//         command_buttons.select_previous_button(true);
+      if (key_down && gamemode == ua_mode_options)
+         command_buttons.select_previous_button(true);
       break;
 
    case ua_key_menu_bottom_of_list:
    case ua_key_menu_bottom_of_list2:
-//      if (key_down && gamemode == ua_mode_options)
-//         command_buttons.select_next_button(true);
+      if (key_down && gamemode == ua_mode_options)
+         command_buttons.select_next_button(true);
+      break;
+
+   case ua_key_menu_press_button:
+      if (key_down && gamemode == ua_mode_options)
+         command_buttons.do_button_action();
       break;
 
       // options menu
@@ -591,8 +602,8 @@ void ua_ingame_orig_screen::key_event(bool key_down, ua_key_value key)
 
       if (gamemode != ua_mode_fight)
       {
-         bool ret = game->get_underworld().user_action(ua_action_combat_enter);
-         if (ret)
+         /*bool ret = */game->get_underworld().user_action(ua_action_combat_enter);
+         //if (ret)
          {
             command_buttons.select_button(4);
             gamemode = ua_mode_fight;
@@ -603,6 +614,7 @@ void ua_ingame_orig_screen::key_event(bool key_down, ua_key_value key)
          command_buttons.select_button(-1);
          gamemode = ua_mode_default;
       }
+
       break;
 
       // use mode
@@ -627,7 +639,7 @@ void ua_ingame_orig_screen::key_event(bool key_down, ua_key_value key)
 
    case ua_key_special_cast_spell:
       if (!key_down)
-         game->get_underworld().user_action(ua_action_cast_spell);
+         game->get_underworld().user_action(ua_action_clicked_spells);
       break;
 
    case ua_key_special_use_track:
@@ -682,6 +694,10 @@ void ua_ingame_orig_screen::key_event(bool key_down, ua_key_value key)
             screenshot_rgba,screenshot_xres,screenshot_yres);
 */
       }
+      break;
+
+      // returns from menu to game
+   case ua_key_game_return_to_game:
       break;
 
       // "debugger" key

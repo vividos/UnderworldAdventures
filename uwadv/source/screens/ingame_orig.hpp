@@ -160,6 +160,9 @@ public:
    //! sets game mode
    void set_gamemode(ua_ingame_game_mode my_gamemode){ gamemode = my_gamemode; }
 
+   //! returns underworld object; for controls
+   ua_underworld& get_underworld(){ return game->get_underworld(); }
+
 protected:
    //! suspends game resources while showing another screen
    void suspend();
