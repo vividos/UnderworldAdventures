@@ -42,12 +42,26 @@ trig_last = trig_unlock
 
 -- functions
 
--- checks a given handle for triggers and sets it off
-function check_handle_trigger(obj_handle)
+-- checks a given handle for a given trigger type and sets it off
+function trig_check_handle(trig_id,obj_handle)
 
    objinfo = objlist_get_obj_info(obj_handle)
 
+   -- do we have a special linked object?
+   if objinfo.is_quantity ~= 0
+   then
+      return
+   end
 
+   -- check if special linked obj is trigger
+   objinfo2 = objlist_get_obj_info(objinfo.quantity)
+
+   if objinfo2.item_id == trig_id and objinfo2.is_quantity == 0
+   then
+      print( "trigger set off: " .. ui_get_gamestring(4,objinfo2.item_id))
+
+      trap_set_off(objinfo2.quantity)
+   end
 
 end
 
