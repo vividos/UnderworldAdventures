@@ -97,7 +97,7 @@ zziplib: $(zziplib_OBJS)
 uwadv_EXEC = uwadv.exe
 
 include source/Makefile.common
-uwadv_CPPs = $(uwadv_SOURCES:%.hpp=)
+uwadv_CPPs = $(patsubst %.hpp,,$(patsubst %.h,,$(uwadv_SOURCES)))
 uwadv_OBJS = $(uwadv_CPPs:%.cpp=source/%.o) \
         $(uwadv_win32objects:%=source/%) \
 	$(lua_OBJS) $(zziplib_OBJS)
