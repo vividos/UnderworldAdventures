@@ -38,10 +38,6 @@
 # include "midi_driver/win_midiout.h"
 #endif
 
-#ifdef HAVE_FMOD_H
-#include "midi_driver/uni_fmod.h"
-#endif
-
 #include "midi_driver/linux_sdl_mixer.h"
 
 
@@ -96,10 +92,6 @@ bool ua_midi_player::init_driver()
       windrv->set_dev_num(win32_midi_device);
       ua_try_midi_driver(midi_driver,windrv);
    }
-#endif
-
-#ifdef HAVE_FMOD_H
-   ua_try_midi_driver(midi_driver,new ua_uni_fmod_driver);
 #endif
 
    ua_try_midi_driver(midi_driver,new ua_sdl_mixer_driver);

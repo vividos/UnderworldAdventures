@@ -223,10 +223,6 @@ SOURCE=..\audio\resamp.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\audio\midi_driver\uni_fmod.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\audio\vocresample.cpp
 # End Source File
 # Begin Source File
@@ -252,10 +248,6 @@ SOURCE=..\audio\midi.hpp
 # Begin Source File
 
 SOURCE=..\audio\resamp.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\audio\midi_driver\uni_fmod.h
 # End Source File
 # Begin Source File
 

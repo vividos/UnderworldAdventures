@@ -52,10 +52,6 @@ LDFLAGS = -mwindows -s
 DEFINES = 
 
 
-# fmod isn't needed for Win32, since uwadv has a native midi driver
-FMOD_INCLUDE = #-DHAVE_FMOD_H -Ic:/mingw/include/fmod/api/inc/
-FMOD_LIB = #-Lc:/mingw/include/fmod/api/lib/ -lfmod
-
 # library configure stuff
 SDL_LIB = -lSDLmain -lSDL -lSDL_mixer
 WIN32_LIB = -lmingw32 -lkernel32 -luser32
