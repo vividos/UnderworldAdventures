@@ -32,6 +32,7 @@
 #include "playerinfo.hpp"
 #include "objectlist.hpp"
 #include "hotspotlist.hpp"
+#include "tilemapview.hpp"
 
 // frame layout library
 
@@ -55,6 +56,7 @@ BEGIN_EVENT_TABLE(ua_debugger_main_frame, wxMDIParentFrame)
    EVT_MENU(MENU_UNDERW_UPDATE, ua_debugger_main_frame::OnMenuUnderwUpdate)
    EVT_MENU(MENU_UNDERW_SUSPEND, ua_debugger_main_frame::OnMenuUnderwSuspend)
    EVT_MENU(MENU_UNDERW_RESUME, ua_debugger_main_frame::OnMenuUnderwResume)
+   EVT_MENU(MENU_UNDERW_TILEMAPVIEW, ua_debugger_main_frame::OnMenuUnderwTilemapView)
    EVT_MENU(MENU_UNDERW_HOTSPOTLIST, ua_debugger_main_frame::OnMenuUnderwHotspotList)
    EVT_MENU(MENU_UNDERW_PLAYER, ua_debugger_main_frame::OnMenuUnderwPlayer)
    EVT_MENU(MENU_UNDERW_OBJECTLIST, ua_debugger_main_frame::OnMenuUnderwObjectList)
@@ -112,6 +114,7 @@ void ua_debugger_main_frame::AddFrameMenus(wxMenuBar* menubar)
    uwmenu->Append(MENU_UNDERW_SUSPEND, "&Suspend Game", "suspends a running game");
    uwmenu->Append(MENU_UNDERW_RESUME, "&Resume Game", "resumes a suspended game");
    uwmenu->AppendSeparator();
+   uwmenu->Append(MENU_UNDERW_TILEMAPVIEW, "&Tilemap View", "shows Tilemap");
    uwmenu->Append(MENU_UNDERW_HOTSPOTLIST, "&Hotspot List", "shows Hotspot List");
    uwmenu->Append(MENU_UNDERW_PLAYER, "&Player Info", "shows Player Infos");
    uwmenu->Append(MENU_UNDERW_OBJECTLIST, "Master &Object List", "shows Master Object List");
@@ -177,6 +180,24 @@ void ua_debugger_main_frame::OnMenuUnderwSuspend(wxCommandEvent& event)
 void ua_debugger_main_frame::OnMenuUnderwResume(wxCommandEvent& event)
 {
    wxGetApp().command(udc_game_resume,0,NULL,NULL);
+}
+
+void ua_debugger_main_frame::OnMenuUnderwTilemapView(wxCommandEvent& event)
+{
+   // find window using FindWindowByName
+   wxString name(ua_tilemapview_frame::frame_name);
+   wxWindow* wnd = wxWindow::FindWindowByName(name);
+   if (wnd==NULL)
+   {
+      new ua_tilemapview_frame(this,-1,wxDefaultPosition,
+         wxSize(600,400),wxDEFAULT_FRAME_STYLE);
+   }
+   else
+   {
+      // show the window
+      wnd->Raise();
+      wnd->Show();
+   }
 }
 
 void ua_debugger_main_frame::OnMenuUnderwHotspotList(wxCommandEvent& event)

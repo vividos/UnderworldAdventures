@@ -71,6 +71,9 @@ protected:
    //! menu handler: Underworld | Resume Game
    void OnMenuUnderwResume(wxCommandEvent& event);
 
+   //! menu handler: Underworld | Tilemap View
+   void OnMenuUnderwTilemapView(wxCommandEvent& event);
+
    //! menu handler: Underworld | Hotspot List
    void OnMenuUnderwHotspotList(wxCommandEvent& event);
 
@@ -96,6 +99,7 @@ protected:
       MENU_UNDERW_SUSPEND,
       MENU_UNDERW_RESUME,
       MENU_UNDERW_UPDATE,
+      MENU_UNDERW_TILEMAPVIEW,//!< shows tilemap view
       MENU_UNDERW_HOTSPOTLIST,//!< shows hotspot list
       MENU_UNDERW_PLAYER,     //!< shows player info
       MENU_UNDERW_OBJECTLIST, //!< shows master object list
