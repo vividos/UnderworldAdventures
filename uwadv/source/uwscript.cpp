@@ -37,6 +37,21 @@
 const char* ua_uwscript_lua_thisptr_name = "self";
 
 
+// global functions
+
+Uint32 ua_obj_handle_encode(Uint32 objpos, Uint32 level)
+{
+   return objpos | (level<<10);
+}
+
+void ua_obj_handle_decode(Uint32 obj_handle, Uint32 &objpos,
+   Uint32 level)
+{
+   objpos = obj_handle & 0x03ff;
+   level = obj_handle>>10;
+}
+
+
 // ua_underworld_script_bindings methods
 
 ua_underworld_script_bindings::ua_underworld_script_bindings()
@@ -206,6 +221,18 @@ void ua_underworld_script_bindings::lua_change_level(unsigned int level)
       callback->ui_changed_level(level);
 }
 
+
+// lua_objlist_* functions
+
+void ua_underworld_script_bindings::lua_objlist_look(Uint32 level, Uint32 objpos)
+{
+   Uint32 objhandle = ua_obj_handle_encode(objpos,level);
+
+   // call Lua function
+   lua_getglobal(L,"lua_objlist_look");
+   lua_pushnumber(L,static_cast<double>(objhandle));
+   checked_lua_call(1,0);
+}
 
 // lua_inventory_* functions
 
@@ -408,18 +435,6 @@ int ua_underworld_script_bindings::player_set_angle(lua_State *L)
 
 
 // objlist_* functions
-
-Uint32 ua_obj_handle_encode(Uint32 objpos, Uint32 level)
-{
-   return objpos | (level<<10);
-}
-
-void ua_obj_handle_decode(Uint32 obj_handle, Uint32 &objpos,
-   Uint32 level)
-{
-   objpos = obj_handle & 0x03ff;
-   level = obj_handle>>10;
-}
 
 int ua_underworld_script_bindings::objlist_get_obj_info(lua_State* L)
 {
@@ -691,6 +706,20 @@ int ua_underworld_script_bindings::ui_print_string(lua_State* L)
       cback->ui_print_string(text);
 
    return 0;
+}
+
+int ua_underworld_script_bindings::ui_get_gamestring(lua_State* L)
+{
+   ua_underworld &uw = get_underworld_from_self(L);
+
+   unsigned int block = static_cast<unsigned int>(lua_tonumber(L,-1));
+   unsigned int num = static_cast<unsigned int>(lua_tonumber(L,-2));
+
+   // retrieve game string
+   std::string str(uw.get_strings().get_string(block,num));
+   lua_pushstring(L,str.c_str());
+
+   return 1;
 }
 
 int ua_underworld_script_bindings::ui_show_ingame_anim(lua_State* L)

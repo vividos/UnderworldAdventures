@@ -142,6 +142,12 @@ public:
    void lua_change_level(unsigned int level);
 
 
+   // objlist functions
+
+   //! prints "look" text for object in objlist
+   void lua_objlist_look(Uint32 level, Uint32 objpos);
+
+
    // inventory functions
 
    //! returns true when a item_id is a container
@@ -215,6 +221,7 @@ protected:
    static int ui_start_conv(lua_State* L);
    static int ui_show_cutscene(lua_State* L);
    static int ui_print_string(lua_State* L);
+   static int ui_get_gamestring(lua_State* L);
    static int ui_show_ingame_anim(lua_State* L);
    static int ui_cursor_use_item(lua_State* L);
    static int ui_cursor_target(lua_State* L);
