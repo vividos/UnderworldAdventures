@@ -545,6 +545,7 @@ void ua_level::render(ua_texture_manager &texmgr,ua_frustum &fr)
 #else
 
    // draw floor tile polygons, for all visible tiles
+   max = tilelist.size();
    for(i=0;i<max;i++)
    {
       const ua_quad_tile_coord &qtc = tilelist[i];
