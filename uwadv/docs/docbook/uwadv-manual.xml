@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+   "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
 <book>
   <bookinfo>
     <author>
@@ -16,30 +16,114 @@
 
   <preface><title>Introduction</title>
     <para>
-    For Underworld Adventures to run you need a version of Ultima Underworld 1
-    installed on your hard disk.
+    Welcome to the Underworld Adventures Manual. This manual explains all
+    things that have to do with configuring and running Underworld Adventures.
+    Please note that this is not the manual for Ultima Underworld I or II.
+    </para>
+
+    <para>
+    To play the games using Underworld Adventures, you definitely need the
+    original game om floppy discs or on CD-ROM (when using the "Electronic
+    Arts Presents CD-Rom Classics : Ultima Underworld I & II" CD). It would
+    also be good to have the original manuals.
     </para>
 
     <section><title>System Requirements</title>
     <para>
+    Here is a list of things you should have to fully (or at all) relive
+    the old games in new clothes:
     <itemizedlist>
-      <listitem>3D-Graphics card with OpenGL drivers</listitem>
-      <listitem>Sound card</listitem>
-      <listitem>Operating System: Linux, Windows</listitem>
+      <listitem>A modern 32-bit processor (600 MHz or above recommended)</listitem>
+      <listitem>A modern Operating System (Windows, Linux, etc.)</listitem>
+      <listitem>A decent 3D-Graphics card with current OpenGL drivers, e.g. an Nvidia GeForce</listitem>
+      <listitem>A Sound card</listitem>
     </itemizedlist>
     </para>
     </section>
   </preface>
 
-  <chapter><title>Configuration</title>
+  <chapter><title>Configuration Guide</title>
     <para>
-    Prerequisites are...
+    This chapter describes how to set up and configure Underworld Adventures
+    to run the old Ultima Underworld games.
     </para>
 
+    <section><title>Installing the old games</title>
+    This section has yet to be written.
+    </section>
+
     <section><title>Command line options</title>
+    This section has yet to be written.
     </section>
 
     <section><title>Configuration file</title>
+    This section has yet to be written.
+    </section>
+  </chapter>
+
+  <chapter><title>Running Underworld Adventures</title>
+    <para>
+    Underworld Adventures is played just like Ultima Underworld I and II.
+    However there are some minor things that are not in the old games.
+    </para>
+
+    <!-- section><title>Underworld Adventures Menu</title>
+    This section has yet to be written.
+    </section -->
+
+    <section><title>Savegames</title>
+    <section><title>Load/Save screen</title>
+    <para>
+    One limitation of the Underworld games were the number of savegames one
+    can use during the game. Underworld Adventures lifts that limitation by
+    providing practically unlimited number of savegames. Another way had to be
+    found in Underworld Adventures to access and handle those.
+    </para>
+
+    <para>
+    Underworld Adventures introduces the savegame Load/Save screen that is
+    used to either load a savegame, e.g. when using "Journey Onward" on the
+    game's screen, or when selecting "Save Game" or "Restore Game" in the
+    game's builtin menu. The old way of accessing the savegames via buttons
+    numbered I to IV and savegame descriptions listed in the text scroll are
+    gone now.
+    </para>
+    </section>
+    <section><title>Quicksave Feature</title>
+    <para>
+    The current game can quickly be saved using the Quicksave feature. The
+    key F11 saves the current game to a special Quicksave slot. With F12 one
+    can restore the previously saved quicksave savegame. If you have modified
+    the key bindings, look up the keys used for quickloading and quicksaving
+    in the modified keymap.cfg.
+    </para>
+    </section>
+    </section>
+  </chapter>
+
+  <chapter><title>Operating System Specific Documentation</title>
+    <para>
+    This chapter contains operating system specific documentation about
+    Underworld Adventures.
+    </para>
+
+    <section><title>Windows 9x, ME, 2000 and XP</title>
+    This section has yet to be written.
+    </section>
+
+    <section><title>Linux, FreeBSD and other Unices</title>
+    <para>
+    Please read the following excerpt from the SDL_mixer home page if you use
+    timidity under Linux:
+    </para>
+    <para>
+    SDL_Mixer supports playing MIDI format files using software wavetable via
+    an old version of timidity. This requires you to have a GUS compatible set
+    of sound patches on your system. By default, the library looks for these
+    patches on Win32 in C:\timidity, and on UNIX in /usr/local/lib/timidity/.
+    The patches are available here: 
+    <ulink url="http://www.libsdl.org/projects/SDL_mixer/timidity/timidity.tar.gz"/>
+    </para>
     </section>
   </chapter>
 
@@ -48,8 +132,9 @@
     <para>
     While creating Underworld Adventures there were some things that were
     done differently than in the original games. Reasons for this are mainly
-    to simplify the game, or to implement things another way that would have
-    to be much more difficult to do.
+    to simplify the game, to improve it in some way, or just to implement
+    things in another way that else would have been too difficult or hard to
+    do.
     </para>
 
     <para>
@@ -58,16 +143,17 @@
     setting in the configure file. See Section x for that.
     <itemizedlist>
       <listitem>
-        up/down view angle can be varied between -75 and 75 degree, as opposed
+        Up/down view angle can be varied between -75 and 75 degree, as opposed
         to something like 45 degrees in the original (can be switched off).
       </listitem>
       <listitem>
-      cutscene speech is played a bit too slow (due to some technical reasons
-      the audio samples isn't exactly converted to the proper frequency).
+       Cutscene speech is played a bit too slow (due to some technical reasons
+       the audio samples isn't exactly converted to the proper frequency).
       </listitem>
       <listitem>
-      the input cursor in text scrolls (e.g. in conversations) is a vertical
-      line, and not a blinking cursor square
+       The input cursor in text scrolls (e.g. in conversations) is a vertical
+       line, and not a blinking cursor square. The cursor can be moved to any
+       position in the input field.
       </listitem>
     </itemizedlist>
     </para>
@@ -91,6 +177,7 @@
       <listitem>Cuneyt Cuneyitoglu</listitem>
       <listitem>Radoslaw Grzanka</listitem>
       <listitem>Sam Matthews (servus)</listitem>
+      <listitem>Marc A. Pelletier (Coren)</listitem>
     </itemizedlist>
     </para>
     </section>
