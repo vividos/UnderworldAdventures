@@ -63,6 +63,9 @@ public:
 
 
 //! panel
+/*!
+    \todo when rotating adjust y coords of windows, too, like in the original
+*/
 class ua_panel: public ua_image_quad
 {
 public:
