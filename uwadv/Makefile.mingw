@@ -90,7 +90,8 @@ else
 endif
 
 INCLUDES = $(SDL_INCLUDE) $(STLPORT_INCLUDE) $(FMOD_INCLUDE) \
-	-Isource/ -Isource/lua/include/ -Isource/resource/zziplib/
+	-Isource/ -Isource/base \
+	-Isource/lua/include/ -Isource/base/zziplib/
 
 # wxWindows
 ifeq ("$(WITH_WXWINDOWS)", "yes")
@@ -122,8 +123,8 @@ all: uwadv tools data
 include source/lua/Makefile.common
 
 lua_Cs = \
-        $(filter %.c,$(liblua_la_SOURCES)) \
-        $(filter %.c,$(liblualib_la_SOURCES))
+	$(filter %.c,$(liblua_la_SOURCES)) \
+	$(filter %.c,$(liblualib_la_SOURCES))
 lua_OBJS = $(lua_Cs:%.c=source/lua/%.o)
 
 
@@ -133,14 +134,14 @@ lua: $(lua_OBJS)
 
 # zziplib objects
 
-zziplib_OBJS = source/resource/zziplib/SDL_rwops_zzip.o \
-	source/resource/zziplib/zzip-dir.o \
-	source/resource/zziplib/zzip-err.o \
-	source/resource/zziplib/zzip-file.o \
-	source/resource/zziplib/zzip-info.o \
-	source/resource/zziplib/zzip-io.o \
-	source/resource/zziplib/zzip-stat.o \
-	source/resource/zziplib/zzip-zip.o
+zziplib_OBJS = source/base/zziplib/SDL_rwops_zzip.o \
+	source/base/zziplib/zzip-dir.o \
+	source/base/zziplib/zzip-err.o \
+	source/base/zziplib/zzip-file.o \
+	source/base/zziplib/zzip-info.o \
+	source/base/zziplib/zzip-io.o \
+	source/base/zziplib/zzip-stat.o \
+	source/base/zziplib/zzip-zip.o
 
 zziplib: $(zziplib_OBJS)
 
@@ -152,17 +153,15 @@ uwadv_EXEC = uwadv.exe
 include source/Makefile.common
 
 uwadv_win32objects = \
-	source/win32/main.o \
 	source/win32/game_win32.o \
 	source/win32/uwadv_res.o \
-	source/win32/debug.o \
-	source/audio/midi_driver/win_midiout.o
+	source/win32/debug.o
 
 uwadv_CPPs = $(filter %.cpp,$(uwadv_SOURCES))
 uwadv_Cs = $(filter %.c,$(uwadv_SOURCES))
 uwadv_OBJS = $(uwadv_CPPs:%.cpp=source/%.o) \
 	$(uwadv_Cs:%.c=source/%.o) \
-        $(uwadv_win32objects) \
+	$(uwadv_win32objects) \
 	$(lua_OBJS) $(zziplib_OBJS)
 
 uwadv_LIBS = $(WIN32_LIB) -lwinmm $(OPENGL_LIB) \
