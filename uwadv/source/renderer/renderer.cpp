@@ -131,7 +131,7 @@ void ua_renderer::setup_camera3d(const ua_vector3d& the_view_offset,
    far_dist = the_far_dist;
    fov = the_fov;
 
-   view_offset.z += 10.0;
+   view_offset.z += 20.0;
 
    // set projection matrix
    glMatrixMode(GL_PROJECTION);
@@ -144,6 +144,7 @@ void ua_renderer::setup_camera3d(const ua_vector3d& the_view_offset,
 
    // switch back to modelview matrix
    glMatrixMode(GL_MODELVIEW);
+   glLoadIdentity();
 
    glEnable(GL_DEPTH_TEST);
 
@@ -161,8 +162,6 @@ void ua_renderer::setup_camera3d(const ua_vector3d& the_view_offset,
 
 void ua_renderer::render_underworld(const ua_underworld& underw)
 {
-   glLoadIdentity();
-
    const ua_player& pl = underw.get_player();
 
    double plheight = 0.6+pl.get_height();
@@ -291,4 +290,13 @@ void ua_renderer::prepare_level(const ua_level& level)
       for(n=0; n<13; n++) texmgr.prepare(ua_tex_stock_door+n);
       for(n=0; n<33; n++) texmgr.prepare(ua_tex_stock_tmobj+n);
    }
+}
+
+/*! \todo enable critter pool tick() call */
+void ua_renderer::tick(double ticktime)
+{
+   // do texture manager tick processing
+   get_texture_manager().tick(ticktime);
+
+//   critter_pool.tick(1.0/tickrate);
 }

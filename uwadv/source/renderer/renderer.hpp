@@ -85,6 +85,9 @@ public:
    //! prepares renderer for given level (e.g. when changing levels)
    void prepare_level(const ua_level& level);
 
+   //! does renderer-specific tick processing
+   void tick(double ticktime);
+
 protected:
    //! critter pool
    ua_critter_pool* critpool;
