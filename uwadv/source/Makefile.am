@@ -15,7 +15,7 @@ SDL_CFLAGS = `sdl-config --cflags`
 SDL_LIBS = `sdl-config --libs`
 
 CPPFLAGS = -I.. $(SDL_CFLAGS)
-LDFLAGS = $(SDL_LIBS)
+LDFLAGS = $(SDL_LIBS) -lGL
 
 bin_PROGRAMS = uwadv
 
@@ -29,7 +29,7 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	audio/midi.hpp audio/xmidi.hpp \
 	audio/midi_driver/uni_fmod.cpp audio/midi_driver/uni_fmod.hpp \
 	conv/codevm.cpp conv/codevm.hpp \
-	resource/codeloaeder.cpp resource/fontloader.cpp \
+	resource/codeloader.cpp resource/fontloader.cpp \
 	resource/gamestrings.cpp resource/imageloader.cpp \
 	resource/maploader.cpp resource/settings.cpp \
 	resource/texloader.cpp \

@@ -99,7 +99,7 @@ SDL_CFLAGS = `sdl-config --cflags`
 SDL_LIBS = `sdl-config --libs`
 
 CPPFLAGS = -I.. $(SDL_CFLAGS)
-LDFLAGS = $(SDL_LIBS)
+LDFLAGS = $(SDL_LIBS) -lGL
 
 bin_PROGRAMS = uwadv
 
@@ -113,7 +113,7 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	audio/midi.hpp audio/xmidi.hpp \
 	audio/midi_driver/uni_fmod.cpp audio/midi_driver/uni_fmod.hpp \
 	conv/codevm.cpp conv/codevm.hpp \
-	resource/codeloaeder.cpp resource/fontloader.cpp \
+	resource/codeloader.cpp resource/fontloader.cpp \
 	resource/gamestrings.cpp resource/imageloader.cpp \
 	resource/maploader.cpp resource/settings.cpp \
 	resource/texloader.cpp \
@@ -137,7 +137,7 @@ am_uwadv_OBJECTS = font.$(OBJEXT) image.$(OBJEXT) inventory.$(OBJEXT) \
 	level.$(OBJEXT) player.$(OBJEXT) quadtree.$(OBJEXT) \
 	texture.$(OBJEXT) underworld.$(OBJEXT) uwadv.$(OBJEXT) \
 	audio.$(OBJEXT) midi.$(OBJEXT) xmidi.$(OBJEXT) \
-	uni_fmod.$(OBJEXT) codevm.$(OBJEXT) codeloaeder.$(OBJEXT) \
+	uni_fmod.$(OBJEXT) codevm.$(OBJEXT) codeloader.$(OBJEXT) \
 	fontloader.$(OBJEXT) gamestrings.$(OBJEXT) \
 	imageloader.$(OBJEXT) maploader.$(OBJEXT) settings.$(OBJEXT) \
 	texloader.$(OBJEXT) ingame_orig.$(OBJEXT) \
@@ -152,7 +152,7 @@ DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
 LIBS = @LIBS@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/audio.Po ./$(DEPDIR)/codeloaeder.Po \
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/audio.Po ./$(DEPDIR)/codeloader.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/codevm.Po ./$(DEPDIR)/font.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/fontloader.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/gamestrings.Po ./$(DEPDIR)/image.Po \
@@ -227,7 +227,7 @@ midi.$(OBJEXT): audio/midi.cpp
 xmidi.$(OBJEXT): audio/xmidi.cpp
 uni_fmod.$(OBJEXT): audio/midi_driver/uni_fmod.cpp
 codevm.$(OBJEXT): conv/codevm.cpp
-codeloaeder.$(OBJEXT): resource/codeloaeder.cpp
+codeloader.$(OBJEXT): resource/codeloader.cpp
 fontloader.$(OBJEXT): resource/fontloader.cpp
 gamestrings.$(OBJEXT): resource/gamestrings.cpp
 imageloader.$(OBJEXT): resource/imageloader.cpp
@@ -247,7 +247,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/audio.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/codeloaeder.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/codeloader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/codevm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/font.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fontloader.Po@am__quote@
@@ -381,23 +381,23 @@ codevm.lo: conv/codevm.cpp
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o codevm.lo `test -f 'conv/codevm.cpp' || echo '$(srcdir)/'`conv/codevm.cpp
 
-codeloaeder.o: resource/codeloaeder.cpp
-@AMDEP_TRUE@	source='resource/codeloaeder.cpp' object='codeloaeder.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/codeloaeder.Po' tmpdepfile='$(DEPDIR)/codeloaeder.TPo' @AMDEPBACKSLASH@
+codeloader.o: resource/codeloader.cpp
+@AMDEP_TRUE@	source='resource/codeloader.cpp' object='codeloader.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/codeloader.Po' tmpdepfile='$(DEPDIR)/codeloader.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o codeloaeder.o `test -f 'resource/codeloaeder.cpp' || echo '$(srcdir)/'`resource/codeloaeder.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o codeloader.o `test -f 'resource/codeloader.cpp' || echo '$(srcdir)/'`resource/codeloader.cpp
 
-codeloaeder.obj: resource/codeloaeder.cpp
-@AMDEP_TRUE@	source='resource/codeloaeder.cpp' object='codeloaeder.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/codeloaeder.Po' tmpdepfile='$(DEPDIR)/codeloaeder.TPo' @AMDEPBACKSLASH@
+codeloader.obj: resource/codeloader.cpp
+@AMDEP_TRUE@	source='resource/codeloader.cpp' object='codeloader.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/codeloader.Po' tmpdepfile='$(DEPDIR)/codeloader.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o codeloaeder.obj `cygpath -w resource/codeloaeder.cpp`
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o codeloader.obj `cygpath -w resource/codeloader.cpp`
 
-codeloaeder.lo: resource/codeloaeder.cpp
-@AMDEP_TRUE@	source='resource/codeloaeder.cpp' object='codeloaeder.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/codeloaeder.Plo' tmpdepfile='$(DEPDIR)/codeloaeder.TPlo' @AMDEPBACKSLASH@
+codeloader.lo: resource/codeloader.cpp
+@AMDEP_TRUE@	source='resource/codeloader.cpp' object='codeloader.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/codeloader.Plo' tmpdepfile='$(DEPDIR)/codeloader.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o codeloaeder.lo `test -f 'resource/codeloaeder.cpp' || echo '$(srcdir)/'`resource/codeloaeder.cpp
+	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o codeloader.lo `test -f 'resource/codeloader.cpp' || echo '$(srcdir)/'`resource/codeloader.cpp
 
 fontloader.o: resource/fontloader.cpp
 @AMDEP_TRUE@	source='resource/fontloader.cpp' object='fontloader.o' libtool=no @AMDEPBACKSLASH@
