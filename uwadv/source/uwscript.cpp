@@ -82,6 +82,8 @@ void ua_underworld_script_bindings::register_functions()
 //   lua_register(L,"func_name",func_name);
 
    // ua_player access
+   lua_register(L,"underw_change_level",underw_change_level);
+
    lua_register(L,"player_get_attr",player_get_attr);
    lua_register(L,"player_set_attr",player_set_attr);
    lua_register(L,"player_get_skill",player_get_skill);
@@ -337,6 +339,15 @@ ua_obj_combine_result ua_underworld_script_bindings::lua_inventory_combine_obj(
    return res;
 }
 
+void ua_underworld_script_bindings::lua_trigger_set_off(Uint32 level, Uint32 objpos)
+{
+   lua_getglobal(L,"lua_trigger_set_off");
+   lua_pushnumber(L,static_cast<double>(ua_obj_handle_encode(objpos,level)));
+
+   checked_lua_call(1,0);
+}
+
+
 /*! params is the number of parameters the current registered function
     expects. it is needed to determine where the "self" userdata value is
     stored. */
@@ -361,6 +372,20 @@ ua_underworld& ua_underworld_script_bindings::get_underworld_from_self(lua_State
 
 
 // registered C functions callable from Lua
+
+// underw_* functions
+
+int ua_underworld_script_bindings::underw_change_level(lua_State* L)
+{
+   ua_underworld& uw = get_underworld_from_self(L);
+
+   unsigned int level = static_cast<unsigned int>(lua_tonumber(L,-1));
+
+   uw.change_level(level);
+
+   return 0;
+}
+
 
 // player_* functions
 
@@ -481,7 +506,7 @@ int ua_underworld_script_bindings::player_set_angle(lua_State *L)
 
 int ua_underworld_script_bindings::objlist_get_obj_info(lua_State* L)
 {
-   ua_underworld &uw = get_underworld_from_self(L);
+   ua_underworld& uw = get_underworld_from_self(L);
 
    Uint32 obj_handle = static_cast<Uint32>(lua_tonumber(L,-1));
 

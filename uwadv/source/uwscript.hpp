@@ -26,8 +26,8 @@
 */
 
 // include guard
-#ifndef __uwadv_uwscript_hpp_
-#define __uwadv_uwscript_hpp_
+#ifndef uwadv_uwscript_hpp_
+#define uwadv_uwscript_hpp_
 
 // needed includes
 #include "savegame.hpp"
@@ -172,6 +172,10 @@ public:
    ua_obj_combine_result lua_inventory_combine_obj(Uint16 item_id1, Uint16 item_id2,
       Uint16& result_id);
 
+   // trap/trigger functions
+
+   //! sets off trigger pointed to
+   void lua_trigger_set_off(Uint32 level, Uint32 objpos);
 
 protected:
    //! registers all ua_underworld functions
@@ -193,6 +197,8 @@ protected:
 
    // registered C functions callable from Lua
    // prototype: static int xyz(lua_State* L);
+
+   static int underw_change_level(lua_State* L);
 
    static int player_get_attr(lua_State* L);
    static int player_set_attr(lua_State* L);
