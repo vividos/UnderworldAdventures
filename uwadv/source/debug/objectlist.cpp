@@ -49,13 +49,14 @@ const char* ua_objectlist_captions[] =
    "quality",  // 2
    "owner",    // 3
    "quantity",
-   "x",
-   "y",
-   "height",
-   "angle",
-   "enchanted",
-   "is_link",
-//   "extra"
+   "xpos",
+   "ypos",
+   "zpos",
+   "heading",
+   "flags",
+   "ench",
+   "is_quant",
+   "hidden"
 };
 
 unsigned int ua_objectlist_widths[] =
@@ -67,13 +68,14 @@ unsigned int ua_objectlist_widths[] =
    45,   // quality
    45,   // owner
    50,   // quantity
-   40,
-   40,
-   50,
-   40,
-   60,   // ench
-   50,   // is_link
-   60,
+   35,   // xpos
+   35,   // ypos
+   40,   // zpos
+   45,   // heading
+   40,   // flags
+   40,   // ench
+   40,   // is_quant
+   40,   // is_hidden
 };
 
 
@@ -169,36 +171,33 @@ void ua_objectlist_ctrl::UpdateData()
          text = param1.val.str;
          break;
 
-      case 7: // x
-      case 8: // y
+      case 7: // xpos
+      case 8: // ypos
+      case 10: // heading
+      case 11: // flags
          param2.set_int(col-2);
          cmd(udc_objlist_get,level,&param1,&param2);
-         text.Printf("%.3f",param1.val.d);
+         text.Printf("%x",param1.val.i);
          break;
 
-      case 9: // height
+      case 9: // zpos
          param2.set_int(col-2);
          cmd(udc_objlist_get,level,&param1,&param2);
-         text.Printf("%2.1f",param1.val.d);
+         text.Printf("%02x",param1.val.i);
          break;
 
-      case 10: // angle
-         param2.set_int(col-2);
-         cmd(udc_objlist_get,level,&param1,&param2);
-         text.Printf("%u",param1.val.i);
-         break;
-
-      case 11: // enchanted
-      case 12: // is_link
+      case 12: // enchanted
+      case 13: // is_quant
+      case 14: // is_hidden
          param2.set_int(col-2);
          cmd(udc_objlist_get,level,&param1,&param2);
          text = param1.val.i == 1 ? "yes" : "no";
          break;
 
-      case 3:
-      case 4:
-      case 5:
-      case 6:
+      case 3: // link
+      case 4: // quality
+      case 5: // owner
+      case 6: // quantity
          param2.set_int(col-2);
          cmd(udc_objlist_get,level,&param1,&param2);
          text.Printf("%04x",param1.val.i);
@@ -300,7 +299,7 @@ void ua_objectlist_frame::OnMenuObjlistChangeLevel(wxCommandEvent& event)
    // choose level to change to
    {
       // TODO use string names of levels from (custom) game strings
-      wxString levelnames[] =
+      wxString levelnames_uw1[] =
       {
          "Level 0: Goblin Home/Human Enclave",
          "Level 1: Mountain-Folk",
@@ -313,9 +312,86 @@ void ua_objectlist_frame::OnMenuObjlistChangeLevel(wxCommandEvent& event)
          "Level 8: Ethereal Void",
       };
 
+      wxString levelnames_uw2[] =
+      {
+         "Britannia 1 (castle)",
+         "Britannia 2 (cellars)",
+         "Britannia 3 (sewers)",
+         "Britannia 4",
+         "Britannia 5 (gem)",
+         "Britannia 5? (draft?)",
+         "Britannia 4? (draft?)",
+         "(empty)",
+         "Prisons 1 (cellar)",
+         "Prisons 2",
+         "Prisons 3",
+         "Prisons 4",
+         "Prisons 5",
+         "Prisons 6",
+         "Prisons 7",
+         "Prisons 8",
+         "Killorn Keep 1",
+         "Killorn Keep 2",
+         "(empty)",
+         "(empty)",
+         "Unknown icy place",
+         "(empty)",
+         "(empty)",
+         "(empty)",
+         "Ice Caverns 1",
+         "Ice Caverns 2",
+         "Ice Caverns?",
+         "(empty)",
+         "(empty)",
+         "(empty)",
+         "(empty)",
+         "(empty)",
+         "Talorus 1",
+         "Talorus 2",
+         "(empty)",
+         "(empty)",
+         "(empty)",
+         "(empty)",
+         "(empty)",
+         "(empty)",
+         "Academy 1",
+         "Academy 2",
+         "Academy 3",
+         "Academy 4",
+         "Academy 5",
+         "Academy 6",
+         "Academy 7",
+         "Academy 8",
+         "Loth's Tomb 1",
+         "Loth's Tomb 2",
+         "Loth's Tomb 3",
+         "Loth's Tomb 4",
+         "(empty)",
+         "(empty)",
+         "Unknown (maze)",
+         "Loth's Tomb?",
+         "Pits of Carnage 1",
+         "Pits of Carnage 2",
+         "Pits of Carnage 3",
+         "(empty)",
+         "(empty)",
+         "(empty)",
+         "(empty)",
+         "(empty)",
+         "Ethereal Void 1",
+         "Ethereal Void 2",
+         "Ethereal Void 3",
+         "Ethereal Void (yellow)",
+         "Ethereal Void (main)",
+         "Can't Get Here",
+         "Ethereal Void",
+         "Ethereal Void?",
+         "Loth's Tomb?",
+      };
+
       wxSingleChoiceDialog dlg(this,"select a new underworld level ...",
          "Underworld Adventures Debugger",
-         SDL_TABLESIZE(levelnames),levelnames,NULL);
+         SDL_TABLESIZE(levelnames_uw1),levelnames_uw1,NULL);
 
       dlg.SetSelection(level);
 
