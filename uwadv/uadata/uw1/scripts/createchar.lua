@@ -186,6 +186,30 @@ ccharui = {
       [5] = { [0] = 13, [1] =  5, [2] =  0, [3] = 0 }, -- paladin skills
       [6] = { [0] = 14, [1] = 15, [2] =  0, [3] = 0 }, -- ranger skills
       [7] = { [0] = 16, [1] = 17, [2] = 17, [3] = 0 }  -- shepard skills
+   },
+
+   skilltrans = -- translates ccvXXX to player_skill_XXX values (defined in uwinterface.lua)
+   {
+	  [ccvAttack]	= player_skill_attack,
+	  [ccvDefence]	= player_skill_defense,
+	  [ccvUnarmed]	= player_skill_unarmed,
+	  [ccvSword]	= player_skill_sword,
+	  [ccvAxe]		= player_skill_axe,
+	  [ccvMace]		= player_skill_mace,
+	  [ccvMissile]	= player_skill_missile,
+	  [ccvMana]		= player_skill_mana,
+	  [ccvLore]		= player_skill_lore,
+	  [ccvCasting]	= player_skill_casting,
+	  [ccvTraps]	= player_skill_traps,
+	  [ccvSearch]	= player_skill_search,
+	  [ccvTrack]	= player_skill_track,
+	  [ccvSneak]	= player_skill_sneak,
+	  [ccvRepair]	= player_skill_repair,
+	  [ccvCharm]	= player_skill_charm,
+	  [ccvPicklock]	= player_skill_picklock,
+	  [ccvAcrobat]	= player_skill_acrobat,
+	  [ccvAppraise]	= player_skill_appraise,
+	  [ccvSwimming] = player_skill_swimming
    }
 }
 
@@ -231,12 +255,14 @@ function cchar_addskill(skill, value)
       -- increase the value if found and return
       if skills[csi].name==skill then
          skills[csi].val = skills[csi].val + value/2
+		 cchar_do_action(self, actSetPlayerSkill, ccharui.skilltrans[skill], skills[csi].val)
          return
       end
    end
    -- not found? add the skill
    numberofskills = numberofskills + 1
    skills[numberofskills] = { name = skill, val = value };
+   cchar_do_action(self, actSetPlayerSkill, ccharui.skilltrans[skill], value)
 end
 
 
