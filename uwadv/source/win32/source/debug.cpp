@@ -85,7 +85,7 @@ ua_debug_impl_win32::ua_debug_impl_win32()
    dll = ::LoadLibrary("uadebug.dll");
    avail = dll != NULL;
 
-   avail &= NULL != ::GetProcAddress(dll,"uadebug_start");
+   avail &= (NULL != ::GetProcAddress(dll,"uadebug_start"));
 
    sem_debugger = SDL_CreateSemaphore(0);
    thread_debug = NULL;
