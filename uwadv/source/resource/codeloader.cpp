@@ -58,7 +58,7 @@ void ua_conv_globals::import(const char *bgname, bool init)
       Uint16 slot = fread16(fd);
       Uint16 size = fread16(fd);
 
-      std::vector<Uint8> globals;
+      std::vector<Uint16> globals;
       globals.resize(size,0);
 
       if (!init)

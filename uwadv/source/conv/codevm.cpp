@@ -61,7 +61,7 @@ void ua_conv_code_vm::init(ua_conv_globals &cg)
    stack.init(4096);
 
    // load globals into stack
-   const std::vector<Uint8> &glob = cg.get_globals(conv_nr);
+   const std::vector<Uint16> &glob = cg.get_globals(conv_nr);
 
    unsigned int max=glob.size();
    for(unsigned int i=0; i<max; i++)
@@ -74,7 +74,7 @@ void ua_conv_code_vm::done(ua_conv_globals &cg)
       return;
 
    // store back globals from stack
-   std::vector<Uint8> &glob = cg.get_globals(conv_nr);
+   std::vector<Uint16> &glob = cg.get_globals(conv_nr);
 
    unsigned int max=glob.size();
    for(unsigned int i=0; i<max; i++)
