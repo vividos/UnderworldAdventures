@@ -37,7 +37,7 @@ const double ua_ellipsoid_z = 2.9;//3.2;//0.4*8;
 // ua_player methods
 ua_player::ua_player() : ua_physics_object()
 {
-  
+   name.assign("GRONKEY");
 }
 
 void ua_player::init()
