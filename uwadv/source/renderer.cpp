@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Underworld Adventures Team
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -994,8 +994,7 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
 
 #ifndef HAVE_DEBUG
    // don't render invisible objects
-   if (item_id>0x0140 && item_id != 0x01ca && item_id != 0x0164 &&
-       item_id != 0x0166 && item_id != 0x016e && item_id != 0x0157)
+   if (obj.get_object_info().is_hidden)
       return;
 #endif
 
@@ -1004,14 +1003,15 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
 
    double objxpos = static_cast<double>(x) + (extinfo.xpos+0.5)/8.0;
    double objypos = static_cast<double>(y) + (extinfo.ypos+0.5)/8.0;
-   double height = level.get_floor_height(objxpos,objypos)*height_scale;
+   //double height = level.get_floor_height(objxpos,objypos)*height_scale;
+   double height = extinfo.zpos/4.0*height_scale;
 
    ua_vector3d base(objxpos, objypos, height);
 
    // check if a 3d model is available for that item
    if (modelmgr->model_avail(item_id))
    {
-      base.z = extinfo.zpos*height_scale;
+      base.z = extinfo.zpos/4.0*height_scale;
 
       // hack: set texture for bridge
       if (item_id==0x0164 || item_id==0x0157)
@@ -1052,12 +1052,23 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
    }
    else
    {
-      if (item_id == 0x0166 || item_id == 0x016e)
+      if (item_id >= 0x0170 && item_id <= 0x017f)
       {
-         render_tmap_decal(obj,x,y);
+         render_decal(obj,x,y);
          return;
       }
 
+      /*if (item_id == 0x0166 || item_id == 0x016e)
+      {
+         render_tmap_obj(obj,x,y);
+         return;
+      }*/
+/*
+      if (item_id == 0x01a0)
+      {
+         base.z = extinfo.zpos/4.0*height_scale;
+      }
+*/
       // normal object
       double quadwidth = 0.25;
 
@@ -1081,15 +1092,65 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
    }
 }
 
-void ua_renderer::render_tmap_decal(ua_object& obj, unsigned int x, unsigned int y)
+void ua_renderer::render_decal(ua_object& obj, unsigned int x, unsigned int y)
+{
+   ua_object_info_ext& extinfo = obj.get_ext_object_info();
+   ua_vector3d base(static_cast<double>(x),static_cast<double>(y),
+      extinfo.zpos/4.0*height_scale);
+
+   ua_vector2d to_right;
+
+   const double wall_offset = 0.00;
+
+   switch(extinfo.heading)
+   {
+   case 0: to_right.set(1.0,0.0);  base.x += extinfo.xpos/8.0; base.y += 1.0-wall_offset; break;
+   case 2: to_right.set(0.0,-1.0); base.y += extinfo.ypos/8.0; base.x += 1.0-wall_offset; break;
+   case 4: to_right.set(-1.0,0.0); base.x += extinfo.xpos/8.0; base.y += wall_offset; break;
+   case 6: to_right.set(0.0,1.0);  base.y += extinfo.ypos/8.0; base.x += wall_offset; break;
+
+   default:
+      break; // should not occur
+   }
+
+   double decalheight = 1.0/8.0;
+
+   to_right.normalize();
+   to_right *= 1.0/8.0;
+
+   // get object texture coords
+   double u1,v1,u2,v2;
+   texmgr->object_tex(obj.get_object_info().item_id,u1,v1,u2,v2);
+
+   // enable polygon offset
+   glPolygonOffset(-2.0, -2.0);
+   glEnable(GL_POLYGON_OFFSET_FILL);
+
+   // draw quad
+   glColor3ub(255,255,255);
+
+   // render quad
+   glBegin(GL_QUADS);
+//   glBegin(GL_LINE_LOOP);
+   glTexCoord2d(u1,v2); glVertex3d(base.x-to_right.x,base.y-to_right.y,base.z-decalheight);
+   glTexCoord2d(u2,v2); glVertex3d(base.x+to_right.x,base.y+to_right.y,base.z-decalheight);
+   glTexCoord2d(u2,v1); glVertex3d(base.x+to_right.x,base.y+to_right.y,base.z+decalheight);
+   glTexCoord2d(u1,v1); glVertex3d(base.x-to_right.x,base.y-to_right.y,base.z+decalheight);
+   glEnd();
+
+   glDisable(GL_POLYGON_OFFSET_FILL);
+//   glEnable(GL_TEXTURE_2D);
+}
+
+void ua_renderer::render_tmap_obj(ua_object& obj, unsigned int x, unsigned int y)
 {
    // 0x0166 some writing, 0x016e special tmap object, 0x0177 pull chain
 
    ua_object_info_ext& extinfo = obj.get_ext_object_info();
 
-   double xpos = x;
-   double ypos = y;
-   double zpos = extinfo.zpos*height_scale;
+   double xpos = static_cast<double>(x) + (extinfo.xpos+0.5)/8.0;
+   double ypos = static_cast<double>(y) + (extinfo.ypos+0.5)/8.0;
+   double zpos = extinfo.zpos/4.0*height_scale;
    bool xdir = true;
 
    double decalwidth = 0.15;
@@ -1114,7 +1175,7 @@ void ua_renderer::render_tmap_decal(ua_object& obj, unsigned int x, unsigned int
    glColor3ub(255,255,255);
 
    // render quad
-   glBegin(GL_TRIANGLES);
+   //glBegin(GL_TRIANGLES);
    //glBegin(GL_QUADS);
    glBegin(GL_LINE_LOOP);
    if (xdir)
@@ -1126,11 +1187,6 @@ void ua_renderer::render_tmap_decal(ua_object& obj, unsigned int x, unsigned int
       glVertex3d(xpos+decalwidth,ypos,zpos);
       glVertex3d(xpos-decalwidth,ypos,zpos+0.2);
       glVertex3d(xpos-decalwidth,ypos,zpos);
-/*
-      glVertex3d(xpos+0.15,ypos,zpos);
-      glVertex3d(xpos-0.15,ypos,zpos+0.2);
-      glVertex3d(xpos+0.15,ypos,zpos+0.2);
-*/
    }
    else
    {

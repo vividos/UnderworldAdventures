@@ -87,8 +87,11 @@ protected:
    //! renders a single object
    void render_object(ua_object& obj, unsigned int x, unsigned int y);
 
-   //! renders a decal
-   void render_tmap_decal(ua_object& obj, unsigned int x, unsigned int y);
+   //! renders decal
+   void render_decal(ua_object& obj, unsigned int x, unsigned int y);
+
+   //! renders tmap object
+   void render_tmap_obj(ua_object& obj, unsigned int x, unsigned int y);
 
    //! draws a billboarded quad
    void draw_billboard_quad(ua_vector3d base,
