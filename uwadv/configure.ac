@@ -122,7 +122,20 @@ zlib header not found. Zlib is required to compile and run
 Underworld Adventures.]))
 
 
-# checking for uwadv.cfg entries
+
+# Build the tools?
+AC_ARG_ENABLE(tools,    [  --disable-tools         Don't build the tools],,enable_tools=yes)
+AC_MSG_CHECKING(whether to build the tools)
+if test x$enable_tools = xno; then
+        AC_MSG_RESULT(yes)
+        AM_CONDITIONAL(BUILD_TOOLS, false)
+else
+        AC_MSG_RESULT(no)
+        AM_CONDITIONAL(BUILD_TOOLS, true)
+fi
+
+
+# determining uwadv.cfg entries
 AC_ARG_WITH(uw1, [  --with-uw1=DIR          directory where UW1 is installed ],UW1PATH=$with_uw1,UW1PATH=${datadir}/games/uw1/)
 AC_SUBST(UW1PATH)
 
