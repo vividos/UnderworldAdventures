@@ -27,9 +27,12 @@
 
 */
 
+// needed includes
+#include "common.hpp"
+
+// only compile if FMOD support is wanted
 #ifdef HAVE_FMOD_H
 
-// neded includes
 #include "uni_fmod.h"
 
 // linker options
