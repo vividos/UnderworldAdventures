@@ -128,7 +128,7 @@ animview_LDFLAGS =
 all: $(uwadv_EXEC) tools
 
 tools: $(cnvdbg_EXEC) $(cnvdasm_EXEC) $(xmi2mid_EXEC) $(mapdisp_EXEC) \
-	(animview_EXEC)
+	$(animview_EXEC)
 
 $(uwadv_EXEC): $(uwadv_OBJS)
 	$(CC) $(LDFLAGS) $(uwadv_LDFLAGS) -o $(@) $(uwadv_OBJS) $(uwadv_LIBS)
