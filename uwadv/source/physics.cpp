@@ -36,5 +36,5 @@
 void ua_physics_model::walk_player(ua_vector2d &dir)
 {
    ua_player &player = underw->get_player();
-   player.move_player( player.get_xpos()+dir.x, player.get_ypos()+dir.y );
+   player.set_pos(player.get_xpos()+dir.x, player.get_ypos()+dir.y);
 }

@@ -28,3 +28,32 @@
 // needed includes
 #include "common.hpp"
 #include "player.hpp"
+
+
+// ua_player methods
+
+void ua_player::init()
+{
+   xpos = ypos = 32.0;
+   angle = 0.0;
+   gender_male = false;
+   left_handedness = true;
+   appearance = 0;
+
+   memset(stats,0,sizeof(stats));
+   memset(skills,0,sizeof(skills));
+}
+
+unsigned int ua_player::get_stat(ua_player_stats which)
+{
+   if (unsigned(which)>=ua_stat_max)
+      return 0;
+   return stats[unsigned(which)];
+}
+
+unsigned int ua_player::get_skill(ua_player_skills which)
+{
+   if (unsigned(which)>=ua_skill_max)
+      return 0;
+   return skills[unsigned(which)];
+}

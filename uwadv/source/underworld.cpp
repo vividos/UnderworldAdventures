@@ -42,7 +42,9 @@ void ua_underworld::init(ua_game_core_interface *thecore)
 
    physics.init(this);
 
-   player.init(32.f,2.f);
+   player.init();
+   player.set_pos(32.0,2.0);
+   player.set_angle(90.0);
 }
 
 void ua_underworld::load_game()
