@@ -332,6 +332,10 @@ SOURCE=..\image.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\inventory.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\level.hpp
 # End Source File
 # Begin Source File
@@ -361,6 +365,10 @@ SOURCE=..\settings.hpp
 # Begin Source File
 
 SOURCE=..\texture.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\uamath.hpp
 # End Source File
 # Begin Source File
 
