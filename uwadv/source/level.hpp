@@ -35,6 +35,7 @@
 #include "quadtree.hpp"
 #include "objects.hpp"
 #include "savegame.hpp"
+#include "uamath.hpp"
 
 
 // enums
@@ -89,6 +90,17 @@ struct ua_levelmap_tile
    Uint16 texture_floor;
 };
 
+//! textured triangle
+struct ua_triangle3d_textured: public ua_triangle3d
+{
+   //! stock texture number used
+   Uint16 texnum;
+
+   //! u/v texture coordinates
+   double tex_u[3];
+   double tex_v[3];
+};
+
 
 // classes
 
@@ -118,6 +130,10 @@ public:
 
    //! returns map object list ref
    ua_object_list &get_mapobjects(){ return allobjects; }
+
+   //! returns the list of all triangles for a given tile
+   void get_tile_triangles(unsigned int xpos, unsigned int ypos,
+      std::vector<ua_triangle3d_textured> &alltriangles);
 
    // loading / saving / importing
 

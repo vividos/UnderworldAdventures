@@ -111,6 +111,11 @@ ua_levelmap_tile &ua_level::get_tile(unsigned int xpos, unsigned int ypos)
    return tiles[ypos*64 + xpos];
 }
 
+void ua_level::get_tile_triangles(unsigned int xpos, unsigned int ypos,
+   std::vector<ua_triangle3d_textured> &alltriangles)
+{
+}
+
 void ua_level::load_game(ua_savegame &sg)
 {
    // read tilemap
