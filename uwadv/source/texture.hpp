@@ -98,10 +98,10 @@ public:
    void upload(bool mipmaps=false);
 
    //! returns u texture coordinate
-   double get_tex_u();
+   double get_tex_u() const;
 
    //! returns v texture coordinate
-   double get_tex_v();
+   double get_tex_v() const;
 
    //! cleans up texture name(s) after usage
    void done();
@@ -112,10 +112,10 @@ public:
    const Uint32* get_texels(unsigned int numtex=0);
 
    //! returns x resolution
-   unsigned int get_xres();
+   unsigned int get_xres() const;
 
    //! returns y resolution
-   unsigned int get_yres();
+   unsigned int get_yres() const;
 
 protected:
    //! pointer to texture manager, or NULL if none available
@@ -210,22 +210,22 @@ protected:
 
 // inline methods
 
-inline double ua_texture::get_tex_u()
+inline double ua_texture::get_tex_u() const
 {
    return u;
 }
 
-inline double ua_texture::get_tex_v()
+inline double ua_texture::get_tex_v() const
 {
    return v;
 }
 
-inline unsigned int ua_texture::get_xres()
+inline unsigned int ua_texture::get_xres() const
 {
    return xres;
 }
 
-inline unsigned int ua_texture::get_yres()
+inline unsigned int ua_texture::get_yres() const
 {
    return yres;
 }
