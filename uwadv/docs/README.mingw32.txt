@@ -6,9 +6,10 @@ This is the Readme file for compiling Underworld Adventures using MinGW32.
 MinGW Setup
 -----------
 
-First, you should install mingw and MSYS, available from
-http://www.mingw.org/. Either get a full distribution, e.g.
-MinGW-1.1.tar.gz (or any later version) or get the packages separately (e.g.):
+First, you should install mingw32 and MSYS, available from
+http://www.mingw.org/. MSYS is needed for compiling uwadv and STLport. For
+mingw32, either get a full distribution, e.g. MinGW-1.1.tar.gz (or any later
+version) or get the packages separately (e.g.):
 
    gcc-3_1-core-20020516-1.tar.gz
    binutils-2_12_90-20020518-1.tar.gz
@@ -25,7 +26,7 @@ In this example, the mingw package was extracted to "c:\mingw\". The main
 project dir always is the folder with the Makefile.mingw (among others).
 
 SDL/SDL_mixer Setup
----------
+-------------------
 
 SDL 1.2.3 or later is needed to compile Underworld Adventures. Just download
 the SDL mingw32 development package from http://www.libsdl.org/. Extract the
