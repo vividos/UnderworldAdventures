@@ -35,6 +35,8 @@
 bool can_exit = false;
 unsigned int width, height;
 
+const double crit_ai_tickrate = 20.0;
+
 enum action_mode
 {
    mode_none=0,
@@ -50,15 +52,16 @@ ua_underworld underworld;
 ua_settings settings;
 ua_files_manager filesmgr;
 ua_texture_manager texmgr;
+ua_debug_interface* debug;
 
-class dummy_core: public ua_game_core_interface
+class ua_dummy_core: public ua_game_core_interface
 {
 public:
-   dummy_core():audio(NULL){}
+   ua_dummy_core():audio(NULL){}
    virtual void init_game(){}
    virtual unsigned int get_screen_width(){ return width; }
    virtual unsigned int get_screen_height(){ return height; }
-   virtual unsigned int get_tickrate(){ return 20.0; }
+   virtual unsigned int get_tickrate(){ return crit_ai_tickrate; }
    virtual ua_audio_interface &get_audio(){ return *audio; }
    virtual ua_gamestrings &get_strings(){ return underworld.get_strings(); }
    virtual ua_settings &get_settings(){ return settings; }
@@ -67,7 +70,7 @@ public:
    virtual ua_critter_pool& get_critter_pool(){ return critter_pool; };
    virtual ua_model3d_manager& get_model_manager(){ return model_manager; };
    virtual ua_savegames_manager& get_savegames_mgr(){ return savegames_mgr; };
-   virtual ua_debug_interface* get_debug_interface(){ return NULL; }
+   virtual ua_debug_interface* get_debug_interface(){ return debug; }
    virtual ua_underworld &get_underworld(){ return underworld; }
 
    virtual void push_screen(ua_ui_screen_base *newscreen){}
@@ -80,7 +83,48 @@ public:
    ua_audio_interface* audio;
 };
 
-dummy_core core;
+ua_dummy_core core;
+
+
+class ua_dummy_callback: public ua_underworld_script_callback
+{
+public:
+   ua_dummy_callback(){}
+
+   virtual void ui_changed_level(unsigned int level)
+   {
+      // prepare all used wall/ceiling textures
+      {
+         const std::vector<Uint16>& used_textures =
+            underworld.get_current_level().get_used_textures();
+
+         unsigned int max = used_textures.size();
+         for(unsigned int n=0; n<max; n++)
+            texmgr.prepare(used_textures[n]);
+      }
+/*
+      // prepare all switch, door and tmobj textures
+      {
+         unsigned int n;
+         for(n=0; n<16; n++) texmgr.prepare(ua_tex_stock_switches+n);
+         for(n=0; n<13; n++) texmgr.prepare(ua_tex_stock_door+n);
+         for(n=0; n<33; n++) texmgr.prepare(ua_tex_stock_tmobj+n);
+      }
+*/
+   };
+
+   virtual void ui_start_conv(unsigned int level, unsigned int objpos){}
+   virtual void ui_show_cutscene(unsigned int cutscene){}
+   virtual void ui_print_string(const char* str)
+   {
+      ua_trace("ui_print_string: %s\n",str);
+   }
+   virtual void ui_show_ingame_anim(unsigned int anim){}
+   virtual void ui_cursor_use_item(Uint16 item_id){}
+   virtual void ui_cursor_target(){}
+};
+
+ua_dummy_callback callback;
 
 
 // functions
@@ -126,26 +170,14 @@ void crit_ai_init()
    // import default game
    underworld.import_savegame(settings,"data/",true);
 
-   // prepare all used wall/ceiling textures
-   {
-      const std::vector<Uint16>& used_textures =
-         underworld.get_current_level().get_used_textures();
+   callback.ui_changed_level(0);
 
-      unsigned int max = used_textures.size();
-      for(unsigned int n=0; n<max; n++)
-         texmgr.prepare(used_textures[n]);
-   }
 
-/*
-   // prepare all switch, door and tmobj textures
-   {
-      unsigned int n;
-      for(n=0; n<16; n++) texmgr.prepare(ua_tex_stock_switches+n);
-      for(n=0; n<13; n++) texmgr.prepare(ua_tex_stock_door+n);
-      for(n=0; n<33; n++) texmgr.prepare(ua_tex_stock_tmobj+n);
-   }
-*/
+   underworld.get_scripts().register_callback(&callback);
 
+   // get debug interface ptr
+   debug = ua_debug_interface::get_new_debug_interface(&core);
+   debug->start_debugger();
 
    // OpenGL setup
 
@@ -177,6 +209,8 @@ void crit_ai_init()
 
 void crit_ai_done()
 {
+   delete debug;
+   debug = NULL;
 }
 
 void draw_screen()
@@ -223,6 +257,23 @@ void draw_screen()
       glTexCoord2d(1.0, 0.0); if (omit_vertex&2) glVertex2i(x+1,y);
       glTexCoord2d(1.0, 1.0); if (omit_vertex&4) glVertex2i(x+1,y+1);
       glTexCoord2d(0.0, 1.0); if (omit_vertex&8) glVertex2i(x,  y+1);
+      glEnd();
+   }
+
+   // draw player
+   {
+      double xpos = underworld.get_player().get_xpos();
+      double ypos = underworld.get_player().get_ypos();
+
+      glBindTexture(GL_TEXTURE_2D, 0);
+      glColor3ub(0,255,0);
+
+      double quadwidth = 0.4;
+      glBegin(GL_QUADS);
+      glVertex2d(xpos+quadwidth,ypos+quadwidth);
+      glVertex2d(xpos-quadwidth,ypos+quadwidth);
+      glVertex2d(xpos-quadwidth,ypos-quadwidth);
+      glVertex2d(xpos+quadwidth,ypos-quadwidth);
       glEnd();
    }
 
@@ -310,8 +361,11 @@ int main(int argc, char* argv[])
 
 
    // main loop
-   Uint32 now, fcstart = SDL_GetTicks();
-   unsigned int renders=0;
+   Uint32 now, then, fcstart;
+   unsigned int renders, ticks, tickcount;
+
+   then = fcstart = SDL_GetTicks();
+   renders = ticks = tickcount = 0;
 
    // main loop
    while(!can_exit)
@@ -322,17 +376,35 @@ int main(int argc, char* argv[])
 
       now = SDL_GetTicks();
 
+      // do a tick
+      while ((now - then) > (1000.0/core.get_tickrate()))
+      {
+         then += Uint32(1000.0/core.get_tickrate());
+
+         underworld.eval_underworld(double(tickcount)/core.get_tickrate());
+         tickcount++;
+
+         debug->tick();
+
+         ticks++;
+      }
+
+      // catch up if ticks or rendering take too long
+      if ((now - then) > (1000.0/core.get_tickrate()))
+         then = now - Uint32(1000.0/core.get_tickrate());
+
       if (now-fcstart > 2000/* || force_fps_update*/)
       {
          // set new caption
          char buffer[256];
-         sprintf(buffer,"Underworld Adventures: Critter AI workbench - %3.1f frames/s",
-            renders*1000.f/(now-fcstart));
+         sprintf(buffer,"Underworld Adventures: Critter AI workbench - %3.1f frames/s, %3.1 ticks/s",
+            renders*1000.f/(now-fcstart),ticks*1000.f/(now-fcstart));
 
          SDL_WM_SetCaption(buffer,NULL);
 
          // restart counting
          renders = 0;
+         ticks = 0;
          fcstart = now;
          //force_fps_update = false;
       }
