@@ -1,0 +1,2 @@
+?package(uwadv):needs=X11 section=Games/Adventure\
+  title="Underworld Adventures" command="/usr/games/uwadv"

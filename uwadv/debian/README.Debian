@@ -1,0 +1,41 @@
+Ultima Adventures for Debian
+----------------------------
+
+This is my first public _Debian Package_. Any suggestions are more than welcome.
+
+Do _NOT_ try to contact Official Debian Maintainers about this package.
+I am not _Official Debian Maintainer_. 
+
+Do _NOT_ try to submit bug(s) against this package on official Debian site.
+This package isn't official.
+
+Any Package Specific Bug not listed below send directly to me.
+Even if you find language error. Please mail me. English is not my native 
+language.
+
+KNOWN PACKAGE SPECIFIC BUGS
+---------------------------
+
+* I am aware that this package may not be compatible with _Debian Policy_.
+  I'm working on it.
+  
+CVS-BUILD
+---------
+
+Before trying to create debian package. Please refer to docs/README.Linux.txt
+Especially pay attention to section _Remarks_ and follow steps described
+there. After that you can dpkg-buildpackage.
+
+CLOSED BUGS
+-----------
+
+* Currently you have to edit /etc/uwadv/uwadv.cfg by hand and specify 
+  _Ultima Underworld 1_ directory or put _Ultima Underworld 1_ data in 
+  /usr/share/games/uw1. _NOT ANY MORE_
+
+* Remember that all files in that directory have to be lowercase. There is 
+  script 'ua-lowercase-all.pl' in '/usr/games' that does the job. 
+  See man(6) page for further information. _YOU DON'T HAVE TO DO IT MANUALLY 
+  ANYMORE_
+
+ -- Radoslaw Grzanka <sad@rpg.pl>, Sun, 29 Apr 2003 18:39:02 +0200

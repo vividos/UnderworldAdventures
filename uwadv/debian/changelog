@@ -1,0 +1,24 @@
+uwadv (0.8a.CVS-2003-04-30) unstable; urgency=low
+
+  * CVS build
+
+ -- root <root@rybki>  Wed, 30 Apr 2003 17:14:51 +0200
+
+uwadv (0.8a.0-HotChili-1) unstable; urgency=low
+
+  * Changed postinst script to be more safe.
+  * New upstream release. 
+  
+ -- Radoslaw Grzanka <sad@rpg.pl>  Sun, 29 Apr 2003 17:39:02 +0200
+
+uwadv (0.8.0-HotChili-1) unstable; urgency=low
+
+  * You can specify _Ulitma Underworld 1_ direcotry upon installation 
+  * Script that makes lowercases file names runs after installation
+  * Bug in wrllexer.cpp resolved. Bug #722818 closed.
+  * Changed configure script to store configuration files in /etc/uwadv
+  * Changed configure script to store binary files in /usr/games
+  * Initial Release.
+
+ -- Radoslaw Grzanka <sad@rpg.pl>  Sun, 27 Apr 2003 18:39:02 +0200
+

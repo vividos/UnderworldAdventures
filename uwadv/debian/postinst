@@ -1,0 +1,24 @@
+#!/bin/sh -e
+# Automatically added by dh_installdocs
+if [ "$1" = "configure" ]; then
+	if [ -d /usr/doc -a ! -e /usr/doc/uwadv -a -d /usr/share/doc/uwadv ]; then
+		ln -sf ../share/doc/uwadv /usr/doc/uwadv
+	fi
+fi
+# End automatically added section
+# Automatically added by dh_installmenu
+if [ "$1" = "configure" -a -x /usr/bin/update-menus ]; then update-menus ; fi
+# End automatically added section
+
+
+
+if [ "$1" = "configure" -a -e /usr/share/debconf/confmodule ]; then
+    #Source debconf library.
+    . /usr/share/debconf/confmodule
+
+    db_get uwadv/Location
+
+    perl -i.bak -pe 's#^uw1-path.*#uw1-path'" $RET#" /etc/uwadv/uwadv.cfg
+
+    /usr/games/ua-lowercase-all.pl $RET >/dev/null
+fi

@@ -1,0 +1,11 @@
+Template: uwadv/Location
+Type: string
+Default: /usr/share/games/uw1
+Description: ULTIMA UNDERWORLD 1 path:
+ Please enter full path to _Ultima Underworld 1_ directory. 
+ _Ultima Underworld 1_ (or _Ultima Underworld demo_) is required to enjoy 
+ _Ultima Adventures_.
+ .
+ If you haven't got these files you can specify location later by executing
+ command: dpkg-reconfigure uwadv
+ 

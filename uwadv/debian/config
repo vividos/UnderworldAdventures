@@ -1,0 +1,10 @@
+#!/bin/sh -e
+
+#Source debconf library.
+
+. /usr/share/debconf/confmodule
+
+#Location
+
+db_input medium uwadv/Location || true
+db_go
