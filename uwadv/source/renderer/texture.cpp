@@ -96,7 +96,7 @@ void ua_texture::convert(Uint8* pix, unsigned int origx, unsigned int origy,
    }
 
    // convert color indices to 32-bit texture
-   Uint32* palptr = reinterpret_cast<Uint32*>(&pal);
+   Uint32* palptr = reinterpret_cast<Uint32*>(pal.get());
    Uint32* texptr = &texels[numtex*xres*yres];
 
    for(unsigned int y=0; y<origy; y++)
@@ -315,24 +315,6 @@ void ua_texture_manager::reset()
    last_texname = 0;
 }
 
-//! rotates palette indices
-void ua_palette_rotate(ua_palette256& pal,Uint8 start, Uint8 len, bool forward)
-{
-   Uint8 save[4];
-   if (forward)
-   {
-      memcpy(save,&pal[start],sizeof(pal[0]));
-      memmove(&pal[start],&pal[start+1],(len-1)*sizeof(pal[0]));
-      memcpy(pal[start+len-1],save,sizeof(pal[0]));
-   }
-   else
-   {
-      memcpy(save,&pal[start+len-1],sizeof(pal[0]));
-      memmove(&pal[start+1],&pal[start],(len-1)*sizeof(pal[0]));
-      memcpy(pal[start],save,sizeof(pal[0]));
-   }
-}
-
 void ua_texture_manager::prepare(unsigned int idx)
 {
    if (idx>=allstocktex_imgs.size())
@@ -353,8 +335,7 @@ void ua_texture_manager::prepare(unsigned int idx)
    }
    else
    {
-      ua_palette256 pal;
-      memcpy(pal,*palette0,sizeof(ua_palette256));
+      ua_palette256 pal = *palette0;
 
       unsigned int xres = allstocktex_imgs[idx].get_xres();
       unsigned int yres = allstocktex_imgs[idx].get_xres();
@@ -370,7 +351,7 @@ void ua_texture_manager::prepare(unsigned int idx)
             stock_textures[idx].upload(i,true); // upload texture with mipmaps
 
             // rotate entries
-            ua_palette_rotate(pal,16,8,false);
+            pal.rotate(16,8,false);
          }
       }
       else
@@ -383,7 +364,7 @@ void ua_texture_manager::prepare(unsigned int idx)
             stock_textures[idx].upload(i,true); // upload texture with mipmaps
 
             // rotate entries
-            ua_palette_rotate(pal,48,4,true);
+            pal.rotate(48,4,true);
          }
       }
    }
