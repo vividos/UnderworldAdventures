@@ -40,7 +40,7 @@
 #include "audio.hpp"
 #include "savegame.hpp"
 #include "renderer.hpp"
-#include "start_menu.hpp"
+//#include "start_menu.hpp"
 //#include "ingame_orig.hpp"
 
 
@@ -67,30 +67,24 @@ void ua_start_splash_screen::init()
    // start intro midi music
    game->get_audio_manager().start_music(0,false);
 
-   // setup orthogonal projection
-   glMatrixMode(GL_PROJECTION);
-   glLoadIdentity();
-   gluOrtho2D(0,320,0,200);
-   glMatrixMode(GL_MODELVIEW);
-
-   // set OpenGL flags
-   glEnable(GL_TEXTURE_2D);
-   glBindTexture(GL_TEXTURE_2D,0);
-
-   glDisable(GL_DEPTH_TEST);
-   glDisable(GL_BLEND);
+   game->get_renderer().setup_camera2d();
 
    // load first image
-   ua_trace("loading first image\n");
-   ua_image img;
+   {
+      ua_trace("loading first image\n");
 
-   const char* first_img_name = "data/pres1.byt";
-   if (game->get_settings().get_gametype() == ua_game_uw_demo)
-      first_img_name = "data/presd.byt";
+      const char* first_img_name = "data/pres1.byt";
+      if (game->get_settings().get_gametype() == ua_game_uw_demo)
+         first_img_name = "data/presd.byt";
 
-   img_still.load_raw(game->get_settings(),first_img_name,5);
-   img_still.init(&game->get_renderer().get_texture_manager(),0,0,320,200);
+      // load image, palette 5
+      game->get_image_manager().load(img_still.get_image(),
+         first_img_name, 0, 5, ua_img_byt);
 
+      img_still.init(*game, 0,0);
+   }
+
+   // demo game?
    if (game->get_settings().get_gametype() == ua_game_uw_demo)
    {
       // write a string under the demo title
@@ -102,12 +96,13 @@ void ua_start_splash_screen::init()
       double scale = 0.9;
       unsigned int xpos = unsigned((320-img_temp.get_xres()*scale)/2);
 
-      img_still.paste_image(img_temp,xpos,200-16);
+      img_still.get_image().paste_rect(img_temp, 0,0,
+         img_temp.get_xres(), img_temp.get_yres(),
+         xpos,200-16);
    }
 
-   img_still.convert_upload();
+   img_still.update();
 
-   // split image in two images
    stage = 0;
    tickcount = 0;
    curframe = 0;
@@ -132,8 +127,8 @@ void ua_start_splash_screen::destroy()
 {
    ua_screen::destroy();
 
-   img_still.done();
-   cuts_anim.done();
+   img_still.destroy();
+   cuts_anim.destroy();
 
    SDL_ShowCursor(0);
 
@@ -166,16 +161,15 @@ void ua_start_splash_screen::draw()
    if (stage>=2)
    {
       // prepare and convert animation frame
-      cuts_anim.get_frame(curframe);
-      cuts_anim.convert_upload();
+      cuts_anim.update_frame(curframe);
 
       // render quad
-      cuts_anim.render();
+      cuts_anim.draw();
    }
    else
    {
       // render still image
-      img_still.render();
+      img_still.draw();
    }
 }
 
@@ -247,7 +241,7 @@ void ua_start_splash_screen::tick()
 
       // load animation
       cuts_anim.load(game->get_settings(),"cuts/cs011.n01");
-      cuts_anim.init(&game->get_renderer().get_texture_manager());
+      cuts_anim.init(*game, 0,0);
 
       curframe = 0;
       animcount = 0.0;
@@ -267,8 +261,10 @@ void ua_start_splash_screen::tick()
          ua_trace("loading second image\n");
 
          // load second image
-         img_still.load_raw(game->get_settings(),"data/pres2.byt",5);
-         img_still.convert_upload();
+         game->get_image_manager().load(img_still.get_image(),
+            "data/pres2.byt", 0, 5, ua_img_byt);
+
+         img_still.update();
 
          stage++;
          tickcount=0;
@@ -312,7 +308,7 @@ void ua_start_splash_screen::tick()
          return;
       }
       else
-         game->replace_screen(new ua_start_menu_screen,false);
+         //TODOgame->replace_screen(new ua_start_menu_screen,false);
       break;
    }
 }
