@@ -32,8 +32,6 @@
 // needed includes
 #include <vector>
 #include "settings.hpp"
-#include "texture.hpp"
-#include "quadtree.hpp"
 #include "savegame.hpp"
 
 

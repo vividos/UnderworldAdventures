@@ -28,8 +28,6 @@
 // needed includes
 #include "common.hpp"
 #include "objects.hpp"
-#include "level.hpp"
-#include "uamath.hpp"
 
 
 // ua_object methods

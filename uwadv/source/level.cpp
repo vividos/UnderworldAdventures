@@ -28,13 +28,8 @@
 // needed includes
 #include "common.hpp"
 #include "level.hpp"
-#include <string>
 #include <set>
-#include <algorithm>
 #include <cmath>
-
-
-#undef HAVE_ALTERNATE_RENDERER
 
 
 // ua_level methods
