@@ -550,7 +550,7 @@ int main(int argc, char *argv[])
    {
       printf("syntax: cnvdbg <cnv-file> <str-file> <bglobals-file>\n");
       printf("example: cnvdbg \"data\\cnv.ark\" "
-         "\"data\\strings.ark\""
+         "\"data\\strings.pak\""
          "\"save1\\bglobals.dat\"\n\n");
       return 0;
    }
