@@ -18,3 +18,7 @@ libzziplib_la_SOURCES = \
 	zzip.h \
 	zzipformat.h \
 	zziplib.h
+
+EXTRA_DIST = \
+	COPYING.LGPL \
+	COPYING.ZZIP
