@@ -1011,6 +1011,8 @@ Table of Contents
    n+06   Int16   import type (0x010F=variable, 0x0111=imported func.)
    n+08   Int16   return type (0x0000=void, 0x0129=int, 0x012B=string)
 
+   After this table the code section follows.
+
    Each conversation has a set of private global variables that are saved
    across conversations. The initial size of them are stored in the file
    "babglobals.dat". When a game is saved, the globals are stored in the file
@@ -1027,9 +1029,9 @@ Table of Contents
 
    * Memory layout
 
-     0000    unnamed globals (may be empty, size n)
+     0000    unnamed globals (may be empty, size nglobals)
      000n    imported globals (copied on start) (usually 0x001f long)
-     0020    private conversation globals (of size n)
+     0020    private conversation globals (of size nprivglobals)
      0020+n  stack begin (ascends up)
 
      There may be unnamed globals that start at memory location 0. The
@@ -1151,63 +1153,64 @@ Table of Contents
      even unused ones. All imported functions have at least one argument, and
      the first one is the number of arguments additionally passed (some times
      this rule seems to be violated, e.g. function "babl_menu", see (*)
-     below). First argument is always pushed last on stack.
+     below). First argument is always pushed last on stack. All values are
+     passed by reference.
 
      Here is a quick overview of all builtin functions ("args" is the number
      of arguments without the mandatory first one):
 
-       id   type    args     function name
-      0000  int      1 (*)   babl_menu
-      0001  int      2 (*)   babl_fmenu
-      0002  void     1       print
-      0003  int      0       babl_ask
-      0004  int      2       compare
-      0005  int      1       random
-      0006  string   ?       plural
-      0007  int      2       contains
-      0008  string   ?       append
-      0009  string   ?       copy
-      000a  int      ?       find
-      000b  int      1       length
-      000c  int      ?       val
-      000d  void     ?       say
-      000e  void     ?       respond
-      000f  int      1       get_quest
-      0010  void     2       set_quest
-      0011  string   2       sex
-      0012  int      2       show_inv
-      0013  int      2       give_to_npc
-      0014  int      2       give_ptr_npc
-      0015  int      1       take_from_npc
-      0016  int      1       take_id_from_npc
-      0017  int      4       identify_inv
-      0018  int      *       do_offer
-      0019  int      2       do_demand
-      001a  int      1       do_inv_create
-      001b  int      1       do_inv_delete
-      001c  int      1       check_inv_quality
-      001d  int      2       set_inv_quality
-      001e  int      1       count_inv
-      001f  void     0       setup_to_barter
-      0020  void     ?       end_barter
-      0021  void     0       do_judgement
-      0022  void     0       do_decline
-      0023  void     ?       pause
-      0024  void     2       set_likes_dislikes
-      0025  int      3       gronk_door
-      0026  void     1/3     set_race_attitude
-      0027  void     3       place_object
-      0028  void     1       take_from_npc_inv
-      0029  void     ?       add_to_npc_inv
-      002a  void     0       remove_talker
-      002b  void     2       set_attitude
-      002c  int      2       x_skills
-      002d  int      2       x_traps
-      002e  void     ?       x_obj_pos
-      002f  void     9       x_obj_stuff
-      0030  int      2       find_inv
-      0031  int      1       find_barter
-      0032  int      4       find_barter_total
+      type    args     function name
+      int      1 (*)   babl_menu
+      int      2 (*)   babl_fmenu
+      void     1       print
+      int      0       babl_ask
+      int      2       compare
+      int      1       random
+      string   ?       plural
+      int      2       contains
+      string   ?       append
+      string   ?       copy
+      int      ?       find
+      int      1       length
+      int      ?       val
+      void     ?       say
+      void     ?       respond
+      int      1       get_quest
+      void     2       set_quest
+      string   2       sex
+      int      2       show_inv
+      int      2       give_to_npc
+      int      2       give_ptr_npc
+      int      1       take_from_npc
+      int      1       take_id_from_npc
+      int      4       identify_inv
+      int      *       do_offer
+      int      2       do_demand
+      int      1       do_inv_create
+      int      1       do_inv_delete
+      int      1       check_inv_quality
+      int      2       set_inv_quality
+      int      1       count_inv
+      void     0       setup_to_barter
+      void     ?       end_barter
+      void     0       do_judgement
+      void     0       do_decline
+      void     ?       pause
+      void     2       set_likes_dislikes
+      int      3       gronk_door
+      void     1/3     set_race_attitude
+      void     3       place_object
+      void     1       take_from_npc_inv
+      void     ?       add_to_npc_inv
+      void     0       remove_talker
+      void     2       set_attitude
+      int      2       x_skills
+      int      2       x_traps
+      void     ?       x_obj_pos
+      void     9       x_obj_stuff
+      int      2       find_inv
+      int      1       find_barter
+      int      4       find_barter_total
 
      Here is a detailed description of every builtin function. arg0 is always
      the first argument (the last value pushed on the stack) and specifies the
