@@ -1,6 +1,6 @@
 #
 # Underworld Adventures - an Ultima Underworld hacking project
-# Copyright (c) 2002,2003 Underworld Adventures Team
+# Copyright (c) 2002-2004 Underworld Adventures Team
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,6 +26,17 @@ AUTOMAKE_OPTIONS = foreign
 SUBDIRS = hacking source uadata
 
 bin_SCRIPTS = linux/ua-lowercase-all.pl
+
+docbookdir = $(prefix)/share/doc/uwadv
+if have_xsltproc
+dist_docbook_DATA = docs/docbook/uwadv-manual.html
+DOCBOOKXSL=http://docbook.sourceforge.net/release/xsl/current/html/docbook.xsl
+
+docs/docbook/uwadv-manual.html: ${top_srcdir}/docs/docbook/uwadv-manual.xml
+	$(XSLTPROC) $(XSLTPROC_FLAGS) -o $ @$(DOCBOOKXSL) $<
+else
+dist_docbook_DATA =
+endif
 
 EXTRA_DIST =  \
 	autogen.sh \

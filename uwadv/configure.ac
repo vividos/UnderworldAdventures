@@ -208,6 +208,11 @@ AC_ARG_WITH(uw1, [  --with-uw1=DIR          directory where UW1 is installed ],U
 AC_SUBST(UW1PATH)
 
 
+# see if we have xsltproc/docbook stylesheets so we can build docs
+# this sets the 'have_xsltproc' automake conditional
+AX_CHECK_DOCBOOK
+
+
 UADATAPATH=${datadir}/games/uwadv/
 AC_SUBST(UADATAPATH)
 
