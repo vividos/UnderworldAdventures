@@ -250,9 +250,9 @@ void ua_renderer::select_pick(const ua_underworld& underw, unsigned int xpos,
    }
 
    // render scene
-//   selection_mode = true;
+   renderer_impl->set_selection_mode(true);
    render_underworld(underw);
-//   selection_mode = false;
+   renderer_impl->set_selection_mode(false);
 
    // switch off selection mode
    GLint hits = glRenderMode(GL_RENDER);

@@ -66,6 +66,9 @@ public:
    //! renders the objects of a tile
    void render_objects(const ua_level& level, unsigned int x, unsigned int y);
 
+   //! sets selection mode on or off
+   void set_selection_mode(bool enabled){ selection_mode = enabled; }
+
 protected:
    //! renders a single object
    void render_object(const ua_level& level, const ua_object& obj,
