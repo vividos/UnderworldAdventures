@@ -8,14 +8,22 @@ MinGW Setup
 
 First, you should install mingw32 and MSYS, available from
 http://www.mingw.org/. MSYS is needed for compiling uwadv and STLport. For
-mingw32, either get a full distribution, e.g. MinGW-1.1.tar.gz (or any later
+mingw32, either get a full distribution, e.g. MinGW-2.0.0-3.exe (or any later
 version) or get the packages separately (e.g.):
 
-   gcc-3_1-core-20020516-1.tar.gz
-   binutils-2_12_90-20020518-1.tar.gz
-   w32api-1.5.tar.gz
-   mingw-runtime-2.0.tar.gz
-   make-3.79.1-20010722.tar.gz
+   gcc-3.2-core-20020817-1
+   binutils-2.13-20020903-1
+   mingw-runtime-2.2
+   w32api-2.0
+   make-3.79.1-20010722 
+
+an older set of the files using gcc-3.1 would be:
+
+   gcc-3_1-core-20020516-1
+   binutils-2_12_90-20020518-1
+   w32api-1.5
+   mingw-runtime-2.0
+   make-3.79.1-20010722
 
 To let the system find the make program and the compiler, you should add
 something like this to your "autoexec.bat" (or wherever):
