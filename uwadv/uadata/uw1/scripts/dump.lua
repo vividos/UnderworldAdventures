@@ -82,3 +82,37 @@ function dump_objinfo_table(obj_handle)
        )
    end
 end
+
+-- dumps inventory item info table entries
+function dump_invinfo_table(inv_pos)
+
+   objinfo = inv_get_objinfo(inv_pos);
+
+   local category = "quantity"
+
+   if objinfo.is_quantity > 0
+   then
+      if objinfo.quantity >= 512
+      then
+         category = "special"
+      end
+   else
+      category = "sp_link"
+   end
+
+   print( "dumping inventory item info, inv_pos = " .. format("%04x",inv_pos) .."\n" ..
+      " item_id = " .. format("%04x",objinfo.item_id) ..
+      " (" .. ui_get_gamestring(4,objinfo.item_id) .. ")," ..
+
+      " link = " .. format("%04x",objinfo.link) .. "\n" ..
+
+      format(" quality = %04x,",objinfo.quality) ..
+      format(" owner = %04x, ",objinfo.owner) ..
+      category .. format(" = %04x\n",objinfo.quantity) ..
+
+      " enchanted = " .. objinfo.enchanted ..
+      ", is_quantity = " .. objinfo.is_quantity ..
+      ", flags = " .. format("%04x\n",objinfo.flags)
+   )
+
+end
