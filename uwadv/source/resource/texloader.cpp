@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -91,9 +91,23 @@ void ua_texture_manager::init(ua_settings &settings)
       // init stock texture objects
       reset();
    }
+   else
+   if (settings.get_gametype() == ua_game_uw2)
+   { 
+      // load all textures
+      std::string texfname(settings.get_string(ua_setting_uw_path));
+      texfname.append("data/t64.tr");
+
+      load_textures(0,texfname.c_str());
+
+      // init stock texture objects
+      reset();
+   }
 
    // load object texture graphics
-   if (settings.get_gametype() == ua_game_uw1 || settings.get_gametype() == ua_game_uw_demo)
+   if (settings.get_gametype() == ua_game_uw1 ||
+       settings.get_gametype() == ua_game_uw2 ||
+       settings.get_gametype() == ua_game_uw_demo)
    {
       // load image list
       ua_image_list il;
@@ -215,6 +229,9 @@ void ua_texture_manager::load_textures(unsigned int startidx, const char *texfna
    // read in all textures
    for(int tex=0; tex<entries; tex++)
    {
+      if (offsets[tex]>=flen)
+         continue;
+
       // seek to texture entry
       fseek(fd,offsets[tex],SEEK_SET);
 
