@@ -4,7 +4,7 @@
 # $Id$
 #
 
-SUBDIRS = tools resource lua
+SUBDIRS = tools resource lua debug
 
 # compiler options
 CXXFLAGS = @CXXFLAGS@
