@@ -774,13 +774,13 @@ void ua_panel::inventory_click(bool button_down, bool left_button,
    {
       // trigger "use" action
       if (item != ua_item_none && scripting != NULL)
-         scripting->inventory_use(item);
+         scripting->user_action(ua_action_use_object_inventory, item);
    }
    else
    {
       // trigger "look" action
       if (item != ua_item_none && scripting != NULL)
-         scripting->inventory_look(item);
+         scripting->user_action(ua_action_look_object_inventory, item);
    }
 }
 
