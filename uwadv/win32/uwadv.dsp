@@ -997,6 +997,10 @@ SOURCE=..\source\resource\objloader.cpp
 
 SOURCE=..\source\resource\texloader.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=..\source\resource\tgaimport.cpp
+# End Source File
 # End Group
 # Begin Source File
 

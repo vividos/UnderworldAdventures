@@ -33,6 +33,7 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	resource/texloader.cpp resource/objloader.cpp \
 	resource/cutsloader.cpp resource/savegame.cpp \
 	resource/critloader.cpp resource/modeldecode.cpp \
+	resource/tgaimport.cpp \
 	resource/fread_endian.hpp \
 	resource/model/FlexLexer.h resource/model/unistd.h \
 	resource/model/importwrl.cpp \
