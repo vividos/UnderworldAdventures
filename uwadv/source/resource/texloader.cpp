@@ -113,6 +113,14 @@ void ua_texture_manager::init(ua_settings &settings)
          if (id!=(302-256))
             part2.paste_image(il.get_image(id+256),(id&0x0f)<<4,id&0xf0);
       }
+/*
+      std::vector<Uint8> &pix1 = part1.get_pixels();
+      std::vector<Uint8> &pix2 = part2.get_pixels();
+      for(int i=0; i<256*256; i++)
+      {
+         if (pix1[i]==0) pix1[i]=11;
+         if (pix2[i]==0) pix2[i]=11;
+      }*/
 
       // TODO paste images 218 to 223 and 302 into remaining space
 
