@@ -100,6 +100,9 @@ protected:
    //! midi driver to use
    ua_midi_driver *midi_driver;
 
+   //! midi device for the win32 midi driver
+   int win32_midi_device;
+
    // music conversion type
    int music_conversion;
 

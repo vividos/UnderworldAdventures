@@ -74,6 +74,8 @@ void ua_midi_player::init_player(ua_settings &settings)
 {
    // todo: retrieve these values from the settings
 
+   win32_midi_device = settings.get_int(ua_setting_win32_midi_device);
+
    music_conversion = XMIDI_CONVERT_MT32_TO_GM;
 //   music_conversion = XMIDI_CONVERT_MT32_TO_GS;
 //   music_conversion = XMIDI_CONVERT_MT32_TO_GS127;
@@ -89,7 +91,11 @@ bool ua_midi_player::init_driver()
    midi_driver = NULL;
 
 #ifdef WIN32
-   ua_try_midi_driver(midi_driver,new ua_win_midiout);
+   {
+      ua_win_midiout* windrv = new ua_win_midiout;
+      windrv->set_dev_num(win32_midi_device);
+      ua_try_midi_driver(midi_driver,windrv);
+   }
 #endif
 
 #ifdef HAVE_FMOD_H

@@ -61,6 +61,9 @@ public:
    //! initializes driver
    virtual bool init_driver();
 
+   //! sets device number to use
+   void set_dev_num(signed int num){ dev_num = num; }
+
 private:
 
 	struct mid_data {

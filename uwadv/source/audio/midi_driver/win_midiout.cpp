@@ -28,6 +28,7 @@
 #include "common.hpp"
 #include "win_midiout.h"
 #include "../xmidi.hpp"
+#include <iostream>
 
 
 // constants
@@ -126,7 +127,7 @@ void ua_win_midiout::init_device()
    
    // Get Win32 Midi Device num
 //   config->value("config/audio/midi/win32_device", dev_num, -1);
-   dev_num = -1;
+//   dev_num = -1;
 
    giveinfo();
    thread_handle = (HANDLE*) CreateThread (NULL, 0, thread_start, this, 0, &thread_id);
@@ -179,7 +180,7 @@ DWORD ua_win_midiout::thread_main()
       dev_num = -1;
    }
    midiOutGetDevCaps ((UINT) dev_num, &caps, sizeof(caps));
-//   std::cout << "Using device " << dev_num << ": "<< caps.szPname << endl;
+   std::cout << "ua_win_midiout: Using device " << dev_num << ": "<< caps.szPname << std::endl;
 
    UINT mmsys_err = midiOutOpen (&midi_port, dev_num, 0, 0, 0);
 
