@@ -404,6 +404,11 @@ void ua_game::init_game()
 
 void ua_game::push_screen(ua_ui_screen_base *newscreen)
 {
+   // clear screen; this stuff could take a while
+   glClearColor(0,0,0,0);
+   glClear(GL_COLOR_BUFFER_BIT);
+   SDL_GL_SwapBuffers();
+
    // save old screen on stack
    if (screen!=NULL)
    {
@@ -413,9 +418,7 @@ void ua_game::push_screen(ua_ui_screen_base *newscreen)
 
    // we have a new screen
    screen = newscreen;
-
-   screen->set_core(this);
-   screen->init();
+   screen->init(this);
 
    // reset tick timer
    reset_tick_timer = true;
