@@ -91,11 +91,19 @@ protected:
    //! update chain images only
    void update_chains();
 
+   //! updates inventory panel
+   void update_inventory();
+
    //! updates stats panel
    void update_stats();
 
    //! updates runebag panel
    void update_runebag();
+
+   //! clicked somewhere on inventory panel
+   void inventory_click(bool button_down, bool left_button,
+      enum ua_panel_inventory_area_id area);
+
 
 protected:
    //! interface to panel owner
@@ -147,6 +155,9 @@ protected:
    //! font for stats list
    ua_font font_stats;
 
+   //! font for inventory weight
+   ua_font font_weight;
+
 
    //! indicates if panel is currently rotating
    bool rotate_panel;
@@ -160,21 +171,6 @@ protected:
    //! indicates if old-style "jerky" rotation should be used
    bool rotation_oldstyle;
 
-
-/*
-protected:
-   //! updates panel texture
-   void update_panel_texture();
-
-   void update_cursor_image();
-
-   //! clicked on inventory
-   void inventory_click(
-      bool pressed, bool left_button, unsigned int area);
-
-   void inventory_dragged_item();
-
-protected:
    // inventory / item dragging
 
    //! start of inventory slots the user sees
@@ -183,17 +179,18 @@ protected:
    //! indicates if dragging should be checked
    bool check_dragging;
 
+
+/*
+   void update_cursor_image();
+
+   void inventory_dragged_item();
+
+protected:
    //! area the item is dragged from
    unsigned int drag_area;
 
    //! item index that is currently dragged
    Uint16 drag_item;
-
-
-   // panel graphics
-
-   //! normal font for inventory weight
-   ua_font font_normal;
 */
 };
 

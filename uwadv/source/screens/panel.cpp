@@ -36,6 +36,76 @@
 const double ua_panel_rotate_time = 2.5;
 
 
+// tables
+
+//! inventory area types
+enum ua_panel_inventory_area_id
+{
+   ua_area_inv_slot0=0,
+   ua_area_inv_slot1,
+   ua_area_inv_slot2,
+   ua_area_inv_slot3,
+   ua_area_inv_slot4,
+   ua_area_inv_slot5,
+   ua_area_inv_slot6,
+   ua_area_inv_slot7,
+
+   ua_area_inv_container,
+   ua_area_inv_scroll_up,
+   ua_area_inv_scroll_down,
+
+   ua_area_equip_left_hand,
+   ua_area_equip_left_shoulder,
+   ua_area_equip_left_ring,
+
+   ua_area_equip_right_hand,
+   ua_area_equip_right_shoulder,
+   ua_area_equip_right_ring,
+
+   ua_area_paperdoll_head,
+   ua_area_paperdoll_chest,
+   ua_area_paperdoll_hand,
+   ua_area_paperdoll_legs,
+   ua_area_paperdoll_feet,
+
+   ua_area_none
+};
+
+//! inventory area table
+struct {
+   ua_panel_inventory_area_id area_id;
+   unsigned int xmin, xmax, ymin, ymax;
+} ua_panel_inventory_areas[] =
+{
+   { ua_area_inv_slot0,  5, 24, 76,  93 },
+   { ua_area_inv_slot1, 25, 43, 76,  93 },
+   { ua_area_inv_slot2, 44, 62, 76,  93 },
+   { ua_area_inv_slot3, 63, 80, 76,  93 },
+   { ua_area_inv_slot4,  5, 24, 94, 110 },
+   { ua_area_inv_slot5, 25, 43, 94, 110 },
+   { ua_area_inv_slot6, 44, 62, 94, 110 },
+   { ua_area_inv_slot7, 63, 80, 94, 110 },
+
+   { ua_area_inv_container,    5, 24, 60, 75 },
+   { ua_area_inv_scroll_up,   61, 70, 64, 75 },
+   { ua_area_inv_scroll_down, 71, 80, 64, 75 },
+
+   { ua_area_equip_left_hand,      7, 24, 29, 45 },
+   { ua_area_equip_left_shoulder, 10, 27,  7, 23 },
+   { ua_area_equip_left_ring,     24, 31, 50, 57 },
+
+   { ua_area_equip_right_hand,     61, 77, 29, 45 },
+   { ua_area_equip_right_shoulder, 59, 75,  7, 23 },
+   { ua_area_equip_right_ring,     55, 62, 50, 57 },
+
+   { ua_area_paperdoll_head,  36, 49,  5, 22 },
+   { ua_area_paperdoll_chest, 34, 51, 23, 44 },
+   { ua_area_paperdoll_hand,  27, 33, 38, 49 },
+   { ua_area_paperdoll_hand,  52, 58, 38, 49 }, // 2nd hand area
+   { ua_area_paperdoll_legs,  34, 51, 45, 60 },
+   { ua_area_paperdoll_feet,  32, 54, 61, 75 },
+};
+
 // ua_panel methods
 
 ua_panel::ua_panel()
@@ -56,6 +126,9 @@ void ua_panel::init(ua_panel_parent_interface* the_panel_parent, unsigned int xp
    rotate_angle = 0.0;
    rotation_oldstyle = !game.get_settings().get_bool(ua_setting_uwadv_features);
 
+   slot_start = 0;
+   check_dragging = false;
+
    // load image lists
    ua_image_manager& img_manager = game.get_image_manager();
 
@@ -71,7 +144,7 @@ void ua_panel::init(ua_panel_parent_interface* the_panel_parent, unsigned int xp
 
    // load fonts
    font_stats.load(game.get_settings(), ua_font_italic);
-
+   font_weight.load(game.get_settings(), ua_font_normal);
 
    // create image
    get_image().create(85,116);
@@ -173,6 +246,49 @@ bool ua_panel::process_event(SDL_Event& event)
 void ua_panel::mouse_event(bool button_clicked, bool left_button,
    bool button_down, unsigned int mousex, unsigned int mousey)
 {
+   if (panel_type == ua_panel_inventory)
+   {
+      ua_panel_inventory_area_id area = ua_area_none;
+
+      mousex -= wnd_xpos; mousey -= wnd_ypos;
+
+      // determine area
+      for(unsigned int i=0; i<SDL_TABLESIZE(ua_panel_inventory_areas); i++)
+      {
+         // check ranges
+         if (mousex >= ua_panel_inventory_areas[i].xmin &&
+             mousex <= ua_panel_inventory_areas[i].xmax &&
+             mousey >= ua_panel_inventory_areas[i].ymin &&
+             mousey <= ua_panel_inventory_areas[i].ymax)
+         {
+            area = ua_panel_inventory_areas[i].area_id;
+            break;
+         }
+      }
+
+      if (button_clicked)
+         inventory_click(button_down,left_button,area);
+/*      else
+      {
+         // check item dragging
+         if (check_dragging && drag_area != area)
+            inventory_dragged_item();
+      }
+*/
+#ifdef HAVE_DEBUG
+      if (area != ua_area_none)
+      {
+         update_inventory();
+         get_image().ua_image::fill_rect(
+            ua_panel_inventory_areas[i].xmin,
+            ua_panel_inventory_areas[i].ymin,
+            ua_panel_inventory_areas[i].xmax-ua_panel_inventory_areas[i].xmin,
+            ua_panel_inventory_areas[i].ymax-ua_panel_inventory_areas[i].ymin, 13);
+         update();
+      }
+#endif
+   }
+
    if (panel_type == ua_panel_stats && button_clicked && !button_down)
    {
       mousex -= wnd_xpos; mousey -= wnd_ypos;
@@ -251,9 +367,7 @@ void ua_panel::update_panel()
 
    // inventory panel?
    if (panel_type == ua_panel_inventory)
-   {
-      img.paste_image(img_panels[0],1,1);
-   }
+      update_inventory();
    else
    if (panel_type == ua_panel_stats)
       update_stats();
@@ -275,6 +389,136 @@ void ua_panel::update_chains()
 
    img_chains_top.update();
    img_chains_bottom.update();
+}
+
+void ua_panel::update_inventory()
+{
+   ua_image& img = get_image();
+
+   ua_inventory& inv = panel_parent->get_game_interface().
+      get_underworld().get_inventory();
+   ua_player& pl = panel_parent->get_game_interface().
+      get_underworld().get_player();
+
+   // background image
+   img.paste_image(img_panels[0],1,1);
+
+   bool female = pl.get_attr(ua_attr_gender)!=0;
+
+   // player appearance
+   {
+      unsigned int bodyimg = pl.get_attr(ua_attr_appearance)%5 +
+         (female ? 5 : 0);
+
+      img.paste_image(img_bodies[bodyimg],25,5);
+   }
+
+   // check if paperdoll images have to be reloaded (e.g. when changed in
+   // debugger)
+   if (female != armor_female)
+   {
+      armor_female = female;
+
+      img_armor.clear();
+      panel_parent->get_game_interface().get_image_manager().
+         load_list(img_armor, armor_female ? "armor_f" : "armor_m");
+   }
+
+   // start index; 0 is used in the main inventory
+   unsigned int start = 0;
+
+   if (inv.get_container_item_id() != ua_item_none)
+   {
+      // inside a container
+
+      // draw alternative inventory panel
+      img.paste_image(img_inv_bagpanel,1,74);
+
+      // draw up/down arrows
+      if (slot_start>0)
+         img.paste_image(img_inv_updown[0],61,64,true); // up
+
+      if (inv.get_num_slots()-slot_start>=8)
+         img.paste_image(img_inv_updown[1],71,64,true); // down
+
+      // draw container we're in
+      Uint16 cont_id = inv.get_container_item_id();
+      img.paste_image(img_objects[cont_id],6,58,true);
+
+      // begin at current slot start
+      start = slot_start;
+   }
+   // paste inventory slots
+   for(unsigned int i=0; i<8; i++)
+   {
+      if (start+i < inv.get_num_slots())
+      {
+         Uint16 item = inv.get_slot_item(start+i);
+         Uint16 item_id = inv.get_item(item).item_id;
+
+         // draw item
+         if (item_id != 0xffff)
+         {
+            unsigned int
+               destx = 7 + (i&3)*19,
+               desty = 76 + (i>>2)*18;
+
+            img.paste_image(img_objects[item_id], destx,desty, true);
+         }
+      }
+   }
+
+   // do paperdoll items
+   for(unsigned int j=ua_slot_lefthand; j<ua_slot_max; j++)
+   {
+      // paperdoll image coordinates
+      static unsigned int slot_coords[] =
+      {
+           5,27,  59,27, // hand
+           8, 5,  57, 5, // shoulder
+          18,43,  48,43, // finger
+          32,19,         // legs
+          26,15,         // chest
+          25,35,         // hands
+          30,59,         // feet
+          31, 3,         // head
+      };
+
+      unsigned int destx, desty;
+      destx = slot_coords[(j-ua_slot_lefthand)*2]+1;
+      desty = slot_coords[(j-ua_slot_lefthand)*2+1]+1;
+
+      // paste item
+      Uint16 item_id = inv.get_item(j).item_id;
+      if (item_id != 0xffff)
+      {
+         if (j<ua_slot_paperdoll_start)
+         {
+            // normal object
+            img.paste_image(img_objects[item_id], destx,desty, true);
+         }
+         else
+         {
+            // paperdoll image
+            unsigned int quality = 3; // can be between 0..3
+            Uint16 armorimg = item_id < 0x002f ?
+               (item_id-0x0020)+15*quality : (item_id-0x002f+60);
+
+            img.paste_image(img_armor[armorimg], destx,desty, true);
+         }
+      }
+   }
+
+   // inventory weight
+   {
+      std::ostringstream buffer;
+      buffer << static_cast<unsigned int>(inv.get_inventory_weight()) <<
+         std::ends;
+
+      ua_image img_weight;
+      font_weight.create_string(img_weight,buffer.str().c_str(),224);
+      img.paste_image(img_weight, 70-img_weight.get_xres()/2,53, true);
+   }
 }
 
 void ua_panel::update_stats()
@@ -375,201 +619,7 @@ void ua_panel::update_runebag()
 
 // old stuff
 
-
-// tables
 /*
-ua_screen_area_data ua_panel_area_table[] =
-{
-   { ua_area_inv_slot0, 242, 260,  83,  99 },
-   { ua_area_inv_slot1, 261, 279,  83,  99 },
-   { ua_area_inv_slot2, 280, 298,  83,  99 },
-   { ua_area_inv_slot3, 299, 317,  83,  99 },
-   { ua_area_inv_slot4, 242, 260, 100, 116 },
-   { ua_area_inv_slot5, 261, 279, 100, 116 },
-   { ua_area_inv_slot6, 280, 298, 100, 116 },
-   { ua_area_inv_slot7, 299, 317, 100, 116 },
-
-   { ua_area_inv_container, 241, 256, 64, 79 },
-   { ua_area_inv_scroll_up, 294, 304, 69, 81 },
-   { ua_area_inv_scroll_down, 305, 315, 69, 81 },
-
-   { ua_area_equip_left_hand,     243, 258, 36, 51 },
-   { ua_area_equip_left_shoulder, 246, 261, 14, 28 },
-   { ua_area_equip_left_ring,     260, 265, 56, 63 },
-
-   { ua_area_equip_right_hand,     297, 311, 36, 51 },
-   { ua_area_equip_right_shoulder, 295, 309, 14, 28 },
-   { ua_area_equip_right_ring,     292, 297, 56, 63 },
-
-   { ua_area_paperdoll_head,  271, 285, 13, 31 },
-   { ua_area_paperdoll_chest, 270, 285, 31, 53 },
-   { ua_area_paperdoll_hand,  265, 271, 46, 55 },
-   { ua_area_paperdoll_hand,  286, 292, 46, 55 },
-   { ua_area_paperdoll_legs,  271, 286, 54, 65 },
-   { ua_area_paperdoll_feet,  270, 286, 66, 80 },
-
-   { ua_area_none, 0,0, 320,200 }
-};
-
-// ua_panel methods
-
-void ua_panel::init_panel(ua_game_core_interface* thecore,
-   ua_ingame_orig_screen* theingame_orig)
-{
-   slot_start = 0;
-   check_dragging = false;
-
-   // fonts
-   font_normal.init(settings,ua_font_normal);
-}
-
-void ua_panel::mouse_action(bool click, bool left_button, bool pressed)
-{
-   // check inventory item areas
-   unsigned int area = get_area(ua_panel_area_table,cursorx,cursory);
-
-   if (click)
-      inventory_click(pressed,left_button,area);
-   else
-   {
-      // check item dragging
-      if (check_dragging && drag_area != area)
-         inventory_dragged_item();
-   }
-}
-
-void ua_panel::update_panel_texture()
-{
-   ua_image panel(img_panels.get_image(panel_type));
-
-   // update inventory panel?
-   if (panel_type==0)
-   {
-      ua_inventory& inv = core->get_underworld().get_inventory();
-      ua_player& pl = core->get_underworld().get_player();
-
-      bool female = pl.get_attr(ua_attr_gender)!=0;
-
-      // player appearance
-      {
-         unsigned int bodyimg = pl.get_attr(ua_attr_appearance)%5
-            + ( female ? 5 : 0 );
-
-         panel.paste_image(this->img_bodies.get_image(bodyimg),24,4);
-      }
-
-      // check if paperdoll images should be reloaded
-      if (female != armor_female)
-      {
-         armor_female = female;
-         img_armor.load(core->get_settings(),armor_female ? "armor_f" : "armor_m");
-      }
-
-      unsigned int start = 0;
-
-      if (inv.get_container_item_id()!=0xffff)
-      {
-         // inside a container
-
-         // draw alternative inventory panel
-         panel.paste_image(img_inv_bagpanel,0,73);
-
-         // draw up/down arrows
-         if (slot_start>0)
-            panel.paste_image(img_inv_updown.get_image(0),60,63,true); // up
-
-         if (inv.get_num_slots()-slot_start>=8)
-            panel.paste_image(img_inv_updown.get_image(1),70,63,true); // down
-
-         // draw container we're in
-         Uint16 cont_id = inv.get_container_item_id();
-         panel.paste_image(img_objects.get_image(cont_id),5,57,true);
-
-         // begin at current slot start
-         start = slot_start;
-      }
-
-      // paste inventory slots
-      for(unsigned int i=0; i<8; i++)
-      {
-         if (start+i < inv.get_num_slots())
-         {
-            Uint16 item = inv.get_slot_item(start+i);
-            Uint16 item_id = inv.get_item(item).item_id;
-
-            // draw item
-            if (item_id != 0xffff)
-            {
-               unsigned int
-                  destx = 6 + (i&3)*19,
-                  desty = 75 + (i>>2)*18;
-
-               panel.paste_image(img_objects.get_image(item_id),
-                  destx,desty,true);
-            }
-         }
-      }
-
-      // do paperdoll items
-      for(unsigned int j=ua_slot_lefthand; j<ua_slot_max; j++)
-      {
-         // paperdoll image coordinates
-         static unsigned int slot_coords[] =
-         {
-              5,27,  59,27, // hand
-              8, 5,  57, 5, // shoulder
-             18,43,  48,43, // finger
-             32,19,         // legs
-             26,15,         // chest
-             25,35,         // hands
-             30,59,         // feet
-             31, 3,         // head
-         };
-
-         unsigned int destx, desty;
-         destx = slot_coords[(j-ua_slot_lefthand)*2];
-         desty = slot_coords[(j-ua_slot_lefthand)*2+1];
-
-         // paste item
-         Uint16 item_id = inv.get_item(j).item_id;
-         if (item_id != 0xffff)
-         {
-            if (j<ua_slot_paperdoll_start)
-            {
-               // normal object
-               panel.paste_image(img_objects.get_image(item_id),
-                  destx,desty,true);
-            }
-            else
-            {
-               // paperdoll image
-               unsigned int quality = 3; // can be between 0..3
-               Uint16 armorimg = item_id < 0x002f
-                  ? (item_id-0x0020)+15*quality
-                  : (item_id-0x002f+60);
-
-               panel.paste_image(img_armor.get_image(armorimg),
-                  destx,desty,true);
-            }
-         }
-      }
-
-      // inventory weight
-      {
-         std::ostringstream buffer;
-         buffer << static_cast<unsigned int>(inv.get_inventory_weight()) << std::ends;
-
-         ua_image img_weight;
-         font_normal.create_string(img_weight,buffer.str().c_str(),224);
-         panel.paste_image(img_weight,69-img_weight.get_xres()/2,52,true);
-      }
-   }
-
-   // upload new panel
-   tex_panel.convert(panel);
-   tex_panel.upload();
-}
-
 void ua_panel::update_cursor_image()
 {
    ua_inventory& inv = core->get_underworld().get_inventory();
@@ -590,25 +640,29 @@ void ua_panel::update_cursor_image()
    else
       ingame_orig->set_cursor_image(false,0xffff,true);
 }
+*/
 
-void ua_panel::inventory_click(
-   bool pressed, bool left_button, unsigned int area)
+void ua_panel::inventory_click(bool button_down, bool left_button,
+   enum ua_panel_inventory_area_id area)
 {
-   ua_inventory& inv = core->get_underworld().get_inventory();
+   ua_inventory& inv = panel_parent->get_game_interface().
+      get_underworld().get_inventory();
 
    // check scroll up/down buttons
-   if (!pressed && area==ua_area_inv_scroll_up && slot_start>0)
+   if (!button_down && area == ua_area_inv_scroll_up && slot_start>0)
    {
       slot_start -= slot_start > 4? 4 : slot_start;
-      update_panel_texture();
+      update_panel();
+      update();
       return;
    }
 
-   if (!pressed && area==ua_area_inv_scroll_down &&
+   if (!button_down && area == ua_area_inv_scroll_down &&
       inv.get_num_slots()-slot_start>=8)
    {
       slot_start += 4;
-      update_panel_texture();
+      update_panel();
+      update();
       return;
    }
 
@@ -617,14 +671,12 @@ void ua_panel::inventory_click(
    {
       switch(area)
       {
-      case ua_area_inv_slot0: item = inv.get_slot_item(slot_start+0); break;
-      case ua_area_inv_slot1: item = inv.get_slot_item(slot_start+1); break;
-      case ua_area_inv_slot2: item = inv.get_slot_item(slot_start+2); break;
-      case ua_area_inv_slot3: item = inv.get_slot_item(slot_start+3); break;
-      case ua_area_inv_slot4: item = inv.get_slot_item(slot_start+4); break;
-      case ua_area_inv_slot5: item = inv.get_slot_item(slot_start+5); break;
-      case ua_area_inv_slot6: item = inv.get_slot_item(slot_start+6); break;
-      case ua_area_inv_slot7: item = inv.get_slot_item(slot_start+7); break;
+      case ua_area_inv_slot0: case ua_area_inv_slot1:
+      case ua_area_inv_slot2: case ua_area_inv_slot3:
+      case ua_area_inv_slot4: case ua_area_inv_slot5:
+      case ua_area_inv_slot6: case ua_area_inv_slot7:
+         item = inv.get_slot_item(slot_start+unsigned(area-ua_area_inv_slot0));
+         break;
 
       case ua_area_equip_left_hand: item = ua_slot_lefthand; break;
       case ua_area_equip_left_shoulder: item = ua_slot_leftshoulder; break;
@@ -647,9 +699,9 @@ void ua_panel::inventory_click(
 
    if (area == ua_area_none)
       return; // no pos that is interesting for us
-
+/*
    // left/right button pressed
-   if (pressed && !check_dragging && area!=ua_area_inv_container)
+   if (button_down && !check_dragging && area != ua_area_inv_container)
    {
       // start checking for dragging items
       check_dragging = true;
@@ -658,7 +710,7 @@ void ua_panel::inventory_click(
       return;
    }
 
-   if (pressed)
+   if (button_down)
       return; // no more checks for pressed mouse button
 
    // left/right button release
@@ -737,8 +789,9 @@ void ua_panel::inventory_click(
       if (item != ua_item_none)
          core->get_underworld().get_scripts().lua_inventory_look(item);
    }
+*/
 }
-
+/*
 void ua_panel::inventory_dragged_item()
 {
    ua_inventory& inv = core->get_underworld().get_inventory();
