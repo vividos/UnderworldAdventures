@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -30,8 +30,9 @@
 
 // needed includes
 #include "common.hpp"
+#include "import.hpp"
 #include "font.hpp"
-#include "fread_endian.hpp"
+#include "io_endian.hpp"
 
 
 // constants
@@ -50,25 +51,28 @@ const char *ua_font_names[6] =
 
 // ua_font methods
 
-void ua_font::init(ua_settings &settings, ua_font_id fontid)
+void ua_font::load(const char* uw_path, ua_font_id fontid)
 {
    if (fontid >= (int)SDL_TABLESIZE(ua_font_names))
       throw ua_exception("ua_font::init: invalid font id");
 
    // do font name
-   std::string fontname;
-   fontname.assign(settings.get_string(ua_setting_uw_path));
+   std::string fontname(uw_path);
    fontname.append("data/");
    fontname.append(ua_font_names[fontid]);
 
    // and load it
-   init(fontname.c_str());
+#ifndef UA_NO_IMPORTS
+   ua_uw_import uw_import;
+
+   uw_import.load_font(fontname.c_str(),*this);
+#endif
 }
 
-void ua_font::init(const char *fontname)
+void ua_uw_import::load_font(const char* fontname, ua_font& font)
 {
    // open font file
-   FILE *fd = fopen(fontname,"rb");
+   FILE* fd = fopen(fontname,"rb");
    if (fd==NULL)
    {
       std::string text("could not open font file: ");
@@ -84,31 +88,34 @@ void ua_font::init(const char *fontname)
    // read in header
    Uint16 dummy;
    dummy = fread16(fd);
-   charsize = fread16(fd);
-   spacewidth = fread16(fd);
-   charheight = fread16(fd);
-   rowwidth = fread16(fd);
-   maxwidth = fread16(fd);
+   font.charsize = fread16(fd);
+   font.spacewidth = fread16(fd);
+   font.charheight = fread16(fd);
+   font.rowwidth = fread16(fd);
+   font.maxwidth = fread16(fd);
 
    // fix for overly large font chars like 'm' or 'w'
-   maxwidth |= 7;
+   font.maxwidth |= 7;
 
    // calculate number of chars
-   nchars = (flen-12) / (charsize+1);
+   font.nchars = (flen-12) / (font.charsize+1);
 
    // allocate memory for new data
-   fontdata.resize(nchars*charheight*maxwidth);
-   charlengths.resize(nchars);
+   font.fontdata.clear();
+   font.charlengths.clear();
 
-   for(unsigned int n=0; n<nchars; n++)
+   font.fontdata.resize(font.nchars*font.charheight*font.maxwidth);
+   font.charlengths.resize(font.nchars);
+
+   for(unsigned int n=0; n<font.nchars; n++)
    {
       unsigned int bits = 0;
       Uint8 curbits=0;
 
       // read in whole character
-      for (unsigned int h=0; h<charheight; h++)
+      for (unsigned int h=0; h<font.charheight; h++)
       {
-         for (unsigned int w=0; w<maxwidth; w++)
+         for (unsigned int w=0; w<font.maxwidth; w++)
          {
             if (bits==0)
             {
@@ -119,11 +126,11 @@ void ua_font::init(const char *fontname)
             if ((curbits&0x80)==0)
             {
                // background pixel
-               fontdata[n*charheight*maxwidth + h*maxwidth + w] = 0;
+               font.fontdata[n*font.charheight*font.maxwidth + h*font.maxwidth + w] = 0;
             }
             else
             {
-               fontdata[n*charheight*maxwidth + h*maxwidth + w] = 1;
+               font.fontdata[n*font.charheight*font.maxwidth + h*font.maxwidth + w] = 1;
             }
 
             curbits <<= 1;
@@ -135,7 +142,7 @@ void ua_font::init(const char *fontname)
       }
 
       // read char length in pixels
-      charlengths[n] = fgetc(fd);
+      font.charlengths[n] = fgetc(fd);
    }
 
    fclose(fd);

@@ -31,19 +31,20 @@
 
 // needed includes
 #include <vector>
-#include "settings.hpp"
 #include "image.hpp"
 
 
 // typedefs
+
+//! available fonts
 typedef enum
 {
-   ua_font_small=0,
-   ua_font_italic=1,  // for character stats screen
-   ua_font_normal=2,  // for scroll messages
-   ua_font_big=3,     // for cutscenes
-   ua_font_buttons=4, // for buttons
-   ua_font_chargen=5  // for character generation
+   ua_font_small = 0,   //!< for ???
+   ua_font_italic = 1,  //!< for character stats screen
+   ua_font_normal = 2,  //!< for scroll messages
+   ua_font_big = 3,     //!< for cutscenes
+   ua_font_buttons = 4, //!< for buttons
+   ua_font_chargen = 5  //!< for character generation
 } ua_font_id;
 
 
@@ -55,11 +56,9 @@ class ua_font
 public:
    //! ctor
    ua_font(){}
-   //! dtor
-   //~ua_font();
 
-   //! initializes and loads a font
-   void init(ua_settings& settings, ua_font_id fontid);
+   //! loads a font
+   void load(const char* uw_path, ua_font_id fontid);
 
    //! initializes and loads a font from file
    void init(const char* fontname);
@@ -97,6 +96,9 @@ protected:
 
    //! number of characters in font
    unsigned int nchars;
+
+   // import friend class
+   friend class ua_uw_import;
 };
 
 #endif
