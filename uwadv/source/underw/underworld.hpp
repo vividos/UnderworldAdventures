@@ -28,7 +28,7 @@
 
    underworld objects documentation yet to come ...
 
-   The underworld objects depend on the "Base Components" and, if you
+   The Underworld Objects module depends on the "Base Components" and, if you
    don't have defined DISABLE_IMPORTS, it depends on the "Import Components"
 
 */
@@ -48,7 +48,6 @@
 #include "conv/codevm.hpp"
 #include "level.hpp"
 #include "physics.hpp"
-#include "gamestrings.hpp"
 #include "savegame.hpp"
 #include "properties.hpp"
 
@@ -236,9 +235,6 @@ public:
    //! returns current level
    const ua_level &get_current_level() const;
 
-   //! returns game strings object
-   ua_gamestrings& get_strings(){ return gstr; }
-
    //! changes current level
    void change_level(unsigned int level);
 
@@ -301,9 +297,6 @@ protected:
 
    //! object property class
    ua_object_properties properties;
-
-   //! hey, it's all the game strings!
-   ua_gamestrings gstr;
 
    //! list with active triggers
    std::set<Uint16> trigger_active;

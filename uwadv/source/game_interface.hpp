@@ -46,6 +46,7 @@ class ua_scripting;
 class ua_underworld;
 class ua_debug_server;
 class ua_screen;
+class ua_gamestrings;
 
 
 // enums
@@ -93,6 +94,9 @@ public:
    
    //! returns debugger object
    virtual ua_debug_server& get_debugger()=0;
+
+   //! returns game strings object
+   virtual ua_gamestrings& get_gamestrings()=0;
 
    //! returns underworld object
    virtual ua_underworld& get_underworld()=0;

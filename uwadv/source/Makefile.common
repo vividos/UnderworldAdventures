@@ -41,6 +41,7 @@ uwadv_SOURCES = \
 	conv/codevm.cpp conv/codevm.hpp \
 	conv/convgraph.cpp conv/convgraph.hpp \
 	conv/opcodes.hpp \
+	import/convloader.cpp \
 	import/critloader.cpp \
 	import/cutsloader.cpp \
 	import/fontloader.cpp \
@@ -84,7 +85,6 @@ uwadv_SOURCES = \
 	ui/textedit.cpp ui/textedit.hpp \
 	ui/textscroll.cpp ui/textscroll.hpp \
 	ui/window.cpp ui/window.hpp \
-	underw/gamestrings.cpp underw/gamestrings.hpp \
 	underw/geometry.cpp underw/geometry.hpp \
 	underw/inventory.cpp underw/inventory.hpp \
 	underw/level.cpp underw/level.hpp \
@@ -103,6 +103,7 @@ uwadv_SOURCES = \
 	debug.cpp debug.hpp \
 	game_interface.hpp \
 	gamecfg.cpp gamecfg.hpp \
+	gamestrings.cpp gamestrings.hpp \
 	main.cpp \
 	unittest.cpp unittest.hpp \
 	uwadv.cpp uwadv.hpp \

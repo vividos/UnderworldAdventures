@@ -30,6 +30,7 @@
 #include "panel.hpp"
 #include "underworld.hpp"
 #include "scripting.hpp"
+#include "gamestrings.hpp"
 #include <sstream>
 
 
@@ -543,7 +544,7 @@ void ua_panel::update_stats()
       get_underworld().get_player();
 
    ua_gamestrings& gstr = panel_parent->get_game_interface().
-      get_underworld().get_strings();
+      get_gamestrings();
 
    img.paste_image(img_panels[2],1,1);
 

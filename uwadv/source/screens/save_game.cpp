@@ -33,6 +33,7 @@
 #include "ingame_orig.hpp"
 #include "renderer.hpp"
 #include "underworld.hpp"
+#include "gamestrings.hpp"
 #include <sstream>
 
 
@@ -683,15 +684,13 @@ void ua_save_game_screen::update_info()
       img_temp.clear();
 
       // gender
-      std::string text(game.get_underworld().get_strings().
-         get_string(2,info.gender+9));
+      std::string text(game.get_gamestrings().get_string(2,info.gender+9));
       font_btns.create_string(img_temp, text.c_str(), textcolor);
       img_info.paste_image(img_temp,2,13,true);
       img_temp.clear();
 
       // profession
-      text = game.get_underworld().get_strings().
-         get_string(2,info.profession+23);
+      text = game.get_gamestrings().get_string(2,info.profession+23);
       font_btns.create_string(img_temp,text.c_str(),textcolor);
       img_info.paste_image(img_temp,125-img_temp.get_xres(),13,true);
 
@@ -699,7 +698,7 @@ void ua_save_game_screen::update_info()
       for(unsigned int i=0; i<4; i++)
       {
          // text
-         text = game.get_underworld().get_strings().get_string(2,i+17);
+         text = game.get_gamestrings().get_string(2,i+17);
          font_btns.create_string(img_temp, text.c_str(), textcolor);
          img_info.paste_image(img_temp,75,42+i*17,true);
 

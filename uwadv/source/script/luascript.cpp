@@ -30,6 +30,7 @@
 #include "luascript.hpp"
 #include "game_interface.hpp"
 #include "files.hpp"
+#include "gamestrings.hpp"
 
 
 // constants
@@ -401,8 +402,7 @@ int ua_lua_scripting::uw_get_string(lua_State* L)
    unsigned int num = static_cast<unsigned int>(lua_tonumber(L,-1));
 
    // retrieve game string
-   std::string str(self.game->get_underworld().get_strings().
-      get_string(block,num));
+   std::string str(self.game->get_gamestrings().get_string(block,num));
    lua_pushstring(L,str.c_str());
 
    return 1;
@@ -838,7 +838,7 @@ int ua_lua_scripting::conv_is_avail(lua_State* L)
 {
    // retrieve game strings object
    ua_lua_scripting& self = get_scripting_from_self(L);
-   ua_gamestrings& gstr = self.game->get_underworld().get_strings();
+   ua_gamestrings& gstr = self.game->get_gamestrings();
 
    Uint16 slot = static_cast<Uint16>(lua_tonumber(L,-1));
 

@@ -33,6 +33,7 @@
 #include "files.hpp"
 #include "underworld.hpp"
 #include "scripting.hpp"
+#include "gamestrings.hpp"
 
 
 // global functions
@@ -177,7 +178,7 @@ void ua_gamecfg_loader::load_value(const char* the_name, const char* the_value)
       if (gstr != NULL)
       {
          // add strings.pak-like file
-         game.get_underworld().get_strings().add_pak_file(gstr);
+         game.get_gamestrings().add_pak_file(gstr);
          // note: don't call SDL_RWclose, the ua_gamestrings file will do that
       }
       else

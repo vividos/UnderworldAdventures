@@ -639,6 +639,11 @@ void ua_uwadv_game::init_game()
    underworld.init(settings,files_manager);
    underworld.set_scripting(scripting);
 
+   // load game strings
+   ua_trace("loading game strings ... ");
+   get_gamestrings().init(settings);
+   ua_trace("done\n");
+
    // init audio
    audio_manager.init(settings,files_manager);
 
@@ -655,11 +660,11 @@ void ua_uwadv_game::init_game()
       SDL_RWops* rwops = files_manager.get_uadata_file(langpak_name.c_str());
       if (rwops != NULL)
       {
-         underworld.get_strings().add_pak_file(rwops);
+         get_gamestrings().add_pak_file(rwops);
          // note: don't call SDL_RWclose, the ua_gamestrings file will do that
 
          ua_trace("language \"%s\"\n",
-            underworld.get_strings().get_string(0x0a00,0).c_str());
+            get_gamestrings().get_string(0x0a00,0).c_str());
       }
       else
          ua_trace("not available\n");

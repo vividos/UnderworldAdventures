@@ -32,10 +32,6 @@
 #include "scripting.hpp"
 #include "geometry.hpp"
 
-#ifndef DISABLE_IMPORTS
-#include "import.hpp"
-#endif
-
 
 // ua_underworld methods
 
@@ -66,12 +62,6 @@ void ua_underworld::init(ua_settings& settings, ua_files_manager& filesmgr)
    questflags.resize(0x0040,0);
 
    properties.import(settings);
-
-   // load game strings
-   ua_trace("loading game strings ... ");
-   gstr.init(settings);
-//   gstr.load(settings);
-   ua_trace("done\n");
 
    physics.add_track_body(&player);
 }

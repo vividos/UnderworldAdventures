@@ -46,6 +46,7 @@
 #include "underw/underworld.hpp"
 #include "game_interface.hpp"
 #include "debug.hpp"
+#include "gamestrings.hpp"
 
 
 // classes
@@ -74,19 +75,21 @@ public:
    //! shows the user an error message
    virtual void error_msg(const char* msg);
 
-   // ua_game_interface methods
-
+   // ua_basic_game_interface methods
    virtual double get_tickrate();
-   virtual void init_game();
-   virtual ua_audio_manager& get_audio_manager();
    virtual ua_settings& get_settings();
    virtual ua_files_manager& get_files_manager();
    virtual ua_savegames_manager& get_savegames_manager();
-   virtual ua_image_manager& get_image_manager();
-   virtual ua_renderer& get_renderer();
    virtual ua_scripting& get_scripting();
    virtual ua_debug_server& get_debugger();
+   virtual ua_gamestrings& get_gamestrings();
    virtual ua_underworld& get_underworld();
+
+   // ua_game_interface methods
+   virtual void init_game();
+   virtual ua_audio_manager& get_audio_manager();
+   virtual ua_image_manager& get_image_manager();
+   virtual ua_renderer& get_renderer();
    virtual void replace_screen(ua_screen* new_screen, bool save_current);
    virtual void remove_screen();
 
@@ -156,6 +159,9 @@ protected:
    //! underworld object
    ua_underworld underworld;
 
+   //! hey, it's all the game strings!
+   ua_gamestrings gamestrings;
+
    //! screen queued to destroy
    ua_screen* screen_to_destroy;
 
@@ -209,6 +215,11 @@ inline ua_scripting& ua_uwadv_game::get_scripting()
 inline ua_debug_server& ua_uwadv_game::get_debugger()
 {
    return debug;
+}
+
+inline ua_gamestrings& ua_uwadv_game::get_gamestrings()
+{
+   return gamestrings;
 }
 
 inline ua_underworld& ua_uwadv_game::get_underworld()

@@ -38,6 +38,7 @@
 #include "ingame_orig.hpp"
 #include "audio.hpp"
 #include "renderer.hpp"
+#include "gamestrings.hpp"
 #include "underworld.hpp"
 #include <sstream>
 #include <ctime>
@@ -622,7 +623,7 @@ unsigned int ua_create_character_screen::drawnumber(unsigned int num, int x, int
 
 unsigned int ua_create_character_screen::drawtext(int strnum, int x, int y, int xalign, unsigned char color, int custstrblock)
 {
-   std::string text(game.get_underworld().get_strings().get_string(custstrblock>-1 ? custstrblock : strblock, strnum));
+   std::string text(game.get_gamestrings().get_string(custstrblock>-1 ? custstrblock : strblock, strnum));
    return (!text.empty()) ? drawtext(text.c_str(), x, y, xalign, color) : 0;
 }
 

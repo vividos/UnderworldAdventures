@@ -24,7 +24,7 @@
    \brief game strings class
 
 */
-//! \ingroup underworld
+//! \ingroup game
 
 //@{
 
@@ -91,14 +91,6 @@ protected:
 
    //! all strings.pak files available for loading strings
    std::vector<ua_strings_pak_file> allpakfiles;
-
-/*
-   //! loads all game strings from a RWops
-   void load(SDL_RWops* rwops);
-
-   //! returns the whole strings block
-   std::map<int,std::vector<std::string> >& get_allstrings(){ return allstrings; }
-*/
 };
 
 

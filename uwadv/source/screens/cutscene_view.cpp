@@ -33,6 +33,7 @@
 #include "audio.hpp"
 #include "renderer.hpp"
 #include "underworld.hpp"
+#include "gamestrings.hpp"
 
 
 // constants
@@ -454,7 +455,7 @@ void ua_cutscene_view_screen::do_action()
       if (canshowtext)
       {
          unsigned int strnum = static_cast<unsigned int>(lua_tonumber(L,-1));
-         create_text_image( game.get_underworld().get_strings().get_string(strblock,strnum).c_str() );
+         create_text_image( game.get_gamestrings().get_string(strblock,strnum).c_str() );
          text_fade_state = 1; // fade in
          text_fadecount = 0;
          showtext = true;
@@ -474,7 +475,7 @@ void ua_cutscene_view_screen::do_action()
       if (canshowtext)
       {
          unsigned int strnum = static_cast<unsigned int>(lua_tonumber(L,-1));
-         create_text_image( game.get_underworld().get_strings().get_string(strblock,strnum).c_str() );
+         create_text_image( game.get_gamestrings().get_string(strblock,strnum).c_str() );
          showtext = true;
          text_fade_state = 0;
       }
