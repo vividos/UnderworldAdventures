@@ -84,7 +84,7 @@ public:
       std::string relpath);
 
    //! renders model
-   virtual void render(ua_vector3d& base);
+   virtual void render(ua_object& obj, ua_vector3d& base);
 
 protected:
 

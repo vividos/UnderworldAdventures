@@ -288,7 +288,6 @@ void ua_model3d_wrl::import_wrl(ua_game_core_interface* core, SDL_RWops* rwops,
       for(unsigned int i=0; i<max; i++)
       {
          coords[i] *= scale;
-         coords[i].z*= -1.0;
          coords[i].rotate(rotate_axis,rotate_angle);
          coords[i] += translate;
       }
@@ -321,7 +320,7 @@ void ua_model3d_wrl::import_wrl(ua_game_core_interface* core, SDL_RWops* rwops,
    }
 }
 
-void ua_model3d_wrl::render(ua_vector3d& base)
+void ua_model3d_wrl::render(ua_object& obj, ua_vector3d& base)
 {
    // render object
 
