@@ -134,7 +134,7 @@ ZLIB_LIBS="-lz"
 
 
 # Build the tools?
-AC_ARG_ENABLE(tools,    [  --disable-tools         Don't build the tools],,enable_tools=yes)
+AC_ARG_ENABLE(tools,    [  --enable-tools          Don't build the tools],,enable_tools=no)
 AC_MSG_CHECKING(whether to build the tools)
 if test x$enable_tools = xno; then
    AC_MSG_RESULT(yes)
