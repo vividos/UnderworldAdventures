@@ -99,6 +99,9 @@ public:
    //! loads a config file
    void load(const char *filename);
 
+   //! creates a new config file with the current settings and a original file as template
+   void write(const char *origfile, const char *newfile);
+
    // settings value access
 
    //! returns the gametype
