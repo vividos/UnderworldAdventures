@@ -136,14 +136,14 @@ void ua_save_game_screen::init()
 
       img_back1.paste_rect(img_back,10,186, 140,6, 9,141);
 
-      update_buttons();
-      update_list();
-
       // prepare right image (savegame info)
       img_back2.create(160,200,0,3);
       img_back2.init(&core->get_texmgr(),160,0, 160,200);
       img_back2.paste_rect(img_back,0,0, 160,200, 0,0);
-      img_back2.convert_upload();
+
+      // update all controls
+      update_buttons();
+      update_list();
    }
 
    // init mouse cursor
