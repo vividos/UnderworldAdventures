@@ -77,6 +77,8 @@ void ua_ingame_orig_screen::init()
    move_turn_left = move_turn_right = move_walk_forward =
       move_walk_backwards = move_run_forward = false;
 
+   priority_cursor = false;
+
    gamemode = ua_mode_default;
    tickcount = 0;
 
@@ -84,6 +86,8 @@ void ua_ingame_orig_screen::init()
 
    fadeout_action = ua_action_none;
    fadeout_param = 0;
+
+   game.get_image_manager().load_list(img_objects, "objects");
 
 
 
@@ -373,7 +377,8 @@ void ua_ingame_orig_screen::key_event(bool key_down, ua_key_value key)
             if (move_walk_forward)
                pl.set_movement_factor(ua_move_walk,0.6);
             else
-               pl.set_movement_mode(0,ua_move_walk);
+               if (!view3d.get_mouse_move())
+                  pl.set_movement_mode(0,ua_move_walk);
       }
 
       break;
@@ -395,7 +400,8 @@ void ua_ingame_orig_screen::key_event(bool key_down, ua_key_value key)
             if (move_run_forward)
                pl.set_movement_factor(ua_move_walk,1.0);
             else
-               pl.set_movement_mode(0,ua_move_walk);
+               if (!view3d.get_mouse_move())
+                  pl.set_movement_mode(0,ua_move_walk);
       }
       break;
 
@@ -413,7 +419,8 @@ void ua_ingame_orig_screen::key_event(bool key_down, ua_key_value key)
          if (move_turn_right)
             pl.set_movement_factor(ua_move_rotate,-1.0);
          else
-            pl.set_movement_mode(0,ua_move_rotate);
+            if (!view3d.get_mouse_move())
+               pl.set_movement_mode(0,ua_move_rotate);
       }
       break;
 
@@ -431,7 +438,8 @@ void ua_ingame_orig_screen::key_event(bool key_down, ua_key_value key)
          if (move_turn_left)
             pl.set_movement_factor(ua_move_rotate,1.0);
          else
-            pl.set_movement_mode(0,ua_move_rotate);
+            if (!view3d.get_mouse_move())
+               pl.set_movement_mode(0,ua_move_rotate);
       }
       break;
 
@@ -443,7 +451,8 @@ void ua_ingame_orig_screen::key_event(bool key_down, ua_key_value key)
          pl.set_movement_mode(ua_move_slide);
       }
       else
-         pl.set_movement_mode(0,ua_move_slide);
+         if (!view3d.get_mouse_move())
+            pl.set_movement_mode(0,ua_move_slide);
       break;
 
       // slide right key
@@ -454,7 +463,8 @@ void ua_ingame_orig_screen::key_event(bool key_down, ua_key_value key)
          pl.set_movement_mode(ua_move_slide);
       }
       else
-         pl.set_movement_mode(0,ua_move_slide);
+         if (!view3d.get_mouse_move())
+            pl.set_movement_mode(0,ua_move_slide);
       break;
 
       // walk backwards keys
@@ -472,7 +482,8 @@ void ua_ingame_orig_screen::key_event(bool key_down, ua_key_value key)
          if (move_walk_forward || move_run_forward)
             pl.set_movement_factor(ua_move_walk,move_run_forward ? 1.0 : 0.6);
          else
-            pl.set_movement_mode(0,ua_move_walk);
+            if (!view3d.get_mouse_move())
+               pl.set_movement_mode(0,ua_move_walk);
       }
       break;
 
@@ -840,6 +851,56 @@ void ua_ingame_orig_screen::do_action(ua_ingame_orig_action action)
    }
 }
 
+bool ua_ingame_orig_screen::get_move_state(ua_ingame_move_state movestate)
+{
+   bool state = false;
+   switch(movestate)
+   {
+   case ua_move_turn_left: state = move_turn_left; break;
+   case ua_move_turn_right: state = move_turn_right; break;
+   case ua_move_walk_forward: state = move_walk_forward; break;
+   case ua_move_run_forward: state = move_run_forward; break;
+   case ua_move_walk_backwards: state = move_walk_backwards; break;
+   default: break;
+   }
+   return state;
+}
+
+/*! Sets a new cursor image for the mouse cursor. There can be normal cursor
+    images and prioritized cursor images. The last ones cannot be changed or
+    resetted by unprioritized ones. Passing a negative index resets priority
+    mode and sets the negated index as normal cursor index. If the cursor
+    index is > 0x100, an object image is used for the cursor image.
+
+    \param index cursor image index to set
+    \param priority indicates if priority cursor image should be set
+*/
+void ua_ingame_orig_screen::set_cursor(int index, bool priority)
+{
+   if (!priority && priority_cursor)
+      return; // ignore new non-priority cursor
+
+   priority_cursor = priority;
+
+   // reset priority cursor
+   if (index < 0 && priority)
+   {
+      priority_cursor = false;
+      index = -index;
+   }
+
+   if (index>0x100)
+   {
+      // change mouse cursor type to object image
+      mousecursor.set_custom(img_objects[unsigned(index)-0x100]);
+   }
+   else
+   {
+      // set image from cursors
+      mousecursor.set_type(unsigned(index));
+   }
+}
+
 void ua_ingame_orig_screen::uw_notify(ua_underworld_notification notify,
    unsigned int param)
 {
@@ -875,7 +936,7 @@ void ua_ingame_orig_screen::uw_notify(ua_underworld_notification notify,
 
    case ua_notify_select_target:
       //target_select_mode = true
-      //mousecursor.set_type();
+      set_cursor(param+0x100,true);
       break;
 
    default:
@@ -895,21 +956,9 @@ void ua_ingame_orig_screen::uw_start_conversation(unsigned int list_pos)
 }
 
 /*
-// tables
-
 void ua_ingame_orig_screen::init(ua_game_core_interface* thecore)
 {
-   cursor_image = 0;
-   mouse_move = false;
-   prio_cursor = false;
-
    panel.init_panel(core,this);
-
-   fadeout_action = 0;
-
-
-   // load some images
-   img_objects.load(settings,"objects");
 
    // background image
    {
@@ -921,239 +970,6 @@ void ua_ingame_orig_screen::init(ua_game_core_interface* thecore)
 
       }
    }
-}
-
-void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pressed)
-{
-   // restrict area when movement mode is on
-   if (mouse_move && !click)
-   {
-      bool modified = false;
-      if (cursorx<53)
-         cursorx=54;
-      if (cursorx>224)
-         cursorx=224;
-
-      if (cursory<20)
-         cursory=21;
-      if (cursory>131)
-         cursory=131;
-   }
-
-   unsigned int area = get_area(ua_ingame_orig_area_table,cursorx,cursory);
-
-
-   // check 3d view area
-   if (area == ua_area_screen3d)
-   {
-      {
-         // when pressing mouse, start mouse move mode
-         if (click && left_button)
-         {
-            // mouse move is started on pressing mouse button
-            mouse_move = pressed;
-
-            if (!mouse_move)
-            {
-               // disable all modes (when possible)
-               if (!move_walk_forward && !move_run_forward && !move_walk_backwards)
-                  player.set_movement_mode(0,ua_move_walk);
-
-               if (!move_turn_left && !move_turn_right)
-                  player.set_movement_mode(0,ua_move_rotate);
-
-               player.set_movement_mode(0,ua_move_slide);
-
-               // set new mouse cursor position
-               Uint16 x = unsigned(cursorx*core->get_screen_width()/320.0);
-               Uint16 y = unsigned(cursory*core->get_screen_height()/200.0);
-               SDL_WarpMouse(x,y);
-            }
-         }
-
-         // determine cursor image
-         double slide, rotate, walk;
-
-         slide = rotate = walk = 10.0;
-
-         if (rely>=0.75)
-         {
-            // lower part of screen
-            if (relx<0.33){ slide = -1.0; set_cursor_image(false,3); } else
-            if (relx>=0.66){ slide = 1.0; set_cursor_image(false,4); } else
-               { walk = -0.4*(rely-0.75)/0.25; set_cursor_image(false,2); }
-         }
-         else
-         if (rely>=0.6)
-         {
-            // middle part
-            if (relx<0.33){ rotate = (0.33-relx)/0.33; set_cursor_image(false,5); } else
-            if (relx>=0.66){ rotate = -(relx-0.66)/0.33; set_cursor_image(false,6); } else
-               set_cursor_image(false,0);
-         }
-         else
-         {
-            // upper part
-            if (relx<0.33){ rotate = (0.33-relx)/0.33; set_cursor_image(false,7); } else
-            if (relx>=0.66){ rotate = -(relx-0.66)/0.33; set_cursor_image(false,8); } else
-               set_cursor_image(false,1);
-
-            // walking speed increases in range [0.6; 0.2] only
-            walk = (0.6-rely)/0.4;
-            if (walk>1.0) walk = 1.0;
-         }
-
-         if (mouse_move)
-         {
-            // disable all modes (when not active through keyboard movement)
-            // and update movement modes and factors
-            if (!move_walk_forward && !move_run_forward && !move_walk_backwards)
-            {
-               player.set_movement_mode(0,ua_move_walk);
-
-               if (walk<10.0)
-               {
-                  player.set_movement_mode(ua_move_walk);
-                  player.set_movement_factor(ua_move_walk,walk);
-               }
-            }
-
-            if (!move_turn_left && !move_turn_right)
-            {
-               player.set_movement_mode(0,ua_move_rotate);
-
-               if (rotate<10.0)
-               {
-                  player.set_movement_mode(ua_move_rotate);
-                  player.set_movement_factor(ua_move_rotate,rotate);
-               }
-            }
-
-            {
-               player.set_movement_mode(0,ua_move_slide);
-
-               if (slide<10.0)
-               {
-                  player.set_movement_mode(ua_move_slide);
-                  player.set_movement_factor(ua_move_slide,slide);
-               }
-            }
-         }
-      }
-
-      // check click
-      if (click && pressed && !left_button)
-      {
-         int x,y;
-         SDL_GetMouseState(&x,&y);
-
-         unsigned int tilex=0, tiley=0, id=0;
-         bool isobj = true;
-
-         renderer.select_pick(x,y,tilex,tiley,isobj,id);
-
-         if (gamemode == ua_mode_default || gamemode == ua_mode_look)
-         {
-            // "look" action
-            if (isobj)
-            {
-               if (id != 0)
-               {
-                  // user clicked on an object
-                  Uint32 level = core->get_underworld().get_player().get_attr(ua_attr_maplevel);
-                  core->get_underworld().get_scripts().lua_objlist_look(level,id);
-               }
-            }
-            else
-            {
-               // user clicked on a texture
-               ua_trace("looking at wall/ceiling, tile=%02x/%02x, id=%04x\n",
-                  tilex,tiley,id);
-
-               core->get_underworld().get_scripts().lua_wall_look(id);
-            }
-         }
-         else
-         if (gamemode == ua_mode_use)
-         {
-            if (isobj)
-            {
-               // use object in map
-               Uint32 level = core->get_underworld().get_player().get_attr(ua_attr_maplevel);
-               core->get_underworld().get_scripts().lua_objlist_use(level,id);
-            }
-            else
-            {
-            }
-         }
-         else
-         if (gamemode == ua_mode_get)
-         {
-            if (isobj)
-            {
-               // get object from map
-               Uint32 level = core->get_underworld().get_player().get_attr(ua_attr_maplevel);
-               core->get_underworld().get_scripts().lua_objlist_get(level,id);
-
-               ua_inventory& inv = core->get_underworld().get_inventory();
-
-               // set appropriate cursor
-               if (inv.get_floating_item() != ua_item_none)
-               {
-                  Uint16 item_id = inv.get_item(inv.get_floating_item()).item_id;
-                  set_cursor_image(true,item_id,true);
-               }
-               else
-                  set_cursor_image(false,0xffff,true);
-            }
-            else
-            {
-               // getting tilemap wall/ceiling/floor? not possible
-            }
-         }
-
-         if (gamemode == ua_mode_talk && isobj)
-         {
-            Uint32 level = core->get_underworld().get_player().get_attr(ua_attr_maplevel);
-            core->get_underworld().get_scripts().lua_objlist_talk(level,id);
-         }
-      }
-   }
-}
-
-
-// virtual functions from ua_underworld_script_callback
-
-void ua_ingame_orig_screen::ui_start_conv(unsigned int level, unsigned int objpos)
-{
-   // start fading out
-   fade_state = 2;
-   fade_ticks = 0;
-   fadeout_action = 3; // start conversation
-
-   conv_level = level;
-   conv_objpos = objpos;
-
-   // fade out audio track
-   core->get_audio().fadeout_music(fade_time);
-}
-
-void ua_ingame_orig_screen::ui_print_string(const char* str)
-{
-   // print to text scroll
-   textscroll.print(str);
-}
-
-void ua_ingame_orig_screen::ui_show_ingame_anim(unsigned int anim)
-{
-}
-
-void ua_ingame_orig_screen::ui_cursor_use_item(Uint16 item_id)
-{
-}
-
-void ua_ingame_orig_screen::ui_cursor_target()
-{
 }
 
 void ua_ingame_orig_screen::do_screenshot(bool with_menu, unsigned int xres, unsigned int yres)
@@ -1199,41 +1015,5 @@ void ua_ingame_orig_screen::do_screenshot(bool with_menu, unsigned int xres, uns
    renderer.setup_camera(90.0,
       double(core->get_screen_width())/core->get_screen_height(),
       16.0);
-}
-
-void ua_ingame_orig_screen::set_cursor_image(bool is_object, Uint16 image,
-   bool prio)
-{
-   if (!prio && prio_cursor)
-      return; // do nothing; priority cursor in effect
-
-//   ua_trace("set_cursor_image(%s, %04x, %s)\n",
-//      is_object?"true":"false", image, prio?"true":"false");
-
-   if (image==0xffff)
-   {
-      if (prio_cursor)
-      {
-         // reset cursor image
-         prio_cursor = false;
-      }
-      image = 0;
-   }
-   else
-      prio_cursor = prio;
-
-   cursor_image = image;
-
-   if (!is_object)
-   {
-      // change mouse cursor type
-//      ua_trace("mousecursor.settype(%04x);\n",cursor_image);
-      mousecursor.settype(cursor_image);
-   }
-   else
-   {
-//      ua_trace("mousecursor.set_custom(img_objects.get_image(%04x));\n",cursor_image);
-      mousecursor.set_custom(img_objects.get_image(cursor_image));
-   }
 }
 */

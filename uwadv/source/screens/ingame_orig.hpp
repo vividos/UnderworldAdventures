@@ -77,6 +77,16 @@ enum ua_ingame_orig_action
    ua_action_cutscene,  //!< shows cutscene
 };
 
+//! player move state
+enum ua_ingame_move_state
+{
+   ua_move_turn_left=0,
+   ua_move_turn_right,
+   ua_move_walk_forward,
+   ua_move_run_forward,
+   ua_move_walk_backwards
+};
+
 /*
 //! screen area values
 enum ua_screen_area_id
@@ -160,8 +170,14 @@ public:
    //! sets game mode
    void set_gamemode(ua_ingame_game_mode my_gamemode){ gamemode = my_gamemode; }
 
-   //! returns underworld object; for controls
-   ua_underworld& get_underworld(){ return game.get_underworld(); }
+   //! returns game interface; for controls
+   ua_game_interface& get_game_interface(){ return game; }
+
+   //! returns move state
+   bool get_move_state(ua_ingame_move_state state);
+
+   //! sets cursor image
+   void set_cursor(int index, bool priority=false);
 
 protected:
    //! suspends game resources while showing another screen
@@ -181,12 +197,8 @@ protected:
    //! starts conversation with object in current level, on list position
    virtual void uw_start_conversation(unsigned int list_pos);
 
-
 /*
    virtual void ui_show_cutscene(unsigned int cutscene);
-
-   //! sets cursor image
-   void set_cursor_image(bool is_object, Uint16 image, bool prio=false);
 */
 protected:
    // constants
@@ -210,6 +222,12 @@ protected:
    //! indicates if there is a movement key pressed
    bool move_turn_left, move_turn_right,
       move_walk_forward, move_run_forward, move_walk_backwards;
+
+   //! indicates if a priority cursor image is in effect
+   bool priority_cursor;
+
+   //! all inventory objects
+   std::vector<ua_image> img_objects;
 
    //! fading helper
    ua_fading_helper fading;
@@ -297,9 +315,6 @@ protected:
 
 
    // images, textures and fonts
-
-   //! all inventory objects
-   ua_image_list img_objects;
 
 
    //! inventory/stats/runebag panel
