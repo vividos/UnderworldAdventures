@@ -383,13 +383,14 @@ Table of Contents
    -------------------------
    The infos are 19 bytes long each and can be split up like this:
 
-      0000   Int8   unknown
+      0000   Int8   npc_hp, npc hit points
       0001   Int8   unknown
       0002   Int8   unknown
       0003   Int8   unknown
       0004   Int8   unknown
       0005   Int8   unknown
-      0006   Int8   unknown
+      0006   Int8   flags:
+                       bits 7-8: mood (string block 5, pos 96..99)
       0007   Int8   unknown
       0008   Int8   unknown
       0009   Int8   unknown
