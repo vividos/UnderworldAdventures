@@ -4,19 +4,20 @@ Underworld Adventures Tools Readme
 There are some tools made while creation of Underworld Adventures that can be
 interesting for the common user. Here is a description of the tools. The source
 code for them resides in the source/tools/ folder. Note that on Windows, most
-programs need the file "SDL.dll" to work. It can be copied into the same
-folder as the .exe files.
+tools need the file "SDL.dll" to work. It can be copied into the same folder
+as the .exe files. Tools that work together with Ultima Underworld 2, too,
+have a [uw1/2] next to their name.
 
 
-mapdisp - Underworld Map Display
+mapdisp - Underworld Map Display [uw1/2]
 --------------------------------
 
 mapdisp is a program to show an "eagle's eye" view of each level of the
 underworld. The user can rotate and move the level to view all details of a
 specific level.
 
-The program should be placed in the Ultima Underworld 1 (or demo) folder,
-directly where the original file "uw.exe" resides.
+The program should be placed in the Ultima Underworld 1, 2, or demo folder,
+directly where the original executable file resides.
 
 To rotate the level around the center, drag with the left mouse key (press
 down left mouse button anywhere in the screen, move the mouse around, and
@@ -24,16 +25,21 @@ release the button again). To move the level around, drag with the right mouse
 button. The up and down cursor keys moves towards or from the viewer's point.
 
 Finally, Page Up and Page Down select another level in the abyss, either above
-or beyond the current (when using the uw_demo, this won't work, since the demo
-only has one underworld level stored).
+or beyond the current (when using the uw_demo this won't work, since the demo
+only has one underworld level stored). The window caption shows infos about
+the current level.
+
+mapdisp can be started with the parameter "allmaps"; it then shows all maps
+simultaneously as they would be in real space. You can move around the scene
+as usual.
 
 Reference Card:
 
-action            result
-left-drag         rotates level around center
-right-drag        moves level centerpoint
-up / down key     moves level towards or from the viewer
-page up / down    changes underworld level
+   action            result
+   left-drag         rotates level around center
+   right-drag        moves level centerpoint
+   up / down key     moves level towards or from the viewer
+   page up / down    changes underworld level
 
 
 animview - Underworld Cutscenes Animation Viewer
@@ -62,7 +68,7 @@ Background info: The cutscene animations were done with Deluxe Paint on Amiga,
 using the Deluxe Paint Animator file format (*.anm).
 
 
-strpak - Underworld Game Strings Pack/Unpack Tool
+strpak - Underworld Game Strings Pack/Unpack Tool [uw1/2]
 -------------------------------------------------
 
 strpak is a tool that lets you unpack the game strings in the file
@@ -157,8 +163,8 @@ Ultima Underworld, just look into the file "docs/uw-formats.txt" in the source
 distribution of Underworld Adventures.
 
 
-cnvdasm - Conversation Disassembler and Decompiler
---------------------------------------------------
+cnvdasm - Underworld Conversation Disassembler and Decompiler
+-------------------------------------------------------------
 
 cnvdasm is a disassembler and decompiler for the Ultima Underworld
 assembler-like conversation script code. The disassembler part just decodes
@@ -179,7 +185,80 @@ Again, for more info about the conversation system, look into the file
 "docs/uw-formats.txt" in the source distribution of Underworld Adventures.
 
 
-xmi2mid - XMIDI to MIDI converter
+map3ds - Level Map to 3DS format converter [uw1/2]
+------------------------------------------
+
+map3ds is a conversion tool to convert Ultima Underworld's level maps to
+3ds mesh files with texture info. Each level is output to a separate 3ds
+file; textures are written out as .tga files.
+
+The program should be placed in the game's main folder, where the executable
+is found. It writes out all .3ds and .tga files into a newly created subfolder
+named "levels3ds". Some levels in Ultima Underworld 2 contain no data; those
+are recognized and are omitted.
+
+An optional parameter "sepmesh" seperates triangles for ceiling, water and
+lava into an own object.
+
+
+uwdump - Ultima Underworld data dump program
+---------------------------------------------
+
+uwdump is a program to extract and show information about many data structures
+used in Ultima Underworld. Textual output is always written to standard output
+where it can be redirected, e.g. to a text file. The program has the following
+syntax:
+
+   uwdump <options> <command> <options>
+
+Options and the command can be in any order, but there can only be one
+command. Here is a list of supported commands:
+
+   leveldump <file>
+      dumps the level map archive lev.ark given as <basepath><file>; it prints
+      an overview of the .ark file block structure, the master object list
+      with all fields described in uw-formats.txt, npc extra infos, npc
+      inventories, a list of traps, special link ("sp_link") chains and the
+      texture mapping. the infos are dumped for every level in the file.
+
+   propdump
+      dumps common object properties from <basepath>/data/comobj.dat and
+      special object properties from <basepath>/data/objects.dat
+
+The following options are available for all commands:
+
+  -d<basepath>   sets uw1/uw2 path; using current folder when not specified
+                 (game type is auto-detected)
+  -2             set game type to ultima underworld 2 without further checking
+
+Here are some examples for calling uwdump. It is assumed that the current
+folder is the game's main folder:
+
+   uwdump -d c:\uw1\ leveldump data\lev.ark > uw1-leveldump.txt
+   uwdump leveldump save1\lev.ark
+   uwdump -d c:\uw2\ propdump > uw2-properties.txt
+
+
+uwmdlview - Ultima Underworld builtin 3d model viewer [uw1/2]
+-----------------------------------------------------
+
+uwmdlview shows the 3d models built into the .exe files of both games. It lets
+you switch between the objects and switch on/off lighting. The view of the
+model can be controlled with the mouse.
+
+To view the models, just start the program in the same folder as one of the
+files "uw.exe", "uw2.exe" or "uwdemo.exe". No other files are needed. There
+are 32 models available. The view can be controlled with some keys and the mouse:
+
+   action          description
+   left-drag       rotates level around center
+   right-drag      moves level centerpoint
+   up / down key   moves level towards or from the viewer
+   page up/down    shows next/previous model
+   L               toggles on/off lighting
+
+
+xmi2mid - XMIDI to MIDI converter [uw1/2]
 ---------------------------------
 
 xmi2mid is a converter for XMIDI files (*.xmi) that are used in Ultima
