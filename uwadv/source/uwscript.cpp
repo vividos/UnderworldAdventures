@@ -522,7 +522,26 @@ int ua_underworld_script_bindings::objlist_get_obj_info(lua_State* L)
    lua_pushnumber(L,static_cast<double>(info.quantity));
    lua_settable(L,-3);
 
-   // TODO: add data
+   // add data table
+   lua_pushstring(L,"data");
+   {
+      lua_newtable(L);
+
+      // push table entries
+      unsigned int max = info.data.size();
+
+      lua_pushstring(L,"size");
+      lua_pushnumber(L,static_cast<double>(max));
+      lua_settable(L,-3);
+
+      for(unsigned int i=0; i<max; i++)
+      {
+         lua_pushnumber(L,static_cast<double>(i));
+         lua_pushnumber(L,static_cast<double>(info.data[i]));
+         lua_settable(L,-3);
+      }
+   }
+   lua_settable(L,-3);
 
    return 1;
 }
