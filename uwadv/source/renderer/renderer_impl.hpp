@@ -32,10 +32,15 @@
 // needed includes
 #include "uamath.hpp"
 #include "level.hpp"
+#include "critter.hpp"
+#include "models.hpp"
+#include "quadtree.hpp"
+#include "geometry.hpp"
 
 
 // classes
 
+//! renderer implementation
 class ua_renderer_impl
 {
 public:
@@ -47,58 +52,76 @@ public:
       double panangle, double rotangle, double fov);
 
    //! returns texture manager
-   inline ua_texture_manager& get_texture_manager(){ return texmgr; }
+   ua_texture_manager& get_texture_manager(){ return texmgr; }
 
-protected:
-   //! renders tile floor
-   void render_floor(ua_levelmap_tile& tile, unsigned int x, unsigned int y);
+   //! returns critter frames manager
+   ua_critter_frames_manager& get_critter_frames_manager(){ return critter_manager; }
 
-   //! renders tile ceiling
-   void render_ceiling(ua_levelmap_tile& tile, unsigned int x, unsigned int y);
-
-   //! renders tile walls
-   void render_walls(ua_levelmap_tile& tile, unsigned int x, unsigned int y);
+   //! returns 3d models manager
+   ua_model3d_manager& get_ua_model3d_manager(){ return model_manager; }
 
    //! renders the objects of a tile
-   void render_objects(unsigned int x, unsigned int y);
+   void render_objects(const ua_level& level, unsigned int x, unsigned int y);
 
-
+protected:
    //! renders a single object
-   void render_object(ua_object& obj, unsigned int x, unsigned int y);
+   void render_object(const ua_level& level, const ua_object& obj,
+      unsigned int x, unsigned int y);
 
+   //! renders a billboarded sprite
+   void render_sprite(ua_vector3d base, double width, double height,
+      bool ignore_upvector, double u, double v);
+
+/*
    //! renders decal
-   void render_decal(ua_object& obj, unsigned int x, unsigned int y);
+   void render_decal(const ua_object& obj, unsigned int x, unsigned int y);
 
    //! renders tmap object
-   void render_tmap_obj(ua_object& obj, unsigned int x, unsigned int y);
+   void render_tmap_obj(const ua_object& obj, unsigned int x, unsigned int y);
 
    //! draws a billboarded quad
    void draw_billboard_quad(ua_vector3d base,
       double quadwidth, double quadheight,
       double u1,double v1,double u2,double v2);
-/*
-   //! retrieves tile coordinates
-   static void get_tile_coords(unsigned int side, ua_levelmap_tiletype type,
-      unsigned int basex, unsigned int basey, Uint16 basez, Uint16 slope, Uint16 ceiling,
-      Uint16 &x1, Uint16 &y1, Uint16 &z1,
-      Uint16 &x2, Uint16 &y2, Uint16 &z2);
 */
-   //! renders a wall of a tile, dependent on the neighbour
-   static void render_wall(unsigned int side,
-      Uint16 x1, Uint16 y1, Uint16 z1, Uint16 x2, Uint16 y2, Uint16 z2,
-      Uint16 nz1, Uint16 nz2, Uint16 ceiling);
-
 protected:
    // texture manager
    ua_texture_manager texmgr;
 
+   //! critter frames manager
+   ua_critter_frames_manager critter_manager;
 
+   //! 3d models manager
+   ua_model3d_manager model_manager;
 
    //! indicates if in selection (picking) mode
    bool selection_mode;
 
    //! billboard right and up vectors
    ua_vector3d bb_right, bb_up;
+};
+
+
+//! level tile renderer class
+class ua_level_tile_renderer: public ua_quad_callback
+{
+public:
+   //! ctor
+   ua_level_tile_renderer(const ua_level& my_level, ua_renderer_impl& my_renderer_impl)
+      :level(my_level), renderer_impl(my_renderer_impl), geom(my_level){}
+
+   //! callback function to render tile
+   virtual void visible_tile(unsigned int xpos, unsigned int ypos);
+
+protected:
+   //! ref to level
+   const ua_level& level;
+
+   //! geometry provider for level
+   ua_geometry_provider geom;
+
+   //! ref back to renderer implementation
+   ua_renderer_impl& renderer_impl;
 };
 
 
