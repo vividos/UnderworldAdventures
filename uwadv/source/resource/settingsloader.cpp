@@ -159,6 +159,9 @@ void ua_settings::write(const char *origfile, const char *newfile)
       std::getline(cfg,line);
       linecopy = line;
 
+      if (cfg.eof())
+         break;
+
       bool found = false;
       do
       {
