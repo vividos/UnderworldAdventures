@@ -48,7 +48,7 @@ uwadv_SOURCES = \
 	import/cutsloader.cpp \
 	import/fontloader.cpp \
 	import/imageloader.cpp \
-	import/import.hpp import/io_endian.hpp \
+	import/import.hpp import/importgfx.hpp import/io_endian.hpp \
 	import/maploader.cpp \
 	import/objloader.cpp \
 	import/playerimport.cpp \
@@ -57,6 +57,7 @@ uwadv_SOURCES = \
 	import/texloader.cpp \
 	import/tgaimport.cpp \
 	import/uw2dec.cpp \
+	import/uwloader.cpp \
 	renderer/critter.cpp renderer/critter.hpp \
 	renderer/models.cpp renderer/models.hpp \
 	renderer/quadtree.cpp renderer/quadtree.hpp \
@@ -109,7 +110,6 @@ uwadv_SOURCES = \
 	main.cpp \
 	unittest.cpp unittest.hpp \
 	uwadv.cpp uwadv.hpp \
-	resource/codeloader.cpp \
 	resource/modeldecode.cpp \
 	resource/models_impl.hpp
 
