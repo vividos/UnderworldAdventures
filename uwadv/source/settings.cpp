@@ -41,7 +41,7 @@ ua_settings::ua_settings()
 void ua_settings::init()
 {
    // set the generic uw path
-   insert_value(ua_setting_uw_path,get_string(ua_setting_uw1_path).c_str());
+   insert_value(ua_setting_uw_path,get_string(ua_setting_uw1_path));
 
    //:uw1_path("./"), uadata_path("./uadata/"), fullscreen(false), cutsntype(ua_cutscenenar_subtitles)
 
@@ -60,8 +60,7 @@ void ua_settings::init()
 std::string ua_settings::get_string(ua_settings_key key)
 {
    // try to find key
-   std::map<ua_settings_key,std::string>::iterator iter =
-      settings.find(key);
+   SettingsMap::iterator iter = settings.find(key);
 
    // return string
    return iter == settings.end() ?  std::string("") : iter->second;
@@ -70,8 +69,7 @@ std::string ua_settings::get_string(ua_settings_key key)
 int ua_settings::get_int(ua_settings_key key)
 {
    // try to find key
-   std::map<ua_settings_key,std::string>::iterator iter =
-      settings.find(key);
+   SettingsMap::iterator iter = settings.find(key);
 
    // return integer
    return iter == settings.end() ? 0 :
@@ -81,8 +79,7 @@ int ua_settings::get_int(ua_settings_key key)
 bool ua_settings::get_bool(ua_settings_key key)
 {
    // try to find key
-   std::map<ua_settings_key,std::string>::iterator iter =
-      settings.find(key);
+   SettingsMap::iterator iter = settings.find(key);
 
    if (iter == settings.end())
       return false;
@@ -98,7 +95,19 @@ bool ua_settings::get_bool(ua_settings_key key)
    }
 }
 
-void ua_settings::insert_value(ua_settings_key key, const char *value)
+void ua_settings::insert_value(ua_settings_key key, std::string value)
 {
-   settings.insert( std::make_pair<ua_settings_key,std::string>(key,std::string(value)) );
+   settings[key] = value;
+}
+
+void ua_settings::dump()
+{
+   std::map<ua_settings_key,std::string>::iterator iter;
+
+   for (iter = settings.begin();
+        iter != settings.end();
+        ++iter)
+   {
+      std::cout << iter->first << "=" << iter->second << std::endl;
+   }
 }

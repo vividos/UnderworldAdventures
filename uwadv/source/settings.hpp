@@ -37,7 +37,7 @@
 // enum
 
 //! settings value key
-typedef enum
+enum ua_settings_key
 {
    //! path to the game files (dependent on which game currently plays)
    ua_setting_uw_path = 0,
@@ -66,10 +66,10 @@ typedef enum
    //! int value with midi device to use
    ua_setting_win32_midi_device,
 
-} ua_settings_key;
+};
 
 //! game type enum
-typedef enum
+enum ua_game_type
 {
    //! no game available
    ua_game_none=0,
@@ -83,8 +83,10 @@ typedef enum
    //! we have uw2
    ua_game_uw2,
 
-} ua_game_type;
+};
 
+
+typedef std::map<ua_settings_key,std::string> SettingsMap;
 
 // classes
 
@@ -116,10 +118,13 @@ public:
    bool get_bool(ua_settings_key key);
 
    //! inserts a settings key/value pair
-   void insert_value(ua_settings_key key, const char *value);
+   void insert_value(ua_settings_key key, std::string value);
 
    //! sets the gametype
    void set_gametype(ua_game_type type){ gtype = type; }
+
+   //! dumps all settings
+   void dump();
 
 protected:
 
@@ -127,7 +132,7 @@ protected:
    ua_game_type gtype;
 
    //! settings map
-   std::map<ua_settings_key,std::string> settings;
+   SettingsMap settings;
 };
 
 #endif

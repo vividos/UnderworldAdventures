@@ -31,6 +31,7 @@
 #include <cctype>
 #include <fstream>
 #include <algorithm>
+#include <iostream>
 
 
 // structs

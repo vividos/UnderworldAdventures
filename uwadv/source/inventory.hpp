@@ -48,7 +48,7 @@ const Uint16 ua_slot_no_item = 0xffff;
 // enums
 
 //! inventory slot enum
-typedef enum
+enum ua_inv_paperdoll_slots
 {
    ua_slot_topmost_first_item=0, // topmost inventory; first item list pos
 
@@ -70,7 +70,7 @@ typedef enum
 
    ua_slot_paperdoll_start=ua_slot_paperdoll_legs
 
-} ua_inv_paperdoll_slots;
+};
 
 
 // classes
