@@ -30,6 +30,16 @@
 #define uwadv_script_hpp_
 
 // needed includes
+#include "game_interface.hpp"
+
+
+// enums
+
+//! scripting language
+enum ua_scripting_language
+{
+   ua_script_lang_lua=0,
+};
 
 
 // classes
@@ -40,6 +50,46 @@ class ua_scripting
 public:
    //! ctor
    ua_scripting(){}
+   virtual ~ua_scripting(){}
+
+   //! inits scripting
+   virtual void init(ua_game_interface* game)=0;
+
+   //! loads a script into scripting engine
+   virtual bool load_script(const char* basename)=0;
+
+   //! cleans up scripting
+   virtual void done()=0;
+
+   //! called to init new game
+   virtual void init_new_game()=0;
+
+   //! evaluates a critter in master object list
+   virtual void eval_critter(unsigned int pos)=0;
+
+   //! executes a trigger action
+   virtual void do_trigger(unsigned int pos)=0;
+
+   //! casts spell described by the runes in spell rack
+   virtual void cast_spell()=0;
+
+   //! notifies script that the current level has changed
+   virtual void on_changing_level()=0;
+
+   //! performs object "look" action
+   virtual void object_look(unsigned int pos)=0;
+
+   //! performs object "use" action
+   virtual void object_use(unsigned int pos)=0;
+
+   //! combines two objects in inventory
+   virtual void inventory_combine(unsigned int pos,unsigned int pos2)=0;
+
+   //! performs inventory item "look" action
+   virtual void inventory_look(unsigned int pos)=0;
+
+   //! creates new scripting object
+   static ua_scripting* create_scripting(ua_scripting_language lang);
 };
 
 #endif
