@@ -31,6 +31,7 @@
 #include "uamath.hpp"
 #include "import.hpp"
 #include "scripting.hpp"
+#include "geometry.hpp"
 
 
 // ua_underworld methods
@@ -44,6 +45,8 @@ void ua_underworld::init(ua_settings& settings, ua_files_manager& filesmgr)
 {
    enhanced_features = settings.get_bool(ua_setting_uwadv_features);
 
+   last_evaltime = -1.0;
+
    stopped = false;
    attacking = false;
    attack_power = 0;
@@ -55,7 +58,7 @@ void ua_underworld::init(ua_settings& settings, ua_files_manager& filesmgr)
 
    inventory.init(this);
 
-   player.init();
+   player.init(*this);
 
    questflags.resize(0x0040,0);
 
@@ -65,6 +68,8 @@ void ua_underworld::init(ua_settings& settings, ua_files_manager& filesmgr)
    ua_trace("loading game strings ... ");
    gstr.load(settings);
    ua_trace("done\n");
+
+   physics.add_track_body(&player);
 }
 
 void ua_underworld::done()
@@ -75,6 +80,8 @@ void ua_underworld::eval_underworld(double time)
 {
    if (stopped)
       return;
+
+   double elapsed = last_evaltime > 0 ? time - last_evaltime : 0.1;
 
    if (attacking)
    {
@@ -87,9 +94,13 @@ void ua_underworld::eval_underworld(double time)
    }
 
    // evaluate physics
-   physics.eval_physics(time);
+   physics.eval_physics(elapsed);
+
+   player.rotate_move(elapsed);
 
    check_move_trigger();
+
+   last_evaltime = time;
 }
 
 void ua_underworld::user_action(ua_underworld_user_action action,
@@ -370,4 +381,25 @@ void ua_underworld::check_move_trigger()
          pos = obj.get_object_info().link;
       }
    }
+}
+
+/*! \todo also collect triangles from 3d models and critter objects */
+void ua_underworld::get_surrounding_triangles(unsigned int xpos,
+   unsigned int ypos, std::vector<ua_triangle3d_textured>& alltriangles)
+{
+   unsigned int xmin, xmax, ymin, ymax;
+
+   xmin = xpos>0 ? xpos-1 : 0;
+   xmax = xpos<64 ? xpos+1 : 64;
+   ymin = ypos>0 ? ypos-1 : 0;
+   ymax = ypos<64 ? ypos+1 : 64;
+
+   // collect all triangles
+   ua_geometry_provider prov(get_current_level());
+
+   for(unsigned int x=xmin; x<xmax; x++)
+   for(unsigned int y=ymin; y<ymax; y++)
+      prov.get_tile_triangles(x,y,alltriangles);
+
+   // TODO: also collect triangles from 3d models and critter objects
 }

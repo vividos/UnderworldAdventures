@@ -171,7 +171,7 @@ public:
 
 
 //! underworld class
-class ua_underworld
+class ua_underworld: public ua_physics_model_callback
 {
 public:
    //! ctor
@@ -262,6 +262,11 @@ public:
    void import_savegame(ua_settings& settings,const char* folder,bool initial);
 
 protected:
+   // ua_physics_model_callback virtual methods
+   virtual void get_surrounding_triangles(unsigned int xpos,
+      unsigned int ypos, std::vector<ua_triangle3d_textured>& alltriangles);
+
+protected:
    //! checks if player is near move triggers
    void check_move_trigger();
 
@@ -277,6 +282,9 @@ protected:
 
    //! attack power, ranging from 0 to 100
    unsigned int attack_power;
+
+   //! last timestamp that evaluation occured
+   double last_evaltime;
 
    //! the player object
    ua_player player;
