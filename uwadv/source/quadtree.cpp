@@ -36,24 +36,27 @@
 
 // ua_frustum methods
 
-ua_frustum::ua_frustum(double xpos,double ypos,double angle,double fov,double farplane)
+ua_frustum::ua_frustum(double xpos,double ypos,double myxangle,double myyangle,double fov,double farplane)
 {
+   xangle=myxangle;
+   yangle=myyangle;
+
    // calculate all three triangle points forming the 2d frustum top view
-   x[0] = xpos - 3.0*cos(ua_deg2rad(angle));
-   y[0] = ypos - 3.0*sin(ua_deg2rad(angle));
+   x[0] = xpos - 3.0*cos(ua_deg2rad(xangle));
+   y[0] = ypos - 3.0*sin(ua_deg2rad(xangle));
 
    // move camera pos a bit behind
    farplane += 3.0;
    fov *= 1.3;
 
    // view vector
-   double vx = farplane*cos(ua_deg2rad(angle)) + xpos;
-   double vy = farplane*sin(ua_deg2rad(angle)) + ypos;
+   double vx = farplane*cos(ua_deg2rad(xangle)) + xpos;
+   double vy = farplane*sin(ua_deg2rad(xangle)) + ypos;
 
    // vector to second point
    double len = farplane*tan(ua_deg2rad(fov/2));
-   double wx = len*cos(ua_deg2rad(angle+90));
-   double wy = len*sin(ua_deg2rad(angle+90));
+   double wx = len*cos(ua_deg2rad(xangle+90));
+   double wy = len*sin(ua_deg2rad(xangle+90));
 
    x[1] = vx + wx;
    y[1] = vy + wy;
