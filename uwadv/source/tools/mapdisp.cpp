@@ -39,6 +39,7 @@
 #include "level.hpp"
 #include "renderer.hpp"
 #include <algorithm>
+#include "resource/fread_endian.hpp"
 
 
 // globals
@@ -112,6 +113,14 @@ void load_all_levels()
 
    for(unsigned int i=0; i<maxlevels; i++)
    {
+      {
+         // set new caption
+         char buffer[256];
+         sprintf(buffer,"Underworld Adventures: Map Display; loading level %u ...",i);
+
+         SDL_WM_SetCaption(buffer,NULL);
+      }
+
       // prepare all used textures
       const std::vector<Uint16>& used_textures =
          levels[i].get_used_textures();
@@ -135,7 +144,7 @@ void load_all_levels()
    }
 
    // sort triangles by texnum
-//   std::sort(alltriangles.begin(), alltriangles.end());
+   std::sort(alltriangles.begin(), alltriangles.end());
 }
 
 void init_mapdisp()
@@ -172,6 +181,8 @@ void init_mapdisp()
    }
 }
 
+void screenshot(bool big);
+
 void handle_key_down(SDL_keysym* keysym)
 {
    switch(keysym->sym)
@@ -196,6 +207,11 @@ void handle_key_down(SDL_keysym* keysym)
 
    case SDLK_DOWN:
       zpos-=2.0;
+      break;
+
+   case SDLK_s:
+      // do large screenshot
+      screenshot(true);
       break;
 
    default:
@@ -301,8 +317,117 @@ void draw_screen()
       }
       glEnd();
    }
+}
 
-   SDL_GL_SwapBuffers();
+void screenshot(bool big)
+{
+   unsigned int xres = 640;
+   unsigned int yres = 480;
+
+   if (big)
+   {
+      // store proj. matrix
+      glMatrixMode(GL_PROJECTION);
+      glPushMatrix();
+      glMatrixMode(GL_MODELVIEW);
+
+      unsigned int tilex = 4;
+      unsigned int tiley = 4;
+
+      std::vector<Uint32> image;
+      image.reserve(xres*yres*tilex*tiley);
+
+      double left, right, bottom, top;
+
+      for(unsigned int x=0; x<tilex; x++)
+      {
+         for(int y=tiley-1; y>=0; y--)
+         {
+            {
+               // set new caption
+               char buffer[256];
+               sprintf(buffer,"Underworld Adventures: Map Display; capturing image %u x %u",
+                  x+1,tiley-y);
+
+               SDL_WM_SetCaption(buffer,NULL);
+            }
+
+            left = -0.25 + x/double(tilex*2);
+            right = -0.25 + (x+1)/double(tilex*2);
+            bottom = -0.25 + y/double(tiley*2);
+            top = -0.25 + (y+1)/double(tiley*2);
+
+            left *= double(xres)/yres;
+            right *= double(xres)/yres;
+            left *= double(tilex)/tiley;
+            right *= double(tilex)/tiley;
+
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            glFrustum(left, right, bottom, top, 0.25, 256.0);
+            glMatrixMode(GL_MODELVIEW);
+
+            draw_screen();
+
+            // store scanlines
+            glReadBuffer(GL_BACK);
+
+            // read in all scanlines
+            for(int n=yres-1; n>=0; n--)
+            {
+               unsigned int pos =
+                  (x*xres)+
+                  (n*xres*tilex) +
+                  ((y)*xres*yres*tilex)
+                  ;
+
+               glReadPixels(0, n, xres, 1, GL_BGRA_EXT, GL_UNSIGNED_BYTE,
+                  &image[pos]);
+
+               //fwrite(&scanline[0],xres,4,fd);
+            }
+            // show captured image
+            SDL_GL_SwapBuffers();
+         }
+      }
+
+      SDL_WM_SetCaption("Underworld Adventures: Map Display; saving captured image ...",NULL);
+
+      // saving tga file
+      {
+         // write tga header
+         FILE *fd = fopen("mapdisp-shot.tga","wb");
+         {
+            // write header
+            fputc(0,fd); // id length
+            fputc(0,fd); // color map flag
+            fputc(2,fd); // tga type (2=truecolor)
+            fwrite16(fd,0); // color map origin
+            fwrite16(fd,0); // color map length
+            fputc(0,fd); // color map depth
+            fwrite16(fd,0); // x origin
+            fwrite16(fd,0); // y origin
+            fwrite16(fd,xres*tilex); // width
+            fwrite16(fd,yres*tiley); // height
+            fputc(32,fd); // bits per pixel
+            fputc(0x20,fd); // image descriptor; 0x00 = bottomup
+         }
+
+         for(int line=yres*tiley-1; line>=0; line--)
+            fwrite(&image[line*xres*tilex],xres*tilex,4,fd);
+
+         fclose(fd);
+      }
+
+      // restore projection matrix
+      glMatrixMode(GL_PROJECTION);
+      glPopMatrix();
+      glMatrixMode(GL_MODELVIEW);
+   }
+   else
+   {
+      // normal capture
+   }
 }
 
 void setup_opengl(int width,int height)
@@ -396,6 +521,8 @@ int main(int argc, char* argv[])
    {
       process_events();
       draw_screen();
+      SDL_GL_SwapBuffers();
+
       renders++;
 
       now = SDL_GetTicks();
