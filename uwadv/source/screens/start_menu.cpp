@@ -97,9 +97,10 @@ void ua_start_menu_screen::resume()
    // upload screen image quad
    img_screen.convert_upload();
 
+   fader.init(true,game->get_tickrate(),fade_time);
+
    // set other flags/values
    stage = 0;
-   tickcount = 0;
    journey_avail = game->get_savegames_manager().get_savegames_count() > 0;
    selected_area = -1;
    shiftcount=0.0;
@@ -115,7 +116,7 @@ void ua_start_menu_screen::destroy()
 
 void ua_start_menu_screen::draw()
 {
-   glClear(GL_COLOR_BUFFER_BIT);
+//   glClear(GL_COLOR_BUFFER_BIT);
 
    // do we need to reupload the image quad texture?
    if (reupload_image)
@@ -142,33 +143,16 @@ void ua_start_menu_screen::draw()
    }
 
    // calculate brightness of texture quad
-   Uint8 light = 255;
-
-   switch(stage)
-   {
-   case 0:
-      light = Uint8(255*(double(tickcount) / (game->get_tickrate()*fade_time)));
-      break;
-
-   case 2:
-      light = Uint8(255-255*(double(tickcount) / (game->get_tickrate()*fade_time)));
-      break;
-
-   case 3:
-      light=0;
-      break;
-   }
-
-   glDisable(GL_BLEND);
+   Uint8 light = fader.get_fade_value();
 
    glColor3ub(light,light,light);
 
    // render screen image and mouse
+   glDisable(GL_BLEND);
    img_screen.render();
 
-   glEnable(GL_BLEND);
-
    // draw subwindows
+   glEnable(GL_BLEND);
    ua_screen::draw();
 }
 
@@ -204,7 +188,6 @@ bool ua_start_menu_screen::process_event(SDL_Event& event)
          if (stage==1)
          {
             stage++;
-            tickcount=0;
             ret = true;
          }
          break;
@@ -230,12 +213,10 @@ bool ua_start_menu_screen::process_event(SDL_Event& event)
 void ua_start_menu_screen::tick()
 {
    // when fading in or out, check if blend time is over
-   if ((stage==0 || stage==2) &&
-      ++tickcount >= (game->get_tickrate()*fade_time))
+   if ((stage==0 || stage==2) && fader.tick())
    {
       // do next stage
       stage++;
-      tickcount=0;
    }
 
    // do palette shifting
@@ -261,7 +242,9 @@ void ua_start_menu_screen::tick()
    {
       press_button();
       stage=0;
-      tickcount=0;
+
+      // fade in, in case user returns to menu screen
+      fader.init(true,game->get_tickrate(),fade_time);
    }
 }
 
@@ -332,7 +315,7 @@ void ua_start_menu_screen::mouse_event(bool button_clicked, bool left_button, bo
             if (area != -1 && selected_area == area)
             {
                stage++; // next stage
-               tickcount=0;
+               fader.init(false,game->get_tickrate(),fade_time);
 
                // fade out music when selecting "introduction"
                if (selected_area == 0)
@@ -344,7 +327,6 @@ void ua_start_menu_screen::mouse_event(bool button_clicked, bool left_button, bo
    else
    {
       // a mouse move action
-
       if (stage==1 && (leftbuttondown || rightbuttondown) && area != -1)
          selected_area = area;
    }

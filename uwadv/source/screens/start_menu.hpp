@@ -38,6 +38,7 @@
 #include "message.hpp"
 #include "imgquad.hpp"
 #include "mousecursor.hpp"
+#include "fading.hpp"
 
 
 // classes
@@ -81,14 +82,14 @@ protected:
    static const double palette_shifts_per_second;
 
 
+   //! fading helper
+   ua_fading_helper fader;
+
    //! mouse cursor
    ua_mousecursor mousecursor;
 
    //! current stage
    unsigned int stage;
-
-   //! current tickcount
-   unsigned int tickcount;
 
    //! count for palette shifting
    double shiftcount;

@@ -34,10 +34,10 @@
 
 // needed includes
 #include "screen.hpp"
-
 #include "imgquad.hpp"
 #include "font.hpp"
 #include "cutscene.hpp"
+#include "fading.hpp"
 
 
 
@@ -70,6 +70,9 @@ protected:
 
    //! animation frame rate, in frames per second
    static const double anim_framerate;
+
+   //! fading helper
+   ua_fading_helper fader;
 
    //! current stage we are in
    unsigned int stage;

@@ -149,21 +149,10 @@ void ua_start_splash_screen::draw()
 
    switch(stage)
    {
-      // anim fade-in
+      // anim fade-in/fade-out
    case 2:
-      light = Uint8(255*(double(tickcount) / (game->get_tickrate()*blend_time)));
-      break;
-
-      // still image / anim
-   case 0:
-   case 1:
-   case 3:
-      light=255;
-      break;
-
-      // anim fade-out
    case 4:
-      light = Uint8(255-255*(double(tickcount) / (game->get_tickrate()*blend_time)));
+      light = fader.get_fade_value();
       break;
 
       // finished
@@ -201,25 +190,39 @@ bool ua_start_splash_screen::process_event(SDL_Event& event)
       // when a key or mouse button was pressed, go to next stage
       switch(stage)
       {
-      case 0:
+      case 0: // first or second image
       case 1:
          tickcount = unsigned(show_time * game->get_tickrate()) + 1;
          ret = true;
          break;
 
-      case 2:
-         stage=4;
-         tickcount = unsigned(blend_time * game->get_tickrate()) - tickcount;
-         ret = true;
+      case 2: // fading in animation
+         {
+            stage=4;
+
+            // init fadeout
+            fader.init(false,game->get_tickrate(),blend_time);
+
+            // "simulate" the number of ticks we already did
+            for(unsigned int i=0; i<tickcount; i++)
+               fader.tick();
+
+            tickcount = unsigned(blend_time * game->get_tickrate()) - tickcount;
+
+            ret = true;
+         }
          break;
 
-      case 3:
+      case 3: // showing animation
          stage++;
          tickcount=0;
 
          // fade out music when we have the demo (ingame starts after this)
          if (game->get_settings().get_gametype() == ua_game_uw_demo)
             game->get_audio_manager().fadeout_music(blend_time);
+
+         // init fadeout
+         fader.init(false,game->get_tickrate(),blend_time);
 
          ret = true;
          break;
@@ -250,6 +253,9 @@ void ua_start_splash_screen::tick()
       animcount = 0.0;
       stage = 2;
       tickcount = 0;
+
+      // init fadein
+      fader.init(true,game->get_tickrate(),blend_time);
    }
 
    // check other stages
@@ -272,7 +278,7 @@ void ua_start_splash_screen::tick()
       // fade-in / out
    case 2:
    case 4:
-      if (tickcount >= blend_time * game->get_tickrate())
+      if (fader.tick())
       {
          stage++;
          tickcount=0;
