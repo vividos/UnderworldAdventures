@@ -761,6 +761,10 @@ SOURCE=..\quadtree.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\resource\savegame.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\settings.cpp
 # End Source File
 # Begin Source File
@@ -798,6 +802,10 @@ SOURCE=..\keymap.hpp
 # Begin Source File
 
 SOURCE=..\quadtree.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\savegame.hpp
 # End Source File
 # Begin Source File
 
