@@ -233,7 +233,7 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    static int curlevel = 0;
    ua_player &pl = core->get_underworld().get_player();
 
-   Uint32 keymod = ua_make_keymod(keysym.sym,keysym.mod);
+   Uint32 keymod = ua_make_keymod(keysym.sym,keysym.mod & ~KMOD_NUM);
 
    // check for run forward key
    if (keymap.is_key(ua_key_run_forward,keymod))
@@ -254,7 +254,7 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    }
    else
    // check for turn right key
-   if (keymap.is_key(ua_key_turn_left,keymod))
+   if (keymap.is_key(ua_key_turn_right,keymod))
    {
       if (type==SDL_KEYDOWN)
          pl.set_movement_mode(ua_move_rotate_right);
@@ -651,7 +651,7 @@ void ua_ingame_orig_screen::tick()
    // check for looking up or down
    if (look_up || look_down)
    {
-      viewangle += (look_up ? 1.0 : -1.0)*(viewangle_speed/core->get_tickrate());
+      viewangle += (look_up ? -1.0 : 1.0)*(viewangle_speed/core->get_tickrate());
 
       // view angle has to stay between -180 and 180 degree
       while (viewangle > 180.0 || viewangle < -180.0 )
