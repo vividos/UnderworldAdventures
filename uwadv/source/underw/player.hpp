@@ -56,35 +56,38 @@ enum ua_player_movement_mode
     may be used for combat/spell/etc. calculations */
 typedef enum
 {
-   // note: scripts depend on numeral values, they must be in-sync with uwinterface.lua
-   ua_attr_gender=0,     // 0 means male
-   ua_attr_handedness=1, // 0 means left-handedness
-   ua_attr_appearance=2, // values from 0..4
-   ua_attr_profession=3, // values from 0..7
+   // note: scripts depend on numerical values, they must be in-sync with
+   // those in uwinterface.lua
+   ua_attr_gender=0,     //!< 0 means male
+   ua_attr_handedness=1, //!< 0 means left-handedness
+   ua_attr_appearance=2, //!< values from 0..4
+   ua_attr_profession=3, //!< values from 0..7, fighter, mage, bard, ...
 
-   ua_attr_maplevel=4,
+   ua_attr_maplevel=4,   //!< map level the player currently is
 
    ua_attr_strength=5,
    ua_attr_dexterity=6,
    ua_attr_intelligence=7,
 
-   ua_attr_life=8,
-   ua_attr_max_life=9,
+   ua_attr_vitality=8,
+   ua_attr_max_vitality=9,
    ua_attr_mana=10,
    ua_attr_max_mana=11,
 
    ua_attr_weariness=12,
    ua_attr_hungriness=13,
-   ua_attr_poisoned=14,
-   ua_attr_mentalstate=15, // drunk, tripping, etc. 0 means normal
+   ua_attr_poisoned=14,    //!< 1 when poisoned
+   ua_attr_mentalstate=15, //!< drunk, tripping, etc. 0 means normal
    ua_attr_nightvision=16,
 
-   ua_attr_talks=17,
-   ua_attr_kills=18,
-   ua_attr_level=19,
-   ua_attr_exp_points=20,
+   ua_attr_talks=17,       //!< number of conversations
+   ua_attr_kills=18,       //!< number of successful kills
+   ua_attr_exp_level=19,   //!< experience level
+   ua_attr_exp_points=20,  //!< number of experience points
 
-   ua_attr_difficulty=21, // 0=easy, 1=normal
+   ua_attr_difficulty=21,  //!< 0=easy, 1=normal
+
+   // todo: game time, etc.
 
    ua_attr_max
 
@@ -93,7 +96,7 @@ typedef enum
 //! player skills enum
 typedef enum
 {
-   // note: scripts depend on numeral values, they must be in-sync with uwinterface.lua
+   // note: scripts depend on numerical values, they must be in-sync with uwinterface.lua
    ua_skill_attack=0,
    ua_skill_defense=1,
    ua_skill_unarmed=2,
