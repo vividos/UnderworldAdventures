@@ -218,6 +218,9 @@ protected:
    //! area the item is dragged from
    ua_ingame_orig_area drag_area;
 
+   //! is true when the mouse cursor is in 3d screen
+   bool in_screen3d;
+
 
    // misc. stuff
 

@@ -113,6 +113,8 @@ void ua_ingame_orig_screen::init()
    slot_start = 0;
    check_dragging = false;
 
+   in_screen3d = false;
+
    tickcount = 0;
    gamemode = ua_mode_default;
    panel_type = 0;
@@ -1220,9 +1222,18 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
    } while (false);
    area = area_save;
 
+   if (in_screen3d && area != ua_area_screen3d)
+   {
+      // cursor was moved out of 3d screen
+      in_screen3d = false;
+      cursor_image = 0;
+   }
+
    // check 3d view area
    if (area == ua_area_screen3d)
    {
+      in_screen3d = true;
+
       double relx = double(cursorx-53)/(224-53);
       double rely = double(cursory-20)/(131-20);
 
