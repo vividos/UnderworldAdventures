@@ -31,10 +31,7 @@
 #define __uwadv_screen_hpp_
 
 // needed includes
-#include "audio.hpp"
-#include "texture.hpp"
-#include "settings.hpp"
-#include "gamestrings.hpp"
+#include "core.hpp"
 
 
 // classes
@@ -70,42 +67,6 @@ public:
 protected:
    //! game core interface ptr
    class ua_game_core_interface *core;
-};
-
-
-//! game core abstract base class
-class ua_game_core_interface
-{
-public:
-   ua_game_core_interface(){}
-   virtual ~ua_game_core_interface(){}
-
-   //! returns screen width
-   virtual unsigned int get_screen_width()=0;
-   //! returns screen height
-   virtual unsigned int get_screen_height()=0;
-
-   //! returns audio interface
-   virtual ua_audio_interface &get_audio()=0;
-
-   //! returns game strings
-   virtual ua_gamestrings &get_strings()=0;
-
-   //! returns settings object
-   virtual ua_settings &get_settings()=0;
-
-   //! returns texture manager object
-   virtual ua_texture_manager &get_texmgr()=0;
-
-
-   //! sets new screen as top screen stack
-   virtual void push_screen(ua_ui_screen_base *newscreen)=0;
-
-   //! replaces current screen with new one
-   virtual void replace_screen(ua_ui_screen_base *newscreen)=0;
-
-   //! destroys current screen (when finished tick()) and uses the last one
-   virtual void pop_screen()=0;
 };
 
 #endif
