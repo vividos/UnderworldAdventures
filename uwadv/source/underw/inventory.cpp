@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@ void ua_inventory::init(ua_underworld* theunderw)
    underw = theunderw;
 
    itemlist.resize(256);
-   runebag.reset();
    floating_object = ua_slot_no_item;
 
 #ifdef HAVE_DEBUG
@@ -80,7 +79,7 @@ Uint16 ua_inventory::get_slot_item(unsigned int index)
    return slot_links[index];
 }
 
-ua_object_info &ua_inventory::get_item(Uint16 index)
+ua_object_info& ua_inventory::get_item(Uint16 index)
 {
    if (index>=itemlist.size())
       throw ua_exception("inventory: illegal item list access");
@@ -125,6 +124,7 @@ Uint16 ua_inventory::get_container_item_id()
    return id==ua_slot_no_item ? ua_slot_no_item : get_item(id).item_id;
 }
 
+/*! \todo implement properly */
 bool ua_inventory::is_container(Uint16 item_id)
 {
    return false;//TODOunderw->get_scripts().lua_inventory_is_container(item_id);
@@ -186,7 +186,7 @@ double ua_inventory::get_container_weight(Uint16 cont_pos)
    while (link != 0)
    {
       // get object
-      ua_object_info &obj = get_item(link);
+      ua_object_info& obj = get_item(link);
 
       // add weight
       weight += prop.get_common_property(obj.item_id).mass;
@@ -317,6 +317,8 @@ bool ua_inventory::drop_floating_item_slot(Uint16 slot_index)
 
     if the function is called with ua_slot_no_item as index, a new item is
     allocated.
+
+    \todo implement category stuff
 */
 bool ua_inventory::drop_floating_item(Uint16 index)
 {
@@ -333,7 +335,7 @@ bool ua_inventory::drop_floating_item(Uint16 index)
       return true;
    }
 
-   ua_object_info &obj = get_item(index);
+   ua_object_info& obj = get_item(index);
 
    // check if object can be placed in that slot
    {
@@ -615,40 +617,50 @@ void ua_inventory::append_item(Uint16 cont, Uint16 item)
    }
 }
 
+/*! \todo store slot_links, container_stack from savegame? */
 void ua_inventory::load_game(ua_savegame& sg)
 {
    sg.begin_section("inventory");
 
-   // load runebag
-   for(unsigned int r=0; r<24; r++)
-      runebag.set(r, sg.read8()!=0 );
+   if (sg.get_version()==0)
+   {
+      std::bitset<24>& runebag = underw->get_player().get_runes().get_runebag();
+      // load runebag; only in version 0
+      for(unsigned int r=0; r<24; r++)
+         runebag.set(r, sg.read8()!=0);
+   }
 
    // load itemlist
    for(unsigned int i=0; i<256; i++)
       itemlist[i].load_info(sg);
 
-   // TODO restore slot_links, container_stack (?)
+   // restore slot_links, container_stack (?)
 
    sg.end_section();
 }
 
+/*! \todo store slot_links, container_stack from savegame? */
 void ua_inventory::save_game(ua_savegame& sg)
 {
    sg.begin_section("inventory");
 
-   // save runebag
-   for(unsigned int r=0; r<24; r++) {
-      // Hope this doesn't break anything but bitset::at() is not available in gcc/mingw.. 'test' should be the 'official' function to use (telemachos) 
-      // sg.write8(runebag.at(r) ? 1 : 0);
-      sg.write8(runebag.test(r) ? 1 : 0);
-   }  
-   
-   
+   if (sg.get_version()==0)
+   {
+      // save runebag; only in version 0
+      std::bitset<24>& runebag = underw->get_player().get_runes().get_runebag();
+      for(unsigned int r=0; r<24; r++) {
+         // Hope this doesn't break anything but bitset::at() is not available in gcc/mingw..
+         // 'test' should be the 'official' function to use (telemachos)
+         // sg.write8(runebag.at(r) ? 1 : 0);
+         sg.write8(runebag.test(r) ? 1 : 0);
+      }
+   }
+
    // save itemlist
    for(unsigned int i=0; i<256; i++)
       itemlist[i].save_info(sg);
 
-   // TODO store slot_links, container_stack (?)
+   // store slot_links, container_stack (?)
 
    sg.end_section();
 }

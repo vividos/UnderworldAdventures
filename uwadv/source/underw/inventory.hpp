@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -34,7 +34,6 @@
 
 // needed includes
 #include <vector>
-#include <bitset>
 #include "objects.hpp"
 
 
@@ -85,15 +84,12 @@ public:
    ua_inventory(){}
 
    //! initializes inventory
-   void init(ua_underworld *underw);
+   void init(ua_underworld* underw);
 
    // common functionality
 
-   //! returns runebag as bitset
-   std::bitset<24>& get_runebag(){ return runebag; }
-
    //! retrieves an item from an object
-   ua_object_info &get_item(Uint16 index);
+   ua_object_info& get_item(Uint16 index);
 
    //! calculates weight of inventory in stones
    double get_inventory_weight();
@@ -150,10 +146,10 @@ public:
    // loading / saving / importing
 
    //! loads a savegame
-   void load_game(ua_savegame &sg);
+   void load_game(ua_savegame& sg);
 
    //! saves to a savegame
-   void save_game(ua_savegame &sg);
+   void save_game(ua_savegame& sg);
 
 protected:
    //! builds new slot link list
@@ -171,9 +167,6 @@ protected:
 protected:
    //! underworld object
    ua_underworld* underw;
-
-   //! rune bag
-   std::bitset<24> runebag;
 
    //! item list
    std::vector<ua_object_info> itemlist;
