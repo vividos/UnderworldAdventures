@@ -44,7 +44,7 @@ const double ua_pi = 3.141592653589793;
 #define ua_min(a,b) ((a)<(b) ? (a) : (b))
 #define ua_max(a,b) ((a)>(b) ? (a) : (b))
 
-#define ua_deg2rad(a) ((double(a)/180.f)*ua_pi)
+#define ua_deg2rad(a) ((double(a)/180.0)*ua_pi)
 
 
 // classes
