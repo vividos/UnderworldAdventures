@@ -70,6 +70,9 @@ enum ua_settings_key
    //! boolean value that indicates if uwadv-specific features are enabled
    ua_setting_uwadv_features,
 
+   //! prefix for the uadata folder path to locate the game.cfg and other cfg files
+   ua_setting_game_prefix,
+
    //! screen resolution string, in the form <xres> x <yres>
    ua_setting_screen_resolution,
 
