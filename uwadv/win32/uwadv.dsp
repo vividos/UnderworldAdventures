@@ -708,6 +708,10 @@ SOURCE=..\source\level.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\source\mapnotes.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\source\objects.cpp
 # End Source File
 # Begin Source File
@@ -745,6 +749,10 @@ SOURCE=..\source\inventory.hpp
 # Begin Source File
 
 SOURCE=..\source\level.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\mapnotes.hpp
 # End Source File
 # Begin Source File
 

@@ -9,7 +9,7 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	objects.cpp cutscene.cpp physics.cpp physicsobject.cpp files.cpp keymap.cpp \
 	uwscript.cpp settings.cpp utils.cpp mousecursor.cpp \
 	renderer.cpp textscroll.cpp critter.cpp imgquad.cpp models.cpp \
-	gamecfg.cpp \
+	gamecfg.cpp mapnotes.cpp \
 	audio.hpp common.hpp core.hpp font.hpp gamestrings.hpp \
 	image.hpp inventory.hpp level.hpp player.hpp quadtree.hpp \
 	screen.hpp settings.hpp texture.hpp utils.hpp \
@@ -18,6 +18,7 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	files.hpp keymap.hpp uwscript.hpp uamath.hpp settings.hpp \
 	savegame.hpp mousecursor.hpp renderer.hpp textscroll.hpp \
 	debug.hpp cfgfile.hpp critter.hpp gamecfg.hpp properties.hpp \
+	mapnotes.hpp \
 	linux/main.cpp linux/debug.cpp \
 	audio/audio.cpp audio/midi.cpp audio/xmidi.cpp \
 	audio/resamp.c audio/resamp.h \
