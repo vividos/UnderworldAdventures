@@ -33,10 +33,6 @@
 #include "underworld.hpp"
 
 
-// forward declaration
-struct ua_uw_access_api;
-
-
 // classes
 
 //! debug interface
@@ -57,9 +53,6 @@ public:
 
    //! returns underworld object
    virtual ua_underworld* get_underworld()=0;
-
-   //! returns a pointer to the uw access API struct
-   virtual ua_uw_access_api* get_access_api()=0;
 
 
    //! dtor
