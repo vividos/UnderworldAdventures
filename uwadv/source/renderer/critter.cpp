@@ -56,8 +56,8 @@ void ua_critter::prepare(ua_texture_manager& texmgr)
 
       curtex.init(&texmgr,1);
 
-      curtex.convert(&allframe_bytes.get()[i*xres*yres],
-         xres,yres,texmgr.get_palette(0),0);
+//      curtex.convert(&allframe_bytes.get()[i*xres*yres],
+//         xres,yres,texmgr.get_palette(0),0);
 
       curtex.upload(0,false);
       // using mipmapped textures (2nd param "true") disables the alpha
