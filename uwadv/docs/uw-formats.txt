@@ -2102,10 +2102,10 @@ Table of Contents
      0078   define model center
               0000   Int16     node id
               0002   VertNo    vertex list index to use as origin (?)
-              0002   Fixed     origin X coordinate
-              0004   Fixed     origin Y coordinate
-              0006   Fixed     origin Z coordinate
-              0006   Int16     ???
+              0004   Fixed     origin X coordinate
+              0006   Fixed     origin Y coordinate
+              0008   Fixed     origin Z coordinate
+              000a   Int16     ???
 
             because of the limited resolution available for specifying object
             positions, the origin for model coordinates will typically need to
@@ -2146,8 +2146,8 @@ Table of Contents
      0090   define vertex offset X,Z
               0002   Fixed     offset to add to X coordinate
               0004   Fixed     offset to add to X coordinate
-              0002   VertNo    reference vertex to modify
-              0006   VertNo    new list index to store vertex
+              0006   VertNo    reference vertex to modify
+              0008   VertNo    new list index to store vertex
 
      0092   define vertex offset X,Y
             same as 0090, but for the X and Y coordinate
@@ -2160,8 +2160,7 @@ Table of Contents
             up to the ceiling, wherever it be.
               0002   VertNo    reference vertex to modify
               0004   Int16     ???
-              0006   Int16     ???
-              0002   VertNo    new list index to store vertex
+              0006   VertNo    new list index to store vertex
 
    Face plane checks
    -----------------
@@ -2266,7 +2265,7 @@ Table of Contents
               0002   VertNo    vertex number
               0004   Int8      c1 ???
               0005   Int8      c2 ???
-              0002   VertNo    vertex number
+              0006   VertNo    vertex number
 
      002E   ???
               0002   Int16     ???
