@@ -127,7 +127,7 @@ void ua_audio_impl::init(ua_settings &settings, ua_files_manager &filesmgr)
 
    // init mixer
    SDL_Init(SDL_INIT_AUDIO);
-   Mix_OpenAudio(12000, MIX_DEFAULT_FORMAT, 2, 4096);
+   Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 4096);
    Mix_ChannelFinished(mixer_channel_finished);
 
    ua_trace(" %s\n",Mix_GetError());
@@ -145,6 +145,8 @@ void ua_audio_impl::init(ua_settings &settings, ua_files_manager &filesmgr)
       mixer_ver->major,mixer_ver->minor,mixer_ver->patch);
 }
 
+extern void ua_audio_resample_voc(Mix_Chunk* mc);
+
 void ua_audio_impl::play_sound(const char *soundname)
 {
    // construct filename
@@ -156,7 +158,13 @@ void ua_audio_impl::play_sound(const char *soundname)
    // start playing
    Mix_Chunk* mc = Mix_LoadWAV(vocname.c_str());
    if (mc)
+   {
+      // note: Mix_LoadWAV() doesn't resample the waveform to the specified
+      // mixer samplerate, so we must do it by ourselves
+      ua_audio_resample_voc(mc);
+
       Mix_PlayChannel(-1, mc, 0);
+   }
 }
 
 void ua_audio_impl::stop_sound()
