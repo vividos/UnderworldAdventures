@@ -97,7 +97,7 @@ void ua_underworld_script_bindings::register_functions()
 
    lua_register(L,"objlist_get_obj_info",objlist_get_obj_info);
    lua_register(L,"objlist_set_obj_info",objlist_set_obj_info);
-   lua_register(L,"objlist_remove_obj",objlist_remove_obj);
+   lua_register(L,"objlist_delete_obj",objlist_delete_obj);
    lua_register(L,"objlist_insert_obj",objlist_insert_obj);
 
    lua_register(L,"tilemap_get_tile",tilemap_get_tile);
@@ -113,7 +113,7 @@ void ua_underworld_script_bindings::register_functions()
    lua_register(L,"inv_get_objinfo",inv_get_objinfo);
    lua_register(L,"inv_slot_get_num",inv_slot_get_num);
    lua_register(L,"inv_slot_get_item",inv_slot_get_item);
-   lua_register(L,"inv_slot_remove_item",inv_slot_remove_item);
+   lua_register(L,"inv_slot_delete_item",inv_slot_delete_item);
    lua_register(L,"inv_float_get_item",inv_float_get_item);
    lua_register(L,"inv_float_add_item",inv_float_add_item);
    lua_register(L,"inv_cont_calc_weight",inv_cont_calc_weight);
@@ -610,6 +610,14 @@ int ua_underworld_script_bindings::objlist_get_obj_info(lua_State* L)
    lua_pushnumber(L,static_cast<double>(extinfo.heading));
    lua_settable(L,-3);
 
+   lua_pushstring(L,"tilex");
+   lua_pushnumber(L,static_cast<double>(extinfo.tilex));
+   lua_settable(L,-3);
+
+   lua_pushstring(L,"tiley");
+   lua_pushnumber(L,static_cast<double>(extinfo.tiley));
+   lua_settable(L,-3);
+
 
    lua_pushstring(L,"quality");
    lua_pushnumber(L,static_cast<double>(info.quality));
@@ -686,9 +694,18 @@ int ua_underworld_script_bindings::objlist_set_obj_info(lua_State* L)
    return 0;
 }
 
-int ua_underworld_script_bindings::objlist_remove_obj(lua_State* L)
+int ua_underworld_script_bindings::objlist_delete_obj(lua_State* L)
 {
-   // todo: implement
+   ua_underworld& uw = get_underworld_from_self(L);
+
+   Uint32 obj_handle = static_cast<Uint32>(lua_tonumber(L,-1));
+
+   // decode handle
+   Uint32 objpos=0,level=0;
+   ua_obj_handle_decode(obj_handle,objpos,level);
+
+   uw.get_level(level).get_mapobjects().delete_object(objpos);
+
    return 0;
 }
 
@@ -862,6 +879,10 @@ int ua_underworld_script_bindings::inv_get_objinfo(lua_State* L)
    ua_inventory& inv = get_underworld_from_self(L).get_inventory();
 
    Uint16 inv_pos = static_cast<Uint16>(lua_tonumber(L,-1));
+
+   if (inv_pos == ua_item_none)
+      return 0; // no info returned
+
    ua_object_info& info = inv.get_item(inv_pos);
 
    // create new table and fill it with infos
@@ -927,7 +948,7 @@ int ua_underworld_script_bindings::inv_slot_get_item(lua_State* L)
    return 1;
 }
 
-int ua_underworld_script_bindings::inv_slot_remove_item(lua_State* L)
+int ua_underworld_script_bindings::inv_slot_delete_item(lua_State* L)
 {
    // TODO
    return 0;

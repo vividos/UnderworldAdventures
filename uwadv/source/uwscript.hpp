@@ -222,8 +222,7 @@ protected:
 
    static int objlist_get_obj_info(lua_State* L);
    static int objlist_set_obj_info(lua_State* L);
-   static int objlist_remove_obj(lua_State* L);
-   static int objlist_obj_is_npc(lua_State* L);
+   static int objlist_delete_obj(lua_State* L);
    static int objlist_insert_obj(lua_State* L);
 
    static int tilemap_get_tile(lua_State* L);
@@ -239,7 +238,7 @@ protected:
    static int inv_get_objinfo(lua_State* L);
    static int inv_slot_get_num(lua_State* L);
    static int inv_slot_get_item(lua_State* L);
-   static int inv_slot_remove_item(lua_State* L);
+   static int inv_slot_delete_item(lua_State* L);
    static int inv_float_get_item(lua_State* L);
    static int inv_float_add_item(lua_State* L);
    static int inv_cont_calc_weight(lua_State* L);
