@@ -73,10 +73,6 @@ public:
    virtual void user_action(ua_underworld_user_action action,
       unsigned int param);
    virtual void on_changing_level();
-   virtual void object_look(unsigned int pos);
-   virtual void object_use(unsigned int pos);
-   virtual void inventory_look(unsigned int pos);
-   virtual void inventory_use(unsigned int pos);
    virtual ua_item_combine_status item_combine(Uint16 item_id1, Uint16 item_id2,
       Uint16& result_id);
 
@@ -84,11 +80,26 @@ protected:
    //! loads a script
    int load_script(SDL_RWops* rwops, const char* chunkname);
 
+   //! returns scripting class from Lua state
+   static ua_lua_scripting& get_scripting_from_self(lua_State* L);
+
+   //! registers all callable functions
+   void register_functions();
+
+protected:
    //! lua state information
    lua_State* L;
 
    //! ptr to game interface
    ua_game_interface* game;
+
+   //! name for 'self' global in Lua
+   static const char* self_name;
+
+protected:
+   // registered C functions callable from Lua
+   // prototype: static int xyz(lua_State* L);
+   static int ui_print(lua_State* L);
 };
 
 

@@ -90,18 +90,6 @@ public:
    //! notifies script that the current level has changed
    virtual void on_changing_level()=0;
 
-   //! performs object "look" action
-   virtual void object_look(unsigned int pos)=0;
-
-   //! performs object "use" action
-   virtual void object_use(unsigned int pos)=0;
-
-   //! performs inventory item "look" action
-   virtual void inventory_look(unsigned int pos)=0;
-
-   //! performs inventory item "use" action
-   virtual void inventory_use(unsigned int pos)=0;
-
    //! combines two items
    /*! Tries to combine two objects; returns resulting object id or
        ua_item_none, when items couldn't be combined.
