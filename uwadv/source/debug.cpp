@@ -97,9 +97,24 @@ void ua_debug_server::tick()
       debug_impl->tick();
 }
 
-/*! \todo implement */
 void ua_debug_server::shutdown()
 {
+   if (debug_impl != NULL && debug_impl->is_avail() && thread_debugger != NULL)
+   {
+      ua_trace("shutting down debugger...\n");
+
+      // send quit message
+      lock(true);
+      ua_debug_server_message msg;
+      msg.msg_type = ua_msg_shutdown;
+
+      debug_impl->add_message(msg);
+      lock(false);
+
+      // wait for thread
+      SDL_WaitThread(thread_debugger,NULL);
+      thread_debugger = NULL;
+   }
 }
 
 void ua_debug_server::lock(bool set_lock)
