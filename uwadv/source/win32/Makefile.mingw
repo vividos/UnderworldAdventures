@@ -124,7 +124,8 @@ mapdisp_EXEC = mapdisp.exe
 mapdisp_OBJS = ../tools/mapdisp.o ../level.o ../resource/maploader.o \
 	../quadtree.o ../texture.o ../resource/texloader.o \
 	../resource/imageloader.o ../resource/objloader.o \
-	../image.o ../objects.o ../resource/codeloader.o
+	../image.o ../objects.o ../resource/codeloader.o \
+	../resource/settings.o
 
 mapdisp_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB) $(STLPORT_LIB) $(OPENGL_LIB)
 
