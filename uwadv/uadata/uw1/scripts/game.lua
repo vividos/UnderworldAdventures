@@ -263,7 +263,7 @@ end
 -- called when changing to a new level
 function lua_change_level(newlevel)
 
-   ui_print_string("changing to level " .. newlevel+1 .. " ...")
+   print( " changing to level " .. newlevel )
 
    -- fun_replace_tilemap_solids()
 
