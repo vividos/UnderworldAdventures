@@ -194,6 +194,100 @@ SOURCE=..\screens\start_menu.cpp
 SOURCE=..\screens\start_splash.cpp
 # End Source File
 # End Group
+# Begin Group "lua sources"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\lua\src\lapi.c
+# ADD CPP /I "..\lua\include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\lcode.c
+# ADD CPP /I "..\lua\include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\ldebug.c
+# ADD CPP /I "..\lua\include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\ldo.c
+# ADD CPP /I "..\lua\include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\lfunc.c
+# ADD CPP /I "..\lua\include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\lgc.c
+# ADD CPP /I "..\lua\include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\llex.c
+# ADD CPP /I "..\lua\include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\lmem.c
+# ADD CPP /I "..\lua\include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\lobject.c
+# ADD CPP /I "..\lua\include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\lparser.c
+# ADD CPP /I "..\lua\include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\lstate.c
+# ADD CPP /I "..\lua\include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\lstring.c
+# ADD CPP /I "..\lua\include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\ltable.c
+# ADD CPP /I "..\lua\include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\ltests.c
+# ADD CPP /I "..\lua\include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\ltm.c
+# ADD CPP /I "..\lua\include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\lundump.c
+# ADD CPP /I "..\lua\include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\lvm.c
+# ADD CPP /I "..\lua\include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\lzio.c
+# ADD CPP /I "..\lua\include"
+# End Source File
+# End Group
 # Begin Source File
 
 SOURCE=..\cutscene.cpp
@@ -296,6 +390,106 @@ SOURCE=..\screens\start_menu.hpp
 # Begin Source File
 
 SOURCE=..\screens\start_splash.hpp
+# End Source File
+# End Group
+# Begin Group "lua headers"
+
+# PROP Default_Filter ""
+# Begin Group "lua internal headers"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\lua\src\lapi.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\lcode.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\ldebug.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\ldo.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\lfunc.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\lgc.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\llex.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\llimits.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\lmem.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\lobject.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\lopcodes.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\lparser.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\lstate.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\lstring.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\ltable.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\ltm.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\lundump.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\lvm.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\src\lzio.h
+# End Source File
+# End Group
+# Begin Source File
+
+SOURCE=..\lua\include\lauxlib.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\include\lua.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\include\luadebug.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\lua\include\lualib.h
 # End Source File
 # End Group
 # Begin Source File

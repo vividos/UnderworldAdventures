@@ -28,13 +28,27 @@ CC = c++
 CFLAGS = -O2 #-g -O
 
 DEFINES =
-INCLUDES = $(SDL_INCLUDE) $(STLPORT_INCLUDE) $(FMOD_INCLUDE) -I.. -I. 
-CXXFLAGS = $(DEFINES) $(INCLUDES)
+INCLUDES = $(SDL_INCLUDE) $(STLPORT_INCLUDE) $(FMOD_INCLUDE) -I.. -I. \
+	-I../lua/include/
+CFLAGS += $(DEFINES) $(INCLUDES)
+CXXFLAGS =
 LDFLAGS = -mwindows -s
 
 #
 # build targets
 #
+
+
+# lua objects
+
+lua_OBJS = ../lua/src/lapi.o ../lua/src/lcode.o ../lua/src/ldebug.o \
+	../lua/src/ldo.o ../lua/src/lfunc.o ../lua/src/lgc.o \
+	../lua/src/llex.o ../lua/src/lmem.o ../lua/src/lobject.o \
+	../lua/src/lparser.o ../lua/src/lstate.o ../lua/src/lstring.o \
+	../lua/src/ltable.o ../lua/src/ltests.o ../lua/src/ltm.o \
+	../lua/src/lundump.o ../lua/src/lvm.o ../lua/src/lzio.o
+lua: $(lua_OBJS)
+
 
 # underworld adventures
 
@@ -54,7 +68,9 @@ uwadv_OBJS = source/main.o source/game_win32.o source/uwadv_res.o \
 	../resource/texloader.o ../resource/objloader.o \
 	../resource/cutsloader.o \
 	../screens/ingame_orig.o ../screens/start_splash.o \
-	../screens/start_menu.o
+	../screens/start_menu.o \
+	$(lua_OBJS)
+
 
 uwadv_LIBS = $(WIN32_LIB) -lwinmm $(OPENGL_LIB) \
 	$(SDL_LIB) $(FMOD_LIB) $(STLPORT_LIB)
@@ -148,7 +164,7 @@ $(uwadv_EXEC): $(uwadv_OBJS)
 	$(CC) $(LDFLAGS) $(uwadv_LDFLAGS) -o $(@) $(uwadv_OBJS) $(uwadv_LIBS)
 
 source/uwadv_res.o: source/uwadv.rc source/Uus.ico
-	cd source && windres -i uwadv.rc -o $@
+	cd source && windres -i uwadv.rc -o uwadv_res.o
 
 
 cnvdbg: $(cnvdbg_EXEC)
@@ -191,6 +207,9 @@ clean:
 		$(mapdisp_EXEC) $(animview_EXEC) \
 		$(uwadv_OBJS) $(cnvdbg_OBJS) $(cnvdasm_OBJS) $(xmi2mid_OBJS) \
 		$(mapdisp_OBJS) $(animview_OBJS) \
+
+.c.o:
+	$(CC) $(CFLAGS) -c $(<) -o $*.o
 
 .cpp.o:
 	$(CC) $(CFLAGS) $(CXXFLAGS) -c $(<) -o $*.o
