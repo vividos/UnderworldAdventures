@@ -586,6 +586,9 @@ void ua_uwadv_game::init_game()
    ua_trace("using generic uw-path: %s\n",
       settings.get_string(ua_setting_uw_path).c_str());
 
+   // init image manager
+   image_manager.init(settings);
+
    // init renderer
    renderer.init(*this);
 
