@@ -396,6 +396,9 @@ void ua_game::run()
       // do debug processing (uwadv thread)
       debug->tick();
 
+      // do texmgr tick
+      texmgr.tick(1.0/tickrate);
+
       // process incoming events
       process_events();
 
