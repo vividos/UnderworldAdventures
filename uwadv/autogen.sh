@@ -39,7 +39,6 @@ fi
 
 # clean up generated files
 rm -f configure config.log config.guess config.sub config.status
-rm -f source/config.h.in source/config.h
 rm -f depcomp compile
 rm -f aclocal.m4
 rm -f install-sh ltmain.sh missing mkinstalldirs
@@ -47,6 +46,8 @@ rm -f uwadv.spec source/uwadv.cfg
 rm -f Makefile.in Makefile
 rm -f source/Makefile.in source/Makefile 
 rm -f source/tools/Makefile.in source/tools/Makefile
+rm -f source/resource/Makefile.in source/resource/Makefile.in
+rm -f source/resource/zziplib/Makefile.in sourc/resource/zziplib/Makefile.in
 rm -f uadata/Makefile.in uadata/Makefile
 # maybe change this last line into some fancy
 # 'find all Makefile.am and delete corresponding Makefile and Makefile.in'

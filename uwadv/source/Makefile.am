@@ -4,7 +4,7 @@
 # $Id$
 #
 
-SUBDIRS = tools
+SUBDIRS = tools resource
 
 # compiler options
 CXXFLAGS = -I. -I.. $(SDL_CFLAGS) -Wall
@@ -13,8 +13,7 @@ LDFLAGS = $(SDL_LIBS) -lSDL_mixer
 
 # automake build rules
 
-noinst_LIBRARIES = liblua.a libzziplib.a
-
+noinst_LIBRARIES = liblua.a
 
 liblua_a_SOURCES = lua/src/lapi.c lua/src/lcode.c lua/src/ldebug.c \
 	lua/src/ldo.c lua/src/lfunc.c lua/src/lgc.c \
@@ -35,30 +34,6 @@ liblua_a_SOURCES = lua/src/lapi.c lua/src/lcode.c lua/src/ldebug.c \
 	lua/include/luadebug.h lua/include/lualib.h
 
 liblua_a_CFLAGS = -Ilua/include -Wall
-
-
-libzziplib_a_SOURCES = resource/zziplib/SDL_rwops_zzip.c \
-	resource/zziplib/zzip-dir.c \
-	resource/zziplib/zzip-err.c \
-	resource/zziplib/zzip-file.c \
-	resource/zziplib/zzip-info.c \
-	resource/zziplib/zzip-io.c \
-	resource/zziplib/zzip-stat.c \
-	resource/zziplib/zzip-zip.c \
-	resource/zziplib/SDL_rwops_zzip.h \
-	resource/zziplib/zzip-conf.h \
-	resource/zziplib/zzip-config.h \
-	resource/zziplib/zzip-file.h \
-	resource/zziplib/zzip-io.h \
-	resource/zziplib/zzip-msvc.h \
-	resource/zziplib/zzip-stdint.h \
-	resource/zziplib/zzip.h \
-	resource/zziplib/zzipformat.h \
-	resource/zziplib/zziplib.h
-
-
-libzziplib_a_CFLAGS = -Iresource/zziplib $(SDL_CFLAGS) -Wall
-
 
 bin_PROGRAMS = uwadv
 
@@ -94,9 +69,14 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	screens/conversation.hpp screens/create_character.hpp \
 	screens/map_view.hpp screens/cutscene_view.hpp
 
-uwadv_LDADD = $(OPENGL_LIBS) $(SDL_LIBS) liblua.a libzziplib.a -lz
+uwadv_LDADD = \
+	$(OPENGL_LIBS) \
+	$(SDL_LIBS) \
+	liblua.a \
+	resource/zziplib/libzziplib.la \
+	-lz
 
-uwadv_DEPENDENCIES = liblua.a libzziplib.a
+uwadv_DEPENDENCIES = liblua.a
 
 EXTRA_DIST = audio/midi_driver/win_midiout.cpp \
 	audio/midi_driver/win_midiout.h \

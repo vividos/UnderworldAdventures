@@ -58,6 +58,7 @@ AC_PROG_MAKE_SET
 AC_PROG_INSTALL
 AC_PROG_RANLIB
 
+AM_PROG_LIBTOOL
 
 dnl X config
 AC_PATH_X
@@ -121,6 +122,8 @@ AC_CONFIG_FILES([
 Makefile
 source/Makefile
 source/tools/Makefile
+source/resource/Makefile
+source/resource/zziplib/Makefile
 uadata/Makefile
 uwadv.spec:source/linux/uwadv.spec.in
 ])
