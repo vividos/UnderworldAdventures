@@ -664,13 +664,13 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
       fade_ticks = 0;
       fadeout_action = 2; // save game
    }
+#endif
    else
    // check for "debugger" key
    if (keymap.is_key(ua_key_ua_debug,keymod))
    {
       core->get_debug_interface()->start_debugger();
    }
-#endif
    else
    // check for "level up" key
    if (keymap.is_key(ua_key_ua_level_up,keymod))
