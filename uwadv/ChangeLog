@@ -1,3 +1,247 @@
+2002-05-28 12:10  vividos
+
+	* source/texture.hpp (1.5):
+
+	invalid texture name is 0, not -1
+	
+2002-05-28 12:09  vividos
+
+	* source/win32/Makefile.mingw (1.8):
+
+	added files to build uwadv
+	
+2002-05-28 00:55  vividos
+
+	* source/: Makefile.am (1.13), tools/Makefile.am (1.7),
+	win32/Makefile.mingw (1.7), win32/mapdisp.dsp (1.2),
+	win32/uwadv.dsp (1.6):
+
+	added object implementation files
+	
+2002-05-28 00:42  vividos
+
+	* source/: objects.cpp (1.1), objects.hpp (1.1),
+	resource/objloader.cpp (1.1):
+
+	added object list implementation and loader
+	
+2002-05-28 00:41  vividos
+
+	* source/screens/ingame_orig.cpp (1.7):
+
+	ua_frustum now gets xangle and yangle
+	
+2002-05-28 00:41  vividos
+
+	* source/screens/start_splash.cpp (1.7):
+
+	added drawing of the two object textures
+	
+2002-05-28 00:39  vividos
+
+	* source/resource/maploader.cpp (1.5):
+
+	tile info is stored in std::vector now
+	added a call to load object list
+	
+2002-05-28 00:37  vividos
+
+	* source/: level.cpp (1.8), level.hpp (1.5):
+
+	added code to render objects
+	changed float usage to double
+	
+2002-05-28 00:36  vividos
+
+	* source/: quadtree.cpp (1.4), quadtree.hpp (1.2):
+
+	xangle and yangle is now stored in ua_frustum
+	
+2002-05-26 17:09  vividos
+
+	* source/resource/texloader.cpp (1.5):
+
+	added object image texture loading
+	
+2002-05-26 17:09  vividos
+
+	* source/: texture.cpp (1.6), texture.hpp (1.4):
+
+	fixed texture resolution calc.
+	added invalidation for external textures
+	added calculation for object texture coordinates
+	
+2002-05-26 17:08  vividos
+
+	* source/resource/imageloader.cpp (1.5):
+
+	fixed memory overwriting bug
+	
+2002-05-26 17:08  vividos
+
+	* source/: image.cpp (1.5), image.hpp (1.4):
+
+	changed way ua_image is stored in ua_image_list
+	
+2002-05-26 16:29  vividos
+
+	* source/: image.cpp (1.4), image.hpp (1.3),
+	resource/imageloader.cpp (1.4):
+
+	implemented more ua_image methods
+	fixed image loading
+	
+2002-05-25 20:10  vividos
+
+	* source/linux/: configure (1.5), configure.in (1.8):
+
+	added OpenGL test compile
+	removed AC_PATH_XTRA
+	
+2002-05-25 19:45  vividos
+
+	* source/tools/: Makefile.am (1.6), Makefile.in (1.5):
+
+	forgot to add X libs here
+	
+2002-05-25 19:33  vividos
+
+	* source/: Makefile.am (1.12), Makefile.in (1.10),
+	linux/config.h.in (1.3), linux/configure (1.4), linux/configure.in
+	(1.7), linux/mkinstalldirs (1.7), tools/Makefile.in (1.4):
+
+	added check for X
+	some more stuff
+	
+2002-05-24 16:41  vividos
+
+	* docs/uw-formats.txt (1.14):
+
+	added info about object animation overlay info
+	
+2002-05-23 13:22  vividos
+
+	* source/audio/: midi.cpp (1.9), midi.hpp (1.5),
+	midi_driver/uni_fmod.cpp (1.4), midi_driver/uni_fmod.h (1.3),
+	midi_driver/win_midiout.cpp (1.4), midi_driver/win_midiout.h (1.4):
+
+	added ua_midi_driver::init_driver()
+	added checking for available midi driver
+	
+2002-05-23 13:00  vividos
+
+	* source/tools/cnvdbg.cpp (1.8):
+
+	added custom stricmp() function
+	
+2002-05-23 12:50  vividos
+
+	* source/tools/cnvdasm.cpp (1.5):
+
+	replaced calls to std::vector::at()
+	completed command line interface
+	
+2002-05-23 12:44  vividos
+
+	* source/uatypes.hpp (1.7):
+
+	even more precision for ua_deg2rad macro
+	
+2002-05-23 10:34  vividos
+
+	* hacking/levarkdec/levarkdec.cpp (1.6):
+
+	added dumping of "unknown info" list
+	enhanced output of file block list
+	added even more link2 targets
+	
+2002-05-23 10:31  vividos
+
+	* docs/uw-formats.txt (1.13):
+
+	updated level map/object format
+	
+2002-05-22 23:13  vividos
+
+	* source/uatypes.hpp (1.6):
+
+	fix for gcc-3.x, submitted by Tels <tels@bloodgate.com>
+	for more info:
+	http://groups.google.com/groups?hl=en&lr=&selm=9tcrgo%245dq%241%40slb1.atl.mindspring.net
+	
+2002-05-22 19:47  vividos
+
+	* docs/README.tools.txt (1.1):
+
+	added tools readme file
+	
+2002-05-22 17:47  vividos
+
+	* source/: Makefile.in (1.9), linux/mkinstalldirs (1.6),
+	tools/Makefile.am (1.5), tools/Makefile.in (1.3):
+
+	completed tools source files list
+	
+2002-05-22 17:35  vividos
+
+	* source/tools/: cnvdasm.cpp (1.4), cnvdbg.cpp (1.7):
+
+	replaced std::vector::at() calls with usage of [] operator
+	old libg++ shipped with gcc-2.95.2 seems to not know at()
+	
+2002-05-22 17:23  vividos
+
+	* source/: Makefile.am (1.11), Makefile.in (1.8), tools/Makefile.am
+	(1.4), tools/Makefile.in (1.2):
+
+	added mapdisp to tools makefile
+	removed libSDLmain.a (not needed on linux)
+	
+2002-05-22 12:56  vividos
+
+	* source/: Makefile.in (1.7), linux/configure (1.3),
+	linux/configure.in (1.6), linux/mkinstalldirs (1.5),
+	tools/Makefile.am (1.3), tools/Makefile.in (1.1):
+
+	added tools compiling
+	
+2002-05-21 18:39  vividos
+
+	* source/: Makefile.am (1.10), Makefile.in (1.6), common.hpp (1.4),
+	linux/main.cpp (1.1), linux/mkinstalldirs (1.4):
+
+	d'oh! forgot main() function for Linux compile
+	
+2002-05-21 13:13  vividos
+
+	* hacking/levarkdec/levarkdec.cpp (1.5):
+
+	added code to follow object chains through link1 and link2
+	info on objects on chains is printed out
+	
+2002-05-16 23:24  vividos
+
+	* source/: level.cpp (1.7), level.hpp (1.4),
+	screens/ingame_orig.cpp (1.6), tools/mapdisp.cpp (1.1),
+	win32/Makefile.mingw (1.6), win32/mapdisp.dsp (1.1),
+	win32/tools.dsw (1.3):
+
+	added mapdisp: an underworld map viewer
+	made some additions in the uwadv files to get the viewer to work
+	
+2002-05-16 09:33  vividos
+
+	* docs/uw-formats.txt (1.12):
+
+	updated with terrain texture properties
+	added NPC info desc. for master object list
+	
+2002-05-16 01:08  vividos
+
+	* ChangeLog (1.5):
+
+	updated
+	
 2002-05-16 01:06  vividos
 
 	* source/quadtree.cpp (1.3):
