@@ -35,6 +35,10 @@
 #include "objects.hpp"
 
 
+// forward declarations
+class ua_underworld;
+
+
 // constants
 
 //! item position or item id that indicates "no item"
@@ -79,7 +83,7 @@ public:
    ua_inventory(){}
 
    //! initializes inventory
-   void init();
+   void init(ua_underworld *underw);
 
    // common functionality
 
@@ -146,6 +150,9 @@ protected:
    void append_item(Uint16 cont, Uint16 item);
 
 protected:
+   //! underworld object
+   ua_underworld *underw;
+
    //! rune bag
    std::bitset<26> runebag;
 

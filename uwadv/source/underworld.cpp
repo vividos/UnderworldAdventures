@@ -43,7 +43,7 @@ void ua_underworld::init(ua_game_core_interface *thecore)
 
    physics.init(this);
 
-   inventory.init();
+   inventory.init(this);
 
    player.init();
    player.set_pos(32.0,2.0);

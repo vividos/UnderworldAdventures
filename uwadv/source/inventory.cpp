@@ -28,12 +28,15 @@
 // needed includes
 #include "common.hpp"
 #include "inventory.hpp"
+#include "underworld.hpp"
 
 
 // ua_inventory methods
 
-void ua_inventory::init()
+void ua_inventory::init(ua_underworld *theunderw)
 {
+   underw = theunderw;
+
    itemlist.resize(256);
    runebag.reset();
    floating_object = ua_slot_no_item;
@@ -297,6 +300,57 @@ bool ua_inventory::drop_floating_item(Uint16 index)
       else
       {
          // no, simple object
+
+         // check if object can be placed in that slot
+         {
+            // get inventory object category
+            ua_inv_item_category cat =
+               underw->get_scripts().lua_inventory_categorize_item(
+                  get_item(floating_object).item_id);
+
+            // check for rings
+            if ( (index == ua_slot_rightfinger || index == ua_slot_leftfinger ) &&
+               cat != ua_inv_cat_ring)
+                  return false;
+
+            // check for paperdoll items
+            if ( (index==ua_slot_paperdoll_head && cat != ua_inv_cat_head) ||
+                 (index==ua_slot_paperdoll_chest && cat != ua_inv_cat_chest) ||
+                 (index==ua_slot_paperdoll_hands && cat != ua_inv_cat_hands) ||
+                 (index==ua_slot_paperdoll_legs &&  cat != ua_inv_cat_legs) ||
+                 (index==ua_slot_paperdoll_feet &&  cat != ua_inv_cat_feet) )
+                    return false;
+         }
+
+         // check if objects can be combined
+         {
+            Uint16 item_id2 = get_item(floating_object).item_id;
+            Uint16 result_id = ua_slot_no_item;
+
+            // try to combine objects
+            ua_obj_combine_result ret =
+               underw->get_scripts().lua_obj_combine(obj.item_id,item_id2,result_id);
+
+            if (ret!=ua_obj_cmb_failed)
+            {
+               switch(ret)
+               {
+               case ua_obj_cmb_dstr_dropped:
+                  // dropped item is to be erased; just replace item id
+                  get_item(floating_object).item_id = result_id;
+                  break;
+
+               case ua_obj_cmb_dstr_both:
+                  // all two items are erased
+                  obj.item_id = result_id;
+                  get_item(floating_object).item_id = ua_slot_no_item;
+                  floating_object = ua_slot_no_item;
+                  break;
+               }
+
+               return true; // combining was successful
+            }
+         }
 
          // make copy of item on that place
          ua_object_info temp = get_item(index);
