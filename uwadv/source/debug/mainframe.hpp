@@ -30,22 +30,23 @@
 #define uadebug_mainframe_hpp_
 
 // needed includes
+#include <wx/docmdi.h>
 
 
 // forward references
-class wxMDIChildWindow;
+//class wxDocMDIChildWindow;
 
 
 // classes
 
 //! MDI parent frame
-class ua_debugger_main_frame: public wxMDIParentFrame
+class ua_debugger_main_frame: public wxDocMDIParentFrame
 {
 public:
    //! ctor
-   ua_debugger_main_frame(wxWindow* parent, const wxWindowID id,
-      const wxString& title,const wxPoint& pos, const wxSize& size,
-      const long style);
+   ua_debugger_main_frame(wxDocManager* manager, wxFrame* parent,
+      const wxWindowID id, const wxString& title,const wxPoint& pos,
+      const wxSize& size, const long style);
 
    //! adds standard frame menus
    void AddFrameMenus(wxMenuBar* menubar);
@@ -59,11 +60,30 @@ protected:
 
    // message handler
 
+   //! menu handler: File | New
+   void OnMenuFileNew(wxCommandEvent& event);
+
    //! menu handler: File | Open
    void OnMenuFileOpen(wxCommandEvent& event);
 
+   //! menu handler: File | Close
+   void OnMenuFileClose(wxCommandEvent& event);
+
+   //! menu handler: File | Save
+   void OnMenuFileSave(wxCommandEvent& event);
+
+   //! menu handler: File | Save As
+   void OnMenuFileSaveAs(wxCommandEvent& event);
+
+   //! menu handler: File | Save All
+   void OnMenuFileSaveAll(wxCommandEvent& event);
+
    //! menu handler: File | Quit
    void OnMenuFileQuit(wxCommandEvent& event);
+
+
+   void OnUpdateUIFileClose(wxUpdateUIEvent& event);
+
 
    //! menu handler: Underworld | Update
    void OnMenuUnderwUpdate(wxCommandEvent& event);
@@ -99,7 +119,12 @@ protected:
    enum
    {
       MENU_FILE_QUIT=1000,
+      MENU_FILE_NEW,
       MENU_FILE_OPEN,
+      MENU_FILE_CLOSE,
+      MENU_FILE_SAVE,
+      MENU_FILE_SAVEAS,
+      MENU_FILE_SAVEALL,
       MENU_UNDERW_SUSPEND,
       MENU_UNDERW_RESUME,
       MENU_UNDERW_UPDATE,
