@@ -53,15 +53,22 @@ ua_conversation_screen::ua_conversation_screen(
 
 void ua_conversation_screen::init()
 {
+   ua_trace("started conversation screen\n");
+   ua_trace("talking to npc at level %u, objpos %u, ",level,objpos);
+
    // get npc object to talk to
    ua_object& npc_obj =
       core->get_underworld().get_level(level).get_mapobjects().get_object(objpos);
    npcdata = npc_obj.get_object_info().data;
    Uint16 convslot = npcdata[0];
 
-   ua_trace("started conversation screen");
-   ua_trace(", npc at level %u, objpos %u",level,objpos);
-   ua_trace(", conversation #%u\n",convslot);
+   if (convslot==0)
+   {
+      // generic conversation
+      convslot = npc_obj.get_object_info().item_id-64+0x0100;
+   }
+
+   ua_trace("conversation slot 0x%04x\n",convslot);
 
    // clear screen
    glClearColor(0,0,0,0);
@@ -112,6 +119,19 @@ void ua_conversation_screen::init()
       // names
       std::string name1 = core->get_strings().get_string(7,16+convslot);
       std::string name2 = pl.get_name();
+
+      if (npcdata[0]==0)
+      {
+         // generic conversation
+         name1 = core->get_strings().get_string(4,npc_obj.get_object_info().item_id);
+
+         std::string::size_type pos;
+         pos = name1.find('_');
+         if (pos!=std::string::npos) name1.erase(0,pos+1);
+
+         pos = name1.find('&');
+         if (pos!=std::string::npos) name1.erase(pos);
+      }
 
       ua_image img_name;
       font_normal.create_string(img_name,name1.c_str(),101);
