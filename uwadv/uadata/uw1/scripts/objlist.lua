@@ -166,13 +166,12 @@ function lua_objlist_look(obj_handle)
 
    -- object owned by someone?
    owner = ""
-   if (objinfo.item_id < 64 or objinfo.item_id >= 128) and
-      objinfo.item_id < 320  and objinfo.owner > 0
-   then
-      local article,name = format_item_name(objinfo.owner-1+64, 0)
+   prop_item = prop_get_common(objinfo.item_id)
 
+   if prop_item.can_have_owner > 0 and objinfo.owner > 0
+   then
       -- do owner string
-      owner = " belonging to " .. article .. " " .. name
+      owner = " belonging to" .. ui_get_gamestring(1,objinfo.owner+370)
    end
 
    ui_print_string(
