@@ -26,8 +26,8 @@
 */
 
 // include guard
-#ifndef __uwadv_ingame_orig_hpp_
-#define __uwadv_ingame_orig_hpp_
+#ifndef uwadv_ingame_orig_hpp_
+#define uwadv_ingame_orig_hpp_
 
 // needed includes
 #include "screen.hpp"
@@ -35,10 +35,10 @@
 #include "font.hpp"
 #include "keymap.hpp"
 #include "renderer.hpp"
-#include "mousecursor.hpp"
 #include "textscroll.hpp"
 #include "uwscript.hpp"
 #include "debug.hpp"
+#include "panel.hpp"
 
 
 // enums
@@ -56,10 +56,11 @@ typedef enum
 
 } ua_ingame_orig_game_mode;
 
+
 //! screen area values
-typedef enum
+enum ua_screen_area_id
 {
-   ua_area_screen3d=0,
+   ua_area_screen3d=1,
    ua_area_textscroll,
    ua_area_gargoyle,
    ua_area_powergem,
@@ -84,6 +85,7 @@ typedef enum
    ua_area_flask_mana,
    ua_area_stats_chain,
 
+   // inventory stuff
    ua_area_inv_slot0,
    ua_area_inv_slot1,
    ua_area_inv_slot2,
@@ -110,10 +112,7 @@ typedef enum
    ua_area_paperdoll_hand,
    ua_area_paperdoll_legs,
    ua_area_paperdoll_feet,
-
-   ua_area_none
-
-} ua_ingame_orig_area;
+};
 
 
 // classes
@@ -128,12 +127,12 @@ public:
    ua_ingame_orig_screen(){}
    virtual ~ua_ingame_orig_screen(){}
 
-   // virtual functions from ua_ui_screen_base
-   virtual void init();
+   // virtual functions from ua_screen_ctrl_base
+   virtual void init(ua_game_core_interface* core);
    virtual void suspend();
    virtual void resume();
    virtual void done();
-   virtual void handle_event(SDL_Event &event);
+   virtual bool handle_event(SDL_Event& event);
    virtual void render();
    virtual void tick();
 
@@ -153,33 +152,19 @@ protected:
    //! renders 2d user interface
    void render_ui();
 
-   //! updates panel texture
-   void update_panel_texture();
-
    //! handles keyboard action
    void handle_key_action(Uint8 type, SDL_keysym &keysym);
 
-   //! returns area the given mouse coordinates is over
-   ua_ingame_orig_area get_area(unsigned int xpos,unsigned int ypos);
-
    //! called for a given mouse action; click is false for mouse moves
-   void mouse_action(bool click, bool left_button, bool pressed);
+   virtual bool mouse_action(bool click, bool left_button, bool pressed);
 
    //! finds out selection on specific mouse cursor position
    GLuint get_selection(unsigned int xpos, unsigned int ypos);
-
-   //! inventory item was dragged from slot
-   void inventory_dragged_item(ua_inventory &inv);
-
-   //! button was pressed released or released in inventory
-   void inventory_click(ua_inventory& inv,
-      bool pressed, bool left_button, ua_ingame_orig_area area);
 
    //! takes screenshot from current image
    void do_screenshot(bool with_menu, unsigned int xres=0, unsigned int yres=0);
 
 protected:
-
    // constants
 
    //! time to fade in/out
@@ -194,12 +179,6 @@ protected:
    //! current cursor image
    unsigned int cursor_image_current;
 
-   //! mouse cursor coordinates in 320x200 window coordinates
-   unsigned int cursorx,cursory;
-
-   //! mouse button states
-   bool leftbuttondown,rightbuttondown;
-
    //! indicates if cursor is an object icon
    bool cursor_is_object;
 
@@ -213,20 +192,6 @@ protected:
    bool move_turn_left, move_turn_right,
       move_walk_forward, move_run_forward, move_walk_backwards;
 
-
-   // inventory / item dragging
-
-   //! start of inventory slots the user sees
-   unsigned int slot_start;
-
-   //! indicates if dragging should be checked
-   bool check_dragging;
-
-   //! inventory item that is dragged
-   Uint16 drag_item;
-
-   //! area the item is dragged from
-   ua_ingame_orig_area drag_area;
 
    //! is true when the mouse cursor is in 3d screen
    bool in_screen3d;
@@ -301,34 +266,8 @@ protected:
    ua_texture tex_cmd_buttons;
 
 
-   // panels for inventory, runebag and stats
-
-   //! panels
-   ua_image_list img_panels;
-
-   //! panel texture
-   ua_texture tex_panel;
-
-   //! current panel type; 0 = inventory, 1 = runebag, 2 = stats
-   unsigned int panel_type;
-
-   //! alternative inventory panel when inside container
-   ua_image img_inv_bagpanel;
-
-   //! up/down button for scrollable inventory
-   ua_image_list img_inv_updown;
-
-   //! paperdoll armor images
-   ua_image_list img_armor;
-
-   //! indicates if armor is female
-   bool armor_female;
-
-   //! player appearance body graphics
-   ua_image_list img_bodies;
-
-   //! all inventory objects
-   ua_image_list img_objects;
+   //! inventory/stats/runebag panel
+   ua_panel panel;
 
 
    //! text scroll
@@ -336,12 +275,6 @@ protected:
 
    //! text scroll width
    unsigned int scrollwidth;
-
-
-   // needed fonts
-
-   // font for inventory weight and scroll messages
-   ua_font font_normal;
 
 
    //! screenshot image in rgba format
