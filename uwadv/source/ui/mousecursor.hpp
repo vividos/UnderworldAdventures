@@ -33,65 +33,50 @@
 #define uwadv_mousecursor_hpp_
 
 // needed includes
+#include "window.hpp"
 #include "image.hpp"
 #include "texture.hpp"
 
 
 // forward references
-class ua_game_core_interface;
+class ua_game_interface;
 
 
 // classes
 
 //! mouse cursor class
-class ua_mousecursor
+class ua_mousecursor: public ua_window
 {
 public:
    //! ctor
    ua_mousecursor(){}
-
    //! dtor
-   ~ua_mousecursor(){ done(); }
+   virtual ~ua_mousecursor(){}
 
    //! initializes mouse cursor class
-   void init(ua_game_core_interface* core, int initialtype=0);
+   void init(ua_game_interface* game, unsigned int initialtype=0);
 
    //! show or hide the cursor
    void show(bool show);
 
    //! set the type of cursor (the image used)
-   void settype(int type);
+   void set_type(unsigned int type);
 
    //! sets custom image as cursor
    void set_custom(ua_image& cursorimg);
 
-   //! update the current position of the mouse
-   void updatepos();
+   // virtual methods from ua_window
 
-   //! update current position with given relative mouse coordinates
-   void updatepos(unsigned int relx, unsigned int rely);
-
-   //! update and draw the mouse texture
-   void draw();
-
-   //! cleans up mouse cursor
-   void done();
+   virtual void destroy();
+   virtual void draw();
+   bool process_event(SDL_Event& event);
 
 protected:
-   //! screen size
-   unsigned int screen_width,screen_height;
-
    //! cursor visible
    bool isvisible;
 
-   //! mouse cursor image list 
+   //! mouse cursor image list
    ua_image_list img_cursors;
-
-   //! mouse cursor coordinates
-   unsigned int cursorx,cursory;
-
-   //! mouse cursor height/width
-   unsigned int cursorw, cursorh;
 
    //! texture object for mouse
    ua_texture mousetex;
