@@ -268,16 +268,15 @@ void ua_image::load_image(FILE *fd,Uint8 auxpalidx[32][16])
       break;
    case 0x0a: // 4-bit uncompressed
       {
-         unsigned int pixcount=0;
-
+         unsigned int pixcount=0, maxpix = width*height;
          Uint8 *pal = auxpalidx[auxpal];
-
          Uint8 rawbyte;
 
          while (datalen>0)
          {
             rawbyte = fgetc(fd);
             pixels[pixcount++] = pal[rawbyte >> 4];
+            if (pixcount>=maxpix) break;
             pixels[pixcount++] = pal[rawbyte&0x0f];
             datalen--;
          }
