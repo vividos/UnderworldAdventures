@@ -34,6 +34,15 @@
 #include "io_endian.hpp"
 
 
+// defines
+
+// for optimizing, we omit the first pass in loading frames
+// the xres, yres and maxframes members have to be set before calling
+// ua_uw_import::load_critter()
+//#define OMIT_1ST_PASS
+#undef OMIT_1ST_PASS
+
+
 // external functions
 
 extern void ua_image_decode_rle(FILE *fd, Uint8* pixels, unsigned int bits,
@@ -53,7 +62,7 @@ void ua_uw_import::load_critters(std::vector<ua_critter>& allcritters,
    }
    else
    {
-//      ua_uw1_import import;
+//      ua_uw2_import import;
 //      import.load_critters(allcritters,settings);
    }
 }
@@ -70,20 +79,26 @@ void ua_uw_import::load_critter(ua_critter& critter, const char* file,
    unsigned int& maxframes = critter.maxframes;
    std::vector<unsigned int>& hotxy_coords = critter.hotxy_coords;
    std::vector<unsigned int>& imgsizes = critter.imgsizes;
-   ua_smart_ptr<Uint8>& allframe_bytes = critter.allframe_bytes;
+   std::vector<Uint8>& allframe_bytes = critter.allframe_bytes;
    std::vector<Uint8>& slotlist = critter.slotlist;
    std::vector<std::vector<Uint8> >& segmentlist = critter.segmentlist;
 
+#ifndef OMIT_1ST_PASS
    xres = yres = 0;
+   maxframes = 0;
+#endif
+
    hotxy_coords.clear();
    imgsizes.clear();
-
-   maxframes = 0;
 
    // do 2-pass loading:
    // pass 0: determine max. frame image size
    // pass 1: load frame images
+#ifdef OMIT_1ST_PASS
+   for(unsigned int pass=1; pass<2; pass++)
+#else
    for(unsigned int pass=0; pass<2; pass++)
+#endif
    {
       unsigned int curpage = 0;
       unsigned int segment_offset = 0;
@@ -102,12 +117,12 @@ void ua_uw_import::load_critter(ua_critter& critter, const char* file,
 #endif
 
          // allocate needed number of bytes
-         allframe_bytes = ua_smart_ptr<Uint8>(new Uint8[maxframes * xres * yres]);
+         allframe_bytes.resize(maxframes * xres * yres);
 
 #if defined(DO_CRITLOAD_DEBUG) && defined(HAVE_DEBUG)
-         memset(&allframe_bytes.get()[0],0xcc, maxframes * xres * yres);
+         memset(&allframe_bytes[0],0xcc, maxframes * xres * yres);
 #else
-         memset(&allframe_bytes.get()[0],0x00, maxframes * xres * yres);
+         memset(&allframe_bytes[0],0x00, maxframes * xres * yres);
 #endif
 
          hotxy_coords.resize(maxframes*2,0);
@@ -264,7 +279,7 @@ void ua_uw_import::load_critter(ua_critter& critter, const char* file,
                   // rle-decode image
                   unsigned int bytes_offset = curframe*xres*yres;
 
-                  ua_image_decode_rle(fd, &allframe_bytes.get()[bytes_offset],
+                  ua_image_decode_rle(fd, &allframe_bytes[bytes_offset],
                      type==6 ? 5 : 4, datalen, width*height, auxpal,
                      xres-width, width);
 
@@ -291,6 +306,7 @@ void ua_uw_import::load_critter(ua_critter& critter, const char* file,
    // end of all passes
 }
 
+
 void ua_uw1_import::load_critters(std::vector<ua_critter>& allcritters,
    ua_settings& settings, ua_palette256_ptr palette0)
 {
@@ -315,6 +331,24 @@ void ua_uw1_import::load_critters(std::vector<ua_critter>& allcritters,
    // get animation names
    fread(animnames,32,8,assoc);
 
+#ifdef OMIT_1ST_PASS
+   unsigned int critres[64] =
+   {
+      68,58, 51,55, 70,51, 33,21, 39,54, 54,25, 60,46, 52,54, 39,48, 54,17,
+      43,49, 49,47, 62,67, 44,52, 63,58, 60,56, 62,31, 67,50, 45,30, 43,60,
+      44,56, 71,54, 37,19, 23,17, 95,73, 70,32, 67,50, 59,53, 69,54, 40,54,
+      57,73, 90,79
+   };
+
+   unsigned int critframes[32] =
+   {
+      83, 65, 66, 34, 69, 49, 45, 63, 
+      61, 38, 48, 70, 36, 38, 80, 47, 
+      64, 63, 49, 53, 49, 63, 41, 8, 
+      14, 81, 63, 68, 30, 69, 6, 8
+   };
+#endif
+
    // read in critter anim and auxpal values
    for(unsigned int i=0; i<64; i++)
    {
@@ -336,6 +370,11 @@ void ua_uw1_import::load_critters(std::vector<ua_critter>& allcritters,
 //         ua_trace("loading critter %02x from cr%02opage.*, auxpal=%02x\n",
 //            i,anim,auxpal);
 
+#ifdef OMIT_1ST_PASS
+         critter.xres = critres[anim*2+0];
+         critter.yres = critres[anim*2+1];
+         critter.maxframes = critframes[anim];
+#endif
          // load it
          load_critter(critter,critfile.c_str(),auxpal);
 
