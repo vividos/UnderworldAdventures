@@ -102,10 +102,17 @@ void ua_start_splash_screen::init()
    tex.use();
    tex.upload();
 
-   stage = core->get_filesmgr().savegames_avail() ? 2 : 0;
+   stage = 0;
    tickcount = 0;
    curframe = 0;
    animcount = 0.0;
+
+   if (core->get_filesmgr().savegames_avail())
+   {
+      stage=1;
+      tickcount = unsigned(ua_start_splash_show_time * core->get_tickrate()) + 1;
+      tick();
+   }
 }
 
 void ua_start_splash_screen::done()
