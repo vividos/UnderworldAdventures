@@ -669,7 +669,8 @@ is below 512 (0x0200).
     quality_class = 1,
     quality_type = 2,
     can_have_owner = 1,   -- is 1 when item can have an owner
-    can_be_looked_at = 1  -- is 1 when object can be looked at
+    can_be_looked_at = 1, -- is 1 when object can be looked at
+    can_be_picked_up = 1  -- is 1 when object can be picked up
   }
 
 * prop_get_special(item_id)
