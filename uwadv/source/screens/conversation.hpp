@@ -54,9 +54,8 @@ enum ua_conv_screen_state
 // classes
 
 //! conversation screen class
-class ua_conversation_screen:
-   public ua_screen,
-   public ua_conv_code_vm
+class ua_conversation_screen: public ua_screen,
+   public ua_conv_code_callback
 {
 public:
    //! ctor
@@ -71,13 +70,16 @@ public:
    virtual bool process_event(SDL_Event& event);
    virtual void tick();
 
-   // virtual functions from ua_conv_code_vm
-   virtual void imported_func(const std::string& funcname);
-   virtual void say_op(Uint16 str_id);
-   virtual void store_value(Uint16 at, Uint16 val);
-   virtual void fetch_value(Uint16 at);
-   virtual Uint16 get_global(const std::string& globname);
-   virtual void set_global(const std::string& globname, Uint16 val);
+   // virtual functions from ua_conv_code_callback
+   virtual void say(Uint16 index);
+   virtual const char* get_local_string(Uint16 index);
+   virtual Uint16 external_func(const char* funcname, ua_conv_stack& stack);
+   virtual Uint16 get_global(const char* globname);
+   virtual void set_global(const char* globname, Uint16 val);
+
+protected:
+   //! allocates new local string
+   Uint16 alloc_string(const char* the_str);
 
 protected:
    // constants
@@ -90,6 +92,13 @@ protected:
 
    //! time to wait before fading out at end of conversation
    static const double endconv_wait_time;
+
+
+   //! conversation code virtual machine
+   ua_conv_code_vm code_vm;
+
+   //! all current local strings
+   std::vector<std::string> localstrings;
 
 
    // ui elements

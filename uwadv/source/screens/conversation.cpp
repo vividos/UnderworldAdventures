@@ -29,6 +29,7 @@
 #include "common.hpp"
 #include "conversation.hpp"
 #include "objects.hpp"
+#include "gamestrings.hpp"
 #include "underworld.hpp"
 #include "renderer.hpp"
 #include "audio.hpp"
@@ -108,13 +109,13 @@ void ua_conversation_screen::init()
       img.paste_image(imgs_converse[0],139,0);
 
       // names
-      std::string name1 = game.get_underworld().get_strings().get_string(7,16+convslot);
+      std::string name1 = game.get_gamestrings().get_string(7,16+convslot);
       std::string name2 = pl.get_name();
 
       if (convslot==0)
       {
          // generic conversation
-         name1 = game.get_underworld().get_strings().get_string(4,npc_obj.get_object_info().item_id);
+         name1 = game.get_gamestrings().get_string(4,npc_obj.get_object_info().item_id);
 
          std::string::size_type pos;
          pos = name1.find('_');
@@ -208,12 +209,13 @@ void ua_conversation_screen::init()
       std::string cnv_name(game.get_settings().get_string(ua_setting_uw_path));
       cnv_name.append("data/cnv.ark");
 
-      ua_conv_code_vm::load_code(cnv_name.c_str(),static_cast<Uint16>(convslot));
+      //TODO
+//      ua_conv_code_vm::load_code(cnv_name.c_str(),static_cast<Uint16>(convslot));
 
-      std::vector<std::string> strblock;
-      game.get_underworld().get_strings().get_stringblock(static_cast<Uint16>(convslot),strblock);
+      // get local strings
+      game.get_gamestrings().get_stringblock(static_cast<Uint16>(convslot),localstrings);
 
-      ua_conv_code_vm::init(game.get_underworld().get_conv_globals(),strblock);
+      code_vm.init(this,game.get_underworld().get_conv_globals());
    }
 
    state = ua_state_fadein;
@@ -228,7 +230,7 @@ void ua_conversation_screen::init()
 void ua_conversation_screen::destroy()
 {
    // write back conv. globals
-   ua_conv_code_vm::done(game.get_underworld().get_conv_globals());
+   code_vm.done(game.get_underworld().get_conv_globals());
 
    ua_trace("conversation screen ended\n\n");
 }
@@ -285,11 +287,11 @@ bool ua_conversation_screen::process_event(SDL_Event& event)
 
          if (selection<answer_values.size())
          {
-            result_register = answer_values[selection];
+            code_vm.set_result_register(answer_values[selection]);
 
             // print answer
             std::string answer(localstrings[answer_string_ids[selection]]);
-            replace_placeholder(answer);
+            code_vm.replace_placeholder(answer);
 
             scroll_conv.set_color_code(ua_cc_orange);
             scroll_conv.print(answer.c_str());
@@ -324,13 +326,14 @@ void ua_conversation_screen::tick()
 
    // execute code until finished, waiting for an action or have [MORE]
    // lines to scroll
-   while(state == ua_state_running && !finished)//TODO &&
+//   while(state == ua_state_running && !finished)//TODO &&
          //!scroll_menu.have_more_lines() && !scroll_conv.have_more_lines())
    {
-      try
+      code_vm.step();
+//      if (finished)
       {
-         ua_conv_code_vm::step();
-      }
+//      state = code_vm.step();
+/*
       catch(ua_conv_vm_exception e)
       {
          ua_trace("caught ua_conv_vm_exception: ip=%04x, type: ",instrp);
@@ -344,17 +347,17 @@ void ua_conversation_screen::tick()
          case ua_ex_unk_opcode: ua_trace("unknown opcode"); break;
          case ua_ex_imported_na: ua_trace("imported function not available"); break;
          default: ua_trace("unknown exception number %u",e); break;
-         }
-         finished = true;
+         }*/
+//         finished = true;
       }
-      catch(...)
+/*      catch(...)
       {
          ua_trace("caught unknown exception from ua_conv_code_vm::step()\n");
          finished = true;
-      }
+      }*/
    }
 
-   if (finished && state == ua_state_running)
+//TODO   if (finished && state == ua_state_running)
    {
       // clear menu scroll
       scroll_menu.clear_scroll();
@@ -383,11 +386,40 @@ void ua_conversation_screen::tick()
    }
 }
 
-void ua_conversation_screen::imported_func(const std::string& funcname)
+Uint16 ua_conversation_screen::alloc_string(const char* the_str)
 {
+   std::string str(the_str);
+   Uint16 pos = localstrings.size();
+   localstrings.push_back(str);
+   return pos;
+}
+
+void ua_conversation_screen::say(Uint16 index)
+{
+   ua_assert(index<localstrings.size());
+
+   std::string str(localstrings[index]);
+   code_vm.replace_placeholder(str);
+
+   scroll_conv.print(str.c_str());
+}
+
+const char* ua_conversation_screen::get_local_string(Uint16 index)
+{
+   ua_assert(index<localstrings.size());
+   return localstrings[index].c_str();
+}
+
+Uint16 ua_conversation_screen::external_func(const char* the_funcname,
+   ua_conv_stack& stack)
+{
+   std::string funcname(the_funcname);
+
    Uint16 argpos = stack.get_stackp();
    Uint16 argcount = stack.at(argpos);
    argpos--;
+
+   Uint16 result_register = 0xffff;
 
    if (funcname.compare("babl_menu")==0)
    {
@@ -410,7 +442,7 @@ void ua_conversation_screen::imported_func(const std::string& funcname)
          buffer << ask_count << ". " << localstrings[arg] << std::ends;
 
          std::string menuentry(buffer.str());
-         replace_placeholder(menuentry);
+         code_vm.replace_placeholder(menuentry);
 
          // print menu entry
          scroll_menu.print(menuentry.c_str());
@@ -452,7 +484,7 @@ void ua_conversation_screen::imported_func(const std::string& funcname)
             buffer << ask_count << ". " << localstrings[arg1] << std::ends;
 
             std::string menuentry(buffer.str());
-            replace_placeholder(menuentry);
+            code_vm.replace_placeholder(menuentry);
 
             // print menu entry
             scroll_menu.print(menuentry.c_str());
@@ -477,7 +509,7 @@ void ua_conversation_screen::imported_func(const std::string& funcname)
       arg = stack.at(arg);
 
       std::string printtext(localstrings[arg]);
-      replace_placeholder(printtext);
+      code_vm.replace_placeholder(printtext);
 
       scroll_conv.print(printtext.c_str());
 
@@ -573,50 +605,27 @@ void ua_conversation_screen::imported_func(const std::string& funcname)
       result_register = arg1;
    }
    else
-      ua_trace("unknown imported function: %s\n",funcname.c_str());
+      ua_trace("code_vm: unknown imported function: %s\n",funcname.c_str());
+
+   return result_register;
 }
 
-void ua_conversation_screen::say_op(Uint16 str_id)
+Uint16 ua_conversation_screen::get_global(const char* the_globname)
 {
-   std::string str(localstrings[str_id]);
-
-   replace_placeholder(str);
-
-   scroll_conv.print(str.c_str());
-}
-
-void ua_conversation_screen::store_value(Uint16 at, Uint16 val)
-{
-   std::map<Uint16,ua_conv_imported_item>::iterator iter =
-      imported_globals.find(at);
-
-   if (iter!=imported_globals.end())
-      ua_trace("storing: %s = %04x\n",iter->second.name.c_str(),val);
-}
-
-void ua_conversation_screen::fetch_value(Uint16 at)
-{
-   std::map<Uint16,ua_conv_imported_item>::iterator iter =
-      imported_globals.find(at);
-
-   if (iter!=imported_globals.end())
-      ua_trace("fetching: %s = %04x\n",iter->second.name.c_str(),stack.at(at));
-}
-
-Uint16 ua_conversation_screen::get_global(const std::string& globname)
-{
+   std::string globname(the_globname);
    Uint16 val = 0;
 
    if (globname.compare("play_name")==0)
    {
-      val = alloc_string(game.get_underworld().get_player().get_name());
+      val = alloc_string(
+         game.get_underworld().get_player().get_name().c_str());
    }
-//   else
-//      ua_trace("get global: unhandled global %s\n",globname.c_str());
+   else
+      ua_trace("code_vm: get global: unknown global %s\n",globname);
 
    return val;
 }
 
-void ua_conversation_screen::set_global(const std::string& globname, Uint16 val)
+void ua_conversation_screen::set_global(const char* globname, Uint16 val)
 {
 }
