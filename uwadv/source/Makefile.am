@@ -18,6 +18,18 @@ LDFLAGS = $(SDL_LIBS)
 
 # automake build rules
 
+noinst_LIBRARIES = liblua.a
+
+liblua_a_SOURCES = lua/src/lapi.c lua/src/lcode.c lua/src/ldebug.c \
+	lua/src/ldo.c lua/src/lfunc.c lua/src/lgc.c \
+	lua/src/llex.c lua/src/lmem.c lua/src/lobject.c \
+	lua/src/lparser.c lua/src/lstate.c lua/src/lstring.c \
+	lua/src/ltable.c lua/src/ltests.c lua/src/ltm.c \
+	lua/src/lundump.c lua/src/lvm.c lua/src/lzio.c
+
+liblua_a_CFLAGS = -Ilua/include
+
+
 bin_PROGRAMS = uwadv
 
 uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
@@ -43,7 +55,9 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	screens/ingame_orig.hpp screens/start_splash.hpp \
 	screens/start_menu.hpp
 
-uwadv_LDADD = -lGL -lGLU $(SDL_LIBS)
+uwadv_LDADD = -lGL -lGLU $(SDL_LIBS) liblua.a
+
+uwadv_DEPENDENCIES = liblua.a
 
 EXTRA_DIST = audio/midi_driver/win_midiout.cpp \
 	audio/midi_driver/win_midiout.hpp \

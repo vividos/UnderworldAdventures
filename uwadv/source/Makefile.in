@@ -80,6 +80,7 @@ CXX = @CXX@
 DEPDIR = @DEPDIR@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 PACKAGE = @PACKAGE@
+RANLIB = @RANLIB@
 SDL_CFLAGS = @SDL_CFLAGS@
 SDL_CONFIG = @SDL_CONFIG@
 SDL_LIBS = @SDL_LIBS@
@@ -101,6 +102,18 @@ LDFLAGS = $(SDL_LIBS)
 
 
 # automake build rules
+noinst_LIBRARIES = liblua.a
+
+liblua_a_SOURCES = lua/src/lapi.c lua/src/lcode.c lua/src/ldebug.c \
+	lua/src/ldo.c lua/src/lfunc.c lua/src/lgc.c \
+	lua/src/llex.c lua/src/lmem.c lua/src/lobject.c \
+	lua/src/lparser.c lua/src/lstate.c lua/src/lstring.c \
+	lua/src/ltable.c lua/src/ltests.c lua/src/ltm.c \
+	lua/src/lundump.c lua/src/lvm.c lua/src/lzio.c
+
+
+liblua_a_CFLAGS = -Ilua/include
+
 bin_PROGRAMS = uwadv
 
 uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
@@ -127,7 +140,9 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	screens/start_menu.hpp
 
 
-uwadv_LDADD = -lGL -lGLU $(SDL_LIBS)
+uwadv_LDADD = -lGL -lGLU $(SDL_LIBS) liblua.a
+
+uwadv_DEPENDENCIES = liblua.a
 
 EXTRA_DIST = audio/midi_driver/win_midiout.cpp \
 	audio/midi_driver/win_midiout.hpp \
@@ -139,6 +154,20 @@ subdir = ..
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
+LIBRARIES = $(noinst_LIBRARIES)
+
+liblua_a_AR = $(AR) cru
+liblua_a_LIBADD =
+am_liblua_a_OBJECTS = liblua_a-lapi.$(OBJEXT) liblua_a-lcode.$(OBJEXT) \
+	liblua_a-ldebug.$(OBJEXT) liblua_a-ldo.$(OBJEXT) \
+	liblua_a-lfunc.$(OBJEXT) liblua_a-lgc.$(OBJEXT) \
+	liblua_a-llex.$(OBJEXT) liblua_a-lmem.$(OBJEXT) \
+	liblua_a-lobject.$(OBJEXT) liblua_a-lparser.$(OBJEXT) \
+	liblua_a-lstate.$(OBJEXT) liblua_a-lstring.$(OBJEXT) \
+	liblua_a-ltable.$(OBJEXT) liblua_a-ltests.$(OBJEXT) \
+	liblua_a-ltm.$(OBJEXT) liblua_a-lundump.$(OBJEXT) \
+	liblua_a-lvm.$(OBJEXT) liblua_a-lzio.$(OBJEXT)
+liblua_a_OBJECTS = $(am_liblua_a_OBJECTS)
 bin_PROGRAMS = uwadv$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
@@ -154,7 +183,6 @@ am_uwadv_OBJECTS = font.$(OBJEXT) image.$(OBJEXT) inventory.$(OBJEXT) \
 	ingame_orig.$(OBJEXT) start_splash.$(OBJEXT) \
 	start_menu.$(OBJEXT)
 uwadv_OBJECTS = $(am_uwadv_OBJECTS)
-uwadv_DEPENDENCIES =
 uwadv_LDFLAGS =
 
 DEFS = @DEFS@
@@ -170,7 +198,24 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/gamestrings.Po ./$(DEPDIR)/image.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/imageloader.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/ingame_orig.Po ./$(DEPDIR)/inventory.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/level.Po ./$(DEPDIR)/main.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/level.Po ./$(DEPDIR)/liblua_a-lapi.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/liblua_a-lcode.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/liblua_a-ldebug.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/liblua_a-ldo.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/liblua_a-lfunc.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/liblua_a-lgc.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/liblua_a-llex.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/liblua_a-lmem.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/liblua_a-lobject.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/liblua_a-lparser.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/liblua_a-lstate.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/liblua_a-lstring.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/liblua_a-ltable.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/liblua_a-ltests.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/liblua_a-ltm.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/liblua_a-lundump.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/liblua_a-lvm.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/liblua_a-lzio.Po ./$(DEPDIR)/main.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/maploader.Po ./$(DEPDIR)/midi.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/objects.Po ./$(DEPDIR)/objloader.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/physics.Po ./$(DEPDIR)/player.Po \
@@ -180,17 +225,17 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/texloader.Po ./$(DEPDIR)/texture.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/underworld.Po ./$(DEPDIR)/uni_fmod.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/uwadv.Po ./$(DEPDIR)/xmidi.Po
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+CFLAGS = @CFLAGS@
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-CFLAGS = @CFLAGS@
-COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
-	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-CCLD = $(CC)
-LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-DIST_SOURCES = $(uwadv_SOURCES)
+DIST_SOURCES = $(liblua_a_SOURCES) $(uwadv_SOURCES)
 
 RECURSIVE_TARGETS = info-recursive dvi-recursive install-info-recursive \
 	uninstall-info-recursive all-recursive install-data-recursive \
@@ -198,17 +243,44 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive install-info-recursive \
 	uninstall-recursive check-recursive installcheck-recursive
 DIST_COMMON = Makefile.am Makefile.in
 DIST_SUBDIRS = $(SUBDIRS)
-SOURCES = $(uwadv_SOURCES)
+SOURCES = $(liblua_a_SOURCES) $(uwadv_SOURCES)
 
 all: all-recursive
 
 .SUFFIXES:
-.SUFFIXES: .cpp .o .obj
+.SUFFIXES: .c .cpp .o .obj
 $(srcdir)/Makefile.in:  Makefile.am  $(top_srcdir)/configure.in $(ACLOCAL_M4)
 	cd $(top_srcdir) && \
 	  $(AUTOMAKE) --foreign  ../Makefile
 Makefile:  $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)
+
+AR = ar
+
+clean-noinstLIBRARIES:
+	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
+liblua_a-lapi.$(OBJEXT): lua/src/lapi.c
+liblua_a-lcode.$(OBJEXT): lua/src/lcode.c
+liblua_a-ldebug.$(OBJEXT): lua/src/ldebug.c
+liblua_a-ldo.$(OBJEXT): lua/src/ldo.c
+liblua_a-lfunc.$(OBJEXT): lua/src/lfunc.c
+liblua_a-lgc.$(OBJEXT): lua/src/lgc.c
+liblua_a-llex.$(OBJEXT): lua/src/llex.c
+liblua_a-lmem.$(OBJEXT): lua/src/lmem.c
+liblua_a-lobject.$(OBJEXT): lua/src/lobject.c
+liblua_a-lparser.$(OBJEXT): lua/src/lparser.c
+liblua_a-lstate.$(OBJEXT): lua/src/lstate.c
+liblua_a-lstring.$(OBJEXT): lua/src/lstring.c
+liblua_a-ltable.$(OBJEXT): lua/src/ltable.c
+liblua_a-ltests.$(OBJEXT): lua/src/ltests.c
+liblua_a-ltm.$(OBJEXT): lua/src/ltm.c
+liblua_a-lundump.$(OBJEXT): lua/src/lundump.c
+liblua_a-lvm.$(OBJEXT): lua/src/lvm.c
+liblua_a-lzio.$(OBJEXT): lua/src/lzio.c
+liblua.a: $(liblua_a_OBJECTS) $(liblua_a_DEPENDENCIES) 
+	-rm -f liblua.a
+	$(liblua_a_AR) liblua.a $(liblua_a_OBJECTS) $(liblua_a_LIBADD)
+	$(RANLIB) liblua.a
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
@@ -276,6 +348,24 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ingame_orig.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/inventory.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/level.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblua_a-lapi.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblua_a-lcode.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblua_a-ldebug.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblua_a-ldo.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblua_a-lfunc.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblua_a-lgc.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblua_a-llex.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblua_a-lmem.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblua_a-lobject.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblua_a-lparser.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblua_a-lstate.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblua_a-lstring.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblua_a-ltable.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblua_a-ltests.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblua_a-ltm.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblua_a-lundump.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblua_a-lvm.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblua_a-lzio.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/maploader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/midi.Po@am__quote@
@@ -296,6 +386,235 @@ distclean-compile:
 
 distclean-depend:
 	-rm -rf ./$(DEPDIR)
+
+.c.o:
+@AMDEP_TRUE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(COMPILE) -c `test -f '$<' || echo '$(srcdir)/'`$<
+
+.c.obj:
+@AMDEP_TRUE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(COMPILE) -c `cygpath -w $<`
+
+liblua_a-lapi.o: lua/src/lapi.c
+@AMDEP_TRUE@	source='lua/src/lapi.c' object='liblua_a-lapi.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-lapi.Po' tmpdepfile='$(DEPDIR)/liblua_a-lapi.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-lapi.o `test -f 'lua/src/lapi.c' || echo '$(srcdir)/'`lua/src/lapi.c
+
+liblua_a-lapi.obj: lua/src/lapi.c
+@AMDEP_TRUE@	source='lua/src/lapi.c' object='liblua_a-lapi.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-lapi.Po' tmpdepfile='$(DEPDIR)/liblua_a-lapi.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-lapi.obj `cygpath -w lua/src/lapi.c`
+
+liblua_a-lcode.o: lua/src/lcode.c
+@AMDEP_TRUE@	source='lua/src/lcode.c' object='liblua_a-lcode.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-lcode.Po' tmpdepfile='$(DEPDIR)/liblua_a-lcode.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-lcode.o `test -f 'lua/src/lcode.c' || echo '$(srcdir)/'`lua/src/lcode.c
+
+liblua_a-lcode.obj: lua/src/lcode.c
+@AMDEP_TRUE@	source='lua/src/lcode.c' object='liblua_a-lcode.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-lcode.Po' tmpdepfile='$(DEPDIR)/liblua_a-lcode.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-lcode.obj `cygpath -w lua/src/lcode.c`
+
+liblua_a-ldebug.o: lua/src/ldebug.c
+@AMDEP_TRUE@	source='lua/src/ldebug.c' object='liblua_a-ldebug.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-ldebug.Po' tmpdepfile='$(DEPDIR)/liblua_a-ldebug.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-ldebug.o `test -f 'lua/src/ldebug.c' || echo '$(srcdir)/'`lua/src/ldebug.c
+
+liblua_a-ldebug.obj: lua/src/ldebug.c
+@AMDEP_TRUE@	source='lua/src/ldebug.c' object='liblua_a-ldebug.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-ldebug.Po' tmpdepfile='$(DEPDIR)/liblua_a-ldebug.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-ldebug.obj `cygpath -w lua/src/ldebug.c`
+
+liblua_a-ldo.o: lua/src/ldo.c
+@AMDEP_TRUE@	source='lua/src/ldo.c' object='liblua_a-ldo.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-ldo.Po' tmpdepfile='$(DEPDIR)/liblua_a-ldo.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-ldo.o `test -f 'lua/src/ldo.c' || echo '$(srcdir)/'`lua/src/ldo.c
+
+liblua_a-ldo.obj: lua/src/ldo.c
+@AMDEP_TRUE@	source='lua/src/ldo.c' object='liblua_a-ldo.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-ldo.Po' tmpdepfile='$(DEPDIR)/liblua_a-ldo.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-ldo.obj `cygpath -w lua/src/ldo.c`
+
+liblua_a-lfunc.o: lua/src/lfunc.c
+@AMDEP_TRUE@	source='lua/src/lfunc.c' object='liblua_a-lfunc.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-lfunc.Po' tmpdepfile='$(DEPDIR)/liblua_a-lfunc.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-lfunc.o `test -f 'lua/src/lfunc.c' || echo '$(srcdir)/'`lua/src/lfunc.c
+
+liblua_a-lfunc.obj: lua/src/lfunc.c
+@AMDEP_TRUE@	source='lua/src/lfunc.c' object='liblua_a-lfunc.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-lfunc.Po' tmpdepfile='$(DEPDIR)/liblua_a-lfunc.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-lfunc.obj `cygpath -w lua/src/lfunc.c`
+
+liblua_a-lgc.o: lua/src/lgc.c
+@AMDEP_TRUE@	source='lua/src/lgc.c' object='liblua_a-lgc.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-lgc.Po' tmpdepfile='$(DEPDIR)/liblua_a-lgc.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-lgc.o `test -f 'lua/src/lgc.c' || echo '$(srcdir)/'`lua/src/lgc.c
+
+liblua_a-lgc.obj: lua/src/lgc.c
+@AMDEP_TRUE@	source='lua/src/lgc.c' object='liblua_a-lgc.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-lgc.Po' tmpdepfile='$(DEPDIR)/liblua_a-lgc.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-lgc.obj `cygpath -w lua/src/lgc.c`
+
+liblua_a-llex.o: lua/src/llex.c
+@AMDEP_TRUE@	source='lua/src/llex.c' object='liblua_a-llex.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-llex.Po' tmpdepfile='$(DEPDIR)/liblua_a-llex.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-llex.o `test -f 'lua/src/llex.c' || echo '$(srcdir)/'`lua/src/llex.c
+
+liblua_a-llex.obj: lua/src/llex.c
+@AMDEP_TRUE@	source='lua/src/llex.c' object='liblua_a-llex.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-llex.Po' tmpdepfile='$(DEPDIR)/liblua_a-llex.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-llex.obj `cygpath -w lua/src/llex.c`
+
+liblua_a-lmem.o: lua/src/lmem.c
+@AMDEP_TRUE@	source='lua/src/lmem.c' object='liblua_a-lmem.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-lmem.Po' tmpdepfile='$(DEPDIR)/liblua_a-lmem.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-lmem.o `test -f 'lua/src/lmem.c' || echo '$(srcdir)/'`lua/src/lmem.c
+
+liblua_a-lmem.obj: lua/src/lmem.c
+@AMDEP_TRUE@	source='lua/src/lmem.c' object='liblua_a-lmem.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-lmem.Po' tmpdepfile='$(DEPDIR)/liblua_a-lmem.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-lmem.obj `cygpath -w lua/src/lmem.c`
+
+liblua_a-lobject.o: lua/src/lobject.c
+@AMDEP_TRUE@	source='lua/src/lobject.c' object='liblua_a-lobject.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-lobject.Po' tmpdepfile='$(DEPDIR)/liblua_a-lobject.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-lobject.o `test -f 'lua/src/lobject.c' || echo '$(srcdir)/'`lua/src/lobject.c
+
+liblua_a-lobject.obj: lua/src/lobject.c
+@AMDEP_TRUE@	source='lua/src/lobject.c' object='liblua_a-lobject.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-lobject.Po' tmpdepfile='$(DEPDIR)/liblua_a-lobject.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-lobject.obj `cygpath -w lua/src/lobject.c`
+
+liblua_a-lparser.o: lua/src/lparser.c
+@AMDEP_TRUE@	source='lua/src/lparser.c' object='liblua_a-lparser.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-lparser.Po' tmpdepfile='$(DEPDIR)/liblua_a-lparser.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-lparser.o `test -f 'lua/src/lparser.c' || echo '$(srcdir)/'`lua/src/lparser.c
+
+liblua_a-lparser.obj: lua/src/lparser.c
+@AMDEP_TRUE@	source='lua/src/lparser.c' object='liblua_a-lparser.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-lparser.Po' tmpdepfile='$(DEPDIR)/liblua_a-lparser.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-lparser.obj `cygpath -w lua/src/lparser.c`
+
+liblua_a-lstate.o: lua/src/lstate.c
+@AMDEP_TRUE@	source='lua/src/lstate.c' object='liblua_a-lstate.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-lstate.Po' tmpdepfile='$(DEPDIR)/liblua_a-lstate.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-lstate.o `test -f 'lua/src/lstate.c' || echo '$(srcdir)/'`lua/src/lstate.c
+
+liblua_a-lstate.obj: lua/src/lstate.c
+@AMDEP_TRUE@	source='lua/src/lstate.c' object='liblua_a-lstate.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-lstate.Po' tmpdepfile='$(DEPDIR)/liblua_a-lstate.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-lstate.obj `cygpath -w lua/src/lstate.c`
+
+liblua_a-lstring.o: lua/src/lstring.c
+@AMDEP_TRUE@	source='lua/src/lstring.c' object='liblua_a-lstring.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-lstring.Po' tmpdepfile='$(DEPDIR)/liblua_a-lstring.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-lstring.o `test -f 'lua/src/lstring.c' || echo '$(srcdir)/'`lua/src/lstring.c
+
+liblua_a-lstring.obj: lua/src/lstring.c
+@AMDEP_TRUE@	source='lua/src/lstring.c' object='liblua_a-lstring.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-lstring.Po' tmpdepfile='$(DEPDIR)/liblua_a-lstring.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-lstring.obj `cygpath -w lua/src/lstring.c`
+
+liblua_a-ltable.o: lua/src/ltable.c
+@AMDEP_TRUE@	source='lua/src/ltable.c' object='liblua_a-ltable.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-ltable.Po' tmpdepfile='$(DEPDIR)/liblua_a-ltable.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-ltable.o `test -f 'lua/src/ltable.c' || echo '$(srcdir)/'`lua/src/ltable.c
+
+liblua_a-ltable.obj: lua/src/ltable.c
+@AMDEP_TRUE@	source='lua/src/ltable.c' object='liblua_a-ltable.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-ltable.Po' tmpdepfile='$(DEPDIR)/liblua_a-ltable.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-ltable.obj `cygpath -w lua/src/ltable.c`
+
+liblua_a-ltests.o: lua/src/ltests.c
+@AMDEP_TRUE@	source='lua/src/ltests.c' object='liblua_a-ltests.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-ltests.Po' tmpdepfile='$(DEPDIR)/liblua_a-ltests.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-ltests.o `test -f 'lua/src/ltests.c' || echo '$(srcdir)/'`lua/src/ltests.c
+
+liblua_a-ltests.obj: lua/src/ltests.c
+@AMDEP_TRUE@	source='lua/src/ltests.c' object='liblua_a-ltests.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-ltests.Po' tmpdepfile='$(DEPDIR)/liblua_a-ltests.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-ltests.obj `cygpath -w lua/src/ltests.c`
+
+liblua_a-ltm.o: lua/src/ltm.c
+@AMDEP_TRUE@	source='lua/src/ltm.c' object='liblua_a-ltm.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-ltm.Po' tmpdepfile='$(DEPDIR)/liblua_a-ltm.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-ltm.o `test -f 'lua/src/ltm.c' || echo '$(srcdir)/'`lua/src/ltm.c
+
+liblua_a-ltm.obj: lua/src/ltm.c
+@AMDEP_TRUE@	source='lua/src/ltm.c' object='liblua_a-ltm.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-ltm.Po' tmpdepfile='$(DEPDIR)/liblua_a-ltm.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-ltm.obj `cygpath -w lua/src/ltm.c`
+
+liblua_a-lundump.o: lua/src/lundump.c
+@AMDEP_TRUE@	source='lua/src/lundump.c' object='liblua_a-lundump.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-lundump.Po' tmpdepfile='$(DEPDIR)/liblua_a-lundump.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-lundump.o `test -f 'lua/src/lundump.c' || echo '$(srcdir)/'`lua/src/lundump.c
+
+liblua_a-lundump.obj: lua/src/lundump.c
+@AMDEP_TRUE@	source='lua/src/lundump.c' object='liblua_a-lundump.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-lundump.Po' tmpdepfile='$(DEPDIR)/liblua_a-lundump.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-lundump.obj `cygpath -w lua/src/lundump.c`
+
+liblua_a-lvm.o: lua/src/lvm.c
+@AMDEP_TRUE@	source='lua/src/lvm.c' object='liblua_a-lvm.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-lvm.Po' tmpdepfile='$(DEPDIR)/liblua_a-lvm.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-lvm.o `test -f 'lua/src/lvm.c' || echo '$(srcdir)/'`lua/src/lvm.c
+
+liblua_a-lvm.obj: lua/src/lvm.c
+@AMDEP_TRUE@	source='lua/src/lvm.c' object='liblua_a-lvm.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-lvm.Po' tmpdepfile='$(DEPDIR)/liblua_a-lvm.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-lvm.obj `cygpath -w lua/src/lvm.c`
+
+liblua_a-lzio.o: lua/src/lzio.c
+@AMDEP_TRUE@	source='lua/src/lzio.c' object='liblua_a-lzio.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-lzio.Po' tmpdepfile='$(DEPDIR)/liblua_a-lzio.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-lzio.o `test -f 'lua/src/lzio.c' || echo '$(srcdir)/'`lua/src/lzio.c
+
+liblua_a-lzio.obj: lua/src/lzio.c
+@AMDEP_TRUE@	source='lua/src/lzio.c' object='liblua_a-lzio.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/liblua_a-lzio.Po' tmpdepfile='$(DEPDIR)/liblua_a-lzio.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblua_a_CFLAGS) $(CFLAGS) -c -o liblua_a-lzio.obj `cygpath -w lua/src/lzio.c`
+CCDEPMODE = @CCDEPMODE@
 
 .cpp.o:
 @AMDEP_TRUE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
@@ -664,7 +983,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-recursive
-all-am: Makefile $(PROGRAMS)
+all-am: Makefile $(LIBRARIES) $(PROGRAMS)
 installdirs: installdirs-recursive
 installdirs-am:
 	$(mkinstalldirs) $(DESTDIR)$(bindir)
@@ -695,7 +1014,8 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-recursive
 
-clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
+clean-am: clean-binPROGRAMS clean-generic clean-noinstLIBRARIES \
+	mostlyclean-am
 
 distclean: distclean-recursive
 
@@ -733,11 +1053,11 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am
 uninstall-info: uninstall-info-recursive
 
 .PHONY: $(RECURSIVE_TARGETS) GTAGS all all-am check check-am clean \
-	clean-binPROGRAMS clean-generic clean-recursive distclean \
-	distclean-compile distclean-depend distclean-generic \
-	distclean-recursive distclean-tags distdir dvi dvi-am \
-	dvi-recursive info info-am info-recursive install install-am \
-	install-binPROGRAMS install-data install-data-am \
+	clean-binPROGRAMS clean-generic clean-noinstLIBRARIES \
+	clean-recursive distclean distclean-compile distclean-depend \
+	distclean-generic distclean-recursive distclean-tags distdir \
+	dvi dvi-am dvi-recursive info info-am info-recursive install \
+	install-am install-binPROGRAMS install-data install-data-am \
 	install-data-recursive install-exec install-exec-am \
 	install-exec-recursive install-info install-info-am \
 	install-info-recursive install-man install-recursive \

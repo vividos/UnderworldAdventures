@@ -34,6 +34,7 @@ AC_LANG_CPLUSPLUS
 dnl other needed programs
 AC_PROG_MAKE_SET
 AC_PROG_INSTALL
+AC_PROG_RANLIB
 
 
 dnl X config
@@ -84,6 +85,6 @@ FMOD is available at http://www.fmod.org/]))
 
 
 dnl produce output files
-AC_CONFIG_FILES([../Makefile ../tools/Makefile])
+AC_CONFIG_FILES([../Makefile ../tools/Makefile uwadv.cfg])
 AC_OUTPUT
 

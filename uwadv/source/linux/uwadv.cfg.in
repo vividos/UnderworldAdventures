@@ -6,8 +6,13 @@
 # path to Ultima Underworld folder (where the uw.exe lives)
 #
 
-uw1path     /usr/local/games/uw1/
+uw1path     @UW1PATH@
 
+#
+# path to the uwadv "uadata" dir
+#
+
+uadata-path @datadir@/uwadv/
 
 #
 # end of config
