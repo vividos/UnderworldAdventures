@@ -196,6 +196,7 @@ char *luaO_openspace (lua_State *L, size_t n);
 
 int luaO_equalObj (const TObject *t1, const TObject *t2);
 int luaO_str2d (const char *s, Number *result);
+int luaO_hexstr2d (const char *s, Number *result);
 
 void luaO_verror (lua_State *L, const char *fmt, ...);
 void luaO_chunkid (char *out, const char *source, int len);

@@ -151,6 +151,36 @@ static void read_number (LexState *LS, int comma, SemInfo *seminfo) {
   size_t l = 0;
   checkbuffer(L, 10, l);
   if (comma) save(L, '.', l);
+
+  // mf: inserted to check for hexadecimal numbers
+  //     hope this is working properly ...
+  {
+    if (LS->current == '0')
+    {
+      checkbuffer(L, 10, l);
+      save_and_next(L, LS, l);
+      if (LS->current == 'x' || LS->current == 'X')
+      {
+        checkbuffer(L, 10, l);
+        save_and_next(L, LS, l);
+
+        // hex number!
+        while (isxdigit(LS->current)) {
+          checkbuffer(L, 10, l);
+          save_and_next(L, LS, l);
+        }
+
+        // convert to hex
+        save(L, '\0', l);
+
+        if (!luaO_hexstr2d(L->Mbuffer, &seminfo->r))
+          luaX_error(LS, "malformed hexadecimal number", TK_NUMBER);
+
+        return;
+      }
+    }
+  }
+
   while (isdigit(LS->current)) {
     checkbuffer(L, 10, l);
     save_and_next(L, LS, l);

@@ -76,6 +76,17 @@ int luaO_str2d (const char *s, Number *result) {  /* LUA_NUMBER */
 }
 
 
+int luaO_hexstr2d (const char *s, Number *result) {  /* LUA_NUMBER */
+  char *endptr;
+  Number res = strtol(s, &endptr, 16);
+  if (endptr == s) return 0;  /* no conversion */
+  while (isspace((unsigned char)*endptr)) endptr++;
+  if (*endptr != '\0') return 0;  /* invalid trailing characters? */
+  *result = res;
+  return 1;
+}
+
+
 /* maximum length of a string format for `luaO_verror' */
 #define MAX_VERROR	280
 
