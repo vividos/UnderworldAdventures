@@ -122,7 +122,8 @@ uaconfig_EXEC = uaconfig.exe
 
 uaconfig_OBJS = source/win32/source/uaconfig/uaconfig.o \
 	source/win32/source/uaconfig/uaconfig_res.o \
-	source/settings.o source/resource/settingsloader.o
+	source/settings.o source/resource/settingsloader.o \
+	source/utils.o
 
 uaconfig_LIBS = $(WIN32_LIB) -lwinmm $(STLPORT_LIB)
 
@@ -272,6 +273,7 @@ luac-clean:
 
 update: uwadv data uaconfig
 	strip $(uwadv_EXEC)
+	strip $(uaconfig_EXEC)
 	mkdir -p $(UWADV_PATH)
 	cp $(uwadv_EXEC) $(UWADV_PATH)
 	cp $(uaconfig_EXEC) $(UWADV_PATH)
