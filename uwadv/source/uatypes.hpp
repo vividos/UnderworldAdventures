@@ -34,10 +34,17 @@
 #include <exception>
 
 
+// constants
+
+const double ua_pi = 3.1415;
+
+
 // macros
 
 #define ua_min(a,b) ((a)<(b) ? (a) : (b))
 #define ua_max(a,b) ((a)>(b) ? (a) : (b))
+
+#define ua_deg2rad(a) ((float(a)/180.f)*ua_pi)
 
 
 // classes
