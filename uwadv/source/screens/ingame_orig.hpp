@@ -62,21 +62,12 @@ protected:
 
    //! indicates if player moves forward
    bool walk;
-
-   float walk_dir;
-
-   float xangle,yangle;
+   double walk_dir;
 
    bool leftbuttondown,rightbuttondown;
 
-   float xpos,ypos;
-
-   float playerx,playery;
-
    double fov;
-   float playerxangle,playeryangle;
-
-   bool mapmode;
+   double playerxangle,playeryangle;
 };
 
 #endif
