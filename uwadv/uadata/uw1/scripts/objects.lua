@@ -35,6 +35,29 @@ obj_cmb_recurse_flag = 0
 
 -- tables
 
+-- table with all possible object combinations
+-- objects that are destroyed when combined are marked with (*)
+obj_cmb_list = {
+
+   -- 0x0095 + 0x0116(*) = 0x0115
+   -- "a lit torch" + "a block of incense" = "a block of burning incense"
+   { item_id1  =          9*16 +  5, item_id2 = 1*256 +  1*16 +  6,
+     result_id = 1*256 +  1*16 +  5, success_code = lua_obj_cmb_dstr_second },
+
+   -- 0x0095 + 0x00b4(*) = 0x00b7
+   -- "a lit torch" + "an ear of corn" = "some_popcorn"
+   { item_id1  =          9*16 +  5, item_id2 =         11*16 +  4,
+     result_id =         11*16 +  7, success_code = lua_obj_cmb_dstr_second },
+
+   -- 0x011c(*) + 0x00d8(*) = 0x012b
+   -- "some_strong thread&pieces of strong thread" + "a pole" = "a fishing pole"
+   { item_id1  = 1*256 +  1*16 + 12, item_id2 =         13*16 +  8,
+     result_id = 1*256 +  2*16 + 11, success_code = lua_obj_cmb_dstr_both },
+
+   -- stop entry
+   { item_id1  = -1, item_id2 = -1, result_id = -1, success_code = 0 },
+}
+
 
 -- functions
 
@@ -45,16 +68,23 @@ function lua_obj_combine(item_id1, item_id2)
    success_code = lua_obj_cmb_failed
    result_id = 0
 
-   -- check for all combinable items
+   -- check for all combinable items in table
+   idx = 1;
+   while obj_cmb_list[idx].item_id1 ~= -1 and success_code == lua_obj_cmb_failed
+   do
 
-   if (item_id1 == 256+2*16+11) and (item_id2 == 256+3*16+11)
-   then
-      success_code = lua_obj_cmb_dstr_second
-      result_id = 256+2*16+10
+      if obj_cmb_list[idx].item_id1 == item_id1 and
+         obj_cmb_list[idx].item_id2 == item_id2
+      then
+         -- found the right id
+         result_id = obj_cmb_list[idx].result_id
+         success_code = obj_cmb_list[idx].success_code
+      end
+
+      idx = idx + 1
    end
 
-
-   -- check for swapped objects
+   -- check for objects using swapped item id's
    if success_code == lua_obj_cmb_failed and obj_cmb_recurse_flag ~= 1
    then
 
