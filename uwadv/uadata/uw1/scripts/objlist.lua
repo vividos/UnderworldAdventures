@@ -62,22 +62,17 @@ function format_item_name(item_id,quantity)
    local pos_amp = strfind(name, "&", 1, 1)
 
    -- more than one object?
-   if quantity < 2 then
-
-      if pos_amp ~= nil then
-
+   if pos_amp ~= nil then
+      if quantity > 1 then
          -- take "plural" part of description
          name = strsub(name, pos_amp+1)
+      else
+         -- delete plural part of string
+         name = strsub(name, 1, pos_amp-1)
       end
    end
 
-   -- delete plural part of string
-   if pos_amp ~= nil then
-
-      name = strsub(name, 1, pos_amp)
-   end
-
-   print("format_item_name: using string " .. name )
+   print("format_item_name: using string " .. name .. ", quantity = " .. quantity )
 
    -- find out article
    local pos_us = strfind(name, "_", 1, 1)
@@ -103,7 +98,17 @@ function lua_objlist_look(obj_handle)
 
    dump_objinfo_table(objinfo,obj_handle)
 
-   local article, name = format_item_name(objinfo.item_id, objinfo.quantity)
+   local quantity = 0
+
+   if objinfo.is_link ~= 1 then
+      quantity = objinfo.quantity
+   end
+
+   local article, name = format_item_name(objinfo.item_id, quantity)
+
+   if strlen(article) > 0 then
+      article = article .. " "
+   end
 
    -- is NPC?
    mood = ""
@@ -111,11 +116,14 @@ function lua_objlist_look(obj_handle)
    if objinfo.item_id >= 64 and objinfo.item_id < 128 then
       -- do mood string
 
-      -- ui_get_gamestring(5,96-99) (99=friendly)
+      -- todo: ui_get_gamestring(5,96-99) (99=friendly)
 
       -- do "named" string
+      if objinfo.data.size > 0 and objinfo.data[0] > 0 then
 
-      -- named = " named xyz"
+         print("name byte is: " .. objinfo.data[0])
+         named = " named " .. ui_get_gamestring(7,objinfo.data[0]+16)
+      end
 
    end
 
@@ -124,20 +132,14 @@ function lua_objlist_look(obj_handle)
    if (objinfo.item_id < 64 or objinfo.item_id >= 128) and
       objinfo.item_id < 320  and objinfo.owner > 0 then
 
-      local quantity = 0
-
-      if not objinfo.is_link then
-         quantity = objinfo.quantity
-      end
-
-      local article,name = format_item_name(objinfo.owner-1+64, quantity)
+      local article,name = format_item_name(objinfo.owner-1+64, 0)
 
       -- do owner string
       owner = " belonging to " .. article .. " " .. name
    end
 
    ui_print_string(
-     "You see " .. article .. " " ..
+     "You see " .. article ..
      mood .. name .. named .. owner)
 
 end
