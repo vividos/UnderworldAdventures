@@ -190,10 +190,13 @@ void ua_create_character_screen::done()
 
 void ua_create_character_screen::handle_event(SDL_Event &event)
 {
-
    switch(event.type)
    {
    case SDL_KEYDOWN:
+      // don't handle any keystroke if Alt or Ctrl is down
+      if (((event.key.keysym.mod & KMOD_ALT)>0) || ((event.key.keysym.mod & KMOD_CTRL)>0))
+         return;
+
       // handle key presses
       if ((btng_buttontype==btInput) && 
           (((event.key.keysym.sym>=SDLK_a) && (event.key.keysym.sym<=SDLK_z)) || 
@@ -204,7 +207,7 @@ void ua_create_character_screen::handle_event(SDL_Event &event)
            (event.key.keysym.sym==SDLK_UNDERSCORE)))
       {
          char c = event.key.keysym.sym;
-         if ((event.key.keysym.mod & KMOD_SHIFT) && ((c>='a') && (c<='z')))
+         if (((event.key.keysym.mod & KMOD_SHIFT)>0) && ((c>='a') && (c<='z')))
             c -= 32;
          handleinputchar(c);
          drawbuttongroup();
@@ -329,7 +332,7 @@ void ua_create_character_screen::do_action()
    case actSetInitVal:
       if (n<4) break;
       strblock = static_cast<unsigned int>(lua_tonumber(L,3));
-	  bgxpos = static_cast<unsigned int>(lua_tonumber(L,4));
+      bgxpos = static_cast<unsigned int>(lua_tonumber(L,4));
       break;
 
    case actSetBtnGroup:
