@@ -19,7 +19,7 @@
    $Id$
 
 */
-/*! \file __uadebug_playerinfo_hpp_.hpp
+/*! \file playerinfo.hpp
 
    \brief player info list control
 

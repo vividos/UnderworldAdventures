@@ -19,7 +19,7 @@
    $Id$
 
 */
-/*! \file dbgapp.hpp
+/*! \file dbgapp.cpp
 
    \brief debugger main application
 

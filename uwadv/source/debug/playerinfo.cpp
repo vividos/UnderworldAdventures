@@ -19,9 +19,9 @@
    $Id$
 
 */
-/*! \file dbgapp.hpp
+/*! \file playerinfo.cpp
 
-   \brief debugger main application
+   \brief player info list control
 
 */
 

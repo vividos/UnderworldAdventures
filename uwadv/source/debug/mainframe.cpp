@@ -19,9 +19,9 @@
    $Id$
 
 */
-/*! \file dbgapp.hpp
+/*! \file mainframe.cpp
 
-   \brief debugger main application
+   \brief debugger main MDI frame
 
 */
 

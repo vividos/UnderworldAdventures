@@ -19,7 +19,7 @@
    $Id$
 
 */
-/*! \file pch.hpp
+/*! \file pch.cpp
 
    \brief precompiled header support file
 
