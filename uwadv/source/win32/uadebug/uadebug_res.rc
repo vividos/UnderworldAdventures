@@ -102,14 +102,14 @@ BEGIN
             VALUE "Comments", "Underworld Adventures is a project to recreate Ultima Underworld 1 on modern operating systems.\0"
             VALUE "CompanyName", "Underworld Adventures Team\0"
             VALUE "FileDescription", "Underworld Adventures Debugger dynamic link library\0"
-            VALUE "FileVersion", "0.9-xxx\0"
+            VALUE "FileVersion", "0.9-mojito\0"
             VALUE "InternalName", "uadebug\0"
             VALUE "LegalCopyright", "Copyright © 2004 Underworld Adventures Team\0"
             VALUE "LegalTrademarks", " \0"
             VALUE "OriginalFilename", "uwadv.exe\0"
             VALUE "PrivateBuild", " \0"
             VALUE "ProductName", "Underworld Adventures Debugger\0"
-            VALUE "ProductVersion", "0.9-xxx\0"
+            VALUE "ProductVersion", "0.9-mojito\0"
             VALUE "SpecialBuild", " \0"
         END
     END
