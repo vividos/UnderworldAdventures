@@ -126,7 +126,7 @@ bool ua_conv_code_vm::load_code(const char *cnvfile, Uint16 conv)
    Uint16 unk3 = fread16(fd); // conv slot + 0x0e00
 
    // seems to be superfluous, since we know the number of words from the globals file
-   Uint16 unk4 = fread16(fd); // number of stack words reserved for globals
+   glob_reserved = fread16(fd); // number of stack words reserved for globals
 
    // load imported functions
    load_imported_funcs(fd);
@@ -179,7 +179,7 @@ void ua_conv_code_vm::load_imported_funcs(FILE *fd)
       // store imported item in appropriate list
       if (import_type == 0x0111)
       {
-         if (imported_funcs.capacity()<func_id)
+         if (imported_funcs.size()<func_id)
             imported_funcs.resize(func_id+1);
 
          imported_funcs[func_id] = iitem;
@@ -187,7 +187,7 @@ void ua_conv_code_vm::load_imported_funcs(FILE *fd)
       else
       if (import_type == 0x010F)
       {
-         if (imported_globals.capacity()<func_id)
+         if (imported_globals.size()<func_id)
             imported_globals.resize(func_id+1);
 
          imported_globals[func_id] = iitem;

@@ -62,6 +62,7 @@ void ua_conv_debugger::start()
    for(int s=0; s<priv_globals.size(); s++)
       stack.push(priv_globals[s]);
 
+   Uint16 lastlistptr = 0x0000;
    char lastbuffer[256];
    verbose = false;
 
@@ -72,7 +73,8 @@ void ua_conv_debugger::start()
       printf("\n");
 
       // print status
-      list_code(instrp);
+      if (loaded)
+         list_code(instrp);
 
       char buffer[256];
       printf(">");
@@ -97,14 +99,16 @@ void ua_conv_debugger::start()
          printf(
             "cnvdbg - help\n\n"
             "help       h shows this help\n"
-            "conv n       loads a conversation\n"
-            "reg        r shows registers and current stack context\n"
-            "list [n]   l lists instructions from code memory <n> on\n"
+            "conv n       loads a conversation (conv slot n in decimal, not hex)\n"
+            "reg        r shows registers\n"
+            "info       i shows info about the virtual machine, including breakpoints\n"
+            "list [n]   l lists instructions from code memory 0x<n> on (or from current ip)\n"
             "dump       d dumps complete stack\n"
             "step       s advances an instruction\n"
             "cont       c continues until a breakpoint occurs\n"
-            "break n    b toggles a breakpoint at code pos <n>\n"
+            "break n    b toggles a breakpoint at code pos 0x<n>\n"
             "verbose    v toggles verboseness of debugger\n"
+            "reset        resets virtual machine (e.g. after an exception)\n"
             "exit/quit  x quits the debugger\n\n"
             "short keys can be used for the commands, e.g. 's' for step\n"
             "some commands are only available, when a conversation is loaded\n"
@@ -116,12 +120,28 @@ void ua_conv_debugger::start()
          if (conv_nr!=0xffff)
             ua_conv_code_vm::done(cg);
 
-         // try to load code
          int conv = atoi(buffer+4);
-         if (load_code(cnvname,conv))
+
+         // try to load code
+         bool ret=false;
+         try
+         {
+            ret=load_code(cnvname,conv);
+         }
+         catch (ua_exception e)
+         {
+            printf("caught ua_exception: %s\n",e.what());
+            ret=false;
+         }
+
+         // print out status
+         if (ret)
          {
             printf("loaded conversation #%u.\n",conv);
             ua_conv_code_vm::init(cg);
+            printf("conversation partner: \"%s\"\n",
+               gs.get_string(6,16+conv_nr).c_str());
+            printf("using strings from string block #%u\n",strblock);
             loaded=true;
          }
          else
@@ -130,24 +150,43 @@ void ua_conv_debugger::start()
          continue;
       }
 
-      if (stricmp("reg",buffer)==0 || tolower(buffer[0])=='r')
+      if (stricmp("reg",buffer)==0 ||
+          (tolower(buffer[0])=='r' && strncmp("reset",buffer,4)!=0))
       {
-         printf(
-            "registers:\n"
+         printf("registers:\n"
             "instrp: %04x   stackp: %04x   basep: %04x   result_reg: %04x\n",
                instrp,stack.get_stackp(),basep,result_register);
+      }
 
-         Uint16 stackp = stack.get_stackp();
-
-         if (stackp==0xffff)
+      if (stricmp("info",buffer)==0 || tolower(buffer[0])=='i')
+      {
+         if (!loaded)
          {
-            printf("stack not available\n");
+            printf("no conversation loaded yet.\n");
             continue;
          }
 
-         printf("stack: ");
-         for(Uint16 i=0; i<=stackp && i<8; i++)
-            printf("%04x ",stack.at(i));
+         // print some infos
+         printf("infos about conversation #%u (string block %u):\n\n",
+            conv_nr,strblock);
+
+         printf("code size: %04x, call/ret level: %u, verbose mode: %s\n",
+            codesize,call_level,verbose ? "on" : "off");
+
+         printf("private globals: %04x; imported funcs: %04x; "
+            "imported globals: %04x\n",
+            glob_reserved,imported_funcs.size(),imported_globals.size());
+
+         // list breakpoints
+         unsigned int bps = allbreakpoints.size();
+         if (bps==0)
+            printf("no breakpoints set.\n");
+         else
+         {
+            printf("all breakpoints:\n");
+            for(unsigned int i=0; i<bps; i++)
+               printf("%04x%c",allbreakpoints.at(i),i%8==7 ? '\n' : ' ');
+         }
 
          printf("\n");
       }
@@ -173,20 +212,38 @@ void ua_conv_debugger::start()
          continue;
       }
 
+      if (strncmp("reset",buffer,4)==0)
+      {
+         // re-init vm
+         printf("re-init'ing virtual machine.\n");
+         ua_conv_code_vm::init(cg);
+         printf("deleting all breakpoints.\n");
+         allbreakpoints.clear();
+      }
+
       if (strncmp("list",buffer,4)==0 || tolower(buffer[0])=='l')
       {
-         Uint32 ptr = instrp;
+         Uint16 ptr = instrp;
+
+         // when repeating the command, start from last list ptr
+         if (buffer[1]==0 || buffer[4]==0)
+            ptr = lastlistptr;
 
          char *pos = strchr(buffer,' ');
          if (pos!=NULL)
             ptr = strtoul(pos,NULL,16);
 
-         // list three lines of position
+         // list a few lines of position
          ptr += list_code(ptr);
          ptr += list_code(ptr);
          ptr += list_code(ptr);
-         list_code(ptr);
+         ptr += list_code(ptr);
+         lastlistptr = ptr + list_code(ptr);
+         continue;
       }
+
+      // reset last list pointer
+      lastlistptr = instrp;
 
       if (stricmp("dump",buffer)==0 || tolower(buffer[0])=='d')
       {
@@ -194,6 +251,7 @@ void ua_conv_debugger::start()
          Uint16 stackp = stack.get_stackp();
          printf("stackp = %04x\n",stackp);
 
+         if (stackp!=0xffff)
          for(Uint16 i=0; i<=stackp; i++)
          {
             if ( i%8 == 0) printf("%04x:  ",i);
@@ -287,7 +345,7 @@ void ua_conv_debugger::start()
          // conversation finished?
          if (finished)
          {
-            printf("conversation ended.\n\n");
+            printf("conversation ended (at %04x).\n\n",instrp);
             n=0;
 
             // reinit code vm
@@ -344,16 +402,16 @@ int ua_conv_debugger::list_code(Uint16 at)
 
 void ua_conv_debugger::imported_func(Uint16 number)
 {
-   if (number>imported_funcs.size())
+   if (imported_funcs.empty() || number>imported_funcs.size())
    {
-      printf("alert! called unknown imported function: %04x",number);
+      printf("alert! called unknown imported function: %04x\n",number);
       return;
    }
 
    const ua_conv_imported_item &iitem = imported_funcs.at(number);
 
    if (verbose)
-      printf("%04x: CALLI %04x: \"%s\"\n",instrp,number,iitem.name.c_str());
+      printf("%04x: CALLI %04x: \"%s\"\n",instrp-1,number,iitem.name.c_str());
 
    if (iitem.name=="babl_menu")
    {
@@ -406,7 +464,15 @@ void ua_conv_debugger::imported_func(Uint16 number)
       } while (result_register<1 || result_register > nr-1);
 
       printf("response: %u\n\n",result_register);
+   }
 
+   if (iitem.name=="take_from_npc")
+   {
+      Uint16 arg1=stack.at(stack.get_stackp());
+      Uint16 arg2=stack.at(stack.get_stackp()-1);
+
+      printf("<NPC gives player an item>\n"
+         "arg1=%04x, *arg2=%04x\n\n",arg1,stack.at(arg2));
    }
 }
 
@@ -428,7 +494,12 @@ void ua_conv_debugger::sto_priv(Uint16 at, Uint16 val)
          printf("%04x: STO: \"%s\" (%04x) = %04x\n",instrp,iitem.name.c_str(),at,val);
       }
       else
-         printf("%04x: STO: priv[%04x] = %04x\n",instrp,at,val);
+      {
+         if (at<glob_reserved)
+            printf("%04x: STO: priv[%04x] = %04x\n",instrp,at,val);
+//         else
+//            printf("%04x: STO: stack[%04x] = %04x\n",instrp,at,val);
+      }
    }
 }
 
@@ -442,7 +513,12 @@ void ua_conv_debugger::fetchm_priv(Uint16 at)
          printf("%04x: FETCHM: \"%s\" (%04x)\n",instrp,iitem.name.c_str(),at);
       }
       else
-         printf("%04x: FETCHM: priv[%04x]\n",instrp,at);
+      {
+         if (at<glob_reserved)
+            printf("%04x: FETCHM: priv[%04x]\n",instrp,at);
+//         else
+//            printf("%04x: FETCHM: stack[%04x]\n",instrp,at);
+      }
    }
 }
 

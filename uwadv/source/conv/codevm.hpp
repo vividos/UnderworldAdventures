@@ -206,6 +206,9 @@ protected:
    //! stack
    ua_conv_stack stack;
 
+   //! number of values for globals reserved on stack
+   Uint16 glob_reserved;
+
    //! tracks call/ret level
    unsigned int call_level;
 

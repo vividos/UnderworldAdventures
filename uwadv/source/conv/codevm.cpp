@@ -34,7 +34,9 @@
 
 ua_conv_code_vm::ua_conv_code_vm()
 {
-   conv_nr = 0xffff;
+   conv_nr = codesize = 0xffff;
+   instrp = basep = result_register = 0xffff;
+   call_level = glob_reserved = 0;
    finished = true;
 }
 
@@ -50,7 +52,7 @@ void ua_conv_code_vm::init(ua_conv_globals &cg)
    result_register = 0;
    finished = false;
 
-   call_level=0;
+   call_level=1;
 
    // init stack
    stack.init(4096);
@@ -65,6 +67,9 @@ void ua_conv_code_vm::init(ua_conv_globals &cg)
 
 void ua_conv_code_vm::done(ua_conv_globals &cg)
 {
+   if (conv_nr==0xffff)
+      return;
+
    // store back globals from stack
    std::vector<Uint8> &glob = cg.get_globals(conv_nr);
 
