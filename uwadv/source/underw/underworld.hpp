@@ -39,7 +39,7 @@
 #include "conv/codevm.hpp"
 #include "level.hpp"
 #include "physics.hpp"
-#include "uwscript.hpp"
+//#include "uwscript.hpp"
 #include "gamestrings.hpp"
 #include "savegame.hpp"
 #include "properties.hpp"
@@ -95,7 +95,7 @@ public:
    ua_level &get_current_level();
 
    //! returns script bindings object
-   ua_underworld_script_bindings &get_scripts(){ return script; }
+//   ua_underworld_script_bindings &get_scripts(){ return script; }
 
    //! returns game strings object
    ua_gamestrings& get_strings(){ return gstr; }
@@ -162,7 +162,7 @@ protected:
    ua_map_notes mapnotes;
 
    //! underworld script bindings;
-   ua_underworld_script_bindings script;
+//   ua_underworld_script_bindings script;
 
    //! hey, it's all the game strings!
    ua_gamestrings gstr;

@@ -28,7 +28,7 @@
 // needed includes
 #include "common.hpp"
 #include "underworld.hpp"
-#include "core.hpp"
+//TODO#include "core.hpp"
 #include "uamath.hpp"
 
 
@@ -61,7 +61,7 @@ void ua_underworld::init(ua_settings& settings, ua_files_manager& filesmgr)
 
 void ua_underworld::done()
 {
-   script.done();
+//TODO   script.done();
 }
 
 void ua_underworld::eval_underworld(double time)
@@ -73,7 +73,7 @@ void ua_underworld::eval_underworld(double time)
    physics.eval_physics(time);
 
    // call Lua tick script
-   script.lua_game_tick(time);
+//TODO   script.lua_game_tick(time);
 
    check_move_trigger();
 }
@@ -92,7 +92,7 @@ void ua_underworld::change_level(unsigned int level)
    // set new level
    player.set_attr(ua_attr_maplevel,level);
 
-   script.lua_change_level(level);
+//TODO   script.lua_change_level(level);
 
    // clear activated move triggers
    trigger_active.clear();
@@ -152,7 +152,7 @@ void ua_underworld::load_game(ua_savegame &sg)
    conv_globals.load_game(sg);
 
    // load Lua script values
-   script.load_game(sg);
+//TODO   script.load_game(sg);
 
    sg.close();
 
@@ -204,7 +204,7 @@ void ua_underworld::save_game(ua_savegame &sg)
    conv_globals.save_game(sg);
 
    // save Lua script values
-   script.save_game(sg);
+//TODO   script.save_game(sg);
 
    sg.close();
 }
@@ -284,7 +284,7 @@ void ua_underworld::check_move_trigger()
                   ua_trace("move trigger: activate trigger at %04x\n",pos);
 
                   unsigned int curlevel = player.get_attr(ua_attr_maplevel);
-                  script.lua_trigger_set_off(curlevel,pos);
+//TODO                  script.lua_trigger_set_off(curlevel,pos);
                }
                else
                {
