@@ -58,8 +58,8 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	audio/midi.hpp audio/xmidi.hpp \
 	audio/midi_driver/uni_fmod.cpp \
 	audio/midi_driver/linux_sdl_mixer.cpp \
-	audio/midi_driver/uni_fmod.hpp \
-	audio/midi_driver/linux_sdl_mixer.hpp \
+	audio/midi_driver/uni_fmod.h \
+	audio/midi_driver/linux_sdl_mixer.h \
 	conv/codevm.cpp conv/codevm.hpp \
 	resource/codeloader.cpp resource/fontloader.cpp \
 	resource/gamestrings.cpp resource/imageloader.cpp \
@@ -81,8 +81,7 @@ uwadv_LDADD = $(OPENGL_LIBS) $(SDL_LIBS) liblua.a libzziplib.a -lz
 uwadv_DEPENDENCIES = liblua.a libzziplib.a
 
 EXTRA_DIST = audio/midi_driver/win_midiout.cpp \
-	audio/midi_driver/win_midiout.hpp \
-	linux/uwadv.cfg
+	audio/midi_driver/win_midiout.h
 
 SUBDIRS = tools
 

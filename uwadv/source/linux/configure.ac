@@ -1,19 +1,24 @@
 dnl
-dnl configure.in for Underworld Adventures
+dnl configure.ac for Underworld Adventures
 dnl
 dnl $Id$
 dnl
-
 
 dnl initial stuff
 AC_PREREQ(2.53)
 AC_INIT(../uwadv.cpp)
 
+
+# version info
+PACKAGE=uwadv
+VERSION=0.4
+
+
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
 
-AM_INIT_AUTOMAKE(uwadv,0.0.1)
+AM_INIT_AUTOMAKE($PACKAGE,$VERSION,no-define)
 AM_CONFIG_HEADER(config.h)
 
 dnl initial variable values
@@ -105,10 +110,10 @@ dnl checking for uwadv.cfg entries
 AC_ARG_WITH(uw1, [  --with-uw1=DIR          directory where UW1 is installed ],UW1PATH=$with_uw1,UW1PATH=/usr/local/games/uw1/)
 AC_SUBST(UW1PATH)
 
-UADATAPATH=../uadata/
+UADATAPATH=${datadir}/games/uwadv
 AC_SUBST(UADATAPATH)
 
-CPPFLAGS="$CPPFLAGS -DCONFIGDIR=\\\"\$(datadir)/games/uwadv/\\\""
+CPPFLAGS="$CPPFLAGS -DCONFIGDIR=\\\"${datadir}/games/uwadv/\\\""
 
 dnl produce output files
 AC_SUBST(OPENGL_LIBS)
