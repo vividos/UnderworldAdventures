@@ -21,7 +21,7 @@
 */
 /*! \file core.hpp
 
-   a
+   game core interface
 
 */
 
