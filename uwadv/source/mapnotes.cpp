@@ -40,6 +40,8 @@ std::vector<ua_map_notes_entry>& ua_map_notes::get_page_notes(
 
 void ua_map_notes::load_game(ua_savegame& sg)
 {
+   sg.begin_section("mapnotes");
+
    mapnotes.clear();
 
    Uint8 endpages = sg.read8();
@@ -73,6 +75,8 @@ void ua_map_notes::load_game(ua_savegame& sg)
       mapnotes.insert( std::make_pair<unsigned int,std::vector<ua_map_notes_entry> >(
          page,noteslist) );
    }
+
+   sg.end_section();
 }
 
 void ua_map_notes::save_game(ua_savegame& sg)
