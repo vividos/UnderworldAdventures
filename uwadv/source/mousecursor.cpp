@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002 Dirk Manders
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -28,6 +28,9 @@
 // needed includes
 #include "common.hpp"
 #include "mousecursor.hpp"
+
+
+// ua_mousecursor methods
 
 ua_mousecursor::ua_mousecursor(ua_game_core_interface* core, int initialtype)
 {
@@ -82,4 +85,3 @@ void ua_mousecursor::draw()
    glTexCoord2d(0.0, 0.0); glVertex2i(cursorx, 200-cursory+cursorh);
    glEnd();
 }
-
