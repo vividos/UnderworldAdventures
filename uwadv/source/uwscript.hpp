@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -77,7 +77,7 @@ public:
    virtual void ui_changed_level(unsigned int level)=0;
 
    //! starts conversation with NPC
-   virtual void ui_start_conv(unsigned int convslot)=0;
+   virtual void ui_start_conv(unsigned int level, unsigned int objpos)=0;
 
    //! starts viewing a cutscene
    virtual void ui_show_cutscene(unsigned int cutscene)=0;

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -59,7 +59,7 @@ class ua_conversation_screen:
 {
 public:
    //! ctor
-   ua_conversation_screen(unsigned int conv):convslot(conv){}
+   ua_conversation_screen(unsigned int conv_level, Uint16 conv_objpos);
    //! dtor
    virtual ~ua_conversation_screen(){}
 
@@ -119,8 +119,17 @@ protected:
 
    // conversation stuff
 
+   //! level of underworld npc object is
+   unsigned int level;
+
+   //! position in master object list of npc object
+   Uint16 objpos;
+
+   //! npc data section
+   std::vector<Uint16> npcdata;
+
    //! conversation slot to use
-   unsigned int convslot;
+//   unsigned int convslot;
 
    //! screen state
    ua_conv_screen_state state;

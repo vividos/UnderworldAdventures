@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -1118,7 +1118,7 @@ void ua_ingame_orig_screen::tick()
             break;
 
          case 3: // start conversation
-            core->push_screen(new ua_conversation_screen(fadeout_param));
+            core->push_screen(new ua_conversation_screen(conv_level,conv_objpos));
             break;
 
          case 4: // start cutscene
@@ -1627,13 +1627,15 @@ void ua_ingame_orig_screen::ui_changed_level(unsigned int level)
       texmgr.prepare(used_textures[n]);
 }
 
-void ua_ingame_orig_screen::ui_start_conv(unsigned int convslot)
+void ua_ingame_orig_screen::ui_start_conv(unsigned int level, unsigned int objpos)
 {
    // start fading out
    fade_state = 2;
    fade_ticks = 0;
    fadeout_action = 3; // start conversation
-   fadeout_param = convslot;
+
+   conv_level = level;
+   conv_objpos = objpos;
 
    // fade out audio track
    core->get_audio().fadeout_music(fade_time);

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -856,11 +856,14 @@ int ua_underworld_script_bindings::ui_start_conv(lua_State* L)
 {
    ua_underworld &uw = get_underworld_from_self(L);
 
-   unsigned int convslot = static_cast<unsigned int>(lua_tonumber(L,-1));
+   Uint32 obj_handle = static_cast<Uint32>(lua_tonumber(L,-1));
+   Uint32 level,objpos;
+
+   ua_obj_handle_decode(obj_handle,objpos,level);
 
    ua_underworld_script_callback* cback = uw.get_scripts().callback;
    if (cback)
-      cback->ui_start_conv(convslot);
+      cback->ui_start_conv(level,objpos);
 
    return 0;
 }

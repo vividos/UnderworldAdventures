@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -45,9 +45,23 @@ const double ua_conversation_screen::endconv_wait_time = 1.0;
 
 // ua_conversation_screen methods
 
+ua_conversation_screen::ua_conversation_screen(
+   unsigned int conv_level,Uint16 conv_objpos)
+:level(conv_level),objpos(conv_objpos)
+{
+}
+
 void ua_conversation_screen::init()
 {
-   ua_trace("started conversation screen, conversation #%u\n",convslot);
+   // get npc object to talk to
+   ua_object& npc_obj =
+      core->get_underworld().get_level(level).get_mapobjects().get_object(objpos);
+   npcdata = npc_obj.get_object_info().data;
+   Uint16 convslot = npcdata[0];
+
+   ua_trace("started conversation screen");
+   ua_trace(", npc at level %u, objpos %u",level,objpos);
+   ua_trace(", conversation #%u\n",convslot);
 
    // clear screen
    glClearColor(0,0,0,0);
@@ -127,6 +141,13 @@ void ua_conversation_screen::init()
       else
       {
          // portrait is in "genheads.gr"
+         ua_image_list img_genheads;
+         img_genheads.load(core->get_settings(),"genhead");
+
+         unsigned int gen_head = npc_obj.get_object_info().item_id-64;
+         if (gen_head>59) gen_head = 0;
+
+         img_back.paste_image(img_genheads.get_image(gen_head),45,11);
       }
 
       ua_image_list img_playerheads;
@@ -195,7 +216,7 @@ void ua_conversation_screen::done()
    scroll_menu.done();
    mousecursor.done();
 
-   ua_trace("ended conversation screen\n",convslot);
+   ua_trace("ended conversation screen\n");
 }
 
 void ua_conversation_screen::handle_event(SDL_Event &event)

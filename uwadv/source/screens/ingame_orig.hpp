@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -139,7 +139,7 @@ public:
 
    // virtual functions from ua_underworld_script_callback
    virtual void ui_changed_level(unsigned int level);
-   virtual void ui_start_conv(unsigned int convslot);
+   virtual void ui_start_conv(unsigned int level, unsigned int objpos);
    virtual void ui_show_cutscene(unsigned int cutscene);
    virtual void ui_print_string(const char* str);
    virtual void ui_show_ingame_anim(unsigned int anim);
@@ -260,6 +260,12 @@ protected:
 
    //! fadeout parameter for specific actions
    unsigned int fadeout_param;
+
+   //! level of npc object to converse with
+   unsigned int conv_level;
+
+   //! objpos of npc object to converse with
+   unsigned int conv_objpos;
 
 
    // images, textures and fonts
