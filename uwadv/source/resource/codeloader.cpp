@@ -61,6 +61,20 @@ bool ua_conv_code_vm::load_code(const char *cnvfile, Uint16 conv)
       return false;
    }
 
+   // count valid conv slots up to the one to load
+   unsigned int slotcount=0;
+   fseek(fd,2,SEEK_SET);
+
+   for(Uint16 n=0; n<conv; n++)
+   {
+      Uint32 slotoffset = fread32(fd);
+      if (slotoffset!=0)
+         slotcount++;
+   }
+
+   strblock = slotcount+25;
+
+   // read conversation header
    fseek(fd,offset,SEEK_SET);
 
    Uint32 unknown1 = fread32(fd);
