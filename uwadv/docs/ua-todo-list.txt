@@ -11,16 +11,16 @@ technical/source
 ----------------
 
 - savegame manager API
-  prio: 2  assigned: vividos
+  prio: 1  assigned: vividos
 
 - levelmap annotations list API
-  prio: 3  assigned: vividos
+  prio: 2  assigned: vividos
 
 - add check for all needed files before starting uwadv
-  prio: 4  assigned: none
+  prio: 3  assigned: none
 
 - load/use music fallback playlist when file isn't found in normal one
-  prio: 4  assigned: phlask
+  prio: 4  assigned: none
 
 - win32: setting of different SDL audio backend driver (at SDL_AudioInit)
   prio: 4  assigned: none
@@ -29,7 +29,7 @@ technical/source
   prio: 5  assigned: none
 
 - port uwadv to MacOS X / other platforms
-  prio: 3  assigned: none
+  prio: 4  assigned: none
 
 - write an interactive debugger for Lua scripts and the ua_underworld object,
   e.g. using wxWindows for platform independence
@@ -40,35 +40,41 @@ technical/source
   prio: 5  assigned: none
 
 - write map editor for uwadv savegames
-  prio: 4  assigned: none
+  prio: 5  assigned: none
 
 - replace all object 2d graphics with 3d low-poly models
   prio: 4  assigned: none
 
 - load custom uwadv strings from packed gamestrings file
-  prio: 3  assigned: vividos
+  prio: 4  assigned: vividos
 
 
 game interface
 --------------
 
+- do a model manager class
+  prio: 2  assigned: vividos
+
+- factor out panel as ui element to reuse on more places
+  prio: 2  assigned: vividos
+
 - selection style mouse cursor on "start menu" and "create char." screens
-  prio: 3  assigned: phlask
-
-- improve savegame loading/saving screen implementation
-  prio: 2  assigned: phlask
-
-- savegame saving screen implementation (together into loading screen?)
-  prio: 2  assigned: none
-
-- npc's rendering and animation
-  prio: 2  assigned: none
-
-- level map view screen
   prio: 3  assigned: none
 
+- improve savegame loading/saving screen implementation
+  prio: 1  assigned: none
+
+- savegame saving screen implementation (together into loading screen?)
+  prio: 1  assigned: none
+
+- npc's animation
+  prio: 1  assigned: none
+
+- level map view screen
+  prio: 2  assigned: none
+
 - ingame: implementation of all keymap keys
-  prio: 3  assigned: vividos
+  prio: 2  assigned: vividos
 
 - add eating via dropping on paperdoll head
   prio: 3  assigned: none
@@ -77,22 +83,22 @@ game interface
   prio: 2  assigned: none
 
 - 3d model loading / rendering (from game files)
-  prio: 2  assigned: none
+  prio: 1  assigned: none
 
 - decals rendering (tmap objects)
-  prio: 2  assigned: none
+  prio: 1  assigned: none
 
 - conversation screen implementation
-  prio: 3  assigned: none
+  prio: 2  assigned: none
 
-- meditating at shrines(object interaction)
+- meditating at shrines (object interaction)
   prio: 3  assigned: none
 
 - all remaining cutscenes
   prio: 3  assigned: none
 
 - ingame_new: design and implement new user interface
-  prio: 3  assigned: none
+  prio: 4  assigned: none
 
 - add endgame screen implementation
   prio: 4  assigned: none
@@ -102,42 +108,42 @@ underworld ingame
 -----------------
 
 - complete Lua <--> underworld interface
-  prio: 2  assigned: vividos
+  prio: 1  assigned: vividos
 
 - complete saving of all needed infos from the ua_underworld object (including
   Lua script values)
-  prio: 3  assigned: vividos
+  prio: 1  assigned: vividos
 
 - npc AI via Lua scripts
-  prio: 2  assigned: none
+  prio: 3  assigned: none
 
 - add inventory weight count
   prio: 3  assigned: none
 
 - object interaction: picking up objects (stealing)
-  prio: 2  assigned: none
+  prio: 3  assigned: none
 
 - object interaction: throwing, dropping objects
-  prio: 2  assigned: none
+  prio: 3  assigned: none
 
 - traps / triggers handling
-  prio: 3  assigned: none
+  prio: 2  assigned: none
 
 - combat implementation (lua scripts)
   prio: 2  assigned: none
 
 - conversation virtual machine implementation (all imported functions,
   possible interface to Lua scripting)
-  prio: 3  assigned: none
+  prio: 2  assigned: none
 
-- meditating at shrines(lua scripts)
+- meditating at shrines (lua scripts)
   prio: 3  assigned: none
 
 - physics: pathfinding algorithm (A*)
   prio: 3  assigned: none
 
 - physics: tracing of objects in map, npc's, objects from objlist, avatar
-  prio: 3  assigned: none
+  prio: 2  assigned: none
 
 - physics: walking and floating (sinus) movement
   prio: 4  assigned: none
@@ -159,7 +165,7 @@ finally
 -------
 
 - verify story continuity
-  prio: 2  assigned: none
+  prio: 1  assigned: none
 
 - complete source code documentation
   prio: 2  assigned: uwadv team
