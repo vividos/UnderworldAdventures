@@ -35,8 +35,8 @@
 
 // needed includes
 #include "uamath.hpp"
+#include "physicsobject.hpp"
 #include <vector>
-
 
 // forward declarations
 class ua_underworld;
@@ -71,13 +71,13 @@ public:
 
 protected:
    //! tracks object by position and direction; vectors must be in ellipsoid space
-   void track_object(ua_vector3d& pos, const ua_vector3d& dir);
+   void track_object(ua_physics_object& object, ua_vector3d& pos, const ua_vector3d& dir, bool gravity_call, double time);
 
    //! recursive collision response calculation
-   void collide_with_world(ua_vector3d& pos, const ua_vector3d& dir);
+   bool collide_with_world(ua_physics_object& object, ua_vector3d& pos, const ua_vector3d& dir);
 
    //! checks mesh for collision
-   void check_collision(int xpos, int ypos, ua_collision_data& data);
+   void check_collision(ua_physics_object& object, int xpos, int ypos, ua_collision_data& data);
 
 #else // HAVE_NEW_CD
 
@@ -99,9 +99,8 @@ protected:
 protected:
    //! current underworld object
    ua_underworld* underw;
-
-   //! ellipsoid radius for currently tracked object (for use in track_object())
-   ua_vector3d radius;
+  
+   int collision_recursion_depth;
 
    //! last evaluation time
    double last_evaltime;

@@ -29,13 +29,15 @@
 #include "common.hpp"
 #include "player.hpp"
 
+//! Size of the player ellipsoid
+const double ua_ellipsoid_x = 0.3;
+const double ua_ellipsoid_y = 0.3;
+const double ua_ellipsoid_z = 0.4;
 
 // ua_player methods
-
-ua_player::ua_player()
+ua_player::ua_player() : ua_physics_object()
 {
-  safeSpotHead = -1;
-  safeSpotTail = -1;
+  
 }
 
 void ua_player::init()
@@ -54,6 +56,8 @@ void ua_player::init()
    move_factors[ua_move_jump] = 0.0;
    move_factors[ua_move_slide] = 0.0;
    move_factors[ua_move_float] = 0.0;
+   
+   set_ellipsoid(ua_vector3d(ua_ellipsoid_x, ua_ellipsoid_y, ua_ellipsoid_z));
 }
 
 void ua_player::set_movement_mode(unsigned int set,unsigned int del)
@@ -142,43 +146,3 @@ void ua_player::save_game(ua_savegame &sg)
    sg.end_section();
 }
 
-
-// Physics:
-void ua_player::push_safe_spot(ua_vector3d spot) {
-  // first insertion
-  if (safeSpotHead == -1) {
-     safeSpotHead = 0;
-     safeSpotTail = 0;
-     safeSpots[safeSpotHead] = spot;
-  }
-  else {
-    // only insert new spot if it's far enough away from the last inserted one
-    double dist = (safeSpots[safeSpotHead] - spot).length();
-    if (dist < 0.1)
-      return;
-    
-    // move tail if needed (full buffer)
-    if ((safeSpotHead + 1) % 100 == safeSpotTail)
-      safeSpotTail = (safeSpotTail + 1) % 100;
-  
-    safeSpotHead = (safeSpotHead + 1) % 100;
-    safeSpots[safeSpotHead] = spot;
-  }  
-}
-
-ua_vector3d ua_player::pop_safe_spot() {
-  ua_vector3d spot(0,0,0);
-  
-  if (safeSpotHead > 0) {
-    spot = safeSpots[safeSpotHead];
-    
-    // Check we have not reached the tail yet.
-    if (safeSpotHead != safeSpotTail) {
-       safeSpotHead--;
-       if (safeSpotHead < 0)
-          safeSpotHead = safeSpotHead + 100;
-    }
-  }
-    
-  return spot;
-} 

@@ -68,17 +68,10 @@ typedef struct ua_collision_data
 
 // constants
 
-//! how much does the gravity pull the player down
-const double ua_gravity_pull = -0.04;
+
 
 //! Trick to get smoother CD
 const double ua_cd_liftoff   = 0.05;
-
-//! Size of the player ellipsoid
-const double ua_ellipsoid_x = 0.3;
-const double ua_ellipsoid_y = 0.3;
-const double ua_ellipsoid_z = 0.4;
-
 
 //! minimum distance
 const double ua_physics_min_dist = 0.05;
@@ -168,23 +161,19 @@ void ua_physics_model::eval_physics(double time)
 
          // position vector
          ua_vector3d pos(pl.get_xpos(),pl.get_ypos(),pl.get_height()*0.125);
-         
-         
-         pos.z += (ua_ellipsoid_z + ua_cd_liftoff);
-    
-    
-         // set ellipsoid radius for further processing
-         radius.set(ua_ellipsoid_x, ua_ellipsoid_y, ua_ellipsoid_z);
+         ua_vector3d ellipsoid = pl.get_ellipsoid();
+         pos.z += (ellipsoid.z + ua_cd_liftoff);
+              
 
          // do object tracking; pos is modified after call
-         track_object(pos,dir);
+         track_object(pl, pos,dir, false, time);
 
          // limit height when falling out of the map
          if (pos.z<0.0) pos.z = 0.0;
 
          // set new player pos
          pl.set_pos(pos.x,pos.y);
-         pl.set_height((pos.z - (ua_ellipsoid_z + ua_cd_liftoff)) / 0.125);
+         pl.set_height((pos.z - (ellipsoid.z + ua_cd_liftoff)) / 0.125);
          
 #else // HAVE_NEW_CD
 
@@ -236,25 +225,24 @@ void ua_physics_model::eval_physics(double time)
 #ifdef HAVE_NEW_CD
      // If we use the new CD we should apply gravity here nomatter if any keys were pressed..  
      // construct direction vector
-     ua_vector3d dir(0.0, 0.0, ua_gravity_pull);
-  
+     ua_vector3d dir = pl.get_fall_velocity();
+       
      // position vector
      ua_vector3d pos(pl.get_xpos(),pl.get_ypos(),pl.get_height()*0.125);
-     pos.z += (ua_ellipsoid_z + ua_cd_liftoff);
     
-    
-     // set ellipsoid radius for further processing
-     radius.set(ua_ellipsoid_x, ua_ellipsoid_y, ua_ellipsoid_z);
+     ua_vector3d ellipsoid = pl.get_ellipsoid();
+     pos.z += (ellipsoid.z + ua_cd_liftoff);
+        
 
      // do object tracking; pos is modified after call
-     track_object(pos,dir);
+     track_object(pl, pos,dir, true, time);
 
      // limit height when falling out of the map
      if (pos.z<0.0) pos.z = 0.0;
 
      // set new player pos
      pl.set_pos(pos.x,pos.y);
-     pl.set_height((pos.z - (ua_ellipsoid_z + ua_cd_liftoff)) / 0.125);
+     pl.set_height((pos.z - (ellipsoid.z + ua_cd_liftoff)) / 0.125);
    
 #endif
    }
@@ -264,25 +252,38 @@ void ua_physics_model::eval_physics(double time)
 
 #ifdef HAVE_NEW_CD
 
-void ua_physics_model::track_object(ua_vector3d& pos, const ua_vector3d& dir)
+void ua_physics_model::track_object(ua_physics_object& object, ua_vector3d& pos, const ua_vector3d& dir, bool gravity_call, double time)
 {
    ua_vector3d dir2(dir);
    // transform to ellipsoid space
-   pos /= radius;
-   dir2 /= radius;
+   ua_vector3d ellipsoid = object.get_ellipsoid();
+   pos /= ellipsoid;
+   dir2 /= ellipsoid;
 
    // call recursive collision response function
-   collide_with_world(pos,dir2);
+   collision_recursion_depth = 0;
+   bool collided = collide_with_world(object, pos,dir2);
+
+   if (gravity_call) {
+     if (collided) {
+      object.reset_fall_velocity();
+     } 
+     else {
+      object.accellerate_fall_velocity(time);
+     } 
+   }
 
    // transform back to normal space
-   pos *= radius;
+   pos *= ellipsoid;
 }
 
-void ua_physics_model::collide_with_world(ua_vector3d& pos, const ua_vector3d& dir)
+bool ua_physics_model::collide_with_world(ua_physics_object& object, ua_vector3d& pos, const ua_vector3d& dir)
 {
    // do we need to worry?
-   if (dir.length()<ua_physics_min_dist)
-      return;
+   if (dir.length()<ua_physics_min_dist || collision_recursion_depth > 15)
+      return true;
+
+   collision_recursion_depth++;
 
    ua_vector3d dest(pos);
    dest += dir;
@@ -297,14 +298,14 @@ void ua_physics_model::collide_with_world(ua_vector3d& pos, const ua_vector3d& d
    data.stuck = false;
 
    // check triangle mesh collision
-   check_collision( static_cast<int>(pos.x*radius.x), static_cast<int>(pos.y*radius.y), data);
+   ua_vector3d ellipsoid = object.get_ellipsoid();
+   check_collision( object, static_cast<int>(pos.x*ellipsoid.x), static_cast<int>(pos.y*ellipsoid.y), data);
   
    if (data.stuck) {
      // recovery code here:
-     ua_player &pl = underw->get_player();
-     ua_vector3d safeSpot = pl.pop_safe_spot();
+     ua_vector3d safeSpot = object.pop_safe_spot();
      pos = safeSpot;
-     return;
+     return true; // if stuck we definitly collides
    }
   
    if (!data.found)
@@ -317,12 +318,11 @@ void ua_physics_model::collide_with_world(ua_vector3d& pos, const ua_vector3d& d
       dir2 *= dir.length()-ua_physics_min_dist;
 
       // push 'pos' as a safe spot:
-      ua_player &pl = underw->get_player();
-      pl.push_safe_spot(pos);
+      object.push_safe_spot(pos);
       
       // return the final position
       pos += dir2;
-      return;
+      return false; // no collision found
    }
    else
    {
@@ -361,12 +361,13 @@ void ua_physics_model::collide_with_world(ua_vector3d& pos, const ua_vector3d& d
       ua_vector3d newdir = newdest - data.nearest_poly_inter;
       
       // call the function with the new position and velocity
-      collide_with_world(newpos,newdir);
+      collide_with_world(object, newpos,newdir);
       pos = newpos;
+      return true; // there was a collision here
    }
 }
 
-void ua_physics_model::check_collision(int xpos, int ypos, ua_collision_data& data)
+void ua_physics_model::check_collision(ua_physics_object& object, int xpos, int ypos, ua_collision_data& data)
 {
    // retrieve all tile triangles to check
    std::vector<ua_triangle3d_textured> alltriangles;
@@ -380,6 +381,8 @@ void ua_physics_model::check_collision(int xpos, int ypos, ua_collision_data& da
    // keep a copy of this as it's needed a few times
    ua_vector3d normdir(data.dir);
    normdir.normalize();
+   
+   ua_vector3d ellipsoid = object.get_ellipsoid();
 
    // check all triangles
    unsigned int max = alltriangles.size();
@@ -389,9 +392,9 @@ void ua_physics_model::check_collision(int xpos, int ypos, ua_collision_data& da
 
       // get triangle points and convert to ellipsoid space
       ua_vector3d p1(tri.points[0]), p2(tri.points[1]), p3(tri.points[2]);
-      p1 /= radius;
-      p2 /= radius;
-      p3 /= radius;
+      p1 /= ellipsoid;
+      p2 /= ellipsoid;
+      p3 /= ellipsoid;
 
       // construct plane containing this triangle
       ua_vector3d p_origin(p1), v1(p2), v2(p3);
