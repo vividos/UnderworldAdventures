@@ -1,0 +1,78 @@
+#
+# mingw32 makefile for Underworld Adventures
+#
+# $Id$
+#
+
+#
+# user-configurable stuff
+#
+
+SDL_INCLUDE = -Ic:/mingw/include/sdl/
+
+STLPORT_INCLUDE = -Ic:/mingw/stl/stlport/
+STLPORT_LIB = -Lc:/mingw/stl/lib/
+
+FMOD_INCLUDE = -Ic:/mingw/include/fmod/api/inc/
+FMOD_LIB = -Lc:/mingw/include/fmod/api/lib/ -lfmod
+
+#
+# build variables
+#
+
+SDL_LIB = -lSDLmain -lSDL
+
+CC = c++
+CFLAGS = -g -O
+
+DEFINES = -DHAVE_FMOD_H
+#-I../../
+INCLUDES = $(SDL_INCLUDE) $(STLPORT_INCLUDE) $(FMOD_INCLUDE) -I.. -I. 
+CPPFLAGS = $(DEFINES) $(INCLUDES)
+
+LDFLAGS = -mwindows -mconsole -s
+LIBS = -lmingw32 -lkernel32 -luser32 -lwinmm -lopengl32 -lglu32 \
+	-lstlport_mingw32_static \
+	$(SDL_LIB) $(FMOD_LIB) $(STLPORT_LIB)
+
+#
+# build targets
+#
+
+uwadv_EXEC = uwadv.exe
+
+uwadv_OBJS = main.o game_win32.o uwadv_res.o \
+	../font.o ../image.o ../inventory.o ../level.o \
+	../texture.o ../underworld.o ../uwadv.o ../player.o \
+	../audio/audio.o ../audio/midi.o ../audio/xmidi.o \
+	../audio/midi_driver/uni_fmod.o \
+	../audio/midi_driver/win_midiout.o \
+	../conv/codevm.o \
+	../resource/codeloader.o ../resource/fontloader.o \
+	../resource/gamestrings.o ../resource/imageloader.o \
+	../resource/maploader.o ../resource/settings.o \
+	../resource/texloader.o \
+	../screens/ingame_orig.o ../screens/start_splash.o
+
+#
+# build rules
+#
+
+all: $(uwadv_EXEC)
+
+$(uwadv_EXEC): $(uwadv_OBJS)
+	$(CC) $(LDFLAGS) -o $(@) $(OBJS) $(LIBS)
+
+installer: $(uwadv_EXEC)
+	mkdir -p ../../output/release/
+	cp uwadv.exe ../../output/release/uwadv.exe
+	makensis uwadv.nsi
+
+clean:
+	rm -f $(uwadv_OBJS)
+
+uwadv_res.o: uwadv.rc Uus.ico
+	windres -i uwadv.rc -o $@
+
+.cpp.o:
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $(<) -o $*.o
