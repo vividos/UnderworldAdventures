@@ -64,6 +64,8 @@ void ua_import_levelmaps(ua_settings &settings, const char *folder,
    unsigned int numlevels = settings.get_gametype() == ua_game_uw_demo ? 1 : 9;
    levels.reserve(numlevels);
 
+   ua_trace("importing %u level maps from %s\n",numlevels,folder);
+
    // open map file
    std::string mapfile(settings.get_string(ua_setting_uw_path));
    if (settings.get_gametype() == ua_game_uw_demo)
