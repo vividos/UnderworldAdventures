@@ -403,7 +403,7 @@ void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
       {
          Uint16 arg1 = stack.pop();
 
-         fetchm_priv(arg1);
+         fetch_value(arg1);
 
          stack.push(stack.at(arg1));
       }
@@ -414,7 +414,7 @@ void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
          Uint16 arg1 = stack.pop();
          Uint16 arg2 = stack.pop();
 
-         sto_priv(arg2,arg1);
+         store_value(arg2,arg1);
 
          stack.set(arg2,arg1);
       }
@@ -547,10 +547,10 @@ void ua_conv_code_vm::set_global(const std::string& globname, Uint16 val)
 {
 }
 
-void ua_conv_code_vm::sto_priv(Uint16 at, Uint16 val)
+void ua_conv_code_vm::store_value(Uint16 at, Uint16 val)
 {
 }
 
-void ua_conv_code_vm::fetchm_priv(Uint16 at)
+void ua_conv_code_vm::fetch_value(Uint16 at)
 {
 }

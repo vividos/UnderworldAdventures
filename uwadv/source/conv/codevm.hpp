@@ -222,11 +222,11 @@ public:
    //! sers global variable value
    virtual void set_global(const std::string& globname, Uint16 val);
 
-   //! called when storing a value at private globals
-   virtual void sto_priv(Uint16 at, Uint16 val);
+   //! called when storing a value at the stack
+   virtual void store_value(Uint16 at, Uint16 val);
 
-   //! called when fetching a value from private globals
-   virtual void fetchm_priv(Uint16 at);
+   //! called when fetching a value from stack
+   virtual void fetch_value(Uint16 at);
 
 protected:
    //! reads all imported function entries
