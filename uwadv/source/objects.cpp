@@ -33,8 +33,8 @@
 // ua_object_info methods
 
 ua_object_info::ua_object_info()
-:item_id(ua_item_none), enchanted(false),
- is_link(false),quality(0), link(0), owner(0), quantity(0)
+:item_id(ua_item_none), link(0), quality(0), owner(0), quantity(0),
+ flags(0), enchanted(false), is_hidden(false), is_quantity(true)
 {
 }
 
@@ -51,8 +51,15 @@ void ua_object_info::load_info(ua_savegame& sg)
    owner = sg.read16();
    quantity = sg.read16();
 
-   enchanted = sg.read8()==1;
-   is_link = sg.read8()==1;
+   flags = sg.read8();
+
+   enchanted = sg.read8() != 0;
+   is_hidden = sg.read8() != 0;
+   is_quantity = sg.read8() != 0;
+
+   // dummy values
+   sg.read8();
+   sg.read8();
 }
 
 void ua_object_info::save_info(ua_savegame& sg)
@@ -68,76 +75,90 @@ void ua_object_info::save_info(ua_savegame& sg)
    sg.write16(owner);
    sg.write16(quantity);
 
-   sg.write8(enchanted? 1 : 0);
-   sg.write8(is_link? 1 : 0);
+   sg.write8(flags);
 
-   // TODO write unknown flags
+   sg.write8(enchanted ? 1 : 0);
+   sg.write8(is_hidden ? 1 : 0);
+   sg.write8(is_quantity ? 1 : 0);
+
+   // dummy values
+   sg.write8(0);
+   sg.write8(0);
 }
 
 
 // ua_object_info_ext methods
 
 ua_object_info_ext::ua_object_info_ext()
-:xpos(0.0), ypos(0.0), zpos(0.0), dir(0),
- npc_used(false)
+:xpos(0), ypos(0), zpos(0), heading(0),
+ npc_used(false),
+ npc_hp(0), npc_goal(0), npc_gtarg(0), npc_level(0),
+ npc_talkedto(0), npc_attitude(0), npc_xhome(0), npc_yhome(0), 
+ npc_hunger(0), npc_whoami(0)
 {
 }
 
 void ua_object_info_ext::load_extinfo(ua_savegame& sg)
 {
    // read extended object info
-   xpos = sg.read32()/256.0;
-   ypos = sg.read32()/256.0;
-   zpos = sg.read32()/256.0;
-   dir = sg.read8();
+   xpos = sg.read8() & 7;
+   ypos = sg.read8() & 7;
+   zpos = sg.read8();
+   heading = sg.read8() & 7;
 
    npc_used = sg.read8()!=0;
    if (npc_used)
    {
-      npc_whoami = sg.read16();
-      npc_attitude = sg.read16();
-      npc_hp = sg.read16();
+      npc_hp = sg.read8();
+
+      npc_goal = sg.read8();
+      npc_gtarg = sg.read8();
+      npc_level = sg.read8();
+      npc_talkedto = sg.read8() != 0;
+      npc_attitude = sg.read8();
+
       npc_xhome = sg.read8();
       npc_yhome = sg.read8();
+
+      npc_hunger = sg.read8();
+      npc_whoami = sg.read8();
 
       // read placeholder values
       sg.read16();
       sg.read16();
       sg.read16();
-      sg.read16();
-      sg.read16();
-      sg.read16();
-
-      // TODO read more npc values
    }
 }
 
 void ua_object_info_ext::save_extinfo(ua_savegame& sg)
 {
    // write extended object info
-   sg.write32(static_cast<Uint32>(xpos*256.0));
-   sg.write32(static_cast<Uint32>(ypos*256.0));
-   sg.write32(static_cast<Uint32>(zpos*256.0));
-   sg.write8(dir);
+   sg.write8(xpos & 7);
+   sg.write8(ypos & 7);
+   sg.write8(zpos);
+   sg.write8(heading & 7);
 
-   sg.write8(npc_used? 1 : 0);
+   sg.write8(npc_used ? 1 : 0);
    if (npc_used)
    {
-      sg.write16(npc_whoami);
-      sg.write16(npc_attitude);
-      sg.write16(npc_hp);
+      sg.write8(npc_hp);
+
+      sg.write8(npc_goal);
+      sg.write8(npc_gtarg);
+      sg.write8(npc_level);
+      sg.write8(npc_talkedto ? 1 : 0);
+      sg.write8(npc_attitude);
+
       sg.write8(npc_xhome);
       sg.write8(npc_yhome);
+
+      sg.write8(npc_hunger);
+      sg.write8(npc_whoami);
 
       // write placeholder values
       sg.write16(0);
       sg.write16(0);
       sg.write16(0);
-      sg.write16(0);
-      sg.write16(0);
-      sg.write16(0);
-
-      // TODO write more npc values
    }
 }
 

@@ -88,14 +88,14 @@ void ua_object_list::addobj_follow(Uint32 objprop[0x400*2],
 
       // word 1
       Uint16 item_id =     ua_get_bits(word1, 0, 9);
-      //Uint16 flags =       ua_get_bits(word1, 9, 6);
+      Uint16 flags =       ua_get_bits(word1, 9, 4);
       Uint16 enchanted =   ua_get_bits(word1, 12, 1);
       Uint16 is_quantity = ua_get_bits(word1, 15, 1);
 
-      Uint16 zpos = ua_get_bits(word1, 16, 7);
-      Uint16 dir  = ua_get_bits(word1, 23, 3);
-      Uint16 ypos = ua_get_bits(word1, 26, 3);
-      Uint16 xpos = ua_get_bits(word1, 29, 3);
+      Uint16 zpos =    ua_get_bits(word1, 16, 7);
+      Uint16 heading = ua_get_bits(word1, 23, 3);
+      Uint16 ypos =    ua_get_bits(word1, 26, 3);
+      Uint16 xpos =    ua_get_bits(word1, 29, 3);
 
       // word 2
       Uint16 quality =  ua_get_bits(word2, 0, 6);
@@ -116,38 +116,45 @@ void ua_object_list::addobj_follow(Uint32 objprop[0x400*2],
          info.quality = quality;
          info.owner = owner;
          info.quantity = quantity;
+         info.flags = flags;
 
          info.enchanted = enchanted == 1;
-         info.is_link = is_quantity == 0;
+         info.is_hidden = false;
+         info.is_quantity = is_quantity == 1;
       }
 
       // extended object info
       {
          ua_object_info_ext& extinfo = obj.get_ext_object_info();
 
-         extinfo.xpos = (xpos+0.5)/8.0;
-         extinfo.ypos = (ypos+0.5)/8.0;
-         extinfo.zpos = zpos/4.0;
-         extinfo.dir = dir;
+         extinfo.xpos = xpos;
+         extinfo.ypos = ypos;
+         extinfo.zpos = zpos;
+         extinfo.heading = heading;
 
          // npc infos
          if (objpos<0x0100)
          {
-            Uint8* data = &npcinfo[objpos*19];
+            Uint8* data = &npcinfo[objpos*19-8];
 
             extinfo.npc_used = true;
 
-            extinfo.npc_whoami = data[18];
-            extinfo.npc_attitude = data[6]>>6;
-            extinfo.npc_hp = data[0];
+            extinfo.npc_hp = data[0x0008];
 
-            // npc_xhome, npc_yhome
-            Uint16 xyhome = data[14]|(data[15]<<8);
-            extinfo.npc_xhome = (xyhome >> 10) & 0x3f;
-            extinfo.npc_yhome = (xyhome >> 4) & 0x3f;
-            extinfo.extra1 = xyhome & 0x0f;
+            Uint16 value_b = data[0x000b] | (data[0x000c]<<8);
+            extinfo.npc_goal = ua_get_bits(value_b,0,3);
+            extinfo.npc_gtarg = ua_get_bits(value_b,4,8);
 
-            // TODO: store more data from NPC
+            Uint16 value_d = data[0x000d] | (data[0x000e]<<8);
+            extinfo.npc_level = ua_get_bits(value_d,0,3);
+            extinfo.npc_talkedto = ua_get_bits(value_d,13,1)==1;
+            extinfo.npc_attitude = ua_get_bits(value_d,14,2);
+
+            Uint16 value_16 = data[0x0016] | (data[0x0017]<<8);
+            extinfo.npc_xhome = ua_get_bits(value_16,10,6);
+            extinfo.npc_yhome = ua_get_bits(value_16,4,6);
+
+            extinfo.npc_whoami = data[0x001a];
          }
       }
 

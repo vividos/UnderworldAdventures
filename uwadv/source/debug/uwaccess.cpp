@@ -211,27 +211,27 @@ unsigned int ua_uw_access_api::command_func(
             break;
 
          case 5: // x
-            param1->set(extobjinfo.xpos);
+            param1->set_int(extobjinfo.xpos);
             break;
 
          case 6: // y
-            param1->set(extobjinfo.ypos);
+            param1->set_int(extobjinfo.ypos);
             break;
 
          case 7: // z
-            param1->set(extobjinfo.zpos);
+            param1->set_int(extobjinfo.zpos);
             break;
 
          case 8: // angle
-            param1->set_int(extobjinfo.dir);
+            param1->set_int(extobjinfo.heading);
             break;
 
          case 9: // enchanted
             param1->set_int(objinfo.enchanted?1:0);
             break;
 
-         case 10: // is_link
-            param1->set_int(objinfo.is_link);
+         case 10: // is_quantity
+            param1->set_int(objinfo.is_quantity);
             break;
          }
       }

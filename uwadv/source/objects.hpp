@@ -64,14 +64,17 @@ struct ua_object_info
    //! object chain link
    Uint16 link;
 
-   //! item quality
+   //! quality
    Uint16 quality;
 
-   //! object owner
+   //! owner / special field
    Uint16 owner;
 
-   //! item quantity / special
+   //! quantity / special / special link
    Uint16 quantity;
+
+   //! object flags
+   Uint8 flags;
 
 
    // flags
@@ -79,8 +82,11 @@ struct ua_object_info
    //! true when object is enchanted
    bool enchanted;
 
-   //! true when "quantity" is a special link
-   bool is_link;
+   //! indicates if object is hidden or visible
+   bool is_hidden;
+
+   //! true when "quantity" field is a quantity/special property
+   bool is_quantity;
 };
 
 
@@ -99,29 +105,40 @@ struct ua_object_info_ext
 
    // position info
 
-   //! fractional x and y positions in tile
-   double xpos, ypos;
+   //! fractional x and y positions in tile (0..7)
+   Uint8 xpos, ypos;
 
-   //! z position
-   double zpos;
+   //! z position (0..127)
+   Uint8 zpos;
 
    //! direction (0..7)
-   Uint16 dir;
+   Uint8 heading;
 
    // npc infos
 
    //! indicates if npc infos are used
    bool npc_used;
 
-   Uint8 npc_whoami;
-   Uint8 npc_attitude;
+   // npc infos
+
+   //! hit points
    Uint8 npc_hp;
+
+   Uint8 npc_goal;
+   Uint8 npc_gtarg;
+   Uint8 npc_level;
+   bool  npc_talkedto;
+   Uint8 npc_attitude;
 
    Uint8 npc_xhome;
    Uint8 npc_yhome;
-   Uint8 extra1;
 
-   // add more flags here
+   Uint8 npc_hunger;
+   Uint8 npc_whoami;
+
+   // extra (unknown) values
+   //Uint8 extra1,extra2,extra5,extra7,extra8,extra9,extra10;
+   //Uint8 extra11,extra12,extra13,extra14,extra15,extra16,extra17;
 };
 
 
