@@ -582,10 +582,14 @@ void ua_uwadv_game::init_game()
 
       cfgloader.load(gamecfg);
    }
-
+*/
    ua_trace("using generic uw-path: %s\n",
       settings.get_string(ua_setting_uw_path).c_str());
 
+   // init renderer
+   renderer.init(settings);
+
+/*
    // init underworld
    underworld.init(settings,filesmgr);
 
