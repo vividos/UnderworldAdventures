@@ -88,13 +88,21 @@ public:
    ua_vector2d& operator *=(double sc){ x*=sc; y*=sc; return *this; }
 
    //! returns length of vector
-   double length(){ return sqrt(x*x+y*y); }
+   double length() const { return sqrt(x*x+y*y); }
 
    //! normalizes vector
    void normalize(){ (*this)*=(1.0/length()); }
 
    //! calculates the inner (dot) product
-   double dot(const ua_vector2d &vec){ return x*vec.x + y*vec.y; }
+   double dot(const ua_vector2d &vec) const { return x*vec.x + y*vec.y; }
+
+   //! rotates vector; angle in degree
+   void rotate(double angle)
+   {
+      double temp = x*cos(ua_deg2rad(angle))-y*sin(ua_deg2rad(angle));
+      y = x*sin(ua_deg2rad(angle))+y*cos(ua_deg2rad(angle));
+      x=temp;
+   }
 };
 
 
