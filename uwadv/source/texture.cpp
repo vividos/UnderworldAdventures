@@ -53,8 +53,8 @@ void ua_texture::init(ua_texture_manager *thetexmgr,unsigned int numtex,
    {
       glBindTexture(GL_TEXTURE_2D,texname[i]);
 
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap_s);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap_t);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, min_filt);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, max_filt);
 
@@ -232,10 +232,10 @@ void ua_texture_manager::object_tex(Uint16 id,double &u1,double &v1,double &u2,d
    double delta = 1.0/256;
 
    u1 = ((id&0x0f)<<4)*delta;
-   v1 = (id&0xf0)*delta+0.3*delta;
+   v1 = (id&0xf0)*delta;
 
-   u2 = (((id&0x0f)+1)<<4)*delta-delta*0.4;
-   v2 = ((id&0xf0)+15)*delta+0.8*delta;
+   u2 = (((id&0x0f)<<4)+16)*delta;
+   v2 = ((id&0xf0)+16)*delta;
 }
 
 bool ua_texture_manager::using_new_texname(GLuint new_texname)
