@@ -153,11 +153,6 @@ SOURCE=..\source\..\uadata\uw1\scripts\uwinterface.lua
 
 SOURCE=..\source\..\docs\README.Lua.txt
 # End Source File
-# Begin Source File
-
-SOURCE=..\source\..\uadata\uw1\scripts\uwinit.txt
-# PROP Exclude_From_Build 1
-# End Source File
 # End Group
 # Begin Group "win32 specific files"
 
@@ -797,6 +792,10 @@ SOURCE=..\source\font.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\source\gamecfg.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\source\imgquad.cpp
 # End Source File
 # Begin Source File
@@ -870,6 +869,10 @@ SOURCE=..\source\files.hpp
 # Begin Source File
 
 SOURCE=..\source\font.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\gamecfg.hpp
 # End Source File
 # Begin Source File
 
