@@ -17,7 +17,7 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	physicsobject.hpp imgquad.hpp models.hpp \
 	files.hpp keymap.hpp uwscript.hpp uamath.hpp settings.hpp \
 	savegame.hpp mousecursor.hpp renderer.hpp textscroll.hpp \
-	debug.hpp cfgfile.hpp critter.hpp gamecfg.hpp \
+	debug.hpp cfgfile.hpp critter.hpp gamecfg.hpp properties.hpp \
 	linux/main.cpp linux/debug.cpp \
 	audio/audio.cpp audio/midi.cpp audio/xmidi.cpp \
 	audio/resamp.c audio/resamp.h \
@@ -35,6 +35,7 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	resource/cutsloader.cpp resource/savegame.cpp \
 	resource/critloader.cpp resource/modeldecode.cpp \
 	resource/tgaimport.cpp resource/playerimport.cpp \
+	resource/proploader.cpp \
 	resource/fread_endian.hpp \
 	resource/model/FlexLexer.h \
 	resource/model/importwrl.cpp \

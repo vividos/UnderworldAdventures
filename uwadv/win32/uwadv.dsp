@@ -754,6 +754,10 @@ SOURCE=..\source\player.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\source\properties.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\source\underworld.hpp
 # End Source File
 # Begin Source File
@@ -1013,6 +1017,10 @@ SOURCE=..\source\resource\objloader.cpp
 # Begin Source File
 
 SOURCE=..\source\resource\playerimport.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\resource\proploader.cpp
 # End Source File
 # Begin Source File
 
