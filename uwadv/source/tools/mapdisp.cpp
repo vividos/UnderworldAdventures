@@ -368,9 +368,16 @@ int main(int argc, char* argv[])
 }
 
 
-// fake function to prevent linking with all the ua_underworld stuff
+// fake functions to prevent linking with all the uwadv stuff
 
 ua_level& ua_underworld::get_current_level()
 {
    return levels[curlevel];
+}
+
+#include "files.hpp"
+
+SDL_RWops* ua_files_manager::get_uadata_file(const char *filename)
+{
+   return SDL_RWFromFile(filename,"rb");
 }
