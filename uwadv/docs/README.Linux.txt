@@ -11,11 +11,12 @@ To compile and install Underworld Adventures, you need several things. These
 are:
 
  * GCC 2.95.2 or higher
- * a working X window system
  * SDL 1.2.3 (or higher), available at http://www.libsdl.org/
+ * SDL_mixer 1.2.4 (or higher), available at http://www.libsdl.org/projects/SDL_mixer/
  * Mesa (or any other working OpenGL implementation) http://www.mesa3d.org
 
-Additionally, you can install FMOD to hear MIDI music.
+To hear Midi music using SDL_mixer, you additionally need the sound patches
+available on the SDL_mixer home page.
 
 Compiling
 ---------
@@ -27,11 +28,15 @@ and run
    ./configure
 
 The configure script should detect all needed things to compile Underworld
-Adventures, such as the C++ compiler, paths to X includes/libs, SDL, Mesa and
-(if installed) FMOD. Note that FMOD isn't absolutely needed and can be
-omitted.
+Adventures, such as the C++ compiler, paths to SDL, SDL_mixer and the OpenGL
+include file. There are several options that can be passed to the configure
+script:
 
-When the script ran through without errors, type:
+  --with-uw1=DIR          directory where UW1 is installed
+  --disable-tools         don't build the tools
+  --enable-debug          enable debugging (disables optimizations)
+
+When the configure script is finished, type:
 
    make
 
@@ -41,8 +46,8 @@ finished, the executable "uwadv" is built. Now type (as root now):
    make install
 
 The built files are now installed into their proper folders.
-(The binary is installed into /usr/local/bin by default, the data files
-into /usr/local/share/games/uwadv)
+(The binary is installed into /usr/local/bin/ by default, the data files
+into /usr/local/share/games/uwadv/)
 
 To run Underworld Adventures under Linux, make sure that all Ultima
 Underworld files and folders have lowercase names, or else the files cannot
@@ -63,22 +68,6 @@ Uninstalling:
       make uninstall
 
 
-Installing FMOD:
-
-   FMOD comes with some header files and a shared library. There's no install
-   script, so it's a bit harder to install.
-
-   To install the two header files ("fmod.h" and "fmod_errors.h"), you have to
-   be root. Just copy them to "/usr/local/include/" or "/usr/include/". Be
-   sure that the two include files have linux line endings. When not, convert
-   them using "recode ibmpc..lat1 <file>".
-
-   To install the shared library, you have to copy the file ("libfmod-3.5.so"
-   in the latest release at this time) to "/usr/lib/" (or again
-   "/usr/local/lib/") and run ldconfig in that directory, to let the linker
-   know that a new library is available.
-
-
 Building from CVS:
 
    To build from CVS you will need several other tools, including:
@@ -91,4 +80,4 @@ Building from CVS:
 
     ./autogen.sh
 
-   Continue by following the 'Compiling' instructions
+   Continue by following the 'Compiling' instructions.
