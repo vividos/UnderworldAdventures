@@ -326,7 +326,7 @@ void ua_conv_code_vm::step()
          if (imported_funcs.find(arg1) == imported_funcs.end())
             throw ua_ex_imported_na;
 
-         imported_func(imported_funcs[arg1].name);
+         imported_func(imported_funcs[arg1].name.c_str());
       }
       break;
 

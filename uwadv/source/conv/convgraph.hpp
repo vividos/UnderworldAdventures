@@ -91,7 +91,7 @@ struct ua_conv_func_info
       :rettype(ua_rt_void), numparam(0), start(0){}
 
    //! return type
-   ua_conv_ret_type rettype;
+   ua_conv_datatype rettype;
 
    //! number of parameter
    unsigned int numparam;

@@ -31,6 +31,7 @@
 
 // needed includes
 #include <vector>
+#include "savegame.hpp"
 
 
 // classes

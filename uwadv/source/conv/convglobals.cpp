@@ -28,7 +28,6 @@
 // needed includes
 #include "common.hpp"
 #include "convglobals.hpp"
-#include "savegame.hpp"
 #include <sstream>
 
 
