@@ -179,6 +179,7 @@ Makefile
 source/Makefile
 source/debug/Makefile
 source/tools/Makefile
+source/tools/uwdump/Makefile
 source/resource/Makefile
 source/resource/zziplib/Makefile
 source/lua/Makefile

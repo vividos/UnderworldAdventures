@@ -5,3 +5,4 @@ mapdisp
 cnvdbg
 cnvdasm
 Makefile.in
+libuatools.la

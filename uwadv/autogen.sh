@@ -48,6 +48,7 @@ rm -f uwadv.spec source/uwadv.cfg
 rm -f Makefile.in Makefile
 rm -f source/Makefile.in source/Makefile 
 rm -f source/tools/Makefile.in source/tools/Makefile
+rm -f source/tools/uwdump/Makefile.in source/tools/uwdump/Makefile
 rm -f source/resource/Makefile.in source/resource/Makefile
 rm -f source/lua/Makefile.in source/lua/Makefile
 rm -f uadata/Makefile.in uadata/Makefile

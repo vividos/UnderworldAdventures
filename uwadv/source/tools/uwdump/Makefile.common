@@ -1,0 +1,10 @@
+#
+# Makefile.common for tools/uwdump
+#
+# $Id$
+#
+
+
+uwdump_SOURCES = \
+	uwdump.hpp uwdump.cpp \
+	levark.hpp levark.cpp
