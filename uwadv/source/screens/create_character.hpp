@@ -112,6 +112,9 @@ protected:
    //! indicates if the mouse button is down
    bool buttondown;
 
+   //! input text
+   char* inputtext;
+
    //! image
    ua_image img;
 

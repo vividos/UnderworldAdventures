@@ -115,11 +115,13 @@ void ua_create_character_screen::init()
    stage=0;
    tickcount=0;
    buttondown=false;
-   strblock=0x0002;
+   strblock=2;
    btng_caption=0;
    btng_buttontype=0;
    btng_buttoncount = 0;
    btng_buttons = new unsigned int[ua_maxbuttons];
+   inputtext = new char[32];
+   memcpy(inputtext, "Avatar", 7);
 
    // init lua scripting
    initluascript();
@@ -234,6 +236,7 @@ void ua_create_character_screen::do_action()
 
 void ua_create_character_screen::done()
 {
+   delete[] inputtext;
    delete[] btng_buttons;
 
    tex.done();
@@ -359,7 +362,7 @@ void ua_create_character_screen::drawnumber(unsigned int num, int x, int y, unsi
 
 void ua_create_character_screen::drawtext(int strnum, int x, int y, int xalign, unsigned char color)
 {
-   const char* ptext = core->get_strings().get_string(2, strnum).c_str();
+   const char* ptext = core->get_strings().get_string(strblock, strnum).c_str();
    if (ptext)
       drawtext(ptext, x, y, xalign, color);
 }
@@ -486,7 +489,7 @@ void ua_create_character_screen::tick()
 {
    // when fading in or out, check if blend time is over
    if ((stage==0 || stage==2) &&
-      ++tickcount >= (core->get_tickrate()*ua_fade_time))
+     (!ended || (++tickcount >= (core->get_tickrate()*ua_fade_time))))
    {
       // do next stage
       stage++;
@@ -516,7 +519,13 @@ void ua_create_character_screen::press_button(int button)
    // call "cchar_buttonclick(button)"
    lua_getglobal(L,"cchar_buttonclick");
    lua_pushnumber(L,static_cast<int>(button));
-   int ret = lua_call(L,1,0);
+   int ret;
+   if (btng_buttontype==btInput)
+   {
+      lua_pushstring(L,inputtext);
+      ret = lua_call(L,2,0);
+   } else
+      ret = lua_call(L,1,0);
    if (ret!=0)
    {
       ua_trace("Lua function call cchar_buttonclick(0x%08x,%u) ended with error code %u\n",

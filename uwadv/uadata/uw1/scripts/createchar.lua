@@ -33,8 +33,8 @@
 
 -- constants
 
--- string block base for labels/buttons
-cchar_strbase = 2*256
+-- string block for labels/buttons
+cchar_strblock = 2
 
 -- actions
 actEnd = 0            -- ends the character creation screen (no params)
@@ -48,7 +48,7 @@ actUpdate = 7         -- updates the screen after a change (no params)
 actClear = 8          -- clears all screen elements (not the background)
 
 -- labels/button values, these must match entries in string table 
--- starting at offset cchar_strbase.
+-- starting at block cchar_strblock.
 ccvNone = 0
 ccvSex = 1
 ccvHandedness = 2
@@ -116,7 +116,7 @@ alRight = 2
 -- button groups
 
 ccharui = {
-   strblock = cchar_strbase + 0,
+   strblock = cchar_strblock,
 
    btngroups = -- table with all buttons groups (a.k.a. "screens")
    {
@@ -193,6 +193,7 @@ function cchar_init(this)
    psex = 0
    pclass = 0
    pimg = 0
+   pname = "None"
    cchar_do_action(self, actSetStringBlock, ccharui.strblock)
 
    -- show the first button group
@@ -203,7 +204,7 @@ end
 
 
 -- processes action on a button click in the current group
-function cchar_buttonclick(button)
+function cchar_buttonclick(button, text)
 
    -- simple case, button groups in sequential order
    if curgroup<=2 or curgroup>=18 then
@@ -223,6 +224,9 @@ function cchar_buttonclick(button)
          pimg = button + 5
 
       elseif curgroup==20 then
+
+      elseif curgroup==21 then
+         pname = text
 
       elseif curgroup==22 then
          if button==0 then
@@ -275,8 +279,9 @@ function cchar_buttonclick(button)
       if curgroup>19 then
          cchar_do_action(self, actSetImg, 17+pimg, 44, 81)
       end
-
-      cchar_do_action(self, actSetName, "Avatar", 80, 11, alCenter)
+      if curgroup>21 then
+         cchar_do_action(self, actSetName, "Avatar", 80, 10, alCenter)
+      end
       cchar_do_action(self, actSetBtnGroup, ccharui.btngroups[curgroup].heading, ccharui.btngroups[curgroup].btntype, ccharui.btngroups[curgroup].btns)
       cchar_do_action(self, actUpdate)
    else
