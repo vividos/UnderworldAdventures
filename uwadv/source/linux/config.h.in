@@ -1,6 +1,6 @@
 /* config.h.in.  Generated from configure.in by autoheader.  */
 
-/* HAVE_FMOD_H */
+/* defined when FMOD library is present */
 #undef HAVE_FMOD_H
 
 /* Define to 1 if you have the <inttypes.h> header file. */

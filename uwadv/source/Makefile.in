@@ -74,11 +74,13 @@ top_srcdir = linux
 top_builddir = linux
 AMTAR = @AMTAR@
 AWK = @AWK@
-CC = @CC@
 CXX = @CXX@
 DEPDIR = @DEPDIR@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 PACKAGE = @PACKAGE@
+SDL_CFLAGS = @SDL_CFLAGS@
+SDL_CONFIG = @SDL_CONFIG@
+SDL_LIBS = @SDL_LIBS@
 STRIP = @STRIP@
 VERSION = @VERSION@
 X_CFLAGS = @X_CFLAGS@
@@ -91,22 +93,20 @@ install_sh = @install_sh@
 
 AUTOMAKE_OPTIONS = foreign
 
-# SDL stuff
-SDL_CFLAGS = `sdl-config --cflags`
-SDL_LIBS = `sdl-config --libs`
-
+# compiler options
 CPPFLAGS = -I.. $(SDL_CFLAGS)
-LDFLAGS = $(SDL_LIBS) -lGL -lGLU $(X_LIBS)
+LDFLAGS = $(SDL_LIBS)
 
 # automake build rules
 bin_PROGRAMS = uwadv
 
 uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	player.cpp quadtree.cpp texture.cpp underworld.cpp uwadv.cpp \
+	objects.cpp \
 	audio.hpp common.hpp core.hpp font.hpp gamestrings.hpp \
 	image.hpp inventory.hpp level.hpp player.hpp quadtree.hpp \
 	screen.hpp settings.hpp texture.hpp uatypes.hpp \
-	underworld.hpp uwadv.hpp \
+	underworld.hpp uwadv.hpp objects.hpp \
 	linux/main.cpp \
 	audio/audio.cpp audio/midi.cpp audio/xmidi.cpp \
 	audio/midi.hpp audio/xmidi.hpp \
@@ -115,7 +115,7 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	resource/codeloader.cpp resource/fontloader.cpp \
 	resource/gamestrings.cpp resource/imageloader.cpp \
 	resource/maploader.cpp resource/settings.cpp \
-	resource/texloader.cpp \
+	resource/texloader.cpp resource/objloader.cpp \
 	resource/fread_endian.hpp \
 	screens/ingame_orig.cpp screens/start_splash.cpp \
 	screens/ingame_orig.hpp screens/start_splash.hpp
@@ -137,11 +137,11 @@ PROGRAMS = $(bin_PROGRAMS)
 am_uwadv_OBJECTS = font.$(OBJEXT) image.$(OBJEXT) inventory.$(OBJEXT) \
 	level.$(OBJEXT) player.$(OBJEXT) quadtree.$(OBJEXT) \
 	texture.$(OBJEXT) underworld.$(OBJEXT) uwadv.$(OBJEXT) \
-	main.$(OBJEXT) audio.$(OBJEXT) midi.$(OBJEXT) xmidi.$(OBJEXT) \
-	uni_fmod.$(OBJEXT) codevm.$(OBJEXT) codeloader.$(OBJEXT) \
-	fontloader.$(OBJEXT) gamestrings.$(OBJEXT) \
+	objects.$(OBJEXT) main.$(OBJEXT) audio.$(OBJEXT) midi.$(OBJEXT) \
+	xmidi.$(OBJEXT) uni_fmod.$(OBJEXT) codevm.$(OBJEXT) \
+	codeloader.$(OBJEXT) fontloader.$(OBJEXT) gamestrings.$(OBJEXT) \
 	imageloader.$(OBJEXT) maploader.$(OBJEXT) settings.$(OBJEXT) \
-	texloader.$(OBJEXT) ingame_orig.$(OBJEXT) \
+	texloader.$(OBJEXT) objloader.$(OBJEXT) ingame_orig.$(OBJEXT) \
 	start_splash.$(OBJEXT)
 uwadv_OBJECTS = $(am_uwadv_OBJECTS)
 uwadv_LDADD = $(LDADD)
@@ -161,6 +161,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/ingame_orig.Po ./$(DEPDIR)/inventory.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/level.Po ./$(DEPDIR)/main.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/maploader.Po ./$(DEPDIR)/midi.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/objects.Po ./$(DEPDIR)/objloader.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/player.Po ./$(DEPDIR)/quadtree.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/settings.Po ./$(DEPDIR)/start_splash.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/texloader.Po ./$(DEPDIR)/texture.Po \
@@ -235,6 +236,7 @@ imageloader.$(OBJEXT): resource/imageloader.cpp
 maploader.$(OBJEXT): resource/maploader.cpp
 settings.$(OBJEXT): resource/settings.cpp
 texloader.$(OBJEXT): resource/texloader.cpp
+objloader.$(OBJEXT): resource/objloader.cpp
 ingame_orig.$(OBJEXT): screens/ingame_orig.cpp
 start_splash.$(OBJEXT): screens/start_splash.cpp
 uwadv$(EXEEXT): $(uwadv_OBJECTS) $(uwadv_DEPENDENCIES) 
@@ -261,6 +263,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/maploader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/midi.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/objects.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/objloader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/player.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/quadtree.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/settings.Po@am__quote@
@@ -442,6 +446,18 @@ texloader.obj: resource/texloader.cpp
 @AMDEP_TRUE@	depfile='$(DEPDIR)/texloader.Po' tmpdepfile='$(DEPDIR)/texloader.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o texloader.obj `cygpath -w resource/texloader.cpp`
+
+objloader.o: resource/objloader.cpp
+@AMDEP_TRUE@	source='resource/objloader.cpp' object='objloader.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/objloader.Po' tmpdepfile='$(DEPDIR)/objloader.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o objloader.o `test -f 'resource/objloader.cpp' || echo '$(srcdir)/'`resource/objloader.cpp
+
+objloader.obj: resource/objloader.cpp
+@AMDEP_TRUE@	source='resource/objloader.cpp' object='objloader.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/objloader.Po' tmpdepfile='$(DEPDIR)/objloader.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o objloader.obj `cygpath -w resource/objloader.cpp`
 
 ingame_orig.o: screens/ingame_orig.cpp
 @AMDEP_TRUE@	source='screens/ingame_orig.cpp' object='ingame_orig.o' libtool=no @AMDEPBACKSLASH@

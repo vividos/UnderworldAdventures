@@ -6,6 +6,7 @@ dnl
 
 
 dnl initial stuff
+AC_PREREQ(2.53)
 AC_INIT(../uwadv.cpp)
 
 AC_CANONICAL_HOST
@@ -16,8 +17,12 @@ AM_CONFIG_HEADER(config.h)
 AC_PREFIX_DEFAULT(/usr/local)
 
 
+dnl initial variable values
+CFLAGS="$CFLAGS -O2"
+CXXFLAGS="$CXXFLAGS -O2"
+
+
 dnl find and test the compiler
-AC_PROG_CC
 AC_LANG_C
 AC_C_INLINE
 AC_C_CONST
@@ -34,19 +39,28 @@ AC_PROG_INSTALL
 
 dnl X config
 AC_PATH_X
+AC_PATH_XTRA
+CFLAGS="$CFLAGS $X_CFLAGS"
+LIBS="$LIBS $X_LIBS"
 
 
-dnl check header
+dnl check standard C header
 AC_HEADER_STDC
 
 
+dnl checking for --enable-debug
+AC_MSG_CHECKING(for debug options)
+
+AC_ARG_ENABLE(debug,
+  [  --enable-debug          enable debugging (disables optimizations)],
+  [ CXXFLAGS="-O -g -wall $CXXFLAGS"
+    AC_MSG_RESULT(yes)
+  ], AC_MSG_RESULT(no))
+
+
 dnl checking for SDL
-
-AC_CHECK_HEADER(SDL/SDL.h,,AC_MSG_ERROR([
-Underworld Adventures needs SDL 1.2.3 or higher installed.]))
-
-AC_CHECK_HEADER(SDL/SDL_opengl.h,,AC_MSG_ERROR([
-File SDL_opengl.h is missing. Please install at least SDL 1.2.3 (or newer).]))
+AM_PATH_SDL(1.2.3,,AC_MSG_ERROR([
+Underworld Adventures needs at least SDL 1.2.3 or higher installed.]))
 
 
 dnl checking for working OpenGL
@@ -54,24 +68,29 @@ dnl checking for working OpenGL
 AC_CHECK_HEADER(GL/gl.h,,AC_MSG_ERROR([
 OpenGL header not found. An OpenGL graphics library is required
 to compile and run Underworld Adventures.
-Check http://mesa3d.sourceforge.net]))
+Check http://mesa3d.sourceforge.net/ for a good one.]))
 
 AC_MSG_CHECKING(for working OpenGL)
 AC_TRY_COMPILE([
   #include <GL/gl.h>
   #include <GL/glu.h>
-],,AC_MSG_RESULT(yes),AC_MSG_ERROR([
-OpenGL support does not work. Please reinstall your OpenGL driver.
+],,[
+  LIBS="$LIBS -lGL -lGLU"
+  AC_MSG_RESULT(yes)],AC_MSG_ERROR([
+OpenGL support does not work. Please reinstall your OpenGL library and include files.
 ]))
 
 
 dnl checking for FMOD
 
-AC_CHECK_HEADER(fmod.h,AC_DEFINE(HAVE_FMOD_H,1,HAVE_FMOD_H),AC_MSG_WARN([
+AC_CHECK_HEADER(fmod.h,
+  AC_DEFINE(HAVE_FMOD_H,,[defined when FMOD library is present]),
+  AC_MSG_WARN([
 FMOD not found. No midi playback available.
-FMOD is available at http://www.fmod.org]))
+FMOD is available at http://www.fmod.org/]))
 
 
 dnl produce output files
-AC_OUTPUT(../Makefile ../tools/Makefile)
+AC_CONFIG_FILES([../Makefile ../tools/Makefile])
+AC_OUTPUT
 

@@ -10,12 +10,9 @@ AUTOMAKE_OPTIONS = foreign
 top_srcdir = linux
 top_builddir = linux
 
-# SDL stuff
-SDL_CFLAGS = `sdl-config --cflags`
-SDL_LIBS = `sdl-config --libs`
-
+# compiler options
 CPPFLAGS = -I.. $(SDL_CFLAGS)
-LDFLAGS = $(SDL_LIBS) -lGL -lGLU $(X_LIBS)
+LDFLAGS = $(SDL_LIBS)
 
 # automake build rules
 bin_PROGRAMS = uwadv
