@@ -116,6 +116,18 @@ void ua_underworld_script_bindings::checked_lua_call(int params, int retvals)
       ua_trace("Lua function call error code: %u\n",ret);
 }
 
+double ua_underworld_script_bindings::get_lua_constant(const char *name)
+{
+   lua_getglobal(L,name);
+
+   double val = 0.0;
+   if (lua_isnumber(L,-1)) val = lua_tonumber(L,-1);
+
+   lua_pop(L,1);
+
+   return val;
+}
+
 void ua_underworld_script_bindings::done()
 {
    lua_close(L);
@@ -141,6 +153,13 @@ ua_inv_item_category ua_underworld_script_bindings::lua_inventory_categorize_ite
 
    lua_pop(L,1);
    return cat;
+}
+
+ua_obj_combine_result ua_underworld_script_bindings::lua_obj_combine(
+   Uint16 item_id1, Uint16 item_id2, Uint16 &result_id)
+{
+   result_id = 0x012b;
+   return ua_obj_cmb_failed;
 }
 
 
