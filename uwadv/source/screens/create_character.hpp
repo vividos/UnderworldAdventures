@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Dirk Manders
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -29,8 +29,8 @@
 */
 
 // include guard
-#ifndef __uwadv_create_character_hpp_
-#define __uwadv_create_character_hpp_
+#ifndef uwadv_create_character_hpp_
+#define uwadv_create_character_hpp_
 
 // needed includes
 #include "screen.hpp"
@@ -51,9 +51,9 @@ public:
    virtual ~ua_create_character_screen(){}
 
    // virtual functions from ua_ui_screen_base
-   virtual void init();
+   virtual void init(ua_game_core_interface* core);
    virtual void done();
-   virtual void handle_event(SDL_Event &event);
+   virtual bool handle_event(SDL_Event &event);
    virtual void render();
    virtual void tick();
 
@@ -139,9 +139,6 @@ protected:
 
    //! background image palette
    ua_onepalette palette;
-
-   //! mouse cursor
-   ua_mousecursor mousecursor;
 
    //! number of selected button, or -1 if none
    int selected_button;

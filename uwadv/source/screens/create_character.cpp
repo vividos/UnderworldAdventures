@@ -85,8 +85,10 @@ ua_create_character_screen *current_screen = 0;
 
 // ua_create_character_screen methods
 
-void ua_create_character_screen::init()
+void ua_create_character_screen::init(ua_game_core_interface* thecore)
 {
+   ua_ui_screen_base::init(thecore);
+
    ua_trace("character creation screen started\n");
 
    // get a pointer to to current player
@@ -216,14 +218,14 @@ void ua_create_character_screen::done()
    current_screen = 0;
 }
 
-void ua_create_character_screen::handle_event(SDL_Event &event)
+bool ua_create_character_screen::handle_event(SDL_Event &event)
 {
    switch(event.type)
    {
    case SDL_KEYDOWN:
       // don't handle any keystroke if Alt or Ctrl is down
       if (((event.key.keysym.mod & KMOD_ALT)>0) || ((event.key.keysym.mod & KMOD_CTRL)>0))
-         return;
+         return true;
 
       // handle key presses
       if ((btng_buttontype==btInput) && 
@@ -326,6 +328,7 @@ void ua_create_character_screen::handle_event(SDL_Event &event)
 
    default: break;
    }
+   return true;
 }
 
 void ua_create_character_screen::handleinputchar(char c)

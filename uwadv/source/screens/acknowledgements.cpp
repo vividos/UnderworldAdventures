@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -45,8 +45,10 @@ const double ua_acknowledgements_screen::xfade_time = 0.5;
 
 // ua_acknowledgements_screen methods
 
-void ua_acknowledgements_screen::init()
+void ua_acknowledgements_screen::init(ua_game_core_interface* thecore)
 {
+   ua_ui_screen_base::init(thecore);
+
    ua_trace("acknowledgements screen started\n");
 
    // init OpenGL stuff
@@ -96,7 +98,7 @@ void ua_acknowledgements_screen::done()
    img[1].done();
 }
 
-void ua_acknowledgements_screen::handle_event(SDL_Event &event)
+bool ua_acknowledgements_screen::handle_event(SDL_Event &event)
 {
    switch(event.type)
    {
@@ -121,6 +123,8 @@ void ua_acknowledgements_screen::handle_event(SDL_Event &event)
       }
    default: break;
    }
+
+   return true;
 }
 
 void ua_acknowledgements_screen::render()

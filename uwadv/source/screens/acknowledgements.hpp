@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,8 +26,8 @@
 */
 
 // include guard
-#ifndef __uwadv_acknowledgements_hpp_
-#define __uwadv_acknowledgements_hpp_
+#ifndef uwadv_acknowledgements_hpp_
+#define uwadv_acknowledgements_hpp_
 
 // needed includes
 #include "screen.hpp"
@@ -45,9 +45,9 @@ public:
    ua_acknowledgements_screen(){}
 
    // virtual functions from ua_ui_screen_base
-   virtual void init();
+   virtual void init(ua_game_core_interface* core);
    virtual void done();
-   virtual void handle_event(SDL_Event &event);
+   virtual bool handle_event(SDL_Event &event);
    virtual void render();
    virtual void tick();
 

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -31,23 +31,25 @@
 
 
 // ua_map_view_screen methods
-
-void ua_map_view_screen::init()
+/*
+void ua_map_view_screen::init(ua_game_core_interface* thecore)
 {
+   ua_ui_screen_base::init(thecore);
 }
 
 void ua_map_view_screen::done()
 {
 }
 
-void ua_map_view_screen::handle_event(SDL_Event &event)
+bool ua_map_view_screen::handle_event(SDL_Event &event)
 {
+   return false;
 }
 
 void ua_map_view_screen::render()
 {
 }
-
+*/
 void ua_map_view_screen::tick()
 {
    core->pop_screen();

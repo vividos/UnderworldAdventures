@@ -35,7 +35,6 @@
 #include "imgquad.hpp"
 #include "font.hpp"
 #include "textscroll.hpp"
-#include "mousecursor.hpp"
 
 
 // classes
@@ -46,15 +45,14 @@ class ua_save_game_screen: public ua_ui_screen_base
 public:
    //! ctor
    ua_save_game_screen(bool from_menu);
-
    //! dtor
    virtual ~ua_save_game_screen(){}
 
    // virtual functions from ua_ui_screen_base
 
-   virtual void init();
+   virtual void init(ua_game_core_interface* core);
    virtual void done();
-   virtual void handle_event(SDL_Event &event);
+   virtual bool handle_event(SDL_Event& event);
    virtual void render();
    virtual void tick();
 
@@ -116,9 +114,6 @@ protected:
 
    //! highlighted button (or -1 when none)
    int button_highlight;
-
-   //! mouse cursor
-   ua_mousecursor mousecursor;
 
    //! indicates if mouse button is pressed
    bool button_pressed;

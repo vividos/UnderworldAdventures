@@ -23,6 +23,11 @@
 
    \brief save game screen implementation
 
+   TODO: use ua_screen_ctrl_base::get_area() to check for buttons and
+   list of savegames, etc.
+
+   TODO: add scroll buttons
+
 */
 
 // needed includes
@@ -58,8 +63,10 @@ ua_save_game_screen::ua_save_game_screen(bool myfrom_menu)
 {
 }
 
-void ua_save_game_screen::init()
+void ua_save_game_screen::init(ua_game_core_interface* thecore)
 {
+   ua_ui_screen_base::init(thecore);
+
    ua_trace("save game screen started\n");
 
    // setup orthogonal projection
@@ -169,7 +176,7 @@ void ua_save_game_screen::done()
    ua_trace("leaving save game screen\n\n");
 }
 
-void ua_save_game_screen::handle_event(SDL_Event &event)
+bool ua_save_game_screen::handle_event(SDL_Event& event)
 {
    if (edit_desc && desc_scroll.handle_event(event))
    {
@@ -210,7 +217,7 @@ void ua_save_game_screen::handle_event(SDL_Event &event)
          selected_savegame = -1;
          update_list();
       }
-      return;
+      return true;
    }
 
    // calculate cursor position
@@ -300,6 +307,8 @@ void ua_save_game_screen::handle_event(SDL_Event &event)
       mousecursor.updatepos();
       break;
    }
+
+   return true;
 }
 
 void ua_save_game_screen::render()
