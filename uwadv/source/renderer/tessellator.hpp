@@ -30,6 +30,7 @@
 #define uwadv_tessellator_hpp_
 
 // needed includes
+#include "uamath.hpp"
 
 
 #ifdef WIN32
