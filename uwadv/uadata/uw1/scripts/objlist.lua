@@ -27,6 +27,14 @@
 
 -- tables
 
+dump_data_names = {
+   [0] = "npc_whoami",
+   [1] = "npc_attitude",
+   [2] = "npc_hp",
+   [3] = "npc_xhome",
+   [4] = "npc_yhome",
+}
+
 -- functions
 
 
@@ -47,8 +55,18 @@ function dump_objinfo_table(objinfo,obj_handle)
       "  quality     = " .. objinfo.quality .. "\n" ..
       "  handle_next = " .. objinfo.handle_next .. "\n" ..
       "  owner       = " .. objinfo.owner .. "\n" ..
-      "  quantity    = " .. objinfo.quantity .. "\n\n"
+      "  quantity    = " .. objinfo.quantity .. "\n"
    )
+
+   print("dumping data (" .. objinfo.data.size .. " values):")
+
+   for i = 0,objinfo.data.size-1
+   do
+      print(" " .. dump_data_names[i] .. " = " .. objinfo.data[i])
+   end
+
+   print("\n")
+
 end
 
 
@@ -109,12 +127,16 @@ function lua_objlist_look(obj_handle)
    end
 
    -- is NPC?
-   mood = ""
+   attitude = ""
    named = ""
    if objinfo.item_id >= 64 and objinfo.item_id < 128 then
-      -- do mood string
+      -- get attitude string
+      attitude = ui_get_gamestring(5,96+objinfo.data[1]) .. " ";
 
-      -- todo: ui_get_gamestring(5,96-99) (99=friendly)
+      if attitude == "upset "
+      then
+         article = "an "
+      end
 
       -- do "named" string
       if objinfo.data.size > 0 and objinfo.data[0] > 0 then
@@ -138,8 +160,7 @@ function lua_objlist_look(obj_handle)
    end
 
    ui_print_string(
-     "You see " .. article ..
-     mood .. name .. named .. owner)
+     "You see " .. article .. attitude .. name .. named .. owner)
 
 end
 
@@ -149,9 +170,11 @@ function lua_objlist_talk(obj_handle)
 
    dump_objinfo_table(objinfo,obj_handle)
 
+   -- check if npc
    if objinfo.item_id < 64 or objinfo.item_id >= 128
    then
-      ui_print_string(ui_get_gamestring(1,156))
+      -- no, print "You cannot talk to that!"
+      ui_print_string(ui_get_gamestring(7,0))
       return
    end
 
@@ -159,9 +182,20 @@ function lua_objlist_talk(obj_handle)
    then
       local conv = objinfo.data[0]
 
-      if conv > 0 and conv < 255
+      -- generic conversation?
+      if conv == 0
       then
-         ui_start_conv(obj_handle)
+         conv = objinfo.item_id-64+256  -- 0x0f00
+      end
+
+      -- check if conversation is available
+      if conv_is_avail(conv)
+      then
+         -- start talking
+         ui_start_conv(obj_handle);
+      else
+         -- no, print "You get no response."
+         ui_print_string(ui_get_gamestring(7,1))
       end
    end
 
