@@ -352,18 +352,18 @@ void ua_save_game_screen::init()
    register_window(&button_refresh);
    register_window(&button_exit);
 
+   // init info area
+   img_infoarea.get_image().create(20,20);
+   img_infoarea.get_image().set_palette(img_back.get_image().get_palette());
+   img_infoarea.init(game,160,0);
+//   register_window(&img_infoarea);
+
    // init savegames list
    savegames_list.init(this, game, 19,13, from_menu);
 
    savegames_list.update_list();
 
    register_window(&savegames_list);
-
-   // init info area
-   img_infoarea.get_image().create(20,20);
-   img_infoarea.get_image().set_palette(img_back.get_image().get_palette());
-   img_infoarea.init(game,160,0);
-//   register_window(&img_infoarea);
 
    update_info();
 
