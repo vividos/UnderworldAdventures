@@ -50,7 +50,8 @@ public:
    ua_fading_helper():finished(true),fade_in(false),tickrate(20.0),fadetime(){}
 
    //! (re)initialize fading helper
-   void init(bool fade_in, double tickrate, double fadetime);
+   void init(bool fade_in, double tickrate, double fadetime,
+      unsigned int start_tickcount=0);
 
    //! does a tick and returns true if the fading action is finished
    bool tick();
@@ -71,12 +72,13 @@ protected:
 
 // inline methods
 
-inline void ua_fading_helper::init(bool my_fade_in, double my_tickrate, double my_fadetime)
+inline void ua_fading_helper::init(bool my_fade_in, double my_tickrate,
+   double my_fadetime, unsigned int start_tickcount)
 {
    fade_in = my_fade_in;
    tickrate = my_tickrate;
    fadetime = my_fadetime;
-   tickcount = 0;
+   tickcount = start_tickcount;
    finished = false;
 }
 
