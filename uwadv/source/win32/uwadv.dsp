@@ -302,6 +302,10 @@ SOURCE=..\image.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\inventory.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\level.cpp
 # End Source File
 # Begin Source File
