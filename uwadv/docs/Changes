@@ -1,8 +1,9 @@
-xxxx-xx-xx release 0.7-
+2003-02-11 release 0.7-muffin
 
-	* added support for static 3d models in vrml97 format
-	* conversations works (no inventory interaction yet)
-	* removed big textures larger than 256x256 (voodoo3 cards should work now)
+	* added support for 3d models for static objects
+	* conversations work (no inventory interaction yet)
+	* removed usage of big textures larger than 256x256 (voodoo3 cards
+	  should work now)
 
 2002-11-21 release 0.6-rotworm-stew
 
@@ -48,7 +49,8 @@ xxxx-xx-xx release 0.7-
 2002-05-05 release 0.1-ricecraecker
 
 	* set up SourceForge project and CVS repository
-	* player is able to run around on first level of abyss; no clipping yet
+	* player is able to run around on first level of abyss; no clipping
+	  yet
 	* introduction music plays
 
 2002-04-08 release "uwadv-stuff-preview"
