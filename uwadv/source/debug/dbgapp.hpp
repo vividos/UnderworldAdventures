@@ -29,6 +29,9 @@
 #ifndef uadebug_dbgapp_hpp_
 #define uadebug_dbgapp_hpp_
 
+// needed includes
+#include <wx/docview.h>
+
 
 // classes
 
@@ -44,6 +47,10 @@ public:
 
    //! command function
    static ua_debug_command_func command;
+
+protected:
+   //! document manager
+   wxDocManager* doc_manager;
 };
 
 

@@ -45,10 +45,13 @@ ua_debug_command_func ua_debugger::command = NULL;
 
 bool ua_debugger::OnInit()
 {
+   // create document manager
+   doc_manager = new wxDocManager;
+
    // create debugger main frame
    ua_debugger_main_frame* frame = new ua_debugger_main_frame(
-      (wxFrame *)NULL, -1, "Underworld Adventures Debugger",
-      wxPoint(-1, -1), wxSize(800, 600),
+      doc_manager, (wxFrame *)NULL, -1, "Underworld Adventures Debugger",
+      wxPoint(-1, -1), wxSize(1024, 768),
       wxDEFAULT_FRAME_STYLE | wxHSCROLL | wxVSCROLL);
 
    // show it
