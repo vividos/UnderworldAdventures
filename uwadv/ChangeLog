@@ -1,3 +1,79 @@
+2002-06-13 18:55  vividos
+
+	* source/audio/: midi.cpp (1.10), midi_driver/linux_sdl_mixer.cpp
+	(1.1), midi_driver/linux_sdl_mixer.h (1.1):
+
+	added midi driver for SDL_mixer, done by Tels (http://bloodgate.com/)
+	
+2002-06-12 21:09  vividos
+
+	* source/: Makefile.in (1.13), linux/configure (1.8),
+	linux/configure.in (1.11), linux/mkinstalldirs (1.11),
+	tools/Makefile.in (1.8):
+
+	and yet another update to the makefiles
+	
+2002-06-12 20:04  vividos
+
+	* source/: Makefile.in (1.12), linux/config.h.in (1.5),
+	linux/configure (1.7), linux/configure.in (1.10),
+	linux/mkinstalldirs (1.10), tools/Makefile.in (1.7):
+
+	updated once again
+	
+2002-06-12 19:33  vividos
+
+	* source/linux/mkinstalldirs (1.9):
+
+	removed rcs $Id line, so that the file doesn't get commited every time automake updates it
+	
+2002-06-12 19:27  vividos
+
+	* source/: Makefile.am (1.14), Makefile.in (1.11), linux/aclocal.m4
+	(1.3), linux/config.h.in (1.4), linux/configure (1.6),
+	linux/configure.in (1.9), linux/mkinstalldirs (1.8),
+	tools/Makefile.in (1.6):
+
+	updated linux build files
+	
+2002-06-12 14:51  vividos
+
+	* source/linux/acinclude.m4 (1.3):
+
+	saved and restored language type for SDL checking
+	
+2002-06-12 14:39  vividos
+
+	* source/linux/acinclude.m4 (1.2):
+
+	checked in with proper lf
+	
+2002-06-12 14:30  vividos
+
+	* source/linux/: acinclude.m4 (1.1), sdl.m4 (1.2):
+
+	renamed sdl.m4 to acinclude.m4
+	
+2002-05-29 00:31  vividos
+
+	* docs/: Authors.txt (1.1), README.Linux.txt (1.1),
+	README.mingw32.txt (1.1), authors.txt (1.3):
+
+	added README files for Linux and mingw32
+	renamed authors.txt to Authors.txt
+	
+2002-05-28 18:03  vividos
+
+	* source/audio/midi_driver/uni_fmod.cpp (1.5):
+
+	forgot to include common.hpp
+	
+2002-05-28 12:12  vividos
+
+	* ChangeLog (1.6):
+
+	updated
+	
 2002-05-28 12:10  vividos
 
 	* source/texture.hpp (1.5):
@@ -165,7 +241,7 @@
 
 	* source/uatypes.hpp (1.6):
 
-	fix for gcc-3.x, submitted by Tels <tels@bloodgate.com>
+	fix for gcc-3.x, submitted by Tels http://bloodgate.com
 	for more info:
 	http://groups.google.com/groups?hl=en&lr=&selm=9tcrgo%245dq%241%40slb1.atl.mindspring.net
 	
