@@ -10,4 +10,5 @@ EXTRA_DIST = \
 	miscdecode/miscdecode.cpp miscdecode/miscdecode.dsp \
 	sgdecode/sgdecode.cpp sgdecode/sgdecode.dsp \
 	stringextract/stringextract.cpp stringextract/stringextract.dsp \
-	trdecode/trdecode.cpp trdecode/trdecode.dsp
+	trdecode/trdecode.cpp trdecode/trdecode.dsp \
+	uwmdldec/uwmdldec.cpp uwmdldec/uwmdldec.dsp
