@@ -286,7 +286,7 @@ void ua_level::render_walls(unsigned int x, unsigned int y, ua_texture_manager &
    if (tile.type == ua_tile_solid)
       return; // don't draw solid tiles
 
-   Uint8 x1, y1, z1, x2, y2, z2, dummy, nz1, nz2;
+   Uint8 x1, y1, z1, x2, y2, z2;
 
    // use wall texture
    texmgr.use(tile.texture_wall);
@@ -296,22 +296,22 @@ void ua_level::render_walls(unsigned int x, unsigned int y, ua_texture_manager &
    {
    case ua_tile_diagonal_se:
       render_wall(ua_left,x,y,tile.floor,x+1,y+1,tile.floor,
-         tile.ceiling,tile.ceiling);
+         tile.ceiling,tile.ceiling,tile.ceiling);
       break;
 
    case ua_tile_diagonal_sw:
       render_wall(ua_left,x,y+1,tile.floor,x+1,y,tile.floor,
-         tile.ceiling,tile.ceiling);
+         tile.ceiling,tile.ceiling,tile.ceiling);
       break;
 
    case ua_tile_diagonal_nw:
       render_wall(ua_left,x+1,y+1,tile.floor,x,y,tile.floor,
-         tile.ceiling,tile.ceiling);
+         tile.ceiling,tile.ceiling,tile.ceiling);
       break;
 
    case ua_tile_diagonal_ne:
       render_wall(ua_left,x+1,y,tile.floor,x,y+1,tile.floor,
-         tile.ceiling,tile.ceiling);
+         tile.ceiling,tile.ceiling,tile.ceiling);
       break;
    }
 
@@ -344,17 +344,19 @@ void ua_level::render_walls(unsigned int x, unsigned int y, ua_texture_manager &
          x1,y1,z1, x2,y2,z2);
 
       // get adjacent tile coordinates
-      Uint8 nx, ny;
+      Uint8 nx, ny, nz1, nz2;
       switch(side)
       {
-      case ua_left:  nx = x-1; ny=y; break;
-      case ua_right: nx = x+1; ny=y; break;
-      case ua_front: ny = y+1; nx=x; break;
-      case ua_back:  ny = y-1; nx=x; break;
+      case ua_left:  nx=x-1; ny=y; break;
+      case ua_right: nx=x+1; ny=y; break;
+      case ua_front: ny=y+1; nx=x; break;
+      case ua_back:  ny=y-1; nx=x; break;
       }
 
       if (nx<64 && ny<64)
       {
+         // tile inside map
+
          ua_levelmap_tile &ntile = tiles[ny*64 + nx];
 
          if (ntile.type == ua_tile_solid)
@@ -374,21 +376,27 @@ void ua_level::render_walls(unsigned int x, unsigned int y, ua_texture_manager &
             default: adjside=ua_front; break;
             }
 
+            Uint8 dummy=0;
             get_tile_coords(adjside,ntile.type,nx,ny,
                ntile.floor,ntile.slope,ntile.ceiling,
                dummy,dummy,nz1, dummy,dummy,nz2);
 
-            // determine if neighbour tile was a diagonal one
-            bool diag = ntile.type == ua_tile_diagonal_se || 
-               ntile.type == ua_tile_diagonal_sw|| 
-               ntile.type == ua_tile_diagonal_nw|| 
-               ntile.type == ua_tile_diagonal_ne;
+            // if the wall to the adjacent tile goes up (e.g. a stair),
+            // we draw that wall. if it goes down, the adjacent tile has to
+            // draw that wall. so we only draw walls that go up to another
+            // tile or the ceiling.
 
-            // additionally check if we face the non-diagonal side
-            diag &= (nz1 == nz2 && nz2 == ntile.ceiling);
+            if (nz1 == nz2 && nz2 == ntile.ceiling)
+            {
+               // get_tile_coords() returns this, when the adjacent wall is a
+               // diagonal wall. we assume the diagonal tile has the same
+               // height as our current tile to render.
 
-            // only draw diag-adjacent sides, or right- and back-walls
-            if (!diag && (side==ua_right || side==ua_back))
+               nz1 = nz2 = tile.ceiling;
+            }
+
+            // determine if we should draw the wall
+            if (nz1 < z1 || nz2 < z2)
                continue;
          }
       }
@@ -404,7 +412,7 @@ void ua_level::render_walls(unsigned int x, unsigned int y, ua_texture_manager &
          continue;
 
       // now that we have all info, draw the tile wall
-      render_wall((ua_levelmap_wall_render_side)side,x1,y1,z1,x2,y2,z2,nz1,nz2);
+      render_wall((ua_levelmap_wall_render_side)side,x1,y1,z1,x2,y2,z2,nz1,nz2,tile.ceiling);
    }
 }
 
@@ -485,28 +493,26 @@ void ua_level::get_tile_coords(
 
 void ua_level::render_wall(ua_levelmap_wall_render_side side,
    Uint8 x1, Uint8 y1, Uint8 z1, Uint8 x2, Uint8 y2, Uint8 z2,
-   Uint8 nz1, Uint8 nz2)
+   Uint8 nz1, Uint8 nz2, Uint8 ceiling)
 {
-   if (z1 == nz1 && z2 == nz2)
-      return;
-
    glColor4ub(128,128,128,128);
 
+   // calculate texture coordinates
    double v1,v2,v3,v4;
-   v1=0.0;
-   v2=(z2-z1)*height_scale;
-   v3=(nz1-z1-(nz1-nz2))*height_scale;
-   v4=(nz1-z1)*height_scale;
+   v1=(ceiling-z1)*height_scale;
+   v2=(ceiling-z2)*height_scale;
+   v3=(ceiling-nz2)*height_scale;
+   v4=(ceiling-nz1)*height_scale;
 
    glBegin(GL_QUADS);
 
    // draw with proper winding
    if (side == ua_left || side == ua_front)
    {
-      glTexCoord2d(1.0,v1); glVertex3d(x1,y1,z1*height_scale);
-      glTexCoord2d(0.0,v2); glVertex3d(x2,y2,z2*height_scale);
-      glTexCoord2d(0.0,v3); glVertex3d(x2,y2,nz2*height_scale);
-      glTexCoord2d(1.0,v4); glVertex3d(x1,y1,nz1*height_scale);
+      glTexCoord2d(0.0,v1); glVertex3d(x1,y1,z1*height_scale);
+      glTexCoord2d(1.0,v2); glVertex3d(x2,y2,z2*height_scale);
+      glTexCoord2d(1.0,v3); glVertex3d(x2,y2,nz2*height_scale);
+      glTexCoord2d(0.0,v4); glVertex3d(x1,y1,nz1*height_scale);
    }
    else
    {

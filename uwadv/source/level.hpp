@@ -142,7 +142,7 @@ private:
    //! renders a wall of a tile, dependent on the neighbour
    void render_wall(ua_levelmap_wall_render_side side,
       Uint8 x1, Uint8 y1, Uint8 z1, Uint8 x2, Uint8 y2, Uint8 z2,
-      Uint8 nz1, Uint8 nz2);
+      Uint8 nz1, Uint8 nz2, Uint8 ceiling);
 
 protected:
    //! all levelmap tiles; 64x64 tiles assumed
