@@ -422,6 +422,7 @@ void ua_ingame_orig_screen::handle_event(SDL_Event &event)
          mouse_action(true,SDL_BUTTON(state)==SDL_BUTTON_LEFT,false);
       }
       break;
+   default: break;
    }
 }
 
@@ -896,6 +897,7 @@ void ua_ingame_orig_screen::render_ui()
       case ua_mode_look:    button = 3; break;
       case ua_mode_fight:   button = 4; break;
       case ua_mode_use:     button = 5; break;
+      default: break;
       }
 
       // draw mana flask quad
@@ -1244,6 +1246,8 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
    case ua_area_menu_button5: // "use" button
       gamemode = (gamemode == ua_mode_use) ? ua_mode_default : ua_mode_use;
       break;
+
+   default: break;
    }
 
    // check inventory items

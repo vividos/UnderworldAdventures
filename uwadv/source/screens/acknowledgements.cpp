@@ -126,7 +126,9 @@ void ua_acknowledgements_screen::handle_event(SDL_Event &event)
 
          fadeout_end();
          break;
+      default: break;
       }
+   default: break;
    }
 }
 

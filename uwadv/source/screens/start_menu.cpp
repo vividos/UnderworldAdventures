@@ -141,6 +141,8 @@ void ua_start_menu_screen::handle_event(SDL_Event &event)
             tickcount=0;
          }
          break;
+
+      default: break;
       }
       break;
 
@@ -178,6 +180,7 @@ void ua_start_menu_screen::handle_event(SDL_Event &event)
             core->get_audio().fadeout_music(fade_time);
       }
       break;
+   default: break;
    }
 }
 

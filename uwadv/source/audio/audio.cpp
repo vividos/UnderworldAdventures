@@ -35,6 +35,7 @@
 #include "SDL_mixer.h"
 #include <string>
 #include <algorithm>
+#include <cctype>
 
 
 // classes

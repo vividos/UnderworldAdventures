@@ -616,6 +616,7 @@ void ua_renderer::get_tile_triangles(ua_level& level, unsigned int xpos, unsigne
          floor_tri2.set(2,x,y+1,floor_slope_height, 0.0,1.0);
          break;
 
+      default: break;
       } // end switch
 
       // insert triangles into list
@@ -753,6 +754,8 @@ void ua_renderer::render_floor(ua_levelmap_tile& tile, unsigned int x,
       glTexCoord2d(0.0,1.0); glVertex3d(x,y+1,(tile.floor+tile.slope)*height_scale);
       glEnd();
       break;
+
+   default: break;
    }
 
    glPopName();
@@ -817,6 +820,8 @@ void ua_renderer::render_walls(ua_levelmap_tile& tile, unsigned int x,
       render_wall(ua_left,x+1,y,tile.floor,x,y+1,tile.floor,
          tile.ceiling,tile.ceiling,tile.ceiling);
       break;
+
+   default: break;
    }
 
    ua_level& level = underw->get_current_level();
@@ -842,6 +847,8 @@ void ua_renderer::render_walls(ua_levelmap_tile& tile, unsigned int x,
       case ua_tile_diagonal_ne:
          if (side==ua_left || side==ua_back) continue;
          break;
+
+      default: break;
       }
 
       // get current tile coordinates

@@ -29,6 +29,7 @@
 #include "common.hpp"
 #include "keymap.hpp"
 #include <algorithm>
+#include <cctype>
 
 
 // tables

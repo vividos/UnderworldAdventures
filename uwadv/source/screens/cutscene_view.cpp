@@ -172,7 +172,9 @@ void ua_cutscene_view_screen::handle_event(SDL_Event &event)
          anim_fade_state = 2;
          anim_fadecount = 0;
          break;
+      default: break;
       }
+   default: break;
    }
 }
 

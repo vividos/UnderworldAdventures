@@ -296,6 +296,7 @@ bool ua_textscroll::handle_event(SDL_Event &event)
             handled = true;
          }
          break;
+      default: break;
       }
 
       // check type'able keys when in input mode

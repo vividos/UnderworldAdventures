@@ -85,8 +85,8 @@ void ua_texture::convert(Uint8 *pix, unsigned int origx, unsigned int origy,
       yres = 16;
       while(yres<origy && yres<2048) yres<<=1;
 
-      u = double(origx)/xres;
-      v = double(origy)/yres;
+      u = ((double)origx)/xres;
+      v = ((double)origy)/yres;
 
       texels.resize(texname.size()*xres*yres,0x00000000);
    }
@@ -118,6 +118,7 @@ void ua_texture::use(unsigned int numtex)
       // set texture parameter
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap_s);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap_t);
+
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, min_filt);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, max_filt);
    }

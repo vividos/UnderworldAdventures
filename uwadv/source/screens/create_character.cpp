@@ -286,6 +286,8 @@ void ua_create_character_screen::handle_event(SDL_Event &event)
          // simulate clicking on that area
          press_button(selected_button);
          break;
+
+      default: break;
       }
       break;
 
@@ -320,6 +322,8 @@ void ua_create_character_screen::handle_event(SDL_Event &event)
             press_button(selected_button);
       }
       break;
+
+   default: break;
    }
 }
 
