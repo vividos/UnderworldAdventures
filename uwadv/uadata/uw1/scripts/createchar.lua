@@ -39,16 +39,18 @@ gactInit = 0    -- initialize
 gactDeinit = 1  -- deinitialize
 
 -- actions (outgoing param values for C function cchar_do_action)
-actEnd = 0            -- ends the character creation screen (no params)
-actSetInitVal = 1     -- sets init values (param1=stringblock, param2=buttongroup x-coord, param3=normal text color, param4=highlighted text color, param5=table with button image indexes)
-actSetUIBtnGroup = 2  -- sets the specified button group (param1=heading, param2=buttontype, param3=buttontable)
-actSetUIText = 3      -- sets the specified text at the specified location (param1=stringno, param2=x-coord, param3=y-coord, param4=alignment)
-actSetUICustText = 4  -- sets the specified custom text at the specified location (param1=text, param2=x-coord, param3=y-coord, param4=alignment)
-actSetUINumber = 5    -- sets the specifed number at the specified location (param1=number, param2=right x-coord, param3=y-coord)
-actSetUIImg = 6       -- sets the specified image at the specified location (param1=imagenumber, param2=center x-coord, param3=center y-coord)
-actUIClear = 7        -- clears all screen elements (not the background)
-actUIUpdate = 8       -- updates the screen after a SetUIxxx/UIClear action (no params)
-actSetPlayerName = 9  -- guess what...
+actEnd = 0             -- ends the character creation screen (no params)
+actSetInitVal = 1      -- sets init values (param1=stringblock, param2=buttongroup x-coord, param3=normal text color, param4=highlighted text color, param5=table with button image indexes)
+actSetUIBtnGroup = 2   -- sets the specified button group (param1=heading, param2=buttontype, param3=buttontable)
+actSetUIText = 3       -- sets the specified text at the specified location (param1=stringno, param2=x-coord, param3=y-coord, param4=alignment)
+actSetUICustText = 4   -- sets the specified custom text at the specified location (param1=text, param2=x-coord, param3=y-coord, param4=alignment)
+actSetUINumber = 5     -- sets the specifed number at the specified location (param1=number, param2=right x-coord, param3=y-coord)
+actSetUIImg = 6        -- sets the specified image at the specified location (param1=imagenumber, param2=center x-coord, param3=center y-coord)
+actUIClear = 7         -- clears all screen elements (not the background)
+actUIUpdate = 8        -- updates the screen after a SetUIxxx/UIClear action (no params)
+actSetPlayerName = 9   -- does what the name suggests (param1=name)
+actSetPlayerAttr = 10  -- does what the name suggests (param1=attribute, param2=value)
+actSetPlayerSkill = 11 -- does what the name suggests (param1=skill, param2=value)
 
 -- labels/button values, these must match entries in string table 
 -- starting at block cchar_strblock.
@@ -191,11 +193,11 @@ ccharui = {
 -- functions
 
 -- initializes/deinitializes create character screen
-function cchar_global(this, globalaction)
+function cchar_global(this, globalaction, seed)
    if globalaction==gactInit then
       self = this       -- sets "self" as userdata for all C function calls
       skills = {}
-      randomseed(1)
+      randomseed(seed)
       cchar_do_action(self, actSetInitVal, ccharui.strblock, ccharui.btngxcoord, ccharui.textcolor_normal, ccharui.textcolor_highlight, ccharui.btnimages)
    end
 
@@ -245,17 +247,19 @@ function cchar_buttonclick(button, text)
    if curgroup<=2 or curgroup>=18 then
 
       if curgroup==1 then
-        -- player_set_attr(self, 0, button)
+        cchar_do_action(self, actSetPlayerAttr, player_attr_gender, button)
         psex = button
 
       elseif curgroup==2 then
-        -- player_set_attr(self, 1, button)
+        cchar_do_action(self, actSetPlayerAttr, player_attr_handedness, button)
 
       elseif curgroup==18 then
+         cchar_do_action(self, actSetPlayerAttr, player_attr_appearance, button)
          pimg = button
          curgroup = curgroup + 1
 
       elseif curgroup==19 then
+         cchar_do_action(self, actSetPlayerAttr, player_attr_appearance, button)
          pimg = button + 5
 
       elseif curgroup==20 then
@@ -282,6 +286,7 @@ function cchar_buttonclick(button, text)
    elseif curgroup>=3 and curgroup<=17 then
 
       if curgroup==3 then   -- player class selection button 
+         cchar_do_action(self, actSetPlayerAttr, player_attr_profession, button)
          pclass = button
          curstep = 0
 
@@ -289,6 +294,10 @@ function cchar_buttonclick(button, text)
          pdex = random(15,25)
          pint = random(12,22)
          pvit = random(34,36)
+         cchar_do_action(self, actSetPlayerAttr, player_attr_strength, pstr)
+         cchar_do_action(self, actSetPlayerAttr, player_attr_dexterity, pdex)
+         cchar_do_action(self, actSetPlayerAttr, player_attr_intelligence, pint)
+         cchar_do_action(self, actSetPlayerAttr, player_attr_max_life, pvit)
 
          -- the attack and defence skill appear for all player classes
          cchar_addskill(ccvAttack, random(4,13))
@@ -300,7 +309,7 @@ function cchar_buttonclick(button, text)
             cchar_addskill(ccvCasting, random(4,13))
          elseif button==3 then            -- tinker
             cchar_addskill(ccvRepair, random(4,13))
-         elseif button==5 then            -- palading
+         elseif button==5 then            -- paladin
             cchar_addskill(ccvCharm, random(4,13))
          elseif button==6 then            -- ranger
             cchar_addskill(ccvTrack, random(4,13))
