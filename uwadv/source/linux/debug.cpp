@@ -25,7 +25,7 @@
 
 */
 
-#ifndef WIN32
+#if 0
 
 // needed includes
 #include "common.hpp"
