@@ -88,20 +88,22 @@ void ua_ingame_orig_screen::init(ua_game_core_interface* thecore)
    if (core->get_settings().get_gametype() == ua_game_uw_demo)
       scrollwidth = 218;
 
+   ua_settings &settings = core->get_settings();
+
    // load keymap
    ua_trace("loading keymaps ...\n");
    {
-      keymap.init(core->get_settings());
+      keymap.init(settings);
 
       // load keymap from uadata resources
-      std::string keymap_name("uw1"); // TODO: replace with current game name
+      std::string keymap_name(settings.get_string(ua_setting_game_prefix));
       keymap_name.append("/keymap.cfg");
 
       ua_trace(" keymap: %s\n",keymap_name.c_str());
       keymap.load(core->get_filesmgr().get_uadata_file(keymap_name.c_str()));
 
       // load custom keymap
-      keymap_name = core->get_settings().get_string(ua_setting_custom_keymap);
+      keymap_name = settings.get_string(ua_setting_custom_keymap);
 
       ua_trace(" keymap: %s",keymap_name.c_str());
       SDL_RWops* rwops = SDL_RWFromFile(keymap_name.c_str(),"rb");
@@ -115,8 +117,6 @@ void ua_ingame_orig_screen::init(ua_game_core_interface* thecore)
    }
 
    // load some images
-   ua_settings &settings = core->get_settings();
-
    img_objects.load(settings,"objects");
 
    // background image
@@ -127,6 +127,14 @@ void ua_ingame_orig_screen::init(ua_game_core_interface* thecore)
       if (core->get_settings().get_gametype() == ua_game_uw_demo)
          mainscreenname = "data/dmain.byt";
 
+      if (core->get_settings().get_gametype() == ua_game_uw2)
+      {
+         // uw2: no background for now
+         img_back.create(320,200,0,0);
+      }
+      else
+      {
+
       img_back.load_raw(settings,mainscreenname,0);
 
       // fill message scroll area
@@ -134,6 +142,8 @@ void ua_ingame_orig_screen::init(ua_game_core_interface* thecore)
 
       // fill panel area
       img_back.fill_rect(236,7, 83,114, 1);
+
+      }
    }
 
    // compass images
