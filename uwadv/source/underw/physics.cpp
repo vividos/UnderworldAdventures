@@ -140,7 +140,7 @@ bool ua_physics_model::track_object(ua_physics_body& body, ua_vector3d dir,
    if (gravity_force && collided)
    {
       body.hit_floor();
-//      body.reset_gravity();
+      body.reset_gravity();
    }
 
    // transform position back to normal space and set it
