@@ -32,6 +32,7 @@
 #include "game_interface.hpp"
 #include "underworld.hpp"
 #include "renderer.hpp"
+#include <deque>
 
 
 #ifdef WIN32
@@ -97,6 +98,51 @@ public:
    {
       if (game != NULL)
          game->get_debugger().lock(set_lock);
+   }
+
+   virtual unsigned int get_message_num()
+   {
+      return message_queue.size();
+   }
+
+   virtual bool get_message(unsigned int& msg_type,
+      unsigned int& msg_arg1, unsigned int& msg_arg2, double& msg_arg3,
+      unsigned int& msg_text_size)
+   {
+      if (message_queue.size()>0)
+      {
+         ua_debug_server_message& msg = message_queue.front();
+         msg_type = msg.msg_type;
+         msg_arg1 = msg.msg_arg1;
+         msg_arg2 = msg.msg_arg2;
+         msg_arg3 = msg.msg_arg3;
+         msg_text_size = msg.msg_text.size()+1;
+      }
+      return message_queue.size()>0;
+   }
+
+   virtual bool get_message_text(char* buffer, unsigned int bufsize)
+   {
+      if (message_queue.size()>0)
+      {
+         ua_debug_server_message& msg = message_queue.front();
+         strncpy(buffer,msg.msg_text.c_str(), bufsize);
+      }
+      return message_queue.size()>0;
+   };
+
+   virtual bool pop_message()
+   {
+      if (message_queue.size()>0)
+      {
+         message_queue.pop_front();
+      }
+      return message_queue.size()>0;
+   }
+
+   virtual void add_message(ua_debug_server_message& msg)
+   {
+      message_queue.push_back(msg);
    }
 
    virtual double get_player_pos_info(unsigned int idx)
@@ -185,6 +231,9 @@ protected:
 
    //! is true when new level textures should be prepared at next tick()
    bool schedule_prepare;
+
+   //! message queue
+   std::deque<ua_debug_server_message> message_queue;
 };
 
 

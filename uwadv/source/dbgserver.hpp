@@ -37,7 +37,54 @@
 class ua_game_interface;
 
 
+// enums
+
+//! debug server message types; usable in ua_debug_server_message::msg_type
+enum ua_debug_server_message_type
+{
+   //! a code debugger message
+   /*!; msg_arg1 contains the code debugger handle */
+   ua_msg_code_debugger=0,
+
+   //! a message to shutdown the debugger
+   ua_msg_shutdown,
+
+   //! miscellaneous message
+   ua_msg_misc,
+};
+
+
+// structs
+
+//! debug server message that gets sent to client
+struct ua_debug_server_message
+{
+   //! ctor
+   ua_debug_server_message()
+      :msg_type(0), msg_arg1(0), msg_arg2(0), msg_arg3(0.0){}
+
+   //! message type; see enum ua_debug_server_message_type
+   unsigned int msg_type;
+
+   //! message argument 1
+   unsigned int msg_arg1;
+   //! message argument 2
+   unsigned int msg_arg2;
+   //! message argument 3
+   double msg_arg3;
+
+   //! message text
+   std::string msg_text;
+};
+
+
 // classes
+
+//! code debugger interface
+class ua_debug_code_debugger
+{
+};
+
 
 //! debug server implementation definition
 /*! all methods of this interface class are virtual, so that they can be
@@ -66,6 +113,39 @@ public:
 
    //! locks/unlocks underworld
    virtual void lock(bool set_lock)=0;
+
+   // messaging stuff
+
+   //! returns number of messages in the message queue
+   virtual unsigned int get_message_num()=0;
+
+   //! returns current message
+   inline bool get_message(ua_debug_server_message& msg)
+   {
+      unsigned int text_size=0;
+      bool ret = get_message(msg.msg_type, msg.msg_arg1, msg.msg_arg2,
+         msg.msg_arg3, text_size);
+      if (ret)
+      {
+         msg.msg_text.resize(text_size+1);
+         ret = get_message_text(msg.msg_text.begin(), text_size);
+      }
+      return ret;
+   }
+
+   //! returns current message
+   virtual bool get_message(unsigned int& msg_type,
+      unsigned int& msg_arg1, unsigned int& msg_arg2, double& msg_arg3,
+      unsigned int& msg_text_size)=0;
+
+   //! returns message text of current message
+   virtual bool get_message_text(char* buffer, unsigned int bufsize)=0;
+
+   //! removes current message
+   virtual bool pop_message()=0;
+
+   //! adds message to queue; only debug server should call this!
+   virtual void add_message(ua_debug_server_message& msg)=0;
 
    // player stuff
 
