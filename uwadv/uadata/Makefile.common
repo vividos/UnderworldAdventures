@@ -14,13 +14,20 @@ luaSCRIPTS = \
 
 luaOBJECTS = $(luaSCRIPTS:.lua=.lob)
 
-modelFILES = \
+modelFILES = uw1/model3d.cfg \
 	models/static/muffin.wrl \
-	models/static/steak.wrl
+	models/static/steak.wrl \
+	models/static/mushroom.wrl \
+	models/static/chest.wrl \
+	models/static/chair.wrl \
+	models/static/textures/muffin.tga \
+	models/static/textures/mushroom.tga \
+	models/static/textures/steak.tga \
+	models/static/textures/wdchest.tga \
+	models/static/textures/wood.tga
 
 uarFILES = $(luaOBJECTS) \
 	uw1/scripts/uwinit.txt \
 	uw1/audio/music.m3u \
 	uw1/keymap.cfg \
-	uw1/model3d.cfg \
 	$(modelFILES)
