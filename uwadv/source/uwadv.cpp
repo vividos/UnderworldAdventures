@@ -232,6 +232,8 @@ void ua_game::done()
       delete screenstack[i];
    }
 
+   underworld.done();
+
    delete audio;
    SDL_Quit();
 }
