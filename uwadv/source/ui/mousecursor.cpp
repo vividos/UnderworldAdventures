@@ -66,6 +66,8 @@ void ua_mousecursor::set_custom(ua_image& cursorimg)
    cursorimg2.create(wnd_width+1,wnd_height+1);
    cursorimg2.paste_rect(cursorimg, 0,0, wnd_width,wnd_height, 0,0);
 
+   cursorimg2.get_palette() = cursorimg.get_palette();
+
    mousetex.convert(cursorimg2);
    mousetex.upload();
 }
@@ -88,6 +90,9 @@ void ua_mousecursor::draw()
    // set wrap parameter
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
    glBegin(GL_QUADS);
    glTexCoord2d(0.0, v  ); glVertex2i(wnd_xpos,           200-wnd_ypos);
