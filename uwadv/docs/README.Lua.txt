@@ -98,7 +98,6 @@ registered C functions to call from Lua:
    objlist_get_obj_info
    objlist_set_obj_info
    objlist_remove_obj
-   objlist_obj_is_npc
    objlist_insert_obj
 
    tilemap_get_tile
@@ -128,6 +127,9 @@ registered C functions to call from Lua:
    ui_show_ingame_anim
    ui_cursor_use_item
    ui_cursor_target
+
+   savegame_store_value
+   savegame_restore_value
 
 
 2.1.2. Functions provided by Lua scripts
@@ -383,29 +385,43 @@ Object infos are stored in a table that may look like this:
 T = {
    item_id = 0,    -- item ID
    enchanted = 1,  -- 1 if enchanted, 0 if not
-   is_link = 1,    -- is "special" field a link?
+   is_quantity = 1,-- is "special" field a quantity/property?
+   is_hidden = 0,  -- is object hidden?
 
+   xpos = 2,       -- fractional x position in tile (0..7)
+   ypos = 7,       -- fractional y position in tile (0..7)
    zpos = 0,       -- z position (flying critters?)
-   dir = 7,        -- direction (0..7, dir*45 degree)
-   ypos = 0.2,     -- fractional y position in tile
-   xpos = 0.7,     -- fractional x position in tile
+   heading = 7,    -- direction (0..7, dir*45 degree)
 
    quality = 1,    -- quality value
    handle_next,    -- object handle to next item (or 0 if end of chain)
    owner = 0,      -- owner / special field
-   quantity = 0,   -- quantity / link / special property field
+   quantity = 0,   -- quantity / property / special link field
 
-   data = {        -- data value array
-      size = 2,
-      [0] = 1, [1] = 42
-   },
+   -- these variables are only set when object is a NPC object
+
+   npc_used = 1.0, -- is > 0 when below npc fields are available
+
+   npc_hp = 14,      -- vitality of npc
+   npc_goal = 0,     -- goal of npc (0: wander around, 1: kill gtarg)
+   npc_gtarg = 0,    -- goal target value (5 means player)
+   npc_level = 2,    -- experience level
+   npc_talkedto = 0, -- is > 0 when the player already talked to this npc
+   npc_attitude = 0, -- attitude; 0: friendly, 1: mellow, 2: upset, 3: hostile
+
+   npc_xhome = 13,  -- npc x and y pos of home spot in tilemap
+   npc_yhome = 43,
+
+   npc_hunger = 2,  -- indicates hungryness of npc
+   npc_whoami = 0,  -- npc identity, used in conversations and for names
 }
 
-The "quantity" variable can be a link field for special objects (when is_link
-is 1), e.g. for container content or NPC/critter inventory. It also can serve
-as special property field (see uw-formats.txt for more).
-The "data" array contains misc. data for that particular item type. The
-content of these fields are not yet specified.
+The "is_quantity" variable determines if the "quantity" field is a
+quantity / special (value is 1), or if it's a special link (value is 0). In
+this case the "quantity" field is a handle to another object associated with
+the current object. The "quality" field is a simple quantity if the value
+is below 512 (0x0200).
+
 
 * objlist_get_obj_info(obj_handle)
   return values: objinfo
@@ -421,11 +437,6 @@ content of these fields are not yet specified.
   return values: none
 
   removes object from the object list and unlinks it.
-
-* objlist_obj_is_npc(obj_handle)
-  return values: is_npc
-
-  determines if an object is a NPC; when not, "is_npc" is nil.
 
 * objlist_insert_obj(tile_handle, objinfo, xpos, ypos)
   return values: none
