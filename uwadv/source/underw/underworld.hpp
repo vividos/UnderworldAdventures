@@ -45,11 +45,11 @@
 #include "level.hpp"
 #include "player.hpp"
 #include "inventory.hpp"
-#include "conv/codevm.hpp"
 #include "level.hpp"
 #include "physics.hpp"
 #include "savegame.hpp"
 #include "properties.hpp"
+#include "convglobals.hpp"
 
 
 // forward declaration
