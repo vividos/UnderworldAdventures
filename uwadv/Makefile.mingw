@@ -21,9 +21,9 @@
 # $Id$
 #
 
-#
+# -------------------------------------------------------------------
 # user-configurable stuff
-#
+# -------------------------------------------------------------------
 
 # path to place where uwadv should be installed
 UWADV_PATH = c:/uwadv
@@ -39,17 +39,29 @@ WITH_DEBUGGING = no
 # path to mingw compiler
 MINGW_PATH = c:/mingw
 
+# -------------------------------------------------------------------
+# STLport configuration
+# -------------------------------------------------------------------
+
 # set to "yes" if you have STLport (and modify STLPORT_PATH then)
-WITH_STLPORT = yes
+WITH_STLPORT = no
 
 # path to where STLport was installed and built
 STLPORT_PATH = c:/mingw/stlport
 
-# set to "yes" if you have wxWindows
-WITH_WXWINDOWS = no
+# -------------------------------------------------------------------
+# wxWidgets configuration
+# -------------------------------------------------------------------
 
-# path to wxWindows base dir (only needed for uadebug.dll)
+# set to "yes" if you have wxWidgets
+WITH_WXWIDGETS = yes
+
+# path to wxWidgets base dir (only needed for uadebug.dll)
 WXWIN_PATH = d:/projekte/wxMSW
+
+# -------------------------------------------------------------------
+# docbook configuration
+# -------------------------------------------------------------------
 
 # set to "yes if you have docbook-xsl installed somewhere
 WITH_DOCBOOK_XSL = yes
@@ -58,9 +70,19 @@ WITH_DOCBOOK_XSL = yes
 # note: for some reasons xsltproc doesn't like all slashes in the path
 DOCBOOK_XSL_BASEPATH = d:\\uwadv/docbook/docbook-xsl-1.64.0
 
+# xsl-transformation processor to use
+# choose either "xsltproc" or "msxsl" and configure paths below
+XSLT_PROCESSOR = msxsl
+
 # path and filename for the xsltproc utility
 XSLTPROC_PATH = d:/uwadv/docbook/xsltproc.exe
 
+# path and filename for the msxsl utility
+MSXSL_PATH = d:/uwadv/docbook/msxsl.exe
+
+# -------------------------------------------------------------------
+# configuration details
+# -------------------------------------------------------------------
 
 # change this value only if you have a non-standard mingw32 setup
 # (i.e. when the uwadv-mingw32-source-setup-?.zip wasn't used)
@@ -70,6 +92,7 @@ SDL_INCLUDE = -I$(MINGW_PATH)/include/sdl/
 
 
 # no servicable parts beyond here.
+# -------------------------------------------------------------------
 # -------------------------------------------------------------------
 
 #
@@ -110,7 +133,15 @@ endif
 # STLport
 ifeq ("$(WITH_STLPORT)", "yes")
  STLPORT_INCLUDE = -I$(STLPORT_PATH)/stlport/
- STLPORT_LIB = -L$(STLPORT_PATH)/lib/ -lstlport_mingw32_static
+ STLPORT_LIB = -L$(STLPORT_PATH)/lib/
+ ifeq ("$(WITH_DEBUGGING)", "yes")
+  DEFINES += -D_STLP_DEBUG -D_STLP_USE_STATIC_LIB
+  #-D_STLP_DEBUG_ALLOC -D_STLP_USE_SYSTEM_ASSERT
+  #-D_STLP_USE_NEWALLOC 
+  STLPORT_LIB += -lstlport_mingw32_stldebug_static
+ else
+  STLPORT_LIB += -lstlport_mingw32_static
+ endif
 else
  STLPORT_INCLUDE =
  STLPORT_LIB =
@@ -121,8 +152,8 @@ INCLUDES = $(SDL_INCLUDE) $(STLPORT_INCLUDE) $(FMOD_INCLUDE) \
 	-Isource/renderer -Isource/script -Isource/ui -Isource/underw \
 	-Isource/script/lua/include/ -Isource/base/zziplib/
 
-# wxWindows
-ifeq ("$(WITH_WXWINDOWS)", "yes")
+# wxWidgets
+ifeq ("$(WITH_WXWIDGETS)", "yes")
  INCLUDES += -I$(WXWIN_PATH)/include/ -I$(WXWIN_PATH)/contrib/include/ -I$(WXWIN_PATH)/lib/mswd/
  DEFINES += -D__GNUWIN32__ -D__WXMSW__ -D_X86_=1 -DWIN32 -D_WIN32 -DWINVER=0x0400
  WXWIN_LIB = -L$(WXWIN_PATH)/lib/ -L$(WXWIN_PATH)/contrib/lib/ \
@@ -138,9 +169,9 @@ endif
 
 CFLAGS += $(DEFINES) $(INCLUDES)
 
-#
+# -------------------------------------------------------------------
 # build targets
-#
+# -------------------------------------------------------------------
 
 
 all: uwadv tools data manual
@@ -344,9 +375,9 @@ endif
 
 
 
-#
+# -------------------------------------------------------------------
 # build rules
-#
+# -------------------------------------------------------------------
 
 TOOLS = cnvdbg cnvdasm xmi2mid mapdisp animview strpak uwdump uwmdlview
 
@@ -360,7 +391,7 @@ uwadv.cfg: win32/uwadv.cfg
 	cp win32/uwadv.cfg .
 
 
-ifeq ("$(WITH_WXWINDOWS)", "yes")
+ifeq ("$(WITH_WXWIDGETS)", "yes")
 
 uadebug: $(uadebug_EXEC)
 
@@ -370,8 +401,8 @@ $(uadebug_EXEC): $(uadebug_OBJS)
 else
 uadebug:
 	@echo.
-	@echo "To build uadebug.dll, you need to compile wxWindows with mingw32"
-	@echo "Then enable the wxWindows options in Makefile.mingw and try again."
+	@echo "To build uadebug.dll, you need to compile wxWidgets with mingw32"
+	@echo "Then enable the wxWidgets options in Makefile.mingw and try again."
 	@echo "More infos are available in the file docs/README.mingw32.txt"
 endif
 
@@ -434,9 +465,9 @@ $(uwmdlview_EXEC): libuatools $(uwmdlview_OBJS)
 
 
 
-#
+# -------------------------------------------------------------------
 # general build rules
-#
+# -------------------------------------------------------------------
 
 include uadata/Makefile.common
 uadata_uarFILES = $(uarFILES:%=uadata/%)
@@ -501,9 +532,9 @@ clean: data-clean luac-clean manual-clean
 		$(uwmdlview_OBJS) $(liblua_OBJS) $(libzziplib_OBJS)
 
 
-#
+# -------------------------------------------------------------------
 # compile rules
-#
+# -------------------------------------------------------------------
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $(<) -o $*.o
@@ -520,7 +551,18 @@ clean: data-clean luac-clean manual-clean
 
 ifeq ("$(WITH_DOCBOOK_XSL)", "yes")
 
+ ifeq ("$(XSLT_PROCESSOR)", "xsltproc")
+
 docs/docbook/%.html: docs/docbook/%.xml
 	$(XSLTPROC_PATH) --nonet $(DOCBOOK_XSL_BASEPATH)/html/docbook.xsl docs/docbook/$*.xml > $@
 
+ else
+  ifeq ("$(XSLT_PROCESSOR)", "msxsl")
+
+docs/docbook/%.html: docs/docbook/%.xml
+	$(MSXSL_PATH) docs/docbook/$*.xml $(DOCBOOK_XSL_BASEPATH)/html/docbook.xsl -xe -o $@
+  endif
+ endif
 endif
+
+# -------------------------------------------------------------------
