@@ -78,10 +78,10 @@ public:
    virtual void init_new_game()=0;
 
    //! evaluates a critter in master object list
-   virtual void eval_critter(unsigned int pos)=0;
+   virtual void eval_critter(Uint16 pos)=0;
 
    //! executes a trigger action
-   virtual void do_trigger(unsigned int pos)=0;
+   virtual void trigger_set_off(Uint16 pos)=0;
 
    //! user performed an action
    virtual void user_action(ua_underworld_user_action action,
