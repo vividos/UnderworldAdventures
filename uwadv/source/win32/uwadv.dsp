@@ -140,7 +140,7 @@ SOURCE=..\..\uadata\uw1\scripts\inventory.lua
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\uadata\uw1\scripts\objects.lua
+SOURCE=..\..\uadata\uw1\scripts\objlist.lua
 # PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
@@ -717,6 +717,10 @@ SOURCE=..\uwscript.cpp
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\gamestrings.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\inventory.hpp
 # End Source File
 # Begin Source File
@@ -850,10 +854,6 @@ SOURCE=..\files.hpp
 # Begin Source File
 
 SOURCE=..\font.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\gamestrings.hpp
 # End Source File
 # Begin Source File
 
