@@ -36,7 +36,7 @@
 
 // constants
 
-const double ua_pi = 3.1415;
+const double ua_pi = 3.141592653589793;
 
 
 // macros
@@ -44,7 +44,7 @@ const double ua_pi = 3.1415;
 #define ua_min(a,b) ((a)<(b) ? (a) : (b))
 #define ua_max(a,b) ((a)>(b) ? (a) : (b))
 
-#define ua_deg2rad(a) ((float(a)/180.f)*ua_pi)
+#define ua_deg2rad(a) ((double(a)/180.f)*ua_pi)
 
 
 // classes
