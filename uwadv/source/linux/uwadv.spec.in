@@ -16,6 +16,8 @@ BuildRoot: /var/tmp/uwadv
 Obsoletes: uwadv
 Packager: Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 URL: http://uwadv.sourceforge.net
+Requires: SDL >= 1.2.4
+Requires: SDL_mixer >= 1.2.4
 
 %description
 Underworld Adventures is a project to recreate Ultima Underworld 1 on modern operating systems
