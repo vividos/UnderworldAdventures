@@ -76,7 +76,7 @@ protected:
 
    //! draws text at a coordinate (xalign: 0=left, 1=center, 2=right), returns width of text in pixels
    unsigned int drawtext(const char *str, int x, int y, int xalign = 0, unsigned char color = 0);
-   unsigned int drawtext(int strnum, int x, int y, int xalign = 0, unsigned char color = 0);
+   unsigned int drawtext(int strnum, int x, int y, int xalign = 0, unsigned char color = 0, int custstrblock = -1);
 
    //! draw a number at a coordinate, number is always right-aligned, returns width of text in pixels
    unsigned int drawnumber(unsigned int num, int x, int y, unsigned char color = 0);
@@ -105,6 +105,9 @@ protected:
 
    //! ended
    bool ended;
+
+   //! start a new game
+   bool newgame;
 
    //! the player
    ua_player *pplayer;
@@ -177,6 +180,13 @@ protected:
 
    //! array of string numbers for buttons in current group
    unsigned int* btng_buttons;
+
+   //! countdown time in seconds for timer buttons
+   double countdowntime;
+
+   //! tickcount for countdown timer
+   unsigned int cdttickcount;
+
 };
 
 #endif

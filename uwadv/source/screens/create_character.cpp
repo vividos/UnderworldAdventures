@@ -29,6 +29,7 @@
 #include <time.h>
 #include "common.hpp"
 #include "create_character.hpp"
+#include "ingame_orig.hpp"
 
 // constants
 
@@ -71,9 +72,10 @@ enum ua_echarcreationvalue
 //! custom type for identifying buttons/text 
 enum ua_ebuttontype
 {
-   btText = 0,      // standard button with text from string table, btns contains stringtable index
-   btImage = 1,     // square button with image, btns contains index of image
-   btInput = 2      // input area
+   btText = 0,      // standard button with text from string table
+   btImage = 1,     // square button with image
+   btInput = 2,     // input area
+   btTimer = 3      // virtual button acting as a countdown timer
 };
 
 
@@ -120,20 +122,22 @@ void ua_create_character_screen::init()
    font.init(core->get_settings(), ua_font_chargen);
 
    // intial variable values
-   ended=false;
-   selected_button=0;
-   prev_button=0;
-   changed=false;
-   fadingstage=1;
-   tickcount=0;
-   buttondown=false;
-   strblock=2;
-   bgxpos=240;
-   btng_caption=0;
-   btng_buttontype=0;
-   btng_buttoncount=0;
-   btng_buttonimg_normal=0;
-   btng_buttonimg_highlight=0;
+   ended = false;
+   newgame = false;
+   selected_button = 0;
+   prev_button = 0;
+   changed = false;
+   fadingstage = 1;
+   tickcount = 0;
+   cdttickcount = 0;
+   buttondown = false;
+   strblock = 2;
+   bgxpos = 240;
+   btng_caption = 0;
+   btng_buttontype = 0;
+   btng_buttoncount = 0;
+   btng_buttonimg_normal = 0;
+   btng_buttonimg_highlight = 0;
    btng_buttons = new unsigned int[ua_maxbuttons];
    inputtext = new char[32];
    inputtext[0] = 0;
@@ -331,6 +335,7 @@ void ua_create_character_screen::do_action()
    {
    case actEnd:
       ended = true;
+      newgame = (n>2) && (static_cast<unsigned int>(lua_tonumber(L,3))==1);
       fadingstage = -1;
       ua_trace("end request by char. creation script\n");
       break;
@@ -360,35 +365,44 @@ void ua_create_character_screen::do_action()
       if (n<4) break;
       btng_caption = static_cast<unsigned int>(lua_tonumber(L,3));
       btng_buttontype = static_cast<unsigned int>(lua_tonumber(L,4));
-      btng_buttoncount = lua_getn(L, 5);
-      if ((btng_buttontype==btInput) && (btng_buttoncount>0))
+      if (btng_buttontype==btTimer)
       {
-         inputtext[0] = 0;
-         btng_buttoncount = 1;
-      }
-      for (int i=0; i<btng_buttoncount; i++)
+         countdowntime = btng_caption/1000.0;
+         cdttickcount = 0;
+         btng_caption = 0;
+         btng_buttoncount = btng_buttonspercolumn = 1;
+      } 
+      else
       {
-         lua_rawgeti(L, 5, i+1);
-         btng_buttons[i] = static_cast<unsigned int>(lua_tonumber(L,6));
-         lua_pop(L, 1);
-      }
+         btng_buttoncount = lua_getn(L, 5);
+         if ((btng_buttontype==btInput) && (btng_buttoncount>0))
+         {
+            inputtext[0] = 0;
+            btng_buttoncount = 1;
+         }
+         for (int i=0; i<btng_buttoncount; i++)
+         {
+            lua_rawgeti(L, 5, i+1);
+            btng_buttons[i] = static_cast<unsigned int>(lua_tonumber(L,6));
+            lua_pop(L, 1);
+         }
 
-      switch (btng_buttontype)
-      {
-         case btText:
-            btng_buttonimg_normal = btnimgs[0];
-            btng_buttonimg_highlight = btnimgs[1];
-            break;
-         case btImage: 
-            btng_buttonimg_normal = btnimgs[2];
-            btng_buttonimg_highlight = btnimgs[3];
-            break;
-         case btInput: 
-            btng_buttonimg_normal = btnimgs[4];
-            break;
+         switch (btng_buttontype)
+         {
+            case btText:
+               btng_buttonimg_normal = btnimgs[0];
+               btng_buttonimg_highlight = btnimgs[1];
+               break;
+            case btImage: 
+               btng_buttonimg_normal = btnimgs[2];
+               btng_buttonimg_highlight = btnimgs[3];
+               break;
+            case btInput: 
+               btng_buttonimg_normal = btnimgs[4];
+               break;
+         }
+         btng_buttonspercolumn = (btng_buttoncount>8) ? btng_buttoncount/2 : btng_buttoncount;
       }
-
-      btng_buttonspercolumn = (btng_buttoncount>8) ? btng_buttoncount/2 : btng_buttoncount;
       selected_button=prev_button=0;
       drawbuttongroup();
       ua_trace("new buttongroup set by char. creation script, caption nr: %d, %d buttons\n", btng_caption, btng_buttoncount);
@@ -401,7 +415,9 @@ void ua_create_character_screen::do_action()
       drawtext(static_cast<unsigned int>(lua_tonumber(L,3)),
                static_cast<unsigned int>(lua_tonumber(L,4)),
                static_cast<unsigned int>(lua_tonumber(L,5)),
-               static_cast<unsigned int>(lua_tonumber(L,6)));
+               static_cast<unsigned int>(lua_tonumber(L,6)),
+               textcolor_normal,
+               (n>6) ? static_cast<unsigned int>(lua_tonumber(L,7)) : -1);
       break;
    }
 
@@ -497,9 +513,9 @@ unsigned int ua_create_character_screen::drawnumber(unsigned int num, int x, int
    return drawtext(ca, x, y, 2, color);
 }
 
-unsigned int ua_create_character_screen::drawtext(int strnum, int x, int y, int xalign, unsigned char color)
+unsigned int ua_create_character_screen::drawtext(int strnum, int x, int y, int xalign, unsigned char color, int custstrblock)
 {
-   std::string text(core->get_strings().get_string(strblock, strnum));
+   std::string text(core->get_strings().get_string(custstrblock>-1 ? custstrblock : strblock, strnum));
    return (!text.empty()) ? drawtext(text.c_str(), x, y, xalign, color) : 0;
 }
 
@@ -533,6 +549,9 @@ void ua_create_character_screen::drawbutton(int buttontype, bool highlight, int 
 
 void ua_create_character_screen::drawbuttongroup()
 {
+   if (btng_buttontype==btTimer)
+      return;
+
    ua_image button = img_buttons.get_image(btng_buttonimg_normal);
    int inity = btng_buttonspercolumn*button.get_yres() + ((btng_buttonspercolumn-1)*5);
    if (btng_caption!=ccvNone)
@@ -565,6 +584,9 @@ void ua_create_character_screen::drawbuttongroup()
 
 int ua_create_character_screen::getbuttonover()
 {
+   if (btng_buttontype==btTimer)
+      return -1;
+
    int xpos, ypos;
    SDL_GetMouseState(&xpos, &ypos);
    xpos = int(double(xpos)/core->get_screen_width()*320);
@@ -602,21 +624,21 @@ void ua_create_character_screen::render()
 
    if (changed || (fadingstage!=0))
    {
-       // set brightness of texture quad
-       Uint8 light = 255;
+      // set brightness of texture quad
+      Uint8 light = 255;
 
-       switch (fadingstage)
-       {
-       case 1:
-          light = Uint8(255*(double(tickcount) / (core->get_tickrate()*ua_fade_time)));
-          break;
+      switch (fadingstage)
+      {
+      case 1:
+         light = Uint8(255*(double(tickcount) / (core->get_tickrate()*ua_fade_time)));
+         break;
 
-       case -1:
-          light = Uint8(255-255*(double(tickcount) / (core->get_tickrate()*ua_fade_time)));
-          break;
-       }
+      case -1:
+         light = Uint8(255-255*(double(tickcount) / (core->get_tickrate()*ua_fade_time)));
+         break;
+      }
 
-       glColor3ub(light,light,light);
+      glColor3ub(light,light,light);
 
 
       // prepare image texture
@@ -648,12 +670,19 @@ void ua_create_character_screen::tick()
          if (ended)
          {
             core->pop_screen();
+            if (newgame)
+               core->push_screen(new ua_ingame_orig_screen);
             return;
          } // else
          changed = true;
          fadingstage=0;
          tickcount=0;
       }
+   } 
+   if ((btng_buttontype==btTimer) && (++cdttickcount >= (core->get_tickrate()*countdowntime)))
+   {
+      cdttickcount=0;
+      press_button(0);
    }
 }
 
