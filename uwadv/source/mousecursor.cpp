@@ -63,8 +63,8 @@ void ua_mousecursor::updatepos()
 {
    int x,y;
    SDL_GetMouseState(&x,&y);
-   cursorx = unsigned(double(x)/screen_width*320.0)-cursorw/2.0;
-   cursory = unsigned(double(y)/screen_height*200.0)+cursorh/2.0;
+   cursorx = unsigned(double(x)/screen_width*320.0-cursorw/2.0);
+   cursory = unsigned(double(y)/screen_height*200.0+cursorh/2.0);
 }
 
 void ua_mousecursor::show(bool show)
