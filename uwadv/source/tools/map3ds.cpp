@@ -109,98 +109,87 @@ void write_level(unsigned int curlevel, ua_level& level)
    sprintf(buffer,"./levels3ds/level%02u.3ds",curlevel,curlevel);
 
 #ifdef HAVE_LIB3DS
+   // create new 3ds file
    Lib3dsFile* file = lib3ds_file_new();
 
    std::set<Uint16> usedtextures;
 
    // insert all meshes
    {
-      Uint16 curtexnum = alltriangles[0].texnum;
-      unsigned int startidx = 0;
-
       unsigned int max = alltriangles.size();
-      for(unsigned int i=0; i<max; i++)
+
+      Lib3dsMesh* mesh = lib3ds_mesh_new("alltriangles");
+
+      // create points, texels and faces list
+      lib3ds_mesh_new_point_list(mesh,max*3);
+      lib3ds_mesh_new_texel_list(mesh,max*3);
+      lib3ds_mesh_new_face_list(mesh,max);
+
+      char buffer2[64];
+
+      // process every triangle
+      for(unsigned int j=0; j<max; j++)
       {
-         if ( alltriangles[i].texnum != curtexnum && signed(i)-signed(startidx) > 0)
+         ua_triangle3d_textured tri(alltriangles[j]);
+
+         // point and texels list
+         for(int n=0; n<3; n++)
          {
-            // we reached a new texture number; do a new mesh object
-            char buffer2[64];
-            sprintf(buffer2,"tri%04x",startidx);
-            Lib3dsMesh* mesh = lib3ds_mesh_new(buffer2);
+            Lib3dsPoint pt;
 
-            // material name for all faces
-            sprintf(buffer2,"tex%04x",alltriangles[i].texnum);
+            pt.pos[0] = tri.points[n].x;
+            pt.pos[1] = tri.points[n].y;
+            pt.pos[2] = tri.points[n].z*0.125;
 
-            // create points, texels and faces list
-            lib3ds_mesh_new_point_list(mesh,(i-startidx)*3);
-            lib3ds_mesh_new_texel_list(mesh,(i-startidx)*3);
-            lib3ds_mesh_new_face_list(mesh,(i-startidx));
+            mesh->pointL[j*3+n] = pt;
 
-            // handle every triangle
-            for(unsigned int j=0; j<i-startidx; j++)
-            {
-               ua_triangle3d_textured tri(alltriangles[j]);
-
-               // point and texels list
-               for(int n=0; n<3; n++)
-               {
-                  Lib3dsPoint pt;
-
-                  pt.pos[0] = tri.points[n].x;
-                  pt.pos[1] = tri.points[n].y;
-                  pt.pos[2] = tri.points[n].z;
-
-                  mesh->pointL[j*3+n] = pt;
-
-                  // texels
-                  mesh->texelL[j*3+n][0] = tri.tex_u[n];
-                  mesh->texelL[j*3+n][1] = tri.tex_v[n];
-               }
-
-               // faces list
-               {
-                  Lib3dsFace face;
-                  strncpy(face.material,buffer2,64);
-
-                  face.points[0] = j*3+0;
-                  face.points[1] = j*3+1;
-                  face.points[2] = j*3+2;
-
-                  face.flags = 0;
-                  face.smoothing = 0;
-
-                  // calculate normal
-                  ua_vector3d line1, line2, normal;
-                  line1.set(
-                     tri.points[1].x-tri.points[0].x,
-                     tri.points[1].y-tri.points[0].y,
-                     tri.points[1].z-tri.points[0].z);
-
-                  line2.set(
-                     tri.points[2].x-tri.points[0].x,
-                     tri.points[2].y-tri.points[0].y,
-                     tri.points[2].z-tri.points[0].z);
-
-                  normal.cross(line1,line2);
-
-                  face.normal[0] = normal.x;
-                  face.normal[1] = normal.y;
-                  face.normal[2] = normal.z;
-
-                  mesh->faceL[j] = face;
-               }
-            }
-
-            // remember name of used texture
-            usedtextures.insert(curtexnum);
-
-            // set begin of new mesh
-            startidx = i;
-            curtexnum = alltriangles[i].texnum;
-
-            lib3ds_file_insert_mesh(file,mesh);
+            // texels
+            mesh->texelL[j*3+n][0] = tri.tex_u[n];
+            mesh->texelL[j*3+n][1] = tri.tex_v[n];
          }
+
+         // faces list
+         {
+            Lib3dsFace face;
+            strncpy(face.material,buffer2,64);
+
+            face.points[0] = j*3+0;
+            face.points[1] = j*3+1;
+            face.points[2] = j*3+2;
+
+            face.flags = 7;
+            face.smoothing = 0;
+
+            // calculate normal
+            ua_vector3d line1, line2, normal;
+            line1.set(
+               tri.points[1].x-tri.points[0].x,
+               tri.points[1].y-tri.points[0].y,
+               tri.points[1].z-tri.points[0].z);
+
+            line2.set(
+               tri.points[2].x-tri.points[0].x,
+               tri.points[2].y-tri.points[0].y,
+               tri.points[2].z-tri.points[0].z);
+
+            normal.cross(line1,line2);
+
+            face.normal[0] = normal.x;
+            face.normal[1] = normal.y;
+            face.normal[2] = normal.z;
+
+            mesh->faceL[j] = face;
+
+            // set face texture name
+            sprintf(mesh->faceL[j].material,"tex%04x",alltriangles[j].texnum);
+         }
+
+         // remember name of used texture
+         usedtextures.insert(alltriangles[j].texnum);
       }
+
+      // insert new mesh
+      lib3ds_file_insert_mesh(file,mesh);
    }
 
    // insert all used materials
@@ -247,6 +236,28 @@ void write_textures()
       tex.init(&texmgr);
       texmgr.stock_to_external(*iter,tex);
 
+      // swap red and blue color byte of texture
+      std::vector<Uint32> texels;
+      {
+         const Uint32* oldtexels = tex.get_texels();
+         Uint32 temp = 0;
+         Uint8 tempred = 0;
+
+         unsigned int max = tex.get_xres()*tex.get_yres();
+         for(unsigned int i=0; i<max; i++)
+         {
+            temp = oldtexels[i];
+
+            tempred = temp & 0xff;       // save red
+            temp &= 0xffffff00;          // mask out old red
+            temp |= ((temp >> 16)&0xff); // move blue
+            temp &= 0xff00ffff;          // mask out old blue
+            temp |= Uint32(tempred)<<16; // add back red
+
+            texels.push_back(temp);
+         }
+      }
+
       // write tga file with texture
       char buffer2[64];
       sprintf(buffer2,"./levels3ds/tex%04x.tga",*iter);
@@ -269,9 +280,7 @@ void write_textures()
       }
 
       // write texture texels
-      const Uint32* texels = tex.get_texels();
-
-      fwrite(texels,tex.get_xres()*tex.get_yres(),4,fd);
+      fwrite(&texels[0],tex.get_xres()*tex.get_yres(),4,fd);
 
       fclose(fd);
 
