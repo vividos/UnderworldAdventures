@@ -39,7 +39,7 @@
 class ua_underworld;
 class ua_level;
 class ua_renderer_impl;
-class ua_critter_pool;
+class ua_critter_frames_manager;
 class ua_model3d_manager;
 
 
@@ -66,6 +66,9 @@ public:
    //! returns texture manager
    ua_texture_manager& get_texture_manager();
 
+   //! returns critter frames manager
+   ua_critter_frames_manager& get_critter_frames_manager();
+
    //! sets up camera for 2d user interface rendering
    void setup_camera2d();
 
@@ -83,18 +86,12 @@ public:
       bool& isobj, unsigned int& id);
 
    //! prepares renderer for given level (e.g. when changing levels)
-   void prepare_level(const ua_level& level);
+   void prepare_level(ua_level& level);
 
    //! does renderer-specific tick processing
    void tick(double ticktime);
 
 protected:
-   //! critter pool
-   ua_critter_pool* critpool;
-
-   //! 3d models manager
-   ua_model3d_manager* modelmgr;
-
    //! renderer implementation
    ua_renderer_impl* renderer_impl;
 

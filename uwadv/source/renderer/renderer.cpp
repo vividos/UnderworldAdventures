@@ -26,10 +26,6 @@
    picking tutorial:
    http://www.lighthouse3d.com/opengl/picking/index.php3
 
-   billboarding tutorials:
-   http://www.lighthouse3d.com/opengl/billboarding/
-   http://nate.scuzzy.net/gltut/
-
 */
 
 // needed includes
@@ -39,18 +35,19 @@
 #include "critter.hpp"
 #include "models.hpp"
 #include "underworld.hpp"
+#include "game_interface.hpp"
 
 
 // constants
 
+//! near plane distance from the camera
 const double ua_renderer::near_dist = 0.05;
 
 
 // ua_renderer methods
 
 ua_renderer::ua_renderer()
-//:selection_mode(false)
-:view_offset(0.0, 0.0, 0.0), critpool(NULL), modelmgr(NULL), renderer_impl(NULL)
+:view_offset(0.0, 0.0, 0.0), renderer_impl(NULL)
 {
 }
 
@@ -59,13 +56,19 @@ ua_renderer::~ua_renderer()
    done();
 }
 
+/*! Initializes the renderer, the texture manager, critter frames manager and
+    OpenGL flags.
+
+    \param game game interface
+*/
 void ua_renderer::init(ua_game_interface& game)
 {
-   critpool = new ua_critter_pool;
-   modelmgr = new ua_model3d_manager;
    renderer_impl = new ua_renderer_impl;
+   if (renderer_impl == NULL)
+      throw ua_exception("couldn't create ua_renderer_impl class");
 
    get_texture_manager().init(game);
+   get_critter_frames_manager().init(game.get_settings(), game.get_image_manager());
 
    // culling: only render front face, counter clockwise
    glCullFace(GL_BACK);
@@ -90,9 +93,8 @@ void ua_renderer::init(ua_game_interface& game)
 
 void ua_renderer::done()
 {
-   delete critpool;
-   delete modelmgr;
    delete renderer_impl;
+   renderer_impl = NULL;
 
    glDisable(GL_FOG);
 }
@@ -107,6 +109,11 @@ void ua_renderer::clear()
 ua_texture_manager& ua_renderer::get_texture_manager()
 {
    return renderer_impl->get_texture_manager();
+}
+
+ua_critter_frames_manager& ua_renderer::get_critter_frames_manager()
+{
+   return renderer_impl->get_critter_frames_manager();
 }
 
 void ua_renderer::setup_camera2d()
@@ -265,8 +272,9 @@ void ua_renderer::select_pick(const ua_underworld& underw, unsigned int xpos,
    }
 }
 
-void ua_renderer::prepare_level(const ua_level& level)
+void ua_renderer::prepare_level(ua_level& level)
 {
+   ua_trace("preparing textures for level... ");
    ua_texture_manager& texmgr = get_texture_manager();
 
    // reset stock texture usage
@@ -288,6 +296,16 @@ void ua_renderer::prepare_level(const ua_level& level)
       for(n=0; n<13; n++) texmgr.prepare(ua_tex_stock_door+n);
       for(n=0; n<33; n++) texmgr.prepare(ua_tex_stock_tmobj+n);
    }
+
+   // prepare all object images
+   {
+      for(unsigned int n=0; n<0x01c0; n++) texmgr.prepare(ua_tex_stock_objects+n);
+   }
+
+   // reset critters controlled by critter frames manager
+   //get_critter_frames_manager().prepare(get_texture_manager(),&level.get_mapobjects());
+
+   ua_trace("done\n");
 }
 
 /*! \todo enable critter pool tick() call */
@@ -296,5 +314,6 @@ void ua_renderer::tick(double ticktime)
    // do texture manager tick processing
    get_texture_manager().tick(ticktime);
 
-//   critter_pool.tick(1.0/tickrate);
+   // do critter frames processing, too
+   get_critter_frames_manager().tick(ticktime);
 }
