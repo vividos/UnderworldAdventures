@@ -21,23 +21,21 @@
 */
 /*! \file uwadv.cpp
 
-   main game loop and OpenGL rendering code
+   main game loop code
 
 */
 
 // needed includes
 #include "common.hpp"
 #include "uwadv.hpp"
-#include "screens/ingame_orig.hpp"
+#include "screens/start_splash.hpp"
 
 
 // ua_game methods
 
-ua_game::ua_game()
+ua_game::ua_game():tickrate(20),exit_game(false),audio(NULL),screen(NULL),
+   screen_to_destroy(NULL)
 {
-   exit_game = false;
-   audio = NULL;
-   screen = NULL;
 }
 
 void ua_game::init()
@@ -88,6 +86,8 @@ void ua_game::init()
       throw ua_exception(text.c_str());
    }
 
+   // setup opengl
+   setup_opengl();
 
    // load settings
    settings.load();
@@ -102,45 +102,119 @@ void ua_game::init()
    audio = ua_audio_interface::get_audio_interface();
    audio->init(settings);
 
-   // create new user interface
-   screen = new ua_ingame_orig_screen;
    screenstack.clear();
 
-   screen->set_core(this);
-   screen->init();
+   // create new user interface screen
+   //push_screen(new ua_ingame_orig_screen);
+   push_screen(new ua_start_splash_screen);
 }
+
+#define HAVE_FRAMECOUNT
 
 void ua_game::run()
 {
    Uint32 now, then;
-   then = SDL_GetTicks();
+   Uint32 fcstart;
+   fcstart = then = SDL_GetTicks();
+
+   unsigned int ticks=0,renders=0;
 
    // main game loop
    while(!exit_game)
    {
       now = SDL_GetTicks();
-      Uint32 elapsed = (now - then);
-      then = now;
 
-      if (elapsed>(1.f/30.f))
-         game_logic();
+      Uint32 elapsed = (now - then);
+
+      while ((now - then) > (1000.f/tickrate))
+      {
+         then += (1000.f/tickrate);
+
+         // do game logic
+         screen->tick();
+         ticks++;
+
+         // check if there is a screen to destroy
+         if (screen_to_destroy!=NULL)
+         {
+            screen_to_destroy->done();
+            delete screen_to_destroy;
+            screen_to_destroy = NULL;
+            break;
+         }
+      }
+
+      if (exit_game) break;
 
       // process incoming events
       process_events();
 
       // draw the screen
       draw_screen();
+      renders++;
+
+      if ((now - then) > (1000.f/tickrate))
+         then = now - (1000.f/tickrate);
+
+#ifdef HAVE_FRAMECOUNT
+      now = SDL_GetTicks();
+
+      if (now-fcstart > 2000)
+      {
+         // set new caption
+         char buffer[256];
+         sprintf(buffer,"Underworld Adventures: %3.1f ticks/s, %3.1f frames/s",
+            ticks*1000.f/(now-fcstart),renders*1000.f/(now-fcstart));
+
+         SDL_WM_SetCaption(buffer,NULL);
+
+         // restart counting
+         ticks = renders = 0;
+         fcstart = now;
+      }
+#endif
    }
 }
 
 void ua_game::done()
 {
+   // free current screen
+   if (screen!=NULL)
+   {
+      screen->done();
+      delete screen;
+   }
+
+   // free all screens on screen stack
+   int max = screenstack.size();
+   for(int i=0; i<max; i++)
+   {
+      screenstack[i]->done();
+      delete screenstack[i];
+   }
+
    delete audio;
    SDL_Quit();
 }
 
 
 // private ua_game methods
+
+void ua_game::setup_opengl()
+{
+   // viewport
+   glViewport(0, 0, width, height);
+
+   // set projection matrix
+   float ratio = float(width)/height;
+   glMatrixMode(GL_PROJECTION);
+   glLoadIdentity();
+
+   gluPerspective(90.0, ratio, 0.25, 256.0);
+
+   // switch back to modelview matrix
+   glMatrixMode(GL_MODELVIEW);
+}
 
 void ua_game::process_events()
 {
@@ -149,6 +223,8 @@ void ua_game::process_events()
    // get another event
    while(SDL_PollEvent(&event))
    {
+      screen->handle_event(event);
+
       switch(event.type)
       {
       case SDL_KEYDOWN:
@@ -159,12 +235,6 @@ void ua_game::process_events()
       case SDL_SYSWMEVENT:
          // system message
          system_message(event.syswm);
-         break;
-
-      case SDL_MOUSEMOTION:
-      case SDL_MOUSEBUTTONDOWN:
-      case SDL_MOUSEBUTTONUP:
-         screen->handle_mouse_action(event);
          break;
 
       case SDL_QUIT:
@@ -192,10 +262,6 @@ void ua_game::handle_key_down(SDL_keysym *keysym)
       // play a midi track
       audio->start_music(keysym->sym-SDLK_0);
       break;
-
-   default:
-      screen->handle_key_down(*keysym);
-      break;
    }
 }
 
@@ -207,15 +273,41 @@ void ua_game::draw_screen()
    SDL_GL_SwapBuffers();
 }
 
-void ua_game::game_logic()
+void ua_game::push_screen(ua_ui_screen_base *newscreen)
 {
-   screen->tick();
+   // save old screen on stack
+   if (screen!=NULL)
+      screenstack.push_back(screen);
+
+   // we have a new screen
+   screen = newscreen;
+
+   screen->set_core(this);
+   screen->init();
 }
 
-void ua_game::push_screen(ua_ui_screen_base *screen)
+void ua_game::replace_screen(ua_ui_screen_base *newscreen)
 {
+   pop_screen();
+   push_screen(newscreen);
+   exit_game = false;
 }
 
-void ua_game::replace_screen(ua_ui_screen_base *screen)
+void ua_game::pop_screen()
 {
+   screen_to_destroy = screen;
+
+   // use 
+   if (screenstack.size()==0)
+   {
+      // no more screens available
+      screen=NULL;
+      exit_game = true;
+   }
+   else
+   {
+      // get last pushed screen
+      screen = screenstack.back();
+      screenstack.pop_back();
+   }
 }

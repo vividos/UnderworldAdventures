@@ -34,7 +34,7 @@
 #include "texture.hpp"
 #include "gamestrings.hpp"
 #include "audio.hpp"
-#include "screenbase.hpp"
+#include "screen.hpp"
 
 
 // main game class
@@ -55,6 +55,8 @@ public:
    virtual void done();
 
 protected:
+   //! controls how many ticks per second are done
+   const unsigned int tickrate;
 
    //! screen width
    unsigned int width;
@@ -83,6 +85,9 @@ protected:
    //! stack of user interface screens
    std::vector<ua_ui_screen_base*> screenstack;
 
+   //! screen queued to destroy
+   ua_ui_screen_base *screen_to_destroy;
+
 protected:
    // ua_game_core_interface virtual methods
 
@@ -93,10 +98,14 @@ protected:
    virtual ua_settings &get_settings(){ return settings; };
    virtual ua_texture_manager &get_texmgr(){ return texmgr; };
 
-   virtual void push_screen(ua_ui_screen_base *screen);
-   virtual void replace_screen(ua_ui_screen_base *screen);
+   virtual void push_screen(ua_ui_screen_base *newscreen);
+   virtual void replace_screen(ua_ui_screen_base *newscreen);
+   virtual void pop_screen();
 
 private:
+   //! sets up general OpenGL stuff
+   void setup_opengl();
+
    //! processes SDL events
    void process_events();
 
