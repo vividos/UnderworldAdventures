@@ -42,6 +42,15 @@ enum ua_scripting_language
    ua_script_lang_lua=0,
 };
 
+//! item combining result status
+enum ua_item_combine_status
+{
+   ua_item_combine_failed=0, //!< failed to combine the items
+   ua_item_combine_destroy_first, //!< succeeded; destroyed first item
+   ua_item_combine_destroy_second, //!< succeeded; destroyed second item
+   ua_item_combine_destroy_both, //!< succeeded; destroyed both items
+};
+
 
 // classes
 
@@ -90,8 +99,17 @@ public:
    //! performs inventory item "use" action
    virtual void inventory_use(unsigned int pos)=0;
 
-   //! combines two objects in inventory
-   virtual void inventory_combine(unsigned int pos,unsigned int pos2)=0;
+   //! combines two items
+   /*! Tries to combine two objects; returns resulting object id or
+       ua_item_none, when items couldn't be combined.
+
+       \param item_id1 item id of object to combine
+       \param item_id2 item id of object to combine with
+       \param result_id item id of result object
+       \return status of item combining
+   */
+   virtual ua_item_combine_status item_combine(Uint16 item_id1, Uint16 item_id2,
+      Uint16& result_id)=0;
 
    //! creates new scripting object
    static ua_scripting* create_scripting(ua_scripting_language lang);

@@ -201,12 +201,16 @@ void ua_lua_scripting::inventory_use(unsigned int pos)
    checked_call(1,0);
 }
 
-void ua_lua_scripting::inventory_combine(unsigned int pos,unsigned int pos2)
+ua_item_combine_status ua_lua_scripting::item_combine(Uint16 item_id1,
+   Uint16 item_id2, Uint16& result_id)
 {
-   lua_getglobal(L,"inventory_combine");
-   lua_pushnumber(L, static_cast<double>(pos));
-   lua_pushnumber(L, static_cast<double>(pos2));
+   lua_getglobal(L,"item_combine");
+   lua_pushnumber(L, static_cast<double>(item_id1));
+   lua_pushnumber(L, static_cast<double>(item_id2));
    checked_call(2,2);
+
+   result_id = ua_item_none;
+   return ua_item_combine_failed;
 }
 
 int ua_lua_scripting::load_script(SDL_RWops* rwops, const char* chunkname)

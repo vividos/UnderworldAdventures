@@ -74,7 +74,8 @@ public:
    virtual void object_use(unsigned int pos);
    virtual void inventory_look(unsigned int pos);
    virtual void inventory_use(unsigned int pos);
-   virtual void inventory_combine(unsigned int pos,unsigned int pos2);
+   virtual ua_item_combine_status item_combine(Uint16 item_id1, Uint16 item_id2,
+      Uint16& result_id);
 
 protected:
    //! loads a script
