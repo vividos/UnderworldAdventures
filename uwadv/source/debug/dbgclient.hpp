@@ -31,12 +31,12 @@
 
 
 // forward references
-class ua_debug_server_impl;
+class ua_debug_server_interface;
 
 
 // classes
 
-//! debugger application
+//! debugger client interface
 class ua_debug_client_interface
 {
 public:
@@ -67,8 +67,8 @@ public:
    double get_tile_height(unsigned int level, double xpos, double ypos);
 
 protected:
-   //! pointer to server-side debugger implementation object
-   ua_debug_server_impl* server;
+   //! pointer to server debugger interface
+   ua_debug_server_interface* server;
 };
 
 

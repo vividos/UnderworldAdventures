@@ -35,7 +35,7 @@
 
 void ua_debug_client_interface::init_client(void* data)
 {
-   server = reinterpret_cast<ua_debug_server_impl*>(data);
+   server = reinterpret_cast<ua_debug_server_interface*>(data);
 }
 
 void ua_debug_client_interface::lock(bool set_lock)
