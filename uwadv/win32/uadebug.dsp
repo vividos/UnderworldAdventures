@@ -38,8 +38,8 @@ RSC=rc.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "../../output/release/uadebug"
-# PROP Intermediate_Dir "../../output/release/uadebug/intermediate"
+# PROP Output_Dir "../output/release/uadebug"
+# PROP Intermediate_Dir "../output/release/uadebug/intermediate"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "UADEBUG_EXPORTS" /YX /FD /c
@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib wxmsw.lib png.lib zlib.lib jpeg.lib tiff.lib regex.lib fl.lib /nologo /dll /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libci.lib" /nodefaultlib:"msvcrtd.lib" /out:"../../output/release/uadebug.dll" /libpath:"$(wxwin)/lib"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib wxmsw.lib png.lib zlib.lib jpeg.lib tiff.lib regex.lib fl.lib /nologo /dll /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libci.lib" /nodefaultlib:"msvcrtd.lib" /out:"../output/release/uadebug.dll" /libpath:"$(wxwin)/lib"
 
 !ELSEIF  "$(CFG)" == "uadebug - Win32 Debug"
 
@@ -64,8 +64,8 @@ LINK32=link.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "../../output/debug/uadebug"
-# PROP Intermediate_Dir "../../output/debug/uadebug/intermediate"
+# PROP Output_Dir "../output/debug/uadebug"
+# PROP Intermediate_Dir "../output/debug/uadebug/intermediate"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "UADEBUG_EXPORTS" /YX /FD /GZ /c
@@ -92,22 +92,22 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE=..\debug\dbgapp.cpp
+SOURCE=..\source\debug\dbgapp.cpp
 # ADD CPP /Yu"dbgcommon.hpp"
 # End Source File
 # Begin Source File
 
-SOURCE=..\debug\mainframe.cpp
+SOURCE=..\source\debug\mainframe.cpp
 # ADD CPP /Yu"dbgcommon.hpp"
 # End Source File
 # Begin Source File
 
-SOURCE=..\debug\pch.cpp
+SOURCE=..\source\debug\pch.cpp
 # ADD CPP /Yc"dbgcommon.hpp"
 # End Source File
 # Begin Source File
 
-SOURCE=..\debug\playerinfo.cpp
+SOURCE=..\source\debug\playerinfo.cpp
 # ADD CPP /Yu"dbgcommon.hpp"
 # End Source File
 # Begin Source File
@@ -120,19 +120,19 @@ SOURCE=.\uadebug.def
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
-SOURCE=..\debug\dbgapp.hpp
+SOURCE=..\source\debug\dbgapp.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\debug\dbgcommon.hpp
+SOURCE=..\source\debug\dbgcommon.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\debug\mainframe.hpp
+SOURCE=..\source\debug\mainframe.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\debug\playerinfo.hpp
+SOURCE=..\source\debug\playerinfo.hpp
 # End Source File
 # End Group
 # Begin Group "resource files"
@@ -144,12 +144,12 @@ SOURCE=..\debug\playerinfo.hpp
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\..\wxMSW\contrib\src\fl\controlbar.cpp
+SOURCE=..\..\wxMSW\contrib\src\fl\controlbar.cpp
 # PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\wxMSW\contrib\include\wx\fl\controlbar.h
+SOURCE=..\..\wxMSW\contrib\include\wx\fl\controlbar.h
 # PROP Exclude_From_Build 1
 # End Source File
 # End Group

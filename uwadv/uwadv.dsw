@@ -3,7 +3,7 @@ Microsoft Developer Studio Workspace File, Format Version 6.00
 
 ###############################################################################
 
-Project: "uaconfig"=.\source\win32\uaconfig.dsp - Package Owner=<4>
+Project: "uaconfig"=.\win32\uaconfig.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -15,7 +15,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "uadebug"=.\source\win32\uadebug.dsp - Package Owner=<4>
+Project: "uadebug"=.\win32\uadebug.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -30,7 +30,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "uaopt"=.\source\win32\uaopt.dsp - Package Owner=<4>
+Project: "uaopt"=.\win32\uaopt.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -42,7 +42,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "uwadv"=.\source\win32\uwadv.dsp - Package Owner=<4>
+Project: "uwadv"=.\win32\uwadv.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
