@@ -113,7 +113,8 @@ void ua_ingame_orig_screen::init()
    cursor_is_object = false;
    mouse_move = false;
 
-   move_turn_left = move_turn_right = move_walk_forward = move_walk_backwards = false;
+   move_turn_left = move_turn_right = move_walk_forward =
+      move_walk_backwards = move_run_forward = false;
 
    slot_start = 0;
    check_dragging = false;
