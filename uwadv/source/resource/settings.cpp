@@ -75,6 +75,28 @@ ua_settings::ua_settings()
 {
 }
 
+void ua_settings::process_option(int option, const char *value)
+{
+   switch(option)
+   {
+   case ua_setting_uw1path:
+      uw1_path = value;
+      break;
+
+   case ua_setting_uadata_path:
+      uadata_path = value;
+      break;
+
+   case ua_setting_fullscreen:
+      {
+         fullscreen = (strstr("true",value) != NULL) ||
+            (strstr("1",value) != NULL) ||
+            (strstr("yes",value) != NULL);
+      }
+      break;
+   }
+}
+
 void ua_settings::load()
 {
    std::ifstream cfg(ua_settings_file);
@@ -202,27 +224,4 @@ bool ua_settings::file_isavail(const char *fname)
       return false;
    fclose(fd);
    return true;
-}
-
-void ua_settings::process_option(int option, const char *value)
-{
-   switch(option)
-   {
-   case ua_setting_uw1path:
-      uw1_path = value;
-      break;
-
-   case ua_setting_uadata_path:
-      uadata_path = value;
-      break;
-
-   case ua_setting_fullscreen:
-      {
-         fullscreen = (strstr("true",value) != NULL) ||
-            (strstr("1",value) != NULL) ||
-            (strstr("yes",value) != NULL);
-      }
-      break;
-   }
-
 }
