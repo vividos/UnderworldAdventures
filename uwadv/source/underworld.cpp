@@ -46,10 +46,8 @@ void ua_underworld::init(ua_game_core_interface *thecore)
    inventory.init(this);
 
    player.init();
-   player.set_pos(32.0,2.0);
-   player.set_angle(90.0);
-   player.set_attr(ua_attr_gender,1);
 
+   // init the scripts as last step
    script.init(this);
 }
 
