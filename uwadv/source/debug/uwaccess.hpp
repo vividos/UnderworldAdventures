@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Underworld Adventures Team
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,30 +26,98 @@
 */
 
 // include guard
-#ifndef __uadebug_uwaccess_hpp__
-#define __uadebug_uwaccess_hpp__
+#ifndef uadebug_uwaccess_hpp_
+#define uadebug_uwaccess_hpp_
 
 // needed includes
 
 
+// forward references
+class ua_game_core_interface;
+class ua_debug_interface;
+
+
+// enums
+
+//! uadebug commands
+enum
+{
+   udc_nop=0,
+   udc_lock=1,       //!< lock underworld object
+   udc_unlock=2,     //!< unlock underworld
+
+   udc_player_get=3, /*!< gets player value; param1.uint holds array index;
+                          allowed types:
+                          0: get player info
+                          0: get attribute
+                          1: get skill */
+   udc_player_set=4, /*!< sets player value; param1.uint holds index;
+                          types are the same as in udc_player_get */
+};
+
+//! parameter types
+enum
+{
+   ua_param_int=0,
+   ua_param_double=1
+};
+
+
 // structs
 
-//! ua_underworld access api function struct
-struct ua_uw_access_api
+//! parameter struct for command function
+struct ua_debug_param
 {
-   //! gets/sets a player double value
-   void (*player_value)(ua_debug_interface* inter,
-      bool set, unsigned int index, double& value);
+   // parameter variant
+   union param
+   {
+      unsigned int i;
+      double d;
+      //void* v;
+   } val;
 
-   void (*player_attribute)(ua_debug_interface* inter,
-      bool set, unsigned int index, unsigned int& value);
+   //! parameter type
+   unsigned int type;
+};
 
-   void (*player_skill)(ua_debug_interface* inter,
-      bool set, unsigned int index, unsigned int& value);
 
-   //! inits access api struct; must be the last member in the struct
-   void init();
+// typedefs
 
+//! command func to pass commands from debugger to uwadv
+typedef unsigned int (*ua_debug_command_func)(
+   unsigned int cmd, unsigned int type,
+   ua_debug_param* param1, ua_debug_param* param2);
+
+
+// classes
+
+//! underworld access api
+class ua_uw_access_api
+{
+public:
+   //! ctor
+   ua_uw_access_api(){}
+
+   //! initialize access api object
+   void init(ua_game_core_interface* core, ua_debug_interface* debug);
+
+   //! returns command function
+   ua_debug_command_func get_command_func(){ return command_func; }
+
+protected:
+   //! command function
+   static unsigned int command_func(
+      unsigned int cmd, unsigned int type,
+      ua_debug_param* param1, ua_debug_param* param2);
+
+   //! current api object
+   static ua_uw_access_api* cur_api;
+
+   //! game core object
+   ua_game_core_interface* core;
+
+   //! currently used debug interface
+   ua_debug_interface* debug;
 };
 
 #endif

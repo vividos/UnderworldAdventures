@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Underworld Adventures Team
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -27,61 +27,82 @@
 
 // needed includes
 #include "common.hpp"
-#include "debug.hpp"
 #include "uwaccess.hpp"
+#include "core.hpp"
 
 
-// global api methods
+// static variables
 
-void ua_access_player_value(ua_debug_interface* inter,
-   bool set, unsigned int index, double& value)
+//! current access api object
+ua_uw_access_api* ua_uw_access_api::cur_api = NULL;
+
+
+// ua_uw_access_api methods
+
+void ua_uw_access_api::init(ua_game_core_interface* thecore, ua_debug_interface* dbgint)
 {
-   ua_player& pl = inter->get_underworld()->get_player();
-   switch(index)
+   core = thecore;
+   debug = dbgint;
+   cur_api = this;
+}
+
+unsigned int ua_uw_access_api::command_func(
+   unsigned int cmd, unsigned int type,
+   ua_debug_param* param1, ua_debug_param* param2)
+{
+   unsigned int ret = 1;
+
+   ua_game_core_interface* core = cur_api->core;
+   ua_debug_interface* debug = cur_api->debug;
+
+   switch(cmd)
    {
-   case 0: // xpos
-      if (set) pl.set_pos(value,pl.get_ypos());
-      else value = pl.get_xpos();
+   case udc_nop: // do noting
+      ret = 0;
       break;
 
-   case 1: // ypos
-      if (set) pl.set_pos(pl.get_xpos(),value);
-      else value = pl.get_ypos();
+   case udc_lock: // lock underworld
+      debug->lock();
       break;
 
-   case 2: // height
-      if (set) pl.set_height(value);
-      else value = pl.get_height();
+   case udc_unlock: // unlock underworld
+      debug->unlock();
       break;
 
-   case 3: // angle
-      if (set) pl.set_angle_rot(value);
-      else value = pl.get_angle_rot();
+   case udc_player_get: // get player value
+      {
+         ua_player& pl = core->get_underworld().get_player();
+
+         unsigned int value = param1->val.i;
+
+         if (value<4)
+         {
+            switch(value)
+            {
+            case 0: param1->val.d = pl.get_xpos(); break;
+            case 1: param1->val.d = pl.get_ypos(); break;
+            case 2: param1->val.d = pl.get_height(); break;
+            case 3: param1->val.d = pl.get_angle_rot(); break;
+            }
+
+            param1->type = ua_param_double;
+         }
+         else
+         {
+            value -= 4;
+            param1->type = ua_param_int;
+
+            if (value<ua_attr_max)
+               param1->val.i = pl.get_attr((ua_player_attributes)value);
+            else
+               param1->val.i = pl.get_skill((ua_player_skills)(value-ua_attr_max));
+         }
+      }
+      break;
+
+   case udc_player_set:
       break;
    }
-}
 
-void ua_access_player_attribute(ua_debug_interface* inter,
-   bool set, unsigned int index, unsigned int& value)
-{
-   ua_player& pl = inter->get_underworld()->get_player();
-   if (set) pl.set_attr(ua_player_attributes(index),value);
-   else value = pl.get_attr(ua_player_attributes(index));
-}
-
-void ua_access_player_skill(ua_debug_interface* inter,
-   bool set, unsigned int index, unsigned int& value)
-{
-   ua_player& pl = inter->get_underworld()->get_player();
-   if (set) pl.set_skill(ua_player_skills(index),value);
-   else value = pl.get_skill(ua_player_skills(index));
-}
-
-// struct methods
-
-void ua_uw_access_api::init()
-{
-   player_value = ua_access_player_value;
-   player_attribute = ua_access_player_attribute;
-   player_skill = ua_access_player_skill;
+   return ret;
 }
