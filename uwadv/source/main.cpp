@@ -19,15 +19,20 @@
    $Id$
 
 */
-/*! \file win32/main.cpp
+/*! \file main.cpp
 
-   \brief win32 specific main function
+   \brief the game's main function
 
 */
 
 // needed includes
 #include "common.hpp"
-#include "game_win32.hpp"
+#include "uwadv.hpp"
+
+
+// external functions
+
+extern ua_uwadv_game* ua_game_create();
 
 
 // to have console output, use a genuine main(), not the SDL_main one
@@ -40,33 +45,44 @@
 
 int main(int argc, char* argv[])
 {
-   ua_game_win32 ua;
+   ua_uwadv_game* ua;
 
-#ifndef HAVE_DEBUG
+   // create new game object
+   ua = ua_game_create();
+
+   if (ua == NULL)
+      return 1;
+
+#ifndef HAVE_DEBUG // in debug mode the debugger catches the exceptions
    try
 #endif
    {
-      ua.init();
-      ua.parse_args(static_cast<unsigned int>(argc),
+      // init and run the game
+      ua->init();
+      ua->parse_args(static_cast<unsigned int>(argc),
          const_cast<const char**>(argv));
-      ua.run();
-      ua.done();
+
+      ua->run();
+
+      ua->done();
    }
 #ifndef HAVE_DEBUG
    catch (ua_exception e)
    {
-      ua_trace("caught ua_exception: %s\n",e.what());
-
       std::string text("caught ua_exception:\n\r");
       text.append(e.what());
-      ua.error_msg(text.c_str());
+
+      ua->error_msg(text.c_str());
    }
    catch (std::exception e)
    {
       ua_trace("caught std::exception\n");
-      ua.error_msg("std::exception");
+      ua->error_msg("std::exception");
    }
 #endif
+
+   delete ua;
+   ua = NULL;
 
    return 0;
 }
