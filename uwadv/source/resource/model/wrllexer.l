@@ -60,7 +60,7 @@
 /* prefix code */
 %{
 
-#include "wrllexer.hpp"
+#include "resource/model/wrllexer.hpp"
 
 %}
 
