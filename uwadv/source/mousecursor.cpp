@@ -21,7 +21,7 @@
 */
 /*! \file mousecursor.cpp
 
-   \brief mouse cursor 
+   \brief mouse cursor
 
 */
 
@@ -32,20 +32,17 @@
 
 // ua_mousecursor methods
 
-ua_mousecursor::ua_mousecursor(ua_game_core_interface* core, int initialtype)
+void ua_mousecursor::init(ua_game_core_interface* core, int initialtype)
 {
-   this->core = core;
+   screen_width = core->get_screen_width();
+   screen_height = core->get_screen_height();
+
    ua_settings &settings = core->get_settings();
    img_cursors.load(settings,"cursors");
    mousetex.init(&core->get_texmgr());
    isvisible = false;
    settype(initialtype);
    updatepos();
-}
-
-ua_mousecursor::~ua_mousecursor()
-{
-   mousetex.done();
 }
 
 void ua_mousecursor::settype(int type)
@@ -62,8 +59,8 @@ void ua_mousecursor::updatepos()
 {
    int x,y;
    SDL_GetMouseState(&x,&y);
-   cursorx = unsigned(double(x)/core->get_screen_width()*320.0)-cursorw/2.0;
-   cursory = unsigned(double(y)/core->get_screen_height()*200.0)+cursorh/2.0;
+   cursorx = unsigned(double(x)/screen_width*320.0)-cursorw/2.0;
+   cursory = unsigned(double(y)/screen_height*200.0)+cursorh/2.0;
 }
 
 void ua_mousecursor::show(bool show)
@@ -84,4 +81,9 @@ void ua_mousecursor::draw()
    glTexCoord2d(u  , 0.0); glVertex2i(cursorx+cursorw, 200-cursory+cursorh);
    glTexCoord2d(0.0, 0.0); glVertex2i(cursorx, 200-cursory+cursorh);
    glEnd();
+}
+
+void ua_mousecursor::done()
+{
+   mousetex.done();
 }

@@ -41,10 +41,13 @@ class ua_mousecursor
 {
 public:
    //! ctor
-   ua_mousecursor(ua_game_core_interface* core, int initialtype=0);
-   
+   ua_mousecursor(){}
+
    //! dtor
-   ~ua_mousecursor();
+   ~ua_mousecursor(){ done(); }
+
+   //! initializes mouse cursor class
+   void init(ua_game_core_interface* core, int initialtype=0);
 
    //! show or hide the cursor
    void show(bool show);
@@ -58,9 +61,12 @@ public:
    //! update and draw the mouse texture
    void draw();
 
+   //! cleans up mouse cursor
+   void done();
+
 protected:
-   //! pointer to core interface
-   ua_game_core_interface* core;
+   //! screen size
+   unsigned int screen_width,screen_height;
 
    //! cursor visible
    bool isvisible;
