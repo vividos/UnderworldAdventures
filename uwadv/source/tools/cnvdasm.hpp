@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 */
 /*! \file cnvdasm.hpp
 
-   conversation disassembler and decompiler
+   \brief conversation disassembler and decompiler
 
 */
 
@@ -36,37 +36,6 @@
 #include <cstdio>
 
 
-// structs
-
-//! decompiler entry
-typedef struct
-{
-   Uint16 instrp;
-
-   //! code byte
-   Uint16 code;
-
-   //! optional argument
-   Uint16 arg;
-
-   //! indicates if code was translated
-   bool translated;
-
-   //! translated command
-   std::string command;
-
-   //! possible label
-   std::string label;
-
-   //! indendation level
-   unsigned int indent_level;
-
-   //! indicates if an empty line should be printed before "command"
-   bool empty_line;
-
-} ua_conv_dec_entry;
-
-
 // classes
 
 //! disassembler class
@@ -77,45 +46,26 @@ public:
    ua_conv_dasm(){}
 
    //! initializes disassembler; returns false if no conversation is available
-   bool init(const char *cnvfile,unsigned int conv);
+   bool init(ua_gamestrings* gs, const char* cnvfile,unsigned int conv);
 
    //! disassembles code in assembler-like file
-   void disassemble(FILE *out);
+   void disassemble();
 
    //! tries to match assembler language to C constructs
-   void decompile(FILE *out);
+   void decompile(bool with_opcodes);
 
 protected:
-   //! loads code in the dec_entries struct
-   void load_dec();
 
-   //! resolves labels of jump opcodes
-   void resolve_labels();
 
-   // replaces constructs in the dec_entries list
-   bool replace_constructs(unsigned int type, unsigned int entry, unsigned int max);
+   // helper functions
 
-   //! formats a string with the global's variable name
-   std::string format_global(Uint16 offset);
-
-   //! searches for instrp and returns entry index in dec_entries
-   unsigned int search_instrp(unsigned int instrp);
-
-   //! replaces stuff with if or switch statement
-   bool if_switch_replace(unsigned int entry, unsigned int max);
+   //! prints opcode (and argument)
+   void print_opcode(Uint16 opcode, Uint16 arg, Uint16 pos);
 
 protected:
-   //! input file
-   FILE *fd;
 
-   //! decoding entries
-   std::vector<ua_conv_dec_entry> dec_entries;
-
-   //! all function names which should be forward declared
-   std::vector<std::string> forward_decl;
-
-   //! all game strings
-   ua_gamestrings gs;
+   //! game strings
+   ua_gamestrings* gs;
 };
 
 #endif
