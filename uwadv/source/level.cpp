@@ -122,12 +122,20 @@ void ua_level::render(ua_texture_manager &texmgr,ua_frustum &fr)
       render_walls(qtc.first,qtc.second,texmgr);
    }
 
+   // set up new viewpoint, "view coordinates" used in ua_object::render()
+   glPushMatrix();
+   glLoadIdentity();
+   glRotatef(-fr.get_yangle()+270, 1.0, 0.0, 0.0);
+
    // draw all objects in tile
    for(i=0;i<max;i++)
    {
       const ua_quad_tile_coord &qtc = tilelist[i];
       render_objs(qtc.first,qtc.second,texmgr,fr);
    }
+
+   // restore old viewpoint
+   glPopMatrix();
 }
 
 void ua_level::render(ua_texture_manager &texmgr)
@@ -142,10 +150,23 @@ void ua_level::render(ua_texture_manager &texmgr)
 
    for(y=0; y<64;y++) for(x=0; x<64;x++)
       render_walls(x,y,texmgr);
+/*
+   {
+      // construct proper frustum for viewing in mapdisp
+      ua_frustum fr(0.0,0.0,0.0,45.0,0.0,90.0,16.0);
 
-/* // TODO construct proper frustum for viewing in mapdisp
-   for(y=0; y<64;y++) for(x=0; x<64;x++)
-      render_objs(x,y,texmgr);*/
+      // set up new viewpoint, "view coordinates" used in ua_object::render()
+      glPushMatrix();
+      glLoadIdentity();
+      glRotatef(-fr.get_yangle()+270, 1.0, 0.0, 0.0);
+
+      for(y=0; y<64;y++) for(x=0; x<64;x++)
+         render_objs(x,y,texmgr,fr);
+
+      // restore old viewpoint
+      glPopMatrix();
+   }
+*/
 }
 
 void ua_level::render_floor(unsigned int x, unsigned int y, ua_texture_manager &texmgr)

@@ -29,6 +29,7 @@
 #include "common.hpp"
 #include "objects.hpp"
 #include "level.hpp"
+#include <cmath>
 
 
 // ua_object methods
@@ -38,52 +39,61 @@ ua_object::ua_object(unsigned int myxpos,unsigned int myypos,Uint16 mylink1,Uint
 {
 }
 
+/*! each object is rendered using "view coordinates", that means the camera is
+    at 0,0,0 and the camera views towards the positive y axis. objects that
+    should be perpendicular to the view vector can just be rendered as quads
+    with a fixed y value. the needed modelview matrix should be set up by the
+    caller, e.g. from ua_level::render().
+*/
 void ua_object::render(unsigned int x, unsigned int y,
    ua_texture_manager &texmgr, ua_frustum &fr, ua_level &lev)
 {
    // get object position
    double objxpos = x + (xpos+0.5)/8.0;
    double objypos = y + (ypos+0.5)/8.0;
-   double height = lev.get_floor_height(objxpos,objypos);
+   double height = -fr.get_pos(2)+lev.get_floor_height(objxpos,objypos);
+
+   // get object angle and distance, in respect to the camera
+   double objdx = objxpos-fr.get_pos(0), objdy = objypos-fr.get_pos(1);
+   double objangle = ua_rad2deg(atan2(objdy,objdx));
+   double objdist = sqrt(objdx*objdx+objdy*objdy);
+
+   // calculate angle relative to view
+   double camangle = fr.get_xangle();
+   double relangle = objangle - camangle + 90.0;
+
+   // calculate object position in transformed coordinates
+   double relx, rely;
+   relx = objdist*cos(ua_deg2rad(relangle));
+   rely = objdist*sin(ua_deg2rad(relangle));
 
    // get object texture coords
    double u1,v1,u2,v2;
    texmgr.object_tex(id,u1,v1,u2,v2);
 
-
-   // render object
-
+   // calculate quad y rotation (e.g. when looking at it from above)
    double boxwidth=0.1;
+   double camangle2 = fr.get_yangle();
+   double rely2 = rely-boxwidth*sin(ua_deg2rad(camangle2));
+   double height2 = height+boxwidth*2*cos(ua_deg2rad(camangle2));
 
-   // draws a white textured box on the floor
+   // draw object quad
+
+//   glDisable(GL_DEPTH_TEST);
+   glEnable(GL_BLEND);
+
    glBegin(GL_QUADS);
    glColor3ub(255,255,255);
 
-   glTexCoord2d(u1,v1); glVertex3d(objxpos-boxwidth, objypos-boxwidth, height+boxwidth*2);
-   glTexCoord2d(u2,v1); glVertex3d(objxpos+boxwidth, objypos-boxwidth, height+boxwidth*2);
-   glTexCoord2d(u2,v2); glVertex3d(objxpos+boxwidth, objypos+boxwidth, height+boxwidth*2);
-   glTexCoord2d(u1,v2); glVertex3d(objxpos-boxwidth, objypos+boxwidth, height+boxwidth*2);
+   glTexCoord2d(u1,v2); glVertex3d(relx-boxwidth, rely, height);
+   glTexCoord2d(u2,v2); glVertex3d(relx+boxwidth, rely, height);
+   glTexCoord2d(u2,v1); glVertex3d(relx+boxwidth, rely2, height2);
+   glTexCoord2d(u1,v1); glVertex3d(relx-boxwidth, rely2, height2);
 
-   glTexCoord2d(u1,v1); glVertex3d(objxpos-boxwidth, objypos-boxwidth, height+boxwidth*2);
-   glTexCoord2d(u2,v1); glVertex3d(objxpos-boxwidth, objypos+boxwidth, height+boxwidth*2);
-   glTexCoord2d(u2,v2); glVertex3d(objxpos-boxwidth, objypos+boxwidth, height);
-   glTexCoord2d(u1,v2); glVertex3d(objxpos-boxwidth, objypos-boxwidth, height);
-
-   glTexCoord2d(u1,v1); glVertex3d(objxpos-boxwidth, objypos+boxwidth, height+boxwidth*2);
-   glTexCoord2d(u2,v1); glVertex3d(objxpos+boxwidth, objypos+boxwidth, height+boxwidth*2);
-   glTexCoord2d(u2,v2); glVertex3d(objxpos+boxwidth, objypos+boxwidth, height);
-   glTexCoord2d(u1,v2); glVertex3d(objxpos-boxwidth, objypos+boxwidth, height);
-
-   glTexCoord2d(u1,v1); glVertex3d(objxpos+boxwidth, objypos+boxwidth, height+boxwidth*2);
-   glTexCoord2d(u2,v1); glVertex3d(objxpos+boxwidth, objypos-boxwidth, height+boxwidth*2);
-   glTexCoord2d(u2,v2); glVertex3d(objxpos+boxwidth, objypos-boxwidth, height);
-   glTexCoord2d(u1,v2); glVertex3d(objxpos+boxwidth, objypos+boxwidth, height);
-
-   glTexCoord2d(u1,v1); glVertex3d(objxpos+boxwidth, objypos-boxwidth, height+boxwidth*2);
-   glTexCoord2d(u2,v1); glVertex3d(objxpos-boxwidth, objypos-boxwidth, height+boxwidth*2);
-   glTexCoord2d(u2,v2); glVertex3d(objxpos-boxwidth, objypos-boxwidth, height);
-   glTexCoord2d(u1,v2); glVertex3d(objxpos+boxwidth, objypos-boxwidth, height);
    glEnd();
+
+   glDisable(GL_BLEND);
+//   glEnable(GL_DEPTH_TEST);
 }
 
 
