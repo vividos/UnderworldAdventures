@@ -46,6 +46,7 @@ struct
    { "uw1-path", ua_setting_uw1_path },
 // { "uw2-path", ua_setting_uw2_path },
    { "uadata-path", ua_setting_uadata_path },
+   { "savegame-folder", ua_setting_savegame_folder },
    { "fullscreen", ua_setting_fullscreen },
    { "cutscene-narration", ua_setting_cuts_narration },
 //   { "audio-enabled",  },

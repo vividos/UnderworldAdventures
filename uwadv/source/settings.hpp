@@ -57,6 +57,9 @@ enum ua_settings_key
    //! path to the "uadata" folder
    ua_setting_uadata_path,
 
+   //! path to the savegame folder
+   ua_setting_savegame_folder,
+
    //! boolean value that indicates fullscreen mode
    ua_setting_fullscreen,
 
@@ -65,7 +68,6 @@ enum ua_settings_key
 
    //! int value with midi device to use
    ua_setting_win32_midi_device,
-
 };
 
 //! game type enum
