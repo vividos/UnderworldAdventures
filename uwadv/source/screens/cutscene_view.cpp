@@ -23,6 +23,8 @@
 
    \brief cutscene view implementation
 
+   \todo replace fading in/out with ua_fading_helper
+
 */
 
 // needed includes
@@ -53,6 +55,11 @@ void ua_cutscene_view_screen::init()
 
    ua_trace("cutscene view screen started\n"
       "showing cutscene %u\n",cutscene);
+
+   game->get_renderer().setup_camera2d();
+
+   glDisable(GL_BLEND);
+   glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
    // determine cutscene type
    ua_settings& settings = game->get_settings();
@@ -123,22 +130,6 @@ void ua_cutscene_view_screen::init()
       ended = true;
    }
 
-   // init OpenGL
-
-   // setup orthogonal projection
-   glMatrixMode(GL_PROJECTION);
-   glLoadIdentity();
-   gluOrtho2D(0,320,0,200);
-   glMatrixMode(GL_MODELVIEW);
-
-   // set OpenGL flags
-   glEnable(GL_TEXTURE_2D);
-   glBindTexture(GL_TEXTURE_2D,0);
-
-   glDisable(GL_DEPTH_TEST);
-   glDisable(GL_BLEND);
-   glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-
    // init subtitle text
    font_big.load(settings,ua_font_big);
 }
@@ -150,9 +141,8 @@ void ua_cutscene_view_screen::destroy()
    // stop audio track
    game->get_audio_manager().stop_sound();
 
-   img_text.done();
-   cuts_anim.done();
-   game->get_renderer().get_texture_manager().using_new_texname(0);
+   img_text.destroy();
+   cuts_anim.destroy();
 
    lua.done();
 }
@@ -166,8 +156,7 @@ void ua_cutscene_view_screen::draw()
       // render animation frame
 
       // prepare image texture
-      cuts_anim.get_frame(curframe);
-      cuts_anim.convert_upload();
+      cuts_anim.update_frame(curframe);
 
       // set text color
       Uint8 light = 255;
@@ -189,7 +178,7 @@ void ua_cutscene_view_screen::draw()
       }
       glColor3ub(light,light,light);
 
-      cuts_anim.render();
+      cuts_anim.draw();
    }
 
    if (showtext)
@@ -219,7 +208,7 @@ void ua_cutscene_view_screen::draw()
       }
       glColor3ub(light,light,light);
 
-      img_text.render();
+      img_text.draw();
 
       glDisable(GL_BLEND);
    }
@@ -348,12 +337,12 @@ void ua_cutscene_view_screen::create_text_image(const char* str)
 {
    unsigned int maxlen = 310;
 
-   img_text.clear(0);
+   img_text.get_image().clear(0);
 
    if (font_big.calc_length(str)<maxlen)
    {
       // easy task: all text fits into one line
-      font_big.create_string(img_text,str,textcolor);
+      font_big.create_string(img_text.get_image(),str,textcolor);
    }
    else
    {
@@ -400,7 +389,8 @@ void ua_cutscene_view_screen::create_text_image(const char* str)
          unsigned int lineheight = lines[0].get_yres();
          unsigned int max = lines.size();
 
-         img_text.create(320, lineheight*max);
+         ua_image& img = img_text.get_image();
+         img.create(320, lineheight*max);
 
          // paste all lines into the new image
          for(unsigned int i=0; i<max; i++)
@@ -408,21 +398,21 @@ void ua_cutscene_view_screen::create_text_image(const char* str)
             const ua_image &img_temp = lines[i];
 
             unsigned int destx = (320-img_temp.get_xres())/2;
-            img_text.paste_image(img_temp,destx,lineheight*i);
+            img.paste_rect(img_temp, 0,0, img_temp.get_xres(),img_temp.get_yres(),
+               destx,lineheight*i);
          }
       }
    }
 
    // calculate screen position
-   unsigned int startx = (320-img_text.get_xres())/2;
-   unsigned int starty = 200-5-img_text.get_yres();
+   unsigned int startx = (320-img_text.get_image().get_xres())/2;
+   unsigned int starty = 200-5-img_text.get_image().get_yres();
 
    // init after new creation
-   img_text.init(&game->get_renderer().get_texture_manager(),startx,starty,img_text.get_xres(),
-      img_text.get_yres());
+   img_text.init(*game, startx, starty);
 
    // upload texture
-   img_text.convert_upload();
+   img_text.update();
 }
 
 /*! stack indices/values:
@@ -505,7 +495,7 @@ void ua_cutscene_view_screen::do_action()
 
          // load animation
          cuts_anim.load(game->get_settings(),animname.c_str());
-         cuts_anim.init(&game->get_renderer().get_texture_manager());
+         cuts_anim.init(*game, 0,0);
          showanim = true;
          loopanim = true;
          curframe = 0;
