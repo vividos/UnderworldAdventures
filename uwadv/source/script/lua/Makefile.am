@@ -2,7 +2,7 @@ INCLUDES = -Isrc -Iinclude
 
 noinst_LTLIBRARIES = liblua.la liblualib.la
 
-# Makefile.comman defines lublua_la_SOURCES and liblualib_la_SOURCES
+# Makefile.common defines lublua_la_SOURCES and liblualib_la_SOURCES
 include Makefile.common
 
 liblualib_la_LIBADD = liblua.la
