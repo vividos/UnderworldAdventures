@@ -66,10 +66,11 @@ ua_renderer::ua_renderer()
 }
 
 void ua_renderer::init(ua_underworld* uw, ua_texture_manager* thetexmgr,
-   const ua_vector3d& view_offset)
+   ua_critter_pool* thecritpool, const ua_vector3d& view_offset)
 {
    underw = uw;
    texmgr = thetexmgr;
+   critpool = thecritpool;
 
    // culling
    glCullFace(GL_BACK);
@@ -942,6 +943,9 @@ void ua_renderer::render_objects(unsigned int x, unsigned int y)
       bb_up.normalize();
    }
 
+   // enable alpha blending
+   glEnable(GL_BLEND);
+
    ua_object_list& objlist = underw->get_current_level().get_mapobjects();
 
    // get first object link
@@ -962,6 +966,9 @@ void ua_renderer::render_objects(unsigned int x, unsigned int y)
       // next object in link chain
       link1 = obj.get_object_info().link1;
    }
+
+   // disable alpha blending again
+   glDisable(GL_BLEND);
 
    glPopName();
 }
@@ -989,13 +996,19 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
    if (item_id >= 0x0040 && item_id < 0x0080)
    {
       // critter object
+      ua_texture& tex = critpool->get_critter(item_id-0x0040).get_texture();
 
-      // TODO
+      double u = tex.get_tex_u(), v = tex.get_tex_v();
+
+      tex.use(0);
+
+      draw_billboard_quad(base,
+         1.0/256.0*tex.get_xres(), 2.0/256.0*tex.get_yres(),
+         0.0, 0.0, u,v);
    }
    else
    {
       // normal object
-
       double quadwidth = 0.25;
 
       // items that have to be drawn at the ceiling?
@@ -1035,9 +1048,6 @@ void ua_renderer::draw_billboard_quad(
    high1 += bb_up*quadheight;
    high2 += bb_up*quadheight;
 
-   // draw quad
-   glEnable(GL_BLEND);
-
    glColor3ub(255,255,255);
 
    // render quad
@@ -1047,8 +1057,6 @@ void ua_renderer::draw_billboard_quad(
    glTexCoord2d(u2,v1); glVertex3d(high2.x,high2.y,high2.z);
    glTexCoord2d(u1,v1); glVertex3d(high1.x,high1.y,high1.z);
    glEnd();
-
-   glDisable(GL_BLEND);
 }
 
 void ua_renderer::get_tile_coords(

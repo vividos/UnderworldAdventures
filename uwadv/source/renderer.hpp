@@ -31,6 +31,7 @@
 
 // needed includes
 #include "uamath.hpp"
+#include "critter.hpp"
 #include "underworld.hpp"
 
 
@@ -69,7 +70,7 @@ public:
 
    //! initializes renderer
    void init(ua_underworld* uw, ua_texture_manager* texmgr,
-      const ua_vector3d& view_offset);
+      ua_critter_pool* thecritpool, const ua_vector3d& view_offset);
 
    //! cleans up renderer
    void done();
@@ -130,6 +131,9 @@ protected:
 
    //! texture manager to use for rendering
    ua_texture_manager* texmgr;
+
+   //! critter pool
+   ua_critter_pool* critpool;
 
    //! field of view in degrees
    double fov;
