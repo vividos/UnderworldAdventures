@@ -36,6 +36,9 @@
 #include "texture.hpp"
 
 
+// classes
+
+//! image quad class
 class ua_image_quad: public ua_image
 {
 public:
