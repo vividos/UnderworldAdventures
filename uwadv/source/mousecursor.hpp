@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Dirk Manders
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -29,11 +29,17 @@
 */
 
 // include guard
-#ifndef __uwadv_mousecursor_hpp_
-#define __uwadv_mousecursor_hpp_
+#ifndef uwadv_mousecursor_hpp_
+#define uwadv_mousecursor_hpp_
 
 // needed includes
-#include "core.hpp"
+#include "image.hpp"
+#include "texture.hpp"
+
+
+// forward references
+class ua_game_core_interface;
+
 
 // classes
 
