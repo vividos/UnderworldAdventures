@@ -40,7 +40,7 @@
 #include "audio.hpp"
 #include "savegame.hpp"
 #include "renderer.hpp"
-//#include "start_menu.hpp"
+#include "start_menu.hpp"
 //#include "ingame_orig.hpp"
 
 
@@ -308,7 +308,7 @@ void ua_start_splash_screen::tick()
          return;
       }
       else
-         //TODOgame->replace_screen(new ua_start_menu_screen,false);
+         game->replace_screen(new ua_start_menu_screen,false);
       break;
    }
 }
