@@ -124,6 +124,12 @@ void ua_ingame_orig_screen::init()
    gamemode = ua_mode_default;
    panel_type = 0;
 
+   // adjust scroll width for uw_demo
+   scrollwidth = 289;
+
+   if (core->get_settings().get_gametype() == ua_game_uw_demo)
+      scrollwidth = 218;
+
    dbgint = ua_debug_interface::get_new_debug_interface(&core->get_underworld());
 
    // load keymap
@@ -168,7 +174,7 @@ void ua_ingame_orig_screen::init()
       img_back.load_raw(settings,mainscreenname,0);
 
       // fill message scroll area
-      img_back.fill_rect(16,169, 289,30, 42);
+      img_back.fill_rect(16,169, scrollwidth,30, 42);
 
       // fill panel area
       img_back.fill_rect(236,7, 83,114, 1);
@@ -324,7 +330,8 @@ void ua_ingame_orig_screen::resume()
    mousecursor.init(core,0);
    mousecursor.show(true);
 
-   textscroll.init(*core,15,169, 289,30, 5, 42);
+   // init text scroll
+   textscroll.init(*core,15,169, scrollwidth,30, 5, 42);
    textscroll.set_color(1);
 
    // register script callbacks

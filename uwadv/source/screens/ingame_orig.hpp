@@ -334,6 +334,9 @@ protected:
    //! text scroll
    ua_textscroll textscroll;
 
+   //! text scroll width
+   unsigned int scrollwidth;
+
 
    // needed fonts
 
