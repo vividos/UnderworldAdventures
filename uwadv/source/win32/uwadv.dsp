@@ -200,6 +200,10 @@ SOURCE=..\player.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\quadtree.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\texture.cpp
 # End Source File
 # Begin Source File
@@ -301,6 +305,10 @@ SOURCE=..\level.hpp
 # Begin Source File
 
 SOURCE=..\player.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\quadtree.hpp
 # End Source File
 # Begin Source File
 

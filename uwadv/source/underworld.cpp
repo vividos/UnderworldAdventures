@@ -76,9 +76,9 @@ float ua_underworld::get_player_height()
    return level.get_floor_height(player.get_xpos(),player.get_ypos());
 }
 
-void ua_underworld::render()
+void ua_underworld::render(ua_frustum &fr)
 {
-   level.render(core->get_texmgr());
+   level.render(core->get_texmgr(),fr);
 }
 
 ua_level &ua_underworld::get_level(unsigned int level)

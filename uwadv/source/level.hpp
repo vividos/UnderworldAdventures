@@ -32,6 +32,7 @@
 // needed includes
 #include "settings.hpp"
 #include "texture.hpp"
+#include "quadtree.hpp"
 
 
 // enums
@@ -95,8 +96,8 @@ public:
    //! prepares textures used in map for OpenGL
    void prepare_textures(ua_texture_manager &texmgr);
 
-   //! renders map to OpenGL
-   void render(ua_texture_manager &texmgr);
+   //! renders map to OpenGL, using a view frustum
+   void render(ua_texture_manager &texmgr,ua_frustum &fr);
 
    // returns floor height on specific position
    float get_floor_height(float xpos, float ypos);

@@ -37,6 +37,7 @@
 #include "inventory.hpp"
 #include "conv/codevm.hpp"
 #include "level.hpp"
+#include "quadtree.hpp"
 
 
 // forward declaration
@@ -75,7 +76,7 @@ public:
    float get_player_height();
 
    //! renders the current game map and all objects
-   void render();
+   void render(ua_frustum &fr);
 
    // access to underworld components
 

@@ -91,23 +91,36 @@ float ua_level::get_floor_height(float xpos, float ypos)
    return height;
 }
 
-void ua_level::render(ua_texture_manager &texmgr)
+void ua_level::render(ua_texture_manager &texmgr,ua_frustum &fr)
 {
-   int x,y;
-   // draw floor tile polygons, for all (or for all visible)
-   for(y=0; y<64; y++)
-   for(x=0; x<64; x++)
-      render_floor(x,y,texmgr);
+   // determine list of visible tiles
+   std::vector<ua_quad_tile_coord> tilelist;
+   ua_quad q(0.0,0.0,64.0,64.0);
 
-   // draw tile ceiling
-   for(y=0; y<64; y++)
-   for(x=0; x<64; x++)
-      render_ceiling(x,y,texmgr);
+   q.get_visible_tiles(fr,tilelist);
 
-   // draw all walls
-   for(y=0; y<64; y++)
-      for(x=0; x<64; x++)
-         render_walls(x,y,texmgr);
+   int i,max = tilelist.size();
+
+   // draw floor tile polygons, for all visible tiles
+   for(i=0;i<max;i++)
+   {
+      const ua_quad_tile_coord &qtc = tilelist[i];
+      render_floor(qtc.first,qtc.second,texmgr);
+   }
+
+   // draw visible tile ceilings
+   for(i=0;i<max;i++)
+   {
+      const ua_quad_tile_coord &qtc = tilelist[i];
+      render_ceiling(qtc.first,qtc.second,texmgr);
+   }
+
+   // draw all visible walls
+   for(i=0;i<max;i++)
+   {
+      const ua_quad_tile_coord &qtc = tilelist[i];
+      render_walls(qtc.first,qtc.second,texmgr);
+   }
 }
 
 void ua_level::render_floor(int x, int y, ua_texture_manager &texmgr)
