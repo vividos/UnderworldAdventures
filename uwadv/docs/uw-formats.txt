@@ -177,7 +177,7 @@ Table of Contents
       4 -  7    4   floor height
       8 -  9        unknown, always 0
      10 - 13    4   floor/ceiling texture info
-     14             unknown, only used on level 6, by the shrine
+     14             unknown, only used on level 6, at the shrine
      15         1   door bit (when 1, a door is present)
      16 - 21    6   wall texture index (from level texture usage)
      22 - 31   10   index (?) probably a tile ID
@@ -547,8 +547,35 @@ Table of Contents
 
 4.0 Game strings
 
+   Game strings are stored in the file "strings.pak", and uses a Huffman
+   compression scheme to store its strings. The first 2 bytes of the file give
+   the number of nodes in the tree. Then follow the nodes themselves, 4 bytes
+   each:
 
+   0000   Int8   char symbol
+   0001   Int8   parent node
+   0002   Int8   left child
+   0003   Int8   right child
 
+   The last node stored in the file is the head of the tree. Following the
+   nodes is a 16-bit word giving the number of string blocks in the
+   file. Then follows the block directory, 6 bytes per block as follows:
+
+   0000   Int16   block number
+   0002   Int32   offset in file of start of block
+
+   Each block contains a variable number of strings. The block header is:
+
+   0000   Int16   no. of strings
+   0002   Int16   relative offset from end of block header
+
+   Strings are compressed using the Huffman tree in the usual way. Bits are
+   extracted big-endian i.e. rotated out of the top of each byte in turn.
+   Starting with the root node (last node), if a 1 bit is encountered the right
+   branch is taken, otherwise take the left. Repeat until a leaf (node with -1
+   for its children) is reached, at which point output the symbol for that node.
+   For the next bit we start again from the root. End of string is marked with a
+   `|' character.
 
    * conversation escape codes
 
@@ -591,15 +618,20 @@ Table of Contents
    available. The name of the conversation partner is stored in string block
    6, as string number (conversation slot number+17).
 
+   To find out which string block to use during conversation, you have to
+   count the valid conversation slots up to the slot with the current
+   conversation. The number of valid slots is the offset in string blocks,
+   plus 25.
+
    The conversation header looks like this:
 
-   0000   Int32   unknown1
+   0000   Int32   unknown1, always seems to be 0x0828, or 28 08
    0004   Int32   code size in number of instructions (16-bit words)
-   0008   Int32   unknown2, always seems to be 0x0000
-   000C   Int16   seems to be conversation number + 0x0E00
-   000E   Int16   number of stack space reserved for private globals
-   0010   Int16   number of imported globals (functions + variables)
-   0012           start of imported functions list
+   0008   Int16   unknown2, always seems to be 0x0000
+   000A   Int16   seems to be conversation number + 0x0E00
+   000C   Int16   number of stack space reserved for private globals
+   000E   Int16   number of imported globals (functions + variables)
+   0010           start of imported functions list
 
    One import record describes builtin (or imported) functions and game
    global variables used by the conversation:
