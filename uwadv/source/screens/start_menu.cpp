@@ -31,7 +31,7 @@
 #include "audio.hpp"
 #include "renderer.hpp"
 #include "savegame.hpp"
-//#include "cutscene_view.hpp"
+#include "cutscene_view.hpp"
 #include "acknowledgements.hpp"
 //#include "create_character.hpp"
 //#include "ingame_orig.hpp"
@@ -242,7 +242,7 @@ void ua_start_menu_screen::press_button()
    switch(selected_area)
    {
    case 0: // "introduction"
-      //game->replace_screen(new ua_cutscene_view_screen(0),true);
+      game->replace_screen(new ua_cutscene_view_screen(0),true);
       break;
 
    case 1: // "create character"
