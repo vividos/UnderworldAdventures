@@ -78,49 +78,62 @@ void ua_files_manager::init(ua_settings &settings)
    }
 
    if (!foundconfig)
-      throw ua_exception("Could not find any config files");
+      throw ua_exception("could not find any config files");
 
    ua_trace("\n");
-
-   settings.init();
 
    uadata_path = settings.get_string(ua_setting_uadata_path);
 
    // check for available games
 
-   std::string base = settings.get_string(ua_setting_uw_path);
+   // check for uw1
+   {
+      settings.set_value(ua_setting_uw1_avail,false);
+      settings.set_value(ua_setting_uw1_is_uw_demo,false);
 
-   // check for files that have to be available in all games
-   if (!ua_file_isavail(base,"data/cnv.ark") &&
-       !ua_file_isavail(base,"data/strings.pak") &&
-       !ua_file_isavail(base,"data/pals.dat") &&
-       !ua_file_isavail(base,"data/allpals.dat"))
-   {
-      settings.set_gametype(ua_game_none);
+      std::string base = settings.get_string(ua_setting_uw1_path);
+      if (!base.empty())
+      {
+         if (ua_file_isavail(base,"data/cnv.ark") &&
+             ua_file_isavail(base,"data/strings.pak") &&
+             ua_file_isavail(base,"data/pals.dat") &&
+             ua_file_isavail(base,"data/allpals.dat"))
+         {
+            // could be uw1 or uw_demo
+            if (ua_file_isavail(base,"uw.exe")||ua_file_isavail(base,"uwdemo.exe"))
+            {
+               settings.set_value(ua_setting_uw1_avail,true);
+
+               // check if we only have the demo
+               if (ua_file_isavail(base,"data/level13.st") &&
+                   ua_file_isavail(base,"data/level13.anx") &&
+                   ua_file_isavail(base,"data/level13.txm"))
+               {
+                  settings.set_value(ua_setting_uw1_is_uw_demo,true);
+               }
+            }
+         }
+      }
    }
-   else
-   // check for demo relevant files
-   if (ua_file_isavail(base,"uwdemo.exe") &&
-       ua_file_isavail(base,"data/level13.st") &&
-       ua_file_isavail(base,"data/level13.anx") &&
-       ua_file_isavail(base,"data/level13.txm"))
+
+   // check for uw2
    {
-      settings.set_gametype(ua_game_uw_demo);
+      settings.set_value(ua_setting_uw2_avail,false);
+
+      std::string base = settings.get_string(ua_setting_uw2_path);
+      if (!base.empty())
+      {
+         if (ua_file_isavail(base,"data/cnv.ark") &&
+             ua_file_isavail(base,"data/strings.pak") &&
+             ua_file_isavail(base,"data/pals.dat") &&
+             ua_file_isavail(base,"data/allpals.dat") &&
+             ua_file_isavail(base,"uw2.exe") &&
+             ua_file_isavail(base,"data/t64.tr"))
+         {
+            settings.set_value(ua_setting_uw2_avail,true);
+         }
+      }
    }
-   else
-   // check for ultima underworld 2
-   if (ua_file_isavail(base,"uw2.exe"))
-   {
-      settings.set_gametype(ua_game_uw2);
-   }
-   else
-   // check for ultima underworld 1
-   if (ua_file_isavail(base,"uw.exe"))
-   {
-      settings.set_gametype(ua_game_uw1);
-   }
-   else
-      settings.set_gametype(ua_game_none);
 }
 
 void ua_files_manager::init_cfgfiles_list()
