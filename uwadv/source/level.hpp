@@ -158,6 +158,9 @@ protected:
    Uint16 wall_textures[48];
    Uint16 floor_textures[10];
    Uint16 door_textures[6];
+
+   //! number of ceiling stock texture
+   unsigned int ceiling_texnr;
 };
 
 #endif

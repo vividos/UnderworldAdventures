@@ -43,7 +43,8 @@ void ua_level::prepare_textures(ua_texture_manager &texmgr)
    // prepare door textures
 
    // ceiling texture, always #15
-   texmgr.prepare(ua_tex_stock_floor+15);
+   ceiling_texnr = ua_tex_stock_floor+15;
+   texmgr.prepare(ceiling_texnr);
 }
 
 double ua_level::get_floor_height(double xpos, double ypos)
@@ -267,8 +268,9 @@ void ua_level::render_ceiling(unsigned int x, unsigned int y, ua_texture_manager
    if (tile.type == ua_tile_solid)
       return; // don't draw solid tiles
 
-   // use texture
-   texmgr.use(0x010f);
+   // use ceiling texture
+   texmgr.use(ceiling_texnr);
+
    glColor3ub(192,192,192);
 
    // draw ceiling tile; for simplicity, we only draw a square
