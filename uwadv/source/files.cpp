@@ -31,6 +31,7 @@
 #include "common.hpp"
 #include "files.hpp"
 #include "resource/zziplib/SDL_rwops_zzip.h"
+#include <iostream>
 
 
 // ua_files_manager methods
@@ -154,6 +155,61 @@ SDL_RWops *ua_files_manager::get_uadata_file(const char *relpath)
       }
       while(found);
    }
+
+   return ret;
+}
+
+int ua_files_manager::load_lua_script(lua_State *L, const char *basename)
+{
+   std::string scriptname(basename);
+   scriptname.append(".lua");
+
+   bool compiled = false;
+
+   // load lua script
+   SDL_RWops *script = get_uadata_file(scriptname.c_str());
+
+   // not found? try binary one
+   if (script==NULL)
+   {
+      scriptname.assign(basename);
+      scriptname.append(".lob");
+      compiled = true;
+
+      script = get_uadata_file(scriptname.c_str());
+   }
+
+   // still not found? exception
+   if (script==NULL)
+   {
+      std::string text("could not load Lua script from uadata: ");
+      text.append(scriptname.c_str());
+      throw ua_exception(text.c_str());
+   }
+
+   ua_trace("loaded Lua %sscript \"%s\"\n",
+      compiled ? "compiled " : "", scriptname.c_str());
+
+   // load script into buffer
+   std::vector<char> buffer;
+   unsigned int len=0;
+   {
+      SDL_RWseek(script,0,SEEK_END);
+      len = SDL_RWtell(script);
+      SDL_RWseek(script,0,SEEK_SET);
+
+      buffer.resize(len+1,0);
+
+      SDL_RWread(script,&buffer[0],len,1);
+      buffer[len]=0;
+   }
+   SDL_RWclose(script);
+
+   // execute script
+   int ret = lua_dobuffer(L,&buffer[0],len,"");
+
+   if (ret!=0)
+      ua_trace("Lua script ended with error code %u\n",ret);
 
    return ret;
 }

@@ -51,6 +51,9 @@ public:
    //! returns "uadata" file
    SDL_RWops *get_uadata_file(const char *relpath);
 
+   //! loads a lua script
+   int load_lua_script(lua_State *L, const char *basename);
+
    //! returns true when savegames are available
    bool savegames_avail();
 
