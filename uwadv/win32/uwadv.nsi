@@ -2,7 +2,7 @@
 # Underworld Adventures install script
 #
 
-!define VERSION "0.8-hot-chili"
+!define VERSION "0.8a-hot-chili"
 
 # compiler utility commands
 #
