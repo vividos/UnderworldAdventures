@@ -43,7 +43,15 @@ void* ua_init_debug_data;
 bool ua_debugger::OnInit()
 {
    // init client interface
-   client.init_client(ua_init_debug_data);
+   if (!client.init_client(ua_init_debug_data))
+   {
+      // interface version doesn't match
+      wxMessageDialog dlg(NULL,
+         "Debugger Interface versions doesn't match. Please get a newer "
+         "uadebug.dll.", "Underworld Adventures Debugger");
+      dlg.ShowModal();
+      return false;
+   }
 
    // create document manager
    doc_manager = new wxDocManager;
@@ -83,7 +91,7 @@ void uadebug_start(void* data)
 
 #ifdef WIN32
    // call win32 specific entry function
-   HMODULE mod = ::GetModuleHandle(NULL);
+   HMODULE mod = ::GetModuleHandle("uadebug.dll");
    wxEntry((HINSTANCE)mod,NULL,"",0);
 #else
    // generic entry function
