@@ -32,8 +32,9 @@
 #include <SDL_thread.h>
 
 
-// debugger implementation class
+// classes
 
+//! win32 debugger implementation class
 class ua_debug_impl_win32: public ua_debug_interface
 {
 public:
