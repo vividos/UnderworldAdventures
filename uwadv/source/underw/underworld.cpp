@@ -339,5 +339,24 @@ void ua_underworld::get_surrounding_triangles(unsigned int xpos,
    for(unsigned int y=ymin; y<ymax; y++)
       prov.get_tile_triangles(x,y,alltriangles);
 
-   // TODO: also collect triangles from 3d models and critter objects
+   // also collect triangles from 3d models and critter objects
+   if (callback != NULL)
+   {
+      const ua_object_list& objlist = get_current_level().get_mapobjects();
+      for(unsigned int x=xmin; x<xmax; x++)
+      for(unsigned int y=ymin; y<ymax; y++)
+      {
+         // get first object link
+         Uint16 link = objlist.get_tile_list_start(x,y);
+         while(link != 0)
+         {
+            // collect triangles
+            callback->uw_get_object_triangles(x,y,objlist.get_object(link),
+               alltriangles);
+
+            // next object in link chain
+            link = objlist.get_object(link).get_object_info().link;
+         }
+      }
+   }
 }

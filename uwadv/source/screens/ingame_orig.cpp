@@ -36,6 +36,7 @@
 #include "cutscene_view.hpp"
 #include "debug.hpp"
 #include "conversation.hpp"
+#include "models.hpp"
 
 
 // constants
@@ -870,6 +871,7 @@ void ua_ingame_orig_screen::do_action(ua_ingame_orig_action action)
          ua_savegame_info info;
          ua_player& pl = game.get_underworld().get_player();
          pl.fill_savegame_infos(info);
+         info.game_prefix = game.get_settings().get_string(ua_setting_game_prefix);
 
          ua_savegame sg = game.get_savegames_manager().
             get_quicksave_savegame(true,info);
@@ -997,6 +999,13 @@ void ua_ingame_orig_screen::uw_start_conversation(Uint16 list_pos)
 {
    fadeout_param = list_pos;
    schedule_action(ua_action_conversation, true);
+}
+
+void ua_ingame_orig_screen::uw_get_object_triangles(unsigned int x,
+   unsigned int y, const ua_object& obj,
+   std::vector<ua_triangle3d_textured>& alltriangles)
+{
+   game.get_renderer().get_model3d_bounding_triangles(x,y,obj,alltriangles);
 }
 
 void ua_ingame_orig_screen::do_savegame_screenshot(

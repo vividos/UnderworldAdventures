@@ -168,6 +168,11 @@ public:
 
    //! starts conversation with object in current level, on list position
    virtual void uw_start_conversation(Uint16 list_pos)=0;
+
+   //! adds object triangles to list
+   virtual void uw_get_object_triangles(unsigned int x, unsigned int y,
+      const ua_object& obj,
+      std::vector<ua_triangle3d_textured>& alltriangles)=0;
 };
 
 
