@@ -89,10 +89,15 @@ void ua_files_manager::init(ua_settings &settings)
    {
       savegame_folder = settings.get_string(ua_setting_savegame_folder);
 
-      // try to create folder when not already present
-//      mkdir(savegame_folder);
-   }
+      // replace strings in savegame folder
+      replace_system_vars(savegame_folder);
 
+      // store back value
+      settings.set_value(ua_setting_savegame_folder,savegame_folder);
+
+      // try to create folder (when not already present)
+      ua_mkdir(savegame_folder.c_str(),0700);
+   }
 
    // check for available games
 
@@ -144,6 +149,33 @@ void ua_files_manager::init(ua_settings &settings)
          }
       }
    }
+}
+
+void ua_files_manager::replace_system_vars(std::string& path)
+{
+   std::string::size_type pos = 0;
+
+   // replace ~ at start of path
+   if ( 0 == path.find("~") )
+   {
+      const char* home = getenv("HOME");
+      if (home != NULL)
+         path.replace(pos,1,home);
+   }
+
+   // replace %home%
+   while( std::string::npos != (pos = path.find("%home%") ) )
+   {
+      const char* home = getenv("HOME");
+      if (home != NULL)
+         path.replace(pos,6,home);
+      else
+         break;
+   }
+
+   // replace %uadata%
+   while( std::string::npos != (pos = path.find("%uadata%") ) )
+      path.replace(pos,8,uadata_path.c_str());
 }
 
 void ua_files_manager::init_cfgfiles_list()

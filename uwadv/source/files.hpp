@@ -49,6 +49,9 @@ public:
    //! initializes files manager; loads all config files; also sets gametype in ua_settings
    void init(ua_settings &settings);
 
+   //! replaces %xxx% variables and ~ in file system paths
+   void replace_system_vars(std::string& path);
+
    //! returns "uadata" file
    SDL_RWops *get_uadata_file(const char *relpath);
 
