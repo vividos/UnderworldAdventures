@@ -194,7 +194,7 @@ Table of Contents
    conv.byt       seems to be a conversation screenshot, palette #0
    converse.gr    conversation screen bitmaps
    cursors.gr     mouse cursor images
-   doors.gr       doors textures (may be decals)
+   doors.gr       door textures
    dragons.gr     scroll dragons animations
    eyes.gr        eyes from top screen
    f16.tr         floor/ceiling textures, size 16x16
@@ -1020,7 +1020,7 @@ Table of Contents
        8       1    unknown (?? special light feature ??)
        9       1    0, never used in uw1
       10-13    4    floor texture index (into texture mapping)
-      14       1    unknown (only used on level 6, near the shrine)
+      14       1    when set, no magic is allowed to cast/to be casted upon
       15       1    door bit (when 1, a door is present)
 
    0002 tile properties 2 / object list link
@@ -1394,11 +1394,30 @@ Table of Contents
    007f  an_adventurer
          the player as object; isn't used ingame
 
+   00c6  a_pile of bones
+         the "owner" field determines from whom the bones are; strings are
+         taken from block 4; a value of 63 means "an adventurer"
+
    0110  a_picture of Tom
+
+   0114  a_book
+         the book explodes when the user tries to look at it; player takes
+         damage.
 
    0120  a_spell
          spell object used by wands, spell traps, magical items;
          the "quality" field 
+
+   0140  a_door (and up to 0147)
+         if bit 1 of the "owner" field is set, the door is spiked.
+
+   0161  a_lever
+         a clock-like lever with 8 positions; texture is determined by
+         the "flags" field (lower 3 bits) + 4, from "tmobj.gr".
+
+   0162  a_switch
+         almost the same as 0161, but starting with image 12 of "tmobj.gr".
+         not used in uw1
 
    0164  a_bridge
          bridge 3d object. texture to use comes from "flags" field. when the
@@ -1424,10 +1443,11 @@ Table of Contents
 
    0166  some_writing
          wall decal; text is determined through "quantity" field,
-         game strings block 8. the texture used is;
+         game strings block 8. the texture used is determined from "tmobj.gr",
+         image "flags" + 20 (?).
 
-         the text printed when looking at it is determined by the "flags"
-         field. text printed is from strings block 8, 368 + flags
+         the plaque description printed when looking at it is determined by
+         the "flags" field. text printed is from strings block 8, 368 + flags
 
    0167  a_bed [uw2]
          The "owner" field determines the colour of the sheets and pillow. The
@@ -1479,7 +1499,15 @@ Table of Contents
           02
           03
           05
-          18       (special property is a link)
+          18       bullfrog puzzle related; (special property is a link)
+                   if not in level 5 (where the puzzle is), the trap just
+                   prints "There is a pained whining sound.".
+                   "owner" defines some subcode:
+                   00/01: lowers/raises tiles
+                   02:    increases x coord (?) (0..7)
+                   03:    increases y coord (?) (0..7)
+                   04:    resets bullfrog puzzle; prints "reset activated"
+
           28       (special property is a link)
           2a       starts conversation (uw1 starts a hard-wired conv., slot
                    0x19, the speaking "Door"
@@ -1691,7 +1719,7 @@ Table of Contents
 
    * Containers table
 
-   0000   Int8   capacity
+   0000   Int8   capacity in 0.1 stones
    0001   Int8   objects accepted (0xFF means any)
    0002   Int8   unknown
 
