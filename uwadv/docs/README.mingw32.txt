@@ -6,7 +6,7 @@ This is the Readme file for compiling Underworld Adventures using MinGW32.
 MinGW Setup
 -----------
 
-First, you should install mingw32 and MSYS, available from
+First, you should install MinGW32 and MSYS, available from
 http://www.mingw.org/. MSYS is needed for compiling uwadv and STLport. For
 mingw32, either get a full distribution, e.g. MinGW-2.0.0-3.exe (or any later
 version) or get the packages separately (e.g.):
@@ -33,6 +33,10 @@ something like this to your "autoexec.bat" (or wherever):
 In this example, the mingw package was extracted to "c:\mingw\". The main
 project dir always is the folder with the Makefile.mingw (among others).
 
+To compile the data resource files, you also need a command line "zip" utility
+that is available here: http://www.info-zip.org/pub/infozip/Zip.html
+
+
 SDL/SDL_mixer Setup
 -------------------
 
@@ -46,6 +50,7 @@ should go into "c:\mingw\include\SDL\" (for our example). The SDL libraries
 Additionally, SDL_mixer is needed. The development package can be obtained
 from http://www.libsdl.org/projects/SDL_mixer/. The MSVC dev package also
 works for mingw32, as the mingw32 seems to be able to link in SDL_mixer.lib.
+
 
 STLport Setup
 -------------
@@ -64,6 +69,7 @@ and type:
 The library "libstlport_mingw32_static.a" should have been built in the "lib"
 folder which is needed later.
 
+
 zlib Setup
 ----------
 
@@ -73,6 +79,7 @@ development package for zlib-1.1.4 is available here:
    http://uwadv.sourceforge.net/devel/zlib-1.1.4-devel-uwadv.zip
 
 The Readme.txt file in the zip archive explains the contents of the file.
+
 
 Compiling
 ---------
