@@ -1,12 +1,42 @@
 #
+# Underworld Adventures - an Ultima Underworld hacking project
+# Copyright (c) 2002,2003,2004 Underworld Adventures Team
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# $Id$
+#
 # Underworld Adventures install script
+# Note: process this with NSIS 2.0
 #
 
-!define VERSION "0.8a-hot-chili"
+!define VERSION "0.9-pre1"
 
 # compiler utility commands
 #
 !packhdr temp.dat "upx -9 temp.dat"
+
+# compiler flags
+#
+SetCompressor lzma
+SetOverwrite ifnewer
+SetDateSave on
+SetCompress auto
+SetDatablockOptimize on
+SetDateSave on
+
 
 # general installer config
 #
@@ -16,40 +46,45 @@ CRCCheck on
 
 # install directory config
 #
-InstallDir "c:\uwadv\"
-#InstallDir "$PROGRAMFILES\Underworld Adventures"
+#InstallDir "c:\uwadv\"
+InstallDir "$PROGRAMFILES\Underworld Adventures"
+InstallDirRegKey HKLM "Software\Underworld Adventures" "InstallPath"
+
 
 # license page config
 #
+#Page license
 LicenseText "You should read the following license before installing."
 LicenseData "License.installer.txt"
 
+
 # component page config
 #
-ComponentText "This will install Underworld Adventures '${VERSION}' on your system."
-InstType Typical
+#Page components
+#ComponentText "This will install Underworld Adventures '${VERSION}' on your system."
+#InstType Typical
+
 
 # directory page config
 #
-DirShow show
+#Page directory
 DirText "Please select a location to install Underworld Adventures '${VERSION}' (or use the default)."
+
 
 # install page config
 #
+#Page instfiles
 AutoCloseWindow false
-ShowInstDetails show
+ShowInstDetails hide
+
 
 # uninstall config
 #
+#UninstPage uninstConfirm
+#UninstPage instfiles
 UninstallText "This will uninstall Underworld Adventures '${VERSION}' from your system."
-ShowUninstDetails show
+ShowUninstDetails hide
 
-# compiler flags
-#
-SetOverwrite ifnewer
-SetCompress auto
-SetDatablockOptimize on
-SetDateSave on
 
 #
 # installation execution commands
@@ -58,8 +93,8 @@ SetDateSave on
 #
 # section: all needed uwadv files
 #
-Section -
-#SectionIn 0
+Section "Underworld Adventures (required)"
+SectionIn RO
 SetOutPath $INSTDIR
 File uwadv.exe
 File uaconfig.exe
@@ -79,18 +114,15 @@ File uadata\uadata00.uar
 
 SetOutPath $INSTDIR
 
-WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\Underworld Adventures" "DisplayName" "Underworld Adventures '${VERSION}' (remove only)"
-WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\Underworld Adventures" "UninstallString" '"$INSTDIR\uninst-uwadv.exe"'
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Underworld Adventures" "DisplayName" "Underworld Adventures '${VERSION}'"
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Underworld Adventures" "UninstallString" '"$INSTDIR\uninst-uwadv.exe"'
+WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Underworld Adventures" "NoModify" 1
+WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Underworld Adventures" "NoRepair" 1
 
-WriteUninstaller $INSTDIR\uninst-uwadv.exe
-SectionEnd
+WriteRegStr HKLM "Software\Underworld Adventures" "InstallPath" "$INSTDIR"
 
-#
-# section: icons
-#
-Section "Start Menu and Desktop Icons"
-SectionIn 1
-SetShellVarContext current
+WriteUninstaller "$INSTDIR\uninst-uwadv.exe"
+
 CreateShortCut "$DESKTOP\Underworld Adventures.lnk" "$INSTDIR\uwadv.exe" "" "" "0"
 CreateDirectory "$SMPROGRAMS\Underworld Adventures"
 CreateShortCut "$SMPROGRAMS\Underworld Adventures\Underworld Adventures.lnk" "$INSTDIR\uwadv.exe" "" "" "0"
@@ -98,22 +130,24 @@ CreateShortCut "$SMPROGRAMS\Underworld Adventures\Underworld Adventures Config.l
 CreateShortCut "$SMPROGRAMS\Underworld Adventures\Underworld Adventures Readme.lnk" "$INSTDIR\README.uwadv.txt" "" "" "0"
 CreateShortCut "$SMPROGRAMS\Underworld Adventures\Ultima Underworld 1 Keyboard Commands.lnk" "$INSTDIR\uw1-keyboard.txt" "" "" "0"
 CreateShortCut "$SMPROGRAMS\Underworld Adventures\Uninstall Underworld Adventures.lnk" "$INSTDIR\uninst-uwadv.exe" "" "" "0"
+
 SectionEnd
+
 
 Function .onInstSuccess
   MessageBox MB_YESNO|MB_ICONQUESTION \
-    "Setup has completed. View readme file now?" \
-    IDNO NoReadme
+    "Setup has completed. View readme file now?" IDNO NoReadme
     ExecShell open '$INSTDIR\README.uwadv.txt'
   NoReadme:
    MessageBox MB_OK "Please configure Underworld Adventures in the next dialog."
    Exec $INSTDIR\uaconfig.exe
 FunctionEnd
 
+
 #
 # section: uninstall
 #
-Section Uninstall
+Section "Uninstall"
 Delete $INSTDIR\uwadv.exe
 Delete $INSTDIR\uaconfig.exe
 Delete $INSTDIR\SDL.dll
@@ -150,6 +184,7 @@ Delete "$SMPROGRAMS\Underworld Adventures\Ultima Underworld 1 Keyboard Commands.
 Delete "$SMPROGRAMS\Underworld Adventures\Uninstall Underworld Adventures.lnk"
 RMDir "$SMPROGRAMS\Underworld Adventures"
 
-DeleteRegKey HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\Underworld Adventures"
+DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Underworld Adventures"
+DeleteRegKey HKLM "Software\Underworld Adventures"
 
 SectionEnd
