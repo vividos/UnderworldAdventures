@@ -217,7 +217,7 @@ void ua_conversation_screen::handle_event(SDL_Event &event)
             // clear menu scroll
             scroll_menu.clear_scroll();
 
-            wait_count = answer_wait_time * core->get_tickrate();
+            wait_count = unsigned(answer_wait_time * core->get_tickrate());
          }
       }
 
@@ -250,7 +250,7 @@ void ua_conversation_screen::handle_event(SDL_Event &event)
             // clear menu scroll
             scroll_menu.clear_scroll();
 
-            wait_count = answer_wait_time * core->get_tickrate();
+            wait_count = unsigned(answer_wait_time * core->get_tickrate());
          }
       }
       break;
@@ -345,7 +345,7 @@ void ua_conversation_screen::tick()
       state = ua_state_fadeout;
       fade_ticks = 0;
 
-      wait_count = endconv_wait_time * core->get_tickrate();
+      wait_count = unsigned(endconv_wait_time * core->get_tickrate());
 
       // fade out music
       core->get_audio().fadeout_music(fade_time);
