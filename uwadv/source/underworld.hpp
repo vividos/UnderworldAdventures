@@ -60,8 +60,8 @@ public:
    //! clean up the underworld
    void done();
 
-   //! moves player according to the direction angle
-   void walk_player(double angle);
+   //! evaluates whole underworld for a given time point
+   void eval_underworld(double time);
 
    //! returns the height of the player
    double get_player_height();
@@ -76,6 +76,9 @@ public:
 
    //! returns player's inventory
    ua_inventory &get_inventory(){ return inventory; }
+
+   //! returns physics model
+   ua_physics_model &get_physics(){ return physics; }
 
    //! returns conversation globals
    ua_conv_globals &get_conv_globals(){ return conv_globals; }

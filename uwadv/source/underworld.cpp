@@ -47,19 +47,14 @@ void ua_underworld::init(ua_game_core_interface *thecore)
 
    player.init();
    player.set_pos(32.0,2.0);
-   player.set_angle(90.0);
+   player.set_angle(9.0);
    player.set_attr(ua_attr_gender,1);
 }
 
-void ua_underworld::walk_player(double angle)
+void ua_underworld::eval_underworld(double time)
 {
-   // speed: 1.8 tiles per second
-   double speed = 1.8 / core->get_tickrate();
-
-   ua_vector2d dir;
-   dir.set_polar(speed,angle);
-
-   physics.walk_player(dir);
+   // evaluate physics
+   physics.eval_player_movement(time);
 }
 
 double ua_underworld::get_player_height()
