@@ -136,7 +136,7 @@ void ua_start_splash_screen::handle_event(SDL_Event &event)
 
       case 2:
          stage=4;
-         tickcount = (ua_start_splash_blend_time * core->get_tickrate()) - tickcount;
+         tickcount = unsigned(ua_start_splash_blend_time * core->get_tickrate()) - tickcount;
          break;
 
       case 3:
