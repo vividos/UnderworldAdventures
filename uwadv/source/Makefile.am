@@ -74,7 +74,7 @@ EXTRA_DIST = audio/midi_driver/win_midiout.cpp \
 	win32/source/game_win32.hpp \
 	win32/source/main.cpp \
 	win32/source/resource.h \
-	win32/source/Uuw.ico \
+	win32/source/Uus.ico \
 	win32/source/uwadv.rc
 
 cfgdir = $(datadir)/games/uwadv
