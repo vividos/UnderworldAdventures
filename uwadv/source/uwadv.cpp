@@ -389,15 +389,19 @@ void ua_game::run()
             screen_to_destroy = NULL;
             break;
          }
+
+         // do texmgr tick
+         texmgr.tick(1.0/tickrate);
+
+         //Johnm - need to do logic for critters
+         critter_pool.tick(1.0/tickrate);
+
       }
 
       if (exit_game) break;
 
       // do debug processing (uwadv thread)
       debug->tick();
-
-      // do texmgr tick
-      texmgr.tick(1.0/tickrate);
 
       // process incoming events
       process_events();
@@ -411,6 +415,7 @@ void ua_game::run()
 
       // draw the screen
       draw_screen();
+
       renders++;
 
       if ((now - then) > (1000.0/tickrate))

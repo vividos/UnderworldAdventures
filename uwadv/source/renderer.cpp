@@ -1052,7 +1052,8 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
       bb_up.x = bb_up.y = 0.0; // NPC's up vector 
       bb_up.normalize();
 
-      tex.use(0);
+      //Johnm - use the texture for the current frame of critter animation
+      tex.use(crit.get_currentframe());
 
       draw_billboard_quad(base,
          scale_x,

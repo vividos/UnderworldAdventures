@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,8 +26,8 @@
 */
 
 // include guard
-#ifndef __uwadv_critter_hpp_
-#define __uwadv_critter_hpp_
+#ifndef uwadv_critter_hpp_
+#define uwadv_critter_hpp_
 
 // needed includes
 #include "settings.hpp"
@@ -42,7 +42,7 @@ class ua_critter
 {
 public:
    //! ctor
-   ua_critter(){}
+   ua_critter();
 
    //! loads critter animations
    void load(const char* file, unsigned int used_auxpal);
@@ -59,6 +59,12 @@ public:
    //! returns hotspot v coordinate
    inline double get_hotspot_v();
 
+   // get current frame of animation
+   unsigned int get_currentframe();
+
+   //! called every game tick
+   void tick(double ticktime);
+
 protected:
    //! slot list with segment indices
    std::vector<Uint8> slotlist;
@@ -74,6 +80,15 @@ protected:
 
    //! texture with all critter images
    ua_texture tex;
+
+   //! current animation segment
+   unsigned int currentanim;
+
+   //! time counter for animated textures
+   double animcount;
+
+   //! current frame of animation being played for critter
+   unsigned int currentframe;
 };
 
 
@@ -92,6 +107,9 @@ public:
 
    //! returns critter object
    ua_critter& get_critter(unsigned int idx){ return allcritters[idx]; }
+
+   //! called every game tick
+   void tick(double ticktime);
 
 protected:
    //! vector with critter animation imagelists
