@@ -70,6 +70,8 @@ File keymap.cfg
 File Copying
 File README.uwadv.txt
 File uw1-keyboard.txt
+File Changes.txt
+File Authors.txt
 CreateDirectory "$INSTDIR\uasave"
 
 SetOutPath $INSTDIR\uadata
