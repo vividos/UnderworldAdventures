@@ -62,10 +62,13 @@ void ua_files_manager::init(ua_settings& settings)
    for(unsigned int i=0; i<max; i++)
    {
       bool fileok = true;
-      try {
+      try
+      {
          ua_trace("loading %s\n",cfgfiles_list[i].c_str());
          settings.load(cfgfiles_list[i].c_str());
-      } catch (ua_exception e) {
+      }
+      catch (ua_exception e)
+      {
          fileok = false;
       }
       foundconfig |= fileok;
