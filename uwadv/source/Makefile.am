@@ -29,30 +29,17 @@ EXTRA_DIST = \
 	audio/midi_driver/win_midiout.h \
 	resource/model/wrllexer.l \
 	resource/model/import3ds.cpp \
-	win32/animview.dsp \
-	win32/cnvdasm.dsp \
-	win32/cnvdbg.dsp \
-	win32/mapdisp.dsp \
-	win32/strpak.dsp \
-	win32/tools.dsw \
-	win32/uwadv.cfg \
-	win32/uwadv.dsp \
-	win32/uwadv.nsi \
-	win32/xmi2mid.dsp \
-	win32/uaconfig.dsp \
-	win32/uaopt.dsp \
-	win32/License.installer.txt \
-	win32/source/game_win32.cpp \
-	win32/source/game_win32.hpp \
-	win32/source/main.cpp \
-	win32/source/resource.h \
-	win32/source/Uus.ico \
-	win32/source/uwadv_res.rc \
-	win32/source/uaconfig/Corp.ico \
-	win32/source/uaconfig/resource.h \
-	win32/source/uaconfig/uaconfig.cpp \
-	win32/source/uaconfig/uaconfig.hpp \
-	win32/source/uaconfig/uaconfig_res.rc
+	win32/game_win32.cpp \
+	win32/game_win32.hpp \
+	win32/main.cpp \
+	win32/resource.h \
+	win32/Uus.ico \
+	win32/uwadv_res.rc \
+	win32/uaconfig/Corp.ico \
+	win32/uaconfig/resource.h \
+	win32/uaconfig/uaconfig.cpp \
+	win32/uaconfig/uaconfig.hpp \
+	win32/uaconfig/uaconfig_res.rc
 
 lua/liblualib.la:
 	cd lua; $(MAKE)

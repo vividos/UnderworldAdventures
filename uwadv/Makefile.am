@@ -17,6 +17,8 @@ EXTRA_DIST =  \
 	Makefile.mingw \
 	uwadv.dsw \
 	docs/Authors.txt \
+	docs/Changes \
+	docs/License.installer.txt \
 	docs/README.dev.txt \
 	docs/README.Linux.txt \
 	docs/README.Lua.txt \
@@ -44,7 +46,25 @@ EXTRA_DIST =  \
 	misc/uw1-levelobjs-level1.txt \
 	misc/uw1-object-classes.txt \
 	misc/uw1-objects.png \
-	misc/uw1-palette0.png
+	misc/uw1-palette0.png \
+	win32/animview.dsp \
+	win32/cnvdasm.dsp \
+	win32/cnvdbg.dsp \
+	win32/map3ds.dsp \
+	win32/mapdisp.dsp \
+	win32/strpak.dsp \
+	win32/tools.dsw \
+	win32/toolslib.dsp \
+	win32/uaconfig.dsp \
+	win32/uadebug.def \
+	win32/uadebug.dsp \
+	win32/uaopt.dsp \
+	win32/uwadv.cfg \
+	win32/uwadv.dsp \
+	win32/uwadv.nsi \
+	win32/wrlview.dsp \
+	win32/xmi2mid.dsp \
+
 
 cfgdir = $(datadir)/games/uwadv
 cfg_DATA = linux/uwadv.cfg
