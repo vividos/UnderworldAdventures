@@ -143,6 +143,10 @@ protected:
    //! starts conversation with object in current level, on list position
    virtual void uw_start_conversation(unsigned int list_pos);
 
+   //! takes a screenshot, for savegame preview or to save it to disk
+   void do_screenshot(bool for_savegame=false, unsigned int xres=0,
+      unsigned int yres=0);
+
 protected:
    // constants
 
@@ -238,41 +242,7 @@ protected:
    //! tickcount used for time bookkeeping
    unsigned int tickcount;
 
-
-/*
-   //! finds out selection on specific mouse cursor position
-   GLuint get_selection(unsigned int xpos, unsigned int ypos);
-
-   //! takes screenshot from current image
-   void do_screenshot(bool with_menu, unsigned int xres=0, unsigned int yres=0);
-
-protected:
-   //! mouse cursor image
-   unsigned int cursor_image;
-
-
-   // misc. stuff
-
-   // fading in/out
-
-   //! level of npc object to converse with
-   unsigned int conv_level;
-
-   //! objpos of npc object to converse with
-   unsigned int conv_objpos;
-
-
-   // images, textures and fonts
-
-   //! screenshot image in rgba format
-   std::vector<Uint32> screenshot_rgba;
-
-   //! screenshot image resolution
-   unsigned int screenshot_xres,screenshot_yres;
-*/
-
    // classes that need direct access to this class
-
    friend class ua_ingame_command_buttons;
 };
 

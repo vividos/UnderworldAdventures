@@ -719,8 +719,11 @@ void ua_ingame_orig_screen::key_event(bool key_down, ua_key_value key)
    case ua_key_special_quicksave:
       if (key_down)
       {
-         ua_trace("quicksaving ... ");
-         //ui_print_string("quicksaving ...");
+         // render savegame preview image
+         do_screenshot(true,80,50);
+
+         ua_trace("quicksaving... ");
+         uw_print("quicksaving...");
 
          schedule_action(ua_action_quicksave,false);
          ua_trace("done\n");
@@ -729,10 +732,10 @@ void ua_ingame_orig_screen::key_event(bool key_down, ua_key_value key)
 
       // quickload key
    case ua_key_special_quickload:
-      if (key_down)
+      if (key_down && game.get_savegames_manager().quicksave_avail())
       {
-         ua_trace("quickloading ... ");
-         //ui_print_string("quickloading ...");
+         ua_trace("quickloading... ");
+         uw_print("quickloading...");
 
          schedule_action(ua_action_quickload,false);
          ua_trace("done\n");
@@ -742,20 +745,22 @@ void ua_ingame_orig_screen::key_event(bool key_down, ua_key_value key)
       // "load game" key
    case ua_key_game_restore_game:
       if (key_down)
+      {
+         // render savegame preview image
+         do_screenshot(true,80,50);
+
          schedule_action(ua_action_load_game, true);
+      }
       break;
 
       // "save game" key
    case ua_key_game_save_game:
       if (key_down)
       {
+         // render savegame preview image
+         do_screenshot(true,80,50);
+
          schedule_action(ua_action_save_game, true);
-/*
-         // TODO render savegame preview image
-         do_screenshot(false,80,50);
-         core->get_savegames_mgr().set_save_screenshot(
-            screenshot_rgba,screenshot_xres,screenshot_yres);
-*/
       }
       break;
 
@@ -780,7 +785,7 @@ void ua_ingame_orig_screen::key_event(bool key_down, ua_key_value key)
       if (key_down)
       {
          // take a screenshot
-//         do_screenshot(true,0,0);
+//         do_screenshot(false);
 //         save_screenshot();
       }
       break;
@@ -833,6 +838,11 @@ void ua_ingame_orig_screen::schedule_action(ua_ingame_orig_action action, bool f
       fade_state = 2;
       fading.init(false,game.get_tickrate(), fade_time);
    }
+   else
+   {
+      fade_state=0;
+      fading.init(false,game.get_tickrate(), 0.0);
+   }
 }
 
 /*! \todo implement all actions */
@@ -860,28 +870,25 @@ void ua_ingame_orig_screen::do_action(ua_ingame_orig_action action)
 
       // quickloading
    case ua_action_quickload:
+      if (game.get_savegames_manager().quicksave_avail())
       {
-/*
-         ua_savegame sg = game.get_savegames_manager().get_quicksave(
-            false,game.get_underworld().get_player());
+         ua_savegame sg = game.get_savegames_manager().
+            get_quicksave_savegame(false);
          game.get_underworld().load_game(sg);
-*/
       }
       break;
 
       // quicksaving
    case ua_action_quicksave:
       {
-/*
-         // render savegame preview image
-         do_screenshot(false,80,50);
-         game.get_savegames_managergr().set_save_screenshot(
-            screenshot_rgba,screenshot_xres,screenshot_yres);
+         ua_savegame sg = game.get_savegames_manager().
+            get_quicksave_savegame(true);
 
-         ua_savegame sg = game.get_savegames_manager().get_quicksave(
-            true,game.get_underworld().get_player());
+         // set player infos
+         ua_player& pl = game.get_underworld().get_player();
+         pl.fill_savegame_infos(sg.get_savegame_info());
+
          game.get_underworld().save_game(sg);
-*/
       }
       break;
 
@@ -1004,11 +1011,14 @@ void ua_ingame_orig_screen::uw_start_conversation(unsigned int list_pos)
    schedule_action(ua_action_conversation, true);
 }
 
-/*
-void ua_ingame_orig_screen::do_screenshot(bool with_menu, unsigned int xres, unsigned int yres)
+void ua_ingame_orig_screen::do_screenshot(bool for_savegame,
+   unsigned int xres, unsigned int yres)
 {
-   if (xres==0) xres = core->get_screen_width();
-   if (yres==0) yres = core->get_screen_height();
+   std::vector<Uint32> screenshot_rgba;
+   unsigned int screenshot_xres,screenshot_yres;
+/*
+//   if (xres==0) xres = game.get_screen_width();
+//   if (yres==0) yres = core->get_screen_height();
 
    // set up camera and viewport
    glViewport(0,0,xres,yres);
@@ -1017,7 +1027,7 @@ void ua_ingame_orig_screen::do_screenshot(bool with_menu, unsigned int xres, uns
    glClear(GL_COLOR_BUFFER_BIT);
 
    // render scene
-   if (with_menu)
+   if (!for_savegame)
       render();
    else
    {
@@ -1025,14 +1035,14 @@ void ua_ingame_orig_screen::do_screenshot(bool with_menu, unsigned int xres, uns
       renderer.render();
       glEnable(GL_SCISSOR_TEST);
    }
-
+*/
    // prepare screenshot
    screenshot_xres = xres;
    screenshot_yres = yres;
 
    screenshot_rgba.clear();
    screenshot_rgba.resize(xres*yres,0);
-
+/*
    // read in scanlines
    glReadBuffer(GL_BACK);
 
@@ -1048,5 +1058,7 @@ void ua_ingame_orig_screen::do_screenshot(bool with_menu, unsigned int xres, uns
    renderer.setup_camera(90.0,
       double(core->get_screen_width())/core->get_screen_height(),
       16.0);
-}
 */
+   game.get_savegames_manager().set_save_screenshot(
+      screenshot_rgba,screenshot_xres,screenshot_yres);
+}
