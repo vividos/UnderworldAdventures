@@ -35,7 +35,6 @@
 
 // needed includes
 #include "screen.hpp"
-#include "message.hpp"
 #include "imgquad.hpp"
 #include "mousecursor.hpp"
 #include "fading.hpp"
