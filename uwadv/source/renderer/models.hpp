@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -91,9 +91,6 @@ public:
    //! returns bounding triangles for collision detection with given item_id
    void get_bounding_triangles(ua_object& obj, ua_vector3d& base,
       std::vector<ua_triangle3d_textured>& alltriangles);
-
-   //! current model manager instance
-   static ua_model3d_manager* cur_modelmgr;
 
 protected:
    //! called to load a specific value
