@@ -29,6 +29,7 @@
 #include "common.hpp"
 #include "settings.hpp"
 #include <algorithm>
+#include <iostream>
 
 
 // ua_settings methods
