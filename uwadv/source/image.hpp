@@ -103,7 +103,7 @@ public:
    unsigned int size(){ return allimages.size(); };
 
    //! returns a single image
-   const ua_image &get_image(unsigned int num);
+   ua_image &get_image(unsigned int num);
 
 protected:
    //! images in the list
