@@ -224,7 +224,7 @@ void ua_conversation_screen::init(ua_game_core_interface* thecore)
    wait_count = 0;
 
    // start audio track "maps & legends" for conversations
-   core->get_audio().start_music(11,false);
+   core->get_audio().start_music(ua_music_uw1_maps_legends,false);
 }
 
 void ua_conversation_screen::done()
