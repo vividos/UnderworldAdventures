@@ -1,10 +1,18 @@
 // miscdecode.cpp
 //
 
+#pragma warning(disable:4786)
+
 #include "../hacking.h"
 #include <stdio.h>
 #include <string.h>
 #include <io.h>
+
+#include "common.hpp"
+#include "settings.hpp"
+#include "gamestrings.hpp"
+
+#undef SDL_main
 
 int main(int argc, char* argv[])
 {
@@ -101,6 +109,37 @@ int main(int argc, char* argv[])
 
    } // end pal for
 
+   // decoding cmb.dat
+   {
+      ua_gamestrings gs;
+      gs.load(UWPATH"data\\strings.pak");
+
+      FILE *fd = fopen(UWPATH"data\\cmb.dat","rb");
+
+      FILE *out = fopen("uw-combinations.txt","w");
+
+      while(1)
+      {
+         unsigned short item1,item2,resitem;
+
+         fread(&item1,2,1,fd);
+         fread(&item2,2,1,fd);
+         fread(&resitem,2,1,fd);
+
+         if (item1==0 && item2==0 && resitem==0)
+            break;
+
+         fprintf(out,"%04x + %04x = %04x:  \"%s\"%s + \"%s\"%s = \"%s\"%s\n",
+            item1,item2,resitem,
+            gs.get_string(3,item1&0x1ff).c_str(), (item1&0x8000)==0 ? "" : "(*)",
+            gs.get_string(3,item2&0x1ff).c_str(), (item2&0x8000)==0 ? "" : "(*)",
+            gs.get_string(3,resitem&0x1ff).c_str(), (resitem&0x8000)==0 ? "" : "(*)"
+         );
+      }
+
+      fclose(fd);
+      fclose(out);
+   }
 
    return 0;
 }
