@@ -149,8 +149,8 @@ void ua_cutscene_view_screen::init()
    // texture stuff
 
    // init textures
-   tex_anim.init();
-   tex_text.init(1,GL_LINEAR,GL_NEAREST);
+   tex_anim.init(&core->get_texmgr());
+   tex_text.init(&core->get_texmgr());
 
    // init subtitle text
    font_big.init(core->get_settings(),ua_font_big);
@@ -160,6 +160,7 @@ void ua_cutscene_view_screen::done()
 {
    tex_text.done();
    tex_anim.done();
+   core->get_texmgr().using_new_texname(0);
 
    lua_close(L);
 }
@@ -196,7 +197,7 @@ void ua_cutscene_view_screen::render()
       // render animation frame
 
       // prepare image texture
-      tex_anim.use(core->get_texmgr());
+      tex_anim.use();
       cuts.get_frame(tex_anim,curframe);
       tex_anim.upload();
 
@@ -239,7 +240,7 @@ void ua_cutscene_view_screen::render()
       glEnable(GL_BLEND);
 
       // prepare image texture
-      tex_text.use(core->get_texmgr());
+      tex_text.use();
 
       double u = tex_text.get_tex_u(), v = tex_text.get_tex_v();
 
@@ -436,8 +437,8 @@ void ua_cutscene_view_screen::create_text_image(const char *str)
    }
 
    // upload texture
-   tex_text.convert(core->get_texmgr(),img_text);
-   tex_text.use(core->get_texmgr());
+   tex_text.convert(img_text);
+   tex_text.use();
    tex_text.upload();
 }
 

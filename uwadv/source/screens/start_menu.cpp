@@ -64,9 +64,9 @@ void ua_start_menu_screen::init()
 
    // load background image
    img.load_raw(core->get_settings(),"data/opscr.byt",2);
-   tex.init();
-   tex.convert(core->get_texmgr(),img);
-   tex.use(core->get_texmgr());
+   tex.init(&core->get_texmgr());
+   tex.convert(img);
+   tex.use();
    tex.upload();
 
    // get palette #2 (needed for palette shifting)
@@ -198,8 +198,8 @@ void ua_start_menu_screen::render()
    glColor3ub(light,light,light);
 
    // prepare image texture
-   tex.convert(img,palette);
-   tex.use(core->get_texmgr());
+   tex.convert(palette,img);
+   tex.use();
    tex.upload();
 
    double u = tex.get_tex_u(), v = tex.get_tex_v();

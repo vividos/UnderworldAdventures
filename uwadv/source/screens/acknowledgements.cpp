@@ -71,18 +71,18 @@ void ua_acknowledgements_screen::init()
    ack.load(core->get_settings(),"cuts/cs012.n01");
 
    // init and fill the textures
-   tex.init(2);
+   tex.init(&core->get_texmgr(),2);
 
    // tex 0 is a blank frame / fading-out frame
    ua_image img_clear;
    img_clear.create(320,200,1);
-   tex.convert(core->get_texmgr(),img_clear,0);
-   tex.use(core->get_texmgr(),0);
+   tex.convert(img_clear,0);
+   tex.use();
    tex.upload();
 
    // tex 1 is next fading-in frame
-   tex.convert(core->get_texmgr(),img_clear,1);
-   tex.use(core->get_texmgr(),1);
+   tex.convert(img_clear,1);
+   tex.use(1);
    tex.upload();
 }
 
@@ -119,7 +119,7 @@ void ua_acknowledgements_screen::render()
    glColor3ub(255,255,255);
 
    // prepare image texture
-   tex.use(core->get_texmgr(),1-(curframe&1));
+   tex.use(1-(curframe&1));
 
    double u = tex.get_tex_u(), v = tex.get_tex_v();
 
@@ -143,7 +143,7 @@ void ua_acknowledgements_screen::render()
       glColor4ub(255,255,255,alpha);
 
       // prepare image texture
-      tex.use(core->get_texmgr(),(curframe&1));
+      tex.use(curframe&1);
 
       u = tex.get_tex_u(); v = tex.get_tex_v();
 
@@ -175,7 +175,7 @@ void ua_acknowledgements_screen::tick()
 
       // load new animation frame
       ack.get_frame(tex,curframe,1-(curframe&1));
-      tex.use(core->get_texmgr(),1-(curframe&1));
+      tex.use(1-(curframe&1));
       tex.upload();
 
       return;
@@ -206,8 +206,8 @@ void ua_acknowledgements_screen::fadeout_end()
    {
       ua_image img_clear;
       img_clear.create(320,200,1);
-      tex.convert(core->get_texmgr(),img_clear,(curframe&1));
-      tex.use(core->get_texmgr(),(curframe&1));
+      tex.convert(img_clear,(curframe&1));
+      tex.use(curframe&1);
       tex.upload();
    }
    ++curframe;

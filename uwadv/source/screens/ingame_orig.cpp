@@ -69,9 +69,9 @@ void ua_ingame_orig_screen::init()
    ua_settings &settings = core->get_settings();
 
    img_back.load_raw(settings,mainscreenname,0);
-   tex.init();
-   tex.convert(core->get_texmgr(),img_back);
-   tex.use(core->get_texmgr());
+   tex.init(&core->get_texmgr());
+   tex.convert(img_back);
+   tex.use();
    tex.upload();
 
    img_temp.create(img_back.get_xres(),img_back.get_yres(),0,
@@ -409,8 +409,8 @@ void ua_ingame_orig_screen::render_ui()
    }
 
    // upload ui texture
-   tex.convert(core->get_texmgr(),img_temp);
-   tex.use(core->get_texmgr());
+   tex.convert(img_temp);
+   tex.use();
    tex.upload();
 
    double u = tex.get_tex_u(), v = tex.get_tex_v();

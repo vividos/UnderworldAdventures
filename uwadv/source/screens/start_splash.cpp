@@ -150,9 +150,9 @@ void ua_start_splash_screen::init()
    is_animation = false;
 
    // convert to texture
-   tex.init();
-   tex.convert(core->get_texmgr(),img);
-   tex.use(core->get_texmgr());
+   tex.init(&core->get_texmgr());
+   tex.convert(img);
+   tex.use();
    tex.upload();
 
    stage=0;
@@ -213,13 +213,13 @@ void ua_start_splash_screen::render()
    {
       // prepare animation frame
       cuts.get_frame(tex,curframe);
-      tex.use(core->get_texmgr());
+      tex.use();
       tex.upload();
    }
    else
    {
       // prepare image texture
-      tex.use(core->get_texmgr());
+      tex.use();
    }
 
    double u = tex.get_tex_u(), v = tex.get_tex_v();
@@ -254,8 +254,8 @@ void ua_start_splash_screen::tick()
          {
             // load new image and texture
             img.load_raw(core->get_settings(),splash_seq[stage+1].moreinfo,5);
-            tex.convert(core->get_texmgr(),img);
-            tex.use(core->get_texmgr());
+            tex.convert(img);
+            tex.use();
             tex.upload();
             is_animation = false;
          }

@@ -97,7 +97,7 @@ void setup_opengl(int width,int height)
    glMatrixMode(GL_MODELVIEW);
 
    // init texture
-   tex.init();
+   tex.init(NULL,1); // no texmgr available
 }
 
 void draw_screen()
@@ -111,7 +111,7 @@ void draw_screen()
    cuts.get_frame(tex,currentframe);
 
    // upload texture to graphics card
-   // note: we don't need to use() it, since it's still used from tex.init()
+   tex.use();
    tex.upload(false);
 
    // draw quad
