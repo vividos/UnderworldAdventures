@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,8 +23,6 @@
 
    \brief user interface screens base classes
 
-   base class for user interface screens, e.g. main game screen, conversation screen,
-   map screen etc.
 */
 //! \ingroup userinterface
 
@@ -43,11 +41,14 @@
 // classes
 
 //! screen base class
+/*! base class for user interface screens, e.g. main game screen, conversation
+    screen, map screen etc.
+*/
 class ua_screen: public ua_window
 {
 public:
    //! ctor
-   ua_screen();
+   ua_screen(ua_game_interface& game_interface);
    //! dtor
    virtual ~ua_screen();
 
@@ -75,27 +76,16 @@ public:
    //! registers a keymap
    void register_keymap(ua_keymap* keymap);
 
-   //! sets pointer to game interface
-   void set_game_interface(ua_game_interface* game_interface);
-
 protected:
    //! list of all subwindows controlled by the screen
    std::vector<ua_window*> subwindows;
 
-   //! game interface pointer
-   ua_game_interface* game;
+   //! game interface
+   ua_game_interface& game;
 
    //! screen keymap
    ua_keymap* scr_keymap;
 };
-
-
-// inline methods
-
-inline void ua_screen::set_game_interface(ua_game_interface* game_interface)
-{
-   game = game_interface;
-}
 
 
 #endif

@@ -32,8 +32,8 @@
 
 // ua_screen methods
 
-ua_screen::ua_screen()
-:game(NULL),scr_keymap(NULL)
+ua_screen::ua_screen(ua_game_interface& game_interface)
+:game(game_interface),scr_keymap(NULL)
 {
 }
 
@@ -99,8 +99,7 @@ bool ua_screen::process_event(SDL_Event& event)
          ua_window& wnd = *subwindows[i];
 
          // mouse in area?
-         if (xpos > wnd.get_xpos() && xpos < wnd.get_xpos()+wnd.get_width() &&
-             ypos > wnd.get_ypos() && ypos < wnd.get_ypos()+wnd.get_height())
+         if (wnd.in_window(xpos,ypos))
          {
             wnd.mouse_event(event.type != SDL_MOUSEMOTION,
                left_button,
@@ -141,6 +140,10 @@ void ua_screen::key_event(bool key_down, ua_key_value key)
 
 void ua_screen::tick()
 {
+   // send tick to all subwindows
+   unsigned int max = subwindows.size();
+   for(unsigned int i=0; i<max; i++)
+      subwindows[i]->tick();
 }
 
 /*! note that for all subwindows the draw() and destroy() functions are
