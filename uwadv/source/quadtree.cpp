@@ -39,8 +39,12 @@
 ua_frustum::ua_frustum(double xpos,double ypos,double angle,double fov,double farplane)
 {
    // calculate all three triangle points forming the 2d frustum top view
-   x[0] = xpos;
-   y[0] = ypos;
+   x[0] = xpos - 3.0*cos(ua_deg2rad(angle));
+   y[0] = ypos - 3.0*sin(ua_deg2rad(angle));
+
+   // move camera pos a bit behind
+   farplane += 3.0;
+   fov *= 1.3;
 
    // view vector
    double vx = farplane*cos(ua_deg2rad(angle)) + xpos;
