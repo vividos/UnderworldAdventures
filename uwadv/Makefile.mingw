@@ -96,28 +96,10 @@ zziplib: $(zziplib_OBJS)
 
 uwadv_EXEC = uwadv.exe
 
-uwadv_OBJS = source/win32/source/main.o \
-	source/win32/source/game_win32.o \
-	source/win32/source/uwadv_res.o \
-	source/font.o source/image.o source/inventory.o source/level.o \
-	source/texture.o source/underworld.o source/uwadv.o source/player.o \
-	source/quadtree.o source/objects.o source/physics.o source/cutscene.o \
-	source/files.o source/keymap.o source/uwscript.o source/settings.o \
-	source/audio/audio.o source/audio/midi.o source/audio/xmidi.o \
-	source/audio/midi_driver/uni_fmod.o \
-	source/audio/midi_driver/win_midiout.o \
-	source/audio/midi_driver/linux_sdl_mixer.o \
-	source/conv/codevm.o \
-	source/resource/codeloader.o source/resource/fontloader.o \
-	source/resource/gamestrings.o source/resource/imageloader.o \
-	source/resource/maploader.o source/resource/settingsloader.o \
-	source/resource/texloader.o source/resource/objloader.o \
-	source/resource/cutsloader.o source/resource/savegame.o \
-	source/screens/ingame_orig.o source/screens/start_splash.o \
-	source/screens/start_menu.o source/screens/cutscene_view.o \
-	source/screens/acknowledgements.o source/screens/create_character.o \
-	source/screens/conversation.o source/screens/map_view.o \
-	source/screens/uwadv_menu.o \
+include source/Makefile.common
+uwadv_CPPs = $(uwadv_SOURCES:%.hpp=)
+uwadv_OBJS = $(uwadv_CPPs:%.cpp=source/%.o) \
+        $(uwadv_win32objects:%=source/%) \
 	$(lua_OBJS) $(zziplib_OBJS)
 
 
