@@ -62,8 +62,7 @@ void ua_conversation_screen::init(ua_game_core_interface* thecore)
    ua_object& npc_obj =
       core->get_underworld().get_level(level).get_mapobjects().get_object(objpos);
 
-   npcdata = npc_obj.get_object_info().data;
-   Uint16 convslot = npcdata[0];
+   Uint16 convslot = npc_obj.get_ext_object_info().npc_whoami;
 
    if (convslot==0)
    {
@@ -123,7 +122,7 @@ void ua_conversation_screen::init(ua_game_core_interface* thecore)
       std::string name1 = core->get_strings().get_string(7,16+convslot);
       std::string name2 = pl.get_name();
 
-      if (npcdata[0]==0)
+      if (convslot==0)
       {
          // generic conversation
          name1 = core->get_strings().get_string(4,npc_obj.get_object_info().item_id);
