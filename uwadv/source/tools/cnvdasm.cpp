@@ -1006,8 +1006,8 @@ int main(int argc, char *argv[])
    if (argc<4)
    {
       printf("syntax: cnvdasm <command> <cnv-archive> <conv-slot>\n"
-         "   command can either be \"dasm\" (=disassembler) or \"dec\" (=decompiler).");
-      printf("examples: cnvdasm dasm data/cnv.ark 1\n"
+         "   command can either be \"dasm\" (=disassembler) or \"dec\" (=decompiler).\n"
+         "   examples: cnvdasm dasm data/cnv.ark 1\n"
          "   cnvdasm dec data/cnv.ark 3\n\n");
       return 0;
    }
