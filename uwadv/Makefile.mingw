@@ -301,7 +301,9 @@ uwdump_LIBS = -lmingw32 -lkernel32 -luser32 libuatools.a $(SDL_LIB) $(STLPORT_LI
 # build rules
 #
 
-tools: libuatools cnvdbg cnvdasm xmi2mid mapdisp animview strpak uwdump
+TOOLS = cnvdbg cnvdasm xmi2mid mapdisp animview strpak uwdump
+
+tools: libuatools $(TOOLS)
 
 uwadv: $(uwadv_EXEC) uwadv.cfg
 $(uwadv_EXEC): $(uwadv_OBJS)
@@ -404,6 +406,11 @@ update: uwadv data uaconfig
 install: update
 	cp uwadv.cfg $(UWADV_PATH)
 	cp uadata/uw1/keymap.cfg $(UWADV_PATH)
+
+toolsinstall: tools
+	mkdir -p $(UWADV_PATH)/tools/
+	cp $(TOOLS) $(UWADV_PATH)/tools/
+	cp docs/README.tools.txt $(UWADV_PATH)/tools/
 
 installer: install
 	cp win32/uwadv.nsi $(UWADV_PATH)
