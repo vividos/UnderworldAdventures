@@ -75,10 +75,6 @@ void ua_textscroll::init(ua_game_core_interface& core, unsigned int xpos,
       tex.use(1);
       tex.upload();
    }
-
-   // enable unicode key support
-   SDL_EnableUNICODE(1);
-   ua_trace("unicode keyboard support enabled\n");
 }
 
 bool ua_textscroll::print(const char* text)
@@ -340,6 +336,10 @@ bool ua_textscroll::handle_event(SDL_Event &event)
             // end input mode
             input_mode = false;
             handled = true;
+
+            // disable unicode key support
+            SDL_EnableUNICODE(0);
+            ua_trace("unicode keyboard support disabled\n");
          }
       }
    }
@@ -355,6 +355,10 @@ void ua_textscroll::enter_input_mode()
    input_line = linestack.size()-1;
 
    update_scroll();
+
+   // enable unicode key support
+   SDL_EnableUNICODE(1);
+   ua_trace("unicode keyboard support enabled\n");
 }
 
 bool ua_textscroll::is_input_done(std::string& text)
@@ -423,8 +427,4 @@ void ua_textscroll::render()
 void ua_textscroll::done()
 {
    tex.done();
-
-   // disable unicode key support
-   SDL_EnableUNICODE(0);
-   ua_trace("unicode keyboard support disabled\n");
 }
