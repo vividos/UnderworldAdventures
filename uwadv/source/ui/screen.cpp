@@ -33,6 +33,7 @@
 // ua_screen methods
 
 ua_screen::ua_screen()
+:game(NULL),scr_keymap(NULL)
 {
 }
 
@@ -109,7 +110,27 @@ bool ua_screen::process_event(SDL_Event& event)
       }
    }
 
+   // key event
+   if (scr_keymap != NULL && event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
+   {
+      // make keymod value; mask out numlock mod key
+      Uint32 keymod = ua_make_keymod(event.key.keysym.sym,
+         event.key.keysym.mod & ~KMOD_NUM);
+
+      ua_key_value key = scr_keymap->find_key(keymod);
+
+      // process key
+      if (key != ua_key_nokey)
+         key_event(event.type == SDL_KEYDOWN, key);
+   }
+
    return true;
+}
+
+/*! note that SDL_events must be passed to ua_screen::process_event() to
+    let key messages to be processed and sent to key_event() */
+void ua_screen::key_event(bool key_down, ua_key_value key)
+{
 }
 
 void ua_screen::tick()
@@ -121,4 +142,9 @@ void ua_screen::tick()
 void ua_screen::register_window(ua_window* window)
 {
    subwindows.push_back(window);
+}
+
+void ua_screen::register_keymap(ua_keymap* keymap)
+{
+   scr_keymap = keymap;
 }

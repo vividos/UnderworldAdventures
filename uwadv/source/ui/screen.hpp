@@ -37,6 +37,7 @@
 // needed includes
 #include "window.hpp"
 #include "game_interface.hpp"
+#include "keymap.hpp"
 
 
 // classes
@@ -62,11 +63,17 @@ public:
    //! processes SDL events; returns true when event shouldn't processed further
    virtual bool process_event(SDL_Event& event);
 
+   //! processes key event
+   virtual void key_event(bool key_down, ua_key_value key);
+
    //! called every game tick
    virtual void tick();
 
    //! registers a window as subwindow
    void register_window(ua_window* window);
+
+   //! registers a keymap
+   void register_keymap(ua_keymap* keymap);
 
    //! sets pointer to game interface
    void set_game_interface(ua_game_interface* game_interface);
@@ -77,6 +84,9 @@ protected:
 
    //! game interface pointer
    ua_game_interface* game;
+
+   //! screen keymap
+   ua_keymap* scr_keymap;
 };
 
 
