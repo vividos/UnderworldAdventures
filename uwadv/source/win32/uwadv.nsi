@@ -66,6 +66,7 @@ File uaconfig.exe
 File SDL.dll
 File SDL_mixer.dll
 File uwadv.cfg
+File keymap.cfg
 File Copying
 File README.uwadv.txt
 File uw1-keyboard.txt
