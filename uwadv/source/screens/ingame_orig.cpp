@@ -1206,11 +1206,13 @@ void ua_ingame_orig_screen::inventory_click(ua_inventory& inv,
       // yes, floating
 
       // check for container icon "slot"
-      if (area==ua_area_inv_container &&
-         inv.get_container_item_id() != ua_slot_no_item)
+      if (area==ua_area_inv_container)
       {
-         // put item into parent's container, if possible
-         inv.drop_floating_item_parent();
+         if (inv.get_container_item_id() != ua_slot_no_item)
+         {
+            // put item into parent's container, if possible
+            inv.drop_floating_item_parent();
+         }
       }
       else
       {
