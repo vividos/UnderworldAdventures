@@ -119,6 +119,7 @@ registered C functions to call from Lua:
 2.1.2. Functions provided by Lua scripts
 
 * lua_init_script(self)
+  return values: none
 
   the first function that is called when all scripts are loaded. the userdata
   value "self" is passed which is the handle to the underworld object. every
@@ -126,41 +127,46 @@ registered C functions to call from Lua:
   as the first parameter, unless noted otherwise.
 
 * lua_done_script()
+  return values: none
 
   does some cleanup
 
 * lua_game_tick(curtime)
+  return values: none
 
   is called for every game tick for which the underworld Lua scripts should
   run. "curtime" is the current underworld time in seconds since start of the
   underworld object.
 
 * lua_obj_look_at(item_id)
+  return values: none
 
   performs the "look at" action for a given item id.
 
 * lua_obj_use(inv_pos)
+  return values: none
 
   performs the "use" action for a given object. "inv_pos" is the inventory
   itemlist position. generally, only objects that are in the inventory can be
   used with that function. if the object must be used together with another
-  object, a "object" cursor is requested. no return value.
+  object, a "object" cursor is requested.
 
 * lua_obj_walk_over(obj)
+  return values: none
 
   called when the player walks over an object. "obj" is the position in the
-  objlist. no return value.
+  objlist.
 
 * lua_obj_combine(item_id1,item_id2)
+  return values: success_code, new_item_id
 
-  tries to combine the two items given by their item_id's. the three return
-  values are: "success_code,new_item_id". Possible values for the
+  tries to combine the two items given by their item_id's. The second item is
+  treated as the item dropped onto the first. Possible values for
   "success_code" are:
 
   - lua_obj_cmb_failed        items couldn't be combined
-  - lua_obj_cmb_dstr_first    first item is destroyed
-  - lua_obj_cmb_dstr_second   second item is destroyed
-  - lua_obj_cmb_dstr_all      all two objects are destroyed
+  - lua_obj_cmb_dstr_dropped  second (dropped) item is destroyed
+  - lua_obj_cmb_dstr_both     both the two objects are destroyed
 
   in any case but "lua_obj_cmb_failed" the "new_item_id" contains the item id
   of the newly created object.
@@ -170,16 +176,18 @@ registered C functions to call from Lua:
 * lua_obj_can_use
 * lua_obj_can_get
 * lua_player_hit_floor(speed)
+  return values: none
 
   called when the player hits the floor. "speed" is the speed in
-  height_unit/second. no return value.
+  height_unit/second.
 
 * lua_player_hit_wall
 
 * lua_inventory_categorize_item(item_id)
+  return values: category
 
-  categorizes an item in respect to the inventory paperdoll. the single return
-  value can be one of the following category constants:
+  categorizes an item in respect to the inventory paperdoll. the return value
+  "category" can be one of the following category constants:
 
   - lua_inv_cat_normal   normal object, cannot be worn on paperdoll
   - lua_inv_cat_ring     a ring that can be put on a finger
@@ -190,32 +198,37 @@ registered C functions to call from Lua:
   - lua_inv_cat_head     all sorts of helmets/crowns
 
 * lua_track()
+  return values: none
 
   performs the "track" skill evaluation and prints a string about possible
-  critters in the nearby area on the scroll. no return value.
+  critters in the nearby area on the scroll.
 
 * lua_sleep()
+  return values: none
 
-  performs sleeping. may start dream cutscenes. no return value.
+  performs sleeping. may start dream cutscenes.
 
 * lua_cast_spell(spell_id)
+  return values: none
 
-  starts casting a spell with "spell_id". may request a "target" cursor. no
-  return value.
+  starts casting a spell with "spell_id". may request a "target" cursor.
 
 * lua_cast_target(target_obj)
+  return values: none
 
   finishes casting of "target" spells. "target_obj" is the object selected
-  with the target cursor. no return value.
+  with the target cursor.
 
 * lua_savegame_load(version)
+  return values: none
 
   restores lua values from the savegame that is to be loaded. "version"
   indicates the version of the savegame.
 
 * lua_savegame_save()
+  return values: none
 
-  saves the lua values that have to be persisted. no return value.
+  saves the lua values that have to be persisted.
 
 
 2.1.3. Registered C functions
@@ -233,6 +246,7 @@ defined.
 Lua functions to call from C:
 
 * cuts_init(self,cutscene)
+  return values: none
 
   tells the cutscene script the "self" userdata, needed for all calls back to
   the C language. "cutscene" is the number of the cutscene that should be
@@ -244,12 +258,13 @@ Lua functions to call from C:
   todo
 
 * cuts_tick(time)
+  return values: none
 
   is called for every game tick. Game ticks are constant over time, as opposed
   to rendered frames per second (which might change). "time" contains the
   current time from start of the cutscene animation, in seconds.
 
-C functions to call from Lua:
+registered C functions to call from Lua:
 
 * cuts_do_action(self,actioncode,actionvalue)
 
