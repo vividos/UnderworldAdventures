@@ -285,6 +285,7 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
 
    switch(keysym.sym)
    {
+#ifdef HAVE_DEBUG
    case SDLK_PAGEUP:
       if (curlevel>0 && type==SDL_KEYDOWN)
          core->get_underworld().change_level(--curlevel);
@@ -294,6 +295,27 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
       if (curlevel<9 && type==SDL_KEYDOWN)
          core->get_underworld().change_level(++curlevel);
       break;
+
+   case SDLK_F6: // quicksave
+      if (type==SDL_KEYDOWN)
+      {
+         ua_trace("quicksaving ... ");
+         ua_savegame &sg = core->get_filesmgr().get_quicksave(true);
+         core->get_underworld().save_game(sg);
+         ua_trace("done\n");
+      }
+      break;
+
+   case SDLK_F7: // quickload
+      if (type==SDL_KEYDOWN)
+      {
+         ua_trace("quickloading ... ");
+         ua_savegame &sg = core->get_filesmgr().get_quicksave(false);
+         core->get_underworld().load_game(sg);
+         ua_trace("done\n");
+      }
+      break;
+#endif
 
    case SDLK_q:
       // exit screen when pressing Alt + q
