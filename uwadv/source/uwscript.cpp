@@ -956,7 +956,7 @@ int ua_underworld_script_bindings::ui_cursor_target(lua_State* L)
 
 int ua_underworld_script_bindings::savegame_store_value(lua_State* L)
 {
-   ua_savegame* sg = reinterpret_cast<ua_savegame*>(lua_touserdata(L,-1));
+   ua_savegame* sg = reinterpret_cast<ua_savegame*>(lua_touserdata(L,-2));
    double value = lua_tonumber(L,-1);
 
    sg->write32(static_cast<Uint32>(value));
