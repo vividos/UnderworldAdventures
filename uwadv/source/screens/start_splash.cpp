@@ -60,7 +60,9 @@ struct ua_start_splash_sequence
 {
    ua_start_splash_action type;
    const char *moreinfo;
-} splash_seq[] =
+};
+
+ua_start_splash_sequence ua_uw1_splash_seq[] =
 {
    // first image
    { ua_fadein, NULL },
@@ -70,6 +72,22 @@ struct ua_start_splash_sequence
    // second image
    { ua_fadein, NULL },
    { ua_showimg, "data/pres2.byt" },
+   { ua_fadeout, NULL },
+
+   // title animation
+   { ua_fadein, NULL },
+   { ua_showanim, "cuts/cs011.n01" },
+   { ua_fadeout, NULL },
+
+   // finished
+   { ua_endseq, NULL }
+};
+
+ua_start_splash_sequence ua_uw_demo_splash_seq[] =
+{
+   // first image
+   { ua_fadein, NULL },
+   { ua_showimg, "data/presd.byt" },
    { ua_fadeout, NULL },
 
    // title animation
@@ -102,11 +120,17 @@ void ua_start_splash_screen::init()
    glDisable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
+   // select splash sequence
+   if (core->get_settings().gtype == ua_game_uw_demo)
+      splash_seq = ua_uw_demo_splash_seq;
+   else
+      splash_seq = ua_uw1_splash_seq;
+
    // load first image
+   img.load_raw(core->get_settings(),splash_seq[1].moreinfo,5);
+
    if (core->get_settings().gtype == ua_game_uw_demo)
    {
-      img.load_raw(core->get_settings(),"data/presd.byt",5);
-
       // write a string under the demo title
       ua_font font;
       ua_image img2;
@@ -117,10 +141,6 @@ void ua_start_splash_screen::init()
       int xpos=int((320-img2.get_xres()*scale)/2);
 
       img.paste_image(img2,xpos,200-16);
-   }
-   else
-   {
-      img.load_raw(core->get_settings(),splash_seq[1].moreinfo,5);
    }
 
    img_loaded = true;
@@ -246,13 +266,6 @@ void ua_start_splash_screen::tick()
       // do next stage when blend time is over
       if (tickcount >= (core->get_tickrate()*ua_start_splash_blend_time))
       {
-         if (core->get_settings().gtype == ua_game_uw_demo)
-         {
-            // when we have the demo, we immediately go to the ingame
-            core->replace_screen(new ua_ingame_orig_screen);
-            return;
-         }
-
          stage++;
          img_loaded = false;
 
@@ -266,7 +279,15 @@ void ua_start_splash_screen::tick()
 
    case ua_endseq:
       // start next screen
-      core->replace_screen(new ua_start_menu_screen);
+      if (core->get_settings().gtype == ua_game_uw_demo)
+      {
+         // when we have the demo, we immediately go to the ingame
+         core->replace_screen(new ua_ingame_orig_screen);
+         return;
+      }
+      else
+         core->replace_screen(new ua_start_menu_screen);
+
       break;
    }
 

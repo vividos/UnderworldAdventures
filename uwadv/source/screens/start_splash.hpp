@@ -85,6 +85,9 @@ protected:
 
    //! animation frame count
    unsigned int animcount;
+
+   //! splash sequence list to use
+   struct ua_start_splash_sequence *splash_seq;
 };
 
 #endif
