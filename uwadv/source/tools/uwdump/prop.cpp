@@ -114,6 +114,7 @@ void ua_dump_obj_properties::start(std::string& basepath)
       printf("q_type=%01x ",data[10] & 15);
 
       printf("belong_to=%01x ",data[7]>>7);
+      printf("type=%01x ",(data[7]>>1)&15);
       printf("look_at=%01x ",(data[10]>>4) & 1);
 
       printf("name=%s\n",gstr.get_string(4,i).c_str());
