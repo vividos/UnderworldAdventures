@@ -37,31 +37,47 @@ uwadv_SOURCES = \
 	base/settings.cpp base/settings.hpp \
 	base/uamath.hpp \
 	base/utils.cpp base/utils.hpp \
+	conv/codevm.cpp conv/codevm.hpp \
+	conv/convgraph.cpp conv/convgraph.hpp \
+	conv/opcodes.hpp \
+	renderer/quadtree.cpp renderer/quadtree.hpp \
+	renderer/renderer.cpp renderer/renderer.hpp \
+	renderer/texture.cpp renderer/texture.hpp \
+	ui/cutscene.cpp ui/cutscene.hpp \
+	ui/font.cpp ui/font.hpp \
+	ui/imgquad.cpp ui/imgquad.hpp \
 	ui/screen.cpp ui/screen.hpp \
 	ui/window.cpp ui/window.hpp \
+	underw/inventory.cpp underw/inventory.hpp \
+	underw/level.cpp underw/level.hpp \
+	underw/mapnotes.cpp underw/mapnotes.hpp \
+	underw/objects.cpp underw/objects.hpp \
+	underw/pathfinder.cpp underw/pathfinder.hpp \
+	underw/physics.cpp underw/physics.hpp \
+	underw/physicsobject.cpp underw/physicsobject.hpp \
+	underw/player.cpp underw/player.hpp \
+	underw/properties.hpp \
+	underw/underworld.cpp underw/underworld.hpp \
+	underw/.cpp underw/.hpp \
 	uwadv.cpp uwadv.hpp \
 	main.cpp \
 	common.hpp
 
 the_rest = \
-	font.cpp image.cpp inventory.cpp level.cpp \
-	player.cpp quadtree.cpp texture.cpp underworld.cpp uwadv.cpp \
-	objects.cpp cutscene.cpp physics.cpp physicsobject.cpp keymap.cpp \
+	image.cpp \
+	texture.cpp uwadv.cpp \
+	keymap.cpp \
 	uwscript.cpp mousecursor.cpp \
-	renderer.cpp textscroll.cpp critter.cpp imgquad.cpp models.cpp \
-	gamecfg.cpp mapnotes.cpp pathfinder.cpp \
-	audio.hpp core.hpp font.hpp gamestrings.hpp \
-	image.hpp inventory.hpp level.hpp player.hpp quadtree.hpp \
-	screen.hpp texture.hpp \
-	underworld.hpp uwadv.hpp objects.hpp cutscene.hpp physics.hpp \
-	physicsobject.hpp imgquad.hpp models.hpp \
+	textscroll.cpp critter.cpp models.cpp \
+	gamecfg.cpp \
+	audio.hpp core.hpp gamestrings.hpp \
+	image.hpp \
+	texture.hpp \
+	models.hpp \
 	keymap.hpp uwscript.hpp \
-	mousecursor.hpp renderer.hpp textscroll.hpp \
-	debug.hpp critter.hpp gamecfg.hpp properties.hpp \
-	mapnotes.hpp pathfinder.hpp \
-	linux/main.cpp linux/debug.cpp \
-	conv/codevm.cpp conv/codevm.hpp conv/opcodes.hpp \
-	conv/convgraph.hpp conv/convgraph.cpp \
+	mousecursor.hpp textscroll.hpp \
+	debug.hpp critter.hpp gamecfg.hpp \
+	linux/debug.cpp \
 	debug/uwaccess.cpp debug/uwaccess.hpp \
 	resource/codeloader.cpp resource/fontloader.cpp \
 	resource/gamestrings.cpp resource/imageloader.cpp \
@@ -77,7 +93,6 @@ the_rest = \
 	resource/model/FlexLexer.h \
 	resource/model/importwrl.cpp \
 	resource/model/wrllexer.cpp resource/model/wrllexer.hpp \
-	screens/screen.cpp \
 	screens/ingame_orig.cpp screens/start_splash.cpp \
 	screens/start_menu.cpp screens/cutscene_view.cpp \
 	screens/acknowledgements.cpp screens/conversation.cpp \
