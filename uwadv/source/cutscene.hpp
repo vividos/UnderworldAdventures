@@ -62,7 +62,7 @@ public:
    unsigned int get_maxframes(){ return records; }
 
    //! extracts a new frame into a texture
-   void get_frame(ua_texture &tex, unsigned int framenum);
+   void get_frame(ua_texture &tex, unsigned int framenum, unsigned int texnum=0);
 
 protected:
    //! decodes one frame

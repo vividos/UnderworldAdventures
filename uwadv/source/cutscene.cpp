@@ -135,7 +135,7 @@ void ua_cuts_extract_data(Uint8 *src,Uint8 *dst,unsigned int maxpix)
    }
 }
 
-void ua_cutscene::get_frame(ua_texture &tex, unsigned int framenum)
+void ua_cutscene::get_frame(ua_texture &tex, unsigned int framenum, unsigned int texnum)
 {
    if (curframe!=framenum)
    {
@@ -154,8 +154,8 @@ void ua_cutscene::get_frame(ua_texture &tex, unsigned int framenum)
       }
    }
 
-   // now copy the bytes to the image
-   tex.convert(&outbuffer[0],width,height,palette,0);
+   // now copy the bytes to the texture
+   tex.convert(&outbuffer[0],width,height,palette,texnum);
 }
 
 void ua_cutscene::decode_frame(unsigned int framenum)
