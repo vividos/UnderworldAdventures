@@ -349,10 +349,9 @@ void add_wall(ua_triangle3d_textured& tri1, ua_triangle3d_textured& tri2,
    }
 }
 
-void ua_renderer::get_tile_triangles(unsigned int xpos, unsigned int ypos,
+void ua_renderer::get_tile_triangles(ua_level& level, unsigned int xpos, unsigned int ypos,
    std::vector<ua_triangle3d_textured>& alltriangles)
 {
-   ua_level& level = underw->get_current_level();
    ua_levelmap_tile& tile = level.get_tile(xpos,ypos);
 
    if (tile.type == ua_tile_solid)

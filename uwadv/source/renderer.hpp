@@ -85,7 +85,7 @@ public:
       unsigned int& tilex, unsigned int& tiley, bool& isobj, unsigned int& id);
 
    //! returns the list of all triangles for a given tile
-   void get_tile_triangles(unsigned int xpos, unsigned int ypos,
+   static void get_tile_triangles(ua_level& level, unsigned int xpos, unsigned int ypos,
       std::vector<ua_triangle3d_textured>& alltriangles);
 
 protected:
@@ -105,18 +105,17 @@ protected:
    void render_objects(unsigned int x, unsigned int y);
 
 protected:
-
    //! renders a single object
    void render_object(ua_object& obj, unsigned int x, unsigned int y);
 
    //! retrieves tile coordinates
-   void get_tile_coords(unsigned int side, ua_levelmap_tiletype type,
+   static void get_tile_coords(unsigned int side, ua_levelmap_tiletype type,
       unsigned int basex, unsigned int basey, Uint16 basez, Uint16 slope, Uint16 ceiling,
       Uint16 &x1, Uint16 &y1, Uint16 &z1,
       Uint16 &x2, Uint16 &y2, Uint16 &z2);
 
    //! renders a wall of a tile, dependent on the neighbour
-   void render_wall(unsigned int side,
+   static void render_wall(unsigned int side,
       Uint16 x1, Uint16 y1, Uint16 z1, Uint16 x2, Uint16 y2, Uint16 z2,
       Uint16 nz1, Uint16 nz2, Uint16 ceiling);
 
