@@ -1,0 +1,2 @@
+Michael Fink <vividos@users.sourceforge.net>
+Ryan Nunn <triforce@merlin.net.au>    XMIDI and Windows MidiOut driver
