@@ -16,9 +16,10 @@ Table of Contents
 
    2      Overview
    2.1    Remarks
-   2.2    Summary of game files
-   2.2.1  Ultima Underworld 1 files
-   2.2.2  Ultima Underworld 2 files
+   2.2    Document conventions
+   2.3    Summary of game files
+   2.3.1  Ultima Underworld 1 files
+   2.3.2  Ultima Underworld 2 files
 
    3      Graphics and visuals
    3.1    Palettes
@@ -30,9 +31,15 @@ Table of Contents
    3.7    Cutscene animations
 
    4      Level maps and object lists
-   4.1    Level map
+   4.1    File format
+   4.2    Level tilemap
    4.2    Master object list
+   4.2.1  Enchantments
+   4.2.2  Item Owner
    4.3    Free lists
+   4.4    Texture mappings
+   4.5    Animation infos
+   4.6    Automap infos
 
    5      String resources
    5.1    String block contents
@@ -41,7 +48,7 @@ Table of Contents
    6.1    List of all objects and items
    6.2    Common object properties
    6.3    Object class properties
-   6.4    Item combining
+   6.4    Object combining
 
    7      Conversations
    7.1    Conversation file format
@@ -57,13 +64,54 @@ Table of Contents
    8.1    List of all nodes
 
    9      Miscellaneous stuff
+   9.1    Ultima Underworld 2 compression scheme
+   9.2    Savegame format
+   9.3    Unknown files
 
  +--------------------------------------------------------------------------+
 
 
 1  Introduction
 
-   <-- start here
+   This file tries to collect all file formats and data structures used in the
+   game Ultima Underworld 1. It origined from the "uw-specs.txt" file that I
+   found with "The System Shock Hack Project" (TSSHP). System Shock uses
+   almost the same data structures for the game and Jim decided to support the
+   underworldly games, too. With the start of the Underworld Adventures
+   project I started to extend the file as I found new things. It started with
+   a tiny 20kb text file.
+
+   As I further progressed to find out things I realized that the Underworld
+   games are not that simple done as I always thought. Many little things want
+   to be specified, configured and set. The Underworld games were built very
+   detailed, far more than other games at this time. The second game even
+   added to that complexity (and some say, story, too).
+
+   With this document I hope to present the interested reader a rather
+   detailed overview over the file formats, and even more the inner workings
+   of Ultima Underworld 1 and 2. Have as much fun reading it as I had fun to
+   find out things and writing it!
+
+
+1.1  Credits
+
+   My thanks go out to Jim Cameron that started the original "uw-specs.txt"
+   file and subsequently found out more unknown data structures and discussed
+   about file formats with me. Many thanks, Jim!
+
+   Additional information came from Alistair Brown (basic object format, via
+   the Underworld II editor available at
+   <http://bearcity.pwp.blueyonder.co.uk/>), Ulf Wohlers (Objects and 3D
+   models) and Fabian Pache (about map details and 3d models, uw2 related,
+   http://uw2rev.sourceforge.net).
+
+   I also like to thank Telemachos who pointed me to the TSSHP's file formats
+   file at the start of all of this.
+
+   This file is probably:
+   Copyright (c) 2000,2001,2002,2003 Jim Cameron
+   Copyright (c) 2002,2003 Michael Fink
+
 
  +--------------------------------------------------------------------------+
 
@@ -76,17 +124,40 @@ Table of Contents
 
 2.1  Remarks
 
-   Ultima Underworld is a MS-DOS based game created in C with Turbo-C and
-   Optasm as the assembler used.
+   The game was released in the year 1992, just before Wolfenstein 3D came
+   out.was released. So it was the first true first-person game on the PC.
+
+   Ultima Underworld is a MS-DOS based game created in C with Turbo C++ 2.1
+   and Optasm as the assembler used (as far as we know). 3d models were done
+   with 3d studio max and converted and placed into the executable.
+
+   Ultima Underworld is a trademark of Origin, Inc.
 
 
-2.2  Summary of game files
+2.2  Document conventions
+
+   This document follows some conventions, to keep a nice and well-to-read
+   format. The document is indented by 3 spaces; text must be wrapped at
+   line column 79 and and tables can (but doesn't need to be) indented with
+   3 spaces, too. No tab spaces should be used. Special parts of the formats
+   specification that only refer to either Ultima Underworld 1 or 2 are marked
+   with [uw1] or [uw2].
+
+   All integer data values are refered in the documentation are refered as
+   Int8 for 8-bit values, Int16 and Int32 for 16-bit and 32-bit values. All
+   values are unsigned, unless noted otherwise. As the game was written and
+   run on PC machines, all variables are stored in little-endian format, where
+   the lower byte of e.g. a 16-bit value is stored first, then the higher
+   byte. All data structures found so far use this scheme.
+
+
+2.3  Summary of game files
 
    This section lists all the files that are part of the Ultima Underworld
    game installations.
 
 
-2.2.1  Ultima Underworld 1 files
+2.3.1  Ultima Underworld 1 files
 
    Here's a list of all files for Ultima Underworld 1:
 
@@ -294,7 +365,7 @@ Table of Contents
    presd.byt      "... presents a demo of ..." screen for the demo
 
 
-2.2.2  Ultima Underworld 2 files
+2.3.2  Ultima Underworld 2 files
 
    Here is a list of all files from Ultima Underworld 2 that differ in content
    or are only available in the second game.
@@ -360,6 +431,7 @@ Table of Contents
    uwa30.xmi
    uwa31.xmi
 
+
  +--------------------------------------------------------------------------+
 
 
@@ -373,9 +445,9 @@ Table of Contents
 
    Ultima Underworld uses several palettes for different purposes. There are
    palettes with 256 indices, as well as auxiliary meta-palettes that have
-   16 or 32 entries that map indices to the 256-index map. As the original
+   16 or 32 entries that map indices to the 256-index palette. As the original
    games directly load the palettes into the VGA registers, effects as color
-   flashs done with palette rotating is possible.
+   flashs done with palette rotating are possible.
 
 
 3.1.1  256 color palettes
@@ -450,7 +522,12 @@ Table of Contents
    Graphics are stored in "*.gr" files and can be stored with 8-bit or 4-bit
    indices.
 
-   0000  Int8   unknown, always seems to be 1
+   0000  Int8   Graphic file format:
+                01 .gr
+                02 .tr
+                03 .cr
+                04 .sr
+                05 .ar
    0001  Int16  number of bitmaps
    0003  Int32  offset to bitmap #0
    0007  Int32  offset to bitmap #1
@@ -822,7 +899,7 @@ Table of Contents
    count = value & 0x3fff and the next Int8 as the pixel index. If the value
    is <= 0x4000, we have a long "dump" record.
 
-   Here is some C code to describe the decoding:
+   Here is some meta-C code to describe the decoding:
 
       while(true)
       {
@@ -861,6 +938,319 @@ Table of Contents
 
 
 4  Level maps and object lists
+
+   Level map informations are stored in the file "lev.ark". A default map is
+   in the "data" folder and is loaded after character creation. During
+   gameplay, the map is stored in the folder "Save0".
+
+
+4.1  File format
+
+   The file is a container for several differently-sized blocks that contain
+   different infos of the level maps. Some blocks may be unused, e.g. automap
+   blocks.
+
+   The file header looks like this:
+
+   0000   Int16   number of blocks in file
+   0002   Int32   file offset to block 0
+   0006   Int32   file offset to block 1
+   ...            etc.
+
+   File offsets are absolute offsets into the file. When an offset is 0, the
+   block is not available.
+
+   Ultima Underworld 1 has 135 (0x0087) entries (9 levels x 15 blocks). The
+   block layout is as following:
+
+   <9 blocks level tilemap/master object list>
+   <9 blocks object animation overlay info>
+   <9 blocks texture mapping>
+   <9 blocks automap infos>
+   <9 blocks map comment infos>
+
+   The Ultima Underworld Demo uses three separate files to store the map.
+   Here's a list of the files and what blocks they contain:
+
+   level13.st    level tilemap/master object list block
+   level13.txm   texture mapping
+   level13.anx   object animation overlay info
+
+   Ultima Underworld 2 has 320 (0x0140) entries (50 levels x 6 blocks).
+
+   Data blocks for Ultima Underworld 2 are compressed using the uw2
+   compression scheme described in chapter 9.1.
+
+   The "level tilemap/master object list" for each level contains infos about
+   the level architecture (tilemap) and the objects which live in it:
+
+   offset  size   description
+   0000    4000   tilemap (64 x 64 x 4 bytes)
+   4000    1b00   mobile object information (objects 0000-00ff, 256 x 27 bytes)
+   5b00    1800   static object information (objects 0100-03ff, 768 x 8 bytes)
+   7300    01fc   free list for mobile objects (objects 0002-00ff, 254 x 2 bytes)
+   74fc    0600   free list for static objects (objects 0100-03ff, 768 x 2 bytes)
+   7afc    0104   unknown (260 bytes)
+   7c00    0002
+   7c02    0002   no. entries in mobile free list minus 1
+   7c04    0002   no. entries in static free list minus 1
+   7c06    0002   0x7775 ('uw')
+
+
+4.2  Level tilemap
+
+   Each underworld level consists of a 64x64 tile map (just like on a chess
+   board). A tile can be of different types and can have various floor
+   heights. The ceiling height is fixed. A tile can have an index
+   into the master object list that is the start of an object chain with
+   objects in this tile.
+
+   The first 0x4000 bytes of each "level tilemap/master object list" contain
+   the tilemap info bytes. For each tile there are two Int16 that describe a
+   tile's properties. The map's origin is at the lower left tile, going to the
+   right, each line in turn.
+
+   The two Int16 values can be split into bits:
+
+   0000 tile properties / flags:
+
+      bits     len  description
+       0- 3    4    tile type (0-9, see below)
+       4- 7    4    floor height
+       8       1    unknown (?? special light feature ??)
+       9       1    0, never used in uw1
+      10-13    4    floor texture index (into texture mapping)
+      14       1    unknown (only used on level 6, near the shrine)
+      15       1    door bit (when 1, a door is present)
+
+   0002 tile properties 2 / object list link
+
+      bits     len  description
+       0- 5    6    wall texture index (into texture mapping)
+       6-15    10   first object in tile (index into master object list)
+
+   about word 0000, bit 8:
+      For UW2 Bit 8 is set pretty often, and if set the light level changes.
+      Ironically 1 sometimes means daylight (in Lord British Castle Lv 1) but
+      sometimes 0 means daylight (LBC Lv 5). But the areas are exactly right.
+
+   Underworld tile types are:
+    00      Solid (wall tile)
+    01      Open (square tile of empty space)
+    02      Diagonal, open SE
+    03      Diagonal, open SW
+    04      Diagonal, open NE
+    05      Diagonal, open NW
+    06      Sloping up to the north
+    07      Sloping up to the south
+    08      Sloping up to the east
+    09      Sloping up to the west
+
+
+4.2  Master object list
+
+   The master object list is stored after the tilemap data. There are 1024
+   (0x0400) list positions. The first 256 are reserved for "mobile objects"
+   that have extra NPC info. The rest of the list is used for "static
+   objects". The list entries are allocated from the end to the beginning of
+   the lists. Item positions that are free are stored in the "free lists",
+   described in chapter 4.3.
+
+   Entry 0 is never allocated and is used to test against item links of value
+   0. Entry 1 is partly used to store the player's informations, e.g.
+   direction or in-tile x/y positions.
+
+   Each object entry has a "general object info" block consisting of 4 Int16
+   words. The 256 "mobile objects" are followed by 19 bytes "mobile object
+   extra info", resulting in entries of 27 bytes length. The remaining 768
+   entries only have 8 bytes each. The "mobile object extra info" is described
+   in chapter 4.2.3.
+
+   The "general object info" block looks as following:
+
+        bits  size  field      description
+
+   0000 objid / flags
+        0- 8   9   "item_id"   Object ID (see below)
+        9-12   4   "flags"     Flags
+          12   1   "enchant"   Enchantment flag (enchantable objects only)
+          13   1   "doordir"   Direction flag (doors)
+          14   1   "invis"     Invisible flag (don't draw this object)
+          15   1   "is_quant"  Quantity flag (link field is quantity/special)
+
+   0002 position
+        0- 6   7   "zpos"      Object Z position (0-127)
+        7- 9   3   "heading"   Heading (*45 deg)
+       10-12   3   "ypos"      Object Y position (0-7)
+       13-15   3   "xpos"      Object X position (0-7)
+
+   0004 quality / chain
+        0- 5   6   "quality"   Quality
+        6-15   10  "next"      Index of next object in chain
+
+   0006 link / special
+        0- 5   6   "owner"     Owner / special
+        6-15   10  (*)         Quantity / link / special property
+
+   All field names listed are used later to refer to these fields in the
+   object's information words.
+
+   Object IDs can be split up for classification purposes. Read more in
+   chapter 6 about it.
+
+   Objects in a tile are stored as a linked list, where the "Index of next
+   object in chain" points to the next object in list, or contains 0 for the
+   end of the linked list. The first object in the list is determined by the
+   tile's object index value (see above, at "Tile map").
+
+   (*) The "Quantity" field in word 0006 can have several meanings. If the
+   "is_quant" field is 0 (unset), it contains the index of an associated
+   object. The exact meaning varies, but is generally a "has-a" type
+   relationship (contents, trap to set off, spell). The field name "sp_link"
+   is used in this document if that type of field is meant.
+
+   If the "is_quant" flag is set, the field is a quantity or a special
+   property. If the value is < 512 or 0x0200 it gives the number of stacked
+   items present. Identical objects may be stacked up to 256 objects at a
+   time. The field name "quantity" is used for this.
+
+   If the value is > 512, the value minus 512 is a special property; the
+   object type defines the further meaning of this value (see chapter 6.1 for
+   all special objects in Ultima Underworld). The field name "property" is
+   used for this type of value.
+
+   Note that the term "object" and "item" are used concurrently in the
+   document and always mean the same thing.
+
+
+4.2.1  Enchantments
+
+   If the enchantment flag is set and the object is enchantable, then the
+   link field (less 512) determines the enchantment. Enchantment names are
+   stored in strings chunk 5. The way in which the link value maps onto
+   spells in this chunk depends on the object type.
+
+   Most objects seem to use spells 256-320 (add 256) if the enchantment
+   number is in the range 0-63, otherwise they add 144 to use spells 208 and
+   up. Healing fountains, however, don't use a correction at all.
+
+   Weapons and armour have a more complex mapping. Most enchanted weapons and
+   pieces of armour have an enhancement for Accuracy, Damage, Protection or
+   Toughness, which are spells 448-479 in the main spell list. These map to
+   special property values 192-207. Yes, there are only 16 values for 32
+   spells; enchanted armour adds another 16 to the spell index to bring it
+   into the armour enchantment range. However, these items may also carry
+   generic enchantments, in which case the special properties map to spells
+   0-255 (and armour doesn't apply a special correction).
+
+   Wands don't hold their enchantments directly in the quantity field, since
+   they also need to store the number of charges remaining. Instead, they
+   link to a spell object which holds the enchantment; it seems here that
+   the "quality" field of the spell object determines the number of charges.
+   Other objects may also carry spells in this way.
+
+
+4.2.2  Item Owner
+
+   Some items have a "... belongs to <critter type>" description. The common
+   object properties (see chapter 6.2) determine if an object can have an
+   owner. The string printed is stored in the "owner" field and is an index
+   into string block 1; the string printed for the critter type is
+   "owner" - 1 + 370. When the field is 0, the object doesn't belong to anyone.
+
+
+4.2.3  Mobile object extra info
+
+   The values stored in the NPC info area (19 bytes) contain infos for
+   critters unique to each object.
+
+   offsets     type     bits   meaning
+
+   0008   0000   Int8   0-7    npc_hp
+   0009   0001
+   000a   0002   Int8   7
+   000b   0003   Int16  0-3    npc_goal
+                        4-11   npc_gtarg
+   000d   0005   Int16  0-3    npc_level
+                        4-11   
+                        13     npc_talkedto
+                        14-15  npc_attitude
+   000f   0007
+   0010   0008
+   0011   0009
+   0012   000a
+   0013   000b   Int8   7      single bit, unknown
+   0014   000c
+   0015   000d
+   0016   000e   Int16  0-3    unknown
+                        4-9    npc_yhome
+                        10-15  npc_xhome
+   0017   000f
+   0018   0010   Int8   0-4:   
+                        5-7:   
+   0019   0011   Int8   0-6:   npc_hunger (?)
+   001a   0012   Int8          npc_whoami
+
+   The values are used for combat, AI and conversations.
+
+
+4.3  Free lists
+
+   The free lists generally contain infos about the master object list usage
+   and are used for object slot allocation/deallocation.
+
+   Free list, mobile objects
+   -------------------------
+   This consists of an Int16 for each mobile object (critter) slot which is
+   not in use, giving the slot position in the master object list. Note that
+   there are only 254 entries in this table because object 0 is always the
+   null object (and hence is never allocated) and object 1 is always the
+   avatar (and can never be free - that's probably a metaphor for life, or
+   something). Of course, only the first (no. free mobile objects) entries
+   are valid.
+
+   Free list, static objects
+   -------------------------
+   This consists of an Int16 for each static object which is not in use, as
+   above. This table is 768 entries long (room for all possible static objects).
+
+
+4.4  Texture mappings
+
+   The texture mapping table are used to map tile texture indices to the
+   actual texture used, since wall and floor textures are only encoded with
+   6 or 4 bits. The block of size 0x007a always look like this:
+
+   0000  48 x Int16   wall texture number (from w64.tr)
+   0030  10 x Int16   floor texture number (from f32.tr)
+   003a  12 x Int8    unknown data
+   007a
+
+   The last value from the floor texture number array is used as ceiling
+   texture.
+
+
+4.5  Animation infos
+
+   This block contains entries with length of 6 bytes with infos about
+   objects with animation overlay images from "animo.gr".
+   It always is 0x0180 bytes long which leads to 64 entries.
+
+   0000   Int16   link1
+   0002   Int16   unk2
+   0004   Int8    tile x coordinate
+   0005   Int8    tile y coordinate
+
+   link1's most significant 10 bits contain a link into the master object
+   list, to the object that should get an animation overlay.
+
+
+4.6  Automap infos
+
+   Each block contains the "visited" bytes for each level. Each byte
+   describes a tile on the main map. The block size always is 0x1000.
+
+   rest not decoded yet
 
 
  +--------------------------------------------------------------------------+
@@ -925,8 +1315,8 @@ Table of Contents
    0e01-0f3a  conversation strings
 
    Block 0003 contains text/scroll etc. strings. The exact string to use for
-   books, scrolls or other text object is in the link2 field. It is calculated
-   as link2 - 0x0200. For each level, 32 string slots are available.
+   books, scrolls or other text object is in the quantity field. It is
+   calculated as quantity - 0x0200. For each level, 32 string slots are available.
 
    Block 0004 contains the object descriptions. The article (e.g. 'a' or
    'an') is separated with an underscore '_'. When a '&' is in the string,
@@ -947,29 +1337,47 @@ Table of Contents
    Objects (or items) are grouped by type. Here's a short overview of all
    object groups:
 
-   0000-001F  Weapons and missiles
-   0020-003F  Armour and clothing
-   0040-007F  Monsters
-   0080-008F  Containers
+   0000-001f  Weapons and missiles
+   0020-003f  Armour and clothing
+   0040-007f  Monsters
+   0080-008f  Containers
    0090-0097  Light sources
-   0098-009F  Wands
-   00A0-00AF  Treasure
-   00B0-00BF  Comestibles
-   00C0-00DF  Scenery and junk
-   00E0-00FF  Runes and bits of the Key of Infinity
-   0100-010F  Keys, lockpick, lock
-   0110-011F  Quest items
-   0120-012F  Inventory items, misc stuff
-   0130-013F  Books and scrolls
-   0140-014F  Doors
-   0150-015F  Furniture
-   0160-016F  Pillar, some decals, force field, special tmap (?)
-   0170-017F  Switches
-   0180-019F  Traps
-   01A0-01BF  Triggers
-   01C0-01CF  Explosions/splats, fountain, silver tree, moving things
+   0098-009f  Wands
+   00a0-00af  Treasure
+   00b0-00bf  Comestibles
+   00c0-00df  Scenery and junk
+   00e0-00ff  Runes and bits of the Key of Infinity
+   0100-010f  Keys, lockpick, lock
+   0110-011f  Quest items
+   0120-012f  Inventory items, misc stuff
+   0130-013f  Books and scrolls
+   0140-014f  Doors
+   0150-015f  Furniture
+   0160-016f  Pillar, some decals, force field, special tmap (?)
+   0170-017f  Switches
+   0180-019f  Traps
+   01a0-01bf  Triggers
+   01c0-01cf  Explosions/splats, fountain, silver tree, moving things
 
    A description string for each object is stored in game strings block 0004
+
+   Object IDs are in the range 0x0000 to 0x01ff. The bits can be split up
+   for classification purposes of different objects:
+
+      bits
+      0..3  object number in subclass
+      4..5  object subclass
+      6..8  object class
+
+   The object class groups together 0x0040 (64) items each. Here's a list
+   of some classes:
+
+   class  item_id  description
+   1      0040     npc's
+   6      0180     traps/triggers
+                   subclass 0/1: traps
+                   subclass 2: triggers
+   7      01c0     sprites, animated objects
 
 
 6.1  List of all objects and items
@@ -988,9 +1396,63 @@ Table of Contents
 
    0110  a_picture of Tom
 
+   0120  a_spell
+         spell object used by wands, spell traps, magical items;
+         the "quality" field 
+
+   0164  a_bridge
+         bridge 3d object. texture to use comes from "flags" field. when the
+         value is < 2, the bridge texture is taken from "tmobj.gr", index
+         30 + flags. for this bridge, string block 0001, string 171 is printed
+         as "look" description.
+
+         when the "flags" value is > 2, flags-1 is used as index into the
+         floor texture mapping, effectively using a floor texture.
+
+         bridges could be use to alter the fixed ceiling height.
+
+   0165  a_gravestone
+         3d grave stone object (obj 0x13). text for gravestone is stored in
+         strings block 0008, indexed by "quantity" - 0x200. the index also
+         serves as offset into the file "grave.dat" which gives a unique grave
+         id. It is used for large gravestone images that are stored in
+         "cuts/cs401.n01", indexed by the grave id. texture of the gravestone
+         is determined by <TODO>
+
+         the text printed when looking at it is determined by the "flags"
+         field. text printed is from strings block 8, 352 + flags
+
    0166  some_writing
-         decal on the wall; text is determined through "quantity" field,
-         first 10 bits; game strings block 0008
+         wall decal; text is determined through "quantity" field,
+         game strings block 8. the texture used is;
+
+         the text printed when looking at it is determined by the "flags"
+         field. text printed is from strings block 8, 368 + flags
+
+   0167  a_bed [uw2]
+         The "owner" field determines the colour of the sheets and pillow. The
+         sheets are colour (4*owner+5), the pillow colour (4*owner).
+
+   016e  special tmap obj (tmap_c)
+         wall decal; texture used is determined from the "owner" field and is
+         an index into the texture mapping wall table.
+
+   016f  special tmap obj (tmap_s)
+         same as 016e, with the difference that the wall is recognized in
+         collision detection, effectively providing thin walls that could
+         be removed by deleting the object.
+
+   017x  a_button, etc.
+         buttons, switches, pull chains and levers, textured with images
+         from "tmflat.gr". special link usually points to a trigger.
+
+   01c9  a_fountain
+
+   01ca  a_silver tree [uw1]
+         animated objects; "owner" field determines current animation overlay
+         
+   01cf  a_moving door
+         object that is used during opening a door
 
 
 6.1.2  Traps and Triggers
@@ -999,45 +1461,148 @@ Table of Contents
    near them. Traps can also be set off by switches or buttons, etc.
 
    0180  a_damage trap
-         player is hurt; number of hit points are in field "quality"
+         player vitality is decrease; number of hit points are in "quality"
+         field; if the "owner" field is != 0, the hit points are added
+         instead.
 
    0181  a_teleport trap
          teleports the player to another level and tile; destination level is
-         given by trap z position (0 means current level), tile coordinates
+         given by "zpos" (0 means current level), tile x/y coordinates
          are given in "quality" and "owner" fields.
 
    0182  a_arrow trap
-   0183  a_do trap
-   0184  a_pit trap
+
+   0183  a_do trap [uw1]
+         a multi-purpose trap. the "quality"-field determines action to
+         perform:
+          action   description
+          02
+          03
+          05
+          18       (special property is a link)
+          28       (special property is a link)
+          2a       starts conversation (uw1 starts a hard-wired conv., slot
+                   0x19, the speaking "Door"
+          32
+          39       (not used in uw1)
+          3c..3e   (not used in uw1)
+          3f
+
+   0183  a_hack trap [uw2]
+
+   0184  a_pit trap [uw1]
+         not implemented in uw1, but used on 3rd level, as target for a use
+         trigger that is associated with a check variable trap (map bug?)
+
+   0184  a_special effects trap [uw2]
+
    0185  a_change terrain trap
    0186  a_spelltrap
+
    0187  a_create object trap
+         creates a new object using the object referenced by the "quantity"
+         field as a template. the object is created only when a random number
+         between 0 and 3f is the same as the "quality" field value.
+
    0188  a_door trap
          opens or shuts a door when set off. The "quantity" field specifies
          the lock of the door.
 
    0189  a_ward trap
-   018a  a_tell trap
+         not used in uw1
+
+   018a  a_tell trap [uw1]
+         not used in uw1, implemented the same way as a ward trap
+
+   018a  a_skill trap [uw2]
+
    018b  a_delete object trap
+
    018c  an_inventory trap
+
    018d  a_set variable trap
+         sets a game variable; fields "quality", "owner" and "ypos" are
+         combined to form a value that is used later:
+
+          field   bits in value
+          ypos    0..2
+          owner   3..7     (bit 5 of "owner" seems not to be used)
+          owner   8..13
+
+         the "zpos" field determines which variable to set. if zpos is 0, a
+         bit-field is modified and the value indicates which bit to modify.
+         the "heading" field determines the operation to perform:
+
+          heading  operation    bit-field operation
+          0        add          set bit
+          1        sub          clear bit
+          2        set          set bit
+          3        and          set bit
+          4        or           set bit
+          5        xor          flip bit
+          6        shl          set bit
+
+         values are modified and kept in range 0..63 (0x3f).
+         largest variable index in uw1 is 0x33, the only bit modified in uw1
+         is bit 7 of the bit field
+
    018e  a_check variable trap
-   018f  a_combination trap
+
+   018f  a_combination trap [uw1]
+         not implemented in uw1
+
+   018f  a_null trap [uw2]
+
    0190  a_text string trap
          causes the player to get a text message when it is set off. The
          "owner" field specifies string number per level, in game strings
          block 0009. The actual string number printed is (64*level + "owner")
 
+   0191  an_experience trap [uw2]
+   0192  a_jump trap [uw2]
+   0193  a_change from trap [uw2]
+   0194  a_change to trap [uw2]
+   0195  an_oscillator trap [uw2]
+   0196  a_proximity trap [uw2]
+   0197  a_pit trap [uw2]
+   0198  a_bridge trap [uw2]
+   
+   019e  a_flam rune [uw2]
+   019f  a_tym rune [uw2]
+
    01a0  a_move trigger
+         triggers the associated trap when player moves near the trigger
+
    01a1  a_pick up trigger
+
    01a2  a_use trigger
-         triggers a trap as if it was "used" by the player. trap to use is
-         specified in "quantity" field.
+         triggers a trap when the player uses the object that points to the
+         use trigger
 
    01a3  a_look trigger
-   01a4  a_step on trigger
-   01a5  an_open trigger
+         triggers a "look at" action; "special" contains some string id?
+
+   01a4  a_step on trigger [uw1]
+         not used in uw1
+
+   01a4  a_pressure trigger [uw2]
+
+   01a5  an_open trigger [uw1]
+   01a5  a_pressure release trigger [uw2]
+
    01a6  an_unlock trigger
+         not used in uw1
+
+   01a6  an_enter trigger [uw2]
+   01a7  an_exit trigger [uw2]
+   01a8  an_unlock trigger [uw2]
+   01a9  a_timer trigger [uw2]
+   01aa  an_open trigger [uw2]
+   01ab  a_close trigger [uw2]
+   01ac  a_scheduled trigger [uw2]
+
+   [uw2]: the triggers 01a0..01ac repeat at 01b0..01bf (same object class,
+          different object sub-class?)
 
 
 6.2  Common object properties
@@ -1049,18 +1614,22 @@ Table of Contents
    The first two bytes of the file contain unknown information. Each entry has
    the following format:
 
-   0000  Int8    armour (ID?)
+   0000  Int8    height
    0001  Int16   mass/stuff:
-                 bits 0-3:  unknown
-                 bits 4-15: mass in 0.1 stones
+                 bits 0-2:  radius
+                 bits 4-15: mass in 0.1 kg (stones?)
    0003  Int8    flags (lower 4 bits only)
                  0/2: object in range [336, 368[ seem to be 3d objects
                  4:   decal object
    0004  Int16   value (?)
-   0005  Int24   unknown1
+   0006  Int8    bits 2..3: quality class (this value*6+quality gives index
+                            into string block 5
+   0007  Int8    bit 7: if 1, item can have owner
    0008  Int8    scale value (?)
    0009  Int8    unknown2
-   000A  Int8    lower 4 bits are quality type 0-f
+                 bits 0-1: ??
+   000A  Int8    bits 0-3: quality type 0-f
+                 bit 4: printable "look at" description when 1
 
    Each possible value of "quality type" maps onto a group of 6 strings in
    block 4 from lowest to highest quality. Items which have a quality are
@@ -1097,8 +1666,8 @@ Table of Contents
 
    * Ranged weapons table
 
-   0000   Int8   unknown
-   0001   Int8   unknown
+   0000   Int16  unknown
+                 bits 9-15: ammunition needed (+0x10)
    0002   Int8   durability
 
    * Armour and wearables table
@@ -1140,7 +1709,7 @@ Table of Contents
    0003   Int8   unknown
 
 
-6.4  Item combining
+6.4  Object combining
 
    In the Ultima Underworlds, when you `apply' certain objects to one another
    in your inventory a new object is created. For example,
@@ -1166,7 +1735,7 @@ Table of Contents
    Conversations in Ultima Underworld are controlled using an assembler-like
    opcode-language that seemed to originate from Forth sourcecode. There are
    256 conversation "slots" available that can contain code (but doesn't need
-   to). The field "npc_whoami" of the "Mobile obect extra data" (see 4.x.x)
+   to). The field "npc_whoami" of the "Mobile object extra info" (see 4.2.3)
    decides which slot to take. If it is 0, a generic NPC-conversation is used
    instead.
 
@@ -1188,9 +1757,8 @@ Table of Contents
    * Game globals are variables that are global to the game, e.g. game time,
      current dungeon level or player properties
 
-   The conversation code can call "intrinsic" (or imported) functions to use
-   functionality built into the game, e.g. bartering or player inventory
-   access.
+   The conversation code can call "intrinsic" functions to use functionality
+   built into the game, e.g. for bartering or player inventory access.
 
 
 7.1  Conversation file format
@@ -1235,12 +1803,12 @@ Table of Contents
 7.2  Private global variables
 
    Each conversation has a set of private global variables that are saved
-   across conversations. The initial size of them are stored in the file
+   across conversations. The initial size of the area is stored in the file
    "babglobals.dat". When a game is saved, the globals are stored in the file
    "bglobals.dat". The layout of both files is as follows:
 
    0000   Int16     number of conversation slot
-   0002   Int16     size of private global data for that conv.
+   0002   Int16     size of private global data for that conv.(=n)
    0004   n*Int16   all globals for that slot (omitted in "babglobals.dat")
    ...              repeat until file end
 
@@ -1632,8 +2200,8 @@ Table of Contents
 
    id=001c name="check_inv_quality" ret_type=int
    parameters:   unknown
-   description:  unknown
-   return value: unknown
+   description:  returns "quality" field of npc? inventory item
+   return value: "quality" field
    -------------------------------------------------------------------------
 
    id=001d name="set_inv_quality" ret_type=int
@@ -1644,8 +2212,8 @@ Table of Contents
 
    id=001e name="count_inv" ret_type=int
    parameters:   unknown
-   description:  unknown
-   return value: unknown
+   description:  counts number of items in inventory
+   return value: item number
    -------------------------------------------------------------------------
 
    id=001f name="setup_to_barter" ret_type=void
@@ -1684,7 +2252,8 @@ Table of Contents
    id=0025 name="gronk_door" ret_type=int
    parameters:   arg1: x tile coordinate with door to open
                  arg2: y tile coordinate
-   description:  opens closed door or portcullis
+                 arg3: close/open flag (0 means open)
+   description:  opens/closes door or portcullis
    return value: unknown
    -------------------------------------------------------------------------
 
@@ -1838,6 +2407,10 @@ Table of Contents
            3: found writ
            4: door to armoury opened
 
+   flags 0..31 are stored in a 32-bit integer bit field, flags 32..35 are
+   stored in as Int8 values. See chapter 9.1. for where the values are stored
+   in the savegame.
+
 
  +--------------------------------------------------------------------------+
 
@@ -1886,14 +2459,14 @@ Table of Contents
       0A   pillar
       0B   shrine
       0D   painting
-      10   texture map
-      11   texture map
-      12   texture map
+      10   texture map (8-way lever)
+      11   texture map (8-way switch)
+      12   texture map (writing)
       13   gravestone
       14   texture map
       15   -
       16   ?texture map
-      17   
+      17   moongate
       18   table
       19   chest
       1A   nightstand
@@ -2006,7 +2579,7 @@ Table of Contents
 
      0082   define initial vertices
               0002   Int16     number of vertices (=nvert)
-              0004   Int16     ???
+              0004   Int16     first vertex no.?
               0006   Fixed     vertex X coordinate for first vertex
               0008   Fixed     vertex Y coordinate
               000a   Fixed     vertex Z coordinate
@@ -2049,7 +2622,7 @@ Table of Contents
    not. Usually a face normal vector is defined to verify. A length value
    is given to know how many bytes to omit in the node list.
 
-     0058   define face plane, arbitrary heading
+     0058   define face plane, arbitrary heading (backface cull)
               0002   Int16     number of bytes to skip when not visible
               0004   Fixed     normal vector X coordinate
               0006   Fixed     distance "model origin -> face" X value
@@ -2156,21 +2729,17 @@ Table of Contents
             no further node data
 
      00BC   define face shade
-              0002   Int8      c1 ???
-              0003   Int8      c2 ???
-              0004   Int8      c3 ???
-              0005   Int8      ???
+              0002   Int16     colour (address of colour variable)
+              0004   Int16     shade (dark value)
 
-     00BE   ??? seems to define 2 shades
-              0002   Int8      c1 ???
-              0003   Int8      ???
-              0004   Int8      ???
-              0005   Int8      ???
+     00BE   ??? seems to define 2 shades ?? refers to 2 model variables
+              0002   Int16     var 1
+              0004   Int16     var 2
 
-     00CE   ??? yet another texture-mapped face
+     00CE   define texture-mapped face
             same data as 00B4
 
-     00A0   ??? shorthand face definition
+     00A0   shorthand texture-mapped face definition
             seems to be a quick way to define a face with 4 vertices and
             automatic texture coordinates; vertex list indices
               0002   VertNo    ???
@@ -2179,13 +2748,12 @@ Table of Contents
               0006   Int8      vertex list index 2
               0007   Int8      vertex list index 3
 
-     00D2   ??? shorthand face definition
+     00D2   define texture mapped face (shorthand)
             same as 00A0
 
-     00D4   define dark vertex face (?)
+     00D4   define vertex shading values
               0002   Int16     number of vertices (=nvert)
-              0004   Int8      c1 ???
-              0005   Int8      c2 ???
+              0004   Int16     base colour for Gouraud shading (colour variable address)
               0006   VertNo    vertex list index for first point
               0008   Int8      dark value for first point ???
               0009   VertNo    vertex list index for second point
@@ -2193,8 +2761,120 @@ Table of Contents
                                and so on; if nvert is odd, read another empty
                                byte to have 16 bit word align
 
-     00D6   define gouraud shading
+     00D6   introduce Gouraud shaded face
             no other info; may switch on gouraud shading
+
+
+ +--------------------------------------------------------------------------+
+
+
+9  Miscellaneous stuff
+
+
+   This section describes all miscellaneous data structures and things that
+   didn't fit elsewhere.
+
+
+9.1  Ultima Underworld 2 compression scheme
+
+   <TODO>
+
+
+9.2  Savegame format
+
+   Savegames are stored in folders called "SaveN", where N is the number
+   of the save game. Ultima Underworld only allows 4 save game slots. The
+   folder "Save0" is used to store the files "lev.ark" and "bglobals.dat"
+   during gameplay.
+
+   The file "player.dat" contains the main character data. The first 220 bytes
+   are encrypted with a rather simple algorithm. Byte 0 in the file is the
+   starting xor value. Byte 1 is xor'ed with xorvalue + 3, and for each next
+   byte, the xorvalue is incremented by 3. A simple implementation in C is here:
+
+      // descramble data
+      unsigned char xorvalue = data[0];
+      unsigned char incrnum = 3;
+
+      for(int i=1; i<=220; i++)
+      {
+         if (i==81) incrnum = 3;
+         data[i] ^= (xorvalue+incrnum);
+         incrnum += 3;
+      }
+
+   After decryption, the file contains the following:
+
+   0000   Int8    unused (was starting xor value)
+   0001   14*char character name
+   ...
+   001F   Int8    Strength
+   0020   Int8    Dexterity
+   0021   Int8    Intelligence
+   0022   Int8    Attack
+   0023   Int8    Defense
+   0024   Int8    Unarmed
+   0025   Int8    Sword
+   0026   Int8    Axe
+   0027   Int8    Mace
+   0028   Int8    Missile
+   0029   Int8    Mana
+   002A   Int8    Lore
+   002B   Int8    Casting
+   002C   Int8    Traps
+   002D   Int8    Search
+   002E   Int8    Track
+   002F   Int8    Sneak
+   0030   Int8    Repair
+   0031   Int8    Charm
+   0032   Int8    Picklock
+   0033   Int8    Acrobat
+   0034   Int8    Appraise
+   0035   Int8    Swimming
+   ...
+   0037   Int8    max. vitality
+   0038   Int8    current mana, play_mana
+   0039   Int8    max. mana
+   003A   Int8    hunger, play_hunger
+   ...
+   003E   Int8    character level
+   ...
+   0045   3*8bits rune flags (*)
+   ...
+   004D   Int16   weight in 0.1 stones
+   004F   Int32   experience in 0.1 points
+   ...
+   0055   Int16   x-position in level
+   0057   Int16   y-position
+   0059   Int16   z-position
+   005B   Int16   heading
+   005D   Int16   dungeon level
+   ...
+   0060   Int8    bits 2..5: play_poison
+   ...
+   00CF   Int32   game time
+   ...
+   00DD   Int8    current vitality
+
+   (*) The rune field is a bitfield, where an 1 indicates an available
+       rune. Bits are seen from most to least significant. The 'A' rune is
+       stored in bit 7 of the first field.
+
+   <TODO>: how items are stored
+
+
+9.3  Unknown files
+
+   shades.dat
+   ----------
+   contains 12 entries, 8 byte long each
+
+   sounds.dat
+   ----------
+   The file "sounds.dat" in the "sound" folder contains sound effect data.
+   The file starts with an Int8 value that is the number of data entries in
+   the file. Then 5 Int8 bytes for each entry in the file follow.
+   It is supposed that the data may be midi commands to play back sfx.
 
 
  +--------------------------------------------------------------------------+
@@ -2206,244 +2886,15 @@ end of file
 + old document starts here +
 +--------------------------+
 
-Ultima Underworld Formats Specification
----------------------------------------
-
-
-Table of Contents
-
-1.0   General stuff
-1.1   Summary of data files
-
-2.0   Level Map File
-2.1   Palettes
-2.2   Textures
-2.3   Graphics
-2.4   Fonts
-2.5   Bitmaps
-2.6   Palette mappings
-
-3.0   Object IDs
-3.1   Common object properties
-3.2   Object class properties
-3.3   Traps
-
-4.0   Game strings
-4.1   Conversations
-
-5.0   Critter Animation
-5.1   Cutscene Animations
-
-6.0   Savegame format
-
-7.0   3D object models
-
-8.0   Misc. stuff
-8.1   Combining objects
-8.2   Graves
-8.3   Terrain texture properties
-
-
-1.0 General stuff
-
-   In this document, all integers are refered as Int8, Int16 or Int32,
-   depending on their number of bits.
-
-   All files from Ultima Underworld are in little endian format, that means
-   that the low-byte of an Int16 intever comes first in the file, and is
-   followed by the high-byte.
-
-   Most of the stuff in this file is from the original "uw-specs.txt" found
-   in "The System Shock Hack Project". System Shock uses almost the same
-   data structures for the game. Many thanks to Jim Cameron!
-
-   Copyright (c) 2000,2001,2002 Jim Cameron
-   Copyright (c) 2002 Michael Fink
-
-   Additional information from:
-
-   Fabian Pache
-     - map details, UW2 related
-     - 3D models, UW2 related
-
-   Alistair Brown (basic object format, via the Underworld II editor
-      <http://bearcity.pwp.blueyonder.co.uk/>)
-
-   Ulf Wohlers (Objects and 3D models)
-
-
-
 
 2.0 Level Map File
-
-   Level maps are stored in file "lev.ark". The header of the file contains
-   the offsets to all the chunks in the level archive. First there is a Int16
-   value giving the number of chunk directory entries (0x0087 = 135 for 9x15
-   possible chunks) followed by Int32 offset for each chunk (measured from the
-   start of the file).
 
    Chunks are arranged in blocks of 9 (Ultima Underworld 1 has 9 levels, Abyss
    levels 1 - 8 and the Ethereal Void). There is space in the header for 15
    such blocks, though only 5 are actually used.
 
-   When the offset is a value of 0, the chunk or block is not available and
-   contains no data. There are 45 offsets which point to different data:
-
-   <9 blocks level map/object info>
-   <9 blocks object animation overlay info>
-   <9 blocks level texture usage>
-   <9 blocks level automap flags>
-   <9 blocks level comment entries>
 
 2.0.1 Level map info
-
-   The level map chunk for each level contains information about the level
-   architecture (tile map) and the objects which live in it:
-
-    Offset  Size   Description
-    0000    4000   Tile map (64 x 64 x 4 bytes)
-    4000    1b00   Mobile object information (objects 000-0ff, 256 x 27 bytes)
-    5b00    1800   Static object information (objects 100-3ff, 768 x 8 bytes)
-    7300    01fc   Free list for mobile objects (objects 002-0ff, 254 x 2 bytes)
-    74fc    0600   Free list for static objects (objects 100-3ff, 768 x 2 bytes)
-    7afc    0104   Unknown (260 bytes)
-    7c00    0002
-    7c02    0002   No. entries in mobile free list minus 1
-    7c04    0002   No. entries in static free list minus 1
-    7c06    0002   0x7775 ('uw')
-
-   Tile map
-   --------
-   Levels are always 64 x 64 tiles. Map origin is at the lower left tile,
-   going to the right, each line in turn. For each tile there are two Int16
-   values stored. The two values can be split into bits:
-
-   00 tile properties / flags:
-
-      bits      len  description
-       0 -  3    4   tile type (0-9, see below)
-       4 -  7    4   floor height
-       8 -  9    2   ?? special light feature ??
-      10 - 13    4   floor texture index (from level texture usage block)
-      14         1   unknown (only used on level 6, near the shrine)
-      15         1   door bit (when 1, a door is present)
-
-      about bit 8,9:
-      They have me hitting my head against the wall. Bit 9 is never set, so
-      it can be gladly ignored. For UW2 Bit 8 is set pretty often, and if
-      set the light level changes. Ironically 1 sometimes means daylight (in
-      Lord British Castle Lv 1) but sometimes 0 means daylight (LBC Lv 5).
-      But the areas are exactly right.
-
-   02 tile properties 2 / object list link
-
-      bits      len  description
-       0 -  5    6   wall texture index (from level texture usage)
-       6 - 15   10   first object in tile (index into master object list)
-
-   Underworld tile types are:
-    00      Solid (wall tile)
-    01      Open (square tile of empty space)
-    02      Diagonal, open SE
-    03      Diagonal, open SW
-    04      Diagonal, open NE
-    05      Diagonal, open NW
-    06      Sloping up to the north
-    07      Sloping up to the south
-    08      Sloping up to the east
-    09      Sloping up to the west
-
-   Mobile / Static object info
-   ---------------------------
-   The master object list is stored after the map data. There are 1024
-   entries (0x400) in the table. The first 256 entries contain infos about
-   mobile objects (NPCs, critters) and have 8 + 19 bytes each.
-
-   0000   Int16*4   general object infos
-   0008   19        mobile object extra infos (see below)
-
-   The reamaining 768 object entries starting at 0x100 only have general
-   object infos and are 8 bytes long each.
-
-   General object infos
-   --------------------
-   They contain 4 Int16 words which can be split into bits:
-
-   00 objid / flags:      0- 8   Object ID (see below)
-                          9-15   Flags
-                            12   Enchantment flag (enchantable objects only)
-                            14   Set only for traps, triggers and locks -
-                                 "Effects The World Flag?"
-                            15   Link flag (link field is quantity/special)
-
-   02 position:           0- 6   Object Z position (0-127)
-                          7- 9   Heading (*45 deg)
-                          10-12  Object Y position (0-7)
-                          13-15  Object X position (0-7)
-
-   04 quality / chain:    0- 5   Quality
-                          6-15   Index of next object in chain
-
-   06 link / special:     0- 5   Owner / special
-                          6-15   Quantity / link / special property
-
-   Object chaining
-   ---------------
-   Objects in a tile are stored as a linked list, where the "Index of next
-   object in chain" points to the next object in list, or contains 0 for the
-   end of the linked list. The first object in the list is determined by the
-   tile's object index value (see above, at "Tile map").
-
-   For normal objects, the "Owner" field describes the NPC type the object
-   belongs to. NPC object ID = Owner - 1 + 0x0040. When the field is 0, the
-   object doesn't belong to anyone.
-
-   Link Field
-   -----------
-   The link field can be used for various things. If the link flag is unset,
-   it contains the index of an associated object. The exact meaning varies,
-   but is generally a "has-a" type relationship (contents, trap to set off,
-   spell).
-
-   If the link flag is set, this field is a quantity or special property.
-   Quantity is straightforward; if the value is less than 512 it gives the
-   number of a stackable item that are present in the stack, so identical
-   items may be combined into one object definition.
-
-   Quantities >= 512 are special properties. The value is the link field
-   minus 512 (unsurprisingly), the meaning depends on object type and flags.
-
-   Flags
-   -----
-   For item 0x164 (a_bridge) the "flags" value specifies the bridge texture
-   number to use. For item 0x16e (special tmap obj) the decal to use comes
-   from the "special" field.
-
-   Enchantments
-   ------------
-   If the enchantment flag is set and the object is enchantable, then the
-   link field (less 512) determines the enchantment. Enchantment names are
-   stored in strings chunk 5. The way in which the link value maps onto
-   spells in this chunk depends on the object type.
-
-   Most objects seem to use spells 256-320 (add 256) if the enchantment
-   number is in the range 0-63, otherwise they add 144 to use spells 208 and
-   up. Healing fountains, however, don't use a correction at all.
-
-   Weapons and armour have a more complex mapping. Most enchanted weapons and
-   pieces of armour have an enhancement for Accuracy, Damage, Protection or
-   Toughness, which are spells 448-479 in the main spell list. These map to
-   special property values 192-207. Yes, there are only 16 values for 32
-   spells; enchanted armour adds another 16 to the spell index to bring it
-   into the armour enchantment range. However, these items may also carry
-   generic enchantments, in which case the special properties map to spells
-   0-255 (and armour doesn't apply a special correction).
-
-   Wands don't hold their enchantments directly in the quantity field, since
-   they also need to store the number of charges remaining. Instead, they
-   link to a spell object which holds the enchantment; it seems here that
-   the "quality" field of the spell object determines the number of charges.
-   Other objects may also carry spells in this way.
 
    Links
    -----
@@ -2467,82 +2918,6 @@ Table of Contents
     01a5: an_open trigger
     01a6: an_unlock trigger
 
-   Mobile object extra infos
-   -------------------------
-   The infos are 19 bytes long each and can be split up like this:
-
-      0000   Int8   npc_hp, npc hit points
-      0001   Int8   unknown
-      0002   Int8   unknown
-      0003   Int8   unknown
-      0004   Int8   unknown
-      0005   Int8   unknown
-      0006   Int8   flags:
-                       bits 7-8: npc_attitude (string block 5, pos 96..99)
-      0007   Int8   unknown
-      0008   Int8   unknown
-      0009   Int8   unknown
-      000a   Int8   unknown
-      000b   Int8   unknown
-      000c   Int8   unknown
-      000d   Int8   unknown
-      000e   Int16  npc home coordinates:
-                       bits 0-3:   unknown
-                       bits 4-9:   npc_yhome
-                       bits 10-15: npc_xhome
-      0010   Int8   unknown
-      0011   Int8   unknown
-      0012   Int8   npc_whoami, conversation slot to use (or 0 for none)
-
-   The conversation slot to use is  npc_whoami + 0x0e00. If the value is 0,
-   a generic conversation is used, starting from string blocks 0x0f00.
-
-   Free list, mobile objects
-   -------------------------
-   This consists of an Int16 for each mobile object (critter) slot which is
-   not in use, giving the slot position in the master object list. Note that
-   there are only 254 entries in this table because object 0 is always the
-   null object (and hence is never allocated) and object 1 is always the
-   avatar (and can never be free - that's probably a metaphor for life, or
-   something). Of course, only the first (no. free mobile objects) entries
-   are valid.
-
-   Free list, static objects
-   -------------------------
-   This consists of an Int16 for each static object which is not in use, as
-   above. This table is 768 entries long (room for all possible static objects).
-
-2.0.2 Object animation overlay info
-
-   The 9 blocks contain entries with length of 6 bytes with infos about
-   objects with animation overlay images from "animo.gr".
-   It always is 0x0180 bytes long which leads to 64 entries.
-
-   0000   Int16   link1
-   0002   Int16   unk2
-   0004   Int8    tile x coordinate
-   0005   Int8    tile y coordinate
-
-   link1's most significant 10 bits contain a link into the object table,
-   to the object that should get an animation overlay.
-
-2.0.3 Level texture usage
-
-   0000  48 x Int16   wall texture number (from w64.tr)
-   0030  10 x Int16   floor texture number (from f32.tr)
-   003a   6 x Int16   door decal number (from doors.gr (?))
-
-   The last value from the floor texture number array is used as ceiling
-   texture.
-
-2.0.4 Level automap flags
-
-   each block contains the "visited" bytes for each level. Each byte
-   describes a tile on the main map. The block size always is 0x1000.
-
-2.0.5 Level comment entries
-
-   not decoded yet
 
 2.0.6 Underworld 2 differences
 
@@ -2596,29 +2971,6 @@ Table of Contents
 
 3.3 Traps
 
-   Traps have various effects on the game world. Traps have object IDs from
-   0x0180 to 0x0190
-
-   0180  Damage trap
-   0181  Teleport trap
-   0182  Arrow trap
-   0183  "Do" trap
-   0184  Pit trap
-   0185  Change terrain trap
-   0186  Spell trap
-   0187  Create object trap
-   0188  Door trap
-   0189  Ward trap
-   018A  "Tell" trap
-   018B  Delete object trap
-   018C  Inventory trap
-   018D  Set variable trap
-   018E  Check variable trap
-   018F  Combination trap
-   0190  Text string trap
-   0192  Jump trap (uw2)
-
-
    * Pit trap (ID 0184)
 
      This is probably a bottomless pit that drops the player through to the
@@ -2638,84 +2990,6 @@ Table of Contents
      Causes the player to get an upward velocity according to the quality
      field; where '24' would be the velocity one would get from a standing
      jump.
-
-
-
-6.0 Savegame format
-
-   Savegames are stored in folders called "SaveN", where N is the number
-   of the save game. Ultima Underworld only allows 4 save game slots.
-
-   The file "player.dat" contains the main character data. The first 220 bytes
-   are encrypted with a rather simple algorithm. Byte 0 in the file is the
-   starting xor value. Byte 1 is xor'ed with xorvalue + 3, and for each next
-   byte, the xorvalue is incremented by 3. A simple implementation in C is here:
-
-      // descramble data
-      unsigned char xorvalue = data[0];
-      unsigned char incrnum = 3;
-
-      for(int i=1; i<=220; i++)
-      {
-         if (i==81) incrnum = 3;
-         data[i] ^= (xorvalue+incrnum);
-         incrnum += 3;
-      }
-
-   After decryption, the file contains the following:
-
-   0000   Int8    unused (was starting xor value)
-   0001   14*char character name
-   ...
-   001F   Int8    Strength
-   0020   Int8    Dexterity
-   0021   Int8    Intelligence
-   0022   Int8    Attack
-   0023   Int8    Defense
-   0024   Int8    Unarmed
-   0025   Int8    Sword
-   0026   Int8    Axe
-   0027   Int8    Mace
-   0028   Int8    Missile
-   0029   Int8    Mana
-   002A   Int8    Lore
-   002B   Int8    Casting
-   002C   Int8    Traps
-   002D   Int8    Search
-   002E   Int8    Track
-   002F   Int8    Sneak
-   0030   Int8    Repair
-   0031   Int8    Charm
-   0032   Int8    Picklock
-   0033   Int8    Acrobat
-   0034   Int8    Appraise
-   0035   Int8    Swimming
-   ...
-   0037   Int8    max. vitality
-   0038   Int8    current mana
-   0039   Int8    max. mana
-   ...
-   003E   Int8    character level
-   ...
-   0045   3*8bits rune flags (*)
-   ...
-   004D   Int16   weight in 0.1 stones
-   004F   Int32   experience in 0.1 points
-   ...
-   0055   Int16   x-position in level
-   0057   Int16   y-position
-   0057   Int16   z-position
-   005B   Int16   heading
-   005D   Int16   dungeon level
-   ...
-   00DD   Int8    current vitality
-
-   (*) The rune field is a bitfield, where an 1 indicates an available
-       rune. Bits are seen from most to least significant. The 'A' rune is
-       stored in bit 7 of the first field.
-
-   todo: how items are stored
-
 
 
    Ultima Underworld 2 models
@@ -2747,41 +3021,16 @@ Table of Contents
    It obviously spans from floor to ceiling. Texture is stored in tmobj.gr
    Texture index are the 2 least significant bits of the flags
    
-7.1.2 Bridges
-
-   Bridges are used for two things: Bridging gaps and altering or lowering the ceiling
-   If bit 2 and 3 of the flags are set it's a ceiling, otherwise it's a bridge.
-
-7.1.2.1 Real bridges
-
-   Bridges are textured by tmobj.gr textures. Use index 30 + bits 0 and 1 of the flags.
-   Description is "Bridge".
 
 7.1.2.2 ceilings
 
    Texture is still unknown. Suspect some offset + bit 0 and 1 of the flags into
    the texture mapping of the level. Description is texture dependant
 
-7.1.3 Tmap
-
-   There are two tmap objects for uw2. objects.gr names one as tmap_c and the other as
-   tmap_s. Looking into the difference. 
-   [ tmap_c is usually used as wall decal -> no collision detection
-   [ tmap_s is usually used to insert new (thin) walls -> collision detection
-   [ not too sure about this ]
-   tmap_c (index 366) and tmap_s (index 367) use a texture from t64.tr.
-   Index is variable1 resolved with the level's texturemapping. Description is
-   the texture's description
-   Any tmap is a square object of tile size, whose lower center is given by the items
-   coordinates. [Figure out the exact offsets]
-
 7.2 Static objects
 
    Though formerly defined in code these objects always look the same. Only 
    interesting point remaining is the base of the coordinate system
-
-
-8.0 Misc. stuff
 
 
 8.2 Graves
@@ -2795,6 +3044,7 @@ Table of Contents
 
    Large headstone images live in the cutscene file cuts/cs401.n01, one frame
    each, indexed by grave ID.
+
 
 8.3 Terrain texture properties
 
@@ -2822,12 +3072,5 @@ Table of Contents
     00E8    Ice walls (crumbling?)
     0080    Lavafall       - UW2
     00F8    Ice            - UW2
-
-8.4 Sound effects
-
-   The file "sounds.dat" in the "sound" folder contains sound effect data.
-   The file starts with an Int8 value that is the number of data entries in
-   the file. Then 5 Int8 bytes for each entry in the file follow.
-   It is supposed that the data may be midi commands to play back the sfx.
 
 eof
