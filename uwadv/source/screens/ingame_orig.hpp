@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -136,7 +136,7 @@ class ua_ingame_orig_screen: public ua_screen, public ua_underworld_callback
 {
 public:
    //! ctor
-   ua_ingame_orig_screen();
+   ua_ingame_orig_screen(ua_game_interface& game);
    //! dtor
    virtual ~ua_ingame_orig_screen(){}
 
@@ -161,7 +161,7 @@ public:
    void set_gamemode(ua_ingame_game_mode my_gamemode){ gamemode = my_gamemode; }
 
    //! returns underworld object; for controls
-   ua_underworld& get_underworld(){ return game->get_underworld(); }
+   ua_underworld& get_underworld(){ return game.get_underworld(); }
 
 protected:
    //! suspends game resources while showing another screen
@@ -256,6 +256,9 @@ protected:
    //! command buttons
    ua_ingame_command_buttons command_buttons;
 
+   //! 3d view area (invisible)
+   ua_ingame_3dview view3d;
+
 
    // game related
 
@@ -280,13 +283,6 @@ protected:
 
    //! true when cursor is a priority cursor
    bool prio_cursor;
-
-   //! indicates that mouse movement is currently on
-   bool mouse_move;
-
-
-   //! is true when the mouse cursor is in 3d screen
-   bool in_screen3d;
 
 
    // misc. stuff
