@@ -100,6 +100,14 @@ SOURCE=..\..\source\files.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\font.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\resource\fontloader.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\gamecfg.cpp
 # End Source File
 # Begin Source File
@@ -133,6 +141,10 @@ SOURCE=..\..\source\resource\playerimport.cpp
 # Begin Source File
 
 SOURCE=..\..\source\resource\proploader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\textscroll.cpp
 # End Source File
 # Begin Source File
 
