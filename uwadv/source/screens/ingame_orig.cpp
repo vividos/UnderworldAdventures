@@ -243,6 +243,8 @@ void ua_ingame_orig_screen::init()
    font_normal.init(settings,ua_font_normal);
 
    resume();
+
+   textscroll.print("Welcome to the Underworld Adventures!\n http://uwadv.sourceforge.net/");
 }
 
 void ua_ingame_orig_screen::suspend()
@@ -256,6 +258,7 @@ void ua_ingame_orig_screen::suspend()
    tex_panel.done();
 
    mousecursor.done();
+   textscroll.done();
 
    renderer.done();
 
@@ -272,6 +275,9 @@ void ua_ingame_orig_screen::resume()
    // init mouse cursor
    mousecursor.init(core,0);
    mousecursor.show(true);
+
+   textscroll.init(*core,16+1,169+2, 289,30+2, 4, 42);
+   textscroll.set_color(1);
 
    // init some textures
 
@@ -483,12 +489,18 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
 
    case SDLK_UP:
       if (type==SDL_KEYDOWN)
-         test_vit++;
+         textscroll.print("Lorem ipsum\ndolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor");
       break;
 
    case SDLK_DOWN:
       if (type==SDL_KEYDOWN)
-         test_vit--;
+         textscroll.print("Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.\nLorem ipsum\n dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.Ut wisi enim");
+      break;
+
+   case SDLK_RETURN:
+   case SDLK_SPACE:
+      if (type==SDL_KEYDOWN && textscroll.have_more_lines())
+         textscroll.show_more_lines();
       break;
    }
 
@@ -754,6 +766,8 @@ void ua_ingame_orig_screen::render_ui()
       glEnd();
    }
 
+   // draw text scroll
+   textscroll.render();
 /*
 #ifdef HAVE_DEBUG
    // debug text quad

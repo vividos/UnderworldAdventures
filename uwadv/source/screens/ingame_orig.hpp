@@ -36,6 +36,7 @@
 #include "keymap.hpp"
 #include "renderer.hpp"
 #include "mousecursor.hpp"
+#include "textscroll.hpp"
 
 
 // enums
@@ -312,6 +313,10 @@ protected:
 
    //! all inventory objects
    ua_image_list img_objects;
+
+
+   //! text scroll
+   ua_textscroll textscroll;
 
 
    // needed fonts
