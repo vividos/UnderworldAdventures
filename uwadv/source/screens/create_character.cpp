@@ -30,6 +30,8 @@
 #include "common.hpp"
 #include "create_character.hpp"
 #include "ingame_orig.hpp"
+#include <sstream>
+
 
 // constants
 
@@ -520,9 +522,9 @@ unsigned int ua_create_character_screen::drawtext(const char* str, int x, int y,
 
 unsigned int ua_create_character_screen::drawnumber(unsigned int num, int x, int y, unsigned char color)
 {
-   char ca[12];
-   sprintf(ca, "%d", num);
-   return drawtext(ca, x, y, 2, color);
+   std::ostringstream buffer;
+   buffer << num << std::ends;
+   return drawtext(buffer.str().c_str(), x, y, 2, color);
 }
 
 unsigned int ua_create_character_screen::drawtext(int strnum, int x, int y, int xalign, unsigned char color, int custstrblock)
