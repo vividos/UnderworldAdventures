@@ -114,7 +114,9 @@ void ua_ingame_orig_screen::init()
 
    dbgint = ua_debug_interface::get_new_debug_interface();
 
+   // load keymap
    keymap.init(core->get_settings());
+   keymap.load(core->get_filesmgr().get_uadata_file("uw1/keymap.cfg"));
 
    // load all needed images
    const char *mainscreenname = "data/main.byt";
