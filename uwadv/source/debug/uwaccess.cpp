@@ -39,11 +39,33 @@ ua_uw_access_api* ua_uw_access_api::cur_api = NULL;
 
 // ua_uw_access_api methods
 
+ua_uw_access_api::ua_uw_access_api()
+:change_level(false)
+{
+}
+
 void ua_uw_access_api::init(ua_game_core_interface* thecore, ua_debug_interface* dbgint)
 {
    core = thecore;
    debug = dbgint;
    cur_api = this;
+}
+
+void ua_uw_access_api::tick()
+{
+   debug->lock();
+
+   if (change_level)
+   {
+      change_level = false;
+
+      // do scheduled change_level() call
+      // this must be done using the thread which created the OpenGL window
+      unsigned int level = core->get_underworld().get_player().get_attr(ua_attr_maplevel);
+      core->get_underworld().change_level(level);
+   }
+
+   debug->unlock();
 }
 
 unsigned int ua_uw_access_api::command_func(
@@ -143,7 +165,7 @@ unsigned int ua_uw_access_api::command_func(
                pl.set_attr((ua_player_attributes)value,param2->val.i);
 
                if (value==ua_attr_maplevel)
-                  underw.change_level(param2->val.i);
+                  cur_api->change_level = true; // schedule change_level() call
             }
             else
             {

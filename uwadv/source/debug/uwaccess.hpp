@@ -135,10 +135,13 @@ class ua_uw_access_api
 {
 public:
    //! ctor
-   ua_uw_access_api(){}
+   ua_uw_access_api();
 
    //! initialize access api object
    void init(ua_game_core_interface* core, ua_debug_interface* debug);
+
+   //! does debugger processing (uwadv thread)
+   void tick();
 
    //! returns command function
    ua_debug_command_func get_command_func(){ return command_func; }
@@ -157,6 +160,9 @@ protected:
 
    //! currently used debug interface
    ua_debug_interface* debug;
+
+   //! indicates if a level change should be done next tick()
+   bool change_level;
 };
 
 #endif
