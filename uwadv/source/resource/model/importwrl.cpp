@@ -30,6 +30,7 @@
 // needed includes
 #include "common.hpp"
 #include "models.hpp"
+#include "../models_impl.hpp"
 #include "wrllexer.hpp"
 #include "core.hpp"
 
