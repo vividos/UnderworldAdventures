@@ -137,6 +137,9 @@ void ua_underworld::load_game(ua_savegame &sg)
    script.load_game(sg);
 
    sg.close();
+
+   // reload level
+   change_level(player.get_attr(ua_attr_maplevel));
 }
 
 //! saves to a savegame
