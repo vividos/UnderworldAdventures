@@ -101,6 +101,8 @@ void ua_ingame_orig_screen::init()
    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
 
+   uw_notify(ua_notify_level_change);
+
 
    ua_settings& settings = game.get_settings();
 
@@ -130,14 +132,7 @@ void ua_ingame_orig_screen::init()
       ua_trace("\n");
    }
 
-
    register_keymap(&keymap);
-
-
-
-   // TODO move to level changing code
-   game.get_renderer().prepare_level(game.get_underworld().get_current_level());
-
 
 
    // init images/subwindows
@@ -176,6 +171,8 @@ void ua_ingame_orig_screen::init()
    // init 3d view window
    view3d.init(game,54,20);
    register_window(&view3d);
+
+   game.get_renderer().set_viewport3d(52,19, 172,112);
 
    // init compass
    compass.init(game, 112,131);
@@ -317,28 +314,16 @@ void ua_ingame_orig_screen::draw()
 {
    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
-   // setup 3d world
-   ua_vector3d view_offset(0.0, 0.0, 0.0);
-   game.get_renderer().setup_camera3d(view_offset);
+   game.get_renderer().set_viewport3d(52,19, 172,112);
 
-   // set up viewport for small window
+   // 3d world
    {
-      SDL_Surface* surf = SDL_GetVideoSurface();
-
-      // calculate viewport for window at 52/68 to 226/182
-      unsigned int xpos, ypos, width, height;
-      xpos = unsigned((surf->w / 320.0) * 52.0);
-      ypos = unsigned((surf->h / 200.0) * 68.0);
-      width = unsigned((surf->w / 320.0) * (226.0-52.0));
-      height = unsigned((surf->h / 200.0) * (182.0-68.0));
-
-      glViewport(xpos,ypos, width,height);
+      // set up 3d world
+      ua_vector3d view_offset(0.0, 0.0, 20.0);
+      game.get_renderer().setup_camera3d(view_offset);
 
       // render a const world
       game.get_renderer().render_underworld(game.get_underworld());
-
-      // reset viewport
-      glViewport(0,0, surf->w,surf->h);
    }
 
    // render 2d user interface
@@ -994,6 +979,7 @@ void ua_ingame_orig_screen::uw_notify(ua_underworld_notification notify,
       break;
 
    case ua_notify_level_change:
+      game.get_renderer().prepare_level(game.get_underworld().get_current_level());
       break;
 
    case ua_notify_select_target:
