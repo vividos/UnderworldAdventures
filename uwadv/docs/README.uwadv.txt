@@ -7,10 +7,23 @@ It uses OpenGL for 3D graphics, the SDL library for platform specific tasks
 and Lua for scripting. It is developed as Open Source and is licensed under
 the GNU General Public License.
 
-Underworld Adventures is Copyright (C) 2002 Underworld Adventures Team
+Underworld Adventures is Copyright (C) 2002,2003 Underworld Adventures Team
 
 Underworld Adventures is available from
    http://uwadv.sourceforge.net/
+
+
+Release Notes for "0.7-muffin"
+------------------------------
+
+In this release there is basic support for conversations. Just click on the
+"talk" command button on the left and click on people in the underworld you
+see. Inventory interactions with NPC's are not supported yet, and some
+conversations may end unexpectedly when an unknown script function is called
+internally.
+
+Some objects are replaced by 3d models done by Sam Matthews. Just look out for
+them in the underworld.
 
 
 Release Notes for "0.6-rotworm stew"
