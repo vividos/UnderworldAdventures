@@ -128,7 +128,8 @@ Table of Contents
       uw_demo. Build systems to test for are: mingw32, mingw32 configure.ac,
       MSVC, Linux configure.ac, Linux RPM
 
-   3. Adjust version numbers in configure.ac and win32/uwadv.nsi
+   3. Adjust version numbers in configure.ac, win32/uwadv.nsi and
+      docs/ua-doxygen.cfg
 
    4. Create latest ChangeLog and commit it
 
