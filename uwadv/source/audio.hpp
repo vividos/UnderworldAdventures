@@ -57,7 +57,7 @@ public:
    virtual void init(ua_settings &settings)=0;
 
    //! plays a sound; stops when finished
-   virtual void play_sound(unsigned int sound)=0;
+   virtual void play_sound(const char *soundname)=0;
 
    //! starts music playback
    virtual void start_music(unsigned int music, bool repeat)=0;

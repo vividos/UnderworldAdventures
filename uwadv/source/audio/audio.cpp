@@ -38,16 +38,6 @@
 
 // tables
 
-//! table with all voc file names
-const char *ua_audio_allvocs[] =
-{
-   "00", "01", "02", "03", "04", "05", "06", "07", "08", "09",
-   "10", "11", "12", "13", "14", "15", "16", "17", "18", "19",
-   "20", "22", "23", "24", "25", "26", "27", "28", "29", "30",
-   "31", "32", "33", "34", "35", "36", "37", "38", "39", "50",
-   "58", "65"
-};
-
 //! table with all midi file names
 const char *ua_audio_allmidis[] =
 {
@@ -88,14 +78,12 @@ public:
    }
 
    //! plays a sound; stops when finished
-   void play_sound(unsigned int sound)
+   void play_sound(const char *soundname)
    {
-      if (sound>=SDL_TABLESIZE(ua_audio_allvocs)) return;
-
       // construct filename
       std::string vocname(uw1path);
       vocname.append("sound/");
-      vocname.append(ua_audio_allvocs[sound]);
+      vocname.append(soundname);
       vocname.append(".voc");
 
       // start playing
