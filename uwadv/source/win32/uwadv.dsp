@@ -611,6 +611,10 @@ SOURCE=..\screens\start_menu.cpp
 
 SOURCE=..\screens\start_splash.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=..\screens\uwadv_menu.cpp
+# End Source File
 # End Group
 # Begin Group "screens headers"
 
@@ -646,6 +650,10 @@ SOURCE=..\screens\start_menu.hpp
 # Begin Source File
 
 SOURCE=..\screens\start_splash.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\screens\uwadv_menu.hpp
 # End Source File
 # End Group
 # End Group

@@ -42,10 +42,12 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	screens/start_menu.cpp screens/cutscene_view.cpp \
 	screens/acknowledgements.cpp screens/conversation.cpp \
 	screens/create_character.cpp screens/map_view.cpp \
+	screens/uwadv_menu.cpp \
 	screens/ingame_orig.hpp screens/start_splash.hpp \
 	screens/start_menu.hpp screens/acknowledgements.hpp \
 	screens/conversation.hpp screens/create_character.hpp \
-	screens/map_view.hpp screens/cutscene_view.hpp
+	screens/map_view.hpp screens/cutscene_view.hpp \
+	screens/uwadv_menu.hpp
 
 uwadv_LDADD = \
 	$(OPENGL_LIBS) \

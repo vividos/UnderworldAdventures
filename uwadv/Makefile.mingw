@@ -105,6 +105,7 @@ uwadv_OBJS = source/win32/source/main.o \
 	source/screens/start_menu.o source/screens/cutscene_view.o \
 	source/screens/acknowledgements.o source/screens/create_character.o \
 	source/screens/conversation.o source/screens/map_view.o \
+	source/screens/uwadv_menu.o
 	$(lua_OBJS) $(zziplib_OBJS)
 
 
