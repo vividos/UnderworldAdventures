@@ -287,6 +287,7 @@ installer: install
 	cp source/win32/License.installer.txt $(UWADV_PATH)
 	cp Copying $(UWADV_PATH)
 	cp docs/README.uwadv.txt $(UWADV_PATH)
+	cp docs/uw1-keyboard.txt $(UWADV_PATH)
 	cd $(UWADV_PATH) && ./upx -9 uwadv.exe
 	cd $(UWADV_PATH) && ./upx -9 uaconfig.exe
 	cd $(UWADV_PATH) && ./makensis.exe uwadv.nsi
