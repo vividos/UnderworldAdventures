@@ -128,6 +128,12 @@ void ua_debugger_main_frame::UpdateAll()
    }
 
    // todo: update more windows
+
+   // update master object list window
+   wxString name(ua_objectlist_frame::frame_name);
+   wxWindow* wnd = wxWindow::FindWindowByName(name);
+   if (wnd!=NULL)
+      reinterpret_cast<ua_objectlist_frame*>(wnd)->UpdateData();
 }
 
 bool ua_debugger_main_frame::CheckBarAvail(wxString& barname)
@@ -191,8 +197,8 @@ void ua_debugger_main_frame::OnMenuUnderwObjectList(wxCommandEvent& event)
    wxWindow* wnd = wxWindow::FindWindowByName(name);
    if (wnd==NULL)
    {
-      new ua_objectlist_frame(this,-1,wxDefaultPosition, wxDefaultSize,
-         wxDEFAULT_FRAME_STYLE);
+      new ua_objectlist_frame(-1,this,-1,wxDefaultPosition,
+         wxSize(700,500),wxDEFAULT_FRAME_STYLE);
    }
    else
    {

@@ -41,7 +41,20 @@ class ua_objectlist_ctrl: public wxEditListCtrl
 {
 public:
    //! ctor
-   ua_objectlist_ctrl(wxWindow* parent);
+   ua_objectlist_ctrl(wxWindow* parent, int level);
+
+   //! returns level
+   unsigned int get_level() const { return level; }
+
+   //! updates data from underworld
+   void UpdateData();
+
+protected:
+   //! level to show master object list
+   unsigned int level;
+
+   //! table with all string contents
+   std::vector<std::string> table;
 
 protected:
    // event handler
@@ -62,11 +75,15 @@ class ua_objectlist_frame: public wxMDIChildFrame
 public:
    //! ctor
    ua_objectlist_frame(/*wxDocManager* doc_manager, */
+      int level,
       wxMDIParentFrame* parent, wxWindowID id,
       const wxPoint& pos, const wxSize& size, long style);
 
    //! updates data from underworld
-   void UpdateData();
+   void UpdateData(){ listctrl->UpdateData(); }
+
+   //! returns level
+   unsigned int get_level() const { return listctrl->get_level(); }
 
    //! frame name for "object list" frame
    static const char* frame_name;
