@@ -65,9 +65,12 @@ ua_renderer::ua_renderer()
 {
 }
 
-void ua_renderer::init(ua_underworld* uw, ua_texture_manager* thetexmgr,
-   ua_critter_pool* thecritpool, ua_model3d_manager* themodelmgr, const ua_vector3d& view_offset)
+void ua_renderer::init(ua_settings& settings
+/*ua_underworld* uw, ua_texture_manager* thetexmgr,
+   ua_critter_pool* thecritpool, ua_model3d_manager* themodelmgr, const ua_vector3d& view_offset*/)
 {
+   texmgr2.init(settings);
+/*
    underw = uw;
    texmgr = thetexmgr;
    critpool = thecritpool;
@@ -100,6 +103,7 @@ void ua_renderer::init(ua_underworld* uw, ua_texture_manager* thetexmgr,
    glHint(GL_FOG_HINT,GL_DONT_CARE);
    glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
    glHint(GL_POLYGON_SMOOTH_HINT,GL_DONT_CARE);
+*/
 }
 
 void ua_renderer::done()

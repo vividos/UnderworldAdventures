@@ -35,6 +35,7 @@
 #include "critter.hpp"
 #include "models.hpp"
 #include "underworld.hpp"
+#include "settings.hpp"
 
 
 // classes
@@ -47,9 +48,12 @@ public:
    ua_renderer();
 
    //! initializes renderer
-   void init(ua_underworld* uw, ua_texture_manager* texmgr,
+   void init(ua_settings& settings
+      /*ua_underworld* uw, ua_texture_manager* texmgr,
       ua_critter_pool* thecritpool, ua_model3d_manager* modelmgr,
-      const ua_vector3d& view_offset);
+      const ua_vector3d& view_offset*/);
+
+   ua_texture_manager& get_texture_manager(){ return texmgr2;}
 
    //! cleans up renderer
    void done();
@@ -123,6 +127,9 @@ protected:
       double nz1, double nz2, double ceiling);
 
 protected:
+
+   ua_texture_manager texmgr2;
+
    //! underworld object
    ua_underworld* underw;
 
