@@ -118,7 +118,9 @@ void ua_start_splash_screen::init()
    curframe = 0;
    animcount = 0.0;
 
-   if (core->get_savegames_mgr().get_savegames_count()>0)
+   // leave out first two screens when we have savegames
+   if (core->get_settings().get_gametype() != ua_game_uw_demo &&
+       core->get_savegames_mgr().get_savegames_count()>0)
    {
       stage=1;
       tickcount = unsigned(ua_start_splash_show_time * core->get_tickrate()) + 1;
@@ -154,6 +156,11 @@ void ua_start_splash_screen::handle_event(SDL_Event &event)
       case 3:
          stage++;
          tickcount=0;
+
+         // fade out music when we have the demo (ingame starts after this)
+         if (core->get_settings().get_gametype() == ua_game_uw_demo)
+            core->get_audio().fadeout_music(ua_start_splash_blend_time);
+
          break;
       }
       break;
