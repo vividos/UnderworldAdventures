@@ -63,6 +63,9 @@ public:
    //! prints a string to the text scroll; returns true when text had to scroll
    bool print(const char* text);
 
+   //! clears scroll contents
+   inline void clear_scroll();
+
    //! handles events needed for the text scroll; returns true when handled
    bool handle_event(SDL_Event &event);
 
@@ -72,12 +75,12 @@ public:
    //! returns true when text was entered; "text" is updated then
    bool is_input_done(std::string& text);
 
+   //! returns true when more lines to show are available
+   inline bool have_more_lines();
+
 protected:
    //! updates scroll texture
    void update_scroll();
-
-   //! returns true when more lines to show are available
-   inline bool have_more_lines();
 
    //! scroll more lines
    void show_more_lines();
@@ -120,6 +123,13 @@ protected:
 inline void ua_textscroll::set_color(Uint8 color)
 {
    text_color = color;
+}
+
+inline void ua_textscroll::clear_scroll()
+{
+   linestack.clear();
+   linehistory.clear();
+   morestack.clear();
 }
 
 inline bool ua_textscroll::have_more_lines()
