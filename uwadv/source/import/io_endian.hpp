@@ -19,7 +19,7 @@
    $Id$
 
 */
-/*! \file fread_endian.hpp
+/*! \file io_endian.hpp
 
    \brief endian-aware 16- and 32-bit fread/fwrite routines
 
