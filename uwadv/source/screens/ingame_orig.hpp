@@ -123,6 +123,8 @@ public:
 
    // virtual functions
    virtual void init();
+   virtual void suspend();
+   virtual void resume();
    virtual void done();
    virtual void handle_event(SDL_Event &event);
    virtual void render();
@@ -145,6 +147,15 @@ protected:
    void mouse_action(bool click, bool left_button, bool pressed);
 
 protected:
+
+   // constants
+
+   //! time to fade in/out
+   static const double fade_time;
+
+   //! speed of view angle change in degree / second
+   static const double viewangle_speed;
+
 
    //! field of view angle
    double fov;
@@ -193,6 +204,18 @@ protected:
 
    // mouse button states
    bool leftbuttondown,rightbuttondown;
+
+
+   // fading in/out
+
+   //! current fade state
+   unsigned int fade_state;
+
+   //! current fade tickcount
+   unsigned int fade_ticks;
+
+   //! fadeout action to carry out
+   unsigned int fadeout_action;
 
 
    // images, textures and fonts

@@ -34,7 +34,10 @@
 // constants
 
 //! speed of view angle change in degree / second
-const double ua_ingame_orig_viewangle_speed = 60;
+const double ua_ingame_orig_screen::viewangle_speed = 60;
+
+//! time to fade in/out
+const double ua_ingame_orig_screen::fade_time = 0.5;
 
 
 // tables
@@ -111,8 +114,6 @@ void ua_ingame_orig_screen::init()
    look_down = look_up = false;
    gamemode = ua_mode_default;
 
-   setup_opengl();
-
    keymap.init(core->get_settings());
 
    // load all needed images
@@ -122,17 +123,10 @@ void ua_ingame_orig_screen::init()
    if (core->get_settings().get_gametype() == ua_game_uw_demo)
       mainscreenname = "data/dmain.byt";
 
-   // disable normal cursor
-   SDL_ShowCursor(0);
-
    // load some images
    ua_settings &settings = core->get_settings();
 
    img_back.load_raw(settings,mainscreenname,0);
-   tex.init(&core->get_texmgr());
-   tex.convert(img_back);
-   tex.use();
-   tex.upload();
 
    img_temp.create(img_back.get_xres(),img_back.get_yres(),0,
       img_back.get_palette());
@@ -151,14 +145,41 @@ void ua_ingame_orig_screen::init()
 
    img_inv_bagpanel.load(settings,"inv",6);
    img_inv_updown.load(settings,"buttons",27,29);
+
+   resume();
 }
 
-void ua_ingame_orig_screen::done()
+void ua_ingame_orig_screen::suspend()
 {
    tex.done();
 
    glDisable(GL_SCISSOR_TEST);
    glDisable(GL_FOG);
+
+   // enable cursor again
+   SDL_ShowCursor(1);
+}
+
+void ua_ingame_orig_screen::resume()
+{
+   setup_opengl();
+
+   // disable normal cursor
+   SDL_ShowCursor(0);
+
+   // upload textures
+   tex.init(&core->get_texmgr());
+   tex.convert(img_back);
+   tex.use();
+   tex.upload();
+
+   fade_state = 0;
+   fade_ticks = 0;
+}
+
+void ua_ingame_orig_screen::done()
+{
+   suspend();
 }
 
 void ua_ingame_orig_screen::handle_event(SDL_Event &event)
@@ -277,7 +298,11 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    case SDLK_q:
       // exit screen when pressing Alt + q
       if ((keysym.mod & KMOD_ALT)!=0)
-         core->pop_screen();
+      {
+         fade_state = 2;
+         fade_ticks = 0;
+         fadeout_action = 0;
+      }
       break;
    }
 }
@@ -536,7 +561,21 @@ void ua_ingame_orig_screen::render_ui()
 
    double u = tex.get_tex_u(), v = tex.get_tex_v();
 
-   glColor3ub(255,255,255);
+   // set texture brightness
+   Uint8 light = 255;
+
+   switch(fade_state)
+   {
+   case 0: // fade in
+      light = Uint8(255*(double(fade_ticks) / (core->get_tickrate()*fade_time)));
+      break;
+
+   case 2: // fade out
+      light = Uint8(255-255*(double(fade_ticks) / (core->get_tickrate()*fade_time)));
+      break;
+   }
+
+   glColor3ub(light,light,light);
 
    // draw user interface image quad
    glBegin(GL_QUADS);
@@ -561,7 +600,7 @@ void ua_ingame_orig_screen::tick()
    // check for looking up or down
    if (look_up || look_down)
    {
-      viewangle += (look_up ? 1.0 : -1.0)*(ua_ingame_orig_viewangle_speed/core->get_tickrate());
+      viewangle += (look_up ? 1.0 : -1.0)*(viewangle_speed/core->get_tickrate());
 
       // view angle has to stay between -180 and 180 degree
       while (viewangle > 180.0 || viewangle < -180.0 )
@@ -570,6 +609,26 @@ void ua_ingame_orig_screen::tick()
       // restrict up-down view angle
       if (viewangle < -40.0) viewangle = -40.0;
       if (viewangle > 40.0) viewangle = 40.0;
+   }
+
+   // check for fading in/out
+   if ((fade_state==0 || fade_state==2) &&
+      ++fade_ticks >= (core->get_tickrate()*fade_time))
+   {
+      fade_state++;
+      fade_ticks=0;
+
+      if (fade_state==3)
+      {
+         // carry out fadeout_action
+
+         switch(fadeout_action)
+         {
+         case 0: // leave the ingame_orig screen
+            core->pop_screen();
+            break;
+         }
+      }
    }
 }
 
