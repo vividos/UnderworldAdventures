@@ -117,7 +117,7 @@ void ua_ingame_orig_screen::init()
    gamemode = ua_mode_default;
    panel_type = 0;
 
-   dbgint = ua_debug_interface::get_new_debug_interface();
+   dbgint = ua_debug_interface::get_new_debug_interface(&core->get_underworld());
 
    // load keymap
    ua_trace("loading keymap uw1/keymap.cfg\n");
