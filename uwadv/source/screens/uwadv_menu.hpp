@@ -36,24 +36,23 @@
 // classes
 
 //! start splash screen class
-class ua_uwadv_menu_screen: public ua_ui_screen_base
+class ua_uwadv_menu_screen: public ua_screen
 {
 public:
    //! ctor
-//   ua_uwadv_menu_screen(){}
+   ua_uwadv_menu_screen(){}
    //! dtor
-//   virtual ~ua_uwadv_menu_screen(){}
+   virtual ~ua_uwadv_menu_screen(){}
 
-   // virtual functions from ua_ui_screen_base
+   // virtual functions from ua_screen
 
-   virtual void init(ua_game_core_interface* core);
-//   virtual void done();
-//   virtual void handle_event(SDL_Event& event);
-//   virtual void render();
+   virtual void init();
+//   virtual void destroy();
+//   virtual void draw();
+//   virtual bool process_event(SDL_Event& event);
    virtual void tick();
 
 protected:
-
 };
 
 
