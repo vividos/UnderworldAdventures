@@ -120,9 +120,30 @@ void ua_ingame_orig_screen::init()
    dbgint = ua_debug_interface::get_new_debug_interface(&core->get_underworld());
 
    // load keymap
-   ua_trace("loading keymap uw1/keymap.cfg\n");
-   keymap.init(core->get_settings());
-   keymap.load(core->get_filesmgr().get_uadata_file("uw1/keymap.cfg"));
+   ua_trace("loading keymaps ...\n");
+   {
+      keymap.init(core->get_settings());
+
+      // load keymap from uadata resources
+      std::string keymap_name("uw1"); // TODO: replace with current game name
+      keymap_name.append("/keymap.cfg");
+
+      ua_trace(" keymap: %s\n",keymap_name.c_str());
+      keymap.load(core->get_filesmgr().get_uadata_file(keymap_name.c_str()));
+
+      // load custom keymap
+      keymap_name = core->get_settings().get_string(ua_setting_custom_keymap);
+
+      ua_trace(" keymap: %s",keymap_name.c_str());
+      SDL_RWops* rwops = SDL_RWFromFile(keymap_name.c_str(),"rb");
+
+      if (rwops!=NULL)
+         keymap.load(rwops);
+      else
+         ua_trace(" => not available");
+
+      ua_trace("\n");
+   }
 
    // load all needed images
    const char *mainscreenname = "data/main.byt";
