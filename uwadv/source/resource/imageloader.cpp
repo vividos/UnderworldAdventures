@@ -228,23 +228,37 @@ void ua_image_decode_rle(FILE *fd,std::vector<Uint8> &pixels,unsigned int bits,
 
 // ua_image methods
 
-void ua_image::load_image(FILE *fd,Uint8 auxpalidx[32][16])
+void ua_image::load_image(FILE *fd,Uint8 auxpalidx[32][16], bool special_panels)
 {
    Uint8 type, width, height,auxpal=0;
+   Uint16 datalen;
 
-   // read in the image header
-   type = fgetc(fd);
-   width = fgetc(fd);
-   height = fgetc(fd);
+   if (special_panels)
+   {
+      // special case for "panels.gr" that lacks a normal header
+      type = 4; // 8-bit uncompressed
+      width = 83;
+      height = 114;
+      datalen = width*height;
+   }
+   else
+   {
+      // read in image header
+      type = fgetc(fd);
+      width = fgetc(fd);
+      height = fgetc(fd);
+
+      // read in auxpal, when needed
+      if (type==0x08 || type==0x0a)
+         auxpal = fgetc(fd);
+
+      if (auxpal>0x1f) auxpal=0;
+
+      // read in data length
+      datalen = fread16(fd);
+   }
 
    create(width,height);
-
-   if (type==0x08 || type==0x0a)
-      auxpal = fgetc(fd);
-
-   if (auxpal>0x1f) auxpal=0;
-
-   Uint16 datalen = fread16(fd);
 
    switch(type)
    {
@@ -342,20 +356,10 @@ void ua_image::load(ua_settings &settings, const char *name, unsigned int which,
 
    fseek(fd,offset,SEEK_SET);
 
-   // special case for "panels.gr" file
-   if (strcmp("panels",name)==0)
-   {
-      // files are 8-bit uncompressed, but have no header
-      create(83,114,0,pal);
-
-      // TODO read in pixels
-   }
-   else
-   {
-      // load image into pixel vector
-      load_image(fd,auxpalidx);
-      palette = pal;
-   }
+   // load image into pixel vector
+   bool special_panels = (strcmp("panels",name)==0);
+   load_image(fd,auxpalidx,special_panels);
+   palette = pal;
 
    fclose(fd);
 }
@@ -440,6 +444,8 @@ void ua_image_list::load(ua_settings &settings, const char *name, unsigned int f
    for(Uint16 i=0; i<entries; i++)
       offsets[i]=fread32(fd);
 
+   bool special_panels = (strcmp("panels",name)==0);
+
    for(Uint16 j=from; j<to; j++)
    {
       if (offsets[j]>=filelen)
@@ -449,7 +455,7 @@ void ua_image_list::load(ua_settings &settings, const char *name, unsigned int f
 
       // load image into pixel vector
       ua_image img;
-      img.load_image(fd,auxpalidx);
+      img.load_image(fd,auxpalidx,special_panels);
       img.palette = palette;
 
       allimages.push_back(img);

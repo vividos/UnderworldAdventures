@@ -82,7 +82,7 @@ public:
 
 protected:
    //! private image loader
-   void load_image(FILE *fd,Uint8 auxpalidx[32][16]);
+   void load_image(FILE *fd,Uint8 auxpalidx[32][16], bool special_panels);
 
 protected:
    //! used palette
