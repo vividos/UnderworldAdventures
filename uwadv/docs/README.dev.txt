@@ -65,6 +65,8 @@ should consider when commiting code via CVS:
  - always document your code, use doxygen-style comments for functions
  - don't use "using namespace std;", use e.g. std::string instead
  - use C++ style casts when unsure
+ - use std::ostringstream instead of sprintf()
+ - use "T* var" and "T& var" for refs and pointers (not "T *var" or "T &var")
  - throw exceptions on serious errors (e.g. when you absolutely can't continue)
  - use SDL functionality where appropriate, to stay platform independent
  - use SDL data types, such as Uint32, Uint16 when needed
