@@ -281,14 +281,25 @@ strpak_CPPs = $(filter %.cpp,$(strpak_SOURCES))
 strpak_OBJS = $(strpak_CPPs:%.cpp=source/tools/%.o)
 
 strpak_LDFLAGS = -mconsole
-strpak_LIBS = -lmingw32 -lkernel32 -luser32 libuatools.a $(SDL_LIB) $(STLPORT_LIB) \
+strpak_LIBS = -lmingw32 -lkernel32 -luser32 libuatools.a $(SDL_LIB) $(STLPORT_LIB)
+
+
+# uw dump tool
+
+uwdump_EXEC = uwdump.exe
+
+uwdump_CPPs = $(filter %.cpp,$(uwdump_SOURCES))
+uwdump_OBJS = $(uwdump_CPPs:%.cpp=source/tools/%.o)
+
+uwdump_LDFLAGS = -mconsole
+uwdump_LIBS = -lmingw32 -lkernel32 -luser32 libuatools.a $(SDL_LIB) $(STLPORT_LIB)
 
 
 #
 # build rules
 #
 
-tools: libuatools cnvdbg cnvdasm xmi2mid mapdisp animview strpak
+tools: libuatools cnvdbg cnvdasm xmi2mid mapdisp animview strpak uwdump
 
 uwadv: $(uwadv_EXEC) uwadv.cfg
 $(uwadv_EXEC): $(uwadv_OBJS)
@@ -352,6 +363,11 @@ $(strpak_EXEC): libuatools $(strpak_OBJS)
 	$(CXX) $(LDFLAGS) $(strpak_LDFLAGS) -o $(@) $(strpak_OBJS) $(strpak_LIBS)
 
 
+uwdump: $(uwdump_EXEC)
+$(uwdump_EXEC): libuatools $(uwdump_OBJS)
+	$(CXX) $(LDFLAGS) $(uwdump_LDFLAGS) -o $(@) $(uwdump_OBJS) $(uwdump_LIBS)
+
+
 #
 # general build rules
 #
@@ -402,10 +418,10 @@ installer: install
 clean: data-clean luac-clean
 	rm -f $(uwadv_EXEC) $(cnvdbg_EXEC) $(cnvdasm_EXEC) $(xmi2mid_EXEC) \
 		$(mapdisp_EXEC) $(animview_EXEC) $(strpak_EXEC) \
-		$(uaconfig_EXEC) $(libuatools_EXT) \
+		$(uaconfig_EXEC) $(libuatools_EXT) $(uwdump_EXEC) \
 		$(uwadv_OBJS) $(cnvdbg_OBJS) $(cnvdasm_OBJS) $(xmi2mid_OBJS) \
 		$(mapdisp_OBJS) $(animview_OBJS) $(strpak_OBJS) \
-		$(uaconfig_OBJS) $(libuatools_OBJS)
+		$(uaconfig_OBJS) $(libuatools_OBJS) $(uwdump_OBJS)
 
 
 #

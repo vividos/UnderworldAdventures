@@ -40,3 +40,7 @@ mapdisp_SOURCES = mapdisp.cpp
 animview_SOURCES = animview.cpp
 
 strpak_SOURCES = strpak.cpp
+
+uwdump_SOURCES = \
+	uwdump/uwdump.hpp uwdump/uwdump.cpp \
+	uwdump/levark.hpp uwdump/levark.cpp

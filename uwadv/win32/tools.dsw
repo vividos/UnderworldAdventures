@@ -105,6 +105,21 @@ Package=<4>
 
 ###############################################################################
 
+Project: "uwdump"=.\uwdump.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name toolslib
+    End Project Dependency
+}}}
+
+###############################################################################
+
 Project: "xmi2mid"=.\xmi2mid.dsp - Package Owner=<4>
 
 Package=<5>
