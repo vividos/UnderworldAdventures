@@ -1,11 +1,23 @@
 #
 # Underworld Adventures configuration file
 #
+# All settings are stored as key/value pairs. The pairs must be
+# separated by at least one space. For some paths placeholders
+# can be used. These are:
+#
+#  %uwpath%   path of the currently played game (uw1-path or uw2-path)
+#  %uadata%   value of the "uadata-path" variable
+#  %uahome%   path to the underworld adventures home folder. For linux
+#             this is "~/.uwadv/"; For windows it just is the current folder
+#
+# All placeholder variables end with a slash.
+#
 
 #
 # path to Ultima Underworld folder (where the uw.exe lives)
 # must end with a /
 # Underworld Demo (uw_demo) path works, too
+# note that placeholders cannot be used!
 #
 
 uw1-path @UW1PATH@
@@ -13,6 +25,7 @@ uw1-path @UW1PATH@
 #
 # path to the uwadv "uadata" dir
 # must end with a /
+# note that placeholders cannot be used!
 #
 
 uadata-path @UADATAPATH@
@@ -22,7 +35,7 @@ uadata-path @UADATAPATH@
 # must end with a /
 #
 
-savegame-folder ~/.uwadv/savegame/
+savegame-folder %uahome%uasave/
 
 #
 # enables or disables Underworld Adventures specific features and
@@ -55,7 +68,7 @@ fullscreen  no
 # "both" for sound and subtitles
 #
 
-cutscene-narration   sound
+cutscene-narration sound
 
 #
 # selects if the audio system should be init'ed and used
