@@ -139,7 +139,7 @@ void ua_renderer::render()
    glLoadIdentity();
 
    ua_player &pl = underw->get_player();
-   double plheight = 0.6+underw->get_player_height()*height_scale;
+   double plheight = 0.6+pl.get_height()*height_scale;
    double rotangle = pl.get_angle_rot();
    double panangle = pl.get_angle_pan();
 
