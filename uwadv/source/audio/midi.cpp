@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@
 # include "midi_driver/win_midiout.h"
 #endif
 
-#include "midi_driver/linux_sdl_mixer.h"
+#include "midi_driver/midi_sdl_mixer.hpp"
 
 
 // global functions
@@ -94,7 +94,7 @@ bool ua_midi_player::init_driver()
    }
 #endif
 
-   ua_try_midi_driver(midi_driver,new ua_sdl_mixer_driver);
+   ua_try_midi_driver(midi_driver,new ua_sdl_mixer_midi_driver);
 
    if (midi_driver != NULL)
       ua_trace("audio: using midi driver \"%s\"\n",midi_driver->copyright());
