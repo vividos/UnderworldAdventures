@@ -207,6 +207,9 @@ public:
    //! sets scripting interface
    void set_scripting(ua_scripting* script){ scripting = script; }
 
+   //! sets scripting interface
+   ua_scripting* get_scripting(){ return scripting; }
+
    // access to underworld components
 
    //! returns player
