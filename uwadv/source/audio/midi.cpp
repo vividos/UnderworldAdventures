@@ -48,18 +48,23 @@
 // global functions
 
 // template function to try out midi driver
-template <typename T>
-void ua_try_midi_driver(ua_midi_driver *&mdrv)
+void ua_try_midi_driver(ua_midi_driver*& mdrv, ua_midi_driver* newdrv)
 {
-   if (mdrv!=NULL) return;
-
-   mdrv = new T;
-
-   if (!mdrv->init_driver())
+   if (mdrv!=NULL)
    {
-      delete mdrv;
+      // already have a driver
+      delete newdrv;
+      return;
+   }
+
+   // try to init driver
+   if (!newdrv->init_driver())
+   {
+      delete newdrv;
       mdrv = NULL;
    }
+   else
+      mdrv = newdrv;
 }
 
 
@@ -84,16 +89,14 @@ bool ua_midi_player::init_driver()
    midi_driver = NULL;
 
 #ifdef WIN32
-   ua_try_midi_driver<ua_win_midiout>(midi_driver);
+   ua_try_midi_driver(midi_driver,new ua_win_midiout);
 #endif
 
 #ifdef HAVE_FMOD_H
-   ua_try_midi_driver<ua_uni_fmod_driver>(midi_driver);
+   ua_try_midi_driver(midi_driver,new ua_uni_fmod_driver);
 #endif
 
-#ifndef WIN32
-   ua_try_midi_driver<ua_sdl_mixer_driver>(midi_driver);
-#endif
+   ua_try_midi_driver(midi_driver,new ua_sdl_mixer_driver);
 
    if (midi_driver != NULL)
       ua_trace("audio: using midi driver \"%s\"\n",midi_driver->copyright());
