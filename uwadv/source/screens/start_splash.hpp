@@ -34,15 +34,17 @@
 
 // needed includes
 #include "screen.hpp"
+
 #include "imgquad.hpp"
 #include "font.hpp"
 #include "cutscene.hpp"
 
 
+
 // classes
 
 //! start splash screen class
-class ua_start_splash_screen: public ua_ui_screen_base
+class ua_start_splash_screen: public ua_screen
 {
 public:
    //! ctor
@@ -50,12 +52,11 @@ public:
    //! dtor
    virtual ~ua_start_splash_screen(){}
 
-   // virtual functions from ua_ui_screen_base
-
-   virtual void init(ua_game_core_interface* core);
-   virtual void done();
-   virtual void handle_event(SDL_Event &event);
-   virtual void render();
+   // virtual functions from ua_screen
+   virtual void init();
+   virtual void destroy();
+   virtual void draw();
+   virtual bool process_event(SDL_Event& event);
    virtual void tick();
 
 protected:
@@ -69,7 +70,6 @@ protected:
 
    //! animation frame rate, in frames per second
    static const double anim_framerate;
-
 
    //! current stage we are in
    unsigned int stage;

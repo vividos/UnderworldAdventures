@@ -37,8 +37,11 @@
 // needed includes
 #include "common.hpp"
 #include "start_splash.hpp"
-#include "start_menu.hpp"
-#include "ingame_orig.hpp"
+#include "audio.hpp"
+#include "savegame.hpp"
+#include "renderer.hpp"
+//#include "start_menu.hpp"
+//#include "ingame_orig.hpp"
 
 
 // constants
@@ -55,14 +58,14 @@ const double ua_start_splash_screen::anim_framerate = 5.0;
 
 // ua_start_splash_screen methods
 
-void ua_start_splash_screen::init(ua_game_core_interface* thecore)
+void ua_start_splash_screen::init()
 {
-   ua_ui_screen_base::init(thecore);
+   ua_screen::init();
 
    ua_trace("start splash screen started\n");
 
    // start intro midi music
-   core->get_audio().start_music(0,false);
+   game->get_audio_manager().start_music(0,false);
 
    // setup orthogonal projection
    glMatrixMode(GL_PROJECTION);
@@ -81,19 +84,19 @@ void ua_start_splash_screen::init(ua_game_core_interface* thecore)
    ua_trace("loading first image\n");
    ua_image img;
 
-   const char *first_img_name = "data/pres1.byt";
-   if (core->get_settings().get_gametype() == ua_game_uw_demo)
+   const char* first_img_name = "data/pres1.byt";
+   if (game->get_settings().get_gametype() == ua_game_uw_demo)
       first_img_name = "data/presd.byt";
 
-   img_still.load_raw(core->get_settings(),first_img_name,5);
-   img_still.init(&core->get_texmgr(),0,0,320,200);
+   img_still.load_raw(game->get_settings(),first_img_name,5);
+   img_still.init(&game->get_renderer().get_texture_manager(),0,0,320,200);
 
-   if (core->get_settings().get_gametype() == ua_game_uw_demo)
+   if (game->get_settings().get_gametype() == ua_game_uw_demo)
    {
       // write a string under the demo title
       ua_font font;
       ua_image img_temp;
-      font.init(core->get_settings(),ua_font_big);
+      font.load(game->get_settings().get_string(ua_setting_uw_path).c_str(),ua_font_big);
       font.create_string(img_temp,"Underworld Adventures",198);
 
       double scale = 0.9;
@@ -111,59 +114,31 @@ void ua_start_splash_screen::init(ua_game_core_interface* thecore)
    animcount = 0.0;
 
    // leave out first two screens when we have savegames
-   if (core->get_settings().get_gametype() != ua_game_uw_demo &&
-       core->get_savegames_mgr().get_savegames_count()>0)
+   if (game->get_settings().get_gametype() != ua_game_uw_demo &&
+       game->get_savegames_manager().get_savegames_count()>0)
    {
       ua_trace("skipping images (savegames available)\n");
 
       stage=1;
-      tickcount = unsigned(show_time * core->get_tickrate()) + 1;
+      tickcount = unsigned(show_time * game->get_tickrate()) + 1;
       tick();
    }
 }
 
-void ua_start_splash_screen::done()
+void ua_start_splash_screen::destroy()
 {
-   ua_trace("start splash screen ended\n\n");
+   ua_screen::destroy();
 
    img_still.done();
    cuts_anim.done();
+
+   ua_trace("start splash screen ended\n\n");
 }
 
-void ua_start_splash_screen::handle_event(SDL_Event& event)
+void ua_start_splash_screen::draw()
 {
-   switch(event.type)
-   {
-   case SDL_KEYDOWN:
-   case SDL_MOUSEBUTTONDOWN:
-      // when a key or mouse button was pressed, go to next stage
-      switch(stage)
-      {
-      case 0:
-      case 1:
-         tickcount = unsigned(show_time * core->get_tickrate()) + 1;
-         break;
+   ua_screen::draw();
 
-      case 2:
-         stage=4;
-         tickcount = unsigned(blend_time * core->get_tickrate()) - tickcount;
-         break;
-
-      case 3:
-         stage++;
-         tickcount=0;
-
-         // fade out music when we have the demo (ingame starts after this)
-         if (core->get_settings().get_gametype() == ua_game_uw_demo)
-            core->get_audio().fadeout_music(blend_time);
-         break;
-      }
-      break;
-   }
-}
-
-void ua_start_splash_screen::render()
-{
    // calculate brightness of texture quad
    Uint8 light = 255;
 
@@ -171,7 +146,7 @@ void ua_start_splash_screen::render()
    {
       // anim fade-in
    case 2:
-      light = Uint8(255*(double(tickcount) / (core->get_tickrate()*blend_time)));
+      light = Uint8(255*(double(tickcount) / (game->get_tickrate()*blend_time)));
       break;
 
       // still image / anim
@@ -183,7 +158,7 @@ void ua_start_splash_screen::render()
 
       // anim fade-out
    case 4:
-      light = Uint8(255-255*(double(tickcount) / (core->get_tickrate()*blend_time)));
+      light = Uint8(255-255*(double(tickcount) / (game->get_tickrate()*blend_time)));
       break;
 
       // finished
@@ -205,23 +180,66 @@ void ua_start_splash_screen::render()
    }
    else
    {
+      // render still image
       img_still.render();
    }
 }
 
+bool ua_start_splash_screen::process_event(SDL_Event& event)
+{
+   bool ret = false;
+
+   switch(event.type)
+   {
+   case SDL_KEYDOWN:
+   case SDL_MOUSEBUTTONDOWN:
+      // when a key or mouse button was pressed, go to next stage
+      switch(stage)
+      {
+      case 0:
+      case 1:
+         tickcount = unsigned(show_time * game->get_tickrate()) + 1;
+         ret = true;
+         break;
+
+      case 2:
+         stage=4;
+         tickcount = unsigned(blend_time * game->get_tickrate()) - tickcount;
+         ret = true;
+         break;
+
+      case 3:
+         stage++;
+         tickcount=0;
+
+         // fade out music when we have the demo (ingame starts after this)
+         if (game->get_settings().get_gametype() == ua_game_uw_demo)
+            game->get_audio_manager().fadeout_music(blend_time);
+
+         ret = true;
+         break;
+      }
+      break;
+   }
+
+   return ret;
+}
+
 void ua_start_splash_screen::tick()
 {
+   ua_screen::tick();
+
    tickcount++;
 
    // check if animation should be loaded
-   if ( (stage == 1 || (stage == 0 && core->get_settings().get_gametype() == ua_game_uw_demo)) &&
-      tickcount >= show_time * core->get_tickrate())
+   if ( (stage == 1 || (stage == 0 && game->get_settings().get_gametype() == ua_game_uw_demo)) &&
+      tickcount >= show_time * game->get_tickrate())
    {
       ua_trace("loading animation\n");
 
       // load animation
-      cuts_anim.load(core->get_settings(),"cuts/cs011.n01");
-      cuts_anim.init(&core->get_texmgr());
+      cuts_anim.load(game->get_settings(),"cuts/cs011.n01");
+      cuts_anim.init(&game->get_renderer().get_texture_manager());
 
       curframe = 0;
       animcount = 0.0;
@@ -233,12 +251,12 @@ void ua_start_splash_screen::tick()
    switch(stage)
    {
    case 0:
-      if (tickcount >= show_time * core->get_tickrate())
+      if (tickcount >= show_time * game->get_tickrate())
       {
          ua_trace("loading second image\n");
 
          // load second image
-         img_still.load_raw(core->get_settings(),"data/pres2.byt",5);
+         img_still.load_raw(game->get_settings(),"data/pres2.byt",5);
          img_still.convert_upload();
 
          stage++;
@@ -249,7 +267,7 @@ void ua_start_splash_screen::tick()
       // fade-in / out
    case 2:
    case 4:
-      if (tickcount >= blend_time * core->get_tickrate())
+      if (tickcount >= blend_time * game->get_tickrate())
       {
          stage++;
          tickcount=0;
@@ -260,7 +278,7 @@ void ua_start_splash_screen::tick()
       // animation
    case 3:
       // check if we have to do a new animation frame
-      animcount += 1.0/core->get_tickrate();
+      animcount += 1.0/game->get_tickrate();
       if (animcount >= 1.0/anim_framerate)
       {
          // do next frame
@@ -274,16 +292,16 @@ void ua_start_splash_screen::tick()
       // finished
    case 5:
       // start next screen
-      if (core->get_settings().get_gametype() == ua_game_uw_demo)
+      if (game->get_settings().get_gametype() == ua_game_uw_demo)
       {
          // when we have the demo, we immediately go to the ingame
-         core->get_underworld().import_savegame(core->get_settings(),"data/",true);
-         core->get_underworld().get_scripts().lua_started_newgame();
-         core->replace_screen(new ua_ingame_orig_screen);
+         //game->get_underworld().import_savegame(core->get_settings(),"data/",true);
+         //game->get_underworld().get_scripts().lua_started_newgame();
+         //game->replace_screen(new ua_ingame_orig_screen);
          return;
       }
       else
-         core->replace_screen(new ua_start_menu_screen);
+         //game->replace_screen(new ua_start_menu_screen);
       break;
    }
 }
