@@ -12,17 +12,30 @@
 UWADV_PATH = c:/uwadv
 
 # set to "yes" for console or "no" to have stdout.txt/stderr.txt
+# for releases, always use "no"
 WITH_CONSOLE = no
 
 # set to "yes" to have some debugging features
+# for releases, always use "no"
 WITH_DEBUGGING = no
 
+# path to mingw compiler
+MINGW_PATH = c:/mingw
+
+# path to where STLport was installed and built
+STLPORT_PATH = c:/mingw/stlport
+
+
+# change these values only if you have a non-standard mingw32 setup
+# (i.e. when the uwadv-mingw32-source-setup-?.zip wasn't used)
+
 # path to SDL include
-SDL_INCLUDE = -Ic:/mingw/include/sdl/
+SDL_INCLUDE = -I$(MINGW_PATH)/include/sdl/
 
 # path to STLport
-STLPORT_INCLUDE = -Ic:/mingw/stlport/stlport/
-STLPORT_LIB = -Lc:/mingw/stlport/lib/ -lstlport_mingw32_static
+STLPORT_INCLUDE = -I$(STLPORT_PATH)/stlport/
+STLPORT_LIB = -L$(STLPORT_PATH)/lib/ -lstlport_mingw32_static
+
 
 # no servicable parts beyond here.
 
@@ -107,13 +120,20 @@ zziplib: $(zziplib_OBJS)
 uwadv_EXEC = uwadv.exe
 
 include source/Makefile.common
+
+uwadv_win32objects = \
+	win32/source/main.o \
+	win32/source/game_win32.o \
+	win32/source/uwadv_res.o \
+	win32/source/debug.o \
+	audio/midi_driver/win_midiout.o
+
 uwadv_CPPs = $(filter %.cpp,$(uwadv_SOURCES))
 uwadv_Cs = $(filter %.c,$(uwadv_SOURCES))
 uwadv_OBJS = $(uwadv_CPPs:%.cpp=source/%.o) \
 	$(uwadv_Cs:%.c=source/%.o) \
         $(uwadv_win32objects:%=source/%) \
 	$(lua_OBJS) $(zziplib_OBJS)
-
 
 uwadv_LIBS = $(WIN32_LIB) -lwinmm $(OPENGL_LIB) \
 	$(uwadv_SDL_LIB) $(FMOD_LIB) $(STLPORT_LIB) -lz
