@@ -188,8 +188,8 @@ void process_events()
             light_on = !light_on;
             break;
 
-		 default:
-			 break;
+         default:
+            break;
          }
          break;
 
@@ -312,6 +312,8 @@ int main(int argc, char* argv[])
 
 #include "files.hpp"
 #include "player.hpp"
+#include "underworld.hpp"
+#include "level.hpp"
 
 SDL_RWops* ua_files_manager::get_uadata_file(const char* relpath)
 {
@@ -321,4 +323,11 @@ SDL_RWops* ua_files_manager::get_uadata_file(const char* relpath)
 unsigned int ua_player::get_attr(ua_player_attributes) const
 {
    return 0;
+}
+
+ua_level dummy_level;
+
+ua_level& ua_underworld::get_current_level()
+{
+   return dummy_level;
 }
