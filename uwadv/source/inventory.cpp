@@ -57,7 +57,7 @@ void ua_inventory::init(ua_underworld *theunderw)
    for(unsigned int i=0; i<ua_slot_max+4; i++)
    {
       itemlist[i].item_id = test_inv[i];
-      itemlist[i].link1 = 0;
+      itemlist[i].link = 0;
    }
 
    // set some container links
@@ -125,8 +125,8 @@ void ua_inventory::open_container(Uint16 index)
    }
 
    // quantity is used as pointer to content of containers
-   Uint16 link1 = get_item(index).quantity;
-   build_slot_link_list(link1);
+   Uint16 link = get_item(index).quantity;
+   build_slot_link_list(link);
 
    // set current container as top item
    container_stack.push_back(index);
@@ -227,7 +227,7 @@ bool ua_inventory::drop_floating_item_slot(Uint16 slot_index)
          return false; // no more space in inventory
    }
 
-   Uint16 link1 = get_item(item).link1;
+   Uint16 link = get_item(item).link;
 
    // drop on item list
    bool ret = drop_floating_item(item);
@@ -244,17 +244,17 @@ bool ua_inventory::drop_floating_item_slot(Uint16 slot_index)
          }
          else
          {
-            // fix the previous item's link1
-            get_item(slot_index-1).link1 = item;
+            // fix the previous item's link
+            get_item(slot_index-1).link = item;
          }
       }
 
       // fix object's link to next
-      get_item(item).link1 = link1;
+      get_item(item).link = link;
 
-      // reset floating item's link1
+      // reset floating item's link
       if (floating_object!=0xffff)
-         get_item(floating_object).link1 = 0;
+         get_item(floating_object).link = 0;
    }
 
    return ret;
@@ -388,9 +388,9 @@ bool ua_inventory::drop_floating_item(Uint16 index)
          // put floating item
          get_item(index) = get_item(floating_object);
 
-         // correct link1 list
-         get_item(index).link1 = temp.link1;
-         temp.link1 = 0;
+         // correct link list
+         get_item(index).link = temp.link;
+         temp.link = 0;
 
          // put new floating item
          get_item(floating_object) = temp;
@@ -411,9 +411,9 @@ bool ua_inventory::drop_floating_item_parent()
       // dropping to parent container that is not the topmost one
       unsigned int parent = container_stack[container_stack.size()-2];
 
-      // follow link1 list to last object
-      Uint16 link1 = get_item(parent).quantity;
-      if (link1==0)
+      // follow link list to last object
+      Uint16 link = get_item(parent).quantity;
+      if (link==0)
          return false; // impossible, since at least the container we are in
                        // must be in the parent container
 
@@ -445,12 +445,12 @@ bool ua_inventory::drop_floating_item_parent()
    return true; // dropping was successful
 }
 
-void ua_inventory::build_slot_link_list(Uint16 link1)
+void ua_inventory::build_slot_link_list(Uint16 link)
 {
    // rebuild slot_links list
    slot_links.clear();
 
-   if (link1==ua_slot_no_item)
+   if (link==ua_slot_no_item)
    {
       // build list with first 8 items
       for(unsigned int i=0; i<8; i++)
@@ -459,14 +459,14 @@ void ua_inventory::build_slot_link_list(Uint16 link1)
    else
    {
       // build normal list
-      while (link1 != 0)
+      while (link != 0)
       {
          // add to slot links
-         slot_links.push_back(link1);
+         slot_links.push_back(link);
 
          // get next object
-         ua_object_info &obj = get_item(link1);
-         link1 = obj.link1;
+         ua_object_info &obj = get_item(link);
+         link = obj.link;
       }
    }
 }
@@ -502,32 +502,32 @@ void ua_inventory::unlink_object(Uint16 item)
          {
             // was first object; fix link2 in container
             ua_object_info &cont = get_item(get_container_item());
-            cont.quantity = get_item(slot_links[i]).link1;
+            cont.quantity = get_item(slot_links[i]).link;
          }
          else
          {
-            // fix link1 in previous object
+            // fix link in previous object
             ua_object_info &obj = get_item(slot_links[i-1]);
-            obj.link1 = get_item(slot_links[i]).link1;
+            obj.link = get_item(slot_links[i]).link;
          }
          break;
       }
    }
 
    // rebuild slot link list
-   Uint16 link1 = get_item(get_container_item()).quantity;
-   if (link1==0)
+   Uint16 link = get_item(get_container_item()).quantity;
+   if (link==0)
       slot_links.clear();
    else
-      build_slot_link_list(link1);
+      build_slot_link_list(link);
 }
 
 void ua_inventory::append_item(Uint16 cont, Uint16 item)
 {
-   Uint16 link1 = get_item(cont).quantity;
+   Uint16 link = get_item(cont).quantity;
 
-   // check if container already has a link1'ed list
-   if (link1==0)
+   // check if container already has a link'ed list
+   if (link==0)
    {
       // add new item
       get_item(cont).quantity = item;
@@ -535,16 +535,16 @@ void ua_inventory::append_item(Uint16 cont, Uint16 item)
    else
    {
       // find last object
-      while (get_item(link1).link1 != 0)
+      while (get_item(link).link != 0)
       {
          // get next object
-         link1 = get_item(link1).link1;
+         link = get_item(link).link;
       }
-      // link1 is last object
+      // link is last object
 
       // append to list
-      get_item(link1).link1 = item;
-      get_item(item).link1 = 0;
+      get_item(link).link = item;
+      get_item(item).link = 0;
    }
 }
 

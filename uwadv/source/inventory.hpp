@@ -149,7 +149,7 @@ public:
 
 protected:
    //! builds new slot link list
-   void build_slot_link_list(Uint16 link1);
+   void build_slot_link_list(Uint16 link);
 
    //! allocates a new item; returns ua_slot_no_item when no itemlist position is free
    Uint16 allocate_item();
