@@ -34,7 +34,7 @@
 #include "savegame.hpp"
 #include "imgquad.hpp"
 #include "font.hpp"
-//#include "textscroll.hpp"
+#include "textscroll.hpp"
 #include "mousecursor.hpp"
 
 
@@ -114,23 +114,20 @@ protected:
    //! indicates if mouse button is pressed
    bool button_pressed;
 
+   //! fade in/out state
    unsigned int fade_state;
+
+   //! fade ticks
    unsigned int fade_ticks;
 
-/*
-   //! text scroll
-   ua_textscroll scroll;
+   //! indicates if we're editing the savegame description
+   bool edit_desc;
 
-   //! number of game to load
-   int game_nr;
+   //! text scroll to edit savegame description
+   ua_textscroll desc_scroll;
 
-   //! indicates to write a new game
-   bool write_new;
-
-   bool have_desc;
-
-   std::string savegame_desc;
-*/
+   //! savegame description text
+   std::string desc;
 };
 
 #endif
