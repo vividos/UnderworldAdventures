@@ -278,7 +278,6 @@ void ua_panel::update_panel_texture()
 
    // upload new panel
    tex_panel.convert(panel);
-   tex_panel.use();
    tex_panel.upload();
 }
 

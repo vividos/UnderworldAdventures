@@ -115,7 +115,6 @@ void ua_create_character_screen::init(ua_game_core_interface* thecore)
    img.create(320, 200, 0, 3);
    tex.init(&core->get_texmgr());
    tex.convert(img);
-   tex.use();
    tex.upload();
 
    // init mouse cursor
@@ -671,7 +670,6 @@ void ua_create_character_screen::render()
 
       // prepare image texture
       tex.convert(img);
-      tex.use();
       tex.upload();
 
       changed = false;

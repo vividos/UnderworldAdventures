@@ -299,7 +299,6 @@ void ua_ingame_orig_screen::resume()
    // compass texture
    tex_compass.init(&core->get_texmgr(),1,GL_LINEAR,GL_LINEAR);
    tex_compass.convert(img_compass.get_image(0));
-   tex_compass.use();
    tex_compass.upload();
    compass_curimg = 0;
 
@@ -307,17 +306,14 @@ void ua_ingame_orig_screen::resume()
    flasks_curimg[0] = flasks_curimg[1] = 0;
    tex_flasks.init(&core->get_texmgr(),2,GL_LINEAR,GL_LINEAR);
    tex_flasks.convert(img_flasks[0].get_image(flasks_curimg[0]),0);
-   tex_flasks.use(0);
-   tex_flasks.upload();
+   tex_flasks.upload(0);
 
    tex_flasks.convert(img_flasks[1].get_image(flasks_curimg[1]),1);
-   tex_flasks.use(1);
-   tex_flasks.upload();
+   tex_flasks.upload(1);
 
    // command buttons
    tex_cmd_buttons.init(&core->get_texmgr(),1,GL_LINEAR,GL_LINEAR,GL_CLAMP,GL_CLAMP);
    tex_cmd_buttons.convert(img_cmd_buttons);
-   tex_cmd_buttons.use();
    tex_cmd_buttons.upload();
 
    // panel texture
@@ -764,7 +760,6 @@ void ua_ingame_orig_screen::render_ui()
          // reupload compass texture
          compass_curimg = compassimg;
          tex_compass.convert(img_compass.get_image(compass_curimg));
-         tex_compass.use();
          tex_compass.upload();
       }
       else
@@ -802,8 +797,7 @@ void ua_ingame_orig_screen::render_ui()
 
          tex_flasks.convert(
             img_flasks[ vit_flask_img>=14 ? 2 : 0 ].get_image(vit_flask_img%14),0);
-         tex_flasks.use(0);
-         tex_flasks.upload();
+         tex_flasks.upload(0);
       }
       else
          tex_flasks.use(0);
@@ -833,8 +827,7 @@ void ua_ingame_orig_screen::render_ui()
          flasks_curimg[1] = mana_flask_img;
 
          tex_flasks.convert(img_flasks[1].get_image(mana_flask_img%14),1);
-         tex_flasks.use(1);
-         tex_flasks.upload();
+         tex_flasks.upload(1);
       }
       else
          tex_flasks.use(1);
@@ -1208,17 +1201,15 @@ void ua_ingame_orig_screen::ui_changed_level(unsigned int level)
    // reset stock texture usage
    texmgr.reset();
 
-   // prepare all used textures
-   const std::vector<Uint16>& used_textures =
-      core->get_underworld().get_level(level).get_used_textures();
+   // prepare all used wall/ceiling textures
+   {
+      const std::vector<Uint16>& used_textures =
+         core->get_underworld().get_level(level).get_used_textures();
 
-   unsigned int max = used_textures.size();
-   for(unsigned int n=0; n<max; n++)
-      texmgr.prepare(used_textures[n]);
-
-   // hack: prepare bridge texture
-   texmgr.prepare(ua_tex_stock_floor+31);
-
+      unsigned int max = used_textures.size();
+      for(unsigned int n=0; n<max; n++)
+         texmgr.prepare(used_textures[n]);
+   }
 }
 
 void ua_ingame_orig_screen::ui_start_conv(unsigned int level, unsigned int objpos)

@@ -643,7 +643,6 @@ void ua_save_game_screen::update_info()
       // do preview image
       tex_preview.init(&core->get_texmgr());
       tex_preview.convert(info.image_xres, info.image_yres, &info.image_rgba[0]);
-      tex_preview.use();
       tex_preview.upload();
 
       show_preview = true;

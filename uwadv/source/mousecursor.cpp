@@ -61,7 +61,6 @@ void ua_mousecursor::set_custom(ua_image& cursorimg)
    cursorimg2.paste_image(cursorimg,0,0);
 
    mousetex.convert(cursorimg2);
-   mousetex.use();
    mousetex.upload();
 }
 

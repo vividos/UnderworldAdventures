@@ -76,19 +76,16 @@ void ua_image_quad::convert_upload()
 
       // upload it to the texture
       tex.convert(quadpalette,img_split1,0);
-      tex.use(0);
-      tex.upload();
+      tex.upload(0);
 
       tex.convert(quadpalette,img_split2,1);
-      tex.use(1);
-      tex.upload();
+      tex.upload(1);
    }
    else
    {
       // image is small enough
       tex.convert(*this);
-      tex.use(0);
-      tex.upload();
+      tex.upload(0);
    }
 }
 

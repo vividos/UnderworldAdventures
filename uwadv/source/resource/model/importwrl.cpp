@@ -321,7 +321,6 @@ void ua_model3d_wrl::import_wrl(ua_game_core_interface* core, SDL_RWops* rwops,
          core->get_filesmgr().get_uadata_file(relpath.c_str());
 
       tex.load(rwops);
-      tex.use();
       tex.upload();
 
       SDL_RWclose(rwops);
