@@ -253,7 +253,6 @@ data-clean:
 
 luac:
 	cd source/lua/src/luac && make
-	cp source/lua/bin/luac.exe* uadata
 
 luac-clean:
 	cd source/lua/src/luac && make clean
