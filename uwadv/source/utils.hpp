@@ -33,6 +33,7 @@
 
 // needed includes
 #include <string>
+#include <vector>
 #include <exception>
 
 
@@ -58,6 +59,10 @@ int ua_trace_printf(const char *fmt,...);
 
 //! creates a folder with given mode
 int ua_mkdir(const char *dirname, int mode);
+
+//! finds files matching a wildcard pattern pathname
+void ua_find_files(const char* pathname, std::vector<std::string>& filelist);
+
 
 
 // classes

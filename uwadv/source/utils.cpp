@@ -37,6 +37,7 @@
 
 #ifdef WIN32
 #include <direct.h> // for mkdir
+#include <io.h> // for _findfirst, _findnext, _findclose
 #endif
 
 #ifdef HAVE_SYS_STAT_H
@@ -122,3 +123,93 @@ int ua_trace_printf(const char *fmt,...)
    va_end(args);
    return ret;
 }
+
+
+// ua_find_files implementation for various platforms
+
+#if defined(WIN32)
+
+void ua_find_files(const char* pathname, std::vector<std::string>& filelist)
+{
+   ua_trace("searching for files: %s\n",pathname);
+
+   // find out base path
+   std::string basepath(pathname);
+   std::string::size_type pos = basepath.find_last_of("\\/");
+   if (pos != std::string::npos)
+      basepath.erase(pos+1);
+
+   // try to find files by pathname
+   _finddata_t fileinfo;
+
+   long handle = _findfirst(pathname,&fileinfo);
+   if (handle!=-1)
+   {
+      std::string filename;
+
+      do
+      {
+         // add to filelist
+         filename.assign(basepath);
+         filename.append(fileinfo.name);
+
+         ua_trace(" found file: %s\n",filename.c_str());
+
+         filelist.push_back(filename);
+
+      } while(0==_findnext(handle,&fileinfo));
+
+      _findclose(handle);
+   }
+
+   ua_trace("found %u files\n",filelist.size());
+}
+
+#elif defined(HAVE_GLOB_H) // this system has glob.h
+
+#include <glob.h>
+
+void ua_find_files(const char* pathname, std::vector<std::string>& filelist)
+{
+   ua_trace("searching for files: %s\n",pathname);
+
+   std::string path(pathname);
+
+   glob_t globres;
+   int err = glob(path.c_str(), GLOB_NOSORT, 0, &globres);
+
+   // check for return code
+   switch (err)
+   {
+      case 0: // ok
+         // add all found files to the list
+         for (int i=0; i<globres.gl_pathc; i++)
+            filelist.push_back(globres.gl_pathv[i]);
+
+         globfree(&globres);
+      return 0;
+
+      case 3: //no matches
+         break;
+
+      default: // error
+         ua_trace("glob error: %u\n",err);
+         break;
+   }
+
+   ua_trace("found %u files\n",filelist.size());
+}
+
+#elif defined(BEOS)
+
+#error "please port Exult's U7ListFiles() function in files/listfiles.cc to uwadv!"
+
+#else
+
+#error "no implementation for ua_find_files()!"
+
+// if you get this error, you have to supply a custom version of
+// ua_find_files() for your system, together with the proper ifdef's to
+// enable it.
+
+#endif
