@@ -5,7 +5,7 @@
 #
 
 # compiler options
-CXXFLAGS = @CXXFLAGS@ -I$(srcdir)/..
+CXXFLAGS = @CXXFLAGS@
 LDFLAGS = @LIBS@
 
 if BUILD_TOOLS
