@@ -38,6 +38,9 @@ const double ua_cutscene_view_anim_fps = 5.0;
 //! time needed to fade in/out text
 const double ua_cutscene_view_fade_time = 0.5;
 
+//! name of lua userdata variable containing the "this" pointer
+const char* ua_cutscene_view_lua_thisptr_name = "self";
+
 
 // ua_cutscene_view_screen methods
 
@@ -93,19 +96,22 @@ void ua_cutscene_view_screen::init()
    if (0!=core->get_filesmgr().load_lua_script(L,"uw1/scripts/cutscene"))
       ended = true;
 
-   // call "cuts_init(this,cutscene)"
-   lua_getglobal(L,"cuts_init");
+   // set "this" pointer
    lua_pushuserdata(L,this);
+   lua_setglobal(L,ua_cutscene_view_lua_thisptr_name);
+
+   // call "cuts_init(cutscene)"
+   lua_getglobal(L,"cuts_init");
    lua_pushnumber(L,static_cast<double>(cutscene));
-   int ret = lua_call(L,2,0);
+   int ret = lua_call(L,1,0);
    if (ret!=0)
    {
-      ua_trace("Lua function call cuts_init(0x%08x,%u) ended with error code %u\n",
-         this,cutscene,ret);
+      ua_trace("Lua function call cuts_init(%u) ended with error code %u\n",
+         cutscene,ret);
       ended = true;
    }
 
-   // init opengl
+   // init OpenGL
 
    // setup orthogonal projection
    glMatrixMode(GL_PROJECTION);
@@ -420,10 +426,13 @@ void ua_cutscene_view_screen::create_text_image(const char *str)
    tex_text.upload();
 }
 
+/*! stack indices/values:
+    -2: actioncode
+    -1: actionvalue
+*/
 void ua_cutscene_view_screen::do_action()
 {
-   int n=lua_gettop(L);
-   unsigned int action = static_cast<unsigned int>(lua_tonumber(L,n-1));
+   unsigned int action = static_cast<unsigned int>(lua_tonumber(L,-2));
 
    // note: the case values must be in sync with the ones in the script
    switch(action)
@@ -435,25 +444,25 @@ void ua_cutscene_view_screen::do_action()
       break;
 
    case 1: // cuts_set_string_block
-      strblock = static_cast<unsigned int>(lua_tonumber(L,n));
+      strblock = static_cast<unsigned int>(lua_tonumber(L,-1));
       break;
 
    case 2: // cuts_sound_play
       if (canplaysound)
       {
-         const char *str = lua_tostring(L,n);
+         const char *str = lua_tostring(L,-1);
          core->get_audio().play_sound(str);
       }
       break;
 
    case 3: // cuts_text_set_color
-      textcolor = static_cast<Uint8>(lua_tonumber(L,n));
+      textcolor = static_cast<Uint8>(lua_tonumber(L,-1));
       break;
 
    case 4: // cuts_text_fadein
       if (canshowtext)
       {
-         unsigned int strnum = static_cast<unsigned int>(lua_tonumber(L,n));
+         unsigned int strnum = static_cast<unsigned int>(lua_tonumber(L,-1));
          create_text_image( core->get_strings().get_string(strblock,strnum).c_str() );
          text_fade_state = 1; // fade in
          text_fadecount = 0;
@@ -473,7 +482,7 @@ void ua_cutscene_view_screen::do_action()
    case 6: // cuts_text_show
       if (canshowtext)
       {
-         unsigned int strnum = static_cast<unsigned int>(lua_tonumber(L,n));
+         unsigned int strnum = static_cast<unsigned int>(lua_tonumber(L,-1));
          create_text_image( core->get_strings().get_string(strblock,strnum).c_str() );
          showtext = true;
          text_fade_state = 0;
@@ -492,7 +501,7 @@ void ua_cutscene_view_screen::do_action()
    case 9: // cuts_anim_show
       {
          std::string animname("cuts/");
-         animname.append(lua_tostring(L,n));
+         animname.append(lua_tostring(L,-1));
 
          // load animation
          cuts.load(core->get_settings(),animname.c_str());
@@ -506,7 +515,7 @@ void ua_cutscene_view_screen::do_action()
 
    case 10: // cuts_anim_set_stopframe
       // get "stop frame" parameter
-      stopframe = static_cast<int>(lua_tonumber(L,n));
+      stopframe = static_cast<int>(lua_tonumber(L,-1));
       break;
 
    case 11: // cuts_anim_fadeout
@@ -516,7 +525,7 @@ void ua_cutscene_view_screen::do_action()
 
    case 12: // cuts_anim_stop
       loopanim = false;
-      curframe = static_cast<unsigned int>(lua_tonumber(L,n));
+      curframe = static_cast<unsigned int>(lua_tonumber(L,-1));
       break;
 
    case 13: // cuts_anim_hide
@@ -532,22 +541,27 @@ void ua_cutscene_view_screen::do_action()
 
 // static ua_cutscene_view_screen methods
 
-int ua_cutscene_view_screen::cuts_do_action(lua_State *L)
+int ua_cutscene_view_screen::cuts_do_action(lua_State* L)
 {
    // check for "self" parameter being userdata
-   int n=lua_gettop(L);
-   if (lua_isuserdata(L,n-2))
+
+   lua_getglobal(L,ua_cutscene_view_lua_thisptr_name);
+   if (lua_isuserdata(L,-1))
    {
-      // get pointer to object
+      // get pointer to screen
       ua_cutscene_view_screen *self =
-         reinterpret_cast<ua_cutscene_view_screen*>(lua_touserdata(L,n-2));
+         reinterpret_cast<ua_cutscene_view_screen*>(lua_touserdata(L,-1));
 
       if (self->L != L)
          throw ua_exception("wrong 'self' parameter in Lua script");
 
+      lua_pop(L,1);
+
       // perform action
       self->do_action();
    }
+   else
+      throw ua_exception("'self' parameter wasn't set by Lua script");
 
    return 0;
 }

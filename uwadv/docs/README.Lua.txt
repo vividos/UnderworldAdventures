@@ -425,12 +425,11 @@ defined.
 
 Lua functions to call from C:
 
-* cuts_init(self,cutscene)
+* cuts_init(cutscene)
   return values: none
 
-  tells the cutscene script the "self" userdata, needed for all calls back to
-  the C language. "cutscene" is the number of the cutscene that should be
-  shown. Here's a list of all cutscenes:
+  tells the cutscene script the actual cutscene to play. Here's a list of all
+  values for "cutscene":
   
   0: introduction
   1: endgame
@@ -446,7 +445,7 @@ Lua functions to call from C:
 
 registered C functions to call from Lua:
 
-* cuts_do_action(self,actioncode,actionvalue)
+* cuts_do_action(actioncode,actionvalue)
 
   does some action in the cutscene, controlled by the value in "actioncode".
   "actionvalue" can contain additional informations that may be needed for a

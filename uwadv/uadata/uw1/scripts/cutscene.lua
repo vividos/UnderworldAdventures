@@ -1,6 +1,7 @@
 --
 -- Underworld Adventures - an Ultima Underworld hacking project
 -- Copyright (c) 2002 Michael Fink
+-- Copyright (c) 2002 Dirk Manders
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -22,11 +23,11 @@
 --
 -- cutscene.lua - lua cutscene script; controls the cutscene sequence
 --
-						 
+
 --
 -- registered C functions:
 --
--- cuts_do_action(self,actioncode,actionvalue)
+-- cuts_do_action(actioncode,actionvalue)
 --   actioncode is one of the values below; actionvalue can be
 --   a value depending on the action. it always must be present.
 --
@@ -55,7 +56,7 @@ cuts_anim_hide = 13          -- hides animation
 cuts_anim_continue = 14      -- continues animation after stop
 
 -- string block base for cutscenes
-cuts_strbase = 12*256
+cuts_strbase = 12*256        -- 0x0c00
 
 
 -- tables
@@ -365,8 +366,8 @@ cutscenes = {
 -- functions
 
 -- initializes cutscene sequence
-function cuts_init(this,cutscene)
-   self = this       -- sets "self" as userdata for all C function calls
+function cuts_init(cutscene)
+
    cuts = cutscene   -- number of cutscene to use
    curtime = 0.0     -- current time frame
    curstep = 1       -- current timetable step
@@ -374,17 +375,18 @@ end
 
 -- processes cutscene timetable for every game tick
 function cuts_tick(time)
+
    -- at start, set string block to use
    if time == 0.0
    then
-      cuts_do_action(self,cuts_set_string_block,cutscenes[cuts].strblock)
+      cuts_do_action(cuts_set_string_block,cutscenes[cuts].strblock)
    end
 
    -- check if new timetable entry can be done
    while time >= curtime + cutscenes[cuts].timetable[curstep].time
    do
       -- perform action
-      cuts_do_action(self,
+      cuts_do_action(
          cutscenes[cuts].timetable[curstep].action,
          cutscenes[cuts].timetable[curstep].value)
 
