@@ -126,6 +126,7 @@ Delete $INSTDIR\README.uwadv.txt
 Delete $INSTDIR\uw1-keyboard.txt
 Delete $INSTDIR\Authors.txt
 Delete $INSTDIR\Changes.txt
+Delete $INSTDIR\stdout.txt
 Delete $INSTDIR\uninst-uwadv.exe
 Delete $INSTDIR\uadata\uadata00.uar
 RMDir $INSTDIR\uadata
@@ -145,6 +146,7 @@ Delete "$SMPROGRAMS\Underworld Adventures\Underworld Adventures.lnk"
 Delete "$SMPROGRAMS\Underworld Adventures\Underworld Adventures Config.lnk"
 Delete "$SMPROGRAMS\Underworld Adventures\Underworld Adventures Readme.lnk"
 Delete "$SMPROGRAMS\Underworld Adventures\Ultima Underworld 1 Keyboard Commands.lnk"
+Delete "$SMPROGRAMS\Underworld Adventures\Uninstall Underworld Adventures.lnk"
 RMDir "$SMPROGRAMS\Underworld Adventures"
 
 DeleteRegKey HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\Underworld Adventures"
