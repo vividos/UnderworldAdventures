@@ -21,7 +21,16 @@
 */
 /*! \file start_splash.cpp
 
-   \brief start splash screens
+   \brief start splash screens implementation
+
+   stages the ua_start_splash_screen can be in:
+
+   stage 0: first opening screen
+   stage 1: second opening screen (not in uw_demo)
+   stage 2: fading in animation
+   stage 3: showing animation
+   stage 4: fading out animation
+   stage 5: screen finished
 
 */
 
@@ -34,70 +43,14 @@
 
 // constants
 
+//! number of seconds the splash screen images are shown
+const double ua_start_splash_show_time = 4.0;
+
 //! fade in/out time in seconds
 const double ua_start_splash_blend_time = 0.8;
+
 //! animation frame rate, in frames per second
 const double ua_splash_anim_framerate = 5.0;
-
-
-// enums
-
-//! action types for the splash screen
-enum ua_start_splash_action
-{
-   ua_fadein,
-   ua_showimg,
-   ua_fadeout,
-   ua_showanim,
-   ua_endseq
-};
-
-
-// structs
-
-//! list with splash sequence actions
-struct ua_start_splash_sequence
-{
-   ua_start_splash_action type;
-   const char *moreinfo;
-};
-
-ua_start_splash_sequence ua_uw1_splash_seq[] =
-{
-   // first image
-   { ua_fadein, NULL },
-   { ua_showimg, "data/pres1.byt" },
-   { ua_fadeout, NULL },
-
-   // second image
-   { ua_fadein, NULL },
-   { ua_showimg, "data/pres2.byt" },
-   { ua_fadeout, NULL },
-
-   // title animation
-   { ua_fadein, NULL },
-   { ua_showanim, "cuts/cs011.n01" },
-   { ua_fadeout, NULL },
-
-   // finished
-   { ua_endseq, NULL }
-};
-
-ua_start_splash_sequence ua_uw_demo_splash_seq[] =
-{
-   // first image
-   { ua_fadein, NULL },
-   { ua_showimg, "data/presd.byt" },
-   { ua_fadeout, NULL },
-
-   // title animation
-   { ua_fadein, NULL },
-   { ua_showanim, "cuts/cs011.n01" },
-   { ua_fadeout, NULL },
-
-   // finished
-   { ua_endseq, NULL }
-};
 
 
 // ua_start_splash_screen methods
@@ -121,16 +74,13 @@ void ua_start_splash_screen::init()
 
    glDisable(GL_DEPTH_TEST);
    glDisable(GL_BLEND);
-   glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-
-   // select splash sequence
-   if (core->get_settings().gtype == ua_game_uw_demo)
-      splash_seq = ua_uw_demo_splash_seq;
-   else
-      splash_seq = ua_uw1_splash_seq;
 
    // load first image
-   img.load_raw(core->get_settings(),splash_seq[1].moreinfo,5);
+   const char *first_img = "data/pres1.byt";
+   if (core->get_settings().gtype == ua_game_uw_demo)
+      first_img = "data/presd.byt";
+
+   img.load_raw(core->get_settings(),first_img,5);
 
    if (core->get_settings().gtype == ua_game_uw_demo)
    {
@@ -140,14 +90,11 @@ void ua_start_splash_screen::init()
       font.init(core->get_settings(),ua_font_big);
       font.create_string(img2,"Underworld Adventures",198);
 
-      float scale = 0.9f;
-      int xpos=int((320-img2.get_xres()*scale)/2);
+      double scale = 0.9;
+      unsigned int xpos = unsigned((320-img2.get_xres()*scale)/2);
 
       img.paste_image(img2,xpos,200-16);
    }
-
-   img_loaded = true;
-   is_animation = false;
 
    // convert to texture
    tex.init(&core->get_texmgr());
@@ -155,8 +102,10 @@ void ua_start_splash_screen::init()
    tex.use();
    tex.upload();
 
-   stage=0;
-   tickcount=0;
+   stage = 0;
+   tickcount = 0;
+   curframe = 0;
+   animcount = 0.0;
 }
 
 void ua_start_splash_screen::done()
@@ -171,11 +120,22 @@ void ua_start_splash_screen::handle_event(SDL_Event &event)
    case SDL_KEYDOWN:
    case SDL_MOUSEBUTTONDOWN:
       // when a key or mouse button was pressed, go to next stage
-      if (splash_seq[stage].type==ua_fadein || splash_seq[stage].type==ua_showimg ||
-          splash_seq[stage].type==ua_showanim)
+      switch(stage)
       {
+      case 0:
+      case 1:
+         tickcount = unsigned(ua_start_splash_show_time * core->get_tickrate()) + 1;
+         break;
+
+      case 2:
+         stage=4;
+         tickcount = (ua_start_splash_blend_time * core->get_tickrate()) - tickcount;
+         break;
+
+      case 3:
          stage++;
          tickcount=0;
+         break;
       }
       break;
    }
@@ -183,33 +143,37 @@ void ua_start_splash_screen::handle_event(SDL_Event &event)
 
 void ua_start_splash_screen::render()
 {
-   glLoadIdentity();
-
    // calculate brightness of texture quad
    Uint8 light = 255;
 
-   switch(splash_seq[stage].type)
+   switch(stage)
    {
-   case ua_fadein:
-      light = Uint8(255*(float(tickcount) / (core->get_tickrate()*ua_start_splash_blend_time)));
+      // anim fade-in
+   case 2:
+      light = Uint8(255*(double(tickcount) / (core->get_tickrate()*ua_start_splash_blend_time)));
       break;
 
-   case ua_showimg:
-   case ua_showanim:
+      // still image / anim
+   case 0:
+   case 1:
+   case 3:
       light=255;
       break;
 
-   case ua_fadeout:
-      light = Uint8(255-255*(float(tickcount) / (core->get_tickrate()*ua_start_splash_blend_time)));
+      // anim fade-out
+   case 4:
+      light = Uint8(255-255*(double(tickcount) / (core->get_tickrate()*ua_start_splash_blend_time)));
       break;
 
-   case ua_endseq:
+      // finished
+   case 5:
       light=0;
+      break;
    }
 
    glColor3ub(light,light,light);
 
-   if (is_animation)
+   if (stage>=2)
    {
       // prepare animation frame
       cuts.get_frame(tex,curframe);
@@ -235,57 +199,65 @@ void ua_start_splash_screen::render()
 
 void ua_start_splash_screen::tick()
 {
-   ++tickcount;
+   tickcount++;
 
-   switch(splash_seq[stage].type)
+   // check if animation should be loaded
+   if ( (stage == 1 || (stage == 0 && core->get_settings().gtype == ua_game_uw_demo)) &&
+      tickcount >= ua_start_splash_show_time * core->get_tickrate())
    {
-   case ua_fadein:
-      if (!img_loaded)
-      {
-         if (splash_seq[stage+1].type==ua_showanim)
-         {
-            // load new animation
-            cuts.load(core->get_settings(),splash_seq[stage+1].moreinfo);
-            curframe = 0;
-            animcount = 0;
-            is_animation = true;
-         }
-         else
-         {
-            // load new image and texture
-            img.load_raw(core->get_settings(),splash_seq[stage+1].moreinfo,5);
-            tex.convert(img);
-            tex.use();
-            tex.upload();
-            is_animation = false;
-         }
-         img_loaded = true;
-         tickcount=0;
-      }
+      // load animation
+      cuts.load(core->get_settings(),"cuts/cs011.n01");
+      curframe = 0;
+      animcount = 0.0;
+      stage = 2;
+      tickcount = 0;
+   }
 
-      if (tickcount >= (core->get_tickrate()*ua_start_splash_blend_time))
+   // check other stages
+   switch(stage)
+   {
+   case 0:
+      if (tickcount >= ua_start_splash_show_time * core->get_tickrate())
       {
+         // load second image
+         img.load_raw(core->get_settings(),"data/pres2.byt",5);
+
+         tex.convert(img);
+         tex.use();
+         tex.upload();
+
          stage++;
          tickcount=0;
       }
       break;
 
-   case ua_fadeout:
-      // do next stage when blend time is over
-      if (tickcount >= (core->get_tickrate()*ua_start_splash_blend_time))
+      // fade-in / out
+   case 2:
+   case 4:
+      if (tickcount >= ua_start_splash_blend_time * core->get_tickrate())
       {
          stage++;
-         img_loaded = false;
+         tickcount=0;
+         break;
+      }
+      // no break, fall through
 
-         // do another tick to load the next one
-         ua_start_splash_screen::tick();
+      // animation
+   case 3:
+      // check if we have to do a new animation frame
+      animcount += 1.0/core->get_tickrate();
+      if (animcount >= 1.0/ua_splash_anim_framerate)
+      {
+         // do next frame
+         curframe++;
+         animcount -= 1.0/ua_splash_anim_framerate;
+         if (curframe>=cuts.get_maxframes()-2)
+            curframe=0;
       }
       break;
 
-   case ua_showanim:
-      break;
-
-   case ua_endseq:
+      // finished
+   case 5:
       // start next screen
       if (core->get_settings().gtype == ua_game_uw_demo)
       {
@@ -295,20 +267,6 @@ void ua_start_splash_screen::tick()
       }
       else
          core->replace_screen(new ua_start_menu_screen);
-
       break;
-   }
-
-   if (is_animation)
-   {
-      // check if we have to do a new animation frame
-      if (++animcount >= (core->get_tickrate()/ua_splash_anim_framerate))
-      {
-         // do next frame
-         curframe++;
-         animcount=0;
-         if (curframe>=cuts.get_maxframes()-2)
-            curframe=0;
-      }
    }
 }

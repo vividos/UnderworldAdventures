@@ -65,16 +65,10 @@ protected:
    //! count of ticks since last stage-start
    unsigned int tickcount;
 
-   //! indicates if the current image is already loaded
-   bool img_loaded;
-
-   //! indicates if next stage features a cutscene animation
-   bool is_animation;
-
-   //! current image
+   //! current still image
    ua_image img;
 
-   //! texture object for current image
+   //! texture object for current image / anim
    ua_texture tex;
 
    //! current cutscene
@@ -83,11 +77,8 @@ protected:
    //! current animation frame
    unsigned int curframe;
 
-   //! animation frame count
-   unsigned int animcount;
-
-   //! splash sequence list to use
-   struct ua_start_splash_sequence *splash_seq;
+   //! animation time count
+   double animcount;
 };
 
 #endif
