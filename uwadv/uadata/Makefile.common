@@ -26,9 +26,12 @@ modelFILES = uw1/model3d.cfg \
 	models/static/textures/wdchest.tga \
 	models/static/textures/wood.tga
 
-uarFILES = $(luaOBJECTS) \
+uarEXTRA = \
 	uw1/scripts/uwinit.txt \
 	uw1/audio/music.m3u \
-	uw1/audio/music-fallback.m3u
-	uw1/keymap.cfg \
+	uw1/audio/music-fallback.m3u \
+	uw1/keymap.cfg
+
+uarFILES = $(luaOBJECTS) \
+	$(uarEXTRA) \
 	$(modelFILES)

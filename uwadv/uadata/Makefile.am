@@ -13,7 +13,9 @@ uadata_DATA = uadata00.uar uw1/keymap.cfg
 uadatadir = $(datadir)/games/uwadv
 
 EXTRA_DIST = \
-	$(uarFILES) \
+	$(luaSCRIPTS) \
+	$(modelFILES) \
+	$(uarEXTRA) \
 	Makefile.common
 
 CLEANFILES = \
