@@ -29,9 +29,15 @@
 #include "common.hpp"
 #include "underworld.hpp"
 #include "uamath.hpp"
+#include "import.hpp"
 
 
 // ua_underworld methods
+
+ua_underworld::ua_underworld()
+:callback(NULL)
+{
+}
 
 void ua_underworld::init(ua_settings& settings, ua_files_manager& filesmgr)
 {
@@ -50,7 +56,7 @@ void ua_underworld::init(ua_settings& settings, ua_files_manager& filesmgr)
 
    questflags.resize(0x0040,0);
 
-   properties.init(settings);
+   properties.import(settings);
 
    // load game strings
    ua_trace("loading game strings ... ");
@@ -75,6 +81,12 @@ void ua_underworld::eval_underworld(double time)
 //TODO   script.lua_game_tick(time);
 
    check_move_trigger();
+}
+
+bool ua_underworld::user_action(ua_underworld_user_action action,
+   unsigned int param)
+{
+   return true;
 }
 
 ua_level &ua_underworld::get_current_level()
@@ -214,13 +226,16 @@ void ua_underworld::save_game(ua_savegame &sg)
    sg.close();
 }
 
-extern void ua_import_levelmaps(ua_settings &settings, const char *folder,
-   std::vector<ua_level> &levels);
-
-void ua_underworld::import_savegame(ua_settings &settings,const char *folder,bool initial)
+void ua_underworld::import_savegame(ua_settings& settings,const char* folder,bool initial)
 {
+   ua_uw1_import uw1import;
+   ua_uw2_import uw2import;
+
+   ua_uw_import& uwimport = (settings.get_gametype() == ua_game_uw2) ?
+      (ua_uw_import&)uw2import : (ua_uw_import&)uw1import;
+
    // load level maps
-   ua_import_levelmaps(settings,folder,levels);
+   uwimport.load_levelmaps(levels,settings,folder);
 
    // load conv globals
    {
@@ -232,7 +247,7 @@ void ua_underworld::import_savegame(ua_settings &settings,const char *folder,boo
 
    // load player infos
    if (!initial)
-      player.import_player(settings,folder);
+      uwimport.load_player(player,folder);
 
    // reload level
    change_level(player.get_attr(ua_attr_maplevel));
