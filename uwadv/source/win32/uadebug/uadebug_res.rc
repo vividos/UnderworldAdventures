@@ -1,0 +1,8 @@
+
+uadebug ICON "Des.ico"
+
+#include "wx/msw/wx.rc"
+
+new BITMAP "new.bmp"
+open BITMAP "open.bmp"
+save BITMAP "save.bmp"
