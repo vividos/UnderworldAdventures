@@ -172,10 +172,23 @@ int main(int argc, char* argv[])
          fprintf(out,"link1=%04x ",(objval[1] & (0x3ff<<6))>>6);
          fprintf(out,"unk2=%02x ",(objval[1] & (0x3f<<16))>>16);
          fprintf(out,"quan/link2=%04x ",(objval[1] & (0x3ff<<22))>>22);
-         fprintf(out,"desc=%s\n",gs.get_string(3,objval[0] & 0x000001ff).c_str());
 
-         if (n<0x0100)
-            fseek(fd,0x1b-8,SEEK_CUR);
+         if (n<0x100)
+         {
+            fprintf(out,"- ");
+
+            unsigned char npcinfo[19];
+            fread(npcinfo,1,19,fd);
+
+            // dump NPC info
+            for(int c=0; c<19; c++)
+               fprintf(out,"%02x ",(unsigned int)npcinfo[c]);
+
+            if (npcinfo[18]>0)
+               fprintf(out,"name=%-25s ",gs.get_string(6,npcinfo[18]+16).c_str());
+         }
+
+         fprintf(out,"desc=%s\n",gs.get_string(3,objval[0] & 0x000001ff).c_str());
       }
       fprintf(out,"\n");
    }
