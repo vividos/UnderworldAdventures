@@ -53,8 +53,8 @@ void ua_inventory::init()
    // init with some stuff
    for(unsigned int i=0; i<ua_slot_max+4; i++)
    {
-      itemlist.at(i).item_id = test_inv[i];
-      itemlist.at(i).link1 = 0;
+      itemlist[i].item_id = test_inv[i];
+      itemlist[i].link1 = 0;
    }
 
    // set some container links
@@ -72,7 +72,7 @@ Uint16 ua_inventory::get_slot_item(unsigned int index)
    if (index>=slot_links.size())
       return ua_slot_no_item;
 
-   return slot_links.at(index);
+   return slot_links[index];
 }
 
 ua_object_info &ua_inventory::get_item(Uint16 index)
@@ -80,7 +80,7 @@ ua_object_info &ua_inventory::get_item(Uint16 index)
    if (index>=itemlist.size())
       throw ua_exception("inventory: illegal item list access");
 
-   return itemlist.at(index);
+   return itemlist[index];
 }
 
 unsigned int ua_inventory::get_num_slots()
@@ -94,7 +94,7 @@ Uint16 ua_inventory::get_container_item()
       return ua_slot_no_item; // topmost
 
    unsigned int top = container_stack.size()-1;
-   return container_stack.at(top);
+   return container_stack[top];
 }
 
 Uint16 ua_inventory::get_container_item_id()
@@ -154,7 +154,7 @@ bool ua_inventory::float_item_slot(Uint16 slot_index)
    if (slot_index>=slot_links.size())
       return false;
 
-   return float_item(slot_links.at(slot_index));
+   return float_item(slot_links[slot_index]);
 }
 
 bool ua_inventory::float_item(Uint16 index)
@@ -199,7 +199,7 @@ bool ua_inventory::drop_floating_item_slot(Uint16 slot_index)
    if (slot_index>slot_links.size()/* || slot_index>=get_container_max_size()*/)
       return false;
 
-   Uint16 item = slot_links.at(slot_index);
+   Uint16 item = slot_links[slot_index];
 
    if (slot_index==slot_links.size())
    {
@@ -321,7 +321,7 @@ bool ua_inventory::drop_floating_item_parent()
    if (container_stack.size()>1)
    {
       // dropping to parent container that is not the topmost one
-      unsigned int parent = container_stack.at(container_stack.size()-2);
+      unsigned int parent = container_stack[container_stack.size()-2];
 
       // follow link1 list to last object
       Uint16 link1 = get_item(parent).quantity;
@@ -391,7 +391,7 @@ Uint16 ua_inventory::allocate_item()
    unsigned int max = itemlist.size();
    for(unsigned int i = ua_slot_max; i<max; i++)
    {
-      if (itemlist.at(i).item_id == ua_slot_no_item)
+      if (itemlist[i].item_id == ua_slot_no_item)
       {
          // found one
          item = i;
@@ -408,19 +408,19 @@ void ua_inventory::unlink_object(Uint16 item)
    unsigned int max = slot_links.size();
    for(unsigned int i=0; i<max; i++)
    {
-      if (slot_links.at(i)==item)
+      if (slot_links[i]==item)
       {
          if (i==0)
          {
             // was first object; fix link2 in container
             ua_object_info &cont = get_item(get_container_item());
-            cont.quantity = get_item(slot_links.at(i)).link1;
+            cont.quantity = get_item(slot_links[i]).link1;
          }
          else
          {
             // fix link1 in previous object
-            ua_object_info &obj = get_item(slot_links.at(i-1));
-            obj.link1 = get_item(slot_links.at(i)).link1;
+            ua_object_info &obj = get_item(slot_links[i-1]);
+            obj.link1 = get_item(slot_links[i]).link1;
          }
          break;
       }
