@@ -116,6 +116,11 @@ void ua_model3d_manager::load_value(const std::string& name, const std::string& 
       if (model_path.find("%uadata%") == 0)
       {
          model_path.erase(0,8);
+
+         // remove slash when needed
+         if (model_path.find_first_of("\\/")==0)
+            model_path.erase(0,1);
+
          rwops = core->get_filesmgr().get_uadata_file(model_path.c_str());
       }
       else
