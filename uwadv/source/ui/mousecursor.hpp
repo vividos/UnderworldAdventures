@@ -83,6 +83,9 @@ protected:
 
    //! texture object for mouse
    ua_texture mousetex;
+
+   //! indicates if mouse cursor is drawn using smooth (filtered) pixels
+   bool smooth_ui;
 };
 
 

@@ -44,6 +44,8 @@ void ua_mousecursor::init(ua_game_interface& game, unsigned int initialtype)
 
    isvisible = false;
    set_type(initialtype);
+
+   smooth_ui = game.get_settings().get_bool(ua_setting_ui_smooth);
 }
 
 void ua_mousecursor::show(bool show)
@@ -97,8 +99,8 @@ void ua_mousecursor::draw()
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, smooth_ui ? GL_LINEAR : GL_NEAREST);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, smooth_ui ? GL_LINEAR : GL_NEAREST);
 
    glBegin(GL_QUADS);
    glTexCoord2d(0.0, v  ); glVertex2i(wnd_xpos,           200-wnd_ypos);
