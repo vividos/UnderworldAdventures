@@ -35,7 +35,7 @@
 #include "acknowledgements.hpp"
 //#include "create_character.hpp"
 //#include "ingame_orig.hpp"
-//#include "save_game.hpp"
+#include "save_game.hpp"
 
 
 // constants
@@ -83,6 +83,7 @@ void ua_start_menu_screen::resume()
 
    game->get_renderer().setup_camera2d();
 
+   glDisable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
    img_screen.update();
@@ -91,7 +92,7 @@ void ua_start_menu_screen::resume()
 
    // set other flags/values
    stage = 0;
-   journey_avail = game->get_savegames_manager().get_savegames_count() > 0;
+   journey_avail = true;//game->get_savegames_manager().get_savegames_count() > 0;
    selected_area = -1;
    shiftcount = 0.0;
    reupload_image = true;
@@ -140,11 +141,10 @@ void ua_start_menu_screen::draw()
    glColor3ub(light,light,light);
 
    // render screen image and mouse
-   glDisable(GL_BLEND);
    img_screen.draw();
 
    // draw subwindows
-   glEnable(GL_BLEND);
+//   glEnable(GL_BLEND);
    ua_screen::draw();
 }
 
@@ -257,7 +257,7 @@ void ua_start_menu_screen::press_button()
       if (journey_avail)
       {
          // "load game" screen (with later starting "orig. ingame ui")
-         //game->replace_screen(new ua_save_game_screen(true),true);
+         game->replace_screen(new ua_save_game_screen(true),true);
       }
       break;
    }
@@ -276,6 +276,9 @@ void ua_start_menu_screen::mouse_event(bool button_clicked, bool left_button, bo
       else if (mousey < 153) area = 2;
       else area = 3;
    }
+
+   if (area == 3 && !journey_avail)
+      return;
 
    // a button click action?
    if (button_clicked)
