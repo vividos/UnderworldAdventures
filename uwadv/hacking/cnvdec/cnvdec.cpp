@@ -179,6 +179,8 @@ int main()
    unsigned int *offsets = new unsigned int[entries];
    fread(offsets,4,entries,fd);
 
+   int slotcount = 0;
+
    for(int i=0; i<entries; i++)
    {
       if (offsets[i]==0)
@@ -202,16 +204,17 @@ int main()
       unsigned short unknown2[3];
       fread(unknown2,2,3,fd);
 
-      fprintf(dest,"; unknown2: %04x %04x %04x\n;\n",
+      fprintf(dest,"; unk2=%04x, conv=%04x, init_stack=%04x\n",
          unknown2[0],unknown2[1],unknown2[2]);
 
-//      fprintf(dest,"; unknown2: %02x %02x %02x %02x %02x %02x\n;\n",
-//         unknown2[0],unknown2[1],unknown2[2],unknown2[3],unknown2[4],unknown2[5]);
+      fprintf(dest,"; string block to use: %u\n",slotcount+25);
 
       dump_import_funcs(fd,dest);
       decode_instructions(fd,dest,codesize);
 
       fprintf(dest,"; -----------------------------------------\n\n");
+
+      slotcount++;
    }
 
    fclose(dest);
