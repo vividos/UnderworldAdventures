@@ -447,7 +447,8 @@ clean: data-clean luac-clean
 		$(uwmdlview_EXEC) \
 		$(uwadv_OBJS) $(cnvdbg_OBJS) $(cnvdasm_OBJS) $(xmi2mid_OBJS) \
 		$(mapdisp_OBJS) $(animview_OBJS) $(strpak_OBJS) \
-		$(uaconfig_OBJS) $(libuatools_OBJS) $(uwdump_OBJS)
+		$(uaconfig_OBJS) $(libuatools_OBJS) $(uwdump_OBJS) \
+		$(uwmdlview_OBJS)
 
 
 #
