@@ -30,6 +30,7 @@
 #define uwadv_uwadv_hpp_
 
 // needed includes
+/*
 #include <vector>
 #include "settings.hpp"
 #include "texture.hpp"
@@ -39,12 +40,12 @@
 #include "critter.hpp"
 #include "models.hpp"
 #include "screen.hpp"
-
+*/
 
 // classes
 
 //! main game class
-class ua_game: public ua_game_core_interface
+class ua_uwadv_game
 {
 public:
    //! ctor
@@ -54,7 +55,7 @@ public:
    virtual void init();
 
    //! parses command line arguments
-   void parse_args(unsigned int argc, const char**argv);
+   void parse_args(unsigned int argc, const char** argv);
 
    //! runs the game's main loop
    void run();
@@ -63,9 +64,10 @@ public:
    virtual void done();
 
    //! shows the user an error message
-   virtual void error_msg(const char *msg);
+   virtual void error_msg(const char* msg);
 
 protected:
+/*
    //! controls how many ticks per second are done
    const unsigned int tickrate;
 
@@ -118,7 +120,7 @@ protected:
    ua_ui_screen_base* screen_to_destroy;
 
    //! action to carry out after init
-   /*! actions: 0=normal game start, 1=load savegame, 2=load custom game */
+   / *! actions: 0=normal game start, 1=load savegame, 2=load custom game * /
    unsigned int init_action;
 
    //! savegame to load
@@ -161,6 +163,16 @@ private:
 
    //! renders the screen
    void draw_screen();
+*/
 };
+
+
+// macros
+
+#define ua_uwadv_game_implement(gameclass) \
+   ua_uwadv_game* ua_game_create(){ \
+      return new gameclass; \
+   }
+
 
 #endif

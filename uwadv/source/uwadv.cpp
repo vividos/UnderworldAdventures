@@ -28,12 +28,14 @@
 // needed includes
 #include "common.hpp"
 #include "uwadv.hpp"
+/*
 #include "gamecfg.hpp"
 #include "screens/uwadv_menu.hpp"
 #include "screens/ingame_orig.hpp"
 #include "screens/start_splash.hpp"
 #include <iostream>
 #include <ctime>
+*/
 
 
 // tables
@@ -59,7 +61,7 @@ ua_arg_entry arg_params[] =
    { ua_arg_game, "g", "game", 1 },
 };
 
-
+/*
 // ua_game methods
 
 ua_game::ua_game():tickrate(20),exit_game(false),
@@ -75,9 +77,9 @@ ua_game::ua_game():tickrate(20),exit_game(false),
 
    srand((unsigned)time(NULL));
 }
-
-void ua_game::init()
-{
+*/
+void ua_uwadv_game::init()
+{/*
    ua_trace("initializing game\n");
 
    // output SDL version number
@@ -213,6 +215,7 @@ void ua_game::init()
    SDL_ShowCursor(0);
 
    screenstack.clear();
+*/
 }
 
 /*! reads in command line arguments
@@ -222,7 +225,8 @@ void ua_game::init()
     longopt is the string that is used for the long option
     numparams specifies how many parameters are used for the specific option
 */
-void ua_game::parse_args(unsigned int argc, const char** argv)
+
+void ua_uwadv_game::parse_args(unsigned int argc, const char** argv)
 {
    ua_trace("parsing command line arguments\n");
 
@@ -251,8 +255,8 @@ void ua_game::parse_args(unsigned int argc, const char** argv)
          // TODO support "" arguments
 
          // user specified a savegame to load
-         init_action = 1;
-         savegame_name = arg;
+//         init_action = 1;
+//         savegame_name = arg;
          continue;
       }
 
@@ -303,8 +307,8 @@ void ua_game::parse_args(unsigned int argc, const char** argv)
          break;
 
       case ua_arg_game:
-         init_action = 2;
-         custom_game_prefix = argv[i+1];
+//         init_action = 2;
+//         custom_game_prefix = argv[i+1];
          break;
       }
 
@@ -313,10 +317,10 @@ void ua_game::parse_args(unsigned int argc, const char** argv)
    }
 }
 
-#define HAVE_FRAMECOUNT
+//#define HAVE_FRAMECOUNT
 
-void ua_game::run()
-{
+void ua_uwadv_game::run()
+{/*
    switch(init_action)
    {
    case 0: // normal start
@@ -444,10 +448,11 @@ void ua_game::run()
    }
 
    ua_trace("main loop ended\n\n");
+*/
 }
 
-void ua_game::done()
-{
+void ua_uwadv_game::done()
+{/*
    // free current screen
    if (screen!=NULL)
    {
@@ -467,16 +472,17 @@ void ua_game::done()
 
    underworld.done();
 
-   delete audio;
+   delete audio;*/
    SDL_Quit();
 }
 
-void ua_game::error_msg(const char *msg)
+void ua_uwadv_game::error_msg(const char* msg)
 {
-   std::cerr << msg << std::endl;
+   ua_trace(msg);
+   //std::cerr << msg << std::endl;
 }
 
-
+/*
 // private ua_game methods
 
 void ua_game::process_events()
@@ -682,3 +688,4 @@ void ua_game::pop_screen()
    // reset tick timer
    reset_tick_timer = true;
 }
+*/
