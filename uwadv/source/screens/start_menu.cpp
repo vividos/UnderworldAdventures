@@ -45,6 +45,8 @@ const double ua_start_menu_palette_shifts_per_second = 20.0;
 
 void ua_start_menu_screen::init()
 {
+   ua_trace("start menu screen started\n");
+
    // setup orthogonal projection
    glMatrixMode(GL_PROJECTION);
    glLoadIdentity();

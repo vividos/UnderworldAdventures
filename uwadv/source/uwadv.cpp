@@ -29,6 +29,10 @@
 #include "common.hpp"
 #include "uwadv.hpp"
 #include "screens/start_splash.hpp"
+#ifdef _DEBUG
+ #include "screens/ingame_orig.hpp"
+ #include "screens/start_menu.hpp"
+#endif
 
 
 // ua_game methods
@@ -42,6 +46,8 @@ ua_game::ua_game():tickrate(20),exit_game(false),audio(NULL),screen(NULL),
 
 void ua_game::init()
 {
+   ua_trace("initializing game\n");
+
    // load settings
    settings.load();
 
@@ -90,6 +96,8 @@ void ua_game::init()
    int bpp = info->vfmt->BitsPerPixel;
    int flags = SDL_OPENGL | (settings.fullscreen ? SDL_FULLSCREEN : 0);
 
+   ua_trace("setting video mode%s\n",settings.fullscreen ? ", fullscreen" : "");
+
    if(SDL_SetVideoMode(width, height, bpp, flags)==0)
    {
       std::string text("video mode set failed: ");
@@ -118,14 +126,20 @@ void ua_game::init()
 
    screenstack.clear();
 
-   // create new user interface screen
+#ifdef _DEBUG
+   push_screen(new ua_start_menu_screen);
+//   push_screen(new ua_ingame_orig_screen);
+#else
    push_screen(new ua_start_splash_screen);
+#endif
 }
 
 #define HAVE_FRAMECOUNT
 
 void ua_game::run()
 {
+   ua_trace("\nmain loop started\n");
+
    Uint32 now, then;
    Uint32 fcstart;
    fcstart = then = SDL_GetTicks();
@@ -187,6 +201,8 @@ void ua_game::run()
       }
 #endif
    }
+
+   ua_trace("main loop ended\n\n");
 }
 
 void ua_game::done()

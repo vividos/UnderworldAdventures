@@ -35,6 +35,8 @@
 
 void ua_ingame_orig_screen::init()
 {
+   ua_trace("orig. ingame user interface started\n");
+
    walk = false;
    fov = 90.0;
    playeryangle = 0.0;

@@ -104,6 +104,8 @@ ua_start_splash_sequence ua_uw_demo_splash_seq[] =
 
 void ua_start_splash_screen::init()
 {
+   ua_trace("start splash screen started\n");
+
    // start intro midi music
    core->get_audio().start_music(0,true);
 
