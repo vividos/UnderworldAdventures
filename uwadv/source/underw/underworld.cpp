@@ -228,14 +228,10 @@ void ua_underworld::save_game(ua_savegame &sg)
 
 void ua_underworld::import_savegame(ua_settings& settings,const char* folder,bool initial)
 {
-   ua_uw1_import uw1import;
-   ua_uw2_import uw2import;
-
-   ua_uw_import& uwimport = (settings.get_gametype() == ua_game_uw2) ?
-      (ua_uw_import&)uw2import : (ua_uw_import&)uw1import;
+   ua_uw_import import;
 
    // load level maps
-   uwimport.load_levelmaps(levels,settings,folder);
+   import.load_levelmaps(levels,settings,folder);
 
    // load conv globals
    {
@@ -247,7 +243,7 @@ void ua_underworld::import_savegame(ua_settings& settings,const char* folder,boo
 
    // load player infos
    if (!initial)
-      uwimport.load_player(player,folder);
+      import.load_player(player,folder);
 
    // reload level
    change_level(player.get_attr(ua_attr_maplevel));
