@@ -48,13 +48,16 @@ class ua_image_quad: public ua_window
 {
 public:
    //! ctor
-   ua_image_quad():split_textures(false){}
+   ua_image_quad():split_textures(false),has_border(false){}
 
    //! initializes image quad window
    void init(ua_game_interface& game, unsigned int xpos, unsigned int ypos);
 
    //! returns image to draw
    ua_image& get_image();
+
+   //! adds border to image, taking border pixels from given image
+   void add_border(ua_image& border_img);
 
    //! updates internal texture when image was changed
    void update();
@@ -66,6 +69,9 @@ public:
 protected:
    //! the image to draw
    ua_image image;
+
+   //! indicates if image has border
+   bool has_border;
 
    //! image quad texture
    ua_texture tex;
