@@ -202,6 +202,108 @@ void parse_node(FILE* fd, FILE* log)
          loop = false;
          break;
 
+      case M3_UW_SORT_PLANE_ZY:
+         {
+            double sz, z, sy, y;
+
+            sz = read_float(fd);
+            z  = read_float(fd);
+            sy = read_float(fd);
+            y  = read_float(fd);
+
+            unsigned int left = read_int16(fd);
+            unsigned int left_ofs = left + ftell(fd);
+            unsigned int right = read_int16(fd);
+            unsigned int right_ofs = right + ftell(fd);
+
+            fprintf(log,"  SortNodeZY n=(0.0, %3.2f, %3.2f) x = (0.0, %3.2f, %3.2f)"
+               " left: %02x right: %02x\n",
+               sy,sz,y,z,left,right);
+
+            long pos = ftell(fd);
+
+            fprintf(log,"  LeftList start\n");
+            fseek(fd,left_ofs,SEEK_SET);
+            parse_node(fd,log);
+            fprintf(log,"  LeftList end\n");
+
+            fprintf(log,"  RightList start\n");
+            fseek(fd,right_ofs,SEEK_SET);
+            parse_node(fd,log);
+            fprintf(log,"  RightList end\n");
+
+            fseek(fd,pos,SEEK_SET);
+         }
+         break;
+
+      case M3_UW_SORT_PLANE_XY:
+         {
+            double sx, x, sy, y;
+
+            sx = read_float(fd);
+            x  = read_float(fd);
+            sy = read_float(fd);
+            y  = read_float(fd);
+
+            unsigned int left = read_int16(fd);
+            unsigned int left_ofs = left + ftell(fd);
+            unsigned int right = read_int16(fd);
+            unsigned int right_ofs = right + ftell(fd);
+
+            fprintf(log,"  SortNodeXY n=(%3.2f, %3.2f, 0.0) x = (%3.2f, %3.2f, 0.0)"
+               " left: %02x right: %02x\n",
+               sx,sy,x,y,left,right);
+
+            long pos = ftell(fd);
+
+            fprintf(log,"  LeftList start\n");
+            fseek(fd,left_ofs,SEEK_SET);
+            parse_node(fd,log);
+            fprintf(log,"  LeftList end\n");
+
+            fprintf(log,"  RightList start\n");
+            fseek(fd,right_ofs,SEEK_SET);
+            parse_node(fd,log);
+            fprintf(log,"  RightList end\n");
+
+            fseek(fd,pos,SEEK_SET);
+         }
+         break;
+
+      case M3_UW_SORT_PLANE_XZ:
+         {
+            double sx, x, sz, z;
+
+            sx = read_float(fd);
+            x  = read_float(fd);
+            sz = read_float(fd);
+            z  = read_float(fd);
+
+            unsigned int left = read_int16(fd);
+            unsigned int left_ofs = left + ftell(fd);
+            unsigned int right = read_int16(fd);
+            unsigned int right_ofs = right + ftell(fd);
+
+            fprintf(log,"  SortNodeXZ n=(%3.2f, 0.0, %3.2f) x = (%3.2f, 0.0, %3.2f)"
+               " left: %02x right: %02x\n",
+               sx,sz,x,z,left,right);
+
+            long pos = ftell(fd);
+
+            fprintf(log,"  LeftList start\n");
+            fseek(fd,left_ofs,SEEK_SET);
+            parse_node(fd,log);
+            fprintf(log,"  LeftList end\n");
+
+            fprintf(log,"  RightList start\n");
+            fseek(fd,right_ofs,SEEK_SET);
+            parse_node(fd,log);
+            fprintf(log,"  RightList end\n");
+
+            fseek(fd,pos,SEEK_SET);
+         }
+         break;
+
       case 0x14: // don't know what this is, might have to do with colour */
          {
             unsigned int vertno,vertno2;
@@ -214,6 +316,10 @@ void parse_node(FILE* fd, FILE* log)
             fprintf(log,"  Color vertex[%u] = { %02x, %02x ?? } => vertex[%u] ??\n",
                vertno, unk1, unk2, vertno2);
          }
+         break;
+
+      case 0x0040:
+         fprintf(log,"  Unk0040\n");
          break;
 
       case M3_UW_FACE_PLANE:
@@ -230,6 +336,16 @@ void parse_node(FILE* fd, FILE* log)
             fprintf(log, "  FacePlane { len = %04x } s=(%3.2f, %3.2f, %3.2f) x=(%3.2f, %3.2f, %3.2f)\n",
                face_len,sx,sy,sz,x,y,z);
          }
+         break;
+
+      case M3_UW_FACE_PLANE_ZY:
+         fprintf(log, "  FacePlaneXZ\n");
+         fseek(fd,2+2+2+2+2,SEEK_CUR);
+         break;
+
+      case M3_UW_FACE_PLANE_XY:
+         fprintf(log, "  FacePlaneXZ\n");
+         fseek(fd,2+2+2+2+2,SEEK_CUR);
          break;
 
       case M3_UW_FACE_PLANE_XZ:
