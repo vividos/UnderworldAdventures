@@ -4,6 +4,43 @@
 Here are listed the older releases for Underworld Adventures. All downloadable files can be found in the Sourceforge <a href="http://sourceforge.net/project/showfiles.php?group_id=50987">Project Files</a>.
 </p>
 
+<h3>music packs</h3>
+
+<p>
+The digital music pack is available here:
+</p>
+
+<ul>
+<li><a href="http://prdownloads.sourceforge.net/uwadv/uwadv-musicpack-1.zip?download" target="_blank">uwadv-musicpack-1.zip</a></li>
+</ul>
+
+<h3>mingw32 compile packs</h3>
+
+<p><a name="mingw-compile" id="mingw-compile">
+There are some packages that help setting up MinGW compilation:
+</a></p>
+
+<ul>
+ <li><a href="http://prdownloads.sourceforge.net/uwadv/uwadv-mingw32-source-setup-1.zip?download" target="_blank">needed files to compile Underworld Adventures using MinGW</a></li>
+ <li><a href="http://prdownloads.sourceforge.net/uwadv/uwadv-mingw32-installer-setup-1.zip?download" target="_blank">needed files to build an installer for Underworld Adventures</a></li>
+</ul>
+
+
+<h3>release 0.8-hot-chili</h3>
+
+<p>
+Released on 2003-04-24
+</p>
+
+<ul>
+ <li><a href="http://prdownloads.sourceforge.net/uwadv/uwadv-0.8_hot_chili.tar.gz?download" target="_blank">uwadv-0.8_hot_chili.tar.gz</a> (source code)</li>
+ <li><a href="http://prdownloads.sourceforge.net/uwadv/uwadv-0.8a-hot-chili-win32.exe?download" target="_blank">uwadv-0.8a-hot-chili-win32.exe</a> (Windows installer) [updated]</li>
+ <li><a href="http://prdownloads.sourceforge.net/uwadv/uwadv-0.8-hot-chili-tools-win32.zip?download" target="_blank">uwadv-0.8-hot-chili-tools-win32.zip</a> (Windows tools)</li>
+ <li><a href="http://prdownloads.sourceforge.net/uwadv/uwadv-0.8_hot_chili-1.i386.rpm?download" target="_blank">uwadv-0.8_hot_chili-1.i386.rpm</a> (Linux binary RPM)</li>
+ <li><a href="http://prdownloads.sourceforge.net/uwadv/uwadv-0.8_hot_chili-1.src.rpm?download" target="_blank">uwadv-0.8_hot_chili-1.src.rpm</a> (Linux source RPM)</li>
+ <li><a href="http://prdownloads.sourceforge.net/uwadv/uwadv_0.8a.0-HotChili-1_i386.deb?download" target="_blank">uwadv_0.8a.0-HotChili-1_i386.deb</a> (Debian binary package)</li>
+</ul>
+
 <h3>release 0.7-muffin</h3>
 
 <p>

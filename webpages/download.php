@@ -18,27 +18,26 @@ Latest source code is always available via the <a href="http://sourceforge.net/c
 </p>
 
 
-<h3>release 0.8-hot-chili</h3>
+<h3>release 0.9-mojito</h3>
 
 <p>
-Released on 2003-04-24
+Released on 2004-04-10
 </p>
 
 <ul>
- <li><a href="http://prdownloads.sourceforge.net/uwadv/uwadv-0.8_hot_chili.tar.gz?download" target="_blank">uwadv-0.8_hot_chili.tar.gz</a> (source code)</li>
- <li><a href="http://prdownloads.sourceforge.net/uwadv/uwadv-0.8a-hot-chili-win32.exe?download" target="_blank">uwadv-0.8a-hot-chili-win32.exe</a> (Windows installer) [updated]</li>
- <li><a href="http://prdownloads.sourceforge.net/uwadv/uwadv-0.8-hot-chili-tools-win32.zip?download" target="_blank">uwadv-0.8-hot-chili-tools-win32.zip</a> (Windows tools)</li>
- <li><a href="http://prdownloads.sourceforge.net/uwadv/uwadv-0.8_hot_chili-1.i386.rpm?download" target="_blank">uwadv-0.8_hot_chili-1.i386.rpm</a> (Linux binary RPM)</li>
- <li><a href="http://prdownloads.sourceforge.net/uwadv/uwadv-0.8_hot_chili-1.src.rpm?download" target="_blank">uwadv-0.8_hot_chili-1.src.rpm</a> (Linux source RPM)</li>
- <li><a href="http://prdownloads.sourceforge.net/uwadv/uwadv_0.8a.0-HotChili-1_i386.deb?download" target="_blank">uwadv_0.8a.0-HotChili-1_i386.deb</a> (Debian binary package)</li>
+ <li><a href="http://prdownloads.sourceforge.net/uwadv/uwadv-0.9_mojito.tar.gz?download" target="_blank">uwadv-0.9_mojito.tar.gz</a> (source code)</li>
+ <li><a href="http://prdownloads.sourceforge.net/uwadv/uwadv-0.9-mojito-win32.exe?download" target="_blank">uwadv-0.9-mojito-win32.exe</a> (win32 installer)</li>
+ <li><a href="http://prdownloads.sourceforge.net/uwadv/uwadv-0.9_mojito-1.i386.rpm?download" target="_blank">uwadv-0.9_mojito-1.i386.rpm</a> (Linux binary RPM)</li>
+ <li><a href="http://prdownloads.sourceforge.net/uwadv/uwadv-0.9_mojito-1.src.rpm?download" target="_blank">uwadv-0.9_mojito-1.src.rpm</a> (Linux source RPM)</li>
+ <!-- li><a href="" target="_blank"></a> (Debian binary package)</li -->
 </ul>
 
 <p>
-The digital music pack is available here:
+The updated digital music pack is available here:
 </p>
 
 <ul>
-<li><a href="http://prdownloads.sourceforge.net/uwadv/uwadv-musicpack-1.zip?download" target="_blank">uwadv-musicpack-1.zip</a></li>
+<li><a href="http://prdownloads.sourceforge.net/uwadv/uwadv-musicpack-2.zip?download" target="_blank">uwadv-musicpack-2.zip</a> (version 2)</li>
 </ul>
 
 <p><a name="mingw-compile" id="mingw-compile">
@@ -46,8 +45,8 @@ There are some packages that help setting up MinGW compilation:
 </a></p>
 
 <ul>
- <li><a href="http://prdownloads.sourceforge.net/uwadv/uwadv-mingw32-source-setup-1.zip?download" target="_blank">needed files to compile Underworld Adventures using MinGW</a></li>
- <li><a href="http://prdownloads.sourceforge.net/uwadv/uwadv-mingw32-installer-setup-1.zip?download" target="_blank">needed files to build an installer for Underworld Adventures</a></li>
+ <li><a href="http://prdownloads.sourceforge.net/uwadv/uwadv-mingw32-source-setup-2.zip?download" target="_blank">needed files to compile Underworld Adventures using MinGW, package version 2</a></li>
+ <li><a href="http://prdownloads.sourceforge.net/uwadv/uwadv-mingw32-installer-setup-2.zip?download" target="_blank">needed files to build an installer for Underworld Adventures, package version 2</a></li>
 </ul>
 
 
