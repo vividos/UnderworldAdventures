@@ -177,14 +177,14 @@ void ua_acknowledgements_screen::tick()
       cuts_ack.update_frame(++curframe);
       img_fadeout.update();
 
-      ua_trace("crossfading to frame %u\n",curframe);
+      //ua_trace("crossfading to frame %u\n",curframe);
       return;
    }
 
    if (stage==1 && fader.tick())
    {
       // fading complete; switch to showing image
-      ua_trace("showing frame %u\n",curframe);
+      //ua_trace("showing frame %u\n",curframe);
 
       if (ended)
          game->remove_screen();
