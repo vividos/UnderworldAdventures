@@ -123,7 +123,8 @@ void ua_start_splash_screen::render()
    glColor3ub(light,light,light);
 
    // draw first quad with screen background
-   tex.use();
+   ua_texture_manager &texmgr = core->get_texmgr();
+   tex.use(texmgr);
 
    glBegin(GL_QUADS);
    glTexCoord2d(0.0,tex.get_tex_v());
@@ -145,7 +146,7 @@ void ua_start_splash_screen::render()
    {
       // above background, draw font text
       glEnable(GL_BLEND);
-      tex2.use();
+      tex2.use(texmgr);
 
       float scale = 0.9f;
       int xpos=int((320-img2.get_xres()*scale)/2), ypos=3;
