@@ -1,9 +1,354 @@
-2002-04-10 22:50  vividos
+2002-04-29 14:08  vividos
 
-	* docs/: uw-formats.txt (1.1), uw1-walkthrough.txt (1.1),
-	uw2-walkthrough.txt (1.1):
+	* source/: inventory.cpp (1.1), inventory.hpp (1.1), player.hpp
+	(1.1), tools/instr.hpp (1.3), win32/uwadv.dsp (1.3):
 
-	initial import
+	added some more files
+	
+2002-04-29 14:08  vividos
+
+	* source/tools/: cnvdbg.cpp (1.4), cnvdbg.hpp (1.3):
+
+	added some more imported functions
+	removed loading of private globals (now done in ua_conv_code_vm)
+	
+2002-04-29 14:07  vividos
+
+	* source/: font.hpp (1.3), uatypes.hpp (1.3),
+	resource/fread_endian.hpp (1.2), win32/resource.h (1.2):
+
+	small changes
+	
+2002-04-29 14:07  vividos
+
+	* source/win32/: game_win32.cpp (1.2), game_win32.hpp (1.2),
+	main.cpp (1.3):
+
+	added error message function
+	
+2002-04-29 14:07  vividos
+
+	* source/screens/: ingame_orig.cpp (1.3), ingame_orig.hpp (1.3),
+	start_splash.cpp (1.2), start_splash.hpp (1.2):
+
+	updated screens; splash screen is now shown
+	
+2002-04-29 14:06  vividos
+
+	* source/: core.hpp (1.1), screen.hpp (1.3):
+
+	cvs commit screen.hpp core.hpp
+	
+2002-04-29 14:06  vividos
+
+	* source/resource/maploader.cpp (1.3):
+
+	game type is now considered when loading map
+	
+2002-04-29 14:06  vividos
+
+	* source/: settings.hpp (1.2), resource/settings.cpp (1.3):
+
+	added game type enum
+	
+2002-04-29 14:05  vividos
+
+	* source/: level.cpp (1.3), level.hpp (1.2):
+
+	class ua_levelmap now named ua_level
+	
+2002-04-29 14:05  vividos
+
+	* source/: texture.cpp (1.3), texture.hpp (1.3),
+	resource/texloader.cpp (1.3):
+
+	added ua_image to ua_texture conversion
+	added more ua_texture functionality
+	ua_palettes: removed aux palette stuff
+	
+2002-04-29 14:05  vividos
+
+	* source/: image.cpp (1.2), image.hpp (1.2):
+
+	changed ua_image interface somewhat
+	
+2002-04-29 14:05  vividos
+
+	* source/: underworld.cpp (1.2), underworld.hpp (1.2), uwadv.hpp
+	(1.3):
+
+	bigger overhaul: ua_underworld object now contains all underworld items/objects
+	
+2002-04-29 14:04  vividos
+
+	* source/uwadv.cpp (1.3):
+
+	simplified some stuff in the game class:
+	OpenGL modelview matrix must be set up by screen class now
+	
+2002-04-29 14:04  vividos
+
+	* source/: font.cpp (1.3), gamestrings.hpp (1.3), conv/codevm.cpp
+	(1.5), conv/codevm.hpp (1.5), resource/codeloader.cpp (1.5),
+	resource/fontloader.cpp (1.3), resource/gamestrings.cpp (1.4),
+	resource/imageloader.cpp (1.2):
+
+	added documentation
+	
+2002-04-29 14:03  vividos
+
+	* source/win32/tools.dsw (1.2):
+
+	added cnvdasm project
+	
+2002-04-29 13:40  vividos
+
+	* source/audio.hpp (1.3):
+
+	slight audio interface changes
+	
+2002-04-29 13:40  vividos
+
+	* source/audio/: audio.cpp (1.4), midi.cpp (1.5), midi.hpp (1.4),
+	midi_driver/uni_fmod.cpp (1.2), midi_driver/uni_fmod.h (1.2),
+	midi_driver/win_midiout.cpp (1.3):
+
+	slight audio interface changes
+	added more documentation
+	
+2002-04-29 01:15  vividos
+
+	* source/tools/: cnvdasm.cpp (1.2), cnvdasm.hpp (1.2):
+
+	more additions to asm opcode replacements
+	
+2002-04-26 00:13  vividos
+
+	* source/: tools/cnvdasm.cpp (1.1), tools/cnvdasm.hpp (1.1),
+	tools/instr.hpp (1.2), win32/cnvdasm.dsp (1.1):
+
+	added conv code disassembler and decompiler (produces C code, yay!)
+	
+2002-04-22 13:37  vividos
+
+	* source/: common.hpp (1.2), gamestrings.hpp (1.2), uatypes.hpp
+	(1.2), resource/gamestrings.cpp (1.3), win32/main.cpp (1.2):
+
+	many small changes and additions
+	
+2002-04-22 13:37  vividos
+
+	* source/win32/uwadv.dsp (1.2):
+
+	updated for new files
+	
+2002-04-22 13:36  vividos
+
+	* source/level.cpp (1.2):
+
+	now uses stock textures from texmgr
+	
+2002-04-22 13:36  vividos
+
+	* source/: uwadv.cpp (1.2), uwadv.hpp (1.2):
+
+	added fixed time steps for game logic, from:
+	http://www.flipcode.com/cgi-bin/msg.cgi?showThread=Tip-MainLoopTimeSteps&forum=totd&id=-1
+	
+2002-04-22 13:21  vividos
+
+	* source/: conv/codevm.cpp (1.4), conv/codevm.hpp (1.4),
+	resource/codeloader.cpp (1.4), tools/cnvdbg.cpp (1.3):
+
+	more work on the conversation debugger: added "info" and "reset" command, more enhancements
+	fixed some other minor bugs
+	
+2002-04-21 23:51  vividos
+
+	* source/tools/: cnvdbg.cpp (1.2), cnvdbg.hpp (1.2):
+
+	cleanup: conversations are now loaded in debugger
+	added imported function "babl_fmenu"
+	
+2002-04-21 23:51  vividos
+
+	* source/resource/codeloader.cpp (1.3):
+
+	added loader for conversation globals
+	
+2002-04-21 23:50  vividos
+
+	* source/conv/: codevm.cpp (1.3), codevm.hpp (1.3):
+
+	added private globals class
+	cleanup in ua_conv_code_vm
+	
+2002-04-21 15:30  vividos
+
+	* source/conv/: codevm.cpp (1.2), codevm.hpp (1.2):
+
+	added remaining two opcodes
+	added stack exception generation
+	
+2002-04-19 17:10  vividos
+
+	* source/: screen.hpp (1.2), screens/ingame_orig.cpp (1.2),
+	screens/ingame_orig.hpp (1.2):
+
+	changed screen to core interface
+	
+2002-04-19 17:09  vividos
+
+	* source/resource/: gamestrings.cpp (1.2), settings.cpp (1.2):
+
+	minor changes
+	
+2002-04-19 17:09  vividos
+
+	* source/resource/codeloader.cpp (1.2):
+
+	added calculation for string block to use
+	
+2002-04-19 17:08  vividos
+
+	* source/: font.cpp (1.2), font.hpp (1.2), resource/fontloader.cpp
+	(1.2):
+
+	added more font functionality
+	
+2002-04-19 17:07  vividos
+
+	* source/: texture.cpp (1.2), texture.hpp (1.2),
+	resource/maploader.cpp (1.2), resource/texloader.cpp (1.2):
+
+	changed texture manager to handle external textures as well as "stock" textures (for wall/floor)
+	
+2002-04-19 17:06  vividos
+
+	* source/screens/: start_splash.cpp (1.1), start_splash.hpp (1.1):
+
+	added splash screen class
+	
+2002-04-19 17:06  vividos
+
+	* source/: image.cpp (1.1), image.hpp (1.1),
+	resource/imageloader.cpp (1.1):
+
+	added image handling class
+	
+2002-04-19 16:55  vividos
+
+	* source/: level.cpp (1.1), level.hpp (1.1), levelmap.cpp (1.2),
+	levelmap.hpp (1.2), screen.hpp (1.1), screenbase.hpp (1.2),
+	settings.cpp (1.2), resource/settings.cpp (1.1):
+
+	renamed and moved some files; no changes
+	
+2002-04-17 14:21  vividos
+
+	* source/audio/: audio.cpp (1.3), midi.cpp (1.4), midi.hpp (1.3),
+	xmidi.cpp (1.7), xmidi.hpp (1.5):
+
+	midi properties are now settable via ua_midi_player
+	
+2002-04-16 19:10  vividos
+
+	* source/audio/: midi.cpp (1.3), midi_driver/uni_fmod.cpp (1.1),
+	midi_driver/uni_fmod.h (1.1):
+
+	added fmod midi driver
+	
+2002-04-15 23:23  vividos
+
+	* source/audio/xmidi.cpp (1.6):
+
+	removed calls to SDL_FreeRW()
+	done a bit cleanup
+	
+2002-04-11 23:13  vividos
+
+	* source/audio/xmidi.cpp (1.5):
+
+	fixed writing of midi header
+	
+2002-04-11 23:05  vividos
+
+	* source/: tools/xmi2mid.cpp (1.1), win32/tools.dsw (1.1),
+	win32/uwadv.dsw (1.2), win32/xmi2mid.dsp (1.1):
+
+	added xmidi to midi project
+	moved tools to own workspace
+	
+2002-04-11 22:28  vividos
+
+	* source/audio/: xmidi.cpp (1.4), xmidi.hpp (1.4):
+
+	re-added MIDI writing via XMIDIEventList::Write()
+	fixed endian handling for SDL_RWops helper functions
+	
+2002-04-11 18:02  vividos
+
+	* source/: common.hpp (1.1), font.cpp (1.1), font.hpp (1.1),
+	gamestrings.hpp (1.1), levelmap.cpp (1.1), levelmap.hpp (1.1),
+	screenbase.hpp (1.1), settings.cpp (1.1), settings.hpp (1.1),
+	texture.cpp (1.1), texture.hpp (1.1), uatypes.hpp (1.1),
+	underworld.cpp (1.1), underworld.hpp (1.1), uwadv.cpp (1.1),
+	uwadv.hpp (1.1), conv/codevm.cpp (1.1), conv/codevm.hpp (1.1),
+	resource/codeloader.cpp (1.1), resource/fontloader.cpp (1.1),
+	resource/fread_endian.hpp (1.1), resource/gamestrings.cpp (1.1),
+	resource/maploader.cpp (1.1), resource/texloader.cpp (1.1),
+	screens/ingame_orig.cpp (1.1), screens/ingame_orig.hpp (1.1),
+	tools/cnvdbg.cpp (1.1), tools/cnvdbg.hpp (1.1), tools/instr.hpp
+	(1.1), win32/.cvsignore (1.1), win32/Uus.ico (1.1),
+	win32/cnvdbg.dsp (1.1), win32/game_win32.cpp (1.1),
+	win32/game_win32.hpp (1.1), win32/main.cpp (1.1), win32/resource.h
+	(1.1), win32/uwadv.cfg (1.1), win32/uwadv.dsp (1.1),
+	win32/uwadv.dsw (1.1), win32/uwadv.nsi (1.1), win32/uwadv.rc (1.1):
+
+	added remaining source files
+	
+2002-04-11 17:58  vividos
+
+	* source/: audio.hpp (1.2), audio/audio.cpp (1.2), audio/midi.cpp
+	(1.2), audio/midi.hpp (1.2), audio/xmidi.cpp (1.3), audio/xmidi.hpp
+	(1.3):
+
+	included common.hpp
+	
+2002-04-11 11:59  vividos
+
+	* source/: audio.hpp (1.1), audio/audio.cpp (1.1), audio/midi.cpp
+	(1.1), audio/midi.hpp (1.1):
+
+	added rest of audio files
+	
+2002-04-11 11:57  vividos
+
+	* source/audio/: xmidi.cpp (1.2), xmidi.hpp (1.2),
+	midi_driver/win_midiout.cpp (1.2), midi_driver/win_midiout.h (1.2):
+
+	updated with hacked-on files; dependencies on other exult stuff is removed
+	SDL_RWops is used instead of exult's DataSource class
+	
+2002-04-11 11:55  vividos
+
+	* source/audio/: xmidi.cpp (1.1), xmidi.hpp (1.1),
+	midi_driver/win_midiout.cpp (1.1), midi_driver/win_midiout.h (1.1):
+
+	added xmidi and win_midiout drivers from exult project
+	files are from the source rc1 package
+	
+2002-04-11 11:49  vividos
+
+	* .cvsignore (1.1):
+
+	added hacking projects
+	
+2002-04-10 22:52  vividos
+
+	* ChangeLog (1.1):
+
+	always created with `cvs2cl.pl -r -S --no-wrap --gmt'
 	
 2002-04-10 22:32  vividos
 
