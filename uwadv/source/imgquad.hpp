@@ -55,6 +55,9 @@ public:
    //! cleans up image quad
    void done();
 
+   //! returns image quad palette
+   ua_onepalette& get_quadpalette();
+
 protected:
    //! image quad texture
    ua_texture tex;
@@ -68,5 +71,13 @@ protected:
    //! image quad palette
    ua_onepalette quadpalette;
 };
+
+
+// inline methods
+
+inline ua_onepalette& ua_image_quad::get_quadpalette()
+{
+   return quadpalette;
+}
 
 #endif
