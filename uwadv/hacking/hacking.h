@@ -19,7 +19,7 @@
    $Id$
 
 */
-// specifies common hacking stuff
+// common hacking include stuff
 
 #ifndef __uwadv_hacking_h_
 #define __uwadv_hacking_h_
@@ -28,7 +28,9 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 #include <io.h>
+
 #include <string>
 #include <vector>
 #include <map>
