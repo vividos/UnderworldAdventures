@@ -1395,7 +1395,29 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
          bool isobj;
 
          renderer.select_pick(x,y,tilex,tiley,isobj,id);
-//         hit = ((id+(isobj?0:0x0400))<<16) | (tilex << 8) | tiley;
+
+         if (isobj)
+         {
+            // user clicked on an object
+            Uint32 level = core->get_underworld().get_player().get_attr(ua_attr_maplevel);
+            core->get_underworld().get_scripts().lua_objlist_look(level,id);
+         }
+         else
+         {
+            // user clicked on a texture
+
+            unsigned int texid = id;
+
+            if (id>=ua_tex_stock_floor)
+               texid = 510-(id-ua_tex_stock_floor);
+
+            std::string desc("You see ");
+            desc.append(core->get_underworld().get_strings().get_string(10,texid));
+
+            ui_print_string(desc.c_str());
+
+            //core->get_underworld().get_scripts().lua_wall_look();
+         }
       }
    }
 }
