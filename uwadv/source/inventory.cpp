@@ -289,6 +289,27 @@ bool ua_inventory::drop_floating_item(Uint16 index)
 
    ua_object_info &obj = get_item(index);
 
+   // check if object can be placed in that slot
+   {
+      // get inventory object category
+      ua_inv_item_category cat =
+         underw->get_scripts().lua_inventory_categorize_item(
+            get_item(floating_object).item_id);
+
+      // check for rings
+      if ( (index == ua_slot_rightfinger || index == ua_slot_leftfinger ) &&
+         cat != ua_inv_cat_ring)
+            return false;
+
+      // check for paperdoll items
+      if ( (index==ua_slot_paperdoll_head && cat != ua_inv_cat_head) ||
+           (index==ua_slot_paperdoll_chest && cat != ua_inv_cat_chest) ||
+           (index==ua_slot_paperdoll_hands && cat != ua_inv_cat_hands) ||
+           (index==ua_slot_paperdoll_legs &&  cat != ua_inv_cat_legs) ||
+           (index==ua_slot_paperdoll_feet &&  cat != ua_inv_cat_feet) )
+              return false;
+   }
+
    if (obj.item_id == ua_slot_no_item)
    {
       // object place isn't used; just drop the floating item to that spot
@@ -322,27 +343,6 @@ bool ua_inventory::drop_floating_item(Uint16 index)
       else
       {
          // no, simple object
-
-         // check if object can be placed in that slot
-         {
-            // get inventory object category
-            ua_inv_item_category cat =
-               underw->get_scripts().lua_inventory_categorize_item(
-                  get_item(floating_object).item_id);
-
-            // check for rings
-            if ( (index == ua_slot_rightfinger || index == ua_slot_leftfinger ) &&
-               cat != ua_inv_cat_ring)
-                  return false;
-
-            // check for paperdoll items
-            if ( (index==ua_slot_paperdoll_head && cat != ua_inv_cat_head) ||
-                 (index==ua_slot_paperdoll_chest && cat != ua_inv_cat_chest) ||
-                 (index==ua_slot_paperdoll_hands && cat != ua_inv_cat_hands) ||
-                 (index==ua_slot_paperdoll_legs &&  cat != ua_inv_cat_legs) ||
-                 (index==ua_slot_paperdoll_feet &&  cat != ua_inv_cat_feet) )
-                    return false;
-         }
 
          // check if objects can be combined
          {
