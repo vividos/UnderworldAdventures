@@ -12,12 +12,14 @@ Table of Contents
    1.1. Used libraries
    1.2. Code guidelines
    1.3. doxygen use
+   1.4. CVS use
+   1.5. Release procedure
 
    2. Basic uwadv stuff
    2.1. Game utility classes
    2.2. Os porter's guide
    2.3. Core interface
-   2.4. Screens explained
+   2.4. Screens mechanism
    2.5. Resource loading
 
    3. Underworld object
@@ -41,7 +43,7 @@ game, look into "README.Lua.txt".
 1.1. Used libraries
 
 Some libraries are used throughout the project, to gain some functionality
-that otherwise would be hard to gain, or to get a platform independent game.
+that otherwise would be hard to do, or to get a platform independent game.
 
 * OpenGL 1.1 (or greater)
   3D graphics rendering library
@@ -85,6 +87,73 @@ the entry point to the source code documentation. The file
 doxygen is available from here:
 
    http://www.doxygen.org/
+
+
+1.4. CVS use
+
+The source code and related files for Underworld Adventures is stored in CVS,
+using the SourceForge CVS repository services. Anonymous access:
+
+   cvs -d:pserver:anonymous@cvs.uwadv.sourceforge.net:/cvsroot/uwadv login
+   password:<return>
+
+   cvs -z9 -d:pserver:anonymous@cvs.uwadv.sourceforge.net:/cvsroot/uwadv co uwadv
+
+Developer access (requires SF account and project membership):
+
+   cvs -z9 -d:ext:<username>@cvs.uwadv.sourceforge.net:/cvsroot/uwadv co uwadv
+
+Once the project files are checked out and have a CVS folder, the -d option
+can be omitted. That also means that developer commits for anon-cvs checkouts
+are not possible.
+
+There are some CVS GUIs for Windows:
+
+* TortoiseCVS: http://www.tortoisecvs.org/
+  It works as shell extension for the Windows Explorer and has almost all
+  important cvs commands developers need. Unix-to-DOS line ending conversion
+  is done automatically.
+
+* WinCVS: http://www.wincvs.org/
+  Explorer-like browser interface for CVS, but a bit cumbersome to set up. It
+  has some specialities like version tree graph. Be sure to have unchecked the
+  option "Checkout text files with the Unix LF (0xa)" when checking out files.
+
+Occasionally the ChangeLog in the main project dir is updated from the cvs log
+messages. This is done using the perl script "cvs2cl.pl" available here:
+
+   http://www.red-bean.com/cvs2cl/
+
+The complete command to update the ChangeLog file is:
+
+   cvs2cl.pl -r -S --no-wrap --gmt
+
+
+1.5. Release procedure
+
+Here are the steps for a successful uwadv release:
+
+1. Think about the next funny release name
+
+2. Be sure that the project (uwadv, tools) compiles AND works on all systems
+   where build files exist. be sure to test against uw1 and uw_demo
+   for uwadv systems are: mingw32, MSVC, Linux configure.ac, Linux RPM
+
+3. Adjust version numbers in configure.ac
+
+4. Create latest ChangeLog and commit it
+
+5. Tag repository using "cvs rtag", using the release name as tag name
+
+6. Do a "make dist", using a fresh checkout using the tag name
+
+7. Upload source package to SourceForge
+
+8. Let the platform porters compile binary versions for distribution
+
+9. Update Underworld Adventures home page with latest news
+
+10. Send mails to news sites
 
 
 2. Basic uwadv stuff
@@ -142,12 +211,34 @@ to do certain things.
 
 * ua_texture_manager and ua_texture
 
-  todo
+  The ua_texture class can be used to store and upload textures to OpenGL.
+  Textures are usually of size 2^n x 2^m (where n and m are integral numbers).
+  The ua_texture class can be used in two ways; a) uploading texture once and
+  using it consecutively and b) uploading texture each rendered frame.
+
+  init() has to be called for every ua_texture object. The number of textures
+  (which must have the same size) can be specified, as well as the min. and
+  mag. filter method. To convert an ua_image to a texture, convert() can be
+  called, and the new 32-bit color pixels are stored in the texture (without
+  uploading it yet).
+
+  To let OpenGL know which texture to use next (for rendering or uploading),
+  call use(). upload() sends the texture to the graphics card (which may slow
+  down a bit).
+
+  After the call to use(), the usual OpenGL texture calls can be used.
+  get_tex_u() and get_tex_v() can be used to retrieve maximum u and v
+  coordinates in texture (e.g. when having a 50x50 image in a 64x64 texture).
+  When finished, done() should be called.
+
+  A pointer to a ua_texture_manager (which will be explained in detail later)
+  can be passed to init() to keep the texture manager informed about usage of
+  the texture.
 
   implementation: source/texture.hpp and .cpp, source/resource/texloader.cpp
 
 More utility classes that have to do with the game core can be found in
-chapter "2.3. Game core interface".
+chapter "2.3. Core interface".
 
 
 2.2. Os porter's guide
@@ -177,10 +268,27 @@ message to stderr.
 
 2.3. Core interface
 
-todo
+Here's a list of classes used in the core interface, followed by a more
+in-depth look at them:
+
+* ua_settings
+* ua_files_manager
+* ua_texture_manager
+* ua_gamestrings
+* ua_audio_interface
+* ua_game_core_interface
+
+2.3.1. Core interface classes
+
+* ua_settings
+
+  todo
+
+  implementation: source/settings.hpp and .cpp,
+  source/resource/settingsloader.cpp
 
 
-2.4. Screens explained
+2.4. Screens mechanism
 
 todo
 
