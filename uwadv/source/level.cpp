@@ -29,6 +29,7 @@
 #include "common.hpp"
 #include "level.hpp"
 #include <string>
+#include <cmath>
 
 
 // ua_level methods
@@ -60,6 +61,23 @@ float ua_level::get_floor_height(float xpos, float ypos)
       height = 0.f; // player shouldn't get there, though
       break;
 
+   case ua_tile_slope_n:
+      height = tile.floor*height_scale + 
+         float(tile.slope*height_scale)*fmod(ypos,1.0);
+      break;
+   case ua_tile_slope_s:
+      height = (tile.floor+tile.slope)*height_scale -
+         float(tile.slope*height_scale)*fmod(ypos,1.0);
+      break;
+   case ua_tile_slope_e:
+      height = tile.floor*height_scale +
+         float(tile.slope*height_scale)*fmod(xpos,1.0);
+      break;
+   case ua_tile_slope_w:
+      height = (tile.floor+tile.slope)*height_scale -
+         float(tile.slope*height_scale)*fmod(xpos,1.0);
+      break;
+
    case ua_tile_open:
    case ua_tile_diagonal_se:
    case ua_tile_diagonal_sw:
@@ -68,7 +86,6 @@ float ua_level::get_floor_height(float xpos, float ypos)
    default:
       height = tile.floor*height_scale;
       break;
-      // todo slope calculation
    };
 
    return height;
