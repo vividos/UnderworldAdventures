@@ -424,8 +424,7 @@ void ua_panel::inventory_click(
 
    // check if container
    if (item != ua_slot_no_item &&
-       inv.is_container(inv.get_item(item).item_id) &&
-       ingame_orig->get_gamemode() == ua_mode_default)
+       inv.is_container(inv.get_item(item).item_id))
    {
       // open container
       inv.open_container(item);
