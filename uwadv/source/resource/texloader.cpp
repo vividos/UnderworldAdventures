@@ -105,7 +105,7 @@ void ua_texture_manager::init(ua_settings &settings)
       // TODO paste images 218 to 223 and 302 into remaining space
 
       // convert to textures
-      objtex.init(this,2,GL_LINEAR,GL_LINEAR,GL_CLAMP,GL_CLAMP);
+      objtex.init(this,2,GL_LINEAR,GL_LINEAR);
       objtex.convert(part1,0);
       objtex.convert(part2,1);
 
