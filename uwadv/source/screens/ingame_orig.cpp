@@ -364,8 +364,6 @@ void ua_ingame_orig_screen::handle_event(SDL_Event &event)
 
    case SDL_MOUSEMOTION: // mouse has moved
       {
-         mousecursor.updatepos();
-
          // calculate cursor position
          int x,y;
          SDL_GetMouseState(&x,&y);
@@ -373,6 +371,8 @@ void ua_ingame_orig_screen::handle_event(SDL_Event &event)
          cursory = unsigned(double(y)/core->get_screen_height()*200.0);
 
          mouse_action(false,false,false);
+
+         mousecursor.updatepos(cursorx,cursory);
       }
       break;
 
@@ -1136,21 +1136,14 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
    {
       bool modified = false;
       if (cursorx<53)
-      { cursorx=54; modified=true; }
+         cursorx=54;
       if (cursorx>224)
-      { cursorx=224; modified=true; }
+         cursorx=224;
 
       if (cursory<20)
-      { cursory=21; modified=true; }
+         cursory=21;
       if (cursory>131)
-      { cursory=131; modified=true; }
-
-      if (modified)
-      {
-         Uint16 x = unsigned(cursorx*core->get_screen_width()/320.0);
-         Uint16 y = unsigned(cursory*core->get_screen_height()/200.0);
-         SDL_WarpMouse(x,y);
-      }
+         cursory=131;
    }
 
    ua_ingame_orig_area area = get_area(cursorx,cursory);
@@ -1227,6 +1220,11 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
                player.set_movement_mode(0,ua_move_slide);
                player.set_movement_mode(0,ua_move_rotate);
                player.set_movement_mode(0,ua_move_walk);
+
+               // set new mouse cursor position
+               Uint16 x = unsigned(cursorx*core->get_screen_width()/320.0);
+               Uint16 y = unsigned(cursory*core->get_screen_height()/200.0);
+               SDL_WarpMouse(x,y);
             }
          }
 
