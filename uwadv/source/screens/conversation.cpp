@@ -247,37 +247,45 @@ void ua_conversation_screen::draw()
 
    // render ui elements
    ua_screen::draw();
+
+   // render text edit window when available
+   if (state == ua_state_text_input)
+      textedit.draw();
 }
 
 bool ua_conversation_screen::process_event(SDL_Event& event)
 {
    if (ua_screen::process_event(event))
       return true;
-/*TODO
-   if (scroll_menu.handle_event(event) || scroll_conv.handle_event(event))
+
+   // process text input-specific events
+   if (state == ua_state_text_input)
    {
-      // in user input mode?
-      if (state == ua_state_wait_input)
+      // let text edit window process event
+      if (textedit.process_event(event))
+         return true;
+
+      // user event?
+      if (event.type == SDL_USEREVENT &&
+          (event.user.code == ua_event_textedit_finished ||
+           event.user.code == ua_event_textedit_aborted))
       {
-         // check if string was given
-         std::string answer;
-         if (scroll_menu.is_input_done(answer))
-         {
-            result_register = alloc_string(answer);
+         // get string
+         Uint16 answer_id = alloc_string(textedit.get_text());
+         code_vm.set_result_register(answer_id);
 
-            // continue processing
-            state = ua_state_running;
+         // continue processing code
+         state = ua_state_running;
 
-            // clear menu scroll
-            scroll_menu.clear_scroll();
+         textedit.done();
 
-            wait_count = unsigned(answer_wait_time * game.get_tickrate());
-         }
+         // clear menu scroll
+         scroll_menu.clear_scroll();
+
+         wait_count = unsigned(answer_wait_time * game.get_tickrate());
       }
-
-      return;
    }
-*/
+
    switch(event.type)
    {
    case SDL_KEYDOWN:
@@ -339,8 +347,8 @@ void ua_conversation_screen::tick()
 
    // execute code until finished, waiting for an action or have [MORE]
    // lines to scroll
-   while(state == ua_state_running)//TODO &&
-         //!scroll_menu.have_more_lines() && !scroll_conv.have_more_lines())
+   while(state == ua_state_running &&
+      !scroll_menu.is_waiting_more() && !scroll_conv.is_waiting_more())
    {
       if (!code_vm.step())
          state = ua_state_wait_end;
@@ -499,11 +507,13 @@ Uint16 ua_conversation_screen::external_func(const char* the_funcname,
    if (funcname.compare("babl_ask")==0)
    {
       // start user input mode
-/*TODO      scroll_menu.clear_scroll();
-      scroll_menu.print(">");
-      scroll_menu.enter_input_mode();*/
+      scroll_menu.clear_scroll();
 
-      state = ua_state_wait_input;
+      // init text edit
+      textedit.init(game, scroll_menu.get_xpos()+1, scroll_menu.get_ypos()+1,
+         scroll_menu.get_width(), 42, 1, 46,">");
+
+      state = ua_state_text_input;
 
    } else
 

@@ -38,6 +38,7 @@
 #include "textscroll.hpp"
 #include "mousecursor.hpp"
 #include "codevm.hpp"
+#include "textedit.hpp"
 #include "fading.hpp"
 
 
@@ -46,12 +47,12 @@
 //! conv screen state values
 enum ua_conv_screen_state
 {
-   ua_state_running=0,  // vm code can run
-   ua_state_wait_menu,  // waiting for menu selection
-   ua_state_wait_input, // waiting for string input
-   ua_state_wait_end,   // waiting for a key to end conversation
-   ua_state_fadein,     // fading in screen
-   ua_state_fadeout,    // fading out screen
+   ua_state_running=0,  //!< vm code can run
+   ua_state_wait_menu,  //!< waiting for menu selection
+   ua_state_wait_end,   //!< waiting for a key to end conversation
+   ua_state_text_input, //!< user currently can enter input text
+   ua_state_fadein,     //!< fading in screen
+   ua_state_fadeout,    //!< fading out screen
 };
 
 
@@ -112,6 +113,9 @@ protected:
 
    //! menu text scroll
    ua_textscroll scroll_menu;
+
+   //! text edit window for input
+   ua_textedit_window textedit;
 
    //! mouse cursor
    ua_mousecursor mousecursor;
