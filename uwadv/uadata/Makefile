@@ -9,15 +9,17 @@ all: uadata
 # all lua scripts
 
 lua_SCRIPTS = uw1/scripts/cutscene.lua \
+	uw1/scripts/createchar.lua \
 	uw1/scripts/inventory.lua \
 	uw1/scripts/objects.lua
 
 lua_OBJECTS = uw1/scripts/cutscene.lob \
+	uw1/scripts/createchar.lob \
 	uw1/scripts/inventory.lob \
 	uw1/scripts/objects.lob
 
 
-zip_DATA = $(lua_OBJECTS)
+zip_DATA = $(lua_OBJECTS) uw1/scripts/uwinit.txt
 
 # various targets
 
@@ -27,7 +29,7 @@ uadata00.uar: $(lua_OBJECTS) $(lua_SCRIPTS)
 	zip uadata00.uar $(zip_DATA)
 
 clean:
-	rm -f $(zip_DATA) uadata00.uar
+	rm -f $(lua_OBJECTS) uadata00.uar
 
 
 # lua object (.lob) building rule
