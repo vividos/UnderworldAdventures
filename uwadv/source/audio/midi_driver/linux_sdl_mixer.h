@@ -40,13 +40,13 @@
 // classes
 
 //! SDL_mixer midi driver
-class sdl_mixer_driver : virtual public ua_midi_driver
+class ua_sdl_mixer_driver : virtual public ua_midi_driver
 {
 public:
    //! ctor
-   sdl_mixer_driver();
+   ua_sdl_mixer_driver();
    //! dtor
-   virtual ~sdl_mixer_driver();
+   virtual ~ua_sdl_mixer_driver();
 
    //! initializes driver
    virtual bool init_driver();

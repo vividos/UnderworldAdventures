@@ -34,40 +34,39 @@
 
 // needed includes
 #include "common.hpp"
-
-// only compile if SDL_MIXER support is wanted
-#ifdef HAVE_SDL_MIXER
-
 #include "linux_sdl_mixer.h"
 
 
-// sdl_mixer_driver methods
+// ua_sdl_mixer_driver methods
 
-sdl_mixer_driver::sdl_mixer_driver()
+ua_sdl_mixer_driver::ua_sdl_mixer_driver()
 {
    mod = NULL;
 }
 
-sdl_mixer_driver::~sdl_mixer_driver()
+ua_sdl_mixer_driver::~ua_sdl_mixer_driver()
 {
    // clean up
    stop_track();
-   Mix_CloseAudio();
+//   Mix_CloseAudio();
 }
 
-bool sdl_mixer_driver::init_driver()
+bool ua_sdl_mixer_driver::init_driver()
 {
-
+   // we don't need to call Mix_OpenAudio() here, since the audio class
+   // already did it
+/*
    // 44 Khz, , 2 channels (stereo), chunksize 
    if ( Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) != 0)
       {
       // this might be a critical error...
       printf("Mix_OpenAudio: %s\n", Mix_GetError());
       } 
-
+*/
+   return true;
 }
 
-void sdl_mixer_driver::start_track(XMIDIEventList *eventlist, bool repeat)
+void ua_sdl_mixer_driver::start_track(XMIDIEventList *eventlist, bool repeat)
 {
    stop_track();
 
@@ -102,7 +101,7 @@ void sdl_mixer_driver::start_track(XMIDIEventList *eventlist, bool repeat)
       }
 }
 
-void sdl_mixer_driver::stop_track()
+void ua_sdl_mixer_driver::stop_track()
 {
    if (mod!=NULL)
    {
@@ -113,9 +112,7 @@ void sdl_mixer_driver::stop_track()
    }
 }
 
-const char *sdl_mixer_driver::copyright()
+const char *ua_sdl_mixer_driver::copyright()
 {
    return "SDL_mixer midi driver for Underworld Adventures";
 }
-
-#endif
