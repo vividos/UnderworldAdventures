@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Underworld Adventures Team
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,8 +26,8 @@
 */
 
 // include guard
-#ifndef __uwadv_opcodes_hpp_
-#define __uwadv_opcodes_hpp_
+#ifndef uwadv_opcodes_hpp_
+#define uwadv_opcodes_hpp_
 
 
 // enums
@@ -82,9 +82,9 @@ enum ua_conv_opcodes
 //! instruction list
 static struct
 {
-   const char *mnemonic;
+   const char* mnemonic;
    int args;
-   const char *argcode;
+   const char* argcode;
 } ua_conv_instructions[0x002a] = 
 {
    { "NOP", 0,  "" },
