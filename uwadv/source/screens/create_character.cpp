@@ -349,7 +349,7 @@ void ua_create_character_screen::do_action()
       ended = true;
       newgame = (n>1) && (static_cast<unsigned int>(lua_tonumber(L,2))==1);
       fadingstage = unsigned(-1);
-      ua_trace("end request by char. creation script\n");
+      //ua_trace("end request by char. creation script\n");
       break;
 
    case actSetInitVal:
@@ -367,7 +367,7 @@ void ua_create_character_screen::do_action()
          btnimgs[i] = static_cast<unsigned int>(lua_tonumber(L,7));
          lua_pop(L, 1);
       }
-      ua_trace("init values set by char. creation script\n");
+      //ua_trace("init values set by char. creation script\n");
       break;
    }
 
@@ -416,7 +416,7 @@ void ua_create_character_screen::do_action()
       }
       selected_button=prev_button=0;
       drawbuttongroup();
-      ua_trace("new buttongroup set by char. creation script, caption nr: %d, %d buttons\n", btng_caption, btng_buttoncount);
+      //ua_trace("new buttongroup set by char. creation script, caption nr: %d, %d buttons\n", btng_caption, btng_buttoncount);
       break;
    }
 
@@ -462,36 +462,37 @@ void ua_create_character_screen::do_action()
 
    case actUIClear:
       img.paste_image(bgimg, 0, 0, false);
-      ua_trace("buffered screen cleared by char. creation script\n");
+      //ua_trace("buffered screen cleared by char. creation script\n");
       break;
 
    case actUIUpdate:
       changed = true;
-      ua_trace("screen updated by char. creation script\n");
+      //ua_trace("screen updated by char. creation script\n");
       break;
 
    case actSetPlayerName:
       if (n<2) break;
       pplayer->set_name(lua_tostring(L,2));
-      ua_trace("player name set to \"%s\" by char. creation script\n", lua_tostring(L,2));
+      //ua_trace("player name set to \"%s\" by char. creation script\n", lua_tostring(L,2));
       break;
 
    case actSetPlayerAttr:
       if (n<3) break;
       pplayer->set_attr(static_cast<ua_player_attributes>(static_cast<unsigned int>(lua_tonumber(L,2))), 
                         static_cast<unsigned int>(lua_tonumber(L,3)));
-      ua_trace("player attribute set\n");
+      //ua_trace("player attribute set\n");
       break;
 
    case actSetPlayerSkill:
       if (n<3) break;
       pplayer->set_skill(static_cast<ua_player_skills>(static_cast<unsigned int>(lua_tonumber(L,2))), 
                          static_cast<unsigned int>(lua_tonumber(L,3)));
-      ua_trace("player skill set\n");
+      //ua_trace("player skill set\n");
       break;
 
    default:
-       ua_trace("unknown action (#%d) requested by by char. creation script\n", action);
+      //ua_trace("unknown action (#%d) requested by by char. creation script\n", action);
+      break;
    }
 }
 
@@ -709,7 +710,7 @@ void ua_create_character_screen::tick()
 
 void ua_create_character_screen::press_button(int button)
 {
-   ua_trace("character creation button %d pressed\n", button);
+   //ua_trace("character creation button %d pressed\n", button);
 
    // call "cchar_buttonclick(button)"
    lua_getglobal(L,"cchar_buttonclick");
