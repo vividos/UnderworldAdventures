@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,8 +26,8 @@
 */
 
 // include guard
-#ifndef __uwadv_underworld_hpp_
-#define __uwadv_underworld_hpp_
+#ifndef uwadv_underworld_hpp_
+#define uwadv_underworld_hpp_
 
 // needed includes
 #include <vector>
@@ -67,6 +67,9 @@ public:
 
    //! returns if enhanced features are turned on
    bool have_enhanced_features(){ return enhanced_features; }
+
+   //! stops or resumes game
+   void pause_eval(bool stop=true){ stopped = stop; }
 
    // access to underworld components
 
@@ -117,6 +120,9 @@ public:
 protected:
    //! indicates if enhanced features are enabled
    bool enhanced_features;
+
+   //! is true when game is stopped
+   bool stopped;
 
    //! the player object
    ua_player player;

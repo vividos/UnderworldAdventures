@@ -71,11 +71,11 @@ unsigned int ua_uw_access_api::command_func(
       break;
 
    case udc_game_suspend: // suspend game
-      // TODO
+      underw.pause_eval(true);
       break;
 
    case udc_game_resume: // resume game
-      // TODO
+      underw.pause_eval(false);
       break;
 
    case udc_player_get: // get player value

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -38,6 +38,8 @@ void ua_underworld::init(ua_settings& settings, ua_files_manager& filesmgr)
 {
    enhanced_features = settings.get_bool(ua_setting_uwadv_features);
 
+   stopped = false;
+
    // init underworld members
    levels.clear();
 
@@ -70,6 +72,9 @@ void ua_underworld::done()
 
 void ua_underworld::eval_underworld(double time)
 {
+   if (stopped)
+      return;
+
    // evaluate physics
    physics.eval_physics(time);
 
