@@ -36,6 +36,11 @@
 IMPLEMENT_APP(ua_debugger)
 
 
+// static members
+
+ua_debug_interface* ua_debugger::inter = NULL;
+
+
 // ua_debugger methods
 
 bool ua_debugger::OnInit()
@@ -57,8 +62,10 @@ bool ua_debugger::OnInit()
 // global functions
 
 //! debugger start
-void uadebug_start()
+void uadebug_start(ua_debug_interface* inter)
 {
+   wxGetApp().inter = inter;
+
 #ifdef WIN32
    // call win32 generic entry function
    HMODULE mod = ::GetModuleHandle("uadebug.dll");

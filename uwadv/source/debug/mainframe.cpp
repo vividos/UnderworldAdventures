@@ -27,6 +27,7 @@
 
 // needed includes
 #include "dbgcommon.hpp"
+#include "dbgapp.hpp"
 #include "mainframe.hpp"
 #include "playerinfo.hpp"
 
@@ -48,6 +49,8 @@
 // event table
 
 BEGIN_EVENT_TABLE(ua_debugger_main_frame, wxMDIParentFrame)
+   EVT_MENU(MENU_FILE_QUIT, ua_debugger_main_frame::OnMenuFileQuit)
+   EVT_MENU(MENU_UNDERW_UPDATE, ua_debugger_main_frame::OnMenuUnderwUpdate)
    EVT_MENU(MENU_UNDERW_PLAYER, ua_debugger_main_frame::OnMenuUnderwPlayer)
 END_EVENT_TABLE()
 
@@ -59,6 +62,10 @@ ua_debugger_main_frame::ua_debugger_main_frame(wxWindow *parent,
    const wxPoint& pos, const wxSize& size, const long style)
 :wxMDIParentFrame(parent, id, title, pos, size, style)
 {
+   // get debug interface pointer
+   inter = wxGetApp().inter;
+
+
    // frame layout manager
    m_pLayout = new wxFrameLayout(this, GetClientWindow());
 
@@ -69,21 +76,27 @@ ua_debugger_main_frame::ua_debugger_main_frame(wxWindow *parent,
 
    m_pLayout->AddPlugin( CLASSINFO(cbBarHintsPlugin) );
    m_pLayout->AddPlugin( CLASSINFO(cbHintAnimationPlugin) );
-//   m_pLayout->AddPlugin( CLASSINFO(cbRowDragPlugin) );
+//   m_pLayout->AddPlugin( CLASSINFO(cbRowDragPlugin) ); // mozilla-like bars
    m_pLayout->AddPlugin( CLASSINFO(cbAntiflickerPlugin) );
    m_pLayout->AddPlugin( CLASSINFO(cbSimpleCustomizationPlugin) );
 
    m_pLayout->EnableFloating(TRUE);
 
 
-
    // menu stuff
    m_pMenuBar = new wxMenuBar();
 
+   // file menu
+   m_pFileMenu = new wxMenu();
+//   m_pUnderwMenu->AppendSeparator();
+   m_pFileMenu->Append(MENU_FILE_QUIT, "&Quit", "quits the debugger");
+   m_pMenuBar->Append(m_pFileMenu, "&File");
+
    // underworld menu
    m_pUnderwMenu = new wxMenu();
-   m_pUnderwMenu->Append(MENU_UNDERW_PLAYER, "&Player Info", "shows Player Infos");
+   m_pUnderwMenu->Append(MENU_UNDERW_UPDATE, "&Update", "updates all windows");
    m_pUnderwMenu->AppendSeparator();
+   m_pUnderwMenu->Append(MENU_UNDERW_PLAYER, "&Player Info", "shows Player Infos");
    m_pMenuBar->Append(m_pUnderwMenu, "&Underworld");
 
    SetMenuBar(m_pMenuBar);
@@ -92,6 +105,33 @@ ua_debugger_main_frame::ua_debugger_main_frame(wxWindow *parent,
    // status bar
    CreateStatusBar(3);
    SetStatusText("ready.", 0);
+
+   // update all bars and windows
+   UpdateAll();
+}
+
+void ua_debugger_main_frame::UpdateAll()
+{
+   // lock underworld
+   inter->lock();
+
+   // update player info
+   {
+      cbBarInfo* barinfo = m_pLayout->FindBarByName(ua_playerinfo_list::frame_name);
+      if (barinfo!=NULL && barinfo->mState != wxCBAR_HIDDEN)
+      {
+         ua_playerinfo_list* pilist =
+            reinterpret_cast<ua_playerinfo_list*>(barinfo->mpBarWnd);
+
+         pilist->UpdateData(inter);
+      }
+   }
+
+   // todo: update more windows
+
+
+   // unlock underworld
+   inter->unlock();
 }
 
 bool ua_debugger_main_frame::CheckBarAvail(wxString& barname)
@@ -104,14 +144,22 @@ bool ua_debugger_main_frame::CheckBarAvail(wxString& barname)
       if (barinfo->mState == wxCBAR_HIDDEN)
       {
          // unhide bar when necessary
-         barinfo->mState = wxCBAR_DOCKED_HORIZONTALLY;
-
-         m_pLayout->DoSetBarState(barinfo);
+         m_pLayout->SetBarState(barinfo,wxCBAR_DOCKED_HORIZONTALLY,true);
          m_pLayout->RefreshNow();
       }
    }
 
    return barinfo != NULL;
+}
+
+void ua_debugger_main_frame::OnMenuFileQuit(wxCommandEvent &event)
+{
+   Close(TRUE);
+}
+
+void ua_debugger_main_frame::OnMenuUnderwUpdate(wxCommandEvent &event)
+{
+   UpdateAll();
 }
 
 void ua_debugger_main_frame::OnMenuUnderwPlayer(wxCommandEvent &event)
@@ -120,9 +168,10 @@ void ua_debugger_main_frame::OnMenuUnderwPlayer(wxCommandEvent &event)
    {
       // create new player info list and add it
       ua_playerinfo_list* pilist = new ua_playerinfo_list(
-         this, -1, wxDefaultPosition, wxSize(0,0), wxLC_REPORT);
+         this, -1, wxDefaultPosition, wxSize(0,0), 0);
 
       pilist->AddBar(m_pLayout);
+      pilist->UpdateData(inter);
 
       m_pLayout->RefreshNow();
    }

@@ -41,6 +41,9 @@ public:
 
    //! called on initialisation
    virtual bool OnInit();
+
+   //! debug interface
+   static ua_debug_interface* inter;
 };
 
 

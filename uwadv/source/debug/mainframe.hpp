@@ -26,8 +26,8 @@
 */
 
 // include guard
-#ifndef __uadebug__mainframe_hpp__
-#define __uadebug__mainframe_hpp__
+#ifndef __uadebug_mainframe_hpp_
+#define __uadebug_mainframe_hpp_
 
 // needed includes
 
@@ -44,15 +44,27 @@ public:
       const long style);
 
 protected:
+   //! updates all bars and windows
+   void UpdateAll();
+
    //! returns false when bar with given name is not found; else activates bar
    bool CheckBarAvail(wxString& barname);
 
    // message handler
 
+   //! menu handler: File | Quit
+   void OnMenuFileQuit(wxCommandEvent &event);
+
+   //! menu handler: Underworld | Update
+   void OnMenuUnderwUpdate(wxCommandEvent &event);
+
    //! menu handler: Underworld | Player Info
    void OnMenuUnderwPlayer(wxCommandEvent &event);
 
 protected:
+   //! debug interface
+   ua_debug_interface* inter;
+
    //! frame layout object
    wxFrameLayout* m_pLayout;
 
@@ -61,11 +73,14 @@ protected:
 
    //! underworld menu
    wxMenu *m_pUnderwMenu;
+   wxMenu *m_pFileMenu;
 
    //! menu id's
    enum
    {
-      MENU_UNDERW_PLAYER=1000, // shows player info
+      MENU_FILE_QUIT=1000,
+      MENU_UNDERW_UPDATE,
+      MENU_UNDERW_PLAYER, // shows player info
    };
 
    DECLARE_EVENT_TABLE()
