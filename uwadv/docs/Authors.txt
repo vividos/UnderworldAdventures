@@ -5,6 +5,9 @@ Underworld Adventures additionally contains code from:
 * XMIDI and Windows MidiOut driver:
   Ryan Nunn <triforce at merlin.net.au>
 
+* SDL_mixer midi driver:
+  Tels, http://www.bloodgate.com/
+
 * Lua scripting language:
   Waldemar Celes, Roberto Ierusalimschy, and Luiz Henrique de Figueiredo at
   TeCGraf, PUC-Rio in Brazil.
@@ -12,3 +15,9 @@ Underworld Adventures additionally contains code from:
 
 * Telemachos, http://www.peroxide.dk/:
   Collision detecton / response code
+
+* SDL_mixer audio output:
+  Dirk Manders <dirkmnl at hotmail.com>
+
+* perl script to convert uw1 files/folders to lowercase
+  Cuneyt Cuneyitoglu <darkie at haylaz.org>
