@@ -49,6 +49,13 @@ void ua_underworld::init(ua_game_core_interface *thecore)
    player.set_pos(32.0,2.0);
    player.set_angle(9.0);
    player.set_attr(ua_attr_gender,1);
+
+   script.init(this);
+}
+
+void ua_underworld::done()
+{
+   script.done();
 }
 
 void ua_underworld::eval_underworld(double time)
