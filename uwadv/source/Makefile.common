@@ -33,6 +33,7 @@ uwadv_SOURCES = \
 	audio/midi_driver/win_midiout.h \
 	base/cfgfile.cpp base/cfgfile.hpp \
 	base/files.cpp base/files.hpp \
+	base/keymap.cpp base/keymap.hpp \
 	base/savegame.cpp base/savegame.hpp \
 	base/settings.cpp base/settings.hpp \
 	base/uamath.hpp \
@@ -41,19 +42,34 @@ uwadv_SOURCES = \
 	conv/convgraph.cpp conv/convgraph.hpp \
 	conv/opcodes.hpp \
 	import/fontloader.cpp \
+	import/imageloader.cpp \
 	import/import.hpp io_endian.hpp \
 	import/stringsloader.cpp \
+	import/texloader.cpp \
+	renderer/critter.cpp renderer/critter.hpp \
+	renderer/models.cpp renderer/models.hpp \
 	renderer/quadtree.cpp renderer/quadtree.hpp \
 	renderer/renderer.cpp renderer/renderer.hpp \
+	renderer/renderer_impl.cpp renderer/renderer_impl.hpp \
+	renderer/tessellator.cpp renderer/tessellator.hpp \
 	renderer/texture.cpp renderer/texture.hpp \
+	screens/acknowledgements.cpp screens/acknowledgements.hpp \
 	screens/start_menu.cpp screens/start_menu.hpp \
 	screens/start_splash.cpp screens/start_splash.hpp \
 	screens/uwadv_menu.cpp screens/uwadv_menu.hpp \
+	script/luascript.cpp script/luascript.hpp \
+	script/script.hpp \
+	script/luascript.cpp script/luascript.hpp \
 	ui/cutscene.cpp ui/cutscene.hpp \
+	ui/fading.hpp \
 	ui/font.cpp ui/font.hpp \
+	ui/image.cpp ui/image.hpp \
 	ui/imgquad.cpp ui/imgquad.hpp \
+	ui/mousecursor.cpp ui/mousecursor.hpp \
 	ui/screen.cpp ui/screen.hpp \
+	ui/textscroll.cpp ui/textscroll.hpp \
 	ui/window.cpp ui/window.hpp \
+	underw/gamestrings.cpp underw/gamestrings.hpp \
 	underw/inventory.cpp underw/inventory.hpp \
 	underw/level.cpp underw/level.hpp \
 	underw/mapnotes.cpp underw/mapnotes.hpp \
@@ -64,63 +80,36 @@ uwadv_SOURCES = \
 	underw/player.cpp underw/player.hpp \
 	underw/properties.hpp \
 	underw/underworld.cpp underw/underworld.hpp \
-	uwadv.cpp uwadv.hpp \
-	main.cpp \
 	common.hpp \
+	debug.hpp \
+	game_interface.hpp \
+	gamecfg.cpp gamecfg.hpp \
+	main.cpp \
+	uwadv.cpp uwadv.hpp \
 	\
-	\
-	critter.cpp image.cpp keymap.cpp  \
 	renderer/models.cpp \
 	resource/codeloader.cpp resource/critloader.cpp \
-	resource/cutsloader.cpp resource/imageloader.cpp \
+	resource/cutsloader.cpp \
 	resource/maploader.cpp resource/modeldecode.cpp \
 	resource/objloader.cpp resource/playerimport.cpp \
-	resource/proploader.cpp resource/texloader.cpp \
+	resource/proploader.cpp \
 	resource/tgaimport.cpp resource/uw2dec.cpp
 
 the_rest = \
-	image.cpp \
-	texture.cpp uwadv.cpp \
-	keymap.cpp \
-	uwscript.cpp mousecursor.cpp \
-	textscroll.cpp critter.cpp models.cpp \
-	gamecfg.cpp \
-	audio.hpp core.hpp gamestrings.hpp \
-	image.hpp \
-	texture.hpp \
-	models.hpp \
-	keymap.hpp uwscript.hpp \
-	mousecursor.hpp textscroll.hpp \
-	debug.hpp critter.hpp gamecfg.hpp \
 	linux/debug.cpp \
 	debug/uwaccess.cpp debug/uwaccess.hpp \
-	resource/codeloader.cpp resource/fontloader.cpp \
-	resource/gamestrings.cpp resource/imageloader.cpp \
-	resource/maploader.cpp \
-	resource/texloader.cpp resource/objloader.cpp \
-	resource/cutsloader.cpp \
-	resource/critloader.cpp resource/modeldecode.cpp \
-	resource/tgaimport.cpp resource/playerimport.cpp \
-	resource/proploader.cpp \
-	resource/uw2dec.cpp \
-	resource/fread_endian.hpp \
 	resource/models_impl.hpp \
 	resource/model/FlexLexer.h \
 	resource/model/importwrl.cpp \
 	resource/model/wrllexer.cpp resource/model/wrllexer.hpp \
-	screens/ingame_orig.cpp screens/start_splash.cpp \
-	screens/start_menu.cpp screens/cutscene_view.cpp \
-	screens/acknowledgements.cpp screens/conversation.cpp \
+	screens/ingame_orig.cpp \
+	screens/cutscene_view.cpp \
+	screens/conversation.cpp \
 	screens/create_character.cpp screens/map_view.cpp \
-	screens/uwadv_menu.cpp \
 	screens/save_game.cpp \
 	screens/panel.cpp \
-	screens/message_inl.cpp \
-	screens/ingame_orig.hpp screens/start_splash.hpp \
-	screens/start_menu.hpp screens/acknowledgements.hpp \
+	screens/ingame_orig.hpp \
 	screens/conversation.hpp screens/create_character.hpp \
 	screens/map_view.hpp screens/cutscene_view.hpp \
-	screens/uwadv_menu.hpp \
 	screens/save_game.hpp \
-	screens/panel.hpp \
-	screens/message.hpp
+	screens/panel.hpp
