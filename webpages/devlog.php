@@ -93,22 +93,26 @@ An RSS feed is also available: <a href="devlog.php?type=rss"><img src="rss_xml.g
       else
       if (0 == strcasecmp($name, "entry"))
       {
+         // convert to RFC-822 date
+         $date = $attr['date'];
+         $date_rfc = date("r", strtotime($date));
+
          echo "<item>\n" .
-              "  <pubDate>" . $attr['date'] . "</pubDate>\n" .
-              "  <guid isPermaLink=\"false\">date-" . $attr['date'] ."</guid>\n" .
+              "  <pubDate>" . $date_rfc . "</pubDate>\n" .
+              "  <guid isPermaLink=\"false\">date-" . $date ."</guid>\n" .
               "  <description>";
       }
       else
       if (0 == strcasecmp($name, "para"))
       {
-         echo "<p>";
+         echo "&lt;p&gt;";
       }
       else
       {
-         echo "<" . $name;
+         echo "&lt;" . $name;
          while (list($key, $val) = each ($attr))
             echo " $key=\"" . htmlentities($val) . "\"";
-         echo ">\n";
+         echo "&gt;\n";
       }
    }
 
@@ -128,10 +132,10 @@ An RSS feed is also available: <a href="devlog.php?type=rss"><img src="rss_xml.g
       else
       if (0 == strcasecmp($name, "para"))
       {
-         echo "</p>";
+         echo "&lt;/p&gt;";
       }
       else
-      	echo "</" . $name . ">";
+      	echo "&lt;/" . $name . "&gt;";
    }
 
    $expat = xml_parser_create();
