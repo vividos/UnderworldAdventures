@@ -152,9 +152,9 @@ public:
 
    void cross(const ua_vector3d &first, const ua_vector3d &second)
    {
-      set(first.y * second.z - second.y * first.z,
-          first.z * second.x - second.z * first.x,
-          first.x * second.y - second.x * first.y);
+      set(first.y * second.z - first.y * second.z,
+          first.z * second.x - first.z * second.x,
+          first.x * second.y - first.x * second.y);
    }
 };
 
