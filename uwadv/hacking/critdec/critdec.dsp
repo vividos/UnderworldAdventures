@@ -86,6 +86,10 @@ LINK32=link.exe
 # Name "critdec - Win32 Debug"
 # Begin Source File
 
+SOURCE=".\crit-log.txt"
+# End Source File
+# Begin Source File
+
 SOURCE=.\critdec.cpp
 # SUBTRACT CPP /YX
 # End Source File
