@@ -148,7 +148,7 @@ void ua_start_splash_screen::render()
       tex2.use();
 
       float scale = 0.9f;
-      int xpos=(320-img2.get_xres()*scale)/2, ypos=3;
+      int xpos=int((320-img2.get_xres()*scale)/2), ypos=3;
 
       glBegin(GL_QUADS);
       glTexCoord2d(0.0,tex2.get_tex_v());
