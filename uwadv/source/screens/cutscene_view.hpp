@@ -99,8 +99,8 @@ protected:
    //! text fadein/fadeout state
    unsigned int text_fade_state;
 
-   //! count for fadein/fadeout
-   unsigned int fadecount;
+   //! count for text fadein/fadeout
+   unsigned int text_fadecount;
 
    // cutscene animation stuff
 
@@ -119,8 +119,17 @@ protected:
    //! current animation frame
    unsigned int curframe;
 
+   //! frame to stop at; if negative, don't stop
+   int stopframe;
+
    //! animation tick count
    double animcount;
+
+   //! anim fadein/fadeout state
+   unsigned int anim_fade_state;
+
+   //! count for anim fadein/fadeout
+   unsigned int anim_fadecount;
 };
 
 #endif

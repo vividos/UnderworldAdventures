@@ -36,7 +36,7 @@
 const double ua_cutscene_view_anim_fps = 8.0;
 
 //! time needed to fade in/out text
-const double ua_cutscene_view_text_fade_time = 0.8;
+const double ua_cutscene_view_fade_time = 0.5;
 
 
 // ua_cutscene_view_screen methods
@@ -45,16 +45,19 @@ void ua_cutscene_view_screen::init()
 {
    ended = false;
    tickcount = 0;
+
    showanim = false;
    loopanim = false;
    curframe = 0;
    animcount = 0.0;
+   anim_fade_state = 0;
+   anim_fadecount = 0;
 
    showtext = false;
    strblock = 0x0c00;
    textcolor = 11;
    text_fade_state = 0;
-   fadecount = 0;
+   text_fadecount = 0;
 
    // init lua scripting
 
@@ -121,7 +124,13 @@ void ua_cutscene_view_screen::handle_event(SDL_Event &event)
       {
       case SDLK_RETURN:
       case SDLK_ESCAPE:
-         ended=true; // TODO initiate fading out
+         ended = true;
+
+         // initiate text and anim fadeout
+         text_fade_state = 2;
+         text_fadecount = 0;
+         anim_fade_state = 2;
+         anim_fadecount = 0;
          break;
       }
    }
@@ -142,7 +151,25 @@ void ua_cutscene_view_screen::render()
 
       double u = tex_anim.get_tex_u(), v = tex_anim.get_tex_v();
 
-      glColor3ub(255,255,255);
+      // set text color
+      Uint8 light = 255;
+      switch(anim_fade_state)
+      {
+      case 0: // show
+         light = 255;
+         break;
+
+      case 1: // fade in
+         light = 255*double(anim_fadecount) /
+            (ua_cutscene_view_fade_time*core->get_tickrate());
+         break;
+
+      case 2: // fade out
+         light = 255-255*double(anim_fadecount) /
+            (ua_cutscene_view_fade_time*core->get_tickrate());
+         break;
+      }
+      glColor3ub(light,light,light);
 
       // draw animation quad
       glBegin(GL_QUADS);
@@ -155,7 +182,7 @@ void ua_cutscene_view_screen::render()
 
    if (showtext)
    {
-      // render text
+      // render subtitle text
 
       // enable blending, in case text overlaps animation
       glEnable(GL_BLEND);
@@ -177,13 +204,13 @@ void ua_cutscene_view_screen::render()
          break;
 
       case 1: // fade in
-         light = 255*double(fadecount) /
-            (ua_cutscene_view_text_fade_time*core->get_tickrate());
+         light = 255*double(text_fadecount) /
+            (ua_cutscene_view_fade_time*core->get_tickrate());
          break;
 
       case 2: // fade out
-         light = 255-255*double(fadecount) /
-            (ua_cutscene_view_text_fade_time*core->get_tickrate());
+         light = 255-255*double(text_fadecount) /
+            (ua_cutscene_view_fade_time*core->get_tickrate());
          break;
       }
       glColor3ub(light,light,light);
@@ -202,14 +229,15 @@ void ua_cutscene_view_screen::render()
 
 void ua_cutscene_view_screen::tick()
 {
-   if (ended)
+   if (ended && anim_fadecount >= ua_cutscene_view_fade_time*core->get_tickrate())
    {
       // we're finished
       core->pop_screen();
       return;
    }
 
-   if (showanim && loopanim)
+   // check anim looping
+   if (showanim && loopanim && !(anim_fade_state == 1 || anim_fade_state == 2))
    {
       // count up animcount
       animcount += 1.0/core->get_tickrate();
@@ -223,16 +251,38 @@ void ua_cutscene_view_screen::tick()
          curframe++;
          if (curframe>=cuts.get_maxframes())
             curframe = 0;
+
+         // check if we should stop at that frame
+         if (stopframe >= 0 && curframe == stopframe)
+         {
+            // disable animation; works like "cuts_anim_stop"
+            loopanim = false;
+         }
       }
    }
 
-   // check fading
-   if (showtext && (text_fade_state == 1 || text_fade_state == 2))
+   // check anim fading
+   if (showanim && (anim_fade_state == 1 || anim_fade_state == 2))
    {
-      ++fadecount;
+      ++anim_fadecount;
 
       // end of fade reached?
-      if (fadecount >= ua_cutscene_view_text_fade_time*core->get_tickrate())
+      if (anim_fadecount >= ua_cutscene_view_fade_time*core->get_tickrate())
+      {
+         if (anim_fade_state == 1)
+            anim_fade_state = 0;
+         else
+            showanim = false;
+      }
+   }
+
+   // check text fading
+   if (showtext && (text_fade_state == 1 || text_fade_state == 2))
+   {
+      ++text_fadecount;
+
+      // end of fade reached?
+      if (text_fadecount >= ua_cutscene_view_fade_time*core->get_tickrate())
       {
          if (text_fade_state == 1)
             text_fade_state = 0;
@@ -338,20 +388,21 @@ void ua_cutscene_view_screen::do_action()
    {
    case 0: // cuts_finished
       ended = true;
+      anim_fadecount = ua_cutscene_view_fade_time*core->get_tickrate() + 1;
       break;
 
    case 1: // cuts_set_string_block
       strblock = static_cast<unsigned int>(lua_tonumber(L,n));
       break;
 
-   case 2: // cuts_play_sound
+   case 2: // cuts_sound_play
       {
          const char *str = lua_tostring(L,n);
          core->get_audio().play_sound(str);
       }
       break;
 
-   case 3: // cuts_set_text_color
+   case 3: // cuts_text_set_color
       textcolor = static_cast<Uint8>(lua_tonumber(L,n));
       break;
 
@@ -360,14 +411,14 @@ void ua_cutscene_view_screen::do_action()
          unsigned int strnum = static_cast<unsigned int>(lua_tonumber(L,n));
          create_text_image( core->get_strings().get_string(strblock,strnum).c_str() );
          text_fade_state = 1; // fade in
-         fadecount = 0;
+         text_fadecount = 0;
          showtext = true;
       }
       break;
 
    case 5: // cuts_text_fadeout
       text_fade_state = 2; // fade out
-      fadecount = 0;
+      text_fadecount = 0;
       showtext = true;
       break;
 
@@ -383,7 +434,12 @@ void ua_cutscene_view_screen::do_action()
       showtext = false;
       break;
 
-   case 8: // cuts_anim_show
+   case 8: // cuts_anim_fadein
+      anim_fade_state = 1;
+      anim_fadecount = 0;
+      // falls through to "cuts_anim_show"
+
+   case 9: // cuts_anim_show
       {
          std::string animname("cuts/");
          animname.append(lua_tostring(L,n));
@@ -394,15 +450,26 @@ void ua_cutscene_view_screen::do_action()
          loopanim = true;
          curframe = 0;
          animcount = 0.0;
+         stopframe = -1;
       }
       break;
 
-   case 9: // cuts_anim_stop
+   case 10: // cuts_anim_set_stopframe
+      // get "stop frame" parameter
+      stopframe = static_cast<int>(lua_tonumber(L,n));
+      break;
+
+   case 11: // cuts_anim_fadeout
+      anim_fade_state = 2;
+      anim_fadecount = 0;
+      break;
+
+   case 12: // cuts_anim_stop
       loopanim = false;
       curframe = static_cast<unsigned int>(lua_tonumber(L,n));
       break;
 
-   case 10: // cuts_anim_hide
+   case 13: // cuts_anim_hide
       showanim = false;
       break;
    }
@@ -424,6 +491,7 @@ int ua_cutscene_view_screen::cuts_do_action(lua_State *L)
       if (self->L != L)
          throw ua_exception("wrong 'self' parameter in lua script!");
 
+      // perform action
       self->do_action();
 
       return 0;
