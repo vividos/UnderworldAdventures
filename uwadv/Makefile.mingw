@@ -100,7 +100,7 @@ uwadv_OBJS = source/win32/source/main.o \
 	source/resource/gamestrings.o source/resource/imageloader.o \
 	source/resource/maploader.o source/resource/settingsloader.o \
 	source/resource/texloader.o source/resource/objloader.o \
-	source/resource/cutsloader.o \
+	source/resource/cutsloader.o source/resource/savegame.o \
 	source/screens/ingame_orig.o source/screens/start_splash.o \
 	source/screens/start_menu.o source/screens/cutscene_view.o \
 	source/screens/acknowledgements.o source/screens/create_character.o \
