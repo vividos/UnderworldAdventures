@@ -154,8 +154,8 @@ include source/Makefile.common
 
 uwadv_win32objects = \
 	source/win32/game_win32.o \
-	source/win32/uwadv_res.o \
-	source/win32/debug.o
+	source/win32/uwadv_res.o
+#	source/win32/debug.o
 
 uwadv_CPPs = $(filter %.cpp,$(uwadv_SOURCES))
 uwadv_Cs = $(filter %.c,$(uwadv_SOURCES))
