@@ -30,7 +30,7 @@ that are used. A package containing all these files is available here (in the
 http://sourceforge.net/project/showfiles.php?group_id=50987
 
 Just download the latest "uwadv-mingw32-installer-setup-?.zip" and install the
-files according to the Readme-File that is also in the package.
+files according to the Readme-File that is included in the package.
 
 STLport Setup
 -------------
@@ -58,14 +58,20 @@ The variable UWADV_PATH contains the path where Underworld Adventures is
 installed when doing a "make install" or "make update" (see below for make
 targets).
 
-To set the SDL include path, adjust the path after "SDL_INCLUDE". If you don't
-want to use STLport, edit these two lines so that they look like this:
+The variable MINGW_PATH should be set to the base path of the mingw32
+installation. It is mainly to specify the SDL include path.
 
-STLPORT_INCLUDE = 
-STLPORT_LIB = 
+There are some settings that can be set to "yes" or "no". These are:
 
-To compile, start MSYS and cd to the main project dir. The command to compile
-the project looks like this:
+  WITH_CONSOLE    enables separate console output and disables writing of the
+                  stdout.txt and stderr.txt file. default: "no"
+  WITH_DEBUGGING  enables some experimental code for developers. Basically
+                  defines HAVE_DEBUG in the source code. default: "no"
+  WITH_STLPORT    enables linking against the static STLport library (see
+                  above). Be sure to also set STLPORT_PATH. default: "yes"
+
+To compile, start MSYS and change ("cd") to the main project dir. The command
+to compile the project looks like this:
 
    make -f Makefile.mingw <target>
 
