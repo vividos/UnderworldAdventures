@@ -1,3 +1,185 @@
+2002-05-05 21:02  vividos
+
+	* docs/License.installer.txt (1.2), source/win32/uwadv.nsi (1.4),
+	source/win32/install/License.installer.txt (1.1):
+
+	last changes for installer
+	moved file License.installer.txt
+	
+2002-05-05 20:52  vividos
+
+	* source/win32/install/makensis.exe (1.2):
+
+	updated to makensis 1.98
+	
+2002-05-05 20:51  vividos
+
+	* docs/License.installer.txt (1.1):
+
+	added lincense text for win32 installer
+	
+2002-05-05 20:36  vividos
+
+	* source/win32/uwadv.nsi (1.3):
+
+	added readme file
+	
+2002-05-05 20:33  vividos
+
+	* docs/Readme.txt (1.1):
+
+	added readme file for installer
+	
+2002-05-03 09:55  vividos
+
+	* source/: level.cpp (1.5), screens/start_splash.cpp (1.5),
+	win32/Makefile.mingw (1.4), win32/uwadv.cfg (1.2), win32/uwadv.dsp
+	(1.4):
+
+	preparations for first release
+	
+2002-05-03 09:54  vividos
+
+	* source/resource/maploader.cpp (1.4):
+
+	fixed map-loading for uw_demo
+	
+2002-05-03 09:49  vividos
+
+	* source/audio/midi_driver/uni_fmod.cpp (1.3):
+
+	fixed compiling for mingw makefile
+	
+2002-05-03 01:04  vividos
+
+	* source/win32/: Makefile.mingw (1.3), uwadv.nsi (1.2),
+	install/SDL.dll (1.1), install/makensis.exe (1.1), install/upx.exe
+	(1.1):
+
+	added installer files
+	added more targets to mingw project
+	
+2002-05-03 01:00  vividos
+
+	* source/tools/cnvdbg.cpp (1.6):
+
+	fixed scope for index variable in for() loop
+	
+2002-04-30 18:55  vividos
+
+	* source/.cvsignore (1.1):
+
+	added
+	
+2002-04-30 18:55  vividos
+
+	* source/Makefile.am (1.3):
+
+	fixed SDL path stuff
+	added more source files
+	
+2002-04-30 18:08  vividos
+
+	* source/linux/.cvsignore (1.1):
+
+	added
+	
+2002-04-30 18:04  vividos
+
+	* source/tools/: cnvdasm.cpp (1.3), cnvdasm.hpp (1.3):
+
+	introduced method format_global() to simplify printing of global stack vars
+	parameter of function "babl_menu" and "babl_fmenu" are shown now
+	
+2002-04-30 15:35  vividos
+
+	* source/Makefile.am (1.2):
+
+	added SDL config
+	
+2002-04-30 14:48  vividos
+
+	* source/tools/cnvdbg.cpp (1.5):
+
+	corrected typo
+	
+2002-04-30 14:48  vividos
+
+	* source/conv/codevm.hpp (1.7):
+
+	fixed bug in range checking
+	
+2002-04-30 14:22  vividos
+
+	* source/: player.hpp (1.2), underworld.cpp (1.3), underworld.hpp
+	(1.3), uwadv.cpp (1.5), screens/ingame_orig.cpp (1.4),
+	screens/ingame_orig.hpp (1.4):
+
+	added more stuff so that the player can run around in first person mode
+	
+2002-04-30 14:09  vividos
+
+	* source/screens/start_splash.cpp (1.4):
+
+	fixed small bug
+	
+2002-04-30 13:36  vividos
+
+	* source/uatypes.hpp (1.4):
+
+	added macro to convert from degrees to radians
+	
+2002-04-30 13:35  vividos
+
+	* source/level.cpp (1.4):
+
+	added floor height calculation for slope tiles
+	
+2002-04-30 13:34  vividos
+
+	* source/win32/Makefile.mingw (1.2):
+
+	made it so that other build targets can coexist
+	
+2002-04-30 10:30  vividos
+
+	* source/win32/Makefile.mingw (1.1):
+
+	added makefile for mingw32
+	MSYS is additionally needed to compile
+	all stuff available at http://www.mingw.org
+	
+2002-04-30 10:28  vividos
+
+	* source/: common.hpp (1.3), texture.cpp (1.4), uwadv.cpp (1.4),
+	audio/midi.cpp (1.6), audio/midi_driver/win_midiout.h (1.3),
+	conv/codevm.cpp (1.6), conv/codevm.hpp (1.6),
+	resource/gamestrings.cpp (1.5), screens/start_splash.cpp (1.3),
+	win32/uwadv.rc (1.2):
+
+	fixed warnings and bugs to get compiling with mingw32 to work
+	
+2002-04-30 10:27  vividos
+
+	* source/player.cpp (1.1):
+
+	added missing file
+	
+2002-04-29 16:11  vividos
+
+	* source/: Makefile.am (1.1), linux/COPYING (1.1), linux/INSTALL
+	(1.1), linux/Makefile.am (1.1), linux/autogen.sh (1.1),
+	linux/configure.in (1.1), linux/install-sh (1.1), linux/missing
+	(1.1), linux/mkinstalldirs (1.1), linux/uwadv.cfg (1.1):
+
+	added linux build files
+	
+2002-04-29 14:10  vividos
+
+	* ChangeLog (1.2):
+
+	updated
+	
 2002-04-29 14:08  vividos
 
 	* source/: inventory.cpp (1.1), inventory.hpp (1.1), player.hpp
@@ -116,6 +298,13 @@
 	slight audio interface changes
 	added more documentation
 	
+2002-04-29 01:17  vividos
+
+	* docs/uw-formats.txt (1.9):
+
+	some clarifications on the string parameters
+	added some more conv function info
+	
 2002-04-29 01:15  vividos
 
 	* source/tools/: cnvdasm.cpp (1.2), cnvdasm.hpp (1.2):
@@ -128,6 +317,12 @@
 	tools/instr.hpp (1.2), win32/cnvdasm.dsp (1.1):
 
 	added conv code disassembler and decompiler (produces C code, yay!)
+	
+2002-04-22 21:19  vividos
+
+	* docs/uw-formats.txt (1.8):
+
+	added conv text substitutions
 	
 2002-04-22 13:37  vividos
 
@@ -162,6 +357,18 @@
 
 	more work on the conversation debugger: added "info" and "reset" command, more enhancements
 	fixed some other minor bugs
+	
+2002-04-22 13:18  vividos
+
+	* docs/uw-formats.txt (1.7):
+
+	added more conversation import routines
+	
+2002-04-21 23:53  vividos
+
+	* docs/uw-formats.txt (1.6):
+
+	added function "babl_fmenu"
 	
 2002-04-21 23:51  vividos
 
@@ -258,12 +465,72 @@
 
 	added fmod midi driver
 	
+2002-04-16 18:55  vividos
+
+	* hacking/: hacking.dsw (1.2), hacking.h (1.1), cnvdec/cnvdec.cpp
+	(1.3), critdec/critdec.cpp (1.4), cutsdec/.cvsignore (1.1),
+	cutsdec/cutsdec.cpp (1.1), cutsdec/cutsdec.dsp (1.1),
+	fontdecode/fontdecode.cpp (1.2), grdecode/grdecode.cpp (1.3),
+	levarkdec/levarkdec.cpp (1.2), miscdecode/miscdecode.cpp (1.2),
+	sgdecode/sgdecode.cpp (1.2), stringextract/stringextract.cpp (1.2),
+	trdecode/trdecode.cpp (1.2):
+
+	added cutscenes decoding project
+	added common include file for all hacking projects
+	removed stuff not needed from the actual projects
+	
+2002-04-16 09:55  vividos
+
+	* docs/: uw-cuts-animfile.txt (1.1), uw-formats.txt (1.5):
+
+	added some more infos about critter files
+	added cutscene animation format file
+	
+2002-04-16 09:54  vividos
+
+	* docs/authors.txt (1.2):
+
+	changed text somewhat
+	
 2002-04-15 23:23  vividos
 
 	* source/audio/xmidi.cpp (1.6):
 
 	removed calls to SDL_FreeRW()
 	done a bit cleanup
+	
+2002-04-14 11:13  vividos
+
+	* hacking/grdecode/grdecode.cpp (1.2):
+
+	added new rle decoding function
+	added special case for file panel.gr
+	
+2002-04-13 19:47  vividos
+
+	* docs/uw-formats.txt (1.4):
+
+	added some more critter info
+	
+2002-04-13 19:46  vividos
+
+	* hacking/critdec/critdec.cpp (1.3):
+
+	fixed decoding
+	
+2002-04-13 18:17  vividos
+
+	* hacking/critdec/critdec.cpp (1.2):
+
+	added generic rle decoding function
+	
+2002-04-13 18:15  vividos
+
+	* docs/uw-formats.txt (1.3):
+
+	added palette mappings info
+	added remark about special file "panel.gr"
+	some other minor changes
 	
 2002-04-11 23:13  vividos
 
@@ -285,6 +552,26 @@
 
 	re-added MIDI writing via XMIDIEventList::Write()
 	fixed endian handling for SDL_RWops helper functions
+	
+2002-04-11 19:46  vividos
+
+	* docs/authors.txt (1.1):
+
+	added authors file
+	
+2002-04-11 19:46  vividos
+
+	* docs/uw-formats.txt (1.2):
+
+	added game strings decompression description
+	added description to find conv string block to use
+	corrected an error in the conv header
+	
+2002-04-11 19:35  vividos
+
+	* hacking/cnvdec/cnvdec.cpp (1.2):
+
+	updated; used string block is now printed
 	
 2002-04-11 18:02  vividos
 
@@ -340,7 +627,27 @@
 	
 2002-04-11 11:49  vividos
 
-	* .cvsignore (1.1):
+	* .cvsignore (1.1), hacking/.cvsignore (1.1), hacking/hacking.dsw
+	(1.1), hacking/cnvdec/.cvsignore (1.1), hacking/cnvdec/cnvdec.cpp
+	(1.1), hacking/cnvdec/cnvdec.dsp (1.1), hacking/critdec/.cvsignore
+	(1.1), hacking/critdec/critdec.cpp (1.1),
+	hacking/critdec/critdec.dsp (1.1), hacking/fontdecode/.cvsignore
+	(1.1), hacking/fontdecode/fontdecode.cpp (1.1),
+	hacking/fontdecode/fontdecode.dsp (1.1),
+	hacking/grdecode/.cvsignore (1.1), hacking/grdecode/grdecode.cpp
+	(1.1), hacking/grdecode/grdecode.dsp (1.1),
+	hacking/levarkdec/.cvsignore (1.1), hacking/levarkdec/levarkdec.cpp
+	(1.1), hacking/levarkdec/levarkdec.dsp (1.1),
+	hacking/miscdecode/.cvsignore (1.1),
+	hacking/miscdecode/miscdecode.cpp (1.1),
+	hacking/miscdecode/miscdecode.dsp (1.1),
+	hacking/sgdecode/.cvsignore (1.1), hacking/sgdecode/sgdecode.cpp
+	(1.1), hacking/sgdecode/sgdecode.dsp (1.1),
+	hacking/stringextract/.cvsignore (1.1),
+	hacking/stringextract/stringextract.cpp (1.1),
+	hacking/stringextract/stringextract.dsp (1.1),
+	hacking/trdecode/.cvsignore (1.1), hacking/trdecode/trdecode.cpp
+	(1.1), hacking/trdecode/trdecode.dsp (1.1):
 
 	added hacking projects
 	
@@ -349,6 +656,13 @@
 	* ChangeLog (1.1):
 
 	always created with `cvs2cl.pl -r -S --no-wrap --gmt'
+	
+2002-04-10 22:50  vividos
+
+	* docs/: uw-formats.txt (1.1), uw1-walkthrough.txt (1.1),
+	uw2-walkthrough.txt (1.1):
+
+	initial import
 	
 2002-04-10 22:32  vividos
 
