@@ -40,6 +40,7 @@ function lua_init_script()
 
    player_set_pos(32.0, 2.0)
    player_set_angle(90.0)
+   player_set_height(24.0)
    player_set_attr(player_attr_maplevel,0)
 
    player_set_attr(player_attr_gender,1)
@@ -153,6 +154,15 @@ level_pos = {
          { x = 29.5, y = 18.5 }, -- human enclave
          { x = 11.5, y = 44.5 }, -- green goblin camp
          { x = 56.5, y = 59.5 }, -- gray goblin camp
+      }
+   },
+
+   [1] = { -- starting positions for level 1
+      n = 3,
+      pos = {
+         { x = 13.5, y = 8.5 },  -- hall of the mountain king
+         { x = 60.5, y = 8.5 },  -- shak
+         { x = 45.5, y = 58.5 }, -- evil gray goblins
       }
    },
 }
