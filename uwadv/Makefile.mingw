@@ -295,7 +295,7 @@ uwdump_OBJS = $(uwdump_CPPs:%.cpp=source/tools/uwdump/%.o)
 
 uwdump_LDFLAGS = -mconsole
 uwdump_LIBS = -lmingw32 -lkernel32 -luser32 libuatools.a \
-	$(SDL_LIB) $(STLPORT_LIB) $(OPENGL_LIB)
+	$(SDL_LIB) $(STLPORT_LIB)
 
 
 # uw model view tool
@@ -305,7 +305,8 @@ uwmdlview_CPPs = $(filter %.cpp,$(uwmdlview_SOURCES))
 uwmdlview_OBJS = $(uwmdlview_CPPs:%.cpp=source/tools/%.o)
 
 uwmdlview_LDFLAGS = -mconsole
-uwmdlview_LIBS = -lmingw32 -lkernel32 -luser32 libuatools.a $(SDL_LIB) $(STLPORT_LIB)
+uwmdlview_LIBS = -lmingw32 -lkernel32 -luser32 libuatools.a \
+	$(SDL_LIB) $(STLPORT_LIB) $(OPENGL_LIB)
 
 
 #
