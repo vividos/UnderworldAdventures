@@ -1,0 +1,9 @@
+#
+# common makefile for Underworld Adventures Debugger
+#
+# $Id$
+#
+
+libuadebug_la_SOURCES = dbgcommon.hpp \
+	dbgapp.hpp dbgapp.cpp \
+	mainframe.hpp mainframe.cpp
