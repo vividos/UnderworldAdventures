@@ -51,6 +51,8 @@ public:
    // virtual functions from ua_ui_screen_base
 
    virtual void init();
+   virtual void suspend();
+   virtual void resume();
    virtual void done();
    virtual void handle_event(SDL_Event &event);
    virtual void render();

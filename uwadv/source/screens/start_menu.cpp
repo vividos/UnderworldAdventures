@@ -49,6 +49,25 @@ void ua_start_menu_screen::init()
 {
    ua_trace("start menu screen started\n");
 
+   // load background image
+   img.load_raw(core->get_settings(),"data/opscr.byt",2);
+
+   // get palette #2 (needed for palette shifting)
+   memcpy(palette,core->get_texmgr().get_palette(2),sizeof(ua_onepalette));
+
+   // load button graphics
+   img_buttons.load(core->get_settings(),"opbtn",0,0,2);
+
+   resume();
+}
+
+void ua_start_menu_screen::suspend()
+{
+   tex.done();
+}
+
+void ua_start_menu_screen::resume()
+{
    // setup orthogonal projection
    glMatrixMode(GL_PROJECTION);
    glLoadIdentity();
@@ -63,30 +82,23 @@ void ua_start_menu_screen::init()
    glDisable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
-   // load background image
-   img.load_raw(core->get_settings(),"data/opscr.byt",2);
+   // init texture
    tex.init(&core->get_texmgr());
    tex.convert(img);
    tex.use();
    tex.upload();
 
-   // get palette #2 (needed for palette shifting)
-   memcpy(palette,core->get_texmgr().get_palette(2),sizeof(ua_onepalette));
-
-   // load button graphics
-   img_buttons.load(core->get_settings(),"opbtn",0,0,2);
-
-   stage=0;
-   tickcount=0;
+   stage = 0;
+   tickcount = 0;
+   journey_avail = core->get_filesmgr().savegames_avail();
+   buttondown = false;
+   selected_area = -1;
    shiftcount=0.0;
-   journey_avail=core->get_filesmgr().savegames_avail();
-   buttondown=false;
-   selected_area=-1;
 }
 
 void ua_start_menu_screen::done()
 {
-   tex.done();
+   suspend();
 
    // clear screen
    glClearColor(0,0,0,0);
