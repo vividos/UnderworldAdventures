@@ -30,6 +30,7 @@
 #include <string>
 #include <cstdarg>
 #include <cstdio>
+#include <algorithm>
 
 #ifdef __MINGW32__
 #define HAVE_SYS_STAT_H
@@ -222,3 +223,8 @@ void ua_find_files(const char* pathname, std::vector<std::string>& filelist)
 // enable it.
 
 #endif
+
+void ua_str_lowercase(std::string& str)
+{
+   std::transform(str.begin(),str.end(),str.begin(),tolower);
+}

@@ -67,6 +67,8 @@ bool ua_file_exists(const char* filename);
 //! finds files matching a wildcard pattern pathname
 void ua_find_files(const char* pathname, std::vector<std::string>& filelist);
 
+//! makes a string lowercase
+void ua_str_lowercase(std::string& str);
 
 
 // classes
