@@ -34,7 +34,8 @@
 
 // ua_uw_import methods
 
-void ua_uw_import::load_mapobjects(ua_object_list& objlist, SDL_RWops* rwops, Uint16 texmap[64])
+void ua_uw_import::load_mapobjects(ua_object_list& objlist, SDL_RWops* rwops,
+   Uint16 texmap[64], Uint16 door_map[6])
 {
    std::vector<Uint16>& tile_index = objlist.get_tile_index();
    std::vector<ua_object>& master_obj_list = objlist.get_master_obj_list();
@@ -69,12 +70,13 @@ void ua_uw_import::load_mapobjects(ua_object_list& objlist, SDL_RWops* rwops, Ui
    // now that we have the two lists, follow each tile ref
    for(unsigned int n=0; n<64*64; n++)
       if (tile_index[n] != 0)
-         addobj_follow(master_obj_list,objprop,npcinfo,tile_index[n],texmap,n&63,n>>6);
+         addobj_follow(master_obj_list, objprop, npcinfo, tile_index[n],
+            texmap, door_map, n&63, n>>6);
 }
 
 void ua_uw_import::addobj_follow(std::vector<ua_object>& master_obj_list,
-   Uint32 objprop[0x400*2], Uint8 npcinfo[0x100*19],Uint16 objpos,
-   Uint16 texmap[64],Uint8 tilex, Uint8 tiley)
+   Uint32 objprop[0x400*2], Uint8 npcinfo[0x100*19], Uint16 objpos,
+   Uint16 texmap[64], Uint16 door_map[6], Uint8 tilex, Uint8 tiley)
 {
    while(objpos!=0)
    {
@@ -85,7 +87,8 @@ void ua_uw_import::addobj_follow(std::vector<ua_object>& master_obj_list,
          // at least update tilex/tiley when needed
          if (tilex != 0xff && tiley != 0xff)
          {
-            ua_object_info_ext& extinfo = master_obj_list[objpos].get_ext_object_info();
+            ua_object_info_ext& extinfo =
+               master_obj_list[objpos].get_ext_object_info();
 
             extinfo.tilex = tilex;
             extinfo.tiley = tiley;
@@ -196,7 +199,14 @@ void ua_uw_import::addobj_follow(std::vector<ua_object>& master_obj_list,
          if (item_id == 0x0164)
          {
             Uint16& flags = obj.get_object_info().flags;
-            flags = flags < 2 ? (30+flags+ua_tex_stock_tmobj) : texmap[flags-2+48];
+            flags = flags < 2 ?
+               (30+flags+ua_tex_stock_tmobj) : texmap[flags-2+48];
+         }
+
+         // a_door objects: store texture id in "flags"
+         if (item_id >= 0x0140 && item_id < 0x0150 && (item_id & 7) < 6)
+         {
+            flags = door_map[item_id & 7];
          }
       }
 
@@ -205,7 +215,8 @@ void ua_uw_import::addobj_follow(std::vector<ua_object>& master_obj_list,
 
       // examine special property and add recursively
       if (is_quantity==0)
-         addobj_follow(master_obj_list,objprop,npcinfo,quantity,texmap,0xff,0xff);
+         addobj_follow(master_obj_list, objprop, npcinfo, quantity,
+            texmap, door_map, 0xff,0xff);
 
       // add next object in chain
       objpos = link;

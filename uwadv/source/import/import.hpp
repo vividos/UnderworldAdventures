@@ -61,7 +61,8 @@ public:
    // underworld objects loading
 
    //! loads underworld objects from folder
-   void load_underworld(ua_underworld& underw, ua_settings& settings, const char* folder, bool initial);
+   void load_underworld(ua_underworld& underw, ua_settings& settings,
+      const char* folder, bool initial);
 
    //! loads properties
    void load_properties(ua_object_properties& prop, const char* path);
@@ -70,7 +71,8 @@ public:
    void load_player(ua_player& player, const char* path);
 
    //! loads map objects
-   void load_mapobjects(ua_object_list& objlist, SDL_RWops* rwops, Uint16 texmap[64]);
+   void load_mapobjects(ua_object_list& objlist, SDL_RWops* rwops,
+      Uint16 texmap[64], Uint16 door_map[6]);
 
    //! loads uw1, uw_demo or uw2 level maps
    void load_levelmaps(std::vector<ua_level> &levels, ua_settings &settings,
@@ -85,15 +87,17 @@ public:
 
 protected:
    //! loads tilemap infos
-   void load_tilemap(ua_level& level, SDL_RWops* rwops, Uint16 textures[64], bool uw2_mode);
+   void load_tilemap(ua_level& level, SDL_RWops* rwops, Uint16 textures[64],
+      bool uw2_mode);
 
    //! loads texture info
-   void load_texinfo(ua_level& level, SDL_RWops* rwops, Uint16 textures[64], bool uw2_mode);
+   void load_texinfo(ua_level& level, SDL_RWops* rwops, Uint16 textures[64],
+      Uint16 door_textures[6], bool uw2_mode);
 
    //! adds object to master object list and follows link1 and link2 objs
    void addobj_follow(std::vector<ua_object>& master_obj_list,
-      Uint32 objprop[0x400*2], Uint8 npcinfo[0x100*19],
-      Uint16 objpos, Uint16 texmap[64], Uint8 tilex, Uint8 tiley);
+      Uint32 objprop[0x400*2], Uint8 npcinfo[0x100*19], Uint16 objpos,
+      Uint16 texmap[64], Uint16 door_map[6], Uint8 tilex, Uint8 tiley);
 
    //! loads imported functions list
    void load_conv_code_imported_funcs(ua_conv_code_vm& vm, FILE *fd);
@@ -179,7 +183,8 @@ public:
 // inline functions
 
 //! retrieves "count" bits from "value", starting at bit "start"
-inline Uint32 ua_get_bits(Uint32 value, unsigned int start, unsigned int count)
+inline Uint32 ua_get_bits(Uint32 value, unsigned int start,
+   unsigned int count)
 {
    return (value>>start) & ((1<<count)-1);
 }

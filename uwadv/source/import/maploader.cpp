@@ -61,18 +61,20 @@ ua_levelmap_tiletype ua_tile_type_mapping[16] =
 
 // ua_uw1_import methods
 
-void ua_uw1_import::load_levelmaps(std::vector<ua_level> &levels, ua_settings &settings,
-   const char* folder)
+void ua_uw1_import::load_levelmaps(std::vector<ua_level> &levels,
+   ua_settings &settings, const char* folder)
 {
    // load uw1 maps
 
    // determine number of levels
-   unsigned int numlevels = settings.get_bool(ua_setting_uw1_is_uw_demo) ? 1 : 9;
+   unsigned int numlevels =
+      settings.get_bool(ua_setting_uw1_is_uw_demo) ? 1 : 9;
    levels.resize(numlevels);
 
    ua_trace("importing %u uw1 level maps from %s\n",numlevels,folder);
 
    Uint16 textures[64];
+   Uint16 door_textures[6];
 
    std::string mapfile(settings.get_string(ua_setting_uw_path));
 
@@ -94,7 +96,7 @@ void ua_uw1_import::load_levelmaps(std::vector<ua_level> &levels, ua_settings &s
             throw ua_exception(text.c_str());
          }
 
-         load_texinfo(level,rwops,textures,false);
+         load_texinfo(level,rwops,textures,door_textures,false);
          SDL_RWclose(rwops);
       }
 
@@ -114,7 +116,7 @@ void ua_uw1_import::load_levelmaps(std::vector<ua_level> &levels, ua_settings &s
 
       // import objects
       SDL_RWseek(rwops,0,SEEK_SET);
-      load_mapobjects(level.get_mapobjects(),rwops,textures);
+      load_mapobjects(level.get_mapobjects(), rwops, textures, door_textures);
       SDL_RWclose(rwops);
    }
    else
@@ -149,7 +151,7 @@ void ua_uw1_import::load_levelmaps(std::vector<ua_level> &levels, ua_settings &s
 
          // load texture usage table
          SDL_RWseek(rwops,offsets[i+18],SEEK_SET);
-         load_texinfo(level,rwops,textures,false);
+         load_texinfo(level,rwops,textures,door_textures,false);
 
          // load level map
          SDL_RWseek(rwops,offsets[i],SEEK_SET);
@@ -157,7 +159,7 @@ void ua_uw1_import::load_levelmaps(std::vector<ua_level> &levels, ua_settings &s
 
          // load object list
          SDL_RWseek(rwops,offsets[i],SEEK_SET);
-         load_mapobjects(level.get_mapobjects(),rwops,textures);
+         load_mapobjects(level.get_mapobjects(),rwops,textures,door_textures);
       }
 
       SDL_RWclose(rwops);
@@ -167,8 +169,8 @@ void ua_uw1_import::load_levelmaps(std::vector<ua_level> &levels, ua_settings &s
 
 // ua_uw2_import methods
 
-void ua_uw2_import::load_levelmaps(std::vector<ua_level>& levels, ua_settings& settings,
-   const char* folder)
+void ua_uw2_import::load_levelmaps(std::vector<ua_level>& levels,
+   ua_settings& settings, const char* folder)
 {
    // load uw2 maps
    unsigned int numlevels = 80;
@@ -177,6 +179,7 @@ void ua_uw2_import::load_levelmaps(std::vector<ua_level>& levels, ua_settings& s
    ua_trace("importing %u uw2 level maps from %s\n",numlevels,folder);
 
    Uint16 textures[64];
+   Uint16 door_textures[6];
 
    // open map file
    std::string mapfile(settings.get_string(ua_setting_uw_path));
@@ -202,7 +205,7 @@ void ua_uw2_import::load_levelmaps(std::vector<ua_level>& levels, ua_settings& s
       rwops = get_rwops_uw2dec(fd,i+80,0x0086);
       if (rwops != NULL)
       {
-         load_texinfo(level,rwops,textures,true);
+         load_texinfo(level,rwops,textures,door_textures,true);
          SDL_RWclose(rwops);
       }
 
@@ -217,7 +220,7 @@ void ua_uw2_import::load_levelmaps(std::vector<ua_level>& levels, ua_settings& s
 
       // load object list
       SDL_RWseek(rwops,0,SEEK_SET);
-      load_mapobjects(level.get_mapobjects(),rwops,textures);
+      load_mapobjects(level.get_mapobjects(),rwops,textures,door_textures);
 
       SDL_RWclose(rwops);
    }
@@ -228,8 +231,8 @@ void ua_uw2_import::load_levelmaps(std::vector<ua_level>& levels, ua_settings& s
 
 // ua_uw_import methods
 
-void ua_uw_import::load_levelmaps(std::vector<ua_level>& levels, ua_settings& settings,
-   const char* folder)
+void ua_uw_import::load_levelmaps(std::vector<ua_level>& levels,
+   ua_settings& settings, const char* folder)
 {
    // decide which method to call
    if (settings.get_gametype() != ua_game_uw2)
@@ -244,7 +247,8 @@ void ua_uw_import::load_levelmaps(std::vector<ua_level>& levels, ua_settings& se
    }
 }
 
-void ua_uw_import::load_tilemap(ua_level& level, SDL_RWops* rwops, Uint16 textures[64], bool uw2_mode)
+void ua_uw_import::load_tilemap(ua_level& level, SDL_RWops* rwops,
+   Uint16 textures[64], bool uw2_mode)
 {
    std::vector<ua_levelmap_tile>& tiles = level.get_tileslist();
 
@@ -286,8 +290,8 @@ void ua_uw_import::load_tilemap(ua_level& level, SDL_RWops* rwops, Uint16 textur
 //   level.used = true;
 }
 
-/*! \todo load texture info for doors */
-void ua_uw_import::load_texinfo(ua_level& level, SDL_RWops* rwops, Uint16 textures[64], bool uw2_mode)
+void ua_uw_import::load_texinfo(ua_level& level, SDL_RWops* rwops,
+   Uint16 textures[64], Uint16 door_textures[6], bool uw2_mode)
 {
    std::vector<Uint16>& used_textures = level.get_used_textures();
 
@@ -295,6 +299,7 @@ void ua_uw_import::load_texinfo(ua_level& level, SDL_RWops* rwops, Uint16 textur
 
    if (!uw2_mode)
    {
+      // uw1 mapping
       Uint16 tex;
       for(tex=0; tex<48; tex++)
       {
@@ -310,6 +315,7 @@ void ua_uw_import::load_texinfo(ua_level& level, SDL_RWops* rwops, Uint16 textur
    }
    else
    {
+      // uw2 mapping
       Uint16 tex;
       for(tex=0; tex<64; tex++)
       {
@@ -318,5 +324,10 @@ void ua_uw_import::load_texinfo(ua_level& level, SDL_RWops* rwops, Uint16 textur
       }
    }
 
-//   for(tex=0; tex<6; tex++)  door_textures[tex]  = fread16(fd);
+   // load door textures mapping
+   for(Uint16 dtex=0; dtex<6; dtex++)
+   {
+      door_textures[dtex]  = SDL_RWread8(rwops)+ua_tex_stock_door;
+      used_textures.push_back(door_textures[dtex]);
+   }
 }
