@@ -1,0 +1,143 @@
+Index: include/lua.h
+===================================================================
+RCS file: /cvsroot/uwadv/uwadv/source/lua/include/lua.h,v
+retrieving revision 1.2
+diff -I$Id -u -r1.2 lua.h
+--- include/lua.h	3 Jul 2002 15:09:00 -0000	1.2
++++ include/lua.h	10 Jul 2002 10:42:01 -0000
+@@ -22,7 +22,7 @@
+ #endif
+ 
+ 
+-#define LUA_VERSION	"Lua 4.0"
++#define LUA_VERSION	"Lua 4.0.1"
+ #define LUA_COPYRIGHT	"Copyright (C) 1994-2000 TeCGraf, PUC-Rio"
+ #define LUA_AUTHORS 	"W. Celes, R. Ierusalimschy & L. H. de Figueiredo"
+ 
+Index: src/lapi.c
+===================================================================
+RCS file: /cvsroot/uwadv/uwadv/source/lua/src/lapi.c,v
+retrieving revision 1.2
+diff -I$Id -u -r1.2 lapi.c
+--- src/lapi.c	3 Jul 2002 15:09:00 -0000	1.2
++++ src/lapi.c	10 Jul 2002 10:42:01 -0000
+@@ -485,7 +485,7 @@
+ 
+ 
+ LUA_API void *lua_newuserdata (lua_State *L, size_t size) {
+-  TString *ts = luaS_newudata(L, size, NULL);
++  TString *ts = luaS_newudata(L, (size==0) ? 1 : size, NULL);
+   tsvalue(L->top) = ts;
+   ttype(L->top) = LUA_TUSERDATA;
+   api_incr_top(L);
+Index: src/ldo.c
+===================================================================
+RCS file: /cvsroot/uwadv/uwadv/source/lua/src/ldo.c,v
+retrieving revision 1.2
+diff -I$Id -u -r1.2 ldo.c
+--- src/ldo.c	3 Jul 2002 15:09:00 -0000	1.2
++++ src/ldo.c	10 Jul 2002 10:42:01 -0000
+@@ -244,7 +244,9 @@
+   unsigned long old_blocks;
+   int status;
+   p.z = z; p.bin = bin;
+-  luaC_checkGC(L);
++  /* before parsing, give a (good) chance to GC */
++  if (L->nblocks/8 >= L->GCthreshold/10)
++    luaC_collectgarbage(L);
+   old_blocks = L->nblocks;
+   status = luaD_runprotected(L, f_parser, &p);
+   if (status == 0) {
+@@ -274,10 +276,11 @@
+   lua_pushstring(L, "@");
+   lua_pushstring(L, (filename == NULL) ? "(stdin)" : filename);
+   lua_concat(L, 2);
+-  filename = lua_tostring(L, -1);  /* filename = '@'..filename */
+-  lua_pop(L, 1);  /* OK: there is no GC during parser */
++  c = lua_gettop(L);
++  filename = lua_tostring(L, c);  /* filename = '@'..filename */
+   luaZ_Fopen(&z, f, filename);
+   status = protectedparser(L, &z, bin);
++  lua_remove(L, c);  /* remove `filename' from the stack */
+   if (f != stdin)
+     fclose(f);
+   return status;
+Index: src/lgc.c
+===================================================================
+RCS file: /cvsroot/uwadv/uwadv/source/lua/src/lgc.c,v
+retrieving revision 1.2
+diff -I$Id -u -r1.2 lgc.c
+--- src/lgc.c	3 Jul 2002 15:09:00 -0000	1.2
++++ src/lgc.c	10 Jul 2002 10:42:01 -0000
+@@ -336,7 +336,7 @@
+ }
+ 
+ 
+-static void luaC_collectgarbage (lua_State *L) {
++void luaC_collectgarbage (lua_State *L) {
+   markall(L);
+   invalidaterefs(L);  /* check unlocked references */
+   luaC_collect(L, 0);
+Index: src/lgc.h
+===================================================================
+RCS file: /cvsroot/uwadv/uwadv/source/lua/src/lgc.h,v
+retrieving revision 1.2
+diff -I$Id -u -r1.2 lgc.h
+--- src/lgc.h	3 Jul 2002 15:09:00 -0000	1.2
++++ src/lgc.h	10 Jul 2002 10:42:01 -0000
+@@ -12,6 +12,7 @@
+ 
+ 
+ void luaC_collect (lua_State *L, int all);
++void luaC_collectgarbage (lua_State *L);
+ void luaC_checkGC (lua_State *L);
+ 
+ 
+Index: src/lparser.c
+===================================================================
+RCS file: /cvsroot/uwadv/uwadv/source/lua/src/lparser.c,v
+retrieving revision 1.2
+diff -I$Id -u -r1.2 lparser.c
+--- src/lparser.c	3 Jul 2002 15:09:00 -0000	1.2
++++ src/lparser.c	10 Jul 2002 10:42:02 -0000
+@@ -997,7 +997,7 @@
+   /* stat -> RETURN explist */
+   FuncState *fs = ls->fs;
+   next(ls);  /* skip RETURN */
+-  if (!block_follow(ls->t.token))
++  if (!block_follow(ls->t.token) && ls->t.token != ';')
+     explist1(ls);  /* optional return values */
+   luaK_code1(fs, OP_RETURN, ls->fs->nactloc);
+   fs->stacklevel = fs->nactloc;  /* removes all temp values */
+Index: src/lstring.c
+===================================================================
+RCS file: /cvsroot/uwadv/uwadv/source/lua/src/lstring.c,v
+retrieving revision 1.2
+diff -I$Id -u -r1.2 lstring.c
+--- src/lstring.c	3 Jul 2002 15:09:00 -0000	1.2
++++ src/lstring.c	10 Jul 2002 10:42:02 -0000
+@@ -119,7 +119,7 @@
+   ts->nexthash = NULL;
+   ts->len = s;
+   ts->u.d.tag = 0;
+-  ts->u.d.value = (udata == NULL) ? uts+1 : udata;
++  ts->u.d.value = (s > 0) ? uts+1 : udata;
+   L->nblocks += sizestring(s);
+  /* insert it on table */
+   newentry(L, &L->udt, ts, IntPoint(ts->u.d.value) & (L->udt.size-1));
+Index: src/lvm.c
+===================================================================
+RCS file: /cvsroot/uwadv/uwadv/source/lua/src/lvm.c,v
+retrieving revision 1.2
+diff -I$Id -u -r1.2 lvm.c
+--- src/lvm.c	3 Jul 2002 15:09:01 -0000	1.2
++++ src/lvm.c	10 Jul 2002 10:42:02 -0000
+@@ -79,7 +79,7 @@
+   if (newline != ci->line || pc <= ci->lastpc) {
+     ci->line = newline;
+     L->top = top;
+-    luaD_lineHook(L, base-2, newline, linehook);
++    luaD_lineHook(L, base-1, newline, linehook);
+   }
+   ci->lastpc = pc;
+ }
