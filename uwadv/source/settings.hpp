@@ -33,8 +33,29 @@
 #include <string>
 
 
-//! config class
+// enum
 
+//! game type enum
+typedef enum
+{
+   //! no game available
+   ua_game_none=0,
+
+   //! we have the full game
+   ua_game_uw1,
+
+   //! only the demo is available
+   ua_game_uw_demo,
+
+   //! we have uw2
+   ua_game_uw2,
+
+} ua_game_type;
+
+
+// classes
+
+//! config class
 class ua_settings
 {
 public:
@@ -47,7 +68,16 @@ public:
    //! path to uw1
    std::string uw1_path;
 
+   //! game type
+   ua_game_type gtype;
+
 protected:
+   //! initializes more stuff after loading
+   void init();
+
+   //! checks if a file is available
+   bool file_isavail(const char *fname);
+
    //! processes a single option
    void process_option(int option, const char *value);
 };

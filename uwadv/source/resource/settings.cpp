@@ -59,6 +59,8 @@ struct
 };
 
 
+// functions
+
 inline bool ua_istab(char c){ return c=='\t'; }
 
 
@@ -129,6 +131,67 @@ bool ua_settings::load()
 
    cfg.close();
 
+   // initialize rest of settings
+   init();
+
+   return true;
+}
+
+void ua_settings::init()
+{
+   // check if uw1_path ends with a slash; add one when not
+   if (uw1_path.size()==0)
+   {
+      throw ua_exception("no uw1_path specified in uwadv.cfg");
+   }
+
+   unsigned int last = uw1_path.size()-1;
+   if (uw1_path.at(last)!='/' && uw1_path.at(last)!='\\')
+      uw1_path.append(1,'/');
+
+   // check for files that have to be available in all games
+   if (!file_isavail("data/cnv.ark") &&
+       !file_isavail("data/strings.pak") &&
+       !file_isavail("data/pals.dat") &&
+       !file_isavail("data/allpals.dat"))
+   {
+      gtype = ua_game_none;
+   }
+   else
+   // check for demo relevant files
+   if (file_isavail("uwdemo.exe") &&
+       file_isavail("data/level13.st") &&
+       file_isavail("data/level13.anx") &&
+       file_isavail("data/level13.txm"))
+   {
+      gtype = ua_game_uw_demo;
+   }
+   else
+   // check for ultima underworld 2
+   if (file_isavail("uw2.exe"))
+   {
+      gtype = ua_game_uw2;
+      return;
+   }
+   else
+   // check for ultima underworld 1
+   if (file_isavail("uw.exe"))
+   {
+      gtype = ua_game_uw1;
+   }
+   else
+      gtype = ua_game_none;
+}
+
+bool ua_settings::file_isavail(const char *fname)
+{
+   std::string filename(uw1_path);
+   filename.append(fname);
+
+   FILE *fd = fopen(filename.c_str(),"rb");
+   if (fd==NULL)
+      return false;
+   fclose(fd);
    return true;
 }
 
