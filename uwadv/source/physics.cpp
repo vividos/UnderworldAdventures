@@ -67,6 +67,9 @@ const double ua_physics_max_step_height = 2.1;
 //! max speed a player can walk, in tiles / second
 const double ua_player_max_walk_speed = 2.4;
 
+//! max speed a player can slide left or right
+const double ua_player_max_slide_speed = 1.0;
+
 //! max speed a player can rotate, in degrees / second
 const double ua_player_max_rotate_speed = 90;
 
@@ -94,11 +97,20 @@ void ua_physics_model::eval_physics(double time)
 
       unsigned int mode = underw->get_player().get_movement_mode();
 
-      if (mode & ua_move_walk)
+      if ((mode & ua_move_walk) || (mode & ua_move_slide))
       {
-         double speed = ua_player_max_walk_speed*(time-last_evaltime) *
-            pl.get_movement_factor(ua_move_walk);
+         double speed = ua_player_max_walk_speed*(time-last_evaltime);
          double angle = underw->get_player().get_angle_rot();
+
+         // adjust angle for sliding
+         if (mode & ua_move_slide)
+         {
+            angle -= 90.0;
+            speed *= pl.get_movement_factor(ua_move_slide);
+            speed *= ua_player_max_slide_speed/ua_player_max_walk_speed;
+         }
+         else
+            speed *= pl.get_movement_factor(ua_move_walk);
 
          ua_vector2d dir;
          dir.set_polar(speed,angle);

@@ -50,6 +50,7 @@ void ua_player::init()
    move_factors[ua_move_rotate] = 0.0;
    move_factors[ua_move_lookup] = 0.0;
    move_factors[ua_move_jump] = 0.0;
+   move_factors[ua_move_slide] = 0.0;
    move_factors[ua_move_float] = 0.0;
 }
 

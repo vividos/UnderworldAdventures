@@ -42,7 +42,8 @@ enum ua_player_movement_mode
    ua_move_rotate  = 2, // rotates player left (or right)
    ua_move_lookup = 4,  // moves player look angle up (or down)
    ua_move_jump = 8,    // jumps forward (or factor 0.0 for standing jump)
-   ua_move_float = 16,  // floats player up (or down)
+   ua_move_slide = 16,  // slides right (or left)
+   ua_move_float = 32,  // floats player up (or down)
 };
 
 
