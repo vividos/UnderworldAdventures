@@ -105,7 +105,7 @@ protected:
    unsigned int nchars;
 
    // import friend class
-   friend class ua_uw_import;
+   friend class ua_uw_import_gfx;
 };
 
 

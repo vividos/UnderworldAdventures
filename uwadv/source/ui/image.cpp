@@ -28,7 +28,7 @@
 // needed includes
 #include "common.hpp"
 #include "image.hpp"
-#include "import.hpp"
+#include "importgfx.hpp"
 
 
 // ua_palette256 methods
@@ -189,7 +189,7 @@ void ua_image_manager::init(ua_settings& settings)
 {
    uw_path = settings.get_string(ua_setting_uw_path);
 
-   ua_uw_import import;
+   ua_uw_import_gfx import;
 
    // load all palettes
    std::string filename(uw_path);
@@ -222,7 +222,7 @@ void ua_image_manager::load(ua_image& img, const char* basename, unsigned int im
          filename.append(".gr");
 
          // import the image
-         ua_uw_import import;
+         ua_uw_import_gfx import;
          import.load_image_gr(img, filename.c_str(), imgnum, allauxpals);
       }
       break;
@@ -236,7 +236,7 @@ void ua_image_manager::load(ua_image& img, const char* basename, unsigned int im
          img.create(320,200);
 
          // import the image
-         ua_uw_import import;
+         ua_uw_import_gfx import;
          import.load_image_byt(filename.c_str(), &img.get_pixels()[0]);
       }
       break;
@@ -262,7 +262,7 @@ void ua_image_manager::load_list(std::vector<ua_image>& imgs, const char* basena
    filename.append(".gr");
 
    // import the images
-   ua_uw_import import;
+   ua_uw_import_gfx import;
 
    import.load_image_gr_list(imgs, filename.c_str(), img_from, img_to,
       allauxpals);

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
 // needed includes
 #include "common.hpp"
 #include "cutscene.hpp"
-#include "import.hpp"
+#include "importgfx.hpp"
 
 
 // ua_cutscene methods
@@ -53,7 +53,7 @@ void ua_cutscene::load(ua_settings& settings, const char* relfilename)
 
 void ua_cutscene::load(const char* filename)
 {
-   ua_uw_import import;
+   ua_uw_import_gfx import;
    import.load_cutscene(filename, image, lpdarray, lpages, records);
 
    curframe = (unsigned int)-1;
@@ -120,7 +120,7 @@ void ua_cutscene::decode_frame(unsigned int framenum)
       src += ( src16[1] + ( src16[1] & 1 ));
 
    // extract the pixel data
-   ua_uw_import import;
+   ua_uw_import_gfx import;
    import.extract_cutscene_data(&src[4], &image.get_pixels()[0],
       image.get_xres()*image.get_yres());
 }
