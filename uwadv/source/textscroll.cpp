@@ -126,15 +126,16 @@ bool ua_textscroll::print(const char* text)
             linewidth -= font_normal.calc_length(ua_textscroll_more_string);
          }
 
+         // search for newlines
+         pos = part.find_first_of('\n');
+
+         if (pos != std::string::npos)
+            part.erase(pos);
+
          // cut down string on ' ' boundaries, until it fits into an image
          while(font_normal.calc_length(part.c_str()) > linewidth)
          {
-            // search for newlines
-            pos = part.find_first_of('\n');
-
-            // no newlines? then search for the last space
-            if (pos==std::string::npos)
-               pos = part.find_last_of(' ');
+            pos = part.find_last_of(' ');
 
             if (pos != std::string::npos)
             {
