@@ -100,6 +100,10 @@ SOURCE=..\debug\mainframe.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\debug\playerinfo.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\uadebug.def
 # End Source File
 # End Group
@@ -118,10 +122,28 @@ SOURCE=..\debug\dbgcommon.hpp
 
 SOURCE=..\debug\mainframe.hpp
 # End Source File
+# Begin Source File
+
+SOURCE=..\debug\playerinfo.hpp
+# End Source File
 # End Group
 # Begin Group "resource files"
 
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+# End Group
+# Begin Group "frame layout files"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\..\wxMSW\contrib\src\fl\controlbar.cpp
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\wxMSW\contrib\include\wx\fl\controlbar.h
+# PROP Exclude_From_Build 1
+# End Source File
 # End Group
 # End Target
 # End Project
