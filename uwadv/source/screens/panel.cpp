@@ -150,7 +150,7 @@ bool ua_panel::process_event(SDL_Event& event)
    // check if bottom chain was pressed
    if (event.type == SDL_MOUSEBUTTONUP)
    {
-      unsigned int xpos,ypos;
+      unsigned int xpos=0, ypos=0;
       calc_mousepos(event, xpos, ypos);
 
       // in window?

@@ -107,7 +107,7 @@ bool ua_save_game_button::process_event(SDL_Event& event)
    // check if mouse left button area
    if (event.type == SDL_MOUSEMOTION && (leftbuttondown || rightbuttondown))
    {
-      unsigned int xpos, ypos;
+      unsigned int xpos=0, ypos=0;
       calc_mousepos(event, xpos, ypos);
 
       update_button(in_window(xpos,ypos));

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -80,7 +80,7 @@ bool ua_screen::process_event(SDL_Event& event)
        event.type == SDL_MOUSEBUTTONUP)
    {
       // get coordinates
-      unsigned int xpos,ypos;
+      unsigned int xpos=0, ypos=0;
       calc_mousepos(event, xpos, ypos);
 
       // first, send mouse event to main screen window
