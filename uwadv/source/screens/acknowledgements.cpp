@@ -52,51 +52,42 @@ void ua_acknowledgements_screen::init()
 
    ua_trace("acknowledgements screen started\n");
 
-   // init OpenGL stuff
+   game->get_renderer().setup_camera2d();
 
-   // setup orthogonal projection
-   glMatrixMode(GL_PROJECTION);
-   glLoadIdentity();
-   gluOrtho2D(0,320,0,200);
-   glMatrixMode(GL_MODELVIEW);
-
-   // set OpenGL flags
-   glEnable(GL_TEXTURE_2D);
-   glBindTexture(GL_TEXTURE_2D,0);
-
-   glDisable(GL_DEPTH_TEST);
    glDisable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
-   // setup misc. variables
+   // set up variables
    ended = false;
-   stage = 0; // crossfade
-   tickcount = unsigned(show_time * game->get_tickrate()) - 3;
-   curframe = unsigned(-1);
+   stage = 1; // crossfade
+   tickcount = 0;
+   curframe = 0;
 
+   // init cutscene quad
    cuts_ack.load(game->get_settings(),"cuts/cs012.n01");
-   cuts_ack.init(&game->get_renderer().get_texture_manager());
+   cuts_ack.init(*game, 0,0);
+   cuts_ack.update_frame(curframe);
 
-   // trick to copy image properties and palette
-   img[0].init(&game->get_renderer().get_texture_manager(),0,0,320,200,false);
-   memcpy(img[0].get_quadpalette(),cuts_ack.get_quadpalette(),sizeof(ua_onepalette));
+   // init fadeout image
+   img_fadeout.init(*game, 0,0);
+   {
+      ua_image& img = img_fadeout.get_image();
 
-   img[1].init(&game->get_renderer().get_texture_manager(),0,0,320,200,false);
-   memcpy(img[1].get_quadpalette(),cuts_ack.get_quadpalette(),sizeof(ua_onepalette));
+      img.create(320,200);
+      img.clear(1);
+   }
+   img_fadeout.update();
 
-   // tex 0 is a blank frame / fading-out frame
-   img[0].clear(1);
-   img[0].convert_upload();
-
-   // tex 1 is next fading-in frame
-   img[1].clear(1);
-   img[1].convert_upload();
+   // init fadeout
+   fader.init(false,game->get_tickrate(),xfade_time);
 }
 
 void ua_acknowledgements_screen::destroy()
 {
-   img[0].done();
-   img[1].done();
+   cuts_ack.destroy();
+   img_fadeout.destroy();
+
+   ua_trace("acknowledgements screen ended\n\n");
 }
 
 void ua_acknowledgements_screen::draw()
@@ -108,21 +99,18 @@ void ua_acknowledgements_screen::draw()
    glColor3ub(255,255,255);
 
    // draw first quad
-   unsigned int imgnum = 1-(curframe&1);
-   img[imgnum].render();
+   cuts_ack.draw();
 
    if (stage==1)
    {
       // render second quad using alpha blending
       glEnable(GL_BLEND);
 
-      // calculate alpha
-      Uint8 alpha = 255-Uint8(255*(double(tickcount)/(game->get_tickrate()*xfade_time)));
+      Uint8 alpha = fader.get_fade_value();
       glColor4ub(255,255,255,alpha);
 
       // draw second quad
-      imgnum = curframe&1;
-      img[imgnum].render();
+      img_fadeout.draw();
    }
 }
 
@@ -140,6 +128,10 @@ bool ua_acknowledgements_screen::process_event(SDL_Event& event)
       // handle key presses
       switch(event.key.keysym.sym)
       {
+      case SDLK_SPACE:
+         tickcount = unsigned(show_time * game->get_tickrate()) + 1;
+         break;
+
       case SDLK_RETURN:
       case SDLK_ESCAPE:
          ua_trace("acknowledgements ended by return/escape\n");
@@ -162,37 +154,40 @@ void ua_acknowledgements_screen::tick()
 {
    if (stage==0 && double(tickcount)/game->get_tickrate() >= show_time)
    {
-      // switch to crossfade
-      stage = 1;
-      tickcount = 0;
+      // last frame? fade out and end
       if (curframe==13)
       {
-         ended=true;
+         ended = true;
          fadeout_end();
          return;
       }
 
-      ++curframe;
+      // switch to crossfade
+      stage = 1;
+      tickcount = 0;
+
+      // reinit fader
+      fader.init(false,game->get_tickrate(),xfade_time);
+
+      // copy old frame to fadeout image
+      img_fadeout.get_image() = cuts_ack.get_image();
+      img_fadeout.update();
 
       // load new animation frame
-      cuts_ack.get_frame(curframe);
+      cuts_ack.update_frame(++curframe);
+      img_fadeout.update();
 
-      // upload textures
-      unsigned int imgnum = 1-(curframe&1);
-      img[imgnum].paste_image(cuts_ack,0,0);
-      img[imgnum].convert_upload();
-
-      //ua_trace("uploading frame %u to image %u\n",curframe,imgnum);
-      //ua_trace("showing image %u, blending image %u\n",1-(curframe&1),curframe&1);
-
+      ua_trace("crossfading to frame %u\n",curframe);
       return;
    }
 
-   if (stage==1 && double(tickcount)/game->get_tickrate() >= xfade_time)
+   if (stage==1 && fader.tick())
    {
-      //ua_trace("showing image %u, current frame %u\n",1-(curframe&1),curframe);
+      // fading complete; switch to showing image
+      ua_trace("showing frame %u\n",curframe);
 
-      game->remove_screen();
+      if (ended)
+         game->remove_screen();
 
       // switch to show mode
       stage = 0;
@@ -207,16 +202,20 @@ void ua_acknowledgements_screen::tick()
 void ua_acknowledgements_screen::fadeout_end()
 {
    // initiate fadeout
+   if (stage == 1)
+      tickcount = unsigned(xfade_time * game->get_tickrate()) - tickcount;
+   else
+      tickcount = 0;
    stage = 1;
-   tickcount=0;
+
+   // reinit fader
+   fader.init(false,game->get_tickrate(),xfade_time, tickcount);
+
+   // copy last frame to fadeout image
+   img_fadeout.get_image() = cuts_ack.get_image();
+   img_fadeout.update();
 
    // insert black frame as fadeout frame
-   {
-      ua_image img_clear1,img_clear2;
-
-      unsigned int imgnum = curframe&1;
-      img[imgnum].clear(1);
-      img[imgnum].convert_upload();
-   }
-   ++curframe;
+   cuts_ack.get_image().clear(1);
+   cuts_ack.update();
 }

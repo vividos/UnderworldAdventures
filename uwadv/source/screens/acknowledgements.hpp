@@ -34,8 +34,9 @@
 
 // needed includes
 #include "screen.hpp"
-#include "texture.hpp"
+#include "imgquad.hpp"
 #include "cutscene.hpp"
+#include "fading.hpp"
 
 
 // classes
@@ -81,11 +82,14 @@ protected:
    //! indicates if ended
    bool ended;
 
+   //! fading helper
+   ua_fading_helper fader;
+
    //! acknowledgements cutscene
    ua_cutscene cuts_ack;
 
-   //! fading quad images (two parts, two textures)
-   ua_image_quad img[2];
+   //! image to fade out
+   ua_image_quad img_fadeout;
 };
 
 
