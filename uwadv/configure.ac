@@ -21,6 +21,8 @@ AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE($PACKAGE,$VERSION,no-define)
 AM_CONFIG_HEADER(source/config.h)
 
+AC_CONFIG_SUBDIRS(source/resource/zziplib)
+
 dnl initial variable values
 CFLAGS="$CFLAGS -O2"
 CXXFLAGS="$CXXFLAGS -O2"
@@ -68,9 +70,13 @@ CXXFLAGS="$CXXFLAGS $X_CFLAGS"
 LIBS="$LIBS $X_LIBS"
 
 
-# check standard C header
+# check standard C headers
 AC_HEADER_STDC
 
+# check other headers
+AC_CHECK_HEADERS(cstdio cstdlib cstring cmath cctype)
+AC_CHECK_HEADERS(vector string map iostream set bitset)
+AC_CHECK_HEADERS(utility algorithm exception fstream)
 
 
 # checking for --enable-debug

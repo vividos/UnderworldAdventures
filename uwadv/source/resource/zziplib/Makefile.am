@@ -1,8 +1,13 @@
 CFLAGS = $(SDL_CFLAGS)
 
-noinst_LTLIBRARIES = libzziplib.la
+VERSIONINFO=@VERSIONINFO@
+RELEASEINFO=@RELEASEINFO@
+THREAD_SAFE=@THREAD_SAFE@
 
-libzziplib_la_SOURCES = \
+
+noinst_LTLIBRARIES = libzzip.la
+
+libzzip_la_SOURCES = \
 	SDL_rwops_zzip.c SDL_rwops_zzip.h \
 	zzip-dir.c \
 	zzip-err.c \
@@ -18,6 +23,11 @@ libzziplib_la_SOURCES = \
 	zzip.h \
 	zzipformat.h \
 	zziplib.h
+
+libzzip_la_LDFLAGS= @ZZIPLIB_LDFLAGS@ $(RELEASEINFO) $(VERSIONINFO) \
+                    $(THREAD_SAFE)
+libzzip_la_LIBADD= -lz @RESOLVES@
+
 
 EXTRA_DIST = \
 	COPYING.LGPL \

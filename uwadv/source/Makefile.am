@@ -15,13 +15,14 @@ LDFLAGS = $(SDL_LIBS) $(X_LIBS) -lSDL_mixer
 
 bin_PROGRAMS = uwadv
 
+# Makefile.common defines uwadv_SOURCES
 include Makefile.common
 
 uwadv_LDADD = \
 	$(OPENGL_LIBS) \
 	$(SDL_LIBS) \
 	lua/liblualib.la \
-	resource/zziplib/libzziplib.la \
+	resource/zziplib/libzzip.la \
 	-lz
 
 EXTRA_DIST = audio/midi_driver/win_midiout.cpp \
@@ -40,7 +41,7 @@ EXTRA_DIST = audio/midi_driver/win_midiout.cpp \
 	win32/uwadv.nsi \
 	win32/xmi2mid.dsp \
 	win32/uaconfig.dsp \
-	win32/install/License.installer.txt \
+	win32/License.installer.txt
 	win32/source/game_win32.cpp \
 	win32/source/game_win32.hpp \
 	win32/source/main.cpp \

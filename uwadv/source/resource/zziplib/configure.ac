@@ -1,6 +1,6 @@
 CONFIG_ARGS="$*" 
-AC_INIT(zzcat.c)
-AC_PREREQ(2.49)
+AC_INIT(zziplib.h)
+AC_PREREQ(2.53)
 AC_COPYRIGHT([Guido Draheim <guido@gmx.de> for ZZipLib.SF.net])
 AC_REVISION($Revision$)
 
@@ -30,6 +30,12 @@ AM_PROG_LIBTOOL
 AC_SET_RELEASEINFO_VERSIONINFO
 AM_CONFIG_HEADER(config.h)
 AM_MAINTAINER_MODE
+
+# checking for SDL
+AM_PATH_SDL(1.2.3,,AC_MSG_ERROR([
+Underworld Adventures needs at least SDL 1.2.3 or higher installed.
+SDL is available here: http://www.libsdl.org/
+]))
 
 AC_PATH_PROGS(PERL, perl5 perl, echo no perl found for)
 AC_PATH_PROGS(PHP,  php-standalone php, echo no php found for)
@@ -197,23 +203,13 @@ PATCH_LIBTOOL_ON_DARWIN_ZSH_OVERQUOTING
 PATCH_LIBTOOL_SYS_LIB_SEARCH_PATH_SPEC
 PATCH_LIBTOOL_TO_ADD_HOST_CC
 # ---------------------------------------------------------------
-echo ' DONE' $PACKAGE $VERSION $prefix
-$SHELL libtool --features || true
-test $enable_mmap != "no" && echo "enable  mmap   ($enable_mmap)"
-test $enable_mmap  = "no" && echo "disable mmap   ($enable_mmap)"
-test $with_lowstk != "no" && echo "with    lowstk ($with_lowstk)"
-test $with_lowstk  = "no" && echo "without lowstk ($with_lowstk)"
-test $with_debug  != "no" && echo "with    debug  ($with_debug)"
-test $with_debug   = "no" && echo "without debug  ($with_debug)"
+dnl -- removed these since they serve little use for Underworld Adventures
 
-
-
-
-
-
-
-
-
-
-
-
+# echo ' DONE' $PACKAGE $VERSION $prefix
+# $SHELL libtool --features || true
+# test $enable_mmap != "no" && echo "enable  mmap   ($enable_mmap)"
+# test $enable_mmap  = "no" && echo "disable mmap   ($enable_mmap)"
+# test $with_lowstk != "no" && echo "with    lowstk ($with_lowstk)"
+# test $with_lowstk  = "no" && echo "without lowstk ($with_lowstk)"
+# test $with_debug  != "no" && echo "with    debug  ($with_debug)"
+# test $with_debug   = "no" && echo "without debug  ($with_debug)"

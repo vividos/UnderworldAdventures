@@ -25,14 +25,9 @@ install-sh
 missing
 mkinstalldirs
 compile
-uwadv.cfg
 aclocal.m4
 config.guess
 config.sub
 configure
-depcomp
-install-sh
-missing
-mkinstalldirs
 ltmain.sh
 uwadv.spec

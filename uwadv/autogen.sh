@@ -37,6 +37,8 @@ fi
 #  fi
 #fi
 
+echo "Cleaning up..."
+
 # clean up generated files
 rm -f configure config.log config.guess config.sub config.status
 rm -f depcomp compile
@@ -47,12 +49,29 @@ rm -f Makefile.in Makefile
 rm -f source/Makefile.in source/Makefile 
 rm -f source/tools/Makefile.in source/tools/Makefile
 rm -f source/resource/Makefile.in source/resource/Makefile
-rm -f source/resource/zziplib/Makefile.in source/resource/zziplib/Makefile
 rm -f source/lua/Makefile.in source/lua/Makefile
 rm -f uadata/Makefile.in uadata/Makefile
 rm -f hacking/Makefile.in hacking/Makefile
 # maybe change this last line into some fancy
 # 'find all Makefile.am and delete corresponding Makefile and Makefile.in'
+
+echo "Generating files..."
+
+aclocal $aclocalincludes
+libtoolize --automake --copy --force
+autoheader
+automake --copy --force --add-missing --foreign
+autoconf
+
+echo "Generating files in source/resource/zziplib..."
+
+cd source/resource/zziplib
+
+rm -f configure config.log config.guess config.sub config.status
+rm -f depcomp compile
+rm -f aclocal.m4
+rm -f install-sh ltmain.sh missing mkinstalldirs
+rm -f Makefile.in Makefile
 
 aclocal $aclocalincludes
 libtoolize --automake --copy --force
