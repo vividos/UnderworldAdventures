@@ -81,6 +81,14 @@ inline void SDL_RWwrite8(SDL_RWops *rwops, Uint8 val)
    SDL_RWwrite(rwops,&val,1,1);
 }
 
+inline void SDL_RWwrite16(SDL_RWops *rwops, Uint16 val)
+{
+#ifdef SDL_BIG_ENDIAN
+   val = ua_endian_convert16(val)
+#endif
+   SDL_RWwrite(rwops,&val,2,1);
+}
+
 inline void SDL_RWwrite32(SDL_RWops *rwops, Uint32 val)
 {
 #ifdef SDL_BIG_ENDIAN
@@ -1500,10 +1508,10 @@ int XMIDIEventList::Write(SDL_RWops *dest)
    SDL_RWwrite8(dest,'h');
    SDL_RWwrite8(dest,'d');
 
-   SDL_RWwrite32(dest,ua_endian_convert32(6));
-   SDL_RWwrite32(dest,ua_endian_convert32(0));
-   SDL_RWwrite32(dest,ua_endian_convert32(1));
-   SDL_RWwrite32(dest,ua_endian_convert32(60)); // The PPQN
+   SDL_RWwrite32(dest,ua_endian_convert32(6)); // track length
+   SDL_RWwrite16(dest,ua_endian_convert16(0)); // type
+   SDL_RWwrite16(dest,ua_endian_convert16(1)); // number of tracks
+   SDL_RWwrite16(dest,ua_endian_convert16(60)); // the PPQN
 
    len = ConvertListToMTrk(dest);
 
