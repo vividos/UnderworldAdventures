@@ -23,6 +23,9 @@
 
    \brief text scroll
 
+   the text scroll class is based on the generic image quad rendering class
+   ua_image_quad
+
 */
 
 // include guard
@@ -31,6 +34,7 @@
 
 // needed includes
 #include <vector>
+#include "imgquad.hpp"
 #include "font.hpp"
 #include "texture.hpp"
 
@@ -42,7 +46,7 @@ class ua_game_core_interface;
 // classes
 
 //! text scroll class
-class ua_textscroll
+class ua_textscroll: public ua_image_quad
 {
 public:
    //! ctor
@@ -54,7 +58,7 @@ public:
       Uint8 bg_color);
 
    //! sets new color
-   void set_color(Uint8 color);
+   inline void set_color(Uint8 color);
 
    //! prints a string to the text scroll; returns true when text had to scroll
    bool print(const char* text);
@@ -68,18 +72,12 @@ public:
    //! returns true when text was entered; "text" is updated then
    bool is_input_done(std::string& text);
 
-   //! renders text scroll
-   void render();
-
-   //! cleans up textscroll
-   void done();
-
 protected:
    //! updates scroll texture
    void update_scroll();
 
    //! returns true when more lines to show are available
-   bool have_more_lines();
+   inline bool have_more_lines();
 
    //! scroll more lines
    void show_more_lines();
@@ -97,17 +95,8 @@ protected:
    //! font to render lines
    ua_font font_normal;
 
-   //! text scroll size
-   unsigned int xpos, ypos, width, height;
-
    //! maximal number of lines to show
    unsigned int maxlines;
-
-   //! textures with current
-   ua_texture tex;
-
-   //! indicates if two textures were used to render scroll
-   bool split_textures;
 
    //! background color
    Uint8 bg_color;

@@ -42,39 +42,21 @@ const char* ua_textscroll_more_string = " [MORE]";
    //! initializes text scroll
 void ua_textscroll::init(ua_game_core_interface& core, unsigned int xpos,
    unsigned int ypos, unsigned int width,
-   unsigned int height, unsigned int lines, Uint8 bg_color)
+   unsigned int height, unsigned int lines, Uint8 my_bg_color)
 {
+   ua_image_quad::init(&core.get_texmgr(),xpos,ypos,width,height);
+
    font_normal.init(core.get_settings(),ua_font_normal);
 
-   this->xpos = xpos;
-   this->ypos = ypos;
-   this->width = width + (width&1); // even width
-   this->height = height;
-   this->maxlines = lines;
-   this->bg_color = bg_color;
+   maxlines = lines;
+   bg_color = my_bg_color;
    text_color = 11;
    input_mode = false;
    input_line = 0;
 
-   // init texture
-   split_textures = width>254;
-
-   tex.init(&core.get_texmgr(),split_textures ? 2 : 1,
-      GL_LINEAR,GL_LINEAR,GL_CLAMP,GL_CLAMP);
-
-   // fill with blank texture
-   ua_image img_blank;
-   img_blank.create((split_textures ? width/2+2 : width+2),height+2,bg_color,0);
-   tex.convert(img_blank,0);
-   tex.use(0);
-   tex.upload();
-
-   if (split_textures)
-   {
-      tex.convert(img_blank,1);
-      tex.use(1);
-      tex.upload();
-   }
+   // use blank image for now
+   ua_image::clear(bg_color);
+   convert_upload();
 }
 
 bool ua_textscroll::print(const char* text)
@@ -85,7 +67,7 @@ bool ua_textscroll::print(const char* text)
    // check text length
    unsigned int len = font_normal.calc_length(text);
 
-   if (strchr(text,'\n')==0 && len<=width-2)
+   if (strchr(text,'\n')==0 && len<=ua_image_quad::xres-2)
    {
       // fits into a single line
 
@@ -118,7 +100,7 @@ bool ua_textscroll::print(const char* text)
 
          std::string::size_type pos = std::string::npos;
 
-         unsigned int linewidth = width-2;
+         unsigned int linewidth = ua_image_quad::xres-2;
 
          if (curline==maxlines-1)
          {
@@ -196,9 +178,10 @@ bool ua_textscroll::print(const char* text)
 void ua_textscroll::update_scroll()
 {
    // redo scroll texture
-   ua_image img_text,img_temp;
+   ua_image img_temp;
    unsigned int imgheight = maxlines * font_normal.get_charheight() + 1;
-   img_text.create(width,imgheight,bg_color,0);
+   //img_text.create(width,imgheight,bg_color,0);
+   ua_image::clear(bg_color);
 
    unsigned int max = ua_min(maxlines,linestack.size());
    for(unsigned int i=0; i<max; i++)
@@ -210,7 +193,7 @@ void ua_textscroll::update_scroll()
       // calc y position
       unsigned int ypos = i * font_normal.get_charheight() + 1;
 
-      img_text.paste_image(img_temp,1,ypos,true);
+      ua_image::paste_image(img_temp,1,ypos,true);
 
       if (i==maxlines-1 && morestack.size()!=0)
       {
@@ -219,7 +202,7 @@ void ua_textscroll::update_scroll()
          font_normal.create_string(img_more,ua_textscroll_more_string,11);
 
          // paste string after end of last line
-         img_text.paste_image(img_more,
+         ua_image::paste_image(img_more,
             img_temp.get_xres(),ypos,true);
       }
 
@@ -232,46 +215,20 @@ void ua_textscroll::update_scroll()
             input_text.c_str(),1); // color black for now
 
          unsigned int xpos = img_temp.get_xres()+1;
-         img_text.paste_image(img_input,xpos,ypos,true);
+         ua_image::paste_image(img_input,xpos,ypos,true);
 
          xpos += img_input.get_xres();
 
          // draw a cursor line after the text
          img_line.create(1,img_input.get_yres()+2,1,0);
 
-         img_text.paste_image(img_line,xpos+1,ypos-1,true);
+         ua_image::paste_image(img_line,xpos+1,ypos-1,true);
       }
 
       img_temp.clear();
    }
 
-   // upload image
-   if (split_textures)
-   {
-      // split text image into two
-      ua_image img_split1,img_split2;
-
-      unsigned int texwidth = width/2+1;
-
-      img_text.copy_rect(img_split1,0,0, texwidth,imgheight);
-      img_text.copy_rect(img_split2,texwidth-1,0, texwidth-1,imgheight);
-
-      // upload it to the texture
-      tex.convert(img_split1,0);
-      tex.use(0);
-      tex.upload();
-
-      tex.convert(img_split2,1);
-      tex.use(1);
-      tex.upload();
-   }
-   else
-   {
-      // image is small enough
-      tex.convert(img_text);
-      tex.use(0);
-      tex.upload();
-   }
+   convert_upload();
 }
 
 bool ua_textscroll::handle_event(SDL_Event &event)
@@ -394,39 +351,4 @@ void ua_textscroll::show_more_lines()
 
    // print the string
    print(msgtext.c_str());
-}
-
-void ua_textscroll::render()
-{
-   double u = tex.get_tex_u(), v = tex.get_tex_v();
-   tex.use(0);
-
-   unsigned int quadwidth = split_textures ? width/2+2 : width+2;
-   double dx = split_textures ? 0.5/quadwidth : 0.0;
-
-   // render (first) quad
-   glBegin(GL_QUADS);
-   glTexCoord2d(0.0,  v);   glVertex2i(xpos+0,        200-ypos-height);
-   glTexCoord2d(u-dx, v);   glVertex2i(xpos+quadwidth,200-ypos-height);
-   glTexCoord2d(u-dx, 0.0); glVertex2i(xpos+quadwidth,200-ypos);
-   glTexCoord2d(0.0,  0.0); glVertex2i(xpos+0,        200-ypos);
-   glEnd();
-
-   if (split_textures)
-   {
-      tex.use(1);
-
-      // render second quad
-      glBegin(GL_QUADS);
-      glTexCoord2d(0.0, v  ); glVertex2i(xpos+quadwidth,  200-ypos-height);
-      glTexCoord2d(u  , v  ); glVertex2i(xpos+quadwidth*2,200-ypos-height);
-      glTexCoord2d(u  , 0.0); glVertex2i(xpos+quadwidth*2,200-ypos);
-      glTexCoord2d(0.0, 0.0); glVertex2i(xpos+quadwidth,  200-ypos);
-      glEnd();
-   }
-}
-
-void ua_textscroll::done()
-{
-   tex.done();
 }
