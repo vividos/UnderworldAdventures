@@ -128,12 +128,12 @@ void ua_game::init()
    // load game strings
    gstr.load(settings);
 
-   // initializes underworld
-   underworld.init(this);
-
    // init audio
    audio = ua_audio_interface::get_audio_interface();
    audio->init(settings);
+
+   // initializes underworld
+   underworld.init(this);
 
    screenstack.clear();
 
