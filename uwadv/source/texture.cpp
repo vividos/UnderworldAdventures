@@ -181,8 +181,8 @@ void ua_texture_manager::reset()
    // delete all stock textures
    stocktex[0].done();
    stocktex[1].done();
-   stocktex[0].init(this,stocktex_count[0],GL_LINEAR,GL_NEAREST_MIPMAP_LINEAR);
-   stocktex[1].init(this,stocktex_count[1],GL_LINEAR,GL_NEAREST_MIPMAP_LINEAR);
+   stocktex[0].init(this,stocktex_count[0],GL_LINEAR,GL_NEAREST_MIPMAP_LINEAR,GL_REPEAT,GL_REPEAT);
+   stocktex[1].init(this,stocktex_count[1],GL_LINEAR,GL_NEAREST_MIPMAP_LINEAR,GL_REPEAT,GL_REPEAT);
    last_texname = 0;
 }
 
