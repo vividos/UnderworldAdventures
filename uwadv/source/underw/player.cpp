@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -29,12 +29,16 @@
 #include "common.hpp"
 #include "player.hpp"
 
+
+// constants
+
 //! Size of the player ellipsoid
 const double ua_ellipsoid_x = 0.2;
 const double ua_ellipsoid_y = 0.2;
 const double ua_ellipsoid_z = 2.9;
 
 // ua_player methods
+
 ua_player::ua_player()
 :ua_physics_object()
 {
@@ -43,11 +47,8 @@ ua_player::ua_player()
 
 void ua_player::init()
 {
-   xpos = 32.0;
-   ypos = 2.0;
-   height = 26.0*4.0;
-   //xpos = ypos = 32.0;
-   //height = 0.0;
+   xpos = ypos = 32.0;
+   height = 0.0;
    rotangle = panangle = 0.0;
    move_mode = 0;
 
@@ -62,6 +63,12 @@ void ua_player::init()
    move_factors[ua_move_float] = 0.0;
 
    set_ellipsoid(ua_vector3d(ua_ellipsoid_x, ua_ellipsoid_y, ua_ellipsoid_z));
+
+#ifdef HAVE_DEBUG
+   runes.get_runebag().reset();
+   for(unsigned int n=0; n<24; n+=3)
+      runes.get_runebag().set(n);
+#endif
 }
 
 void ua_player::set_movement_mode(unsigned int set,unsigned int del)
@@ -121,6 +128,25 @@ void ua_player::load_game(ua_savegame& sg)
    for(n=0; n<SDL_TABLESIZE(skills); n++)
       skills[n] = sg.read16();
 
+   // load runes
+   if (sg.get_version()>0)
+   {
+      // load runebag
+      std::bitset<24>& runebag = runes.get_runebag();
+      runebag.reset();
+
+      Uint32 bagbits = sg.read32();
+      for(unsigned int i=0; i<24; i++)
+         if (bagbits & (1L << i) != 0)
+            runebag.set(i);
+
+      // load runeshelf
+      runes.reset_runeshelf();
+      unsigned int count = sg.read8();
+      for(Uint8 n=0; n<count; n++)
+         runes.add_runeshelf_rune(sg.read8());
+   }
+
    sg.end_section();
 }
 
@@ -146,6 +172,26 @@ void ua_player::save_game(ua_savegame& sg)
 
    for(n=0; n<SDL_TABLESIZE(skills); n++)
       sg.write16(skills[n]);
+
+   // save runes
+   if (sg.get_version()>0)
+   {
+      // store runebag
+      // note: we could use std::bitset::to_ulong(), but it probably isn't
+      // portable enough
+      std::bitset<24>& runebag = runes.get_runebag();
+      Uint32 bagbits = 0;
+      for(unsigned int i=0; i<24; i++)
+         if (runebag.test(i))
+            bagbits |= 1L << i;
+      sg.write32(bagbits);
+
+      // store runeshelf
+      Uint8 count = runes.get_runeshelf_count() % 3;
+      sg.write8(count);
+      for(unsigned int n=0; n<count; n++)
+         sg.write8(runes.get_runeshelf_rune(n));
+   }
 
    sg.end_section();
 }

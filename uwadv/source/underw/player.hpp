@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -36,6 +36,8 @@
 #include "savegame.hpp"
 #include "uamath.hpp"
 #include "physicsobject.hpp"
+#include "runes.hpp"
+
 
 // enums
 
@@ -194,6 +196,9 @@ public:
    //! returns movement factor for given movement mode
    double get_movement_factor(ua_player_movement_mode mode);
 
+   //! returns runes object
+   ua_runes& get_runes();
+
 
    //! returns player attribute value
    unsigned int get_attr(ua_player_attributes which) const;
@@ -202,16 +207,13 @@ public:
    unsigned int get_skill(ua_player_skills which) const;
 
 
-   // loading/saving/importing
+   // loading/saving
 
    //! loads a savegame
    void load_game(ua_savegame& sg);
 
    //! saves to a savegame
    void save_game(ua_savegame& sg);
-
-   //! imports player info from savegame
-   void import_player(ua_settings& settings, const char* folder);
 
 protected:
    //! the name of the player
@@ -231,6 +233,9 @@ protected:
 
    //! movement factors map
    std::map<ua_player_movement_mode,double> move_factors;
+
+   //! runes object
+   ua_runes runes;
 };
 
 
@@ -299,6 +304,11 @@ inline const std::string& ua_player::get_name() const
 inline unsigned int ua_player::get_movement_mode() const
 {
    return move_mode;
+}
+
+inline ua_runes& ua_player::get_runes()
+{
+   return runes;
 }
 
 
