@@ -94,6 +94,7 @@ void parse_args(unsigned int argc, const char** argv)
                "                  (game type is auto-detected)\n"
                "   -2             set game type to ultima underworld 2 without further checking\n"
                "\n");
+            exit(0); // plain ugly, but I'm too lazy now
             break;
          }
       }
@@ -201,7 +202,7 @@ Uint32 fread32(FILE* fd)
 extern "C"
 int main(char argc, char* argv[])
 {
-   printf("uwdump - ultima underworld data info dump program\n"
+   printf("uwdump - ultima underworld data dump program\n"
       "Copyright (c) 2003 Michael Fink\n\n");
 
    basepath.assign("./");
@@ -226,6 +227,10 @@ int main(char argc, char* argv[])
          ua_dump_obj_properties objprop;
          objprop.start(basepath);
       }
+      break;
+
+   default:
+      printf("no command given; show help with parameter -h\n");
       break;
    }
 
