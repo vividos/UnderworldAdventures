@@ -86,17 +86,23 @@ void ua_game::init()
       throw ua_exception(text.c_str());
    }
 
-   // setup opengl
-   setup_opengl();
+   // setup OpenGL viewport
+   glViewport(0, 0, width, height);
 
    // load settings
    settings.load();
+
+   if (settings.gtype == ua_game_none)
+      throw ua_exception("could not find relevant game files");
 
    // init textures
    texmgr.init(settings);
 
    // load game strings
    gstr.load(settings);
+
+   // initializes underworld
+   underworld.init(settings,this);
 
    // init audio
    audio = ua_audio_interface::get_audio_interface();
@@ -105,7 +111,6 @@ void ua_game::init()
    screenstack.clear();
 
    // create new user interface screen
-   //push_screen(new ua_ingame_orig_screen);
    push_screen(new ua_start_splash_screen);
 }
 
@@ -197,24 +202,13 @@ void ua_game::done()
    SDL_Quit();
 }
 
+void ua_game::error_msg(const char *msg)
+{
+   fprintf(stderr,msg);
+}
+
 
 // private ua_game methods
-
-void ua_game::setup_opengl()
-{
-   // viewport
-   glViewport(0, 0, width, height);
-
-   // set projection matrix
-   float ratio = float(width)/height;
-   glMatrixMode(GL_PROJECTION);
-   glLoadIdentity();
-
-   gluPerspective(90.0, ratio, 0.25, 256.0);
-
-   // switch back to modelview matrix
-   glMatrixMode(GL_MODELVIEW);
-}
 
 void ua_game::process_events()
 {
@@ -260,7 +254,7 @@ void ua_game::handle_key_down(SDL_keysym *keysym)
    case SDLK_8:
    case SDLK_9:
       // play a midi track
-      audio->start_music(keysym->sym-SDLK_0);
+      audio->start_music(keysym->sym-SDLK_0,false);
       break;
    }
 }
