@@ -207,6 +207,9 @@ public:
    //! returns savegame object for loading
    ua_savegame get_savegame_load(unsigned int index, bool save_image=false);
 
+   //! returns savegame object for loading from specified filename
+   ua_savegame get_savegame_from_file(const char* filename);
+
    //! creates a savegame in a new slot; uses savegame info for savegame
    ua_savegame get_savegame_save_new_slot(ua_savegame_info& info);
 

@@ -373,6 +373,15 @@ ua_savegame ua_savegames_manager::get_savegame_load(unsigned int index,
    return sg;
 }
 
+ua_savegame ua_savegames_manager::get_savegame_from_file(const char* filename)
+{
+   // open savegame for loading
+   ua_savegame sg;
+   sg.open(filename,false);
+
+   return sg;
+}
+
 ua_savegame ua_savegames_manager::get_savegame_save_new_slot(
    ua_savegame_info& info)
 {
