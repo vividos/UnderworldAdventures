@@ -31,3 +31,47 @@
 
 
 // ua_savegame methods
+
+Uint32 ua_savegame::get_version()
+{
+   return 0;
+}
+
+Uint8 ua_savegame::read8()
+{
+   return 0;
+}
+
+Uint16 ua_savegame::read16()
+{
+   return 0;
+}
+
+Uint32 ua_savegame::read32()
+{
+   return 0;
+}
+
+void ua_savegame::write8(Uint8 value)
+{
+}
+
+void ua_savegame::write16(Uint16 value)
+{
+}
+
+void ua_savegame::write32(Uint32 value)
+{
+}
+
+void ua_savegame::begin_section(const char* section_name)
+{
+}
+
+void ua_savegame::end_section()
+{
+}
+
+void ua_savegame::close()
+{
+}
