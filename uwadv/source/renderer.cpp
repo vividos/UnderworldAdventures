@@ -1024,12 +1024,17 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
 
       // hack: set texture for bridge
       if (item_id==0x0164 || item_id==0x0157)
-         texmgr->use(ua_tex_stock_floor+31);
+      {
+         // TODO move this to bridge rendering
+         // TODO fix "flags > 2" case
+         Uint16 flags = obj.get_object_info().flags;
+         texmgr->use(flags<2 ?
+            30+flags+ua_tex_stock_tmobj : ua_tex_stock_tmobj + 30);
+      }
 
       modelmgr->render(item_id,base);
       return;
    }
-/*
    if (item_id >= 0x0040 && item_id < 0x0080)
    {
       // critter object
@@ -1059,7 +1064,7 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
 
       bb_up = bb_up_save;
    }
-   else*/
+   else
    {
       // switches/levers/buttons/pull chains
       if ((item_id >= 0x0170 && item_id <= 0x017f) ||
@@ -1135,10 +1140,34 @@ void ua_renderer::render_decal(ua_object& obj, unsigned int x, unsigned int y)
    to_right.normalize();
    to_right *= decalheight;
 
-   // get object texture coords
-   // TODO select correct texture
+   // select texture
+   Uint16 item_id = obj.get_object_info().item_id;
+   unsigned int tex = 0;
+
+   switch(item_id)
+   {
+   case 0x0161: // a_lever
+      tex = obj.get_object_info().flags + 4 + ua_tex_stock_tmobj;
+      break;
+
+   case 0x0162: // a_switch
+      tex = obj.get_object_info().flags + 12 + ua_tex_stock_tmobj;
+      break;
+
+   case 0x0166: // some_writing
+      tex = (obj.get_object_info().flags & 7) + 20 + ua_tex_stock_tmobj;
+      break;
+
+   default: // 0x017x
+      tex = (item_id & 15) + ua_tex_stock_switches;
+      break;
+   }
+
+   texmgr->use(tex);
+
    double u1,v1,u2,v2;
-   texmgr->object_tex(obj.get_object_info().item_id,u1,v1,u2,v2);
+   u1 = v1 = 0.0;
+   u2 = v2 = 1.0;
 
    // enable polygon offset
    if (!selection_mode)
@@ -1146,9 +1175,6 @@ void ua_renderer::render_decal(ua_object& obj, unsigned int x, unsigned int y)
       glPolygonOffset(-2.0, -2.0);
       glEnable(GL_POLYGON_OFFSET_FILL);
    }
-
-   // draw quad
-   //glColor3ub(255,255,255);
 
    // render quad
    glBegin(GL_QUADS);
@@ -1172,6 +1198,10 @@ void ua_renderer::render_tmap_obj(ua_object& obj, unsigned int x, unsigned int y
 
    unsigned int x_fr = extinfo.xpos;
    unsigned int y_fr = extinfo.ypos;
+
+   // hack: fixing some tmap decals
+   if (x_fr>4) x_fr++;
+   if (y_fr>4) y_fr++;
 
    // determine direction
    ua_vector3d dir;
