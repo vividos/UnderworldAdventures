@@ -10,7 +10,7 @@
 
 # general installer config
 #
-OutFile ..\..\output\uwadv-${VERSION}.exe
+OutFile "..\..\output\uwadv-${VERSION}.exe"
 Name "Underworld Adventures ${VERSION}"
 CRCCheck on
 
@@ -20,8 +20,8 @@ InstallDir "$PROGRAMFILES\Underworld Adventures"
 
 # license page config
 #
-#LicenseText "You should read the following license before installing."
-#LicenseData ..\..\docs\License.installer.txt
+LicenseText "You should read the following license before installing."
+LicenseData ..\..\docs\License.installer.txt
 
 # component page config
 #
@@ -59,7 +59,9 @@ Section -
 SectionIn 0
 SetOutPath $INSTDIR
 File ..\..\output\release\uwadv.exe
-#File SDL.dll
+File install\SDL.dll
+#File install\fmod.dll
+File uwadv.cfg
 File ..\..\Copying
 #File ..\readme.txt
 CreateShortCut "$DESKTOP\Underworld Adventures.lnk" "$INSTDIR\uwadv.exe" "" "" "0"
@@ -70,8 +72,10 @@ SectionEnd
 
 Section Uninstall
 Delete $INSTDIR\uwadv.exe
-Delete $INSTDIR\Copying
 Delete $INSTDIR\SDL.dll
+#Delete $INSTDIR\fmod.dll
+Delete $INSTDIR\uwadv.cfg
+Delete $INSTDIR\Copying
 Delete $INSTDIR\uninst-uwadv.exe
 Delete "$DESKTOP\Underworld Adventures.lnk"
 DeleteRegKey HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\uwadv"

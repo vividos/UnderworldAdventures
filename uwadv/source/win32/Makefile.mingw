@@ -11,10 +11,10 @@
 SDL_INCLUDE = -Ic:/mingw/include/sdl/
 
 STLPORT_INCLUDE = -Ic:/mingw/stl/stlport/
-STLPORT_LIB = -Lc:/mingw/stl/lib/
+STLPORT_LIB = -Lc:/mingw/stl/lib/ -lstlport_mingw32_static
 
-FMOD_INCLUDE = -Ic:/mingw/include/fmod/api/inc/
-FMOD_LIB = -Lc:/mingw/include/fmod/api/lib/ -lfmod
+FMOD_INCLUDE = #-DHAVE_FMOD_H -Ic:/mingw/include/fmod/api/inc/
+FMOD_LIB = #-Lc:/mingw/include/fmod/api/lib/ -lfmod
 
 #
 # build variables
@@ -23,21 +23,19 @@ FMOD_LIB = -Lc:/mingw/include/fmod/api/lib/ -lfmod
 SDL_LIB = -lSDLmain -lSDL
 
 CC = c++
-CFLAGS = -g -O
+CFLAGS = -O2 #-g -O
 
-DEFINES = -DHAVE_FMOD_H
-#-I../../
+DEFINES =
 INCLUDES = $(SDL_INCLUDE) $(STLPORT_INCLUDE) $(FMOD_INCLUDE) -I.. -I. 
 CPPFLAGS = $(DEFINES) $(INCLUDES)
 
 LDFLAGS = -mwindows -mconsole -s
-uwadv_LIBS = -lmingw32 -lkernel32 -luser32 -lwinmm -lopengl32 -lglu32 \
-	-lstlport_mingw32_static \
-	$(SDL_LIB) $(FMOD_LIB) $(STLPORT_LIB)
 
 #
 # build targets
 #
+
+# underworld adventures
 
 uwadv_EXEC = uwadv.exe
 
@@ -54,25 +52,72 @@ uwadv_OBJS = main.o game_win32.o uwadv_res.o \
 	../resource/texloader.o \
 	../screens/ingame_orig.o ../screens/start_splash.o
 
+uwadv_LIBS = -lmingw32 -lkernel32 -luser32 -lwinmm -lopengl32 -lglu32 \
+	$(SDL_LIB) $(FMOD_LIB) $(STLPORT_LIB)
+
+
+# conv debugger
+
+cnvdbg_EXEC = cnvdbg.exe
+
+cnvdbg_OBJS = ../tools/cnvdbg.o ../conv/codevm.o \
+	../resource/codeloader.o ../resource/gamestrings.o
+
+cnvdbg_LIBS = -lmingw32 -lkernel32 -luser32 \
+	$(SDL_LIB) $(STLPORT_LIB)
+
+
+# conv decompiler
+
+cnvdasm_EXEC = cnvdasm.exe
+
+cnvdasm_OBJS = ../tools/cnvdasm.o ../conv/codevm.o \
+	../resource/codeloader.o ../resource/gamestrings.o
+
+cnvdasm_LIBS = -lmingw32 -lkernel32 -luser32 \
+	$(SDL_LIB) $(STLPORT_LIB)
+
+
+# xmidi to midi converter
+
+xmi2mid_EXEC = xmi2mid.exe
+
+xmi2mid_OBJS = ../tools/xmi2mid.o ../audio/xmidi.o
+
+xmi2mid_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB)
+
 #
 # build rules
 #
 
-all: $(uwadv_EXEC)
+all: $(uwadv_EXEC) $(cnvdbg_EXEC) $(cnvdasm_EXEC)
 
 $(uwadv_EXEC): $(uwadv_OBJS)
 	$(CC) $(LDFLAGS) -o $(@) $(uwadv_OBJS) $(uwadv_LIBS)
 
+uwadv_res.o: uwadv.rc Uus.ico
+	windres -i uwadv.rc -o $@
+
+
+$(cnvdbg_EXEC): $(cnvdbg_OBJS)
+	$(CC) $(LDFLAGS) -o $(@) $(cnvdbg_OBJS) $(cnvdbg_LIBS)
+
+
+$(cnvdasm_EXEC): $(cnvdasm_OBJS)
+	$(CC) $(LDFLAGS) -o $(@) $(cnvdasm_OBJS) $(cnvdasm_LIBS)
+
+
+$(xmi2mid_EXEC): $(xmi2mid_OBJS)
+	$(CC) $(LDFLAGS) -o $(@) $(xmi2mid_OBJS) $(xmi2mid_LIBS)
+
+
 installer: $(uwadv_EXEC)
 	mkdir -p ../../output/release/
 	cp uwadv.exe ../../output/release/uwadv.exe
-	makensis uwadv.nsi
+	install/makensis.exe uwadv.nsi
 
 clean:
-	rm -f $(uwadv_OBJS)
-
-uwadv_res.o: uwadv.rc Uus.ico
-	windres -i uwadv.rc -o $@
+	rm -f $(uwadv_OBJS) $(cnvdbg_OBJS) $(cnvdasm_OBJS) $(xmi2mid_OBJS)
 
 .cpp.o:
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $(<) -o $*.o
