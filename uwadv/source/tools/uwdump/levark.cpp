@@ -577,6 +577,20 @@ void ua_dump_level_archive::dump_item(Uint16 pos)
       }
       break;
 
+   case 0x018c: // an_inventory trap
+      {
+         Uint16 item_id = (quality << 5) | owner;
+         Uint16 zpos = get_bits(objptr[1],0,7);
+
+         printf("[item_id=%04x name=%s enabled=%01x",
+            item_id,gstr.get_string(4,item_id).c_str(),zpos);
+
+         if (!is_quantity)
+            printf(" sp_link=%04x",special);
+         printf("] ");
+      }
+      break;
+
    default:
       printf("[quality=%02x ",quality);
       printf("owner=%02x ",owner);
