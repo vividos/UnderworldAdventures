@@ -102,7 +102,7 @@ enum ua_model_nodecmd
 double ua_mdl_read_fixed(FILE* fd)
 {
    Sint16 val = static_cast<Sint16>(fread16(fd));
-   return val / 16.0;
+   return val / 256.0;
 }
 
 Uint16 ua_mdl_read_vertno(FILE* fd)
@@ -123,7 +123,8 @@ void ua_mdl_store_vertex(const ua_vector3d& vertex, Uint16 vertno,
 
 // global functions
 
-void ua_model_parse_node(FILE* fd, std::vector<ua_vector3d>& vertex_list,
+void ua_model_parse_node(FILE* fd, ua_vector3d& origin,
+   std::vector<ua_vector3d>& vertex_list,
    std::vector<ua_triangle3d_textured>& tri_list)
 {
    // parse node until end node
@@ -146,9 +147,12 @@ void ua_model_parse_node(FILE* fd, std::vector<ua_vector3d>& vertex_list,
 
       case M3_UW_ORIGIN: // 0078 define model center
          vertno = ua_mdl_read_vertno(fd);
+         origin = vertex_list[vertno];
+
          vx = ua_mdl_read_fixed(fd);
          vy = ua_mdl_read_fixed(fd);
          vz = ua_mdl_read_fixed(fd);
+
          unk1 = fread16(fd);
          break;
 
@@ -390,11 +394,11 @@ void ua_model_parse_node(FILE* fd, std::vector<ua_vector3d>& vertex_list,
 
             // parse left nodes
             fseek(fd,left,SEEK_SET);
-            ua_model_parse_node(fd,vertex_list,tri_list);
+            ua_model_parse_node(fd,origin,vertex_list,tri_list);
 
             // parse right nodes
             fseek(fd,right,SEEK_SET);
-            ua_model_parse_node(fd,vertex_list,tri_list);
+            ua_model_parse_node(fd,origin,vertex_list,tri_list);
 
             // return to "here"
             fseek(fd,here,SEEK_SET);
@@ -535,14 +539,16 @@ bool ua_model_decode_builtins(const char* filename,
       //ua_trace(" loading builtin model %u, offset=0x%08x {unk1=0x%04x, e=(%3.2f, %3.2f, %3.2f) }\n",
       //   n,base + offsets[n],unk1,ex,ey,ez);
 
-      // TODO: fix loading
-      //ua_model3d_ptr model_ptr(new ua_model3d_builtin);
+      ua_model3d_builtin* model = new ua_model3d_builtin;
 
       // parse root node
-      std::vector<ua_vector3d> vertex_list;
+      //std::vector<ua_vector3d> vertex_list;
       //ua_model_parse_node(fd,vertex_list,model.get_triangles());
+      ua_model_parse_node(fd,model->origin,model->coords,model->alltriangles);
 
-      //allmodels.push_back(model_ptr);
+      // insert model
+      ua_model3d_ptr model_ptr(model);
+      allmodels.push_back(model_ptr);
    }
 
    fclose(fd);
