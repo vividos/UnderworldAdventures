@@ -16,9 +16,6 @@ technical/source
 - levelmap annotations list API
   prio: 3  assigned: vividos
 
-- keymap loading from external file (keymap.cfg)
-  prio: 3  assigned: none
-
 - add check for all needed files before starting uwadv
   prio: 4  assigned: none
 
@@ -61,7 +58,7 @@ game interface
 - ingame_orig: split up areas into more textures to reduce texture uploads
   prio: 2  assigned: vividos
 
-- improve savegame loading screen implementation
+- improve savegame loading/saving screen implementation
   prio: 2  assigned: phlask
 
 - savegame saving screen implementation (together into loading screen?)
