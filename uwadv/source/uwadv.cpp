@@ -42,6 +42,12 @@ ua_game::ua_game():tickrate(20),exit_game(false),audio(NULL),screen(NULL),
 
 void ua_game::init()
 {
+   // load settings
+   settings.load();
+
+   if (settings.gtype == ua_game_none)
+      throw ua_exception("could not find relevant game files");
+
    // First, initialize SDL's video subsystem
    if( SDL_Init(SDL_INIT_VIDEO) < 0 )
    {
@@ -69,17 +75,17 @@ void ua_game::init()
    SDL_WM_SetCaption("Underworld Adventures",NULL);
 
    // set up GL attributes
-   SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5 );
-   SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 5 );
-   SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 5 );
-   SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
-   SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+   SDL_GL_SetAttribute(SDL_GL_RED_SIZE,5);
+   SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,5);
+   SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,5);
+   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,16);
+   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,1);
 
    // setup video mode
    width = 640;
    height = 480;
    int bpp = info->vfmt->BitsPerPixel;
-   int flags = SDL_OPENGL/* | SDL_FULLSCREEN*/;
+   int flags = SDL_OPENGL | (settings.fullscreen ? SDL_FULLSCREEN : 0);
 
    if(SDL_SetVideoMode(width, height, bpp, flags)==0)
    {
@@ -90,12 +96,6 @@ void ua_game::init()
 
    // setup OpenGL viewport
    glViewport(0, 0, width, height);
-
-   // load settings
-   settings.load();
-
-   if (settings.gtype == ua_game_none)
-      throw ua_exception("could not find relevant game files");
 
    // init textures
    texmgr.init(settings);
@@ -245,7 +245,10 @@ void ua_game::handle_key_down(SDL_keysym *keysym)
 {
    switch(keysym->sym)
    {
-   default:
+   case SDLK_x:
+      // exit when pressing Alt + x
+      if ((keysym->mod & KMOD_ALT)!=0)
+         exit_game = true;
       break;
    }
 }

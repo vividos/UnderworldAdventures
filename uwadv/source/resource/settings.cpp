@@ -42,7 +42,9 @@ const char *ua_settings_file = "./uwadv.cfg";
 
 enum
 {
-   ua_uw1path
+   ua_setting_uw1path,
+   ua_setting_uadata_path,
+   ua_setting_fullscreen
 };
 
 
@@ -55,7 +57,9 @@ struct
    int val;
 } ua_settings_allsettings[] =
 {
-   { "uw1path", ua_uw1path }
+   { "uw1path", ua_setting_uw1path },
+   { "uadata-path", ua_setting_uadata_path },
+   { "fullscreen", ua_setting_fullscreen },
 };
 
 
@@ -64,7 +68,12 @@ struct
 inline bool ua_istab(char c){ return c=='\t'; }
 
 
-// ua_config methods
+// ua_settings methods
+
+ua_settings::ua_settings()
+:uw1_path("./"), uadata_path("./uadata/"), fullscreen(false)
+{
+}
 
 void ua_settings::load()
 {
@@ -199,8 +208,21 @@ void ua_settings::process_option(int option, const char *value)
 {
    switch(option)
    {
-   case ua_uw1path:
+   case ua_setting_uw1path:
       uw1_path = value;
       break;
+
+   case ua_setting_uadata_path:
+      uadata_path = value;
+      break;
+
+   case ua_setting_fullscreen:
+      {
+         fullscreen = (strstr("true",value) != NULL) ||
+            (strstr("1",value) != NULL) ||
+            (strstr("yes",value) != NULL);
+      }
+      break;
    }
+
 }

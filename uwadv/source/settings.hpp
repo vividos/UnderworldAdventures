@@ -60,13 +60,19 @@ class ua_settings
 {
 public:
    //! ctor
-   ua_settings(){}
+   ua_settings();
 
    //! loads settings from config file
    void load();
 
    //! path to uw1
    std::string uw1_path;
+
+   //! path to uadata folder
+   std::string uadata_path;
+
+   //! indicates if game should run in fullscreen
+   bool fullscreen;
 
    //! game type
    ua_game_type gtype;
