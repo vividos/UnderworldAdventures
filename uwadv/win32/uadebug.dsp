@@ -92,12 +92,27 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
+SOURCE=..\source\debug\childframe.cpp
+# ADD CPP /Yu"dbgcommon.hpp"
+# End Source File
+# Begin Source File
+
 SOURCE=..\source\debug\dbgapp.cpp
 # ADD CPP /Yu"dbgcommon.hpp"
 # End Source File
 # Begin Source File
 
+SOURCE=..\source\debug\editlist.cpp
+# ADD CPP /Yu"dbgcommon.hpp"
+# End Source File
+# Begin Source File
+
 SOURCE=..\source\debug\mainframe.cpp
+# ADD CPP /Yu"dbgcommon.hpp"
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\debug\objectlist.cpp
 # ADD CPP /Yu"dbgcommon.hpp"
 # End Source File
 # Begin Source File
@@ -120,6 +135,10 @@ SOURCE=.\uadebug.def
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
+SOURCE=..\source\debug\childframe.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\source\debug\dbgapp.hpp
 # End Source File
 # Begin Source File
@@ -128,7 +147,15 @@ SOURCE=..\source\debug\dbgcommon.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\source\debug\editlist.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\source\debug\mainframe.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\debug\objectlist.hpp
 # End Source File
 # Begin Source File
 
@@ -143,17 +170,12 @@ SOURCE=..\source\debug\uwaccess.hpp
 
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 # End Group
-# Begin Group "frame layout files"
+# Begin Group "misc. files"
 
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\wxMSW\contrib\src\fl\controlbar.cpp
-# PROP Exclude_From_Build 1
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\wxMSW\contrib\include\wx\fl\controlbar.h
+SOURCE=..\source\debug\uwaccess.cpp
 # PROP Exclude_From_Build 1
 # End Source File
 # End Group
