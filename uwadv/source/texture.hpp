@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -89,6 +89,10 @@ public:
    //! convert image pixels to texture
    void convert(Uint8 *pix, unsigned int origx, unsigned int origy,
       ua_onepalette &pal, unsigned int numtex);
+
+   //! convert 32-bit RGBA values to texture
+   void convert(unsigned int xres, unsigned int yres, Uint32* pix,
+      unsigned int numtex=0);
 
    //! loads texture from (seekable) rwops stream
    void load(SDL_RWops* rwops);

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -100,6 +100,31 @@ void ua_texture::convert(Uint8 *pix, unsigned int origx, unsigned int origy,
       Uint32 *texptr2 = &texptr[y*xres];
       for(unsigned int x=0; x<origx; x++)
          *texptr2++ = palptr[pix[y*origx+x]];
+   }
+}
+
+void ua_texture::convert(unsigned int origx, unsigned int origy, Uint32* pix,
+   unsigned int numtex)
+{
+   // determine texture resolution (must be 2^n)
+   xres = 16;
+   while(xres<origx && xres<2048) xres<<=1;
+
+   yres = 16;
+   while(yres<origy && yres<2048) yres<<=1;
+
+   u = ((double)origx)/xres;
+   v = ((double)origy)/yres;
+
+   texels.resize(texname.size()*xres*yres,0x00000000);
+
+   // copy pixels
+   Uint32* texptr = &texels[numtex*xres*yres];
+   for(unsigned int y=0; y<origy; y++)
+   {
+      memcpy(texptr, pix, origx*sizeof(Uint32));
+      pix += origx;
+      texptr += xres;
    }
 }
 
