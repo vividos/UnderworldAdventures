@@ -40,17 +40,23 @@
 
 // extern texture import functions
 
-extern void ua_import_tga(SDL_RWops* rwops,unsigned int& xres, unsigned int& yres,
-   std::vector<Uint32>& texels);
+extern void ua_import_tga(SDL_RWops* rwops, unsigned int& xres, unsigned int& yres,
+   unsigned int& origx, unsigned int& origy, std::vector<Uint32>& texels);
 
 
 // ua_texture methods
 
 void ua_texture::load(SDL_RWops* rwops)
 {
+   unsigned int origx,origy;
+
    // currently we only have tga texture import
    // TODO: check for file type and load accordingly
-   //ua_import_tga(rwops,xres,yres,texels);
+   ua_import_tga(rwops,xres,yres,origx,origy,texels);
+
+   // calculate max. u and v coordinates
+   u = ((double)origx)/xres;
+   v = ((double)origy)/yres;
 }
 
 
