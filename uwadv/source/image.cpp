@@ -42,7 +42,7 @@ void ua_image::create(unsigned int width, unsigned int height, unsigned int init
 {
    xres = width; yres = height;
    pixels.resize(width*height,initial);
-   for(unsigned int i=0; i<pixels.size(); i++) pixels[i]=initial;
+//   for(unsigned int i=0; i<pixels.size(); i++) pixels[i]=initial;
    palette = pal;
 }
 
