@@ -144,6 +144,9 @@ public:
    //! called when changing to a new level
    void lua_change_level(unsigned int level);
 
+   //! looking at wall/floor/ceiling textures
+   void lua_wall_look(unsigned int tex_id);
+
 
    // objlist functions
 

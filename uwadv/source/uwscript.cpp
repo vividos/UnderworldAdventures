@@ -239,6 +239,14 @@ void ua_underworld_script_bindings::lua_change_level(unsigned int level)
       callback->ui_changed_level(level);
 }
 
+void ua_underworld_script_bindings::lua_wall_look(unsigned int tex_id)
+{
+   // call Lua function
+   lua_getglobal(L,"lua_wall_look");
+   lua_pushnumber(L,static_cast<double>(tex_id));
+   checked_lua_call(1,0);
+}
+
 
 // lua_objlist_* functions
 
