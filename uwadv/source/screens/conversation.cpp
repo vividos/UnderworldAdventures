@@ -782,3 +782,25 @@ Uint16 ua_conversation_screen::get_global(const char* the_globname)
 void ua_conversation_screen::set_global(const char* globname, Uint16 val)
 {
 }
+/*
+play_hunger
+play_health
+play_arms
+play_power
+play_hp
+play_mana
+play_level
+new_player_exp
+play_poison
+play_drawn
+play_sex
+npc_health
+npc_arms
+npc_power
+npc_name
+dungeon_level
+riddlecounter
+game_time
+game_days
+game_mins
+*/
