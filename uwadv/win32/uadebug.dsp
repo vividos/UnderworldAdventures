@@ -134,6 +134,10 @@ SOURCE=..\source\debug\mainframe.hpp
 
 SOURCE=..\source\debug\playerinfo.hpp
 # End Source File
+# Begin Source File
+
+SOURCE=..\source\debug\uwaccess.hpp
+# End Source File
 # End Group
 # Begin Group "resource files"
 
