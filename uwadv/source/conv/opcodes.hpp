@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -24,6 +24,9 @@
    \brief conversation code opcodes
 
 */
+//! \ingroup conv
+
+//@{
 
 // include guard
 #ifndef uwadv_opcodes_hpp_
@@ -82,54 +85,58 @@ enum ua_conv_opcodes
 //! instruction list
 static struct
 {
+   //! mnemonic name
    const char* mnemonic;
+   //! number of arguments to format opcode string
    int args;
+   //! opcode format string
    const char* argcode;
 } ua_conv_instructions[0x002a] = 
 {
-   { "NOP", 0,  "" },
-   { "OPADD", 0, "" },
-   { "OPMUL", 0, "" },
-   { "OPSUB", 0, "" },
-   { "OPDIV", 0, "" },
-   { "OPMOD", 0, "" },
-   { "OPOR", 0, "" },
-   { "OPAND", 0, "" },
-   { "OPNOT", 0, "" },
-   { "TSTGT", 0, "" },
-   { "TSTGE", 0, "" },
-   { "TSTLT", 0, "" },
-   { "TSTLE", 0, "" },
-   { "TSTEQ", 0, "" },
-   { "TSTNE", 0, "" },
-   { "JMP", 1, " $%04x" },
-   { "BEQ", 1, " +%04x" },
-   { "BNE", 1, " +%04x" },
-   { "BRA", 1, " +%04x" },
-   { "CALL", 1, " $%04x" },
-   { "CALLI", 1, " $%04x" },
-   { "RET", 0, "" },
-   { "PUSHI", 1, " #%04x" },
+   { "NOP",    0, "" },
+   { "OPADD",  0, "" },
+   { "OPMUL",  0, "" },
+   { "OPSUB",  0, "" },
+   { "OPDIV",  0, "" },
+   { "OPMOD",  0, "" },
+   { "OPOR",   0, "" },
+   { "OPAND",  0, "" },
+   { "OPNOT",  0, "" },
+   { "TSTGT",  0, "" },
+   { "TSTGE",  0, "" },
+   { "TSTLT",  0, "" },
+   { "TSTLE",  0, "" },
+   { "TSTEQ",  0, "" },
+   { "TSTNE",  0, "" },
+   { "JMP",    1, " $%04x" },
+   { "BEQ",    1, " +%04x" },
+   { "BNE",    1, " +%04x" },
+   { "BRA",    1, " +%04x" },
+   { "CALL",   1, " $%04x" },
+   { "CALLI",  1, " $%04x" },
+   { "RET",    0, "" },
+   { "PUSHI",  1, " #%04x" },
    { "PUSHI_EFF", 1, " #%04x" },
-   { "POP", 0, "" },
-   { "SWAP", 0, "" },
+   { "POP",    0, "" },
+   { "SWAP",   0, "" },
    { "PUSHBP", 0, "" },
-   { "POPBP", 0, "" },
+   { "POPBP",  0, "" },
    { "SPTOBP", 0, "" },
    { "BPTOSP", 0, "" },
-   { "ADDSP", 0, "" },
+   { "ADDSP",  0, "" },
    { "FETCHM", 0, "" },
-   { "STO", 0, "" },
+   { "STO",    0, "" },
    { "OFFSET", 0, "" },
-   { "START", 0, "" },
-   { "SAVE_REG", 0, "" },
-   { "PUSH_REG", 0, "" },
-   { "STRCMP", 0, "" },
-   { "EXIT_OP", 0, "" },
-   { "SAY_OP", 0, "" },
-   { "RESPOND_OP", 0, "" },
-   { "OPNEG", 0, "" },
+   { "START",  0, "" },
+   { "SAVE_REG",  0, "" },
+   { "PUSH_REG",  0, "" },
+   { "STRCMP",    0, "" },
+   { "EXIT_OP",   0, "" },
+   { "SAY_OP",    0, "" },
+   { "RESPOND_OP",   0, "" },
+   { "OPNEG",     0, "" },
 };
 
 
 #endif
+//@}
