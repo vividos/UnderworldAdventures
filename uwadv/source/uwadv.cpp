@@ -287,7 +287,10 @@ void ua_game::push_screen(ua_ui_screen_base *newscreen)
 {
    // save old screen on stack
    if (screen!=NULL)
+   {
+      screen->done();
       screenstack.push_back(screen);
+   }
 
    // we have a new screen
    screen = newscreen;
@@ -319,5 +322,6 @@ void ua_game::pop_screen()
       // get last pushed screen
       screen = screenstack.back();
       screenstack.pop_back();
+      screen->init();
    }
 }
