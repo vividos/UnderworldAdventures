@@ -61,10 +61,12 @@ function trap_set_off(obj_handle,trig_obj_handle)
 
    print( "trap set off: " .. ui_get_gamestring(4,objinfo.item_id))
 
+   -- --------------------------------------------------------------
    if objinfo.item_id == trap_damage
    then
       -- a_damage trap
 
+   -- --------------------------------------------------------------
    elseif objinfo.item_id == trap_teleport
    then
       -- a_teleport trap
@@ -84,11 +86,22 @@ function trap_set_off(obj_handle,trig_obj_handle)
       player_set_height(
          tilemap_get_floor_height(newlevel, player_get_pos() )+0.1 )
 
+   -- --------------------------------------------------------------
+   elseif objinfo.item_id == trap_delete_obj
+   then
+      -- a_delete object trap
+      if objinfo.is_quantity == 0
+      then
+         objlist_delete_obj(objinfo.quantity)
+      end
+
+   -- --------------------------------------------------------------
    elseif objinfo.item_id == trap_inventory
    then
       -- an_inventory trap
       return; -- only follow when object is in inventory
 
+   -- --------------------------------------------------------------
    elseif objinfo.item_id == trap_text_string
    then
       -- a_text string trap
@@ -97,6 +110,7 @@ function trap_set_off(obj_handle,trig_obj_handle)
 
       ui_print_string( ui_get_gamestring(9, str_id) )
 
+   -- --------------------------------------------------------------
    else
       print( "set off unknown trap:\n" )
       dump_objinfo_table(obj_handle)
