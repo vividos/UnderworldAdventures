@@ -63,4 +63,5 @@ EXTRA_DIST = \
 	src/luac/README	\
 	src/luac/Makefile \
 	src/lib/Makefile \
-	src/Makefile
+	src/Makefile \
+	src/lib/ldblib.c
