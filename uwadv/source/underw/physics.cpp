@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -619,7 +619,7 @@ bool ua_physics_check_point_in_triangle(const ua_vector3d& point,
    ua_vector3d e10=pb-pa;
    ua_vector3d e20=pc-pa;
      
-   float a,b,c,ac_bb;
+   double a,b,c,ac_bb;
 
    a = e10.dot(e10);
    b = e10.dot(e20);
@@ -628,12 +628,12 @@ bool ua_physics_check_point_in_triangle(const ua_vector3d& point,
 
    ua_vector3d vp = ua_vector3d(point.x-pa.x, point.y-pa.y, point.z-pa.z);
 
-   float d = vp.dot(e10);
-   float e = vp.dot(e20);
+   double d = vp.dot(e10);
+   double e = vp.dot(e20);
 
-   float x = (d*c)-(e*b);
-   float y = (e*a)-(d*b);
-   float z = x+y-ac_bb;
+   double x = (d*c)-(e*b);
+   double y = (e*a)-(d*b);
+   double z = x+y-ac_bb;
 
 #define in(a) ((Uint32&) a)
 
