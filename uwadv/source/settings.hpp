@@ -21,7 +21,7 @@
 */
 /*! \file settings.hpp
 
-   \brief config file loader class
+   \brief game settings class
 
 */
 
@@ -31,9 +31,42 @@
 
 // needed includes
 #include <string>
+#include <map>
 
 
 // enum
+
+//! settings value key
+typedef enum
+{
+   //! path to the game files (dependent on which game currently plays)
+   ua_setting_uw_path = 0,
+
+   //! path to the original uw1 game files (uw1 or uw_demo)
+   ua_setting_uw1_path,
+
+   //! path to the uw2 game files
+   ua_setting_uw2_path,
+
+   //! boolean value that indicates if uw1 (or uw_demo) game is available
+   ua_setting_uw1_avail,
+
+   //! boolean value that indicates if uw2 game is available
+   ua_setting_uw2_avail,
+
+   //! path to the "uadata" folder
+   ua_setting_uadata_path,
+
+   //! boolean value that indicates fullscreen mode
+   ua_setting_fullscreen,
+
+   //! string with narration type
+   ua_setting_cuts_narration,
+
+   //! int value with midi device to use
+   ua_setting_win32_midi_device,
+
+} ua_settings_key;
 
 //! game type enum
 typedef enum
@@ -53,21 +86,6 @@ typedef enum
 } ua_game_type;
 
 
-//! cutscene narration enum
-typedef enum
-{
-   //! sound (spoken text) only
-   ua_cutscenenar_sound=0,
-
-   //! subtitles only
-   ua_cutscenenar_subtitles,
-
-   //! sound and subtitles 
-   ua_cutscenenar_both
-
-} ua_cutscenenar_type;
-
-
 // classes
 
 //! config class
@@ -77,33 +95,39 @@ public:
    //! ctor
    ua_settings();
 
-   //! loads settings from config file
-   void load();
+   //! loads a config file
+   void load(const char *filename);
 
-   //! path to uw1
-   std::string uw1_path;
+   //! inits settings class after loading all config files
+   void init();
 
-   //! path to uadata folder
-   std::string uadata_path;
+   // settings value access
 
-   //! indicates if game should run in fullscreen
-   bool fullscreen;
+   //! returns the gametype
+   ua_game_type get_gametype(){ return gtype; }
+
+   //! returns string settings value
+   std::string get_string(ua_settings_key key);
+
+   //! returns an integer settings value
+   int get_int(ua_settings_key key);
+
+   //! returns a boolean settings value
+   bool get_bool(ua_settings_key key);
+
+   //! inserts a settings key/value pair
+   void insert_value(ua_settings_key key, const char *value);
+
+   //! sets the gametype
+   void set_gametype(ua_game_type type){ gtype = type; }
+
+protected:
 
    //! game type
    ua_game_type gtype;
 
-   //! cutscene narration type
-   ua_cutscenenar_type cutsntype;
-
-protected:
-   //! initializes more stuff after loading
-   void init();
-
-   //! checks if a file is available
-   bool file_isavail(const char *fname);
-
-   //! processes a single option
-   void process_option(int option, const char *value);
+   //! settings map
+   std::map<ua_settings_key,std::string> settings;
 };
 
 #endif

@@ -19,9 +19,9 @@
    $Id$
 
 */
-/*! \file settings.cpp
+/*! \file settingsloader.cpp
 
-   \brief loading functions for the config file
+   \brief loading functions for the ua_settings class
 
 */
 
@@ -33,89 +33,36 @@
 #include <algorithm>
 
 
-// constants
-
-const char *ua_settings_file = "./uwadv.cfg";
-
-
-// settings enum
-
-enum
-{
-   ua_setting_uw1path,
-   ua_setting_uadata_path,
-   ua_setting_fullscreen,
-   ua_setting_cutscene_narration
-};
-
-
 // structs
 
-// list of all settings
+// mapping of all settings keywords to keys
 struct
 {
-   const char *opt;
-   int val;
-} ua_settings_allsettings[] =
+   const char *optname;
+   ua_settings_key key;
+} ua_settings_mapping[] =
 {
-   { "uw1path", ua_setting_uw1path },
+   { "uw1path", ua_setting_uw1_path },
+// { "uw2path", ua_setting_uw2_path },
    { "uadata-path", ua_setting_uadata_path },
    { "fullscreen", ua_setting_fullscreen },
-   { "cutscene_narration", ua_setting_cutscene_narration },
+   { "cutscene_narration", ua_setting_cuts_narration },
+//   { "audio-enabled",  },
+   { "win32-midi-device", ua_setting_win32_midi_device },
 };
-
-
-// functions
-
-inline bool ua_istab(char c){ return c=='\t'; }
 
 
 // ua_settings methods
 
-ua_settings::ua_settings()
-:uw1_path("./"), uadata_path("./uadata/"), fullscreen(false), cutsntype(ua_cutscenenar_subtitles)
+void ua_settings::load(const char *filename)
 {
-}
-
-void ua_settings::process_option(int option, const char *value)
-{
-   switch(option)
-   {
-   case ua_setting_uw1path:
-      uw1_path = value;
-      break;
-
-   case ua_setting_uadata_path:
-      uadata_path = value;
-      break;
-
-   case ua_setting_fullscreen:
-      {
-         fullscreen = (strstr("true",value) != NULL) ||
-            (strstr("1",value) != NULL) ||
-            (strstr("yes",value) != NULL);
-      }
-      break;
-
-   case ua_setting_cutscene_narration:
-      {
-         cutsntype = (strstr("sound",value) != NULL) ? ua_cutscenenar_sound :
-            (strstr("both",value) != NULL) ? ua_cutscenenar_both : 
-            // default to subtitles only when some weird value is specified
-            ua_cutscenenar_subtitles;
-      }
-      break;
-
-   }
-}
-
-void ua_settings::load()
-{
-   std::ifstream cfg(ua_settings_file);
+   std::ifstream cfg(filename);
 
    if (!cfg.is_open())
    {
-      throw ua_exception("could not open config file ./uwadv.cfg");
+      std::string text("could not open config file ");
+      text.append(filename);
+      throw ua_exception(text.c_str());
    }
 
    // read in all lines
@@ -151,15 +98,17 @@ void ua_settings::load()
       if (line.size()==0) continue;
 
       // replace all '\t' with ' '
-      std::replace_if(line.begin(),line.end(),ua_istab,' ');
+      std::string::size_type pos = 0;
+      while( (pos = line.find_first_of('\t',pos) != std::string::npos) )
+         line.replace(pos,1," ");
 
       // we now have a real config line
-      for(int i=0; i<SDL_TABLESIZE(ua_settings_allsettings); i++)
+      for(int i=0; i<SDL_TABLESIZE(ua_settings_mapping); i++)
       {
          // search through all option entries
-         int len = strlen(ua_settings_allsettings[i].opt);
+         int len = strlen(ua_settings_mapping[i].optname);
 
-         if (strncmp(ua_settings_allsettings[i].opt,line.c_str(),len)==0)
+         if (strncmp(ua_settings_mapping[i].optname,line.c_str(),len)==0)
          {
             line.erase(0,len);
 
@@ -167,7 +116,7 @@ void ua_settings::load()
             for(;line.size()>0 && isspace(line.at(0));)
                line.erase(0,1);
 
-            process_option(ua_settings_allsettings[i].val,line.c_str());
+            insert_value(ua_settings_mapping[i].key,line.c_str());
 
             break;
          }
@@ -175,20 +124,4 @@ void ua_settings::load()
    }
 
    cfg.close();
-
-   // initialize rest of settings
-   init();
-}
-
-void ua_settings::init()
-{
-   // check if uw1_path ends with a slash; add one when not
-   if (uw1_path.size()==0)
-   {
-      throw ua_exception("no uw1_path specified in uwadv.cfg");
-   }
-
-   unsigned int last = uw1_path.size()-1;
-   if (uw1_path.at(last)!='/' && uw1_path.at(last)!='\\')
-      uw1_path.append(1,'/');
 }
