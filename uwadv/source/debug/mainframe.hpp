@@ -47,6 +47,9 @@ public:
       const wxString& title,const wxPoint& pos, const wxSize& size,
       const long style);
 
+   //! adds standard frame menus
+   void AddFrameMenus(wxMenuBar* menubar);
+
 protected:
    //! updates all bars and windows
    void UpdateAll();
@@ -81,11 +84,7 @@ protected:
    wxFrameLayout* m_pLayout;
 
    //! menu bar
-   wxMenuBar* m_pMenuBar;
-
-   //! underworld menu
-   wxMenu* m_pUnderwMenu;
-   wxMenu* m_pFileMenu;
+   wxMenuBar* menubar;
 
    //! menu id's
    enum

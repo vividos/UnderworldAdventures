@@ -84,26 +84,10 @@ ua_debugger_main_frame::ua_debugger_main_frame(wxWindow* parent,
 
 
    // menu stuff
-   m_pMenuBar = new wxMenuBar();
+   menubar = new wxMenuBar();
+   AddFrameMenus(menubar);
 
-   // file menu
-   m_pFileMenu = new wxMenu();
-//   m_pUnderwMenu->AppendSeparator();
-   m_pFileMenu->Append(MENU_FILE_QUIT, "&Quit", "quits the debugger");
-   m_pMenuBar->Append(m_pFileMenu, "&File");
-
-   // underworld menu
-   m_pUnderwMenu = new wxMenu();
-   m_pUnderwMenu->Append(MENU_UNDERW_UPDATE, "&Update", "updates all windows");
-   m_pUnderwMenu->Append(MENU_UNDERW_SUSPEND, "&Suspend Game", "suspends a running game");
-   m_pUnderwMenu->Append(MENU_UNDERW_RESUME, "&Resume Game", "resumes a suspended game");
-   m_pUnderwMenu->AppendSeparator();
-   m_pUnderwMenu->Append(MENU_UNDERW_PLAYER, "&Player Info", "shows Player Infos");
-   m_pUnderwMenu->Append(MENU_UNDERW_OBJECTLIST, "Master &Object List", "shows Master Object List");
-   m_pMenuBar->Append(m_pUnderwMenu, "&Underworld");
-
-   SetMenuBar(m_pMenuBar);
-
+   SetMenuBar(menubar);
 
    // status bar
    CreateStatusBar(3);
@@ -111,6 +95,24 @@ ua_debugger_main_frame::ua_debugger_main_frame(wxWindow* parent,
 
    // update all bars and windows
    UpdateAll();
+}
+
+void ua_debugger_main_frame::AddFrameMenus(wxMenuBar* menubar)
+{
+   // file menu
+   wxMenu* filemenu = new wxMenu();
+   filemenu->Append(MENU_FILE_QUIT, "&Quit", "quits the debugger");
+   menubar->Append(filemenu, "&File");
+
+   // underworld menu
+   wxMenu* uwmenu = new wxMenu();
+   uwmenu->Append(MENU_UNDERW_UPDATE, "&Update", "updates all windows");
+   uwmenu->Append(MENU_UNDERW_SUSPEND, "&Suspend Game", "suspends a running game");
+   uwmenu->Append(MENU_UNDERW_RESUME, "&Resume Game", "resumes a suspended game");
+   uwmenu->AppendSeparator();
+   uwmenu->Append(MENU_UNDERW_PLAYER, "&Player Info", "shows Player Infos");
+   uwmenu->Append(MENU_UNDERW_OBJECTLIST, "Master &Object List", "shows Master Object List");
+   menubar->Append(uwmenu, "&Underworld");
 }
 
 void ua_debugger_main_frame::UpdateAll()
