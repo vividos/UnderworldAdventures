@@ -70,35 +70,24 @@ void ua_sdl_mixer_driver::start_track(XMIDIEventList *eventlist, bool repeat)
 {
    stop_track();
 
-/*   // find out midi file length
+   // find out midi file length
    int length = eventlist->Write(NULL);
 
-   // convert XMIDI event list to midi file, into memory buffer
-   Uint8 *rawbuf = new Uint8[length];
-   SDL_RWops *midibuf = SDL_RWFromMem(rawbuf,length);
+   // convert XMIDI event list to midi file, into temp. file
+   SDL_RWops *midifile = SDL_RWFromFile("uwadv.mid","wb");
+   eventlist->Write(midifile);
+   SDL_RWclose(midifile);
 
-   eventlist->Write(midibuf);
+   // load the midi file
+   mod = Mix_LoadMUS("uwadv.mid");
 
-   // play the midi file
-   mod = FMUSIC_LoadSongMemory(rawbuf,length);
+   remove("uwadv.mid");
 
-   delete[] rawbuf;
-*/
+   if (mod == NULL)
+      return;
 
-   mod=Mix_LoadMUS("music.mid");
-   if (!mod)
-      {
-      // this might be a critical error...
-      printf("Mix_LoadMUS(\"music.mid\"): %s\n", Mix_GetError());
-      }
-
-
-   // -1 loops indefinitely long
-   if(Mix_PlayMusic(mod, -1) == -1)
-      {
-      // well, there's no music, but most games don't break without music...
-      printf("Mix_PlayMusic: %s\n", Mix_GetError());
-      }
+   // play it
+   Mix_PlayMusic(mod, repeat? -1 : 1);
 }
 
 void ua_sdl_mixer_driver::stop_track()
