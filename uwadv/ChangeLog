@@ -1,3 +1,6 @@
+2007-07-31 22:50  wjpalenstijn
+	* source/linux/various: removed generated files from CVS to .cvsignore
+
 2007-07-30 22:30  wjpalenstijn
 	removed Makefile.in from CVS, added to .cvsignore
 
