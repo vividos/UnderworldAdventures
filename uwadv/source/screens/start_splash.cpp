@@ -83,8 +83,10 @@ void ua_start_splash_screen::handle_event(SDL_Event &event)
    case SDL_MOUSEBUTTONDOWN:
       // ends start screen
       if (stage==1)
+      {
          stage++;
-      tickcount=0;
+         tickcount=0;
+      }
       break;
    }
 }
