@@ -44,9 +44,6 @@ const double ua_conversation_screen::fade_time = 0.5;
 //! time to wait before conversation partner answers
 const double ua_conversation_screen::answer_wait_time = 0.4;
 
-//! time to wait before fading out at end of conversation
-const double ua_conversation_screen::endconv_wait_time = 1.0;
-
 
 // ua_conversation_screen methods
 
@@ -204,16 +201,20 @@ void ua_conversation_screen::init()
    register_window(&mousecursor);
 
 
-   // init conv. code virtual machine
+   // init conversation code virtual machine
    {
       std::string cnv_name(game.get_settings().get_string(ua_setting_uw_path));
       cnv_name.append("data/cnv.ark");
 
-      //TODO
-//      ua_conv_code_vm::load_code(cnv_name.c_str(),static_cast<Uint16>(convslot));
+      // load code into vm
+      ua_uw_import import;
+      import.load_conv_code(code_vm, cnv_name.c_str(), static_cast<Uint16>(convslot));
 
       // get local strings
-      game.get_gamestrings().get_stringblock(static_cast<Uint16>(convslot),localstrings);
+      // note: convslot is used to load strings, not the strblock value set in
+      // conv header
+      game.get_gamestrings().get_stringblock(
+         code_vm.get_strblock(),localstrings);
 
       code_vm.init(this,game.get_underworld().get_conv_globals());
    }
@@ -252,7 +253,7 @@ bool ua_conversation_screen::process_event(SDL_Event& event)
 {
    if (ua_screen::process_event(event))
       return true;
-/*
+/*TODO
    if (scroll_menu.handle_event(event) || scroll_conv.handle_event(event))
    {
       // in user input mode?
@@ -306,6 +307,18 @@ bool ua_conversation_screen::process_event(SDL_Event& event)
             wait_count = unsigned(answer_wait_time * game.get_tickrate());
          }
       }
+      else
+      if (state == ua_state_wait_end)
+      {
+         // start fade out
+         state = ua_state_fadeout;
+         fader.init(false,game.get_tickrate(),fade_time);
+
+         wait_count = 0;
+
+         // fade out music
+         game.get_audio_manager().fadeout_music(fade_time);
+      }
       break;
 
    default:
@@ -326,50 +339,18 @@ void ua_conversation_screen::tick()
 
    // execute code until finished, waiting for an action or have [MORE]
    // lines to scroll
-//   while(state == ua_state_running && !finished)//TODO &&
+   while(state == ua_state_running)//TODO &&
          //!scroll_menu.have_more_lines() && !scroll_conv.have_more_lines())
    {
-      code_vm.step();
-//      if (finished)
-      {
-//      state = code_vm.step();
-/*
-      catch(ua_conv_vm_exception e)
-      {
-         ua_trace("caught ua_conv_vm_exception: ip=%04x, type: ",instrp);
-         switch(e)
-         {
-         case ua_ex_error_loading: ua_trace("error while loading"); break;
-         case ua_ex_div_by_zero: ua_trace("division by zero"); break;
-         case ua_ex_code_access: ua_trace("code access"); break;
-         case ua_ex_globals_access: ua_trace("globals access"); break;
-         case ua_ex_stack_access: ua_trace("stack access"); break;
-         case ua_ex_unk_opcode: ua_trace("unknown opcode"); break;
-         case ua_ex_imported_na: ua_trace("imported function not available"); break;
-         default: ua_trace("unknown exception number %u",e); break;
-         }*/
-//         finished = true;
-      }
-/*      catch(...)
-      {
-         ua_trace("caught unknown exception from ua_conv_code_vm::step()\n");
-         finished = true;
-      }*/
+      if (!code_vm.step())
+         state = ua_state_wait_end;
    }
 
-//TODO   if (finished && state == ua_state_running)
+   // finished conv. code?
+   if (state == ua_state_wait_end)
    {
       // clear menu scroll
       scroll_menu.clear_scroll();
-
-      // wait a bit, then fade out
-      state = ua_state_fadeout;
-      fader.init(false,game.get_tickrate(),fade_time);
-
-      wait_count = unsigned(endconv_wait_time * game.get_tickrate());
-
-      // fade out music
-      game.get_audio_manager().fadeout_music(fade_time);
       return;
    }
 
@@ -621,7 +602,7 @@ Uint16 ua_conversation_screen::get_global(const char* the_globname)
          game.get_underworld().get_player().get_name().c_str());
    }
    else
-      ua_trace("code_vm: get global: unknown global %s\n",globname);
+      ua_trace("code_vm: get global: unknown global %s\n",globname.c_str());
 
    return val;
 }

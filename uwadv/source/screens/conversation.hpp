@@ -24,6 +24,9 @@
    \brief conversation screen
 
 */
+//! \ingroup screens
+
+//@{
 
 // include guard
 #ifndef uwadv_conversation_hpp_
@@ -34,7 +37,7 @@
 #include "imgquad.hpp"
 #include "textscroll.hpp"
 #include "mousecursor.hpp"
-#include "conv/codevm.hpp"
+#include "codevm.hpp"
 #include "fading.hpp"
 
 
@@ -46,6 +49,7 @@ enum ua_conv_screen_state
    ua_state_running=0,  // vm code can run
    ua_state_wait_menu,  // waiting for menu selection
    ua_state_wait_input, // waiting for string input
+   ua_state_wait_end,   // waiting for a key to end conversation
    ua_state_fadein,     // fading in screen
    ua_state_fadeout,    // fading out screen
 };
@@ -89,9 +93,6 @@ protected:
 
    //! time to wait before conversation partner answers
    static const double answer_wait_time;
-
-   //! time to wait before fading out at end of conversation
-   static const double endconv_wait_time;
 
 
    //! conversation code virtual machine
@@ -140,4 +141,6 @@ protected:
    std::vector<Uint16> answer_string_ids;
 };
 
+
 #endif
+//@}
