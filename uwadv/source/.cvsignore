@@ -2,4 +2,4 @@ Makefile
 .deps
 uwadv
 Makefile.in
-
+uwadv.cfg
