@@ -19,5 +19,4 @@ ltmain.sh
 config.h
 config.h.in
 zzip-config.h
-zzip-config.in
 zzip-config
