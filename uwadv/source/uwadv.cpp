@@ -358,6 +358,9 @@ void ua_game::init_core()
    critter_pool.load(settings);
    critter_pool.prepare(texmgr);
 
+   // init model manager
+   model_manager.init(settings);
+
    // initializes underworld
    underworld.init(settings,filesmgr);
 }

@@ -37,6 +37,7 @@
 #include "gamestrings.hpp"
 #include "audio.hpp"
 #include "critter.hpp"
+#include "models.hpp"
 #include "screen.hpp"
 
 
@@ -86,6 +87,9 @@ protected:
    //! critter pool
    ua_critter_pool critter_pool;
 
+   //! 3d models manager
+   ua_model3d_manager model_manager;
+
    //! underworld object
    ua_underworld underworld;
 
@@ -120,6 +124,7 @@ protected:
    virtual ua_texture_manager &get_texmgr(){ return texmgr; }
    virtual ua_files_manager &get_filesmgr(){ return filesmgr; }
    virtual ua_critter_pool& get_critter_pool(){ return critter_pool; };
+   virtual ua_model3d_manager& get_model_manager(){ return model_manager; };
    virtual ua_savegames_manager& get_savegames_mgr(){ return savegames_mgr; };
    virtual ua_underworld &get_underworld(){ return underworld; }
 

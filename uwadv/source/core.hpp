@@ -38,6 +38,7 @@
 #include "gamestrings.hpp"
 #include "underworld.hpp"
 #include "screen.hpp"
+#include "models.hpp"
 #include "savegame.hpp"
 
 
@@ -83,6 +84,9 @@ public:
 
    //! returns critter pool object
    virtual ua_critter_pool& get_critter_pool()=0;
+
+   //! returns 3d model manager object
+   virtual ua_model3d_manager& get_model_manager()=0;
 
    //! returns savegames manager object
    virtual ua_savegames_manager& get_savegames_mgr()=0;
