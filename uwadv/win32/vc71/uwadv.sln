@@ -72,6 +72,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "uwdump", "uwdump.vcproj", "
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "uadebug", "uadebug.vcproj", "{D71D5409-E534-46C3-A7DF-41F92F8E254B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CEDCD4DD-3CC4-4944-85EB-BB0601250BA0} = {CEDCD4DD-3CC4-4944-85EB-BB0601250BA0}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -134,6 +139,10 @@ Global
 		{DF297B83-401B-452A-BE51-61357ECEC63A}.Debug.Build.0 = Debug|Win32
 		{DF297B83-401B-452A-BE51-61357ECEC63A}.Release.ActiveCfg = Release|Win32
 		{DF297B83-401B-452A-BE51-61357ECEC63A}.Release.Build.0 = Release|Win32
+		{D71D5409-E534-46C3-A7DF-41F92F8E254B}.Debug.ActiveCfg = Debug|Win32
+		{D71D5409-E534-46C3-A7DF-41F92F8E254B}.Debug.Build.0 = Debug|Win32
+		{D71D5409-E534-46C3-A7DF-41F92F8E254B}.Release.ActiveCfg = Release|Win32
+		{D71D5409-E534-46C3-A7DF-41F92F8E254B}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
