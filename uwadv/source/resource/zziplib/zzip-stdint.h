@@ -4,38 +4,21 @@
    unsigned C9X typedefs. The ISO C 9X: 7.18 Integer types file is stdint.h
  */
 
+/*
+
+  updated for Ultima Adventures: use SDL_types.h instead
+
+*/
+
 #include <zzip-conf.h> 
+#include "SDL_types.h"
 
-/* enforce use of ifdef'd C9X entries in system headers */
-#define __USE_ANSI 1
-#define __USE_ISOC9X 1
-
-#ifdef ZZIP_HAVE_STDINT_H
-    /* ISO C 9X: 7.18 Integer types <stdint.h> */
-#include <stdint.h>
-#elif defined ZZIP_HAVE_SYS_INT_TYPES_H /*solaris*/
-#include <sys/int_types.h>
-#else
-    typedef unsigned char uint8_t;      typedef signed char int8_t;
-
-# if ZZIP_SIZEOF_INT && ZZIP_SIZEOF_INT == 2
-    typedef unsigned int uint16_t;      typedef signed int int16_t;
-# elif ZZIP_SIZEOF_SHORT && ZZIP_SIZEOF_SHORT == 2
-    typedef unsigned short uint16_t;    typedef signed short int16_t;
-# else
-#   error unable to typedef int16_t from either int or short
-    typedef unsigned short uint16_t;    typedef signed short int16_t;
-# endif
-
-# if defined ZZIP_SIZEOF_INT && ZZIP_SIZEOF_INT == 4
-    typedef unsigned int uint32_t;      typedef signed int int32_t;
-# elif defined ZZIP_SIZEOF_LONG && ZZIP_SIZEOF_LONG == 4
-    typedef unsigned long uint32_t;     typedef signed long int32_t;
-# else
-#   error unable to typedef int32_t from either int or long
-    typedef unsigned long uint32_t;     typedef signed long int32_t;
-# endif
-#endif
+typedef Uint8 uint8_t;
+typedef Sint8 int8_t;
+typedef Uint16 uint16_t;
+typedef Sint16 int16_t;
+typedef Uint32 uint32_t;
+typedef Sint32 int32_t;
 
 #endif /*_ZZIP_STDINT_H*/
 
