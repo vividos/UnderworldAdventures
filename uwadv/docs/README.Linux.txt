@@ -55,6 +55,14 @@ More information about running Underworld Adventures can be found in the file
 Remarks
 -------
 
+Uninstalling:
+
+   If you built and installed Underworld Adventures from source, you can
+   uninstall it by running (as root)
+
+      make uninstall
+
+
 Installing FMOD:
 
    FMOD comes with some header files and a shared library. There's no install
