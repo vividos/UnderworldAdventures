@@ -32,10 +32,8 @@
 // needed includes
 #include "settings.hpp"
 #include "texture.hpp"
-//#include "quadtree.hpp"
 #include "objects.hpp"
 #include "savegame.hpp"
-//#include "uamath.hpp"
 
 
 // enums
@@ -55,13 +53,7 @@ typedef enum
    ua_tile_slope_w = 0x09
 
 } ua_levelmap_tiletype;
-/*
-//! side of currently rendered wall; used internally
-typedef enum
-{
-   ua_left, ua_right, ua_front, ua_back
-} ua_levelmap_wall_render_side;
-*/
+
 
 // structs
 
@@ -105,9 +97,6 @@ public:
    //! dtor
    ~ua_level(){}
 
-   //! prepares textures used in map for OpenGL
-   void prepare_textures(ua_texture_manager &texmgr);
-
    //! returns floor height on specific position
    double get_floor_height(double xpos, double ypos);
 
@@ -116,6 +105,9 @@ public:
 
    //! returns map object list ref
    ua_object_list &get_mapobjects(){ return allobjects; }
+
+   //! returns vector of used stock texture ids
+   const std::vector<Uint16>& get_used_textures(){ return used_textures; }
 
    // loading / saving / importing
 

@@ -34,14 +34,6 @@
 
 // ua_level methods
 
-void ua_level::prepare_textures(ua_texture_manager &texmgr)
-{
-   // prepare all used textures
-   unsigned int max = used_textures.size();
-   for(unsigned int n=0; n<max; n++)
-      texmgr.prepare(used_textures[n]);
-}
-
 double ua_level::get_floor_height(double xpos, double ypos)
 {
    if (xpos<0.0 || ypos<0.0 || xpos>64.0 || ypos>64.0)
