@@ -38,28 +38,47 @@ const char* ua_textscroll_more_string = " [MORE]";
 
 // ua_textscroll methods
 
-   //! initializes text scroll
+/*! Initializes text scroll window. The number of lines is determined by the
+    height parameter and the font char cheight.
+
+    \param game reference to game interface
+    \param xpos x position on screen
+    \param ypos y position on screen
+    \param width width of control
+    \param width height of control
+    \param my_bg_color background color index, from palette 0
+*/
 void ua_textscroll::init(ua_game_interface& game, unsigned int xpos,
    unsigned int ypos, unsigned int width, unsigned int height,
-   unsigned int lines, Uint8 my_bg_color)
+   Uint8 my_bg_color)
 {
-   maxlines = lines;
    bg_color = my_bg_color;
    text_color = 11;
    input_mode = false;
    input_line = 0;
 
-   ua_image_quad::init(game, xpos, ypos);
+   // load font
+   font_normal.load(game.get_settings(),ua_font_normal);
 
+   // calculate number of lines
+   maxlines = unsigned(height/font_normal.get_charheight());
+
+   // set up image quad and upload texture
    image.create(width, height);
    image.clear(bg_color);
 
-   font_normal.load(game.get_settings(),ua_font_normal);
+   ua_image_quad::init(game, xpos, ypos);
 
-   // set ua_window width and height and upload texture
    update();
 }
 
+/*! Prints a text to the scroll. The text may contain newline characters and
+    color change codes (like \1, \0 etc.). When the scroll is full, a "[MORE]"
+    text is shown and the window waits for a keypress
+
+    \param text text to print to the scroll
+    \todo implement color code changes
+*/
 bool ua_textscroll::print(const char* text)
 {
    std::string msgtext(text);
@@ -180,6 +199,9 @@ bool ua_textscroll::print(const char* text)
    return needed_scrolling;
 }
 
+/*! Updates the scroll's image and updates the image quad. When in input mode,
+    it shows the input cursor.
+*/
 void ua_textscroll::update_scroll()
 {
    // redo scroll texture
@@ -244,6 +266,7 @@ void ua_textscroll::update_scroll()
    ua_image_quad::update();
 }
 
+/*! Clears the scroll's contents and updates the image quad. */
 void ua_textscroll::clear_scroll()
 {
    // clear contents

@@ -39,12 +39,22 @@
 #include <vector>
 #include "imgquad.hpp"
 #include "font.hpp"
-#include "texture.hpp"
 
 
 // classes
 
 //! text scroll class
+/*! Text scroll window that can be used to show text messages. The scroll
+    stops when the scroll is full and shows a "[MORE]" text, waiting for a key
+    press. It also has a built-in input mode, e.g. for conversation answers
+    and such.
+
+    \todo factor out input mode into own ua_input_ctrl or ua_text_edit_ctrl
+    \todo add up/down buttons from buttons.gr, images 0/ or 27/28, to go
+    through scroll history
+    \todo add left and right borders
+    \todo limit scroll history to some max. number of lines, e.g. 256
+*/
 class ua_textscroll: public ua_image_quad
 {
 public:
@@ -53,8 +63,7 @@ public:
 
    //! initializes text scroll
    void init(ua_game_interface& game, unsigned int xpos, unsigned int ypos,
-      unsigned int width, unsigned int height, unsigned int lines,
-      Uint8 bg_color);
+      unsigned int width, unsigned int lines, Uint8 bg_color);
 
    //! sets new color
    inline void set_color(Uint8 color);
