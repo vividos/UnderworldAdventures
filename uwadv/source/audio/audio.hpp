@@ -21,18 +21,26 @@
 */
 /*! \file audio.hpp
 
-   \brief audio interface definition
+   \brief audio manager definition
 
-   the audio interface lets the user start and stop playing music tracks and
-   sound effects in the background. sound effects are played once, until they
-   end.
+   The audio manager lets the user start and stop playing music tracks, sound
+   effects and *.voc sounds in the background. music tracks can be repeated
+   indefinitely.
 
-   a new audio 'object' must be created with
+   To use the class, just call init() at program start and then call the play
+   functions to play music, sfx or *.voc files.
 
-      ua_audio_interface::get_audio_interface();
+   - play_sound(soundname) plays the file %uw-path%/sound/<soundname>.voc
+   - play_sfx() takes an enum defined below
+   - start_music() takes a playlist index; playlists are loaded from
+                   %uadata%<game-prefix>/audio/music.m3u.
 
-   which returns a pointer to the audio interface. when done, the interface
-   pointer must be destroyed with the delete operator.
+   The playlist is in m3u format, can contain comment lines starting with #
+   and playlist entries can also contain the placeholders %uw-path%, %uahome%
+   and %uadata%.
+
+   Be sure to only use the ua_audio_manager object only once, since it uses
+   the audio-part of SDL and SDL_mixer to play back audio.
 
 */
 
