@@ -34,6 +34,9 @@
 // ua_playerinfo_list event table
 
 BEGIN_EVENT_TABLE(ua_playerinfo_list, wxListCtrl)
+   EVT_LIST_BEGIN_LABEL_EDIT(-1, ua_playerinfo_list::OnBeginLabelEdit)
+   EVT_LIST_END_LABEL_EDIT(-1, ua_playerinfo_list::OnEndLabelEdit)
+   EVT_LEFT_DOWN(wxEditListCtrl::OnMouseLeftDown)
 END_EVENT_TABLE()
 
 
@@ -103,7 +106,7 @@ const char* ua_playerinfo_captions[] =
 
 ua_playerinfo_list::ua_playerinfo_list(wxWindow *parent,
    const wxWindowID id, const wxPoint& pos, const wxSize& size, long style)
-:wxListCtrl(parent, id, pos, size, style | wxLC_REPORT | wxLC_HRULES | wxLC_VRULES)
+:wxEditListCtrl(parent, id, pos, size, style | wxLC_HRULES | wxLC_VRULES)
 {
    // add columns
    wxListItem column;
@@ -175,4 +178,40 @@ void ua_playerinfo_list::AddBar(wxFrameLayout* pLayout)
       frame_name,           // name to refere in customization pop-ups
       TRUE
    );
+}
+
+void ua_playerinfo_list::OnBeginLabelEdit(wxListEvent& event)
+{
+   if (event.m_item.GetColumn()==0)
+      event.Veto();
+}
+
+void ua_playerinfo_list::OnEndLabelEdit(wxListEvent& event)
+{
+   if (event.m_col != 1)
+      return;
+
+   unsigned int item = event.m_itemIndex;;
+   wxString text = event.m_item.GetText();
+
+   ua_debug_command_func cmd = wxGetApp().command;
+
+   ua_debug_param param1(item), param2;
+
+   if (item<4)
+   {
+      double d;
+      text.ToDouble(&d);
+      param2.set(d);
+   }
+   else
+   {
+      unsigned long ul;
+      text.ToULong(&ul);
+      param2.set(static_cast<unsigned int>(ul));
+   }
+
+   cmd(udc_lock,0,NULL,NULL);
+   cmd(udc_player_set,0,&param1,&param2);
+   cmd(udc_unlock,0,NULL,NULL);
 }

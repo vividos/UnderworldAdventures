@@ -30,11 +30,11 @@
 #define uadebug_playerinfo_hpp_
 
 // needed includes
-#include "wx/listctrl.h" // list control
+#include "editlist.hpp"
 
 
 //! player info list control
-class ua_playerinfo_list: public wxListCtrl
+class ua_playerinfo_list: public wxEditListCtrl
 {
 public:
    //! ctor
@@ -49,6 +49,13 @@ public:
 
    //! frame name for "player info" control
    static const char* frame_name;
+
+protected:
+   //! called when editing a cell begins
+   void OnBeginLabelEdit(wxListEvent& event);
+
+   //! called when ending cell edit
+   void OnEndLabelEdit(wxListEvent& event);
 
 protected:
    // event table
