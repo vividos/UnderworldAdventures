@@ -143,7 +143,7 @@ void ua_playerinfo_list::UpdateData()
       wxString value;
       ua_debug_param param1;
 
-      param1.val.i = i;
+      param1.set_int(i);
       cmd(udc_player_get,1,&param1,NULL);
 
       if (param1.type == ua_param_int)
