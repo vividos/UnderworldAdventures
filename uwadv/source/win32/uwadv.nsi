@@ -67,11 +67,14 @@ File uwadv.cfg
 File Copying
 File README.uwadv.txt
 
+SetOutPath $INSTDIR\uadata
+File uadata\uadata00.uar
+
 #CreateShortCut "$DESKTOP\Underworld Adventures.lnk" "$INSTDIR\uwadv.exe" "" "" "0"
 #WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\uwadv" "DisplayName" "Underworld Adventures version '${VERSION}' (remove only)"
 #WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\uwadv" "UninstallString" '"$INSTDIR\uninst-uwadv.exe"'
 
-WriteUninstaller $INSTDIR\uninst-uwadv.exe
+#WriteUninstaller $INSTDIR\uninst-uwadv.exe
 SectionEnd
 
 Function .onInstSuccess
@@ -93,9 +96,11 @@ Delete $INSTDIR\uwadv.cfg
 Delete $INSTDIR\Copying
 Delete $INSTDIR\README.uwadv.txt
 Delete $INSTDIR\uninst-uwadv.exe
+Delete $INSTDIR\uadata\uadata00.uar
 
 #Delete "$DESKTOP\Underworld Adventures.lnk"
 #DeleteRegKey HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\uwadv"
 
+RMDir $INSTDIR\uadata
 RMDir $INSTDIR
 SectionEnd
