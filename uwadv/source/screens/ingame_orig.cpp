@@ -64,6 +64,10 @@ struct
    { ua_area_inv_slot6, 280, 298, 100, 116 },
    { ua_area_inv_slot7, 299, 317, 100, 116 },
 
+   { ua_area_inv_container, 241, 256, 64, 79 },
+   { ua_area_inv_scroll_up, 294, 304, 69, 81 },
+   { ua_area_inv_scroll_down, 305, 315, 69, 81 },
+
    { ua_area_equip_left_hand,     243, 258, 36, 51 },
    { ua_area_equip_left_shoulder, 246, 261, 14, 28 },
    { ua_area_equip_left_ring,     260, 265, 56, 63 },
@@ -98,7 +102,11 @@ void ua_ingame_orig_screen::init()
    viewangle = 0.0;
    cursor_image = 0;
    cursorx = cursory = 0;
+   cursor_is_object = false;
+   cursor_object = 0;
    slot_start = 0;
+   check_dragging = false;
+
    tickcount = 0;
    look_down = look_up = false;
    gamemode = ua_mode_default;
@@ -140,9 +148,12 @@ void ua_ingame_orig_screen::init()
    bool female = core->get_underworld().get_player().get_attr(ua_attr_gender)!=0;
    img_armor.load(settings,female ? "armor_f" : "armor_m");
 
-   font_normal.init(core->get_settings(),ua_font_normal);
+   font_normal.init(settings,ua_font_normal);
 
    img_cmd_btns.load(settings,"lfti");
+
+   img_inv_bagpanel.load(settings,"inv",6);
+   img_inv_updown.load(settings,"buttons",27,29);
 }
 
 void ua_ingame_orig_screen::done()
@@ -170,6 +181,8 @@ void ua_ingame_orig_screen::handle_event(SDL_Event &event)
          SDL_GetMouseState(&x,&y);
          cursorx = unsigned(double(x)/core->get_screen_width()*320.0);
          cursory = unsigned(double(y)/core->get_screen_height()*200.0);
+
+         mouse_action(false,false,false);
       }
       break;
 
@@ -180,7 +193,7 @@ void ua_ingame_orig_screen::handle_event(SDL_Event &event)
          if (SDL_BUTTON(state)==SDL_BUTTON_LEFT) leftbuttondown = true;
          else rightbuttondown = true;
 
-         mouse_action(SDL_BUTTON(state)==SDL_BUTTON_LEFT,true);
+         mouse_action(true,SDL_BUTTON(state)==SDL_BUTTON_LEFT,true);
       }
       break;
 
@@ -191,7 +204,7 @@ void ua_ingame_orig_screen::handle_event(SDL_Event &event)
          if (SDL_BUTTON(state)==SDL_BUTTON_LEFT) leftbuttondown = false;
          else rightbuttondown = false;
 
-         mouse_action(SDL_BUTTON(state)==SDL_BUTTON_LEFT,false);
+         mouse_action(true,SDL_BUTTON(state)==SDL_BUTTON_LEFT,false);
       }
       break;
    }
@@ -397,12 +410,19 @@ void ua_ingame_orig_screen::render_ui()
       {
          // inside a container
 
-         // draw container we're in
-         Uint16 cont_id = inv.get_item(inv.get_container_item_id()).item_id;
+         // draw alternative inventory panel
+         img_temp.paste_image(img_inv_bagpanel,236,80);
 
-         img_temp.paste_image(
-            img_objects.get_image(cont_id),
-            242, 60,true);
+         // draw up/down arrows
+         if (slot_start>0)
+            img_temp.paste_image(img_inv_updown.get_image(0),296,70,true); // up
+
+         if (inv.get_num_slots()-slot_start>=8)
+            img_temp.paste_image(img_inv_updown.get_image(1),306,70,true); // down
+
+         // draw container we're in
+         Uint16 cont_id = inv.get_container_item_id();
+         img_temp.paste_image(img_objects.get_image(cont_id),241,64,true);
 
          // begin at current slot start
          start = slot_start;
@@ -411,9 +431,9 @@ void ua_ingame_orig_screen::render_ui()
       // paste inventory slots
       for(unsigned int i=0; i<8; i++)
       {
-         if (start < inv.get_num_slots())
+         if (start+i < inv.get_num_slots())
          {
-            Uint16 item = inv.get_slot_item(start);
+            Uint16 item = inv.get_slot_item(start+i);
             Uint16 item_id = inv.get_item(item).item_id;
 
             // draw item
@@ -426,7 +446,6 @@ void ua_ingame_orig_screen::render_ui()
                img_temp.paste_image(img_objects.get_image(item_id),
                   destx,desty,true);
             }
-            start++;
          }
       }
 
@@ -441,7 +460,7 @@ void ua_ingame_orig_screen::render_ui()
             254,50, 284,50, // finger
             268,26,         // legs
             262,22,         // chest
-            261,41,         // hands
+            261,42,         // hands
             266,66,         // feet
             267,10,         // head
          };
@@ -500,7 +519,11 @@ void ua_ingame_orig_screen::render_ui()
       posx = cursorx<8 ? 0 : cursorx-8;
       posy = cursory<8 ? 0 : cursory-8;
 
-      img_temp.paste_image(img_cursors.get_image(cursor_image),posx,posy,true);
+      ua_image &img = cursor_is_object
+         ? img_objects.get_image(cursor_object)
+         : img_cursors.get_image(cursor_image);
+
+      img_temp.paste_image(img,posx,posy,true);
    }
 
    // upload ui texture
@@ -642,14 +665,14 @@ ua_ingame_orig_area ua_ingame_orig_screen::get_area(
    return ua_ingame_orig_area_table[idx].areacode;
 }
 
-void ua_ingame_orig_screen::mouse_action(bool left_button, bool pressed)
+void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pressed)
 {
    ua_ingame_orig_area area = get_area(cursorx,cursory);
 
-   // check which area was clicked
+   // check areas
 
    // check "command" buttons
-   if (pressed)
+   if (click && pressed)
    switch(area)
    {
    case ua_area_menu_button0: // "options" button
@@ -676,4 +699,166 @@ void ua_ingame_orig_screen::mouse_action(bool left_button, bool pressed)
       gamemode = (gamemode == ua_mode_use) ? ua_mode_default : ua_mode_use;
       break;
    }
+
+   // check inventory items
+   do
+   {
+      ua_inventory &inv = core->get_underworld().get_inventory();
+
+      if (click)
+      {
+         // check clicks
+
+         // check scroll up/down buttons
+         if (!pressed && area==ua_area_inv_scroll_up && slot_start>0)
+         {
+            slot_start -= slot_start > 4? 4 : slot_start;
+            break;
+         }
+
+         if (!pressed && area==ua_area_inv_scroll_down &&
+            inv.get_num_slots()-slot_start>=8)
+         {
+            slot_start += 4;
+            break;
+         }
+
+         // find out itemlist pos
+         Uint16 item = ua_slot_no_item;
+         switch(area)
+         {
+         case ua_area_inv_slot0: item = inv.get_slot_item(slot_start+0); break;
+         case ua_area_inv_slot1: item = inv.get_slot_item(slot_start+1); break;
+         case ua_area_inv_slot2: item = inv.get_slot_item(slot_start+2); break;
+         case ua_area_inv_slot3: item = inv.get_slot_item(slot_start+3); break;
+         case ua_area_inv_slot4: item = inv.get_slot_item(slot_start+4); break;
+         case ua_area_inv_slot5: item = inv.get_slot_item(slot_start+5); break;
+         case ua_area_inv_slot6: item = inv.get_slot_item(slot_start+6); break;
+         case ua_area_inv_slot7: item = inv.get_slot_item(slot_start+7); break;
+
+         case ua_area_equip_left_hand: item = ua_slot_lefthand; break;
+         case ua_area_equip_left_shoulder: item = ua_slot_leftshoulder; break;
+         case ua_area_equip_left_ring: item = ua_slot_leftfinger; break;
+
+         case ua_area_equip_right_hand: item = ua_slot_righthand; break;
+         case ua_area_equip_right_shoulder: item = ua_slot_rightshoulder; break;
+         case ua_area_equip_right_ring: item = ua_slot_rightfinger; break;
+
+         case ua_area_paperdoll_head: item = ua_slot_paperdoll_head; break;
+         case ua_area_paperdoll_chest: item = ua_slot_paperdoll_chest; break;
+         case ua_area_paperdoll_hand: item = ua_slot_paperdoll_hands; break;
+         case ua_area_paperdoll_legs: item = ua_slot_paperdoll_legs; break;
+         case ua_area_paperdoll_feet: item = ua_slot_paperdoll_feet; break;
+
+         case ua_area_inv_container: break;
+         default: area = ua_area_none; break;
+         }
+
+         if (//item==ua_slot_no_item &&
+            area == ua_area_none)
+               break;
+
+         // left/right click pressed
+         if (pressed && !check_dragging && area!=ua_area_inv_container)
+         {
+            // start checking for dragging items
+            check_dragging = true;
+            drag_item = item;
+            drag_area = area;
+         }
+
+         // left/right click release
+         if (!pressed)
+         {
+            // stop dragging
+            check_dragging = false;
+
+            // check for floating items
+            if (inv.get_floating_item() != ua_slot_no_item)
+            {
+               // yes, floating
+
+               // check for container icon "slot"
+               if (area==ua_area_inv_container &&
+                  inv.get_container_item_id() != ua_slot_no_item)
+               {
+                  // put item into parent's container, if possible
+                  inv.drop_floating_item_parent();
+               }
+               else
+               {
+                  // normal inventory slot
+
+                  // hack: check for item id's when dropping to paperdoll
+                  if (item==ua_slot_paperdoll_head ||
+                      item==ua_slot_paperdoll_chest ||
+                      item==ua_slot_paperdoll_hands ||
+                      item==ua_slot_paperdoll_legs ||
+                      item==ua_slot_paperdoll_feet)
+                  {
+                     Uint16 item_id = inv.get_item(inv.get_floating_item()).item_id;
+                     if (item_id < 0x0020 || item_id > 0x0032)
+                        break;
+                  }
+
+                  // TODO: check if objects can be combined
+
+                  // just drop the item on that position
+                  // an item on that slot gets the next floating one
+                  // items dropped onto a container are put into that container
+                  inv.drop_floating_item(item);
+               }
+
+               // check if we still have a floating object
+               if (inv.get_floating_item() != ua_slot_no_item)
+               {
+                  // still floating? then set new cursor object
+                  cursor_object =  inv.get_item(inv.get_floating_item()).item_id;
+                  cursor_is_object = cursor_object != ua_slot_no_item;
+               }
+               else
+                  cursor_is_object = false;
+
+               break;
+            }
+
+            // no floating object
+
+            // click on container icon
+            if (area==ua_area_inv_container)
+            {
+               // close container when not topmost
+               if (inv.get_container_item_id() != ua_slot_no_item)
+                  inv.close_container();
+               break;
+            }
+
+            // check if container
+            if (inv.is_container(inv.get_item(item).item_id) &&
+               gamemode == ua_mode_default)
+            {
+               // open container
+               inv.open_container(item);
+               cursor_is_object = false;
+               slot_start = 0;
+               break;
+            }
+
+            // todo: perform left/right click action
+         }
+      }
+      else
+      {
+         // check item dragging
+         if (check_dragging && drag_area != area)
+         {
+            // user dragged item out of area
+            check_dragging = false;
+            inv.float_item(drag_item);
+
+            cursor_object =  inv.get_item(inv.get_floating_item()).item_id;
+            cursor_is_object = cursor_object != ua_slot_no_item;
+         }
+      }
+   } while (0);
 }

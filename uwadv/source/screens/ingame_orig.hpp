@@ -88,6 +88,10 @@ typedef enum
    ua_area_inv_slot6,
    ua_area_inv_slot7,
 
+   ua_area_inv_container,
+   ua_area_inv_scroll_up,
+   ua_area_inv_scroll_down,
+
    ua_area_equip_left_hand,
    ua_area_equip_left_shoulder,
    ua_area_equip_left_ring,
@@ -137,8 +141,8 @@ protected:
    //! returns area the given mouse coordinates is over
    ua_ingame_orig_area get_area(unsigned int xpos,unsigned int ypos);
 
-   //! called for a given mouse action
-   void mouse_action(bool left_button, bool pressed);
+   //! called for a given mouse action; click is false for mouse moves
+   void mouse_action(bool click, bool left_button, bool pressed);
 
 protected:
 
@@ -153,8 +157,26 @@ protected:
    //! mouse cursor coordinates
    unsigned int cursorx,cursory;
 
+   //! indicates if cursor is an object icon
+   bool cursor_is_object;
+
+   //! object the cursor currently is
+   Uint16 cursor_object;
+
    //! start of inventory slots the user sees
    unsigned int slot_start;
+
+   //! indicates if dragging should be checked
+   bool check_dragging;
+
+   //! inventory item that is dragged
+   Uint16 drag_item;
+
+   //! area the item is dragged from
+   ua_ingame_orig_area drag_area;
+
+
+   // misc. stuff
 
    //! ticks since start of screen
    unsigned long tickcount;
@@ -203,6 +225,12 @@ protected:
 
    //! paperdoll armour images
    ua_image_list img_armor;
+
+   //! alternative inventory panel for inside containers
+   ua_image img_inv_bagpanel;
+
+   //! up/down button for scrollable inventory
+   ua_image_list img_inv_updown;
 };
 
 #endif
