@@ -100,7 +100,7 @@ inline Uint8 ua_runes::get_runeshelf_rune(unsigned int pos)
 
 inline void ua_runes::add_runeshelf_rune(Uint8 rune)
 {
-   if (runeshelf.size()>2) runeshelf.erase(0);
+   if (runeshelf.size()>2) runeshelf.erase(runeshelf.begin());
    runeshelf.push_back(rune);
 }
 
