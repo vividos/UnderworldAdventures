@@ -3,6 +3,8 @@ AUTOMAKE_OPTIONS = foreign
 SUBDIRS = hacking source uadata
 
 EXTRA_DIST =  \
+	autogen.sh \
+	Copying \
 	uwadv.spec \
 	Makefile.mingw \
 	uwadv.dsw \
