@@ -54,8 +54,12 @@ rm -f source/script/Makefile.in source/script/Makefile
 rm -f source/script/lua/Makefile.in source/script/lua/Makefile
 rm -f uadata/Makefile.in uadata/Makefile
 rm -f hacking/Makefile.in hacking/Makefile
-# maybe change this last line into some fancy
-# 'find all Makefile.am and delete corresponding Makefile and Makefile.in'
+rm -rf source/script/lua/.deps
+rm -rf source/base/zziplib/.deps
+rm -rf source/.deps
+rm -rf source/tools/.deps
+rm -rf source/tools/uwdump/.deps
+rm -rf source/debug/.deps
 
 echo "Generating files..."
 
