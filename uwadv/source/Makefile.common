@@ -95,7 +95,7 @@ uwadv_SOURCES = \
 	underw/properties.hpp \
 	underw/underworld.cpp underw/underworld.hpp \
 	common.hpp \
-	debug.hpp \
+	debug.cpp debug.hpp \
 	game_interface.hpp \
 	gamecfg.cpp gamecfg.hpp \
 	main.cpp \
