@@ -399,6 +399,60 @@ const char* ua_conversation_screen::get_local_string(Uint16 index)
    return localstrings[index].c_str();
 }
 
+/* *=implemented, x=assert
+   * babl_menu
+   * babl_fmenu
+   * print
+   * babl_ask
+   * compare
+   * random
+   x plural
+   * contains
+   x append
+   x copy
+   x find
+   * length
+   x val
+   x say
+   x respond
+   * get_quest
+   * set_quest
+   * sex
+     show_inv
+     give_to_npc
+     give_ptr_npc
+     take_from_npc
+     take_id_from_npc
+     identify_inv
+     do_offer
+     do_demand
+     do_inv_create
+     do_inv_delete
+     check_inv_quality
+     set_inv_quality
+     count_inv
+     setup_to_barter
+     end_barter
+     do_judgement
+     do_decline
+     pause
+     set_likes_dislikes
+     gronk_door
+     set_race_attitude
+     place_object
+     take_from_npc_inv
+     add_to_npc_inv
+     remove_talker
+     set_attitude
+     x_skills
+     x_traps
+     x_obj_pos
+     x_obj_stuff
+     find_inv
+     find_barter
+     find_barter_total
+
+*/
 Uint16 ua_conversation_screen::external_func(const char* the_funcname,
    ua_conv_stack& stack)
 {
@@ -445,8 +499,8 @@ Uint16 ua_conversation_screen::external_func(const char* the_funcname,
       }
 
       state = ua_state_wait_menu;
-
-   } else
+   }
+   else
 
    if (funcname.compare("babl_fmenu")==0)
    {
@@ -489,8 +543,8 @@ Uint16 ua_conversation_screen::external_func(const char* the_funcname,
       }
 
       state = ua_state_wait_menu;
-
-   } else
+   }
+   else
 
    if (funcname.compare("print")==0)
    {
@@ -501,8 +555,8 @@ Uint16 ua_conversation_screen::external_func(const char* the_funcname,
       code_vm.replace_placeholder(printtext);
 
       scroll_conv.print(printtext.c_str());
-
-   } else
+   }
+   else
 
    if (funcname.compare("babl_ask")==0)
    {
@@ -514,16 +568,49 @@ Uint16 ua_conversation_screen::external_func(const char* the_funcname,
          scroll_menu.get_width(), 42, 1, 46,">");
 
       state = ua_state_text_input;
-
-   } else
+   }
+   else
 
    if (funcname.compare("compare")==0)
    {
-   } else
+      // get arguments
+      Uint16 arg1 = stack.at(argpos--);
+      arg1 = stack.at(arg1);
+
+      Uint16 arg2 = stack.at(argpos);
+      arg2 = stack.at(arg2);
+
+      // get strings
+      std::string str1(localstrings[arg1]), str2(localstrings[arg2]);
+
+      ua_str_lowercase(str1);
+      ua_str_lowercase(str2);
+
+      // check if first string contains second
+      result_register = str1 == str2;
+   }
+   else
 
    if (funcname.compare("random")==0)
    {
-   } else
+      Uint16 arg = stack.at(argpos--);
+      arg = stack.at(arg);
+
+      // this code assumes that rand() can return RAND_MAX
+
+      // rnum is in the range [0..1[
+      double rnum = double(rand())/double(RAND_MAX+1);
+      rnum *= arg; // now in range [0..arg[
+      result_register = Uint16(rnum + 1.0); // now from [1..arg+1[
+   }
+   else
+
+   if (funcname.compare("plural")==0)
+   {
+      ua_trace("conv_vm: intrinsic plural() not implemented");
+      ua_assert(false);
+   }
+   else
 
    if (funcname.compare("contains")==0)
    {
@@ -542,8 +629,29 @@ Uint16 ua_conversation_screen::external_func(const char* the_funcname,
 
       // check if first string contains second
       result_register = str1.find(str2) != std::string::npos;
+   }
+   else
 
-   } else
+   if (funcname.compare("append")==0)
+   {
+      ua_trace("conv_vm: intrinsic append() not implemented");
+      ua_assert(false);
+   }
+   else
+
+   if (funcname.compare("copy")==0)
+   {
+      ua_trace("conv_vm: intrinsic copy() not implemented");
+      ua_assert(false);
+   }
+   else
+
+   if (funcname.compare("find")==0)
+   {
+      ua_trace("conv_vm: intrinsic find() not implemented");
+      ua_assert(false);
+   }
+   else
 
    if (funcname.compare("length")==0)
    {
@@ -553,8 +661,29 @@ Uint16 ua_conversation_screen::external_func(const char* the_funcname,
 
       // return string length
       result_register = localstrings[arg].size();
+   }
+   else
 
-   } else
+   if (funcname.compare("val")==0)
+   {
+      ua_trace("conv_vm: intrinsic val() not implemented");
+      ua_assert(false);
+   }
+   else
+
+   if (funcname.compare("say")==0)
+   {
+      ua_trace("conv_vm: intrinsic say() not implemented");
+      ua_assert(false);
+   }
+   else
+
+   if (funcname.compare("respond")==0)
+   {
+      ua_trace("conv_vm: intrinsic respond() not implemented");
+      ua_assert(false);
+   }
+   else
 
    if (funcname.compare("get_quest")==0)
    {
@@ -564,8 +693,8 @@ Uint16 ua_conversation_screen::external_func(const char* the_funcname,
       result_register = game.get_underworld().get_questflags()[arg];
 
       ua_trace("get_quest[%u] = %u\n",arg,result_register);
-
-   } else
+   }
+   else
 
    if (funcname.compare("set_quest")==0)
    {
@@ -578,8 +707,8 @@ Uint16 ua_conversation_screen::external_func(const char* the_funcname,
       game.get_underworld().get_questflags()[arg2] = arg1;
 
       ua_trace("set_quest[%u] = %u\n",arg2,arg1);
-   
-   } else
+   }
+   else
 
    if (funcname.compare("sex")==0)
    {
@@ -596,7 +725,7 @@ Uint16 ua_conversation_screen::external_func(const char* the_funcname,
       result_register = arg1;
    }
    else
-      ua_trace("code_vm: unknown imported function: %s\n",funcname.c_str());
+      ua_trace("code_vm: unknown intrinsic %s()\n",funcname.c_str());
 
    return result_register;
 }
@@ -606,11 +735,44 @@ Uint16 ua_conversation_screen::get_global(const char* the_globname)
    std::string globname(the_globname);
    Uint16 val = 0;
 
+   ua_player& pl = game.get_underworld().get_player();
+
+   // get npc object to talk to
+   ua_object& npc_obj = game.get_underworld().get_current_level().
+      get_mapobjects().get_object(objpos);
+
    if (globname.compare("play_name")==0)
-   {
-      val = alloc_string(
-         game.get_underworld().get_player().get_name().c_str());
-   }
+      val = alloc_string(pl.get_name().c_str());
+   else
+   if (globname.compare("npc_xhome")==0)
+      val = npc_obj.get_ext_object_info().npc_xhome;
+   else
+   if (globname.compare("npc_yhome")==0)
+      val = npc_obj.get_ext_object_info().npc_yhome;
+   else
+   if (globname.compare("npc_attitude")==0)
+      val = npc_obj.get_ext_object_info().npc_attitude;
+   else
+   if (globname.compare("npc_goal")==0)
+      val = npc_obj.get_ext_object_info().npc_goal;
+   else
+   if (globname.compare("npc_gtarg")==0)
+      val = npc_obj.get_ext_object_info().npc_gtarg;
+   else
+   if (globname.compare("npc_hp")==0)
+      val = npc_obj.get_ext_object_info().npc_hp;
+   else
+   if (globname.compare("npc_hunger")==0)
+      val = npc_obj.get_ext_object_info().npc_hunger;
+   else
+   if (globname.compare("npc_level")==0)
+      val = npc_obj.get_ext_object_info().npc_level;
+   else
+   if (globname.compare("npc_talkedto")==0)
+      val = npc_obj.get_ext_object_info().npc_talkedto;
+   else
+   if (globname.compare("npc_whoami")==0)
+      val = npc_obj.get_ext_object_info().npc_whoami;
    else
       ua_trace("code_vm: get global: unknown global %s\n",globname.c_str());
 
