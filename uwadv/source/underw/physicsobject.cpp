@@ -32,7 +32,7 @@
 
 /*! default initial gravity pull; the value is chosen so that the player
     just doesn't slide along sloped tiles. */
-const double ua_default_gravity_pull = --01.0;
+const double ua_default_gravity_pull = -1.0;
 
 /*! maximum gravity pull value */
 const double ua_max_gravity_pull = -12.0;
