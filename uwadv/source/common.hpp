@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,9 +26,10 @@
 */
 
 // include guard
-#ifndef __uwadv_common_hpp_
-#define __uwadv_common_hpp_
+#ifndef uwadv_common_hpp_
+#define uwadv_common_hpp_
 
+// auto-generated config file
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -36,8 +37,8 @@
 
 // get rid of warnings
 #ifdef _MSC_VER
-# pragma warning( disable : 4786 ) // identifier was truncated to '255' characters in the debug information
-# pragma warning( disable : 4290 ) // C++ Exception Specification ignored
+# pragma warning( disable: 4786 ) // identifier was truncated to '255' characters in the debug information
+# pragma warning( disable: 4290 ) // C++ Exception Specification ignored
 #endif
 
 
@@ -48,14 +49,6 @@
 
 // other includes
 #include "utils.hpp"
-
-
-// lua include
-extern "C"
-{
-#include "lua/include/lua.h"
-#include "lua/include/lualib.h"
-}
 
 
 #endif
