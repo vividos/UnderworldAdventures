@@ -1216,6 +1216,10 @@ void ua_ingame_orig_screen::ui_changed_level(unsigned int level)
    unsigned int max = used_textures.size();
    for(unsigned int n=0; n<max; n++)
       texmgr.prepare(used_textures[n]);
+
+   // hack: prepare bridge texture
+   texmgr.prepare(ua_tex_stock_floor+31);
+
 }
 
 void ua_ingame_orig_screen::ui_start_conv(unsigned int level, unsigned int objpos)
