@@ -51,13 +51,13 @@ const char *ua_font_names[6] =
 
 // ua_font methods
 
-void ua_font::load(const char* uw_path, ua_font_id fontid)
+void ua_font::load(ua_settings& settings, ua_font_id fontid)
 {
    if (fontid >= (int)SDL_TABLESIZE(ua_font_names))
       throw ua_exception("ua_font::init: invalid font id");
 
    // do font name
-   std::string fontname(uw_path);
+   std::string fontname(settings.get_string(ua_setting_uw_path));
    fontname.append("data/");
    fontname.append(ua_font_names[fontid]);
 

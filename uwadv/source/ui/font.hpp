@@ -37,6 +37,10 @@
 #include "image.hpp"
 
 
+// forward references
+class ua_settings;
+
+
 // typedefs
 
 //! available fonts
@@ -61,10 +65,7 @@ public:
    ua_font(){}
 
    //! loads a font
-   void load(const char* uw_path, ua_font_id fontid);
-
-   //! initializes and loads a font from file
-   void init(const char* fontname);
+   void load(ua_settings& settings, ua_font_id fontid);
 
    //! returns height of chars in pixels
    unsigned int get_charheight(){ return charheight; }
