@@ -96,6 +96,9 @@ coord                   |
 texCoord                |
 coordIndex              |
 texCoordIndex           |
+translation             |
+rotation                |
+scale                   |
 DEF                     str.assign(yytext,yyleng); return ua_wt_keyword;
 
    /* string constant */

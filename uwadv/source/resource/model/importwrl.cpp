@@ -44,6 +44,13 @@ void ua_model3d_wrl::import_wrl(ua_game_core_interface* core, SDL_RWops* rwops,
    int res,res2;
    bool ccw = true;
 
+   ua_vector3d translate;
+   ua_vector3d rotate_axis;
+   double rotate_angle;
+   ua_vector3d scale;
+
+   scale.set(1.0,1.0,1.0);
+
    std::string texture_url;
 
    do
@@ -203,6 +210,61 @@ void ua_model3d_wrl::import_wrl(ua_game_core_interface* core, SDL_RWops* rwops,
 
                } while(res2 != ua_wt_bracket_close);
             }
+            else
+            if (str == "translation")
+            {
+               double vec[3];
+
+               // read in 3 values
+               for(unsigned int n=0; n<3; n++)
+               {
+                  res2 = lexer.yylex();
+
+                  if (res2==ua_wt_float)
+                     vec[n] = lexer.get_float();
+                  else
+                     vec[n] = static_cast<double>(lexer.get_int());
+               }
+
+               translate.set(vec[0],vec[2],vec[1]);
+            }
+            else
+            if (str == "rotation")
+            {
+               double vec[4];
+
+               // read in 3 values
+               for(unsigned int n=0; n<4; n++)
+               {
+                  res2 = lexer.yylex();
+
+                  if (res2==ua_wt_float)
+                     vec[n] = lexer.get_float();
+                  else
+                     vec[n] = static_cast<double>(lexer.get_int());
+               }
+
+               rotate_axis.set(vec[0],vec[2],vec[1]);
+               rotate_angle = ua_rad2deg(vec[3]);
+            }
+            else
+            if (str == "scale")
+            {
+               double vec[3];
+
+               // read in 3 values
+               for(unsigned int n=0; n<3; n++)
+               {
+                  res2 = lexer.yylex();
+
+                  if (res2==ua_wt_float)
+                     vec[n] = lexer.get_float();
+                  else
+                     vec[n] = static_cast<double>(lexer.get_int());
+               }
+
+               scale.set(vec[0],vec[2],vec[1]);
+            }
          }
          break;
 
@@ -217,6 +279,26 @@ void ua_model3d_wrl::import_wrl(ua_game_core_interface* core, SDL_RWops* rwops,
       }
 
    } while (res > 0);
+
+   // put pixels and texels into vertex buffers
+   {
+      unsigned int max = coords.size();
+      for(unsigned int i=0; i<max; i++)
+      {
+         coords[i] *= scale;
+         coords[i].rotate(rotate_axis,rotate_angle);
+         coords[i] += translate;
+      }
+/*
+   std::vector<ua_vector3d> coords;
+
+   std::vector<ua_vector2d> texcoords;
+
+   std::vector<unsigned int> coord_index;
+
+   std::vector<unsigned int> texcoord_index;
+*/
+   }
 
    // load texture
    if (res==0)
@@ -256,6 +338,7 @@ void ua_model3d_wrl::render(ua_vector3d& base)
    unsigned int max = coord_index.size();
    for(unsigned int i=0; i<max; i+=3)
    {
+      //glDisable(GL_TEXTURE_2D);
       //glBegin(GL_LINE_LOOP);
       glBegin(GL_TRIANGLES);
 
@@ -267,7 +350,7 @@ void ua_model3d_wrl::render(ua_vector3d& base)
          ua_vector3d vec3d(coords[c_idx]);
          ua_vector2d vec2d(texcoords[t_idx]);
 
-         vec3d *= 0.008;
+         //vec3d *= 0.008;
          vec2d.x *= tex.get_tex_u();
          vec2d.y *= tex.get_tex_v();
 
@@ -276,5 +359,6 @@ void ua_model3d_wrl::render(ua_vector3d& base)
       }
 
       glEnd();
+      //glEnable(GL_TEXTURE_2D);
    }
 }
