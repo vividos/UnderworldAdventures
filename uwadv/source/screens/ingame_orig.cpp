@@ -35,8 +35,6 @@
 
 void ua_ingame_orig_screen::init()
 {
-   uworld.init(core->get_settings(),core->get_texmgr());
-
    setup_opengl();
 
    // pos values
@@ -57,7 +55,6 @@ void ua_ingame_orig_screen::init()
 
 void ua_ingame_orig_screen::done()
 {
-   uworld.done();
 }
 
 void ua_ingame_orig_screen::handle_event(SDL_Event &event)
@@ -208,7 +205,7 @@ void ua_ingame_orig_screen::render()
 
       // move to position on map
       glTranslatef( -(playerx+0.5), -(playery+0.5),
-         -(uworld.get_player_height(playerx+0.5,playery+0.5)) );
+         -(0.0f/*uworld.get_player_height(playerx+0.5,playery+0.5)*/) );
    }
 
    // draw ground square
@@ -220,7 +217,9 @@ void ua_ingame_orig_screen::render()
    glVertex3f(0,64,-0.1f);
    glEnd();
 
-   uworld.render(core->get_texmgr());
+//   uworld.render(core->get_texmgr());
+
+   core->get_underworld().render();
 }
 
 int tickcount=0;
@@ -255,5 +254,16 @@ void ua_ingame_orig_screen::setup_opengl()
    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
    // clear color
-   glClearColor(0, 0, 0, 0);
+   glClearColor(0,0,0,0);
+
+   // camera setup
+
+   // set projection matrix
+   glMatrixMode(GL_PROJECTION);
+   glLoadIdentity();
+
+   gluPerspective(90.0, core->get_aspect_ratio(), 0.25, 256.0);
+
+   // switch back to modelview matrix
+   glMatrixMode(GL_MODELVIEW);
 }

@@ -23,6 +23,9 @@
 
    start splash screen
 
+   displays the first few splash screens seen at the start of ultima
+   underworld
+
 */
 
 // include guard
@@ -31,6 +34,8 @@
 
 // needed includes
 #include "screen.hpp"
+#include "image.hpp"
+#include "font.hpp"
 
 
 // classes
@@ -51,7 +56,14 @@ public:
    virtual void tick();
 
 protected:
+
+   int stage;
+
    int tickcount;
+
+   ua_image img,img2;
+   ua_font font;
+   ua_texture tex,tex2;
 };
 
 #endif

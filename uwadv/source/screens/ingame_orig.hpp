@@ -31,7 +31,7 @@
 
 // needed includes
 #include "screen.hpp"
-#include "underworld.hpp"
+#include "image.hpp"
 
 
 // classes
@@ -52,15 +52,13 @@ public:
    virtual void tick();
 
 protected:
-   //! sets up OpenGL stuff, viewport, flags, etc.
+   //! sets up OpenGL stuff, flags, etc.
    void setup_opengl();
 
    void handle_key_down(SDL_keysym &keysym);
    void handle_mouse_action(SDL_Event &event);
 
 protected:
-   ua_underworld uworld;
-
    float xangle,yangle;
 
    bool leftbuttondown,rightbuttondown;
@@ -72,7 +70,6 @@ protected:
    float playerxangle,playeryangle;
 
    bool mapmode;
-
 };
 
 #endif

@@ -21,7 +21,7 @@
 */
 /*! \file start_splash.cpp
 
-   a
+   start splash screen
 
 */
 
@@ -31,12 +31,44 @@
 #include "ingame_orig.hpp"
 
 
+// constants
+
+const float ua_splash_blend_time = 0.8f;
+
+
 // ua_start_splash_screen methods
 
 void ua_start_splash_screen::init()
 {
-   tickcount=10*20;
-   core->get_audio().start_music(1);
+   // start midi music
+   core->get_audio().start_music(0,true);
+
+   // setup orthogonal projection
+   glMatrixMode(GL_PROJECTION);
+   glLoadIdentity();
+   gluOrtho2D(0,320,0,200);
+   glMatrixMode(GL_MODELVIEW);
+
+   glEnable(GL_TEXTURE_2D);
+   glDisable(GL_DEPTH_TEST);
+
+   glDisable(GL_BLEND);
+   glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+
+   // load/create stuff
+
+   font.init(core->get_settings(),ua_font_big);
+
+   img.load_raw(core->get_settings(),"data/opscr.byt",2);
+   tex.convert(core->get_texmgr(),img);
+   tex.prepare(false,GL_NEAREST,GL_NEAREST);
+
+   font.create_string(img2,"Hello, Underworld!",21);
+   tex2.convert(core->get_texmgr(),img2);
+   tex2.prepare();
+
+   stage=0;
+   tickcount=0;
 }
 
 void ua_start_splash_screen::done()
@@ -50,6 +82,8 @@ void ua_start_splash_screen::handle_event(SDL_Event &event)
    case SDL_KEYDOWN:
    case SDL_MOUSEBUTTONDOWN:
       // ends start screen
+      if (stage==1)
+         stage++;
       tickcount=0;
       break;
    }
@@ -57,15 +91,85 @@ void ua_start_splash_screen::handle_event(SDL_Event &event)
 
 void ua_start_splash_screen::render()
 {
-   // clear color and depth buffers
-   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+   glLoadIdentity();
+
+   // calculate light'ness of texture quad
+   unsigned char light = 255;
+
+   switch(stage)
+   {
+   case 0:
+      light = 255*(float(tickcount) / (core->get_tickrate()*ua_splash_blend_time));
+      break;
+
+   case 1:
+      light=255;
+      break;
+
+   case 2:
+      light = 255-255*(float(tickcount) / (core->get_tickrate()*ua_splash_blend_time));
+      break;
+
+   case 3:
+      light=0;
+   }
+
+   glColor3ub(light,light,light);
+
+   // draw first quad with screen background
+   tex.use();
+
+   glBegin(GL_QUADS);
+   glTexCoord2d(0.0,tex.get_tex_v());
+   glVertex3i(0,0,0);
+
+   glTexCoord2d(tex.get_tex_u(),tex.get_tex_v());
+   glVertex3i(320,0,0);
+
+   glTexCoord2d(tex.get_tex_u(),0.0);
+   glVertex3i(320,200,0);
+
+   glTexCoord2d(0.0,0.0);
+   glVertex3i(0,200,0);
+
+   glEnd();
+
+
+   // above background, draw font text
+   glEnable(GL_BLEND);
+   tex2.use();
+
+   glBegin(GL_QUADS);
+   glTexCoord2d(0.0,tex2.get_tex_v());
+   glVertex3i(10,10,0);
+
+   glTexCoord2d(tex2.get_tex_u(),tex2.get_tex_v());
+   glVertex3i(10+img2.get_xres()*0.8,10,0);
+
+   glTexCoord2d(tex2.get_tex_u(),0.0);
+   glVertex3i(10+img2.get_xres()*0.8,10+img2.get_yres()*0.8,0);
+
+   glTexCoord2d(0.0,0.0);
+   glVertex3i(10,10+img2.get_yres()*0.8,0);
+
+   glEnd();
+
+   glDisable(GL_BLEND);
 }
 
 void ua_start_splash_screen::tick()
 {
-   glClearColor(0,0,(200-tickcount)/200.f,0);
-   if (tickcount--==0)
+   switch(stage)
    {
+   case 0:
+   case 2:
+      if (++tickcount >= (core->get_tickrate()*ua_splash_blend_time))
+         stage++;
+      break;
+
+   case 3:
+      // start next screen
       core->replace_screen(new ua_ingame_orig_screen);
+      break;
    }
 }
