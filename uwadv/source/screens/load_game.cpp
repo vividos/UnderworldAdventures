@@ -76,6 +76,11 @@ void ua_load_game_screen::init()
 
       scroll.print(buffer.str().c_str());
    }
+
+   scroll.print("enter number of game to load: ");
+   scroll.enter_input_mode();
+
+   game_nr = -1;
 }
 
 void ua_load_game_screen::done()
@@ -87,17 +92,20 @@ void ua_load_game_screen::done()
 
 void ua_load_game_screen::handle_event(SDL_Event &event)
 {
-   switch(event.type)
+   if (scroll.handle_event(event))
    {
-   case SDL_KEYDOWN:
-      switch(event.key.keysym.sym)
+      std::string text;
+      if (scroll.is_input_done(text))
       {
-      case SDLK_RETURN:
-         // "more" continuation
-         if (scroll.have_more_lines())
-            scroll.show_more_lines();
-         break;
+         // find out game number to load
+         game_nr = strtol(text.c_str(),NULL,10);
+
+         if (unsigned(game_nr)>=core->get_savegames_mgr().get_savegames_count())
+            game_nr = -1;
+         else
+            scroll.print("loading game ...");
       }
+      return;
    }
 }
 
@@ -111,6 +119,13 @@ void ua_load_game_screen::render()
 
 void ua_load_game_screen::tick()
 {
-   // go to ingame screen
-//   core->replace_screen(new ua_ingame_orig_screen);
+   if (game_nr>=0)
+   {
+      ua_savegames_manager& sgmgr = core->get_savegames_mgr();
+      ua_savegame sg = sgmgr.get_savegame_load(static_cast<unsigned int>(game_nr));
+      core->get_underworld().load_game(sg);
+
+      // go to ingame screen
+      core->replace_screen(new ua_ingame_orig_screen);
+   }
 }

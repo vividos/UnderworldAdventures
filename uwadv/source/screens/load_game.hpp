@@ -54,7 +54,11 @@ public:
    virtual void tick();
 
 protected:
+   //! text scroll
    ua_textscroll scroll;
+
+   //! number of game to load
+   int game_nr;
 };
 
 #endif
