@@ -22,6 +22,9 @@ WITH_DEBUGGING = no
 # path to mingw compiler
 MINGW_PATH = c:/mingw
 
+# set to "yes" if you have STLport (and modify STLPORT_PATH then)
+WITH_STLPORT = yes
+
 # path to where STLport was installed and built
 STLPORT_PATH = c:/mingw/stlport
 
@@ -32,12 +35,9 @@ STLPORT_PATH = c:/mingw/stlport
 # path to SDL include
 SDL_INCLUDE = -I$(MINGW_PATH)/include/sdl/
 
-# path to STLport
-STLPORT_INCLUDE = -I$(STLPORT_PATH)/stlport/
-STLPORT_LIB = -L$(STLPORT_PATH)/lib/ -lstlport_mingw32_static
-
 
 # no servicable parts beyond here.
+# -------------------------------------------------------------------
 
 #
 # build variables
@@ -63,16 +63,26 @@ OPENGL_LIB = -lopengl32 -lglu32
 
 uwadv_SDL_LIB = -lSDL -lSDL_mixer
 
+# SDL console output
 ifeq ("$(WITH_CONSOLE)", "yes")
-DEFINES += -DHAVE_CONSOLE
+ DEFINES += -DHAVE_CONSOLE
 else
-uwadv_SDL_LIB = -lSDLmain -lSDL -lSDL_mixer
+ uwadv_SDL_LIB = -lSDLmain -lSDL -lSDL_mixer
 endif
 
+# debug options
 ifeq ("$(WITH_DEBUGGING)", "yes")
-DEFINES += -DHAVE_DEBUG
+ DEFINES += -DHAVE_DEBUG
 endif
 
+# STLport
+ifeq ("$(WITH_STLPORT)", "yes")
+ STLPORT_INCLUDE = -I$(STLPORT_PATH)/stlport/
+ STLPORT_LIB = -L$(STLPORT_PATH)/lib/ -lstlport_mingw32_static
+else
+ STLPORT_INCLUDE =
+ STLPORT_LIB =
+endif
 
 INCLUDES = $(SDL_INCLUDE) $(STLPORT_INCLUDE) $(FMOD_INCLUDE) \
 	-Isource/ -Isource/lua/include/ -Isource/resource/zziplib/
