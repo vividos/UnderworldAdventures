@@ -39,11 +39,17 @@ static int _zzip_close(SDL_RWops *context)
 #define O_BINARY 0
 #endif
 
+/* some ugly include file seemed to define this :( */
+#undef read
+
 SDL_RWops *SDL_RWFromZZIP(const char* file, const char* mode)
 {
     register int mo = 0;
     register SDL_RWops* rwops;
     register ZZIP_FILE* zzip_file;
+
+    /* extension list; to open zip files using their full name */
+    zzip_strings_t exts[] = { "", 0 };
 
     for (; *mode; ++mode)
 	switch (*mode)
@@ -56,7 +62,8 @@ SDL_RWops *SDL_RWFromZZIP(const char* file, const char* mode)
 	    return SDL_RWFromFile(file, mode);
 	}
 
-    zzip_file = zzip_open (file, mo);
+    /* open file, only opening zip files */
+    zzip_file = zzip_open_ext_io (file, mo, ZZIP_PREFERZIP, exts, 0);
     if (! zzip_file) return 0;
 
     rwops = SDL_AllocRW ();

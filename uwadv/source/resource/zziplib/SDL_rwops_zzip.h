@@ -16,7 +16,15 @@
 
 #include <SDL_rwops.h>
 
-extern DECLSPEC
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+//extern DECLSPEC
 SDL_RWops *SDL_RWFromZZIP(const char* file, const char* mode);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
