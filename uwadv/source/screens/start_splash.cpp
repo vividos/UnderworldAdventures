@@ -187,7 +187,7 @@ void ua_start_splash_screen::render()
    {
       // prepare animation frame
       cuts.get_frame(tex,curframe);
-      tex.prepare(false);
+      tex.upload(false);
    }
    else
    {
@@ -252,8 +252,6 @@ void ua_start_splash_screen::tick()
             core->replace_screen(new ua_ingame_orig_screen);
             return;
          }
-
-         tex.clean();
 
          stage++;
          img_loaded = false;

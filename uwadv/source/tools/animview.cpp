@@ -103,7 +103,7 @@ void draw_screen()
    cuts.get_frame(tex,currentframe);
 
    // we can use the texture right after this preparation
-   tex.prepare(false);
+   tex.upload(false);
 
    // draw quad
    glBegin(GL_QUADS);
@@ -119,8 +119,6 @@ void draw_screen()
    glEnd();
 
    SDL_GL_SwapBuffers();
-
-   tex.clean();
 }
 
 void process_events()
