@@ -566,7 +566,7 @@ void ua_save_game_screen::draw()
 
 void ua_save_game_screen::tick()
 {
-   if (fader.tick())
+   if ((fade_state == 0 || fade_state == 2) && fader.tick())
    {
       fade_state++;
 
