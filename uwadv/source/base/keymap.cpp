@@ -23,6 +23,9 @@
 
    \brief keyboard key mappings
 
+   \todo optimize key-keymod mapping so that find_key() doesn't have to search
+   the whole map
+
 */
 
 // needed includes
@@ -204,6 +207,18 @@ Uint32 ua_keymap::get_key(ua_key_value key)
       throw ua_exception("unknown keymap value queried");
 
    return iter->second;
+}
+
+ua_key_value ua_keymap::find_key(Uint32 keymod)
+{
+   std::map<ua_key_value,unsigned int>::iterator iter, stop = keymap.end();
+
+   // search for keymod in map
+   for(iter = keymap.begin(); iter != stop; iter++)
+      if (is_key(iter->first,keymod))
+         return iter->first;
+
+   return ua_key_nokey;
 }
 
 void ua_keymap::load_value(const std::string& name, const std::string& value)

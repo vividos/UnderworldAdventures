@@ -148,6 +148,9 @@ public:
    //! returns SDL keysym value for a given key
    Uint32 get_key(ua_key_value key);
 
+   //! finds key by given keymod
+   ua_key_value find_key(Uint32 keymod);
+
 protected:
    //! called to load a specific value
    virtual void load_value(const std::string& name, const std::string& value);
