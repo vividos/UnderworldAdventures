@@ -39,8 +39,9 @@ void ua_image_quad::init(ua_texture_manager* texmgr, unsigned int myxpos,
    ypos = myypos;
    mywidth += (mywidth&1); // even width
 
-   // init image
-   ua_image::create(mywidth,myheight,0,ua_image::palette);
+   // init image (when needed)
+   if (ua_image::xres == 0 || ua_image::yres == 0)
+      ua_image::create(mywidth,myheight,0,ua_image::palette);
 
    // init texture
    split_textures = mywidth>254;
