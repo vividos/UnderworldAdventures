@@ -248,9 +248,6 @@ void ua_level::import_map(SDL_RWops* rwops, Uint16 textures[64], bool uw2_mode)
          if (floor_index>=10) floor_index=0;
       }
 
-      if (tile==33+33*64)
-         _asm nop;
-
       tiles[tile].texture_wall = textures[wall_index];
       tiles[tile].texture_floor = textures[floor_index + (uw2_mode ? 0 : 48)];
       tiles[tile].texture_ceiling = textures[uw2_mode ? 32 : (9+48)];
