@@ -147,7 +147,7 @@ void crit_ai_init()
       {
          std::string text("could not find game.cfg for game prefix ");
          text.append(prefix.c_str());
-         throw new ua_exception(text.c_str());
+         throw ua_exception(text.c_str());
       }
 
       cfgloader.load(gamecfg);
