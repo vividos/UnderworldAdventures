@@ -807,7 +807,7 @@ int ua_underworld_script_bindings::conv_is_avail(lua_State* L)
 
    std::map<int,std::vector<std::string> >& allstrings = uw.get_strings().get_allstrings();
 
-   if (allstrings.find(slot)  == allstrings.end())
+   if (allstrings.find(slot+0x0e00)  == allstrings.end())
       lua_pushnil(L);
    else
       lua_pushnumber(L,static_cast<double>(slot));
