@@ -15,7 +15,8 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	underworld.hpp uwadv.hpp objects.hpp cutscene.hpp physics.hpp \
 	files.hpp keymap.hpp uwscript.hpp uamath.hpp settings.hpp \
 	savegame.hpp mousecursor.hpp renderer.hpp textscroll.hpp \
-	linux/main.cpp \
+	debug.hpp \
+	linux/main.cpp linux/debug.cpp \
 	audio/audio.cpp audio/midi.cpp audio/xmidi.cpp \
 	audio/midi.hpp audio/xmidi.hpp \
 	audio/midi_driver/uni_fmod.cpp \
