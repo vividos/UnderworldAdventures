@@ -40,6 +40,12 @@
 #include <ctime>
 
 
+#ifndef WIN32
+// Generic game class. win32 has a specialization in game_win32
+ua_uwadv_game_implement(ua_uwadv_game);
+#endif
+
+
 // tables
 
 enum ua_game_arg_type
