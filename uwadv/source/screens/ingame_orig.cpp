@@ -138,6 +138,12 @@ void ua_ingame_orig_screen::init()
       ua_image img_back;
       img_back.load_raw(settings,mainscreenname,0);
 
+      // fill message scroll area
+      img_back.fill_rect(16,169, 289,30, 42);
+
+      // fill panel area
+      img_back.fill_rect(236,7, 83,114, 1);
+
       img_back.copy_rect(img_back1,0,0, 256,200);
       img_back.copy_rect(img_back2,256,0, 320-256,200);
    }
