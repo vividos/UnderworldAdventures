@@ -24,7 +24,6 @@
    \brief save game screen implementation
 
    \todo add scroll buttons
-   \todo fix savegame preview
 
 */
 
@@ -324,8 +323,8 @@ void ua_save_game_savegames_list::mouse_event(bool button_clicked, bool left_but
 // ua_save_game_screen methods
 
 ua_save_game_screen::ua_save_game_screen(ua_game_interface& game,
-   bool myfrom_menu)
-:ua_screen(game), from_menu(myfrom_menu)
+   bool myfrom_menu, bool mydisable_save)
+:ua_screen(game), from_menu(myfrom_menu), disable_save(mydisable_save)
 {
 }
 
@@ -423,7 +422,7 @@ void ua_save_game_screen::init()
    button_refresh.init(this, game, 84,155, "Refresh", ua_button_refresh);
    button_exit.init(this, game, 84,177, "Exit", ua_button_exit);
 
-   if (!from_menu)
+   if (!disable_save)
       register_window(&button_save);
    register_window(&button_load);
    register_window(&button_refresh);
@@ -436,7 +435,7 @@ void ua_save_game_screen::init()
    update_info();
 
    // init savegames list
-   savegames_list.init(this, game, 19,13, from_menu);
+   savegames_list.init(this, game, 19,13, disable_save);
    savegames_list.update_list();
    register_window(&savegames_list);
 
@@ -627,7 +626,7 @@ void ua_save_game_screen::press_button(ua_save_game_button_id id)
 
       // save button
    case ua_button_save:
-      if (!from_menu)
+      if (!disable_save)
          ask_savegame_desc();
       break;
 
@@ -761,7 +760,7 @@ void ua_save_game_screen::ask_savegame_desc()
 
    // init text edit window
    textedit.init(game, 19,ypos, 119, 162, 1, 73,
-      "", savegame_name.c_str(), true);
+      "", savegame_name.c_str(), false);
 
    edit_desc = true;
 }

@@ -158,7 +158,8 @@ class ua_save_game_screen: public ua_screen
 {
 public:
    //! ctor
-   ua_save_game_screen(ua_game_interface& game, bool from_menu);
+   ua_save_game_screen(ua_game_interface& game, bool from_menu,
+      bool disable_save);
    //! dtor
    virtual ~ua_save_game_screen(){}
 
@@ -205,6 +206,9 @@ protected:
 
    //! indicates if screen is called from start menu
    bool from_menu;
+
+   //! indicates if save button should be invisible
+   bool disable_save;
 
    //! background image
    ua_image_quad img_back;
