@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@
 
 // global methods
 
-void ua_image_decode_rle(FILE *fd,std::vector<Uint8> &pixels,unsigned int bits,
+void ua_image_decode_rle(FILE *fd,Uint8* pixels,unsigned int bits,
    unsigned int datalen,unsigned int maxpix,unsigned char *auxpalidx)
 {
    // bit extraction variables
@@ -278,7 +278,7 @@ void ua_image::load_image(FILE *fd,Uint8 auxpalidx[32][16], bool special_panels)
       }
       break;
    case 0x08: // 4-bit rle compressed
-      ua_image_decode_rle(fd,pixels,4,datalen,width*height,auxpalidx[auxpal]);
+      ua_image_decode_rle(fd,&pixels[0],4,datalen,width*height,auxpalidx[auxpal]);
       break;
    case 0x0a: // 4-bit uncompressed
       {
