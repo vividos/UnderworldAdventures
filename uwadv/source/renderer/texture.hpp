@@ -154,6 +154,7 @@ protected:
    std::vector<GLuint> texname;
 
    friend class ua_texture_manager;
+   friend class ua_critter;
 };
 
 
@@ -184,9 +185,6 @@ public:
    //! use a stock texture in OpenGL
    void use(unsigned int idx);
 
-   //! prepares texture for object drawing
-   void object_tex(Uint16 id,double& u1,double& v1,double& u2,double& v2);
-
    //! should be called when a new texname is about to be used
    bool using_new_texname(GLuint new_texname);
 
@@ -205,9 +203,6 @@ protected:
 
    //! infos about current/max texture frame for all stock textures
    std::vector<std::pair<unsigned int, unsigned int> > stock_animinfo;
-
-   //! object sprite textures
-   ua_texture obj_textures;
 
    //! palette 0 from image manager
    ua_palette256_ptr palette0;

@@ -214,7 +214,7 @@ void ua_texture_manager::init(ua_game_interface& game)
 
       // load objects
       {
-         allstocktex_imgs.resize(ua_tex_stock_objects-1);
+         allstocktex_imgs.resize(ua_tex_stock_objects);
 
          // add images to list; we can do this, since the list isn't clear()ed
          // before adding more images
@@ -223,19 +223,19 @@ void ua_texture_manager::init(ua_game_interface& game)
 
       // load switches/levers/pull chains
       {
-         allstocktex_imgs.resize(ua_tex_stock_switches-1);
+         allstocktex_imgs.resize(ua_tex_stock_switches);
          game.get_image_manager().load_list(allstocktex_imgs,"tmflat");
       }
 
       // load door textures
       {
-         allstocktex_imgs.resize(ua_tex_stock_door-1);
+         allstocktex_imgs.resize(ua_tex_stock_door);
          game.get_image_manager().load_list(allstocktex_imgs,"doors");
       }
 
       // load tmobj textures
       {
-         allstocktex_imgs.resize(ua_tex_stock_tmobj-1);
+         allstocktex_imgs.resize(ua_tex_stock_tmobj);
          game.get_image_manager().load_list(allstocktex_imgs,"tmobj");
       }
 
@@ -260,7 +260,6 @@ void ua_texture_manager::init(ua_game_interface& game)
    else
    if (settings.get_gametype() == ua_game_uw2)
    {
-
       // load all textures
       std::string texfname(settings.get_string(ua_setting_uw_path));
       texfname.append("data/t64.tr");
@@ -328,10 +327,12 @@ void ua_texture_manager::prepare(unsigned int idx)
 
    if (pal_max==1)
    {
+      bool mipmap = true;//(idx < ua_tex_stock_objects) || (idx > ua_tex_stock_objects+0x0200);
+
       // unanimated texture
       // convert to texture object
       stock_textures[idx].convert(allstocktex_imgs[idx],0);
-      stock_textures[idx].upload(0,true); // upload texture with mipmaps
+      stock_textures[idx].upload(0,mipmap); // upload texture with mipmaps
    }
    else
    {
@@ -376,13 +377,6 @@ void ua_texture_manager::use(unsigned int idx)
       return; // not a valid index
 
    stock_textures[idx].use(stock_animinfo[idx].first);
-}
-
-void ua_texture_manager::object_tex(Uint16 id,double& u1,double& v1,double& u2,double& v2)
-{
-   obj_textures.use(id);
-   u1 = v1 = 0.0;
-   u2 = v2 = 1.0;
 }
 
 bool ua_texture_manager::using_new_texname(GLuint new_texname)
