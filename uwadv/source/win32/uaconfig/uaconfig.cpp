@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -121,6 +121,9 @@ LRESULT CALLBACK ua_config_prog::DialogProc(HWND hWnd, UINT uMsg,
 
 BOOL ua_config_prog::PreTranslateMessage(MSG* pMsg)
 {
+   if (pMsg->message==WM_MOUSEMOVE)
+      tooltips.relay_event(pMsg);
+
    return FALSE;
 }
 
@@ -211,6 +214,9 @@ LRESULT ua_config_prog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
    // load configuration
    load_config();
 
+   // add tooltips
+   tooltips.init(m_hWnd, m_hInstance);
+
    return 1;  // let the system set the focus
 }
 
@@ -229,7 +235,7 @@ LRESULT ua_config_prog::OnSetUw1Path(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
       buffer[0] = 0;
       ::GetDlgItemText(m_hWnd,IDC_EDIT_UW1_PATH,buffer,MAX_PATH);
 
-      // remove slash; 
+      // remove slash;
       unsigned int len = strlen(buffer);
       if (len>0 && (buffer[len-1]=='\\' || buffer[len-1]=='/'))
          buffer[len-1]=0;
