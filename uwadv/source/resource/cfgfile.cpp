@@ -102,6 +102,22 @@ void ua_cfgfile::load(SDL_RWops* rwops)
          continue;
       }
 
+      // comment somewhere in the line?
+      std::string::size_type pos2 = line.find('#');
+      if (pos2!=std::string::npos)
+      {
+         // write comment before line
+         if (is_writing)
+         {
+            std::string comment;
+            comment.assign(line.c_str()+pos2);
+            write_raw_line(comment);
+         }
+
+         // remove comment
+         line.erase(pos2);
+      }
+
       // check for section start
       if (line.at(0)=='[' && line.size()>2)
       {
