@@ -214,8 +214,8 @@ void ua_texture_manager::object_tex(Uint16 id,double &u1,double &v1,double &u2,d
    double delta = 1.0/256;
 
    u1 = ((id&0x0f)<<4)*delta;
-   v1 = (id&0xf0)*delta;
+   v1 = (id&0xf0)*delta+0.3*delta;
 
-   u2 = (((id&0x0f)+1)<<4)*delta;
-   v2 = ((id&0xf0)+16)*delta;
+   u2 = (((id&0x0f)+1)<<4)*delta-delta*0.4;
+   v2 = ((id&0xf0)+15)*delta+0.8*delta;
 }
