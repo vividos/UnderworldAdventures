@@ -114,8 +114,12 @@ registered C functions to call from Lua:
    inventory_rune_avail
    inventory_rune_add
 
-   conv_get_global
-   conv_set_global
+   quest_get_flag
+   quest_set_flag
+
+   conv_is_avail
+   conv_get_conv_global
+   conv_set_conv_global
 
    ui_start_conv
    ui_show_cutscene
@@ -511,21 +515,40 @@ content of these fields are not yet specified.
 todo
 
 
-2.1.3.5. Conversation flags functions
+2.1.3.5. Quest flags functions
 
-* conv_get_global(slot,var)
+* quest_get_flag(flag_nr)
+  return values: flag_value
+
+  returns a quest flag value by given number.
+
+* quest_set_flag(flag_nr, flag_value)
+  return values: none
+
+  sets a quest flag value.
+
+
+2.1.3.6. Conversation flags functions
+
+* conv_is_avail(slot)
+  return values: is_avail
+
+  returns nil if a conversation slot is not available
+
+* conv_get_global(slot,pos)
   return values: value
 
-  retrieves conversation global value, for slot "slot", variable index "var".
+  retrieves conversation global value, for conv. slot "slot", variable index
+  "pos".
 
-* conv_set_global(slot,var,value)
+* conv_set_global(slot,pos,value)
   return values: none
 
   sets a conversation global value, for conv. slot "slot", variable index
-  "var", to "value".
+  "pos", to "value".
 
 
-2.1.3.6. User Interface callback functions
+2.1.3.7. User Interface callback functions
 
 * ui_start_conv(conv_slot)
   return values: none
@@ -566,7 +589,7 @@ todo
   "ui_cursor_use_item" to cancel targetting.
 
 
-2.1.3.7. Savegame functions
+2.1.3.8. Savegame functions
 
 * savegame_store_value(savegame,value)
   return values: none
