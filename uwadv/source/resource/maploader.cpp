@@ -75,15 +75,15 @@ void ua_level::load(ua_settings &settings, unsigned int level)
       throw ua_exception(text.c_str());
    }
 
-   Uint16 entries = 0;
-   Uint32 *offsets = NULL;
+   Uint16 entries=0;
+   std::vector<Uint32> offsets;
 
    if (settings.gtype == ua_game_uw1)
    {
       // read in all offsets
       entries = fread16(fd);
 
-      offsets = new Uint32[entries];
+      offsets.resize(entries,0);
       for(Uint16 n=0; n<entries; n++)
          offsets[n] = fread32(fd);
 
@@ -134,9 +134,8 @@ void ua_level::load(ua_settings &settings, unsigned int level)
    }
 
    // alloc memory for tiles
-   delete tiles;
-   tiles = new ua_levelmap_tile[64*64];
-   memset(tiles,0,sizeof(ua_levelmap_tile)*64*64);
+   tiles.clear();
+   tiles.resize(64*64);
 
    for(Uint16 tile=0; tile<64*64; tile++)
    {
@@ -149,8 +148,6 @@ void ua_level::load(ua_settings &settings, unsigned int level)
       tiles[tile].floor = (tileword & 0xF0) >> 3;
       tiles[tile].ceiling = 32;
       tiles[tile].slope = 2; // height units per tile
-
-      tiles[tile].index = (tileword & 0xFFC00000) >> 22;
 
       // texture indices
       Uint8 wall_index = (tileword & 0x003F0000) >> 16; // 6 bit wide
@@ -165,5 +162,6 @@ void ua_level::load(ua_settings &settings, unsigned int level)
 
    fclose(fd);
 
-   delete[] offsets;
+   // load all objects
+   allobjects.load(settings,level);
 }
