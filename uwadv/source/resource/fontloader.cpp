@@ -21,7 +21,9 @@
 */
 /*! \file fontloader.cpp
 
-   font loading implementation
+   contains the font loading implementation. fonts are loaded via an
+   ua_font_id, to simplify interface. more infos about font file layout can be
+   found in the file docs/ua-formats.txt
 
 */
 
@@ -55,6 +57,7 @@ void ua_font::init(ua_settings &settings, ua_font_id fontid)
    // do font name
    std::string fontname;
    fontname.assign(settings.uw1_path);
+   fontname.append("data/");
    fontname.append(ua_font_names[fontid]);
 
    // and load it

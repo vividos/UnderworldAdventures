@@ -23,6 +23,10 @@
 
    game strings loading implementation
 
+   loads all the game strings into a map of arrays of strings. strings are
+   stored in a huffman-like tree. for more infos about string storage and
+   extraction, look into the file docs/uw-formats.txt
+
 */
 
 // needed includes
@@ -172,8 +176,21 @@ void ua_gamestrings::load(const char *filename)
    fclose(fd);
 }
 
+std::vector<std::string> &ua_gamestrings::get_block(unsigned int block)
+{
+   // try to find string block
+   std::map<int,std::vector<std::string> >::iterator iter =
+      allstrings.find(block);
+
+   if (iter==allstrings.end())
+      throw ua_exception("string block not found!");
+
+   return iter->second;
+}
+
 std::string ua_gamestrings::get_string(unsigned int block, unsigned int string_nr)
 {
+   // try to find string block
    std::map<int,std::vector<std::string> >::iterator iter =
       allstrings.find(block);
 
@@ -184,6 +201,7 @@ std::string ua_gamestrings::get_string(unsigned int block, unsigned int string_n
    }
    else
    {
+      // try to find string in vector
       std::vector<std::string> &stringlist = iter->second;
       if (stringlist.size()<string_nr)
          return std::string("");

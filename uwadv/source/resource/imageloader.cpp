@@ -23,6 +23,21 @@
 
    *.gr and *.byt files loading implementation
 
+   ua_image_decode_rle() decodes the underworld rle format, for word lengths
+   up to 8 bit and stores the pixels in an array.
+
+   ua_image_load() does the image loading for "*.gr" files from the start of
+   an image header
+
+   ua_image::load() takes a graphic file name and loads it. used without the
+   .gr extension (e.g. only "charhead" for name)
+
+   ua_image_list::load() does the same, but for a range of images in a graphic
+   file.
+
+   ua_image::load_raw() loads a raw image, stored in "*.byt" files. the full
+   path from the uw1 root directory must be given.
+
 */
 
 // needed includes
@@ -347,7 +362,6 @@ void ua_image::load_raw(ua_settings &settings, const char *name, unsigned int pa
 {
    // create filename
    std::string filename(settings.uw1_path);
-   filename.append("data/");
    filename.append(name);
 
    // open file
@@ -365,4 +379,9 @@ void ua_image::load_raw(ua_settings &settings, const char *name, unsigned int pa
    fread(&pixels[0],1,320*200,fd);
 
    fclose(fd);
+}
+
+void ua_image_list::load(ua_settings &settings, const char *name, unsigned int from,
+   unsigned int to, unsigned int palette)
+{
 }

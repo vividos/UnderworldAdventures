@@ -23,6 +23,12 @@
 
    conv code loading implementation
 
+   ua_conv_code_vm::load_code() loads the code into the virtual machine,
+   processing all globals and imported functions. it also determines which
+   string block to use, by counting valid conv slots.
+
+   for more infos about conv code, see file docs/uw-formats.txt
+
 */
 
 // needed includes
@@ -166,19 +172,21 @@ void ua_conv_code_vm::load_imported_funcs(FILE *fd)
       // fill imported item struct
       ua_conv_imported_item iitem;
 
+      // determine return type
       if (ret_type == 0x0000) iitem.ret_type = ua_rt_void;
       else
       if (ret_type == 0x0129) iitem.ret_type = ua_rt_int;
       else
       if (ret_type == 0x012b) iitem.ret_type = ua_rt_string;
       else
-         throw ua_ex_error_loading;
+         throw ua_exception("unknown return type in conv imports list");
 
       iitem.name = funcname;
 
       // store imported item in appropriate list
       if (import_type == 0x0111)
       {
+         // imported function
          if (imported_funcs.size()<func_id)
             imported_funcs.resize(func_id+1);
 
@@ -187,12 +195,13 @@ void ua_conv_code_vm::load_imported_funcs(FILE *fd)
       else
       if (import_type == 0x010F)
       {
+         // imported global
          if (imported_globals.size()<func_id)
             imported_globals.resize(func_id+1);
 
          imported_globals[func_id] = iitem;
       }
       else
-         throw ua_ex_error_loading;
+         throw ua_exception("unknown import type in conv imports list");
    }
 }

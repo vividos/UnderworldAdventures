@@ -21,7 +21,10 @@
 */
 /*! \file conversation.cpp
 
-   a
+   conv code execution functions
+
+   ua_conv_code_vm::step() executes one opcode per call, hopefully mimic'ing
+   the original virtual machine as best as possible
 
 */
 
@@ -54,7 +57,7 @@ void ua_conv_code_vm::init(ua_conv_globals &cg)
 
    call_level=1;
 
-   // init stack
+   // init stack: 4k should be enough for anybody.
    stack.init(4096);
 
    // load globals into stack
@@ -83,6 +86,7 @@ void ua_conv_code_vm::step()
    if (instrp>code.size())
       throw ua_ex_code_access;
 
+   // execute one instruction
    switch(code.at(instrp))
    {
    case 0x0000: // NOP
@@ -373,26 +377,10 @@ void ua_conv_code_vm::step()
       }
       break;
 
-   default:
+   default: // unknown opcode
       throw ua_ex_unk_opcode;
       break;
    }
 
    ++instrp;
-}
-
-void ua_conv_code_vm::imported_func(Uint16 number)
-{
-}
-
-void ua_conv_code_vm::say_op(Uint16 str_id)
-{
-}
-
-void ua_conv_code_vm::sto_priv(Uint16 at, Uint16 val)
-{
-}
-
-void ua_conv_code_vm::fetchm_priv(Uint16 at)
-{
 }

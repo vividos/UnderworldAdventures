@@ -21,7 +21,26 @@
 */
 /*! \file codevm.hpp
 
-   a
+   conversation code virtual machine - much stuff for underworld conversations
+
+   ua_conv_globals contains all conversation globals for each conversation
+   slot and should be persisted when conversation or game exits.
+
+   ua_conv_stack implements the stack used in the virtual machine. it does
+   range checking and throws one of the exceptions in ua_conv_vm_exception
+   when needed.
+
+   ua_conv_code_vm is the virtual machine the whole code excutes. the function
+   ua_conv_code_vm::step() executes one opcode instruction and can be executed
+   in a loop to run the code. an exception of type ua_conv_vm_exception is
+   thrown on error. the virtual functions are called when a special event is
+   happening, such as printing a say string.
+
+   for more info about the underworld conversation assembler script, look in
+   the file docs/uw-formats.txt
+
+   a gnu-gdb style debugger named "cnvdbg" and a disassembler and experimental
+   decompiler (produces C-like code) is available in the "tools" folder.
 
 */
 
@@ -169,16 +188,16 @@ public:
    // virtual functions
 
    //! called when calling an imported function
-   virtual void imported_func(Uint16 number);
+   virtual void imported_func(Uint16 number){}
 
    //! called when saying a string
-   virtual void say_op(Uint16 str_id);
+   virtual void say_op(Uint16 str_id){}
 
    //! called when storing a value at private globals
-   virtual void sto_priv(Uint16 at, Uint16 val);
+   virtual void sto_priv(Uint16 at, Uint16 val){}
 
    //! called when fetching a value from private globals
-   virtual void fetchm_priv(Uint16 at);
+   virtual void fetchm_priv(Uint16 at){}
 
 protected:
    //! reads all imported function entries

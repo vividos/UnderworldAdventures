@@ -21,7 +21,9 @@
 */
 /*! \file gamestrings.hpp
 
-   class to load the game strings
+   game strings class; game strings are contained in blocks that contain a
+   list of strings. each block contains specific strings, for item
+   descriptions, cutscene text or conversation strings.
 
 */
 
@@ -50,6 +52,9 @@ public:
 
    //! loads all game strings from a file
    void load(const char *filename) throw(ua_exception);
+
+   //! returns a whole string block
+   std::vector<std::string> &get_block(unsigned int block);
 
    //! returns a game string
    std::string get_string(unsigned int block, unsigned int string_nr);
