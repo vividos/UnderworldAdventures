@@ -59,18 +59,19 @@ player_skill_sword=3
 player_skill_axe=4
 player_skill_mace=5
 player_skill_missile=6
-player_skill_lore=7
-player_skill_casting=8
-player_skill_traps=9
-player_skill_search=10
-player_skill_track=11
-player_skill_sneak=12
-player_skill_repair=13
-player_skill_charm=14
-player_skill_picklock=15
-player_skill_acrobat=16
-player_skill_appraise=17
-player_skill_swimming=18
+player_skill_mana=7
+player_skill_lore=8
+player_skill_casting=9
+player_skill_traps=10
+player_skill_search=11
+player_skill_track=12
+player_skill_sneak=13
+player_skill_repair=14
+player_skill_charm=15
+player_skill_picklock=16
+player_skill_acrobat=17
+player_skill_appraise=18
+player_skill_swimming=19
 
 
 -- tilemap constants
