@@ -676,6 +676,9 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    // check for "level up" key
    if (keymap.is_key(ua_key_ua_level_up,keymod))
    {
+      if (core->get_settings().get_bool(ua_setting_uw1_is_uw_demo))
+         core->get_underworld().change_level(0);
+      else
       if (curlevel>0)
          core->get_underworld().change_level(--curlevel);
    }
@@ -683,6 +686,9 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    // check for "level down" key
    if (keymap.is_key(ua_key_ua_level_down,keymod))
    {
+      if (core->get_settings().get_bool(ua_setting_uw1_is_uw_demo))
+         core->get_underworld().change_level(0);
+      else
       if (curlevel+1<core->get_underworld().get_num_levels())
          core->get_underworld().change_level(++curlevel);
    }
