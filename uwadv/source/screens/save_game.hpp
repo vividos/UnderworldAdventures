@@ -47,6 +47,12 @@
 class ua_save_game_screen;
 
 
+// functions
+
+void ua_image_draw_edge(ua_image& img, unsigned int xpos, unsigned int ypos,
+   unsigned int width, unsigned int height, bool inner);
+
+
 // enums
 
 //! button id's

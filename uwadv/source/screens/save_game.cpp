@@ -44,26 +44,66 @@ const unsigned int ua_save_game_button::button_width = 55;
 const double ua_save_game_screen::fade_time = 0.5;
 
 
+// global methods
+
+void ua_image_draw_edge(ua_image& img, unsigned int xpos, unsigned int ypos,
+   unsigned int width, unsigned int height, bool inner)
+{
+   Uint8 color_left = 165, color_right = 170;
+   unsigned int edge_width = 1;
+
+   // left edge
+   img.fill_rect(xpos,ypos+1, edge_width, height-2,
+      inner ? color_left : color_right);
+   // top edge
+   img.fill_rect(xpos+edge_width,ypos, width-edge_width*2, 1,
+      inner ? color_left : color_right);
+
+   // right edge
+   img.fill_rect(xpos+width-edge_width,ypos+1, edge_width, height-2,
+      inner ? color_right : color_left);
+   // bottom edge
+   img.fill_rect(xpos+edge_width,ypos+height-1, width-edge_width*2, 1,
+      inner ? color_right : color_left);
+}
+
+
 // ua_save_game_button methods
 
 void ua_save_game_button::init(ua_save_game_screen* my_screen,
    ua_game_interface& game, unsigned int xpos, unsigned int ypos,
    const char* text, ua_save_game_button_id my_id)
 {
+   std::string button_text(text);
+
    screen = my_screen;
    id = my_id;
    leftbuttondown = rightbuttondown = false;
 
-   // load buttons (unpressed/pressed)
-   game.get_image_manager().load_list(img_buttons, "chrbtns", 0,3, 3);
+   ua_font font_normal;
 
-   // create window
-   image.create(button_width, img_buttons[0].get_yres());
-   image.set_palette(game.get_image_manager().get_palette(3));
-
-   ua_image_quad::init(game, xpos, ypos);
-
+   if (game.get_settings().get_bool(ua_setting_uw1_is_uw_demo))
    {
+      // uw_demo only
+      img_buttons.resize(3);
+      img_buttons[0].create(button_width, 16);
+      img_buttons[0].set_palette(game.get_image_manager().get_palette(3));
+
+      img_buttons[2] = img_buttons[1] = img_buttons[0];
+
+      img_buttons[0].fill_rect(0,0, button_width,16, 29);
+      ua_image_draw_edge(img_buttons[1], 0,0, button_width,16, false);
+      ua_image_draw_edge(img_buttons[2], 0,0, button_width,16, true);
+
+      font_normal.load(game.get_settings(), ua_font_buttons);
+
+      ua_str_uppercase(button_text);
+   }
+   else
+   {
+      // load buttons (unpressed/pressed)
+      game.get_image_manager().load_list(img_buttons, "chrbtns", 0,3, 3);
+
       // shorten button images according to button width
       ua_image& button0 = img_buttons[0];
       button0.paste_rect(button0, 66,0, 1,16, button_width-1,0);
@@ -74,30 +114,36 @@ void ua_save_game_button::init(ua_save_game_screen* my_screen,
       ua_image& button2 = img_buttons[2];
       button2.paste_rect(button2, 66,0, 1,16, button_width-1,0);
 
+      font_normal.load(game.get_settings(), ua_font_chargen);
+   }
+
+   {
       // paste text onto buttons
-      ua_font font_normal;
       ua_image img_temp;
 
-      font_normal.load(game.get_settings(), ua_font_chargen);
-
       // normal
-      font_normal.create_string(img_temp, text, 162);
+      font_normal.create_string(img_temp, button_text.c_str(), 162);
 
-      int pos = (button_width-img_temp.get_xres())/2;
-      if (pos<0) pos = 0;
+      int xpos = (signed(button_width)-signed(img_temp.get_xres()))/2;
+      if (xpos<0) xpos = 0;
+      unsigned int ypos = (16-img_temp.get_yres())/2;
 
-      button1.paste_rect(img_temp, 0,0, button1.get_xres(),button1.get_yres(),
-         pos,3, true);
+      img_buttons[1].paste_image(img_temp, xpos,ypos, true);
 
       // highlighted
-      font_normal.create_string(img_temp, text, 73);
+      font_normal.create_string(img_temp, button_text.c_str(), 73);
 
-      pos = (button_width-img_temp.get_xres())/2;
-      if (pos<0) pos = 0;
+      xpos = (signed(button_width)-signed(img_temp.get_xres()))/2;
+      if (xpos<0) xpos = 0;
 
-      button2.paste_rect(img_temp, 0,0, button2.get_xres(),button2.get_yres(),
-         pos,3, true);
+      img_buttons[2].paste_image(img_temp, xpos,ypos, true);
    }
+
+   // create window
+   image.create(button_width, img_buttons[0].get_yres());
+   image.set_palette(game.get_image_manager().get_palette(3));
+
+   ua_image_quad::init(game, xpos, ypos);
 
    update_button(false);
 }
@@ -139,13 +185,12 @@ void ua_save_game_button::update_button(bool state_pressed)
 {
    // paste base button
    ua_image& button0 = img_buttons[0];
-   image.paste_rect(button0, 0,0, button0.get_xres(),button0.get_yres(), 0,0);
+   image.paste_image(button0, 0,0);
 
    // base border depending on selection
    ua_image& button = img_buttons[state_pressed ? 1 : 2];
 
-   image.paste_rect(button, 0,0,
-      button.get_xres(),button.get_yres(), 0,0, true);
+   image.paste_image(button, 0,0, true);
 
    update();
 }
@@ -238,9 +283,7 @@ void ua_save_game_savegames_list::update_list()
       ua_image img_temp;
       font_normal.create_string(img_temp,desc.c_str(),selected ? 73 : 162);
 
-      get_image().ua_image::paste_rect(img_temp, 0,0,
-         img_temp.get_xres(), img_temp.get_yres(),
-         2,i*(charheight+1)+2, true);
+      get_image().paste_image(img_temp, 2,i*(charheight+1)+2, true);
    }
 
    update();
@@ -300,20 +343,54 @@ void ua_save_game_screen::init()
    show_preview = false;
    edit_desc = false;
 
-   font_btns.load(game.get_settings(), ua_font_chargen);
-
-   game.get_image_manager().load_list(img_faces, "chrbtns", 17, 0, 3);
-
-   // scan for savegames
-   game.get_savegames_manager().rescan();
-
-   // load background image
+   if (game.get_settings().get_bool(ua_setting_uw1_is_uw_demo))
    {
+      // we only have the uw_demo, and no character screen
+      font_btns.load(game.get_settings(), ua_font_normal);
+
+      game.get_image_manager().load_list(img_faces, "bodies", 0, 0);
+
+      // init background image
+      ua_image& img = img_back.get_image();
+      img.create(320,200);
+      img.set_palette(game.get_image_manager().get_palette(3));
+
+      img.clear(142);
+      ua_image_draw_edge(img, 2,2, 320-4,200-4, true);
+
+      // savegame list edge
+      ua_image_draw_edge(img, 12,7, 134,138, true);
+
+      // info area
+      ua_image_draw_edge(img, 172,7, 134,27, true);
+
+      ua_image_draw_edge(img, 172,42, 63,77, true);
+      ua_image_draw_edge(img, 243,42, 63,77, true);
+
+      // preview image
+      ua_image_draw_edge(img, 172,127, 134,63, true);
+
+      img_back.init(game, 0,0);
+      img_back.update();
+
+      register_window(&img_back);
+   }
+   else
+   {
+      // normal uw1 game
+      font_btns.load(game.get_settings(), ua_font_chargen);
+
+      game.get_image_manager().load_list(img_faces, "chrbtns", 17, 0, 3);
+
+      // scan for savegames
+      game.get_savegames_manager().rescan();
+
+      // load background image
       ua_image temp_back;
       game.get_image_manager().
          load(temp_back, "data/chargen.byt",0, 3, ua_img_byt);
 
-      // prepare left image (savegames list)
+      // prepare background image
       ua_image& img = img_back.get_image();
 
       img.create(320,200);
