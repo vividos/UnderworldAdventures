@@ -54,8 +54,6 @@ uwadv_SOURCES = \
 	renderer/renderer_impl.cpp renderer/renderer_impl.hpp \
 	renderer/tessellator.cpp renderer/tessellator.hpp \
 	renderer/texture.cpp renderer/texture.hpp \
-	screens/acknowledgements.cpp screens/acknowledgements.hpp \
-	screens/start_menu.cpp screens/start_menu.hpp \
 	screens/start_splash.cpp screens/start_splash.hpp \
 	screens/uwadv_menu.cpp screens/uwadv_menu.hpp \
 	script/luascript.cpp script/luascript.hpp \
@@ -94,6 +92,9 @@ uwadv_SOURCES = \
 	resource/tgaimport.cpp resource/uw2dec.cpp
 
 the_rest = \
+	screens/acknowledgements.cpp screens/acknowledgements.hpp \
+	screens/start_menu.cpp screens/start_menu.hpp \
+	\
 	linux/debug.cpp \
 	debug/uwaccess.cpp debug/uwaccess.hpp \
 	resource/models_impl.hpp \
