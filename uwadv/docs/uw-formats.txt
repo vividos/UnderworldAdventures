@@ -159,15 +159,18 @@ Table of Contents
 
 2.0 Level Map File
 
-   Level maps are stored in file "lev.ark".
+   Level maps are stored in file "lev.ark". The header of the file contains
+   the offsets to all the chunks in the level archive. First there is a Int16
+   value giving the number of chunk directory entries (0x0087 = 135 for 9x15
+   possible chunks) followed by Int32 offset for each chunk (measured from the
+   start of the file).
 
-   0000  Int16  Number of offset entries
-   0002  Int32  Offset #0
-   0006  Int32  Offset #1
-   ...
+   Chunks are arranged in blocks of 9 (Ultima Underworld 1 has 9 levels, Abyss
+   levels 1 - 8 and the Ethereal Void). There is space in the header for 15
+   such blocks, though only 5 are actually used.
 
-   When the offset is a value of 0, the block contains no data for Ultima
-   Underworld 1, there are 45 offsets which point to different data:
+   When the offset is a value of 0, the chunk or block is not available and
+   contains no data. There are 45 offsets which point to different data:
 
    <9 blocks level map/object info>
    <9 blocks object animation overlay info>
@@ -175,27 +178,44 @@ Table of Contents
    <9 blocks level automap flags>
    <9 blocks level comment entries>
 
-   The first 9 blocks describe the 9 level maps (Abyss levels 1 - 8 and the
-   Ethereal Void). The next 9 blocks list the objects in the corresponding
-   map. The next 9 blocks describe the used textures for wall, floor and
-   doors. Then come 9 blocks for automap flags, ending with 9 blocks for
-   comment entries.
-
    * Level map info
 
-     Levels are always 64 x 64 tiles. Map origin is at the lower left tile,
-     going to the right, each line in turn. For each tile there is an Int32
-     stored in the block. The value can be split into bits:
+     The level map chunk for each level contains information about the level
+     architecture (tile map) and the objects which live in it:
 
-     bits           description
-      0 -  3    4   tile type (0-9, see below)
-      4 -  7    4   floor height
-      8 -  9        unknown, always 0
-     10 - 13    4   floor/ceiling texture info
-     14             unknown, only used on level 6, near the shrine
-     15         1   door bit (when 1, a door is present)
-     16 - 21    6   wall texture index (from level texture usage)
-     22 - 31   10   first object in tile (index into object list)
+      Offset  Size   Description
+      0000    4000   Tile map (64 x 64 x 4 bytes)
+      4000    1b00   Mobile object information (objects 000-0ff, 256 x 27bytes)
+      5b00    1800   Static object information (objects 100-3ff, 768 x 8bytes)
+      7300    01fc   Free list for mobile objects (objects 002-0ff, 254 x 2bytes)
+      74fc    0600   Free list for static objects (objects 100-3ff, 768 x 2bytes)
+      7afc    0104   Unknown (260 bytes)
+      7c00    0002
+      7c02    0002   No. entries in mobile free list minus 1
+      7c04    0002   No. entries in static free list minus 1
+      7c06    0002   0x7775 ('uw')
+
+     Tile map
+     --------
+     Levels are always 64 x 64 tiles. Map origin is at the lower left tile,
+     going to the right, each line in turn. For each tile there are two Int16
+     values stored. The two values can be split into bits:
+
+     00 tile properties / flags:
+
+        bits      len  description
+         0 -  3    4   tile type (0-9, see below)
+         4 -  7    4   floor height
+         8 -  9    2   unknown, always 0
+        10 - 13    4   floor texture index (from level texture usage block)
+        14         1   unknown (only used on level 6, near the shrine)
+        15         1   door bit (when 1, a door is present)
+
+     02 tile properties 2 / object list link
+
+        bits      len  description
+         0 -  5    6   wall texture index (from level texture usage)
+         6 - 15   10   first object in tile (index into master object list)
 
      Underworld tile types are:
       00      Solid (wall tile)
@@ -209,52 +229,50 @@ Table of Contents
       08      Sloping up to the east
       09      Sloping up to the west
 
-   * Level object info
+     Mobile / Static object info
+     ---------------------------
+     The master object list is stored after the map data. There are 1024
+     entries (0x400) in the table. The first 256 entries contain infos about
+     mobile objects (NPCs, critters) and have 8 + 19 bytes each.
 
-     They are stored after the tile map data. First come 256 entries for
-     critters, each 0x1b (=27) bytes long. The first 8 bytes form two Int32
-     that describe general critter info (see below). The remaining bytes is
-     be NPC data (like xhome, yhome etc.).
+     0000   Int16*4   general object infos
+     0008   19        mobile object infos (see below)
 
-     Then follows 0x300 (=768) entries for remaining objects, the master
-     object list. They only consist of the two Int32's, the general object
-     info:
+     The reamaining 768 object entries starting at 0x100 only have general
+     object infos and are 8 bytes long each.
 
-     word 1, bytes 0..3
-     bits          description
-      0 -  8    9   object ID
-      9 - 11    3   flags, unknown
-	  12	1   Enchantment flag (only if item is enchantable)
-     13 - 14	2   flags, unknown
-          15    1   Link flag (link field is quantity/special)
-     16 - 22    7   object z position (0-127)
-     23 - 25    3   orientation (*45 degree) (0-7)
-     26 - 28    3   object x position (0-7)
-     29 - 31    3   object y position (0-7)
+     General object infos
+     --------------------
+     They contain 4 Int16 words which can be split into bits:
 
-     word 2, bytes 4..7
-     bits           description
-      0 -  5    6   quality
-      6 - 15   10   link1 (object chain)
-     16 - 21    6   unknown2
-     22 - 31   10   quantity / link2
+     00 objid / flags:      0- 8   Object ID (see below)
+                              12   Enchantment flag (enchantable objects only)
+                              15   Link flag (link field is quantity/special)
 
-     Objects in a tile are stored as a linked list, where link1 points to the
-     next object in list, or contains 0x0000 for the end of the linked list.
-     The first object in the list is determined by the tile's object index
-     value (see above, at "Level map info").
+     02 position:           0- 6   Object Z position (0-127)
+                            7- 9   Heading (*45 deg)
+                            10-12  Object Y position (0-7)
+                            13-15  Object X position (0-7)
 
-     For normal objects, the "unknown2" field is the NPC type the object
-     belongs to. NPC ID = unknown2 - 1 + 0x0040. unknown2 == 0 means the
+     04 quality / chain:    0- 5   Quality
+                            6-15   Index of next object in chain
+
+     06 link / special:     0- 5   Owner / special
+                            6-15   Quantity / link / special property
+
+     Object chaining
+     ---------------
+     Objects in a tile are stored as a linked list, where the "Index of next
+     object in chain" points to the next object in list, or contains 0 for the
+     end of the linked list. The first object in the list is determined by the
+     tile's object index value (see above, at "Tile map").
+
+     For normal objects, the "Owner" field describes the NPC type the object
+     belongs to. NPC object ID = Owner - 1 + 0x0040. When the field is 0, the
      object doesn't belong to anyone.
 
-     After the objects list, another lists starts at offset base+0x7300. The
-     list contains 0x0400 Int16 values. The purpose of this list is unknown.
-
-     All lists are 0x100*0x1b + 0x300*0x08 = 0x1b00 + 0x1800 + 0x0800 = 0x3b00
-     bytes long. After these two lists, 0x3c08 - 0x3b00 = 0x0108 bytes unknown
-     data follows.
-
+     Link Field
+     -----------
      The link field can be used for various things. If the link flag is unset,
      it contains the index of an associated object. The exact meaning varies,
      but is generally a "has-a" type relationship (contents, trap to set off,
@@ -269,6 +287,7 @@ Table of Contents
      minus 512 (unsurprisingly), the meaning depends on object type and flags.
 
      Enchantments
+     ------------
      If the enchantment flag is set and the object is enchantable, then the
      link field (less 512) determines the enchantment. Enchantment names are
      stored in strings chunk 5. The way in which the link value maps onto
@@ -294,14 +313,15 @@ Table of Contents
      Other objects may also carry spells in this way.
 
      Links
+     -----
      When the link field is a link (link flag NOT set), it links to another
-     object(s). Here's a list of IDs:
+     object(s). Here's a list of IDs and the lin meanings:
 
-      0040 - 007f: all sorts of NPCs (link2 point to inventory start)
+      0040 - 007f: all sorts of NPCs (link point to inventory start)
       0080 - 008e: all sorts of container (points to content)
       008f: a_rune bag (specially treated)
-      0098 - 009f,00aa: all sorts of wands (points to a a_spell object)
-      0140 - 014f: doors (points to a a_lock object, when locked)
+      0098 - 009f,00aa: all sorts of wands (points to a "a_spell" object)
+      0140 - 014f: doors (points to a "a_lock" object, when locked)
       015b, 015e: a_chest, a_barrel (3d objects)
       0161: a_lever (mostly points to "a_use trigger" object)
       016e: special tmap obj (?)
@@ -317,8 +337,8 @@ Table of Contents
    * Object animation overlay info
 
      The 9 blocks contain entries with length of 6 bytes with infos about
-     objects with animation overlay images from animo.gr.
-     It always is 0x0180 bytes long, which leads to 64 entries.
+     objects with animation overlay images from "animo.gr".
+     It always is 0x0180 bytes long which leads to 64 entries.
 
      0000   Int16   link1
      0002   Int16   unk2
@@ -395,8 +415,9 @@ Table of Contents
 
 2.2 Textures
 
-   Textures are stored in "*.tr" files, where "f??.tr" files are floor
-   textures, and "w??.tr" are wall textures.
+   Textures are stored in "*.tr" files, where "fXX.tr" files are floor
+   textures, and "wXX.tr" are wall textures. XX describes the width and height
+   resolution of the texture.
 
    0000  Int8   unknown, always seems to be 2
    0001  Int8   x and y resolution (textures always square)
@@ -406,7 +427,7 @@ Table of Contents
    ...
 
    The offset of each texture points to the actual texture palette indices,
-   which are xyres^2 bytes long. Textures always use palette #0
+   which are xyres^2 bytes long. Textures always use palette #0.
 
 
 2.3 Graphics
@@ -490,7 +511,7 @@ Table of Contents
    0004  Int16   width of the blank (space) character, in pixels
    0006  Int16   font height in pixels
    0008  Int16   width of a character row in bytes
-   000A  Int16   maximum width of a character in pixels
+   000A  Int16   maximum width of a character in pixels (=maxwidth)
 
    Then follow all bitmaps for each character. The number of chars can be
    determined by (filelen-12) / (charsize+1). Bitmaps are stored as 1-bit
@@ -501,11 +522,25 @@ Table of Contents
    After 'charsize' number of bytes, there is another Int8 that says the width
    for the current character in pixels.
 
+   Note: at least the fonts "fontbig.sys" and "font5x6p.sys" contain overly
+   large characters, and for these the remaining bits at a line are used. The
+   maxwidth field should be corrected for loading.
+
 
 2.5 Bitmaps
 
    "*.byt" files are just 320x200 bitmaps, using palette indices from
-   different main palettes.
+   different main palettes. Here's a list of all bitmap files:
+
+    blnkmap.byt    blank map bitmap, palette #1
+    chargen.byt    character generation bitmap, palette #3
+    conv.byt       seems to be a conversation screenshot, palette #0
+    main.byt       main game screen bitmap, palette #0
+    opscr.byt      opening screen, palette #2
+    pres1.byt      "origin presents" screen, palette #5
+    pres2.byt      "a blue sky prod. game" screen, palette #5
+    win1.byt       winning screen with text, palette #7
+    win2.byt       blank winning screen for character info, palette #7
 
 
 2.6 Palette mappings
@@ -518,7 +553,8 @@ Table of Contents
 
    The file "mono.dat" contains palette mappings that maps colors to grayscale
    values. It has the same format as the "light.dat" file and can be
-   interchanged to get a gray underworld look.
+   interchanged to get a gray underworld look. It is used for the spell
+   "invisibility".
 
 
 3.0 Object IDs
@@ -545,7 +581,7 @@ Table of Contents
    01A0-01BF  Triggers
    01C0-01CF  Explosions/splats, fountain, silver tree, moving things
 
-   Description for each object is in game strings, block 0004
+   Description for each object is stored in game strings, block 0004
 
 
 3.1 Common object properties
@@ -564,8 +600,8 @@ Table of Contents
    0004  Int16   value (?)
    0005  Int24   unknown1
    0008  Int8    scale value (?)
-   0009  Int8	 unknown2
-   000A	 Int8	 lower 4 bits are quality type 0-f
+   0009  Int8    unknown2
+   000A  Int8   lower 4 bits are quality type 0-f
 
    Each possible value of "quality type" maps onto a group of 6 strings in
    chunk 4 from lowest to highest quality. Items which have a quality are
@@ -573,22 +609,23 @@ Table of Contents
    which is for armour items which are gramatically plural even if there is
    only one of the object, e.g. "leather leggings".
 
+
 3.2 Object class properties
 
    These are stored in the file "objects.dat". It contains infos about
    different classes of objects, e.g. weapons, armor etc. The file is split
    in several tables. Here is an overview:
 
-   pos   size     desc
+   pos   size     desc                        entries   bytes per entry
    0000  Int16    unknown, always 0x010f
-   0002  0x80     melee weapons table; 16 entries, 8 bytes per entry
-   0082  0x30     ranged weapons table; 16 entries, 3 bytes per entry
-   00b2  0x80     armour and wearables table; 32 entries, 4 bytes per entry
-   0132  0x0c00   critters table; 64 entries, 48 bytes per entry
-   0d32  0x30     containers table; 16 entries, 3 bytes per entry
-   0d62  0x20     lights info table, 16 entries, 2 bytes per entry
+   0002  0x80     melee weapons table         16         8 bytes
+   0082  0x30     ranged weapons table        16         3 bytes
+   00b2  0x80     armour and wearables table  32         4 bytes
+   0132  0x0c00   critters table              64        48 bytes
+   0d32  0x30     containers table            16         3 bytes
+   0d62  0x20     lights info table           16         2 bytes
    0d82  0x20     unknown, maybe jewelry info table
-   0da2  0x40     animation object table; 16 entries, 4 bytes per entry
+   0da2  0x40     animation object table      16         4 bytes
    0de2           end
 
    * melee weapons table
@@ -597,7 +634,7 @@ Table of Contents
      0001   Int8   damage modifier for Bash attack
      0002   Int8   damage modifier for Stab attack
      0003   3      unknown
-     0006   Int8   skill type (3 sword, 4 axe, 5 mace, 6 unarmed)
+     0006   Int8   skill type (3: sword, 4: axe, 5: mace, 6: unarmed)
      0007   Int8   durability
 
    * ranged weapons table
@@ -631,7 +668,7 @@ Table of Contents
      0002   Int8   unknown
 
    * lights info table
-   
+
      0000   Int8   light brightneess
      0001   Int8   duration (00: does't go out, e.g. taper of sacrifice)
 
@@ -643,6 +680,7 @@ Table of Contents
      0001   Int8   start frame (from animo.gr)
      0002   Int8   number of frames
      0003   Int8   unknown
+
 
 3.3 Traps
 
@@ -681,18 +719,18 @@ Table of Contents
 
    * Create object trap (ID 0187)
 
-     This trap creates an object when it is set off. The quantity/link field
+     This trap creates an object when it is set off. The link field
      points at the object to create.
 
    * Door trap (ID 0188)
 
-     When set off, this trap opens or shuts a door. The quantity/link field
+     When set off, this trap opens or shuts a door. The link field
      points at the lock, if the door has one.
 
    * Text string trap (ID 0190)
 
      This trap causes the player to get a text message when it is set off. The
-     "Unk2" field of the object definition contains the string number per
+     "Owner / special" field of the object definition contains the string number per
      level, in game string block 0009. The actual string number printed is
      (64*level + unk2).
 
@@ -763,13 +801,13 @@ Table of Contents
      "you see <article> <mood> <description> [named <npc-name>]. <mood> can be
      one of "mellow" or "upset".
 
-     In the uw_demo, the 0cxx blocks and many of the conversation string
+     In the uw_demo, the 0cXX blocks and many of the conversation string
      blocks aren't available.
 
 
 4.1 Conversations
 
-   Conversations are stored in the file cnv.ark. File header:
+   Conversations are stored in the file "cnv.ark". File header:
 
    0000   Int16   number of conversation slots in file
    0002   Int32   offset to conversation slot #0
@@ -1024,27 +1062,24 @@ Table of Contents
 5.0 Critter Animation
 
    Critter animations are stored in the folder "crit". The file "assoc.anm"
-   holds data for each of the 32 animations. The file starts with 8 bytes for
-   the name of each animation. Shorter strings are padded with zeros. Empty
-   strings denote animations not available (for uw_demo).
+   holds data for each of the 32 animations and for the 64 NPC types. The file
+   starts with 8 bytes for the name of each animation. Shorter strings are
+   padded with zeros. Empty strings denote animations not available (for
+   the "uw_demo").
 
-   Next comes a table of infos for each animation:
+   Next comes a table of infos for each NPC. The table is 64 entries (0x0080)
+   long:
 
    0000   Int8   anim
    0001   Int8   auxpal
 
-   The meaning of the "anim" field is currently unknown.
+   The "anim" field specifies which one of the 32 animations to take for a
+   given NPC number (NPC object ID - 0x0040).
 
    The "auxpal" value describes which auxiliary palette to use. There are
    several critters that share the same animations but use different palettes,
    e.g. the bat and the vampire bat uses the same anim value, but different
    auxpals.
-
-   Next comes another table with 32 entries:
-
-   0000   Int16   unknown
-
-   The meaning of the field is currently unknown.
 
    Animation for each critter is stored in a file like "CrXXpage.nYY", where
       XX = animation number (=anim), YY = page number
