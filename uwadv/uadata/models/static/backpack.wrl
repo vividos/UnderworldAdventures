@@ -17,7 +17,7 @@ DEF Backpack Transform {
           transparency 0
         }
         texture ImageTexture {
-          url "Textures/backpack.tga"
+          url "textures/backpack.tga"
         }
       }
       geometry DEF Backpack-FACES IndexedFaceSet {

@@ -19,7 +19,7 @@ DEF Grass03 Transform {
           transparency 0
         }
         texture ImageTexture {
-          url "Textures/grass.tga"
+          url "textures/grass.tga"
         }
       }
       geometry DEF Grass03-FACES IndexedFaceSet {

@@ -16,7 +16,7 @@ DEF Chest Transform {
           transparency 0
         }
         texture ImageTexture {
-          url "Textures/wdchest.tga"
+          url "textures/wdchest.tga"
         }
       }
       geometry DEF Chest-FACES IndexedFaceSet {

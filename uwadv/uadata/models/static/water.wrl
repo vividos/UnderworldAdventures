@@ -17,7 +17,7 @@ DEF Water Transform {
           transparency 0.2
         }
         texture ImageTexture {
-          url "Textures/water.tga"
+          url "textures/water.tga"
         }
       }
       geometry DEF Water-FACES IndexedFaceSet {

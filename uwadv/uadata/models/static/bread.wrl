@@ -17,7 +17,7 @@ DEF Bread Transform {
           transparency 0
         }
         texture ImageTexture {
-          url "Textures/bread.tga"
+          url "textures/bread.tga"
         }
       }
       geometry DEF Bread-FACES IndexedFaceSet {

@@ -19,7 +19,7 @@ DEF Skull Transform {
           transparency 0
         }
         texture ImageTexture {
-          url "Textures/skull.tga"
+          url "textures/skull.tga"
         }
       }
       geometry DEF Skull-FACES IndexedFaceSet {

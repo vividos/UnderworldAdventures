@@ -17,7 +17,7 @@ DEF Barrel Transform {
           transparency 0
         }
         texture ImageTexture {
-          url "Textures/barrel.tga"
+          url "textures/barrel.tga"
         }
       }
       geometry DEF Barrel-FACES IndexedFaceSet {

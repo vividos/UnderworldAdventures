@@ -17,7 +17,7 @@ DEF Bed_Frame Transform {
           transparency 0
         }
         texture ImageTexture {
-          url "Textures/plank.tga"
+          url "textures/plank.tga"
         }
       }
       geometry DEF Bed_Frame-FACES IndexedFaceSet {

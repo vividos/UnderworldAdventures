@@ -17,7 +17,7 @@ DEF Bag Transform {
           transparency 0
         }
         texture ImageTexture {
-          url "Textures/bag.tga"
+          url "textures/bag.tga"
         }
       }
       geometry DEF Bag-FACES IndexedFaceSet {

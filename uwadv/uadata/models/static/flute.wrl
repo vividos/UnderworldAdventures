@@ -19,7 +19,7 @@ DEF Flute Transform {
           transparency 0
         }
         texture ImageTexture {
-          url "Textures/flute.tga"
+          url "textures/flute.tga"
         }
       }
       geometry DEF Flute-FACES IndexedFaceSet {

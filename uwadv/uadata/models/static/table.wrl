@@ -18,7 +18,7 @@ DEF Table Transform {
           transparency 0
         }
         texture ImageTexture {
-          url "Textures/wood.tga"
+          url "textures/wood.tga"
         }
       }
       geometry DEF Table-FACES IndexedFaceSet {

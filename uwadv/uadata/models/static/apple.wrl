@@ -19,7 +19,7 @@ DEF Apple Transform {
           transparency 0
         }
         texture ImageTexture {
-          url "Textures/apple.tga"
+          url "textures/apple.tga"
         }
       }
       geometry DEF Apple-FACES IndexedFaceSet {

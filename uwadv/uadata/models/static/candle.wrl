@@ -16,7 +16,7 @@ DEF Candle Transform {
           transparency 0
         }
         texture ImageTexture {
-          url "Textures/candle.tga"
+          url "textures/candle.tga"
         }
       }
       geometry DEF Candle-FACES IndexedFaceSet {
