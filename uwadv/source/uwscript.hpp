@@ -39,6 +39,12 @@
 typedef enum
 {
    ua_inv_cat_normal = 0,   // normal item
+   ua_inv_cat_ring,
+   ua_inv_cat_legs,
+   ua_inv_cat_chest,
+   ua_inv_cat_hands,
+   ua_inv_cat_feet,
+   ua_inv_cat_head,
 } ua_inv_item_category;
 
 //! result value when combining items
