@@ -40,6 +40,7 @@ Table of Contents
    4.4    Texture mappings
    4.5    Animation infos
    4.6    Automap infos
+   4.7    Terrain texture properties
 
    5      String resources
    5.1    String block contents
@@ -66,7 +67,7 @@ Table of Contents
    9      Miscellaneous stuff
    9.1    Ultima Underworld 2 compression scheme
    9.2    Savegame format
-   9.3    Unknown files
+   9.4    Unknown files
 
  +--------------------------------------------------------------------------+
 
@@ -234,7 +235,7 @@ Table of Contents
    skills.dat     char. generation skills for all classes
    spells.gr      spells graphics
    strings.pak    all the game strings
-   terrain.dat    terrain texture properties (see 8.3)
+   terrain.dat    terrain texture properties (see 4.7)
    tmflat.gr      wall switches and other decals
    tmobj.gr       more wall decals, 3d model textures
    uw.cfg         underworld configuration (audio, cut scenes)
@@ -408,8 +409,8 @@ Table of Contents
    sp??.voc
    uw.opl
    uw??.voc
-   uwa??.xmi
-   uwr??.xmi
+   uwa??.xmi      adlib music files
+   uwr??.xmi      roland music files
 
    Here's a list of song names for the .xmi files:
 
@@ -1173,6 +1174,7 @@ Table of Contents
                         4-11   npc_gtarg
    000d   0005   Int16  0-3    npc_level
                         4-11   
+                        8      
                         13     npc_talkedto
                         14-15  npc_attitude
    000f   0007
@@ -1229,6 +1231,20 @@ Table of Contents
    The last value from the floor texture number array is used as ceiling
    texture.
 
+   "Look" descriptions come from block 000a, where wall textures use strings 0
+   to 255 and floor textures are described by strings 256 to 510, in reverse
+   order. Ceiling always uses string 511.
+
+   In uw2 the texture mapping is 134 (0x0086) bytes long and contains 64
+   Int16 entries that are indices into t64.tr. The first 16 entries are shared
+   by the floor and wall indices. Entries above 16 are wall-only textures.
+   Ceiling seems to be textured by entry 0x20. The last 6 bytes appear to be
+   some kind of checksum, always 00 01 02 03 04 05.
+
+   "Look" descriptions are almost the same as in uw1, but as textures can be
+   shared between walls and floors, there are two descriptions for every entry
+   in t64.tr. Floor descriptions start at string 255 without reversing order.
+
 
 4.5  Animation infos
 
@@ -1251,6 +1267,34 @@ Table of Contents
    describes a tile on the main map. The block size always is 0x1000.
 
    rest not decoded yet
+
+
+4.7  Terrain texture properties
+
+   The file "terrain.dat" in the data directory contains information on the
+   terrain types represented by the various wall and floor textures. There is
+   a 16-bit word per texture, up to a maximum of 256 walls and 256 floors.
+   Floor data therefore starts at file offset 0x200. Terrain types are:
+
+    0000    Normal (solid) wall or floor
+    0002    Ankh mural (shrines)
+    0003    Stairs up
+    0004    Stairs down
+    0005    Pipe
+    0006    Grating
+    0007    Drain
+    0008    Chained-up princess
+    0009    Window
+    000a    Tapestry
+    000b    Textured door (used for the lock to the Key of Infinity)
+    0010    Water (not waterfall)
+    0020    Lava (not lavafall)
+    0040    Waterfall      - UW2
+    00C0    Ice wall       - UW2
+    00D8
+    00E8    Ice walls (crumbling?)
+    0080    Lavafall       - UW2
+    00F8    Ice            - UW2
 
 
  +--------------------------------------------------------------------------+
@@ -1408,8 +1452,16 @@ Table of Contents
          spell object used by wands, spell traps, magical items;
          the "quality" field 
 
+   013b  a_map
+         the map is shown when looked at the map in inventory. The string at
+         block 1, string 151 is printed, too.
+
    0140  a_door (and up to 0147)
          if bit 1 of the "owner" field is set, the door is spiked.
+
+   0160  a_pillar
+         3d object. texture is determined by the lower 2 bits of the "flags"
+         field (?)
 
    0161  a_lever
          a clock-like lever with 8 positions; texture is determined by
@@ -1478,12 +1530,14 @@ Table of Contents
 6.1.2  Traps and Triggers
 
    Traps are set off by triggers, which are triggered by the player coming
-   near them. Traps can also be set off by switches or buttons, etc.
+   near them. Traps can also be set off by switches or buttons, etc. All
+   triggers contain tilemap coords in "quality" and "owner" field called
+   trigger "target" coordinates.
 
    0180  a_damage trap
          player vitality is decrease; number of hit points are in "quality"
          field; if the "owner" field is != 0, the hit points are added
-         instead.
+         instead. the trap is only set of when a random value [0..10] is >= 7.
 
    0181  a_teleport trap
          teleports the player to another level and tile; destination level is
@@ -1522,19 +1576,32 @@ Table of Contents
          not implemented in uw1, but used on 3rd level, as target for a use
          trigger that is associated with a check variable trap (map bug?)
 
+         this is probably a bottomless pit that drops the player through to
+         the next level.
+
    0184  a_special effects trap [uw2]
+         this trap does 'visual' effects like earthquakes, or blurry vision.
 
    0185  a_change terrain trap
+
    0186  a_spelltrap
+         fields "quality" and "quantity" determine spell type.
 
    0187  a_create object trap
          creates a new object using the object referenced by the "quantity"
          field as a template. the object is created only when a random number
-         between 0 and 3f is the same as the "quality" field value.
+         between 0 and 3f is greater than the "quality" field value.
 
    0188  a_door trap
-         opens or shuts a door when set off. The "quantity" field specifies
-         the lock of the door.
+         opens or shuts a door when set off. the trigger "target" coords
+         determine the tile with the door to open/close. if the door
+         has an "a_lock" object associated, it is deleted. if there is no
+         lock, a new lock is created, using the template lock linked to by the
+         "sp_link" field. as the door points to a lock, there can't be another
+         trigger associated with it.
+
+         the "quality" value can have the values 1,2,3 and determines opening
+         animation (?)
 
    0189  a_ward trap
          not used in uw1
@@ -1545,21 +1612,24 @@ Table of Contents
    018a  a_skill trap [uw2]
 
    018b  a_delete object trap
+         deletes an object when set off. "owner" and "quality" of the trap
+         determines tile the object is to be found, "sp_link" points to the
+         object.
 
    018c  an_inventory trap
 
    018d  a_set variable trap
          sets a game variable; fields "quality", "owner" and "ypos" are
-         combined to form a value that is used later:
+         combined to form a "value" that is used as variable index later:
 
           field   bits in value
           ypos    0..2
           owner   3..7     (bit 5 of "owner" seems not to be used)
-          owner   8..13
+          quality 8..13
 
          the "zpos" field determines which variable to set. if zpos is 0, a
-         bit-field is modified and the value indicates which bit to modify.
-         the "heading" field determines the operation to perform:
+         bit-field is modified and the index value indicates which bit to
+         modify. the "heading" field determines the operation to perform:
 
           heading  operation    bit-field operation
           0        add          set bit
@@ -1571,10 +1641,37 @@ Table of Contents
           6        shl          set bit
 
          values are modified and kept in range 0..63 (0x3f).
+
          largest variable index in uw1 is 0x33, the only bit modified in uw1
          is bit 7 of the bit field
 
    018e  a_check variable trap
+         the "value" from the set variable trap (018d) is also used here.
+         the trap checks a range of variables, starting from "zpos" and of
+         length "heading". if "xpos" is not 0, the variable values in range
+         are added; if it is 0, the lower 3 bits of every variable value are
+         shifted into the resulting value. here's some meta-C code to show
+         how the check works:
+
+         bool check_variable_trap(zpos,heading,value)
+         {
+            Int16 cmp = 0;
+            for(Int16 i=zpos; i<zpos+heading; i++)
+            {
+               if (xpos != 0)
+                  cmp += game_vars[i];
+               else
+               {
+                  cmp <<= 3;
+                  cmp |= game_vars[i] & 7;
+               }
+            }
+
+            return di != value
+         }
+
+         The trigger associated with the trap is set off when the resulting
+         value is not equal the "value".
 
    018f  a_combination trap [uw1]
          not implemented in uw1
@@ -1588,13 +1685,17 @@ Table of Contents
 
    0191  an_experience trap [uw2]
    0192  a_jump trap [uw2]
+         causes the player to get an upward velocity according to the quality
+         field; where '24' would be the velocity one would get from a standing
+         jump.
+
    0193  a_change from trap [uw2]
    0194  a_change to trap [uw2]
    0195  an_oscillator trap [uw2]
    0196  a_proximity trap [uw2]
    0197  a_pit trap [uw2]
    0198  a_bridge trap [uw2]
-   
+
    019e  a_flam rune [uw2]
    019f  a_tym rune [uw2]
 
@@ -1629,8 +1730,8 @@ Table of Contents
    01ab  a_close trigger [uw2]
    01ac  a_scheduled trigger [uw2]
 
-   [uw2]: the triggers 01a0..01ac repeat at 01b0..01bf (same object class,
-          different object sub-class?)
+   [uw2]: the triggers 01a0..01ac repeat at 01b0..01bc (same object class,
+          different object sub-class)
 
 
 6.2  Common object properties
@@ -2511,13 +2612,14 @@ Table of Contents
    different things. There also is a vertex array that is filled at start of
    the model, and then faces are defined, using points from the vertex list.
    The list is parsed every frame and tests are done if some faces have to be
-   rendered or not (depending if the player faces the polygon or not).
+   rendered or not (depending if the player sees the polygon or not).
 
    There are some data types that are used in the model node data. These are:
 
      Int16   a simple 16 bit unsigned integer
-     Fixed   fixed point number with 12 bits before the fraction point (12.4)
+     Fixed   fixed point number with 8 bits before the fraction point (8.8)
      VertNo  vertex number; lowest 3 bits are ignored
+     TexCo   texture coordinate; contains a 16 bit fractional texture coord.
 
    Every model has a header that looks like this:
 
@@ -2699,15 +2801,16 @@ Table of Contents
               0008             and so on
 
      00A8   define texture-mapped face
-            vertex u and v coordinates are stored as 0.16 fractional value.
+            vertex u and v coordinates are stored as 0.16 fractional values.
             just divide by 65535.0 to get coordinates in the range [0; 1]
               0002   Int16     texture number (?)
               0004   Int16     number of vertices (=nvert)
               0006   VertNo    vertex list index for first point
-              0008   Fixed      first vertex u coordinate
-              000a   Fixed      first vertex v coordinate
+              0008   TexCo     first vertex u coordinate
+              000a   TexCo     first vertex v coordinate
               000c   VertNo    vertex list index for second point
-              000e             and so on
+              000e   TexCo     second vertex u coordinate
+              0010             and so on
 
      00B4   define face vertices with u,v information
             same structure as 00A8, but without the "texture number" field.
@@ -2894,6 +2997,15 @@ Table of Contents
 
 9.3  Unknown files
 
+   skills.dat
+   ----------
+   The file contains infos about the skills in character creation for every
+   class. First 0x20 bytes are unknown. There are 5 entries for each of the
+   8 character classes. The first Int8 byte contains the length of one entry.
+   Then follows as many Int8 bytes as the length tells. The bytes describe
+   the skill the user can select. If the length is 1, the only skill given is
+   auto-set, showing no selection.
+
    shades.dat
    ----------
    contains 12 entries, 8 byte long each
@@ -2905,6 +3017,15 @@ Table of Contents
    the file. Then 5 Int8 bytes for each entry in the file follow.
    It is supposed that the data may be midi commands to play back sfx.
 
+   xfer.dat
+   ----------
+   The Underworld games use the (colour-index) translation tables in
+   data/xfer.dat for the transparencies (each transparency index has a
+   table). [The numbers here are an attempt to back-convert from the
+   translation table to RGBA values using a hairy little program of my own
+   devising. They look "about right", so I'm inclined to leave them.]
+   (from TSSHP CVS)
+
 
  +--------------------------------------------------------------------------+
 
@@ -2914,14 +3035,6 @@ end of file
 +--------------------------+
 + old document starts here +
 +--------------------------+
-
-
-2.0 Level Map File
-
-   Chunks are arranged in blocks of 9 (Ultima Underworld 1 has 9 levels, Abyss
-   levels 1 - 8 and the Ethereal Void). There is space in the header for 15
-   such blocks, though only 5 are actually used.
-
 
 2.0.1 Level map info
 
@@ -2983,84 +3096,6 @@ end of file
      160..239  map visibility flags
      240..319  ??? strings, entered on map ???
 
-   * Level maps
-
-     as described in 2.0
-
-   * Texture mappings
-
-     these are 134 Bytes large, either uncompressed or after decompression
-     each of the 64 entries is an Int16, the index of the texture in t64.tr
-     the first 16 entries are shared by the floor and wall indices
-     entries 17 to 63 are wall-only textures
-     ceiling seems to be textured by entry 0x20
-
-     the last 6 bytes appear to be some kind of checksum, always 00 01 02 03 04 05 
-
-
-3.3 Traps
-
-   * Pit trap (ID 0184)
-
-     This is probably a bottomless pit that drops the player through to the
-     next level.
-
-     (uw2) This is a special effect trap, that triggers 'visual' effects like
-     earthquakes, or blurry vision. In UW2, 'pits' are interpreted in terms
-     of teleport traps in all cases.
-
-   * Create object trap (ID 0187)
-
-     This trap creates an object when it is set off. The link field
-     points at the object to create.
-
-   * Jump trap (ID 0192) (uw2)
-
-     Causes the player to get an upward velocity according to the quality
-     field; where '24' would be the velocity one would get from a standing
-     jump.
-
-
-   Ultima Underworld 2 models
-   --------------------------
-
-   Notes from Fabian Pache (http://uw2rev.sourceforge.net) for UW2 models:
-
-   I am not concerned with recreating the original 3D models because 
-   (1) they are stored within the executable (thanks Ulf Wohlers)
-   (2) they are rather poor
-   Therefore I replace the old objects with new ones.
-
-   There are two types of 3D objects: Dynamic and Static objects
-   The following information has not been obtained by debugging, disassembling
-   or any other kind of dark magic, but rather by observing and 
-   crossreferencing various files. It may not be the way UW" really does things,
-   but it's the way things look. 
-   I'll refer to unknown as variable1 and to link2 as
-   variable2 as their usage is... well, variable.
-
-7.1 Dynamic objects
-
-   Dynamic objects either have a context sensitve geometry, like pillars or
-   they have context sensitive textures (tmap, bridge...). I'll be talking
-   about a cube size a lot - what I mean is the size of a tile
-
-7.1.1 Pillars
-   The position given by the item is the southwest corner of the pillar,
-   It obviously spans from floor to ceiling. Texture is stored in tmobj.gr
-   Texture index are the 2 least significant bits of the flags
-   
-
-7.1.2.2 ceilings
-
-   Texture is still unknown. Suspect some offset + bit 0 and 1 of the flags into
-   the texture mapping of the level. Description is texture dependant
-
-7.2 Static objects
-
-   Though formerly defined in code these objects always look the same. Only 
-   interesting point remaining is the base of the coordinate system
-
 
 8.2 Graves
 
@@ -3074,32 +3109,5 @@ end of file
    Large headstone images live in the cutscene file cuts/cs401.n01, one frame
    each, indexed by grave ID.
 
-
-8.3 Terrain texture properties
-
-   The file terrain.dat in the data directory contains information on the
-   terrain types represented by the various wall and floor textures. There is
-   a 16-bit word per texture, up to a maximum of 256 walls and 256 floors.
-   Floor data therefore starts at file offset 0x200. Terrain types are:
-
-    0000    Normal (solid) wall or floor
-    0002    Ankh mural (shrines)
-    0003    Stairs up
-    0004    Stairs down
-    0005    Pipe
-    0006    Grating
-    0007    Drain
-    0008    Chained-up princess
-    0009    Window
-    000a    Tapestry
-    000b    Textured door (used for the lock to the Key of Infinity)
-    0010    Water (not waterfall)
-    0020    Lava (not lavafall)
-    0040    Waterfall      - UW2
-    00C0    Ice wall       - UW2
-    00D8
-    00E8    Ice walls (crumbling?)
-    0080    Lavafall       - UW2
-    00F8    Ice            - UW2
 
 eof
