@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@
 //! mapping of all keytype keywords to keytypes
 struct
 {
-   const char *keytype;
+   const char* keytype;
    ua_key_value key;
 } ua_keymap_keytype_mapping[] =
 {
@@ -50,9 +50,9 @@ struct
    { "menu-bottom-of-list2",  ua_key_menu_bottom_of_list2 },
 
    { "run-forward",                 ua_key_run_forward },
-   { "run-forward-easymove",  ua_key_run_forward_easymove },
+   { "run-forward-easymove",        ua_key_run_forward_easymove },
    { "walk-forward",                ua_key_walk_forward },
-   { "walk-forward-easymove", ua_key_walk_forward_easymove },
+   { "walk-forward-easymove",       ua_key_walk_forward_easymove },
    { "turn-left",                   ua_key_turn_left },
    { "turn-left-easymove",          ua_key_turn_left_easymove },
    { "turn-right",                  ua_key_turn_right },
@@ -70,9 +70,9 @@ struct
    { "standing-long-jump", ua_key_standing_long_jump },
    { "jump",               ua_key_jump },
 
-   { "combat-bash",     ua_key_combat_bash },
-   { "combat-slash",    ua_key_combat_slash },
-   { "combat-thrust",   ua_key_combat_thrust },
+   { "combat-bash",        ua_key_combat_bash },
+   { "combat-slash",       ua_key_combat_slash },
+   { "combat-thrust",      ua_key_combat_thrust },
 
    { "special-options",    ua_key_special_options    },
    { "special-talk-mode",  ua_key_special_talk_mode  },
@@ -85,8 +85,8 @@ struct
    { "special-use-track",  ua_key_special_use_track  },
    { "special-sleep",      ua_key_special_sleep      },
 
-   { "special-quicksave", ua_key_special_quicksave },
-   { "special-quickload", ua_key_special_quickload },
+   { "special-quicksave",  ua_key_special_quicksave },
+   { "special-quickload",  ua_key_special_quickload },
 
    { "game-save-game",      ua_key_game_save_game      },
    { "game-restore-game",   ua_key_game_restore_game   },
@@ -120,7 +120,7 @@ struct
 //! mapping of all settings keywords to keys
 struct
 {
-   const char *keytype;
+   const char* keytype;
    SDLKey key;
 } ua_keymap_key_mapping[] =
 {
@@ -182,11 +182,7 @@ struct
 
 // ua_keymap methods
 
-ua_keymap::ua_keymap()
-{
-}
-
-void ua_keymap::init(ua_settings &settings)
+void ua_keymap::init(ua_settings& settings)
 {
 }
 
