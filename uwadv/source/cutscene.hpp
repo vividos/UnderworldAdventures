@@ -101,6 +101,9 @@ protected:
 
    //! output buffer
    std::vector<Uint8> outbuffer;
+
+   //! image for copying to a texture object in get_frame()
+   ua_image img;
 };
 
 #endif

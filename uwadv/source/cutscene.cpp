@@ -36,22 +36,22 @@
 // dumps pixels to output buffer
 void ua_cuts_dump_pixel(Uint8 *&src,Uint8 *&dst,unsigned int &maxpix,unsigned int size)
 {
-   while(size>0 && maxpix>0)
-   {
-      *dst++ = *src++;
-      size--; maxpix--;
-   }
+   unsigned int len = ua_min(size,maxpix);
+   memcpy(dst,src,len);
+   dst += len;
+   src += len;
+   maxpix -= len;
 }
 
 // does a run with a pixel to output buffer
 void ua_cuts_run_pixel(Uint8 *&src,Uint8 *&dst,unsigned int &maxpix,unsigned int size)
 {
    Uint8 pixel = *src++;
-   while(size>0 && maxpix>0)
-   {
-      *dst++ = pixel;
-      size--; maxpix--;
-   }
+   unsigned int len = ua_min(size,maxpix);
+
+   memset(dst,pixel,len);
+   dst += len;
+   maxpix -= len;
 }
 
 // skips some pixels in the output buffer
@@ -155,10 +155,7 @@ void ua_cutscene::get_frame(ua_texture &tex, unsigned int framenum)
    }
 
    // now copy the bytes to the image
-   ua_image img;
-   img.create(width,height,0,0);
    memcpy(&img.get_pixels()[0],&outbuffer[0],width*height);
-
    tex.convert(img,palette);
 }
 

@@ -123,4 +123,5 @@ void ua_cutscene::load(const char *filename)
    fclose(fd);
 
    curframe = -1;
+   img.create(width,height,0,0);
 }
