@@ -97,6 +97,9 @@ public:
    //! replaces current screen with new one; saves current on a screen stack when selected
    virtual void replace_screen(ua_screen* new_screen, bool save_current)=0;
 
+   //! removes current screen at next event processing
+   virtual void remove_screen()=0;
+
 protected:
    //! ctor
    ua_game_interface(){}
