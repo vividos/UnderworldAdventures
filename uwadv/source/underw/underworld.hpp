@@ -122,7 +122,7 @@ enum ua_underworld_user_action
    //! leaves combat mode again
    ua_action_combat_leave,
 
-   //! starts drawing the weapon
+   //! starts drawing back the weapon (start of power gem heatup)
    ua_action_combat_draw,
 
    /*! user released a weapon; the parameter describes the "part" of the
@@ -138,7 +138,7 @@ enum ua_underworld_user_action
 enum ua_underworld_notification
 {
    ua_notify_nothing=0,
-   ua_notify_update_gem,
+   ua_notify_update_powergem,
    ua_notify_update_gargoyle_eyes,
    ua_notify_update_flasks,
    ua_notify_update_show_ingame_animation,
@@ -194,6 +194,9 @@ public:
 
    //! stops or resumes game
    void pause_eval(bool stop=true){ stopped = stop; }
+
+   //! returns the attack power, ranging from 0 to 100
+   unsigned int get_attack_power(){ return attack_power; }
 
    //! registers a callback
    void register_callback(ua_underworld_callback* cb=NULL){ callback = cb; }
@@ -265,6 +268,12 @@ protected:
 
    //! is true when game is stopped
    bool stopped;
+
+   //! indicates if player is attacking
+   bool attacking;
+
+   //! attack power, ranging from 0 to 100
+   unsigned int attack_power;
 
    //! the player object
    ua_player player;

@@ -45,6 +45,8 @@ void ua_underworld::init(ua_settings& settings, ua_files_manager& filesmgr)
    enhanced_features = settings.get_bool(ua_setting_uwadv_features);
 
    stopped = false;
+   attacking = false;
+   attack_power = 0;
 
    // init underworld members
    levels.clear();
@@ -76,6 +78,16 @@ void ua_underworld::eval_underworld(double time)
    if (stopped)
       return;
 
+   if (attacking)
+   {
+      attack_power += 5;
+      if (attack_power > 100)
+         attack_power = 100;
+
+      if (callback != NULL)
+         callback->uw_notify(ua_notify_update_powergem);
+   }
+
    // evaluate physics
    physics.eval_physics(time);
 
@@ -87,7 +99,35 @@ void ua_underworld::user_action(ua_underworld_user_action action,
 {
    if (scripting == NULL) return;
 
-   scripting->user_action(action, param);
+   ua_trace("user action: action=%u param=%u\n", action,param);
+
+   switch(action)
+   {
+   case ua_action_combat_draw:
+      attacking = true;
+      attack_power = 0;
+      // additionally tell scripting with type of attack
+      scripting->user_action(action, param);
+      break;
+
+   case ua_action_combat_release:
+      // do the actual attack
+      scripting->user_action(action, attack_power);
+      ua_trace("attacking with power=%u\n", attack_power);
+
+      // switch off attacking
+      attacking = false;
+      attack_power = 0;
+
+      if (callback != NULL)
+         callback->uw_notify(ua_notify_update_powergem);
+      break;
+
+   default:
+      // pass on to scripting
+      scripting->user_action(action, param);
+      break;
+   }
 }
 
 ua_level &ua_underworld::get_current_level()
