@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ class ua_create_character_screen: public ua_screen
 {
 public:
    //! ctor
-   ua_create_character_screen(){}
+   ua_create_character_screen(ua_game_interface& game):ua_screen(game){}
 
    // virtual functions from ua_screen
    virtual void init();

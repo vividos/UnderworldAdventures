@@ -42,12 +42,17 @@
 
 // classes
 
-//! start splash screen class
+//! uwadv menu screen class
+/*! A screen for selecting which game should be started.
+    Currently this screen just shows a "loading ..." image and immediately
+    loads the game with prefix "uw1". In future this screen could be used to
+    select if "uw1", "uw2" or any custom games should be started.
+*/
 class ua_uwadv_menu_screen: public ua_screen
 {
 public:
    //! ctor
-   ua_uwadv_menu_screen(){}
+   ua_uwadv_menu_screen(ua_game_interface& game):ua_screen(game){}
    //! dtor
    virtual ~ua_uwadv_menu_screen(){}
 

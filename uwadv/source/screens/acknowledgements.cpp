@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@ void ua_acknowledgements_screen::init()
 
    ua_trace("acknowledgements screen started\n");
 
-   game->get_renderer().setup_camera2d();
+   game.get_renderer().setup_camera2d();
 
    glDisable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
@@ -64,12 +64,12 @@ void ua_acknowledgements_screen::init()
    curframe = 0;
 
    // init cutscene quad
-   cuts_ack.load(game->get_settings(),"cuts/cs012.n01");
-   cuts_ack.init(*game, 0,0);
+   cuts_ack.load(game.get_settings(),"cuts/cs012.n01");
+   cuts_ack.init(game, 0,0);
    cuts_ack.update_frame(curframe);
 
    // init fadeout image
-   img_fadeout.init(*game, 0,0);
+   img_fadeout.init(game, 0,0);
    {
       ua_image& img = img_fadeout.get_image();
 
@@ -79,7 +79,7 @@ void ua_acknowledgements_screen::init()
    img_fadeout.update();
 
    // init fadeout
-   fader.init(false,game->get_tickrate(),xfade_time);
+   fader.init(false,game.get_tickrate(),xfade_time);
 
    SDL_ShowCursor(1);
 }
@@ -125,7 +125,7 @@ bool ua_acknowledgements_screen::process_event(SDL_Event& event)
    case SDL_MOUSEBUTTONDOWN:
       // start crossfade immediately
       if (stage==0)
-         tickcount = unsigned(game->get_tickrate()*show_time) + 1;
+         tickcount = unsigned(game.get_tickrate()*show_time) + 1;
       break;
 
    case SDL_KEYDOWN:
@@ -133,7 +133,7 @@ bool ua_acknowledgements_screen::process_event(SDL_Event& event)
       switch(event.key.keysym.sym)
       {
       case SDLK_SPACE:
-         tickcount = unsigned(show_time * game->get_tickrate()) + 1;
+         tickcount = unsigned(show_time * game.get_tickrate()) + 1;
          break;
 
       case SDLK_RETURN:
@@ -156,7 +156,7 @@ bool ua_acknowledgements_screen::process_event(SDL_Event& event)
 
 void ua_acknowledgements_screen::tick()
 {
-   if (stage==0 && double(tickcount)/game->get_tickrate() >= show_time)
+   if (stage==0 && double(tickcount)/game.get_tickrate() >= show_time)
    {
       // last frame? fade out and end
       if (curframe==13)
@@ -171,7 +171,7 @@ void ua_acknowledgements_screen::tick()
       tickcount = 0;
 
       // reinit fader
-      fader.init(false,game->get_tickrate(),xfade_time);
+      fader.init(false,game.get_tickrate(),xfade_time);
 
       // copy old frame to fadeout image
       img_fadeout.get_image() = cuts_ack.get_image();
@@ -191,7 +191,7 @@ void ua_acknowledgements_screen::tick()
       //ua_trace("showing frame %u\n",curframe);
 
       if (ended)
-         game->remove_screen();
+         game.remove_screen();
 
       // switch to show mode
       stage = 0;
@@ -207,13 +207,13 @@ void ua_acknowledgements_screen::fadeout_end()
 {
    // initiate fadeout
    if (stage == 1)
-      tickcount = unsigned(xfade_time * game->get_tickrate()) - tickcount;
+      tickcount = unsigned(xfade_time * game.get_tickrate()) - tickcount;
    else
       tickcount = 0;
    stage = 1;
 
    // reinit fader
-   fader.init(false,game->get_tickrate(),xfade_time, tickcount);
+   fader.init(false,game.get_tickrate(),xfade_time, tickcount);
 
    // copy last frame to fadeout image
    img_fadeout.get_image() = cuts_ack.get_image();

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,15 +23,6 @@
 
    \brief start splash screens implementation
 
-   stages the ua_start_splash_screen can be in:
-
-   stage 0: first opening screen
-   stage 1: second opening screen (not in uw_demo)
-   stage 2: fading in animation
-   stage 3: showing animation
-   stage 4: fading out animation
-   stage 5: screen finished
-
 */
 
 // needed includes
@@ -41,7 +32,7 @@
 #include "savegame.hpp"
 #include "renderer.hpp"
 #include "start_menu.hpp"
-//#include "ingame_orig.hpp"
+#include "ingame_orig.hpp"
 
 
 // constants
@@ -65,32 +56,32 @@ void ua_start_splash_screen::init()
    ua_trace("start splash screen started\n");
 
    // start intro midi music
-   game->get_audio_manager().start_music(ua_music_uw1_introduction,false);
+   game.get_audio_manager().start_music(ua_music_uw1_introduction,false);
 
-   game->get_renderer().setup_camera2d();
+   game.get_renderer().setup_camera2d();
 
    // load first image
    {
       ua_trace("loading first image\n");
 
       const char* first_img_name = "data/pres1.byt";
-      if (game->get_settings().get_gametype() == ua_game_uw_demo)
+      if (game.get_settings().get_gametype() == ua_game_uw_demo)
          first_img_name = "data/presd.byt";
 
       // load image, palette 5
-      game->get_image_manager().load(img_still.get_image(),
+      game.get_image_manager().load(img_still.get_image(),
          first_img_name, 0, 5, ua_img_byt);
 
-      img_still.init(*game, 0,0);
+      img_still.init(game, 0,0);
    }
 
    // demo game?
-   if (game->get_settings().get_gametype() == ua_game_uw_demo)
+   if (game.get_settings().get_gametype() == ua_game_uw_demo)
    {
       // write a string under the demo title
       ua_font font;
       ua_image img_temp;
-      font.load(game->get_settings(),ua_font_big);
+      font.load(game.get_settings(),ua_font_big);
       font.create_string(img_temp,"Underworld Adventures",198);
 
       double scale = 0.9;
@@ -103,19 +94,20 @@ void ua_start_splash_screen::init()
 
    img_still.update();
 
+   // set up variables
    stage = 0;
    tickcount = 0;
    curframe = 0;
    animcount = 0.0;
 
    // leave out first two screens when we have savegames
-   if (game->get_settings().get_gametype() != ua_game_uw_demo &&
-       game->get_savegames_manager().get_savegames_count()>0)
+   if (game.get_settings().get_gametype() != ua_game_uw_demo &&
+       game.get_savegames_manager().get_savegames_count()>0)
    {
       ua_trace("skipping images (savegames available)\n");
 
       stage=1;
-      tickcount = unsigned(show_time * game->get_tickrate()) + 1;
+      tickcount = unsigned(show_time * game.get_tickrate()) + 1;
       tick();
    }
 
@@ -158,7 +150,7 @@ void ua_start_splash_screen::draw()
 
    glColor3ub(light,light,light);
 
-   if (stage>=2)
+   if (stage >= 2)
    {
       // prepare and convert animation frame
       cuts_anim.update_frame(curframe);
@@ -186,16 +178,16 @@ bool ua_start_splash_screen::process_event(SDL_Event& event)
       {
       case 0: // first or second image
       case 1:
-         tickcount = unsigned(show_time * game->get_tickrate()) + 1;
+         tickcount = unsigned(show_time * game.get_tickrate()) + 1;
          ret = true;
          break;
 
       case 2: // fading in animation
          stage=4;
-         tickcount = unsigned(blend_time * game->get_tickrate()) - tickcount;
+         tickcount = unsigned(blend_time * game.get_tickrate()) - tickcount;
 
          // init fadeout
-         fader.init(false,game->get_tickrate(),blend_time,tickcount);
+         fader.init(false,game.get_tickrate(),blend_time,tickcount);
 
          ret = true;
          break;
@@ -205,11 +197,11 @@ bool ua_start_splash_screen::process_event(SDL_Event& event)
          tickcount=0;
 
          // fade out music when we have the demo (ingame starts after this)
-         if (game->get_settings().get_gametype() == ua_game_uw_demo)
-            game->get_audio_manager().fadeout_music(blend_time);
+         if (game.get_settings().get_gametype() == ua_game_uw_demo)
+            game.get_audio_manager().fadeout_music(blend_time);
 
          // init fadeout
-         fader.init(false,game->get_tickrate(),blend_time);
+         fader.init(false,game.get_tickrate(),blend_time);
 
          ret = true;
          break;
@@ -227,14 +219,14 @@ void ua_start_splash_screen::tick()
    tickcount++;
 
    // check if animation should be loaded
-   if ( (stage == 1 || (stage == 0 && game->get_settings().get_gametype() == ua_game_uw_demo)) &&
-      tickcount >= show_time * game->get_tickrate())
+   if ( (stage == 1 || (stage == 0 && game.get_settings().get_gametype() == ua_game_uw_demo)) &&
+      tickcount >= show_time * game.get_tickrate())
    {
       ua_trace("loading animation\n");
 
       // load animation
-      cuts_anim.load(game->get_settings(),"cuts/cs011.n01");
-      cuts_anim.init(*game, 0,0);
+      cuts_anim.load(game.get_settings(),"cuts/cs011.n01");
+      cuts_anim.init(game, 0,0);
 
       curframe = 0;
       animcount = 0.0;
@@ -242,19 +234,19 @@ void ua_start_splash_screen::tick()
       tickcount = 0;
 
       // init fadein
-      fader.init(true,game->get_tickrate(),blend_time);
+      fader.init(true,game.get_tickrate(),blend_time);
    }
 
    // check other stages
    switch(stage)
    {
    case 0:
-      if (tickcount >= show_time * game->get_tickrate())
+      if (tickcount >= show_time * game.get_tickrate())
       {
          ua_trace("loading second image\n");
 
          // load second image
-         game->get_image_manager().load(img_still.get_image(),
+         game.get_image_manager().load(img_still.get_image(),
             "data/pres2.byt", 0, 5, ua_img_byt);
 
          img_still.update();
@@ -278,7 +270,7 @@ void ua_start_splash_screen::tick()
       // animation
    case 3:
       // check if we have to do a new animation frame
-      animcount += 1.0/game->get_tickrate();
+      animcount += 1.0/game.get_tickrate();
       if (animcount >= 1.0/anim_framerate)
       {
          // do next frame
@@ -292,16 +284,15 @@ void ua_start_splash_screen::tick()
       // finished
    case 5:
       // start next screen
-      if (game->get_settings().get_gametype() == ua_game_uw_demo)
+      if (game.get_settings().get_gametype() == ua_game_uw_demo)
       {
          // when we have the demo, we immediately go to the ingame screen
-         //game->get_underworld().import_savegame(core->get_settings(),"data/",true);
-         //game->get_underworld().get_scripts().lua_started_newgame();
-         //game->replace_screen(new ua_ingame_orig_screen);
+         game.get_underworld().import_savegame(game.get_settings(),"data/",true);
+         game.replace_screen(new ua_ingame_orig_screen(game),false);
          return;
       }
       else
-         game->replace_screen(new ua_start_menu_screen,false);
+         game.replace_screen(new ua_start_menu_screen(game),false);
       break;
    }
 }

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,10 +23,6 @@
 
    \brief start menu screen
 
-   shows the menu where the user can select "introduction", "create
-   character", "acknowledgements" or "journey onward" (if a game can
-   be loaded).
-
 */
 //! \ingroup screens
 
@@ -46,11 +42,18 @@
 // classes
 
 //! start menu screen class
+/*! The screen displays the main game menu. The user can select one of the
+    menu items "Introduction", "Create Character", "Acknowledgements" or
+    "Journey Onward" (only available when savegames are detected). Above
+    the menu there is a "warping" Ultima Underworld logo.
+
+    \todo implement the buttons using a generic ua_button class
+*/
 class ua_start_menu_screen: public ua_screen
 {
 public:
    //! ctor
-   ua_start_menu_screen();
+   ua_start_menu_screen(ua_game_interface& game);
    //! dtor
    virtual ~ua_start_menu_screen(){}
 
@@ -110,9 +113,6 @@ protected:
 
    //! indicates if image quad texture should be reuploaded
    bool reupload_image;
-
-   //! indicates if left or right button is pressed down
-   bool leftbuttondown, rightbuttondown;
 };
 
 

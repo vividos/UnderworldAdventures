@@ -96,6 +96,7 @@ ua_create_character_screen *current_screen = 0;
 
 // ua_create_character_screen methods
 
+/*! \todo replace pplayer with reference to player object */
 void ua_create_character_screen::init()
 {
    ua_screen::init();
@@ -103,28 +104,28 @@ void ua_create_character_screen::init()
    ua_trace("character creation screen started\n");
 
    // setup screen
-   game->get_renderer().setup_camera2d();
+   game.get_renderer().setup_camera2d();
 
    glDisable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
    // get a pointer to to current player
-   pplayer = &(game->get_underworld().get_player());
+   pplayer = &(game.get_underworld().get_player());
 
-   game->get_image_manager().load(bgimg,"data/chargen.byt", 0,3, ua_img_byt);
+   game.get_image_manager().load(bgimg,"data/chargen.byt", 0,3, ua_img_byt);
 
-   game->get_image_manager().load_list(img_buttons, "chrbtns", 0,0, 3);
+   game.get_image_manager().load_list(img_buttons, "chrbtns", 0,0, 3);
 
    // init text
-   font.load(game->get_settings(), ua_font_chargen);
+   font.load(game.get_settings(), ua_font_chargen);
 
-   img_screen.init(*game,0,0);
+   img_screen.init(game,0,0);
    img_screen.get_image() = bgimg;
    img_screen.update();
    register_window(&img_screen);
 
    // init mouse cursor
-   mousecursor.init(*game);
+   mousecursor.init(game);
    mousecursor.show(true);
 
    register_window(&mousecursor);
@@ -182,11 +183,11 @@ void ua_create_character_screen::draw()
       switch (fadingstage)
       {
       case 1:
-         light = Uint8(255*(double(tickcount) / (game->get_tickrate()*ua_fade_time)));
+         light = Uint8(255*(double(tickcount) / (game.get_tickrate()*ua_fade_time)));
          break;
 
       case -1:
-         light = Uint8(255-255*(double(tickcount) / (game->get_tickrate()*ua_fade_time)));
+         light = Uint8(255-255*(double(tickcount) / (game.get_tickrate()*ua_fade_time)));
          break;
       }
 
@@ -320,20 +321,20 @@ void ua_create_character_screen::tick()
 {
    if (fadingstage!=0)
    { 
-      if (++tickcount >= (game->get_tickrate()*ua_fade_time))
+      if (++tickcount >= (game.get_tickrate()*ua_fade_time))
       {
          if (ended)
          {
             if (newgame)
             {
                // load initial game
-               game->get_underworld().import_savegame(game->get_settings(),"data/",true);
+               game.get_underworld().import_savegame(game.get_settings(),"data/",true);
 
                // start original game
-               game->replace_screen(new ua_ingame_orig_screen,false);
+               game.replace_screen(new ua_ingame_orig_screen(game),false);
             }
             else
-               game->remove_screen();
+               game.remove_screen();
 
             return;
          } // else
@@ -343,7 +344,7 @@ void ua_create_character_screen::tick()
       }
    }
 
-   if ((btng_buttontype==btTimer) && (++cdttickcount >= (game->get_tickrate()*countdowntime)))
+   if ((btng_buttontype==btTimer) && (++cdttickcount >= (game.get_tickrate()*countdowntime)))
    {
       cdttickcount=0;
       press_button(0);
@@ -355,7 +356,7 @@ void ua_create_character_screen::tick()
 void ua_create_character_screen::init_luascript()
 {
    // initialize Lua
-   lua.init(game);
+   lua.init(&game);
 
    lua_State* L = lua.get_lua_State();
 
@@ -429,7 +430,7 @@ void ua_create_character_screen::do_action()
       fadingstage = unsigned(-1);
 
       // fade out music
-      game->get_audio_manager().fadeout_music(ua_fade_time);
+      game.get_audio_manager().fadeout_music(ua_fade_time);
 
       //ua_trace("end request by char. creation script\n");
       break;
@@ -443,7 +444,7 @@ void ua_create_character_screen::do_action()
       textcolor_highlight = static_cast<unsigned int>(lua_tonumber(L,5));
 
       // set different highlight color when features are enabled
-      if (game->get_settings().get_bool(ua_setting_uwadv_features))
+      if (game.get_settings().get_bool(ua_setting_uwadv_features))
          textcolor_highlight = 162; // orange, palette #3
 
       int ic = lua_getn(L, 6);
@@ -616,7 +617,7 @@ unsigned int ua_create_character_screen::drawnumber(unsigned int num, int x, int
 
 unsigned int ua_create_character_screen::drawtext(int strnum, int x, int y, int xalign, unsigned char color, int custstrblock)
 {
-   std::string text(game->get_underworld().get_strings().get_string(custstrblock>-1 ? custstrblock : strblock, strnum));
+   std::string text(game.get_underworld().get_strings().get_string(custstrblock>-1 ? custstrblock : strblock, strnum));
    return (!text.empty()) ? drawtext(text.c_str(), x, y, xalign, color) : 0;
 }
 

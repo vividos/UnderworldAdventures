@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 */
 /*! \file start_menu.cpp
 
-   \brief menu at game start
+   \brief start menu screen implementation
 
 */
 
@@ -48,8 +48,9 @@ const double ua_start_menu_screen::palette_shifts_per_second = 20.0;
 
 
 // ua_start_menu_screen methods
-ua_start_menu_screen::ua_start_menu_screen()
-:leftbuttondown(false), rightbuttondown(false)
+
+ua_start_menu_screen::ua_start_menu_screen(ua_game_interface& game)
+:ua_screen(game)
 {
 }
 
@@ -60,16 +61,17 @@ void ua_start_menu_screen::init()
    ua_trace("start menu screen started\n");
 
    // load background image
-   game->get_image_manager().load(img_screen.get_image(), "data/opscr.byt",
+   game.get_image_manager().load(img_screen.get_image(), "data/opscr.byt",
       0, 2, ua_img_byt);
+   img_screen.get_image().clone_palette();
 
-   img_screen.init(*game, 0,0);
+   img_screen.init(game, 0,0);
 
    // load button graphics
-   game->get_image_manager().load_list(img_buttons, "opbtn", 0,8, 2);
+   game.get_image_manager().load_list(img_buttons, "opbtn", 0,8, 2);
 
    // set up mouse cursor
-   mousecursor.init(*game,0);
+   mousecursor.init(game,0);
    mousecursor.show(true);
 
    register_window(&mousecursor);
@@ -81,18 +83,18 @@ void ua_start_menu_screen::resume()
 {
    ua_trace("resuming start menu screen\n");
 
-   game->get_renderer().setup_camera2d();
+   game.get_renderer().setup_camera2d();
 
    glDisable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
    img_screen.update();
 
-   fader.init(true,game->get_tickrate(),fade_time);
+   fader.init(true,game.get_tickrate(),fade_time);
 
    // set other flags/values
    stage = 0;
-   journey_avail = true;//game->get_savegames_manager().get_savegames_count() > 0;
+   journey_avail = game.get_savegames_manager().get_savegames_count() > 0;
    selected_area = -1;
    shiftcount = 0.0;
    reupload_image = true;
@@ -107,7 +109,7 @@ void ua_start_menu_screen::destroy()
 
 void ua_start_menu_screen::draw()
 {
-//   glClear(GL_COLOR_BUFFER_BIT);
+   // no need to clear the screen, since we overdraw all of it anyway
 
    // do we need to reupload the image quad texture?
    if (reupload_image)
@@ -144,7 +146,6 @@ void ua_start_menu_screen::draw()
    img_screen.draw();
 
    // draw subwindows
-//   glEnable(GL_BLEND);
    ua_screen::draw();
 }
 
@@ -191,9 +192,7 @@ bool ua_start_menu_screen::process_event(SDL_Event& event)
 
    // user event?
    if (event.type == SDL_USEREVENT && event.user.code == ua_event_resume_screen)
-   {
       resume();
-   }
 
    // check if selected area changed
    if (selected_area != last_selected_area)
@@ -212,7 +211,7 @@ void ua_start_menu_screen::tick()
    }
 
    // do palette shifting
-   shiftcount += 1.0/game->get_tickrate();
+   shiftcount += 1.0/game.get_tickrate();
    if (shiftcount >= 1.0/palette_shifts_per_second)
    {
       shiftcount -= 1.0/palette_shifts_per_second;
@@ -231,7 +230,7 @@ void ua_start_menu_screen::tick()
       stage=0;
 
       // fade in, in case user returns to menu screen
-      fader.init(true,game->get_tickrate(),fade_time);
+      fader.init(true,game.get_tickrate(),fade_time);
    }
 }
 
@@ -242,27 +241,28 @@ void ua_start_menu_screen::press_button()
    switch(selected_area)
    {
    case 0: // "introduction"
-      game->replace_screen(new ua_cutscene_view_screen(0),true);
+      game.replace_screen(new ua_cutscene_view_screen(game,0),true);
       break;
 
    case 1: // "create character"
-      game->replace_screen(new ua_create_character_screen,true);
+      game.replace_screen(new ua_create_character_screen(game),true);
       break;
 
    case 2: // "acknowledgements"
-      game->replace_screen(new ua_acknowledgements_screen,true);
+      game.replace_screen(new ua_acknowledgements_screen(game),true);
       break;
 
    case 3: // "journey onward"
       if (journey_avail)
       {
          // "load game" screen (with later starting "orig. ingame ui")
-         game->replace_screen(new ua_save_game_screen(true),true);
+         game.replace_screen(new ua_save_game_screen(game,true),true);
       }
       break;
    }
 }
 
+/*! \todo remove leftbuttondown and rightbuttondown usage */
 void ua_start_menu_screen::mouse_event(bool button_clicked, bool left_button, bool button_down,
    unsigned int mousex, unsigned int mousey)
 {
@@ -283,12 +283,6 @@ void ua_start_menu_screen::mouse_event(bool button_clicked, bool left_button, bo
    // a button click action?
    if (button_clicked)
    {
-      // remember what buttons are down
-      if (left_button)
-         leftbuttondown = button_down;
-      else
-         rightbuttondown = button_down;
-
       // only in stage 1
       if (stage==1)
       {
@@ -305,19 +299,22 @@ void ua_start_menu_screen::mouse_event(bool button_clicked, bool left_button, bo
             if (area != -1 && selected_area == area)
             {
                stage++; // next stage
-               fader.init(false,game->get_tickrate(),fade_time);
+               fader.init(false,game.get_tickrate(),fade_time);
 
                // fade out music when selecting "introduction"
                if (selected_area == 0)
-                  game->get_audio_manager().fadeout_music(fade_time);
+                  game.get_audio_manager().fadeout_music(fade_time);
             }
          }
       }
    }
    else
    {
-      // a mouse move action
-      if (stage==1 && (leftbuttondown || rightbuttondown) && area != -1)
+      // a mouse move action with at least one button down
+      Uint8 mouse_state = SDL_GetMouseState(NULL, NULL);
+      if (stage==1 &&
+          (mouse_state & (SDL_BUTTON_LMASK|SDL_BUTTON_RMASK)) != 0 &&
+          area != -1)
          selected_area = area;
    }
 }

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -151,7 +151,7 @@ class ua_save_game_screen: public ua_screen
 {
 public:
    //! ctor
-   ua_save_game_screen(bool from_menu);
+   ua_save_game_screen(ua_game_interface& game, bool from_menu);
    //! dtor
    virtual ~ua_save_game_screen(){}
 

@@ -56,13 +56,13 @@ void ua_cutscene_view_screen::init()
    ua_trace("cutscene view screen started\n"
       "showing cutscene %u\n",cutscene);
 
-   game->get_renderer().setup_camera2d();
+   game.get_renderer().setup_camera2d();
 
    glDisable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
    // determine cutscene type
-   ua_settings& settings = game->get_settings();
+   ua_settings& settings = game.get_settings();
    {
       std::string cutsntype(settings.get_string(ua_setting_cuts_narration));
 
@@ -99,12 +99,12 @@ void ua_cutscene_view_screen::init()
    text_fadecount = 0;
 
    // stop audio track
-   game->get_audio_manager().stop_music();
+   game.get_audio_manager().stop_music();
 
    // init lua scripting
 
    // get a new lua state
-   lua.init(game);
+   lua.init(&game);
 
    // register C functions
    lua_register(lua.get_lua_State(),"cuts_do_action",cuts_do_action);
@@ -139,7 +139,7 @@ void ua_cutscene_view_screen::destroy()
    ua_trace("cutscene view screen ended\n\n");
 
    // stop audio track
-   game->get_audio_manager().stop_sound();
+   game.get_audio_manager().stop_sound();
 
    img_text.destroy();
    cuts_anim.destroy();
@@ -168,12 +168,12 @@ void ua_cutscene_view_screen::draw()
 
       case 1: // fade in
          light = static_cast<Uint8>( 255*double(anim_fadecount) /
-            (fade_time*game->get_tickrate()) );
+            (fade_time*game.get_tickrate()) );
          break;
 
       case 2: // fade out
          light = 255-static_cast<Uint8>( 255*double(anim_fadecount) /
-            (fade_time*game->get_tickrate()) );
+            (fade_time*game.get_tickrate()) );
          break;
       }
       glColor3ub(light,light,light);
@@ -198,12 +198,12 @@ void ua_cutscene_view_screen::draw()
 
       case 1: // fade in
          light = static_cast<Uint8>( 255*double(text_fadecount) /
-            (fade_time*game->get_tickrate()) );
+            (fade_time*game.get_tickrate()) );
          break;
 
       case 2: // fade out
          light = 255-static_cast<Uint8>( 255*double(text_fadecount) /
-            (fade_time*game->get_tickrate()) );
+            (fade_time*game.get_tickrate()) );
          break;
       }
       glColor3ub(light,light,light);
@@ -249,10 +249,10 @@ bool ua_cutscene_view_screen::process_event(SDL_Event& event)
 
 void ua_cutscene_view_screen::tick()
 {
-   if (ended && anim_fadecount >= fade_time*game->get_tickrate())
+   if (ended && anim_fadecount >= fade_time*game.get_tickrate())
    {
       // we're finished
-      game->remove_screen();
+      game.remove_screen();
       return;
    }
 
@@ -260,7 +260,7 @@ void ua_cutscene_view_screen::tick()
    if (showanim && loopanim && !(anim_fade_state == 1 || anim_fade_state == 2))
    {
       // count up animcount
-      animcount += 1.0/game->get_tickrate();
+      animcount += 1.0/game.get_tickrate();
 
       if (animcount>=1.0/anim_fps)
       {
@@ -287,7 +287,7 @@ void ua_cutscene_view_screen::tick()
       ++anim_fadecount;
 
       // end of fade reached?
-      if (anim_fadecount >= fade_time*game->get_tickrate())
+      if (anim_fadecount >= fade_time*game.get_tickrate())
       {
          if (anim_fade_state == 1)
             anim_fade_state = 0;
@@ -302,7 +302,7 @@ void ua_cutscene_view_screen::tick()
       ++text_fadecount;
 
       // end of fade reached?
-      if (text_fadecount >= fade_time*game->get_tickrate())
+      if (text_fadecount >= fade_time*game.get_tickrate())
       {
          if (text_fade_state == 1)
             text_fade_state = 0;
@@ -313,7 +313,7 @@ void ua_cutscene_view_screen::tick()
 
 
    // calculate current ticktime
-   double ticktime = double(tickcount) / game->get_tickrate();
+   double ticktime = double(tickcount) / game.get_tickrate();
 
    // call lua "cuts_tick(ticktime)" function
    if (!ended)
@@ -409,7 +409,7 @@ void ua_cutscene_view_screen::create_text_image(const char* str)
    unsigned int starty = 200-5-img_text.get_image().get_yres();
 
    // init after new creation
-   img_text.init(*game, startx, starty);
+   img_text.init(game, startx, starty);
 
    // upload texture
    img_text.update();
@@ -430,7 +430,7 @@ void ua_cutscene_view_screen::do_action()
    case 0: // cuts_finished
       ended = true;
       anim_fadecount = static_cast<unsigned int>(
-         fade_time*game->get_tickrate() ) + 1;
+         fade_time*game.get_tickrate() ) + 1;
       break;
 
    case 1: // cuts_set_string_block
@@ -441,7 +441,7 @@ void ua_cutscene_view_screen::do_action()
       if (canplaysound)
       {
          const char *str = lua_tostring(L,-1);
-         game->get_audio_manager().play_sound(str);
+         game.get_audio_manager().play_sound(str);
       }
       break;
 
@@ -453,7 +453,7 @@ void ua_cutscene_view_screen::do_action()
       if (canshowtext)
       {
          unsigned int strnum = static_cast<unsigned int>(lua_tonumber(L,-1));
-         create_text_image( game->get_underworld().get_strings().get_string(strblock,strnum).c_str() );
+         create_text_image( game.get_underworld().get_strings().get_string(strblock,strnum).c_str() );
          text_fade_state = 1; // fade in
          text_fadecount = 0;
          showtext = true;
@@ -473,7 +473,7 @@ void ua_cutscene_view_screen::do_action()
       if (canshowtext)
       {
          unsigned int strnum = static_cast<unsigned int>(lua_tonumber(L,-1));
-         create_text_image( game->get_underworld().get_strings().get_string(strblock,strnum).c_str() );
+         create_text_image( game.get_underworld().get_strings().get_string(strblock,strnum).c_str() );
          showtext = true;
          text_fade_state = 0;
       }
@@ -494,8 +494,8 @@ void ua_cutscene_view_screen::do_action()
          animname.append(lua_tostring(L,-1));
 
          // load animation
-         cuts_anim.load(game->get_settings(),animname.c_str());
-         cuts_anim.init(*game, 0,0);
+         cuts_anim.load(game.get_settings(),animname.c_str());
+         cuts_anim.init(game, 0,0);
          showanim = true;
          loopanim = true;
          curframe = 0;

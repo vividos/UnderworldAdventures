@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,9 +23,6 @@
 
    \brief start splash screen
 
-   displays the first few splash screens seen at the start of ultima
-   underworld
-
 */
 //! \ingroup screens
 
@@ -46,11 +43,24 @@
 // classes
 
 //! start splash screen class
+/*! The screen displays the splash screen sequence at start of Ultima
+    Underworld. It shows two images (or just one when using the demo) and the
+    animated logo. The images are skipped when savegames are available.
+
+    The screen can be in one of these stages:
+
+    stage 0: first opening screen
+    stage 1: second opening screen (not in uw_demo)
+    stage 2: fading in animation
+    stage 3: showing animation
+    stage 4: fading out animation
+    stage 5: screen finished
+*/
 class ua_start_splash_screen: public ua_screen
 {
 public:
    //! ctor
-   ua_start_splash_screen(){}
+   ua_start_splash_screen(ua_game_interface& game):ua_screen(game){}
    //! dtor
    virtual ~ua_start_splash_screen(){}
 

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
    \brief save game screen implementation
 
    \todo add scroll buttons
+   \todo fix savegame preview
 
 */
 
@@ -282,8 +283,9 @@ void ua_save_game_savegames_list::mouse_event(bool button_clicked, bool left_but
 
 // ua_save_game_screen methods
 
-ua_save_game_screen::ua_save_game_screen(bool myfrom_menu)
-:from_menu(myfrom_menu)
+ua_save_game_screen::ua_save_game_screen(ua_game_interface& game,
+   bool myfrom_menu)
+:ua_screen(game), from_menu(myfrom_menu)
 {
 }
 
@@ -293,7 +295,7 @@ void ua_save_game_screen::init()
 
    ua_trace("save game screen started\n");
 
-   game->get_renderer().setup_camera2d();
+   game.get_renderer().setup_camera2d();
 
    glDisable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
@@ -303,12 +305,12 @@ void ua_save_game_screen::init()
 //   edit_desc = false;
 
    // scan for savegames
-   game->get_savegames_manager().rescan();
+   game.get_savegames_manager().rescan();
 
    // load background image
    {
       ua_image temp_back;
-      game->get_image_manager().
+      game.get_image_manager().
          load(temp_back, "data/chargen.byt",0, 3, ua_img_byt);
 
       // prepare left image (savegames list)
@@ -332,17 +334,17 @@ void ua_save_game_screen::init()
 
       img.paste_rect(temp_back, 0,0, 160,200, 159,0);
 
-      img_back.init(*game, 0,0);
+      img_back.init(game, 0,0);
       img_back.update();
 
       register_window(&img_back);
    }
 
    // init buttons
-   button_load.init(this, *game, 17,155, "Load", ua_button_load);
-   button_save.init(this, *game, 17,177, "Save", ua_button_save);
-   button_refresh.init(this, *game, 84,155, "Refresh", ua_button_refresh);
-   button_exit.init(this, *game, 84,177, "Exit", ua_button_exit);
+   button_load.init(this, game, 17,155, "Load", ua_button_load);
+   button_save.init(this, game, 17,177, "Save", ua_button_save);
+   button_refresh.init(this, game, 84,155, "Refresh", ua_button_refresh);
+   button_exit.init(this, game, 84,177, "Exit", ua_button_exit);
 
    if (from_menu)
       register_window(&button_save);
@@ -351,7 +353,7 @@ void ua_save_game_screen::init()
    register_window(&button_exit);
 
    // init savegames list
-   savegames_list.init(this, *game, 19,13, from_menu);
+   savegames_list.init(this, game, 19,13, from_menu);
 
    savegames_list.update_list();
 
@@ -360,19 +362,19 @@ void ua_save_game_screen::init()
    // init info area
    img_infoarea.get_image().create(20,20);
    img_infoarea.get_image().get_palette() = img_back.get_image().get_palette();
-   img_infoarea.init(*game,160,0);
+   img_infoarea.init(game,160,0);
 //   register_window(&img_infoarea);
 
    update_info();
 
    // init mouse cursor
-   mousecursor.init(*game,10);
+   mousecursor.init(game,10);
    mousecursor.show(true);
 
    register_window(&mousecursor);
 
    // init fadein
-   fader.init(true, game->get_tickrate(), fade_time);
+   fader.init(true, game.get_tickrate(), fade_time);
    fade_state = 0;
 }
 
@@ -399,7 +401,7 @@ bool ua_save_game_screen::process_event(SDL_Event& event)
          // set up savegame info
          ua_savegame_info info;
          info.title = desc;
-         info.game_prefix = game->get_settings().get_string(ua_setting_game_prefix);
+         info.game_prefix = game.get_settings().get_string(ua_setting_game_prefix);
          //TODOinfo.fill_infos(core->get_underworld().get_player());
 
          // saving game
@@ -410,7 +412,7 @@ bool ua_save_game_screen::process_event(SDL_Event& event)
 
             // saving over selected game
             ua_savegame sg = sgmgr->get_savegame_save_overwrite(selected_savegame,info);
-            game->get_underworld().save_game(sg);
+            game.get_underworld().save_game(sg);
          }
          else
          {
@@ -418,7 +420,7 @@ bool ua_save_game_screen::process_event(SDL_Event& event)
 
             // saving to new slot
             ua_savegame sg = sgmgr->get_savegame_save_new_slot(info);
-            game->get_underworld().save_game(sg);
+            game.get_underworld().save_game(sg);
          }
 
          // refresh list
@@ -512,27 +514,27 @@ void ua_save_game_screen::tick()
          case ua_button_load:
          {
             ua_trace("loading saved game, filename %s\n",
-               game->get_savegames_manager().get_savegame_filename(
+               game.get_savegames_manager().get_savegame_filename(
                   savegames_list.get_selected_savegame()).c_str());
 
             // clear screen; loading takes a while
-            game->get_renderer().clear();
+            game.get_renderer().clear();
 
             // load savegame
-            ua_savegame sg = game->get_savegames_manager().get_savegame_load(
+            ua_savegame sg = game.get_savegames_manager().get_savegame_load(
                savegames_list.get_selected_savegame(),true);
-            game->get_underworld().load_game(sg);
+            game.get_underworld().load_game(sg);
 
             // next screen
             if (from_menu)
-               game->replace_screen(new ua_ingame_orig_screen,false);
+               game.replace_screen(new ua_ingame_orig_screen(game),false);
             else
-               game->remove_screen();
+               game.remove_screen();
             break;
          }
 
          case ua_button_exit:
-            game->remove_screen();
+            game.remove_screen();
             break;
          }
       }
@@ -549,7 +551,7 @@ void ua_save_game_screen::press_button(ua_save_game_button_id id)
       {
          // check if user tries to load the "new slot" entry
          if (savegames_list.get_selected_savegame() >=
-            game->get_savegames_manager().get_savegames_count())
+            game.get_savegames_manager().get_savegames_count())
          {
             //TODO button_highlight = -1;
             break;
@@ -557,14 +559,14 @@ void ua_save_game_screen::press_button(ua_save_game_button_id id)
 
          // fade out and do action
          fade_state = 2;
-         fader.init(false, game->get_tickrate(), fade_time);
+         fader.init(false, game.get_tickrate(), fade_time);
       }
       break;
 
    case ua_button_refresh:
       {
          // refresh list
-         game->get_savegames_manager().rescan();
+         game.get_savegames_manager().rescan();
 
          //button_highlight = -1;
          savegames_list.update_list();
@@ -603,7 +605,7 @@ void ua_save_game_screen::press_button(ua_save_game_button_id id)
 
    case ua_button_exit: // exit
       fade_state = 2;
-      fader.init(false, game->get_tickrate(), fade_time);
+      fader.init(false, game.get_tickrate(), fade_time);
       break;
    }
 }
@@ -619,11 +621,11 @@ void ua_save_game_screen::update_info()
 
 
    if (selected_savegame >= 0 &&
-       selected_savegame < game->get_savegames_manager().get_savegames_count())
+       selected_savegame < game.get_savegames_manager().get_savegames_count())
    {
       // get savegame infos
       ua_savegame_info info;
-      game->get_savegames_manager().get_savegame_info(selected_savegame,info);
+      game.get_savegames_manager().get_savegame_info(selected_savegame,info);
 /*
       // show infos
       ua_image temp;
@@ -640,7 +642,7 @@ void ua_save_game_screen::update_info()
       img_back2.paste_image(temp,18,21,true);
 
       // profession
-      //TODOtext = game->get_strings().get_string(2,info.profession+23);
+      //TODOtext = game.get_strings().get_string(2,info.profession+23);
       font_btns.create_string(temp,text.c_str(),textcolor);
       img_back2.paste_image(temp,141-temp.get_xres(),21,true);
 
@@ -687,7 +689,7 @@ void ua_save_game_screen::update_info()
 #endif
 */
       // do preview image
-      tex_preview.init(&game->get_renderer().get_texture_manager());
+      tex_preview.init();
       tex_preview.convert(info.image_xres, info.image_yres, &info.image_rgba[0]);
       tex_preview.upload();
 

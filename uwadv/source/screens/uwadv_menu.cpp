@@ -50,15 +50,15 @@ void ua_uwadv_menu_screen::init()
    ua_trace("uwadv menu screen started\n");
 
    // init 2d camera
-   game->get_renderer().setup_camera2d();
+   game.get_renderer().setup_camera2d();
    glEnable(GL_TEXTURE_2D);
 
    // load texture
-   SDL_RWops* rwops = game->get_files_manager().get_uadata_file("uwadv-loading.tga");
+   SDL_RWops* rwops = game.get_files_manager().get_uadata_file("uwadv-loading.tga");
 
    if (rwops != NULL)
    {
-      tex.init(&game->get_renderer().get_texture_manager());
+      tex.init();
       tex.load(rwops);
       tex.upload(0);
    }
@@ -107,7 +107,7 @@ void ua_uwadv_menu_screen::tick()
    if (!rendered)
       return;
 
-   ua_settings& settings = game->get_settings();
+   ua_settings& settings = game.get_settings();
 
    // set game prefix to use
    std::string prefix("uw1");
@@ -121,33 +121,33 @@ void ua_uwadv_menu_screen::tick()
    settings.set_value(ua_setting_uw_path,settings.get_string(ua_setting_uw1_path));
 
    // now that we know the generic uw path, we can init the whole game stuff
-   game->init_game();
+   game.init_game();
 
 #ifdef HAVE_DEBUG
-   game->get_underworld().import_savegame(game->get_settings(),"data/",true);
-   game->replace_screen(new ua_ingame_orig_screen,false);
+   game.get_underworld().import_savegame(game.get_settings(),"data/",true);
+   game.replace_screen(new ua_ingame_orig_screen(game),false);
 
 /*
    paste one:
    --------------------
-   game->get_underworld().import_savegame(game->get_settings(),"data/",true);
-   game->replace_screen(new ua_ingame_orig_screen,false);
+   game.get_underworld().import_savegame(game.get_settings(),"data/",true);
+   game.replace_screen(new ua_ingame_orig_screen(game),false);
    --------------------
-   game->replace_screen(new ua_save_game_screen(true),false);
+   game.replace_screen(new ua_save_game_screen(game,true),false);
    --------------------
-   game->replace_screen(new ua_start_menu_screen,false);
+   game.replace_screen(new ua_start_menu_screen(game),false);
    --------------------
-   game->replace_screen(new ua_start_splash_screen,false);
+   game.replace_screen(new ua_start_splash_screen(game),false);
    --------------------
-   game->get_underworld().import_savegame(game->get_settings(),"data/",true);
-   game->get_underworld().get_scripts().lua_started_newgame();
-   game->replace_screen(new ua_ingame_orig_screen,false);
+   game.get_underworld().import_savegame(game.get_settings(),"data/",true);
+   game.get_underworld().get_scripts().lua_started_newgame();
+   game.replace_screen(new ua_ingame_orig_screen(game),false);
    --------------------
 */
 #else
 
    // for now, immediately start splash screen
-   game->replace_screen(new ua_start_splash_screen,false);
+   game.replace_screen(new ua_start_splash_screen(game),false);
 
 #endif
 }
