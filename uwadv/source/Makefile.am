@@ -58,14 +58,13 @@ EXTRA_DIST = \
 	win32/source/uaconfig/uaconfig_res.rc
 
 cfgdir = $(datadir)/games/uwadv
-cfg_DATA = uwadv.cfg
+cfg_DATA = linux/uwadv.cfg
 
 man6_MANS = linux/uwadv.6 \
 	linux/ua-lowercase-all.pl.6
 
-uwadv.cfg: linux/uwadv.cfg.in
-	rm -f $@ $@.tmp $@.tmptmp
-	sed 's,@UW1PATH\@,@UW1PATH@,g' $< >$@.tmp
-	sed 's,@UADATAPATH\@,@UADATAPATH@,g' $@.tmp >$@.tmptmp
-	rm -f $@.tmp
-	mv $@.tmptmp $@
+linux/uwadv.cfg linux/uwadv.6: %: %.in
+	rm -f $@
+	sed -e 's,@UW1PATH\@,@UW1PATH@,g' \
+            -e 's,@UADATAPATH\@,@UADATAPATH@,g' \
+            -e 's,@UADOCPATH\@,@datadir@/doc/uwadv,g' $< >$@

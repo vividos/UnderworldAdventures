@@ -165,7 +165,6 @@ source/lua/Makefile
 uadata/Makefile
 hacking/Makefile
 uwadv.spec:source/linux/uwadv.spec.in
-source/linux/uwadv.6
 ])
 AC_OUTPUT
 
