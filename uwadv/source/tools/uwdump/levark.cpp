@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2003 Underworld Adventures Team
+   Copyright (c) 2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@
 // needed includes
 #include "common.hpp"
 #include "levark.hpp"
+#include "io_endian.hpp"
 #include <algorithm>
 #include <bitset>
 
@@ -45,7 +46,10 @@ void ua_dump_level_archive::start(std::string& basepath,std::string& param)
       strpak.append("data/strings.pak");
       try
       {
-         gstr.load(strpak.c_str());
+         ua_settings settings;
+         settings.set_value(ua_setting_uw_path, basepath);
+
+         gstr.init(settings);
       }
       catch(...)
       {
@@ -184,8 +188,7 @@ void ua_dump_level_archive::start(std::string& basepath,std::string& param)
          std::vector<Uint8> decoded;
          decoded.resize(0x7e08,0);
 
-         extern SDL_RWops* ua_rwops_uw2dec(FILE* fd,unsigned int blocknum, unsigned int destsize);
-         SDL_RWops* rwops = ua_rwops_uw2dec(fd,level,0x7e08);
+         SDL_RWops* rwops = ua_uw2_import::get_rwops_uw2dec(fd,level,0x7e08);
 
          if (rwops == NULL)
             continue;
@@ -248,7 +251,7 @@ void ua_dump_level_archive::start(std::string& basepath,std::string& param)
 
          // texture mapping
          {
-            SDL_RWops* rwops_tex = ua_rwops_uw2dec(fd,80+level,0x0086);
+            SDL_RWops* rwops_tex = ua_uw2_import::get_rwops_uw2dec(fd,80+level,0x0086);
 
             if (rwops_tex != NULL)
             {
