@@ -9,9 +9,11 @@ AUTOMAKE_OPTIONS = gnu
 top_srcdir = linux
 top_builddir = linux
 
-LDADD = -lsdl
+# SDL stuff
+SDL_CFLAGS = `sdl-config --cflags'
 
-CPPFLAGS = -I.. -ISDL
+CPPFLAGS = -I.. $(SDL_CFLAGS)
+LDFLAGS = `sdl-config --libs'
 
 bin_PROGRAMS = uwadv
 
