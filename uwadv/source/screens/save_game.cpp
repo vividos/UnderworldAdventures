@@ -384,6 +384,11 @@ void ua_save_game_screen::tick()
             ua_trace("loading saved game, filename %s\n",
                sgmgr->get_savegame_filename(selected_savegame).c_str());
 
+            // clear screen; loading takes a while
+            glClearColor(0,0,0,0);
+            glClear(GL_COLOR_BUFFER_BIT);
+            SDL_GL_SwapBuffers();
+
             // load savegame
             ua_savegame sg = sgmgr->get_savegame_load(selected_savegame,true);
             core->get_underworld().load_game(sg);
