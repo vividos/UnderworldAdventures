@@ -96,9 +96,8 @@ void ua_files_manager::init(ua_settings &settings)
       settings.set_value(ua_setting_savegame_folder,savegame_folder);
 
       // try to create folder (when not already present)
-      if (0 > ua_mkdir(savegame_folder.c_str(),0700))
-         ua_trace("problems creating savegame folder \"%s\"\n",
-            savegame_folder.c_str());
+      ua_trace("creating savegame folder \"%s\"\n");
+      ua_mkdir(savegame_folder.c_str(),0700);
    }
 
    // check for available games
