@@ -28,11 +28,13 @@
 // needed includes
 #include "common.hpp"
 #include "uwadv.hpp"
+#include "screens/uwadv_menu.hpp"
+//#include "screens/ingame_orig.hpp" // TODO use screens/ingame.hpp
+//#include "screens/start_splash.hpp"
 /*
 #include "gamecfg.hpp"
 #include "screens/uwadv_menu.hpp"
-#include "screens/ingame_orig.hpp"
-#include "screens/start_splash.hpp"
+
 #include <iostream>
 */
 #include <ctime>
@@ -65,7 +67,7 @@ ua_arg_entry arg_params[] =
 // ua_uwadv_game methods
 
 ua_uwadv_game::ua_uwadv_game()
-:tickrate(20.0), exit_game(false)
+:tickrate(20), exit_game(false), screen_to_destroy(NULL)
 {
    printf("Underworld Adventures"
 #ifdef HAVE_DEBUG
@@ -81,7 +83,7 @@ void ua_uwadv_game::init()
    ua_trace("initializing game ...\n\n");
 
    // init files manager; settings are loaded here, too
-   filesmgr.init(settings);
+   files_manager.init(settings);
 
    // find out selected screen resolution
    {
@@ -102,13 +104,13 @@ void ua_uwadv_game::init()
       }
    }
 
+   // init savegames manager
+   savegames_manager.init(settings);
+
    // init SDL window
    init_sdl();
 
 /*
-   // init savegames manager, too
-   savegames_mgr.init(settings);
-
    // clean screen
    glClearColor(0,0,0,0);
    glClear(GL_COLOR_BUFFER_BIT);
@@ -118,9 +120,9 @@ void ua_uwadv_game::init()
    // switch off cursor
    SDL_ShowCursor(0);
 
-   // set first screen
-   // TODO replace with first real screen
-   curscreen = new ua_screen;
+   // normal game start
+   init_action = 0;
+   curscreen = NULL;
 }
 
 /*! reads in command line arguments
@@ -159,8 +161,8 @@ void ua_uwadv_game::parse_args(unsigned int argc, const char** argv)
          // TODO support "" arguments
 
          // user specified a savegame to load
-//         init_action = 1;
-//         savegame_name = arg;
+         init_action = 1;
+         savegame_name = arg;
          continue;
       }
 
@@ -211,8 +213,10 @@ void ua_uwadv_game::parse_args(unsigned int argc, const char** argv)
          break;
 
       case ua_arg_game:
-//         init_action = 2;
-//         custom_game_prefix = argv[i+1];
+         init_action = 2;
+
+         std::string custom_game_prefix(argv[i+1]);
+         settings.set_value(ua_setting_game_prefix, custom_game_prefix);
          break;
       }
 
@@ -224,19 +228,19 @@ void ua_uwadv_game::parse_args(unsigned int argc, const char** argv)
 #define HAVE_FRAMECOUNT
 
 void ua_uwadv_game::run()
-{/*
+{
    switch(init_action)
    {
    case 0: // normal start
-      // start uwadv menu screen
-      push_screen(new ua_uwadv_menu_screen);
+      // start with uwadv menu screen
+      replace_screen(new ua_uwadv_menu_screen,false);
       break;
 
    case 1: // load savegame
       {
          ua_trace("loading savegame from file %s\n",savegame_name.c_str());
 
-         ua_savegame sg = savegames_mgr.get_savegame_from_file(
+         ua_savegame sg = savegames_manager.get_savegame_from_file(
             savegame_name.c_str());
 
          // set game prefix
@@ -248,7 +252,7 @@ void ua_uwadv_game::run()
          underworld.load_game(sg);
 
          // immediately start game
-         push_screen(new ua_ingame_orig_screen);
+         //replace_screen(new ua_ingame_orig_screen,false);
       }
       break;
 
@@ -256,22 +260,23 @@ void ua_uwadv_game::run()
       {
          // set prefix
          ua_trace("starting custom game\n");
-         settings.set_value(ua_setting_game_prefix,custom_game_prefix);
+         //settings.set_value(ua_setting_game_prefix,custom_game_prefix);
 
          init_game();
 
 #ifndef HAVE_DEBUG
          // start splash screen
-         push_screen(new ua_start_splash_screen);
+         //replace_screen(new ua_start_splash_screen,false);
 #else
          // for uw2 testing; splash screens don't work yet
          underworld.import_savegame(settings,"data/",true);
-         push_screen(new ua_ingame_orig_screen);
+         //replace_screen(new ua_ingame_orig_screen,false);
 #endif
       }
       break;
    }
-*/
+
+
    ua_trace("\nmain loop started\n");
 
    Uint32 now, then;
@@ -295,15 +300,18 @@ void ua_uwadv_game::run()
 
          // do game logic
          curscreen->tick();
-/*
+
          // check if there is a screen to destroy
-         if (screen_to_destroy!=NULL)
+         if (screen_to_destroy != NULL)
          {
+            screen_to_destroy->destroy();
             delete screen_to_destroy;
             screen_to_destroy = NULL;
+
+            reset_tick_timer = true;
             break;
          }
-
+/*
          // do texmgr tick
          texmgr.tick(1.0/tickrate);
 
@@ -312,21 +320,21 @@ void ua_uwadv_game::run()
 */
       }
 
-      if (exit_game) break;
-
       // do debug processing (uwadv thread)
 //      debug->tick();
 
       // process incoming events
       process_events();
-/*
+
+      if (exit_game) break;
+
       // reset timer when needed
       if (reset_tick_timer)
       {
          then = now = SDL_GetTicks();
          reset_tick_timer = false;
       }
-*/
+
       // draw the screen
       {
          curscreen->draw();
@@ -372,20 +380,18 @@ void ua_uwadv_game::done()
       delete curscreen;
       curscreen = NULL;
    }
-/*
+
    // free all screens on screen stack
-   int max = screenstack.size();
-   for(int i=0; i<max; i++)
+   unsigned int max = screenstack.size();
+   for(unsigned int i=0; i<max; i++)
    {
-      screenstack[i]->done();
+      screenstack[i]->destroy();
       delete screenstack[i];
    }
-
+/*
    delete debug;
 
    underworld.done();
-
-   delete audio;
 */
 
    SDL_Quit();
@@ -394,7 +400,6 @@ void ua_uwadv_game::done()
 void ua_uwadv_game::error_msg(const char* msg)
 {
    ua_trace(msg);
-   //std::cerr << msg << std::endl;
 }
 
 void ua_uwadv_game::init_sdl()
@@ -505,7 +510,8 @@ void ua_uwadv_game::process_events()
    // get another event
    while(SDL_PollEvent(&event))
    {
-      //screen->handle_event(event);
+      // let the screen handle the event first
+      curscreen->process_event(event);
 
       switch(event.type)
       {
@@ -520,16 +526,32 @@ void ua_uwadv_game::process_events()
          // handle quit requests
          exit_game=true;
          break;
+
+      case SDL_USEREVENT:
+         // handle user events
+         switch(event.user.code)
+         {
+         case ua_event_destroy_screen:
+            pop_screen();
+            break;
+
+         default:
+            break;
+         }
+         break;
+
+      default:
+         break;
       }
    }
 }
-/*
-void ua_game::init_game()
+
+void ua_uwadv_game::init_game()
 {
    std::string prefix(settings.get_string(ua_setting_game_prefix));
 
    ua_trace("initializing game; prefix: %s\n",prefix.c_str());
-
+/*
    // load game config file
    std::string gamecfg_name(prefix);
    gamecfg_name.append("/game.cfg");
@@ -566,11 +588,10 @@ void ua_game::init_game()
 
    // init textures
    texmgr.init(settings);
-
+*/
    // init audio
-   audio = ua_audio_interface::get_audio_interface();
-   audio->init(settings,filesmgr);
-
+   audio_manager.init(settings,files_manager);
+/*
    // load critters
    critter_pool.load(settings);
    critter_pool.prepare(texmgr);
@@ -600,79 +621,66 @@ void ua_game::init_game()
       else
          ua_trace("not available\n");
    }
-
+*/
    // reset tick timer
    reset_tick_timer = true;
 }
 
-void ua_game::push_screen(ua_ui_screen_base *newscreen)
+void ua_uwadv_game::pop_screen()
 {
-   // clear screen; this stuff could take a while
-   glClearColor(0,0,0,0);
-   glClear(GL_COLOR_BUFFER_BIT);
-   SDL_GL_SwapBuffers();
+   // handle destroying of current screen
+   // TODO clear screen
+   curscreen->destroy();
+   delete curscreen;
 
-   // save old screen on stack
-   if (screen!=NULL)
+   if (screenstack.size()!=0)
    {
-      screen->suspend();
-      screenstack.push_back(screen);
-   }
+      // get last pushed screen
+      curscreen = screenstack.back();
+      screenstack.pop_back();
 
-   // we have a new screen
-   screen = newscreen;
-   screen->init(this);
-
-   // reset tick timer
-   reset_tick_timer = true;
-}
-
-void ua_game::replace_screen(ua_ui_screen_base *newscreen)
-{
-   // clear screen; this stuff could take a while
-   glClearColor(0,0,0,0);
-   glClear(GL_COLOR_BUFFER_BIT);
-   SDL_GL_SwapBuffers();
-
-   // pop screen
-   screen->done();
-   screen_to_destroy = screen;
-
-   // push new screen
-   screen = newscreen;
-   screen->init(this);
-
-   // reset tick timer
-   reset_tick_timer = true;
-}
-
-void ua_game::pop_screen()
-{
-   // clear screen; this stuff could take a while
-   glClearColor(0,0,0,0);
-   glClear(GL_COLOR_BUFFER_BIT);
-   SDL_GL_SwapBuffers();
-
-   screen->done();
-
-   screen_to_destroy = screen;
-
-   // use 
-   if (screenstack.size()==0)
-   {
-      // no more screens available
-      screen=NULL;
-      exit_game = true;
+      // send resume event
+      SDL_Event user_event;
+      user_event.type = SDL_USEREVENT;
+      user_event.user.code = 2;
+      user_event.user.data1 = NULL;
+      user_event.user.data2 = NULL;
+      SDL_PushEvent(&user_event);
    }
    else
    {
-      // get last pushed screen
-      screen = screenstack.back();
-      screenstack.pop_back();
-      screen->resume();
+      // no more screens available
+      curscreen = NULL;
+      exit_game = true;
    }
+}
+
+void ua_uwadv_game::replace_screen(ua_screen* new_screen, bool save_current)
+{
+   // TODO clear screen; this could take a while
+/*
+   glClearColor(0,0,0,0);
+   glClear(GL_COLOR_BUFFER_BIT);
+   SDL_GL_SwapBuffers();
+*/
+   if (save_current)
+   {
+      // save on screenstack
+      screenstack.push_back(curscreen);
+   }
+   else
+   {
+      // defer screen destruction
+      if (curscreen != NULL)
+         screen_to_destroy = curscreen;
+   }
+
+   // initialize new screen
+   curscreen = new_screen;
+
+   curscreen->set_game_interface(this);
+   curscreen->init();
 
    // reset tick timer
    reset_tick_timer = true;
 }
-*/

@@ -33,20 +33,16 @@
 #include "settings.hpp"
 #include "files.hpp"
 #include "screen.hpp"
-/*
-#include <vector>
-#include "texture.hpp"
-#include "gamestrings.hpp"
-#include "audio.hpp"
-#include "critter.hpp"
-#include "models.hpp"
-#include "screen.hpp"
-*/
+#include "audio/audio.hpp"
+#include "renderer/renderer.hpp"
+#include "script/script.hpp"
+#include "game_interface.hpp"
+
 
 // classes
 
 //! main game class
-class ua_uwadv_game
+class ua_uwadv_game: public ua_game_interface
 {
 public:
    //! ctor
@@ -69,6 +65,19 @@ public:
    //! shows the user an error message
    virtual void error_msg(const char* msg);
 
+   // ua_game_interface methods
+
+   double get_tickrate();
+   void init_game();
+   ua_audio_manager& get_audio_manager();
+   ua_settings& get_settings();
+   ua_files_manager& get_files_manager();
+   ua_savegames_manager& get_savegames_manager();
+   ua_renderer& get_renderer();
+   ua_scripting& get_scripting();
+   ua_underworld& get_underworld();
+   void replace_screen(ua_screen* new_screen, bool save_current);
+
 protected:
    //! initializes SDL and creates a window
    void init_sdl();
@@ -76,9 +85,12 @@ protected:
    //! processes SDL events
    void process_events();
 
+   //! pops off next screen from screenstack
+   void pop_screen();
+
 protected:
    //! resource files manager
-   ua_files_manager filesmgr;
+   ua_files_manager files_manager;
 
    //! game configuration
    ua_settings settings;
@@ -95,15 +107,43 @@ protected:
    //! indicates if game can be exited
    bool exit_game;
 
+   //! action to carry out after init
+   /*! actions: 0=normal game start, 1=load savegame, 2=load custom game */
+   unsigned int init_action;
+
+   //! savegame to load
+   std::string savegame_name;
+
    //! current screen
    ua_screen* curscreen;
+
+   //! stack of screens
+   std::vector<ua_screen*> screenstack;
+
+   //! true when tick timer should be resetted for the next cycle
+   bool reset_tick_timer;
+
+   //! audio manager object
+   ua_audio_manager audio_manager;
+
+   //! savegames manager
+   ua_savegames_manager savegames_manager;
+
+   //! renderer class
+   ua_renderer renderer;
+
+   //! scripting class
+   ua_scripting scripting;
+
+   //! underworld object
+   ua_underworld underworld;
+
+   //! screen queued to destroy
+   ua_screen* screen_to_destroy;
 
 /*
    //! texture manager
    ua_texture_manager texmgr;
-
-   //! savegames manager
-   ua_savegames_manager savegames_mgr;
 
    //! critter pool
    ua_critter_pool critter_pool;
@@ -111,71 +151,52 @@ protected:
    //! 3d models manager
    ua_model3d_manager model_manager;
 
-   //! underworld object
-   ua_underworld underworld;
-
    //! debug interface
    ua_debug_interface* debug;
-
-   //! true when tick timer should be resetted for the next cycle
-   bool reset_tick_timer;
-
-   //! audio interface
-   ua_audio_interface *audio;
-
-   //! current user interface screen
-   ua_ui_screen_base *screen;
-
-   //! stack of user interface screens
-   std::vector<ua_ui_screen_base*> screenstack;
-
-   //! screen queued to destroy
-   ua_ui_screen_base* screen_to_destroy;
-
-   //! action to carry out after init
-   / *! actions: 0=normal game start, 1=load savegame, 2=load custom game * /
-   unsigned int init_action;
-
-   //! savegame to load
-   std::string savegame_name;
-
-   //! custom game prefix to use
-   std::string custom_game_prefix;
-
-protected:
-   // ua_game_core_interface virtual methods
-
-   virtual void init_game();
-   virtual unsigned int get_screen_width(){ return width; }
-   virtual unsigned int get_screen_height(){ return height; }
-   virtual unsigned int get_tickrate(){ return tickrate; }
-   virtual ua_audio_interface &get_audio(){ return *audio; }
-   virtual ua_gamestrings &get_strings(){ return underworld.get_strings(); }
-   virtual ua_settings &get_settings(){ return settings; }
-   virtual ua_texture_manager &get_texmgr(){ return texmgr; }
-   virtual ua_files_manager &get_filesmgr(){ return filesmgr; }
-   virtual ua_critter_pool& get_critter_pool(){ return critter_pool; };
-   virtual ua_model3d_manager& get_model_manager(){ return model_manager; };
-   virtual ua_savegames_manager& get_savegames_mgr(){ return savegames_mgr; };
-   virtual ua_debug_interface* get_debug_interface(){ return debug; }
-   virtual ua_underworld &get_underworld(){ return underworld; }
-
-   virtual void push_screen(ua_ui_screen_base *newscreen);
-   virtual void replace_screen(ua_ui_screen_base *newscreen);
-   virtual void pop_screen();
-
-private:
-
-   //! called when receiving a system dependent message
-   virtual void system_message(SDL_SysWMEvent &syswm){}
-
-   //! handles keyboard events
-   void handle_key_down(SDL_keysym *keysym);
-
-   //! renders the screen
-   void draw_screen();
 */
 };
+
+// inline methods
+
+inline double ua_uwadv_game::get_tickrate()
+{
+   return tickrate;
+}
+
+inline ua_audio_manager& ua_uwadv_game::get_audio_manager()
+{
+   return audio_manager;
+}
+
+inline ua_settings& ua_uwadv_game::get_settings()
+{
+   return settings;
+}
+
+inline ua_files_manager& ua_uwadv_game::get_files_manager()
+{
+   return files_manager;
+}
+
+inline ua_savegames_manager& ua_uwadv_game::get_savegames_manager()
+{
+   return savegames_manager;
+}
+
+inline ua_renderer& ua_uwadv_game::get_renderer()
+{
+   return renderer;
+}
+
+inline ua_scripting& ua_uwadv_game::get_scripting()
+{
+   return scripting;
+}
+
+inline ua_underworld& ua_uwadv_game::get_underworld()
+{
+   return underworld;
+}
 
 
 // macros
