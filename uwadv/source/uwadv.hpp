@@ -148,7 +148,7 @@ protected:
    ua_renderer renderer;
 
    //! scripting class
-   ua_scripting scripting;
+   ua_scripting* scripting;
 
    //! underworld object
    ua_underworld underworld;
@@ -200,7 +200,7 @@ inline ua_renderer& ua_uwadv_game::get_renderer()
 
 inline ua_scripting& ua_uwadv_game::get_scripting()
 {
-   return scripting;
+   return *scripting;
 }
 
 inline ua_debug_server& ua_uwadv_game::get_debugger()

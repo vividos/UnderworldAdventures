@@ -71,7 +71,7 @@ ua_arg_entry arg_params[] =
 // ua_uwadv_game methods
 
 ua_uwadv_game::ua_uwadv_game()
-:tickrate(20), exit_game(false), screen_to_destroy(NULL)
+:tickrate(20), exit_game(false), screen_to_destroy(NULL), scripting(NULL)
 {
    printf("Underworld Adventures"
 #ifdef HAVE_DEBUG
@@ -565,8 +565,12 @@ void ua_uwadv_game::init_game()
    std::string gamecfg_name(prefix);
    gamecfg_name.append("/game.cfg");
 
-   // init scripting before loading game.cfg (lua_State is needed)
-//   underworld.get_scripts().init(&underworld);
+   // init scripting
+   scripting = ua_scripting::create_scripting(ua_script_lang_lua);
+   if (scripting == NULL)
+      throw ua_exception("could not create scripting object");
+
+   scripting->init(this);
 
    // try to load %prefix%/game.cfg
    {
@@ -595,28 +599,14 @@ void ua_uwadv_game::init_game()
    // init renderer
    renderer.init(*this);
 
-
    // init underworld
    underworld.init(settings,files_manager);
-
-   // after loading all scripts, init the stuff
-//   underworld.get_scripts().lua_init_script();
-
 
    // init audio
    audio_manager.init(settings,files_manager);
 
-/*
-   // load critters
-   critter_pool.load(settings);
-   critter_pool.prepare(texmgr);
-
-   // init model manager
-   model_manager.init(this);
-
-   // create debug interface instance
-   debug = ua_debug_interface::get_new_debug_interface(this);
-*/
+   // init debug server
+   debug.init();
 
    // load language specific .pak file
    {
