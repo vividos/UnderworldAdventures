@@ -165,6 +165,43 @@ level_pos = {
          { x = 45.5, y = 58.5 }, -- evil gray goblins
       }
    },
+
+   [2] = { -- starting positions for level 2
+      n = 3,
+      pos = {
+         { x = 11.5, y = 10.5 }, -- gray lizardmen
+         { x = 5.5,  y = 1.5 },  -- starting place (stairs)
+         { x = 37.5, y = 30.5 }, -- lizardman lair
+      }
+   },
+
+   [3] = { -- starting positions for level 3
+      n = 3,
+      pos = {
+         { x = 32.5, y = 52.5 }, -- rodrick's hall
+         { x = 8.5,  y = 29.5 }, -- knight's home
+         { x = 50.5, y = 22.5 }, -- lakshi longtooth (?)
+      }
+   },
+
+   [4] = { -- starting positions for level 4
+      n = 4,
+      pos = {
+         { x = 52.5, y = 24.5 }, -- ghouls
+         { x = 37.5, y = 12.5 }, -- on a box
+         { x =  8.5, y = 2.5 },  -- pac-man
+         { x = 34.5, y = 47.5 }, -- level stairs
+      }
+   },
+
+   [5] = { -- starting positions for level 5
+      n = 3,
+      pos = {
+         { x =  6.5, y = 24.5 },  -- golem test
+         { x =  3.5, y = 11.5 },  -- seer's storeroom
+         { x = 57.5, y = 31.5 },  -- level stairs
+      }
+   },
 }
 
 
@@ -173,22 +210,25 @@ function repos_player(newlevel)
    targets = level_pos[newlevel]
 
    if targets == nil then
+
+      -- set player to height of current tile
+      player_set_height(
+         tilemap_get_floor_height(newlevel, player_get_pos() )+0.1 )
+
       return
    end
 
-
+   -- find new random pos
    newpos_idx = random(targets.n)
-
-   print( " newpos_idx = " .. newpos_idx )
 
    local newx = targets.pos[newpos_idx].x
    local newy = targets.pos[newpos_idx].y
-   local newz = tilemap_get_floor_height(newlevel, newx, newy)
+   local newz = tilemap_get_floor_height(newlevel, newx, newy)+0.1
 
    player_set_pos( newx, newy )
    player_set_height( newz )
 
-   print( " setting new player position to x = " ..
+   print( " setting player position to x = " ..
       newx .. ", y = " .. newy ..
       " and z = " .. newz )
 
