@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,8 +26,8 @@
 */
 
 // include guard
-#ifndef __uwadv_inventory_hpp_
-#define __uwadv_inventory_hpp_
+#ifndef uwadv_inventory_hpp_
+#define uwadv_inventory_hpp_
 
 // needed includes
 #include <vector>
@@ -69,7 +69,6 @@ enum ua_inv_paperdoll_slots
    ua_slot_max,            // from here on indices in itemlist are free
 
    ua_slot_paperdoll_start=ua_slot_paperdoll_legs
-
 };
 
 
@@ -162,7 +161,7 @@ protected:
 
 protected:
    //! underworld object
-   ua_underworld *underw;
+   ua_underworld* underw;
 
    //! rune bag
    std::bitset<26> runebag;

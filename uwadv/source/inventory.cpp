@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -41,6 +41,7 @@ void ua_inventory::init(ua_underworld *theunderw)
    runebag.reset();
    floating_object = ua_slot_no_item;
 
+#ifdef HAVE_DEBUG
    // test item inventory
    Uint16 test_inv[] =
    {
@@ -65,6 +66,7 @@ void ua_inventory::init(ua_underworld *theunderw)
    get_item(1).quantity = ua_slot_max+1;
    get_item(3).quantity = ua_slot_max+2;
    get_item(7).quantity = ua_slot_max+3;
+#endif
 
    // build link list
    build_slot_link_list(ua_slot_no_item);
@@ -553,16 +555,36 @@ double ua_inventory::get_weight_avail()
    return 42.0;
 }
 
-void ua_inventory::load_game(ua_savegame &sg)
+void ua_inventory::load_game(ua_savegame& sg)
 {
    sg.begin_section("inventory");
+
+   // load runebag
+   for(unsigned int r=0; r<26; r++)
+      runebag.set(r, sg.read8()!=0 );
+
+   // load itemlist
+   for(unsigned int i=0; i<256; i++)
+      itemlist[i].load_info(sg);
+
+   // TODO restore slot_links, container_stack (?)
 
    sg.end_section();
 }
 
-void ua_inventory::save_game(ua_savegame &sg)
+void ua_inventory::save_game(ua_savegame& sg)
 {
    sg.begin_section("inventory");
+
+   // save runebag
+   for(unsigned int r=0; r<26; r++)
+      sg.write8(runebag.at(r) ? 1 : 0);
+
+   // save itemlist
+   for(unsigned int i=0; i<256; i++)
+      itemlist[i].save_info(sg);
+
+   // TODO store slot_links, container_stack (?)
 
    sg.end_section();
 }
