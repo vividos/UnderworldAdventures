@@ -7,3 +7,6 @@ original games there are. Some differences can be switched off with the
 
 - up/down view angle can be between -75 and 75 degree, as opposed to something
   like 45 degrees in the original (can be switched off)
+
+- cutscene speech is played back a bit too slow (as the .voc files are
+  resampled to 22088 Hz as opposed to 22050 Hz)
