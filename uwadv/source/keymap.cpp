@@ -28,8 +28,6 @@
 // needed includes
 #include "common.hpp"
 #include "keymap.hpp"
-#include <algorithm>
-#include <cctype>
 
 
 // tables
@@ -219,7 +217,7 @@ void ua_keymap::load_value(const std::string& name, const std::string& value)
       std::string keyname(name);
 
       // make lowercase
-      std::transform(keyname.begin(),keyname.end(),keyname.begin(),tolower);
+      ua_str_lowercase(keyname);
 
       // search whole table
       unsigned int max = SDL_TABLESIZE(ua_keymap_keytype_mapping);
@@ -244,7 +242,7 @@ void ua_keymap::load_value(const std::string& name, const std::string& value)
       std::string keyval(value);
 
       // make lowercase
-      std::transform(keyval.begin(),keyval.end(),keyval.begin(),tolower);
+      ua_str_lowercase(keyval);
 
       // check for modifiers
       std::string::size_type pos = keyval.find("ctrl");

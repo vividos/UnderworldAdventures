@@ -34,8 +34,6 @@
 #include "midi.hpp"
 #include "SDL_mixer.h"
 #include <string>
-#include <algorithm>
-#include <cctype>
 
 
 // classes
@@ -192,7 +190,7 @@ void ua_audio_impl::start_music(unsigned int music, bool repeat)
       ext.assign(trackname.substr(pos));
 
    // make extension lowercase
-   std::transform(ext.begin(),ext.end(),ext.begin(),::tolower);
+   ua_str_lowercase(ext);
 
    // check for midi tracks
    if (ext.find(".xmi") != std::string::npos ||

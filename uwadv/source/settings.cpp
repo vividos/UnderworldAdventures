@@ -28,7 +28,6 @@
 // needed includes
 #include "common.hpp"
 #include "settings.hpp"
-#include <algorithm>
 #include <iostream>
 
 
@@ -99,7 +98,7 @@ bool ua_settings::get_bool(ua_settings_key key)
       std::string val(iter->second);
 
       // make lowercase
-      std::transform(val.begin(),val.end(),val.begin(),::tolower);
+      ua_str_lowercase(val);
 
       // check for boolean keywords
       return (val.compare("true")==0 || val.compare("1")==0 || val.compare("yes")==0);
