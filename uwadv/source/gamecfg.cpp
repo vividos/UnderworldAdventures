@@ -51,6 +51,42 @@ void ua_gamecfg_loader::load_value(const std::string& name, const std::string& v
       core->get_filesmgr().load_lua_script(L,value.c_str());
    }
    else
+   if (name.compare("use-resources")==0)
+   {
+      ua_settings &settings = core->get_settings();
+
+      // check if resources to use are available
+      if (value.compare("uw1")==0)
+      {
+            // TODO check if all games are available here
+            // TODO delete setting ua_setting_uw1_avail, not needed then
+            if (!settings.get_bool(ua_setting_uw1_avail))
+               throw ua_exception("could not find relevant uw1 game files");
+
+         // select proper game type
+         if (settings.get_bool(ua_setting_uw1_is_uw_demo))
+            settings.set_gametype(ua_game_uw_demo);
+         else
+            settings.set_gametype(ua_game_uw1);
+
+         // set generic uw path
+         settings.set_value(ua_setting_uw_path,settings.get_string(ua_setting_uw1_path));
+      }
+      else
+      if (value.compare("uw2")==0)
+      {
+         // set generic uw path
+         settings.set_value(ua_setting_uw_path,settings.get_string(ua_setting_uw2_path));
+      }
+      else
+      {
+         // unknown string
+         std::string text("unknown resources string in game.cfg: ");
+         text.append(value);
+         throw ua_exception(text.c_str());
+      }
+   }
+   else
    if (name.compare("import-strings")==0)
    {
       // load game strings
