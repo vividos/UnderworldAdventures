@@ -113,6 +113,17 @@ bool ua_inventory::is_container(Uint16 item_id)
 
 void ua_inventory::open_container(Uint16 index)
 {
+   // check if user wants to open container that already is open
+   if (get_container_item()==index)
+      return; // don't do anything
+
+   // check if user wants to open container from paperdoll
+   if (index>=8 && index<ua_slot_max)
+   {
+      // clear container stack; container to open becomes topmost
+      container_stack.clear();
+   }
+
    // quantity is used as pointer to content of containers
    Uint16 link1 = get_item(index).quantity;
    build_slot_link_list(link1);
@@ -164,6 +175,10 @@ bool ua_inventory::float_item(Uint16 index)
 {
    // don't do anything when we already have a floating object
    if (floating_object != ua_slot_no_item) return false;
+
+   // check if user wants to "float" current container
+   if (get_container_item()==index)
+      return false; // don't allow that
 
    // remove object from current container
    if (get_container_item() == ua_slot_no_item || index<ua_slot_max)
@@ -296,6 +311,13 @@ bool ua_inventory::drop_floating_item(Uint16 index)
          // add it to the container's list
          append_item(index,floating_object);
          floating_object = ua_slot_no_item;
+
+         // dropping into current container?
+         if (index==get_container_item())
+         {
+            // then rebuild slot list
+            build_slot_link_list(get_item(get_container_item()).quantity);
+         }
       }
       else
       {
