@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -339,7 +339,7 @@ void ua_uw1_import::load_critters(std::vector<ua_critter>& allcritters,
          // load it
          load_critter(critter,critfile.c_str(),auxpal);
 
-         critter.get_palette() = palette0;
+         critter.set_palette(palette0);
       }
    }
 

@@ -70,8 +70,8 @@ public:
    //! updates animation frame of object
    void update_frame(ua_object& obj);
 
-   //! returns palette ptr
-   ua_palette256_ptr& get_palette(){ return palette; }
+   //! sets palette
+   void set_palette(ua_palette256_ptr& pal){ palette = pal; }
 
 protected:
    //! slot list with segment indices
