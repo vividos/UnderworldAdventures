@@ -28,7 +28,7 @@
 // needed includes
 #include "common.hpp"
 #include "settings.hpp"
-#include <iostream>
+#include <sstream>
 
 
 // structs
@@ -118,11 +118,9 @@ void ua_settings::set_value(ua_settings_key key, bool value)
 
 void ua_settings::set_value(ua_settings_key key, int value)
 {
-   char buffer[16];
-   sprintf(buffer,"%i",value);
-
-   std::string strval(buffer);
-   set_value(key,strval);
+   std::ostringstream buffer;
+   buffer << value << std::ends;
+   set_value(key,buffer.str());
 }
 
 void ua_settings::dump()
@@ -132,9 +130,7 @@ void ua_settings::dump()
    for (iter = settings.begin();
         iter != settings.end();
         ++iter)
-   {
-      std::cout << iter->first << "=" << iter->second << std::endl;
-   }
+      ua_trace("%s = %s\n", iter->first, iter->second);
 }
 
 bool ua_settings::search_key_from_string(const char* keyname, ua_settings_key& key)
