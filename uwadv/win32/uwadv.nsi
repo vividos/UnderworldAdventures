@@ -127,6 +127,7 @@ Delete $INSTDIR\uw1-keyboard.txt
 Delete $INSTDIR\Authors.txt
 Delete $INSTDIR\Changes.txt
 Delete $INSTDIR\stdout.txt
+Delete $INSTDIR\stderr.txt
 Delete $INSTDIR\uninst-uwadv.exe
 Delete $INSTDIR\uadata\uadata00.uar
 RMDir $INSTDIR\uadata
