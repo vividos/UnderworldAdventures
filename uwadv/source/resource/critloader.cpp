@@ -35,8 +35,9 @@
 
 // external functions
 
-extern void ua_image_decode_rle(FILE *fd,Uint8* pixels,unsigned int bits,
-   unsigned int datalen,unsigned int maxpix,unsigned char *auxpalidx);
+extern void ua_image_decode_rle(FILE *fd, Uint8* pixels, unsigned int bits,
+   unsigned int datalen, unsigned int maxpix, unsigned char *auxpalidx,
+   unsigned int padding, unsigned int linewidth);
 
 
 // ua_critter methods
@@ -225,12 +226,12 @@ void ua_critter::load(const char* file, unsigned int used_auxpal)
                   Uint16 datalen = fread16(fd);
 
                   // rle-decode image
-                  // TODO pass pitch and line length
-                  Uint8* curpos = &allframe_bytes.get()[0];
-                     //&allframe_bytes.get()[(frame_offset+n)*xres*yres];
+                  unsigned int bytes_offset =
+                     (frame_offset+n)*xres*yres + (maxtop-hoty)*xres + (maxleft-hotx);
 
-                  ua_image_decode_rle(fd,curpos,
-                     type==6 ? 5 : 4, datalen, width*height, auxpal);
+                  ua_image_decode_rle(fd, &allframe_bytes.get()[bytes_offset],
+                     type==6 ? 5 : 4, datalen, width*height, auxpal,
+                     xres-width, width);
                }
                // end of current frame
             }
