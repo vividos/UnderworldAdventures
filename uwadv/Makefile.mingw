@@ -99,7 +99,7 @@ zziplib: $(zziplib_OBJS)
 uwadv_EXEC = uwadv.exe
 
 include source/Makefile.common
-uwadv_CPPs = $(patsubst %.hpp,,$(patsubst %.h,,$(uwadv_SOURCES)))
+uwadv_CPPs = $(filter %.cpp,$(uwadv_SOURCES))
 uwadv_OBJS = $(uwadv_CPPs:%.cpp=source/%.o) \
         $(uwadv_win32objects:%=source/%) \
 	$(lua_OBJS) $(zziplib_OBJS)
@@ -131,76 +131,68 @@ uaconfig_LIBS = $(WIN32_LIB) $(STLPORT_LIB)
 
 cnvdbg_EXEC = cnvdbg.exe
 
-cnvdbg_OBJS = source/tools/cnvdbg.o source/conv/codevm.o \
-	source/resource/codeloader.o source/resource/gamestrings.o \
-	source/settings.o source/resource/savegame.o
-
-cnvdbg_LIBS = -lmingw32 -lkernel32 -luser32 \
-	$(SDL_LIB) $(STLPORT_LIB)
+cnvdbg_CPPs = $(filter %.cpp,$(cnvdbg_SOURCES))
+cnvdbg_OBJS = $(cnvdbg_CPPs:%.cpp=source/tools/%.o)
 
 cnvdbg_LDFLAGS = -mconsole
+cnvdbg_LIBS = -lmingw32 -lkernel32 -luser32 \
+	$(SDL_LIB) $(STLPORT_LIB)
 
 
 # conv decompiler
 
 cnvdasm_EXEC = cnvdasm.exe
 
-cnvdasm_OBJS = source/tools/cnvdasm.o source/conv/codevm.o \
-	source/resource/codeloader.o source/resource/gamestrings.o \
-	source/settings.o source/resource/savegame.o
-
-cnvdasm_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB) $(STLPORT_LIB)
+cnvdasm_CPPs = $(filter %.cpp,$(cnvdasm_SOURCES))
+cnvdasm_OBJS = $(cnvdasm_CPPs:%.cpp=source/tools/%.o)
 
 cnvdasm_LDFLAGS = -mconsole
+cnvdasm_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB) $(STLPORT_LIB)
 
 
 # xmidi to midi converter
 
 xmi2mid_EXEC = xmi2mid.exe
 
-xmi2mid_OBJS = source/tools/xmi2mid.o source/audio/xmidi.o
-
-xmi2mid_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB)
+xmi2mid_CPPs = $(filter %.cpp,$(xmi2mid_SOURCES))
+xmi2mid_OBJS = $(xmi2mid_CPPs:%.cpp=source/tools/%.o)
 
 xmi2mid_LDFLAGS = -mconsole
+xmi2mid_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB)
 
 
 # map display
 
 mapdisp_EXEC = mapdisp.exe
 
-mapdisp_OBJS = source/tools/mapdisp.o source/level.o source/resource/maploader.o \
-	source/quadtree.o source/texture.o source/resource/texloader.o \
-	source/resource/imageloader.o source/resource/objloader.o \
-	source/image.o source/objects.o source/resource/codeloader.o \
-	source/settings.o source/resource/savegame.o
-
-mapdisp_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB) $(STLPORT_LIB) $(OPENGL_LIB)
+mapdisp_CPPs = $(filter %.cpp,$(mapdisp_SOURCES))
+mapdisp_OBJS = $(mapdisp_CPPs:%.cpp=source/tools/%.o)
 
 mapdisp_LDFLAGS =
+mapdisp_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB) $(STLPORT_LIB) $(OPENGL_LIB)
 
 
 # animation viewer
 
 animview_EXEC = animview.exe
 
-animview_OBJS = source/tools/animview.o source/cutscene.o source/resource/cutsloader.o \
-	source/image.o source/texture.o source/settings.o
-
-animview_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB) $(STLPORT_LIB) $(OPENGL_LIB)
+animview_CPPs = $(filter %.cpp,$(animview_SOURCES))
+animview_OBJS = $(animview_CPPs:%.cpp=source/tools/%.o)
 
 animview_LDFLAGS =
+animview_LIBS = -lmingw32 -lkernel32 -luser32 $(SDL_LIB) $(STLPORT_LIB) $(OPENGL_LIB)
 
 
 # string pack/unpack tool
 
 strpak_EXEC = strpak.exe
 
-strpak_OBJS = source/tools/strpak.o source/resource/gamestrings.o source/settings.o
-
-strpak_LIBS = -lmingw32 -lkernel32 -luser32 $(STLPORT_LIB)
+strpak_CPPs = $(filter %.cpp,$(strpak_SOURCES))
+strpak_OBJS = $(strpak_CPPs:%.cpp=source/tools/%.o)
 
 strpak_LDFLAGS = -mconsole
+strpak_LIBS = -lmingw32 -lkernel32 -luser32 $(STLPORT_LIB)
+
 
 
 #
