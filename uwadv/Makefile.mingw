@@ -130,17 +130,17 @@ uwadv_EXEC = uwadv.exe
 include source/Makefile.common
 
 uwadv_win32objects = \
-	win32/source/main.o \
-	win32/source/game_win32.o \
-	win32/source/uwadv_res.o \
-	win32/source/debug.o \
-	audio/midi_driver/win_midiout.o
+	source/win32/main.o \
+	source/win32/game_win32.o \
+	source/win32/uwadv_res.o \
+	source/win32/debug.o \
+	source/audio/midi_driver/win_midiout.o
 
 uwadv_CPPs = $(filter %.cpp,$(uwadv_SOURCES))
 uwadv_Cs = $(filter %.c,$(uwadv_SOURCES))
 uwadv_OBJS = $(uwadv_CPPs:%.cpp=source/%.o) \
 	$(uwadv_Cs:%.c=source/%.o) \
-        $(uwadv_win32objects:%=source/%) \
+        $(uwadv_win32objects) \
 	$(lua_OBJS) $(zziplib_OBJS)
 
 uwadv_LIBS = $(WIN32_LIB) -lwinmm $(OPENGL_LIB) \
@@ -158,8 +158,8 @@ endif
 
 uaconfig_EXEC = uaconfig.exe
 
-uaconfig_OBJS = source/win32/source/uaconfig/uaconfig.o \
-	source/win32/source/uaconfig/uaconfig_res.o \
+uaconfig_OBJS = source/win32/uaconfig/uaconfig.o \
+	source/win32/uaconfig/uaconfig_res.o \
 	source/settings.o source/resource/cfgfile.o \
 	source/utils.o
 
@@ -251,8 +251,8 @@ uwadv: $(uwadv_EXEC) uwadv.cfg
 $(uwadv_EXEC): $(uwadv_OBJS)
 	$(CXX) $(LDFLAGS) $(uwadv_LDFLAGS) -o $(@) $(uwadv_OBJS) $(uwadv_LIBS)
 
-uwadv.cfg: source/win32/uwadv.cfg
-	cp source/win32/uwadv.cfg .
+uwadv.cfg: win32/uwadv.cfg
+	cp win32/uwadv.cfg .
 
 
 uaconfig: $(uaconfig_EXEC)
@@ -324,10 +324,9 @@ install: update
 	cp uwadv.cfg $(UWADV_PATH)
 	cp uadata/uw1/keymap.cfg $(UWADV_PATH)
 
-
 installer: install
-	cp source/win32/uwadv.nsi $(UWADV_PATH)
-	cp source/win32/License.installer.txt $(UWADV_PATH)
+	cp win32/uwadv.nsi $(UWADV_PATH)
+	cp docs/License.installer.txt $(UWADV_PATH)
 	cp Copying $(UWADV_PATH)
 	cp docs/README.uwadv.txt $(UWADV_PATH)
 	cp docs/uw1-keyboard.txt $(UWADV_PATH)

@@ -97,6 +97,7 @@ CreateShortCut "$SMPROGRAMS\Underworld Adventures\Underworld Adventures.lnk" "$I
 CreateShortCut "$SMPROGRAMS\Underworld Adventures\Underworld Adventures Config.lnk" "$INSTDIR\uaconfig.exe" "" "" "0"
 CreateShortCut "$SMPROGRAMS\Underworld Adventures\Underworld Adventures Readme.lnk" "$INSTDIR\README.uwadv.txt" "" "" "0"
 CreateShortCut "$SMPROGRAMS\Underworld Adventures\Ultima Underworld 1 Keyboard Commands.lnk" "$INSTDIR\uw1-keyboard.txt" "" "" "0"
+CreateShortCut "$SMPROGRAMS\Underworld Adventures\Uninstall Underworld Adventures.lnk" "$INSTDIR\uninst-uwadv.exe" "" "" "0"
 SectionEnd
 
 Function .onInstSuccess
