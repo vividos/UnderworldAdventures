@@ -24,13 +24,16 @@
    \brief Lua scripting support
 
 */
+//! \ingroup scripting
+
+//@{
 
 // include guard
 #ifndef uwadv_luascript_hpp_
 #define uwadv_luascript_hpp_
 
 // needed includes
-#include "script.hpp"
+#include "scripting.hpp"
 extern "C"
 {
 #include "lua/include/lua.h"
@@ -90,3 +93,4 @@ protected:
 
 
 #endif
+//@}
