@@ -1,3 +1,9 @@
+2004-xx-xx release 0.9-xxx
+
+	* restructured code
+	* added config option to show "pixely" user interface
+	* added splash screen when starting the game
+
 2003-04-24 release 0.8-hot-chili
 
 	* added simple NPC animation
