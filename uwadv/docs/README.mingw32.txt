@@ -6,18 +6,25 @@ This is the Readme file for compiling Underworld Adventures using MinGW32.
 MinGW Setup
 -----------
 
-First, you should install mingw (and if you like, MSYS) from
-http://www.mingw.org/. I recommend using the full distribution, e.g.
-MinGW-1.1.tar.gz (or any later version).
+First, you should install mingw and MSYS, available from
+http://www.mingw.org/. Either get a full distribution, e.g.
+MinGW-1.1.tar.gz (or any later version) or get the packages separately (e.g.):
+
+   gcc-3_1-core-20020516-1.tar.gz
+   binutils-2_12_90-20020518-1.tar.gz
+   w32api-1.5.tar.gz
+   mingw-runtime-2.0.tar.gz
+   make-3.79.1-20010722.tar.gz
 
 To let the system find the make program and the compiler, you should add
 something like this to your "autoexec.bat" (or wherever):
 
    PATH=%PATH%;c:\mingw\bin
 
-In this example, the mingw package is installed to "c:\mingw\".
+In this example, the mingw package was extracted to "c:\mingw\". The main
+project dir always is the folder with the Makefile.mingw (among others).
 
-SDL Setup
+SDL/SDL_mixer Setup
 ---------
 
 SDL 1.2.3 or later is needed to compile Underworld Adventures. Just download
@@ -61,28 +68,42 @@ The Readme.txt file in the zip archive explains the contents of the file.
 Compiling
 ---------
 
-To specify some paths, open the file "Makefile.mingw" in the "source/win32"
-folder. If you don't want to use STLport, edit these two lines so that they
-look like this:
+To specify some paths, open the file "Makefile.mingw" in the main project dir.
+
+The variable UWADV_PATH contains the path where Underworld Adventures is
+installed when doing a "make install" or "make update" (see below for make
+targets).
+
+To set the SDL include path, adjust the path after "SDL_INCLUDE". If you don't
+want to use STLport, edit these two lines so that they look like this:
 
 STLPORT_INCLUDE = 
 STLPORT_LIB = 
 
-else let them point to the proper folders. Do the same for the "SDL_INCLUDE"
-(and "FMOD_INCLUDE", "FMOD_LIB", if you want FMOD MIDI support).
+To compile, start MSYS and cd to the main project dir. The command to compile
+the project looks like this:
 
-To compile the project, just type:
+   make -f Makefile.mingw <target>
 
-   make -f Makefile.mingw
+where target can be one of several words:
 
-The executable "uwadv.exe" will be built. It additionally needs the SDL.DLL
-and SDL_mixer.DLL to run. The DLLs are available at http://www.libsdl.org/ or
+  target      description
+  ------      -----------
+  uwadv       builds uwadv.exe and copies a template uwadv.cfg to the main
+              project dir
+  tools       builds all tools (each tool can be built separately using one of
+              these targets: cnvdbg cnvdasm xmi2mid mapdisp animview strpak
+  data        builds all needed data files
+  install     builds uwadv and data and installs the files in the path
+              specified by "UWADV_PATH". overwrites uwadv.cfg
+  update      the same as "install" but doesn't copy the uwadv.cfg file
+  clean       cleans all built source and data files
+  luac        builds the Lua compiler that can be used to verify Lua scripts
+
+To run "uwadv.exe", SDL.dll and SDL_mixer.dll are needed. For the tools, only
+SDL.dll is needed. The DLLs are available at http://www.libsdl.org/ or
 http://www.libsdl.org/projects/SDL_mixer/
-
-To build the tools, type:
-
-   make -f Makefile.mingw tools
 
 More infos about the tools can be found in the file "README.tools.txt". Infos
 about how to run Underworld Adventures can be found in the file
-"README.uwadv.txt"
+"README.uwadv.txt". Please continue reading there.
