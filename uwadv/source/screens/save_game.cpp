@@ -54,7 +54,7 @@ void ua_save_game_screen::init()
 
    SDL_ShowCursor(1);
 
-   scroll.init(*core,10,10, 300,180, 25, 42);
+   scroll.init(*core,10,10, 300,180, 30, 42);
    scroll.set_color(1);
 
    scroll.print("Underworld Adventures\nSave Game\n\n");
