@@ -89,6 +89,9 @@ protected:
    //! stack with currently shown lines
    std::vector<std::string> linestack;
 
+   //! color values for all shown lines
+   std::vector<Uint8> linecolors;
+
    //! stack with lines to show after "[MORE]"
    std::vector<std::string> morestack;
 

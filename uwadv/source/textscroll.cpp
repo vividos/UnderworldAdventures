@@ -81,10 +81,12 @@ bool ua_textscroll::print(const char* text)
 
          // delete old line
          linestack.erase(linestack.begin());
+         linecolors.erase(linecolors.begin());
       }
 
       // add line
       linestack.push_back(msgtext);
+      linecolors.push_back(text_color);
    }
    else
    {
@@ -145,10 +147,12 @@ bool ua_textscroll::print(const char* text)
 
                // delete old line
                linestack.erase(linestack.begin());
+               linecolors.erase(linecolors.begin());
             }
 
             // add line
             linestack.push_back(part);
+            linecolors.push_back(text_color);
          }
          else
          {
@@ -188,7 +192,7 @@ void ua_textscroll::update_scroll()
    {
       // create line string and paste it into final image
       font_normal.create_string(img_temp,
-         linestack[i].c_str(),text_color);
+         linestack[i].c_str(),linecolors[i]);
 
       // calc y position
       unsigned int ypos = i * font_normal.get_charheight() + 1;
