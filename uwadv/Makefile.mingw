@@ -97,7 +97,7 @@ ifeq ("$(WITH_WXWINDOWS)", "yes")
  INCLUDES += -I$(WXWIN_PATH)/include/ -I$(WXWIN_PATH)/contrib/include/ -I$(WXWIN_PATH)/lib/mswd/
  DEFINES += -D__GNUWIN32__ -D__WXMSW__ -D_X86_=1 -DWIN32 -D_WIN32 -DWINVER=0x0400
  WXWIN_LIB = -L$(WXWIN_PATH)/lib/ -L$(WXWIN_PATH)/contrib/lib/ \
-	-lwxmswd -lfld -lole32 -loleaut32 -luuid \
+	-lwxmsw -lfl -lole32 -loleaut32 -luuid \
 	-lcomctl32 -lwsock32
 	# -lwinspool -lcomdlg32 -ladvapi32 -lshell32 \
 	# -lodbc32 -lodbccp32 -lrpcrt4.lib
@@ -298,10 +298,20 @@ uwadv.cfg: win32/uwadv.cfg
 	cp win32/uwadv.cfg .
 
 
+ifeq ("$(WITH_WXWINDOWS)", "yes")
+
 uadebug: $(uadebug_EXEC)
+
 $(uadebug_EXEC): $(uadebug_OBJS)
 	$(CXX) $(LDFLAGS) $(uadebug_LDFLAGS) -o $(@) $(uadebug_OBJS) $(uadebug_LIBS)
 
+else
+uadebug:
+	@echo.
+	@echo "to build uadebug.dll, you need to compile wxWindows with mingw32"
+	@echo "then enable the wxWindows options in Makefile.mingw and try again."
+	@echo "more infos are available in the file docs/README.mingw32.txt"
+endif
 
 uaconfig: $(uaconfig_EXEC)
 $(uaconfig_EXEC): $(uaconfig_OBJS)
