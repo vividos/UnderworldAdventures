@@ -139,6 +139,8 @@ void ua_renderer::setup_camera3d(const ua_vector3d& the_view_offset,
    // switch back to modelview matrix
    glMatrixMode(GL_MODELVIEW);
 
+   glEnable(GL_DEPTH_TEST);
+
 /*
    // fog
    glEnable(GL_FOG);
