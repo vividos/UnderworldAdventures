@@ -31,7 +31,7 @@
 // needed includes
 #include "common.hpp"
 #include "quadtree.hpp"
-#include <cmath>
+#include "uamath.hpp"
 
 
 // ua_frustum methods
@@ -96,21 +96,18 @@ void ua_quad::get_visible_tiles(ua_frustum &fr, std::vector<ua_quad_tile_coord> 
    bool res,all=true,one=false;
 
    // test quads coordinates
-   res = fr.is_in_frustum(x0,y0); all &= res; one |= res;
-   res = fr.is_in_frustum(x1,y0); all &= res; one |= res;
-   res = fr.is_in_frustum(x1,y1); all &= res; one |= res;
-   res = fr.is_in_frustum(x0,y1); all &= res; one |= res;
+   res = fr.is_in_frustum(double(x0),double(y0)); all &= res; one |= res;
+   res = fr.is_in_frustum(double(x1),double(y0)); all &= res; one |= res;
+   res = fr.is_in_frustum(double(x1),double(y1)); all &= res; one |= res;
+   res = fr.is_in_frustum(double(x0),double(y1)); all &= res; one |= res;
 
    if (all)
    {
-      // all quad coordinates were in the view frustum
-
-      unsigned int x,y,xmax,ymax;
-      xmax = unsigned(x1); ymax = unsigned(y1);
+      // all quad points were in the view frustum
 
       // add all tiles in the quad
-      for(x=unsigned(x0);x<xmax; x++)
-      for(y=unsigned(y0);y<ymax; y++)
+      for(unsigned int x=x0; x<x1; x++)
+      for(unsigned int y=y0; y<y1; y++)
       {
          tilelist.push_back(
             std::make_pair<unsigned int,unsigned int>(x,y) );
@@ -130,18 +127,18 @@ void ua_quad::get_visible_tiles(ua_frustum &fr, std::vector<ua_quad_tile_coord> 
    // quad is partly visible
 
    // divide the quad further
-   double xhalf = (x1-x0)/2, yhalf = (y1-y0)/2;
+   double xhalf = double(x1-x0)/2.0, yhalf = double(y1-y0)/2.0;
 
    if (xhalf<1.0 || yhalf<1.0)
    {
       if (one)
       // don't divide that one further, it's a single tile
       tilelist.push_back(
-            std::make_pair<unsigned int,unsigned int>(unsigned(x0),unsigned(y0)) );
+            std::make_pair<unsigned int,unsigned int>(x0,y0) );
       return;
    }
 
-   static const double quad_coords[4][4] =
+   static const unsigned int quad_coords[4][4] =
    {
       { 0, 0, 1, 1 },
       { 1, 0, 2, 1 },

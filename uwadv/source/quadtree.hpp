@@ -78,7 +78,7 @@ class ua_quad
 {
 public:
    //! ctor
-   ua_quad(double nx0,double ny0,double nx1,double ny1)
+   ua_quad(unsigned int nx0,unsigned int ny0,unsigned int nx1,unsigned int ny1)
       :x0(nx0),y0(ny0),x1(nx1),y1(ny1){}
 
    //! calculates all visible tiles from given view frustum
@@ -89,7 +89,7 @@ public:
 
 protected:
    //! quad coordinates
-   double x0,y0,x1,y1;
+   unsigned int x0,y0,x1,y1;
 };
 
 #endif
