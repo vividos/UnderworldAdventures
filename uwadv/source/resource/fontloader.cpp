@@ -90,6 +90,10 @@ void ua_font::init(const char *fontname)
    rowwidth = fread16(fd);
    maxwidth = fread16(fd);
 
+   // fix for overly large font chars like 'm' or 'w'
+   if (strstr(fontname,"fontbig")!=0)
+      maxwidth += 4;
+
    // calculate number of chars
    nchars = (flen-12) / (charsize+1);
 
