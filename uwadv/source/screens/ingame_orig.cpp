@@ -1210,6 +1210,14 @@ void ua_ingame_orig_screen::ui_changed_level(unsigned int level)
       for(unsigned int n=0; n<max; n++)
          texmgr.prepare(used_textures[n]);
    }
+
+   // prepare all switch, door and tmobj textures
+   {
+      unsigned int n;
+      for(n=0; n<16; n++) texmgr.prepare(ua_tex_stock_switches+n);
+      for(n=0; n<13; n++) texmgr.prepare(ua_tex_stock_door+n);
+      for(n=0; n<33; n++) texmgr.prepare(ua_tex_stock_tmobj+n);
+   }
 }
 
 void ua_ingame_orig_screen::ui_start_conv(unsigned int level, unsigned int objpos)
