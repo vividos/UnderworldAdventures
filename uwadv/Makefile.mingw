@@ -108,7 +108,9 @@ uwadv_EXEC = uwadv.exe
 
 include source/Makefile.common
 uwadv_CPPs = $(filter %.cpp,$(uwadv_SOURCES))
+uwadv_Cs = $(filter %.c,$(uwadv_SOURCES))
 uwadv_OBJS = $(uwadv_CPPs:%.cpp=source/%.o) \
+	$(uwadv_Cs:%.c=source/%.o) \
         $(uwadv_win32objects:%=source/%) \
 	$(lua_OBJS) $(zziplib_OBJS)
 
