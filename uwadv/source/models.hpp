@@ -68,65 +68,6 @@ public:
 typedef ua_smart_ptr<ua_model3d> ua_model3d_ptr;
 
 
-//! builtin model class
-class ua_model3d_builtin: public ua_model3d
-{
-public:
-   //! ctor
-   ua_model3d_builtin(){}
-
-   //! renders model
-   virtual void render(ua_vector3d& base);
-
-   //! returns bounding triangles for collision detection
-   virtual void get_bounding_triangles(ua_vector3d& base,
-      std::vector<ua_triangle3d_textured>& alltriangles);
-
-protected:
-   std::vector<ua_vector3d> coords;
-   std::vector<unsigned int> coord_index;
-
-   std::vector<ua_triangle3d_textured> alltriangles;
-
-   ua_vector3d origin;
-
-   friend bool ua_model_decode_builtins(const char* filename,
-      std::vector<ua_model3d_ptr>& allmodels);
-};
-
-
-//! static object model
-class ua_model3d_wrl: public ua_model3d
-{
-public:
-   //! ctor
-   ua_model3d_wrl(){}
-
-   //! dtor
-   virtual ~ua_model3d_wrl(){}
-
-   //! loads vrml97 .wrl file
-   void import_wrl(ua_game_core_interface* core, SDL_RWops* rwops,
-      std::string relpath);
-
-   //! renders model
-   virtual void render(ua_vector3d& base);
-
-protected:
-
-   std::vector<ua_vector3d> coords;
-
-   std::vector<ua_vector2d> texcoords;
-
-   std::vector<unsigned int> coord_index;
-
-   std::vector<unsigned int> texcoord_index;
-
-   //! model texture
-   ua_texture tex;
-};
-
-
 //! 3d model manager
 class ua_model3d_manager: private ua_cfgfile
 {
