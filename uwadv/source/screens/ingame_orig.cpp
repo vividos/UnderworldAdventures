@@ -45,7 +45,13 @@ void ua_ingame_orig_screen::init()
 
    setup_opengl();
 
-   img.load_raw(core->get_settings(),"data/main.byt",0);
+   const char *mainscreenname = "data/main.byt";
+
+   // replace name for uw_demo
+   if (core->get_settings().gtype == ua_game_uw_demo)
+      mainscreenname = "data/dmain.byt";
+
+   img.load_raw(core->get_settings(),mainscreenname,0);
    tex.convert(core->get_texmgr(),img);
    tex.prepare(false);
 }
