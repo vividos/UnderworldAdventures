@@ -39,6 +39,7 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	resource/proploader.cpp \
 	resource/uw2dec.cpp \
 	resource/fread_endian.hpp \
+	resource/models_impl.hpp \
 	resource/model/FlexLexer.h \
 	resource/model/importwrl.cpp \
 	resource/model/wrllexer.cpp resource/model/wrllexer.hpp \
