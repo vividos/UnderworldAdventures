@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -58,12 +58,16 @@ void ua_uwadv_menu_screen::init()
    // set the generic uw path
    settings.set_value(ua_setting_uw_path,settings.get_string(ua_setting_uw1_path));
 
+   // set game prefix to use
+   std::string prefix("uw1");
+   settings.set_value(ua_setting_game_prefix,prefix);
+
    ua_trace("selected game: %s\n\n",
       settings.get_gametype() == ua_game_uw1 ? "uw1" :
       settings.get_gametype() == ua_game_uw_demo ? "uw_demo" : "uw2");
 
-   // now that we know the generic uw path, we could init the core stuff
-   core->init_core();
+   // now that we know the generic uw path, we can init the core stuff
+   core->init_game();
 }
 
 void ua_uwadv_menu_screen::done()
