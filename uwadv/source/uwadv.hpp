@@ -49,7 +49,7 @@ class ua_uwadv_game
 {
 public:
    //! ctor
-   ua_game();
+   ua_uwadv_game();
 
    //! initializes video, audio, etc.
    virtual void init();
