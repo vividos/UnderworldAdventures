@@ -48,6 +48,7 @@
 #define NOCRYPT
 #define NOIMAGE
 #include <windows.h>
+#include <mmsystem.h> // for midiOutGet*
 #include <shlobj.h> // for SHBrowseForFolder
 
 // needed includes
@@ -153,6 +154,13 @@ LRESULT ua_config_prog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
    ::SendMessage(m_hWnd, WM_SETICON, ICON_SMALL, (LPARAM)wndicon_small);
    ::ShowWindow(m_hWnd,SW_SHOW);
 
+   // get window caption
+   {
+      char buffer[256];
+      ::GetWindowText(m_hWnd,buffer,256);
+      caption.assign(buffer);
+   }
+
    // cutscene narration combobox
    ::SendDlgItemMessage(m_hWnd,IDC_COMBO_CUTS_NARRATION,CB_ADDSTRING,0,(LPARAM)"Sound");
    ::SendDlgItemMessage(m_hWnd,IDC_COMBO_CUTS_NARRATION,CB_ADDSTRING,0,(LPARAM)"Subtitles");
@@ -181,6 +189,22 @@ LRESULT ua_config_prog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
             ::SendDlgItemMessage(m_hWnd,IDC_COMBO_SCREEN_RESOLUTION,CB_ADDSTRING,
                0,(LPARAM)buffer);
          }
+      }
+   }
+
+   // add all midi devices to combo box
+   {
+      MIDIOUTCAPS caps;
+      UINT max = midiOutGetNumDevs();
+
+      for(signed int n=-1; n<(signed)max; n++)
+      {
+         // get midi device caps
+         midiOutGetDevCaps((UINT)n, &caps, sizeof(caps));
+
+         // add to combo box
+         ::SendDlgItemMessage(m_hWnd,IDC_COMBO_MIDI_DEVICE,CB_ADDSTRING,
+            0,(LPARAM)caps.szPname);
       }
    }
 
@@ -245,7 +269,21 @@ LRESULT ua_config_prog::OnSetUw1Path(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
 
 void ua_config_prog::load_config()
 {
-   settings.load("./uwadv.cfg");
+   // try loading settings
+   try
+   {
+      settings.load("./uwadv.cfg");
+   }
+   catch(...)
+   {
+      // loading failed
+      ::MessageBox(m_hWnd,"Could not find file \"uwadv.cfg\" in current folder!",
+         caption.c_str(),MB_OK|MB_ICONSTOP);
+
+      // exit program
+      ::PostMessage(m_hWnd,WM_QUIT,0,0);
+      return;
+   }
 
    std::string text;
 
@@ -261,13 +299,28 @@ void ua_config_prog::load_config()
 
    // set screen resolution text
    text = settings.get_string(ua_setting_screen_resolution);
-   ::SendDlgItemMessage(m_hWnd,IDC_COMBO_SCREEN_RESOLUTION,
-      CB_INSERTSTRING,0,(LPARAM)text.c_str());
-   ::SendDlgItemMessage(m_hWnd,IDC_COMBO_SCREEN_RESOLUTION,CB_SETCURSEL,0,0);
+
+   // check if we already have that one
+   if (CB_ERR == ::SendDlgItemMessage(m_hWnd,IDC_COMBO_SCREEN_RESOLUTION,
+      CB_FINDSTRINGEXACT,(WPARAM)-1,(LPARAM)text.c_str()))
+   {
+      // add current resolution value
+      ::SendDlgItemMessage(m_hWnd,IDC_COMBO_SCREEN_RESOLUTION,
+         CB_INSERTSTRING,0,(LPARAM)text.c_str());
+      ::SendDlgItemMessage(m_hWnd,IDC_COMBO_SCREEN_RESOLUTION,CB_SETCURSEL,0,0);
+   }
 
    // set "fullscreen" check
    ::SendDlgItemMessage(m_hWnd,IDC_CHECK_FULLSCREEN,BM_SETCHECK,
       settings.get_bool(ua_setting_fullscreen) ? BST_CHECKED : BST_UNCHECKED, 0);
+
+   // set "audio enabled" check
+   ::SendDlgItemMessage(m_hWnd,IDC_CHECK_ENABLE_AUDIO,BM_SETCHECK,
+      settings.get_bool(ua_setting_audio_enabled) ? BST_CHECKED : BST_UNCHECKED, 0);
+
+   // set midi device
+   ::SendDlgItemMessage(m_hWnd,IDC_COMBO_MIDI_DEVICE,CB_SETCURSEL,
+      (WPARAM)(settings.get_int(ua_setting_win32_midi_device)+1),0);
 }
 
 //! checks if a file with given filename is available
@@ -304,7 +357,7 @@ bool ua_config_prog::check_config()
       if (!uw1_avail)
       {
          ::MessageBox(m_hWnd,"Couldn't find Ultima Underworld I game files in specified folder!",
-            "Underworld Adventures Configuration",MB_OK);
+            caption.c_str(),MB_OK|MB_ICONEXCLAMATION);
          return false;
       }
    }
@@ -319,7 +372,7 @@ bool ua_config_prog::check_config()
       if (pos == std::string::npos)
       {
          ::MessageBox(m_hWnd,"Screen resolution is not in format <xres> x <yres>!",
-            "Underworld Adventures Configuration",MB_OK);
+            caption.c_str(),MB_OK|MB_ICONEXCLAMATION);
          return false;
       }
 
@@ -353,7 +406,7 @@ bool ua_config_prog::check_config()
          if (!found)
          {
             ::MessageBox(m_hWnd,"Selected screen resolution is not available in fullscreen mode!",
-               "Underworld Adventures Configuration",MB_OK);
+               caption.c_str(),MB_OK|MB_ICONEXCLAMATION);
             return false;
          }
       }
@@ -386,6 +439,14 @@ void ua_config_prog::save_config()
    // fullscreen check
    sel = ::SendDlgItemMessage(m_hWnd,IDC_CHECK_FULLSCREEN,BM_GETCHECK,0,0);
    settings.set_value(ua_setting_fullscreen, bool(sel==BST_CHECKED));
+
+   // "audio enabled" check
+   sel = ::SendDlgItemMessage(m_hWnd,IDC_CHECK_ENABLE_AUDIO,BM_GETCHECK,0,0);
+   settings.set_value(ua_setting_audio_enabled, bool(sel==BST_CHECKED));
+
+   // midi device
+   sel = ::SendDlgItemMessage(m_hWnd,IDC_COMBO_MIDI_DEVICE,CB_GETCURSEL,0,0);
+   settings.set_value(ua_setting_win32_midi_device, sel-1);
 
    // write config file
    settings.write("./uwadv.cfg","./uwadv.cfg.new");

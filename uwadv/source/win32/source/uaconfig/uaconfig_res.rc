@@ -65,16 +65,23 @@ BEGIN
     LTEXT           "Cutscenes Narration",IDC_STATIC,9,31,65,8
     COMBOBOX        IDC_COMBO_CUTS_NARRATION,92,27,90,46,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Graphics Settings",IDC_STATIC,4,57,56,8
-    LTEXT           "Screen Resolution",IDC_STATIC,9,72,59,8
-    COMBOBOX        IDC_COMBO_SCREEN_RESOLUTION,92,68,90,103,CBS_DROPDOWN | 
+    LTEXT           "Graphics Settings",IDC_STATIC,4,46,56,8
+    LTEXT           "Screen Resolution",IDC_STATIC,9,61,59,8
+    COMBOBOX        IDC_COMBO_SCREEN_RESOLUTION,92,57,90,103,CBS_DROPDOWN | 
                     WS_VSCROLL | WS_GROUP | WS_TABSTOP
     CONTROL         "Fullscreen Mode",IDC_CHECK_FULLSCREEN,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,193,70,68,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,193,59,68,10
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,4,126,274,1
     PUSHBUTTON      "&Cancel",IDCANCEL,172,132,50,14
     PUSHBUTTON      "&OK",IDOK,228,132,50,14
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,64,61,213,1
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,64,50,212,1
+    CONTROL         "enable audio output",IDC_CHECK_ENABLE_AUDIO,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,9,89,79,10
+    LTEXT           "Audio Settings",IDC_STATIC,4,77,46,8
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,54,81,223,1
+    LTEXT           "MIDI device",IDC_STATIC,9,103,40,8
+    COMBOBOX        IDC_COMBO_MIDI_DEVICE,92,101,137,83,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
 END
 
 
@@ -94,11 +101,11 @@ BEGIN
         VERTGUIDE, 92
         VERTGUIDE, 182
         VERTGUIDE, 193
+        VERTGUIDE, 229
         TOPMARGIN, 2
         BOTTOMMARGIN, 146
         HORZGUIDE, 24
         HORZGUIDE, 39
-        HORZGUIDE, 80
     END
 END
 #endif    // APSTUDIO_INVOKED

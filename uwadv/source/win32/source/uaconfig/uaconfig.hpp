@@ -135,6 +135,9 @@ protected:
    //! current config dialog
    static ua_config_prog *current_dlg;
 
+   //! window caption
+   std::string caption;
+
    //! win32 program instance
    HINSTANCE m_hInstance;
 
