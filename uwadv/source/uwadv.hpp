@@ -87,6 +87,7 @@ public:
 
    // ua_game_interface methods
    virtual void init_game();
+   virtual void done_game();
    virtual ua_audio_manager& get_audio_manager();
    virtual ua_image_manager& get_image_manager();
    virtual ua_renderer& get_renderer();

@@ -429,15 +429,7 @@ void ua_uwadv_game::done()
       delete screenstack[i];
    }
 
-   debug.shutdown();
-   underworld.done();
-
-   if (scripting != NULL)
-   {
-      scripting->done();
-      delete scripting;
-      scripting = NULL;
-   }
+   done_game();
 
    SDL_Quit();
 }
@@ -672,6 +664,19 @@ void ua_uwadv_game::init_game()
 
    // reset tick timer
    reset_tick_timer = true;
+}
+
+void ua_uwadv_game::done_game()
+{
+   debug.shutdown();
+   underworld.done();
+
+   if (scripting != NULL)
+   {
+      scripting->done();
+      delete scripting;
+      scripting = NULL;
+   }
 }
 
 void ua_uwadv_game::pop_screen()

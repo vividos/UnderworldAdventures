@@ -100,6 +100,12 @@ public:
 
    //! returns underworld object
    virtual ua_underworld& get_underworld()=0;
+
+   //! initializes game; only called after all stuff is initialized and ready
+   virtual void init_game()=0;
+
+   //! cleans up game
+   virtual void done_game()=0;
 };
 
 
@@ -107,9 +113,6 @@ public:
 class ua_game_interface: public ua_basic_game_interface
 {
 public:
-   //! initializes game; only called after all stuff is initialized and ready
-   virtual void init_game()=0;
-
    //! returns audio manager
    virtual ua_audio_manager& get_audio_manager()=0;
 
