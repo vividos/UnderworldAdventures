@@ -30,6 +30,23 @@
 #define __uwadv_instr_hpp_
 
 
+// enums
+
+//! all instructions as enum
+enum
+{
+   op_NOP=0,
+   op_OPADD=1, op_OPMUL=2, op_OPSUB=3, op_OPDIV=4, op_OPMOD=5, op_OPOR=6, op_OPAND=7, op_OPNOT=8,
+   op_TSTGT=9, op_TSTGE=10, op_TSTLT=11, op_TSTLE=12, op_TSTEQ=13, op_TSTNE=14,
+   op_JMP=15, op_BEQ=16, op_BNE=17, op_BRA=18, op_CALL=19, op_CALLI=20, op_RET=21,
+   op_PUSHI=22, op_PUSHI_EFF=23, op_POP=24, op_SWAP=25,
+   op_PUSHBP=26, op_POPBP=27, op_SPTOBP=28, op_BPTOSP=29, op_ADDSP=30,
+   op_FETCHM=31, op_STO=32, op_OFFSET=33,
+   op_START=34, op_SAVE_REG=35, op_PUSH_REG=36, op_STRCMP=37, op_EXIT_OP=38, op_SAY_OP=39, op_RESPOND_OP=40,
+   op_OPNEG=41
+};
+
+
 // structs
 
 //! instruction list
