@@ -47,10 +47,11 @@ void ua_underworld::init(ua_game_core_interface *thecore)
 
    // load all levels
    import_savegame(core->get_settings(),"data/",true);
-   change_level(0);
 
    // init the scripts as last step
    script.init(this);
+
+   change_level(0);
 }
 
 void ua_underworld::done()
@@ -62,6 +63,9 @@ void ua_underworld::eval_underworld(double time)
 {
    // evaluate physics
    physics.eval_player_movement(time);
+
+   // call Lua tick script
+   script.lua_game_tick(time);
 }
 
 double ua_underworld::get_player_height()
