@@ -924,19 +924,6 @@ void ua_ingame_orig_screen::render_ui()
 
    // draw text scroll
    textscroll.render();
-/*
-#ifdef HAVE_DEBUG
-   // debug text quad
-   {
-      ua_image img_coords;
-      char buffer[256];
-      sprintf(buffer,"x=%u y=%u area=%u hit=%08x",cursorx,cursory,
-         get_area(cursorx,cursory),hit);
-      font_normal.create_string(img_coords,buffer,11);
-      img_temp.paste_image(img_coords,2,2,true);
-   }
-#endif
-*/
 
    // draw mouse cursor
    {
