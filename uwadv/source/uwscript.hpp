@@ -110,8 +110,8 @@ protected:
 
 protected:
 
-   //! returns underworld object reference from lua stack variable "self"
-   static ua_underworld& get_underworld_from_self(lua_State* L, int params);
+   //! returns underworld object reference from lua state
+   static ua_underworld& get_underworld_from_self(lua_State* L);
 
    //! returns levelmap tile from given tile_handle
    static ua_levelmap_tile& get_tile_per_handle(ua_underworld& uw,

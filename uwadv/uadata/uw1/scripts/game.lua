@@ -32,26 +32,23 @@
 -- functions
 
 -- called on initing underworld
-function lua_init_script(this)
-
-   -- store "self" userdata for reference
-   self = this
+function lua_init_script()
 
    print ("lua_init_script() called")
 
    -- init player position
 
-   player_set_pos(self, 32.0, 2.0)
-   player_set_angle(self, 90.0)
-   player_set_attr(self,player_attr_maplevel,0)
+   player_set_pos(32.0, 2.0)
+   player_set_angle(90.0)
+   player_set_attr(player_attr_maplevel,0)
 
-   player_set_attr(self,player_attr_gender,1)
-   player_set_attr(self,player_attr_appearance,1)
+   player_set_attr(player_attr_gender,1)
+   player_set_attr(player_attr_appearance,1)
 
    -- testing stuff
 
-   -- fun_replace_tilemap_solids()
-   -- fun_count_underworld_path()
+   fun_replace_tilemap_solids()
+   fun_count_underworld_path()
 
 end
 
@@ -62,12 +59,12 @@ function fun_replace_tilemap_solids()
    do
       for ypos = 1, 63
       do
-         local tile_handle = tilemap_get_tile(self, -1, xpos, ypos)
+         local tile_handle = tilemap_get_tile(-1, xpos, ypos)
 
-         if tilemap_get_type(self, tile_handle) == tilemap_type_solid
+         if tilemap_get_type(tile_handle) == tilemap_type_solid
          then
-            tilemap_set_type(self, tile_handle, tilemap_type_open)
-            tilemap_set_floor(self, tile_handle, 0)
+            tilemap_set_type(tile_handle, tilemap_type_open)
+            tilemap_set_floor(tile_handle, 0)
          end
       end
    end
@@ -83,28 +80,28 @@ function fun_count_underworld_path()
       do
          for ypos = 1, 63
          do
-            local tile_handle = tilemap_get_tile(self, level, xpos, ypos)
+            local tile_handle = tilemap_get_tile(level, xpos, ypos)
 
             -- all normal tiles
-            if tilemap_get_type(self, tile_handle) == tilemap_type_open
+            if tilemap_get_type(tile_handle) == tilemap_type_open
             then
                length = length + 1.0
             end
 
             -- all diagonal tiles
-            if tilemap_get_type(self, tile_handle) == tilemap_type_diagonal_se or
-               tilemap_get_type(self, tile_handle) == tilemap_type_diagonal_sw or
-               tilemap_get_type(self, tile_handle) == tilemap_type_diagonal_nw or
-               tilemap_get_type(self, tile_handle) == tilemap_type_diagonal_ne
+            if tilemap_get_type(tile_handle) == tilemap_type_diagonal_se or
+               tilemap_get_type(tile_handle) == tilemap_type_diagonal_sw or
+               tilemap_get_type(tile_handle) == tilemap_type_diagonal_nw or
+               tilemap_get_type(tile_handle) == tilemap_type_diagonal_ne
             then
                length = length + 0.5
             end
 
             -- all diagonal tiles
-            if tilemap_get_type(self, tile_handle) == tilemap_type_slope_n or
-               tilemap_get_type(self, tile_handle) == tilemap_type_slope_e or
-               tilemap_get_type(self, tile_handle) == tilemap_type_slope_s or
-               tilemap_get_type(self, tile_handle) == tilemap_type_slope_w
+            if tilemap_get_type(tile_handle) == tilemap_type_slope_n or
+               tilemap_get_type(tile_handle) == tilemap_type_slope_e or
+               tilemap_get_type(tile_handle) == tilemap_type_slope_s or
+               tilemap_get_type(tile_handle) == tilemap_type_slope_w
             then
                length = length + 1.2
             end
@@ -122,7 +119,6 @@ end
 function lua_done_script()
 
    print ("lua_done_script() called")
-
 end
 
 
