@@ -45,12 +45,9 @@ void ua_object_list::import_objs(FILE *fd)
       tile_index[tile] = (tileword & 0xFFC00000) >> 22;
    }
 
-   // now read in the master object list
-   std::vector<Uint32> objprop;
-   objprop.resize(0x400*2,0);
-
-//   std::vector<Uint8> npcinfo;
-//   npcinfo.resize(0x100*19,0);
+   // read in master object list
+   Uint32 objprop[0x400*2];
+   Uint8 npcinfo[0x100*19];
 
    for(Uint16 item=0; item<0x400; item++)
    {
@@ -59,60 +56,79 @@ void ua_object_list::import_objs(FILE *fd)
 
       if (item<0x100)
       {
-         // read NPC info bytes, too
-         fseek(fd,19,SEEK_CUR);
+         // read NPC info bytes
+         for(unsigned int n=0; n<19; n++)
+            npcinfo[item*19+n] = fgetc(fd);
       }
    }
 
    // now that we have the two lists, follow each tile ref
    for(unsigned int n=0; n<64*64; n++)
-   {
-      if (tile_index[n]!=0)
-         addobj_follow(objprop,tile_index[n]);
-   }
+      if (tile_index[n] != 0)
+         addobj_follow(objprop,npcinfo,tile_index[n]);
 }
 
-void ua_object_list::addobj_follow(std::vector<Uint32> &objprop,Uint16 objpos)
+//! retrieves "count" bits from "value", starting at bit "start"
+Uint32 ua_get_bits(Uint32 value, unsigned int start, unsigned int count)
+{
+   return (value>>start) & ((1<<count)-1);
+}
+
+void ua_object_list::addobj_follow(Uint32 objprop[0x400*2],
+   Uint8 npcinfo[0x100*19],Uint16 objpos)
 {
    while(objpos!=0)
    {
+      if (ua_obj_none != master_obj_list[objpos].get_object_info().type)
+         break; // we already had that object
+
       // get object properties
-      Uint16 objid = objprop[objpos*2+0] & 0x000001ff;
-      Uint16 ypos = (objprop[objpos*2+0] & (7<<26))>>26;
-      Uint16 xpos = (objprop[objpos*2+0] & (7<<29))>>29;
-      Uint16 link1 = (objprop[objpos*2+1] & (0x3ff<<6))>>6;
+      Uint32 word1 = objprop[objpos*2+0];
+      Uint32 word2 = objprop[objpos*2+1];
 
-      ua_object *obj;
+      // word 1
+      Uint16 item_id =     ua_get_bits(word1, 0, 9);
+      Uint16 unk1 =        ua_get_bits(word1, 9, 6);
+      Uint16 is_quantity = ua_get_bits(word1, 15, 1);
 
-      // add object to master object list
-      if (objpos<0x100)
+      Uint16 zpos = ua_get_bits(word1, 16, 7);
+      Uint16 dir  = ua_get_bits(word1, 23, 3);
+      Uint16 ypos = ua_get_bits(word1, 26, 3);
+      Uint16 xpos = ua_get_bits(word1, 29, 3);
+
+      // word 2
+      Uint16 quality =  ua_get_bits(word2, 0, 6);
+      Uint16 link1 =    ua_get_bits(word2, 6, 10);
+      Uint16 unk2 =     ua_get_bits(word2, 16, 6);
+      Uint16 quantity = ua_get_bits(word2, 22, 10);
+
+      // generate object
+      ua_object obj(xpos,ypos);
       {
-         obj = new ua_npc_object(xpos,ypos,link1,objid);
-         //obj->set_npcinfo();
-      }
-      else
-      {
-         obj = new ua_object(xpos,ypos,link1,objid);
-      }
+         ua_object_info& info = obj.get_object_info();
+         info.item_id = item_id;
+         info.link1 = link1;
+         info.quality = quality;
+         info.quantity = quantity;
 
-      if ( (objid >= 0x40 && objid < 0x80) ||
-           (objid >= 0x140 && objid != 458) )
-         obj->set_type(ua_obj_invisible);
-      else
-         obj->set_type(ua_obj_object);
+         // todo categorize item
+         info.type = ua_obj_item;
+
+         if ( (item_id >= 0x40 && item_id < 0x80) ||
+              (item_id >= 0x140 && item_id != 458) )
+            info.type =  ua_obj_invisible;
+      }
 
       // add to master object list
-      master_obj_list[objpos] = ua_object_ptr(obj);
+      master_obj_list[objpos] = obj;
 
-      // examine link2 and add where appropriate/known
-
-      if (objpos==link1)
+      // todo: examine link2 and add where appropriate/known
+      if (is_quantity==0)
       {
-         // throw ua_exception("while importing: very strange, object links to itself");
-         break;
+         addobj_follow(objprop,npcinfo,quantity);
       }
 
-      // add next obj in list
-      objpos=link1;
+      // examine next object in chain
+      objpos = link1;
    }
 }
