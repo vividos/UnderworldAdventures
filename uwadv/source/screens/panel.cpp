@@ -43,10 +43,14 @@ ua_panel::ua_panel()
 {
 }
 
-void ua_panel::init(ua_game_interface& game, unsigned int xpos,
+void ua_panel::init(ua_panel_parent_interface* the_panel_parent, unsigned int xpos,
    unsigned int ypos)
 {
-   panel_type = ua_panel_inventory;
+   panel_parent = the_panel_parent;
+   ua_game_interface& game = panel_parent->get_game_interface();
+
+   panel_type = ua_panel_runebag;
+   //panel_type = ua_panel_inventory;
    armor_female = game.get_underworld().get_player().get_attr(ua_attr_gender) != 0;
    tickrate = game.get_tickrate();
    rotate_panel = false;
@@ -65,6 +69,7 @@ void ua_panel::init(ua_game_interface& game, unsigned int xpos,
 
    img_manager.load_list(img_bodies, "bodies");
    img_manager.load_list(img_objects, "objects");
+
 
    // create image
    get_image().create(85,116);
@@ -166,6 +171,29 @@ bool ua_panel::process_event(SDL_Event& event)
 void ua_panel::mouse_event(bool button_clicked, bool left_button,
    bool button_down, unsigned int mousex, unsigned int mousey)
 {
+   if (panel_type == ua_panel_runebag && button_clicked && !button_down)
+   {
+      mousex -= wnd_xpos; mousey -= wnd_ypos;
+      if (mousex >= 8 && mousex < 80 && mousey >= 7 && mousey < 96)
+      {
+         // calculate which rune we hit
+         mousex -= 8;
+         mousey -= 7;
+         mousex /= 18;
+         mousey /= 15;
+
+         ua_trace("runebag: mouse hit rune %u\n", mousex+mousey*4);
+      }
+      else
+      {
+         if (mousex >= 21 && mousex < 68 && mousey >= 96 && mousey < 111)
+         {
+            ua_trace("runebag: mouse hit \"reset shelf\" area\n");
+         }
+         else
+            ua_trace("runebag: mouse hit outside\n");
+      }
+   }
 }
 
 void ua_panel::tick()
@@ -212,7 +240,7 @@ void ua_panel::update_panel()
    else
    if (panel_type == ua_panel_runebag)
    {
-      img.paste_image(img_panels[1],1,1);
+      update_runebag();
    }
 
    update();
@@ -231,6 +259,19 @@ void ua_panel::update_chains()
    img_chains_bottom.update();
 }
 
+void ua_panel::update_runebag()
+{
+   ua_image& img = get_image();
+   img.paste_image(img_panels[1],1,1);
+
+   ua_inventory& inv = panel_parent->get_game_interface().
+      get_underworld().get_inventory();
+
+   for(unsigned int i=0; i<24; i++)
+      if (inv.get_runebag().test(i))
+         img.paste_rect(img_objects[0x00e8+i], 0,0, 14,14,
+            (i&3)*18+9, (i>>2)*15+6, true);
+}
 
 
 // old stuff

@@ -51,6 +51,17 @@ enum ua_panel_type
 
 // classes
 
+//! panel parent interface
+class ua_panel_parent_interface
+{
+public:
+   ua_panel_parent_interface(){}
+   virtual ~ua_panel_parent_interface(){}
+
+   virtual ua_game_interface& get_game_interface()=0;
+};
+
+
 //! panel
 class ua_panel: public ua_image_quad
 {
@@ -59,7 +70,7 @@ public:
    ua_panel();
 
    //! initializes panel
-   virtual void init(ua_game_interface& game, unsigned int xpos,
+   virtual void init(ua_panel_parent_interface* panel_parent, unsigned int xpos,
       unsigned int ypos);
 
    // virtual functions from ua_window
@@ -78,7 +89,13 @@ protected:
    //! update chain images only
    void update_chains();
 
+   //! updates runebag panel
+   void update_runebag();
+
 protected:
+   //! interface to panel owner
+   ua_panel_parent_interface* panel_parent;
+
    //! panel type
    ua_panel_type panel_type;
 
@@ -111,7 +128,6 @@ protected:
 
    //! inventory objects
    std::vector<ua_image> img_objects;
-
 
 
    //! chains image on top
