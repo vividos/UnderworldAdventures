@@ -58,11 +58,6 @@ void ua_underworld::init(ua_settings& settings, ua_files_manager& filesmgr)
 
    // init and load the scripts as last step
    script.init(this);
-
-   filesmgr.load_underworld_scripts(script.get_lua_State(),
-      "uw1/scripts/uwinit.txt"); // TODO use proper uadata name
-
-   script.lua_init_script();
 }
 
 void ua_underworld::done()
