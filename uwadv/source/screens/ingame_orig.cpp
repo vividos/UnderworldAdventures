@@ -30,6 +30,7 @@
 #include "ingame_orig.hpp"
 #include "uamath.hpp"
 #include "load_game.hpp"
+#include "save_game.hpp"
 #include "cutscene_view.hpp"
 #include "conversation.hpp"
 
@@ -997,7 +998,7 @@ void ua_ingame_orig_screen::tick()
             break;
 
          case 2: // start "save game" screen
-//            core->push_screen(new ua_save_game_screen);
+            core->push_screen(new ua_save_game_screen);
             break;
 
          case 3: // start conversation
