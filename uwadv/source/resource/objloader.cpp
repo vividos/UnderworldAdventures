@@ -103,6 +103,12 @@ void ua_object_list::addobj_follow(Uint32 objprop[0x400*2],
       Uint16 owner =    ua_get_bits(word2, 16, 6);
       Uint16 quantity = ua_get_bits(word2, 22, 10);
 
+      // fix is_quantity flag for triggers
+      if (item_id >= 0x01a0 && item_id <= 0x01bf)
+      {
+         is_quantity = 0;
+      }
+
       // generate object
       ua_object obj;
 
