@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -25,8 +25,8 @@
 */
 
 // include guard
-#ifndef __uwadv_uaconfig_hpp_
-#define __uwadv_uaconfig_hpp_
+#ifndef uwadv_uaconfig_hpp_
+#define uwadv_uaconfig_hpp_
 
 // needed includes
 #include "common.hpp"
