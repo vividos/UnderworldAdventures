@@ -34,7 +34,7 @@
 
 // constants
 
-const double ua_texture_anim_fps = 1.5;
+const double ua_texture_manager::anim_fps = 1.5;
 
 
 // ua_texture methods
@@ -44,6 +44,13 @@ ua_texture::ua_texture()
 {
 }
 
+/*! Initializes texture and allocates OpenGL texture names. Previous textures
+    are cleaned up with a call to done(). A pointer to a texture manager can
+    be set to let the texture be managed from it.
+
+    \param the_texmgr pointer to texture manager, if used (otherwise NULL)
+    \param numtex number of texture images to allocate
+*/
 void ua_texture::init(ua_texture_manager* the_texmgr,unsigned int numtex)
 {
    done();
@@ -56,6 +63,7 @@ void ua_texture::init(ua_texture_manager* the_texmgr,unsigned int numtex)
       glGenTextures(numtex,&texname[0]);
 }
 
+/*! Frees texture pixels and OpenGL texture names. */
 void ua_texture::done()
 {
    texels.clear();
@@ -70,12 +78,27 @@ void ua_texture::done()
       texmgr->using_new_texname(0);
 }
 
+/*! Converts image data to texture.
+
+    \param img image to convert to texture
+    \param numtex index of texture to use for conversion
+*/
 void ua_texture::convert(ua_image& img,unsigned int numtex)
 {
    convert(&img.get_pixels()[0], img.get_xres(), img.get_yres(),
       *img.get_palette(), numtex);
 }
 
+/*! Converts palette-indexed image data to texture. The resulting texture has
+    a resolution of 2^n x 2^m. The texture resolution is determined when the
+    first image is converted. There currently is a resolution limit of 2048 x
+    2048.
+
+    \param pix array with index values to convert
+    \param origx x resolution of image stored in pix
+    \param origy y resolution of image stored in pix
+    \param pal 256 color palette to use in conversion.
+*/
 void ua_texture::convert(Uint8* pix, unsigned int origx, unsigned int origy,
    ua_palette256& pal, unsigned int numtex)
 {
@@ -107,6 +130,14 @@ void ua_texture::convert(Uint8* pix, unsigned int origx, unsigned int origy,
    }
 }
 
+/*! Converts 32-bit truecolor pixel data in GL_RGBA format to texture. Be sure
+    to only convert images with exactly the same size with this method.
+
+    \param origx x resolution of pixel data in pix
+    \param origy y resolution of pixel data in pix
+    \param pix 32-bit pixel data in GL_RGBA format (red byte, green byte, ...)
+    \param numtex index of texture to convert
+*/
 void ua_texture::convert(unsigned int origx, unsigned int origy, Uint32* pix,
    unsigned int numtex)
 {
@@ -132,6 +163,12 @@ void ua_texture::convert(unsigned int origx, unsigned int origy, Uint32* pix,
    }
 }
 
+/*! Use the texture in OpenGL. All further triangle, quad, etc. definitions
+    use the texture, until another texture is used or
+    glBindTexture(GL_TEXTURE_2D, 0) is called.
+
+    \param numtex index of texture to use
+*/
 void ua_texture::use(unsigned int numtex)
 {
    if (numtex>=texname.size())
@@ -142,6 +179,12 @@ void ua_texture::use(unsigned int numtex)
       glBindTexture(GL_TEXTURE_2D,texname[numtex]);
 }
 
+/*! Uploads the convert()ed texture to the graphics card. The texture doesn't
+    have to be use()d before uploading.
+
+    \param numtex index of texture to upload
+    \param mipmaps generates mipmaps when true
+*/
 void ua_texture::upload(unsigned int numtex, bool mipmaps)
 {
    use(numtex);
@@ -167,6 +210,10 @@ void ua_texture::upload(unsigned int numtex, bool mipmaps)
       ua_trace("ua_texture: error during uploading texture! (%u)\n",error);
 }
 
+/*! Returns 32-bit texture pixels in GL_RGBA format for specified texture.
+
+    \param numtex index of texture to return texels
+*/
 const Uint32* ua_texture::get_texels(unsigned int numtex) const
 {
    return &texels[numtex*xres*yres];
@@ -185,6 +232,11 @@ ua_texture_manager::~ua_texture_manager()
    reset();
 }
 
+/*! Initializes texture manager. All stock textures are loaded and animation
+    infos are generated for animated textures.
+
+    \param game game interface
+*/
 void ua_texture_manager::init(ua_game_interface& game)
 {
    palette0 = game.get_image_manager().get_palette(0);
@@ -278,13 +330,17 @@ void ua_texture_manager::init(ua_game_interface& game)
    reset();
 }
 
+/*! Does all tick processing for textures. Animates animated textures.
+
+    \param tickrate tick rate in ticks/second
+*/
 void ua_texture_manager::tick(double tickrate)
 {
-   animcount += tickrate;
+   animcount += 1.0/tickrate;
 
-   if (animcount > 1.0/ua_texture_anim_fps)
+   if (animcount > 1.0/anim_fps)
    {
-      animcount -= 1.0/ua_texture_anim_fps;
+      animcount -= 1.0/anim_fps;
 
       // next animation frame
       unsigned int max = stock_animinfo.size();
@@ -302,6 +358,7 @@ void ua_texture_manager::tick(double tickrate)
    }
 }
 
+/*! Resets all stock textures. */
 void ua_texture_manager::reset()
 {
    glBindTexture(GL_TEXTURE_2D,0);
@@ -314,6 +371,10 @@ void ua_texture_manager::reset()
    last_texname = 0;
 }
 
+/*! Prepares a stock texture for use in OpenGL.
+
+    \param idx index of stock texture to prepare
+*/
 void ua_texture_manager::prepare(unsigned int idx)
 {
    if (idx>=allstocktex_imgs.size())
@@ -371,6 +432,10 @@ void ua_texture_manager::prepare(unsigned int idx)
    }
 }
 
+/*! Uses a stock texture.
+
+    \param idx index of stock texture to use
+*/
 void ua_texture_manager::use(unsigned int idx)
 {
    if (idx>=stock_textures.size())
@@ -379,6 +444,10 @@ void ua_texture_manager::use(unsigned int idx)
    stock_textures[idx].use(stock_animinfo[idx].first);
 }
 
+/*! Uses a new texture name. Returns false when the texture is already in use.
+
+    \param new_texname new texture name to use
+*/
 bool ua_texture_manager::using_new_texname(GLuint new_texname)
 {
    if (last_texname == new_texname)
@@ -388,6 +457,11 @@ bool ua_texture_manager::using_new_texname(GLuint new_texname)
    return true;
 }
 
+/*! Converts a stock texture to an external one.
+
+    \param idx index of stock texture to convert
+    \param tex texture object to convert to
+*/
 void ua_texture_manager::stock_to_external(unsigned int idx, ua_texture& tex)
 {
    tex.convert(allstocktex_imgs[idx],0);

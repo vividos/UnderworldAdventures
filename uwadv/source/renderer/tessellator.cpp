@@ -51,6 +51,11 @@ ua_poly_tessellator::~ua_poly_tessellator()
 
 typedef void (UA_GL_CALLBACK* GLU_CALLBACK)();
 
+/*! Tessellates the polygon into triangles with the polygon vertices passed
+    with add_poly_vertex().
+
+    \param texnum texture number to use when storing triangles
+*/
 const std::vector<ua_triangle3d_textured>& ua_poly_tessellator::tessellate(Uint16 texnum)
 {
    cur_texnum = texnum;

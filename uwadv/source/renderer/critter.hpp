@@ -21,9 +21,12 @@
 */
 /*! \file critter.hpp
 
-   \brief critter animation loading
+   \brief critter frames manager
 
 */
+//! \ingroup renderer
+
+//@{
 
 // include guard
 #ifndef uwadv_critter_hpp_
@@ -35,7 +38,7 @@
 #include "texture.hpp"
 
 
-//! forward references
+// forward references
 class ua_object;
 class ua_object_list;
 class ua_texture_manager;
@@ -117,10 +120,10 @@ public:
    void prepare(ua_texture_manager& texmgr, ua_object_list* mapobjects);
 
    //! does tick processing
-   void tick(double time);
+   void tick(double tickrate);
 
    //! returns critter object
-   ua_critter& get_critter(unsigned int idx){ return allcritters[idx]; }
+   inline ua_critter& get_critter(unsigned int idx);
 
 protected:
    //! frames per second for critter animations
@@ -163,5 +166,11 @@ double ua_critter::get_hotspot_v(unsigned int frame)
    return double(hotxy_coords[frame*2+1])/tex[frame].get_yres();
 }
 
+ua_critter& ua_critter_frames_manager::get_critter(unsigned int idx)
+{
+   return allcritters[idx];
+}
+
 
 #endif
+//@}

@@ -24,6 +24,9 @@
    \brief underworld renderer
 
 */
+//! \ingroup renderer
+
+//@{
 
 // include guard
 #ifndef uwadv_renderer_hpp_
@@ -40,7 +43,7 @@ class ua_underworld;
 class ua_level;
 class ua_renderer_impl;
 class ua_critter_frames_manager;
-class ua_model3d_manager;
+//class ua_model3d_manager;
 
 
 // classes
@@ -89,7 +92,7 @@ public:
    void prepare_level(ua_level& level);
 
    //! does renderer-specific tick processing
-   void tick(double ticktime);
+   void tick(double tickrate);
 
 protected:
    //! renderer implementation
@@ -110,4 +113,6 @@ protected:
    static const double near_dist;
 };
 
+
 #endif
+//@}

@@ -23,7 +23,7 @@
 
    \brief quadtree and view frustum implementation
 
-   there is also a test main() function, just define TEST_QUADTREE and compile
+   There is a test main() function, just define TEST_QUADTREE and compile
    as a single project.
 
 */
@@ -58,11 +58,14 @@ ua_frustum2d::ua_frustum2d(double xpos, double ypos,
    points[2].set(vx - wx, vy - wy);
 }
 
-/*! this function uses the barycentric coordinates of the view frustum
-    triangle to determine if a point is in the frustum
+/*! Determines if the given point is inside the view frustum.
+    This function uses the barycentric coordinates of the view frustum
+    triangle to determine if a point is in the frustum. More info at:
 
-    more info at:
     http://research.microsoft.com/~hollasch/cgindex/math/barycentric.html
+
+    \param xpos x position
+    \param ypos y position
 */
 bool ua_frustum2d::is_in_frustum(double xpos,double ypos) const
 {
@@ -88,7 +91,16 @@ static int used_iter;
 static unsigned int quad_type[64*64];
 #endif
 
-void ua_quad::find_visible_tiles(const ua_frustum2d& fr, ua_quad_callback& callback)
+/*! Finds visible tiles in given view frustum by determining if the quad is
+    completely contained in the quad and subdividing the quad in 4 subquads
+    if it's not contained. This function calls itself recursively, but not
+    more than log(max(xres,yres))/log(2).
+
+    \param fr view frustum
+    \param callback callback interface to notify caller of visible tiles
+*/
+void ua_quad::find_visible_tiles(const ua_frustum2d& fr,
+   ua_quad_callback& callback)
 {
 #ifdef TEST_QUADTREE
    used_iter++;
@@ -163,18 +175,20 @@ void ua_quad::find_visible_tiles(const ua_frustum2d& fr, ua_quad_callback& callb
    }
 }
 
-/*! tests if the given frustum triangle intersects with the quad in any way.
+/*! Tests if the given frustum triangle intersects with the quad in any way.
     first, it is tested if at least one point of the triangle is in the quad.
     second test is to test quad lines against triangle lines for intersection.
 
     also look at:
     http://www.flipcode.com/cgi-bin/knowledge.cgi?showunit=0
     http://www.flipcode.com/portal/issue07.shtml
+
+    \param fr view frustum
 */
 bool ua_quad::does_intersect(const ua_frustum2d& fr) const
 {
    // check how much triangle points are in the quad
-   int i,count=0;
+   unsigned int i,count=0;
    for(i=0; i<3; i++)
    {
       const ua_vector2d& point = fr.get_point(i);
@@ -189,15 +203,14 @@ bool ua_quad::does_intersect(const ua_frustum2d& fr) const
       return true;
 
    // check if triangle and quad lines intersect
-
    for(i=0; i<3; i++)
    {
-      int j = (i+1)%3;
+      unsigned int j = (i+1)%3;
 
       const ua_vector2d& pt1 = fr.get_point(i);
       const ua_vector2d& pt2 = fr.get_point(j);
 
-      for(int k=0; k<4; k++)
+      for(unsigned int k=0; k<4; k++)
       {
          double dist1=0, dist2=0;
 
@@ -246,6 +259,7 @@ bool ua_quad::does_intersect(const ua_frustum2d& fr) const
 
 // ua_quad_tile_collector methods
 
+/*! Collects visible tiles in the tilelist vector. */
 void ua_quad_tile_collector::visible_tile(unsigned int xpos, unsigned int ypos)
 {
    tilelist.push_back(std::make_pair<unsigned int, unsigned int>(xpos,ypos));

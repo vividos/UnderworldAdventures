@@ -24,6 +24,9 @@
    \brief renderer implementation class
 
 */
+//! \ingroup renderer
+
+//@{
 
 // include guard
 #ifndef uwadv_renderer_impl_hpp_
@@ -85,7 +88,7 @@ protected:
       double u1,double v1,double u2,double v2);
 */
 protected:
-   // texture manager
+   //! texture manager
    ua_texture_manager texmgr;
 
    //! critter frames manager
@@ -126,3 +129,4 @@ protected:
 
 
 #endif
+//@}

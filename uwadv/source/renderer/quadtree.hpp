@@ -21,9 +21,12 @@
 */
 /*! \file quadtree.hpp
 
-   \brief quadtree definitions
+   \brief quadtree and view frustum definitions
 
 */
+//! \ingroup renderer
+
+//@{
 
 // include guard
 #ifndef uwadv_quadtree_hpp_
@@ -38,9 +41,11 @@
 // classes
 
 //! view frustum
-/*! as we only have a quadtree, we only need a 2d frustum. to simplify things
-    more, we ignore the near clipping plane. this yields to a frustum
-    triangle, which is described by its three corner points */
+/*! The view frustum represents a 2d top view of the visible area in OpenGL.
+    To simplify things more, the near clipping plane is ignored. Thus the
+    frustum is represented with a simple triangle described by its corner
+    points.
+*/
 class ua_frustum2d
 {
 public:
@@ -63,7 +68,7 @@ protected:
 class ua_quad_callback
 {
 public:
-   //! callback method
+   //! callback method that is called when a visible tile is found
    virtual void visible_tile(unsigned int xpos, unsigned int ypos)=0;
 };
 
@@ -109,3 +114,4 @@ protected:
 
 
 #endif
+//@}

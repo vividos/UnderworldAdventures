@@ -23,20 +23,17 @@
 
    \brief texture management classes
 
-   ua_texture can be used in several ways. either an image is converted to
-   texture once and used from there on, or a texture is converted and uploaded
-   for every rendered frame (e.g. for animations).
-
-   ua_texture::init() allocates texture names from OpenGL
    ua_texture::convert() converts image pixels to 32-bit texture data
    ua_texture::use() activates a texture name for use in rendering
    ua_texture::upload() uploads a converted texture to the graphics card
-   ua_texture::done() deletes the used texture names
 
    note: texture size for multiple textures is calculated when convert()ing
    the first texture. all other textures must have the same size.
 
 */
+//! \ingroup renderer
+
+//@{
 
 // include guard
 #ifndef uwadv_texture_hpp_
@@ -64,7 +61,7 @@ const unsigned int ua_tex_stock_door = 0x0410;
 const unsigned int ua_tex_stock_tmobj = 0x0420;
 
 
-// forward declaration
+// forward references
 class ua_texture_manager;
 class ua_game_interface;
 
@@ -73,16 +70,19 @@ class ua_game_interface;
 
 //! texture class; represents one or more texture images
 /*! The ua_texture class can be used to store and upload textures to OpenGL.
-    Textures are usually of size 2^n x 2^m (where n and m are integral numbers).
-    The ua_texture class can be used in two ways; a) uploading texture once and
-    using it consecutively and b) uploading texture each rendered frame.
+    Textures are usually of size 2^n x 2^m (where n and m are integral
+    numbers). The ua_texture class can be used in two ways; a) uploading
+    texture once and using it consecutively and b) uploading texture each
+    rendered frame (e.g. for animations).
+
+    Each ua_texture object can hold one or more texture images of the same
+    size.
 */
 class ua_texture
 {
 public:
    //! ctor
    ua_texture();
-
 
    // texture preparation
 
@@ -171,7 +171,7 @@ public:
    void init(ua_game_interface& game/*ua_settings& settings*/);
 
    //! called every game tick
-   void tick(double ticktime);
+   void tick(double tickrate);
 
    //! resets usage of stock textures in OpenGL
    void reset();
@@ -192,6 +192,9 @@ public:
    void stock_to_external(unsigned int idx, ua_texture& tex);
 
 protected:
+   //! frames per second for animated textures
+   static const double anim_fps;
+
    //! last bound texture name
    GLuint last_texname;
 
@@ -236,3 +239,4 @@ inline unsigned int ua_texture::get_yres() const
 
 
 #endif
+//@}

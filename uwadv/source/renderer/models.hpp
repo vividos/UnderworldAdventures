@@ -24,6 +24,9 @@
    \brief 3d models and model manager
 
 */
+//! \ingroup renderer
+
+//@{
 
 // include guard
 #ifndef uwadv_models_hpp_
@@ -107,4 +110,6 @@ protected:
    ua_game_core_interface* core;
 };
 
+
 #endif
+//@}

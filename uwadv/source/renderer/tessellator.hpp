@@ -24,6 +24,9 @@
    \brief tessellator class
 
 */
+//! \ingroup renderer
+
+//@{
 
 // include guard
 #ifndef uwadv_tessellator_hpp_
@@ -33,11 +36,13 @@
 #include "uamath.hpp"
 
 
+// under win32, the callback function must have standard calling convention
 #ifdef WIN32
 #define UA_GL_CALLBACK __stdcall
 #else
 #define UA_GL_CALLBACK
 #endif
+
 
 // classes
 
@@ -51,10 +56,7 @@ public:
    ~ua_poly_tessellator();
 
    //! adds polygon vertex
-   void add_poly_vertex(const ua_vertex3d& vertex)
-   {
-      poly_vertices.push_back(vertex);
-   }
+   void add_poly_vertex(const ua_vertex3d& vertex);
 
    //! tessellates the polygon and returns triangles
    const std::vector<ua_triangle3d_textured>& tessellate(Uint16 texnum);
@@ -62,13 +64,18 @@ public:
 protected:
    // static callback functions
 
-   static void UA_GL_CALLBACK begin_data(GLenum type, ua_poly_tessellator* This);
+   //! called when triangle data begins
+   static void UA_GL_CALLBACK begin_data(GLenum type,
+      ua_poly_tessellator* This);
 
+   //! called when triangle data ends
    static void UA_GL_CALLBACK end_data(ua_poly_tessellator* This);
 
+   //! called when vertex data is created
    static void UA_GL_CALLBACK vertex_data(
       ua_vertex3d* vert, ua_poly_tessellator* This);
 
+   //! called when new vertices are created, e.g. when subdividing triangles
    static void UA_GL_CALLBACK combine_data(GLdouble coords[3],
       ua_vertex3d* vertex_data[4], GLfloat weight[4], ua_vertex3d** out_data,
       ua_poly_tessellator* This);
@@ -100,4 +107,13 @@ protected:
 };
 
 
+// inline methods
+
+inline void ua_poly_tessellator::add_poly_vertex(const ua_vertex3d& vertex)
+{
+   poly_vertices.push_back(vertex);
+}
+
+
 #endif
+//@}

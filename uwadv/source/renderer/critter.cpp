@@ -21,7 +21,7 @@
 */
 /*! \file critter.cpp
 
-   \brief critter image handling implementation
+   \brief critter frames manager implementation
 
 */
 
@@ -44,6 +44,10 @@ ua_critter::ua_critter()
 {
 }
 
+/*! Prepares textures for this critter.
+
+    \param texmgr texture manager to use
+*/
 void ua_critter::prepare(ua_texture_manager& texmgr)
 {
    tex.resize(maxframes);
@@ -58,15 +62,17 @@ void ua_critter::prepare(ua_texture_manager& texmgr)
       curtex.convert(&allframe_bytes.get()[i*xres*yres],
          xres,yres, *palette.get(), 0);
 
-//      curtex.convert(&allframe_bytes.get()[i*xres*yres],
-//         xres,yres,texmgr.get_palette(0),0);
-
       curtex.upload(0,false);
       // using mipmapped textures (2nd param "true") disables the alpha
       // channel somehow; might be a driver problem
    }
 }
 
+/*! Updates animation frame for given object. When the end of the animation is
+    reached, it restarts with the first frame of the animation state.
+
+    \param obj object to modify animframe
+*/
 void ua_critter::update_frame(ua_object& obj)
 {
    Uint8& animframe = obj.get_ext_object_info().animframe;
@@ -82,6 +88,7 @@ void ua_critter::update_frame(ua_object& obj)
 
 // ua_critter_frames_manager methods
 
+/*! Initializes critter frames manager. Imports all critter frames. */
 void ua_critter_frames_manager::init(ua_settings& settings, ua_image_manager& img_manager)
 {
    // load all critters' frames
@@ -89,6 +96,7 @@ void ua_critter_frames_manager::init(ua_settings& settings, ua_image_manager& im
    import.load_critters(allcritters,settings,img_manager.get_palette(0));
 }
 
+/*! Prepares all critter frames for all critters in given map. */
 void ua_critter_frames_manager::prepare(ua_texture_manager& texmgr,
    ua_object_list* new_mapobjects)
 {
@@ -121,7 +129,12 @@ void ua_critter_frames_manager::prepare(ua_texture_manager& texmgr,
    }
 }
 
-void ua_critter_frames_manager::tick(double time)
+/*! Does tick processing for critter frames. Goes through all managed objects
+    and checks if the frame has to be updated for an object.
+
+    \param tickrate tick rate in ticks/second
+*/
+void ua_critter_frames_manager::tick(double tickrate)
 {
    if (mapobjects == NULL)
       return;
@@ -131,7 +144,7 @@ void ua_critter_frames_manager::tick(double time)
    for(unsigned int i=0; i<max; i++)
    {
       double& framecount = object_framecount[i];
-      framecount += time;
+      framecount += 1.0/tickrate;
       if (framecount > 1.0/critter_fps)
       {
          // next frame

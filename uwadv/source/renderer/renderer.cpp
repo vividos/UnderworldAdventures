@@ -23,9 +23,6 @@
 
    \brief underworld renderer
 
-   picking tutorial:
-   http://www.lighthouse3d.com/opengl/picking/index.php3
-
 */
 
 // needed includes
@@ -57,7 +54,7 @@ ua_renderer::~ua_renderer()
 }
 
 /*! Initializes the renderer, the texture manager, critter frames manager and
-    OpenGL flags.
+    OpenGL flags common to 2d and 3d rendering.
 
     \param game game interface
 */
@@ -91,6 +88,7 @@ void ua_renderer::init(ua_game_interface& game)
    glHint(GL_POLYGON_SMOOTH_HINT,GL_DONT_CARE);
 }
 
+/*! Cleans up renderer. */
 void ua_renderer::done()
 {
    delete renderer_impl;
@@ -99,6 +97,7 @@ void ua_renderer::done()
    glDisable(GL_FOG);
 }
 
+/*! Clears the OpenGL framebuffer with black and swaps pages. */
 void ua_renderer::clear()
 {
    glClearColor(0,0,0,0);
@@ -116,6 +115,10 @@ ua_critter_frames_manager& ua_renderer::get_critter_frames_manager()
    return renderer_impl->get_critter_frames_manager();
 }
 
+/*! Sets up camera for 2d user interface rendering. All triangles (e.g. quads)
+    should be rendered with z coordinate = 0. Also disables fog, blending and
+    depth test.
+*/
 void ua_renderer::setup_camera2d()
 {
    // setup orthogonal projection
@@ -131,6 +134,14 @@ void ua_renderer::setup_camera2d()
    glDisable(GL_FOG);
 }
 
+/*! Sets up camera for 3d scene rendering. Enables depth test and fog.
+
+    \param the_view_offset view offset that is added to the player's position
+    \param the_fov field of view angle
+    \param the_far_dist distance from camera to far plane
+
+    \todo move z view offset elsewhere
+*/
 void ua_renderer::setup_camera3d(const ua_vector3d& the_view_offset,
    double the_fov, double the_far_dist)
 {
@@ -138,6 +149,7 @@ void ua_renderer::setup_camera3d(const ua_vector3d& the_view_offset,
    far_dist = the_far_dist;
    fov = the_fov;
 
+   // todo
    view_offset.z += 20.0;
 
    // set projection matrix
@@ -165,6 +177,10 @@ void ua_renderer::setup_camera3d(const ua_vector3d& the_view_offset,
    glFogiv(GL_FOG_COLOR,fog_color);
 }
 
+/*! Renders the underworld using the current player's view.
+
+    \param underw underworld object
+*/
 void ua_renderer::render_underworld(const ua_underworld& underw)
 {
    const ua_player& pl = underw.get_player();
@@ -179,6 +195,21 @@ void ua_renderer::render_underworld(const ua_underworld& underw)
       pl.get_angle_rot(), fov);
 }
 
+/*! Finds out selected object or tile wall by picking.
+
+    \param underw underworld object
+    \param xpos mouse x position in real window coordinates
+    \param ypos mouse y position in real window coordinates
+    \param tilex tile x coordinate of picked target
+    \param tiley tile y coordinate of picked target
+    \param isobj true is returned if an object was picked; otherwise tile
+                 walls were picked
+    \param id object list pos of picked object, or texture number of picked
+              tile wall
+
+    picking tutorial:
+    http://www.lighthouse3d.com/opengl/picking/index.php3
+*/
 void ua_renderer::select_pick(const ua_underworld& underw, unsigned int xpos,
    unsigned int ypos, unsigned int& tilex, unsigned int& tiley, bool& isobj,
    unsigned int& id)
@@ -272,6 +303,10 @@ void ua_renderer::select_pick(const ua_underworld& underw, unsigned int xpos,
    }
 }
 
+/*! Prepares renderer for new level.
+
+    \param level level to prepare for
+*/
 void ua_renderer::prepare_level(ua_level& level)
 {
    ua_trace("preparing textures for level... ");
@@ -308,12 +343,16 @@ void ua_renderer::prepare_level(ua_level& level)
    ua_trace("done\n");
 }
 
-/*! \todo enable critter pool tick() call */
-void ua_renderer::tick(double ticktime)
+/*! Does tick processing for renderer for texture and critter frames
+    animation.
+
+    \param tickrate tick rate in ticks/second
+*/
+void ua_renderer::tick(double tickrate)
 {
    // do texture manager tick processing
-   get_texture_manager().tick(ticktime);
+   get_texture_manager().tick(tickrate);
 
    // do critter frames processing, too
-   get_critter_frames_manager().tick(ticktime);
+   get_critter_frames_manager().tick(tickrate);
 }
