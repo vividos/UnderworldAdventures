@@ -940,6 +940,27 @@ SOURCE=..\source\debug\uwaccess.hpp
 # Begin Group "resource loading files"
 
 # PROP Default_Filter ""
+# Begin Group "model loader"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\source\resource\model\importwrl.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\resource\model\wrllexer.cpp
+# ADD CPP /I "..\source\resource\model"
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\resource\model\wrllexer.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\resource\model\wrllexer.l
+# End Source File
+# End Group
 # Begin Source File
 
 SOURCE=..\source\resource\codeloader.cpp
