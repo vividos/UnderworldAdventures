@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -32,6 +32,8 @@
 // needed includes
 #include "common.hpp"
 #include "gamestrings.hpp"
+
+/*
 #include "fread_endian.hpp"
 
 
@@ -194,8 +196,9 @@ void ua_gamestrings::load(SDL_RWops *rwops)
          std::make_pair<int,std::vector<std::string> >(allblocks[i].block_id,allblockstrings));
    }
 }
+*/
 
-std::vector<std::string> &ua_gamestrings::get_block(unsigned int block)
+std::vector<std::string>& ua_gamestrings::get_block(unsigned int block)
 {
    // try to find string block
    std::map<int,std::vector<std::string> >::iterator iter =

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -30,8 +30,8 @@
 */
 
 // include guard
-#ifndef __uwadv_gamestrings_hpp_
-#define __uwadv_gamestrings_hpp_
+#ifndef uwadv_gamestrings_hpp_
+#define uwadv_gamestrings_hpp_
 
 // needed includes
 #include <map>
@@ -50,19 +50,19 @@ public:
    ua_gamestrings(){}
 
    //! loads all game strings
-   void load(ua_settings &settings) throw(ua_exception);
+   void load(ua_settings& settings) throw(ua_exception);
 
    //! loads all game strings from a file
-   void load(const char *filename) throw(ua_exception);
+   void load(const char* filename) throw(ua_exception);
 
    //! loads all game strings from a RWops
-   void load(SDL_RWops *rwops);
+   void load(SDL_RWops* rwops);
 
    //! returns the whole strings block
-   std::map<int,std::vector<std::string> > &get_allstrings(){ return allstrings; }
+   std::map<int,std::vector<std::string> >& get_allstrings(){ return allstrings; }
 
    //! returns a whole string block
-   std::vector<std::string> &get_block(unsigned int block);
+   std::vector<std::string>& get_block(unsigned int block);
 
    //! returns a game string
    std::string get_string(unsigned int block, unsigned int string_nr);
