@@ -1,6 +1,6 @@
 --
 -- Underworld Adventures - an Ultima Underworld hacking project
--- Copyright (c) 2002,2003 Underworld Adventures Team
+-- Copyright (c) 2002,2003,2004 Underworld Adventures Team
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 --
 
 --
--- objlist.lua - lua underworld script; dump functions
+-- dump.lua - lua underworld script; dump functions
 --
 
 -- constants
@@ -33,9 +33,9 @@
 
 
 -- dumps objlist table entries
-function dump_objinfo_table(obj_handle)
+function dump_objinfo_table(objpos)
 
-   local objinfo = objlist_get_obj_info(obj_handle)
+   local objinfo = objlist.get_info(objpos)
    local category = "quantity"
 
    if objinfo.is_quantity > 0
@@ -48,12 +48,12 @@ function dump_objinfo_table(obj_handle)
       category = "sp_link"
    end
 
-   print( "dumping object info, obj_handle = " .. format("%04x",obj_handle) .."\n" ..
+   print( "dumping object info, objpos = " .. format("%04x",objpos) .."\n" ..
 
       " item_id = " .. format("%04x",objinfo.item_id) ..
-      " (" .. ui_get_gamestring(4,objinfo.item_id) .. ")," ..
+      " (" .. uw.get_string(4,objinfo.item_id) .. ")," ..
 
-      " handle_next = " .. format("%04x",objinfo.handle_next) .. "\n" ..
+      " link_next = " .. format("%04x",objinfo.link_next) .. "\n" ..
 
       format(" quality = %04x,",objinfo.quality) ..
       format(" owner = %04x, ",objinfo.owner) ..
@@ -87,7 +87,7 @@ end
 -- dumps inventory item info table entries
 function dump_invinfo_table(inv_pos)
 
-   objinfo = inv_get_objinfo(inv_pos);
+   objinfo = inventory.get_info(inv_pos);
 
    local category = "quantity"
 
@@ -103,7 +103,7 @@ function dump_invinfo_table(inv_pos)
 
    print( "dumping inventory item info, inv_pos = " .. format("%04x",inv_pos) .."\n" ..
       " item_id = " .. format("%04x",objinfo.item_id) ..
-      " (" .. ui_get_gamestring(4,objinfo.item_id) .. ")," ..
+      " (" .. uw.get_string(4,objinfo.item_id) .. ")," ..
 
       " link = " .. format("%04x",objinfo.link) .. "\n" ..
 

@@ -1,6 +1,6 @@
 --
 -- Underworld Adventures - an Ultima Underworld hacking project
--- Copyright (c) 2002,2003 Underworld Adventures Team
+-- Copyright (c) 2002,2003,2004 Underworld Adventures Team
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -33,19 +33,19 @@
 -- functions
 
 -- evaluates critter condition and does actions
-function lua_critter_evaluate(obj_handle)
+function critter_eval(obj_pos)
 
    -- get object infos
-   local objinfo = objlist_get_obj_info(obj_handle)
+   -- local objinfo = objlist_get_obj_info(obj_handle)
 
    -- available functions:
-   --  critter_find_path(tox,toy,use_water,use_lava,can_fly)
-   --  critter_dist_to(obj_handle)
-   --  critter_dist_to_player()
-   --  critter_set_move(dir,speed)
-   --  critter_set_anim(animtype)
-   --  critter_get_npcinfo() -> same as objlist_get_obj_info?
-   --  critter_attack_mode(bool on)
-   --  critter_set_goal(goal) often used(?)
+   --  critter.find_path(tox,toy,use_water,use_lava,can_fly)
+   --  critter.dist_to(obj_handle)
+   --  critter.dist_to_player()
+   --  critter.set_move(dir,speed)
+   --  critter.set_anim(animtype)
+   --  critter.get_npcinfo() -> same as objlist_get_obj_info?
+   --  critter.attack_mode(bool on)
+   --  critter.set_goal(goal) often used(?)
 
 end

@@ -1,6 +1,6 @@
 --
 -- Underworld Adventures - an Ultima Underworld hacking project
--- Copyright (c) 2002,2003 Underworld Adventures Team
+-- Copyright (c) 2002,2003,2004 Underworld Adventures Team
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ function format_item_name(item_id,quantity)
 
    local article, name
 
-   name = ui_get_gamestring(4,item_id)
+   name = uw.get_string(4,item_id)
 
    local pos_amp = strfind(name, "&", 1, 1)
 
@@ -78,8 +78,8 @@ function look_at_special(objinfo)
    if objinfo.item_id == 0x0166
    then
       -- print more detailed string
-      ui_print_string( ui_get_gamestring(8,objinfo.flags + 368) )
-      ui_print_string( ui_get_gamestring(8,objinfo.quantity-512) )
+      uw.print( uw.get_string(8,objinfo.flags + 368) )
+      uw.print( uw.get_string(8,objinfo.quantity-512) )
 
       return 1
    end
@@ -126,7 +126,7 @@ function look_at_objinfo(objinfo,is_inv)
    if objinfo.item_id >= 0x0040 and objinfo.item_id < 0x0080
    then
       -- get attitude string
-      attitude = ui_get_gamestring(5,96+objinfo.npc_attitude) .. " ";
+      attitude = uw.get_string(5,96+objinfo.npc_attitude) .. " ";
 
       if attitude == "upset "
       then
@@ -136,7 +136,7 @@ function look_at_objinfo(objinfo,is_inv)
       -- do "named" string
       if objinfo.npc_whoami ~= nil and objinfo.npc_whoami > 0
       then
-         named = " named " .. ui_get_gamestring(7,objinfo.npc_whoami+16)
+         named = " named " .. uw.get_string(7,objinfo.npc_whoami+16)
       end
 
    end
@@ -146,17 +146,16 @@ function look_at_objinfo(objinfo,is_inv)
    if is_inv <= 0
    then
       -- check item properties
-      prop_item = prop_get_common(objinfo.item_id)
+      prop_item = prop.get_common(objinfo.item_id)
 
       if prop_item.can_have_owner > 0 and objinfo.owner > 0 and objinfo.owner <= 28
       then
          -- do owner string
-         owner = " belonging to" .. ui_get_gamestring(1,objinfo.owner+370)
+         owner = " belonging to" .. uw.get_string(1,objinfo.owner+370)
       end
    end
 
-   ui_print_string(
-     "You see " .. article .. attitude .. name .. named .. owner)
+   uw.print("You see " .. article .. attitude .. name .. named .. owner)
 
    if is_inv > 0 - 1
    then
@@ -168,11 +167,11 @@ function look_at_objinfo(objinfo,is_inv)
          if objinfo.item_id == 0x013b
          then
             -- map scroll, "Enscribed upon the scroll is your map."
-            ui_print_string(ui_get_gamestring(1,151))
+            uw.print(uw.get_string(1,151))
          else
             -- normal book
-            ui_print_string("You read the " .. name .. "...")
-            ui_print_string(ui_get_gamestring(3,objinfo.quantity-512))
+            uw.print("You read the " .. name .. "...")
+            uw.print(uw.get_string(3,objinfo.quantity-512))
          end
       end
 
@@ -190,6 +189,6 @@ function lua_wall_look(tex_id)
    end
 
    -- print description
-   ui_print_string( "You see " .. ui_get_gamestring(10,tex_id) )
+   uw.print( "You see " .. uw.get_string(10,tex_id) )
 
 end
