@@ -1,3 +1,112 @@
+2002-06-20 21:38  vividos
+
+	* source/screens/start_splash.cpp (1.8):
+
+	going back to CVS version 1.6
+	
+2002-06-20 21:37  vividos
+
+	* source/screens/ingame_orig.cpp (1.9):
+
+	fixed bug where the fov isn't set when calling gluPerspective()
+	
+2002-06-19 23:59  vividos
+
+	* source/win32/Makefile.mingw (1.10):
+
+	typo; fixes win32 compiling
+	
+2002-06-18 09:46  vividos
+
+	* source/: objects.cpp (1.3), objects.hpp (1.2),
+	resource/objloader.cpp (1.3):
+
+	set some objects IDs to invisible, to prevent spoiling the game for users
+	
+2002-06-18 01:33  vividos
+
+	* source/: settings.hpp (1.3), resource/settings.cpp (1.4):
+
+	changed settings loading so that an exception is thrown when the config file wasn't found
+	
+2002-06-18 01:15  vividos
+
+	* source/linux/: configure (1.10), configure.in (1.13):
+
+	CPPFLAGS has to be set for testing OpenGL on MacOS X
+	
+2002-06-18 01:02  vividos
+
+	* source/cutscene.cpp (1.3):
+
+	added needed include for ua_endian_convert16() on MacOsX
+	
+2002-06-18 00:55  vividos
+
+	* source/: .cvsignore (1.2), Makefile.am (1.15), Makefile.in
+	(1.14), linux/configure (1.9), linux/configure.in (1.12),
+	linux/ltmain.sh (1.2), tools/Makefile.am (1.8), tools/Makefile.in
+	(1.9):
+
+	updated linux make files. once again.
+	
+2002-06-18 00:18  vividos
+
+	* source/tools/cnvdasm.cpp (1.6):
+
+	fixed syntax printout
+	
+2002-06-17 22:34  vividos
+
+	* docs/README.Linux.txt (1.2):
+
+	corrected a few typos
+	
+2002-06-17 22:29  vividos
+
+	* docs/README.tools.txt (1.2):
+
+	added description for animview
+	completed description for cnvdasm
+	
+2002-06-17 20:04  vividos
+
+	* source/cutscene.cpp (1.2):
+
+	improved cutscene frame decoding
+	
+2002-06-17 15:17  vividos
+
+	* source/win32/mapdisp.dsp (1.3):
+
+	removed command window
+	
+2002-06-17 15:15  vividos
+
+	* source/win32/: Makefile.mingw (1.9), animview.dsp (1.1),
+	tools.dsw (1.4):
+
+	added animation viewer project
+	
+2002-06-17 15:13  vividos
+
+	* source/tools/animview.cpp (1.1):
+
+	added animation viewer
+	
+2002-06-17 15:06  vividos
+
+	* source/: cutscene.cpp (1.1), cutscene.hpp (1.1),
+	resource/cutsloader.cpp (1.1):
+
+	added cutscene decoding code
+	
+2002-06-16 16:56  vividos
+
+	* ChangeLog (1.8):
+
+	updated
+	
 2002-06-15 18:55  vividos
 
 	* docs/uw-formats.txt (1.15):
