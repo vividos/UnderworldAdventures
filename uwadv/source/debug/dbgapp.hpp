@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Underworld Adventures Team
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,8 +26,8 @@
 */
 
 // include guard
-#ifndef __uadebug_dbgapp_hpp__
-#define __uadebug_dbgapp_hpp__
+#ifndef uadebug_dbgapp_hpp_
+#define uadebug_dbgapp_hpp_
 
 
 // classes
@@ -42,8 +42,8 @@ public:
    //! called on initialisation
    virtual bool OnInit();
 
-   //! debug interface
-   static ua_debug_interface* inter;
+   //! command function
+   static ua_debug_command_func command;
 };
 
 

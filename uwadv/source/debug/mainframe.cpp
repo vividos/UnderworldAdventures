@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Underworld Adventures Team
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -62,10 +62,6 @@ ua_debugger_main_frame::ua_debugger_main_frame(wxWindow *parent,
    const wxPoint& pos, const wxSize& size, const long style)
 :wxMDIParentFrame(parent, id, title, pos, size, style)
 {
-   // get debug interface pointer
-   inter = wxGetApp().inter;
-
-
    // frame layout manager
    m_pLayout = new wxFrameLayout(this, GetClientWindow());
 
@@ -112,9 +108,6 @@ ua_debugger_main_frame::ua_debugger_main_frame(wxWindow *parent,
 
 void ua_debugger_main_frame::UpdateAll()
 {
-   // lock underworld
-   inter->lock();
-
    // update player info
    {
       cbBarInfo* barinfo = m_pLayout->FindBarByName(ua_playerinfo_list::frame_name);
@@ -123,15 +116,11 @@ void ua_debugger_main_frame::UpdateAll()
          ua_playerinfo_list* pilist =
             reinterpret_cast<ua_playerinfo_list*>(barinfo->mpBarWnd);
 
-         pilist->UpdateData(inter);
+         pilist->UpdateData();
       }
    }
 
    // todo: update more windows
-
-
-   // unlock underworld
-   inter->unlock();
 }
 
 bool ua_debugger_main_frame::CheckBarAvail(wxString& barname)
@@ -171,7 +160,7 @@ void ua_debugger_main_frame::OnMenuUnderwPlayer(wxCommandEvent &event)
          this, -1, wxDefaultPosition, wxSize(0,0), 0);
 
       pilist->AddBar(m_pLayout);
-      pilist->UpdateData(inter);
+      pilist->UpdateData();
 
       m_pLayout->RefreshNow();
    }

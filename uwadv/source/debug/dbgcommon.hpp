@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Underworld Adventures Team
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,12 +26,11 @@
 */
 
 // include guard
-#ifndef __uadebug_dbgcommon_hpp__
-#define __uadebug_dbgcommon_hpp__
+#ifndef uadebug_dbgcommon_hpp_
+#define uadebug_dbgcommon_hpp_
 
 // uwadv includes
 #include "../common.hpp"
-#include "../debug.hpp"
 #include "uwaccess.hpp"
 
 

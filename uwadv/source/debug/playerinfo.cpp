@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Underworld Adventures Team
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@
 // needed includes
 #include "dbgcommon.hpp"
 #include "playerinfo.hpp"
+#include "dbgapp.hpp"
 
 
 // ua_playerinfo_list misc. stuff
@@ -107,14 +108,16 @@ ua_playerinfo_list::ua_playerinfo_list(wxWindow *parent,
 
    InsertColumn(0,column);
 
-   column.m_width = 200-column.m_width-20;
+   column.m_width = 200-column.m_width-30;
    column.m_text = "Value";
    InsertColumn(1,column);
 }
 
-void ua_playerinfo_list::UpdateData(ua_debug_interface* inter, bool to_underw)
+void ua_playerinfo_list::UpdateData()
 {
-   ua_uw_access_api* api = inter->get_access_api();
+   ua_debug_command_func cmd = wxGetApp().command;
+
+   cmd(udc_lock,0,NULL,NULL);
 
    DeleteAllItems();
 
@@ -126,26 +129,21 @@ void ua_playerinfo_list::UpdateData(ua_debug_interface* inter, bool to_underw)
 
       // set value
       wxString value;
-      double d;
+      ua_debug_param param1;
 
-      if (i<4)
-      {
-         api->player_value(inter,false,i,d);
-         value.Printf("%3.2f",d);
-      }
+      param1.val.i = i;
+      cmd(udc_player_get,1,&param1,NULL);
+
+      if (param1.type == ua_param_int)
+         value.Printf("%u",param1.val.i);
       else
-      {
-         unsigned int val;
-         if (i<4+ua_attr_max)
-            api->player_attribute(inter,false,i-4,val);
-         else
-            api->player_skill(inter,false,i-4-ua_attr_max,val);
-
-         value.Printf("%u",val);
-      }
+      if (param1.type == ua_param_double)
+         value.Printf("%3.2f",param1.val.d);
 
       SetItem(nr,1,value);
    }
+
+   cmd(udc_unlock,0,NULL,NULL);
 }
 
 void ua_playerinfo_list::AddBar(wxFrameLayout* pLayout)

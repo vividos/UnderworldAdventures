@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Underworld Adventures Team
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ IMPLEMENT_APP(ua_debugger)
 
 // static members
 
-ua_debug_interface* ua_debugger::inter = NULL;
+ua_debug_command_func ua_debugger::command = NULL;
 
 
 // ua_debugger methods
@@ -62,9 +62,10 @@ bool ua_debugger::OnInit()
 // global functions
 
 //! debugger start
-void uadebug_start(ua_debug_interface* inter)
+void uadebug_start(ua_debug_command_func command_func)
 {
-   wxGetApp().inter = inter;
+   wxGetApp().command = command_func;
+   //wxGetApp().command(udc_nop,0,NULL,NULL);
 
 #ifdef WIN32
    // call win32 generic entry function
