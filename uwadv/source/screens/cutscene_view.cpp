@@ -158,6 +158,9 @@ void ua_cutscene_view_screen::init()
 
 void ua_cutscene_view_screen::done()
 {
+   // stop audio track
+   core->get_audio().stop_sound();
+
    tex_text.done();
    tex_anim.done();
    core->get_texmgr().using_new_texname(0);
