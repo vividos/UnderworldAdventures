@@ -37,12 +37,18 @@ void ua_ingame_orig_screen::init()
 {
    ua_trace("orig. ingame user interface started\n");
 
+   // clear screen; this init() can take quite some time
+   glClearColor(0,0,0,0);
+   glClear(GL_COLOR_BUFFER_BIT);
+   SDL_GL_SwapBuffers();
+
    walk = false;
    fov = 90.0;
    playeryangle = 0.0;
    leftbuttondown = rightbuttondown = false;
    cursor_image = 0;
    cursorx = cursory = 0;
+   slot_start = 0;
 
    setup_opengl();
 
@@ -52,12 +58,14 @@ void ua_ingame_orig_screen::init()
    // load all needed images
    const char *mainscreenname = "data/main.byt";
 
-   // replace name for uw_demo
+   // replace name when using uw_demo
    if (core->get_settings().gtype == ua_game_uw_demo)
       mainscreenname = "data/dmain.byt";
 
-//   SDL_ShowCursor(0);
+   // disable normal cursor
+   SDL_ShowCursor(0);
 
+   // load some images
    ua_settings &settings = core->get_settings();
 
    img_back.load_raw(settings,mainscreenname,0);
@@ -71,7 +79,13 @@ void ua_ingame_orig_screen::init()
 
    img_compass.load(settings,"compass");
    img_bodies.load(settings,"bodies");
-//   img_cursors.load(settings,"cursors");
+   img_cursors.load(settings,"cursors",0,1);
+   img_objects.load(settings,"objects");
+
+   bool female = core->get_underworld().get_player().get_attr(ua_attr_gender)!=0;
+   img_armor.load(settings,female ? "armor_f" : "armor_m");
+
+   font_normal.init(core->get_settings(),ua_font_normal);
 }
 
 void ua_ingame_orig_screen::done()
@@ -168,6 +182,16 @@ void ua_ingame_orig_screen::handle_mouse_action(SDL_Event &event)
          if (playeryangle > 40.0)
             playeryangle = 40.0;
       }
+
+      // calculate cursor position
+      {
+         int x,y;
+         SDL_GetMouseState(&x,&y);
+         x = int(double(x)/core->get_screen_width()*320.0);
+         y = int(double(y)/core->get_screen_height()*200.0);
+         cursorx = x<5 ? 0 : x-5;
+         cursory = y<5 ? 0 : y-5;
+      }
       break;
 
    case SDL_MOUSEBUTTONDOWN:
@@ -189,7 +213,9 @@ void ua_ingame_orig_screen::handle_mouse_action(SDL_Event &event)
 void ua_ingame_orig_screen::render()
 {
    // clear color and depth buffers
+   glDisable(GL_SCISSOR_TEST);
    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+   glEnable(GL_SCISSOR_TEST);
 
    glLoadIdentity();
 
@@ -200,7 +226,7 @@ void ua_ingame_orig_screen::render()
    {
       // rotation
       glRotated(playeryangle+270.0, 1.0, 0.0, 0.0);
-      glRotated(-xangle+90.0,  0.0, 0.0, 1.0);
+      glRotated(-xangle+90.0, 0.0, 0.0, 1.0);
 
       ua_player &pl = core->get_underworld().get_player();
 
@@ -230,6 +256,7 @@ void ua_ingame_orig_screen::render()
    glDisable(GL_SCISSOR_TEST);
    glDisable(GL_FOG);
 
+   // render all user interface graphics
    render_ui();
 
    // restore old projection matrix and settings
@@ -276,13 +303,109 @@ void ua_ingame_orig_screen::render_ui()
 
    // player appearance
    {
-      unsigned int app = (pl.get_appearance() + pl.is_gender_male()? 0 : 5) % 10;
+      unsigned int app = (pl.get_attr(ua_attr_appearance) +
+         pl.get_attr(ua_attr_gender)==0? 0 : 5) % 10;
       img_temp.paste_image(img_bodies.get_image(app),260,11);
    }
 
-   // mouse cursor
+   // inventory
    {
-//      img_temp.paste_image(img_cursors.get_image(cursor_image),cursorx,cursory);
+      ua_inventory &inv = core->get_underworld().get_inventory();
+
+      unsigned int start = 0;
+
+      if (inv.get_container_item_id()!=0xffff)
+      {
+         // inside a container
+
+         // draw container we're in
+         Uint16 cont_id = inv.get_item(inv.get_container_item_id()).item_id;
+
+         img_temp.paste_image(
+            img_objects.get_image(cont_id),
+            242, 60,true);
+
+         // begin at current slot start
+         start = slot_start;
+      }
+
+      // paste inventory slots
+      for(unsigned int i=0; i<8; i++)
+      {
+         if (start < inv.get_num_slots())
+         {
+            Uint16 item = inv.get_slot_item(start);
+            Uint16 item_id = inv.get_item(item).item_id;
+
+            // draw item
+            if (item_id != 0xffff)
+            {
+               unsigned int
+                  destx = 242 + (i&3)*19,
+                  desty = 82 + (i>>2)*18;
+
+               img_temp.paste_image(img_objects.get_image(item_id),
+                  destx,desty,true);
+            }
+            start++;
+         }
+      }
+
+      // do paperdoll items
+      for(unsigned int j=ua_slot_lefthand; j<ua_slot_max; j++)
+      {
+         // paperdoll image coordinates
+         unsigned int slot_coords[] =
+         {
+            241,34, 295,34, // hand
+            244,12, 293,12, // shoulder
+            254,50, 284,50, // finger
+            268,26,         // legs
+            262,22,         // chest
+            261,41,         // hands
+            266,66,         // feet
+            267,10,         // head
+         };
+
+         unsigned int destx, desty;
+         destx = slot_coords[(j-ua_slot_lefthand)*2];
+         desty = slot_coords[(j-ua_slot_lefthand)*2+1];
+
+         // paste item
+         Uint16 item_id = inv.get_item(j).item_id;
+         if (item_id != 0xffff)
+         {
+            if (j<ua_slot_paperdoll_start)
+            {
+               // normal object
+               img_temp.paste_image(img_objects.get_image(item_id),
+                  destx,desty,true);
+            }
+            else
+            {
+               // paperdoll image
+               unsigned int quality = 3; // can be between 0..3
+               Uint16 armorimg = item_id < 0x002f
+                  ? (item_id-0x0020)+15*quality
+                  : (item_id-0x002f+60);
+
+               img_temp.paste_image(img_armor.get_image(armorimg),
+                  destx,desty,true);
+            }
+         }
+      }
+
+      // inventory weight
+      {
+         ua_image img_weight;
+         font_normal.create_string(img_weight,"42",224);
+         img_temp.paste_image(img_weight,301,59,true);
+      }
+   }
+
+   // mouse cursor; should be the last one to paste
+   {
+      img_temp.paste_image(img_cursors.get_image(cursor_image),cursorx,cursory,true);
    }
 
    // upload ui texture
@@ -305,12 +428,6 @@ void ua_ingame_orig_screen::render_ui()
 
 void ua_ingame_orig_screen::tick()
 {
-   // get cursor pos
-   int x,y;
-   SDL_GetMouseState(&x,&y);
-   cursorx=unsigned(double(x)/core->get_screen_width()*320.0)-5;
-   cursory=unsigned(double(y)/core->get_screen_height()*200.0)-5;
-
    // movement
    if (walk)
       core->get_underworld().walk_player(
@@ -343,7 +460,11 @@ void ua_ingame_orig_screen::setup_opengl()
    // fog
    glEnable(GL_FOG);
    glFogi(GL_FOG_MODE,GL_EXP2);
-   glFogf(GL_FOG_DENSITY,0.65);
+#ifdef _DEBUG
+   glFogf(GL_FOG_DENSITY,0.1f);
+#else
+   glFogf(GL_FOG_DENSITY,0.65f);
+#endif
    glFogf(GL_FOG_START,0.0);
    glFogf(GL_FOG_END,1.0);
    int fog_color[4] = { 0,0,0,0 };

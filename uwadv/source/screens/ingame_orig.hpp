@@ -32,6 +32,7 @@
 // needed includes
 #include "screen.hpp"
 #include "image.hpp"
+#include "font.hpp"
 
 
 // classes
@@ -69,19 +70,44 @@ protected:
 
    bool leftbuttondown,rightbuttondown;
 
+   //! field of view angle
    double fov;
+   //! current player angle
    double playeryangle;
 
+   //! current mouse cursor
    unsigned int cursor_image;
+   //! mouse cursor coordinates
    unsigned int cursorx,cursory;
 
+   //! start of inventory slots the user sees
+   unsigned int slot_start;
+
+   //! 2d ui image background
    ua_image img_back;
+
+   //! temp image to assemble 2d ui image
    ua_image img_temp;
+   //! main 2d ui texture
    ua_texture tex;
 
+   //! normal font
+   ua_font font_normal;
+
+   //! compass graphics
    ua_image_list img_compass;
+
+   //! player appearance body graphics
    ua_image_list img_bodies;
+
+   //! cursor images
    ua_image_list img_cursors;
+
+   //! 2d object images
+   ua_image_list img_objects;
+
+   //! paperdoll armour images
+   ua_image_list img_armor;
 };
 
 #endif
