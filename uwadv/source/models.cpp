@@ -42,60 +42,73 @@ extern bool ua_model_decode_builtins(const char* filename,
 
 void ua_model3d_builtin::render(ua_object& obj, ua_vector3d& base)
 {
-   // hack: implementation for a_bridge
-   if (obj.get_object_info().item_id == 0x0164)
-   {
-      ua_object_info_ext& extinfo = obj.get_ext_object_info();
-
-      base.x = extinfo.tilex + 0.5;
-      base.y = extinfo.tiley + 0.5;
-      base.z += 0.06;
-
-      glBegin(GL_TRIANGLES);
-      glTexCoord2d(0.0,0.0); glVertex3d(base.x-0.5, base.y-0.5, base.z);
-      glTexCoord2d(1.0,0.0); glVertex3d(base.x+0.5, base.y-0.5, base.z);
-      glTexCoord2d(1.0,1.0); glVertex3d(base.x+0.5, base.y+0.5, base.z);
-
-      glTexCoord2d(0.0,0.0); glVertex3d(base.x-0.5, base.y-0.5, base.z);
-      glTexCoord2d(1.0,1.0); glVertex3d(base.x+0.5, base.y+0.5, base.z);
-      glTexCoord2d(0.0,1.0); glVertex3d(base.x-0.5, base.y+0.5, base.z);
-      glEnd();
-
-      return;
-   }
-
-   glDisable(GL_CULL_FACE);
+   //glDisable(GL_CULL_FACE);
    glDisable(GL_TEXTURE_2D);
 
-   unsigned int max = coord_index.size();
+   unsigned int max = triangles.size();
 
-   unsigned int col_cnt = 0;
+   ua_vector3d origin;
 
    for(unsigned int i=0; i<max; i++)
    {
-      glColor3ub(face_colors[col_cnt],face_colors[col_cnt+1],face_colors[col_cnt+2]);
-      col_cnt+=3;
+      // select debug triangle color
+      switch(triangles[i].texnum)
+      {
+      case 1:
+         glColor3ub(255,0,0); // red
+         break;
+      case 2:
+         glColor3ub(0,255,0); // green
+         break;
+      case 3:
+         glColor3ub(0,0,255); // blue
+         break;
+      case 4:
+         glColor3ub(255,0,255); // violet
+         break;
+      }
 
-      glBegin(GL_LINE_LOOP);
-      //glBegin(GL_POLYGON);
-      //glBegin(GL_TRIANGLE_STRIP);
+      const ua_triangle3d_textured& tri = triangles[i];
+
+//      glBegin(GL_LINE_LOOP);
+      glBegin(GL_TRIANGLES);
 
       // TODO generate normal vector
-      unsigned int j=i;
-      do
-      {
-         const ua_vector3d& vert = coords[coord_index[j]];
+      ua_vector3d normal,vec1(tri.vertices[1].pos),vec2(tri.vertices[2].pos);
+      vec1 -= tri.vertices[0].pos;
+      vec2 -= tri.vertices[0].pos;
 
-         glVertex3d(base.x+vert.x-origin.x, base.y+vert.y-origin.y, base.z+vert.z-origin.z);
+      normal.cross(vec1,vec2);
+      normal.normalize();
+      normal*= -1;
 
-      } while(coord_index[++j] != -1);
+      glNormal3d(normal.x,normal.y,normal.z);
 
-      i = j + 1; // go to next indices
+      for(unsigned j=0; j<3; j++)
+         glVertex3d(
+            base.x-origin.x+tri.vertices[j].pos.x,
+            base.y-origin.y+tri.vertices[j].pos.y,
+            base.z-origin.z+tri.vertices[j].pos.z
+         );
 
       glEnd();
+/*
+#ifdef HAVE_DEBUG
+      glColor3ub(255,255,255);
+      glBegin(GL_LINE_LOOP);
+      for(unsigned n=0; n<3; n++)
+         glVertex3d(
+            base.x-origin.x+tri.vertices[n].pos.x,
+            base.y-origin.y+tri.vertices[n].pos.y,
+            base.z-origin.z+tri.vertices[n].pos.z
+         );
+      glEnd();
+#endif
+*/
    }
 
 #ifdef HAVE_DEBUG
+/*
    // draw extents box
    glColor3ub(255,255,255);
 
@@ -130,59 +143,18 @@ void ua_model3d_builtin::render(ua_object& obj, ua_vector3d& base)
    glVertex3d(base.x+-ext.x, base.y+ ext.y, base.z+0);
    glVertex3d(base.x+-ext.x, base.y+-ext.y, base.z+0);
    glEnd();
+*/
 #endif
 
-   glEnable(GL_CULL_FACE);
+   //glEnable(GL_CULL_FACE);
    glEnable(GL_TEXTURE_2D);
 }
 
 void ua_model3d_builtin::get_bounding_triangles(ua_object& obj,
    ua_vector3d& base, std::vector<ua_triangle3d_textured>& trilist)
 {
-   // hack: implementation for a_bridge
-   if (obj.get_object_info().item_id == 0x0164)
-   {
-      ua_object_info_ext& extinfo = obj.get_ext_object_info();
-
-      base.x = extinfo.tilex + 0.5;
-      base.y = extinfo.tiley + 0.5;
-      base.z += 0.06*4.0;
-
-      ua_triangle3d_textured tri1,tri2;
-      tri1.set(0, base.x-0.5, base.y-0.5, base.z, 0.0,0.0);
-      tri1.set(1, base.x+0.5, base.y-0.5, base.z, 0.0,0.0);
-      tri1.set(2, base.x+0.5, base.y+0.5, base.z, 0.0,0.0);
-
-      tri2.set(0, base.x-0.5, base.y-0.5, base.z, 0.0,0.0);
-      tri2.set(1, base.x+0.5, base.y+0.5, base.z, 0.0,0.0);
-      tri2.set(2, base.x-0.5, base.y+0.5, base.z, 0.0,0.0);
-
-      trilist.push_back(tri1);
-      trilist.push_back(tri2);
-   }
-
-/*
-   unsigned int max = alltriangles.size();
-   for(unsigned int i=0; i<max; i++)
-   {
-      ua_triangle3d_textured tri(alltriangles[i]);
-
-      tri.points[0] += base;
-      tri.points[0] += origin;
-
-      tri.points[1] += base;
-      tri.points[1] += origin;
-
-      tri.points[2] += base;
-      tri.points[2] += origin;
-
-      ua_vector3d temp = tri.points[2];
-      tri.points[2] = tri.points[1];
-      tri.points[1] = temp;
-
-      trilist.push_back(tri);
-   }
-*/
+   // just hand over the tessellated triangles
+   trilist.insert(trilist.end(),triangles.begin(),triangles.end());
 }
 
 
@@ -230,7 +202,7 @@ void ua_model3d_manager::load_value(const std::string& name, const std::string& 
    if (value.find("builtin")==0)
    {
       // we have a builtin graphics
-      unsigned int builtin_nr = strtol(value.c_str()+7,NULL,10);
+      unsigned int builtin_nr = strtol(value.c_str()+7,NULL,16);
 
       // insert builtin model
       ua_model3d_ptr model_ptr = allbuiltins[builtin_nr];
