@@ -57,7 +57,7 @@ public:
    virtual ~ua_mousecursor(){}
 
    //! initializes mouse cursor class
-   void init(ua_game_interface* game, unsigned int initialtype=0);
+   void init(ua_game_interface& game, unsigned int initialtype=0);
 
    //! show or hide the cursor
    void show(bool show);
@@ -79,7 +79,7 @@ protected:
    bool isvisible;
 
    //! mouse cursor image list
-   ua_image_list img_cursors;
+   std::vector<ua_image> img_cursors;
 
    //! texture object for mouse
    ua_texture mousetex;

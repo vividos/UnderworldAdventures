@@ -34,14 +34,13 @@
 
 // ua_mousecursor methods
 
-void ua_mousecursor::init(ua_game_interface* game, unsigned int initialtype)
+void ua_mousecursor::init(ua_game_interface& game, unsigned int initialtype)
 {
    ua_window::create(0,0,0,0);
 
-   ua_settings& settings = game->get_settings();
-   img_cursors.load(settings,"cursors");
+   game.get_image_manager().load_list(img_cursors, "cursors");
 
-   mousetex.init(&game->get_renderer().get_texture_manager(),1,GL_LINEAR,GL_LINEAR,GL_CLAMP,GL_CLAMP);
+   mousetex.init(&game.get_renderer().get_texture_manager(),1);
 
    isvisible = false;
    set_type(initialtype);
@@ -54,7 +53,8 @@ void ua_mousecursor::show(bool show)
 
 void ua_mousecursor::set_type(unsigned int type)
 {
-   set_custom(img_cursors.get_image(type));
+   if (type < img_cursors.size())
+      set_custom(img_cursors[type]);
 }
 
 void ua_mousecursor::set_custom(ua_image& cursorimg)
@@ -64,7 +64,7 @@ void ua_mousecursor::set_custom(ua_image& cursorimg)
 
    ua_image cursorimg2;
    cursorimg2.create(wnd_width+1,wnd_height+1);
-   cursorimg2.paste_image(cursorimg,0,0);
+   cursorimg2.paste_rect(cursorimg, 0,0, wnd_width,wnd_height, 0,0);
 
    mousetex.convert(cursorimg2);
    mousetex.upload();
@@ -84,6 +84,10 @@ void ua_mousecursor::draw()
    double u = mousetex.get_tex_u(), v = mousetex.get_tex_v();
    u -= mousetex.get_tex_u()/mousetex.get_xres();
    v -= mousetex.get_tex_v()/mousetex.get_yres();
+
+   // set wrap parameter
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
    glBegin(GL_QUADS);
    glTexCoord2d(0.0, v  ); glVertex2i(wnd_xpos,           200-wnd_ypos);
