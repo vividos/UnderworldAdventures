@@ -121,10 +121,22 @@ void ua_object_list::addobj_follow(Uint32 objprop[0x400*2],
 
          if (objpos<0x0100)
          {
-            // TODO: store data from NPC, at //&npcinfo[objpos*19]
+            Uint8* data = &npcinfo[objpos*19];
 
-            // store NPC name as first data value
-            info.data.push_back(npcinfo[objpos*19+18]);
+            // npc_whoami
+            info.data.push_back(data[18]);
+
+            // npc_attitude
+            info.data.push_back(data[6]>>6);
+
+            // npc_hp
+            info.data.push_back(data[0]);
+
+            // npc_xhome, npc_yhome
+            info.data.push_back(((data[14]|(data[15]<<8))>>5)&0x3f);
+            info.data.push_back(data[14]&0x3f);
+
+            // TODO: store more data from NPC
          }
       }
 
