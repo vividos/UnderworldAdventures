@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -44,11 +44,8 @@ ua_critter::ua_critter()
 {
 }
 
-/*! Prepares textures for this critter.
-
-    \param texmgr texture manager to use
-*/
-void ua_critter::prepare(ua_texture_manager& texmgr)
+/*! Prepares textures for this critter. */
+void ua_critter::prepare()
 {
    tex.resize(maxframes);
 
@@ -56,7 +53,7 @@ void ua_critter::prepare(ua_texture_manager& texmgr)
    {
       ua_texture& curtex = tex[i];
 
-      curtex.init(&texmgr,1);
+      curtex.init(1);
 
       unsigned int offset = 0;
       curtex.convert(&allframe_bytes.get()[i*xres*yres],
@@ -88,7 +85,11 @@ void ua_critter::update_frame(ua_object& obj)
 
 // ua_critter_frames_manager methods
 
-/*! Initializes critter frames manager. Imports all critter frames. */
+/*! Initializes critter frames manager. Imports all critter frames.
+
+    \param settings settings to use
+    \param img_manager image manager to load critters
+*/
 void ua_critter_frames_manager::init(ua_settings& settings, ua_image_manager& img_manager)
 {
    // load all critters' frames
@@ -96,9 +97,11 @@ void ua_critter_frames_manager::init(ua_settings& settings, ua_image_manager& im
    import.load_critters(allcritters,settings,img_manager.get_palette(0));
 }
 
-/*! Prepares all critter frames for all critters in given map. */
-void ua_critter_frames_manager::prepare(ua_texture_manager& texmgr,
-   ua_object_list* new_mapobjects)
+/*! Prepares all critter frames for all critters in given map.
+
+    \param new_mapobjects object list with new map objects to prepare
+*/
+void ua_critter_frames_manager::prepare(ua_object_list* new_mapobjects)
 {
    mapobjects = new_mapobjects;
    object_indices.clear();
@@ -124,7 +127,7 @@ void ua_critter_frames_manager::prepare(ua_texture_manager& texmgr,
          object_framecount.push_back(0.0);
 
          // prepare texture
-         allcritters[item_id-0x0040].prepare(texmgr);
+         allcritters[item_id-0x0040].prepare();
       }
    }
 }

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -41,7 +41,6 @@
 // forward references
 class ua_object;
 class ua_object_list;
-class ua_texture_manager;
 
 
 // classes
@@ -54,7 +53,7 @@ public:
    ua_critter();
 
    //! prepares critter textures
-   void prepare(ua_texture_manager& texmgr);
+   void prepare();
 
    //! returns critter texture index by frame
    inline unsigned int get_frame(Uint8 animstate, Uint8 animframe);
@@ -117,7 +116,7 @@ public:
    void init(ua_settings& settings, ua_image_manager& img_manager);
 
    //! resets controlled object frames and prepares new critter objects
-   void prepare(ua_texture_manager& texmgr, ua_object_list* mapobjects);
+   void prepare(ua_object_list* mapobjects);
 
    //! does tick processing
    void tick(double tickrate);

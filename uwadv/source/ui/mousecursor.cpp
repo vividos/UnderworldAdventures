@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ void ua_mousecursor::init(ua_game_interface& game, unsigned int initialtype)
 
    game.get_image_manager().load_list(img_cursors, "cursors");
 
-   mousetex.init(&game.get_renderer().get_texture_manager(),1);
+   mousetex.init(1);
 
    isvisible = false;
    set_type(initialtype);

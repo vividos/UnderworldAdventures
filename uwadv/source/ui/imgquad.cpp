@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@ void ua_image_quad::init(ua_game_interface& game, unsigned int xpos,
    if (image.get_palette().get() == NULL)
       image.get_palette() = game.get_image_manager().get_palette(0);
 
-   tex.init(&game.get_renderer().get_texture_manager(), 2);
+   tex.init(2);
 
    smooth_ui = game.get_settings().get_bool(ua_setting_ui_smooth);
 }
