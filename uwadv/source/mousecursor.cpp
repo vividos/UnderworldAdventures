@@ -67,6 +67,12 @@ void ua_mousecursor::updatepos()
    cursory = unsigned(double(y)/screen_height*200.0+cursorh/2.0);
 }
 
+void ua_mousecursor::updatepos(unsigned int relx, unsigned int rely)
+{
+   cursorx = relx - cursorw/2;
+   cursory = rely + cursorh/2;
+}
+
 void ua_mousecursor::show(bool show)
 {
    isvisible = show;

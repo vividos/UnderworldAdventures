@@ -61,6 +61,9 @@ public:
    //! update the current position of the mouse
    void updatepos();
 
+   //! update current position with given relative mouse coordinates
+   void updatepos(unsigned int relx, unsigned int rely);
+
    //! update and draw the mouse texture
    void draw();
 
