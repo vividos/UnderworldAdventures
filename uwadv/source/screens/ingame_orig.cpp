@@ -562,6 +562,7 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
       fadeout_action = 0; // return to menu
    }
    else
+#ifdef HAVE_DEBUG
    // check for quicksave key
    if (keymap.is_key(ua_key_special_quicksave,keymod))
    {
@@ -601,6 +602,7 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    {
       dbgint->start_debugger();
    }
+#endif
 #ifdef HAVE_DEBUG
    else
    // check for "level up" key
