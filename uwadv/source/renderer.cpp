@@ -1023,13 +1023,10 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
       base.z = extinfo.zpos/4.0*height_scale;
 
       // hack: set texture for bridge
-      if (item_id==0x0164 || item_id==0x0157)
+      if (item_id==0x0164)
       {
          // TODO move this to bridge rendering
-         // TODO fix "flags > 2" case
-         Uint16 flags = obj.get_object_info().flags;
-         texmgr->use(flags<2 ?
-            30+flags+ua_tex_stock_tmobj : ua_tex_stock_tmobj + 30);
+         texmgr->use(obj.get_object_info().flags);
       }
 
       modelmgr->render(item_id,base);

@@ -28,6 +28,7 @@
 // needed includes
 #include "common.hpp"
 #include "objects.hpp"
+#include "texture.hpp"
 
 
 // ua_object_list methods
@@ -165,13 +166,20 @@ void ua_object_list::addobj_follow(Uint32 objprop[0x400*2],
 
       // object modifications
       {
-         // "special tmap object"
+         // special tmap object
          if (item_id == 0x016e || item_id == 0x016f)
          {
             Uint16& owner = obj.get_object_info().owner;
             if (owner > 64)
                owner = 0;
             owner = texmap[owner]; // resolve texture
+         }
+
+         // a_bridge
+         if (item_id == 0x0164)
+         {
+            Uint16& flags = obj.get_object_info().flags;
+            flags = flags < 2 ? (30+flags+ua_tex_stock_tmobj) : texmap[flags-2+48];
          }
       }
 
