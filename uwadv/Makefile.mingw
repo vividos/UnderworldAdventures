@@ -21,8 +21,8 @@ WITH_DEBUGGING = no
 SDL_INCLUDE = -Ic:/mingw/include/sdl/
 
 # path to STLport
-STLPORT_INCLUDE = -Ic:/mingw/stl/stlport/
-STLPORT_LIB = -Lc:/mingw/stl/lib/ -lstlport_mingw32_static
+STLPORT_INCLUDE = -Ic:/mingw/stlport/stlport/
+STLPORT_LIB = -Lc:/mingw/stlport/lib/ -lstlport_mingw32_static
 
 # no servicable parts beyond here.
 
