@@ -87,6 +87,24 @@ Package=<4>
 
 ###############################################################################
 
+Project: "strpak"=.\strpak.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name base
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name import
+    End Project Dependency
+}}}
+
+###############################################################################
+
 Project: "uaconfig"=.\uaconfig.dsp - Package Owner=<4>
 
 Package=<5>
@@ -98,6 +116,18 @@ Package=<4>
     Begin Project Dependency
     Project_Dep_Name base
     End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "uastudio"=.\uastudio.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
 }}}
 
 ###############################################################################
