@@ -100,7 +100,7 @@ CXXFLAGS = -I.. $(SDL_CFLAGS)
 LDFLAGS = $(SDL_LIBS)
 
 # tools build rule
-TOOLS = cnvdasm cnvdbg xmi2mid mapdisp animview
+TOOLS = cnvdasm cnvdbg xmi2mid mapdisp animview strpak
 
 
 # automake build rules
@@ -114,13 +114,19 @@ cnvdasm_SOURCES = cnvdasm.cpp cnvdasm.hpp instr.hpp \
 	cnvdasm.hpp instr.hpp ../conv/codevm.hpp
 
 
+cnvdasm_LDADD = $(SDL_LIBS)
+
 cnvdbg_SOURCES = cnvdbg.cpp cnvdbg.hpp instr.hpp \
 	../conv/codevm.cpp ../resource/codeloader.cpp \
 	../resource/gamestrings.cpp \
 	cnvdbg.hpp instr.hpp ../conv/codevm.hpp
 
 
+cnvdbg_LDADD = $(SDL_LIBS)
+
 xmi2mid_SOURCES = xmi2mid.cpp ../audio/xmidi.cpp ../audio/xmidi.hpp
+
+xmi2mid_LDADD = $(SDL_LIBS)
 
 mapdisp_SOURCES = mapdisp.cpp ../level.cpp ../resource/maploader.cpp \
 	../quadtree.cpp ../resource/texloader.cpp ../texture.cpp \
@@ -131,7 +137,7 @@ mapdisp_SOURCES = mapdisp.cpp ../level.cpp ../resource/maploader.cpp \
 	../texture.hpp ../uatypes.hpp
 
 
-mapdisp_LDADD = -lGL -lGLU
+mapdisp_LDADD = -lGL -lGLU $(SDL_LIBS)
 
 animview_SOURCES = animview.cpp ../cutscene.cpp ../resource/cutsloader.cpp \
 	../image.cpp ../texture.cpp ../image.hpp ../texture.hpp \
@@ -139,7 +145,14 @@ animview_SOURCES = animview.cpp ../cutscene.cpp ../resource/cutsloader.cpp \
 	../resource/fread_endian.hpp
 
 
-animview_LDADD = -lGL -lGLU
+animview_LDADD = -lGL -lGLU $(SDL_LIBS)
+
+strpak_SOURCES = strpak.cpp ../resource/gamestrings.cpp \
+	../common.hpp ../resource/fread_endian.hpp ../gamestrings.hpp \
+	../settings.hpp ../uatypes.hpp
+
+
+strpak_LDADD = $(SDL_LIBS)
 
 EXTRA_DIST = 
 subdir = ../tools
@@ -147,7 +160,7 @@ mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 EXTRA_PROGRAMS = cnvdasm$(EXEEXT) cnvdbg$(EXEEXT) xmi2mid$(EXEEXT) \
-	mapdisp$(EXEEXT) animview$(EXEEXT)
+	mapdisp$(EXEEXT) animview$(EXEEXT) strpak$(EXEEXT)
 am_animview_OBJECTS = animview.$(OBJEXT) cutscene.$(OBJEXT) \
 	cutsloader.$(OBJEXT) image.$(OBJEXT) texture.$(OBJEXT)
 animview_OBJECTS = $(am_animview_OBJECTS)
@@ -156,13 +169,11 @@ animview_LDFLAGS =
 am_cnvdasm_OBJECTS = cnvdasm.$(OBJEXT) codevm.$(OBJEXT) \
 	codeloader.$(OBJEXT) gamestrings.$(OBJEXT)
 cnvdasm_OBJECTS = $(am_cnvdasm_OBJECTS)
-cnvdasm_LDADD = $(LDADD)
 cnvdasm_DEPENDENCIES =
 cnvdasm_LDFLAGS =
 am_cnvdbg_OBJECTS = cnvdbg.$(OBJEXT) codevm.$(OBJEXT) \
 	codeloader.$(OBJEXT) gamestrings.$(OBJEXT)
 cnvdbg_OBJECTS = $(am_cnvdbg_OBJECTS)
-cnvdbg_LDADD = $(LDADD)
 cnvdbg_DEPENDENCIES =
 cnvdbg_LDFLAGS =
 am_mapdisp_OBJECTS = mapdisp.$(OBJEXT) level.$(OBJEXT) \
@@ -172,9 +183,12 @@ am_mapdisp_OBJECTS = mapdisp.$(OBJEXT) level.$(OBJEXT) \
 mapdisp_OBJECTS = $(am_mapdisp_OBJECTS)
 mapdisp_DEPENDENCIES =
 mapdisp_LDFLAGS =
+am_strpak_OBJECTS = strpak.$(OBJEXT) gamestrings.$(OBJEXT)
+strpak_OBJECTS = $(am_strpak_OBJECTS)
+strpak_DEPENDENCIES =
+strpak_LDFLAGS =
 am_xmi2mid_OBJECTS = xmi2mid.$(OBJEXT) xmidi.$(OBJEXT)
 xmi2mid_OBJECTS = $(am_xmi2mid_OBJECTS)
-xmi2mid_LDADD = $(LDADD)
 xmi2mid_DEPENDENCIES =
 xmi2mid_LDFLAGS =
 
@@ -192,9 +206,9 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/imageloader.Po ./$(DEPDIR)/level.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/mapdisp.Po ./$(DEPDIR)/maploader.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/objects.Po ./$(DEPDIR)/objloader.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/quadtree.Po ./$(DEPDIR)/texloader.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/texture.Po ./$(DEPDIR)/xmi2mid.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/xmidi.Po
+@AMDEP_TRUE@	./$(DEPDIR)/quadtree.Po ./$(DEPDIR)/strpak.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/texloader.Po ./$(DEPDIR)/texture.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/xmi2mid.Po ./$(DEPDIR)/xmidi.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
@@ -206,9 +220,9 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 DIST_SOURCES = $(animview_SOURCES) $(cnvdasm_SOURCES) $(cnvdbg_SOURCES) \
-	$(mapdisp_SOURCES) $(xmi2mid_SOURCES)
+	$(mapdisp_SOURCES) $(strpak_SOURCES) $(xmi2mid_SOURCES)
 DIST_COMMON = Makefile.am Makefile.in
-SOURCES = $(animview_SOURCES) $(cnvdasm_SOURCES) $(cnvdbg_SOURCES) $(mapdisp_SOURCES) $(xmi2mid_SOURCES)
+SOURCES = $(animview_SOURCES) $(cnvdasm_SOURCES) $(cnvdbg_SOURCES) $(mapdisp_SOURCES) $(strpak_SOURCES) $(xmi2mid_SOURCES)
 
 all: all-am
 
@@ -245,6 +259,9 @@ objects.$(OBJEXT): ../objects.cpp
 mapdisp$(EXEEXT): $(mapdisp_OBJECTS) $(mapdisp_DEPENDENCIES) 
 	@rm -f mapdisp$(EXEEXT)
 	$(CXXLINK) $(mapdisp_LDFLAGS) $(mapdisp_OBJECTS) $(mapdisp_LDADD) $(LIBS)
+strpak$(EXEEXT): $(strpak_OBJECTS) $(strpak_DEPENDENCIES) 
+	@rm -f strpak$(EXEEXT)
+	$(CXXLINK) $(strpak_LDFLAGS) $(strpak_OBJECTS) $(strpak_LDADD) $(LIBS)
 xmidi.$(OBJEXT): ../audio/xmidi.cpp
 xmi2mid$(EXEEXT): $(xmi2mid_OBJECTS) $(xmi2mid_DEPENDENCIES) 
 	@rm -f xmi2mid$(EXEEXT)
@@ -272,6 +289,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/objects.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/objloader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/quadtree.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strpak.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/texloader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/texture.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xmi2mid.Po@am__quote@
