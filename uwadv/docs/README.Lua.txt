@@ -374,16 +374,34 @@ registered C functions to call from Lua:
 
 2.1.3.2. Object list access functions
 
-Object infos are stored in a table that can look like this:
+Object infos are stored in a table that may look like this:
 
-T = { item_id = 0, quantity = 0, handle_next, handle_special,
-      data = { size = 2, [0] = 1, [1] = 42 },
-    }
+T = {
+   item_id = 0,    -- item ID
+   enchanted = 1,  -- 1 if enchanted, 0 if not
+   is_link = 1,    -- is "special" field a link?
 
-"handle_next" is the handle to the next object in list, or 0 for none.
-"handle_special" points to an object associated with the current one (e.g. the
-inventory of NPC's, contents of a container or door to a lock object).
-"data" contains misc. data for that particular item type
+   zpos = 0,       -- z position (flying critters?)
+   dir = 7,        -- direction (0..7, dir*45 degree)
+   ypos = 0.2,     -- fractional y position in tile
+   xpos = 0.7,     -- fractional x position in tile
+
+   quality = 1,    -- quality value
+   handle_next,    -- object handle to next item (or 0 if end of chain)
+   owner = 0,      -- owner / special field
+   quantity = 0,   -- quantity / link / special property field
+
+   data = {        -- data value array
+      size = 2,
+      [0] = 1, [1] = 42
+   },
+}
+
+The "quantity" variable can be a link field for special objects (when is_link
+is 1), e.g. for container content or NPC/critter inventory. It also can serve
+as special property field (see uw-formats.txt for more).
+The "data" array contains misc. data for that particular item type. The
+content of these fields are not yet specified.
 
 * objlist_get_obj_info(obj_handle)
   return values: objinfo
