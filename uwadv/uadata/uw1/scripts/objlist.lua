@@ -99,3 +99,26 @@ function lua_objlist_use(obj_handle)
    trig_check_handle(trig_use,obj_handle)
 
 end
+
+
+-- called when (trying to) picking up an object
+function lua_objlist_get(obj_handle)
+
+   -- check if the user already has item in hand
+   if inv_float_get_item() ~= lua_slot_no_item
+   then
+      return
+   end
+
+   -- check if object can be picked up
+
+   -- check if object is near enough
+
+   -- add object to inventory and float it
+   if inv_float_add_item(obj_handle) ~= ua_slot_no_item
+   then
+      -- remove from master object list
+      objlist_remove_obj(obj_handle)
+   end
+
+end
