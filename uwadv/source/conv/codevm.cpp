@@ -108,8 +108,11 @@ void ua_conv_code_vm::init(ua_conv_globals &cg, std::vector<std::string>& string
    basep = 0xffff;
    result_register = 0;
    finished = false;
-
    call_level=1;
+
+   // store string block on local strings heap
+   localstrings.clear();
+   localstrings = stringblock;
 
    // init stack: 4k should be enough for anybody.
    stack.init(4096);
@@ -142,9 +145,6 @@ void ua_conv_code_vm::init(ua_conv_globals &cg, std::vector<std::string>& string
          stack.set(pos,val);
       }
    }
-
-   localstrings.clear();
-   localstrings = stringblock;
 }
 
 void ua_conv_code_vm::done(ua_conv_globals &cg)
@@ -308,7 +308,7 @@ void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
       break;
 
    case op_BRA:
-      instrp += code[instrp+1]+1;
+      instrp += code[instrp+1];
       break;
 
    case op_CALL: // local function
@@ -528,6 +528,13 @@ void ua_conv_code_vm::replace_placeholder(std::string& str)
       // insert value string
       str.replace(pos,num_len,varstr.c_str());
    }
+}
+
+Uint16 ua_conv_code_vm::alloc_string(const std::string& str)
+{
+   Uint16 pos = localstrings.size();
+   localstrings.push_back(str);
+   return pos;
 }
 
 void ua_conv_code_vm::imported_func(const std::string& funcname)

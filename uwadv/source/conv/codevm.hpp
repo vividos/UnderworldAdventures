@@ -208,6 +208,9 @@ public:
    //! replaces all @ placeholder in the given string
    void replace_placeholder(std::string& str);
 
+   //! allocates new string on local strings heap and returns handle
+   Uint16 alloc_string(const std::string& str);
+
    // virtual functions
 
    //! called when calling an imported function
