@@ -139,6 +139,12 @@ struct ua_object_info_ext
    // extra (unknown) values
    //Uint8 extra1,extra2,extra5,extra7,extra8,extra9,extra10;
    //Uint8 extra11,extra12,extra13,extra14,extra15,extra16,extra17;
+
+   //! npc state
+   Uint8 state;
+
+   //! current animation frame
+   Uint8 animframe;
 };
 
 

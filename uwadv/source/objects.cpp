@@ -123,6 +123,9 @@ void ua_object_info_ext::load_extinfo(ua_savegame& sg)
       npc_hunger = sg.read8();
       npc_whoami = sg.read8();
 
+      state = sg.read8();
+      animframe = sg.read8();
+
       // read placeholder values
       sg.read16();
       sg.read16();
@@ -154,6 +157,9 @@ void ua_object_info_ext::save_extinfo(ua_savegame& sg)
 
       sg.write8(npc_hunger);
       sg.write8(npc_whoami);
+
+      sg.write8(state);
+      sg.write8(animframe);
 
       // write placeholder values
       sg.write16(0);
