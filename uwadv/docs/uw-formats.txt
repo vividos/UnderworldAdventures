@@ -1186,8 +1186,7 @@ Table of Contents
                         8      
                         13     npc_talkedto
                         14-15  npc_attitude
-   000f   0007
-   0010   0008
+   000f   0007   Int16  6- 12  npc height?
    0011   0009
    0012   000a
    0013   000b   Int8   7      single bit, unknown
@@ -1604,6 +1603,9 @@ Table of Contents
          this trap does 'visual' effects like earthquakes, or blurry vision.
 
    0185  a_change terrain trap
+         the trap changes one or more tiles, according to the encoded info.
+         the trigger's target coordinates describe the starting tile.
+         TODO
 
    0186  a_spelltrap
          fields "quality" and "quantity" determine spell type.
@@ -1755,8 +1757,8 @@ Table of Contents
    01ab  a_close trigger [uw2]
    01ac  a_scheduled trigger [uw2]
 
-   [uw2]: the triggers 01a0..01ac repeat at 01b0..01bc (same object class,
-          different object sub-class)
+   [uw2]: the triggers 01a0..01ac are repeated at 01b0..01bc (same object
+          class, different object sub-class)
 
 
 6.2  Common object properties
@@ -2621,7 +2623,10 @@ Table of Contents
     09     0159      beam
     0A     0160      pillar
     0B     0157      shrine
+    0C
     0D     0163      painting [uw2]
+    0E
+    0F
     10     0161      texture map (8-way lever)
     11     0162      texture map (8-way switch)
     12     0166      texture map (writing)
