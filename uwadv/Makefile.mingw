@@ -73,7 +73,7 @@ include source/lua/Makefile.common
 lua_Cs = \
         $(filter %.c,$(liblua_la_SOURCES)) \
         $(filter %.c,$(liblualib_la_SOURCES))
-lua_OBJS = $(cnvdbg_Cs:%.c=source/lua/%.o)
+lua_OBJS = $(lua_Cs:%.c=source/lua/%.o)
 
 
 
