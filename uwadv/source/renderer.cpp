@@ -1008,6 +1008,10 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
       return;
 #endif
 
+   // hack: don't render some objects we currently don't support
+   if ((item_id >= 0x00da && item_id <= 0x00df) || item_id == 0x012e)
+      return;
+
    ua_level& level = underw->get_current_level();
    ua_object_info_ext& extinfo = obj.get_ext_object_info();
 
@@ -1029,7 +1033,7 @@ void ua_renderer::render_object(ua_object& obj, unsigned int x, unsigned int y)
          texmgr->use(obj.get_object_info().flags);
       }
 
-      modelmgr->render(item_id,base);
+      modelmgr->render(obj,base);
       return;
    }
    if (item_id >= 0x0040 && item_id < 0x0080)
