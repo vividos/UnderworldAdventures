@@ -13,9 +13,6 @@ technical/source
 - savegame manager API
   prio: 2  assigned: vividos
 
-- add zlib compression to savegame writing/loading
-  prio: 4  assigned: none
-
 - levelmap annotations list API
   prio: 3  assigned: vividos
 
