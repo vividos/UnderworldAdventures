@@ -9,7 +9,7 @@ LUAC = ../source/lua/luac
 # this defines luaSCRIPTS, luaOBJECTS and uarFILES
 include Makefile.common
 
-uadata_DATA = uadata00.uar
+uadata_DATA = uadata00.uar uw1/keymap.cfg
 uadatadir = $(datadir)/games/uwadv
 
 EXTRA_DIST = \

@@ -32,6 +32,7 @@ EXTRA_DIST = \
 	linux/uwadv.cfg.in \
 	linux/ua-lowercase-all.pl \
 	linux/uwadv.6.in \
+	linux/ua-lowercase-all.pl.6 \
 	win32/animview.dsp \
 	win32/cnvdasm.dsp \
 	win32/cnvdbg.dsp \
