@@ -36,7 +36,11 @@
 -- string block for labels/buttons
 cchar_strblock = 2
 
--- actions
+-- global actions (incoming param values for Lua function cchar_global)
+gactInit = 0    -- initialize
+gactDeinit = 1  -- deinitialize
+
+-- actions (outgoing param values for C function cchar_do_action)
 actEnd = 0            -- ends the character creation screen (no params)
 actSetStringBlock = 1 -- sets the stringblock (param1=stringblock)
 actSetBtnGroup = 2    -- sets the specified button group (param1=heading, param2=buttontype, param3=buttontable)
@@ -185,21 +189,28 @@ ccharui = {
 
 -- functions
 
--- initializes create character screen
-function cchar_init(this)
-   self = this       -- sets "self" as userdata for all C function calls
-   curgroup = 1
-   curstep = 0 
-   psex = 0
-   pclass = 0
-   pimg = 0
-   pname = "None"
-   cchar_do_action(self, actSetStringBlock, ccharui.strblock)
+-- initializes/deinitializes create character screen
+function cchar_global(this, globalaction)
+   if globalaction==gactInit then
+      self = this       -- sets "self" as userdata for all C function calls
+      curstep = 0 
+      psex = 0
+      pclass = 0
+      pimg = 0
+      pname = ""
+      cchar_do_action(self, actSetStringBlock, ccharui.strblock)
+   end
 
-   -- show the first button group
-   cchar_do_action(self, actClear)
-   cchar_do_action(self, actSetBtnGroup, ccharui.btngroups[curgroup].heading, ccharui.btngroups[curgroup].btntype, ccharui.btngroups[curgroup].btns)
-   cchar_do_action(self, actUpdate)
+   -- end it all when we're at the first page and a deinit was received
+   if globalaction==gactDeinit and curgroup==1 then
+      cchar_do_action(self, actEnd)
+   else
+      -- show the first button group
+      curgroup = 1
+      cchar_do_action(self, actClear)
+      cchar_do_action(self, actSetBtnGroup, ccharui.btngroups[curgroup].heading, ccharui.btngroups[curgroup].btntype, ccharui.btngroups[curgroup].btns)
+      cchar_do_action(self, actUpdate)
+   end
 end
 
 
@@ -265,7 +276,8 @@ function cchar_buttonclick(button, text)
       if curgroup>1 then 
          cchar_do_action(self, actSetText, psex+ccvMale, 18, 21, alLeft) 
       end
-      if curgroup>3 then 
+      if curgroup>3 then
+         -- common stats
          cchar_do_action(self, actSetText, pclass+ccvFighter, 141, 21, alRight)
          cchar_do_action(self, actSetText, ccvStrc, 93, 50, alLeft)
          cchar_do_action(self, actSetNumber, 0, 139, 50)
@@ -275,12 +287,24 @@ function cchar_buttonclick(button, text)
          cchar_do_action(self, actSetNumber, 10, 139, 84)
          cchar_do_action(self, actSetText, ccvVitc, 93, 101, alLeft)
          cchar_do_action(self, actSetNumber, 100, 139, 101)
+
+         -- class/skill specific stats
+         cchar_do_action(self, actSetText, ccvAttack, 30, 132, alLeft)
+         cchar_do_action(self, actSetNumber, 9, 125, 132)
+         cchar_do_action(self, actSetText, ccvDefence, 30, 143, alLeft)
+         cchar_do_action(self, actSetNumber, 10, 125, 143)
+         cchar_do_action(self, actSetText, ccvRepair, 30, 154, alLeft)
+         cchar_do_action(self, actSetNumber, 11, 125, 154)
+         cchar_do_action(self, actSetText, ccvSword, 30, 165, alLeft)
+         cchar_do_action(self, actSetNumber, 12, 125, 165)
+         cchar_do_action(self, actSetText, ccvAppraise, 30, 176, alLeft)
+         cchar_do_action(self, actSetNumber, 13, 125, 176)
       end
       if curgroup>19 then
          cchar_do_action(self, actSetImg, 17+pimg, 44, 81)
       end
       if curgroup>21 then
-         cchar_do_action(self, actSetName, "Avatar", 80, 10, alCenter)
+         cchar_do_action(self, actSetName, pname, 80, 10, alCenter)
       end
       cchar_do_action(self, actSetBtnGroup, ccharui.btngroups[curgroup].heading, ccharui.btngroups[curgroup].btntype, ccharui.btngroups[curgroup].btns)
       cchar_do_action(self, actUpdate)

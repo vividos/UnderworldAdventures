@@ -37,6 +37,7 @@
 
 // classes
 
+
 //! create character screen class
 class ua_create_character_screen: public ua_ui_screen_base
 {
@@ -71,18 +72,24 @@ protected:
    //! determines clicked button in current group, -1 if none
    int getbuttonover();
 
-   //! draws text at a coordinate (xalign: 0=left, 1=center, 2=right)
-   void drawtext(const char *str, int x, int y, int xalign = 0, unsigned char color = 0);
-   void drawtext(int strnum, int x, int y, int xalign = 0, unsigned char color = 0);
+   //! draws text at a coordinate (xalign: 0=left, 1=center, 2=right), returns width of text in pixels
+   unsigned int drawtext(const char *str, int x, int y, int xalign = 0, unsigned char color = 0);
+   unsigned int drawtext(int strnum, int x, int y, int xalign = 0, unsigned char color = 0);
 
-   //! draw a number at a coordinate, number is always right-aligned
-   void drawnumber(unsigned int num, int x, int y, unsigned char color = 0);
+   //! draw a number at a coordinate, number is always right-aligned, returns width of text in pixels
+   unsigned int drawnumber(unsigned int num, int x, int y, unsigned char color = 0);
 
    //! draws a button at a coordinate (xc is horizontal center, y vertical top)
    void drawbutton(int buttontype, bool highlight, int strnum, int xc, int y);
 
    //! draws a buttongroup
    void drawbuttongroup();
+
+   //! handleinputchar
+   void handleinputchar(char c);
+
+   //! call cchar_global in script 
+   void cchar_global(int globalaction);
 
 protected:
    //! lua script state
@@ -112,9 +119,6 @@ protected:
    //! indicates if the mouse button is down
    bool buttondown;
 
-   //! input text
-   char* inputtext;
-
    //! image
    ua_image img;
 
@@ -135,6 +139,9 @@ protected:
 
    //! number of previous button
    int prev_button;
+
+   //! input text
+   char* inputtext;
 
    //! string number of caption in current button group (0 if none)
    unsigned int btng_caption;

@@ -35,6 +35,13 @@ const double ua_fade_time = 0.5;
 //! maximum number of buttons in a group (shown on-screen at once)
 const unsigned char ua_maxbuttons = 10;
 
+//! global script actions
+enum ua_elua_globalaction
+{
+   gactInit = 0,   // initialize
+   gactDeinit = 1  // deinitialize
+};
+
 //! script actions 
 enum ua_elua_action
 {
@@ -121,7 +128,7 @@ void ua_create_character_screen::init()
    btng_buttoncount = 0;
    btng_buttons = new unsigned int[ua_maxbuttons];
    inputtext = new char[32];
-   memcpy(inputtext, "Avatar", 7);
+   inputtext[0] = 0;
 
    // init lua scripting
    initluascript();
@@ -139,99 +146,23 @@ void ua_create_character_screen::initluascript()
    if (0!=core->get_filesmgr().load_lua_script(L,"uw1/scripts/createchar"))
       ended = true;
 
-   // call "cchar_init(this)"
-   lua_getglobal(L,"cchar_init");
-   lua_pushuserdata(L,this);
-   int ret = lua_call(L,1,0);
+   cchar_global(gactInit);
+}
+
+void ua_create_character_screen::cchar_global(int globalaction)
+{
+    // call "cchar_global(this)"
+   lua_getglobal(L,"cchar_global");
+   lua_pushuserdata(L, this);
+   lua_pushnumber(L, globalaction);
+   int ret = lua_call(L,2,0);
    if (ret!=0)
    {
-      ua_trace("Lua function call cchar_init(0x%08x) ended with error code %u\n",
+      ua_trace("Lua function call cchar_global(0x%08x) ended with error code %u\n",
          this,ret);
       ended = true;
    }
-}
 
-void ua_create_character_screen::do_action()
-{
-   int n=lua_gettop(L);
-   unsigned int action = (n<2) ? 0 : static_cast<unsigned int>(lua_tonumber(L,2));
-
-   ua_trace("character creation script action %d received\n", action);
-
-   switch(static_cast<ua_elua_action>(action))
-   {
-   case actEnd:
-      ended = true;
-      break;
-
-   case actSetStringBlock:
-      if (n<3) break;
-      strblock = static_cast<unsigned int>(lua_tonumber(L,3));
-      break;
-
-   case actSetBtnGroup:
-   {
-      if (n<4) break;
-      btng_caption = static_cast<unsigned int>(lua_tonumber(L,3));
-      btng_buttontype = static_cast<unsigned int>(lua_tonumber(L,4));
-      btng_buttoncount = lua_getn(L, 5);
-      for (int i=0; i<btng_buttoncount; i++)
-      {
-         lua_rawgeti(L, 5, i+1);
-         btng_buttons[i] = static_cast<unsigned int>(lua_tonumber(L,6));
-         lua_pop(L, 1);
-      }
-      selected_button=prev_button=0;
-      drawbuttongroup();
-      break;
-   }
-
-   case actSetText:
-   {
-      if (n<6) break;
-      drawtext(static_cast<unsigned int>(lua_tonumber(L,3)),
-               static_cast<unsigned int>(lua_tonumber(L,4)),
-               static_cast<unsigned int>(lua_tonumber(L,5)),
-               static_cast<unsigned int>(lua_tonumber(L,6)));
-      break;
-   }
-
-   case actSetName:
-   {
-      if (n<6) break;
-      drawtext(lua_tostring(L,3),
-               static_cast<unsigned int>(lua_tonumber(L,4)),
-               static_cast<unsigned int>(lua_tonumber(L,5)),
-               static_cast<unsigned int>(lua_tonumber(L,6)));
-      break;
-   }
-
-   case actSetNumber:
-   {
-      if (n<5) break;
-      drawnumber(static_cast<unsigned int>(lua_tonumber(L,3)),
-               static_cast<unsigned int>(lua_tonumber(L,4)),
-               static_cast<unsigned int>(lua_tonumber(L,5)));
-      break;
-   }
-
-   case actSetImg:
-   {
-      if (n<5) break;
-      ua_image cimg = img_buttons.get_image(static_cast<unsigned int>(lua_tonumber(L,3)));
-      img.paste_image(cimg, static_cast<unsigned int>(lua_tonumber(L,4)) - cimg.get_xres()/2, 
-                            static_cast<unsigned int>(lua_tonumber(L,5)) - cimg.get_yres()/2, true);
-      break;
-   }
-
-   case actClear:
-      img.paste_image(bgimg, 0, 0, false);
-      break;
-
-   case actUpdate:
-      changed = true;
-      break;
-   }
 }
 
 void ua_create_character_screen::done()
@@ -253,14 +184,27 @@ void ua_create_character_screen::done()
 
 void ua_create_character_screen::handle_event(SDL_Event &event)
 {
+
    switch(event.type)
    {
    case SDL_KEYDOWN:
       // handle key presses
+      if ((btng_buttontype==btInput) && 
+          (((event.key.keysym.sym>=SDLK_a) && (event.key.keysym.sym<=SDLK_z)) 
+          || (event.key.keysym.sym==SDLK_BACKSPACE) || (event.key.keysym.sym==SDLK_SPACE)))
+      {
+         char c = event.key.keysym.sym;
+         if ((SDL_GetModState() & KMOD_SHIFT) && ((c>='a') && (c<='z')))
+            c -= 32;
+         handleinputchar(c);
+         drawbuttongroup();
+         changed = true;
+      }
+
       switch(event.key.keysym.sym)
       {
       case SDLK_ESCAPE:
-         ended = true;
+         cchar_global(gactDeinit);
          break;
 
       case SDLK_PAGEUP:
@@ -332,18 +276,121 @@ void ua_create_character_screen::handle_event(SDL_Event &event)
    }
 }
 
-void ua_create_character_screen::drawtext(const char* str, int x, int y, int xalign, unsigned char color)
+void ua_create_character_screen::handleinputchar(char c)
+{
+   int i = strlen(inputtext);
+   if (c==8) 
+   {
+      if (i>0)
+         inputtext[i-1] = 0;
+      return;
+   }
+   if (i>=31)
+      return;
+   inputtext[i] = c;
+   inputtext[i+1] = 0;
+}
+
+void ua_create_character_screen::do_action()
+{
+   int n=lua_gettop(L);
+   unsigned int action = (n<2) ? 0 : static_cast<unsigned int>(lua_tonumber(L,2));
+
+   ua_trace("character creation script action %d received\n", action);
+
+   switch(static_cast<ua_elua_action>(action))
+   {
+   case actEnd:
+      ended = true;
+      break;
+
+   case actSetStringBlock:
+      if (n<3) break;
+      strblock = static_cast<unsigned int>(lua_tonumber(L,3));
+      break;
+
+   case actSetBtnGroup:
+   {
+      if (n<4) break;
+      btng_caption = static_cast<unsigned int>(lua_tonumber(L,3));
+      btng_buttontype = static_cast<unsigned int>(lua_tonumber(L,4));
+      btng_buttoncount = lua_getn(L, 5);
+      if ((btng_buttontype==btInput) && (btng_buttoncount>0))
+      {
+         inputtext[0] = 0;
+         btng_buttoncount = 1;
+      }
+      for (int i=0; i<btng_buttoncount; i++)
+      {
+         lua_rawgeti(L, 5, i+1);
+         btng_buttons[i] = static_cast<unsigned int>(lua_tonumber(L,6));
+         lua_pop(L, 1);
+      }
+      selected_button=prev_button=0;
+      drawbuttongroup();
+      break;
+   }
+
+   case actSetText:
+   {
+      if (n<6) break;
+      drawtext(static_cast<unsigned int>(lua_tonumber(L,3)),
+               static_cast<unsigned int>(lua_tonumber(L,4)),
+               static_cast<unsigned int>(lua_tonumber(L,5)),
+               static_cast<unsigned int>(lua_tonumber(L,6)));
+      break;
+   }
+
+   case actSetName:
+   {
+      if (n<6) break;
+      drawtext(lua_tostring(L,3),
+               static_cast<unsigned int>(lua_tonumber(L,4)),
+               static_cast<unsigned int>(lua_tonumber(L,5)),
+               static_cast<unsigned int>(lua_tonumber(L,6)));
+      break;
+   }
+
+   case actSetNumber:
+   {
+      if (n<5) break;
+      drawnumber(static_cast<unsigned int>(lua_tonumber(L,3)),
+               static_cast<unsigned int>(lua_tonumber(L,4)),
+               static_cast<unsigned int>(lua_tonumber(L,5)));
+      break;
+   }
+
+   case actSetImg:
+   {
+      if (n<5) break;
+      ua_image cimg = img_buttons.get_image(static_cast<unsigned int>(lua_tonumber(L,3)));
+      img.paste_image(cimg, static_cast<unsigned int>(lua_tonumber(L,4)) - cimg.get_xres()/2, 
+                            static_cast<unsigned int>(lua_tonumber(L,5)) - cimg.get_yres()/2, true);
+      break;
+   }
+
+   case actClear:
+      img.paste_image(bgimg, 0, 0, false);
+      break;
+
+   case actUpdate:
+      changed = true;
+      break;
+   }
+}
+
+unsigned int ua_create_character_screen::drawtext(const char* str, int x, int y, int xalign, unsigned char color)
 {
    // set default text color
    if (color==0)
       color = 73;
    ua_image img_text;
+   unsigned int textlength = font.calc_length(str);
    img_text.clear(0);
    font.create_string(img_text, str, color);
    if (xalign!=0)
    {
        // adjust horizontal alignment
-       unsigned int textlength = font.calc_length(str);
        if (xalign==1)
           x -= textlength/2;
        else
@@ -351,20 +398,20 @@ void ua_create_character_screen::drawtext(const char* str, int x, int y, int xal
              x -= textlength;
    }
    img.paste_image(img_text, x, y, true);
+   return textlength;
 }
 
-void ua_create_character_screen::drawnumber(unsigned int num, int x, int y, unsigned char color)
+unsigned int ua_create_character_screen::drawnumber(unsigned int num, int x, int y, unsigned char color)
 {
    char ca[12];
    sprintf(ca, "%d", num);
-   drawtext(ca, x, y, 2, color);
+   return drawtext(ca, x, y, 2, color);
 }
 
-void ua_create_character_screen::drawtext(int strnum, int x, int y, int xalign, unsigned char color)
+unsigned int ua_create_character_screen::drawtext(int strnum, int x, int y, int xalign, unsigned char color)
 {
    std::string text(core->get_strings().get_string(strblock, strnum));
-   if (!text.empty())
-      drawtext(text.c_str(), x, y, xalign, color);
+   return (!text.empty()) ? drawtext(text.c_str(), x, y, xalign, color) : 0;
 }
 
 void ua_create_character_screen::drawbutton(int buttontype, bool highlight, int strnum, int xc, int y)
@@ -375,7 +422,14 @@ void ua_create_character_screen::drawbutton(int buttontype, bool highlight, int 
    if (buttontype==btText)
       drawtext(strnum, xc, y+3, 1, (highlight ? 68 : 73));
    else if (buttontype==btInput)
-      drawtext(strnum, x+5, y+3, 0);
+   {
+      unsigned int labelwidth = drawtext(strnum, x+4, y+3, 0, 68);
+      unsigned int maxnamewidth = button.get_xres()-labelwidth-7;
+      unsigned int ip = strlen(inputtext);
+      while ((font.calc_length(inputtext)>maxnamewidth) && (ip>0))
+         inputtext[ip--] = 0;
+      drawtext(inputtext, x + labelwidth + 4, y + 3, 0, 73);
+   }
    else if (buttontype==btImage)
    {
       button = img_buttons.get_image(strnum);
