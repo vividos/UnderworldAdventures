@@ -276,37 +276,37 @@ SOURCE=..\source\resource\zziplib\SDL_rwops_zzip.c
 # End Source File
 # Begin Source File
 
-SOURCE="..\resource\zziplib\zzip-dir.c"
+SOURCE="..\source\resource\zziplib\zzip-dir.c"
 # ADD CPP /I "..\resource\zziplib"
 # End Source File
 # Begin Source File
 
-SOURCE="..\resource\zziplib\zzip-err.c"
+SOURCE="..\source\resource\zziplib\zzip-err.c"
 # ADD CPP /I "..\resource\zziplib"
 # End Source File
 # Begin Source File
 
-SOURCE="..\resource\zziplib\zzip-file.c"
+SOURCE="..\source\resource\zziplib\zzip-file.c"
 # ADD CPP /I "..\resource\zziplib"
 # End Source File
 # Begin Source File
 
-SOURCE="..\resource\zziplib\zzip-info.c"
+SOURCE="..\source\resource\zziplib\zzip-info.c"
 # ADD CPP /I "..\resource\zziplib"
 # End Source File
 # Begin Source File
 
-SOURCE="..\resource\zziplib\zzip-io.c"
+SOURCE="..\source\resource\zziplib\zzip-io.c"
 # ADD CPP /I "..\resource\zziplib"
 # End Source File
 # Begin Source File
 
-SOURCE="..\resource\zziplib\zzip-stat.c"
+SOURCE="..\source\resource\zziplib\zzip-stat.c"
 # ADD CPP /I "..\resource\zziplib"
 # End Source File
 # Begin Source File
 
-SOURCE="..\resource\zziplib\zzip-zip.c"
+SOURCE="..\source\resource\zziplib\zzip-zip.c"
 # ADD CPP /I "..\resource\zziplib"
 # End Source File
 # End Group
@@ -319,23 +319,23 @@ SOURCE=..\source\resource\zziplib\SDL_rwops_zzip.h
 # End Source File
 # Begin Source File
 
-SOURCE="..\resource\zziplib\zzip-conf.h"
+SOURCE="..\source\resource\zziplib\zzip-conf.h"
 # End Source File
 # Begin Source File
 
-SOURCE="..\resource\zziplib\zzip-file.h"
+SOURCE="..\source\resource\zziplib\zzip-file.h"
 # End Source File
 # Begin Source File
 
-SOURCE="..\resource\zziplib\zzip-io.h"
+SOURCE="..\source\resource\zziplib\zzip-io.h"
 # End Source File
 # Begin Source File
 
-SOURCE="..\resource\zziplib\zzip-msvc.h"
+SOURCE="..\source\resource\zziplib\zzip-msvc.h"
 # End Source File
 # Begin Source File
 
-SOURCE="..\resource\zziplib\zzip-stdint.h"
+SOURCE="..\source\resource\zziplib\zzip-stdint.h"
 # End Source File
 # Begin Source File
 
@@ -971,7 +971,7 @@ SOURCE=..\source\resource\texloader.cpp
 # End Group
 # Begin Source File
 
-SOURCE="..\..\docs\uw-formats.txt"
+SOURCE="..\docs\uw-formats.txt"
 # End Source File
 # End Target
 # End Project
