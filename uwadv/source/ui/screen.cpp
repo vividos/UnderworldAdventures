@@ -129,7 +129,7 @@ bool ua_screen::process_event(SDL_Event& event)
          key_event(event.type == SDL_KEYDOWN, key);
    }
 
-   return true;
+   return false;
 }
 
 /*! note that SDL_events must be passed to ua_screen::process_event() to
