@@ -1,11 +1,11 @@
 Underworld Adventures Tools Readme
 ----------------------------------
 
-There are some tools made while creation of Underworld Adventures, that can be
-interesting to the common user. Here is a description of the tools. The source
-code to them reside in the source/tools/ folder. Note that on Windows, most
+There are some tools made while creation of Underworld Adventures that can be
+interesting for the common user. Here is a description of the tools. The source
+code for them resides in the source/tools/ folder. Note that on Windows, most
 programs need the file "SDL.dll" to work. It can be copied into the same
-folder as the .exe file.
+folder as the .exe files.
 
 
 mapdisp - Underworld Map Display
