@@ -1,6 +1,8 @@
-GNU General Public License
+Underworld Adventures is Copyright (c) 2002 Michael Fink, Dirk Manders, Willem Jan Palenstijn
 
-Underworld Adventures is Copyright (c) 2002 Michael Fink
+Underworld Adventures is in no way related to Origin, Inc.
+
+GNU General Public License
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
