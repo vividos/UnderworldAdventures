@@ -24,6 +24,9 @@
    \brief font class
 
 */
+//! \ingroup userinterface
+
+//@{
 
 // include guard
 #ifndef uwadv_font_hpp_
@@ -100,5 +103,8 @@ protected:
    // import friend class
    friend class ua_uw_import;
 };
+
+
+//@}
 
 #endif

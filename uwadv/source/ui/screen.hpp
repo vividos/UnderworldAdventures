@@ -25,8 +25,10 @@
 
    base class for user interface screens, e.g. main game screen, conversation screen,
    map screen etc.
-
 */
+//! \ingroup userinterface
+
+//@{
 
 // include guard
 #ifndef uwadv_screen_hpp_
@@ -84,5 +86,8 @@ inline void ua_screen::set_game_interface(ua_game_interface* game_interface)
 {
    game = game_interface;
 }
+
+
+//@}
 
 #endif

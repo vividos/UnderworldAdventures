@@ -26,6 +26,9 @@
    the image quad supports resolutions up to 512 x 256
 
 */
+//! \ingroup userinterface
+
+//@{
 
 // include guard
 #ifndef __uwadv_imgquad_hpp_
@@ -82,5 +85,8 @@ inline ua_onepalette& ua_image_quad::get_quadpalette()
 {
    return quadpalette;
 }
+
+
+//@}
 
 #endif

@@ -27,6 +27,9 @@
    every screen that shows a cursor, nothing more, nothing less. All
    texture/graphic options must be set by the user of the class.
 */
+//! \ingroup userinterface
+
+//@{
 
 // include guard
 #ifndef uwadv_mousecursor_hpp_
@@ -81,5 +84,8 @@ protected:
    //! texture object for mouse
    ua_texture mousetex;
 };
+
+
+//@}
 
 #endif

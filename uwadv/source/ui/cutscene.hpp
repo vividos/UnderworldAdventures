@@ -24,6 +24,9 @@
    \brief cutscene handling class
 
 */
+//! \ingroup userinterface
+
+//@{
 
 // include guard
 #ifndef __uwadv_cutscene_hpp_
@@ -95,5 +98,8 @@ protected:
    //! all large pages
    std::vector<Uint8> lpages;
 };
+
+
+//@}
 
 #endif

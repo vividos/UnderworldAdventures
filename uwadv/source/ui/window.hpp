@@ -23,9 +23,13 @@
 
    \brief aaa
 
-   aaa
+*/
+/*! \defgroup userinterface User Interface Documentation
+
+   abc 123
 
 */
+//@{
 
 // include guard
 #ifndef uwadv_window_hpp_
@@ -68,15 +72,23 @@ public:
    virtual void mouse_event(bool button_clicked, bool left_button,
       bool button_down, unsigned int mousex, unsigned int mousey);
 
+   //! access for window position
    unsigned int get_xpos() const { return wnd_xpos; }
    unsigned int get_ypos() const { return wnd_ypos; }
 
+   //! access for window size
    unsigned int get_width() const { return wnd_width; }
    unsigned int get_height() const { return wnd_height; }
 
 protected:
+   //! window position
    unsigned int wnd_xpos, wnd_ypos;
+
+   //! window size
    unsigned int wnd_width, wnd_height;
 };
+
+
+//}@
 
 #endif

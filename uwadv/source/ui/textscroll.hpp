@@ -27,6 +27,9 @@
    ua_image_quad
 
 */
+//! \ingroup userinterface
+
+//@{
 
 // include guard
 #ifndef uwadv_textscroll_hpp_
@@ -132,5 +135,8 @@ inline bool ua_textscroll::have_more_lines()
 {
    return morestack.size()>0;
 }
+
+
+//!@}
 
 #endif
