@@ -48,6 +48,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "uwadv", "uwadv.vcproj", "{2
 		{D3B6F1DE-D52F-4E99-B6E7-7D5F255721F2} = {D3B6F1DE-D52F-4E99-B6E7-7D5F255721F2}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "uaconfig", "uaconfig.vcproj", "{ECCDC58D-597D-4815-955E-F5E83A6CCA78}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E1210703-9ADB-4ED7-AE0C-B7E39A15E01F} = {E1210703-9ADB-4ED7-AE0C-B7E39A15E01F}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -94,6 +99,10 @@ Global
 		{253FDC75-1CE6-48EF-951A-C3FB7A1D9B69}.Debug.Build.0 = Debug|Win32
 		{253FDC75-1CE6-48EF-951A-C3FB7A1D9B69}.Release.ActiveCfg = Release|Win32
 		{253FDC75-1CE6-48EF-951A-C3FB7A1D9B69}.Release.Build.0 = Release|Win32
+		{ECCDC58D-597D-4815-955E-F5E83A6CCA78}.Debug.ActiveCfg = Debug|Win32
+		{ECCDC58D-597D-4815-955E-F5E83A6CCA78}.Debug.Build.0 = Debug|Win32
+		{ECCDC58D-597D-4815-955E-F5E83A6CCA78}.Release.ActiveCfg = Release|Win32
+		{ECCDC58D-597D-4815-955E-F5E83A6CCA78}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
