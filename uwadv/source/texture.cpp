@@ -33,10 +33,17 @@
 
 // ua_texture methods
 
-void ua_texture::init(unsigned int numtex,GLenum min_filt,GLenum max_filt)
+void ua_texture::init(ua_texture_manager *thetexmgr,unsigned int numtex,
+   GLenum min_filt,GLenum max_filt)
 {
+   texmgr = thetexmgr;
+
+   done();
    texname.resize(numtex,0);
    xres = yres = 0;
+
+   if (numtex==0)
+      return;
 
    // create texture names
    glGenTextures(numtex,&texname[0]);
@@ -53,19 +60,18 @@ void ua_texture::init(unsigned int numtex,GLenum min_filt,GLenum max_filt)
 
       glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-      last_used_tex = i;
+      last_used_tex_idx = i;
    }
 }
 
-void ua_texture::convert(ua_texture_manager &texmgr, ua_image &img,
-   unsigned int numtex)
+void ua_texture::convert(ua_image &img,unsigned int numtex)
 {
-   if (img.get_palette()>=8) return;
+   if (texmgr==NULL || img.get_palette()>=8) return;
 
-   convert(img,texmgr.get_palette(img.get_palette()),numtex);
+   convert(texmgr->get_palette(img.get_palette()),img,numtex);
 }
 
-void ua_texture::convert(ua_image &img, ua_onepalette &pal,
+void ua_texture::convert(ua_onepalette &pal, ua_image &img,
    unsigned int numtex)
 {
    Uint8 *pix = &img.get_pixels()[0];
@@ -80,14 +86,14 @@ void ua_texture::convert(Uint8 *pix, unsigned int origx, unsigned int origy,
    ua_onepalette &pal, unsigned int numtex)
 {
    // only do resolution determination for the first texture
-   if (numtex==0)
+   if (numtex==0 || xres==0 || yres==0)
    {
       // determine texture resolution (must be 2^n)
-      xres = (unsigned int)pow(2,int(log(origx)/log(2)+0.9999));
-      yres = (unsigned int)pow(2,int(log(origy)/log(2)+0.9999));
+      xres = 16;
+      while(xres<origx && xres<2048) xres<<=1;
 
-      if (xres<64) xres=64;
-      if (yres<64) yres=64;
+      yres = 16;
+      while(yres<origy && yres<2048) yres<<=1;
 
       u = double(origx)/xres;
       v = double(origy)/yres;
@@ -104,35 +110,36 @@ void ua_texture::convert(Uint8 *pix, unsigned int origx, unsigned int origy,
       Uint32 *texptr2 = &texptr[y*xres];
       for(unsigned int x=0; x<origx; x++)
          *texptr2++ = palptr[pix[y*origx+x]];
-   }/*
-   for(unsigned int y=0; y<origy; y++)
-      for(unsigned int x=0; x<origx; x++)
-         texptr[y*xres+x] = palptr[pix[y*origx+x]];*/
+   }
 }
 
-void ua_texture::use(ua_texture_manager &texmgr, unsigned int numtex)
+void ua_texture::use(unsigned int numtex)
 {
-   if (numtex>=texname.size()) return;
+   if (numtex>=texname.size())
+      return; // invalid texture index
 
-   last_used_tex = numtex;
+   last_used_tex_idx = numtex;
 
    // invalidates currently used texture
-   texmgr.invalidate_tex();
-   glBindTexture(GL_TEXTURE_2D,texname[numtex]);
+   if (texmgr == NULL || texmgr->using_new_texname(texname[numtex]))
+   {
+      glBindTexture(GL_TEXTURE_2D,texname[numtex]);
+   }
 }
 
 void ua_texture::upload(bool mipmaps)
 {
-   Uint32 *tex = &texels[last_used_tex*xres*yres];
+   Uint32 *tex = &texels[last_used_tex_idx*xres*yres];
 
-   // build mipmaps/single texture
    if (mipmaps)
    {
+      // build mipmapped textures
       gluBuild2DMipmaps(GL_TEXTURE_2D, 3, xres, yres, GL_RGBA,
          GL_UNSIGNED_BYTE, tex);
    }
    else
    {
+      // build texture
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, xres, yres, 0, GL_RGBA,
          GL_UNSIGNED_BYTE, tex);
    }
@@ -140,7 +147,9 @@ void ua_texture::upload(bool mipmaps)
 
 void ua_texture::done()
 {
-   glDeleteTextures(texname.size(),&texname[0]);
+   texels.clear();
+   if (texname.size()>0)
+      glDeleteTextures(texname.size(),&texname[0]);
 }
 
 
@@ -148,94 +157,64 @@ void ua_texture::done()
 
 ua_texture_manager::ua_texture_manager()
 {
+   stocktex_count[0]=stocktex_count[1]=0;
 }
 
 ua_texture_manager::~ua_texture_manager()
 {
    reset();
-   allstocktex.clear();
 }
 
 void ua_texture_manager::reset()
 {
    glBindTexture(GL_TEXTURE_2D,0);
 
-   int max = allstocktex.size();
-   for(int i=0; i<max; i++)
-   {
-      ua_stock_texture &stex = allstocktex[i];
-      if (stex.texname!=0)
-         glDeleteTextures(1,&stex.texname);
-   }
+   // delete all stock textures
+   stocktex[0].done();
+   stocktex[1].done();
+   stocktex[0].init(this,stocktex_count[0],GL_LINEAR,GL_NEAREST_MIPMAP_LINEAR);
+   stocktex[1].init(this,stocktex_count[1],GL_LINEAR,GL_NEAREST_MIPMAP_LINEAR);
+   last_texname = 0;
 }
 
 void ua_texture_manager::prepare(unsigned int idx)
 {
-   if (idx>=allstocktex.size())
-      return;
+   if (idx>=allstocktex_imgs.size())
+      return; // not a valid index
 
-   ua_stock_texture &stex = allstocktex[idx];
-   unsigned int texsize = stex.pixels.size();
-
-   if (texsize==0)
-      return;
-
-   // generate a texture object number
-   GLuint texname=0;
-   glGenTextures(1,&texname);
-
-   glBindTexture(GL_TEXTURE_2D, texname);
-
-   // set texture parameters
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR/*GL_LINEAR*/);
-
-   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
-   // generate 32-bit truecolor texture
-   Uint8 xyres = texsize==64*64 ? 64 : texsize==32*32 ? 32 : texsize/64;
-
-   std::vector<Uint32> texels;
-   texels.resize(stex.pixels.size()*4,0);
-
-   // use texture #0, stock textures always use these
-   ua_onepalette &pal = get_palette(0);
-
-   for(unsigned int i=0; i<texsize; i++)
+   unsigned int stock = 0;
+   unsigned int stockidx = idx;
+   if (idx>=ua_tex_stock_floor)
    {
-      texels[i] = *(Uint32*)(pal+stex.pixels[i]);
+      stockidx -= ua_tex_stock_floor;
+      stock = 1;
    }
 
-   // build texture and mipmaps
-   gluBuild2DMipmaps(GL_TEXTURE_2D, 3, xyres, xyres, GL_RGBA,
-      GL_UNSIGNED_BYTE, &texels[0]);
-
-   // remember texture name
-   stex.texname = texname;
+   // convert to texture object
+   stocktex[stock].convert(allstocktex_imgs.get_image(idx),stockidx);
+   stocktex[stock].use(stockidx);
+   stocktex[stock].upload(true); // upload texture with mipmaps
 }
 
 void ua_texture_manager::use(unsigned int idx)
 {
-   if (idx>=allstocktex.size())
-      return;
+   if (idx>=allstocktex_imgs.size())
+      return; // not a valid index
 
-   ua_stock_texture &stex = allstocktex[idx];
-
-   if (last_texname != stex.texname)
+   unsigned int stock=0;
+   if (idx>=ua_tex_stock_floor)
    {
-      // bind texture to use it
-      glBindTexture(GL_TEXTURE_2D,stex.texname);
-      last_texname = stex.texname;
+      idx -= ua_tex_stock_floor;
+      stock = 1;
    }
+
+   stocktex[stock].use(idx);
 }
 
 void ua_texture_manager::object_tex(Uint16 id,double &u1,double &v1,double &u2,double &v2)
 {
    // select texture
-   if (id<0x100) objtex.use(*this,0);
-   else objtex.use(*this,1);
+   objtex.use(id<0x100 ? 0 : 1);
 
    // calculate texture coordinates
    double delta = 1.0/256;
@@ -245,4 +224,13 @@ void ua_texture_manager::object_tex(Uint16 id,double &u1,double &v1,double &u2,d
 
    u2 = (((id&0x0f)+1)<<4)*delta-delta*0.4;
    v2 = ((id&0xf0)+15)*delta+0.8*delta;
+}
+
+bool ua_texture_manager::using_new_texname(GLuint new_texname)
+{
+   if (last_texname == new_texname)
+      return false; // no need to use texname again
+
+   last_texname = new_texname;
+   return true;
 }

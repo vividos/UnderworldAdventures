@@ -57,8 +57,10 @@ void ua_texture_manager::init(ua_settings &settings)
       std::string floortexfname(settings.uw1_path);
       floortexfname.append(
          settings.gtype == ua_game_uw1 ? "data/f32.tr" : "data/df32.tr");
-
       load_textures(ua_tex_stock_floor,floortexfname.c_str());
+
+      // init stock texture objects
+      reset();
    }
 
    // load object texture graphics
@@ -92,27 +94,17 @@ void ua_texture_manager::init(ua_settings &settings)
          if (id!=(302-256))
             part2.paste_image(il.get_image(id+256),(id&0x0f)<<4,id&0xf0);
       }
-/*
-      std::vector<Uint8> &pix1 = part1.get_pixels();
-      std::vector<Uint8> &pix2 = part2.get_pixels();
-      for(int i=0; i<256*256; i++)
-      {
-         if (pix1[i]==0) pix1[i]=11;
-         if (pix2[i]==0) pix2[i]=11;
-      }*/
 
       // TODO paste images 218 to 223 and 302 into remaining space
 
       // convert to textures
-      objtex.init(2);
-      objtex.convert(*this,part1,0);
-      objtex.convert(*this,part2,1);
+      objtex.init(this,2);
+      objtex.convert(part1,0);
+      objtex.convert(part2,1);
 
       // prepare textures
-      objtex.use(*this,0);
-      objtex.upload(false);
-      objtex.use(*this,1);
-      objtex.upload(false);
+      objtex.use(0); objtex.upload(false);
+      objtex.use(1); objtex.upload(false);
    }
 }
 
@@ -138,7 +130,8 @@ void ua_texture_manager::load_textures(unsigned int startidx, const char *texfna
    Uint16 entries = fread16(fd);
 
    // reserve needed entries
-   allstocktex.resize(startidx+entries);
+   allstocktex_imgs.get_allimages().resize(startidx+entries);
+   stocktex_count[startidx==ua_tex_stock_wall ? 0 : 1] = entries;
 
    // read in all offsets
    std::vector<Uint32> offsets(entries);
@@ -153,14 +146,16 @@ void ua_texture_manager::load_textures(unsigned int startidx, const char *texfna
       // alloc memory for texture
       unsigned int datalen = xyres*xyres;
 
-      ua_stock_texture &stex = allstocktex[startidx+tex];
-      stex.pixels.resize(datalen);
+      // create new image
+      ua_image &teximg = allstocktex_imgs.get_image(startidx+tex);
+      teximg.create(xyres,xyres);
+      Uint8 *pixels = &teximg.get_pixels()[0];
 
       unsigned int idx = 0;
       while(datalen>0)
       {
          unsigned int size = ua_min(datalen,1024);
-         unsigned int read = fread(&stex.pixels[idx],1,size,fd);
+         unsigned int read = fread(pixels+idx,1,size,fd);
          idx += read;
          datalen -= read;
       }
