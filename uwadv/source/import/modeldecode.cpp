@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -21,16 +21,16 @@
 */
 /*! \file modeldecode.cpp
 
-   \brief original model decoding
+   \brief original uw model decoding
 
 */
 
 // needed includes
 #include "common.hpp"
 #include "models.hpp"
-#include "models_impl.hpp"
+#include "model_builtin.hpp"
 #include "renderer.hpp"
-#include "../import/io_endian.hpp"
+#include "io_endian.hpp"
 #include "uamath.hpp"
 #include <vector>
 #include "tessellator.hpp"
