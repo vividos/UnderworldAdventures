@@ -152,8 +152,8 @@ static void read_number (LexState *LS, int comma, SemInfo *seminfo) {
   checkbuffer(L, 10, l);
   if (comma) save(L, '.', l);
 
-  // mf: inserted to check for hexadecimal numbers
-  //     hope this is working properly ...
+  /* mf: inserted to check for hexadecimal numbers */
+  /*     hope this is working properly ... */
   {
     if (LS->current == '0')
     {
@@ -164,13 +164,13 @@ static void read_number (LexState *LS, int comma, SemInfo *seminfo) {
         checkbuffer(L, 10, l);
         save_and_next(L, LS, l);
 
-        // hex number!
+        /* hex number! */
         while (isxdigit(LS->current)) {
           checkbuffer(L, 10, l);
           save_and_next(L, LS, l);
         }
 
-        // convert to hex
+        /* convert to hex */
         save(L, '\0', l);
 
         if (!luaO_hexstr2d(L->Mbuffer, &seminfo->r))
