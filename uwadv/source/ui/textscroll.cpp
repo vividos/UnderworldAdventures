@@ -29,7 +29,6 @@
 #include "common.hpp"
 #include "textscroll.hpp"
 #include "image.hpp"
-//#include "core.hpp"
 
 
 // constants
@@ -40,24 +39,25 @@ const char* ua_textscroll_more_string = " [MORE]";
 // ua_textscroll methods
 
    //! initializes text scroll
-void ua_textscroll::init(ua_game_core_interface& core, unsigned int xpos,
-   unsigned int ypos, unsigned int width,
-   unsigned int height, unsigned int lines, Uint8 my_bg_color)
+void ua_textscroll::init(ua_game_interface& game, unsigned int xpos,
+   unsigned int ypos, unsigned int width, unsigned int height,
+   unsigned int lines, Uint8 my_bg_color)
 {
-/*TODO
-   ua_image_quad::init(&core.get_texmgr(),xpos,ypos,width,height);
-
-   font_normal.init(core.get_settings(),ua_font_normal);
-*/
    maxlines = lines;
    bg_color = my_bg_color;
    text_color = 11;
    input_mode = false;
    input_line = 0;
 
-   // use blank image for now
-   ua_image::clear(bg_color);
-   convert_upload();
+   ua_image_quad::init(game, xpos, ypos);
+
+   image.create(width, height);
+   image.clear(bg_color);
+
+   font_normal.load(game.get_settings(),ua_font_normal);
+
+   // set ua_window width and height and upload texture
+   update();
 }
 
 bool ua_textscroll::print(const char* text)
@@ -68,7 +68,7 @@ bool ua_textscroll::print(const char* text)
    // check text length
    unsigned int len = font_normal.calc_length(text);
 
-   if (strchr(text,'\n')==0 && len<=ua_image_quad::xres-2)
+   if (strchr(text,'\n') == 0 && len <= image.get_xres()-2)
    {
       // fits into a single line
 
@@ -103,7 +103,7 @@ bool ua_textscroll::print(const char* text)
 
          std::string::size_type pos = std::string::npos;
 
-         unsigned int linewidth = ua_image_quad::xres-2;
+         unsigned int linewidth = image.get_xres()-2;
 
          if (curline==maxlines-1)
          {
@@ -186,7 +186,7 @@ void ua_textscroll::update_scroll()
    ua_image img_temp;
    unsigned int imgheight = maxlines * font_normal.get_charheight() + 1;
    //img_text.create(width,imgheight,bg_color,0);
-   ua_image::clear(bg_color);
+   image.clear(bg_color);
 
    unsigned int max = ua_min(maxlines,linestack.size());
    for(unsigned int i=0; i<max; i++)
@@ -198,7 +198,8 @@ void ua_textscroll::update_scroll()
       // calc y position
       unsigned int ypos = i * font_normal.get_charheight() + 1;
 
-      ua_image::paste_image(img_temp,1,ypos,true);
+      image.paste_rect(img_temp, 0,0, img_temp.get_xres(), img_temp.get_yres(),
+         1,ypos,true);
 
       if (i==maxlines-1 && morestack.size()!=0)
       {
@@ -207,7 +208,7 @@ void ua_textscroll::update_scroll()
          font_normal.create_string(img_more,ua_textscroll_more_string,11);
 
          // paste string after end of last line
-         ua_image::paste_image(img_more,
+         image.paste_rect(img_more, 0,0, img_more.get_xres(), img_more.get_yres(),
             img_temp.get_xres(),ypos,true);
       }
 
@@ -220,23 +221,27 @@ void ua_textscroll::update_scroll()
             input_text.c_str(),1); // color black for now
 
          unsigned int xpos = img_temp.get_xres()+1;
-         ua_image::paste_image(img_input,xpos,ypos,true);
+         image.paste_rect(img_input, 0,0, img_input.get_xres(), img_input.get_yres(),
+            xpos,ypos,true);
 
          xpos += img_input.get_xres();
 
          if (xpos+1<img_line.get_xres())
          {
             // draw a cursor line after the text
-            img_line.create(1,img_input.get_yres()+2,1,0);
+            img_line.create(1,img_input.get_yres()+2);
+            img_line.clear(1);
 
-            ua_image::paste_image(img_line,xpos+1,ypos-1,true);
+            image.paste_rect(img_line, 0,0, img_line.get_xres(), img_line.get_yres(),
+               xpos+1,ypos-1,true);
          }
       }
 
       img_temp.clear();
    }
 
-   convert_upload();
+   // update texture
+   ua_image_quad::update();
 }
 
 void ua_textscroll::clear_scroll()
@@ -248,7 +253,6 @@ void ua_textscroll::clear_scroll()
 
    // update and upload image
    update_scroll();
-   convert_upload();
 }
 
 bool ua_textscroll::handle_event(SDL_Event& event)

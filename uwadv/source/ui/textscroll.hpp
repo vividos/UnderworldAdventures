@@ -42,10 +42,6 @@
 #include "texture.hpp"
 
 
-// forward references
-class ua_game_core_interface;
-
-
 // classes
 
 //! text scroll class
@@ -56,7 +52,7 @@ public:
    ua_textscroll(){}
 
    //! initializes text scroll
-   void init(ua_game_core_interface& core, unsigned int xpos, unsigned int ypos,
+   void init(ua_game_interface& game, unsigned int xpos, unsigned int ypos,
       unsigned int width, unsigned int height, unsigned int lines,
       Uint8 bg_color);
 
