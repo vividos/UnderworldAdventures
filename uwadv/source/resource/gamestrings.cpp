@@ -185,6 +185,10 @@ void ua_gamestrings::load(SDL_RWops *rwops)
          str.erase();
       }
 
+      // check if string block already exists
+      if (allstrings.find(allblocks[i].block_id)!=allstrings.end())
+         allstrings.erase(allblocks[i].block_id);
+
       // insert string block
       allstrings.insert(
          std::make_pair<int,std::vector<std::string> >(allblocks[i].block_id,allblockstrings));
