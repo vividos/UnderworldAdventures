@@ -110,7 +110,7 @@ protected:
    void render_object(ua_object& obj, unsigned int x, unsigned int y);
 
    //! draws a billboarded quad
-   void ua_renderer::draw_billboard_quad(ua_vector3d base,
+   void draw_billboard_quad(ua_vector3d base,
       double quadwidth, double quadheight,
       double u1,double v1,double u2,double v2);
 
@@ -124,6 +124,13 @@ protected:
    static void render_wall(unsigned int side,
       Uint16 x1, Uint16 y1, Uint16 z1, Uint16 x2, Uint16 y2, Uint16 z2,
       Uint16 nz1, Uint16 nz2, Uint16 ceiling);
+
+   //! helper function for get_tile_triangles()
+   static void add_wall(ua_triangle3d_textured& tri1, ua_triangle3d_textured& tri2,
+      unsigned int side,
+      double x1, double y1, double z1,
+      double x2, double y2, double z2,
+      double nz1, double nz2, double ceiling);
 
 protected:
    //! underworld object

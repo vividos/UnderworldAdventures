@@ -314,7 +314,7 @@ void ua_renderer::select_pick(unsigned int xpos, unsigned int ypos,
    }
 }
 
-void add_wall(ua_triangle3d_textured& tri1, ua_triangle3d_textured& tri2,
+void ua_renderer::add_wall(ua_triangle3d_textured& tri1, ua_triangle3d_textured& tri2,
    unsigned int side,
    double x1, double y1, double z1,
    double x2, double y2, double z2,
@@ -322,10 +322,10 @@ void add_wall(ua_triangle3d_textured& tri1, ua_triangle3d_textured& tri2,
 {
    // calculate texture coordinates
    double v1,v2,v3,v4;
-   v1 = ceiling-z1; // ceiling is the "base" for textures
-   v2 = ceiling-z2;
-   v3 = ceiling-nz2;
-   v4 = ceiling-nz1;
+   v1 = (ceiling-z1)*height_scale; // ceiling is the "base" for textures
+   v2 = (ceiling-z2)*height_scale;
+   v3 = (ceiling-nz2)*height_scale;
+   v4 = (ceiling-nz1)*height_scale;
 
    // add triangles with proper winding
    if (side == ua_left || side == ua_front)
@@ -954,7 +954,7 @@ void ua_renderer::render_objects(unsigned int x, unsigned int y)
    glEnable(GL_BLEND);
 
    // prevent pixels with alpha < 0.1 to write to color and depth buffer
-   glAlphaFunc(GL_GREATER, 0.1);
+   glAlphaFunc(GL_GREATER, 0.1f);
    glEnable(GL_ALPHA_TEST);
 
    ua_object_list& objlist = underw->get_current_level().get_mapobjects();
