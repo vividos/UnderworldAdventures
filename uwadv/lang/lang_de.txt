@@ -1,0 +1,31 @@
+# translated strings for uwadv
+#
+
+#
+# block 0a00 contains infos about language conversions for Underworld
+# Adventures.
+#
+
+block: 0a00
+0: de
+1: Deutsch
+2: Michael Fink <vividos@users.sourceforge.net>
+3:
+
+#
+# conversation with Bragit
+# partially translated by Michael Fink
+#
+
+block: 0e43 # 50 strings.
+0: 
+1:  Freund
+2: e Freundin
+3: Hail, Fremder!  Was ist dein Begehr?  Ich habe dich hier noch nie zuvor gesehen.
+4: Ich erforsche nur ein bisschen die Abyss.
+5: Ich versuche ein unschuldig entfuehrtes Maedchen zu retten.
+6: Ich wurde hier als Strafe fuer ein Verbrechen hineingeworfen, das ich nicht begangen habe.
+7: Erforschen, was?  Ha, das ist ein guter Witz.  Aber wenn du nicht ueber dein Verbrechen sprichst, dann ist es nicht meine Sache, danach zu fragen.\m
+8: Ah, eine Rettungsmission, was?  Sollten die Wachen des Barons nicht bei dir sein, um dir in der Suche zu helfen?  Wahrscheinlicher, dass dich einer von ihnen hier hereingeworfen hat, was?\m
+9: Ah, ungerecht eingespertt, was?  Das ist die uebliche Geschichte, mein@SS1, aber das heisst nicht, dass es in deinem Fall nicht wahr waere, nehme ich an.\m
+10: Du brauchst dich nicht wegen deines Ungluecks schaemen, mein@SS1; du bist jetzt im selben Boot wie wir alle.  Wenn du eine Chance, lang in der Abyss zu ueberleben haben willst, musst du die Welt hier unten kennenlernen.
