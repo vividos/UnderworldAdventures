@@ -84,6 +84,8 @@ Lua functions callable from C:
 
 registered C functions to call from Lua:
 
+   underw_change_level
+
    player_get_attr
    player_set_attr
    player_get_skill
@@ -119,6 +121,9 @@ registered C functions to call from Lua:
    conv_is_avail
    conv_get_conv_global
    conv_set_conv_global
+
+   prop_get_common
+   prop_get_special
 
    ui_start_conv
    ui_show_cutscene
@@ -276,6 +281,14 @@ registered C functions to call from Lua:
 2.1.3. Registered C functions
 
 
+2.1.3.1. Underworld functions
+
+* underw_change_level(level)
+  return values: none
+
+  changes current levelmap to given one
+
+
 2.1.3.1. Player access functions
 
 * player_get_attr(attr_type)
@@ -311,7 +324,7 @@ registered C functions to call from Lua:
   - player_attr_level             current experience level
   - player_attr_exp_points
 
-  - ua_attr_difficulty            0=easy, 1=normal
+  - player_attr_difficulty        0=easy, 1=normal
 
 * player_set_attr(attr_type, attr_value)
   return values: none
@@ -546,20 +559,43 @@ todo
 
   returns nil if a conversation slot is not available
 
-* conv_get_global(slot,pos)
+* conv_get_conv_global(slot,pos)
   return values: value
 
   retrieves conversation global value, for conv. slot "slot", variable index
   "pos".
 
-* conv_set_global(slot,pos,value)
+* conv_set_conv_global(slot,pos,value)
   return values: none
 
   sets a conversation global value, for conv. slot "slot", variable index
   "pos", to "value".
 
 
-2.1.3.7. User Interface callback functions
+2.1.3.7. Object property functions
+
+* prop_get_common(item_id)
+  return values: common_prop_table
+
+  returns a table with common properties; the table has the following layout:
+
+  T = {
+    item_id = 0,      -- item id
+    height = 2,
+    mass = 0,
+    radius = 0,
+    quality_class = 1,
+    quality_type = 2,
+    can_have_owner = 1,
+    can_be_looked_at = 1
+  }
+
+* prop_get_special(item_id)
+
+  returns a special property table for a given item_id
+
+
+2.1.3.8. User Interface callback functions
 
 * ui_start_conv(conv_slot)
   return values: none
@@ -600,7 +636,7 @@ todo
   "ui_cursor_use_item" to cancel targetting.
 
 
-2.1.3.8. Savegame functions
+2.1.3.9. Savegame functions
 
 * savegame_store_value(savegame,value)
   return values: none
