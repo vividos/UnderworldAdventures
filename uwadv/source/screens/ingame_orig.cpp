@@ -182,13 +182,6 @@ void ua_ingame_orig_screen::init()
       ua_image_list img_temp;
       img_temp.load(settings,"compass");
 
-      std::vector<ua_image>& compass = img_compass.get_allimages();
-
-      // collect all compass images
-      for(unsigned int i=0; i<4; i++)
-      for(unsigned int j=0; j<4; j++)
-         compass.push_back(img_temp.get_image(j));
-
       static int ua_compass_tip_coords[16*2] =
       {
          24, 0, 16, 2,  8, 3,  4, 6,
@@ -197,13 +190,26 @@ void ua_ingame_orig_screen::init()
          48,10, 44, 6, 40, 3, 32, 2,
       };
 
-      // add compass needle tips
+      std::vector<ua_image>& compass = img_compass.get_allimages();
+
+      // create compass images and add needle tips and right/bottom borders
       for(unsigned int n=0; n<16; n++)
       {
-         ua_image& img = compass[n];
+         ua_image img;
+         img.create(52+1,26+1);
+         img.paste_image(img_temp.get_image(n&3),0,0);
 
+         // compass needle
          img.paste_image(img_temp.get_image(n+4),
             ua_compass_tip_coords[n*2],ua_compass_tip_coords[n*2+1]);
+
+         // right border
+         img.paste_rect(img,51,0, 1,img.get_yres(), 52,0);
+
+         // bottom border
+         img.paste_rect(img,0,25, img.get_xres(),1, 0,26);
+
+         compass.push_back(img);
       }
    }
 
@@ -341,7 +347,7 @@ void ua_ingame_orig_screen::resume()
    tex_back2.upload();
 
    // compass texture
-   tex_compass.init(&core->get_texmgr(),1,GL_LINEAR,GL_LINEAR,GL_CLAMP,GL_CLAMP);
+   tex_compass.init(&core->get_texmgr(),1,GL_LINEAR,GL_LINEAR);
    tex_compass.convert(img_compass.get_image(0));
    tex_compass.use();
    tex_compass.upload();
@@ -349,7 +355,7 @@ void ua_ingame_orig_screen::resume()
 
    // flasks textures
    flasks_curimg[0] = flasks_curimg[1] = 0;
-   tex_flasks.init(&core->get_texmgr(),2,GL_LINEAR,GL_LINEAR,GL_CLAMP,GL_CLAMP);
+   tex_flasks.init(&core->get_texmgr(),2,GL_LINEAR,GL_LINEAR);
    tex_flasks.convert(img_flasks[0].get_image(flasks_curimg[0]),0);
    tex_flasks.use(0);
    tex_flasks.upload();
@@ -809,6 +815,8 @@ void ua_ingame_orig_screen::render_ui()
 
       // draw compass quad
       double u = tex_compass.get_tex_u(), v = tex_compass.get_tex_v();
+      u -= tex_compass.get_tex_u()/tex_compass.get_xres();
+      v -= tex_compass.get_tex_v()/tex_compass.get_yres();
 
       glBegin(GL_QUADS);
       glTexCoord2d(0.0, v  ); glVertex2i(112,   43);
