@@ -1,3 +1,9 @@
+#
+# Makefile.am for uadata resources
+#
+# $Id$
+#
+
 LUAC = ../source/lua/luac
 
 # this defines luaSCRIPTS, luaOBJECTS and uarFILES

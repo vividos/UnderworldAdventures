@@ -1,3 +1,9 @@
+#
+# Makefile.am for hacking folder
+#
+# $Id$
+#
+
 EXTRA_DIST = \
 	hacking.dsw \
 	hacking.h gamestrings.cpp \

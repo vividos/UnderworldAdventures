@@ -1,3 +1,9 @@
+#
+# common makefile for uadata resources
+#
+# $Id$
+#
+
 luaSCRIPTS = \
 	uw1/scripts/cutscene.lua \
 	uw1/scripts/createchar.lua \
