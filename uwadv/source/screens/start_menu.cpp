@@ -30,6 +30,7 @@
 #include "start_menu.hpp"
 #include "ingame_orig.hpp"
 #include "cutscene_view.hpp"
+#include "acknowledgements.hpp"
 
 
 // constants
@@ -85,6 +86,11 @@ void ua_start_menu_screen::init()
 void ua_start_menu_screen::done()
 {
    tex.done();
+
+   // clear screen
+   glClearColor(0,0,0,0);
+   glClear(GL_COLOR_BUFFER_BIT);
+   SDL_GL_SwapBuffers();
 }
 
 void ua_start_menu_screen::handle_event(SDL_Event &event)
@@ -252,7 +258,7 @@ void ua_start_menu_screen::press_button()
       break;
 
    case 2: // "acknowledgements"
-      //core->push_screen(new ua_acknowledgements_screen);
+      core->push_screen(new ua_acknowledgements_screen);
       break;
 
    case 3: // "journey onward"
