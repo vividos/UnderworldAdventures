@@ -68,6 +68,7 @@ public:
 typedef ua_smart_ptr<ua_model3d> ua_model3d_ptr;
 
 
+//! builtin model class
 class ua_model3d_builtin: public ua_model3d
 {
 public:
@@ -104,6 +105,7 @@ protected:
 
    std::vector<unsigned int> texcoord_index;
 
+   //! model texture
    ua_texture tex;
 };
 
