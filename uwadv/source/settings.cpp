@@ -38,10 +38,10 @@ ua_settings::ua_settings()
 :gtype(ua_game_uw1)
 {
    // set some initial values
-   set_value(ua_setting_uadata_path,"./uadata/");
-   set_value(ua_setting_savegame_folder,"./uasave/");
+   set_value(ua_setting_uadata_path,std::string("./uadata/"));
+   set_value(ua_setting_savegame_folder,std::string("./uasave/"));
    set_value(ua_setting_fullscreen,false);
-   set_value(ua_setting_cuts_narration,"sound");
+   set_value(ua_setting_cuts_narration,std::string("sound"));
    set_value(ua_setting_win32_midi_device,-1);
 }
 
