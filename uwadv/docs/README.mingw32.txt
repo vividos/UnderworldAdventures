@@ -89,6 +89,7 @@ where target can be one of several words:
   update      the same as "install" but doesn't copy the uwadv.cfg file
   clean       cleans all built source and data files
   luac        builds the Lua compiler that can be used to verify Lua scripts
+  toolsinstall installs all tools in a "tools" subfolder of "UWADV_PATH"
 
 To run "uwadv.exe", SDL.dll and SDL_mixer.dll are needed. For the tools, only
 SDL.dll is needed. The DLLs are available at http://www.libsdl.org/ or
