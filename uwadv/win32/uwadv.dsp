@@ -1002,6 +1002,10 @@ SOURCE=..\source\resource\objloader.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\source\resource\playerimport.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\source\resource\texloader.cpp
 # End Source File
 # Begin Source File
