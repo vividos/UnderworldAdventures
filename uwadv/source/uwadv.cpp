@@ -234,7 +234,7 @@ void ua_uwadv_game::run()
    {
    case 0: // normal start
       // start with uwadv menu screen
-      replace_screen(new ua_uwadv_menu_screen,false);
+      replace_screen(new ua_uwadv_menu_screen(*this),false);
       break;
 
    case 1: // load savegame
@@ -253,7 +253,7 @@ void ua_uwadv_game::run()
          underworld.load_game(sg);
 
          // immediately start game
-         replace_screen(new ua_ingame_orig_screen,false);
+         replace_screen(new ua_ingame_orig_screen(*this),false);
       }
       break;
 
@@ -267,11 +267,11 @@ void ua_uwadv_game::run()
 
 #ifndef HAVE_DEBUG
          // start splash screen
-         replace_screen(new ua_start_splash_screen,false);
+         replace_screen(new ua_start_splash_screen(*this),false);
 #else
          // for uw2 testing; splash screens don't work yet
          underworld.import_savegame(settings,"data/",true);
-         replace_screen(new ua_ingame_orig_screen,false);
+         replace_screen(new ua_ingame_orig_screen(*this),false);
 #endif
       }
       break;
@@ -577,8 +577,7 @@ void ua_uwadv_game::init_game()
 
    // try to load %prefix%/game.cfg
    {
-      ua_gamecfg_loader cfgloader;
-      cfgloader.init(this);
+      ua_gamecfg_loader cfgloader(*this);
 
       SDL_RWops* gamecfg = files_manager.get_uadata_file(gamecfg_name.c_str());
 
@@ -685,7 +684,6 @@ void ua_uwadv_game::replace_screen(ua_screen* new_screen, bool save_current)
    // initialize new screen
    curscreen = new_screen;
 
-   curscreen->set_game_interface(this);
    curscreen->init();
 
    // reset tick timer
