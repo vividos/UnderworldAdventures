@@ -158,6 +158,8 @@ void ua_save_game_screen::done()
    if (edit_desc)
       desc_scroll.done();
 
+   tex_preview.done();
+
    ua_trace("leaving save game screen\n\n");
 }
 
@@ -325,6 +327,23 @@ void ua_save_game_screen::render()
    if (edit_desc)
       desc_scroll.render();
 
+   // render savegame preview image
+   if (show_infos)
+   {
+      tex_preview.use();
+
+      double u,v;
+      u = tex_preview.get_tex_u();
+      v = tex_preview.get_tex_v();
+
+      glBegin(GL_QUADS);
+      glTexCoord2d(0.0, v);   glVertex2i(200,   200-133-50);
+      glTexCoord2d(u,   v);   glVertex2i(200+80,200-133-50);
+      glTexCoord2d(u,   0.0); glVertex2i(200+80,200-133);
+      glTexCoord2d(0.0, 0.0); glVertex2i(200,   200-133);
+      glEnd();
+   }
+
    // draw mouse cursor
    glEnable(GL_BLEND);
    mousecursor.draw();
@@ -348,7 +367,7 @@ void ua_save_game_screen::tick()
             ua_trace("loading saved game\n");
             // load savegame
             core->get_underworld().load_game(
-               sgmgr->get_savegame_load(selected_savegame));
+               sgmgr->get_savegame_load(selected_savegame,true));
 
             // next screen
             if (from_menu)
@@ -499,6 +518,10 @@ void ua_save_game_screen::press_button()
          // ask for a savegame name
          edit_desc = true;
 
+         // select new slot when no savegame was selected
+         if (selected_savegame==-1)
+            selected_savegame = sgmgr->get_savegames_count();
+
          unsigned int height = font_normal.get_charheight();
          unsigned int ypos = selected_savegame*(height+1)+13+2;
 
@@ -527,15 +550,24 @@ void ua_save_game_screen::update_info()
 {
    if (selected_savegame < sgmgr->get_savegames_count())
    {
+      show_infos = true;
+
       // get savegame infos
       ua_savegame_info info;
       sgmgr->get_savegame_info(selected_savegame,info);
 
       // show infos
+
+      // do preview image
+      tex_preview.init(&core->get_texmgr());
+      tex_preview.convert(info.image_xres, info.image_yres, &info.image_rgba[0]);
+      tex_preview.use();
+      tex_preview.upload();
    }
    else
    {
-      // TODO empty info pane
+      // empty info pane
+      show_infos = false;
    }
 
    img_back2.convert_upload();
