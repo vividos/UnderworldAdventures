@@ -35,7 +35,7 @@
 #ifdef HAVE_DEBUG
  #include "screens/start_menu.hpp"
  #include "screens/save_game.hpp"
- #include "screens/ingame_new.hpp"
+// #include "screens/ingame_new.hpp"
  #include "screens/ingame_orig.hpp"
  #include "underworld.hpp"
 #endif
