@@ -44,7 +44,7 @@ MINGW_PATH = c:/mingw
 # -------------------------------------------------------------------
 
 # set to "yes" if you have STLport (and modify STLPORT_PATH then)
-WITH_STLPORT = no
+WITH_STLPORT = yes
 
 # path to where STLport was installed and built
 STLPORT_PATH = c:/mingw/stlport
@@ -67,12 +67,12 @@ WXWIN_PATH = d:/projekte/wxMSW
 WITH_DOCBOOK_XSL = yes
 
 # base path to docbook-xsl package
-# note: for some reasons xsltproc doesn't like all slashes in the path
+# note: for some reason xsltproc doesn't like all slashes in the path
 DOCBOOK_XSL_BASEPATH = d:\\uwadv/docbook/docbook-xsl-1.64.0
 
 # xsl-transformation processor to use
 # choose either "xsltproc" or "msxsl" and configure paths below
-XSLT_PROCESSOR = msxsl
+XSLT_PROCESSOR = xsltproc
 
 # path and filename for the xsltproc utility
 XSLTPROC_PATH = d:/uwadv/docbook/xsltproc.exe
