@@ -29,8 +29,7 @@
 #include "common.hpp"
 #include "panel.hpp"
 #include "underworld.hpp"
-//#include "ingame_orig.hpp"
-//#include <sstream>
+#include <sstream>
 
 
 //! time to rotate panel
@@ -49,10 +48,10 @@ void ua_panel::init(ua_panel_parent_interface* the_panel_parent, unsigned int xp
    panel_parent = the_panel_parent;
    ua_game_interface& game = panel_parent->get_game_interface();
 
-   panel_type = ua_panel_runebag;
-   //panel_type = ua_panel_inventory;
+   panel_type = ua_panel_inventory;
    armor_female = game.get_underworld().get_player().get_attr(ua_attr_gender) != 0;
    tickrate = game.get_tickrate();
+   stats_scrollstart = 0;
    rotate_panel = false;
    rotate_angle = 0.0;
    rotation_oldstyle = !game.get_settings().get_bool(ua_setting_uwadv_features);
@@ -69,6 +68,9 @@ void ua_panel::init(ua_panel_parent_interface* the_panel_parent, unsigned int xp
 
    img_manager.load_list(img_bodies, "bodies");
    img_manager.load_list(img_objects, "objects");
+
+   // load fonts
+   font_stats.load(game.get_settings(), ua_font_italic);
 
 
    // create image
@@ -234,14 +236,10 @@ void ua_panel::update_panel()
    }
    else
    if (panel_type == ua_panel_stats)
-   {
-      img.paste_image(img_panels[2],1,1);
-   }
+      update_stats();
    else
    if (panel_type == ua_panel_runebag)
-   {
       update_runebag();
-   }
 
    update();
 }
@@ -257,6 +255,87 @@ void ua_panel::update_chains()
 
    img_chains_top.update();
    img_chains_bottom.update();
+}
+
+void ua_panel::update_stats()
+{
+   ua_image& img = get_image();
+
+   ua_player& pl = panel_parent->get_game_interface().
+      get_underworld().get_player();
+
+   ua_gamestrings& gstr = panel_parent->get_game_interface().
+      get_underworld().get_strings();
+
+   img.paste_image(img_panels[2],1,1);
+
+   ua_image img_temp;
+   unsigned int xpos;
+   std::string text;
+   
+   // player name
+   text = pl.get_name();
+   xpos = ( 83 - font_stats.calc_length(text.c_str()) )/2;
+   font_stats.create_string(img_temp, pl.get_name().c_str(), 1);
+   img.paste_rect(img_temp, 0,0, img_temp.get_xres(),img_temp.get_yres(), xpos, 7, true);
+
+   // player profession
+   unsigned int prof = pl.get_attr(ua_attr_profession)&7;
+   text = gstr.get_string(2,prof+23);
+   ua_str_uppercase(text);
+
+   font_stats.create_string(img_temp, text.c_str(), 1);
+   img.paste_rect(img_temp, 0,0, img_temp.get_xres(),img_temp.get_yres(), 7, 15, true);
+
+   // player main stats
+   for(unsigned int i=0; i<7; i++)
+   {
+      std::ostringstream buffer;
+      switch(i)
+      {
+      case 0: buffer << pl.get_attr(ua_attr_exp_level) << "TH" << std::ends; break;
+      case 1: buffer << pl.get_attr(ua_attr_strength) << std::ends; break;
+      case 2: buffer << pl.get_attr(ua_attr_dexterity) << std::ends; break;
+      case 3: buffer << pl.get_attr(ua_attr_intelligence) << std::ends; break;
+      case 4: buffer << pl.get_attr(ua_attr_vitality) << "/" <<
+                 pl.get_attr(ua_attr_max_vitality) << std::ends; break;
+      case 5: buffer << pl.get_attr(ua_attr_mana) << "/" <<
+                 pl.get_attr(ua_attr_max_mana) << std::ends; break;
+
+      case 6: buffer << pl.get_attr(ua_attr_exp_points) << std::ends; break;
+      }
+
+      xpos = 77 - font_stats.calc_length(buffer.str().c_str());
+
+      font_stats.create_string(img_temp, buffer.str().c_str(), 1);
+      img.paste_rect(img_temp, 0,0, img_temp.get_xres(),img_temp.get_yres(), xpos, i*7+15, true);
+
+      buffer.str().erase();
+   }
+
+   // player skills
+   for(unsigned int n=0; n<6; n++)
+   {
+      std::ostringstream buffer;
+
+      // skill name
+      text = gstr.get_string(2,n+stats_scrollstart+31);
+      ua_str_uppercase(text);
+
+      font_stats.create_string(img_temp, text.c_str(), 104);
+      img.paste_rect(img_temp, 0,0, img_temp.get_xres(),img_temp.get_yres(), 7, n*7+65, true);
+
+      // skill value
+      unsigned int skill = pl.get_skill(
+         static_cast<ua_player_skills>(ua_skill_attack+n+stats_scrollstart));
+
+      buffer << skill << std::ends;
+
+      xpos = 77 - font_stats.calc_length(buffer.str().c_str());
+
+      font_stats.create_string(img_temp, buffer.str().c_str(), 104);
+      img.paste_rect(img_temp, 0,0, img_temp.get_xres(),img_temp.get_yres(), xpos, n*7+65, true);
+   }
 }
 
 void ua_panel::update_runebag()

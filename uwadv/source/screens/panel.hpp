@@ -35,7 +35,7 @@
 // needed includes
 #include "panel.hpp"
 #include "imgquad.hpp"
-//#include "font.hpp"
+#include "font.hpp"
 
 
 // enums
@@ -81,13 +81,15 @@ public:
       bool button_down, unsigned int mousex, unsigned int mousey);
    virtual void tick();
 
-
 protected:
    //! updates panel image
    void update_panel();
 
    //! update chain images only
    void update_chains();
+
+   //! updates stats panel
+   void update_stats();
 
    //! updates runebag panel
    void update_runebag();
@@ -104,6 +106,9 @@ protected:
 
    //! tickrate in ticks/s
    unsigned int tickrate;
+
+   //! start of scrollable stats area
+   unsigned int stats_scrollstart;
 
 
    // images / image lists
@@ -135,6 +140,9 @@ protected:
 
    //! chains image on bottom
    ua_image_quad img_chains_bottom;
+
+   //! font for stats list
+   ua_font font_stats;
 
 
    //! indicates if panel is currently rotating
