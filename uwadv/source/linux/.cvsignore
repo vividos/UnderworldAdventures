@@ -1,11 +1,9 @@
-aclocal.m4
 config.cache
 config.log
 config.status
-configure
-stamp-h.in
+autom4te.cache
+stamp-h*
 config.h
 confdefs.h
-config.h.in
 libtool
 

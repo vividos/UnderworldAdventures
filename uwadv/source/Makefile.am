@@ -24,17 +24,20 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	audio.hpp common.hpp core.hpp font.hpp gamestrings.hpp \
 	image.hpp inventory.hpp level.hpp player.hpp quadtree.hpp \
 	screen.hpp settings.hpp texture.hpp uatypes.hpp \
-	underworld.hpp uwadv.hpp
+	underworld.hpp uwadv.hpp \
+	audio/audio.cpp audio/midi.cpp audio/xmidi.cpp \
+	audio/midi.hpp audio/xmidi.hpp \
+	audio/midi_driver/uni_fmod.cpp audio/midi_driver/uni_fmod.hpp \
+	conv/codevm.cpp conv/codevm.hpp \
+	resource/codeloaeder.cpp resource/fontloader.cpp \
+	resource/gamestrings.cpp resource/imageloader.cpp \
+	resource/maploader.cpp resource/settings.cpp \
+	resource/texloader.cpp \
+	resource/fread_endian.hpp \
+	screens/ingame_orig.cpp screens/start_splash.cpp \
+	screens/ingame_orig.hpp screens/start_splash.hpp
 
-UWADVLIBS = audio/libaudio.la conv/libconv.la \
-	resource/libresource.la screens/libscreens.la
-
-uwadv_LDADD = $(UWADVLIBS)
-
-uwadv_DEPENDENCIES = $(UWADVLIBS)
-
-EXTRA_DIST = 
-
-#SUBDIRS = audio conv resource screens
-SUBDIRS = conv
+EXTRA_DIST = audio/midi_driver/win_midiout.cpp \
+	audio/midi_driver/win_midiout.hpp \
+	linux/uwadv.cfg
 
