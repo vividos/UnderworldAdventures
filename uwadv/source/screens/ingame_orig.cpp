@@ -116,6 +116,8 @@ void ua_ingame_orig_screen::init()
    move_turn_left = move_turn_right = move_walk_forward =
       move_walk_backwards = move_run_forward = false;
 
+   leftbuttondown = rightbuttondown = false;
+
    slot_start = 0;
    check_dragging = false;
 
@@ -421,22 +423,30 @@ void ua_ingame_orig_screen::handle_event(SDL_Event &event)
    case SDL_MOUSEBUTTONDOWN: // mouse button was pressed down
       {
          Uint8 state = SDL_GetRelativeMouseState(NULL,NULL);
+         Uint8 state2 = SDL_GetMouseState(NULL,NULL);
 
-         if (SDL_BUTTON(state)==SDL_BUTTON_LEFT) leftbuttondown = true;
-         else rightbuttondown = true;
+         bool left_changed =
+            (state&SDL_BUTTON_LMASK) != 0 && !leftbuttondown;
 
-         mouse_action(true,SDL_BUTTON(state)==SDL_BUTTON_LEFT,true);
+         leftbuttondown = (state&SDL_BUTTON_LMASK) != 0;
+         rightbuttondown = (state&SDL_BUTTON_RMASK) != 0;
+
+         mouse_action(true,left_changed,true);
       }
       break;
 
    case SDL_MOUSEBUTTONUP: // mouse button was released
       {
          Uint8 state = SDL_GetRelativeMouseState(NULL,NULL);
+         Uint8 state2 = SDL_GetMouseState(NULL,NULL);
 
-         if (SDL_BUTTON(state)==SDL_BUTTON_LEFT) leftbuttondown = false;
-         else rightbuttondown = false;
+         bool left_changed =
+            (state&SDL_BUTTON_LMASK) == 0 && leftbuttondown;
 
-         mouse_action(true,SDL_BUTTON(state)==SDL_BUTTON_LEFT,false);
+         leftbuttondown = (state&SDL_BUTTON_LMASK) != 0;
+         rightbuttondown = (state&SDL_BUTTON_RMASK) != 0;
+
+         mouse_action(true,left_changed,false);
       }
       break;
    default: break;
@@ -1307,7 +1317,7 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
          ua_player& player = core->get_underworld().get_player();
 
          // when pressing mouse, start mouse move mode
-         if (click)
+         if (click && left_button)
          {
             // mouse move is started on pressing mouse button
             mouse_move = pressed;
@@ -1401,7 +1411,7 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
       }
 
       // check click
-      if (click && pressed)
+      if (click && pressed && !left_button)
       {
          int x,y;
          SDL_GetMouseState(&x,&y);
@@ -1411,27 +1421,30 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
 
          renderer.select_pick(x,y,tilex,tiley,isobj,id);
 
-         if (isobj)
+         if (gamemode == ua_mode_default || gamemode == ua_mode_look)
          {
-            // user clicked on an object
-            Uint32 level = core->get_underworld().get_player().get_attr(ua_attr_maplevel);
-            core->get_underworld().get_scripts().lua_objlist_look(level,id);
-         }
-         else
-         {
-            // user clicked on a texture
+            // "look" action
+            if (isobj)
+            {
+               // user clicked on an object
+               Uint32 level = core->get_underworld().get_player().get_attr(ua_attr_maplevel);
+               core->get_underworld().get_scripts().lua_objlist_look(level,id);
+            }
+            else
+            {
+               // user clicked on a texture
+               unsigned int texid = id;
 
-            unsigned int texid = id;
+               if (id>=ua_tex_stock_floor)
+                  texid = 510-(id-ua_tex_stock_floor);
 
-            if (id>=ua_tex_stock_floor)
-               texid = 510-(id-ua_tex_stock_floor);
+               std::string desc("You see ");
+               desc.append(core->get_underworld().get_strings().get_string(10,texid));
 
-            std::string desc("You see ");
-            desc.append(core->get_underworld().get_strings().get_string(10,texid));
+               ui_print_string(desc.c_str());
 
-            ui_print_string(desc.c_str());
-
-            //core->get_underworld().get_scripts().lua_wall_look();
+               //core->get_underworld().get_scripts().lua_wall_look();
+            }
          }
       }
    }
