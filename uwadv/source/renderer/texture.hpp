@@ -54,12 +54,14 @@
 const unsigned int ua_tex_stock_wall = 0x0000;
 //! start of stock floor textures
 const unsigned int ua_tex_stock_floor = 0x0100;
+//! object textures
+const unsigned int ua_tex_stock_objects = 0x0200;
 //! switch/lever/pull chain textures
-const unsigned int ua_tex_stock_switches = 0x0200;
+const unsigned int ua_tex_stock_switches = 0x0400;
 //! door textures
-const unsigned int ua_tex_stock_door = 0x0210;
+const unsigned int ua_tex_stock_door = 0x0410;
 //! tmobj textures
-const unsigned int ua_tex_stock_tmobj = 0x0220;
+const unsigned int ua_tex_stock_tmobj = 0x0420;
 
 
 // forward declaration

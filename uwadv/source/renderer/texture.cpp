@@ -29,6 +29,7 @@
 #include "common.hpp"
 #include "texture.hpp"
 #include "game_interface.hpp"
+#include "import.hpp"
 
 
 // constants
@@ -183,7 +184,10 @@ void ua_texture_manager::init(ua_game_interface& game)
 {
    palette0 = game.get_image_manager().get_palette(0);
 
-/*
+   ua_settings& settings = game.get_settings();
+
+   ua_uw_import import;
+
    // load stock textures
    if (settings.get_gametype() == ua_game_uw1 || settings.get_gametype() == ua_game_uw_demo)
    {
@@ -191,13 +195,47 @@ void ua_texture_manager::init(ua_game_interface& game)
       std::string walltexfname(settings.get_string(ua_setting_uw_path));
       walltexfname.append(
          settings.get_gametype() == ua_game_uw1 ? "data/w64.tr" : "data/dw64.tr");
-      load_textures(ua_tex_stock_wall,walltexfname.c_str());
+
+      import.load_textures(allstocktex_imgs, ua_tex_stock_wall,
+         walltexfname.c_str(), palette0);
 
       // load all floor textures
       std::string floortexfname(settings.get_string(ua_setting_uw_path));
       floortexfname.append(
          settings.get_gametype() == ua_game_uw1 ? "data/f32.tr" : "data/df32.tr");
-      load_textures(ua_tex_stock_floor,floortexfname.c_str());
+
+      import.load_textures(allstocktex_imgs, ua_tex_stock_floor,
+         walltexfname.c_str(), palette0);
+
+      // load objects
+      {
+         allstocktex_imgs.resize(ua_tex_stock_objects-1);
+
+         // add images to list; we can do this, since the list isn't clear()ed
+         // before adding more images
+         game.get_image_manager().load_list(allstocktex_imgs,"objects");
+      }
+
+      // load switches/levers/pull chains
+      {
+         allstocktex_imgs.resize(ua_tex_stock_switches-1);
+         game.get_image_manager().load_list(allstocktex_imgs,"tmflat");
+      }
+
+      // load door textures
+      {
+         allstocktex_imgs.resize(ua_tex_stock_door-1);
+         game.get_image_manager().load_list(allstocktex_imgs,"doors");
+      }
+
+      // load tmobj textures
+      {
+         allstocktex_imgs.resize(ua_tex_stock_tmobj-1);
+         game.get_image_manager().load_list(allstocktex_imgs,"tmobj");
+      }
+
+      stock_animinfo.resize(allstocktex_imgs.size(),
+         std::make_pair<unsigned int, unsigned int>(0,1));
 
       // set some animated textures
       {
@@ -213,72 +251,27 @@ void ua_texture_manager::init(ua_game_interface& game)
          stock_animinfo[0x0110].second = 4; // 493 water
          stock_animinfo[0x0111].second = 4; // 494 water
       }
-
-      // load switches/levers/pull chains
-      {
-         ua_image_list il;
-         il.load(settings,"tmflat");
-
-         load_imgtextures(ua_tex_stock_switches,il);
-      }
-
-      // load door textures
-      {
-         ua_image_list il;
-         il.load(settings,"doors");
-
-         load_imgtextures(ua_tex_stock_door,il);
-      }
-
-      // load tmobj textures
-      {
-         ua_image_list il;
-         il.load(settings,"tmobj");
-
-         load_imgtextures(ua_tex_stock_tmobj,il);
-      }
-
-      // init stock texture objects
-      reset();
    }
    else
    if (settings.get_gametype() == ua_game_uw2)
-   { 
+   {
+
       // load all textures
       std::string texfname(settings.get_string(ua_setting_uw_path));
       texfname.append("data/t64.tr");
 
-      load_textures(0,texfname.c_str());
+      import.load_textures(allstocktex_imgs, ua_tex_stock_wall,
+         texfname.c_str(), palette0);
 
-      // init stock texture objects
-      reset();
+      stock_animinfo.resize(allstocktex_imgs.size(),
+         std::make_pair<unsigned int, unsigned int>(0,1));
    }
 
-   // load object sprite textures
-   {
-      // load image list
-      ua_image_list il;
-      il.load(settings,"objects");
+   // now that all texture images are loaded, we can resize the texture array
+   stock_textures.resize(allstocktex_imgs.size());
 
-      // make sure we have at least have 460 images
-      if (il.size()<460)
-         throw ua_exception("expected 460 images in data/objects.gr");
-
-      // copy images to object textures
-      obj_textures.init(this,il.size());
-
-      unsigned int max = il.size();
-      for(unsigned int id=0; id<max; id++)
-      {
-         // objects [218..223] and 302 have different sizes
-         if ((id>=218 && id<=223) || id==302 )
-            continue;
-
-         obj_textures.convert(il.get_image(id),id);
-         obj_textures.upload(id);
-      }
-   }
-*/
+   // init stock texture objects
+   reset();
 }
 
 void ua_texture_manager::tick(double tickrate)
