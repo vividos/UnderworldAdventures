@@ -38,6 +38,9 @@ void ua_image_quad::init(ua_game_interface& game, unsigned int xpos,
 {
    ua_window::create(xpos,ypos,image.get_xres(),image.get_yres());
 
+   if (image.get_palette().get() == NULL)
+      image.get_palette() = game.get_image_manager().get_palette(0);
+
    tex.init(&game.get_renderer().get_texture_manager(), 2);
 }
 
