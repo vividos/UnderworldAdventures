@@ -37,17 +37,17 @@
 // classes
 
 //! conversation debugger class
-class ua_conv_debugger: public ua_conv_code_vm
+class ua_conv_debugger: private ua_conv_code_vm
 {
 public:
    //! ctor
-   ua_conv_debugger(ua_gamestrings &gstr):gs(gstr){}
+   ua_conv_debugger(){}
 
-   //! loads private globals from bglobals.dat file
-   void load_priv_globals(const char *fname);
+   //! initializes debugger
+   void init(const char *cnvname, const char *strname, const char *bgname);
 
    //! starts the debugger
-   void start(ua_gamestrings gs);
+   void start();
 
 protected:
    //! lists code at position; returns number of bytes opcode occupies
@@ -61,8 +61,14 @@ protected:
    virtual void fetchm_priv(Uint16 at);
 
 protected:
-   //! ref to all game strings
-   ua_gamestrings &gs;
+   //! conversations file name
+   const char *cnvname;
+
+   //! all game strings
+   ua_gamestrings gs;
+
+   //! we have the globals 'on board'
+   ua_conv_globals cg;
 
    //! private globals
    std::vector<Uint16> priv_globals;
@@ -70,6 +76,10 @@ protected:
    //! list of all breakpoints
    std::vector<Uint16> allbreakpoints;
 
+   //! indicates if conversation is loaded
+   bool loaded;
+
+   //! indicates if verbose mode is on
    bool verbose;
 };
 

@@ -40,7 +40,21 @@ const char *ua_cnvdbg_version = "0.1";
 
 // ua_conv_debugger methods
 
-void ua_conv_debugger::start(ua_gamestrings gs)
+void ua_conv_debugger::init(const char *thecnvname, const char *strname, const char *bgname)
+{
+   cnvname = thecnvname;
+
+   printf("loading game strings ...\n");
+   gs.load(strname);
+
+   printf("loading conv globals ...\n");
+   cg.load(bgname,false);
+
+   printf("done loading.\n");
+   loaded=false; // code not loaded yet
+}
+
+void ua_conv_debugger::start()
 {
    allbreakpoints.clear();
 
@@ -82,32 +96,81 @@ void ua_conv_debugger::start(ua_gamestrings gs)
       {
          printf(
             "cnvdbg - help\n\n"
-            "help       shows this help\n"
-            "reg        shows registers and current stack context\n"
-            "list [n]   lists instructions from code memory <n> on\n"
-            "dump       dumps complete stack\n"
-            "step       advances an instruction\n"
-            "cont       continues until a breakpoint occurs\n"
-            "break n    toggles a breakpoint at code pos <n>\n"
-            "verbose    toggles verboseness of debugger\n"
-            "exit/quit  quits the debugger\n"
-            "\nshort keys can be used for the commands, e.g. 's' for step\n");
+            "help       h shows this help\n"
+            "conv n       loads a conversation\n"
+            "reg        r shows registers and current stack context\n"
+            "list [n]   l lists instructions from code memory <n> on\n"
+            "dump       d dumps complete stack\n"
+            "step       s advances an instruction\n"
+            "cont       c continues until a breakpoint occurs\n"
+            "break n    b toggles a breakpoint at code pos <n>\n"
+            "verbose    v toggles verboseness of debugger\n"
+            "exit/quit  x quits the debugger\n\n"
+            "short keys can be used for the commands, e.g. 's' for step\n"
+            "some commands are only available, when a conversation is loaded\n"
+            "\n");
+      }
+
+      if (strncmp("conv",buffer,4)==0)
+      {
+         if (conv_nr!=0xffff)
+            ua_conv_code_vm::done(cg);
+
+         // try to load code
+         int conv = atoi(buffer+4);
+         if (load_code(cnvname,conv))
+         {
+            printf("loaded conversation #%u.\n",conv);
+            ua_conv_code_vm::init(cg);
+            loaded=true;
+         }
+         else
+            printf("conversation %u not available!\n",conv);
+
+         continue;
       }
 
       if (stricmp("reg",buffer)==0 || tolower(buffer[0])=='r')
       {
          printf(
             "registers:\n"
-            "instrp: %04x   stackp: %04x   basep: %04x result_reg: %04x\n",
+            "instrp: %04x   stackp: %04x   basep: %04x   result_reg: %04x\n",
                instrp,stack.get_stackp(),basep,result_register);
 
          Uint16 stackp = stack.get_stackp();
+
+         if (stackp==0xffff)
+         {
+            printf("stack not available\n");
+            continue;
+         }
 
          printf("stack: ");
          for(Uint16 i=0; i<=stackp && i<8; i++)
             printf("%04x ",stack.at(i));
 
          printf("\n");
+      }
+
+      if (stricmp("verbose",buffer)==0 || tolower(buffer[0])=='v')
+      {
+         verbose = !verbose;
+         printf("verbose: %s\n",verbose ? "on" : "off");
+         continue;
+      }
+
+      if (stricmp("exit",buffer)==0 || tolower(buffer[0])=='x' ||
+          stricmp("quit",buffer)==0 || tolower(buffer[0])=='q')
+      {
+         endloop=true;
+         continue;
+      }
+
+      // for the next functions, code must be loaded
+      if (!loaded)
+      {
+         printf("no conversation loaded yet; please use \"conv\" to load one.\n");
+         continue;
       }
 
       if (strncmp("list",buffer,4)==0 || tolower(buffer[0])=='l')
@@ -180,16 +243,6 @@ void ua_conv_debugger::start(ua_gamestrings gs)
          }
       }
 
-      if (stricmp("verbose",buffer)==0 || tolower(buffer[0])=='v')
-      {
-         verbose = !verbose;
-         printf("verbose: %s\n",verbose ? "on" : "off");
-      }
-
-      if (stricmp("exit",buffer)==0 || tolower(buffer[0])=='x' ||
-          stricmp("quit",buffer)==0 || tolower(buffer[0])=='q')
-         endloop=true;
-
       // when we reach here, we run the code n times; if n == -1, we run
       // until exit, an exception is thrown or a callback function is called
 
@@ -237,16 +290,9 @@ void ua_conv_debugger::start(ua_gamestrings gs)
             printf("conversation ended.\n\n");
             n=0;
 
-            instrp = 0;
-            basep = -1;
-            finished = false;
-
-            // we don't reload private globals here, to keep their values
-            stack.set_stackp(priv_globals.size());
-
-            // reload private globals
-//            for(int s=0; s<priv_globals.size(); s++)
-//               stack.push(priv_globals[s]);
+            // reinit code vm
+            ua_conv_code_vm::done(cg);
+            ua_conv_code_vm::init(cg);
          }
 
          // check if breakpoints are reached
@@ -298,6 +344,12 @@ int ua_conv_debugger::list_code(Uint16 at)
 
 void ua_conv_debugger::imported_func(Uint16 number)
 {
+   if (number>imported_funcs.size())
+   {
+      printf("alert! called unknown imported function: %04x",number);
+      return;
+   }
+
    const ua_conv_imported_item &iitem = imported_funcs.at(number);
 
    if (verbose)
@@ -311,7 +363,7 @@ void ua_conv_debugger::imported_func(Uint16 number)
       while(stack.at(arg2)!=0)
       {
          printf("%u. %s\n",nr++,
-            gs.get_string(conv_nr+24,stack.at(arg2)).c_str());
+            gs.get_string(strblock,stack.at(arg2)).c_str());
          arg2++;
       }
 
@@ -326,6 +378,36 @@ void ua_conv_debugger::imported_func(Uint16 number)
 
       printf("response: %u\n\n",result_register);
    }
+
+   if (iitem.name=="babl_fmenu")
+   {
+      Uint16 arg1=stack.at(stack.get_stackp());
+      Uint16 arg2=stack.at(stack.get_stackp()-1);
+      Uint16 arg3=stack.at(stack.get_stackp()-2);
+
+      if (verbose)
+         printf("babl_fmenu: s[3]=%04x\n",arg3);
+
+      int nr=1;
+      while(stack.at(arg2)!=0)
+      {
+         printf("%u. %s\n",nr++,
+            gs.get_string(strblock,stack.at(arg2)).c_str());
+         arg2++;
+      }
+
+      do
+      {
+         printf("what do you respond? ");
+         char buffer[256];
+         fgets(buffer,255,stdin);
+
+         result_register = atoi(buffer);
+      } while (result_register<1 || result_register > nr-1);
+
+      printf("response: %u\n\n",result_register);
+
+   }
 }
 
 void ua_conv_debugger::say_op(Uint16 str_id)
@@ -333,7 +415,7 @@ void ua_conv_debugger::say_op(Uint16 str_id)
    if (verbose)
       printf("%04x: SAY (%04x)\n", instrp, str_id);
 
-   printf("%s\n\n", gs.get_string(conv_nr+24,str_id).c_str());
+   printf("%s\n\n", gs.get_string(strblock,str_id).c_str());
 }
 
 void ua_conv_debugger::sto_priv(Uint16 at, Uint16 val)
@@ -365,31 +447,6 @@ void ua_conv_debugger::fetchm_priv(Uint16 at)
 }
 
 
-void ua_conv_debugger::load_priv_globals(const char *fname)
-{
-   FILE *fd = fopen(fname,"rb");
-   if (fd==NULL)
-      throw ua_ex_error_loading;
-
-   while (!feof(fd))
-   {
-      Uint16 slot = fread16(fd);
-      Uint16 size = fread16(fd);
-
-      if (slot==conv_nr)
-      {
-         for(int i=0; i<size; i++)
-            priv_globals.push_back(fread16(fd));
-         break;
-      }
-      else
-         fseek(fd,size,SEEK_CUR);
-   }
-
-   fclose(fd);
-}
-
-
 // we don't need SDL's main here
 #undef main
 
@@ -401,43 +458,34 @@ int main(int argc, char *argv[])
    printf("cnvdbg %s - ultima underworld 1 conversation script debugger\n\n",
       ua_cnvdbg_version);
 
-   if (argc<5)
+   if (argc<4)
    {
-      printf("syntax: cnvdbg <cnv-file> <str-file> <bglobals-file> <conv-code-nr>\n");
-      printf("example: cnvdbg \"d:\\games\\uw1\\data\\cnv.ark\" "
-         "\"d:\\games\\uw1\\data\\strings.ark\""
-         "\"d:\\games\\uw1\\save1\\bglobals.dat\" 3\n\n");
+      printf("syntax: cnvdbg <cnv-file> <str-file> <bglobals-file>\n");
+      printf("example: cnvdbg \"data\\cnv.ark\" "
+         "\"data\\strings.ark\""
+         "\"save1\\bglobals.dat\"\n\n");
       return 0;
    }
 
-   int conv = atoi(argv[4]);
-
    printf("conversation-file: %s\n",argv[1]);
    printf("strings-file:      %s\n",argv[2]);
-   printf("private globals:   %s\n",argv[3]);
-   printf("conversation:      %u\n\n",conv);
+   printf("private globals:   %s\n\n",argv[3]);
 
-   ua_gamestrings gs;
-   ua_conv_debugger dbg(gs);
+   ua_conv_debugger dbg;
 
+#ifndef _DEBUG
    try
+#endif
    {
-      // load strings
-      gs.load(argv[2]);
-
-      dbg.init();
-
-      // load code
-      if (!dbg.load_code(argv[1],conv))
-      {
-         printf("conversation %u not available!\n",conv);
-         return 0;
-      }
-
-      dbg.load_priv_globals(argv[3]);
+      dbg.init(argv[1],argv[2],argv[3]);
 
       // start debugging
-      dbg.start(gs);
+      dbg.start();
+   }
+#ifndef _DEBUG
+   catch(ua_exception e)
+   {
+      printf("caught an ua_exception: \"%s\"\n",e.what());
    }
    catch(std::exception e)
    {
@@ -447,6 +495,7 @@ int main(int argc, char *argv[])
    {
       printf("caught an unknown exception, exiting!\n");
    }
+#endif
 
    return 0;
 }
