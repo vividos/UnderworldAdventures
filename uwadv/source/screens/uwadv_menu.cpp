@@ -37,8 +37,10 @@
 
 // ua_uwadv_menu_screen methods
 
-void ua_uwadv_menu_screen::init()
+void ua_uwadv_menu_screen::init(ua_game_core_interface* thecore)
 {
+   ua_ui_screen_base::init(thecore);
+
    ua_trace("uwadv menu screen started\n");
 
    ua_settings &settings = core->get_settings();
@@ -69,19 +71,19 @@ void ua_uwadv_menu_screen::init()
    // now that we know the generic uw path, we can init the core stuff
    core->init_game();
 }
-
+/*
 void ua_uwadv_menu_screen::done()
 {
 }
 
-void ua_uwadv_menu_screen::handle_event(SDL_Event &event)
+bool ua_uwadv_menu_screen::handle_event(SDL_Event &event)
 {
 }
 
 void ua_uwadv_menu_screen::render()
 {
 }
-
+*/
 void ua_uwadv_menu_screen::tick()
 {
 #ifdef HAVE_DEBUG

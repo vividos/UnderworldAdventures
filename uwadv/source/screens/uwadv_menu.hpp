@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,8 +26,8 @@
 */
 
 // include guard
-#ifndef __uwadv_uwadv_menu_hpp_
-#define __uwadv_uwadv_menu_hpp_
+#ifndef uwadv_uwadv_menu_hpp_
+#define uwadv_uwadv_menu_hpp_
 
 // needed includes
 #include "screen.hpp"
@@ -40,16 +40,16 @@ class ua_uwadv_menu_screen: public ua_ui_screen_base
 {
 public:
    //! ctor
-   ua_uwadv_menu_screen(){}
+//   ua_uwadv_menu_screen(){}
    //! dtor
-   virtual ~ua_uwadv_menu_screen(){}
+//   virtual ~ua_uwadv_menu_screen(){}
 
    // virtual functions from ua_ui_screen_base
 
-   virtual void init();
-   virtual void done();
-   virtual void handle_event(SDL_Event &event);
-   virtual void render();
+   virtual void init(ua_game_core_interface* core);
+//   virtual void done();
+//   virtual bool handle_event(SDL_Event& event);
+//   virtual void render();
    virtual void tick();
 
 protected:
