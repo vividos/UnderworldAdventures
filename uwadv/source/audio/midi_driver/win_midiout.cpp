@@ -24,11 +24,13 @@
 
 */
 
+// neded includes
+#include "common.hpp"
+
 // only compile for win32
 #ifdef WIN32
 
-// neded includes
-#include "common.hpp"
+// more includes
 #include "win_midiout.h"
 #include "../xmidi.hpp"
 #include <iostream>
