@@ -118,7 +118,7 @@ public:
    void save_game(ua_savegame &sg);
 
    //! imports a level map
-   void import_map(FILE *fd, Uint16 ceil_tex, Uint16 wall_textures[48],
+   void import_map(FILE *fd, Uint16 wall_textures[48],
       Uint16 floor_textures[10]);
 
    //! imports texture usage info

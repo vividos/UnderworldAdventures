@@ -109,7 +109,7 @@ void ua_import_levelmaps(ua_settings &settings, const char *folder,
       }
 
       // import map
-      level.import_map(fd,ua_tex_stock_floor+9,wall_textures,floor_textures);
+      level.import_map(fd,wall_textures,floor_textures);
 
       // import objects
       fseek(fd,0,SEEK_SET);
@@ -140,11 +140,7 @@ void ua_import_levelmaps(ua_settings &settings, const char *folder,
       // load level map
       fseek(fd,offsets[i],SEEK_SET);
 
-      Uint16 floortex = ua_tex_stock_floor+15;
-      if (i==8 && settings.get_gametype() == ua_game_uw1)
-         floortex = ua_tex_stock_floor+26; // level 8: ethereal void
-
-      level.import_map(fd,floortex,wall_textures,floor_textures);
+      level.import_map(fd,wall_textures,floor_textures);
 
       // load object list
       fseek(fd,offsets[i],SEEK_SET);
@@ -160,7 +156,7 @@ void ua_import_levelmaps(ua_settings &settings, const char *folder,
 
 // ua_level methods
 
-void ua_level::import_map(FILE *fd, Uint16 ceil_tex, Uint16 wall_textures[48],
+void ua_level::import_map(FILE *fd, Uint16 wall_textures[48],
    Uint16 floor_textures[10])
 {
    // read in map info
@@ -190,10 +186,8 @@ void ua_level::import_map(FILE *fd, Uint16 ceil_tex, Uint16 wall_textures[48],
 
       tiles[tile].texture_wall = wall_textures[wall_index];
       tiles[tile].texture_floor = floor_textures[floor_index];
-      tiles[tile].texture_ceiling = ceil_tex;
+      tiles[tile].texture_ceiling = floor_textures[9];
    }
-
-   used_textures.push_back(ceil_tex);
 }
 
 void ua_level::import_texinfo(FILE *fd, Uint16 wall_textures[48],
