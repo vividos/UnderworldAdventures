@@ -35,7 +35,7 @@
 // external functions
 
 extern bool ua_model_decode_builtins(const char* filename,
-   std::vector<ua_model3d_ptr>& allmodels);
+   std::vector<ua_model3d_ptr>& allmodels, bool dump=false);
 
 
 // ua_model3d_builtin methods
@@ -207,7 +207,7 @@ void ua_model3d_manager::init(ua_game_core_interface* thecore)
    else
       uwexe_filename.append("uwdemo.exe");
 
-   ua_model_decode_builtins(uwexe_filename.c_str(), allbuiltins);
+   ua_model_decode_builtins(uwexe_filename.c_str(), allbuiltins, false);
 
    // loading %game%/model3d.cfg
    std::string cfgfile_name(core->get_settings().get_string(ua_setting_game_prefix));

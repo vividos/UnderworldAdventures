@@ -29,6 +29,7 @@
 #include "common.hpp"
 #include "levark.hpp"
 #include "prop.hpp"
+#include "mdldump.hpp"
 
 
 // enums
@@ -38,6 +39,7 @@ enum uwdump_command
    cmd_nop=0,
    cmd_leveldec,
    cmd_objprop,
+   cmd_mdldump,
 };
 
 
@@ -88,6 +90,7 @@ void parse_args(unsigned int argc, const char** argv)
                " commands:\n"
                "   leveldump <file>    dumps <basepath><file> as lev.ark\n"
                "   propdump            dumps data/comobj.dat and objects.dat\n"
+               "   mdldump             dumps builtin model data\n"
                "\n"
                " options:\n"
                "   -d<basepath>   sets uw1/uw2 path; using current folder when not specified\n"
@@ -111,6 +114,12 @@ void parse_args(unsigned int argc, const char** argv)
          if (strcmp(argv[i],"propdump")==0)
          {
             command = cmd_objprop;
+            need_param = true;
+         }
+         else
+         if (strcmp(argv[i],"mdldump")==0)
+         {
+            command = cmd_mdldump;
             need_param = true;
          }
          else
@@ -174,26 +183,6 @@ void check_game_type()
    is_uw2 = false;
 }
 
-Uint16 fread16(FILE* fd)
-{
-   Uint16 data;
-   fread(&data,1,2,fd);
-#if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
-   data = ua_endian_convert16(data);
-#endif
-   return data;
-}
-
-Uint32 fread32(FILE* fd)
-{
-   Uint32 data;
-   fread(&data,1,4,fd);
-#if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
-   data = ua_endian_convert32(data);
-#endif
-   return data;
-}
-
 
 // main function
 
@@ -229,10 +218,27 @@ int main(char argc, char* argv[])
       }
       break;
 
+   case cmd_mdldump: // builtin model dumping
+      {
+         ua_dump_builtin_models mdldump;
+         mdldump.start(basepath);
+      }
+      break;
+
    default:
       printf("no command given; show help with parameter -h\n");
       break;
    }
 
    return 0;
+}
+
+
+// fake functions to get linking to work
+
+#include "files.hpp"
+
+SDL_RWops* ua_files_manager::get_uadata_file(const char* relpath)
+{
+   return NULL;
 }

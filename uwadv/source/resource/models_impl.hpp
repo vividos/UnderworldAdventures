@@ -65,7 +65,7 @@ protected:
    std::vector<unsigned char> face_colors;
 
    friend bool ua_model_decode_builtins(const char* filename,
-      std::vector<ua_model3d_ptr>& allmodels);
+      std::vector<ua_model3d_ptr>& allmodels, bool dump);
 };
 
 

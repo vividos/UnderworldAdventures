@@ -50,7 +50,7 @@ bool rightbuttondown = false;
 // external functions
 
 extern bool ua_model_decode_builtins(const char* filename,
-   std::vector<ua_model3d_ptr>& allmodels);
+   std::vector<ua_model3d_ptr>& allmodels, bool dump=false);
 
 
 // functions
@@ -58,13 +58,13 @@ extern bool ua_model_decode_builtins(const char* filename,
 void uwmdlview_init()
 {
    if (ua_file_exists("./uw.exe"))
-      ua_model_decode_builtins("./uw.exe",allmodels);
+      ua_model_decode_builtins("./uw.exe",allmodels,false);
    else
    if (ua_file_exists("./uwdemo.exe"))
-      ua_model_decode_builtins("./uwdemo.exe",allmodels);
+      ua_model_decode_builtins("./uwdemo.exe",allmodels,false);
    else
    if (ua_file_exists("./uw2.exe"))
-      ua_model_decode_builtins("./uw2.exe",allmodels);
+      ua_model_decode_builtins("./uw2.exe",allmodels,false);
 }
 
 void setup_opengl(unsigned int width, unsigned int height)
