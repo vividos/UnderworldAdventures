@@ -103,7 +103,7 @@ void ua_gamestrings::get_stringblock(Uint16 block_id,
       decrease_lifetimes(block_id);
    }
    else
-      ua_trace("string block %04x cannot be found", block_id);
+      ua_trace("string block %04x cannot be found\n", block_id);
 }
 
 std::string ua_gamestrings::get_string(Uint16 block_id,
@@ -124,11 +124,11 @@ std::string ua_gamestrings::get_string(Uint16 block_id,
          decrease_lifetimes(block_id);
       }
       else
-         ua_trace("string %u in block %04x cannot be found", string_nr,
+         ua_trace("string %u in block %04x cannot be found\n", string_nr,
             block_id);
    }
    else
-      ua_trace("string block %04x cannot be found", block_id);
+      ua_trace("string block %04x cannot be found\n", block_id);
 
    return text;
 }
