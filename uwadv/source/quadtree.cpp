@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -34,38 +34,28 @@
 #include "uamath.hpp"
 
 
-// ua_frustum methods
+// ua_frustum2d methods
 
-ua_frustum::ua_frustum(double xpos,double ypos,double zpos,double myxangle,double myyangle,double fov,double farplane)
+ua_frustum2d::ua_frustum2d(double xpos, double ypos,
+   double angle, double fov, double farplane)
 {
-   xangle=myxangle;
-   yangle=myyangle;
-   pos[0]=xpos;
-   pos[1]=ypos;
-   pos[2]=zpos;
-
-   // calculate all three triangle points forming the 2d frustum top view
-   x[0] = xpos - 3.0*cos(ua_deg2rad(xangle));
-   y[0] = ypos - 3.0*sin(ua_deg2rad(xangle));
+   points[0].set(xpos - 3.0*cos(ua_deg2rad(angle)),ypos - 3.0*sin(ua_deg2rad(angle)));
 
    // move camera pos a bit behind
    farplane += 3.0;
    fov *= 1.3;
 
    // view vector
-   double vx = farplane*cos(ua_deg2rad(xangle)) + xpos;
-   double vy = farplane*sin(ua_deg2rad(xangle)) + ypos;
+   double vx = farplane*cos(ua_deg2rad(angle)) + xpos;
+   double vy = farplane*sin(ua_deg2rad(angle)) + ypos;
 
    // vector to second point
-   double len = farplane*tan(ua_deg2rad(fov/2));
-   double wx = len*cos(ua_deg2rad(xangle+90));
-   double wy = len*sin(ua_deg2rad(xangle+90));
+   double len = farplane*tan(ua_deg2rad(fov/2.0));
+   double wx = len*cos(ua_deg2rad(angle+90.0));
+   double wy = len*sin(ua_deg2rad(angle+90.0));
 
-   x[1] = vx + wx;
-   y[1] = vy + wy;
-
-   x[2] = vx - wx;
-   y[2] = vy - wy;
+   points[1].set(vx + wx, vy + wy);
+   points[2].set(vx - wx, vy - wy);
 }
 
 /*! this function uses the barycentric coordinates of the view frustum
@@ -74,44 +64,46 @@ ua_frustum::ua_frustum(double xpos,double ypos,double zpos,double myxangle,doubl
     more info at:
     http://research.microsoft.com/~hollasch/cgindex/math/barycentric.html
 */
-bool ua_frustum::is_in_frustum(double xpos,double ypos)
+bool ua_frustum2d::is_in_frustum(double xpos,double ypos)
 {
-   double b0 =  (x[1] - x[0]) * (y[2] - y[0]) - (x[2] - x[0]) * (y[1] - y[0]);
-   double b1 = ((x[1] - xpos) * (y[2] - ypos) - (x[2] - xpos) * (y[1] - ypos)) / b0;
-   double b2 = ((x[2] - xpos) * (y[0] - ypos) - (x[0] - xpos) * (y[2] - ypos)) / b0;
-   double b3 = ((x[0] - xpos) * (y[1] - ypos) - (x[1] - xpos) * (y[0] - ypos)) / b0;
+   double b0 =  (points[1].x - points[0].x) * (points[2].y - points[0].y) - (points[2].x - points[0].x) * (points[1].y - points[0].y);
+   double b1 = ((points[1].x - xpos) * (points[2].y - ypos) - (points[2].x - xpos) * (points[1].y - ypos)) / b0;
+   double b2 = ((points[2].x - xpos) * (points[0].y - ypos) - (points[0].x - xpos) * (points[2].y - ypos)) / b0;
+   double b3 = ((points[0].x - xpos) * (points[1].y - ypos) - (points[1].x - xpos) * (points[0].y - ypos)) / b0;
 
    return (b1>0.0 && b2>0.0 && b3>0.0);
 }
+
+
+// ua_quad methods
 
 #ifdef TEST_QUADTREE
 static int used_iter;
 #endif
 
-void ua_quad::get_visible_tiles(ua_frustum &fr, std::vector<ua_quad_tile_coord> &tilelist)
+void ua_quad::get_visible_tiles(ua_frustum2d& fr, std::vector<ua_quad_tile_coord>& tilelist)
 {
 #ifdef TEST_QUADTREE
    used_iter++;
 #endif
-   bool res,all=true,one=false;
+   bool res, all=true, one=false;
 
-   // test quads coordinates
-   res = fr.is_in_frustum(double(x0),double(y0)); all &= res; one |= res;
-   res = fr.is_in_frustum(double(x1),double(y0)); all &= res; one |= res;
-   res = fr.is_in_frustum(double(x1),double(y1)); all &= res; one |= res;
-   res = fr.is_in_frustum(double(x0),double(y1)); all &= res; one |= res;
+   // test quad corner coordinates
+   res = fr.is_in_frustum(double(xmin),double(ymin)); all &= res; one |= res;
+   res = fr.is_in_frustum(double(xmax),double(ymin)); all &= res; one |= res;
+   res = fr.is_in_frustum(double(xmax),double(ymax)); all &= res; one |= res;
+   res = fr.is_in_frustum(double(xmin),double(ymax)); all &= res; one |= res;
 
    if (all)
    {
-      // all quad points were in the view frustum
+      // all quad points are in the view frustum
 
       // add all tiles in the quad
-      for(unsigned int x=x0; x<x1; x++)
-      for(unsigned int y=y0; y<y1; y++)
-      {
-         tilelist.push_back(
-            std::make_pair<unsigned int,unsigned int>(x,y) );
-      }
+      for(unsigned int x=xmin; x<xmax; x++)
+         for(unsigned int y=ymin; y<ymax; y++)
+            tilelist.push_back(
+               std::make_pair<unsigned int,unsigned int>(x,y) );
+
       return;
    }
 
@@ -126,40 +118,40 @@ void ua_quad::get_visible_tiles(ua_frustum &fr, std::vector<ua_quad_tile_coord> 
 
    // quad is partly visible
 
-   // divide the quad further
-   double xhalf = double(x1-x0)/2.0, yhalf = double(y1-y0)/2.0;
-
-   if (xhalf<1.0 || yhalf<1.0)
+   // check if quad is one tile wide
+   if (!one && xmax-xmin <= 4)
    {
-      if (one)
-      // don't divide that one further, it's a single tile
       tilelist.push_back(
-            std::make_pair<unsigned int,unsigned int>(x0,y0) );
+         std::make_pair<unsigned int,unsigned int>(xmin,ymin) );
       return;
    }
 
+   // divide the quad further
+   unsigned int xnew = (xmax-xmin)>>1;
+   unsigned int ynew = (ymax-ymin)>>1;
+
    static const unsigned int quad_coords[4][4] =
-   {
-      { 0, 0, 1, 1 },
-      { 1, 0, 2, 1 },
-      { 0, 1, 1, 2 },
-      { 1, 1, 2, 2 },
+   {                  // +--+--+
+      { 0, 1, 0, 1 }, // | 2| 3| y
+      { 1, 2, 0, 1 }, // +--+--+ ^
+      { 0, 1, 1, 2 }, // | 0| 1| |
+      { 1, 2, 1, 2 }, // +--+--+-+-> x
    };
 
    // process all 4 sub-quads
    for(unsigned int i=0; i<4; i++)
    {
       ua_quad q(
-         unsigned(x0+xhalf*quad_coords[i][0]),
-         unsigned(y0+yhalf*quad_coords[i][1]),
-         unsigned(x0+xhalf*quad_coords[i][2]),
-         unsigned(y0+yhalf*quad_coords[i][3]));
+         unsigned(xmin+xnew*quad_coords[i][0]),
+         unsigned(xmin+xnew*quad_coords[i][1]),
+         unsigned(ymin+ynew*quad_coords[i][2]),
+         unsigned(ymin+ynew*quad_coords[i][3]));
 
       q.get_visible_tiles(fr,tilelist);
    }
 }
 
-/*! tests if the given frustum triangle intersects with the quad in any way
+/*! tests if the given frustum triangle intersects with the quad in any way.
     first, it is tested if at least one point of the triangle is in the quad.
     second test is to test quad lines against triangle lines for intersection.
 
@@ -167,15 +159,17 @@ void ua_quad::get_visible_tiles(ua_frustum &fr, std::vector<ua_quad_tile_coord> 
     http://www.flipcode.com/cgi-bin/knowledge.cgi?showunit=0
     http://www.flipcode.com/portal/issue07.shtml
 */
-bool ua_quad::does_intersect(ua_frustum &fr)
+bool ua_quad::does_intersect(ua_frustum2d& fr)
 {
    // check how much triangle points are in the quad
    int i,count=0;
    for(i=0; i<3; i++)
    {
-      if ( (fr.get_x(i)>=x0 && fr.get_x(i)<=x1) &&
-           (fr.get_y(i)>=y0 && fr.get_y(i)<=y1) )
-         count++;
+      ua_vector2d& point = fr.get_point(i);
+
+      if (point.x >= xmin && point.x <= xmax &&
+          point.y >= ymin && point.y <= ymax)
+            count++;
    }
 
    // at least one? then we do intersect
@@ -188,11 +182,8 @@ bool ua_quad::does_intersect(ua_frustum &fr)
    {
       int j = (i+1)%3;
 
-      double xt1=fr.get_x(i);
-      double yt1=fr.get_y(i);
-
-      double xt2=fr.get_x(j);
-      double yt2=fr.get_y(j);
+      ua_vector2d& pt1 = fr.get_point(i);
+      ua_vector2d& pt2 = fr.get_point(j);
 
       for(int k=0; k<4; k++)
       {
@@ -200,10 +191,10 @@ bool ua_quad::does_intersect(ua_frustum &fr)
 
          switch(k)
          {
-         case 0: dist1 = yt1-y0; dist2 = yt2-y0; break;
-         case 1: dist1 = yt1-y1; dist2 = yt2-y1; break;
-         case 2: dist1 = xt1-x0; dist2 = xt2-x0; break;
-         case 3: dist1 = xt1-x1; dist2 = xt2-x1; break;
+         case 0: dist1 = pt1.y-ymin; dist2 = pt2.y-ymin; break;
+         case 1: dist1 = pt1.y-ymax; dist2 = pt2.y-ymax; break;
+         case 2: dist1 = pt1.x-xmin; dist2 = pt2.x-xmin; break;
+         case 3: dist1 = pt1.x-xmax; dist2 = pt2.x-xmax; break;
          }
 
          // equal sign?
@@ -213,8 +204,8 @@ bool ua_quad::does_intersect(ua_frustum &fr)
          double portion = dist2/(dist2-dist1);
 
          // calculate cross point
-         double cx = xt2 - portion * (xt2-xt1);
-         double cy = yt2 - portion * (yt2-yt1);
+         double cx = pt2.x - portion * (pt2.x-pt1.x);
+         double cy = pt2.y - portion * (pt2.y-pt1.y);
 
          bool cross = false;
 
@@ -223,12 +214,12 @@ bool ua_quad::does_intersect(ua_frustum &fr)
          {
          case 0:
          case 1:
-            if (cx>=x0 && cx<=x1) cross=true;
+            if (cx >= xmin && cx <= xmax) cross=true;
             break;
 
          case 2:
          case 3:
-            if (cy>=y0 && cy<=y1) cross=true;
+            if (cy >= ymin && cy <= ymax) cross=true;
             break;
          }
 
@@ -245,8 +236,13 @@ bool ua_quad::does_intersect(ua_frustum &fr)
 
 #ifdef TEST_QUADTREE
 
-#include <time.h>
-#include <windows.h>
+#include "SDL.h"
+
+#ifdef _MSC_VER
+#pragma comment(lib, "SDL.lib")
+#pragma comment(lib, "SDLmain.lib")
+#endif
+
 
 void runtime_test()
 {
@@ -254,11 +250,11 @@ void runtime_test()
 
    std::vector<ua_quad_tile_coord> tilelist;
 
-//   ua_frustum fr(5.0, 5.0, 30.0, 90.0, 48.0);
-   ua_frustum fr(33.0, 35.0, 290.0, 60.0, 32.0);
-   ua_quad q(0.0,0.0,64.0,64.0);
+//   ua_frustum2d fr(5.0, 5.0, 30.0, 90.0, 48.0);
+   ua_frustum2d fr(33.0, 35.0, 290.0, 60.0, 32.0);
+   ua_quad q(0,64,0,64);
 
-   unsigned int now = ::GetTickCount();
+   Uint32 now = SDL_GetTicks();
 
    for(int i=0; i<loops; i++)
    {
@@ -266,16 +262,11 @@ void runtime_test()
       q.get_visible_tiles(fr,tilelist);
    }
 
-   unsigned int then = ::GetTickCount();
+   Uint32 then = SDL_GetTicks();
 
    printf("needed: %2.2f ms for one call.\n",double(then-now)/double(loops));
 }
 
-
-#include "SDL.h"
-
-#pragma comment(lib, "SDL.lib")
-#pragma comment(lib, "SDLmain.lib")
 
 #undef SDL_main
 
@@ -283,13 +274,14 @@ int main(int argc, char* argv[])
 {
    double xpos = 33.0;
    double ypos = 33.0;
-   double angle = 20.0;
+   //double angle = 20.0;
+   double angle = 45.0;
 
    std::vector<ua_quad_tile_coord> tilelist;
 
-   runtime_test();
+   //runtime_test();
 
-   ua_quad q(0.0,0.0,64.0,64.0);
+   ua_quad q(0,64,0,64);
 
    SDL_Init(SDL_INIT_VIDEO);
    SDL_Surface *screen = SDL_SetVideoMode(64, 64, 16 , 0);
@@ -313,7 +305,8 @@ int main(int argc, char* argv[])
             memset(pix,0,64*64*2);
 
             tilelist.clear();
-            ua_frustum fr(x, 64-y, angle, 60.0, 32.0);
+            ua_frustum2d fr(x, 64-y, angle, 60.0, 16.0);
+            //ua_frustum2d fr(32, 32, 45.0, 69.2307692, 32.0);
 
             used_iter = 0;
             q.get_visible_tiles(fr,tilelist);
