@@ -4,8 +4,9 @@
 # MAX File: muffin.max, Date: Thu Jan 09 05:22:05 2003
 
 DEF Chair Transform {
-  translation 65.41 -5 117.9
-  rotation -0.5774 0.5774 -0.5774 -2.094
+  scale 0.004 0.004 0.004
+  rotation 1 0 0 -1.5707
+  translation 0.08 0.38 -0.28
   children [
     Shape {
       appearance Appearance {

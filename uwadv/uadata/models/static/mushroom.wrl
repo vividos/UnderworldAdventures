@@ -4,7 +4,8 @@
 # MAX File: muffin.max, Date: Thu Jan 09 05:22:05 2003
 
 DEF Mushroom Transform {
-  translation 35.28 97.31 -25.67
+  translation 0 0 0
+  scale 0.015 -0.015 0.015
   children [
     Shape {
       appearance Appearance {

@@ -4,8 +4,7 @@
 # MAX File: muffin.max, Date: Thu Jan 09 05:22:05 2003
 
 DEF Chest Transform {
-  translation 1.484 0 28.28
-  rotation 0 -1 0 -3.142
+  scale 0.008 0.008 0.008
   children [
     Shape {
       appearance Appearance {

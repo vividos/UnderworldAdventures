@@ -4,8 +4,7 @@
 # MAX File: Low.max, Date: Thu Jan 09 04:38:09 2003
 
 DEF Steak Transform {
-  translation 0 0 0
-  scale 0.9524 0.4738 0.9524
+  scale 0.01 -0.005 0.01
   children [
     Shape {
       appearance Appearance {

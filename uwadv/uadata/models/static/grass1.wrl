@@ -4,10 +4,8 @@
 # MAX File: Low.max, Date: Thu Jan 09 04:38:09 2003
 
 DEF Grass01 Transform {
-  translation -13.74 -24.02 103.7
   rotation -1 0 0 -1.571
   scale 0.1497 0.2031 0.2031
-  scaleOrientation 1 0 0 0
   children [
     Shape {
       appearance Appearance {

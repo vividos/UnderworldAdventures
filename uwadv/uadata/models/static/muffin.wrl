@@ -4,7 +4,7 @@
 # MAX File: muffin.max, Date: Thu Jan 09 05:22:05 2003
 
 DEF Muffin Transform {
-  translation 0 0 0
+  scale 0.01 -0.01 0.01
   children [
     Shape {
       appearance Appearance {
