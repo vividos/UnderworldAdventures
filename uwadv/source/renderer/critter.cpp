@@ -29,7 +29,7 @@
 #include "common.hpp"
 #include "critter.hpp"
 #include "objects.hpp"
-#include "import.hpp"
+#include "importgfx.hpp"
 
 
 // constants
@@ -110,7 +110,7 @@ void ua_critter::update_frame(ua_object& obj)
 void ua_critter_frames_manager::init(ua_settings& settings, ua_image_manager& img_manager)
 {
    // load all critters' frames
-   ua_uw_import import;
+   ua_uw_import_gfx import;
    import.load_critters(allcritters,settings,img_manager.get_palette(0));
 }
 

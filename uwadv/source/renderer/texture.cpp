@@ -29,7 +29,7 @@
 #include "common.hpp"
 #include "texture.hpp"
 #include "game_interface.hpp"
-#include "import.hpp"
+#include "importgfx.hpp"
 
 
 // constants
@@ -235,7 +235,7 @@ void ua_texture_manager::init(ua_game_interface& game)
 
    ua_settings& settings = game.get_settings();
 
-   ua_uw_import import;
+   ua_uw_import_gfx import;
 
    // load stock textures
    if (settings.get_gametype() == ua_game_uw1)

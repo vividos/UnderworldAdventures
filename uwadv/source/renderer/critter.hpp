@@ -107,9 +107,9 @@ protected:
    //! palette to use
    ua_palette256_ptr palette;
 
-   friend class ua_uw_import;
+   friend class ua_uw_import_gfx;
    // friendship needed for OMIT_1ST_PASS define
-   friend class ua_uw1_import;
+   friend class ua_uw1_import_gfx;
 };
 
 
