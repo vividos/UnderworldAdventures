@@ -110,10 +110,10 @@ void ua_texture::convert(unsigned int origx, unsigned int origy, Uint32* pix,
    unsigned int numtex)
 {
    // determine texture resolution (must be 2^n)
-   xres = 16;
+   xres = 2;
    while(xres<origx && xres<2048) xres<<=1;
 
-   yres = 16;
+   yres = 2;
    while(yres<origy && yres<2048) yres<<=1;
 
    u = ((double)origx)/xres;
