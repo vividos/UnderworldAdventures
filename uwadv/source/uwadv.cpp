@@ -34,6 +34,13 @@
 #include "screens/start_splash.hpp"
 #include <ctime>
 
+#ifdef HAVE_UNITTEST
+#include "unittest.hpp"
+#endif
+
+
+#define HAVE_FRAMECOUNT
+
 
 #ifndef WIN32
 //! Generic game class. win32 has a specialization in game_win32
@@ -48,6 +55,7 @@ enum ua_game_arg_type
 {
    ua_arg_help, //!< help option
    ua_arg_game, //!< game option, to specify custom games
+   ua_arg_unittest, //!< runs unit tests
 };
 
 //! command line argument data
@@ -65,13 +73,17 @@ ua_arg_entry arg_params[] =
 {
    { ua_arg_help, "hH?", "help", 0 },
    { ua_arg_game, "g", "game", 1 },
+#ifdef HAVE_UNITTEST
+   { ua_arg_unittest, "u", "unittest", 0 },
+#endif
 };
 
 
 // ua_uwadv_game methods
 
 ua_uwadv_game::ua_uwadv_game()
-:tickrate(20), exit_game(false), screen_to_destroy(NULL), scripting(NULL)
+:tickrate(20), exit_game(false), screen_to_destroy(NULL), scripting(NULL),
+ run_unittests(false)
 {
    // print game name
    printf("Underworld Adventures"
@@ -214,8 +226,8 @@ void ua_uwadv_game::parse_args(unsigned int argc, const char** argv)
       // check actual parameter
       switch(arg_params[entry].type)
       {
-      case ua_arg_help:
          // print help string
+      case ua_arg_help:
          printf(
             "Underworld Adventures command line options\n"
             " available options:\n"
@@ -225,11 +237,22 @@ void ua_uwadv_game::parse_args(unsigned int argc, const char** argv)
          return;
          break;
 
+         // game prefix
       case ua_arg_game:
-         init_action = 2;
+         {
+            init_action = 2;
 
-         std::string custom_game_prefix(argv[i+1]);
-         settings.set_value(ua_setting_game_prefix, custom_game_prefix);
+            std::string custom_game_prefix(argv[i+1]);
+            settings.set_value(ua_setting_game_prefix, custom_game_prefix);
+         }
+         break;
+
+         // unit tests
+      case ua_arg_unittest:
+         run_unittests = true;
+         break;
+
+      default:
          break;
       }
 
@@ -238,10 +261,17 @@ void ua_uwadv_game::parse_args(unsigned int argc, const char** argv)
    }
 }
 
-#define HAVE_FRAMECOUNT
-
 void ua_uwadv_game::run()
 {
+   if (run_unittests)
+   {
+#ifdef HAVE_UNITTEST
+      ua_unittest_run();
+#else
+      ua_trace("unit tests not compiled in, skipping\n");
+#endif
+   }
+
    switch(init_action)
    {
    case 0: // normal start

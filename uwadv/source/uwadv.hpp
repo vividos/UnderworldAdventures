@@ -135,6 +135,9 @@ protected:
    //! true when tick timer should be resetted for the next cycle
    bool reset_tick_timer;
 
+   //! indicates if unit tests should be run
+   bool run_unittests;
+
    //! audio manager object
    ua_audio_manager audio_manager;
 
