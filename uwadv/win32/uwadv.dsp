@@ -272,42 +272,42 @@ SOURCE=..\source\audio.hpp
 # Begin Source File
 
 SOURCE=..\source\resource\zziplib\SDL_rwops_zzip.c
-# ADD CPP /I "..\resource\zziplib"
+# ADD CPP /I "..\source\resource\zziplib"
 # End Source File
 # Begin Source File
 
 SOURCE="..\source\resource\zziplib\zzip-dir.c"
-# ADD CPP /I "..\resource\zziplib"
+# ADD CPP /I "..\source\resource\zziplib"
 # End Source File
 # Begin Source File
 
 SOURCE="..\source\resource\zziplib\zzip-err.c"
-# ADD CPP /I "..\resource\zziplib"
+# ADD CPP /I "..\source\resource\zziplib"
 # End Source File
 # Begin Source File
 
 SOURCE="..\source\resource\zziplib\zzip-file.c"
-# ADD CPP /I "..\resource\zziplib"
+# ADD CPP /I "..\source\resource\zziplib"
 # End Source File
 # Begin Source File
 
 SOURCE="..\source\resource\zziplib\zzip-info.c"
-# ADD CPP /I "..\resource\zziplib"
+# ADD CPP /I "..\source\resource\zziplib"
 # End Source File
 # Begin Source File
 
 SOURCE="..\source\resource\zziplib\zzip-io.c"
-# ADD CPP /I "..\resource\zziplib"
+# ADD CPP /I "..\source\resource\zziplib"
 # End Source File
 # Begin Source File
 
 SOURCE="..\source\resource\zziplib\zzip-stat.c"
-# ADD CPP /I "..\resource\zziplib"
+# ADD CPP /I "..\source\resource\zziplib"
 # End Source File
 # Begin Source File
 
 SOURCE="..\source\resource\zziplib\zzip-zip.c"
-# ADD CPP /I "..\resource\zziplib"
+# ADD CPP /I "..\source\resource\zziplib"
 # End Source File
 # End Group
 # Begin Group "zziplib headers"
@@ -459,113 +459,113 @@ SOURCE=..\source\lua\include\lualib.h
 # Begin Source File
 
 SOURCE=..\source\lua\src\lib\lauxlib.c
-# ADD CPP /I "..\lua\include"
+# ADD CPP /I "..\source\lua\include"
 # End Source File
 # Begin Source File
 
 SOURCE=..\source\lua\src\lib\lbaselib.c
-# ADD CPP /I "..\lua\include"
+# ADD CPP /I "..\source\lua\include"
 # End Source File
 # Begin Source File
 
 SOURCE=..\source\lua\src\lib\lmathlib.c
-# ADD CPP /I "..\lua\include"
+# ADD CPP /I "..\source\lua\include"
 # End Source File
 # Begin Source File
 
 SOURCE=..\source\lua\src\lib\lstrlib.c
-# ADD CPP /I "..\lua\include"
+# ADD CPP /I "..\source\lua\include"
 # End Source File
 # End Group
 # Begin Source File
 
 SOURCE=..\source\lua\src\lapi.c
-# ADD CPP /I "..\lua\include"
+# ADD CPP /I "..\source\lua\include"
 # End Source File
 # Begin Source File
 
 SOURCE=..\source\lua\src\lcode.c
-# ADD CPP /I "..\lua\include"
+# ADD CPP /I "..\source\lua\include"
 # End Source File
 # Begin Source File
 
 SOURCE=..\source\lua\src\ldebug.c
-# ADD CPP /I "..\lua\include"
+# ADD CPP /I "..\source\lua\include"
 # End Source File
 # Begin Source File
 
 SOURCE=..\source\lua\src\ldo.c
-# ADD CPP /I "..\lua\include"
+# ADD CPP /I "..\source\lua\include"
 # End Source File
 # Begin Source File
 
 SOURCE=..\source\lua\src\lfunc.c
-# ADD CPP /I "..\lua\include"
+# ADD CPP /I "..\source\lua\include"
 # End Source File
 # Begin Source File
 
 SOURCE=..\source\lua\src\lgc.c
-# ADD CPP /I "..\lua\include"
+# ADD CPP /I "..\source\lua\include"
 # End Source File
 # Begin Source File
 
 SOURCE=..\source\lua\src\llex.c
-# ADD CPP /I "..\lua\include"
+# ADD CPP /I "..\source\lua\include"
 # End Source File
 # Begin Source File
 
 SOURCE=..\source\lua\src\lmem.c
-# ADD CPP /I "..\lua\include"
+# ADD CPP /I "..\source\lua\include"
 # End Source File
 # Begin Source File
 
 SOURCE=..\source\lua\src\lobject.c
-# ADD CPP /I "..\lua\include"
+# ADD CPP /I "..\source\lua\include"
 # End Source File
 # Begin Source File
 
 SOURCE=..\source\lua\src\lparser.c
-# ADD CPP /I "..\lua\include"
+# ADD CPP /I "..\source\lua\include"
 # End Source File
 # Begin Source File
 
 SOURCE=..\source\lua\src\lstate.c
-# ADD CPP /I "..\lua\include"
+# ADD CPP /I "..\source\lua\include"
 # End Source File
 # Begin Source File
 
 SOURCE=..\source\lua\src\lstring.c
-# ADD CPP /I "..\lua\include"
+# ADD CPP /I "..\source\lua\include"
 # End Source File
 # Begin Source File
 
 SOURCE=..\source\lua\src\ltable.c
-# ADD CPP /I "..\lua\include"
+# ADD CPP /I "..\source\lua\include"
 # End Source File
 # Begin Source File
 
 SOURCE=..\source\lua\src\ltests.c
-# ADD CPP /I "..\lua\include"
+# ADD CPP /I "..\source\lua\include"
 # End Source File
 # Begin Source File
 
 SOURCE=..\source\lua\src\ltm.c
-# ADD CPP /I "..\lua\include"
+# ADD CPP /I "..\source\lua\include"
 # End Source File
 # Begin Source File
 
 SOURCE=..\source\lua\src\lundump.c
-# ADD CPP /I "..\lua\include"
+# ADD CPP /I "..\source\lua\include"
 # End Source File
 # Begin Source File
 
 SOURCE=..\source\lua\src\lvm.c
-# ADD CPP /I "..\lua\include"
+# ADD CPP /I "..\source\lua\include"
 # End Source File
 # Begin Source File
 
 SOURCE=..\source\lua\src\lzio.c
-# ADD CPP /I "..\lua\include"
+# ADD CPP /I "..\source\lua\include"
 # End Source File
 # End Group
 # End Group
