@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -128,8 +128,16 @@ void ua_object_info_ext::load_extinfo(ua_savegame& sg)
       npc_hunger = sg.read8();
       npc_whoami = sg.read8();
 
-      animstate = sg.read8();
-      animframe = sg.read8();
+      if (sg.get_version()>0)
+      {
+         animstate = sg.read8();
+         animframe = sg.read8();
+      }
+      else
+      {
+         animframe = animstate = 0;
+         sg.read8(); // state
+      }
 
       // read placeholder values
       sg.read16();
