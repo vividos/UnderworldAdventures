@@ -73,7 +73,7 @@ void ua_object::render(unsigned int x, unsigned int y,
 {
    // don't render invisible objects
 #ifndef HAVE_DEBUG
-   if (type==ua_obj_invisible)
+   if (info.type==ua_obj_invisible)
       return;
 #endif
 
