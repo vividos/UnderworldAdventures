@@ -99,6 +99,9 @@ int main(int argc, char* argv[])
 
       for(int i=0; i<entries; i++)
       {
+         if (offsets[i]>=flen)
+            continue;
+
          fseek(fd,offsets[i],SEEK_SET);
 
          char tganame[256];
