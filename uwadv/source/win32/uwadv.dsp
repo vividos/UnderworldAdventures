@@ -811,6 +811,10 @@ SOURCE=..\texture.cpp
 
 SOURCE=..\utils.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=..\debug\uwaccess.cpp
+# End Source File
 # End Group
 # Begin Group "game support headers"
 
@@ -882,6 +886,10 @@ SOURCE=..\texture.hpp
 # Begin Source File
 
 SOURCE=..\utils.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\debug\uwaccess.hpp
 # End Source File
 # End Group
 # End Group

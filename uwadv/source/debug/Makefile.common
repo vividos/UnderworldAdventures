@@ -4,6 +4,7 @@
 # $Id$
 #
 
-libuadebug_la_SOURCES = dbgcommon.hpp \
+libuadebug_la_SOURCES = \
+	dbgcommon.hpp pch.cpp \
 	dbgapp.hpp dbgapp.cpp \
 	mainframe.hpp mainframe.cpp
