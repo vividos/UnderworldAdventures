@@ -114,8 +114,8 @@ void ua_model3d_manager::init(ua_game_core_interface* thecore)
 
    ua_model_decode_builtins(uwexe_filename.c_str(), allbuiltins);
 
-   // loading model3d.cfg
-   std::string cfgfile_name("uw1"); // TODO: replace with current game name
+   // loading %game%/model3d.cfg
+   std::string cfgfile_name(core->get_settings().get_string(ua_setting_game_prefix));
    cfgfile_name.append("/model3d.cfg");
 
    ua_trace(" loading config file: %s\n",cfgfile_name.c_str());
