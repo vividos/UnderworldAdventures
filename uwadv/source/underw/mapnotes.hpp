@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@
 
 // needed includes
 #include "savegame.hpp"
+#include <vector>
 
 
 // structs
@@ -59,7 +60,7 @@ public:
    ua_map_notes(){}
 
    //! returns list of notes for given page
-   std::vector<ua_map_notes_entry>& get_page_notes(unsigned int page);
+   std::vector<ua_map_notes_entry>& get_notes();
 
    // loading / saving
 
@@ -70,9 +71,17 @@ public:
    void save_game(ua_savegame& sg);
 
 protected:
-   //! map with lists of all notes
-   std::map<unsigned int,std::vector<ua_map_notes_entry> > mapnotes;
+   //! list of all notes
+   std::vector<ua_map_notes_entry> mapnotes;
 };
+
+
+// inline methods
+
+inline std::vector<ua_map_notes_entry>& ua_map_notes::get_notes()
+{
+   return mapnotes;
+}
 
 
 #endif

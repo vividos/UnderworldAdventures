@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -32,48 +32,24 @@
 
 // ua_map_notes methods
 
-std::vector<ua_map_notes_entry>& ua_map_notes::get_page_notes(
-   unsigned int page)
-{
-   return mapnotes[page];
-}
-
 void ua_map_notes::load_game(ua_savegame& sg)
 {
    sg.begin_section("mapnotes");
 
+   Uint16 numentries = sg.read16();
+
    mapnotes.clear();
+   mapnotes.resize(numentries);
 
-   Uint8 endpages = sg.read8();
-
-   while(endpages != 0)
+   for(unsigned int i=0; i<numentries; i++)
    {
-      // read page number
-      unsigned int page = sg.read32();
+      ua_map_notes_entry& note = mapnotes[i];
 
-      std::vector<ua_map_notes_entry> noteslist;
+      // read map note
+      note.xpos = sg.read16();
+      note.ypos = sg.read16();
 
-      Uint8 endlist = sg.read8();
-
-      while(endlist != 0)
-      {
-         ua_map_notes_entry note;
-
-         // read map note
-         note.xpos = sg.read16();
-         note.ypos = sg.read16();
-
-         std::string text;
-         sg.read_string(note.text);
-
-         noteslist.push_back(note);
-
-         endlist = sg.read8();
-      }
-
-      // insert current page's list
-      mapnotes.insert( std::make_pair<unsigned int,std::vector<ua_map_notes_entry> >(
-         page,noteslist) );
+      sg.read_string(note.text);
    }
 
    sg.end_section();
@@ -83,28 +59,17 @@ void ua_map_notes::save_game(ua_savegame& sg)
 {
    sg.begin_section("mapnotes");
 
-   std::map<unsigned int,std::vector<ua_map_notes_entry> >::iterator iter,stop;
-   iter = mapnotes.begin();
-   stop = mapnotes.end();
+   Uint16 numentries = mapnotes.size();
+   sg.write16(numentries);
 
-   for(;iter!=stop; iter++)
+   for(unsigned int i=0; i<numentries; i++)
    {
-      sg.write8(1);
-      sg.write32(iter->first);
+      ua_map_notes_entry& note = mapnotes[i];
 
-      const std::vector<ua_map_notes_entry>& noteslist = iter->second;
-
-      for(unsigned int i=0; i<noteslist.size(); i++)
-      {
-         sg.write16(1);
-         sg.write16(noteslist[i].xpos);
-         sg.write16(noteslist[i].ypos);
-         sg.write_string(noteslist[i].text.c_str());
-      }
-      sg.write16(0); // end marker
+      sg.write16(note.xpos);
+      sg.write16(note.ypos);
+      sg.write_string(note.text.c_str());
    }
-
-   sg.write8(0); // end marker
 
    sg.end_section();
 }
