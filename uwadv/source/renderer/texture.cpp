@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ const double ua_texture_manager::anim_fps = 1.5;
 // ua_texture methods
 
 ua_texture::ua_texture()
-:texmgr(NULL), xres(0), yres(0), u(0.0), v(0.0)
+:xres(0), yres(0), u(0.0), v(0.0)
 {
 }
 
@@ -48,14 +48,11 @@ ua_texture::ua_texture()
     are cleaned up with a call to done(). A pointer to a texture manager can
     be set to let the texture be managed from it.
 
-    \param the_texmgr pointer to texture manager, if used (otherwise NULL)
     \param numtex number of texture images to allocate
 */
-void ua_texture::init(ua_texture_manager* the_texmgr,unsigned int numtex)
+void ua_texture::init(unsigned int numtex)
 {
    done();
-
-   texmgr = the_texmgr;
 
    // create texture names
    texname.resize(numtex,0);
@@ -72,10 +69,6 @@ void ua_texture::done()
    if (texname.size()>0)
       glDeleteTextures(texname.size(),&texname[0]);
    texname.clear();
-
-   // invalidate current texture
-   if (texmgr != NULL)
-      texmgr->using_new_texname(0);
 }
 
 /*! Converts image data to texture.
@@ -172,12 +165,10 @@ void ua_texture::convert(unsigned int origx, unsigned int origy, Uint32* pix,
 */
 void ua_texture::use(unsigned int numtex)
 {
-   if (numtex>=texname.size())
+   if (numtex >= texname.size())
       return; // invalid texture index
 
-   // invalidates currently used texture
-   if (texmgr == NULL || texmgr->using_new_texname(texname[numtex]))
-      glBindTexture(GL_TEXTURE_2D,texname[numtex]);
+   glBindTexture(GL_TEXTURE_2D,texname[numtex]);
 }
 
 /*! Uploads the convert()ed texture to the graphics card. The texture doesn't
@@ -385,7 +376,7 @@ void ua_texture_manager::prepare(unsigned int idx)
    if (pal_max<1)
       return; // not an available texture
 
-   stock_textures[idx].init(this,pal_max);
+   stock_textures[idx].init(pal_max);
 
    if (pal_max==1)
    {

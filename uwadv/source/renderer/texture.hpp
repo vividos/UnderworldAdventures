@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -87,7 +87,7 @@ public:
    // texture preparation
 
    //! allocates and initializes OpenGL texture object
-   void init(ua_texture_manager* texmgr, unsigned int numtex=1);
+   void init(unsigned int numtex=1);
 
    //! cleans up texture name(s) after usage
    void done();
@@ -138,9 +138,6 @@ protected:
       ua_palette256& pal, unsigned int numtex);
 
 protected:
-   //! pointer to texture manager, or NULL if none available
-   ua_texture_manager* texmgr;
-
    //! upper left texture coordinates
    double u,v;
 
@@ -168,7 +165,7 @@ public:
    ~ua_texture_manager();
 
    //! initializes texture manager; loads stock textures
-   void init(ua_game_interface& game/*ua_settings& settings*/);
+   void init(ua_game_interface& game);
 
    //! called every game tick
    void tick(double tickrate);
