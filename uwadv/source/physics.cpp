@@ -64,18 +64,53 @@ const double ua_player_radius = 0.4;
 //! max height the player can step
 const double ua_physics_max_step_height = 0.45;
 
+//! max speed a player can walk, in tiles / second
+const double ua_player_max_walk_speed = 2.4;
+
+//! max speed a player can rotate, in degrees / second
+const double ua_player_max_rotate_speed = 90;
+
 
 // ua_physics_model methods
 
-void ua_physics_model::walk_player(ua_vector2d &dir)
+ua_physics_model::ua_physics_model():last_evaltime(-0.1)
+{
+}
+
+void ua_physics_model::eval_player_movement(double time)
 {
    ua_player &player = underw->get_player();
-   ua_vector2d pos(player.get_xpos(),player.get_ypos());
 
-   calc_collision(pos,dir);
+   unsigned int mode = underw->get_player().get_movement_mode();
 
-   // set new player pos
-   player.set_pos(pos.x,pos.y);
+   if (mode & ua_move_walk_forward)
+   {
+      double speed = ua_player_max_walk_speed*(time-last_evaltime);
+      double angle = underw->get_player().get_angle();
+
+      ua_vector2d dir;
+      dir.set_polar(speed,angle);
+      ua_vector2d pos(player.get_xpos(),player.get_ypos());
+
+      calc_collision(pos,dir);
+
+      // set new player pos
+      player.set_pos(pos.x,pos.y);
+   }
+
+   if (mode & ua_move_rotate_left)
+   {
+      double angle = ua_player_max_rotate_speed*(time-last_evaltime);
+      player.set_angle(player.get_angle()+angle);
+   }
+
+   if (mode & ua_move_rotate_right)
+   {
+      double angle = ua_player_max_rotate_speed*(time-last_evaltime);
+      player.set_angle(player.get_angle()-angle);
+   }
+
+   last_evaltime = time;
 }
 
 /*! calculates new position for a given position and direction vector
@@ -148,7 +183,7 @@ void ua_physics_model::calc_collision(ua_vector2d &pos, const ua_vector2d &dir)
       newdir = proj_dir;
 
       // scale new dir a bit (adjust this to get the sliding speed you like! (tm))
-      newdir *= 3;
+      newdir *= 4;
 
 
 #ifdef DEBUG

@@ -45,13 +45,13 @@ class ua_physics_model
 {
 public:
    //! ctor
-   ua_physics_model(){}
+   ua_physics_model();
 
    //! inits physics model
    void init(ua_underworld *uw){ underw = uw; }
 
-   //! evaluates player walking
-   void walk_player(ua_vector2d &dir);
+   //! evaluates player movement
+   void eval_player_movement(double time);
 
 protected:
    //! calculates collision and response; recursively called
@@ -68,6 +68,9 @@ protected:
 protected:
    //! current underworld object
    ua_underworld *underw;
+
+   //! last evaluation time
+   double last_evaltime;
 };
 
 #endif
