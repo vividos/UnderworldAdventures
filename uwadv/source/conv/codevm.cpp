@@ -160,7 +160,7 @@ void ua_conv_code_vm::done(ua_conv_globals &cg)
       glob[i] = stack.at(i);
 }
 
-void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
+void ua_conv_code_vm::step()
 {
    if (instrp>code.size())
       throw ua_ex_code_access;
