@@ -64,7 +64,12 @@ void done_anim()
 
 void decode_anim()
 {
+   printf("Underworld Adventures: Animation Viewer\n\n");
+
    unsigned int max = cuts.get_maxframes();
+
+   printf("decoding %u frames ... ",max);
+
    for(unsigned int n=0; n<max; n++)
    {
       cuts.get_frame(n);
@@ -107,6 +112,8 @@ void decode_anim()
       //tex.convert(cuts.get_anim_palette(),cuts);
       //tex.get_texels(
    }
+
+   printf("done\n\n");
 }
 
 void setup_opengl(int width,int height)
