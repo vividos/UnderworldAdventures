@@ -176,6 +176,9 @@ public:
 
    //! rotate vector around z axis
    void rotate_z(double angle);
+
+   //! rotates vector around axis
+   void rotate(const ua_vector3d& axis, double angle);
 };
 
 
@@ -413,5 +416,24 @@ inline void ua_vector3d::rotate_z(double angle)
    x = x*cos(angle_rad) - y*sin(angle_rad);
    y = x_temp*sin(angle_rad) + y*cos(angle_rad);
 }
+
+inline void ua_vector3d::rotate(const ua_vector3d& axis, double angle)
+{
+   // calculates rotated vector using the rotation matrix at
+   // http://www.makegames.com/3drotation/
+
+   double c = cos(ua_deg2rad(angle));
+   double s = sin(ua_deg2rad(angle));
+   double t = 1 - c;
+
+   double ax=axis.x, ay=axis.y, az=axis.z;
+
+   set(
+      (t*ax*ax+c   )*x + (t*ax*ay-s*az)*y + (t*ax*az+s*ay)*z,
+      (t*ax*ay+s*az)*x + (t*ay*ay+c   )*y + (t*ay*az-s*ax)*z,
+      (t*ax*az-s*ay)*x + (t*ay*az+s*ax)*y + (t*az*az+c   )*z
+   );
+}
+
 
 #endif
