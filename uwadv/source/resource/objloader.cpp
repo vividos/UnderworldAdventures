@@ -111,42 +111,44 @@ void ua_object_list::addobj_follow(Uint32 objprop[0x400*2],
          ua_object_info& info = obj.get_object_info();
 
          info.item_id = item_id;
-         info.enchanted = enchanted == 1;
-         info.is_link = is_quantity == 0;
 
-         info.quality = quality;
          info.link = link;
+         info.quality = quality;
          info.owner = owner;
          info.quantity = quantity;
 
-         if (objpos<0x0100)
-         {
-            Uint8* data = &npcinfo[objpos*19];
-
-            // npc_whoami
-            info.data.push_back(data[18]);
-
-            // npc_attitude
-            info.data.push_back(data[6]>>6);
-
-            // npc_hp
-            info.data.push_back(data[0]);
-
-            // npc_xhome, npc_yhome
-            info.data.push_back(((data[14]|(data[15]<<8))>>5)&0x3f);
-            info.data.push_back(data[14]&0x3f);
-
-            // TODO: store more data from NPC
-         }
+         info.enchanted = enchanted == 1;
+         info.is_link = is_quantity == 0;
       }
 
       // extended object info
       {
          ua_object_info_ext& extinfo = obj.get_ext_object_info();
+
          extinfo.xpos = (xpos+0.5)/8.0;
          extinfo.ypos = (ypos+0.5)/8.0;
          extinfo.zpos = zpos/4.0;
          extinfo.dir = dir;
+
+         // npc infos
+         if (objpos<0x0100)
+         {
+            Uint8* data = &npcinfo[objpos*19];
+
+            extinfo.npc_used = true;
+
+            extinfo.npc_whoami = data[18];
+            extinfo.npc_attitude = data[6]>>6;
+            extinfo.npc_hp = data[0];
+
+            // npc_xhome, npc_yhome
+            Uint16 xyhome = data[14]|(data[15]<<8);
+            extinfo.npc_xhome = (xyhome >> 10) & 0x3f;
+            extinfo.npc_yhome = (xyhome >> 4) & 0x3f;
+            extinfo.extra1 = xyhome & 0x0f;
+
+            // TODO: store more data from NPC
+         }
       }
 
       // add to master object list
