@@ -108,6 +108,7 @@ void ua_ingame_orig_screen::init()
    cursor_image_current = 0;
    cursorx = cursory = 0;
    cursor_is_object = false;
+   mouse_move = false;
 
    slot_start = 0;
    check_dragging = false;
@@ -1130,6 +1131,28 @@ ua_ingame_orig_area ua_ingame_orig_screen::get_area(
 
 void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pressed)
 {
+   // restrict area when movement mode is on
+   if (mouse_move && !click)
+   {
+      bool modified = false;
+      if (cursorx<53)
+      { cursorx=54; modified=true; }
+      if (cursorx>224)
+      { cursorx=224; modified=true; }
+
+      if (cursory<20)
+      { cursory=21; modified=true; }
+      if (cursory>131)
+      { cursory=131; modified=true; }
+
+      if (modified)
+      {
+         Uint16 x = unsigned(cursorx*core->get_screen_width()/320.0);
+         Uint16 y = unsigned(cursory*core->get_screen_height()/200.0);
+         SDL_WarpMouse(x,y);
+      }
+   }
+
    ua_ingame_orig_area area = get_area(cursorx,cursory);
 
    // check areas
