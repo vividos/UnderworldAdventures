@@ -13,7 +13,7 @@ Underworld Adventures is available from
 Release Notes for "0.9-mojito"
 ---------------------------------
 
-This release doesn't have much new things. There even are features left out.
+This release doesn't have many new things. There even are features left out.
 The reason for that is a restructuring and refactoring of source code that was
 done over the last few months. The release mainly was done to show that the
 project is still alive and active. Expect more things to work again in the
