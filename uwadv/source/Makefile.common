@@ -106,7 +106,6 @@ uwadv_SOURCES = \
 	main.cpp \
 	unittest.cpp unittest.hpp \
 	uwadv.cpp uwadv.hpp \
-	\
 	resource/codeloader.cpp \
 	resource/modeldecode.cpp \
 	resource/models_impl.hpp
