@@ -36,6 +36,7 @@
 #include "settings.hpp"
 #include "texture.hpp"
 #include "objects.hpp"
+#include "mapnotes.hpp"
 #include "savegame.hpp"
 
 
@@ -136,6 +137,9 @@ protected:
 
    //! all objects in level
    ua_object_list allobjects;
+
+   //! all map notes for this level
+   ua_map_notes mapnotes;
 
    //! numbers of all used stock textures
    std::vector<Uint16> used_textures;

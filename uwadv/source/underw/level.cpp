@@ -115,6 +115,8 @@ const ua_levelmap_tile& ua_level::get_tile(unsigned int xpos, unsigned int ypos)
 
 void ua_level::load_game(ua_savegame &sg)
 {
+   sg.begin_section("tilemap");
+
    used = sg.read8() != 0;
 
    if (!used)
@@ -156,11 +158,16 @@ void ua_level::load_game(ua_savegame &sg)
    // read objects list
    allobjects.load_game(sg);
 
-   // read annotations list
+   // read map notes
+   mapnotes.load_game(sg);
+
+   sg.end_section();
 }
 
 void ua_level::save_game(ua_savegame& sg)
 {
+   sg.begin_section("tilemap");
+
    sg.write8(used ? 1 : 0);
 
    if (!used)
@@ -184,5 +191,8 @@ void ua_level::save_game(ua_savegame& sg)
    // write objects list
    allobjects.save_game(sg);
 
-   // write annotations list
+   // write map notes list
+   mapnotes.save_game(sg);
+
+   sg.end_section();
 }
