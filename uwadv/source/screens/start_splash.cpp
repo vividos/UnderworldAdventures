@@ -40,7 +40,7 @@
 #include "audio.hpp"
 #include "savegame.hpp"
 #include "renderer.hpp"
-//#include "start_menu.hpp"
+#include "start_menu.hpp"
 //#include "ingame_orig.hpp"
 
 
@@ -123,6 +123,9 @@ void ua_start_splash_screen::init()
       tickcount = unsigned(show_time * game->get_tickrate()) + 1;
       tick();
    }
+
+   // switch on cursor for this screen
+   SDL_ShowCursor(1);
 }
 
 void ua_start_splash_screen::destroy()
@@ -131,6 +134,8 @@ void ua_start_splash_screen::destroy()
 
    img_still.done();
    cuts_anim.done();
+
+   SDL_ShowCursor(0);
 
    ua_trace("start splash screen ended\n\n");
 }
@@ -294,14 +299,14 @@ void ua_start_splash_screen::tick()
       // start next screen
       if (game->get_settings().get_gametype() == ua_game_uw_demo)
       {
-         // when we have the demo, we immediately go to the ingame
+         // when we have the demo, we immediately go to the ingame screen
          //game->get_underworld().import_savegame(core->get_settings(),"data/",true);
          //game->get_underworld().get_scripts().lua_started_newgame();
          //game->replace_screen(new ua_ingame_orig_screen);
          return;
       }
       else
-         //game->replace_screen(new ua_start_menu_screen);
+         game->replace_screen(new ua_start_menu_screen,false);
       break;
    }
 }
