@@ -16,7 +16,7 @@ DEF Muffin Transform {
           transparency 0
         }
         texture ImageTexture {
-          url "textures/muffin.bmp"
+          url "textures/muffin.tga"
         }
       }
       geometry DEF Muffin-FACES IndexedFaceSet {

@@ -17,7 +17,7 @@ DEF Steak Transform {
           transparency 0
         }
         texture ImageTexture {
-          url "textures/steak.bmp"
+          url "textures/steak.tga"
         }
       }
       geometry DEF Steak-FACES IndexedFaceSet {
