@@ -39,6 +39,9 @@
 //! a GL_RGBA compatible palette
 typedef Uint8 ua_palette256[256][4];
 
+//! smart ptr to palette
+typedef ua_smart_ptr<ua_palette256> ua_palette256_ptr;
+
 
 // enums
 
@@ -96,7 +99,13 @@ public:
    const std::vector<Uint8>& get_pixels() const { return pixels; }
 
    //! returns palette
-   ua_smart_ptr<ua_palette256>& get_palette(){ return palette; };
+   ua_palette256_ptr& get_palette(){ return palette; };
+
+   //! allocates memory for a new palette
+   void create_new_palette();
+
+   //! clones palette to get a freely modifiable one
+   void clone_palette();
 
 protected:
    //! image resolution
@@ -106,9 +115,7 @@ protected:
    std::vector<Uint8> pixels;
 
    //! smart pointer to palette to use
-   ua_smart_ptr<ua_palette256> palette;
-
-//   friend class ua_image_manager;
+   ua_palette256_ptr palette;
 };
 
 
@@ -132,14 +139,14 @@ public:
       unsigned int palette = 0);
 
    //! returns ptr to palette
-   ua_smart_ptr<ua_palette256> get_palette(unsigned int pal);
+   ua_palette256_ptr get_palette(unsigned int pal);
 
 protected:
    //! path to uw folder
    std::string uw_path;
 
    //! smart ptr to all all palettes
-   ua_smart_ptr<ua_palette256> allpalettes[8];
+   ua_palette256_ptr allpalettes[8];
 
    //! auxiliary palettes for 4-bit images
    Uint8 allauxpals[32][16];
@@ -158,7 +165,7 @@ inline unsigned int ua_image::get_yres() const
    return yres;
 }
 
-inline ua_smart_ptr<ua_palette256> ua_image_manager::get_palette(
+inline ua_palette256_ptr ua_image_manager::get_palette(
    unsigned int pal)
 {
    return allpalettes[pal >= 8 ? 0 : pal];

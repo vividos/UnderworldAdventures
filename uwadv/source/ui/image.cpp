@@ -127,6 +127,27 @@ void ua_image::clear(Uint8 index)
    memset(&pixels[0],index,pixels.size());
 }
 
+void ua_image::create_new_palette()
+{
+   Uint8* pal = (Uint8*)new ua_palette256;
+
+   memset(pal, 0, sizeof(ua_palette256));
+
+   palette = ua_palette256_ptr((ua_palette256*)pal);
+}
+
+void ua_image::clone_palette()
+{
+   if (palette.get() == NULL)
+      return;
+
+   Uint8* pal = (Uint8*)new ua_palette256;
+
+   memcpy(pal,palette.get(), sizeof(ua_palette256));
+
+   palette = ua_palette256_ptr((ua_palette256*)pal);
+}
+
 
 // ua_image_manager methods
 
