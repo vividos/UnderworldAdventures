@@ -102,15 +102,14 @@ void ua_textedit_window::update_text()
          border?2:1,border?2:1, true);
    }
 
-   unsigned int xpos = img_temp.get_xres();
+   unsigned int prefix_xpos = img_temp.get_xres();
 
    // main text
    if (text.size()>0)
    {
       font.create_string(img_temp, text.c_str(), text_color);
 
-      img.paste_rect(img_temp, 0,0, img_temp.get_xres(),img_temp.get_yres(),
-         xpos+border?2:1,border?2:1, true);
+      img.paste_image(img_temp, prefix_xpos+(border?2:1),border?2:1, true);
    }
 
    // cursor image pos
@@ -118,7 +117,7 @@ void ua_textedit_window::update_text()
    unsigned int cursor_xpos = font.calc_length(pos_string.c_str());
 
    // draw cursor
-   img.fill_rect(xpos+cursor_xpos+(border?1:0),border?1:0, 1, font.get_charheight(), 1);
+   img.fill_rect(prefix_xpos+cursor_xpos+(border?1:0),border?1:0, 1, font.get_charheight(), 1);
 
    update();
 }
