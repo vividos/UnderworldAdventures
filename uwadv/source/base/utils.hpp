@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,13 +23,35 @@
 
    \brief commonly used types, classes and functions
 
-   ua_smart_ptr was inspired by boost::shared_ptr
+   ua_trace() is the standard way of logging text during the game; it has
+   the same syntax as a printf() call; it may be conditionally switched off
+
+   ua_smart_ptr<T> was inspired by boost::shared_ptr; it represents a pointer
+   to an object of class T and may conveniently be used in STL containers like
+   std::map or std::vector. The smart pointer does reference counting of the
+   pointer and destroys the object when the objects isn't used anymore
+   (refcount at 0). The smart pointer may noticeable reduce the number of
+   constructions, destructions and copy operations of objects in STL.
+
+   ua_exception is the standard way to throw an exception in uwadv. It should
+   be thrown when there is no way to continue normal operation, e.g. when a
+   resource file can't be loaded. It can be constructed with an informational
+   text about the exception.
+
+   ua_endian_convert16 and ua_endian_convert32 are inline functions to switch
+   between host and network byte order, e.g. when loading a little endian
+   16-bit value from a resource file on an apple macintosh (which is a big
+   endian machine).
+
+   SDL_RWreadN and SDL_RWwriteN are inline functions to read and write 8, 16
+   and 32 bit values from SDL_RWops structures. They always read little endian
+   values, even on big endian machines.
 
 */
 
 // include guard
-#ifndef __uwadv_utils_hpp_
-#define __uwadv_utils_hpp_
+#ifndef uwadv_utils_hpp_
+#define uwadv_utils_hpp_
 
 // needed includes
 #include <string>
@@ -59,7 +81,7 @@ int ua_trace_printf(const char *fmt,...);
 // functions
 
 //! creates a folder with given mode
-int ua_mkdir(const char *dirname, int mode);
+int ua_mkdir(const char* dirname, int mode);
 
 //! checks if a given file name exists
 bool ua_file_exists(const char* filename);
@@ -89,9 +111,9 @@ public:
    ~ua_smart_ptr(){ dispose(); }
 
    //! copy ctor
-   ua_smart_ptr(const ua_smart_ptr &ptr):px(ptr.px){ ++*(pn = ptr.pn); }
+   ua_smart_ptr(const ua_smart_ptr& ptr):px(ptr.px){ ++*(pn = ptr.pn); }
    //! assignment operator
-   ua_smart_ptr &operator =(const ua_smart_ptr &ptr){ share(ptr.px,ptr.pn); return *this; }
+   ua_smart_ptr& operator =(const ua_smart_ptr& ptr){ share(ptr.px,ptr.pn); return *this; }
 
    //! member-selection operator
    T* operator->() const { return px; }
@@ -124,9 +146,9 @@ protected:
 
 protected:
    //! pointer to refcount
-   long *pn;
+   long* pn;
    //! pointer to type object
-   T*px;
+   T* px;
 };
 
 
@@ -135,13 +157,13 @@ class ua_exception: public std::exception
 {
 public:
    //! ctor
-   ua_exception(const char *desc){ description.assign(desc); };
+   ua_exception(const char* desc){ description.assign(desc); };
 
    //! dtor
    ~ua_exception() throw() {}
 
    //! returns exception description
-   virtual const char *what() const throw()
+   virtual const char* what() const throw()
    {
       return description.c_str();
    }
@@ -169,14 +191,14 @@ inline Uint32 ua_endian_convert32(Uint32 x)
 
 // SDL_RWops helper functions
 
-inline Uint8 SDL_RWread8(SDL_RWops *rwops)
+inline Uint8 SDL_RWread8(SDL_RWops* rwops)
 {
    Uint8 val;
    SDL_RWread(rwops,&val,1,1);
    return val;
 }
 
-inline Uint16 SDL_RWread16(SDL_RWops *rwops)
+inline Uint16 SDL_RWread16(SDL_RWops* rwops)
 {
    Uint16 val;
    SDL_RWread(rwops,&val,2,1);
@@ -186,7 +208,7 @@ inline Uint16 SDL_RWread16(SDL_RWops *rwops)
    return val;
 }
 
-inline Uint32 SDL_RWread32(SDL_RWops *rwops)
+inline Uint32 SDL_RWread32(SDL_RWops* rwops)
 {
    Uint32 val;
    SDL_RWread(rwops,&val,4,1);
@@ -196,12 +218,12 @@ inline Uint32 SDL_RWread32(SDL_RWops *rwops)
    return val;
 }
 
-inline void SDL_RWwrite8(SDL_RWops *rwops, Uint8 val)
+inline void SDL_RWwrite8(SDL_RWops* rwops, Uint8 val)
 {
    SDL_RWwrite(rwops,&val,1,1);
 }
 
-inline void SDL_RWwrite16(SDL_RWops *rwops, Uint16 val)
+inline void SDL_RWwrite16(SDL_RWops* rwops, Uint16 val)
 {
 #if (SDL_BYTEORDER==SDL_BIG_ENDIAN)
    val = ua_endian_convert16(val);
@@ -209,7 +231,7 @@ inline void SDL_RWwrite16(SDL_RWops *rwops, Uint16 val)
    SDL_RWwrite(rwops,&val,2,1);
 }
 
-inline void SDL_RWwrite32(SDL_RWops *rwops, Uint32 val)
+inline void SDL_RWwrite32(SDL_RWops* rwops, Uint32 val)
 {
 #if (SDL_BYTEORDER==SDL_BIG_ENDIAN)
    val = ua_endian_convert32(val);

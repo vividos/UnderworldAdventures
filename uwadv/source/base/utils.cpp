@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,6 +23,10 @@
 
    \brief misc utilities
 
+   Implementations of some functions are dependent on operating system and
+   compiler, so some #ifdef magic is used. Some functions are taken from
+   Exult.
+
 */
 
 // needed includes
@@ -32,6 +36,7 @@
 #include <cstdio>
 #include <algorithm>
 #include <cctype>
+
 
 #if defined(__MINGW32__) && !defined(HAVE_CONFIG_H)
 #define HAVE_SYS_STAT_H
@@ -49,7 +54,7 @@
 
 //! creates a folder
 /*! borrowed from Exult, files/utils.cc */
-int ua_mkdir(const char *dirname, int mode)
+int ua_mkdir(const char* dirname, int mode)
 {
    std::string name(dirname);
 
@@ -95,7 +100,7 @@ int ua_mkdir(const char *dirname, int mode)
 #if defined(WIN32) && defined(UNICODE)
 
    // unicode case
-   const char *n = name.c_str();
+   const char* n = name.c_str();
    int nLen = std::strlen(n)+1;
    LPTSTR lpszT = (LPTSTR) alloca(nLen*2);
    MultiByteToWideChar(CP_ACP, 0, n, -1, lpszT, nLen);
@@ -115,7 +120,7 @@ int ua_mkdir(const char *dirname, int mode)
 }
 
 //! prints out a ua_trace message (when enabled)
-int ua_trace_printf(const char *fmt,...)
+int ua_trace_printf(const char* fmt,...)
 {
    va_list args;
    va_start(args,fmt);
@@ -128,13 +133,14 @@ int ua_trace_printf(const char *fmt,...)
 
 bool ua_file_exists(const char* filename)
 {
-   FILE *fd = fopen(filename,"rb");
+   FILE* fd = fopen(filename,"rb");
    if (fd==NULL)
       return false;
 
    fclose(fd);
    return true;
 }
+
 
 // ua_find_files implementation for various platforms
 
@@ -224,6 +230,7 @@ void ua_find_files(const char* pathname, std::vector<std::string>& filelist)
 // enable it.
 
 #endif
+
 
 void ua_str_lowercase(std::string& str)
 {
