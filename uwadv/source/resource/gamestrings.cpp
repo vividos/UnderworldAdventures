@@ -49,6 +49,7 @@ typedef struct ua_huff_node
   int right;
 } ua_huff_node;
 
+//! strings block info
 typedef struct ua_block_info
 {
    Uint16 block_id;

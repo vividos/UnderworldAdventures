@@ -29,14 +29,17 @@
 #ifndef __uwadv_physicsobject_hpp_
 #define __uwadv_physicsobject_hpp_
 
+// needed includes
 #include "uamath.hpp"
 
+
+//! physics object class
 class ua_physics_object
 {
 public:
-    
+   //! ctor
   ua_physics_object();
-  
+
   void set_ellipsoid(ua_vector3d size);
   ua_vector3d get_ellipsoid() const;
     

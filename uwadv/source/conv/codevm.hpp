@@ -58,6 +58,7 @@
 
 // enums
 
+//! imported function return type
 typedef enum
 {
    ua_rt_void, ua_rt_int, ua_rt_string
@@ -78,6 +79,7 @@ typedef enum
 
 // structs
 
+//! imported item info
 typedef struct
 {
    //! type of the function/global memory location

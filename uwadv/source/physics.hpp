@@ -41,6 +41,7 @@ struct ua_collision_data;
 
 // classes
 
+//! physics model class
 class ua_physics_model
 {
 public:

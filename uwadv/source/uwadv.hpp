@@ -40,8 +40,9 @@
 #include "screen.hpp"
 
 
-// main game class
+// classes
 
+//! main game class
 class ua_game: public ua_game_core_interface
 {
 public:

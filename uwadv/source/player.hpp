@@ -118,6 +118,7 @@ typedef enum
 
 // classes
 
+//! player class
 class ua_player : public ua_physics_object
 {
 public:

@@ -37,6 +37,7 @@
 
 // classes
 
+//! mouse cursor class
 class ua_mousecursor
 {
 public:

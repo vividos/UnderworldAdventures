@@ -68,6 +68,7 @@
 
 template <class T> class GammaTable;
 
+//! single midi event
 struct midi_event
 {
    int            time;
@@ -83,6 +84,7 @@ struct midi_event
    midi_event     *next;
 };
 
+//! midi note stack
 class NoteStack
 {
    midi_event     *notes;     // Top of the stack
@@ -208,6 +210,7 @@ public:
 };
 
 
+//! xmidi event list
 class XMIDIEventList
 {
 public:
@@ -237,6 +240,7 @@ private:
 };
 
 
+//! xmidi file processor
 class XMIDI
 {
 public:
