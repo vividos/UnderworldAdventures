@@ -25,6 +25,7 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	image.hpp inventory.hpp level.hpp player.hpp quadtree.hpp \
 	screen.hpp settings.hpp texture.hpp uatypes.hpp \
 	underworld.hpp uwadv.hpp \
+	linux/main.cpp \
 	audio/audio.cpp audio/midi.cpp audio/xmidi.cpp \
 	audio/midi.hpp audio/xmidi.hpp \
 	audio/midi_driver/uni_fmod.cpp audio/midi_driver/uni_fmod.hpp \

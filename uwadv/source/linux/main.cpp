@@ -19,37 +19,38 @@
    $Id$
 
 */
-/*! \file common.hpp
+/*! \file main.cpp
 
-   commonly used includes and definitions
+   linux specific main function
 
 */
 
-// include guard
-#ifndef __uwadv_common_hpp_
-#define __uwadv_common_hpp_
-
-
-// get rid of warnings
-#ifdef WIN32
-# pragma warning( disable: 4786 ) // identifier was truncated to '255' characters in the debug information
-# pragma warning( disable : 4290 ) // C++ Exception Specification ignored
-#endif
-
-
-// SDL includes
+// needed includes
+#include "common.hpp"
 #include "SDL.h"
-#include "SDL_opengl.h"
+#include "uwadv.hpp"
 
 
-// other includes
-#include "uatypes.hpp"
+// main function
 
+int main(int argc, char* argv[])
+{
+   ua_game ua;
 
-// linux config file
-#ifdef HAVE_CONFIG_H
-#include "linux/config.h"
-#endif
+   try
+   {
+      ua.init();
+      ua.run();
+      ua.done();
+   }
+   catch (ua_exception e)
+   {
+      ua.error_msg(e.what());
+   }
+   catch (std::exception e)
+   {
+      ua.error_msg("std::exception");
+   }
 
-
-#endif
+   return 0;
+}

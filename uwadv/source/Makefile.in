@@ -100,6 +100,7 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	image.hpp inventory.hpp level.hpp player.hpp quadtree.hpp \
 	screen.hpp settings.hpp texture.hpp uatypes.hpp \
 	underworld.hpp uwadv.hpp \
+	linux/main.cpp \
 	audio/audio.cpp audio/midi.cpp audio/xmidi.cpp \
 	audio/midi.hpp audio/xmidi.hpp \
 	audio/midi_driver/uni_fmod.cpp audio/midi_driver/uni_fmod.hpp \
@@ -127,7 +128,7 @@ PROGRAMS = $(bin_PROGRAMS)
 am_uwadv_OBJECTS = font.$(OBJEXT) image.$(OBJEXT) inventory.$(OBJEXT) \
 	level.$(OBJEXT) player.$(OBJEXT) quadtree.$(OBJEXT) \
 	texture.$(OBJEXT) underworld.$(OBJEXT) uwadv.$(OBJEXT) \
-	audio.$(OBJEXT) midi.$(OBJEXT) xmidi.$(OBJEXT) \
+	main.$(OBJEXT) audio.$(OBJEXT) midi.$(OBJEXT) xmidi.$(OBJEXT) \
 	uni_fmod.$(OBJEXT) codevm.$(OBJEXT) codeloader.$(OBJEXT) \
 	fontloader.$(OBJEXT) gamestrings.$(OBJEXT) \
 	imageloader.$(OBJEXT) maploader.$(OBJEXT) settings.$(OBJEXT) \
@@ -149,10 +150,10 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/gamestrings.Po ./$(DEPDIR)/image.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/imageloader.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/ingame_orig.Po ./$(DEPDIR)/inventory.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/level.Po ./$(DEPDIR)/maploader.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/midi.Po ./$(DEPDIR)/player.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/quadtree.Po ./$(DEPDIR)/settings.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/start_splash.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/level.Po ./$(DEPDIR)/main.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/maploader.Po ./$(DEPDIR)/midi.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/player.Po ./$(DEPDIR)/quadtree.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/settings.Po ./$(DEPDIR)/start_splash.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/texloader.Po ./$(DEPDIR)/texture.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/underworld.Po ./$(DEPDIR)/uni_fmod.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/uwadv.Po ./$(DEPDIR)/xmidi.Po
@@ -206,6 +207,7 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+main.$(OBJEXT): linux/main.cpp
 audio.$(OBJEXT): audio/audio.cpp
 midi.$(OBJEXT): audio/midi.cpp
 xmidi.$(OBJEXT): audio/xmidi.cpp
@@ -241,6 +243,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ingame_orig.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/inventory.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/level.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/maploader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/midi.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/player.Po@am__quote@
@@ -268,6 +271,18 @@ distclean-depend:
 @AMDEP_TRUE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(CXXCOMPILE) -c -o $@ `cygpath -w $<`
+
+main.o: linux/main.cpp
+@AMDEP_TRUE@	source='linux/main.cpp' object='main.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/main.Po' tmpdepfile='$(DEPDIR)/main.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o main.o `test -f 'linux/main.cpp' || echo '$(srcdir)/'`linux/main.cpp
+
+main.obj: linux/main.cpp
+@AMDEP_TRUE@	source='linux/main.cpp' object='main.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/main.Po' tmpdepfile='$(DEPDIR)/main.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o main.obj `cygpath -w linux/main.cpp`
 
 audio.o: audio/audio.cpp
 @AMDEP_TRUE@	source='audio/audio.cpp' object='audio.o' libtool=no @AMDEPBACKSLASH@
