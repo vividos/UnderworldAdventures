@@ -48,6 +48,28 @@ function lua_init_script(this)
    player_set_attr(self,player_attr_gender,1)
    player_set_attr(self,player_attr_appearance,1)
 
+   -- testing stuff
+
+   -- fun_replace_tilemap_solids()
+
+end
+
+-- replaces all solid tiles with open ones
+function fun_replace_tilemap_solids()
+
+   for xpos = 1, 63
+   do
+      for ypos = 1, 63
+      do
+         local tile_handle = tilemap_get_tile(self, -1, xpos, ypos)
+
+         if tilemap_get_type(self, tile_handle) == tilemap_type_solid
+         then
+            tilemap_set_type(self, tile_handle, tilemap_type_open)
+            tilemap_set_floor(self, tile_handle, 0)
+         end
+      end
+   end
 end
 
 
