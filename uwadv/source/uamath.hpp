@@ -132,10 +132,13 @@ public:
    //! subtract assignment
    ua_vector3d& operator-=(const ua_vector3d &vec);
 
-   // multiplication assignment
+   //! multiplication assignment
    ua_vector3d& operator*=(double sc);
 
-   // division assignment with vector
+   //! multiplication assignment with vector
+   ua_vector3d& operator*=(const ua_vector3d& vec);
+
+   //! division assignment with vector
    ua_vector3d& operator/=(const ua_vector3d& vec);
 
    //! sets vector by giving vector elements
@@ -309,6 +312,14 @@ inline ua_vector3d& ua_vector3d::operator*=(double sc)
    x *= sc;
    y *= sc;
    z *= sc;
+   return *this;
+}
+
+inline ua_vector3d& ua_vector3d::operator*=(const ua_vector3d& vec)
+{
+   x *= vec.x;
+   y *= vec.y;
+   z *= vec.z;
    return *this;
 }
 
