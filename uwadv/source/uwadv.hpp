@@ -105,6 +105,7 @@ protected:
 protected:
    // ua_game_core_interface virtual methods
 
+   virtual void init_core();
    virtual unsigned int get_screen_width(){ return width; }
    virtual unsigned int get_screen_height(){ return height; }
    virtual unsigned int get_tickrate(){ return tickrate; }

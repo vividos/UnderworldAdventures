@@ -28,11 +28,7 @@
 // needed includes
 #include "common.hpp"
 #include "uwadv.hpp"
-#include "screens/start_splash.hpp"
-#ifdef HAVE_DEBUG
- #include "screens/ingame_orig.hpp"
- #include "screens/start_menu.hpp"
-#endif
+#include "screens/uwadv_menu.hpp"
 #include <iostream>
 
 
@@ -51,23 +47,6 @@ void ua_game::init()
 
    // init files mgr; loads all config files and inits settings, too
    filesmgr.init(settings);
-
-   // trace output some settings
-   ua_trace("uw-path: %s\nuadata-path: %s\n",
-      settings.get_string(ua_setting_uw_path).c_str(),
-      settings.get_string(ua_setting_uadata_path).c_str());
-
-   ua_trace("game detected: %s\n\n",
-      settings.get_gametype() == ua_game_none? "none" :
-      settings.get_gametype() == ua_game_uw1 ? "uw1" :
-      settings.get_gametype() == ua_game_uw_demo ? "uw_demo" : "uw2");
-
-   // check some settings
-   if (settings.get_gametype() == ua_game_none)
-      throw ua_exception("could not find relevant game files");
-
-   if (settings.get_gametype() == ua_game_uw2)
-      throw ua_exception("you can't play with Ultima Underworld 2 data files");
 
    // first, initialize SDL's video subsystem
    if( SDL_Init(SDL_INIT_VIDEO) < 0 )
@@ -122,27 +101,10 @@ void ua_game::init()
    // setup OpenGL viewport
    glViewport(0, 0, width, height);
 
-   // init textures
-   texmgr.init(settings);
-
-   // load game strings
-   gstr.load(settings);
-
-   // init audio
-   audio = ua_audio_interface::get_audio_interface();
-   audio->init(settings);
-
-   // initializes underworld
-   underworld.init(this);
-
    screenstack.clear();
 
-#ifdef HAVE_DEBUG
-   push_screen(new ua_start_menu_screen);
-//   push_screen(new ua_ingame_orig_screen);
-#else
-   push_screen(new ua_start_splash_screen);
-#endif
+   // start with uwadv menu
+   push_screen(new ua_uwadv_menu_screen);
 }
 
 #define HAVE_FRAMECOUNT
@@ -299,6 +261,25 @@ void ua_game::draw_screen()
 
    // finished
    SDL_GL_SwapBuffers();
+}
+
+void ua_game::init_core()
+{
+   ua_trace("initializing core objects\n"
+      "uw-path: %s\n",settings.get_string(ua_setting_uw_path).c_str());
+
+   // init textures
+   texmgr.init(settings);
+
+   // load game strings
+   gstr.load(settings);
+
+   // init audio
+   audio = ua_audio_interface::get_audio_interface();
+   audio->init(settings);
+
+   // initializes underworld
+   underworld.init(this);
 }
 
 void ua_game::push_screen(ua_ui_screen_base *newscreen)

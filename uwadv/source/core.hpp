@@ -53,6 +53,9 @@ public:
    ua_game_core_interface(){}
    virtual ~ua_game_core_interface(){}
 
+   //! called as soon as a game path is available
+   virtual void init_core()=0;
+
    //! returns screen width
    virtual unsigned int get_screen_width()=0;
    //! returns screen height
