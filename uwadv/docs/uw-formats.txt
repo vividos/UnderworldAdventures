@@ -243,8 +243,15 @@ Table of Contents
      The first object in the list is determined by the tile's object index
      value (see above, at "Level map info").
 
-     The whole list is 0x100*0x1b + 0x300*0x08 = 0x1b00 + 0x1800 = 0x3300
-     bytes long. After these two lists, 0x3c08 - 0x3300 = 0x0908 bytes unknown
+     For normal objects, the "unknown2" field is the NPC type the object
+     belongs to. NPC ID = unknown2 + 1 + 0x0040. unknown2 == 0 means the
+     object doesn't belong to anyone.
+
+     After the objects list, another lists starts at offset base+0x7300. The
+     list contains 0x0400 Int16 values. The purpose of this list is unknown.
+
+     All lists are 0x100*0x1b + 0x300*0x08 = 0x1b00 + 0x1800 + 0x0800 = 0x3b00
+     bytes long. After these two lists, 0x3c08 - 0x3b00 = 0x0108 bytes unknown
      data follows.
 
      Normally the field "quantity / link2" indicates how much items there are,
@@ -469,7 +476,7 @@ Table of Contents
    block contains 256 Int8 values who map colors to their palette indices in
    the game palette. The first block is the mapping for original colors, and
    the last one is for "almost black".
-   
+
    The file "mono.dat" contains palette mappings that maps colors to grayscale
    values. It has the same format as the "light.dat" file and can be
    interchanged to get a gray underworld look.
