@@ -1,0 +1,50 @@
+2002-11-18 release 0.6-rotworm-stew
+
+	* added looking at objects in the underworld
+	* initial rendering of NPC and critter sprites; no animation yet
+	* added mouse movement
+	* added customization of key mappings
+	* added support for digital remakes of the underworld soundtrack
+	* added support of changing levels via Alt+PageUp and Alt+PageDown
+	* rewrote collision detection; added gravity
+	* Tools: improved conversation script decompiling
+	* Linux: fixed midi playback on Linux
+	* Linux: added manual pages
+
+2002-08-22 release 0.5-butterfinger
+
+	* added character creation
+	* Linux: finished build system, including binary RPMs
+	* Windows: added installer and configuration program
+
+2002-08-12 snapshot 0.4b-cheesecake
+
+	* Linux: improved build system
+
+2002-07-30 release 0.4-cheesecake
+
+	* added introduction scene
+	* added acknowledgements screen
+	* added inventory handling
+	* added fullscreen mode
+
+2002-07-08 release 0.3-poppypastry
+
+	* added splash screen and start menu
+	* added initial collision detection
+
+2002-06-20 release 0.2-grainroll
+
+	* added rendering objects to the abyss
+	* textures are rendered correctly now
+	* Tools: added conversation script decompiler and animation viewer
+
+2002-05-05 release 0.1-ricecraecker
+
+	* set up SourceForge project and CVS repository
+	* player is able to run around on first level of abyss; no clipping yet
+	* introduction music plays
+
+2002-04-08 release "uwadv-stuff-preview"
+
+	* made a simple level map viewer
