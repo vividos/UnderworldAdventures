@@ -1,3 +1,9 @@
+xxxx-xx-xx release 0.7-
+
+	* added support for static 3d models in vrml97 format
+	* conversations works (no inventory interaction yet)
+	* removed big textures larger than 256x256 (voodoo3 cards should work now)
+
 2002-11-21 release 0.6-rotworm-stew
 
 	* added looking at objects in the underworld
