@@ -141,11 +141,10 @@ protected:
    virtual void uw_print(const char* text);
 
    //! starts conversation with object in current level, on list position
-   virtual void uw_start_conversation(unsigned int list_pos);
+   virtual void uw_start_conversation(Uint16 list_pos);
 
-   //! takes a screenshot, for savegame preview or to save it to disk
-   void do_screenshot(bool for_savegame=false, unsigned int xres=0,
-      unsigned int yres=0);
+   //! takes a screenshot for savegame preview
+   void do_savegame_screenshot(unsigned int xres, unsigned int yres);
 
 protected:
    // constants

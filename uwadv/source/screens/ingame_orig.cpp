@@ -47,6 +47,9 @@
 //! time to fade in/out
 const double ua_ingame_orig_screen::fade_time = 0.5;
 
+const unsigned int ua_ingame_screenshot_xres = 80;
+const unsigned int ua_ingame_screenshot_yres = 50;
+
 
 // ua_ingame_orig_screen methods
 
@@ -720,7 +723,8 @@ void ua_ingame_orig_screen::key_event(bool key_down, ua_key_value key)
       if (key_down)
       {
          // render savegame preview image
-         do_screenshot(true,80,50);
+         do_savegame_screenshot(ua_ingame_screenshot_xres,
+            ua_ingame_screenshot_yres);
 
          ua_trace("quicksaving... ");
          uw_print("quicksaving...");
@@ -747,7 +751,8 @@ void ua_ingame_orig_screen::key_event(bool key_down, ua_key_value key)
       if (key_down)
       {
          // render savegame preview image
-         do_screenshot(true,80,50);
+         do_savegame_screenshot(ua_ingame_screenshot_xres,
+            ua_ingame_screenshot_yres);
 
          schedule_action(ua_action_load_game, true);
       }
@@ -758,7 +763,8 @@ void ua_ingame_orig_screen::key_event(bool key_down, ua_key_value key)
       if (key_down)
       {
          // render savegame preview image
-         do_screenshot(true,80,50);
+         do_savegame_screenshot(ua_ingame_screenshot_xres,
+            ua_ingame_screenshot_yres);
 
          schedule_action(ua_action_save_game, true);
       }
@@ -1005,44 +1011,39 @@ void ua_ingame_orig_screen::uw_print(const char* text)
    textscroll.print(text);
 }
 
-void ua_ingame_orig_screen::uw_start_conversation(unsigned int list_pos)
+void ua_ingame_orig_screen::uw_start_conversation(Uint16 list_pos)
 {
    fadeout_param = list_pos;
    schedule_action(ua_action_conversation, true);
 }
 
-void ua_ingame_orig_screen::do_screenshot(bool for_savegame,
+void ua_ingame_orig_screen::do_savegame_screenshot(
    unsigned int xres, unsigned int yres)
 {
    std::vector<Uint32> screenshot_rgba;
    unsigned int screenshot_xres,screenshot_yres;
-/*
-//   if (xres==0) xres = game.get_screen_width();
-//   if (yres==0) yres = core->get_screen_height();
 
-   // set up camera and viewport
+   // set up viewport and camera
    glViewport(0,0,xres,yres);
-   renderer.setup_camera(90.0,double(xres)/yres,16.0);
+
+   ua_vector3d view_offset(0,0,0);
+   game.get_renderer().setup_camera3d(view_offset);
 
    glClear(GL_COLOR_BUFFER_BIT);
 
-   // render scene
-   if (!for_savegame)
-      render();
-   else
-   {
-      glDisable(GL_SCISSOR_TEST);
-      renderer.render();
-      glEnable(GL_SCISSOR_TEST);
-   }
-*/
+   // render a const world
+   game.get_renderer().render_underworld(game.get_underworld());
+
+   // flip pages
+   SDL_GL_SwapBuffers();
+
    // prepare screenshot
    screenshot_xres = xres;
    screenshot_yres = yres;
 
    screenshot_rgba.clear();
    screenshot_rgba.resize(xres*yres,0);
-/*
+
    // read in scanlines
    glReadBuffer(GL_BACK);
 
@@ -1052,13 +1053,7 @@ void ua_ingame_orig_screen::do_screenshot(bool for_savegame,
          &screenshot_rgba[(yres-1-i)*xres]);
    }
 
-   // reset camera and viewport
-   glViewport(0,0,core->get_screen_width(),core->get_screen_height());
-
-   renderer.setup_camera(90.0,
-      double(core->get_screen_width())/core->get_screen_height(),
-      16.0);
-*/
+   // set in savegames manager
    game.get_savegames_manager().set_save_screenshot(
       screenshot_rgba,screenshot_xres,screenshot_yres);
 }
