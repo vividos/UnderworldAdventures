@@ -40,7 +40,7 @@ LDFLAGS = -mwindows -s
 
 uwadv_EXEC = uwadv.exe
 
-uwadv_OBJS = source/main.o source/game_win32.o uwadv_res.o \
+uwadv_OBJS = source/main.o source/game_win32.o source/uwadv_res.o \
 	../font.o ../image.o ../inventory.o ../level.o \
 	../texture.o ../underworld.o ../uwadv.o ../player.o \
 	../quadtree.o ../objects.o ../physics.o ../cutscene.o \
@@ -147,8 +147,8 @@ uwadv: $(uwadv_EXEC)
 $(uwadv_EXEC): $(uwadv_OBJS)
 	$(CC) $(LDFLAGS) $(uwadv_LDFLAGS) -o $(@) $(uwadv_OBJS) $(uwadv_LIBS)
 
-uwadv_res.o: source/uwadv.rc source/Uus.ico
-	windres -i source/uwadv.rc -o $@
+source/uwadv_res.o: source/uwadv.rc source/Uus.ico
+	cd source && windres -i uwadv.rc -o $@
 
 
 cnvdbg: $(cnvdbg_EXEC)
