@@ -813,6 +813,10 @@ SOURCE=..\source\keymap.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\source\models.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\source\mousecursor.cpp
 # End Source File
 # Begin Source File
@@ -886,6 +890,10 @@ SOURCE=..\source\imgquad.hpp
 # Begin Source File
 
 SOURCE=..\source\keymap.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\models.hpp
 # End Source File
 # Begin Source File
 
