@@ -47,19 +47,29 @@ public:
    virtual ~ua_create_character_screen(){}
 
    // virtual functions from ua_ui_screen_base
-
    virtual void init();
    virtual void done();
    virtual void handle_event(SDL_Event &event);
    virtual void render();
    virtual void tick();
 
+   // registered lua C functions
+
+   //! performs an action given by the script
+   static int cchar_do_action(lua_State *L);
+
 protected:
+   //! loads and initializes lua script
+   void initluascript();
+
+   //! performs an action given by the script
+   void do_action();
+
    //! does a button press
-   void press_button();
+   void press_button(int button);
 
    //! determines clicked button in current group, -1 if none
-   int getbuttonclicked(int buttongroup);
+   int getbuttonover();
 
    //! draws text at a coordinate (xalign: 0=left, 1=center, 2=right)
    void drawtext(const char *str, int x, int y, int xalign = 0, unsigned char color = 0);
@@ -72,12 +82,15 @@ protected:
    void drawbutton(int buttontype, bool highlight, int strnum, int xc, int y);
 
    //! draws a buttongroup
-   void drawcurrentbuttongroup();
-
-   //! draws selected options in right part of the screen
-   void drawselectedoptions();
+   void drawbuttongroup();
 
 protected:
+   //! lua script state
+   lua_State *L;
+
+   //! string block for button and label text
+   unsigned int strblock;
+
    //! button and text font
    ua_font font;
 
@@ -87,20 +100,14 @@ protected:
    //! the player
    ua_player *pplayer;
 
-   //! current creation step
-   int step;
-
-   //! previous creation step
-   int prevstep;
+   //! buttons changed
+   bool changed;
 
    //! current stage
    unsigned int stage;
 
    //! current tickcount
    unsigned int tickcount;
-
-   //! number of current buttongroup
-   int current_buttongroup;
 
    //! indicates if the mouse button is down
    bool buttondown;
@@ -125,6 +132,18 @@ protected:
 
    //! number of previous button
    int prev_button;
+
+   //! string number of caption in current button group (0 if none)
+   unsigned int btng_caption;
+
+   //! button type of current button group
+   unsigned int btng_buttontype;
+
+   //! number of buttons in current group
+   unsigned int btng_buttoncount;
+
+   //! array of string numbers for buttons in current group
+   unsigned int* btng_buttons;
 };
 
 #endif

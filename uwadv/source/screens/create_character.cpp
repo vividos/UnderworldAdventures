@@ -29,116 +29,40 @@
 
 // constants
 
-//! time for fade in/out
-const double ua_start_menu_blend_time = 0.5;
+//! time needed to fade in/out text
+const double ua_fade_time = 0.5;
+
+//! maximum number of buttons in a group (shown on-screen at once)
+const unsigned char ua_maxbuttons = 10;
+
+//! script actions 
+enum ua_elua_action
+{
+   actEnd = 0,            // ends the character creation screen (no params)
+   actSetStringBlock = 1, // sets the stringblock (param1=stringblock)
+   actSetBtnGroup = 2,    // sets the specified button group (param1=heading, param2=buttontype, param3=buttontable)
+   actSetText = 3,        // sets the specified text at the specified location (param1=stringno, param2=x-coord, param3=y-coord)
+   actSetName = 4,        // sets the specified name at the specified location (param1=name, param2=x-coord, param3=y-coord, param4=alignment)
+   actSetNumber = 5,      // sets the specifed number at the specified location
+   actSetImg = 6,         // sets the specified image at the specified location
+   actUpdate = 7,         // updates the screen after a change
+   actClear = 8           // clears all screen elements (not the background)
+};
 
 //! custom type for identifying buttons/text 
 enum ua_echarcreationvalue
 {
-   // note: enum values must match entries in stringtable block 2
-   ccvSex = 1,
-   ccvHandedness = 2,
-   ccvClass = 3,
-   ccvSkill = 4,
-   ccvDifficulty = 6,
-   ccvName = 7,
-   ccvKeep = 8,
-   ccvMale = 9,
-   ccvFemale = 10,
-   ccvLeft = 11,
-   ccvRight = 12,
-   ccvStandard = 13,
-   ccvEasy = 14,
-   ccvYes = 15,
-   ccvNo = 16,
-   ccvStrc = 17,
-   ccvDexc = 18,
-   ccvIntc = 19,
-   ccvVitc = 20,
-   ccvManac = 21,
-   ccvExpc = 22,
-   ccvFighter = 23,
-   ccvMage = 24,
-   ccvBard = 25,
-   ccvTinker = 26,
-   ccvDruid = 27,
-   ccvPaladin = 28,
-   ccvRanger = 29,
-   ccvShepard = 30,
-   ccvAttack = 31,
-   ccvDefence = 32,
-   ccvUnarmed = 33,
-   ccvSword = 34,
-   ccvAxe = 35,
-   ccvMace = 36,
-   ccvMissile = 37,
-   ccvMana = 38,
-   ccvLore = 39,
-   ccvCasting = 40,
-   ccvTraps = 41,
-   ccvSearch = 42,
-   ccvTrack = 43,
-   ccvSneak = 44,
-   ccvRepair = 45,
-   ccvCharm = 46,
-   ccvPicklock = 47,
-   ccvAcrobat = 48,
-   ccvAppraise = 49,
-   ccvSwimming = 50,
-   
-   // custom values (these have no matching text in string table)
-   ccvOther = 2000,
+   ccvNone = 0
 };
 
-
-
-//! table of character creation buttons 
-int ua_cc_buttongroups[][11] =
-{ // {HeadingText,	BtnType, #Btns, Btn1...Btn8 }
-
-   {ccvSex,        0,  2, ccvMale, ccvFemale},
-   {ccvHandedness, 0,  2, ccvLeft, ccvRight},
-   {ccvClass,      0,  8, ccvFighter, ccvMage, ccvBard, ccvTinker, ccvDruid, ccvPaladin, ccvRanger, ccvShepard},
-/*
-  // Fighter Skills
-   {ccvSkill,      0,  2, ccvAttack, ccvDefence},
-   {ccvSkill,      0,  5, ccvUnarmed, ccvSword, ccvAxe, ccvMace, ccvMissile},
-   {ccvSkill,      0,  5, ccvSwimming, ccvTraps, ccvSearch, ccvCharm, ccvAcrobat, ccvAppraise},
-
-  // Mage Skills
-   {ccvSkill,      0,  2, ccvMana, ccvCasting},
-
-  // Bard Skills
-   {ccvSkill,      0,  2, ccvLore, ccvCharm},
-   {ccvSkill,      0,  6, ccvAppraise, ccvAcrobat, ccvSneak, ccvPicklock, ccvSearch, ccvSwimming},
-   {ccvSkill,      0,  7, ccvMana, ccvCasting, ccvSword, ccvAxe, ccvMace, ccvUnarmed,  ccvMissile},
-
-  // Tinker Skills
-   // First Tinker Skills page same as Fighter Skills page 2 (index 4)
-   {ccvSkill,      0,  5, ccvPicklock, ccvTraps, ccvSearch, ccvAppraise, ccvRepair},
-
-  // Druid Skills
-   {ccvSkill,      0,  3, ccvTrack, ccvLore, ccvSearch},
-
-  // Paladin Skills
-   {ccvSkill,      0,  4, ccvAppraise, ccvCharm, ccvAcrobat, ccvRepair},
-   // Second Paladin skill page same as Fighter Skills page 2 (index 4)
-
-  // Ranger Skills
-   {ccvSkill,      0,  6, ccvTraps, ccvAcrobat, ccvSneak, ccvSearch, ccvSwimming, ccvRepair},
-   {ccvSkill,      0,  8, ccvUnarmed, ccvSword, ccvAxe, ccvMace, ccvMissile, ccvAttack, ccvDefence, ccvTrack},
-
-  // Shepard Skills  (note: the original game had the last 2 pages combined on one page with 10 buttons)
-   {ccvSkill,      0,  6, ccvUnarmed, ccvSword, ccvAxe, ccvMace, ccvMissile, ccvDefence},
-   {ccvSkill,      0,  6, ccvTraps, ccvSneak, ccvAppraise, ccvTrack, ccvLore, ccvOther},
-   {ccvSkill,      0,  5, ccvSearch, ccvAcrobat, ccvSwimming, ccvCasting, ccvMana},
-*/
-  // Appearance    
-   {ccvDifficulty, 0,  2, ccvStandard, ccvEasy},
-
-  // Confirm
-   {ccvKeep,       0,  2, ccvYes, ccvNo}
+//! custom type for identifying buttons/text 
+enum ua_ebuttontype
+{
+   btText = 0,      // standard button with text from string table, btns contains stringtable index
+   btImage = 3,     // square button with image, btns contains index of image
+   btInput = 6      // input area
 };
+
 
 
 // ua_create_character_screen methods
@@ -185,24 +109,143 @@ void ua_create_character_screen::init()
 
    // intial variable values
    ended=false;
-   current_buttongroup=0;
    selected_button=0;
    prev_button=0;
-   step=0;
-   prevstep=-1;
+   changed=false;
    stage=0;
    tickcount=0;
    buttondown=false;
+   strblock=0x0002;
+   btng_caption=0;
+   btng_buttontype=0;
+   btng_buttoncount = 0;
+   btng_buttons = new unsigned int[ua_maxbuttons];
+
+   // init lua scripting
+   initluascript();
+}
+
+void ua_create_character_screen::initluascript()
+{
+   // get a new lua state
+   L = lua_open(128);
+
+   // register C functions
+   lua_register(L,"cchar_do_action", cchar_do_action);
+
+   // load lua cutscene script
+   if (0!=core->get_filesmgr().load_lua_script(L,"uw1/scripts/createchar"))
+      ended = true;
+
+   // call "cchar_init(this)"
+   lua_getglobal(L,"cchar_init");
+   lua_pushuserdata(L,this);
+   int ret = lua_call(L,1,0);
+   if (ret!=0)
+   {
+      ua_trace("Lua function call cchar_init(0x%08x) ended with error code %u\n",
+         this,ret);
+      ended = true;
+   }
+}
+
+void ua_create_character_screen::do_action()
+{
+   int n=lua_gettop(L);
+   unsigned int action = (n<2) ? 0 : static_cast<unsigned int>(lua_tonumber(L,2));
+
+   ua_trace("character creation script action %d received\n", action);
+
+   switch(static_cast<ua_elua_action>(action))
+   {
+   case actEnd:
+      ended = true;
+      break;
+
+   case actSetStringBlock:
+      if (n<3) break;
+      strblock = static_cast<unsigned int>(lua_tonumber(L,3));
+      break;
+
+   case actSetBtnGroup:
+   {
+      if (n<4) break;
+      btng_caption = static_cast<unsigned int>(lua_tonumber(L,3));
+      btng_buttontype = static_cast<unsigned int>(lua_tonumber(L,4));
+      btng_buttoncount = lua_getn(L, 5);
+      for (int i=0; i<btng_buttoncount; i++)
+      {
+         lua_rawgeti(L, 5, i+1);
+         btng_buttons[i] = static_cast<unsigned int>(lua_tonumber(L,6));
+         lua_pop(L, 1);
+      }
+      selected_button=prev_button=0;
+      drawbuttongroup();
+      break;
+   }
+
+   case actSetText:
+   {
+      if (n<6) break;
+      drawtext(static_cast<unsigned int>(lua_tonumber(L,3)),
+               static_cast<unsigned int>(lua_tonumber(L,4)),
+               static_cast<unsigned int>(lua_tonumber(L,5)),
+               static_cast<unsigned int>(lua_tonumber(L,6)));
+      break;
+   }
+
+   case actSetName:
+   {
+      if (n<6) break;
+      drawtext(lua_tostring(L,3),
+               static_cast<unsigned int>(lua_tonumber(L,4)),
+               static_cast<unsigned int>(lua_tonumber(L,5)),
+               static_cast<unsigned int>(lua_tonumber(L,6)));
+      break;
+   }
+
+   case actSetNumber:
+   {
+      if (n<5) break;
+      drawnumber(static_cast<unsigned int>(lua_tonumber(L,3)),
+               static_cast<unsigned int>(lua_tonumber(L,4)),
+               static_cast<unsigned int>(lua_tonumber(L,5)));
+      break;
+   }
+
+   case actSetImg:
+   {
+      if (n<5) break;
+      ua_image cimg = img_buttons.get_image(static_cast<unsigned int>(lua_tonumber(L,3)));
+      img.paste_image(cimg, static_cast<unsigned int>(lua_tonumber(L,4)) - cimg.get_xres()/2, 
+                            static_cast<unsigned int>(lua_tonumber(L,5)) - cimg.get_yres()/2, true);
+      break;
+   }
+
+   case actClear:
+      img.paste_image(bgimg, 0, 0, false);
+      break;
+
+   case actUpdate:
+      changed = true;
+      break;
+   }
 }
 
 void ua_create_character_screen::done()
 {
+   delete[] btng_buttons;
+
    tex.done();
 
    // clear screen
    glClearColor(0,0,0,0);
    glClear(GL_COLOR_BUFFER_BIT);
    SDL_GL_SwapBuffers();
+
+   // close Lua
+   lua_close(L);
+   ua_trace("character creation screen ended\n");
 }
 
 void ua_create_character_screen::handle_event(SDL_Event &event)
@@ -214,7 +257,6 @@ void ua_create_character_screen::handle_event(SDL_Event &event)
       switch(event.key.keysym.sym)
       {
       case SDLK_ESCAPE:
-         ua_trace("character creation ended by escape\n");
          ended = true;
          break;
 
@@ -225,7 +267,7 @@ void ua_create_character_screen::handle_event(SDL_Event &event)
 
       case SDLK_PAGEDOWN:
       case SDLK_END:
-         selected_button=ua_cc_buttongroups[current_buttongroup][2]-1;
+         selected_button=btng_buttoncount-1;
          break;
 
       case SDLK_UP:
@@ -236,7 +278,7 @@ void ua_create_character_screen::handle_event(SDL_Event &event)
 
       case SDLK_DOWN:
          // select the area below, if possible
-         if (selected_button+1<ua_cc_buttongroups[current_buttongroup][2])
+         if (selected_button+1<btng_buttoncount)
             selected_button++;
          break;
 
@@ -255,14 +297,18 @@ void ua_create_character_screen::handle_event(SDL_Event &event)
       // select the area where the mouse button is pressed
       buttondown=true;
       if (stage==1)
-         selected_button = getbuttonclicked(step);
+      {
+         int ret = getbuttonover();
+         if (ret>=0)
+            selected_button = ret;
+      }
       break;
 
    case SDL_MOUSEMOTION:
       if (stage==1 && buttondown)
       {
-         int ret = getbuttonclicked(step);
-         if (ret!=-1)
+         int ret = getbuttonover();
+         if (ret>=0)
             selected_button = ret;
       }
       break;
@@ -272,8 +318,8 @@ void ua_create_character_screen::handle_event(SDL_Event &event)
       if (stage==1)
       {
          // determine if user released the mouse button over the same area
-         int ret = getbuttonclicked(step);
-         if (ret != -1 && ret == selected_button)
+         int ret = getbuttonover();
+         if ((ret>=0) && (ret==selected_button))
          {
             stage++;
             tickcount=0;
@@ -313,50 +359,84 @@ void ua_create_character_screen::drawnumber(unsigned int num, int x, int y, unsi
 
 void ua_create_character_screen::drawtext(int strnum, int x, int y, int xalign, unsigned char color)
 {
-   drawtext(core->get_strings().get_string(2, strnum).c_str(), x, y, xalign, color);
+   const char* ptext = core->get_strings().get_string(2, strnum).c_str();
+   if (ptext)
+      drawtext(ptext, x, y, xalign, color);
 }
 
 void ua_create_character_screen::drawbutton(int buttontype, bool highlight, int strnum, int xc, int y)
 {
    ua_image button = img_buttons.get_image(buttontype);
-   img.paste_image(button, xc - button.get_xres()/2, y, false);
-   if (highlight)
+   int x = xc - button.get_xres()/2;
+   img.paste_image(button, x, y, false);
+   if (buttontype==btText)
+      drawtext(strnum, xc, y+3, 1, (highlight ? 68 : 73));
+   else if (buttontype==btInput)
+      drawtext(strnum, x+5, y+3, 0);
+   else if (buttontype==btImage)
    {
-       button = img_buttons.get_image(buttontype+2);
-       img.paste_image(button, xc - button.get_xres()/2, y, true);
+      button = img_buttons.get_image(strnum);
+      img.paste_image(button, x, y, true);
    }
-   if (strnum>0)
-      drawtext(strnum, xc, y+3, 1);
+   if (highlight && (buttontype!=btInput))
+   {
+      button = img_buttons.get_image(buttontype+2);
+      img.paste_image(button, x, y, true);
+   }
 }
 
-void ua_create_character_screen::drawcurrentbuttongroup()
+void ua_create_character_screen::drawbuttongroup()
 {
-    int btnheight = img_buttons.get_image(ua_cc_buttongroups[current_buttongroup][1]).get_yres();
-    int y = (200-(ua_cc_buttongroups[current_buttongroup][2]*btnheight + ((ua_cc_buttongroups[current_buttongroup][2]-1)*5) + 15))/2;
-    drawtext(ua_cc_buttongroups[current_buttongroup][0], 240, y, 1);
-    y += 15;
-    for(int i=0; i<ua_cc_buttongroups[current_buttongroup][2]; i++)
-    {
-        drawbutton(ua_cc_buttongroups[current_buttongroup][1], (selected_button==i), ua_cc_buttongroups[current_buttongroup][3+i], 240, y);
-        y += btnheight + 5;
-    }
+   ua_image button = img_buttons.get_image(btng_buttontype);
+   int columnsplit = (btng_buttoncount>8) ? btng_buttoncount/2 : btng_buttoncount;
+   int inity = columnsplit*button.get_yres() + ((columnsplit-1)*5);
+   if (btng_caption!=ccvNone)
+       inity += 15;
+   inity = (200-inity)/2;
+   if (btng_caption!=ccvNone)
+   {
+      drawtext(btng_caption, 240, inity, 1);
+      inity += 15;
+   }
+
+   int y = inity;
+   int x = 240;
+   if (columnsplit!=btng_buttoncount)
+      x -= button.get_xres()/2+3;
+   else
+      columnsplit = -1;
+   for(int i=0; i<btng_buttoncount; i++)
+   {
+      drawbutton(btng_buttontype, (selected_button==i), btng_buttons[i], x, y);
+      if (i==columnsplit-1)
+      {
+         y = inity;
+         x += button.get_xres()+6;
+      } else
+         y += button.get_yres()+5;
+   }
 }
 
-int ua_create_character_screen::getbuttonclicked(int buttongroup)
+int ua_create_character_screen::getbuttonover()
 {
    // get mouse coordinates
-   int x,y;
+   int x, y;
    SDL_GetMouseState(&x,&y);
    unsigned int xpos,ypos;
    xpos = unsigned(double(x)/core->get_screen_width()*320);
    ypos = unsigned(double(y)/core->get_screen_height()*200);
-   int btnhwidth = img_buttons.get_image(ua_cc_buttongroups[buttongroup][1]).get_xres()/2;
+   int btnhwidth = img_buttons.get_image(btng_buttontype).get_xres()/2;
    if ((xpos<240-btnhwidth) || (xpos>240+btnhwidth))
       return -1;
 
-   int btnheight = img_buttons.get_image(ua_cc_buttongroups[buttongroup][1]).get_yres();
-   y = (200-(ua_cc_buttongroups[buttongroup][2]*btnheight + ((ua_cc_buttongroups[buttongroup][2]-1)*5) + 15))/2 + 15;
-   for(int i=0; i<ua_cc_buttongroups[buttongroup][2]; i++)
+   int btnheight = img_buttons.get_image(btng_buttontype).get_yres();
+   y = btng_buttoncount*btnheight + ((btng_buttoncount-1)*5);
+   if (btng_caption!=ccvNone)
+       y += 15;
+   y = (200-y)/2;
+   if (btng_caption!=ccvNone)
+      y += 15;
+   for(int i=0; i<btng_buttoncount; i++)
    {
         if ((ypos>y) && (ypos<y+btnheight))
             return i;
@@ -365,71 +445,48 @@ int ua_create_character_screen::getbuttonclicked(int buttongroup)
    return -1;
 }
 
-void ua_create_character_screen::drawselectedoptions()
-{
-   if (step>0)
-      drawtext((pplayer->get_attr(ua_attr_gender)==0) ? ccvMale : ccvFemale, 18, 21, 0);
-
-   if (step>2)
-   {
-      drawtext(ccvFighter + pplayer->get_attr(ua_attr_profession), 141, 21, 2);
-      drawtext(ccvStrc, 93, 50, 0);
-      drawnumber(pplayer->get_stat(ua_stat_strength), 139, 50);
-      drawtext(ccvDexc, 93, 67, 0);
-      drawnumber(pplayer->get_stat(ua_stat_dexterity), 139, 67);
-      drawtext(ccvIntc, 93, 84, 0);
-      drawnumber(pplayer->get_stat(ua_stat_intelligence), 139, 84);
-      drawtext(ccvVitc, 93, 101, 0);
-      drawnumber(pplayer->get_stat(ua_stat_max_life), 139, 101);
-   }
-}
-
 void ua_create_character_screen::render()
 {
    glClear(GL_COLOR_BUFFER_BIT);
    glLoadIdentity();
 
-   // only redraw the whole image when the step has changed
-   if (step!=prevstep)
+   if (selected_button!=prev_button)
    {
-       img.paste_image(bgimg, 0, 0, false);
-       selected_button=prev_button=0;
-       current_buttongroup=step;
-       drawcurrentbuttongroup();
-       drawselectedoptions();
-       prevstep=step;
+      drawbuttongroup();
+      prev_button=selected_button;
+      changed = true;
    }
-   else // redraw the buttons when the current selection has changed
-      if (selected_button!=prev_button)
-      {
-         drawcurrentbuttongroup();
-         prev_button=selected_button;
-      }
 
-   // set brightness of texture quad
-   glColor3ub(255,255,255);
+   if (changed)
+   {
+      // set brightness of texture quad
+      glColor3ub(255,255,255);
 
-   // prepare image texture
-   tex.convert(img);
-   tex.use();
-   tex.upload();
+      // prepare image texture
+      tex.convert(img);
+      tex.use();
+      tex.upload();
+
+      changed = false;
+   }
 
    double u = tex.get_tex_u(), v = tex.get_tex_v();
 
-   // draw background quad
+   // draw quad
    glBegin(GL_QUADS);
    glTexCoord2d(0.0, v  ); glVertex2i(  0,  0);
    glTexCoord2d(u  , v  ); glVertex2i(320,  0);
    glTexCoord2d(u  , 0.0); glVertex2i(320,200);
    glTexCoord2d(0.0, 0.0); glVertex2i(  0,200);
    glEnd();
+
 }
 
 void ua_create_character_screen::tick()
 {
    // when fading in or out, check if blend time is over
    if ((stage==0 || stage==2) &&
-      ++tickcount >= (core->get_tickrate()*ua_start_menu_blend_time))
+      ++tickcount >= (core->get_tickrate()*ua_fade_time))
    {
       // do next stage
       stage++;
@@ -446,39 +503,48 @@ void ua_create_character_screen::tick()
    // in stage 3 the selected button is pressed
    if (stage==3)
    {
-      press_button();
+      press_button(selected_button);
       stage=0;
       tickcount=0;
    }
 }
 
-void ua_create_character_screen::press_button()
+void ua_create_character_screen::press_button(int button)
 {
-   switch(current_buttongroup)
+   ua_trace("character creation button %d pressed\n", button);
+
+   // call "cchar_buttonclick(button)"
+   lua_getglobal(L,"cchar_buttonclick");
+   lua_pushnumber(L,static_cast<int>(button));
+   int ret = lua_call(L,1,0);
+   if (ret!=0)
    {
-   case 0: // Sex
-      pplayer->set_attr(ua_attr_gender, selected_button);
-      break;
-
-   case 1: // Handedness
-      pplayer->set_attr(ua_attr_handedness, selected_button);
-      break;
-
-   case 2: // Class
-      pplayer->set_attr(ua_attr_profession, selected_button);
-      break;
-
-   case 3: // Difficulty
-      break;
-
-   case 4: // Keep character
-      if (selected_button==0)
-         ended=true;
-      else
-         step=0;
-      return;
+      ua_trace("Lua function call cchar_buttonclick(0x%08x,%u) ended with error code %u\n",
+         this, button, ret);
+      ended = true;
    }
-   step++;
-   selected_button = -1;
 }
 
+
+// static ua_create_character_view_screen methods
+
+int ua_create_character_screen::cchar_do_action(lua_State *L)
+{
+   // check for "self" parameter being userdata
+   int n=lua_gettop(L);
+   if ((n>0) && lua_isuserdata(L,1))
+   {
+      // get pointer to object
+      ua_create_character_screen *self =
+         reinterpret_cast<ua_create_character_screen*>(lua_touserdata(L,1));
+
+      if (self->L != L)
+         throw ua_exception("wrong 'self' parameter in Lua script");
+
+      // perform action
+      self->do_action();
+
+      return 0;
+   }
+   return 1;
+}
