@@ -1,4 +1,0 @@
-uw1/scripts/uwinterface
-uw1/scripts/inventory
-uw1/scripts/objlist
-uw1/scripts/game
