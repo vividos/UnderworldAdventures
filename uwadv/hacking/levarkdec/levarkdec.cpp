@@ -1,17 +1,29 @@
-// levarkdec.cpp
-//
+/*
+   Underworld Adventures - an Ultima Underworld hacking project
+   Copyright (c) 2002 Michael Fink
 
-#pragma warning(disable:4786)
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+   $Id$
+
+*/
+// level map decoding
 
 #include "../hacking.h"
-#include <stdio.h>
-
-#include "common.hpp"
-#include "settings.hpp"
-#include "gamestrings.hpp"
 #include <algorithm>
 
-#undef SDL_main
 
 //const char *filename = UWPATH"Save3\\lev.ark";
 const char *filename = UWPATH"data\\lev.ark";
@@ -223,7 +235,7 @@ int main(int argc, char* argv[])
       std::vector<bool> ref_by_tile;
       std::vector<bool> linked_by_obj;
       std::vector<bool> link2_by_obj;
-      std::vector<Uint8> tile_coords;
+      std::vector<unsigned char> tile_coords;
 
       ref_by_tile.resize(0x400,false);
       linked_by_obj.resize(0x400,false);
