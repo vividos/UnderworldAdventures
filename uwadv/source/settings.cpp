@@ -35,33 +35,20 @@
 // ua_settings methods
 
 ua_settings::ua_settings()
-:gtype(ua_game_none)
+:gtype(ua_game_uw1)
 {
-}
-
-void ua_settings::init()
-{
-   // set the generic uw path
-   insert_value(ua_setting_uw_path,get_string(ua_setting_uw1_path));
-
-   //:uw1_path("./"), uadata_path("./uadata/"), fullscreen(false), cutsntype(ua_cutscenenar_subtitles)
-
-/*
-   // check if uw1_path ends with a slash; add one when not
-   if (uw1_path.size()==0)
-   {
-      throw ua_exception("no uw1_path specified in uwadv.cfg");
-   }
-
-   unsigned int last = uw1_path.size()-1;
-   if (uw1_path.at(last)!='/' && uw1_path.at(last)!='\\')
-      uw1_path.append(1,'/');*/
+   // set some initial values
+   set_value(ua_setting_uadata_path,"./uadata/");
+   set_value(ua_setting_savegame_folder,"./uasave/");
+   set_value(ua_setting_fullscreen,false);
+   set_value(ua_setting_cuts_narration,"sound");
+   set_value(ua_setting_win32_midi_device,-1);
 }
 
 std::string ua_settings::get_string(ua_settings_key key)
 {
    // try to find key
-   SettingsMap::iterator iter = settings.find(key);
+   ua_settings_map_type::iterator iter = settings.find(key);
 
    // return string
    return iter == settings.end() ?  std::string("") : iter->second;
@@ -70,7 +57,7 @@ std::string ua_settings::get_string(ua_settings_key key)
 int ua_settings::get_int(ua_settings_key key)
 {
    // try to find key
-   SettingsMap::iterator iter = settings.find(key);
+   ua_settings_map_type::iterator iter = settings.find(key);
 
    // return integer
    return iter == settings.end() ? 0 :
@@ -80,7 +67,7 @@ int ua_settings::get_int(ua_settings_key key)
 bool ua_settings::get_bool(ua_settings_key key)
 {
    // try to find key
-   SettingsMap::iterator iter = settings.find(key);
+   ua_settings_map_type::iterator iter = settings.find(key);
 
    if (iter == settings.end())
       return false;
@@ -96,9 +83,24 @@ bool ua_settings::get_bool(ua_settings_key key)
    }
 }
 
-void ua_settings::insert_value(ua_settings_key key, std::string value)
+void ua_settings::set_value(ua_settings_key key, std::string value)
 {
    settings[key] = value;
+}
+
+void ua_settings::set_value(ua_settings_key key, bool value)
+{
+   std::string strval(value ? "true" : "false");
+   set_value(key,strval);
+}
+
+void ua_settings::set_value(ua_settings_key key, int value)
+{
+   char buffer[16];
+   sprintf(buffer,"%i",value);
+
+   std::string strval(buffer);
+   set_value(key,strval);
 }
 
 void ua_settings::dump()

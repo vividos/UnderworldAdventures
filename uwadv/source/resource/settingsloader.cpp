@@ -44,7 +44,7 @@ struct
 } ua_settings_mapping[] =
 {
    { "uw1-path", ua_setting_uw1_path },
-// { "uw2-path", ua_setting_uw2_path },
+   { "uw2-path", ua_setting_uw2_path },
    { "uadata-path", ua_setting_uadata_path },
    { "savegame-folder", ua_setting_savegame_folder },
    { "fullscreen", ua_setting_fullscreen },
@@ -121,7 +121,7 @@ void ua_settings::load(const char *filename)
             ua_trace("settings key/value: %s => %s\n",
                ua_settings_mapping[i].optname,line.c_str());
 
-            insert_value(ua_settings_mapping[i].key,line.c_str());
+            set_value(ua_settings_mapping[i].key,line);
 
             break;
          }

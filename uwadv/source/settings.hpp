@@ -51,6 +51,9 @@ enum ua_settings_key
    //! boolean value that indicates if uw1 (or uw_demo) game is available
    ua_setting_uw1_avail,
 
+   //! true when the uw1 installation is the uw_demo
+   ua_setting_uw1_is_uw_demo,
+
    //! boolean value that indicates if uw2 game is available
    ua_setting_uw2_avail,
 
@@ -73,9 +76,6 @@ enum ua_settings_key
 //! game type enum
 enum ua_game_type
 {
-   //! no game available
-   ua_game_none=0,
-
    //! we have the full game
    ua_game_uw1,
 
@@ -84,11 +84,8 @@ enum ua_game_type
 
    //! we have uw2
    ua_game_uw2,
-
 };
 
-
-typedef std::map<ua_settings_key,std::string> SettingsMap;
 
 // classes
 
@@ -101,9 +98,6 @@ public:
 
    //! loads a config file
    void load(const char *filename);
-
-   //! inits settings class after loading all config files
-   void init();
 
    // settings value access
 
@@ -120,7 +114,13 @@ public:
    bool get_bool(ua_settings_key key);
 
    //! inserts a settings key/value pair
-   void insert_value(ua_settings_key key, std::string value);
+   void set_value(ua_settings_key key, std::string value);
+
+   //! inserts a boolean value
+   void set_value(ua_settings_key key, bool value);
+
+   //! inserts an integer value
+   void set_value(ua_settings_key key, int value);
 
    //! sets the gametype
    void set_gametype(ua_game_type type){ gtype = type; }
@@ -130,11 +130,14 @@ public:
 
 protected:
 
+   //! settings map typedef
+   typedef std::map<ua_settings_key,std::string> ua_settings_map_type;
+
    //! game type
    ua_game_type gtype;
 
    //! settings map
-   SettingsMap settings;
+   ua_settings_map_type settings;
 };
 
 #endif
