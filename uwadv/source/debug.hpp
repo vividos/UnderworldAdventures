@@ -43,7 +43,30 @@
 
 // forward references
 class ua_basic_game_interface;
-class ua_debug_server_interface;
+
+
+// structs
+
+//! debug server message that gets sent to client
+struct ua_debug_server_message
+{
+   //! ctor
+   ua_debug_server_message()
+      :msg_type(0), msg_arg1(0), msg_arg2(0), msg_arg3(0.0){}
+
+   //! message type; see enum ua_debug_server_message_type
+   unsigned int msg_type;
+
+   //! message argument 1
+   unsigned int msg_arg1;
+   //! message argument 2
+   unsigned int msg_arg2;
+   //! message argument 3
+   double msg_arg3;
+
+   //! message text
+   std::string msg_text;
+};
 
 
 // classes
@@ -78,6 +101,9 @@ public:
    //! starts debugger client; returns if debugger was already running
    bool start_debugger(ua_basic_game_interface* game);
 
+   //! returns if the debugger is running
+   bool is_debugger_running();
+
    //! does tick processing
    void tick();
 
@@ -97,7 +123,7 @@ protected:
 
    virtual unsigned int get_flag(unsigned int flag_id);
 
-   virtual const char* get_game_path();
+   virtual unsigned int get_game_path(char* buffer, unsigned int bufsize);
 
    virtual void load_game(const char* path);
 
@@ -123,6 +149,23 @@ protected:
 
    virtual double get_tile_height(unsigned int level, double xpos,
       double ypos);
+
+   virtual unsigned int get_tile_info_value(unsigned int level,
+      unsigned int xpos, unsigned int ypos, unsigned int type);
+
+   virtual unsigned int get_objlist_info(unsigned int level,
+      unsigned int pos, unsigned int type);
+
+   virtual void set_objlist_info(unsigned int level,
+      unsigned int pos, unsigned int type, unsigned int value);
+
+   virtual bool enum_gamestr_block(unsigned int index,
+      unsigned int& blocknum);
+
+   virtual unsigned int get_gamestr_blocksize(unsigned int block);
+
+   virtual unsigned int get_game_string(unsigned int block, unsigned int nr,
+      char* buffer, unsigned int maxsize);
 
    virtual void add_message(ua_debug_server_message& msg);
 

@@ -59,28 +59,40 @@ enum ua_debug_server_message_type
    ua_msg_misc,
 };
 
-
-// structs
-
-//! debug server message that gets sent to client
-struct ua_debug_server_message
+//! debug server flags, used in ua_debug_server_interface::get_flag()
+enum ua_debug_server_flags
 {
-   //! ctor
-   ua_debug_server_message()
-      :msg_type(0), msg_arg1(0), msg_arg2(0), msg_arg3(0.0){}
+   ua_flag_is_studio_mode=0, //!< is in studio mode?
+};
 
-   //! message type; see enum ua_debug_server_message_type
-   unsigned int msg_type;
+//! tile info type for get_tile_info_value
+enum ua_debug_server_tile_info
+{
+   ua_tile_info_type=0,
+   ua_tile_info_floor_height,
+   ua_tile_info_ceiling_height,
+   ua_tile_info_slope,
+   ua_tile_info_tex_wall,
+   ua_tile_info_tex_floor,
+   ua_tile_info_tex_ceil
+};
 
-   //! message argument 1
-   unsigned int msg_arg1;
-   //! message argument 2
-   unsigned int msg_arg2;
-   //! message argument 3
-   double msg_arg3;
-
-   //! message text
-   std::string msg_text;
+//! object list info type for get_objlist_info
+enum ua_debug_server_objlist_info
+{
+   ua_objlist_info_item_id=0,
+   ua_objlist_info_link,
+   ua_objlist_info_quality,
+   ua_objlist_info_owner,
+   ua_objlist_info_quantity,
+   ua_objlist_info_xpos,
+   ua_objlist_info_ypos,
+   ua_objlist_info_zpos,
+   ua_objlist_info_heading,
+   ua_objlist_info_flags,
+   ua_objlist_info_ench,
+   ua_objlist_info_is_quant,
+   ua_objlist_info_hidden,
 };
 
 
@@ -116,7 +128,7 @@ public:
    virtual unsigned int get_flag(unsigned int flag_id)=0;
 
    //! returns current game path, or "" when none
-   virtual const char* get_game_path()=0;
+   virtual unsigned int get_game_path(char* buffer, unsigned int bufsize)=0;
 
    //! loads new game, or unloads game when "" is set as path
    virtual void load_game(const char* path)=0;
@@ -128,9 +140,6 @@ public:
 
    //! returns number of messages in the message queue
    virtual unsigned int get_message_num()=0;
-
-   //! returns current message
-   bool get_message(ua_debug_server_message& msg);
 
    //! returns current message
    virtual bool get_message(unsigned int& msg_type,
@@ -166,33 +175,31 @@ public:
    virtual double get_tile_height(unsigned int level, double xpos,
       double ypos)=0;
 
-protected:
-   // methods only callable for ua_debug_server
+   //! returns tile info
+   virtual unsigned int get_tile_info_value(unsigned int level,
+      unsigned int xpos, unsigned int ypos, unsigned int type)=0;
 
-   //! adds message to queue; only debug server should call this!
-   virtual void add_message(ua_debug_server_message& msg)=0;
+   //! returns master object list info
+   virtual unsigned int get_objlist_info(unsigned int level,
+      unsigned int pos, unsigned int type)=0;
 
-   friend class ua_debug_server;
+   //! sets master object list info
+   virtual void set_objlist_info(unsigned int level,
+      unsigned int pos, unsigned int type, unsigned int value)=0;
+
+   // game strings stuff
+
+   //! enumerates game string blocks
+   virtual bool enum_gamestr_block(unsigned int index,
+      unsigned int& blocknum)=0;
+
+   //! returns number of strings in the given block
+   virtual unsigned int get_gamestr_blocksize(unsigned int block)=0;
+
+   //! returns game string
+   virtual unsigned int get_game_string(unsigned int block, unsigned int nr,
+      char* buffer, unsigned int maxsize)=0;
 };
-
-
-// inline methods
-
-inline bool ua_debug_server_interface::get_message(ua_debug_server_message& msg)
-{
-   unsigned int text_size=0;
-   bool ret = get_message(msg.msg_type, msg.msg_arg1, msg.msg_arg2,
-      msg.msg_arg3, text_size);
-   if (ret && text_size>0)
-   {
-      std::vector<char> buffer(text_size+1);
-      ret = get_message_text(&buffer[0], text_size);
-
-      buffer[text_size]=0;
-      msg.msg_text.assign(&buffer[0]);
-   }
-   return ret;
-}
 
 
 #endif
