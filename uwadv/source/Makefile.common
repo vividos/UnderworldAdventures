@@ -25,7 +25,8 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	audio/midi_driver/linux_sdl_mixer.cpp \
 	audio/midi_driver/uni_fmod.h \
 	audio/midi_driver/linux_sdl_mixer.h \
-	conv/codevm.cpp conv/codevm.hpp \
+	conv/codevm.cpp conv/codevm.hpp conv/opcodes.hpp \
+	conv/convgraph.hpp conv/convgraph.cpp \
 	debug/uwaccess.cpp debug/uwaccess.hpp \
 	resource/codeloader.cpp resource/fontloader.cpp \
 	resource/gamestrings.cpp resource/imageloader.cpp \
