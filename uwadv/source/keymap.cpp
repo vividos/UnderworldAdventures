@@ -41,6 +41,10 @@ void ua_keymap::init(ua_settings &settings)
    keymap.insert(std::make_pair<ua_key_value,unsigned int>(ua_key_forward,SDLK_w));
    keymap.insert(std::make_pair<ua_key_value,unsigned int>(ua_key_turn_left,SDLK_a));
    keymap.insert(std::make_pair<ua_key_value,unsigned int>(ua_key_turn_right,SDLK_d));
+
+   keymap.insert(std::make_pair<ua_key_value,unsigned int>(ua_key_look_up,SDLK_1));
+   keymap.insert(std::make_pair<ua_key_value,unsigned int>(ua_key_look_center,SDLK_2));
+   keymap.insert(std::make_pair<ua_key_value,unsigned int>(ua_key_look_down,SDLK_3));
 }
 
 unsigned int ua_keymap::get_key(ua_key_value key)

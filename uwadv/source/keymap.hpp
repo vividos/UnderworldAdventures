@@ -43,6 +43,9 @@ enum ua_key_value
    ua_key_forward=0,
    ua_key_turn_left,
    ua_key_turn_right,
+   ua_key_look_up,
+   ua_key_look_center,
+   ua_key_look_down,
 };
 
 
