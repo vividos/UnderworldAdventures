@@ -28,7 +28,7 @@
 // needed includes
 #include "common.hpp"
 #include "level.hpp"
-#include "utils.hpp"
+#include "renderer.hpp"
 #include "resource/fread_endian.hpp"
 #include <set>
 #include <algorithm>
@@ -47,6 +47,13 @@ static std::vector<ua_level> levels;
 static ua_settings settings;
 static ua_texture_manager texmgr;
 static std::set<Uint16> allusedtextures;
+
+
+// dummy functions
+unsigned int ua_player::get_attr(ua_player_attributes){ return 0; }
+void ua_underworld::change_level(unsigned int){}
+ua_level& ua_underworld::get_current_level(){ return levels[0]; }
+void ua_conv_globals::import(char const *,bool){}
 
 
 // prototypes
@@ -75,6 +82,7 @@ void init_map3ds(const char* uwpath)
 
    texmgr.init(settings);
 
+   // import all levelmaps
    ua_import_levelmaps(settings,"data/",levels);
 
    ua_mkdir("./levels3ds",0700);
@@ -89,7 +97,7 @@ void write_level(unsigned int curlevel, ua_level& level)
 
    for(unsigned int ypos=0; ypos<64; ypos++)
       for(unsigned int xpos=0; xpos<64; xpos++)
-         level.get_tile_triangles(xpos,ypos,alltriangles);
+         ua_renderer::get_tile_triangles(level,xpos,ypos,alltriangles);
 
    // sort triangles by texnum
    std::sort(alltriangles.begin(), alltriangles.end());
