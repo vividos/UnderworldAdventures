@@ -45,7 +45,6 @@ enum ua_conv_screen_state
    ua_state_running=0,  // vm code can run
    ua_state_wait_menu,  // waiting for menu selection
    ua_state_wait_input, // waiting for string input
-   ua_state_conv_ended, // conversation ended, waiting for keypress
    ua_state_fadein,     // fading in screen
    ua_state_fadeout,    // fading out screen
 };
@@ -82,6 +81,18 @@ public:
    virtual void set_global(const std::string& globname, Uint16 val);
 
 protected:
+   // constants
+
+   //! time to fade in / out screen
+   static const double fade_time;
+
+   //! time to wait before conversation partner answers
+   static const double answer_wait_time;
+
+   //! time to wait before fading out at end of conversation
+   static const double endconv_wait_time;
+
+
    // ui elements
 
    //! background image
@@ -98,6 +109,9 @@ protected:
 
    //! current fade tickcount
    unsigned int fade_ticks;
+
+   //! counter to wait some ticks
+   unsigned int wait_count;
 
    //! font for panel names
    ua_font font_normal;

@@ -31,10 +31,16 @@
 #include <sstream>
 
 
-// constants
+// ua_conversation_screen constants
 
 //! time to fade in / out screen
-const double ua_conv_screen_fade_time = 0.5;
+const double ua_conversation_screen::fade_time = 0.5;
+
+//! time to wait before conversation partner answers
+const double ua_conversation_screen::answer_wait_time = 0.4;
+
+//! time to wait before fading out at end of conversation
+const double ua_conversation_screen::endconv_wait_time = 1.0;
 
 
 // ua_conversation_screen methods
@@ -67,6 +73,8 @@ void ua_conversation_screen::init()
 
    // background image
    {
+      ua_player& pl = core->get_underworld().get_player();
+
       const char *mainscreenname = "data/main.byt";
 
       // replace name when using uw_demo
@@ -87,14 +95,14 @@ void ua_conversation_screen::init()
 
       // names
       std::string name1 = core->get_strings().get_string(7,16+convslot);
-      std::string name2 = core->get_underworld().get_player().get_name();
+      std::string name2 = pl.get_name();
 
       ua_image img_name;
       font_normal.create_string(img_name,name1.c_str(),101);
       img_back.paste_image(img_name,48,2,true);
 
       font_normal.create_string(img_name,name2.c_str(),101);
-      img_back.paste_image(img_name,144,1,true);
+      img_back.paste_image(img_name,144,2,true);
 
       // barter areas
       img_back.paste_image(img_converse.get_image(1),82,9);
@@ -104,7 +112,29 @@ void ua_conversation_screen::init()
       img_back.paste_image(img_converse.get_image(2),43,9);
       img_back.paste_image(img_converse.get_image(2),195,9);
 
-      // todo portraits
+      // portrait images
+
+      if (convslot<=28)
+      {
+         // portrait is in "charhead.gr"
+         ua_image_list img_charhead;
+         img_charhead.load(core->get_settings(),"charhead");
+
+         img_back.paste_image(img_charhead.get_image(convslot-1),45,11);
+      }
+      else
+      {
+         // portrait is in "genheads.gr"
+      }
+
+      ua_image_list img_playerheads;
+      img_playerheads.load(core->get_settings(),"heads");
+
+      unsigned int appearance = pl.get_attr(ua_attr_appearance) +
+         (pl.get_attr(ua_attr_gender)==0 ? 0 : 5);
+
+      img_back.paste_image(img_playerheads.get_image(appearance),197,11);
+
 
       // scroll frames up/down
       img_back.paste_image(img_converse.get_image(3),42,48);
@@ -146,6 +176,7 @@ void ua_conversation_screen::init()
 
    state = ua_state_fadein;
    fade_ticks = 0;
+   wait_count = 0;
 }
 
 void ua_conversation_screen::done()
@@ -164,15 +195,6 @@ void ua_conversation_screen::handle_event(SDL_Event &event)
 {
    if (scroll_menu.handle_event(event) || scroll_conv.handle_event(event))
       return;
-
-   if (state == ua_state_conv_ended &&
-       (event.type == SDL_KEYDOWN || event.type == SDL_MOUSEBUTTONDOWN) )
-   {
-      scroll_menu.clear_scroll();
-
-      state = ua_state_fadeout;
-      fade_ticks = 0;
-   }
 
    switch(event.type)
    {
@@ -196,6 +218,11 @@ void ua_conversation_screen::handle_event(SDL_Event &event)
 
             // continue processing
             state = ua_state_running;
+
+            // clear menu scroll
+            scroll_menu.clear_scroll();
+
+            wait_count = answer_wait_time * core->get_tickrate();
          }
       }
       break;
@@ -222,7 +249,7 @@ void ua_conversation_screen::render()
    Uint8 light = 255;
    if (state == ua_state_fadein || state == ua_state_fadeout)
    {
-      light = Uint8(255*(double(fade_ticks) / (core->get_tickrate()*ua_conv_screen_fade_time)));
+      light = Uint8(255*(double(fade_ticks) / (core->get_tickrate()*fade_time)));
 
       if (state == ua_state_fadeout)
          light = 255-light;
@@ -242,23 +269,50 @@ void ua_conversation_screen::render()
 
 void ua_conversation_screen::tick()
 {
-   if (!finished && !scroll_menu.have_more_lines() && !scroll_conv.have_more_lines())
+   // still waiting?
+   if (wait_count>0)
    {
-      while(state == ua_state_running && !finished)
-         ua_conv_code_vm::step();
+      wait_count--;
+      return; // do nothing
+   }
+
+   // execute code until finished, waiting for an action or have [MORE]
+   // lines to scroll
+   while(state == ua_state_running && !finished &&
+         !scroll_menu.have_more_lines() && !scroll_conv.have_more_lines())
+   {
+      ua_conv_code_vm::step();
    }
 
    if (finished && state == ua_state_running)
-      state = ua_state_conv_ended;
+   {
+      // clear menu scroll
+      scroll_menu.clear_scroll();
+
+      // wait a bit, then fade out
+      state = ua_state_fadeout;
+      fade_ticks = 0;
+
+      wait_count = endconv_wait_time * core->get_tickrate();
+      return;
+   }
 
    // check for fading in/out
    if ((state == ua_state_fadein || state == ua_state_fadeout) &&
-      ++fade_ticks >= (core->get_tickrate()*ua_conv_screen_fade_time))
+      ++fade_ticks >= (core->get_tickrate()*fade_time))
    {
       if (state == ua_state_fadein)
          state = ua_state_running;
       else
+      {
+         // clear screen
+         glClearColor(0,0,0,0);
+         glClear(GL_COLOR_BUFFER_BIT);
+         SDL_GL_SwapBuffers();
+
+         // leave screen
          core->pop_screen();
+      }
    }
 }
 
@@ -351,7 +405,7 @@ void ua_conversation_screen::imported_func(const std::string& funcname)
       arg2 = stack.at(arg2);
 
       // check player gender
-      if (core->get_underworld().get_player().get_attr(ua_attr_gender)!=0)
+      if (core->get_underworld().get_player().get_attr(ua_attr_gender)==0)
          arg1 = arg2;
 
       result_register = arg1;
@@ -367,8 +421,6 @@ void ua_conversation_screen::say_op(Uint16 str_id)
    replace_placeholder(str);
 
    scroll_conv.print(str.c_str());
-      // scrolled text view
-//      process_code = false;
 }
 
 void ua_conversation_screen::store_value(Uint16 at, Uint16 val)
