@@ -329,6 +329,9 @@ void ua_ingame_orig_screen::done()
 
 void ua_ingame_orig_screen::handle_event(SDL_Event &event)
 {
+   if (textscroll.handle_event(event))
+      return;
+
    switch(event.type)
    {
    case SDL_KEYDOWN:
@@ -496,12 +499,6 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    case SDLK_DOWN:
       if (type==SDL_KEYDOWN)
          textscroll.print("Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.\nLorem ipsum\n dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.Ut wisi enim");
-      break;
-
-   case SDLK_RETURN:
-   case SDLK_SPACE:
-      if (type==SDL_KEYDOWN && textscroll.have_more_lines())
-         textscroll.show_more_lines();
       break;
 
    case SDLK_F4:
