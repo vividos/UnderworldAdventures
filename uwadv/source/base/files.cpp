@@ -48,6 +48,8 @@ bool ua_file_isavail(const std::string& base, const char* fname)
 
 void ua_files_manager::init(ua_settings& settings)
 {
+   ua_trace("initializing files manager\n");
+
    // init config files list
    init_cfgfiles_list();
 
@@ -71,8 +73,6 @@ void ua_files_manager::init(ua_settings& settings)
 
    if (!foundconfig)
       throw ua_exception("could not find any config files");
-
-   ua_trace("\n");
 
    // check "uadata-path"
    {
@@ -193,6 +193,8 @@ void ua_files_manager::init(ua_settings& settings)
          }
       }
    }
+
+   ua_trace("\n");
 }
 
 void ua_files_manager::replace_system_vars(std::string& path)
