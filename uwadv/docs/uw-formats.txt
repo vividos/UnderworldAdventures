@@ -223,9 +223,11 @@ Table of Contents
      word 1, bytes 0..3
      bits          description
       0 -  8    9   object ID
-      9 - 15    7   unknown1
+      9 - 14    6   flags, unknown
+          15    1   quantity flag: if 1, "quantity" field is quantity/special,
+                    else it's a link
      16 - 22    7   object z position (0-127)
-     23 - 25    3   orientation (*45 degree)
+     23 - 25    3   orientation (*45 degree) (0-7)
      26 - 28    3   object x position (0-7)
      29 - 31    3   object y position (0-7)
 
