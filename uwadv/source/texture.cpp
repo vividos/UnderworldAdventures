@@ -159,6 +159,11 @@ void ua_texture::done()
       texmgr->using_new_texname(0);
 }
 
+const Uint32* ua_texture::get_texels(unsigned int numtex)
+{
+   return &texels[numtex*xres*yres];
+}
+
 
 // ua_texture_manager methods
 
@@ -240,4 +245,9 @@ bool ua_texture_manager::using_new_texname(GLuint new_texname)
 
    last_texname = new_texname;
    return true;
+}
+
+void ua_texture_manager::stock_to_external(unsigned int idx, ua_texture &tex)
+{
+   tex.convert(allstocktex_imgs.get_image(idx),0);
 }

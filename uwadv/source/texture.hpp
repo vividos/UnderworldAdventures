@@ -105,6 +105,17 @@ public:
    //! cleans up texture name(s) after usage
    void done();
 
+   // raw texture access
+
+   //! returns array of texels
+   const Uint32* get_texels(unsigned int numtex=0);
+
+   //! returns x resolution
+   unsigned int get_xres(){ return xres; }
+
+   //! returns y resolution
+   unsigned int get_yres(){ return yres; }
+
 protected:
    //! pointer to texture manager, or NULL if none available
    ua_texture_manager *texmgr;
@@ -158,6 +169,9 @@ public:
 
    //! should be called when a new texname is about to be used
    bool using_new_texname(GLuint new_texname);
+
+   //! converts stock texture to external one
+   void stock_to_external(unsigned int idx, ua_texture &tex);
 
 private:
    //! loads textures from file
