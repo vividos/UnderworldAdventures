@@ -7,4 +7,5 @@
 libuadebug_la_SOURCES = \
 	dbgcommon.hpp pch.cpp \
 	dbgapp.hpp dbgapp.cpp \
-	mainframe.hpp mainframe.cpp
+	mainframe.hpp mainframe.cpp \
+	playerinfo.hpp playerinfo.cpp
