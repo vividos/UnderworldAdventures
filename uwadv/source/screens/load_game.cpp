@@ -44,7 +44,7 @@ void ua_load_game_screen::init()
 
    // set OpenGL flags
    glBindTexture(GL_TEXTURE_2D,0);
-   glClearColor(0.0,0.0,0.0,0.0);
+   glClearColor(140.0/256.0, 104.0/256.0, 84.0/256.0, 0.0);
 
    glDisable(GL_DEPTH_TEST);
 
