@@ -131,3 +131,9 @@ end
 function lua_game_tick(curtime)
 
 end
+
+
+-- called when changing to a new level
+function lua_change_level(newlevel)
+
+end
