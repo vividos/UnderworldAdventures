@@ -110,6 +110,8 @@ void ua_underworld::load_game(ua_savegame &sg)
       for(Uint32 i=0; i<max; i++)
       {
          ua_level newlevel;
+
+         // load tilemap / objects list / annotations
          newlevel.load_game(sg);
 
          levels.push_back(newlevel);
@@ -148,14 +150,13 @@ void ua_underworld::save_game(ua_savegame &sg)
       sg.write32(max);
 
       for(unsigned int i=0; i<max; i++)
+      {
+         // save tilemap / objects list / annotations
          levels[i].save_game(sg);
+      }
 
       sg.end_section();
    }
-
-   // save map annotations
-
-   // save objects list
 
    // save inventory
    inventory.save_game(sg);
