@@ -38,8 +38,12 @@
 ua_game::ua_game():tickrate(20),exit_game(false),
    reset_tick_timer(false),audio(NULL),screen(NULL),screen_to_destroy(NULL)
 {
-   printf("Underworld Adventures\n");
-   printf("http://uwadv.sourceforge.net/\n\n");
+   printf("Underworld Adventures\n"
+      "http://uwadv.sourceforge.net/\n"
+#ifdef HAVE_DEBUG
+      "- debug mode -\n"
+#endif
+      "\n");
 }
 
 void ua_game::init()
