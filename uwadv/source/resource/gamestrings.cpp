@@ -167,7 +167,8 @@ void ua_gamestrings::load(const char *filename) throw(ua_exception)
       delete[] stroffsets;
 
       // insert string block
-      allstrings.insert(std::make_pair<int,std::vector<std::string> >(i,allblockstrings));
+      allstrings.insert(
+         std::make_pair<int,std::vector<std::string> >(allblocks[i].block_id,allblockstrings));
    }
 
    delete[] allblocks;
