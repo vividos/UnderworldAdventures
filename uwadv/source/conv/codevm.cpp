@@ -32,6 +32,7 @@
 #include "common.hpp"
 #include "codevm.hpp"
 #include "opcodes.hpp"
+#include <sstream>
 
 
 // ua_conv_globals methods
@@ -100,7 +101,7 @@ ua_conv_code_vm::~ua_conv_code_vm()
 {
 }
 
-void ua_conv_code_vm::init(ua_conv_globals &cg)
+void ua_conv_code_vm::init(ua_conv_globals &cg, std::vector<std::string>& stringblock)
 {
    // reset pointer
    instrp = 0;
@@ -113,12 +114,37 @@ void ua_conv_code_vm::init(ua_conv_globals &cg)
    // init stack: 4k should be enough for anybody.
    stack.init(4096);
 
-   // load globals into stack
-   const std::vector<Uint16> &glob = cg.get_globals(conv_nr);
+   // reserve stack for globals/private globals
+   stack.set_stackp(glob_reserved);
 
-   unsigned int max=glob.size();
-   for(unsigned int i=0; i<max; i++)
-      stack.push(glob[i]);
+   // load private globals onto stack
+   {
+      const std::vector<Uint16> &glob = cg.get_globals(conv_nr);
+
+      unsigned int max=glob.size();
+      for(unsigned int i=0; i<max; i++)
+         stack.set(i,glob[i]);
+   }
+
+   // load imported globals onto stack
+   {
+      std::map<Uint16,ua_conv_imported_item>::iterator iter,stop;
+      iter = imported_globals.begin();
+      stop = imported_globals.end();
+
+      for(;iter!=stop; iter++)
+      {
+         Uint16 pos = (*iter).first;
+         ua_conv_imported_item& iitem = (*iter).second;
+
+         Uint16 val = get_global(iitem.name);
+
+         stack.set(pos,val);
+      }
+   }
+
+   localstrings.clear();
+   localstrings = stringblock;
 }
 
 void ua_conv_code_vm::done(ua_conv_globals &cg)
@@ -295,7 +321,12 @@ void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
    case op_CALLI: // imported function
       {
          Uint16 arg1 = code[++instrp];
-         imported_func(arg1);
+
+         std::string funcname;
+         if (imported_funcs.find(arg1) == imported_funcs.end())
+            throw ua_ex_imported_na;
+
+         imported_func(imported_funcs[arg1].name);
       }
       break;
 
@@ -316,10 +347,14 @@ void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
 
    case op_PUSHI:
       stack.push(code[++instrp]);
-      break;
+         break;
 
    case op_PUSHI_EFF:
-      stack.push(basep + code[++instrp]);
+/*      if (code[instrp+1]>0xf000)
+         _asm nop;
+      if (instrp&~3==0x03b0)
+         _asm nop;*/
+      stack.push(basep + (Sint16)code[++instrp]);
       break;
 
    case op_POP:
@@ -439,4 +474,83 @@ void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
 
    // process next instruction
    ++instrp;
+}
+
+void ua_conv_code_vm::replace_placeholder(std::string& str)
+{
+   std::string::size_type pos = 0;
+   while( (pos = str.find('@',pos)) != std::string::npos )
+   {
+      char source = str[pos+1];
+      char vartype = str[pos+2];
+
+      signed int param = 0;
+      unsigned int value = 0;
+      unsigned int num_len = 0;
+      {
+         const char* startpos = str.c_str()+pos;
+         char* endpos = NULL;
+         param = (signed int)strtol(startpos+3,&endpos,10);
+         num_len = endpos-startpos;
+      }
+
+      // get param value
+      switch(source)
+      {
+      case 'G':
+         value = stack.at(static_cast<unsigned int>(param));
+         break;
+      case 'S':
+         value = stack.at(static_cast<unsigned int>(basep+param-1));
+         break;
+      case 'P':
+         param = stack.at(static_cast<unsigned int>(basep+param-1));
+         value = stack.at(static_cast<unsigned int>(param));
+         break;
+      }
+
+      std::string varstr;
+
+      switch(vartype)
+      {
+      case 'S':
+         varstr = localstrings[value];
+         break;
+      case 'I':
+         {
+            std::ostringstream buffer;
+            buffer << value << std::ends;
+            varstr.assign(buffer.str());
+         }
+         break;
+      }
+
+      // insert value string
+      str.replace(pos,num_len,varstr.c_str());
+   }
+}
+
+void ua_conv_code_vm::imported_func(const std::string& funcname)
+{
+}
+
+void ua_conv_code_vm::say_op(Uint16 str_id)
+{
+}
+
+Uint16 ua_conv_code_vm::get_global(const std::string& globname)
+{
+   return 0;
+}
+
+void ua_conv_code_vm::set_global(const std::string& globname, Uint16 val)
+{
+}
+
+void ua_conv_code_vm::sto_priv(Uint16 at, Uint16 val)
+{
+}
+
+void ua_conv_code_vm::fetchm_priv(Uint16 at)
+{
 }

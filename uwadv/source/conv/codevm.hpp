@@ -74,6 +74,7 @@ typedef enum
    ua_ex_globals_access,// invalid globals access
    ua_ex_stack_access,  // invalid stack access
    ua_ex_unk_opcode,    // unknown opcode
+   ua_ex_imported_na,   // imported function not available
 } ua_conv_vm_exception;
 
 
@@ -168,7 +169,7 @@ public:
    //! sets new stack pointer
    void set_stackp(Uint16 val)
    {
-      if (stackp>stack.size()) throw ua_ex_stack_access;
+      if (val>stack.size()) throw ua_ex_stack_access;
       stackp = val;
    }
 
@@ -196,7 +197,7 @@ public:
    bool load_code(const char *cnvfile, Uint16 conv);
 
    //! inits virtual machine after filling code segment
-   void init(ua_conv_globals &cg);
+   void init(ua_conv_globals &cg, std::vector<std::string>& stringblock);
 
    //! does a step in code
    void step() throw(ua_conv_vm_exception);
@@ -204,19 +205,28 @@ public:
    //! writes back conv globals
    void done(ua_conv_globals &cg);
 
+   //! replaces all @ placeholder in the given string
+   void replace_placeholder(std::string& str);
+
    // virtual functions
 
    //! called when calling an imported function
-   virtual void imported_func(Uint16 number){}
+   virtual void imported_func(const std::string& funcname);
 
    //! called when saying a string
-   virtual void say_op(Uint16 str_id){}
+   virtual void say_op(Uint16 str_id);
+
+   //! queries for a global variable value
+   virtual Uint16 get_global(const std::string& globname);
+
+   //! sers global variable value
+   virtual void set_global(const std::string& globname, Uint16 val);
 
    //! called when storing a value at private globals
-   virtual void sto_priv(Uint16 at, Uint16 val){}
+   virtual void sto_priv(Uint16 at, Uint16 val);
 
    //! called when fetching a value from private globals
-   virtual void fetchm_priv(Uint16 at){}
+   virtual void fetchm_priv(Uint16 at);
 
 protected:
    //! reads all imported function entries
@@ -257,10 +267,13 @@ protected:
    bool finished;
 
    // all imported functions
-   std::vector<ua_conv_imported_item> imported_funcs;
+   std::map<Uint16,ua_conv_imported_item> imported_funcs;
 
    // names of all imported globals
-   std::vector<ua_conv_imported_item> imported_globals;
+   std::map<Uint16,ua_conv_imported_item> imported_globals;
+
+   //! all current local strings
+   std::vector<std::string> localstrings;
 };
 
 #endif

@@ -81,18 +81,12 @@ void ua_conv_code_vm::load_imported_funcs(FILE *fd)
       if (import_type == 0x0111)
       {
          // imported function
-         if (imported_funcs.size()<func_id)
-            imported_funcs.resize(func_id+1);
-
          imported_funcs[func_id] = iitem;
       }
       else
       if (import_type == 0x010F)
       {
          // imported global
-         if (imported_globals.size()<func_id)
-            imported_globals.resize(func_id+1);
-
          imported_globals[func_id] = iitem;
       }
       else
