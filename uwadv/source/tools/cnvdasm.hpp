@@ -76,8 +76,8 @@ public:
    //! ctor
    ua_conv_dasm(){}
 
-   //! initializes disassembler
-   void init(const char *cnvfile,unsigned int conv);
+   //! initializes disassembler; returns false if no conversation is available
+   bool init(const char *cnvfile,unsigned int conv);
 
    //! disassembles code in assembler-like file
    void disassemble(FILE *out);

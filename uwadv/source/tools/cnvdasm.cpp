@@ -34,17 +34,17 @@
 
 // constants
 
-const int ua_dasm_replace_count = 11;
+const int ua_dasm_replace_count = 13;
 
 
 // ua_conv_dasm methods
 
-void ua_conv_dasm::init(const char *cnvfile,unsigned int conv)
+bool ua_conv_dasm::init(const char *cnvfile,unsigned int conv)
 {
    if (!ua_conv_code_vm::load_code(cnvfile,conv))
    {
       printf("could not load code ...\n");
-      return;
+      return false;
    }
 
    // global '0' string is empty
@@ -70,6 +70,8 @@ void ua_conv_dasm::init(const char *cnvfile,unsigned int conv)
          printf("failed loading game strings.\n");
       }
    }
+
+   return true;
 }
 
 
@@ -152,7 +154,7 @@ void ua_conv_dasm::decompile(FILE *out)
       "   string block: %u\n"
       "   conversation partner: \"%s\"\n\n"
       "   decompiled by cnvdasm\n*/\n",conv_nr,strblock,
-      gs.get_string(3,conv_nr).c_str());
+      gs.get_string(6,conv_nr+16).c_str());
 
    load_dec();
    resolve_labels();
@@ -186,7 +188,7 @@ void ua_conv_dasm::decompile(FILE *out)
    fprintf(out,"\n// private and globals\n");
 
    if (glob_reserved-imported_globals.size()>0)
-      fprintf(out,"int private[0x%04x];\n\n",glob_reserved-imported_globals.size());
+      fprintf(out,"int private[0x%04x];\n\n",glob_reserved+1);
 
    // print out globals
    max = imported_globals.size();
@@ -402,31 +404,7 @@ bool ua_conv_dasm::replace_constructs(unsigned int type, unsigned int entry, uns
       }
       break;
 
-   case 4: // function call
-      if (dec_entries[entry].code==op_CALL)
-      {
-         ua_conv_dec_entry &item = dec_entries[entry];
-         item.translated=true;
-         item.indent_level = 1;
-         item.empty_line = true;
-
-         std::string cmd(item.command);
-         std::string::size_type pos = cmd.find("func_");
-
-         cmd.erase(0,pos);
-         if (cmd.empty()) cmd.assign("unknown");
-
-         // remember for forward decls
-         forward_decl.push_back(cmd);
-
-         cmd.append("();\n");
-
-         item.command = cmd;
-         return true;
-      }
-      break;
-
-   case 5: // store global/private value
+   case 4: // store global/private value
       if (max-entry<3) break;
       if (dec_entries[entry].code==op_PUSHI &&
           dec_entries[entry+1].code==op_PUSHI &&
@@ -450,7 +428,7 @@ bool ua_conv_dasm::replace_constructs(unsigned int type, unsigned int entry, uns
          else
          {
             if (ptr<glob_reserved)
-               sprintf(buffer,"private[0x%04x] = 0x%04x;",glob_reserved-ptr,val);
+               sprintf(buffer,"private[0x%04x] = 0x%04x;",ptr,val);
             else
                sprintf(buffer,"globals[0x%04x] = 0x%04x; // hmm, should not happen",ptr,val);
          }
@@ -464,7 +442,7 @@ bool ua_conv_dasm::replace_constructs(unsigned int type, unsigned int entry, uns
       }
       break;
 
-   case 6: // say operation
+   case 5: // say operation
       if (max-entry<2)
          break;
       if (dec_entries[entry].code==op_PUSHI &&
@@ -500,7 +478,7 @@ bool ua_conv_dasm::replace_constructs(unsigned int type, unsigned int entry, uns
       }
       break;
 
-   case 7: // store local var
+   case 6: // store local var
       if (max-entry<5) break;
       if (dec_entries[entry].code==op_PUSHI &&
           dec_entries[entry+1].code==op_PUSHI_EFF &&
@@ -524,20 +502,82 @@ bool ua_conv_dasm::replace_constructs(unsigned int type, unsigned int entry, uns
       }
       break;
 
-   case 8: // function call
-      if (dec_entries[entry].code==op_CALLI)
+   case 7: // store local var, part 2
+      if (max-entry<4) break;
+      if (dec_entries[entry].code==op_PUSHI &&
+          dec_entries[entry+1].code==op_PUSHI_EFF &&
+          dec_entries[entry+2].code==op_SWAP &&
+          dec_entries[entry+3].code==op_STO)
       {
          ua_conv_dec_entry &item = dec_entries[entry];
          item.translated=true;
          item.indent_level = 1;
-         item.empty_line = true;
 
-         // find out function name
-         std::string funcname;
-         if (item.arg>imported_funcs.size())
-            funcname.assign("unknown_exported");
+         sprintf(buffer,"locals[0x%04x] = 0x%04x;",
+            dec_entries[entry+1].arg,dec_entries[entry].arg);
+
+         item.command.assign(buffer);
+
+         // delete other entries
+         dec_entries.erase(dec_entries.begin()+entry+1,dec_entries.begin()+entry+4);
+         return true;
+      }
+      break;
+
+   case 8: // store local var, part 3
+      if (max-entry<3) break;
+      if (dec_entries[entry].code==op_PUSHI_EFF &&
+          dec_entries[entry+1].code==op_PUSHI &&
+          dec_entries[entry+2].code==op_STO)
+      {
+         ua_conv_dec_entry &item = dec_entries[entry];
+         item.translated=true;
+         item.indent_level = 1;
+
+         sprintf(buffer,"locals[0x%04x] = 0x%04x;",
+            dec_entries[entry].arg,dec_entries[entry+1].arg);
+
+         item.command.assign(buffer);
+
+         // delete other entries
+         dec_entries.erase(dec_entries.begin()+entry+1,dec_entries.begin()+entry+3);
+         return true;
+      }
+      break;
+
+   case 9: // function call
+      if (dec_entries[entry].code==op_CALLI ||
+          dec_entries[entry].code==op_CALL)
+      {
+         std::string cmd;
+
+         if (dec_entries[entry].code==op_CALL)
+         {
+            cmd = dec_entries[entry].command;
+            std::string::size_type pos = cmd.find("func_");
+
+            cmd.erase(0,pos);
+            if (cmd.empty()) cmd.assign("unknown");
+
+            // remember for forward decls
+            forward_decl.push_back(cmd);
+
+         }
          else
-            funcname.assign(imported_funcs.at(item.arg).name);
+         {
+            // find out function name
+            std::string funcname;
+            if (dec_entries[entry].arg>imported_funcs.size())
+               funcname.assign("unknown_exported");
+            else
+               funcname.assign(imported_funcs.at(dec_entries[entry].arg).name);
+
+            cmd.assign("res = ");
+            cmd.append(funcname);
+         }
+
+         // check for args
+         cmd.append("(");
 
          // find out how many args by counting the POPs
 
@@ -545,15 +585,21 @@ bool ua_conv_dasm::replace_constructs(unsigned int type, unsigned int entry, uns
          while(i<max && dec_entries[i].code == op_POP)
             argcount++,i++;
 
-         std::string cmd("res = ");
-         cmd.append(funcname);
-         cmd.append("(");
+         // delete the POPs
+         dec_entries.erase(dec_entries.begin()+entry+1,dec_entries.begin()+entry+1+argcount);
 
          unsigned int count=argcount;
 
          // now try to get the args, hopefully there are only PUSHI and PUSHI_EFF's
          for(i=entry-1;count>0;count--,i--)
          {
+            if (dec_entries[i].translated)
+            {
+               // only do non-translated entries
+               count++;
+               continue;
+            }
+
             if (i!=entry-1)
                cmd.append(", ");
 
@@ -568,25 +614,29 @@ bool ua_conv_dasm::replace_constructs(unsigned int type, unsigned int entry, uns
                break;
             default:
                // should not happen :-(
-               sprintf(buffer,"unk");
+               return false;
                break;
             }
             cmd.append(buffer);
+
+            // delete that PUSHI/PUSHI_EFF entry
+            dec_entries.erase(dec_entries.begin()+i);
          }
 
          cmd.append(");\n");
 
-         item.command.assign(cmd);
+         ua_conv_dec_entry &item = dec_entries[entry-argcount];
 
-         // delete other entries
-         dec_entries.erase(dec_entries.begin()+entry+1,dec_entries.begin()+entry+1+argcount);
-         dec_entries.erase(dec_entries.begin()+entry-1-argcount,dec_entries.begin()+entry);
+         item.command.assign(cmd);
+         item.translated=true;
+         item.indent_level = 1;
+         item.empty_line = true;
 
          return true;
       }
       break;
 
-   case 9: // function call result store
+   case 10: // function call result store
       if (max-entry<5) break;
       if (dec_entries[entry].code==op_PUSH_REG &&
           dec_entries[entry+1].code==op_PUSHI_EFF &&
@@ -605,9 +655,61 @@ bool ua_conv_dasm::replace_constructs(unsigned int type, unsigned int entry, uns
       }
       break;
 
+   case 11: // function call result store, part 2
+      if (max-entry<2) break;
+      if (dec_entries[entry].code==op_PUSH_REG &&
+          dec_entries[entry+1].code==op_STO)
+      {
+         // search valid PUSHI/PUSHI_EFF opcode
+         unsigned int pushi_pos = entry-1;
+         while(entry<max && dec_entries[pushi_pos].translated) pushi_pos--;
 
+         // check if we have found a nice one
+         if (dec_entries[pushi_pos].code != op_PUSHI &&
+             dec_entries[pushi_pos].code != op_PUSHI_EFF)
+         {
+            // we failed :-/
+            return false;
+         }
 
-   case 10: // search for "switch" and "if" statements; must always be the last ones
+         ua_conv_dec_entry &item = dec_entries[entry];
+
+         item.translated=true;
+         item.indent_level = 1;
+
+         if (dec_entries[pushi_pos].code == op_PUSHI)
+         {
+            Uint16 ptr = dec_entries[pushi_pos].arg;
+
+            if (ptr<imported_globals.size())
+            {
+               if (imported_globals[ptr].name.empty())
+                  sprintf(buffer, "globals[0x%04x] = reg;",ptr);
+               else
+                  sprintf(buffer,"%s = reg;",
+                     imported_globals[ptr].name.c_str());
+            }
+            else
+            {
+               if (ptr<glob_reserved)
+                  sprintf(buffer,"private[0x%04x] = reg;",ptr);
+               else
+                  sprintf(buffer,"globals[0x%04x] = reg; // hmm, should not happen",ptr);
+            }
+         }
+         else
+         {
+            sprintf(buffer,"locals[0x%04x] = res;\n",dec_entries[entry+1].arg);
+         }
+         item.command.assign(buffer);
+
+         // delete not needed entries
+         dec_entries.erase(dec_entries.begin()+entry+1);
+         dec_entries.erase(dec_entries.begin()+pushi_pos);
+      }
+      break;
+
+   case 12: // search for "switch" and "if" statements; must always be the last ones
       if (max-entry<5) break;
       if ( (dec_entries[entry].code==op_PUSHI_EFF || dec_entries[entry].code==op_PUSHI ) &&
           dec_entries[entry+1].code==op_FETCHM &&
@@ -688,7 +790,7 @@ bool ua_conv_dasm::if_switch_replace(unsigned int entry, unsigned int max)
 
       // do the "if" line
       if (if_item.code == op_PUSHI_EFF)
-         sprintf(buffer,"if (locals[0x%04x] != 0x%04x) {",
+         sprintf(buffer,"if (locals[0x%04x] == 0x%04x) {",
             dec_entries[entry].arg,dec_entries[entry+2].arg);
       else
       {
@@ -696,15 +798,15 @@ bool ua_conv_dasm::if_switch_replace(unsigned int entry, unsigned int max)
          if (arg<imported_globals.size())
          {
             if (imported_globals.at(arg).name.empty())
-               sprintf(buffer,"if (globals[0x%04x] != 0x%04x) {",
+               sprintf(buffer,"if (globals[0x%04x] == 0x%04x) {",
                   arg,dec_entries[entry+2].arg);
                else
-                  sprintf(buffer,"if (%s != 0x%04x) {",
+                  sprintf(buffer,"if (%s == 0x%04x) {",
                      imported_globals.at(arg).name.c_str(),dec_entries[entry+2].arg);
          }
          else
-            sprintf(buffer,"if (private[0x%04x] != 0x%04x) {",
-               arg-imported_globals.size(),dec_entries[entry+2].arg);
+            sprintf(buffer,"if (private[0x%04x] == 0x%04x) {",
+               arg,dec_entries[entry+2].arg);
       }
 
       if_item.command.assign(buffer);
@@ -793,7 +895,7 @@ bool ua_conv_dasm::if_switch_replace(unsigned int entry, unsigned int max)
                imported_globals.at(arg).name.c_str());
          else
             sprintf(buffer,"switch (private[0x%04x]) {",
-               arg-imported_globals.size()-1);
+               arg);
       }
 
       switch_item.command.assign(buffer);
@@ -898,15 +1000,15 @@ int main(int argc, char *argv[])
       return 0;
    }*/
 
-   ua_conv_dasm dasm;
-
-   dasm.init("d:\\projekte\\uwadv\\uw1\\data\\cnv.ark",1);
 
    FILE *out = fopen("uw1-dasm.txt","wt");
 
-   // start deassembling
-//   dasm.disassemble(out);
-   dasm.decompile(out);
+   ua_conv_dasm dasm;
+   if (dasm.init("d:\\projekte\\uwadv\\uw1\\data\\cnv.ark",161))
+   {
+//      dasm.disassemble(out);
+      dasm.decompile(out);
+   }
 
    fclose(out);
 
