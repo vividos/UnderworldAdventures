@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -51,6 +51,7 @@ enum ua_key_value
    ua_key_menu_top_of_list2,    //!< home
    ua_key_menu_bottom_of_list,  //!< pgdn
    ua_key_menu_bottom_of_list2, //!< end
+   ua_key_menu_press_button,    //!< enter
 
    // normal movement
    ua_key_run_forward,            //!< w

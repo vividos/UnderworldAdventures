@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -36,8 +36,8 @@
 //! mapping of all keytype keywords to keytypes
 struct
 {
-   const char* keytype;
-   ua_key_value key;
+   const char* keytype; //!< type name that occurs in keymap.cfg
+   ua_key_value key;    //!< enum value of key
 } ua_keymap_keytype_mapping[] =
 {
    { "menu-up",               ua_key_menu_up },
@@ -48,6 +48,7 @@ struct
    { "menu-top-of-list2",     ua_key_menu_top_of_list2 },
    { "menu-bottom-of-list",   ua_key_menu_bottom_of_list },
    { "menu-bottom-of-list2",  ua_key_menu_bottom_of_list2 },
+   { "menu-press-button",     ua_key_menu_press_button },
 
    { "run-forward",                 ua_key_run_forward },
    { "run-forward-easymove",        ua_key_run_forward_easymove },
@@ -152,6 +153,7 @@ struct
 
    { "backspace", SDLK_BACKSPACE },
    { "return", SDLK_RETURN },
+   { "enter", SDLK_RETURN },
    { "pause", SDLK_PAUSE },
    { "space", SDLK_SPACE },
    { "comma", SDLK_COMMA },
