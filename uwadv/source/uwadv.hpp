@@ -36,6 +36,7 @@
 #include "files.hpp"
 #include "gamestrings.hpp"
 #include "audio.hpp"
+#include "critter.hpp"
 #include "screen.hpp"
 
 
@@ -80,6 +81,9 @@ protected:
 
    //! savegames manager
    ua_savegames_manager savegames_mgr;
+
+   //! critter pool
+   ua_critter_pool critter_pool;
 
    //! underworld object
    ua_underworld underworld;

@@ -325,6 +325,9 @@ void ua_game::init_core()
    audio = ua_audio_interface::get_audio_interface();
    audio->init(settings,filesmgr);
 
+   // load critters
+   critter_pool.load(settings);
+
    // initializes underworld
    underworld.init(this);
 }
