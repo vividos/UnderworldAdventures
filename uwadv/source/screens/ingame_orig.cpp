@@ -446,7 +446,7 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    }
    else
    // check for exit screen key
-   if (keymap.is_key(ua_key_game_quit_game,keymod))
+   if (keymap.is_key(ua_key_game_quit_game,keymod) && type==SDL_KEYDOWN)
    {
       fade_state = 2;
       fade_ticks = 0;
