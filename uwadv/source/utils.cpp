@@ -25,11 +25,8 @@
 
 */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 // needed includes
+#include "common.hpp"
 #include <string>
 #include <cstdarg>
 #include <cstdio>
