@@ -28,6 +28,12 @@ WITH_STLPORT = yes
 # path to where STLport was installed and built
 STLPORT_PATH = c:/mingw/stlport
 
+# set to "yes" if you have wxWindows
+WITH_WXWINDOWS = no
+
+# path to wxWindows base dir (only needed for uadebug.dll)
+WXWIN_PATH = d:/projekte/wxMSW
+
 
 # change these values only if you have a non-standard mingw32 setup
 # (i.e. when the uwadv-mingw32-source-setup-?.zip wasn't used)
@@ -85,6 +91,21 @@ endif
 
 INCLUDES = $(SDL_INCLUDE) $(STLPORT_INCLUDE) $(FMOD_INCLUDE) \
 	-Isource/ -Isource/lua/include/ -Isource/resource/zziplib/
+
+# wxWindows
+ifeq ("$(WITH_WXWINDOWS)", "yes")
+ INCLUDES += -I$(WXWIN_PATH)/include/ -I$(WXWIN_PATH)/contrib/include/ -I$(WXWIN_PATH)/lib/mswd/
+ DEFINES += -D__GNUWIN32__ -D__WXMSW__ -D_X86_=1 -DWIN32 -D_WIN32 -DWINVER=0x0400
+ WXWIN_LIB = -L$(WXWIN_PATH)/lib/ -L$(WXWIN_PATH)/contrib/lib/ \
+	-lwxmswd -lfld -lole32 -loleaut32 -luuid \
+	-lcomctl32 -lwsock32
+	# -lwinspool -lcomdlg32 -ladvapi32 -lshell32 \
+	# -lodbc32 -lodbccp32 -lrpcrt4.lib
+	# -lzlib -lpng -ljpeg -ltiff -lregex
+else
+ WXWIN_LIB =
+endif
+
 
 CFLAGS += $(DEFINES) $(INCLUDES)
 
@@ -153,6 +174,19 @@ uwadv_LDFLAGS = -mconsole
 else
 uwadv_LDFLAGS =
 endif
+
+
+# underworld adventures debugger
+
+uadebug_EXEC = uadebug.dll
+
+include source/debug/Makefile.common
+
+uadebug_CPPs = $(filter %.cpp,$(libuadebug_la_SOURCES))
+uadebug_OBJS = $(uadebug_CPPs:%.cpp=source/debug/%.o)
+
+uadebug_LIBS = $(WXWIN_LIB) $(WIN32_LIB) $(STLPORT_LIB)
+uadebug_LDFLAGS =
 
 
 # ua config program
@@ -250,7 +284,6 @@ strpak_LDFLAGS = -mconsole
 strpak_LIBS = -lmingw32 -lkernel32 -luser32 libuatools.a $(SDL_LIB) $(STLPORT_LIB) \
 
 
-
 #
 # build rules
 #
@@ -263,6 +296,11 @@ $(uwadv_EXEC): $(uwadv_OBJS)
 
 uwadv.cfg: win32/uwadv.cfg
 	cp win32/uwadv.cfg .
+
+
+uadebug: $(uadebug_EXEC)
+$(uadebug_EXEC): $(uadebug_OBJS)
+	$(CXX) $(LDFLAGS) $(uadebug_LDFLAGS) -o $(@) $(uadebug_OBJS) $(uadebug_LIBS)
 
 
 uaconfig: $(uaconfig_EXEC)
@@ -302,6 +340,7 @@ $(animview_EXEC): libuatools $(animview_OBJS)
 strpak: $(strpak_EXEC)
 $(strpak_EXEC): libuatools $(strpak_OBJS)
 	$(CXX) $(LDFLAGS) $(strpak_LDFLAGS) -o $(@) $(strpak_OBJS) $(strpak_LIBS)
+
 
 #
 # general build rules
