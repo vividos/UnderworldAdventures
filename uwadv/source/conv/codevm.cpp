@@ -51,7 +51,7 @@ void ua_conv_code_vm::init(ua_conv_globals &cg)
 {
    // reset pointer
    instrp = 0;
-   basep = -1;
+   basep = 0xffff;
    result_register = 0;
    finished = false;
 
@@ -81,7 +81,7 @@ void ua_conv_code_vm::done(ua_conv_globals &cg)
       glob.at(i) = stack.at(i);
 }
 
-void ua_conv_code_vm::step()
+void ua_conv_code_vm::step() throw(ua_conv_vm_exception)
 {
    if (instrp>code.size())
       throw ua_ex_code_access;

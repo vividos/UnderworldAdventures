@@ -38,7 +38,9 @@
 # include "midi_driver/win_midiout.h"
 #endif
 
+#ifdef HAVE_FMOD_H
 #include "midi_driver/uni_fmod.h"
+#endif
 
 
 // ua_midi_player methods

@@ -38,8 +38,8 @@
 
 
 // SDL includes
-#include <SDL.h>
-#include <SDL_opengl.h>
+#include "SDL.h"
+#include "SDL_opengl.h"
 
 // other includes
 #include "uatypes.hpp"

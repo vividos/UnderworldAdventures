@@ -55,7 +55,7 @@ typedef struct ua_block_info
 
 // ua_gamestrings methods
 
-void ua_gamestrings::load(ua_settings &settings)
+void ua_gamestrings::load(ua_settings &settings) throw(ua_exception)
 {
    std::string filename(settings.uw1_path);
    filename.append("data/strings.pak");
@@ -63,7 +63,7 @@ void ua_gamestrings::load(ua_settings &settings)
    load(filename.c_str());
 }
 
-void ua_gamestrings::load(const char *filename)
+void ua_gamestrings::load(const char *filename) throw(ua_exception)
 {
    FILE *fd = fopen(filename,"rb");
    if (fd==NULL)
@@ -190,22 +190,19 @@ std::vector<std::string> &ua_gamestrings::get_block(unsigned int block)
 
 std::string ua_gamestrings::get_string(unsigned int block, unsigned int string_nr)
 {
+   std::string res;
+
    // try to find string block
    std::map<int,std::vector<std::string> >::iterator iter =
       allstrings.find(block);
 
-   if (iter==allstrings.end())
-   {
-      // block not found :(
-      return std::string("");
-   }
-   else
+   if (iter!=allstrings.end())
    {
       // try to find string in vector
       std::vector<std::string> &stringlist = iter->second;
-      if (stringlist.size()<string_nr)
-         return std::string("");
-      else
-         return stringlist.at(string_nr);
+      if (string_nr<stringlist.size())
+         res = stringlist[string_nr];
    }
+
+   return res;
 }

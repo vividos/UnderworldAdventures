@@ -133,7 +133,7 @@ void ua_game::run()
 
       while ((now - then) > (1000.f/tickrate))
       {
-         then += (1000.f/tickrate);
+         then += Uint32(1000.f/tickrate);
 
          // do game logic
          screen->tick();
@@ -159,7 +159,7 @@ void ua_game::run()
       renders++;
 
       if ((now - then) > (1000.f/tickrate))
-         then = now - (1000.f/tickrate);
+         then = now - Uint32(1000.f/tickrate);
 
 #ifdef HAVE_FRAMECOUNT
       now = SDL_GetTicks();

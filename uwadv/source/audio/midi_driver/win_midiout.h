@@ -44,7 +44,6 @@
 #include <mmsystem.h>
 
 #include "../midi.hpp"
-//#include "exceptions.h"
 
 class	Windows_MidiOut : virtual public ua_midi_driver
 {
@@ -60,7 +59,6 @@ public:
 	virtual ~Windows_MidiOut();
 
 private:
-	UNREPLICATABLE_CLASS(Windows_MidiOut);
 
 	struct mid_data {
 		XMIDIEventList	*list;

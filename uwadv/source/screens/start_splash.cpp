@@ -94,12 +94,12 @@ void ua_start_splash_screen::render()
    glLoadIdentity();
 
    // calculate light'ness of texture quad
-   unsigned char light = 255;
+   Uint8 light = 255;
 
    switch(stage)
    {
    case 0:
-      light = 255*(float(tickcount) / (core->get_tickrate()*ua_splash_blend_time));
+      light = Uint8(255*(float(tickcount) / (core->get_tickrate()*ua_splash_blend_time)));
       break;
 
    case 1:
@@ -107,7 +107,7 @@ void ua_start_splash_screen::render()
       break;
 
    case 2:
-      light = 255-255*(float(tickcount) / (core->get_tickrate()*ua_splash_blend_time));
+      light = Uint8(255-255*(float(tickcount) / (core->get_tickrate()*ua_splash_blend_time)));
       break;
 
    case 3:
@@ -144,13 +144,13 @@ void ua_start_splash_screen::render()
    glVertex3i(10,10,0);
 
    glTexCoord2d(tex2.get_tex_u(),tex2.get_tex_v());
-   glVertex3i(10+img2.get_xres()*0.8,10,0);
+   glVertex3i(int(10+img2.get_xres()*0.8),10,0);
 
    glTexCoord2d(tex2.get_tex_u(),0.0);
-   glVertex3i(10+img2.get_xres()*0.8,10+img2.get_yres()*0.8,0);
+   glVertex3i(int(10+img2.get_xres()*0.8),int(10+img2.get_yres()*0.8),0);
 
    glTexCoord2d(0.0,0.0);
-   glVertex3i(10,10+img2.get_yres()*0.8,0);
+   glVertex3i(10,int(10+img2.get_yres()*0.8),0);
 
    glEnd();
 

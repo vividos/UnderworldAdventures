@@ -114,13 +114,17 @@ protected:
 class ua_conv_stack
 {
 public:
-   ua_conv_stack(){ stackp = -1; };
+   ua_conv_stack(){ stackp = 0xffff; };
 
    //! reserves stack space
-   void init(Uint16 stacksize){ stack.clear(); stackp = -1; stack.resize(stacksize,0); }
+   void init(Uint16 stacksize){ stack.clear(); stackp = 0xffff; stack.resize(stacksize,0); }
 
    //! pushes a value onto the stack
-   void push(Uint16 val){ stack.at(++stackp) = val; }
+   void push(Uint16 val)
+   {
+      if (stackp>stack.size()) throw ua_ex_stack_access;
+      stack[++stackp] = val;
+   }
 
    //! pops a value from the stack
    Uint16 pop()

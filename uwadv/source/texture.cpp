@@ -44,8 +44,8 @@ void ua_texture::convert(ua_texture_manager &texmgr,ua_image &img)
    unsigned int origy = img.get_yres();
 
    // determine texture resolution (must be 2^n)
-   xres = pow(2,int(log(origx)/log(2)+1.0));
-   yres = pow(2,int(log(origy)/log(2)+1.0));
+   xres = (unsigned int)pow(2,int(log(origx)/log(2)+1.0));
+   yres = (unsigned int)pow(2,int(log(origy)/log(2)+1.0));
    texcount = 1;
 
    u = float(origx)/xres;
