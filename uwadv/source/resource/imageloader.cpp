@@ -48,12 +48,16 @@
 
 // global methods
 
-void ua_image_decode_rle(FILE *fd,Uint8* pixels,unsigned int bits,
-   unsigned int datalen,unsigned int maxpix,unsigned char *auxpalidx)
+void ua_image_decode_rle(FILE *fd, Uint8* pixels, unsigned int bits,
+   unsigned int datalen, unsigned int maxpix, unsigned char *auxpalidx,
+   unsigned int padding=0, unsigned int linewidth=0)
 {
+   unsigned int linecount = 0;
+   unsigned int bufpos = 0;
+
    // bit extraction variables
-   unsigned int bits_avail=0;
-   unsigned int rawbits=0;
+   unsigned int bits_avail = 0;
+   unsigned int rawbits = 0;
    unsigned int bitmask = ((1<<bits)-1) << (8-bits);
    unsigned int nibble;
 
@@ -167,8 +171,16 @@ void ua_image_decode_rle(FILE *fd,Uint8* pixels,unsigned int bits,
             // repeat 'nibble' color 'count' times
             for(unsigned int n=0; n<count; n++)
             {
-               pixels[pixcount++] = auxpalidx[nibble];
-               if (pixcount>=maxpix)
+               pixels[bufpos++] = auxpalidx[nibble];
+
+               // add padding space when needed
+               if (padding != 0 && ++linecount >= linewidth)
+               {
+                  linecount = 0;
+                  bufpos += padding;
+               }
+
+               if (++pixcount>=maxpix)
                   break;
             }
          }
@@ -208,7 +220,15 @@ void ua_image_decode_rle(FILE *fd,Uint8* pixels,unsigned int bits,
          // run record stage 2
 
          // now we have a nibble to write
-         pixels[pixcount++] = auxpalidx[nibble];
+         pixels[bufpos++] = auxpalidx[nibble];
+         pixcount++;
+
+         // add padding space when needed
+         if (padding != 0 && ++linecount >= linewidth)
+         {
+            linecount = 0;
+            bufpos += padding;
+         }
 
          if (--count==0)
          {
@@ -277,9 +297,11 @@ void ua_image::load_image(FILE *fd,Uint8 auxpalidx[32][16], bool special_panels)
          }
       }
       break;
+
    case 0x08: // 4-bit rle compressed
-      ua_image_decode_rle(fd,&pixels[0],4,datalen,width*height,auxpalidx[auxpal]);
+      ua_image_decode_rle(fd,&pixels[0],4,datalen,width*height,auxpalidx[auxpal],0,0);
       break;
+
    case 0x0a: // 4-bit uncompressed
       {
          unsigned int pixcount=0, maxpix = width*height;
