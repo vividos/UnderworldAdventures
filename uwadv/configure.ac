@@ -202,7 +202,8 @@ source/debug/Makefile
 source/tools/Makefile
 source/tools/uwdump/Makefile
 source/base/Makefile
-source/lua/Makefile
+source/script/Makefile
+source/script/lua/Makefile
 uadata/Makefile
 hacking/Makefile
 uwadv.spec:linux/uwadv.spec.in

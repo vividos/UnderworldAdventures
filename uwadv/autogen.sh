@@ -50,7 +50,8 @@ rm -f source/Makefile.in source/Makefile
 rm -f source/tools/Makefile.in source/tools/Makefile
 rm -f source/tools/uwdump/Makefile.in source/tools/uwdump/Makefile
 rm -f source/base/Makefile.in source/base/Makefile
-rm -f source/lua/Makefile.in source/lua/Makefile
+rm -f source/script/Makefile.in source/script/Makefile
+rm -f source/script/lua/Makefile.in source/script/lua/Makefile
 rm -f uadata/Makefile.in uadata/Makefile
 rm -f hacking/Makefile.in hacking/Makefile
 # maybe change this last line into some fancy

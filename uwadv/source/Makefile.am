@@ -21,7 +21,7 @@
 # $Id$
 #
 
-SUBDIRS = base tools lua debug
+SUBDIRS = base tools script debug
 
 # compiler options
 INCLUDES = -I$(srcdir)/base -I$(srcdir)/audio -I$(srcdir)/ui -I$(srcdir)/renderer -I$(srcdir)/underw -I$(srcdir)/import
@@ -37,7 +37,7 @@ bin_PROGRAMS = uwadv
 include Makefile.common
 
 uwadv_LDADD = \
-	lua/liblualib.la \
+	script/lua/liblualib.la \
 	base/zziplib/libzzip.la \
 	-lz
 
@@ -61,8 +61,8 @@ EXTRA_DIST = \
 	win32/uaconfig/uaconfig.hpp \
 	win32/uaconfig/uaconfig_res.rc
 
-lua/liblualib.la:
-	cd lua; $(MAKE)
+script/lua/liblualib.la:
+	cd script/lua; $(MAKE)
 
 base/zziplib/libzzip.la:
 	cd base/zziplib; $(MAKE)
