@@ -229,7 +229,7 @@ void ua_textscroll::update_scroll()
          font_normal.create_string(img_input,
             input_text.c_str(),1); // color black for now
 
-         unsigned int xpos = img_temp.get_xres();
+         unsigned int xpos = img_temp.get_xres()+1;
          img_text.paste_image(img_input,xpos,ypos,true);
 
          xpos += img_input.get_xres();
@@ -320,6 +320,11 @@ bool ua_textscroll::handle_event(SDL_Event &event)
          // "return" key
          if (key==SDLK_RETURN)
          {
+            // add string to current line
+            linestack[input_line].append(input_text);
+            update_scroll();
+
+            // end input mode
             input_mode = false;
             handled = true;
          }
