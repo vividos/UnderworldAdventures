@@ -371,7 +371,7 @@ void ua_physics_model::check_collision(ua_physics_object& object, int xpos, int 
       ua_triangle3d_textured& tri = alltriangles[i];
 
       // get triangle points and convert to ellipsoid space
-      ua_vector3d p1(tri.points[0]), p2(tri.points[1]), p3(tri.points[2]);
+      ua_vector3d p1(tri.vertices[0].pos), p2(tri.vertices[1].pos), p3(tri.vertices[2].pos);
       p1 /= ellipsoid;
       p2 /= ellipsoid;
       p3 /= ellipsoid;
