@@ -673,8 +673,8 @@ void ua_ingame_orig_screen::tick()
          viewangle = fmod(viewangle-360.0,360.0);
 
       // restrict up-down view angle
-      if (viewangle < -40.0) viewangle = -40.0;
-      if (viewangle > 40.0) viewangle = 40.0;
+      if (viewangle < -75.0) viewangle = -75.0;
+      if (viewangle > 75.0) viewangle = 75.0;
    }
 
    // check for fading in/out
