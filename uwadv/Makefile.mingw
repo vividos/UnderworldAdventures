@@ -68,14 +68,14 @@ all: uwadv tools data
 
 # lua objects
 
-lua_OBJS = source/lua/src/lapi.o source/lua/src/lcode.o source/lua/src/ldebug.o \
-	source/lua/src/ldo.o source/lua/src/lfunc.o source/lua/src/lgc.o \
-	source/lua/src/llex.o source/lua/src/lmem.o source/lua/src/lobject.o \
-	source/lua/src/lparser.o source/lua/src/lstate.o source/lua/src/lstring.o \
-	source/lua/src/ltable.o source/lua/src/ltests.o source/lua/src/ltm.o \
-	source/lua/src/lundump.o source/lua/src/lvm.o source/lua/src/lzio.o \
-	source/lua/src/lib/lauxlib.o source/lua/src/lib/lbaselib.o \
-	source/lua/src/lib/lmathlib.o source/lua/src/lib/lstrlib.o
+include source/lua/Makefile.common
+
+lua_Cs = \
+        $(filter %.c,$(liblua_la_SOURCES)) \
+        $(filter %.c,$(liblualib_la_SOURCES))
+lua_OBJS = $(cnvdbg_Cs:%.c=source/lua/%.o)
+
+
 
 lua: $(lua_OBJS)
 
@@ -126,6 +126,11 @@ uaconfig_OBJS = source/win32/source/uaconfig/uaconfig.o \
 
 uaconfig_LIBS = $(WIN32_LIB) $(STLPORT_LIB)
 
+
+
+# tools
+
+include source/tools/Makefile.common
 
 # conv debugger
 
