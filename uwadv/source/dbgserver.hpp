@@ -37,6 +37,12 @@
 class ua_basic_game_interface;
 
 
+// constants
+
+//! current interface version
+const unsigned int ua_debug_server_interface_version = 1;
+
+
 // enums
 
 //! debug server message types; usable in ua_debug_server_message::msg_type
@@ -81,35 +87,30 @@ struct ua_debug_server_message
 // classes
 
 //! code debugger interface
+/*!
+*/
 class ua_debug_code_debugger
 {
 };
 
-
-//! debug server implementation definition
-/*! all methods of this interface class are virtual, so that they can be
-    called via the vtable, from the uadebug dll.
+//! debug server interface definition
+/*! All methods of this interface class are virtual, so that they can be
+    called via the vtable, from the uadebug shared library.
 */
-class ua_debug_server_impl
+class ua_debug_server_interface
 {
-protected:
-   // methods called from debug server
-
-   //! inits debug server
-   virtual void init()=0;
-   //! cleans up debug server
-   virtual void done()=0;
-   //! returns if debugger is available
-   virtual bool is_avail()=0;
-   //! returns if debugger
-   virtual void start_debugger(ua_basic_game_interface* game)=0;
-   //! does idle tick processing
-   virtual void tick()=0;
-
-   friend class ua_debug_server;
-
 public:
-   // methods called from debug client interface
+   //! dtor
+   virtual ~ua_debug_server_interface(){}
+
+   // methods called from debug client
+
+   //! checks interface version
+   /*! checks interface version used in debug server; when interface used by
+       the client is different from the version used by the server, the
+       debugger mustn't proceed */
+   virtual bool check_interface_version(
+      unsigned int interface_ver=ua_debug_server_interface_version)=0;
 
    //! locks/unlocks underworld
    virtual void lock(bool set_lock)=0;
@@ -120,21 +121,7 @@ public:
    virtual unsigned int get_message_num()=0;
 
    //! returns current message
-   inline bool get_message(ua_debug_server_message& msg)
-   {
-      unsigned int text_size=0;
-      bool ret = get_message(msg.msg_type, msg.msg_arg1, msg.msg_arg2,
-         msg.msg_arg3, text_size);
-      if (ret && text_size>0)
-      {
-         std::vector<char> buffer(text_size+1);
-         ret = get_message_text(&buffer[0], text_size);
-
-         buffer[text_size]=0;
-         msg.msg_text.assign(&buffer[0]);
-      }
-      return ret;
-   }
+   bool get_message(ua_debug_server_message& msg);
 
    //! returns current message
    virtual bool get_message(unsigned int& msg_type,
@@ -146,9 +133,6 @@ public:
 
    //! removes current message
    virtual bool pop_message()=0;
-
-   //! adds message to queue; only debug server should call this!
-   virtual void add_message(ua_debug_server_message& msg)=0;
 
    // player stuff
 
@@ -172,7 +156,34 @@ public:
    //! returns tile height at given coordinates
    virtual double get_tile_height(unsigned int level, double xpos,
       double ypos)=0;
+
+protected:
+   // methods only callable for ua_debug_server
+
+   //! adds message to queue; only debug server should call this!
+   virtual void add_message(ua_debug_server_message& msg)=0;
+
+   friend class ua_debug_server;
 };
+
+
+// inline methods
+
+inline bool ua_debug_server_interface::get_message(ua_debug_server_message& msg)
+{
+   unsigned int text_size=0;
+   bool ret = get_message(msg.msg_type, msg.msg_arg1, msg.msg_arg2,
+      msg.msg_arg3, text_size);
+   if (ret && text_size>0)
+   {
+      std::vector<char> buffer(text_size+1);
+      ret = get_message_text(&buffer[0], text_size);
+
+      buffer[text_size]=0;
+      msg.msg_text.assign(&buffer[0]);
+   }
+   return ret;
+}
 
 
 #endif
