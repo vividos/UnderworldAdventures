@@ -440,7 +440,7 @@ bool ua_model_decode_all(const char* filename)
 
       if (file_value == ua_model_offset_table[i].value)
       {
-         // found positino
+         // found position
          base = ua_model_offset_table[i].base_offset;
          fseek(fd,ua_model_offset_table[i].table_offset,SEEK_SET);
 
@@ -476,7 +476,7 @@ bool ua_model_decode_all(const char* filename)
       double ez = ua_mdl_read_fixed(fd);
 
       ua_trace(" loading model %u, offset=0x%08x {unk1=0x%04x, e=(%3.2f, %3.2f, %3.2f) }\n",
-         n,base + offsets[i],unk1,ex,ey,ez);
+         n,base + offsets[n],unk1,ex,ey,ez);
 
       // parse root node
       std::vector<ua_vector3d> vertex_list;
