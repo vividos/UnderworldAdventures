@@ -46,6 +46,9 @@ public:
    void render(const ua_level& level, ua_vector3d pos,
       double panangle, double rotangle, double fov);
 
+   //! returns texture manager
+   inline ua_texture_manager& get_texture_manager(){ return texmgr; }
+
 protected:
    //! renders tile floor
    void render_floor(ua_levelmap_tile& tile, unsigned int x, unsigned int y);
@@ -73,26 +76,24 @@ protected:
    void draw_billboard_quad(ua_vector3d base,
       double quadwidth, double quadheight,
       double u1,double v1,double u2,double v2);
-
+/*
    //! retrieves tile coordinates
    static void get_tile_coords(unsigned int side, ua_levelmap_tiletype type,
       unsigned int basex, unsigned int basey, Uint16 basez, Uint16 slope, Uint16 ceiling,
       Uint16 &x1, Uint16 &y1, Uint16 &z1,
       Uint16 &x2, Uint16 &y2, Uint16 &z2);
-
+*/
    //! renders a wall of a tile, dependent on the neighbour
    static void render_wall(unsigned int side,
       Uint16 x1, Uint16 y1, Uint16 z1, Uint16 x2, Uint16 y2, Uint16 z2,
       Uint16 nz1, Uint16 nz2, Uint16 ceiling);
 
-   //! helper function for get_tile_triangles()
-   static void add_wall(ua_triangle3d_textured& tri1, ua_triangle3d_textured& tri2,
-      unsigned int side,
-      double x1, double y1, double z1,
-      double x2, double y2, double z2,
-      double nz1, double nz2, double ceiling);
-
 protected:
+   // texture manager
+   ua_texture_manager texmgr;
+
+
+
    //! indicates if in selection (picking) mode
    bool selection_mode;
 
