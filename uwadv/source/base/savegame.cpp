@@ -41,7 +41,7 @@
 const Uint32 ua_savegame::current_version = 1;
 
 
-// ua_savegame_info methods#
+// ua_savegame_info methods
 
 /*! Structure constructor. Sets default values for all members. */
 ua_savegame_info::ua_savegame_info()
