@@ -164,36 +164,36 @@ public:
    // get functions
 
    //! returns x position
-   double get_xpos();
+   double get_xpos() const;
 
    //! returns y position
-   double get_ypos();
+   double get_ypos() const;
 
    //! returns view rotation angle
-   double get_angle_rot();
+   double get_angle_rot() const;
 
    //! returns view panning angle
-   double get_angle_pan();
+   double get_angle_pan() const;
 
    //! returns player height
-   double get_height();
+   double get_height() const;
 
    //! returns player name
-   std::string& get_name();
+   const std::string& get_name() const;
 
 
    //! returns movement mode
-   unsigned int get_movement_mode();
+   unsigned int get_movement_mode() const;
 
    //! returns movement factor for given movement mode
    double get_movement_factor(ua_player_movement_mode mode);
 
 
    //! returns player attribute value
-   unsigned int get_attr(ua_player_attributes which);
+   unsigned int get_attr(ua_player_attributes which) const;
 
    //! returns player skill value
-   unsigned int get_skill(ua_player_skills which);
+   unsigned int get_skill(ua_player_skills which) const;
 
 
    // loading/saving/importing
@@ -257,37 +257,37 @@ inline double ua_player::get_movement_factor(ua_player_movement_mode mode)
    return move_factors[mode];
 }
 
-inline double ua_player::get_xpos()
+inline double ua_player::get_xpos() const
 {
    return xpos;
 }
 
-inline double ua_player::get_ypos()
+inline double ua_player::get_ypos() const
 {
    return ypos;
 }
 
-inline double ua_player::get_angle_rot()
+inline double ua_player::get_angle_rot() const
 {
    return rotangle;
 }
 
-inline double ua_player::get_angle_pan()
+inline double ua_player::get_angle_pan() const
 {
    return panangle;
 }
 
-inline double ua_player::get_height()
+inline double ua_player::get_height() const
 {
    return height;
 }
 
-inline std::string& ua_player::get_name()
+inline const std::string& ua_player::get_name() const
 {
    return name;
 }
 
-inline unsigned int ua_player::get_movement_mode()
+inline unsigned int ua_player::get_movement_mode() const
 {
    return move_mode;
 }

@@ -82,13 +82,13 @@ void ua_player::set_name(std::string name)
     this->name = name;
 }
 
-unsigned int ua_player::get_attr(ua_player_attributes which)
+unsigned int ua_player::get_attr(ua_player_attributes which) const
 {
    if (which>=ua_attr_max) return 0;
    return attributes[static_cast<unsigned int>(which)];
 }
 
-unsigned int ua_player::get_skill(ua_player_skills which)
+unsigned int ua_player::get_skill(ua_player_skills which) const
 {
    if (which>=ua_skill_max) return 0;
    return skills[static_cast<unsigned int>(which)];
