@@ -1,0 +1,25 @@
+.TH "uwadv" 1
+.SH NAME
+uwadv \- an Ultima Underworld remake
+.SH SYNOPSIS
+.B uwadv
+.SH DESCRIPTION
+Underworld Adventures is a project to recreate Ultima Underworld 1 on modern operating systems (e.g. Win32, Linux or MacOS), using the original game files. It uses OpenGL for 3D graphics, the SDL library for platform specific tasks and Lua for scripting.
+
+Underworld Adventures needs the original game files to run, so be sure to install the game on a dos or windows partition and mount it. The game files must be all lowercase. uwadv has a tool called "ua-lowercase-all.pl" that recursively converts all file and folder names to lowercase.
+
+Before starting the game, you have to set up the path to the installed Ultima
+Underworld game files. Without them, the game won't run. Just open the file "uwadv.cfg" with a text editor (it was installed to @SHAREDPATH@) and edit the settings. To have user settings, copy the file to "~/.uwadv/uwadv.cfg" and adjust your settings in this file.
+
+To start the Underworld Adventures, just run the executable uwadv. While running, the file "stdout.txt" is created, which contains debugging output in case of an error.
+
+The game should behave exactly as the original. Please consult your game manuals or reference card for instructions. A list of keyboard commands for the original Ultima Underworld 1 is available in the file "uw1-keyboard.txt" that is installed to @DOCSFOLDER@.
+.SH FILES
+/usr/local/share/uwadv/uwadv.cfg
+/usr/local/docs/wherever/uw1-keyboard.txt
+.SH BUGS
+The program currently is less than alpha, so expect all sorts of bugs and missing features.
+.SH CONTACT
+Underworld Adventures is available from its home page, at
+.B   http://uwadv.sourceforge.net/
+
