@@ -127,6 +127,15 @@ void ua_underworld_script_bindings::register_functions()
    lua_register(L,"player_set_pos",player_set_pos);
    lua_register(L,"player_get_angle",player_get_angle);
    lua_register(L,"player_set_angle",player_set_angle);
+
+   lua_register(L,"tilemap_get_tile",tilemap_get_tile);
+   lua_register(L,"tilemap_get_type",tilemap_get_type);
+   lua_register(L,"tilemap_set_type",tilemap_set_type);
+   lua_register(L,"tilemap_get_floor",tilemap_get_floor);
+   lua_register(L,"tilemap_set_floor",tilemap_set_floor);
+   lua_register(L,"tilemap_get_automap_visible",tilemap_get_automap_visible);
+   lua_register(L,"tilemap_set_automap_visible",tilemap_set_automap_visible)  ;
+   lua_register(L,"tilemap_get_objlist_start",tilemap_get_objlist_start);
 }
 
 void ua_underworld_script_bindings::checked_lua_call(int params, int retvals)
@@ -232,7 +241,7 @@ ua_obj_combine_result ua_underworld_script_bindings::lua_obj_combine(
 /*! params is the number of parameters the current registered function
     expects. it is needed to determine where the "self" userdata value is
     stored. */
-ua_underworld& ua_underworld_script_bindings::lua_get_underworld(lua_State* L,int params)
+ua_underworld& ua_underworld_script_bindings::get_underworld_from_self(lua_State* L,int params)
 {
    ua_underworld* self =
       reinterpret_cast<ua_underworld*>(lua_touserdata(L,-params));
@@ -246,9 +255,11 @@ ua_underworld& ua_underworld_script_bindings::lua_get_underworld(lua_State* L,in
 
 // registered C functions callable from Lua
 
+// player_* functions
+
 int ua_underworld_script_bindings::player_get_attr(lua_State *L)
 {
-   ua_player &pl = lua_get_underworld(L,2).get_player();
+   ua_player &pl = get_underworld_from_self(L,2).get_player();
 
    ua_player_attributes attr_type =
       static_cast<ua_player_attributes>(static_cast<int>(lua_tonumber(L,-1)));
@@ -261,7 +272,7 @@ int ua_underworld_script_bindings::player_get_attr(lua_State *L)
 
 int ua_underworld_script_bindings::player_set_attr(lua_State *L)
 {
-   ua_player &pl = lua_get_underworld(L,3).get_player();
+   ua_player &pl = get_underworld_from_self(L,3).get_player();
 
    ua_player_attributes attr_type =
       static_cast<ua_player_attributes>(static_cast<int>(lua_tonumber(L,-2)));
@@ -274,7 +285,7 @@ int ua_underworld_script_bindings::player_set_attr(lua_State *L)
 
 int ua_underworld_script_bindings::player_get_skill(lua_State *L)
 {
-   ua_player &pl = lua_get_underworld(L,2).get_player();
+   ua_player &pl = get_underworld_from_self(L,2).get_player();
 
    ua_player_skills skill_type =
       static_cast<ua_player_skills>(static_cast<int>(lua_tonumber(L,-1)));
@@ -287,7 +298,7 @@ int ua_underworld_script_bindings::player_get_skill(lua_State *L)
 
 int ua_underworld_script_bindings::player_set_skill(lua_State *L)
 {
-   ua_player &pl = lua_get_underworld(L,3).get_player();
+   ua_player &pl = get_underworld_from_self(L,3).get_player();
 
    ua_player_skills skill_type =
       static_cast<ua_player_skills>(static_cast<int>(lua_tonumber(L,-2)));
@@ -300,7 +311,7 @@ int ua_underworld_script_bindings::player_set_skill(lua_State *L)
 
 int ua_underworld_script_bindings::player_get_pos(lua_State *L)
 {
-   ua_player &pl = lua_get_underworld(L,1).get_player();
+   ua_player &pl = get_underworld_from_self(L,1).get_player();
 
    lua_pushnumber(L,pl.get_xpos());
    lua_pushnumber(L,pl.get_ypos());
@@ -310,7 +321,7 @@ int ua_underworld_script_bindings::player_get_pos(lua_State *L)
 
 int ua_underworld_script_bindings::player_set_pos(lua_State *L)
 {
-   ua_player &pl = lua_get_underworld(L,3).get_player();
+   ua_player &pl = get_underworld_from_self(L,3).get_player();
 
    double xpos = lua_tonumber(L,-2);
    double ypos = lua_tonumber(L,-1);
@@ -322,7 +333,7 @@ int ua_underworld_script_bindings::player_set_pos(lua_State *L)
 
 int ua_underworld_script_bindings::player_get_angle(lua_State *L)
 {
-   ua_player &pl = lua_get_underworld(L,1).get_player();
+   ua_player &pl = get_underworld_from_self(L,1).get_player();
 
    lua_pushnumber(L,pl.get_angle());
 
@@ -331,10 +342,115 @@ int ua_underworld_script_bindings::player_get_angle(lua_State *L)
 
 int ua_underworld_script_bindings::player_set_angle(lua_State *L)
 {
-   ua_player &pl = lua_get_underworld(L,2).get_player();
+   ua_player &pl = get_underworld_from_self(L,2).get_player();
 
    double angle = lua_tonumber(L,-1);
    pl.set_angle(angle);
 
    return 0;
+}
+
+// tilemap_* functions
+
+ua_levelmap_tile& ua_underworld_script_bindings::get_tile_per_handle(
+   ua_underworld& uw, unsigned int tile_handle)
+{
+   // decode the tile_handle hash, as seen from tilemap_get_tile()
+   unsigned int xpos = tile_handle & 63;
+   unsigned int ypos = (tile_handle >> 6) & 63;
+   unsigned int level = tile_handle >> 12;
+
+   ua_level& levelmap = uw.get_level(level);
+   return levelmap.get_tile(xpos,ypos);
+}
+
+int ua_underworld_script_bindings::tilemap_get_tile(lua_State* L)
+{
+   ua_underworld &uw = get_underworld_from_self(L,4);
+
+   int level = static_cast<int>(lua_tonumber(L,-3));
+   unsigned int xpos = static_cast<unsigned int>(lua_tonumber(L,-1));
+   unsigned int ypos = static_cast<unsigned int>(lua_tonumber(L,-2));
+
+   // get current level, when level is negative
+   if (level<0)
+      level = uw.get_player().get_attr(ua_attr_maplevel);
+
+   // the tile_handle is just a hash of level, xpos and ypos, but don't tell
+   // the Lua programmers :-)
+   unsigned int tile_handle = (level << 12) | (ypos << 6) | xpos;
+
+   lua_pushnumber(L,static_cast<double>(tile_handle));
+
+   return 1;
+}
+
+int ua_underworld_script_bindings::tilemap_get_type(lua_State* L)
+{
+   ua_underworld& uw = get_underworld_from_self(L,2);
+
+   unsigned int tile_handle = static_cast<unsigned int>(lua_tonumber(L,-1));
+   ua_levelmap_tile& tile = get_tile_per_handle(uw,tile_handle);
+
+   lua_pushnumber(L,static_cast<double>(tile.type));
+
+   return 1;
+}
+
+int ua_underworld_script_bindings::tilemap_set_type(lua_State* L)
+{
+   ua_underworld &uw = get_underworld_from_self(L,3);
+
+   unsigned int tile_handle = static_cast<unsigned int>(lua_tonumber(L,-2));
+   ua_levelmap_tile& tile = get_tile_per_handle(uw,tile_handle);
+
+   tile.type = static_cast<ua_levelmap_tiletype>(
+      static_cast<unsigned int>(lua_tonumber(L,-1) ));
+
+   return 0;
+}
+
+int ua_underworld_script_bindings::tilemap_get_floor(lua_State* L)
+{
+   ua_underworld &uw = get_underworld_from_self(L,2);
+
+   unsigned int tile_handle = static_cast<unsigned int>(lua_tonumber(L,-1));
+   ua_levelmap_tile& tile = get_tile_per_handle(uw,tile_handle);
+
+   lua_pushnumber(L,static_cast<double>(tile.floor));
+   return 1;
+}
+
+int ua_underworld_script_bindings::tilemap_set_floor(lua_State* L)
+{
+   ua_underworld &uw = get_underworld_from_self(L,3);
+
+   unsigned int tile_handle = static_cast<unsigned int>(lua_tonumber(L,-2));
+   ua_levelmap_tile& tile = get_tile_per_handle(uw,tile_handle);
+
+   tile.floor = static_cast<ua_levelmap_tiletype>(
+      static_cast<unsigned int>(lua_tonumber(L,-1) ));
+
+   return 0;
+}
+
+int ua_underworld_script_bindings::tilemap_get_automap_visible(lua_State* L)
+{
+   ua_underworld &uw = get_underworld_from_self(L,2);
+   // TODO
+   return 1;
+}
+
+int ua_underworld_script_bindings::tilemap_set_automap_visible(lua_State* L)
+{
+   ua_underworld &uw = get_underworld_from_self(L,3);
+   // TODO
+   return 0;
+}
+
+int ua_underworld_script_bindings::tilemap_get_objlist_start(lua_State* L)
+{
+   ua_underworld &uw = get_underworld_from_self(L,2);
+   // TODO
+   return 1;
 }

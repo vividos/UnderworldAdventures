@@ -59,6 +59,7 @@ typedef enum
 
 // forward declarations
 class ua_underworld;
+struct ua_levelmap_tile;
 
 
 // classes
@@ -101,7 +102,11 @@ protected:
 protected:
 
    //! returns underworld object reference from lua stack variable "self"
-   static ua_underworld& lua_get_underworld(lua_State* L, int params);
+   static ua_underworld& get_underworld_from_self(lua_State* L, int params);
+
+   //! returns levelmap tile from given tile_handle
+   static ua_levelmap_tile& get_tile_per_handle(ua_underworld& uw,
+      unsigned int tile_handle);
 
    // registered C functions callable from Lua
    // prototype: static int xyz(lua_State* L);
@@ -114,6 +119,16 @@ protected:
    static int player_set_pos(lua_State* L);
    static int player_get_angle(lua_State* L);
    static int player_set_angle(lua_State* L);
+
+   static int tilemap_get_tile(lua_State* L);
+   static int tilemap_get_type(lua_State* L);
+   static int tilemap_set_type(lua_State* L);
+   static int tilemap_get_floor(lua_State* L);
+   static int tilemap_set_floor(lua_State* L);
+   static int tilemap_get_automap_visible(lua_State* L);
+   static int tilemap_set_automap_visible(lua_State* L);
+   static int tilemap_get_objlist_start(lua_State* L);
+
 
 protected:
    //! lua script state
