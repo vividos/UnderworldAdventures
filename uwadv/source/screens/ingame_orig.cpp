@@ -426,21 +426,11 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
       else
          pl.set_movement_mode(0,ua_move_rotate_right);
    }
-    else
+   else
    // check for look up key
    if (keymap.is_key(ua_key_look_up,keymod))
    {
       look_up = type==SDL_KEYDOWN;
-   }
-   else
-   // check for center look key
-   if (keymap.is_key(ua_key_center_view,keymod))
-   {
-      if (type==SDL_KEYDOWN)
-      {
-         look_down = look_up = false;
-         pl.set_angle_pan(0.0);
-      }
    }
    else
    // check for look down key
@@ -448,66 +438,63 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    {
       look_down = type==SDL_KEYDOWN;
    }
+
+   // now check for keydown only keys
+   if (type==SDL_KEYDOWN)
+
+   // check for center look key
+   if (keymap.is_key(ua_key_center_view,keymod))
+   {
+      look_down = look_up = false;
+      pl.set_angle_pan(0.0);
+   }
    else
    // check for exit screen key
-   if (keymap.is_key(ua_key_game_quit_game,keymod) && type==SDL_KEYDOWN)
+   if (keymap.is_key(ua_key_ua_return_menu,keymod))
    {
       fade_state = 2;
       fade_ticks = 0;
       fadeout_action = 0;
    }
+   else
+   // check for quicksave key
+   if (keymap.is_key(ua_key_special_quicksave,keymod))
+   {
+      ua_trace("quicksaving ... ");
+      ua_savegame &sg = core->get_savegames_mgr().get_quicksave(true);
+      core->get_underworld().save_game(sg);
+      ua_trace("done\n");
+   }
+   else
+   // check for quickload key
+   if (keymap.is_key(ua_key_special_quickload,keymod))
+   {
+      ua_trace("quickloading ... ");
+      ua_savegame &sg = core->get_savegames_mgr().get_quicksave(false);
+      core->get_underworld().load_game(sg);
+      ua_trace("done\n");
+   }
+   else
+   // check for "debugger" key
+   if (keymap.is_key(ua_key_ua_debug,keymod))
+   {
+      dbgint->start_debugger();
+   }
 #ifdef HAVE_DEBUG
    else
-
-   switch(keymod)
+   // check for "level up" key
+   if (keymap.is_key(ua_key_ua_level_up,keymod))
    {
-   case SDLK_PAGEUP:
-      if (curlevel>0 && type==SDL_KEYDOWN)
+      if (curlevel>0)
          core->get_underworld().change_level(--curlevel);
-      break;
-
-   case SDLK_PAGEDOWN:
-      if (curlevel<9 && type==SDL_KEYDOWN)
-         core->get_underworld().change_level(++curlevel);
-      break;
-
-   case SDLK_F11: // quicksave
-      if (type==SDL_KEYDOWN)
-      {
-         ua_trace("quicksaving ... ");
-         ua_savegame &sg = core->get_savegames_mgr().get_quicksave(true);
-         core->get_underworld().save_game(sg);
-         ua_trace("done\n");
-      }
-      break;
-
-   case SDLK_F12: // quickload
-      if (type==SDL_KEYDOWN)
-      {
-         ua_trace("quickloading ... ");
-         ua_savegame &sg = core->get_savegames_mgr().get_quicksave(false);
-         core->get_underworld().load_game(sg);
-         ua_trace("done\n");
-      }
-      break;
-
-   case SDLK_UP:
-      if (type==SDL_KEYDOWN)
-         textscroll.print("Lorem ipsum\ndolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor");
-      break;
-
-   case SDLK_DOWN:
-      if (type==SDL_KEYDOWN)
-         textscroll.print("Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.\nLorem ipsum\n dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.Ut wisi enim");
-      break;
-
-   case SDLK_F4:
-      if (type==SDL_KEYDOWN)
-      {
-         dbgint->start_debugger();
-      }
    }
-
+   else
+   // check for "level down" key
+   if (keymap.is_key(ua_key_ua_level_down,keymod))
+   {
+      if (curlevel<9)
+         core->get_underworld().change_level(++curlevel);
+   }
 #endif
 }
 
