@@ -36,6 +36,7 @@
 
 // forward declarations
 class ua_underworld;
+struct ua_collision_data;
 
 
 // classes
@@ -51,6 +52,18 @@ public:
 
    //! evaluates player walking
    void walk_player(ua_vector2d &dir);
+
+protected:
+   //! calculates collision and response; recursively called
+   void calc_collision(ua_vector2d &pos, const ua_vector2d &dir);
+
+   //! checks a tile for collision with walls
+   bool check_collision_tile(unsigned int tilex, unsigned int tiley,
+      ua_collision_data &data);
+
+   //! does collision check; returns true when line was hit
+   bool check_collision(const ua_vector2d &point1,const ua_vector2d &point2,
+      ua_collision_data &data, bool check_height);
 
 protected:
    //! current underworld object
