@@ -34,6 +34,7 @@
 bool can_exit = false;
 const int tickrate = 8;
 ua_cutscene cuts;
+ua_texture tex;
 unsigned int currentframe;
 unsigned int mode=0;
 
@@ -53,6 +54,11 @@ bool init_anim(const char *filename)
    }
 
    return true;
+}
+
+void done_anim()
+{
+   tex.done();
 }
 
 void setup_opengl(int width,int height)
@@ -89,6 +95,9 @@ void setup_opengl(int width,int height)
 
    // switch back to modelview matrix
    glMatrixMode(GL_MODELVIEW);
+
+   // init texture
+   tex.init();
 }
 
 void draw_screen()
@@ -99,10 +108,10 @@ void draw_screen()
    glLoadIdentity();
 
    // load texture with current animation frame
-   ua_texture tex;
    cuts.get_frame(tex,currentframe);
 
-   // we can use the texture right after this preparation
+   // upload texture to graphics card
+   // note: we don't need to use() it, since it's still used from tex.init()
    tex.upload(false);
 
    // draw quad
@@ -248,6 +257,8 @@ int main(int argc, char* argv[])
       }
       SDL_Delay(0);
    }
+
+   done_anim();
 
    // finish off SDL
    SDL_Quit();
