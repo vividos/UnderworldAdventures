@@ -190,9 +190,16 @@ $(uwadv_EXEC): $(uwadv_OBJS)
 
 source/win32/source/uwadv_res.o: source/win32/source/uwadv.rc source/win32/source/Uus.ico
 	cd source/win32/source && windres -i uwadv.rc -o uwadv_res.o
-	
+
 uwadv.cfg: source/win32/uwadv.cfg
 	cp source/win32/uwadv.cfg .
+
+data: luac
+	cd uadata && make
+
+luac:
+	cd source/lua/src/luac && make
+	cp source/lua/bin/luac.exe* uadata
 
 
 cnvdbg: $(cnvdbg_EXEC)
@@ -235,6 +242,7 @@ clean:
 		$(mapdisp_EXEC) $(animview_EXEC) $(strpak_EXEC) \
 		$(uwadv_OBJS) $(cnvdbg_OBJS) $(cnvdasm_OBJS) $(xmi2mid_OBJS) \
 		$(mapdisp_OBJS) $(animview_OBJS) $(strpak_OBJS)
+	cd uadata && make clean
 
 .c.o:
 	$(CC) $(CFLAGS) -c $(<) -o $*.o
