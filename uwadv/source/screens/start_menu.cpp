@@ -74,6 +74,7 @@ void ua_start_menu_screen::resume()
    glLoadIdentity();
    gluOrtho2D(0,320,0,200);
    glMatrixMode(GL_MODELVIEW);
+   glLoadIdentity();
 
    // set OpenGL flags
    glEnable(GL_TEXTURE_2D);
@@ -82,6 +83,8 @@ void ua_start_menu_screen::resume()
    glDisable(GL_DEPTH_TEST);
    glEnable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+
+   glClearColor(0.0, 0.0, 0.0, 0.0);
 
    // init texture
    tex.init(&core->get_texmgr());
@@ -177,7 +180,6 @@ void ua_start_menu_screen::handle_event(SDL_Event &event)
 void ua_start_menu_screen::render()
 {
    glClear(GL_COLOR_BUFFER_BIT);
-   glLoadIdentity();
 
    // combine button graphics with background image
    const unsigned int btn_coords[] =
