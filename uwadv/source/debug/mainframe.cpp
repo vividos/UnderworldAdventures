@@ -31,6 +31,7 @@
 #include "mainframe.hpp"
 #include "playerinfo.hpp"
 #include "objectlist.hpp"
+#include "hotspotlist.hpp"
 
 // frame layout library
 
@@ -54,6 +55,7 @@ BEGIN_EVENT_TABLE(ua_debugger_main_frame, wxMDIParentFrame)
    EVT_MENU(MENU_UNDERW_UPDATE, ua_debugger_main_frame::OnMenuUnderwUpdate)
    EVT_MENU(MENU_UNDERW_SUSPEND, ua_debugger_main_frame::OnMenuUnderwSuspend)
    EVT_MENU(MENU_UNDERW_RESUME, ua_debugger_main_frame::OnMenuUnderwResume)
+   EVT_MENU(MENU_UNDERW_HOTSPOTLIST, ua_debugger_main_frame::OnMenuUnderwHotspotList)
    EVT_MENU(MENU_UNDERW_PLAYER, ua_debugger_main_frame::OnMenuUnderwPlayer)
    EVT_MENU(MENU_UNDERW_OBJECTLIST, ua_debugger_main_frame::OnMenuUnderwObjectList)
 END_EVENT_TABLE()
@@ -110,6 +112,7 @@ void ua_debugger_main_frame::AddFrameMenus(wxMenuBar* menubar)
    uwmenu->Append(MENU_UNDERW_SUSPEND, "&Suspend Game", "suspends a running game");
    uwmenu->Append(MENU_UNDERW_RESUME, "&Resume Game", "resumes a suspended game");
    uwmenu->AppendSeparator();
+   uwmenu->Append(MENU_UNDERW_HOTSPOTLIST, "&Hotspot List", "shows Hotspot List");
    uwmenu->Append(MENU_UNDERW_PLAYER, "&Player Info", "shows Player Infos");
    uwmenu->Append(MENU_UNDERW_OBJECTLIST, "Master &Object List", "shows Master Object List");
    menubar->Append(uwmenu, "&Underworld");
@@ -176,6 +179,24 @@ void ua_debugger_main_frame::OnMenuUnderwResume(wxCommandEvent& event)
    wxGetApp().command(udc_game_resume,0,NULL,NULL);
 }
 
+void ua_debugger_main_frame::OnMenuUnderwHotspotList(wxCommandEvent& event)
+{
+   // find window using FindWindowByName
+   wxString name(ua_hotspotlist_frame::frame_name);
+   wxWindow* wnd = wxWindow::FindWindowByName(name);
+   if (wnd==NULL)
+   {
+      new ua_hotspotlist_frame(this,-1,wxDefaultPosition,
+         wxSize(600,400),wxDEFAULT_FRAME_STYLE);
+   }
+   else
+   {
+      // show the window
+      wnd->Raise();
+      wnd->Show();
+   }
+}
+
 void ua_debugger_main_frame::OnMenuUnderwPlayer(wxCommandEvent& event)
 {
    wxString name(ua_playerinfo_list::frame_name);
@@ -200,7 +221,7 @@ void ua_debugger_main_frame::OnMenuUnderwObjectList(wxCommandEvent& event)
    if (wnd==NULL)
    {
       new ua_objectlist_frame(-1,this,-1,wxDefaultPosition,
-         wxSize(700,500),wxDEFAULT_FRAME_STYLE);
+         wxSize(750,500),wxDEFAULT_FRAME_STYLE);
    }
    else
    {
