@@ -165,7 +165,8 @@ registered C functions to call from Lua:
   "success_code" are:
 
   - lua_obj_cmb_failed        items couldn't be combined
-  - lua_obj_cmb_dstr_dropped  second (dropped) item is destroyed
+  - lua_obj_cmb_dstr_first    first (existing) item is destroyed
+  - lua_obj_cmb_dstr_second   second (dropped) item is destroyed
   - lua_obj_cmb_dstr_both     both the two objects are destroyed
 
   in any case but "lua_obj_cmb_failed" the "new_item_id" contains the item id
