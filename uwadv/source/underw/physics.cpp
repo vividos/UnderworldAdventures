@@ -334,7 +334,7 @@ void ua_physics_model::check_collision(ua_physics_object& object, int xpos, int 
    // retrieve all tile triangles to check
    std::vector<ua_triangle3d_textured> alltriangles;
    {
-      /* TODO
+      /*TODO
       for(int i=-1; i<2; i++)
       for(int j=-1; j<2; j++)
          ua_renderer::get_tile_triangles(underw->get_current_level(),
@@ -359,8 +359,8 @@ void ua_physics_model::check_collision(ua_physics_object& object, int xpos, int 
             extobjinfo.zpos/4.0);
 
          // get triangles from model manager
-         ua_model3d_manager::cur_modelmgr->get_bounding_triangles(
-            obj,base,alltriangles);
+         //TODOua_model3d_manager::cur_modelmgr->get_bounding_triangles(
+         //TODO   obj,base,alltriangles);
 
          // next object in link chain
          link = obj.get_object_info().link;
