@@ -34,6 +34,30 @@
 #include "underworld.hpp"
 
 
+// structs
+
+//! textured triangle
+struct ua_triangle3d_textured: public ua_triangle3d
+{
+   //! stock texture number used
+   Uint16 texnum;
+
+   //! u/v texture coordinates
+   double tex_u[3];
+   double tex_v[3];
+
+   void set(unsigned int point, double x, double y, double z, double u, double v)
+   {
+      points[point].set(x,y,z); tex_u[point] = u; tex_v[point] = v;
+   }
+
+   bool operator<(const ua_triangle3d_textured &tri)
+   {
+      return texnum>tri.texnum;
+   }
+};
+
+
 // classes
 
 //! underworld renderer
@@ -59,6 +83,10 @@ public:
    void select_pick(unsigned int xpos, unsigned int ypos,
       unsigned int& tilex, unsigned int& tiley, bool& isobj, unsigned int& id);
 
+   //! returns the list of all triangles for a given tile
+   void get_tile_triangles(unsigned int xpos, unsigned int ypos,
+      std::vector<ua_triangle3d_textured>& alltriangles);
+
 protected:
    //! private method to set up camera
    void setup_camera_priv(bool pick,unsigned int xpos, unsigned int ypos);
@@ -77,13 +105,13 @@ protected:
 
    //! renders the objects of a tile
    void render_objects(unsigned int x, unsigned int y,
-      ua_texture_manager &texmgr, ua_frustum &fr);
+      ua_texture_manager &texmgr);
 
 protected:
 
    //! renders a single object
    void render_object(ua_object& obj, unsigned int x, unsigned int y,
-      ua_texture_manager &texmgr, ua_frustum &fr);
+      ua_texture_manager &texmgr);
 
    //! retrieves tile coordinates
    void get_tile_coords(unsigned int side, ua_levelmap_tiletype type,
