@@ -89,7 +89,7 @@ void ua_strpak_unpack_strings(const char *infile,const char *outfile)
       const std::pair<int,std::vector<std::string> > &block = *iter;
       const std::vector<std::string> &stringlist = block.second;
 
-      fprintf(out,"\nblock: %u; %u strings.\n",block.first,stringlist.size());
+      fprintf(out,"\nblock: %04x; %u strings.\n",block.first,stringlist.size());
 
       // print all strings in list
       unsigned int i,max=stringlist.size();
@@ -112,7 +112,7 @@ void ua_strpak_unpack_strings(const char *infile,const char *outfile)
 }
 
 //! repacks a string pack file
-void ua_strpak_pack_strings(const char *infile,const char *outfile)
+void ua_strpak_pack_strings(const char *infile,const char *outfile,const char *nodefile)
 {
    // open input file
    FILE *in = fopen(infile,"r");
@@ -161,7 +161,7 @@ void ua_strpak_pack_strings(const char *infile,const char *outfile)
          }
 
          // start of a new block
-         curblock = strtol(buffer+7,NULL,10);
+         curblock = strtol(buffer+7,NULL,16);
          block.clear();
          continue;
       }
@@ -266,7 +266,7 @@ void ua_strpak_pack_strings(const char *infile,const char *outfile)
       if (node2==-1)
       {
          // only found one node, the root node
-         huffnodes[node1].parent=-1;
+         huffnodes[node1].parent=0xff;
          break; // we're finished
       }
 
@@ -286,6 +286,35 @@ void ua_strpak_pack_strings(const char *infile,const char *outfile)
       unsigned int parent = huffnodes.size()-1;
       huffnodes[node1].parent=parent;
       huffnodes[node2].parent=parent;
+   }
+
+
+   // load nodes from template node file
+   if (nodefile!=NULL)
+   {
+      huffnodes.clear();
+      char_lookup.clear();
+      char_lookup.resize(256,0);
+
+      FILE *fd = fopen(nodefile,"rb");
+
+      // number of nodes
+      Uint16 nodenum = fread16(fd);
+      huffnodes.resize(nodenum);
+
+      for(Uint16 k=0; k<nodenum; k++)
+      {
+         huffnodes[k].symbol = fgetc(fd);
+         huffnodes[k].parent = fgetc(fd);
+         huffnodes[k].left   = fgetc(fd);
+         huffnodes[k].right  = fgetc(fd);
+      }
+
+      // build lookup table
+      for(Uint16 n=0; n<=nodenum/2; n++)
+      {
+         char_lookup[huffnodes[n].symbol]=n;
+      }
    }
 
 
@@ -409,7 +438,7 @@ void ua_strpak_pack_strings(const char *infile,const char *outfile)
 
                   pos=pos2; // parent is new node
 
-               } while(huffnodes[pos].parent != -1);
+               } while(huffnodes[pos].parent != 0xff);
 
                // now we have all bits for this char, in the reverse order
                // put them to bytes and write them
@@ -479,9 +508,11 @@ int main(int argc, char *argv[])
 
    if (argc<4)
    {
-      printf("syntax: strpak <command> <input-file> <output-file>\n");
+      printf("syntax: strpak <command> <input-file> <output-file> [<huffnode-basefile>]\n"
+             "   command can either be \"pack\" or \"unpack\".\n");
       printf("example: strpak unpack strings.pak uw-strings.txt\n"
-             "         strpak pack uw-strings.txt strings2.pak\n\n");
+             "         strpak pack uw-strings.txt strings2.pak\n");
+             "         strpak pack uw-strings.txt strings2.pak strings.pak\n\n");
       return 1;
    }
 
@@ -492,7 +523,7 @@ int main(int argc, char *argv[])
    else
    if (strcmp("pack",argv[1])==0)
    {
-      ua_strpak_pack_strings(argv[2],argv[3]);
+      ua_strpak_pack_strings(argv[2],argv[3],argc>4 ? argv[4] : NULL);
    }
    else
       printf("unknown command \"%s\"\n",argv[1]);
