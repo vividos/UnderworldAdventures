@@ -30,8 +30,9 @@
 #define __uwadv_critter_hpp_
 
 // needed includes
-#include "image.hpp"
 #include "settings.hpp"
+#include "image.hpp"
+#include "texture.hpp"
 
 
 // classes
@@ -46,6 +47,12 @@ public:
    //! loads critter animations
    void load(const char* file, unsigned int used_auxpal);
 
+   //! prepares critter textures
+   void prepare(ua_texture_manager& texmgr);
+
+   //! returns critter texture
+   ua_texture& get_texture(){ return tex; }
+
 protected:
    //! slot list with segment indices
    std::vector<Uint8> slotlist;
@@ -58,6 +65,9 @@ protected:
 
    //! hotspot point in image
    unsigned int hotspot_x, hotspot_y;
+
+   //! texture with all critter images
+   ua_texture tex;
 };
 
 
@@ -70,6 +80,12 @@ public:
 
    //! loads critter images
    void load(ua_settings& settings);
+
+   //! prepares all critter textures
+   void prepare(ua_texture_manager& texmgr);
+
+   //! returns critter object
+   ua_critter& get_critter(unsigned int idx){ return allcritters[idx]; }
 
 protected:
    //! vector with critter animation imagelists
