@@ -351,7 +351,7 @@ bool ua_inventory::drop_floating_item(Uint16 index)
 
             // try to combine objects
             ua_obj_combine_result ret =
-               underw->get_scripts().lua_obj_combine(obj.item_id,item_id2,result_id);
+               underw->get_scripts().lua_inventory_combine_obj(obj.item_id,item_id2,result_id);
 
             if (ret!=ua_obj_cmb_failed)
             {
