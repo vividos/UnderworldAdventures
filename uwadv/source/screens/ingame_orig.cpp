@@ -451,8 +451,8 @@ void ua_ingame_orig_screen::render_ui()
 
    // player appearance
    {
-      unsigned int app = (pl.get_attr(ua_attr_appearance) +
-         pl.get_attr(ua_attr_gender)==0? 0 : 5) % 10;
+      unsigned int app = ( pl.get_attr(ua_attr_appearance) +
+         (pl.get_attr(ua_attr_gender)==0? 0 : 5) ) % 10;
       img_temp.paste_image(img_bodies.get_image(app),260,11);
    }
 
