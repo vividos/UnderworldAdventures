@@ -196,7 +196,7 @@ bool ua_quad::does_intersect(ua_frustum &fr)
 
       for(int k=0; k<4; k++)
       {
-         double dist1, dist2;
+         double dist1=0, dist2=0;
 
          switch(k)
          {

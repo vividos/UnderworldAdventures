@@ -429,7 +429,7 @@ void ua_renderer::get_tile_triangles(ua_level& level, unsigned int xpos, unsigne
             x1,y1,z1, x2,y2,z2);
 
          // get adjacent tile coordinates
-         Uint16 nx, ny, nz1, nz2;
+         Uint16 nx=0, ny=0, nz1, nz2;
          switch(side)
          {
          case ua_left:  nx=Uint16(x)-1; ny=Uint16(y); break;
@@ -858,7 +858,7 @@ void ua_renderer::render_walls(ua_levelmap_tile& tile, unsigned int x,
          x1,y1,z1, x2,y2,z2);
 
       // get adjacent tile coordinates
-      Uint16 nx, ny, nz1, nz2;
+      Uint16 nx=0, ny=0, nz1, nz2;
       switch(side)
       {
       case ua_left:  nx=x-1; ny=y; break;

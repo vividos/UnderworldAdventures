@@ -452,7 +452,7 @@ void ua_ingame_orig_screen::handle_event(SDL_Event &event)
 
 void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
 {
-   static int curlevel = 0;
+   static unsigned int curlevel = 0;
    ua_player &pl = core->get_underworld().get_player();
 
    Uint32 keymod = ua_make_keymod(keysym.sym,keysym.mod & ~KMOD_NUM);

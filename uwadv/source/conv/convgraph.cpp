@@ -373,7 +373,7 @@ void ua_conv_graph::replace_expressions()
             {
                operitem.oper_needed = 0;
 
-               int j=i+1;
+               unsigned int j=i+1;
                while(is_opcode(j,op_POP) && j<max)
                {
                   operitem.oper_needed++;
@@ -704,7 +704,7 @@ void ua_conv_graph::fold_expressions()
             if (item.oper_needed>0)
             {
                // search for new insertion position before last finished expression
-               int n = i-1;
+               unsigned int n = i-1;
 
                while(n>j && n>0)
                {

@@ -38,7 +38,7 @@ void ua_critter::prepare(ua_texture_manager& texmgr)
 
    tex.init(&texmgr,max);
 
-   for(int i=0; i<max; i++)
+   for(unsigned int i=0; i<max; i++)
    {
       tex.convert(allframes.get_image(i),i);
       tex.use(i);

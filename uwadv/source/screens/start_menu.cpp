@@ -115,7 +115,7 @@ void ua_start_menu_screen::done()
 
 void ua_start_menu_screen::handle_event(SDL_Event &event)
 {
-   unsigned int last_selected_area = selected_area;
+   int last_selected_area = selected_area;
 
    switch(event.type)
    {

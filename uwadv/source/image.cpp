@@ -33,7 +33,7 @@
 // ua_image methods
 
 ua_image::ua_image()
-:xres(0), yres(0), palette(0)
+: palette(0), xres(0), yres(0)
 {
 }
 

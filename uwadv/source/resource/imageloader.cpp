@@ -53,14 +53,14 @@ void ua_image_decode_rle(FILE *fd,std::vector<Uint8> &pixels,unsigned int bits,
 {
    // bit extraction variables
    unsigned int bits_avail=0;
-   unsigned int rawbits;
+   unsigned int rawbits=0;
    unsigned int bitmask = ((1<<bits)-1) << (8-bits);
    unsigned int nibble;
 
    // rle decoding vars
    unsigned int pixcount=0;
    unsigned int stage=0; // we start in stage 0
-   unsigned int count;
+   unsigned int count=0;
    unsigned int record=0; // we start with record 0=repeat (3=run)
    unsigned int repeatcount=0;
 

@@ -93,7 +93,7 @@ struct ua_tga_info
    unsigned int bytesperpixel;
 
    // count of raw bytes to pass
-   int rawcount;
+   unsigned int rawcount;
    // count of bytes to repeat
    int repeatcount;
 
@@ -160,7 +160,7 @@ void ua_import_tga(SDL_RWops* rwops, unsigned int& xres, unsigned int& yres,
       SDL_RWseek(rwops,info.idlength+info.colormaplength,SEEK_CUR);
 
    // load scanlines (saved top-down)
-   for(int line=0; line<origy; line++)
+   for(unsigned int line=0; line<origy; line++)
       ua_tga_read_scanline(rwops,info,&texels[line*xres]);
 
    // (saved bottom-up)
@@ -179,7 +179,7 @@ void ua_tga_read_scanline(SDL_RWops* rwops, ua_tga_info& info, Uint32* line)
 
    case 10: // rle-compressed rgb image
       {
-         int size=0; // size in 'color values'
+         unsigned int size=0; // size in 'color values'
 
          while (size<info.width)
          {
@@ -227,7 +227,7 @@ void ua_tga_read_scanline(SDL_RWops* rwops, ua_tga_info& info, Uint32* line)
    case 2: // 16-bit
       {
          // uses GGGBBBBB ARRRRRGG storage
-         for(int i=0; i<info.width; i++) 
+         for(unsigned int i=0; i<info.width; i++) 
          {
 /* TODO
             int offs1 = i<<2, offs2 = (i<<1)+i;
@@ -243,7 +243,7 @@ void ua_tga_read_scanline(SDL_RWops* rwops, ua_tga_info& info, Uint32* line)
 
    case 3: // 24-bit
       {
-         for(int i=0; i<info.width; i++)
+         for(unsigned int i=0; i<info.width; i++)
          {
             for(int j=0; j<3; j++)
                line[i] |= Uint32(info.scanline[(i<<1)+i+(2-j)])<<(8*j);
