@@ -59,34 +59,34 @@ FONT 8, "Tahoma"
 BEGIN
     LTEXT           "General Settings",IDC_STATIC,4,2,53,8
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,60,6,218,1
-    LTEXT           "Ultima Underworld I Path",IDC_STATIC,9,16,82,8
+    LTEXT           "&Ultima Underworld I Path",IDC_STATIC,9,16,82,8
     EDITTEXT        IDC_EDIT_UW1_PATH,92,12,137,12,ES_AUTOHSCROLL | WS_GROUP
-    PUSHBUTTON      "Browse ...",IDC_BUTTON_SET_UW1_PATH,233,12,43,13
-    LTEXT           "Cutscenes Narration",IDC_STATIC,9,31,82,8
+    PUSHBUTTON      "&Browse ...",IDC_BUTTON_SET_UW1_PATH,233,12,43,13
+    LTEXT           "Cutscenes &Narration",IDC_STATIC,9,31,82,8
     COMBOBOX        IDC_COMBO_CUTS_NARRATION,92,27,90,46,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    CONTROL         "enable Underworld Adventures features",
+    CONTROL         "enable Underworld Adventures &features",
                     IDC_CHECK_ENABLE_FEATURES,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,9,44,173,10
     LTEXT           "Graphics Settings",IDC_STATIC,4,57,56,8
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,64,61,212,1
-    LTEXT           "Screen Resolution",IDC_STATIC,9,72,82,8
+    LTEXT           "&Screen Resolution",IDC_STATIC,9,72,82,8
     COMBOBOX        IDC_COMBO_SCREEN_RESOLUTION,92,68,90,103,CBS_DROPDOWN | 
                     WS_VSCROLL | WS_GROUP | WS_TABSTOP
-    CONTROL         "Fullscreen Mode",IDC_CHECK_FULLSCREEN,"Button",
+    CONTROL         "F&ullscreen Mode",IDC_CHECK_FULLSCREEN,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,193,70,85,10
+    CONTROL         "S&mooth User Interface",IDC_CHECK_SMOOTHUI,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,9,85,151,10
     LTEXT           "Audio Settings",IDC_STATIC,4,98,46,8
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,54,102,223,1
-    CONTROL         "enable audio output",IDC_CHECK_ENABLE_AUDIO,"Button",
+    CONTROL         "enable &audio output",IDC_CHECK_ENABLE_AUDIO,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,9,110,134,10
-    LTEXT           "MIDI device",IDC_STATIC,9,124,82,8
+    LTEXT           "MIDI &device",IDC_STATIC,9,124,82,8
     COMBOBOX        IDC_COMBO_MIDI_DEVICE,92,122,137,83,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,4,140,274,1
     PUSHBUTTON      "&Cancel",IDCANCEL,172,146,50,14
     PUSHBUTTON      "&OK",IDOK,228,146,50,14
-    CONTROL         "Smooth User Interface",IDC_CHECK_SMOOTHUI,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,9,85,151,10
 END
 
 
