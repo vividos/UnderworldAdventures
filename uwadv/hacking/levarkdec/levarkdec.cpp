@@ -1,8 +1,16 @@
 // levarkdec.cpp
 //
 
+#pragma warning(disable:4786)
+
 #include "../hacking.h"
 #include <stdio.h>
+
+#include "common.hpp"
+#include "settings.hpp"
+#include "gamestrings.hpp"
+
+#undef SDL_main
 
 const char *filename = UWPATH"Save3\\lev.ark";
 
@@ -51,6 +59,10 @@ int main(int argc, char* argv[])
       }
    }
    printf(", size=%08x\n",flen-lastpos);
+
+   // read in game strings
+   ua_gamestrings gs;
+   gs.load(UWPATH"data\\strings.pak");
 
    for(int j=0; j<9; j++)
    {
@@ -139,15 +151,15 @@ int main(int argc, char* argv[])
 
 
       // level object dumping
-      fseek(fd,offsets[j+9],SEEK_SET);
-      fprintf(out,"objects for level %02u, at offset %08x:\n\n",j,offsets[j+9]);
+      fseek(fd,offsets[j]+0x4000,SEEK_SET);
+      fprintf(out,"objects for level %02u, at offset %08x:\n\n",j,offsets[j]+0x4000);
 
-      for(int n=0; n<48; n++)
+      for(int n=0; n<0x400; n++)
       {
          unsigned int objval[2];
          fread(objval,4,2,fd);
 
-         fprintf(out,"object %02x: ",n);
+         fprintf(out,"object %03x: ",n);
 
          fprintf(out,"id=%04x ",objval[0] & 0x000001ff);
          fprintf(out,"unk1=%02x ",(objval[0] & 0x0000ff00)>>9 );
@@ -159,7 +171,11 @@ int main(int argc, char* argv[])
          fprintf(out,"quality=%02x ",objval[1] & 0x0000003f);
          fprintf(out,"link1=%04x ",(objval[1] & (0x3ff<<6))>>6);
          fprintf(out,"unk2=%02x ",(objval[1] & (0x3f<<16))>>16);
-         fprintf(out,"quan/link2=%04x\n",(objval[1] & (0x3ff<<22))>>22);
+         fprintf(out,"quan/link2=%04x ",(objval[1] & (0x3ff<<22))>>22);
+         fprintf(out,"desc=%s\n",gs.get_string(3,objval[0] & 0x000001ff).c_str());
+
+         if (n<0x0100)
+            fseek(fd,0x1b-8,SEEK_CUR);
       }
       fprintf(out,"\n");
    }
