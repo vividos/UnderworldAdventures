@@ -28,11 +28,11 @@
 // needed includes
 #include "common.hpp"
 #include "uwadv.hpp"
+#include "gamecfg.hpp"
 #include "screens/uwadv_menu.hpp"
 //#include "screens/ingame_orig.hpp" // TODO use screens/ingame.hpp
 //#include "screens/start_splash.hpp"
 /*
-#include "gamecfg.hpp"
 #include "screens/uwadv_menu.hpp"
 
 #include <iostream>
@@ -561,41 +561,41 @@ void ua_uwadv_game::init_game()
    // load game config file
    std::string gamecfg_name(prefix);
    gamecfg_name.append("/game.cfg");
-/*
+
    // init scripting before loading game.cfg (lua_State is needed)
-   underworld.get_scripts().init(&underworld);
+//   underworld.get_scripts().init(&underworld);
 
    // try to load %prefix%/game.cfg
    {
       ua_gamecfg_loader cfgloader;
       cfgloader.init(this);
 
-      SDL_RWops* gamecfg = filesmgr.get_uadata_file(gamecfg_name.c_str());
+      SDL_RWops* gamecfg = files_manager.get_uadata_file(gamecfg_name.c_str());
 
       // no game.cfg found? too bad ...
       if (gamecfg == NULL)
       {
          std::string text("could not find game.cfg for game prefix ");
          text.append(prefix.c_str());
-         throw new ua_exception(text.c_str());
+         throw ua_exception(text.c_str());
       }
 
       cfgloader.load(gamecfg);
    }
-*/
+
    ua_trace("using generic uw-path: %s\n",
       settings.get_string(ua_setting_uw_path).c_str());
 
    // init renderer
    renderer.init(settings);
 
-/*
+
    // init underworld
-   underworld.init(settings,filesmgr);
+   underworld.init(settings,files_manager);
 
    // after loading all scripts, init the stuff
-   underworld.get_scripts().lua_init_script();
-*/
+//   underworld.get_scripts().lua_init_script();
+
 
    // init audio
    audio_manager.init(settings,files_manager);
