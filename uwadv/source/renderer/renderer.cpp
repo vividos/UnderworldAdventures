@@ -61,11 +61,11 @@ ua_renderer::~ua_renderer()
 
 void ua_renderer::init(ua_game_interface& game)
 {
-   texmgr.init(game);
-
    critpool = new ua_critter_pool;
    modelmgr = new ua_model3d_manager;
    renderer_impl = new ua_renderer_impl;
+
+   get_texture_manager().init(game);
 
    // culling: only render front face, counter clockwise
    glCullFace(GL_BACK);
@@ -94,8 +94,6 @@ void ua_renderer::done()
    delete modelmgr;
    delete renderer_impl;
 
-   //texmgr.reset();
-
 //   glDisable(GL_FOG);
 }
 
@@ -106,6 +104,11 @@ void ua_renderer::clear()
    SDL_GL_SwapBuffers();
 }
 
+ua_texture_manager& ua_renderer::get_texture_manager()
+{
+   return renderer_impl->get_texture_manager();
+}
+
 void ua_renderer::setup_camera2d()
 {
    // setup orthogonal projection
@@ -113,6 +116,7 @@ void ua_renderer::setup_camera2d()
    glLoadIdentity();
    gluOrtho2D(0,320,0,200);
    glMatrixMode(GL_MODELVIEW);
+   glLoadIdentity();
 
    glDisable(GL_DEPTH_TEST);
    glDisable(GL_BLEND);
@@ -126,6 +130,8 @@ void ua_renderer::setup_camera3d(const ua_vector3d& the_view_offset,
    view_offset = the_view_offset;
    far_dist = the_far_dist;
    fov = the_fov;
+
+   view_offset.z += 10.0;
 
    // set projection matrix
    glMatrixMode(GL_PROJECTION);
@@ -159,16 +165,14 @@ void ua_renderer::render_underworld(const ua_underworld& underw)
 
    const ua_player& pl = underw.get_player();
 
-   double plheight = 0.6+pl.get_height()/*TODOheight_scale*/;
+   double plheight = 0.6+pl.get_height();
    ua_vector3d pos(pl.get_xpos(),pl.get_ypos(),plheight);
 
-   double rotangle = pl.get_angle_rot();
-   double panangle = pl.get_angle_pan();
+   pos += view_offset;
 
    // render map
    renderer_impl->render(underw.get_current_level(),pos,pl.get_angle_pan(),
       pl.get_angle_rot(), fov);
-
 }
 
 void ua_renderer::select_pick(const ua_underworld& underw, unsigned int xpos,
@@ -261,5 +265,30 @@ void ua_renderer::select_pick(const ua_underworld& underw, unsigned int xpos,
       tiley = (coords>>8) & 0x00ff;
       isobj = renderid<0x0400;
       id = renderid - (isobj ? 0 : 0x0400);
+   }
+}
+
+void ua_renderer::prepare_level(const ua_level& level)
+{
+   ua_texture_manager& texmgr = get_texture_manager();
+
+   // reset stock texture usage
+   texmgr.reset();
+
+   // prepare all used wall/ceiling textures
+   {
+      const std::vector<Uint16>& used_textures = level.get_used_textures();
+
+      unsigned int max = used_textures.size();
+      for(unsigned int n=0; n<max; n++)
+         texmgr.prepare(used_textures[n]);
+   }
+
+   // prepare all switch, door and tmobj textures
+   {
+      unsigned int n;
+      for(n=0; n<16; n++) texmgr.prepare(ua_tex_stock_switches+n);
+      for(n=0; n<13; n++) texmgr.prepare(ua_tex_stock_door+n);
+      for(n=0; n<33; n++) texmgr.prepare(ua_tex_stock_tmobj+n);
    }
 }

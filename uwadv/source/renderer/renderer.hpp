@@ -37,6 +37,7 @@
 
 // forward references
 class ua_underworld;
+class ua_level;
 class ua_renderer_impl;
 class ua_critter_pool;
 class ua_model3d_manager;
@@ -81,22 +82,10 @@ public:
       unsigned int& tilex, unsigned int& tiley,
       bool& isobj, unsigned int& id);
 
-/*
-   //! renders underworld
-   void ua_renderer::render(ua_level& level, ua_vector3d& pos,
-      double panangle, double rotangle,
-      std::vector<ua_quad_tile_coord>& tilelist);
-
-
-   //! returns the list of all triangles for a given tile
-   static void get_tile_triangles(ua_level& level, unsigned int xpos, unsigned int ypos,
-      std::vector<ua_triangle3d_textured>& alltriangles);
-*/
+   //! prepares renderer for given level (e.g. when changing levels)
+   void prepare_level(const ua_level& level);
 
 protected:
-   //! texture manager to use for rendering
-   ua_texture_manager texmgr;
-
    //! critter pool
    ua_critter_pool* critpool;
 
@@ -120,13 +109,5 @@ protected:
    //! near plane distance
    static const double near_dist;
 };
-
-
-// inline methods
-
-inline ua_texture_manager& ua_renderer::get_texture_manager()
-{
-   return texmgr;
-}
 
 #endif
