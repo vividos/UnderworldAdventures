@@ -23,29 +23,6 @@
 
    \brief general config file handling
 
-   The ua_cfgfile class supports reading and writing configuration files,
-   stored as text files that have "key" and "value" pairs. The file might
-   look as follows:
-
-   ; one-line comment
-   [section]  ; sections may be omitted
-   key1 value1
-   key2 value2
-
-   Keys and values are separated with at least one whitespace. when saving
-   files one space character is put between them. Comments are preserved
-   during writing; comments that are on a line with a key/value pair are
-   written to a new line
-
-   To use the class, derive from it and implement at least:
-   - load_value()           for reading
-   - load_start_section()   to have support for sections while reading
-   - write_replace()        for writing
-   - write_start_section()  to support writing sections
-
-   note: after calling ua_cfgfile::load(SDL_RWops*) the file is not closed
-   using SDL_RWclose()
-
 */
 //! \ingroup base
 
@@ -61,6 +38,29 @@
 // classes
 
 //! config file class
+/*! The ua_cfgfile class supports reading and writing configuration files,
+    stored as text files that have "key" and "value" pairs. The file might
+    look as follows:
+
+    ; one-line comment
+    [section]  ; sections may be omitted
+    key1 value1
+    key2 value2
+
+    Keys and values are separated with at least one whitespace. When saving
+    files one space character is put between them. Comments are preserved
+    during writing; comments that are on a line with a key/value pair are
+    written to a new line.
+
+    To use the class, derive from it and implement at least:
+    - load_value()           for reading
+    - load_start_section()   to have support for sections while reading
+    - write_replace()        for writing
+    - write_start_section()  to support writing sections
+
+    Note: After calling ua_cfgfile::load(SDL_RWops*) the file is not closed
+    using SDL_RWclose(). It has to be closed manually.
+*/
 class ua_cfgfile
 {
 public:

@@ -40,7 +40,9 @@
 const Uint32 ua_savegame::current_version = 0;
 
 
-// ua_savegame_info methods
+// ua_savegame_info methods#
+
+/*! Structure constructor. Sets default values for all members. */
 ua_savegame_info::ua_savegame_info()
 :type(0),title("no savegame title"),gender(0),appearance(0),profession(0),
  maplevel(0),strength(0),dexterity(0),intelligence(0),vitality(0),

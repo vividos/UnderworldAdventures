@@ -23,18 +23,8 @@
 
    \brief math stuff
 
-   The macros ua_deg2rad and ua_rad2deg convert angles between degree values
-   (0°..360°) and radians (0..2pi).
-
-   The classes ua_vector2d and ua_vector3d represents vectors with 2 and 3
-   elements and contains common mathematical operators and functions.
-
-   The ua_vertex3d class is a point in 3d space with texture coordinates u and
-   v.
-
-   ua_triangle3d_textured describes three vertices and a texture number or id.
-
-   Note: all angle params should be passed in degrees, not radians.
+   Note: all angle params should be passed to the functions in degrees, not
+   radians.
 
 */
 //! \ingroup base
@@ -64,13 +54,16 @@ const double ua_pi = 3.141592653589793;
 
 // macros
 
+//! converts angle from degree values (0°..360°) to radians (0..2pi)
 #define ua_deg2rad(a) ((double(a)/180.0)*ua_pi)
+//! converts angle from randians values to degrees
 #define ua_rad2deg(a) ((double(a)/ua_pi)*180.0)
 
 
 // classes
 
 //! 2d vector class
+/*! The class represents a 2 dimensional vector with x and y coordinates. */
 class ua_vector2d
 {
 public:
@@ -121,6 +114,9 @@ public:
 
 
 //! 3d vector class
+/*! The class represents a 3 dimensional vector with x, y and z coordinates.
+    It can also represent a point in 3d space, depending on use.
+*/
 class ua_vector3d
 {
 public:
@@ -197,6 +193,8 @@ public:
 
 
 //! vertex in 3d space
+/*! Represents a vertex in 3d space, which can form a triangle. Additionally
+    the vertex has texture coordinates associated with them. */
 struct ua_vertex3d
 {
    //! struct ctor
@@ -211,6 +209,9 @@ struct ua_vertex3d
 
 
 //! textured triangle
+/*! Represents a textured triangle, made up with 3 ua_vertex3d objects. There
+    also is a texnum member to specify texture to use.
+*/
 struct ua_triangle3d_textured
 {
    //! stock texture number used
@@ -459,11 +460,11 @@ inline void ua_vector3d::rotate_z(double angle)
    y = x_temp*sin(angle_rad) + y*cos(angle_rad);
 }
 
+/*! calculates rotated vector using the rotation matrix at
+    http://www.makegames.com/3drotation/
+*/
 inline void ua_vector3d::rotate(const ua_vector3d& axis, double angle)
 {
-   // calculates rotated vector using the rotation matrix at
-   // http://www.makegames.com/3drotation/
-
    double c = cos(ua_deg2rad(angle));
    double s = sin(ua_deg2rad(angle));
    double t = 1 - c;

@@ -23,29 +23,6 @@
 
    \brief savegame class and savegames manager
 
-   The ua_savegame class represents a savegame on disk and can be in one of
-   two states, either loading and saving. It has a ua_savegame_info struct
-   that contains infos about the savegame. The ua_savegames_manager manages
-   savegames on disk and creating new ones. It also has support for quicksave
-   savegames.
-
-   Using the classes is simple. Just init() and let the savegames manager
-   rescan() to find the savegame files (*.uas). The list of available
-   savegames can be queried with get_savegames_count() and get_savegame_info()
-   and a savegame to load can be retrieved with get_savegame_load() or
-   get_savegame_from_file(). New savegames can be created with
-   get_savegame_save_new_slot() or get_savegame_save_overwrite().
-
-   A savegame contains several sections that are started with begin_section()
-   and ended with end_section(). Values can be read and write via the readN()
-   and writeN() functions. When done, close() should be called.
-
-   A savegame carries a version number that lets the user decide which fields
-   or parts of a savegame have to be loaded. This way older savegames can be
-   supported.
-
-   The savegame naming scheme is "uasaveXXXXX.uas".
-
 */
 //! \ingroup base
 
@@ -69,6 +46,10 @@
 // structs
 
 //! savegame info struct
+/*! The info struct saves infos about a savegame that can be shown in the
+    savegames screen. They are written into the first section of the savegame
+    and can easily be extracted.
+*/
 struct ua_savegame_info
 {
    //! ctor
@@ -116,6 +97,20 @@ struct ua_savegame_info
 // classes
 
 //! savegame class
+/*! The ua_savegame class represents a savegame on disk and can be in one of
+    two states, either loading and saving. It has a ua_savegame_info struct
+    that contains infos about the savegame.
+
+    A savegame contains several sections that are started with begin_section()
+    and ended with end_section(). Values can be read and write via the readN()
+    and writeN() functions. When done, close() should be called.
+
+    A savegame carries a version number that lets the user decide which fields
+    or parts of a savegame have to be loaded. This way older savegames can be
+    supported.
+
+    The savegame naming scheme is "uasaveXXXXX.uas".
+*/
 class ua_savegame
 {
    friend class ua_savegames_manager;
@@ -202,6 +197,10 @@ protected:
 
 
 //! savegames manager
+/*! The savegames manager keeps hold of all savegames, including quicksave
+    savegames. To use the class, call init() and rescan() to rescan the
+    uasave folder for new savegames (extension .uas). 
+*/
 class ua_savegames_manager
 {
 public:

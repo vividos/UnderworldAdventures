@@ -43,6 +43,10 @@
 // classes
 
 //! resource files manager
+/*! The class manages file access and config file paths. The class can read
+    from uwadv resource files (extension .uar) transparently (using method
+    get_uadata_file()).
+*/
 class ua_files_manager
 {
 public:

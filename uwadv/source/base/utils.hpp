@@ -23,30 +23,6 @@
 
    \brief commonly used types, classes and functions
 
-   ua_trace() is the standard way of logging text during the game; it has
-   the same syntax as a printf() call; it may be conditionally switched off
-
-   ua_smart_ptr<T> was inspired by boost::shared_ptr; it represents a pointer
-   to an object of class T and may conveniently be used in STL containers like
-   std::map or std::vector. The smart pointer does reference counting of the
-   pointer and destroys the object when the objects isn't used anymore
-   (refcount at 0). The smart pointer may noticeable reduce the number of
-   constructions, destructions and copy operations of objects in STL.
-
-   ua_exception is the standard way to throw an exception in uwadv. It should
-   be thrown when there is no way to continue normal operation, e.g. when a
-   resource file can't be loaded. It can be constructed with an informational
-   text about the exception.
-
-   ua_endian_convert16 and ua_endian_convert32 are inline functions to switch
-   between host and network byte order, e.g. when loading a little endian
-   16-bit value from a resource file on an apple macintosh (which is a big
-   endian machine).
-
-   SDL_RWreadN and SDL_RWwriteN are inline functions to read and write 8, 16
-   and 32 bit values from SDL_RWops structures. They always read little endian
-   values, even on big endian machines.
-
 */
 //! \ingroup base
 
@@ -65,7 +41,9 @@
 
 // macros
 
+//! returns minimum value
 #define ua_min(a,b) ((a)<(b) ? (a) : (b))
+//! returns maximum value
 #define ua_max(a,b) ((a)>(b) ? (a) : (b))
 
 
@@ -74,6 +52,15 @@
 int ua_trace_printf(const char *fmt,...);
 
 // debug trace
+/*! \function ua_trace
+    The function ua_trace is used to log text during the game. The text is
+    printed on the console (the program has to be built with console support
+    to show the text.
+
+    The function has the same syntax as the printf function and uses the
+    ua_trace_printf() helper function. The function can be switched off
+    conditionally.
+*/
 #if 1 //defined(_DEBUG) || defined(DEBUG)
 # define ua_trace ua_trace_printf
 #else
@@ -99,14 +86,21 @@ void ua_str_lowercase(std::string& str);
 // classes
 
 //! smart pointer class
+/*! The class was inspired by boost::shared_ptr; it represents a pointer
+    to an object of class T and may conveniently be used in STL containers
+    like std::map or std::vector. The smart pointer does reference counting of
+    the pointer and destroys the object when the objects isn't used anymore
+    (refcount drops to 0). The smart pointer may noticeable reduce the number
+    of constructions, destructions and copy operations of objects in STL.
+*/
 template<typename T>
 class ua_smart_ptr
 {
 public:
    // typedefs
-   typedef T  value_type;
-   typedef T* pointer_type;
-   typedef T& reference_type;
+   typedef T  value_type;     //!< value type pointed to
+   typedef T* pointer_type;   //!< pointer type
+   typedef T& reference_type; //!< reference type
 
    //! ctor
    explicit ua_smart_ptr(T* ptr=0):px(ptr){ pn=new long(1);}
@@ -156,6 +150,11 @@ protected:
 
 
 //! exception class
+/*! The ua_exception class is the class used in uwadv to throw an exception.
+    It should be thrown when there is no way to continue normal operation,
+    e.g. when a needed resource file can't be loaded. It can be constructed
+    with an informational text about the exception.
+*/
 class ua_exception: public std::exception
 {
 public:
@@ -181,11 +180,20 @@ protected:
 
 // endian conversion
 
+//! endian-converts 16-bit value
+/*! Converts between host and network byte ordering by swapping the low and
+    high byte. This can become handy when reading a little-endian value from a
+    resource file when running on a big endian machine (like an Apple Mac).
+*/
 inline Uint16 ua_endian_convert16(Uint16 x)
 {
    return (((x)&0x00ff)<<8) | (((x)&0xff00)>>8);
 }
 
+//! endian-converts 32-bit value
+/*! Converts between host and network byte ordering by swapping the low and
+    high word.
+*/
 inline Uint32 ua_endian_convert32(Uint32 x)
 {
    return ua_endian_convert16(((x)&0xffff0000)>>16) |
@@ -194,6 +202,7 @@ inline Uint32 ua_endian_convert32(Uint32 x)
 
 // SDL_RWops helper functions
 
+//! function to read 8-bit value from SDL_RWops structure
 inline Uint8 SDL_RWread8(SDL_RWops* rwops)
 {
    Uint8 val;
@@ -201,6 +210,10 @@ inline Uint8 SDL_RWread8(SDL_RWops* rwops)
    return val;
 }
 
+//! function to read 16-bit value from SDL_RWops structure
+/*! The function always reads a little-endian value, even on big endian
+    machines.
+*/
 inline Uint16 SDL_RWread16(SDL_RWops* rwops)
 {
    Uint16 val;
@@ -211,6 +224,7 @@ inline Uint16 SDL_RWread16(SDL_RWops* rwops)
    return val;
 }
 
+//! function to read 32-bit value from SDL_RWops structure
 inline Uint32 SDL_RWread32(SDL_RWops* rwops)
 {
    Uint32 val;
@@ -221,11 +235,13 @@ inline Uint32 SDL_RWread32(SDL_RWops* rwops)
    return val;
 }
 
+//! function to write 8-bit value from SDL_RWops structure
 inline void SDL_RWwrite8(SDL_RWops* rwops, Uint8 val)
 {
    SDL_RWwrite(rwops,&val,1,1);
 }
 
+//! function to write 16-bit value from SDL_RWops structure
 inline void SDL_RWwrite16(SDL_RWops* rwops, Uint16 val)
 {
 #if (SDL_BYTEORDER==SDL_BIG_ENDIAN)
@@ -234,6 +250,7 @@ inline void SDL_RWwrite16(SDL_RWops* rwops, Uint16 val)
    SDL_RWwrite(rwops,&val,2,1);
 }
 
+//! function to write 32-bit value from SDL_RWops structure
 inline void SDL_RWwrite32(SDL_RWops* rwops, Uint32 val)
 {
 #if (SDL_BYTEORDER==SDL_BIG_ENDIAN)

@@ -52,7 +52,6 @@
 #endif
 
 
-//! creates a folder
 /*! borrowed from Exult, files/utils.cc */
 int ua_mkdir(const char* dirname, int mode)
 {

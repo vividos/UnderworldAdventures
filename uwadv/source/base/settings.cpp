@@ -23,11 +23,6 @@
 
    \brief settings functions
 
-   settings loading implementation; the ua_settings_mapping table contains
-   the mapping between actual key strings and the enum values defined in the
-   header. Ther rest of the functions are to read from the config file or
-   delivering values to the user.
-
 */
 
 // needed includes
@@ -39,6 +34,10 @@
 // structs
 
 //! mapping of all settings keywords to keys
+/*! The mapping contains strings that are to be mapped to ua_settings_key enum
+    values when loading the settings file. Add new entries to the end when
+    needed.
+*/
 struct
 {
    const char *optname;
@@ -61,6 +60,7 @@ struct
 
 // ua_settings methods
 
+/*! Constructor. Sets default values for some settings. */
 ua_settings::ua_settings()
 :gtype(ua_game_uw1)
 {
@@ -91,6 +91,9 @@ int ua_settings::get_int(ua_settings_key key)
       static_cast<int>(strtol(iter->second.c_str(),NULL,10));
 }
 
+/*! Boolean values in the settings can be expressed either with the words
+    "true", "yes" or "1". All other values mean false.
+*/
 bool ua_settings::get_bool(ua_settings_key key)
 {
    // try to find key
