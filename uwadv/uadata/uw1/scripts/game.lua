@@ -34,7 +34,7 @@
 -- called on initing underworld
 function lua_init_script()
 
-   print ("lua_init_script() called")
+   print ("Lua: lua_init_script() called")
 
    -- init player position
 
@@ -52,7 +52,6 @@ function lua_init_script()
 
    -- testing stuff
 
-   -- fun_replace_tilemap_solids()
    -- fun_count_underworld_path()
 
 end
@@ -115,7 +114,7 @@ function fun_count_underworld_path()
       end
    end
 
-   print ("length of paths in underworld: " .. floor(length)/1000 ..
+   print ("Lua: length of paths in underworld: " .. floor(length)/1000 ..
       " km or " .. floor(length/1.60935)/1000 .. " miles (and not 25 :)" )
 end
 
@@ -123,7 +122,19 @@ end
 -- called when underworld is destroyed
 function lua_done_script()
 
-   print ("lua_done_script() called")
+   print ("Lua: lua_done_script() called")
+end
+
+
+-- called to load lua values from savegame
+function lua_savegame_load(savegame,version)
+
+end
+
+
+-- called to load lua values from savegame
+function lua_savegame_save(savegame)
+
 end
 
 
@@ -135,5 +146,9 @@ end
 
 -- called when changing to a new level
 function lua_change_level(newlevel)
+
+   ui_print_string("Lua: changing to level " .. newlevel)
+
+   -- fun_replace_tilemap_solids()
 
 end
