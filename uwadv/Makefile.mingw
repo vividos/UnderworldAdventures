@@ -59,7 +59,9 @@ lua_OBJS = source/lua/src/lapi.o source/lua/src/lcode.o source/lua/src/ldebug.o 
 	source/lua/src/llex.o source/lua/src/lmem.o source/lua/src/lobject.o \
 	source/lua/src/lparser.o source/lua/src/lstate.o source/lua/src/lstring.o \
 	source/lua/src/ltable.o source/lua/src/ltests.o source/lua/src/ltm.o \
-	source/lua/src/lundump.o source/lua/src/lvm.o source/lua/src/lzio.o
+	source/lua/src/lundump.o source/lua/src/lvm.o source/lua/src/lzio.o \
+	source/lua/src/lib/lauxlib.o source/lua/src/lib/lbaselib.o \
+	source/lua/src/lib/lmathlib.o source/lua/src/lib/lstrlib.o
 
 lua: $(lua_OBJS)
 
@@ -232,20 +234,30 @@ strpak: $(strpak_EXEC)
 $(strpak_EXEC): $(strpak_OBJS)
 	$(CXX) $(LDFLAGS) $(strpak_LDFLAGS) -o $(@) $(strpak_OBJS) $(strpak_LIBS)
 
+#
+# general build rules
+#
 
 data: luac
 	cd uadata && make
+
+data-clean:
+	cd uadata && make clean
 
 luac:
 	cd source/lua/src/luac && make
 	cp source/lua/bin/luac.exe* uadata
 
-update: uwadv tools data
+luac-clean:
+	cd source/lua/src/luac && make clean
+
+
+update: uwadv data
 	strip $(uwadv_EXEC)
 	mkdir -p $(UWADV_PATH)
 	cp $(uwadv_EXEC) $(UWADV_PATH)
-	mkdir -p $(UWADV_PATH)uadata/
-	cp uadata/uadata00.uar $(UWADV_PATH)uadata/
+	mkdir -p $(UWADV_PATH)/uadata/
+	cp uadata/uadata00.uar $(UWADV_PATH)/uadata/
 
 install: update
 	cp uwadv.cfg $(UWADV_PATH)
@@ -256,12 +268,12 @@ installer: uwadv data
 	rem cp uwadv.exe output/release/uwadv.exe
 	rem source/win32/install/makensis.exe uwadv.nsi
 
-clean:
+clean: data-clean luac-clean
 	rm -f $(uwadv_EXEC) $(cnvdbg_EXEC) $(cnvdasm_EXEC) $(xmi2mid_EXEC) \
 		$(mapdisp_EXEC) $(animview_EXEC) $(strpak_EXEC) \
 		$(uwadv_OBJS) $(cnvdbg_OBJS) $(cnvdasm_OBJS) $(xmi2mid_OBJS) \
 		$(mapdisp_OBJS) $(animview_OBJS) $(strpak_OBJS)
-	cd uadata && make clean
+
 
 #
 # compile rules
