@@ -256,18 +256,6 @@ void ua_game::handle_key_down(SDL_keysym *keysym)
       if ((keysym->mod & KMOD_ALT)!=0)
          exit_game = true;
       break;
-
-   case SDLK_1:
-      audio->play_sound("01");
-      break;
-
-   case SDLK_2:
-      audio->play_sound("26");
-      break;
-
-   case SDLK_3:
-      audio->play_sound("03");
-      break;
    }
 }
 
