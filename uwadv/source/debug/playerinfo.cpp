@@ -196,7 +196,8 @@ void ua_playerinfo_list::OnEndLabelEdit(wxListEvent& event)
 
    ua_debug_command_func cmd = wxGetApp().command;
 
-   ua_debug_param param1(item), param2;
+   ua_debug_param param1,param2;
+   param1.set_int(item);
 
    if (item<4)
    {
