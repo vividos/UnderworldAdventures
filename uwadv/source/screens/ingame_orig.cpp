@@ -29,7 +29,6 @@
 #include "common.hpp"
 #include "ingame_orig.hpp"
 #include "uamath.hpp"
-#include "load_game.hpp"
 #include "save_game.hpp"
 #include "cutscene_view.hpp"
 #include "conversation.hpp"
@@ -627,7 +626,6 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
       fade_ticks = 0;
       fadeout_action = 0; // return to menu
    }
-#ifdef HAVE_DEBUG
    else
    // check for quicksave key
    if (keymap.is_key(ua_key_special_quicksave,keymod))
@@ -664,7 +662,6 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
       fade_ticks = 0;
       fadeout_action = 2; // save game
    }
-#endif
    else
    // check for "debugger" key
    if (keymap.is_key(ua_key_ua_debug,keymod))
@@ -1110,12 +1107,12 @@ void ua_ingame_orig_screen::tick()
             core->pop_screen();
             break;
 
-         case 1: // start "load game" screen
-            core->push_screen(new ua_load_game_screen);
+         case 1: // start "save game" screen
+            core->push_screen(new ua_save_game_screen(false));
             break;
 
          case 2: // start "save game" screen
-            core->push_screen(new ua_save_game_screen);
+            core->push_screen(new ua_save_game_screen(false));
             break;
 
          case 3: // start conversation
