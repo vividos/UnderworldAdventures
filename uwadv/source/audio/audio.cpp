@@ -117,7 +117,7 @@ ua_audio_impl::~ua_audio_impl()
 
 void ua_audio_impl::init(ua_settings &settings, ua_files_manager &filesmgr)
 {
-   ua_trace("init audio subsystem ...");
+   ua_trace("init audio subsystem ... ");
 
    if (!settings.get_bool(ua_setting_audio_enabled))
    {
