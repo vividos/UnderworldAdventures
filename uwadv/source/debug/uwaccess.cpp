@@ -189,49 +189,48 @@ unsigned int ua_uw_access_api::command_func(
          switch(param2->val.i)
          {
          case 0: // item_id
-            param1->set(static_cast<unsigned int>(objinfo.item_id));
+            param1->set_int(objinfo.item_id);
             break;
 
          case 1: // link
-            param1->set(static_cast<unsigned int>(objinfo.link));
+            param1->set_int(objinfo.link);
             break;
 
          case 2: // quality
-            param1->set(static_cast<unsigned int>(objinfo.quality));
+            param1->set_int(objinfo.quality);
             break;
 
          case 3: // owner
-            param1->set(static_cast<unsigned int>(objinfo.owner));
+            param1->set_int(objinfo.owner);
             break;
 
          case 4: // quantity
-            param1->set(static_cast<unsigned int>(objinfo.quantity));
+            param1->set_int(objinfo.quantity);
             break;
 
-         case 5: // enchanted
-            param1->set(static_cast<unsigned int>(objinfo.enchanted?1:0));
-            break;
-
-         case 6: // is_link
-            param1->set(static_cast<unsigned int>(objinfo.is_link));
-            break;
-
-         case 7: // x
+         case 5: // x
             param1->set(extobjinfo.xpos);
             break;
 
-         case 8: // y
+         case 6: // y
             param1->set(extobjinfo.ypos);
             break;
 
-         case 9: // z
-            param1->set(static_cast<unsigned int>(extobjinfo.zpos));
+         case 7: // z
+            param1->set(extobjinfo.zpos);
             break;
 
-         case 10: // angle
-            param1->set(static_cast<unsigned int>(extobjinfo.dir));
+         case 8: // angle
+            param1->set_int(extobjinfo.dir);
             break;
 
+         case 9: // enchanted
+            param1->set_int(objinfo.enchanted?1:0);
+            break;
+
+         case 10: // is_link
+            param1->set_int(objinfo.is_link);
+            break;
          }
       }
       break;

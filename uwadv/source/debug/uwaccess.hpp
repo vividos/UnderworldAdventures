@@ -50,7 +50,7 @@ enum
    udc_game_suspend=3, //!< suspends game
    udc_game_resume=4,  //!< resumes game
 
-   udc_player_get=5, /*!< gets player value; param1.uint holds array index;
+   udc_player_get=5, /*!< gets player value; param1.i holds array index;
                           allowed types:
                           0: get player info
                           1: get attribute
@@ -58,14 +58,29 @@ enum
    udc_player_set=6, /*!< sets player value; param1.uint holds index;
                           types are the same as in udc_player_get */
 
-   udc_objlist_get=7, /*< gets master object list value
-                          type contains "level"
-                          param1 contains object list position to get
-                          param2 contains value index to get:
-                             0: item_id
-                             1: ?
-                          */
-   udc_objlist_set=8,
+   udc_objlist_get=7, /*!< gets master object list value
+                           "type" contains underworld level
+                           param1 contains object list position to get
+                           param2 contains value index to get:
+                             0: item_id     
+                             1: link        
+                             2: quality     
+                             3: owner       
+                             4: quantity    
+                             5: x
+                             6: y
+                             7: z/height
+                             8: angle
+                             9: enchanted
+                            10: is_link
+                            11: ??         */
+
+   udc_objlist_set=8, /*!< sets master object list value
+                           "type" contains "stage" in setting a value:
+                            0: set list position (underworld level in param1,
+                               object list position in param2)
+                            1: set value (value index in param1, see
+                               udc_objlist_get, value in param2) */
 
    udc_tilemap_get=9,
    udc_tilemap_set=10,
@@ -97,7 +112,7 @@ struct ua_debug_param
    ~ua_debug_param(){ if (type==ua_param_string) delete val.str; }
 
    // set functions
-   void set(unsigned int i){ val.i = i; type = ua_param_int; }
+   void set_int(unsigned int i){ val.i = i; type = ua_param_int; }
    void set(double d){ val.d = d; type = ua_param_double; }
    void set(const char* str)
    {
