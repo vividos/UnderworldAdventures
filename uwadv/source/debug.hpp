@@ -55,6 +55,9 @@ public:
    //! dtor
    ~ua_debug_server();
 
+   //! inits debug server
+   void init();
+
    //! starts debugger client; returns if debugger was already running
    bool start_debugger(ua_game_interface* game);
 

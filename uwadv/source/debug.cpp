@@ -40,17 +40,6 @@ ua_debug_server::ua_debug_server()
    // init mutex, semaphore and thread handle
    mutex_lock = SDL_CreateMutex();
    sem_debugger = SDL_CreateSemaphore(0);
-
-#ifdef WIN32
-   // create win32 debug server implementation
-   extern ua_debug_server_impl* ua_create_debug_server_impl();
-   debug_impl = ua_create_debug_server_impl();
-#endif
-   if (debug_impl != NULL)
-      debug_impl->init();
-
-   ua_trace("debug server started; debugger is %savailable\n",
-      debug_impl != NULL && debug_impl->is_avail() ? "" : "not ");
 }
 
 ua_debug_server::~ua_debug_server()
@@ -67,6 +56,20 @@ ua_debug_server::~ua_debug_server()
 
    delete debug_impl;
    debug_impl = NULL;
+}
+
+void ua_debug_server::init()
+{
+#ifdef WIN32
+   // create win32 debug server implementation
+   extern ua_debug_server_impl* ua_create_debug_server_impl();
+   debug_impl = ua_create_debug_server_impl();
+#endif
+   if (debug_impl != NULL)
+      debug_impl->init();
+
+   ua_trace("debug server inited; debugger is %savailable\n",
+      debug_impl != NULL && debug_impl->is_avail() ? "" : "not ");
 }
 
 bool ua_debug_server::start_debugger(ua_game_interface* game)
