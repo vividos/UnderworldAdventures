@@ -7,9 +7,7 @@
    uwadv's devlog now conforms to RSS 2.0 and Feedvalidator confirms this: <a href="http://feedvalidator.org/check.cgi?url=http://uwadv.sourceforge.net/devlog.php?type=rss">check</a>. The date wasn't RFC 822 conform, and the description tag must encode html chars like &lt; and &gt; as entities.
   </para>
  </entry>
-</devlog>
 
-<devlog>
  <entry date="2004-09-08">
   <para>
 I modified the devlog so that devlog entries are stored in an xml file and the web output is done using an xsl-transformation. At least that was my initial thought. SF doesn't directly support that, so I had to use the expat parser, which registers callback functions for elements. The handlers then output html code. It's more limited than xsl-transformations, but it suffices for what I want to do here. I've also done RSS 2.0 output so that everyone with an RSS aggregator can read the devlog. I then tried SharpReader and Amphetadesk. The results look ok, but both aggregators seem to have problems with the embedded html code, so links won't show up, and other small problems. Also the pubDate field isn't formatted correctly as in RFC 822, but I'm too lazy to do that now.
