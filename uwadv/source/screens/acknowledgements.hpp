@@ -79,10 +79,10 @@ protected:
    bool ended;
 
    //! acknowledgements cutscene
-   ua_cutscene ack;
+   ua_cutscene cuts_ack;
 
-   //! fading textures (two parts, two textures)
-   ua_texture tex1,tex2;
+   //! fading quad images (two parts, two textures)
+   ua_image_quad img[2];
 };
 
 #endif
