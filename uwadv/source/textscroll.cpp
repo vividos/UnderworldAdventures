@@ -114,7 +114,7 @@ bool ua_textscroll::print(const char* text)
       {
          part.assign(msgtext);
 
-         std::string::size_type pos;
+         std::string::size_type pos = std::string::npos;
 
          unsigned int linewidth = width;
 
@@ -128,7 +128,7 @@ bool ua_textscroll::print(const char* text)
          while(font_normal.calc_length(part.c_str()) > linewidth)
          {
             // search for newlines
-            pos = part.find_first_of('\n\r');
+            pos = part.find_first_of('\n');
 
             // no newlines? then search for the last space
             if (pos==std::string::npos)
@@ -167,8 +167,14 @@ bool ua_textscroll::print(const char* text)
          }
          else
          {
+            std::string morestr(part);
+
+            // add newline when line ended in a newline
+            if (pos!=std::string::npos && msgtext.at(pos)=='\n')
+               morestr.append(1,'\n');
+
             // add to "[MORE]" stack
-            morestack.push_back(part);
+            morestack.push_back(morestr);
          }
 
          curline++;
@@ -241,8 +247,12 @@ void ua_textscroll::show_more_lines()
    unsigned int max = morestack.size();
    for(unsigned int i=0; i<max; i++)
    {
-      msgtext.append(morestack[i].c_str());
-      msgtext.append(1,'\n');
+      std::string& morestr = morestack[i];
+      msgtext.append(morestr.c_str());
+
+      // append space, but only when last string didn't end with newline
+      if (morestr.size()>0 && morestr.at(morestr.size()-1)!='\n')
+         msgtext.append(1,' ');
    }
 
    morestack.clear();
