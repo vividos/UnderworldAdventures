@@ -81,7 +81,7 @@ C functions to call from Lua:
     indicates that cutscene is at it's end; the screen immediately gives back
     control to the previous screen, so do some fade-out before doing this
     action.
-    
+
   - cuts_set_string_block
     sets game string block that should be used for cutscene text. Game strings
     can be extracted from the game with the "strpak" tool. Usually string
@@ -132,6 +132,10 @@ C functions to call from Lua:
 
   - cuts_anim_hide
     hides the animation instantly.
+
+  - cuts_anim_continue
+    continues a stopped animation (either with "cuts_anim_set_stopframe" or
+    "cuts_anim_stop". It also clears the stopframe.
 
 The "actionvalue" variable always must be passed to the function. For actions
 that doesn't use the value, it can be set to anything.
