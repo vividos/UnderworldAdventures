@@ -209,14 +209,14 @@ public:
    virtual unsigned int get_num_levels()
    {
       if (game == NULL) return 0;
-      return game->get_underworld().get_num_levels();
+      return game->get_underworld().get_levelmaps_list().get_num_levels();
    }
 
    virtual double get_tile_height(unsigned int level, double xpos,
       double ypos)
    {
       if (game == NULL) return 0.0;
-      return game->get_underworld().get_level(level).get_floor_height(xpos,ypos);
+      return game->get_underworld().get_levelmaps_list().get_level(level).get_floor_height(xpos,ypos);
    }
 
 /*   virtual void get_tile_info(unsigned int level, unsigned int xpos,
