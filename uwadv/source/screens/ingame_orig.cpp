@@ -540,7 +540,7 @@ void ua_ingame_orig_screen::handle_key_action(Uint8 type, SDL_keysym &keysym)
    // check for "level down" key
    if (keymap.is_key(ua_key_ua_level_down,keymod))
    {
-      if (curlevel<9)
+      if (curlevel<8)
          core->get_underworld().change_level(++curlevel);
    }
 #endif
