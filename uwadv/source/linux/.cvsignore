@@ -3,4 +3,6 @@ config.cache
 config.log
 config.status
 configure
+stamp-h.in
+config.h
 

@@ -8,8 +8,12 @@ dnl
 dnl initial stuff
 AC_INIT(../uwadv.cpp)
 AM_INIT_AUTOMAKE(uwadv,0.0.1)
-dnl AM_CONFIG_HEADER(config.h)
-AC_PREFIX_DEFAULT(/usr/local/games)
+AM_CONFIG_HEADER(config.h)
+AC_PREFIX_DEFAULT(/usr/local)
+
+
+dnl libtool
+AM_PROG_LIBTOOL
 
 
 dnl find and test the compiler
@@ -27,10 +31,21 @@ AC_PROG_INSTALL
 
 dnl check header
 AC_HEADER_STDC
-AC_CHECK_HEADERS(SDL/SDL.h,,AC_MSG_ERROR([
-   Underworld Adventures needs SDL 1.2 or higher installed.]))
-dnl AC_CHECK_HEADERS(fmod.h fmoderr.h,,AC_MSG_ERROR)
+AC_CHECK_HEADER(SDL/SDL.h,,AC_MSG_ERROR([
+Underworld Adventures needs SDL 1.2 or higher installed.]))
+
+AC_CHECK_HEADER(GL/gl.h,,AC_MSG_ERROR([
+Mesa header not found. The Mesa graphics 
+library is required to compile and run
+Underworld Adventures.
+Check http://mesa3d.sourceforge.net]))
+
+AC_CHECK_HEADER(fmod.h,AC_DEFINE(HAVE_FMOD_H),AC_MSG_WARN([
+FMOD not found. No midi playback available.]))
 
 
 dnl produce output files
-AC_OUTPUT(../Makefile)
+AC_OUTPUT([Makefile ../Makefile ../audio/Makefile
+../audio/midi_driver/Makefile ../conv/Makefile
+../resource/Makefile ../screens/Makefile])
+
