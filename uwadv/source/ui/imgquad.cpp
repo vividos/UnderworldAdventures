@@ -33,6 +33,17 @@
 
 // ua_image_quad methods
 
+/*! Does image quad initialisation; ua_window::create() is called and needed
+    texture(s) are init'ed. When there's no palette for the image yet, palette
+    0 is retrieved and set.
+
+    The method is virtual and can be derived to do window/control specific
+    init'ing before or after calling this method.
+
+    \param game reference to game interface
+    \param xpos x position on ua_screen
+    \param ypos y position
+*/
 void ua_image_quad::init(ua_game_interface& game, unsigned int xpos,
    unsigned int ypos)
 {
@@ -44,9 +55,23 @@ void ua_image_quad::init(ua_game_interface& game, unsigned int xpos,
    tex.init(&game.get_renderer().get_texture_manager(), 2);
 }
 
-/*! the border image must completely contain the window and image */
+/*! The method adds a border around the current quad image, based on the
+    given image; the border pixels are taken from the window coordinates
+    set during ua_window::create() that is called in ua_image_quad::init().
+    The window is enlarged by 2 pixels in width and height and moved one
+    pixel left and up. To update the quad image, paste new image contents
+    to the coordinates destx = 1, desty = 1.
+
+    The border is not added to the image if the image quad has to use
+    split-textures to draw the quad.
+
+    \param border_img the background image where borders are copied from
+*/
 void ua_image_quad::add_border(ua_image& border_img)
 {
+   if (split_textures)
+      return; // no border support for large images
+
    ua_image img_temp = image;
 
    // enlarge the image
@@ -65,15 +90,21 @@ void ua_image_quad::add_border(ua_image& border_img)
    // image
    image.paste_rect(img_temp, 0,0, img_temp.get_xres(),img_temp.get_yres(), 1,1);
 
+   wnd_xpos--;
+   wnd_ypos--;
+
    has_border = true;
 }
 
+/*! Updates image quad texture(s) with changes from the quad image available
+    through get_image(). The method determines if the texture will get larger
+    than 256 in height or width and uses a split-texture approach then. This
+    is required for older cards that only support textures up to 256x256.
+*/
 void ua_image_quad::update()
 {
    wnd_width = image.get_xres();
    wnd_height = image.get_yres();
-
-   wnd_width += (wnd_width&1); // even width
 
    split_textures = wnd_width > 254;
 
@@ -89,6 +120,8 @@ void ua_image_quad::update()
    // upload image
    if (split_textures)
    {
+      wnd_width += (wnd_width&1); // even width
+
       // split text image into two
       ua_image img_split1,img_split2;
 
@@ -123,11 +156,14 @@ void ua_image_quad::update()
    }
 }
 
+/*! Cleans up texture(s) used for rendering the image quad. */
 void ua_image_quad::destroy()
 {
    tex.done();
 }
 
+/*! Draws the image quad. The method takes into account if a border was added
+    with add_border(), and if a split-texture has to be used. */
 void ua_image_quad::draw()
 {
    double u = tex.get_tex_u(), v = tex.get_tex_v();
@@ -136,51 +172,56 @@ void ua_image_quad::draw()
    unsigned int quadwidth = wnd_width;
    unsigned int quadheight = wnd_height;
    double dx = 0.0, dy = 0.0;
-   unsigned int dpx = 0, dpy = 0;
+   unsigned int dpx, dpy;
+
+   unsigned int x0, x1, y0, y1;
+   x0 = wnd_xpos;
+   x1 = wnd_xpos+quadwidth;
+
+   y0 = 200-wnd_ypos;
+   y1 = 200-wnd_ypos-quadheight;
+
 
    if (split_textures)
    {
       dx = 1.22*0.5/quadwidth;
       quadwidth = wnd_width/2;
    }
-
+   else
    if (has_border)
    {
       dx = 1.0/quadwidth;
       dy = 1.0/quadheight;
-
-      dpx = dpy = 1;
-      quadwidth -= 2;
-      quadheight -= 2;
+      x0++; x1--; y0--; y1++;
    }
 
    double u0 = dx, u1 = u-dx;
    double v0 = dy, v1 = v-dy;
 
-//   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-//   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+//   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
    // render (first) quad
    glBegin(GL_QUADS);
-   glTexCoord2d(u0, v1); glVertex2d(wnd_xpos+dpx,          200-wnd_ypos-quadheight+dpy);
-   glTexCoord2d(u1, v1); glVertex2d(wnd_xpos+quadwidth-dpx,200-wnd_ypos-quadheight+dpy);
-   glTexCoord2d(u1, v0); glVertex2d(wnd_xpos+quadwidth-dpx,200-wnd_ypos-dpy);
-   glTexCoord2d(u0, v0); glVertex2d(wnd_xpos+dpx,          200-wnd_ypos-dpy);
+   glTexCoord2d(u0, v1); glVertex2d(x0,y1);
+   glTexCoord2d(u1, v1); glVertex2d(x1,y1);
+   glTexCoord2d(u1, v0); glVertex2d(x1,y0);
+   glTexCoord2d(u0, v0); glVertex2d(x0,y0);
    glEnd();
 
    if (split_textures)
    {
       tex.use(1);
 
-//      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-//      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+//      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);

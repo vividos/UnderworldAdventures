@@ -21,9 +21,7 @@
 */
 /*! \file imgquad.hpp
 
-   \brief image quad that can be drawn onto screen
-
-   the image quad supports resolutions up to 512 x 256
+   \brief image quad class
 
 */
 //! \ingroup userinterface
@@ -44,6 +42,15 @@
 // classes
 
 //! image quad class
+/*! The ua_image_quad class is a ua_window that draws an ua_image on an OpenGL
+    screen managed by ua_screen. It supports images up to 320x200 (the
+    standard screen size) and supports adding a border to properly render the
+    image quad on top of a background image in OpenGL.
+
+    The image quad can be registered using ua_screen::register_window() just
+    like any ua_window object. The underlying image can be retrieved via
+    get_image().
+*/
 class ua_image_quad: public ua_window
 {
 public:
@@ -51,7 +58,7 @@ public:
    ua_image_quad():split_textures(false),has_border(false){}
 
    //! initializes image quad window
-   void init(ua_game_interface& game, unsigned int xpos, unsigned int ypos);
+   virtual void init(ua_game_interface& game, unsigned int xpos, unsigned int ypos);
 
    //! returns image to draw
    ua_image& get_image();
