@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Underworld Adventures Team
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -331,6 +331,31 @@ void ua_physics_model::check_collision(ua_physics_object& object, int xpos, int 
       for(int j=-1; j<2; j++)
          ua_renderer::get_tile_triangles(underw->get_current_level(),
             unsigned(xpos+i),unsigned(ypos+j),alltriangles);
+   }
+
+   // also retrieve 3d model triangles
+   {
+      ua_object_list& objlist = underw->get_current_level().get_mapobjects();
+
+      // get first object link
+      Uint16 link = objlist.get_tile_list_start(xpos,ypos);
+
+      while(link != 0)
+      {
+         ua_object& obj = objlist.get_object(link);
+         ua_object_info_ext& extobjinfo = obj.get_ext_object_info();
+
+         ua_vector3d base(
+            xpos+extobjinfo.xpos, ypos+extobjinfo.ypos,
+            extobjinfo.zpos/4.0);
+
+         // get triangles from model manager
+         ua_model3d_manager::cur_modelmgr->get_bounding_triangles(
+            obj.get_object_info().item_id,base,alltriangles);
+
+         // next object in link chain
+         link = obj.get_object_info().link;
+      }
    }
 
    // keep a copy of this as it's needed a few times
