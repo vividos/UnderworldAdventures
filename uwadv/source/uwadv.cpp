@@ -212,7 +212,6 @@ void ua_game::run()
          // check if there is a screen to destroy
          if (screen_to_destroy!=NULL)
          {
-            screen_to_destroy->done();
             delete screen_to_destroy;
             screen_to_destroy = NULL;
             break;
@@ -426,6 +425,11 @@ void ua_game::push_screen(ua_ui_screen_base *newscreen)
 
 void ua_game::replace_screen(ua_ui_screen_base *newscreen)
 {
+   // clear screen; this stuff could take a while
+   glClearColor(0,0,0,0);
+   glClear(GL_COLOR_BUFFER_BIT);
+   SDL_GL_SwapBuffers();
+
    pop_screen();
    push_screen(newscreen);
    exit_game = false;
@@ -433,6 +437,8 @@ void ua_game::replace_screen(ua_ui_screen_base *newscreen)
 
 void ua_game::pop_screen()
 {
+   screen->done();
+
    screen_to_destroy = screen;
 
    // use 
