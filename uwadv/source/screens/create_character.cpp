@@ -623,10 +623,10 @@ unsigned int ua_create_character_screen::drawtext(int strnum, int x, int y, int 
 
 void ua_create_character_screen::drawbutton(int buttontype, bool highlight, int strnum, int xc, int y)
 {
-   ua_image& button = img_buttons[btng_buttonimg_normal];
+   ua_image button = img_buttons[btng_buttonimg_normal];
    int x = xc - button.get_xres()/2;
 
-   img_screen.get_image().paste_image(button, x, y);
+   img_screen.get_image().paste_image(button, x,y);
 
    if (buttontype==btText)
       drawtext(strnum, xc, y+3, 1, (highlight ? textcolor_highlight : textcolor_normal));
