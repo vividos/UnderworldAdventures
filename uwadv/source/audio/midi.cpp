@@ -35,12 +35,15 @@
 # include "midi_driver/win_midiout.h"
 #endif
 
+#include "midi_driver/uni_fmod.h"
+
 
 // ua_midi_player methods
 
 bool ua_midi_player::init_driver()
 {
-   midi_driver = new Windows_MidiOut;
+//   midi_driver = new Windows_MidiOut;
+   midi_driver = new uni_fmod_driver;
    init=true;
    return true;
 }
