@@ -760,6 +760,18 @@ SOURCE=..\conv\codevm.cpp
 
 SOURCE=..\conv\codevm.hpp
 # End Source File
+# Begin Source File
+
+SOURCE=..\conv\convgraph.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\conv\convgraph.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\conv\opcodes.hpp
+# End Source File
 # End Group
 # Begin Group "game support files"
 
