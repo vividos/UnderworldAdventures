@@ -2,7 +2,7 @@
 # Underworld Adventures install script
 #
 
-!define VERSION "0.5-butterfinger"
+!define VERSION "0.6-rotworm-stew"
 
 # compiler utility commands
 #
