@@ -168,6 +168,8 @@ void ua_image_decode_rle(FILE *fd,std::vector<Uint8> &pixels,unsigned int bits,
             for(int n=0; n<count; n++)
             {
                pixels[pixcount++] = auxpalidx[nibble];
+               if (pixcount>=maxpix)
+                  break;
             }
          }
 
@@ -447,9 +449,9 @@ void ua_image_list::load(ua_settings &settings, const char *name, unsigned int f
       fseek(fd,offsets[j],SEEK_SET);
 
       // load image into pixel vector
-      ua_image *img = new ua_image;
-      img->load_image(fd,auxpalidx);
-      img->palette = palette;
+      ua_image img;
+      img.load_image(fd,auxpalidx);
+      img.palette = palette;
 
       allimages.push_back(img);
    }
