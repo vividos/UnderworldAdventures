@@ -80,6 +80,50 @@ void ua_texture_manager::init(ua_settings &settings)
 
       load_textures(ua_tex_stock_floor,floortexfname.c_str());
    }
+
+   // load object texture graphics
+   if (settings.gtype == ua_game_uw1 || settings.gtype == ua_game_uw_demo)
+   {
+      // load image list
+      ua_image_list il;
+      il.load(settings,"objects");
+
+      // make sure we have at least have 460 images
+      if (il.size()<460)
+         throw ua_exception("expected 460 images in data/objects.gr");
+
+      // create object textures
+      objteximg[0].create(256,256);
+      objteximg[1].create(256,256);
+
+      // create first texture
+      ua_image &part1 = objteximg[0];
+      Uint16 id;
+      for(id=0; id<256; id++)
+      {
+         // objects 218 thru 223 have different size
+         if (id<218 || id>=224)
+            part1.paste_image(il.get_image(id),(id&0x0f)<<4,id&0xf0);
+      }
+
+      // create first texture
+      ua_image &part2 = objteximg[1];
+      for(id=0; id<(460-256); id++)
+      {
+         if (id!=(302-256))
+            part2.paste_image(il.get_image(id+256),(id&0x0f)<<4,id&0xf0);
+      }
+
+      // TODO paste images 218 to 223 and 302 into remaining space
+
+      // convert to textures
+      objtexs[0].convert(*this,objteximg[0]);
+      objtexs[1].convert(*this,objteximg[1]);
+
+      // prepare textures
+      objtexs[0].prepare(false);
+      objtexs[1].prepare(false);
+   }
 }
 
 void ua_texture_manager::load_textures(unsigned int startidx, const char *texfname)
