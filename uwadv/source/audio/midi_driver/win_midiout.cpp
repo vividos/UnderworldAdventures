@@ -142,8 +142,8 @@ void ua_win_midiout::init_device()
 //   config->set("config/audio/midi/win32_device", dev_num, true);
    
    giveinfo();
-   if (thread_com == W32MO_THREAD_COM_INIT_FAILED)
-      thread_com;//cerr << "Failure to initialize midi playing thread" << endl;
+//   if (thread_com == W32MO_THREAD_COM_INIT_FAILED)
+//      cerr << "Failure to initialize midi playing thread" << endl;
    giveinfo();
 }
 
@@ -272,7 +272,7 @@ void ua_win_midiout::thread_play ()
          InterlockedExchange (&thread_com, W32MO_THREAD_COM_READY);
 
          // Handle note off's here
-         while (note = notes_on.Pop())
+         while ((note = notes_on.Pop()))
             midiOutShortMsg (midi_port, note->status + (note->data[0] << 8));
 
          giveinfo();
@@ -295,10 +295,10 @@ void ua_win_midiout::thread_play ()
       }
 
       // Handle note off's here
-      while (note = notes_on.PopTime(wmoGetRealTime()))
+      while ((note = notes_on.PopTime(wmoGetRealTime())))
          midiOutShortMsg (midi_port, note->status + (note->data[0] << 8));
 
-      while (note = s_notes_on.PopTime(wmoGetRealTime()))
+      while ((note = s_notes_on.PopTime(wmoGetRealTime())))
          midiOutShortMsg (midi_port, note->status + (note->data[0] << 8));
 
       while (event && thread_com != W32MO_THREAD_COM_STOP)
@@ -359,7 +359,7 @@ void ua_win_midiout::thread_play ()
                   InterlockedExchange (&thread_com, W32MO_THREAD_COM_READY);
 
                // Handle note off's here
-               while (note = notes_on.Pop())
+               while ((note = notes_on.Pop()))
                   midiOutShortMsg (midi_port, note->status + (note->data[0] << 8));
 
                 // Clean up
@@ -397,7 +397,7 @@ void ua_win_midiout::thread_play ()
       if (thread_com == W32MO_THREAD_COM_PLAY)
       {
          // Handle note off's here
-         while (note = notes_on.Pop())
+         while ((note = notes_on.Pop()))
             midiOutShortMsg (midi_port, note->status + (note->data[0] << 8));
 
          // Manual Reset since I don't trust midiOutReset()
@@ -474,7 +474,7 @@ void ua_win_midiout::thread_play ()
        if (s_evntlist && (!s_event || thread_com == W32MO_THREAD_COM_EXIT || sfx_com != W32MO_THREAD_COM_READY))
       {
           // Play all the remaining note offs 
-         while (note = s_notes_on.Pop())
+         while ((note = s_notes_on.Pop()))
             midiOutShortMsg (midi_port, note->status + (note->data[0] << 8));
           
           // Also reset the played tracks
@@ -495,7 +495,7 @@ void ua_win_midiout::thread_play ()
 //         cout << "Play sfx command" << endl;
 
           // Play all the remaining note offs 
-         while (note = s_notes_on.Pop())
+         while ((note = s_notes_on.Pop()))
             midiOutShortMsg (midi_port, note->status + (note->data[0] << 8));
 
          // Make sure that the data exists
@@ -548,11 +548,11 @@ void ua_win_midiout::thread_play ()
       if (diff > 5 && s_diff > 5) Sleep (1);
    }
    // Handle note off's here
-   while (note = notes_on.Pop())
+   while ((note = notes_on.Pop()))
       midiOutShortMsg (midi_port, note->status + (note->data[0] << 8));
 
    // Play all the remaining note offs 
-   while (note = s_notes_on.PopTime(wmoGetRealTime()))
+   while ((note = s_notes_on.PopTime(wmoGetRealTime())))
       midiOutShortMsg (midi_port, note->status + (note->data[0] << 8));
 
    if (evntlist) evntlist->DecrementCounter();
@@ -644,7 +644,7 @@ void ua_win_midiout::start_sfx(XMIDIEventList *xmidi)
    giveinfo();
    xmidi->IncrementCounter();
    sdata.list = xmidi;
-   sdata.repeat;
+   //sdata.repeat;
    
    giveinfo();
    InterlockedExchange ((LONG*) &sfx_data, (LONG) &sdata);
