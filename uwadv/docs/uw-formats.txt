@@ -767,7 +767,14 @@ Table of Contents
      parameters:   s[0]: unknown
                    s[1]: pointer to list of string id's; ends with id == 0
      description:  shows a menu of further questions the user can select
-     return value: number of selected question
+     return value: number of selected response
+
+     id=0001 name="babl_fmenu" ret_type=int
+     parameters:   s[0]: unknown, always 0x0000
+                   s[1]: pointer to list of string id's; ends with id == 0
+                   s[2]: unknown, points to 3 values
+     description:  ???
+     return value: number of selected response
 
 
 5.0 Critter Animation
