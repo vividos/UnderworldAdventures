@@ -51,6 +51,7 @@
 #define __uwadv_codevm_hpp_
 
 // needed includes
+#include <string>
 #include <vector>
 
 
