@@ -31,6 +31,46 @@
 #include "fread_endian.hpp"
 
 
+// ua_conv_globals methods
+
+/*! when init is set to true, the file to load only contains size entries, and no
+    actual data; globals are initalized with 0 then. */
+void ua_conv_globals::load(const char *bgname, bool init)
+{
+   // try to open file
+   FILE *fd = fopen(bgname,"rb");
+   if (fd==NULL)
+   {
+      std::string text("error loading private globals file: ");
+      text.append(bgname);
+      throw ua_exception(text.c_str());
+   }
+
+   // read in all slot/size/[globals] infos
+   while (!feof(fd))
+   {
+      Uint16 slot = fread16(fd);
+      Uint16 size = fread16(fd);
+
+      if (!init)
+      {
+         // read in globals
+         std::vector<Uint8> globals;
+
+         for(Uint16 i=0; i<size; i++)
+            globals.push_back(fread16(fd));
+
+         if (slot>allglobals.size())
+            allglobals.resize(slot);
+
+         allglobals.insert(allglobals.begin()+slot,globals);
+      }
+   }
+
+   fclose(fd);
+}
+
+
 // ua_conv_vm methods
 
 bool ua_conv_code_vm::load_code(const char *cnvfile, Uint16 conv)
@@ -77,19 +117,23 @@ bool ua_conv_code_vm::load_code(const char *cnvfile, Uint16 conv)
    // read conversation header
    fseek(fd,offset,SEEK_SET);
 
-   Uint32 unknown1 = fread32(fd);
-   Uint32 thecodesize = fread32(fd);
+   Uint32 unk1 = fread32(fd); // always 0x0828
 
-   Uint16 fn_unknown1 = fread16(fd);
-   Uint16 fn_unknown2 = fread16(fd);
-   Uint16 fn_unknown3 = fread16(fd);
+   // as there are only 16-bit operands for e.g. JUMP, 32-bit code doesn't
+   // make sense
+   codesize = static_cast<Uint16>(fread32(fd));
+   Uint16 unk2 = fread16(fd); // always 0x0000
+   Uint16 unk3 = fread16(fd); // conv slot + 0x0e00
+
+   // seems to be superfluous, since we know the number of words from the globals file
+   Uint16 unk4 = fread16(fd); // number of stack words reserved for globals
 
    // load imported functions
    load_imported_funcs(fd);
 
    // load code
-   reserve(thecodesize);
-   for(int i=0; i<codesize; i++)
+   code.resize(codesize,0);
+   for(Uint16 i=0; i<codesize; i++)
       code[i] = fread16(fd);
 
    return true;
