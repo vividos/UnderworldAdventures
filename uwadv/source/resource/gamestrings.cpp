@@ -65,58 +65,69 @@ void ua_gamestrings::load(ua_settings &settings) throw(ua_exception)
 
 void ua_gamestrings::load(const char *filename) throw(ua_exception)
 {
-   FILE *fd = fopen(filename,"rb");
-   if (fd==NULL)
+   SDL_RWops* rwops = SDL_RWFromFile(filename,"rb");
+   if (rwops==NULL)
       throw ua_exception("could not open file strings.pak");
 
-   Uint16 nodenum = fread16(fd);
+   load(rwops);
+
+   SDL_RWclose(rwops);
+}
+
+void ua_gamestrings::load(SDL_RWops *rwops)
+{
+   // determine filesize
+   SDL_RWseek(rwops,0,SEEK_END);
+   long filesize = SDL_RWtell(rwops);
+   SDL_RWseek(rwops,0,SEEK_SET);
+
+   // number of huffman nodes
+   Uint16 nodenum = SDL_RWread16(rwops);
 
    // read in node list
    std::vector<ua_huff_node> allnodes;
    allnodes.resize(nodenum);
    for(Uint16 k=0; k<nodenum; k++)
    {
-      allnodes[k].symbol = fgetc(fd);
-      allnodes[k].parent = fgetc(fd);
-      allnodes[k].left   = fgetc(fd);
-      allnodes[k].right  = fgetc(fd);
+      allnodes[k].symbol = SDL_RWread8(rwops);
+      allnodes[k].parent = SDL_RWread8(rwops);
+      allnodes[k].left   = SDL_RWread8(rwops);
+      allnodes[k].right  = SDL_RWread8(rwops);
    }
 
    // number of string blocks
-   Uint16 sblocks = fread16(fd);
+   Uint16 sblocks = SDL_RWread16(rwops);
 
    // read in all block infos
    std::vector<ua_block_info> allblocks;
    allblocks.resize(sblocks);
    for(int z=0; z<sblocks; z++)
    {
-      allblocks[z].block_id = fread16(fd);
-      allblocks[z].offset = fread32(fd);
+      allblocks[z].block_id = SDL_RWread16(rwops);
+      allblocks[z].offset = SDL_RWread32(rwops);
    }
-
-//   printf("game strings: %u blocks\n",sblocks);
 
    for(Uint16 i=0; i<sblocks; i++)
    {
       std::vector<std::string> allblockstrings;
 
-      fseek(fd,allblocks[i].offset,SEEK_SET);
+      SDL_RWseek(rwops,allblocks[i].offset,SEEK_SET);
 
       // number of strings
-      Uint16 numstrings = fread16(fd);
-
-//      printf("\nblock %u: %u strings\n",i,numstrings);
+      Uint16 numstrings = SDL_RWread16(rwops);
 
       // all string offsets
-      Uint16 *stroffsets = new Uint16[numstrings];
+      std::vector<Uint16> stroffsets;
+      stroffsets.resize(numstrings);
+
       for(int j=0; j<numstrings; j++)
-         stroffsets[j] = fread16(fd);
+         stroffsets[j] = SDL_RWread16(rwops);
 
       Uint32 curoffset = allblocks[i].offset + (numstrings+1)*sizeof(Uint16);
 
       for(Uint16 n=0; n<numstrings; n++)
       {
-         fseek(fd,curoffset+stroffsets[n],SEEK_SET);
+         SDL_RWseek(rwops,curoffset+stroffsets[n],SEEK_SET);
 
          char c;
          std::string str;
@@ -134,8 +145,9 @@ void ua_gamestrings::load(const char *filename) throw(ua_exception)
                if (bit==0)
                {
                   bit=8;
-                  raw=fgetc(fd);
-                  if (feof(fd))
+                  raw=SDL_RWread8(rwops);
+
+                  if (SDL_RWtell(rwops)>=filesize)
                   {
                      // premature end of file, should not happen
                      n=numstrings;
@@ -152,7 +164,8 @@ void ua_gamestrings::load(const char *filename) throw(ua_exception)
                bit--;
             }
 
-            if (feof(fd)) break;
+            if (SDL_RWtell(rwops)>=filesize)
+               break;
 
             // have a new symbol
             c = allnodes[node].symbol;
@@ -161,19 +174,14 @@ void ua_gamestrings::load(const char *filename) throw(ua_exception)
 
          } while (c!='|');
 
-//         printf("%03u: %s\n",n,str.c_str());
-
          allblockstrings.push_back(str);
          str.erase();
       }
-      delete[] stroffsets;
 
       // insert string block
       allstrings.insert(
          std::make_pair<int,std::vector<std::string> >(allblocks[i].block_id,allblockstrings));
    }
-
-   fclose(fd);
 }
 
 std::vector<std::string> &ua_gamestrings::get_block(unsigned int block)

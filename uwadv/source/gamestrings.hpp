@@ -55,6 +55,9 @@ public:
    //! loads all game strings from a file
    void load(const char *filename) throw(ua_exception);
 
+   //! loads all game strings from a RWops
+   void load(SDL_RWops *rwops);
+
    //! returns the whole strings block
    std::map<int,std::vector<std::string> > &get_allstrings(){ return allstrings; }
 
