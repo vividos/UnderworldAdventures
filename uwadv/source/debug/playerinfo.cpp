@@ -33,7 +33,7 @@
 
 // ua_playerinfo_list event table
 
-BEGIN_EVENT_TABLE(ua_playerinfo_list, wxListCtrl)
+BEGIN_EVENT_TABLE(ua_playerinfo_list, wxEditListCtrl)
    EVT_LIST_BEGIN_LABEL_EDIT(-1, ua_playerinfo_list::OnBeginLabelEdit)
    EVT_LIST_END_LABEL_EDIT(-1, ua_playerinfo_list::OnEndLabelEdit)
    EVT_LEFT_DOWN(wxEditListCtrl::OnMouseLeftDown)
