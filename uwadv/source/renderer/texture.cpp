@@ -210,7 +210,7 @@ void ua_texture_manager::init(ua_game_interface& game)
          settings.get_gametype() == ua_game_uw1 ? "data/f32.tr" : "data/df32.tr");
 
       import.load_textures(allstocktex_imgs, ua_tex_stock_floor,
-         walltexfname.c_str(), palette0);
+         floortexfname.c_str(), palette0);
 
       // load objects
       {
