@@ -62,18 +62,19 @@ enum
                            "type" contains underworld level
                            param1 contains object list position to get
                            param2 contains value index to get:
-                             0: item_id     
-                             1: link        
-                             2: quality     
-                             3: owner       
-                             4: quantity    
-                             5: x
-                             6: y
-                             7: z/height
-                             8: angle
-                             9: enchanted
-                            10: is_link
-                            11: ??         */
+                             0: item_id
+                             1: link
+                             2: quality
+                             3: owner
+                             4: quantity/sp_link
+                             5: xpos
+                             6: ypos
+                             7: zpos
+                             8: heading
+                             9: flags
+                             10: enchanted
+                             11: is_quant
+                             12: is_hidden */
 
    udc_objlist_set=8, /*!< sets master object list value
                            "type" contains "stage" in setting a value:
@@ -82,11 +83,12 @@ enum
                             1: set value (value index in param1, see
                                udc_objlist_get, value in param2) */
 
-   udc_tilemap_get=9,
-   udc_tilemap_set=10,
+   udc_tilemap_get=9,  /*!< not implemented yet */
+   udc_tilemap_set=10, /*!< not implemented yet */
 
-   udc_strings_get=11,
-   udc_strings_set=12,
+   udc_strings_get=11, /*!< retrieves game string; block is determined by
+                            param1, string number by param2 */
+   udc_strings_set=12, /*!< not implemented yet */
 };
 
 //! parameter types

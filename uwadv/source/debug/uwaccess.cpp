@@ -210,28 +210,36 @@ unsigned int ua_uw_access_api::command_func(
             param1->set_int(objinfo.quantity);
             break;
 
-         case 5: // x
+         case 5: // xpos
             param1->set_int(extobjinfo.xpos);
             break;
 
-         case 6: // y
+         case 6: // ypos
             param1->set_int(extobjinfo.ypos);
             break;
 
-         case 7: // z
+         case 7: // zpos
             param1->set_int(extobjinfo.zpos);
             break;
 
-         case 8: // angle
+         case 8: // heading
             param1->set_int(extobjinfo.heading);
             break;
 
-         case 9: // enchanted
-            param1->set_int(objinfo.enchanted?1:0);
+         case 9: // flags
+            param1->set_int(objinfo.flags);
             break;
 
-         case 10: // is_quantity
+         case 10: // enchanted
+            param1->set_int(objinfo.enchanted ? 1:0);
+            break;
+
+         case 11: // is_quantity
             param1->set_int(objinfo.is_quantity);
+            break;
+
+         case 12: // is_hidden
+            param1->set_int(objinfo.is_hidden ? 1:0);
             break;
          }
       }
