@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "..\source" /I "..\source\audio" /I "..\source\base" /I "..\source\import" /I "..\source\renderer" /I "..\source\ui" /I "..\source\underw" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "WIN32_EXTRA_LEAN" /D "VC_EXTRALEAN" /D "NOSERVICE" /D "NOMCX" /D "NOIME" /D "NOSOUND" /D "NOCOMM" /D "NOKANJI" /D "NORPC" /D "NOPROXYSTUB" /D "NOTAPE" /D "NOCRYPT" /D "NOIMAGE" /D "_STLP_USE_STATIC_LIB" /YX"common.hpp" /FD /c
+# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "..\source" /I "..\source\audio" /I "..\source\base" /I "..\source\import" /I "..\source\renderer" /I "..\source\script" /I "..\source\ui" /I "..\source\underw" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "WIN32_EXTRA_LEAN" /D "VC_EXTRALEAN" /D "NOSERVICE" /D "NOMCX" /D "NOIME" /D "NOSOUND" /D "NOCOMM" /D "NOKANJI" /D "NORPC" /D "NOPROXYSTUB" /D "NOTAPE" /D "NOCRYPT" /D "NOIMAGE" /D "_STLP_USE_STATIC_LIB" /YX"common.hpp" /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x407 /d "NDEBUG"
@@ -69,7 +69,8 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /Gm /GX /ZI /Od /I "..\source" /I "..\source\audio" /I "..\source\base" /I "..\source\import" /I "..\source\renderer" /I "..\source\ui" /I "..\source\underw" /D "_DEBUG" /D "HAVE_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "WIN32_EXTRA_LEAN" /D "VC_EXTRALEAN" /D "NOSERVICE" /D "NOMCX" /D "NOIME" /D "NOSOUND" /D "NOCOMM" /D "NOKANJI" /D "NORPC" /D "NOPROXYSTUB" /D "NOTAPE" /D "NOCRYPT" /D "NOIMAGE" /D "_STLP_DEBUG" /D "_STLP_USE_STATIC_LIB" /D "_RTLDLL" /D "_STLP_USE_NEWALLOC" /D "_STLP_DEBUG_ALLOC" /D "_STLP_USE_SYSTEM_ASSERT" /FR /YX"common.hpp" /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "..\source" /I "..\source\audio" /I "..\source\base" /I "..\source\import" /I "..\source\renderer" /I "..\source\script" /I "..\source\ui" /I "..\source\underw" /D "_DEBUG" /D "HAVE_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "WIN32_EXTRA_LEAN" /D "VC_EXTRALEAN" /D "NOSERVICE" /D "NOMCX" /D "NOIME" /D "NOSOUND" /D "NOCOMM" /D "NOKANJI" /D "NORPC" /D "NOPROXYSTUB" /D "NOTAPE" /D "NOCRYPT" /D "NOIMAGE" /D "_STLP_DEBUG" /D "_STLP_USE_STATIC_LIB" /D "_STLP_USE_NEWALLOC" /D "_STLP_DEBUG_ALLOC" /D "_STLP_USE_SYSTEM_ASSERT" /D "HAVE_UNITTEST" /YX"common.hpp" /FD /GZ /c
+# SUBTRACT CPP /Fr
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x407 /d "_DEBUG"
@@ -79,7 +80,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib sdl.lib sdlmain.lib opengl32.lib glu32.lib winmm.lib sdl_mixer.lib zlib.lib uaopt.lib /nologo /subsystem:console /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /pdbtype:sept /libpath:"../output/debug/uaopt"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib sdl.lib sdlmain.lib opengl32.lib glu32.lib winmm.lib sdl_mixer.lib zlib.lib uaopt.lib cppunitd.lib /nologo /subsystem:console /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /pdbtype:sept /libpath:"../output/debug/uaopt"
 # SUBTRACT LINK32 /pdb:none
 
 !ENDIF 
@@ -252,6 +253,10 @@ SOURCE=..\source\ui\screen.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\source\ui\textedit.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\source\ui\textscroll.cpp
 # End Source File
 # Begin Source File
@@ -292,6 +297,10 @@ SOURCE=..\source\ui\screen.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\source\ui\textedit.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\source\ui\textscroll.hpp
 # End Source File
 # Begin Source File
@@ -308,7 +317,11 @@ SOURCE=..\source\ui\window.hpp
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\source\win32\debug.cpp
+SOURCE=..\source\debug.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\win32\debug_impl.cpp
 # End Source File
 # Begin Source File
 
@@ -330,6 +343,10 @@ SOURCE=..\source\uwadv.cpp
 # Begin Group "main game headers"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\source\dbgserver.hpp
+# End Source File
 # Begin Source File
 
 SOURCE=..\source\debug.hpp
@@ -469,6 +486,10 @@ SOURCE=..\source\screens\ingame_orig.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\source\screens\panel.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\source\screens\save_game.cpp
 # End Source File
 # Begin Source File
@@ -510,6 +531,10 @@ SOURCE=..\source\screens\ingame_new.hpp
 # Begin Source File
 
 SOURCE=..\source\screens\ingame_orig.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\screens\panel.hpp
 # End Source File
 # Begin Source File
 
@@ -569,7 +594,7 @@ SOURCE=..\source\underw\physics.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\underw\physicsobject.cpp
+SOURCE=..\source\underw\physicsbody.cpp
 # End Source File
 # Begin Source File
 
@@ -617,7 +642,7 @@ SOURCE=..\source\underw\physics.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\underw\physicsobject.hpp
+SOURCE=..\source\underw\physicsbody.hpp
 # End Source File
 # Begin Source File
 
@@ -626,6 +651,10 @@ SOURCE=..\source\underw\player.hpp
 # Begin Source File
 
 SOURCE=..\source\underw\properties.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\underw\runes.hpp
 # End Source File
 # Begin Source File
 
@@ -761,9 +790,73 @@ SOURCE=..\source\script\luascript.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\script\script.hpp
+SOURCE=..\source\script\scripting.hpp
 # End Source File
 # End Group
+# Begin Group "lua scripting files"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\uadata\uw1\scripts\createchar.lua
+# End Source File
+# Begin Source File
+
+SOURCE=..\uadata\uw1\scripts\critter.lua
+# End Source File
+# Begin Source File
+
+SOURCE=..\uadata\uw1\scripts\cutscene.lua
+# End Source File
+# Begin Source File
+
+SOURCE=..\uadata\uw1\scripts\dump.lua
+# End Source File
+# Begin Source File
+
+SOURCE=..\uadata\uw1\scripts\game.lua
+# End Source File
+# Begin Source File
+
+SOURCE=..\uadata\uw1\scripts\inventory.lua
+# End Source File
+# Begin Source File
+
+SOURCE=..\uadata\uw1\scripts\lookat.lua
+# End Source File
+# Begin Source File
+
+SOURCE=..\uadata\uw1\scripts\objlist.lua
+# End Source File
+# Begin Source File
+
+SOURCE=..\uadata\uw1\scripts\traps.lua
+# End Source File
+# Begin Source File
+
+SOURCE=..\uadata\uw1\scripts\triggers.lua
+# End Source File
+# Begin Source File
+
+SOURCE=..\uadata\uw1\scripts\uwinterface.lua
+# End Source File
+# End Group
+# End Group
+# Begin Group "unittest files"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\source\underw\test\physicstest.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\unittest.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\unittest.hpp
+# End Source File
 # End Group
 # Begin Source File
 

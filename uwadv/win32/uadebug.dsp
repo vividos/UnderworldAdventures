@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "UADEBUG_EXPORTS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX /O2 /I "$(wxwin)/include" /I "$(wxwin)/contrib/include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "UADEBUG_EXPORTS" /D "__WINDOWS__" /D "__WXMSW__" /D WINVER=0x0400 /D "STRICT" /YX /FD /c
+# ADD CPP /nologo /MD /W3 /GX /O2 /I "$(wxwin)/include" /I "$(wxwin)/contrib/include" /I "..\source" /I "..\source\base" /I "..\source\underw" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "UADEBUG_EXPORTS" /D "__WINDOWS__" /D "__WXMSW__" /D WINVER=0x0400 /D "STRICT" /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x407 /d "NDEBUG"
@@ -69,7 +69,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "UADEBUG_EXPORTS" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "$(wxwin)/include" /I "$(wxwin)/contrib/include" /D "_DEBUG" /D "__WXDEBUG__" /D WXDEBUG=1 /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "UADEBUG_EXPORTS" /D "__WINDOWS__" /D "__WXMSW__" /D WINVER=0x0400 /D "STRICT" /YX"../debug/dbgcommon.hpp" /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "$(wxwin)/include" /I "$(wxwin)/contrib/include" /I "..\source" /I "..\source\base" /I "..\source\underw" /D "_DEBUG" /D "__WXDEBUG__" /D WXDEBUG=1 /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "UADEBUG_EXPORTS" /D "__WINDOWS__" /D "__WXMSW__" /D WINVER=0x0400 /D "STRICT" /YX"../debug/dbgcommon.hpp" /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x407 /d "_DEBUG"
@@ -92,13 +92,21 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE=..\source\debug\childframe.cpp
+SOURCE=..\source\debug\dbgapp.cpp
 # ADD CPP /Yu"dbgcommon.hpp"
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\debug\dbgapp.cpp
+SOURCE=..\source\debug\dbgclient.cpp
+
+!IF  "$(CFG)" == "uadebug - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "uadebug - Win32 Debug"
+
 # ADD CPP /Yu"dbgcommon.hpp"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
@@ -150,15 +158,19 @@ SOURCE=.\uadebug.def
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
-SOURCE=..\source\debug\childframe.hpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\source\debug\dbgapp.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\source\debug\dbgclient.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\source\debug\dbgcommon.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\dbgserver.hpp
 # End Source File
 # Begin Source File
 
@@ -188,46 +200,119 @@ SOURCE=..\source\debug\playerinfo.hpp
 
 SOURCE=..\source\debug\tilemapview.hpp
 # End Source File
-# Begin Source File
-
-SOURCE=..\source\debug\uwaccess.hpp
-# End Source File
 # End Group
 # Begin Group "resource files"
 
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 # Begin Source File
 
+SOURCE=..\source\win32\uadebug\wx\msw\blank.cur
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\win32\uadebug\wx\msw\bullseye.cur
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\win32\uadebug\wx\msw\cdrom.ico
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\win32\uadebug\wx\msw\colours.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\win32\uadebug\wx\msw\computer.ico
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\win32\uadebug\wx\msw\csquery.bmp
+# End Source File
+# Begin Source File
+
 SOURCE=..\source\win32\uadebug\Des.ico
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\win32\uadebug\new.bmp
+SOURCE=..\source\win32\uadebug\wx\msw\disable.bmp
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\win32\uadebug\open.bmp
+SOURCE=..\source\win32\uadebug\wx\msw\drive.ico
 # End Source File
 # Begin Source File
 
-SOURCE=..\source\win32\uadebug\save.bmp
+SOURCE=..\source\win32\uadebug\wx\msw\file1.ico
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\win32\uadebug\wx\msw\floppy.ico
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\win32\uadebug\wx\msw\folder1.ico
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\win32\uadebug\wx\msw\folder2.ico
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\win32\uadebug\wx\msw\hand.cur
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\win32\uadebug\wx\msw\magnif1.cur
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\win32\uadebug\wx\msw\noentry.cur
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\win32\uadebug\wx\msw\pbrush.cur
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\win32\uadebug\wx\msw\pencil.cur
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\win32\uadebug\wx\msw\pntleft.cur
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\win32\uadebug\wx\msw\pntright.cur
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\win32\uadebug\wx\msw\query.cur
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\win32\uadebug\wx\msw\removble.ico
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\win32\uadebug\wx\msw\rightarr.cur
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\win32\uadebug\wx\msw\roller.cur
+# End Source File
+# Begin Source File
+
+SOURCE=..\source\win32\uadebug\wx\msw\size.cur
 # End Source File
 # Begin Source File
 
 SOURCE=..\source\win32\uadebug\uadebug_res.rc
+# ADD BASE RSC /l 0x407 /i "\uwadv\refactor\uwadv\source\win32\uadebug" /i "\uwadv\uwadv\source\win32\uadebug"
+# ADD RSC /l 0x407 /i "\uwadv\refactor\uwadv\source\win32\uadebug" /i "$(wxwin)/include" /i "\uwadv\uwadv\source\win32\uadebug"
+# End Source File
+# Begin Source File
 
-!IF  "$(CFG)" == "uadebug - Win32 Release"
-
-# ADD BASE RSC /l 0x407 /i "\uwadv\uwadv\source\win32\uadebug"
-# ADD RSC /l 0x407 /i "$(wxwin)/include" /i "\uwadv\uwadv\source\win32\uadebug"
-
-!ELSEIF  "$(CFG)" == "uadebug - Win32 Debug"
-
-# ADD BASE RSC /l 0x407 /i "\uwadv\uwadv\source\win32\uadebug"
-# ADD RSC /l 0x407 /i "$(wxwin)/include" /i "\uwadv\uwadv\source\win32\uadebug"
-
-!ENDIF 
-
+SOURCE=..\source\win32\uadebug\wx\msw\watch1.cur
 # End Source File
 # End Group
 # Begin Group "misc. files"
