@@ -795,6 +795,10 @@ void ua_ingame_orig_screen::tick()
 
       fadeout_action = ua_action_none;
    }
+
+   // resume when reentering the screen
+   if (fade_state == 3)
+      resume();
 }
 
 void ua_ingame_orig_screen::schedule_action(ua_ingame_orig_action action, bool fadeout_before)
@@ -851,8 +855,9 @@ void ua_ingame_orig_screen::do_action(ua_ingame_orig_action action)
    case ua_action_quickload:
       if (game.get_savegames_manager().quicksave_avail())
       {
+         ua_savegame_info info;
          ua_savegame sg = game.get_savegames_manager().
-            get_quicksave_savegame(false);
+            get_quicksave_savegame(false,info);
          game.get_underworld().load_game(sg);
          uw_print("quickloading done.");
       }
@@ -861,12 +866,13 @@ void ua_ingame_orig_screen::do_action(ua_ingame_orig_action action)
       // quicksaving
    case ua_action_quicksave:
       {
-         ua_savegame sg = game.get_savegames_manager().
-            get_quicksave_savegame(true);
-
          // set player infos
+         ua_savegame_info info;
          ua_player& pl = game.get_underworld().get_player();
-         pl.fill_savegame_infos(sg.get_savegame_info());
+         pl.fill_savegame_infos(info);
+
+         ua_savegame sg = game.get_savegames_manager().
+            get_quicksave_savegame(true,info);
 
          game.get_underworld().save_game(sg);
          uw_print("quicksaving done.");
