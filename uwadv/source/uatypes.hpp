@@ -56,6 +56,9 @@ public:
    //! ctor
    ua_exception(const char *desc){ description.assign(desc); };
 
+   //! dtor
+   ~ua_exception() throw() {}
+
    //! returns exception description
    virtual const char *what() const throw()
    {
