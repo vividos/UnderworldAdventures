@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib sdl.lib sdlmain.lib opengl32.lib glu32.lib winmm.lib /nologo /subsystem:windows /machine:I386
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib sdl.lib sdlmain.lib opengl32.lib glu32.lib winmm.lib sdl_mixer.lib /nologo /subsystem:windows /machine:I386
 
 !ELSEIF  "$(CFG)" == "uwadv - Win32 Debug"
 
@@ -79,7 +79,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib sdl.lib sdlmain.lib opengl32.lib glu32.lib winmm.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib sdl.lib sdlmain.lib opengl32.lib glu32.lib winmm.lib sdl_mixer.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /pdbtype:sept
 
 !ENDIF 
 
@@ -155,6 +155,10 @@ SOURCE=..\audio\audio.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\audio\midi_driver\linux_sdl_mixer.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\audio\midi.cpp
 # End Source File
 # Begin Source File
@@ -181,6 +185,10 @@ SOURCE=..\conv\codevm.cpp
 # Begin Group "screens sources"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\screens\cutscene_view.cpp
+# End Source File
 # Begin Source File
 
 SOURCE=..\screens\ingame_orig.cpp
@@ -357,6 +365,10 @@ SOURCE=.\source\resource.h
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\audio\midi_driver\linux_sdl_mixer.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\audio\midi.hpp
 # End Source File
 # Begin Source File
@@ -383,6 +395,10 @@ SOURCE=..\conv\codevm.hpp
 # Begin Group "screens headers"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\screens\cutscene_view.hpp
+# End Source File
 # Begin Source File
 
 SOURCE=..\screens\ingame_orig.hpp
@@ -587,6 +603,15 @@ SOURCE=..\uwadv.hpp
 # Begin Source File
 
 SOURCE=.\source\Uus.ico
+# End Source File
+# End Group
+# Begin Group "lua scripts"
+
+# PROP Default_Filter "*.lua"
+# Begin Source File
+
+SOURCE=..\..\uadata\scripts\cutscene.lua
+# PROP Exclude_From_Build 1
 # End Source File
 # End Group
 # Begin Source File
