@@ -241,13 +241,19 @@ LRESULT ua_config_prog::OnSetUw1Path(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
          buffer[len-1]=0;
    }
 
+#ifndef BIF_USENEWUI
+#define BIF_USENEWUI 0x0050
+#endif
+
    // setup struct
-   BROWSEINFO bi = {0};
+   BROWSEINFO bi;
+   ZeroMemory(&bi, sizeof(bi));
    bi.lpszTitle = "Please select the Ultima Underworld I folder:";
    bi.pszDisplayName = buffer;
    bi.pidlRoot = NULL;
    bi.lpfn = ua_browse_callback;
    bi.lParam = (LPARAM)buffer;
+   bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_USENEWUI;
 
    // browse
    LPITEMIDLIST lpIL = ::SHBrowseForFolder(&bi);
