@@ -47,7 +47,7 @@ uwadv_SOURCES = \
 	import/import.hpp io_endian.hpp \
 	import/stringsloader.cpp \
 	import/texloader.cpp \
-   linux/debug.cpp \
+	linux/debug.cpp \
 	renderer/critter.cpp renderer/critter.hpp \
 	renderer/models.cpp renderer/models.hpp \
 	renderer/quadtree.cpp renderer/quadtree.hpp \
@@ -56,7 +56,10 @@ uwadv_SOURCES = \
 	renderer/tessellator.cpp renderer/tessellator.hpp \
 	renderer/texture.cpp renderer/texture.hpp \
 	screens/acknowledgements.cpp screens/acknowledgements.hpp \
+	screens/create_character.cpp screens/create_character.hpp \
 	screens/cutscene_view.cpp screens/cutscene_view.hpp \
+	screens/ingame_orig.cpp screens/ingame_orig.hpp \
+	screens/ingame_ctrls.cpp screens/ingame_ctrls.hpp \
 	screens/save_game.cpp screens/save_game.hpp \
 	screens/start_menu.cpp screens/start_menu.hpp \
 	screens/start_splash.cpp screens/start_splash.hpp \
@@ -98,23 +101,15 @@ uwadv_SOURCES = \
 	resource/tgaimport.cpp resource/uw2dec.cpp
 
 the_rest = \
-	screens/acknowledgements.cpp screens/acknowledgements.hpp \
-	screens/start_menu.cpp screens/start_menu.hpp \
-	\
-	linux/debug.cpp \
 	debug/uwaccess.cpp debug/uwaccess.hpp \
 	resource/models_impl.hpp \
 	resource/model/FlexLexer.h \
 	resource/model/importwrl.cpp \
 	resource/model/wrllexer.cpp resource/model/wrllexer.hpp \
-	screens/ingame_orig.cpp \
-	screens/cutscene_view.cpp \
 	screens/conversation.cpp \
-	screens/create_character.cpp screens/map_view.cpp \
+	screens/map_view.cpp \
 	screens/save_game.cpp \
 	screens/panel.cpp \
-	screens/ingame_orig.hpp \
-	screens/conversation.hpp screens/create_character.hpp \
-	screens/map_view.hpp screens/cutscene_view.hpp \
-	screens/save_game.hpp \
+	screens/conversation.hpp \
+	screens/map_view.hpp \
 	screens/panel.hpp
