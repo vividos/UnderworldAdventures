@@ -60,8 +60,13 @@ void ua_midi_player::init_player(ua_settings &settings)
 
 bool ua_midi_player::init_driver()
 {
+#ifdef WIN32
    midi_driver = new Windows_MidiOut;
-//   midi_driver = new uni_fmod_driver;
+#elseif defined(HAVE_FMOD_H)
+   midi_driver = new uni_fmod_driver;
+#else
+  midi_driver = NULL;
+#endif
    init=true;
    return true;
 }
