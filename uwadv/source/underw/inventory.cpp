@@ -33,7 +33,7 @@
 
 // ua_inventory methods
 
-void ua_inventory::init(ua_underworld *theunderw)
+void ua_inventory::init(ua_underworld* theunderw)
 {
    underw = theunderw;
 
@@ -127,7 +127,7 @@ Uint16 ua_inventory::get_container_item_id()
 
 bool ua_inventory::is_container(Uint16 item_id)
 {
-   return underw->get_scripts().lua_inventory_is_container(item_id);
+   return false;//TODOunderw->get_scripts().lua_inventory_is_container(item_id);
 }
 
 void ua_inventory::open_container(Uint16 index)
@@ -338,7 +338,8 @@ bool ua_inventory::drop_floating_item(Uint16 index)
    // check if object can be placed in that slot
    {
       // get inventory object category
-      ua_inv_item_category cat =
+      //TODO
+/*      ua_inv_item_category cat = ua_inv_cat_normal;
          underw->get_scripts().lua_inventory_categorize_item(
             get_item(floating_object).item_id);
 
@@ -353,7 +354,7 @@ bool ua_inventory::drop_floating_item(Uint16 index)
            (index==ua_slot_paperdoll_hands && cat != ua_inv_cat_hands) ||
            (index==ua_slot_paperdoll_legs &&  cat != ua_inv_cat_legs) ||
            (index==ua_slot_paperdoll_feet &&  cat != ua_inv_cat_feet) )
-              return false;
+              return false;*/
    }
 
    if (obj.item_id == ua_slot_no_item)
@@ -396,7 +397,7 @@ bool ua_inventory::drop_floating_item(Uint16 index)
             Uint16 result_id = ua_slot_no_item;
 
             // try to combine objects
-            ua_obj_combine_result ret =
+/*TODO            ua_obj_combine_result ret =
                underw->get_scripts().lua_inventory_combine_obj(obj.item_id,item_id2,result_id);
 
             if (ret!=ua_obj_cmb_failed)
@@ -425,7 +426,7 @@ bool ua_inventory::drop_floating_item(Uint16 index)
                }
 
                return true; // combining was successful
-            }
+            }*/
          }
 
          // make copy of item on that place
