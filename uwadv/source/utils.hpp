@@ -54,6 +54,12 @@ int ua_trace_printf(const char *fmt,...);
 #endif
 
 
+// functions
+
+//! creates a folder with given mode
+int ua_mkdir(const char *dirname, int mode);
+
+
 // classes
 
 //! smart pointer class
