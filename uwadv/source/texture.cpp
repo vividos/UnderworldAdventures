@@ -52,6 +52,8 @@ void ua_texture::init(unsigned int numtex,GLenum min_filt,GLenum max_filt)
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, max_filt);
 
       glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+      last_used_tex = i;
    }
 }
 
@@ -83,6 +85,9 @@ void ua_texture::convert(Uint8 *pix, unsigned int origx, unsigned int origy,
       // determine texture resolution (must be 2^n)
       xres = (unsigned int)pow(2,int(log(origx)/log(2)+0.9999));
       yres = (unsigned int)pow(2,int(log(origy)/log(2)+0.9999));
+
+      if (xres<64) xres=64;
+      if (yres<64) yres=64;
 
       u = double(origx)/xres;
       v = double(origy)/yres;
