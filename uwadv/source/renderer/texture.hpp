@@ -205,7 +205,7 @@ protected:
    ua_texture obj_textures;
 
    //! palette 0 from image manager
-   ua_smart_ptr<ua_palette256> palette0;
+   ua_palette256_ptr palette0;
 
    //! time counter for animated textures
    double animcount;

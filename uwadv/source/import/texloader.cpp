@@ -58,7 +58,7 @@ void ua_texture::load(SDL_RWops* rwops)
 
 void ua_uw_import::load_textures(std::vector<ua_image>& tex_images,
    unsigned int startidx, const char* texname,
-   ua_smart_ptr<ua_palette256>& palette)
+   ua_palette256_ptr palette)
 {
    FILE* fd = fopen(texname,"rb");
    if (fd==NULL)

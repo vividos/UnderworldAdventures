@@ -250,7 +250,7 @@ void ua_image_decode_rle(FILE *fd, Uint8* pixels, unsigned int bits,
 // ua_uw_import methods
 
 void ua_uw_import::load_palettes(const char* allpalname,
-   ua_smart_ptr<ua_palette256> allpalettes[8])
+   ua_palette256_ptr allpalettes[8])
 {
    FILE* fd = fopen(allpalname,"rb");
    if (fd==NULL)
@@ -263,15 +263,8 @@ void ua_uw_import::load_palettes(const char* allpalname,
    // palettes are stored in ancient vga color format
    for(unsigned int pal=0; pal<8; pal++)
    {
-      //ua_smart_ptr<ua_palette256> ppal =
-      ua_palette256* ppp = (ua_palette256*)new ua_palette256;
-      allpalettes[pal] = ua_smart_ptr<ua_palette256>(ppp);
-
-//         ua_smart_ptr<ua_palette256>((ua_palette256*)new ua_palette256);
-
-//      ua_smart_ptr<ua_palette256> ppal = ua_smart_ptr<ua_palette256>(ppp);
-//      ua_palette256 ppp = new ua_palette256;
-//      allpalettes[pal] = ppp;
+      ua_palette256* newpal = (ua_palette256*)new ua_palette256;
+      allpalettes[pal] = ua_palette256_ptr(newpal);
 
       ua_palette256& palette = *allpalettes[pal];
 
