@@ -82,7 +82,17 @@ void ua_files_manager::init(ua_settings &settings)
 
    ua_trace("\n");
 
+   // get uadata path
    uadata_path = settings.get_string(ua_setting_uadata_path);
+
+   // get savegame folder name
+   {
+      savegame_folder = settings.get_string(ua_setting_savegame_folder);
+
+      // try to create folder when not already present
+//      mkdir(savegame_folder);
+   }
+
 
    // check for available games
 
@@ -305,4 +315,18 @@ bool ua_files_manager::savegames_avail()
 {
    // for now we pretend there always are some savegames
    return true;
+}
+
+//! returns a quicksave savegame
+ua_savegame ua_files_manager::get_quicksave(bool saving)
+{
+   ua_savegame sg;
+
+   std::string quicksave_name(savegame_folder);
+   quicksave_name.append("quicksave");
+   quicksave_name.append(".uas"); // extension
+
+   sg.open(quicksave_name.c_str(),saving);
+
+   return sg;
 }
