@@ -221,8 +221,8 @@ void ua_model3d_wrl::import_wrl(ua_game_core_interface* core, SDL_RWops* rwops,
    // load texture
    if (res==0)
    {
-      tex.init(&core->get_texmgr(),1,
-         GL_LINEAR,GL_LINEAR,GL_REPEAT,GL_REPEAT);
+      tex.init(core==NULL ? NULL : &core->get_texmgr(),
+         1,GL_LINEAR,GL_LINEAR,GL_REPEAT,GL_REPEAT);
 
       // construct texture name
       std::string::size_type pos = relpath.find_last_of("\\/");
@@ -234,7 +234,9 @@ void ua_model3d_wrl::import_wrl(ua_game_core_interface* core, SDL_RWops* rwops,
       relpath.append(texture_url);
 
       // load texture
-      SDL_RWops* rwops = core->get_filesmgr().get_uadata_file(relpath.c_str());
+      SDL_RWops* rwops = 
+         core == NULL ? SDL_RWFromFile(relpath.c_str(),"rb") :
+         core->get_filesmgr().get_uadata_file(relpath.c_str());
 
       tex.load(rwops);
       tex.use();
