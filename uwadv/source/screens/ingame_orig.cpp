@@ -58,6 +58,7 @@ void ua_ingame_orig_screen::init()
 
 void ua_ingame_orig_screen::done()
 {
+   glDisable(GL_SCISSOR_TEST);
 }
 
 void ua_ingame_orig_screen::handle_event(SDL_Event &event)
@@ -189,6 +190,7 @@ void ua_ingame_orig_screen::render()
 
    glDisable(GL_DEPTH_TEST);
    glEnable(GL_BLEND);
+   glDisable(GL_SCISSOR_TEST);
 
    // draw user interface
 
@@ -206,6 +208,7 @@ void ua_ingame_orig_screen::render()
    glEnd();
 
    // restore old projection matrix
+   glEnable(GL_SCISSOR_TEST);
    glDisable(GL_BLEND);
    glEnable(GL_DEPTH_TEST);
 
@@ -254,4 +257,31 @@ void ua_ingame_orig_screen::setup_opengl()
 
    // switch back to modelview matrix
    glMatrixMode(GL_MODELVIEW);
+
+   // set up scissor test
+   glClearColor(0,0,0,0);
+   glClear(GL_COLOR_BUFFER_BIT);
+
+   glEnable(GL_SCISSOR_TEST);
+
+   // calculate scissor rectangle
+   const unsigned int scissor_area[4] =
+   {
+      52,68, 174,114
+   };
+
+   unsigned int xres = core->get_screen_width(),
+      yres = core->get_screen_height();
+
+   double x1,x2,y1,y2;
+
+   // lower left coords
+   x1 = (scissor_area[0]/320.0) * xres;
+   y1 = (scissor_area[1]/200.0) * yres;
+
+   // width/height
+   x2 = (scissor_area[2]/320.0) * xres;
+   y2 = (scissor_area[3]/200.0) * yres;
+
+   glScissor(x1,y1,x2,y2);
 }
