@@ -45,10 +45,10 @@ enum ua_key_value
    ua_key_menu_down,       // cursor down
    ua_key_menu_left,       // cursor left
    ua_key_menu_right,      // cursor right
-   ua_key_top_of_list,     // pgup
-   ua_key_top_of_list2,    // home
-   ua_key_bottom_of_list,  // pgdn
-   ua_key_bottom_of_list2, // end
+   ua_key_menu_top_of_list,     // pgup
+   ua_key_menu_top_of_list2,    // home
+   ua_key_menu_bottom_of_list,  // pgdn
+   ua_key_menu_bottom_of_list2, // end
 
    // normal movement
    ua_key_run_forward,            // w
@@ -105,25 +105,25 @@ enum ua_key_value
    ua_key_cursor_hotarea_right, // tab
    ua_key_cursor_hotarea_left,  // shift tab
 
-   // numeric pad
-   ua_key_cursor_dir_sw, // 1
-   ua_key_cursor_dir_s,  // 2
-   ua_key_cursor_dir_se, // 3
-   ua_key_cursor_dir_w,  // 4
-   ua_key_cursor_dir_e,  // 6
-   ua_key_cursor_dir_nw, // 7
-   ua_key_cursor_dir_n,  // 8
-   ua_key_cursor_dir_ne, // 9
+   // numeric keypad
+   ua_key_cursor_dir_sw, // num1
+   ua_key_cursor_dir_s,  // num2
+   ua_key_cursor_dir_se, // num3
+   ua_key_cursor_dir_w,  // num4
+   ua_key_cursor_dir_e,  // num6
+   ua_key_cursor_dir_nw, // num7
+   ua_key_cursor_dir_n,  // num8
+   ua_key_cursor_dir_ne, // num9
 
-   ua_key_cursor_button_left,  // 0
-   ua_key_cursor_button_right, // .
+   ua_key_cursor_button_left,  // num0
+   ua_key_cursor_button_right, // numperiod
 
    // special uwadv keys
    ua_key_ua_debug,        // alt d, starts debugger application
    ua_key_ua_return_menu,  // alt q, returns to main menu
    ua_key_ua_screenshot,   // alt c, takes screenshot
-   ua_key_ua_level_up,     // page up, only in debug mode
-   ua_key_ua_level_down,   // page down, only in debug mode
+   ua_key_ua_level_up,     // alt page up, only in debug mode
+   ua_key_ua_level_down,   // alt page down, only in debug mode
 };
 
 
