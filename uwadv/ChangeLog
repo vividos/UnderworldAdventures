@@ -1,3 +1,951 @@
+2002-08-20 22:48  phlask
+
+	* uadata/uw1/scripts/createchar.lua (1.8):
+
+	All selected skills and attributes are no actually stored for the player.
+	Everything is implemented now (I hope).
+	
+2002-08-20 22:46  phlask
+
+	* source/player.hpp (1.13), uadata/uw1/scripts/uwinterface.lua
+	(1.3):
+
+	added Mana skill constant
+	
+2002-08-20 22:41  vividos
+
+	* Makefile.mingw (1.24):
+
+	fixed typo
+	
+2002-08-20 20:26  wjpalenstijn
+
+	* Makefile.mingw (1.23), source/lua/Makefile.am (1.4),
+	source/lua/Makefile.common (1.1), source/lua/Makefile.am (1.5):
+
+	more unifying: source/lua
+	
+2002-08-20 20:08  wjpalenstijn
+
+	* Makefile.mingw (1.22), source/tools/Makefile.am (1.18),
+	source/tools/Makefile.common (1.1):
+
+	unifying source/tools Makefiles
+	
+2002-08-20 18:53  phlask
+
+	* uadata/uw1/scripts/createchar.lua (1.7):
+
+	Seed for random values is now set on init by C-code.
+	All chosen option but the class specific skill values are now actually set for the player.
+	
+2002-08-20 18:50  phlask
+
+	* source/screens/: create_character.cpp (1.12),
+	create_character.hpp (1.8):
+
+	Better responsiveness.
+	Screen fades in & out.
+	Now calls script init with random seed.
+	
+2002-08-20 16:29  vividos
+
+	* source/level.cpp (1.25):
+
+	forgot to set a variable
+	
+2002-08-20 16:28  vividos
+
+	* source/: level.cpp (1.24), level.hpp (1.16):
+
+	added implementation for the get_tile_triangles() function;
+	added alternate renderer that uses this function; can be enabled with HAVE_ALTERNATE_RENDERER, but is way slower
+	
+2002-08-20 14:46  vividos
+
+	* source/screens/ingame_orig.cpp (1.47):
+
+	added "walk backwards" key
+	
+2002-08-20 14:37  vividos
+
+	* source/: level.cpp (1.23), level.hpp (1.15):
+
+	added function ua_level::get_tile_triangles() that returns all triangles for a given tile
+	
+2002-08-20 14:19  vividos
+
+	* source/uamath.hpp (1.7):
+
+	added ua_vector3d and ua_triangle3d class
+	
+2002-08-20 00:09  vividos
+
+	* docs/README.Lua.txt (1.11):
+
+	small changes
+	
+2002-08-20 00:08  vividos
+
+	* source/: physics.cpp (1.10), physics.hpp (1.6):
+
+	added "player_speed" variable to have different avatar walking speeds for ingame
+	
+2002-08-20 00:07  vividos
+
+	* source/underworld.cpp (1.24), uadata/uw1/scripts/game.lua (1.5):
+
+	call in lua_init_script() to set the player map level is honored now
+	
+2002-08-19 23:42  vividos
+
+	* Makefile.mingw (1.21):
+
+	unbroke tools compiling with introducing a uwadv_SDL_LIB variable
+	
+2002-08-19 23:36  vividos
+
+	* Makefile.mingw (1.20):
+
+	added rule to remove .h include files from uwadv_CPPs
+	
+2002-08-19 23:33  vividos
+
+	* source/Makefile.common (1.2):
+
+	added win_midiout.o
+	added header
+	
+2002-08-19 23:05  wjpalenstijn
+
+	* Makefile.mingw (1.19), source/Makefile.am (1.35),
+	source/Makefile.common (1.1):
+
+	unifying Makefiles
+	
+2002-08-19 19:34  vividos
+
+	* docs/README.mingw32.txt (1.6):
+
+	clarified that MSYS is needed to compile
+	
+2002-08-19 12:29  vividos
+
+	* source/screens/ingame_orig.cpp (1.46):
+
+	fixed player appearance graphics
+	
+2002-08-19 11:01  vividos
+
+	* source/win32/uwadv.nsi (1.11):
+
+	added creation of uasave folder
+	added start menu links
+	uninstaller: added check for non-empty uasave folder
+	
+2002-08-19 10:52  vividos
+
+	* source/win32/uwadv.cfg (1.10):
+
+	set 640x480 as default resolution
+	
+2002-08-19 10:10  vividos
+
+	* source/win32/uwadv.nsi (1.10):
+
+	added desktop links and uninstaller writing
+	caption changes
+	
+2002-08-19 10:07  vividos
+
+	* Makefile.mingw (1.18), source/win32/License.installer.txt (1.1),
+	source/win32/install/License.installer.txt (1.3):
+
+	moved installer license to source/win32
+	
+2002-08-19 00:25  vividos
+
+	* source/win32/uwadv.nsi (1.9):
+
+	added installation of uadata files
+	removed creation of uninstaller
+	
+2002-08-18 23:21  vividos
+
+	* source/screens/ingame_orig.cpp (1.45):
+
+	masked out numlock mod
+	reversed look up/down to match original
+	
+2002-08-18 23:20  vividos
+
+	* source/keymap.cpp (1.5):
+
+	fixed ua_keymap::is_key() for cases without a mod value
+	
+2002-08-18 23:12  vividos
+
+	* source/: keymap.cpp (1.4), keymap.hpp (1.4),
+	screens/ingame_orig.cpp (1.44):
+
+	added whole list of keymap values for the keyboard controls
+	
+2002-08-18 22:06  vividos
+
+	* source/win32/source/: resource.h (1.2), uwadv_res.rc (1.2):
+
+	added more settings
+	
+2002-08-18 21:28  vividos
+
+	* source/inventory.cpp (1.17):
+
+	moved check for item category in front of function to work for all sorts of dropping
+	bug pointed out by wjp
+	
+2002-08-18 21:27  vividos
+
+	* uadata/uw1/scripts/inventory.lua (1.4):
+
+	fixed a bug in the lua_inventory_categorize_item function
+	
+2002-08-18 19:43  phlask
+
+	* source/player.hpp (1.12), uadata/uw1/scripts/uwinterface.lua
+	(1.2):
+
+	updated numeral values and changed some skills and attributes
+	
+2002-08-18 17:45  vividos
+
+	* source/win32/uwadv.nsi (1.8):
+
+	changed installer caption
+	
+2002-08-18 17:10  vividos
+
+	* source/resource/zziplib/zzip-conf.h (1.5):
+
+	re-added fix for compiling under mingw32
+	
+2002-08-18 16:56  vividos
+
+	* source/win32/uwadv.nsi (1.7):
+
+	added execution of uaconfig after successful install
+	
+2002-08-18 16:55  vividos
+
+	* uwadv.dsw (1.2):
+
+	added uaconfig project to the workspace
+	
+2002-08-18 16:54  vividos
+
+	* source/resource/zziplib/SDL_rwops_zzip.c (1.5):
+
+	re-added changes done for uwadv
+	
+2002-08-18 16:53  vividos
+
+	* source/resource/zziplib/: SDL_rwops_zzip.c (1.4),
+	SDL_rwops_zzip.h (1.3), zzip-conf.h (1.4), zzip-config.h (1.2),
+	zzip-dir.c (1.2), zzip-err.c (1.2), zzip-file.c (1.2), zzip-info.c
+	(1.2), zzip-io.c (1.2), zzip-stat.c (1.2), ChangeLog (1.1),
+	configure.ac (1.1), zzip-stdint.h (1.3), zzip-zip.c (1.2),
+	zziplib.h (1.2):
+
+	updated to zziplib-0.10.65
+	available at http://zziplib.sourceforge.net/
+	
+2002-08-18 16:39  vividos
+
+	* uadata/uw1/scripts/game.lua (1.4):
+
+	added script to count the path length in the underworld
+	
+2002-08-18 16:13  vividos
+
+	* source/: level.cpp (1.22), level.hpp (1.14),
+	resource/maploader.cpp (1.13):
+
+	changed the way that used textures in a levelmap are managed (there are no restrictions to the number of textures anymore)
+	
+2002-08-18 16:04  vividos
+
+	* source/player.cpp (1.12):
+
+	added loading/saving of ua_player
+	
+2002-08-18 16:00  vividos
+
+	* source/underworld.cpp (1.23):
+
+	added call to change_level() on loading a savegame
+	
+2002-08-18 15:58  vividos
+
+	* source/objects.hpp (1.10):
+
+	added initialization for all members of ua_object_info
+	
+2002-08-18 15:57  vividos
+
+	* source/audio/audio.cpp (1.17):
+
+	added check for audio file not found
+	
+2002-08-18 15:54  vividos
+
+	* source/: linux/uwadv.cfg.in (1.5), resource/settingsloader.cpp
+	(1.10), settings.hpp (1.13), uwadv.cpp (1.29), win32/uwadv.cfg
+	(1.9):
+
+	added "screen-resolution" and "audio-enabled" option
+	
+2002-08-18 15:51  vividos
+
+	* source/screens/start_splash.cpp (1.26):
+
+	changed so that intro music only plays once
+	
+2002-08-17 09:47  vividos
+
+	* source/Makefile.am (1.34):
+
+	added missing files
+	
+2002-08-17 09:43  vividos
+
+	* Makefile.mingw (1.17), source/win32/uwadv.nsi (1.6):
+
+	added working "make installer" target
+	
+2002-08-16 19:48  vividos
+
+	* source/objects.cpp (1.15):
+
+	fixed compile on mingw32
+	
+2002-08-16 19:35  vividos
+
+	* source/win32/uaconfig.dsp (1.1), Makefile.mingw (1.16):
+
+	added uaconfig program
+	
+2002-08-16 19:18  vividos
+
+	* source/: settings.hpp (1.12), resource/settingsloader.cpp (1.9):
+
+	added writing of config files (with changed setting values replaced)
+	
+2002-08-16 17:45  vividos
+
+	* Makefile.mingw (1.15):
+
+	replaced resource compiling rule with implicit rule
+	
+2002-08-16 17:42  vividos
+
+	* source/win32/: uwadv.dsp (1.28), source/uwadv.rc (1.2),
+	source/uwadv_res.rc (1.1):
+
+	renamed uwadv.rc to uwadv_res.rc
+	
+2002-08-15 23:02  vividos
+
+	* source/resource/objloader.cpp (1.9):
+
+	redone way games are imported
+	
+2002-08-15 23:01  vividos
+
+	* source/: objects.cpp (1.14), objects.hpp (1.9):
+
+	redone the way ua_objects are stored in the master object list
+	added loading/saving
+	
+2002-08-15 22:57  vividos
+
+	* source/screens/ingame_orig.cpp (1.43):
+
+	added quickload/quicksave functionality (for devs only)
+	
+2002-08-15 22:56  vividos
+
+	* source/underworld.cpp (1.22):
+
+	comment changes
+	
+2002-08-15 22:55  vividos
+
+	* source/level.cpp (1.21):
+
+	fixed level loading/saving
+	added loading/saving of object list
+	
+2002-08-15 14:23  vividos
+
+	* source/level.cpp (1.20):
+
+	added first savegame loading/saving implementation
+	
+2002-08-15 14:02  vividos
+
+	* source/: files.cpp (1.15), files.hpp (1.8):
+
+	added function to get a quicksave ua_savegame object
+	
+2002-08-15 13:59  vividos
+
+	* source/: resource/savegame.cpp (1.3), savegame.hpp (1.3):
+
+	added simple savegame loading/saving implementation
+	
+2002-08-15 12:56  vividos
+
+	* source/screens/acknowledgements.cpp (1.7):
+
+	fixed gcc warning
+	
+2002-08-15 12:50  vividos
+
+	* Makefile.mingw (1.14):
+
+	added WITH_CONSOLE configure option
+	
+2002-08-15 01:49  vividos
+
+	* source/audio/audio.cpp (1.16):
+
+	added output of currently started music track
+	
+2002-08-15 01:38  vividos
+
+	* Makefile.mingw (1.13), source/tools/Makefile.am (1.17),
+	source/tools/mapdisp.cpp (1.5), source/win32/cnvdasm.dsp (1.5),
+	source/win32/cnvdbg.dsp (1.5), source/win32/mapdisp.dsp (1.8):
+
+	fixed tools compilation
+	
+2002-08-15 01:36  vividos
+
+	* source/uwadv.cpp (1.28):
+
+	files manager is needed for audio init now
+	
+2002-08-15 01:35  vividos
+
+	* source/settings.cpp (1.7):
+
+	made sure that values get set as std::strings
+	
+2002-08-15 01:34  vividos
+
+	* source/: audio.hpp (1.8), audio/audio.cpp (1.15):
+
+	added playlist loading
+	
+2002-08-15 00:18  vividos
+
+	* Makefile.mingw (1.12), source/Makefile.am (1.33),
+	source/win32/uwadv.dsp (1.27):
+
+	added uwadv_menu.cpp/.hpp
+	
+2002-08-15 00:15  vividos
+
+	* source/screens/: uwadv_menu.cpp (1.1), uwadv_menu.hpp (1.1):
+
+	added game menu screen that selects actual game type
+	
+2002-08-15 00:15  vividos
+
+	* source/: core.hpp (1.7), uwadv.cpp (1.27), uwadv.hpp (1.10):
+
+	added init_core() method that should get called when a generic game path is available (i.e. when a game is selected)
+	moved game checks to ua_uwadv_menu_screen class
+	
+2002-08-15 00:13  vividos
+
+	* source/files.cpp (1.14):
+
+	changed check for available games to only set ua_setting_uw1_avail or ua_setting_uw2_avail
+	actual game is selected in ua_uwadv_menu_screen
+	
+2002-08-15 00:11  vividos
+
+	* source/: settings.cpp (1.6), settings.hpp (1.11),
+	resource/settingsloader.cpp (1.8):
+
+	insert_value() is now set_value()
+	some other changes
+	
+2002-08-15 00:08  vividos
+
+	* uadata/Makefile.common (1.3):
+
+	added uw1 music playlist
+	
+2002-08-14 16:13  phlask
+
+	* source/screens/create_character.cpp (1.11):
+
+	Fixed bug in mouse-over check for appearance  and input buttons.
+	Added actions for setting player attributes and skills.
+	
+2002-08-14 16:01  vividos
+
+	* source/screens/: acknowledgements.cpp (1.6), acknowledgements.hpp
+	(1.3):
+
+	added constants as static members of the class
+	mouseclick now proceeds to the next page
+	
+2002-08-14 14:49  vividos
+
+	* source/: linux/uwadv.cfg.in (1.4), win32/uwadv.cfg (1.8):
+
+	added "savegame-folder" option
+	
+2002-08-14 14:06  vividos
+
+	* source/screens/ingame_orig.cpp (1.42):
+
+	added fading for the 3d view
+	
+2002-08-14 13:19  vividos
+
+	* source/uwadv.cpp (1.26):
+
+	reset time to current tick time
+	
+2002-08-14 12:56  vividos
+
+	* source/screens/: ingame_orig.cpp (1.41), ingame_orig.hpp (1.16):
+
+	added constants as static members of the class
+	added fading in/out (not complete yet)
+	added suspend() and resume() functions
+	
+2002-08-14 12:52  vividos
+
+	* source/screens/: start_menu.cpp (1.17), start_menu.hpp (1.8):
+
+	added constants as static members of the class
+	
+2002-08-14 12:49  vividos
+
+	* source/: uwadv.cpp (1.25), uwadv.hpp (1.9):
+
+	added resetting of main game loop timer for push_screen() and pop_screen() events
+	the lag produced many tick() calls at one time to keep up with the tick frequency
+	
+2002-08-14 11:53  vividos
+
+	* source/screens/: start_menu.cpp (1.16), start_menu.hpp (1.7):
+
+	uses suspend() and resume() for OpenGL initializations now
+	
+2002-08-14 11:49  vividos
+
+	* source/texture.cpp (1.19):
+
+	fixed cleaning up of texture names
+	
+2002-08-14 10:26  vividos
+
+	* Makefile.mingw (1.11):
+
+	added savegame.cpp/.hpp
+	
+2002-08-13 20:36  phlask
+
+	* uadata/uw1/scripts/createchar.lua (1.6):
+
+	All player skill values are now generated in a largely random manner.
+	The player name is now actually saved for the player (other values aren't yet)
+	
+2002-08-13 20:33  phlask
+
+	* source/screens/: create_character.cpp (1.10),
+	create_character.hpp (1.7):
+
+	Removed all hardcoded references to color and button image indexes (these are now set by the script).
+	Changed actions.
+	Added support for setting the player name from the script
+	
+2002-08-13 20:31  phlask
+
+	* source/: player.cpp (1.11), player.hpp (1.11):
+
+	added function for setting player name
+	
+2002-08-13 16:58  vividos
+
+	* source/win32/uwadv.dsp (1.26):
+
+	added savegame.cpp/.hpp
+	
+2002-08-13 16:55  vividos
+
+	* source/: resource/settingsloader.cpp (1.7), settings.hpp (1.10):
+
+	added "savegame-folder" settings key
+	
+2002-08-13 16:52  vividos
+
+	* source/: inventory.cpp (1.16), inventory.hpp (1.8), level.cpp
+	(1.19), level.hpp (1.13), objects.cpp (1.13), objects.hpp (1.8),
+	conv/codevm.cpp (1.12), conv/codevm.hpp (1.14), player.cpp (1.10),
+	player.hpp (1.10), underworld.cpp (1.21), underworld.hpp (1.14),
+	uwscript.cpp (1.9), uwscript.hpp (1.9):
+
+	added underworld component loading/saving
+	added load_game() and save_game() functions
+	
+2002-08-13 16:50  vividos
+
+	* source/: uwscript.cpp (1.8), uwscript.hpp (1.8):
+
+	added lua_game_tick() function binding
+	
+2002-08-13 16:47  vividos
+
+	* source/underworld.cpp (1.20):
+
+	lua_game_tick is now called every tick
+	level is changed after script initialization
+	
+2002-08-13 16:42  vividos
+
+	* source/resource/savegame.cpp (1.2):
+
+	added (dummy) implementation of ua_savegame methods
+	
+2002-08-13 16:27  vividos
+
+	* source/savegame.hpp (1.2):
+
+	readN functions return values now
+	
+2002-08-13 16:15  vividos
+
+	* source/: resource/savegame.cpp (1.1), savegame.hpp (1.1):
+
+	added savegame.cpp/.hpp
+	
+2002-08-13 11:57  vividos
+
+	* source/objects.cpp (1.12):
+
+	enabled rendering of invisible objects for debug builds
+	
+2002-08-13 00:39  vividos
+
+	* uadata/uw1/scripts/game.lua (1.3):
+
+	added testing function for tilemap_* functions
+	
+2002-08-13 00:38  vividos
+
+	* source/uwadv.cpp (1.24):
+
+	made ua_underworld the very last object that is initialized
+	
+2002-08-13 00:32  vividos
+
+	* source/: uwscript.cpp (1.7), uwscript.hpp (1.7):
+
+	added tilemap_* Lua functions (not complete)
+	
+2002-08-13 00:25  vividos
+
+	* source/underworld.cpp (1.19):
+
+	initial game is loaded in ua_underworld now
+	
+2002-08-13 00:25  vividos
+
+	* source/underworld.hpp (1.13):
+
+	added get_level() function to get a specific levelmap object
+	
+2002-08-13 00:21  vividos
+
+	* source/screens/ingame_orig.cpp (1.40):
+
+	map is now loaded directly in ua_underworld
+	
+2002-08-12 23:24  vividos
+
+	* source/: underworld.cpp (1.18), underworld.hpp (1.12):
+
+	removed ua_underworld::curlevel
+	now stored in ua_player
+	
+2002-08-12 23:21  vividos
+
+	* uadata/uw1/scripts/game.lua (1.2):
+
+	player maplevel is now set via Lua, too
+	
+2002-08-12 22:42  phlask
+
+	* uadata/uw1/scripts/createchar.lua (1.5):
+
+	class specific skills are now displayed correctly in the left-bottom corner (according to actual user input)
+	
+2002-08-12 22:39  phlask
+
+	* source/screens/create_character.cpp (1.9):
+
+	Keystrokes with Alt & Ctrl down are no longer accepted for input
+	
+2002-08-12 21:23  vividos
+
+	* docs/README.Lua.txt (1.10), source/inventory.cpp (1.15),
+	source/uwscript.cpp (1.6), source/uwscript.hpp (1.6),
+	uadata/uw1/scripts/inventory.lua (1.3):
+
+	added Lua function lua_inventory_is_container
+	
+2002-08-12 21:09  vividos
+
+	* Makefile.am (1.4):
+
+	added docs/uw1-keyboard.txt
+	
+2002-08-12 21:06  vividos
+
+	* source/win32/uwadv.dsp (1.25):
+
+	added some lua scripts
+	added zziplib-config.h
+	
+2002-08-12 21:05  vividos
+
+	* docs/README.Lua.txt (1.9):
+
+	added another topic in list:
+	2.3. character creation interface
+	
+2002-08-12 21:04  vividos
+
+	* source/underworld.cpp (1.17):
+
+	moved player init to game.lua
+	
+2002-08-12 21:03  vividos
+
+	* source/: uwscript.cpp (1.5), uwscript.hpp (1.5):
+
+	added registered C functions for ua_player access
+	
+2002-08-12 21:02  vividos
+
+	* source/: player.cpp (1.9), player.hpp (1.9):
+
+	added player stats values to player attributes
+	added attribute for current map level and a "poisoned" flag
+	
+2002-08-12 20:59  vividos
+
+	* uadata/Makefile.common (1.2):
+
+	added game.lua and uwinterface.lua
+	
+2002-08-12 20:58  vividos
+
+	* uadata/uw1/scripts/: game.lua (1.1), uwinit.txt (1.3):
+
+	added game.lua
+	
+2002-08-12 20:55  vividos
+
+	* source/screens/ingame_orig.cpp (1.39):
+
+	added Alt+Q for returning to main screen
+	
+2002-08-12 20:22  vividos
+
+	* source/screens/cutscene_view.cpp (1.19):
+
+	value returned from a registered Lua script actually is the number of parameters on the stack
+	
+2002-08-12 20:21  vividos
+
+	* source/files.cpp (1.13):
+
+	lua_dobuffer uses script basename as "name of the chunk" now
+	
+2002-08-12 18:45  vividos
+
+	* uadata/uw1/scripts/uwinterface.lua (1.1):
+
+	added constants file
+	
+2002-08-12 18:44  vividos
+
+	* docs/README.Lua.txt (1.8):
+
+	added more Lua function descriptions
+	
+2002-08-12 17:08  vividos
+
+	* source/underworld.cpp (1.16):
+
+	changed inital viewing angle
+	
+2002-08-12 17:03  vividos
+
+	* source/resource/zziplib/zzip-conf.h (1.3):
+
+	fix for mingw32 define that didn't work for Dark-Star, using mingw32 + cygwin + the Linux ./configure
+	
+2002-08-12 16:58  vividos
+
+	* docs/README.uwadv.txt (1.4):
+
+	added note about uw1-keyboard.txt
+	
+2002-08-12 16:47  vividos
+
+	* docs/uw1-keyboard.txt (1.1):
+
+	added keyboard commands
+	by Dan Simpson (manymoose at hotmail.com)
+	Version 1.3 (3-26-00)
+	downloaded from http://db.gamefaqs.com/computer/doswin/file/ultima_underworld_a.txt
+	
+2002-08-12 16:35  vividos
+
+	* docs/README.uwadv.txt (1.3):
+
+	added comment about uadata-path
+	
+2002-08-12 16:08  vividos
+
+	* source/files.cpp (1.12):
+
+	some debug output changes
+	
+2002-08-11 16:01  phlask
+
+	* source/screens/create_character.cpp (1.8),
+	source/screens/create_character.hpp (1.6),
+	uadata/uw1/scripts/createchar.lua (1.4):
+
+	Improved mouse-over-button detection.
+	Multiple button columns are now handled correctly.
+	X-coord of buttongroup can now be (and is) set in script.
+	
+2002-08-10 10:51  wjpalenstijn
+
+	* source/: Makefile.am (1.32), tools/Makefile.am (1.16):
+
+	use X cflags/libs
+	
+2002-08-09 22:27  wjpalenstijn
+
+	* hacking/Makefile.am (1.2):
+
+	corrected typo
+	
+2002-08-08 22:24  wjpalenstijn
+
+	* Makefile.am (1.3), autogen.sh (1.6), configure.ac (1.7),
+	hacking/Makefile.am (1.1), source/tools/Makefile.am (1.15):
+
+	added hacking to makefiles (not actually built, though)
+	
+2002-08-08 22:18  wjpalenstijn
+
+	* source/resource/zziplib/zzip-stdint.h (1.2):
+
+	use SDL integer types for zziplib
+	
+2002-08-08 22:13  wjpalenstijn
+
+	* docs/README.Linux.txt (1.7):
+
+	updated linux build docs
+	
+2002-08-08 22:12  wjpalenstijn
+
+	* configure.ac (1.6):
+
+	check for zlib
+	
+2002-08-08 19:41  phlask
+
+	* source/screens/create_character.cpp (1.7),
+	source/screens/create_character.hpp (1.5),
+	uadata/uw1/scripts/createchar.lua (1.3):
+
+	Player name can be entered. Esc key behavior is now the same as in the original game. Script interface changes.
+	
+2002-08-08 17:27  wjpalenstijn
+
+	* source/lua/Makefile.am (1.3):
+
+	added missing file to dist
+	
+2002-08-08 16:58  wjpalenstijn
+
+	* uadata/Makefile.am (1.3):
+
+	added Makefile.common to dist
+	
+2002-08-08 16:52  wjpalenstijn
+
+	* source/Makefile.am (1.31):
+
+	typo
+	
+2002-08-08 16:28  vividos
+
+	* source/screens/create_character.cpp (1.6):
+
+	fix for garbled text output on mingw32 systems; it seems that there's a bug that changes string contents for const char* value got from std::string::c_str()
+	
+2002-08-08 13:52  vividos
+
+	* .cvsignore (1.6):
+
+	split line with two filenames
+	
+2002-08-08 13:51  vividos
+
+	* Makefile.mingw (1.10):
+
+	added "data" to the "all" target
+	
+2002-08-08 13:43  vividos
+
+	* docs/README.dev.txt (1.4):
+
+	added infos about CVS use and the release prodedure
+	added documentation for ua_texture
+	
+2002-08-08 11:37  vividos
+
+	* docs/README.mingw32.txt (1.5):
+
+	updated build instructions for mingw32
+	
+2002-08-08 11:36  vividos
+
+	* Makefile.mingw (1.9):
+
+	no need to copy luac.exe to uadata folder
+	
+2002-08-08 00:16  vividos
+
+	* ChangeLog (1.25):
+
+	updated
+	
 2002-08-07 23:34  wjpalenstijn
 
 	* source/: Makefile.am (1.30), lua/Makefile.am (1.2):
