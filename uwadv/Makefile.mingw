@@ -218,9 +218,6 @@ uwadv: $(uwadv_EXEC) uwadv.cfg
 $(uwadv_EXEC): $(uwadv_OBJS)
 	$(CXX) $(LDFLAGS) $(uwadv_LDFLAGS) -o $(@) $(uwadv_OBJS) $(uwadv_LIBS)
 
-source/win32/source/uwadv_res.o: source/win32/source/uwadv.rc source/win32/source/Uus.ico
-	cd source/win32/source && windres -i uwadv.rc -o uwadv_res.o
-
 uwadv.cfg: source/win32/uwadv.cfg
 	cp source/win32/uwadv.cfg .
 
@@ -308,6 +305,9 @@ clean: data-clean luac-clean
 
 %.o: %.cpp
 	$(CXX) $(CFLAGS) $(CXXFLAGS) -c $(<) -o $*.o
+
+%.o: %.rc
+	windres -i $(<) -o $*.o --output-format=coff --include-dir=$(@D)
 
 %.lob: %.lua luac
 	source/lua/bin/luac -o $@ $<
