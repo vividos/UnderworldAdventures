@@ -754,9 +754,7 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
          default: area = ua_area_none; break;
          }
 
-         if (//item==ua_slot_no_item &&
-            area == ua_area_none)
-               break;
+         if (area == ua_area_none) break;
 
          // left/right click pressed
          if (pressed && !check_dragging && area!=ua_area_inv_container)
@@ -790,18 +788,32 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
                   // normal inventory slot
 
                   // hack: check for item id's when dropping to paperdoll
-                  if (item==ua_slot_paperdoll_head ||
-                      item==ua_slot_paperdoll_chest ||
-                      item==ua_slot_paperdoll_hands ||
-                      item==ua_slot_paperdoll_legs ||
-                      item==ua_slot_paperdoll_feet)
+                  // todo: put this into lua script
                   {
                      Uint16 item_id = inv.get_item(inv.get_floating_item()).item_id;
-                     if (item_id < 0x0020 || item_id > 0x0032)
+                     {
+                        if (
+                            (item==ua_slot_paperdoll_head && !((item_id>=0x002c && item_id<=0x002e) || (item_id>=0x0030 && item_id<=0x0032)) ) ||
+                            (item==ua_slot_paperdoll_chest && !(item_id>=0x0020 && item_id<=0x0022) ) ||
+                            (item==ua_slot_paperdoll_hands && !(item_id>=0x0026 && item_id<=0x0028) ) ||
+                            (item==ua_slot_paperdoll_legs && !(item_id>=0x0023 && item_id<=0x0025) ) ||
+                            (item==ua_slot_paperdoll_feet && !((item_id>=0x0029 && item_id<=0x002b) || (item_id==0x002f)) )
+                           )
+                        {
+                           // prevent dropping item to wrong position
+                           break;
+                        }
+                     }
+
+                     // check for rings to put on finger slots
+                     if ( (item == ua_slot_rightfinger || item == ua_slot_leftfinger ) &&
+                        !(item_id>=0x0033 && item_id<=0x003a && item_id != 0x0037) )
+                     {
                         break;
+                     }
                   }
 
-                  // TODO: check if objects can be combined
+                  // TODO: check if objects can be combined --> ua_inventory?
 
                   // just drop the item on that position
                   // an item on that slot gets the next floating one
@@ -860,5 +872,5 @@ void ua_ingame_orig_screen::mouse_action(bool click, bool left_button, bool pres
             cursor_is_object = cursor_object != ua_slot_no_item;
          }
       }
-   } while (0);
+   } while (false);
 }
