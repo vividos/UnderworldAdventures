@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -31,99 +31,44 @@
 // needed includes
 #include "common.hpp"
 #include "audio.hpp"
+#include "settings.hpp"
+#include "files.hpp"
 #include "midi.hpp"
 #include "SDL_mixer.h"
 #include <string>
 
 
-// classes
+// external functions
 
-//! audio implementation class
-class ua_audio_impl: public ua_audio_interface
-{
-public:
-   //! ctor
-   ua_audio_impl();
-   //! dtor
-   virtual ~ua_audio_impl();
-
-   //! initializes audio
-   virtual void init(ua_settings &settings, ua_files_manager &filesmgr);
-
-   //! plays a sound; stops when finished
-   virtual void play_sound(const char *soundname);
-
-   //! stops sound playback
-   virtual void stop_sound();
-
-   //! starts music playback
-   virtual void start_music(unsigned int music, bool repeat);
-
-   //! fades out currently playing music track; fadeout time in seconds
-   virtual void fadeout_music(double time);
-
-   //! stops music playback
-   virtual void stop_music();
-
-protected:
-   //! loads music playlist
-   void load_playlist(ua_settings &settings, ua_files_manager &filesmgr,
-      const char *filename);
-
-   //! frees audio chunk when channel stops playing (callback function)
-   static void mixer_channel_finished(int channel)
-   {
-      Mix_Chunk* mc = Mix_GetChunk(channel);
-      if (mc)
-         Mix_FreeChunk(mc);
-   }
-
-protected:
-   //! midi player
-   ua_midi_player midipl;
-
-   //! playlist with all music files
-   std::vector<std::string> music_playlist;
-
-   //! path to uw base folder
-   std::string uw_path;
-
-   Mix_Music* curtrack;
-};
+//! resamples voc file recorded at 12000 Hz to (approximately) 22050 Hz
+extern void ua_audio_resample_voc(Mix_Chunk* mc);
 
 
-// ua_audio_interface methods
-
-ua_audio_interface *ua_audio_interface::get_audio_interface()
-{
-   // creates a new audio object
-   return new ua_audio_impl;
-}
-
-
-// ua_audio_impl methods
-
-ua_audio_impl::ua_audio_impl()
-:curtrack(NULL)
+// ua_audio_manager methods
+ua_audio_manager::ua_audio_manager()
+:midipl(NULL), curtrack(NULL)
 {
 }
 
-ua_audio_impl::~ua_audio_impl()
+ua_audio_manager::~ua_audio_manager()
 {
    stop_sound();
    stop_music();
 
    Mix_CloseAudio();
    SDL_QuitSubSystem(SDL_INIT_AUDIO);
+
+   delete midipl;
+   midipl = NULL;
 }
 
-void ua_audio_impl::init(ua_settings &settings, ua_files_manager &filesmgr)
+void ua_audio_manager::init(ua_settings& settings, ua_files_manager& filesmgr)
 {
    ua_trace("init audio subsystem ... ");
 
    if (!settings.get_bool(ua_setting_audio_enabled))
    {
-      ua_trace("disabled by settings\n");
+      ua_trace("disabled by settings\n\n");
       return;
    }
 
@@ -132,10 +77,11 @@ void ua_audio_impl::init(ua_settings &settings, ua_files_manager &filesmgr)
    Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 4096);
    Mix_ChannelFinished(mixer_channel_finished);
 
-   ua_trace(" %s\n",Mix_GetError());
+   ua_trace(" %s\n", Mix_GetError());
 
-   midipl.init_player(settings);
-   midipl.init_driver();
+   midipl = new ua_midi_player;
+   midipl->init_player(settings);
+   midipl->init_driver();
 
    load_playlist(settings,filesmgr,"uw1/audio/music.m3u");
 
@@ -143,13 +89,11 @@ void ua_audio_impl::init(ua_settings &settings, ua_files_manager &filesmgr)
 
    // print out SDL_mixer version
    const SDL_version* mixer_ver = Mix_Linked_Version();
-   ua_trace("using SDL_mixer version %u.%u.%u\n",
-      mixer_ver->major,mixer_ver->minor,mixer_ver->patch);
+   ua_trace("using SDL_mixer version %u.%u.%u\n\n",
+      mixer_ver->major, mixer_ver->minor, mixer_ver->patch);
 }
 
-extern void ua_audio_resample_voc(Mix_Chunk* mc);
-
-void ua_audio_impl::play_sound(const char *soundname)
+void ua_audio_manager::play_sound(const char* soundname)
 {
    // construct filename
    std::string vocname(uw_path);
@@ -169,12 +113,17 @@ void ua_audio_impl::play_sound(const char *soundname)
    }
 }
 
-void ua_audio_impl::stop_sound()
+void ua_audio_manager::stop_sound()
 {
    Mix_HaltChannel(-1);
 }
 
-void ua_audio_impl::start_music(unsigned int music, bool repeat)
+void ua_audio_manager::play_sfx(ua_audio_sfx_type sfx)
+{
+   // TODO
+}
+
+void ua_audio_manager::start_music(unsigned int music, bool repeat)
 {
    if (music>=music_playlist.size()) return;
 
@@ -197,7 +146,7 @@ void ua_audio_impl::start_music(unsigned int music, bool repeat)
        ext.find(".mid") != std::string::npos)
    {
       // start midi player
-      midipl.start_track(trackname.c_str(),0,repeat);
+      midipl->start_track(trackname.c_str(),0,repeat);
    }
    else
    {
@@ -214,12 +163,12 @@ void ua_audio_impl::start_music(unsigned int music, bool repeat)
    ua_trace("\n");
 }
 
-void ua_audio_impl::fadeout_music(double time)
+void ua_audio_manager::fadeout_music(double time)
 {
    Mix_FadeOutMusic(static_cast<int>(time*1000.0));
 }
 
-void ua_audio_impl::stop_music()
+void ua_audio_manager::stop_music()
 {
    if (curtrack)
    {
@@ -227,11 +176,11 @@ void ua_audio_impl::stop_music()
       curtrack = NULL;
    }
 
-   midipl.stop_track();
+   midipl->stop_track();
 }
 
-void ua_audio_impl::load_playlist(ua_settings &settings,
-   ua_files_manager &filesmgr, const char *filename)
+void ua_audio_manager::load_playlist(ua_settings& settings,
+   ua_files_manager& filesmgr, const char* filename)
 {
    SDL_RWops *m3u = filesmgr.get_uadata_file(filename);
    if (m3u==NULL) return;
@@ -272,16 +221,21 @@ void ua_audio_impl::load_playlist(ua_settings &settings,
       // check for empty line
       if (line.empty()) continue;
 
-      // replace %var% variables
+      filesmgr.replace_system_vars(line);
+
+      // additionally replace %uw-path%
       pos = line.find("%uw-path%");
       if (pos != std::string::npos)
-         line.replace(pos,9,settings.get_string(ua_setting_uw_path));
-
-      pos = line.find("%uadata%");
-      if (pos != std::string::npos)
-         line.replace(pos,8,settings.get_string(ua_setting_uadata_path));
+         line.replace(pos,9,uw_path);
 
       // add to playlist
       music_playlist.push_back(line);
    }
+}
+
+void ua_audio_manager::mixer_channel_finished(int channel)
+{
+   Mix_Chunk* mc = Mix_GetChunk(channel);
+   if (mc != NULL)
+      Mix_FreeChunk(mc);
 }

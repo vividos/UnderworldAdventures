@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -37,53 +37,82 @@
 */
 
 // include guard
-#ifndef __uwadv_audio_hpp_
-#define __uwadv_audio_hpp_
+#ifndef uwadv_audio_hpp_
+#define uwadv_audio_hpp_
 
 // needed includes
-#include "settings.hpp"
-#include "files.hpp"
+
+
+// forward references
+class ua_files_manager;
+class ua_settings;
+class ua_midi_player;
+typedef struct _Mix_Music Mix_Music;
+
+
+// enums
+
+//! enumeration of all sound effects
+enum ua_audio_sfx_type
+{
+   ua_sfx_steps=0,
+   // TODO add more
+};
 
 
 // classes
 
 //! audio interface class
-class ua_audio_interface
+class ua_audio_manager
 {
 public:
-   //! returns an audio interface
-   static ua_audio_interface *get_audio_interface();
+   //! ctor
+   ua_audio_manager();
+   //! dtor
+   ~ua_audio_manager();
 
    //! initializes audio
-   virtual void init(ua_settings &settings, ua_files_manager &filesmgr)=0;
+   void init(ua_settings& settings, ua_files_manager& filesmgr);
 
    //! plays a sound; stops when finished
-   virtual void play_sound(const char *soundname)=0;
+   void play_sound(const char* soundname);
 
    //! stops sound playback
-   virtual void stop_sound()=0;
+   void stop_sound();
+
+   //! plays a special effect sound
+   void play_sfx(ua_audio_sfx_type sfx);
 
    //! starts music playback
-   virtual void start_music(unsigned int music, bool repeat)=0;
+   void start_music(unsigned int music, bool repeat);
 
    //! fades out currently playing music track; fadeout time in seconds
-   virtual void fadeout_music(double time)=0;
+   void fadeout_music(double time);
 
    //! stops music playback
-   virtual void stop_music()=0;
-
-   //! dtor
-   virtual ~ua_audio_interface(){}
+   void stop_music();
 
 protected:
-   //! ctor
-   ua_audio_interface(){}
+   //! loads music playlist
+   void load_playlist(ua_settings& settings, ua_files_manager& filesmgr,
+      const char* filename);
 
-   //! copy ctor
-   ua_audio_interface(const ua_audio_interface &ai){ ai; }
+   //! frees audio chunk when channel stops playing (callback function)
+   static void ua_audio_manager::mixer_channel_finished(int channel);
 
-   //! assign operator
-   ua_audio_interface &operator =(const ua_audio_interface &ai){ ai; return *this; }
+protected:
+
+   //! midi player
+   ua_midi_player* midipl;
+
+   //! playlist with all music files
+   std::vector<std::string> music_playlist;
+
+   //! path to uw base folder
+   std::string uw_path;
+
+   //! current music track
+   Mix_Music* curtrack;
 };
 
 #endif
