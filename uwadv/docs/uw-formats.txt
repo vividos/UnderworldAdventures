@@ -759,6 +759,29 @@ Table of Contents
    (?) I haven't yet encountered these in the wild, so don't know exactly what
        they do.
 
+   * Conversation text substitutions
+
+     In text strings printed by SAY_OP or a imported function (like
+     "babl_menu") there may be strings like @SS1 or @GS8 that are substituted
+     with other text. The format of the "format string" is like this:
+
+     @XY<num>
+
+     X: source of variable to substitute, one of these: GSP
+        G: global variable (?)
+        S: stack variable
+        P: private variable (?)
+     Y: type of variable, one of these: SI
+        S: value is a string number into current string block
+        I: value is an integer value
+     <num>: hex value, without leading 0's
+
+     For stack variables, the num value determines which stack value is taken
+     from the current local variables. The value to take is basep + <num>
+
+     Example:
+     A @SS2 means: print string with string number found at basep + 2
+
    * Conversation builtin functions
 
      Here are listed all builtin functions:
