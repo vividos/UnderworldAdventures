@@ -46,7 +46,7 @@ void ua_conv_debugger::init(const char *thecnvname, const char *strname, const c
    gs.load(strname);
 
    printf("loading conv globals ...\n");
-   cg.load(bgname,false);
+   cg.import(bgname,false);
 
    printf("done loading.\n");
    loaded=false; // code not loaded yet
