@@ -87,8 +87,6 @@ void load_level(int level)
       texmgr.prepare(used_textures[n]);
 
    // collect all triangles
-   std::vector<ua_triangle3d_textured> alltriangles;
-
    for(unsigned int x=0; x<64; x++)
       for(unsigned int y=0; y<64; y++)
          ua_renderer::get_tile_triangles(levels[curlevel],x,y,alltriangles);
