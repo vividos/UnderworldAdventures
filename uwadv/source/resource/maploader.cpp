@@ -56,18 +56,13 @@ ua_levelmap_tiletype ua_tile_type_mapping[16] =
 };
 
 
-// ua_underworld methods
+// global functions
 
-void ua_underworld::import_savegame(ua_settings &settings,const char *folder,bool initial)
+void ua_import_levelmaps(ua_settings &settings, const char *folder,
+   std::vector<ua_level> &levels)
 {
-   unsigned int maxlevels = 0;
-
-   if (settings.gtype == ua_game_uw_demo)
-      maxlevels = 1;
-   else
-      maxlevels = 9;
-
-   levels.reserve(maxlevels);
+   unsigned int numlevels = settings.gtype == ua_game_uw_demo ? 1 : 9;
+   levels.reserve(numlevels);
 
    // open map file
    std::string mapfile(settings.uw1_path);
@@ -129,7 +124,7 @@ void ua_underworld::import_savegame(ua_settings &settings,const char *folder,boo
       offsets[n]=fread32(fd);
 
    // load all levels
-   for(unsigned int i=0; i<maxlevels; i++)
+   for(unsigned int i=0; i<numlevels; i++)
    {
       ua_level level;
 
@@ -150,6 +145,15 @@ void ua_underworld::import_savegame(ua_settings &settings,const char *folder,boo
 
    } // end if
    fclose(fd);
+}
+
+
+// ua_underworld methods
+
+void ua_underworld::import_savegame(ua_settings &settings,const char *folder,bool initial)
+{
+   // load level maps
+   ua_import_levelmaps(settings,folder,levels);
 
    // load conv globals
    {
