@@ -2,26 +2,27 @@
 # Underworld Adventures install script
 #
 
-!define VERSION "ricecraecker"
+!define VERSION "04c-cheesecake"
 
 # compiler utility commands
 #
-!packhdr temp.dat "tools\upx -9 temp.dat"
+!packhdr temp.dat "upx -9 temp.dat"
 
 # general installer config
 #
-OutFile "..\..\output\uwadv-${VERSION}.exe"
-Name "Underworld Adventures ${VERSION}"
+OutFile "uwadv-${VERSION}-bin-win32.exe"
+Name "Underworld Adventures release ${VERSION}"
 CRCCheck on
 
 # install directory config
 #
-InstallDir "$PROGRAMFILES\Underworld Adventures"
+InstallDir "c:\uwadv\"
+#InstallDir "$PROGRAMFILES\Underworld Adventures"
 
 # license page config
 #
 LicenseText "You should read the following license before installing."
-LicenseData "install\License.installer.txt"
+LicenseData "License.installer.txt"
 
 # component page config
 #
@@ -58,15 +59,18 @@ ComponentText
 Section -
 #SectionIn 0
 SetOutPath $INSTDIR
-File ..\..\output\release\uwadv.exe
-File install\SDL.dll
-#File install\fmod.dll
+File uwadv.exe
+File uaconfig.exe
+File SDL.dll
+File SDL_mixer.dll
 File uwadv.cfg
-File ..\..\Copying
-File ..\..\docs\readme.txt
-CreateShortCut "$DESKTOP\Underworld Adventures.lnk" "$INSTDIR\uwadv.exe" "" "" "0"
-WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\uwadv" "DisplayName" "Underworld Adventures version '${VERSION}' (remove only)"
-WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\uwadv" "UninstallString" '"$INSTDIR\uninst-uwadv.exe"'
+File Copying
+File README.uwadv.txt
+
+#CreateShortCut "$DESKTOP\Underworld Adventures.lnk" "$INSTDIR\uwadv.exe" "" "" "0"
+#WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\uwadv" "DisplayName" "Underworld Adventures version '${VERSION}' (remove only)"
+#WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\uwadv" "UninstallString" '"$INSTDIR\uninst-uwadv.exe"'
+
 WriteUninstaller $INSTDIR\uninst-uwadv.exe
 SectionEnd
 
@@ -74,19 +78,22 @@ Function .onInstSuccess
   MessageBox MB_YESNO|MB_ICONQUESTION \
     "Setup has completed. View readme file now?" \
     IDNO NoReadme
-    ExecShell open '$INSTDIR\readme.txt'
+    ExecShell open '$INSTDIR\README.uwadv.txt'
   NoReadme:
 FunctionEnd
 
 Section Uninstall
 Delete $INSTDIR\uwadv.exe
+Delete $INSTDIR\uaconfig.exe
 Delete $INSTDIR\SDL.dll
-#Delete $INSTDIR\fmod.dll
+Delete $INSTDIR\SDL_mixer.dll
 Delete $INSTDIR\uwadv.cfg
 Delete $INSTDIR\Copying
-Delete $INSTDIR\readme.txt
+Delete $INSTDIR\README.uwadv.txt
 Delete $INSTDIR\uninst-uwadv.exe
-Delete "$DESKTOP\Underworld Adventures.lnk"
-DeleteRegKey HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\uwadv"
+
+#Delete "$DESKTOP\Underworld Adventures.lnk"
+#DeleteRegKey HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\uwadv"
+
 RMDir $INSTDIR
 SectionEnd

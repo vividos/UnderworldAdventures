@@ -301,10 +301,14 @@ install: update
 	cp uwadv.cfg $(UWADV_PATH)
 
 
-installer: uwadv data
-	rem mkdir -p output/release/
-	rem cp uwadv.exe output/release/uwadv.exe
-	rem source/win32/install/makensis.exe uwadv.nsi
+installer: install
+	cp source/win32/uwadv.nsi $(UWADV_PATH)
+	cp source/win32/install/License.installer.txt $(UWADV_PATH)
+	cp Copying $(UWADV_PATH)
+	cp docs/README.uwadv.txt $(UWADV_PATH)
+	cd $(UWADV_PATH) && ./upx -9 uwadv.exe
+	cd $(UWADV_PATH) && ./upx -9 uaconfig.exe
+	cd $(UWADV_PATH) && ./makensis.exe uwadv.nsi
 
 clean: data-clean luac-clean
 	rm -f $(uwadv_EXEC) $(cnvdbg_EXEC) $(cnvdasm_EXEC) $(xmi2mid_EXEC) \
