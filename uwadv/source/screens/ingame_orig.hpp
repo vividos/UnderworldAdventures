@@ -40,15 +40,9 @@
 #include "imgquad.hpp"
 #include "textscroll.hpp"
 #include "ingame_ctrls.hpp"
-#include "underworld.hpp"
-/*
-#include "image.hpp"
-#include "font.hpp"
-#include "renderer.hpp"
-#include "uwscript.hpp"
-#include "debug.hpp"
 #include "panel.hpp"
-*/
+#include "underworld.hpp"
+
 
 // enums
 
@@ -91,51 +85,12 @@ enum ua_ingame_move_state
 //! screen area values
 enum ua_screen_area_id
 {
-   ua_area_screen3d=1,
    ua_area_textscroll,
-   ua_area_gargoyle,
    ua_area_powergem,
 
-   ua_area_compass,
    ua_area_move_left,
    ua_area_move_foreward,
    ua_area_move_right,
-
-   ua_area_spell0,
-   ua_area_spell1,
-   ua_area_spell2,
-   ua_area_bookshelf,
-   ua_area_flask_vitality,
-   ua_area_flask_mana,
-   ua_area_stats_chain,
-
-   // inventory stuff
-   ua_area_inv_slot0,
-   ua_area_inv_slot1,
-   ua_area_inv_slot2,
-   ua_area_inv_slot3,
-   ua_area_inv_slot4,
-   ua_area_inv_slot5,
-   ua_area_inv_slot6,
-   ua_area_inv_slot7,
-
-   ua_area_inv_container,
-   ua_area_inv_scroll_up,
-   ua_area_inv_scroll_down,
-
-   ua_area_equip_left_hand,
-   ua_area_equip_left_shoulder,
-   ua_area_equip_left_ring,
-
-   ua_area_equip_right_hand,
-   ua_area_equip_right_shoulder,
-   ua_area_equip_right_ring,
-
-   ua_area_paperdoll_head,
-   ua_area_paperdoll_chest,
-   ua_area_paperdoll_hand,
-   ua_area_paperdoll_legs,
-   ua_area_paperdoll_feet,
 };
 */
 
@@ -244,6 +199,9 @@ protected:
 
    // controls
 
+   //! panel for inventory, stats or runebag
+   ua_panel panel;
+
    //! compass window
    ua_ingame_compass compass;
 
@@ -315,11 +273,6 @@ protected:
 
 
    // images, textures and fonts
-
-
-   //! inventory/stats/runebag panel
-   ua_panel panel;
-
 
    //! screenshot image in rgba format
    std::vector<Uint32> screenshot_rgba;

@@ -158,6 +158,11 @@ void ua_ingame_orig_screen::init()
       }
 
       img_background.init(game, 0,0);
+
+      img_background.get_image().fill_rect(236,7, 83,114, 0);
+      img_background.get_image().fill_rect(272,3, 10,4, 0);
+      img_background.get_image().fill_rect(272,121, 10,18, 0);
+
       img_background.update();
 
       register_window(&img_background);
@@ -224,6 +229,9 @@ void ua_ingame_orig_screen::init()
    // init 3d view window
    view3d.init(game,54,20);
    register_window(&view3d);
+
+   panel.init(game,235,6);
+   register_window(&panel);
 
    // init mouse cursor
    mousecursor.init(game,0);
@@ -751,6 +759,8 @@ void ua_ingame_orig_screen::key_event(bool key_down, ua_key_value key)
 
 void ua_ingame_orig_screen::tick()
 {
+   ua_screen::tick();
+
    // evaluate underworld;
    // only evaluate when the user is not in the options menu
    if (fadeout_action == ua_action_none && gamemode != ua_mode_options)
