@@ -1,3 +1,9 @@
+#
+# Makefile.am for Underworld Adventures
+#
+# $Id$
+#
+
 AUTOMAKE_OPTIONS = foreign
 
 SUBDIRS = hacking source uadata
