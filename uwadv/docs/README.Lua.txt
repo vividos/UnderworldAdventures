@@ -95,8 +95,8 @@ registered C functions to call from Lua:
    tilemap_set_type
    tilemap_get_floor
    tilemap_set_floor
-   tilemap_get_automap_visible
-   tilemap_set_automap_visible
+   tilemap_get_ceiling
+   tilemap_set_ceiling
    tilemap_get_objlist_start
 
    inventory_rune_avail
@@ -105,14 +105,12 @@ registered C functions to call from Lua:
    conv_get_global
    conv_set_global
 
-   ui_print_string
-   ui_cursor_use_item
-   ui_cursor_target
    ui_start_conv
    ui_show_cutscene
+   ui_print_string
    ui_show_ingame_anim
-   ui_persist_put
-   ui_persist_get
+   ui_cursor_use_item
+   ui_cursor_target
 
 
 2.1.2. Functions provided by Lua scripts
@@ -134,51 +132,72 @@ registered C functions to call from Lua:
   run. "curtime" is the current underworld time in seconds since start of the
   underworld object.
 
-* lua_obj_look_at(item_id)
+* lua_track()
   return values: none
 
-  performs the "look at" action for a given item id.
+  performs the "track" skill evaluation and prints a string about possible
+  critters in the nearby area on the scroll.
 
-* lua_obj_use(inv_pos)
+* lua_sleep(start)
+  return values: success
+
+  performs sleeping. when "start" is positive, sleeping is to be started, else
+  sleeping ended. "success" is "nil" when the player cannot sleep for a
+  reason. function may start dream cutscenes.
+
+* lua_objlist_default_action(obj_handle)
   return values: none
 
-  performs the "use" action for a given object. "inv_pos" is the inventory
-  itemlist position. generally, only objects that are in the inventory can be
-  used with that function. if the object must be used together with another
-  object, a "object" cursor is requested.
+  performs the "default" action for object with given handle.
 
-* lua_obj_walk_over(obj)
+* lua_objlist_talk(obj_handle)
+  return values: none
+
+  tries to speak with the object with given handle.
+
+* lua_objlist_get(obj_handle)
+  return values: none
+
+  tries to pick up object with given handle.
+
+* lua_objlist_look(obj_handle)
+  return values: none
+
+  prints the look description for a given object
+
+* lua_objlist_use(obj_handle)
+  return values: none
+
+  uses an object; may call "ui_cursor_use_item" to get a target for using the
+  item.
+
+* lua_objlist_use_target(target_obj_handle)
+  return values: none
+
+  called when user selected a target object to use the current object on.
+
+* lua_objlist_drag(obj_handle)
+  return values: none
+
+  called when user "drags" an object with the mouse.
+
+* lua_objlist_walk_over(obj_handle)
   return values: none
 
   called when the player walks over an object. "obj" is the position in the
   objlist.
 
-* lua_obj_combine(item_id1, item_id2)
-  return values: success_code, new_item_id
-
-  tries to combine the two items given by their item_id's. The second item is
-  treated as the item dropped onto the first. Possible values for
-  "success_code" are:
-
-  - lua_obj_cmb_failed        items couldn't be combined
-  - lua_obj_cmb_dstr_first    first (existing) item is destroyed
-  - lua_obj_cmb_dstr_second   second (dropped) item is destroyed
-  - lua_obj_cmb_dstr_both     both the two objects are destroyed
-
-  in any case but "lua_obj_cmb_failed" the "new_item_id" contains the item id
-  of the newly created object.
-
-* lua_obj_get
-* lua_obj_can_talk
-* lua_obj_can_use
-* lua_obj_can_get
-* lua_player_hit_floor(speed)
+* lua_cast_spell()
   return values: none
 
-  called when the player hits the floor. "speed" is the speed in
-  height_unit/second.
+  starts casting a spell with the runes on the runeshelf. may request a "target"
+  cursor.
 
-* lua_player_hit_wall
+* lua_cast_target(target_obj)
+  return values: none
+
+  finishes casting of "target" spells. "target_obj" is the object handle for
+  the object selected with the target cursor.
 
 * lua_inventory_is_container(item_id)
   return values: is_cont
@@ -199,38 +218,40 @@ registered C functions to call from Lua:
   - lua_inv_cat_feet     all sorts of boots
   - lua_inv_cat_head     all sorts of helmets/crowns
 
-* lua_track()
+* lua_inventory_look(item_pos)
   return values: none
 
-  performs the "track" skill evaluation and prints a string about possible
-  critters in the nearby area on the scroll.
-
-* lua_sleep()
+* lua_inventory_use(item_pos)
   return values: none
 
-  performs sleeping. may start dream cutscenes.
+* lua_inventory_combine_obj(item_id1, item_id2)
+  return values: success_code, new_item_id
 
-* lua_cast_spell(spell_id)
-  return values: none
+  tries to combine the two items given by their item_id's. The second item is
+  treated as the item dropped onto the first. Possible values for
+  "success_code" are:
 
-  starts casting a spell with "spell_id". may request a "target" cursor.
+  - lua_inv_cmb_failed        items couldn't be combined
+  - lua_inv_cmb_dstr_first    first (existing) item is destroyed
+  - lua_inv_cmb_dstr_second   second (dropped) item is destroyed
+  - lua_inv_cmb_dstr_both     both the two objects are destroyed
 
-* lua_cast_target(target_obj)
-  return values: none
+  in any case but "lua_inv_cmb_failed" the "new_item_id" contains the item id
+  of the newly created object.
 
-  finishes casting of "target" spells. "target_obj" is the object selected
-  with the target cursor.
-
-* lua_savegame_load(version)
+* lua_savegame_load(savegame,version)
   return values: none
 
   restores lua values from the savegame that is to be loaded. "version"
-  indicates the version of the savegame.
+  indicates the version of the savegame. "savegame" is a userdata value that
+  has to be passed to the savegame_* functions. the function should skip
+  loading values that are stored with an earlier version.
 
-* lua_savegame_save()
+* lua_savegame_save(savegame)
   return values: none
 
-  saves the lua values that have to be persisted.
+  saves the lua values that have to be persisted. "savegame" is a userdata
+  value that has to be passed to the savegame_* functions.
 
 
 2.1.3. Registered C functions
@@ -254,8 +275,6 @@ registered C functions to call from Lua:
   - player_attr_strength
   - player_attr_dexterity
   - player_attr_intelligence
-  - player_attr_attack
-  - player_attr_defense
 
   - player_attr_life
   - player_attr_max_life
@@ -265,11 +284,15 @@ registered C functions to call from Lua:
   - player_attr_weariness
   - player_attr_hungriness
   - player_attr_poisoned
+  - player_attr_mentalstate       drunk, tripping, etc.; 0 means normal
+  - player_attr_nightvision
 
   - player_attr_talks
   - player_attr_kills
   - player_attr_level             current experience level
   - player_attr_exp_points
+
+  - ua_attr_difficulty            0=easy, 1=normal
 
 * player_set_attr(attr_type, attr_value)
   return values: none
@@ -280,11 +303,14 @@ registered C functions to call from Lua:
 * player_get_skill(skill_type)
   return values: skill_value
 
+  - player_skill_attack
+  - player_skill_defense
   - player_skill_unarmed
   - player_skill_sword
   - player_skill_axe
   - player_skill_mace
   - player_skill_missile
+  - player_skill_mana
   - player_skill_lore
   - player_skill_casting
   - player_skill_traps
@@ -317,40 +343,52 @@ registered C functions to call from Lua:
 * player_get_angle()
   return values: angle
 
-  returns view angle of the player.
+  returns rotation view angle of the player.
 
 * player_set_angle(angle)
 
-  sets new view angle.
+  sets new rotation view angle.
 
 
 2.1.3.2. Object list access functions
 
+Object infos are stored in a table that can look like this:
+
+T = { item_id = 0, quantity = 0, handle_next, handle_special,
+      data = { size = 2, [0] = 1, [1] = 42 },
+    }
+
+"handle_next" is the handle to the next object in list, or 0 for none.
+"handle_special" points to an object associated with the current one (e.g. the
+inventory of NPC's, contents of a container or door to a lock object).
+"data" contains misc. data for that particular item type
+
 * objlist_get_obj_info(obj_handle)
-  return values: item_id, quantity, obj_handle_next, obj_handle_special
+  return values: objinfo
 
-  returns all infos about an object in the object list. "obj_handle_next" is a
-  handle to the next object, or 0. "obj_handle_special" is an object handle to
-  another object related to the object (e.g. contents of NPC's inventory, or a
-  door to the given lock).
+  returns all infos about an object in the object list in the table "objinfo".
 
-* objlist_set_obj_info(obj_handle, item_id, quantity)
+* objlist_set_obj_info(obj_handle, objinfo)
   return values: none
 
-  sets object info for a given object handle
+  sets object infos in table "objinfo" for a given object handle.
 
 * objlist_remove_obj(obj_handle)
   return values: none
 
-  removed object from the object list and unlinks it.
+  removes object from the object list and unlinks it.
 
 * objlist_obj_is_npc(obj_handle)
   return values: is_npc
 
-  determines if an object is a NPC; when no, "is_npc" is nil.
+  determines if an object is a NPC; when not, "is_npc" is nil.
 
-* objlist_insert_obj
-  todo
+* objlist_insert_obj(tile_handle, objinfo, xpos, ypos)
+  return values: none
+
+  inserts object into a tile given by "tile_handle"; infos about the object is
+  in "objinfo", and "xpos" and "ypos" are coordinates relative to the tile
+  (i.e. clamped to [0.0 1.0]).
 
 
 2.1.3.3. Tilemap access functions
@@ -359,7 +397,7 @@ registered C functions to call from Lua:
   return values: tile_handle
 
   returns a tile handle for a given level and position. "level" can be -1 and
-  is a placeholder for the current level then.
+  is a placeholder for the current level.
 
 * tilemap_get_type(tile_handle)
   return values: tile_type
@@ -392,13 +430,15 @@ registered C functions to call from Lua:
 
   sets floor height.
 
-* tilemap_get_automap_visible(tile_handle)
-  return values: visible
+* tilemap_get_ceiling(tile_handle)
+  return values: ceiling_height
 
-  returns if a tile is visible on the automap. returns nil when not visible.
+  returns ceiling height.
 
-* tilemap_set_automap_visible(tile_handle, visible)
+* tilemap_set_ceiling(tile_handle, ceiling_height)
   return values: none
+
+  sets ceiling height.
 
 * tilemap_get_objlist_start(tile_handle)
   return values: obj_handle
@@ -406,9 +446,87 @@ registered C functions to call from Lua:
   returns handle to the first object in object list
 
 
-2.1.3.4.
+2.1.3.4. Inventory access functions
+
+* inventory_rune_avail(rune)
+  return values: avail
+
+  returns nil when the given rune is not available. "rune" can be either a
+  string where the first char is taken as the rune letter. if "rune" is a
+  number, it is used as aphabetical index value. note that there only are
+  24 runes, X and Z doesn't exist.
+
+* inventory_rune_add(rune)
+  return values: none
+
+  adds rune to the runebag. the parameter "rune" is treated the same as in
+  "inventory_rune_avail".
 
 todo
+
+
+2.1.3.5. Conversation flags functions
+
+* conv_get_global(slot,var)
+  return values: value
+
+  retrieves conversation global value, for slot "slot", variable index "var".
+
+* conv_set_global(slot,var,value)
+  return values: none
+
+  sets a conversation global value, for conv. slot "slot", variable index
+  "var", to "value".
+
+
+2.1.3.6. User Interface callback functions
+
+* ui_start_conv(conv_slot)
+  return values: none
+
+  starts conversation with NPC using conversation slot "conv_slot".
+
+* ui_show_cutscene(cutscene)
+  return values: none
+
+  shows a cutscene with number "cutscene"
+
+* ui_print_string(text)
+  return values: none
+
+  prints a string "text" to the message scroll
+
+* ui_show_ingame_anim(anim)
+  return values: none
+
+  shows ingame animation like death animation, anvil, etc.
+
+* ui_cursor_use_item(item_id)
+  return values: none
+
+  changes cursor with image of item with "item_id". a negative value restores
+  normal cursor. cancels targetting cursor.
+
+* ui_cursor_target()
+  return values: none
+
+  changes mouse cursor to a target cursor, to let the user click on a target.
+  call e.g. "lua_cast_target" to finally cast target spells, or call
+  "ui_cursor_use_item" to cancel targetting.
+
+2.1.3.7. Savegame functions
+
+* savegame_store_value(savegame,value)
+  return values: none
+
+  stores numerical value in savegame. "savegame" is a userdata value from
+  either "lua_savegame_save" or "lua_savegame_load". note that 32 bits
+  are spent before the decimal place, and 16 bits after the decimal place.
+
+* savegame_restore_value(savegame)
+  return values: value
+
+  restores a numerical value from the savegame returned with "value"
 
 
 2.2. Cutscenes control interface
