@@ -51,6 +51,8 @@ void ua_underworld::init(ua_settings& settings, ua_files_manager& filesmgr)
 
    questflags.resize(0x0040,0);
 
+   properties.init(settings);
+
    // load game strings
    ua_trace("loading game strings ... ");
    gstr.load(settings);

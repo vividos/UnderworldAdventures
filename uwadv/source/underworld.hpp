@@ -42,6 +42,7 @@
 #include "uwscript.hpp"
 #include "gamestrings.hpp"
 #include "savegame.hpp"
+#include "properties.hpp"
 
 
 // forward declaration
@@ -107,6 +108,9 @@ public:
    //! returns quest flag vector
    std::vector<Uint16>& get_questflags(){ return questflags; }
 
+   //! returns object property object
+   ua_object_properties& get_obj_properties(){ return properties; }
+
    // loading / saving / importing
 
    //! loads a savegame
@@ -146,6 +150,9 @@ protected:
 
    //! list of all quest flags
    std::vector<Uint16> questflags;
+
+   //! object property class
+   ua_object_properties properties;
 
    //! underworld script bindings;
    ua_underworld_script_bindings script;
