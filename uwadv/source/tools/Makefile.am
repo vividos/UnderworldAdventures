@@ -5,8 +5,8 @@
 #
 
 # compiler options
-CXXFLAGS = -I.. $(SDL_CFLAGS)
-LDFLAGS = $(SDL_LIBS)
+CXXFLAGS = -I.. $(SDL_CFLAGS) $(X_CFLAGS)
+LDFLAGS = $(SDL_LIBS) $(X_LIBS)
 
 
 noinst_PROGRAMS = cnvdasm cnvdbg xmi2mid mapdisp animview strpak
