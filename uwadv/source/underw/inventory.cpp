@@ -29,6 +29,7 @@
 #include "common.hpp"
 #include "inventory.hpp"
 #include "underworld.hpp"
+#include "script.hpp"
 
 
 // ua_inventory methods
@@ -99,7 +100,6 @@ double ua_inventory::get_inventory_weight()
       ua_common_obj_property& cprop = prop.get_common_property(itemlist[i].item_id);
       weight += cprop.mass;
    }
-//      weight += prop.get_common_property(itemlist[i].item_id).mass;
 
    return weight / 10.0;
 }
@@ -124,10 +124,11 @@ Uint16 ua_inventory::get_container_item_id()
    return id==ua_slot_no_item ? ua_slot_no_item : get_item(id).item_id;
 }
 
-/*! \todo implement properly */
 bool ua_inventory::is_container(Uint16 item_id)
 {
-   return false;//TODOunderw->get_scripts().lua_inventory_is_container(item_id);
+   ua_object_properties& prop = underw->get_obj_properties();
+   ua_common_obj_property& cprop = prop.get_common_property(itemlist[item_id].item_id);
+   return cprop.is_container;
 }
 
 void ua_inventory::open_container(Uint16 index)
@@ -317,8 +318,6 @@ bool ua_inventory::drop_floating_item_slot(Uint16 slot_index)
 
     if the function is called with ua_slot_no_item as index, a new item is
     allocated.
-
-    \todo implement category stuff
 */
 bool ua_inventory::drop_floating_item(Uint16 index)
 {
@@ -340,23 +339,23 @@ bool ua_inventory::drop_floating_item(Uint16 index)
    // check if object can be placed in that slot
    {
       // get inventory object category
-      //TODO
-/*      ua_inv_item_category cat = ua_inv_cat_normal;
-         underw->get_scripts().lua_inventory_categorize_item(
-            get_item(floating_object).item_id);
+
+      ua_armour_wearable_property& prop =
+      underw->get_obj_properties().
+         get_armour_property(get_item(floating_object).item_id);
 
       // check for rings
       if ( (index == ua_slot_rightfinger || index == ua_slot_leftfinger ) &&
-         cat != ua_inv_cat_ring)
-            return false;
+         prop.category != ua_armour_ring)
+         return false;
 
       // check for paperdoll items
-      if ( (index==ua_slot_paperdoll_head && cat != ua_inv_cat_head) ||
-           (index==ua_slot_paperdoll_chest && cat != ua_inv_cat_chest) ||
-           (index==ua_slot_paperdoll_hands && cat != ua_inv_cat_hands) ||
-           (index==ua_slot_paperdoll_legs &&  cat != ua_inv_cat_legs) ||
-           (index==ua_slot_paperdoll_feet &&  cat != ua_inv_cat_feet) )
-              return false;*/
+      if ( (index == ua_slot_paperdoll_head && prop.category != ua_armour_hat) ||
+           (index == ua_slot_paperdoll_chest && prop.category != ua_armour_body_armour) ||
+           (index == ua_slot_paperdoll_hands && prop.category != ua_armour_gloves) ||
+           (index == ua_slot_paperdoll_legs &&  prop.category != ua_armour_leggings) ||
+           (index == ua_slot_paperdoll_feet &&  prop.category != ua_armour_boots) )
+              return false;
    }
 
    if (obj.item_id == ua_slot_no_item)
@@ -397,26 +396,29 @@ bool ua_inventory::drop_floating_item(Uint16 index)
          {
             Uint16 item_id2 = get_item(floating_object).item_id;
             Uint16 result_id = ua_slot_no_item;
+            ua_item_combine_status status = ua_item_combine_failed;
 
             // try to combine objects
-/*TODO            ua_obj_combine_result ret =
-               underw->get_scripts().lua_inventory_combine_obj(obj.item_id,item_id2,result_id);
+            ua_scripting* scripting = underw->get_scripting();
+            if (scripting != NULL)
+                status = scripting->item_combine(obj.item_id, item_id2,
+                result_id);
 
-            if (ret!=ua_obj_cmb_failed)
+            if (status != ua_item_combine_failed)
             {
-               switch(ret)
+               switch(status)
                {
-               case ua_obj_cmb_dstr_first:
+               case ua_item_combine_destroy_first:
                   // existing item is to be erased; just replace item id
                   obj.item_id = result_id;
                   break;
 
-               case ua_obj_cmb_dstr_second:
+               case ua_item_combine_destroy_second:
                   // dropped item is to be erased; just replace item id
                   get_item(floating_object).item_id = result_id;
                   break;
 
-               case ua_obj_cmb_dstr_both:
+               case ua_item_combine_destroy_both:
                   // all two items are erased
                   obj.item_id = result_id;
                   get_item(floating_object).item_id = ua_slot_no_item;
@@ -428,7 +430,7 @@ bool ua_inventory::drop_floating_item(Uint16 index)
                }
 
                return true; // combining was successful
-            }*/
+            }
          }
 
          // make copy of item on that place
