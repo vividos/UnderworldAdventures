@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,8 +26,8 @@
 */
 
 // include guard
-#ifndef __uwadv_files_hpp_
-#define __uwadv_files_hpp_
+#ifndef uwadv_files_hpp_
+#define uwadv_files_hpp_
 
 // needed includes
 #include "settings.hpp"
@@ -57,9 +57,6 @@ public:
 
    //! loads a lua script
    int load_lua_script(lua_State* L, const char* basename);
-
-   //! loads all underworld scripts
-   void load_underworld_scripts(lua_State* L, const char* initfile);
 
    //! returns a list of all configuration files to load
    std::vector<std::string> &get_cfgfiles_list() { return cfgfiles_list; }

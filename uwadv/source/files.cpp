@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -22,8 +22,6 @@
 /*! \file files.cpp
 
    \brief resource files management
-
-   functions to create a image from a string, in a specific font. fonts are
 
 */
 
@@ -337,77 +335,4 @@ int ua_files_manager::load_lua_script(lua_State* L, const char* basename)
       ua_trace("Lua script ended with error code %u\n",ret);
 
    return ret;
-}
-
-void ua_files_manager::load_underworld_scripts(lua_State* L, const char* initfile)
-{
-   // load all lua scripts
-
-   // read init text file
-   std::string initlist_str;
-   {
-      SDL_RWops* uwinit = get_uadata_file(initfile);
-
-      if (uwinit==NULL)
-      {
-         std::string text("could not find underworld Lua scripts init file ");
-         text.append(initfile);
-         throw ua_exception(text.c_str());
-      }
-
-      // read in all of the file
-      std::vector<char> initlist;
-
-      SDL_RWseek(uwinit,0,SEEK_END);
-      int size = SDL_RWtell(uwinit);
-      SDL_RWseek(uwinit,0,SEEK_SET);
-
-      if (size<=0)
-      {
-         std::string text("could not read underworld Lua scripts init file ");
-         text.append(initfile);
-         throw ua_exception(text.c_str());
-      }
-
-      initlist.resize(size+1,0);
-      SDL_RWread(uwinit,&initlist[0],size,1);
-      initlist[size]=0;
-
-      initlist_str.assign(reinterpret_cast<char*>(&initlist[0]));
-   }
-
-   std::string::size_type pos=0;
-
-   // remove '\r' chars
-   do
-   {
-      pos = initlist_str.find_first_of('\r');
-      if (pos != std::string::npos)
-         initlist_str.erase(pos,1);
-
-   } while (pos != std::string::npos);
-
-   // load all scripts mentioned in init text file
-   do
-   {
-      pos = initlist_str.find_first_of('\n');
-
-      if (pos != std::string::npos)
-      {
-         // load single script
-         std::string basename;
-         basename.assign(initlist_str.c_str(),pos);
-
-         if (basename.size()>0)
-         {
-            int ret = load_lua_script(L,basename.c_str());
-            if (ret!=0)
-               throw ua_exception("could not execute underworld Lua script");
-         }
-
-         // remove from list
-         initlist_str.erase(0,pos+1);
-      }
-
-   } while (pos != std::string::npos);
 }
