@@ -109,6 +109,9 @@ public:
    //! returns a single image
    ua_image &get_image(unsigned int num);
 
+   //! returns the list of images
+   std::vector<ua_image> &get_allimages(){ return allimages; }
+
 protected:
    //! images in the list
    std::vector<ua_image> allimages;
