@@ -23,7 +23,7 @@
 
    \brief game data import
 
-   aaa
+   import
 
 */
 
@@ -36,6 +36,7 @@
 
 // forward references
 class ua_font;
+class ua_image;
 
 
 //! imports common to uw1 and uw2
@@ -43,11 +44,36 @@ class ua_uw_import
 {
 public:
 
+   //! loads 8 main palettes
+   void load_palettes(const char* allpalname,
+      ua_smart_ptr<ua_palette256> allpalettes[8]);
+
+   //! loads all 32 auxiliary palettes with 16 indices each
+   void load_aux_palettes(const char* auxpalname,
+      Uint8 allauxpals[32][16]);
+
+   //! loads a *.gr image
+   void load_image_gr(ua_image& img, const char* imgname, unsigned int imgnum,
+      Uint8 auxpalettes[32][16]);
+
+   //! loads a list of image from a *.gr file
+   void load_image_gr_list(std::vector<ua_image>& imglist,
+      const char* imgname, unsigned int img_from, unsigned int img_to,
+      Uint8 auxpalettes[32][16]);
+
+   //! loads a *.byt image
+   void load_image_byt(const char* imgname, Uint8* pixels);
 
    //! loads a font
    void load_font(const char* fontname, ua_font& font);
 
+
 protected:
+
+private:
+   //! loads *.gr image into pixels array
+   void load_image_gr_priv(ua_image& image, FILE* fd, Uint8 auxpalidx[32][16],
+      bool special_panels);
 };
 
 //! uw1 imports
