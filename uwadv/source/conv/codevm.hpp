@@ -56,9 +56,12 @@
 //! function types
 enum ua_conv_datatype
 {
+   ua_dt_unknown,
    ua_dt_void,
    ua_dt_int,
-   ua_dt_string
+   ua_dt_string,
+   ua_dt_int_array,
+   ua_dt_string_array,
 };
 
 
@@ -144,9 +147,9 @@ public:
    std::vector<Uint16>& get_code_segment(){ return code; }
 
    //! returns map with imported functions
-   std::map<Uint16,ua_conv_imported_item>& get_imported_funcs(){ return imported_globals; }
+   std::map<Uint16,ua_conv_imported_item>& get_imported_funcs(){ return imported_funcs; }
    //! returns map with imported globals
-   std::map<Uint16,ua_conv_imported_item>& get_imported_globals(){ return imported_funcs ; }
+   std::map<Uint16,ua_conv_imported_item>& get_imported_globals(){ return  imported_globals; }
 
    //! returns string block to use for this conversation
    Uint16 get_strblock(){ return strblock; }
