@@ -70,7 +70,7 @@ public:
    bool handle_event(SDL_Event &event);
 
    //! starts input mode on the current line
-   void enter_input_mode();
+   void enter_input_mode(const char* text="");
 
    //! returns true when text was entered; "text" is updated then
    bool is_input_done(std::string& text);

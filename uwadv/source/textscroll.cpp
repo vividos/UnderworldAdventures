@@ -306,11 +306,12 @@ bool ua_textscroll::handle_event(SDL_Event &event)
          {
             // add string to current line
             linestack[input_line].append(input_text);
-            update_scroll();
 
             // end input mode
             input_mode = false;
             handled = true;
+
+            update_scroll();
 
             // disable unicode key support
             SDL_EnableUNICODE(0);
@@ -322,12 +323,19 @@ bool ua_textscroll::handle_event(SDL_Event &event)
    return handled;
 }
 
-void ua_textscroll::enter_input_mode()
+void ua_textscroll::enter_input_mode(const char* text)
 {
    // set up input mode
    input_mode = true;
-   input_text.erase();
-   input_line = linestack.size()-1;
+   input_text.assign(text);
+
+   if (linestack.size()>0)
+      input_line = linestack.size()-1;
+   else
+   {
+      print("");
+      input_line = 0;
+   }
 
    update_scroll();
 
