@@ -84,6 +84,9 @@ public:
    //! returns conversation globals
    ua_conv_globals &get_conv_globals(){ return conv_globals; }
 
+   //! returns a levelmap
+   ua_level &get_level(unsigned int level){ return levels[level]; }
+
    //! returns current level
    ua_level &get_current_level();
 
