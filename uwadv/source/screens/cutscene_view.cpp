@@ -63,6 +63,10 @@ void ua_cutscene_view_screen::init()
 
       if (cutsntype.compare("subtitles")==0)
          canshowtext = true;
+
+      // enable showing text when audio wasn't enabled
+      if (!settings.get_bool(ua_setting_audio_enabled))
+         canshowtext = true;
    }
 
    ended = false;
