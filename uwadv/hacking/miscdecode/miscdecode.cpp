@@ -309,6 +309,34 @@ int main(int argc, char* argv[])
       fclose(out);
    }
 
+   // decoding weapons.dat
+   {
+      FILE *fd = fopen(UWPATH"data\\weapons.dat","rb");
+      FILE *out = fopen("weapons-dat.txt","w");
+
+      for(unsigned int j=0; j<16; j++)
+      {
+         fprintf(out,"weapon \"%s\":\n",gs.get_string(4,j).c_str());
+
+         unsigned int i;
+         for(i=0; i<9; i++)
+            fprintf(out,"%02x ",fgetc(fd));
+         fprintf(out,"\n");
+
+         for(i=0; i<9; i++)
+            fprintf(out,"%02x ",fgetc(fd));
+         fprintf(out,"\n");
+
+         for(i=0; i<10; i++)
+            fprintf(out,"%02x ",fgetc(fd));
+         fprintf(out,"\n\n");
+      }
+
+      fclose(fd);
+      fclose(out);
+
+   } while(false);
+
    // decoding sounds.dat
    do
    {
