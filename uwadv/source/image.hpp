@@ -72,6 +72,9 @@ public:
    //! pastes a image on a specific pos
    void paste_image(const ua_image &img, unsigned int destx,unsigned int desty);
 
+   //! clears bitmap with one palette index
+   void clear(Uint8 index=0);
+
 protected:
    //! private image loader
    void load_image(FILE *fd,Uint8 auxpalidx[32][16]);

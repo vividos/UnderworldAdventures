@@ -42,7 +42,6 @@ void ua_image::create(unsigned int width, unsigned int height, unsigned int init
 {
    xres = width; yres = height;
    pixels.resize(width*height,initial);
-//   for(unsigned int i=0; i<pixels.size(); i++) pixels[i]=initial;
    palette = pal;
 }
 
@@ -60,6 +59,13 @@ void ua_image::paste_image(const ua_image &img, unsigned int destx,unsigned int 
       dest[(y+desty)*xres+(x+destx)] = src[y*sxres+x];
    }
 }
+
+void ua_image::clear(Uint8 index)
+{
+   unsigned int max = pixels.size();
+   for(unsigned int i=0; i<max; i++) pixels[i]=index;
+}
+
 
 // ua_image_list methods
 
