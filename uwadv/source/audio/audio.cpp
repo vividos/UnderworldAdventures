@@ -180,7 +180,8 @@ void ua_audio_manager::stop_music()
       curtrack = NULL;
    }
 
-   midipl->stop_track();
+   if (midipl)
+      midipl->stop_track();
 }
 
 void ua_audio_manager::load_playlist(ua_settings& settings,
