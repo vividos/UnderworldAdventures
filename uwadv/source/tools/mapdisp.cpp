@@ -165,6 +165,7 @@ void init_mapdisp()
    // init texture manager
    texmgr.init(settings);
 
+   // import all levelmaps
    ua_import_levelmaps(settings,"data/",levels);
 
    if (all_maps)
