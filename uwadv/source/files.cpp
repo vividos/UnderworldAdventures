@@ -93,3 +93,9 @@ SDL_RWops *ua_files_manager::get_uadata_file(const char *relpath)
 
    return ret;
 }
+
+bool ua_files_manager::savegames_avail()
+{
+   // for now we pretend there always are some savegames
+   return true;
+}

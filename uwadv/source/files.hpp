@@ -50,6 +50,9 @@ public:
    //! returns "uadata" file
    SDL_RWops *get_uadata_file(const char *relpath);
 
+   //! returns true when savegames are available
+   bool savegames_avail();
+
 protected:
    //! path to "uadata" dir
    std::string uadata_path;
