@@ -50,9 +50,9 @@ void ua_image_quad::init(ua_game_interface& game, unsigned int xpos,
    ua_window::create(xpos,ypos,image.get_xres(),image.get_yres());
 
    if (image.get_palette().get() == NULL)
-      image.get_palette() = game.get_image_manager().get_palette(0);
+      image.set_palette(game.get_image_manager().get_palette(0));
 
-   tex.init(2);
+   tex.init(1);
 
    smooth_ui = game.get_settings().get_bool(ua_setting_ui_smooth);
 }
@@ -134,14 +134,17 @@ void ua_image_quad::update()
       img_split1.create(texwidth+1,texheight);
       img_split2.create(texwidth+1,texheight);
 
-      img_split1.get_palette() = image.get_palette();
-      img_split2.get_palette() = image.get_palette();
+      img_split1.set_palette(image.get_palette());
+      img_split2.set_palette(image.get_palette());
 
       // paste contents
       img_split1.paste_rect(image,0,0, texwidth+1,texheight, 0,0);
       img_split2.paste_rect(image,texwidth,0, texwidth,texheight, 0,0);
 
       img_split2.paste_rect(image,image.get_xres()-1,0, 1,texheight, texwidth,0); // copy border
+
+      // reinit with 2 textures
+      tex.init(2);
 
       // upload it to the texture
       tex.convert(img_split1,0);

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -245,7 +245,7 @@ void ua_image_manager::load(ua_image& img, const char* basename, unsigned int im
    }
 
    // set palette ptr
-   img.get_palette() = allpalettes[palette];
+   img.set_palette(allpalettes[palette]);
 }
 
 /*! just specify the filename without the .gr and without path.
@@ -269,5 +269,5 @@ void ua_image_manager::load_list(std::vector<ua_image>& imgs, const char* basena
    // set palette ptr for all images
    unsigned int max = imgs.size();
    for(unsigned int i=0; i<max; i++)
-      imgs[i].get_palette() = allpalettes[palette];
+      imgs[i].set_palette(allpalettes[palette]);
 }

@@ -68,7 +68,7 @@ void ua_mousecursor::set_custom(ua_image& cursorimg)
    cursorimg2.create(wnd_width+1,wnd_height+1);
    cursorimg2.paste_rect(cursorimg, 0,0, wnd_width,wnd_height, 0,0);
 
-   cursorimg2.get_palette() = cursorimg.get_palette();
+   cursorimg2.set_palette(cursorimg.get_palette());
 
    mousetex.convert(cursorimg2);
    mousetex.upload();

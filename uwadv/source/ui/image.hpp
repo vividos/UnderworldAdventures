@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -122,6 +122,9 @@ public:
 
    //! returns a const pixel vector
    const std::vector<Uint8>& get_pixels() const { return pixels; }
+
+   //! sets palette
+   void set_palette(ua_palette256_ptr& pal){ palette = pal; }
 
    //! returns palette
    ua_palette256_ptr& get_palette(){ return palette; };
