@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -148,7 +148,8 @@ void ua_renderer_impl::render(const ua_level& level, ua_vector3d pos,
     \param x tile x coordinate of tile which objects are to render
     \param y tile y coordinate of tile which objects are to render
 */
-void ua_renderer_impl::render_objects(const ua_level& level, unsigned int x, unsigned int y)
+void ua_renderer_impl::render_objects(const ua_level& level,
+   unsigned int x, unsigned int y)
 {
    // enable alpha blending
    glEnable(GL_BLEND);
@@ -232,7 +233,6 @@ void ua_renderer_impl::render_object(const ua_level& level,
    }
    else
 */
-/*
    // critters
    if (item_id >= 0x0040 && item_id < 0x0080)
    {
@@ -243,16 +243,30 @@ void ua_renderer_impl::render_object(const ua_level& level,
 
       tex.use(0);
 
-      render_sprite(base, 0.4, 0.9, true, tex.get_tex_u(), tex.get_tex_v());
+      // adjust height for hotspot
+      base.z -= 0.0;
+
+      double u = crit.get_hotspot_u(curframe) / tex.get_tex_u();
+      double v = crit.get_hotspot_v(curframe) / tex.get_tex_v();
+
+      u = 1.0-u*2.0;
+      v = v-1.0;
+
+      // fix for rotworm; hotspot always too high
+      if (item_id == 0x0040) v += 0.25;
+
+      render_sprite(base, 0.4, 0.88, true,
+         tex.get_tex_u(), tex.get_tex_v(), u, v);
    }
    else
+/*
    // switches/levers/buttons/pull chains
    if ((item_id >= 0x0170 && item_id <= 0x017f) ||
          item_id == 0x0161 || // a_lever
          item_id == 0x0162 || // a_switch
          item_id == 0x0166)   // some_writing
    {
-      render_aligned_quad();
+      render_aligned_quad(object);
    }
    else
    // special tmap object
@@ -281,54 +295,8 @@ void ua_renderer_impl::render_object(const ua_level& level,
       texmgr.use(item_id+ua_tex_stock_objects);
       render_sprite(base, 0.5*quadwidth, quadwidth, false, 1.0, 1.0);
    }
-
-/*
-   if (item_id >= 0x0040 && item_id < 0x0080)
-   {
-      double u = tex.get_tex_u(), v = tex.get_tex_v();
-      double hot_u = crit.get_hotspot_u(curframe), hot_v = crit.get_hotspot_v(curframe);
-
-      double scale_x = 0.4*u*tex.get_xres()/64.0;
-      double scale_z = 0.9*v*tex.get_yres()/64.0;
-
-      // modify base point
-      base.z -= (v-hot_v)/v*scale_z*bb_up.length();
-      // TODO: modify x/y coords according to hot_u
-
-      ua_vector3d bb_up_save(bb_up);
-      bb_up.x = bb_up.y = 0.0; // NPC's up vector 
-      bb_up.normalize();
-
-      draw_billboard_quad(base,
-         scale_x,
-         scale_z,
-         0.0, 0.0, u,v);
-
-      bb_up = bb_up_save;
-   }
-   else
-   {
-      // switches/levers/buttons/pull chains
-      if ((item_id >= 0x0170 && item_id <= 0x017f) ||
-          item_id == 0x0161 || // a_lever
-          item_id == 0x0162 || // a_switch
-          item_id == 0x0166)   // some_writing
-      {
-         render_decal(obj,x,y);
-         return;
-      }
-
-      // special tmap object
-      if (item_id == 0x016e || item_id == 0x016f)
-      {
-         render_tmap_obj(obj,x,y);
-#ifndef HAVE_DEBUG
-         return;
-#endif
-      }
-   }
-*/
 }
+
 /*
 void ua_renderer_impl::render_decal(const ua_object& obj, unsigned int x, unsigned int y)
 {
@@ -511,21 +479,34 @@ void ua_renderer_impl::render_tmap_obj(const ua_object& obj, unsigned int x, uns
     \param width relative width of object in relation to a tile
     \param height relative height of object in relation to a tile
     \param ignore_upvector ignores billboard up-vector when true; used for
-                           citters
+                           critters
     \param u maximum u texture coordinate
     \param v maximum v texture coordinate
+    \param move_u u-coordinate offset to move base, e.g. to hotspot
+    \param move_v v-coordinate offset to move base, e.g. to hotspot
 */
 void ua_renderer_impl::render_sprite(ua_vector3d base,
-   double width, double height, bool ignore_upvector, double u, double v)
+   double width, double height, bool ignore_upvector, double u, double v,
+   double move_u, double move_v)
 {
    // set texture parameter
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+   // scale z axis before any calculation is done
+   base.z *= height_scale;
+
+   // move base to new location
+   base += bb_right*move_u*width;
+   base += bb_up*move_v*height;
 
    // calculate vectors for quad
    ua_vector3d base2(base);
 
-   base -=  bb_right*width;
+   base  -= bb_right*width;
    base2 += bb_right*width;
 
    ua_vector3d high1(base);
@@ -533,7 +514,8 @@ void ua_renderer_impl::render_sprite(ua_vector3d base,
 
    if (ignore_upvector)
    {
-      // TODO
+      high1.z += height;
+      high2.z += height;
    }
    else
    {
@@ -547,16 +529,37 @@ void ua_renderer_impl::render_sprite(ua_vector3d base,
 
    // render quad
    glBegin(GL_QUADS);
-   glTexCoord2d(0.0,v);   glVertex3d(base .x,base .y,base .z*height_scale);
-   glTexCoord2d(u,  v);   glVertex3d(base2.x,base2.y,base2.z*height_scale);
-   glTexCoord2d(u,  0.0); glVertex3d(high2.x,high2.y,high2.z*height_scale);
-   glTexCoord2d(0.0,0.0); glVertex3d(high1.x,high1.y,high1.z*height_scale);
+   glTexCoord2d(0.0,v);   glVertex3d(base .x,base .y,base .z);
+   glTexCoord2d(u,  v);   glVertex3d(base2.x,base2.y,base2.z);
+   glTexCoord2d(u,  0.0); glVertex3d(high2.x,high2.y,high2.z);
+   glTexCoord2d(0.0,0.0); glVertex3d(high1.x,high1.y,high1.z);
    glEnd();
+
+#ifdef HAVE_DEBUG
+   if (ignore_upvector)
+   {
+      glDisable(GL_TEXTURE_2D);
+
+      GLfloat linewidth;
+      glGetFloatv(GL_LINE_WIDTH_RANGE, &linewidth);
+      glLineWidth(5.0);
+
+      glBegin(GL_LINE_LOOP );
+      glVertex3d(base .x,base .y,base .z);
+      glVertex3d(base2.x,base2.y,base2.z);
+      glVertex3d(high2.x,high2.y,high2.z);
+      glVertex3d(high1.x,high1.y,high1.z);
+      glEnd();
+
+      glLineWidth(linewidth);
+
+      glEnable(GL_TEXTURE_2D);
+   }
+#endif
 
    glDisable(GL_POLYGON_OFFSET_FILL);
 }
 
-/*
 /* ! Renders a wall-aligned textured quad.
    \param width 
    \param height 

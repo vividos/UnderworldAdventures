@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -73,7 +73,8 @@ protected:
 
    //! renders a billboarded sprite
    void render_sprite(ua_vector3d base, double width, double height,
-      bool ignore_upvector, double u, double v);
+      bool ignore_upvector, double u, double v,
+      double move_u=0.0, double move_v=0.0);
 
 /*
    //! renders decal
