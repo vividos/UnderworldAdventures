@@ -377,7 +377,7 @@ int ua_underworld_script_bindings::player_get_angle(lua_State *L)
 {
    ua_player &pl = get_underworld_from_self(L).get_player();
 
-   lua_pushnumber(L,pl.get_angle());
+   lua_pushnumber(L,pl.get_angle_rot());
 
    return 1;
 }
@@ -387,7 +387,7 @@ int ua_underworld_script_bindings::player_set_angle(lua_State *L)
    ua_player &pl = get_underworld_from_self(L).get_player();
 
    double angle = lua_tonumber(L,-1);
-   pl.set_angle(angle);
+   pl.set_angle_rot(angle);
 
    return 0;
 }

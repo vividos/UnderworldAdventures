@@ -40,7 +40,7 @@ void ua_player::init()
 {
    xpos = ypos = 32.0;
    height = 3.0; // Start height at entrance
-   angle = 0.0;
+   rotangle = panangle = 0.0;
    move_mode = 0;
 
    memset(attributes,0,sizeof(attributes));
@@ -99,7 +99,8 @@ void ua_player::load_game(ua_savegame &sg)
    // read position
    xpos = sg.read32()/256.0;
    ypos = sg.read32()/256.0;
-   angle = sg.read32()/256.0;
+   rotangle = sg.read32()/256.0;
+   panangle = sg.read32()/256.0;
    height = sg.read32()/256.0;
 
    // read attributes and skills
@@ -131,7 +132,8 @@ void ua_player::save_game(ua_savegame &sg)
    // write position
    sg.write32(Uint32(xpos*256.0));
    sg.write32(Uint32(ypos*256.0));
-   sg.write32(Uint32(angle*256.0));
+   sg.write32(Uint32(rotangle*256.0));
+   sg.write32(Uint32(panangle*256.0));
    sg.write32(Uint32(height*256.0));
 
    // write attributes and skills

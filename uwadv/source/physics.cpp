@@ -62,7 +62,7 @@ const double ua_physics_min_dist = 0.05;
 const double ua_player_radius = 0.4;
 
 //! max height the player can step
-const double ua_physics_max_step_height = 0.45;
+const double ua_physics_max_step_height = 1.1;
 
 //! max speed a player can walk, in tiles / second
 const double ua_player_max_walk_speed = 2.4;
@@ -92,7 +92,7 @@ void ua_physics_model::eval_player_movement(double time)
    if (mode & ua_move_walk_forward)
    {
       double speed = ua_player_max_walk_speed*(time-last_evaltime) * player_speed;
-      double angle = underw->get_player().get_angle();
+      double angle = underw->get_player().get_angle_rot();
 
       ua_vector2d dir;
       dir.set_polar(speed,angle);
@@ -128,13 +128,13 @@ void ua_physics_model::eval_player_movement(double time)
    if (mode & ua_move_rotate_left)
    {
       double angle = ua_player_max_rotate_speed*(time-last_evaltime);
-      player.set_angle(player.get_angle()+angle);
+      player.set_angle_rot(player.get_angle_rot()+angle);
    }
 
    if (mode & ua_move_rotate_right)
    {
       double angle = ua_player_max_rotate_speed*(time-last_evaltime);
-      player.set_angle(player.get_angle()-angle);
+      player.set_angle_rot(player.get_angle_rot()-angle);
    }
 
    last_evaltime = time;
