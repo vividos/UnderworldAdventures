@@ -338,6 +338,7 @@ int main(int argc, char* argv[])
    } while(false);
 
    // decoding chrgen.dat
+   do
    {
       FILE *fd = fopen(UWPATH"data\\chrgen.dat","rb");
       FILE *out = fopen("chrgen-dat.txt","w");
@@ -352,6 +353,44 @@ int main(int argc, char* argv[])
 
          if (j>0 && (j%linewidth)==(linewidth-1))
             fprintf(out,"\n");
+      }
+
+      fclose(fd);
+      fclose(out);
+
+   } while(false);
+
+   // decoding skills.dat
+   do
+   {
+      FILE *fd = fopen(UWPATH"data\\skills.dat","rb");
+      FILE *out = fopen("skills-dat.txt","w");
+
+      fseek(fd,0x0020,SEEK_SET);
+
+      // read in skills for all char classes
+      for(unsigned int a=0; a<8; a++)
+      {
+         fprintf(out,"listing skills for class %u, %s\n\n",
+            a,gs.get_string(2,a+23).c_str());
+
+         for(unsigned int b=0; b<5; b++)
+         {
+            // read length of table
+            unsigned int len = fgetc(fd);
+
+            if (len==1)
+               fprintf(out,"group %u, autoset\n",b);
+            else
+               fprintf(out,"group %u, length: %u\n",b,len);
+
+            for(unsigned int i=0; i<len; i++)
+            {
+               unsigned int val = fgetc(fd);
+               fprintf(out,"skill %02x, %s\n",val,gs.get_string(2,val+31).c_str());
+            }
+            fprintf(out,"\n",len);
+         }
       }
 
       fclose(fd);
