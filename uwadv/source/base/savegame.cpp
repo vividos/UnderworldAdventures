@@ -23,8 +23,6 @@
 
    \brief savegame reading/writing implementation
 
-   savegame naming scheme is "uasaveXXXXX.uas"
-
 */
 
 // needed includes
@@ -50,21 +48,6 @@ ua_savegame_info::ua_savegame_info()
  maplevel(0),strength(0),dexterity(0),intelligence(0),vitality(0),
  image_xres(0), image_yres(0)
 {
-}
-
-void ua_savegame_info::fill_infos(const ua_player& player)
-{
-   name = player.get_name();
-
-   gender = player.get_attr(ua_attr_gender);
-   appearance = player.get_attr(ua_attr_appearance);
-   profession = player.get_attr(ua_attr_profession);
-   maplevel = player.get_attr(ua_attr_maplevel);
-
-   strength = player.get_attr(ua_attr_strength);
-   dexterity = player.get_attr(ua_attr_dexterity);
-   intelligence = player.get_attr(ua_attr_intelligence);
-   vitality = player.get_attr(ua_attr_life);
 }
 
 
@@ -221,20 +204,13 @@ void ua_savegame::open(const char* filename, bool issaving)
    {
       // write header
       write32(current_version);
-/*
-#ifdef HAVE_ZLIB_SAVEGAME
-      write8(1); // compression: zlib
-#else
-      write8(0); // compression: none
-#endif
-*/
+
       write_info();
    }
    else
    {
       // read header
       save_version = read32();
-      //Uint8 compression = read8();
 
       read_info();
    }
@@ -308,7 +284,7 @@ ua_savegames_manager::ua_savegames_manager()
 {
 }
 
-void ua_savegames_manager::init(ua_settings &settings)
+void ua_savegames_manager::init(ua_settings& settings)
 {
    savegame_folder = settings.get_string(ua_setting_savegame_folder);
    game_prefix = settings.get_string(ua_setting_game_prefix);
@@ -342,7 +318,7 @@ unsigned int ua_savegames_manager::get_savegames_count()
 }
 
 void ua_savegames_manager::get_savegame_info(unsigned int index,
-   ua_savegame_info &info)
+   ua_savegame_info& info)
 {
    // open savegame and retrieve info
    ua_savegame sg = get_savegame_load(index);
@@ -447,37 +423,6 @@ bool ua_savegames_manager::quicksave_avail()
 
    // check if quicksave savegame file is available
    return ua_file_exists(quicksave_name.c_str());
-}
-
-ua_savegame ua_savegames_manager::get_quicksave(bool saving,
-   const ua_player& player)
-{
-   ua_savegame sg;
-
-   std::string quicksave_name(savegame_folder);
-   quicksave_name.append("quicksave.uas");
-
-   if (saving)
-   {
-      ua_savegame_info info;
-      info.title = "Quicksave Savegame";
-      info.game_prefix = game_prefix;
-
-      info.fill_infos(player);
-
-      // add savegame preview image to savegame info
-      info.image_rgba.clear();
-      info.image_rgba = image_savegame;
-      info.image_xres = image_xres;
-      info.image_yres = image_yres;
-
-      sg.get_savegame_info() = info;
-   }
-
-   // open quicksave savegame in given mode
-   sg.open(quicksave_name.c_str(),saving);
-
-   return sg;
 }
 
 void ua_savegames_manager::set_save_screenshot(

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures team
+   Copyright (c) 2002,2003 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,6 +23,29 @@
 
    \brief savegame class and savegames manager
 
+   The ua_savegame class represents a savegame on disk and can be in one of
+   two states, either loading and saving. It has a ua_savegame_info struct
+   that contains infos about the savegame. The ua_savegames_manager manages
+   savegames on disk and creating new ones. It also has support for quicksave
+   savegames.
+
+   Using the classes is simple. Just init() and let the savegames manager
+   rescan() to find the savegame files (*.uas). The list of available
+   savegames can be queried with get_savegames_count() and get_savegame_info()
+   and a savegame to load can be retrieved with get_savegame_load() or
+   get_savegame_from_file(). New savegames can be created with
+   get_savegame_save_new_slot() or get_savegame_save_overwrite().
+
+   A savegame contains several sections that are started with begin_section()
+   and ended with end_section(). Values can be read and write via the readN()
+   and writeN() functions. When done, close() should be called.
+
+   A savegame carries a version number that lets the user decide which fields
+   or parts of a savegame have to be loaded. This way older savegames can be
+   supported.
+
+   The savegame naming scheme is "uasaveXXXXX.uas".
+
 */
 
 // include guard
@@ -40,10 +63,6 @@
 #endif
 
 
-// forward references
-class ua_player;
-
-
 // structs
 
 //! savegame info struct
@@ -52,10 +71,7 @@ struct ua_savegame_info
    //! ctor
    ua_savegame_info();
 
-   //! fills player infos from player object
-   void fill_infos(const ua_player& player);
-
-   //! game type; 0 = uw1, 1 = uw2, 2 = custom
+   //! game type; 0 = uw1, 1 = uw2
    unsigned int type;
 
    //! savegame title
@@ -69,7 +85,7 @@ struct ua_savegame_info
    //! player name
    std::string name;
 
-   //! player gender (0=male)
+   //! player gender (0=male, 1=female)
    unsigned int gender;
 
    //! player appearance (0..4)
@@ -168,7 +184,7 @@ protected:
 #ifdef HAVE_ZLIB_SAVEGAME
    gzFile sg;
 #else
-   FILE *sg;
+   FILE* sg;
 #endif
 
    //! true when currently saving
@@ -199,7 +215,7 @@ public:
    unsigned int get_savegames_count();
 
    //! returns title of savegame
-   void get_savegame_info(unsigned int index, ua_savegame_info &info);
+   void get_savegame_info(unsigned int index, ua_savegame_info& info);
 
    //! returns name of savegame file
    std::string get_savegame_filename(unsigned int index);
@@ -219,9 +235,6 @@ public:
 
    //! returns true when a quicksave savegame is available
    bool quicksave_avail();
-
-   //! returns the quicksave savegame for loading or saving
-   ua_savegame get_quicksave(bool saving, const ua_player& player);
 
    //! sets screenshot for next save operation
    void set_save_screenshot(std::vector<Uint32>& image_rgba,
