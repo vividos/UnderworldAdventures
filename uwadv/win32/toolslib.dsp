@@ -185,6 +185,10 @@ SOURCE=..\source\utils.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\source\resource\uw2dec.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\source\resource\model\wrllexer.cpp
 # End Source File
 # End Group

@@ -16,6 +16,7 @@ libuatools_la_SOURCES = \
 	../image.cpp ../image.hpp ../resource/imageloader.cpp \
 	../imgquad.cpp ../imgquad.hpp \
 	../level.cpp ../level.hpp ../resource/maploader.cpp \
+	../resource/uw2dec.cpp \
 	../models.cpp ../models.hpp ../resource/modeldecode.cpp \
 	../resource/model/importwrl.cpp ../resource/model/FlexLexer.h \
 	../resource/model/wrllexer.cpp ../resource/model/wrllexer.hpp \

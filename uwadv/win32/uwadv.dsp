@@ -1030,6 +1030,10 @@ SOURCE=..\source\resource\texloader.cpp
 
 SOURCE=..\source\resource\tgaimport.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=..\source\resource\uw2dec.cpp
+# End Source File
 # End Group
 # Begin Source File
 
