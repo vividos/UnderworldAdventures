@@ -441,11 +441,13 @@ void ua_level::render_walls(unsigned int x, unsigned int y, ua_texture_manager &
 void ua_level::render_objs(unsigned int x, unsigned int y,
    ua_texture_manager &texmgr, ua_frustum &fr)
 {
-   std::vector<ua_object*> objlist(allobjects.get_object_list(x,y));
+   std::vector<ua_object_ptr> objlist;
+   allobjects.get_object_list(x,y,objlist);
+
    int max=objlist.size();
    for(int i=0; i<max; i++)
    {
-      ua_object *obj=objlist[i];
+      ua_object_ptr obj=objlist[i];
       obj->render(x,y,texmgr,fr,*this);
    }
 }

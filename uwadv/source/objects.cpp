@@ -111,33 +111,29 @@ ua_npc_object::ua_npc_object(unsigned int xpos,unsigned int ypos,Uint16 link1,Ui
 
 // ua_object_list methods
 
-std::vector<ua_object*> ua_object_list::get_object_list(unsigned int xpos,
-   unsigned int ypos)
+ua_object_list::~ua_object_list()
 {
-   std::vector<ua_object*> objlist;
+   master_obj_list.clear();
+}
 
+void ua_object_list::get_object_list(unsigned int xpos, unsigned int ypos,
+   std::vector<ua_object_ptr> &objlist)
+{
    // collect all object in that tile
    Uint16 idx=tile_index[ypos*64+xpos];
 
    while(idx!=0)
    {
-      ua_object *obj = master_obj_list[idx];
-      if (obj==0)
+      ua_object_ptr objptr = master_obj_list[idx];
+      if (objptr.get()==0)
       {
          idx=0; break;
       }
 
       // remember that object
-      objlist.push_back(obj);
+      objlist.push_back(objptr);
 
       // follow link
-      idx = obj->get_link1();
+      idx = objptr->get_link1();
    }
-
-   return objlist;
-}
-
-ua_object *ua_object_list::get_object(Uint16 at)
-{
-   return master_obj_list[at];
 }

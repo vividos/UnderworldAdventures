@@ -109,19 +109,24 @@ public:
 };
 
 
+typedef ua_smart_ptr<ua_object> ua_object_ptr;
+
+
 //! object list class
 class ua_object_list
 {
 public:
    //! ctor
    ua_object_list(){}
+   //! dtor
+   ~ua_object_list();
 
    //! returns list of objects on a tile
-   std::vector<ua_object*> get_object_list(unsigned int xpos,
-      unsigned int ypos);
+   void get_object_list(unsigned int xpos, unsigned int ypos,
+      std::vector<ua_object_ptr> &objlist);
 
    //! returns an object at a specific list pos
-   ua_object *get_object(Uint16 at);
+   ua_object_ptr get_object(Uint16 at){ return master_obj_list[at]; }
 
    // loading / saving / importing
 
@@ -137,7 +142,7 @@ protected:
    std::vector<unsigned int> tile_index;
 
    //! master object list
-   std::vector<ua_object*> master_obj_list;
+   std::vector<ua_object_ptr> master_obj_list;
 };
 
 #endif

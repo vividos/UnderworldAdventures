@@ -36,7 +36,7 @@
 void ua_object_list::import_objs(FILE *fd)
 {
    tile_index.resize(64*64,0);
-   master_obj_list.resize(0x400,0);
+   master_obj_list.resize(0x400);
 
    // read in all tile indices
    for(unsigned int tile=0; tile<64*64; tile++)
@@ -102,7 +102,7 @@ void ua_object_list::addobj_follow(std::vector<Uint32> &objprop,Uint16 objpos)
          obj->set_type(ua_obj_object);
 
       // add to master object list
-      master_obj_list[objpos] = obj;
+      master_obj_list[objpos] = ua_object_ptr(obj);
 
       // examine link2 and add where appropriate/known
 
