@@ -439,15 +439,15 @@ void ua_panel::inventory_click(
    // perform left/right click action
    if (left_button)
    {
-      // trigger "look" action
-      if (item != ua_item_none)
-         core->get_underworld().get_scripts().lua_inventory_look(item);
-   }
-   else
-   {
       // trigger "use" action
       if (item != ua_item_none)
          core->get_underworld().get_scripts().lua_inventory_use(item);
+   }
+   else
+   {
+      // trigger "look" action
+      if (item != ua_item_none)
+         core->get_underworld().get_scripts().lua_inventory_look(item);
    }
 }
 
