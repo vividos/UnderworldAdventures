@@ -82,6 +82,9 @@ void ua_find_files(const char* pathname, std::vector<std::string>& filelist);
 //! makes a string lowercase
 void ua_str_lowercase(std::string& str);
 
+//! makes a string uppercase
+void ua_str_uppercase(std::string& str);
+
 
 // classes
 
