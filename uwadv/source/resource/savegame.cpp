@@ -50,46 +50,87 @@ Uint32 ua_savegame::get_version()
    return save_version;
 }
 
+#ifdef HAVE_ZLIB_SAVEGAME
+
 Uint8 ua_savegame::read8()
 {
-#ifdef HAVE_ZLIB_SAVEGAME
    return gzgetc(sg);
-#else
-   return fgetc(sg);
-#endif
 }
 
 Uint16 ua_savegame::read16()
 {
-#ifdef HAVE_ZLIB_SAVEGAME
-
    Uint16 data;
    gzread(sg,&data,2);
 #if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
    data = ua_endian_convert16(data);
 #endif
    return data;
-
-#else
-   return fread16(sg);
-#endif
 }
 
 Uint32 ua_savegame::read32()
 {
-#ifdef HAVE_ZLIB_SAVEGAME
-
    Uint32 data;
    gzread(sg,&data,4);
 #if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
    data = ua_endian_convert32(data);
 #endif
    return data;
-
-#else
-   return fread32(sg);
-#endif
 }
+
+void ua_savegame::write8(Uint8 value)
+{
+   gzputc(sg,value);
+}
+
+void ua_savegame::write16(Uint16 value)
+{
+#if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
+   value = ua_endian_convert16(value);
+#endif
+   gzwrite(sg,&value,2);
+}
+
+void ua_savegame::write32(Uint32 value)
+{
+#if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
+   value = ua_endian_convert32(value);
+#endif
+   gzwrite(sg,&value,4);
+}
+
+#else // HAVE_ZLIB_SAVEGAME
+
+Uint8 ua_savegame::read8()
+{
+   return fgetc(sg);
+}
+
+Uint16 ua_savegame::read16()
+{
+   return fread16(sg);
+}
+
+Uint32 ua_savegame::read32()
+{
+   return fread32(sg);
+}
+
+void ua_savegame::write8(Uint8 value)
+{
+   fputc(value,sg);
+}
+
+void ua_savegame::write16(Uint16 value)
+{
+   fwrite16(sg,value);
+}
+
+void ua_savegame::write32(Uint32 value)
+{
+   fwrite32(sg,value);
+}
+
+#endif // HAVE_ZLIB_SAVEGAME
 
 void ua_savegame::read_string(std::string& str)
 {
@@ -99,76 +140,27 @@ void ua_savegame::read_string(std::string& str)
       str.append(1,static_cast<char>(read8()));
 }
 
-void ua_savegame::write8(Uint8 value)
-{
-#ifdef HAVE_ZLIB_SAVEGAME
-   gzputc(sg,value);
-#else
-   fputc(value,sg);
-#endif
-}
-
-void ua_savegame::write16(Uint16 value)
-{
-#ifdef HAVE_ZLIB_SAVEGAME
-
-#if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
-   value = ua_endian_convert16(value);
-#endif
-   gzwrite(sg,&value,2);
-
-#else
-   fwrite16(sg,value);
-#endif
-}
-
-void ua_savegame::write32(Uint32 value)
-{
-#ifdef HAVE_ZLIB_SAVEGAME
-
-#if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
-   value = ua_endian_convert32(value);
-#endif
-   gzwrite(sg,&value,4);
-
-#else
-   fwrite32(sg,value);
-#endif
-}
-
 void ua_savegame::write_string(const char* str)
 {
    Uint16 len = strlen(str);
    write16(len);
-   for(unsigned int i=0; i<len; i++) write8(static_cast<Uint8>(str[i]));
+   for(unsigned int i=0; i<len; i++)
+      write8(static_cast<Uint8>(str[i]));
 }
 
 void ua_savegame::begin_section(const char* section_name)
 {
    if (saving)
    {
-#ifdef HAVE_ZLIB_SAVEGAME
-      gzputs(sg,section_name);
-#else
-      fputs(section_name,sg);
-#endif
+      write_string(section_name);
    }
    else
    {
-      unsigned int len = strlen(section_name);
-
-      std::vector<char> buffer;
-      buffer.resize(len+1);
-
-#ifdef HAVE_ZLIB_SAVEGAME
-      gzgets(sg,&buffer[0],len+1);
-#else
-      fgets(&buffer[0],len+1,sg);
-#endif
-      buffer[len]=0;
+      std::string read_name;
+      read_string(read_name);
 
       // check if section names are the same
-      if (strcmp(&buffer[0],section_name)!=0)
+      if (0 != read_name.compare(section_name))
          throw ua_exception("savegame loading: section name mismatch");
    }
 }
@@ -245,8 +237,13 @@ void ua_savegames_manager::rescan()
 {
    savegames.clear();
 
+   // add quicksave savegame name
    if (quicksave_avail())
-      savegames.push_back("quicksave.uas");
+   {
+      std::string quicksave_name(savegame_folder);
+      quicksave_name.append("quicksave.uas");
+      savegames.push_back(quicksave_name);
+   }
 
    std::string pathname(savegame_folder);
    pathname.append("uasave*.uas");
@@ -346,6 +343,13 @@ ua_savegame ua_savegames_manager::get_quicksave(bool saving)
 
    std::string quicksave_name(savegame_folder);
    quicksave_name.append("quicksave.uas");
+
+   if (saving)
+   {
+      ua_savegame_info info;
+      info.title = "Quicksave Savegame";
+      sg.get_savegame_info() = info;
+   }
 
    // open quicksave savegame in given mode
    sg.open(quicksave_name.c_str(),saving);
