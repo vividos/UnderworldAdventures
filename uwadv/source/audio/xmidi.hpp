@@ -211,6 +211,18 @@ class XMIDIEventList
 public:
    midi_event *events;
 
+   // Write methods
+
+   //! writes out a MIDI file
+   int Write(SDL_RWops *dest);
+
+   //! Write a Conventional Variable Length Quantity
+   int PutVLQ(SDL_RWops *dest, Uint32 value);
+
+   //! Converts an event list to a MTrk
+   Uint32 ConvertListToMTrk(SDL_RWops *dest);
+
+
    //! Increments the counter
    void IncrementCounter(){ counter++; }
 
@@ -219,7 +231,7 @@ public:
 
 private:
    int counter;
-   static void DeleteEventList (midi_event *list);
+   static void DeleteEventList(midi_event *list);
 };
 
 

@@ -40,6 +40,13 @@ using namespace std;
 #endif
 
 
+// endian helper macros
+
+# define ua_endian_convert16(x) ( (((x)&0x00ff)<<8) | (((x)&0xff00)>>8) )
+# define ua_endian_convert32(x) ( ua_endian_convert16(((x)&0xffff0000)>>16) | \
+   ua_endian_convert16((x)&0x0000ffff)<<16 )
+
+
 // SDL_RWops helper functions
 
 inline Uint8 SDL_RWread8(SDL_RWops *rwops)
@@ -53,6 +60,9 @@ inline Uint16 SDL_RWread16(SDL_RWops *rwops)
 {
    Uint16 val;
    SDL_RWread(rwops,&val,2,1);
+#ifdef SDL_BIG_ENDIAN
+   val = ua_endian_convert16(val)
+#endif
    return val;
 }
 
@@ -60,15 +70,24 @@ inline Uint32 SDL_RWread32(SDL_RWops *rwops)
 {
    Uint32 val;
    SDL_RWread(rwops,&val,4,1);
+#ifdef SDL_BIG_ENDIAN
+   val = ua_endian_convert32(val)
+#endif
    return val;
 }
 
-// endian helper macros
+inline void SDL_RWwrite8(SDL_RWops *rwops, Uint8 val)
+{
+   SDL_RWwrite(rwops,&val,1,1);
+}
 
-# define ua_endian_convert16(x) ( (((x)&0x00ff)<<8) | (((x)&0xff00)>>8) )
-# define ua_endian_convert32(x) ( ua_endian_convert16(((x)&0xffff0000)>>16) | \
-   ua_endian_convert16((x)&0x0000ffff)<<16 )
-
+inline void SDL_RWwrite32(SDL_RWops *rwops, Uint32 val)
+{
+#ifdef SDL_BIG_ENDIAN
+   val = ua_endian_convert32(val)
+#endif
+   SDL_RWwrite(rwops,&val,4,1);
+}
 
 //! gamma table template class
 template <class T> class GammaTable
@@ -1456,4 +1475,179 @@ void XMIDIEventList::DeleteEventList (midi_event *mlist)
          Free (event->buffer);
       Free (event);
    }
+}
+
+int XMIDIEventList::Write(SDL_RWops *dest)
+{
+   int len = 0;
+
+   if (!events)
+   {
+//      cerr << "No midi data in loaded." << endl;
+      return 0;
+   }
+
+   // This is so if using buffer datasource, the caller can know how big to make the buffer
+   if (!dest)
+   {
+      // Header is 14 bytes long and add the rest as well
+      len = ConvertListToMTrk(NULL);
+      return len+14;
+   }
+
+   SDL_RWwrite8(dest,'M');
+   SDL_RWwrite8(dest,'T');
+   SDL_RWwrite8(dest,'h');
+   SDL_RWwrite8(dest,'d');
+
+   SDL_RWwrite32(dest,ua_endian_convert32(6));
+   SDL_RWwrite32(dest,ua_endian_convert32(0));
+   SDL_RWwrite32(dest,ua_endian_convert32(1));
+   SDL_RWwrite32(dest,ua_endian_convert32(60)); // The PPQN
+
+   len = ConvertListToMTrk(dest);
+
+   return len+14;
+}
+
+int XMIDIEventList::PutVLQ(SDL_RWops *dest, Uint32 value)
+{
+   int buffer;
+   int i = 1;
+   buffer = value & 0x7F;
+   while (value >>= 7)
+   {
+      buffer <<= 8;
+      buffer |= ((value & 0x7F) | 0x80);
+      i++;
+   }
+
+   if (!dest) return i;
+   for (int j = 0; j < i; j++)
+   {
+      SDL_RWwrite8(dest,buffer & 0xFF);
+      buffer >>= 8;
+   }
+
+   return i;
+}
+
+/*! Returns bytes of the array; buf can be NULL */
+Uint32 XMIDIEventList::ConvertListToMTrk(SDL_RWops *dest)
+{
+   int time = 0;
+   int lasttime = 0;
+   midi_event *event;
+   Uint32 delta;
+   unsigned char last_status = 0;
+   Uint32 i = 8;
+   Uint32 j;
+   Uint32 size_pos=0;
+
+   if (dest)
+   {
+      SDL_RWwrite8(dest,'M');
+      SDL_RWwrite8(dest,'T');
+      SDL_RWwrite8(dest,'r');
+      SDL_RWwrite8(dest,'k');
+
+      size_pos = SDL_RWtell(dest);
+      SDL_RWseek(dest,4,SEEK_CUR); // skip size, will be written later
+   }
+
+   for (event = events; event; event=event->next)
+   {
+      // We don't write the end of stream marker here, we'll do it later
+      if (event->status == 0xFF && event->data[0] == 0x2f)
+      {
+         lasttime = event->time;
+         continue;
+      }
+
+      delta = (event->time - time);
+      time = event->time;
+
+      i += PutVLQ(dest, delta);
+
+      if ((event->status != last_status) || (event->status >= 0xF0))
+      {
+         if (dest) SDL_RWwrite8(dest,event->status);
+         i++;
+      }
+
+      last_status = event->status;
+
+      switch (event->status >> 4)
+      {
+      // 2 bytes data
+      // Note off, Note on, Aftertouch, Controller and Pitch Wheel
+      case 0x8: case 0x9: case 0xA: case 0xB: case 0xE:
+         if (dest)
+         {
+            SDL_RWwrite8(dest,event->data[0]);
+            SDL_RWwrite8(dest,event->data[1]);
+         }
+         i += 2;
+         break;
+
+      // 1 bytes data
+      // Program Change and Channel Pressure
+      case 0xC: case 0xD:
+         if (dest) SDL_RWwrite8(dest,event->data[0]);
+         i++;
+         break;
+
+      // Variable length
+      // SysEx
+      case 0xF:
+         if (event->status == 0xFF)
+         {
+            if (dest) SDL_RWwrite8(dest,event->data[0]);
+            i++;
+         }
+
+         i += PutVLQ(dest, event->len);
+
+         if (event->len)
+         {
+            for (j = 0; j < event->len; j++)
+            {
+               if (dest) SDL_RWwrite8(dest,event->buffer[j]); 
+               i++;
+            }
+         }
+         break;
+
+      // Never occur
+      default:
+//         cerr << "Not supposed to see this" << endl;
+         break;
+      }
+   }
+
+   // Write out end of stream marker
+   if (lasttime > time)
+      i += PutVLQ(dest, lasttime-time);
+   else
+      i += PutVLQ(dest, 0);
+
+   if (dest)
+   {
+      SDL_RWwrite8(dest,0xFF);
+      SDL_RWwrite8(dest,0x2F);
+   }
+
+   i += PutVLQ(dest,0)+2;
+
+   if (dest)
+   {
+      Uint32 cur_pos = SDL_RWtell(dest);
+      SDL_RWseek(dest,size_pos,SEEK_SET);
+
+      Uint32 length = i-8;
+      SDL_RWwrite32(dest,ua_endian_convert32(length));
+
+      SDL_RWseek(dest,cur_pos,SEEK_SET);
+   }
+   return i;
 }
