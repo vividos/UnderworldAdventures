@@ -34,6 +34,7 @@
 
 // needed includes
 #include "imgquad.hpp"
+#include "keymap.hpp"
 
 
 // forward references
@@ -275,6 +276,26 @@ protected:
 
    //! powergame images
    std::vector<ua_image> img_powergem;
+};
+
+
+//! move arrows (below the compass)
+class ua_ingame_move_arrows: public ua_ingame_orig_ctrl
+{
+public:
+   //! initializes move arrows window
+   virtual void init(ua_game_interface& game, unsigned int xpos,
+      unsigned int ypos);
+
+   // virtual methods from ua_window
+   virtual void draw();
+   virtual bool process_event(SDL_Event& event);
+   virtual void mouse_event(bool button_clicked, bool left_button,
+      bool button_down, unsigned int mousex, unsigned int mousey);
+
+protected:
+   //! last (virtually) pressed key
+   ua_key_value selected_key;
 };
 
 

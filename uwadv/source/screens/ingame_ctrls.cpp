@@ -700,6 +700,87 @@ void ua_ingame_powergem::tick()
 }
 
 
+// ua_ingame_move_arrows methods
+
+void ua_ingame_move_arrows::init(ua_game_interface& game, unsigned int xpos,
+   unsigned int ypos)
+{
+   ua_image_quad::init(game, xpos, ypos);
+
+   wnd_width = 63;
+   wnd_height = 14;
+
+   selected_key = ua_key_nokey;
+}
+
+void ua_ingame_move_arrows::draw()
+{
+   // do nothing
+}
+
+bool ua_ingame_move_arrows::process_event(SDL_Event& event)
+{
+   bool ret = ua_image_quad::process_event(event);
+
+   unsigned int xpos,ypos;
+   calc_mousepos(event, xpos, ypos);
+
+   // leaving window while move arrow is pressed?
+   if (selected_key != ua_key_nokey && !in_window(xpos,ypos))
+   {
+      // unpress (release) key
+      parent->key_event(false, selected_key);
+      selected_key = ua_key_nokey;
+   }
+
+   return ret;
+}
+
+void ua_ingame_move_arrows::mouse_event(bool button_clicked, bool left_button,
+   bool button_down, unsigned int mousex, unsigned int mousey)
+{
+   mousex -= wnd_xpos;
+
+   ua_key_value new_selected_key = ua_key_nokey;
+
+   // check which button the mouse is over
+   if (mousex < 19)
+      new_selected_key = ua_key_turn_left;
+   else
+   if (mousex < 44)
+      new_selected_key = ua_key_walk_forward;
+   else
+      new_selected_key = ua_key_turn_right;
+
+   // button activity?
+   if (button_clicked)
+   {
+      // simulate key press (or release)
+      parent->key_event(button_down, new_selected_key);
+
+      if (!button_down)
+         selected_key = ua_key_nokey;
+      else
+         selected_key = new_selected_key;
+   }
+   else
+   {
+      if (selected_key != ua_key_nokey)
+      {
+         // mouse was moved; check if arrow changed
+         if (new_selected_key != selected_key)
+         {
+            // change pressed button
+            parent->key_event(false, selected_key);
+            parent->key_event(true, new_selected_key);
+
+            selected_key = new_selected_key;
+         }
+      }
+   }
+}
+
+
 // ua_ingame_command_buttons tables
 
 struct ua_ingame_command_menu_info
