@@ -29,6 +29,7 @@
 #include "common.hpp"
 #include "uwaccess.hpp"
 #include "core.hpp"
+#include "renderer.hpp"
 
 
 // static variables
@@ -258,9 +259,54 @@ unsigned int ua_uw_access_api::command_func(
       }
       break;
 
+   case udc_render: // renders underworld
+      cur_api->render(type,param1 != NULL ? param1->val.i : 0);
+      break;
+
    default:
       ret = 1;
    }
 
    return ret;
+}
+
+void ua_uw_access_api::render(unsigned int type, unsigned int level)
+{
+   switch(type)
+   {
+   case 0: // init renderer
+      renderer = new ua_renderer;
+      renderer->init(&core->get_underworld(),
+         &core->get_texmgr(),
+         &core->get_critter_pool(),
+         &core->get_model_manager(),
+         ua_vector3d(0.0, 0.0, 0.0) );
+      break;
+
+   case 1: // clean up renderer
+      delete renderer;
+      renderer = NULL;
+      break;
+
+   case 2: // render given level
+      if (renderer==NULL) break;
+
+      // TODO render any level
+      renderer->render();
+      break;
+
+   case 3: // prepare level textures
+      {
+         // TODO prepare any level
+         const std::vector<Uint16>& used_textures =
+            core->get_underworld().get_current_level().get_used_textures();
+
+         ua_texture_manager& texmgr = core->get_texmgr();
+
+         unsigned int max = used_textures.size();
+         for(unsigned int n=0; n<max; n++)
+            texmgr.prepare(used_textures[n]);
+      }
+      break;
+   }
 }

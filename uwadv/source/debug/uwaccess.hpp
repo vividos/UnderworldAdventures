@@ -35,6 +35,7 @@
 // forward references
 class ua_game_core_interface;
 class ua_debug_interface;
+class ua_renderer;
 
 
 // enums
@@ -89,6 +90,12 @@ enum
    udc_strings_get=11, /*!< retrieves game string; block is determined by
                             param1, string number by param2 */
    udc_strings_set=12, /*!< not implemented yet */
+
+   udc_render=100, /*!< rendering functions; "type" determines action:
+                        0: init renderer
+                        1: clean up renderer
+                        2: render level given in param1
+                        3: prepare textures for new level given in param1 */
 };
 
 //! parameter types
@@ -169,6 +176,10 @@ protected:
       unsigned int cmd, unsigned int type,
       ua_debug_param* param1, ua_debug_param* param2);
 
+   //! tilemap render function
+   void render(unsigned int type, unsigned int level);
+
+protected:
    //! current api object
    static ua_uw_access_api* cur_api;
 
@@ -177,6 +188,9 @@ protected:
 
    //! currently used debug interface
    ua_debug_interface* debug;
+
+   //! renderer used to render tilemaps
+   ua_renderer* renderer;
 
    //! indicates if a level change should be done next tick()
    bool change_level;
