@@ -249,7 +249,8 @@ void ua_ingame_orig_screen::setup_opengl()
    glMatrixMode(GL_PROJECTION);
    glLoadIdentity();
 
-   gluPerspective(fov, core->get_aspect_ratio(), 0.25, 16.0);
+   double aspect = double(core->get_screen_width())/core->get_screen_height();
+   gluPerspective(fov, aspect, 0.25, 16.0);
 
    // switch back to modelview matrix
    glMatrixMode(GL_MODELVIEW);

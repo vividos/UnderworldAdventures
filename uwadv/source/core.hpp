@@ -52,8 +52,11 @@ public:
    ua_game_core_interface(){}
    virtual ~ua_game_core_interface(){}
 
-   //! returns screen aspect ratio
-   virtual float get_aspect_ratio()=0;
+   //! returns screen width
+   virtual unsigned int get_screen_width()=0;
+   //! returns screen height
+   virtual unsigned int get_screen_height()=0;
+
    //! returns tick rate in ticks / second
    virtual unsigned int get_tickrate()=0;
 

@@ -98,7 +98,8 @@ protected:
 protected:
    // ua_game_core_interface virtual methods
 
-   virtual float get_aspect_ratio(){ return float(width)/height; }
+   virtual unsigned int get_screen_width(){ return width; }
+   virtual unsigned int get_screen_height(){ return height; }
    virtual unsigned int get_tickrate(){ return tickrate; }
    virtual ua_audio_interface &get_audio(){ return *audio; }
    virtual ua_gamestrings &get_strings(){ return gstr; }
