@@ -982,7 +982,7 @@ void ua_ingame_orig_screen::setup_opengl()
 
    // camera setup
    ua_vector3d view_offset(0.0, 0.0, 0.0);
-   renderer.init(&core->get_underworld(),view_offset);
+   renderer.init(&core->get_underworld(),&core->get_texmgr(),view_offset);
 
    renderer.setup_camera(90.0,
       double(core->get_screen_width())/core->get_screen_height(),
