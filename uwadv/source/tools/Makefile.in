@@ -134,9 +134,12 @@ mapdisp_SOURCES = mapdisp.cpp ../level.cpp ../resource/maploader.cpp \
 mapdisp_LDADD = -lGL -lGLU
 
 animview_SOURCES = animview.cpp ../cutscene.cpp ../resource/cutsloader.cpp \
+	../image.cpp ../texture.cpp ../image.hpp ../texture.hpp \
 	../common.hpp ../cutscene.hpp ../settings.hpp ../uatypes.hpp \
 	../resource/fread_endian.hpp
 
+
+animview_LDADD = -lGL -lGLU
 
 EXTRA_DIST = 
 subdir = ../tools
@@ -146,9 +149,8 @@ CONFIG_CLEAN_FILES =
 EXTRA_PROGRAMS = cnvdasm$(EXEEXT) cnvdbg$(EXEEXT) xmi2mid$(EXEEXT) \
 	mapdisp$(EXEEXT) animview$(EXEEXT)
 am_animview_OBJECTS = animview.$(OBJEXT) cutscene.$(OBJEXT) \
-	cutsloader.$(OBJEXT)
+	cutsloader.$(OBJEXT) image.$(OBJEXT) texture.$(OBJEXT)
 animview_OBJECTS = $(am_animview_OBJECTS)
-animview_LDADD = $(LDADD)
 animview_DEPENDENCIES =
 animview_LDFLAGS =
 am_cnvdasm_OBJECTS = cnvdasm.$(OBJEXT) codevm.$(OBJEXT) \
@@ -219,6 +221,8 @@ Makefile:  $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)
 cutscene.$(OBJEXT): ../cutscene.cpp
 cutsloader.$(OBJEXT): ../resource/cutsloader.cpp
+image.$(OBJEXT): ../image.cpp
+texture.$(OBJEXT): ../texture.cpp
 animview$(EXEEXT): $(animview_OBJECTS) $(animview_DEPENDENCIES) 
 	@rm -f animview$(EXEEXT)
 	$(CXXLINK) $(animview_LDFLAGS) $(animview_OBJECTS) $(animview_LDADD) $(LIBS)
@@ -235,10 +239,8 @@ level.$(OBJEXT): ../level.cpp
 maploader.$(OBJEXT): ../resource/maploader.cpp
 quadtree.$(OBJEXT): ../quadtree.cpp
 texloader.$(OBJEXT): ../resource/texloader.cpp
-texture.$(OBJEXT): ../texture.cpp
 imageloader.$(OBJEXT): ../resource/imageloader.cpp
 objloader.$(OBJEXT): ../resource/objloader.cpp
-image.$(OBJEXT): ../image.cpp
 objects.$(OBJEXT): ../objects.cpp
 mapdisp$(EXEEXT): $(mapdisp_OBJECTS) $(mapdisp_DEPENDENCIES) 
 	@rm -f mapdisp$(EXEEXT)
@@ -313,6 +315,30 @@ cutsloader.obj: ../resource/cutsloader.cpp
 @AMDEP_TRUE@	depfile='$(DEPDIR)/cutsloader.Po' tmpdepfile='$(DEPDIR)/cutsloader.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cutsloader.obj `cygpath -w ../resource/cutsloader.cpp`
+
+image.o: ../image.cpp
+@AMDEP_TRUE@	source='../image.cpp' object='image.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/image.Po' tmpdepfile='$(DEPDIR)/image.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o image.o `test -f '../image.cpp' || echo '$(srcdir)/'`../image.cpp
+
+image.obj: ../image.cpp
+@AMDEP_TRUE@	source='../image.cpp' object='image.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/image.Po' tmpdepfile='$(DEPDIR)/image.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o image.obj `cygpath -w ../image.cpp`
+
+texture.o: ../texture.cpp
+@AMDEP_TRUE@	source='../texture.cpp' object='texture.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/texture.Po' tmpdepfile='$(DEPDIR)/texture.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o texture.o `test -f '../texture.cpp' || echo '$(srcdir)/'`../texture.cpp
+
+texture.obj: ../texture.cpp
+@AMDEP_TRUE@	source='../texture.cpp' object='texture.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/texture.Po' tmpdepfile='$(DEPDIR)/texture.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o texture.obj `cygpath -w ../texture.cpp`
 
 codevm.o: ../conv/codevm.cpp
 @AMDEP_TRUE@	source='../conv/codevm.cpp' object='codevm.o' libtool=no @AMDEPBACKSLASH@
@@ -398,18 +424,6 @@ texloader.obj: ../resource/texloader.cpp
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o texloader.obj `cygpath -w ../resource/texloader.cpp`
 
-texture.o: ../texture.cpp
-@AMDEP_TRUE@	source='../texture.cpp' object='texture.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/texture.Po' tmpdepfile='$(DEPDIR)/texture.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o texture.o `test -f '../texture.cpp' || echo '$(srcdir)/'`../texture.cpp
-
-texture.obj: ../texture.cpp
-@AMDEP_TRUE@	source='../texture.cpp' object='texture.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/texture.Po' tmpdepfile='$(DEPDIR)/texture.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o texture.obj `cygpath -w ../texture.cpp`
-
 imageloader.o: ../resource/imageloader.cpp
 @AMDEP_TRUE@	source='../resource/imageloader.cpp' object='imageloader.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@	depfile='$(DEPDIR)/imageloader.Po' tmpdepfile='$(DEPDIR)/imageloader.TPo' @AMDEPBACKSLASH@
@@ -433,18 +447,6 @@ objloader.obj: ../resource/objloader.cpp
 @AMDEP_TRUE@	depfile='$(DEPDIR)/objloader.Po' tmpdepfile='$(DEPDIR)/objloader.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o objloader.obj `cygpath -w ../resource/objloader.cpp`
-
-image.o: ../image.cpp
-@AMDEP_TRUE@	source='../image.cpp' object='image.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/image.Po' tmpdepfile='$(DEPDIR)/image.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o image.o `test -f '../image.cpp' || echo '$(srcdir)/'`../image.cpp
-
-image.obj: ../image.cpp
-@AMDEP_TRUE@	source='../image.cpp' object='image.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@	depfile='$(DEPDIR)/image.Po' tmpdepfile='$(DEPDIR)/image.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o image.obj `cygpath -w ../image.cpp`
 
 objects.o: ../objects.cpp
 @AMDEP_TRUE@	source='../objects.cpp' object='objects.o' libtool=no @AMDEPBACKSLASH@

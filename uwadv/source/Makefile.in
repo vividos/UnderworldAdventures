@@ -105,11 +105,11 @@ bin_PROGRAMS = uwadv
 
 uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	player.cpp quadtree.cpp texture.cpp underworld.cpp uwadv.cpp \
-	objects.cpp cutscene.cpp \
+	objects.cpp cutscene.cpp physics.cpp \
 	audio.hpp common.hpp core.hpp font.hpp gamestrings.hpp \
 	image.hpp inventory.hpp level.hpp player.hpp quadtree.hpp \
 	screen.hpp settings.hpp texture.hpp uatypes.hpp \
-	underworld.hpp uwadv.hpp objects.hpp cutscene.hpp \
+	underworld.hpp uwadv.hpp objects.hpp cutscene.hpp physics.hpp \
 	linux/main.cpp \
 	audio/audio.cpp audio/midi.cpp audio/xmidi.cpp \
 	audio/midi.hpp audio/xmidi.hpp \
@@ -125,7 +125,7 @@ uwadv_SOURCES = font.cpp image.cpp inventory.cpp level.cpp \
 	screens/ingame_orig.hpp screens/start_splash.hpp
 
 
-uwadv_LDADD = -lGL -lGLU
+uwadv_LDADD = -lGL -lGLU $(SDL_LIBS)
 
 EXTRA_DIST = audio/midi_driver/win_midiout.cpp \
 	audio/midi_driver/win_midiout.hpp \
@@ -143,8 +143,8 @@ PROGRAMS = $(bin_PROGRAMS)
 am_uwadv_OBJECTS = font.$(OBJEXT) image.$(OBJEXT) inventory.$(OBJEXT) \
 	level.$(OBJEXT) player.$(OBJEXT) quadtree.$(OBJEXT) \
 	texture.$(OBJEXT) underworld.$(OBJEXT) uwadv.$(OBJEXT) \
-	objects.$(OBJEXT) cutscene.$(OBJEXT) main.$(OBJEXT) \
-	audio.$(OBJEXT) midi.$(OBJEXT) xmidi.$(OBJEXT) \
+	objects.$(OBJEXT) cutscene.$(OBJEXT) physics.$(OBJEXT) \
+	main.$(OBJEXT) audio.$(OBJEXT) midi.$(OBJEXT) xmidi.$(OBJEXT) \
 	uni_fmod.$(OBJEXT) codevm.$(OBJEXT) codeloader.$(OBJEXT) \
 	fontloader.$(OBJEXT) gamestrings.$(OBJEXT) \
 	imageloader.$(OBJEXT) maploader.$(OBJEXT) settings.$(OBJEXT) \
@@ -170,8 +170,9 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/level.Po ./$(DEPDIR)/main.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/maploader.Po ./$(DEPDIR)/midi.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/objects.Po ./$(DEPDIR)/objloader.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/player.Po ./$(DEPDIR)/quadtree.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/settings.Po ./$(DEPDIR)/start_splash.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/physics.Po ./$(DEPDIR)/player.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/quadtree.Po ./$(DEPDIR)/settings.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/start_splash.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/texloader.Po ./$(DEPDIR)/texture.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/underworld.Po ./$(DEPDIR)/uni_fmod.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/uwadv.Po ./$(DEPDIR)/xmidi.Po
@@ -275,6 +276,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/midi.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/objects.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/objloader.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/physics.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/player.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/quadtree.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/settings.Po@am__quote@

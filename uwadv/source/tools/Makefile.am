@@ -51,8 +51,11 @@ mapdisp_SOURCES = mapdisp.cpp ../level.cpp ../resource/maploader.cpp \
 mapdisp_LDADD = -lGL -lGLU
 
 animview_SOURCES = animview.cpp ../cutscene.cpp ../resource/cutsloader.cpp \
+	../image.cpp ../texture.cpp ../image.hpp ../texture.hpp \
 	../common.hpp ../cutscene.hpp ../settings.hpp ../uatypes.hpp \
 	../resource/fread_endian.hpp
+
+animview_LDADD = -lGL -lGLU
 
 EXTRA_DIST =
 
