@@ -100,6 +100,9 @@ public:
    //! returns number of levels available
    unsigned int get_num_levels(){ return levels.size(); }
 
+   //! returns quest flag vector
+   std::vector<Uint16>& get_questflags(){ return questflags; }
+
    // loading / saving / importing
 
    //! loads a savegame
@@ -129,6 +132,9 @@ protected:
 
    //! all underworld levels
    std::vector<ua_level> levels;
+
+   //! list of all quest flags
+   std::vector<Uint16> questflags;
 
    //! underworld script bindings;
    ua_underworld_script_bindings script;
