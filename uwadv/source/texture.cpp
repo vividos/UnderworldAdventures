@@ -67,16 +67,6 @@ void ua_texture::convert(ua_image &img, ua_onepalette &pal)
    }
 }
 
-void ua_texture::convert(ua_texture_manager &texmgr,ua_image_list &imglist,
-   unsigned int start, unsigned int until)
-{
-   // TODO implement
-//   if (until==-1)
-//      until = imglist.size();
-
-//   texcount = until-start;
-}
-
 void ua_texture::prepare(bool mipmaps, GLenum min_filt, GLenum max_filt)
 {
    texname.resize(texcount,0);

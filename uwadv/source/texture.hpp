@@ -83,10 +83,6 @@ public:
    //! converts image to texture
    void convert(ua_texture_manager &texmgr, ua_image &img);
 
-   //! converts a list of images to textures
-   void convert(ua_texture_manager &texmgr, ua_image_list &imglist,
-      unsigned int start=0, unsigned int until=-1);
-
    //! converts image with custom palette to texture
    void convert(ua_image &img, ua_onepalette &pal);
 
