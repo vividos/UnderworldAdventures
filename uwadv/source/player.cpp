@@ -43,7 +43,6 @@ void ua_player::init()
    move_mode = 0;
 
    memset(attributes,0,sizeof(attributes));
-   memset(stats,0,sizeof(stats));
    memset(skills,0,sizeof(skills));
 }
 
@@ -58,28 +57,16 @@ void ua_player::set_attr(ua_player_attributes which, unsigned int value)
       attributes[static_cast<unsigned int>(which)]=value;
 }
 
-void ua_player::set_stat(ua_player_stats which, unsigned int value)
-{
-   if (which<ua_stat_max)
-      attributes[static_cast<unsigned int>(which)]=value;
-}
-
 void ua_player::set_skill(ua_player_skills which, unsigned int value)
 {
    if (which<ua_skill_max)
-      attributes[static_cast<unsigned int>(which)]=value;
+      skills[static_cast<unsigned int>(which)]=value;
 }
 
 unsigned int ua_player::get_attr(ua_player_attributes which)
 {
    if (which>=ua_attr_max) return 0;
    return attributes[static_cast<unsigned int>(which)];
-}
-
-unsigned int ua_player::get_stat(ua_player_stats which)
-{
-   if (which>=ua_stat_max) return 0;
-   return stats[static_cast<unsigned int>(which)];
 }
 
 unsigned int ua_player::get_skill(ua_player_skills which)

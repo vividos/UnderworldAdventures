@@ -44,8 +44,8 @@ enum ua_player_movement_mode
 
 
 //! player attribute enum
-/*! player attributes are values that should never change during normal
-    gameplay */
+/*! player attributes are values that characterize the player, and
+    may be used for combat/spell/etc. calculations */
 typedef enum
 {
    ua_attr_gender=0,   // 0 means male
@@ -53,37 +53,31 @@ typedef enum
    ua_attr_appearance, // values from 0..4
    ua_attr_profession, // values from 0..7
 
+   ua_attr_maplevel,
+
+   ua_attr_strength,
+   ua_attr_dexterity,
+   ua_attr_intelligence,
+   ua_attr_attack,
+   ua_attr_defense,
+
+   ua_attr_life,
+   ua_attr_max_life,
+   ua_attr_mana,
+   ua_attr_max_mana,
+
+   ua_attr_weariness,
+   ua_attr_hungriness,
+   ua_attr_poisoned,
+
+   ua_attr_talks,
+   ua_attr_kills,
+   ua_attr_level,
+   ua_attr_exp_points,
+
    ua_attr_max
 
 } ua_player_attributes;
-
-//! player stats enum
-/*! player stats are values that may change over a while of game playing, and
-    may be used for combat/spell/etc. calculations */
-typedef enum
-{
-   ua_stat_strength=0,
-   ua_stat_dexterity,
-   ua_stat_intelligence,
-   ua_stat_attack,
-   ua_stat_defense,
-
-   ua_stat_life,
-   ua_stat_max_life,
-   ua_stat_mana,
-   ua_stat_max_mana,
-
-   ua_stat_weariness,
-   ua_stat_hungriness,
-
-   ua_stat_talks,
-   ua_stat_kills,
-   ua_stat_level,
-   ua_stat_exp_points,
-
-   ua_stat_max
-
-} ua_player_stats;
 
 //! player skills enum
 typedef enum
@@ -136,9 +130,6 @@ public:
    //! sets player attribute value
    void set_attr(ua_player_attributes which, unsigned int value);
 
-   //! sets player stat value
-   void set_stat(ua_player_stats which, unsigned int value);
-
    //! sets player skill value
    void set_skill(ua_player_skills which, unsigned int value);
 
@@ -160,9 +151,6 @@ public:
    //! returns player attribute value
    unsigned int get_attr(ua_player_attributes which);
 
-   //! returns player stat value
-   unsigned int get_stat(ua_player_stats which);
-
    //! returns player skill value
    unsigned int get_skill(ua_player_skills which);
 
@@ -178,9 +166,6 @@ protected:
 
    //! array with all player attributes
    unsigned int attributes[ua_attr_max];
-
-   //! array with all player stats
-   unsigned int stats[ua_stat_max];
 
    //! array with all player skills
    unsigned int skills[ua_skill_max];
