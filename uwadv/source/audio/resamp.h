@@ -24,6 +24,11 @@
 * ANY KIND. See http://www.dspguru.com/wol.htm for more information.
 *
 *****************************************************************************/
+/*! \file resamp.h
+
+   function prototypes to resample a signal
+
+*/
 
 /*****************************************************************************
 Description:
