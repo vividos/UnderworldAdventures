@@ -9,3 +9,6 @@ Underworld Adventures additionally contains code from:
   Waldemar Celes, Roberto Ierusalimschy, and Luiz Henrique de Figueiredo at
   TeCGraf, PUC-Rio in Brazil.
   http://www.lua.org/
+
+* Telemachos, http://www.peroxide.dk/:
+  Collision detecton / response code
