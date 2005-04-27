@@ -30,23 +30,21 @@
 #define uadebug_mainframe_hpp_
 
 // needed includes
-#include <wx/docmdi.h>
-
-
-// forward references
-//class wxDocMDIChildWindow;
 
 
 // classes
 
 //! MDI parent frame
-class ua_debugger_main_frame: public wxDocMDIParentFrame
+class ua_debugger_main_frame: public wxMDIParentFrame
 {
 public:
    //! ctor
    ua_debugger_main_frame(wxDocManager* manager, wxFrame* parent,
       const wxWindowID id, const wxString& title,const wxPoint& pos,
       const wxSize& size, const long style);
+
+   //! dtor
+   virtual ~ua_debugger_main_frame();
 
    //! adds standard frame menus
    void AddFrameMenus(wxMenuBar* menubar);

@@ -37,32 +37,6 @@
 class wxStyledTextCtrl;
 
 
-class ua_lua_view: public wxView
-{
-public:
-   ua_lua_view(){}
-
-   void OnDraw(wxDC* dc);
-
-protected:
-
-   DECLARE_DYNAMIC_CLASS(ua_lua_view)
-};
-
-
-class ua_lua_document: public wxDocument
-{
-public:
-   //! ctor
-   ua_lua_document(){}
-
-protected:
-   wxString text;
-
-   DECLARE_DYNAMIC_CLASS(ua_lua_document)
-};
-
-
 // classes
 
 //! lua source file frame

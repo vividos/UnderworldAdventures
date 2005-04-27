@@ -32,17 +32,6 @@
 #include "wx/file.h"
 
 
-// macros
-
-IMPLEMENT_DYNAMIC_CLASS(ua_lua_document, wxDocument)
-IMPLEMENT_DYNAMIC_CLASS(ua_lua_view, wxView)
-
-
-void ua_lua_view::OnDraw(wxDC* dc)
-{
-}
-
-
 // ua_lua_source_frame event table
 
 BEGIN_EVENT_TABLE(ua_lua_source_frame, wxMDIChildFrame)

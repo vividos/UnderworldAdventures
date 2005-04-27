@@ -33,9 +33,32 @@
 
 // ua_debug_client_interface methods
 
-void ua_debug_client_interface::init_client(void* data)
+bool ua_debug_client_interface::init_client(void* data)
 {
    server = reinterpret_cast<ua_debug_server_interface*>(data);
+
+   return server->check_interface_version();
+}
+
+bool ua_debug_client_interface::in_studio_mode()
+{
+   return server->get_flag(0) == 1;
+}
+
+bool ua_debug_client_interface::get_game_path(std::string& path)
+{
+   char buffer[256];
+   buffer[255] = 0;
+
+   server->get_game_path(buffer, 255);
+
+   path = buffer;
+   return path.size()>0;
+}
+
+void ua_debug_client_interface::load_game(const char* path)
+{
+   server->load_game(path);
 }
 
 void ua_debug_client_interface::lock(bool set_lock)

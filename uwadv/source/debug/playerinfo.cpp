@@ -194,27 +194,24 @@ void ua_playerinfo_list::OnEndLabelEdit(wxListEvent& event)
 
    unsigned int item = event.m_itemIndex;;
    wxString text = event.m_item.GetText();
-/*
-   ua_debug_command_func cmd = wxGetApp().command;
 
-   ua_debug_param param1,param2;
-   param1.set_int(item);
+   ua_debug_client_interface& client = wxGetApp().get_client_interface();
+
+
+   client.lock(true);
 
    if (item<4)
    {
       double d;
       text.ToDouble(&d);
-      param2.set(d);
+      client.set_player_pos_info(item,d);
    }
    else
    {
       unsigned long ul;
       text.ToULong(&ul);
-      param2.set_int(ul);
+      client.set_player_attr(item-4, unsigned(ul));
    }
 
-   cmd(udc_lock,0,NULL,NULL);
-   cmd(udc_player_set,0,&param1,&param2);
-   cmd(udc_unlock,0,NULL,NULL);
-*/
+   client.lock(false);
 }

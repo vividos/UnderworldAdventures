@@ -32,7 +32,7 @@
 #include "playerinfo.hpp"
 #include "objectlist.hpp"
 #include "hotspotlist.hpp"
-#include "tilemapview.hpp"
+//#include "tilemapview.hpp"
 #include "luasrcframe.hpp"
 
 // wxWindows includes
@@ -55,7 +55,7 @@
 
 // ua_debugger_main_frame event table
 
-BEGIN_EVENT_TABLE(ua_debugger_main_frame, wxDocMDIParentFrame)
+BEGIN_EVENT_TABLE(ua_debugger_main_frame, wxMDIParentFrame)
    EVT_MENU(MENU_FILE_NEW, ua_debugger_main_frame::OnMenuFileNew)
    EVT_MENU(MENU_FILE_OPEN, ua_debugger_main_frame::OnMenuFileOpen)
    EVT_MENU(MENU_FILE_CLOSE, ua_debugger_main_frame::OnMenuFileClose)
@@ -69,7 +69,7 @@ BEGIN_EVENT_TABLE(ua_debugger_main_frame, wxDocMDIParentFrame)
    EVT_MENU(MENU_UNDERW_UPDATE, ua_debugger_main_frame::OnMenuUnderwUpdate)
    EVT_MENU(MENU_UNDERW_SUSPEND, ua_debugger_main_frame::OnMenuUnderwSuspend)
    EVT_MENU(MENU_UNDERW_RESUME, ua_debugger_main_frame::OnMenuUnderwResume)
-   EVT_MENU(MENU_UNDERW_TILEMAPVIEW, ua_debugger_main_frame::OnMenuUnderwTilemapView)
+//   EVT_MENU(MENU_UNDERW_TILEMAPVIEW, ua_debugger_main_frame::OnMenuUnderwTilemapView)
    EVT_MENU(MENU_UNDERW_HOTSPOTLIST, ua_debugger_main_frame::OnMenuUnderwHotspotList)
    EVT_MENU(MENU_UNDERW_PLAYER, ua_debugger_main_frame::OnMenuUnderwPlayer)
    EVT_MENU(MENU_UNDERW_OBJECTLIST, ua_debugger_main_frame::OnMenuUnderwObjectList)
@@ -82,7 +82,7 @@ ua_debugger_main_frame::ua_debugger_main_frame(
    wxDocManager* doc_manager, wxFrame* parent,
    const wxWindowID id, const wxString& title,
    const wxPoint& pos, const wxSize& size, const long style)
-:wxDocMDIParentFrame(doc_manager, parent, id, title, pos, size, style)
+:wxMDIParentFrame(parent, id, title, pos, size, style)
 {
    // frame layout manager
    {
@@ -104,17 +104,17 @@ ua_debugger_main_frame::ua_debugger_main_frame(
 
 
    // docview stuff
-   {
+/*   {
       new wxDocTemplate(doc_manager,
          "lua source file", "*.lua", "", "lua", "lua source file", "loa source file view",
           CLASSINFO(ua_lua_document), CLASSINFO(ua_lua_view));
-         /*
+         / *
    dir_view_templ = new d64view_doc_template((wxDocManager*)doc_manager,
       "d64 disk image", "*.d64", "", "d64", "d64 disk image", "d64 disk image directory view",
           CLASSINFO(disk_document), CLASSINFO(dir_view));
-*/
+* /
    }
-
+*/
 
    // application icon
 #ifdef __WXMSW__
@@ -136,7 +136,10 @@ ua_debugger_main_frame::ua_debugger_main_frame(
 /*
    // toolbar
    {
-      wxToolBar* tb = CreateToolBar(wxTB_FLAT | wxTB_HORIZONTAL,-1,"toolbar");
+      wxDynamicToolBar* tb = new wxDynamicToolBar(this, -1);
+
+      //wxDynamicToolBar* tb = CreateToolBar(wxTB_FLAT | wxTB_HORIZONTAL,-1,"toolbar");
+      //wxToolBar* tb = CreateToolBar(wxTB_FLAT | wxTB_HORIZONTAL,-1,"toolbar");
 
       wxBitmap toolBarBitmaps[3];
 
@@ -144,9 +147,9 @@ ua_debugger_main_frame::ua_debugger_main_frame(
       toolBarBitmaps[1] = wxBitmap("open");
       toolBarBitmaps[2] = wxBitmap("save");
 
-      tb->AddTool(MENU_FILE_NEW/ *wxID_NEW* /, _T("New"),   toolBarBitmaps[0], _T("New file"));
-      tb->AddTool(MENU_FILE_OPEN/ *wxID_OPEN* /, _T("Open"), toolBarBitmaps[1], _T("Open file"));
-      tb->AddTool(MENU_FILE_SAVE/ *wxID_SAVE* /, _T("Save"), toolBarBitmaps[2], _T("Save file"), wxITEM_CHECK);
+      tb->AddTool(MENU_FILE_NEW, _T("New"),   toolBarBitmaps[0], _T("New file"));
+      tb->AddTool(MENU_FILE_OPEN, _T("Open"), toolBarBitmaps[1], _T("Open file"));
+      tb->AddTool(MENU_FILE_SAVE, _T("Save"), toolBarBitmaps[2], _T("Save file"), wxITEM_CHECK);
 
       tb->Realize();
    }
@@ -154,6 +157,12 @@ ua_debugger_main_frame::ua_debugger_main_frame(
 
    // update all bars and windows
    UpdateAll();
+}
+
+ua_debugger_main_frame::~ua_debugger_main_frame()
+{
+   delete m_pLayout;
+   m_pLayout = NULL;
 }
 
 void ua_debugger_main_frame::AddFrameMenus(wxMenuBar* menubar)
@@ -177,7 +186,7 @@ void ua_debugger_main_frame::AddFrameMenus(wxMenuBar* menubar)
    uwmenu->Append(MENU_UNDERW_SUSPEND, "&Suspend Game", "suspends a running game");
    uwmenu->Append(MENU_UNDERW_RESUME, "&Resume Game", "resumes a suspended game");
    uwmenu->AppendSeparator();
-   uwmenu->Append(MENU_UNDERW_TILEMAPVIEW, "&Tilemap View", "shows Tilemap");
+//   uwmenu->Append(MENU_UNDERW_TILEMAPVIEW, "&Tilemap View", "shows Tilemap");
    uwmenu->Append(MENU_UNDERW_HOTSPOTLIST, "&Hotspot List", "shows Hotspot List");
    uwmenu->Append(MENU_UNDERW_PLAYER, "&Player Info", "shows Player Infos");
    uwmenu->Append(MENU_UNDERW_OBJECTLIST, "Master &Object List", "shows Master Object List");
@@ -290,7 +299,7 @@ void ua_debugger_main_frame::OnMenuUnderwResume(wxCommandEvent& event)
 }
 
 void ua_debugger_main_frame::OnMenuUnderwTilemapView(wxCommandEvent& event)
-{
+{/*
    // find window using FindWindowByName
    wxString name(ua_tilemapview_frame::frame_name);
    wxWindow* wnd = wxWindow::FindWindowByName(name);
@@ -304,7 +313,7 @@ void ua_debugger_main_frame::OnMenuUnderwTilemapView(wxCommandEvent& event)
       // show the window
       wnd->Raise();
       wnd->Show();
-   }
+   }*/
 }
 
 void ua_debugger_main_frame::OnMenuUnderwHotspotList(wxCommandEvent& event)

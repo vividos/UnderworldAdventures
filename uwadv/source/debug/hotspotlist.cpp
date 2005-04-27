@@ -82,6 +82,7 @@ struct ua_hotspot_items
 
    { "Level 7: Crystal Splinter passage", 6, 20.5, 44.5 },
    { "Level 7: Prison?", 6, 6.5, 30.5 },
+   { "Level 7: Cell", 6, 26.5, 56.5 },
 
    { "Level 8: Before the Chamber of Virtue", 7, 32.0, 25.5 },
    { "Level 8: Monster pit?", 7, 23.0, 49.5 },

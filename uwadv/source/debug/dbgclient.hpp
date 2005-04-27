@@ -41,7 +41,16 @@ class ua_debug_client_interface
 {
 public:
    //! inits client interface
-   void init_client(void* data);
+   bool init_client(void* data);
+
+   //! returns if in studio mode (true) or in debugger mode (false)
+   bool in_studio_mode();
+
+   //! returns current game path, or "" if none is active
+   bool get_game_path(std::string& path);
+
+   //! loads new game from game.cfg in path
+   void load_game(const char* path);
 
    //! locks or unlocks the interface
    void lock(bool set_lock);
