@@ -685,8 +685,8 @@ bool ua_debug_server::get_object_list_imagelist(unsigned int& num_objects, unsig
    Uint32* palptr = reinterpret_cast<Uint32*>(img_list[0].get_palette().get());
    Uint32* texptr = reinterpret_cast<Uint32*>(buffer);
 
-   for(unsigned int n=0; n<xres*yres*max; n++)
-      *texptr++ = palptr[pixels[n]];
+   for(unsigned int i=0; i<xres*yres*max; i++)
+      *texptr++ = palptr[pixels[i]];
 
    delete[] pixels;
 
