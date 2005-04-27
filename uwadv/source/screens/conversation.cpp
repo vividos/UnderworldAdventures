@@ -33,6 +33,7 @@
 #include "underworld.hpp"
 #include "renderer.hpp"
 #include "audio.hpp"
+#include "debug.hpp"
 #include <sstream>
 
 
@@ -217,6 +218,9 @@ void ua_conversation_screen::init()
          code_vm.get_strblock(),localstrings);
 
       code_vm.init(this,game.get_underworld().get_conv_globals());
+
+      // notify debugger of start of code debugger
+      game.get_debugger().start_code_debugger(&code_vm);
    }
 
    state = ua_state_fadein;
@@ -230,6 +234,9 @@ void ua_conversation_screen::init()
 
 void ua_conversation_screen::destroy()
 {
+   // notify debugger of end of code debugger
+   game.get_debugger().end_code_debugger(&code_vm);
+
    // write back conv. globals
    code_vm.done(game.get_underworld().get_conv_globals());
 
