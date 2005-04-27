@@ -36,9 +36,9 @@ extern Uint16 fread16(FILE* fd);
 extern Uint32 fread32(FILE* fd);
 
 //! returns bits from a 16-bit value
-inline Uint16 get_bits(Uint16 value, unsigned int start, unsigned numbits)
+inline Uint16 get_bits(Uint16 value, unsigned int start, unsigned int numbits)
 {
-   return (value >> start) & ((1L<<numbits)-1);
+   return static_cast<Uint16>( (value >> start) & ((1L<<numbits)-1) );
 }
 
 
