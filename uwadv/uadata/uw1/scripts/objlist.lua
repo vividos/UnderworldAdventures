@@ -81,7 +81,7 @@ function object_talk(objpos)
          uw.start_conv(objpos);
       else
          -- no, print "You get no response."
-         uw.print(ui.get_gamestring(7,1))
+         uw.print(uw.get_string(7,1))
       end
    end
 
