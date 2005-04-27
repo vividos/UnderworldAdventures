@@ -37,6 +37,7 @@ Table of Contents
    4.2    Master object list
    4.2.1  Enchantments
    4.2.2  Item Owner
+   4.2.3  Mobile object extra info
    4.3    Free lists
    4.4    Texture mappings
    4.5    Animation infos
@@ -463,18 +464,18 @@ Table of Contents
 
 3.1.1  256 color palettes
 
-   In the file "palette.dat" there are stored 8 different palettes. A palette
+   In the file "pals.dat" there are stored 8 different palettes. A palette
    has the following layout:
 
-   0000  Int8  blue  intensity, index 0, range [0..63]
+   0000  Int8  red   intensity, index 0, range [0..63]
    0001  Int8  green intensity, index 0, range [0..63]
-   0002  Int8  red   intensity, index 0, range [0..63]
+   0002  Int8  blue  intensity, index 0, range [0..63]
 
-   0003  Int8  blue  intensity, index 1, range [0..63]
+   0003  Int8  red   intensity, index 1, range [0..63]
    0004  Int8  green intensity, index 1, range [0..63]
    ...
    02fe  Int8  green intensity, index 255, range [0..63]
-   02ff  Int8  red   intensity, index 255, range [0..63]
+   02ff  Int8  blue  intensity, index 255, range [0..63]
 
    In each palette there are stored color intensities for 256 colors. All 8
    palettes are stored sequentially in the file.
@@ -1297,8 +1298,8 @@ Table of Contents
    6 or 4 bits. The block of size 0x007a always look like this:
 
    0000  48 x Int16   wall texture number (from w64.tr)
-   0030  10 x Int16   floor texture number (from f32.tr)
-   003a  12 x Int8    unknown data
+   0060  10 x Int16   floor texture number (from f32.tr)
+   0074  6 x Int8     door texture number (from doors.gr)
    007a
 
    The last value from the floor texture number array is used as ceiling
@@ -1311,8 +1312,8 @@ Table of Contents
    In uw2 the texture mapping is 134 (0x0086) bytes long and contains 64
    Int16 entries that are indices into t64.tr. The first 16 entries are shared
    by the floor and wall indices. Entries above 16 are wall-only textures.
-   Ceiling seems to be textured by entry 0x20. The last 6 bytes appear to be
-   some kind of checksum, always 00 01 02 03 04 05.
+   Ceiling seems to be textured by entry 0x20. The last 6 bytes is the door
+   texture mapping, see above.
 
    "Look" descriptions are almost the same as in uw1, but as textures can be
    shared between walls and floors, there are two descriptions for every entry
@@ -2263,15 +2264,15 @@ Table of Contents
    number of arguments passed.
 
    id=0000 name="babl_menu" ret_type=int
-   parameters:   arg1: array of string id's; ends with id == 0
+   parameters:   arg1: array of string id's; ends with id = 0
    description:  shows a menu of further questions the user can select;
                  string id's are stored in list in arg1
    return value: number of selected response (one-based index of arg1 list)
    -------------------------------------------------------------------------
 
    id=0001 name="babl_fmenu" ret_type=int
-   parameters:   arg1: array of string id's; ends with id == 0
-                 arg2: array with on/off values (1==on)
+   parameters:   arg1: array of string id's; ends with id = 0
+                 arg2: array with on/off flag values (1==on)
    description:  shows a menu with questions from list in arg1; the list in
                  arg2 indicates if the question is available (0 means not
                  available).
@@ -2289,7 +2290,7 @@ Table of Contents
    description:  lets the user type in a string; the string typed in is
                  stored in a newly allocated string slot. The string is not
                  stored after conversation ended.
-   return value: string handle of allocated string
+   return value: string id of allocated string
    -------------------------------------------------------------------------
 
    id=0004 name="compare" ret_type=int
@@ -2306,19 +2307,17 @@ Table of Contents
    -------------------------------------------------------------------------
 
    id=0006 name="plural" ret_type=string
-   parameters:   arg1: item id to retrieve plural string (guessed)
-   description:  (as this function is not used in uw1, I only can guess)
-                 the function returns a newly allocated string with the
-                 plural of the description string of a given item id.
-   return value: string id (guessed)
+   parameters:   unknown
+   description:  (not used in uw1)
+   return value: unknown
    -------------------------------------------------------------------------
 
    id=0007 name="contains" ret_type=int
    parameters:   arg1: pointer to first string id
                  arg2: pointer to second string id
-   description:  checks if the first string contains the second string
-                 (case-independent).
-   return value: returns 1 when the string was found
+   description:  checks if the first string contains the second string,
+                 case-independent.
+   return value: returns 1 when the string was found, 0 when not
    -------------------------------------------------------------------------
 
    id=0008 name="append" ret_type=string
@@ -2342,7 +2341,7 @@ Table of Contents
    id=000b name="length" ret_type=int
    parameters:   arg1: string id
    description:  calculates length of string
-   return value: returns length
+   return value: length of string
    -------------------------------------------------------------------------
 
    id=000c name="val" ret_type=int
@@ -2377,46 +2376,51 @@ Table of Contents
    -------------------------------------------------------------------------
 
    id=0011 name="sex" ret_type=string
-   parameters:   arg1: pointer to first string handle
-                 arg2: pointer to second string handle
-   description:  decides on the gender of the avatar which string handle to
+   parameters:   arg1: pointer to first string id
+                 arg2: pointer to second string id
+   description:  decides on the gender of the avatar which string id to
                  return. for a male avatar, the second handle is taken,
                  otherwise the first handle is taken
-   return value: selected string handle
+   return value: selected string id
    -------------------------------------------------------------------------
 
    id=0012 name="show_inv" ret_type=int
    parameters:   arg1: list with inventory item positions
-                 arg2: list with object ids shown in player's barter area
-   description:  lets the player show an item to the npc, the player gets
-                 the item back (?)
-   return value: returns number of items
+                 arg2: list with object id's shown in player's barter area
+   description:  the function copies the item positions and object id's of
+                 all visible items in the barter area to the array in arg1
+                 and arg2 (which needs at most 4 array values each)
+   return value: returns number of items stored in the arrays
    -------------------------------------------------------------------------
 
    id=0013 name="give_to_npc" ret_type=int
    parameters:   arg1: list of item inventory positions to give to npc
                  arg2: number of items in list in arg1
-   description:  transfers a number of items to the npc's inventory
-   return value: returns 0 if there were no items, and 1 if there were some
+   description:  transfers a number of items from the player inventory to
+                 the npc's inventory
+   return value: returns 0 if there were no items to give, and 1 if there
+                 were some items
    -------------------------------------------------------------------------
 
    id=0014 name="give_ptr_npc" ret_type=int
-   parameters:   arg1: quantity?, or -1 for ignore
-                 arg2: master object list position? (got from find_barter)
-   description:  player hands over an item to NPC (?)
-   return value: unused
+   parameters:   arg1: quantity (?), or -1 for ignore
+                 arg2: inventory object list pos
+   description:  copies item from player inventory to npc inventory
+   return value: none
    -------------------------------------------------------------------------
 
    id=0015 name="take_from_npc" ret_type=int
-   parameters:   arg1: item id
-   description:  gives the player an item
+   parameters:   arg1: item id (can also be an item category value, > 1000)
+   description:  transfers an item from npc inventory to player inventory,
+                 based on an item id. when the value is > 1000, all items of
+                 a category are copied. category item start = (arg1-1000)*16
    return value: 1: ok, 2: player has no space left
    -------------------------------------------------------------------------
 
    id=0016 name="take_id_from_npc" ret_type=int
-   parameters:   unknown
-   description:  unknown
-   return value: unknown
+   parameters:   arg1: inventory object list pos (from take_from_npc_inv)
+   description:  transfers item to player, per id (?)
+   return value: 1: ok, 2: player has no space left
    -------------------------------------------------------------------------
 
    id=0017 name="identify_inv" ret_type=int
@@ -2424,21 +2428,26 @@ Table of Contents
                  arg2:
                  arg3:
                  arg4: inventory item position
-   description:  unknown
+   description:  unknown TODO
    return value: unknown
    -------------------------------------------------------------------------
 
    id=0018 name="do_offer" ret_type=int
-   parameters:   unknown
-   description:  unknown
-   return value: unknown
+   parameters:   arg1 ... arg5: unknown
+                 [arg6, arg7]: unknown
+   description:  checks if the deal is acceptable for the npc, based on the
+                 selected items in both bartering areas. the values in arg1
+                 to arg5 are probably values of the items that are
+                 acceptable for the npc.
+                 the function is sometimes called with 7 args, but arg6 and
+                 arg7 are always set to -1.
+   return value: 1 if the deal is acceptable, 0 if not
    -------------------------------------------------------------------------
 
    id=0019 name="do_demand" ret_type=int
-   parameters:   arg1: string handle with text to print if NPC is not
-                        willing to give the item
-                 arg2: string handle with text if NPC gives the player the
-                      item
+   parameters:   arg1: string id with text to print if NPC is not willing
+                       to give the item
+                 arg2: string id with text if NPC gives the player the item
    description:  decides if the player can "persuade" the NPC to give away
                  the items in barter area, e.g. using karma.
    return value: returns 1 when player persuaded the NPC, 0 else
@@ -2447,13 +2456,13 @@ Table of Contents
    id=001a name="do_inv_create" ret_type=int
    parameters:   arg1: item id
    description:  creates item in npc inventory
-   return value: inventory slot
+   return value: inventory object list position
    -------------------------------------------------------------------------
 
    id=001b name="do_inv_delete" ret_type=int
    parameters:   arg1: item id
    description:  deletes item from npc inventory
-   return value: unknown
+   return value: none
    -------------------------------------------------------------------------
 
    id=001c name="check_inv_quality" ret_type=int
@@ -2463,9 +2472,10 @@ Table of Contents
    -------------------------------------------------------------------------
 
    id=001d name="set_inv_quality" ret_type=int
-   parameters:   unknown
-   description:  unknown
-   return value: unknown
+   parameters:   arg1: quality value
+                 arg2: inventory object list position
+   description:  sets quality for an item in inventory
+   return value: none
    -------------------------------------------------------------------------
 
    id=001e name="count_inv" ret_type=int
@@ -2476,12 +2486,13 @@ Table of Contents
 
    id=001f name="setup_to_barter" ret_type=void
    parameters:   none
-   description:  starts bartering
+   description:  starts bartering; shows npc items in npc bartering area
    -------------------------------------------------------------------------
 
    id=0020 name="end_barter" ret_type=void
    parameters:   unknown
-   description:  (not used in uw1), ends bartering
+   description:  (not used in uw1), ends bartering, probably removing npc
+                 bartering items
    -------------------------------------------------------------------------
 
    id=0021 name="do_judgement" ret_type=void
@@ -2529,8 +2540,10 @@ Table of Contents
    -------------------------------------------------------------------------
 
    id=0028 name="take_from_npc_inv" ret_type=void
-   parameters:   unknown
-   description:  unknown
+   parameters:   arg1: unknown, always 1 in uw1
+   description:  moves object from npc to player inventory, by npc inventory
+                 index (only used in conv. #16, Ishtass)
+   return value: inventory object list position (used in take_id_from_npc)
    -------------------------------------------------------------------------
 
    id=0029 name="add_to_npc_inv" ret_type=void
@@ -2566,18 +2579,18 @@ Table of Contents
    -------------------------------------------------------------------------
 
    id=002f name="x_obj_stuff" ret_type=void
-   parameters:   arg1: not used
-                 arg2: not used
+   parameters:   arg1: not used in uw1
+                 arg2: not used in uw1
                  arg3: 0, (upper bit of quality field?)
-                 arg4: quantity field, 115
-                 arg5: not used
-                 arg6: not used
+                 arg4: quantity/special field, 115
+                 arg5: not used in uw1
+                 arg6: not used in uw1
                  arg7: quality?
                  arg8: identified flag?
-                 arg9: position in master object list
-   description:  sets object properties for object in master object list. if
-                 a property shouldn't be set, -1 can be passed for the
-                 property.
+                 arg9: position in inventory object list
+   description:  sets object properties for object in inventory object list.
+                 if a property shouldn't be set, -1 is passed for the
+                 property value.
    -------------------------------------------------------------------------
 
    id=0030 name="find_inv" ret_type=int
@@ -2590,7 +2603,7 @@ Table of Contents
    id=0031 name="find_barter" ret_type=int
    parameters:   arg1: item id to find
    description:  searches for item in barter area
-   return value: returns pos in master object list of item, or 0 if not found
+   return value: returns pos in inventory object list, or 0 if not found
    -------------------------------------------------------------------------
 
    id=0032 name="find_barter_total" ret_type=int
@@ -2660,11 +2673,11 @@ Table of Contents
      2    met Dr. Owl?
      3    permission to speak to king Ketchaval
      4    Goldthirst's quest to kill the gazer (1: gazer killed)
-     5    Garamon, magic source
+     5    Garamon, find talismans and throw into lava
      6    friend of Lizardman folk
      7    ?? (conv #24, Murgo)
      8    book from Bronus for Morlock
-     9    "find Gurstang" quest?
+     9    "find Gurstang" quest
     10    where to find Zak, for Delanrey
     11    Rodrick killed
 
