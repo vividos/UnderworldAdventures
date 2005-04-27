@@ -76,7 +76,7 @@ int main(int argc, char* argv[])
    }
    catch (std::exception& e)
    {
-      ua_trace("caught std::exception\n");
+      ua_trace("caught std::exception: %s\n", e.what());
       ua->error_msg("std::exception");
    }
 #endif
