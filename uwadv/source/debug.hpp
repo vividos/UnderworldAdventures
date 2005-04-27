@@ -113,6 +113,12 @@ public:
    //! locks or unlocks debugger access to underworld
    virtual void lock(bool set_lock);
 
+   //! starts code debugger
+   void start_code_debugger(ua_debug_code_interface* code_debugger);
+
+   //! ends code debugging
+   void end_code_debugger(ua_debug_code_interface* code_debugger);
+
 protected:
    //! debugger thread procedure
    static int thread_proc(void* ptr);
@@ -170,7 +176,8 @@ protected:
    virtual bool get_object_list_imagelist(unsigned int& num_objects,
       unsigned char* buffer, unsigned int size);
 
-   virtual void add_message(ua_debug_server_message& msg);
+   //! adds message to client message queue
+   void add_message(ua_debug_server_message& msg);
 
 protected:
    //! debug library context
@@ -193,6 +200,12 @@ protected:
 
    //! message queue
    std::deque<ua_debug_server_message> message_queue;
+
+   //! map of all code debugger
+   std::map<unsigned int, ua_debug_code_interface*> all_code_debugger;
+
+   //! id of last code debugger
+   unsigned int last_code_debugger_id;
 };
 
 
