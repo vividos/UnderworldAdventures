@@ -65,6 +65,8 @@ void uwmdlview_init()
    else
    if (ua_file_exists("./uw2.exe"))
       ua_model_decode_builtins("./uw2.exe",allmodels,false);
+   else
+      ua_assert(false); // wrong current folder!
 }
 
 void setup_opengl(unsigned int width, unsigned int height)
@@ -124,10 +126,11 @@ void draw_screen()
    glBegin(GL_QUADS);
    glColor3ub(32,32,32);
 
-   glVertex3d(-1.0,-1.0,-0.01);
-   glVertex3d( 1.0,-1.0,-0.01);
-   glVertex3d( 1.0, 1.0,-0.01);
-   glVertex3d(-1.0, 1.0,-0.01);
+   double sq_size = 0.5;
+   glVertex3d(-sq_size,-sq_size,-0.0001);
+   glVertex3d( sq_size,-sq_size,-0.0001);
+   glVertex3d( sq_size, sq_size,-0.0001);
+   glVertex3d(-sq_size, sq_size,-0.0001);
    glEnd();
 
    if (light_on)
@@ -177,11 +180,11 @@ void process_events()
             break;
 
          case SDLK_UP:
-            zpos+=0.25;
+            zpos+=0.15;
             break;
 
          case SDLK_DOWN:
-            zpos-=0.25;
+            zpos-=0.15;
             break;
 
          case SDLK_l:
