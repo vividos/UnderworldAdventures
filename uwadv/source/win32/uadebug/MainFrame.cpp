@@ -185,6 +185,37 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
    return FALSE;
 }
 
+BOOL CMainFrame::OnIdle()
+{
+   UIUpdateToolBar();
+
+   ProcessServerMessages();
+
+   return FALSE;
+}
+
+void CMainFrame::ProcessServerMessages()
+{
+   // check for new messages
+   CDebugClientMessage msg;
+   while (m_debugClient.GetMessage(msg))
+   {
+      switch(msg.m_nType)
+      {
+      case 0: // shutdown request
+         PostMessage(WM_CLOSE);
+         break;
+
+      case 1: // debugger attach
+         // TODO
+         break;
+
+      case 2: // debugger detach
+         break;
+      }
+   }
+}
+
 LRESULT CMainFrame::OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
    PostMessage(WM_CLOSE);

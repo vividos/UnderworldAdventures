@@ -75,11 +75,9 @@ public:
 
    virtual BOOL PreTranslateMessage(MSG* pMsg);
 
-   virtual BOOL OnIdle()
-   {
-      UIUpdateToolBar();
-      return FALSE;
-   }
+   virtual BOOL OnIdle();
+
+   void ProcessServerMessages();
 
    BEGIN_MSG_MAP(CMainFrame)
       MESSAGE_HANDLER(WM_CREATE, OnCreate)
