@@ -15,8 +15,6 @@ them
 [screens] ingame_orig screen: fix positions of dragons, or split them up to
 several ua_image_quad objects
 
-[screens] exit savegame screen with ESC
-
 [uadebug] do code-debugger class
 
 [uadebug] add project management, reading game.cfg, etc.
@@ -27,7 +25,7 @@ several ua_image_quad objects
 
 [renderer] get decal rendering to work, for switches, levers, etc., and tmap
 objects
-  
+
 [renderer] re-add 3d model rendering
 
 [renderer] properly animate critters
@@ -41,16 +39,12 @@ savegame
 
 [import] tgaimport: add all needed tga image modes
 
-[screens] introduction: end with space key
-
 [screens] rewrite character creation
 
 [screens] in character creation, only stop music when entering game, not when
 escaping/restarting
 
 [screens] adjust scroll size in uw_demo
-
-[game] added "check-files" keyword and implementation to ua_game_config
 
 [screens] properly implement map view screen; where do the images come from?
 
@@ -67,3 +61,11 @@ escaping/restarting
 [underworld] add object list alloc/dealloc/insert/delete methods
 
 [screens] ingame_orig: add getting items
+
+[audio] add sound effects reusing from uw2 sounds
+
+[renderer] implement uw 3d models
+
+[screens] use unicode translation in character screen
+
+[screens] ingame: implement right-dragging as using
