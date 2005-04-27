@@ -19,7 +19,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\source;..\..\source\base;..\..\source\conv;..\..\source\import;..\..\source\underw"
+				AdditionalIncludeDirectories="..\..\source;..\..\source\base;..\..\source\conv;..\..\source\import;..\..\source\renderer;..\..\source\ui;..\..\source\underw"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -31,10 +31,10 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="base.lib conv.lib import.lib script.lib underw.lib SDL.lib SDLmain.lib zlib.lib"
+				AdditionalDependencies="base.lib conv.lib import.lib script.lib ui.lib underw.lib SDL.lib SDLmain.lib zlib.lib"
 				OutputFile="$(OutDir)\..\uastudio.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(OutDir)\..\base&quot;;&quot;$(OutDir)\..\conv&quot;;&quot;$(OutDir)\..\import&quot;;&quot;$(OutDir)\..\script&quot;;&quot;$(OutDir)\..\underw&quot;"
+				AdditionalLibraryDirectories="&quot;$(OutDir)\..\base&quot;;&quot;$(OutDir)\..\conv&quot;;&quot;$(OutDir)\..\import&quot;;&quot;$(OutDir)\..\script&quot;;&quot;$(OutDir)\..\ui&quot;;&quot;$(OutDir)\..\underw&quot;"
 				IgnoreDefaultLibraryNames="msvcrt.lib"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)\..\$(ProjectName).pdb"
@@ -69,7 +69,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\source;..\..\source\base;..\..\source\conv;..\..\source\import;..\..\source\underw"
+				AdditionalIncludeDirectories="..\..\source;..\..\source\base;..\..\source\conv;..\..\source\import;..\..\source\renderer;..\..\source\ui;..\..\source\underw"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -79,10 +79,10 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="base.lib conv.lib import.lib script.lib underw.lib SDL.lib SDLmain.lib zlib.lib"
+				AdditionalDependencies="base.lib conv.lib import.lib script.lib ui.lib underw.lib SDL.lib SDLmain.lib zlib.lib"
 				OutputFile="$(OutDir)\..\uastudio.exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(OutDir)\..\base&quot;;&quot;$(OutDir)\..\conv&quot;;&quot;$(OutDir)\..\import&quot;;&quot;$(OutDir)\..\script&quot;;&quot;$(OutDir)\..\underw&quot;"
+				AdditionalLibraryDirectories="&quot;$(OutDir)\..\base&quot;;&quot;$(OutDir)\..\conv&quot;;&quot;$(OutDir)\..\import&quot;;&quot;$(OutDir)\..\script&quot;;&quot;$(OutDir)\..\ui&quot;;&quot;$(OutDir)\..\underw&quot;"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)\..\$(ProjectName).pdb"
 				SubSystem="1"
@@ -132,6 +132,12 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
+			<File
+				RelativePath="..\..\source\dbgserver.hpp">
+			</File>
+			<File
+				RelativePath="..\..\source\debug.hpp">
+			</File>
 			<File
 				RelativePath="..\..\source\win32\uastudio\resource.h">
 			</File>
