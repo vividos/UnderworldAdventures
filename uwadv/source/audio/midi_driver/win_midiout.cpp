@@ -33,7 +33,10 @@
 // more includes
 #include "win_midiout.h"
 #include "../xmidi.hpp"
-#include <iostream>
+
+#ifdef MMNOMCI
+WINMMAPI BOOL WINAPI mciGetErrorStringA(DWORD mcierr, LPSTR pszText, UINT cchText);
+#endif
 
 
 // constants
@@ -170,22 +173,22 @@ DWORD ua_win_midiout::thread_main()
    // List all the midi devices.
    MIDIOUTCAPS caps;
    signed long dev_count = (signed long) midiOutGetNumDevs(); 
-//   std::cout << dev_count << " Midi Devices Detected" << endl;
-//   std::cout << "Listing midi devices:" << endl;
+//   ua_trace("%u Midi Devices Detected\n", dev_count);
+//   ua_trace("Listing midi devices:\n");;
 
    for (i = -1; i < dev_count; i++)
    {
       midiOutGetDevCaps ((UINT) i, &caps, sizeof(caps));
-//      std::cout << i << ": " << caps.szPname << endl;
+//      ua_trace("%u: ", i, caps.szPname);
    }
 
    if (dev_num < -1 || dev_num >= dev_count)
    {
-//      std::cerr << "Warning Midi device in config is out of range." << endl;
+      ua_trace("ua_win_midiout: Warning Midi device in config is out of range.\n");
       dev_num = -1;
    }
    midiOutGetDevCaps ((UINT) dev_num, &caps, sizeof(caps));
-   std::cout << "ua_win_midiout: Using device " << dev_num << ": "<< caps.szPname << std::endl;
+   ua_trace("ua_win_midiout: Using device %u: %s\n", dev_num, caps.szPname);
 
    UINT mmsys_err = midiOutOpen (&midi_port, dev_num, 0, 0, 0);
 
@@ -196,8 +199,8 @@ DWORD ua_win_midiout::thread_main()
 
       giveinfo();
       buf[0]=0;
-//      mciGetErrorStringA(mmsys_err, buf, 512);
-//      cerr << "Unable to open device: " << buf << endl;
+      mciGetErrorStringA(mmsys_err, buf, 512);
+      ua_trace("ua_win_midiout: Unable to open device: %s\n", buf);
       giveinfo();
       InterlockedExchange (&thread_com, W32MO_THREAD_COM_INIT_FAILED);
       giveinfo();
