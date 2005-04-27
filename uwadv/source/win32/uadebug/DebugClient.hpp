@@ -43,23 +43,24 @@ struct CDebugClientMessage
 {
    //! ctor
    CDebugClientMessage()
-      :msg_type(0), msg_arg1(0), msg_arg2(0), msg_arg3(0.0){}
+      :m_nType(0), m_nArg1(0), m_nArg2(0), m_dArg3(0.0){}
 
    //! message type; see enum ua_debug_server_message_type
-   unsigned int msg_type;
+   unsigned int m_nType;
 
    //! message argument 1
-   unsigned int msg_arg1;
+   unsigned int m_nArg1;
    //! message argument 2
-   unsigned int msg_arg2;
+   unsigned int m_nArg2;
    //! message argument 3
-   double msg_arg3;
+   double m_dArg3;
 
    //! message text
-   //CString msg_text;
+   CString m_cszText;
 };
 
 
+//! player info interface
 class CDebugClientPlayerInterface
 {
 public:
@@ -88,6 +89,7 @@ private:
 };
 
 
+//! object list interface
 class CDebugClientObjectInterface
 {
 public:
@@ -113,6 +115,15 @@ private:
    unsigned int m_nLevel;
 
    friend class CDebugClientInterface;
+};
+
+
+//! code debugger interface
+class CDebugClientCodeDebuggerInterface
+{
+public:
+   CDebugClientCodeDebuggerInterface(){}
+   virtual ~CDebugClientCodeDebuggerInterface(){}
 };
 
 
@@ -156,7 +167,7 @@ public:
 
    CImageList GetObjectImageList();
 
-//   bool GetMessage(CDebugClientMessage& msg);
+   bool GetMessage(CDebugClientMessage& msg);
 
 private:
    //! pointer to debug server interface

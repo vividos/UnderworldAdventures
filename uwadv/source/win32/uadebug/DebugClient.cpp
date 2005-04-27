@@ -366,9 +366,6 @@ CImageList CDebugClientInterface::GetObjectImageList()
       pBitmapData[i*4+2] = nSwap;
    };
 
-//   CBitmap bitmap;
-//   bitmap.CreateBitmap(num_objects*16,  16, 1, 32, pBitmapData);
-
    CImageList imageList;
    imageList.Create(16, 16, ILC_COLOR32, 0, num_objects);
 
@@ -388,23 +385,30 @@ CImageList CDebugClientInterface::GetObjectImageList()
    return imageList;
 }
 
-/*
 bool CDebugClientInterface::GetMessage(CDebugClientMessage& msg)
 {
-   // TODO
-   ATLASSERT(FALSE);
+   m_pDebugInterface->lock(true);
 
-   unsigned int text_size=0;
-   bool ret = get_message(msg.msg_type, msg.msg_arg1, msg.msg_arg2,
-      msg.msg_arg3, text_size);
-   if (ret && text_size>0)
+   unsigned int nNum = m_pDebugInterface->get_message_num();
+   if (nNum == 0)
    {
-      std::vector<char> buffer(text_size+1);
-      ret = get_message_text(&buffer[0], text_size);
-
-      buffer[text_size]=0;
-      msg.msg_text.assign(&buffer[0]);
+      m_pDebugInterface->lock(false);
+      return false;
    }
-   return ret; return false;
+
+   unsigned int nTextSize = 0;
+   m_pDebugInterface->get_message(msg.m_nType, msg.m_nArg1, msg.m_nArg2, msg.m_dArg3, nTextSize);
+
+   CHAR* pBuffer = new CHAR[nTextSize+1];
+   pBuffer[nTextSize]=0;
+
+   ATLVERIFY(true == m_pDebugInterface->get_message_text(pBuffer, nTextSize));
+
+   msg.m_cszText = pBuffer;
+
+   m_pDebugInterface->pop_message();
+
+   m_pDebugInterface->lock(false);
+
+   return true;
 }
-*/
