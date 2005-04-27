@@ -596,13 +596,13 @@ void ua_debug_server::set_objlist_info(unsigned int level,
       objinfo.flags = value;
       break;
    case ua_objlist_info_ench:
-      objinfo.enchanted = value;
+      objinfo.enchanted = value != 0;
       break;
    case ua_objlist_info_is_quant:
-      objinfo.is_quantity = value;
+      objinfo.is_quantity = value != 0;
       break;
    case ua_objlist_info_hidden:
-      objinfo.is_hidden = value;
+      objinfo.is_hidden = value != 0;
       break;
 
    default:
