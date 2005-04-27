@@ -47,6 +47,7 @@
 #include <direct.h> // for mkdir
 #include <io.h> // for _findfirst, _findnext, _findclose
 #include <shlobj.h> // for SHGetFolderPathA
+#pragma comment(lib, "shell32.lib")
 #endif
 
 #ifdef HAVE_SYS_STAT_H
