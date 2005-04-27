@@ -1,0 +1,131 @@
+<?xml version='1.0'?>
+<!--
+
+ Underworld Adventures - an Ultima Underworld hacking project
+ Copyright (c) 2005 Underworld Adventures Team
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ $Id$
+
+-->
+<Wix xmlns="http://schemas.microsoft.com/wix/2003/01/wi">
+  <Product Id="22286665-1215-4d00-a87f-7e239ee56f3e"
+      Name="Underworld Adventures" Language="1033"
+      Version="0.10.0.0" Manufacturer="Michael Fink">
+    <Package Id="e3b56be4-5df1-4e68-9566-688afbfe379d"
+      Description="Underworld Adventures Installer"
+      Comments="This installs Underworld Adventures"
+      Manufacturer="Michael Fink" InstallerVersion="200"
+      AdminImage="no" Compressed="yes" ShortNames="no"
+      Keywords="Underworld Adventures, Ultima, Ultima Underworld, Stygian Abyss"
+      Platforms="Intel" />
+
+    <Media Id="1" Cabinet="uwadv.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="." SourceName=".">
+        <Directory Id="UnderworldAdventures" Name="uwadv" LongName="Underworld Adventures">
+          <Directory Id="INSTALLDIR" Name=".">
+            <Component Id="UnderworldAdventuresApp" Guid="f1fc0646-d06c-4a72-bf63-7abbac37bab4">
+              <File Id="UwadvExe" Name="uwadv.exe" LongName="uwadv.exe" DiskId="1" KeyPath="yes" src="..\vc71\Release\uwadv.exe" />
+            </Component>
+            <Component Id="UnderworldAdventuresShortcut" Guid="dc848364-47f7-44f5-b7dd-2a050f92ad1c">
+              <Registry Id="RegistryKey1" Root="HKCU" Key="Software\Underworld Adventures" KeyPath="yes" />
+              <Shortcut Id="Shortcut1" Directory="UnderworldAdventuresShortcutFolder" Name="uwadv" LongName="Underworld Adventures"
+                Target="[INSTALLDIR]uwadv.exe" Icon="UnderworldAdventuresShortcutIcon" IconIndex="0" Show="normal"
+                Description="Starts Underworld Adventures" />
+              <RemoveFolder Directory="UnderworldAdventuresShortcutFolder" On="uninstall" Id="Shortcut1" />
+            </Component>
+            <Component Id="UnderworldAdventuresConfigApp" Guid="2ee47c18-c120-412d-860e-d45c6ffe261a">
+              <File Id="UaconfigExe" Name="uaconfig.exe" LongName="uaconfig.exe" DiskId="1" KeyPath="yes" src="..\vc71\Release\uaconfig.exe" />
+            </Component>
+            <Component Id="SdlLibrary" Guid="6ef91d1b-c139-4e65-a6a2-2132b65752c5">
+              <File Id="SdlDll" Name="SDL.dll" LongName="SDL.dll" DiskId="1" KeyPath="yes" src="..\vc71\Release\SDL.dll" />
+            </Component>
+            <Component Id="SdlMixerLibrary" Guid="a377c5e3-9268-4d3c-9ed5-1cf7d0538bd2">
+              <File Id="SdlMixerDll" Name="SDL_mi~1.dll" LongName="SDL_mixer.dll" DiskId="1" KeyPath="yes" src="..\vc71\Release\SDL_mixer.dll" />
+            </Component>
+            <Component Id="UnderworldAdventuresStudioApp" Guid="ee7c5f0e-a713-4db5-bf7b-3149df5ec480">
+              <File Id="UastudioExe" Name="uastudio.exe" LongName="uastudio.exe" DiskId="1" KeyPath="yes" src="..\vc71\Release\uastudio.exe" />
+            </Component>
+            <Component Id="UnderworldAdventuresDebuggerDll" Guid="dc493173-7fa6-4b91-ae9a-ad1e09e4991a">
+              <File Id="UadebugDll" Name="uadebug.dll" LongName="uadebug.dll" DiskId="1" KeyPath="yes" src="..\vc71\Release\uadebug.dll" />
+            </Component>
+            <Component Id="StrPakTool" Guid="b4ee56db-d6fd-45ba-97c4-7c90c7b74175">
+              <File Id="StrPakExe" Name="strpak.exe" LongName="strpak.exe" DiskId="1" KeyPath="yes" src="..\vc71\Release\strpak.exe" />
+            </Component>
+          </Directory>
+        </Directory>
+      </Directory>
+      <Directory Id="ProgramMenuFolder" Name="." SourceName=".">
+        <Directory Id="UnderworldAdventuresShortcutFolder" Name="uwadv" LongName="Underworld Adventures" />
+      </Directory>
+      <Directory Id="CommonAppDataFolder" Name="." SourceName=".">
+        <Directory Id="UnderworldAdventuresAppDataFolder" Name="underw~1" LongName="Underworld Adventures Data">
+          <Component Id="UnderworldAdventuresConfig" Guid="2ef55bad-5de5-4659-8906-4fbaaa13c3bb">
+            <File Id="UwadvCfg" Name="uwadv.cfg" LongName="uwadv.cfg" DiskId="1" KeyPath="yes" src="..\..\win32\uwadv.cfg" />
+          </Component>
+          <Directory Id="UnderworldAdventuresUadataFolder" Name="uadata">
+            <Component Id="UnderworldAdventuresResource00" Guid="259c9880-2510-42ed-923f-babdddfa0600">
+              <File Id="Uadata00Uar" Name="uadata00.uar" LongName="uadata00.uar" DiskId="1" KeyPath="yes" src="..\..\uadata\uadata00.uar" />
+            </Component>
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <Icon Id="UnderworldAdventuresShortcutIcon" src="..\..\source\win32\Uus.ico" />
+
+    <Feature Id="UnderworldAdventures" Title="Underworld Adventures"
+        Description="Installs the Underworld Adventures game." Level="1" ConfigurableDirectory="INSTALLDIR">
+      <ComponentRef Id="UnderworldAdventuresApp" />
+      <ComponentRef Id="UnderworldAdventuresShortcut" />
+      <ComponentRef Id="UnderworldAdventuresConfigApp" />
+      <!-- ComponentRef Id="UnderworldAdventuresConfigShortcut" / -->
+      <ComponentRef Id="UnderworldAdventuresConfig" />
+      <ComponentRef Id="SdlLibrary" />
+      <ComponentRef Id="SdlMixerLibrary" />
+      <ComponentRef Id="UnderworldAdventuresResource00" />
+    </Feature>
+
+    <Feature Id="UnderworldAdventuresStudio" Title="Underworld Adventures Studio"
+        Description="Installs the Underworld Adventures Studio application." Level="1" ConfigurableDirectory="INSTALLDIR">
+      <ComponentRef Id="UnderworldAdventuresStudioApp" />
+      <ComponentRef Id="UnderworldAdventuresDebuggerDll" />
+      <ComponentRef Id="UnderworldAdventuresConfigApp" />
+      <!-- ComponentRef Id="UnderworldAdventuresConfigShortcut" / -->
+      <ComponentRef Id="UnderworldAdventuresConfig" />
+      <ComponentRef Id="StrPakTool" />
+      <ComponentRef Id="SdlLibrary" />
+      <ComponentRef Id="SdlMixerLibrary" />
+      <ComponentRef Id="UnderworldAdventuresResource00" />
+    </Feature>
+
+    <FragmentRef Id="StandardUserInterface" />
+
+    <Property Id="SHOWCUSTOMSETUP"><![CDATA[1]]></Property>
+    <Property Id="SHOWLAUNCHREADME"><![CDATA[0]]></Property>
+    <Property Id="READMEFILETOLAUNCHATEND"><![CDATA[readme.txt]]></Property>
+    <Property Id="SHOWLAUNCHPROGRAM"><![CDATA[0]]></Property>
+    <Property Id="PROGRAMFILETOLAUNCHATEND"><![CDATA[[INSTALLDIR]uaconfig.exe]]></Property>
+    <Property Id="LAUNCHPROGRAM"><![CDATA[1]]></Property>
+    <Property Id="LAUNCHREADME"><![CDATA[1]]></Property>
+
+    <Property Id="ARPURLINFOABOUT"><![CDATA[http://www.vividos.de/]]></Property>
+    <Property Id="ARPCOMMENTS"><![CDATA[Your Comments]]></Property>
+
+   </Product>
+</Wix>
