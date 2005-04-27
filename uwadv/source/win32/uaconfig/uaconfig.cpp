@@ -282,15 +282,20 @@ LRESULT ua_config_prog::OnSetUw1Path(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
 void ua_config_prog::load_config()
 {
    // try loading settings
+   settings_filename = ua_get_home_path();
+   settings_filename += "uwadv.cfg";
    try
    {
-      settings.load("./uwadv.cfg");
+      settings.load(settings_filename.c_str());
    }
    catch(...)
    {
       // loading failed
-      ::MessageBox(m_hWnd,"Could not find file \"uwadv.cfg\" in current folder!",
-         caption.c_str(),MB_OK|MB_ICONSTOP);
+      std::string text = "Could not find file \"";
+      text += settings_filename;
+      text += "\"!";
+
+      ::MessageBox(m_hWnd, text.c_str(), caption.c_str(), MB_OK|MB_ICONSTOP);
 
       // exit program
       ::PostMessage(m_hWnd,WM_QUIT,0,0);
@@ -487,10 +492,12 @@ void ua_config_prog::save_config()
    settings.set_value(ua_setting_win32_midi_device, sel-1);
 
    // write config file
-   settings.write("./uwadv.cfg","./uwadv.cfg.new");
-   remove("./uwadv.cfg.old");
-   rename("./uwadv.cfg","./uwadv.cfg.old");
-   rename("./uwadv.cfg.new","./uwadv.cfg");
+   std::string settings_filename_backup(settings_filename);
+   settings_filename_backup += ".bak";
+
+   rename(settings_filename.c_str(), settings_filename_backup.c_str());
+   settings.write(settings_filename_backup.c_str(), settings_filename.c_str());
+   remove(settings_filename_backup.c_str());
 }
 
 

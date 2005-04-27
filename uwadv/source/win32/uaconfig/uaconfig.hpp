@@ -223,6 +223,9 @@ protected:
    //! window caption
    std::string caption;
 
+   //! settings filename
+   std::string settings_filename;
+
    //! win32 program instance
    HINSTANCE m_hInstance;
 
