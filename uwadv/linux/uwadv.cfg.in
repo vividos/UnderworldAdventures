@@ -5,77 +5,90 @@
 # separated by at least one space. For some paths placeholders
 # can be used. These are:
 #
-#  %uwpath%   path of the currently played game (uw1-path or uw2-path)
-#  %uadata%   value of the "uadata-path" variable
-#  %uahome%   path to the underworld adventures home folder. For linux
-#             this is "~/.uwadv/"; For windows it just is the current folder
+#  %uwpath%   Path of the currently played game (uw1-path or uw2-path).
+#  %uadata%   Value of the "uadata-path" variable.
+#  %uahome%   Path to the underworld adventures home folder. For linux
+#             this is "~/.uwadv/"; For Windows versions that support per-user
+#             folders, it is the "common application data folder", such as
+#             "C:\Documents and Settings\All Users\Application Data\Underworld Adventures Data\"
+#             If that folder doesn't exist, the current folder is used.
 #
-# All placeholder variables end with a slash.
+# All placeholder variables end with a slash, so in principle it is perfectly
+# valid to continue with a folder name, e.g. %uahome%uadata/. For better
+# readability the slash can be repeated, though: %uahome%/uadata/
 #
 
 #
-# path to Ultima Underworld folder (where the uw.exe lives)
+# Path to Ultima Underworld 1 folder (where the uw.exe lives)
 # Underworld Demo (uw_demo) path works, too
-# note that placeholders cannot be used!
+# Note that placeholders cannot be used!
 #
 
 uw1-path @UW1PATH@
 
 #
-# path to the uwadv "uadata" dir
-# note that placeholders cannot be used!
+# Path to Ultima Underworld 2 folder (where the uw2.exe lives)
+# Note that placeholders cannot be used!
+# Note that this doesn't currently work with Underworld Adventures!
+#
+
+#uw2-path UW2PATH
+
+#
+# Path to the "uadata" folder where the *.uar files reside
+# Note that the %uadata% placeholder cannot be used.
 #
 
 uadata-path @UADATAPATH@
 
 #
-# path to a folder where the savegames are stored
-# the folder is created when it doesn't exist
+# Path to a folder where the savegames are stored.
+# The folder is created when it doesn't exist.
 #
 
 savegame-folder %uahome%/uasave/
 
 #
-# path to a custom keymap to load
+# Path to a custom keymap to load.
 #
 
 custom-keymap %uahome%/keymap.cfg
 
 #
-# enables or disables Underworld Adventures specific features and
-# enhancements. either set to "yes" or "no"
+# Enables or disables Underworld Adventures specific features and
+# enhancements. Either set to "yes" or "no".
 #
 
 enable-uwadv-features yes
 
 #
-# sets the screen resolution to use
-# resolution must be specified in the form "<xres> x <yres>",
-# e.g. "800 x 600"
+# Sets the screen resolution to use.
+# Resolution must be specified in the form "<xres> x <yres>",
+# e.g. "800 x 600".
 #
-# if using "fullscreen" mode, selected screen resolution must be available
-# for the used graphics card
+# If using "fullscreen" mode, selected screen resolution must be available
+# for the used graphics card.
 #
 
 screen-resolution 800 x 600
 
 #
-# enables fullscreen gameplay
-# "yes" enables it, "no" disables it
+# Enables fullscreen gameplay.
+# "yes" enables it, "no" disables it.
 #
 
 fullscreen no
 
 #
-# enables the "smooth" drawing of the user interface graphics
-# when disabled, the graphics look more "pixely"
-# "yes" enables it, "no" disables it
+# Enables the "smooth" drawing of the user interface graphics.
+# When disabled, the graphics look more "pixely".
+# "yes" enables it, "no" disables it.
 #
 
 smooth-ui yes
 
 #
-# sets the narration type for cutscenes (including the intro)
+# Sets the narration type for cutscenes (including the intro).
 # "sound" for sound playback (spoken text) only
 # "subtitles" for subtitles only (no sound)
 # "both" for sound and subtitles
@@ -84,19 +97,19 @@ smooth-ui yes
 cutscene-narration sound
 
 #
-# selects if the audio system should be init'ed and used
-# can be "true" or "false"
+# Selects if the audio system should be init'ed and used.
+# Can be "true" or "false".
 #
 
 audio-enabled true
 
 #
-# win32 only: midi device selection
-# determines the midi device to use for the win32 midi driver
+# Windows only: midi device selection
+# Determines the midi device to use for the win32 midi driver.
 #
 
 win32-midi-device -1
 
 #
-# end of config
+# End of config.
 #
