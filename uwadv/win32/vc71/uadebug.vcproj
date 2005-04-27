@@ -261,6 +261,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\source\win32\uadebug\ProjectInfo.cpp">
+			</File>
+			<File
 				RelativePath="..\..\source\win32\uadebug\ProjectManager.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -378,6 +381,9 @@
 				RelativePath="..\..\source\win32\uadebug\PlayerInfo.hpp">
 			</File>
 			<File
+				RelativePath="..\..\source\win32\uadebug\ProjectInfo.hpp">
+			</File>
+			<File
 				RelativePath="..\..\source\win32\uadebug\ProjectManager.hpp">
 			</File>
 			<File
@@ -388,6 +394,9 @@
 			</File>
 			<File
 				RelativePath="..\..\source\win32\uadebug\TileMapViewCtrl.hpp">
+			</File>
+			<File
+				RelativePath="..\..\source\win32\uadebug\WindowBase.hpp">
 			</File>
 		</Filter>
 		<Filter
@@ -426,6 +435,9 @@
 			</File>
 			<File
 				RelativePath="..\..\source\win32\uadebug\res\tilemap_view.ico">
+			</File>
+			<File
+				RelativePath="..\..\source\win32\uadebug\res\tree_project.bmp">
 			</File>
 			<File
 				RelativePath="..\..\source\win32\uadebug\uadebug_res.rc">
