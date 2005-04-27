@@ -39,7 +39,8 @@
 #include "level.hpp"
 #include "renderer.hpp"
 #include <algorithm>
-#include "resource/fread_endian.hpp"
+#include "import/io_endian.hpp"
+#include "geometry.hpp"
 
 
 // globals
@@ -94,9 +95,11 @@ void load_level(int level)
    alltriangles.clear();
    alltriangles.reserve(12000);
 
+   ua_geometry_provider prov(levels[curlevel]);
+
    for(unsigned int x=0; x<64; x++)
       for(unsigned int y=0; y<64; y++)
-         ua_renderer::get_tile_triangles(levels[curlevel],x,y,alltriangles);
+         prov.get_tile_triangles(x,y,alltriangles);
 
    // sort triangles by texnum
    std::sort(alltriangles.begin(), alltriangles.end());
@@ -129,17 +132,19 @@ void load_all_levels()
       for(unsigned int n=0; n<max; n++)
          texmgr.prepare(used_textures[n]);
 
+      ua_geometry_provider prov(levels[i]);
+
       // collect all triangles
       for(unsigned int x=0; x<64; x++)
          for(unsigned int y=0; y<64; y++)
-            ua_renderer::get_tile_triangles(levels[i],x,y,alltriangles);
+            prov.get_tile_triangles(x,y,alltriangles);
 
       // translate all triangles up
       unsigned int maxtri = alltriangles.size();
       for(unsigned int t=0; t<maxtri; t++)
       {
          for(unsigned int k=0; k<3; k++)
-            alltriangles[t].points[k].z += 32.0;
+            alltriangles[t].vertices[k].pos.z += 32.0;
       }
    }
 
@@ -154,9 +159,11 @@ void init_mapdisp()
    std::string uw_path("./");
    settings.set_value(ua_setting_uw_path,uw_path);
 
+   settings.set_gametype(ua_game_uw1);
+
    // check if we only have the demo
    if (ua_file_exists("./data/level13.st"))
-      settings.set_gametype(ua_game_uw_demo);
+      settings.set_value(ua_setting_uw1_is_uw_demo, true);
 
    // check if we have uw2
    if (ua_file_exists("./uw2.exe"))
@@ -306,15 +313,15 @@ void draw_screen()
    unsigned int max = alltriangles.size();
    for(unsigned int i=0; i<max; i++)
    {
-      ua_triangle3d_textured &tri = alltriangles[i];
+      ua_triangle3d_textured& tri = alltriangles[i];
 
       texmgr.use(tri.texnum);
 
       glBegin(GL_TRIANGLES);
       for(int j=0; j<3; j++)
       {
-         glTexCoord2d(tri.tex_u[j],tri.tex_v[j]);
-         glVertex3d(tri.points[j].x, tri.points[j].y, tri.points[j].z*0.125);
+         glTexCoord2d(tri.vertices[j].u,tri.vertices[j].v);
+         glVertex3d(tri.vertices[j].pos.x, tri.vertices[j].pos.y, tri.vertices[j].pos.z*0.125);
       }
       glEnd();
    }
@@ -547,24 +554,4 @@ int main(int argc, char* argv[])
    SDL_Quit();
 
    return 0;
-}
-
-
-// fake functions to prevent linking with all the uwadv stuff
-
-ua_level& ua_underworld::get_current_level()
-{
-   return levels[curlevel];
-}
-
-unsigned int ua_player::get_attr(ua_player_attributes) const
-{
-   return 0;
-}
-
-#include "files.hpp"
-
-SDL_RWops* ua_files_manager::get_uadata_file(const char *filename)
-{
-   return SDL_RWFromFile(filename,"rb");
 }
