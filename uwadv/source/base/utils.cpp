@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -46,6 +46,7 @@
 #ifdef WIN32
 #include <direct.h> // for mkdir
 #include <io.h> // for _findfirst, _findnext, _findclose
+#include <shlobj.h> // for SHGetFolderPathA
 #endif
 
 #ifdef HAVE_SYS_STAT_H
@@ -245,6 +246,56 @@ void ua_find_files(const char* pathname, std::vector<std::string>& filelist)
 // enable it.
 
 #endif
+
+
+std::string ua_get_home_path()
+{
+   std::string uahome_path = "./";
+
+#ifdef HAVE_HOME
+   {
+      const char *homedir = getenv("HOME");
+      if (homedir != NULL)
+      {
+         // User has a home directory
+         uahome_path = homedir;
+
+#ifndef BEOS
+         uahome_path += "/.uwadv/";
+#else
+         uahome_path += "/config/settings/uwadv/";
+#endif
+      }
+
+      // try to create home folder
+      ua_trace("creating uahome folder \"%s\"\n", uahome_path.c_str());
+      ua_mkdir(uahome_path.c_str(), 0700);
+   }
+
+#elif defined(WIN32) && defined(_MSC_VER) // Visual C++ under Windows
+
+   char appdata_path[MAX_PATH];
+   HRESULT hr = SHGetFolderPathA(NULL, CSIDL_COMMON_APPDATA | CSIDL_FLAG_CREATE,
+      NULL, SHGFP_TYPE_CURRENT, appdata_path);
+   if (hr == S_OK)
+   {
+      uahome_path = appdata_path;
+      uahome_path += "\\Underworld Adventures Data\\";
+
+      // check if the path really exists
+      if (0xFFFFFFFF == ::GetFileAttributesA(uahome_path.c_str()))
+         uahome_path = "./"; // revert to current dir
+   }
+
+#else // all other OSes
+
+   // assume current working folder as home dir
+   uahome_path = "./";
+
+#endif // HAVE_HOME
+
+   return uahome_path;
+}
 
 
 void ua_str_lowercase(std::string& str)

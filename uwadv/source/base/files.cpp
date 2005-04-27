@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -73,14 +73,22 @@ void ua_files_manager::init(ua_settings& settings)
       // get uadata path
       uadata_path = settings.get_string(ua_setting_uadata_path);
 
+      // uadata placeholder must not appear
+      ua_assert(std::string::npos == uadata_path.find("%uadata%"));
+
+      // replace strings in uadata path
+      replace_system_vars(uadata_path);
+
       // check if path ends with slash
       std::string::size_type pos = uadata_path.find_last_of("\\/");
       if (pos != std::string::npos && pos != uadata_path.size()-1)
       {
-         // add slash and write back
+         // add slash
          uadata_path.append("/");
-         settings.set_value(ua_setting_uadata_path,uadata_path);
       }
+
+      // write back
+      settings.set_value(ua_setting_uadata_path,uadata_path);
    }
 
    // get savegame folder name
@@ -176,36 +184,9 @@ void ua_files_manager::replace_system_vars(std::string& path)
 void ua_files_manager::init_cfgfiles_list()
 {
    // determine uahome path
-   {
-#ifdef HAVE_HOME
-
-      const char *homedir = getenv("HOME");
-      if (homedir != NULL)
-      {
-         // User has a home directory
-         uahome_path = homedir;
-
-#ifndef BEOS
-         uahome_path += "/.uwadv/";
-#else
-         uahome_path += "/config/settings/uwadv/";
-#endif
-      }
-
-      // try to create home folder
-      ua_trace("creating uahome folder \"%s\"\n",uahome_path.c_str());
-      ua_mkdir(uahome_path.c_str(),0700);
-
-#else // !HAVE_HOME
-
-      // assume current working folder as home dir
-      uahome_path = "./";
-
-#endif // HAVE_HOME
-   }
+   uahome_path = ua_get_home_path();
 
    // set up config files list
-
    cfgfiles_list.clear();
 
 #ifdef CONFIGDIR
