@@ -93,6 +93,12 @@ extern CAppModule _Module;
 #include "EditListViewCtrl.hpp"
 
 
+// check macro to check if the REFLECT_NOTIFICATIONS() macro was added to the parent class
+#define ATLASSERT_ADDED_REFLECT_NOTIFICATIONS() CheckAddedReflectNotifications(hWnd, uMsg, wParam, lParam);
+
+void CheckAddedReflectNotifications(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
