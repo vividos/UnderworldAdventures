@@ -127,21 +127,6 @@
 				RelativePath="..\..\source\underw\pathfinder.cpp">
 			</File>
 			<File
-				RelativePath="..\..\source\pch.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\source\underw\physics.cpp">
 			</File>
 			<File

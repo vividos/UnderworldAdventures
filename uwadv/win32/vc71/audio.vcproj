@@ -110,139 +110,24 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
 				RelativePath="..\..\source\audio\audio.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="common.hpp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="common.hpp"/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\source\audio\midi.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="common.hpp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="common.hpp"/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\source\audio\midi_driver\midi_sdl_mixer.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="common.hpp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="common.hpp"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\source\pch.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="common.hpp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="common.hpp"/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\source\audio\resamp.c">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="common.hpp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="common.hpp"/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\source\audio\vocresample.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="common.hpp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="common.hpp"/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\source\audio\midi_driver\win_midiout.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="common.hpp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="common.hpp"/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\source\audio\xmidi.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="common.hpp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="common.hpp"/>
-				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
