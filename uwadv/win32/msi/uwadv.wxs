@@ -35,22 +35,39 @@
 
     <Media Id="1" Cabinet="uwadv.cab" EmbedCab="yes" />
 
-    <Directory Id="TARGETDIR" Name="SourceDir">
+    <Directory Id="INSTALLDIR" Name="SourceDir">
       <Directory Id="ProgramFilesFolder" Name="." SourceName=".">
         <Directory Id="UnderworldAdventures" Name="uwadv" LongName="Underworld Adventures">
-          <Directory Id="INSTALLDIR" Name=".">
+          <Directory Id="TARGETDIR" Name=".">
             <Component Id="UnderworldAdventuresApp" Guid="f1fc0646-d06c-4a72-bf63-7abbac37bab4">
               <File Id="UwadvExe" Name="uwadv.exe" LongName="uwadv.exe" DiskId="1" KeyPath="yes" src="..\vc71\Release\uwadv.exe" />
             </Component>
             <Component Id="UnderworldAdventuresShortcut" Guid="dc848364-47f7-44f5-b7dd-2a050f92ad1c">
               <Registry Id="RegistryKey1" Root="HKCU" Key="Software\Underworld Adventures" KeyPath="yes" />
               <Shortcut Id="Shortcut1" Directory="UnderworldAdventuresShortcutFolder" Name="uwadv" LongName="Underworld Adventures"
-                Target="[INSTALLDIR]uwadv.exe" Icon="UnderworldAdventuresShortcutIcon" IconIndex="0" Show="normal"
+                Target="[TARGETDIR]uwadv.exe" Icon="UnderworldAdventuresShortcutIcon" IconIndex="0" Show="normal"
                 Description="Starts Underworld Adventures" />
               <RemoveFolder Directory="UnderworldAdventuresShortcutFolder" On="uninstall" Id="Shortcut1" />
             </Component>
+            <Component Id="UnderworldAdventuresManual" Guid="1">
+              <File Id="UwadvManualHtml" Name="uwadvm~1.htm" LongName="uwadv-manual.html" DiskId="1" KeyPath="yes" src="..\..\docs\docbook\uwadv-manual.html" />
+            </Component>
+            <Component Id="UnderworldAdventuresManualShortcut" Guid="1">
+              <Registry Id="RegistryKey4" Root="HKCU" Key="Software\Underworld Adventures" KeyPath="yes" />
+              <Shortcut Id="Shortcut4" Directory="UnderworldAdventuresShortcutFolder" Name="uwadvm~1" LongName="Underworld Adventures Manual"
+                Target="[TARGETDIR]uwadv-manual.html" Show="normal"
+                Description="Opens the Underworld Adventures Manual" />
+              <RemoveFolder Directory="UnderworldAdventuresShortcutFolder" On="uninstall" Id="Shortcut4" />
+            </Component>
             <Component Id="UnderworldAdventuresConfigApp" Guid="2ee47c18-c120-412d-860e-d45c6ffe261a">
               <File Id="UaconfigExe" Name="uaconfig.exe" LongName="uaconfig.exe" DiskId="1" KeyPath="yes" src="..\vc71\Release\uaconfig.exe" />
+            </Component>
+            <Component Id="UnderworldAdventuresConfigShortcut" Guid="c9f7552f-0d52-4c7d-ae4e-6ec4605611fd">
+              <Registry Id="RegistryKey2" Root="HKCU" Key="Software\Underworld Adventures" KeyPath="yes" />
+              <Shortcut Id="Shortcut2" Directory="UnderworldAdventuresShortcutFolder" Name="uaconfig" LongName="Underworld Adventures Config"
+                Target="[TARGETDIR]uaconfig.exe" Icon="UnderworldAdventuresConfigShortcutIcon" IconIndex="0" Show="normal"
+                Description="Starts Underworld Adventures Configuration" />
+              <RemoveFolder Directory="UnderworldAdventuresShortcutFolder" On="uninstall" Id="Shortcut2" />
             </Component>
             <Component Id="SdlLibrary" Guid="6ef91d1b-c139-4e65-a6a2-2132b65752c5">
               <File Id="SdlDll" Name="SDL.dll" LongName="SDL.dll" DiskId="1" KeyPath="yes" src="..\vc71\Release\SDL.dll" />
@@ -61,12 +78,24 @@
             <Component Id="UnderworldAdventuresStudioApp" Guid="ee7c5f0e-a713-4db5-bf7b-3149df5ec480">
               <File Id="UastudioExe" Name="uastudio.exe" LongName="uastudio.exe" DiskId="1" KeyPath="yes" src="..\vc71\Release\uastudio.exe" />
             </Component>
+            <Component Id="UnderworldAdventuresStudioShortcut" Guid="8c5a72f5-ea19-470b-90e7-118eec7004d3">
+              <Registry Id="RegistryKey3" Root="HKCU" Key="Software\Underworld Adventures" KeyPath="yes" />
+              <Shortcut Id="Shortcut3" Directory="UnderworldAdventuresShortcutFolder" Name="uastudio" LongName="Underworld Adventures Studio"
+                Target="[TARGETDIR]uastudio.exe" Icon="UnderworldAdventuresStudioShortcutIcon" IconIndex="0" Show="normal"
+                Description="Starts Underworld Adventures Studio" />
+              <RemoveFolder Directory="UnderworldAdventuresShortcutFolder" On="uninstall" Id="Shortcut3" />
+            </Component>
+            <Component Id="UnderworldAdventuresStudioManual" Guid="1">
+              <File Id="UastudioManualHtml" Name="uadebu~1.htm" LongName="uadebug-manual.html" DiskId="1" KeyPath="yes" src="..\..\docs\docbook\uadebug-manual.html" />
+            </Component>
             <Component Id="UnderworldAdventuresDebuggerDll" Guid="dc493173-7fa6-4b91-ae9a-ad1e09e4991a">
               <File Id="UadebugDll" Name="uadebug.dll" LongName="uadebug.dll" DiskId="1" KeyPath="yes" src="..\vc71\Release\uadebug.dll" />
             </Component>
             <Component Id="StrPakTool" Guid="b4ee56db-d6fd-45ba-97c4-7c90c7b74175">
               <File Id="StrPakExe" Name="strpak.exe" LongName="strpak.exe" DiskId="1" KeyPath="yes" src="..\vc71\Release\strpak.exe" />
             </Component>
+            <Merge Id="MergeMsvc71CRuntime" Language="1033" DiskId="1" src="VC_User_CRT71_RTL_X86_---.msm" />
+            <Merge Id="MergeMsvc71CppRuntime" Language="1033" DiskId="1" src="VC_User_STL71_RTL_X86_---.msm" />
           </Directory>
         </Directory>
       </Directory>
@@ -74,8 +103,8 @@
         <Directory Id="UnderworldAdventuresShortcutFolder" Name="uwadv" LongName="Underworld Adventures" />
       </Directory>
       <Directory Id="CommonAppDataFolder" Name="." SourceName=".">
-        <Directory Id="UnderworldAdventuresAppDataFolder" Name="underw~1" LongName="Underworld Adventures Data">
-          <Component Id="UnderworldAdventuresConfig" Guid="2ef55bad-5de5-4659-8906-4fbaaa13c3bb">
+        <Directory Id="UnderworldAdventuresAppDataFolder" Name="underw~1" LongName="Underworld Adventures">
+          <Component Id="UnderworldAdventuresConfigFile" Guid="2ef55bad-5de5-4659-8906-4fbaaa13c3bb">
             <File Id="UwadvCfg" Name="uwadv.cfg" LongName="uwadv.cfg" DiskId="1" KeyPath="yes" src="..\..\win32\uwadv.cfg" />
           </Component>
           <Directory Id="UnderworldAdventuresUadataFolder" Name="uadata">
@@ -88,30 +117,37 @@
     </Directory>
 
     <Icon Id="UnderworldAdventuresShortcutIcon" src="..\..\source\win32\Uus.ico" />
+    <Icon Id="UnderworldAdventuresConfigShortcutIcon" src="..\..\source\win32\uaconfig\Corp.ico" />
+    <Icon Id="UnderworldAdventuresStudioShortcutIcon" src="..\..\source\win32\uastudio\Sanct.ico" />
 
     <Feature Id="UnderworldAdventures" Title="Underworld Adventures"
-        Description="Installs the Underworld Adventures game." Level="1" ConfigurableDirectory="INSTALLDIR">
+        Description="Installs the Underworld Adventures game." Level="1" ConfigurableDirectory="TARGETDIR">
       <ComponentRef Id="UnderworldAdventuresApp" />
       <ComponentRef Id="UnderworldAdventuresShortcut" />
       <ComponentRef Id="UnderworldAdventuresConfigApp" />
-      <!-- ComponentRef Id="UnderworldAdventuresConfigShortcut" / -->
-      <ComponentRef Id="UnderworldAdventuresConfig" />
+      <ComponentRef Id="UnderworldAdventuresConfigShortcut" />
       <ComponentRef Id="SdlLibrary" />
       <ComponentRef Id="SdlMixerLibrary" />
+      <ComponentRef Id="UnderworldAdventuresConfigFile" />
       <ComponentRef Id="UnderworldAdventuresResource00" />
+      <MergeRef Id="MergeMsvc71CRuntime" />
+      <MergeRef Id="MergeMsvc71CppRuntime" />
     </Feature>
 
     <Feature Id="UnderworldAdventuresStudio" Title="Underworld Adventures Studio"
-        Description="Installs the Underworld Adventures Studio application." Level="1" ConfigurableDirectory="INSTALLDIR">
+        Description="Installs the Underworld Adventures Studio application." Level="1">
       <ComponentRef Id="UnderworldAdventuresStudioApp" />
+      <ComponentRef Id="UnderworldAdventuresStudioShortcut" />
+      <ComponentRef Id="UnderworldAdventuresStudioManual" />
       <ComponentRef Id="UnderworldAdventuresDebuggerDll" />
       <ComponentRef Id="UnderworldAdventuresConfigApp" />
-      <!-- ComponentRef Id="UnderworldAdventuresConfigShortcut" / -->
-      <ComponentRef Id="UnderworldAdventuresConfig" />
+      <ComponentRef Id="UnderworldAdventuresConfigShortcut" />
       <ComponentRef Id="StrPakTool" />
       <ComponentRef Id="SdlLibrary" />
-      <ComponentRef Id="SdlMixerLibrary" />
+      <ComponentRef Id="UnderworldAdventuresConfigFile" />
       <ComponentRef Id="UnderworldAdventuresResource00" />
+      <MergeRef Id="MergeMsvc71CRuntime" />
+      <MergeRef Id="MergeMsvc71CppRuntime" />
     </Feature>
 
     <FragmentRef Id="StandardUserInterface" />
@@ -120,7 +156,7 @@
     <Property Id="SHOWLAUNCHREADME"><![CDATA[0]]></Property>
     <Property Id="READMEFILETOLAUNCHATEND"><![CDATA[readme.txt]]></Property>
     <Property Id="SHOWLAUNCHPROGRAM"><![CDATA[0]]></Property>
-    <Property Id="PROGRAMFILETOLAUNCHATEND"><![CDATA[[INSTALLDIR]uaconfig.exe]]></Property>
+    <Property Id="PROGRAMFILETOLAUNCHATEND"><![CDATA[[TARGETDIR]uaconfig.exe]]></Property>
     <Property Id="LAUNCHPROGRAM"><![CDATA[1]]></Property>
     <Property Id="LAUNCHREADME"><![CDATA[1]]></Property>
 
