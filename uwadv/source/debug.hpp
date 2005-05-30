@@ -133,6 +133,8 @@ protected:
 
    virtual void load_game(const char* path);
 
+   virtual bool pause_game(bool pause);
+
    virtual unsigned int get_message_num();
 
    virtual bool get_message(unsigned int& msg_type,
@@ -158,6 +160,10 @@ protected:
 
    virtual unsigned int get_tile_info_value(unsigned int level,
       unsigned int xpos, unsigned int ypos, unsigned int type);
+
+   virtual void set_tile_info_value(unsigned int level,
+      unsigned int xpos, unsigned int ypos, unsigned int type,
+      unsigned int val);
 
    virtual unsigned int get_objlist_info(unsigned int level,
       unsigned int pos, unsigned int type);

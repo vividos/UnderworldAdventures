@@ -69,7 +69,7 @@ enum ua_debug_server_flags
    ua_flag_is_studio_mode=0, //!< is in studio mode?
 };
 
-//! tile info type for get_tile_info_value
+//! tile info type for get_tile_info_value() and set_tile_info_value()
 enum ua_debug_server_tile_info
 {
    ua_tile_info_type=0,
@@ -144,6 +144,9 @@ public:
    //! locks/unlocks underworld
    virtual void lock(bool set_lock)=0;
 
+   //! pauses or unpauses game; returns previous game state
+   virtual bool pause_game(bool pause)=0;
+
    // messaging stuff
 
    //! returns number of messages in the message queue
@@ -183,9 +186,14 @@ public:
    virtual double get_tile_height(unsigned int level, double xpos,
       double ypos)=0;
 
-   //! returns tile info
+   //! returns tile info value
    virtual unsigned int get_tile_info_value(unsigned int level,
       unsigned int xpos, unsigned int ypos, unsigned int type)=0;
+
+   //! sets tile info value
+   virtual void set_tile_info_value(unsigned int level,
+      unsigned int xpos, unsigned int ypos, unsigned int type,
+      unsigned int val)=0;
 
    //! returns master object list info
    virtual unsigned int get_objlist_info(unsigned int level,

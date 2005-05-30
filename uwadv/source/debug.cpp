@@ -338,6 +338,11 @@ void ua_debug_server::load_game(const char* path)
    game->init_game();
 }
 
+bool ua_debug_server::pause_game(bool pause)
+{
+   return game->pause_game(pause);
+}
+
 unsigned int ua_debug_server::get_message_num()
 {
    return message_queue.size();
@@ -494,6 +499,48 @@ unsigned int ua_debug_server::get_tile_info_value(unsigned int level,
    return val;
 }
 
+void ua_debug_server::set_tile_info_value(unsigned int level,
+   unsigned int xpos, unsigned int ypos, unsigned int type,
+   unsigned int val)
+{
+   ua_levelmap_tile& tile = game->get_underworld().get_levelmaps_list().
+      get_level(level).get_tile(xpos,ypos);
+
+   switch(type)
+   {
+   case ua_tile_info_type:
+      tile.type = static_cast<ua_levelmap_tiletype>(val);
+      break;
+   case ua_tile_info_floor_height:
+      tile.floor = static_cast<Uint16>(val);
+      break;
+   case ua_tile_info_ceiling_height:
+      tile.ceiling = static_cast<Uint16>(val);
+      break;
+   case ua_tile_info_slope:
+      tile.slope = static_cast<Uint8>(val);
+      break;
+   case ua_tile_info_tex_wall:
+      tile.texture_wall = static_cast<Uint16>(val);
+      break;
+   case ua_tile_info_tex_floor:
+      tile.texture_floor = static_cast<Uint16>(val);
+      break;
+   case ua_tile_info_tex_ceil:
+      tile.texture_ceiling = static_cast<Uint16>(val);
+      break;
+   case ua_tile_info_objlist_start:
+      ua_assert(false); // TODO implement
+      game->get_underworld().get_levelmaps_list().
+         get_level(level).get_mapobjects();//.get_tile_list_start(xpos,ypos);
+      break;
+
+   default:
+      ua_assert(false);
+      break;
+   }
+}
+
 unsigned int ua_debug_server::get_objlist_info(unsigned int level,
    unsigned int pos, unsigned int type)
 {
@@ -641,9 +688,12 @@ unsigned int ua_debug_server::get_gamestr_blocksize(unsigned int block)
 unsigned int ua_debug_server::get_game_string(unsigned int block,
    unsigned int nr, char* buffer, unsigned int maxsize)
 {
-   memset(buffer, 0, maxsize);
-
    std::string str = game->get_gamestrings().get_string(block, nr);
+
+   if (buffer == NULL)
+      return str.size()+1;
+
+   memset(buffer, 0, maxsize);
 
    if (str.size()>maxsize)
    {
