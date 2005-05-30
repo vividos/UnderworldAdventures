@@ -12,8 +12,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="Debug\uadebug"
-			IntermediateDirectory="Debug\uadebug\intermediate"
+			OutputDirectory="Debug\$(ProjectName)"
+			IntermediateDirectory="Debug\$(ProjectName)\intermediate"
 			ConfigurationType="2"
 			UseOfATL="1"
 			CharacterSet="2">
@@ -21,13 +21,18 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\source;..\..\source\win32\uadebug\thirdparty\menuxp;..\..\source\win32\uadebug\thirdparty\scintilla;..\..\source\win32\uadebug\thirdparty\tabbingframework\include;..\..\source\win32\uadebug\thirdparty\wtldockingwindows\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;UADEBUG_EXPORTS"
+				PreprocessorDefinitions="_STLP_USE_STATIC_LIB"
+				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
+				SmallerTypeCheck="TRUE"
 				RuntimeLibrary="3"
+				BufferSecurityCheck="TRUE"
+				EnableFunctionLevelLinking="TRUE"
 				UsePrecompiledHeader="3"
 				PrecompiledHeaderThrough="stdatl.hpp"
-				WarningLevel="3"
+				WarningLevel="4"
+				Detect64BitPortabilityProblems="FALSE"
 				DebugInformationFormat="4"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -65,20 +70,23 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="Release\uadebug"
-			IntermediateDirectory="Release\uadebug\intermediate"
+			OutputDirectory="Release\$(ProjectName)"
+			IntermediateDirectory="Release\$(ProjectName)\intermediate"
 			ConfigurationType="2"
 			UseOfATL="1"
 			CharacterSet="2"
-			WholeProgramOptimization="TRUE">
+			WholeProgramOptimization="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
+				GlobalOptimizations="TRUE"
 				AdditionalIncludeDirectories="..\..\source;..\..\source\win32\uadebug\thirdparty\menuxp;..\..\source\win32\uadebug\thirdparty\scintilla;..\..\source\win32\uadebug\thirdparty\tabbingframework\include;..\..\source\win32\uadebug\thirdparty\wtldockingwindows\include"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;UADEBUG_EXPORTS"
+				PreprocessorDefinitions="_STLP_USE_STATIC_LIB"
+				StringPooling="TRUE"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="3"
 				PrecompiledHeaderThrough="stdatl.hpp"
-				WarningLevel="3"
+				WarningLevel="4"
+				Detect64BitPortabilityProblems="FALSE"
 				DebugInformationFormat="3"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -126,159 +134,36 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
 				RelativePath="..\..\source\win32\uadebug\DebugClient.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="stdatl.hpp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="stdatl.hpp"/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\source\win32\uadebug\EditListViewCtrl.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="stdatl.hpp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="stdatl.hpp"/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\source\win32\uadebug\GameStringsView.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="stdatl.hpp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="stdatl.hpp"/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\source\win32\uadebug\HotspotList.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="stdatl.hpp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="stdatl.hpp"/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\source\win32\uadebug\LuaSourceView.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="stdatl.hpp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="stdatl.hpp"/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\source\win32\uadebug\MainFrame.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="stdatl.hpp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="stdatl.hpp"/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\source\win32\uadebug\ObjectList.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="stdatl.hpp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="stdatl.hpp"/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\source\win32\uadebug\PlayerInfo.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="stdatl.hpp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="stdatl.hpp"/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\source\win32\uadebug\ProjectInfo.cpp">
 			</File>
 			<File
 				RelativePath="..\..\source\win32\uadebug\ProjectManager.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="stdatl.hpp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="stdatl.hpp"/>
-				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\source\win32\uadebug\PropertyListCtrl.cpp">
 			</File>
 			<File
 				RelativePath="..\..\source\win32\uadebug\stdatl.cpp">
@@ -299,54 +184,12 @@
 			</File>
 			<File
 				RelativePath="..\..\source\win32\uadebug\TileMapView.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="stdatl.hpp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="stdatl.hpp"/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\source\win32\uadebug\TileMapViewCtrl.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="stdatl.hpp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="stdatl.hpp"/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\source\win32\uadebug\uadebug.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="stdatl.hpp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="stdatl.hpp"/>
-				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
@@ -385,6 +228,9 @@
 			</File>
 			<File
 				RelativePath="..\..\source\win32\uadebug\ProjectManager.hpp">
+			</File>
+			<File
+				RelativePath="..\..\source\win32\uadebug\PropertyListCtrl.hpp">
 			</File>
 			<File
 				RelativePath="..\..\source\win32\uadebug\stdatl.hpp">
