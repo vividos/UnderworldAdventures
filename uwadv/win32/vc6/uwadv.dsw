@@ -143,6 +143,24 @@ Package=<5>
 
 Package=<4>
 {{{
+    Begin Project Dependency
+    Project_Dep_Name base
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name conv
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name import
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name script
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name ui
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name underw
+    End Project Dependency
 }}}
 
 ###############################################################################
@@ -167,6 +185,24 @@ Package=<5>
 
 Package=<4>
 {{{
+}}}
+
+###############################################################################
+
+Project: "unittest"=.\unittest.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name base
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name underw
+    End Project Dependency
 }}}
 
 ###############################################################################
@@ -218,6 +254,21 @@ Package=<5>
 
 Package=<4>
 {{{
+    Begin Project Dependency
+    Project_Dep_Name base
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name conv
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name import
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name renderer
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name ui
+    End Project Dependency
 }}}
 
 ###############################################################################
