@@ -144,7 +144,7 @@ void ua_cfgfile::load(SDL_RWops* rwops)
 
       // replace all '\t' with ' '
       std::string::size_type pos = 0;
-      while( (pos = line.find('\t',pos) != std::string::npos) )
+      while( (pos = line.find('\t',pos)) != std::string::npos )
          line.replace(pos,1," ");
 
       read_raw_line(line.c_str());
