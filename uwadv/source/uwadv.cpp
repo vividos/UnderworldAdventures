@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -83,7 +83,7 @@ ua_arg_entry arg_params[] =
 
 ua_uwadv_game::ua_uwadv_game()
 :tickrate(20), exit_game(false), screen_to_destroy(NULL), scripting(NULL),
- run_unittests(false)
+ run_unittests(false), paused(false)
 {
    // print game name
    printf("Underworld Adventures"
@@ -437,6 +437,13 @@ void ua_uwadv_game::done()
 void ua_uwadv_game::error_msg(const char* msg)
 {
    ua_trace(msg);
+}
+
+bool ua_uwadv_game::pause_game(bool pause)
+{
+   bool old_paused = paused;
+   paused = pause;
+   return old_paused;
 }
 
 void ua_uwadv_game::init_sdl()

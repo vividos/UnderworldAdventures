@@ -77,6 +77,7 @@ public:
 
    // ua_basic_game_interface methods
    virtual double get_tickrate();
+   virtual bool pause_game(bool pause);
    virtual ua_settings& get_settings();
    virtual ua_files_manager& get_files_manager();
    virtual ua_savegames_manager& get_savegames_manager();
@@ -122,6 +123,9 @@ protected:
 
    //! indicates if game can be exited
    bool exit_game;
+
+   //! indicates if the game is currently paused
+   bool paused;
 
    //! action to carry out after init
    /*! actions: 0=normal game start, 1=load savegame, 2=load custom game */
