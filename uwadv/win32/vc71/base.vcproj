@@ -12,20 +12,26 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="Debug\base"
-			IntermediateDirectory="Debug\base\intermediate"
+			OutputDirectory="Debug\$(ProjectName)"
+			IntermediateDirectory="Debug\$(ProjectName)\intermediate"
 			ConfigurationType="4"
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\source;..\..\source\base\zziplib"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
+				AdditionalIncludeDirectories="..\..\source;..\..\source\base;..\..\source\base\zziplib"
+				PreprocessorDefinitions="_STLP_USE_STATIC_LIB"
+				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
+				SmallerTypeCheck="TRUE"
 				RuntimeLibrary="3"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
+				BufferSecurityCheck="TRUE"
+				EnableFunctionLevelLinking="TRUE"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="common.hpp"
+				WarningLevel="4"
+				Detect64BitPortabilityProblems="FALSE"
 				DebugInformationFormat="4"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -53,17 +59,22 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="Release\base"
-			IntermediateDirectory="Release\base\intermediate"
+			OutputDirectory="Release\$(ProjectName)"
+			IntermediateDirectory="Release\$(ProjectName)\intermediate"
 			ConfigurationType="4"
-			CharacterSet="2">
+			CharacterSet="2"
+			WholeProgramOptimization="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\source;..\..\source\base\zziplib"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
+				GlobalOptimizations="TRUE"
+				AdditionalIncludeDirectories="..\..\source;..\..\source\base;..\..\source\base\zziplib"
+				PreprocessorDefinitions="_STLP_USE_STATIC_LIB"
+				StringPooling="TRUE"
 				RuntimeLibrary="2"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="common.hpp"
+				WarningLevel="4"
+				Detect64BitPortabilityProblems="FALSE"
 				DebugInformationFormat="3"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -147,27 +158,123 @@
 			Filter="">
 			<File
 				RelativePath="..\..\source\base\zziplib\SDL_rwops_zzip.c">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="2"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="2"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\source\base\zziplib\zzip-dir.c">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="2"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="2"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\source\base\zziplib\zzip-err.c">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="2"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="2"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\source\base\zziplib\zzip-file.c">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="2"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="2"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\source\base\zziplib\zzip-info.c">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="2"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="2"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\source\base\zziplib\zzip-io.c">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="2"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="2"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\source\base\zziplib\zzip-stat.c">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="2"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="2"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\source\base\zziplib\zzip-zip.c">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="2"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="2"/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter

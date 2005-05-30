@@ -12,20 +12,26 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="Debug\uastudio"
-			IntermediateDirectory="Debug\uastudio\intermediate"
+			OutputDirectory="Debug\$(ProjectName)"
+			IntermediateDirectory="Debug\$(ProjectName)\intermediate"
 			ConfigurationType="1"
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\source;..\..\source\base;..\..\source\conv;..\..\source\import;..\..\source\renderer;..\..\source\ui;..\..\source\underw"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
+				AdditionalIncludeDirectories="..\..\source;..\..\source\base;..\..\source\conv;..\..\source\import;..\..\source\renderer;..\..\source\script;..\..\source\ui;..\..\source\underw"
+				PreprocessorDefinitions="_STLP_USE_STATIC_LIB"
+				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
+				SmallerTypeCheck="TRUE"
 				RuntimeLibrary="3"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
+				BufferSecurityCheck="TRUE"
+				EnableFunctionLevelLinking="TRUE"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="common.hpp"
+				WarningLevel="4"
+				Detect64BitPortabilityProblems="FALSE"
 				DebugInformationFormat="4"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -63,17 +69,22 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="Release\uastudio"
-			IntermediateDirectory="Release\uastudio\intermediate"
+			OutputDirectory="Release\$(ProjectName)"
+			IntermediateDirectory="Release\$(ProjectName)\intermediate"
 			ConfigurationType="1"
-			CharacterSet="2">
+			CharacterSet="2"
+			WholeProgramOptimization="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\source;..\..\source\base;..\..\source\conv;..\..\source\import;..\..\source\renderer;..\..\source\ui;..\..\source\underw"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
+				GlobalOptimizations="TRUE"
+				AdditionalIncludeDirectories="..\..\source;..\..\source\base;..\..\source\conv;..\..\source\import;..\..\source\renderer;..\..\source\script;..\..\source\ui;..\..\source\underw"
+				PreprocessorDefinitions="_STLP_USE_STATIC_LIB"
+				StringPooling="TRUE"
 				RuntimeLibrary="2"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="common.hpp"
+				WarningLevel="4"
+				Detect64BitPortabilityProblems="FALSE"
 				DebugInformationFormat="3"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -122,6 +133,9 @@
 				RelativePath="..\..\source\debug.cpp">
 			</File>
 			<File
+				RelativePath="..\..\source\gamecfg.cpp">
+			</File>
+			<File
 				RelativePath="..\..\source\gamestrings.cpp">
 			</File>
 			<File
@@ -137,6 +151,9 @@
 			</File>
 			<File
 				RelativePath="..\..\source\debug.hpp">
+			</File>
+			<File
+				RelativePath="..\..\source\gamecfg.hpp">
 			</File>
 			<File
 				RelativePath="..\..\source\win32\uastudio\resource.h">
