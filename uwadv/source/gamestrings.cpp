@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -185,7 +185,7 @@ void ua_gamestrings::decrease_lifetimes(Uint16 except_for_block_id)
          if (--iter->second == 0)
          {
             // erase block
-            ua_trace("garbage-collecing block %04x\n", iter->first);
+            ua_trace("garbage-collecting block %04x\n", iter->first);
             list_dump_ids.push_back(iter->first);
          }
       }
