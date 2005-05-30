@@ -89,6 +89,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "unittest", "unittest.vcproj
 		{4CC50617-2229-460E-9A80-3C517A2D9090} = {4CC50617-2229-460E-9A80-3C517A2D9090}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "luac", "luac.vcproj", "{B32FCCB5-C0F4-41D7-B9E2-DD7EDBE2230A}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -155,6 +159,10 @@ Global
 		{D71D5409-E534-46C3-A7DF-41F92F8E254B}.Debug.Build.0 = Debug|Win32
 		{D71D5409-E534-46C3-A7DF-41F92F8E254B}.Release.ActiveCfg = Release|Win32
 		{D71D5409-E534-46C3-A7DF-41F92F8E254B}.Release.Build.0 = Release|Win32
+		{B32FCCB5-C0F4-41D7-B9E2-DD7EDBE2230A}.Debug.ActiveCfg = Debug|Win32
+		{B32FCCB5-C0F4-41D7-B9E2-DD7EDBE2230A}.Debug.Build.0 = Debug|Win32
+		{B32FCCB5-C0F4-41D7-B9E2-DD7EDBE2230A}.Release.ActiveCfg = Release|Win32
+		{B32FCCB5-C0F4-41D7-B9E2-DD7EDBE2230A}.Release.Build.0 = Release|Win32
 		{B32FCCB5-C0F4-41D7-B9E2-DD7EDBE2230A}.Debug.ActiveCfg = Debug|Win32
 		{B32FCCB5-C0F4-41D7-B9E2-DD7EDBE2230A}.Debug.Build.0 = Debug|Win32
 		{B32FCCB5-C0F4-41D7-B9E2-DD7EDBE2230A}.Release.ActiveCfg = Release|Win32
