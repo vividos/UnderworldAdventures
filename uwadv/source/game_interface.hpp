@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -79,6 +79,9 @@ class ua_basic_game_interface
 public:
    //! returns game tickrate
    virtual double get_tickrate()=0;
+
+   //! pauses or unpauses game
+   virtual bool pause_game(bool pause)=0;
 
    //! returns settings object
    virtual ua_settings& get_settings()=0;
