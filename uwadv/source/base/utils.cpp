@@ -281,7 +281,7 @@ std::string ua_get_home_path()
    if (hr == S_OK)
    {
       uahome_path = appdata_path;
-      uahome_path += "\\Underworld Adventures Data\\";
+      uahome_path += "\\Underworld Adventures\\";
 
       // check if the path really exists
       if (0xFFFFFFFF == ::GetFileAttributesA(uahome_path.c_str()))
