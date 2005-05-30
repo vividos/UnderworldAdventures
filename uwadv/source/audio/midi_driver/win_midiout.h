@@ -37,7 +37,7 @@
 #define MMNOMIXER       // Mixer support
 #define MMNOTIMER       // Timer support
 #define MMNOJOY         // Joystick support
-#define MMNOMCI         // MCI support
+//#define MMNOMCI         // MCI support
 #define MMNOMMIO        // Multimedia file I/O support
 
 #include <windows.h>

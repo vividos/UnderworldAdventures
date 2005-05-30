@@ -34,10 +34,6 @@
 #include "win_midiout.h"
 #include "../xmidi.hpp"
 
-#ifdef MMNOMCI
-WINMMAPI BOOL WINAPI mciGetErrorStringA(DWORD mcierr, LPSTR pszText, UINT cchText);
-#endif
-
 
 // constants
 
@@ -179,7 +175,7 @@ DWORD ua_win_midiout::thread_main()
    for (i = -1; i < dev_count; i++)
    {
       midiOutGetDevCaps ((UINT) i, &caps, sizeof(caps));
-//      ua_trace("%u: ", i, caps.szPname);
+//      ua_trace("%d: %s\n", i, caps.szPname);
    }
 
    if (dev_num < -1 || dev_num >= dev_count)
@@ -188,7 +184,7 @@ DWORD ua_win_midiout::thread_main()
       dev_num = -1;
    }
    midiOutGetDevCaps ((UINT) dev_num, &caps, sizeof(caps));
-   ua_trace("ua_win_midiout: Using device %u: %s\n", dev_num, caps.szPname);
+   ua_trace("ua_win_midiout: Using device %d: %s\n", dev_num, caps.szPname);
 
    UINT mmsys_err = midiOutOpen (&midi_port, dev_num, 0, 0, 0);
 
