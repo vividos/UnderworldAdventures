@@ -34,11 +34,8 @@
 #include "game_interface.hpp"
 #include "gamestrings.hpp"
 #include "debug.hpp"
+#include "gamecfg.hpp"
 #include <ctime>
-
-#ifdef HAVE_UNITTEST
-#include "unittest.hpp"
-#endif
 
 
 // to have console output, use a genuine main(), not the SDL_main one
@@ -60,6 +57,7 @@ public:
 
    // virtual ua_basic_game_interface methods
    virtual double get_tickrate(){ return 20.0; }
+   virtual bool pause_game(bool pause);
    virtual ua_settings& get_settings(){ return settings; }
    virtual ua_files_manager& get_files_manager(){ return files_manager; }
    virtual ua_savegames_manager& get_savegames_manager(){ return savegames_manager; };
@@ -80,6 +78,7 @@ protected:
    ua_debug_server debug_server;
    ua_gamestrings gamestrings;
 
+   //! indicates if the game is currently paused
    bool paused;
 };
 
@@ -98,20 +97,12 @@ void uastudio::init()
    // init savegames manager
    savegames_manager.init(settings);
 
-   // run unit tests
-#ifdef HAVE_UNITTEST
-ua_unittest_run();
-#else
-   ua_trace("unit tests not compiled in, skipping\n");
-#endif
-
    // set uw1 as path
    std::string prefix("uw1");
    settings.set_value(ua_setting_uw_path, settings.get_string(ua_setting_uw1_path));
    settings.set_value(ua_setting_game_prefix, prefix);
 
-   // init game components; uw prefix and path is known now
-
+   // init game components; uw prefix and path is now known
    init_game();
 
    // init debug server and start
@@ -169,26 +160,52 @@ void uastudio::run()
       // do server side debug processing
       debug_server.tick();
 
-      //Sleep(0);
+      Sleep(10);
    }
 
    ua_trace("uastudio main loop ended\n\n");
 }
 
+bool uastudio::pause_game(bool pause)
+{
+   bool old_paused = paused;
+   paused = pause;
+   return old_paused;
+}
+
 void uastudio::init_game()
 {
-   // init Lua scripting
-   scripting = ua_scripting::create_scripting(ua_script_lang_lua);
+   std::string prefix(settings.get_string(ua_setting_game_prefix));
 
-   // check if scripting was set
-   if (scripting == NULL)
-      throw ua_exception("could not create scripting object");
+   ua_trace("initializing game; prefix: %s\n", prefix.c_str());
 
-   scripting->init(NULL);
-   underworld.set_scripting(scripting);
+   // load game config file
+   std::string gamecfg_name(prefix);
+   gamecfg_name.append("/game.cfg");
+
+   // set new game prefix
+   savegames_manager.set_game_prefix(prefix.c_str());
+
+   // try to load %prefix%/game.cfg
+   {
+      ua_gamecfg_loader cfgloader(*this, &scripting);
+
+      SDL_RWops* gamecfg = files_manager.get_uadata_file(gamecfg_name.c_str());
+
+      // no game.cfg found? too bad ...
+      if (gamecfg == NULL)
+      {
+         std::string text("could not find game.cfg for game prefix ");
+         text.append(prefix.c_str());
+         throw ua_exception(text.c_str());
+      }
+
+      cfgloader.load(gamecfg);
+   }
 
    // init underworld
    underworld.init(settings,files_manager);
+   underworld.set_scripting(scripting);
 
    // init game strings
    gamestrings.init(settings);
@@ -221,7 +238,7 @@ void uastudio::done_game()
 
 
 //! uastudio main function
-int main(int argc, char* argv[])
+int main(int /*argc*/, char* /*argv*/[])
 {
 #ifndef HAVE_DEBUG // in debug mode the debugger catches exceptions
    try
