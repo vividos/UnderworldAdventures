@@ -543,6 +543,7 @@ bool CPropertyListCtrlBase::EndLabelEdit(const CString& cszValue)
 // TODO pass pInplaceEdit at all?
 void CPropertyListCtrlBase::NoticeFinish(IInplaceEditControl* pInplaceEdit)
 {
+   pInplaceEdit;
    ATLASSERT(m_pInplaceEdit == pInplaceEdit);
 
    PostMessage(PLM_FINISH_INPLACE, 0, reinterpret_cast<LPARAM>(this));
