@@ -71,9 +71,16 @@ void uadebug_start(void* pDebugClient)
    ::_CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
 #endif
 
+   // init COM
    HRESULT hRes = ::CoInitialize(NULL);
    ATLASSERT(SUCCEEDED(hRes));
 
+   // this resolves ATL window thunking problem when Microsoft Layer for Unicode (MSLU) is used
+   ::DefWindowProc(NULL, 0, 0, 0L);
+
+#if (_ATL_VER >= 0x700) // >= ATL7
+   AtlInitCommonControls(ICC_COOL_CLASSES | ICC_BAR_CLASSES);
+#else
 #if (_WIN32_IE >= 0x0300)
    INITCOMMONCONTROLSEX iccx;
    iccx.dwSize = sizeof(iccx);
@@ -84,8 +91,9 @@ void uadebug_start(void* pDebugClient)
 #else
    ::InitCommonControls();
 #endif
+#endif
 
-   hRes = _Module.Init(NULL, g_hInstance);
+   hRes = _Module.Init(NULL, g_hInstance/*, &LIBID_ATLLib*/);
    ATLASSERT(SUCCEEDED(hRes));
 
    // run WTL application
@@ -99,12 +107,12 @@ void uadebug_start(void* pDebugClient)
 extern "C"
 BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID /*lpReserved*/)
 {
-    if (dwReason == DLL_PROCESS_ATTACH)
-    {
-       // remember instance handle
-       g_hInstance = hInstance;
-       DisableThreadLibraryCalls(hInstance);
-    }
+   if (dwReason == DLL_PROCESS_ATTACH)
+   {
+      // remember instance handle
+      g_hInstance = hInstance;
+      DisableThreadLibraryCalls(hInstance);
+   }
 
-    return TRUE;
+   return TRUE;
 }
