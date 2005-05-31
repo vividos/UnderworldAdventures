@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
 #ifndef HAVE_DEBUG
    catch (ua_exception& e)
    {
-      std::string text("caught ua_exception:\n\r");
+      std::string text("An unhandled exception was caught:\n\r");
       text.append(e.what());
 
       ua->error_msg(text.c_str());
