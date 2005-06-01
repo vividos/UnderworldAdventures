@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Copyright (c) 2002-2005 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -21,8 +21,8 @@
 */
 // common hacking include stuff
 
-#ifndef __uwadv_hacking_h_
-#define __uwadv_hacking_h_
+#ifndef uwadv_hacking_h_
+#define uwadv_hacking_h_
 
 # pragma warning( disable : 4786 ) // identifier was truncated to '255' characters in the debug information
 
