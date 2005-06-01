@@ -261,10 +261,13 @@ std::string ua_get_home_path()
          // User has a home directory
          uahome_path = homedir;
 
-#ifndef BEOS
-         uahome_path += "/.uwadv/";
-#else
+#ifdef __MACH__
+         // JCD: in Mac OS X, we put user config into user's Library folder
+         uahome_path += "/Library/Preferences/Underworld Adventures/";
+#elif defined( BEOS )
          uahome_path += "/config/settings/uwadv/";
+#else
+         uahome_path += "/.uwadv/";
 #endif
       }
 
