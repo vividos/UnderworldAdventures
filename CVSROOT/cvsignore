@@ -6,4 +6,13 @@ Makefile.in
 .libs
 *.lob
 *.uar
-
+*~.nib
+.DS_Store
+*.pbxuser
+*.pkg
+*.mpkg
+*.dmg
+*.sit
+*.hqx
+*.mode1
+*.sitx
