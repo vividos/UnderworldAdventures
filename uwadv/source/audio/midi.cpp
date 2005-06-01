@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -33,6 +33,10 @@
 // driver includes
 #ifdef WIN32
 # include "midi_driver/win_midiout.h"
+#endif
+
+#ifdef __MACH__
+# include "midi_driver/osx_midiout.h"
 #endif
 
 #include "midi_driver/midi_sdl_mixer.hpp"
@@ -88,6 +92,12 @@ bool ua_midi_player::init_driver()
       ua_win_midiout* windrv = new ua_win_midiout;
       windrv->set_dev_num(win32_midi_device);
       ua_try_midi_driver(midi_driver,windrv);
+   }
+#elif __MACH__
+   // JCD
+   {
+      ua_osx_midiout* osxdrv = new ua_osx_midiout;
+      ua_try_midi_driver( midi_driver, osxdrv );
    }
 #endif
 
