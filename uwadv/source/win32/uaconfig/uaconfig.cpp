@@ -231,15 +231,15 @@ static int CALLBACK WINAPI ua_browse_callback(HWND hwnd, UINT uMsg, LPARAM lPara
 
 LRESULT ua_config_prog::OnSetUw1Path(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-   char buffer[MAX_PATH];
+   char buffer[MAX_PATH+1];
    {
       buffer[0] = 0;
       ::GetDlgItemText(m_hWnd,IDC_EDIT_UW1_PATH,buffer,MAX_PATH);
 
-      // remove slash;
+      // add slash when needed
       unsigned int len = strlen(buffer);
-      if (len>0 && (buffer[len-1]=='\\' || buffer[len-1]=='/'))
-         buffer[len-1]=0;
+      if (len>0 && buffer[len-1]!='\\' && buffer[len-1]!='/')
+         strcat(buffer, "\\");
    }
 
 #ifndef BIF_USENEWUI
