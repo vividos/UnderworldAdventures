@@ -39,46 +39,64 @@
 #include "ObjectList.hpp"
 #include "HotspotList.hpp"
 #include "TileMapView.hpp"
+#include "TileInfo.hpp"
 #include "Resource.h"
+
+
+#define WM_UNDOCK_WINDOW (WM_APP + 10)
+
 
 // classes
 
+//! debugger app main frame
 class CMainFrame :
    public dockwins::CMDIDockingFrameImpl<CMainFrame>,
    public CUpdateUI<CMainFrame>,
    public CMessageFilter,
-   public CIdleHandler
+   public CIdleHandler,
+   public IMainFrame
 {
    typedef dockwins::CMDIDockingFrameImpl<CMainFrame> baseClass;
 public:
    DECLARE_FRAME_WND_CLASS(NULL, IDR_MAINFRAME)
 
-   CTabbedMDIClient<CDotNetTabCtrl<CTabViewTabItem> > m_tabbedClient;
-
-   //CMDICommandBarCtrlXP m_CmdBar;
-//   CTabbedMDICommandBarCtrl m_CmdBar;
+   //! MDI command bar for tabbing, with XP look
    CTabbedMDICommandBarCtrlXP m_CmdBar;
 
+   //! tabbed MDI client window
+   CTabbedMDIClient<CDotNetTabCtrl<CTabViewTabItem> > m_tabbedClient;
+
+   //! tabbed child window
    CTabbedChildWindow< CDotNetTabCtrl<CTabViewTabItem> > m_tabbedChildWindow;
+
+   // docking windows
 
    CPlayerInfoWindow m_playerInfoWindow;
    CObjectListWindow m_objectListWindow;
    CHotspotListWindow m_hotspotListWindow;
+   CTileInfoWindow m_tileInfoWindow;
    CProjectInfoWindow m_projectInfoWindow;
- 
+
+   // statically allocated child windows
+
    CTileMapViewChildFrame m_tilemapChildFrame;
 
+   //! image list with all icons for underworld objects; 16x16
    CImageList m_ilObjects;
 
 public:
+   //! initializes debug client of main frame
    bool InitDebugClient(void* pDebugClient);
 
    virtual BOOL PreTranslateMessage(MSG* pMsg);
 
+   //! called for idle processing
    virtual BOOL OnIdle();
 
+   //! processes all waiting debug server messages
    void ProcessServerMessages();
 
+   // message map
    BEGIN_MSG_MAP(CMainFrame)
       MESSAGE_HANDLER(WM_CREATE, OnCreate)
       COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
@@ -89,6 +107,7 @@ public:
       COMMAND_ID_HANDLER(ID_VIEW_PLAYERINFO, OnViewPlayerInfo)
       COMMAND_ID_HANDLER(ID_VIEW_OBJECTLIST, OnViewObjectList)
       COMMAND_ID_HANDLER(ID_VIEW_HOTSPOT, OnViewHotspotList)
+      COMMAND_ID_HANDLER(ID_VIEW_TILEINFO, OnViewTileInfo)
       COMMAND_ID_HANDLER(ID_VIEW_PROJECT, OnViewProjectInfo)
       COMMAND_ID_HANDLER(ID_VIEW_TILEMAP, OnViewTilemap)
       COMMAND_ID_HANDLER(ID_VIEW_GAMESTRINGS, OnViewGameStrings)
@@ -101,8 +120,10 @@ public:
       CHAIN_MDI_CHILD_COMMANDS()
       CHAIN_MSG_MAP(CUpdateUI<CMainFrame>)
       CHAIN_MSG_MAP(baseClass)
+      REFLECT_NOTIFICATIONS()
    END_MSG_MAP()
 
+   // update map for menus and toolbars
    BEGIN_UPDATE_UI_MAP(CMainFrame)
       UPDATE_ELEMENT(ID_UNDERWORLD_RUNNING, UPDUI_TOOLBAR)
       UPDATE_ELEMENT(ID_VIEW_TOOLBAR, UPDUI_MENUPOPUP)
@@ -110,24 +131,33 @@ public:
       UPDATE_ELEMENT(ID_VIEW_PLAYERINFO, UPDUI_MENUPOPUP|UPDUI_TOOLBAR)
       UPDATE_ELEMENT(ID_VIEW_OBJECTLIST, UPDUI_MENUPOPUP|UPDUI_TOOLBAR)
       UPDATE_ELEMENT(ID_VIEW_HOTSPOT, UPDUI_MENUPOPUP|UPDUI_TOOLBAR)
+      UPDATE_ELEMENT(ID_VIEW_TILEINFO, UPDUI_MENUPOPUP|UPDUI_TOOLBAR)
+      UPDATE_ELEMENT(ID_VIEW_PROJECT, UPDUI_MENUPOPUP|UPDUI_TOOLBAR)
       UPDATE_ELEMENT(ID_VIEW_TILEMAP, UPDUI_MENUPOPUP|UPDUI_TOOLBAR)
       UPDATE_ELEMENT(ID_VIEW_GAMESTRINGS, UPDUI_MENUPOPUP|UPDUI_TOOLBAR)
    END_UPDATE_UI_MAP()
 
-   LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-   LRESULT OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-   LRESULT OnFileNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-   LRESULT OnButtonUnderworldRunning(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-   LRESULT OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-   LRESULT OnViewStatusBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-   LRESULT OnViewPlayerInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-   LRESULT OnViewObjectList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-   LRESULT OnViewHotspotList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-   LRESULT OnViewProjectInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-   LRESULT OnViewTilemap(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-   LRESULT OnViewGameStrings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+// Handler prototypes (uncomment arguments if needed):
+//   LRESULT MessageHandler(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+//   LRESULT CommandHandler(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+//   LRESULT NotifyHandler(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/)
 
-   LRESULT OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+   // message handler
+
+   LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+   LRESULT OnFileExit(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnFileNew(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnButtonUnderworldRunning(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnViewToolBar(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnViewStatusBar(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnViewPlayerInfo(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnViewObjectList(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnViewHotspotList(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnViewTileInfo(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnViewProjectInfo(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnViewTilemap(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnViewGameStrings(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnAppAbout(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
    LRESULT OnWindowCascade(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
    {
@@ -153,14 +183,35 @@ public:
       return 0;
    }
 
-   LRESULT OnUndockWindow(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+   //! shows or hides docking windows
+   bool ShowHideDockingWindow(CDockingWindowBase& dockingWindow);
+
+   //! called per PostMessage from UndockWindow() to really undock a docking window
+   LRESULT OnUndockWindow(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+
+   // virtual methods from IMainFrame
+
+   virtual CDebugClientInterface& GetDebugClientInterface();
+   virtual void SendNotification(CDebugWindowNotification& notify, CDebugWindowBase* pDebugWindow);
+   virtual void SendNotification(CDebugWindowNotification& notify,
+      bool fExcludeSender=false, CDebugWindowBase* pSender=NULL);
+   virtual CImageList& GetObjectImageList();
+   virtual void UndockWindow(T_enDockingWindowID windowID);
+   virtual void AddDebugWindow(CDebugWindowBase* pDebugWindow);
+   virtual void RemoveDebugWindow(CDebugWindowBase* pDebugWindow);
 
 private:
+   //! debug client interface
    CDebugClientInterface m_debugClient;
 
+   //! indicates if game is stopped // TODO why?
    bool m_bStopped;
 
+   //! project manager
    CProjectManager m_projectManager;
+
+   //! array with pointer to all debug windows
+   CSimpleArray<CDebugWindowBase*> m_apDebugWindows;
 };
 
 /////////////////////////////////////////////////////////////////////////////
