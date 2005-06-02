@@ -38,7 +38,7 @@ CGameStringsView::~CGameStringsView()
    m_comboBlocks.Detach();
 }
 
-LRESULT CGameStringsView::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT CGameStringsView::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
    m_listStrings.Attach(GetDlgItem(IDC_LIST_STRINGS));
    m_comboBlocks.Attach(GetDlgItem(IDC_COMBO_TEXTBLOCK));
@@ -54,74 +54,68 @@ LRESULT CGameStringsView::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
    m_listStrings.InsertColumn(0, _T("Nr."), LVCFMT_LEFT, nWidth, 0);
    m_listStrings.InsertColumn(1, _T("Text"), LVCFMT_LEFT, nWidth2, 0);
 
-   m_pDebugClient->Lock(true);
+   return 0;
+}
+
+void CGameStringsView::InitCombobox()
+{
+   CDebugClientInterface& debugClient = m_pMainFrame->GetDebugClientInterface();
+   debugClient.Lock(true);
 
    unsigned int nIndex = 0, nBlock = 0;
    CString cszBlockName;
-   while(m_pDebugClient->EnumGameStringsBlock(nIndex, nBlock))
+   while(debugClient.EnumGameStringsBlock(nIndex, nBlock))
    {
+      // determine block name
       switch(nBlock)
       {
-      case 1: cszBlockName = _T("Basic Game Strings, Block 0001 (1)");
-         break;
-      case 2: cszBlockName = _T("Character creation strings, mantras, Block 0002 (2)");
-         break;
-      case 3: cszBlockName = _T("Wall text/scroll/book/book title strings, Block 0003 (3)");
-         break;
-      case 4: cszBlockName = _T("Object descriptions, Block 0004 (4)");
-         break;
-      case 5: cszBlockName = _T("Object \"look\" descriptions, object quality states, Block 0005 (5)");
-         break;
-      case 6: cszBlockName = _T("Spell names, Block 0006 (6)");
-         break;
-      case 7: cszBlockName = _T("Conversation partner names, Block 0007 (7)");
-         break;
-      case 8: cszBlockName = _T("Text on walls, signs, Block 0008 (8)");
-         break;
-      case 9: cszBlockName = _T("Text trap messages, Block 0009 (9)");
-         break;
-      case 10: cszBlockName = _T("Wall/floor description text, Block 000a (10)");
-         break;
-      case 18: cszBlockName = _T("Debugging strings, Block 000a (10)");
-         break;
+      case 1: cszBlockName = _T("Basic Game Strings,"); break;
+      case 2: cszBlockName = _T("Character creation strings, mantras,"); break;
+      case 3: cszBlockName = _T("Wall text/scroll/book/book title strings,"); break;
+      case 4: cszBlockName = _T("Object descriptions,"); break;
+      case 5: cszBlockName = _T("Object \"look\" descriptions, object quality states,"); break;
+      case 6: cszBlockName = _T("Spell names,"); break;
+      case 7: cszBlockName = _T("Conversation partner names,"); break;
+      case 8: cszBlockName = _T("Text on walls, signs,"); break;
+      case 9: cszBlockName = _T("Text trap messages,"); break;
+      case 10: cszBlockName = _T("Wall/floor description text,"); break;
+      case 24: cszBlockName = _T("Debugging strings,"); break;
       default:
          if (nBlock >= 0x0c00 && nBlock < 0x0e00)
-            cszBlockName.Format(_T("Cutscenes Block %04x (%d)"), nBlock, nBlock);
+            cszBlockName = _T("Cutscenes");
          else
          if (nBlock >= 0x0e00 && nBlock < 0x0f00)
          {
-            CString cszNpcName = m_pDebugClient->GetGameString(7, nBlock-0xe00+16);
-            cszBlockName.Format(_T("Conversation [%s] Block %04x (%d)"),
-               cszNpcName, nBlock, nBlock);
+            CString cszNpcName = debugClient.GetGameString(7, nBlock-0xe00+16);
+            cszBlockName.Format(_T("Conversation [%s]"), cszNpcName);
          }
          else
          if (nBlock >= 0x0f00 && nBlock < 0x1000)
-         {
-            cszBlockName.Format(_T("Conversation (generic) Block %04x (%d)"),
-               nBlock, nBlock);
-         }
+            cszBlockName = _T("Conversation (generic)");
          else
-            cszBlockName.Format(_T("Unknown Block %04x (%d)"), nBlock, nBlock);
+            cszBlockName = _T("Unknown");
          break;
       }
+
+      // add block number
+      CString cszBlockNr;
+      cszBlockNr.Format(_T(" Block %04x (%d)"), nBlock, nBlock);
+      cszBlockName += cszBlockNr;
 
       int nItem = m_comboBlocks.AddString(cszBlockName);
       m_comboBlocks.SetItemData(nItem, nBlock);
 
       ++nIndex;
-   }   
+   }
 
-   m_pDebugClient->Lock(false);
+   debugClient.Lock(false);
 
    m_comboBlocks.SetCurSel(0);
-
-   BOOL fDummy = false;
-   OnComboSelChange(0,0,0,fDummy);
-
-   return 0;
+   BOOL bDummy = TRUE;
+   OnComboSelChange(0,0,0, bDummy);
 }
 
-LRESULT CGameStringsView::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT CGameStringsView::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
    CSize size = CSize(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
    m_listStrings.MoveWindow(0,40,size.cx+1, size.cy-40, TRUE);
@@ -137,26 +131,27 @@ LRESULT CGameStringsView::OnComboSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, H
 
    int nBlock = m_comboBlocks.GetItemData(nItem);
 
-   m_pDebugClient->Lock(true);
+   CDebugClientInterface& debugClient = m_pMainFrame->GetDebugClientInterface();
+   debugClient.Lock(true);
 
    m_listStrings.LockWindowUpdate();
 
    m_listStrings.DeleteAllItems();
 
    CString cszNr, cszText;
-   unsigned int max = m_pDebugClient->GetGameStringBlockSize(nBlock);
+   unsigned int max = debugClient.GetGameStringBlockSize(nBlock);
    for(unsigned int n=0; n<max; n++)
    {
       cszNr.Format(_T("%04x (%u)"), n, n);
       int nItem = m_listStrings.InsertItem(m_listStrings.GetItemCount(), cszNr);
-      cszText = m_pDebugClient->GetGameString(nBlock, n);
+      cszText = debugClient.GetGameString(nBlock, n);
       cszText.Replace(_T("\n"), _T("\\n"));
       m_listStrings.SetItemText(nItem, 1, cszText);
    }
 
    m_listStrings.LockWindowUpdate(FALSE);
 
-   m_pDebugClient->Lock(false); 
+   debugClient.Lock(false);
 
    return 0;
 }
