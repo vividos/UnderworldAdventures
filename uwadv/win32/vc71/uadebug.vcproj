@@ -183,6 +183,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\source\win32\uadebug\TileInfo.cpp">
+			</File>
+			<File
 				RelativePath="..\..\source\win32\uadebug\TileMapView.cpp">
 			</File>
 			<File
@@ -234,6 +237,9 @@
 			</File>
 			<File
 				RelativePath="..\..\source\win32\uadebug\stdatl.hpp">
+			</File>
+			<File
+				RelativePath="..\..\source\win32\uadebug\TileInfo.hpp">
 			</File>
 			<File
 				RelativePath="..\..\source\win32\uadebug\TileMapView.hpp">
