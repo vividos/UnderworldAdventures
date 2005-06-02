@@ -42,6 +42,15 @@
 
 // ATL includes
 #include <atlbase.h>
+
+// runtime-check safe macros for COLORREF
+#undef GetRValue
+#undef GetGValue
+#undef GetBValue
+#define GetRValue(rgb)      ((BYTE)(rgb&0xFF))
+#define GetGValue(rgb)      ((BYTE)((((WORD)(rgb&0xFFFF)) >> 8)&0xFF))
+#define GetBValue(rgb)      ((BYTE)(((rgb)>>16)&0xFF))
+
 #if (_ATL_VER >= 0x700) // >= ATL 7
 #define _WTL_NO_CSTRING
 #include <atlcoll.h>
@@ -88,15 +97,22 @@ extern CAppModule _Module;
 // Underworld Adventures includes
 #include "dbgserver.hpp"
 
-// project-specific includes
-// #include "WindowBase.hpp" // TODO put back in
-#include "EditListViewCtrl.hpp"
-
 
 // check macro to check if the REFLECT_NOTIFICATIONS() macro was added to the parent class
 #define ATLASSERT_ADDED_REFLECT_NOTIFICATIONS() CheckAddedReflectNotifications(hWnd, uMsg, wParam, lParam);
 
 void CheckAddedReflectNotifications(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+
+// macro to route individual command messages to member variables
+#define COMMAND_ROUTE_TO_MEMBER(uCmd, m_Member) \
+   if (uMsg == WM_COMMAND && LOWORD(wParam) == uCmd) \
+      CHAIN_MSG_MAP_MEMBER(m_Member)
+
+
+// project-specific often-used includes
+#include "WindowBase.hpp"
+#include "EditListViewCtrl.hpp"
 
 
 //{{AFX_INSERT_LOCATION}}
