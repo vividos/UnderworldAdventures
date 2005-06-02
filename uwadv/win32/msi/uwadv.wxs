@@ -187,8 +187,8 @@
     <Property Id="LAUNCHPROGRAM"><![CDATA[1]]></Property>
     <Property Id="LAUNCHREADME"><![CDATA[1]]></Property>
 
-    <Property Id="ARPURLINFOABOUT"><![CDATA[http://www.vividos.de/]]></Property>
-    <Property Id="ARPCOMMENTS"><![CDATA[Your Comments]]></Property>
+    <Property Id="ARPURLINFOABOUT"><![CDATA[http://uwadv.sourceforge.net/]]></Property>
+    <Property Id="ARPCOMMENTS"><![CDATA[For more information, please visit http://uwadv.sourceforge.net/]]></Property>
 
    </Product>
 </Wix>
