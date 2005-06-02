@@ -30,60 +30,26 @@
 #include "TileMapViewCtrl.hpp"
 #include "DebugClient.hpp"
 
-// methods
+// CTileMapViewCtrl methods
 
 CTileMapViewCtrl::CTileMapViewCtrl()
 {
-   m_pMapInfo = new CTileMapInfo[64*64];
+   m_aMapInfo.SetCount(64*64);
    m_nTileSizeX = m_nTileSizeY = 8;
+
+   m_nSelectedTileX = m_nSelectedTileY = unsigned(-1);
 }
 
-CTileMapViewCtrl::~CTileMapViewCtrl()
+void CTileMapViewCtrl::DoPaint(CDCHandle hDC)
 {
-   delete m_pMapInfo;
-   m_pMapInfo = NULL;
-}
+   CRect rc;
+   rc.SetRectEmpty();
 
-void CTileMapViewCtrl::UpdateTileMap(CDebugClientInterface* pDebugClient)
-{
-   pDebugClient->Lock(true);
-
-   for(unsigned int y=0; y<64; y++)
-   for(unsigned int x=0; x<64; x++)
-   {
-      CTileMapInfo& info = GetTileMapInfo(x,y);
-      info.m_nType =          pDebugClient->GetTileInfo(x,y,0);
-      info.m_nFloorHeight =   pDebugClient->GetTileInfo(x,y,1);
-      info.m_nCeilingHeight = pDebugClient->GetTileInfo(x,y,2);
-      info.m_nSlope =         pDebugClient->GetTileInfo(x,y,3);
-      info.m_nTexWall =       pDebugClient->GetTileInfo(x,y,4);
-      info.m_nTexFloor =      pDebugClient->GetTileInfo(x,y,5);
-      info.m_nTexCeil =       pDebugClient->GetTileInfo(x,y,6);
-      info.m_nObjlistStart =  pDebugClient->GetTileInfo(x,y,7);
-   }
-
-   pDebugClient->Lock(false);
-}
-
-CTileMapInfo& CTileMapViewCtrl::GetTileMapInfo(unsigned int x, unsigned int y)
-{
-   ATLASSERT(x < 64);
-   ATLASSERT(y < 64);
-
-   return m_pMapInfo[(y<<6) + x];
-}
-
-LRESULT CTileMapViewCtrl::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
-{
-   PAINTSTRUCT paintStruct;
-   HDC hDC = BeginPaint(&paintStruct);
+   rc.bottom = rc.top + 64*m_nTileSizeX;
+   rc.right = rc.left + 64*m_nTileSizeY;
 
    {
-      CRect rc = paintStruct.rcPaint;
       CMemDC dc(hDC, &rc);
-
-      rc.bottom = rc.top + 64*m_nTileSizeX;
-      rc.right = rc.left + 64*m_nTileSizeY;
 
       dc.FillSolidRect(rc.left, rc.top, rc.right, rc.bottom, RGB(128,128,128));
 
@@ -169,34 +135,138 @@ LRESULT CTileMapViewCtrl::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*
          default:
             break;
          }
+
+         // draw objects dots when tile has object list attached
+         if (info.m_nObjlistStart != 0)
+         {
+            COLORREF color = RGB(255,128,0); // orange
+            unsigned int nLeftBase = rc.left + x * m_nTileSizeX;
+            unsigned int dx = m_nTileSizeX;
+            unsigned int nTopBase = rc.top + y * m_nTileSizeY;
+            unsigned int dy = m_nTileSizeY;
+            unsigned int nBoxSizeX = unsigned(0.2*dy);
+            unsigned int nBoxSizeY = unsigned(0.2*dy);
+            if (nBoxSizeX < 1) nBoxSizeX = 1;
+            if (nBoxSizeY < 1) nBoxSizeY = 1;
+
+            dc.FillSolidRect(nLeftBase+unsigned(0.2*dx), nTopBase+unsigned(0.2*dy), nBoxSizeX, nBoxSizeY, color);
+            dc.FillSolidRect(nLeftBase+unsigned(0.7*dx), nTopBase+unsigned(0.3*dy), nBoxSizeX, nBoxSizeY, color);
+            dc.FillSolidRect(nLeftBase+unsigned(0.4*dx), nTopBase+unsigned(0.6*dy), nBoxSizeX, nBoxSizeY, color);
+         }
       }
    } // <-- CMemDC dtor
+}
 
-   EndPaint(&paintStruct);
+void CTileMapViewCtrl::ReceiveNotification(CDebugWindowNotification& notify)
+{
+   switch(notify.code)
+   {
+   case ncUpdateData:
+      UpdateTileMap();
+      RedrawWindow(); // force redraw
+      break;
+
+   case ncChangedLevel:
+      // invalidate selected tile pos
+      m_nSelectedTileX = m_nSelectedTileY = unsigned(-1);
+      break;
+   }
+}
+
+void CTileMapViewCtrl::Init()
+{
+   SetScrollSize(m_nTileSizeX*64, m_nTileSizeY*64);
+   SetScrollPage(m_nTileSizeX*16, m_nTileSizeY*16);
+   SetScrollLine(m_nTileSizeX*4, m_nTileSizeY*4);
+
+   // resize parent frame window, too
+//   GetParent().MoveWindow(0, 0, m_nTileSizeX*64+10, m_nTileSizeY*64+10);
+}
+
+CTileMapInfo& CTileMapViewCtrl::GetTileMapInfo(unsigned int x, unsigned int y)
+{
+   ATLASSERT(x < 64);
+   ATLASSERT(y < 64);
+
+   return m_aMapInfo[(y<<6) + x];
+}
+
+void CTileMapViewCtrl::UpdateTileMap()
+{
+   CDebugClientInterface& debugClient = m_pMainFrame->GetDebugClientInterface();
+
+   debugClient.Lock(true);
+
+   // rebuild tile info map
+   for(unsigned int y=0; y<64; y++)
+   for(unsigned int x=0; x<64; x++)
+   {
+      CTileMapInfo& info = GetTileMapInfo(x,y);
+      info.m_nType =          debugClient.GetTileInfo(x, y, tiType);
+      info.m_nFloorHeight =   debugClient.GetTileInfo(x, y, tiFloorHeight);
+      info.m_nCeilingHeight = debugClient.GetTileInfo(x, y, tiCeilingHeight);
+      info.m_nSlope =         debugClient.GetTileInfo(x, y, tiSlope);
+      info.m_nTexWall =       debugClient.GetTileInfo(x, y, tiTextureWall);
+      info.m_nTexFloor =      debugClient.GetTileInfo(x, y, tiTextureFloor);
+      info.m_nTexCeil =       debugClient.GetTileInfo(x, y, tiTextureCeil);
+      info.m_nObjlistStart =  debugClient.GetTileInfo(x, y, tiObjlistStart);
+   }
+
+   debugClient.Lock(false);
+}
+
+LRESULT CTileMapViewCtrl::OnLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+   CPoint pt(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+
+   // add offset from scrolling
+   CPoint ptOffset;
+   GetScrollOffset(ptOffset);
+
+   pt += ptOffset;
+
+   // convert to tile coordinates
+   pt.x /= m_nTileSizeX;
+   pt.y /= m_nTileSizeY;
+
+   // check range
+   if (pt.x < 0 || pt.x >= 64 || pt.y < 0 || pt.y >= 64)
+       return 1;
+
+   m_nSelectedTileX = pt.x;
+   m_nSelectedTileY = 63-pt.y;
+
+   // send notification about tile selection
+   CDebugWindowNotification notify;
+   notify.code = ncSelectedTile;
+   notify.m_nParam1 = m_nSelectedTileX;
+   notify.m_nParam2 = m_nSelectedTileY;
+
+   m_pMainFrame->SendNotification(notify, true, this);
 
    return 0;
 }
 
-LRESULT CTileMapViewCtrl::OnEraseBkgnd(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT CTileMapViewCtrl::OnTilemapZoomIn(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+   if (m_nTileSizeX < 16)
+   {
+      m_nTileSizeX++;
+      m_nTileSizeY++;
+
+      Init();
+   }
    return 0;
 }
 
-LRESULT CTileMapViewCtrl::OnGetMinMaxInfo(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT CTileMapViewCtrl::OnTilemapZoomOut(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-   MINMAXINFO* pMinMaxInfo = (MINMAXINFO*)lParam;
+   if (m_nTileSizeX > 2)
+   {
+      m_nTileSizeX--;
+      m_nTileSizeY--;
 
-   pMinMaxInfo->ptMaxSize.x = 64*m_nTileSizeX;
-   pMinMaxInfo->ptMaxSize.y = 64*m_nTileSizeY;
-
-   return 0;
-}
-
-LRESULT CTileMapViewCtrl::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-   int nBorderSize = 2;
-   SetWindowPos(NULL, 0,0,64*m_nTileSizeX+nBorderSize,64*m_nTileSizeY+nBorderSize,
-      SWP_NOMOVE|SWP_NOZORDER|SWP_SHOWWINDOW);
-
+      Init();
+   }
    return 0;
 }

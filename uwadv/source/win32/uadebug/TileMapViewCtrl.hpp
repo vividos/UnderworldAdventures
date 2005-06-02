@@ -32,15 +32,18 @@
 #pragma once
 
 // includes
+#include <atlscrl.h>
 
 // forward references
 class CDebugClientInterface;
 
 // classes
 
+//! info about a tile on the tilemap
 struct CTileMapInfo
 {
 public:
+   //! ctor
    CTileMapInfo():m_nType(0), m_nFloorHeight(0), m_nCeilingHeight(0), m_nSlope(0),
       m_nTexWall(0), m_nTexFloor(0), m_nTexCeil(0){}
 
@@ -54,37 +57,73 @@ public:
    unsigned int m_nObjlistStart;
 };
 
-class CTileMapViewCtrl: public CWindowImpl<CTileMapViewCtrl, CWindow>
+//! tilemap view control; draws tilemap
+class CTileMapViewCtrl :
+   public CScrollWindowImpl<CTileMapViewCtrl, CWindow>,
+   public CDebugWindowBase
 {
+   typedef CScrollWindowImpl<CTileMapViewCtrl, CWindow> baseClass;
 public:
+   DECLARE_WND_CLASS_EX(_T("TileMapViewCtrl"), CS_DBLCLKS, COLOR_WINDOW);
+
+   //! ctor
    CTileMapViewCtrl();
-   virtual ~CTileMapViewCtrl();
+   //! dtor
+   virtual ~CTileMapViewCtrl(){}
 
-   unsigned int GetTileSizeX(){ return m_nTileSizeX; }
-   unsigned int GetTileSizeY(){ return m_nTileSizeY; }
+   //! returns tile x size
+   unsigned int GetTileSizeX() const { return m_nTileSizeX; }
+   //! returns tile y size
+   unsigned int GetTileSizeY() const { return m_nTileSizeY; }
 
-   void UpdateTileMap(CDebugClientInterface* pDebugClient);
+   //! handles scrolled painting; called by CScrollWindowImpl
+	void DoPaint(CDCHandle dc);
 
+protected:
+   // virtual methods from CDebugWindowBase
+   virtual void ReceiveNotification(CDebugWindowNotification& notify);
+
+   //! initializes scrolling
+   void Init();
+
+   //! returns tile map info for a given tile
    CTileMapInfo& GetTileMapInfo(unsigned int x, unsigned int y);
 
+   //! updates tile map values 
+   void UpdateTileMap();
+
 protected:
+   // message map
    BEGIN_MSG_MAP(CTileMapViewCtrl)
-      MESSAGE_HANDLER(WM_PAINT, OnPaint)
-      MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBkgnd)
-      MESSAGE_HANDLER(WM_GETMINMAXINFO, OnGetMinMaxInfo)
-      MESSAGE_HANDLER(WM_SIZE, OnSize)
+      MESSAGE_HANDLER(WM_CREATE, OnCreate)
+      MESSAGE_HANDLER(WM_LBUTTONDOWN, OnLButtonDown)
+      COMMAND_ID_HANDLER(ID_TILEMAP_ZOOMIN, OnTilemapZoomIn)
+      COMMAND_ID_HANDLER(ID_TILEMAP_ZOOMOUT, OnTilemapZoomOut)
+      CHAIN_MSG_MAP(baseClass)
    END_MSG_MAP()
 
-protected:
-   LRESULT OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
-   LRESULT OnEraseBkgnd(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-   LRESULT OnGetMinMaxInfo(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-   LRESULT OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+   // message handler
+
+   LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+   {
+      Init();
+      bHandled = FALSE;
+      return 1;
+   }
+
+   LRESULT OnLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+   LRESULT OnTilemapZoomIn(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+   LRESULT OnTilemapZoomOut(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 protected:
-   CTileMapInfo* m_pMapInfo;
+   //! array with all tile map infos
+   CAtlArray<CTileMapInfo> m_aMapInfo;
 
+   //! current tile x and y size
    unsigned int m_nTileSizeX, m_nTileSizeY;
+
+   //! selected tile x and y coordinates;
+   unsigned int m_nSelectedTileX, m_nSelectedTileY;
 };
 
 //@}
