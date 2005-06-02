@@ -37,7 +37,7 @@ bool CEditListInplaceEditCtrl::AcceptChanges()
    GetWindowText(szBuffer, 256);
 
    NMLVDISPINFO dispinfo;
-   dispinfo.hdr.hwndFrom = m_hWnd;
+   dispinfo.hdr.hwndFrom = GetParent();
    dispinfo.hdr.idFrom = 0;
    dispinfo.hdr.code = LVN_ENDLABELEDIT;
 
@@ -88,7 +88,7 @@ LRESULT CEditListInplaceEditCtrl::OnChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*
    return 0;
 }
 
-LRESULT CEditListInplaceEditCtrl::OnKillFocus(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+LRESULT CEditListInplaceEditCtrl::OnKillFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
    if (!m_bFinished)
    {
@@ -98,7 +98,7 @@ LRESULT CEditListInplaceEditCtrl::OnKillFocus(UINT /*uMsg*/, WPARAM wParam, LPAR
    return 0;
 }
 
-LRESULT CEditListInplaceEditCtrl::OnNcDestroy(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+LRESULT CEditListInplaceEditCtrl::OnNcDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
    ::PostMessage(GetParent(), WM_DELETEME, 0, reinterpret_cast<LPARAM>(this));
    m_hWnd = NULL;
@@ -108,7 +108,28 @@ LRESULT CEditListInplaceEditCtrl::OnNcDestroy(UINT /*uMsg*/, WPARAM wParam, LPAR
 
 // CEditListViewCtrl methods
 
-LRESULT CEditListViewCtrl::OnLeftButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+void CEditListViewCtrl::Init(IEditListViewCallback* pCallback)
+{
+   m_pCallback = pCallback;
+
+   int nColumn = 0;
+   LVCOLUMN col;
+   col.mask = LVCF_WIDTH;
+   while (GetColumn(nColumn, &col)) nColumn++;
+
+   m_abEditableColumns.RemoveAll();
+
+   for(int n=0; n<nColumn; n++)
+      m_abEditableColumns.Add(false);
+}
+
+void CEditListViewCtrl::SetColumnEditable(unsigned int nColumn, bool bEditable)
+{
+   ATLASSERT(nColumn < static_cast<unsigned int>(m_abEditableColumns.GetSize()));
+   m_abEditableColumns[nColumn] = bEditable;
+}
+
+LRESULT CEditListViewCtrl::OnLeftButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
    SetFocus();
 
@@ -133,7 +154,7 @@ LRESULT CEditListViewCtrl::OnLeftButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM
 
    NMLVDISPINFO dispInfo;
    dispInfo.hdr.hwndFrom = m_hWnd;
-   dispInfo.hdr.idFrom = -1;
+   dispInfo.hdr.idFrom = static_cast<UINT_PTR>(-1);
    dispInfo.hdr.code = LVN_BEGINLABELEDIT;
    dispInfo.item.mask = 0;
    dispInfo.item.iItem = item;
@@ -175,9 +196,51 @@ LRESULT CEditListViewCtrl::OnLeftButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM
    return 0;
 }
 
-LRESULT CEditListViewCtrl::OnDeleteMe(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
+LRESULT CEditListViewCtrl::OnDeleteMe(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
    CEditListInplaceEditCtrl* pEdit = reinterpret_cast<CEditListInplaceEditCtrl*>(lParam);
    delete pEdit;
    return 0;
+}
+
+LRESULT CEditListViewCtrl::OnBeginLabelEdit(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+{
+   if (m_bReadonly)
+      return 1;
+
+   NMLVDISPINFO* pLvDispInfo = reinterpret_cast<NMLVDISPINFO*>(pnmh);
+
+   int nSubItem = pLvDispInfo->item.iSubItem;
+   if (nSubItem == -1)
+      return 0;
+
+   // disallow editing columns that are non-editable
+   ATLASSERT(nSubItem < m_abEditableColumns.GetSize());
+   if (!m_abEditableColumns[nSubItem])
+   {
+      // when column 0, at least select item
+      if (nSubItem == 0)
+         SelectItem(pLvDispInfo->item.iItem);
+      return 1;
+   }
+
+   return 0;
+}
+
+LRESULT CEditListViewCtrl::OnEndLabelEdit(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+{
+   ATLASSERT(m_bReadonly == false);
+
+   NMLVDISPINFO* pLvDispInfo = reinterpret_cast<NMLVDISPINFO*>(pnmh);
+   if (pLvDispInfo->item.iItem == -1)
+      return 0;
+
+   // get edited text
+   LPCTSTR pszText = pLvDispInfo->item.pszText;
+
+   if (m_pCallback != NULL)
+      m_pCallback->OnUpdatedValue(static_cast<unsigned int>(pLvDispInfo->item.iItem),
+         static_cast<unsigned int>(pLvDispInfo->item.iSubItem), pszText);
+
+   return 1;
 }

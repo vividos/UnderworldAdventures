@@ -1,4 +1,4 @@
-/*
+
    Underworld Adventures Debugger - a debugger tool for Underworld Adventures
    Copyright (c) 2004,2005 Michael Fink
 
@@ -45,7 +45,9 @@ public:
    CEditListInplaceEditCtrl(int nItem, int nColumn)
       :m_bFinished(false), m_nItem(nItem), m_nColumn(nColumn){}
 
+   // message map
    BEGIN_MSG_MAP(CEditListViewCtrl)
+      ATLASSERT_ADDED_REFLECT_NOTIFICATIONS()
       MESSAGE_HANDLER(WM_CHAR, OnChar)
       MESSAGE_HANDLER(WM_KILLFOCUS, OnKillFocus)
       MESSAGE_HANDLER(WM_NCDESTROY, OnNcDestroy)
@@ -55,29 +57,65 @@ protected:
    bool AcceptChanges();
    void Finish();
 
-protected:
-   LRESULT OnChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
-   LRESULT OnKillFocus(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
-   LRESULT OnNcDestroy(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
+   // message handler
+
+   LRESULT OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+   LRESULT OnKillFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+   LRESULT OnNcDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+
 protected:
    bool m_bFinished;
    int m_nItem, m_nColumn;
 };
+
+//! callback class for subitem editing
+class IEditListViewCallback
+{
+public:
+   //! dtor
+   virtual ~IEditListViewCallback(){}
+
+   //! called when a value was edited
+   virtual void OnUpdatedValue(unsigned int nItem, unsigned int nSubItem, LPCTSTR pszValue)=0;
+};
+
 
 //! editable list view control
 class CEditListViewCtrl: public CWindowImpl<CEditListViewCtrl, CListViewCtrl>
 {
 public:
    //! ctor
-   CEditListViewCtrl(){}
+   CEditListViewCtrl():m_pCallback(NULL), m_bReadonly(false){}
 
    BEGIN_MSG_MAP(CEditListViewCtrl)
+      ATLASSERT_ADDED_REFLECT_NOTIFICATIONS() // checks for forgotten REFLECT_NOTIFICATIONS() macro in base class
       MESSAGE_HANDLER(WM_LBUTTONDOWN, OnLeftButtonDown)
       MESSAGE_HANDLER(WM_DELETEME, OnDeleteMe)
+      REFLECTED_NOTIFY_CODE_HANDLER(LVN_BEGINLABELEDIT, OnBeginLabelEdit) // item editing
+      REFLECTED_NOTIFY_CODE_HANDLER(LVN_ENDLABELEDIT, OnEndLabelEdit)
    END_MSG_MAP()
 
-   LRESULT OnLeftButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
-   LRESULT OnDeleteMe(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
+   //! initializes edit list view
+   void Init(IEditListViewCallback* pCallback = NULL);
+
+   //! sets a columns "editable" flag
+   void SetColumnEditable(unsigned int nColumn, bool bEditable = true);
+
+   void SetReadonly(bool bReadonly){ m_bReadonly = bReadonly; }
+
+   LRESULT OnLeftButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+   LRESULT OnDeleteMe(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+   LRESULT OnBeginLabelEdit(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+   LRESULT OnEndLabelEdit(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+
+private:
+   //! pointer to callback interface, if any
+   IEditListViewCallback* m_pCallback;
+
+   //! array with flags if a column is editable
+   CSimpleArray<bool> m_abEditableColumns;
+
+   bool m_bReadonly;
 };
 
 //@}
