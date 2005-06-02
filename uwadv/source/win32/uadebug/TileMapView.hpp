@@ -34,7 +34,6 @@
 // includes
 #include "Resource.h"
 #include "TileMapViewCtrl.hpp"
-#include "EditListViewCtrl.hpp"
 
 // forward references
 class CMainFrame;
@@ -42,78 +41,30 @@ class CDebugClientInterface;
 
 // classes
 
-class CTileMapViewWindow: public CDialogImpl<CTileMapViewWindow>
-{
-public:
-   CTileMapViewWindow();
-   virtual ~CTileMapViewWindow();
-
-   void InitWindow(CMainFrame* pMainFrame){ m_pMainFrame = pMainFrame; }
-   void SetClient(CDebugClientInterface* pDebugClient){ m_pDebugClient = pDebugClient; }
-
-   void UpdateData();
-
-   void SelectTile(unsigned int x, unsigned y, bool select=true);
-
-   void UpdateTileInfo();
-   void UpdateObjectInfo();
-
-   enum { IDD = IDD_TILEMAPVIEW_FORM };
-
-   BOOL PreTranslateMessage(MSG* pMsg)
-   {
-      return IsDialogMessage(pMsg);
-   }
-
-protected:
-   BEGIN_MSG_MAP(CTileMapViewWindow)
-      MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-      MESSAGE_HANDLER(WM_LBUTTONDOWN, OnLButtonDown)
-      COMMAND_HANDLER(IDC_BUTTON_BEAM, BN_CLICKED, OnButtonBeam)
-   END_MSG_MAP()
-
-   LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-   LRESULT OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-
-   LRESULT OnButtonBeam(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-
-protected:
-   CTileMapViewCtrl m_tileMapView;
-   CEditListViewCtrl m_tileInfoList;
-   CEditListViewCtrl m_objectList;
-
-   CMainFrame* m_pMainFrame;
-   CDebugClientInterface* m_pDebugClient;
-
-   unsigned int m_nTileX, m_nTileY;
-};
-
-
-class CTileMapViewChildFrame:
-//   public CMDIChildWindowImpl<CTileMapViewChildFrame>
-   public CTabbedMDIChildWindowImpl<CTileMapViewChildFrame>
+//! child frame for tilemap control
+class CTileMapViewChildFrame : public CChildWindowBase<IDR_TILEMAP_VIEW>
 {
    typedef CTileMapViewChildFrame thisClass;
-//   typedef CMDIChildWindowImpl<CTileMapViewChildFrame> baseClass;
-   typedef CTabbedMDIChildWindowImpl<CTileMapViewChildFrame> baseClass;
+   typedef CChildWindowBase<IDR_TILEMAP_VIEW> baseClass;
 public:
-   DECLARE_FRAME_WND_CLASS(NULL, IDR_TILEMAP_VIEW)
+   //! ctor
+   CTileMapViewChildFrame(){}
 
-   CTileMapViewWindow& GetView(){ return m_view; }
-
-   void UpdateData(){ m_view.UpdateData(); }
+   //! returns tilemap view control
+   const CTileMapViewCtrl& GetTilemapViewCtrl() const { return m_view; }
 
 protected:
-   virtual void OnFinalMessage(HWND /*hWnd*/)
-   {
-//      delete this;
-   }
-
+   // message map
    BEGIN_MSG_MAP(thisClass)
       MESSAGE_HANDLER(WM_CREATE, OnCreate)
+      MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
       MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
+      COMMAND_ROUTE_TO_MEMBER(ID_TILEMAP_ZOOMIN, m_view);
+      COMMAND_ROUTE_TO_MEMBER(ID_TILEMAP_ZOOMOUT, m_view);
       CHAIN_MSG_MAP(baseClass)
    END_MSG_MAP()
+
+   // message handler
 
    LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
    {
@@ -123,18 +74,42 @@ protected:
       return 1;
    }
 
+   LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+   {
+      bHandled = FALSE;
+      m_pMainFrame->RemoveDebugWindow(&m_view);
+      return 0;
+   }
+
    LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
    {
       LPMSG pMsg = (LPMSG)lParam;
 
-      if(baseClass::PreTranslateMessage(pMsg))
+      if (baseClass::PreTranslateMessage(pMsg))
          return TRUE;
 
-      return m_view.PreTranslateMessage(pMsg);
+      return FALSE;
+   }
+
+   // virtual methods from CChildWindowBase
+
+   virtual void InitDebugWindow(IMainFrame* pMainFrame)
+   {
+      CDebugWindowBase::InitDebugWindow(pMainFrame);
+      if (pMainFrame != NULL)
+         pMainFrame->AddDebugWindow(&m_view);
+   }
+
+   virtual void ReceiveNotification(CDebugWindowNotification& notify)
+   {
+      // relay notification to descendant window, if needed
+      if (notify.m_bRelayToDescendants)
+         m_pMainFrame->SendNotification(notify, &m_view);
    }
 
 protected:
-   CTileMapViewWindow m_view;
+   //! tilemap control
+   CTileMapViewCtrl m_view;
 };
 
 //@}
