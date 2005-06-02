@@ -42,6 +42,11 @@
 #include "CppUnitMini.h"
 
 
+// global variables
+
+ua_settings settings;
+
+
 // classes
 
 //! reporter that prints out to debug console
@@ -86,7 +91,34 @@ private:
 };
 
 
-// functions
+// ua_testcase methods
+
+ua_settings& ua_testcase::get_settings(){ return settings; }
+
+
+// ua_test_tempdir methods
+
+ua_test_tempdir::ua_test_tempdir()
+{
+   pathname = "./temp";
+
+   ua_mkdir(pathname.c_str(), 700);
+}
+
+ua_test_tempdir::~ua_test_tempdir()
+{
+   std::vector<std::string> filelist;
+   ua_find_files(pathname + "/*", filelist);
+
+   std::vector::size_type max = filelist.size();
+   for (std::vector::size_type i=0; i<max; i++)
+      remove(filelist[i].c_str());
+
+//TODO   ua_rmdir("./temp");
+}
+
+
+// global functions
 
 #undef main
 
@@ -97,6 +129,11 @@ private:
 */
 int main()
 {
+   // init settings variable
+   std::string uw_path("./");
+   settings.set_value(ua_setting_uw_path, uw_path);
+
+   // start unit tests
    ua_trace_reporter reporter;
 
    int num_errors = CPPUNIT_NS::TestCase::run(&reporter, "");
