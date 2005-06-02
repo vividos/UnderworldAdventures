@@ -126,6 +126,17 @@ public:
    virtual ~CDebugClientCodeDebuggerInterface(){}
 };
 
+enum T_enTileInfoType
+{
+   tiType=0,
+   tiFloorHeight,
+   tiCeilingHeight,
+   tiSlope,
+   tiTextureWall,
+   tiTextureFloor,
+   tiTextureCeil,
+   tiObjlistStart
+};
 
 //! debugger client interface
 class CDebugClientInterface  
@@ -144,6 +155,7 @@ public:
 
    void LoadGameCfg(LPCTSTR pszPrefix);
 
+   bool IsGamePaused();
    void PauseGame(bool pause);
 
    unsigned int GetNumLevels();
@@ -156,8 +168,8 @@ public:
    CDebugClientObjectInterface GetObjectInterface();
 
 
-   unsigned int GetTileInfo(unsigned int xpos, unsigned int ypos, unsigned int type);
-   void SetTileInfo(unsigned int xpos, unsigned int ypos, unsigned int type, unsigned int val);
+   unsigned int GetTileInfo(unsigned int xpos, unsigned int ypos, T_enTileInfoType type);
+   void SetTileInfo(unsigned int xpos, unsigned int ypos, T_enTileInfoType type, unsigned int val);
 
 
    bool EnumGameStringsBlock(int index, unsigned int& block);

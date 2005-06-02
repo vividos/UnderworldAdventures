@@ -288,9 +288,21 @@ void CDebugClientInterface::LoadGameCfg(LPCTSTR pszPrefix)
    m_pDebugInterface->load_game(pszPrefix);
 }
 
+bool CDebugClientInterface::IsGamePaused()
+{
+   m_pDebugInterface->lock(true);
+   bool paused = m_pDebugInterface->pause_game(true);
+   m_pDebugInterface->pause_game(paused);
+   m_pDebugInterface->lock(false);
+
+   return paused;
+}
+
 void CDebugClientInterface::PauseGame(bool pause)
 {
-   ATLASSERT(FALSE);
+   m_pDebugInterface->lock(true);
+   m_pDebugInterface->pause_game(pause);
+   m_pDebugInterface->lock(false);
 }
 
 unsigned int CDebugClientInterface::GetNumLevels()
@@ -319,15 +331,14 @@ CDebugClientObjectInterface CDebugClientInterface::GetObjectInterface()
 }
 
 
-unsigned int CDebugClientInterface::GetTileInfo(unsigned int xpos, unsigned int ypos, unsigned int type)
+unsigned int CDebugClientInterface::GetTileInfo(unsigned int xpos, unsigned int ypos, T_enTileInfoType type)
 {
-   return m_pDebugInterface->get_tile_info_value(m_nLevel, xpos, ypos, type);
+   return m_pDebugInterface->get_tile_info_value(m_nLevel, xpos, ypos, static_cast<unsigned int>(type));
 }
 
-void CDebugClientInterface::SetTileInfo(unsigned int xpos, unsigned int ypos, unsigned int type, unsigned int val)
+void CDebugClientInterface::SetTileInfo(unsigned int xpos, unsigned int ypos, T_enTileInfoType type, unsigned int val)
 {
-   // TODO
-   ATLASSERT(FALSE);
+   m_pDebugInterface->set_tile_info_value(m_nLevel, xpos, ypos, static_cast<unsigned int>(type), val);
 }
 
 bool CDebugClientInterface::EnumGameStringsBlock(int index, unsigned int& block)
@@ -343,8 +354,11 @@ unsigned int CDebugClientInterface::GetGameStringBlockSize(unsigned int block)
 CString CDebugClientInterface::GetGameString(unsigned int block, unsigned int nr)
 {
    CString cszText;
-   unsigned int ret = m_pDebugInterface->get_game_string(block, nr, cszText.GetBuffer(512), 512);
-   cszText.ReleaseBuffer();
+
+   unsigned int nLen = m_pDebugInterface->get_game_string(block, nr, NULL, 0);
+
+   nLen = m_pDebugInterface->get_game_string(block, nr, cszText.GetBuffer(nLen), nLen);
+   cszText.ReleaseBuffer(nLen);
 
    return cszText;
 }
