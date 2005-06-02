@@ -21,7 +21,7 @@
 */
 /*! \file WindowBase.hpp
 
-   \brief xxx
+   \brief window base classes
 
 */
 //! \ingroup uadebug
@@ -38,36 +38,116 @@ class CDebugClientInterface;
 class CMainFrame;
 
 
-#define WM_UNDOCK_WINDOW (WM_USER+10)
+// types
 
-enum enDockingWindowID
+enum T_enDockingWindowID
 {
    idPlayerInfoWindow = 1,
    idObjectListWindow,
    idHotspotListWindow,
+   idTileInfoWindow,
+   idObjectInfoWindow,
+   idBreakpointWindow,
+   idWatchesWindow,
    idProjectInfoWindow,
 };
 
+//! notification code for debug app notifications
+enum T_enNotifyCode
+{
+   ncSetReadonly,    //!< is sent when all controls should go into read only mode
+   ncSetReadWrite,   //!< is sent when all controls should go to read/write mode again
+   ncUpdateData,     //!< is sent when windows should be updated with new values
+   ncSelectedObject, //!< is sent when user selected an object
+   ncSelectedTile,   //!< is sent when user selected a tile
+   ncUpdatedObject,  //!< is sent when object information were updated
+   ncUpdatedTile,    //!< is sent when tile information were updated
+   ncChangedLevel,   //!< is sent when user changed the current level
+   ncUnknown,
+};
 
-// classes
+
+// structs
+
+//! notification that can be sent to all debug app windows
+struct CDebugWindowNotification
+{
+   //! ctor
+   CDebugWindowNotification()
+      :code(ncUnknown), m_nParam1(0), m_nParam2(0), m_bRelayToDescendants(false){}
+
+   //! notify code
+   T_enNotifyCode code;
+   //! first param value
+   UINT m_nParam1;
+   //! second param value
+   UINT m_nParam2;
+
+   //! indicates if a window that added a subwindow of itself to the window list should also
+   //! get this message
+   bool m_bRelayToDescendants;
+};
+
+
+// classes and interfaces
+
+//! interface to main frame
+class IMainFrame
+{
+public:
+   //! dtor
+   virtual ~IMainFrame(){}
+
+   //! returns debug client interface
+   virtual CDebugClientInterface& GetDebugClientInterface()=0;
+
+   //! sends notification message to a specific debug application window
+   virtual void SendNotification(CDebugWindowNotification& notify, class CDebugWindowBase* pDebugWindow)=0;
+
+   //! sends notification message to all registered debug application windows
+   virtual void SendNotification(CDebugWindowNotification& notify,
+      bool fExcludeSender=false, class CDebugWindowBase* pSender=NULL)=0;
+
+   //! returns image list with all game object images
+   virtual CImageList& GetObjectImageList()=0;
+
+   //! notifies main frame that window with given id was undocked (hidden)
+   virtual void UndockWindow(T_enDockingWindowID windowID)=0;
+
+   //! adds debug window to main frame processing
+   virtual void AddDebugWindow(CDebugWindowBase* pDebugWindow)=0;
+
+   //! removes debug windows from main frame processing
+   virtual void RemoveDebugWindow(class CDebugWindowBase* pWindow)=0;
+};
+
 
 //! base class for windows that want to access debugger and main frame
 class CDebugWindowBase
 {
 public:
+   //! ctor
+   CDebugWindowBase():m_pMainFrame(NULL){}
+   //! dtor
+   virtual ~CDebugWindowBase(){}
+
    //! initializes child window
-   void InitDebugWindow(CDebugClientInterface* pDebugClient, CMainFrame* pMainFrame)
-   {
-      m_pMainFrame = pMainFrame;
-      m_pDebugClient = pDebugClient;
-   }
+   virtual void InitDebugWindow(IMainFrame* pMainFrame){ m_pMainFrame = pMainFrame; }
+
 protected:
-   CDebugClientInterface* m_pDebugClient;
-   CMainFrame* m_pMainFrame;
+   //! receives notifications; only CMainFrame may call this function
+   virtual void ReceiveNotification(CDebugWindowNotification& /*notify*/){}
+
+protected:
+   //! pointer to main frame callback
+   IMainFrame* m_pMainFrame;
+
+   friend class CMainFrame;
 };
 
 
 //! base class for child windows with tabbing support
+template <unsigned IDR_WINDOW>
 class CChildWindowBase:
    public CTabbedMDIChildWindowImpl<CChildWindowBase>,
    public CDebugWindowBase
@@ -75,44 +155,78 @@ class CChildWindowBase:
    typedef CChildWindowBase thisClass;
    typedef CTabbedMDIChildWindowImpl<CChildWindowBase> baseClass;
 
-   BEGIN_MSG_MAP(thisClass)
-      CHAIN_MSG_MAP(baseClass)
-   END_MSG_MAP()
+public:
+   CChildWindowBase():m_bDynamicWindow(false){}
+
+   DECLARE_FRAME_WND_CLASS(NULL, IDR_WINDOW)
+
+   virtual void OnFinalMessage(HWND /*hWnd*/)
+   {
+      if (m_bDynamicWindow)
+         delete this;
+   }
+
+protected:
+   bool m_bDynamicWindow;
 };
+
+
+// macro to define docking window properties
+#define DECLARE_DOCKING_WINDOW(dockcaption, docksize, floatsize, dockside) \
+   public: \
+      virtual dockwins::CDockingSide GetPreferredDockingSide() const { return dockside; } \
+      virtual CSize GetDockingSize() const { return docksize; } \
+      virtual CSize GetFloatingSize() const { return floatsize; } \
+      virtual CString GetDockWindowCaption() const { return dockcaption; }
+
+// macro to define docking window properties; same as above but uses string resource id for docking caption
+#define DECLARE_DOCKING_WINDOW_ID(dockcaption_id, docksize, floatsize, dockside) \
+   public: \
+      virtual dockwins::CDockingSide GetPreferredDockingSide() const { return dockside; } \
+      virtual CSize GetDockingSize() const { return docksize; } \
+      virtual CSize GetFloatingSize() const { return floatsize; } \
+      virtual CString GetDockWindowCaption() const { return CString().LoadString(dockcaption_id); }
 
 
 //! base class for docking windows
 class CDockingWindowBase :
-   //public dockwins::CBoxedDockingWindowImpl<CDockingWindowBase,CWindow,dockwins::CVC7LikeExBoxedDockingWindowTraits>,
    public dockwins::CBoxedDockingWindowImpl<CDockingWindowBase, CWindow, dockwins::CVC7LikeExBoxedDockingWindowTraits>,
    public CDebugWindowBase
 {
    typedef CDockingWindowBase thisClass;
-   //typedef dockwins::CBoxedDockingWindowImpl<CDockingWindowBase,CWindow,dockwins::CVC7LikeExBoxedDockingWindowTraits> baseClass;
    typedef dockwins::CBoxedDockingWindowImpl<CDockingWindowBase, CWindow, dockwins::CVC7LikeExBoxedDockingWindowTraits> baseClass;
+
 public:
    //! ctor
-   CDockingWindowBase(enDockingWindowID windowID):m_windowID(windowID){}
+   CDockingWindowBase(T_enDockingWindowID windowID): m_windowID(windowID){}
+   //! dtor
+   virtual ~CDockingWindowBase(){}
 
-   BEGIN_MSG_MAP(thisClass)   
-      CHAIN_MSG_MAP(baseClass)      
-   END_MSG_MAP()
+   DECLARE_WND_CLASS_EX(_T("DockingWindow"), CS_DBLCLKS, COLOR_WINDOW)
 
-   bool IsFloating()
-   {
-      return !m_rcUndock.IsRectEmpty();
-   }
+   //! returns window ID
+   T_enDockingWindowID GetWindowId() const { return m_windowID; }
 
+   //! returns if window is floating
+   bool IsFloating(){ return !m_rcUndock.IsRectEmpty(); }
+
+   //! called when docking window is hidden
    void OnUndocked(HDOCKBAR hBar)
    {
+      ATLASSERT(m_pMainFrame != NULL);
       baseClass::OnUndocked(hBar);
-      // notify main frame of undocking
-//TODO      m_pMainFrame->OnUndockWindow(m_windowID);
-      ::PostMessage(GetParent(),WM_UNDOCK_WINDOW, m_windowID, 0);
+      m_pMainFrame->UndockWindow(m_windowID);
    }
 
+   // pre virtual methods; implement by using DECLARE_DOCKING_WINDOW or DECLARE_DOCKING_WINDOW_ID macro
+   virtual dockwins::CDockingSide GetPreferredDockingSide() const=0;
+   virtual CSize GetDockingSize() const=0;
+   virtual CSize GetFloatingSize() const=0;
+   virtual CString GetDockWindowCaption() const=0;
+
 protected:
-   enDockingWindowID m_windowID;
+   //! docking window id
+   T_enDockingWindowID m_windowID;
 };
 
 //@}
