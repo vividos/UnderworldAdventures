@@ -69,30 +69,26 @@ protected:
 };
 
 
-class CLuaSourceView:
-//   public CMDIChildWindowImpl<CLuaSourceView>
-   public CTabbedMDIChildWindowImpl<CLuaSourceView>
+class CLuaSourceView : public CChildWindowBase<IDR_LUA_SOURCE_FRAME>
 {
    typedef CLuaSourceView thisClass;
-//   typedef CMDIChildWindowImpl<CLuaSourceView> baseClass;
-   typedef CTabbedMDIChildWindowImpl<CLuaSourceView> baseClass;
+   typedef CChildWindowBase<IDR_LUA_SOURCE_FRAME> baseClass;
+
 public:
-   DECLARE_FRAME_WND_CLASS(NULL, IDR_LUA_SOURCE_FRAME)
+   CLuaSourceView(){ m_bDynamicWindow = true; }
 
    CLuaSourceCtrl m_view;
 
-   virtual void OnFinalMessage(HWND /*hWnd*/)
-   {
-      delete this;
-   }
-
+   // message map
    BEGIN_MSG_MAP(thisClass)
       MESSAGE_HANDLER(WM_CREATE, OnCreate)
       MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
       CHAIN_MSG_MAP(baseClass)
    END_MSG_MAP()
 
-   LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+   // message map handler
+
+   LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
    LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
    {
