@@ -254,13 +254,3 @@ int main(char argc, char* argv[])
 
    return 0;
 }
-
-
-// fake functions to get linking to work
-
-#include "files.hpp"
-
-SDL_RWops* ua_files_manager::get_uadata_file(const char* relpath)
-{
-   return NULL;
-}
