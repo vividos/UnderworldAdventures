@@ -32,20 +32,27 @@
 #pragma once
 
 // includes
-#include "WindowBase.hpp"
 
 // classes
 
+//! hotspot list docking window
 class CHotspotListWindow : public CDockingWindowBase
 {
    typedef CHotspotListWindow thisClass;
    typedef CDockingWindowBase baseClass;
 public:
+   //! ctor
    CHotspotListWindow():baseClass(idHotspotListWindow){}
+   //! dtor
    virtual ~CHotspotListWindow(){}
 
-   DECLARE_WND_CLASS(_T("CHotspotListWindow"))
+   DECLARE_DOCKING_WINDOW(_T("Hotspot List"), CSize(250,100)/*docked*/, CSize(450,300)/*floating*/, dockwins::CDockingSide::sLeft)
+
+   DECLARE_WND_CLASS(_T("HotspotListWindow"))
+
+   // message map
    BEGIN_MSG_MAP(thisClass)
+      ATLASSERT_ADDED_REFLECT_NOTIFICATIONS()
       MESSAGE_HANDLER(WM_CREATE, OnCreate)
       MESSAGE_HANDLER(WM_SIZE, OnSize)
       MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus)
@@ -53,13 +60,15 @@ public:
       CHAIN_MSG_MAP(baseClass)
    END_MSG_MAP()
 
+protected:
+   // message handler
    LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-   LRESULT OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
-   LRESULT OnSetFocus(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
-
+   LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+   LRESULT OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
    LRESULT OnDblClick(WPARAM /*wParam*/, NMHDR* pNMHDR, BOOL& /*bHandled*/);
 
 protected:
+   //! list with all hotspots
    CListViewCtrl m_listCtrl;
 };
 

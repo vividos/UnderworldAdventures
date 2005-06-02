@@ -33,14 +33,25 @@
 
 // CProjectInfoWindow methods
 
+void CProjectInfoWindow::ReceiveNotification(CDebugWindowNotification& notify)
+{
+   if (notify.code == ncUpdateData)
+      UpdateData();
+}
+
 void CProjectInfoWindow::UpdateData()
 {
-   m_pDebugClient->Lock(true);
+   CDebugClientInterface& debugClient = m_pMainFrame->GetDebugClientInterface();
+   debugClient.Lock(true);
 
-   HTREEITEM hLuaTree = m_treeCtrl.InsertItem(_T("Lua source files"), 0, 0, m_treeCtrl.GetRootItem(), NULL);
+   m_treeCtrl.DeleteAllItems();
+
+   HTREEITEM hLuaTree = m_treeCtrl.InsertItem(_T("Lua source files"), 0, 0, TVI_ROOT, NULL);
    m_treeCtrl.InsertItem(_T("triggers.lua"), 1, 1, hLuaTree, NULL);
 
-   m_pDebugClient->Lock(false);
+   m_treeCtrl.Expand(hLuaTree);
+
+   debugClient.Lock(false);
 }
 
 LRESULT CProjectInfoWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)

@@ -32,10 +32,8 @@
 #pragma once
 
 // includes
-#include "WindowBase.hpp"
 
 // classes
-
 
 class CObjectListInfo
 {
@@ -52,7 +50,8 @@ protected:
    unsigned int* m_pObjectList;
 };
 
-class CObjectListWindow : public CDockingWindowBase
+class CObjectListWindow : public CDockingWindowBase,
+   public IEditListViewCallback
 {
    typedef CObjectListWindow thisClass;
    typedef CDockingWindowBase baseClass;
@@ -60,27 +59,33 @@ public:
    CObjectListWindow();
    virtual ~CObjectListWindow();
 
-   void UpdateData();
+   DECLARE_DOCKING_WINDOW(_T("Master Object List"), CSize(200,100)/*docked*/, CSize(500,150)/*floating*/, dockwins::CDockingSide::sBottom)
 
-   DECLARE_WND_CLASS(_T("CObjectListWindow"))
-   BEGIN_MSG_MAP(thisClass)   
+   DECLARE_WND_CLASS_EX(_T("ObjectListWindow"), CS_DBLCLKS, COLOR_WINDOW)
+
+   BEGIN_MSG_MAP(thisClass)
+      ATLASSERT_ADDED_REFLECT_NOTIFICATIONS()
       MESSAGE_HANDLER(WM_CREATE, OnCreate)
       MESSAGE_HANDLER(WM_SIZE, OnSize)
       MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus)
-      NOTIFY_CODE_HANDLER(LVN_BEGINLABELEDIT, OnBeginLabelEdit)
-      NOTIFY_CODE_HANDLER(LVN_ENDLABELEDIT, OnEndLabelEdit)
       NOTIFY_CODE_HANDLER(LVN_GETDISPINFO, OnGetDispInfo)
-      CHAIN_MSG_MAP(baseClass)      
+      NOTIFY_CODE_HANDLER(LVN_BEGINLABELEDIT, OnBeginLabelEdit)
+      CHAIN_MSG_MAP(baseClass)
+      REFLECT_NOTIFICATIONS()
    END_MSG_MAP()
 
 protected:
    LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-   LRESULT OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
-   LRESULT OnSetFocus(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
+   LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+   LRESULT OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+   LRESULT OnGetDispInfo(WPARAM /*wParam*/, NMHDR* /*pNMHDR*/, BOOL& /*bHandled*/);
+   LRESULT OnBeginLabelEdit(WPARAM /*wParam*/, NMHDR* /*pNMHDR*/, BOOL& /*bHandled*/);
 
-   LRESULT OnBeginLabelEdit(WPARAM /*wParam*/, NMHDR* pNMHDR, BOOL& /*bHandled*/);
-   LRESULT OnEndLabelEdit(WPARAM /*wParam*/, NMHDR* pNMHDR, BOOL& /*bHandled*/);
-   LRESULT OnGetDispInfo(WPARAM /*wParam*/, NMHDR* pNMHDR, BOOL& /*bHandled*/);
+   virtual void ReceiveNotification(CDebugWindowNotification& notify);
+
+   void UpdateData();
+
+   virtual void OnUpdatedValue(unsigned int nItem, unsigned int nSubItem, LPCTSTR pszValue);
 
 protected:
    CEditListViewCtrl m_listCtrl;

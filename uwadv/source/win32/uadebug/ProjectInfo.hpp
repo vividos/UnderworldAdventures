@@ -32,7 +32,6 @@
 #pragma once
 
 // includes
-#include "WindowBase.hpp"
 
 // classes
 
@@ -45,20 +44,28 @@ public:
    //! ctor
    CProjectInfoWindow():baseClass(idProjectInfoWindow){}
 
-   //! updates project info data
-   void UpdateData();
+   DECLARE_DOCKING_WINDOW(_T("Project"), CSize(200,100)/*docked*/, CSize(200,400)/*floating*/, dockwins::CDockingSide::sLeft)
 
-   DECLARE_WND_CLASS(_T("CProjectInfoWindow"))
-   BEGIN_MSG_MAP(thisClass)   
+   DECLARE_WND_CLASS(_T("ProjectInfoWindow"))
+   BEGIN_MSG_MAP(thisClass)
+      ATLASSERT_ADDED_REFLECT_NOTIFICATIONS()
       MESSAGE_HANDLER(WM_CREATE, OnCreate)
       MESSAGE_HANDLER(WM_SIZE, OnSize)
       MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus)
       CHAIN_MSG_MAP(baseClass)      
    END_MSG_MAP()
 
+protected:
+   // message handler
    LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-   LRESULT OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
-   LRESULT OnSetFocus(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
+   LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+   LRESULT OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
+   // virtual methods from CDockingWindowBase
+   virtual void ReceiveNotification(CDebugWindowNotification& notify);
+
+   //! updates project info data
+   void UpdateData();
 
 protected:
    //! project info tree

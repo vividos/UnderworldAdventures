@@ -32,11 +32,34 @@
 
 // CPlayerInfoWindow methods
 
+void CPlayerInfoWindow::ReceiveNotification(CDebugWindowNotification& notify)
+{
+   switch(notify.code)
+   {
+   case ncUpdateData:
+      UpdateData();
+      break;
+
+   case ncSetReadonly:
+      m_bReadonly = true;
+      m_listCtrl.SetReadonly(true);
+      m_listCtrl.SetBkColor(RGB(255,0,255));
+      break;
+
+   case ncSetReadWrite:
+      m_listCtrl.SetReadonly(false);
+      m_listCtrl.SetBkColor(RGB(255,255,255));
+      m_bReadonly = false;
+      break;
+   }
+}
+
 void CPlayerInfoWindow::UpdateData()
 {
-   m_pDebugClient->Lock(true);
+   CDebugClientInterface& debugClient = m_pMainFrame->GetDebugClientInterface();
+   debugClient.Lock(true);
 
-   CDebugClientPlayerInterface playerInfo = m_pDebugClient->GetPlayerInterface();
+   CDebugClientPlayerInterface playerInfo = debugClient.GetPlayerInterface();
 
    // update all position info values
    _TCHAR szBuffer[32];
@@ -58,7 +81,7 @@ void CPlayerInfoWindow::UpdateData()
       m_listCtrl.SetItemText(n+4, 1, szBuffer);
    }
 
-   m_pDebugClient->Lock(false);
+   debugClient.Lock(false);
 }
 
 LRESULT CPlayerInfoWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -75,7 +98,8 @@ LRESULT CPlayerInfoWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
    m_listCtrl.InsertColumn(1, (LPCTSTR)_T("Value"), LVCFMT_LEFT, 90, -1);
 
    // insert all text descriptions
-   CDebugClientPlayerInterface playerInfo = m_pDebugClient->GetPlayerInterface();
+   CDebugClientInterface& debugClient = m_pMainFrame->GetDebugClientInterface();
+   CDebugClientPlayerInterface playerInfo = debugClient.GetPlayerInterface();
 
    for(unsigned int n=0; n<4; n++)
       m_listCtrl.InsertItem(m_listCtrl.GetItemCount(), playerInfo.GetPosInfoName(n));
@@ -84,7 +108,37 @@ LRESULT CPlayerInfoWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
    for(unsigned int i=0; i<max; i++)
       m_listCtrl.InsertItem(m_listCtrl.GetItemCount(), playerInfo.GetAttrName(i));
 
+   m_listCtrl.Init(this);
+   m_listCtrl.SetColumnEditable(1, true);
+
    return 0;
+}
+
+void CPlayerInfoWindow::OnUpdatedValue(unsigned int item, unsigned int nSubItem, LPCTSTR pszText)
+{
+   nSubItem;
+   ATLASSERT(nSubItem == 1);
+   ATLASSERT(pszText != NULL);
+
+   CDebugClientInterface& debugClient = m_pMainFrame->GetDebugClientInterface();
+   debugClient.Lock(true);
+
+   CDebugClientPlayerInterface playerInfo = debugClient.GetPlayerInterface();
+
+   if (item < 4)
+   {
+      // position info
+      double d = _tcstod(pszText, NULL);
+      playerInfo.SetPosInfo(item, d);
+   }
+   else
+   {
+      // attribute
+      unsigned long nVal = _tcstoul(pszText, NULL, 10);
+      playerInfo.SetAttribute(item-4, nVal);
+   }
+
+   debugClient.Lock(false);
 }
 
 LRESULT CPlayerInfoWindow::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
@@ -106,48 +160,5 @@ LRESULT CPlayerInfoWindow::OnSetFocus(UINT, WPARAM, LPARAM, BOOL& bHandled)
       m_listCtrl.SetFocus();
 
    bHandled = FALSE;
-   return 1;
-}
-
-LRESULT CPlayerInfoWindow::OnBeginLabelEdit(WPARAM /*wParam*/, NMHDR* pNMHDR, BOOL& /*bHandled*/)
-{
-   NMLVDISPINFO* pLvDispInfo = (NMLVDISPINFO*)pNMHDR;
-
-   // disallow editing column 0
-   if (pLvDispInfo->item.iSubItem == 0)
-      return 1;
-
-   return 0;
-}
-
-LRESULT CPlayerInfoWindow::OnEndLabelEdit(WPARAM /*wParam*/, NMHDR* pNMHDR, BOOL& /*bHandled*/)
-{
-   NMLVDISPINFO* pLvDispInfo = (NMLVDISPINFO*)pNMHDR;
-   if (pLvDispInfo->item.iItem == -1 || pLvDispInfo->item.iSubItem != 1)
-      return 0;
-
-   // get edited text
-   LPCTSTR pszText = pLvDispInfo->item.pszText;
-   int item = pLvDispInfo->item.iItem;
-
-   m_pDebugClient->Lock(true);
-
-   CDebugClientPlayerInterface playerInfo = m_pDebugClient->GetPlayerInterface();
-
-   if (item < 4)
-   {
-      // position info
-      double d = _tcstod(pszText, NULL);
-      playerInfo.SetPosInfo(item, d);
-   }
-   else
-   {
-      // attribute
-      unsigned long nVal = _tcstoul(pszText, NULL, 10);
-      playerInfo.SetAttribute(item-4, nVal);
-   }
-
-   m_pDebugClient->Lock(false);
-
    return 1;
 }
