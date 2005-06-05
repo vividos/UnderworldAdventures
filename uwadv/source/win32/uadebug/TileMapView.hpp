@@ -57,7 +57,6 @@ protected:
    // message map
    BEGIN_MSG_MAP(thisClass)
       MESSAGE_HANDLER(WM_CREATE, OnCreate)
-      MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
       MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
       COMMAND_ROUTE_TO_MEMBER(ID_TILEMAP_ZOOMIN, m_view);
       COMMAND_ROUTE_TO_MEMBER(ID_TILEMAP_ZOOMOUT, m_view);
@@ -74,13 +73,6 @@ protected:
       return 1;
    }
 
-   LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-   {
-      bHandled = FALSE;
-      m_pMainFrame->RemoveDebugWindow(&m_view);
-      return 0;
-   }
-
    LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
    {
       LPMSG pMsg = (LPMSG)lParam;
@@ -95,7 +87,11 @@ protected:
 
    virtual void InitDebugWindow(IMainFrame* pMainFrame)
    {
+      if (pMainFrame == NULL && m_pMainFrame != NULL)
+         m_pMainFrame->RemoveDebugWindow(&m_view);
+
       CDebugWindowBase::InitDebugWindow(pMainFrame);
+
       if (pMainFrame != NULL)
          pMainFrame->AddDebugWindow(&m_view);
    }
