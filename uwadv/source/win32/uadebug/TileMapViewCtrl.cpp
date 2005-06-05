@@ -144,10 +144,10 @@ void CTileMapViewCtrl::DoPaint(CDCHandle hDC)
             unsigned int dx = m_nTileSizeX;
             unsigned int nTopBase = rc.top + y * m_nTileSizeY;
             unsigned int dy = m_nTileSizeY;
-            unsigned int nBoxSizeX = unsigned(0.2*dy);
-            unsigned int nBoxSizeY = unsigned(0.2*dy);
-            if (nBoxSizeX < 1) nBoxSizeX = 1;
-            if (nBoxSizeY < 1) nBoxSizeY = 1;
+            unsigned int nBoxSizeX = unsigned(0.3*dy);
+            unsigned int nBoxSizeY = unsigned(0.3*dy);
+            if (nBoxSizeX < 2) nBoxSizeX = 2;
+            if (nBoxSizeY < 2) nBoxSizeY = 2;
 
             dc.FillSolidRect(nLeftBase+unsigned(0.2*dx), nTopBase+unsigned(0.2*dy), nBoxSizeX, nBoxSizeY, color);
             dc.FillSolidRect(nLeftBase+unsigned(0.7*dx), nTopBase+unsigned(0.3*dy), nBoxSizeX, nBoxSizeY, color);
