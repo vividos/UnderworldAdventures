@@ -1,4 +1,4 @@
-
+/*
    Underworld Adventures Debugger - a debugger tool for Underworld Adventures
    Copyright (c) 2004,2005 Michael Fink
 

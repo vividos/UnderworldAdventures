@@ -32,6 +32,7 @@
 #pragma once
 
 // includes
+#include "Resource.h"
 #include <atlscrl.h>
 
 // forward references
