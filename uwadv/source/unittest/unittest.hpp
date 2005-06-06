@@ -33,14 +33,14 @@
 #define uwadv_unittest_hpp_
 
 // needed includes
-
 #include "CppUnitMini.h"
 #include "settings.hpp"
+
 
 class ua_testcase: public CPPUNIT_NS::TestCase
 {
 public:
-   ua_settings& get_settings(){ return settings; }
+   ua_settings& get_settings();
 
 };
 

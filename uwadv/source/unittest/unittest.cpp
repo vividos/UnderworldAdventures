@@ -39,7 +39,7 @@
 
 // needed includes
 #include "common.hpp"
-#include "CppUnitMini.h"
+#include "unittest.hpp"
 
 
 // global variables
@@ -108,10 +108,11 @@ ua_test_tempdir::ua_test_tempdir()
 ua_test_tempdir::~ua_test_tempdir()
 {
    std::vector<std::string> filelist;
-   ua_find_files(pathname + "/*", filelist);
+   std::string searchpath(pathname + "/*");
+   ua_find_files(searchpath.c_str(), filelist);
 
-   std::vector::size_type max = filelist.size();
-   for (std::vector::size_type i=0; i<max; i++)
+   std::vector<std::string>::size_type max = filelist.size();
+   for (std::vector<std::string>::size_type i=0; i<max; i++)
       remove(filelist[i].c_str());
 
 //TODO   ua_rmdir("./temp");
