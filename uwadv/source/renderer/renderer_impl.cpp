@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -528,7 +528,7 @@ void ua_renderer_impl::render_sprite(ua_vector3d base,
       glDisable(GL_TEXTURE_2D);
 
       GLfloat linewidth;
-      glGetFloatv(GL_LINE_WIDTH_RANGE, &linewidth);
+      glGetFloatv(GL_LINE_WIDTH, &linewidth);
       glLineWidth(5.0);
 
       glBegin(GL_LINE_LOOP );
