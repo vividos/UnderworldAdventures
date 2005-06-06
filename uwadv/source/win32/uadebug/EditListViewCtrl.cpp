@@ -219,7 +219,7 @@ LRESULT CEditListViewCtrl::OnBeginLabelEdit(int /*idCtrl*/, LPNMHDR pnmh, BOOL& 
    if (!m_abEditableColumns[nSubItem])
    {
       // when column 0, at least select item
-      if (nSubItem == 0)
+      if (nSubItem == 0 && (GetStyle() & LVS_SINGLESEL) != 0)
          SelectItem(pLvDispInfo->item.iItem);
       return 1;
    }
