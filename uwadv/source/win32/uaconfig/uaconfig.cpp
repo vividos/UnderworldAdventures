@@ -21,64 +21,29 @@
 */
 /*! \file uaconfig.cpp
 
-   \brief underworld adventures win32 config program
-
-   dialog message system is built using ATL-like message handling macros.
-   messages are passed from win32 to the StartDialogProc() which passes
-   the message on to ua_config_prog::DialogProc(). therefore there can only
-   be one ua_config_prog running (current dialog is stored in
-   ua_config_prog::current_dlg). finally the message is processed by
-   ProcessWindowMessage() that is defined with the message map macros.
+   \brief underworld adventures win32 config application
 
 */
 
-// exclude rarely-used stuff from Windows headers
-#define WIN32_LEAN_AND_MEAN
-#define WIN32_EXTRA_LEAN
-#define VC_EXTRALEAN
-#define NOSERVICE
-#define NOMCX
-#define NOIME
-#define NOSOUND
-#define NOCOMM
-#define NOKANJI
-#define NORPC
-#define NOPROXYSTUB
-#define NOTAPE
-#define NOCRYPT
-#define NOIMAGE
-#include "common.hpp"
-#include <windows.h>
-#include <mmsystem.h> // for midiOutGet*
-#include <shlobj.h> // for SHBrowseForFolder
-
 // needed includes
+#include "common.hpp"
 #include "uaconfig.hpp"
 #include <string>
+#include <atlconv.h>
+#include <mmsystem.h> // for midiOutGet*
+#include <shlobj.h> // for SHBrowseForFolder
+#include <tchar.h> // for _sntprintf
 
 
-// constants
+// ua_config_dlg methods
 
-const UINT ua_config_prog::dialog_id = IDD_DIALOG_UACONFIG;
-
-
-// ua_config_prog methods
-
-ua_config_prog::ua_config_prog(HINSTANCE hInst)
-:m_hWnd(NULL),m_hInstance(hInst)
+void ua_config_dlg::RunDialog()
 {
-}
+   // create and show the dialog
+   Create(NULL);
+   ShowWindow(SW_SHOW);
 
-void ua_config_prog::RunDialog()
-{
-   // create the dialog
-   current_dlg = this;
-   HWND hWnd = ::CreateDialogParam(m_hInstance,
-      MAKEINTRESOURCE(dialog_id), NULL,
-      (DLGPROC)StartDialogProc, 0);
-   m_hWnd = hWnd;
-
-   // runs the message loop of the modeless dialog
+   // run the message loop of the modeless dialog
    MSG msg;
 
    for(;;)
@@ -87,10 +52,11 @@ void ua_config_prog::RunDialog()
       BOOL bRet = ::GetMessage(&msg, NULL, 0, 0);
 
       // quit message loop on WM_QUIT
-      if (!bRet) break;
+      if (!bRet)
+         break;
 
       // deliver message
-      if(!PreTranslateMessage(&msg) && !::IsDialogMessage(m_hWnd,&msg))
+      if (!PreTranslateMessage(&msg) && !IsDialogMessage(&msg))
       {
          ::TranslateMessage(&msg);
          ::DispatchMessage(&msg);
@@ -98,77 +64,30 @@ void ua_config_prog::RunDialog()
    }
 
    // destroy the dialog window
-   ::DestroyWindow(m_hWnd);
-   current_dlg = NULL;
-}
-
-ua_config_prog *ua_config_prog::current_dlg = NULL;
-
-LRESULT CALLBACK ua_config_prog::StartDialogProc(HWND hWnd, UINT uMsg,
-   WPARAM wParam, LPARAM lParam)
-{
-   return current_dlg->DialogProc(hWnd,uMsg,wParam,lParam);
-}
-
-LRESULT CALLBACK ua_config_prog::DialogProc(HWND hWnd, UINT uMsg,
-   WPARAM wParam, LPARAM lParam)
-{
-   if (m_hWnd==NULL) m_hWnd = hWnd;
-
-   LONG lResult=0;
-   ProcessWindowMessage(hWnd,uMsg,wParam,lParam,lResult);
-   return lResult;
-}
-
-BOOL ua_config_prog::PreTranslateMessage(MSG* pMsg)
-{
-   if (pMsg->message==WM_MOUSEMOVE)
-      tooltips.relay_event(pMsg);
-
-   return FALSE;
+   DestroyWindow();
 }
 
 
 // message handler methods
 
-LRESULT ua_config_prog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT ua_config_dlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
    // center main window
-   {
-      HWND parent = ::GetDesktopWindow();
+   CenterWindow();
 
-      RECT bigger,ours;
-      ::GetWindowRect(parent,&bigger);
-      ::GetWindowRect(m_hWnd,&ours);
+   // set icons
+   HICON hIcon = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_ICON_UACONFIG), 
+      IMAGE_ICON, ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON), LR_DEFAULTCOLOR);
+   SetIcon(hIcon, TRUE);
 
-      UINT xLeft = ((bigger.right-bigger.left)-(ours.right-ours.left))/2;
-      UINT yTop = ((bigger.bottom-bigger.top)-(ours.bottom-ours.top))/2;
-
-      ::SetWindowPos(m_hWnd, NULL, xLeft, yTop, -1, -1,
-         SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
-   }
-
-   // load icons
-   wndicon = ::LoadIcon(m_hInstance,MAKEINTRESOURCE(IDI_ICON_UACONFIG));
-   wndicon_small = (HICON)::LoadImage(m_hInstance,
-      MAKEINTRESOURCE(IDI_ICON_UACONFIG),IMAGE_ICON,16,16,LR_DEFAULTCOLOR);
-
-   // set icon
-   ::SendMessage(m_hWnd, WM_SETICON, ICON_BIG, (LPARAM)wndicon);
-   ::SendMessage(m_hWnd, WM_SETICON, ICON_SMALL, (LPARAM)wndicon_small);
-   ::ShowWindow(m_hWnd,SW_SHOW);
-
-   // get window caption
-   {
-      char buffer[256];
-      ::GetWindowText(m_hWnd,buffer,256);
-      caption.assign(buffer);
-   }
+   HICON hIconSmall = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_ICON_UACONFIG), 
+      IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
+   SetIcon(hIconSmall, FALSE);
 
    // cutscene narration combobox
-   ::SendDlgItemMessage(m_hWnd,IDC_COMBO_CUTS_NARRATION,CB_ADDSTRING,0,(LPARAM)"Sound");
-   ::SendDlgItemMessage(m_hWnd,IDC_COMBO_CUTS_NARRATION,CB_ADDSTRING,0,(LPARAM)"Subtitles");
-   ::SendDlgItemMessage(m_hWnd,IDC_COMBO_CUTS_NARRATION,CB_ADDSTRING,0,(LPARAM)"Sound+Subtitles");
+   SendDlgItemMessage(IDC_COMBO_CUTS_NARRATION, CB_ADDSTRING, 0, (LPARAM)_T("Sound"));
+   SendDlgItemMessage(IDC_COMBO_CUTS_NARRATION, CB_ADDSTRING, 0, (LPARAM)_T("Subtitles"));
+   SendDlgItemMessage(IDC_COMBO_CUTS_NARRATION, CB_ADDSTRING, 0, (LPARAM)_T("Sound+Subtitles"));
 
    // add all available resolutions to screen resolution combo box
    {
@@ -177,21 +96,21 @@ LRESULT ua_config_prog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
       devmode.dmSize = sizeof(DEVMODE);
       devmode.dmDriverExtra = 0;
 
-      while(0 != ::EnumDisplaySettings(NULL,iModeNum++,&devmode))
+      while (0 != ::EnumDisplaySettings(NULL, iModeNum++, &devmode))
       {
          // only add hi-/truecolor modes
          if (devmode.dmBitsPerPel<16) continue;
 
-         char buffer[32];
-         sprintf(buffer,"%u x %u",devmode.dmPelsWidth,devmode.dmPelsHeight);
+         _TCHAR szBuffer[32];
+         _sntprintf(szBuffer, 32, _T("%u x %u"), devmode.dmPelsWidth, devmode.dmPelsHeight);
 
          // check if we already have that one
-         if (CB_ERR == ::SendDlgItemMessage(m_hWnd,IDC_COMBO_SCREEN_RESOLUTION,
-            CB_FINDSTRINGEXACT,(WPARAM)-1,(LPARAM)buffer))
+         if (CB_ERR == SendDlgItemMessage(IDC_COMBO_SCREEN_RESOLUTION,
+            CB_FINDSTRINGEXACT, (WPARAM)-1, (LPARAM)szBuffer))
          {
             // add it
-            ::SendDlgItemMessage(m_hWnd,IDC_COMBO_SCREEN_RESOLUTION,CB_ADDSTRING,
-               0,(LPARAM)buffer);
+            SendDlgItemMessage(IDC_COMBO_SCREEN_RESOLUTION, CB_ADDSTRING,
+               0, (LPARAM)szBuffer);
          }
       }
    }
@@ -207,39 +126,39 @@ LRESULT ua_config_prog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
          midiOutGetDevCaps((UINT)n, &caps, sizeof(caps));
 
          // add to combo box
-         ::SendDlgItemMessage(m_hWnd,IDC_COMBO_MIDI_DEVICE,CB_ADDSTRING,
-            0,(LPARAM)caps.szPname);
+         SendDlgItemMessage(IDC_COMBO_MIDI_DEVICE, CB_ADDSTRING,
+            0, (LPARAM)caps.szPname);
       }
    }
 
    // load configuration
    load_config();
 
-   // add tooltips
-   tooltips.init(m_hWnd, m_hInstance);
+   // add tooltips for all controls
+   tooltips.init(m_hWnd);
 
    return 1;  // let the system set the focus
 }
 
-static int CALLBACK WINAPI ua_browse_callback(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData)
+static int CALLBACK WINAPI ua_browse_callback(HWND hwnd, UINT uMsg, LPARAM /*lParam*/, LPARAM lpData)
 {
    // set initial path on initialisation
    if (uMsg == BFFM_INITIALIZED)
-      ::SendMessage(hwnd,BFFM_SETSELECTION,(WPARAM)TRUE,lpData);
+      ::SendMessage(hwnd, BFFM_SETSELECTION, (WPARAM)TRUE, lpData);
    return 0;
 }
 
-LRESULT ua_config_prog::OnSetUw1Path(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+LRESULT ua_config_dlg::OnSetUw1Path(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-   char buffer[MAX_PATH+1];
+   _TCHAR buffer[MAX_PATH+1];
    {
       buffer[0] = 0;
-      ::GetDlgItemText(m_hWnd,IDC_EDIT_UW1_PATH,buffer,MAX_PATH);
+      GetDlgItemText(IDC_EDIT_UW1_PATH, buffer, MAX_PATH);
 
       // add slash when needed
-      unsigned int len = strlen(buffer);
-      if (len>0 && buffer[len-1]!='\\' && buffer[len-1]!='/')
-         strcat(buffer, "\\");
+      unsigned int len = _tcslen(buffer);
+      if (len>0 && buffer[len-1] != _T('\\') && buffer[len-1] != _T('/'))
+         _tcscat(buffer, _T("\\"));
    }
 
 #ifndef BIF_USENEWUI
@@ -249,7 +168,7 @@ LRESULT ua_config_prog::OnSetUw1Path(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
    // setup struct
    BROWSEINFO bi;
    ZeroMemory(&bi, sizeof(bi));
-   bi.lpszTitle = "Please select the Ultima Underworld I folder:";
+   bi.lpszTitle = _T("Please select the Ultima Underworld I folder:");
    bi.pszDisplayName = buffer;
    bi.pidlRoot = NULL;
    bi.lpfn = ua_browse_callback;
@@ -265,22 +184,32 @@ LRESULT ua_config_prog::OnSetUw1Path(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
 
    // set path in edit box
    {
-      std::string uw1_path(buffer);
+      USES_CONVERSION;
+      std::string uw1_path(T2CA(buffer));
       if (uw1_path.size()==0) return 0;
 
       char last = uw1_path.at(uw1_path.size()-1);
 
-      if (last!='\\' && last != '/')
+      if (last != '\\' && last != '/')
          uw1_path.append("\\");
 
-      ::SetDlgItemText(m_hWnd,IDC_EDIT_UW1_PATH,uw1_path.c_str());
+      SetDlgItemText(IDC_EDIT_UW1_PATH, A2CT(uw1_path.c_str()));
    }
 
    return 0;
 }
 
+void ua_config_dlg::MessageBox(LPCTSTR pszText, UINT nType)
+{
+   // get window caption
+   _TCHAR szCaption[256];
+   GetWindowText(szCaption, 256);
 
-void ua_config_prog::load_config()
+   AtlMessageBox(m_hWnd, pszText, szCaption, nType);
+}
+
+
+void ua_config_dlg::load_config()
 {
    // try loading settings
    settings_filename = ua_get_home_path();
@@ -296,30 +225,31 @@ void ua_config_prog::load_config()
       text += settings_filename;
       text += "\"!";
 
-      ::MessageBox(m_hWnd, text.c_str(), caption.c_str(), MB_OK|MB_ICONSTOP);
+      USES_CONVERSION;
+      MessageBox(A2CT(text.c_str()), MB_OK | MB_ICONSTOP);
 
       // exit program
-      ::PostMessage(m_hWnd,WM_QUIT,0,0);
+      PostMessage(WM_QUIT);
       return;
    }
 
    std::string text;
+   USES_CONVERSION;
 
    // general settings
 
    // sets uw1 path
    text = settings.get_string(ua_setting_uw1_path);
-   ::SetDlgItemText(m_hWnd,IDC_EDIT_UW1_PATH,text.c_str());
+   SetDlgItemText(IDC_EDIT_UW1_PATH, A2CT(text.c_str()));
 
    // set cutscene narration option
    text = settings.get_string(ua_setting_cuts_narration);
-   ::SendDlgItemMessage(m_hWnd,IDC_COMBO_CUTS_NARRATION,CB_SETCURSEL,
-      (text.compare("both")==0 ? 2 : text.compare("sound")==0 ? 0 : 1),
-      0);
+   SendDlgItemMessage(IDC_COMBO_CUTS_NARRATION, CB_SETCURSEL,
+      (text.compare("both")==0 ? 2 : text.compare("sound")==0 ? 0 : 1));
 
    // set "uwadv features" check
-   ::SendDlgItemMessage(m_hWnd,IDC_CHECK_ENABLE_FEATURES,BM_SETCHECK,
-      settings.get_bool(ua_setting_uwadv_features) ? BST_CHECKED : BST_UNCHECKED, 0);
+   SendDlgItemMessage(IDC_CHECK_ENABLE_FEATURES, BM_SETCHECK,
+      settings.get_bool(ua_setting_uwadv_features) ? BST_CHECKED : BST_UNCHECKED);
 
    // graphics settings
 
@@ -327,96 +257,92 @@ void ua_config_prog::load_config()
    text = settings.get_string(ua_setting_screen_resolution);
 
    // check if we already have that one
-   int item = ::SendDlgItemMessage(m_hWnd,IDC_COMBO_SCREEN_RESOLUTION,
-      CB_FINDSTRINGEXACT,(WPARAM)-1,(LPARAM)text.c_str());
+   int item = SendDlgItemMessageA(IDC_COMBO_SCREEN_RESOLUTION,
+      CB_FINDSTRINGEXACT, (WPARAM)-1, (LPARAM)(A2CT(text.c_str())));
 
    if (item == CB_ERR)
    {
       // add current resolution value
-      ::SendDlgItemMessage(m_hWnd,IDC_COMBO_SCREEN_RESOLUTION,
-         CB_INSERTSTRING,0,(LPARAM)text.c_str());
+      SendDlgItemMessage(IDC_COMBO_SCREEN_RESOLUTION,
+         CB_INSERTSTRING, 0, (LPARAM)(A2CT(text.c_str())));
       item = 0;
    }
    // set selection
-   ::SendDlgItemMessage(m_hWnd,IDC_COMBO_SCREEN_RESOLUTION,CB_SETCURSEL,item,0);
+   SendDlgItemMessage(IDC_COMBO_SCREEN_RESOLUTION, CB_SETCURSEL, item);
 
    // set "fullscreen" check
-   ::SendDlgItemMessage(m_hWnd,IDC_CHECK_FULLSCREEN,BM_SETCHECK,
-      settings.get_bool(ua_setting_fullscreen) ? BST_CHECKED : BST_UNCHECKED, 0);
+   SendDlgItemMessage(IDC_CHECK_FULLSCREEN, BM_SETCHECK,
+      settings.get_bool(ua_setting_fullscreen) ? BST_CHECKED : BST_UNCHECKED);
 
    // set "smooth ui" check
-   ::SendDlgItemMessage(m_hWnd,IDC_CHECK_SMOOTHUI,BM_SETCHECK,
-      settings.get_bool(ua_setting_ui_smooth) ? BST_CHECKED : BST_UNCHECKED, 0);
+   SendDlgItemMessage(IDC_CHECK_SMOOTHUI, BM_SETCHECK,
+      settings.get_bool(ua_setting_ui_smooth) ? BST_CHECKED : BST_UNCHECKED);
 
    // audio settings
 
    // set "audio enabled" check
-   ::SendDlgItemMessage(m_hWnd,IDC_CHECK_ENABLE_AUDIO,BM_SETCHECK,
-      settings.get_bool(ua_setting_audio_enabled) ? BST_CHECKED : BST_UNCHECKED, 0);
+   SendDlgItemMessage(IDC_CHECK_ENABLE_AUDIO, BM_SETCHECK,
+      settings.get_bool(ua_setting_audio_enabled) ? BST_CHECKED : BST_UNCHECKED);
 
    // set midi device
-   ::SendDlgItemMessage(m_hWnd,IDC_COMBO_MIDI_DEVICE,CB_SETCURSEL,
-      (WPARAM)(settings.get_int(ua_setting_win32_midi_device)+1),0);
+   SendDlgItemMessage(IDC_COMBO_MIDI_DEVICE, CB_SETCURSEL,
+      (WPARAM)(settings.get_int(ua_setting_win32_midi_device)+1), 0);
 }
 
 //! checks if a file with given filename is available
-bool ua_file_isavail(const char *base, const char *fname)
+bool ua_file_isavail(const char* base, const char* fname)
 {
    std::string filename(base);
    filename += fname;
-
-   FILE *fd = fopen(filename.c_str(),"rb");
-   if (fd==NULL)
-      return false;
-
-   fclose(fd);
-   return true;
+   return ua_file_exists(filename.c_str());
 }
 
-bool ua_config_prog::check_config()
+bool ua_config_dlg::check_config()
 {
-   char buffer[MAX_PATH];
+   _TCHAR szBuffer[MAX_PATH];
 
    // check uw1 path
    {
-      ::GetDlgItemText(m_hWnd,IDC_EDIT_UW1_PATH,buffer,MAX_PATH);
+      GetDlgItemText(IDC_EDIT_UW1_PATH, szBuffer, MAX_PATH);
 
-      std::string uw1_path(buffer);
+      std::string uw1_path(T2CA(szBuffer));
       bool uw1_avail =
-         ua_file_isavail(uw1_path.c_str(),"data/cnv.ark") &&
-         ua_file_isavail(uw1_path.c_str(),"data/strings.pak") &&
-         ua_file_isavail(uw1_path.c_str(),"data/pals.dat") &&
-         ua_file_isavail(uw1_path.c_str(),"data/allpals.dat") &&
-         (ua_file_isavail(uw1_path.c_str(),"uw.exe") ||
-          ua_file_isavail(uw1_path.c_str(),"uwdemo.exe"));
+         ua_file_isavail(uw1_path.c_str(), "data/cnv.ark") &&
+         ua_file_isavail(uw1_path.c_str(), "data/strings.pak") &&
+         ua_file_isavail(uw1_path.c_str(), "data/pals.dat") &&
+         ua_file_isavail(uw1_path.c_str(), "data/allpals.dat") &&
+        (ua_file_isavail(uw1_path.c_str(), "uw.exe") ||
+         ua_file_isavail(uw1_path.c_str(), "uwdemo.exe"));
 
       if (!uw1_avail)
       {
-         ::MessageBox(m_hWnd,"Couldn't find Ultima Underworld I game files in specified folder!",
-            caption.c_str(),MB_OK|MB_ICONEXCLAMATION);
+         MessageBox(_T("Couldn't find Ultima Underworld I game files in specified folder!"),
+            MB_OK | MB_ICONEXCLAMATION);
          return false;
       }
    }
 
+   // TODO: check uw2 path
+
    // check screen resolution
    {
-      ::GetDlgItemText(m_hWnd,IDC_COMBO_SCREEN_RESOLUTION,buffer,MAX_PATH);
-      std::string screen_res(buffer);
+      GetDlgItemText(IDC_COMBO_SCREEN_RESOLUTION, szBuffer, MAX_PATH);
+      std::string screen_res(T2CA(szBuffer));
 
       // parse resolution string, format is <xres> x <yres>
       std::string::size_type pos = screen_res.find('x');
       if (pos == std::string::npos)
       {
-         ::MessageBox(m_hWnd,"Screen resolution is not in format <xres> x <yres>!",
-            caption.c_str(),MB_OK|MB_ICONEXCLAMATION);
+         MessageBox(_T("Screen resolution is not in format <xres> x <yres>!"),
+            MB_OK | MB_ICONEXCLAMATION);
          return false;
       }
 
       // check if fullscreen mode was checked
-      if (BST_CHECKED == ::SendDlgItemMessage(m_hWnd,IDC_CHECK_FULLSCREEN,BM_GETCHECK,0,0))
+      if (BST_CHECKED == SendDlgItemMessage(IDC_CHECK_FULLSCREEN, BM_GETCHECK))
       {
-         unsigned int width = static_cast<unsigned int>( strtol(screen_res.c_str(),NULL,10) );
-         unsigned int height = static_cast<unsigned int>( strtol(screen_res.c_str()+pos+1,NULL,10) );
+         unsigned int width = static_cast<unsigned int>( strtol(screen_res.c_str(), NULL, 10) );
+         unsigned int height = static_cast<unsigned int>( strtol(screen_res.c_str() + pos + 1, NULL, 10) );
 
          // check all display settings if screen resolution is available
          bool found = false;
@@ -426,7 +352,7 @@ bool ua_config_prog::check_config()
             devmode.dmSize = sizeof(DEVMODE);
             devmode.dmDriverExtra = 0;
 
-            while(0 != ::EnumDisplaySettings(NULL,iModeNum++,&devmode))
+            while(0 != ::EnumDisplaySettings(NULL, iModeNum++, &devmode))
             {
                if (devmode.dmBitsPerPel<16) continue;
 
@@ -441,8 +367,8 @@ bool ua_config_prog::check_config()
 
          if (!found)
          {
-            ::MessageBox(m_hWnd,"Selected screen resolution is not available in fullscreen mode!",
-               caption.c_str(),MB_OK|MB_ICONEXCLAMATION);
+            MessageBox(_T("Selected screen resolution is not available in fullscreen mode!"),
+               MB_OK | MB_ICONEXCLAMATION);
             return false;
          }
       }
@@ -451,45 +377,54 @@ bool ua_config_prog::check_config()
    return true;
 }
 
-void ua_config_prog::save_config()
+void ua_config_dlg::save_config()
 {
-   char buffer[MAX_PATH];
+   _TCHAR szBuffer[MAX_PATH];
+   USES_CONVERSION;
+
    std::string value;
    int sel;
 
    // get uw1 path
-   ::GetDlgItemText(m_hWnd,IDC_EDIT_UW1_PATH,buffer,MAX_PATH);
-   value.assign(buffer);
-   settings.set_value(ua_setting_uw1_path,value);
+   GetDlgItemText(IDC_EDIT_UW1_PATH, szBuffer, MAX_PATH);
+   value.assign(T2CA(szBuffer));
+   settings.set_value(ua_setting_uw1_path, value);
+
+   // get uw2 path
+/*
+   GetDlgItemText(IDC_EDIT_UW2_PATH, szBuffer, MAX_PATH);
+   value.assign(T2CA(buffer));
+   settings.set_value(ua_setting_uw2_path, value);
+*/
 
    // get cutscene narration type
-   sel = ::SendDlgItemMessage(m_hWnd,IDC_COMBO_CUTS_NARRATION,CB_GETCURSEL,0,0);
+   sel = SendDlgItemMessage(IDC_COMBO_CUTS_NARRATION, CB_GETCURSEL);
    value = (sel==0 ? "sound" : (sel==1 ? "subtitles" : "both"));
-   settings.set_value(ua_setting_cuts_narration,value);
+   settings.set_value(ua_setting_cuts_narration, value);
 
    // get "uwadv features" check
-   sel = ::SendDlgItemMessage(m_hWnd,IDC_CHECK_ENABLE_FEATURES,BM_GETCHECK,0,0);
+   sel = SendDlgItemMessage(IDC_CHECK_ENABLE_FEATURES, BM_GETCHECK);
    settings.set_value(ua_setting_uwadv_features, bool(sel==BST_CHECKED));
 
    // get "screen resolution" text
-   ::GetDlgItemText(m_hWnd,IDC_COMBO_SCREEN_RESOLUTION,buffer,MAX_PATH);
-   value.assign(buffer);
-   settings.set_value(ua_setting_screen_resolution,value);
+   GetDlgItemText(IDC_COMBO_SCREEN_RESOLUTION, szBuffer, MAX_PATH);
+   value.assign(T2CA(szBuffer));
+   settings.set_value(ua_setting_screen_resolution, value);
 
    // get "fullscreen" check
-   sel = ::SendDlgItemMessage(m_hWnd,IDC_CHECK_FULLSCREEN,BM_GETCHECK,0,0);
+   sel = SendDlgItemMessage(IDC_CHECK_FULLSCREEN, BM_GETCHECK);
    settings.set_value(ua_setting_fullscreen, bool(sel==BST_CHECKED));
 
    // get "smooth ui" check
-   sel = ::SendDlgItemMessage(m_hWnd,IDC_CHECK_SMOOTHUI,BM_GETCHECK,0,0);
+   sel = SendDlgItemMessage(IDC_CHECK_SMOOTHUI, BM_GETCHECK);
    settings.set_value(ua_setting_ui_smooth, bool(sel==BST_CHECKED));
 
    // get "audio enabled" check
-   sel = ::SendDlgItemMessage(m_hWnd,IDC_CHECK_ENABLE_AUDIO,BM_GETCHECK,0,0);
+   sel = SendDlgItemMessage(IDC_CHECK_ENABLE_AUDIO, BM_GETCHECK);
    settings.set_value(ua_setting_audio_enabled, bool(sel==BST_CHECKED));
 
    // get midi device
-   sel = ::SendDlgItemMessage(m_hWnd,IDC_COMBO_MIDI_DEVICE,CB_GETCURSEL,0,0);
+   sel = SendDlgItemMessage(IDC_COMBO_MIDI_DEVICE, CB_GETCURSEL);
    settings.set_value(ua_setting_win32_midi_device, sel-1);
 
    // write config file
@@ -502,14 +437,26 @@ void ua_config_prog::save_config()
 }
 
 
+CAppModule _Module;
+
 // main function
 
-int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
-   LPSTR lpCmdLine, int nCmdShow)
+int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/,
+   LPSTR /*lpCmdLine*/, int /*nCmdShow*/)
 {
+   // this resolves ATL window thunking problem when Microsoft Layer for Unicode (MSLU) is used
+   ::DefWindowProc(NULL, 0, 0, 0L);
+
+   AtlInitCommonControls(ICC_WIN95_CLASSES);
+
+   HRESULT hRes = _Module.Init(NULL, hInstance);
+   ATLASSERT(SUCCEEDED(hRes));
+
    // run dialog
-   ua_config_prog cfg(hInstance);
+   ua_config_dlg cfg;
    cfg.RunDialog();
+
+   _Module.Term();
 
    return 0;
 }

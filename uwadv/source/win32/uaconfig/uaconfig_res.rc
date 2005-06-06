@@ -7,7 +7,7 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include "winresrc.h"
+#include <atlres.h>
 
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
@@ -34,7 +34,7 @@ END
 
 2 TEXTINCLUDE 
 BEGIN
-    "#include ""winresrc.h""\r\n"
+    "#include <atlres.h>\r\n"
     "\0"
 END
 
@@ -52,10 +52,11 @@ END
 // Dialog
 //
 
-IDD_DIALOG_UACONFIG DIALOG  0, 0, 282, 164
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_UACONFIG DIALOGEX 0, 0, 282, 164
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
+    WS_SYSMENU
 CAPTION "Underworld Adventures Configuration"
-FONT 8, "Tahoma"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     LTEXT           "General Settings",IDC_STATIC,4,2,53,8
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,60,6,218,1
@@ -65,7 +66,7 @@ BEGIN
     LTEXT           "Cutscenes &Narration",IDC_STATIC,9,31,82,8
     COMBOBOX        IDC_COMBO_CUTS_NARRATION,92,27,90,46,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    CONTROL         "enable Underworld Adventures &features",
+    CONTROL         "Enable Underworld Adventures &features",
                     IDC_CHECK_ENABLE_FEATURES,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,9,44,173,10
     LTEXT           "Graphics Settings",IDC_STATIC,4,57,56,8
@@ -79,7 +80,7 @@ BEGIN
                     BS_AUTOCHECKBOX | WS_TABSTOP,9,85,151,10
     LTEXT           "Audio Settings",IDC_STATIC,4,98,46,8
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,54,102,223,1
-    CONTROL         "enable &audio output",IDC_CHECK_ENABLE_AUDIO,"Button",
+    CONTROL         "Enable &audio output",IDC_CHECK_ENABLE_AUDIO,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,9,110,134,10
     LTEXT           "MIDI &device",IDC_STATIC,9,124,82,8
     COMBOBOX        IDC_COMBO_MIDI_DEVICE,92,122,137,83,CBS_DROPDOWNLIST | 
@@ -98,7 +99,7 @@ END
 #ifdef APSTUDIO_INVOKED
 GUIDELINES DESIGNINFO 
 BEGIN
-    IDD_DIALOG_UACONFIG, DIALOG
+    IDD_UACONFIG, DIALOG
     BEGIN
         LEFTMARGIN, 4
         RIGHTMARGIN, 278
@@ -123,7 +124,7 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_ICON_UACONFIG       ICON                    "Corp.ico"
+IDR_ICON_UACONFIG       ICON                    "Corp.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //

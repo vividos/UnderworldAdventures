@@ -1,9 +1,9 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
+// Microsoft Visual C++ generated include file.
 // Used by uaconfig_res.rc
 //
-#define IDD_DIALOG_UACONFIG             101
-#define IDI_ICON_UACONFIG               102
+#define IDD_UACONFIG                    101
+#define IDR_ICON_UACONFIG               102
 #define IDC_EDIT_UW1_PATH               1000
 #define IDC_BUTTON_SET_UW1_PATH         1001
 #define IDC_COMBO_CUTS_NARRATION        1002
@@ -13,7 +13,6 @@
 #define IDC_COMBO_MIDI_DEVICE           1006
 #define IDC_CHECK_ENABLE_FEATURES       1007
 #define IDC_CHECK_SMOOTHUI              1008
-#define IDC_STATIC                      -1
 
 // Next default values for new objects
 // 
