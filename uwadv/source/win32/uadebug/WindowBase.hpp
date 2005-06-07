@@ -115,10 +115,19 @@ public:
    virtual void UndockWindow(T_enDockingWindowID windowID)=0;
 
    //! adds debug window to main frame processing
-   virtual void AddDebugWindow(CDebugWindowBase* pDebugWindow)=0;
+   virtual void AddDebugWindow(class CDebugWindowBase* pDebugWindow)=0;
 
    //! removes debug windows from main frame processing
    virtual void RemoveDebugWindow(class CDebugWindowBase* pWindow)=0;
+
+   //! opens Lua source file
+   virtual void OpenLuaSourceFile(LPCTSTR pszFilename)=0;
+
+   //! adds Lua child view to main frame processing
+   virtual void AddLuaChildView(class CLuaSourceView* pChildView)=0;
+
+   //! removes Lua child view from main frame processing
+   virtual void RemoveLuaChildView(class CLuaSourceView* pChildView)=0;
 };
 
 

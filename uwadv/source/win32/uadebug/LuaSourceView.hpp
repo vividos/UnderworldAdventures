@@ -75,13 +75,54 @@ class CLuaSourceView : public CChildWindowBase<IDR_LUA_SOURCE_FRAME>
    typedef CChildWindowBase<IDR_LUA_SOURCE_FRAME> baseClass;
 
 public:
-   CLuaSourceView(){ m_bDynamicWindow = true; }
+   //! ctor
+   CLuaSourceView():m_bModified(false){ m_bDynamicWindow = true; }
 
-   CLuaSourceCtrl m_view;
+   //! returns filename
+   LPCTSTR GetFilename() const { return m_cszFilename; }
 
+   //! creates a new unnamed file
+   void NewFile()
+   {
+      m_cszFilename = _T("unnamed.lua");
+      UpdateFilename();
+   }
+
+   //! opens file with given name
+   bool OpenFile(LPCTSTR pszFilename)
+   {
+      m_cszFilename = pszFilename;
+      UpdateFilename();
+      return m_view.OpenFile(pszFilename);
+   }
+
+   //! saves file
+   bool SaveFile()
+   {
+      bool bRet = m_view.SaveFile(m_cszFilename);
+      SetModified(false);
+      UpdateFilename();
+      return bRet;
+   }
+
+   //! saves file under another name
+   bool SaveAs(CString cszNewFilename)
+   {
+      m_cszFilename = cszNewFilename;
+      return SaveFile();
+   }
+
+   //! returns "modified" state of file
+   bool IsModified() const { return m_bModified; }
+
+   //! sets "modified" state of file
+   void SetModified(bool bModified){ m_bModified = bModified; }
+
+protected:
    // message map
    BEGIN_MSG_MAP(thisClass)
       MESSAGE_HANDLER(WM_CREATE, OnCreate)
+      MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
       MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
       CHAIN_MSG_MAP(baseClass)
    END_MSG_MAP()
@@ -89,6 +130,7 @@ public:
    // message map handler
 
    LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+   LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
    LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
    {
@@ -99,6 +141,19 @@ public:
 
       return m_view.PreTranslateMessage(pMsg);
    }
+
+   //! updates displayed filename
+   void UpdateFilename();
+
+protected:
+   //! scintilla edit view
+   CLuaSourceCtrl m_view;
+
+   //! indicates if file is modified
+   bool m_bModified;
+
+   //! filename
+   CString m_cszFilename;
 };
 
 //@}

@@ -32,6 +32,11 @@
 #include "LuaSourceView.hpp"
 #include "GameStringsView.hpp"
 
+// constants
+
+LPCTSTR g_pszLuaFileFilter = _T("Lua Source Files (*.lua)\0*.lua\0All Files (*.*)\0*.*\0\0");
+
+
 // CMainFrame methods
 
 bool CMainFrame::InitDebugClient(void* pDebugClient)
@@ -112,6 +117,9 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
    // floating stuff
    InitializeDockingFrame();
+
+   // dock some often-needed windows
+   ShowHideDockingWindow(m_projectInfoWindow);
 
    UpdateLayout();
 
@@ -214,6 +222,79 @@ LRESULT CMainFrame::OnFileNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 {
    CLuaSourceView* pChild = new CLuaSourceView;
    pChild->CreateEx(m_hWndClient);
+   pChild->MDIMaximize(pChild->m_hWnd);
+   AddLuaChildView(pChild);
+
+   pChild->NewFile();
+
+   return 0;
+}
+
+LRESULT CMainFrame::OnFileOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+   // ask for filename
+   CFileDialog dlg(TRUE, _T(".lua"), NULL, OFN_FILEMUSTEXIST,
+      g_pszLuaFileFilter, m_hWnd);
+
+   if (IDOK == dlg.DoModal())
+      OpenLuaSourceFile(dlg.m_ofn.lpstrFile);
+
+   return 0;
+}
+
+LRESULT CMainFrame::OnFileSave(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+   HWND hWnd = MDIGetActive();
+
+   // search active Lua child frame
+   int nMax = m_apLuaChildWindows.GetSize();
+   for (int n=0; n<nMax; n++)
+   {
+      if (hWnd == m_apLuaChildWindows[n]->m_hWnd)
+      {
+         // found window; save file
+         m_apLuaChildWindows[n]->SaveFile();
+         break;
+      }
+   }
+
+   return 0;
+}
+
+LRESULT CMainFrame::OnFileSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+   HWND hWnd = MDIGetActive();
+
+   // search active Lua child frame
+   int nMax = m_apLuaChildWindows.GetSize();
+   for (int n=0; n<nMax; n++)
+   {
+      if (hWnd == m_apLuaChildWindows[n]->m_hWnd)
+      {
+         CString cszFilename = m_apLuaChildWindows[n]->GetFilename();
+
+         // found window; ask for filename
+         CFileDialog dlg(FALSE, _T(".lua"), cszFilename, OFN_OVERWRITEPROMPT,
+            g_pszLuaFileFilter, m_hWnd);
+
+         if (IDOK == dlg.DoModal())
+            m_apLuaChildWindows[n]->SaveAs(dlg.m_ofn.lpstrFile);
+
+         break;
+      }
+   }
+
+   return 0;
+}
+
+LRESULT CMainFrame::OnFileSaveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+   // go through all Lua child frames and save file when necessary
+   int nMax = m_apLuaChildWindows.GetSize();
+   for (int n=0; n<nMax; n++)
+      if (m_apLuaChildWindows[n]->IsModified())
+         m_apLuaChildWindows[n]->SaveFile();
+
    return 0;
 }
 
@@ -516,6 +597,8 @@ void CMainFrame::AddDebugWindow(CDebugWindowBase* pDebugWindow)
 
 void CMainFrame::RemoveDebugWindow(CDebugWindowBase* pDebugWindow)
 {
+   ATLASSERT(pDebugWindow != NULL);
+
    pDebugWindow->InitDebugWindow(NULL);
 
    int nMax = m_apDebugWindows.GetSize();
@@ -523,6 +606,59 @@ void CMainFrame::RemoveDebugWindow(CDebugWindowBase* pDebugWindow)
       if (pDebugWindow == m_apDebugWindows[n])
       {
          m_apDebugWindows.RemoveAt(n);
+         n--;
+         nMax--;
+      }
+}
+
+void CMainFrame::OpenLuaSourceFile(LPCTSTR pszFilename)
+{
+   ATLASSERT(pszFilename != NULL);
+
+   // search if file is already open
+   CString cszOpenFilename(pszFilename);
+   cszOpenFilename.MakeLower();
+
+   int nMax = m_apLuaChildWindows.GetSize();
+   for (int n=0; n<nMax; n++)
+   {
+      CString cszWindowFilename = m_apLuaChildWindows[n]->GetFilename();
+      cszWindowFilename.MakeLower();
+
+      if (cszWindowFilename == cszOpenFilename)
+      {
+         m_apLuaChildWindows[n]->MDIActivate(m_apLuaChildWindows[n]->m_hWnd);
+         return;
+      }
+   }
+
+   CLuaSourceView* pChild = new CLuaSourceView;
+   pChild->CreateEx(m_hWndClient);
+   pChild->MDIMaximize(pChild->m_hWnd);
+   AddLuaChildView(pChild);
+
+   pChild->OpenFile(pszFilename);
+}
+
+void CMainFrame::AddLuaChildView(CLuaSourceView* pChildView)
+{
+   ATLASSERT(pChildView != NULL);
+
+   pChildView->InitDebugWindow(this);
+   m_apLuaChildWindows.Add(pChildView);
+}
+
+void CMainFrame::RemoveLuaChildView(CLuaSourceView* pChildView)
+{
+   ATLASSERT(pChildView != NULL);
+
+   pChildView->InitDebugWindow(NULL);
+
+   int nMax = m_apLuaChildWindows.GetSize();
+   for (int n=0; n<nMax; n++)
+      if (pChildView == m_apLuaChildWindows[n])
+      {
+         m_apLuaChildWindows.RemoveAt(n);
          n--;
          nMax--;
       }

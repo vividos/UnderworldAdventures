@@ -101,6 +101,10 @@ public:
       MESSAGE_HANDLER(WM_CREATE, OnCreate)
       COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
       COMMAND_ID_HANDLER(ID_FILE_NEW, OnFileNew)
+      COMMAND_ID_HANDLER(ID_FILE_OPEN, OnFileOpen)
+      COMMAND_ID_HANDLER(ID_FILE_SAVE, OnFileSave)
+      COMMAND_ID_HANDLER(ID_FILE_SAVE_AS, OnFileSaveAs)
+      COMMAND_ID_HANDLER(ID_FILE_SAVE_ALL, OnFileSaveAll)
       COMMAND_ID_HANDLER(ID_UNDERWORLD_RUNNING, OnButtonUnderworldRunning)
       COMMAND_ID_HANDLER(ID_VIEW_TOOLBAR, OnViewToolBar)
       COMMAND_ID_HANDLER(ID_VIEW_STATUS_BAR, OnViewStatusBar)
@@ -111,11 +115,12 @@ public:
       COMMAND_ID_HANDLER(ID_VIEW_PROJECT, OnViewProjectInfo)
       COMMAND_ID_HANDLER(ID_VIEW_TILEMAP, OnViewTilemap)
       COMMAND_ID_HANDLER(ID_VIEW_GAMESTRINGS, OnViewGameStrings)
-      COMMAND_ID_HANDLER(ID_APP_ABOUT, OnAppAbout)
       COMMAND_ID_HANDLER(ID_WINDOW_CASCADE, OnWindowCascade)
       COMMAND_ID_HANDLER(ID_WINDOW_TILE_HORZ, OnWindowTileHorizontal)
       COMMAND_ID_HANDLER(ID_WINDOW_TILE_VERT, OnWindowTileVertical)
       COMMAND_ID_HANDLER(ID_WINDOW_ARRANGE, OnWindowArrangeIcons)
+      COMMAND_ID_HANDLER(ID_APP_ABOUT, OnAppAbout)
+      // ID_HELP_INDEX
       MESSAGE_HANDLER(WM_UNDOCK_WINDOW, OnUndockWindow)
       CHAIN_MDI_CHILD_COMMANDS()
       CHAIN_MSG_MAP(CUpdateUI<CMainFrame>)
@@ -147,6 +152,10 @@ public:
    LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
    LRESULT OnFileExit(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnFileNew(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnFileOpen(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnFileSave(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnFileSaveAs(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnFileSaveAll(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnButtonUnderworldRunning(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnViewToolBar(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnViewStatusBar(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -199,6 +208,9 @@ public:
    virtual void UndockWindow(T_enDockingWindowID windowID);
    virtual void AddDebugWindow(CDebugWindowBase* pDebugWindow);
    virtual void RemoveDebugWindow(CDebugWindowBase* pDebugWindow);
+   virtual void OpenLuaSourceFile(LPCTSTR pszFilename);
+   virtual void AddLuaChildView(CLuaSourceView* pChildView);
+   virtual void RemoveLuaChildView(CLuaSourceView* pChildView);
 
 private:
    //! debug client interface
@@ -212,6 +224,9 @@ private:
 
    //! array with pointer to all debug windows
    CSimpleArray<CDebugWindowBase*> m_apDebugWindows;
+
+   //! array with pointer to all lua child windows
+   CSimpleArray<CLuaSourceView*> m_apLuaChildWindows;
 };
 
 /////////////////////////////////////////////////////////////////////////////
