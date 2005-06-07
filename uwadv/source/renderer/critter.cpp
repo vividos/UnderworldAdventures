@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -68,6 +68,10 @@ void ua_critter::reset_prepare()
 
 ua_texture& ua_critter::get_texture(unsigned int frame)
 {
+//   ua_assert(frame < frame_uploaded.size() && frame != 0xFF);
+   if (frame == 0xff)
+      frame = 0;
+
    if (!frame_uploaded[frame])
    {
       frame_uploaded[frame] = true;
