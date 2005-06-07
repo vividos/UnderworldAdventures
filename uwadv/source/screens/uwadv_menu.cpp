@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -82,8 +82,13 @@ void ua_uwadv_menu_screen::draw()
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
+   // calculate height, width and position
+   double xres = game.get_screen_xres();
+   double yres = game.get_screen_yres();
+   double ratio = (xres / yres) * (200.0 / 320.0);
+
    const unsigned width = 150;
-   const unsigned height = 75;
+   const unsigned height = static_cast<unsigned>(60 * ratio);
    const unsigned xpos = (320-width)/2;
    const unsigned ypos = (200-height)/2;
 
@@ -124,8 +129,7 @@ void ua_uwadv_menu_screen::tick()
    game.init_game();
 
 #ifdef HAVE_DEBUG
-   game.get_underworld().import_savegame(game.get_settings(),"data/",true);
-   game.replace_screen(new ua_ingame_orig_screen(game),false);
+   game.replace_screen(new ua_start_menu_screen(game),false);
 
 /*
    paste one:
@@ -133,7 +137,7 @@ void ua_uwadv_menu_screen::tick()
    game.get_underworld().import_savegame(game.get_settings(),"data/",true);
    game.replace_screen(new ua_ingame_orig_screen(game),false);
    --------------------
-   game.replace_screen(new ua_save_game_screen(game,true),false);
+   game.replace_screen(new ua_save_game_screen(game,true,false),false);
    --------------------
    game.replace_screen(new ua_start_menu_screen(game),false);
    --------------------
