@@ -132,9 +132,6 @@ void ua_uwadv_game::init()
       }
    }
 
-   // init savegames manager
-   savegames_manager.init(settings);
-
    // init SDL window
    init_sdl();
 
@@ -630,6 +627,9 @@ void ua_uwadv_game::init_game()
 
    ua_trace("using generic uw-path: %s\n",
       settings.get_string(ua_setting_uw_path).c_str());
+
+   // init savegames manager
+   savegames_manager.init(settings);
 
    // init image manager
    image_manager.init(settings);
