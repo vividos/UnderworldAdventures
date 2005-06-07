@@ -131,6 +131,11 @@ public:
    //! removes current screen at next event processing
    virtual void remove_screen()=0;
 
+   //! returns screen x resolution
+   virtual unsigned int get_screen_xres()=0;
+   //! returns screen y resolution
+   virtual unsigned int get_screen_yres()=0;
+
 protected:
    //! ctor
    ua_game_interface(){}

@@ -94,6 +94,8 @@ public:
    virtual ua_renderer& get_renderer();
    virtual void replace_screen(ua_screen* new_screen, bool save_current);
    virtual void remove_screen();
+   virtual unsigned int get_screen_xres(){ return width; }
+   virtual unsigned int get_screen_yres(){ return height; }
 
 protected:
    //! initializes SDL and creates a window
