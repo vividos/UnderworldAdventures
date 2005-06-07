@@ -259,7 +259,7 @@ void ua_conv_graph::collect_xrefs()
 
          // adjust for relative jumps
          if (opcode == op_BEQ || opcode == op_BNE || opcode == op_BRA)
-            target += item.pos+1;
+            target = static_cast<Uint16>((static_cast<Uint32>(target) + static_cast<Uint32>(item.pos + 1)) & 0xFFFF);
 
          // find target position
          graph_iterator target_pos = find_pos(target);
