@@ -102,7 +102,6 @@ uwadv_SOURCES = \
 	underw/properties.hpp \
 	underw/runes.hpp \
 	underw/underworld.cpp underw/underworld.hpp \
-	underw/test/physicstest.cpp \
 	common.hpp \
 	dbgserver.hpp \
 	debug.cpp debug.hpp \
