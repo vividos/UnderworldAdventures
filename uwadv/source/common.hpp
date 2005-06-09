@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -39,6 +39,8 @@
 #ifdef _MSC_VER
 # pragma warning( disable: 4786 ) // identifier was truncated to '255' characters in the debug information
 # pragma warning( disable: 4290 ) // C++ Exception Specification ignored
+# pragma warning( disable: 4244 ) // conversion from 'x' to 'y', possible loss of data
+# pragma warning( disable: 4100 ) // unreferenced formal parameter
 #endif
 
 
