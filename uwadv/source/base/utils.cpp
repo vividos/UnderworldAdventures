@@ -279,15 +279,19 @@ std::string ua_get_home_path()
 #elif defined(WIN32) && defined(_MSC_VER) // Visual C++ under Windows
 
    char appdata_path[MAX_PATH];
-   HRESULT hr = SHGetFolderPathA(NULL, CSIDL_COMMON_APPDATA | CSIDL_FLAG_CREATE,
+   HRESULT hr = ::SHGetFolderPathA(NULL, CSIDL_COMMON_APPDATA | CSIDL_FLAG_CREATE,
       NULL, SHGFP_TYPE_CURRENT, appdata_path);
    if (hr == S_OK)
    {
       uahome_path = appdata_path;
       uahome_path += "\\Underworld Adventures\\";
 
-      // check if the path really exists
-      if (0xFFFFFFFF == ::GetFileAttributesA(uahome_path.c_str()))
+      std::string cfgfile(uahome_path);
+      cfgfile += "uwadv.cfg";
+
+      // check if the path really exists, and that it contains uwadv.cfg
+      if (0xFFFFFFFF == ::GetFileAttributesA(uahome_path.c_str()) ||
+          0xFFFFFFFF == ::GetFileAttributesA(cfgfile.c_str()))
          uahome_path = "./"; // revert to current dir
    }
 
