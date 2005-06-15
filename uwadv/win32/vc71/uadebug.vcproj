@@ -12,8 +12,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="Debug\$(ProjectName)"
-			IntermediateDirectory="Debug\$(ProjectName)\intermediate"
+			OutputDirectory="$(ConfigurationName)\$(ProjectName)"
+			IntermediateDirectory="$(ConfigurationName)\$(ProjectName)\intermediate"
 			ConfigurationType="2"
 			UseOfATL="1"
 			CharacterSet="2">
@@ -21,7 +21,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\source;..\..\source\win32\uadebug\thirdparty\menuxp;..\..\source\win32\uadebug\thirdparty\scintilla;..\..\source\win32\uadebug\thirdparty\tabbingframework\include;..\..\source\win32\uadebug\thirdparty\wtldockingwindows\include"
-				PreprocessorDefinitions="_STLP_USE_STATIC_LIB"
+				PreprocessorDefinitions="HAVE_DEBUG,HAVE_CONSOLE,_STLP_USE_STATIC_LIB"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -29,6 +29,8 @@
 				RuntimeLibrary="3"
 				BufferSecurityCheck="TRUE"
 				EnableFunctionLevelLinking="TRUE"
+				TreatWChar_tAsBuiltInType="TRUE"
+				ForceConformanceInForLoopScope="TRUE"
 				UsePrecompiledHeader="3"
 				PrecompiledHeaderThrough="stdatl.hpp"
 				WarningLevel="4"
@@ -70,8 +72,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="Release\$(ProjectName)"
-			IntermediateDirectory="Release\$(ProjectName)\intermediate"
+			OutputDirectory="$(ConfigurationName)\$(ProjectName)"
+			IntermediateDirectory="$(ConfigurationName)\$(ProjectName)\intermediate"
 			ConfigurationType="2"
 			UseOfATL="1"
 			CharacterSet="2"
@@ -83,6 +85,8 @@
 				PreprocessorDefinitions="_STLP_USE_STATIC_LIB"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
+				TreatWChar_tAsBuiltInType="TRUE"
+				ForceConformanceInForLoopScope="TRUE"
 				UsePrecompiledHeader="3"
 				PrecompiledHeaderThrough="stdatl.hpp"
 				WarningLevel="4"
@@ -139,6 +143,9 @@
 				RelativePath="..\..\source\win32\uadebug\EditListViewCtrl.cpp">
 			</File>
 			<File
+				RelativePath="..\..\source\win32\uadebug\Filename.cpp">
+			</File>
+			<File
 				RelativePath="..\..\source\win32\uadebug\GameStringsView.cpp">
 			</File>
 			<File
@@ -186,9 +193,6 @@
 				RelativePath="..\..\source\win32\uadebug\TileInfo.cpp">
 			</File>
 			<File
-				RelativePath="..\..\source\win32\uadebug\TileMapView.cpp">
-			</File>
-			<File
 				RelativePath="..\..\source\win32\uadebug\TileMapViewCtrl.cpp">
 			</File>
 			<File
@@ -207,6 +211,9 @@
 			</File>
 			<File
 				RelativePath="..\..\source\win32\uadebug\EditListViewCtrl.hpp">
+			</File>
+			<File
+				RelativePath="..\..\source\win32\uadebug\Filename.hpp">
 			</File>
 			<File
 				RelativePath="..\..\source\win32\uadebug\GameStringsView.hpp">
