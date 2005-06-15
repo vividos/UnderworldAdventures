@@ -3,8 +3,8 @@
 // Used by uadebug_res.rc
 //
 #define IDD_ABOUTBOX                    100
-#define IDD_TILEMAPVIEW_FORM            101
-#define IDD_GAMESTRINGSVIEW             102
+#define IDD_TILE_INFO                   101
+#define IDD_GAMESTRINGS                 102
 #define IDR_MAINFRAME                   128
 #define IDR_LUA_SOURCE_FRAME            129
 #define IDR_GAME_STRINGS                130
@@ -21,6 +21,7 @@
 #define ID_VIEW_PLAYERINFO              32772
 #define ID_VIEW_HOTSPOT                 32773
 #define ID_VIEW_OBJECTLIST              32775
+#define ID_FILE_SAVE_ALL                32776
 #define ID_FILE_OPEN_PROJECT            32777
 #define ID_FILE_CLOSE_PROJECT           32778
 #define ID_UNDERWORLD_RUNNING           32780
