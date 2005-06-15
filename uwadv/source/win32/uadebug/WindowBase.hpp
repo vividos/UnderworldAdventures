@@ -36,6 +36,7 @@
 // forward references
 class CDebugClientInterface;
 class CMainFrame;
+class CProjectManager;
 
 
 // types
@@ -63,6 +64,7 @@ enum T_enNotifyCode
    ncUpdatedObject,  //!< is sent when object information were updated
    ncUpdatedTile,    //!< is sent when tile information were updated
    ncChangedLevel,   //!< is sent when user changed the current level
+   ncCodeDebuggerUpdate,   //!< is sent when a code debugger action occured
    ncUnknown,
 };
 
@@ -100,6 +102,9 @@ public:
 
    //! returns debug client interface
    virtual CDebugClientInterface& GetDebugClientInterface()=0;
+
+   //! returns project manager object
+   virtual CProjectManager& GetProjectManager()=0;
 
    //! sends notification message to a specific debug application window
    virtual void SendNotification(CDebugWindowNotification& notify, class CDebugWindowBase* pDebugWindow)=0;
@@ -140,8 +145,11 @@ public:
    //! dtor
    virtual ~CDebugWindowBase(){}
 
-   //! initializes child window
+   //! initializes debug window
    virtual void InitDebugWindow(IMainFrame* pMainFrame){ m_pMainFrame = pMainFrame; }
+
+   //! cleans up debug window
+   virtual void DoneDebugWindow(){ m_pMainFrame = NULL; }
 
 protected:
    //! receives notifications; only CMainFrame may call this function
