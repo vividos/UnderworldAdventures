@@ -238,6 +238,93 @@ void CDebugClientObjectInterface::SetItemInfo(unsigned int nPos, unsigned int nS
 }
 
 
+// CDebugClientCodeDebuggerInterface methods
+
+T_enCodeDebuggerType CDebugClientCodeDebuggerInterface::GetDebuggerType()
+{
+   return static_cast<T_enCodeDebuggerType>(m_pCodeDebugger->get_debugger_type());
+}
+
+void CDebugClientCodeDebuggerInterface::PrepareDebugInfo()
+{
+   m_pCodeDebugger->prepare_debug_info();
+}
+
+bool CDebugClientCodeDebuggerInterface::IsSourceAvail() const
+{
+   // TODO implement
+   return true;
+}
+
+bool CDebugClientCodeDebuggerInterface::IsCodeAvail() const
+{
+   // TODO implement
+   return true;
+}
+
+CDebugClientCodeDebuggerInterface::SCodePosition CDebugClientCodeDebuggerInterface::GetCurrentPos()
+{
+   SCodePosition pos;
+   // TODO implement
+   return pos;
+}
+
+unsigned int CDebugClientCodeDebuggerInterface::GetBreakpointCount() const
+{
+   // TODO implement
+   return 0;
+}
+
+void CDebugClientCodeDebuggerInterface::GetBreakpointInfo(unsigned int nBreakpointIndex, SBreakpointInfo& breakpointInfo) const
+{
+   // TODO implement
+}
+
+bool CDebugClientCodeDebuggerInterface::GetSourceFromPosition(CString& cszFilename, unsigned int& nLine, unsigned int& nLineDisplacement)
+{
+   // TODO implement
+   return false;
+}
+
+unsigned int CDebugClientCodeDebuggerInterface::GetCallstackHeight() const
+{
+   // TODO implement
+   return 0;
+}
+
+void CDebugClientCodeDebuggerInterface::GetCallstackInfo(unsigned int nAtLevel, SCallstackInfo& callstackInfo) const
+{
+   ATLASSERT(nAtLevel < GetCallstackHeight());
+   // TODO implement
+}
+
+unsigned int CDebugClientCodeDebuggerInterface::GetSourcecodeCount() const
+{
+   return m_pCodeDebugger->get_num_sourcefiles();
+}
+
+CString CDebugClientCodeDebuggerInterface::GetSourcecodeFilename(unsigned int nIndex)
+{
+   ATLASSERT(nIndex < GetSourcecodeCount());
+
+   unsigned int nSize = m_pCodeDebugger->get_sourcefile_name(nIndex, NULL, 0);
+
+   CHAR* szText = new CHAR[nSize+1];
+   szText[nSize] = 0;
+
+   m_pCodeDebugger->get_sourcefile_name(nIndex, szText, nSize+1);
+
+   USES_CONVERSION;
+   CFilename sourceFilename(A2CT(szText));
+   delete[] szText;
+
+   sourceFilename.MakeAbsoluteToCurrentDir();
+   ATLASSERT(sourceFilename.IsValidObject());
+
+   return sourceFilename.Get();
+}
+
+
 // CDebugClientInterface methods
 
 bool CDebugClientInterface::Init(ua_debug_server_interface* pDebugInterface)
@@ -271,16 +358,18 @@ unsigned int CDebugClientInterface::GetFlag(unsigned int flag)
 
 CString CDebugClientInterface::GetGameCfgPath()
 {
-   char szBuffer[512];
+   CHAR szBuffer[512];
    szBuffer[511] = 0;
 
    m_pDebugInterface->get_game_path(szBuffer,511);
 
-   CString cszGamePath(szBuffer);
-   cszGamePath.Replace(_T("/"), _T("\\"));
-   cszGamePath += _T("\\");
+   USES_CONVERSION;
+   CFilename gamePath(A2CT(szBuffer));
 
-   return cszGamePath;
+   gamePath.MakeAbsoluteToCurrentDir();
+   ATLASSERT(gamePath.IsValidObject());
+
+   return gamePath.Get();
 }
 
 void CDebugClientInterface::LoadGameCfg(LPCTSTR pszPrefix)
@@ -313,6 +402,22 @@ unsigned int CDebugClientInterface::GetNumLevels()
 void CDebugClientInterface::SetWorkingLevel(unsigned int level)
 {
    m_nLevel = level;
+}
+
+CString CDebugClientInterface::GetLevelName(unsigned int level) const
+{
+   // TODO
+   return _T("unknown");
+}
+
+void CDebugClientInterface::InsertNewLevel(unsigned int before_level)
+{
+   // TODO implement
+}
+
+void CDebugClientInterface::MoveLevel(unsigned int level, unsigned int level_insert_point)
+{
+   // TODO implement
 }
 
 CDebugClientPlayerInterface CDebugClientInterface::GetPlayerInterface()
@@ -353,14 +458,62 @@ unsigned int CDebugClientInterface::GetGameStringBlockSize(unsigned int block)
 
 CString CDebugClientInterface::GetGameString(unsigned int block, unsigned int nr)
 {
-   CString cszText;
-
    unsigned int nLen = m_pDebugInterface->get_game_string(block, nr, NULL, 0);
 
-   nLen = m_pDebugInterface->get_game_string(block, nr, cszText.GetBuffer(nLen), nLen);
-   cszText.ReleaseBuffer(nLen);
+   CHAR* szBuffer = new CHAR[nLen+1];
+   szBuffer[nLen] = 0;
+
+   m_pDebugInterface->get_game_string(block, nr, szBuffer, nLen+1);
+
+   USES_CONVERSION;
+   CString cszText = A2CT(szBuffer);
 
    return cszText;
+}
+
+void CDebugClientInterface::AddCodeDebugger(unsigned int nCodeDebuggerID)
+{
+   if (!IsValidCodeDebuggerID(nCodeDebuggerID))
+      m_anCodeDebuggerIDs.Add(nCodeDebuggerID);
+}
+
+void CDebugClientInterface::RemoveCodeDebugger(unsigned int nCodeDebuggerID)
+{
+   ATLVERIFY(TRUE == m_anCodeDebuggerIDs.Remove(nCodeDebuggerID));
+}
+
+unsigned int CDebugClientInterface::GetCodeDebuggerCount() const
+{
+   return static_cast<unsigned int>(m_anCodeDebuggerIDs.GetSize());
+}
+
+unsigned int CDebugClientInterface::GetCodeDebuggerByIndex(unsigned int nIndex) const
+{
+   ATLASSERT(nIndex < GetCodeDebuggerCount());
+   return m_anCodeDebuggerIDs[nIndex];
+}
+
+bool CDebugClientInterface::IsValidCodeDebuggerID(unsigned int nCodeDebuggerID) const
+{
+   int nMax = m_anCodeDebuggerIDs.GetSize();
+   for(int n=0; n<nMax; n++)
+   {
+      if (m_anCodeDebuggerIDs[n] == nCodeDebuggerID)
+         return true;
+   }
+
+   return false;
+}
+
+CDebugClientCodeDebuggerInterface CDebugClientInterface::GetCodeDebuggerInterface(unsigned int nCodeDebuggerID)
+{
+   ATLASSERT(true == IsValidCodeDebuggerID(nCodeDebuggerID));
+
+   CDebugClientCodeDebuggerInterface cdi;
+   cdi.m_pCodeDebugger = m_pDebugInterface->get_code_debugger(nCodeDebuggerID);
+
+   ATLASSERT(cdi.m_pCodeDebugger != NULL);
+   return cdi;
 }
 
 CImageList CDebugClientInterface::GetObjectImageList()
@@ -413,16 +566,17 @@ bool CDebugClientInterface::GetMessage(CDebugClientMessage& msg)
    unsigned int nTextSize = 0;
    m_pDebugInterface->get_message(msg.m_nType, msg.m_nArg1, msg.m_nArg2, msg.m_dArg3, nTextSize);
 
-   CHAR* pBuffer = new CHAR[nTextSize+1];
-   pBuffer[nTextSize]=0;
+   CHAR* szBuffer = new CHAR[nTextSize+1];
+   szBuffer[nTextSize]=0;
 
-   ATLVERIFY(true == m_pDebugInterface->get_message_text(pBuffer, nTextSize));
+   ATLVERIFY(true == m_pDebugInterface->get_message_text(szBuffer, nTextSize));
 
-   msg.m_cszText = pBuffer;
+   msg.m_cszText = szBuffer;
+   delete[] szBuffer;
 
    m_pDebugInterface->pop_message();
 
    m_pDebugInterface->lock(false);
 
    return true;
-}
+}

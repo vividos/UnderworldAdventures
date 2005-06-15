@@ -118,12 +118,84 @@ private:
 };
 
 
+//! code debugger type; corresponds with ua_debug_code_debugger_type in dbgserver.hpp
+enum T_enCodeDebuggerType
+{
+   cdtUwConv=0,   //!< uw conversation script
+   cdtLuaScript   //!< Lua script
+};
+
 //! code debugger interface
 class CDebugClientCodeDebuggerInterface
 {
 public:
+   struct SCodePosition
+   {
+      //! code position; only valid if code debugger IsCodeAvail() returns true
+      unsigned int m_nCodePos;
+
+      //! index value to retrieve source file name
+      unsigned int m_nSourceFileNameIndex;
+      unsigned int m_nSourceFileLine;
+      unsigned int m_nSourceFileDisplacement;
+   };
+
+   struct SBreakpointInfo
+   {
+      unsigned int m_nPos;
+      unsigned int m_nType;
+   };
+
+   struct SCallstackInfo
+   {
+      unsigned int m_nPos;
+      unsigned int m_nReturnPos;
+   };
+
+public:
    CDebugClientCodeDebuggerInterface(){}
    virtual ~CDebugClientCodeDebuggerInterface(){}
+
+   // misc.
+
+   //! returns code debugger type
+   T_enCodeDebuggerType GetDebuggerType();
+
+   //! prepares debug info for code debugger
+   void PrepareDebugInfo();
+
+   //! returns true when source file is available
+   bool IsSourceAvail() const;
+
+   //! returns true when code is available
+   bool IsCodeAvail() const;
+
+   //! returns current code position
+   SCodePosition GetCurrentPos();
+
+   // breakpoints
+
+   unsigned int GetBreakpointCount() const;
+   void GetBreakpointInfo(unsigned int nBreakpointIndex, SBreakpointInfo& breakpointInfo) const;
+
+   // call stack
+
+   unsigned int GetCallstackHeight() const;
+   void GetCallstackInfo(unsigned int nAtLevel, SCallstackInfo& callstackInfo) const;
+
+
+   // sourcecode files; only valid if IsSourceAvail() returns a value > 0
+   unsigned int GetSourcecodeCount() const;
+
+   CString GetSourcecodeFilename(unsigned int nIndex);
+
+   // code location
+
+   bool GetSourceFromPosition(CString& cszFilename, unsigned int& nLine, unsigned int& nLineDisplacement);
+
+protected:
+   class ua_debug_code_interface* m_pCodeDebugger;
+   friend class CDebugClientInterface;
 };
 
 enum T_enTileInfoType
@@ -158,24 +230,53 @@ public:
    bool IsGamePaused();
    void PauseGame(bool pause);
 
+   // level stuff
+
    unsigned int GetNumLevels();
    void SetWorkingLevel(unsigned int level);
    unsigned int GetWorkingLevel() const { return m_nLevel; }
 
+   CString GetLevelName(unsigned int level) const;
+
+   void InsertNewLevel(unsigned int before_level);
+
+   void MoveLevel(unsigned int level, unsigned int level_insert_point);
+
+
+   // sub-interfaces
 
    CDebugClientPlayerInterface GetPlayerInterface();
 
    CDebugClientObjectInterface GetObjectInterface();
 
 
+   // tile info
+
    unsigned int GetTileInfo(unsigned int xpos, unsigned int ypos, T_enTileInfoType type);
    void SetTileInfo(unsigned int xpos, unsigned int ypos, T_enTileInfoType type, unsigned int val);
 
+
+   // game strings
 
    bool EnumGameStringsBlock(int index, unsigned int& block);
    unsigned int GetGameStringBlockSize(unsigned int block);
    CString GetGameString(unsigned int block, unsigned int nr);
 
+
+   // code debugger access
+
+   void AddCodeDebugger(unsigned int nCodeDebuggerID);
+   void RemoveCodeDebugger(unsigned int nCodeDebuggerID);
+
+   bool IsValidCodeDebuggerID(unsigned int nCodeDebuggerID) const;
+
+   unsigned int GetCodeDebuggerCount() const;
+   unsigned int GetCodeDebuggerByIndex(unsigned int nIndex) const;
+
+   CDebugClientCodeDebuggerInterface GetCodeDebuggerInterface(unsigned int nCodeDebuggerID);
+
+
+   // misc.
 
    CImageList GetObjectImageList();
 
@@ -187,6 +288,9 @@ private:
 
    //! current level we're operating
    unsigned int m_nLevel;
+
+   //! array with all valid code debugger IDs
+   CSimpleArray<unsigned int> m_anCodeDebuggerIDs;
 };
 
 //@}
