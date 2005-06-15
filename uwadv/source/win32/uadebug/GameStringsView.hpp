@@ -45,7 +45,7 @@ public:
    CGameStringsView(){}
    virtual ~CGameStringsView();
 
-   enum { IDD = IDD_GAMESTRINGSVIEW };
+   enum { IDD = IDD_GAMESTRINGS };
 
    BOOL PreTranslateMessage(MSG* pMsg)
    {
@@ -66,8 +66,7 @@ protected:
    virtual void InitDebugWindow(IMainFrame* pMainFrame)
    {
       CDebugWindowBase::InitDebugWindow(pMainFrame);
-      if (m_pMainFrame != NULL)
-         InitCombobox();
+      InitCombobox();
    }
 
    //! initializes combobox content
@@ -132,8 +131,13 @@ protected:
    virtual void InitDebugWindow(IMainFrame* pMainFrame)
    {
       baseClass::InitDebugWindow(pMainFrame);
-      if (pMainFrame != NULL)
-         pMainFrame->AddDebugWindow(&m_view);
+      pMainFrame->AddDebugWindow(&m_view);
+   }
+
+   virtual void DoneDebugWindow()
+   {
+      m_pMainFrame->RemoveDebugWindow(&m_view);
+      baseClass::DoneDebugWindow();
    }
 
    virtual void ReceiveNotification(CDebugWindowNotification& notify)
