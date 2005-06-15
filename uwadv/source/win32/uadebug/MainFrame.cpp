@@ -509,18 +509,15 @@ bool CMainFrame::ShowHideDockingWindow(CDockingWindowBase& dockingWindow)
       DockWindow(dockingWindow, dockSide,
          nBar, float(0.0)/*fPctPos*/, dockSize.cx, dockSize.cy);
 
-      if (!m_bStopped)
-      {
-         // update data in control
-         CDebugWindowNotification notify;
-         notify.code = ncUpdateData;
-         notify.m_bRelayToDescendants = true;
-         SendNotification(notify, &dockingWindow);
+      // update data in control
+      CDebugWindowNotification notify;
+      notify.code = ncUpdateData;
+      notify.m_bRelayToDescendants = true;
+      SendNotification(notify, &dockingWindow);
 
-         // also set window to readonly / writable
-         notify.code = m_bStopped ? ncSetReadonly : ncSetReadWrite;
-         SendNotification(notify, &dockingWindow);
-      }
+      // also set window to readonly / writable
+      notify.code = m_bStopped ? ncSetReadonly : ncSetReadWrite;
+      SendNotification(notify, &dockingWindow);
    }
 
    return !bVisible;
