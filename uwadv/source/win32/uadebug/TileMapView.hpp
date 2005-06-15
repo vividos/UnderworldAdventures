@@ -87,13 +87,14 @@ protected:
 
    virtual void InitDebugWindow(IMainFrame* pMainFrame)
    {
-      if (pMainFrame == NULL && m_pMainFrame != NULL)
-         m_pMainFrame->RemoveDebugWindow(&m_view);
+      baseClass::InitDebugWindow(pMainFrame);
+      pMainFrame->AddDebugWindow(&m_view);
+   }
 
-      CDebugWindowBase::InitDebugWindow(pMainFrame);
-
-      if (pMainFrame != NULL)
-         pMainFrame->AddDebugWindow(&m_view);
+   virtual void DoneDebugWindow()
+   {
+      m_pMainFrame->RemoveDebugWindow(&m_view);
+      baseClass::DoneDebugWindow();
    }
 
    virtual void ReceiveNotification(CDebugWindowNotification& notify)
