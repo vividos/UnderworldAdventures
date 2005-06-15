@@ -98,6 +98,10 @@ extern CAppModule _Module;
 #include "dbgserver.hpp"
 
 
+// array length macro
+#define ARRAYLENGTH(arr) (sizeof(arr) / sizeof((arr)[0]) )
+
+
 // check macro to check if the REFLECT_NOTIFICATIONS() macro was added to the parent class
 #define ATLASSERT_ADDED_REFLECT_NOTIFICATIONS() CheckAddedReflectNotifications(hWnd, uMsg, wParam, lParam);
 
@@ -111,6 +115,7 @@ void CheckAddedReflectNotifications(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 
 
 // project-specific often-used includes
+#include "Filename.hpp"
 #include "WindowBase.hpp"
 #include "EditListViewCtrl.hpp"
 
