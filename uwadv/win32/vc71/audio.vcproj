@@ -12,15 +12,15 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="Debug\$(ProjectName)"
-			IntermediateDirectory="Debug\$(ProjectName)\intermediate"
+			OutputDirectory="$(ConfigurationName)\$(ProjectName)"
+			IntermediateDirectory="$(ConfigurationName)\$(ProjectName)\intermediate"
 			ConfigurationType="4"
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\source;..\..\source\base"
-				PreprocessorDefinitions="_STLP_USE_STATIC_LIB"
+				PreprocessorDefinitions="HAVE_DEBUG,HAVE_CONSOLE,_STLP_USE_STATIC_LIB"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -28,6 +28,8 @@
 				RuntimeLibrary="3"
 				BufferSecurityCheck="TRUE"
 				EnableFunctionLevelLinking="TRUE"
+				TreatWChar_tAsBuiltInType="TRUE"
+				ForceConformanceInForLoopScope="TRUE"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="common.hpp"
 				WarningLevel="4"
@@ -59,8 +61,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="Release\$(ProjectName)"
-			IntermediateDirectory="Release\$(ProjectName)\intermediate"
+			OutputDirectory="$(ConfigurationName)\$(ProjectName)"
+			IntermediateDirectory="$(ConfigurationName)\$(ProjectName)\intermediate"
 			ConfigurationType="4"
 			CharacterSet="2"
 			WholeProgramOptimization="FALSE">
@@ -71,6 +73,8 @@
 				PreprocessorDefinitions="_STLP_USE_STATIC_LIB"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
+				TreatWChar_tAsBuiltInType="TRUE"
+				ForceConformanceInForLoopScope="TRUE"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="common.hpp"
 				WarningLevel="4"

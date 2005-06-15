@@ -12,15 +12,15 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="Debug\$(ProjectName)"
-			IntermediateDirectory="Debug\$(ProjectName)\intermediate"
+			OutputDirectory="$(ConfigurationName)\$(ProjectName)"
+			IntermediateDirectory="$(ConfigurationName)\$(ProjectName)\intermediate"
 			ConfigurationType="1"
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\source;..\..\source\base;..\..\source\underw"
-				PreprocessorDefinitions="_STLP_USE_STATIC_LIB"
+				AdditionalIncludeDirectories="..\..\source;..\..\source\base;..\..\source\conv;..\..\source\import;..\..\source\underw"
+				PreprocessorDefinitions="HAVE_DEBUG,HAVE_CONSOLE,_STLP_USE_STATIC_LIB"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -28,6 +28,8 @@
 				RuntimeLibrary="3"
 				BufferSecurityCheck="TRUE"
 				EnableFunctionLevelLinking="TRUE"
+				TreatWChar_tAsBuiltInType="TRUE"
+				ForceConformanceInForLoopScope="TRUE"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="common.hpp"
 				WarningLevel="4"
@@ -36,10 +38,10 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="base.lib underw.lib SDL.lib SDLmain.lib "
+				AdditionalDependencies="base.lib conv.lib import.lib underw.lib zlib.lib SDL.lib SDLmain.lib"
 				OutputFile="$(OutDir)\..\unittest.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="$(OutDir)\..\base;$(OutDir)\..\underw"
+				AdditionalLibraryDirectories="&quot;$(OutDir)\..\base&quot;;&quot;$(OutDir)\..\conv&quot;;&quot;$(OutDir)\..\import&quot;;&quot;$(OutDir)\..\underw&quot;"
 				IgnoreDefaultLibraryNames="msvcrt.lib"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)\..\$(ProjectName).pdb"
@@ -68,18 +70,20 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="Release\$(ProjectName)"
-			IntermediateDirectory="Release\$(ProjectName)\intermediate"
+			OutputDirectory="$(ConfigurationName)\$(ProjectName)"
+			IntermediateDirectory="$(ConfigurationName)\$(ProjectName)\intermediate"
 			ConfigurationType="1"
 			CharacterSet="2"
 			WholeProgramOptimization="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
 				GlobalOptimizations="TRUE"
-				AdditionalIncludeDirectories="..\..\source;..\..\source\base;..\..\source\underw"
+				AdditionalIncludeDirectories="..\..\source;..\..\source\base;..\..\source\conv;..\..\source\import;..\..\source\underw"
 				PreprocessorDefinitions="_STLP_USE_STATIC_LIB"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
+				TreatWChar_tAsBuiltInType="TRUE"
+				ForceConformanceInForLoopScope="TRUE"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="common.hpp"
 				WarningLevel="4"
@@ -88,10 +92,10 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="base.lib underw.lib SDL.lib SDLmain.lib "
+				AdditionalDependencies="base.lib conv.lib import.lib underw.lib zlib.lib SDL.lib SDLmain.lib"
 				OutputFile="$(OutDir)\..\unittest.exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(OutDir)\..\base;$(OutDir)\..\underw"
+				AdditionalLibraryDirectories="&quot;$(OutDir)\..\base&quot;;&quot;$(OutDir)\..\conv&quot;;&quot;$(OutDir)\..\import&quot;;&quot;$(OutDir)\..\underw&quot;"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)\..\$(ProjectName).pdb"
 				SubSystem="1"
@@ -128,7 +132,13 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
+				RelativePath="..\..\source\unittest\convtest.cpp">
+			</File>
+			<File
 				RelativePath="..\..\source\unittest\CppUnitMini.cpp">
+			</File>
+			<File
+				RelativePath="..\..\source\gamestrings.cpp">
 			</File>
 			<File
 				RelativePath="..\..\source\unittest\physicstest.cpp">
@@ -143,6 +153,12 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
 				RelativePath="..\..\source\unittest\CppUnitMini.h">
+			</File>
+			<File
+				RelativePath="..\..\source\gamestrings.hpp">
+			</File>
+			<File
+				RelativePath="..\..\source\unittest\unittest.hpp">
 			</File>
 		</Filter>
 	</Files>
