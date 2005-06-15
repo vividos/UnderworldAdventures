@@ -201,6 +201,7 @@ public:
    // virtual methods from IMainFrame
 
    virtual CDebugClientInterface& GetDebugClientInterface();
+   virtual CProjectManager& GetProjectManager(){ return m_projectManager; }
    virtual void SendNotification(CDebugWindowNotification& notify, CDebugWindowBase* pDebugWindow);
    virtual void SendNotification(CDebugWindowNotification& notify,
       bool fExcludeSender=false, CDebugWindowBase* pSender=NULL);
@@ -216,7 +217,7 @@ private:
    //! debug client interface
    CDebugClientInterface m_debugClient;
 
-   //! indicates if game is stopped // TODO why?
+   //! indicates if game is stopped
    bool m_bStopped;
 
    //! project manager

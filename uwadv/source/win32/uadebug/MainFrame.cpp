@@ -54,7 +54,8 @@ bool CMainFrame::InitDebugClient(void* pDebugClient)
       return false;
    }
 
-   m_bStopped = false;
+   m_bStopped = m_debugClient.IsGamePaused();
+   UISetCheck(ID_UNDERWORLD_RUNNING, m_bStopped ? FALSE : TRUE);
 
    // load project
    CString cszGameCfgPath = m_debugClient.GetGameCfgPath();
@@ -65,8 +66,6 @@ bool CMainFrame::InitDebugClient(void* pDebugClient)
       m_projectManager.LoadProject(cszGameCfgPath);
    }
 
-   UISetCheck(ID_UNDERWORLD_RUNNING, m_bStopped ? FALSE : TRUE);
-
    // get object imagelist
    m_ilObjects = m_debugClient.GetObjectImageList();
 
@@ -75,6 +74,12 @@ bool CMainFrame::InitDebugClient(void* pDebugClient)
 
 LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+   // set caption
+   if (m_debugClient.IsStudioMode())
+   {
+      // TODO set uastudio mode
+   }
+
    // create command bar window
    HWND hWndCmdBar = m_CmdBar.Create(m_hWnd, rcDefault, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE);
    // attach menu
@@ -144,7 +149,7 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
    }
 
    HWND hWndFocus = ::GetFocus();
-   HWND hWndMDIActive = this->MDIGetActive();
+   HWND hWndMDIActive = MDIGetActive();
 
    if ((hWndMDIActive == hWndFocus) || (::IsChild(hWndMDIActive, hWndFocus)))
    {
@@ -203,10 +208,30 @@ void CMainFrame::ProcessServerMessages()
          break;
 
       case 1: // debugger attach
-         // TODO
+         {
+            unsigned int nCodeDebuggerID = msg.m_nArg1;
+            ATLASSERT(false == m_debugClient.IsValidCodeDebuggerID(nCodeDebuggerID));
+            m_debugClient.AddCodeDebugger(nCodeDebuggerID);
+
+            // prepare debug info
+            m_debugClient.GetCodeDebuggerInterface(nCodeDebuggerID).PrepareDebugInfo();
+
+            // send notification about code debugger update
+            CDebugWindowNotification notify;
+            notify.code = ncCodeDebuggerUpdate;
+            SendNotification(notify);
+         }
          break;
 
       case 2: // debugger detach
+         {
+            ATLASSERT(true == m_debugClient.IsValidCodeDebuggerID(msg.m_nArg1));
+            m_debugClient.RemoveCodeDebugger(msg.m_nArg1);
+
+            CDebugWindowNotification notify;
+            notify.code = ncCodeDebuggerUpdate;
+            SendNotification(notify);
+         }
          break;
       }
    }
@@ -222,7 +247,7 @@ LRESULT CMainFrame::OnFileNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 {
    CLuaSourceView* pChild = new CLuaSourceView;
    pChild->CreateEx(m_hWndClient);
-   pChild->MDIMaximize(pChild->m_hWnd);
+   MDIMaximize(pChild->m_hWnd);
    AddLuaChildView(pChild);
 
    pChild->NewFile();
@@ -423,7 +448,9 @@ LRESULT CMainFrame::OnViewGameStrings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
    pChild->CreateEx(m_hWndClient);
 
    AddDebugWindow(pChild);
+   MDIMaximize(pChild->m_hWnd);
 
+   // send read/write and update data notification
    CDebugWindowNotification notify;
    notify.code = m_bStopped ? ncSetReadonly : ncSetReadWrite;
    notify.m_bRelayToDescendants = true;
@@ -599,7 +626,7 @@ void CMainFrame::RemoveDebugWindow(CDebugWindowBase* pDebugWindow)
 {
    ATLASSERT(pDebugWindow != NULL);
 
-   pDebugWindow->InitDebugWindow(NULL);
+   pDebugWindow->DoneDebugWindow();
 
    int nMax = m_apDebugWindows.GetSize();
    for (int n=0; n<nMax; n++)
@@ -627,14 +654,14 @@ void CMainFrame::OpenLuaSourceFile(LPCTSTR pszFilename)
 
       if (cszWindowFilename == cszOpenFilename)
       {
-         m_apLuaChildWindows[n]->MDIActivate(m_apLuaChildWindows[n]->m_hWnd);
+         MDIActivate(m_apLuaChildWindows[n]->m_hWnd);
          return;
       }
    }
 
    CLuaSourceView* pChild = new CLuaSourceView;
    pChild->CreateEx(m_hWndClient);
-   pChild->MDIMaximize(pChild->m_hWnd);
+   MDIMaximize(pChild->m_hWnd);
    AddLuaChildView(pChild);
 
    pChild->OpenFile(pszFilename);
@@ -652,7 +679,7 @@ void CMainFrame::RemoveLuaChildView(CLuaSourceView* pChildView)
 {
    ATLASSERT(pChildView != NULL);
 
-   pChildView->InitDebugWindow(NULL);
+   pChildView->DoneDebugWindow();
 
    int nMax = m_apLuaChildWindows.GetSize();
    for (int n=0; n<nMax; n++)
