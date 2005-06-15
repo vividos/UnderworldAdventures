@@ -467,6 +467,7 @@ CString CDebugClientInterface::GetGameString(unsigned int block, unsigned int nr
 
    USES_CONVERSION;
    CString cszText = A2CT(szBuffer);
+   delete[] szBuffer;
 
    return cszText;
 }
