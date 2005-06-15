@@ -169,6 +169,8 @@ void CTileMapViewCtrl::ReceiveNotification(CDebugWindowNotification& notify)
    case ncChangedLevel:
       // invalidate selected tile pos
       m_nSelectedTileX = m_nSelectedTileY = unsigned(-1);
+      UpdateTileMap();
+      RedrawWindow(); // force redraw
       break;
    }
 }
