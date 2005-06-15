@@ -89,8 +89,8 @@ LRESULT CPlayerInfoWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
    // create and set up list control
    CRect rcDef;
    GetClientRect(rcDef);
-   m_listCtrl.Create(m_hWnd, rcDef, NULL,
-      WS_CHILD | WS_VISIBLE | LVS_REPORT | LVS_EDITLABELS | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER );
+   m_listCtrl.Create(m_hWnd, rcDef, NULL, WS_CHILD | WS_VISIBLE |
+      LVS_REPORT | LVS_EDITLABELS | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | LVS_SINGLESEL);
 
    m_listCtrl.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES);
 
