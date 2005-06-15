@@ -48,7 +48,7 @@ public:
    virtual ~CTileInfoForm(){}
 
    // dialog form id // TODO change id
-   enum { IDD = IDD_TILEMAPVIEW_FORM };
+   enum { IDD = IDD_TILE_INFO };
 
    BOOL PreTranslateMessage(MSG* pMsg)
    {
@@ -70,7 +70,6 @@ protected:
 
    // virtual methods from CDebugWindowBase
 
-   virtual void InitDebugWindow(IMainFrame* pMainFrame);
    virtual void ReceiveNotification(CDebugWindowNotification& notify);
 
    void UpdateData();
@@ -111,7 +110,6 @@ public:
 
    BEGIN_MSG_MAP(thisClass)
       MESSAGE_HANDLER(WM_CREATE, OnCreate)
-      MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
       MESSAGE_HANDLER(WM_SIZE, OnSize)
       MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus)
       CHAIN_MSG_MAP(baseClass)
@@ -127,21 +125,21 @@ protected:
       return 0;
    }
 
-   LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-   {
-      bHandled = FALSE;
-      m_pMainFrame->RemoveDebugWindow(&m_form);
-      return 0;
-   }
-
    LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
    LRESULT OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
+   // virtual methods from CDebugWindowBase
 
    virtual void InitDebugWindow(IMainFrame* pMainFrame)
    {
       CDebugWindowBase::InitDebugWindow(pMainFrame);
-      if (pMainFrame != NULL)
-         pMainFrame->AddDebugWindow(&m_form);
+      pMainFrame->AddDebugWindow(&m_form);
+   }
+
+   virtual void DoneDebugWindow()
+   {
+      m_pMainFrame->RemoveDebugWindow(&m_form);
+      CDebugWindowBase::DoneDebugWindow();
    }
 
    virtual void ReceiveNotification(CDebugWindowNotification& notify)
@@ -152,5 +150,6 @@ protected:
    }
 
 protected:
+   //! tile info dialog
    CTileInfoForm m_form;
 };

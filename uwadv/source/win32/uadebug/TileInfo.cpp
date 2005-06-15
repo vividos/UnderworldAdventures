@@ -68,12 +68,6 @@ LRESULT CTileInfoForm::OnButtonBeam(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
    return 0;
 }
 
-void CTileInfoForm::InitDebugWindow(IMainFrame* pMainFrame)
-{
-   // TODO remove
-   CDebugWindowBase::InitDebugWindow(pMainFrame);
-}
-
 void CTileInfoForm::ReceiveNotification(CDebugWindowNotification& notify)
 {
    switch(notify.code)
