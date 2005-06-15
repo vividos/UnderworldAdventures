@@ -40,17 +40,6 @@ LRESULT CLuaSourceView::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
    m_view.SetEdgeColumn(80);
    m_view.SetEdgeMode(EDGE_LINE);
 
-   m_view.SetKeyWords(0,
-      "asm auto bool break case catch char class const "
-      "const_cast continue default delete do double "
-      "dynamic_cast else enum explicit export extern "
-      "false float for friend goto if inline int long "
-      "mutable namespace new operator private protected "
-      "public register reinterpret_cast return short signed "
-      "sizeof static static_cast struct switch template this "
-      "throw true try typedef typeid typename union unsigned "
-      "using virtual void volatile wchar_t while");
-
    m_view.StyleSetFore(0,  RGB(0x80, 0x80, 0x80));
    m_view.StyleSetFore(1,  RGB(0x00, 0x7f, 0x00));
    m_view.StyleSetFore(2,  RGB(0x00, 0x7f, 0x00));
@@ -68,6 +57,12 @@ LRESULT CLuaSourceView::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 
    m_view.SetLexer(SCLEX_LUA);
 
+   // set Lua keywords
+   m_view.SetKeyWords(0,
+      "and break do else elseif end for function if in" // official keywords
+      "local nil not or repeat return then until while"
+      "uw player objlist tilemap runes conv quest prop"); // uwadv objects
+
    m_view.SetInitialTabWidth(3);
 
    bHandled = FALSE;
@@ -83,14 +78,14 @@ LRESULT CLuaSourceView::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 
 void CLuaSourceView::UpdateFilename()
 {
-   int nPos = m_cszFilename.ReverseFind(_T('\\'));
-   CString cszFilename = m_cszFilename.Mid(nPos+1);
+   CFilename fileName(m_cszFilename);
+   CString cszFilename = fileName.GetFilename();
 
    if (IsModified())
       cszFilename += _T("*");
 
    CString cszTitleName(_T("Lua Source File - "));
-   cszTitleName += cszFilename;
+   cszTitleName += fileName.Get();
 
    SetTitle(cszTitleName);
    SetTabText(cszFilename);
