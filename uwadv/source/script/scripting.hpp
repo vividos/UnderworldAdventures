@@ -33,8 +33,11 @@
 #define uwadv_scripting_hpp_
 
 // needed includes
-#include "game_interface.hpp"
 #include "underworld.hpp"
+
+
+// forward references
+class ua_basic_game_interface;
 
 
 // enums
