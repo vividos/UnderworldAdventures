@@ -31,6 +31,13 @@
 #include "game_interface.hpp"
 #include "files.hpp"
 #include "gamestrings.hpp"
+#include "debug.hpp"
+
+extern "C"
+{
+#include "lua/src/lstate.h"
+#include "lua/src/lobject.h"
+}
 
 
 // constants
@@ -39,6 +46,11 @@ const char* ua_lua_scripting::self_name = "_scripting_self";
 
 
 // ua_lua_scripting methods
+
+ua_lua_scripting::ua_lua_scripting()
+:L(NULL), game(NULL), debugger_state(ua_debugger_state_inactive)
+{
+}
 
 void ua_lua_scripting::init(ua_basic_game_interface* the_game)
 {
@@ -57,6 +69,15 @@ void ua_lua_scripting::init(ua_basic_game_interface* the_game)
    lua_setglobal(L,self_name);
 
    register_functions();
+
+   // notify debugger of start of Lua script code debugger
+   game->get_debugger().start_code_debugger(this);
+
+   debugger_state = ua_debugger_state_running;
+//   command = ua_debugger_command_step_into; // ensures that we break at the first line
+   command = ua_debugger_command_run;
+   step_over_func_depth = 0;
+   curpos_srcfile = curpos_line = unsigned(-1);
 }
 
 bool ua_lua_scripting::load_script(const char* basename)
@@ -88,10 +109,17 @@ bool ua_lua_scripting::load_script(const char* basename)
       throw ua_exception(text.c_str());
    }
 
-   int ret = load_script(script, basename);
+   std::string complete_scriptname = game->get_settings().get_string(ua_setting_uadata_path);
+   complete_scriptname += scriptname.c_str();
+
+   int ret = load_script(script, complete_scriptname.c_str());
 
    ua_trace("loaded Lua %sscript \"%s\"\n",
       compiled ? "compiled " : "", scriptname.c_str());
+
+   // put script name in list, if it's not a compiled one
+   if (!compiled)
+      loaded_script_files.push_back(complete_scriptname);
 
    SDL_RWclose(script);
 
@@ -100,12 +128,21 @@ bool ua_lua_scripting::load_script(const char* basename)
 
 void ua_lua_scripting::done()
 {
+   // notify debugger of end of Lua script code debugger
+   game->get_debugger().end_code_debugger(this);
+
    lua_close(L);
 }
 
 void ua_lua_scripting::checked_call(int nargs, int nresults)
 {
+   lua_setcallhook(L, debug_hook_call);
+   lua_setlinehook(L, debug_hook_line);
+
    lua_call(L,nargs,nresults);
+
+   lua_setcallhook(L, NULL);
+   lua_setlinehook(L, NULL);
 }
 
 void ua_lua_scripting::init_new_game()
@@ -312,6 +349,131 @@ ua_lua_scripting& ua_lua_scripting::get_scripting_from_self(lua_State* L)
    return *self;
 }
 
+void ua_lua_scripting::debug_hook_call(lua_State* L, lua_Debug* ar)
+{
+   lua_getstack(L, 0, ar);
+   lua_getinfo(L, "Snlu", ar);
+
+   // don't report C functions
+   if (0==strcmp(ar->source, "=C"))
+      return;
+
+   ua_lua_scripting& script = get_scripting_from_self(L);
+   ua_assert(script.get_lua_State() == L);
+
+   script.debug_hook(ar);
+}
+
+void ua_lua_scripting::debug_hook_line(lua_State* L, lua_Debug* ar)
+{
+   lua_getstack(L, 0, ar);
+   lua_getinfo(L, "Snlu", ar);
+
+   ua_lua_scripting& script = get_scripting_from_self(L);
+   ua_assert(script.get_lua_State() == L);
+
+   script.debug_hook(ar);
+}
+
+void ua_lua_scripting::debug_hook(lua_Debug* ar)
+{
+   ua_trace("debug: event=%s, name=%s, start=%d, line=%d, in=%s\n",
+      ar->event, ar->name, ar->linedefined, ar->currentline, ar->source);
+
+   if (ar->source != NULL)
+   {
+      curpos_srcfile = unsigned(-1);
+
+      // find out current index
+      unsigned int max = loaded_script_files.size();
+      for (unsigned int n=0; n<max; n++)
+         if (loaded_script_files[n] == ar->source)
+         {
+            curpos_srcfile = n;
+            break;
+         }
+   }
+
+   if (ar->currentline > 0)
+      curpos_line = static_cast<unsigned int>(ar->currentline);
+
+   ua_debug_code_debugger_state old_state = get_debugger_state();
+
+   // check commands
+//   if (get_debugger_state() == ua_debugger_state_running)
+   {
+      switch(get_debugger_command())
+      {
+      case ua_debugger_command_run:
+         set_debugger_state(ua_debugger_state_running);
+         break;
+
+      case ua_debugger_command_step_over:
+         if (0 == strcmp(ar->event, "line"))
+         {
+            if (step_over_func_depth == 0)
+               set_debugger_state(ua_debugger_state_break);
+         }
+         else
+         if (0 == strcmp(ar->event, "call"))
+         {
+            if (get_debugger_state() == ua_debugger_state_running)
+               step_over_func_depth++; // 
+            else
+               step_over_func_depth = 0; // start of stepping over a function
+         }
+         else
+         if (0 == strcmp(ar->event, "return"))
+         {
+            --step_over_func_depth; // returning from function
+            if (step_over_func_depth == 0)
+            {
+               // returned from stepped over function
+               set_debugger_state(ua_debugger_state_running);
+               set_debugger_command(ua_debugger_command_step_into);
+            }
+         }
+         break;
+
+      case ua_debugger_command_step_into:
+         if (0 == strcmp(ar->event, "line"))
+         {
+            set_debugger_state(ua_debugger_state_break);
+         }
+         break;
+
+      case ua_debugger_command_step_out:
+         if (0 == strcmp(ar->event, "return"))
+         {
+            // when returning set "step over" command to stop at the next line
+            set_debugger_state(ua_debugger_state_running);
+            set_debugger_command(ua_debugger_command_step_over);
+         }
+         break;
+      }
+   }
+
+   // check for breakpoints
+   check_breakpoints();
+
+   // check if state changed
+   if (old_state != get_debugger_state())
+      game->get_debugger().send_code_debugger_status_update(debugger_id);
+
+   // wait for state to change to "running" again
+   wait_debugger_continue();
+}
+
+void ua_lua_scripting::check_breakpoints()
+{
+}
+
+void ua_lua_scripting::wait_debugger_continue()
+{
+   while (get_debugger_state() == ua_debugger_state_break)
+      Sleep(10); //SDL_Sleep(10); // TODO
+}
+
 //! registers a C function inside a table
 #define lua_register_table(L, n, f) { \
    lua_pushstring(L, n); lua_pushcfunction(L, f); lua_settable(L,-3); }
@@ -380,6 +542,143 @@ void ua_lua_scripting::register_functions()
    lua_register_table(L, "get_special", prop_get_special);
    lua_setglobal(L, "prop");
 }
+
+ua_debug_code_debugger_type ua_lua_scripting::get_debugger_type()
+{
+   return ua_code_debugger_lua;
+}
+
+/*! Prepares debugging info.
+    The Lua struct Proto contains all informations about a function prototype.
+    It also contains line number info when a source file was loaded. The
+    format of the "lineinfo" array is as follows:
+    The lineinfo array contains "nlineinfo" items, which is always an odd
+    number. The last item contains MAX_INT to signal an end. The list contains
+    pairs of int values. The first one describes a line number and is coded to
+    save space. If the value is negative, it is a relative value to the
+    previous line number. The first line number is 1 (one). If the value is
+    positive, it is not a line number offset and the line number stays the
+    same. The second value is a program counter into the compiled bytecode.
+    It points to the start of the code that is generated from the line
+    described in the first value.
+*/
+void ua_lua_scripting::prepare_debug_info()
+{
+   // retrieve debug info from lua struct
+   // go through list of all function prototype structures
+   Proto* proto = L->rootproto;
+   while (proto != NULL)
+   {
+      std::string filename(proto->source->str);
+
+      // find line numbers set
+      std::map<std::string, std::set<unsigned int> >::iterator iter =
+         all_line_numbers.find(filename);
+      if (iter == all_line_numbers.end())
+      {
+         // insert new set; we have a new filename
+         std::set<unsigned int> empty_set;
+         all_line_numbers[filename] = empty_set;
+         iter = all_line_numbers.find(filename);
+      }
+
+      // go through all lineinfo value pairs
+      int* lineinfo = proto->lineinfo;
+      int curline = 0;
+      for (int n=0; n < proto->nlineinfo && lineinfo[n] != MAX_INT; n+=2)
+      {
+         // value negative? then add offset
+         if (lineinfo[n] < 0)
+            curline += -lineinfo[n] + 1;
+
+         iter->second.insert(static_cast<unsigned int>(curline));
+      }
+
+      proto = proto->next;
+   }
+}
+
+ua_debug_code_debugger_state ua_lua_scripting::get_debugger_state() const
+{
+   // TODO protect access
+   return debugger_state;
+}
+
+void ua_lua_scripting::set_debugger_state(ua_debug_code_debugger_state new_state)
+{
+   // TODO protect access
+   debugger_state = new_state;
+}
+
+ua_debug_code_debugger_command ua_lua_scripting::get_debugger_command() const
+{
+   // TODO protect access
+   return command;
+}
+
+void ua_lua_scripting::set_debugger_command(ua_debug_code_debugger_command the_command)
+{
+//   if (get_debugger_state() == ua_debugger_state_running)
+//      return; // don't set command when still running
+
+   // TODO protect access
+   command = the_command;
+//   debugger_state = ua_debugger_state_running;
+}
+
+void ua_lua_scripting::get_current_pos(unsigned int& sourcefile_index,
+   unsigned int& sourcefile_line, unsigned int& code_pos,
+   bool& sourcefile_is_valid)
+{
+   sourcefile_index = curpos_srcfile;
+   sourcefile_line = curpos_line;
+   sourcefile_is_valid = true;
+}
+
+unsigned int ua_lua_scripting::get_num_sourcefiles() const
+{
+   return static_cast<unsigned int>(loaded_script_files.size());
+}
+
+unsigned int ua_lua_scripting::get_sourcefile_name(unsigned int index, char* buffer, unsigned int len)
+{
+   std::string filename(loaded_script_files[index]);
+   if (filename.size() > 0 && filename[0] == '@')
+      filename.erase(0, 1); // remove @ char
+
+   std::string::size_type size = filename.size();
+
+   if (buffer == NULL || len == 0 || len < size + 1)
+      return size + 1;
+
+   strncpy(buffer, filename.c_str(), size);
+   buffer[size] = 0;
+
+   return filename.size()+1;
+}
+
+unsigned int ua_lua_scripting::get_num_breakpoints()
+{
+   return breakpoints.size();
+}
+
+void ua_lua_scripting::get_breakpoint_info(unsigned int breakpoint_index,
+   unsigned int& sourcefile_index, unsigned int& sourcefile_line,
+   unsigned int& code_pos, bool& visible)
+{
+   ua_assert(breakpoint_index < get_num_breakpoints());
+   if (breakpoint_index >= get_num_breakpoints())
+      return;
+
+   ua_debug_code_breakpoint_info& info = breakpoints[breakpoint_index];
+
+   visible = info.visible;
+   sourcefile_index = info.pos.sourcefile_index;
+   sourcefile_line = info.pos.sourcefile_line;
+   code_pos = info.pos.code_pos;
+}
+
+
 
 int ua_lua_scripting::uw_print(lua_State* L)
 {

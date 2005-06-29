@@ -34,10 +34,16 @@
 
 // needed includes
 #include "scripting.hpp"
+#include "dbgserver.hpp"
+#include <vector>
+#include <map>
+#include <set>
+
 extern "C"
 {
 #include "lua/include/lua.h"
 #include "lua/include/lualib.h"
+#include "lua/include/luadebug.h"
 }
 
 
@@ -47,11 +53,11 @@ extern "C"
 // classes
 
 //! lua scripting class
-class ua_lua_scripting: public ua_scripting
+class ua_lua_scripting: public ua_scripting, public ua_debug_code_interface
 {
 public:
    //! ctor
-   ua_lua_scripting():L(NULL), game(NULL){}
+   ua_lua_scripting();
    virtual ~ua_lua_scripting(){}
 
    //! loads a script from uadata
@@ -83,8 +89,37 @@ protected:
    //! returns scripting class from Lua state
    static ua_lua_scripting& get_scripting_from_self(lua_State* L);
 
+   static void debug_hook_call(lua_State* L, lua_Debug* ar);
+   static void debug_hook_line(lua_State* L, lua_Debug* ar);
+
+   void debug_hook(lua_Debug* ar);
+
+   void check_breakpoints();
+
+   //! waits for the debugger to continue debugging
+   void wait_debugger_continue();
+
+   //! sends status update to debugger client
+   void send_debug_status_update();
+
    //! registers all callable functions
    void register_functions();
+
+   // virtual methods from ua_debug_code_interface
+   virtual ua_debug_code_debugger_type get_debugger_type();
+   virtual void prepare_debug_info();
+   virtual ua_debug_code_debugger_state get_debugger_state() const;
+   virtual void set_debugger_state(ua_debug_code_debugger_state state);
+   virtual ua_debug_code_debugger_command get_debugger_command() const;
+   virtual void set_debugger_command(ua_debug_code_debugger_command command);
+   virtual void get_current_pos(unsigned int& sourcefile_index, unsigned int& sourcefile_line,
+      unsigned int& code_pos, bool& sourcefile_is_valid);
+   virtual unsigned int get_num_sourcefiles() const;
+   virtual unsigned int get_sourcefile_name(unsigned int index, char* buffer, unsigned int len);
+   virtual unsigned int get_num_breakpoints();
+   virtual void get_breakpoint_info(unsigned int breakpoint_index,
+      unsigned int& sourcefile_index, unsigned int& sourcefile_line,
+      unsigned int& code_pos, bool& visible);
 
 protected:
    //! lua state information
@@ -95,6 +130,30 @@ protected:
 
    //! name for 'self' global in Lua
    static const char* self_name;
+
+   //! array with all loaded script files
+   std::vector<std::string> loaded_script_files;
+
+   //! map with all source files and line numbers
+   std::map<std::string, std::set<unsigned int> > all_line_numbers;
+
+   //! current debugger state
+   ua_debug_code_debugger_state debugger_state;
+
+   //! current debugger command
+   ua_debug_code_debugger_command command;
+
+   //! current position sourcefile index
+   unsigned int curpos_srcfile;
+
+   //! current position sourcefile line
+   unsigned int curpos_line;
+
+   //! function call depth when doing "step over"
+   unsigned int step_over_func_depth;
+
+   //! list with all breakpoints
+   std::vector<ua_debug_code_breakpoint_info> breakpoints;
 
 protected:
    // registered C functions callable from Lua
