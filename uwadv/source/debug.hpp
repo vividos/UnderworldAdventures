@@ -119,6 +119,9 @@ public:
    //! ends code debugging
    void end_code_debugger(ua_debug_code_interface* code_debugger);
 
+   //! sends code debugger update message
+   void send_code_debugger_status_update(unsigned int debugger_id);
+
 protected:
    //! debugger thread procedure
    static int thread_proc(void* ptr);
@@ -181,6 +184,8 @@ protected:
 
    virtual bool get_object_list_imagelist(unsigned int& num_objects,
       unsigned char* buffer, unsigned int size);
+
+   virtual ua_debug_code_interface* get_code_debugger(unsigned int debugger_id);
 
    //! adds message to client message queue
    void add_message(ua_debug_server_message& msg);

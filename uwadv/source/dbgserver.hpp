@@ -49,7 +49,7 @@ const unsigned int ua_debug_server_interface_version = 1;
 enum ua_debug_server_message_type
 {
    //! a message to shutdown the debugger
-   ua_msg_shutdown,
+   ua_msg_shutdown=0,
 
    //! a code debugger has started
    /*! msg_arg1 contains the code debugger handle */
@@ -59,8 +59,12 @@ enum ua_debug_server_message_type
    /*! msg_arg1 contains the code debugger handle */
    ua_msg_end_code_debugger,
 
-   //! miscellaneous message
-   ua_msg_misc,
+   //! a code debugger has updated his debug state
+   /*! msg_arg1 contains the code debugger handle */
+   ua_msg_code_debugger_state_update,
+
+   //! unknown message
+   ua_msg_unknown,
 };
 
 //! debug server flags, used in ua_debug_server_interface::get_flag()
@@ -100,6 +104,57 @@ enum ua_debug_server_objlist_info
    ua_objlist_info_hidden,
 };
 
+//! tile info type for get_tile_info_value() and set_tile_info_value()
+enum ua_debug_code_debugger_type
+{
+   ua_code_debugger_uwconv=0, //!< uw conversation script
+   ua_code_debugger_lua,      //!< Lua script
+};
+
+
+enum ua_debug_code_debugger_state
+{
+   ua_debugger_state_inactive=0,
+   ua_debugger_state_running,
+   ua_debugger_state_break,
+};
+
+//! code debugger command
+enum ua_debug_code_debugger_command
+{
+   ua_debugger_command_run=0, //!< continue running code until next breakpoint or end
+   ua_debugger_command_step_over, //!< continue with one line of code, not stepping into functions
+   ua_debugger_command_step_into, //!< continue with one line of code, stepping into functions
+   ua_debugger_command_step_out, //!< continue to the function above
+};
+
+
+//! code location
+struct ua_debug_code_location
+{
+   ua_debug_code_location(): sourcefile_index(unsigned(-1)),
+      sourcefile_line(0), code_pos(unsigned(-1)){}
+
+   unsigned int sourcefile_index;
+   unsigned int sourcefile_line;
+   unsigned int code_pos;
+};
+
+
+//! breakpoint informations
+struct ua_debug_code_breakpoint_info
+{
+   ua_debug_code_breakpoint_info():visible(true){}
+
+   //! breakpoint location
+   ua_debug_code_location pos;
+
+   bool visible; //!< indicates if breakpoint is visible to debugger
+
+   //unsigned int count_before_trigger;
+   //std::string condition;
+};
+
 
 // classes
 
@@ -109,7 +164,50 @@ enum ua_debug_server_objlist_info
 class ua_debug_code_interface
 {
 public:
-//   virtual unsigned int get_num_breakpoints()=0;
+   //! returns code debugger type
+   virtual ua_debug_code_debugger_type get_debugger_type()=0;
+
+   //! called by client to let the code debugger prepare debug info
+   virtual void prepare_debug_info()=0;
+
+   //! returns current debugger state
+   virtual ua_debug_code_debugger_state get_debugger_state() const=0;
+
+   //! sets new debugger state
+   virtual void set_debugger_state(ua_debug_code_debugger_state state)=0;
+
+   //! returns current debugger command
+   virtual ua_debug_code_debugger_command get_debugger_command() const=0;
+
+   //! sets new debugger command
+   virtual void set_debugger_command(ua_debug_code_debugger_command command)=0;
+
+   //! returns current position
+   virtual void get_current_pos(unsigned int& sourcefile_index, unsigned int& sourcefile_line,
+      unsigned int& code_pos, bool& sourcefile_is_valid)=0;
+
+   //! returns number of source files
+   virtual unsigned int get_num_sourcefiles() const=0;
+
+   //! returns sourcefile name by index
+   virtual unsigned int get_sourcefile_name(unsigned int index, char* buffer, unsigned int len)=0;
+
+   //! returns number of breakpoints
+   virtual unsigned int get_num_breakpoints()=0;
+
+   //! returns breakpoint info for a given breakpoint index
+   virtual void get_breakpoint_info(unsigned int breakpoint_index,
+      unsigned int& sourcefile_index, unsigned int& sourcefile_line,
+      unsigned int& code_pos, bool& visible)=0;
+
+protected:
+   //! sets debugger id
+   void set_debugger_id(unsigned int the_debugger_id){ debugger_id = the_debugger_id;}
+
+   //! code debugger id
+   unsigned int debugger_id;
+
+   friend class ua_debug_server;
 };
 
 
@@ -219,6 +317,11 @@ public:
    //! retrieves an object list imagelist in 32-bit RGBA format
    virtual bool get_object_list_imagelist(unsigned int& num_objects,
       unsigned char* buffer, unsigned int size)=0;
+
+   // code debugger
+
+   //! retrieves code debugger interface by debugger id
+   virtual ua_debug_code_interface* get_code_debugger(unsigned int debugger_id)=0;
 };
 
 

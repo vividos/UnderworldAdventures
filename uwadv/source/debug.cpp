@@ -239,6 +239,8 @@ void ua_debug_server::start_code_debugger(ua_debug_code_interface* code_debugger
 {
    unsigned int debugger_id = ++last_code_debugger_id;
 
+   code_debugger->set_debugger_id(debugger_id);
+
    // send "start" message
    ua_debug_server_message msg;
    msg.msg_type = ua_msg_start_code_debugger;
@@ -284,6 +286,18 @@ void ua_debug_server::end_code_debugger(ua_debug_code_interface* code_debugger)
    lock(false);
 }
 
+void ua_debug_server::send_code_debugger_status_update(unsigned int debugger_id)
+{
+   // send notification about changed state
+   ua_debug_server_message msg;
+   msg.msg_type = ua_msg_code_debugger_state_update;
+   msg.msg_arg1 = debugger_id;
+
+   lock(true);
+   add_message(msg);
+   lock(false);
+}
+
 bool ua_debug_server::check_interface_version(unsigned int interface_ver)
 {
    return interface_ver == ua_debug_server_interface_version;
@@ -316,14 +330,21 @@ unsigned int ua_debug_server::get_game_path(char* buffer, unsigned int bufsize)
    std::string prefix = settings.get_string(ua_setting_game_prefix);
    if (prefix.size()==0)
    {
-      buffer[0] = 0;
+      if (buffer != NULL)
+         buffer[0] = 0;
       return 0;
    }
 
    std::string game_path = settings.get_string(ua_setting_uadata_path);
    game_path += prefix;
 
-   strncpy(buffer, game_path.c_str(), bufsize);
+   std::string::size_type strsize = game_path.size();
+
+   if (bufsize < strsize + 1)
+      return strsize + 1;
+
+   strncpy(buffer, game_path.c_str(), strsize);
+   buffer[strsize] = 0;
 
    return ua_min(game_path.size(), bufsize);
 }
@@ -689,21 +710,15 @@ unsigned int ua_debug_server::get_game_string(unsigned int block,
    unsigned int nr, char* buffer, unsigned int maxsize)
 {
    std::string str = game->get_gamestrings().get_string(block, nr);
+   std::string::size_type strsize = str.size();
 
-   if (buffer == NULL)
-      return str.size()+1;
+   if (buffer == NULL || maxsize == 0 || maxsize < strsize+1)
+      return strsize + 1;
 
-   memset(buffer, 0, maxsize);
+   strncpy(buffer, str.c_str(), strsize);
+   buffer[strsize] = 0;
 
-   if (str.size()>maxsize)
-   {
-      strncpy(buffer,str.c_str(), maxsize-1);
-      buffer[maxsize-1] = 0;
-   }
-   else
-      strncpy(buffer,str.c_str(), str.size());
-
-   return ua_min(maxsize, str.size());
+   return strsize;
 }
 
 bool ua_debug_server::get_object_list_imagelist(unsigned int& num_objects, unsigned char* buffer, unsigned int size)
@@ -741,6 +756,14 @@ bool ua_debug_server::get_object_list_imagelist(unsigned int& num_objects, unsig
    delete[] pixels;
 
    return true;
+}
+
+ua_debug_code_interface* ua_debug_server::get_code_debugger(unsigned int debugger_id)
+{
+   std::map<unsigned int, ua_debug_code_interface*>::iterator iter;
+
+   iter = all_code_debugger.find(debugger_id);
+   return (iter != all_code_debugger.end()) ? iter->second : NULL;
 }
 
 void ua_debug_server::add_message(ua_debug_server_message& msg)
