@@ -65,7 +65,7 @@ public:
    CProjectInfoWindow():baseClass(idProjectInfoWindow), m_bIgnoreSelections(false){}
    virtual ~CProjectInfoWindow(){}
 
-   DECLARE_DOCKING_WINDOW(_T("Project"), CSize(200,100)/*docked*/, CSize(200,400)/*floating*/, dockwins::CDockingSide::sLeft)
+   DECLARE_DOCKING_WINDOW(_T("Project"), CSize(250,100)/*docked*/, CSize(250,400)/*floating*/, dockwins::CDockingSide::sLeft)
 
    DECLARE_WND_CLASS(_T("ProjectInfoWindow"))
    BEGIN_MSG_MAP(thisClass)
