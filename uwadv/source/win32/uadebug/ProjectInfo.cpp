@@ -127,6 +127,7 @@ LRESULT CProjectInfoWindow::OnSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
    HTREEITEM hItemOld = pNMTreeView->itemOld.hItem;
 
    STreeItemInfo itemInfo = GetTreeItemInfo(hItem);
+   STreeItemInfo itemInfoOld = GetTreeItemInfo(hItemOld);
 
    if (itemInfo.m_enType == tiLuaFilename)
    {
@@ -152,7 +153,7 @@ LRESULT CProjectInfoWindow::OnSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
       debugClient.Lock(false);
 
       // refresh list
-      if (hItemOld != NULL)
+      if (hItemOld != NULL && itemInfoOld.m_enType == tiLevel)
       {
          CString cszText;
 
@@ -259,29 +260,29 @@ void CProjectInfoWindow::RefreshCodeDebuggerList()
 
       SetTreeItemInfo(hItem, STreeItemInfo(tiCodeDebugger, nCodeDebuggerID));
 
-      if (cdi.IsSourceAvail() && cdi.GetSourcecodeCount() > 0)
+      if (cdi.IsSourceAvail() && cdi.GetSourcefileCount() > 0)
       {
          HTREEITEM hSubItem = m_treeCtrl.InsertItem(_T("Sourcecode files"), 0, 0, hItem, NULL);
          SetTreeItemInfo(hSubItem, STreeItemInfo(tiWindowType, 0));
 
          CString cszGameCfgPath(debugClient.GetGameCfgPath());
 
-         unsigned int nMax = cdi.GetSourcecodeCount();
+         unsigned int nMax = cdi.GetSourcefileCount();
          for (unsigned int n=0; n<nMax; n++)
-            InsertLuaSourceFile(hSubItem, cdi.GetSourcecodeFilename(n), cszGameCfgPath);
+            InsertLuaSourceFile(hSubItem, cdi.GetSourcefileFilename(n), cszGameCfgPath);
 
          m_treeCtrl.Expand(hSubItem);
       }
 
-      HTREEITEM hSubItem = m_treeCtrl.InsertItem(_T("Breakpoints list"), 0, 0, hItem, NULL);
+      HTREEITEM hSubItem = m_treeCtrl.InsertItem(_T("Breakpoints list"), 3, 3, hItem, NULL);
       SetTreeItemInfo(hSubItem, STreeItemInfo(tiWindowType, 1));
 
-      hSubItem = m_treeCtrl.InsertItem(_T("Watches"), 0, 0, hItem, NULL);
+      hSubItem = m_treeCtrl.InsertItem(_T("Watches"), 3, 3, hItem, NULL);
       SetTreeItemInfo(hSubItem, STreeItemInfo(tiWindowType, 2));
 
       if (enType == cdtUwConv)
       {
-         hSubItem = m_treeCtrl.InsertItem(_T("Memory"), 0, 0, hItem, NULL);
+         hSubItem = m_treeCtrl.InsertItem(_T("Memory"), 3, 3, hItem, NULL);
          SetTreeItemInfo(hSubItem, STreeItemInfo(tiWindowType, 3));
       }
 
@@ -308,7 +309,8 @@ void CProjectInfoWindow::InsertLuaSourceFile(HTREEITEM hParentItem, LPCTSTR pszF
    CString cszFilePath(luaFilename.Get());
 
    // calculate relative path
-   ATLVERIFY(true == luaFilename.MakeRelativeTo(pszPathRelativeTo));
+   //ATLVERIFY(true == luaFilename.MakeRelativeTo(pszPathRelativeTo));
+   luaFilename.MakeRelativeTo(pszPathRelativeTo);
 
    // insert item
    HTREEITEM hItem = m_treeCtrl.InsertItem(luaFilename.Get(), 1, 1, hParentItem, NULL);
