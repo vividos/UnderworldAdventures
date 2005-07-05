@@ -11,7 +11,7 @@
 /*! \file PropertyListCtrl.h
 
 Property List Control
-(C) 2005 Michael Fink
+Copyright (C) 2005 Michael Fink
 
 A property list control presents properties to the use which the user may
 edit. The properties can be grouped together by topic, and groups can be
@@ -76,7 +76,7 @@ the control in different ways:
    
       [...]
       REFLECT_NOTIFICATIONS()
-	END_MSG_MAP()
+   END_MSG_MAP()
 
    This ensures that notifications are reflected back from the parent class
    (CMainFrame) to the property list control.
@@ -100,7 +100,7 @@ the control in different ways:
    
       [...]
       REFLECT_NOTIFICATIONS()
-	END_MSG_MAP()
+   END_MSG_MAP()
 
    In CMyDialog::OnInitInstance(), add the following:
 
@@ -183,6 +183,7 @@ struct SPropertyGroupInfo
 {
    UINT m_nPropertyGroupId;
    SStringOrId m_sPropertyGroupName;
+   bool m_bExpanded;
 };
 
 // macros to define property group lists
@@ -193,7 +194,7 @@ struct SPropertyGroupInfo
 
 // property group item
 #define PROPERTY_GROUP(id, name_string_or_id) \
-   { id, name_string_or_id },
+   { id, name_string_or_id, true },
 
 // property group list end
 #define END_PROPERTY_GROUP_LIST() { UINT(-1), PROPERTY_STRING_ID(UINT(-1)) } };
@@ -301,7 +302,7 @@ private:
 };
 
 
-#define PLM_FINISH_INPLACE WM_USER + 200
+#define PLM_FINISH_INPLACE (WM_USER + 200)
 
 //! inplace edit control callback interface
 class IInplaceParentCallback
@@ -339,7 +340,7 @@ protected:
 };
 
 
-//! text edit control for 
+//! text edit control for editing text properties
 class CInplaceTextEditControl :
    public CWindowImpl<CInplaceTextEditControl, CEdit>,
    public IInplaceEditControl
@@ -378,8 +379,11 @@ public:
    //! dtor
    virtual ~IPropertyItemCustom(){}
 
+   //! custom drawing for custom item; returns true when item was custom-drawn
+   virtual bool DrawItem(CRect rect)=0;
+
    //! creates an inplace edit control for use when editing the property
-   virtual IInplaceEditControl* CreateInplaceEditControl(CRect rect)=0;
+   virtual IInplaceEditControl* CreateInplaceEditControl()=0;
 };
 
 
@@ -406,8 +410,17 @@ public:
    //! sets storage interface
    void SetStorage(IPropertyStorage* pStorage){ m_pStorage = pStorage; }
 
+   //! returns current storage interface
+   IPropertyStorage* GetStorage() const { return m_pStorage; }
+
    //! initializes property list; call after adding groups and property items
    void Init();
+
+   //! sets read-only state of list control
+   bool SetReadonly(bool bReadonly);
+
+   //! updates all values from storage
+   void UpdateValues();
 
    //! sort order
    enum T_enListSortOrder
@@ -423,6 +436,11 @@ public:
       BuildPropertiesList();
       // TODO redraw?
    }
+
+   //! expands an item that is a group
+   void ExpandGroupItem(UINT nListItemIndex, bool bExpand=true);
+   //! expands a group item
+   void ExpandGroup(UINT nPropertyGroupId, bool bExpand=true);
 
    //! determines if a given list item is a property group
    bool IsListItemAPropertyGroup(unsigned int nListItemIndex) const;
@@ -457,6 +475,8 @@ public:
       m_pStorage->SetProperty(nPropertyItemId, cszValue);
    }
 
+   void LeftButtonClick(CPoint pt, unsigned int nItem, unsigned int nSubItem);
+
 protected:
    //! rebuilds properties list depending on sort order
    void BuildPropertiesList();
@@ -470,8 +490,14 @@ protected:
    //! starts editing a property
    void EditProperty(unsigned int nListItem);
 
+   //! creates edit control for given property id
+   IInplaceEditControl* CreateEditControl(UINT nPropertyItemId);
+
    // retrieves string by struct that either contains string or string resource id
    CString GetString(const SStringOrId& sStringOrId) const;
+
+   //! returns rect of plus/minus box; takes item rect
+   void GetPlusMinusBoxRect(CRect& rect);
 
    //! draw list control item
    void DrawItem(unsigned int nItem, unsigned int nSubItem, CDCHandle dc, UINT uItemState);
@@ -498,6 +524,9 @@ protected:
    //! height of list item
    int m_nItemHeight;
 
+   //! size of left area
+   unsigned int m_nLeftAreaSize;
+
    //! pointer to property storage
    IPropertyStorage* m_pStorage;
 
@@ -506,6 +535,9 @@ protected:
 
    //! current inplace edit control
    IInplaceEditControl* m_pInplaceEdit;
+
+   //! indicates if list control is read-only
+   bool m_bReadonly;
 
 private:
    //! mapping of all group ids to group info structs
@@ -554,7 +586,7 @@ public:
 
 protected:
    // message map
-	BEGIN_MSG_MAP(CPropertyListCtrl)
+   BEGIN_MSG_MAP(CPropertyListCtrl)
       ATLASSERT_ADDED_REFLECT_NOTIFICATIONS() // checks for forgotten REFLECT_NOTIFICATIONS() macro in base class
       CHAIN_MSG_MAP_ALT(CCustomDraw<CPropertyListCtrlImpl>, 1) // hand over messages to custom draw class
       MESSAGE_HANDLER(WM_CREATE, OnCreate)
@@ -568,12 +600,12 @@ protected:
       REFLECTED_NOTIFY_CODE_HANDLER(LVN_ENDLABELEDIT, OnEndLabelEdit)
       REFLECTED_NOTIFY_CODE_HANDLER(LVN_ITEMCHANGED, OnItemChanged)
       DEFAULT_REFLECTION_HANDLER()
-	END_MSG_MAP()
+   END_MSG_MAP()
 
 // Handler prototypes (uncomment arguments if needed):
-//	LRESULT MessageHandler(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-//	LRESULT CommandHandler(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-//	LRESULT NotifyHandler(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/)
+// LRESULT MessageHandler(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+// LRESULT CommandHandler(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+// LRESULT NotifyHandler(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/)
 
    //! called when creating list control
    LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -609,12 +641,10 @@ protected:
       pt.y = GET_Y_LPARAM(lParam);
 
       unsigned int nItem=0, nSubItem=0;
-      if (HitTestEx(pt, nItem, nSubItem) &&
-          !IsListItemAPropertyGroup(nItem) && nSubItem == 1)
-      {
-         // yes, user clicked on a property value subitem
-         EditProperty(nItem);
-      }
+      bool fHitResult = HitTestEx(pt, nItem, nSubItem);
+
+      if (fHitResult && nItem >= 0)
+         LeftButtonClick(pt, nItem, nSubItem);
 
       return 0;
    }
@@ -682,21 +712,21 @@ protected:
 
    // custom-drawing property list control
 
-	DWORD OnPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW /*lpNMCustomDraw*/)
-	{
+   DWORD OnPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW /*lpNMCustomDraw*/)
+   {
       // get item drawing messages and post-paint messages (TODO needed?)
-		return CDRF_NOTIFYITEMDRAW | CDRF_NOTIFYPOSTPAINT;
-	}
+      return CDRF_NOTIFYITEMDRAW | CDRF_NOTIFYPOSTPAINT;
+   }
 
-	DWORD OnItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW /*lpNMCustomDraw*/)
-	{
+   DWORD OnItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW /*lpNMCustomDraw*/)
+   {
       // get item drawing messages for all subitems
-		return CDRF_NOTIFYSUBITEMDRAW;
-	}
+      return CDRF_NOTIFYSUBITEMDRAW;
+   }
 
    //! called when drawing subitems
-	DWORD OnSubItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW lpNMCustomDraw)
-	{
+   DWORD OnSubItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW lpNMCustomDraw)
+   {
       DWORD nItem = lpNMCustomDraw->dwItemSpec;
 
       LPNMLVCUSTOMDRAW lpNMLVCustomDraw = reinterpret_cast<LPNMLVCUSTOMDRAW>(lpNMCustomDraw);
@@ -707,7 +737,6 @@ protected:
 
       return CDRF_SKIPDEFAULT;
    }
-
 
 private:
    //! ratio of size of first column to second column

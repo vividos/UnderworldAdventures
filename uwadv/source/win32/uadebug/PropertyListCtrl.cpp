@@ -18,6 +18,8 @@ using namespace nsPropertyList;
 
 void CInplaceTextEditControl::Create(HWND hWnd, CRect rect, LPCTSTR pszPropertyValue)
 {
+   rect.top++;
+
    // create
    BaseClass::Create(hWnd, rect, _T(""), WS_VISIBLE | WS_CHILD);
    SetWindowText(pszPropertyValue);
@@ -25,6 +27,7 @@ void CInplaceTextEditControl::Create(HWND hWnd, CRect rect, LPCTSTR pszPropertyV
    SetFocus();
    SetSel(0,-1);
 
+   // set font of owner
    HFONT hFont = CWindow(hWnd).GetFont();
    SetFont(hFont);
 }
@@ -100,7 +103,9 @@ CPropertyListCtrlBase::CPropertyListCtrlBase()
  m_crGrayBackground(RGB(224,224,224)),
  m_pStorage(NULL),
  m_nInplaceEditItem(0),
- m_pInplaceEdit(NULL)
+ m_pInplaceEdit(NULL),
+ m_nLeftAreaSize(14),
+ m_bReadonly(false)
 {
 }
 
@@ -152,6 +157,36 @@ void CPropertyListCtrlBase::Init()
    SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
 }
 
+bool CPropertyListCtrlBase::SetReadonly(bool bReadonly)
+{
+   bool bOldReadonly = m_bReadonly;
+   m_bReadonly = bReadonly;
+   return bOldReadonly;
+
+   RedrawWindow(NULL, NULL, RDW_INVALIDATE);
+}
+
+void CPropertyListCtrlBase::UpdateValues()
+{
+   // TODO
+}
+
+void CPropertyListCtrlBase::ExpandGroupItem(UINT nListItemIndex, bool bExpand)
+{
+   ATLASSERT(true == IsListItemAPropertyGroup(nListItemIndex));
+   ExpandGroup(GetListItemPropertyGroupId(nListItemIndex), bExpand);
+}
+
+void CPropertyListCtrlBase::ExpandGroup(UINT nPropertyGroupId, bool bExpand)
+{
+   ATLASSERT(NULL != m_mapAllGroups.Lookup(nPropertyGroupId));
+
+   SPropertyGroupInfo& propGroupInfo = m_mapAllGroups[nPropertyGroupId];
+   propGroupInfo.m_bExpanded = bExpand;
+
+   BuildPropertiesList();
+}
+
 bool CPropertyListCtrlBase::IsListItemAPropertyGroup(unsigned int nListItemIndex) const
 {
    ATLASSERT(nListItemIndex < m_aAllProperties.GetCount()); // range check
@@ -176,15 +211,12 @@ bool CPropertyListCtrlBase::IsPropertyGroupExpanded(unsigned int nListItemIndex)
    ATLASSERT(nListItemIndex < m_aAllProperties.GetCount()); // range check
    ATLASSERT(IsListItemAPropertyGroup(nListItemIndex)); // must be a group item
 
-   // TODO other method to find out if an item is expanded?
+   UINT nPropertyGroupId = GetListItemPropertyGroupId(nListItemIndex);
 
-   if (nListItemIndex+1 < m_aAllProperties.GetCount() && IsListItemAPropertyGroup(nListItemIndex+1))
-      return false;
+   SPropertyGroupInfo propGroupInfo;
+   ATLVERIFY(true == m_mapAllGroups.Lookup(nPropertyGroupId, propGroupInfo));
 
-   if (nListItemIndex+1 >= m_aAllProperties.GetCount())
-      return false;
-
-   return true;
+   return propGroupInfo.m_bExpanded;
 }
 
 CString CPropertyListCtrlBase::GetPropertyGroupName(UINT nPropertyGroupId) const
@@ -206,6 +238,33 @@ CString CPropertyListCtrlBase::GetPropertyItemDesc(UINT nPropertyItemId) const
    SPropertyItemInfo propItemInfo;
    ATLVERIFY(true == m_mapAllItems.Lookup(nPropertyItemId, propItemInfo));
    return GetString(propItemInfo.m_sPropertyItemDesc);
+}
+
+void CPropertyListCtrlBase::LeftButtonClick(CPoint pt, unsigned int nItem, unsigned int nSubItem)
+{
+   CRect rectBox;
+   GetItemRect(nItem, rectBox, LVIR_BOUNDS);
+   GetPlusMinusBoxRect(rectBox);
+
+   if (IsListItemAPropertyGroup(nItem) && nSubItem == 0 && TRUE == rectBox.PtInRect(pt))
+   {
+      // toggle group item expansion
+      ExpandGroupItem(nItem, !IsPropertyGroupExpanded(nItem));
+   }
+   else
+   if (!IsListItemAPropertyGroup(nItem) && nSubItem == 1)
+   {
+      // yes, user clicked on a property value subitem
+      EditProperty(nItem);
+   }
+   else
+   {
+      SetFocus(); // cancen edit boxes
+
+      // select item
+      SelectItem(nItem);
+      Update(nItem);
+   }
 }
 
 void CPropertyListCtrlBase::BuildPropertiesList()
@@ -231,6 +290,10 @@ void CPropertyListCtrlBase::BuildPropertiesList()
 
          UINT nItemId = UINT(-1);
          SPropertyItemInfo propItemInfo;
+
+         // when group is collapsed, don't add items
+         if (!propGroupInfo.m_bExpanded)
+            continue;
 
          // go through all properties with current group id
          POSITION posItems = m_mapAllItems.GetStartPosition();
@@ -294,7 +357,11 @@ void CPropertyListCtrlBase::GetSubItemRect(unsigned int nItem, unsigned int nSub
 
 void CPropertyListCtrlBase::EditProperty(unsigned int nListItem)
 {
-   // TODO check if the list control or the property is read-only
+   // check if the list control or the property is read-only
+   if (m_bReadonly)
+      return;
+
+   // TODO check if property is also read-only
 
    SetFocus();
 
@@ -323,15 +390,41 @@ void CPropertyListCtrlBase::EditProperty(unsigned int nListItem)
    UINT nPropertyId = GetListItemPropertyItemId(nListItem);
    CString cszPropertyValue = GetPropertyItemValue(nPropertyId);
 
-   // create edit control
-   // TODO call type-independent create function
-   IInplaceEditControl* pInplaceEdit = new CInplaceTextEditControl();
-   m_pInplaceEdit = pInplaceEdit; // TODO remove pInplaceEdit usage
-   pInplaceEdit->Init(this);
+   // create and init edit control
+   m_pInplaceEdit = CreateEditControl(nPropertyId);
 
-// TODO test
-cszPropertyValue = _T("test 123");
-   pInplaceEdit->Create(m_hWnd, rectItem, cszPropertyValue);
+   m_pInplaceEdit->Init(this);
+   m_pInplaceEdit->Create(m_hWnd, rectItem, cszPropertyValue);
+}
+
+IInplaceEditControl* CPropertyListCtrlBase::CreateEditControl(UINT nPropertyItemId)
+{
+   SPropertyItemInfo propItemInfo;
+   ATLVERIFY(true == m_mapAllItems.Lookup(nPropertyItemId, propItemInfo));
+
+   IInplaceEditControl* pEditControl = NULL;
+
+   // create edit control dependent on property type
+   switch (propItemInfo.m_enPropertyType)
+   {
+   case enPropertyTypeText:
+      pEditControl = new CInplaceTextEditControl();
+      break;
+
+   case enPropertyTypeComboBox:
+      ATLASSERT(false); // TODO implement
+      break;
+
+   case enPropertyTypeCustom:
+      pEditControl = propItemInfo.m_pCustomProperty->CreateInplaceEditControl();
+      break;
+
+   default:
+      ATLASSERT(false);
+      break;
+   }
+
+   return pEditControl;
 }
 
 CString CPropertyListCtrlBase::GetString(const SStringOrId& sStringOrId) const
@@ -344,6 +437,14 @@ CString CPropertyListCtrlBase::GetString(const SStringOrId& sStringOrId) const
       cszText.LoadString(sStringOrId.m_nStringId);
       return cszText;
    }
+}
+
+void CPropertyListCtrlBase::GetPlusMinusBoxRect(CRect& rect)
+{
+   rect.top = rect.top + 3;
+   rect.left = rect.left + 3;
+   rect.bottom = rect.top + 9;
+   rect.right = rect.left + 9;
 }
 
 void CPropertyListCtrlBase::DrawItem(unsigned int nItem, unsigned int nSubItem, CDCHandle dc, UINT uItemState)
@@ -372,7 +473,7 @@ void CPropertyListCtrlBase::DrawGroupItem(unsigned int nItem, CDCHandle dc, UINT
    dc.FillSolidRect(rect, m_crGrayBackground);
 
    CRect rectText(rect);
-   rectText.left += 16 + 1;
+   rectText.left += m_nLeftAreaSize + 2 + 1;
    rectText.bottom -= 2;
 
    UINT nGroupId = GetListItemPropertyGroupId(nItem);
@@ -406,11 +507,8 @@ void CPropertyListCtrlBase::DrawGroupItem(unsigned int nItem, CDCHandle dc, UINT
 */
 
    // draw box with plus or minus sign
-   CRect rectBox;
-   rectBox.top = rect.top + 3;
-   rectBox.left = rect.left + 3;
-   rectBox.bottom = rectBox.top + 9;
-   rectBox.right = rectBox.left + 9;
+   CRect rectBox(rect);
+   GetPlusMinusBoxRect(rectBox);
 
    dc.FrameRect(rectBox, (HBRUSH)GetStockObject(BLACK_BRUSH));
 
@@ -438,7 +536,7 @@ void CPropertyListCtrlBase::DrawPropertyNameItem(unsigned int nItem, CDCHandle d
    rect.right = GetColumnWidth(0)-1;
 
    CRect rectFrontBar(rect);
-   rectFrontBar.right = rectFrontBar.left + 14;
+   rectFrontBar.right = rectFrontBar.left + m_nLeftAreaSize;
    dc.FillSolidRect(rectFrontBar, m_crGrayBackground);
 
    // draw grid lines around name area
