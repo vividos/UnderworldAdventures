@@ -55,7 +55,8 @@ bool CMainFrame::InitDebugClient(void* pDebugClient)
    }
 
    m_bStopped = m_debugClient.IsGamePaused();
-   UISetCheck(ID_UNDERWORLD_RUNNING, m_bStopped ? FALSE : TRUE);
+   UIEnable(ID_UNDERWORLD_RUN, m_bStopped ? TRUE : FALSE, TRUE);
+   UIEnable(ID_UNDERWORLD_PAUSE, m_bStopped ? FALSE : TRUE, TRUE);
 
    // load project
    CString cszGameCfgPath = m_debugClient.GetGameCfgPath();
@@ -86,15 +87,37 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
    m_CmdBar.AttachMenu(GetMenu());
    // load command bar images
    m_CmdBar.LoadImages(IDR_MAINFRAME);
+   m_CmdBar.LoadImages(IDR_TOOLBAR_STANDARD);
+   m_CmdBar.LoadImages(IDR_TOOLBAR_DEBUG);
    // remove old menu
    SetMenu(NULL);
 
-   HWND hWndToolBar = CreateSimpleToolBarCtrl(m_hWnd, IDR_MAINFRAME, FALSE, ATL_SIMPLE_TOOLBAR_PANE_STYLE);
+   // set up toolbars and status bar
+   {
+      HWND hWndToolBar = CreateSimpleToolBarCtrl(m_hWnd, IDR_MAINFRAME, FALSE, ATL_SIMPLE_TOOLBAR_PANE_STYLE);
 
-   CreateSimpleReBar(ATL_SIMPLE_REBAR_NOBORDER_STYLE);
-   AddSimpleReBarBand(hWndCmdBar);
-   AddSimpleReBarBand(hWndToolBar, NULL, TRUE);
-   CreateSimpleStatusBar();
+      CreateSimpleReBar(ATL_SIMPLE_REBAR_NOBORDER_STYLE);
+      AddSimpleReBarBand(hWndCmdBar);
+      AddSimpleReBarBand(hWndToolBar, NULL, TRUE);
+
+      // misc command bar
+      HWND hWndMainToolBar = CreateSimpleToolBarCtrl(m_hWnd, IDR_TOOLBAR_STANDARD, FALSE, ATL_SIMPLE_TOOLBAR_PANE_STYLE, ATL_IDW_TOOLBAR);
+      AddSimpleReBarBand(hWndMainToolBar, NULL, FALSE);
+
+      // debug command bar
+      HWND hWndDebugToolBar = CreateSimpleToolBarCtrl(m_hWnd, IDR_TOOLBAR_DEBUG, FALSE, ATL_SIMPLE_TOOLBAR_PANE_STYLE, ATL_IDW_TOOLBAR);
+      AddSimpleReBarBand(hWndDebugToolBar, NULL, FALSE);
+
+      CreateSimpleStatusBar();
+
+      UIAddToolBar(hWndToolBar);
+      UIAddToolBar(hWndMainToolBar);
+      UIAddToolBar(hWndDebugToolBar);
+      UISetCheck(ID_VIEW_TOOLBAR, 1);
+      UISetCheck(ID_VIEW_TOOLBAR_STANDARD, 1);
+      UISetCheck(ID_VIEW_TOOLBAR_DEBUG, 1);
+      UISetCheck(ID_VIEW_STATUS_BAR, 1);
+   }
 
    m_tabbedChildWindow.SetReflectNotifications(true);
 
@@ -110,10 +133,6 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
    m_CmdBar.SetMDIClient(m_hWndMDIClient);
 
-   UIAddToolBar(hWndToolBar);
-   UISetCheck(ID_VIEW_TOOLBAR, 1);
-   UISetCheck(ID_VIEW_STATUS_BAR, 1);
-
    // register object for message filtering and idle updates
    CMessageLoop* pLoop = _Module.GetMessageLoop();
    ATLASSERT(pLoop != NULL);
@@ -125,6 +144,7 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
    // dock some often-needed windows
    ShowHideDockingWindow(m_projectInfoWindow);
+   UISetCheck(ID_VIEW_PROJECT, TRUE);
 
    UpdateLayout();
 
@@ -201,16 +221,24 @@ void CMainFrame::ProcessServerMessages()
    CDebugClientMessage msg;
    while (m_debugClient.GetMessage(msg))
    {
-      switch(msg.m_nType)
+      ATLTRACE(_T("server message: type=%s\n"),
+         msg.m_nType == 0 ? _T("shutdown") :
+         msg.m_nType == 1 ? _T("attach") :
+         msg.m_nType == 2 ? _T("detach") : _T("unknown") );
+
+      switch (msg.m_nType)
       {
       case 0: // shutdown request
+         ATLTRACE(_T("server message: type=shutdown\n"));
          PostMessage(WM_CLOSE);
          break;
 
       case 1: // debugger attach
          {
+            ATLTRACE(_T("server message: type=code debugger attach, id=%u\n"), msg.m_nArg1);
             unsigned int nCodeDebuggerID = msg.m_nArg1;
-            ATLASSERT(false == m_debugClient.IsValidCodeDebuggerID(nCodeDebuggerID));
+            ATLASSERT(FALSE == m_debugClient.IsValidCodeDebuggerID(nCodeDebuggerID));
+
             m_debugClient.AddCodeDebugger(nCodeDebuggerID);
 
             // prepare debug info
@@ -218,20 +246,43 @@ void CMainFrame::ProcessServerMessages()
 
             // send notification about code debugger update
             CDebugWindowNotification notify;
-            notify.code = ncCodeDebuggerUpdate;
+            notify.m_enCode = ncCodeDebuggerUpdate;
+            notify.m_nParam1 = utAttach;
+            notify.m_nParam2 = msg.m_nArg1;
             SendNotification(notify);
          }
          break;
 
       case 2: // debugger detach
          {
+            ATLTRACE(_T("server message: type=code debugger detach, id=%u\n"), msg.m_nArg1);
+
             ATLASSERT(true == m_debugClient.IsValidCodeDebuggerID(msg.m_nArg1));
             m_debugClient.RemoveCodeDebugger(msg.m_nArg1);
 
             CDebugWindowNotification notify;
-            notify.code = ncCodeDebuggerUpdate;
+            notify.m_enCode = ncCodeDebuggerUpdate;
+            notify.m_nParam1 = utDetach;
+            notify.m_nParam2 = msg.m_nArg1;
             SendNotification(notify);
          }
+         break;
+
+      case 3: // code debugger update
+         {
+            ATLTRACE(_T("server message: type=code debugger update, id=%u\n"), msg.m_nArg1);
+
+            // send notification about code debugger update
+            CDebugWindowNotification notify;
+            notify.m_enCode = ncCodeDebuggerUpdate;
+            notify.m_nParam1 = utUpdateState;
+            notify.m_nParam2 = msg.m_nArg1;
+            SendNotification(notify);
+         }
+         break;
+
+      case 4:
+         ATLASSERT(false);
          break;
       }
    }
@@ -323,10 +374,23 @@ LRESULT CMainFrame::OnFileSaveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
    return 0;
 }
 
-LRESULT CMainFrame::OnButtonUnderworldRunning(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CMainFrame::OnGameNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-   m_bStopped = !m_bStopped;
-   UISetCheck(ID_UNDERWORLD_RUNNING, m_bStopped ? FALSE : TRUE);
+   return 0;
+}
+
+LRESULT CMainFrame::OnGameOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+   return 0;
+}
+
+LRESULT CMainFrame::OnButtonUnderworldRunPause(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+   ATLASSERT(wID == ID_UNDERWORLD_RUN || wID == ID_UNDERWORLD_PAUSE);
+
+   m_bStopped = wID == ID_UNDERWORLD_RUN ? false : true;
+   UIEnable(ID_UNDERWORLD_RUN, m_bStopped ? TRUE : FALSE, TRUE);
+   UIEnable(ID_UNDERWORLD_PAUSE, m_bStopped ? FALSE : TRUE, TRUE);
 
    // tell underworld to stop
    m_debugClient.Lock(true);
@@ -335,13 +399,13 @@ LRESULT CMainFrame::OnButtonUnderworldRunning(WORD /*wNotifyCode*/, WORD /*wID*/
 
    // send notification to all windows
    CDebugWindowNotification notify;
-   notify.code = m_bStopped ? ncSetReadonly : ncSetReadWrite;
+   notify.m_enCode = m_bStopped ? ncSetReadonly : ncSetReadWrite;
    SendNotification(notify);
 
    // when stopping, also update data
    if (m_bStopped)
    {
-      notify.code = ncUpdateData;
+      notify.m_enCode = ncUpdateData;
       SendNotification(notify);
    }
 
@@ -358,6 +422,34 @@ LRESULT CMainFrame::OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
    rebar.ShowBand(nBandIndex, bVisible);
 
    UISetCheck(ID_VIEW_TOOLBAR, bVisible);
+   UpdateLayout();
+   return 0;
+}
+
+LRESULT CMainFrame::OnViewToolBarStandard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+   static BOOL bVisible = TRUE;   // initially visible
+   bVisible = !bVisible;
+
+   CReBarCtrl rebar = m_hWndToolBar;
+   int nBandIndex = rebar.IdToIndex(ATL_IDW_BAND_FIRST + 2);   // toolbar is 3rd added band
+   rebar.ShowBand(nBandIndex, bVisible);
+
+   UISetCheck(ID_VIEW_TOOLBAR_STANDARD, bVisible);
+   UpdateLayout();
+   return 0;
+}
+
+LRESULT CMainFrame::OnViewToolBarDebug(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+   static BOOL bVisible = TRUE;   // initially visible
+   bVisible = !bVisible;
+
+   CReBarCtrl rebar = m_hWndToolBar;
+   int nBandIndex = rebar.IdToIndex(ATL_IDW_BAND_FIRST + 3);   // toolbar is 4th added band
+   rebar.ShowBand(nBandIndex, bVisible);
+
+   UISetCheck(ID_VIEW_TOOLBAR_DEBUG, bVisible);
    UpdateLayout();
    return 0;
 }
@@ -423,12 +515,12 @@ LRESULT CMainFrame::OnViewTilemap(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
       // send notifications
       CDebugWindowNotification notify;
-      notify.code = m_bStopped ? ncSetReadonly : ncSetReadWrite;
+      notify.m_enCode = m_bStopped ? ncSetReadonly : ncSetReadWrite;
       notify.m_bRelayToDescendants = true;
 
       SendNotification(notify, &m_tilemapChildFrame);
 
-      notify.code = ncUpdateData;
+      notify.m_enCode = ncUpdateData;
       SendNotification(notify, &m_tilemapChildFrame);
    }
    else
@@ -452,12 +544,12 @@ LRESULT CMainFrame::OnViewGameStrings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 
    // send read/write and update data notification
    CDebugWindowNotification notify;
-   notify.code = m_bStopped ? ncSetReadonly : ncSetReadWrite;
+   notify.m_enCode = m_bStopped ? ncSetReadonly : ncSetReadWrite;
    notify.m_bRelayToDescendants = true;
 
    SendNotification(notify, pChild);
 
-   notify.code = ncUpdateData;
+   notify.m_enCode = ncUpdateData;
    SendNotification(notify, pChild);
 
    return 0;
@@ -493,39 +585,32 @@ bool CMainFrame::ShowHideDockingWindow(CDockingWindowBase& dockingWindow)
 
       if (!dockingWindow.IsWindow())
       {
-         //dockingWindow.CreateDockingWindow(m_hWnd);
          CRect rect(CPoint(0,0), dockingWindow.GetFloatingSize());
         
          DWORD dwStyle = WS_OVERLAPPEDWINDOW | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
          dockingWindow.Create(m_hWnd, rect, dockingWindow.GetDockWindowCaption(), dwStyle);
       }
 
-      CSize dockSize = dockingWindow.GetDockingSize();
-      dockwins::CDockingSide dockSide = dockingWindow.GetPreferredDockingSide();
-
-      // TODO search proper bar to dock to
-      int nBar = 0; // TODO ::IsWindowVisible(m_playerInfoWindow) ? 1 : 0;
-
-      DockWindow(dockingWindow, dockSide,
-         nBar, float(0.0)/*fPctPos*/, dockSize.cx, dockSize.cy);
+      DockDebugWindow(dockingWindow);
 
       // update data in control
       CDebugWindowNotification notify;
-      notify.code = ncUpdateData;
+      notify.m_enCode = ncUpdateData;
       notify.m_bRelayToDescendants = true;
       SendNotification(notify, &dockingWindow);
 
       // also set window to readonly / writable
-      notify.code = m_bStopped ? ncSetReadonly : ncSetReadWrite;
+      notify.m_enCode = m_bStopped ? ncSetReadonly : ncSetReadWrite;
       SendNotification(notify, &dockingWindow);
    }
 
    return !bVisible;
 }
 
-LRESULT CMainFrame::OnUndockWindow(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT CMainFrame::OnUndockWindow(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
    T_enDockingWindowID id = static_cast<T_enDockingWindowID>(wParam);
+   CDockingWindowBase& dockingWindow = *reinterpret_cast<CDockingWindowBase*>(lParam);
 
    CDockingWindowBase* pWindowBase = NULL;
    UINT nViewId = 0;
@@ -555,6 +640,13 @@ LRESULT CMainFrame::OnUndockWindow(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam
    case idProjectInfoWindow:
       pWindowBase = &m_projectInfoWindow;
       nViewId = ID_VIEW_PROJECT;
+      break;
+
+   case idBreakpointWindow:
+      // breakpoint windows are created from CProjectInfoWindow, so we don't
+      // know exactly the window base pointer
+      pWindowBase = &dockingWindow;
+      nViewId = 0;
       break;
 
    default:
@@ -606,9 +698,21 @@ CImageList& CMainFrame::GetObjectImageList()
    return m_ilObjects;
 }
 
-void CMainFrame::UndockWindow(T_enDockingWindowID windowID)
+void CMainFrame::DockDebugWindow(CDockingWindowBase& dockingWindow)
 {
-   PostMessage(WM_UNDOCK_WINDOW, static_cast<WPARAM>(windowID));
+   CSize dockSize = dockingWindow.GetDockingSize();
+   dockwins::CDockingSide dockSide = dockingWindow.GetPreferredDockingSide();
+
+   // TODO search proper bar to dock to
+   int nBar = 0;
+
+   DockWindow(dockingWindow, dockSide,
+      nBar, float(0.0)/*fPctPos*/, dockSize.cx, dockSize.cy);
+}
+
+void CMainFrame::UndockWindow(T_enDockingWindowID windowID, CDockingWindowBase* pDockingWindow)
+{
+   PostMessage(WM_UNDOCK_WINDOW, static_cast<WPARAM>(windowID), reinterpret_cast<LPARAM>(pDockingWindow));
 }
 
 void CMainFrame::AddDebugWindow(CDebugWindowBase* pDebugWindow)

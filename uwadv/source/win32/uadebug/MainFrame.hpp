@@ -105,8 +105,13 @@ public:
       COMMAND_ID_HANDLER(ID_FILE_SAVE, OnFileSave)
       COMMAND_ID_HANDLER(ID_FILE_SAVE_AS, OnFileSaveAs)
       COMMAND_ID_HANDLER(ID_FILE_SAVE_ALL, OnFileSaveAll)
-      COMMAND_ID_HANDLER(ID_UNDERWORLD_RUNNING, OnButtonUnderworldRunning)
+      COMMAND_ID_HANDLER(ID_GAME_NEW, OnGameNew)
+      //COMMAND_ID_HANDLER(ID_GAME_OPEN, OnGameOpen)
+      COMMAND_ID_HANDLER(ID_UNDERWORLD_RUN, OnButtonUnderworldRunPause)
+      COMMAND_ID_HANDLER(ID_UNDERWORLD_PAUSE, OnButtonUnderworldRunPause)
       COMMAND_ID_HANDLER(ID_VIEW_TOOLBAR, OnViewToolBar)
+      COMMAND_ID_HANDLER(ID_VIEW_TOOLBAR_STANDARD, OnViewToolBarStandard)
+      COMMAND_ID_HANDLER(ID_VIEW_TOOLBAR_DEBUG, OnViewToolBarDebug)
       COMMAND_ID_HANDLER(ID_VIEW_STATUS_BAR, OnViewStatusBar)
       COMMAND_ID_HANDLER(ID_VIEW_PLAYERINFO, OnViewPlayerInfo)
       COMMAND_ID_HANDLER(ID_VIEW_OBJECTLIST, OnViewObjectList)
@@ -130,8 +135,11 @@ public:
 
    // update map for menus and toolbars
    BEGIN_UPDATE_UI_MAP(CMainFrame)
-      UPDATE_ELEMENT(ID_UNDERWORLD_RUNNING, UPDUI_TOOLBAR)
+      UPDATE_ELEMENT(ID_UNDERWORLD_RUN, UPDUI_MENUPOPUP|UPDUI_TOOLBAR)
+      UPDATE_ELEMENT(ID_UNDERWORLD_PAUSE, UPDUI_MENUPOPUP|UPDUI_TOOLBAR)
       UPDATE_ELEMENT(ID_VIEW_TOOLBAR, UPDUI_MENUPOPUP)
+      UPDATE_ELEMENT(ID_VIEW_TOOLBAR_STANDARD, UPDUI_MENUPOPUP)
+      UPDATE_ELEMENT(ID_VIEW_TOOLBAR_DEBUG, UPDUI_MENUPOPUP)
       UPDATE_ELEMENT(ID_VIEW_STATUS_BAR, UPDUI_MENUPOPUP)
       UPDATE_ELEMENT(ID_VIEW_PLAYERINFO, UPDUI_MENUPOPUP|UPDUI_TOOLBAR)
       UPDATE_ELEMENT(ID_VIEW_OBJECTLIST, UPDUI_MENUPOPUP|UPDUI_TOOLBAR)
@@ -156,8 +164,12 @@ public:
    LRESULT OnFileSave(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnFileSaveAs(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnFileSaveAll(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-   LRESULT OnButtonUnderworldRunning(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnGameNew(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnGameOpen(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnButtonUnderworldRunPause(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnViewToolBar(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnViewToolBarStandard(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnViewToolBarDebug(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnViewStatusBar(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnViewPlayerInfo(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnViewObjectList(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -202,11 +214,14 @@ public:
 
    virtual CDebugClientInterface& GetDebugClientInterface();
    virtual CProjectManager& GetProjectManager(){ return m_projectManager; }
+   virtual CImageList GetCommonImageList(){ return m_ilCommonImages; }
+   virtual bool IsGameStopped() const { return m_bStopped; }
    virtual void SendNotification(CDebugWindowNotification& notify, CDebugWindowBase* pDebugWindow);
    virtual void SendNotification(CDebugWindowNotification& notify,
       bool fExcludeSender=false, CDebugWindowBase* pSender=NULL);
    virtual CImageList& GetObjectImageList();
-   virtual void UndockWindow(T_enDockingWindowID windowID);
+   virtual void DockDebugWindow(CDockingWindowBase& dockingWindow);
+   virtual void UndockWindow(T_enDockingWindowID windowID, CDockingWindowBase* pDockingWindow);
    virtual void AddDebugWindow(CDebugWindowBase* pDebugWindow);
    virtual void RemoveDebugWindow(CDebugWindowBase* pDebugWindow);
    virtual void OpenLuaSourceFile(LPCTSTR pszFilename);
@@ -228,6 +243,9 @@ private:
 
    //! array with pointer to all lua child windows
    CSimpleArray<CLuaSourceView*> m_apLuaChildWindows;
+
+   //! common image list
+   CImageList m_ilCommonImages;
 };
 
 /////////////////////////////////////////////////////////////////////////////
