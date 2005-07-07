@@ -66,13 +66,18 @@ CObjectListWindow::~CObjectListWindow()
 
 void CObjectListWindow::ReceiveNotification(CDebugWindowNotification& notify)
 {
-   switch(notify.code)
+   switch(notify.m_enCode)
    {
    case ncUpdateData:
       UpdateData();
       break;
 
+   case ncChangedLevel:
+      UpdateData();
+      break;
+
    case ncSelectedObject:
+      m_listCtrl.EnsureVisible(notify.m_nParam1, FALSE);
       m_listCtrl.SelectItem(notify.m_nParam1);
       break;
 
@@ -268,16 +273,16 @@ LRESULT CObjectListWindow::OnBeginLabelEdit(WPARAM /*wParam*/, NMHDR* pNMHDR, BO
 {
    NMLVDISPINFO* pLvDispInfo = reinterpret_cast<NMLVDISPINFO*>(pNMHDR);
 
-   int nItem = pLvDispInfo->item.iItem;
-   unsigned int nItemId = m_objectList.GetItem(nItem, 1);
+   int nItemPos = pLvDispInfo->item.iItem;
+   unsigned int nItemId = m_objectList.GetItem(nItemPos, 1);
 
    if (pLvDispInfo->item.iSubItem == 0)
    {
-      m_listCtrl.SelectItem(nItem);
+      m_listCtrl.SelectItem(nItemPos);
 
       CDebugWindowNotification notify;
-      notify.code = ncSelectedObject;
-      notify.m_nParam1 = nItem;
+      notify.m_enCode = ncSelectedObject;
+      notify.m_nParam1 = nItemPos;
       m_pMainFrame->SendNotification(notify, true, this);
    }
 
