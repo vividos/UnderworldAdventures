@@ -84,6 +84,8 @@ IDR_MAINFRAME           BITMAP                  "res\\tb_mainframe.bmp"
 IDR_LUA_SOURCE_FRAME    BITMAP                  "res\\tb_lua_source.bmp"
 IDR_GAME_STRINGS        BITMAP                  "res\\tb_game_strings.bmp"
 IDR_TILEMAP_VIEW        BITMAP                  "res\\tb_tilemap.bmp"
+IDR_TOOLBAR_DEBUG       BITMAP                  "res\\tb_debug.bmp"
+IDR_TOOLBAR_STANDARD    BITMAP                  "res\\tb_standard.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -92,26 +94,18 @@ IDR_TILEMAP_VIEW        BITMAP                  "res\\tb_tilemap.bmp"
 
 IDR_MAINFRAME TOOLBAR  16, 15
 BEGIN
+    BUTTON      ID_GAME_NEW
+    SEPARATOR
     BUTTON      ID_FILE_NEW
     BUTTON      ID_FILE_OPEN
     BUTTON      ID_FILE_SAVE
+    BUTTON      ID_FILE_SAVEALL
     SEPARATOR
     BUTTON      ID_EDIT_CUT
     BUTTON      ID_EDIT_COPY
     BUTTON      ID_EDIT_PASTE
     SEPARATOR
-    BUTTON      ID_FILE_PRINT
     BUTTON      ID_APP_ABOUT
-    SEPARATOR
-    BUTTON      ID_UNDERWORLD_RUNNING
-    SEPARATOR
-    BUTTON      ID_VIEW_PROJECT
-    BUTTON      ID_VIEW_PLAYERINFO
-    BUTTON      ID_VIEW_OBJECTLIST
-    BUTTON      ID_VIEW_HOTSPOT
-    BUTTON      ID_VIEW_TILEMAP
-    BUTTON      ID_VIEW_TILEINFO
-    BUTTON      ID_VIEW_GAMESTRINGS
     SEPARATOR
     BUTTON      ID_WINDOW_CASCADE
     BUTTON      ID_WINDOW_TILE_HORZ
@@ -120,9 +114,15 @@ END
 
 IDR_LUA_SOURCE_FRAME TOOLBAR  16, 15
 BEGIN
+    BUTTON      ID_GAME_NEW
+    SEPARATOR
     BUTTON      ID_FILE_NEW
     BUTTON      ID_FILE_OPEN
     BUTTON      ID_FILE_SAVE
+    BUTTON      ID_FILE_SAVEALL
+    SEPARATOR
+    BUTTON      ID_EDIT_UNDO
+    BUTTON      ID_EDIT_REDO
     SEPARATOR
     BUTTON      ID_EDIT_CUT
     BUTTON      ID_EDIT_COPY
@@ -130,16 +130,6 @@ BEGIN
     SEPARATOR
     BUTTON      ID_FILE_PRINT
     BUTTON      ID_APP_ABOUT
-    SEPARATOR
-    BUTTON      ID_UNDERWORLD_RUNNING
-    SEPARATOR
-    BUTTON      ID_VIEW_PROJECT
-    BUTTON      ID_VIEW_PLAYERINFO
-    BUTTON      ID_VIEW_OBJECTLIST
-    BUTTON      ID_VIEW_HOTSPOT
-    BUTTON      ID_VIEW_TILEMAP
-    BUTTON      ID_VIEW_TILEINFO
-    BUTTON      ID_VIEW_GAMESTRINGS
     SEPARATOR
     BUTTON      ID_WINDOW_CASCADE
     BUTTON      ID_WINDOW_TILE_HORZ
@@ -148,6 +138,29 @@ END
 
 IDR_GAME_STRINGS TOOLBAR  16, 15
 BEGIN
+    BUTTON      ID_GAME_NEW
+    SEPARATOR
+    BUTTON      ID_FILE_NEW
+    BUTTON      ID_FILE_OPEN
+    BUTTON      ID_FILE_SAVE
+    BUTTON      ID_FILE_SAVEALL
+    SEPARATOR
+    BUTTON      ID_EDIT_CUT
+    BUTTON      ID_EDIT_COPY
+    BUTTON      ID_EDIT_PASTE
+    SEPARATOR
+    BUTTON      ID_APP_ABOUT
+    SEPARATOR
+    BUTTON      ID_WINDOW_CASCADE
+    BUTTON      ID_WINDOW_TILE_HORZ
+    BUTTON      ID_WINDOW_TILE_VERT
+    BUTTON      ID_BUTTON32820
+END
+
+IDR_TILEMAP_VIEW TOOLBAR  16, 15
+BEGIN
+    BUTTON      ID_GAME_NEW
+    SEPARATOR
     BUTTON      ID_FILE_NEW
     BUTTON      ID_FILE_OPEN
     BUTTON      ID_FILE_SAVE
@@ -156,38 +169,27 @@ BEGIN
     BUTTON      ID_EDIT_COPY
     BUTTON      ID_EDIT_PASTE
     SEPARATOR
-    BUTTON      ID_FILE_PRINT
     BUTTON      ID_APP_ABOUT
-    SEPARATOR
-    BUTTON      ID_UNDERWORLD_RUNNING
-    SEPARATOR
-    BUTTON      ID_VIEW_PROJECT
-    BUTTON      ID_VIEW_PLAYERINFO
-    BUTTON      ID_VIEW_OBJECTLIST
-    BUTTON      ID_VIEW_HOTSPOT
-    BUTTON      ID_VIEW_TILEMAP
-    BUTTON      ID_VIEW_TILEINFO
-    BUTTON      ID_VIEW_GAMESTRINGS
     SEPARATOR
     BUTTON      ID_WINDOW_CASCADE
     BUTTON      ID_WINDOW_TILE_HORZ
     BUTTON      ID_WINDOW_TILE_VERT
 END
 
-IDR_TILEMAP_VIEW TOOLBAR  16, 15
+IDR_TOOLBAR_DEBUG TOOLBAR  16, 15
 BEGIN
-    BUTTON      ID_FILE_NEW
-    BUTTON      ID_FILE_OPEN
-    BUTTON      ID_FILE_SAVE
+    BUTTON      ID_DEBUG_RUN
+    BUTTON      ID_DEBUG_STEP_INTO
+    BUTTON      ID_DEBUG_STEP_OVER
+    BUTTON      ID_DEBUG_STEP_OUT
     SEPARATOR
-    BUTTON      ID_EDIT_CUT
-    BUTTON      ID_EDIT_COPY
-    BUTTON      ID_EDIT_PASTE
-    SEPARATOR
-    BUTTON      ID_FILE_PRINT
-    BUTTON      ID_APP_ABOUT
-    SEPARATOR
-    BUTTON      ID_UNDERWORLD_RUNNING
+    BUTTON      ID_VIEW_OUTPUT
+END
+
+IDR_TOOLBAR_STANDARD TOOLBAR  16, 15
+BEGIN
+    BUTTON      ID_UNDERWORLD_RUN
+    BUTTON      ID_UNDERWORLD_PAUSE
     SEPARATOR
     BUTTON      ID_VIEW_PROJECT
     BUTTON      ID_VIEW_PLAYERINFO
@@ -196,10 +198,6 @@ BEGIN
     BUTTON      ID_VIEW_TILEMAP
     BUTTON      ID_VIEW_TILEINFO
     BUTTON      ID_VIEW_GAMESTRINGS
-    SEPARATOR
-    BUTTON      ID_WINDOW_CASCADE
-    BUTTON      ID_WINDOW_TILE_HORZ
-    BUTTON      ID_WINDOW_TILE_VERT
 END
 
 
@@ -224,8 +222,10 @@ BEGIN
     BEGIN
         MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
         MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
+        MENUITEM "St&andard Toolbar",           ID_VIEW_TOOLBAR_STANDARD
+        MENUITEM "&Debug Toolbar",              ID_VIEW_TOOLBAR_DEBUG
         MENUITEM SEPARATOR
-        MENUITEM "Project",                     32791
+        MENUITEM "P&roject Info",               ID_VIEW_PROJECT
         MENUITEM "&Player Info",                ID_VIEW_PLAYERINFO
         MENUITEM "Master &Object List",         ID_VIEW_OBJECTLIST
         MENUITEM "&Hotspot List",               ID_VIEW_HOTSPOT
@@ -256,6 +256,7 @@ BEGIN
     POPUP "&Edit"
     BEGIN
         MENUITEM "&Undo\tCtrl+Z",               ID_EDIT_UNDO
+        MENUITEM "&Redo\tCtrl+Y",               ID_EDIT_REDO
         MENUITEM SEPARATOR
         MENUITEM "Cu&t\tCtrl+X",                ID_EDIT_CUT
         MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
@@ -307,6 +308,7 @@ BEGIN
     POPUP "&Edit"
     BEGIN
         MENUITEM "&Undo\tCtrl+Z",               ID_EDIT_UNDO
+        MENUITEM "&Redo\tCtrl+Y",               ID_EDIT_REDO
         MENUITEM SEPARATOR
         MENUITEM "Cu&t\tCtrl+X",                ID_EDIT_CUT
         MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
@@ -610,19 +612,40 @@ END
 
 STRINGTABLE 
 BEGIN
-    ID_VIEW_PLAYERINFO      "Show Player Info\nShow a list with all player attributes."
-    ID_VIEW_HOTSPOT         "View Hotspot list\nView list with all hotspots in the game."
-    ID_VIEW_OBJECTLIST      "Show Master Object List\nShow list of all objects in the current level."
+    ID_VIEW_PLAYERINFO      "Show or hide Player Info window\nPlayer Info"
+    ID_VIEW_HOTSPOT         "Show or hide list with all hotspots in the game\nHotspot List"
+    ID_VIEW_OBJECTLIST      "Show or hide Master Object List\nMaster Object List"
     ID_FILE_OPEN_PROJECT    "Open Project\nOpen a new game project."
     ID_FILE_CLOSE_PROJECT   "Close Project\nClose the current game project."
-    ID_UNDERWORLD_RUNNING   "Determines if the Underworld is currently running."
+    ID_UNDERWORLD_RUN       "Run Underworld\nRun"
     ID_VIEW_TILEMAPVIEW     "Tilemap View\nShow tilemap view window"
-    ID_VIEW_TILEMAP         "Tilemap View\nShow tilemap view window"
+    ID_VIEW_TILEMAP         "Show tilemap view window\nTilemap View"
 END
 
 STRINGTABLE 
 BEGIN
-    ID_VIEW_GAMESTRINGS     "Game Strings\nShow a window with all game strings."
+    ID_VIEW_GAMESTRINGS     "Show a window with all game strings\nGame Strings"
+    ID_VIEW_PROJECT         "Show or hide Project Info Window\nProject Info"
+    ID_VIEW_TILEINFO        "Show or hide tile info window\nTile Info"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_FILE_SAVEALL         "Save all open documents\nSave All"
+    ID_UNDERWORLD_PAUSE     "Pause Underworld\nPause"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_DEBUG_STEP_INTO      "Steps into functions\nStep Into"
+    ID_DEBUG_STEP_OVER      "Steps over functions\nStep Over"
+    ID_DEBUG_STEP_OUT       "Leaves current function\nStep Out"
+    ID_DEBUG_RUN            "Starts or continues running code in active code debugger\nStart"
+    ID_GAME_NEW             "Create a new game\nNew Game"
+    ID_VIEW_OUTPUT          "Show Output Window\nOutput Window"
+    ID_VIEW_TOOLBAR_DEBUG   "Show or hide the debug toolbar\nToggle Debug ToolBar"
+    ID_VIEW_TOOLBAR_STANDARD 
+                            "Show or hide the standard toolbar\nToggle Standard ToolBar"
 END
 
 #endif    // English (U.S.) resources
