@@ -59,8 +59,8 @@ LRESULT CLuaSourceView::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 
    // set Lua keywords
    m_view.SetKeyWords(0,
-      "and break do else elseif end for function if in" // official keywords
-      "local nil not or repeat return then until while"
+      "and break do else elseif end for function if in " // official keywords
+      "local nil not or repeat return then until while "
       "uw player objlist tilemap runes conv quest prop"); // uwadv objects
 
    m_view.SetInitialTabWidth(3);
