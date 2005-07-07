@@ -19,7 +19,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\source;..\..\source\base"
+				AdditionalIncludeDirectories="..\..\source;..\..\source\base;..\..\source\underw"
 				PreprocessorDefinitions="HAVE_DEBUG,HAVE_CONSOLE,_STLP_USE_STATIC_LIB"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
@@ -69,7 +69,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				GlobalOptimizations="TRUE"
-				AdditionalIncludeDirectories="..\..\source;..\..\source\base"
+				AdditionalIncludeDirectories="..\..\source;..\..\source\base;..\..\source\underw"
 				PreprocessorDefinitions="_STLP_USE_STATIC_LIB"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -116,6 +116,9 @@
 				RelativePath="..\..\source\conv\codevm.cpp">
 			</File>
 			<File
+				RelativePath="..\..\source\conv\conv.cpp">
+			</File>
+			<File
 				RelativePath="..\..\source\conv\convglobals.cpp">
 			</File>
 			<File
@@ -128,6 +131,9 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
 				RelativePath="..\..\source\conv\codevm.hpp">
+			</File>
+			<File
+				RelativePath="..\..\source\conv\conv.hpp">
 			</File>
 			<File
 				RelativePath="..\..\source\conv\convglobals.hpp">
