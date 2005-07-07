@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
 #ifndef HAVE_DEBUG
    catch (ua_exception& e)
    {
-      std::string text("An unhandled exception was caught:\n\r");
+      std::string text("An unhandled exception was encountered:\n\r");
       text.append(e.what());
 
       ua->error_msg(text.c_str());
