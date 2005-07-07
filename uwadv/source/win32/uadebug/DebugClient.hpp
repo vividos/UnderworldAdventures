@@ -125,35 +125,52 @@ enum T_enCodeDebuggerType
    cdtLuaScript   //!< Lua script
 };
 
+//! code debugger state; corresponds with ua_debug_code_debugger_state in dbgserver.hpp
+enum T_enCodeDebuggerState
+{
+   cdsInactive=0,
+   cdsRunning,
+   cdsBreak,
+};
+
+//! code debugger command; corresponds with ua_debug_code_debugger_command in dbgserver.hpp
+enum T_enCodeDebuggerCommand
+{
+   cdcRun=0,
+   cdcStepOver,
+   cdcStepInto,
+   cdcStepOut
+};
+
+
+struct SCodePosition
+{
+   //! index value to retrieve source file name
+   unsigned int m_nSourceFileNameIndex;
+   unsigned int m_nSourceFileLine;
+
+   //! code position; if not available, -1 is put in here
+   unsigned int m_nCodePos;
+};
+
+struct SBreakpointInfo
+{
+   bool m_bIsVisible;
+   SCodePosition m_location;
+};
+
+struct SCallstackInfo
+{
+   unsigned int m_nPos;
+   unsigned int m_nReturnPos;
+};
+
+
+
 //! code debugger interface
 class CDebugClientCodeDebuggerInterface
 {
 public:
-   struct SCodePosition
-   {
-      //! code position; only valid if code debugger IsCodeAvail() returns true
-      unsigned int m_nCodePos;
-
-      //! index value to retrieve source file name
-      unsigned int m_nSourceFileNameIndex;
-      unsigned int m_nSourceFileLine;
-      unsigned int m_nSourceFileDisplacement;
-   };
-
-   struct SBreakpointInfo
-   {
-      unsigned int m_nPos;
-      unsigned int m_nType;
-   };
-
-   struct SCallstackInfo
-   {
-      unsigned int m_nPos;
-      unsigned int m_nReturnPos;
-   };
-
-public:
-   CDebugClientCodeDebuggerInterface(){}
    virtual ~CDebugClientCodeDebuggerInterface(){}
 
    // misc.
@@ -170,6 +187,12 @@ public:
    //! returns true when code is available
    bool IsCodeAvail() const;
 
+   //! sets new debugger command
+   void SetCommand(T_enCodeDebuggerCommand enCommand);
+
+   //! returns current code debugger state
+   T_enCodeDebuggerState GetState() const;
+
    //! returns current code position
    SCodePosition GetCurrentPos();
 
@@ -183,20 +206,30 @@ public:
    unsigned int GetCallstackHeight() const;
    void GetCallstackInfo(unsigned int nAtLevel, SCallstackInfo& callstackInfo) const;
 
+   // sourcecode files
 
-   // sourcecode files; only valid if IsSourceAvail() returns a value > 0
-   unsigned int GetSourcecodeCount() const;
+   // sourcecode files count; only valid if IsSourceAvail() returns a value > 0
+   unsigned int GetSourcefileCount() const;
 
-   CString GetSourcecodeFilename(unsigned int nIndex);
+   //! returns sourcecode filename by index
+   CString GetSourcefileFilename(unsigned int nIndex);
 
-   // code location
-
-   bool GetSourceFromPosition(CString& cszFilename, unsigned int& nLine, unsigned int& nLineDisplacement);
+   //! returns sourcecode filename and line by code position
+   bool GetSourceFromCodePos(unsigned int nCodePos, CString& cszFilename, unsigned int& nLine, unsigned int& nLineDisplacement);
 
 protected:
+   //! ctor
+   CDebugClientCodeDebuggerInterface(){}
+
+   //! pointer to code debugger interface
    class ua_debug_code_interface* m_pCodeDebugger;
+
+   //! pointer to debug interface
+   class CDebugClientInterface* m_pDebugClient;
+
    friend class CDebugClientInterface;
 };
+
 
 enum T_enTileInfoType
 {

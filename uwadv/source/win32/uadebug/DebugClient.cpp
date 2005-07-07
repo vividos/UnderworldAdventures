@@ -262,28 +262,47 @@ bool CDebugClientCodeDebuggerInterface::IsCodeAvail() const
    return true;
 }
 
-CDebugClientCodeDebuggerInterface::SCodePosition CDebugClientCodeDebuggerInterface::GetCurrentPos()
+void CDebugClientCodeDebuggerInterface::SetCommand(T_enCodeDebuggerCommand enCommand)
+{
+   m_pCodeDebugger->set_debugger_command(static_cast<ua_debug_code_debugger_command>(enCommand));
+   m_pCodeDebugger->set_debugger_state(ua_debugger_state_running);
+}
+
+T_enCodeDebuggerState CDebugClientCodeDebuggerInterface::GetState() const
+{
+   return static_cast<T_enCodeDebuggerState>(m_pCodeDebugger->get_debugger_state());
+}
+
+SCodePosition CDebugClientCodeDebuggerInterface::GetCurrentPos()
 {
    SCodePosition pos;
-   // TODO implement
+
+   bool bSourcefileIsValid = false;
+
+   m_pCodeDebugger->get_current_pos(pos.m_nSourceFileNameIndex,
+      pos.m_nSourceFileLine, pos.m_nCodePos, bSourcefileIsValid);
+
+   if (bSourcefileIsValid)
+      pos.m_nCodePos = unsigned(-1);
+   else
+      pos.m_nSourceFileNameIndex = unsigned(-1);
+
    return pos;
 }
 
 unsigned int CDebugClientCodeDebuggerInterface::GetBreakpointCount() const
 {
-   // TODO implement
-   return 0;
+   return m_pCodeDebugger->get_num_breakpoints();
 }
 
 void CDebugClientCodeDebuggerInterface::GetBreakpointInfo(unsigned int nBreakpointIndex, SBreakpointInfo& breakpointInfo) const
 {
-   // TODO implement
-}
-
-bool CDebugClientCodeDebuggerInterface::GetSourceFromPosition(CString& cszFilename, unsigned int& nLine, unsigned int& nLineDisplacement)
-{
-   // TODO implement
-   return false;
+   ATLASSERT(nBreakpointIndex < GetBreakpointCount());
+   m_pCodeDebugger->get_breakpoint_info(nBreakpointIndex,
+      breakpointInfo.m_location.m_nSourceFileNameIndex,
+      breakpointInfo.m_location.m_nSourceFileLine,
+      breakpointInfo.m_location.m_nCodePos,
+      breakpointInfo.m_bIsVisible);
 }
 
 unsigned int CDebugClientCodeDebuggerInterface::GetCallstackHeight() const
@@ -298,14 +317,14 @@ void CDebugClientCodeDebuggerInterface::GetCallstackInfo(unsigned int nAtLevel, 
    // TODO implement
 }
 
-unsigned int CDebugClientCodeDebuggerInterface::GetSourcecodeCount() const
+unsigned int CDebugClientCodeDebuggerInterface::GetSourcefileCount() const
 {
    return m_pCodeDebugger->get_num_sourcefiles();
 }
 
-CString CDebugClientCodeDebuggerInterface::GetSourcecodeFilename(unsigned int nIndex)
+CString CDebugClientCodeDebuggerInterface::GetSourcefileFilename(unsigned int nIndex)
 {
-   ATLASSERT(nIndex < GetSourcecodeCount());
+   ATLASSERT(nIndex < GetSourcefileCount());
 
    unsigned int nSize = m_pCodeDebugger->get_sourcefile_name(nIndex, NULL, 0);
 
@@ -318,10 +337,22 @@ CString CDebugClientCodeDebuggerInterface::GetSourcecodeFilename(unsigned int nI
    CFilename sourceFilename(A2CT(szText));
    delete[] szText;
 
-   sourceFilename.MakeAbsoluteToCurrentDir();
+   if (sourceFilename.IsRelativePath())
+      sourceFilename.MakeAbsoluteToCurrentDir();
+
    ATLASSERT(sourceFilename.IsValidObject());
 
    return sourceFilename.Get();
+}
+
+bool CDebugClientCodeDebuggerInterface::GetSourceFromCodePos(unsigned int nCodePos,
+   CString& cszFilename, unsigned int& nLine, unsigned int& nLineDisplacement)
+{
+   unsigned int nSourcefileIndex = 0; // TODO
+   cszFilename = GetSourcefileFilename(nSourcefileIndex);
+
+   // TODO implement
+   return false;
 }
 
 
@@ -512,8 +543,10 @@ CDebugClientCodeDebuggerInterface CDebugClientInterface::GetCodeDebuggerInterfac
 
    CDebugClientCodeDebuggerInterface cdi;
    cdi.m_pCodeDebugger = m_pDebugInterface->get_code_debugger(nCodeDebuggerID);
-
    ATLASSERT(cdi.m_pCodeDebugger != NULL);
+
+   cdi.m_pDebugClient = this;
+
    return cdi;
 }
 
@@ -580,4 +613,4 @@ bool CDebugClientInterface::GetMessage(CDebugClientMessage& msg)
    m_pDebugInterface->lock(false);
 
    return true;
-}
+}
