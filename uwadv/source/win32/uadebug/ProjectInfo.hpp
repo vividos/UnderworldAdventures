@@ -32,8 +32,24 @@
 #pragma once
 
 // includes
+#include "DebugClient.hpp"
+
+// forward references
+class CDockingWindowBase;
 
 // classes
+
+//! window info about code debugger
+struct SCodeDebuggerInfo
+{
+   SCodeDebuggerInfo()
+      :m_pWatchesWindow(NULL), m_pBreakpointWindow(NULL), m_pCallstackWindow(NULL){}
+
+   CDockingWindowBase* m_pBreakpointWindow;
+   CDockingWindowBase* m_pWatchesWindow;
+   CDockingWindowBase* m_pCallstackWindow;
+//   CDockingWindowBase* m_pMemoryWindow;
+};
 
 //! player info docking window
 class CProjectInfoWindow : public CDockingWindowBase
@@ -43,20 +59,41 @@ class CProjectInfoWindow : public CDockingWindowBase
 
    enum T_enTreeItemType
    {
-      tiNone=1, tiLevel, tiLuaFilename, tiCodeDebugger, tiWindowType
+      tiNone=1, tiLevel, tiLuaFilename, tiConvCodeFilename, tiCodeDebugger, tiWindow
+   };
+
+   enum T_enWindowType
+   {
+      wtNone=0,
+      wtBreakpoints,
+      wtWatches,
+      wtCallstack,
+//      wtMemory,
    };
 
    struct STreeItemInfo
    {
+      //! default ctor
       STreeItemInfo(): m_enType(tiNone), m_nInfo(0){}
 
-      STreeItemInfo(T_enTreeItemType enType, unsigned int nInfo): m_enType(enType), m_nInfo(nInfo){}
+      //! item info ctor for tiLevel, tiCodeDebugger, tiWindow
+      STreeItemInfo(T_enTreeItemType enType, unsigned int nInfo, unsigned int nCodeDebuggerID=0)
+         : m_enType(enType), m_nCodeDebuggerID(nCodeDebuggerID), m_nInfo(nInfo){}
 
-      STreeItemInfo(LPCTSTR pszInfo, T_enTreeItemType enType): m_enType(enType), m_nInfo(0), m_cszInfo(pszInfo){}
+      //! item info ctor for tiLuaFilename, tiConvCodeFilename
+      STreeItemInfo(LPCTSTR pszInfo, unsigned int nInfo=wtNone, T_enTreeItemType enType=tiNone, unsigned int nCodeDebuggerID=0)
+         : m_enType(enType), m_nCodeDebuggerID(nCodeDebuggerID), m_nInfo(nInfo), m_cszInfo(pszInfo){}
 
+      //! type of tree item
       T_enTreeItemType m_enType;
 
+      //! code debugger id, if any
+      unsigned int m_nCodeDebuggerID;
+
+      //! string info; for filename items
       CString m_cszInfo;
+
+      //! integer info; for window items
       unsigned int m_nInfo;
    };
 
@@ -74,6 +111,7 @@ public:
       MESSAGE_HANDLER(WM_SIZE, OnSize)
       MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus)
       NOTIFY_CODE_HANDLER(TVN_SELCHANGED, OnSelChanged);
+      NOTIFY_CODE_HANDLER(NM_DBLCLK, OnDblClick);
       NOTIFY_CODE_HANDLER(TVN_DELETEITEM, OnDeleteItem);
       CHAIN_MSG_MAP(baseClass)      
    END_MSG_MAP()
@@ -84,6 +122,7 @@ protected:
    LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
    LRESULT OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
    LRESULT OnSelChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
+   LRESULT OnDblClick(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
    LRESULT OnDeleteItem(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 
    // virtual methods from CDockingWindowBase
@@ -92,14 +131,24 @@ protected:
    //! updates project info data
    void UpdateData();
 
+   //! handles code debugger update message
+   void OnCodeDebuggerUpdate(CDebugWindowNotification& notify);
+
+   //! creates and docks or activates code debugger window
+   void CreateActivateWindow(CDockingWindowBase& dockingWindow);
+
+   //! undocks and closes a code debugger window
+   void UndockCloseWindow(CDockingWindowBase& dockingWindow);
+
    //! refreshes level list
    void RefreshLevelList();
 
    //! refreshes code debugger list
    void RefreshCodeDebuggerList();
 
-   //! inserts lua source file; display name is relative to given path
-   void InsertLuaSourceFile(HTREEITEM hParentItem, LPCTSTR pszFilename, LPCTSTR pszPathRelativeTo);
+   //! inserts source file; display name is relative to given path
+   void InsertSourceFile(HTREEITEM hParentItem, T_enCodeDebuggerType enType,
+      LPCTSTR pszFilename, LPCTSTR pszPathRelativeTo, unsigned int nCodeDebuggerID);
 
    //! returns tree item info for a given item
    STreeItemInfo GetTreeItemInfo(HTREEITEM hItem);
@@ -125,6 +174,9 @@ protected:
 
    //! tree item with all code debuggers
    HTREEITEM m_hItemCodeDebugger;
+
+   //! map with all code debugger infos
+   CAtlMap<unsigned int, SCodeDebuggerInfo> m_aCodeDebuggerInfos;
 };
 
 //@}

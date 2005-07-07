@@ -28,9 +28,9 @@
 // includes
 #include "stdatl.hpp"
 #include "ProjectInfo.hpp"
-#include "DebugClient.hpp"
 #include "ProjectManager.hpp"
 #include "Resource.h"
+#include "BreakpointList.hpp"
 
 // global variables
 
@@ -40,14 +40,14 @@ LPCTSTR g_pszActive = _T(" (active)");
 
 void CProjectInfoWindow::ReceiveNotification(CDebugWindowNotification& notify)
 {
-   switch(notify.code)
+   switch (notify.m_enCode)
    {
    case ncUpdateData:
       UpdateData();
       break;
 
    case ncCodeDebuggerUpdate:
-      RefreshCodeDebuggerList();
+      OnCodeDebuggerUpdate(notify);
       break;
    }
 }
@@ -67,6 +67,107 @@ void CProjectInfoWindow::UpdateData()
    RefreshLevelList();
 }
 
+void CProjectInfoWindow::OnCodeDebuggerUpdate(CDebugWindowNotification& notify)
+{
+   unsigned int nReason = notify.m_nParam1, nCodeDebugger = notify.m_nParam2;
+
+   SCodeDebuggerInfo codeDebuggerInfo;
+
+   switch (nReason)
+   {
+   case utAttach:
+      {
+         m_aCodeDebuggerInfos.SetAt(nCodeDebugger, codeDebuggerInfo);
+      }
+      break;
+
+   case utDetach:
+      {
+         codeDebuggerInfo = m_aCodeDebuggerInfos[nCodeDebugger];
+
+         if (codeDebuggerInfo.m_pBreakpointWindow != NULL)
+         {
+            UndockCloseWindow(*codeDebuggerInfo.m_pBreakpointWindow);
+            delete codeDebuggerInfo.m_pBreakpointWindow;
+         }
+
+         if (codeDebuggerInfo.m_pWatchesWindow != NULL)
+         {
+            UndockCloseWindow(*codeDebuggerInfo.m_pWatchesWindow);
+            delete codeDebuggerInfo.m_pWatchesWindow;
+         }
+
+         if (codeDebuggerInfo.m_pCallstackWindow != NULL)
+         {
+            UndockCloseWindow(*codeDebuggerInfo.m_pCallstackWindow);
+            delete codeDebuggerInfo.m_pCallstackWindow;
+         }
+
+         m_aCodeDebuggerInfos.RemoveKey(nCodeDebugger);
+      }
+      break;
+
+   case utUpdateState:
+      {
+         codeDebuggerInfo = m_aCodeDebuggerInfos[nCodeDebugger];
+
+         if (codeDebuggerInfo.m_pWatchesWindow != NULL)
+            m_pMainFrame->SendNotification(notify, codeDebuggerInfo.m_pWatchesWindow);
+
+         if (codeDebuggerInfo.m_pBreakpointWindow != NULL)
+            m_pMainFrame->SendNotification(notify, codeDebuggerInfo.m_pBreakpointWindow);
+
+         if (codeDebuggerInfo.m_pCallstackWindow != NULL)
+            m_pMainFrame->SendNotification(notify, codeDebuggerInfo.m_pCallstackWindow);
+      }
+      break;
+   }
+
+   RefreshCodeDebuggerList();
+}
+
+void CProjectInfoWindow::CreateActivateWindow(CDockingWindowBase& dockingWindow)
+{
+   // check if window is already created
+   if (dockingWindow.m_hWnd == NULL)
+   {
+      CRect rect(CPoint(0,0), dockingWindow.GetFloatingSize());
+      
+      DWORD dwStyle = WS_OVERLAPPEDWINDOW | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
+      dockingWindow.Create(m_hWnd, rect, dockingWindow.GetDockWindowCaption(), dwStyle);
+   }
+
+   // check if window is already docked
+   if (!dockingWindow.IsDocking())
+      m_pMainFrame->DockDebugWindow(dockingWindow);
+
+   // also window to readonly / writable
+   CDebugWindowNotification notify;
+   notify.m_enCode = m_pMainFrame->IsGameStopped() ? ncSetReadonly : ncSetReadWrite;
+   m_pMainFrame->SendNotification(notify, &dockingWindow);
+}
+
+void CProjectInfoWindow::UndockCloseWindow(CDockingWindowBase& dockingWindow)
+{
+   // determine if docking window is visible
+   bool bVisible = dockingWindow.IsWindow() && dockingWindow.IsWindowVisible() &&
+       (dockingWindow.IsDocking() || dockingWindow.IsFloating());
+
+   if (bVisible)
+   {
+      // when docking, undock window, else hide window
+      if (dockingWindow.IsDocking())
+         dockingWindow.Undock();
+      else
+         dockingWindow.Hide();
+      SetFocus();
+
+// TODO remove      RemoveDebugWindow(&dockingWindow);
+   }
+
+   dockingWindow.DestroyWindow();
+}
+
 LRESULT CProjectInfoWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
    // create and set up tree control
@@ -75,7 +176,17 @@ LRESULT CProjectInfoWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
    m_treeCtrl.Create(m_hWnd, rcDef, NULL,
       WS_CHILD | WS_VISIBLE | TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT );
 
-   m_ilIcons.Create(IDB_TREE_PROJECT, 16, 0, RGB(255,255,255));
+   // load 24-bit bitmap
+   {
+      CBitmap bmpImages;
+      bmpImages.LoadBitmap(IDB_TREE_PROJECT);
+
+      CSize sizeImage;
+      bmpImages.GetSize(sizeImage);
+
+      m_ilIcons.Create(16, sizeImage.cy, ILC_COLOR24, 0, sizeImage.cx/16);
+      m_ilIcons.Add(bmpImages, RGB(255,255,255));
+   }
 
    m_treeCtrl.SetImageList(m_ilIcons, TVSIL_NORMAL);
 
@@ -137,6 +248,12 @@ LRESULT CProjectInfoWindow::OnSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
          m_pMainFrame->OpenLuaSourceFile(cszFilename);
    }
    else
+   if (itemInfo.m_enType == tiConvCodeFilename)
+   {
+      // conversation code source file
+      // TODO open file
+   }
+   else
    if (itemInfo.m_enType == tiLevel)
    {
       // changed active Level
@@ -174,8 +291,49 @@ LRESULT CProjectInfoWindow::OnSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
       if (nLevel != nOldLevel)
       {
          CDebugWindowNotification notify;
-         notify.code = ncChangedLevel;
+         notify.m_enCode = ncChangedLevel;
          m_pMainFrame->SendNotification(notify, true, this);
+      }
+   }
+
+   return 0;
+}
+
+LRESULT CProjectInfoWindow::OnDblClick(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/)
+{
+   HTREEITEM hItem = m_treeCtrl.GetSelectedItem();
+   STreeItemInfo itemInfo = GetTreeItemInfo(hItem);
+
+   unsigned int nCodeDebuggerID = itemInfo.m_nCodeDebuggerID;
+
+   if (itemInfo.m_enType == tiWindow)
+   {
+      ATLASSERT(NULL != m_aCodeDebuggerInfos.Lookup(nCodeDebuggerID));
+
+      SCodeDebuggerInfo& codeDebuggerInfo = m_aCodeDebuggerInfos[nCodeDebuggerID];
+
+      switch (itemInfo.m_nInfo)
+      {
+      case wtBreakpoints:
+         if (codeDebuggerInfo.m_pBreakpointWindow == NULL)
+         {
+            codeDebuggerInfo.m_pBreakpointWindow = new CBreakpointListWindow(nCodeDebuggerID);
+            codeDebuggerInfo.m_pBreakpointWindow->InitDebugWindow(m_pMainFrame);
+         }
+
+         CreateActivateWindow(*codeDebuggerInfo.m_pBreakpointWindow);
+         break;
+
+      case wtWatches:
+//         CreateActivateWindow(*codeDebuggerInfo.m_pWatchesWindow);
+         break;
+
+      case wtCallstack:
+//         CreateActivateWindow(*codeDebuggerInfo.m_pCallstackWindow);
+         break;
+
+      default:
+         ATLASSERT(false);
       }
    }
 
@@ -258,34 +416,38 @@ void CProjectInfoWindow::RefreshCodeDebuggerList()
          enType == cdtUwConv ? _T("Conversation code") : _T("Lua script code"),
          0, 0, m_hItemCodeDebugger, NULL);
 
-      SetTreeItemInfo(hItem, STreeItemInfo(tiCodeDebugger, nCodeDebuggerID));
+      SetTreeItemInfo(hItem, STreeItemInfo(tiCodeDebugger, 0, nCodeDebuggerID));
 
       if (cdi.IsSourceAvail() && cdi.GetSourcefileCount() > 0)
       {
          HTREEITEM hSubItem = m_treeCtrl.InsertItem(_T("Sourcecode files"), 0, 0, hItem, NULL);
-         SetTreeItemInfo(hSubItem, STreeItemInfo(tiWindowType, 0));
+         SetTreeItemInfo(hSubItem, STreeItemInfo(tiWindow, wtNone, nCodeDebuggerID));
 
          CString cszGameCfgPath(debugClient.GetGameCfgPath());
 
          unsigned int nMax = cdi.GetSourcefileCount();
          for (unsigned int n=0; n<nMax; n++)
-            InsertLuaSourceFile(hSubItem, cdi.GetSourcefileFilename(n), cszGameCfgPath);
+            InsertSourceFile(hSubItem, enType, cdi.GetSourcefileFilename(n), cszGameCfgPath, nCodeDebuggerID);
 
          m_treeCtrl.Expand(hSubItem);
       }
 
       HTREEITEM hSubItem = m_treeCtrl.InsertItem(_T("Breakpoints list"), 3, 3, hItem, NULL);
-      SetTreeItemInfo(hSubItem, STreeItemInfo(tiWindowType, 1));
+      SetTreeItemInfo(hSubItem, STreeItemInfo(tiWindow, wtBreakpoints, nCodeDebuggerID));
 
       hSubItem = m_treeCtrl.InsertItem(_T("Watches"), 3, 3, hItem, NULL);
-      SetTreeItemInfo(hSubItem, STreeItemInfo(tiWindowType, 2));
+      SetTreeItemInfo(hSubItem, STreeItemInfo(tiWindow, wtWatches, nCodeDebuggerID));
 
+      hSubItem = m_treeCtrl.InsertItem(_T("Callstack"), 3, 3, hItem, NULL);
+      SetTreeItemInfo(hSubItem, STreeItemInfo(tiWindow, wtCallstack, nCodeDebuggerID));
+
+/* memory window not supported yet
       if (enType == cdtUwConv)
       {
          hSubItem = m_treeCtrl.InsertItem(_T("Memory"), 3, 3, hItem, NULL);
-         SetTreeItemInfo(hSubItem, STreeItemInfo(tiWindowType, 3));
+         SetTreeItemInfo(hSubItem, STreeItemInfo(tiWindow, wtMemory, nCodeDebuggerID));
       }
-
+*/
       m_treeCtrl.Expand(hItem);
    }
 
@@ -298,23 +460,34 @@ void CProjectInfoWindow::RefreshCodeDebuggerList()
    m_treeCtrl.SetRedraw(TRUE);
 }
 
-void CProjectInfoWindow::InsertLuaSourceFile(HTREEITEM hParentItem, LPCTSTR pszFilename, LPCTSTR pszPathRelativeTo)
+void CProjectInfoWindow::InsertSourceFile(HTREEITEM hParentItem, T_enCodeDebuggerType enType, LPCTSTR pszFilename, LPCTSTR pszPathRelativeTo, unsigned int nCodeDebuggerID)
 {
    CFilename luaFilename(pszFilename);
+   CString cszFilePath(pszFilename);
 
-   // make absolute path
-   luaFilename.MakeAbsoluteToCurrentDir();
-   ATLASSERT(luaFilename.IsValidObject());
+   if (enType == cdtLuaScript)
+   {
+      // make absolute path
+      luaFilename.MakeAbsoluteToCurrentDir();
+      ATLASSERT(luaFilename.IsValidObject());
 
-   CString cszFilePath(luaFilename.Get());
+      cszFilePath = luaFilename.Get();
 
-   // calculate relative path
-   //ATLVERIFY(true == luaFilename.MakeRelativeTo(pszPathRelativeTo));
-   luaFilename.MakeRelativeTo(pszPathRelativeTo);
+      // calculate relative path
+      ATLVERIFY(true == luaFilename.MakeRelativeTo(pszPathRelativeTo));
+//      luaFilename.MakeRelativeTo(pszPathRelativeTo);
+   }
+   else if (enType == cdtUwConv)
+   {
+      // only show filename part
+      luaFilename.Set(luaFilename.GetFilename());
+   }
+   else
+      ATLASSERT(false);
 
    // insert item
    HTREEITEM hItem = m_treeCtrl.InsertItem(luaFilename.Get(), 1, 1, hParentItem, NULL);
-   SetTreeItemInfo(hItem, STreeItemInfo(cszFilePath, tiLuaFilename));
+   SetTreeItemInfo(hItem, STreeItemInfo(cszFilePath, 0, enType == cdtLuaScript ? tiLuaFilename : tiConvCodeFilename, nCodeDebuggerID));
 }
 
 CProjectInfoWindow::STreeItemInfo CProjectInfoWindow::GetTreeItemInfo(HTREEITEM hItem)
