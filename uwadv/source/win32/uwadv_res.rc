@@ -80,7 +80,7 @@ BEGIN
         BEGIN
             VALUE "Comments", "Underworld Adventures is a project to recreate Ultima Underworld 1 on modern operating systems."
             VALUE "CompanyName", "Underworld Adventures Team"
-            VALUE "FileDescription", "Underworld Adventures main application"
+            VALUE "FileDescription", "Underworld Adventures Game"
             VALUE "FileVersion", "0.9-mojito"
             VALUE "InternalName", "uwadv"
             VALUE "LegalCopyright", "Copyright © 2002,2003,2004,2005 Underworld Adventures Team"
