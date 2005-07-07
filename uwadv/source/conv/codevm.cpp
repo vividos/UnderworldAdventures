@@ -426,7 +426,7 @@ void ua_conv_code_vm::replace_placeholder(std::string& str)
       switch(vartype)
       {
       case 'S':
-         varstr = code_callback->get_local_string(value);
+         varstr = get_local_string(value);
          break;
       case 'I':
          {
@@ -455,6 +455,11 @@ void ua_conv_code_vm::imported_func(const char* funcname)
    result_register = code_callback->external_func(funcname, stack);
 }
 
+std::string ua_conv_code_vm::get_local_string(Uint16 str_nr)
+{
+   return std::string("");
+}
+
 void ua_conv_code_vm::say_op(Uint16 index)
 {
    code_callback->say(index);
@@ -462,15 +467,13 @@ void ua_conv_code_vm::say_op(Uint16 index)
 
 Uint16 ua_conv_code_vm::get_global(const char* globname)
 {
-   Uint16 val = code_callback->get_global(globname);
-   ua_trace("code_vm: get_global %s returned %04x\n",globname, val);
-   return val;
+   ua_trace("code_vm: get global: unknown global %s\n", globname);
+   return 0;
 }
 
 void ua_conv_code_vm::set_global(const char* globname, Uint16 val)
 {
-   ua_trace("code_vm: set_global %s = %04x\n", globname, val);
-   code_callback->set_global(globname, val);
+   ua_trace("code_vm: set_global: unknown global %s = %04x\n", globname, val);
 }
 
 void ua_conv_code_vm::store_value(Uint16 at, Uint16 val)

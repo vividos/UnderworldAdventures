@@ -49,7 +49,6 @@
 #include "savegame.hpp"
 #include "convstack.hpp"
 #include "convglobals.hpp"
-#include "dbgserver.hpp"
 
 
 // enums
@@ -89,17 +88,8 @@ public:
    //! prints "say" string
    virtual void say(Uint16 index)=0;
 
-   //! returns string in local string block
-   virtual const char* get_local_string(Uint16 index)=0;
-
    //! executes external function
    virtual Uint16 external_func(const char* funcname, ua_conv_stack& stack)=0;
-
-   //! returns global value
-   virtual Uint16 get_global(const char* globname)=0;
-
-   //! sets global value
-   virtual void set_global(const char* globname, Uint16 val)=0;
 };
 
 
@@ -117,7 +107,7 @@ public:
     done() should be called to write back conversation globals for the given
     conversation.
 */
-class ua_conv_code_vm: public ua_debug_code_interface
+class ua_conv_code_vm
 {
 public:
    //! ctor
@@ -162,23 +152,24 @@ public:
    //! sets number of globals reserved at start of memory
    void set_globals_reserved(Uint16 numglobals){ glob_reserved = numglobals; }
 
+   //! returns number of reserved global variables
    Uint16 get_globals_reserved(){ return glob_reserved; }
 
-protected:
-   //! called when an imported function is executed
-   void imported_func(const std::string& funcname);
+   //! returns local string value
+   virtual std::string get_local_string(Uint16 str_nr);
 
+protected:
    //! called when saying a string
    void say_op(Uint16 str_id);
 
    //! executes an imported function
-   void imported_func(const char* funcname);
+   virtual void imported_func(const char* funcname);
 
    //! queries for a global variable value
-   Uint16 get_global(const char* globname);
+   virtual Uint16 get_global(const char* globname);
 
    //! sers global variable value
-   void set_global(const char* globname, Uint16 val);
+   virtual void set_global(const char* globname, Uint16 val);
 
    //! called when storing a value to the stack
    void store_value(Uint16 at, Uint16 val);
@@ -222,6 +213,9 @@ protected:
 
    //! names of all imported globals
    std::map<Uint16,ua_conv_imported_item> imported_globals;
+
+   //! local strings
+   std::vector<std::string> localstrings;
 
    //! code callback pointer
    ua_conv_code_callback* code_callback;
