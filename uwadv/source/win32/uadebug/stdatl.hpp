@@ -71,7 +71,9 @@ extern CAppModule _Module;
 #include <atlcrack.h>
 
 // Tabbed Framework includes
-#define _TABBEDMDI_MESSAGES_EXTERN_REGISTER
+#if (_MSC_VER < 1300)
+#  define _TABBEDMDI_MESSAGES_EXTERN_REGISTER
+#endif
 #include <atlgdix.h>
 #include <TabbedMDI.h>
 

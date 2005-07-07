@@ -32,7 +32,9 @@
 #include <atlimpl.cpp>
 #endif //(_ATL_VER < 0x0700)
 
+#if (_MSC_VER < 1300)
 RegisterTabbedMDIMessages g_RegisterTabbedMDIMessages;
+#endif
 
 #include <dockimpl.cpp>
 
