@@ -7,7 +7,6 @@ The following uwadv files need to be available to build the installer:
 
 ..\vc71\Release\:
 luac.exe
-SciLexer.dll
 SDL.dll
 SDL_mixer.dll
 strpak.exe
@@ -16,6 +15,9 @@ uadebug.dll
 uastudio.exe
 uwadv.exe
 uwdump.exe
+
+..\..\source\win32\uadebug\thirdparty\scintilla\:
+SciLexer.dll (automatically installed by "uadebug-thirdparty-?.zip"
 
 ..\..\docs\docbook\:
 uwadv-manual.html
