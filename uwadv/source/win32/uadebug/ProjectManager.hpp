@@ -41,10 +41,20 @@ public:
    CProjectManager();
    virtual ~CProjectManager();
 
+   bool IsOpen() const { return m_bOpen; }
+
    void LoadProject(LPCTSTR pszProjectFilename);
 
    void CloseProject();
 
+   void SaveProject();
+
+   CString GetProjectName() const { return m_cszProjectName; }
+
+protected:
+   CString m_cszProjectFilename;
+   CString m_cszProjectName;
+   bool m_bOpen;
 };
 
 //@}

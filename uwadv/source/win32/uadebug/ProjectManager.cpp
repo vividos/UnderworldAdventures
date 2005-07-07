@@ -32,6 +32,7 @@
 // methods
 
 CProjectManager::CProjectManager()
+:m_bOpen(false), m_cszProjectName(_T("Unknown"))
 {
 }
 
@@ -39,10 +40,16 @@ CProjectManager::~CProjectManager()
 {
 }
 
-void CProjectManager::LoadProject(LPCTSTR pszProjectFilename)
+void CProjectManager::LoadProject(LPCTSTR /*pszProjectFilename*/)
 {
+   m_bOpen = true;
 }
 
 void CProjectManager::CloseProject()
+{
+   m_bOpen = false;
+}
+
+void CProjectManager::SaveProject()
 {
 }
