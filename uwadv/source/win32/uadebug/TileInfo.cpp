@@ -68,9 +68,25 @@ LRESULT CTileInfoForm::OnButtonBeam(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
    return 0;
 }
 
+LRESULT CTileInfoForm::OnListObjectsClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+{
+   NMITEMACTIVATE* pNMItemActivate = reinterpret_cast<NMITEMACTIVATE*>(pnmh);
+
+   unsigned int nItemPos = m_objectList.GetItemData(pNMItemActivate->iItem);
+
+   // send notification that an object was clicked
+   CDebugWindowNotification notify;
+   notify.m_enCode = ncSelectedObject;
+   notify.m_nParam1 = nItemPos;
+
+   m_pMainFrame->SendNotification(notify, true, this);
+
+   return 0;
+}
+
 void CTileInfoForm::ReceiveNotification(CDebugWindowNotification& notify)
 {
-   switch(notify.code)
+   switch (notify.m_enCode)
    {
    case ncUpdateData:
       UpdateTileInfo();
@@ -97,7 +113,7 @@ void CTileInfoForm::UpdateTileInfo()
    cszText.Format(_T("x: %02x y: %02x"), m_nTileX, m_nTileY);
    SetDlgItemText(IDC_EDIT_TILEPOS, cszText);
 
-   m_tileInfoList.LockWindowUpdate();
+   m_tileInfoList.SetRedraw(FALSE);
    m_tileInfoList.DeleteAllItems();
 
    CDebugClientInterface& debugClient = m_pMainFrame->GetDebugClientInterface();
@@ -147,14 +163,16 @@ void CTileInfoForm::UpdateTileInfo()
 
    debugClient.Lock(false);
 
-   m_tileInfoList.LockWindowUpdate(FALSE);
+   m_tileInfoList.SetColumnWidth(1, LVSCW_AUTOSIZE_USEHEADER);
+
+   m_tileInfoList.SetRedraw(TRUE);
 
    UpdateObjectInfo();
 }
 
 void CTileInfoForm::UpdateObjectInfo()
 {
-   m_objectList.LockWindowUpdate();
+   m_objectList.SetRedraw(FALSE);
    m_objectList.DeleteAllItems();
 
    CDebugClientInterface& debugClient = m_pMainFrame->GetDebugClientInterface();
@@ -171,14 +189,16 @@ void CTileInfoForm::UpdateObjectInfo()
       CString cszItemName(debugClient.GetGameString(4, nItemId));
 
       int nItem = m_objectList.InsertItem(m_objectList.GetItemCount(), cszItemName, nItemId);
-      m_objectList.SetItemData(nItem, nItemId);
+      m_objectList.SetItemData(nItem, nPos);
 
       nPos = objectInfo.GetItemNext(nPos);
    }
 
+   m_objectList.SetColumnWidth(0, LVSCW_AUTOSIZE_USEHEADER);
+
    debugClient.Lock(false);
 
-   m_objectList.LockWindowUpdate(FALSE);
+   m_objectList.SetRedraw(TRUE);
 }
 
 

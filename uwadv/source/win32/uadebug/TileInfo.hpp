@@ -59,6 +59,7 @@ public:
    BEGIN_MSG_MAP(CTileMapViewWindow)
       MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
       COMMAND_HANDLER(IDC_BUTTON_BEAM, BN_CLICKED, OnButtonBeam)
+      NOTIFY_HANDLER(IDC_LIST_OBJECTS, NM_CLICK, OnListObjectsClicked)
       REFLECT_NOTIFICATIONS()
    END_MSG_MAP()
 
@@ -67,6 +68,7 @@ protected:
 
    LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
    LRESULT OnButtonBeam(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnListObjectsClicked(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 
    // virtual methods from CDebugWindowBase
 
@@ -76,8 +78,6 @@ protected:
 
    void UpdateTileInfo();
    void UpdateObjectInfo();
-
-//   void SelectTile(unsigned int x, unsigned y, bool select=true);
 
 protected:
    CEditListViewCtrl m_tileInfoList;
