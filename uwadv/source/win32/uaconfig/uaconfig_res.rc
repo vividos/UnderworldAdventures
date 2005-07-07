@@ -150,7 +150,7 @@ BEGIN
         BEGIN
             VALUE "Comments", "Underworld Adventures is a project to recreate Ultima Underworld 1 on modern operating systems."
             VALUE "CompanyName", "Underworld Adventures Team"
-            VALUE "FileDescription", "Underworld Adventures Config application"
+            VALUE "FileDescription", "Underworld Adventures Configuration"
             VALUE "FileVersion", "0.9-mojito"
             VALUE "InternalName", "uaconfig"
             VALUE "LegalCopyright", "Copyright © 2004,2005 Underworld Adventures Team"
