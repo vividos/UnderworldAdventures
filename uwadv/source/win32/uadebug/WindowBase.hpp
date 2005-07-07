@@ -37,6 +37,7 @@
 class CDebugClientInterface;
 class CMainFrame;
 class CProjectManager;
+class CDockingWindowBase;
 
 
 // types
@@ -68,6 +69,14 @@ enum T_enNotifyCode
    ncUnknown,
 };
 
+//! code debugger update type; stored in m_nParam1 field of CDebugWindowNotification
+enum T_enCodeDebuggerUpdateType
+{
+   utAttach=0, //!< code debugger attached; code debugger id is in m_nParam2
+   utDetach,   //!< code debugger detached; code debugger id is in m_nParam2
+   utUpdateState,   //!< code debugger updated its state; code debugger id is in m_nParam2
+};
+
 
 // structs
 
@@ -76,10 +85,10 @@ struct CDebugWindowNotification
 {
    //! ctor
    CDebugWindowNotification()
-      :code(ncUnknown), m_nParam1(0), m_nParam2(0), m_bRelayToDescendants(false){}
+      :m_enCode(ncUnknown), m_nParam1(0), m_nParam2(0), m_bRelayToDescendants(false){}
 
    //! notify code
-   T_enNotifyCode code;
+   T_enNotifyCode m_enCode;
    //! first param value
    UINT m_nParam1;
    //! second param value
@@ -88,6 +97,16 @@ struct CDebugWindowNotification
    //! indicates if a window that added a subwindow of itself to the window list should also
    //! get this message
    bool m_bRelayToDescendants;
+};
+
+
+enum T_enCommonImageListImages
+{
+   enImageFolder = 0,
+   enImageLua,
+   enImageLevelMap,
+   enImageBlankWindow,
+   enImageDebugger,
 };
 
 
@@ -106,6 +125,12 @@ public:
    //! returns project manager object
    virtual CProjectManager& GetProjectManager()=0;
 
+   //! returns common image list
+   virtual CImageList GetCommonImageList()=0;
+
+   //! returns if game is currently stopped or running
+   virtual bool IsGameStopped() const=0;
+
    //! sends notification message to a specific debug application window
    virtual void SendNotification(CDebugWindowNotification& notify, class CDebugWindowBase* pDebugWindow)=0;
 
@@ -116,8 +141,11 @@ public:
    //! returns image list with all game object images
    virtual CImageList& GetObjectImageList()=0;
 
+   //! docks window at initial side
+   virtual void DockDebugWindow(CDockingWindowBase& dockingWindow)=0;
+
    //! notifies main frame that window with given id was undocked (hidden)
-   virtual void UndockWindow(T_enDockingWindowID windowID)=0;
+   virtual void UndockWindow(T_enDockingWindowID windowID, CDockingWindowBase* pDockingWindow)=0;
 
    //! adds debug window to main frame processing
    virtual void AddDebugWindow(class CDebugWindowBase* pDebugWindow)=0;
@@ -232,7 +260,7 @@ public:
    {
       ATLASSERT(m_pMainFrame != NULL);
       baseClass::OnUndocked(hBar);
-      m_pMainFrame->UndockWindow(m_windowID);
+      m_pMainFrame->UndockWindow(m_windowID, this);
    }
 
    // pre virtual methods; implement by using DECLARE_DOCKING_WINDOW or DECLARE_DOCKING_WINDOW_ID macro
