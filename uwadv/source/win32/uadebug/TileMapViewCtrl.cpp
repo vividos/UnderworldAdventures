@@ -159,7 +159,7 @@ void CTileMapViewCtrl::DoPaint(CDCHandle hDC)
 
 void CTileMapViewCtrl::ReceiveNotification(CDebugWindowNotification& notify)
 {
-   switch(notify.code)
+   switch (notify.m_enCode)
    {
    case ncUpdateData:
       UpdateTileMap();
@@ -240,7 +240,7 @@ LRESULT CTileMapViewCtrl::OnLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
    // send notification about tile selection
    CDebugWindowNotification notify;
-   notify.code = ncSelectedTile;
+   notify.m_enCode = ncSelectedTile;
    notify.m_nParam1 = m_nSelectedTileX;
    notify.m_nParam2 = m_nSelectedTileY;
 
