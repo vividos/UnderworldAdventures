@@ -52,10 +52,10 @@ struct ua_debug_server_message
 {
    //! ctor
    ua_debug_server_message()
-      :msg_type(0), msg_arg1(0), msg_arg2(0), msg_arg3(0.0){}
+      :msg_type(ua_msg_unknown), msg_arg1(0), msg_arg2(0), msg_arg3(0.0){}
 
    //! message type; see enum ua_debug_server_message_type
-   unsigned int msg_type;
+   ua_debug_server_message_type msg_type;
 
    //! message argument 1
    unsigned int msg_arg1;

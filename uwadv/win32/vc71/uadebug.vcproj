@@ -20,7 +20,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\source;..\..\source\win32\uadebug\thirdparty\menuxp;..\..\source\win32\uadebug\thirdparty\scintilla;..\..\source\win32\uadebug\thirdparty\tabbingframework\include;..\..\source\win32\uadebug\thirdparty\wtldockingwindows\include"
+				AdditionalIncludeDirectories="..\..\source;..\..\source\win32\uadebug\thirdparty\menuxp\include;..\..\source\win32\uadebug\thirdparty\scintilla\include;..\..\source\win32\uadebug\thirdparty\tabbingframework\include;..\..\source\win32\uadebug\thirdparty\wtldockingwindows\include"
 				PreprocessorDefinitions="HAVE_DEBUG,HAVE_CONSOLE,_STLP_USE_STATIC_LIB"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
@@ -81,7 +81,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				GlobalOptimizations="TRUE"
-				AdditionalIncludeDirectories="..\..\source;..\..\source\win32\uadebug\thirdparty\menuxp;..\..\source\win32\uadebug\thirdparty\scintilla;..\..\source\win32\uadebug\thirdparty\tabbingframework\include;..\..\source\win32\uadebug\thirdparty\wtldockingwindows\include"
+				AdditionalIncludeDirectories="..\..\source;..\..\source\win32\uadebug\thirdparty\menuxp\include;..\..\source\win32\uadebug\thirdparty\scintilla\include;..\..\source\win32\uadebug\thirdparty\tabbingframework\include;..\..\source\win32\uadebug\thirdparty\wtldockingwindows\include"
 				PreprocessorDefinitions="_STLP_USE_STATIC_LIB"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -136,6 +136,9 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
+			<File
+				RelativePath="..\..\source\win32\uadebug\BreakpointList.cpp">
+			</File>
 			<File
 				RelativePath="..\..\source\win32\uadebug\DebugClient.cpp">
 			</File>
@@ -198,6 +201,9 @@
 			<File
 				RelativePath="..\..\source\win32\uadebug\uadebug.cpp">
 			</File>
+			<File
+				RelativePath="..\..\source\win32\uadebug\WatchesList.cpp">
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -205,6 +211,9 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
 				RelativePath="..\..\source\win32\uadebug\AboutDlg.hpp">
+			</File>
+			<File
+				RelativePath="..\..\source\win32\uadebug\BreakpointList.hpp">
 			</File>
 			<File
 				RelativePath="..\..\source\win32\uadebug\DebugClient.hpp">
@@ -255,6 +264,9 @@
 				RelativePath="..\..\source\win32\uadebug\TileMapViewCtrl.hpp">
 			</File>
 			<File
+				RelativePath="..\..\source\win32\uadebug\WatchesList.hpp">
+			</File>
+			<File
 				RelativePath="..\..\source\win32\uadebug\WindowBase.hpp">
 			</File>
 		</Filter>
@@ -275,10 +287,19 @@
 				RelativePath="..\..\source\win32\uadebug\res\Lua.ico">
 			</File>
 			<File
+				RelativePath="..\..\..\test\LuaEdit\Graphics\DotNet_Style\NewProject.bmp">
+			</File>
+			<File
 				RelativePath="..\..\source\win32\uadebug\resource.h">
 			</File>
 			<File
 				RelativePath="..\..\source\win32\uadebug\res\Sanct.ico">
+			</File>
+			<File
+				RelativePath="..\..\..\test\LuaEdit\Graphics\DotNet_Style\Save.bmp">
+			</File>
+			<File
+				RelativePath="..\..\source\win32\uadebug\res\tb_debug.bmp">
 			</File>
 			<File
 				RelativePath="..\..\source\win32\uadebug\res\tb_game_strings.bmp">
@@ -287,7 +308,13 @@
 				RelativePath="..\..\source\win32\uadebug\res\tb_lua_source.bmp">
 			</File>
 			<File
+				RelativePath="..\..\source\win32\uadebug\res\tb_main.bmp">
+			</File>
+			<File
 				RelativePath="..\..\source\win32\uadebug\res\tb_mainframe.bmp">
+			</File>
+			<File
+				RelativePath="..\..\source\win32\uadebug\res\tb_standard.bmp">
 			</File>
 			<File
 				RelativePath="..\..\source\win32\uadebug\res\tb_tilemap.bmp">

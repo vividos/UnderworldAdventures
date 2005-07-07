@@ -271,6 +271,8 @@ void ua_player::set_pos(ua_vector3d& pos)
    height = pos.z-ellipsoid.z;
 }
 
+bool my_movement;
+
 ua_vector3d ua_player::get_dir()
 {
    double time_elapsed = 0.05;
@@ -283,6 +285,8 @@ ua_vector3d ua_player::get_dir()
    {
       double speed = ua_player_max_walk_speed*time_elapsed;
       double angle = get_angle_rot();
+
+my_movement = true;
 
       // adjust angle for sliding
       if (mode & ua_move_slide)

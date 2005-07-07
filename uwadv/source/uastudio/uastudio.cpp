@@ -36,6 +36,7 @@
 #include "debug.hpp"
 #include "gamecfg.hpp"
 #include <ctime>
+#include "testconv.hpp" // TODO remove again
 
 
 // to have console output, use a genuine main(), not the SDL_main one
@@ -48,7 +49,7 @@ class uastudio: public ua_basic_game_interface
 {
 public:
    //! ctor
-   uastudio(){}
+   uastudio():testconv(*this){}
 
    void init();
    void done();
@@ -77,6 +78,8 @@ protected:
    ua_scripting* scripting;
    ua_debug_server debug_server;
    ua_gamestrings gamestrings;
+
+   ua_testconv testconv;
 
    //! indicates if the game is currently paused
    bool paused;
@@ -110,11 +113,15 @@ void uastudio::init()
    debug_server.start_debugger(this);
 
 
+   testconv.init(); // TODO remove again
+
    paused = true;
 }
 
 void uastudio::done()
 {
+   testconv.done(); // TODO remove again
+
    done_game();
 
    debug_server.shutdown();
@@ -148,6 +155,8 @@ void uastudio::run()
          if (!paused)
          {
             underworld.eval_underworld(double(tickcount)/tickrate);
+
+            testconv.tick(); // TODO remove again
 
             tickcount++;
          }

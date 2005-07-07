@@ -199,6 +199,7 @@ void ua_debug_server::shutdown()
       msg.msg_type = ua_msg_shutdown;
 
       lock(true);
+      message_queue.clear();
       add_message(msg);
       lock(false);
 
@@ -239,6 +240,8 @@ void ua_debug_server::start_code_debugger(ua_debug_code_interface* code_debugger
 {
    unsigned int debugger_id = ++last_code_debugger_id;
 
+   ua_trace("debug: starting code debugger, id=%u\n", debugger_id);
+
    code_debugger->set_debugger_id(debugger_id);
 
    // send "start" message
@@ -247,9 +250,10 @@ void ua_debug_server::start_code_debugger(ua_debug_code_interface* code_debugger
    msg.msg_arg1 = debugger_id;
 
    lock(true);
-   add_message(msg);
 
    all_code_debugger.insert(std::make_pair<unsigned int, ua_debug_code_interface*>(debugger_id, code_debugger));
+
+   add_message(msg);
 
    lock(false);
 }
@@ -277,6 +281,21 @@ void ua_debug_server::end_code_debugger(ua_debug_code_interface* code_debugger)
 
    ua_assert(iter != stop); // assert when pointer was not found
 
+   ua_trace("debug: ending code debugger, id=%u\n", debugger_id);
+
+   // remove all "start code debugger" messages from the same code debugger
+   unsigned int max = static_cast<unsigned int>(message_queue.size());
+   for (unsigned int n=0; n<max; n++)
+   {
+      ua_debug_server_message& queue_msg = message_queue[n];
+      if (queue_msg.msg_type == ua_msg_start_code_debugger && queue_msg.msg_arg1 == debugger_id)
+      {
+         message_queue.erase(message_queue.begin() + n);
+         --n;
+         --max;
+      }
+   }
+
    // send "end" message
    ua_debug_server_message msg;
    msg.msg_type = ua_msg_end_code_debugger;
@@ -294,6 +313,20 @@ void ua_debug_server::send_code_debugger_status_update(unsigned int debugger_id)
    msg.msg_arg1 = debugger_id;
 
    lock(true);
+
+   // remove all previous "status update" messages from the same code debugger
+   unsigned int max = static_cast<unsigned int>(message_queue.size());
+   for (unsigned int n=0; n<max; n++)
+   {
+      ua_debug_server_message& queue_msg = message_queue[n];
+      if (queue_msg.msg_type == msg.msg_type && queue_msg.msg_arg1 == msg.msg_arg1)
+      {
+         message_queue.erase(message_queue.begin() + n);
+         --n;
+         --max;
+      }
+   }
+
    add_message(msg);
    lock(false);
 }

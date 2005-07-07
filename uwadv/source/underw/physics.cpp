@@ -125,6 +125,10 @@ bool ua_physics_model::track_object(ua_physics_body& body, ua_vector3d dir,
 
    ua_vector3d pos = body.get_pos();
 
+extern bool my_movement;
+if (my_movement)
+   ua_trace("old pos: %2.3f / %2.3f / %2.3f\n", pos.x, pos.y, pos.z);
+
    if (!gravity_force)
       pos.z += 0.5;
 
@@ -148,6 +152,10 @@ bool ua_physics_model::track_object(ua_physics_body& body, ua_vector3d dir,
 
    if (!gravity_force)
       pos.z -= 0.5;
+
+if (my_movement)
+   ua_trace("new pos: %2.3f / %2.3f / %2.3f\n", pos.x, pos.y, pos.z);
+my_movement = false;
 
    // limit height when falling out of the map
    if (pos.z<0.0) pos.z = 0.0;

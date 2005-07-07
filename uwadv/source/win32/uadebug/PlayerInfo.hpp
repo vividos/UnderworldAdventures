@@ -32,13 +32,15 @@
 #pragma once
 
 // includes
+#include "PropertyListCtrl.hpp"
 
 // classes
 
 //! player info docking window
 class CPlayerInfoWindow :
    public CDockingWindowBase,
-   public IEditListViewCallback
+//   public IEditListViewCallback,
+   public nsPropertyList::IPropertyStorage
 {
    typedef CPlayerInfoWindow thisClass;
    typedef CDockingWindowBase baseClass;
@@ -69,11 +71,20 @@ protected:
    void UpdateData();
 
    // virtual methods from IEditListViewCallback
-   virtual void OnUpdatedValue(unsigned int nItem, unsigned int nSubItem, LPCTSTR pszValue);
+//   virtual void OnUpdatedValue(unsigned int nItem, unsigned int nSubItem, LPCTSTR pszValue);
+
+   // virtual methods from nsPropertyList::IPropertyStorage
+   virtual void GetProperty(unsigned int nPropertyItemId, CString& cszProperty);
+   virtual void SetProperty(unsigned int nPropertyItemId, const CString& cszProperty);
+   virtual bool VerifyProperty(unsigned int nPropertyItemId, const CString& cszProperty);
 
 protected:
    //! player info list 
-   CEditListViewCtrl m_listCtrl;
+   //CEditListViewCtrl m_listCtrl;
+   CPropertyListCtrl m_listCtrl;
+
+   double m_adValues[4];
+   unsigned int m_anValues[42];
 
    //! indicates if control is read-only
    bool m_bReadonly;
