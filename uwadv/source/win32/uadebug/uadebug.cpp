@@ -93,6 +93,10 @@ void uadebug_start(void* pDebugClient)
 #endif
 #endif
 
+   DWORD dwMajor = 0, dwMinor = 0;
+   ::AtlGetCommCtrlVersion(&dwMajor, &dwMinor);
+   ATLTRACE(_T("using common controls version %u.%u\n"), dwMajor, dwMinor);
+
    hRes = _Module.Init(NULL, g_hInstance/*, &LIBID_ATLLib*/);
    ATLASSERT(SUCCEEDED(hRes));
 
