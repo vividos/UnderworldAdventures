@@ -37,7 +37,7 @@
 #include "imgquad.hpp"
 #include "textscroll.hpp"
 #include "mousecursor.hpp"
-#include "codevm.hpp"
+#include "conv.hpp"
 #include "textedit.hpp"
 #include "fading.hpp"
 
@@ -77,10 +77,7 @@ public:
 
    // virtual functions from ua_conv_code_callback
    virtual void say(Uint16 index);
-   virtual const char* get_local_string(Uint16 index);
    virtual Uint16 external_func(const char* funcname, ua_conv_stack& stack);
-   virtual Uint16 get_global(const char* globname);
-   virtual void set_global(const char* globname, Uint16 val);
 
 protected:
    //! allocates new local string
@@ -97,10 +94,8 @@ protected:
 
 
    //! conversation code virtual machine
-   ua_conv_code_vm code_vm;
-
-   //! all current local strings
-   std::vector<std::string> localstrings;
+   //ua_debug_conversation conv;
+   ua_basic_conversation code_vm;
 
 
    // ui elements

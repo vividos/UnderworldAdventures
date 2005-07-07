@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -214,13 +214,10 @@ void ua_conversation_screen::init()
       // get local strings
       // note: convslot is used to load strings, not the strblock value set in
       // conv header
-      game.get_gamestrings().get_stringblock(
-         code_vm.get_strblock(),localstrings);
+      std::vector<std::string> localstrings;
+      game.get_gamestrings().get_stringblock(code_vm.get_strblock(), localstrings);
 
-      code_vm.init(this,game.get_underworld().get_conv_globals());
-
-      // notify debugger of start of code debugger
-      game.get_debugger().start_code_debugger(&code_vm);
+      code_vm.init(game, this, localstrings);
    }
 
    state = ua_state_fadein;
@@ -234,11 +231,7 @@ void ua_conversation_screen::init()
 
 void ua_conversation_screen::destroy()
 {
-   // notify debugger of end of code debugger
-   game.get_debugger().end_code_debugger(&code_vm);
-
-   // write back conv. globals
-   code_vm.done(game.get_underworld().get_conv_globals());
+   code_vm.done(game);
 
    ua_trace("conversation screen ended\n\n");
 }
@@ -278,7 +271,7 @@ bool ua_conversation_screen::process_event(SDL_Event& event)
            event.user.code == ua_event_textedit_aborted))
       {
          // get string
-         Uint16 answer_id = alloc_string(textedit.get_text());
+         Uint16 answer_id = code_vm.alloc_string(textedit.get_text());
          code_vm.set_result_register(answer_id);
 
          // continue processing code
@@ -306,7 +299,7 @@ bool ua_conversation_screen::process_event(SDL_Event& event)
             code_vm.set_result_register(answer_values[selection]);
 
             // print answer
-            std::string answer(localstrings[answer_string_ids[selection]]);
+            std::string answer(code_vm.get_local_string(answer_string_ids[selection]));
             code_vm.replace_placeholder(answer);
 
             scroll_conv.set_color_code(ua_cc_orange);
@@ -382,28 +375,12 @@ void ua_conversation_screen::tick()
    }
 }
 
-Uint16 ua_conversation_screen::alloc_string(const char* the_str)
-{
-   std::string str(the_str);
-   Uint16 pos = localstrings.size();
-   localstrings.push_back(str);
-   return pos;
-}
-
 void ua_conversation_screen::say(Uint16 index)
 {
-   ua_assert(index<localstrings.size());
-
-   std::string str(localstrings[index]);
+   std::string str(code_vm.get_local_string(index));
    code_vm.replace_placeholder(str);
 
    scroll_conv.print(str.c_str());
-}
-
-const char* ua_conversation_screen::get_local_string(Uint16 index)
-{
-   ua_assert(index<localstrings.size());
-   return localstrings[index].c_str();
 }
 
 /* *=implemented, x=assert
@@ -411,17 +388,17 @@ const char* ua_conversation_screen::get_local_string(Uint16 index)
    * babl_fmenu
    * print
    * babl_ask
-   * compare
-   * random
-   x plural
-   * contains
-   x append
-   x copy
-   x find
-   * length
-   x val
-   x say
-   x respond
+     compare
+     random
+     plural
+     contains
+     append
+     copy
+     find
+     length
+     val
+     say
+     respond
    * get_quest
    * set_quest
    * sex
@@ -489,7 +466,7 @@ Uint16 ua_conversation_screen::external_func(const char* the_funcname,
 
          // format menu entry string
          std::ostringstream buffer;
-         buffer << ask_count << ". " << localstrings[arg] << std::ends;
+         buffer << ask_count << ". " << code_vm.get_local_string(arg) << std::ends;
 
          std::string menuentry(buffer.str());
          code_vm.replace_placeholder(menuentry);
@@ -531,7 +508,7 @@ Uint16 ua_conversation_screen::external_func(const char* the_funcname,
 
             // format menu entry string
             std::ostringstream buffer;
-            buffer << ask_count << ". " << localstrings[arg1] << std::ends;
+            buffer << ask_count << ". " << code_vm.get_local_string(arg1) << std::ends;
 
             std::string menuentry(buffer.str());
             code_vm.replace_placeholder(menuentry);
@@ -558,7 +535,7 @@ Uint16 ua_conversation_screen::external_func(const char* the_funcname,
       Uint16 arg = stack.at(argpos++);
       arg = stack.at(arg);
 
-      std::string printtext(localstrings[arg]);
+      std::string printtext(code_vm.get_local_string(arg));
       code_vm.replace_placeholder(printtext);
 
       scroll_conv.print(printtext.c_str());
@@ -575,120 +552,6 @@ Uint16 ua_conversation_screen::external_func(const char* the_funcname,
          scroll_menu.get_width(), 42, 1, 46,">");
 
       state = ua_state_text_input;
-   }
-   else
-
-   if (funcname.compare("compare")==0)
-   {
-      // get arguments
-      Uint16 arg1 = stack.at(argpos--);
-      arg1 = stack.at(arg1);
-
-      Uint16 arg2 = stack.at(argpos);
-      arg2 = stack.at(arg2);
-
-      // get strings
-      std::string str1(localstrings[arg1]), str2(localstrings[arg2]);
-
-      ua_str_lowercase(str1);
-      ua_str_lowercase(str2);
-
-      // check if first string contains second
-      result_register = str1 == str2;
-   }
-   else
-
-   if (funcname.compare("random")==0)
-   {
-      Uint16 arg = stack.at(argpos--);
-      arg = stack.at(arg);
-
-      // this code assumes that rand() can return RAND_MAX
-
-      // rnum is in the range [0..1[
-      double rnum = double(rand())/double(RAND_MAX+1);
-      rnum *= arg; // now in range [0..arg[
-      result_register = Uint16(rnum + 1.0); // now from [1..arg+1[
-   }
-   else
-
-   if (funcname.compare("plural")==0)
-   {
-      ua_trace("conv_vm: intrinsic plural() not implemented");
-      ua_assert(false);
-   }
-   else
-
-   if (funcname.compare("contains")==0)
-   {
-      // get arguments
-      Uint16 arg1 = stack.at(argpos--);
-      arg1 = stack.at(arg1);
-
-      Uint16 arg2 = stack.at(argpos);
-      arg2 = stack.at(arg2);
-
-      // get strings
-      std::string str1(localstrings[arg1]), str2(localstrings[arg2]);
-
-      ua_str_lowercase(str1);
-      ua_str_lowercase(str2);
-
-      // check if first string contains second
-      result_register = str1.find(str2) != std::string::npos;
-   }
-   else
-
-   if (funcname.compare("append")==0)
-   {
-      ua_trace("conv_vm: intrinsic append() not implemented");
-      ua_assert(false);
-   }
-   else
-
-   if (funcname.compare("copy")==0)
-   {
-      ua_trace("conv_vm: intrinsic copy() not implemented");
-      ua_assert(false);
-   }
-   else
-
-   if (funcname.compare("find")==0)
-   {
-      ua_trace("conv_vm: intrinsic find() not implemented");
-      ua_assert(false);
-   }
-   else
-
-   if (funcname.compare("length")==0)
-   {
-      // get argument
-      Uint16 arg = stack.at(argpos--);
-      arg = stack.at(arg);
-
-      // return string length
-      result_register = localstrings[arg].size();
-   }
-   else
-
-   if (funcname.compare("val")==0)
-   {
-      ua_trace("conv_vm: intrinsic val() not implemented");
-      ua_assert(false);
-   }
-   else
-
-   if (funcname.compare("say")==0)
-   {
-      ua_trace("conv_vm: intrinsic say() not implemented");
-      ua_assert(false);
-   }
-   else
-
-   if (funcname.compare("respond")==0)
-   {
-      ua_trace("conv_vm: intrinsic respond() not implemented");
-      ua_assert(false);
    }
    else
 
@@ -716,98 +579,7 @@ Uint16 ua_conversation_screen::external_func(const char* the_funcname,
       ua_trace("set_quest[%u] = %u\n",arg2,arg1);
    }
    else
-
-   if (funcname.compare("sex")==0)
-   {
-      Uint16 arg1 = stack.at(argpos--);
-      arg1 = stack.at(arg1);
-
-      Uint16 arg2 = stack.at(argpos);
-      arg2 = stack.at(arg2);
-
-      // check player gender
-      if (game.get_underworld().get_player().get_attr(ua_attr_gender)==0)
-         arg1 = arg2;
-
-      result_register = arg1;
-   }
-   else
       ua_trace("code_vm: unknown intrinsic %s()\n",funcname.c_str());
 
    return result_register;
 }
-
-Uint16 ua_conversation_screen::get_global(const char* the_globname)
-{
-   std::string globname(the_globname);
-   Uint16 val = 0;
-
-   ua_player& pl = game.get_underworld().get_player();
-
-   // get npc object to talk to
-   ua_object& npc_obj = game.get_underworld().get_current_level().
-      get_mapobjects().get_object(objpos);
-
-   if (globname.compare("play_name")==0)
-      val = alloc_string(pl.get_name().c_str());
-   else
-   if (globname.compare("npc_xhome")==0)
-      val = npc_obj.get_ext_object_info().npc_xhome;
-   else
-   if (globname.compare("npc_yhome")==0)
-      val = npc_obj.get_ext_object_info().npc_yhome;
-   else
-   if (globname.compare("npc_attitude")==0)
-      val = npc_obj.get_ext_object_info().npc_attitude;
-   else
-   if (globname.compare("npc_goal")==0)
-      val = npc_obj.get_ext_object_info().npc_goal;
-   else
-   if (globname.compare("npc_gtarg")==0)
-      val = npc_obj.get_ext_object_info().npc_gtarg;
-   else
-   if (globname.compare("npc_hp")==0)
-      val = npc_obj.get_ext_object_info().npc_hp;
-   else
-   if (globname.compare("npc_hunger")==0)
-      val = npc_obj.get_ext_object_info().npc_hunger;
-   else
-   if (globname.compare("npc_level")==0)
-      val = npc_obj.get_ext_object_info().npc_level;
-   else
-   if (globname.compare("npc_talkedto")==0)
-      val = npc_obj.get_ext_object_info().npc_talkedto;
-   else
-   if (globname.compare("npc_whoami")==0)
-      val = npc_obj.get_ext_object_info().npc_whoami;
-   else
-      ua_trace("code_vm: get global: unknown global %s\n",globname.c_str());
-
-   return val;
-}
-
-void ua_conversation_screen::set_global(const char* globname, Uint16 val)
-{
-}
-/*
-play_hunger
-play_health
-play_arms
-play_power
-play_hp
-play_mana
-play_level
-new_player_exp
-play_poison
-play_drawn
-play_sex
-npc_health
-npc_arms
-npc_power
-npc_name
-dungeon_level
-riddlecounter
-game_time
-game_days
-game_mins
-*/
