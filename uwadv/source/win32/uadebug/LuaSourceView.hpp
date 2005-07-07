@@ -124,6 +124,11 @@ protected:
       MESSAGE_HANDLER(WM_CREATE, OnCreate)
       MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
       MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
+      COMMAND_ID_HANDLER(ID_EDIT_CUT, OnEditCut)
+      COMMAND_ID_HANDLER(ID_EDIT_COPY, OnEditCopy)
+      COMMAND_ID_HANDLER(ID_EDIT_PASTE, OnEditPaste)
+      COMMAND_ID_HANDLER(ID_EDIT_UNDO, OnEditUndo)
+      COMMAND_ID_HANDLER(ID_EDIT_REDO, OnEditRedo)
       CHAIN_MSG_MAP(baseClass)
    END_MSG_MAP()
 
@@ -140,6 +145,36 @@ protected:
          return TRUE;
 
       return m_view.PreTranslateMessage(pMsg);
+   }
+
+   LRESULT OnEditCut(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+   {
+      m_view.Cut();
+      return 0;
+   }
+
+   LRESULT OnEditCopy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+   {
+      m_view.Copy();
+      return 0;
+   }
+
+   LRESULT OnEditPaste(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+   {
+      m_view.Paste();
+      return 0;
+   }
+
+   LRESULT OnEditUndo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+   {
+      m_view.Undo();
+      return 0;
+   }
+
+   LRESULT OnEditRedo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+   {
+      m_view.Redo();
+      return 0;
    }
 
    //! updates displayed filename
