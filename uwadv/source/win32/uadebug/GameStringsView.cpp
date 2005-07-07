@@ -134,7 +134,7 @@ LRESULT CGameStringsView::OnComboSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, H
    CDebugClientInterface& debugClient = m_pMainFrame->GetDebugClientInterface();
    debugClient.Lock(true);
 
-   m_listStrings.LockWindowUpdate();
+   m_listStrings.SetRedraw(FALSE);
 
    m_listStrings.DeleteAllItems();
 
@@ -149,7 +149,7 @@ LRESULT CGameStringsView::OnComboSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, H
       m_listStrings.SetItemText(nItem, 1, cszText);
    }
 
-   m_listStrings.LockWindowUpdate(FALSE);
+   m_listStrings.SetRedraw(TRUE);
 
    debugClient.Lock(false);
 
