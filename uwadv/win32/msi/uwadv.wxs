@@ -41,9 +41,17 @@
           <Directory Id="TARGETDIR" Name=".">
             <Component Id="UnderworldAdventuresApp" Guid="f1fc0646-d06c-4a72-bf63-7abbac37bab4">
               <File Id="UwadvExe" Name="uwadv.exe" LongName="uwadv.exe" DiskId="1" KeyPath="yes" src="..\vc71\Release\uwadv.exe" />
+              <ProgId Id="UnderworldAdventuresSavegame" Advertise="no" Description="Underworld Adventures Savegame" Icon="[TARGETDIR]uwadv.exe">
+                <Extension Id="uas" Advertise="no">
+                  <Verb Id="open" Command="Open" Target='[TARGETDIR]uwadv.exe "%s"' />
+                </Extension>
+              </ProgId>
+              <Registry Action="createKeyAndRemoveKeyOnUninstall" Root="HKCR" Key="Applications\uwadv.exe\SupportedTypes">
+                <Registry Name=".uas" Type="string" />
+              </Registry>
             </Component>
             <Component Id="UnderworldAdventuresShortcut" Guid="dc848364-47f7-44f5-b7dd-2a050f92ad1c">
-              <Registry Id="RegistryKey1" Root="HKCU" Key="Software\Underworld Adventures" KeyPath="yes" />
+              <Registry Id="RegistryKey1" Root="HKCU" Key="Software\Underworld Adventures\Install" Name="UwadvShortcutPresent" KeyPath="yes" />
               <Shortcut Id="Shortcut1" Directory="UnderworldAdventuresShortcutFolder" Name="uwadv" LongName="Underworld Adventures"
                 Target="[TARGETDIR]uwadv.exe" Icon="UnderworldAdventuresShortcutIcon" IconIndex="0" Show="normal"
                 Description="Starts Underworld Adventures" Advertise="no" WorkingDirectory="[TARGETDIR]" />
@@ -54,7 +62,7 @@
               <File Id="UwadvManualHtml" Name="uwadvm~1.htm" LongName="uwadv-manual.html" DiskId="1" KeyPath="yes" src="..\..\docs\docbook\uwadv-manual.html" />
             </Component>
             <Component Id="UnderworldAdventuresManualShortcut" Guid="c81f4230-1af9-4b7b-825c-015b3a6e6118">
-              <Registry Id="RegistryKey4" Root="HKCU" Key="Software\Underworld Adventures" KeyPath="yes" />
+              <Registry Id="RegistryKey4" Root="HKCU" Key="Software\Underworld Adventures\Install" Name="UwadvManualShortcutPresent" KeyPath="yes" />
               <Shortcut Id="Shortcut4" Directory="UnderworldAdventuresShortcutFolder" Name="uwadvm~1" LongName="Underworld Adventures Manual"
                 Target="[TARGETDIR]uwadv-manual.html" Show="normal"
                 Description="Opens the Underworld Adventures Manual" Advertise="no" WorkingDirectory="[TARGETDIR]" />
@@ -65,8 +73,8 @@
               <File Id="UaconfigExe" Name="uaconfig.exe" LongName="uaconfig.exe" DiskId="1" KeyPath="yes" src="..\vc71\Release\uaconfig.exe" />
             </Component>
             <Component Id="UnderworldAdventuresConfigShortcut" Guid="c9f7552f-0d52-4c7d-ae4e-6ec4605611fd">
-              <Registry Id="RegistryKey2" Root="HKCU" Key="Software\Underworld Adventures" KeyPath="yes" />
-              <Shortcut Id="Shortcut2" Directory="UnderworldAdventuresShortcutFolder" Name="uaconfig" LongName="Underworld Adventures Configuration"
+              <Registry Id="RegistryKey2" Root="HKCU" Key="Software\Underworld Adventures\Install" Name="UaconfigShortcutPresent" KeyPath="yes" />
+              <Shortcut Id="Shortcut2" Directory="UnderworldAdventuresShortcutFolder" Name="uaconfig" LongName="Configuration"
                 Target="[TARGETDIR]uaconfig.exe" Icon="UnderworldAdventuresConfigShortcutIcon" IconIndex="0" Show="normal"
                 Description="Starts Underworld Adventures Configuration" Advertise="no" WorkingDirectory="[TARGETDIR]" />
               <RemoveFolder Directory="UnderworldAdventuresShortcutFolder" On="uninstall" Id="Shortcut2" />
@@ -83,7 +91,7 @@
               <File Id="UastudioExe" Name="uastudio.exe" LongName="uastudio.exe" DiskId="1" KeyPath="yes" src="..\vc71\Release\uastudio.exe" />
             </Component>
             <Component Id="UnderworldAdventuresStudioShortcut" Guid="8c5a72f5-ea19-470b-90e7-118eec7004d3">
-              <Registry Id="RegistryKey3" Root="HKCU" Key="Software\Underworld Adventures" KeyPath="yes" />
+              <Registry Id="RegistryKey3" Root="HKCU" Key="Software\Underworld Adventures\Install" Name="UastudioShortcutPresent" KeyPath="yes" />
               <Shortcut Id="Shortcut3" Directory="UnderworldAdventuresShortcutFolder" Name="uastudio" LongName="Underworld Adventures Studio"
                 Target="[TARGETDIR]uastudio.exe" Icon="UnderworldAdventuresStudioShortcutIcon" IconIndex="0" Show="normal"
                 Description="Starts Underworld Adventures Studio" Advertise="no" WorkingDirectory="[TARGETDIR]" />
@@ -94,7 +102,7 @@
               <File Id="UastudioManualHtml" Name="uastud~1.htm" LongName="uastudio-manual.html" DiskId="1" KeyPath="yes" src="..\..\docs\docbook\uastudio-manual.html" />
             </Component>
             <Component Id="UnderworldAdventuresStudioManualShortcut" Guid="d1707ece-134e-4d3d-928d-d0eacc97521b">
-              <Registry Id="RegistryKey5" Root="HKCU" Key="Software\Underworld Adventures" KeyPath="yes" />
+              <Registry Id="RegistryKey5" Root="HKCU" Key="Software\Underworld Adventures\Install" Name="UastudioManualShortcutPresent" KeyPath="yes" />
               <Shortcut Id="Shortcut5" Directory="UnderworldAdventuresShortcutFolder" Name="uastudio" LongName="Underworld Adventures Studio Manual"
                 Target="[TARGETDIR]uastudio-manual.html" Show="normal"
                 Description="Opens the Underworld Adventures Studio Manual" Advertise="no" WorkingDirectory="[TARGETDIR]" />
@@ -108,7 +116,7 @@
               <File Id="StrPakExe" Name="strpak.exe" LongName="strpak.exe" DiskId="1" KeyPath="yes" src="..\vc71\Release\strpak.exe" />
             </Component>
             <Component Id="ScintillaLexer" Guid="96a92fc3-b7ec-4d7c-a63d-6657fcc918c2">
-              <File Id="SciLexerDll" Name="SciLexer.dll" LongName="SciLexer.dll" DiskId="1" KeyPath="yes" src="..\vc71\Release\SciLexer.dll" />
+              <File Id="SciLexerDll" Name="SciLexer.dll" LongName="SciLexer.dll" DiskId="1" KeyPath="yes" src="..\..\source\win32\uadebug\thirdparty\scintilla\SciLexer.dll" />
             </Component>
             <Component Id="LuaCompiler" Guid="5707964b-f944-4d0b-9586-9c94e7130bdd">
               <File Id="LuaCExe" Name="luac.exe" LongName="luac.exe" DiskId="1" KeyPath="yes" src="..\vc71\Release\luac.exe" />
@@ -178,6 +186,7 @@
     </Feature>
 
     <FragmentRef Id="StandardUserInterface" />
+    <FragmentRef Id="ErrorTextList" />
 
     <Property Id="SHOWCUSTOMSETUP"><![CDATA[1]]></Property>
     <Property Id="SHOWLAUNCHREADME"><![CDATA[0]]></Property>
@@ -190,5 +199,11 @@
     <Property Id="ARPURLINFOABOUT"><![CDATA[http://uwadv.sourceforge.net/]]></Property>
     <Property Id="ARPCOMMENTS"><![CDATA[For more information, please visit http://uwadv.sourceforge.net/]]></Property>
 
-   </Product>
+    <!-- TODO: add upgrade item for new version with Id as the old ProductCode -->
+    <!-- Upgrade Id="OldProductCode">
+      <UpgradeVersion Maximum="0.09.0000" Property="ACTIONPROP1" MigrateFeatures="yes" IncludeMinimum="yes" />
+      <Property Id="ACTIONPROP1" Secure="yes" />
+    </Upgrade -->
+
+  </Product>
 </Wix>
