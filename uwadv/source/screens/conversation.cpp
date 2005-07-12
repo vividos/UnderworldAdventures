@@ -217,7 +217,8 @@ void ua_conversation_screen::init()
       std::vector<std::string> localstrings;
       game.get_gamestrings().get_stringblock(code_vm.get_strblock(), localstrings);
 
-      code_vm.init(game, this, localstrings);
+      unsigned int level = game.get_underworld().get_player().get_attr(ua_attr_maplevel);
+      code_vm.init(level, objpos, game, this, localstrings);
    }
 
    state = ua_state_fadein;
