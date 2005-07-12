@@ -183,7 +183,7 @@ void CPlayerInfoWindow::UpdateData()
 
    // update all position info values
    for(unsigned int i=0; i<4; i++)
-      m_adValues[4] = playerInfo.GetPosInfo(i);
+      m_adValues[i] = playerInfo.GetPosInfo(i);
 
    // update all attributes
    unsigned int max = playerInfo.GetAttrCount();
@@ -310,8 +310,21 @@ void CPlayerInfoWindow::SetProperty(unsigned int nPropertyItemId, const CString&
 
 bool CPlayerInfoWindow::VerifyProperty(unsigned int nPropertyItemId, const CString& cszProperty)
 {
-   // TODO verify properties
-   return true;
+   CString cszCheck(cszProperty);
+
+   // allowed characters
+   LPCTSTR pszChars = _T("0123456789");
+
+   if (nPropertyItemId < 4)
+      pszChars = _T("0123456789.");
+
+   // remove all valid chars
+   int nPos = 0;
+   while (-1 != (nPos = cszCheck.FindOneOf(pszChars)))
+      cszCheck.Delete(nPos);
+
+   // property is valid when no more chars in string
+   return cszCheck.IsEmpty();
 }
 
 LRESULT CPlayerInfoWindow::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
