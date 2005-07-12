@@ -154,6 +154,25 @@ void CTileMapViewCtrl::DoPaint(CDCHandle hDC)
             dc.FillSolidRect(nLeftBase+unsigned(0.4*dx), nTopBase+unsigned(0.6*dy), nBoxSizeX, nBoxSizeY, color);
          }
       }
+
+      // draw border around selected tile
+      if (m_nSelectedTileX != unsigned(-1) && m_nSelectedTileY != unsigned(-1))
+      {
+         unsigned int nLineSizeX = unsigned(0.15*m_nTileSizeX);
+         unsigned int nLineSizeY = unsigned(0.15*m_nTileSizeY);
+         if (nLineSizeX == 0) nLineSizeX = 0;
+         if (nLineSizeY == 0) nLineSizeY = 0;
+         COLORREF crBorder = RGB(255,0,0);
+         unsigned int nPosX = rc.left+m_nSelectedTileX*m_nTileSizeX;
+         unsigned int nPosY = rc.top +(63-m_nSelectedTileY)*m_nTileSizeY;
+
+         // top, bottom, left, right
+         dc.FillSolidRect(nPosX, nPosY,                         m_nTileSizeX, nLineSizeY, crBorder);
+         dc.FillSolidRect(nPosX, nPosY+m_nTileSizeY-nLineSizeY, m_nTileSizeX, nLineSizeY, crBorder);
+         dc.FillSolidRect(nPosX, nPosY,                         nLineSizeX, m_nTileSizeY, crBorder);
+         dc.FillSolidRect(nPosX+m_nTileSizeX-nLineSizeX, nPosY, nLineSizeX, m_nTileSizeY, crBorder);
+      }
+
    } // <-- CMemDC dtor
 }
 
@@ -163,14 +182,14 @@ void CTileMapViewCtrl::ReceiveNotification(CDebugWindowNotification& notify)
    {
    case ncUpdateData:
       UpdateTileMap();
-      RedrawWindow(); // force redraw
+      RedrawWindow(NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW); // force redraw
       break;
 
    case ncChangedLevel:
       // invalidate selected tile pos
       m_nSelectedTileX = m_nSelectedTileY = unsigned(-1);
       UpdateTileMap();
-      RedrawWindow(); // force redraw
+      RedrawWindow(NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW); // force redraw
       break;
    }
 }
@@ -245,6 +264,8 @@ LRESULT CTileMapViewCtrl::OnLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
    notify.m_nParam2 = m_nSelectedTileY;
 
    m_pMainFrame->SendNotification(notify, true, this);
+
+   RedrawWindow(NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
 
    return 0;
 }
