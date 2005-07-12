@@ -68,19 +68,24 @@ LRESULT CTileInfoForm::OnButtonBeam(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
    return 0;
 }
 
-LRESULT CTileInfoForm::OnListObjectsClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+LRESULT CTileInfoForm::OnListItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
-   NMITEMACTIVATE* pNMItemActivate = reinterpret_cast<NMITEMACTIVATE*>(pnmh);
+   NMLISTVIEW* pNMListView = reinterpret_cast<NMLISTVIEW*>(pnmh);
 
-   unsigned int nItemPos = m_objectList.GetItemData(pNMItemActivate->iItem);
+   // check if item changed to state "focused"
+   if (pNMListView->iItem >= 0 &&
+       (pNMListView->uOldState & LVIS_FOCUSED) == 0 &&
+       (pNMListView->uNewState & LVIS_FOCUSED) != 0)
+   {
+      unsigned int nItemPos = m_objectList.GetItemData(pNMListView->iItem);
 
-   // send notification that an object was clicked
-   CDebugWindowNotification notify;
-   notify.m_enCode = ncSelectedObject;
-   notify.m_nParam1 = nItemPos;
+      // send notification that an object was clicked
+      CDebugWindowNotification notify;
+      notify.m_enCode = ncSelectedObject;
+      notify.m_nParam1 = nItemPos;
 
-   m_pMainFrame->SendNotification(notify, true, this);
-
+      m_pMainFrame->SendNotification(notify, true, this);
+   }
    return 0;
 }
 
