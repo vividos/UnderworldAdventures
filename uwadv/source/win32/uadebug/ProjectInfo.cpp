@@ -185,7 +185,7 @@ LRESULT CProjectInfoWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
       bmpImages.GetSize(sizeImage);
 
       m_ilIcons.Create(16, sizeImage.cy, ILC_COLOR24, 0, sizeImage.cx/16);
-      m_ilIcons.Add(bmpImages, RGB(255,255,255));
+      m_ilIcons.Add(bmpImages, RGB(0,0,0));
    }
 
    m_treeCtrl.SetImageList(m_ilIcons, TVSIL_NORMAL);
