@@ -166,6 +166,8 @@ LRESULT CEditListViewCtrl::OnLeftButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LP
    if (nRet != 0)
       return 0;
 
+   SelectItem(item);
+
    // create edit-control
    CEditListInplaceEditCtrl* pEdit = new CEditListInplaceEditCtrl(item,column);
 
@@ -178,8 +180,7 @@ LRESULT CEditListViewCtrl::OnLeftButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LP
 
    rect.left = column == 0 ? rect.left : startx+3;
    rect.right = startx + GetColumnWidth(column);
-//   rect.top;
-   rect.bottom++;
+   rect.bottom--;
 
    _TCHAR szBuffer[256];
    GetItemText(item,column,szBuffer,256);
