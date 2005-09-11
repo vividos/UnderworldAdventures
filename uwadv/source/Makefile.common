@@ -38,6 +38,7 @@ uwadv_SOURCES = \
 	base/settings.cpp base/settings.hpp \
 	base/uamath.hpp \
 	base/utils.cpp base/utils.hpp \
+	conv/conv.cpp conv/conv.hpp \
 	conv/codevm.cpp conv/codevm.hpp \
 	conv/convglobals.cpp conv/convglobals.hpp \
 	conv/convgraph.cpp conv/convgraph.hpp \
