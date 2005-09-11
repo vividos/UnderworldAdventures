@@ -24,7 +24,7 @@
 SUBDIRS = base tools script debug
 
 # compiler options
-INCLUDES = -I$(srcdir)/base -I$(srcdir)/conv -I$(srcdir)/audio -I$(srcdir)/ui -I$(srcdir)/renderer -I$(srcdir)/underw -I$(srcdir)/import -I$(srcdir)/script
+INCLUDES = -I$(srcdir)/base -I$(srcdir)/conv -I$(srcdir)/audio -I$(srcdir)/ui -I$(srcdir)/renderer -I$(srcdir)/underw -I$(srcdir)/import -I$(srcdir)/script -I$(srcdir)/script/lua/include
 CXXFLAGS = @CXXFLAGS@
 LDFLAGS = @LIBS@
 
