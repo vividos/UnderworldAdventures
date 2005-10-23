@@ -11,6 +11,9 @@
 #define SDL_RWOPS_ZZIP_FILE(_context) \
              ((ZZIP_FILE*) (_context)->hidden.unknown.data1)
 
+#define SDL_RWOPS_ZZIP_FILE_LVALUE(_context) \
+             ((_context)->hidden.unknown.data1)
+
 static int _zzip_seek(SDL_RWops *context, int offset, int whence)
 {
     return zzip_seek(SDL_RWOPS_ZZIP_FILE(context), offset, whence);
@@ -57,7 +60,7 @@ SDL_RWops *SDL_RWFromZZIP(const char* file, const char* mode)
     rwops = SDL_AllocRW ();
     if (! rwops) { errno=ENOMEM; zzip_close (zzip_file); return 0; }
 
-    SDL_RWOPS_ZZIP_FILE(rwops) = zzip_file;
+    SDL_RWOPS_ZZIP_FILE_LVALUE(rwops) = zzip_file;
     rwops->read = _zzip_read;
     rwops->write = _zzip_write;
     rwops->seek = _zzip_seek;
