@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -471,7 +471,7 @@ void ua_lua_scripting::check_breakpoints()
 void ua_lua_scripting::wait_debugger_continue()
 {
    while (get_debugger_state() == ua_debugger_state_break)
-      Sleep(10); //SDL_Sleep(10); // TODO
+      SDL_Delay(10); // TODO
 }
 
 //! registers a C function inside a table
