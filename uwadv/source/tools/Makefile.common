@@ -1,6 +1,6 @@
 #
 # Underworld Adventures - an Ultima Underworld hacking project
-# Copyright (c) 2002,2003,2004 Underworld Adventures Team
+# Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ libuatools_la_SOURCES = \
 	../renderer/texture.cpp ../renderer/texture.hpp \
 	../ui/cutscene.cpp ../ui/cutscene.hpp \
 	../ui/image.cpp ../ui/image.hpp \
-	../underw/gamestrings.cpp ../underw/gamestrings.hpp \
+	../gamestrings.cpp ../gamestrings.hpp \
 	../underw/objects.cpp ../underw/objects.hpp \
 	../underw/level.cpp ../underw/level.hpp
 

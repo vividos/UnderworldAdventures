@@ -1,10 +1,13 @@
 #
-# Makefile.am for Underworld Adventures
+# Makefile.am for Underworld Adventures tools
 #
 # $Id$
 #
 
 # compiler options
+INCLUDES = -I$(srcdir)/../../base -I$(srcdir)/../../import \
+  -I$(srcdir)/../../ui \
+  -I$(srcdir)/../../renderer -I$(srcdir)/../../underw -I$(srcdir)/../../conv
 CXXFLAGS = @CXXFLAGS@
 LDFLAGS = @LIBS@
 

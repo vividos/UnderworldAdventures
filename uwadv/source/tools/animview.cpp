@@ -28,7 +28,7 @@
 // needed includes
 #include "common.hpp"
 #include "cutscene.hpp"
-#include "resource/fread_endian.hpp"
+#include "import/io_endian.hpp"
 
 
 // globals

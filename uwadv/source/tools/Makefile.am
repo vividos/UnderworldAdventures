@@ -6,7 +6,8 @@
 
 # compiler options
 INCLUDES = -I$(srcdir)/../base -I$(srcdir)/../import \
-  -I$(srcdir)/../lua/include -I$(srcdir)/../ui -I$(srcdir)/../audio
+  -I$(srcdir)/../lua/include -I$(srcdir)/../ui -I$(srcdir)/../audio \
+  -I$(srcdir)/../renderer -I$(srcdir)/../underw -I$(srcdir)/../conv
 CXXFLAGS = @CXXFLAGS@
 LDFLAGS = @LIBS@
 
