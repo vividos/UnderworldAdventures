@@ -283,18 +283,6 @@ cnvdbg_LIBS = -lmingw32 -lkernel32 -luser32 libuatools.a \
 	$(SDL_LIB) $(STLPORT_LIB) -lz
 
 
-# conv decompiler
-
-cnvdasm_EXEC = cnvdasm.exe
-
-cnvdasm_CPPs = $(filter %.cpp,$(cnvdasm_SOURCES))
-cnvdasm_OBJS = $(cnvdasm_CPPs:%.cpp=source/tools/%.o)
-
-cnvdasm_LDFLAGS = -mconsole
-cnvdasm_LIBS = -lmingw32 -lkernel32 -luser32 libuatools.a \
-	$(SDL_LIB) $(STLPORT_LIB) -lz
-
-
 # xmidi to midi converter
 
 xmi2mid_EXEC = xmi2mid.exe
@@ -382,7 +370,7 @@ endif
 # build rules
 # -------------------------------------------------------------------
 
-TOOLS = cnvdbg cnvdasm xmi2mid mapdisp animview strpak uwdump uwmdlview
+TOOLS = cnvdbg xmi2mid mapdisp animview strpak uwdump uwmdlview
 
 tools: libuatools $(TOOLS)
 
@@ -431,11 +419,6 @@ $(libuatools_EXT): $(libuatools_OBJS)
 cnvdbg: $(cnvdbg_EXEC)
 $(cnvdbg_EXEC): libuatools $(cnvdbg_OBJS)
 	$(CXX) $(LDFLAGS) $(cnvdbg_LDFLAGS) -o $(@) $(cnvdbg_OBJS) $(cnvdbg_LIBS)
-
-
-cnvdasm: $(cnvdasm_EXEC)
-$(cnvdasm_EXEC): libuatools $(cnvdasm_OBJS)
-	$(CXX) $(LDFLAGS) $(cnvdasm_LDFLAGS) -o $(@) $(cnvdasm_OBJS) $(cnvdasm_LIBS)
 
 
 xmi2mid: $(xmi2mid_EXEC)
@@ -526,11 +509,11 @@ installer: install manual
 	cd $(UWADV_PATH) && ./makensis.exe //DVERSION="$(UWADV_VERSION)" uwadv.nsi
 
 clean: data-clean luac-clean manual-clean
-	rm -f $(uwadv_EXEC) $(cnvdbg_EXEC) $(cnvdasm_EXEC) $(xmi2mid_EXEC) \
+	rm -f $(uwadv_EXEC) $(cnvdbg_EXEC) $(xmi2mid_EXEC) \
 		$(mapdisp_EXEC) $(animview_EXEC) $(strpak_EXEC) \
 		$(uaconfig_EXEC) $(libuatools_EXT) $(uwdump_EXEC) \
 		$(uwmdlview_EXEC) $(liblua_EXT) $(libzziplib_EXT) \
-		$(uwadv_OBJS) $(cnvdbg_OBJS) $(cnvdasm_OBJS) $(xmi2mid_OBJS) \
+		$(uwadv_OBJS) $(cnvdbg_OBJS) $(xmi2mid_OBJS) \
 		$(mapdisp_OBJS) $(animview_OBJS) $(strpak_OBJS) \
 		$(uaconfig_OBJS) $(libuatools_OBJS) $(uwdump_OBJS) \
 		$(uwmdlview_OBJS) $(liblua_OBJS) $(libzziplib_OBJS)

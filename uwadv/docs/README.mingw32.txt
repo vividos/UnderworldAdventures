@@ -82,7 +82,7 @@ where target can be one of several words:
   uwadv       builds uwadv.exe and copies a template uwadv.cfg to the main
               project dir
   tools       builds all tools (each tool can be built separately using one of
-              these targets: cnvdbg cnvdasm xmi2mid mapdisp animview strpak
+              these targets: cnvdbg xmi2mid mapdisp animview strpak
   data        builds all needed data files
   install     builds uwadv and data and installs the files in the path
               specified by "UWADV_PATH". overwrites uwadv.cfg

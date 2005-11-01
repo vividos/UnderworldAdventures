@@ -163,28 +163,6 @@ Ultima Underworld, just look into the file "docs/uw-formats.txt" in the source
 distribution of Underworld Adventures.
 
 
-cnvdasm - Underworld Conversation Disassembler and Decompiler
--------------------------------------------------------------
-
-cnvdasm is a disassembler and decompiler for the Ultima Underworld
-assembler-like conversation script code. The disassembler part just decodes
-every opcode and prints a assembler source listing. The decompiler instead
-tries to recognize code structures and produces C-like code.
-
-The program has the following calling syntax:
-
-   cnvdasm <command> <cnv-archive> <conv-slot>
-
-The command can either be "dasm" which only performs disassembling the conv
-code, or "dec" which performs decompiling to C-like code. The cnv-archive
-usually is a file called "cnv.ark" found in the "data" folder of Underworld.
-The conv-slot specifies the conversation slot that should be decoded. Not all
-slots actually contain code.
-
-Again, for more info about the conversation system, look into the file
-"docs/uw-formats.txt" in the source distribution of Underworld Adventures.
-
-
 map3ds - Level Map to 3DS format converter [uw1/2]
 ------------------------------------------
 

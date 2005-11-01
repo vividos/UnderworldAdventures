@@ -75,7 +75,6 @@ EXTRA_DIST =  \
 	misc/uw1-objects.png \
 	misc/uw1-palette0.png \
 	win32/animview.dsp \
-	win32/cnvdasm.dsp \
 	win32/cnvdbg.dsp \
 	win32/map3ds.dsp \
 	win32/mapdisp.dsp \

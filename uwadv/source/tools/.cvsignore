@@ -3,6 +3,5 @@ xmi2mid
 animview
 mapdisp
 cnvdbg
-cnvdasm
 Makefile.in
 libuatools.la

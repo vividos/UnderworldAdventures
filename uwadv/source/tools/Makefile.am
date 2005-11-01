@@ -14,7 +14,7 @@ LDFLAGS = @LIBS@
 SUBDIRS = . uwdump
 
 if BUILD_TOOLS
- noinst_PROGRAMS = cnvdasm cnvdbg xmi2mid mapdisp animview strpak uwmdlview
+ noinst_PROGRAMS = cnvdbg xmi2mid mapdisp animview strpak uwmdlview
  noinst_LTLIBRARIES = libuatools.la
 else
  noinst_PROGRAMS =
@@ -25,7 +25,6 @@ endif
 include Makefile.common
 
 if BUILD_TOOLS
- cnvdasm_LDADD = -luatools
  cnvdbg_LDADD = -luatools
  mapdisp_LDADD = -luatools
  animview_LDADD = -luatools
