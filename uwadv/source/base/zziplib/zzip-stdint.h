@@ -10,12 +10,12 @@
 #define __USE_ANSI 1
 #define __USE_ISOC9X 1
 
-#ifdef ZZIP_HAVE_STDINT_H
+#ifdef HAVE_STDINT_H
     /* ISO C 9X: 7.18 Integer types <stdint.h> */
 #include <stdint.h>
-#elif defined ZZIP_HAVE_SYS_INT_TYPES_H /*solaris*/
+#elif defined HAVE_SYS_INT_TYPES_H /*solaris*/
 #include <sys/int_types.h>
-#elif (defined ZZIP_HAVE_INTTYPES_H) && (defined __FreeBSD__) /*freebsd*/
+#elif (defined HAVE_INTTYPES_H) && (defined __FreeBSD__) /*freebsd*/
 #include <inttypes.h>
 #else
     typedef unsigned char uint8_t;      typedef signed char int8_t;

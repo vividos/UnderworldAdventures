@@ -18,13 +18,13 @@
 #include <string.h>
 #include <errno.h>
 
-#ifdef ZZIP_HAVE_SYS_STAT_H
+#ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #else
 #include <stdio.h>
 #endif
 
-#ifdef ZZIP_HAVE_DIRENT_H
+#ifdef HAVE_DIRENT_H
 #include <dirent.h>
 #include <stdio.h>
 #endif
@@ -45,7 +45,7 @@ zzip_rewinddir(ZZIP_DIR * dir)
 {
     if (! dir) return;
 
-#  ifdef ZZIP_HAVE_DIRENT_H
+#  ifdef HAVE_DIRENT_H
     if (dir->realdir) 
     {
         rewinddir(dir->realdir);
@@ -59,7 +59,7 @@ zzip_rewinddir(ZZIP_DIR * dir)
         dir->hdr = 0;
 }
 
-#ifdef ZZIP_HAVE_DIRENT_H
+#ifdef HAVE_DIRENT_H
 static int
 real_readdir(ZZIP_DIR* dir)
 {
@@ -113,7 +113,7 @@ zzip_readdir(ZZIP_DIR * dir)
 {
     if (! dir) { errno=EBADF; return 0; }
 
-#  ifdef ZZIP_HAVE_DIRENT_H
+#  ifdef HAVE_DIRENT_H
     if (dir->realdir)
     {
         if (! real_readdir(dir))
@@ -143,7 +143,7 @@ zzip_telldir(ZZIP_DIR* dir)
 {
     if (! dir) { errno=EBADF; return -1; }
 
-#  ifdef ZZIP_HAVE_DIRENT_H
+#  ifdef HAVE_DIRENT_H
     if (dir->realdir)
     {
         return telldir(dir->realdir);
@@ -162,7 +162,7 @@ zzip_seekdir(ZZIP_DIR* dir, zzip_off_t offset)
 {
     if (! dir) return; 
     
-#  ifdef ZZIP_HAVE_DIRENT_H
+#  ifdef HAVE_DIRENT_H
     if (dir->realdir)
     {
         seekdir(dir->realdir, offset);
@@ -203,14 +203,14 @@ zzip_opendir_ext_io(zzip_char_t* filename, int o_modes,
     zzip_error_t e;
     ZZIP_DIR* dir;
 
-#  ifdef ZZIP_HAVE_SYS_STAT_H
+#  ifdef HAVE_SYS_STAT_H
     struct stat st;
 #  endif
 
     if (o_modes & (ZZIP_PREFERZIP|ZZIP_ONLYZIP)) goto try_zzip;
  try_real:
 
-#  ifdef ZZIP_HAVE_SYS_STAT_H
+#  ifdef HAVE_SYS_STAT_H
     if (stat(filename, &st) >= 0 &&
 #ifdef _MSC_VER
 	(st.st_mode & S_IFDIR)
@@ -218,7 +218,7 @@ zzip_opendir_ext_io(zzip_char_t* filename, int o_modes,
 	S_ISDIR(st.st_mode)
 #endif
     ){
-#     ifdef ZZIP_HAVE_DIRENT_H
+#     ifdef HAVE_DIRENT_H
     	DIR* realdir = opendir(filename);
         if (realdir)
         {
@@ -258,7 +258,7 @@ zzip_closedir(ZZIP_DIR* dir)
 {
     if (! dir) { errno = EBADF; return -1; }
 
-#  ifdef ZZIP_HAVE_DIRENT_H
+#  ifdef HAVE_DIRENT_H
     if (dir->realdir)
     {
         closedir(dir->realdir);

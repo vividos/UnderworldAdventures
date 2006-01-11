@@ -25,7 +25,7 @@
 # elif defined ZZIP_5_H
 # include "zzip-5.h"
 # else /* autoconf generated */
-# include <zzip-config.h>
+# include <config.h>
 # endif
 #endif
 

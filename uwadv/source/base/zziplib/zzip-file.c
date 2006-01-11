@@ -21,17 +21,7 @@
 #include "zzip-file.h"
 #include "zzipformat.h"
 
-#if 0
-
-#if defined ZZIP_HAVE_IO_H
-#include <io.h> /* tell */
-#else
-#define tell(fd) lseek(fd,0,SEEK_CUR);
-#endif
-
-#else
 #define tells(fd) seeks(fd,0,SEEK_CUR);
-#endif
 
 #if 0 /* debugging */
 #include <stdio.h> 
@@ -122,7 +112,7 @@ zzip_file_open(ZZIP_DIR * dir, zzip_char_t* name, int o_mode)
     }
 
     if (hdr)
-    while (1)
+    for(;;)
     {
         register char* hdr_name = hdr->d_name;
         if (o_mode & ZZIP_IGNOREPATH)

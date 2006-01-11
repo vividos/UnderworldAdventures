@@ -2,7 +2,7 @@
 #include "zzip-file.h"
 #include "zzipformat.h"
 
-#ifdef ZZIP_HAVE_SYS_STAT_H
+#ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #else
 #include <stdlib.h>

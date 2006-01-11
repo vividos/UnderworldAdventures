@@ -19,16 +19,16 @@
 
 #include <zlib.h>
 
-#ifdef ZZIP_HAVE_UNISTD_H
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #else
 #include <stdio.h>
-# ifdef ZZIP_HAVE_SYS_TYPES_H
+# ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 # endif
 #endif
 
-#ifdef ZZIP_HAVE_SYS_PARAM_H
+#ifdef HAVE_SYS_PARAM_H
 #include <sys/param.h> /* PATH_MAX */
 #endif
 

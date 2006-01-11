@@ -7,83 +7,61 @@
 /* config.h.in.  Generated automatically from configure.ac by autoheader.  */
 
 /* Define if you have the <dirent.h> header file, and it defines `DIR'. */
-//#ifndef ZZIP_HAVE_DIRENT_H 
-//#define ZZIP_HAVE_DIRENT_H  1 
+//#ifndef HAVE_DIRENT_H 
+//#define HAVE_DIRENT_H  1 
 //#endif
 
-/* Define if you have the <dlfcn.h> header file. */
-/* #undef ZZIP_HAVE_DLFCN_H */
-
 /* Define if you have the <inttypes.h> header file. */
-/* #undef ZZIP_HAVE_INTTYPES_H */
+/* #undef HAVE_INTTYPES_H */
 
 /* Define if you have the <memory.h> header file. */
-#ifndef ZZIP_HAVE_MEMORY_H 
-#define ZZIP_HAVE_MEMORY_H  1 
+#ifndef HAVE_MEMORY_H 
+#define HAVE_MEMORY_H  1 
 #endif
 
-/* Define if you have the <ndir.h> header file, and it defines `DIR'. */
-/* #undef ZZIP_HAVE_NDIR_H */
-
 /* Define if you have the <stdint.h> header file. */
-/* #undef ZZIP_HAVE_STDINT_H */
+/* #undef HAVE_STDINT_H */
 
 /* Define if you have the <stdlib.h> header file. */
-#ifndef ZZIP_HAVE_STDLIB_H 
-#define ZZIP_HAVE_STDLIB_H  1 
+#ifndef HAVE_STDLIB_H 
+#define HAVE_STDLIB_H  1 
 #endif
 
 /* Define if you have the <strings.h> header file. */
-/* #undef ZZIP_HAVE_STRINGS_H */
+/* #undef HAVE_STRINGS_H */
 
 /* Define if you have the <string.h> header file. */
-#ifndef ZZIP_HAVE_STRING_H 
-#define ZZIP_HAVE_STRING_H  1 
+#ifndef HAVE_STRING_H 
+#define HAVE_STRING_H  1 
 #endif
 
-/* Define if you have the <sys/dir.h> header file, and it defines `DIR'. */
-/* #undef ZZIP_HAVE_SYS_DIR_H */
-
 /* Define if you have the <sys/int_types.h> header file. */
-/* #undef ZZIP_HAVE_SYS_INT_TYPES_H */
-
-/* Define if you have the <sys/mman.h> header file. */
-/* #undef ZZIP_HAVE_SYS_MMAN_H */
-
-/* Define if you have the <sys/ndir.h> header file, and it defines `DIR'. */
-/* #undef ZZIP_HAVE_SYS_NDIR_H */
+/* #undef HAVE_SYS_INT_TYPES_H */
 
 /* Define if you have the <sys/param.h> header file. */
-/* #undef ZZIP_HAVE_SYS_PARAM_H */
+/* #undef HAVE_SYS_PARAM_H */
 
 /* Define if you have the <sys/stat.h> header file. */
-#ifndef ZZIP_HAVE_SYS_STAT_H 
-#define ZZIP_HAVE_SYS_STAT_H  1 
+#ifndef HAVE_SYS_STAT_H 
+#define HAVE_SYS_STAT_H  1 
 #endif
 
 /* Define if you have the <sys/types.h> header file. */
-#ifndef ZZIP_HAVE_SYS_TYPES_H 
-#define ZZIP_HAVE_SYS_TYPES_H  1 
+#ifndef HAVE_SYS_TYPES_H 
+#define HAVE_SYS_TYPES_H  1 
 #endif
 
 /* Define if you have the <unistd.h> header file. */
-#ifndef ZZIP_HAVE_UNISTD_H 
-/* #define ZZIP_HAVE_UNISTD_H  1 */ /* MSVC does not have unistd.h, right? */
-#endif
+/* #undef HAVE_UNISTD_H */
 
 /* Define if you have the <windows.h> header file. */
-#ifndef ZZIP_HAVE_WINDOWS_H 
-#define ZZIP_HAVE_WINDOWS_H  1                 /* but sure this one */ 
-#endif
-
-/* Define if you have the <winnt.h> header file. */
-#ifndef ZZIP_HAVE_WINNT_H 
-#define ZZIP_HAVE_WINNT_H  1                   /* is that always true? */
+#ifndef HAVE_WINDOWS_H 
+#define HAVE_WINDOWS_H  1
 #endif
 
 /* Define if you have the <zlib.h> header file. */
-#ifndef ZZIP_HAVE_ZLIB_H 
-#define ZZIP_HAVE_ZLIB_H  1                    /* you do have it, right? */
+#ifndef HAVE_ZLIB_H 
+#define HAVE_ZLIB_H  1
 #endif
 
 /* Name of package */
