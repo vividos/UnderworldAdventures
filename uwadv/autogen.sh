@@ -50,6 +50,7 @@ rm -f source/Makefile.in source/Makefile
 rm -f source/tools/Makefile.in source/tools/Makefile
 rm -f source/tools/uwdump/Makefile.in source/tools/uwdump/Makefile
 rm -f source/base/Makefile.in source/base/Makefile
+rm -f source/base/zziplib/Makefile.in source/base/zziplib/Makefile
 rm -f source/script/Makefile.in source/script/Makefile
 rm -f source/script/lua/Makefile.in source/script/lua/Makefile
 rm -f uadata/Makefile.in uadata/Makefile
@@ -62,22 +63,6 @@ rm -rf source/tools/uwdump/.deps
 rm -rf source/debug/.deps
 
 echo "Generating files..."
-
-aclocal $aclocalincludes
-libtoolize --automake --copy --force
-autoheader
-automake --copy --force --add-missing --foreign
-autoconf
-
-echo "Generating files in source/base/zziplib..."
-
-cd source/base/zziplib
-
-rm -f configure config.log config.guess config.sub config.status
-rm -f depcomp compile
-rm -f aclocal.m4
-rm -f install-sh ltmain.sh missing mkinstalldirs
-rm -f Makefile.in Makefile
 
 aclocal $aclocalincludes
 libtoolize --automake --copy --force
