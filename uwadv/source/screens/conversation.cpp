@@ -467,7 +467,7 @@ Uint16 ua_conversation_screen::external_func(const char* the_funcname,
 
          // format menu entry string
          std::ostringstream buffer;
-         buffer << ask_count << ". " << code_vm.get_local_string(arg) << std::ends;
+         buffer << ask_count << ". " << code_vm.get_local_string(arg);
 
          std::string menuentry(buffer.str());
          code_vm.replace_placeholder(menuentry);
@@ -509,7 +509,7 @@ Uint16 ua_conversation_screen::external_func(const char* the_funcname,
 
             // format menu entry string
             std::ostringstream buffer;
-            buffer << ask_count << ". " << code_vm.get_local_string(arg1) << std::ends;
+            buffer << ask_count << ". " << code_vm.get_local_string(arg1);
 
             std::string menuentry(buffer.str());
             code_vm.replace_placeholder(menuentry);

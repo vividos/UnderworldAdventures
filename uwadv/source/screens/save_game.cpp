@@ -261,7 +261,7 @@ void ua_save_game_savegames_list::update_list()
          savegames_manager->get_savegame_info(i,info);
 
          std::ostringstream buffer;
-         buffer << i+1 << ". " << std::ends;
+         buffer << i+1 << ". ";
 
          desc.assign(buffer.str().c_str());
          desc.append(info.title);
@@ -713,7 +713,7 @@ void ua_save_game_screen::update_info()
          }
 
          std::ostringstream buffer;
-         buffer << val << std::ends;
+         buffer << val;
 
          font_btns.create_string(img_temp, buffer.str().c_str(), textcolor);
          img_info.paste_image(img_temp,110,42+i*17,true);

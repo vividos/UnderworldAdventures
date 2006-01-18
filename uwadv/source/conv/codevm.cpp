@@ -431,7 +431,7 @@ void ua_conv_code_vm::replace_placeholder(std::string& str)
       case 'I':
          {
             std::ostringstream buffer;
-            buffer << value << std::ends;
+            buffer << value;
             varstr.assign(buffer.str());
          }
          break;

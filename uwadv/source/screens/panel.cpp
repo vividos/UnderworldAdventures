@@ -527,8 +527,7 @@ void ua_panel::update_inventory()
    // inventory weight
    {
       std::ostringstream buffer;
-      buffer << static_cast<unsigned int>(inv.get_inventory_weight()) <<
-         std::ends;
+      buffer << static_cast<unsigned int>(inv.get_inventory_weight());
 
       ua_image img_weight;
       font_weight.create_string(img_weight,buffer.str().c_str(),224);
@@ -572,16 +571,16 @@ void ua_panel::update_stats()
       std::ostringstream buffer;
       switch(i)
       {
-      case 0: buffer << pl.get_attr(ua_attr_exp_level) << "TH" << std::ends; break;
-      case 1: buffer << pl.get_attr(ua_attr_strength) << std::ends; break;
-      case 2: buffer << pl.get_attr(ua_attr_dexterity) << std::ends; break;
-      case 3: buffer << pl.get_attr(ua_attr_intelligence) << std::ends; break;
+      case 0: buffer << pl.get_attr(ua_attr_exp_level) << "TH"; break;
+      case 1: buffer << pl.get_attr(ua_attr_strength); break;
+      case 2: buffer << pl.get_attr(ua_attr_dexterity); break;
+      case 3: buffer << pl.get_attr(ua_attr_intelligence); break;
       case 4: buffer << pl.get_attr(ua_attr_vitality) << "/" <<
-                 pl.get_attr(ua_attr_max_vitality) << std::ends; break;
+                 pl.get_attr(ua_attr_max_vitality); break;
       case 5: buffer << pl.get_attr(ua_attr_mana) << "/" <<
-                 pl.get_attr(ua_attr_max_mana) << std::ends; break;
+                 pl.get_attr(ua_attr_max_mana); break;
 
-      case 6: buffer << pl.get_attr(ua_attr_exp_points) << std::ends; break;
+      case 6: buffer << pl.get_attr(ua_attr_exp_points); break;
       }
 
       xpos = 77 - font_stats.calc_length(buffer.str().c_str());
@@ -608,7 +607,7 @@ void ua_panel::update_stats()
       unsigned int skill = pl.get_skill(
          static_cast<ua_player_skills>(ua_skill_attack+n+stats_scrollstart));
 
-      buffer << skill << std::ends;
+      buffer << skill;
 
       xpos = 77 - font_stats.calc_length(buffer.str().c_str());
 

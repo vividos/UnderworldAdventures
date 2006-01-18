@@ -617,7 +617,7 @@ unsigned int ua_create_character_screen::drawtext(const char* str, int x, int y,
 unsigned int ua_create_character_screen::drawnumber(unsigned int num, int x, int y, unsigned char color)
 {
    std::ostringstream buffer;
-   buffer << num << std::ends;
+   buffer << num;
    return drawtext(buffer.str().c_str(), x, y, 2, color);
 }
 
