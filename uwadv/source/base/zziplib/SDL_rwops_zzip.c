@@ -14,18 +14,19 @@
 #define SDL_RWOPS_ZZIP_FILE_LVALUE(_context) \
              ((_context)->hidden.unknown.data1)
 
-static int _zzip_seek(SDL_RWops *context, int offset, int whence)
+static int _zzip_seek(SDL_RWops* context, int offset, int whence)
 {
     return zzip_seek(SDL_RWOPS_ZZIP_FILE(context), offset, whence);
 }
 
-static int _zzip_read(SDL_RWops *context, void *ptr, int size, int maxnum)
+static int _zzip_read(SDL_RWops* context, void* ptr, int size, int maxnum)
 {
     return zzip_read(SDL_RWOPS_ZZIP_FILE(context), ptr, size*maxnum);
 }
 
-static int _zzip_write(SDL_RWops *context, const void *ptr, int size, int num)
+static int _zzip_write(SDL_RWops* context, const void* ptr, int size, int num)
 {
+    (context); (ptr); (size); (num);
     return 0; /* ignored */
 }
 
@@ -36,7 +37,7 @@ static int _zzip_write(SDL_RWops *context, const void *ptr, int size, int num)
 /* some ugly include file seemed to define this :( */
 #undef read
 
-static int _zzip_close(SDL_RWops *context)
+static int _zzip_close(SDL_RWops* context)
 {
     if (! context) return 0; /* may be SDL_RWclose is called by atexit */
 
@@ -45,7 +46,7 @@ static int _zzip_close(SDL_RWops *context)
     return 0;
 }
 
-SDL_RWops *SDL_RWFromZZIP(const char* file, const char* mode)
+SDL_RWops* SDL_RWFromZZIP(const char* file, const char* mode)
 {
     register SDL_RWops* rwops;
     register ZZIP_FILE* zzip_file;
@@ -53,12 +54,14 @@ SDL_RWops *SDL_RWFromZZIP(const char* file, const char* mode)
     /* extension list; to open zip files using their full name */
     zzip_strings_t exts[] = { "", 0 };
 
+    (mode);
+
     /* open file, only opening zip files */
     zzip_file = zzip_open_ext_io (file, O_RDONLY|O_BINARY, ZZIP_ONLYZIP, exts, 0);
-    if (! zzip_file) return 0;
+    if (!zzip_file) return 0;
 
     rwops = SDL_AllocRW ();
-    if (! rwops) { errno=ENOMEM; zzip_close (zzip_file); return 0; }
+    if (!rwops) { errno=ENOMEM; zzip_close (zzip_file); return 0; }
 
     SDL_RWOPS_ZZIP_FILE_LVALUE(rwops) = zzip_file;
     rwops->read = _zzip_read;

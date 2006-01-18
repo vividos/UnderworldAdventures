@@ -1,5 +1,5 @@
 /*
- * Author: 
+ * Author:
  *      Guido Draheim <guidod@gmx.de>
  *      Tomi Ollila <Tomi.Ollila@iki.fi>
  *
@@ -7,7 +7,7 @@
  *          All rights reserved
  *          use under the restrictions of the
  *          Lesser GNU General Public License
- *          note the additional license information 
+ *          note the additional license information
  *          that can be found in COPYING.ZZIP
  *
  * This is the private header containing definitions that are not
@@ -61,7 +61,7 @@ struct zzip_dir
     char*  realname;
     zzip_strings_t* fileext;      /* list of fileext to test for */
     zzip_plugin_io_t io;          /* vtable for io routines */
-}; 
+};
 
 #define ZZIP_32K 32768
 
@@ -69,10 +69,10 @@ struct zzip_dir
 int      __zzip_try_open (zzip_char_t* filename, int filemode,
                           zzip_strings_t* ext, zzip_plugin_io_t io);
 
-ZZIP_DIR * 
+ZZIP_DIR *
 zzip_dir_fdopen(int fd, zzip_error_t * errcode_p);
 
-ZZIP_DIR* 
+ZZIP_DIR*
 zzip_dir_fdopen_ext_io(int fd, zzip_error_t * errorcode_p,
                        zzip_strings_t* ext, const zzip_plugin_io_t io);
 
@@ -84,8 +84,8 @@ uint16_t __zzip_get16(unsigned char * s);
 #define ZZIP_GET32(x) (*(uint32_t*)(x))
 #define ZZIP_GET16(x) (*(uint16_t*)(x))
 #else
-#define ZZIP_GET32(x) (__zzip_get32(x))
-#define ZZIP_GET16(x) (__zzip_get16(x))
+#define ZZIP_GET32(x) (__zzip_get32((unsigned char*)(x)))
+#define ZZIP_GET16(x) (__zzip_get16((unsigned char*)(x)))
 #endif
 
 #endif /* _ZZIP_H */

@@ -1,5 +1,5 @@
 /*
- * Author: 
+ * Author:
  *	Guido Draheim <guidod@gmx.de>
  *      Mike Nordell <tamlin@algonet.se>
  *
@@ -7,7 +7,7 @@
  * 	    All rights reserved,
  *	    use under the restrictions of the
  *	    Lesser GNU General Public License
- *          note the additional license information 
+ *          note the additional license information
  *          that can be found in COPYING.ZZIP
  */
 
@@ -41,6 +41,9 @@ zzip_off_t	zzip_wrap_lseek(int fd, zzip_off_t offset, int whence)
 #define zzip_wrap_lseek lseek
 #endif
 
+#pragma warning(push)
+#pragma warning(disable: 4232) // nonstandard extension used : 'T' : address of dllimport 'T' is not static, identity not guaranteed
+
 static const struct zzip_plugin_io default_io =
 {
     &open,
@@ -50,6 +53,8 @@ static const struct zzip_plugin_io default_io =
     &zzip_filesize,
     1
 };
+
+#pragma warning(pop)
 
 /** => zzip_init_io
  * This function returns a zzip_plugin_io_t handle to static defaults
@@ -62,7 +67,7 @@ zzip_get_default_io()
 }
 
 /**
- * This function initializes the users handler struct to default values 
+ * This function initializes the users handler struct to default values
  * being the posix io functions in default configured environments.
  */
 int zzip_init_io(struct zzip_plugin_io* io, int flags)
@@ -75,7 +80,7 @@ int zzip_init_io(struct zzip_plugin_io* io, int flags)
     return 0;
 }
 
-/* 
+/*
  * Local variables:
  * c-file-style: "stroustrup"
  * End:

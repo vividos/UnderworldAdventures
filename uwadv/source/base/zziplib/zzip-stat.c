@@ -1,5 +1,5 @@
 /*
- * Author: 
+ * Author:
  *	Guido Draheim <guidod@gmx.de>
  *	Tomi Ollila <Tomi.Ollila@iki.fi>
  *
@@ -7,14 +7,14 @@
  * 	    All rights reserved,
  *	    use under the restrictions of the
  *	    Lesser GNU General Public License
- *          note the additional license information 
+ *          note the additional license information
  *          that can be found in COPYING.ZZIP
  *
  * Description:
  *      although this file is defining a function called zzip_stat it
  *      will not need a real stat(2) exported by the Operating System.
  *      It will just try to fill the fields of the ZZIP_STAT structure
- *      of 
+ *      of
  */
 
 #include <string.h>
@@ -22,11 +22,11 @@
 #include "zzip.h"
 
 /**
- * obtain information about a filename in an opened zip-archive without 
- * opening that file first. Mostly used to obtain the uncompressed 
+ * obtain information about a filename in an opened zip-archive without
+ * opening that file first. Mostly used to obtain the uncompressed
  * size of a file inside a zip-archive. see => zzip_dir_open.
  */
-int 
+int
 zzip_dir_stat(ZZIP_DIR * dir, zzip_char_t* name, ZZIP_STAT * zs, int flags)
 {
     struct zzip_dir_hdr * hdr = dir->hdr0;
@@ -41,7 +41,7 @@ zzip_dir_stat(ZZIP_DIR * dir, zzip_char_t* name, ZZIP_STAT * zs, int flags)
     }
 
     if (hdr)
-    while (1)
+    for(;;)
     {
         register char* hdr_name = hdr->d_name;
         if (flags & ZZIP_IGNOREPATH)
@@ -70,7 +70,7 @@ zzip_dir_stat(ZZIP_DIR * dir, zzip_char_t* name, ZZIP_STAT * zs, int flags)
     return 0;
 }
 
-/* 
+/*
  * Local variables:
  * c-file-style: "stroustrup"
  * End:
