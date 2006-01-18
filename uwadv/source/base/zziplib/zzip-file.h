@@ -1,5 +1,5 @@
 /*
- * Author: 
+ * Author:
  *      Guido Draheim <guidod@gmx.de>
  *      Tomi Ollila <Tomi.Ollila@tfi.net>
  *
@@ -7,7 +7,7 @@
  *          All rights reserved,
  *          use under the restrictions of the
  *          Lesser GNU General Public License
- *          note the additional license information 
+ *          note the additional license information
  *          that can be found in COPYING.ZZIP
  */
 
@@ -48,7 +48,7 @@
 
 struct zzip_file
 {
-  struct zzip_dir* dir; 
+  struct zzip_dir* dir;
   int fd;
   int method;
   int restlen;

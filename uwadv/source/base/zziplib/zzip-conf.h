@@ -1,5 +1,5 @@
 /*
- * Author: 
+ * Author:
  *      Guido Draheim <guidod@gmx.de>
  *
  *      Copyright (c) 2001 Guido Draheim
@@ -103,7 +103,7 @@
 
 
 #if !defined __GNUC__ && !defined __attribute__
-#define __attribute__(X) 
+#define __attribute__(X)
 #endif
 
 /* based on zconf.h : */

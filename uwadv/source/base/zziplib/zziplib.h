@@ -1,13 +1,13 @@
 /*
- * Author: 
+ * Author:
  *	Guido Draheim <guidod@gmx.de>
  *	Tomi Ollila <Tomi.Ollila@iki.fi>
  *
  *	Copyright (c) 1999,2000,2001,2002 Guido Draheim
- * 	    All rights reserved, 
+ * 	    All rights reserved,
  *          usage allowed under the restrictions of the
- *	    Lesser GNU General Public License 
- *          note the additional license information 
+ *	    Lesser GNU General Public License
+ *          note the additional license information
  *          that can be found in COPYING.ZZIP
  */
 
@@ -25,7 +25,7 @@ extern "C" {
 /* the zzip_error_t is also used to pass back ZLIB errors... */
 #define ZZIP_ERROR -4096
 
-typedef enum 
+typedef enum
 {
     ZZIP_NO_ERROR = 0,	/* no error, may be used if user sets it. */
     ZZIP_OUTOFMEM =     ZZIP_ERROR-20, /* out of memory */
@@ -76,19 +76,19 @@ struct zzip_dirent
 };
 
 /*
- * Getting error strings 
+ * Getting error strings
  * zzip-err.c
  */
 _zzip_export    /* error in _opendir : */
-zzip_char_t* 	zzip_strerror(int errcode); 
+zzip_char_t* 	zzip_strerror(int errcode);
 _zzip_export    /* error in other functions : */
-zzip_char_t* 	zzip_strerror_of(ZZIP_DIR * dir); 
+zzip_char_t* 	zzip_strerror_of(ZZIP_DIR * dir);
 _zzip_export    /* error mapped to errno.h defines : */
-int    	 	zzip_errno(int errcode); 
+int    	 	zzip_errno(int errcode);
 
 
 /*
- * Functions to grab information from ZZIP_DIR/ZZIP_FILE structure 
+ * Functions to grab information from ZZIP_DIR/ZZIP_FILE structure
  * (if ever needed)
  * zzip-info.c
  */
@@ -193,11 +193,11 @@ int             zzip_tell(ZZIP_FILE * fp);
 
 
 /*
- * reading info of a single file 
+ * reading info of a single file
  * zzip-stat.c
  */
 _zzip_export
-int		zzip_dir_stat(ZZIP_DIR * dir, zzip_char_t* name, 
+int		zzip_dir_stat(ZZIP_DIR * dir, zzip_char_t* name,
 			      ZZIP_STAT * zs, int flags);
 
 
@@ -216,12 +216,12 @@ ZZIP_DIR *  zzip_opendir_ext_io(zzip_char_t* name, int o_modes,
 				zzip_strings_t* ext, zzip_plugin_io_t io);
 
 _zzip_export
-ZZIP_FILE * zzip_file_open_ext_io(ZZIP_DIR * dir, 
+ZZIP_FILE * zzip_file_open_ext_io(ZZIP_DIR * dir,
 				  zzip_char_t* name, int flags,
 				  zzip_strings_t* ext, zzip_plugin_io_t io);
 
 _zzip_export
-ZZIP_DIR *  zzip_dir_open_ext_io(zzip_char_t* filename, 
+ZZIP_DIR *  zzip_dir_open_ext_io(zzip_char_t* filename,
 				 zzip_error_t* errcode_p,
 				 zzip_strings_t* ext, zzip_plugin_io_t io);
 

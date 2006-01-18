@@ -1,12 +1,12 @@
 /*
- * Author: 
+ * Author:
  *	Guido Draheim <guidod@gmx.de>
  *
  *	Copyright (c) 2002 Guido Draheim
  * 	    All rights reserved
  *	    use under the restrictions of the
  *	    Lesser GNU General Public License
- *          note the additional license information 
+ *          note the additional license information
  *          that can be found in COPYING.ZZIP
  *
  *  the interfaces for the plugin_io system

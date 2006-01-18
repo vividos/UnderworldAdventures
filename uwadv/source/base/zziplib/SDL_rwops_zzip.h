@@ -5,8 +5,8 @@
  *      You should be able to drop it in the place of a SDL_RWFromFile. Then
  *      go to X/share/myapp and do `cd graphics && zip -9r ../graphics.zip .`
  *      and rename the graphics/ subfolder - and still all your files
- *      are found: a filepath like X/shared/graphics/game/greetings.bmp 
- *      will open X/shared/graphics.zip and return the zipped file 
+ *      are found: a filepath like X/shared/graphics/game/greetings.bmp
+ *      will open X/shared/graphics.zip and return the zipped file
  *      game/greetings.bmp in the zip-archive (for reading that is).
  *
  */

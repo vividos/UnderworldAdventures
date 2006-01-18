@@ -1,5 +1,5 @@
 /*
- * Author: 
+ * Author:
  *	Guido Draheim <guidod@gmx.de>
  *
  *	Copyright (c) 2000,2001 Guido Draheim
@@ -13,30 +13,30 @@
  */
 #ifndef _ZZIPFORMAT_H
 #define _ZZIPFORMAT_H
- 
+
 #include "zzip.h"
 /* we have ICO C 9X types defined */
 
-/* 
- * Overall zipfile format 
- *  [local file header + file data + data descriptr] ... [central directory] [EOD record] 
+/*
+ * Overall zipfile format
+ *  [local file header + file data + data descriptr] ... [central directory] [EOD record]
  */
- 
+
 # ifdef _MSC_VER
 # pragma pack(push, 1)
 # endif
 
-struct zzip_version 
-{ 
-    char   version[1]; 
-    char   ostype[1]; 
+struct zzip_version
+{
+    char   version[1];
+    char   ostype[1];
 } __attribute__((packed));
 
-struct zzip_dostime 
-{ 
-    char   time[2]; 
-    char   date[2]; 
-} __attribute__((packed)); 
+struct zzip_dostime
+{
+    char   time[2];
+    char   date[2];
+} __attribute__((packed));
 
 #define ZZIP_CHECKMAGIC(__p,__A,__B,__C,__D) \
     ( (((char*)(__p))[0]==(__A)) && \
@@ -63,7 +63,7 @@ struct zzip_file_header
     /* followed by extra field (of variable size) */
 } __attribute__((packed));
 
-/* B. data descriptor 
+/* B. data descriptor
  * the data descriptor exists only if bit 3 of z_flags is set. It is byte aligned
  * and immediately follows the last byte of compressed data. It is only used if
  * the output media of the compressor was not seekable, eg. standard output.
@@ -79,10 +79,10 @@ struct zzip_file_trailer
 } __attribute__((packed));
 
 /* C. central directory structure:
-    [file header] . . . end of central dir record  
+    [file header] . . . end of central dir record
 */
 
-/* directory file header 
+/* directory file header
  * - a single entry including filename, extras and comment may not exceed 64k.
  */
 
@@ -109,7 +109,7 @@ struct zzip_root_dirent
     /* followed by filename (of variable size) */
     /* followed by extra field (of variable size) */
     /* followed by file comment (of variable size) */
-} __attribute__((packed)); 
+} __attribute__((packed));
 
 /* end of central dir record */
 struct zzip_disk_trailer
