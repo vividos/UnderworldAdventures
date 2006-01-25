@@ -45,16 +45,18 @@ bool CInplaceTextEditControl::AcceptChanges()
 
 void CInplaceTextEditControl::Finish()
 {
+   ATLTRACE(_T("Finish\n"));
    if (!m_bFinished)
    {
       m_bFinished = true;
-      ::SetFocus(GetParent());
+//      ::SetFocus(GetParent());
       DestroyWindow();
    }
 }
 
 LRESULT CInplaceTextEditControl::OnChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 {
+   ATLTRACE(_T("OnChar\n"));
    switch (wParam)
    {
    case VK_RETURN:
@@ -79,19 +81,23 @@ LRESULT CInplaceTextEditControl::OnChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*l
 
 LRESULT CInplaceTextEditControl::OnKillFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+   ATLTRACE(_T("OnKillFocus\n"));
    if (!m_bFinished)
    {
       AcceptChanges();
       Finish();
    }
+   ATLTRACE(_T("OnKillFocus end\n"));
    return 0;
 }
 
 LRESULT CInplaceTextEditControl::OnNcDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+   ATLTRACE(_T("OnNcDestroy\n"));
    if (!m_bFinished)
       m_pInplaceParentCallback->NoticeFinish(this);
    m_hWnd = NULL;
+   ATLTRACE(_T("OnNcDestroy end\n"));
    return 0;
 }
 
@@ -161,14 +167,16 @@ bool CPropertyListCtrlBase::SetReadonly(bool bReadonly)
 {
    bool bOldReadonly = m_bReadonly;
    m_bReadonly = bReadonly;
-   return bOldReadonly;
 
    RedrawWindow(NULL, NULL, RDW_INVALIDATE);
+
+   return bOldReadonly;
 }
 
 void CPropertyListCtrlBase::UpdateValues()
 {
-   // TODO
+   BuildPropertiesList();
+   RedrawWindow(NULL, NULL, RDW_INVALIDATE);
 }
 
 void CPropertyListCtrlBase::ExpandGroupItem(UINT nListItemIndex, bool bExpand)
@@ -541,7 +549,7 @@ void CPropertyListCtrlBase::DrawPropertyNameItem(unsigned int nItem, CDCHandle d
 
    // draw grid lines around name area
    CRect rectNameArea(rect);
-   rectNameArea.left = rectFrontBar.right+1;
+   rectNameArea.left = rectFrontBar.right;
 
    CPen pen;
    pen.CreatePen(PS_SOLID, 1, m_crGrayBackground);
@@ -556,12 +564,12 @@ void CPropertyListCtrlBase::DrawPropertyNameItem(unsigned int nItem, CDCHandle d
    rectNameArea.DeflateRect(0,0,1,1);
 
    // draw blue selection box when selected
+   COLORREF crNameArea = RGB(255,255,255);
    bool bIsFocused = (uItemState & CDIS_FOCUS) != 0;
    if (bIsFocused)
-   {
-      COLORREF m_crSelection = RGB(0,0,128);
-      dc.FillSolidRect(rectNameArea, m_crSelection);
-   }
+      crNameArea = RGB(0,0,128);
+
+   dc.FillSolidRect(rectNameArea, crNameArea);
 
    rectNameArea.left += 2;
    rectNameArea.bottom -= 2;
@@ -570,7 +578,11 @@ void CPropertyListCtrlBase::DrawPropertyNameItem(unsigned int nItem, CDCHandle d
    UINT nPropertyId = GetListItemPropertyItemId(nItem);
    CString cszText = GetPropertyItemName(nPropertyId);
 
-   dc.SetTextColor(bIsFocused ? RGB(255,255,255) : RGB(0,0,0));
+   COLORREF crText = bIsFocused ? RGB(255,255,255) : RGB(0,0,0);
+   if (m_bReadonly) // TODO check if item is readonly
+      crText = RGB(128,128,128);
+
+   dc.SetTextColor(crText);
 
    dc.DrawText(cszText, cszText.GetLength(), rectNameArea,
       DT_LEFT | DT_BOTTOM | DT_EDITCONTROL | DT_SINGLELINE | DT_END_ELLIPSIS | DT_NOPREFIX);
@@ -595,6 +607,10 @@ void CPropertyListCtrlBase::DrawPropertyValueItem(unsigned int nItem, CDCHandle 
    dc.SelectPen(oldPen);
 
    rectNameArea.DeflateRect(0,0,1,1);
+
+   // draw name area background
+   dc.FillSolidRect(rectNameArea, RGB(255,255,255));
+
    rectNameArea.left += 3;
    rectNameArea.bottom -= 2;
 
