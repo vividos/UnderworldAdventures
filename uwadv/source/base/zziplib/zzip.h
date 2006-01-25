@@ -49,7 +49,7 @@ struct zzip_dir
     int fd;
     int errcode; /* zzip_error_t */
     long refcount;
-    struct {
+    struct cache_tag {
         struct zzip_file * fp;  /* reduce a lot of alloc/deallocations by */
         char * buf32k;         /* caching one entry of these data structures */
     } cache;

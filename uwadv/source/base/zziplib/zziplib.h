@@ -25,7 +25,7 @@ extern "C" {
 /* the zzip_error_t is also used to pass back ZLIB errors... */
 #define ZZIP_ERROR -4096
 
-typedef enum
+typedef enum zzip_error_tag
 {
     ZZIP_NO_ERROR = 0,	/* no error, may be used if user sets it. */
     ZZIP_OUTOFMEM =     ZZIP_ERROR-20, /* out of memory */
