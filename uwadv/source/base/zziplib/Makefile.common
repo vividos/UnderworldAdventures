@@ -1,6 +1,6 @@
 #
-# Underworld Adventures - an Ultima Underworld hacking project
-# Copyright (c) 2002,2003 Underworld Adventures Team
+# Underworld Adventures - an Ultima Underworld remake project
+# Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,24 +16,23 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-# common makefile for Underworld Adventures
+# Makefile.common for zziplib folder
 #
 # $Id$
 #
 
 libzzip_la_SOURCES = \
 	SDL_rwops_zzip.c SDL_rwops_zzip.h \
+	zzip-conf.h \
 	zzip-dir.c \
 	zzip-err.c \
 	zzip-file.c zzip-file.h \
 	zzip-info.c \
 	zzip-io.c zzip-io.h \
-	zzip-stat.c \
-	zzip-zip.c \
-	zzip-conf.h \
-	zzip-config.h \
 	zzip-msvc.h \
+	zzip-stat.c \
 	zzip-stdint.h \
+	zzip-zip.c \
 	zzip.h \
 	zzipformat.h \
 	zziplib.h
