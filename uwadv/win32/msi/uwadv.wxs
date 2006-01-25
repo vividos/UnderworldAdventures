@@ -2,7 +2,7 @@
 <!--
 
  Underworld Adventures - an Ultima Underworld hacking project
- Copyright (c) 2005 Underworld Adventures Team
+ Copyright (c) 2005,2006 Underworld Adventures Team
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -35,15 +35,15 @@
 
     <Media Id="1" Cabinet="uwadv.cab" EmbedCab="yes" />
 
-    <Directory Id="INSTALLDIR" Name="SourceDir">
+    <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFilesFolder" Name="." SourceName=".">
         <Directory Id="UnderworldAdventures" Name="uwadv" LongName="Underworld Adventures">
-          <Directory Id="TARGETDIR" Name=".">
+          <Directory Id="INSTALLDIR" Name=".">
             <Component Id="UnderworldAdventuresApp" Guid="f1fc0646-d06c-4a72-bf63-7abbac37bab4">
               <File Id="UwadvExe" Name="uwadv.exe" LongName="uwadv.exe" DiskId="1" KeyPath="yes" src="..\vc71\Release\uwadv.exe" />
-              <ProgId Id="UnderworldAdventuresSavegame" Advertise="no" Description="Underworld Adventures Savegame" Icon="[TARGETDIR]uwadv.exe">
+              <ProgId Id="UnderworldAdventuresSavegame" Advertise="no" Description="Underworld Adventures Savegame" Icon="[INSTALLDIR]uwadv.exe">
                 <Extension Id="uas" Advertise="no">
-                  <Verb Id="open" Command="Open" Target='[TARGETDIR]uwadv.exe "%s"' />
+                  <Verb Id="open" Command="Open" Target='[INSTALLDIR]uwadv.exe "%s"' />
                 </Extension>
               </ProgId>
               <Registry Action="createKeyAndRemoveKeyOnUninstall" Root="HKCR" Key="Applications\uwadv.exe\SupportedTypes">
@@ -53,8 +53,8 @@
             <Component Id="UnderworldAdventuresShortcut" Guid="dc848364-47f7-44f5-b7dd-2a050f92ad1c">
               <Registry Id="RegistryKey1" Root="HKCU" Key="Software\Underworld Adventures\Install" Name="UwadvShortcutPresent" KeyPath="yes" />
               <Shortcut Id="Shortcut1" Directory="UnderworldAdventuresShortcutFolder" Name="uwadv" LongName="Underworld Adventures"
-                Target="[TARGETDIR]uwadv.exe" Icon="UnderworldAdventuresShortcutIcon" IconIndex="0" Show="normal"
-                Description="Starts Underworld Adventures" Advertise="no" WorkingDirectory="[TARGETDIR]" />
+                Target="[INSTALLDIR]uwadv.exe" Icon="UnderworldAdventuresShortcutIcon" IconIndex="0" Show="normal"
+                Description="Starts Underworld Adventures" Advertise="no" WorkingDirectory="[INSTALLDIR]" />
               <RemoveFolder Directory="UnderworldAdventuresShortcutFolder" On="uninstall" Id="Shortcut1" />
             </Component>
 
@@ -64,8 +64,8 @@
             <Component Id="UnderworldAdventuresManualShortcut" Guid="c81f4230-1af9-4b7b-825c-015b3a6e6118">
               <Registry Id="RegistryKey4" Root="HKCU" Key="Software\Underworld Adventures\Install" Name="UwadvManualShortcutPresent" KeyPath="yes" />
               <Shortcut Id="Shortcut4" Directory="UnderworldAdventuresShortcutFolder" Name="uwadvm~1" LongName="Underworld Adventures Manual"
-                Target="[TARGETDIR]uwadv-manual.html" Show="normal"
-                Description="Opens the Underworld Adventures Manual" Advertise="no" WorkingDirectory="[TARGETDIR]" />
+                Target="[INSTALLDIR]uwadv-manual.html" Show="normal"
+                Description="Opens the Underworld Adventures Manual" Advertise="no" WorkingDirectory="[INSTALLDIR]" />
               <RemoveFolder Directory="UnderworldAdventuresShortcutFolder" On="uninstall" Id="Shortcut4" />
             </Component>
 
@@ -75,8 +75,8 @@
             <Component Id="UnderworldAdventuresConfigShortcut" Guid="c9f7552f-0d52-4c7d-ae4e-6ec4605611fd">
               <Registry Id="RegistryKey2" Root="HKCU" Key="Software\Underworld Adventures\Install" Name="UaconfigShortcutPresent" KeyPath="yes" />
               <Shortcut Id="Shortcut2" Directory="UnderworldAdventuresShortcutFolder" Name="uaconfig" LongName="Configuration"
-                Target="[TARGETDIR]uaconfig.exe" Icon="UnderworldAdventuresConfigShortcutIcon" IconIndex="0" Show="normal"
-                Description="Starts Underworld Adventures Configuration" Advertise="no" WorkingDirectory="[TARGETDIR]" />
+                Target="[INSTALLDIR]uaconfig.exe" Icon="UnderworldAdventuresConfigShortcutIcon" IconIndex="0" Show="normal"
+                Description="Starts Underworld Adventures Configuration" Advertise="no" WorkingDirectory="[INSTALLDIR]" />
               <RemoveFolder Directory="UnderworldAdventuresShortcutFolder" On="uninstall" Id="Shortcut2" />
             </Component>
 
@@ -93,8 +93,8 @@
             <Component Id="UnderworldAdventuresStudioShortcut" Guid="8c5a72f5-ea19-470b-90e7-118eec7004d3">
               <Registry Id="RegistryKey3" Root="HKCU" Key="Software\Underworld Adventures\Install" Name="UastudioShortcutPresent" KeyPath="yes" />
               <Shortcut Id="Shortcut3" Directory="UnderworldAdventuresShortcutFolder" Name="uastudio" LongName="Underworld Adventures Studio"
-                Target="[TARGETDIR]uastudio.exe" Icon="UnderworldAdventuresStudioShortcutIcon" IconIndex="0" Show="normal"
-                Description="Starts Underworld Adventures Studio" Advertise="no" WorkingDirectory="[TARGETDIR]" />
+                Target="[INSTALLDIR]uastudio.exe" Icon="UnderworldAdventuresStudioShortcutIcon" IconIndex="0" Show="normal"
+                Description="Starts Underworld Adventures Studio" Advertise="no" WorkingDirectory="[INSTALLDIR]" />
               <RemoveFolder Directory="UnderworldAdventuresShortcutFolder" On="uninstall" Id="Shortcut3" />
             </Component>
 
@@ -104,8 +104,8 @@
             <Component Id="UnderworldAdventuresStudioManualShortcut" Guid="d1707ece-134e-4d3d-928d-d0eacc97521b">
               <Registry Id="RegistryKey5" Root="HKCU" Key="Software\Underworld Adventures\Install" Name="UastudioManualShortcutPresent" KeyPath="yes" />
               <Shortcut Id="Shortcut5" Directory="UnderworldAdventuresShortcutFolder" Name="uastudio" LongName="Underworld Adventures Studio Manual"
-                Target="[TARGETDIR]uastudio-manual.html" Show="normal"
-                Description="Opens the Underworld Adventures Studio Manual" Advertise="no" WorkingDirectory="[TARGETDIR]" />
+                Target="[INSTALLDIR]uastudio-manual.html" Show="normal"
+                Description="Opens the Underworld Adventures Studio Manual" Advertise="no" WorkingDirectory="[INSTALLDIR]" />
               <RemoveFolder Directory="UnderworldAdventuresShortcutFolder" On="uninstall" Id="Shortcut5" />
             </Component>
 
@@ -150,7 +150,7 @@
 
     <Feature Id="UnderworldAdventures" Title="Underworld Adventures"
         Description="Installs the Underworld Adventures game." Level="1"
-        AllowAdvertise="no" TypicalDefault="install" ConfigurableDirectory="TARGETDIR">
+        AllowAdvertise="no" TypicalDefault="install" ConfigurableDirectory="INSTALLDIR">
       <ComponentRef Id="UnderworldAdventuresApp" />
       <ComponentRef Id="UnderworldAdventuresShortcut" />
       <ComponentRef Id="UnderworldAdventuresManual" />
@@ -167,7 +167,7 @@
 
     <Feature Id="UnderworldAdventuresStudio" Title="Underworld Adventures Studio"
         Description="Installs the Underworld Adventures Studio application." Level="1"
-        AllowAdvertise="no" ConfigurableDirectory="TARGETDIR">
+        AllowAdvertise="no" ConfigurableDirectory="INSTALLDIR">
       <ComponentRef Id="UnderworldAdventuresStudioApp" />
       <ComponentRef Id="UnderworldAdventuresStudioShortcut" />
       <ComponentRef Id="UnderworldAdventuresStudioManual" />
@@ -192,7 +192,7 @@
     <Property Id="SHOWLAUNCHREADME"><![CDATA[0]]></Property>
     <Property Id="READMEFILETOLAUNCHATEND"><![CDATA[readme.txt]]></Property>
     <Property Id="SHOWLAUNCHPROGRAM"><![CDATA[0]]></Property>
-    <Property Id="PROGRAMFILETOLAUNCHATEND"><![CDATA[[TARGETDIR]uaconfig.exe]]></Property>
+    <Property Id="PROGRAMFILETOLAUNCHATEND"><![CDATA[[INSTALLDIR]uaconfig.exe]]></Property>
     <Property Id="LAUNCHPROGRAM"><![CDATA[1]]></Property>
     <Property Id="LAUNCHREADME"><![CDATA[1]]></Property>
 
