@@ -3238,13 +3238,20 @@ Table of Contents
 
    Ultima Underworld has some error codes printed out when the game
    unexpectedly quits. The format is Nxxx where N is an uppercase letter from
-   A to D and xxx is a decimal (?) number. Error codes:
+   B to F and xxx is a decimal number. Error codes:
 
-      1: out of low memory
-      2: out of EMS mem
-      3: could not read
-      4: could not write
-      5: resource/internal problem
+      B: out of low memory   (1000h)
+      C: out of EMS mem      (2000h)
+      D: could not read      (3000h)
+      E: could not write     (4000h)
+      F: resource/internal problem
+
+   Here's a list of all possible error codes and their occurance
+
+   B001  couldn't alloc memory for "data/strings.pak"
+   D002  couldn't read "data/strings.pak"
+   D007  couldn't read "data/babglobs.dat"
+   E001  couldn't write "save0/bglobals.dat"
 
 
  +--------------------------------------------------------------------------+
