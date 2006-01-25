@@ -314,6 +314,9 @@ LRESULT CProjectInfoWindow::OnDblClick(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /
 
       switch (itemInfo.m_nInfo)
       {
+      case wtNone:
+         break;
+
       case wtBreakpoints:
          if (codeDebuggerInfo.m_pBreakpointWindow == NULL)
          {
