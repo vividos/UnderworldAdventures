@@ -320,7 +320,9 @@ __zzip_parse_root_directory(int fd,
         hdr->d_usize = ZZIP_GET32(d->z_usize);
         hdr->d_off   = ZZIP_GET32(d->z_off);
         hdr->d_compr = (uint8_t)ZZIP_GET16(d->z_compr);
-        if (hdr->d_compr > 255) hdr->d_compr = 255;
+        // vividos: commented out, triggered the following warning under gcc:
+        // warning: comparison is always false due to limited range of data type
+        //if (hdr->d_compr > 255) hdr->d_compr = 255;
 
         if (fd_map)
           { memcpy(hdr->d_name, fd_map+fd_gap+offset+sizeof(*d), u_namlen); }
