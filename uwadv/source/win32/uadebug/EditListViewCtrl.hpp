@@ -1,6 +1,6 @@
 /*
    Underworld Adventures Debugger - a debugger tool for Underworld Adventures
-   Copyright (c) 2004,2005 Michael Fink
+   Copyright (c) 2004,2005,2006 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -35,10 +35,12 @@
 
 #define WM_DELETEME (WM_USER+11)
 
+typedef CWinTraits<WS_VISIBLE | WS_CHILD, 0> CEditListInplaceEditCtrlTraits;
+
 // classes
 
 //! in-place edit control for editable list view control
-class CEditListInplaceEditCtrl: public CWindowImpl<CEditListInplaceEditCtrl, CEdit>
+class CEditListInplaceEditCtrl: public CWindowImpl<CEditListInplaceEditCtrl, CEdit, CEditListInplaceEditCtrlTraits>
 {
 public:
    //! ctor
