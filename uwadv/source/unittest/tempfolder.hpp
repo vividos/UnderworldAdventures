@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld remake project
-   Copyright (c) 2004,2005,2006 Michael Fink
+   Copyright (c) 2006 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -19,43 +19,39 @@
    $Id$
 
 */
-/*! \file unittest.hpp
+/*! \file tempfolder.hpp
 
-   \brief unit test implementation
-
-*/
-/*! \defgroup unittest Unit Testing
-
-   Unit testing is used to verify that Underworld Adventures and its
-   components are working and stay working. There should be a test for all
-   classes and functions that are written. If a bug is found, a test should
-   be written (if possible) that fails. When the bug is fixed the test should
-   has to pass then.
-
-   The library CppUnitMini is used for writing tests. It is taken from STLport
-   and was modified a bit.
+   \brief unit test temp folder
 
 */
 
 // include guard
-#ifndef uwadv_unittest_unittest_hpp_
-#define uwadv_unittest_unittest_hpp_
+#ifndef uwadv_unittest_tempfolder_hpp_
+#define uwadv_unittest_tempfolder_hpp_
 
 // needed includes
-#include "cppunitmini.hpp"
-#include "base.hpp"
-#include "tempfolder.hpp"
 
-//! unit tests namespace \ingroup unittest
 namespace UnitTest
 {
 
-//! unit test case base class
-class UnitTestCase: public CppUnitMini::TestCase
+//! Temp folder for unit tests
+/*! The temporary folder is created at construction of the object, and at
+    destruction the folder is tried to be emptied and deleted.
+*/
+class TempFolder
 {
 public:
-//   Base::Settings& GetSettings();
+   //! ctor; creates folder
+   TempFolder();
+   //! dtor; empties and deletes folder
+   ~TempFolder();
 
+   //! returns pathname of folder
+   std::string GetPathName() const { return m_strPathname; }
+
+private:
+   //! pathname of folder
+   std::string m_strPathname;
 };
 
 } // namespace UnitTest
