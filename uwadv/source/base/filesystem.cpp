@@ -28,6 +28,7 @@
 */
 
 // needed includes
+#include <cerrno>
 #include "base.hpp"
 #include "filesystem.hpp"
 
@@ -234,7 +235,7 @@ void Base::FileSystem::RemoveFolder(const std::string& strFolderName)
 #else
 
    // posix (?)
-   int iRet = rmdir(strName.c_str());
+   int iRet = rmdir(strFolderName.c_str());
    if (iRet != 0 && errno != EEXIST)
       throw Base::FileSystemException(c_strRemoveFolderError, strFolderName, errno);
 

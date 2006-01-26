@@ -26,6 +26,7 @@
 */
 
 // needed includes
+#include <cerrno>
 #include "base.hpp"
 #include "keymap.hpp"
 #include "cfgfile.hpp"
