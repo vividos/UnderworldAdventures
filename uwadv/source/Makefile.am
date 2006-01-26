@@ -1,6 +1,6 @@
 #
-# Underworld Adventures - an Ultima Underworld hacking project
-# Copyright (c) 2002,2003,2004 Underworld Adventures Team
+# Underworld Adventures - an Ultima Underworld remake project
+# Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,30 +16,28 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-# Makefile.am for Underworld Adventures
+# Makefile.am for source folder
 #
 # $Id$
 #
 
-SUBDIRS = base tools script debug
+SUBDIRS = base unittest win32
+#	audio base conv debug import macosx renderer resource \
+#	screens script tools uastudio ui underw 
 
 # compiler options
-INCLUDES = -I$(srcdir)/base -I$(srcdir)/conv -I$(srcdir)/audio -I$(srcdir)/ui -I$(srcdir)/renderer -I$(srcdir)/underw -I$(srcdir)/import -I$(srcdir)/script -I$(srcdir)/script/lua/include
-CXXFLAGS = @CXXFLAGS@
-LDFLAGS = @LIBS@
+#INCLUDES = -I$(srcdir)/base -I$(srcdir)/conv -I$(srcdir)/audio -I$(srcdir)/ui -I$(srcdir)/renderer -I$(srcdir)/underw -I$(srcdir)/import -I$(srcdir)/script -I$(srcdir)/script/lua/include
 
 
 # automake build rules
 
-bin_PROGRAMS = uwadv
+#bin_PROGRAMS = uwadv
 
 # Makefile.common defines uwadv_SOURCES
-include Makefile.common
+#include Makefile.common
 
-uwadv_LDADD = \
-	script/lua/liblualib.la \
-	base/zziplib/libzzip.la \
-	-lz
+#uwadv_LDADD = \
+#	base/libbase.la
 
 EXTRA_DIST = \
 	Makefile.common \
@@ -47,24 +45,7 @@ EXTRA_DIST = \
 	audio/midi_driver/win_midiout.h \
 	resource/model/wrllexer.l \
 	resource/model/flex.skl \
-	resource/model/import3ds.cpp \
-	win32/game_win32.cpp \
-	win32/game_win32.hpp \
-	win32/debug_impl.cpp \
-	win32/resource.h \
-	win32/Uus.ico \
-	win32/uwadv_res.rc \
-	win32/uaconfig/Corp.ico \
-	win32/uaconfig/resource.h \
-	win32/uaconfig/uaconfig.cpp \
-	win32/uaconfig/uaconfig.hpp \
-	win32/uaconfig/uaconfig_res.rc \
-	win32/uadebug/Des.ico \
-	win32/uadebug/resource.h \
-	win32/uadebug/uadebug_res.rc
+	resource/model/import3ds.cpp
 
-script/lua/liblualib.la:
-	cd script/lua; $(MAKE)
-
-base/zziplib/libzzip.la:
-	cd base/zziplib; $(MAKE)
+#script/lua/liblualib.la:
+#	cd script/lua; $(MAKE)
