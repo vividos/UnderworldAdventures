@@ -1,6 +1,6 @@
 /*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Underworld Adventures - an Ultima Underworld remake project
+   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -21,243 +21,244 @@
 */
 /*! \file savegame.hpp
 
-   \brief savegame class and savegames manager
+   \brief savegame and savegames manager classes
 
 */
-//! \ingroup base
-
-//@{
 
 // include guard
-#ifndef uwadv_savegame_hpp_
-#define uwadv_savegame_hpp_
+#ifndef uwadv_base_savegame_hpp_
+#define uwadv_base_savegame_hpp_
 
 // needed includes
 #include "settings.hpp"
+#include "file.hpp"
+#include <vector>
 
+namespace Base
+{
 
-// forward typedef
-typedef void* gzFile;
-
+class Settings;
+class Savegame;
 
 // structs
 
-//! savegame info struct
-/*! The info struct saves infos about a savegame that can be shown in the
-    savegames screen. They are written into the first section of the savegame
-    and can easily be extracted.
+//! Savegame info
+/*! Saves infos about a savegame that can be shown in the savegames screen. The
+    infos are written into the first section of the savegame and can quickly be
+    extracted, e.g. for savegame scanning.
 */
-struct ua_savegame_info
+struct SavegameInfo
 {
+public:
    //! ctor
-   ua_savegame_info();
+   SavegameInfo();
 
-   //! game type; 0 = uw1, 1 = uw2
-   unsigned int type;
+   //! loads savegame infos from savegame
+   void Load(Savegame& savegame);
+
+   //! saves savegame infos to savegame
+   void Save(Savegame& savegame);
+
+public:
+   //! game type
+   Base::EUwGameType gameType;
 
    //! savegame title
-   std::string title;
+   std::string strTitle;
 
    //! name of game prefix
-   std::string game_prefix;
+   std::string strGamePrefix;
+
+   //! date when savegame was saved
+   struct SaveDate
+   {
+      //! ctor
+      SaveDate()
+         : uiYear(0), uiMonth(0), uiDay(0), uiHours(0), uiMinutes(0), uiSeconds(0){}
+
+      Uint16 uiYear;    //!< year
+      Uint8  uiMonth;   //!< month
+      Uint8  uiDay;     //!< day
+
+      Uint8  uiHours;   //!< hours
+      Uint8  uiMinutes; //!< minutes
+      Uint8  uiSeconds; //!< seconds
+
+   } saveDate;
 
    // player infos
+   std::string strPlayerName; //!< player name
+   unsigned int uiGender;     //!< player gender (0=male, 1=female)
+   unsigned int uiAppearance; //!< player appearance (0..4)
+   unsigned int uiProfession; //!< player profession (0..7)
+   unsigned int uiMapLevel;   //!< current map level
 
-   //! player name
-   std::string name;
-
-   //! player gender (0=male, 1=female)
-   unsigned int gender;
-
-   //! player appearance (0..4)
-   unsigned int appearance;
-
-   //! player profession (0..7)
-   unsigned int profession;
-
-   //! current map level
-   unsigned int maplevel;
-
-   //! basic player stats
-   unsigned int strength,dexterity,intelligence,vitality;
+   // basic player stats
+   unsigned int uiStrength;   //!< strength
+   unsigned int uiDexterity;  //!< dexterity
+   unsigned int uiIntelligence; //!< intelligence
+   unsigned int uiVitality;   //!< vitality
 
    // savegame preview screenshot
 
-   //! screenshot bytes in RGBA format
-   std::vector<Uint32> image_rgba;
+   unsigned int uiImageXRes;  //!< screenshot x res
+   unsigned int uiImageYRes;  //!< screenshot y res
 
-   //! screenshot resolution
-   unsigned int image_xres, image_yres;
+   //! screenshot bytes in RGBA format
+   std::vector<Uint32> vecImageRGBA;
 };
 
 
 // classes
 
-//! savegame class
-/*! The ua_savegame class represents a savegame on disk and can be in one of
-    two states, either loading and saving. It has a ua_savegame_info struct
-    that contains infos about the savegame.
+//! Savegame class
+/*! Represents a savegame on disk and can be opened for loading or saving.
+    The SavegameInfo class contains infos about the savegame.
 
-    A savegame contains several sections that are started with begin_section()
-    and ended with end_section(). Values can be read and write via the readN()
-    and writeN() functions. When done, close() should be called.
+    A savegame contains several sections that are started with BeginSection()
+    and ended with EndSection(). Values can be read and written using the
+    methods provided by Base::File. The savegame is automatically clsed when
+    the object is destroyed.
 
     A savegame carries a version number that lets the user decide which fields
-    or parts of a savegame have to be loaded. This way older savegames can be
-    supported.
-
-    The savegame naming scheme is "uasaveXXXXX.uas".
+    or parts of a savegame have to be loaded. This way newer game versions can
+    load older savegames.
 */
-class ua_savegame
+class Savegame: public Base::File
 {
-   friend class ua_savegames_manager;
 public:
+   //! ctor; opens a savegame for saving
+   Savegame(const std::string& strFilename, const SavegameInfo& savegameInfo);
+
+   //! ctor; opens a savegame for loading
+   Savegame(const std::string& strFilename);
+
    // savegame loading functions
 
-   //! returns version of savegame to load
-   Uint32 get_version();
-
-   //! reads a 8-bit value
-   Uint8 read8();
-
-   //! reads a 16-bit value
-   Uint16 read16();
-
-   //! reads a 32-bit value
-   Uint32 read32();
+   //! returns version of savegame to load/save
+   Uint32 GetVersion() const { return m_uiSaveVersion; }
 
    //! reads string from savegame
-   void read_string(std::string& str);
+   void ReadString(std::string& strText);
 
    // savegame saving functions
 
-   //! writes a 8-bit value
-   void write8(Uint8 value);
-
-   //! writes a 16-bit value
-   void write16(Uint16 value);
-
-   //! writes a 32-bit value
-   void write32(Uint32 value);
-
    //! writes string to savegame
-   void write_string(const char* str);
+   void WriteString(const std::string& strText);
 
    // common functions
 
-   //! starts new section to read/write
-   void begin_section(const char* section_name);
+   //! starts new section to load/save
+   void BeginSection(const std::string& strSectionName);
 
    //! ends current section
-   void end_section();
-
-   //! finally closes savegame file
-   void close();
+   void EndSection(){}
 
    //! returns savegame info
-   ua_savegame_info& get_savegame_info(){ return info; }
-
-   //! current version
-   static const Uint32 current_version;
+   SavegameInfo& GetSavegameInfo(){ return m_info; }
 
 protected:
-   //! ctor
-   ua_savegame():save_version(current_version){}
-
-   //! opens savegame
-   void open(const char* filename, bool saving);
-
-   //! writes out savegame info
-   void write_info();
-
-   //! reads in savegame info
-   void read_info();
-
-protected:
-
-   //! input file
-   gzFile sg;
+   //! current savegame version
+   static const Uint32 s_uiCurrentVersion;
 
    //! true when currently saving
-   bool saving;
+   bool m_bSaving;
 
    //! savegame version
-   Uint32 save_version;
+   Uint32 m_uiSaveVersion;
 
    //! savegame info
-   ua_savegame_info info;
+   SavegameInfo m_info;
 };
 
 
-//! savegames manager
-/*! The savegames manager keeps hold of all savegames, including quicksave
-    savegames. To use the class, call init() and rescan() to rescan the
-    uasave folder for new savegames (extension .uas). 
+//! Savegames manager
+/*! Manages all savegames stored in the game's savegame folder. It also
+    supports a special type of savegame called the quicksave savegame.
+
+    The game prefix of the currently running game is needed to determine if
+    there are savegames available, and if there's a quicksave savegame for
+    this prefix. If no prefix is set, all savegames are listed.
+
+    The savegame naming scheme is "uasaveXXXXX.uas", where XXXXX is a decimal
+    number. Quicksave savegames get the name "quicksave_{prefix}.uas"
 */
-class ua_savegames_manager
+class SavegamesManager
 {
 public:
    //! ctor
-   ua_savegames_manager();
-
-   //! inits savegame manager
-   void init(ua_settings& settings);
+   SavegamesManager(const Settings& settings);
 
    //! sets new game prefix
-   void set_game_prefix(const char* new_game_prefix);
+   void SetNewGamePrefix(const std::string& strNewGamePrefix);
 
    //! rescans for existing savegames
-   void rescan();
+   void Rescan();
 
    //! returns number of available savegames
-   unsigned int get_savegames_count();
+   unsigned int GetSavegamesCount() const { return m_vecSavegames.size(); }
 
-   //! returns title of savegame
-   void get_savegame_info(unsigned int index, ua_savegame_info& info);
+   //! returns savegame infos
+   void GetSavegameInfo(unsigned int uiIndex, SavegameInfo& info);
 
-   //! returns name of savegame file
-   std::string get_savegame_filename(unsigned int index);
+   //! returns filename of savegame file
+   std::string GetSavegameFilename(unsigned int uiIndex) const
+   {
+      UaAssert(uiIndex < m_vecSavegames.size());
+      return m_vecSavegames[uiIndex];
+   }
 
-   //! returns savegame object for loading
-   ua_savegame get_savegame_load(unsigned int index, bool save_image=false);
+   //! opens savegame for loading
+   Savegame LoadSavegame(unsigned int uiIndex, bool bStoreImage=false);
 
-   //! returns savegame object for loading from specified filename
-   ua_savegame get_savegame_from_file(const char* filename);
-
-   //! creates a savegame in a new slot; uses savegame info for savegame
-   ua_savegame get_savegame_save_new_slot(ua_savegame_info& info);
-
-   //! overwrites an existing savegame; uses savegame info
-   ua_savegame get_savegame_save_overwrite(unsigned int index,
-      ua_savegame_info& info);
+   //! opens savegame for saving
+   Savegame SaveSavegame(SavegameInfo info, unsigned int uiIndex = unsigned(-1));
 
    //! returns true when a quicksave savegame is available
-   bool quicksave_avail();
+   bool IsQuicksaveAvail() const;
 
-   //! returns quicksave savegame for loading or writing
-   ua_savegame get_quicksave_savegame(bool saving, ua_savegame_info& info);
+   //! returns quicksave savegame for loading
+   Savegame LoadQuicksaveSavegame() const
+   {
+      UaAssert(true == IsQuicksaveAvail());
+      std::string strQuicksaveName = GetQuicksaveFilename();
+      return Savegame(strQuicksaveName);
+   }
 
-   //! sets screenshot for next save operation
-   void set_save_screenshot(std::vector<Uint32>& image_rgba,
-      unsigned int xres, unsigned int yres);
+   //! returns quicksave savegame for saving
+   Savegame SaveQuicksaveSavegame(SavegameInfo info);
+
+   //! sets screenshot for next savegame to be saved
+   void SetSaveScreenshot(unsigned int uiXRes, unsigned int uiYRes,
+      const std::vector<Uint32>& vecImageRGBA)
+   {
+      m_uiImageXRes = uiXRes;
+      m_uiImageYRes = uiYRes;
+      m_vecImageSavegame = vecImageRGBA;
+   }
+
+protected:
+   //! returns filename of quicksave savegame
+   std::string GetQuicksaveFilename() const;
 
 protected:
    //! savegame folder name
-   std::string savegame_folder;
+   std::string m_strSavegameFolder;
 
-   //! game prefix of current file
-   std::string game_prefix;
+   //! game prefix of currently running game
+   std::string m_strGamePrefix;
 
    //! list of all current savegames
-   std::vector<std::string> savegames;
+   std::vector<std::string> m_vecSavegames;
 
-   //! savegame image in rgba format
-   std::vector<Uint32> image_savegame;
+   // savegame image resolution
+   unsigned int m_uiImageXRes;   //!< image x res
+   unsigned int m_uiImageYRes;   //!< image y res
 
-   //! savegame image resolution
-   unsigned int image_xres,image_yres;
+   //! savegame image in RGBA format
+   std::vector<Uint32> m_vecImageSavegame;
 };
 
+} // namespace Base
 
 #endif
-//@}
