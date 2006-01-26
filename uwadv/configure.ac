@@ -80,9 +80,6 @@ AC_CHECK_HEADERS(glob.h)
 # only check some that are rather new
 AC_CHECK_HEADERS(bitset sstream,,[AC_MSG_ERROR([A required Standard C++ Library header file is not found.])])
 
-CFLAGS="$CFLAGS -I. -I${srcdir}"
-CXXFLAGS="$CXXFLAGS -I. -I${srcdir}"
-
 
 # checking for --enable-debug
 AC_MSG_CHECKING(for debug options)
@@ -94,14 +91,13 @@ AC_ARG_ENABLE(debug,
     AC_MSG_RESULT(yes)
   ], AC_MSG_RESULT(no))
 
-CXXFLAGS="$CXXFLAGS $OPT_FLAGS"
-
 
 # checking for SDL
 AM_PATH_SDL(1.2.3,,[AC_MSG_ERROR([
 Underworld Adventures needs at least SDL 1.2.3 or higher installed.
 SDL is available here: http://www.libsdl.org/
 ])])
+
 
 # checking for SDL_mixer
 AC_CHECK_HEADER(SDL/SDL_mixer.h,,[AC_MSG_ERROR([
@@ -166,13 +162,14 @@ UADATAPATH=${datadir}/games/uwadv/
 
 
 
-
 # see if we have xsltproc/docbook stylesheets so we can build docs
 # this sets the 'have_xsltproc' automake conditional
 AX_CHECK_DOCBOOK
 
 
-CXXFLAGS="$CXXFLAGS $SDL_CFLAGS"
+# set up compiler flags
+CFLAGS="$CFLAGS -I. -I${srcdir} $OPT_FLAGS $SDL_CFLAGS"
+CXXFLAGS="$CXXFLAGS -I. -I${srcdir} $OPT_FLAGS $SDL_CFLAGS"
 LDFLAGS="$LDFLAGS $SDL_LDFLAGS"
 LIBS="$LIBS $SDL_LIBS"
 
