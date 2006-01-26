@@ -1,6 +1,6 @@
 /*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Underworld Adventures - an Ultima Underworld remake project
+   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -21,88 +21,72 @@
 */
 /*! \file cfgfile.hpp
 
-   \brief general config file handling
+   \brief Config file class
 
 */
-//! \ingroup base
-
-//@{
 
 // include guard
-#ifndef uwadv_cfgfile_hpp_
-#define uwadv_cfgfile_hpp_
+#ifndef uwadv_base_cfgfile_hpp_
+#define uwadv_base_cfgfile_hpp_
 
 // needed includes
+#include <map>
+#include <string>
 
+namespace Base
+{
+
+class TextFile;
+
+//! map type to hold key/value pairs
+typedef std::map<std::string, std::string> ConfigValueMap;
 
 // classes
 
-//! config file class
-/*! The ua_cfgfile class supports reading and writing configuration files,
-    stored as text files that have "key" and "value" pairs. The file might
-    look as follows:
+//! Config file class
+/*! Supports reading and writing configuration files, stored as text files
+    that have "key" and "value" pairs. "keys" are always unique throughout a
+    config file. When a key appears twice while loading the file, the second
+    value is used.
 
+    The file might look as follows:<pre>
     ; one-line comment
     key1 value1
     key2 value2
-
+    </pre>
     Keys and values are separated with at least one whitespace. When saving
     files one space character is put between them. Comments are preserved
     during writing; comments that are on a line with a key/value pair are
     written to a new line.
 
-    To use the class, derive from it and implement at least:
-    - load_value()           for reading
-    - write_replace()        for writing
-
-    Note: After calling ua_cfgfile::load(SDL_RWops*) the file is not closed
+    Note: After calling ConfigFile::Load(SDL_RWops*) the file is not closed
     using SDL_RWclose(). It has to be closed manually.
 */
-class ua_cfgfile
+class ConfigFile
 {
 public:
    //! ctor
-   ua_cfgfile();
-
+   ConfigFile(){}
    //! dtor
-   virtual ~ua_cfgfile(){}
+   ~ConfigFile(){}
 
+   //! loads a config file by filename
+   void Load(const std::string& strFilename);
 
-   // config file loading
-
-   //! loads a filename
-   void load(const char* filename);
-
-   //! loads a config file from SDL_RWops
-   void load(SDL_RWops* file);
-
-   //! called to load a specific value
-   virtual void load_value(const char* name, const char* value){}
-
-
-   // config file (re)writing
+   //! loads a config file
+   void Load(Base::TextFile& file);
 
    //! creates a new config file using the original file as template
-   void write(const char* origfile, const char* newfile);
+   void Save(const std::string& strOriginalFilename, const std::string& strNewFilename);
 
-   //! called to replace a value
-   virtual void write_replace(const char* name, std::string& value){}
-
-protected:
-   //! reads a raw line
-   virtual void read_raw_line(const char* line){}
-
-   //! writes a raw line (that didn't contain a key/value pair) to the new file
-   void write_raw_line(const char* line);
+   //! returns map with all config values
+   ConfigValueMap& GetValueMap(){ return m_mapValues; }
 
 protected:
-   //! indicates if write() is currently called
-   bool is_writing;
-
-   //! new file, used by write()
-   FILE* newfp;
+   //! map with all config key/value pairs
+   ConfigValueMap m_mapValues;
 };
 
+} // namespace Base
 
 #endif
-//@}

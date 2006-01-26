@@ -1,6 +1,6 @@
 /*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Underworld Adventures - an Ultima Underworld remake project
+   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -21,104 +21,90 @@
 */
 /*! \file cfgfile.cpp
 
-   \brief general config file handling
+   \brief config file loading implementation
 
 */
 
 // needed includes
-#include "common.hpp"
+#include "base.hpp"
 #include "cfgfile.hpp"
-#include <cctype>
+#include "textfile.hpp"
 
-
-// ua_cfgfile methods
-
-ua_cfgfile::ua_cfgfile()
-:is_writing(false),newfp(NULL)
+//! \brief namespace for implementation details
+namespace Detail
 {
-}
 
-void ua_cfgfile::load(const char* filename)
+//! config file loader class
+class ConfigFileLoader: public Base::NonCopyable
 {
-   // try to open from file
-   SDL_RWops* rwops = SDL_RWFromFile(filename,"rb");
-   if (rwops==NULL)
-   {
-      std::string text("could not open config file ");
-      text.append(filename);
-      throw ua_exception(text.c_str());
-   }
+public:
+   //! ctor without saving file
+   ConfigFileLoader():m_bIsWriting(false){}
 
-   load(rwops);
+   //! ctor with saving file
+   ConfigFileLoader(const std::string strOutputFilename)
+      :m_bIsWriting(true), m_outputFile(strOutputFilename, Base::modeWrite){}
 
-   SDL_RWclose(rwops);
-}
+   //! loads config file (and rewrites it, when m_bIsWriting is on)
+   void LoadFile(Base::TextFile& file, Base::ConfigValueMap& mapValues);
 
-void ua_cfgfile::load(SDL_RWops* rwops)
+   //! returns if config file is open
+   bool IsOutputFileOpen() const { return m_outputFile.IsOpen(); }
+
+private:
+   //! indicates if config file is being rewritten
+   bool m_bIsWriting;
+
+   //! output text file when config file is rewritten
+   Base::TextFile m_outputFile;
+};
+
+void ConfigFileLoader::LoadFile(Base::TextFile& file, Base::ConfigValueMap& mapValues)
 {
    // find out filelength
-   SDL_RWseek(rwops,0L,SEEK_END);
-   long filelen = SDL_RWtell(rwops);
-   SDL_RWseek(rwops,0L,SEEK_SET);
+   long lFileLen = file.FileLength();
 
-   // read in all lines
-   std::string line;
+   // read in all strLines
+   std::string strLine;
 
-   while(SDL_RWtell(rwops)<filelen)
+   while (file.Tell() < lFileLen)
    {
-      // read in one line
-      line.erase();
-      {
-         char c=0;
-         do
-         {
-            // read next char
-            SDL_RWread(rwops,&c,1,1);
-            if (c=='\r')
-            {
-               // carriage return? reread
-               SDL_RWread(rwops,&c,1,1);
-            }
-
-            // append char
-            if (c!='\n')
-               line.append(1,c);
-         }
-         while(c!='\n');
-      }
+      file.ReadLine(strLine);
 
       // empty line?
-      if (line.size()==0)
+      if (strLine.size() == 0)
       {
-         if (is_writing) write_raw_line(line.c_str());
+         if (m_bIsWriting)
+            m_outputFile.WriteLine(strLine.c_str());
          continue;
       }
 
       // trim spaces at start of line
-      for(;line.size()>0 && isspace(line.at(0));)
-         line.erase(0,1);
+      for(;strLine.size() > 0 && isspace(strLine.at(0));)
+         strLine.erase(0, 1);
 
       // comment line?
-      if (line.size()==0 || line.at(0)=='#')
+      if (strLine.size() == 0 || strLine.at(0) == '#' || strLine.at(0) == ';')
       {
-         if (is_writing) write_raw_line(line.c_str());
+         if (m_bIsWriting)
+            m_outputFile.WriteLine(strLine.c_str());
          continue;
       }
 
       // comment somewhere in the line?
-      std::string::size_type pos2 = line.find('#');
-      if (pos2!=std::string::npos)
+      std::string::size_type pos2 = strLine.find('#');
+      if (pos2 != std::string::npos)
       {
          // write comment before line
-         if (is_writing)
+         if (m_bIsWriting)
          {
             std::string comment;
-            comment.assign(line.c_str()+pos2);
-            write_raw_line(comment.c_str());
+            comment.assign(strLine.c_str() + pos2);
+            m_outputFile.WriteLine(comment.c_str());
          }
 
          // remove comment
-         line.erase(pos2);
+         strLine.erase(pos2);
       }
 
       // trim spaces at end of line
@@ -126,83 +112,101 @@ void ua_cfgfile::load(SDL_RWops* rwops)
          int len;
          do
          {
-            len = line.size()-1;
-            if (isspace(line.at(len)))
-               line.erase(len);
+            len = strLine.size()-1;
+            if (isspace(strLine.at(len)))
+               strLine.erase(len);
             else
                break;
          }
-         while(line.size()>0);
+         while (strLine.size() > 0);
       }
 
       // empty line?
-      if (line.size()==0)
+      if (strLine.size() == 0)
       {
-         if (is_writing) write_raw_line(line.c_str());
+         if (m_bIsWriting)
+            m_outputFile.WriteLine(strLine.c_str());
          continue;
       }
 
       // replace all '\t' with ' '
       std::string::size_type pos = 0;
-      while( (pos = line.find('\t',pos)) != std::string::npos )
-         line.replace(pos,1," ");
-
-      read_raw_line(line.c_str());
+      while( (pos = strLine.find('\t',pos)) != std::string::npos )
+         strLine.replace(pos, 1, " ");
 
       // there must be at least one space, to separate key from value
-      pos = line.find(' ');
+      pos = strLine.find(' ');
       if (pos==std::string::npos)
       {
-         if (is_writing) write_raw_line(line.c_str());
+         if (m_bIsWriting)
+            m_outputFile.WriteLine(strLine.c_str());
          continue;
       }
 
       // retrieve key and value
       {
-         std::string key,value;
-         key.assign(line.c_str(),pos);
-         value.assign(line.c_str()+pos+1);
+         std::string strKey(strLine.substr(0, pos));
+         std::string strValue(strLine.substr(pos+1));
 
          // trim spaces at start of "value"
-         for(;value.size()>0 && isspace(value.at(0));)
-            value.erase(0,1);
+         for(;strValue.size() > 0 && isspace(strValue.at(0));)
+            strValue.erase(0,1);
 
          // hand over key and value
-         if (is_writing)
+         if (m_bIsWriting)
          {
-            write_replace(key.c_str(),value);
-            key.append(1,' ');
-            key.append(value);
-            write_raw_line(key.c_str());
+            Base::ConfigValueMap::iterator pos = mapValues.find(strKey);
+
+            if (pos != mapValues.end())
+               strValue = pos->second;
+
+            m_outputFile.WriteLine(strKey + ' ' + strValue);
          }
          else
-            load_value(key.c_str(),value.c_str());
+            mapValues[strKey] = strValue;
       }
    }
 }
 
-void ua_cfgfile::write(const char* origfile, const char* newfile)
+} // namespace Detail
+
+
+// ConfigFile methods
+
+//! common error message when a config file couldn't be opened
+const char* c_strFailedOpenConfigFile = "could not open config file";
+
+using Base::ConfigFile;
+
+void ConfigFile::Load(const std::string& strFilename)
 {
-   // open the new file
-   newfp = fopen(newfile,"wt");
-   if (newfp==NULL)
-   {
-      std::string text("could not rewrite new config file ");
-      text.append(newfile);
-      throw ua_exception(text.c_str());
-   }
+   // try to open from file
+   Base::TextFile file(strFilename, Base::modeRead);
+   if (!file.IsOpen())
+      throw Base::FileSystemException(c_strFailedOpenConfigFile, strFilename, ENOENT);
 
-   // load original file and rewrite new file
-   is_writing = true;
-   load(origfile);
-   is_writing = false;
-
-   fclose(newfp);
-   newfp = NULL;
+   Load(file);
 }
 
-void ua_cfgfile::write_raw_line(const char* line)
+void ConfigFile::Load(Base::TextFile& file)
 {
-   fputs(line,newfp);
-   fputs("\n",newfp);
+   // load via config file loader
+   Detail::ConfigFileLoader loader;
+   loader.LoadFile(file, m_mapValues);
+}
+
+void ConfigFile::Save(const std::string& strOriginalFilename, const std::string& strNewFilename)
+{
+   // open original file
+   Base::TextFile origFile(strOriginalFilename, Base::modeRead);
+   if (!origFile.IsOpen())
+      throw Base::FileSystemException(c_strFailedOpenConfigFile, strOriginalFilename, ENOENT);
+
+   // load and rewrite via config file loader
+   Detail::ConfigFileLoader loader(strNewFilename);
+
+   if (!loader.IsOutputFileOpen())
+      throw Base::FileSystemException("could not rewrite new config file", strNewFilename, ENOENT);
+
+   loader.LoadFile(origFile, m_mapValues);
 }

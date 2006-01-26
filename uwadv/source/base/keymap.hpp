@@ -1,6 +1,6 @@
 /*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Underworld Adventures - an Ultima Underworld remake project
+   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,150 +26,144 @@
 */
 
 // include guard
-#ifndef uwadv_keymap_hpp_
-#define uwadv_keymap_hpp_
+#ifndef uwadv_base_keymap_hpp_
+#define uwadv_base_keymap_hpp_
 
 // needed includes
-#include "settings.hpp"
-#include "cfgfile.hpp"
-#include "SDL_keysym.h"
 #include <map>
+#include <SDL_keysym.h>
 
+namespace Base
+{
+
+class Settings;
 
 // enums
 
-//! logical key values
+//! logical key types
 /*! defines all keys that are used during the game. */
-enum ua_key_value
+enum EKeyType
 {
    // menus
-   ua_key_menu_up=0,       //!< cursor up
-   ua_key_menu_down,       //!< cursor down
-   ua_key_menu_left,       //!< cursor left
-   ua_key_menu_right,      //!< cursor right
-   ua_key_menu_top_of_list,     //!< pgup
-   ua_key_menu_top_of_list2,    //!< home
-   ua_key_menu_bottom_of_list,  //!< pgdn
-   ua_key_menu_bottom_of_list2, //!< end
-   ua_key_menu_press_button,    //!< enter
+   keyMenuUp=0,       //!< cursor up
+   keyMenuDown,       //!< cursor down
+   keyMenuLeft,       //!< cursor left
+   keyMenuRight,      //!< cursor right
+   keyMenuTopOfList,  //!< pgup
+   keyMenuTopOfList2,      //!< home
+   keyMenuBottomOfList,    //!< pgdn
+   keyMenuBottomOfList2,   //!< end
+   keyMenuPressButton,     //!< enter
 
    // normal movement
-   ua_key_run_forward,            //!< w
-   ua_key_run_forward_easymove,   //!< shift w
-   ua_key_walk_forward,           //!< s
-   ua_key_walk_forward_easymove,  //!< shift s
-   ua_key_turn_left,              //!< a
-   ua_key_turn_left_easymove,     //!< shift a
-   ua_key_turn_right,             //!< d
-   ua_key_turn_right_easymove,    //!< shift d
-   ua_key_slide_left,             //!< z, y on non-us keyboards
-   ua_key_slide_right,            //!< c
-   ua_key_walk_backwards,         //!< x
-   ua_key_walk_backwards_easymove,//!< shift x
+   keyRunForward,             //!< w
+   keyRunForwardEasymove,     //!< shift w
+   keyWalkForward,            //!< s
+   keyWalkForwardEasymove,    //!< shift s
+   keyTurnLeft,               //!< a
+   keyTurnLeftEasymove,       //!< shift a
+   keyTurnRight,              //!< d
+   keyTurnRightEasymove,      //!< shift d
+   keySlideLeft,              //!< z, y on non-us keyboards
+   keySlideRight,             //!< c
+   keyWalkBackwards,          //!< x
+   keyWalkBackwardsEasymove,  //!< shift x
 
    // other movement
-   ua_key_fly_up,                 //!< e
-   ua_key_fly_down,               //!< q
-   ua_key_look_down,              //!< 1
-   ua_key_center_view,            //!< 2
-   ua_key_look_up,                //!< 3
-   ua_key_standing_long_jump,     //!< shift j
-   ua_key_jump,                   //!< j
+   keyFlyUp,            //!< e
+   keyFlyDown,          //!< q
+   keyLookDown,         //!< 1
+   keyCenterView,       //!< 2
+   keyLookUp,           //!< 3
+   keyStandingLongJump, //!< shift j
+   keyJump,             //!< j
 
    // combat mode keys
-   ua_key_combat_bash,   //!< p
-   ua_key_combat_slash,  //!< ;
-   ua_key_combat_thrust, //!< .
+   keyCombatBash,       //!< p
+   keyCombatSlash,      //!< ;
+   keyCombatThrust,     //!< . (dot)
 
    // special function keys
-   ua_key_special_options,    //!< f1
-   ua_key_special_talk_mode,  //!< f2
-   ua_key_special_get_mode,   //!< f3
-   ua_key_special_look_mode,  //!< f4
-   ua_key_special_fight_mode, //!< f5
-   ua_key_special_use_mode,   //!< f6
-   ua_key_special_flip_panel, //!< f7
-   ua_key_special_cast_spell, //!< f8
-   ua_key_special_use_track,  //!< f9
-   ua_key_special_sleep,      //!< f10
+   keySpecialOptions,   //!< f1
+   keySpecialTalkMode,  //!< f2
+   keySpecialGetMode,   //!< f3
+   keySpecialLookMode,  //!< f4
+   keySpecialFightMode, //!< f5
+   keySpecialUseMode,   //!< f6
+   keySpecialFlipPanel, //!< f7
+   keySpecialCastSpell, //!< f8
+   keySpecialUseTrack,  //!< f9
+   keySpecialSleep,     //!< f10
 
-   ua_key_special_quicksave,  //!< f11
-   ua_key_special_quickload,  //!< f12
+   keySpecialQuicksave, //!< f11
+   keySpecialQuickload, //!< f12
 
    // game options
-   ua_key_game_save_game,      //!< ctrl s
-   ua_key_game_restore_game,   //!< ctrl r
-   ua_key_game_change_music,   //!< ctrl m
-   ua_key_game_change_sfx,     //!< ctrl f
-   ua_key_game_change_lod,     //!< ctrl d
-   ua_key_game_return_to_game, //!< esc
+   keyGameSaveGame,     //!< ctrl s
+   keyGameRestoreGame,  //!< ctrl r
+   keyGameChangeMusic,  //!< ctrl m
+   keyGameChangeSFX,    //!< ctrl f
+   keyGameChangeLevelOfDetail, //!< ctrl d
+   keyGameReturnToGame, //!< esc
 
    // mouse cursor movement keys
-   ua_key_cursor_hotarea_right, //!< tab
-   ua_key_cursor_hotarea_left,  //!< shift tab
+   keyCursorHotAreaRight, //!< tab
+   keyCursorHotAreaLeft,  //!< shift tab
 
    // numeric keypad
-   ua_key_cursor_dir_sw, //!< num1
-   ua_key_cursor_dir_s,  //!< num2
-   ua_key_cursor_dir_se, //!< num3
-   ua_key_cursor_dir_w,  //!< num4
-   ua_key_cursor_dir_e,  //!< num6
-   ua_key_cursor_dir_nw, //!< num7
-   ua_key_cursor_dir_n,  //!< num8
-   ua_key_cursor_dir_ne, //!< num9
+   keyCursorDir_sw, //!< num1
+   keyCursorDir_s,  //!< num2
+   keyCursorDir_se, //!< num3
+   keyCursorDir_w,  //!< num4
+   keyCursorDir_e,  //!< num6
+   keyCursorDir_nw, //!< num7
+   keyCursorDir_n,  //!< num8
+   keyCursorDir_ne, //!< num9
 
-   ua_key_cursor_button_left,  //!< num0
-   ua_key_cursor_button_right, //!< numperiod
+   keyCursorButtonLeft,  //!< num0
+   keyCursorButtonRight, //!< numperiod
 
    // special uwadv keys
-   ua_key_ua_debug,        //!< alt d, starts debugger application
-   ua_key_ua_return_menu,  //!< alt q, returns to main menu
-   ua_key_ua_screenshot,   //!< alt c, takes screenshot
-   ua_key_ua_level_up,     //!< alt page up, only in debug mode
-   ua_key_ua_level_down,   //!< alt page down, only in debug mode
+   keyUaDebug,       //!< alt d, starts debugger application
+   keyUaReturnMenu,  //!< alt q, returns to main menu
+   keyUaScreenshot,  //!< alt c, takes screenshot
+   keyUaLevelUp,     //!< alt page up, only in debug mode
+   keyUaLevelDown,   //!< alt page down, only in debug mode
 
-   ua_key_nokey
+   keyNone
 };
 
 
 // classes
 
 //! keymap class
-/*! The class keeps all key mappings from key/modifier values (that can be
-    created with ua_make_keymod() to ua_key_value values that can be processed
-    in the game then.
-
-    Note: to load the keymap, just call ua_keymap::load()
+/*! The class keeps all key mappings from key/modifier values to EKeyType
+    values that can be processed in the game.
 */
-class ua_keymap: public ua_cfgfile
+class Keymap
 {
 public:
    //! ctor
-   ua_keymap(){}
+   Keymap(){}
 
    //! initializes keymap
-   void init(ua_settings& settings);
+   void Init(const Settings& settings);
 
-   //! finds key by given keymod value
-   ua_key_value find_key(Uint32 keymod);
+   //! finds key by given key amd modifier value
+   EKeyType FindKey(SDLKey key, SDLMod mod);
+
+   //! inserts a new key mapping
+   void InsertKeyMapping(SDLKey key, SDLMod mod, EKeyType keyType);
+
+public:
+   //! mapping from SDL keysym/modifier pair to key type value
+   typedef std::map<Uint32, EKeyType> KeymapMapping;
 
 protected:
-   //! called to load a specific value
-   virtual void load_value(const char* name, const char* value);
-
-protected:
-   //! mapping from key value to SDL keysym value
-   std::map<Uint32,ua_key_value> keymap;
+   //! map with combined SDL "key/mod" and key types
+   KeymapMapping m_mapKeys;
 };
 
-
-// inline functions
-
-//! creates a combined keymod value from a SDLKey and a SDLMod value
-inline Uint32 ua_make_keymod(Uint16 key, Uint16 mod)
-{
-   return Uint32(key) | (Uint32(mod)<<16);
-};
-
+} // namespace Base
 
 #endif

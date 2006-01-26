@@ -16,20 +16,24 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-# Makefile.am for base folder
+# Makefile.common for base folder
 #
 # $Id$
 #
 
-SUBDIRS = zziplib
-
-noinst_LTLIBRARIES = libbase.la
-
-CPPFLAGS = $(CONFIGDIR_CPPFLAGS)
-
-libbase_la_LIBADD = zziplib/libzzip.la
-
-# Makefile.common defines libbase_la_SOURCES
-include Makefile.common
-
-EXTRA_DIST = Makefile.common
+libbase_la_SOURCES = \
+   base.cpp base.hpp \
+   cfgfile.cpp cfgfile.hpp \
+   exception.hpp \
+   file.cpp file.hpp \
+   filesystem.cpp filesystem.hpp \
+   keymap.cpp keymap.hpp \
+   resourcemanager.cpp resourcemanager.hpp \
+   savegame.cpp savegame.hpp \
+   SDL_rwops_gzfile.c SDL_rwops_gzfile.h \
+   settings.cpp settings.hpp \
+   settingsloader.cpp \
+   smart_ptr.hpp \
+   string.cpp string.hpp \
+   textfile.cpp textfile.hpp \
+   uamath.hpp

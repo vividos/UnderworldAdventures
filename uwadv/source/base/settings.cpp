@@ -1,6 +1,6 @@
 /*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Underworld Adventures - an Ultima Underworld remake project
+   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -21,165 +21,205 @@
 */
 /*! \file settings.cpp
 
-   \brief settings functions
+   \brief game settings implementation
 
 */
 
 // needed includes
-#include "common.hpp"
+#include "base.hpp"
 #include "settings.hpp"
 #include <sstream>
 
+namespace Detail
+{
 
 // structs
 
-//! mapping of all settings keywords to keys
-/*! The mapping contains strings that are to be mapped to ua_settings_key enum
-    values when loading the settings file. Add new entries to the end when
+//! mapping of all settings keywords to settings enum
+/*! The mapping contains strings that are to be mapped to ESettingsType enum
+    values when loading the settings file. Add new entries at the end when
     needed.
 */
-struct
+struct SettingsMapping
 {
-   const char *optname;
-   ua_settings_key key;
-} ua_settings_mapping[] =
+   //! option name
+   const char* cstrOptionName;
+
+   //! settings type for option name
+   Base::ESettingsType type;
+
+} SettingsMapping[] =
 {
-   { "uw1-path", ua_setting_uw1_path },
-   { "uw2-path", ua_setting_uw2_path },
-   { "uadata-path", ua_setting_uadata_path },
-   { "savegame-folder", ua_setting_savegame_folder },
-   { "custom-keymap", ua_setting_custom_keymap },
-   { "enable-uwadv-features", ua_setting_uwadv_features },
-   { "screen-resolution", ua_setting_screen_resolution },
-   { "smooth-ui", ua_setting_ui_smooth },
-   { "fullscreen", ua_setting_fullscreen },
-   { "cutscene-narration", ua_setting_cuts_narration },
-   { "audio-enabled", ua_setting_audio_enabled },
-   { "win32-midi-device", ua_setting_win32_midi_device },
+   { "uw1-path",              Base::settingUw1Path },
+   { "uw2-path",              Base::settingUw2Path },
+   { "uadata-path",           Base::settingUadataPath },
+   { "savegame-folder",       Base::settingSavegameFolder },
+   { "custom-keymap",         Base::settingCustomKeymap },
+   { "enable-uwadv-features", Base::settingUwadvFeatures },
+   { "screen-resolution",     Base::settingScreenResolution },
+   { "smooth-ui",             Base::settingUISmooth },
+   { "fullscreen",            Base::settingFullscreen },
+   { "cutscene-narration",    Base::settingCutsceneNarration },
+   { "audio-enabled",         Base::settingAudioEnabled },
+   { "win32-midi-device",     Base::settingWin32MidiDevice },
 };
 
+} // namespace Detail
 
-// ua_settings methods
 
-/*! Constructor. Sets default values for some settings. */
-ua_settings::ua_settings()
-:gtype(ua_game_uw1)
+using Base::Settings;
+using Base::ESettingsType;
+
+// Settings methods
+
+/*! Sets default values for some settings. */
+Settings::Settings()
+:m_gameType(gameUw1)
 {
    // set some initial values
-   set_value(ua_setting_uadata_path,std::string("./uadata/"));
-   set_value(ua_setting_savegame_folder,std::string("./uasave/"));
-   set_value(ua_setting_fullscreen,false);
-   set_value(ua_setting_cuts_narration,std::string("sound"));
-   set_value(ua_setting_win32_midi_device,-1);
+   SetValue(settingUadataPath, std::string("./uadata/"));
+   SetValue(settingSavegameFolder, std::string("./uasave/"));
+   SetValue(settingFullscreen, false);
+   SetValue(settingCutsceneNarration, std::string("sound"));
+   SetValue(settingWin32MidiDevice, -1);
 }
 
-std::string ua_settings::get_string(ua_settings_key key)
+/*! Can be called more than once; settings that are already set are
+    overwritten with settings from file. */
+void Settings::Load(const std::string& strFilename)
 {
-   // try to find key
-   ua_settings_map_type::iterator iter = settings.find(key);
+   // load config file
+   Base::ConfigFile cfgFile;
+   cfgFile.Load(strFilename);
 
-   // return string
-   return iter == settings.end() ?  std::string("") : iter->second;
-}
+   // go through all keys in the file and read the value
+   Base::ConfigValueMap& cfgMap = cfgFile.GetValueMap();
 
-int ua_settings::get_int(ua_settings_key key)
-{
-   // try to find key
-   ua_settings_map_type::iterator iter = settings.find(key);
-
-   // return integer
-   return iter == settings.end() ? 0 :
-      static_cast<int>(strtol(iter->second.c_str(),NULL,10));
-}
-
-/*! Boolean values in the settings can be expressed either with the words
-    "true", "yes" or "1". All other values mean false.
-*/
-bool ua_settings::get_bool(ua_settings_key key)
-{
-   // try to find key
-   ua_settings_map_type::iterator iter = settings.find(key);
-
-   if (iter == settings.end())
-      return false;
-   else
+   Base::ConfigValueMap::const_iterator stop = cfgMap.end();
+   for(Base::ConfigValueMap::const_iterator iter = cfgMap.begin(); iter != stop; iter++)
    {
-      std::string val(iter->second);
-
-      // make lowercase
-      ua_str_lowercase(val);
-
-      // check for boolean keywords
-      return (val.compare("true")==0 || val.compare("1")==0 || val.compare("yes")==0);
+      Base::ESettingsType type = Base::settingUnderworldPath;
+      if (SearchTypeFromString(iter->first, type))
+         SetValue(type, iter->second);
+      else
+         UaAssert(false);
    }
 }
 
-void ua_settings::set_value(ua_settings_key key, std::string value)
+/*! Saves settings file, using an old version of the file as "template". The
+    new file will have all comments and such, only the values of the settings
+    are updated. If a template file doesn't contain a key, the value isn't
+    written to the file.
+
+    \param strFilenameNew new filename of the settings file; will be overwritten
+    \param strFilenameOld filename of the template file that is used to rewrite
+
+    \todo append key/value pairs not found in the template file at the end of
+    the new file.
+*/
+void Settings::Save(const std::string& strFilenameNew, const std::string& strFilenameOld)
 {
-   settings[key] = value;
+   // load config file
+   Base::ConfigFile cfgFile;
+   cfgFile.Load(strFilenameOld);
+
+   // put all settings into loaded file
+   Base::ConfigValueMap& cfgMap = cfgFile.GetValueMap();
+
+   Base::ConfigValueMap::iterator stop = cfgMap.end();
+   for(Base::ConfigValueMap::iterator iter = cfgMap.begin(); iter != stop; iter++)
+   {
+      Base::ESettingsType type = Base::settingUnderworldPath;
+      if (SearchTypeFromString(iter->first, type))
+         iter->second = GetString(type);
+      else
+         UaAssert(false);
+   }
+
+   // save file under new name
+   cfgFile.Save(strFilenameOld, strFilenameNew);
 }
 
-void ua_settings::set_value(ua_settings_key key, bool value)
+/*! Default value when the setting is not found is an empty string. */
+std::string Settings::GetString(ESettingsType type) const
 {
-   std::string strval(value ? "true" : "false");
-   set_value(key,strval);
+   // try to find key
+   SettingsMap::const_iterator iter = m_settings.find(type);
+
+   if (iter == m_settings.end())
+      return std::string("");
+
+   // return string
+   return iter->second;
 }
 
-void ua_settings::set_value(ua_settings_key key, int value)
+/*! Default value when the setting is not found is 0. */
+int Settings::GetInt(ESettingsType type) const
+{
+   // try to find key
+   SettingsMap::const_iterator iter = m_settings.find(type);
+
+   if (iter == m_settings.end())
+      return 0;
+
+   // return integer
+   return static_cast<int>(strtol(iter->second.c_str(), NULL, 10));
+}
+
+/*! Boolean values in the settings can be expressed either with the words
+    "true", "yes" or "1". All other values mean false. Default value when
+    the setting is not found is false.
+*/
+bool Settings::GetBool(ESettingsType type) const
+{
+   // try to find key
+   SettingsMap::const_iterator iter = m_settings.find(type);
+
+   if (iter == m_settings.end())
+      return false;
+
+   std::string strValue(iter->second);
+
+   // make lowercase
+   Base::String::Lowercase(strValue);
+
+   // check for boolean keywords
+   return (strValue.compare("true")==0 || strValue.compare("1")==0 || strValue.compare("yes")==0);
+}
+
+void Settings::SetValue(ESettingsType type, std::string strValue)
+{
+   m_settings[type] = strValue;
+}
+
+/*! The keywords "true" and "false" are used when writing out to a settings
+    config file again.
+*/
+void Settings::SetValue(ESettingsType type, bool bValue)
+{
+   std::string strValue(bValue ? "true" : "false");
+   SetValue(type, strValue);
+}
+
+void Settings::SetValue(ESettingsType type, int iValue)
 {
    std::ostringstream buffer;
-   buffer << value << std::ends;
-   set_value(key,buffer.str());
+   buffer << iValue;
+   SetValue(type, buffer.str());
 }
 
-void ua_settings::dump()
-{
-   std::map<ua_settings_key,std::string>::iterator iter;
-
-   for (iter = settings.begin(); iter != settings.end(); ++iter)
-      ua_trace("%s = %s\n", iter->first, iter->second.c_str());
-}
-
-bool ua_settings::search_key_from_string(const char* keyname, ua_settings_key& key)
+bool Settings::SearchTypeFromString(const std::string& strKeyname, ESettingsType& type)
 {
    // search the whole settings table
-   for(unsigned int i=0; i < SDL_TABLESIZE(ua_settings_mapping); i++)
+   for(unsigned int i=0; i < SDL_TABLESIZE(Detail::SettingsMapping); i++)
    {
       // search through all option entries
-      if (strcmp(ua_settings_mapping[i].optname,keyname)==0)
+      if (strKeyname == Detail::SettingsMapping[i].cstrOptionName)
       {
-         // found
-         key = ua_settings_mapping[i].key;
+         // found entry
+         type = Detail::SettingsMapping[i].type;
          return true;
       }
    }
    return false;
-}
-
-void ua_settings::load_value(const char* name, const char* value)
-{
-   ua_trace("settings key/value: %s => %s\n",name,value);
-
-   // retrieve settings key
-   ua_settings_key key;
-
-   if (!search_key_from_string(name,key))
-      ua_trace("didn't find settings key \"%s\" in table.\n",name);
-   else
-   {
-      std::string str_value(value);
-      set_value(key,str_value);
-   }
-}
-
-void ua_settings::write_replace(const char* name, std::string& value)
-{
-   // search for key by name
-   ua_settings_key key;
-
-   if (search_key_from_string(name,key))
-   {
-      // retrieve new value for that setting
-      value.assign(settings[key]);
-   }
 }

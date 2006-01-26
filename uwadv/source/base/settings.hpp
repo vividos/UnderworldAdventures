@@ -1,6 +1,6 @@
 /*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Underworld Adventures - an Ultima Underworld remake project
+   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -24,153 +24,148 @@
    \brief game settings class
 
 */
-/*! \defgroup base Base Components
-
-   The Base Components contains classes used by all other components of the
-   project.
-   The Base Components depend on no other modules.
-
-*/
-//@{
 
 // include guard
-#ifndef uwadv_settings_hpp_
-#define uwadv_settings_hpp_
+#ifndef uwadv_base_settings_hpp_
+#define uwadv_base_settings_hpp_
 
 // needed includes
 #include <string>
 #include <map>
 #include "cfgfile.hpp"
 
+namespace Base
+{
+
+class Settings;
 
 // enums
 
-//! settings value key
-enum ua_settings_key
+//! settings type key
+enum ESettingsType
 {
-   //! path to the game files (dependent on which game currently plays)
-   ua_setting_uw_path = 0,
+   //! path to the game files (dependent on which game is currently active)
+   settingUnderworldPath = 0,
 
    //! path to the original uw1 game files (uw1 or uw_demo)
-   ua_setting_uw1_path,
+   settingUw1Path,
 
    //! path to the uw2 game files
-   ua_setting_uw2_path,
+   settingUw2Path,
 
    //! true when the uw1 installation is the uw_demo
-   ua_setting_uw1_is_uw_demo,
+   settingUw1IsUwdemo,
 
    //! path to the "uadata" folder
-   ua_setting_uadata_path,
+   settingUadataPath,
 
    //! path to the savegame folder
-   ua_setting_savegame_folder,
+   settingSavegameFolder,
 
    //! custom keymap file to load
-   ua_setting_custom_keymap,
+   settingCustomKeymap,
 
    //! boolean value that indicates if uwadv-specific features are enabled
-   ua_setting_uwadv_features,
+   settingUwadvFeatures,
 
    //! prefix for the uadata folder path to locate the game.cfg and other cfg files
-   ua_setting_game_prefix,
+   settingGamePrefix,
 
    //! screen resolution string, in the form "<xres> x <yres>"
-   ua_setting_screen_resolution,
+   settingScreenResolution,
 
    //! boolean value that indicates if the ui is drawn with "smooth" pixels
-   ua_setting_ui_smooth,
+   settingUISmooth,
 
    //! boolean value that indicates fullscreen mode
-   ua_setting_fullscreen,
+   settingFullscreen,
 
-   //! string with narration type
-   ua_setting_cuts_narration,
+   //! string with narration type; one of "sound", "subtitles" or "both"
+   settingCutsceneNarration,
 
    //! boolean value that is true when audio system should be enabled
-   ua_setting_audio_enabled,
+   settingAudioEnabled,
 
-   //! int value with midi device to use
-   ua_setting_win32_midi_device,
+   //! int value with midi device to use; -1 for default
+   settingWin32MidiDevice,
 };
 
-//! game type enum
-enum ua_game_type
+//! base game type enum
+enum EUwGameType
 {
-   //! we have uw1
-   ua_game_uw1,
+   //! we have ultima underworld 1 (or demo)
+   gameUw1,
 
-   //! we have uw2
-   ua_game_uw2,
+   //! we have ultima underworld 2
+   gameUw2
 };
+
+
+//! loads all config files into the settings object
+void LoadSettings(Settings& settings);
 
 
 // classes
 
-//! settings class
-/*! The ua_settings class manages uwadv's global settings values. The values
-    can have the types "boolean", "int" or "std::string". The values are
-    stored in a config file that is read via the ua_cfgfile class. The
-    ua_settings class also manages a game type value that determines which
-    type of game is currently running. To load the settings, just use
-    ua_cfgfile::load().
+//! Settings class
+/*! Manages uwadv's global settings values. The values can have the types
+    "boolean", "int" or "std::string". The values are stored in a config file
+    that is read via the ConfigFile class. The Settings class also manages a
+    game type value that determines which type of game is currently running.
 */
-class ua_settings: public ua_cfgfile
+class Settings
 {
 public:
    //! ctor
-   ua_settings();
+   Settings();
+
+   //! loads settings from file
+   void Load(const std::string& strFilename);
+
+   //! save settings to file
+   void Save(const std::string& strFilenameNew, const std::string& strFilenameOld);
 
    // settings value access
 
    //! returns the gametype
-   ua_game_type get_gametype(){ return gtype; }
+   EUwGameType GetGametype() const { return m_gameType; }
 
    //! returns string settings value
-   std::string get_string(ua_settings_key key);
+   std::string GetString(ESettingsType type) const;
 
    //! returns an integer settings value
-   int get_int(ua_settings_key key);
+   int GetInt(ESettingsType type) const;
 
    //! returns a boolean settings value
-   bool get_bool(ua_settings_key key);
-
-   //! inserts a settings key/value pair
-   void set_value(ua_settings_key key, std::string value);
-
-   //! inserts a boolean value
-   void set_value(ua_settings_key key, bool value);
-
-   //! inserts an integer value
-   void set_value(ua_settings_key key, int value);
+   bool GetBool(ESettingsType type) const;
 
    //! sets the gametype
-   void set_gametype(ua_game_type type){ gtype = type; }
+   void SetGametype(EUwGameType gameType){ m_gameType = gameType; }
 
-   //! dumps all settings
-   void dump();
+   //! inserts a settings key/value pair
+   void SetValue(ESettingsType type, std::string strValue);
+
+   //! inserts a boolean value
+   void SetValue(ESettingsType type, bool bValue);
+
+   //! inserts an integer value
+   void SetValue(ESettingsType type, int iValue);
 
 protected:
-   //! searches key value from string name
-   bool search_key_from_string(const char* keyname, ua_settings_key& key);
-
-   //! called to load a specific value
-   virtual void load_value(const char* name, const char* value);
-
-   //! called to replace a value
-   virtual void write_replace(const char* name, std::string& value);
+   //! searches type name from string name
+   bool SearchTypeFromString(const std::string& strKeyname, ESettingsType& type);
 
 protected:
    //! settings map typedef
-   typedef std::map<ua_settings_key,std::string> ua_settings_map_type;
+   typedef std::map<ESettingsType, std::string> SettingsMap;
 
    //! game type
-   ua_game_type gtype;
+   EUwGameType m_gameType;
 
    //! settings map
-   ua_settings_map_type settings;
+   SettingsMap m_settings;
 };
 
+} // namespace Base
 
 #endif
-//@}

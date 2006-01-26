@@ -1,6 +1,6 @@
 /*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Underworld Adventures - an Ultima Underworld remake project
+   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,140 +26,166 @@
 */
 
 // needed includes
-#include "common.hpp"
+#include "base.hpp"
 #include "keymap.hpp"
-#include <cctype>
+#include "cfgfile.hpp"
+#include "settings.hpp"
+#include "resourcemanager.hpp"
+#include "textfile.hpp"
+#include "filesystem.hpp"
+#include <SDL_rwops.h>
+
+using Base::Keymap;
+using Base::EKeyType;
+
+namespace Detail
+{
+
+//! creates a combined key/mod value from a SDLKey and a SDLMod value
+inline Uint32 MakeKeymod(SDLKey key, SDLMod mod)
+{
+   return Uint32(key) | (Uint32(mod) << 16);
+}
 
 
 // tables
 
-//! mapping of all keytype keywords to keytypes
-struct
+//! mapping of all key type keywords to key types
+struct KeyTypeMapping
 {
-   const char* keytype; //!< type name that occurs in keymap.cfg
-   ua_key_value key;    //!< enum value of key
-} ua_keymap_keytype_mapping[] =
+   //! type name that occurs in keymap.cfg
+   const char* cstrKeyType;
+
+   //! enum value of key type
+   EKeyType key;
+
+} KeyTypeMapping[] =
 {
-   { "menu-up",               ua_key_menu_up },
-   { "menu-down",             ua_key_menu_down },
-   { "menu-left",             ua_key_menu_left },
-   { "menu-right",            ua_key_menu_right },
-   { "menu-top-of-list",      ua_key_menu_top_of_list },
-   { "menu-top-of-list2",     ua_key_menu_top_of_list2 },
-   { "menu-bottom-of-list",   ua_key_menu_bottom_of_list },
-   { "menu-bottom-of-list2",  ua_key_menu_bottom_of_list2 },
-   { "menu-press-button",     ua_key_menu_press_button },
+   { "menu-up",               Base::keyMenuUp },
+   { "menu-down",             Base::keyMenuDown },
+   { "menu-left",             Base::keyMenuLeft },
+   { "menu-right",            Base::keyMenuRight },
+   { "menu-top-of-list",      Base::keyMenuTopOfList },
+   { "menu-top-of-list2",     Base::keyMenuTopOfList2 },
+   { "menu-bottom-of-list",   Base::keyMenuBottomOfList },
+   { "menu-bottom-of-list2",  Base::keyMenuBottomOfList2 },
+   { "menu-press-button",     Base::keyMenuPressButton },
 
-   { "run-forward",                 ua_key_run_forward },
-   { "run-forward-easymove",        ua_key_run_forward_easymove },
-   { "walk-forward",                ua_key_walk_forward },
-   { "walk-forward-easymove",       ua_key_walk_forward_easymove },
-   { "turn-left",                   ua_key_turn_left },
-   { "turn-left-easymove",          ua_key_turn_left_easymove },
-   { "turn-right",                  ua_key_turn_right },
-   { "turn-right-easymove",         ua_key_turn_right_easymove },
-   { "slide-left",                  ua_key_slide_left },
-   { "slide-right",                 ua_key_slide_right },
-   { "walk-backwards",              ua_key_walk_backwards },
-   { "walk-backwards-easymove",     ua_key_walk_backwards_easymove },
+   { "run-forward",              Base::keyRunForward },
+   { "run-forward-easymove",     Base::keyRunForwardEasymove },
+   { "walk-forward",             Base::keyWalkForward },
+   { "walk-forward-easymove",    Base::keyWalkForwardEasymove },
+   { "turn-left",                Base::keyTurnLeft },
+   { "turn-left-easymove",       Base::keyTurnLeftEasymove },
+   { "turn-right",               Base::keyTurnRight },
+   { "turn-right-easymove",      Base::keyTurnRightEasymove },
+   { "slide-left",               Base::keySlideLeft },
+   { "slide-right",              Base::keySlideRight },
+   { "walk-backwards",           Base::keyWalkBackwards },
+   { "walk-backwards-easymove",  Base::keyWalkBackwardsEasymove },
 
-   { "fly-up",             ua_key_fly_up },
-   { "fly-down",           ua_key_fly_down },
-   { "look-down",          ua_key_look_down },
-   { "center-view",        ua_key_center_view },
-   { "look-up",            ua_key_look_up },
-   { "standing-long-jump", ua_key_standing_long_jump },
-   { "jump",               ua_key_jump },
+   { "fly-up",             Base::keyFlyUp },
+   { "fly-down",           Base::keyFlyDown },
+   { "look-down",          Base::keyLookDown },
+   { "center-view",        Base::keyCenterView },
+   { "look-up",            Base::keyLookUp },
+   { "standing-long-jump", Base::keyStandingLongJump },
+   { "jump",               Base::keyJump },
 
-   { "combat-bash",        ua_key_combat_bash },
-   { "combat-slash",       ua_key_combat_slash },
-   { "combat-thrust",      ua_key_combat_thrust },
+   { "combat-bash",        Base::keyCombatBash },
+   { "combat-slash",       Base::keyCombatSlash },
+   { "combat-thrust",      Base::keyCombatThrust },
 
-   { "special-options",    ua_key_special_options    },
-   { "special-talk-mode",  ua_key_special_talk_mode  },
-   { "special-get-mode",   ua_key_special_get_mode   },
-   { "special-look-mode",  ua_key_special_look_mode  },
-   { "special-fight-mode", ua_key_special_fight_mode },
-   { "special-use-mode",   ua_key_special_use_mode   },
-   { "special-flip-panel", ua_key_special_flip_panel },
-   { "special-cast-spell", ua_key_special_cast_spell },
-   { "special-use-track",  ua_key_special_use_track  },
-   { "special-sleep",      ua_key_special_sleep      },
+   { "special-options",    Base::keySpecialOptions },
+   { "special-talk-mode",  Base::keySpecialTalkMode },
+   { "special-get-mode",   Base::keySpecialGetMode },
+   { "special-look-mode",  Base::keySpecialLookMode },
+   { "special-fight-mode", Base::keySpecialFightMode },
+   { "special-use-mode",   Base::keySpecialUseMode },
+   { "special-flip-panel", Base::keySpecialFlipPanel },
+   { "special-cast-spell", Base::keySpecialCastSpell },
+   { "special-use-track",  Base::keySpecialUseTrack },
+   { "special-sleep",      Base::keySpecialSleep },
 
-   { "special-quicksave",  ua_key_special_quicksave },
-   { "special-quickload",  ua_key_special_quickload },
+   { "special-quicksave",  Base::keySpecialQuicksave },
+   { "special-quickload",  Base::keySpecialQuickload },
 
-   { "game-save-game",      ua_key_game_save_game      },
-   { "game-restore-game",   ua_key_game_restore_game   },
-   { "game-change-music",   ua_key_game_change_music   },
-   { "game-change-sfx",     ua_key_game_change_sfx     },
-   { "game-change-lod",     ua_key_game_change_lod     },
-   { "game-return-to-game", ua_key_game_return_to_game },
+   { "game-save-game",      Base::keyGameSaveGame },
+   { "game-restore-game",   Base::keyGameRestoreGame },
+   { "game-change-music",   Base::keyGameChangeMusic },
+   { "game-change-sfx",     Base::keyGameChangeSFX },
+   { "game-change-lod",     Base::keyGameChangeLevelOfDetail },
+   { "game-return-to-game", Base::keyGameReturnToGame },
 
-   { "cursor-hotarea-right", ua_key_cursor_hotarea_right },
-   { "cursor-hotarea-left",  ua_key_cursor_hotarea_left  },
+   { "cursor-hotarea-right", Base::keyCursorHotAreaRight },
+   { "cursor-hotarea-left",  Base::keyCursorHotAreaLeft },
 
-   { "cursor-dir-sw", ua_key_cursor_dir_sw },
-   { "cursor-dir-s",  ua_key_cursor_dir_s  },
-   { "cursor-dir-se", ua_key_cursor_dir_se },
-   { "cursor-dir-w",  ua_key_cursor_dir_w  },
-   { "cursor-dir-e",  ua_key_cursor_dir_e  },
-   { "cursor-dir-nw", ua_key_cursor_dir_nw },
-   { "cursor-dir-n",  ua_key_cursor_dir_n  },
-   { "cursor-dir-ne", ua_key_cursor_dir_ne },
+   { "cursor-dir-sw", Base::keyCursorDir_sw },
+   { "cursor-dir-s",  Base::keyCursorDir_s  },
+   { "cursor-dir-se", Base::keyCursorDir_se },
+   { "cursor-dir-w",  Base::keyCursorDir_w  },
+   { "cursor-dir-e",  Base::keyCursorDir_e  },
+   { "cursor-dir-nw", Base::keyCursorDir_nw },
+   { "cursor-dir-n",  Base::keyCursorDir_n  },
+   { "cursor-dir-ne", Base::keyCursorDir_ne },
 
-   { "cursor-button-left",  ua_key_cursor_button_left  },
-   { "cursor-button-right", ua_key_cursor_button_right },
+   { "cursor-button-left",  Base::keyCursorButtonLeft },
+   { "cursor-button-right", Base::keyCursorButtonRight },
 
-   { "ua-debug",       ua_key_ua_debug       },
-   { "ua-return-menu", ua_key_ua_return_menu },
-   { "ua-screenshot",  ua_key_ua_screenshot  },
-   { "ua-level-up",    ua_key_ua_level_up    },
-   { "ua-level-down" , ua_key_ua_level_down  },
+   { "ua-debug",       Base::keyUaDebug },
+   { "ua-return-menu", Base::keyUaReturnMenu },
+   { "ua-screenshot",  Base::keyUaScreenshot },
+   { "ua-level-up",    Base::keyUaLevelUp },
+   { "ua-level-down" , Base::keyUaLevelDown },
 };
 
-//! mapping of all settings keywords to keys
-struct
+
+//! mapping of all key keywords to SDL key values
+struct KeyMapping
 {
-   const char* keytype;
+   //! key name that can occur as value in keymap.cfg
+   const char* cstrKeyType;
+
+   //! SDL key value that maps to the key name
    SDLKey key;
-} ua_keymap_key_mapping[] =
+
+} KeyMapping[] =
 {
-   { "f1", SDLK_F1 },
-   { "f2", SDLK_F2 },
-   { "f3", SDLK_F3 },
-   { "f4", SDLK_F4 },
-   { "f5", SDLK_F5 },
-   { "f6", SDLK_F6 },
-   { "f7", SDLK_F7 },
-   { "f8", SDLK_F8 },
-   { "f9", SDLK_F9 },
+   { "f1",  SDLK_F1 },
+   { "f2",  SDLK_F2 },
+   { "f3",  SDLK_F3 },
+   { "f4",  SDLK_F4 },
+   { "f5",  SDLK_F5 },
+   { "f6",  SDLK_F6 },
+   { "f7",  SDLK_F7 },
+   { "f8",  SDLK_F8 },
+   { "f9",  SDLK_F9 },
    { "f10", SDLK_F10 },
    { "f11", SDLK_F11 },
    { "f12", SDLK_F12 },
 
-   { "semicolon", SDLK_SEMICOLON },
-   { "period", SDLK_PERIOD },
-   { "tab", SDLK_TAB },
-   { "esc", SDLK_ESCAPE },
-   { "pgup", SDLK_PAGEUP },
-   { "pgdown", SDLK_PAGEDOWN },
-   { "home", SDLK_HOME },
-   { "end", SDLK_END },
-   { "cursor-up", SDLK_UP },
-   { "cursor-down", SDLK_DOWN },
-   { "cursor-left", SDLK_LEFT },
+   { "semicolon",    SDLK_SEMICOLON },
+   { "period",       SDLK_PERIOD },
+   { "tab",          SDLK_TAB },
+   { "esc",          SDLK_ESCAPE },
+   { "pgup",         SDLK_PAGEUP },
+   { "pgdown",       SDLK_PAGEDOWN },
+   { "home",         SDLK_HOME },
+   { "end",          SDLK_END },
+   { "cursor-up",    SDLK_UP },
+   { "cursor-down",  SDLK_DOWN },
+   { "cursor-left",  SDLK_LEFT },
    { "cursor-right", SDLK_RIGHT },
 
    { "backspace", SDLK_BACKSPACE },
    { "return", SDLK_RETURN },
-   { "enter", SDLK_RETURN },
-   { "pause", SDLK_PAUSE },
-   { "space", SDLK_SPACE },
-   { "comma", SDLK_COMMA },
-   { "minus", SDLK_MINUS },
-   { "colon", SDLK_COLON },
-   { "less", SDLK_LESS },
+   { "enter",  SDLK_RETURN },
+   { "pause",  SDLK_PAUSE },
+   { "space",  SDLK_SPACE },
+   { "comma",  SDLK_COMMA },
+   { "minus",  SDLK_MINUS },
+   { "colon",  SDLK_COLON },
+   { "less",   SDLK_LESS },
    { "delete", SDLK_DELETE },
 
    { "num0", SDLK_KP0 },
@@ -173,119 +199,239 @@ struct
    { "num8", SDLK_KP8 },
    { "num9", SDLK_KP9 },
 
-   { "num-divide", SDLK_KP_DIVIDE },
-   { "num-multipl", SDLK_KP_MULTIPLY },
-   { "num-minus", SDLK_KP_MINUS },
-   { "num-plus", SDLK_KP_PLUS },
-   { "num-enter", SDLK_KP_ENTER },
-   { "num-period", SDLK_KP_PERIOD },
+   { "num-divide",   SDLK_KP_DIVIDE },
+   { "num-multipl",  SDLK_KP_MULTIPLY },
+   { "num-minus",    SDLK_KP_MINUS },
+   { "num-plus",     SDLK_KP_PLUS },
+   { "num-enter",    SDLK_KP_ENTER },
+   { "num-period",   SDLK_KP_PERIOD },
 };
 
 
-// ua_keymap methods
-
-void ua_keymap::init(ua_settings& settings)
+//! keymap config file loader
+class KeymapConfigLoader: public Base::NonCopyable
 {
-}
-
-ua_key_value ua_keymap::find_key(Uint32 keymod)
-{
-   std::map<Uint32,ua_key_value>::iterator iter =
-      keymap.find(keymod);
-
-   return iter == keymap.end() ? ua_key_nokey : iter->second;
-}
-
-void ua_keymap::load_value(const char* name, const char* value)
-{
-   // search "keymap key" key from name
-   ua_key_value key = ua_key_nokey;
+public:
+   //! ctor
+   KeymapConfigLoader(Base::ConfigFile& cfgFile, Base::Keymap& keyMap)
+      :m_cfgFile(cfgFile), m_keyMap(keyMap)
    {
-      std::string keyname(name);
-
-      // make lowercase
-      ua_str_lowercase(keyname);
-
-      // search whole table
-      unsigned int max = SDL_TABLESIZE(ua_keymap_keytype_mapping);
-
-      for(unsigned int i=0; i < max; i++)
-      if (0==keyname.compare(ua_keymap_keytype_mapping[i].keytype))
-      {
-         key = ua_keymap_keytype_mapping[i].key;
-         break;
-      }
-
-      if (key==ua_key_nokey)
-      {
-         ua_trace("keymap: unknown keyboard action: %s\n",keyname.c_str());
-         return;
-      }
    }
 
-   // search keymod for key
-   Uint32 keymod=0;
+   //! loads keymap from config file into Keymap object
+   void Load();
+
+protected:
+   //! initializes internal key type and key name mappings
+   void InitKeyMappings();
+
+   //! searches a key type from key type name
+   bool SearchKeyFromString(const std::string& strKeyTypeName, EKeyType& key);
+
+   //! sets key type and value in map
+   void SetKeyValue(EKeyType& key, const std::string& strKeyValue);
+
+private:
+   //! reference to config file being loade
+   Base::ConfigFile& m_cfgFile;
+
+   //! reference to keymap being loaded
+   Base::Keymap& m_keyMap;
+
+   //! mapping from keytype names to key values
+   typedef std::map<std::string, Base::EKeyType> KeyTypeNamesMapping;
+
+   //! key type names mapping
+   KeyTypeNamesMapping m_mapKeyTypeNames;
+
+   //! mapping from key names to SDL key values
+   typedef std::map<std::string, SDLKey> KeyNamesMapping;
+
+   //! key names mapping
+   KeyNamesMapping m_mapKeyNames;
+};
+
+void KeymapConfigLoader::Load()
+{
+   InitKeyMappings();
+
+   // go through all loaded key/value pairs
+   Base::ConfigValueMap& cfgMap = m_cfgFile.GetValueMap();
+   Base::ConfigValueMap::const_iterator stop = cfgMap.end();
+
+   for(Base::ConfigValueMap::const_iterator iter = cfgMap.begin(); iter != stop; iter++)
    {
-      std::string keyval(value);
+      // search for key type, and add key value for type
+      Base::EKeyType key = Base::keyNone;
+      if (SearchKeyFromString(iter->first, key))
+         SetKeyValue(key, iter->second);
+   }
+}
 
-      // make lowercase
-      ua_str_lowercase(keyval);
+/*! Initializes two maps from the values in KeyTypeMapping and KeyMapping
+    arrays to faster match key type and key strings to values.
+*/
+void KeymapConfigLoader::InitKeyMappings()
+{
+   unsigned int max = SDL_TABLESIZE(KeyTypeMapping);
+   for(unsigned int i=0; i < max; i++)
+      m_mapKeyTypeNames[KeyTypeMapping[i].cstrKeyType] = KeyTypeMapping[i].key;
 
-      // check for modifiers
-      std::string::size_type pos = keyval.find("ctrl");
-      if (pos != std::string::npos)
+   max = SDL_TABLESIZE(KeyMapping);
+   for(unsigned int j=0; j < max; j++)
+   {
+      UaAssert(strlen(KeyMapping[j].cstrKeyType) > 1); // no keytype name can be 1 character only
+      m_mapKeyNames[KeyMapping[j].cstrKeyType] = KeyMapping[j].key;
+   }
+}
+
+bool KeymapConfigLoader::SearchKeyFromString(const std::string& strKeyTypeName, EKeyType& key)
+{
+   // search "keymap key" key from name
+   key = Base::keyNone;
+   std::string strKeyname(strKeyTypeName);
+
+   // make lowercase
+   Base::String::Lowercase(strKeyname);
+
+   // search for key type
+   KeyTypeNamesMapping::const_iterator iter = m_mapKeyTypeNames.find(strKeyname);
+   if (iter == m_mapKeyTypeNames.end())
+   {
+      UaTrace("keymap: unknown keyboard action: %s\n", strKeyname.c_str());
+      return false;
+   }
+   else
+      key = iter->second;
+
+   return true;
+}
+
+/*! If the key name is not recognized, no key type to key mapping is added
+    to the Keymap. No exception is thrown in this case.
+*/
+void KeymapConfigLoader::SetKeyValue(EKeyType& keyType, const std::string& strKeyValue)
+{
+   std::string strKeyName(strKeyValue);
+   Base::String::Lowercase(strKeyName);
+
+   // check for key state modifiers
+   SDLMod mod = KMOD_NONE;
+   std::string::size_type pos = strKeyName.find("ctrl");
+   if (pos != std::string::npos)
+   {
+      mod = static_cast<SDLMod>(mod | KMOD_CTRL);
+      strKeyName.erase(pos, 4);
+   }
+
+   pos = strKeyName.find("alt");
+   if (pos != std::string::npos)
+   {
+      mod = static_cast<SDLMod>(mod | KMOD_ALT);
+      strKeyName.erase(pos, 3);
+   }
+
+   pos = strKeyName.find("shift");
+   if (pos != std::string::npos)
+   {
+      mod = static_cast<SDLMod>(mod | KMOD_SHIFT);
+      strKeyName.erase(pos, 5);
+   }
+
+   // trim string
+   for(;strKeyName.size() > 0 && isspace(strKeyName[0]);)
+      strKeyName.erase(0,1);
+
+   // check for single alphanumeric char
+   SDLKey key = SDLK_UNKNOWN;
+   if (strKeyName.size() == 1 && isalnum(strKeyName.at(0)))
+   {
+      // note: assumes that a conversion from alphanumeric character to SDLKey succeeds
+      key = static_cast<SDLKey>(strKeyName.at(0));
+   }
+   else
+   {
+      // check for known key keywords
+      KeyNamesMapping::const_iterator iter = m_mapKeyNames.find(strKeyName);
+      if (iter == m_mapKeyNames.end())
       {
-         keymod = ua_make_keymod(0,KMOD_CTRL);
-         keyval.erase(pos,4);
-      }
-
-      pos = keyval.find("alt");
-      if (pos != std::string::npos)
-      {
-         keymod = ua_make_keymod(0,KMOD_ALT);
-         keyval.erase(pos,3);
-      }
-
-      pos = keyval.find("shift");
-      if (pos != std::string::npos)
-      {
-         keymod = ua_make_keymod(0,KMOD_SHIFT);
-         keyval.erase(pos,5);
-      }
-
-      // trim string
-      for(;keyval.size()>0 && isspace(keyval.at(0));)
-         keyval.erase(0,1);
-
-      // check for alphanumeric chars
-      if (keyval.size()==1 && isalnum(keyval.at(0)))
-      {
-         keymod |= keyval.at(0);
+         UaTrace("keymap: didn't find keycode for: %s\n", strKeyName.c_str());
+         return;
       }
       else
-      {
-         // check for known key keywords
-
-         // search whole table
-         unsigned int max = SDL_TABLESIZE(ua_keymap_key_mapping);
-
-         bool found = false;
-         for(unsigned int i=0; i < max; i++)
-         if (0==keyval.compare(ua_keymap_key_mapping[i].keytype))
-         {
-            keymod |= ua_keymap_key_mapping[i].key;
-            found = true;
-            break;
-         }
-
-         if (!found)
-         {
-            ua_trace("keymap: didn't find keycode for: %s\n",keyval.c_str());
-            return;
-         }
-      }
+         key = iter->second;
    }
 
    // insert key
-   keymap[keymod] = key;
+   m_keyMap.InsertKeyMapping(key, mod, keyType);
+}
+
+} // namespace Detail
+
+
+// Keymap methods
+
+/*! Loads global keymap for chosen game (game prefix must be set in settings
+    object) and custom keymap specified in settings.
+*/
+void Keymap::Init(const Base::Settings& settings)
+{
+   UaTrace("loading keymaps ...\n");
+
+   // load keymap from uadata resources
+   std::string strKeymapName(settings.GetString(Base::settingGamePrefix));
+   UaAssert(strKeymapName.size() > 0);
+
+   strKeymapName += "/keymap.cfg";
+
+   UaTrace(" keymap: %s\n", strKeymapName.c_str());
+
+   // load main keymap
+   Base::ConfigFile cfgFile;
+   Base::ResourceManager resManager(settings);
+   {
+      SDL_RWops* rwops = resManager.GetResourceFile(strKeymapName);
+      if (rwops == NULL)
+         throw Base::FileSystemException("file not found", strKeymapName, ENOENT);
+
+      Base::TextFile textFile(rwops);
+      cfgFile.Load(textFile);
+   }
+
+   // load custom keymap
+   strKeymapName = settings.GetString(settingCustomKeymap);
+
+   UaTrace(" keymap: %s", strKeymapName.c_str());
+   if (Base::FileSystem::FileExists(strKeymapName))
+   {
+      SDL_RWops* rwops = SDL_RWFromFile(strKeymapName.c_str(), "rb");
+      // note: this exception is only thrown if the file was deleted between two lines above and here
+      if (rwops == NULL)
+         throw Base::FileSystemException("file not found", strKeymapName, ENOENT);
+
+      UaTrace("\n");
+
+      Base::TextFile textFile(rwops);
+      cfgFile.Load(textFile);
+   }
+   else
+      UaTrace(" => not available\n");
+
+   // load all values into the map
+   Detail::KeymapConfigLoader loader(cfgFile, *this);
+   loader.Load();
+}
+
+Base::EKeyType Keymap::FindKey(SDLKey key, SDLMod mod)
+{
+   Uint32 keymod = Detail::MakeKeymod(key, mod);
+   KeymapMapping::const_iterator iter = m_mapKeys.find(keymod);
+
+   return iter == m_mapKeys.end() ? Base::keyNone : iter->second;
+}
+
+void Keymap::InsertKeyMapping(SDLKey key, SDLMod mod, Base::EKeyType keyType)
+{
+   Uint32 keymod = Detail::MakeKeymod(key, mod);
+   m_mapKeys[keymod] = keyType;
 }
