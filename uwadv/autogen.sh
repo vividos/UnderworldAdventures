@@ -46,21 +46,17 @@ rm -f aclocal.m4
 rm -f install-sh ltmain.sh missing mkinstalldirs
 rm -f uwadv.spec source/uwadv.cfg
 rm -f Makefile.in Makefile
+rm -f hacking/Makefile.in hacking/Makefile
 rm -f source/Makefile.in source/Makefile 
-rm -f source/tools/Makefile.in source/tools/Makefile
-rm -f source/tools/uwdump/Makefile.in source/tools/uwdump/Makefile
 rm -f source/base/Makefile.in source/base/Makefile
 rm -f source/base/zziplib/Makefile.in source/base/zziplib/Makefile
-rm -f source/script/Makefile.in source/script/Makefile
-rm -f source/script/lua/Makefile.in source/script/lua/Makefile
+rm -f source/unittest/Makefile.in source/unittest/Makefile
+rm -f source/win32/Makefile.in source/win32/Makefile
 rm -f uadata/Makefile.in uadata/Makefile
-rm -f hacking/Makefile.in hacking/Makefile
-rm -rf source/script/lua/.deps
-rm -rf source/base/zziplib/.deps
 rm -rf source/.deps
-rm -rf source/tools/.deps
-rm -rf source/tools/uwdump/.deps
-rm -rf source/debug/.deps
+rm -rf source/base/.deps
+rm -rf source/base/zziplib/.deps
+rm -rf source/unittest/.deps
 
 echo "Generating files..."
 
