@@ -25,7 +25,7 @@ SUBDIRS = zziplib
 
 noinst_LTLIBRARIES = libbase.la
 
-CXXFLAGS = -DCONFIGDIR="$(CONFIGDIR)"
+AM_CXXFLAGS = @CXXFLAGS@ -DCONFIGDIR=\"$(CONFIGDIR)\"
 
 libbase_la_LIBADD = zziplib/libzzip.la
 
