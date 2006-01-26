@@ -1,5 +1,5 @@
 #
-# Underworld Adventures - an Ultima Underworld hacking project
+# Underworld Adventures - an Ultima Underworld remake project
 # Copyright (c) 2006 Michael Fink
 #
 # This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@ SUBDIRS = zziplib
 
 noinst_LTLIBRARIES = libbase.la
 
-CPPFLAGS = $(CONFIGDIR_CPPFLAGS)
+CXXFLAGS = -DCONFIGDIR="$(CONFIGDIR)"
 
 libbase_la_LIBADD = zziplib/libzzip.la
 
