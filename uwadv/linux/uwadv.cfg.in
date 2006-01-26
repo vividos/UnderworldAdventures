@@ -32,7 +32,7 @@ uw1-path @UW1PATH@
 # Note that this doesn't currently work with Underworld Adventures!
 #
 
-#uw2-path UW2PATH
+#uw2-path @UW2PATH@
 
 #
 # Path to the "uadata" folder where the *.uar files reside
