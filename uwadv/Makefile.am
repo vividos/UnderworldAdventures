@@ -1,6 +1,6 @@
 #
-# Underworld Adventures - an Ultima Underworld hacking project
-# Copyright (c) 2002-2004 Underworld Adventures Team
+# Underworld Adventures - an Ultima Underworld remake project
+# Copyright (c) 2002,2003,2004,2005,2006 Underworld Adventures Team
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -101,5 +101,6 @@ man6_MANS = linux/uwadv.6 \
 linux/uwadv.cfg linux/uwadv.6: %: %.in
 	rm -f $@
 	sed -e 's,@UW1PATH\@,@UW1PATH@,g' \
-            -e 's,@UADATAPATH\@,@UADATAPATH@,g' \
-            -e 's,@UADOCPATH\@,@datadir@/doc/uwadv,g' $< >$@
+       -e 's,@UW2PATH\@,@UW2PATH@,g' \
+       -e 's,@UADATAPATH\@,@UADATAPATH@,g' \
+       -e 's,@UADOCPATH\@,@datadir@/doc/uwadv,g' $< >$@
