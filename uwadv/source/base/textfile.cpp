@@ -35,19 +35,29 @@ using Base::TextFile;
 
 void TextFile::ReadLine(std::string& strLine)
 {
+   long lFileLength = FileLength();
+
    // read in one line
    strLine.erase();
    {
       char c = 0;
       do
       {
+         if (Tell() >= lFileLength)
+            break;
+
          // read next char
          c = Read8();
+#ifdef HAVE_WIN32
          if (c == '\r')
          {
             // carriage return? reread
             c = Read8();
          }
+#elif defined(HAVE_MACOSX)
+         if (c == '\r')
+            c = '\n'; // simulate lf
+#endif
 
          // append char
          if (c != '\n')
@@ -63,7 +73,7 @@ void TextFile::WriteLine(const std::string& strLine)
    WriteBuffer(reinterpret_cast<const Uint8*>(strLine.c_str()), strLine.size());
 #ifdef HAVE_WIN32
    // win32: write cr/lf
-   WriteBuffer(reinterpret_cast<const Uint8*>("\r\n"), 1);
+   WriteBuffer(reinterpret_cast<const Uint8*>("\r\n"), 2);
 #elif defined(HAVE_MACOSX)
    // MacOS X: write cr
    WriteBuffer(reinterpret_cast<const Uint8*>("\r"), 1);
