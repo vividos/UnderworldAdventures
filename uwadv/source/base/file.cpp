@@ -36,6 +36,7 @@ using Base::ESeekMode;
 // File methods
 
 File::File(const std::string& strFilename, EFileOpenMode eOpenMode)
+:m_lFileLength(-1)
 {
    UaAssert(strFilename.size() > 0);
 
@@ -49,7 +50,8 @@ File::File(const std::string& strFilename, EFileOpenMode eOpenMode)
 /*! The given rwops structure will be automatically freed at destruction.
     There's no need to free the ptr. */
 File::File(SDL_RWops* rwops)
-:m_rwops(rwops)
+:m_rwops(rwops),
+ m_lFileLength(-1)
 {
    UaAssert(rwops != NULL);
 }
@@ -59,6 +61,9 @@ File::File(SDL_RWops* rwops)
 */
 long File::FileLength()
 {
+   if (m_lFileLength != -1)
+      return m_lFileLength;
+
    UaAssert(m_rwops.get() != NULL);
 
    long lCurPos = Tell();
@@ -66,11 +71,11 @@ long File::FileLength()
    if (-1 == SDL_RWseek(m_rwops.get(), 0L, SEEK_END))
       return -1L; // couldn't seek, so file length isn't known
 
-   long lFileLength = SDL_RWtell(m_rwops.get());
+   m_lFileLength = SDL_RWtell(m_rwops.get());
 
    Seek(lCurPos, seekBegin);
 
-   return lFileLength;
+   return m_lFileLength;
 }
 
 long File::Tell() const

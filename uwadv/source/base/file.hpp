@@ -57,6 +57,7 @@ enum ESeekMode
 class SDL_RWopsDeletor
 {
 public:
+   //! closes rwops file
    void operator()(SDL_RWops* rwops)
    {
       if (rwops != NULL)
@@ -70,17 +71,22 @@ class File
 {
 public:
    //! default ctor; doesn't open file
-   File(){}
+   File():m_lFileLength(-1){}
    //! ctor; openes per filename
    File(const std::string& strFilename, EFileOpenMode eOpenMode);
    //! ctor; uses opened SDL_RWops pointer
    File(SDL_RWops* rwops);
    //! copy ctor
-   File(const File& file){ operator=(file); }
+   File(const File& file):m_lFileLength(-1){ operator=(file); }
    //! dtor; closes file when still open and no more copies of the object exist
    ~File(){}
    //! assignment operator
-   File& operator=(const File& file){ m_rwops = file.m_rwops; return *this; }
+   File& operator=(const File& file)
+   {
+      m_rwops = file.m_rwops;
+      m_lFileLength = file.m_lFileLength;
+      return *this;
+   }
 
    //! returns if file is open
    bool IsOpen() const { return m_rwops.get() != NULL; }
@@ -118,6 +124,9 @@ public:
 private:
    //! internal rwops ptr
    Base::SmartPtr<SDL_RWops, Base::SDL_RWopsDeletor> m_rwops;
+
+   //! file length
+   long m_lFileLength;
 };
 
 } // namespace Base
