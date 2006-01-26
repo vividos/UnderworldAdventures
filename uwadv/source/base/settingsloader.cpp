@@ -153,7 +153,7 @@ void SettingsLoader::CheckPaths()
 
       // %uadata% must not appear in this value
       if (type == Base::settingUadataPath)
-         UaAssert(m_strUaDataPath.find("%uadata%") == std::string::npos);
+         UaAssert(strPath.find("%uadata%") == std::string::npos);
 
       ResolvePath(strPath);
 
@@ -167,22 +167,9 @@ void SettingsLoader::CheckPaths()
 
       m_settings.SetValue(type, strPath);
 
-      // special handling for some types
-      switch(type)
-      {
-      case Base::settingUadataPath:
+      // special handling for uadata path
+      if (type == Base::settingUadataPath)
          m_strUaDataPath = strPath;
-         break;
-
-      case Base::settingSavegameFolder:
-         // try to create folder (when not already present)
-         if (!Base::FileSystem::FolderExists(strPath))
-         {
-            UaTrace("creating savegame folder \"%s\"\n", strPath.c_str());
-            Base::FileSystem::MakeFolder(strPath.c_str());
-         }
-         break;
-      }
    }
 }
 
