@@ -402,6 +402,12 @@ std::string GetHomePath()
    return strHomePath;
 }
 
+//! returns system specific personal folder
+/*! Win32: returns the "My Documents" folder, or the home folder returned by
+       GetHomePath(), if the folder doesn't exist or is not supported by the
+       system.
+    All other systems: returns the home folder returned by GetHomePath()
+*/
 std::string GetPersonalFolderPath()
 {
    std::string strPersonalFolderPath = GetHomePath();
