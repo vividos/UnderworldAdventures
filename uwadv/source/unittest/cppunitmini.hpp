@@ -13,17 +13,23 @@
  *
  */
 /*
- * The code was modified to be a real drop-in replacement for CppUnit.
- * Modifications (C) 2005 Michael Fink
+ * The code was modified to be used in Underworld Adventures.
+ * Modifications (C) 2005,2006 Michael Fink
  */
+/*! \file cppunitmini.hpp
 
-#ifndef CPPUNITMINI_H_
-#define CPPUNITMINI_H_
+   \brief CppUnitMini header
 
-#ifdef CPPUNIT_VERSION
-#  error You cannot both include CppUnit and CppUnitMini headers!
-#endif
+*/
+//! \ingroup base
 
+//@{
+
+// include guard
+#ifndef uwadv_unittest_cppunitmini_hpp_
+#define uwadv_unittest_cppunitmini_hpp_
+
+// needed includes
 #include <cstring>
 
 #define CPPUNIT_NS CppUnitMini
@@ -151,5 +157,7 @@ namespace CppUnitMini
 #define CPPUNIT_ASSERT_EQUAL(X,Y) if ((X)!=(Y)){ TestCase::error("CPPUNIT_ASSERT_EQUAL", #X","#Y, __FILE__, __LINE__); return; }
 #define CPPUNIT_ASSERT_DOUBLES_EQUAL(X,Y,Z) if (!equalDoubles((X),(Y),(Z))){ TestCase::error("CPPUNIT_ASSERT_DOUBLES_EQUAL", #X","#Y","#Z, __FILE__, __LINE__); return; }
 #define CPPUNIT_MESSAGE(m) CppUnitMini::TestCase::message(m)
+#define CPPUNIT_ASSERT_FALSE() { TestCase::error("CPPUNIT_ASSERT", "false", __FILE__, __LINE__); return; }
 
-#endif // for header
+#endif
+//@}

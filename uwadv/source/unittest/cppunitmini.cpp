@@ -17,8 +17,7 @@
  * Modifications (C) 2005 Michael Fink
  */
 
-#include "common.hpp"
-#include "CppUnitMini.h"
+#include "cppunitmini.hpp"
 
 namespace CppUnitMini
 {
