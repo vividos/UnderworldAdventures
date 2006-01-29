@@ -122,7 +122,7 @@ void Base::FileSystem::FindFiles(const std::string& strSearchPath, std::vector<s
          break;
 
       default: // error
-         ua_trace("glob error: %u\n",err);
+         UaTrace("glob error: %u\n",err);
          break;
    }
 }
