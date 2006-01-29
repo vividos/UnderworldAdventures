@@ -123,6 +123,7 @@ int main (int argc, char *argv[])
 
 ],, no_sdl=yes,[echo $ac_n "cross compiling; assumed OK... $ac_c"])
        CFLAGS="$ac_save_CFLAGS"
+       CXXFLAGS="$ac_save_CXXFLAGS"
        LIBS="$ac_save_LIBS"
        AC_LANG_RESTORE
      fi
