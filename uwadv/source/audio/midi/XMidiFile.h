@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef XMIDIFILE_H_INCLUDED
 #define XMIDIFILE_H_INCLUDED
 
+#include "pent_include.h"
+
 class IDataSource;
 class OIDataSource;
 struct XMidiEvent;

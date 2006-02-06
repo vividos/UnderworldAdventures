@@ -984,7 +984,7 @@ struct uint64 {
 	}
 
 	void printx() {
-		if (high) std::printf ("%X%08X", high, low);
+		if (high) printf ("%X%08X", high, low);
 		else printf ("%X", low);
 	}
 };
