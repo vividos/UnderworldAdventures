@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "LowLevelMidiDriver.h"
 
 #include <AudioUnit/AudioUnit.h>
-#include <CoreMIDI/CoreMIDI.h>7
+#include <CoreMIDI/CoreMIDI.h>
 
 class CoreAudioMidiDriver : public LowLevelMidiDriver
 {
