@@ -23,11 +23,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "MidiDriver.h"
 #include "WindowsMidiDriver.h"
 #include "CoreAudioMidiDriver.h"
-#include "FMOplMidiDriver.h"
-#include "TimidityMidiDriver.h"
-#include "ALSAMidiDriver.h"
-#include "UnixSeqMidiDriver.h"
-#include "FluidSynthMidiDriver.h"
+//#include "FMOplMidiDriver.h"
+//#include "TimidityMidiDriver.h"
+//#include "ALSAMidiDriver.h"
+//#include "UnixSeqMidiDriver.h"
+//#include "FluidSynthMidiDriver.h"
 
 // Legacy Exult Midi Drivers
 #ifdef PENTAGRAM_IN_EXULT
