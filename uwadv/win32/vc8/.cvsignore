@@ -1,0 +1,7 @@
+*.ncb
+*.suo
+Debug
+Release
+audio.vcproj.*.user
+base.vcproj.*.user
+unittest.vcproj.*.user
