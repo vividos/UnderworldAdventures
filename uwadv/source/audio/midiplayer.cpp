@@ -50,7 +50,7 @@ public:
    //! ctor
    InputDataSource(SDL_RWops* rwops):m_rwops(rwops){}
    //! dtor
-	virtual ~InputDataSource(){ SDL_RWclose(rwops); }
+	virtual ~InputDataSource(){ SDL_RWclose(m_rwops); }
 
    //! reads 1 byte
    virtual uint8 read1(){ uint8 u; SDL_RWread(m_rwops, &u, 1, 1); return u; }
