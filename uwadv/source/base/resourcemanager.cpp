@@ -33,6 +33,7 @@
 #include <SDL_rwops.h>
 #include <algorithm>
 #include "zziplib/SDL_rwops_zzip.h"
+#include <cerrno>
 
 using Base::ResourceManager;
 using Base::Settings;
