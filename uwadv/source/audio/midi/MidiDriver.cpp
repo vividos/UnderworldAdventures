@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 #include "MidiDriver.h"
 #include <vector>
+#include <sstream>
 
 #include "MidiDriver.h"
 #include "WindowsMidiDriver.h"
@@ -40,11 +41,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 
-#ifdef PENTAGRAM_IN_EXULT
-#include "Configuration.h"
-#else
-#include "SettingManager.h"
-#endif
 
 static MidiDriver *Disabled_CreateInstance() { return 0; }
 
@@ -122,7 +118,8 @@ std::string MidiDriver::getDriverName(uint32 index)
 }
 
 // Create an Instance of a MidiDriver
-MidiDriver *MidiDriver::createInstance(std::string desired_driver,uint32 sample_rate,bool stereo)
+MidiDriver *MidiDriver::createInstance(std::string desired_driver,uint32 sample_rate,bool stereo,
+   MidiDriverSettings settings)
 {
 	InitMidiDriverVector();
 
@@ -190,33 +187,26 @@ MidiDriver *MidiDriver::createInstance(std::string desired_driver,uint32 sample_
 
 	pout << "Midi Output: " << (new_driver!=0?"Enabled":"Disabled") << std::endl;
 
+   if (new_driver != NULL)
+      new_driver->m_settings = settings;
+
 	return new_driver;
 }
 
 
-#ifdef PENTAGRAM_IN_EXULT
-
-std::string MidiDriver::getConfigSetting(std::string name,
-										 std::string defaultval)
-{
-	std::string key = "config/audio/midi/";
-	key += name;
-	std::string val;
-	config->value(key, val, defaultval.c_str());
-
-	return val;
-}
-
-#else
-
 std::string MidiDriver::getConfigSetting(std::string name,
 										 std::string defaultval)
 {
 	std::string val;
-	if (!SettingManager::get_instance()->get(name,val))
+
+   if (name == "windows_midi_device")
+   {
+      std::ostringstream buffer;
+      buffer << m_settings.m_iWin32MidiDevice;
+      val = buffer.str();
+   }
+   else
 		val = defaultval;
 
 	return val;
 }
-
-#endif
