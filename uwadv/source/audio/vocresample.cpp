@@ -1,6 +1,6 @@
 /*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Underworld Adventures - an Ultima Underworld remake project
+   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,13 +26,16 @@
 */
 
 // needed includes
-#include "common.hpp"
-#include "SDL_mixer.h"
-
-// resampling functions
-extern "C" {
+#include "audio.hpp"
+#include <SDL_mixer.h>
 #include "resamp.h"
-}
+#include <vector>
+
+namespace Detail
+{
+
+//! scale factor for FIR filter coefficients
+const double c_dScale = 10.0;
 
 //! FIR lowpass filter coefficients
 /*!
@@ -57,157 +60,143 @@ Target precision: IEEE 754 32 bit
  
 88 coefficients: 
 */
-double coeff[88] = {
--9.273426038183077E-004,     /* h[0] */
--8.219791035608015E-004,     /* h[1] */
--1.161312424511615E-003,     /* h[2] */
--1.568537131500143E-003,     /* h[3] */
--2.045454770142925E-003,     /* h[4] */
--2.591167007955027E-003,     /* h[5] */
--3.200927102287597E-003,     /* h[6] */
--3.865148676380812E-003,     /* h[7] */
--4.574736705315427E-003,     /* h[8] */
--5.310939848155502E-003,     /* h[9] */
--6.056872314866817E-003,     /* h[10] */
--6.788473123302472E-003,     /* h[11] */
--7.479464924853740E-003,     /* h[12] */
--8.100542706882766E-003,     /* h[13] */
--8.619773439068060E-003,     /* h[14] */
--9.003444658047498E-003,     /* h[15] */
--9.218134767398807E-003,     /* h[16] */
--9.229278363867888E-003,     /* h[17] */
--9.004748433553839E-003,     /* h[18] */
--8.514022884489460E-003,     /* h[19] */
--7.730263941086692E-003,     /* h[20] */
--6.631536774404570E-003,     /* h[21] */
--5.201514512893354E-003,     /* h[22] */
--3.430479320035765E-003,     /* h[23] */
--1.316478002975218E-003,     /* h[24] */
- 1.134949793158958E-003,     /* h[25] */
- 3.909418615041150E-003,     /* h[26] */
- 6.984028940547164E-003,     /* h[27] */
- 1.032722754119598E-002,     /* h[28] */
- 1.389890900433557E-002,     /* h[29] */
- 1.765132404596670E-002,     /* h[30] */
- 2.152991814950323E-002,     /* h[31] */
- 2.547426494834237E-002,     /* h[32] */
- 2.941972390411787E-002,     /* h[33] */
- 3.329852066321085E-002,     /* h[34] */
- 3.704145331541375E-002,     /* h[35] */
- 4.057964442832007E-002,     /* h[36] */
- 4.384612403464872E-002,     /* h[37] */
- 4.677774874672057E-002,     /* h[38] */
- 4.931689773898228E-002,     /* h[39] */
- 5.141288335570159E-002,     /* h[40] */
- 5.302346640288138E-002,     /* h[41] */
- 5.411589717373218E-002,     /* h[42] */
- 5.466777066559685E-002,     /* h[43] */
- 5.466777066559685E-002,     /* h[44] */
- 5.411589717373218E-002,     /* h[45] */
- 5.302346640288138E-002,     /* h[46] */
- 5.141288335570159E-002,     /* h[47] */
- 4.931689773898228E-002,     /* h[48] */
- 4.677774874672057E-002,     /* h[49] */
- 4.384612403464872E-002,     /* h[50] */
- 4.057964442832007E-002,     /* h[51] */
- 3.704145331541375E-002,     /* h[52] */
- 3.329852066321085E-002,     /* h[53] */
- 2.941972390411787E-002,     /* h[54] */
- 2.547426494834237E-002,     /* h[55] */
- 2.152991814950323E-002,     /* h[56] */
- 1.765132404596670E-002,     /* h[57] */
- 1.389890900433557E-002,     /* h[58] */
- 1.032722754119598E-002,     /* h[59] */
- 6.984028940547164E-003,     /* h[60] */
- 3.909418615041150E-003,     /* h[61] */
- 1.134949793158958E-003,     /* h[62] */
--1.316478002975218E-003,     /* h[63] */
--3.430479320035765E-003,     /* h[64] */
--5.201514512893354E-003,     /* h[65] */
--6.631536774404570E-003,     /* h[66] */
--7.730263941086692E-003,     /* h[67] */
--8.514022884489460E-003,     /* h[68] */
--9.004748433553839E-003,     /* h[69] */
--9.229278363867888E-003,     /* h[70] */
--9.218134767398807E-003,     /* h[71] */
--9.003444658047498E-003,     /* h[72] */
--8.619773439068060E-003,     /* h[73] */
--8.100542706882766E-003,     /* h[74] */
--7.479464924853740E-003,     /* h[75] */
--6.788473123302472E-003,     /* h[76] */
--6.056872314866817E-003,     /* h[77] */
--5.310939848155502E-003,     /* h[78] */
--4.574736705315427E-003,     /* h[79] */
--3.865148676380812E-003,     /* h[80] */
--3.200927102287597E-003,     /* h[81] */
--2.591167007955027E-003,     /* h[82] */
--2.045454770142925E-003,     /* h[83] */
--1.568537131500143E-003,     /* h[84] */
--1.161312424511615E-003,     /* h[85] */
--8.219791035608015E-004,     /* h[86] */
--9.273426038183077E-004      /* h[87] */
+double c_dCoeff[88] =
+{
+c_dScale*-9.273426038183077E-004,     /* h[0] */
+c_dScale*-8.219791035608015E-004,     /* h[1] */
+c_dScale*-1.161312424511615E-003,     /* h[2] */
+c_dScale*-1.568537131500143E-003,     /* h[3] */
+c_dScale*-2.045454770142925E-003,     /* h[4] */
+c_dScale*-2.591167007955027E-003,     /* h[5] */
+c_dScale*-3.200927102287597E-003,     /* h[6] */
+c_dScale*-3.865148676380812E-003,     /* h[7] */
+c_dScale*-4.574736705315427E-003,     /* h[8] */
+c_dScale*-5.310939848155502E-003,     /* h[9] */
+c_dScale*-6.056872314866817E-003,     /* h[10] */
+c_dScale*-6.788473123302472E-003,     /* h[11] */
+c_dScale*-7.479464924853740E-003,     /* h[12] */
+c_dScale*-8.100542706882766E-003,     /* h[13] */
+c_dScale*-8.619773439068060E-003,     /* h[14] */
+c_dScale*-9.003444658047498E-003,     /* h[15] */
+c_dScale*-9.218134767398807E-003,     /* h[16] */
+c_dScale*-9.229278363867888E-003,     /* h[17] */
+c_dScale*-9.004748433553839E-003,     /* h[18] */
+c_dScale*-8.514022884489460E-003,     /* h[19] */
+c_dScale*-7.730263941086692E-003,     /* h[20] */
+c_dScale*-6.631536774404570E-003,     /* h[21] */
+c_dScale*-5.201514512893354E-003,     /* h[22] */
+c_dScale*-3.430479320035765E-003,     /* h[23] */
+c_dScale*-1.316478002975218E-003,     /* h[24] */
+c_dScale* 1.134949793158958E-003,     /* h[25] */
+c_dScale* 3.909418615041150E-003,     /* h[26] */
+c_dScale* 6.984028940547164E-003,     /* h[27] */
+c_dScale* 1.032722754119598E-002,     /* h[28] */
+c_dScale* 1.389890900433557E-002,     /* h[29] */
+c_dScale* 1.765132404596670E-002,     /* h[30] */
+c_dScale* 2.152991814950323E-002,     /* h[31] */
+c_dScale* 2.547426494834237E-002,     /* h[32] */
+c_dScale* 2.941972390411787E-002,     /* h[33] */
+c_dScale* 3.329852066321085E-002,     /* h[34] */
+c_dScale* 3.704145331541375E-002,     /* h[35] */
+c_dScale* 4.057964442832007E-002,     /* h[36] */
+c_dScale* 4.384612403464872E-002,     /* h[37] */
+c_dScale* 4.677774874672057E-002,     /* h[38] */
+c_dScale* 4.931689773898228E-002,     /* h[39] */
+c_dScale* 5.141288335570159E-002,     /* h[40] */
+c_dScale* 5.302346640288138E-002,     /* h[41] */
+c_dScale* 5.411589717373218E-002,     /* h[42] */
+c_dScale* 5.466777066559685E-002,     /* h[43] */
+c_dScale* 5.466777066559685E-002,     /* h[44] */
+c_dScale* 5.411589717373218E-002,     /* h[45] */
+c_dScale* 5.302346640288138E-002,     /* h[46] */
+c_dScale* 5.141288335570159E-002,     /* h[47] */
+c_dScale* 4.931689773898228E-002,     /* h[48] */
+c_dScale* 4.677774874672057E-002,     /* h[49] */
+c_dScale* 4.384612403464872E-002,     /* h[50] */
+c_dScale* 4.057964442832007E-002,     /* h[51] */
+c_dScale* 3.704145331541375E-002,     /* h[52] */
+c_dScale* 3.329852066321085E-002,     /* h[53] */
+c_dScale* 2.941972390411787E-002,     /* h[54] */
+c_dScale* 2.547426494834237E-002,     /* h[55] */
+c_dScale* 2.152991814950323E-002,     /* h[56] */
+c_dScale* 1.765132404596670E-002,     /* h[57] */
+c_dScale* 1.389890900433557E-002,     /* h[58] */
+c_dScale* 1.032722754119598E-002,     /* h[59] */
+c_dScale* 6.984028940547164E-003,     /* h[60] */
+c_dScale* 3.909418615041150E-003,     /* h[61] */
+c_dScale* 1.134949793158958E-003,     /* h[62] */
+c_dScale*-1.316478002975218E-003,     /* h[63] */
+c_dScale*-3.430479320035765E-003,     /* h[64] */
+c_dScale*-5.201514512893354E-003,     /* h[65] */
+c_dScale*-6.631536774404570E-003,     /* h[66] */
+c_dScale*-7.730263941086692E-003,     /* h[67] */
+c_dScale*-8.514022884489460E-003,     /* h[68] */
+c_dScale*-9.004748433553839E-003,     /* h[69] */
+c_dScale*-9.229278363867888E-003,     /* h[70] */
+c_dScale*-9.218134767398807E-003,     /* h[71] */
+c_dScale*-9.003444658047498E-003,     /* h[72] */
+c_dScale*-8.619773439068060E-003,     /* h[73] */
+c_dScale*-8.100542706882766E-003,     /* h[74] */
+c_dScale*-7.479464924853740E-003,     /* h[75] */
+c_dScale*-6.788473123302472E-003,     /* h[76] */
+c_dScale*-6.056872314866817E-003,     /* h[77] */
+c_dScale*-5.310939848155502E-003,     /* h[78] */
+c_dScale*-4.574736705315427E-003,     /* h[79] */
+c_dScale*-3.865148676380812E-003,     /* h[80] */
+c_dScale*-3.200927102287597E-003,     /* h[81] */
+c_dScale*-2.591167007955027E-003,     /* h[82] */
+c_dScale*-2.045454770142925E-003,     /* h[83] */
+c_dScale*-1.568537131500143E-003,     /* h[84] */
+c_dScale*-1.161312424511615E-003,     /* h[85] */
+c_dScale*-8.219791035608015E-004,     /* h[86] */
+c_dScale*-9.273426038183077E-004      /* h[87] */
 };
 
 //! interpolation factor
-const int interpolation = 11;
+const int c_iInterpolation = 11;
 
 //! decimation factor
-const int decimation = 6;
+const int c_iDecimation = 6;
 
 
-//! resamples voc chunk to appropriate samplerate
-/*! Resamples a Mix_Chunk from 12048 Hz to 22088 Hz (almost the same as the
-    mixer samplerate of 22050 Hz. The resample code from
-    http://www.dspguru.com/sw/opendsp/alglib.htm was used, and the lowpass
-    filter was designed with FIRfilt.
+//! Resamples audio data from 12048 Hz to 22088 Hz
+/*! The resample code from http://www.dspguru.com/sw/opendsp/alglib.htm was
+    used, and the lowpass filter was designed with FIRfilt.
 
-    The sample data is first upsampled to 132528 Hz, using the ::interpolation
-    factor and filtered with a FIR lowpass filter with coefficients ::coeff,
+    The sample data is first upsampled to 132528 Hz, using the c_iInterpolation
+    factor and filtered with a FIR lowpass filter with coefficients c_dCoeff,
     which cutoff frequency is at 11025 Hz. As last step the signal is
-    decimated by factor ::decimation to 22088 Hz.
+    decimated by factor c_iDecimation to 22088 Hz.
 
-    \param mc the Mix_Chunk with voc samples to resample
+    \param vecSourceSamples source audio samples
+    \param vecDestSamples resampled audio
+    \todo make dest vector smaller
 */
-void ua_audio_resample_voc(Mix_Chunk* mc)
+void ResampleChunk12048_22050(const std::vector<double>& vecSourceSamples,
+   std::vector<double>& vecDestSamples)
 {
-   // assumes we got "16-bit signed int" samples from the call to
-   // SDL_ConvertAudio() in Mix_LoadWAV_RW()
-   Sint16* samples = reinterpret_cast<Sint16*>(mc->abuf);
-   unsigned int srclen = mc->alen/2;
-   unsigned int destlen = unsigned(srclen*double(interpolation)/decimation + 1.0);
-
-   std::vector<double> inbuf, outbuf;
-   inbuf.resize(srclen,0.0);
-   outbuf.resize(destlen+100, 0.0);
-
-   // fill input buffer
-   for(unsigned int i=0; i<srclen; i++)
-      inbuf[i] = static_cast<double>(samples[i]);
+   unsigned int uiDestSize = static_cast<unsigned int>(
+      vecSourceSamples.size()*static_cast<double>(c_iInterpolation)/c_iDecimation + 1.0);
+   vecDestSamples.resize(uiDestSize+100, 0.0);
 
    // delay line for polyphase filter
-   double delayline[8] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+   double dDelayline[8] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 
    // number of taps per polyphase filter
-   int num_taps = int((sizeof(coeff)/sizeof(coeff[0]))/interpolation);
+   int iNumTaps = SDL_TABLESIZE(c_dCoeff)/c_iInterpolation;
 
-   int curphase=0;
-   int out_samples=0;
+   int iCurPhase=0;
+   int iOutSamples=0;
 
    // resample
-   resamp0(interpolation,decimation,num_taps,
-      &curphase,coeff,delayline,
-      srclen,&inbuf[0],
-      &outbuf[0],&out_samples);
+   resamp0(c_iInterpolation, c_iDecimation, iNumTaps,
+      &iCurPhase, c_dCoeff, dDelayline,
+      vecSourceSamples.size(), &vecSourceSamples[0],
+      &vecDestSamples[0], &iOutSamples);
 
-   // as we upsample the signal, we must alloc a larger buffer
-   SDL_FreeWAV(mc->abuf);
-   mc->abuf = (Uint8*)malloc(out_samples*2);
-   samples = reinterpret_cast<Sint16*>(mc->abuf);
-
-   // copy samples to new buffer
-   for(int j=0; j<out_samples; j++)
-      samples[j] = static_cast<Sint16>(outbuf[j]);
-
-   // adjust length of buffer, too
-   mc->alen = out_samples*2;
+   // resize and remove last samples (could be distorted)
+   vecDestSamples.resize(iOutSamples-SDL_TABLESIZE(dDelayline));
+// TODO   vecDestSamples.swap(std::vector<double>(vecDestSamples));
 }
+
+} // namespace Detail

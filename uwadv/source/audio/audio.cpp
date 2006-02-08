@@ -1,6 +1,6 @@
 /*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Underworld Adventures - an Ultima Underworld remake project
+   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -21,287 +21,305 @@
 */
 /*! \file audio.cpp
 
-   \brief audio interface implementation
+   \brief audio manager implementation
 
    audio manager implementation; does the audio music and sound playback using
-   the audio part of SDL and the ua_midi_player class.
+   SDL and SDL_mixer and the midi classes borrowed from Pentagram.
 
 */
 
 // needed includes
-#include "common.hpp"
 #include "audio.hpp"
+#include "playlist.hpp"
+#include "base.hpp"
 #include "settings.hpp"
-#include "files.hpp"
-#include "midi.hpp"
-#include "SDL_mixer.h"
-#include <string>
+#include "resourcemanager.hpp"
+#include <SDL.h>
+#include <SDL_mixer.h>
+#include "midiplayer.hpp"
+#include "vocfile.hpp"
+#include "string.hpp"
+#include "file.hpp"
 
-
-// external functions
-
-//! resamples voc file recorded at 12000 Hz to (approximately) 22050 Hz
-extern void ua_audio_resample_voc(Mix_Chunk* mc);
-
-
-// ua_audio_manager methods
-
-ua_audio_manager::ua_audio_manager()
-:midipl(NULL), curtrack(NULL)
+namespace Detail
 {
-}
 
-/*! Shuts down the SDL and SDL_mixer audio subsystem and deletes the midi
-    player instance.
-*/
-ua_audio_manager::~ua_audio_manager()
+//! internal audio manager data
+class AudioManagerData
 {
-   stop_sound();
-   stop_music();
-
-   Mix_CloseAudio();
-   SDL_QuitSubSystem(SDL_INIT_AUDIO);
-
-   delete midipl;
-   midipl = NULL;
-}
-
-/*! Initializes the audio manager using SDL and SDL_mixer. Creates the midi
-    player and loads the sound track playlist.
-
-    \param settings settings object
-    \param filesmgr files manager object
-*/
-void ua_audio_manager::init(ua_settings& settings, ua_files_manager& filesmgr)
-{
-   ua_trace("init audio subsystem ... ");
-
-   if (!settings.get_bool(ua_setting_audio_enabled))
+public:
+   //! ctor
+   AudioManagerData(const Base::Settings& settings)
+      :m_midiPlayer(settings),
+       m_pCurrentTrack(NULL),
+       m_resourceManager(settings),
+       m_strUwPath(settings.GetString(Base::settingUnderworldPath))
    {
-      ua_trace("disabled by settings\n\n");
+   }
+
+   //! returns underworld game path
+   std::string GetUwPath() const { return m_strUwPath; }
+
+   //! returns current music track
+   Mix_Music*& GetCurrentTrack(){ return m_pCurrentTrack; }
+
+   //! returns resource manager
+   Base::ResourceManager& GetResourceManager(){ return m_resourceManager; }
+
+   //! returns playlist
+   Audio::Playlist& GetPlaylist(){ return m_playlist; }
+
+   //! returns midi player
+   Audio::MidiPlayer& GetMidiPlayer(){ return m_midiPlayer; }
+
+private:
+   //! midi player
+   Audio::MidiPlayer m_midiPlayer;
+
+   //! playlist
+   Audio::Playlist m_playlist;
+
+   //! resource manager
+   Base::ResourceManager m_resourceManager;
+
+   //! current music track
+   Mix_Music* m_pCurrentTrack;
+
+   //! path to current uw game
+   std::string m_strUwPath;
+};
+
+//! frees audio chunk when channel stops playing (callback function)
+/*! Callback function to get notified when a digital audio channel has
+    finished playing back; frees audio chunk.
+
+    \param iChannel channel number that stops playback
+*/
+void MixerChannelFinished(int iChannel)
+{
+   Mix_Chunk* mc = Mix_GetChunk(iChannel);
+   if (mc != NULL)
+      Mix_FreeChunk(mc);
+}
+
+}
+
+using Audio::AudioManager;
+
+/*! Initializes audio subsystem using SDL and SDL_mixer. Note that game type
+    must have been set to properly load the playlist.
+*/
+AudioManager::AudioManager(const Base::Settings& settings)
+:m_apData(new Detail::AudioManagerData(settings))
+{
+   UaAssert(m_apData.get() != NULL);
+
+   UaTrace("init audio subsystem ... ");
+
+   if (!settings.GetBool(Base::settingAudioEnabled))
+   {
+      UaTrace("disabled\n");
       return;
    }
 
-   // init mixer
-   SDL_Init(SDL_INIT_AUDIO);
-   Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 4096);
-   Mix_ChannelFinished(mixer_channel_finished);
-
-   ua_trace(" %s\n", Mix_GetError());
-
-   // create midi player
-   midipl = new ua_midi_player;
-   midipl->init_player(settings);
-   midipl->init_driver();
-
-   // get uw path for future use
-   uw_path = settings.get_string(ua_setting_uw_path);
-
-   // do playlist pathname
-   std::string playlist_name(settings.get_string(ua_setting_game_prefix));
-   playlist_name.append("/audio/music.m3u");
-
-   load_playlist(settings,filesmgr,playlist_name.c_str());
-
-   // print out SDL_mixer version
-   const SDL_version* mixer_ver = Mix_Linked_Version();
-   ua_trace("using SDL_mixer version %u.%u.%u\n\n",
-      mixer_ver->major, mixer_ver->minor, mixer_ver->patch);
-}
-
-/*! Plays back a cutscene sound stored in a .voc file. The file resides in
-    the "sound" folder of uw. The audio samples are resampled to 22050 Hz
-    then. The soundname parameter is used to determine the filename:
-    %uwpath%/sound/{soundname}.voc
-
-    \param soundname base name of the sound file to play back
-*/
-void ua_audio_manager::play_sound(const char* soundname)
-{
-   // construct filename
-   std::string vocname(uw_path);
-   vocname.append("sound/");
-   vocname.append(soundname);
-   vocname.append(".voc");
-
-   // start playing
-   Mix_Chunk* mc = Mix_LoadWAV(vocname.c_str());
-   if (mc)
+   // init SDL audio subsystem and SDL_mixer
    {
-      // note: Mix_LoadWAV() doesn't resample the waveform to the specified
-      // mixer samplerate, so we must do it by ourselves
-      ua_audio_resample_voc(mc);
+      SDL_Init(SDL_INIT_AUDIO);
+      Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 4096);
+      Mix_ChannelFinished(Detail::MixerChannelFinished);
 
-      Mix_PlayChannel(-1, mc, 0);
+      UaTrace(" %s\n", Mix_GetError());
+
+      // print out SDL_mixer version
+      const SDL_version* mixerVersion = Mix_Linked_Version();
+      UaTrace("using SDL_mixer %u.%u.%u\n",
+         mixerVersion->major, mixerVersion->minor, mixerVersion->patch);
+
+      int iSampleFrequency = 0;
+      Uint16 uiFormat = 0;
+      int iChannels = 0;
+      Mix_QuerySpec(&iSampleFrequency, &uiFormat, &iChannels);
+
+      UaTrace("samplerate: %u Hz, %u channels, format: %s\n",
+         iSampleFrequency, iChannels,
+         uiFormat == AUDIO_U8 ? "U8" :
+         uiFormat == AUDIO_S8 ? "S8" :
+         uiFormat == AUDIO_U16LSB ? "U16LSB" :
+         uiFormat == AUDIO_S16LSB ? "S16LSB" :
+         uiFormat == AUDIO_U16MSB ? "U16MSB" :
+         uiFormat == AUDIO_S16MSB ? "S16MSB" : "unknown");
+   }
+
+   // load playlist
+   {
+      std::string strPlaylistName =
+         settings.GetString(Base::settingGamePrefix) + "/audio/music.m3u";
+
+      Base::ResourceManager resMgr(settings);
+      SDL_RWops* rwops = resMgr.GetResourceFile(strPlaylistName);
+      if (rwops != NULL)
+         m_apData->GetPlaylist() = Playlist(settings, rwops);
    }
 }
 
-/*! stops a cutscene sound that is currently playing back. */
-void ua_audio_manager::stop_sound()
+/*! Shuts down SDL audio subsystem and SDL_mixer. */
+AudioManager::~AudioManager()
+{
+   StopSound();
+   StopMusic();
+
+   Mix_CloseAudio();
+   SDL_QuitSubSystem(SDL_INIT_AUDIO);
+}
+
+/*! Plays back a cutscene sound stored in a .voc file in the "sound" folder of
+    the current game. The audio samples are properly resampled for SDL_mixer
+    to process. The strSoundName parameter is used to determine the filename:
+    %uwpath%/sound/{strSoundName}.voc
+
+    \param strSoundName base name of the sound file to play back
+*/
+void AudioManager::PlaySound(const std::string& strSoundName)
+{
+   UaAssert(m_apData.get() != NULL);
+
+   // construct filename
+   std::string strVocFilename =
+      m_apData->GetUwPath() + "/sound/" +strSoundName + ".voc";
+
+   // get .voc file
+   SDL_RWops* rwops = NULL;
+   try
+   {
+      m_apData->GetResourceManager().GetUnderworldFile(Base::resourceGameUw, strVocFilename);
+   }
+   catch(Base::FileSystemException&)
+   {
+      UaTrace("couldn't load sound file %s\n", strVocFilename.c_str());
+      return;
+   }
+
+   VoiceFile vocFile(rwops);
+
+   // start playing
+   Mix_Chunk* mc = Mix_LoadWAV_RW(vocFile.GetFileData(), true);
+   if (mc == NULL)
+   {
+      UaTrace("couldn't load sound file %s: %s\n", strVocFilename.c_str(), Mix_GetError());
+      return;
+   }
+
+   Mix_PlayChannel(-1, mc, 0);
+}
+
+/*! Stops a sound that is currently playing back. */
+void AudioManager::StopSound()
 {
    Mix_HaltChannel(-1);
 }
 
-/*! Plays back a sound effect specified. The playback stops when the sfx is
-    finished.
+/*! Plays back a sound effect. The playback stops when the sound effect is
+    finished. Note: since only uw2 has real sound effects stored in .voc files,
+    this method only plays back sound effects when uw2 path is configured
+    properly.
 
-    \param sfx sound effect type to play back
-
+    \param sfxType sound effect type to play back
     \todo implement
 */
-void ua_audio_manager::play_sfx(ua_audio_sfx_type sfx)
+void AudioManager::PlaySoundEffect(Audio::ESoundEffectType sfxType)
 {
 }
 
 /*! Starts playing back a sound track from the music playlist. Midi files with
     extensions .mid or .xmi are played back using the appropriate midi driver
-    through ua_midi_player. Other file types are tried to load via SDL_mixer,
-    with the function Mix_LoadMUS(), so all music types that the SDL_mixer.dll
+    through MidiPlayer. Other file types are tried to load via SDL_mixer,
+    with the function Mix_LoadMUS(), so all music types that SDL_mixer.dll
     supports can be played back. The distributed SDL_mixer.dll can only play
     back Ogg Vorbis and some tracker formats. mp3 files are not supported,
     since SMPEG is not linked it (it's an ancient format anyway).
 
-    \param music the position in music playlist of the track to play back
-    \param repeat indicates if track should be repeated when it has stopped
+    \param uiMusic the position in music playlist of the track to play back
+    \param bRepeat indicates if track should be repeated when it has stopped
+    \todo use EMusicTrackUw1 or a similar mapping to start music instead
 */
-void ua_audio_manager::start_music(unsigned int music, bool repeat)
+void AudioManager::StartMusicTrack(unsigned int uiMusic, bool bRepeat)
 {
-   if (music>=music_playlist.size()) return;
+   Playlist& playlist = m_apData->GetPlaylist();
 
-   std::string trackname = music_playlist[music];
+   if (uiMusic >= playlist.GetCount())
+      return;
 
-   ua_trace("audio: playing back %s",trackname.c_str());
+   std::string strTrackname = playlist.GetPlaylistTrack(uiMusic);
+
+   UaTrace("audio: playing back %s", strTrackname.c_str());
 
    // find extension
-   std::string ext;
-   std::string::size_type pos = trackname.find_last_of('.');
+   std::string strExt;
+   std::string::size_type pos = strTrackname.find_last_of('.');
 
    if (pos != std::string::npos)
-      ext.assign(trackname.substr(pos));
+      strExt.assign(strTrackname.substr(pos));
 
    // make extension lowercase
-   ua_str_lowercase(ext);
+   Base::String::Lowercase(strExt);
 
    // check for midi tracks
-   if (ext.find(".xmi") != std::string::npos ||
-       ext.find(".mid") != std::string::npos)
+   if (strExt.find(".xmi") != std::string::npos ||
+       strExt.find(".mid") != std::string::npos)
    {
-      // start midi player
-      midipl->start_track(trackname.c_str(),0,repeat);
+      try
+      {
+         SDL_RWops* rwops = m_apData->GetResourceManager().
+            GetUnderworldFile(Base::resourceGameUw, strTrackname);
+
+         // start midi player track
+         m_apData->GetMidiPlayer().PlayFile(rwops, bRepeat);
+      }
+      catch(Base::Exception&)
+      {
+      }
    }
    else
    {
-      if (curtrack)
-         Mix_FreeMusic(curtrack);
+      Mix_Music*& mm = m_apData->GetCurrentTrack();
+
+      if (mm)
+         Mix_FreeMusic(mm);
 
       // start music track via SDL_mixer
-      curtrack = Mix_LoadMUS(trackname.c_str());
-      if (curtrack)
-         Mix_PlayMusic(curtrack, repeat ? -1 : 0);
+      mm = Mix_LoadMUS(strTrackname.c_str());
+      if (mm)
+         Mix_PlayMusic(mm, bRepeat ? -1 : 0);
       else
-         ua_trace(" (%s)",Mix_GetError());
+         UaTrace(" (%s)", Mix_GetError());
    }
-   ua_trace("\n");
+   UaTrace("\n");
 }
 
-/*! Fades out the currently playing track using the time specified.
+/*! Fades out the currently playing music track using the specified time.
     The method currently only fades out tracks playing back using SDL_mixer.
     Other midi drivers are not supported.
 
-    \param time time to fade out music to null volume
+    \param iTimeMs time to fade out music to null volume, in milliseconds
 */
-void ua_audio_manager::fadeout_music(double time)
+void AudioManager::FadeoutMusic(int iTimeMs)
 {
-   Mix_FadeOutMusic(static_cast<int>(time*1000.0));
+   Mix_FadeOutMusic(iTimeMs);
 }
 
 /*! Stops the current music track, either played back by SDL_mixer or the
-    current midi driver.
+    midi player.
 */
-void ua_audio_manager::stop_music()
+void AudioManager::StopMusic()
 {
-   if (curtrack)
+   UaAssert(m_apData.get() != NULL);
+
+   Mix_Music*& mm = m_apData->GetCurrentTrack();
+   if (mm != NULL)
    {
-      Mix_FreeMusic(curtrack);
-      curtrack = NULL;
+      Mix_FreeMusic(mm);
+      mm = NULL;
    }
 
-   if (midipl)
-      midipl->stop_track();
-}
-
-//! music playlist loader helper class
-class ua_audio_playlist_loader: public ua_cfgfile
-{
-public:
-   //! ctor
-   ua_audio_playlist_loader(std::vector<std::string>& the_playlist,
-      ua_files_manager& the_filesmgr, const char* uwpath)
-      :playlist(the_playlist), filesmgr(the_filesmgr), uw_path(uwpath){}
-
-protected:
-   //! reads a raw line
-   virtual void read_raw_line(const char* the_line)
-   {
-      std::string line(the_line);
-
-      // check for # chars
-      std::string::size_type pos = line.find_first_of('#');
-      if (pos != std::string::npos)
-         line.erase(pos);
-
-      if (line.size()==0)
-         return;
-
-      filesmgr.replace_system_vars(line);
-
-      // additionally replace %uw-path%
-      pos = line.find("%uw-path%");
-      if (pos != std::string::npos)
-         line.replace(pos,9,uw_path);
-
-      playlist.push_back(line);
-   }
-
-protected:
-   //! playlist to load
-   std::vector<std::string>& playlist;
-
-   //! files manager to use
-   ua_files_manager& filesmgr;
-
-   //! uw path
-   std::string uw_path;
-};
-
-/*! Loads the music soundtrack playlist from the given filename. The file can
-    be stored in the uadata resource file or in the equivalent path. The file
-    can contain, among the placeholders recognized by
-    ua_files_manager::replace_system_vars(), the placeholder %uw-path%
-    that specifies the current uw path.
-
-    \param settings settings object
-    \param filesmgr files manager object
-    \param filename playlist filename
-*/
-void ua_audio_manager::load_playlist(ua_settings& settings,
-   ua_files_manager& filesmgr, const char* filename)
-{
-   SDL_RWops* m3u = filesmgr.get_uadata_file(filename);
-   if (m3u==NULL) return;
-
-   ua_audio_playlist_loader loader(music_playlist, filesmgr, uw_path.c_str());
-   loader.load(m3u);
-}
-
-/*! Callback function to get notified when a digital audio channel has
-    finished playing back; frees audio chunk played back.
-
-    \param channel channel number that stops playback
-*/
-void ua_audio_manager::mixer_channel_finished(int channel)
-{
-   Mix_Chunk* mc = Mix_GetChunk(channel);
-   if (mc != NULL)
-      Mix_FreeChunk(mc);
+   m_apData->GetMidiPlayer().Stop();
 }

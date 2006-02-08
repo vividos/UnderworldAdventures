@@ -78,6 +78,14 @@ Outputs:
 
 *****************************************************************************/
 
+#ifndef uwadv_audio_resamp_h_
+#define uwadv_audio_resamp_h_
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #define resamp resamp1          /* select resamp0 or resamp1 here */
 
 /* resamp0 is simpler but slower */
@@ -107,3 +115,9 @@ void resamp_complex(int interp_factor_L, int decim_factor_M,
             double *const p_Z_imag, int num_inp, const double *p_inp_real,
             const double *p_inp_imag, double *p_out_real,
             double *p_out_imag, int * p_num_out);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

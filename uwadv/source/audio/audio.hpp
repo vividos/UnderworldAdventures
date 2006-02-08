@@ -1,6 +1,6 @@
 /*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Underworld Adventures - an Ultima Underworld remake project
+   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -24,73 +24,113 @@
    \brief audio manager definition
 
 */
-/*! \defgroup audio Audio Components
+/*! \defgroup audio Audio components
 
    The audio subsystem takes care of all tasks that have to do with playing
    back the sound track, sound effects (such as steps when walking) and the
    cutscene speech.
 
-   The audio subsystem can be controlled via the ua_audio_manager class that
+   The audio subsystem can be controlled via the AudioManager class that
    has functions to do these tasks. Sound track pieces are played back using
    a playlist loaded at initialisation; they can be faded out, e.g. when a
    screen ends. Sound effects are referenced by the enum ua_audio_sfx_type.
    Cutscene speech is played back from uw's .voc files; they are internally
    resampled to 22050 Hz because they are in an unusual format.
 
-   The Audio Components Module depends on the Base Components Module.
+   The Audio module depends on the Base module.
 */
-//@{
 
 // include guard
-#ifndef uwadv_audio_hpp_
-#define uwadv_audio_hpp_
+#ifndef uwadv_audio_audio_hpp_
+#define uwadv_audio_audio_hpp_
 
 // needed includes
+#include "base.hpp"
+#include <string>
+#include <memory> // for std::auto_ptr
 
+namespace Base
+{
+   class Settings;
+}
 
-// forward references
-class ua_files_manager;
-class ua_settings;
-class ua_midi_player;
-//! forward definition for the SDL_Mixer data structure
-typedef struct _Mix_Music Mix_Music;
+namespace Detail
+{
+   class AudioManagerData;
+}
+
+//! Audio namespace \ingroup audio
+namespace Audio
+{
+class Playlist;
+class MidiPlayer;
 
 
 // enums
 
 //! all uw1 music tracks
-/*! The enum value can be used in a call to ua_audio_manager::start_music()
+/*! The enum value can be used in a call to AudioManager::start_music()
     and reflects the position in the music playlist, not the actual filenames
     in the sound folder */
-enum ua_music_track_uw1
+enum EMusicTrackUw1
 {
-   ua_music_uw1_introduction=0,
-   ua_music_uw1_dark_abyss,
-   ua_music_uw1_descent,
-   ua_music_uw1_wanderer,
-   ua_music_uw1_battlefield,
-   ua_music_uw1_combat,
-   ua_music_uw1_injured,
-   ua_music_uw1_armed,
-   ua_music_uw1_victory,
-   ua_music_uw1_death,
-   ua_music_uw1_fleeing,
-   ua_music_uw1_maps_legends
+   musicUw1_Introduction=0,
+   musicUw1_DarkAbyss,
+   musicUw1_Descent,
+   musicUw1_Wanderer,
+   musicUw1_Battlefield,
+   musicUw1_Combat,
+   musicUw1_Injured,
+   musicUw1_Armed,
+   musicUw1_Victory,
+   musicUw1_Death,
+   musicUw1_Fleeing,
+   musicUw1_MapsAndLegends
 };
 
 
 //! enumeration of all sound effects
-/*! \todo add all needed audio sfx types */
-enum ua_audio_sfx_type
+/*! \todo find out and add add remaining audio sfx types */
+enum ESoundEffectType
 {
-   ua_sfx_steps=0,
+   sfxStepsLeft=0,   // SP01
+   sfxStepsRight,    // SP02
+   // SP03 ??
+   // SP04 ??
+   sfxSwimWater,     // SP05
+   sfxPlayerHit,     // SP06
+   sfxWeaponHit,     // SP07
+   sfxWeaponHit2,    // SP08
+   sfxArrow,         // SP09
+   sfxWeaponMiss,    // SP10
+   sfxMovingDoor,    // SP11
+   // SP12 locked door?
+   // SP18 some grumbling?
+   sfxCrankPortcullis, // SP20
+   sfxWalkWater,     // SP24 really water walking?
+   // SP26 some more water walking?
+   // SP27 ??
+   // SP28 ??
+   sfxCastSpell,     // SP29
+   sfxDrinkBottle,   // SP30 really?
+   sfxHaveFood,      // SP31
+   sfxHaveFood2,     // SP33 really?
+   // SP34
+   // SP35
+   // SP36
+   // SP37 eating apple?
+   // SP40
+   // SP47
+   // SP48
+   sfxGuardianLaugh1,// UW00
+   sfxGuardianLaugh2,// UW01
 };
 
 
 // classes
 
-//! audio interface class
-/*! The audio manager lets the user start and stop playing music tracks, sound
+//! Audio manager
+/*! Lets the user start and stop playing music tracks, sound
     effects and *.voc sounds in the background. music tracks can be repeated
     indefinitely.
 
@@ -106,61 +146,40 @@ enum ua_audio_sfx_type
     and playlist entries can also contain the placeholders %uw-path%, %uahome%
     and %uadata%.
 
-    Be sure to only use the ua_audio_manager object only once, since it uses
+    Be sure to only use the AudioManager object only once, since it uses
     the audio-part of SDL and SDL_mixer to play back audio.
 */
-class ua_audio_manager
+class AudioManager
 {
 public:
    //! ctor
-   ua_audio_manager();
+   AudioManager(const Base::Settings& settings);
    //! dtor
-   ~ua_audio_manager();
+   ~AudioManager();
 
-   //! initializes audio
-   void init(ua_settings& settings, ua_files_manager& filesmgr);
-
-   //! plays a sound; stops when finished
-   void play_sound(const char* soundname);
+   //! plays a sound file; stops when finished
+   void PlaySound(const std::string& strSoundName);
 
    //! stops sound playback
-   void stop_sound();
+   void StopSound();
 
-   //! plays a special effect sound
-   void play_sfx(ua_audio_sfx_type sfx);
+   //! plays a special sound effect
+   void PlaySoundEffect(ESoundEffectType sfxType);
 
-   //! starts music playback
-   void start_music(unsigned int music, bool repeat);
+   //! starts music track playback
+   void StartMusicTrack(unsigned int uiMusic, bool bRepeat);
 
-   //! fades out currently playing music track; fadeout time in seconds
-   void fadeout_music(double time);
+   //! fades out currently playing music track; fadeout time in milliseconds
+   void FadeoutMusic(int iTimeMs);
 
-   //! stops music playback
-   void stop_music();
+   //! stops music track playback
+   void StopMusic();
 
-protected:
-   //! loads music playlist
-   void load_playlist(ua_settings& settings, ua_files_manager& filesmgr,
-      const char* filename);
-
-   //! frees audio chunk when channel stops playing (callback function)
-   static void ua_audio_manager::mixer_channel_finished(int channel);
-
-protected:
-
-   //! midi player
-   ua_midi_player* midipl;
-
-   //! playlist with all music files
-   std::vector<std::string> music_playlist;
-
-   //! path to uw base folder
-   std::string uw_path;
-
-   //! current music track
-   Mix_Music* curtrack;
+private:
+   //! audio manager internal data
+   std::auto_ptr<Detail::AudioManagerData> m_apData;
 };
 
+} // namespace Audio
 
 #endif
-//@}

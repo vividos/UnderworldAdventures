@@ -1,0 +1,44 @@
+#
+# Underworld Adventures - an Ultima Underworld remake project
+# Copyright (c) 2006 Michael Fink
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# Makefile.common for audio folder
+#
+# $Id$
+#
+
+libaudio_la_SOURCES = \
+   audio.cpp audio.hpp \
+   midiplayer.cpp midiplayer.hpp \
+   playlist.cpp playlist.hpp \
+   resamp.c resamp.h \
+   vocfile.cpp vocfile.hpp \
+   vocresample.cpp \
+   midi/common_types.h \
+   midi/CoreAudioMidiDriver.cpp midi/CoreAudioMidiDriver.h \
+   midi/IDataSource.h \
+   midi/LowLevelMidiDriver.cpp midi/LowLevelMidiDriver.h \
+   midi/MidiDriver.cpp midi/MidiDriver.h \
+   midi/ODataSource.h \
+   midi/pent_include.h \
+   midi/WindowsMidiDriver.cpp midi/WindowsMidiDriver.h \
+   midi/XMidiEvent.h  \
+   midi/XMidiEventList.cpp midi/XMidiEventList.h \
+   midi/XMidiFile.cpp midi/XMidiFile.h \
+   midi/XMidiNoteStack.h \
+   midi/XMidiSequence.cpp midi/XMidiSequence.h \
+   midi/XMidiSequenceHandler.h
