@@ -48,12 +48,14 @@ rm -f uwadv.spec source/uwadv.cfg
 rm -f Makefile.in Makefile
 rm -f hacking/Makefile.in hacking/Makefile
 rm -f source/Makefile.in source/Makefile 
+rm -f source/audio/Makefile.in source/audio/Makefile
 rm -f source/base/Makefile.in source/base/Makefile
 rm -f source/base/zziplib/Makefile.in source/base/zziplib/Makefile
 rm -f source/unittest/Makefile.in source/unittest/Makefile
 rm -f source/win32/Makefile.in source/win32/Makefile
 rm -f uadata/Makefile.in uadata/Makefile
 rm -rf source/.deps
+rm -rf source/audio/.deps
 rm -rf source/base/.deps
 rm -rf source/base/zziplib/.deps
 rm -rf source/unittest/.deps

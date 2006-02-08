@@ -21,9 +21,8 @@
 # $Id$
 #
 
-SUBDIRS = base unittest win32
-#	audio base conv debug import macosx renderer resource \
-#	screens script tools uastudio ui underw 
+SUBDIRS = base audio unittest win32
+# conv debug import renderer resource screens script tools uastudio ui underw 
 
 # compiler options
 #INCLUDES = -I$(srcdir)/base -I$(srcdir)/conv -I$(srcdir)/audio -I$(srcdir)/ui -I$(srcdir)/renderer -I$(srcdir)/underw -I$(srcdir)/import -I$(srcdir)/script -I$(srcdir)/script/lua/include

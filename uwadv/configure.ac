@@ -187,9 +187,11 @@ AC_SUBST(UADATAPATH)
 AC_CONFIG_FILES([
 Makefile
 source/Makefile
+source/audio/Makefile
 source/base/Makefile
 source/base/zziplib/Makefile
 source/unittest/Makefile
+source/win32/Makefile
 uadata/Makefile
 hacking/Makefile
 uwadv.spec:linux/uwadv.spec.in
