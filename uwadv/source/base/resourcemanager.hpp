@@ -37,6 +37,14 @@ struct SDL_RWops;
 namespace Base
 {
 
+//! resource path for GetUnderworldFile()
+enum EUnderworldResourcePath
+{
+   resourceGameUw,   //!< load file from currently selected uw game
+   resourceGameUw1,  //!< load file from uw1 game (if path is specified)
+   resourceGameUw2,  //!< load file from uw2 game (if path is specified)
+};
+
 class Settings;
 
 //! Resource manager
@@ -50,12 +58,28 @@ public:
    //! returns "uadata" resource file
    SDL_RWops* GetResourceFile(const std::string& strRelFilename);
 
+   //! returns ultima underworld file
+   SDL_RWops* GetUnderworldFile(EUnderworldResourcePath resPath, const std::string& strRelFilePath);
+
+protected:
+   //! maps lowercase filename to real filename for underworld data files
+   void MapUnderworldFilename(std::string& strRelFilename);
+
 protected:
    //! home path
    std::string m_strHomePath;
 
    //! path to uadata resources
    std::string m_strUaDataPath;
+
+   //! path to uw game currently selected
+   std::string m_strUwPath;
+
+   //! path to uw1 game
+   std::string m_strUw1Path;
+
+   //! path to uw2 game
+   std::string m_strUw2Path;
 };
 
 } // namespace Base

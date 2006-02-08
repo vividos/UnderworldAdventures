@@ -48,7 +48,10 @@ std::string GetHomePath();
 
 /*! The settingUadataPath setting must be set in the settings object. */
 ResourceManager::ResourceManager(const Settings& settings)
-:m_strUaDataPath(settings.GetString(Base::settingUadataPath))
+:m_strUaDataPath(settings.GetString(Base::settingUadataPath)),
+ m_strUwPath(settings.GetString(Base::settingUnderworldPath)),
+ m_strUw1Path(settings.GetString(Base::settingUw1Path)),
+ m_strUw2Path(settings.GetString(Base::settingUw2Path))
 {
    UaAssert(m_strUaDataPath.size() > 0);
 }
@@ -93,4 +96,34 @@ SDL_RWops* ResourceManager::GetResourceFile(const std::string& strRelFilename)
    }
 
    return rwops;
+}
+
+/*! \todo implement reading from a zip file, e.g. uw_demo.zip
+*/
+SDL_RWops* ResourceManager::GetUnderworldFile(Base::EUnderworldResourcePath resPath, const std::string& strRelFilePath)
+{
+   std::string strFilename;
+
+   switch(resPath)
+   {
+   case resourceGameUw: strFilename = m_strUwPath; break;
+   case resourceGameUw1: strFilename = m_strUw1Path; break;
+   case resourceGameUw2: strFilename = m_strUw2Path; break;
+   }
+
+   std::string strRealFilePath(strRelFilePath);
+   MapUnderworldFilename(strRealFilePath);
+
+   strFilename += strRealFilePath;
+
+   if (!Base::FileSystem::FileExists(strFilename))
+      throw Base::FileSystemException("couldn't find uw game file", strFilename, ENOENT);
+
+   return SDL_RWFromFile(strFilename.c_str(), "rb");
+}
+
+/*! \todo implement mapping */
+void ResourceManager::MapUnderworldFilename(std::string& strRelFilename)
+{
+   Base::String::Lowercase(strRelFilename);
 }
