@@ -33,6 +33,7 @@
 #include <string>
 #include <SDL_types.h>
 #include <SDL_rwops.h>
+#include <SDL_endian.h>
 #include "smart_ptr.hpp"
 
 namespace Base
@@ -66,7 +67,10 @@ public:
 };
 
 
-//! file class
+//! File class
+/*! Note: the Read16 and Read32 functions always read little-endian values,
+    and the Write16 and Write32 functions always write little-endian values.
+*/
 class File
 {
 public:
@@ -103,18 +107,18 @@ public:
    //! reads 8-bit value from file
    Uint8 Read8() const;
    //! reads 16-bit value from file
-   Uint16 Read16() const;
+   Uint16 Read16() const { return SDL_ReadLE16(m_rwops.get()); }
    //! reads 32-bit value from file
-   Uint32 Read32() const;
+   Uint32 Read32() const { return SDL_ReadLE32(m_rwops.get()); }
    //! reads array from file into buffer
-   void ReadBuffer(Uint8* pBuffer, unsigned int uiLength) const;
+   unsigned int ReadBuffer(Uint8* pBuffer, unsigned int uiLength) const;
 
    //! writes 8-bit value to file
    void Write8(Uint8 val);
    //! writes 16-bit value to file
-   void Write16(Uint16 val);
+   void Write16(Uint16 val){ SDL_WriteLE16(m_rwops.get(), val); }
    //! writes 32-bit value to file
-   void Write32(Uint32 val);
+   void Write32(Uint32 val){ SDL_WriteLE32(m_rwops.get(), val); }
    //! writes buffer to file
    void WriteBuffer(const Uint8* pBuffer, unsigned int uiLength);
 

@@ -102,37 +102,15 @@ Uint8 File::Read8() const
    return val;
 }
 
-/*! Always reads little-endian values, even on big endian machines. */
-Uint16 File::Read16() const
+unsigned int File::ReadBuffer(Uint8* pBuffer, unsigned int uiLength) const
 {
    UaAssert(m_rwops.get() != NULL);
 
-   Uint8 vals[2];
-   SDL_RWread(m_rwops.get(), vals, 1, 2);
+   int iRet = SDL_RWread(m_rwops.get(), pBuffer, 1, uiLength);
+   if (iRet < 0)
+      iRet = 0;
 
-   return static_cast<Uint16>(vals[0]) |
-      (static_cast<Uint16>(vals[1]) << 8);
-}
-
-/*! Always reads little-endian values, even on big endian machines. */
-Uint32 File::Read32() const
-{
-   UaAssert(m_rwops.get() != NULL);
-
-   Uint8 vals[4];
-   SDL_RWread(m_rwops.get(), vals, 1, 4);
-
-   return static_cast<Uint32>(vals[0]) |
-      (static_cast<Uint32>(vals[1]) << 8) |
-      (static_cast<Uint32>(vals[2]) << 16) |
-      (static_cast<Uint32>(vals[3]) << 24);
-}
-
-void File::ReadBuffer(Uint8* pBuffer, unsigned int uiLength) const
-{
-   UaAssert(m_rwops.get() != NULL);
-
-   SDL_RWread(m_rwops.get(), pBuffer, 1, uiLength);
+   return static_cast<unsigned int>(iRet);
 }
 
 void File::Write8(Uint8 val)
@@ -140,30 +118,6 @@ void File::Write8(Uint8 val)
    UaAssert(m_rwops.get() != NULL);
 
    SDL_RWwrite(m_rwops.get(), &val, 1, 1);
-}
-
-/*! Always writes little-endian values, even on big endian machines. */
-void File::Write16(Uint16 val)
-{
-   UaAssert(m_rwops.get() != NULL);
-
-   Uint8 vals[2];
-   vals[0] = static_cast<Uint8>( val & 0x00ff);
-   vals[1] = static_cast<Uint8>((val & 0xff00) >> 8);
-   SDL_RWwrite(m_rwops.get(), vals, 1, 2);
-}
-
-/*! Always writes little-endian values, even on big endian machines. */
-void File::Write32(Uint32 val)
-{
-   UaAssert(m_rwops.get() != NULL);
-
-   Uint8 vals[4];
-   vals[0] = static_cast<Uint8>( val & 0x000000ff);
-   vals[1] = static_cast<Uint8>((val & 0x0000ff00) >> 8);
-   vals[2] = static_cast<Uint8>((val & 0x00ff0000) >> 16);
-   vals[3] = static_cast<Uint8>((val & 0xff000000) >> 24);
-   SDL_RWwrite(m_rwops.get(), vals, 1, 4);
 }
 
 void File::WriteBuffer(const Uint8* pBuffer, unsigned int uiLength)
