@@ -30,7 +30,7 @@
 #include "playlist.hpp"
 #include "settings.hpp"
 #include "textfile.hpp"
-#include <SDL_RWops.h>
+#include <SDL_rwops.h>
 
 namespace Detail
 {
