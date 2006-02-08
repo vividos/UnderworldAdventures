@@ -230,5 +230,5 @@ VoiceFile::VoiceFile(SDL_RWops* rwops)
 /*! user has to free SDL_RWops ptr returned. */
 SDL_RWops* VoiceFile::GetFileData() const
 {
-   return SDL_RWFromConstMem(&m_vecVoiceFile[0], m_vecVoiceFile.size());
+   return SDL_RWFromConstMem(&m_vecFileData[0], m_vecFileData.size());
 }
