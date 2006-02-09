@@ -74,6 +74,7 @@ public:
    //! skip bytes
    virtual void skip(sint32 delta){ SDL_RWseek(m_rwops, delta, SEEK_CUR); }
    //! returns size of file
+   /*! \todo optimize fetching size by storing size value */
    virtual uint32 getSize()
    {
       uint32 uCurPos = SDL_RWtell(m_rwops);
