@@ -184,14 +184,13 @@ void AudioManager::PlaySound(const std::string& strSoundName)
    UaAssert(m_apData.get() != NULL);
 
    // construct filename
-   std::string strVocFilename =
-      m_apData->GetUwPath() + "/sound/" +strSoundName + ".voc";
+   std::string strVocFilename = std::string("/sound/") + strSoundName + ".voc";
 
    // get .voc file
    SDL_RWops* rwops = NULL;
    try
    {
-      m_apData->GetResourceManager().GetUnderworldFile(Base::resourceGameUw, strVocFilename);
+      rwops = m_apData->GetResourceManager().GetUnderworldFile(Base::resourceGameUw, strVocFilename);
    }
    catch(Base::FileSystemException&)
    {
@@ -277,6 +276,7 @@ void AudioManager::StartMusicTrack(unsigned int uiMusic, bool bRepeat)
       }
       catch(Base::Exception&)
       {
+         UaTrace("couldn't load midi file %s\n", strTrackname.c_str());
       }
    }
    else
