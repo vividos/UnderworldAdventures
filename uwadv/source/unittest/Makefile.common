@@ -22,6 +22,7 @@
 #
 
 unittest_SOURCES = \
+   audiotest.cpp \
    cfgfiletest.cpp \
    cppunitmini.cpp cppunitmini.hpp \
    filesystemtest.cpp \

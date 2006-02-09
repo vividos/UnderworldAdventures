@@ -21,14 +21,15 @@
 # $Id$
 #
 
-INCLUDES = -I$(srcdir)/../base
+INCLUDES = -I$(srcdir)/../base -I$(srcdir)/../audio
 
 TESTS = unittest
 
 check_PROGRAMS = unittest
 
 unittest_LDADD = \
-   ../base/libbase.la
+   ../base/libbase.la \
+   ../audio/libaudio.la
 
 # Makefile.common defines unittest_SOURCES
 include Makefile.common
