@@ -1,6 +1,6 @@
 /*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Underworld Adventures - an Ultima Underworld remake project
+   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -27,13 +27,10 @@
    radians.
 
 */
-//! \ingroup base
-
-//@{
 
 // include guard
-#ifndef uwadv_uamath_hpp_
-#define uwadv_uamath_hpp_
+#ifndef uwadv_base_uamath_hpp_
+#define uwadv_base_uamath_hpp_
 
 // needed includes
 #include <cmath>
@@ -529,6 +526,4 @@ inline double ua_plane3d::signed_dist_to(const ua_vector3d& point) const
    return point.dot(normal) + equation_3;
 }
 
-
 #endif
-//@}
