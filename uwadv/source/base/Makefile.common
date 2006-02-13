@@ -35,5 +35,4 @@ libbase_la_SOURCES = \
    settingsloader.cpp \
    smart_ptr.hpp \
    string.cpp string.hpp \
-   textfile.cpp textfile.hpp \
-   uamath.hpp
+   textfile.cpp textfile.hpp
