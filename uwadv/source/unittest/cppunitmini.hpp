@@ -159,7 +159,7 @@ namespace CppUnitMini
 // macros
 
 //! starts a test suite
-#define CPPUNIT_TEST_SUITE(X) virtual void myRun(const char *in_name) { char *className = #X;
+#define CPPUNIT_TEST_SUITE(X) virtual void myRun(const char *in_name) { char *className = #X; (in_name); (className);
 
 #if defined CPPUNIT_MINI_USE_EXCEPTIONS
 //! adds a test to the test suite
