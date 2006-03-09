@@ -43,7 +43,15 @@ using Base::SavegamesManager;
 // constants
 
 //! current savegame version
-const Uint32 Savegame::s_uiCurrentVersion = 2;
+/*! version history:
+    - version 1: initial version; used from version 0.xx on
+    - version 2: ??? 
+    - version 3: Introduced with version 0.10; rewrite of most underworld
+      classes required a new version.
+
+   \todo complete version history
+*/
+const Uint32 Savegame::s_uiCurrentVersion = 3;
 
 //! savegame error message
 const char* c_strSavegameNotFound = "savegame file not found";
@@ -204,6 +212,12 @@ Savegame::Savegame(const std::string& strFilename)
    BeginSection("header");
 
    m_uiSaveVersion = Read32();
+
+   // message and assert about loading newer savegames
+   if (m_uiSaveVersion > s_uiCurrentVersion)
+      UaTrace("cannot load savegames of newer version %d (only version up to %u is supported)", m_uiSaveVersion, s_uiCurrentVersion);
+
+   UaAssert(m_uiSaveVersion <= s_uiCurrentVersion);
 
    m_info.Load(*this);
 
