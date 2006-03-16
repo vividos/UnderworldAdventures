@@ -1,6 +1,6 @@
 /*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
+   Underworld Adventures - an Ultima Underworld remake project
+   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -21,188 +21,92 @@
 */
 /*! \file level.hpp
 
-   \brief game level map class
+   \brief level
 
 */
-//! \ingroup underworld
-
-//@{
 
 // include guard
-#ifndef uwadv_level_hpp_
-#define uwadv_level_hpp_
+#ifndef uwadv_underw_level_hpp_
+#define uwadv_underw_level_hpp_
 
 // needed includes
-#include "settings.hpp"
-#include "objects.hpp"
+#include "tilemap.hpp"
+#include "objectlist.hpp"
 #include "mapnotes.hpp"
-#include "savegame.hpp"
 
-
-// enums
-
-//! levelmap tile types
-enum ua_levelmap_tiletype
+namespace Base
 {
-   ua_tile_solid = 0x00,
-   ua_tile_open  = 0x01,
-   ua_tile_diagonal_se = 0x02,
-   ua_tile_diagonal_sw = 0x03,
-   ua_tile_diagonal_nw = 0x04,
-   ua_tile_diagonal_ne = 0x05,
-   ua_tile_slope_n = 0x06,
-   ua_tile_slope_e = 0x07,
-   ua_tile_slope_s = 0x08,
-   ua_tile_slope_w = 0x09
+   class Savegame;
+}
 
-};
-
-
-// structs
-
-//! levelmap tile description
-struct ua_levelmap_tile
+namespace Underworld
 {
-   //! ctor
-   ua_levelmap_tile():type(ua_tile_solid){}
 
-   //! tile type
-   ua_levelmap_tiletype type;
-
-   //! floor height
-   Uint16 floor;
-
-   //! ceiling height
-   Uint16 ceiling;
-
-   //! slope from this tile to next
-   Uint8 slope;
-
-   //! stock texture id for wall
-   Uint16 texture_wall;
-
-   //! stock texture id for floor
-   Uint16 texture_floor;
-
-   //! stock texture id for ceiling
-   Uint16 texture_ceiling;
-};
-
-
-// classes
-
-//! level map and object representation
-class ua_level
+//! Level of the underworld
+/*! A level of the underworld consists of a tilemap, an object list and automap
+    notes. A level can have a unique name.
+*/
+class Level
 {
 public:
    //! ctor
-   ua_level();
+   Level(){}
 
-   //! returns floor height on specific position
-   double get_floor_height(double xpos, double ypos);
+   //! returns level name
+   std::string GetLevelName() const { return m_strLevelName; }
 
-   //! returns a tile info struct
-   ua_levelmap_tile& get_tile(unsigned int xpos, unsigned int ypos);
+   //! sets new level name
+   void SetLevelName(const std::string& strLevelName){ m_strLevelName = strLevelName; }
 
-   //! returns a tile info struct
-   const ua_levelmap_tile& get_tile(unsigned int xpos, unsigned int ypos) const;
+   // level contents
 
-   //! returns tiles list
-   std::vector<ua_levelmap_tile>& get_tileslist(){ return tiles; }
+   //! returns tilemap
+   Tilemap& GetTilemap(){ return m_tilemap; }
+   //! returns tilemap
+   const Tilemap& GetTilemap() const { return m_tilemap; }
 
-   //! returns map object list ref
-   ua_object_list& get_mapobjects(){ return allobjects; }
+   //! returns object list
+   ObjectList& GetObjectList(){ return m_objectList; }
+   //! returns object list
+   const ObjectList& GetObjectList() const { return m_objectList; }
 
-   //! returns map object list ref
-   const ua_object_list& get_mapobjects() const { return allobjects; }
-
-   //! returns vector of used stock texture ids
-   const std::vector<Uint16>& get_used_textures() const { return used_textures; }
-
-   //! returns vector of used stock texture ids
-   std::vector<Uint16>& get_used_textures(){ return used_textures; }
+   //! returns map notes
+   MapNotes& GetMapNotes(){ return m_mapNotes; }
+   //! returns map notes
+   const MapNotes& GetMapNotes() const { return m_mapNotes; }
 
    // loading / saving
 
-   //! loads a savegame
-   void load_game(ua_savegame &sg);
+   //! saves level
+   void Load(Base::Savegame& sg)
+   {
+      GetTilemap().Load(sg);
+      GetObjectList().Load(sg);
+      GetMapNotes().Load(sg);
+   }
 
-   //! saves to a savegame
-   void save_game(ua_savegame &sg);
+   //! loads level
+   void Save(Base::Savegame& sg) const
+   {
+      GetTilemap().Save(sg);
+      GetObjectList().Save(sg);
+      GetMapNotes().Save(sg);
+   }
 
-protected:
-   //! all levelmap tiles; 64x64 tiles assumed
-   std::vector<ua_levelmap_tile> tiles;
+private:
+   //! level name
+   std::string m_strLevelName;
 
-   //! all objects in level
-   ua_object_list allobjects;
+   //! tilemap of level
+   Tilemap m_tilemap;
 
-   //! all map notes for this level
-   ua_map_notes mapnotes;
+   //! level object list
+   ObjectList m_objectList;
 
-   //! numbers of all used stock textures
-   std::vector<Uint16> used_textures;
-
-   //! indicates if level map is in use
-   bool used;
+   //! automap notes
+   MapNotes m_mapNotes;
 };
 
-
-//! list of all levelmaps
-class ua_levelmaps_list
-{
-public:
-   //! ctor
-   ua_levelmaps_list();
-
-   //! inits levelmaps list
-   void init();
-
-   //! returns number of levels in list
-   unsigned int get_num_levels() const;
-
-   //! returns level
-   ua_level& get_level(unsigned int level);
-   //! returns level
-   const ua_level& get_level(unsigned int level) const;
-
-   // loading/saving
-
-   //! loads a savegame
-   void load_game(ua_savegame &sg);
-
-   //! saves to a savegame
-   void save_game(ua_savegame &sg);
-
-protected:
-   friend class ua_uw_import;
-   std::vector<ua_level>& get_list(){ return all_levels; }
-
-protected:
-   //! all underworld levels
-   std::vector<ua_level> all_levels;
-};
-
-
-// inline methods
-
-inline unsigned int ua_levelmaps_list::get_num_levels() const
-{
-   return all_levels.size();
-}
-
-inline ua_level& ua_levelmaps_list::get_level(unsigned int level)
-{
-   ua_assert(level<all_levels.size());
-   return all_levels[level];
-}
-
-inline const ua_level& ua_levelmaps_list::get_level(unsigned int level) const
-{
-   ua_assert(level<all_levels.size());
-   return all_levels[level];
-}
-
+} // namespace Underworld
 
 #endif
-//@}
