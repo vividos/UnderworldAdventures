@@ -1,6 +1,6 @@
 /*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Underworld Adventures - an Ultima Underworld remake project
+   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -21,147 +21,297 @@
 */
 /*! \file properties.hpp
 
-   \brief object property manager
+   \brief object properties
 
 */
-//! \ingroup underworld
-
-//@{
 
 // include guard
-#ifndef uwadv_properties_hpp_
-#define uwadv_properties_hpp_
+#ifndef uwadv_underw_properties_hpp_
+#define uwadv_underw_properties_hpp_
 
 // needed includes
 #include <vector>
-#include "settings.hpp"
 
+namespace Underworld
+{
 
 // structs
 
-//! object properties common to all objects
-struct ua_common_obj_property
+//! Object properties common to all objects
+/*! \todo this property table is not complete */
+struct CommonObjectProperty
 {
-   Uint16 radius; //!< object radius
-   Uint8 height; //!< object height
+   //! ctor
+   CommonObjectProperty()
+      : uiHeight(0),
+      uiRadius(0),
+      uiMass(0),
+      uiQualityClass(0),
+      uiQualityType(0),
+      bCanHaveOwner(false),
+      bCanBeLookedAt(false),
+      bCanBePickedUp(false),
+      bIsContainer(false)
+   {
+   }
 
-   Uint16 mass; //!< mass of object in 0.1 kg
-
-   Uint8 quality_class; //!< quality class
-   Uint8 quality_type;  //!< quality type
-
-   //! indicates if object can have owner ("belonging to ...")
-   bool can_have_owner;
-
-   //! indicates if object can be looked at
-   bool can_be_looked_at;
-
-   //! indicates if object can be picked up
-   bool can_be_picked_up;
-
-   //! indicates if object is a container
-   bool is_container;
+   Uint8 uiHeight;   //!< object height
+   Uint8 uiRadius;   //!< object radius
+   Uint16 uiMass;    //!< mass of object in 0.1 kg
+   Uint8 uiQualityClass;   //!< quality class
+   Uint8 uiQualityType;    //!< quality type
+   bool bCanHaveOwner;     //!< indicates if object can have owner ("belonging to ...")
+   bool bCanBeLookedAt;    //!< indicates if object can be looked at
+   bool bCanBePickedUp;    //!< indicates if object can be picked up
+   bool bIsContainer;      //!< indicates if object is a container
 };
 
-//! info for melee weapons (ids 0x0000-0x000f)
-struct ua_melee_weapon_property
-{
-   //! damage modifier for attack types
-   Uint8 dm_slash,dm_bash,dm_stab;
 
-   //! skill type needed for melee weapon
-   Uint8 skill_type;
+//! skill type needed for melee weapon
+enum EMeleeSkillType
+{
+   meleeSkillNone=0,    //!< no skill required (may not appear)
+   meleeSkillSword=3,   //!< sword skill applied for attacks
+   meleeSkillAxe=4,     //!< axe skill
+   meleeSkillMace=5,    //!< mace skill
+   meleeSkillUnarmed=6, //!< unarmed fighting skill
+};
+
+//! Info for melee weapons (IDs 0x0000-0x000f)
+/*! \todo this property table is not complete */
+struct MeleeWeaponProperty
+{
+   //! ctor
+   MeleeWeaponProperty()
+      :uiDamageModSlash(0),
+      uiDamageModBash(0),
+      uiDamageModStab(0),
+      skillType(meleeSkillNone),
+      uiDurability(0)
+   {
+   }
+
+   //! damage modifier for attack type slash
+   Uint8 uiDamageModSlash;
+
+   //! damage modifier for attack type bash
+   Uint8 uiDamageModBash;
+
+   //! damage modifier for attack type stab
+   Uint8 uiDamageModStab;
+
+   //! skill type used for melee weapon
+   EMeleeSkillType skillType;
 
    //! weapon durability
-   Uint8 durability;
+   Uint8 uiDurability;
 };
 
-//! info for ranged weapons (ids 0x0010-0x001f)
-struct ua_ranged_weapon_property
+//! Info for ranged weapons (IDs 0x0010-0x001f)
+/*! \todo this property table is not complete */
+struct RangedWeaponProperty
 {
+   //! ctor
+   RangedWeaponProperty():uiDurability(0){}
+
    //! weapon durability
-   Uint8 durability;
+   Uint8 uiDurability;
 };
 
-//! armour category
-enum ua_armour_category
+
+//! Armour category
+/*! Describes where an item can be worn. */
+enum EArmourCategory
 {
-   ua_armour_none = 0,     //!< also: may not be worn on paperdoll
-   ua_armour_body_armour = 1,
-   ua_armour_leggings = 3,
-   ua_armour_gloves = 4,
-   ua_armour_boots = 5,
-   ua_armour_hat = 8,
-   ua_armour_ring = 9,
+   armourNone = 0,      //!< wearable as shield; not worn on paperdoll
+   armourBodyArmour = 1,//!< body armour
+   armourLeggings = 3,  //!< leggings
+   armourGloves = 4,    //!< gloves
+   armourBoots = 5,     //!< boots
+   armourHat = 8,       //!< hat
+   armourRing = 9,      //!< ring
 };
 
-//! info for armour and wearables (ids 0x0020-0x003f)
-struct ua_armour_wearable_property
+//! Info for armour and wearables (IDs 0x0020-0x003f)
+/*! \todo this property table is not complete */
+struct ArmourAndWearableProperty
 {
-   //! protection value
-   Uint8 protection;
+   //! ctor
+   ArmourAndWearableProperty()
+      : uiProtection(0),
+      uiDurability(0),
+      category(armourNone)
+   {
+   }
 
-   //! armour durability
-   Uint8 durability;
-
-   //! armour category (for paperdoll placement)
-   ua_armour_category category;
+   Uint8 uiProtection;        //!< protection value
+   Uint8 uiDurability;        //!< armour durability
+   EArmourCategory category;  //!< armour category (for paperdoll placement)
 };
+
+//! Info for critters (IDs 0x0040-0x007f)
+/*! \todo this property table is not complete */
+struct CritterProperty
+{
+   //! ctor
+   CritterProperty(): uiNpcPower(0){}
+
+   Uint8 uiNpcPower; //!< power of NPC
+};
+
+
+//! Info for container (IDs 0x0080-0x008f)
+/*! \todo this property table is not complete */
+struct ContainerProperty
+{
+   //! ctor
+   ContainerProperty(): uiCapacity(0), iObjectClassAccepted(-1){}
+
+   Uint8 uiCapacity; //!< capacity in 0.1 stones (0 means unlimited)
+   int iObjectClassAccepted; //!< object class (-1 means any)
+};
+
+
+//! Info for light sources (IDs 0x0090-0x009f)
+struct LightSourceProperty
+{
+   //! ctor
+   LightSourceProperty(): uiBrightness(0), uiDuration(0){}
+
+   Uint8 uiBrightness;  //!< brightness of light source (4 is max)
+   Uint8 uiDuration;    //!< duration in hours (0 means unlimited)
+};
+
+
+//! Info for animated objects (IDs 0x01c0-0x01cf)
+/*! \todo this property table is not complete */
+struct AnimatedObjectProperty
+{
+   //! ctor
+   AnimatedObjectProperty(): uiStartFrame(0), uiNumberOfFrames(0){}
+
+   Uint8 uiStartFrame;     //!< starting frame of animation
+   Uint8 uiNumberOfFrames; //!< number of frames
+};
+
 
 
 // classes
 
-//! object properties class
-/*! \todo implement loading all properties */
-class ua_object_properties
+//! Object properties class
+class ObjectProperties
 {
 public:
    //! ctor
-   ua_object_properties(){}
+   ObjectProperties(){}
 
-   //! imports object properties from current uw path
-   void import(ua_settings& settings);
+   //! returns common object properties for a specific item
+   const CommonObjectProperty& GetCommonProperty(Uint16 uiItemId) const
+   {
+      UaAssert(uiItemId <= 0x01ff);
+      UaAssert(uiItemId < m_vecMeleeWeaponProperties.size());
+      return m_vecCommonObjectProperty[uiItemId];
+   }
 
-   //! returns common object properties about specific object
-   inline ua_common_obj_property& get_common_property(Uint16 item_id);
+   //! returns melee weapon property for a specific item
+   const MeleeWeaponProperty& GetMeleeWeaponProperty(Uint16 uiItemId) const
+   {
+      UaAssert(uiItemId <= 0x000f);
+      UaAssert(uiItemId < m_vecMeleeWeaponProperties.size());
+      return m_vecMeleeWeaponProperties[uiItemId];
+   }
 
-   //! returns properties about armour and wearables
-   inline ua_armour_wearable_property& get_armour_property(Uint16 item_id);
+   //! returns ranged weapon property for a specific item
+   const RangedWeaponProperty& GetRangedWeaponProperty(Uint16 uiItemId) const
+   {
+      UaAssert(uiItemId >= 0x0010 && uiItemId <= 0x001f);
+      UaAssert(static_cast<Uint16>(uiItemId-0x0010) < m_vecAnimatedObjectProperties.size());
+      return m_vecRangedWeaponProperties[uiItemId-0x0010];
+   }
+
+   //! returns armour and wearables property for a specific item
+   const ArmourAndWearableProperty& GetArmourAndWearableProperty(Uint16 uiItemId) const
+   {
+      UaAssert(uiItemId >= 0x0020 && uiItemId <= 0x003f);
+      UaAssert(static_cast<Uint16>(uiItemId-0x0020) < m_vecAnimatedObjectProperties.size());
+      return m_vecArmourAndWearableProperties[uiItemId-0x0020];
+   }
+
+   //! returns critter property for a specific item
+   const CritterProperty& GetCritterProperty(Uint16 uiItemId) const
+   {
+      UaAssert(uiItemId >= 0x0040 && uiItemId <= 0x007f);
+      UaAssert(static_cast<Uint16>(uiItemId-0x0040) < m_vecAnimatedObjectProperties.size());
+      return m_vecCritterProperties[uiItemId-0x0040];
+   }
+
+   //! returns container property for a specific item
+   const ContainerProperty& GetContainerProperty(Uint16 uiItemId) const
+   {
+      UaAssert(uiItemId >= 0x0080 && uiItemId <= 0x008f);
+      UaAssert(static_cast<Uint16>(uiItemId-0x0080) < m_vecAnimatedObjectProperties.size());
+      return m_vecContainerProperties[uiItemId-0x0080];
+   }
+
+   //! returns light source property for a specific item
+   const LightSourceProperty& GetLightSourceProperty(Uint16 uiItemId) const
+   {
+      UaAssert(uiItemId >= 0x0090 && uiItemId <= 0x09f);
+      UaAssert(static_cast<Uint16>(uiItemId-0x0090) < m_vecAnimatedObjectProperties.size());
+      return m_vecLightSourceProperties[uiItemId-0x0090];
+   }
+
+   //! returns animated object property for a specific item
+   const AnimatedObjectProperty& GetAnimatedObjectProperty(Uint16 uiItemId) const
+   {
+      UaAssert(uiItemId >= 0x01c0 && uiItemId <= 0x01cf);
+      UaAssert(static_cast<Uint16>(uiItemId-0x01c0) < m_vecAnimatedObjectProperties.size());
+      return m_vecAnimatedObjectProperties[uiItemId];
+   }
+
+   //! returns vector with common object properties
+   std::vector<CommonObjectProperty>& GetVectorCommonObjectProperties(){ return m_vecCommonObjectProperty; }
+   //! returns vector with melee weapon properties
+   std::vector<MeleeWeaponProperty>& GetVectorMeleeWeaponProperties(){ return m_vecMeleeWeaponProperties; }
+   //! returns vector with ranged weapon properties
+   std::vector<RangedWeaponProperty>& GetVectorRangedWeaponProperties(){ return m_vecRangedWeaponProperties; }
+   //! returns vector with armour and wearables properties
+   std::vector<ArmourAndWearableProperty>& GetVectorArmourAndWearableProperties(){ return m_vecArmourAndWearableProperties; }
+   //! returns vector with critter properties
+   std::vector<CritterProperty>& GetVectorCritterProperties(){ return m_vecCritterProperties; }
+   //! returns vector with container properties
+   std::vector<ContainerProperty>& GetVectorContainerProperties(){ return m_vecContainerProperties; }
+   //! returns vector with light source properties
+   std::vector<LightSourceProperty>& GetVectorLightSourceProperties(){ return m_vecLightSourceProperties; }
+   //! returns vector with animated object properties
+   std::vector<AnimatedObjectProperty>& GetVectorAnimatedObjectProperties(){ return m_vecAnimatedObjectProperties; }
 
 protected:
    //! common object properties
-   std::vector<ua_common_obj_property> common_properties;
+   std::vector<CommonObjectProperty> m_vecCommonObjectProperty;
+
+   //! melee weapon properties
+   std::vector<MeleeWeaponProperty> m_vecMeleeWeaponProperties;
+
+   //! ranged weapon properties
+   std::vector<RangedWeaponProperty> m_vecRangedWeaponProperties;
 
    //! armour and wearables properties
-   std::vector<ua_armour_wearable_property> armour_wearable_properties;
+   std::vector<ArmourAndWearableProperty> m_vecArmourAndWearableProperties;
 
-   friend class ua_uw_import;
+   //! critter properties
+   std::vector<CritterProperty> m_vecCritterProperties;
+
+   //! container properties
+   std::vector<ContainerProperty> m_vecContainerProperties;
+
+   //! light source properties
+   std::vector<LightSourceProperty> m_vecLightSourceProperties;
+
+   //! animated object properties
+   std::vector<AnimatedObjectProperty> m_vecAnimatedObjectProperties;
 };
 
-
-// inline methods
-
-inline ua_common_obj_property& ua_object_properties::get_common_property(
-   Uint16 item_id)
-{
-   if (item_id >= common_properties.size())
-      item_id = common_properties.size()-1;
-
-   return common_properties[item_id];
-}
-
-/*! \todo throw exception when item_id out of range? */
-inline ua_armour_wearable_property& ua_object_properties::get_armour_property(
-   Uint16 item_id)
-{
-   item_id-=0x0020;
-
-   if (item_id >= armour_wearable_properties.size())
-      item_id = armour_wearable_properties.size()-1;
-
-   return armour_wearable_properties[item_id];
-}
-
+} // namespace Underworld
 
 #endif
-//@}
