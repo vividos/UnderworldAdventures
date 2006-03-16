@@ -1,6 +1,6 @@
 /*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
+   Underworld Adventures - an Ultima Underworld remake project
+   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -21,325 +21,239 @@
 */
 /*! \file player.hpp
 
-   \brief player character representation
+   \brief player info
 
 */
-//! \ingroup underworld
-
-//@{
 
 // include guard
-#ifndef uwadv_player_hpp_
-#define uwadv_player_hpp_
+#ifndef uwadv_underw_player_hpp_
+#define uwadv_underw_player_hpp_
 
 // needed includes
-#include "savegame.hpp"
-#include "uamath.hpp"
-#include "physicsbody.hpp"
+#include "inventory.hpp"
 #include "runes.hpp"
+#include "convglobals.hpp"
+#include "questflags.hpp"
 
+namespace Base
+{
+   class Savegame;
+   struct SavegameInfo;
+}
+
+namespace Underworld
+{
 
 // enums
 
-//! player movement enum
-enum ua_player_movement_mode
-{
-   ua_move_walk = 1,    //!< walks forward (or backwards, when factor is negative)
-   ua_move_rotate  = 2, //!< rotates player left (or right)
-   ua_move_lookup = 4,  //!< moves player look angle up (or down)
-   ua_move_jump = 8,    //!< jumps forward (or factor 0.0 for standing jump)
-   ua_move_slide = 16,  //!< slides right (or left)
-   ua_move_float = 32,  //!< floats player up (or down)
-};
-
-
-//! player attribute enum
-/*! player attributes are values that characterize the player, and
-    may be used for combat/spell/etc. calculations
+//! Player attributes
+/*! \note Lua scripts depend on numerical values; they must be in-sync with
+    those in uwinterface.lua
     \todo add more needed skills
 */
-enum ua_player_attributes
+enum EPlayerAttribute
 {
-   // note: scripts depend on numerical values, they must be in-sync with
-   // those in uwinterface.lua
-   ua_attr_gender=0,     //!< 0 means male
-   ua_attr_handedness=1, //!< 0 means left-handedness
-   ua_attr_appearance=2, //!< values from 0..4
-   ua_attr_profession=3, //!< values from 0..7, fighter, mage, bard, ...
+   attrGender=0,     //!< 0 means male
+   attrHandedness=1, //!< 0 means left-handedness
+   attrAppearance=2, //!< values from 0..4
+   attrProfession=3, //!< values from 0..7, fighter, mage, bard, ...
 
-   ua_attr_maplevel=4,   //!< map level the player currently is
+   attrMapLevel=4,   //!< map level the player currently is
 
-   ua_attr_strength=5,
-   ua_attr_dexterity=6,
-   ua_attr_intelligence=7,
+   attrStrength=5,
+   attrDexterity=6,
+   attrIntelligence=7,
 
-   ua_attr_vitality=8,
-   ua_attr_max_vitality=9,
-   ua_attr_mana=10,
-   ua_attr_max_mana=11,
+   attrVitality=8,
+   attrMaxVitality=9,
+   attrMana=10,
+   attrMaxMana=11,
 
-   ua_attr_weariness=12,
-   ua_attr_hungriness=13,
-   ua_attr_poisoned=14,    //!< 1 when poisoned
-   ua_attr_mentalstate=15, //!< drunk, tripping, etc. 0 means normal
-   ua_attr_nightvision=16,
+   attrWeariness=12,
+   attrHungriness=13,
+   attrPoisoned=14,    //!< 1 when poisoned
+   attrMentalState=15, //!< drunk, tripping, etc. 0 means normal
+   attrNightVision=16,
 
-   ua_attr_talks=17,       //!< number of conversations
-   ua_attr_kills=18,       //!< number of successful kills
-   ua_attr_exp_level=19,   //!< experience level
-   ua_attr_exp_points=20,  //!< number of experience points
+   attrTalks=17,       //!< number of conversations
+   attrKills=18,       //!< number of successful kills
+   attrExperienceLevel=19,   //!< experience level
+   attrExperiencePoints=20,  //!< number of experience points
 
-   ua_attr_difficulty=21,  //!< 0=easy, 1=normal
+   attrDifficulty=21,  //!< 0=easy, 1=normal
 
    // todo: game time, etc.
 
-   ua_attr_max
-
+   attrMax
 };
 
 
-//! player skills enum
-enum ua_player_skills
+//! Player skills
+/*! \note scripts depend on numerical values; they must be in-sync with uwinterface.lua
+*/
+enum EPlayerSkill
 {
-   // note: scripts depend on numerical values, they must be in-sync with uwinterface.lua
-   ua_skill_attack=0,
-   ua_skill_defense=1,
-   ua_skill_unarmed=2,
-   ua_skill_sword=3,
-   ua_skill_axe=4,
-   ua_skill_mace=5,
-   ua_skill_missile=6,
-   ua_skill_mana=7,
-   ua_skill_lore=8,
-   ua_skill_casting=9,
-   ua_skill_traps=10,
-   ua_skill_search=11,
-   ua_skill_track=12,
-   ua_skill_sneak=13,
-   ua_skill_repair=14,
-   ua_skill_charm=15,
-   ua_skill_picklock=16,
-   ua_skill_acrobat=17,
-   ua_skill_appraise=18,
-   ua_skill_swimming=19,
+   skillAttack=0,
+   skillDefense=1,
+   skillUnarmed=2,
+   skillSword=3,
+   skillAxe=4,
+   skillMace=5,
+   skillMissile=6,
+   skillMana=7,
+   skillLore=8,
+   skillCasting=9,
+   skillTraps=10,
+   skillSearch=11,
+   skillTrack=12,
+   skillSneak=13,
+   skillRepair=14,
+   skillCharm=15,
+   skillPicklock=16,
+   skillAcrobat=17,
+   skillAppraise=18,
+   skillSwimming=19,
 
-   ua_skill_max
+   skillMax
 };
 
 
 // classes
 
-//! player class
-class ua_player: public ua_physics_body
+//! Player
+class Player
 {
 public:
    //! ctor
-   ua_player();
-
-   //! initializes player object
-   void init(class ua_underworld& underw);
-
+   Player();
 
    // set functions
 
-   //! sets player position
-   void set_pos(double x, double y);
+   //! Sets player position
+   void SetPos(double x, double y){ m_xpos = x; m_ypos = y; }
 
-   //! sets player view rotation angle
-   void set_angle_rot(double theangle);
+   //! Sets player height
+   void SetHeight(double dHeight){ m_dHeight = dHeight; }
 
-   //! sets player view panning angle
-   void set_angle_pan(double theangle);
+   //! Sets player view rotation angle
+   void SetRotateAngle(double dAngle){ m_dRotateAngle = dAngle; }
 
-   //! sets player height
-   void set_height(double theheight);
+   //! Sets player view panning angle
+   void SetPanAngle(double dAngle){ m_dPanAngle = dAngle; }
 
+   //! Sets player attribute value
+   void SetAttribute(EPlayerAttribute attr, Uint16 uiValue)
+   {
+      UaAssert(attr < attrMax);
+      m_aAttributes[attr] = uiValue;
+   }
 
-   //! sets and delete movement mode values
-   void set_movement_mode(unsigned int set,unsigned int del=0);
+   //! Sets player skill value
+   void SetSkill(EPlayerSkill skill, Uint16 uiValue)
+   {
+      UaAssert(skill < skillMax);
+      m_aSkills[skill] = uiValue;
+   }
 
-   //! sets movement factor for a given movement type; range is [-1.0; 1.0]
-   void set_movement_factor(ua_player_movement_mode mode, double factor);
-
-
-   //! sets player attribute value
-   void set_attr(ua_player_attributes which, unsigned int value);
-
-   //! sets player skill value
-   void set_skill(ua_player_skills which, unsigned int value);
-
-   //! sets player name
-   void set_name(std::string name);
+   //! Sets player name
+   void SetName(const std::string& strName){ m_strName = strName; }
 
 
    // get functions
 
-   //! returns x position
-   double get_xpos() const;
+   //! Returns x position
+   double GetXPos() const { return m_xpos; }
 
-   //! returns y position
-   double get_ypos() const;
+   //! Returns y position
+   double GetYPos() const { return m_ypos; }
+
+   //! Returns player height
+   double GetHeight() const { return m_dHeight; }
 
    //! returns view rotation angle
-   double get_angle_rot() const;
+   double GetRotateAngle() const { return m_dRotateAngle; }
 
    //! returns view panning angle
-   double get_angle_pan() const;
+   double GetPanAngle() const { return m_dPanAngle; }
 
-   //! returns player height
-   double get_height() const;
+   //! Returns player name
+   const std::string& GetName() const { return m_strName; }
 
-   //! returns player name
-   const std::string& get_name() const;
+   //! Returns player attribute value
+   Uint16 GetAttribute(EPlayerAttribute attr) const
+   {
+      UaAssert(attr < attrMax);
+      return m_aAttributes[attr];
+   }
 
+   //! Returns player skill value
+   Uint16 GetSkill(EPlayerSkill skill) const
+   {
+      UaAssert(skill < skillMax);
+      return m_aSkills[skill];
+   }
 
-   //! returns movement mode
-   unsigned int get_movement_mode() const;
+   //! Returns inventory
+   Inventory& GetInventory(){ return m_inventory; }
+   //! Returns inventory
+   const Inventory& GetInventory() const { return m_inventory; }
 
-   //! returns movement factor for given movement mode
-   double get_movement_factor(ua_player_movement_mode mode);
+   //! Returns runebag
+   Runebag& GetRunebag(){ return m_runebag; }
+   //! Returns runebag
+   const Runebag& GetRunebag() const { return m_runebag; }
 
-   //! returns runes object
-   ua_runes& get_runes();
+   //! Returns conversation globals
+   ConvGlobals& GetConvGlobals(){ return m_convGlobals; }
+   //! Returns conversation globals
+   const ConvGlobals& GetConvGlobals() const { return m_convGlobals; }
 
+   //! Returns quest flags
+   QuestFlags& GetQuestFlags(){ return m_questFlags; }
+   //! Returns conversation globals
+   const QuestFlags& GetQuestFlags() const { return m_questFlags; }
 
-   //! returns player attribute value
-   unsigned int get_attr(ua_player_attributes which) const;
+   // loading / saving
 
-   //! returns player skill value
-   unsigned int get_skill(ua_player_skills which) const;
+   //! Loads player info from savegame
+   void LoadPlayer(Base::Savegame& sg);
 
+   //! Saves player infos to savegame
+   void SavePlayer(Base::Savegame& sg);
 
-   //! does rotation moves
-   void rotate_move(double time_elapsed);
-
-
-   // loading/saving
-
-   //! loads a savegame
-   void load_game(ua_savegame& sg);
-
-   //! saves to a savegame
-   void save_game(ua_savegame& sg);
-
-   //! fills details into savegame info struct
-   void fill_savegame_infos(ua_savegame_info& info);
-
-   // virtual methods from ua_physics_object
-   virtual void set_new_elapsed_time(double time_elapsed);
-   virtual ua_vector3d get_pos();
-   virtual void set_pos(ua_vector3d& pos);
-   virtual ua_vector3d get_dir();
-
-   virtual void reset_gravity();
-   virtual ua_vector3d get_gravity_force();
-   virtual void hit_floor();
+   //! Fills details about player into savegame info
+   void FillSavegamePlayerInfos(Base::SavegameInfo& info);
 
 protected:
    //! the name of the player
-   std::string name;
+   std::string m_strName;
 
    //! positional values
-   double xpos, ypos, rotangle, panangle, height;
-
-   //! maximum pan angle
-   double max_panangle;
-
-   //! current movement mode
-   unsigned int move_mode;
+   double m_xpos; //!< x position
+   double m_ypos; //!< y position
+   double m_dHeight;       //!< height
+   double m_dRotateAngle;  //!< rotate angle
+   double m_dPanAngle;     //!< view pan angle
 
    //! array with all player attributes
-   unsigned int attributes[ua_attr_max];
+   Uint16 m_aAttributes[attrMax];
 
    //! array with all player skills
-   unsigned int skills[ua_skill_max];
+   Uint16 m_aSkills[skillMax];
 
-   //! movement factors map
-   std::map<ua_player_movement_mode,double> move_factors;
+   //! player's inventory
+   Inventory m_inventory;
 
-   //! runes object
-   ua_runes runes;
+   //! runebag
+   Runebag m_runebag;
 
-   //! current fall time
-   double fall_time;
+   //! conversation globals
+   ConvGlobals m_convGlobals;
 
-   //! player height at fall start
-   double fall_height_start;
+   //! quest flags
+   QuestFlags m_questFlags;
 };
 
-
-// inline methods
-
-inline void ua_player::set_pos(double x, double y)
-{
-   xpos=x; ypos=y;
-}
-
-inline void ua_player::set_angle_rot(double theangle)
-{
-   rotangle=theangle;
-}
-
-inline void ua_player::set_angle_pan(double theangle)
-{
-   panangle=theangle;
-}
-
-inline void ua_player::set_height(double theheight)
-{
-   height=theheight;
-}
-
-inline void ua_player::set_movement_factor(ua_player_movement_mode mode, double factor)
-{
-   move_factors[mode] = factor;
-}
-
-inline double ua_player::get_movement_factor(ua_player_movement_mode mode)
-{
-   return move_factors[mode];
-}
-
-inline double ua_player::get_xpos() const
-{
-   return xpos;
-}
-
-inline double ua_player::get_ypos() const
-{
-   return ypos;
-}
-
-inline double ua_player::get_angle_rot() const
-{
-   return rotangle;
-}
-
-inline double ua_player::get_angle_pan() const
-{
-   return panangle;
-}
-
-inline double ua_player::get_height() const
-{
-   return height;
-}
-
-inline const std::string& ua_player::get_name() const
-{
-   return name;
-}
-
-inline unsigned int ua_player::get_movement_mode() const
-{
-   return move_mode;
-}
-
-inline ua_runes& ua_player::get_runes()
-{
-   return runes;
-}
-
+} // namespace Underworld
 
 #endif
-//@}
