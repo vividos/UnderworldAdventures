@@ -1,6 +1,6 @@
 /*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
+   Underworld Adventures - an Ultima Underworld remake project
+   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -22,6 +22,12 @@
 /*! \file main.cpp
 
    \brief the game's main function
+
+*/
+/*! \mainpage
+
+  Module relations are as follows:<br/>
+  \dotfile ../docs/ua-module-dependencies.dot Module Dependencies
 
 */
 
