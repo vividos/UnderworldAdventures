@@ -1,6 +1,6 @@
 /*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2004 Underworld Adventures Team
+   Underworld Adventures - an Ultima Underworld remake project
+   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -24,96 +24,128 @@
    \brief runebag and runeshelf
 
 */
-//! \ingroup underworld
-
-//@{
 
 // include guard
-#ifndef uwadv_runes_hpp_
-#define uwadv_runes_hpp_
+#ifndef uwadv_underw_runes_hpp_
+#define uwadv_underw_runes_hpp_
 
 // needed includes
-#include "savegame.hpp"
+#include <vector>
 #include <bitset>
 
+namespace Base
+{
+   class Savegame;
+}
+
+namespace Underworld
+{
+
+//! Rune type
+/*! Note: in uw1 and uw2 there is no rune for Xen and Zu. */
+enum ERuneType
+{
+   runeAn=0,
+   runeBet,
+   runeCorp,
+   runeDes,
+   runeEx,
+   runeFlam,
+   runeGrav,
+   runeHur,
+   runeIn,
+   runeJux,
+   runeKal,
+   runeLor,
+   runeMani,
+   runeNox,
+   runeOrt,
+   runePor,
+   runeQuas,
+   runeRel,
+   runeSanct,
+   runeTym,
+   runeUus,
+   runeVas,
+   runeWis,
+   runeYlem,
+   runeLast = runeYlem
+};
 
 // classes
 
-//! runes class
-/*! The runes class contains the runeshelf and the runebag contents. Note that
-    there are only 24 runes, since X and Z don't have associated rune stones.
-*/
-class ua_runes
+//! Runeshelf class
+class Runeshelf
 {
 public:
    //! ctor
-   ua_runes(){}
-
-   // runeshelf related
+   Runeshelf(){}
 
    //! returns number of runes on shelf (max. 3 runes)
-   unsigned int get_runeshelf_count();
+   unsigned int GetNumRunes() const { return m_vecRuneshelf.size(); }
 
-   //! returns rune on runeshelf; 0-based
-   Uint8 get_runeshelf_rune(unsigned int pos);
+   //! returns rune on shelf position
+   ERuneType GetRune(unsigned int uiIndex) const
+   {
+      UaAssert(uiIndex < m_vecRuneshelf.size());
+      return m_vecRuneshelf[uiIndex];
+   }
 
    //! adds a rune to the runeshelf
-   void add_runeshelf_rune(Uint8 rune);
+   void AddRune(ERuneType rune)
+   {
+      if (m_vecRuneshelf.size() > 2)
+         m_vecRuneshelf.erase(m_vecRuneshelf.begin());
+
+      m_vecRuneshelf.push_back(rune);
+   }
 
    //! resets runeshelf contents
-   void reset_runeshelf();
+   void Reset(){ m_vecRuneshelf.clear(); }
 
+   // loading / saving
 
-   // runebag related
+   //! loads runebag from savegame
+   void Load(Base::Savegame& sg);
 
-   //! returns runebag as bitset
-   std::bitset<24>& get_runebag();
+   //! saves runebag to a savegame
+   void Save(Base::Savegame& sg);
 
-
-   // loading/saving/importing
-
-   //! loads a savegame
-   void load_game(ua_savegame& sg);
-
-   //! saves to a savegame
-   void save_game(ua_savegame& sg);
-
-protected:
+private:
    //! runeshelf contents
-   std::vector<Uint8> runeshelf;
-
-   //! rune bag
-   std::bitset<24> runebag;
+   std::vector<ERuneType> m_vecRuneshelf;
 };
 
 
-// inline methods
-inline unsigned int ua_runes::get_runeshelf_count()
+//! Runebag class
+class Runebag
 {
-   return runeshelf.size();
-}
+public:
+   //! ctor
+   Runebag(){}
 
-inline Uint8 ua_runes::get_runeshelf_rune(unsigned int pos)
-{
-   return pos > runeshelf.size() ? 0 : runeshelf[pos];
-}
+   //! checks if rune is in bag
+   bool IsInBag(ERuneType rune) const { return m_runebag.test(static_cast<size_t>(rune)); }
 
-inline void ua_runes::add_runeshelf_rune(Uint8 rune)
-{
-   if (runeshelf.size()>2) runeshelf.erase(runeshelf.begin());
-   runeshelf.push_back(rune);
-}
+   //! sets availability of rune in bag
+   void SetRune(ERuneType rune, bool bAvail){ m_runebag.set(static_cast<size_t>(rune), bAvail); }
 
-inline void ua_runes::reset_runeshelf()
-{
-   runeshelf.empty();
-}
+   // loading / saving
 
-inline std::bitset<24>& ua_runes::get_runebag()
-{
-   return runebag;
-}
+   //! loads runebag from savegame
+   void Load(Base::Savegame& sg);
 
+   //! saves runebag to a savegame
+   void Save(Base::Savegame& sg);
+
+   //! returns runebag as bitset
+   std::bitset<24>& GetBitsetRunebag(){ return m_runebag; }
+
+protected:
+   //! rune bag
+   std::bitset<24> m_runebag;
+};
+
+} // namespace Underworld
 
 #endif
-//@}
