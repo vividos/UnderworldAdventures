@@ -116,7 +116,7 @@ public:
    }
 
    //! returns floor height on specific position
-   double GetFloorHeight(double xpos, double xpos);
+   double GetFloorHeight(double xpos, double ypos);
 
    //! returns a tile info struct
    TileInfo& GetTileInfo(unsigned int xpos, unsigned int ypos);

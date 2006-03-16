@@ -120,7 +120,7 @@ const TileInfo& Tilemap::GetTileInfo(unsigned int xpos, unsigned int ypos) const
    return m_vecTiles[ypos*64 + xpos];
 }
 
-void Tilemap::LoadTilemap(Base::Savegame& sg)
+void Tilemap::Load(Base::Savegame& sg)
 {
    sg.BeginSection("tilemap");
 
@@ -152,7 +152,7 @@ void Tilemap::LoadTilemap(Base::Savegame& sg)
    sg.EndSection();
 }
 
-void Tilemap::SaveTilemap(Base::Savegame& sg) const
+void Tilemap::Save(Base::Savegame& sg) const
 {
    sg.BeginSection("tilemap");
 
