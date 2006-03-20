@@ -216,10 +216,10 @@ public:
    // loading / saving
 
    //! Loads player info from savegame
-   void LoadPlayer(Base::Savegame& sg);
+   void Load(Base::Savegame& sg);
 
    //! Saves player infos to savegame
-   void SavePlayer(Base::Savegame& sg);
+   void Save(Base::Savegame& sg) const;
 
    //! Fills details about player into savegame info
    void FillSavegamePlayerInfos(Base::SavegameInfo& info);

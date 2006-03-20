@@ -45,7 +45,7 @@ Player::Player()
    memset(m_aSkills, 0, SDL_TABLESIZE(m_aSkills));
 }
 
-void Player::LoadPlayer(Base::Savegame& sg)
+void Player::Load(Base::Savegame& sg)
 {
    sg.BeginSection("player");
 
@@ -75,7 +75,7 @@ void Player::LoadPlayer(Base::Savegame& sg)
    m_questFlags.Load(sg);
 }
 
-void Player::SavePlayer(Base::Savegame& sg)
+void Player::Save(Base::Savegame& sg) const
 {
    sg.BeginSection("player");
 
