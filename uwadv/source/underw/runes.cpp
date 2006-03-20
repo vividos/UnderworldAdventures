@@ -53,7 +53,7 @@ void Runebag::Load(Base::Savegame& sg)
 /*! \note std::bitset::to_ulong() could be used to convert the bitset to an
     int, but it probably isn't portable enough
 */
-void Runebag::Save(Base::Savegame& sg)
+void Runebag::Save(Base::Savegame& sg) const
 {
    sg.BeginSection("runebag");
 

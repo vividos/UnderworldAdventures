@@ -109,7 +109,7 @@ public:
    void Load(Base::Savegame& sg);
 
    //! saves runebag to a savegame
-   void Save(Base::Savegame& sg);
+   void Save(Base::Savegame& sg) const;
 
 private:
    //! runeshelf contents
@@ -136,7 +136,7 @@ public:
    void Load(Base::Savegame& sg);
 
    //! saves runebag to a savegame
-   void Save(Base::Savegame& sg);
+   void Save(Base::Savegame& sg) const;
 
    //! returns runebag as bitset
    std::bitset<24>& GetBitsetRunebag(){ return m_runebag; }
