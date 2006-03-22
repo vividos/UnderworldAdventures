@@ -48,7 +48,7 @@ public:
    //! ctor; opens text file by name
    TextFile(const std::string& strFilename, EFileOpenMode eOpenMode):File(strFilename, eOpenMode){}
    //! ctor; opens text file from rwops pointer
-   TextFile(SDL_RWops* rwops):File(rwops){}
+   TextFile(SDL_RWopsPtr rwops):File(rwops){}
 
    //! reads a whole string line from file
    void ReadLine(std::string& strLine);

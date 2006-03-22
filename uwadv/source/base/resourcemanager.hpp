@@ -32,8 +32,6 @@
 // needed includes
 #include <string>
 
-struct SDL_RWops;
-
 namespace Base
 {
 
@@ -56,10 +54,10 @@ public:
    ResourceManager(const Settings& settings);
 
    //! returns "uadata" resource file
-   SDL_RWops* GetResourceFile(const std::string& strRelFilename);
+   SDL_RWopsPtr GetResourceFile(const std::string& strRelFilename);
 
    //! returns ultima underworld file
-   SDL_RWops* GetUnderworldFile(EUnderworldResourcePath resPath, const std::string& strRelFilePath);
+   SDL_RWopsPtr GetUnderworldFile(EUnderworldResourcePath resPath, const std::string& strRelFilePath);
 
 protected:
    //! maps lowercase filename to real filename for underworld data files

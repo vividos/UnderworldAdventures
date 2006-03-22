@@ -41,15 +41,16 @@
 #include <config.h>
 #endif
 
-/* compiler macros;
-   The following macros will be defined if the feature is present
-   HAVE_MSVC     Microsoft Visual C++ compiler
-   HAVE_GCC      Gnu gcc compiler
-   HAVE_WIN32    Win32 API is available through <windows.h>
-   HAVE_UNICODE  Unicode Win32 API functions should be used
-   HAVE_LINUX    Linux is used as target system
-   HAVE_MINGW    MinGW32 development/runtime environment
-   HAVE_MACOSX   MacOS X development/runtime environment
+// compiler macros;
+//   The following macros will be defined if the feature is present
+/*!
+   \def HAVE_MSVC     Microsoft Visual C++ compiler
+   \def HAVE_GCC      Gnu gcc compiler
+   \def HAVE_WIN32    Win32 API is available through <windows.h>
+   \def HAVE_UNICODE  Unicode Win32 API functions should be used
+   \def HAVE_LINUX    Linux is used as target system
+   \def HAVE_MINGW    MinGW32 development/runtime environment
+   \def HAVE_MACOSX   MacOS X development/runtime environment
 */
 
 #ifdef _MSC_VER
@@ -141,5 +142,25 @@ private:
 
 #include "exception.hpp"
 #include "string.hpp"
+#include "smart_ptr.hpp"
+
+// forward reference
+struct SDL_RWops;
+
+namespace Base
+{
+
+//! delete functor for SDL_RWops struct ptr; used with Base::SmartPtr
+class SDL_RWopsDeletor
+{
+public:
+   //! closes rwops file
+   void operator()(SDL_RWops* rwops);
+};
+
+//! smart pointer to SDL_RWops struct
+typedef SmartPtr<SDL_RWops, Base::SDL_RWopsDeletor> SDL_RWopsPtr;
+
+} // namespace Base
 
 #endif

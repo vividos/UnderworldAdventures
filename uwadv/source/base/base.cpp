@@ -30,6 +30,16 @@
 #include <cstdio>
 #include <cstdarg>
 #include <sstream>
+#include <SDL_RWops.h>
+
+// SDL_RWopsDeletor methods
+
+void Base::SDL_RWopsDeletor::operator()(SDL_RWops* rwops)
+{
+   if (rwops != NULL)
+      SDL_RWclose(rwops);
+}
+
 
 // functions
 

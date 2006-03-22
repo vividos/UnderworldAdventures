@@ -58,9 +58,6 @@ typedef std::map<std::string, std::string> ConfigValueMap;
     files one space character is put between them. Comments are preserved
     during writing; comments that are on a line with a key/value pair are
     written to a new line.
-
-    Note: After calling ConfigFile::Load(SDL_RWops*) the file is not closed
-    using SDL_RWclose(). It has to be closed manually.
 */
 class ConfigFile
 {

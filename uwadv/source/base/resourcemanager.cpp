@@ -65,7 +65,7 @@ ResourceManager::ResourceManager(const Settings& settings)
     .uar files are .zip files that contain files and subfolders.
     SDL_RWFromZZIP is used to open files inside .uar files.
 */
-SDL_RWops* ResourceManager::GetResourceFile(const std::string& strRelFilename)
+Base::SDL_RWopsPtr ResourceManager::GetResourceFile(const std::string& strRelFilename)
 {
    UaAssert(m_strUaDataPath.size() > 0); // must have called LoadSettings() before
 
@@ -73,9 +73,9 @@ SDL_RWops* ResourceManager::GetResourceFile(const std::string& strRelFilename)
    std::string strFilename = m_strUaDataPath + "/" + strRelFilename;
 
    // try to open file
-   SDL_RWops* rwops = SDL_RWFromFile(strFilename.c_str(), "rb");
+   SDL_RWopsPtr rwops = SDL_RWopsPtr(SDL_RWFromFile(strFilename.c_str(), "rb"));
 
-   if (rwops != NULL)
+   if (rwops.get() != NULL)
       return rwops; // found real file
 
    // find all uadata resource files
@@ -91,8 +91,8 @@ SDL_RWops* ResourceManager::GetResourceFile(const std::string& strRelFilename)
       // try to open from zip file
       std::string strZipPath(vecFileList[i] + "/" + strRelFilename);
 
-      rwops = SDL_RWFromZZIP(strZipPath.c_str(), "rb");
-      if (rwops != NULL)
+      rwops = SDL_RWopsPtr(SDL_RWFromZZIP(strZipPath.c_str(), "rb"));
+      if (rwops.get() != NULL)
          break;
    }
 
@@ -101,7 +101,7 @@ SDL_RWops* ResourceManager::GetResourceFile(const std::string& strRelFilename)
 
 /*! \todo implement reading from a zip file, e.g. uw_demo.zip
 */
-SDL_RWops* ResourceManager::GetUnderworldFile(Base::EUnderworldResourcePath resPath, const std::string& strRelFilePath)
+Base::SDL_RWopsPtr ResourceManager::GetUnderworldFile(Base::EUnderworldResourcePath resPath, const std::string& strRelFilePath)
 {
    std::string strFilename;
 
@@ -120,7 +120,7 @@ SDL_RWops* ResourceManager::GetUnderworldFile(Base::EUnderworldResourcePath resP
    if (!Base::FileSystem::FileExists(strFilename))
       throw Base::FileSystemException("couldn't find uw game file", strFilename, ENOENT);
 
-   return SDL_RWFromFile(strFilename.c_str(), "rb");
+   return SDL_RWopsPtr(SDL_RWFromFile(strFilename.c_str(), "rb"));
 }
 
 /*! \todo implement mapping */

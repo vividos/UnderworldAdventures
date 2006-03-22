@@ -53,23 +53,13 @@ enum ESeekMode
    seekCurrent,   //!< seek position is relative to current position
 };
 
-
-//! delete functor for SDL_RWops struct ptr; used with Base::SmartPtr
-class SDL_RWopsDeletor
-{
-public:
-   //! closes rwops file
-   void operator()(SDL_RWops* rwops)
-   {
-      if (rwops != NULL)
-         SDL_RWclose(rwops);
-   }
-};
-
+// classes
 
 //! File class
 /*! Note: the Read16 and Read32 functions always read little-endian values,
     and the Write16 and Write32 functions always write little-endian values.
+    The underlying SDL_RWops pointer is deleted and the file is closed as soon
+    as no instance is using the pointer anymore.
 */
 class File
 {
@@ -79,7 +69,7 @@ public:
    //! ctor; openes per filename
    File(const std::string& strFilename, EFileOpenMode eOpenMode);
    //! ctor; uses opened SDL_RWops pointer
-   File(SDL_RWops* rwops);
+   File(SDL_RWopsPtr rwops);
    //! copy ctor
    File(const File& file):m_lFileLength(-1){ operator=(file); }
    //! dtor; closes file when still open and no more copies of the object exist
@@ -127,7 +117,7 @@ public:
 
 private:
    //! internal rwops ptr
-   Base::SmartPtr<SDL_RWops, Base::SDL_RWopsDeletor> m_rwops;
+   SDL_RWopsPtr m_rwops;
 
    //! file length
    long m_lFileLength;

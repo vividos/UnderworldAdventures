@@ -47,13 +47,11 @@ File::File(const std::string& strFilename, EFileOpenMode eOpenMode)
    m_rwops.reset(rwops);
 }
 
-/*! The given rwops structure will be automatically freed at destruction.
-    There's no need to free the ptr. */
-File::File(SDL_RWops* rwops)
+File::File(Base::SDL_RWopsPtr rwops)
 :m_rwops(rwops),
  m_lFileLength(-1)
 {
-   UaAssert(rwops != NULL);
+   UaAssert(rwops.get() != NULL);
 }
 
 /*! \return file length, or -1 if the file length couldn't be determined (e.g.
