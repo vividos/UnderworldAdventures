@@ -58,6 +58,7 @@ enum EObjectType
 //! general object info
 struct ObjectInfo
 {
+   //! ctor
    ObjectInfo()
       :m_uiItemID(g_uiItemIDNone),
       m_uiLink(0),
@@ -83,13 +84,16 @@ struct ObjectInfo
    bool m_bHidden;      //!< indicates if object is hidden or visible
    bool m_bIsQuantity;  //!< true when "quantity" field is a quantity/special property
 
+   //! loads object info from savegame
    void Load(Base::Savegame& sg);
+   //! saves object info to savegame
    void Save(Base::Savegame& sg) const;
 };
 
 //! object position info
 struct ObjectPositionInfo
 {
+   //! ctor
    ObjectPositionInfo()
       :m_xpos(0), m_ypos(0), m_zpos(0),
       m_uiHeading(0), m_uiTileX(0xff), m_uiTileY(0xff)
@@ -103,7 +107,9 @@ struct ObjectPositionInfo
    Uint8 m_uiTileX;     //!< tilemap x coordinate
    Uint8 m_uiTileY;     //!< tilemap y coordinate
 
+   //! loads object position info from savegame
    void Load(Base::Savegame& sg);
+   //! saves object position info to savegame
    void Save(Base::Savegame& sg) const;
 };
 
@@ -147,7 +153,9 @@ struct NpcInfo
    Uint8 m_uiAnimationState;  //!< animation state
    Uint8 m_uiAnimationFrame;  //!< current animation frame
 
+   //! loads npc info from savegame
    void Load(Base::Savegame& sg);
+   //! saves npc info to savegame
    void Save(Base::Savegame& sg) const;
 };
 
@@ -163,10 +171,14 @@ public:
    //! returns object type
    EObjectType GetObjectType() const { return m_objectType; }
 
+   //! returns object info
    ObjectInfo& GetObjectInfo(){ return m_objInfo; }
+   //! returns object info
    const ObjectInfo& GetObjectInfo() const { return m_objInfo; }
 
+   //! returns object position info
    ObjectPositionInfo& GetPosInfo(){ return m_posInfo; }
+   //! returns object position info
    const ObjectPositionInfo& GetPosInfo() const { return m_posInfo; }
 
    // loading / saving
