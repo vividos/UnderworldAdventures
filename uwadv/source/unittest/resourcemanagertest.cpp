@@ -69,8 +69,8 @@ void TestResourceManager::TestResourceLoading()
    Base::LoadSettings(settings);
 
    Base::ResourceManager resManager(settings);
-   SDL_RWops* rwops = resManager.GetResourceFile("uw1/keymap.cfg");
-   CPPUNIT_ASSERT(rwops != NULL);
+   Base::SDL_RWopsPtr rwops = resManager.GetResourceFile("uw1/keymap.cfg");
+   CPPUNIT_ASSERT(rwops.get() != NULL);
 
    Base::File file(rwops);
    CPPUNIT_ASSERT(file.FileLength() > 0);

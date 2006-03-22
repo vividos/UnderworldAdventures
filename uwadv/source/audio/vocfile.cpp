@@ -52,8 +52,8 @@ void ResampleChunk12048_22050(const std::vector<double>& vecSourceSamples,
 class VoiceFileLoader
 {
 public:
-   //! ctor; SDL_RWops ptr is freed automatically after loading
-   VoiceFileLoader(SDL_RWops* rwops):m_rwops(rwops){}
+   //! ctor
+   VoiceFileLoader(Base::SDL_RWopsPtr rwops):m_rwops(rwops){}
 
    //! loads voc file
    void Load();
@@ -66,7 +66,7 @@ public:
 
 private:
    //! ptr to read .voc file from
-   SDL_RWops* m_rwops;
+   Base::SDL_RWopsPtr m_rwops;
 
    //! samplerate of .voc file
    Uint32 m_uiSamplerate;
@@ -78,6 +78,7 @@ private:
 /*!
 The .voc file format is documented in:
 http://icculus.org/SDL_sound/downloads/external_documentation/Voc.txt
+\todo reimplement using Base::File
 */
 void VoiceFileLoader::Load()
 {
@@ -85,35 +86,35 @@ void VoiceFileLoader::Load()
 
    // read in header
    char cstrHeaderString[0x13+1];
-   SDL_RWread(m_rwops, cstrHeaderString, 1, SDL_TABLESIZE(cstrHeaderString));
+   SDL_RWread(m_rwops.get(), cstrHeaderString, 1, SDL_TABLESIZE(cstrHeaderString));
    UaAssert(0 == strncmp(cstrHeaderString, c_cstrHeaderString, SDL_TABLESIZE(cstrHeaderString)));
 
-   Uint16 uiOffsetDataBlock = SDL_ReadLE16(m_rwops);
+   Uint16 uiOffsetDataBlock = SDL_ReadLE16(m_rwops.get());
    UaAssert(uiOffsetDataBlock == 0x001a);
 
-   Uint16 uiVersionNumber = SDL_ReadLE16(m_rwops);
+   Uint16 uiVersionNumber = SDL_ReadLE16(m_rwops.get());
    UaAssert(uiVersionNumber == 0x010a); // assume version 1.10 always
 
-   Uint16 uiVersionNumber1sComplement = SDL_ReadLE16(m_rwops);
+   Uint16 uiVersionNumber1sComplement = SDL_ReadLE16(m_rwops.get());
    UaAssert(uiVersionNumber1sComplement == 0x1129);
 
    // read in first data block
    Uint8 uiBlockType = 0;
 
    // read in block type; must be 1
-   SDL_RWread(m_rwops, &uiBlockType, 1, 1);
+   SDL_RWread(m_rwops.get(), &uiBlockType, 1, 1);
    UaAssert(uiBlockType == 1);
 
    // read in size
-   Uint32 uiSize = static_cast<Uint32>(SDL_ReadLE16(m_rwops));
+   Uint32 uiSize = static_cast<Uint32>(SDL_ReadLE16(m_rwops.get()));
 
    Uint8 uiSizeHigh;
-   SDL_RWread(m_rwops, &uiSizeHigh, 1, 1);
+   SDL_RWread(m_rwops.get(), &uiSizeHigh, 1, 1);
    uiSize |= static_cast<Uint32>(uiSizeHigh) << 16;
 
    // read samplerate
    Uint8 uiCodedSamplerate = 0;
-   SDL_RWread(m_rwops, &uiCodedSamplerate, 1, 1);
+   SDL_RWread(m_rwops.get(), &uiCodedSamplerate, 1, 1);
 
    // note: this formula comes from the above URL, but it seems to be wrong
    // for uw1 and uw2 files (or it's just flawed)
@@ -122,12 +123,12 @@ void VoiceFileLoader::Load()
    m_uiSamplerate = 1000000 / (256-uiCodedSamplerate);
 
    Uint8 uiCompressionType = 0;
-   SDL_RWread(m_rwops, &uiCompressionType, 1, 1);
+   SDL_RWread(m_rwops.get(), &uiCompressionType, 1, 1);
    UaAssert(uiCompressionType == 0); // 8-bit
 
    // read in 8-bit samples
    std::vector<Uint8> vecRawSamples(uiSize);
-   SDL_RWread(m_rwops, &vecRawSamples[0], 1, uiSize);
+   SDL_RWread(m_rwops.get(), &vecRawSamples[0], 1, uiSize);
 
    // convert to signed 16-bit
    m_vecSamples.resize(uiSize);
@@ -216,19 +217,17 @@ using Audio::VoiceFile;
 // Playlist methods
 
 /*! SDL_RWops ptr is automatically closed after loading */
-VoiceFile::VoiceFile(SDL_RWops* rwops)
+VoiceFile::VoiceFile(Base::SDL_RWopsPtr rwops)
 {
    Detail::VoiceFileLoader loader(rwops);
 
    loader.Load();
    loader.ResampleAudio();
    loader.GenerateWaveFile(m_vecFileData);
-
-   SDL_RWclose(rwops);
 }
 
 /*! user has to free SDL_RWops ptr returned. */
-SDL_RWops* VoiceFile::GetFileData() const
+Base::SDL_RWopsPtr VoiceFile::GetFileData() const
 {
-   return SDL_RWFromConstMem(&m_vecFileData[0], m_vecFileData.size());
+   return Base::SDL_RWopsPtr(SDL_RWFromConstMem(&m_vecFileData[0], m_vecFileData.size()));
 }

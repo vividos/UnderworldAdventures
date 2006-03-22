@@ -30,7 +30,6 @@
 #define uwadv_audio_vocfile_hpp_
 
 // needed includes
-#include "file.hpp"
 #include <vector>
 
 namespace Audio
@@ -44,10 +43,10 @@ class VoiceFile
 {
 public:
    //! ctor; loads .voc file
-   VoiceFile(SDL_RWops* rwops);
+   VoiceFile(Base::SDL_RWopsPtr rwops);
 
    //! returns voice file data
-   SDL_RWops* GetFileData() const;
+   Base::SDL_RWopsPtr GetFileData() const;
 
 private:
    //! voice file data

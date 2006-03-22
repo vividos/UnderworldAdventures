@@ -153,7 +153,7 @@ void TestAudio::TestMidiPlayer()
       {
          std::string strFilename = std::string("/sound/") + midisUw1[i];
 
-         SDL_RWops* rwops = resourceManager.GetUnderworldFile(Base::resourceGameUw1, strFilename);
+         Base::SDL_RWopsPtr rwops = resourceManager.GetUnderworldFile(Base::resourceGameUw1, strFilename);
 
          player.PlayFile(rwops, false);
          player.Stop();
@@ -189,7 +189,7 @@ void TestAudio::TestMidiPlayer()
       {
          std::string strFilename = std::string("/sound/") + midisUw2[i];
 
-         SDL_RWops* rwops = resourceManager.GetUnderworldFile(Base::resourceGameUw2, strFilename);
+         Base::SDL_RWopsPtr rwops = resourceManager.GetUnderworldFile(Base::resourceGameUw2, strFilename);
 
          player.PlayFile(rwops, false);
          player.Stop();

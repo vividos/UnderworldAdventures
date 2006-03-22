@@ -32,7 +32,6 @@
 // needed includes
 #include <memory> // for std::auto_ptr
 
-struct SDL_RWops;
 class MidiDriver;
 class XMidiFile;
 
@@ -55,7 +54,7 @@ public:
    ~MidiPlayer();
 
    //! starts playing midi file, with track number
-   void PlayFile(SDL_RWops* rwops, bool bRepeat=false);
+   void PlayFile(Base::SDL_RWopsPtr rwops, bool bRepeat=false);
 
    //! stops playing
    void Stop();

@@ -46,8 +46,7 @@ class PlaylistLoader: public Base::NonCopyable
 {
 public:
    //! ctor
-   /*! SDL_RWops ptr is automatically closed */
-   PlaylistLoader(const Base::Settings& settings, SDL_RWops* rwops, std::vector<std::string> &vecPlaylist)
+   PlaylistLoader(const Base::Settings& settings, Base::SDL_RWopsPtr rwops, std::vector<std::string> &vecPlaylist)
       : m_playlistFile(rwops),
         m_vecPlaylist(vecPlaylist),
         m_strUwPath(settings.GetString(Base::settingUnderworldPath)),
@@ -112,7 +111,7 @@ using Audio::Playlist;
 // Playlist methods
 
 /*! SDL_RWops ptr is automatically closed */
-Playlist::Playlist(const Base::Settings& settings, SDL_RWops* rwops)
+Playlist::Playlist(const Base::Settings& settings, Base::SDL_RWopsPtr rwops)
 {
    Detail::PlaylistLoader loader(settings, rwops, m_vecPlaylist);
    loader.Load();

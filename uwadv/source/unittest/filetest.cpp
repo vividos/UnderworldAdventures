@@ -166,8 +166,8 @@ void TestFile::TestRwopsFileRead()
 
    // read test file
    {
-      SDL_RWops* rwops = SDL_RWFromConstMem(testData, SDL_TABLESIZE(testData));
-      CPPUNIT_ASSERT(rwops != NULL);
+      Base::SDL_RWopsPtr rwops = Base::SDL_RWopsPtr(SDL_RWFromConstMem(testData, SDL_TABLESIZE(testData)));
+      CPPUNIT_ASSERT(rwops.get() != NULL);
 
       Base::File testFile(rwops);
       CPPUNIT_ASSERT(true == testFile.IsOpen());
@@ -198,8 +198,8 @@ void TestFile::TestGzipFileReadWrite()
 
    // write test file
    {
-      SDL_RWops* rwops = SDL_RWFromGzFile(strFile.c_str(), "wb9");
-      CPPUNIT_ASSERT(rwops != NULL);
+      Base::SDL_RWopsPtr rwops = Base::SDL_RWopsPtr(SDL_RWFromGzFile(strFile.c_str(), "wb9"));
+      CPPUNIT_ASSERT(rwops.get() != NULL);
 
       Base::File testFile(rwops);
       CPPUNIT_ASSERT(true == testFile.IsOpen());
@@ -218,8 +218,8 @@ void TestFile::TestGzipFileReadWrite()
 
    // read test file
    {
-      SDL_RWops* rwops = SDL_RWFromGzFile(strFile.c_str(), "rb");
-      CPPUNIT_ASSERT(rwops != NULL);
+      Base::SDL_RWopsPtr rwops = Base::SDL_RWopsPtr(SDL_RWFromGzFile(strFile.c_str(), "rb"));
+      CPPUNIT_ASSERT(rwops.get() != NULL);
 
       Base::File testFile(rwops);
       CPPUNIT_ASSERT(true == testFile.IsOpen());

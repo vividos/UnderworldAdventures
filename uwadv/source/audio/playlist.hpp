@@ -33,8 +33,6 @@
 #include <string>
 #include <vector>
 
-struct SDL_RWops;
-
 namespace Base
 {
    class Settings;
@@ -50,7 +48,7 @@ public:
    //! ctor; empty playlist
    Playlist(){}
    //! ctor; loads playlist
-   Playlist(const Base::Settings& settings, SDL_RWops* rwops);
+   Playlist(const Base::Settings& settings, Base::SDL_RWopsPtr rwops);
 
    //! returns number of tracks in playlist
    unsigned int GetCount() const { return m_vecPlaylist.size(); }

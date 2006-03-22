@@ -156,8 +156,8 @@ AudioManager::AudioManager(const Base::Settings& settings)
          settings.GetString(Base::settingGamePrefix) + "/audio/music.m3u";
 
       Base::ResourceManager resMgr(settings);
-      SDL_RWops* rwops = resMgr.GetResourceFile(strPlaylistName);
-      if (rwops != NULL)
+      Base::SDL_RWopsPtr rwops = Base::SDL_RWopsPtr(resMgr.GetResourceFile(strPlaylistName));
+      if (rwops.get() != NULL)
          m_apData->GetPlaylist() = Playlist(settings, rwops);
    }
 }
@@ -187,7 +187,7 @@ void AudioManager::PlaySound(const std::string& strSoundName)
    std::string strVocFilename = std::string("/sound/") + strSoundName + ".voc";
 
    // get .voc file
-   SDL_RWops* rwops = NULL;
+   Base::SDL_RWopsPtr rwops;
    try
    {
       rwops = m_apData->GetResourceManager().GetUnderworldFile(Base::resourceGameUw, strVocFilename);
@@ -201,7 +201,7 @@ void AudioManager::PlaySound(const std::string& strSoundName)
    VoiceFile vocFile(rwops);
 
    // start playing
-   Mix_Chunk* mc = Mix_LoadWAV_RW(vocFile.GetFileData(), true);
+   Mix_Chunk* mc = Mix_LoadWAV_RW(vocFile.GetFileData().get(), true);
    if (mc == NULL)
    {
       UaTrace("couldn't load sound file %s: %s\n", strVocFilename.c_str(), Mix_GetError());
@@ -222,11 +222,12 @@ void AudioManager::StopSound()
     this method only plays back sound effects when uw2 path is configured
     properly.
 
-    \param sfxType sound effect type to play back
+    \param c sound effect type to play back
     \todo implement
 */
 void AudioManager::PlaySoundEffect(Audio::ESoundEffectType sfxType)
 {
+   (sfxType);
 }
 
 /*! Starts playing back a sound track from the music playlist. Midi files with
@@ -268,7 +269,7 @@ void AudioManager::StartMusicTrack(unsigned int uiMusic, bool bRepeat)
    {
       try
       {
-         SDL_RWops* rwops = m_apData->GetResourceManager().
+         Base::SDL_RWopsPtr rwops = m_apData->GetResourceManager().
             GetUnderworldFile(Base::resourceGameUw, strTrackname);
 
          // start midi player track

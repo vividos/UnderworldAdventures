@@ -43,42 +43,43 @@ namespace Detail
 /*! provides implementation for Pentagram's IDataSource interface to input
     .xmi files into XMidiFile.
     The SDL_RWops ptr is closed automatically by this class.
+    \todo reimplement using Base::File
 */
 class InputDataSource: public IDataSource
 {
 public:
    //! ctor
-   InputDataSource(SDL_RWops* rwops):m_rwops(rwops){}
+   InputDataSource(Base::SDL_RWopsPtr rwops):m_rwops(rwops){}
    //! dtor
-	virtual ~InputDataSource(){ SDL_RWclose(m_rwops); }
+	virtual ~InputDataSource(){}
 
    //! reads 1 byte
-   virtual uint8 read1(){ uint8 u; SDL_RWread(m_rwops, &u, 1, 1); return u; }
+   virtual uint8 read1(){ uint8 u; SDL_RWread(m_rwops.get(), &u, 1, 1); return u; }
    //! reads 2 bytes, little endian
-	virtual uint16 read2(){ return SDL_ReadLE16(m_rwops); }
+	virtual uint16 read2(){ return SDL_ReadLE16(m_rwops.get()); }
    //! reads 2 bytes, big endian
-	virtual uint16 read2high(){ return SDL_ReadBE16(m_rwops); }
+	virtual uint16 read2high(){ return SDL_ReadBE16(m_rwops.get()); }
    //! not implemented
 	virtual uint32 read3(){ UaAssert(0); return 0; }
    //! reads 4 bytes, little endian
-	virtual uint32 read4(){ return SDL_ReadLE32(m_rwops); }
+	virtual uint32 read4(){ return SDL_ReadLE32(m_rwops.get()); }
    //! reads 4 bytes, big endian
-	virtual uint32 read4high(){ return SDL_ReadBE32(m_rwops); }
+	virtual uint32 read4high(){ return SDL_ReadBE32(m_rwops.get()); }
    //! reads memory block
    virtual sint32 read(void *str, sint32 num_bytes)
    {
-      return static_cast<sint32>(SDL_RWread(m_rwops, str, 1, num_bytes));
+      return static_cast<sint32>(SDL_RWread(m_rwops.get(), str, 1, num_bytes));
    }
    //! seeks to file position
-   virtual void seek(uint32 pos){ SDL_RWseek(m_rwops, pos, SEEK_SET); }
+   virtual void seek(uint32 pos){ SDL_RWseek(m_rwops.get(), pos, SEEK_SET); }
    //! skip bytes
-   virtual void skip(sint32 delta){ SDL_RWseek(m_rwops, delta, SEEK_CUR); }
+   virtual void skip(sint32 delta){ SDL_RWseek(m_rwops.get(), delta, SEEK_CUR); }
    //! returns size of file
    /*! \todo optimize fetching size by storing size value */
    virtual uint32 getSize()
    {
-      uint32 uCurPos = SDL_RWtell(m_rwops);
-      SDL_RWseek(m_rwops, 0L, SEEK_END);
+      uint32 uCurPos = SDL_RWtell(m_rwops.get());
+      SDL_RWseek(m_rwops.get(), 0L, SEEK_END);
       uint32 u = getPos();
       seek(uCurPos);
       return u;
@@ -86,7 +87,7 @@ public:
    //! returns current file pos
 	virtual uint32 getPos()
    {
-      return static_cast<uint32>(SDL_RWtell(m_rwops));
+      return static_cast<uint32>(SDL_RWtell(m_rwops.get()));
    }
    //! returns if already at end of file
    virtual bool eof()
@@ -96,7 +97,7 @@ public:
 
 private:
    //! rwops ptr
-   SDL_RWops* m_rwops;
+   Base::SDL_RWopsPtr m_rwops;
 };
 
 } // namespace Detail
@@ -127,7 +128,7 @@ MidiPlayer::~MidiPlayer()
       m_apDriver->destroyMidiDriver();
 }
 
-void MidiPlayer::PlayFile(SDL_RWops* rwops, bool bRepeat)
+void MidiPlayer::PlayFile(Base::SDL_RWopsPtr rwops, bool bRepeat)
 {
    if (m_apDriver.get() == NULL)
       return;
