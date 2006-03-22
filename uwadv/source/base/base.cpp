@@ -30,7 +30,7 @@
 #include <cstdio>
 #include <cstdarg>
 #include <sstream>
-#include <SDL_RWops.h>
+#include <SDL_rwops.h>
 
 // SDL_RWopsDeletor methods
 
