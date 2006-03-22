@@ -29,8 +29,7 @@
 #include "underworld.hpp"
 #include "tilemap.hpp"
 #include "savegame.hpp"
-//#include <cmath> // todo!
-#include <math.h>
+#include <cmath>
 
 using Underworld::Tilemap;
 using Underworld::TileInfo;
