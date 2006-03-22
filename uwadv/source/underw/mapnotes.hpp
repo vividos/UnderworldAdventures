@@ -1,6 +1,6 @@
 /*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Underworld Adventures - an Ultima Underworld remake project
+   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -21,68 +21,79 @@
 */
 /*! \file mapnotes.hpp
 
-   \brief map notes class
+   \brief map notes
 
 */
-//! \ingroup underworld
-
-//@{
 
 // include guard
-#ifndef uwadv_mapnotes_hpp_
-#define uwadv_mapnotes_hpp_
+#ifndef uwadv_underw_mapnotes_hpp_
+#define uwadv_underw_mapnotes_hpp_
 
 // needed includes
-#include "savegame.hpp"
 #include <vector>
 
+namespace Base
+{
+   class Savegame;
+}
+
+namespace Underworld
+{
 
 // structs
 
-//! map notes entry
-struct ua_map_notes_entry
+//! map note entry
+struct MapNote
 {
-   //! position on screen
-   unsigned int xpos,ypos;
+   //! ctor
+   MapNote():m_xpos(0.0), m_ypos(0.0){}
 
-   //! text to appear
-   std::string text;
+   //! relative x position on map
+   double m_xpos;
+
+   //! relative x position on map
+   double m_ypos;
+
+   //! note text
+   std::string m_strText;
 };
 
 
 // classes
 
 //! map notes class
-class ua_map_notes
+class MapNotes
 {
 public:
    //! ctor
-   ua_map_notes(){}
+   MapNotes(){}
 
-   //! returns list of notes for given page
-   std::vector<ua_map_notes_entry>& get_notes();
+   //! returns number of notes
+   unsigned int GetNoteCount() const { return m_vecNotes.size(); }
+
+   //! returns a single note
+   MapNote& GetNote(unsigned int uiIndex)
+   {
+      UaAssert(uiIndex < GetNoteCount());
+      return m_vecNotes[uiIndex];
+   }
 
    // loading / saving
 
-   //! loads a savegame
-   void load_game(ua_savegame& sg);
+   //! loads notes from savegame
+   void Load(Base::Savegame& sg);
 
-   //! saves to a savegame
-   void save_game(ua_savegame& sg);
+   //! saves notes to savegame
+   void Save(Base::Savegame& sg) const;
+
+   //! returns list of notes
+   std::vector<MapNote>& GetVectorNotes(){ return m_vecNotes; }
 
 protected:
    //! list of all notes
-   std::vector<ua_map_notes_entry> mapnotes;
+   std::vector<MapNote> m_vecNotes;
 };
 
-
-// inline methods
-
-inline std::vector<ua_map_notes_entry>& ua_map_notes::get_notes()
-{
-   return mapnotes;
-}
-
+} // namespace Underworld
 
 #endif
-//@}

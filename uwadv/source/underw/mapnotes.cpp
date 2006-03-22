@@ -1,6 +1,6 @@
 /*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Underworld Adventures - an Ultima Underworld remake project
+   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,50 +26,52 @@
 */
 
 // needed includes
-#include "common.hpp"
+#include "underworld.hpp"
 #include "mapnotes.hpp"
+#include "savegame.hpp"
+#include <limits>
 
+using Underworld::MapNotes;
+using Underworld::MapNote;
 
-// ua_map_notes methods
+// MapNotes methods
 
-void ua_map_notes::load_game(ua_savegame& sg)
+void MapNotes::Load(Base::Savegame& sg)
 {
-   sg.begin_section("mapnotes");
+   sg.BeginSection("mapnotes");
 
-   Uint16 numentries = sg.read16();
+   Uint16 uiEntries = sg.Read16();
 
-   mapnotes.clear();
-   mapnotes.resize(numentries);
+   m_vecNotes.clear();
+   m_vecNotes.resize(uiEntries);
 
-   for(unsigned int i=0; i<numentries; i++)
+   for (unsigned int i=0; i<uiEntries; i++)
    {
-      ua_map_notes_entry& note = mapnotes[i];
+      MapNote& note = m_vecNotes[i];
 
       // read map note
-      note.xpos = sg.read16();
-      note.ypos = sg.read16();
+      note.m_xpos = static_cast<double>(sg.Read16()) / std::numeric_limits<Uint16>::max();
+      note.m_ypos = static_cast<double>(sg.Read16()) / std::numeric_limits<Uint16>::max();
 
-      sg.read_string(note.text);
+      sg.ReadString(note.m_strText);
    }
-
-   sg.end_section();
 }
 
-void ua_map_notes::save_game(ua_savegame& sg)
+void MapNotes::Save(Base::Savegame& sg) const
 {
-   sg.begin_section("mapnotes");
+   sg.BeginSection("mapnotes");
 
-   Uint16 numentries = mapnotes.size();
-   sg.write16(numentries);
+   Uint16 uiEntries = static_cast<Uint16>(m_vecNotes.size());
+   sg.Write16(uiEntries);
 
-   for(unsigned int i=0; i<numentries; i++)
+   for (unsigned int i=0; i<uiEntries; i++)
    {
-      ua_map_notes_entry& note = mapnotes[i];
+      const MapNote& note = m_vecNotes[i];
 
-      sg.write16(note.xpos);
-      sg.write16(note.ypos);
-      sg.write_string(note.text.c_str());
+      sg.Write16(static_cast<Uint16>(note.m_xpos * std::numeric_limits<Uint16>::max()));
+      sg.Write16(static_cast<Uint16>(note.m_ypos * std::numeric_limits<Uint16>::max()));
+      sg.WriteString(note.m_strText);
    }
 
-   sg.end_section();
+   sg.EndSection();
 }
