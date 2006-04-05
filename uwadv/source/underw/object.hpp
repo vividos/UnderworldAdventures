@@ -61,7 +61,7 @@ struct ObjectInfo
    //! ctor
    ObjectInfo()
       :m_uiItemID(g_uiItemIDNone),
-      m_uiLink(0),
+      m_uiLink(0), // equal to g_uiObjectListPosNone
       m_uiQuality(0),
       m_uiOwner(0),
       m_uiQuantity(0),
@@ -95,8 +95,12 @@ struct ObjectPositionInfo
 {
    //! ctor
    ObjectPositionInfo()
-      :m_xpos(0), m_ypos(0), m_zpos(0),
-      m_uiHeading(0), m_uiTileX(0xff), m_uiTileY(0xff)
+      :m_xpos(0),
+      m_ypos(0),
+      m_zpos(0),
+      m_uiHeading(0),
+      m_uiTileX(0xff),
+      m_uiTileY(0xff)
    {
    }
 
