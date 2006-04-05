@@ -21,11 +21,11 @@
 # $Id$
 #
 
-INCLUDES = -I$(srcdir)/../base -I$(srcdir)/../audio
+check_PROGRAMS = unittest
 
 TESTS = unittest
 
-check_PROGRAMS = unittest
+INCLUDES = -I$(srcdir)/../base -I$(srcdir)/../audio -I$(srcdir)/../import -I$(srcdir)/../underw
 
 unittest_LDADD = \
    ../base/libbase.la \
