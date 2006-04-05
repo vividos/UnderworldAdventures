@@ -142,6 +142,7 @@ public:
    //! returns pointer
    T* get() const { return px; }
 
+   //! swaps pointer with given pointer
    void swap(SmartPtr<T, TDeletor>& other)
    {
       std::swap(px, other.px);
