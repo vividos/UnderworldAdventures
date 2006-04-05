@@ -22,8 +22,24 @@
 /*! \file smart_ptr.hpp
 
    \brief Smart pointer class
-
 */
+/*
+   Most of this class is taken from Boost, so the below copyright statement
+   also applies. Modifications made were introduction of a deletor function
+   object that can be specified.
+*/
+//
+//  detail/shared_ptr_nmt.hpp - shared_ptr.hpp without member templates
+//
+//  (C) Copyright Greg Colvin and Beman Dawes 1998, 1999.
+//  Copyright (c) 2001, 2002 Peter Dimov
+//
+//  Distributed under the Boost Software License, Version 1.0. (See
+//  accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
+//
+//  See http://www.boost.org/libs/smart_ptr/shared_ptr.htm for documentation.
+//
 
 // include guard
 #ifndef uwadv_base_smart_ptr_hpp_
@@ -54,94 +70,118 @@ public:
     incomplete types.
     \param T type of pointer to be managed
     \param TDeletor custom delete functor to clean up the pointer
+    \note Don't put array pointer into this smart pointer; use std::vector
+          instead.
 */
 template<typename T, typename TDeletor=PtrDeletor<T> >
 class SmartPtr
 {
 public:
    // typedefs
+   typedef T  element_type;   //!< value type pointed to
    typedef T  value_type;     //!< value type pointed to
    typedef T* pointer_type;   //!< pointer type
    typedef T& reference_type; //!< reference type
+   typedef long count_type;   //!< reference count type
 
    //! ctor
-   explicit SmartPtr(T* p=0){ data=new SmartPtrData; data->px=p; }
+   explicit SmartPtr(T* p=0)
+      :px(p)
+   {
+      try
+      {
+         pn = new count_type(1);
+      }
+      catch(...)
+      {
+         TDeletor t;
+         t(p);
+         throw;
+      }
+   }
+
    //! dtor
-   ~SmartPtr(){ dispose(); }
+   ~SmartPtr()
+   {
+      if (--*pn == 0)
+      {
+         TDeletor t;
+         t(px);
+         delete pn;
+      }
+   }
 
    //! copy ctor
-   SmartPtr(const SmartPtr& ptr):data(ptr.data){ ++(data->n); }
-   //! assignment operator
-   SmartPtr& operator =(const SmartPtr& ptr){ share(ptr.data); return *this; }
+   SmartPtr(const SmartPtr& r)
+      :px(r.px)
+   {
+      pn = r.pn;
+      ++*pn;
+   }
 
-   //! member-selection operator
-   T* operator->() const { return data->px; }
+   //! assignment operator
+   SmartPtr& operator=(const SmartPtr& r)
+   {
+      SmartPtr(r).swap(*this);
+      return *this;
+   }
+
+   //! resets the smart ptr to another ptr or to NULL
+   void reset(T* p=0)
+   {
+      UaAssert(p == 0 || p != px);
+      SmartPtr(p).swap(*this);
+   }
 
    //! indirection operator
-   T& operator*() const { return *data->px; }
+   T& operator*() const { UaAssert(px != 0); return *px; }
+
+   //! member-selection operator
+   T* operator->() const { UaAssert(px != 0); return px; }
 
    //! returns pointer
-   T* get() const { return data->px; }
+   T* get() const { return px; }
 
-   //! resets the smart ptr to an empty value
-   void reset()
+   void swap(SmartPtr<T, TDeletor>& other)
    {
-      if (--data->n == 0)
-      {
-         TDeletor d;
-         d(data->px);
-         data->px = NULL;
-      }
+      std::swap(px, other.px);
+      std::swap(pn, other.pn);
    }
-
-   //! resets the smart ptr to another value
-   void reset(T* p)
-   {
-      if (p == data->px)
-         return;
-
-      dispose();
-      data = new SmartPtrData;
-      data->px = p;
-    }
 
 protected:
-   //! smart ptr data
-   struct SmartPtrData
-   {
-      //! ctor
-      SmartPtrData():n(1), px(NULL){}
-
-      //! pointer to refcount
-      long n;
-      //! pointer to type object
-      T* px;
-   }* data;
-
-protected:
-   //! deletes pointer
-   void dispose()
-   {
-      if (--data->n == 0)
-      {
-         TDeletor d;
-         d(data->px);
-         delete data;
-         data = NULL;
-      }
-   }
-
-   //! shares pointer
-   void share(SmartPtrData* rdata)
-   {
-      if (data != rdata)
-      {
-         ++rdata->n;
-         dispose();
-         data = rdata;
-      }
-   }
+   //! contained pointer
+   T* px;
+   //! pointer to reference count
+   count_type* pn;
 };
+
+//! global compare operator
+template<class T, class TDeletor, class U>
+inline bool operator==(SmartPtr<T, TDeletor> const& a, SmartPtr<U, TDeletor> const& b)
+{
+   return a.get() == b.get();
+}
+
+//! global unequality operator
+template<class T, class TDeletor, class U>
+inline bool operator!=(SmartPtr<T, TDeletor> const& a, SmartPtr<U, TDeletor> const& b)
+{
+   return a.get() != b.get();
+}
+
+//! global less operator for ptr comparison
+template<class T, class TDeletor>
+inline bool operator<(SmartPtr<T, TDeletor> const& a, SmartPtr<T, TDeletor> const& b)
+{
+   return std::less<T*>()(a.get(), b.get());
+}
+
+//! swaps smart pointers
+template<class T, class TDeletor>
+void swap(SmartPtr<T, TDeletor>& a, SmartPtr<T, TDeletor>& b)
+{
+   a.swap(b);
+}
 
 } // namespace Base
 
