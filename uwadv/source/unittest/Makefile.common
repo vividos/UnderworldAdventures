@@ -22,17 +22,19 @@
 #
 
 unittest_SOURCES = \
+   cppunitmini.cpp cppunitmini.hpp \
+   tempfolder.cpp tempfolder.hpp \
+   unittest.cpp unittest.hpp \
    audiotest.cpp \
    cfgfiletest.cpp \
-   cppunitmini.cpp cppunitmini.hpp \
    filesystemtest.cpp \
    filetest.cpp \
+   importtest.cpp \
    keymaptest.cpp \
    resourcemanagertest.cpp \
    savegametest.cpp \
    stringtest.cpp \
-   tempfolder.cpp tempfolder.hpp \
-   unittest.cpp unittest.hpp
+   underworldtest.cpp
 
 # to be included into unittest later
 not_used_cpps = \
