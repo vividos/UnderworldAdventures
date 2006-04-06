@@ -88,7 +88,7 @@ public:
    void Save(Base::Savegame& sg) const;
 
    //! compacts object list
-   void CompactObjectList();
+   void Compact();
 
 private:
    //! sets object list start for tile on given coordinates

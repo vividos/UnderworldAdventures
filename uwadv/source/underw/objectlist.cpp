@@ -270,6 +270,6 @@ void ObjectList::Save(Base::Savegame& sg) const
     they will be invalidated after calling this function.
     \todo implement
 */
-void ObjectList::CompactObjectList()
+void ObjectList::Compact()
 {
 }
