@@ -1,6 +1,6 @@
 /*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Underworld Adventures - an Ultima Underworld remake project
+   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,96 +26,230 @@
 */
 
 // needed includes
-#include "common.hpp"
 #include "import.hpp"
+#include "resourcemanager.hpp"
+#include "file.hpp"
 #include "properties.hpp"
 
+using Import::GetBits;
+using Underworld::CommonObjectProperty;
+using Underworld::EMeleeSkillType;
+using Underworld::MeleeWeaponProperty;
+using Underworld::RangedWeaponProperty;
+using Underworld::EArmourCategory;
+using Underworld::ArmourAndWearableProperty;
+using Underworld::CritterProperty;
+using Underworld::ContainerProperty;
+using Underworld::LightSourceProperty;
+using Underworld::AnimatedObjectProperty;
 
-// ua_object_properties methods
 
-void ua_object_properties::import(ua_settings& settings)
+/*! \todo load jewelry info table */
+void Import::ImportProperties(Base::ResourceManager& resourceManager,
+   Underworld::ObjectProperties& properties)
 {
-   ua_uw_import import;
-   import.load_properties(*this,
-      settings.get_string(ua_setting_uw_path).c_str());
-}
-
-
-// ua_uw_import methods
-
-void ua_uw_import::load_properties(ua_object_properties& prop,
-   const char* path)
-{
-   ua_trace("loading object properties\n");
+   UaTrace("loading properties\n");
 
    // import common object properties
    {
-      std::string common_name(path);
-      common_name.append("data/comobj.dat");
+      Base::SDL_RWopsPtr rwops = resourceManager.GetUnderworldFile(Base::resourceGameUw, "data/comobj.dat");
+      Base::File file(rwops);
 
-      FILE* fd = fopen(common_name.c_str(),"rb");
+      std::vector<CommonObjectProperty>& vecProp = properties.GetVectorCommonObjectProperties();
+      vecProp.clear();
 
-      if (fd==NULL)
-         throw ua_exception("could not open data/comobj.dat");
+      unsigned int uiMax = (file.FileLength()-2) / 11;
+      UaAssert(uiMax == 0x0200);
 
-      prop.common_properties.clear();
+      vecProp.reserve(uiMax);
+      Uint8 auiData[11];
 
-      fseek(fd,0L,SEEK_END);
-      long flen = ftell(fd);
-      fseek(fd,2,SEEK_SET);
-
-      unsigned int max = (flen-2)/11;
-      for(unsigned int i=0; i<max; i++)
+      for (unsigned int ui=0; ui<uiMax; ui++)
       {
-         Uint8 data[11];
-         for(unsigned int j=0; j<11; j++)
-            data[j] = fgetc(fd);
+         file.ReadBuffer(auiData, SDL_TABLESIZE(auiData));
 
-         ua_common_obj_property comprop;
+         CommonObjectProperty prop;
+         prop.uiRadius = auiData[1] & 7;
+         prop.uiHeight = auiData[0];
+         prop.uiMass = ((auiData[2]<<8) | auiData[1]) >> 4;
+         prop.uiQualityClass = GetBits(auiData[6],  2, 2);
+         prop.uiQualityType =  GetBits(auiData[10], 0, 4);
+         prop.bCanHaveOwner =  GetBits(auiData[7],  7, 1) != 0;
+         prop.bCanBeLookedAt = GetBits(auiData[10], 4, 1) != 0;
+         prop.bCanBePickedUp = GetBits(auiData[3],  5, 1) != 0;
+         prop.bIsContainer =   GetBits(auiData[3],  7, 1) != 0;
 
-         comprop.radius = data[1] & 7;
-         comprop.height = data[0];
-         comprop.mass = ((data[2]<<8) | data[1]) >> 4;
-         comprop.quality_class = (data[6] >> 2) & 3;
-         comprop.quality_type = data[10] & 15;
-         comprop.can_have_owner = (data[7] & 0x80) != 0;
-         comprop.can_be_looked_at = (data[10] & 0x10) != 0;
-         comprop.can_be_picked_up = ((data[3]>>5) & 1) != 0;
-         comprop.is_container = ((data[3]>>7) & 1) != 0;
-         prop.common_properties.push_back(comprop);
+         vecProp.push_back(prop);
       }
-
-      fclose(fd);
    }
 
    // import object properties
    {
-      std::string common_name(path);
-      common_name.append("data/objects.dat");
+      Base::SDL_RWopsPtr rwops = resourceManager.GetUnderworldFile(Base::resourceGameUw, "data/objects.dat");
+      Base::File file(rwops);
 
-      FILE* fd = fopen(common_name.c_str(),"rb");
-
-      if (fd==NULL)
-         throw ua_exception("could not open data/objects.dat");
-
-      // import armour and wearable properties
+      // melee weapons table
       {
-         fseek(fd,0x00b2,SEEK_SET);
-         prop.armour_wearable_properties.clear();
-         prop.armour_wearable_properties.resize(0x0020);
+         file.Seek(2L, Base::seekBegin);
 
-         for(unsigned int i=0; i<0x0020; i++)
+         std::vector<MeleeWeaponProperty>& vecProp = properties.GetVectorMeleeWeaponProperties();
+         vecProp.clear();
+         vecProp.reserve(0x10);
+
+         Uint8 auiData[8];
+         for (unsigned int i=0; i<0x10; i++)
          {
-            ua_armour_wearable_property& aprop =
-               prop.armour_wearable_properties[i];
+            file.ReadBuffer(auiData, SDL_TABLESIZE(auiData));
 
-            aprop.protection = fgetc(fd);
-            aprop.durability = fgetc(fd);
-            fgetc(fd); // unknown
-            aprop.category = (ua_armour_category)fgetc(fd);
-         }         
+            MeleeWeaponProperty prop;
+            prop.uiDamageModSlash = auiData[0];
+            prop.uiDamageModBash = auiData[1];
+            prop.uiDamageModStab = auiData[2];
+            prop.skillType = static_cast<EMeleeSkillType>(auiData[6]);
+            prop.uiDurability = auiData[7];
+
+            UaAssert(prop.skillType == Underworld::meleeSkillSword ||
+               prop.skillType == Underworld::meleeSkillAxe ||
+               prop.skillType == Underworld::meleeSkillMace ||
+               prop.skillType == Underworld::meleeSkillUnarmed);
+
+            vecProp.push_back(prop);
+         }
       }
 
-      fclose(fd);
+      // ranged weapons table
+      {
+         file.Seek(0x82L, Base::seekBegin);
+
+         std::vector<RangedWeaponProperty>& vecProp = properties.GetVectorRangedWeaponProperties();
+         vecProp.clear();
+         vecProp.reserve(0x10);
+
+         Uint8 auiData[3];
+         for (unsigned int i=0; i<0x10; i++)
+         {
+            file.ReadBuffer(auiData, SDL_TABLESIZE(auiData));
+
+            RangedWeaponProperty prop;
+            prop.uiDurability = auiData[0];
+
+            vecProp.push_back(prop);
+         }
+      }
+
+      // armour and wearables table
+      {
+         file.Seek(0xb2L, Base::seekBegin);
+
+         std::vector<ArmourAndWearableProperty>& vecProp = properties.GetVectorArmourAndWearableProperties();
+         vecProp.clear();
+         vecProp.reserve(0x20);
+
+         Uint8 auiData[4];
+         for (unsigned int i=0; i<0x20; i++)
+         {
+            file.ReadBuffer(auiData, SDL_TABLESIZE(auiData));
+
+            ArmourAndWearableProperty prop;
+            prop.uiProtection = auiData[0];
+            prop.uiDurability = auiData[1];
+            prop.category = static_cast<EArmourCategory>(auiData[3]);
+
+            UaAssert(prop.category == Underworld::armourNone ||
+               prop.category == Underworld::armourBodyArmour ||
+               prop.category == Underworld::armourLeggings ||
+               prop.category == Underworld::armourGloves ||
+               prop.category == Underworld::armourBoots ||
+               prop.category == Underworld::armourHat ||
+               prop.category == Underworld::armourRing);
+
+            vecProp.push_back(prop);
+         }
+      }
+
+      // critters table
+      {
+         file.Seek(0x0132L, Base::seekBegin);
+
+         std::vector<CritterProperty>& vecProp = properties.GetVectorCritterProperties();
+         vecProp.clear();
+         vecProp.reserve(0x40);
+
+         Uint8 auiData[48];
+         for (unsigned int i=0; i<0x40; i++)
+         {
+            file.ReadBuffer(auiData, SDL_TABLESIZE(auiData));
+
+            CritterProperty prop;
+            prop.uiNpcPower = auiData[5];
+
+            vecProp.push_back(prop);
+         }
+      }
+
+      // containers table
+      {
+         file.Seek(0x0d32L, Base::seekBegin);
+
+         std::vector<ContainerProperty>& vecProp = properties.GetVectorContainerProperties();
+         vecProp.clear();
+         vecProp.reserve(0x10);
+
+         Uint8 auiData[3];
+         for (unsigned int i=0; i<0x10; i++)
+         {
+            file.ReadBuffer(auiData, SDL_TABLESIZE(auiData));
+
+            ContainerProperty prop;
+            prop.uiCapacity = auiData[0];
+            prop.iObjectClassAccepted = static_cast<int>(static_cast<Sint8>(auiData[1]));
+
+            vecProp.push_back(prop);
+         }
+      }
+
+      // light source table
+      {
+         file.Seek(0x0d62L, Base::seekBegin);
+
+         std::vector<LightSourceProperty>& vecProp = properties.GetVectorLightSourceProperties();
+         vecProp.clear();
+         vecProp.reserve(0x10);
+
+         Uint8 auiData[2];
+         for (unsigned int i=0; i<0x10; i++)
+         {
+            file.ReadBuffer(auiData, SDL_TABLESIZE(auiData));
+
+            LightSourceProperty prop;
+            prop.uiBrightness = auiData[0];
+            prop.uiDuration = auiData[1];
+
+            vecProp.push_back(prop);
+         }
+      }
+
+      // todo: jewelry info table
+
+      // animation object table
+      {
+         file.Seek(0x0da2L, Base::seekBegin);
+
+         std::vector<AnimatedObjectProperty>& vecProp = properties.GetVectorAnimatedObjectProperties();
+         vecProp.clear();
+         vecProp.reserve(0x10);
+
+         Uint8 auiData[4];
+         for (unsigned int i=0; i<0x10; i++)
+         {
+            file.ReadBuffer(auiData, SDL_TABLESIZE(auiData));
+
+            AnimatedObjectProperty prop;
+            prop.uiStartFrame = auiData[2];
+            prop.uiNumberOfFrames = auiData[3];
+
+            vecProp.push_back(prop);
+         }
+      }
    }
 }
