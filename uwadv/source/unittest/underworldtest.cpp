@@ -60,7 +60,10 @@ CPPUNIT_TEST_SUITE_REGISTRATION(TestUnderworld)
 
 using namespace UnitTest;
 
-/*! Tests saving and restoring underworld. */
+/*! Tests saving and restoring underworld.
+    \todo insert data into various underworld objects and check if the data
+          is available after loading.
+*/
 void TestUnderworld::TestSaveLoadSavegames()
 {
    TempFolder testFolder;
@@ -174,5 +177,39 @@ void TestUnderworld::TestObjectList()
       ol.RemoveObjectFromTileList(uiPos2, 32, 16);
       CPPUNIT_ASSERT(ol.GetObject(uiPos2)->GetObjectInfo().m_uiLink == Underworld::g_uiObjectListPosNone);
       CPPUNIT_ASSERT(Underworld::g_uiObjectListPosNone == ol.GetListStart(32,16));
+   }
+
+   // allocate 0x401 entries, exceeding default object list size
+   {
+      Underworld::ObjectList ol;
+      ol.Create();
+
+      std::vector<Uint16> vecAllPos;
+      vecAllPos.reserve(0x401);
+
+      for (unsigned int ui=0; ui<0x401; ui++)
+      {
+         Uint16 uiPos = ol.Allocate();
+         CPPUNIT_ASSERT(uiPos != 0);
+         ol.SetObject(uiPos, Underworld::ObjectPtr(new Underworld::Object));
+
+         ol.AddObjectToTileList(uiPos, 32, 16);
+
+         vecAllPos.push_back(uiPos);
+      }
+
+      // to test compcation, delete every other element
+      {
+         unsigned int uiMax = vecAllPos.size();
+         for (unsigned int ui=0; ui<uiMax; ui+=2)
+         {
+            ol.RemoveObjectFromTileList(vecAllPos[ui], 32, 16);
+            ol.Free(vecAllPos[ui]);
+         }
+
+         ol.Compact();
+      }
+
+      ol.Destroy();
    }
 }
