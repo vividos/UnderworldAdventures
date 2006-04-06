@@ -23,10 +23,12 @@
 
 libunderw_la_SOURCES = \
    convglobals.cpp convglobals.hpp \
+   inventory.cpp inventory.hpp \
    level.hpp \
    levellist.cpp levellist.hpp \
    mapnotes.cpp mapnotes.hpp \
-   objectlist.hpp \
+   object.cpp object.hpp \
+   objectlist.cpp objectlist.hpp \
    player.cpp player.hpp \
    properties.hpp \
    questflags.hpp \
