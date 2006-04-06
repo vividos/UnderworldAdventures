@@ -25,6 +25,7 @@ unittest_SOURCES = \
    cppunitmini.cpp cppunitmini.hpp \
    tempfolder.cpp tempfolder.hpp \
    unittest.cpp unittest.hpp \
+   archivefiletest.cpp \
    audiotest.cpp \
    cfgfiletest.cpp \
    filesystemtest.cpp \
