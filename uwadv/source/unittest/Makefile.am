@@ -29,7 +29,9 @@ INCLUDES = -I$(srcdir)/../base -I$(srcdir)/../audio -I$(srcdir)/../import -I$(sr
 
 unittest_LDADD = \
    ../base/libbase.la \
-   ../audio/libaudio.la
+   ../audio/libaudio.la \
+   ../import/libimport.la \
+   ../underw/libunderw.la
 
 # Makefile.common defines unittest_SOURCES
 include Makefile.common
