@@ -142,8 +142,11 @@ public:
    //! sets the gametype
    void SetGametype(EUwGameType gameType){ m_gameType = gameType; }
 
-   //! inserts a settings key/value pair
+   //! inserts a string value
    void SetValue(ESettingsType type, std::string strValue);
+
+   //! inserts a C string value
+   void SetValue(ESettingsType type, const char* strValue){ SetValue(type, std::string(strValue)); }
 
    //! inserts a boolean value
    void SetValue(ESettingsType type, bool bValue);
