@@ -22,6 +22,7 @@
 #
 
 libbase_la_SOURCES = \
+   archivefile.cpp archivefile.hpp \
    base.cpp base.hpp \
    cfgfile.cpp cfgfile.hpp \
    exception.hpp \
@@ -35,4 +36,5 @@ libbase_la_SOURCES = \
    settingsloader.cpp \
    smart_ptr.hpp \
    string.cpp string.hpp \
-   textfile.cpp textfile.hpp
+   textfile.cpp textfile.hpp \
+   uw2decode.cpp uw2decode.hpp
