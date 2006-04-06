@@ -384,6 +384,10 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath="..\..\source\base\archivefile.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\source\base\base.hpp"
 				>
 			</File>
@@ -435,12 +439,20 @@
 				RelativePath="..\..\source\base\textfile.hpp"
 				>
 			</File>
+			<File
+				RelativePath="..\..\source\base\uw2decode.hpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Source Files"
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
+			<File
+				RelativePath="..\..\source\base\archivefile.cpp"
+				>
+			</File>
 			<File
 				RelativePath="..\..\source\base\base.cpp"
 				>
@@ -519,6 +531,10 @@
 			</File>
 			<File
 				RelativePath="..\..\source\base\textfile.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\base\uw2decode.cpp"
 				>
 			</File>
 		</Filter>

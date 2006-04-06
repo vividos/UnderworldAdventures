@@ -67,7 +67,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="audio.lib base.lib SDL.lib SDLmain.lib"
+				AdditionalDependencies="audio.lib base.lib import.lib underw.lib SDL.lib SDLmain.lib"
 				OutputFile="$(OutDir)\..\unittest.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(OutDir)\..\audio&quot;;&quot;$(OutDir)\..\base&quot;;&quot;$(OutDir)\..\conv&quot;;&quot;$(OutDir)\..\import&quot;;&quot;$(OutDir)\..\underw&quot;"
@@ -149,7 +149,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="audio.lib base.lib SDL.lib SDLmain.lib"
+				AdditionalDependencies="audio.lib base.lib import.lib underw.lib SDL.lib SDLmain.lib"
 				OutputFile="$(OutDir)\..\unittest.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(OutDir)\..\audio&quot;;&quot;$(OutDir)\..\base&quot;;&quot;$(OutDir)\..\conv&quot;;&quot;$(OutDir)\..\import&quot;;&quot;$(OutDir)\..\underw&quot;"
@@ -195,6 +195,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath="..\..\source\unittest\archivefiletest.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\source\unittest\audiotest.cpp"
 				>
 			</File>
@@ -215,6 +219,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\source\unittest\importtest.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\source\unittest\keymaptest.cpp"
 				>
 			</File>
@@ -227,11 +235,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\source\unittest\settingstest.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\source\unittest\stringtest.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\..\source\unittest\tempfolder.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\unittest\underworldtest.cpp"
 				>
 			</File>
 			<File
