@@ -222,7 +222,7 @@ void AudioManager::StopSound()
     this method only plays back sound effects when uw2 path is configured
     properly.
 
-    \param c sound effect type to play back
+    \param sfxType sound effect type to play back
     \todo implement
 */
 void AudioManager::PlaySoundEffect(Audio::ESoundEffectType sfxType)
