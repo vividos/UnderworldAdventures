@@ -27,10 +27,13 @@
 
 // needed includes
 #include "unittest.hpp"
+#include "settings.hpp"
+#include "filesystem.hpp"
 
 // global variables
 
-//Base::Settings settings;
+//! settings common for all unit tests
+Base::Settings g_settings;
 
 
 namespace Detail
@@ -67,7 +70,7 @@ public:
    virtual void printSummary()
    {
       if (m_iErrors > 0)
-         UaTrace("There were errors! (%d of %d)\n", m_iErrors, m_iTests);
+         UaTrace("\nThere were errors! (%d of %d)\n", m_iErrors, m_iTests);
       else
          UaTrace("\nOK (%d)\n\n", m_iTests);
    }
@@ -84,11 +87,12 @@ private:
 
 // UnitTestCase methods
 
-//Settings& UnitTestCase::GetSettings(){ return settings; }
+Base::Settings& UnitTest::UnitTestCase::GetTestSettings(){ return g_settings; }
 
 
 // global functions
 
+// undef main that points to SDL_main entry point; ensures console is shown
 #undef main
 
 //! main function
@@ -98,9 +102,31 @@ private:
 */
 int main()
 {
+   UaTrace("Underworld Adventures Unit Tests\n\n");
+
    // init settings variable
-//   std::string strUwPath("./");
-//   settings.SetValue(settingUnderworldPath, strUwPath);
+   Base::LoadSettings(g_settings);
+
+   // check settings if they are right
+   std::string strFilename = g_settings.GetString(Base::settingUw1Path) + "/uw.exe";
+   if (!Base::FileSystem::FileExists(strFilename))
+   {
+      UaTrace("The Ultima Underworld 1 files cannot be found in %s\n"
+         "Make sure to have a properly configured uwadv.cfg file!\n",
+         strFilename.c_str());
+      return 1;
+   }
+
+   strFilename = g_settings.GetString(Base::settingUw2Path) + "/uw2.exe";
+   if (!Base::FileSystem::FileExists(strFilename))
+   {
+      UaTrace("The Ultima Underworld 2 files cannot be found in %s\n"
+         "Make sure to have a properly configured uwadv.cfg file!\n",
+         strFilename.c_str());
+      return 1;
+   }
+
+   UaTrace("\nRunning tests...\n\n");
 
    // start unit tests
    Detail::TraceReporter reporter;

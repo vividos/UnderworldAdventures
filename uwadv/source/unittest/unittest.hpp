@@ -46,6 +46,11 @@
 #include "base.hpp"
 #include "tempfolder.hpp"
 
+namespace Base
+{
+class Settings;
+}
+
 //! unit tests namespace \ingroup unittest
 namespace UnitTest
 {
@@ -54,7 +59,8 @@ namespace UnitTest
 class UnitTestCase: public CppUnitMini::TestCase
 {
 public:
-//   Base::Settings& GetSettings();
+   //! returns global settings object to use during tests
+   Base::Settings& GetTestSettings();
 
 };
 
