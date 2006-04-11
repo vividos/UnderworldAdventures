@@ -1,4 +1,27 @@
 #! /bin/sh
+#
+# Underworld Adventures - an Ultima Underworld remake project
+# Copyright (c) 2002,2003,2004,2005,2006 Willem Jan Palenstijn
+# Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# autogen.sh for Underworld Adventures
+#
+# $Id$
+#
 
 DIE=0
 
@@ -51,13 +74,17 @@ rm -f source/Makefile.in source/Makefile
 rm -f source/audio/Makefile.in source/audio/Makefile
 rm -f source/base/Makefile.in source/base/Makefile
 rm -f source/base/zziplib/Makefile.in source/base/zziplib/Makefile
+rm -f source/import/Makefile.in source/import/Makefile
+rm -f source/underw/Makefile.in source/underw/Makefile
 rm -f source/unittest/Makefile.in source/unittest/Makefile
 rm -f source/win32/Makefile.in source/win32/Makefile
 rm -f uadata/Makefile.in uadata/Makefile
 rm -rf source/.deps
-rm -rf source/audio/.deps
-rm -rf source/base/.deps
-rm -rf source/base/zziplib/.deps
+rm -rf source/audio/.deps source/audio/.libs
+rm -rf source/base/.deps source/base/.libs
+rm -rf source/base/zziplib/.deps source/base/zziplib/.libs
+rm -rf source/import/.deps source/import/.libs
+rm -rf source/underw/.deps source/underw/.libs
 rm -rf source/unittest/.deps
 
 echo "Generating files..."

@@ -1,6 +1,7 @@
 #
 # Underworld Adventures - an Ultima Underworld remake project
-# Copyright (c) 2002,2003,2004,2005,2006 Underworld Adventures Team
+# Copyright (c) 2002,2003,2004,2005,2006 Willem Jan Palenstijn
+# Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -190,6 +191,8 @@ source/Makefile
 source/audio/Makefile
 source/base/Makefile
 source/base/zziplib/Makefile
+source/import/Makefile
+source/underw/Makefile
 source/unittest/Makefile
 source/win32/Makefile
 uadata/Makefile
@@ -211,7 +214,7 @@ echo "    CXXFLAGS = $CXXFLAGS"
 echo "    LIBS = $LIBS"
 echo "    LDFLAGS = $LDFLAGS"
 echo
-echo "    CONFDIR = $CONFDIR"
+echo "    CONFIGDIR = $CONFIGDIR"
 echo "    UW1PATH = $UW1PATH"
 echo "    UW2PATH = $UW2PATH"
 echo "    UADATAPATH = $UADATAPATH"
