@@ -65,8 +65,7 @@ using namespace UnitTest;
 */
 void TestResourceManager::TestResourceLoading()
 {
-   Base::Settings settings;
-   Base::LoadSettings(settings);
+   Base::Settings& settings = GetTestSettings();
 
    Base::ResourceManager resManager(settings);
    Base::SDL_RWopsPtr rwops = resManager.GetResourceFile("uw1/keymap.cfg");
