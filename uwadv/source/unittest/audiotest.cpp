@@ -89,8 +89,7 @@ public:
 /*! Tests audio manager music track playback */
 void TestAudio::TestAudioManager()
 {
-   Base::Settings settings;
-   Base::LoadSettings(settings);
+   Base::Settings settings = GetTestSettings();
 
    settings.SetValue(Base::settingAudioEnabled, true);
    settings.SetValue(Base::settingGamePrefix, std::string("uw1"));
@@ -124,8 +123,7 @@ void TestAudio::TestMidiPlayer()
 {
    SDLMixerIniter mixerIniter;
 
-   Base::Settings settings;
-   Base::LoadSettings(settings);
+   Base::Settings& settings = GetTestSettings();
 
    Base::ResourceManager resourceManager(settings);
 
@@ -200,8 +198,8 @@ void TestAudio::TestMidiPlayer()
 /*! Tests playing back sound effects */
 void TestAudio::TestPlaySound()
 {
-   Base::Settings settings;
-   Base::LoadSettings(settings);
+   Base::Settings settings = GetTestSettings();
+
    settings.SetValue(Base::settingAudioEnabled, true);
 
    settings.SetValue(Base::settingGamePrefix, std::string("uw1"));

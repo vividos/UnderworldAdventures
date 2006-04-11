@@ -65,8 +65,7 @@ using namespace UnitTest;
 */
 void TestArchiveFile::TestArchiveFileLoad()
 {
-   Base::Settings settings;
-   Base::LoadSettings(settings);
+   Base::Settings& settings = GetTestSettings();
 
    Base::ResourceManager resourceMgr(settings);
 

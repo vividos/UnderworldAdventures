@@ -65,8 +65,7 @@ using namespace UnitTest;
 /*! Tests importing object properties */
 void TestImport::TestObjectPropertiesImport()
 {
-   Base::Settings settings;
-   Base::LoadSettings(settings);
+   Base::Settings& settings = GetTestSettings();
 
    settings.SetValue(Base::settingGamePrefix, std::string("uw1"));
    settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw1Path));
@@ -116,8 +115,7 @@ void TestImport::TestObjectPropertiesImport()
 /*! Tests loading level list */
 void TestImport::TestLevelListImport()
 {
-   Base::Settings settings;
-   Base::LoadSettings(settings);
+   Base::Settings& settings = GetTestSettings();
 
 #if 0
    // uw_demo loading

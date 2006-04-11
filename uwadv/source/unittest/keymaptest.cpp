@@ -77,8 +77,8 @@ void TestKeymap::TestKeymapInsert()
 /*! Tests keymap loading; keymap.cfg is loaded from current uwadv.cfg settings. */
 void TestKeymap::TestKeymapLoading()
 {
-   Base::Settings settings;
-   Base::LoadSettings(settings);
+   Base::Settings& settings = GetTestSettings();
+
    settings.SetValue(Base::settingGamePrefix, std::string("uw1"));
 
    Base::Keymap keymap;
