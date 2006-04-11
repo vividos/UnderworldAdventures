@@ -31,6 +31,9 @@
 #include <cstdarg>
 #include <sstream>
 #include <SDL_rwops.h>
+#ifdef HAVE_WIN32
+#include <windows.h> // for OutputDebugStringA
+#endif
 
 // SDL_RWopsDeletor methods
 
@@ -57,6 +60,10 @@ void UaAssertCheck(bool cond, const char* cond_str, const char* file, int line)
       buffer << file << "(" << line << "): assertion failed (" << cond_str << ")";
 
       UaTrace("%s\n", buffer.str().c_str());
+
+#ifdef HAVE_WIN32
+      OutputDebugStringA(buffer.str().c_str());
+#endif
       throw Base::RuntimeException(buffer.str().c_str());
    }
 }
