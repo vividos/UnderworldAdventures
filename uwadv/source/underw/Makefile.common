@@ -22,6 +22,7 @@
 #
 
 libunderw_la_SOURCES = \
+   underw.cpp underw.hpp \
    convglobals.cpp convglobals.hpp \
    inventory.cpp inventory.hpp \
    level.hpp \
