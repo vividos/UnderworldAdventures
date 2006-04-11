@@ -1,6 +1,6 @@
 #
-# Underworld Adventures - an Ultima Underworld hacking project
-# Copyright (c) 2002,2003,2004 Underworld Adventures Team
+# Underworld Adventures - an Ultima Underworld remake project
+# Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,31 +16,16 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-# common makefile for Underworld Adventures
+# Makefile.common for source folder
 #
 # $Id$
 #
 
-uwadv_SOURCES = \
-	audio/audio.cpp audio/audio.hpp \
-	audio/midi.cpp audio/midi.hpp \
-	audio/resamp.c audio/resamp.h \
-	audio/vocresample.cpp \
-	audio/xmidi.cpp audio/xmidi.hpp \
-	audio/midi_driver/midi_sdl_mixer.cpp \
-	audio/midi_driver/midi_sdl_mixer.hpp \
-	audio/midi_driver/win_midiout.cpp \
-	audio/midi_driver/win_midiout.h \
-	base/cfgfile.cpp base/cfgfile.hpp \
-	base/files.cpp base/files.hpp \
-	base/keymap.cpp base/keymap.hpp \
-	base/savegame.cpp base/savegame.hpp \
-	base/settings.cpp base/settings.hpp \
-	base/uamath.hpp \
-	base/utils.cpp base/utils.hpp \
+uwadv_SOURCES = main.cpp
+
+the_rest = \
 	conv/conv.cpp conv/conv.hpp \
 	conv/codevm.cpp conv/codevm.hpp \
-	conv/convglobals.cpp conv/convglobals.hpp \
 	conv/convgraph.cpp conv/convgraph.hpp \
 	conv/convstack.hpp \
 	conv/opcodes.hpp \
@@ -49,16 +34,12 @@ uwadv_SOURCES = \
 	import/cutsloader.cpp \
 	import/fontloader.cpp \
 	import/imageloader.cpp \
-	import/import.hpp import/importgfx.hpp import/io_endian.hpp \
-	import/maploader.cpp \
+	import/importgfx.hpp \
 	import/modeldecode.cpp \
-	import/objloader.cpp \
 	import/playerimport.cpp \
-	import/proploader.cpp \
 	import/stringsloader.cpp \
 	import/texloader.cpp \
 	import/tgaimport.cpp \
-	import/uw2dec.cpp \
 	import/uwloader.cpp \
 	renderer/critter.cpp renderer/critter.hpp \
 	renderer/model_builtin.cpp renderer/model_builtin.hpp \
@@ -91,30 +72,15 @@ uwadv_SOURCES = \
 	ui/textedit.cpp ui/textedit.hpp \
 	ui/textscroll.cpp ui/textscroll.hpp \
 	ui/window.cpp ui/window.hpp \
-	underw/geometry.cpp underw/geometry.hpp \
-	underw/inventory.cpp underw/inventory.hpp \
-	underw/level.cpp underw/level.hpp \
-	underw/mapnotes.cpp underw/mapnotes.hpp \
-	underw/objects.cpp underw/objects.hpp \
-	underw/pathfinder.cpp underw/pathfinder.hpp \
-	underw/physics.cpp underw/physics.hpp \
-	underw/physicsbody.hpp \
-	underw/player.cpp underw/player.hpp \
-	underw/properties.hpp \
-	underw/runes.hpp \
-	underw/underworld.cpp underw/underworld.hpp \
 	common.hpp \
 	dbgserver.hpp \
 	debug.cpp debug.hpp \
 	game_interface.hpp \
 	gamecfg.cpp gamecfg.hpp \
 	gamestrings.cpp gamestrings.hpp \
-	main.cpp \
 	unittest.cpp unittest.hpp \
 	uwadv.cpp uwadv.hpp \
-	resource/models_impl.hpp
-
-the_rest = \
+	resource/models_impl.hpp \
 	resource/models_impl.hpp \
 	resource/model/FlexLexer.h \
 	resource/model/importwrl.cpp \
