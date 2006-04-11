@@ -1,6 +1,6 @@
 /*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Underworld Adventures - an Ultima Underworld remake project
+   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -21,313 +21,135 @@
 */
 /*! \file maploader.cpp
 
-   \brief game level map loading implementation
+   \brief tilemap and texture mapping loading
 
 */
 
 // needed includes
-#include "common.hpp"
 #include "import.hpp"
-#include "underworld.hpp"
-#include "level.hpp"
-#include "io_endian.hpp"
-#include "texture.hpp"
-#include <string>
+#include "tilemap.hpp"
 
+using Import::LevelImporter;
+using Import::TileStartLinkList;
+using Import::GetBits;
 
 // tables
 
-//! maps numbers read from lev.ark to level map tile type enum
-ua_levelmap_tiletype ua_tile_type_mapping[16] =
+//! maps type numbers read from lev.ark to level map tile type enum
+Underworld::TilemapTileType g_aTileTypeMapping[16] =
 {
-   ua_tile_solid,
-   ua_tile_open,
-   ua_tile_diagonal_se,
-   ua_tile_diagonal_sw,
-   ua_tile_diagonal_ne,
-   ua_tile_diagonal_nw,
-   ua_tile_slope_n,
-   ua_tile_slope_s,
-   ua_tile_slope_e,
-   ua_tile_slope_w,
-   ua_tile_solid,
-   ua_tile_solid,
-   ua_tile_solid,
-   ua_tile_solid,
-   ua_tile_solid,
-   ua_tile_solid
+   Underworld::tileSolid,
+   Underworld::tileOpen,
+   Underworld::tileDiagonal_se,
+   Underworld::tileDiagonal_sw,
+   Underworld::tileDiagonal_ne,
+   Underworld::tileDiagonal_nw,
+   Underworld::tileSlope_n,
+   Underworld::tileSlope_s,
+   Underworld::tileSlope_e,
+   Underworld::tileSlope_w,
+   Underworld::tileSolid,
+   Underworld::tileSolid,
+   Underworld::tileSolid,
+   Underworld::tileSolid,
+   Underworld::tileSolid,
+   Underworld::tileSolid
 };
 
 
-// ua_uw1_import methods
+// LevelImporter methods
 
-void ua_uw1_import::load_levelmaps(std::vector<ua_level> &levels,
-   ua_settings &settings, const char* folder)
+void LevelImporter::LoadTilemap(Underworld::Tilemap& tilemap, std::vector<Uint16>& vecTextureMapping,
+   TileStartLinkList& tileStartLinkList, bool bUw2Mode)
 {
-   // load uw1 maps
-
-   // determine number of levels
-   unsigned int numlevels =
-      settings.get_bool(ua_setting_uw1_is_uw_demo) ? 1 : 9;
-   levels.resize(numlevels);
-
-   ua_trace("importing %u uw1 level maps from %s\n",numlevels,folder);
-
-   Uint16 textures[64];
-   Uint16 door_textures[6];
-
-   std::string mapfile(settings.get_string(ua_setting_uw_path));
-
-   if (settings.get_bool(ua_setting_uw1_is_uw_demo))
-   {
-      // load uw_demo maps
-      SDL_RWops* rwops;
-      ua_level& level = levels[0];
-
-      // import texture usage table
-      {
-         mapfile.append("data/level13.txm");
-
-         rwops = SDL_RWFromFile(mapfile.c_str(),"rb");
-         if (rwops == NULL)
-         {
-            std::string text("could not open uw_demo texinfo file ");
-            text.append(mapfile);
-            throw ua_exception(text.c_str());
-         }
-
-         load_texinfo(level,rwops,textures,door_textures,false);
-         SDL_RWclose(rwops);
-      }
-
-      // import map
-      mapfile.assign(settings.get_string(ua_setting_uw_path));
-      mapfile.append("data/level13.st");
-
-      rwops = SDL_RWFromFile(mapfile.c_str(),"rb");
-      if (rwops==NULL)
-      {
-         std::string text("could not open uw_demo map file ");
-         text.append(mapfile);
-         throw ua_exception(text.c_str());
-      }
-
-      load_tilemap(level,rwops,textures,false);
-
-      // import objects
-      SDL_RWseek(rwops,0,SEEK_SET);
-      load_mapobjects(level.get_mapobjects(), rwops, textures, door_textures);
-      SDL_RWclose(rwops);
-   }
-   else
-   if (settings.get_gametype() == ua_game_uw1)
-   {
-      // load uw1 maps
-
-      // open map file
-      mapfile.append(folder);
-      mapfile.append("lev.ark");
-
-      SDL_RWops* rwops = SDL_RWFromFile(mapfile.c_str(),"rb");
-      if (rwops==NULL)
-      {
-         std::string text("could not open file ");
-         text.append(mapfile);
-         throw ua_exception(text.c_str());
-      }
-
-      // read in offsets
-      std::vector<Uint32> offsets;
-      Uint16 noffsets = SDL_RWread16(rwops);
-      offsets.resize(noffsets,0);
-
-      for(Uint16 n=0; n<noffsets; n++)
-         offsets[n] = SDL_RWread32(rwops);
-
-      // load all levels
-      for(unsigned int i=0; i<numlevels; i++)
-      {
-         ua_level& level = levels[i];
-
-         // load texture usage table
-         SDL_RWseek(rwops,offsets[i+18],SEEK_SET);
-         load_texinfo(level,rwops,textures,door_textures,false);
-
-         // load level map
-         SDL_RWseek(rwops,offsets[i],SEEK_SET);
-         load_tilemap(level,rwops,textures,false);
-
-         // load object list
-         SDL_RWseek(rwops,offsets[i],SEEK_SET);
-         load_mapobjects(level.get_mapobjects(),rwops,textures,door_textures);
-      }
-
-      SDL_RWclose(rwops);
-   }
-}
-
-
-// ua_uw2_import methods
-
-void ua_uw2_import::load_levelmaps(std::vector<ua_level>& levels,
-   ua_settings& settings, const char* folder)
-{
-   // load uw2 maps
-   unsigned int numlevels = 80;
-   levels.resize(numlevels);
-
-   ua_trace("importing %u uw2 level maps from %s\n",numlevels,folder);
-
-   Uint16 textures[64];
-   Uint16 door_textures[6];
-
-   // open map file
-   std::string mapfile(settings.get_string(ua_setting_uw_path));
-
-   mapfile.append(folder);
-   mapfile.append("lev.ark");
-
-   FILE* fd = fopen(mapfile.c_str(),"rb");
-   if (fd==NULL)
-   {
-      std::string text("could not open uw2 map file ");
-      text.append(mapfile);
-      throw ua_exception(text.c_str());
-   }
-
-   // load all levels
-   for(unsigned int i=0; i<numlevels; i++)
-   {
-      SDL_RWops* rwops;
-      ua_level& level = levels[i];
-
-      // load texture mapping
-      rwops = get_rwops_uw2dec(fd,i+80,0x0086);
-      if (rwops != NULL)
-      {
-         load_texinfo(level,rwops,textures,door_textures,true);
-         SDL_RWclose(rwops);
-      }
-
-      // load map / objects
-      rwops = get_rwops_uw2dec(fd,i,0x7e08);
-      if (rwops == NULL)
-         continue;
-
-      // load level map
-      SDL_RWseek(rwops,0,SEEK_SET);
-      load_tilemap(level,rwops,textures,true);
-
-      // load object list
-      SDL_RWseek(rwops,0,SEEK_SET);
-      load_mapobjects(level.get_mapobjects(),rwops,textures,door_textures);
-
-      SDL_RWclose(rwops);
-   }
-
-   fclose(fd);
-}
-
-
-// ua_uw_import methods
-
-void ua_uw_import::load_levelmaps(std::vector<ua_level>& levels,
-   ua_settings& settings, const char* folder)
-{
-   // decide which method to call
-   if (settings.get_gametype() != ua_game_uw2)
-   {
-      ua_uw1_import import;
-      import.load_levelmaps(levels,settings,folder);
-   }
-   else
-   {
-      ua_uw2_import import;
-      import.load_levelmaps(levels,settings,folder);
-   }
-}
-
-void ua_uw_import::load_tilemap(ua_level& level, SDL_RWops* rwops,
-   Uint16 textures[64], bool uw2_mode)
-{
-   std::vector<ua_levelmap_tile>& tiles = level.get_tileslist();
+   tilemap.Destroy();
+   tilemap.Create();
 
    // read in map info
-
-   // alloc memory for tiles
-   tiles.clear();
-   tiles.resize(64*64);
-
-   for(Uint16 tile=0; tile<64*64; tile++)
+   for (Uint16 ypos=0; ypos < 64; ypos++)
+   for (Uint16 xpos=0; xpos < 64; xpos++)
    {
-      ua_levelmap_tile& curtile = tiles[tile];
+      Underworld::TileInfo& tileInfo = tilemap.GetTileInfo(xpos, ypos);
 
-      Uint32 tileword = SDL_RWread32(rwops);
+      Uint32 uiTileInfo1 = m_file.Read16();
+      Uint32 uiTileInfo2 = m_file.Read16();
 
       // extract infos from tile word
-      curtile.type = ua_tile_type_mapping[tileword & 0x0000000F];
+      tileInfo.m_type = g_aTileTypeMapping[GetBits(uiTileInfo1, 0, 4)];
 
       // all size values in height units
-      curtile.floor = (tileword & 0xF0) >> 1;
-      curtile.ceiling = 128;
-      curtile.slope = 8; // height units per tile
+      tileInfo.m_uiFloor = static_cast<Uint16>(GetBits(uiTileInfo1, 4, 4) << 3);
+      tileInfo.m_uiCeiling = 128;
+      tileInfo.m_uiSlope = 8; // height units per tile
 
       // texture indices
-      Uint8 wall_index = (tileword & 0x003F0000) >> 16; // 6 bit wide
-      Uint8 floor_index = (tileword & 0x00003C00) >> 10; // 4 bit wide
+      Uint8 uiFloorIndex = static_cast<Uint8>(GetBits(uiTileInfo1, 10, 4)); // 4 bit wide
+      Uint8 uiWallIndex = static_cast<Uint8>(GetBits(uiTileInfo2, 0, 6)); // 6 bit wide
 
-      if (!uw2_mode)
+      if (!bUw2Mode)
       {
-         if (wall_index>=48) wall_index=0;
-         if (floor_index>=10) floor_index=0;
+         // restrict to proper texture map indices
+         if (uiFloorIndex >= 10)
+            uiFloorIndex = 0;
+         if (uiWallIndex >= 48)
+            uiWallIndex = 0;
       }
 
-      curtile.texture_wall = textures[wall_index];
-      curtile.texture_floor = textures[floor_index + (uw2_mode ? 0 : 48)];
-      curtile.texture_ceiling = textures[uw2_mode ? 32 : (9+48)];
-   }
+      tileInfo.m_uiTextureWall = vecTextureMapping[uiWallIndex];
+      tileInfo.m_uiTextureFloor = vecTextureMapping[uiFloorIndex + (bUw2Mode ? 0 : 48)];
+      tileInfo.m_uiTextureCeiling = vecTextureMapping[bUw2Mode ? 32 : (9+48)];
 
-//   level.used = true;
+      // tile object list start
+      Uint16 uiLink = static_cast<Uint16>(GetBits(uiTileInfo2, 6, 10));
+      tileStartLinkList.SetLinkStart(xpos, ypos, uiLink);
+
+      // special flags
+      tileInfo.m_bMagicDisabled = GetBits(uiTileInfo1, 14, 1) != 0;
+      tileInfo.m_bDoorPresent = GetBits(uiTileInfo1, 15, 1) != 0;
+      tileInfo.m_bSpecialLightFeature = GetBits(uiTileInfo1, 8, 1) != 0;
+
+      // bit 9 is always 0
+      UaAssert(0 == tileInfo.m_bDoorPresent = GetBits(uiTileInfo1, 9, 1));
+   }
 }
 
-void ua_uw_import::load_texinfo(ua_level& level, SDL_RWops* rwops,
-   Uint16 textures[64], Uint16 door_textures[6], bool uw2_mode)
+/*! The texture mapping is stored in the vecTextureMapping as indices into
+    stock textures. In uw1 mode there are 48 wall textures, followed by 10
+    floor textures, followed by 6 empty entries, ending with 6 door textures.
+    In uw2 mode there are 64 textures used for wall and floor (floor textures
+    only use a 4 bit mapping and so only use the first 16 entries), followed
+    by 6 door textures. vecTextureMapping always contains 70 entries after
+    loading.
+*/
+void LevelImporter::LoadTextureMapping(std::vector<Uint16>& vecTextureMapping, bool bUw2Mode)
 {
-   std::vector<Uint16>& used_textures = level.get_used_textures();
+   unsigned int uiTex;
 
-   used_textures.clear();
-
-   if (!uw2_mode)
+   if (!bUw2Mode)
    {
       // uw1 mapping
-      Uint16 tex;
-      for(tex=0; tex<48; tex++)
-      {
-         textures[tex]  = SDL_RWread16(rwops)+ua_tex_stock_wall;
-         used_textures.push_back(textures[tex]);
-      }
-      for(tex=48; tex<48+10; tex++)
-      {
-         textures[tex] = SDL_RWread16(rwops)+ua_tex_stock_floor;
-         used_textures.push_back(textures[tex]);
-      }
-      for(tex=48+10; tex<64; textures[tex++]=0);
+      vecTextureMapping.resize(48+10);
+
+      // wall textures
+      for (uiTex=0; uiTex < 48; uiTex++)
+         vecTextureMapping[uiTex] = m_file.Read16() + Base::c_uiStockTexturesWall;
+
+      // floor textures
+      for (uiTex=48; uiTex < 48+10; uiTex++)
+         vecTextureMapping[uiTex] = m_file.Read16() + Base::c_uiStockTexturesFloor;
    }
    else
    {
       // uw2 mapping
-      Uint16 tex;
-      for(tex=0; tex<64; tex++)
-      {
-         textures[tex] = SDL_RWread16(rwops);
-         used_textures.push_back(textures[tex]);
-      }
+      vecTextureMapping.resize(64);
+
+      // combined wall/floor textures
+      unsigned int uiTex;
+      for (uiTex=0; uiTex < 64; uiTex++)
+         vecTextureMapping[uiTex] = m_file.Read16();
    }
 
-   // load door textures mapping
-   for(Uint16 dtex=0; dtex<6; dtex++)
-   {
-      door_textures[dtex]  = SDL_RWread8(rwops)+ua_tex_stock_door;
-      used_textures.push_back(door_textures[dtex]);
-   }
+   // door textures
+   for (unsigned int uiTex=0; uiTex < 6; uiTex++)
+      vecTextureMapping.push_back(m_file.Read8() + Base::c_uiStockTexturesDoors);
 }

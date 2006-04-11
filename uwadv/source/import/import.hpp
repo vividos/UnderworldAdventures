@@ -1,6 +1,6 @@
 /*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2003,2004 Underworld Adventures Team
+   Underworld Adventures - an Ultima Underworld remake project
+   Copyright (c) 2003,2004,2005,2006 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,33 +26,111 @@
 */
 /*! \defgroup import Import
 
-   import documentation yet to come ...
+   The import classes do the importing of game data from uw1 and uw2 games.
+   They are built as a separate module so that importing game files can be
+   taken out of the game if it's desired.
 
 */
-//@{
-
 
 // include guard
-#ifndef uwadv_import_hpp_
-#define uwadv_import_hpp_
+#ifndef uwadv_import_import_hpp_
+#define uwadv_import_import_hpp_
 
 // needed includes
-#include <string>
+#include "base.hpp"
+#include "file.hpp"
 #include <vector>
-#include <map>
-#include <set>
-
 
 // forward references
-class ua_underworld;
+
+namespace Base
+{
+   class ResourceManager;
+}
+
+namespace Underworld
+{
+   class ObjectProperties;
+   class LevelList;
+   class ObjectList;
+   class Tilemap;
+}
+
+//! import classes \ingroup import
+namespace Import
+{
+
+//! imports all object properties
+void ImportProperties(Base::ResourceManager& resourceManager,
+   Underworld::ObjectProperties& properties);
+
+//! stores tilemap object list start links; used while loading
+class TileStartLinkList
+{
+public:
+   //! ctor
+   TileStartLinkList(){ m_vecLinks.resize(64*64); }
+
+   //! returns link start for given tile
+   Uint16 GetLinkStart(Uint16 xpos, Uint16 ypos) const { return m_vecLinks[ypos*64+xpos]; }
+
+   //! sets link start for given tile
+   void SetLinkStart(Uint16 xpos, Uint16 ypos, Uint16 uiLink){ m_vecLinks[ypos*64+xpos] = uiLink; }
+
+private:
+   //! array with links
+   std::vector<Uint16> m_vecLinks;
+};
+
+
+//! imports levels
+class LevelImporter: public Base::NonCopyable
+{
+public:
+   //! ctor
+   LevelImporter(Base::ResourceManager& resourceManager):m_resourceManager(resourceManager){}
+
+   //! loads uw_demo level into level list
+   void LoadUwDemoLevel(Underworld::LevelList& levelList);
+
+   //! loads uw1 levels into level list
+   void LoadUw1Levels(Underworld::LevelList& levelList);
+
+   //! loads uw2 levels into level list
+   void LoadUw2Levels(Underworld::LevelList& levelList);
+
+protected:
+   //! common uw1 and uw2 level loading
+   void LoadUwLevels(Underworld::LevelList& levelList, bool bUw2Mode,
+      unsigned int uiNumLevels, unsigned int uiTexMapOffset);
+
+   //! loads texture mapping from current file
+   void LoadTextureMapping(std::vector<Uint16>& vecTextureMapping, bool bUw2Mode);
+
+   //! loads tilemap from current file
+   void LoadTilemap(Underworld::Tilemap& tilemap, std::vector<Uint16>& vecTextureMapping,
+      TileStartLinkList& tileStartLinkList, bool bUw2Mode);
+
+   //! loads object list from current file
+   void LoadObjectList(Underworld::ObjectList& objectList, const TileStartLinkList& tileStartLinkList,
+      std::vector<Uint16>& vecTextureMapping);
+
+protected:
+   //! resource manager
+   Base::ResourceManager& m_resourceManager;
+
+   //! current file
+   Base::File m_file;
+};
+
+
+
+#if 0
+// forward references
 class ua_player;
-class ua_level;
-class ua_object_list;
-class ua_object;
-class ua_object_properties;
 class ua_conv_globals;
 class ua_conv_code_vm;
-class ua_settings;
+
 
 
 //! imports common to uw1 and uw2
@@ -65,19 +143,8 @@ public:
    void load_underworld(ua_underworld& underw, ua_settings& settings,
       const char* folder, bool initial);
 
-   //! loads properties
-   void load_properties(ua_object_properties& prop, const char* path);
-
    //! loads player info
    void load_player(ua_player& player, const char* path);
-
-   //! loads map objects
-   void load_mapobjects(ua_object_list& objlist, SDL_RWops* rwops,
-      Uint16 texmap[64], Uint16 door_map[6]);
-
-   //! loads uw1, uw_demo or uw2 level maps
-   void load_levelmaps(std::vector<ua_level> &levels, ua_settings &settings,
-      const char* folder);
 
    //! loads conversation globals
    void load_conv_globals(ua_conv_globals& globals, ua_settings& settings,
@@ -87,49 +154,9 @@ public:
    bool load_conv_code(ua_conv_code_vm& vm, const char* cnvfile, Uint16 conv);
 
 protected:
-   //! loads tilemap infos
-   void load_tilemap(ua_level& level, SDL_RWops* rwops, Uint16 textures[64],
-      bool uw2_mode);
-
-   //! loads texture info
-   void load_texinfo(ua_level& level, SDL_RWops* rwops, Uint16 textures[64],
-      Uint16 door_textures[6], bool uw2_mode);
-
-   //! adds object to master object list and follows link1 and link2 objs
-   void addobj_follow(std::vector<ua_object>& master_obj_list,
-      Uint32 objprop[0x400*2], Uint8 npcinfo[0x100*19], Uint16 objpos,
-      Uint16 texmap[64], Uint16 door_map[6], Uint8 tilex, Uint8 tiley);
-
    //! loads imported functions list
    void load_conv_code_imported_funcs(ua_conv_code_vm& vm, FILE *fd);
 };
-
-//! uw1 specific imports
-class ua_uw1_import: public ua_uw_import
-{
-public:
-   //! loads uw1 or uw_demo level maps
-   void load_levelmaps(std::vector<ua_level> &levels,
-      ua_settings &settings, const char* folder);
-};
-
-//! uw2 specific imports
-class ua_uw2_import: public ua_uw_import
-{
-public:
-   //! loads uw2 levelmaps
-   void load_levelmaps(std::vector<ua_level> &levels,
-      ua_settings &settings, const char* folder);
-
-   //! creates SDL_RWops struct from compressed .ark file blocks (uw2 only)
-   static SDL_RWops* get_rwops_uw2dec(FILE* fd,unsigned int blocknum,
-      unsigned int destsize);
-
-protected:
-   //! callback function to free uw2dec RWops memory
-   static int uw2dec_close(SDL_RWops* rwops);
-};
-
 
 // strings loading
 
@@ -182,17 +209,31 @@ public:
    //! a map of all blocks available in the file
    std::map<Uint16, Uint32> allblocks;
 };
-
+#endif
 
 // inline functions
 
-//! retrieves "count" bits from "value", starting at bit "start"
-inline Uint32 ua_get_bits(Uint32 value, unsigned int start,
-   unsigned int count)
+//! retrieves bits from given value
+inline Uint8 GetBits(Uint8 uiValue, unsigned int uiStart, unsigned int uiCount)
 {
-   return (value>>start) & ((1<<count)-1);
+   UaAssert(uiStart < 8 && uiStart + uiCount <= 8);
+   return static_cast<Uint8>(uiValue >> uiStart) & static_cast<Uint8>((1 << uiCount)-1);
 }
 
+//! retrieves bits from given value
+inline Uint16 GetBits(Uint16 uiValue, unsigned int uiStart, unsigned int uiCount)
+{
+   UaAssert(uiStart < 16 && uiStart + uiCount <= 16);
+   return static_cast<Uint16>(uiValue >> uiStart) & static_cast<Uint16>((1 << uiCount)-1);
+}
+
+//! retrieves bits from given value
+inline Uint32 GetBits(Uint32 uiValue, unsigned int uiStart, unsigned int uiCount)
+{
+   UaAssert(uiStart < 32 && uiStart + uiCount <= 32);
+   return (uiValue >> uiStart) & ((1 << uiCount)-1);
+}
+
+} // namespace Import
 
 #endif
-//@}

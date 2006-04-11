@@ -1,6 +1,6 @@
 /*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
+   Underworld Adventures - an Ultima Underworld remake project
+   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -21,204 +21,239 @@
 */
 /*! \file objloader.cpp
 
-   \brief level objects loader
+   \brief objects list loader
 
 */
 
 // needed includes
-#include "common.hpp"
 #include "import.hpp"
-#include "objects.hpp"
-#include "texture.hpp"
+#include "objectlist.hpp"
 
+using Import::GetBits;
 
-// ua_uw_import methods
-
-void ua_uw_import::load_mapobjects(ua_object_list& objlist, SDL_RWops* rwops,
-   Uint16 texmap[64], Uint16 door_map[6])
+namespace Detail
 {
-   std::vector<Uint16>& tile_index = objlist.get_tile_index();
-   std::vector<ua_object>& master_obj_list = objlist.get_master_obj_list();
 
-   tile_index.resize(64*64,0);
-   master_obj_list.resize(0x0400);
+//! loads object list
+class ObjectListLoader: public Base::NonCopyable
+{
+public:
+   //! ctor
+   ObjectListLoader(Underworld::ObjectList& objectList,
+      std::vector<Uint16>& vecObjectWords,
+      std::vector<Uint8>& vecNpcInfos,
+      std::vector<Uint16>& vecTextureMapping)
+      :m_objectList(objectList),
+      m_vecObjectWords(vecObjectWords),
+      m_vecNpcInfos(vecNpcInfos),
+      m_vecTextureMapping(vecTextureMapping)
+   {}
 
-   // read in all tile indices
-   for(unsigned int tile=0; tile<64*64; tile++)
+   //! follows link and adds all objects it finds (may get called recursively)
+   void FollowLink(Uint16 uiLink, Uint8 xpos, Uint8 ypos);
+
+   //! adds object to object list
+   Underworld::ObjectPtr AddObject(Uint16 uiPos, Uint8 xpos, Uint8 ypos,
+      Uint16 uiObjectWord[4], Uint8* pNpcInfos);
+
+   //! adds NPC infos to object
+   void AddNpcInfos(Underworld::ObjectPtr& obj, Uint8* pNpcInfos);
+
+private:
+   //! object list
+   Underworld::ObjectList& m_objectList;
+
+   //! object list words (4x Uint16 for each slot)
+   std::vector<Uint16>& m_vecObjectWords;
+
+   //! NPC info bytes (19x Uint8 for each NPC)
+   std::vector<Uint8>& m_vecNpcInfos;
+
+   //! texture mapping
+   std::vector<Uint16>& m_vecTextureMapping;
+};
+
+// ObjectListLoader methods
+
+void ObjectListLoader::FollowLink(Uint16 uiLink, Uint8 xpos, Uint8 ypos)
+{
+   while (uiLink != 0)
    {
-      Uint32 tileword = SDL_RWread32(rwops);
-      tile_index[tile] = (tileword & 0xFFC00000) >> 22;
-   }
+      UaAssert(uiLink > 0);
 
-   // read in master object list
-   Uint32 objprop[0x400*2];
-   Uint8 npcinfo[0x100*19];
-
-   for(Uint16 item=0; item<0x400; item++)
-   {
-      objprop[item*2+0] = SDL_RWread32(rwops);
-      objprop[item*2+1] = SDL_RWread32(rwops);
-
-      if (item<0x100)
+      // object already visited?
+      if (m_objectList.GetObject(uiLink).get() != NULL)
       {
-         // read NPC info bytes
-         for(unsigned int n=0; n<19; n++)
-            npcinfo[item*19+n] = SDL_RWread8(rwops);
-      }
-   }
+         // object is chained from more than one object
 
-   // now that we have the two lists, follow each tile ref
-   for(unsigned int n=0; n<64*64; n++)
-      if (tile_index[n] != 0)
-         addobj_follow(master_obj_list, objprop, npcinfo, tile_index[n],
-            texmap, door_map, n&63, n>>6);
+         // item must be a trap
+         Uint16 uiItemID = m_objectList.GetObject(uiLink)->GetObjectInfo().m_uiItemID;
+         UaAssert(uiItemID >= 0x0180 && uiItemID <= 0x0190);
+/*
+         Underworld::ObjectPositionInfo& posInfo = m_objectList.GetObject(uiLink)->GetPosInfo();
+         UaTrace("object already visited: pos%04x, item_id=%04x, at x=%02x y=%02x\n",
+            uiLink, uiItemID, posInfo.m_xpos, posInfo.m_ypos);
+*/
+         return;
+      }
+
+      // add object to object list
+      Uint8* pNpcData = uiLink < 0x0100 ? &m_vecNpcInfos[uiLink*19] : NULL;
+
+      Underworld::ObjectPtr obj = AddObject(uiLink, xpos, ypos, 
+         &m_vecObjectWords[uiLink*4], pNpcData);
+
+      // check special property and add recursively
+      if (!obj->GetObjectInfo().m_bIsQuantity)
+      {
+         Uint16 uiQuantity = obj->GetObjectInfo().m_uiQuantity;
+         if (uiQuantity != 0)
+            FollowLink(uiQuantity, Underworld::g_uiTileNotAPos, Underworld::g_uiTileNotAPos);
+      }
+
+      uiLink = obj->GetObjectInfo().m_uiLink;
+   }
 }
 
-void ua_uw_import::addobj_follow(std::vector<ua_object>& master_obj_list,
-   Uint32 objprop[0x400*2], Uint8 npcinfo[0x100*19], Uint16 objpos,
-   Uint16 texmap[64], Uint16 door_map[6], Uint8 tilex, Uint8 tiley)
+Underworld::ObjectPtr ObjectListLoader::AddObject(Uint16 uiPos, Uint8 xpos, Uint8 ypos,
+   Uint16 uiObjectWord[4], Uint8* pNpcInfos)
 {
-   while(objpos!=0)
+   Underworld::ObjectPtr obj = uiPos < 0x100 ?
+      Underworld::ObjectPtr(new Underworld::NpcObject) : Underworld::ObjectPtr(new Underworld::Object);
+
+   // set object properties
+   Underworld::ObjectInfo& objInfo = obj->GetObjectInfo();
+   Underworld::ObjectPositionInfo& objPosInfo = obj->GetPosInfo();
+
+   // word 0000
+   objInfo.m_uiItemID =    GetBits(uiObjectWord[0], 0, 9);
+   objInfo.m_uiFlags =     GetBits(uiObjectWord[0], 9, 4);
+   objInfo.m_bEnchanted =  GetBits(uiObjectWord[0], 12, 1) != 0;
+   objInfo.m_bIsQuantity = GetBits(uiObjectWord[0], 15, 1) != 0;
+   objInfo.m_bHidden =     GetBits(uiObjectWord[0], 14, 1) != 0;
+
+   // word 0002
+   objPosInfo.m_zpos =    static_cast<Uint8>(GetBits(uiObjectWord[1], 0, 7));
+   objPosInfo.m_uiHeading = static_cast<Uint8>(GetBits(uiObjectWord[1], 7, 3));
+   objPosInfo.m_ypos =    static_cast<Uint8>(GetBits(uiObjectWord[1], 10, 3));
+   objPosInfo.m_xpos =    static_cast<Uint8>(GetBits(uiObjectWord[1], 13, 3));
+
+   // word 0004
+   objInfo.m_uiQuality =  GetBits(uiObjectWord[2], 0, 6);
+   objInfo.m_uiLink  =    GetBits(uiObjectWord[2], 6, 10);
+
+   // word 0006
+   objInfo.m_uiOwner =    GetBits(uiObjectWord[3], 0, 6);
+   objInfo.m_uiQuantity = GetBits(uiObjectWord[3], 6, 10);
+
+   objPosInfo.m_uiTileX = xpos;
+   objPosInfo.m_uiTileY = ypos;
+
+   if (uiPos < 0x0100)
+      AddNpcInfos(obj, pNpcInfos);
+
+   // object modifications
    {
-      if (master_obj_list[objpos].get_object_info().item_id != ua_item_none)
-      {
-         // we already had that object
+      Uint16 uiItemID = objInfo.m_uiItemID;
 
-         // at least update tilex/tiley when needed
-         if (tilex != 0xff && tiley != 0xff)
-         {
-            ua_object_info_ext& extinfo =
-               master_obj_list[objpos].get_ext_object_info();
-
-            extinfo.tilex = tilex;
-            extinfo.tiley = tiley;
-         }
-         break;
-      }
-
-      // get object properties
-      Uint32 word1 = objprop[objpos*2+0];
-      Uint32 word2 = objprop[objpos*2+1];
-
-      // word 1
-      Uint16 item_id =     ua_get_bits(word1, 0, 9);
-      Uint16 flags =       ua_get_bits(word1, 9, 4);
-      Uint16 enchanted =   ua_get_bits(word1, 12, 1);
-      Uint16 is_quantity = ua_get_bits(word1, 15, 1);
-
-      Uint16 zpos =    ua_get_bits(word1, 16, 7);
-      Uint16 heading = ua_get_bits(word1, 23, 3);
-      Uint16 ypos =    ua_get_bits(word1, 26, 3);
-      Uint16 xpos =    ua_get_bits(word1, 29, 3);
-
-      // word 2
-      Uint16 quality =  ua_get_bits(word2, 0, 6);
-      Uint16 link  =    ua_get_bits(word2, 6, 10);
-      Uint16 owner =    ua_get_bits(word2, 16, 6);
-      Uint16 quantity = ua_get_bits(word2, 22, 10);
+      objInfo.m_bHidden = false; // unhide all objects for now
 
       // fix is_quantity flag for triggers and "delete object" traps
-      if ((item_id >= 0x01a0 && item_id <= 0x01bf) || item_id == 0x018b)
+      if ((uiItemID >= 0x01a0 && uiItemID <= 0x01bf) ||
+          uiItemID == 0x018b)
+         objInfo.m_bIsQuantity = false;
+
+      // special tmap object
+      if (uiItemID == 0x016e || uiItemID == 0x016f)
       {
-         is_quantity = 0;
+         if (objInfo.m_uiOwner >= 64)
+            objInfo.m_uiOwner = 0;
+         objInfo.m_uiOwner = m_vecTextureMapping[objInfo.m_uiOwner]; // resolve texture
       }
 
-      // generate object
-      ua_object obj;
-
-      // basic object info
+      // a_bridge
+      if (uiItemID == 0x0164)
       {
-         ua_object_info& info = obj.get_object_info();
-
-         info.item_id = item_id;
-
-         info.link = link;
-         info.quality = quality;
-         info.owner = owner;
-         info.quantity = quantity;
-         info.flags = flags;
-
-         info.enchanted = enchanted == 1;
-         info.is_hidden = false;
-         info.is_quantity = is_quantity == 1;
+         if (objInfo.m_uiFlags < 2)
+            objInfo.m_uiFlags = (30 + objInfo.m_uiFlags + Base::c_uiStockTexturesTmobj);
+         else
+            objInfo.m_uiFlags = m_vecTextureMapping[objInfo.m_uiFlags - 2 + 48];
       }
 
-      // extended object info
-      {
-         ua_object_info_ext& extinfo = obj.get_ext_object_info();
+      // a_door objects: store texture id in "flags"
+      if (uiItemID >= 0x0140 && uiItemID < 0x0150 && (uiItemID & 7) < 6)
+         objInfo.m_uiFlags = m_vecTextureMapping[(uiItemID & 7)+64];
+   }
 
-         extinfo.xpos = xpos;
-         extinfo.ypos = ypos;
-         extinfo.zpos = zpos;
-         extinfo.heading = heading;
+   m_objectList.SetObject(uiPos, obj);
+   return obj;
+}
 
-         if (tilex != 0xff && tiley != 0xff)
-         {
-            extinfo.tilex = tilex;
-            extinfo.tiley = tiley;
-         }
+/*! \todo find out more npc object properties */
+void ObjectListLoader::AddNpcInfos(Underworld::ObjectPtr& obj, Uint8* pNpcInfos)
+{
+   UaAssert(IsNpcObject(obj) == true);
+   UaAssert(pNpcInfos != NULL);
 
-         // npc infos
-         if (objpos<0x0100)
-         {
-            Uint8* data = &npcinfo[objpos*19-8];
+   Underworld::NpcObject& npc = CastToNpcObject(obj);
+   Underworld::NpcInfo npcInfo = npc.GetNpcInfo();
 
-            extinfo.npc_used = true;
+   npcInfo.m_npc_hp = pNpcInfos[0x0000];
 
-            extinfo.npc_hp = data[0x0008];
+   Uint16 uiValue03 = pNpcInfos[0x0003] | (pNpcInfos[0x0004]<<8);
+   npcInfo.m_npc_goal = static_cast<Uint8>(GetBits(uiValue03, 0, 3));
+   npcInfo.m_npc_gtarg = static_cast<Uint8>(GetBits(uiValue03, 4, 8));
 
-            Uint16 value_b = data[0x000b] | (data[0x000c]<<8);
-            extinfo.npc_goal = ua_get_bits(value_b,0,3);
-            extinfo.npc_gtarg = ua_get_bits(value_b,4,8);
+   Uint16 uiValue05 = pNpcInfos[0x0005] | (pNpcInfos[0x0006]<<8);
+   npcInfo.m_npc_level = static_cast<Uint8>(GetBits(uiValue05, 0, 3));
+   npcInfo.m_bNpc_talkedto = GetBits(uiValue05, 13, 1) == 1;
+   npcInfo.m_npc_attitude = static_cast<Uint8>(GetBits(uiValue05, 14, 2));
 
-            Uint16 value_d = data[0x000d] | (data[0x000e]<<8);
-            extinfo.npc_level = ua_get_bits(value_d,0,3);
-            extinfo.npc_talkedto = ua_get_bits(value_d,13,1)==1;
-            extinfo.npc_attitude = ua_get_bits(value_d,14,2);
+   Uint16 uiValue0E = pNpcInfos[0x000e] | (pNpcInfos[0x000f]<<8);
+   npcInfo.m_npc_xhome = static_cast<Uint8>(GetBits(uiValue0E, 10, 6));
+   npcInfo.m_npc_yhome = static_cast<Uint8>(GetBits(uiValue0E, 4, 6));
 
-            Uint16 value_16 = data[0x0016] | (data[0x0017]<<8);
-            extinfo.npc_xhome = ua_get_bits(value_16,10,6);
-            extinfo.npc_yhome = ua_get_bits(value_16,4,6);
+   npcInfo.m_npc_whoami = pNpcInfos[0x0012];
+}
 
-            extinfo.npc_whoami = data[0x001a];
-         }
-      }
+} // namespace Detail
 
-      // object modifications
-      {
-         // special tmap object
-         if (item_id == 0x016e || item_id == 0x016f)
-         {
-            Uint16& owner = obj.get_object_info().owner;
-            if (owner > 64)
-               owner = 0;
-            owner = texmap[owner]; // resolve texture
-         }
+// LevelImporter methods
 
-         // a_bridge
-         if (item_id == 0x0164)
-         {
-            Uint16& flags = obj.get_object_info().flags;
-            flags = flags < 2 ?
-               (30+flags+ua_tex_stock_tmobj) : texmap[flags-2+48];
-         }
+void Import::LevelImporter::LoadObjectList(Underworld::ObjectList& objectList,
+   const TileStartLinkList& tileStartLinkList, std::vector<Uint16>& vecTextureMapping)
+{
+   objectList.Destroy();
+   objectList.Create();
 
-         // a_door objects: store texture id in "flags"
-         if (item_id >= 0x0140 && item_id < 0x0150 && (item_id & 7) < 6)
-         {
-            flags = door_map[item_id & 7];
-         }
-      }
+   // read in master object list
+   std::vector<Uint16> vecObjectWords;
+   vecObjectWords.reserve(0x0400*4);
 
-      // add to master object list
-      master_obj_list[objpos] = obj;
+   std::vector<Uint8> vecNpcInfos;
+   vecNpcInfos.resize(0x0100*19);
 
-      // examine special property and add recursively
-      if (is_quantity==0)
-         addobj_follow(master_obj_list, objprop, npcinfo, quantity,
-            texmap, door_map, 0xff,0xff);
+   for(Uint16 uiItem=0; uiItem < 0x400; uiItem++)
+   {
+      vecObjectWords.push_back(m_file.Read16());
+      vecObjectWords.push_back(m_file.Read16());
+      vecObjectWords.push_back(m_file.Read16());
+      vecObjectWords.push_back(m_file.Read16());
 
-      // add next object in chain
-      objpos = link;
+      // read NPC info bytes
+      if (uiItem < 0x100)
+         m_file.ReadBuffer(&vecNpcInfos[uiItem*19], 19);
+   }
+
+   Detail::ObjectListLoader loader(objectList, vecObjectWords, vecNpcInfos, vecTextureMapping);
+
+   // follow each reference in all tiles
+   for (Uint8 ypos=0; ypos<64; ypos++)
+   for (Uint8 xpos=0; xpos<64; xpos++)
+   {
+      Uint16 uiLink = tileStartLinkList.GetLinkStart(xpos, ypos);
+
+      if (uiLink != 0)
+         loader.FollowLink(uiLink, xpos, ypos);
    }
 }
