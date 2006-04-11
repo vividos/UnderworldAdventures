@@ -21,27 +21,24 @@
 # $Id$
 #
 
-SUBDIRS = base audio unittest win32
-# conv debug import renderer resource screens script tools uastudio ui underw 
+SUBDIRS = base audio import underw unittest win32
+# conv debug renderer resource screens script tools uastudio ui 
 
-# compiler options
-#INCLUDES = -I$(srcdir)/base -I$(srcdir)/conv -I$(srcdir)/audio -I$(srcdir)/ui -I$(srcdir)/renderer -I$(srcdir)/underw -I$(srcdir)/import -I$(srcdir)/script -I$(srcdir)/script/lua/include
+bin_PROGRAMS = uwadv
 
+INCLUDES = -I$(srcdir)/audio -I$(srcdir)/base -I$(srcdir)/import -I$(srcdir)/underw
 
-# automake build rules
-
-#bin_PROGRAMS = uwadv
+uwadv_LDADD = \
+	base/libaudio.la \
+	base/libbase.la \
+	base/libimport.la \
+	base/libunderw.la
 
 # Makefile.common defines uwadv_SOURCES
-#include Makefile.common
-
-#uwadv_LDADD = \
-#	base/libbase.la
+include Makefile.common
 
 EXTRA_DIST = \
 	Makefile.common \
-	audio/midi_driver/win_midiout.cpp \
-	audio/midi_driver/win_midiout.h \
 	resource/model/wrllexer.l \
 	resource/model/flex.skl \
 	resource/model/import3ds.cpp
