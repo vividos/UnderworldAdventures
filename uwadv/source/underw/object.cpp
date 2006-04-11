@@ -26,7 +26,7 @@
 */
 
 // needed includes
-#include "underworld.hpp"
+#include "underw.hpp"
 #include "object.hpp"
 #include "savegame.hpp"
 
@@ -107,19 +107,19 @@ void ObjectPositionInfo::Save(Base::Savegame& sg) const
 
 void NpcInfo::Load(Base::Savegame& sg)
 {
-   m_uiNpc_hp = sg.Read8();
+   m_npc_hp = sg.Read8();
 
-   m_uiNpc_goal = sg.Read8();
-   m_uiNpc_gtarg = sg.Read8();
-   m_uiNpc_level = sg.Read8();
+   m_npc_goal = sg.Read8();
+   m_npc_gtarg = sg.Read8();
+   m_npc_level = sg.Read8();
    m_bNpc_talkedto = sg.Read8() != 0;
-   m_uiNpc_attitude = sg.Read8();
+   m_npc_attitude = sg.Read8();
 
-   m_uiNpc_xhome = sg.Read8();
-   m_uiNpc_yhome = sg.Read8();
+   m_npc_xhome = sg.Read8();
+   m_npc_yhome = sg.Read8();
 
-   m_uiNpc_hunger = sg.Read8();
-   m_uiNpc_whoami = sg.Read8();
+   m_npc_hunger = sg.Read8();
+   m_npc_whoami = sg.Read8();
 
    m_uiAnimationState = sg.Read8();
    m_uiAnimationFrame = sg.Read8();
@@ -127,19 +127,19 @@ void NpcInfo::Load(Base::Savegame& sg)
 
 void NpcInfo::Save(Base::Savegame& sg) const
 {
-   sg.Write8(m_uiNpc_hp);
+   sg.Write8(m_npc_hp);
 
-   sg.Write8(m_uiNpc_goal);
-   sg.Write8(m_uiNpc_gtarg);
-   sg.Write8(m_uiNpc_level);
+   sg.Write8(m_npc_goal);
+   sg.Write8(m_npc_gtarg);
+   sg.Write8(m_npc_level);
    sg.Write8(m_bNpc_talkedto ? 1 : 0);
-   sg.Write8(m_uiNpc_attitude);
+   sg.Write8(m_npc_attitude);
 
-   sg.Write8(m_uiNpc_xhome);
-   sg.Write8(m_uiNpc_yhome);
+   sg.Write8(m_npc_xhome);
+   sg.Write8(m_npc_yhome);
 
-   sg.Write8(m_uiNpc_hunger);
-   sg.Write8(m_uiNpc_whoami);
+   sg.Write8(m_npc_hunger);
+   sg.Write8(m_npc_whoami);
 
    sg.Write8(m_uiAnimationState);
    sg.Write8(m_uiAnimationFrame);

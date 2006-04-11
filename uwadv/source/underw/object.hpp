@@ -43,6 +43,9 @@ namespace Underworld
 //! item id for unused object
 const Uint16 g_uiItemIDNone = 0xffff;
 
+//! tile coordinate for "not a position"
+const Uint8 g_uiTileNotAPos = 0xff;
+
 // enums
 
 //! object type
@@ -99,8 +102,8 @@ struct ObjectPositionInfo
       m_ypos(0),
       m_zpos(0),
       m_uiHeading(0),
-      m_uiTileX(0xff),
-      m_uiTileY(0xff)
+      m_uiTileX(g_uiTileNotAPos),
+      m_uiTileY(g_uiTileNotAPos)
    {
    }
 
@@ -125,34 +128,34 @@ struct NpcInfo
 {
    //! \todo use enums where values are known and fixed
    NpcInfo()
-      :m_uiNpc_hp(0),
-      m_uiNpc_goal(0),
-      m_uiNpc_gtarg(0),
-      m_uiNpc_level(0),
+      :m_npc_hp(0),
+      m_npc_goal(0),
+      m_npc_gtarg(0),
+      m_npc_level(0),
       m_bNpc_talkedto(false),
-      m_uiNpc_attitude(0),
-      m_uiNpc_xhome(0),
-      m_uiNpc_yhome(0),
-      m_uiNpc_hunger(0),
-      m_uiNpc_whoami(0),
+      m_npc_attitude(0),
+      m_npc_xhome(0),
+      m_npc_yhome(0),
+      m_npc_hunger(0),
+      m_npc_whoami(0),
       m_uiAnimationState(0),
       m_uiAnimationFrame(0)
    {
    }
 
-   Uint8 m_uiNpc_hp;       //!< hit points
+   Uint8 m_npc_hp;       //!< hit points
 
-   Uint8 m_uiNpc_goal;     //!< goal of the npc
-   Uint8 m_uiNpc_gtarg;    //!< goal target
-   Uint8 m_uiNpc_level;    //!< experience level
+   Uint8 m_npc_goal;     //!< goal of the npc
+   Uint8 m_npc_gtarg;    //!< goal target
+   Uint8 m_npc_level;    //!< experience level
    bool  m_bNpc_talkedto;  //!< is true when player talked to npc
-   Uint8 m_uiNpc_attitude; //!< attitude
+   Uint8 m_npc_attitude; //!< attitude
 
-   Uint8 m_uiNpc_xhome;    //!< home tile x coordinate
-   Uint8 m_uiNpc_yhome;    //!< home tile y coordinate
+   Uint8 m_npc_xhome;    //!< home tile x coordinate
+   Uint8 m_npc_yhome;    //!< home tile y coordinate
 
-   Uint8 m_uiNpc_hunger;   //!< hungriness of the npc
-   Uint8 m_uiNpc_whoami;   //!< conversation slot of npc, or 0 for generic
+   Uint8 m_npc_hunger;   //!< hungriness of the npc
+   Uint8 m_npc_whoami;   //!< conversation slot of npc, or 0 for generic
 
    Uint8 m_uiAnimationState;  //!< animation state
    Uint8 m_uiAnimationFrame;  //!< current animation frame
@@ -210,7 +213,7 @@ class NpcObject: public Object
 {
 public:
    //! ctor
-   NpcObject(){ m_objectType = objectNormal; }
+   NpcObject(){ m_objectType = objectNpc; }
 
    //! returns npc info
    NpcInfo& GetNpcInfo(){ return m_npcInfo; }
@@ -238,7 +241,7 @@ typedef Base::SmartPtr<Object> ObjectPtr;
 //! returns if given object is a NPC object
 inline bool IsNpcObject(ObjectPtr& ptr)
 {
-   return ptr->GetObjectType() == objectNormal;
+   return ptr->GetObjectType() == objectNpc;
 }
 
 //! Casts object ptr to npc object
