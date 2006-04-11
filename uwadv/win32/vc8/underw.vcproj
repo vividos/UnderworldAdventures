@@ -51,8 +51,8 @@
 				EnableFunctionLevelLinking="true"
 				TreatWChar_tAsBuiltInType="true"
 				ForceConformanceInForLoopScope="true"
-				UsePrecompiledHeader="0"
-				PrecompiledHeaderThrough="common.hpp"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="underw.hpp"
 				WarningLevel="4"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="4"
@@ -117,8 +117,8 @@
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="true"
 				ForceConformanceInForLoopScope="true"
-				UsePrecompiledHeader="0"
-				PrecompiledHeaderThrough="common.hpp"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="underw.hpp"
 				WarningLevel="4"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="3"
@@ -168,22 +168,6 @@
 			<File
 				RelativePath="..\..\source\underw\inventory.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\source\underw\levellist.cpp"
@@ -212,6 +196,26 @@
 			<File
 				RelativePath="..\..\source\underw\tilemap.cpp"
 				>
+			</File>
+			<File
+				RelativePath="..\..\source\underw\underw.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\source\underw\underworld.cpp"
@@ -269,6 +273,10 @@
 			</File>
 			<File
 				RelativePath="..\..\source\underw\tilemap.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\underw\underw.hpp"
 				>
 			</File>
 			<File
