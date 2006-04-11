@@ -262,7 +262,7 @@ Table of Contents
    uwXX.xmi       underworld extended midi music
    awXX.xmi       the same, for adlib music (?)
    sounds.dat     sound effect midi commands (?)
-   uw.mt          MT32 sysex data
+   uw.mt          MT32 sound effects data
    uw.ad          adlib stuff
    *.adv          device driver for midi/wave output:
 
@@ -402,6 +402,7 @@ Table of Contents
    weap.dat       weapon animation x and y coordinates (see 3.8)
 
    Files in the "cuts" folder:
+   cs???.n??      cutscene animations
    lback00x.byt   (?) (x = 0..8)
 
    Files in the "crit" folder:
@@ -413,35 +414,38 @@ Table of Contents
 
    Files in the "sound" folder:
 
-   bsp??.voc
+   bsp??.voc      guardian speech
    dd??.adv       digital sound drivers
    dm??.adv       digital music drivers
    sample.opl
-   sp??.voc
+   sp??.voc       sound effects
    uw.opl
-   uw??.voc
+   uw??.voc       guardian laughter
    uwa??.xmi      adlib music files
    uwr??.xmi      roland music files
 
    Here's a list of song names for the .xmi files:
 
-   uwa01.xmi
-   uwa02.xmi
-   uwa03.xmi
-   uwa04.xmi
-   uwa05.xmi
-   uwa06.xmi
-   uwa07.xmi
-   uwa10.xmi
-   uwa11.xmi
-   uwa12.xmi
-   uwa13.xmi
-   uwa14.xmi
-   uwa15.xmi
-   uwa16.xmi
-   uwa17.xmi
-   uwa30.xmi
-   uwa31.xmi
+   uwa01.xmi      The Labyrinth of Worlds Theme
+   uwa02.xmi      Enemy wounded
+   uwa03.xmi      Combat
+   uwa04.xmi      Dangerous Situation
+   uwa05.xmi      Armed
+   uwa06.xmi      Victory
+   uwa07.xmi      Sewers
+   uwa10.xmi      Talorus
+   uwa11.xmi      Prison Tower / Goblin Prison Tower
+   uwa12.xmi      Death
+   uwa13.xmi      Killorn Keep
+   uwa14.xmi      Ice Caverns / Blackrock Prison
+   uwa15.xmi      Scintillus Academy / Ice Caves
+   uwa16.xmi      Praecor Loth / Castle British
+   uwa17.xmi      The Labyrinth of Worlds Theme (again)
+   uwa30.xmi      Introduction
+   uwa31.xmi      Guardian's Trap
+
+   The second names come from some mp3 files available here:
+   http://www.stygianabyss.com/uw/music/uw2.htm
 
 
  +--------------------------------------------------------------------------+
@@ -1039,6 +1043,8 @@ Table of Contents
    <9 blocks automap infos>
    <9 blocks map notes>
 
+   The remaining 9 x 10 blocks are unused.
+
    The Ultima Underworld Demo uses three separate files to store the map.
    Here's a list of the files and what blocks they contain:
 
@@ -1093,7 +1099,7 @@ Table of Contents
       bits     len  description
        0- 3    4    tile type (0-9, see below)
        4- 7    4    floor height
-       8       1    unknown (?? special light feature ??)
+       8       1    unknown (?? special light feature ??) always 0 in uw1
        9       1    0, never used in uw1
       10-13    4    floor texture index (into texture mapping)
       14       1    when set, no magic is allowed to cast/to be casted upon
@@ -1261,7 +1267,6 @@ Table of Contents
    0016   000e   Int16  0-3    unknown
                         4-9    npc_yhome
                         10-15  npc_xhome
-   0017   000f
    0018   0010   Int8   0-4:   npc_heading?
                         5-7:   
    0019   0011   Int8   0-6:   npc_hunger (?)
@@ -1295,7 +1300,7 @@ Table of Contents
 
    The texture mapping table are used to map tile texture indices to the
    actual texture used, since wall and floor textures are only encoded with
-   6 or 4 bits. The block of size 0x007a always look like this:
+   6 and 4 bits. The block of size 0x007a always look like this:
 
    0000  48 x Int16   wall texture number (from w64.tr)
    0060  10 x Int16   floor texture number (from f32.tr)
@@ -1858,15 +1863,16 @@ Table of Contents
 
    0000  Int8    height
    0001  Int16   mass/stuff:
-                 bits 0-2:  radius
+                 bits 0-2: radius
                  bit 3: 1 for npc's, 3d objects and misc. items (animated flg?)
-                 bits 4-15: mass in 0.1 kg (stones?)
+                 bits 4-15: mass in 0.1 stones
    0003  Int8    flags
                  0/2: object in range [336, 368[ seem to be 3d objects
-                 4: decal object
+                 3: magic object (?)
+                 4: decal object (always 0 in uw1)
                  5: is set when object can be picked up
                  7: is set when object is a container
-   0004  Int16   monetary value (?)
+   0004  Int16   monetary value
    0006  Int8    bits 2..3: quality class (this value*6+quality gives index
                             into string block 5
    0007  Int8    bit 7: if 1, item can have owner ("belongs to ...")
@@ -1896,7 +1902,7 @@ Table of Contents
    00b2  0x80     armour and wearables table  32         4 bytes
    0132  0x0c00   critters table              64        48 bytes
    0d32  0x30     containers table            16         3 bytes
-   0d62  0x20     lights info table           16         2 bytes
+   0d62  0x20     light source table          16         2 bytes
    0d82  0x20     unknown, maybe jewelry info table
    0da2  0x40     animation object table      16         4 bytes
    0de2           end
@@ -1938,22 +1944,22 @@ Table of Contents
    * Containers table (0x0080-0x008f)
 
    0000   Int8   capacity in 0.1 stones
-   0001   Int8   objects accepted (0xFF means any)
-   0002   Int8   unknown
+   0001   Int8   objects accepted; 0: runes, 1: arrows, 2: scrolls, 3: edibles, 0xFF: any
+   0002   Int8   number of slots available?; 2: , -1: any
 
-   * Lights info table
+   * Light source table (0x0090-0x009f)
 
-   0000   Int8   light brightness
+   0000   Int8   light brightness (max. is 4; 0 means unlit)
    0001   Int8   duration (00: doesn't go out, e.g. taper of sacrifice)
 
    * Jewelry info table (?)
 
-   * Animation object table
+   * Animation object table (0x01c0-0x01cf)
 
-   0000   Int8   unknown
-   0001   Int8   start frame (from animo.gr)
-   0002   Int8   number of frames
-   0003   Int8   unknown
+   0000   Int8   unknown (0x00, 0x21 or 0x84)
+   0001   Int8   unknown (always 0x00)
+   0002   Int8   start frame (from animo.gr)
+   0003   Int8   number of frames
 
 
 6.4  Object combining
@@ -3066,7 +3072,7 @@ Table of Contents
    didn't fit elsewhere.
 
 
-9.1  Ultima Underworld 2 compression scheme
+9.1  Ultima Underworld 2 compression scheme [uw2]
 
    The second game uses a new compression scheme to crunch data in .ark files
    together. The file header has a slightly different format than in uw1's
@@ -3082,7 +3088,7 @@ Table of Contents
        an offset of 0 means the entry is not (yet) used
 
      Table 2: flags for the datachunk
-       Bit 0: block should be compressed
+       Bit 0: block should be compressed (always set in uw2)
        Bit 1: actually is compressed
        Bit 2: the chunk has extra space allocated in case the compression
               isn't as effective next time. The "available space" value is
@@ -3096,6 +3102,7 @@ Table of Contents
        This is valid for chunks with extra space (bit 2 in table 2 set). It
        gives the total space available for the chunk in the archive file.
 
+   A compressed block always starts with an Int32 value that is to be ignored.
    If a block is actually compressed, it can be divided into subblocks.
    Each compressed subblock starts with an Int8 number; the bits from LSB to
    MSB describe if the following byte is just transferred to the target buffer
