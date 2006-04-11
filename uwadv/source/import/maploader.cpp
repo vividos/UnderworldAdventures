@@ -109,7 +109,7 @@ void LevelImporter::LoadTilemap(Underworld::Tilemap& tilemap, std::vector<Uint16
       tileInfo.m_bSpecialLightFeature = GetBits(uiTileInfo1, 8, 1) != 0;
 
       // bit 9 is always 0
-      UaAssert(0 == tileInfo.m_bDoorPresent = GetBits(uiTileInfo1, 9, 1));
+      UaAssert(0 == GetBits(uiTileInfo1, 9, 1));
    }
 }
 
