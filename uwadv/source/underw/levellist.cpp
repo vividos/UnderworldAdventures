@@ -26,7 +26,7 @@
 */
 
 // needed includes
-#include "underworld.hpp"
+#include "underw.hpp"
 #include "levellist.hpp"
 #include "savegame.hpp"
 

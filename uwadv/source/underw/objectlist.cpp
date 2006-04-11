@@ -26,8 +26,9 @@
 */
 
 // needed includes
-#include "underworld.hpp"
+#include "underw.hpp"
 #include "objectlist.hpp"
+#include "savegame.hpp"
 
 using Underworld::ObjectList;
 using Underworld::ObjectPtr;
