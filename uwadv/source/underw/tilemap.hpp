@@ -30,6 +30,7 @@
 #define uwadv_underw_tilemap_hpp_
 
 // needed includes
+#include "base.hpp"
 #include <vector>
 #include <set>
 
@@ -64,28 +65,49 @@ enum TilemapTileType
 struct TileInfo
 {
    //! ctor
-   TileInfo():type(tileSolid){}
+   TileInfo()
+      :m_type(tileSolid),
+      m_uiFloor(0),
+      m_uiCeiling(128),
+      m_uiSlope(8),
+      m_uiTextureWall(Base::c_uiStockTexturesWall),
+      m_uiTextureFloor(Base::c_uiStockTexturesFloor),
+      m_uiTextureCeiling(Base::c_uiStockTexturesFloor),
+      m_bMagicDisabled(false),
+      m_bDoorPresent(false),
+      m_bSpecialLightFeature(false)
+   {
+   }
 
    //! tile type
-   TilemapTileType type;
+   TilemapTileType m_type;
 
    //! floor height
-   Uint16 uiFloor;
+   Uint16 m_uiFloor;
 
    //! ceiling height
-   Uint16 uiCeiling;
+   Uint16 m_uiCeiling;
 
    //! slope from this tile to next
-   Uint8 uiSlope;
+   Uint8 m_uiSlope;
 
    //! texture id for wall
-   Uint16 uiTextureWall;
+   Uint16 m_uiTextureWall;
 
    //! texture id for floor
-   Uint16 uiTextureFloor;
+   Uint16 m_uiTextureFloor;
 
    //! texture id for ceiling
-   Uint16 uiTextureCeiling;
+   Uint16 m_uiTextureCeiling;
+
+   //! indicates if magic is disabled in this tile
+   bool m_bMagicDisabled;
+
+   //! indicates if a door is present in this tile
+   bool m_bDoorPresent;
+
+   //! special light feature \todo rename to a better name
+   bool m_bSpecialLightFeature;
 };
 
 

@@ -26,7 +26,7 @@
 */
 
 // needed includes
-#include "underworld.hpp"
+#include "underw.hpp"
 #include "tilemap.hpp"
 #include "savegame.hpp"
 #include <cmath>
@@ -45,58 +45,58 @@ double Tilemap::GetFloorHeight(double xpos, double ypos)
 
    TileInfo& tile = GetTileInfo(static_cast<Uint8>(xpos), static_cast<Uint8>(ypos));
 
-   switch (tile.type)
+   switch (tile.m_type)
    {
    case tileSolid:
-      dHeight = tile.uiCeiling; // player shouldn't get there, though
+      dHeight = tile.m_uiCeiling; // player shouldn't get there, though
       break;
 
    case tileOpen:
-      dHeight = tile.uiFloor;
+      dHeight = tile.m_uiFloor;
       break;
 
       // diagonal tiles
    case tileDiagonal_se:
       if (fmod(xpos, 1.0) - fmod(ypos, 1.0) < 0.0)
-         dHeight = tile.uiCeiling;
+         dHeight = tile.m_uiCeiling;
       else
-         dHeight = tile.uiFloor;
+         dHeight = tile.m_uiFloor;
       break;
    case tileDiagonal_sw:
       if (fmod(xpos, 1.0) + fmod(ypos, 1.0) > 1.0)
-         dHeight = tile.uiCeiling;
+         dHeight = tile.m_uiCeiling;
       else
-         dHeight = tile.uiFloor;
+         dHeight = tile.m_uiFloor;
       break;
    case tileDiagonal_nw:
       if (fmod(xpos, 1.0) - fmod(ypos, 1.0) > 0.0)
-         dHeight = tile.uiCeiling;
+         dHeight = tile.m_uiCeiling;
       else
-         dHeight = tile.uiFloor;
+         dHeight = tile.m_uiFloor;
       break;
    case tileDiagonal_ne:
       if (fmod(xpos, 1.0) + fmod(ypos, 1.0) < 1.0)
-         dHeight = tile.uiCeiling;
+         dHeight = tile.m_uiCeiling;
       else
-         dHeight = tile.uiFloor;
+         dHeight = tile.m_uiFloor;
       break;
 
       // sloped tiles
    case tileSlope_n:
-      dHeight = tile.uiFloor +
-         static_cast<double>(tile.uiSlope) * fmod(ypos, 1.0);
+      dHeight = tile.m_uiFloor +
+         static_cast<double>(tile.m_uiSlope) * fmod(ypos, 1.0);
       break;
    case tileSlope_s:
-      dHeight = (tile.uiFloor+tile.uiSlope) -
-         static_cast<double>(tile.uiSlope)*fmod(ypos,1.0);
+      dHeight = (tile.m_uiFloor+tile.m_uiSlope) -
+         static_cast<double>(tile.m_uiSlope)*fmod(ypos,1.0);
       break;
    case tileSlope_e:
-      dHeight = tile.uiFloor +
-         static_cast<double>(tile.uiSlope)*fmod(xpos,1.0);
+      dHeight = tile.m_uiFloor +
+         static_cast<double>(tile.m_uiSlope)*fmod(xpos,1.0);
       break;
    case tileSlope_w:
-      dHeight = (tile.uiFloor+tile.uiSlope) -
-         static_cast<double>(tile.uiSlope)*fmod(xpos,1.0);
+      dHeight = (tile.m_uiFloor+tile.m_uiSlope) -
+         static_cast<double>(tile.m_uiSlope)*fmod(xpos,1.0);
       break;
 
    default:
@@ -135,17 +135,17 @@ void Tilemap::Load(Base::Savegame& sg)
    {
       TileInfo& tile = m_vecTiles[n];
 
-      tile.type = static_cast<TilemapTileType>(sg.Read8());
-      tile.uiFloor = sg.Read16();
-      tile.uiCeiling = sg.Read16();
-      tile.uiSlope = sg.Read8();
-      tile.uiTextureWall = sg.Read16();
-      tile.uiTextureFloor = sg.Read16();
-      tile.uiTextureCeiling = sg.Read16();
+      tile.m_type = static_cast<TilemapTileType>(sg.Read8());
+      tile.m_uiFloor = sg.Read16();
+      tile.m_uiCeiling = sg.Read16();
+      tile.m_uiSlope = sg.Read8();
+      tile.m_uiTextureWall = sg.Read16();
+      tile.m_uiTextureFloor = sg.Read16();
+      tile.m_uiTextureCeiling = sg.Read16();
 
-      m_setUsedTextures.insert(tile.uiTextureWall);
-      m_setUsedTextures.insert(tile.uiTextureFloor);
-      m_setUsedTextures.insert(tile.uiTextureCeiling);
+      m_setUsedTextures.insert(tile.m_uiTextureWall);
+      m_setUsedTextures.insert(tile.m_uiTextureFloor);
+      m_setUsedTextures.insert(tile.m_uiTextureCeiling);
    }
 
    sg.EndSection();
@@ -165,13 +165,13 @@ void Tilemap::Save(Base::Savegame& sg) const
    {
       const TileInfo& tile = m_vecTiles[n];
 
-      sg.Write8(static_cast<Uint8>(tile.type));
-      sg.Write16(tile.uiFloor);
-      sg.Write16(tile.uiCeiling);
-      sg.Write8(tile.uiSlope);
-      sg.Write16(tile.uiTextureWall);
-      sg.Write16(tile.uiTextureFloor);
-      sg.Write16(tile.uiTextureCeiling);
+      sg.Write8(static_cast<Uint8>(tile.m_type));
+      sg.Write16(tile.m_uiFloor);
+      sg.Write16(tile.m_uiCeiling);
+      sg.Write8(tile.m_uiSlope);
+      sg.Write16(tile.m_uiTextureWall);
+      sg.Write16(tile.m_uiTextureFloor);
+      sg.Write16(tile.m_uiTextureCeiling);
    }
 
    sg.EndSection();
