@@ -161,6 +161,23 @@ public:
 //! smart pointer to SDL_RWops struct
 typedef SmartPtr<SDL_RWops, Base::SDL_RWopsDeletor> SDL_RWopsPtr;
 
+// constants
+
+// stock texture indices
+
+//! start of stock wall textures
+const Uint16 c_uiStockTexturesWall = 0x0000;
+//! start of stock floor textures
+const Uint16 c_uiStockTexturesFloor = 0x0100;
+//! object textures
+const Uint16 c_uiStockTexturesObjects = 0x0200;
+//! switch/lever/pull chain textures
+const Uint16 c_uiStockTexturesSwitches = 0x0400;
+//! door textures
+const Uint16 c_uiStockTexturesDoors = 0x0410;
+//! tmobj textures
+const Uint16 c_uiStockTexturesTmobj = 0x0420;
+
 } // namespace Base
 
 #endif
