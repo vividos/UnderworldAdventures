@@ -26,20 +26,20 @@
 */
 /*! \mainpage
 
-  Module relations are as follows:<br/>
-  \dotfile ../docs/ua-module-dependencies.dot Module Dependencies
+  Module relations are as follows:<br>
+  \dotfile ua-module-dependencies.dot Module Dependencies
 
 */
 
 // needed includes
-#include "common.hpp"
-#include "uwadv.hpp"
+#include "base.hpp"
+//#include "uwadv.hpp"
 
 
 // external functions
 
 //! function to create game object; created by macro ua_uwadv_game_implement
-extern ua_uwadv_game* ua_game_create();
+//extern ua_uwadv_game* ua_game_create();
 
 
 // to have console output, use a genuine main(), not the SDL_main one
@@ -51,6 +51,7 @@ extern ua_uwadv_game* ua_game_create();
 //! main function
 int main(int argc, char* argv[])
 {
+/*   
    ua_uwadv_game* ua;
 
    // create new game object
@@ -89,6 +90,6 @@ int main(int argc, char* argv[])
 
    delete ua;
    ua = NULL;
-
+*/
    return 0;
 }
