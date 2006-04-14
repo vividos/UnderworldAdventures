@@ -71,13 +71,13 @@ public:
    void SetObject(Uint16 uiObjectPos, const ObjectPtr& pObj);
 
    //! returns object list start for tile on given coordinates
-   Uint16 GetListStart(unsigned int xpos, unsigned int ypos) const;
+   Uint16 GetListStart(Uint8 xpos, Uint8 ypos) const;
 
    //! adds object to list for given tile
-   void AddObjectToTileList(Uint16 uiObjectPos, unsigned int xpos, unsigned int ypos);
+   void AddObjectToTileList(Uint16 uiObjectPos, Uint8 xpos, Uint8 ypos);
 
    //! removes object from list for given tile
-   void RemoveObjectFromTileList(Uint16 uiObjectPos, unsigned int xpos, unsigned int ypos);
+   void RemoveObjectFromTileList(Uint16 uiObjectPos, Uint8 xpos, Uint8 ypos);
 
    // loading / saving
 
@@ -92,7 +92,7 @@ public:
 
 private:
    //! sets object list start for tile on given coordinates
-   void SetListStart(Uint16 uiObjectPos, unsigned int xpos, unsigned int ypos);
+   void SetListStart(Uint16 uiObjectPos, Uint8 xpos, Uint8 ypos);
 
 private:
    //! master object list

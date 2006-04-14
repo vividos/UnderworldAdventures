@@ -57,30 +57,42 @@ Uint16 ObjectList::Allocate()
 {
    // start with position 1; 0 is reserved
    Uint16 uiPos = 1;
-   while (uiPos < m_objectList.size() && m_objectList[uiPos].get() != NULL)
+   Uint16 uiSize = static_cast<Uint16>(m_objectList.size());
+   while (uiPos < uiSize && m_objectList[uiPos].get() != NULL)
       uiPos++;
 
    // hit end of list?
    if (uiPos >= m_objectList.size())
    {
+      // already at maximum size?
+      if (m_objectList.size() == 0x10000)
+         throw Base::RuntimeException("Error while enlarging object list; already at maximum size");
+
       // new pos is start of enlarged list
       uiPos = static_cast<Uint16>(m_objectList.size());
 
-      // enlarge list by factor 2
-      m_objectList.resize(m_objectList.size()*2);
+      // enlarge list by factor 1,25
+      unsigned int uiNewSize = m_objectList.size();
+      uiNewSize += uiNewSize >> 2;
+
+      // limit to Uint16 range
+      if (uiNewSize >= 0x10000)
+         uiNewSize = 0x10000;
+
+      m_objectList.resize(uiNewSize);
    }
 
    return uiPos;
 }
 
-/*! \todo check m_uiTileX and m_uiTileY */
 void ObjectList::Free(Uint16 uiObjectPos)
 {
    // object must not be part of a tile list
-   //UaAssert(GetObject(uiObjectPos)->GetPosInfo().m_uiTileX == 0xff);
-   //UaAssert(GetObject(uiObjectPos)->GetPosInfo().m_uiTileY == 0xff);
+   UaAssert(GetObject(uiObjectPos)->GetPosInfo().m_uiTileX == g_uiTileNotAPos);
+   UaAssert(GetObject(uiObjectPos)->GetPosInfo().m_uiTileY == g_uiTileNotAPos);
    UaAssert(uiObjectPos < m_objectList.size());
    UaAssert(uiObjectPos != g_uiObjectListPosNone);
+   UaAssert(m_objectList[uiObjectPos].get() != NULL); // can only free allocated objects
 
    m_objectList[uiObjectPos].reset();
 }
@@ -101,7 +113,7 @@ void ObjectList::SetObject(Uint16 uiObjectPos, const ObjectPtr& pObj)
    m_objectList[uiObjectPos] = pObj;
 }
 
-Uint16 ObjectList::GetListStart(unsigned int xpos, unsigned int ypos) const
+Uint16 ObjectList::GetListStart(Uint8 xpos, Uint8 ypos) const
 {
    UaAssert(xpos < 64);
    UaAssert(ypos < 64);
@@ -112,7 +124,7 @@ Uint16 ObjectList::GetListStart(unsigned int xpos, unsigned int ypos) const
 /*! It is allowed that uiObjectPos may be equal to g_uiObjectListPosNone, to
     empty the list.
 */
-void ObjectList::SetListStart(Uint16 uiObjectPos, unsigned int xpos, unsigned int ypos)
+void ObjectList::SetListStart(Uint16 uiObjectPos, Uint8 xpos, Uint8 ypos)
 {
    UaAssert(xpos < 64);
    UaAssert(ypos < 64);
@@ -123,9 +135,8 @@ void ObjectList::SetListStart(Uint16 uiObjectPos, unsigned int xpos, unsigned in
 
 /*! Adds object to tile's list of objects. Adds the object to the end of the
     list.
-    \todo also reset m_uiTileX and m_uiTileY fields of object
 */
-void ObjectList::AddObjectToTileList(Uint16 uiObjectPos, unsigned int xpos, unsigned int ypos)
+void ObjectList::AddObjectToTileList(Uint16 uiObjectPos, Uint8 xpos, Uint8 ypos)
 {
    UaAssert(uiObjectPos != g_uiObjectListPosNone);
    UaAssert(uiObjectPos < m_objectList.size());
@@ -153,10 +164,12 @@ void ObjectList::AddObjectToTileList(Uint16 uiObjectPos, unsigned int xpos, unsi
       GetObject(uiLastLink)->GetObjectInfo().m_uiLink = uiObjectPos;
       GetObject(uiObjectPos)->GetObjectInfo().m_uiLink = g_uiObjectListPosNone;
    }
+
+   m_objectList[uiObjectPos]->GetPosInfo().m_uiTileX = xpos;
+   m_objectList[uiObjectPos]->GetPosInfo().m_uiTileY = ypos;
 }
 
-/*! \todo also reset m_uiTileX and m_uiTileY fields of object */
-void ObjectList::RemoveObjectFromTileList(Uint16 uiObjectPos, unsigned int xpos, unsigned int ypos)
+void ObjectList::RemoveObjectFromTileList(Uint16 uiObjectPos, Uint8 xpos, Uint8 ypos)
 {
    UaAssert(uiObjectPos != g_uiObjectListPosNone);
    UaAssert(uiObjectPos < m_objectList.size());
@@ -165,6 +178,9 @@ void ObjectList::RemoveObjectFromTileList(Uint16 uiObjectPos, unsigned int xpos,
    // search item in tile list
    Uint16 uiLink = GetListStart(xpos, ypos);
    UaAssert(uiLink != g_uiObjectListPosNone);
+
+   m_objectList[uiObjectPos]->GetPosInfo().m_uiTileX = g_uiTileNotAPos;
+   m_objectList[uiObjectPos]->GetPosInfo().m_uiTileY = g_uiTileNotAPos;
 
    // first item?
    if (uiLink == uiObjectPos)
