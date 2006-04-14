@@ -104,8 +104,16 @@ int main()
 {
    UaTrace("Underworld Adventures Unit Tests\n\n");
 
-   // init settings variable
-   Base::LoadSettings(g_settings);
+   // init global settings variable
+   try
+   {
+      Base::LoadSettings(g_settings);
+   }
+   catch(Base::Exception& e)
+   {
+      UaTrace("Exception while config file loading: %s\n", e.what());
+      return 1;
+   }
 
    // check settings if they are right
    std::string strFilename = g_settings.GetString(Base::settingUw1Path) + "/uw.exe";
