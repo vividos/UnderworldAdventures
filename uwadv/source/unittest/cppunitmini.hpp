@@ -28,7 +28,8 @@
 // needed includes
 #include <cstring>
 
-#ifdef _CPPUNWIND
+// don't use exceptions on msvc when _CPPUNWIND macro isn't defined
+#if !(defined(HAVE_MSVC) && !defined(_CPPUNWIND))
 #  define CPPUNIT_MINI_USE_EXCEPTIONS
 #endif
 
