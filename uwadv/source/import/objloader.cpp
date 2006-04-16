@@ -85,12 +85,17 @@ void ObjectListLoader::FollowLink(Uint16 uiLink, Uint8 xpos, Uint8 ypos)
       if (m_objectList.GetObject(uiLink).get() != NULL)
       {
          // object is chained from more than one object
-
-         // item must be a trap
-         Uint16 uiItemID = m_objectList.GetObject(uiLink)->GetObjectInfo().m_uiItemID;
-         UaAssert(uiItemID >= 0x0180 && uiItemID <= 0x0190);
-/*
          Underworld::ObjectPositionInfo& posInfo = m_objectList.GetObject(uiLink)->GetPosInfo();
+
+         // object already has valid tile coordinates?
+         if (posInfo.m_xpos == Underworld::g_uiTileNotAPos && posInfo.m_ypos == Underworld::g_uiTileNotAPos)
+         {
+            // no, so set them
+            posInfo.m_xpos = xpos;
+            posInfo.m_ypos = ypos;
+         }
+/*
+         Uint16 uiItemID = m_objectList.GetObject(uiLink)->GetObjectInfo().m_uiItemID;
          UaTrace("object already visited: pos%04x, item_id=%04x, at x=%02x y=%02x\n",
             uiLink, uiItemID, posInfo.m_xpos, posInfo.m_ypos);
 */
