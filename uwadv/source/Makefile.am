@@ -29,10 +29,10 @@ bin_PROGRAMS = uwadv
 INCLUDES = -I$(srcdir)/audio -I$(srcdir)/base -I$(srcdir)/import -I$(srcdir)/underw
 
 uwadv_LDADD = \
-	base/libaudio.la \
+	audio/libaudio.la \
 	base/libbase.la \
-	base/libimport.la \
-	base/libunderw.la
+	import/libimport.la \
+	underw/libunderw.la
 
 # Makefile.common defines uwadv_SOURCES
 include Makefile.common
