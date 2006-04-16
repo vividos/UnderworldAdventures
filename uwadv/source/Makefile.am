@@ -21,7 +21,7 @@
 # $Id$
 #
 
-SUBDIRS = base audio import underw unittest win32
+SUBDIRS = base audio underw import unittest win32
 # conv debug renderer resource screens script tools uastudio ui 
 
 bin_PROGRAMS = uwadv
