@@ -88,8 +88,8 @@ Uint16 ObjectList::Allocate()
 void ObjectList::Free(Uint16 uiObjectPos)
 {
    // object must not be part of a tile list
-   UaAssert(GetObject(uiObjectPos)->GetPosInfo().m_uiTileX == g_uiTileNotAPos);
-   UaAssert(GetObject(uiObjectPos)->GetPosInfo().m_uiTileY == g_uiTileNotAPos);
+   UaAssert(GetObject(uiObjectPos)->GetPosInfo().m_uiTileX == c_uiTileNotAPos);
+   UaAssert(GetObject(uiObjectPos)->GetPosInfo().m_uiTileY == c_uiTileNotAPos);
    UaAssert(uiObjectPos < m_objectList.size());
    UaAssert(uiObjectPos != g_uiObjectListPosNone);
    UaAssert(m_objectList[uiObjectPos].get() != NULL); // can only free allocated objects
@@ -179,8 +179,8 @@ void ObjectList::RemoveObjectFromTileList(Uint16 uiObjectPos, Uint8 xpos, Uint8 
    Uint16 uiLink = GetListStart(xpos, ypos);
    UaAssert(uiLink != g_uiObjectListPosNone);
 
-   m_objectList[uiObjectPos]->GetPosInfo().m_uiTileX = g_uiTileNotAPos;
-   m_objectList[uiObjectPos]->GetPosInfo().m_uiTileY = g_uiTileNotAPos;
+   m_objectList[uiObjectPos]->GetPosInfo().m_uiTileX = c_uiTileNotAPos;
+   m_objectList[uiObjectPos]->GetPosInfo().m_uiTileY = c_uiTileNotAPos;
 
    // first item?
    if (uiLink == uiObjectPos)

@@ -43,7 +43,7 @@ void ObjectInfo::Load(Base::Savegame& sg)
    // read basic object info
    m_uiItemID = sg.Read16();
 
-   if (m_uiItemID == g_uiItemIDNone)
+   if (m_uiItemID == c_uiItemIDNone)
       return; // nothing more to read
 
    m_uiLink = sg.Read16();
@@ -63,7 +63,7 @@ void ObjectInfo::Save(Base::Savegame& sg) const
    // write basic object info
    sg.Write16(m_uiItemID);
 
-   if (m_uiItemID == g_uiItemIDNone)
+   if (m_uiItemID == c_uiItemIDNone)
       return; // nothing more to write
 
    sg.Write16(m_uiLink);
@@ -156,14 +156,14 @@ void Object::Load(Base::Savegame& sg)
 void Object::Save(Base::Savegame& sg) const
 {
    m_objInfo.Save(sg);
-   if (m_objInfo.m_uiItemID != g_uiItemIDNone)
+   if (m_objInfo.m_uiItemID != c_uiItemIDNone)
       m_posInfo.Save(sg);
 }
 
 void NpcObject::Load(Base::Savegame& sg)
 {
    Object::Load(sg);
-   if (m_objInfo.m_uiItemID != g_uiItemIDNone)
+   if (m_objInfo.m_uiItemID != c_uiItemIDNone)
       m_npcInfo.Load(sg);
 }
 

@@ -41,10 +41,10 @@ namespace Underworld
 {
 
 //! item id for unused object
-const Uint16 g_uiItemIDNone = 0xffff;
+const Uint16 c_uiItemIDNone = 0xffff;
 
 //! tile coordinate for "not a position"
-const Uint8 g_uiTileNotAPos = 0xff;
+const Uint8 c_uiTileNotAPos = 0xff;
 
 // enums
 
@@ -63,7 +63,7 @@ struct ObjectInfo
 {
    //! ctor
    ObjectInfo()
-      :m_uiItemID(g_uiItemIDNone),
+      :m_uiItemID(c_uiItemIDNone),
       m_uiLink(0), // equal to g_uiObjectListPosNone
       m_uiQuality(0),
       m_uiOwner(0),
@@ -102,8 +102,8 @@ struct ObjectPositionInfo
       m_ypos(0),
       m_zpos(0),
       m_uiHeading(0),
-      m_uiTileX(g_uiTileNotAPos),
-      m_uiTileY(g_uiTileNotAPos)
+      m_uiTileX(c_uiTileNotAPos),
+      m_uiTileY(c_uiTileNotAPos)
    {
    }
 

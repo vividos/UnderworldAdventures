@@ -88,7 +88,7 @@ void ObjectListLoader::FollowLink(Uint16 uiLink, Uint8 xpos, Uint8 ypos)
          Underworld::ObjectPositionInfo& posInfo = m_objectList.GetObject(uiLink)->GetPosInfo();
 
          // object already has valid tile coordinates?
-         if (posInfo.m_xpos == Underworld::g_uiTileNotAPos && posInfo.m_ypos == Underworld::g_uiTileNotAPos)
+         if (posInfo.m_xpos == Underworld::c_uiTileNotAPos && posInfo.m_ypos == Underworld::c_uiTileNotAPos)
          {
             // no, so set them
             posInfo.m_xpos = xpos;
@@ -113,7 +113,7 @@ void ObjectListLoader::FollowLink(Uint16 uiLink, Uint8 xpos, Uint8 ypos)
       {
          Uint16 uiQuantity = obj->GetObjectInfo().m_uiQuantity;
          if (uiQuantity != 0)
-            FollowLink(uiQuantity, Underworld::g_uiTileNotAPos, Underworld::g_uiTileNotAPos);
+            FollowLink(uiQuantity, Underworld::c_uiTileNotAPos, Underworld::c_uiTileNotAPos);
       }
 
       uiLink = obj->GetObjectInfo().m_uiLink;
