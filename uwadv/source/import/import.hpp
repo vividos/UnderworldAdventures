@@ -54,6 +54,7 @@ namespace Underworld
    class LevelList;
    class ObjectList;
    class Tilemap;
+   class Player;
 }
 
 //! import classes \ingroup import
@@ -99,7 +100,7 @@ public:
    //! loads uw2 levels into level list
    void LoadUw2Levels(Underworld::LevelList& levelList);
 
-protected:
+private:
    //! common uw1 and uw2 level loading
    void LoadUwLevels(Underworld::LevelList& levelList, bool bUw2Mode,
       unsigned int uiNumLevels, unsigned int uiTexMapOffset);
@@ -115,7 +116,7 @@ protected:
    void LoadObjectList(Underworld::ObjectList& objectList, const TileStartLinkList& tileStartLinkList,
       std::vector<Uint16>& vecTextureMapping);
 
-protected:
+private:
    //! resource manager
    Base::ResourceManager& m_resourceManager;
 
@@ -123,6 +124,21 @@ protected:
    Base::File m_file;
 };
 
+
+//! imports levels
+class PlayerImporter: public Base::NonCopyable
+{
+public:
+   //! ctor
+   PlayerImporter(Base::ResourceManager& resourceManager):m_resourceManager(resourceManager){}
+
+   //! loads player and inventory
+   void LoadPlayer(Underworld::Player& player, const std::string& strPath);
+
+private:
+   //! resource manager
+   Base::ResourceManager& m_resourceManager;
+};
 
 
 #if 0
@@ -142,9 +158,6 @@ public:
    //! loads underworld objects from folder
    void load_underworld(ua_underworld& underw, ua_settings& settings,
       const char* folder, bool initial);
-
-   //! loads player info
-   void load_player(ua_player& player, const char* path);
 
    //! loads conversation globals
    void load_conv_globals(ua_conv_globals& globals, ua_settings& settings,

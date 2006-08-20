@@ -26,4 +26,5 @@ libimport_la_SOURCES = \
    levelloader.cpp \
    maploader.cpp \
    objloader.cpp \
-   proploader.cpp
+   proploader.cpp \
+   playerimport.cpp
