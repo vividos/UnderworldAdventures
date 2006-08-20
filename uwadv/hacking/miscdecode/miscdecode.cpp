@@ -1,6 +1,6 @@
 /*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
+   Underworld Adventures - an Ultima Underworld remake project
+   Copyright (c) 2002-2006 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -167,11 +167,11 @@ int main(int argc, char* argv[])
       for(int i=0; i<entries; i++)
       {
          unsigned short mass,value,unknown1,unknown2;
-         unsigned char armour,flags,scale;
+         unsigned char height,flags,scale;
 
          int pos = ftell(fd);
 
-         armour = fgetc(fd);
+         height = fgetc(fd);
          fread(&mass,2,1,fd);
          flags = fgetc(fd);
          fread(&value,2,1,fd);
@@ -179,9 +179,14 @@ int main(int argc, char* argv[])
          scale = fgetc(fd);
          fread(&unknown2,2,1,fd);
 
-         fprintf(out,"%03x: armour=%02x mass=%03x stuff2=%01x flags=%02x value=%04x "
+         fprintf(out,"%03x: height=%02x mass=%03x stuff2=%01x anim=%01x "
+            "3dobj=%01x decal=%01x pickup=%01x cont=%01x magic=%01x bit6=%01x "//"flags=%02x "
+            "value=%04x "
             "unknown1=%04x scale=%02x unknown2=%04x name=%s\n",
-            i,armour,mass>>4,mass&15,flags,value,unknown1,scale,unknown2,
+            i,height,mass>>4,mass&7,(mass>>3)&1,
+            flags&7, (flags>>4)&1, (flags>>5)&1, (flags>>7)&1, (flags>>3)&1, (flags>>6)&1,
+            value,
+            unknown1,scale,unknown2,
             gs.get_string(4,i).c_str() );
 
          pos = ftell(fd) - pos;
@@ -278,13 +283,25 @@ int main(int argc, char* argv[])
       }
 
       fseek(fd,0x0d62,SEEK_SET);
-      fprintf(out,"lighting and food info table\n\n");
+      fprintf(out,"lighting info table\n\n");
 
       {
          for(int i=0x90; i<0xa0; i++)
          {
             fprintf(out,"%02x: brightness=%02x duration=%02x name=%s\n",
                i,fgetc(fd),fgetc(fd),gs.get_string(4,i).c_str());
+         }
+         fprintf(out,"\n");
+      }
+
+      fseek(fd,0x0d82,SEEK_SET);
+      fprintf(out,"jewelry and food info table\n\n");
+
+      {
+         for(int i=0xa0; i<0xc0; i++)
+         {
+            fprintf(out,"%02x: unk1=%02x name=%s\n",
+               i,fgetc(fd),gs.get_string(4,i).c_str());
          }
          fprintf(out,"\n");
       }
@@ -298,9 +315,9 @@ int main(int argc, char* argv[])
          {
             fread(buffer,1,4,fd);
 
-            fprintf(out,"%04x: startframe=%02x numframes=%02x unknown1=%02x unknown2=%02x "
+            fprintf(out,"%04x: startframe=%02x numframes=%02x unknown0=%02x unknown1=%02x "
                "name=%s\n",
-               i,buffer[1],buffer[2],buffer[0],buffer[3],
+               i,buffer[2],buffer[3],buffer[0],buffer[1],
                gs.get_string(4,i).c_str());
          }
       }
