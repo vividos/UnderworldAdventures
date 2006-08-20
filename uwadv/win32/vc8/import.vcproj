@@ -198,13 +198,10 @@
 			<File
 				RelativePath="..\..\source\import\objloader.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\source\import\playerimport.cpp"
+				>
 			</File>
 			<File
 				RelativePath="..\..\source\import\proploader.cpp"
