@@ -32,6 +32,7 @@
 #include "import.hpp"
 #include "properties.hpp"
 #include "levellist.hpp"
+#include "player.hpp"
 
 namespace UnitTest
 {
@@ -45,11 +46,13 @@ public:
    CPPUNIT_TEST_SUITE(TestImport)
       CPPUNIT_TEST(TestObjectPropertiesImport)
       CPPUNIT_TEST(TestLevelListImport)
+//      CPPUNIT_TEST(TestPlayerImport)
    CPPUNIT_TEST_SUITE_END()
 
 protected:
    void TestObjectPropertiesImport();
    void TestLevelListImport();
+   void TestPlayerImport();
 };
 
 // register test suite
@@ -160,5 +163,29 @@ void TestImport::TestLevelListImport()
       levelImporter.LoadUw2Levels(levelList);
 
       UaAssert(levelList.GetNumLevels() == 80);
+   }
+}
+
+/*! Tests loading player infos */
+void TestImport::TestPlayerImport()
+{
+   Base::Settings& settings = GetTestSettings();
+
+   {
+      Base::ResourceManager resourceManager(settings);
+
+      Underworld::Player player;
+
+      Import::PlayerImporter playerImporter(resourceManager);
+      playerImporter.LoadPlayer(player, settings.GetString(Base::settingUw1Path));
+   }
+
+   {
+      Base::ResourceManager resourceManager(settings);
+
+      Underworld::Player player;
+
+      Import::PlayerImporter playerImporter(resourceManager);
+      playerImporter.LoadPlayer(player, settings.GetString(Base::settingUw2Path));
    }
 }
