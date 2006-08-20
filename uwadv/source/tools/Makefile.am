@@ -13,24 +13,24 @@ LDFLAGS = @LIBS@
 
 SUBDIRS = . uwdump
 
-if BUILD_TOOLS
- noinst_PROGRAMS = cnvdbg xmi2mid mapdisp animview strpak uwmdlview
- noinst_LTLIBRARIES = libuatools.la
-else
- noinst_PROGRAMS =
- noinst_LTLIBRARIES =
-endif
+#if BUILD_TOOLS
+# noinst_PROGRAMS = cnvdbg xmi2mid mapdisp animview strpak uwmdlview
+# noinst_LTLIBRARIES = libuatools.la
+#else
+# noinst_PROGRAMS =
+# noinst_LTLIBRARIES =
+#endif
 
 # Makefile.common defines all the _SOURCES
-include Makefile.common
+#include Makefile.common
 
-if BUILD_TOOLS
- cnvdbg_LDADD = -luatools
- mapdisp_LDADD = -luatools
- animview_LDADD = -luatools
- strpak_LDADD = -luatools
- uwmdlview_LDADD = -luatools
-endif
+#if BUILD_TOOLS
+# cnvdbg_LDADD = -luatools
+# mapdisp_LDADD = -luatools
+# animview_LDADD = -luatools
+# strpak_LDADD = -luatools
+# uwmdlview_LDADD = -luatools
+#endif
 
 EXTRA_DIST = Makefile.common \
 	map3ds.cpp \
