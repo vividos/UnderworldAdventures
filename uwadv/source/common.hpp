@@ -1,6 +1,6 @@
 /*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
+   Underworld Adventures - an Ultima Underworld remake project
+   Copyright (c) 2002,2003,2004,2005,2006 Underworld Adventures Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -50,10 +50,11 @@
 
 
 // uwadv includes
-#include "utils.hpp"
-#include "uamath.hpp"
-#include "settings.hpp"
-#include "game_interface.hpp"
+#include "base.hpp"
+//#include "utils.hpp"
+//#include "uamath.hpp"
+//#include "settings.hpp"
+//#include "game_interface.hpp"
 
 
 #endif
