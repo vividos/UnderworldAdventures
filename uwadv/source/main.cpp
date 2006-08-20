@@ -33,6 +33,7 @@
 
 // needed includes
 #include "base.hpp"
+#include <SDL_main.h>
 //#include "uwadv.hpp"
 
 
