@@ -324,3 +324,48 @@ void AudioManager::StopMusic()
 
    m_apData->GetMidiPlayer().Stop();
 }
+
+/*
+void DumpChunk(const char* soundname, Mix_Chunk* mc)
+{
+   std::string filename;
+   filename = "d:\\uw1_";
+   filename += soundname;
+   filename += ".wav";
+
+   unsigned int srclen = mc->alen/2;
+   Sint16* samples = reinterpret_cast<Sint16*>(mc->abuf);
+
+   // prepare data bytes array for wave file
+   unsigned int uiFileSize = 12+24+8 + srclen*sizeof(Sint16);
+
+   unsigned int m_uiSamplerate = 44100;
+
+   SDL_RWops* rwops = SDL_RWFromFile(filename.c_str(), "wb");
+
+   // header: 12 bytes
+   SDL_RWwrite(rwops, "RIFF", 4, 1);
+   SDL_WriteLE32(rwops, uiFileSize-8);
+   SDL_RWwrite(rwops, "WAVE", 4, 1);
+
+   // format chunk: 24 bytes
+   SDL_RWwrite(rwops, "fmt ", 4, 1);
+   SDL_WriteLE32(rwops, 16);
+   SDL_WriteLE16(rwops, 1); // wFormatTag
+   SDL_WriteLE16(rwops, 1); // wChannels
+   SDL_WriteLE32(rwops, m_uiSamplerate); // dwSamplesPerSec
+   SDL_WriteLE32(rwops, m_uiSamplerate*sizeof(Sint16)); // dwAvgBytesPerSec = dwSamplesPerSec * wBlockAlign
+   SDL_WriteLE16(rwops, sizeof(Sint16)); // wBlockAlign = wChannels * (wBitsPerSample / 8)
+   SDL_WriteLE16(rwops, sizeof(Sint16)*8); // wBitsPerSample
+
+   // data chunk: 8 + numsamples*sizeof(Sint16) bytes
+   SDL_RWwrite(rwops, "data", 4, 1);
+   unsigned int uiSize = srclen;
+   SDL_WriteLE32(rwops, uiSize*sizeof(Sint16)); // size
+
+   for(unsigned int ui=0; ui<uiSize; ui++)
+      SDL_WriteLE16(rwops, samples[ui]);
+
+   SDL_RWclose(rwops);
+}
+*/
