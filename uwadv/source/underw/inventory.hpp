@@ -1,6 +1,6 @@
 /*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+   Underworld Adventures - an Ultima Underworld remake project
+   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -21,101 +21,191 @@
 */
 /*! \file inventory.hpp
 
-   \brief inventory representation
+   \brief inventory
 
 */
-//! \ingroup underworld
-
-//@{
 
 // include guard
-#ifndef uwadv_inventory_hpp_
-#define uwadv_inventory_hpp_
+#ifndef uwadv_underw_inventory_hpp_
+#define uwadv_underw_inventory_hpp_
 
 // needed includes
 #include <vector>
-#include "objects.hpp"
+#include "object.hpp"
 
-
-// forward declarations
-class ua_underworld;
-
-
-// constants
-
-//! item position or item id that indicates "no item"
-const Uint16 ua_slot_no_item = 0xffff;
-
-
-// enums
-
-//! inventory slot enum
-enum ua_inv_paperdoll_slots
+namespace Base
 {
-   ua_slot_topmost_first_item=0, // topmost inventory; first item list pos
+   class Savegame;
+}
 
-   ua_slot_lefthand=8,
-   ua_slot_righthand,
-   ua_slot_leftshoulder,
-   ua_slot_rightshoulder,
+namespace Underworld
+{
 
-   ua_slot_leftfinger,
-   ua_slot_rightfinger,
+//! inventory position that indicates "no item"
+const Uint16 c_uiInventorySlotNoItem = 0xffff;
 
-   ua_slot_paperdoll_legs,
-   ua_slot_paperdoll_chest,
-   ua_slot_paperdoll_hands,
-   ua_slot_paperdoll_feet,
-   ua_slot_paperdoll_head,
 
-   ua_slot_max,            // from here on indices in itemlist are free
+//! inventory slot
+enum EInventoryPaperdollSlot
+{
+   slotTopmostFirstItem = 0, // topmost inventory; first item list pos
 
-   ua_slot_paperdoll_start=ua_slot_paperdoll_legs
+   slotLeftHand = 8,
+   slotRightHand,
+   slotLeftShoulder,
+   slotRightShoulder,
+
+   slotLeftFinger,
+   slotRightFinger,
+
+   slotPaperdollLegs,
+   slotPaperdollChest,
+   slotPaperdollHands,
+   slotPaperdollFeet,
+   slotPaperdollHead,
+
+   slotMax,                // from here on indices in object list are free
+
+   slotPlayerObjectsStart = slotLeftHand, // first slot with objects held by player
+   slotPaperdollStart = slotPaperdollLegs // first slot with paperdoll objects
 };
-
 
 // classes
 
-//! inventory class
-class ua_inventory
+//! Inventory
+/*! The inventory is organized as a list with object infos held in an ObjectInfo
+    struct. The first 8 entries in this list are the items in the topmost
+    inventory view (where you usually place bags and other containers). The
+    next entries are for the paperdoll object on the paperdoll. After these
+    the list for objects in containers start; this area is used dynamically to
+    store object infos.
+
+    When entering containers, a stack with containers previously opened is
+    managed to let the user return to the container above.
+
+    The inventory objects of the current container is given as a "slot list"
+    that contains all objects that are currently visible. The slot list can
+    have various lengths. When in the top inventory, there are 8 fixed slots.
+    When in a container that e.g. only supports n slots, the list can only get
+    as long as n slots.
+
+    The inventory also manages a single object that can float above the other
+    icons, e.g. for reordering inventory or for dropping into the underworld.
+*/
+class Inventory
 {
 public:
    //! ctor
-   ua_inventory(){}
+   Inventory();
 
-   //! initializes inventory
-   void init(ua_underworld* underw);
+   //! create inventory
+   void Create();
 
-   // common functionality
+   //! destroys inventory contents
+   void Destroy();
 
-   //! retrieves an item from an object
-   ua_object_info& get_item(Uint16 index);
+   // object handling
 
-   //! calculates weight of inventory in stones
-   double get_inventory_weight();
+   //! allocates a new object slot
+   Uint16 Allocate();
 
-   // container functionality
+   //! frees object slot
+   void Free(Uint16 uiPos);
 
-   //! returns number of slots
-   unsigned int get_num_slots();
+   //! retrieves an object from the list
+   ObjectInfo& GetObject(Uint16 uiIndex)
+   {
+      UaAssert(uiIndex < m_vecObjectList.size());
+      return m_vecObjectList[uiIndex];
+   }
 
-   //! returns position of one of the item slots
-   Uint16 get_slot_item(unsigned int index);
+   //! retrieves an object from the list
+   const ObjectInfo& GetObject(Uint16 uiIndex) const
+   {
+      UaAssert(uiIndex < m_vecObjectList.size());
+      return m_vecObjectList[uiIndex];
+   }
 
-   //! returns current container item pos, or ua_slot_no_item when topmost
-   Uint16 get_container_item();
+   // slot list handling
 
-   //! returns current container item id, or ua_slot_no_item when topmost
-   Uint16 get_container_item_id();
+   //! returns number of slots in list
+   unsigned int GetNumSlots() const { return m_vecSlotList.size(); }
 
-   //! returns true if the given item id is a container
-   bool is_container(Uint16 item_id);
+   //! returns object position of object stored in one of the slots
+   Uint16 GetSlotListPos(unsigned int uiIndex) const;
 
-   //! opens a container and sets it as current
-   void open_container(Uint16 index);
+   // container handling
+
+   //! returns true if the given item id is a container item
+   bool IsContainer(Uint16 uiItemID) const;
+
+   //! returns current container object position, or c_uiInventorySlotNoItem when topmost
+   Uint16 GetContainerPos() const;
+
+   //! returns container object position of parent, or c_uiInventorySlotNoItem when topmost
+   Uint16 GetParentContainerPos() const;
+
+   //! opens a container and sets it as current container
+   void OpenContainer(Uint16 uiPos);
 
    //! closes current container and enables the previous one
-   void close_container();
+   void CloseContainer();
+
+   //! adds object to container
+   bool AddToContainer(Uint16& uiPos, Uint16 uiContainerPos);
+
+   //! removes object from container
+   void RemoveFromContainer(Uint16 uiPos, Uint16 uiContainerPos);
+
+   // floating item support
+
+   //! returns position of currently floating item, or c_uiInventorySlotNoItem when none
+   Uint16 GetFloatingObjectPos() const { return m_uiFloatingObjectPos; }
+
+   //! makes an object in the inventory "floating"
+   bool FloatObject(Uint16 uiPos);
+
+   //! drops floating object into container given by container position
+   bool DropFloatingObject(Uint16 uiContainerPos, Uint16 uiObjectIndex = c_uiInventorySlotNoItem);
+
+   // loading / saving
+
+   //! loads inventory from savegame
+   void Load(Base::Savegame& sg);
+
+   //! saves inventory to savegame
+   void Save(Base::Savegame& sg) const;
+
+private:
+   //! builds new slot list from given container link
+   void BuildSlotList(Uint16 uiLink);
+
+   //! drops floating object on given one
+   bool DropOnObject(Uint16 uiContainerPos, Uint16 uiPos);
+
+private:
+   //! object list
+   std::vector<ObjectInfo> m_vecObjectList;
+
+   //! list with all objects in current slot list
+   std::vector<Uint16> m_vecSlotList;
+
+   //! stack with currently opened containers (stored as object list position)
+   std::vector<Uint16> m_vecContainerStack;
+
+   //! floating object position
+   Uint16 m_uiFloatingObjectPos;
+};
+
+#if 0
+// classes
+
+//! inventory
+class Inventory
+{
+public:
+   //! calculates weight of inventory in stones
+   double get_inventory_weight();
 
    //! calculates weight of items in given container in stones
    double get_container_weight(Uint16 cont_pos);
@@ -143,44 +233,16 @@ public:
    //! inserts new item and makes it floating; returns itemlist pos
    Uint16 insert_floating_item(ua_object_info& objinfo);
 
-   // loading / saving
-
-   //! loads a savegame
-   void load_game(ua_savegame& sg);
-
-   //! saves to a savegame
-   void save_game(ua_savegame& sg);
-
 protected:
-   //! builds new slot link list
-   void build_slot_link_list(Uint16 link);
-
-   //! allocates a new item; returns ua_slot_no_item when no itemlist position is free
-   Uint16 allocate_item();
-
    //! removes an object from current inventory by unlinking it
    void unlink_object(Uint16 item);
 
    //! appends item to link1'ed container list
    void append_item(Uint16 cont, Uint16 item);
-
-protected:
-   //! underworld object
-   ua_underworld* underw;
-
-   //! item list
-   std::vector<ua_object_info> itemlist;
-
-   //! slot links of current items
-   std::vector<Uint16> slot_links;
-
-   //! stack with currently opened container
-   std::vector<Uint16> container_stack;
-
-   //! link to floating object
-   Uint16 floating_object;
 };
 
+#endif
+
+} // namespace Underworld
 
 #endif
-//@}
