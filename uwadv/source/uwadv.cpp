@@ -1,6 +1,6 @@
 /*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
+   Underworld Adventures - an Ultima Underworld remake project
+   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,17 +26,14 @@
 */
 
 // needed includes
-#include "common.hpp"
+#include "base.hpp"
+/*
 #include "uwadv.hpp"
 #include "gamecfg.hpp"
 #include "screens/uwadv_menu.hpp"
 #include "screens/ingame_orig.hpp"
 #include "screens/start_splash.hpp"
 #include <ctime>
-
-#ifdef HAVE_UNITTEST
-#include "unittest.hpp"
-#endif
 
 
 #define HAVE_FRAMECOUNT
@@ -753,3 +750,4 @@ void ua_uwadv_game::remove_screen()
    event.user.code = ua_event_destroy_screen;
    SDL_PushEvent(&event);
 }
+*/
