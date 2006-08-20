@@ -21,6 +21,7 @@
 # $Id$
 #
 
+# Note: The order of the subdirs should match the order of the libraries that have to be built.
 SUBDIRS = base audio underw import unittest win32
 # conv debug renderer resource screens script tools uastudio ui 
 
