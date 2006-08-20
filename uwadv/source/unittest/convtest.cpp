@@ -1,6 +1,6 @@
 /*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2005 Underworld Adventures Team
+   Underworld Adventures - an Ultima Underworld remake project
+   Copyright (c) 2005,2006 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ protected:
 };
 
 // register test suite
-CPPUNIT_TEST_SUITE_REGISTRATION(ua_test_conv_regression);
+CPPUNIT_TEST_SUITE_REGISTRATION(ua_test_conv_regression)
 
 
 // methods
