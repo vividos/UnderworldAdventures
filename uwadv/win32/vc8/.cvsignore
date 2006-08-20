@@ -4,4 +4,7 @@ Debug
 Release
 audio.vcproj.*.user
 base.vcproj.*.user
+import.vcproj.*.user
+underw.vcproj.*.user
 unittest.vcproj.*.user
+temp-unittest
