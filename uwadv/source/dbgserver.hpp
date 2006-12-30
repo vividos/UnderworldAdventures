@@ -48,6 +48,9 @@ const unsigned int ua_debug_server_interface_version = 1;
 //! debug server message types; usable in ua_debug_server_message::msg_type
 enum ua_debug_server_message_type
 {
+   //! a code debugger message
+//   ua_msg_code_debugger=0,
+
    //! a message to shutdown the debugger
    ua_msg_shutdown=0,
 
@@ -62,6 +65,17 @@ enum ua_debug_server_message_type
    //! a code debugger has updated his debug state
    /*! msg_arg1 contains the code debugger handle */
    ua_msg_code_debugger_state_update,
+
+   //! a code debugger has started
+   /*! msg_arg1 contains the code debugger handle */
+   ua_msg_start_code_debugger,
+
+   //! a code debugger has ended
+   /*! msg_arg1 contains the code debugger handle */
+   ua_msg_end_code_debugger,
+
+   //! miscellaneous message
+   ua_msg_misc,
 
    //! unknown message
    ua_msg_unknown,
@@ -164,6 +178,8 @@ struct ua_debug_code_breakpoint_info
 class ua_debug_code_interface
 {
 public:
+   virtual unsigned int get_breakpoint_num()=0;
+
    //! returns code debugger type
    virtual ua_debug_code_debugger_type get_debugger_type()=0;
 
