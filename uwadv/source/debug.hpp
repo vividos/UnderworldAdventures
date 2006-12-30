@@ -119,6 +119,12 @@ public:
    //! ends code debugging
    void end_code_debugger(ua_debug_code_interface* code_debugger);
 
+   //! starts code debugger
+   void start_code_debugger(ua_debug_code_interface* code_debugger);
+
+   //! ends code debugging
+   void end_code_debugger(ua_debug_code_interface* code_debugger);
+
    //! sends code debugger update message
    void send_code_debugger_status_update(unsigned int debugger_id);
 
@@ -184,6 +190,9 @@ protected:
 
    virtual bool get_object_list_imagelist(unsigned int& num_objects,
       unsigned char* buffer, unsigned int size);
+
+   //! adds message to client message queue
+   void add_message(ua_debug_server_message& msg);
 
    virtual ua_debug_code_interface* get_code_debugger(unsigned int debugger_id);
 

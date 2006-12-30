@@ -200,7 +200,7 @@ void ua_debug_server::shutdown()
 
       lock(true);
       message_queue.clear();
-      add_message(msg);
+       add_message(msg);
       lock(false);
 
       // wait for thread
@@ -235,6 +235,54 @@ int ua_debug_server::thread_proc(void* ptr)
    return 0;
 }
 
+void ua_debug_server::start_code_debugger(ua_debug_code_interface* code_debugger)
+{
+   unsigned int debugger_id = ++last_code_debugger_id;
+
+   // send "start" message
+   ua_debug_server_message msg;
+   msg.msg_type = ua_msg_start_code_debugger;
+   msg.msg_arg1 = debugger_id;
+
+   lock(true);
+   add_message(msg);
+
+   all_code_debugger.insert(std::make_pair<unsigned int, ua_debug_code_interface*>(debugger_id, code_debugger));
+
+   lock(false);
+}
+
+void ua_debug_server::end_code_debugger(ua_debug_code_interface* code_debugger)
+{
+   lock(true);
+
+   // search code debugger in map
+   std::map<unsigned int, ua_debug_code_interface*>::iterator iter, stop;
+   iter = all_code_debugger.begin();
+   stop = all_code_debugger.end();
+
+   unsigned int debugger_id = 0;
+   for(; iter != stop; iter++)
+   {
+      if (iter->second == code_debugger)
+      {
+         debugger_id = iter->first;
+
+         all_code_debugger.erase(iter);
+         break;
+      }
+   }
+
+   ua_assert(iter != stop); // assert when pointer was not found
+
+   // send "end" message
+   ua_debug_server_message msg;
+   msg.msg_type = ua_msg_end_code_debugger;
+   msg.msg_arg1 = debugger_id;
+
+   add_message(msg);
+   lock(false);
+}
 
 void ua_debug_server::start_code_debugger(ua_debug_code_interface* code_debugger)
 {
