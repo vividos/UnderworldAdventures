@@ -217,6 +217,11 @@ void ua_conversation_screen::init()
       std::vector<std::string> localstrings;
       game.get_gamestrings().get_stringblock(code_vm.get_strblock(), localstrings);
 
+      code_vm.init(this,game.get_underworld().get_conv_globals());
+
+      // notify debugger of start of code debugger
+      game.get_debugger().start_code_debugger(&code_vm);
+
       unsigned int level = game.get_underworld().get_player().get_attr(ua_attr_maplevel);
       code_vm.init(level, objpos, game, this, localstrings);
    }
@@ -232,7 +237,11 @@ void ua_conversation_screen::init()
 
 void ua_conversation_screen::destroy()
 {
-   code_vm.done(game);
+   // notify debugger of end of code debugger
+   game.get_debugger().end_code_debugger(&code_vm);
+
+   // write back conv. globals
+   code_vm.done(game.get_underworld().get_conv_globals());
 
    ua_trace("conversation screen ended\n\n");
 }
