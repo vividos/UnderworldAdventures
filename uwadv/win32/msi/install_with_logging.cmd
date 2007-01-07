@@ -1,0 +1,1 @@
+msiexec.exe /i uwadv.msi /l*vx D:\uwadv\uwadv\win32\msi\install-log.txt
