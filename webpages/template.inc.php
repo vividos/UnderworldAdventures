@@ -13,6 +13,15 @@ function template_head()
  <meta name="author" content="Michael Fink"/>
  <meta name="keywords" content="ultima underworld adventures uw1 hack project"/>
  <link rel="icon" href="favicon.ico" type="image/x-icon"/>
+<?php
+   if ($page == "" || $page == "news")
+   {
+?>
+ <link rel="alternate" type="application/rss+xml"
+   title="Underworld Adventures News" href="http://uwadv.sourceforge.net/index.php?page=rss"/>
+<?php
+   }
+?>
  <style type="text/css">
 
   body { color:black; background-color:white; }
@@ -86,7 +95,7 @@ function template_body_menu()
     * <a href="index.php?page=devlog">dev log</a><br/>
     * <a href="http://lists.sourceforge.net/lists/listinfo/uwadv-devel">mailing list</a><br/>
     * <a href="http://sourceforge.net/tracker/?group_id=50987&amp;atid=461662">bug tracker</a><br/>
-    * <a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/uwadv/uwadv/" target="_blank">view cvs</a><br/>
+    * <a href="http://uwadv.cvs.sourceforge.net/uwadv/" target="_blank">view cvs</a><br/>
     * <a href="index.php?page=irc">#uwadv channel</a>
    </p>
 
