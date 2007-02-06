@@ -4,6 +4,22 @@
 Here are listed older news bits that were once on the main news page. They are here for history purposes; note that some links may be outdated.
 </p>
 
+<span class="newsHeading">2006-04-17 - Project status</span>
+
+<p class="newsBody">
+As some ask about the status of Underworld Adventures and if it's abandoned, I thought I post a new project news item to give a status update of the project.
+</p>
+
+<p class="newsBody">
+The current release is the 0.9 release from two years ago. There was some work in CVS until the end of 2005, including a Mac OS X port, but nothing releaseable. In the beginning of 2006 I decided to rewrite the game, using the algorithms and functions already in uwadv. Until now I've rewritten about 20% of the classes in uwadv. Additonally unit tests were added for every class in uwadv, to ensure code stability.
+</p>
+  
+<p class="newsBody">
+I expect that I have something releaseable by the end of the year (2006, that is!), but until then there won't be any releases that can be tried out. For an alpha version of the game, try out the latest release: <a href="index.php?page=download">0.9 "mojito"</a>.
+</p>
+
+<hr size="1" width="80%"/>
+
 <span class="newsHeading">2004-10-12 - Developer Log updated; RSS feed available</span>
 
 <p class="newsBody">

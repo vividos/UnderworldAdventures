@@ -8,18 +8,19 @@ Welcome to the Underworld Adventures home page. Underworld Adventures is a proje
 <h2>Project News</h2>
 
 <div id="entry">
-  <div id="heading" class="newsHeading">2006-04-17 - Project status</div>
-
+  <div id="heading" class="newsHeading">2007-02-06 - Project discontinued</div>
   <p class="newsBody">
-  As some ask about the status of Underworld Adventures and if it's abandoned, I thought I post a new project news item to give a status update of the project.
+  I'm sorry to say that the current status of the Underworld Adventures project is "inactive".
+  I didn't find enough time in the last few months and years to productively work on the
+  project. Another thing that slowed me down a bit is the fact that it should be possible
+  without much work to get Ultima Underworld 1 and 2 to run on Windows XP and later (via the
+  proper settings), using DosBox under non-Windows operating systems, or with using VMware
+  (Player) to emulate the old operating systems.
   </p>
-
   <p class="newsBody">
-  The current release is the 0.9 release from two years ago. There was some work in CVS until the end of 2005, including a Mac OS X port, but nothing releaseable. In the beginning of 2006 I decided to rewrite the game, using the algorithms and functions already in uwadv. Until now I've rewritten about 20% of the classes in uwadv. Additonally unit tests were added for every class in uwadv, to ensure code stability.
-  </p>
-  
-  <p class="newsBody">
-   I expect that I have something releaseable by the end of the year (2006, that is!), but until then there won't be any releases that can be tried out. For an alpha version of the game, try out the latest release: <a href="index.php?page=download">0.9 "mojito"</a>.
+  Nevertheless Underworld Adventures was a fun project and I learned much about open source
+  development, licenses, people, doing script and graphics programming. Hope you enjoyed trying
+  the early versions of Underworld Adventures!
   </p>
 </div>
 
