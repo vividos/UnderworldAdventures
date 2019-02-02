@@ -46,8 +46,8 @@ zzip_off_t	zzip_wrap_lseek(int fd, zzip_off_t offset, int whence)
 
 static const struct zzip_plugin_io default_io =
 {
-    &open,
-    &close,
+    &_open,
+    &_close,
     &zzip_wrap_read,
     &zzip_wrap_lseek,
     &zzip_filesize,
