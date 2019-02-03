@@ -5,8 +5,7 @@
                         http://uwadv.sourceforge.net/
  +--------------------------------------------------------------------------+
 
-Document version:
-   $Id$
+Document version: 1.68, as of 2006-04-11
 
 
 Table of Contents
