@@ -18,4 +18,6 @@ del %OUTDIR%libvorbis-0.dll 2> nul
 del %OUTDIR%libvorbisfile-3.dll 2> nul
 del %OUTDIR%SDL2_mixer.dll 2> nul
 
+del zlib1.dll 2> nul
+
 exit 0
