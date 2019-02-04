@@ -62,7 +62,7 @@ Base::SDL_RWopsPtr ResourceManager::GetResourceFile(const std::string& relativeF
    // first, we try to open the real file
    std::string filename = m_uadataPath + "/" + relativeFilename;
 
-   SDL_RWopsPtr rwops = SDL_RWopsPtr(SDL_RWFromFile(filename.c_str(), "rb"));
+   SDL_RWopsPtr rwops = MakeRWopsPtr(SDL_RWFromFile(filename.c_str(), "rb"));
 
    if (rwops.get() != NULL)
       return rwops; // found real file
@@ -80,7 +80,7 @@ Base::SDL_RWopsPtr ResourceManager::GetResourceFile(const std::string& relativeF
       // try to open from zip file
       std::string zipPath(fileList[i] + "/" + relativeFilename);
 
-      rwops = SDL_RWopsPtr(SDL_RWFromZZIP(zipPath.c_str(), "rb"));
+      rwops = MakeRWopsPtr(SDL_RWFromZZIP(zipPath.c_str(), "rb"));
       if (rwops.get() != NULL)
          break;
    }
@@ -108,7 +108,7 @@ Base::SDL_RWopsPtr ResourceManager::GetUnderworldFile(Base::EUnderworldResourceP
    if (!Base::FileSystem::FileExists(filename))
       throw Base::FileSystemException("couldn't find uw game file", filename, ENOENT);
 
-   return SDL_RWopsPtr(SDL_RWFromFile(filename.c_str(), "rb"));
+   return MakeRWopsPtr(SDL_RWFromFile(filename.c_str(), "rb"));
 }
 
 /// \todo implement mapping

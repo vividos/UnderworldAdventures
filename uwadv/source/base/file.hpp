@@ -25,7 +25,6 @@
 #include <SDL_types.h>
 #include <SDL_rwops.h>
 #include <SDL_endian.h>
-#include "smart_ptr.hpp"
 
 namespace Base
 {

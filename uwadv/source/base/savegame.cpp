@@ -170,7 +170,7 @@ Savegame::Savegame(const std::string& strFilename, const SavegameInfo& savegameI
    m_info(savegameInfo)
 {
    // use highest gz compression ratio
-   SDL_RWopsPtr rwops = SDL_RWopsPtr(SDL_RWFromGzFile(strFilename.c_str(), "wb9"));
+   SDL_RWopsPtr rwops = MakeRWopsPtr(SDL_RWFromGzFile(strFilename.c_str(), "wb9"));
    if (rwops.get() == NULL)
       throw Base::FileSystemException(c_savegameNotFound, strFilename, errno);
 
@@ -189,7 +189,7 @@ Savegame::Savegame(const std::string& strFilename)
    :m_isSaving(false),
    m_saveVersion(s_currentVersion)
 {
-   SDL_RWopsPtr rwops = SDL_RWopsPtr(SDL_RWFromGzFile(strFilename.c_str(), "rb"));
+   SDL_RWopsPtr rwops = MakeRWopsPtr(SDL_RWFromGzFile(strFilename.c_str(), "rb"));
    if (rwops.get() == NULL)
       throw Base::FileSystemException(c_savegameNotFound, strFilename, errno);
 

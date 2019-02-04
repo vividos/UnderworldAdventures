@@ -160,7 +160,7 @@ Base::File Base::Uw2Decode(const Base::File& file, bool isCompressed, Uint32 dat
    }
 
    // create rwops struct from decoded data
-   SDL_RWopsPtr rwops = SDL_RWopsPtr(SDL_RWFromMem(destBuffer, destSize));
+   SDL_RWopsPtr rwops = MakeRWopsPtr(SDL_RWFromMem(destBuffer, destSize));
 
    rwops->close = Detail::Uw2DecodeClose;
 

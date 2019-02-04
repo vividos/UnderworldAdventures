@@ -110,7 +110,6 @@
     <ClInclude Include="savegame.hpp" />
     <ClInclude Include="SDL_rwops_gzfile.h" />
     <ClInclude Include="settings.hpp" />
-    <ClInclude Include="smart_ptr.hpp" />
     <ClInclude Include="string.hpp" />
     <ClInclude Include="textfile.hpp" />
     <ClInclude Include="uw2decode.hpp" />

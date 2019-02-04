@@ -88,9 +88,6 @@
     <ClInclude Include="settings.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="smart_ptr.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="string.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>

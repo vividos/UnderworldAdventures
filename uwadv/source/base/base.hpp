@@ -124,7 +124,7 @@ namespace Base
 
 #include "exception.hpp"
 #include "string.hpp"
-#include "smart_ptr.hpp"
+#include <memory>
 #include <SDL_types.h>
 
 // forward reference
@@ -132,16 +132,12 @@ struct SDL_RWops;
 
 namespace Base
 {
-   /// delete functor for SDL_RWops struct ptr; used with Base::SmartPtr
-   class SDL_RWopsDeletor
-   {
-   public:
-      /// closes rwops file
-      void operator()(SDL_RWops* rwops);
-   };
-
    /// smart pointer to SDL_RWops struct
-   typedef SmartPtr<SDL_RWops, Base::SDL_RWopsDeletor> SDL_RWopsPtr;
+   typedef std::shared_ptr<SDL_RWops> SDL_RWopsPtr;
+
+   /// creates SDL_RWops shared ptr from pointer
+   SDL_RWopsPtr MakeRWopsPtr(SDL_RWops* rwops);
+
 
    // constants
 

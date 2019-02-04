@@ -368,7 +368,7 @@ void Keymap::Init(const Base::Settings& settings)
    Base::ConfigFile configFile;
    Base::ResourceManager resManager(settings);
    {
-      SDL_RWopsPtr rwops = SDL_RWopsPtr(resManager.GetResourceFile(keymapName));
+      SDL_RWopsPtr rwops = resManager.GetResourceFile(keymapName);
       if (rwops.get() == NULL)
          throw Base::FileSystemException("file not found", keymapName, ENOENT);
 
@@ -382,7 +382,7 @@ void Keymap::Init(const Base::Settings& settings)
    UaTrace(" keymap: %s", keymapName.c_str());
    if (Base::FileSystem::FileExists(keymapName))
    {
-      SDL_RWopsPtr rwops = SDL_RWopsPtr(SDL_RWFromFile(keymapName.c_str(), "rb"));
+      SDL_RWopsPtr rwops = MakeRWopsPtr(SDL_RWFromFile(keymapName.c_str(), "rb"));
       // note: this exception is only thrown if the file was deleted between two lines above and here
       if (rwops.get() == NULL)
          throw Base::FileSystemException("file not found", keymapName, ENOENT);

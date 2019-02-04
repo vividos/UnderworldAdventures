@@ -28,10 +28,16 @@
 #include <windows.h> // for OutputDebugStringA
 #endif
 
-void Base::SDL_RWopsDeletor::operator()(SDL_RWops* rwops)
+/// delete function for SDL_RWops shared ptr
+static void SDL_RWopsDeletor(SDL_RWops* rwops)
 {
    if (rwops != NULL)
       SDL_RWclose(rwops);
+}
+
+Base::SDL_RWopsPtr Base::MakeRWopsPtr(SDL_RWops* rwops)
+{
+   return Base::SDL_RWopsPtr(rwops, &SDL_RWopsDeletor);
 }
 
 /// Throws a RuntimeException after printing out the error on the trace channel.
