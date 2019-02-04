@@ -7,6 +7,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "source", "source", "{F4E92C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "hacking", "hacking", "{D099CDEB-6A21-4E5A-959B-2A3D39E2B6F0}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "base", "source\base\base.vcxproj", "{E1210703-9ADB-4ED7-AE0C-B7E39A15E01F}"
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zziplib", "source\thirdparty\zziplib\zziplib.vcxproj", "{BD30CDD7-5A97-40E6-AE94-2C671363D03C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "luac", "source\thirdparty\lua\luac.vcxproj", "{B32FCCB5-C0F4-41D7-B9E2-DD7EDBE2230A}"
@@ -25,6 +27,10 @@ Global
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E1210703-9ADB-4ED7-AE0C-B7E39A15E01F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E1210703-9ADB-4ED7-AE0C-B7E39A15E01F}.Debug|Win32.Build.0 = Debug|Win32
+		{E1210703-9ADB-4ED7-AE0C-B7E39A15E01F}.Release|Win32.ActiveCfg = Release|Win32
+		{E1210703-9ADB-4ED7-AE0C-B7E39A15E01F}.Release|Win32.Build.0 = Release|Win32
 		{BD30CDD7-5A97-40E6-AE94-2C671363D03C}.Debug|Win32.ActiveCfg = Debug|Win32
 		{BD30CDD7-5A97-40E6-AE94-2C671363D03C}.Debug|Win32.Build.0 = Debug|Win32
 		{BD30CDD7-5A97-40E6-AE94-2C671363D03C}.Release|Win32.ActiveCfg = Release|Win32
@@ -46,6 +52,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{E1210703-9ADB-4ED7-AE0C-B7E39A15E01F} = {F4E92C83-ECFD-4C0C-B40B-1136FE3B73ED}
 		{BD30CDD7-5A97-40E6-AE94-2C671363D03C} = {973B57CA-C119-411A-8994-16CD9FB18BBB}
 		{B32FCCB5-C0F4-41D7-B9E2-DD7EDBE2230A} = {973B57CA-C119-411A-8994-16CD9FB18BBB}
 		{8AB01551-9ABA-4108-B761-BA600FFF704A} = {F4E92C83-ECFD-4C0C-B40B-1136FE3B73ED}
