@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld remake project
-   Copyright (c) 2006 Michael Fink
+   Copyright (c) 2006,2019 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -32,26 +32,29 @@
 
 /*! access to gzFile pointer in SDL_RWops struct */
 #define SDL_RWOPS_GZFILE(_context) \
-             ((gzFile*) (_context)->hidden.unknown.data1)
+             ((gzFile) (_context)->hidden.unknown.data1)
 
 /*! l-value access to gzFile pointer in SDL_RWops struct */
 #define SDL_RWOPS_GZFILE_LVALUE(_context) \
              ((_context)->hidden.unknown.data1)
 
 /*! wrapper for gzseek */
-static int gzip_seek(SDL_RWops* context, int offset, int whence)
+static Sint64 gzip_seek(SDL_RWops* context, Sint64 offset, int whence)
 {
-   return gzseek(SDL_RWOPS_GZFILE(context), offset, whence);
+   if (offset == 0 && whence == RW_SEEK_CUR)
+      return gztell64(SDL_RWOPS_GZFILE(context));
+
+   return gzseek64(SDL_RWOPS_GZFILE(context), offset, whence);
 }
 
 /*! wrapper for gzread */
-static int gzip_read(SDL_RWops* context, void* ptr, int size, int maxnum)
+static size_t gzip_read(SDL_RWops* context, void* ptr, size_t size, size_t maxnum)
 {
    return gzread(SDL_RWOPS_GZFILE(context), ptr, size*maxnum);
 }
 
 /*! wrapper for gzwrite */
-static int gzip_write(SDL_RWops* context, const void* ptr, int size, int num)
+static size_t gzip_write(SDL_RWops* context, const void* ptr, size_t size, size_t num)
 {
    return gzwrite(SDL_RWOPS_GZFILE(context), ptr, size*num);
 }

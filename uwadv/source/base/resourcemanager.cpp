@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld remake project
-   Copyright (c) 2006 Michael Fink
+   Copyright (c) 2006,2019 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 #include "filesystem.hpp"
 #include <SDL_rwops.h>
 #include <algorithm>
-#include "zziplib/SDL_rwops_zzip.h"
+#include <SDL_rwops_zzip.h>
 #include <cerrno>
 
 using Base::ResourceManager;

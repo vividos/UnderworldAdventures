@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld remake project
-   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
+   Copyright (c) 2002,2003,2004,2005,2006,2019 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
 
 // needed includes
 #include <map>
-#include <SDL_keysym.h>
+#include <SDL_keycode.h>
 
 namespace Base
 {
@@ -150,10 +150,10 @@ public:
    void Init(const Settings& settings);
 
    //! finds key by given key amd modifier value
-   EKeyType FindKey(SDLKey key, SDLMod mod);
+   EKeyType FindKey(SDL_Keycode key, SDL_Keymod mod);
 
    //! inserts a new key mapping
-   void InsertKeyMapping(SDLKey key, SDLMod mod, EKeyType keyType);
+   void InsertKeyMapping(SDL_Keycode key, SDL_Keymod mod, EKeyType keyType);
 
 public:
    //! mapping from SDL keysym/modifier pair to key type value

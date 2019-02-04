@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld remake project
-   Copyright (c) 2006 Michael Fink
+   Copyright (c) 2006,2019 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -47,8 +47,8 @@ Uint32 Uw2DecodeData(const std::vector<Uint8>& vecSourceData, Uint8* pDestBuffer
 
    // compressed data
    Uint8* ubuf = pDestBuffer;
-   const Uint8* cp = &vecSourceData[4]; // for some reason the first 4 bytes are not used
-   const Uint8* ce = &vecSourceData[vecSourceData.size()];
+   const Uint8* cp = vecSourceData.data() + 4; // for some reason the first 4 bytes are not used
+   const Uint8* ce = vecSourceData.data() + vecSourceData.size();
    Uint8* up = ubuf;
    Uint8* ue = ubuf+uiDestSize;
 

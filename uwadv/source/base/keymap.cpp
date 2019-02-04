@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld remake project
-   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
+   Copyright (c) 2002,2003,2004,2005,2006,2019 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -42,8 +42,8 @@ using Base::EKeyType;
 namespace Detail
 {
 
-//! creates a combined key/mod value from a SDLKey and a SDLMod value
-inline Uint32 MakeKeymod(SDLKey key, SDLMod mod)
+//! creates a combined key/mod value from a SDL_Keycode and a SDL_Keymod value
+inline Uint32 MakeKeymod(SDL_Keycode key, SDL_Keymod mod)
 {
    return Uint32(key) | (Uint32(mod) << 16);
 }
@@ -148,7 +148,7 @@ struct KeyMapping
    const char* cstrKeyType;
 
    //! SDL key value that maps to the key name
-   SDLKey key;
+   SDL_Keycode key;
 
 } KeyMapping[] =
 {
@@ -189,16 +189,16 @@ struct KeyMapping
    { "less",   SDLK_LESS },
    { "delete", SDLK_DELETE },
 
-   { "num0", SDLK_KP0 },
-   { "num1", SDLK_KP1 },
-   { "num2", SDLK_KP2 },
-   { "num3", SDLK_KP3 },
-   { "num4", SDLK_KP4 },
-   { "num5", SDLK_KP5 },
-   { "num6", SDLK_KP6 },
-   { "num7", SDLK_KP7 },
-   { "num8", SDLK_KP8 },
-   { "num9", SDLK_KP9 },
+   { "num0", SDLK_KP_0 },
+   { "num1", SDLK_KP_1 },
+   { "num2", SDLK_KP_2 },
+   { "num3", SDLK_KP_3 },
+   { "num4", SDLK_KP_4 },
+   { "num5", SDLK_KP_5 },
+   { "num6", SDLK_KP_6 },
+   { "num7", SDLK_KP_7 },
+   { "num8", SDLK_KP_8 },
+   { "num9", SDLK_KP_9 },
 
    { "num-divide",   SDLK_KP_DIVIDE },
    { "num-multipl",  SDLK_KP_MULTIPLY },
@@ -246,7 +246,7 @@ private:
    KeyTypeNamesMapping m_mapKeyTypeNames;
 
    //! mapping from key names to SDL key values
-   typedef std::map<std::string, SDLKey> KeyNamesMapping;
+   typedef std::map<std::string, SDL_Keycode> KeyNamesMapping;
 
    //! key names mapping
    KeyNamesMapping m_mapKeyNames;
@@ -317,25 +317,25 @@ void KeymapConfigLoader::SetKeyValue(EKeyType& keyType, const std::string& strKe
    Base::String::Lowercase(strKeyName);
 
    // check for key state modifiers
-   SDLMod mod = KMOD_NONE;
+   SDL_Keymod mod = KMOD_NONE;
    std::string::size_type pos = strKeyName.find("ctrl");
    if (pos != std::string::npos)
    {
-      mod = static_cast<SDLMod>(mod | KMOD_CTRL);
+      mod = static_cast<SDL_Keymod>(mod | KMOD_CTRL);
       strKeyName.erase(pos, 4);
    }
 
    pos = strKeyName.find("alt");
    if (pos != std::string::npos)
    {
-      mod = static_cast<SDLMod>(mod | KMOD_ALT);
+      mod = static_cast<SDL_Keymod>(mod | KMOD_ALT);
       strKeyName.erase(pos, 3);
    }
 
    pos = strKeyName.find("shift");
    if (pos != std::string::npos)
    {
-      mod = static_cast<SDLMod>(mod | KMOD_SHIFT);
+      mod = static_cast<SDL_Keymod>(mod | KMOD_SHIFT);
       strKeyName.erase(pos, 5);
    }
 
@@ -344,11 +344,11 @@ void KeymapConfigLoader::SetKeyValue(EKeyType& keyType, const std::string& strKe
       strKeyName.erase(0,1);
 
    // check for single alphanumeric char
-   SDLKey key = SDLK_UNKNOWN;
+   SDL_Keycode key = SDLK_UNKNOWN;
    if (strKeyName.size() == 1 && isalnum(strKeyName.at(0)))
    {
-      // note: assumes that a conversion from alphanumeric character to SDLKey succeeds
-      key = static_cast<SDLKey>(strKeyName.at(0));
+      // note: assumes that a conversion from alphanumeric character to SDL_Keycode succeeds
+      key = static_cast<SDL_Keycode>(strKeyName.at(0));
    }
    else
    {
@@ -423,7 +423,7 @@ void Keymap::Init(const Base::Settings& settings)
    loader.Load();
 }
 
-Base::EKeyType Keymap::FindKey(SDLKey key, SDLMod mod)
+Base::EKeyType Keymap::FindKey(SDL_Keycode key, SDL_Keymod mod)
 {
    Uint32 keymod = Detail::MakeKeymod(key, mod);
    KeymapMapping::const_iterator iter = m_mapKeys.find(keymod);
@@ -431,7 +431,7 @@ Base::EKeyType Keymap::FindKey(SDLKey key, SDLMod mod)
    return iter == m_mapKeys.end() ? Base::keyNone : iter->second;
 }
 
-void Keymap::InsertKeyMapping(SDLKey key, SDLMod mod, Base::EKeyType keyType)
+void Keymap::InsertKeyMapping(SDL_Keycode key, SDL_Keymod mod, Base::EKeyType keyType)
 {
    Uint32 keymod = Detail::MakeKeymod(key, mod);
    m_mapKeys[keymod] = keyType;
