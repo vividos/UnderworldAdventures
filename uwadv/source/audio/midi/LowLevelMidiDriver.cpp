@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "pent_include.h"
 #include <cstring>
+#include <SDL_thread.h>
 
 #ifndef PENTAGRAM_IN_EXULT
 #include "IDataSource.h"
@@ -148,7 +149,7 @@ LowLevelMidiDriver::~LowLevelMidiDriver()
 	{
 		perr <<	"Warning: Destructing LowLevelMidiDriver and destroyMidiDriver() wasn't called!" << std::endl;
 		//destroyMidiDriver();
-		if (thread) SDL_KillThread(thread);
+		// TODO if (thread) SDL_KillThread(thread);
 	}
 	thread = 0;
 }
@@ -418,7 +419,7 @@ int LowLevelMidiDriver::initThreadedSynth()
 	ComMessage message(LLMD_MSG_THREAD_INIT);
 	sendComMessage(message);
 
-	thread = SDL_CreateThread (threadMain_Static, static_cast<void*>(this));
+	thread = SDL_CreateThread (threadMain_Static, "audio-thread", static_cast<void*>(this));
 
 	while (peekComMessageType() == LLMD_MSG_THREAD_INIT) 
 		yield ();
@@ -463,7 +464,7 @@ void LowLevelMidiDriver::destroyThreadedSynth()
 	// We waited a while and it still didn't terminate
 	if (count == 400 && peekComMessageType() != 0) {
 		perr << "MidiPlayer Thread failed to stop in time. Killing it." << std::endl;
-		SDL_KillThread (thread);
+      // TODO SDL_KillThread (thread);
 	}
 
 	lockComMessage();

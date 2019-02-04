@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld remake project
-   Copyright (c) 2006 Michael Fink
+   Copyright (c) 2006,2019 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@
 // needed includes
 #include "audio.hpp"
 #include "vocfile.hpp"
+#include <SDL_rwops.h>
 #include <SDL_endian.h>
 
 namespace Detail
@@ -119,7 +120,7 @@ void VoiceFileLoader::Load()
    // note: this formula comes from the above URL, but it seems to be wrong
    // for uw1 and uw2 files (or it's just flawed)
    // uw1 .voc files give 0xAD as coded sample rate, which represents 12048 Hz
-   // uw2 .voc files give 0xA5, which represents 11111 Hz 
+   // uw2 .voc files give 0xA5, which represents 11111 Hz
    m_uiSamplerate = 1000000 / (256-uiCodedSamplerate);
 
    Uint8 uiCompressionType = 0;

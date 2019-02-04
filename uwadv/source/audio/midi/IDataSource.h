@@ -116,7 +116,7 @@ class IDataSource
 
 		/* SDL_RWops functions: */
 
-		static int rw_seek(SDL_RWops *context, int offset, int whence)
+		static Sint64 rw_seek(SDL_RWops *context, Sint64 offset, int whence)
 		{
 			IDataSource*ids = static_cast<IDataSource*>
 				(context->hidden.unknown.data1);
@@ -136,7 +136,7 @@ class IDataSource
 			}
 			return ids->getPos();
 		}
-		static int rw_read(SDL_RWops *context, void *ptr, int size, int maxnum)
+		static size_t rw_read(SDL_RWops *context, void *ptr, size_t size, size_t maxnum)
 		{
 			IDataSource*ids = static_cast<IDataSource*>
 				(context->hidden.unknown.data1);
@@ -144,8 +144,8 @@ class IDataSource
 			int nbytes = ids->read(ptr, maxnum*size);
 			return (nbytes/size);
 		}
-		static int rw_write(SDL_RWops * /*context*/, const void * /*ptr*/,
-							int /*size*/, int /*num*/)
+		static size_t rw_write(SDL_RWops * /*context*/, const void * /*ptr*/,
+							size_t /*size*/, size_t /*num*/)
 		{
 			return 0;
 		}
