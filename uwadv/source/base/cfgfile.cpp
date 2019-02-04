@@ -1,213 +1,199 @@
-/*
-   Underworld Adventures - an Ultima Underworld remake project
-   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file cfgfile.cpp
-
-   \brief config file loading implementation
-
-*/
-
-// needed includes
+//
+// Underworld Adventures - an Ultima Underworld remake project
+// Copyright (c) 2002,2003,2004,2005,2006,2019 Michael Fink
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file cfgfile.cpp
+/// \brief config file loading implementation
+//
 #include <cerrno>
 #include "base.hpp"
 #include "cfgfile.hpp"
 #include "textfile.hpp"
 
-//! \brief namespace for implementation details
+/// \brief namespace for implementation details
 namespace Detail
 {
-
-//! config file loader class
-class ConfigFileLoader: public Base::NonCopyable
-{
-public:
-   //! ctor without saving file
-   ConfigFileLoader():m_bIsWriting(false){}
-
-   //! ctor with saving file
-   ConfigFileLoader(const std::string strOutputFilename)
-      :m_bIsWriting(true), m_outputFile(strOutputFilename, Base::modeWrite){}
-
-   //! loads config file (and rewrites it, when m_bIsWriting is on)
-   void LoadFile(Base::TextFile& file, Base::ConfigValueMap& mapValues);
-
-   //! returns if config file is open
-   bool IsOutputFileOpen() const { return m_outputFile.IsOpen(); }
-
-private:
-   //! indicates if config file is being rewritten
-   bool m_bIsWriting;
-
-   //! output text file when config file is rewritten
-   Base::TextFile m_outputFile;
-};
-
-void ConfigFileLoader::LoadFile(Base::TextFile& file, Base::ConfigValueMap& mapValues)
-{
-   // find out filelength
-   long lFileLen = file.FileLength();
-
-   // read in all strLines
-   std::string strLine;
-
-   while (file.Tell() < lFileLen)
+   /// config file loader class
+   class ConfigFileLoader : public Base::NonCopyable
    {
-      file.ReadLine(strLine);
-
-      // empty line?
-      if (strLine.size() == 0)
+   public:
+      /// ctor without saving file
+      ConfigFileLoader()
+         :m_isWriting(false)
       {
-         if (m_bIsWriting)
-            m_outputFile.WriteLine(strLine.c_str());
-         continue;
       }
 
-      // trim spaces at start of line
-      for(;strLine.size() > 0 && isspace(strLine.at(0));)
-         strLine.erase(0, 1);
+      /// ctor with saving file
+      ConfigFileLoader(const std::string outputFilename)
+         :m_isWriting(true), m_outputFile(outputFilename, Base::modeWrite) {}
 
-      // comment line?
-      if (strLine.size() == 0 || strLine.at(0) == '#' || strLine.at(0) == ';')
-      {
-         if (m_bIsWriting)
-            m_outputFile.WriteLine(strLine.c_str());
-         continue;
-      }
+      /// loads config file (and rewrites it, when m_isWriting is on)
+      void LoadFile(Base::TextFile& file, Base::ConfigValueMap& mapValues);
 
-      // comment somewhere in the line?
-      std::string::size_type pos2 = strLine.find('#');
-      if (pos2 != std::string::npos)
+      /// returns if config file is open
+      bool IsOutputFileOpen() const { return m_outputFile.IsOpen(); }
+
+   private:
+      /// indicates if config file is being rewritten
+      bool m_isWriting;
+
+      /// output text file when config file is rewritten
+      Base::TextFile m_outputFile;
+   };
+
+   void ConfigFileLoader::LoadFile(Base::TextFile& file, Base::ConfigValueMap& mapValues)
+   {
+      long fileLength = file.FileLength();
+
+      std::string line;
+
+      while (file.Tell() < fileLength)
       {
-         // write comment before line
-         if (m_bIsWriting)
+         file.ReadLine(line);
+
+         if (line.empty())
          {
-            std::string comment;
-            comment.assign(strLine.c_str() + pos2);
-            m_outputFile.WriteLine(comment.c_str());
+            if (m_isWriting)
+               m_outputFile.WriteLine(line.c_str());
+            continue;
          }
 
-         // remove comment
-         strLine.erase(pos2);
-      }
+         // trim spaces at start of line
+         for (; line.size() > 0 && isspace(line.at(0));)
+            line.erase(0, 1);
 
-      // trim spaces at end of line
-      {
-         int len;
-         do
+         // comment line?
+         if (line.size() == 0 || line.at(0) == '#' || line.at(0) == ';')
          {
-            len = strLine.size()-1;
-            if (isspace(strLine.at(len)))
-               strLine.erase(len);
+            if (m_isWriting)
+               m_outputFile.WriteLine(line.c_str());
+            continue;
+         }
+
+         // comment somewhere in the line?
+         std::string::size_type pos2 = line.find('#');
+         if (pos2 != std::string::npos)
+         {
+            // write comment before line
+            if (m_isWriting)
+            {
+               std::string comment;
+               comment.assign(line.c_str() + pos2);
+               m_outputFile.WriteLine(comment.c_str());
+            }
+
+            // remove comment
+            line.erase(pos2);
+         }
+
+         // trim spaces at end of line
+         {
+            int len;
+            do
+            {
+               len = line.size() - 1;
+               if (isspace(line.at(len)))
+                  line.erase(len);
+               else
+                  break;
+            } while (line.size() > 0);
+         }
+
+         // empty line?
+         if (line.size() == 0)
+         {
+            if (m_isWriting)
+               m_outputFile.WriteLine(line.c_str());
+            continue;
+         }
+
+         // replace all '\t' with ' '
+         std::string::size_type pos = 0;
+         while ((pos = line.find('\t', pos)) != std::string::npos)
+            line.replace(pos, 1, " ");
+
+         // there must be at least one space, to separate key from value
+         pos = line.find(' ');
+         if (pos == std::string::npos)
+         {
+            if (m_isWriting)
+               m_outputFile.WriteLine(line.c_str());
+            continue;
+         }
+
+         // retrieve key and value
+         {
+            std::string key(line.substr(0, pos));
+            std::string value(line.substr(pos + 1));
+
+            // trim spaces at start of "value"
+            for (; value.size() > 0 && isspace(value.at(0));)
+               value.erase(0, 1);
+
+            // hand over key and value
+            if (m_isWriting)
+            {
+               Base::ConfigValueMap::iterator pos3 = mapValues.find(key);
+
+               if (pos3 != mapValues.end())
+                  value = pos3->second;
+
+               m_outputFile.WriteLine(key + ' ' + value);
+            }
             else
-               break;
+               mapValues[key] = value;
          }
-         while (strLine.size() > 0);
-      }
-
-      // empty line?
-      if (strLine.size() == 0)
-      {
-         if (m_bIsWriting)
-            m_outputFile.WriteLine(strLine.c_str());
-         continue;
-      }
-
-      // replace all '\t' with ' '
-      std::string::size_type pos = 0;
-      while( (pos = strLine.find('\t',pos)) != std::string::npos )
-         strLine.replace(pos, 1, " ");
-
-      // there must be at least one space, to separate key from value
-      pos = strLine.find(' ');
-      if (pos==std::string::npos)
-      {
-         if (m_bIsWriting)
-            m_outputFile.WriteLine(strLine.c_str());
-         continue;
-      }
-
-      // retrieve key and value
-      {
-         std::string strKey(strLine.substr(0, pos));
-         std::string strValue(strLine.substr(pos+1));
-
-         // trim spaces at start of "value"
-         for(;strValue.size() > 0 && isspace(strValue.at(0));)
-            strValue.erase(0,1);
-
-         // hand over key and value
-         if (m_bIsWriting)
-         {
-            Base::ConfigValueMap::iterator pos = mapValues.find(strKey);
-
-            if (pos != mapValues.end())
-               strValue = pos->second;
-
-            m_outputFile.WriteLine(strKey + ' ' + strValue);
-         }
-         else
-            mapValues[strKey] = strValue;
       }
    }
-}
 
 } // namespace Detail
 
-
-// ConfigFile methods
-
-//! common error message when a config file couldn't be opened
-const char* c_strFailedOpenConfigFile = "could not open config file";
+/// common error message when a config file couldn't be opened
+const char* c_failedOpenConfigFile = "could not open config file";
 
 using Base::ConfigFile;
 
-void ConfigFile::Load(const std::string& strFilename)
+void ConfigFile::Load(const std::string& filename)
 {
-   // try to open from file
-   Base::TextFile file(strFilename, Base::modeRead);
+   Base::TextFile file(filename, Base::modeRead);
    if (!file.IsOpen())
-      throw Base::FileSystemException(c_strFailedOpenConfigFile, strFilename, ENOENT);
+      throw Base::FileSystemException(c_failedOpenConfigFile, filename, ENOENT);
 
    Load(file);
 }
 
 void ConfigFile::Load(Base::TextFile& file)
 {
-   // load via config file loader
    Detail::ConfigFileLoader loader;
    loader.LoadFile(file, m_mapValues);
 }
 
-void ConfigFile::Save(const std::string& strOriginalFilename, const std::string& strNewFilename)
+void ConfigFile::Save(const std::string& originalFilename, const std::string& newFilename)
 {
    // open original file
-   Base::TextFile origFile(strOriginalFilename, Base::modeRead);
+   Base::TextFile origFile(originalFilename, Base::modeRead);
    if (!origFile.IsOpen())
-      throw Base::FileSystemException(c_strFailedOpenConfigFile, strOriginalFilename, ENOENT);
+      throw Base::FileSystemException(c_failedOpenConfigFile, originalFilename, ENOENT);
 
    // load and rewrite via config file loader
-   Detail::ConfigFileLoader loader(strNewFilename);
+   Detail::ConfigFileLoader loader(newFilename);
 
    if (!loader.IsOutputFileOpen())
-      throw Base::FileSystemException("could not rewrite new config file", strNewFilename, ENOENT);
+      throw Base::FileSystemException("could not rewrite new config file", newFilename, ENOENT);
 
    loader.LoadFile(origFile, m_mapValues);
 }

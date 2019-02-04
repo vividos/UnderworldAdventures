@@ -1,33 +1,26 @@
-/*
-   Underworld Adventures - an Ultima Underworld remake project
-   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file filesystem.cpp
-
-   \brief file system implementation
-
-   Parts of this file's code was taken from Exult
-
-*/
-
-// needed includes
+//
+// Underworld Adventures - an Ultima Underworld remake project
+// Copyright (c) 2002,2003,2004,2005,2006,2019 Michael Fink
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+//
+/// \file filesystem.cpp
+/// \brief file system implementation
+/// Parts of this file's code was taken from Exult
+//
 #include <cerrno>
 #include "base.hpp"
 #include "filesystem.hpp"
@@ -50,31 +43,31 @@
 #include <sys/stat.h>
 #endif
 
-//! common error text when folder cannot be created
+/// common error text when folder cannot be created
 const char* c_strCreateFolderError = "couldn't create folder";
-//! common error text when folder cannot be removed
+
+/// common error text when folder cannot be removed
 const char* c_strRemoveFolderError = "couldn't remove folder";
 
 
 #if defined(HAVE_WIN32) // use win32 API (or better, Microsoft's C runtime)
 
-/*! The meta-files "." and ".." are not added to the file list.
-*/
-void Base::FileSystem::FindFiles(const std::string& strSearchPath, std::vector<std::string>& vecFileList)
+/// The meta-files "." and ".." are not added to the file list.
+void Base::FileSystem::FindFiles(const std::string& searchPath, std::vector<std::string>& fileList)
 {
    // find out base path
-   std::string strBasePath(strSearchPath);
-   std::string::size_type pos = strBasePath.find_last_of("\\/");
+   std::string basePath(searchPath);
+   std::string::size_type pos = basePath.find_last_of("\\/");
    if (pos != std::string::npos)
-      strBasePath.erase(pos+1);
+      basePath.erase(pos + 1);
 
    // try to find files by pathname
    _finddata_t fileinfo;
 
-   long handle = _findfirst(strSearchPath.c_str(),&fileinfo);
-   if (handle!=-1)
+   long handle = _findfirst(searchPath.c_str(), &fileinfo);
+   if (handle != -1)
    {
-      std::string strFilename;
+      std::string filename;
 
       do
       {
@@ -82,13 +75,13 @@ void Base::FileSystem::FindFiles(const std::string& strSearchPath, std::vector<s
          if (strncmp(fileinfo.name, ".", 1) != 0 &&
             strncmp(fileinfo.name, "..", 2) != 0)
          {
-            strFilename = strBasePath + fileinfo.name;
+            filename = basePath + fileinfo.name;
 
             // add to filelist
-            vecFileList.push_back(strFilename);
+            fileList.push_back(filename);
          }
 
-      } while(0 == _findnext(handle, &fileinfo));
+      } while (0 == _findnext(handle, &fileinfo));
 
       _findclose(handle);
    }
@@ -98,32 +91,30 @@ void Base::FileSystem::FindFiles(const std::string& strSearchPath, std::vector<s
 
 #include <glob.h>
 
-/*! The meta-files "." and ".." are not added to the file list.
-*/
-void Base::FileSystem::FindFiles(const std::string& strSearchPath, std::vector<std::string>& vecFileList)
+/// The meta-files "." and ".." are not added to the file list.
+void Base::FileSystem::FindFiles(const std::string& searchPath, std::vector<std::string>& fileList)
 {
-   std::string strPath(strSearchPath);
+   std::string path(searchPath);
 
    glob_t globres;
-   int err = glob(strPath.c_str(), GLOB_NOSORT, 0, &globres);
+   int err = glob(path.c_str(), GLOB_NOSORT, 0, &globres);
 
    // check for return code
    switch (err)
    {
-      case 0: // ok
-         // add all found files to the list
-         for (unsigned int i=0; i<globres.gl_pathc; i++)
-            vecFileList.push_back(globres.gl_pathv[i]);
+   case 0: // ok
+      for (unsigned int i = 0; i < globres.gl_pathc; i++)
+         fileList.push_back(globres.gl_pathv[i]);
 
-         globfree(&globres);
-         return;
+      globfree(&globres);
+      return;
 
-      case 3: //no matches
-         break;
+   case 3: // no matches
+      break;
 
-      default: // error
-         UaTrace("glob error: %u\n",err);
-         break;
+   default: // error
+      UaTrace("glob error: %u\n", err);
+      break;
    }
 }
 
@@ -141,50 +132,46 @@ void Base::FileSystem::FindFiles(const std::string& strSearchPath, std::vector<s
 
 #endif
 
-void Base::FileSystem::RemoveFile(const std::string& strFilename)
+void Base::FileSystem::RemoveFile(const std::string& filename)
 {
 #ifdef HAVE_WIN32
 
 #ifdef HAVE_UNICODE
-   std::wstring wstrFilename;
-   String::ConvertToUnicode(strFilename, wstrFilename);
-   DeleteFileW(wstrFilename.c_str());
+   std::wstring wfilename;
+   String::ConvertToUnicode(filename, wfilename);
+   DeleteFileW(wfilename.c_str());
 #else
-   DeleteFileA(strFilename.c_str());
+   DeleteFileA(filename.c_str());
 #endif
 
 #else
-   remove(strFilename.c_str());
+   remove(filename.c_str());
 #endif
 }
 
-/*! implementation borrowed from Exult, files/utils.cc */
-void Base::FileSystem::MakeFolder(const std::string& strFolderName)
+/// implementation borrowed from Exult, files/utils.cc
+void Base::FileSystem::MakeFolder(const std::string& folderName)
 {
-   std::string strName(strFolderName);
+   std::string name(folderName);
 
-   // remove any trailing slashes
-   std::string::size_type pos = strName.find_last_not_of('/');
+   std::string::size_type pos = name.find_last_not_of('/');
 
    if (pos != std::string::npos)
-      strName.resize(pos+1);
+      name.resize(pos + 1);
 
-   // check if parent folder exists
    {
-      std::string strParent(strName);
+      std::string parent(name);
 
-      // remove next slash
-      std::string::size_type pos = strParent.find_last_of('/');
+      std::string::size_type pos2 = parent.find_last_of('/');
 
-      if (pos != std::string::npos)
-         strParent.erase(pos);
+      if (pos2 != std::string::npos)
+         parent.erase(pos2);
 
-      // test parent if it's a folder
-      bool bExists = FolderExists(strParent);
-      if (!bExists)
+      bool exists = FolderExists(parent);
+      if (!exists)
       {
          // call recursively
-         MakeFolder(strParent);
+         MakeFolder(parent);
       }
    }
 
@@ -192,240 +179,236 @@ void Base::FileSystem::MakeFolder(const std::string& strFolderName)
 
    // win32 API
 #ifdef HAVE_UNICODE
-   std::wstring wstrName;
-   String::ConvertToUnicode(strName, wstrName);
+   std::wstring wname;
+   String::ConvertToUnicode(name, wname);
 
-   BOOL bRet = CreateDirectoryW(wstrName.c_str(), NULL);
+   BOOL ret = CreateDirectoryW(wname.c_str(), NULL);
 #else
-   BOOL bRet = CreateDirectoryA(strName.c_str(), NULL);
+   BOOL ret = CreateDirectoryA(name.c_str(), NULL);
 #endif
-   if (bRet == FALSE)
+   if (ret == FALSE)
    {
-      DWORD dwError = GetLastError();
-      if (dwError != ERROR_ALREADY_EXISTS)
-         throw Base::FileSystemException(c_strCreateFolderError, strName, dwError);
+      DWORD errror = GetLastError();
+      if (errror != ERROR_ALREADY_EXISTS)
+         throw Base::FileSystemException(c_strCreateFolderError, name, errror);
    }
 
 #else
 
    // posix (?)
-   int iRet = mkdir(strName.c_str(), 0700); // create dir if not already there
+   int iRet = mkdir(name.c_str(), 0700); // create dir if not already there
    if (iRet != 0 && errno != EEXIST)
-      throw Base::FileSystemException(c_strCreateFolderError, strName, errno);
+      throw Base::FileSystemException(c_strCreateFolderError, name, errno);
 
 #endif
 }
 
-void Base::FileSystem::RemoveFolder(const std::string& strFolderName)
+void Base::FileSystem::RemoveFolder(const std::string& folderName)
 {
 #if defined(HAVE_WIN32)
 
    // win32 API
 #ifdef HAVE_UNICODE
-   std::wstring wstrFolderName;
-   String::ConvertToUnicode(strFolderName, wstrFolderName);
+   std::wstring wfolderName;
+   String::ConvertToUnicode(folderName, wfolderName);
 
-   BOOL bRet = RemoveDirectoryW(wstrFolderName.c_str());
+   BOOL ret = RemoveDirectoryW(wfolderName.c_str());
 #else
-   BOOL bRet = RemoveDirectoryA(strFolderName.c_str());
+   BOOL ret = RemoveDirectoryA(folderName.c_str());
 #endif
-   if (bRet == FALSE)
-      throw Base::FileSystemException(c_strRemoveFolderError, strFolderName, GetLastError());
+   if (ret == FALSE)
+      throw Base::FileSystemException(c_strRemoveFolderError, folderName, GetLastError());
 
 #else
 
    // posix (?)
-   int iRet = rmdir(strFolderName.c_str());
+   int iRet = rmdir(folderName.c_str());
    if (iRet != 0 && errno != EEXIST)
-      throw Base::FileSystemException(c_strRemoveFolderError, strFolderName, errno);
+      throw Base::FileSystemException(c_strRemoveFolderError, folderName, errno);
 
 #endif
 }
 
-bool Base::FileSystem::FileExists(const std::string& strFilename)
+bool Base::FileSystem::FileExists(const std::string& filename)
 {
 #ifdef HAVE_WIN32
    // win32 API
 #ifdef HAVE_UNICODE
-   std::wstring wstrFilename;
-   String::ConvertToUnicode(strFilename, wstrFilename);
+   std::wstring wfilename;
+   String::ConvertToUnicode(filename, wfilename);
 
-   DWORD ret = GetFileAttributesW(wstrFilename.c_str());
+   DWORD ret = GetFileAttributesW(wfilename.c_str());
 #else
-   DWORD ret = GetFileAttributesA(strFilename.c_str());
+   DWORD ret = GetFileAttributesA(filename.c_str());
 #endif
-   return (ret!= (DWORD)-1) &&
+   return (ret != (DWORD)-1) &&
       (ret & FILE_ATTRIBUTE_DIRECTORY) == 0;
 #else
    // every other sane system
    struct stat sbuf;
    return
-      (stat(strFilename.c_str(), &sbuf) == 0) &&
+      (stat(filename.c_str(), &sbuf) == 0) &&
       !S_ISDIR(sbuf.st_mode);
 #endif
 }
 
-bool Base::FileSystem::FolderExists(const std::string& strFolderName)
+bool Base::FileSystem::FolderExists(const std::string& folderName)
 {
 #ifdef HAVE_MSVC
    // win32 API
 #ifdef HAVE_UNICODE
-   std::wstring wstrFolderName;
-   String::ConvertToUnicode(strFolderName, wstrFolderName);
+   std::wstring wfolderName;
+   String::ConvertToUnicode(folderName, wfolderName);
 
-   DWORD ret = GetFileAttributesW(wstrFolderName.c_str());
+   DWORD ret = GetFileAttributesW(wfolderName.c_str());
 #else
-   DWORD ret = GetFileAttributesA(strFolderName.c_str());
+   DWORD ret = GetFileAttributesA(folderName.c_str());
 #endif
-   return (ret!= (DWORD)-1) &&
+   return (ret != (DWORD)-1) &&
       (ret & FILE_ATTRIBUTE_DIRECTORY) != 0;
 #else
    // every other sane system
    struct stat sbuf;
    return
-      (stat(strFolderName.c_str(), &sbuf) == 0) &&
+      (stat(folderName.c_str(), &sbuf) == 0) &&
       S_ISDIR(sbuf.st_mode);
 #endif
 }
 
-void Base::FileSystem::RecursiveRemoveFolder(const std::string& strPathname)
+void Base::FileSystem::RecursiveRemoveFolder(const std::string& pathname)
 {
    // collect all files and folders
-   std::vector<std::string> vecFileList;
-   std::string strSearchPath(strPathname);
-   strSearchPath += "/*.*";
-   FindFiles(strSearchPath, vecFileList);
+   std::vector<std::string> fileList;
+   std::string searchPath(pathname);
+   searchPath += "/*.*";
+   FindFiles(searchPath, fileList);
 
-   std::vector<std::string>::size_type max = vecFileList.size();
-   for (std::vector<std::string>::size_type i=0; i<max; i++)
+   std::vector<std::string>::size_type max = fileList.size();
+   for (std::vector<std::string>::size_type i = 0; i < max; i++)
    {
-      std::string strFilename(vecFileList[i]);
+      std::string filename(fileList[i]);
 
       // is a file? then try to remove it
-      if (FileExists(strFilename))
+      if (FileExists(filename))
       {
          try
          {
-            RemoveFile(strFilename);
+            RemoveFile(filename);
          }
-         catch(Base::Exception& e)
+         catch (const Base::Exception& ex)
          {
-            (e);
+            ex;
          }
       }
       else
-      // is a folder? try to remove contents
-      if (FolderExists(strFilename))
-      {
-         RecursiveRemoveFolder(strFilename);
-      }
+         // is a folder? try to remove contents
+         if (FolderExists(filename))
+         {
+            RecursiveRemoveFolder(filename);
+         }
    }
 
    // try to remove this folder
    try
    {
-      RemoveFolder(strPathname);
+      RemoveFolder(pathname);
    }
-   catch(Base::Exception& e)
+   catch (const Base::Exception& ex)
    {
-      (e);
+      ex;
    }
 }
-
 
 namespace Detail
 {
-
-//! returns system specific home path
-/*! Win32: returns a subfolder of the "common application data" folder stored under
-       the user profile of the logged in user, commonly found under
-       "Documents and Settings", or the current directory, if the folder
-       doesn't exist or is not supported by the system.
-    Linux (and all with HAVE_HOME defined): returns the contents of the HOME
-       environment variable. Special cases:
-    MacOS X: "Library/Preferences/Underworld Adventures/" subfolder of HOME folder
-    BeOS: "config/settings/uwadv/" subfolder ofHOME folder
-    All other systems: returns the current folder
-*/
-std::string GetHomePath()
-{
-   std::string strHomePath = "./";
+   /// \brief returns system specific home path
+   /// Win32: returns a subfolder of the "common application data" folder stored under
+   ///    the user profile of the logged in user, commonly found under
+   ///    "Documents and Settings", or the current directory, if the folder
+   ///    doesn't exist or is not supported by the system.
+   /// Linux (and all with HAVE_HOME defined): returns the contents of the HOME
+   ///    environment variable. Special cases:
+   /// MacOS X: "Library/Preferences/Underworld Adventures/" subfolder of HOME folder
+   /// BeOS: "config/settings/uwadv/" subfolder ofHOME folder
+   /// All other systems: returns the current folder
+   std::string GetHomePath()
+   {
+      std::string homePath = "./";
 
 #ifdef HAVE_HOME
-   {
-      const char* homedir = getenv("HOME");
-      if (homedir != NULL)
       {
-         // User has a home directory
-         strHomePath = homedir;
+         const char* homedir = getenv("HOME");
+         if (homedir != NULL)
+         {
+            // User has a home directory
+            homePath = homedir;
 
 #ifdef HAVE_MACOSX
-         // JCD: in Mac OS X, we put user config into user's Library folder
-         strHomePath += "/Library/Preferences/Underworld Adventures/";
+            // JCD: in Mac OS X, we put user config into user's Library folder
+            homePath += "/Library/Preferences/Underworld Adventures/";
 #elif defined( HAVE_BEOS )
-         strHomePath += "/config/settings/uwadv/";
+            homePath += "/config/settings/uwadv/";
 #else
-         strHomePath += "/.uwadv/";
+            homePath += "/.uwadv/";
 #endif
-      }
+         }
 
-      // try to create home folder
-      UaTrace("creating uahome folder \"%s\"\n", strHomePath.c_str());
-      Base::FileSystem::MakeFolder(strHomePath.c_str());
-   }
+         // try to create home folder
+         UaTrace("creating uahome folder \"%s\"\n", homePath.c_str());
+         Base::FileSystem::MakeFolder(homePath.c_str());
+      }
 
 #elif defined(HAVE_WIN32) // Win32 API
 
-   char appdataPath[MAX_PATH];
-   HRESULT hr = ::SHGetFolderPathA(NULL, CSIDL_COMMON_APPDATA | CSIDL_FLAG_CREATE,
-      NULL, SHGFP_TYPE_CURRENT, appdataPath);
-   if (hr == S_OK && appdataPath[0] != 0)
-   {
-      strHomePath = appdataPath;
-      strHomePath += "\\Underworld Adventures\\";
+      char appdataPath[MAX_PATH];
+      HRESULT hr = ::SHGetFolderPathA(NULL, CSIDL_COMMON_APPDATA | CSIDL_FLAG_CREATE,
+         NULL, SHGFP_TYPE_CURRENT, appdataPath);
+      if (hr == S_OK && appdataPath[0] != 0)
+      {
+         homePath = appdataPath;
+         homePath += "\\Underworld Adventures\\";
 
-      std::string strCfgFile(strHomePath);
-      strCfgFile += "uwadv.cfg";
+         std::string configFile(homePath);
+         configFile += "uwadv.cfg";
 
-      // check if the path really exists, and that it contains uwadv.cfg
-      if (!Base::FileSystem::FolderExists(strHomePath) ||
-          !Base::FileSystem::FileExists(strCfgFile))
-         strHomePath = "./"; // revert to current dir
-   }
+         // check if the path really exists, and that it contains uwadv.cfg
+         if (!Base::FileSystem::FolderExists(homePath) ||
+            !Base::FileSystem::FileExists(configFile))
+            homePath = "./"; // revert to current dir
+      }
 
 #else // all other OSes
 
-   // assume current working folder as home dir
-   strHomePath = "./";
+      // assume current working folder as home dir
+      homePath = "./";
 
 #endif
 
-   return strHomePath;
-}
+      return homePath;
+   }
 
-//! returns system specific personal folder
-/*! Win32: returns the "My Documents" folder, or the home folder returned by
-       GetHomePath(), if the folder doesn't exist or is not supported by the
-       system.
-    All other systems: returns the home folder returned by GetHomePath()
-*/
-std::string GetPersonalFolderPath()
-{
-   std::string strPersonalFolderPath = GetHomePath();
+   /// \brief Returns system specific personal folder
+   /// Win32: returns the "My Documents" folder, or the home folder returned by
+   ///    GetHomePath(), if the folder doesn't exist or is not supported by the
+   ///    system.
+   /// All other systems: returns the home folder returned by GetHomePath()
+   std::string GetPersonalFolderPath()
+   {
+      std::string personalFolderPath = GetHomePath();
 
 #ifdef HAVE_WIN32 // Win32 API
 
-   char personalFolderPath[MAX_PATH];
-   HRESULT hr = ::SHGetFolderPathA(NULL, CSIDL_PERSONAL | CSIDL_FLAG_CREATE,
-      NULL, SHGFP_TYPE_CURRENT, personalFolderPath);
+      char personalFolderPathBuffer[MAX_PATH];
+      HRESULT hr = ::SHGetFolderPathA(NULL, CSIDL_PERSONAL | CSIDL_FLAG_CREATE,
+         NULL, SHGFP_TYPE_CURRENT, personalFolderPathBuffer);
 
-   if (hr == S_OK && personalFolderPath[0] != 0)
-   {
-      strPersonalFolderPath = personalFolderPath;
-   }
+      if (hr == S_OK && personalFolderPathBuffer[0] != 0)
+      {
+         personalFolderPath = personalFolderPathBuffer;
+      }
 #endif
 
-   return strPersonalFolderPath;
-}
+      return personalFolderPath;
+   }
 
 } // namespace Detail

@@ -1,31 +1,24 @@
-/*
-   Underworld Adventures - an Ultima Underworld remake project
-   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file savegame.cpp
-
-   \brief savegame and savegames manager classes implementation
-
-*/
-
-// needed includes
+//
+// Underworld Adventures - an Ultima Underworld remake project
+// Copyright (c) 2002,2003,2004,2005,2006,2019 Michael Fink
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file savegame.cpp
+/// \brief savegame and savegames manager classes implementation
+//
 #include "base.hpp"
 #include "savegame.hpp"
 #include "filesystem.hpp"
@@ -40,38 +33,32 @@ using Base::SavegameInfo;
 using Base::Savegame;
 using Base::SavegamesManager;
 
-// constants
+/// \brief current savegame version
+// version history:
+// - version 1: initial version; used from version 0.xx on
+// - version 2: ???
+// - version 3: Introduced with version 0.10; rewrite of most underworld
+//   classes required a new version.
+//   \todo complete version history
+const Uint32 Savegame::s_currentVersion = 3;
 
-//! current savegame version
-/*! version history:
-    - version 1: initial version; used from version 0.xx on
-    - version 2: ??? 
-    - version 3: Introduced with version 0.10; rewrite of most underworld
-      classes required a new version.
+/// savegame error message
+const char* c_savegameNotFound = "savegame file not found";
 
-   \todo complete version history
-*/
-const Uint32 Savegame::s_uiCurrentVersion = 3;
-
-//! savegame error message
-const char* c_strSavegameNotFound = "savegame file not found";
-
-
-// SavegameInfo methods
 
 SavegameInfo::SavegameInfo()
-:gameType(Base::gameUw1),
- strTitle("no savegame title"),
- uiGender(0),
- uiAppearance(0),
- uiProfession(0),
- uiMapLevel(0),
- uiStrength(0),
- uiDexterity(0),
- uiIntelligence(0),
- uiVitality(0),
- uiImageXRes(0),
- uiImageYRes(0)
+   :gameType(Base::gameUw1),
+   strTitle("no savegame title"),
+   uiGender(0),
+   uiAppearance(0),
+   uiProfession(0),
+   uiMapLevel(0),
+   uiStrength(0),
+   uiDexterity(0),
+   uiIntelligence(0),
+   uiVitality(0),
+   uiImageXRes(0),
+   uiImageYRes(0)
 {
    // note: this may not be Year 2038 save, depending on what compiler and runtime is used
    // since the date is only used to show it to the user, it should be no problem, though
@@ -128,7 +115,7 @@ void SavegameInfo::Load(Savegame& savegame)
    vecImageRGBA.clear();
    vecImageRGBA.resize(max);
 
-   for(unsigned int i=0; i<max; i++)
+   for (unsigned int i = 0; i < max; i++)
       vecImageRGBA[i] = savegame.Read32();
 }
 
@@ -170,7 +157,7 @@ void SavegameInfo::Save(Savegame& savegame)
    savegame.Write16(static_cast<Uint16>(uiImageYRes));
 
    unsigned int max = uiImageXRes * uiImageYRes;
-   for(unsigned int i=0; i<max; i++)
+   for (unsigned int i = 0; i < max; i++)
       savegame.Write32(vecImageRGBA[i]);
 }
 
@@ -178,165 +165,151 @@ void SavegameInfo::Save(Savegame& savegame)
 // Savegame methods
 
 Savegame::Savegame(const std::string& strFilename, const SavegameInfo& savegameInfo)
-:m_bSaving(true),
- m_uiSaveVersion(s_uiCurrentVersion),
- m_info(savegameInfo)
+   :m_isSaving(true),
+   m_saveVersion(s_currentVersion),
+   m_info(savegameInfo)
 {
    // use highest gz compression ratio
    SDL_RWopsPtr rwops = SDL_RWopsPtr(SDL_RWFromGzFile(strFilename.c_str(), "wb9"));
    if (rwops.get() == NULL)
-      throw Base::FileSystemException(c_strSavegameNotFound, strFilename, errno);
+      throw Base::FileSystemException(c_savegameNotFound, strFilename, errno);
 
    this->Base::File::operator=(Base::File(rwops));
 
    // write header
    BeginSection("header");
 
-   Write32(m_uiSaveVersion);
+   Write32(m_saveVersion);
 
    m_info.Save(*this);
    EndSection();
 }
 
 Savegame::Savegame(const std::string& strFilename)
-:m_bSaving(false),
- m_uiSaveVersion(s_uiCurrentVersion)
+   :m_isSaving(false),
+   m_saveVersion(s_currentVersion)
 {
    SDL_RWopsPtr rwops = SDL_RWopsPtr(SDL_RWFromGzFile(strFilename.c_str(), "rb"));
    if (rwops.get() == NULL)
-      throw Base::FileSystemException(c_strSavegameNotFound, strFilename, errno);
+      throw Base::FileSystemException(c_savegameNotFound, strFilename, errno);
 
    this->Base::File::operator=(Base::File(rwops));
 
    // read header
    BeginSection("header");
 
-   m_uiSaveVersion = Read32();
+   m_saveVersion = Read32();
 
    // message and assert about loading newer savegames
-   if (m_uiSaveVersion > s_uiCurrentVersion)
-      UaTrace("cannot load savegames of newer version %d (only version up to %u is supported)", m_uiSaveVersion, s_uiCurrentVersion);
+   if (m_saveVersion > s_currentVersion)
+      UaTrace("cannot load savegames of newer version %d (only version up to %u is supported)", m_saveVersion, s_currentVersion);
 
-   UaAssert(m_uiSaveVersion <= s_uiCurrentVersion);
+   UaAssert(m_saveVersion <= s_currentVersion);
 
    m_info.Load(*this);
 
    EndSection();
 }
 
-void Savegame::ReadString(std::string& strText)
+void Savegame::ReadString(std::string& text)
 {
-   // read length
-   strText.erase();
+   text.erase();
    Uint16 uiLen = Base::File::Read16();
-   strText.reserve(uiLen);
+   text.reserve(uiLen);
 
-   // read characters
-   for(unsigned int i=0; i<uiLen; i++)
-      strText.append(1, static_cast<char>(Base::File::Read8()));
+   for (unsigned int i = 0; i < uiLen; i++)
+      text.append(1, static_cast<char>(Base::File::Read8()));
 }
 
-void Savegame::WriteString(const std::string& strText)
+void Savegame::WriteString(const std::string& text)
 {
-   // write length
-   Uint16 uiLen = static_cast<Uint16>(strText.size());
+   Uint16 uiLen = static_cast<Uint16>(text.size());
    Base::File::Write16(uiLen);
 
-   // write characters
-   for(unsigned int i=0; i<uiLen; i++)
-      Base::File::Write8(static_cast<Uint8>(strText[i]));
+   for (unsigned int i = 0; i < uiLen; i++)
+      Base::File::Write8(static_cast<Uint8>(text[i]));
 }
 
-void Savegame::BeginSection(const std::string& strSectionName)
+void Savegame::BeginSection(const std::string& sectionName)
 {
-   if (m_bSaving)
-      WriteString(strSectionName);
+   if (m_isSaving)
+      WriteString(sectionName);
    else
    {
-      std::string strReadSectionName;
-      ReadString(strReadSectionName);
+      std::string readSectionName;
+      ReadString(readSectionName);
 
       // check if section names are the same
-      if (strReadSectionName != strSectionName)
+      if (readSectionName != sectionName)
          throw Base::RuntimeException("savegame loading: section name mismatch");
    }
 }
 
 
-// SavegamesManager methods
-
-/*! Initializes savegames manager with settings for savegames folder and
-    current game prefix (can be set later when not known yet). After
-    constructing the object call Rescan() to obtain the list of savegames.
-*/
+/// Initializes savegames manager with settings for savegames folder and
+/// current game prefix (can be set later when not known yet). After
+/// constructing the object call Rescan() to obtain the list of savegames.
 SavegamesManager::SavegamesManager(const Base::Settings& settings)
-:m_strSavegameFolder(settings.GetString(Base::settingSavegameFolder)),
- m_strGamePrefix(settings.GetString(Base::settingGamePrefix)),
- m_uiImageXRes(0),
- m_uiImageYRes(0)
+   :m_savegameFolder(settings.GetString(Base::settingSavegameFolder)),
+   m_gamePrefix(settings.GetString(Base::settingGamePrefix)),
+   m_imageXRes(0),
+   m_imageYRes(0)
 {
-   UaAssert(m_strSavegameFolder.size() > 0);
+   UaAssert(m_savegameFolder.size() > 0);
 
-   // print zlib version
    UaTrace("savegames manager is using zlib %s\n", ZLIB_VERSION);
 
-   // try to create savegames folder (when not already present)
-   if (!Base::FileSystem::FolderExists(m_strSavegameFolder))
+   if (!Base::FileSystem::FolderExists(m_savegameFolder))
    {
-      UaTrace("creating savegame folder \"%s\"\n", m_strSavegameFolder.c_str());
-      Base::FileSystem::MakeFolder(m_strSavegameFolder.c_str());
+      UaTrace("creating savegame folder \"%s\"\n", m_savegameFolder.c_str());
+      Base::FileSystem::MakeFolder(m_savegameFolder.c_str());
    }
 }
 
-/*! \todo filter out savegames that don't have the same prefix */
+/// \todo filter out savegames that don't have the same prefix
 void SavegamesManager::Rescan()
 {
-   UaAssert(m_strSavegameFolder.size() > 0);
+   UaAssert(m_savegameFolder.size() > 0);
 
-   m_vecSavegames.clear();
+   m_savegamesList.clear();
 
-   // find all savegame files
-   std::string strSearchPath = m_strSavegameFolder + "/uasave*.uas";
-   Base::FileSystem::FindFiles(strSearchPath, m_vecSavegames);
+   std::string strSearchPath = m_savegameFolder + "/uasave*.uas";
+   Base::FileSystem::FindFiles(strSearchPath, m_savegamesList);
 
    // add quicksave savegame name
-   if (m_strGamePrefix.size() > 0 && IsQuicksaveAvail())
+   if (m_gamePrefix.size() > 0 && IsQuicksaveAvail())
    {
       std::string strQuicksaveName = GetQuicksaveFilename();
-      m_vecSavegames.push_back(strQuicksaveName);
+      m_savegamesList.push_back(strQuicksaveName);
    }
 
    // todo filter out other prefixes
 
-   std::sort(m_vecSavegames.begin(), m_vecSavegames.end());
+   std::sort(m_savegamesList.begin(), m_savegamesList.end());
 }
 
-void SavegamesManager::GetSavegameInfo(unsigned int uiIndex, SavegameInfo& info)
+void SavegamesManager::GetSavegameInfo(unsigned int index, SavegameInfo& info)
 {
-   UaAssert(uiIndex < m_vecSavegames.size());
+   UaAssert(index < m_savegamesList.size());
 
-   // open savegame and retrieve info
-   Savegame sg = LoadSavegame(uiIndex, false);
+   Savegame sg = LoadSavegame(index, false);
    info = sg.GetSavegameInfo();
 }
 
-/*! \param uiIndex index in savegame list
-    \param bStoreImage when true, the savegame preview image is stored
-           internally, so when user decides to save again the same savegame
-           state, we already have a preview image. Set to false when just
-           doing savegame information querying.
-*/
-Savegame SavegamesManager::LoadSavegame(unsigned int uiIndex, bool bStoreImage)
+/// \param index index in savegame list
+/// \param bStoreImage when true, the savegame preview image is stored
+///        internally, so when user decides to save again the same savegame
+///        state, we already have a preview image. Set to false when just
+///        doing savegame information querying.
+Savegame SavegamesManager::LoadSavegame(unsigned int index, bool storeImage)
 {
-   UaAssert(uiIndex < m_vecSavegames.size());
+   UaAssert(index < m_savegamesList.size());
 
-   std::string strSavegameFilename(GetSavegameFilename(uiIndex));
+   std::string savegameFilename(GetSavegameFilename(index));
 
-   // open savegame for loading
-   Savegame sg(strSavegameFilename);
+   Savegame sg(savegameFilename);
 
-   // set loaded image as new savegame image
-   if (bStoreImage)
+   if (storeImage)
    {
       const SavegameInfo& info = sg.GetSavegameInfo();
       SetSaveScreenshot(info.uiImageXRes, info.uiImageYRes, info.vecImageRGBA);
@@ -345,90 +318,83 @@ Savegame SavegamesManager::LoadSavegame(unsigned int uiIndex, bool bStoreImage)
    return sg;
 }
 
-/*! The savegame is constructed with the given SavegameInfo.
-    \param info savegame info to store in savegame
-    \param uiIndex index of savegame slot to overwrite; if the default
-                   parameter -1 is used, a new slot is used.
-*/
-Savegame SavegamesManager::SaveSavegame(SavegameInfo info, unsigned int uiIndex)
+/// The savegame is constructed with the given SavegameInfo.
+/// \param info savegame info to store in savegame
+/// \param index index of savegame slot to overwrite; if the default
+///                parameter -1 is used, a new slot is used.
+Savegame SavegamesManager::SaveSavegame(SavegameInfo info, unsigned int index)
 {
-   UaAssert(m_strSavegameFolder.size() > 0);
+   UaAssert(m_savegameFolder.size() > 0);
 
-   std::string strSavegameFilename;
+   std::string savegameFilename;
 
-   // search new slow on default parameter
-   if (uiIndex == unsigned(-1))
+   // search new slot on default parameter
+   if (index == unsigned(-1))
    {
       // Note: This is only going to work when no two instances of uwadv do the
       // same searching at the same time, which is normally not the case.
-      uiIndex = 0;
+      index = 0;
       do
       {
          std::ostringstream buffer;
 
          // create savegame name
-         buffer << m_strSavegameFolder << "/uasave"
-            << std::setfill('0') << std::setw(5) << uiIndex
+         buffer << m_savegameFolder << "/uasave"
+            << std::setfill('0') << std::setw(5) << index
             << ".uas";
 
-         strSavegameFilename = buffer.str();
-         uiIndex++;
+         savegameFilename = buffer.str();
+         index++;
 
-      } while( Base::FileSystem::FileExists(strSavegameFilename) );
+      } while (Base::FileSystem::FileExists(savegameFilename));
    }
    else
-      strSavegameFilename = GetSavegameFilename(uiIndex);
+      savegameFilename = GetSavegameFilename(index);
 
-   // set game prefix
-   info.strGamePrefix = m_strGamePrefix;
+   info.strGamePrefix = m_gamePrefix;
 
-   // add savegame preview image to savegame info
-   info.uiImageXRes = m_uiImageXRes;
-   info.uiImageYRes = m_uiImageYRes;
-   info.vecImageRGBA = m_vecImageSavegame;
+   info.uiImageXRes = m_imageXRes;
+   info.uiImageYRes = m_imageYRes;
+   info.vecImageRGBA = m_imageSavegame;
 
-   // open savegame for saving
-   return Savegame(strSavegameFilename, info);
+   return Savegame(savegameFilename, info);
 }
 
 bool SavegamesManager::IsQuicksaveAvail() const
 {
-   // no prefix? no quicksave savegame for you!
-   if (m_strGamePrefix.size() == 0)
+   // no prefix? no quicksave savegame
+   if (m_gamePrefix.empty())
       return false;
 
-   std::string strQuicksaveName = GetQuicksaveFilename();
+   std::string quicksaveName = GetQuicksaveFilename();
 
    // check if quicksave savegame file is available
-   return Base::FileSystem::FileExists(strQuicksaveName);
+   return Base::FileSystem::FileExists(quicksaveName);
 }
 
 Savegame SavegamesManager::SaveQuicksaveSavegame(SavegameInfo info)
 {
-   UaAssert(m_strGamePrefix.size() > 0);
+   UaAssert(m_gamePrefix.size() > 0);
 
-   std::string strQuicksaveName = GetQuicksaveFilename();
+   std::string quicksaveName = GetQuicksaveFilename();
 
-   // set title and prefix
    info.strTitle = "Quicksave Savegame";
-   info.strGamePrefix = m_strGamePrefix;
+   info.strGamePrefix = m_gamePrefix;
 
-   // set preview image data
-   info.uiImageXRes = m_uiImageXRes;
-   info.uiImageYRes = m_uiImageYRes;
-   info.vecImageRGBA = m_vecImageSavegame;
+   info.uiImageXRes = m_imageXRes;
+   info.uiImageYRes = m_imageYRes;
+   info.vecImageRGBA = m_imageSavegame;
 
-   return Savegame(strQuicksaveName, info);
+   return Savegame(quicksaveName, info);
 }
 
 std::string SavegamesManager::GetQuicksaveFilename() const
 {
-   UaAssert(m_strSavegameFolder.size() > 0);
-   UaAssert(m_strGamePrefix.size() > 0);
+   UaAssert(m_savegameFolder.size() > 0);
+   UaAssert(m_gamePrefix.size() > 0);
 
-   // create quicksave filename
-   std::string strQuicksaveName = m_strSavegameFolder +
-      "/quicksave_" + m_strGamePrefix + ".uas";
+   std::string quicksaveName = m_savegameFolder +
+      "/quicksave_" + m_gamePrefix + ".uas";
 
-   return strQuicksaveName;
+   return quicksaveName;
 }

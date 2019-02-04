@@ -1,174 +1,162 @@
-/*
-   Underworld Adventures - an Ultima Underworld remake project
-   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
+//
+// Underworld Adventures - an Ultima Underworld remake project
+// Copyright (c) 2002,2003,2004,2005,2006,2019 Michael Fink
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file settings.hpp
+/// \brief game settings class
+//
+#pragma once
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file settings.hpp
-
-   \brief game settings class
-
-*/
-
-// include guard
-#ifndef uwadv_base_settings_hpp_
-#define uwadv_base_settings_hpp_
-
-// needed includes
 #include <string>
 #include <map>
 #include "cfgfile.hpp"
 
 namespace Base
 {
+   class Settings;
 
-class Settings;
+   /// settings type key
+   enum ESettingsType
+   {
+      /// path to the game files (dependent on which game is currently active)
+      settingUnderworldPath = 0,
 
-// enums
+      /// path to the original uw1 game files (uw1 or uw_demo)
+      settingUw1Path,
 
-//! settings type key
-enum ESettingsType
-{
-   //! path to the game files (dependent on which game is currently active)
-   settingUnderworldPath = 0,
+      /// path to the uw2 game files
+      settingUw2Path,
 
-   //! path to the original uw1 game files (uw1 or uw_demo)
-   settingUw1Path,
+      /// true when the uw1 installation is the uw_demo
+      settingUw1IsUwdemo,
 
-   //! path to the uw2 game files
-   settingUw2Path,
+      /// path to the "uadata" folder
+      settingUadataPath,
 
-   //! true when the uw1 installation is the uw_demo
-   settingUw1IsUwdemo,
+      /// path to the savegame folder
+      settingSavegameFolder,
 
-   //! path to the "uadata" folder
-   settingUadataPath,
+      /// custom keymap file to load
+      settingCustomKeymap,
 
-   //! path to the savegame folder
-   settingSavegameFolder,
+      /// boolean value that indicates if uwadv-specific features are enabled
+      settingUwadvFeatures,
 
-   //! custom keymap file to load
-   settingCustomKeymap,
+      /// prefix for the uadata folder path to locate the game.cfg and other cfg files
+      settingGamePrefix,
 
-   //! boolean value that indicates if uwadv-specific features are enabled
-   settingUwadvFeatures,
+      /// screen resolution string, in the form "<xres> x <yres>"
+      settingScreenResolution,
 
-   //! prefix for the uadata folder path to locate the game.cfg and other cfg files
-   settingGamePrefix,
+      /// boolean value that indicates if the ui is drawn with "smooth" pixels
+      settingUISmooth,
 
-   //! screen resolution string, in the form "<xres> x <yres>"
-   settingScreenResolution,
+      /// boolean value that indicates fullscreen mode
+      settingFullscreen,
 
-   //! boolean value that indicates if the ui is drawn with "smooth" pixels
-   settingUISmooth,
+      /// string with narration type; one of "sound", "subtitles" or "both"
+      settingCutsceneNarration,
 
-   //! boolean value that indicates fullscreen mode
-   settingFullscreen,
+      /// boolean value that is true when audio system should be enabled
+      settingAudioEnabled,
 
-   //! string with narration type; one of "sound", "subtitles" or "both"
-   settingCutsceneNarration,
+      /// int value with midi device to use; -1 for default
+      settingWin32MidiDevice,
+   };
 
-   //! boolean value that is true when audio system should be enabled
-   settingAudioEnabled,
+   /// base game type enum
+   enum EUwGameType
+   {
+      /// we have ultima underworld 1 (or demo)
+      gameUw1,
 
-   //! int value with midi device to use; -1 for default
-   settingWin32MidiDevice,
-};
-
-//! base game type enum
-enum EUwGameType
-{
-   //! we have ultima underworld 1 (or demo)
-   gameUw1,
-
-   //! we have ultima underworld 2
-   gameUw2
-};
+      /// we have ultima underworld 2
+      gameUw2
+   };
 
 
-//! loads all config files into the settings object
-void LoadSettings(Settings& settings);
+   /// loads all config files into the settings object
+   void LoadSettings(Settings& settings);
 
 
-// classes
+   // classes
 
-//! Settings class
-/*! Manages uwadv's global settings values. The values can have the types
-    "boolean", "int" or "std::string". The values are stored in a config file
-    that is read via the ConfigFile class. The Settings class also manages a
-    game type value that determines which type of game is currently running.
-*/
-class Settings
-{
-public:
-   //! ctor
-   Settings();
+   /// \brief Settings class
+   /// Manages uwadv's global settings values. The values can have the types
+   /// "boolean", "int" or "std::string". The values are stored in a config file
+   /// that is read via the ConfigFile class. The Settings class also manages a
+   /// game type value that determines which type of game is currently running.
+   class Settings
+   {
+   public:
+      /// ctor
+      Settings();
 
-   //! loads settings from file
-   void Load(const std::string& strFilename);
+      /// loads settings from file
+      void Load(const std::string& filename);
 
-   //! save settings to file
-   void Save(const std::string& strFilenameNew, const std::string& strFilenameOld);
+      /// save settings to file
+      void Save(const std::string& filenameNew, const std::string& filenameOld);
 
-   // settings value access
+      // settings value access
 
-   //! returns the gametype
-   EUwGameType GetGametype() const { return m_gameType; }
+      /// returns the gametype
+      EUwGameType GetGametype() const { return m_gameType; }
 
-   //! returns string settings value
-   std::string GetString(ESettingsType type) const;
+      /// returns string settings value
+      std::string GetString(ESettingsType type) const;
 
-   //! returns an integer settings value
-   int GetInt(ESettingsType type) const;
+      /// returns an integer settings value
+      int GetInt(ESettingsType type) const;
 
-   //! returns a boolean settings value
-   bool GetBool(ESettingsType type) const;
+      /// returns a boolean settings value
+      bool GetBool(ESettingsType type) const;
 
-   //! sets the gametype
-   void SetGametype(EUwGameType gameType){ m_gameType = gameType; }
+      /// sets the gametype
+      void SetGametype(EUwGameType gameType) { m_gameType = gameType; }
 
-   //! inserts a string value
-   void SetValue(ESettingsType type, std::string strValue);
+      /// inserts a string value
+      void SetValue(ESettingsType type, std::string value);
 
-   //! inserts a C string value
-   void SetValue(ESettingsType type, const char* strValue){ SetValue(type, std::string(strValue)); }
+      /// inserts a C string value
+      void SetValue(ESettingsType type, const char* value)
+      {
+         SetValue(type, std::string(value));
+      }
 
-   //! inserts a boolean value
-   void SetValue(ESettingsType type, bool bValue);
+      /// inserts a boolean value
+      void SetValue(ESettingsType type, bool value);
 
-   //! inserts an integer value
-   void SetValue(ESettingsType type, int iValue);
+      /// inserts an integer value
+      void SetValue(ESettingsType type, int ialue);
 
-protected:
-   //! searches type name from string name
-   bool SearchTypeFromString(const std::string& strKeyname, ESettingsType& type);
+   protected:
+      /// searches type name from string name
+      bool SearchTypeFromString(const std::string& keyName, ESettingsType& type);
 
-protected:
-   //! settings map typedef
-   typedef std::map<ESettingsType, std::string> SettingsMap;
+   protected:
+      /// settings map typedef
+      typedef std::map<ESettingsType, std::string> SettingsMap;
 
-   //! game type
-   EUwGameType m_gameType;
+      /// game type
+      EUwGameType m_gameType;
 
-   //! settings map
-   SettingsMap m_settings;
-};
+      /// settings map
+      SettingsMap m_settings;
+   };
 
 } // namespace Base
-
-#endif

@@ -16,12 +16,11 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-   $Id$
-
 */
 /*! \file smart_ptr.hpp
 
    \brief Smart pointer class
+   \todo replace with std::shared_ptr
 */
 /*
    Most of this class is taken from Boost, so the below copyright statement

@@ -1,42 +1,26 @@
-/*
-   Underworld Adventures - an Ultima Underworld remake project
-   Copyright (c) 2006 Michael Fink
+//
+// Underworld Adventures - an Ultima Underworld remake project
+// Copyright (c) 2006,2019 Michael Fink
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file base.hpp
+/// \brief Base module includes
+//
+#pragma once
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file base.hpp
-
-   \brief Base module includes
-
-*/
-/*! \defgroup base Base Components
-
-   The Base component contains classes used by all other components of the
-   project.
-   The Base component doesn't depend on other modules.
-
-*/
-
-// include guard
-#ifndef uwadv_base_base_hpp_
-#define uwadv_base_base_hpp_
-
-// needed includes
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -84,57 +68,55 @@
 #endif
 
 
-//! checks for assert
+/// checks for assert
 void UaAssertCheck(bool cond, const char* cond_str, const char* file, int line);
 
-//! macro to check for conditions and pass source filename and line
+/// macro to check for conditions and pass source filename and line
 #define UaAssert(cond) UaAssertCheck((cond), #cond, __FILE__, __LINE__);
 
-//! macro to verify expression/statement
+/// macro to verify expression/statement
 #define UaVerify(cond) if (!(cond)) UaAssertCheck((cond), #cond, __FILE__, __LINE__);
 
 
 // trace messages
 
-//! prints out a trace message (don't use directly, use UaTrace instead!)
+/// prints out a trace message (don't use directly, use UaTrace instead!)
 int UaTracePrintf(const char *fmt, ...);
 
-/*! \def UaTrace
-    \brief debug output
-    Used to log text during the game. The text is printed on the console (the
-    program has to be built with console support to show the text).
-
-    The function has the same syntax as the printf function and uses the
-    UaTracePrintf() helper function. The function can be switched off
-    conditionally.
-*/
+/// \def UaTrace
+/// \brief debug output
+/// Used to log text during the game. The text is printed on the console (the
+/// program has to be built with console support to show the text).
+///
+/// The function has the same syntax as the printf function and uses the
+/// UaTracePrintf() helper function. The function can be switched off
+/// conditionally.
 #if 1 //defined(_DEBUG) || defined(DEBUG)
 # define UaTrace UaTracePrintf
 #else
 # define UaTrace true ? 0 : UaTracePrintf
 #endif
 
-//! \brief Base classes namespace \ingroup base
+/// \brief Base classes namespace
 /*! Contains all base classes, functions and types used in uwadv.
 */
 namespace Base
 {
-
-//! \brief Base class for noncopyable classes
-/*! Base class to prevent a derived class from being copyable (e.g. to put
-    into a container).
-*/
-class NonCopyable
-{
-public:
-   //! ctor; derived classes must be publicly constructible
-   NonCopyable(){}
-private:
-   //! copy ctor; derived classes must not be able to copy construct
-   NonCopyable(const NonCopyable&);
-   //! assignment operator; same as with copy ctor
-   NonCopyable& operator=(const NonCopyable&);
-};
+   /// \brief Base class for noncopyable classes
+   /// Base class to prevent a derived class from being copyable (e.g. to put
+   /// into a container).
+   /// \todo replace with C++11 deleted ctor
+   class NonCopyable
+   {
+   public:
+      /// ctor; derived classes must be publicly constructible
+      NonCopyable() {}
+   private:
+      /// copy ctor; derived classes must not be able to copy construct
+      NonCopyable(const NonCopyable&);
+      /// assignment operator; same as with copy ctor
+      NonCopyable& operator=(const NonCopyable&);
+   };
 
 } // namespace Base
 
@@ -143,41 +125,40 @@ private:
 #include "exception.hpp"
 #include "string.hpp"
 #include "smart_ptr.hpp"
+#include <SDL_types.h>
 
 // forward reference
 struct SDL_RWops;
 
 namespace Base
 {
+   /// delete functor for SDL_RWops struct ptr; used with Base::SmartPtr
+   class SDL_RWopsDeletor
+   {
+   public:
+      /// closes rwops file
+      void operator()(SDL_RWops* rwops);
+   };
 
-//! delete functor for SDL_RWops struct ptr; used with Base::SmartPtr
-class SDL_RWopsDeletor
-{
-public:
-   //! closes rwops file
-   void operator()(SDL_RWops* rwops);
-};
+   /// smart pointer to SDL_RWops struct
+   typedef SmartPtr<SDL_RWops, Base::SDL_RWopsDeletor> SDL_RWopsPtr;
 
-//! smart pointer to SDL_RWops struct
-typedef SmartPtr<SDL_RWops, Base::SDL_RWopsDeletor> SDL_RWopsPtr;
+   // constants
 
-// constants
+   // stock texture indices
+   // \todo move to more appropriate place
 
-// stock texture indices
-
-//! start of stock wall textures
-const Uint16 c_uiStockTexturesWall = 0x0000;
-//! start of stock floor textures
-const Uint16 c_uiStockTexturesFloor = 0x0100;
-//! object textures
-const Uint16 c_uiStockTexturesObjects = 0x0200;
-//! switch/lever/pull chain textures
-const Uint16 c_uiStockTexturesSwitches = 0x0400;
-//! door textures
-const Uint16 c_uiStockTexturesDoors = 0x0410;
-//! tmobj textures
-const Uint16 c_uiStockTexturesTmobj = 0x0420;
+   /// start of stock wall textures
+   const Uint16 c_uiStockTexturesWall = 0x0000;
+   /// start of stock floor textures
+   const Uint16 c_uiStockTexturesFloor = 0x0100;
+   /// object textures
+   const Uint16 c_uiStockTexturesObjects = 0x0200;
+   /// switch/lever/pull chain textures
+   const Uint16 c_uiStockTexturesSwitches = 0x0400;
+   /// door textures
+   const Uint16 c_uiStockTexturesDoors = 0x0410;
+   /// tmobj textures
+   const Uint16 c_uiStockTexturesTmobj = 0x0420;
 
 } // namespace Base
-
-#endif

@@ -1,31 +1,24 @@
-/*
-   Underworld Adventures - an Ultima Underworld remake project
-   Copyright (c) 2006,2019 Michael Fink
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file resourcemanager.cpp
-
-   \brief resource manager implementation
-
-*/
-
-// needed includes
+//
+// Underworld Adventures - an Ultima Underworld remake project
+// Copyright (c) 2006,2019 Michael Fink
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file resourcemanager.cpp
+/// \brief resource manager implementation
+//
 #include "base.hpp"
 #include "resourcemanager.hpp"
 #include "settings.hpp"
@@ -40,58 +33,54 @@ using Base::Settings;
 
 namespace Detail
 {
-std::string GetHomePath();
+   std::string GetHomePath();
 
 } // namespace Detail
 
 
-// ResourceManager methods
-
-/*! The settingUadataPath setting must be set in the settings object. */
+/// The settingUadataPath setting must be set in the settings object.
 ResourceManager::ResourceManager(const Settings& settings)
-:m_strUaDataPath(settings.GetString(Base::settingUadataPath)),
- m_strUwPath(settings.GetString(Base::settingUnderworldPath)),
- m_strUw1Path(settings.GetString(Base::settingUw1Path)),
- m_strUw2Path(settings.GetString(Base::settingUw2Path))
+   :m_uadataPath(settings.GetString(Base::settingUadataPath)),
+   m_uwPath(settings.GetString(Base::settingUnderworldPath)),
+   m_uw1Path(settings.GetString(Base::settingUw1Path)),
+   m_uw2Path(settings.GetString(Base::settingUw2Path))
 {
-   UaAssert(m_strUaDataPath.size() > 0);
+   UaAssert(m_uadataPath.size() > 0);
 }
 
-/*! The search order for resource files is as follows:
-    If a real file exists in the "uadata-path" folder, it is opened and returned.
-    All "uadata??.uar" files in the folder are searched for the file. Search for
-    the file is started with the last .uar file. This way a user can override files
-    found in the base uadata00.uar with his own files.
-    .uar files are .zip files that contain files and subfolders.
-    SDL_RWFromZZIP is used to open files inside .uar files.
-*/
-Base::SDL_RWopsPtr ResourceManager::GetResourceFile(const std::string& strRelFilename)
+/// The search order for resource files is as follows:
+/// If a real file exists in the "uadata-path" folder, it is opened and returned.
+/// All "uadata??.uar" files in the folder are searched for the file. Search for
+/// the file is started with the last .uar file. This way a user can override files
+/// found in the base uadata00.uar with his own files.
+/// .uar files are .zip files that contain files and subfolders.
+/// SDL_RWFromZZIP is used to open files inside .uar files.
+Base::SDL_RWopsPtr ResourceManager::GetResourceFile(const std::string& relativeFilename)
 {
-   UaAssert(m_strUaDataPath.size() > 0); // must have called LoadSettings() before
+   UaAssert(m_uadataPath.size() > 0); // must have called LoadSettings() before
 
    // first, we try to open the real file
-   std::string strFilename = m_strUaDataPath + "/" + strRelFilename;
+   std::string filename = m_uadataPath + "/" + relativeFilename;
 
-   // try to open file
-   SDL_RWopsPtr rwops = SDL_RWopsPtr(SDL_RWFromFile(strFilename.c_str(), "rb"));
+   SDL_RWopsPtr rwops = SDL_RWopsPtr(SDL_RWFromFile(filename.c_str(), "rb"));
 
    if (rwops.get() != NULL)
       return rwops; // found real file
 
    // find all uadata resource files
-   std::string strUarFileSpec = m_strUaDataPath + "/uadata??.uar";
-   std::vector<std::string> vecFileList;
-   Base::FileSystem::FindFiles(strUarFileSpec, vecFileList);
+   std::string uarFileSpec = m_uadataPath + "/uadata??.uar";
+   std::vector<std::string> fileList;
+   Base::FileSystem::FindFiles(uarFileSpec, fileList);
 
-   std::sort(vecFileList.begin(), vecFileList.end());
+   std::sort(fileList.begin(), fileList.end());
 
    // search for the file, starting with the last .uar file
-   for (int i = static_cast<int>(vecFileList.size())-1; i >= 0; i--)
+   for (int i = static_cast<int>(fileList.size()) - 1; i >= 0; i--)
    {
       // try to open from zip file
-      std::string strZipPath(vecFileList[i] + "/" + strRelFilename);
+      std::string zipPath(fileList[i] + "/" + relativeFilename);
 
-      rwops = SDL_RWopsPtr(SDL_RWFromZZIP(strZipPath.c_str(), "rb"));
+      rwops = SDL_RWopsPtr(SDL_RWFromZZIP(zipPath.c_str(), "rb"));
       if (rwops.get() != NULL)
          break;
    }
@@ -99,32 +88,31 @@ Base::SDL_RWopsPtr ResourceManager::GetResourceFile(const std::string& strRelFil
    return rwops;
 }
 
-/*! \todo implement reading from a zip file, e.g. uw_demo.zip
-*/
-Base::SDL_RWopsPtr ResourceManager::GetUnderworldFile(Base::EUnderworldResourcePath resPath, const std::string& strRelFilePath)
+/// \todo implement reading from a zip file, e.g. uw_demo.zip
+Base::SDL_RWopsPtr ResourceManager::GetUnderworldFile(Base::EUnderworldResourcePath resourcePath, const std::string& relativeFilePath)
 {
-   std::string strFilename;
+   std::string filename;
 
-   switch(resPath)
+   switch (resourcePath)
    {
-   case resourceGameUw: strFilename = m_strUwPath; break;
-   case resourceGameUw1: strFilename = m_strUw1Path; break;
-   case resourceGameUw2: strFilename = m_strUw2Path; break;
+   case resourceGameUw: filename = m_uwPath; break;
+   case resourceGameUw1: filename = m_uw1Path; break;
+   case resourceGameUw2: filename = m_uw2Path; break;
    }
 
-   std::string strRealFilePath(strRelFilePath);
-   MapUnderworldFilename(strRealFilePath);
+   std::string realFilePath(relativeFilePath);
+   MapUnderworldFilename(realFilePath);
 
-   strFilename += strRealFilePath;
+   filename += realFilePath;
 
-   if (!Base::FileSystem::FileExists(strFilename))
-      throw Base::FileSystemException("couldn't find uw game file", strFilename, ENOENT);
+   if (!Base::FileSystem::FileExists(filename))
+      throw Base::FileSystemException("couldn't find uw game file", filename, ENOENT);
 
-   return SDL_RWopsPtr(SDL_RWFromFile(strFilename.c_str(), "rb"));
+   return SDL_RWopsPtr(SDL_RWFromFile(filename.c_str(), "rb"));
 }
 
-/*! \todo implement mapping */
-void ResourceManager::MapUnderworldFilename(std::string& strRelFilename)
+/// \todo implement mapping
+void ResourceManager::MapUnderworldFilename(std::string& relativeFilename)
 {
-   Base::String::Lowercase(strRelFilename);
+   Base::String::Lowercase(relativeFilename);
 }
