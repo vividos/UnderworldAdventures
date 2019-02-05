@@ -1,17 +1,5 @@
 output
-animview.exe
-cnvdbg.exe
-mapdisp.exe
-strpak.exe
-uwadv.exe
-*.ncb
-*.opt
-stuff
-uw_demo
-uw1
-uw2
-webpages
-uwadv.cfg
+*.la
 config.cache
 config.log
 config.status
@@ -30,3 +18,6 @@ config.sub
 configure
 ltmain.sh
 uwadv.spec
+config.h.in
+zzip-config.h
+zzip-config
