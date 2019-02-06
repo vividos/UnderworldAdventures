@@ -41,7 +41,7 @@ a:active {
 }
 
 .bordered-box {
-    min-width: 480px;
+    min-width: 360px;
     max-width: 960px;
     margin-left: auto;
     margin-right: auto;
