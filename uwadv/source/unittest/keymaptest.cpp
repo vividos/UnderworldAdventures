@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld remake project
-   Copyright (c) 2006 Michael Fink
+   Copyright (c) 2006,2019 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -32,50 +32,29 @@
 #include "textfile.hpp"
 #include "filesystem.hpp"
 
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
 namespace UnitTest
 {
 
 //! Keymap class test
 /*! Tests loading keymaps and custom keymaps and checks loaded key mappings. */
-class TestKeymap: public UnitTestCase
+TEST_CLASS(TestKeymap)
 {
-public:
-   // generate test suite
-   CPPUNIT_TEST_SUITE(TestKeymap)
-      CPPUNIT_TEST(TestKeymapInsert)
-      CPPUNIT_TEST(TestKeymapLoading)
-      CPPUNIT_TEST(TestCustomKeymapLoading)
-   CPPUNIT_TEST_SUITE_END()
-
-protected:
-   void TestKeymapInsert();
-   void TestKeymapLoading();
-   void TestCustomKeymapLoading();
-};
-
-// register test suite
-CPPUNIT_TEST_SUITE_REGISTRATION(TestKeymap)
-
-} // namespace UnitTest
-
-// methods
-
-using namespace UnitTest;
-
 /*! Tests inserting a key mapping into a Keymap and checking if it can be
     found again.
 */
-void TestKeymap::TestKeymapInsert()
+TEST_METHOD(TestKeymapInsert)
 {
    // empty keymap
    Base::Keymap keymap;
 
-   keymap.InsertKeyMapping(SDLK_a, static_cast<SDLMod>(KMOD_CTRL | KMOD_SHIFT | KMOD_ALT), Base::keyMenuTopOfList2);
-   CPPUNIT_ASSERT(keymap.FindKey(SDLK_a, static_cast<SDLMod>(KMOD_CTRL | KMOD_SHIFT | KMOD_ALT)) == Base::keyMenuTopOfList2);
+   keymap.InsertKeyMapping(SDLK_a, static_cast<SDL_Keymod>(KMOD_CTRL | KMOD_SHIFT | KMOD_ALT), Base::keyMenuTopOfList2);
+   Assert::IsTrue(keymap.FindKey(SDLK_a, static_cast<SDL_Keymod>(KMOD_CTRL | KMOD_SHIFT | KMOD_ALT)) == Base::keyMenuTopOfList2);
 }
 
 /*! Tests keymap loading; keymap.cfg is loaded from current uwadv.cfg settings. */
-void TestKeymap::TestKeymapLoading()
+TEST_METHOD(TestKeymapLoading)
 {
    Base::Settings& settings = GetTestSettings();
 
@@ -88,7 +67,7 @@ void TestKeymap::TestKeymapLoading()
 /*! Tests loading custom keymaps and checking that keys mappings are properly
     saved in the Keymap object.
 */
-void TestKeymap::TestCustomKeymapLoading()
+TEST_METHOD(TestCustomKeymapLoading)
 {
    // write custom keymap file
    TempFolder testFolder;
@@ -119,7 +98,9 @@ void TestKeymap::TestCustomKeymapLoading()
    keymap.Init(settings);
 
    // verify settings
-   CPPUNIT_ASSERT(keymap.FindKey(SDLK_a, static_cast<SDLMod>(KMOD_CTRL | KMOD_SHIFT | KMOD_ALT)) == Base::keyMenuTopOfList2);
-   CPPUNIT_ASSERT(keymap.FindKey(SDLK_F12, static_cast<SDLMod>(KMOD_CTRL)) == Base::keyUaDebug);
-   CPPUNIT_ASSERT(keymap.FindKey(SDLK_F12, KMOD_LCTRL) == Base::keyNone);
+   Assert::IsTrue(keymap.FindKey(SDLK_a, static_cast<SDL_Keymod>(KMOD_CTRL | KMOD_SHIFT | KMOD_ALT)) == Base::keyMenuTopOfList2);
+   Assert::IsTrue(keymap.FindKey(SDLK_F12, static_cast<SDL_Keymod>(KMOD_CTRL)) == Base::keyUaDebug);
+   Assert::IsTrue(keymap.FindKey(SDLK_F12, KMOD_LCTRL) == Base::keyNone);
 }
+};
+} // namespace UnitTest

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld remake project
-   Copyright (c) 2006 Michael Fink
+   Copyright (c) 2006,2019 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -34,39 +34,17 @@
 #include "levellist.hpp"
 #include "player.hpp"
 
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
 namespace UnitTest
 {
 
 //! Import test
 /*! Tests importing all kinds of original game data files. */
-class TestImport: public UnitTestCase
+TEST_CLASS(TestImport)
 {
-public:
-   // generate test suite
-   CPPUNIT_TEST_SUITE(TestImport)
-      CPPUNIT_TEST(TestObjectPropertiesImport)
-      CPPUNIT_TEST(TestLevelListImport)
-//      CPPUNIT_TEST(TestPlayerImport)
-   CPPUNIT_TEST_SUITE_END()
-
-protected:
-   void TestObjectPropertiesImport();
-   void TestLevelListImport();
-   void TestPlayerImport();
-};
-
-// register test suite
-CPPUNIT_TEST_SUITE_REGISTRATION(TestImport)
-
-} // namespace UnitTest
-
-// methods
-
-using namespace UnitTest;
-
-
 /*! Tests importing object properties */
-void TestImport::TestObjectPropertiesImport()
+TEST_METHOD(TestObjectPropertiesImport)
 {
    Base::Settings& settings = GetTestSettings();
 
@@ -82,14 +60,14 @@ void TestImport::TestObjectPropertiesImport()
       Import::ImportProperties(resourceManager, objectProperties);
 
       // test if all property vectors are filled
-      CPPUNIT_ASSERT(0x0200 == objectProperties.GetVectorCommonObjectProperties().size());
-      CPPUNIT_ASSERT(0x0010 == objectProperties.GetVectorMeleeWeaponProperties().size());
-      CPPUNIT_ASSERT(0x0010 == objectProperties.GetVectorRangedWeaponProperties().size());
-      CPPUNIT_ASSERT(0x0020 == objectProperties.GetVectorArmourAndWearableProperties().size());
-      CPPUNIT_ASSERT(0x0040 == objectProperties.GetVectorCritterProperties().size());
-      CPPUNIT_ASSERT(0x0010 == objectProperties.GetVectorContainerProperties().size());
-      CPPUNIT_ASSERT(0x0010 == objectProperties.GetVectorLightSourceProperties().size());
-      CPPUNIT_ASSERT(0x0010 == objectProperties.GetVectorAnimatedObjectProperties().size());
+      Assert::IsTrue(0x0200 == objectProperties.GetVectorCommonObjectProperties().size());
+      Assert::IsTrue(0x0010 == objectProperties.GetVectorMeleeWeaponProperties().size());
+      Assert::IsTrue(0x0010 == objectProperties.GetVectorRangedWeaponProperties().size());
+      Assert::IsTrue(0x0020 == objectProperties.GetVectorArmourAndWearableProperties().size());
+      Assert::IsTrue(0x0040 == objectProperties.GetVectorCritterProperties().size());
+      Assert::IsTrue(0x0010 == objectProperties.GetVectorContainerProperties().size());
+      Assert::IsTrue(0x0010 == objectProperties.GetVectorLightSourceProperties().size());
+      Assert::IsTrue(0x0010 == objectProperties.GetVectorAnimatedObjectProperties().size());
    }
 
    settings.SetValue(Base::settingGamePrefix, std::string("uw2"));
@@ -104,19 +82,19 @@ void TestImport::TestObjectPropertiesImport()
       Import::ImportProperties(resourceManager, objectProperties);
 
       // test if all property vectors are filled
-      CPPUNIT_ASSERT(0x0200 == objectProperties.GetVectorCommonObjectProperties().size());
-      CPPUNIT_ASSERT(0x0010 == objectProperties.GetVectorMeleeWeaponProperties().size());
-      CPPUNIT_ASSERT(0x0010 == objectProperties.GetVectorRangedWeaponProperties().size());
-      CPPUNIT_ASSERT(0x0020 == objectProperties.GetVectorArmourAndWearableProperties().size());
-      CPPUNIT_ASSERT(0x0040 == objectProperties.GetVectorCritterProperties().size());
-      CPPUNIT_ASSERT(0x0010 == objectProperties.GetVectorContainerProperties().size());
-      CPPUNIT_ASSERT(0x0010 == objectProperties.GetVectorLightSourceProperties().size());
-      CPPUNIT_ASSERT(0x0010 == objectProperties.GetVectorAnimatedObjectProperties().size());
+      Assert::IsTrue(0x0200 == objectProperties.GetVectorCommonObjectProperties().size());
+      Assert::IsTrue(0x0010 == objectProperties.GetVectorMeleeWeaponProperties().size());
+      Assert::IsTrue(0x0010 == objectProperties.GetVectorRangedWeaponProperties().size());
+      Assert::IsTrue(0x0020 == objectProperties.GetVectorArmourAndWearableProperties().size());
+      Assert::IsTrue(0x0040 == objectProperties.GetVectorCritterProperties().size());
+      Assert::IsTrue(0x0010 == objectProperties.GetVectorContainerProperties().size());
+      Assert::IsTrue(0x0010 == objectProperties.GetVectorLightSourceProperties().size());
+      Assert::IsTrue(0x0010 == objectProperties.GetVectorAnimatedObjectProperties().size());
    }
 }
 
 /*! Tests loading level list */
-void TestImport::TestLevelListImport()
+TEST_METHOD(TestLevelListImport)
 {
    Base::Settings& settings = GetTestSettings();
 
@@ -167,7 +145,7 @@ void TestImport::TestLevelListImport()
 }
 
 /*! Tests loading player infos */
-void TestImport::TestPlayerImport()
+TEST_METHOD(TestPlayerImport)
 {
    Base::Settings& settings = GetTestSettings();
 
@@ -189,3 +167,5 @@ void TestImport::TestPlayerImport()
       playerImporter.LoadPlayer(player, settings.GetString(Base::settingUw2Path));
    }
 }
+};
+} // namespace UnitTest

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld remake project
-   Copyright (c) 2006 Michael Fink
+   Copyright (c) 2006,2019 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -30,36 +30,17 @@
 #include "cfgfile.hpp"
 #include "textfile.hpp"
 
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
 namespace UnitTest
 {
 
 //! ConfigFile test
 /*! Tests loading and rewriting config files via ConfigFile. */
-class TestConfigFile: public UnitTestCase
+TEST_CLASS(TestConfigFile)
 {
-public:
-   // generate test suite
-   CPPUNIT_TEST_SUITE(TestConfigFile)
-      CPPUNIT_TEST(TestLoadFile)
-      CPPUNIT_TEST(TestRewriteFile)
-   CPPUNIT_TEST_SUITE_END()
-
-protected:
-   void TestLoadFile();
-   void TestRewriteFile();
-};
-
-// register test suite
-CPPUNIT_TEST_SUITE_REGISTRATION(TestConfigFile)
-
-} // namespace UnitTest
-
-// methods
-
-using namespace UnitTest;
-
 /*! Tests loading a config file. */
-void TestConfigFile::TestLoadFile()
+TEST_METHOD(TestLoadFile)
 {
    TempFolder testFolder;
    std::string strPath = testFolder.GetPathName();
@@ -83,15 +64,15 @@ void TestConfigFile::TestLoadFile()
 
    Base::ConfigValueMap& cfgMap = cfgFile.GetValueMap();
 
-   CPPUNIT_ASSERT(cfgMap["key1"] == "value1");
-   CPPUNIT_ASSERT(cfgMap["key2"] == "value2");
-   CPPUNIT_ASSERT(cfgMap["key3"] == "value 3");
+   Assert::IsTrue(cfgMap["key1"] == "value1");
+   Assert::IsTrue(cfgMap["key2"] == "value2");
+   Assert::IsTrue(cfgMap["key3"] == "value 3");
 }
 
 /*! Tests saving a config file by rewriting a given config file.
     \todo check if lines are right-trimmed of spaces
 */
-void TestConfigFile::TestRewriteFile()
+TEST_METHOD(TestRewriteFile)
 {
    TempFolder testFolder;
    std::string strPath = testFolder.GetPathName();
@@ -123,18 +104,20 @@ void TestConfigFile::TestRewriteFile()
    {
       Base::TextFile textFile(strFilenameNew, Base::modeRead);
 
-      CPPUNIT_ASSERT(true == textFile.IsOpen());
+      Assert::IsTrue(true == textFile.IsOpen());
 
       std::string strLine;
 
       textFile.ReadLine(strLine);
-// TODO right trimming isn't done yet      CPPUNIT_ASSERT(strLine == "# comment line");
-      CPPUNIT_ASSERT(strLine == "# comment line  ");
+// TODO right trimming isn't done yet      Assert::IsTrue(strLine == "# comment line");
+      Assert::IsTrue(strLine == "# comment line  ");
 
       textFile.ReadLine(strLine);
-      CPPUNIT_ASSERT(strLine == "key1 uwadv1");
+      Assert::IsTrue(strLine == "key1 uwadv1");
 
       textFile.ReadLine(strLine);
-      CPPUNIT_ASSERT(strLine == "key2 uwadv2");
+      Assert::IsTrue(strLine == "key2 uwadv2");
    }
 }
+};
+} // namespace UnitTest

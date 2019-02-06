@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld remake project
-   Copyright (c) 2006 Michael Fink
+   Copyright (c) 2006,2019 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -32,6 +32,8 @@
 #include <SDL_rwops.h>
 #include "SDL_rwops_gzfile.h"
 
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
 namespace UnitTest
 {
 
@@ -39,35 +41,10 @@ namespace UnitTest
 /*! Tests reading and writing files using File and TextFile. Additionally
     reading from and writing to gzip-compressed streams is tested.
 */
-class TestFile: public UnitTestCase
+TEST_CLASS(TestFile)
 {
-public:
-   // generate test suite
-   CPPUNIT_TEST_SUITE(TestFile)
-      CPPUNIT_TEST(TestFileReadWrite)
-      CPPUNIT_TEST(TestTextFileReadWrite)
-      CPPUNIT_TEST(TestRwopsFileRead)
-      CPPUNIT_TEST(TestGzipFileReadWrite)
-   CPPUNIT_TEST_SUITE_END()
-
-protected:
-   void TestFileReadWrite();
-   void TestTextFileReadWrite();
-   void TestRwopsFileRead();
-   void TestGzipFileReadWrite();
-};
-
-// register test suite
-CPPUNIT_TEST_SUITE_REGISTRATION(TestFile)
-
-} // namespace UnitTest
-
-// methods
-
-using namespace UnitTest;
-
 /*! Tests writing and reading files via Base::File. */
-void TestFile::TestFileReadWrite()
+TEST_METHOD(TestFileReadWrite)
 {
    TempFolder testFolder;
    std::string strFile = testFolder.GetPathName() + "/testfile.bin";
@@ -77,43 +54,43 @@ void TestFile::TestFileReadWrite()
    // write test file
    {
       Base::File testFile(strFile, Base::modeWrite);
-      CPPUNIT_ASSERT(true == testFile.IsOpen());
+      Assert::IsTrue(true == testFile.IsOpen());
 
-      CPPUNIT_ASSERT(0 == testFile.FileLength());
-      CPPUNIT_ASSERT(0 == testFile.Tell());
+      Assert::IsTrue(0 == testFile.FileLength());
+      Assert::IsTrue(0 == testFile.Tell());
 
       testFile.Write8(0x42);
       testFile.Write16(0xfffe);
       testFile.Write32(0x12345678);
-      CPPUNIT_ASSERT(1+2+4 == testFile.Tell());
+      Assert::IsTrue(1+2+4 == testFile.Tell());
 
       testFile.WriteBuffer(testData, SDL_TABLESIZE(testData));
-      CPPUNIT_ASSERT(1+2+4 + SDL_TABLESIZE(testData) == testFile.Tell());
+      Assert::IsTrue(1+2+4 + SDL_TABLESIZE(testData) == testFile.Tell());
    }
 
    // read test file
    {
       Base::File testFile(strFile, Base::modeRead);
-      CPPUNIT_ASSERT(true == testFile.IsOpen());
+      Assert::IsTrue(true == testFile.IsOpen());
 
-      CPPUNIT_ASSERT(1+2+4 + SDL_TABLESIZE(testData) == testFile.FileLength());
-      CPPUNIT_ASSERT(0 == testFile.Tell());
+      Assert::IsTrue(1+2+4 + SDL_TABLESIZE(testData) == testFile.FileLength());
+      Assert::IsTrue(0 == testFile.Tell());
 
-      CPPUNIT_ASSERT(0x42 == testFile.Read8());
-      CPPUNIT_ASSERT(0xfffe == testFile.Read16());
-      CPPUNIT_ASSERT(0x12345678 == testFile.Read32());
-      CPPUNIT_ASSERT(1+2+4 == testFile.Tell());
+      Assert::IsTrue(0x42 == testFile.Read8());
+      Assert::IsTrue(0xfffe == testFile.Read16());
+      Assert::IsTrue(0x12345678 == testFile.Read32());
+      Assert::IsTrue(1+2+4 == testFile.Tell());
 
       Uint8 testReadData[SDL_TABLESIZE(testData)];
       testFile.ReadBuffer(testReadData, SDL_TABLESIZE(testReadData));
-      CPPUNIT_ASSERT(1+2+4 + SDL_TABLESIZE(testData) == testFile.Tell());
+      Assert::IsTrue(1+2+4 + SDL_TABLESIZE(testData) == testFile.Tell());
 
-      CPPUNIT_ASSERT(0 == memcmp(testData, testReadData, SDL_TABLESIZE(testReadData)));
+      Assert::IsTrue(0 == memcmp(testData, testReadData, SDL_TABLESIZE(testReadData)));
    }
 }
 
 /*! Tests writing and reading of text files via Base::TextFile. */
-void TestFile::TestTextFileReadWrite()
+TEST_METHOD(TestTextFileReadWrite)
 {
    TempFolder testFolder;
    std::string strTextFile = testFolder.GetPathName() + "/testfile.txt";
@@ -125,7 +102,7 @@ void TestFile::TestTextFileReadWrite()
    // write test text file
    {
       Base::TextFile testFile(strTextFile, Base::modeWrite);
-      CPPUNIT_ASSERT(true == testFile.IsOpen());
+      Assert::IsTrue(true == testFile.IsOpen());
 
       testFile.WriteLine(c_strLine1);
       testFile.WriteLine(c_strLine2);
@@ -135,26 +112,26 @@ void TestFile::TestTextFileReadWrite()
    // read test text file
    {
       Base::TextFile testFile(strTextFile, Base::modeRead);
-      CPPUNIT_ASSERT(true == testFile.IsOpen());
+      Assert::IsTrue(true == testFile.IsOpen());
 
-      CPPUNIT_ASSERT(testFile.FileLength() > 0);
-      CPPUNIT_ASSERT(0 == testFile.Tell());
+      Assert::IsTrue(testFile.FileLength() > 0);
+      Assert::IsTrue(0 == testFile.Tell());
 
       std::string strLine1, strLine2, strLine3;
 
       testFile.ReadLine(strLine1);
-      CPPUNIT_ASSERT(strLine1 == c_strLine1);
+      Assert::IsTrue(strLine1 == c_strLine1);
 
       testFile.ReadLine(strLine2);
-      CPPUNIT_ASSERT(strLine2 == c_strLine2);
+      Assert::IsTrue(strLine2 == c_strLine2);
 
       testFile.ReadLine(strLine3);
-      CPPUNIT_ASSERT(strLine3 == c_strLine3);
+      Assert::IsTrue(strLine3 == c_strLine3);
    }
 }
 
 /*! Tests reading from SDL_RWops* constructed File class. */
-void TestFile::TestRwopsFileRead()
+TEST_METHOD(TestRwopsFileRead)
 {
    Uint8 testData[] =
    {
@@ -167,29 +144,29 @@ void TestFile::TestRwopsFileRead()
    // read test file
    {
       Base::SDL_RWopsPtr rwops = Base::SDL_RWopsPtr(SDL_RWFromConstMem(testData, SDL_TABLESIZE(testData)));
-      CPPUNIT_ASSERT(rwops.get() != NULL);
+      Assert::IsTrue(rwops.get() != NULL);
 
       Base::File testFile(rwops);
-      CPPUNIT_ASSERT(true == testFile.IsOpen());
+      Assert::IsTrue(true == testFile.IsOpen());
 
-      CPPUNIT_ASSERT(SDL_TABLESIZE(testData) == testFile.FileLength());
-      CPPUNIT_ASSERT(0 == testFile.Tell());
+      Assert::IsTrue(SDL_TABLESIZE(testData) == testFile.FileLength());
+      Assert::IsTrue(0 == testFile.Tell());
 
-      CPPUNIT_ASSERT(0x42 == testFile.Read8());
-      CPPUNIT_ASSERT(0xfffe == testFile.Read16());
-      CPPUNIT_ASSERT(0x12345678 == testFile.Read32());
-      CPPUNIT_ASSERT(1+2+4 == testFile.Tell());
+      Assert::IsTrue(0x42 == testFile.Read8());
+      Assert::IsTrue(0xfffe == testFile.Read16());
+      Assert::IsTrue(0x12345678 == testFile.Read32());
+      Assert::IsTrue(1+2+4 == testFile.Tell());
 
       Uint8 testReadData[SDL_TABLESIZE(testData)];
       testFile.ReadBuffer(testReadData, SDL_TABLESIZE(testReadData));
-      CPPUNIT_ASSERT(SDL_TABLESIZE(testData) == testFile.Tell());
+      Assert::IsTrue(SDL_TABLESIZE(testData) == testFile.Tell());
 
-      CPPUNIT_ASSERT(0 == memcmp(testData+1+2+4, testReadData, SDL_TABLESIZE(testReadData)));
+      Assert::IsTrue(0 == memcmp(testData+1+2+4, testReadData, SDL_TABLESIZE(testReadData)));
    }
 }
 
 /*! Tests writing and reading gzip-compressed files via Base::File. */
-void TestFile::TestGzipFileReadWrite()
+TEST_METHOD(TestGzipFileReadWrite)
 {
    TempFolder testFolder;
    std::string strFile = testFolder.GetPathName() + "/testfile.gz";
@@ -199,44 +176,46 @@ void TestFile::TestGzipFileReadWrite()
    // write test file
    {
       Base::SDL_RWopsPtr rwops = Base::SDL_RWopsPtr(SDL_RWFromGzFile(strFile.c_str(), "wb9"));
-      CPPUNIT_ASSERT(rwops.get() != NULL);
+      Assert::IsTrue(rwops.get() != NULL);
 
       Base::File testFile(rwops);
-      CPPUNIT_ASSERT(true == testFile.IsOpen());
+      Assert::IsTrue(true == testFile.IsOpen());
 
-      CPPUNIT_ASSERT(-1 == testFile.FileLength());
-      CPPUNIT_ASSERT(0 == testFile.Tell());
+      Assert::IsTrue(0 == testFile.FileLength());
+      Assert::IsTrue(0 == testFile.Tell());
 
       testFile.Write8(0x42);
       testFile.Write16(0xfffe);
       testFile.Write32(0x12345678);
-      CPPUNIT_ASSERT(1+2+4 == testFile.Tell());
+      Assert::IsTrue(1+2+4 == testFile.Tell());
 
       testFile.WriteBuffer(testData, SDL_TABLESIZE(testData));
-      CPPUNIT_ASSERT(1+2+4 + SDL_TABLESIZE(testData) == testFile.Tell());
+      Assert::IsTrue(1+2+4 + SDL_TABLESIZE(testData) == testFile.Tell());
    }
 
    // read test file
    {
       Base::SDL_RWopsPtr rwops = Base::SDL_RWopsPtr(SDL_RWFromGzFile(strFile.c_str(), "rb"));
-      CPPUNIT_ASSERT(rwops.get() != NULL);
+      Assert::IsTrue(rwops.get() != NULL);
 
       Base::File testFile(rwops);
-      CPPUNIT_ASSERT(true == testFile.IsOpen());
+      Assert::IsTrue(true == testFile.IsOpen());
 
       /// file length isn't known for gz-streams
-      CPPUNIT_ASSERT(-1 == testFile.FileLength());
-      CPPUNIT_ASSERT(0 == testFile.Tell());
+      Assert::IsTrue(0 == testFile.FileLength());
+      Assert::IsTrue(0 == testFile.Tell());
 
-      CPPUNIT_ASSERT(0x42 == testFile.Read8());
-      CPPUNIT_ASSERT(0xfffe == testFile.Read16());
-      CPPUNIT_ASSERT(0x12345678 == testFile.Read32());
-      CPPUNIT_ASSERT(1+2+4 == testFile.Tell());
+      Assert::IsTrue(0x42 == testFile.Read8());
+      Assert::IsTrue(0xfffe == testFile.Read16());
+      Assert::IsTrue(0x12345678 == testFile.Read32());
+      Assert::IsTrue(1+2+4 == testFile.Tell());
 
       Uint8 testReadData[SDL_TABLESIZE(testData)];
       testFile.ReadBuffer(testReadData, SDL_TABLESIZE(testReadData));
-      CPPUNIT_ASSERT(1+2+4 + SDL_TABLESIZE(testData) == testFile.Tell());
+      Assert::IsTrue(1+2+4 + SDL_TABLESIZE(testData) == testFile.Tell());
 
-      CPPUNIT_ASSERT(0 == memcmp(testData, testReadData, SDL_TABLESIZE(testReadData)));
+      Assert::IsTrue(0 == memcmp(testData, testReadData, SDL_TABLESIZE(testReadData)));
    }
 }
+};
+} // namespace UnitTest

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld remake project
-   Copyright (c) 2006 Michael Fink
+   Copyright (c) 2006,2019 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -31,6 +31,8 @@
 #include "settings.hpp"
 #include "file.hpp"
 
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
 namespace UnitTest
 {
 
@@ -38,39 +40,22 @@ namespace UnitTest
 /*! Tests resource manager that loads resource files.
     \todo test search order of .uar files
 */
-class TestResourceManager: public UnitTestCase
+TEST_CLASS(TestResourceManager)
 {
-public:
-   // generate test suite
-   CPPUNIT_TEST_SUITE(TestResourceManager)
-      CPPUNIT_TEST(TestResourceLoading)
-   CPPUNIT_TEST_SUITE_END()
-
-protected:
-   void TestResourceLoading();
-};
-
-// register test suite
-CPPUNIT_TEST_SUITE_REGISTRATION(TestResourceManager)
-
-} // namespace UnitTest
-
-// methods
-
-using namespace UnitTest;
-
 /*! Tests opening of resource files that may be zipped into an .uar file.
     Assumes that a valid "uwadv.cfg" file can be found where Underworld
     Adventures would expect the file.
 */
-void TestResourceManager::TestResourceLoading()
+TEST_METHOD(TestResourceLoading)
 {
    Base::Settings& settings = GetTestSettings();
 
    Base::ResourceManager resManager(settings);
    Base::SDL_RWopsPtr rwops = resManager.GetResourceFile("uw1/keymap.cfg");
-   CPPUNIT_ASSERT(rwops.get() != NULL);
+   Assert::IsNotNull(rwops.get());
 
    Base::File file(rwops);
-   CPPUNIT_ASSERT(file.FileLength() > 0);
+   Assert::IsTrue(file.FileLength() > 0);
 }
+};
+} // namespace UnitTest

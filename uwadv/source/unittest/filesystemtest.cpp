@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld remake project
-   Copyright (c) 2006 Michael Fink
+   Copyright (c) 2006,2019 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -29,37 +29,17 @@
 #include "unittest.hpp"
 #include "filesystem.hpp"
 
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
 namespace UnitTest
 {
 
 //! FileSystem class test
 /*! Tests file system functions provided by Base::FileSystem. */
-class TestFileSystem: public UnitTestCase
+TEST_CLASS(TestFileSystem)
 {
-public:
-   // generate test suite
-   CPPUNIT_TEST_SUITE(TestFileSystem)
-      CPPUNIT_TEST(TestCreateRemoveFolder)
-      CPPUNIT_TEST(TestListFiles)
-   CPPUNIT_TEST_SUITE_END()
-
-protected:
-   void TestCreateRemoveFolder();
-   void TestListFiles();
-};
-
-// register test suite
-CPPUNIT_TEST_SUITE_REGISTRATION(TestFileSystem)
-
-
-} // namespace UnitTest
-
-// methods
-
-using namespace UnitTest;
-
 /*! Tests creating and removing folders. */
-void TestFileSystem::TestCreateRemoveFolder()
+TEST_METHOD(TestCreateRemoveFolder)
 {
    TempFolder testFolder;
    std::string strPath = testFolder.GetPathName();
@@ -70,18 +50,18 @@ void TestFileSystem::TestCreateRemoveFolder()
    {
       Base::FileSystem::MakeFolder(strPath);
 
-      CPPUNIT_ASSERT(true == Base::FileSystem::FolderExists(strPath));
-      CPPUNIT_ASSERT(false == Base::FileSystem::FileExists(strPath));
+      Assert::IsTrue(true == Base::FileSystem::FolderExists(strPath));
+      Assert::IsTrue(false == Base::FileSystem::FileExists(strPath));
 
       Base::FileSystem::RemoveFolder(strPath);
 
-      CPPUNIT_ASSERT(false == Base::FileSystem::FolderExists(strPath));
-      CPPUNIT_ASSERT(false == Base::FileSystem::FileExists(strPath));
+      Assert::IsTrue(false == Base::FileSystem::FolderExists(strPath));
+      Assert::IsTrue(false == Base::FileSystem::FileExists(strPath));
    }
-   catch(Base::FileSystemException& e)
+   catch(Base::FileSystemException& ex)
    {
-      e;
-      CPPUNIT_ASSERT_FALSE();
+      ex;
+      Assert::Fail();
    }
 }
 
@@ -89,7 +69,7 @@ void TestFileSystem::TestCreateRemoveFolder()
     Base::FileSystem::FindFiles.
     \todo complete test
 */
-void TestFileSystem::TestListFiles()
+TEST_METHOD(TestListFiles)
 {
    TempFolder testFolder;
    std::string strPath = testFolder.GetPathName();
@@ -101,13 +81,15 @@ void TestFileSystem::TestListFiles()
       Base::FileSystem::FindFiles(strPath + "/*.*", vFileList);
 
       // note: folder list must not contain "." or ".."
-      CPPUNIT_ASSERT(vFileList.size() == 0);
+      Assert::IsTrue(vFileList.size() == 0);
    }
-   catch(Base::FileSystemException& e)
+   catch(Base::FileSystemException& ex)
    {
-      e;
-      CPPUNIT_ASSERT_FALSE();
+      ex;
+      Assert::Fail();
    }
 
    // test list with files
 }
+};
+} // namespace UnitTest

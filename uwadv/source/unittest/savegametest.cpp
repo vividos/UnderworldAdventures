@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld remake project
-   Copyright (c) 2006 Michael Fink
+   Copyright (c) 2006,2019 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -30,36 +30,17 @@
 #include "savegame.hpp"
 #include "filesystem.hpp"
 
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
 namespace UnitTest
 {
 
 //! Savegame and SavegamesManager class test
 /*! Tests savegames and the savegames manager. */
-class TestSavegame: public UnitTestCase
+TEST_CLASS(TestSavegame)
 {
-public:
-   // generate test suite
-   CPPUNIT_TEST_SUITE(TestSavegame)
-      CPPUNIT_TEST(TestSaveRestore)
-      CPPUNIT_TEST(TestSavegameManager)
-   CPPUNIT_TEST_SUITE_END()
-
-protected:
-   void TestSaveRestore();
-   void TestSavegameManager();
-};
-
-// register test suite
-CPPUNIT_TEST_SUITE_REGISTRATION(TestSavegame)
-
-} // namespace UnitTest
-
-// methods
-
-using namespace UnitTest;
-
 /*! Tests saving and restoring a savegame. */
-void TestSavegame::TestSaveRestore()
+TEST_METHOD(TestSaveRestore)
 {
    TempFolder testFolder;
    std::string strSavegameFile = testFolder.GetPathName() + "/savegame.uas";
@@ -91,27 +72,27 @@ void TestSavegame::TestSaveRestore()
    {
       Base::Savegame savegame(strSavegameFile);
 
-      CPPUNIT_ASSERT(uiVersion == savegame.GetVersion());
+      Assert::IsTrue(uiVersion == savegame.GetVersion());
 
       savegame.BeginSection("test");
 
-      CPPUNIT_ASSERT(0x42 == savegame.Read8());
-      CPPUNIT_ASSERT(0xfffe == savegame.Read16());
-      CPPUNIT_ASSERT(0x1234abcd == savegame.Read32());
+      Assert::IsTrue(0x42 == savegame.Read8());
+      Assert::IsTrue(0xfffe == savegame.Read16());
+      Assert::IsTrue(0x1234abcd == savegame.Read32());
 
       std::string strTestStr2;
       savegame.ReadString(strTestStr2);
-      CPPUNIT_ASSERT(strTestStr2 == strTestStr);
+      Assert::IsTrue(strTestStr2 == strTestStr);
 
       savegame.EndSection();
 
       Base::SavegameInfo& info2 = savegame.GetSavegameInfo();
-      CPPUNIT_ASSERT(info.strTitle == info2.strTitle);
+      Assert::IsTrue(info.strTitle == info2.strTitle);
    }
 }
 
 /*! Tests savegames manager functions. */
-void TestSavegame::TestSavegameManager()
+TEST_METHOD(TestSavegameManager)
 {
    TempFolder testFolder;
    std::string strSavegameFolder = testFolder.GetPathName();
@@ -124,8 +105,8 @@ void TestSavegame::TestSavegameManager()
    {
       Base::SavegamesManager sgMgr(settings);
       sgMgr.Rescan();
-      CPPUNIT_ASSERT(0 == sgMgr.GetSavegamesCount());
-      CPPUNIT_ASSERT(false == sgMgr.IsQuicksaveAvail());
+      Assert::IsTrue(0 == sgMgr.GetSavegamesCount());
+      Assert::IsTrue(false == sgMgr.IsQuicksaveAvail());
    }
 
    // now set prefix for tests with prefix needed
@@ -144,16 +125,16 @@ void TestSavegame::TestSavegameManager()
 
       sgMgr.Rescan();
 
-      CPPUNIT_ASSERT(1 == sgMgr.GetSavegamesCount());
-      CPPUNIT_ASSERT(false == sgMgr.IsQuicksaveAvail());
+      Assert::IsTrue(1 == sgMgr.GetSavegamesCount());
+      Assert::IsTrue(false == sgMgr.IsQuicksaveAvail());
 
-      CPPUNIT_ASSERT(sgMgr.GetSavegameFilename(0).size() > 0);
-      CPPUNIT_ASSERT(sgMgr.GetSavegameFilename(0).find("uasave00000.uar") > 0);
+      Assert::IsTrue(sgMgr.GetSavegameFilename(0).size() > 0);
+      Assert::IsTrue(sgMgr.GetSavegameFilename(0).find("uasave00000.uar") > 0);
 
       {
          Base::Savegame sg = sgMgr.LoadSavegame(0);
-         CPPUNIT_ASSERT(0x42 == sg.Read8());
-         CPPUNIT_ASSERT(sg.GetSavegameInfo().strGamePrefix == c_strGamePrefix);
+         Assert::IsTrue(0x42 == sg.Read8());
+         Assert::IsTrue(sg.GetSavegameInfo().strGamePrefix == c_strGamePrefix);
       }
 
       // clean up savegame again
@@ -172,26 +153,28 @@ void TestSavegame::TestSavegameManager()
 
       sgMgr.Rescan();
 
-      CPPUNIT_ASSERT(1 == sgMgr.GetSavegamesCount());
-      CPPUNIT_ASSERT(true == sgMgr.IsQuicksaveAvail());
+      Assert::IsTrue(1 == sgMgr.GetSavegamesCount());
+      Assert::IsTrue(true == sgMgr.IsQuicksaveAvail());
 
-      CPPUNIT_ASSERT(sgMgr.GetSavegameFilename(0).size() > 0);
-      CPPUNIT_ASSERT(sgMgr.GetSavegameFilename(0).find("quicksave") > 0);
+      Assert::IsTrue(sgMgr.GetSavegameFilename(0).size() > 0);
+      Assert::IsTrue(sgMgr.GetSavegameFilename(0).find("quicksave") > 0);
 
       // check savegame info for quicksave
       {
          Base::SavegameInfo info;
          sgMgr.GetSavegameInfo(0, info);
-         CPPUNIT_ASSERT(info.strTitle == "Quicksave Savegame");
+         Assert::IsTrue(info.strTitle == "Quicksave Savegame");
       }
 
       {
          Base::Savegame sg = sgMgr.LoadQuicksaveSavegame();
-         CPPUNIT_ASSERT(0x42 == sg.Read8());
-         CPPUNIT_ASSERT(sg.GetSavegameInfo().strGamePrefix == c_strGamePrefix);
+         Assert::IsTrue(0x42 == sg.Read8());
+         Assert::IsTrue(sg.GetSavegameInfo().strGamePrefix == c_strGamePrefix);
       }
 
       // clean up savegame again
       Base::FileSystem::RemoveFile(sgMgr.GetSavegameFilename(0));
    }
 }
+};
+} // namespace UnitTest

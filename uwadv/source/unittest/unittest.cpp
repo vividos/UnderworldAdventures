@@ -33,86 +33,17 @@
 // global variables
 
 //! settings common for all unit tests
-Base::Settings g_settings;
+static Base::Settings g_settings;
 
+/// indicates if settings were already initialized
+static bool g_settingsInitialized = false;
 
-namespace Detail
+Base::Settings& UnitTest::GetTestSettings()
 {
-
-//! reporter that prints out to debug console
-class TraceReporter:
-   public CppUnitMini::Reporter,
-   public Base::NonCopyable
-{
-public:
-   //! ctor
-   TraceReporter() : m_iErrors(0), m_iTests(0){}
-   //! dtor
-   virtual ~TraceReporter(){}
-
-   virtual void error(const char* in_macroName, const char* in_macro, const char* in_file, int in_line)
-   {
-      m_iErrors++;
-      UaTrace("\n%s(%d) : %s(%s);\n", in_file, in_line, in_macroName, in_macro);
-   }
-
-   virtual void message(const char* msg)
-   {
-      UaTrace("\t%s\n", msg);
-   }
-
-   virtual void progress(const char* in_className, const char* in_shortTestName)
-   {
-      m_iTests++;
-      UaTrace("%s::%s\n", in_className, in_shortTestName);
-   }
-
-   virtual void printSummary()
-   {
-      if (m_iErrors > 0)
-         UaTrace("\nThere were errors! (%d of %d)\n", m_iErrors, m_iTests);
-      else
-         UaTrace("\nOK (%d)\n\n", m_iTests);
-   }
-
-private:
-   //! number of errors so far
-   int m_iErrors;
-
-   //! number of tests run so far
-   int m_iTests;
-};
-
-}
-
-// UnitTestCase methods
-
-Base::Settings& UnitTest::UnitTestCase::GetTestSettings(){ return g_settings; }
-
-
-// global functions
-
-// undef main that points to SDL_main entry point; ensures console is shown
-#undef main
-
-//! main function
-/*! runs all unit tests registered with the macro CPPUNIT_TEST_SUITE_REGISTRATION
-
-  \return true when all tests pass, false when at least one test failed
-*/
-int main()
-{
-   UaTrace("Underworld Adventures Unit Tests\n\n");
-
-   // init global settings variable
-   try
+   if (!g_settingsInitialized)
    {
       Base::LoadSettings(g_settings);
-   }
-   catch(Base::Exception& e)
-   {
-      UaTrace("Exception while config file loading: %s\n", e.what());
-      return 1;
+      g_settingsInitialized = true;
    }
 
    // check settings if they are right
@@ -122,7 +53,7 @@ int main()
       UaTrace("The Ultima Underworld 1 files cannot be found in %s\n"
          "Make sure to have a properly configured uwadv.cfg file!\n",
          strFilename.c_str());
-      return 1;
+      throw std::runtime_error("Couldn't find Ultima Underworld 1 files");
    }
 
    strFilename = g_settings.GetString(Base::settingUw2Path) + "/uw2.exe";
@@ -131,16 +62,13 @@ int main()
       UaTrace("The Ultima Underworld 2 files cannot be found in %s\n"
          "Make sure to have a properly configured uwadv.cfg file!\n",
          strFilename.c_str());
-      return 1;
+      throw std::runtime_error("Couldn't find Ultima Underworld 1 files");
    }
 
-   UaTrace("\nRunning tests...\n\n");
+   return g_settings;
+}
 
-   // start unit tests
-   Detail::TraceReporter reporter;
-
-   int iNumErrors = CppUnitMini::TestCase::run(&reporter, "");
-   reporter.printSummary();
-
-   return iNumErrors;
+int main()
+{
+   return 42;
 }

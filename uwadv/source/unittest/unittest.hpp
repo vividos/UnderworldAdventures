@@ -37,12 +37,10 @@
 
 */
 
-// include guard
-#ifndef uwadv_unittest_unittest_hpp_
-#define uwadv_unittest_unittest_hpp_
+#pragma once
 
 // needed includes
-#include "cppunitmini.hpp"
+#include <CppUnitTest.h>
 #include "base.hpp"
 #include "tempfolder.hpp"
 
@@ -55,15 +53,7 @@ class Settings;
 namespace UnitTest
 {
 
-//! unit test case base class
-class UnitTestCase: public CppUnitMini::TestCase
-{
-public:
    //! returns global settings object to use during tests
    Base::Settings& GetTestSettings();
 
-};
-
 } // namespace UnitTest
-
-#endif

@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld remake project
-   Copyright (c) 2006 Michael Fink
+   Copyright (c) 2006,2019 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -35,6 +35,8 @@
 #include "file.hpp"
 #include "resourcemanager.hpp"
 
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
 namespace UnitTest
 {
 
@@ -42,31 +44,8 @@ namespace UnitTest
 /*! Note that this test is normally not run; comment in the test
     suite function to run the test.
 */
-class TestAudio: public UnitTestCase
+TEST_CLASS(TestAudio)
 {
-public:
-   // generate test suite
-   CPPUNIT_TEST_SUITE(TestAudio)
-      //CPPUNIT_TEST(TestAudioManager)
-      //CPPUNIT_TEST(TestMidiPlayer)
-      //CPPUNIT_TEST(TestPlaySound)
-   CPPUNIT_TEST_SUITE_END()
-
-protected:
-   void TestAudioManager();
-   void TestMidiPlayer();
-   void TestPlaySound();
-};
-
-// register test suite
-CPPUNIT_TEST_SUITE_REGISTRATION(TestAudio)
-
-} // namespace UnitTest
-
-// methods
-
-using namespace UnitTest;
-
 //! auto-init class for SDL audio subsystem and SDL_mixer
 class SDLMixerIniter
 {
@@ -87,7 +66,7 @@ public:
 
 
 /*! Tests audio manager music track playback */
-void TestAudio::TestAudioManager()
+TEST_METHOD(TestAudioManager)
 {
    Base::Settings settings = GetTestSettings();
 
@@ -119,7 +98,7 @@ void TestAudio::TestAudioManager()
 }
 
 /*! Tests midi player .xmi playback */
-void TestAudio::TestMidiPlayer()
+TEST_METHOD(TestMidiPlayer)
 {
    SDLMixerIniter mixerIniter;
 
@@ -129,7 +108,7 @@ void TestAudio::TestMidiPlayer()
 
    // load all uw1 midis
    {
-      const char* midisUw1[] = 
+      const char* midisUw1[] =
       {
          "UW01.XMI",
          "UW02.XMI",
@@ -160,7 +139,7 @@ void TestAudio::TestMidiPlayer()
 
    // load all uw2 midis
    {
-      const char* midisUw2[] = 
+      const char* midisUw2[] =
       {
          "UWA01.XMI",
          "UWA02.XMI",
@@ -196,7 +175,7 @@ void TestAudio::TestMidiPlayer()
 }
 
 /*! Tests playing back sound effects */
-void TestAudio::TestPlaySound()
+TEST_METHOD(TestPlaySound)
 {
    Base::Settings settings = GetTestSettings();
 
@@ -224,3 +203,5 @@ void TestAudio::TestPlaySound()
       SDL_Delay(16*1000);
    }
 }
+};
+} // namespace UnitTest

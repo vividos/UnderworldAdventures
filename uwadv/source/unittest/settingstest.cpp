@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld remake project
-   Copyright (c) 2006 Michael Fink
+   Copyright (c) 2006,2019 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -29,6 +29,8 @@
 #include "unittest.hpp"
 #include "settings.hpp"
 
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
 namespace UnitTest
 {
 
@@ -36,31 +38,12 @@ namespace UnitTest
 /*! Tests resource manager that loads resource files.
     \todo test search order of .uar files
 */
-class TestSettings: public UnitTestCase
+TEST_CLASS(TestSettings)
 {
-public:
-   // generate test suite
-   CPPUNIT_TEST_SUITE(TestSettings)
-      CPPUNIT_TEST(TestSetValueStringBug)
-   CPPUNIT_TEST_SUITE_END()
-
-protected:
-   void TestSetValueStringBug();
-};
-
-// register test suite
-CPPUNIT_TEST_SUITE_REGISTRATION(TestSettings)
-
-} // namespace UnitTest
-
-// methods
-
-using namespace UnitTest;
-
 /*! Tests a bug when calling SetValue with a const char* argument that gets
     implicitly converted to bool, calling the wrong function as result.
 */
-void TestSettings::TestSetValueStringBug()
+TEST_METHOD(TestSetValueStringBug)
 {
    Base::Settings settings;
 
@@ -69,5 +52,7 @@ void TestSettings::TestSetValueStringBug()
    //       warning C4800: 'const char *' : forcing value to bool
    //       'true' or 'false' (performance warning)
    settings.SetValue(Base::settingUnderworldPath, "c:\\uwadv");
-   CPPUNIT_ASSERT(settings.GetString(Base::settingUnderworldPath) == "c:\\uwadv");
+   Assert::IsTrue(settings.GetString(Base::settingUnderworldPath) == "c:\\uwadv");
 }
+};
+} // namespace UnitTest

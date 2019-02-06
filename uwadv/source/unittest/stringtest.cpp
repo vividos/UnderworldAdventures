@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld remake project
-   Copyright (c) 2006 Michael Fink
+   Copyright (c) 2006,2019 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -29,36 +29,17 @@
 #include "unittest.hpp"
 #include "string.hpp"
 
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
 namespace UnitTest
 {
 
 //! String functions test
 /*! Tests string functions provided by Base::String. */
-class TestString: public UnitTestCase
+TEST_CLASS(TestString)
 {
-public:
-   // generate test suite
-   CPPUNIT_TEST_SUITE(TestString)
-      CPPUNIT_TEST(TestCaseChange)
-      CPPUNIT_TEST(TestConversion)
-   CPPUNIT_TEST_SUITE_END()
-
-protected:
-   void TestCaseChange();
-   void TestConversion();
-};
-
-// register test suite
-CPPUNIT_TEST_SUITE_REGISTRATION(TestString)
-
-} // namespace UnitTest
-
-// methods
-
-using namespace UnitTest;
-
 /*! Tests case changing via Lowercase and Uppercase */
-void TestString::TestCaseChange()
+TEST_METHOD(TestCaseChange)
 {
    std::string str1("testAbCd");
    std::string str2(str1);
@@ -66,15 +47,15 @@ void TestString::TestCaseChange()
    Base::String::Lowercase(str1);
    Base::String::Uppercase(str2);
 
-   CPPUNIT_ASSERT(str1 == "testabcd");
-   CPPUNIT_ASSERT(str2 == "TESTABCD");
+   Assert::IsTrue(str1 == "testabcd");
+   Assert::IsTrue(str2 == "TESTABCD");
 }
 
 /*! Tests conversion to unicode and UTF8
     Note: UTF8 conversion test is currently commented out, since it isn't
     implemented.
 */
-void TestString::TestConversion()
+TEST_METHOD(TestConversion)
 {
    const char* c_cstrTestString =      "abcd1234";
    const wchar_t* c_cstrTestStringW = L"abcd1234";
@@ -82,18 +63,20 @@ void TestString::TestConversion()
    // conversion to unicode
    std::string str1(c_cstrTestString);
    std::wstring wstr1;
-   CPPUNIT_ASSERT(true == Base::String::ConvertToUnicode(str1, wstr1));
+   Assert::IsTrue(true == Base::String::ConvertToUnicode(str1, wstr1));
 
-   CPPUNIT_ASSERT(wstr1 == c_cstrTestStringW);
+   Assert::IsTrue(wstr1 == c_cstrTestStringW);
 
    // conversion to UTF8
 /*
    std::wstring wstr2(L"\xfeff");
    std::vector<Uint8> vData;
-   CPPUNIT_ASSERT(true == Base::String::ConvertToUTF8(wstr2, vData));
-   CPPUNIT_ASSERT(vData.size() == 3);
+   Assert::IsTrue(true == Base::String::ConvertToUTF8(wstr2, vData));
+   Assert::IsTrue(vData.size() == 3);
 
    Uint8 auiData[] = { 0xef, 0xbb, 0xbf };
-   CPPUNIT_ASSERT(0 == memcmp(auiData, &vData[0], 3));
+   Assert::IsTrue(0 == memcmp(auiData, &vData[0], 3));
 */
 }
+};
+} // namespace UnitTest

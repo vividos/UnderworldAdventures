@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld remake project
-   Copyright (c) 2006 Michael Fink
+   Copyright (c) 2006,2019 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -31,39 +31,22 @@
 #include "settings.hpp"
 #include "resourcemanager.hpp"
 
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
 namespace UnitTest
 {
 
 //! ArchiveFile class test
 /*! Tests reading .ark files in uw1 and uw2 using ArchiveFile.
 */
-class TestArchiveFile: public UnitTestCase
+TEST_CLASS(TestArchiveFile)
 {
-public:
-   // generate test suite
-   CPPUNIT_TEST_SUITE(TestArchiveFile)
-      CPPUNIT_TEST(TestArchiveFileLoad)
-   CPPUNIT_TEST_SUITE_END()
-
-protected:
-   void TestArchiveFileLoad();
-};
-
-// register test suite
-CPPUNIT_TEST_SUITE_REGISTRATION(TestArchiveFile)
-
-} // namespace UnitTest
-
-// methods
-
-using namespace UnitTest;
-
 /*! Tests reading in all known .ark files.
     \todo check file lengths in uw1 mode, once file length is known (see
           ArchiveFile todo's).
     \todo decode what scd.ark contains
 */
-void TestArchiveFile::TestArchiveFileLoad()
+TEST_METHOD(TestArchiveFileLoad)
 {
    Base::Settings& settings = GetTestSettings();
 
@@ -72,11 +55,11 @@ void TestArchiveFile::TestArchiveFileLoad()
    // load uw1 levels
    {
       Base::ArchiveFile file(resourceMgr.GetUnderworldFile(Base::resourceGameUw1, "data/lev.ark"));
-      CPPUNIT_ASSERT(file.GetNumFiles() == 9*15); // 135 blocks
-      
+      Assert::IsTrue(file.GetNumFiles() == 9*15); // 135 blocks
+
       // check if first 9x3 files are available
       for(unsigned int ui=0; ui<9*3; ui++)
-         CPPUNIT_ASSERT(true == file.IsAvailable(ui));
+         Assert::IsTrue(true == file.IsAvailable(ui));
 
       file.GetFile(1);
       // TODO: check file lengths
@@ -85,11 +68,11 @@ void TestArchiveFile::TestArchiveFileLoad()
    // load uw1 conversations
    {
       Base::ArchiveFile file(resourceMgr.GetUnderworldFile(Base::resourceGameUw1, "data/cnv.ark"));
-      CPPUNIT_ASSERT(file.GetNumFiles() == 320); // 320 conversations
+      Assert::IsTrue(file.GetNumFiles() == 320); // 320 conversations
 
       // first conversation is unavailable, second isn't
-      CPPUNIT_ASSERT(false == file.IsAvailable(0));
-      CPPUNIT_ASSERT(true == file.IsAvailable(1));
+      Assert::IsTrue(false == file.IsAvailable(0));
+      Assert::IsTrue(true == file.IsAvailable(1));
 
       file.GetFile(1);
       // TODO: check file lengths
@@ -98,7 +81,7 @@ void TestArchiveFile::TestArchiveFileLoad()
    // load uw2 bitmaps
    {
       Base::ArchiveFile file(resourceMgr.GetUnderworldFile(Base::resourceGameUw2, "data/byt.ark"), true);
-      CPPUNIT_ASSERT(file.GetNumFiles() == 11); // 11 bitmaps
+      Assert::IsTrue(file.GetNumFiles() == 11); // 11 bitmaps
 
       // all files are exactly 64000 bytes long (320x200 bitmap)
       unsigned int uiMax = file.GetNumFiles();
@@ -106,30 +89,30 @@ void TestArchiveFile::TestArchiveFileLoad()
       if (ui != 3 && ui != 10) // entries 3 and 10 are unused
       {
          Base::File f = file.GetFile(ui);
-         CPPUNIT_ASSERT(f.FileLength() == 64000);
+         Assert::IsTrue(f.FileLength() == 64000);
       }
    }
 
    // load uw2 conversations
    {
       Base::ArchiveFile file(resourceMgr.GetUnderworldFile(Base::resourceGameUw2, "data/cnv.ark"), true);
-      CPPUNIT_ASSERT(file.GetNumFiles() == 320); // 320 conversations
+      Assert::IsTrue(file.GetNumFiles() == 320); // 320 conversations
 
-      CPPUNIT_ASSERT(false == file.IsAvailable(0));
-      CPPUNIT_ASSERT(true == file.IsAvailable(1));
+      Assert::IsTrue(false == file.IsAvailable(0));
+      Assert::IsTrue(true == file.IsAvailable(1));
 
       // check some lengths of conversations
       Base::File f1 = file.GetFile(1);
-      CPPUNIT_ASSERT(f1.FileLength() == 0x2a38);
+      Assert::IsTrue(f1.FileLength() == 0x2a38);
 
       Base::File f2 = file.GetFile(2);
-      CPPUNIT_ASSERT(f2.FileLength() == 0xe92);
+      Assert::IsTrue(f2.FileLength() == 0xe92);
    }
 
    // load uw2 levels
    {
       Base::ArchiveFile file(resourceMgr.GetUnderworldFile(Base::resourceGameUw2, "data/lev.ark"), true);
-      CPPUNIT_ASSERT(file.GetNumFiles() == 80*4);
+      Assert::IsTrue(file.GetNumFiles() == 80*4);
 
       // level tilemap and object list
       unsigned int ui;
@@ -139,7 +122,7 @@ void TestArchiveFile::TestArchiveFileLoad()
          if (file.IsAvailable(ui))
          {
             Base::File f = file.GetFile(ui);
-            CPPUNIT_ASSERT(f.FileLength() == 0x7e08);
+            Assert::IsTrue(f.FileLength() == 0x7e08);
          }
       }
 
@@ -150,7 +133,7 @@ void TestArchiveFile::TestArchiveFileLoad()
          if (file.IsAvailable(ui))
          {
             Base::File f = file.GetFile(ui);
-            CPPUNIT_ASSERT(f.FileLength() == 0x86);
+            Assert::IsTrue(f.FileLength() == 0x86);
          }
       }
 
@@ -161,16 +144,16 @@ void TestArchiveFile::TestArchiveFileLoad()
          if (file.IsAvailable(ui))
          {
             Base::File f = file.GetFile(ui);
-            CPPUNIT_ASSERT(f.FileLength() == 0x1000);
+            Assert::IsTrue(f.FileLength() == 0x1000);
          }
       }
    }
 
-   // load uw2 ???
+   // load uw2 sdc.ark
    {
       Base::ArchiveFile file(resourceMgr.GetUnderworldFile(Base::resourceGameUw2, "data/scd.ark"), true);
-      CPPUNIT_ASSERT(file.GetNumFiles() == 16);
-/*
+      Assert::IsTrue(file.GetNumFiles() == 16);
+
       unsigned int uiMax = file.GetNumFiles();
       for(unsigned int ui=0; ui<uiMax; ui++)
       if (file.IsAvailable(ui))
@@ -180,6 +163,8 @@ void TestArchiveFile::TestArchiveFileLoad()
       }
       else
          UaTrace("scd entry %u is not available\n", ui);
-*/
    }
 }
+};
+
+} // namespace UnitTest

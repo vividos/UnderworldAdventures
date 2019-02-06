@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{AF97F28C-51B1-4E30-BDF1-165DCE67FE43}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\source\uwadv-release.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\source\uwadv-debug.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>15.0.28127.55</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules />
+    <CodeAnalysisRuleAssemblies />
+    <OutDir>$(SolutionDir)output\bin\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules />
+    <CodeAnalysisRuleAssemblies />
+    <OutDir>$(SolutionDir)output\bin\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)source\audio;$(SolutionDir)source\conv;$(SolutionDir)source\import;$(SolutionDir)source\underw;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>unittest.hpp</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)source\audio;$(SolutionDir)source\conv;$(SolutionDir)source\import;$(SolutionDir)source\underw;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>unittest.hpp</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\source\unittest\archivefiletest.cpp" />
+    <ClCompile Include="..\..\source\unittest\audiotest.cpp" />
+    <ClCompile Include="..\..\source\unittest\cfgfiletest.cpp" />
+    <ClCompile Include="..\..\source\unittest\filesystemtest.cpp" />
+    <ClCompile Include="..\..\source\unittest\filetest.cpp" />
+    <ClCompile Include="..\..\source\unittest\importtest.cpp" />
+    <ClCompile Include="..\..\source\unittest\keymaptest.cpp" />
+    <ClCompile Include="..\..\source\unittest\resourcemanagertest.cpp" />
+    <ClCompile Include="..\..\source\unittest\savegametest.cpp" />
+    <ClCompile Include="..\..\source\unittest\settingstest.cpp" />
+    <ClCompile Include="..\..\source\unittest\stringtest.cpp" />
+    <ClCompile Include="..\..\source\unittest\tempfolder.cpp" />
+    <ClCompile Include="..\..\source\unittest\underworldtest.cpp" />
+    <ClCompile Include="..\..\source\unittest\unittest.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\source\unittest\tempfolder.hpp" />
+    <ClInclude Include="..\..\source\unittest\unittest.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\audio\audio.vcxproj">
+      <Project>{38a9e85a-3f97-4589-b801-dd7097fc14da}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\base\base.vcxproj">
+      <Project>{e1210703-9adb-4ed7-ae0c-b7e39a15e01f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\import\import.vcxproj">
+      <Project>{a974fda8-7d50-4b04-892a-edb00b68f7d6}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\underw\underw.vcxproj">
+      <Project>{4cc50617-2229-460e-9a80-3c517a2d9090}</Project>
+    </ProjectReference>
+    <ProjectReference Include="audio.vcxproj">
+      <Project>{38a9e85a-3f97-4589-b801-dd7097fc14da}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="base.vcxproj">
+      <Project>{e1210703-9adb-4ed7-ae0c-b7e39a15e01f}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="import.vcxproj">
+      <Project>{a974fda8-7d50-4b04-892a-edb00b68f7d6}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="underw.vcxproj">
+      <Project>{4cc50617-2229-460e-9a80-3c517a2d9090}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

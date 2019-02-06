@@ -1,6 +1,6 @@
 /*
    Underworld Adventures - an Ultima Underworld remake project
-   Copyright (c) 2006 Michael Fink
+   Copyright (c) 2006,2019 Michael Fink
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -33,43 +33,21 @@
 #include "objectlist.hpp"
 #include "inventory.hpp"
 
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
 namespace UnitTest
 {
+   using Underworld::c_uiInventorySlotNoItem;
 
 //! Underworld classes test
 /*! Tests underworld main functionality. */
-class TestUnderworld: public UnitTestCase
+TEST_CLASS(TestUnderworld)
 {
-public:
-   // generate test suite
-   CPPUNIT_TEST_SUITE(TestUnderworld)
-      CPPUNIT_TEST(TestSaveLoadSavegames)
-      CPPUNIT_TEST(TestObjectList)
-      CPPUNIT_TEST(TestInventory)
-      CPPUNIT_TEST(TestInventoryDropParent)
-   CPPUNIT_TEST_SUITE_END()
-
-protected:
-   void TestSaveLoadSavegames();
-   void TestObjectList();
-   void TestInventory();
-   void TestInventoryDropParent();
-};
-
-// register test suite
-CPPUNIT_TEST_SUITE_REGISTRATION(TestUnderworld)
-
-} // namespace UnitTest
-
-// methods
-
-using namespace UnitTest;
-
 /*! Tests saving and restoring underworld.
     \todo insert data into various underworld objects and check if the data
           is available after loading.
 */
-void TestUnderworld::TestSaveLoadSavegames()
+TEST_METHOD(TestSaveLoadSavegames)
 {
    TempFolder testFolder;
    std::string strSavegameFile = testFolder.GetPathName() + "/savegame.uas";
@@ -95,7 +73,7 @@ void TestUnderworld::TestSaveLoadSavegames()
 }
 
 /*! Tests object list functions. */
-void TestUnderworld::TestObjectList()
+TEST_METHOD(TestObjectList)
 {
    // simple allocation/free
    {
@@ -103,7 +81,7 @@ void TestUnderworld::TestObjectList()
       ol.Create();
 
       Uint16 uiPos = ol.Allocate();
-      CPPUNIT_ASSERT(uiPos != 0);
+      Assert::IsTrue(uiPos != 0);
 
       ol.SetObject(uiPos, Underworld::ObjectPtr(new Underworld::Object));
 
@@ -115,16 +93,16 @@ void TestUnderworld::TestObjectList()
    {
       Underworld::ObjectList ol;
       ol.Create();
-      CPPUNIT_ASSERT(Underworld::g_uiObjectListPosNone == ol.GetListStart(32,16));
+      Assert::IsTrue(Underworld::g_objectListPosNone == ol.GetListStart(32,16));
 
       Uint16 uiPos = ol.Allocate();
       ol.SetObject(uiPos, Underworld::ObjectPtr(new Underworld::Object));
 
       ol.AddObjectToTileList(uiPos, 32, 16);
-      CPPUNIT_ASSERT(uiPos == ol.GetListStart(32,16));
+      Assert::IsTrue(uiPos == ol.GetListStart(32,16));
 
       ol.RemoveObjectFromTileList(uiPos, 32, 16);
-      CPPUNIT_ASSERT(Underworld::g_uiObjectListPosNone == ol.GetListStart(32,16));
+      Assert::IsTrue(Underworld::g_objectListPosNone == ol.GetListStart(32,16));
    }
 
    // tile list: add some objects, remove from front, remove from end, remove in between
@@ -147,15 +125,15 @@ void TestUnderworld::TestObjectList()
       Uint16 uiPos5 = ol.Allocate();
       ol.SetObject(uiPos5, Underworld::ObjectPtr(new Underworld::Object));
 
-      CPPUNIT_ASSERT(uiPos1 != uiPos2);
-      CPPUNIT_ASSERT(uiPos1 != uiPos3);
-      CPPUNIT_ASSERT(uiPos1 != uiPos4);
-      CPPUNIT_ASSERT(uiPos1 != uiPos5);
-      CPPUNIT_ASSERT(uiPos2 != uiPos3);
-      CPPUNIT_ASSERT(uiPos2 != uiPos4);
-      CPPUNIT_ASSERT(uiPos2 != uiPos5);
-      CPPUNIT_ASSERT(uiPos3 != uiPos4);
-      CPPUNIT_ASSERT(uiPos5 != uiPos4);
+      Assert::IsTrue(uiPos1 != uiPos2);
+      Assert::IsTrue(uiPos1 != uiPos3);
+      Assert::IsTrue(uiPos1 != uiPos4);
+      Assert::IsTrue(uiPos1 != uiPos5);
+      Assert::IsTrue(uiPos2 != uiPos3);
+      Assert::IsTrue(uiPos2 != uiPos4);
+      Assert::IsTrue(uiPos2 != uiPos5);
+      Assert::IsTrue(uiPos3 != uiPos4);
+      Assert::IsTrue(uiPos5 != uiPos4);
 
       ol.AddObjectToTileList(uiPos1, 32, 16);
       ol.AddObjectToTileList(uiPos2, 32, 16);
@@ -165,25 +143,25 @@ void TestUnderworld::TestObjectList()
 
       // remove ...
       ol.RemoveObjectFromTileList(uiPos1, 32, 16); // from front
-      CPPUNIT_ASSERT(ol.GetObject(uiPos1)->GetObjectInfo().m_uiLink == Underworld::g_uiObjectListPosNone);
+      Assert::IsTrue(ol.GetObject(uiPos1)->GetObjectInfo().m_link == Underworld::g_objectListPosNone);
 
       ol.RemoveObjectFromTileList(uiPos5, 32, 16); // from back
-      CPPUNIT_ASSERT(ol.GetObject(uiPos5)->GetObjectInfo().m_uiLink == Underworld::g_uiObjectListPosNone);
+      Assert::IsTrue(ol.GetObject(uiPos5)->GetObjectInfo().m_link == Underworld::g_objectListPosNone);
 
       ol.RemoveObjectFromTileList(uiPos3, 32, 16); // in the middle
-      CPPUNIT_ASSERT(ol.GetObject(uiPos3)->GetObjectInfo().m_uiLink == Underworld::g_uiObjectListPosNone);
+      Assert::IsTrue(ol.GetObject(uiPos3)->GetObjectInfo().m_link == Underworld::g_objectListPosNone);
 
       ol.RemoveObjectFromTileList(uiPos4, 32, 16); // again, from back
-      CPPUNIT_ASSERT(ol.GetObject(uiPos4)->GetObjectInfo().m_uiLink == Underworld::g_uiObjectListPosNone);
+      Assert::IsTrue(ol.GetObject(uiPos4)->GetObjectInfo().m_link == Underworld::g_objectListPosNone);
 
       // only object 2 is in list now
-      CPPUNIT_ASSERT(uiPos2 == ol.GetListStart(32,16));
-      CPPUNIT_ASSERT(ol.GetObject(uiPos2)->GetObjectInfo().m_uiLink == Underworld::g_uiObjectListPosNone);
+      Assert::IsTrue(uiPos2 == ol.GetListStart(32,16));
+      Assert::IsTrue(ol.GetObject(uiPos2)->GetObjectInfo().m_link == Underworld::g_objectListPosNone);
 
       // remove last
       ol.RemoveObjectFromTileList(uiPos2, 32, 16);
-      CPPUNIT_ASSERT(ol.GetObject(uiPos2)->GetObjectInfo().m_uiLink == Underworld::g_uiObjectListPosNone);
-      CPPUNIT_ASSERT(Underworld::g_uiObjectListPosNone == ol.GetListStart(32,16));
+      Assert::IsTrue(ol.GetObject(uiPos2)->GetObjectInfo().m_link == Underworld::g_objectListPosNone);
+      Assert::IsTrue(Underworld::g_objectListPosNone == ol.GetListStart(32,16));
    }
 
    // allocate 0x401 entries, exceeding default object list size
@@ -197,7 +175,7 @@ void TestUnderworld::TestObjectList()
       for (unsigned int ui=0; ui<0x401; ui++)
       {
          Uint16 uiPos = ol.Allocate();
-         CPPUNIT_ASSERT(uiPos != 0);
+         Assert::IsTrue(uiPos != 0);
          ol.SetObject(uiPos, Underworld::ObjectPtr(new Underworld::Object));
 
          ol.AddObjectToTileList(uiPos, 32, 16);
@@ -221,10 +199,8 @@ void TestUnderworld::TestObjectList()
    }
 }
 
-using Underworld::c_uiInventorySlotNoItem;
-
 /*! Tests inventory functions. */
-void TestUnderworld::TestInventory()
+TEST_METHOD(TestInventory)
 {
    // simple object allocation
    {
@@ -235,7 +211,7 @@ void TestUnderworld::TestInventory()
       UaAssert(c_uiInventorySlotNoItem == inv.GetFloatingObjectPos());
 
       Uint16 uiPos = inv.Allocate();
-      inv.GetObject(uiPos).m_uiItemID = 0x0001;
+      inv.GetObject(uiPos).m_itemID = 0x0001;
 
       inv.Free(uiPos);
 
@@ -249,18 +225,18 @@ void TestUnderworld::TestInventory()
 
       // add container
       Uint16 uiContainerPos = inv.Allocate();
-      inv.GetObject(uiContainerPos).m_uiItemID = 0x0080; // a_sack
-      inv.GetObject(uiContainerPos).m_bIsQuantity = false;
+      inv.GetObject(uiContainerPos).m_itemID = 0x0080; // a_sack
+      inv.GetObject(uiContainerPos).m_isQuantity = false;
 
       // open it
       inv.OpenContainer(uiContainerPos);
-      CPPUNIT_ASSERT(uiContainerPos == inv.GetContainerPos());
-      CPPUNIT_ASSERT(c_uiInventorySlotNoItem == inv.GetParentContainerPos());
+      Assert::IsTrue(uiContainerPos == inv.GetContainerPos());
+      Assert::IsTrue(c_uiInventorySlotNoItem == inv.GetParentContainerPos());
 
       // and close it
       inv.CloseContainer();
-      CPPUNIT_ASSERT(c_uiInventorySlotNoItem == inv.GetContainerPos());
-      CPPUNIT_ASSERT(c_uiInventorySlotNoItem == inv.GetParentContainerPos());
+      Assert::IsTrue(c_uiInventorySlotNoItem == inv.GetContainerPos());
+      Assert::IsTrue(c_uiInventorySlotNoItem == inv.GetParentContainerPos());
    }
 
    // test slot list building for topmost container
@@ -268,49 +244,49 @@ void TestUnderworld::TestInventory()
       Underworld::Inventory inv;
       inv.Create();
 
-      CPPUNIT_ASSERT(0 == inv.GetNumSlots());
+      Assert::IsTrue(0 == inv.GetNumSlots());
 
       // add 4 objects
       Uint16 uiPos1 = inv.Allocate();
-      inv.GetObject(uiPos1).m_uiItemID = 0x0001;
-      CPPUNIT_ASSERT(true == inv.AddToContainer(uiPos1, c_uiInventorySlotNoItem));
-      CPPUNIT_ASSERT(uiPos1 == 0); // move to position 0
-      CPPUNIT_ASSERT(0 == inv.GetObject(uiPos1).m_uiLink); // assume link field is empty for topmost items
+      inv.GetObject(uiPos1).m_itemID = 0x0001;
+      Assert::IsTrue(true == inv.AddToContainer(uiPos1, c_uiInventorySlotNoItem));
+      Assert::IsTrue(uiPos1 == 0); // move to position 0
+      Assert::IsTrue(0 == inv.GetObject(uiPos1).m_link); // assume link field is empty for topmost items
 
       Uint16 uiPos2 = inv.Allocate();
-      inv.GetObject(uiPos2).m_uiItemID = 0x0002;
-      CPPUNIT_ASSERT(true == inv.AddToContainer(uiPos2, c_uiInventorySlotNoItem));
-      CPPUNIT_ASSERT(uiPos2 == 1); // move to position 1
-      CPPUNIT_ASSERT(0 == inv.GetObject(uiPos2).m_uiLink);
+      inv.GetObject(uiPos2).m_itemID = 0x0002;
+      Assert::IsTrue(true == inv.AddToContainer(uiPos2, c_uiInventorySlotNoItem));
+      Assert::IsTrue(uiPos2 == 1); // move to position 1
+      Assert::IsTrue(0 == inv.GetObject(uiPos2).m_link);
 
       Uint16 uiPos3 = inv.Allocate();
-      inv.GetObject(uiPos3).m_uiItemID = 0x0003;
-      CPPUNIT_ASSERT(true == inv.AddToContainer(uiPos3, c_uiInventorySlotNoItem));
-      CPPUNIT_ASSERT(uiPos3 == 2); // move to position 2
-      CPPUNIT_ASSERT(0 == inv.GetObject(uiPos3).m_uiLink);
+      inv.GetObject(uiPos3).m_itemID = 0x0003;
+      Assert::IsTrue(true == inv.AddToContainer(uiPos3, c_uiInventorySlotNoItem));
+      Assert::IsTrue(uiPos3 == 2); // move to position 2
+      Assert::IsTrue(0 == inv.GetObject(uiPos3).m_link);
 
       Uint16 uiPos4 = inv.Allocate();
-      inv.GetObject(uiPos4).m_uiItemID = 0x0004;
-      CPPUNIT_ASSERT(true == inv.AddToContainer(uiPos4, c_uiInventorySlotNoItem));
-      CPPUNIT_ASSERT(uiPos4 == 3); // move to position 3
-      CPPUNIT_ASSERT(0 == inv.GetObject(uiPos4).m_uiLink);
+      inv.GetObject(uiPos4).m_itemID = 0x0004;
+      Assert::IsTrue(true == inv.AddToContainer(uiPos4, c_uiInventorySlotNoItem));
+      Assert::IsTrue(uiPos4 == 3); // move to position 3
+      Assert::IsTrue(0 == inv.GetObject(uiPos4).m_link);
 
       // in topmost container there always are 8 slots
-      CPPUNIT_ASSERT(8 == inv.GetNumSlots());
+      Assert::IsTrue(8 == inv.GetNumSlots());
 
       // remove some items from topmost container
       inv.RemoveFromContainer(uiPos1, c_uiInventorySlotNoItem);
-      CPPUNIT_ASSERT(inv.GetObject(uiPos1).m_uiLink == 0);
+      Assert::IsTrue(inv.GetObject(uiPos1).m_link == 0);
       inv.Free(uiPos1);
-      CPPUNIT_ASSERT(inv.GetObject(uiPos1).m_uiItemID == c_uiInventorySlotNoItem);
+      Assert::IsTrue(inv.GetObject(uiPos1).m_itemID == c_uiInventorySlotNoItem);
 
       inv.RemoveFromContainer(uiPos4, c_uiInventorySlotNoItem);
-      CPPUNIT_ASSERT(inv.GetObject(uiPos4).m_uiLink == 0);
+      Assert::IsTrue(inv.GetObject(uiPos4).m_link == 0);
       inv.Free(uiPos4);
-      CPPUNIT_ASSERT(inv.GetObject(uiPos4).m_uiItemID == c_uiInventorySlotNoItem);
+      Assert::IsTrue(inv.GetObject(uiPos4).m_itemID == c_uiInventorySlotNoItem);
 
       // still 8 slots in the topmost container
-      CPPUNIT_ASSERT(8 == inv.GetNumSlots());
+      Assert::IsTrue(8 == inv.GetNumSlots());
    }
 
    // test slot list building for container
@@ -319,56 +295,56 @@ void TestUnderworld::TestInventory()
       inv.Create();
 
       Uint16 uiPosContainer = inv.Allocate();
-      inv.GetObject(uiPosContainer).m_uiItemID = 0x0080; // a_sack
-      inv.GetObject(uiPosContainer).m_bIsQuantity = false; // m_uiQuantity is a link
-      CPPUNIT_ASSERT(true == inv.AddToContainer(uiPosContainer, c_uiInventorySlotNoItem));
+      inv.GetObject(uiPosContainer).m_itemID = 0x0080; // a_sack
+      inv.GetObject(uiPosContainer).m_isQuantity = false; // m_quantity is a link
+      Assert::IsTrue(true == inv.AddToContainer(uiPosContainer, c_uiInventorySlotNoItem));
 
       // always 8 slots in topmost container
-      CPPUNIT_ASSERT(8 == inv.GetNumSlots());
+      Assert::IsTrue(8 == inv.GetNumSlots());
 
       inv.OpenContainer(uiPosContainer);
 
-      CPPUNIT_ASSERT(0 == inv.GetNumSlots()); // no object yet
+      Assert::IsTrue(0 == inv.GetNumSlots()); // no object yet
 
       Uint16 uiPos1 = inv.Allocate();
-      inv.GetObject(uiPos1).m_uiItemID = 0x0001;
-      CPPUNIT_ASSERT(true == inv.AddToContainer(uiPos1, uiPosContainer));
-      CPPUNIT_ASSERT(1 == inv.GetNumSlots());
+      inv.GetObject(uiPos1).m_itemID = 0x0001;
+      Assert::IsTrue(true == inv.AddToContainer(uiPos1, uiPosContainer));
+      Assert::IsTrue(1 == inv.GetNumSlots());
 
       Uint16 uiPos2 = inv.Allocate();
-      inv.GetObject(uiPos2).m_uiItemID = 0x0002;
-      CPPUNIT_ASSERT(true == inv.AddToContainer(uiPos2, uiPosContainer));
-      CPPUNIT_ASSERT(2 == inv.GetNumSlots());
+      inv.GetObject(uiPos2).m_itemID = 0x0002;
+      Assert::IsTrue(true == inv.AddToContainer(uiPos2, uiPosContainer));
+      Assert::IsTrue(2 == inv.GetNumSlots());
 
       Uint16 uiPos3 = inv.Allocate();
-      inv.GetObject(uiPos3).m_uiItemID = 0x0003;
-      CPPUNIT_ASSERT(true == inv.AddToContainer(uiPos3, uiPosContainer));
-      CPPUNIT_ASSERT(3 == inv.GetNumSlots());
+      inv.GetObject(uiPos3).m_itemID = 0x0003;
+      Assert::IsTrue(true == inv.AddToContainer(uiPos3, uiPosContainer));
+      Assert::IsTrue(3 == inv.GetNumSlots());
 
       Uint16 uiPos4 = inv.Allocate();
-      inv.GetObject(uiPos4).m_uiItemID = 0x0004;
-      CPPUNIT_ASSERT(true == inv.AddToContainer(uiPos4, uiPosContainer));
-      CPPUNIT_ASSERT(4 == inv.GetNumSlots());
+      inv.GetObject(uiPos4).m_itemID = 0x0004;
+      Assert::IsTrue(true == inv.AddToContainer(uiPos4, uiPosContainer));
+      Assert::IsTrue(4 == inv.GetNumSlots());
 
       // remove from front
       inv.RemoveFromContainer(uiPos1, uiPosContainer);
-      CPPUNIT_ASSERT(3 == inv.GetNumSlots());
+      Assert::IsTrue(3 == inv.GetNumSlots());
       inv.Free(uiPos1);
 
       // remove from last
       inv.RemoveFromContainer(uiPos4, uiPosContainer);
-      CPPUNIT_ASSERT(2 == inv.GetNumSlots());
+      Assert::IsTrue(2 == inv.GetNumSlots());
       inv.Free(uiPos4);
 
       // remove from in between
       inv.RemoveFromContainer(uiPos3, uiPosContainer);
-      CPPUNIT_ASSERT(1 == inv.GetNumSlots());
+      Assert::IsTrue(1 == inv.GetNumSlots());
       inv.Free(uiPos3);
 
       inv.CloseContainer();
 
       // still 8 slots in the topmost container
-      CPPUNIT_ASSERT(8 == inv.GetNumSlots());
+      Assert::IsTrue(8 == inv.GetNumSlots());
    }
 
    // allocate all items, causing item list enlargement
@@ -379,7 +355,7 @@ void TestUnderworld::TestInventory()
       for(unsigned int i=0; i<256; i++)
       {
          Uint16 uiPos = inv.Allocate();
-         inv.GetObject(uiPos).m_uiItemID = 0x0001;
+         inv.GetObject(uiPos).m_itemID = 0x0001;
       }
    }
 }
@@ -396,7 +372,7 @@ void TestUnderworld::TestInventory()
         may be a floating object afterwards, e.g. lighting incense with a torch)
       - when the objects can't be combined, the objects just swap
 */
-void TestUnderworld::TestInventoryDropParent()
+TEST_METHOD(TestInventoryDropParent)
 {
    // test dropping object to parent container
    {
@@ -405,80 +381,80 @@ void TestUnderworld::TestInventoryDropParent()
 
       // add container
       Uint16 uiContainerPos1 = inv.Allocate();
-      inv.GetObject(uiContainerPos1).m_uiItemID = 0x0080; // a_sack
-      inv.GetObject(uiContainerPos1).m_bIsQuantity = false;
+      inv.GetObject(uiContainerPos1).m_itemID = 0x0080; // a_sack
+      inv.GetObject(uiContainerPos1).m_isQuantity = false;
       inv.AddToContainer(uiContainerPos1, c_uiInventorySlotNoItem);
 
       // open it
       inv.OpenContainer(uiContainerPos1);
-      CPPUNIT_ASSERT(uiContainerPos1 == inv.GetContainerPos());
-      CPPUNIT_ASSERT(c_uiInventorySlotNoItem == inv.GetParentContainerPos());
+      Assert::IsTrue(uiContainerPos1 == inv.GetContainerPos());
+      Assert::IsTrue(c_uiInventorySlotNoItem == inv.GetParentContainerPos());
 
       // add floating object
       {
          Uint16 uiFloatObjPos1 = inv.Allocate();
-         inv.GetObject(uiFloatObjPos1).m_uiItemID = 0x0001;
-         CPPUNIT_ASSERT(true == inv.FloatObject(uiFloatObjPos1));
+         inv.GetObject(uiFloatObjPos1).m_itemID = 0x0001;
+         Assert::IsTrue(true == inv.FloatObject(uiFloatObjPos1));
       }
 
       // drop to parent container, the topmost one
-      CPPUNIT_ASSERT(true == inv.DropFloatingObject(inv.GetParentContainerPos()));
-      CPPUNIT_ASSERT(0 == inv.GetNumSlots()); // current slot list is untouched
+      Assert::IsTrue(true == inv.DropFloatingObject(inv.GetParentContainerPos()));
+      Assert::IsTrue(0 == inv.GetNumSlots()); // current slot list is untouched
 
       // check if object was really added to topmost container
       // must be after first container
-      CPPUNIT_ASSERT(0x0080 == inv.GetObject(0).m_uiItemID);
-      CPPUNIT_ASSERT(0x0001 == inv.GetObject(1).m_uiItemID);
-      CPPUNIT_ASSERT(0 == inv.GetObject(1).m_uiLink); // must have no link
+      Assert::IsTrue(0x0080 == inv.GetObject(0).m_itemID);
+      Assert::IsTrue(0x0001 == inv.GetObject(1).m_itemID);
+      Assert::IsTrue(0 == inv.GetObject(1).m_link); // must have no link
 
       // add another container
       Uint16 uiContainerPos2 = inv.Allocate();
-      inv.GetObject(uiContainerPos2).m_uiItemID = 0x0082; // a_sack
-      inv.GetObject(uiContainerPos2).m_bIsQuantity = false;
+      inv.GetObject(uiContainerPos2).m_itemID = 0x0082; // a_sack
+      inv.GetObject(uiContainerPos2).m_isQuantity = false;
       inv.AddToContainer(uiContainerPos2, uiContainerPos1);
 
       // open it
       inv.OpenContainer(uiContainerPos2);
-      CPPUNIT_ASSERT(uiContainerPos2 == inv.GetContainerPos());
-      CPPUNIT_ASSERT(uiContainerPos1 == inv.GetParentContainerPos());
+      Assert::IsTrue(uiContainerPos2 == inv.GetContainerPos());
+      Assert::IsTrue(uiContainerPos1 == inv.GetParentContainerPos());
 
       // add another floating object
       {
          Uint16 uiFloatObjPos2 = inv.Allocate();
-         inv.GetObject(uiFloatObjPos2).m_uiItemID = 0x0002;
-         CPPUNIT_ASSERT(true == inv.FloatObject(uiFloatObjPos2));
+         inv.GetObject(uiFloatObjPos2).m_itemID = 0x0002;
+         Assert::IsTrue(true == inv.FloatObject(uiFloatObjPos2));
       }
 
       // drop to parent container, the parent one
-      CPPUNIT_ASSERT(true == inv.DropFloatingObject(inv.GetParentContainerPos()));
-      CPPUNIT_ASSERT(0 == inv.GetNumSlots()); // current slot list is untouched
+      Assert::IsTrue(true == inv.DropFloatingObject(inv.GetParentContainerPos()));
+      Assert::IsTrue(0 == inv.GetNumSlots()); // current slot list is untouched
 
       // check if item was dropped to parent container
       // two objects in list; first, the second container, then the dropped object
       {
          const Underworld::ObjectInfo& objInfo = inv.GetObject(inv.GetParentContainerPos());
-         CPPUNIT_ASSERT(uiContainerPos2 == objInfo.m_uiQuantity);
+         Assert::IsTrue(uiContainerPos2 == objInfo.m_quantity);
 
-         Uint16 uiNonFloatObjectPos2 = inv.GetObject(objInfo.m_uiQuantity).m_uiLink;
-         CPPUNIT_ASSERT(0x0002 == inv.GetObject(uiNonFloatObjectPos2).m_uiItemID);
-         CPPUNIT_ASSERT(0 == inv.GetObject(uiNonFloatObjectPos2).m_uiLink); // must have no link
+         Uint16 uiNonFloatObjectPos2 = inv.GetObject(objInfo.m_quantity).m_link;
+         Assert::IsTrue(0x0002 == inv.GetObject(uiNonFloatObjectPos2).m_itemID);
+         Assert::IsTrue(0 == inv.GetObject(uiNonFloatObjectPos2).m_link); // must have no link
       }
 
       // check previous container
       // has two objects; container 1 and dropped item 1
       inv.CloseContainer();
-      CPPUNIT_ASSERT(2 == inv.GetNumSlots());
-      CPPUNIT_ASSERT(uiContainerPos2 == inv.GetSlotListPos(0));
-      CPPUNIT_ASSERT(0x0082 == inv.GetObject(inv.GetSlotListPos(0)).m_uiItemID);
-      CPPUNIT_ASSERT(0x0002 == inv.GetObject(inv.GetSlotListPos(1)).m_uiItemID);
+      Assert::IsTrue(2 == inv.GetNumSlots());
+      Assert::IsTrue(uiContainerPos2 == inv.GetSlotListPos(0));
+      Assert::IsTrue(0x0082 == inv.GetObject(inv.GetSlotListPos(0)).m_itemID);
+      Assert::IsTrue(0x0002 == inv.GetObject(inv.GetSlotListPos(1)).m_itemID);
 
       // check topmost container
       inv.CloseContainer();
-      CPPUNIT_ASSERT(8 == inv.GetNumSlots());
-      CPPUNIT_ASSERT(uiContainerPos1 == inv.GetSlotListPos(0));
-      CPPUNIT_ASSERT(0x0080 == inv.GetObject(inv.GetSlotListPos(0)).m_uiItemID);
-      CPPUNIT_ASSERT(0x0001 == inv.GetObject(inv.GetSlotListPos(1)).m_uiItemID);
-      CPPUNIT_ASSERT(Underworld::c_uiItemIDNone == inv.GetObject(inv.GetSlotListPos(2)).m_uiItemID);
+      Assert::IsTrue(8 == inv.GetNumSlots());
+      Assert::IsTrue(uiContainerPos1 == inv.GetSlotListPos(0));
+      Assert::IsTrue(0x0080 == inv.GetObject(inv.GetSlotListPos(0)).m_itemID);
+      Assert::IsTrue(0x0001 == inv.GetObject(inv.GetSlotListPos(1)).m_itemID);
+      Assert::IsTrue(Underworld::c_itemIDNone == inv.GetObject(inv.GetSlotListPos(2)).m_itemID);
    }
 /*
    // test floating object functions
@@ -488,27 +464,29 @@ void TestUnderworld::TestInventoryDropParent()
 
       // add item
       Uint16 uiPos1 = inv.Allocate();
-      inv.GetObject(uiPos1).m_uiItemID = 0x0001;
+      inv.GetObject(uiPos1).m_itemID = 0x0001;
 
       // make floating
       inv.FloatObject(uiPos1);
 
       // add some more items to topmost container
       Uint16 uiPos2 = inv.Allocate();
-      inv.GetObject(uiPos2).m_uiItemID = 0x0002;
-      CPPUNIT_ASSERT(true == inv.AddToContainer(uiPos2, c_uiInventorySlotNoItem));
+      inv.GetObject(uiPos2).m_itemID = 0x0002;
+      Assert::IsTrue(true == inv.AddToContainer(uiPos2, c_uiInventorySlotNoItem));
 
       Uint16 uiPos3 = inv.Allocate();
-      inv.GetObject(uiPos3).m_uiItemID = 0x0003;
-      CPPUNIT_ASSERT(true == inv.AddToContainer(uiPos3, c_uiInventorySlotNoItem));
+      inv.GetObject(uiPos3).m_itemID = 0x0003;
+      Assert::IsTrue(true == inv.AddToContainer(uiPos3, c_uiInventorySlotNoItem));
 
       Uint16 uiPos4 = inv.Allocate();
-      inv.GetObject(uiPos4).m_uiItemID = 0x0004;
-      CPPUNIT_ASSERT(true == inv.AddToContainer(uiPos4, c_uiInventorySlotNoItem));
+      inv.GetObject(uiPos4).m_itemID = 0x0004;
+      Assert::IsTrue(true == inv.AddToContainer(uiPos4, c_uiInventorySlotNoItem));
 
       // drop item in topmost container
-      CPPUNIT_ASSERT(true == inv.DropFloatingObject(c_uiInventorySlotNoItem));
+      Assert::IsTrue(true == inv.DropFloatingObject(c_uiInventorySlotNoItem));
 
    }
 */
 }
+};
+} // namespace UnitTest
