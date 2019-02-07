@@ -319,74 +319,74 @@ void Base::FileSystem::RecursiveRemoveFolder(const std::string& pathname)
    }
 }
 
-namespace Detail
+/// \brief returns system specific home path
+/// Win32: returns a subfolder of the "common application data" folder stored under
+///    the user profile of the logged in user, commonly found under
+///    "Documents and Settings", or the current directory, if the folder
+///    doesn't exist or is not supported by the system.
+/// Linux (and all with HAVE_HOME defined): returns the contents of the HOME
+///    environment variable. Special cases:
+/// MacOS X: "Library/Preferences/Underworld Adventures/" subfolder of HOME folder
+/// BeOS: "config/settings/uwadv/" subfolder ofHOME folder
+/// All other systems: returns the current folder
+std::string Base::FileSystem::GetHomePath()
 {
-   /// \brief returns system specific home path
-   /// Win32: returns a subfolder of the "common application data" folder stored under
-   ///    the user profile of the logged in user, commonly found under
-   ///    "Documents and Settings", or the current directory, if the folder
-   ///    doesn't exist or is not supported by the system.
-   /// Linux (and all with HAVE_HOME defined): returns the contents of the HOME
-   ///    environment variable. Special cases:
-   /// MacOS X: "Library/Preferences/Underworld Adventures/" subfolder of HOME folder
-   /// BeOS: "config/settings/uwadv/" subfolder ofHOME folder
-   /// All other systems: returns the current folder
-   std::string GetHomePath()
-   {
-      std::string homePath = "./";
+   std::string homePath = "./";
 
 #ifdef HAVE_HOME
+   {
+      const char* homedir = getenv("HOME");
+      if (homedir != NULL)
       {
-         const char* homedir = getenv("HOME");
-         if (homedir != NULL)
-         {
-            // User has a home directory
-            homePath = homedir;
+         // User has a home directory
+         homePath = homedir;
 
 #ifdef HAVE_MACOSX
-            // JCD: in Mac OS X, we put user config into user's Library folder
-            homePath += "/Library/Preferences/Underworld Adventures/";
+         // JCD: in Mac OS X, we put user config into user's Library folder
+         homePath += "/Library/Preferences/Underworld Adventures/";
 #elif defined( HAVE_BEOS )
-            homePath += "/config/settings/uwadv/";
+         homePath += "/config/settings/uwadv/";
 #else
-            homePath += "/.uwadv/";
+         homePath += "/.uwadv/";
 #endif
-         }
-
-         // try to create home folder
-         UaTrace("creating uahome folder \"%s\"\n", homePath.c_str());
-         Base::FileSystem::MakeFolder(homePath.c_str());
       }
+
+      // try to create home folder
+      UaTrace("creating uahome folder \"%s\"\n", homePath.c_str());
+      Base::FileSystem::MakeFolder(homePath.c_str());
+   }
 
 #elif defined(HAVE_WIN32) // Win32 API
 
-      char appdataPath[MAX_PATH];
-      HRESULT hr = ::SHGetFolderPathA(NULL, CSIDL_COMMON_APPDATA | CSIDL_FLAG_CREATE,
-         NULL, SHGFP_TYPE_CURRENT, appdataPath);
-      if (hr == S_OK && appdataPath[0] != 0)
-      {
-         homePath = appdataPath;
-         homePath += "\\Underworld Adventures\\";
+   char appdataPath[MAX_PATH];
+   HRESULT hr = ::SHGetFolderPathA(NULL, CSIDL_COMMON_APPDATA | CSIDL_FLAG_CREATE,
+      NULL, SHGFP_TYPE_CURRENT, appdataPath);
+   if (hr == S_OK && appdataPath[0] != 0)
+   {
+      homePath = appdataPath;
+      homePath += "\\Underworld Adventures\\";
 
-         std::string configFile(homePath);
-         configFile += "uwadv.cfg";
+      std::string configFile(homePath);
+      configFile += "uwadv.cfg";
 
-         // check if the path really exists, and that it contains uwadv.cfg
-         if (!Base::FileSystem::FolderExists(homePath) ||
-            !Base::FileSystem::FileExists(configFile))
-            homePath = "./"; // revert to current dir
-      }
+      // check if the path really exists, and that it contains uwadv.cfg
+      if (!Base::FileSystem::FolderExists(homePath) ||
+         !Base::FileSystem::FileExists(configFile))
+         homePath = "./"; // revert to current dir
+   }
 
 #else // all other OSes
 
-      // assume current working folder as home dir
-      homePath = "./";
+   // assume current working folder as home dir
+   homePath = "./";
 
 #endif
 
-      return homePath;
-   }
+   return homePath;
+}
 
+namespace Detail
+{
    /// \brief Returns system specific personal folder
    /// Win32: returns the "My Documents" folder, or the home folder returned by
    ///    GetHomePath(), if the folder doesn't exist or is not supported by the
@@ -394,7 +394,7 @@ namespace Detail
    /// All other systems: returns the home folder returned by GetHomePath()
    std::string GetPersonalFolderPath()
    {
-      std::string personalFolderPath = GetHomePath();
+      std::string personalFolderPath = Base::FileSystem::GetHomePath();
 
 #ifdef HAVE_WIN32 // Win32 API
 

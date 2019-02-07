@@ -27,7 +27,6 @@ using Base::Settings;
 
 namespace Detail
 {
-   std::string GetHomePath();
    std::string GetPersonalFolderPath();
 
    /// settings loader
@@ -37,7 +36,7 @@ namespace Detail
       /// ctor
       SettingsLoader(Base::Settings& settings)
          :m_settings(settings),
-         m_homePath(GetHomePath()),
+         m_homePath(Base::FileSystem::GetHomePath()),
          m_personalFolder(GetPersonalFolderPath())
       {
       }

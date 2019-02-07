@@ -49,6 +49,9 @@ namespace Base
 
       /// recursively removes all files and subfolders of a folder
       void RecursiveRemoveFolder(const std::string& pathname);
+
+      /// returns home path to use for uwadv
+      std::string GetHomePath();
    };
 
 } // namespace Base
