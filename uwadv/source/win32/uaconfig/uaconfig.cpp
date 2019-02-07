@@ -387,7 +387,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/,
    LPSTR /*lpCmdLine*/, int /*nCmdShow*/)
 {
    HRESULT res = _Module.Init(NULL, hInstance);
-   ATLASSERT(SUCCEEDED(res));
+   ATLASSERT(SUCCEEDED(res)); res;
 
    ConfigDlg cfg;
    cfg.RunDialog();
