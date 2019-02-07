@@ -23,6 +23,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lua", "source\thirdparty\lu
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "thirdparty", "source\thirdparty\thirdparty.vcxproj", "{CD1023B7-2E03-48A9-81FA-0F6AB70DE9AE}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "uaconfig", "source\win32\uaconfig\uaconfig.vcxproj", "{ECCDC58D-597D-4815-955E-F5E83A6CCA78}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -53,6 +55,10 @@ Global
 		{CD1023B7-2E03-48A9-81FA-0F6AB70DE9AE}.Debug|Win32.Build.0 = Debug|Win32
 		{CD1023B7-2E03-48A9-81FA-0F6AB70DE9AE}.Release|Win32.ActiveCfg = Release|Win32
 		{CD1023B7-2E03-48A9-81FA-0F6AB70DE9AE}.Release|Win32.Build.0 = Release|Win32
+		{ECCDC58D-597D-4815-955E-F5E83A6CCA78}.Debug|Win32.ActiveCfg = Debug|Win32
+		{ECCDC58D-597D-4815-955E-F5E83A6CCA78}.Debug|Win32.Build.0 = Debug|Win32
+		{ECCDC58D-597D-4815-955E-F5E83A6CCA78}.Release|Win32.ActiveCfg = Release|Win32
+		{ECCDC58D-597D-4815-955E-F5E83A6CCA78}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -66,6 +72,7 @@ Global
 		{973B57CA-C119-411A-8994-16CD9FB18BBB} = {F4E92C83-ECFD-4C0C-B40B-1136FE3B73ED}
 		{6DF863DA-184B-4EA4-AC30-865E4CA87C39} = {973B57CA-C119-411A-8994-16CD9FB18BBB}
 		{CD1023B7-2E03-48A9-81FA-0F6AB70DE9AE} = {973B57CA-C119-411A-8994-16CD9FB18BBB}
+		{ECCDC58D-597D-4815-955E-F5E83A6CCA78} = {8AB01551-9ABA-4108-B761-BA600FFF704A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {62C784B6-0AE4-42AB-833B-6267BA627046}
