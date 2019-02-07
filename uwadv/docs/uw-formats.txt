@@ -5,7 +5,7 @@
                         http://uwadv.sourceforge.net/
  +--------------------------------------------------------------------------+
 
-Document version: 1.68, as of 2006-04-11
+Document version: 1.69, as of 2019-02-07
 
 
 Table of Contents
@@ -26,9 +26,12 @@ Table of Contents
    3.3    Bitmaps
    3.4    Textures
    3.5    Fonts
-   3.6    Critter animations
-   3.7    Cutscene animations
+   3.6.1  Critter animations [uw1]
+   3.6.2  Critter animations [uw2]
+   3.7.1  Cutscene animation [uw1]
+   3.7.2  Cutscene animation [uw2]
    3.8    Weapon animations
+   3.9    XFER.DAT Transparencies
 
    4      Level maps and object lists
    4.1    File format
@@ -41,10 +44,12 @@ Table of Contents
    4.4    Texture mappings
    4.5    Animation infos
    4.6    Automap infos
-   4.7    Terrain texture properties
+   4.7    Map notes
+   4.8    Terrain texture properties
 
    5      String resources
-   5.1    String block contents
+   5.1    String block contents [uw1]
+   5.2    String block contents [uw2]
 
    6      Objects and items
    6.1    List of all objects and items
@@ -59,6 +64,8 @@ Table of Contents
    7.4    Assembler language opcodes
    7.5    Text substitutions
    7.6    Intrinsic functions
+   7.6.1  Ultima Underworld 1 intrinsic functions
+   7.6.2  Ultima Underworld 2 intrinsic functions
    7.7    Imported variables
    7.8    Quest flags
 
@@ -67,9 +74,17 @@ Table of Contents
 
    9      Miscellaneous stuff
    9.1    Ultima Underworld 2 compression scheme
-   9.2    Savegame format
+   9.2.1  Savegame format [uw1]
+   9.2.2  Savegame Format [uw2]
    9.3    Unknown files
    9.4    Error codes
+
+  10      Sound
+  10.1    sounds.dat
+  10.1.1  sounds.dat [uw2]
+  10.1.2  sounds.dat [uw2]
+  10.2    VOC files [uw2]
+  10.3    XMI files
 
  +--------------------------------------------------------------------------+
 
@@ -105,8 +120,8 @@ Table of Contents
    Additional information came from Alistair Brown (basic object format, via
    the Underworld II editor available at
    <http://bearcity.pwp.blueyonder.co.uk/>), Ulf Wohlers (Objects and 3D
-   models) and Fabian Pache (about map details and 3d models, uw2 related,
-   http://uw2rev.sourceforge.net).
+   models), Fabian Pache (about map details and 3d models, uw2 conversations
+   uw2 player save <http://uw2rev.sourceforge.net>).
 
    Further infos about weapon animation and miscellaneous bits about uw were
    contributed by Telemachos from peroxide.dk.
@@ -115,6 +130,8 @@ Table of Contents
    file at the start of all of this.
 
    This file is probably:
+   Copyright (c) 2008,2009 Julien Langer
+   Copyright (c) 2002,2008,2009 Fabian Pache
    Copyright (c) 2000,2001,2002,2003 Jim Cameron
    Copyright (c) 2002,2003,2004 Michael Fink
    Copyright (c) 2004 Kasper Fauerby
@@ -260,7 +277,7 @@ Table of Contents
    XX.voc         all cutscene audio files
    uwXX.xmi       underworld extended midi music
    awXX.xmi       the same, for adlib music (?)
-   sounds.dat     sound effect midi commands (?)
+   sounds.dat     sound effect midi commands
    uw.mt          MT32 sound effects data
    uw.ad          adlib stuff
    *.adv          device driver for midi/wave output:
@@ -401,8 +418,27 @@ Table of Contents
    weap.dat       weapon animation x and y coordinates (see 3.8)
 
    Files in the "cuts" folder:
-   cs???.n??      cutscene animations
-   lback00x.byt   (?) (x = 0..8)
+   cs000.n??      intro part 1: letter to the avatar
+   cs001.n??      intro part 2: blackrock shell
+   cs002.n??      outro
+   cs004.n??      audio only cutscene ?
+   cs005.n??      audio only cutscene ?
+   cs006.n??      audio only cutscene ?
+   cs007.n??      audio only cutscene ?
+   cs011.n??      title screen, "ultima underworld 2, labyrinth of worlds"
+   cs012.n??      credits
+   cs030.n??      blue vision
+   cs031.n??      blue vision
+   cs032.n??      blue vision
+   cs033.n??      blue vision
+   cs034.n??      guardian on red
+   cs035.n??      guardian on camo
+   cs036.n??      guardian on blue
+   cs037.n??      guardian on green
+   cs040.n??      guardian on black
+   cs403.n??      player death, bubbling skulls
+
+   lback00?.byt   large background files for camera paning cutscenes (0..8)
 
    Files in the "crit" folder:
 
@@ -467,8 +503,8 @@ Table of Contents
 
 3.1.1  256 color palettes
 
-   In the file "pals.dat" there are stored 8 different palettes. A palette
-   has the following layout:
+   In the file "pals.dat" there are stored 8 different palettes in UW1 and
+   11 in UW2. A palette has the following layout:
 
    0000  Int8  red   intensity, index 0, range [0..63]
    0001  Int8  green intensity, index 0, range [0..63]
@@ -480,7 +516,7 @@ Table of Contents
    02fe  Int8  green intensity, index 255, range [0..63]
    02ff  Int8  blue  intensity, index 255, range [0..63]
 
-   In each palette there are stored color intensities for 256 colors. All 8
+   In each palette there are stored color intensities for 256 colors. All
    palettes are stored sequentially in the file.
 
    Palette index 0 always means transparent color.
@@ -569,7 +605,8 @@ Table of Contents
 
    The file "panels.gr" contains bitmaps that don't have a bitmap header, but
    immediately starts with image data. The bitmaps are of type 04 and have
-   a width of 83 and a height of 114 pixels.
+   a width of 83 and a height of 114 pixels for UW1 and a width of 79 and
+   height of 112 for UW2.
 
 
 3.2.1  Uncompressed bitmaps (04: 8-bit, 0A: 4-bit)
@@ -579,28 +616,61 @@ Table of Contents
    the lower nibble.
 
 
-3.2.2  Compressed bitmaps (type 08)
+3.2.2  Compressed bitmaps (type 08, type 06)
 
-   All pixels are run-length encoded. when a new byte has to be retrieved,
-   first take the high nibble, then the low nibble of that byte.
+   Compressed bitmaps are stored with a run length length encoding and a
+   lookup table. The wordsize used for a certain bitmap is determined by the
+   type.
 
-   Data consists of repeat and run records. Repeat records let the decoder
-   repeat a single nibble a certain number of times. The run record takes
-   a certain number of next nibbles to be as uncompressed. The two records
-   alternate in the bitmap, starting with a repeat record.
+      type 08: wordsize 04 bits
+      type 06: wordsize 05 bits
 
-   For every record, first there is a count to retrieve. Get a nibble; if
-   it is not 0, it is a count. Otherwise, get two more nibbles, n1 and n2.
-   The count is  c = (n1 << nibblesize) | n2. If the count is still zero,
-   take another three nibbles, and calculate the count:
+   If the size of the compressed image is given in words, the number of bytes
+   are calculated as
 
-     c = (((n1 << nibblesize) | n2) << nibblesize) | n3;
+      bytecount = (wordcount * wordssize + 7) / 8
 
-   A count is at most 6 nibbles long.
+   The bytes of the compressed image are treated as a bit stream, starting
+   at the most significant bit of byte 0.
 
-   A run record consists of a count and then follows 'count' nibbles,
-   that are the raw pixel data. A repeat record consists of a count and
-   a single nibble, the nibble is then repeated 'count' times.
+   Data consists of repeat and run records.
+       - Repeat records let the decoder repeat a single word a certain number
+         of times.
+       - Run record takes a certain number of next nibbles to be as
+         uncompressed.
+
+   The decompression engine keeps a counter of the number of repeat records
+   that precede the next run record. This counter is initially 1. See
+   special count interpretation for repeat records below.
+
+   For every record, first there is a count to retrieve. A count is a single
+   number made up from a variable number of words. The alorithm to determine
+   a count is as follows:
+   Get a word.
+
+      c = w0
+
+   If it is not 0, it is a count. Otherwise, get two more words,
+   w1 and w2. The count is:
+
+      c = (w1 << 4) | n2
+
+   If the count is still zero, take another three words, and calculate the
+   count:
+
+      c = (((w3 << 4) | w4) << 4) | w5
+
+   Note that even if the wordsize is 5, the words are only shifted by 4 bits,
+   thus overlapping the words theoretically. In practice a count is at most 6
+   words long, leading to the following possible patterns:
+
+      1 word count : [w0]                          , with (w0) != 0
+      2 word count :   0  [w1] [w2]                , with (w1 << 4 | w2) != 0
+      3 word count :   0    0    0  [w3] [w4] [w5]
+
+   A run record consists of a count and then follow 'count' words, that are
+   the raw pixel data. A repeat record consists of a count and a single word,
+   the nibble is then repeated 'count' times.
 
    As there is no point in repeating a nibble <3 times, there are some
    special meanings for count:
@@ -610,11 +680,14 @@ Table of Contents
    2: multiple repeats. get another count, and process 'count' times a
       repeat record.
 
-   NOTE that there also exists a 5-bit compressed format which is exactly
-   the same as the above except that the word length is 5 bits instead of 4.
-   This is used for critter animation frames in the crit/ folder. The
-   auxiliary palette contains 32 entries and is stored with the animation.
+   Note that there are cases where the decompression yields a greater number
+   of words than would be neccessary to display the image.
 
+   The resulting words make up the atom map for a given image. This atom map
+   is then translated, byte by byte, from their value range of 16 (4 bit) or
+   32 (5 bit) to full 8 bit using the corresponding atom to fragment maps.
+   These maps are also sometimes refered to a auxiliary palettes in this
+   document.
 
 3.3  Bitmaps
 
@@ -672,7 +745,7 @@ Table of Contents
    which are xyres^2 bytes long. Textures always use palette #0.
 
    Texture names are stored in string block 10, where wall textures start at
-   position 0, and ceiling textures start at 510, going backwards. The string
+   position 0, and floor textures start at 510, going backwards. The string
    at position 511 is reserved for the ceiling.
 
 
@@ -702,7 +775,7 @@ Table of Contents
    maxwidth field should be corrected for loading.
 
 
-3.6  Critter animations
+3.6.1  Critter animations [uw1]
 
    Critter animations are stored in the folder "crit". The file "assoc.anm"
    holds data for each of the 32 animations and for the 64 NPC types. The file
@@ -724,10 +797,6 @@ Table of Contents
    several critters that share the same animations but use different palettes,
    e.g. the bat and the vampire bat uses the same anim value, but different
    auxiliary palettes.
-
-   [uw2] The critter associations are stored in the file "as.an"; it doesn't
-   contain the critter names, only the 64 entries for "anim" and "auxpal" are
-   stored.
 
    Animation for each critter is stored in a file named "CrXXpage.nYY", where
       XX = animation number (=anim), YY = page number
@@ -841,8 +910,136 @@ Table of Contents
 
    The animations marked with * are available in the uw_demo, too.
 
+3.6.2  Critter animations [uw2]
 
-3.7  Cutscene animations
+   The following files of the CRIT folder are involved in Underworld 2
+   animations:
+
+   PG.MP :   contains a skiptable to find a frame in the CRxx.yy files
+   CR.AN :   animation sequences for all critter and all actions
+   AS.AN :   contains a mapping of critter IDs to CRxx.yy files and palettes
+   CRxx.yy : the pixel information for critter xx, fragment yy
+
+
+
+3.6.2.1 Format and use of CR.AN
+
+   This file contains 32 chunks [C] of 512 bytes each.
+   Each chunk contains the complete animation information for one character.
+
+      x*512 : start character x animation definition [C]
+
+   Each chunk has 8 subchunks of 64 bytes. A subchunk [SC] describes the
+   animation frames to take for a certain action. The actions are
+
+      [C]+0000 : [SC] standing
+      [C]+0040 : [SC] walking
+      [C]+0080 : [SC] in combat
+      [C]+00c0 : [SC] attack
+      [C]+0100 : [SC] attack
+      [C]+0140 : [SC] attack
+      [C]+0180 : [SC] attack
+      [C]+01c0 : [SC] dying
+
+   The use of the attack animations differs from critter to critter since not
+   all critters have 4 different attacks. If a critter has magical and melee
+   attacks, the melee attacks come first.
+
+   Each action is split into 8 animation sequence [AS] definitions for the
+   angle it is observed from. The blocks always contain valid values, even if
+   there is no explicit frame for a certain animation e.g dying usually exists
+   only from a frontal point of view, thus the animation for all angles is the
+   same.
+
+      [SC]+0000 : [AS] rear
+      [SC]+0008 : [AS] rear    right
+      [SC]+0010 : [AS]         right
+      [SC]+0018 : [AS] front   right
+      [SC]+0020 : [AS] front
+      [SC]+0028 : [AS] front   left
+      [SC]+0030 : [AS]         left
+      [SC]+0038 : [AS] rear    left
+
+   The layout of each animation sequences is as follows:
+   The frame indices reference values in the offset table of CRxx.*
+   Use the values in PG.MP to find the right fragment, see 3.6.2.4
+
+      [CB]+0 .. [CB]+6 : animation frame index
+      [CB]+7           : number of valid entries starting at [CB]
+
+   Invalid entries in the animation frame indices are marked with 0xFF
+
+
+3.6.2.2 Format and use of AS.AN
+
+   Multiple critters use the same pixel layout with differing palettes.
+   This file contains two int8 for each critterID from 0 to 63. 0xFF
+   marks unused indices (the last entry of AS.AN)
+
+      2*n   : [int8] critter file to use (xx of CRxx.*)
+      2*n+1 : [int8] atom to fragment map index
+
+
+3.6.2.3 Format and use of CRxx.yy
+
+   Each unique critter is contained in its own file CRxx. For various reasons
+   each critter is split across multiple files. There are 32 critter pixel
+   maps. xx in the filename is encoded in octal.
+
+      0000..007F : atom to fragment mapping
+      0080..027F : [int16] table of offsets into the file for frame data
+      0280..eof  : frame data
+
+   The actual color value to be used for displaying a single pixel is
+   determined as follows:
+      Decompressing the pixel map for a frame yields an atom map. The size of
+         an atom for a critter is 5 bit.
+      The atom is converted to a fragment using the atom to fragment map
+         determined by the entity id and the index from AS.AN.
+      The fragment is converted to a colorindex using the current light level
+         and LIGHTS.DAT or MONO.DAT.
+      Finally the colorindex is translated to a rgb color by applying PALS.DAT
+
+   All fragments of one critter CRxx.00, CRxx.01, etc have the same
+   header describing the pixel mapping from atom to fragment.
+
+      0000..001F : atom to fragment mapping 0
+      0020..003F : atom to fragment mapping 1
+      0040..005F : atom to fragment mapping 2
+      0060..007F : atom to fragment mapping 3
+
+   Mapping 3 is never accessed from AS.AN. The trigger for this mapping is
+   unknown.
+
+   The offset table of the first file starts at index 0. The offset table of
+   the next fragment continues with the index where the previous left off.
+   (see also PG.MP).
+
+      0080+frame*2 : [int16] offset into this for file [O]
+
+   The frame data is defined in the same manner as in Underworld 1.
+
+      [O] + 0000    [Int8]       width
+      [O] + 0001    [Int8]       height
+      [O] + 0002    [Int8]       hotspot x
+      [O] + 0003    [Int8]       hotspot y
+      [O] + 0004    [Int8]       compression type; (06: 5-bit word size)
+      [O] + 0005    [Int16]      data length in number of words
+      [O] + 0007                 start of rle-encoded image data (see 2.3)
+
+
+3.6.2.4 Format and use of PG.MP
+
+   The purpose of PG.MP is to find the file fragment yy of a specific critter
+   xx, given a specific frame. The file contains 32 fragment id chunks. Each
+   fragment id chunk has 8 bytes. Each byte corresponds to a fragment and
+   contains the last animation frame contained in the fragment. Invalid
+   combinations of xx and yy (== CRxx.yy does not exist) are marked with 0xFF.
+
+      8*xx+yy : [int8] last frame in fragment yy (file CRxx.yy)
+
+
+3.7.1  Cutscene animations [uw1]
 
    Cutscene animations are stored in folder "cuts". Text strings for cutscenes
    can be found in string blocks 0c00 through 0c21. Chapter 2.2.1 lists all
@@ -960,7 +1157,55 @@ Table of Contents
          }
       }
 
-3.9  Weapon animations
+3.7.2  Cutscene animation [uw2]
+
+   Cutscenes in underworld 2 are stored in the CUTS/ folder. Each cutscene is
+   split into a header file and one or more fragment files. Files starting
+   with CSxxx are part of cutscene x with the number encoded in octal in the
+   filename. The extension of the the file is .N00 for the header and .Nyy for
+   fragment y, again encoded in octal.
+   The cutscenes can refer to background files LBACKxxx.BYT
+
+3.7.2.1 Cutscene header format [uw2]
+
+   The cutscene header for each cutscene is stored in file CSxxx.N00. The
+   format of the file is yet unknown. The file is supposed to hold
+      the music to play during playback
+      the sound effect (voice over) to play
+      which subtitles to use
+      references to LBACKxxx and paning information
+
+3.7.2.2 Cutscene fragment format [uw2]
+
+   A cutscene fragment is stored largely in the same manner as in uw1: The file
+   contains one record for each frame in the animation. Records are stored in
+   pages, where each page can contain a variable number of records.
+   Each fragment is associated with a single string of a block in STRINGS.PAK
+   Relevant fields are
+
+   00000006 - 00000007      number of pages in the the fragment
+   00000008 - 0000000B      number of records (=frames) in the fragment
+   00000044 - 00000045      framerate
+   00000080 - 000000FF      palette cycling information
+   00000100 - 000004FF      initial palette information 256 x[blue green red 0]
+   00000500 - ........      short page header
+   00000B00 - 00010AFF		page 0
+   00010B00 - 00020AFF      page 1
+   ....
+
+   <<TODO framerate>>
+   <<TODO palette cycling>>
+   <<TODO document page header>>
+   <<TODO document record layout>>
+
+
+3.7.2.2 Cutscene background format [uw2]
+
+   Cutscene backgrounds are simple index maps of 320 x 200 pixel. The pixel
+   are orderes top to bottom and left to right. The palette is stored with
+   the cutscene that references the background.
+
+3.8  Weapon animations
 
    Attack animations:
    ------------------
@@ -1005,6 +1250,51 @@ Table of Contents
    frames. These are needed to tint the weapon attack frames according to the
    skin color of the selected character. I haven't checked, but probably one
    of these match the "standard" aux pallette used for the .gr files...
+
+
+3.9   XFER.DAT Transparencies
+
+   The following was observed in uw2 but should be valid for uw1 as well.
+   The file XFER.DAT contains 5 color shifting palettes to provide for
+   transparencies. Certain colors in critter color index tables do not
+   overwrite the underlying pixel. Instead they trigger a lookup into
+   XFER.DAT. Colorindices are
+
+      0xf0   fade to red
+      0xf4   fade to blue
+      0xf8   fade to green
+      ????   fade to white
+      ????   fade to black
+   <<TODO confirm / complete>>
+
+   XFER.DAT layout
+
+      0x0080      fade to red
+      0x0100      fade to green
+      0x0180      fade to blue
+      0x0200      fade to white
+      0x0280      fade to black
+
+   XFER.DAT usage
+
+      The pixel that would overwrite the existing pixel decides which fade
+      block to choose from. The pixel that would be overwritten decides the
+      index inside the the fade block. The value at that location replaces
+      the original.
+
+   XFER.DAT for modern systems
+
+      When trying to recreate a the same effect on modern systems which are not
+      palette based, one can either create a pixelshader which does the same
+      translation XFER.DAT did for colorindices in RGB or derive the parameters
+      for the more common transparency equation
+
+         dst_color = overlay_color * alpha + (1-alpha) * src_color
+
+      One way to do this is look for colorindeces that are mapped on
+      themselves by XFER.DAT. These pixel, which are essentially unaffected by
+      XFER.DAT have roughly the same color as the overlay and can subsequently
+      be used to derive an average alpha value for the texture.
 
 
  +--------------------------------------------------------------------------+
@@ -1115,6 +1405,11 @@ Table of Contents
       Ironically 1 sometimes means daylight (in Lord British Castle Lv 1) but
       sometimes 0 means daylight (LBC Lv 5). But the areas are exactly right.
 
+   about the floor height (word 0000, bits 4-7):
+      UW internally uses 7 bits for the map height (0..127). The full range of
+      7 bits is stored in the object properties, but only 4 bits are stored in
+      in the tilemap, so this value should be left shifted by 3 bits.
+
    Underworld tile types are:
     00      Solid (wall tile)
     01      Open (square tile of empty space)
@@ -1158,6 +1453,11 @@ Table of Contents
           13   1   "doordir"   Direction flag (doors)
           14   1   "invis"     Invisible flag (don't draw this object)
           15   1   "is_quant"  Quantity flag (link field is quantity/special)
+        OR
+        9-15       texture number
+
+        Note: some objects don't have flags and use the whole lower byte as a
+        texture number (gravestone, picture, lever, switch, shelf, bridge, ..)
 
    0002 position
         0- 6   7   "zpos"      Object Z position (0-127)
@@ -1344,10 +1644,51 @@ Table of Contents
    Each block contains the "visited" bytes for each level. Each byte
    describes a tile on the main map. The block size always is 0x1000.
 
-   <TODO> rest not decoded yet
+   The following was observed in Underworld 2.
+   The automap contains one byte per tile, in the same order as the
+   level tilemap. A valid value in the low nybble means the tile is displayed
+   on the map. Valid values are the same as tile types:
+            SOLID    0x0
+            CLEAR    0x1
+      Diagonal Tiles have a flat floor and are divided diagonally,
+      the direction of the wall normals is given as suffix to 'DIAG_'
+            DIAG_SE  0x2
+            DIAG_SW  0x3
+            DIAG_NE  0x4
+            DIAG_NW  0x5
+      Slope Tiles are treated like ordinary CLEAR tiles
+            SLOPE_N  0x6
+            SLOPE_S  0x7
+            SLOPE_E  0x8
+            SLOPE_W  0x9
+   Other values are considered undiscovered
+
+   The high nybble contains a modifier on how to display the tile:
+            DEFAULT  0x0
+            DOOR     0x1
+            TELEPORT 0x3
+            WATER    0x4
+            BRIDGE   0x6
+            LAVA     0xc
+
+4.7  Map notes
+
+   The following was observed in Underworld 2.
+   The map labels are compressed with the same scheme as the tiles. Each
+   label is stored in 54 (0x36)bytes, regardless of the actual length of the note.
+
+   The number of labels has to be calculated by dividing the size of the
+   uncompressed chunk by 54. Each label has the following format:
+
+      0000 - 0031  zero-terminated string
+      0032  int16  x-position
+      0034  int16  y-position
+
+   Like the tile map the y-position is inverted with 0 denoting the bottom
+   of the screen and 200 (0xc8) the top of the screen.
 
 
-4.7  Terrain texture properties
+4.8  Terrain texture properties
 
    The file "terrain.dat" in the data directory contains information on the
    terrain types represented by the various wall and floor textures. There is
@@ -1413,7 +1754,7 @@ Table of Contents
    `|' character. The remaining bits in the last byte are unused.
 
 
-5.1  String block contents
+5.1  String block contents [uw1]
 
    block   description
    0001    general UI strings
@@ -1448,6 +1789,47 @@ Table of Contents
 
    In the uw_demo, the 0cXX blocks and many of the conversation string
    blocks aren't available.
+
+5.2  String block contents [uw2]
+
+   The layout of strings.pak has not changed from uw1 to uw2. Common
+   strings are followed by cutscenes and conversations. As before not every
+   ID has been used. Block 3 (ID 0004) contains strings with special markup
+   characters. The underscore '_' is replaced by the according item condition
+   string taken from block 4 (ID 0005). An ampersand '&' marks strings with
+   different singular/plural forms. A plural form never contains a condition.
+
+   index      ID    size
+       0    0001     512    technical stuff, number text conversion
+       1    0002     512    character generation
+       2    0003     512    books, scrolls. readable items
+       3    0004     512    item names
+       4    0005     512    item condition
+       5    0006     512    light levels, spell friendly names, spell effects
+       6    0007     512    barter quality, npc names, monster internal names
+       7    0008     512    wall labels, tombs. readable stuff in the world
+       8    0009     512    game state messages: vision, door state
+       9    000a     512    descriptions of textures/decals
+      10    0018     512    debug/console strings
+
+   Cutscenes include the intro and outro as well as the various taunts by
+   the guardian which occur during conversations or dreams.
+
+   index      ID    size
+      11    0c00      13
+      ..      ..      ..
+      28    0c2b       1
+
+   Conversation strings used by the conversation engine. Contains both the
+   phrases by the npc the player is talking to, as well as the answers by the
+   player. The npc name for each conversation is stored in block 6 (ID 0007).
+   The name of the npc for a given conversation is (ID - 0x0e00 + 16), e.g.
+   ID 0x0e2e contains the conversation with character 0x3e (62), Jerry the Rat
+
+   index      ID    size
+      29    0e00     113
+      ..      ..      ..
+     135    0ea8      95
 
 
  +--------------------------------------------------------------------------+
@@ -1562,18 +1944,56 @@ Table of Contents
          to 014f are the open versions of the closed doors.
          the textures for the doors come from the 6 bytes at the end of the
          texture mapping info from lev.ark.
+         the "doordir" bit determines in which direction the door swings open.
+         Doors are rendered using two 3d models, one for the frame and one for
+         the door. It appears that the frame uses the wall texture of the tile
+         in which the door is located. The frame also seems to change the color
+         of the "border" between the two sides according to the object.
+
+   0150  a_bench
+         3d object (see section about 3d models)
+
+   0154  a_large boulder
+         3d object (see section about 3d models)
+
+   0157  a_shrine
+         3d object (see section about 3d models)
+
+   0158  a_table
+         3d object (see section about 3d models). Texture is 32 from tmobj.gr.
+
+   015a  a_moongate
+         3d object (see section about 3d models)
+
+   015c  a_barrel
+         3d object (see section about 3d models)
+
+   015c  a_chair
+         3d object (see section about 3d models). Texture is 38 from tmobj.gr.
+
+   015d  a_chest
+         3d object (see section about 3d models)
+
+   015e  a_nightstand
+         3d object (see section about 3d models)
 
    0160  a_pillar
-         3d object. texture is determined by the lower 2 bits of the "flags"
-         field (?)
+         3d object. texture is determined by the lower byte of the "flags"
+         field from "tmobj.gr"
 
    0161  a_lever
-         a clock-like lever with 8 positions; texture is determined by
-         the "flags" field (lower 3 bits) + 4, from "tmobj.gr".
+         3d object. A clock-like lever with 8 positions; texture is determined
+         by the "flags" field (lower 3 bits) + 4, from "tmobj.gr".
 
    0162  a_switch
-         almost the same as 0161, but starting with image 12 of "tmobj.gr".
-         not used in uw1
+         3d object. Almost the same as 0161, but starting with image 12 of
+         "tmobj.gr". Not used in uw1
+
+   0163  a_picture [uw2]
+         3d object. Texture is lower byte of flags + 42 from "tmobj.gr"
+
+         ??? [uw1]
+         uw1 has an item with this id but it's currently unknown what it is
 
    0164  a_bridge
          bridge 3d object. texture to use comes from "flags" field. when the
@@ -1581,10 +2001,11 @@ Table of Contents
          30 + flags. for this bridge, string block 0001, string 171 is printed
          as "look" description.
 
-         when the "flags" value is > 2, flags-1 is used as index into the
-         floor texture mapping, effectively using a floor texture.
+         when the "flags" value is > 2, flags-2 is used as index into the
+         floor texture mapping (shared floor+wall for UW2), effectively using a
+         floor texture.
 
-         bridges could be use to alter the fixed ceiling height.
+         bridges could be used to alter the fixed ceiling height.
 
    0165  a_gravestone
          3d grave stone object (obj 0x13). text for gravestone is stored in
@@ -1607,8 +2028,12 @@ Table of Contents
          the "flags" field. text printed is from strings block 8, 368 + flags
 
    0167  a_bed [uw2]
-         The "owner" field determines the colour of the sheets and pillow. The
-         sheets are colour (4*owner+5), the pillow colour (4*owner).
+         3d object. The "owner" field determines the colour of the sheets and
+         pillow. The sheets are colour (4*owner+5), the pillow colour
+         (4*owner).
+
+   0169  a_shelf [uw2]
+         3d object. Texture is lower byte of flags + 36 from "tmobj.gr"
 
    016e  special tmap obj (tmap_c)
          wall decal; texture used is determined from the "owner" field and is
@@ -1620,8 +2045,13 @@ Table of Contents
          be removed by deleting the object.
 
    017x  a_button, etc.
-         buttons, switches, pull chains and levers, textured with images
-         from "tmflat.gr". special link usually points to a trigger.
+         3d object. buttons, switches, pull chains and levers, textured with
+         images from "tmflat.gr". The texture index into tmflat.gr is the
+         lowest byte of the item id (subclass id).
+         Special link usually points to a trigger.
+         Note that after pressing the button the itemid increases by 8, thus
+         using the texture. of the closed button. I don't know if this
+         behaviour is hardcoded or done via the trigger.
 
    01c9  a_fountain
 
@@ -1867,20 +2297,27 @@ Table of Contents
                  bits 4-15: mass in 0.1 stones
    0003  Int8    flags
                  0/2: object in range [336, 368[ seem to be 3d objects
+                 1: TODO unknown
                  3: magic object (?)
                  4: decal object (always 0 in uw1)
                  5: is set when object can be picked up
+                 6: TODO unknown
                  7: is set when object is a container
    0004  Int16   monetary value
-   0006  Int8    bits 2..3: quality class (this value*6+quality gives index
+   0006  Int8    bit 0-1: TODO unknown
+                 bits 2..3: quality class (this value*6+quality gives index
                             into string block 5
-   0007  Int8    bit 7: if 1, item can have owner ("belongs to ...")
+                 bits 4..7: TODO unknown
+   0007  Int8    bit 0: TODO unknown
                  bits 1..4: type? a=talisman, 9=magic, 3..5=ammunition
-   0008  Int8    scale value (?)
+                 but 5-6: TODO unknown
+                 bit 7: if 1, item can have owner ("belongs to ...")
+   0008  Int8    scale value (?) TODO
    0009  Int8    unknown2
-                 bits 0-1: ??
+                 bits 0-1: ?? TODO
    000A  Int8    bits 0-3: quality type 0-f
                  bit 4: printable "look at" description when 1
+                 bit 5-7: TODO unknown
 
    Each possible value of "quality type" maps onto a group of 6 strings in
    block 4 from lowest to highest quality. Items which have a quality are
@@ -1911,13 +2348,13 @@ Table of Contents
    0000   Int8   damage modifier for Slash attack
    0001   Int8   damage modifier for Bash attack
    0002   Int8   damage modifier for Stab attack
-   0003   3      unknown
+   0003   3*Int8 unknown TODO
    0006   Int8   skill type (3: sword, 4: axe, 5: mace, 6: unarmed)
    0007   Int8   durability
 
    * Ranged weapons table (0x0010-0x001f)
 
-   0000   Int16  unknown
+   0000   Int16  unknown TODO
                  bits 9-15: ammunition needed (+0x10)
    0002   Int8   durability
 
@@ -1925,37 +2362,42 @@ Table of Contents
 
    0000   Int8   protection
    0001   Int8   durability
-   0002   Int8   unknown
+   0002   Int8   unknown TODO
    0003   Int8   category:
-                 00: shield
+                 00: shield (or none? uwadv says: also: may not be worn on
+                 paperdoll)
                  01: body armour
                  03: leggings
                  04: gloves
                  05: boots
                  08: hat
                  09: ring
+                 15: unknown
 
    * Critters table  (0x0040-0x007f)
 
-   0000   Int8   unknown
+   0000-4 5*Int8 unknown TODO
    0005   Int8   npc_power
+   0006-48 42*Int8 unknown TODO
 
    * Containers table (0x0080-0x008f)
 
    0000   Int8   capacity in 0.1 stones
-   0001   Int8   objects accepted; 0: runes, 1: arrows, 2: scrolls, 3: edibles, 0xFF: any
-   0002   Int8   number of slots available?; 2: , -1: any
+   0001   Int8   objects accepted; 0: runes, 1: arrows, 2: scrolls, 3: edibles,
+                 0xFF: any
+   0002   Int8   number of slots available?
+                 Only valid values are 2 and 0xFF (any?) (TODO)
 
    * Light source table (0x0090-0x009f)
 
    0000   Int8   light brightness (max. is 4; 0 means unlit)
    0001   Int8   duration (00: doesn't go out, e.g. taper of sacrifice)
 
-   * Jewelry info table (?)
+   * Jewelry info table (?) TODO
 
    * Animation object table (0x01c0-0x01cf)
 
-   0000   Int8   unknown (0x00, 0x21 or 0x84)
+   0000   Int8   unknown (0x00, 0x21 or 0x84) TODO
    0001   Int8   unknown (always 0x00)
    0002   Int8   start frame (from animo.gr)
    0003   Int8   number of frames
@@ -2094,8 +2536,16 @@ Table of Contents
 7.4  Assembler language opcodes
 
    The conversation code is an assembler-like language with a set of opcodes.
-   It runs on a 16-bit virtual machine with a stack and a result register for
-   imported functions. The language set is described here:
+   It runs on a 16-bit virtual machine with 3 dedicated registers:
+      BP: the base pointer for the current function. this is an index into
+          the main memory array. BP+n are local variables on the stack.
+          BP-n are parameters passed into the function.
+      SP: the current stack pointer. this is an index into the main memory
+          array of the VM. Most operations reference the stack pointer.
+      RV: result value for imported function returns. Can also be used as a
+          general purpose register.
+
+   The language set is described here:
 
    Opcode         no. immediate operands
    |   Name       | no. stack operands
@@ -2207,6 +2657,9 @@ Table of Contents
    this rule seems to be violated, e.g. function "babl_menu", see (*)
    below). First argument is always pushed last on stack. All values are
    passed by reference (as pointer to the actual value or array).
+
+
+7.6.1 Ultima Underworld 1 intrinsic functions
 
    Here is a quick overview of all builtin functions ("args" is the number
    of arguments without the mandatory first one):
@@ -2621,6 +3074,122 @@ Table of Contents
    return value: 1 when found (?)
    -------------------------------------------------------------------------
 
+7.6.2 Ultima Underworld 2 intrinsic functions
+
+   Each function that is ever imported in a conversation is listed here. not
+   all functions are always imported. The following complete list is sorted by
+   function id.
+   Underworld 2 knows 63 functions, 12 more than uw1. The additions are marked
+   with [x] below and described later.
+
+   0x00 babl_menu
+   0x01 babl_fmenu
+   0x02 print
+   0x03 babl_ask
+   0x04 compare
+   0x05 random
+   0x06 plural
+   0x07 contains
+   0x08 append
+   0x09 copy
+   0x0a find
+   0x0b length
+   0x0c val
+   0x0d say
+   0x0e respond
+   0x0f babl_hack             [x]
+   0x10 give_all_stuff        [x]
+   0x11 do_input_wait         [x]
+   0x12 get_quest
+   0x13 set_quest
+   0x14 sex
+   0x15 show_inv
+   0x16 give_to_npc
+   0x17 give_ptr_npc
+   0x18 take_from_npc
+   0x19 take_id_from_npc
+   0x1a identify_inv
+   0x1b do_offer
+   0x1c do_demand
+   0x1d do_inv_create
+   0x1e do_inv_delete
+   0x1f check_inv_quality
+   0x20 set_inv_quality
+   0x21 count_inv
+   0x22 setup_to_barter
+   0x23 end_barter
+   0x24 do_judgement
+   0x25 do_decline
+   0x26 pause
+   0x27 set_likes_dislikes
+   0x28 gronk_door
+   0x29 gronk_trigger         [x]
+   0x2a set_race_attitude
+   0x2b place_object
+   0x2c take_from_npc_inv
+   0x2d add_to_npc_inv
+   0x2e transform_talker      [x]
+   0x2f remove_talker
+   0x30 set_attitude
+   0x31 x_skills
+   0x32 x_traps
+   0x33 x_clock               [x]
+   0x34 x_exp                 [x]
+   0x35 teleport_player       [x]
+   0x36 add_event             [x]
+   0x37 x_obj_pos
+   0x38 x_obj_stuff
+   0x39 find_inv
+   0x3a find_barter
+   0x3b find_barter_total     [x]
+   0x3c teleport_talker       [x]
+   0x3d switch_pic            [x]
+   0x3e set_sequence          [x]
+
+
+<<TODO>> ... encounter, observe, etc
+
+   0x0f babl_hack             [x]
+   0x10 give_all_stuff        [x]
+   0x11 do_input_wait         [x]
+   0x29 gronk_trigger         [x]
+   0x2e transform_talker      [x]
+   0x33 x_clock               [x]
+   0x34 x_exp                 [x]
+   0x35 teleport_player       [x]
+   0x36 add_event             [x]
+
+   0x3b find_barter_total     [unconfirmed]
+         return int
+         argc: 4
+         *(argv[0]): unknown
+         *(argv[0]): unknown
+         *(argv[0]): item match mask (?)
+         *(argv[0]): item match template (?)
+      find_barter_total looks for an item in the players inventory. The mask
+      determines which bits of the template are compared to the items.
+      return number of matches.
+      Example: conversation 1, request for kitchen delivery voucher
+
+
+   0x3c teleport_talker       [x]
+
+   0x3d switch_pic
+         return: void
+         argc: 1
+         *(argv[0]): character id
+      switch_pic changes the image of the character the player is talking to.
+      Usally used to give the impression that somebody else has joined a
+      conversation. character id + 16 can usually be used to determine the name
+      of the new talker. This does not result in a conversation slot change.
+      Example: conversation 142 (Lord British)
+
+   0x3e set_sequence          [x]
+
+
+
+
+
 
 7.7  Imported variables
 
@@ -2671,6 +3240,8 @@ Table of Contents
    flags and their meanings (when no values for the flag are specified, 1
    means yes or true, and 0 means no or false):
 
+7.8.1 UW1 quest flags
+
    flag   description
 
      0    Dr. Owl's assistant Murgo freed
@@ -2697,6 +3268,9 @@ Table of Contents
    stored as Int8 values. See chapter 9.2. where the values are stored in the
    savegame.
 
+7.8.2 UW2 quest flags
+
+   TODO
 
  +--------------------------------------------------------------------------+
 
@@ -2732,7 +3306,32 @@ Table of Contents
       uw2  0x00054cf0    d4 64 aa 59   0x00054d8a
       uw2  0x000550e0    d4 64 aa 59   0x0005517a  another UW2 build
 
+   There's also a model information table stored in the .exe file.
+
+   [uw1] It starts at 0x0005f7e5 (in my uw.exe, md5sum:
+   c64cc46fd8162c626135a6a19315d21e) and contains 4 bytes for each model
+   (a total of 32*2 bytes).
+   The layout is as follows:
+
+     0000   Int8*3 Color table. These values are indexed by the "color" values
+                   in the model, and are itself indexes into game palette 0.
+                   Note that this table is NULL-terminated, so the table can
+                   actually have the size 0-3 (this plays a role when indexing
+                   into this table from the model)
+     0003   Int8   Flags (unknown)
+
+
+   [uw2] The model information table for underworld 2 starts at 0x0006908A
+   in a UW2.EXE with base 0x00054cf0. Each table entry has 5 bytes
+
+      0000   int8   high nybble unknown
+                    low nybble contains number of valid color entries
+      0001   int8*3 color table as before
+      0004   int8
+
+
    Models are:
+   ((All?) models from 0x140 to 0x17F are drawn using 3d models)
 
    index   item_id   description
     00               -
@@ -2749,15 +3348,15 @@ Table of Contents
     0B     0157      shrine
     0C
     0D     0163      painting [uw2]
-    0E
-    0F
-    10     0161      texture map (8-way lever)
+    0E               door
+    0F               secret door
+    10     0161,017X texture map (8-way lever and buttons)
     11     0162      texture map (8-way switch)
     12     0166      texture map (writing)
     13     0165      gravestone
-    14     016e?     texture map
+    14     016e?     texture map (which one?)
     15               -
-    16     016f?     ?texture map
+    16     016e      texture map (possibly also for 016f)
     17     015a      moongate
     18     0158      table
     19     015d      chest
@@ -2782,12 +3381,24 @@ Table of Contents
      Fixed   fixed point number with 8 bits before the fraction point (8.8)
      VertNo  vertex number; lowest 3 bits are ignored
      TexCo   texture coordinate; contains a 16 bit fractional texture coord.
+     Color   A color value. This is an index into the 3 byte "auxpal" in the
+             model information table. The correct
+             index into the 3-byte auxpal is obtained by the following
+             calculation:
+
+             for UW1:
+             (color - 0x2920) / 2 % c
+             for UW2:
+             (color - 0x2680) / 2 % c
+
+             where c is the number of entries in the auxpal, which may be less
+             then three.
 
    All data types use 16 bit values.
 
    Every model has a header that looks like this:
 
-     0000   Int32   unknown
+     0000   Int32   unknown (does not seem to change anything)
      0004   Fixed   extents X value
      0006   Fixed   extents Y value
      0008   Fixed   extents Z value
@@ -2809,10 +3420,13 @@ Table of Contents
      000C     define sort node, ZY plane
      000E     define sort node, XY plane
      0010     define sort node, XZ plane
+     0012     ???
      0014     ??? colour definition
-     002E     ???
+     0016     ???
+     002E     ??? seems to influence shading for the next face
      0040     ??? seems to do nothing but introduce a face definition
      0044     ??? this one too
+     004A     define translation XZY
      0058     define face plane, arbitrary heading
      005E     define face plane Z/Y
      0060     define face plane X/Y
@@ -2831,15 +3445,63 @@ Table of Contents
      0090     define vertex offset X,Z
      0092     define vertex offset X,Y
      0094     define vertex offset Y,Z
-     00A0     ??? shorthand face definition
+     00A0     shorthand textured face definition
      00A8     define texture-mapped face
+     00B2     ???
      00B4     define face vertices with u,v information
+     00BA     render door submodel
      00BC     define face shade (6 bytes)
      00BE     ??? seems to define 2 shades
-     00CE     ??? yet another texture-mapped face
-     00D2     ??? shorthand face definition
-     00D4     define dark vertex face (?)
-     00D6     define gouraud shading
+     00CE     ??? yet another texture-mapped face, same as 007E (?)
+     00D2     shorthand textured face definition (similar to 00A0)
+     00D4     defines shades for gouraud shading
+     00D6     turn on on gouraud shading
+
+   The same list as above, sorted by node ID and including the number of
+   arguments each node takes
+
+       ID  argc
+     0000     0      end node
+     0006     8      define sort node, arbitrary heading
+     000C     6      define sort node, ZY plane
+     000E     6      define sort node, XY plane
+     0010     6      define sort node, XZ plane
+     0012     1      ???
+     0014     3      ??? colour definition
+     0016     3      ???
+     002E     1      ??? seems to influence shading for the next face
+     0040     0      ??? seems to do nothing but introduce a face definition
+     0044     0      ??? this one too
+     004A     3      define translation XZY
+     0058     7      define face plane, arbitrary heading
+     005E     5      define face plane Z/Y
+     0060     5      define face plane X/Y
+     0062     5      define face plane X/Z
+     0064     3      define face plane X
+     0066     3      define face plane Z
+     0068     3      define face plane Y
+     0078     5      define model center
+     007A     4      define initial vertex
+     007E     var    define face vertices
+     0082     var    define initial vertices
+     0086     3      define vertex offset X
+     0088     3      define vertex offset Z
+     008A     3      define vertex offset Y
+     008C     3      define vertex variable height
+     0090     4      define vertex offset X,Z
+     0092     4      define vertex offset X,Y
+     0094     4      define vertex offset Y,Z
+     00A0     5      shorthand textured face definition
+     00A8     var    define texture-mapped face
+     00B2     1      ???
+     00B4     var    define face vertices with u,v information
+     00BA     3      render door submodel
+     00BC     2      define face shade (6 bytes)
+     00BE     2      ??? seems to define 2 shades
+     00CE     var    same as 007E (?)
+     00D2     4      shorthand textured face definition (similar to 00A0)
+     00D4     var    defines shades for gouraud shading
+     00D6     0      turn on on gouraud shading
 
    Here's a detailed description of all nodes, sorted after functionality:
 
@@ -2894,7 +3556,7 @@ Table of Contents
 
      0090   define vertex offset X,Z
               0002   Fixed     offset to add to X coordinate
-              0004   Fixed     offset to add to X coordinate
+              0004   Fixed     offset to add to Z coordinate
               0006   VertNo    reference vertex to modify
               0008   VertNo    new list index to store vertex
 
@@ -2979,6 +3641,28 @@ Table of Contents
      00B4   define face vertices with u,v information
             same structure as 00A8, but without the "texture number" field.
 
+     00CE   define texture-mapped face
+            same data as 00B4
+
+     00A0   define texture mapped face (shorthand)
+            seems to be a quick way to define a face with 4 vertices and
+            automatic texture coordinates; vertex list indices
+              0002   Int16     ???
+              0004   Int8      vertex list index 0
+              0005   Int8      vertex list index 1
+              0006   Int8      vertex list index 2
+              0007   Int8      vertex list index 3
+
+            The automatic texture coordinates for the 4 vertices are
+            (normalised to the range [0; 1]):
+            0.0, 0.0
+            1.0, 0.0
+            1.0, 1.0
+            0.0, 1.0
+
+     00D2   define texture mapped face (shorthand)
+            same as 00A0 but missing the first Int16 field
+
    Sort nodes
    ----------
    Sort nodes are there to sort faces of a whole node list and the renderer
@@ -3009,57 +3693,94 @@ Table of Contents
      0010   define sort node, XZ plane
             same as 000C, but with X and Z coordinates (in this order)
 
+
+   Shading/Coloring nodes
+   ----------------------
+     00D4   define vertex shading values
+            Build a table of shading information for each vertex.
+            Note that the list generated by this command doesn't
+            always have the same size as the vertex table.
+            Also note that each model should only define this table
+            once.
+
+              0002   Int16     number of vertices (=nvert)
+              0004   Color     base colour for Gouraud shading
+              0006   VertNo    vertex list index for first point
+              0008   Int8      dark value for first point
+              0009   VertNo    vertex list index for second point
+              000b   Int8      dark value for second point
+                               and so on; if nvert is odd, read another empty
+                               byte to have 16 bit word align
+
+     00D6   introduce Gouraud shaded face
+            switches on gouraud shading. The following faces use
+            the color definitions set with the "define vertex shading values"
+            (00D4) command
+
+     00BC   define flat face shade
+            Defines a flat shade for the next (or all following?) faces.
+            The values given here are the same as in the shading table (00D4)
+            so the same calculations and palette indexing rules apply here
+              0002   Color     colour
+              0004   Int16     shade (dark value)
+
    Unknown nodes
    -------------
+     0012   ???
+              0002   Int16     ???
+
      0014   ??? colour definition
               0002   VertNo    vertex number
               0004   Int8      c1 ???
               0005   Int8      c2 ???
               0006   VertNo    vertex number
 
+     0016   ???
+              0002   VertNo    ??
+              0004   Color     ??
+              0006   Int16     ??
+
      002E   ???
+            This node influences how the next face is drawn. I'm not sure what
+            it does exactly, but I'm sure that it switches guoraud shading off
+            (and possibly some other mode on)
+            It's used quite a lot in the Lotus Turbo Esprit model and only
+            once in the table model (with data=0). Other than that it's not
+            used.
               0002   Int16     ???
 
      0040   ??? seems to do nothing but introduce a face definition
      0044   ??? this one too
             no further node data
 
-     00BC   define face shade
-              0002   Int16     colour (address of colour variable)
-              0004   Int16     shade (dark value)
+     00B2   ??? potential texid for following 00B4 calls
+              0002   Int16     ???
 
      00BE   ??? seems to define 2 shades ?? refers to 2 model variables
               0002   Int16     var 1
               0004   Int16     var 2
 
-     00CE   define texture-mapped face
-            same data as 00B4
+   Door nodes
+   ----------
+   Doors appear to have a special set of nodes only used for door models.
+   Portcullis might be determined by the first parameter of the 00BA command.
 
-     00A0   shorthand texture-mapped face definition
-            seems to be a quick way to define a face with 4 vertices and
-            automatic texture coordinates; vertex list indices
-              0002   VertNo    ???
-              0004   Int8      vertex list index 0
-              0005   Int8      vertex list index 1
-              0006   Int8      vertex list index 2
-              0007   Int8      vertex list index 3
+     004A   define translation
+              0002   Fixed     vertex x position
+              0004   Fixed     vertex z position
+              0006   Fixed     vertex y position
 
-     00D2   define texture mapped face (shorthand)
-            same as 00A0
+          This defines a translation to apply to coming nodes. Note that z
+	  and y seem to be swapped.
 
-     00D4   define vertex shading values
-              0002   Int16     number of vertices (=nvert)
-              0004   Int16     base colour for Gouraud shading (colour variable address)
-              0006   VertNo    vertex list index for first point
-              0008   Int8      dark value for first point ???
-              0009   VertNo    vertex list index for second point
-              000b   Int8      dark value for second point ???
-                               and so on; if nvert is odd, read another empty
-                               byte to have 16 bit word align
-
-     00D6   introduce Gouraud shaded face
-            no other info; may switch on gouraud shading
-
+     00BA   render door submodel
+              0002   Int16     Pointer to some initial set up data for the
+	      	     	       door submodel rendering. Not sure what this
+			       actually does. Possibly related to door angle
+			       and visibility.
+	      0004   Int16     Pointer to first model node of submodel to 
+	      	     	       render. Offset is relative to the location of
+			       the current node (BA).
 
  +--------------------------------------------------------------------------+
 
@@ -3121,7 +3842,7 @@ Table of Contents
    relative "position" to the current one.
 
 
-9.2  Savegame format
+9.2.1  Savegame format [uw1]
 
    Savegames are stored in folders called "SaveN", where N is the number
    of the save game. Ultima Underworld only allows 4 save game slots. The
@@ -3172,7 +3893,7 @@ Table of Contents
    0032   Int8    Acrobat
    0033   Int8    Appraise
    0034   Int8    Swimming
-   ...
+   0035   Int8    current vitality
    0036   Int8    max. vitality
    0037   Int8    current mana, (play_mana)
    0038   Int8    max. mana
@@ -3182,8 +3903,13 @@ Table of Contents
    ...
    0044   3*8bits rune flags (*)
    ...
-   004C   Int16   weight in 0.1 stones
+   004A   Int16   current weight carried (in 0.1 stones)
+   ...
+   004C   Int16   maximum weight in 0.1 stones.
+                  Value is always 300 + 13 * [001E] (strength)
    004E   Int32   experience in 0.1 points
+   ...
+   0052   Int8    Number of skill points available
    ...
    0054   Int16   x-position in level
    0056   Int16   y-position
@@ -3193,15 +3919,135 @@ Table of Contents
    ...
    005F   Int8    bits 2..5: play_poison
    ...
+   0062   Int8    drunkeness level in lower hex digit (?)
+   ...
    00CE   Int32   game time
    ...
-   00DC   Int8    current vitality
+   00DC   Int8    (???) current vitality
 
    (*) The rune field is a bitfield, where an 1 indicates an available
        rune. Bits are seen from most to least significant. The 'A' rune is
        stored in bit 7 of the first field.
 
    <TODO> how items are stored
+
+
+9.2.2 Savegame Format [uw2]
+
+   The player.dat of uw2 is encoded with a different scheme than the one of
+   uw1. The encryption algorithm uses a block of magic bytes in combination
+   with previous ciphertext and plaintext.
+
+   File layout
+
+   0000   int8    magic seed
+   0001 - 037D    encrypted character data
+   037E - eof     inventory data in plaintext
+
+   Inventory Data:
+   037E   Int8      Number of items in inventory + 1
+
+   0383   Int8      Bit 5: Seems to be set when avatar fist picks up an item in
+                           the world and stays set forever
+
+   0386   Int8      Bit 6: Seems to be set when avatar has any items in the
+                           inventory and unset when it is empty
+
+   03A3   19*Int16  Inventory slots in the following order:
+                    head to feet, left shoulder, right shoulder, left hand,
+                    right hand, left ring, right ring, 8 general slots
+                    ("left" means screen's left, ot paperdoll's left)
+                    Bits 6-15 contains the item's index
+
+   03E3   ?         Inventory Items. Same format as static objects from section
+                    4.2 though bytes 2 and 3 (position and heading) are ignroed.
+                    The first item is index 1, and the others increase normally.
+                    Notice that all objects form through their "next" and
+                    "sp_link" fields a single tree, wih it's root in object
+                    index 1, even though they may be in different inventory
+                    slots. This is consistent with the view, that the Avatar
+                    acts as a container for all items in the inventory.
+
+   How to set up the magic bytes:
+   The magic bytes are always 80 (0x50) bytes. They are filled in 4 rounds
+   with differing stride using and changing the magic seed (MS from now on).
+   The algorithm assumes the MS to be stored in an unsigned 8 bit variable
+   and will overflow on MS multiple times.
+
+   Magic Array (MA) fill algorithm:
+
+      MS += 7;
+      for (i = 0; i<80; ++i)
+      {
+         MS += 6;
+         MA[i] = MS;
+      }
+      for (i = 0; i<16; ++i)
+      {
+         MS += 7;
+         MA[i*5] = MS;
+      }
+      for (i = 0; i<4; ++i)
+      {
+         MS += 0x29;
+         MA[i*12] = MS;
+      }
+      for (i = 0; i<11; ++i)
+      {
+         MS += 0x49;
+         MA[i*7] = MS;
+      }
+   Notes on filling the MA bytes:
+     - not resetting MS between loops is intentional.
+      - unlike the first two rounds, the last two rounds are cut short.
+      - the algorithm to fill MA was derived from an assembly trace of
+        Robin Wöhlers uw2edit.exe. He uses a round 0 before the first round
+        which is subsequently overwritten. This first round only results in
+        increasing MS by 7, thus the first line of the algorithm outlined here.
+
+   Example:
+   A magic seed of 0x98 results in the following MA:
+       0 | dc ab b1 b7 bd 8d c9 25 d5 db 94 e7 41 f3 6e 9b
+      10 | 05 0b 11 17 a2 b7 29 2f 6a a9 41 47 00 53 b0 5f
+      20 | 65 6b 71 49 93 83 89 8f be 9b 92 a7 ad c5 b9 bf
+      30 | c5 db cc d7 dd e3 e9 d3 24 fb 01 07 da 13 19 6d
+      40 | 25 e1 31 37 3d 43 b6 4f 55 5b 61 ef 6d ff 79 7f
+
+   Decrypting PLAYER.DAT:
+   After setting up the MA, the ciphertext of the character (C) can be
+   decrypted to the plaintext of the character (P). The ciphertext of
+   0x037D bytes is split in blocks of 0x50 bytes, with the last block
+   being cut short.
+
+   Each block is decoded as follows, with ^ denoting a XOR operation:
+     P[0] = C[0] ^ M[0]
+     for (i=1; i<0x50;++i)
+     {
+        P[i] = C[i] ^ (P[i-1] + C[i-1] + M[i])
+     }
+   Notes on decrypting:
+     - remember to account for the shorter last block
+     - in terms of cryptography, this algorithm sucks. don't reuse
+     - the algorithm is fully symmetric and can also be used for encryption
+     - the algorithm was derived from an assembly trace of Underworld 2.
+
+   Encrypting:
+   As mentioned before, the same algorithm can be used to encrypt and decrypt.
+   The trick is figuring out MS and MA. If an existing file is modified, MS
+   and MA can be reused if the first letter of the character name is not
+   changed. Otherwise a new MS and MA have to be calculated.
+
+   Apparently the the MS can be calculated as
+       0xAA ^ (first letter of character name), thanks Al_B from TTLG forums
+
+
+   Character plaintext layout:
+   <<TODO: basically the same a UW1 but with more information for quests>>
+
+   Inventory layout:
+     * seems like some kind of compression is being used
+     * character = empty container?
+   <<TODO>>
 
 
 9.3  Unknown files
@@ -3225,10 +4071,6 @@ Table of Contents
 
    sounds.dat
    ----------
-   The file "sounds.dat" in the "sound" folder contains sound effect data.
-   The file starts with an Int8 value that is the number of data entries in
-   the file. Then 5 Int8 bytes for each entry in the file follow.
-   It is supposed that the data may be midi commands to play back sfx.
 
    xfer.dat
    ----------
@@ -3261,5 +4103,63 @@ Table of Contents
 
 
  +--------------------------------------------------------------------------+
+
+10     Sound [uw2]
+
+10.1   sounds.dat
+
+   The file "sounds.dat" in the "sound" folder contains sound effect data.
+
+10.1.1   sounds.dat [uw2]
+
+   The file starts with an Int8 value that is the number of data entries in
+   the file. Then 5 Int8 bytes for each entry in the file follow.
+   It is supposed that the data may be midi commands to play back sfx.
+
+10.1.2   sounds.dat [uw2]
+
+   The file starts with an Int8 value that is the number of data entries in
+   the file. Then 8 Int8 bytes for each entry in the file follow.
+   It is supposed that the data may be midi commands to play back sfx.
+
+      0000      int8: number of entries = 49 (0x31)
+      0001+n*8  start of entry n
+   <<TODO entries format>>
+
+10.2   VOC files [uw2]
+
+   VOC files contain sound samples in soundblaster voc format.
+      BSPxx.VOC    cutscene speech
+      SPxx.VOC     sound effect
+      UWxx.VOC     guardian laughter
+
+   There are numours discussions of VOC files freely available on the net.
+   For a complete discussion of the format google it, look at
+   http://www.wotsit.org/ or whatever. Here is the short version as used by
+   Underworld 2:
+
+   VOC file format
+
+      0x0014        uint16   [O] offset to type 1 block
+      [O]+ 0x0000   uint8    type, always 1
+      [O]+ 0x0001   uint24   [S] sample size in bytes
+      [O]+ 0x0004...         sample data
+
+   sample format
+
+      0x0000        uint8    [R] sample rate
+      0x0001        uint8    [C] compression
+      0x0002..[S]            pcm data
+
+   the sample rate [R] can be converted into Hz by the formula
+
+      Hz = (-1000000) / ([R] - 256);
+
+   All samples of uw2 are mono samples. The samples I checked were uncompressed
+
+10.3   XMI files
+
+   XMI files contain the rules to generate random music.
+   <<TODO tear exult engine apart>>
 
 end of file
