@@ -143,7 +143,7 @@ TEST_METHOD(TestRwopsFileRead)
 
    // read test file
    {
-      Base::SDL_RWopsPtr rwops = Base::SDL_RWopsPtr(SDL_RWFromConstMem(testData, SDL_TABLESIZE(testData)));
+      Base::SDL_RWopsPtr rwops = Base::MakeRWopsPtr(SDL_RWFromConstMem(testData, SDL_TABLESIZE(testData)));
       Assert::IsTrue(rwops.get() != NULL);
 
       Base::File testFile(rwops);
@@ -175,7 +175,7 @@ TEST_METHOD(TestGzipFileReadWrite)
 
    // write test file
    {
-      Base::SDL_RWopsPtr rwops = Base::SDL_RWopsPtr(SDL_RWFromGzFile(strFile.c_str(), "wb9"));
+      Base::SDL_RWopsPtr rwops = Base::MakeRWopsPtr(SDL_RWFromGzFile(strFile.c_str(), "wb9"));
       Assert::IsTrue(rwops.get() != NULL);
 
       Base::File testFile(rwops);
@@ -195,7 +195,7 @@ TEST_METHOD(TestGzipFileReadWrite)
 
    // read test file
    {
-      Base::SDL_RWopsPtr rwops = Base::SDL_RWopsPtr(SDL_RWFromGzFile(strFile.c_str(), "rb"));
+      Base::SDL_RWopsPtr rwops = Base::MakeRWopsPtr(SDL_RWFromGzFile(strFile.c_str(), "rb"));
       Assert::IsTrue(rwops.get() != NULL);
 
       Base::File testFile(rwops);

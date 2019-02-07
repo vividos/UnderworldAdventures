@@ -32,7 +32,7 @@ File::File(const std::string& filename, Base::EFileOpenMode openMode)
    SDL_RWops* rwops = SDL_RWFromFile(filename.c_str(),
       openMode == modeRead ? "rb" : "wb");
 
-   m_rwops.reset(rwops);
+   m_rwops = MakeRWopsPtr(rwops);
 }
 
 File::File(Base::SDL_RWopsPtr rwops)
