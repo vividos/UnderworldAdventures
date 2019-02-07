@@ -1,61 +1,52 @@
-/*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file uaconfig.cpp
-
-   \brief underworld adventures win32 config application
-
-*/
-
-// needed includes
+//
+// Underworld Adventures - an Ultima Underworld hacking project
+// Copyright (c) 2002,2003,2004,2005,2019 Underworld Adventures Team
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file uaconfig.cpp
+/// \brief Underworld Adventures win32 config application
+//
 #include "common.hpp"
 #include "uaconfig.hpp"
+#include "filesystem.hpp"
 #include <string>
 #include <atlconv.h>
 #include <mmsystem.h> // for midiOutGet*
 #include <shlobj.h> // for SHBrowseForFolder
 #include <tchar.h> // for _sntprintf
 
+#ifndef BIF_USENEWUI
+#define BIF_USENEWUI 0x0050
+#endif
 
-// ua_config_dlg methods
-
-void ua_config_dlg::RunDialog()
+void ConfigDlg::RunDialog()
 {
-   // create and show the dialog
    Create(NULL);
    ShowWindow(SW_SHOW);
 
    // run the message loop of the modeless dialog
    MSG msg;
 
-   for(;;)
+   for (;;)
    {
-      // retrieve next message
       BOOL bRet = ::GetMessage(&msg, NULL, 0, 0);
 
-      // quit message loop on WM_QUIT
       if (!bRet)
          break;
 
-      // deliver message
       if (!PreTranslateMessage(&msg) && !IsDialogMessage(&msg))
       {
          ::TranslateMessage(&msg);
@@ -63,26 +54,20 @@ void ua_config_dlg::RunDialog()
       }
    }
 
-   // destroy the dialog window
    DestroyWindow();
 }
 
-
-// message handler methods
-
-LRESULT ua_config_dlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT ConfigDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-   // center main window
    CenterWindow();
 
-   // set icons
-   HICON hIcon = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_ICON_UACONFIG), 
+   HICON icon = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_ICON_UACONFIG),
       IMAGE_ICON, ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON), LR_DEFAULTCOLOR);
-   SetIcon(hIcon, TRUE);
+   SetIcon(icon, TRUE);
 
-   HICON hIconSmall = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_ICON_UACONFIG), 
+   HICON iconSmall = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_ICON_UACONFIG),
       IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
-   SetIcon(hIconSmall, FALSE);
+   SetIcon(iconSmall, FALSE);
 
    // cutscene narration combobox
    SendDlgItemMessage(IDC_COMBO_CUTS_NARRATION, CB_ADDSTRING, 0, (LPARAM)_T("Sound"));
@@ -91,7 +76,7 @@ LRESULT ua_config_dlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 
    // add all available resolutions to screen resolution combo box
    {
-      DWORD iModeNum=0;
+      DWORD iModeNum = 0;
       DEVMODE devmode;
       devmode.dmSize = sizeof(DEVMODE);
       devmode.dmDriverExtra = 0;
@@ -99,18 +84,18 @@ LRESULT ua_config_dlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
       while (0 != ::EnumDisplaySettings(NULL, iModeNum++, &devmode))
       {
          // only add hi-/truecolor modes
-         if (devmode.dmBitsPerPel<16) continue;
+         if (devmode.dmBitsPerPel < 16) continue;
 
-         _TCHAR szBuffer[32];
-         _sntprintf(szBuffer, 32, _T("%u x %u"), devmode.dmPelsWidth, devmode.dmPelsHeight);
+         _TCHAR buffer[32];
+         _sntprintf_s(buffer, sizeof(buffer), sizeof(buffer), _T("%u x %u"), devmode.dmPelsWidth, devmode.dmPelsHeight);
 
          // check if we already have that one
          if (CB_ERR == SendDlgItemMessage(IDC_COMBO_SCREEN_RESOLUTION,
-            CB_FINDSTRINGEXACT, (WPARAM)-1, (LPARAM)szBuffer))
+            CB_FINDSTRINGEXACT, (WPARAM)-1, (LPARAM)buffer))
          {
             // add it
             SendDlgItemMessage(IDC_COMBO_SCREEN_RESOLUTION, CB_ADDSTRING,
-               0, (LPARAM)szBuffer);
+               0, (LPARAM)buffer);
          }
       }
    }
@@ -120,27 +105,23 @@ LRESULT ua_config_dlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
       MIDIOUTCAPS caps;
       UINT max = midiOutGetNumDevs();
 
-      for(signed int n=-1; n<(signed)max; n++)
+      for (signed int n = -1; n < (signed)max; n++)
       {
-         // get midi device caps
          midiOutGetDevCaps((UINT)n, &caps, sizeof(caps));
 
-         // add to combo box
          SendDlgItemMessage(IDC_COMBO_MIDI_DEVICE, CB_ADDSTRING,
             0, (LPARAM)caps.szPname);
       }
    }
 
-   // load configuration
-   load_config();
+   LoadConfig();
 
-   // add tooltips for all controls
-   tooltips.init(m_hWnd);
+   m_tooltips.Init(m_hWnd);
 
-   return 1;  // let the system set the focus
+   return 1; // let the system set the focus
 }
 
-static int CALLBACK WINAPI ua_browse_callback(HWND hwnd, UINT uMsg, LPARAM /*lParam*/, LPARAM lpData)
+static int CALLBACK WINAPI BrowseCallback(HWND hwnd, UINT uMsg, LPARAM /*lParam*/, LPARAM lpData)
 {
    // set initial path on initialisation
    if (uMsg == BFFM_INITIALIZED)
@@ -148,175 +129,151 @@ static int CALLBACK WINAPI ua_browse_callback(HWND hwnd, UINT uMsg, LPARAM /*lPa
    return 0;
 }
 
-LRESULT ua_config_dlg::OnSetUw1Path(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT ConfigDlg::OnSetUw1Path(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-   _TCHAR buffer[MAX_PATH+1];
+   _TCHAR buffer[MAX_PATH + 1];
    {
       buffer[0] = 0;
       GetDlgItemText(IDC_EDIT_UW1_PATH, buffer, MAX_PATH);
 
       // add slash when needed
       unsigned int len = _tcslen(buffer);
-      if (len>0 && buffer[len-1] != _T('\\') && buffer[len-1] != _T('/'))
-         _tcscat(buffer, _T("\\"));
+      if (len > 0 && buffer[len - 1] != _T('\\') && buffer[len - 1] != _T('/'))
+         _tcscat_s(buffer, _T("\\"));
    }
-
-#ifndef BIF_USENEWUI
-#define BIF_USENEWUI 0x0050
-#endif
 
    // setup struct
-   BROWSEINFO bi;
-   ZeroMemory(&bi, sizeof(bi));
-   bi.lpszTitle = _T("Please select the Ultima Underworld I folder:");
-   bi.pszDisplayName = buffer;
-   bi.pidlRoot = NULL;
-   bi.lpfn = ua_browse_callback;
-   bi.lParam = (LPARAM)buffer;
-   bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_USENEWUI;
+   BROWSEINFO browseInfo;
+   ZeroMemory(&browseInfo, sizeof(browseInfo));
+   browseInfo.lpszTitle = _T("Please select the Ultima Underworld I folder:");
+   browseInfo.pszDisplayName = buffer;
+   browseInfo.pidlRoot = NULL;
+   browseInfo.lpfn = BrowseCallback;
+   browseInfo.lParam = (LPARAM)buffer;
+   browseInfo.ulFlags = BIF_RETURNONLYFSDIRS | BIF_USENEWUI;
 
-   // browse
-   LPITEMIDLIST lpIL = ::SHBrowseForFolder(&bi);
+   LPITEMIDLIST lpIL = ::SHBrowseForFolder(&browseInfo);
 
-   // retrieve path
-   if (lpIL!=NULL)
+   if (lpIL != NULL)
       ::SHGetPathFromIDList(lpIL, buffer);
 
-   // set path in edit box
-   {
-      USES_CONVERSION;
-      std::string uw1_path(T2CA(buffer));
-      if (uw1_path.size()==0) return 0;
+   std::string uw1path = CT2CA(buffer);
+   if (uw1path.size() == 0)
+      return 0;
 
-      char last = uw1_path.at(uw1_path.size()-1);
+   char last = uw1path.at(uw1path.size() - 1);
 
-      if (last != '\\' && last != '/')
-         uw1_path.append("\\");
+   if (last != '\\' && last != '/')
+      uw1path.append("\\");
 
-      SetDlgItemText(IDC_EDIT_UW1_PATH, A2CT(uw1_path.c_str()));
-   }
+   SetDlgItemText(IDC_EDIT_UW1_PATH, CA2CT(uw1path.c_str()));
 
    return 0;
 }
 
-void ua_config_dlg::MessageBox(LPCTSTR pszText, UINT nType)
+void ConfigDlg::ShowMessageBox(LPCTSTR text, UINT type)
 {
-   // get window caption
-   _TCHAR szCaption[256];
-   GetWindowText(szCaption, 256);
+   _TCHAR caption[256];
+   GetWindowText(caption, 256);
 
-   AtlMessageBox(m_hWnd, pszText, szCaption, nType);
+   MessageBox(text, caption, type);
 }
 
-
-void ua_config_dlg::load_config()
+void ConfigDlg::LoadConfig()
 {
-   // try loading settings
-   settings_filename = ua_get_home_path();
-   settings_filename += "uwadv.cfg";
+   m_settingsFilename = Base::FileSystem::GetHomePath();
+   m_settingsFilename += "uwadv.cfg";
+
    try
    {
-      settings.load(settings_filename.c_str());
+      m_settings.Load(m_settingsFilename.c_str());
    }
-   catch(...)
+   catch (...)
    {
       // loading failed
       std::string text = "Could not find file \"";
-      text += settings_filename;
+      text += m_settingsFilename;
       text += "\"!";
 
-      USES_CONVERSION;
-      MessageBox(A2CT(text.c_str()), MB_OK | MB_ICONSTOP);
+      ShowMessageBox(CA2CT(text.c_str()), MB_OK | MB_ICONSTOP);
 
-      // exit program
       PostMessage(WM_QUIT);
       return;
    }
 
    std::string text;
-   USES_CONVERSION;
 
    // general settings
 
-   // sets uw1 path
-   text = settings.get_string(ua_setting_uw1_path);
-   SetDlgItemText(IDC_EDIT_UW1_PATH, A2CT(text.c_str()));
+   text = m_settings.GetString(Base::settingUw1Path);
+   SetDlgItemText(IDC_EDIT_UW1_PATH, CA2CT(text.c_str()));
 
-   // set cutscene narration option
-   text = settings.get_string(ua_setting_cuts_narration);
+   text = m_settings.GetString(Base::settingCutsceneNarration);
    SendDlgItemMessage(IDC_COMBO_CUTS_NARRATION, CB_SETCURSEL,
-      (text.compare("both")==0 ? 2 : text.compare("sound")==0 ? 0 : 1));
+      (text.compare("both") == 0 ? 2 : text.compare("sound") == 0 ? 0 : 1));
 
-   // set "uwadv features" check
    SendDlgItemMessage(IDC_CHECK_ENABLE_FEATURES, BM_SETCHECK,
-      settings.get_bool(ua_setting_uwadv_features) ? BST_CHECKED : BST_UNCHECKED);
+      m_settings.GetBool(Base::settingUwadvFeatures) ? BST_CHECKED : BST_UNCHECKED);
 
    // graphics settings
 
-   // set screen resolution text
-   text = settings.get_string(ua_setting_screen_resolution);
+   text = m_settings.GetString(Base::settingScreenResolution);
 
-   // check if we already have that one
    int item = SendDlgItemMessageA(IDC_COMBO_SCREEN_RESOLUTION,
-      CB_FINDSTRINGEXACT, (WPARAM)-1, (LPARAM)(A2CT(text.c_str())));
+      CB_FINDSTRINGEXACT, (WPARAM)-1, (LPARAM)(LPCTSTR)(CA2CT(text.c_str())));
 
    if (item == CB_ERR)
    {
-      // add current resolution value
       SendDlgItemMessage(IDC_COMBO_SCREEN_RESOLUTION,
-         CB_INSERTSTRING, 0, (LPARAM)(A2CT(text.c_str())));
+         CB_INSERTSTRING, 0, (LPARAM)(LPCTSTR)(CA2CT(text.c_str())));
       item = 0;
    }
-   // set selection
+
    SendDlgItemMessage(IDC_COMBO_SCREEN_RESOLUTION, CB_SETCURSEL, item);
 
-   // set "fullscreen" check
    SendDlgItemMessage(IDC_CHECK_FULLSCREEN, BM_SETCHECK,
-      settings.get_bool(ua_setting_fullscreen) ? BST_CHECKED : BST_UNCHECKED);
+      m_settings.GetBool(Base::settingFullscreen) ? BST_CHECKED : BST_UNCHECKED);
 
-   // set "smooth ui" check
    SendDlgItemMessage(IDC_CHECK_SMOOTHUI, BM_SETCHECK,
-      settings.get_bool(ua_setting_ui_smooth) ? BST_CHECKED : BST_UNCHECKED);
+      m_settings.GetBool(Base::settingUISmooth) ? BST_CHECKED : BST_UNCHECKED);
 
    // audio settings
 
-   // set "audio enabled" check
    SendDlgItemMessage(IDC_CHECK_ENABLE_AUDIO, BM_SETCHECK,
-      settings.get_bool(ua_setting_audio_enabled) ? BST_CHECKED : BST_UNCHECKED);
+      m_settings.GetBool(Base::settingAudioEnabled) ? BST_CHECKED : BST_UNCHECKED);
 
-   // set midi device
    SendDlgItemMessage(IDC_COMBO_MIDI_DEVICE, CB_SETCURSEL,
-      (WPARAM)(settings.get_int(ua_setting_win32_midi_device)+1), 0);
+      (WPARAM)(m_settings.GetInt(Base::settingWin32MidiDevice) + 1), 0);
 }
 
-//! checks if a file with given filename is available
-bool ua_file_isavail(const char* base, const char* fname)
+/// checks if a file with given filename is available
+bool IsFileAvailable(const char* base, const char* fname)
 {
    std::string filename(base);
    filename += fname;
-   return ua_file_exists(filename.c_str());
+   return Base::FileSystem::FileExists(filename.c_str());
 }
 
-bool ua_config_dlg::check_config()
+bool ConfigDlg::CheckConfig()
 {
-   _TCHAR szBuffer[MAX_PATH];
+   _TCHAR buffer[MAX_PATH];
 
    // check uw1 path
    {
-      GetDlgItemText(IDC_EDIT_UW1_PATH, szBuffer, MAX_PATH);
+      GetDlgItemText(IDC_EDIT_UW1_PATH, buffer, MAX_PATH);
 
-      std::string uw1_path(T2CA(szBuffer));
+      std::string uw1path = CT2CA(buffer);
       bool uw1_avail =
-         ua_file_isavail(uw1_path.c_str(), "data/cnv.ark") &&
-         ua_file_isavail(uw1_path.c_str(), "data/strings.pak") &&
-         ua_file_isavail(uw1_path.c_str(), "data/pals.dat") &&
-         ua_file_isavail(uw1_path.c_str(), "data/allpals.dat") &&
-        (ua_file_isavail(uw1_path.c_str(), "uw.exe") ||
-         ua_file_isavail(uw1_path.c_str(), "uwdemo.exe"));
+         IsFileAvailable(uw1path.c_str(), "data/cnv.ark") &&
+         IsFileAvailable(uw1path.c_str(), "data/strings.pak") &&
+         IsFileAvailable(uw1path.c_str(), "data/pals.dat") &&
+         IsFileAvailable(uw1path.c_str(), "data/allpals.dat") &&
+         (IsFileAvailable(uw1path.c_str(), "uw.exe") ||
+            IsFileAvailable(uw1path.c_str(), "uwdemo.exe"));
 
       if (!uw1_avail)
       {
-         MessageBox(_T("Couldn't find Ultima Underworld I game files in specified folder!"),
+         ShowMessageBox(_T("Couldn't find Ultima Underworld I game files in specified folder!"),
             MB_OK | MB_ICONEXCLAMATION);
          return false;
       }
@@ -326,14 +283,14 @@ bool ua_config_dlg::check_config()
 
    // check screen resolution
    {
-      GetDlgItemText(IDC_COMBO_SCREEN_RESOLUTION, szBuffer, MAX_PATH);
-      std::string screen_res(T2CA(szBuffer));
+      GetDlgItemText(IDC_COMBO_SCREEN_RESOLUTION, buffer, MAX_PATH);
+      std::string screen_res(T2CA(buffer));
 
       // parse resolution string, format is <xres> x <yres>
       std::string::size_type pos = screen_res.find('x');
       if (pos == std::string::npos)
       {
-         MessageBox(_T("Screen resolution is not in format <xres> x <yres>!"),
+         ShowMessageBox(_T("Screen resolution is not in format <xres> x <yres>!"),
             MB_OK | MB_ICONEXCLAMATION);
          return false;
       }
@@ -341,20 +298,20 @@ bool ua_config_dlg::check_config()
       // check if fullscreen mode was checked
       if (BST_CHECKED == SendDlgItemMessage(IDC_CHECK_FULLSCREEN, BM_GETCHECK))
       {
-         unsigned int width = static_cast<unsigned int>( strtol(screen_res.c_str(), NULL, 10) );
-         unsigned int height = static_cast<unsigned int>( strtol(screen_res.c_str() + pos + 1, NULL, 10) );
+         unsigned int width = static_cast<unsigned int>(strtol(screen_res.c_str(), NULL, 10));
+         unsigned int height = static_cast<unsigned int>(strtol(screen_res.c_str() + pos + 1, NULL, 10));
 
          // check all display settings if screen resolution is available
          bool found = false;
          {
-            DWORD iModeNum=0;
+            DWORD iModeNum = 0;
             DEVMODE devmode;
             devmode.dmSize = sizeof(DEVMODE);
             devmode.dmDriverExtra = 0;
 
-            while(0 != ::EnumDisplaySettings(NULL, iModeNum++, &devmode))
+            while (0 != ::EnumDisplaySettings(NULL, iModeNum++, &devmode))
             {
-               if (devmode.dmBitsPerPel<16) continue;
+               if (devmode.dmBitsPerPel < 16) continue;
 
                if (devmode.dmPelsWidth == width && devmode.dmPelsHeight == height)
                {
@@ -367,7 +324,7 @@ bool ua_config_dlg::check_config()
 
          if (!found)
          {
-            MessageBox(_T("Selected screen resolution is not available in fullscreen mode!"),
+            ShowMessageBox(_T("Selected screen resolution is not available in fullscreen mode!"),
                MB_OK | MB_ICONEXCLAMATION);
             return false;
          }
@@ -377,83 +334,62 @@ bool ua_config_dlg::check_config()
    return true;
 }
 
-void ua_config_dlg::save_config()
+void ConfigDlg::SaveConfig()
 {
-   _TCHAR szBuffer[MAX_PATH];
-   USES_CONVERSION;
+   _TCHAR buffer[MAX_PATH];
 
    std::string value;
    int sel;
 
-   // get uw1 path
-   GetDlgItemText(IDC_EDIT_UW1_PATH, szBuffer, MAX_PATH);
-   value.assign(T2CA(szBuffer));
-   settings.set_value(ua_setting_uw1_path, value);
+   GetDlgItemText(IDC_EDIT_UW1_PATH, buffer, MAX_PATH);
+   value.assign(CT2CA(buffer));
+   m_settings.SetValue(Base::settingUw1Path, value);
 
-   // get uw2 path
-/*
-   GetDlgItemText(IDC_EDIT_UW2_PATH, szBuffer, MAX_PATH);
-   value.assign(T2CA(buffer));
-   settings.set_value(ua_setting_uw2_path, value);
-*/
+   //GetDlgItemText(IDC_EDIT_UW2_PATH, buffer, MAX_PATH);
+   //value.assign(CT2CA(buffer));
+   //m_settings.SetValue(Base::settingUw2Path, value);
 
-   // get cutscene narration type
    sel = SendDlgItemMessage(IDC_COMBO_CUTS_NARRATION, CB_GETCURSEL);
-   value = (sel==0 ? "sound" : (sel==1 ? "subtitles" : "both"));
-   settings.set_value(ua_setting_cuts_narration, value);
+   value = (sel == 0 ? "sound" : (sel == 1 ? "subtitles" : "both"));
+   m_settings.SetValue(Base::settingCutsceneNarration, value);
 
-   // get "uwadv features" check
    sel = SendDlgItemMessage(IDC_CHECK_ENABLE_FEATURES, BM_GETCHECK);
-   settings.set_value(ua_setting_uwadv_features, bool(sel==BST_CHECKED));
+   m_settings.SetValue(Base::settingUwadvFeatures, bool(sel == BST_CHECKED));
 
-   // get "screen resolution" text
-   GetDlgItemText(IDC_COMBO_SCREEN_RESOLUTION, szBuffer, MAX_PATH);
-   value.assign(T2CA(szBuffer));
-   settings.set_value(ua_setting_screen_resolution, value);
+   GetDlgItemText(IDC_COMBO_SCREEN_RESOLUTION, buffer, MAX_PATH);
+   value.assign(CT2CA(buffer));
+   m_settings.SetValue(Base::settingScreenResolution, value);
 
-   // get "fullscreen" check
    sel = SendDlgItemMessage(IDC_CHECK_FULLSCREEN, BM_GETCHECK);
-   settings.set_value(ua_setting_fullscreen, bool(sel==BST_CHECKED));
+   m_settings.SetValue(Base::settingFullscreen, bool(sel == BST_CHECKED));
 
-   // get "smooth ui" check
    sel = SendDlgItemMessage(IDC_CHECK_SMOOTHUI, BM_GETCHECK);
-   settings.set_value(ua_setting_ui_smooth, bool(sel==BST_CHECKED));
+   m_settings.SetValue(Base::settingUISmooth, bool(sel == BST_CHECKED));
 
-   // get "audio enabled" check
    sel = SendDlgItemMessage(IDC_CHECK_ENABLE_AUDIO, BM_GETCHECK);
-   settings.set_value(ua_setting_audio_enabled, bool(sel==BST_CHECKED));
+   m_settings.SetValue(Base::settingAudioEnabled, bool(sel == BST_CHECKED));
 
-   // get midi device
    sel = SendDlgItemMessage(IDC_COMBO_MIDI_DEVICE, CB_GETCURSEL);
-   settings.set_value(ua_setting_win32_midi_device, sel-1);
+   m_settings.SetValue(Base::settingWin32MidiDevice, sel - 1);
 
-   // write config file
-   std::string settings_filename_backup(settings_filename);
+   std::string settings_filename_backup(m_settingsFilename);
    settings_filename_backup += ".bak";
 
-   rename(settings_filename.c_str(), settings_filename_backup.c_str());
-   settings.write(settings_filename_backup.c_str(), settings_filename.c_str());
+   rename(m_settingsFilename.c_str(), settings_filename_backup.c_str());
+   m_settings.Save(settings_filename_backup.c_str(), m_settingsFilename.c_str());
    remove(settings_filename_backup.c_str());
 }
 
+CComModule _Module;
 
-CAppModule _Module;
-
-// main function
-
+/// main function
 int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/,
    LPSTR /*lpCmdLine*/, int /*nCmdShow*/)
 {
-   // this resolves ATL window thunking problem when Microsoft Layer for Unicode (MSLU) is used
-   ::DefWindowProc(NULL, 0, 0, 0L);
+   HRESULT res = _Module.Init(NULL, hInstance);
+   ATLASSERT(SUCCEEDED(res));
 
-   AtlInitCommonControls(ICC_WIN95_CLASSES);
-
-   HRESULT hRes = _Module.Init(NULL, hInstance);
-   ATLASSERT(SUCCEEDED(hRes));
-
-   // run dialog
-   ua_config_dlg cfg;
+   ConfigDlg cfg;
    cfg.RunDialog();
 
    _Module.Term();

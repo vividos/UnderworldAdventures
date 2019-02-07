@@ -7,19 +7,17 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include <atlres.h>
+#include <winres.h>
 
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -34,7 +32,7 @@ END
 
 2 TEXTINCLUDE 
 BEGIN
-    "#include <atlres.h>\r\n"
+    "#include <winres.h>\r\n"
     "\0"
 END
 
@@ -53,8 +51,7 @@ END
 //
 
 IDD_UACONFIG DIALOGEX 0, 0, 282, 164
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
-    WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Underworld Adventures Configuration"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
@@ -64,27 +61,20 @@ BEGIN
     EDITTEXT        IDC_EDIT_UW1_PATH,92,12,137,12,ES_AUTOHSCROLL | WS_GROUP
     PUSHBUTTON      "&Browse ...",IDC_BUTTON_SET_UW1_PATH,233,12,43,13
     LTEXT           "Cutscenes &Narration",IDC_STATIC,9,31,82,8
-    COMBOBOX        IDC_COMBO_CUTS_NARRATION,92,27,90,46,CBS_DROPDOWNLIST | 
-                    WS_VSCROLL | WS_TABSTOP
-    CONTROL         "Enable Underworld Adventures &features",
-                    IDC_CHECK_ENABLE_FEATURES,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,9,44,173,10
+    COMBOBOX        IDC_COMBO_CUTS_NARRATION,92,27,90,46,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Enable Underworld Adventures &features",IDC_CHECK_ENABLE_FEATURES,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,9,44,173,10
     LTEXT           "Graphics Settings",IDC_STATIC,4,57,56,8
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,64,61,212,1
     LTEXT           "&Screen Resolution",IDC_STATIC,9,72,82,8
-    COMBOBOX        IDC_COMBO_SCREEN_RESOLUTION,92,68,90,103,CBS_DROPDOWN | 
-                    WS_VSCROLL | WS_GROUP | WS_TABSTOP
-    CONTROL         "F&ullscreen Mode",IDC_CHECK_FULLSCREEN,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,193,70,85,10
-    CONTROL         "S&mooth User Interface",IDC_CHECK_SMOOTHUI,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,9,85,151,10
+    COMBOBOX        IDC_COMBO_SCREEN_RESOLUTION,92,68,90,103,CBS_DROPDOWN | WS_VSCROLL | WS_GROUP | WS_TABSTOP
+    CONTROL         "F&ullscreen Mode",IDC_CHECK_FULLSCREEN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,193,70,85,10
+    CONTROL         "S&mooth User Interface",IDC_CHECK_SMOOTHUI,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,9,85,151,10
     LTEXT           "Audio Settings",IDC_STATIC,4,98,46,8
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,54,102,223,1
-    CONTROL         "Enable &audio output",IDC_CHECK_ENABLE_AUDIO,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,9,110,134,10
+    CONTROL         "Enable &audio output",IDC_CHECK_ENABLE_AUDIO,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,9,110,134,10
     LTEXT           "MIDI &device",IDC_STATIC,9,124,82,8
-    COMBOBOX        IDC_COMBO_MIDI_DEVICE,92,122,137,83,CBS_DROPDOWNLIST | 
-                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_MIDI_DEVICE,92,122,137,83,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,4,140,274,1
     PUSHBUTTON      "&Cancel",IDCANCEL,172,146,50,14
     PUSHBUTTON      "&OK",IDOK,228,146,50,14
@@ -97,7 +87,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_UACONFIG, DIALOG
     BEGIN
@@ -126,14 +116,15 @@ END
 // remains consistent on all systems.
 IDR_ICON_UACONFIG       ICON                    "Corp.ico"
 
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,9,0,0
- PRODUCTVERSION 0,9,0,0
+ FILEVERSION 0,10,0,0
+ PRODUCTVERSION 0,10,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x29L
@@ -151,14 +142,14 @@ BEGIN
             VALUE "Comments", "Underworld Adventures is a project to recreate Ultima Underworld 1 on modern operating systems."
             VALUE "CompanyName", "Underworld Adventures Team"
             VALUE "FileDescription", "Underworld Adventures Configuration"
-            VALUE "FileVersion", "0.9-mojito"
+            VALUE "FileVersion", "0.10-test1"
             VALUE "InternalName", "uaconfig"
-            VALUE "LegalCopyright", "Copyright © 2004,2005 Underworld Adventures Team"
+            VALUE "LegalCopyright", "Copyright © 2004,2005,2019 Underworld Adventures Team"
             VALUE "LegalTrademarks", " "
             VALUE "OriginalFilename", "uaconfig.exe"
             VALUE "PrivateBuild", " "
             VALUE "ProductName", "Underworld Adventures"
-            VALUE "ProductVersion", "0.9-mojito"
+            VALUE "ProductVersion", "0.10-test1"
             VALUE "SpecialBuild", " "
         END
     END
@@ -174,13 +165,13 @@ END
 // String Table
 //
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDOK                    "Leaves Underworld Adventures Configuration dialog and saves settings made so far."
     IDCANCEL                "Leaves Underworld Adventures Configuration dialog and dismisses all changes made."
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDC_EDIT_UW1_PATH       "Contains the full path to a folder where Ultima Underworld I is installed."
     IDC_BUTTON_SET_UW1_PATH "Lets you browse for a folder where Ultima Underworld I is installed."
@@ -195,12 +186,12 @@ BEGIN
                             "When checked, Underworld Adventures features are enabled. Please read the documentation for more information."
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDC_CHECK_SMOOTHUI      "When checked, the in-game user interface graphics are smoothed to prevent a 'pixely' appearance."
 END
 
-#endif    // English (U.S.) resources
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

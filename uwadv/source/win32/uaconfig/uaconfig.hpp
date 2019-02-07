@@ -1,106 +1,72 @@
-/*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
+//
+// Underworld Adventures - an Ultima Underworld hacking project
+// Copyright (c) 2002,2003,2004,2005,2019 Underworld Adventures Team
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file uaconfig.hpp
+/// \brief Underworld Adventures win32 config program
+//
+#pragma once
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file uaconfig.hpp
-
-   \brief underworld adventures win32 config program
-
-*/
-
-// include guard
-#ifndef uwadv_uaconfig_hpp_
-#define uwadv_uaconfig_hpp_
-
-// needed includes
-
-// exclude rarely-used stuff from Windows headers
-#define WIN32_LEAN_AND_MEAN
-#define WIN32_EXTRA_LEAN
-#define VC_EXTRALEAN
-#define NOSERVICE
-#define NOMCX
-#define NOIME
-#define NOSOUND
-#define NOCOMM
-#define NOKANJI
-#define NORPC
-#define NOPROXYSTUB
-#define NOTAPE
-#define NOCRYPT
-#define NOIMAGE
 #include <atlbase.h>
-#include <atlapp.h>
-extern CAppModule _Module;
+extern CComModule _Module;
 #include <atlwin.h>
-
 #include "resource.h"
 #include "settings.hpp"
 
-
-// classes
-
-class ua_tooltip_ctrl
+/// tooltip control
+class TooltipCtrl
 {
 public:
-   void init(HWND parent)
+   /// Adds tooltips for all controls
+   void Init(HWND parent)
    {
-      // create tooltip window
-      hwnd = ::CreateWindowEx(0, TOOLTIPS_CLASS, NULL, 0,
-         0,0,0,0,parent, NULL, _Module.GetResourceInstance(), NULL);
+      m_hwnd = ::CreateWindowEx(0, TOOLTIPS_CLASS, NULL, 0,
+         0, 0, 0, 0, parent, NULL, _Module.GetResourceInstance(), NULL);
 
-      // get first child window
-      HWND child = ::GetWindow(parent,GW_CHILD);
+      HWND child = ::GetWindow(parent, GW_CHILD);
 
-      char tooltext[256];
+      char tooltipText[256];
 
-      // go through all child windows
-      while (child!=NULL)
+      while (child != NULL)
       {
-         // get ctrl id
          int id = ::GetDlgCtrlID(child);
 
          if (id != -1 && id != 0)
          {
             // try to load text from string table
-            tooltext[0] = 0;
-            ::LoadString(NULL, id, tooltext, 256);
+            tooltipText[0] = 0;
+            ::LoadString(NULL, id, tooltipText, 256);
 
             // when successful, add text as tooltip text
-            if (strlen(tooltext) != 0)
-               add_tool(child, tooltext);
+            if (strlen(tooltipText) != 0)
+               AddTooltip(child, tooltipText);
          }
 
-         // get next window
-         child = GetWindow(child,GW_HWNDNEXT);
+         child = GetWindow(child, GW_HWNDNEXT);
       }
 
-      // activate tool tips
-      ::SendMessage(hwnd, TTM_ACTIVATE, TRUE, 0L);
+      ::SendMessage(m_hwnd, TTM_ACTIVATE, TRUE, 0L);
 
       // set autopop delay time to 10s
-      ::SendMessage(hwnd, TTM_SETDELAYTIME, TTDT_AUTOPOP, MAKELPARAM(10*1000, 0));
+      ::SendMessage(m_hwnd, TTM_SETDELAYTIME, TTDT_AUTOPOP, MAKELPARAM(10 * 1000, 0));
    }
 
-   //! adds tooltip for given control
-   void add_tool(HWND ctrl, char* text)
+   /// adds tooltip for given control
+   void AddTooltip(HWND ctrl, char* text)
    {
       // set up toolinfo struct
       TOOLINFO toolinfo;
@@ -113,40 +79,43 @@ public:
       toolinfo.hinst = _Module.GetResourceInstance();
       toolinfo.lpszText = text;
 
-      ::SendMessageA(hwnd, TTM_ADDTOOL, 0, (LPARAM)&toolinfo);
+      ::SendMessageA(m_hwnd, TTM_ADDTOOL, 0, (LPARAM)&toolinfo);
    }
 
-   //! relay mouse move event to tooltip control
-   void relay_event(MSG* msg)
+   /// relay mouse move event to tooltip control
+   void RelayEvent(MSG* msg)
    {
-      ::SendMessage(hwnd, TTM_RELAYEVENT, 0, (LPARAM)msg);
+      ::SendMessage(m_hwnd, TTM_RELAYEVENT, 0, (LPARAM)msg);
    }
 
-   void done()
+   /// cleans up tooltip window
+   void Done()
    {
-      DestroyWindow(hwnd);
-      hwnd = NULL;
+      DestroyWindow(m_hwnd);
+      m_hwnd = NULL;
    }
 
-protected:
-   HWND hwnd;
+private:
+   /// tooltip window handle
+   HWND m_hwnd;
 };
 
 
-//! config dialog class
-class ua_config_dlg: public CDialogImpl<ua_config_dlg>
+/// config dialog class
+class ConfigDlg : public CDialogImpl<ConfigDlg>
 {
 public:
+   /// dialog ID
    enum { IDD = IDD_UACONFIG };
 
-   //! ctor
-   ua_config_dlg(){}
+   /// ctor
+   ConfigDlg() {}
 
-   //! runs dialog main loop
+   /// runs dialog main loop
    void RunDialog();
 
    // message map
-   BEGIN_MSG_MAP(ua_config_dlg)
+   BEGIN_MSG_MAP(ConfigDlg)
       MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
       MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
       COMMAND_ID_HANDLER(IDOK, OnSaveExit)
@@ -154,77 +123,72 @@ public:
       COMMAND_ID_HANDLER(IDC_BUTTON_SET_UW1_PATH, OnSetUw1Path);
    END_MSG_MAP()
 
-   //! translates messages before processing
+   /// translates messages before processing
    BOOL PreTranslateMessage(MSG* pMsg)
    {
-      if (pMsg->message==WM_MOUSEMOVE)
-         tooltips.relay_event(pMsg);
+      if (pMsg->message == WM_MOUSEMOVE)
+         m_tooltips.RelayEvent(pMsg);
       return FALSE;
    }
 
 protected:
    // message handler
 
-   //! called on initing dialog
+   /// called on initing dialog
    LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
-   //! called when leaving dialog
+   /// called when leaving dialog
    LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
    {
       bHandled = FALSE;
-      tooltips.done();
+      m_tooltips.Done();
       return 0;
    }
 
-   //! called to save settings and exit dialog
+   /// called to save settings and exit dialog
    LRESULT OnSaveExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
    {
-      if (check_config())
+      if (CheckConfig())
       {
-         save_config();
+         SaveConfig();
          PostMessage(WM_QUIT);
       }
       return 0;
    }
 
-   //! called to exit dialog
+   /// called to exit dialog
    LRESULT OnExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
    {
       PostMessage(WM_QUIT);
       return 0;
    }
 
-   //! called on button press to set uw1 path
+   /// called on button press to set uw1 path
    LRESULT OnSetUw1Path(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
-   //! shows message box
-   void MessageBox(LPCTSTR pszText, UINT nType = MB_OK);
+   /// shows message box
+   void ShowMessageBox(LPCTSTR text, UINT type = MB_OK);
 
 protected:
-   //! loads config file
-   void load_config();
+   /// loads config file
+   void LoadConfig();
 
-   //! checks configuration
-   bool check_config();
+   /// checks configuration
+   bool CheckConfig();
 
-   //! saves config file
-   void save_config();
+   /// saves config file
+   void SaveConfig();
 
 protected:
-   //! window caption
-   std::string caption;
+   /// window m_caption
+   std::string m_caption;
 
-   //! settings filename
-   std::string settings_filename;
+   /// settings filename
+   std::string m_settingsFilename;
 
-   //! window icons
-   HICON wndicon, wndicon_small;
+   /// tooltip control
+   TooltipCtrl m_tooltips;
 
-   //! tooltip control
-   ua_tooltip_ctrl tooltips;
-
-   //! settings
-   ua_settings settings;
+   /// settings
+   Base::Settings m_settings;
 };
-
-#endif
