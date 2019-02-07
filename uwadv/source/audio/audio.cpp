@@ -156,7 +156,7 @@ AudioManager::AudioManager(const Base::Settings& settings)
          settings.GetString(Base::settingGamePrefix) + "/audio/music.m3u";
 
       Base::ResourceManager resMgr(settings);
-      Base::SDL_RWopsPtr rwops = resMgr.GetResourceFile(strPlaylistName));
+      Base::SDL_RWopsPtr rwops = resMgr.GetResourceFile(strPlaylistName);
       if (rwops.get() != NULL)
          m_apData->GetPlaylist() = Playlist(settings, rwops);
    }
