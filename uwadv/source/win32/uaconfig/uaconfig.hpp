@@ -21,6 +21,7 @@
 //
 #pragma once
 
+#define _ATL_NO_COM_SUPPORT
 #include <atlbase.h>
 extern CComModule _Module;
 #include <atlwin.h>
