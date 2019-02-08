@@ -30,6 +30,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ODataSource.h"
 #endif
 
+#pragma warning(disable: 4456) // declaration of 'x' hides previous local declaration
+#pragma warning(disable: 4458) // declaration of 'x' hides class member
+#pragma warning(disable: 4459) // declaration of 'display' hides global declaration
+
 #ifndef UNDER_CE
 using std::atof;
 using std::atoi;

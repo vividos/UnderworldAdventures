@@ -22,6 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "XMidiSequenceHandler.h"
 #include "XMidiFile.h"
 
+#pragma warning(disable: 4458) // declaration of 'x' hides class member
+
 // Define this to stop the Midisequencer from attempting to
 // catch up time if it has missed over 1200 ticks or 1/5th of a second
 // This is useful for when debugging, since the Sequencer will not attempt

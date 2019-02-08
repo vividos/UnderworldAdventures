@@ -78,7 +78,7 @@ public:
    /*! \todo optimize fetching size by storing size value */
    virtual uint32 getSize()
    {
-      uint32 uCurPos = SDL_RWtell(m_rwops.get());
+      uint32 uCurPos = static_cast<uint32>(SDL_RWtell(m_rwops.get()));
       SDL_RWseek(m_rwops.get(), 0L, SEEK_END);
       uint32 u = getPos();
       seek(uCurPos);
@@ -144,7 +144,7 @@ void MidiPlayer::PlayFile(Base::SDL_RWopsPtr rwops, bool bRepeat)
    XMidiEventList* xmiEventList = xmiFile->GetEventList(0);
 
    int iSeqNumber = 0; // always play using sequence 1 (don't use overlapping midi)
-   m_apDriver->startSequence(iSeqNumber, xmiEventList, bRepeat, 255); 
+   m_apDriver->startSequence(iSeqNumber, xmiEventList, bRepeat, 255);
 }
 
 void MidiPlayer::Stop()
