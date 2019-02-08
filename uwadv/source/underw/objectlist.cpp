@@ -1,45 +1,37 @@
-/*
-   Underworld Adventures - an Ultima Underworld remake project
-   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file objectlist.cpp
-
-   \brief object list
-
-*/
-
-// needed includes
+//
+// Underworld Adventures - an Ultima Underworld remake project
+// Copyright (c) 2002,2003,2004,2005,2006,2019 Michael Fink
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file objectlist.cpp
+/// \brief object list
+//
 #include "underw.hpp"
 #include "objectlist.hpp"
 #include "savegame.hpp"
+#include "tilemap.hpp"
 
 using Underworld::ObjectList;
 using Underworld::ObjectPtr;
-using ::Underworld::EObjectType;
-
-// ObjectList methods
+using Underworld::EObjectType;
 
 void ObjectList::Create()
 {
    m_objectList.resize(0x400);
-   m_tilemapListStart.resize(64*64, g_uiObjectListPosNone);
+   m_tilemapListStart.resize(c_underworldTilemapSize * c_underworldTilemapSize, g_objectListPosNone);
 }
 
 void ObjectList::Destroy()
@@ -48,28 +40,27 @@ void ObjectList::Destroy()
    m_tilemapListStart.clear();
 }
 
-/*! Allocates a new object by searching next free object position in list. The
-    new object itself isn't set; use SetObject to do that.
-    \note may enlarge object list
-    \todo integrate SetObject() call by passing ObjectPtr
-*/
+/// Allocates a new object by searching next free object position in list. The
+/// new object itself isn't set; use SetObject to do that.
+/// \note may enlarge object list
+/// \todo integrate SetObject() call by passing ObjectPtr
 Uint16 ObjectList::Allocate()
 {
    // start with position 1; 0 is reserved
-   Uint16 uiPos = 1;
-   Uint16 uiSize = static_cast<Uint16>(m_objectList.size());
-   while (uiPos < uiSize && m_objectList[uiPos].get() != NULL)
-      uiPos++;
+   Uint16 pos = 1;
+   Uint16 size = static_cast<Uint16>(m_objectList.size());
+   while (pos < size && m_objectList[pos].get() != NULL)
+      pos++;
 
    // hit end of list?
-   if (uiPos >= m_objectList.size())
+   if (pos >= m_objectList.size())
    {
       // already at maximum size?
       if (m_objectList.size() == 0x10000)
          throw Base::RuntimeException("Error while enlarging object list; already at maximum size");
 
       // new pos is start of enlarged list
-      uiPos = static_cast<Uint16>(m_objectList.size());
+      pos = static_cast<Uint16>(m_objectList.size());
 
       // enlarge list by factor 1,25
       unsigned int uiNewSize = m_objectList.size();
@@ -82,131 +73,136 @@ Uint16 ObjectList::Allocate()
       m_objectList.resize(uiNewSize);
    }
 
-   return uiPos;
+   return pos;
 }
 
-void ObjectList::Free(Uint16 uiObjectPos)
+void ObjectList::Free(Uint16 objectPos)
 {
    // object must not be part of a tile list
-   UaAssert(GetObject(uiObjectPos)->GetPosInfo().m_uiTileX == c_uiTileNotAPos);
-   UaAssert(GetObject(uiObjectPos)->GetPosInfo().m_uiTileY == c_uiTileNotAPos);
-   UaAssert(uiObjectPos < m_objectList.size());
-   UaAssert(uiObjectPos != g_uiObjectListPosNone);
-   UaAssert(m_objectList[uiObjectPos].get() != NULL); // can only free allocated objects
+   UaAssert(GetObject(objectPos)->GetPosInfo().m_tileX == c_tileNotAPos);
+   UaAssert(GetObject(objectPos)->GetPosInfo().m_tileY == c_tileNotAPos);
+   UaAssert(objectPos < m_objectList.size());
+   UaAssert(objectPos != g_objectListPosNone);
+   UaAssert(m_objectList[objectPos].get() != NULL); // can only free allocated objects
 
-   m_objectList[uiObjectPos].reset();
+   m_objectList[objectPos].reset();
 }
 
-ObjectPtr ObjectList::GetObject(Uint16 uiObjectPos)
+ObjectPtr ObjectList::GetObject(Uint16 objectPos)
 {
-   UaAssert(uiObjectPos < m_objectList.size());
-   UaAssert(uiObjectPos != g_uiObjectListPosNone);
+   UaAssert(objectPos < m_objectList.size());
+   UaAssert(objectPos != g_objectListPosNone);
 
-   return m_objectList[uiObjectPos];
+   return m_objectList[objectPos];
 }
 
-void ObjectList::SetObject(Uint16 uiObjectPos, const ObjectPtr& pObj)
+const ObjectPtr ObjectList::GetObject(Uint16 objectPos) const
 {
-   UaAssert(uiObjectPos < m_objectList.size());
-   UaAssert(uiObjectPos != g_uiObjectListPosNone);
+   UaAssert(objectPos < m_objectList.size());
+   UaAssert(objectPos != g_objectListPosNone);
 
-   m_objectList[uiObjectPos] = pObj;
+   return m_objectList[objectPos];
+}
+
+void ObjectList::SetObject(Uint16 objectPos, const ObjectPtr& object)
+{
+   UaAssert(objectPos < m_objectList.size());
+   UaAssert(objectPos != g_objectListPosNone);
+
+   m_objectList[objectPos] = object;
 }
 
 Uint16 ObjectList::GetListStart(Uint8 xpos, Uint8 ypos) const
 {
-   UaAssert(xpos < 64);
-   UaAssert(ypos < 64);
+   UaAssert(xpos < c_underworldTilemapSize);
+   UaAssert(ypos < c_underworldTilemapSize);
 
-   return m_tilemapListStart[ypos*64+xpos];
+   return m_tilemapListStart[ypos * c_underworldTilemapSize + xpos];
 }
 
-/*! It is allowed that uiObjectPos may be equal to g_uiObjectListPosNone, to
-    empty the list.
-*/
-void ObjectList::SetListStart(Uint16 uiObjectPos, Uint8 xpos, Uint8 ypos)
+/// It is allowed that objectPos may be equal to g_objectListPosNone, to
+/// empty the list.
+void ObjectList::SetListStart(Uint16 objectPos, Uint8 xpos, Uint8 ypos)
 {
-   UaAssert(xpos < 64);
-   UaAssert(ypos < 64);
-   UaAssert(uiObjectPos < m_objectList.size());
+   UaAssert(xpos < c_underworldTilemapSize);
+   UaAssert(ypos < c_underworldTilemapSize);
+   UaAssert(objectPos < m_objectList.size());
 
-   m_tilemapListStart[ypos*64+xpos] = uiObjectPos;
+   m_tilemapListStart[ypos * c_underworldTilemapSize + xpos] = objectPos;
 }
 
-/*! Adds object to tile's list of objects. Adds the object to the end of the
-    list.
-*/
-void ObjectList::AddObjectToTileList(Uint16 uiObjectPos, Uint8 xpos, Uint8 ypos)
+/// Adds object to tile's list of objects. Adds the object to the end of the list.
+void ObjectList::AddObjectToTileList(Uint16 objectPos, Uint8 xpos, Uint8 ypos)
 {
-   UaAssert(uiObjectPos != g_uiObjectListPosNone);
-   UaAssert(uiObjectPos < m_objectList.size());
-   UaAssert(m_objectList[uiObjectPos].get() != NULL);
-   UaAssert(m_objectList[uiObjectPos]->GetObjectInfo().m_uiLink == g_uiObjectListPosNone);
+   UaAssert(objectPos != g_objectListPosNone);
+   UaAssert(objectPos < m_objectList.size());
+   UaAssert(m_objectList[objectPos].get() != NULL);
+   UaAssert(m_objectList[objectPos]->GetObjectInfo().m_link == g_objectListPosNone);
 
    // search end of tile
-   Uint16 uiLink = GetListStart(xpos, ypos);
-   if (uiLink == g_uiObjectListPosNone)
+   Uint16 link = GetListStart(xpos, ypos);
+   if (link == g_objectListPosNone)
    {
       // no object in tile yet
-      SetListStart(uiObjectPos, xpos, ypos);
+      SetListStart(objectPos, xpos, ypos);
    }
    else
    {
       // follow link to the end
-      Uint16 uiLastLink;
+      Uint16 lastLink;
       do
       {
-         uiLastLink = uiLink;
-         uiLink = GetObject(uiLink)->GetObjectInfo().m_uiLink;
-      } while(uiLink != g_uiObjectListPosNone);
+         lastLink = link;
+         link = GetObject(link)->GetObjectInfo().m_link;
+      } while (link != g_objectListPosNone);
 
       // set as new end object
-      GetObject(uiLastLink)->GetObjectInfo().m_uiLink = uiObjectPos;
-      GetObject(uiObjectPos)->GetObjectInfo().m_uiLink = g_uiObjectListPosNone;
+      GetObject(lastLink)->GetObjectInfo().m_link = objectPos;
+      GetObject(objectPos)->GetObjectInfo().m_link = g_objectListPosNone;
    }
 
-   m_objectList[uiObjectPos]->GetPosInfo().m_uiTileX = xpos;
-   m_objectList[uiObjectPos]->GetPosInfo().m_uiTileY = ypos;
+   m_objectList[objectPos]->GetPosInfo().m_tileX = xpos;
+   m_objectList[objectPos]->GetPosInfo().m_tileY = ypos;
 }
 
-void ObjectList::RemoveObjectFromTileList(Uint16 uiObjectPos, Uint8 xpos, Uint8 ypos)
+void ObjectList::RemoveObjectFromTileList(Uint16 objectPos, Uint8 xpos, Uint8 ypos)
 {
-   UaAssert(uiObjectPos != g_uiObjectListPosNone);
-   UaAssert(uiObjectPos < m_objectList.size());
-   UaAssert(m_objectList[uiObjectPos].get() != NULL);
+   UaAssert(objectPos != g_objectListPosNone);
+   UaAssert(objectPos < m_objectList.size());
+   UaAssert(m_objectList[objectPos].get() != NULL);
 
    // search item in tile list
-   Uint16 uiLink = GetListStart(xpos, ypos);
-   UaAssert(uiLink != g_uiObjectListPosNone);
+   Uint16 link = GetListStart(xpos, ypos);
+   UaAssert(link != g_objectListPosNone);
 
-   m_objectList[uiObjectPos]->GetPosInfo().m_uiTileX = c_uiTileNotAPos;
-   m_objectList[uiObjectPos]->GetPosInfo().m_uiTileY = c_uiTileNotAPos;
+   m_objectList[objectPos]->GetPosInfo().m_tileX = c_tileNotAPos;
+   m_objectList[objectPos]->GetPosInfo().m_tileY = c_tileNotAPos;
 
    // first item?
-   if (uiLink == uiObjectPos)
+   if (link == objectPos)
    {
       // set next item as list start
-      SetListStart(GetObject(uiObjectPos)->GetObjectInfo().m_uiLink, xpos, ypos);
-      GetObject(uiObjectPos)->GetObjectInfo().m_uiLink = g_uiObjectListPosNone;
+      SetListStart(GetObject(objectPos)->GetObjectInfo().m_link, xpos, ypos);
+      GetObject(objectPos)->GetObjectInfo().m_link = g_objectListPosNone;
       return;
    }
 
    // follow link until item is found
-   Uint16 uiLastLink;
+   Uint16 lastLink;
    do
    {
-      uiLastLink = uiLink;
-      uiLink = GetObject(uiLink)->GetObjectInfo().m_uiLink;
+      lastLink = link;
+      link = GetObject(link)->GetObjectInfo().m_link;
 
-      if (uiLink == uiObjectPos)
+      if (link == objectPos)
       {
          // found; set last object's link to the next one
-         GetObject(uiLastLink)->GetObjectInfo().m_uiLink = GetObject(uiLink)->GetObjectInfo().m_uiLink;
-         GetObject(uiObjectPos)->GetObjectInfo().m_uiLink = g_uiObjectListPosNone;
+         GetObject(lastLink)->GetObjectInfo().m_link = GetObject(link)->GetObjectInfo().m_link;
+         GetObject(objectPos)->GetObjectInfo().m_link = g_objectListPosNone;
          return;
       }
 
-   } while(uiLink != g_uiObjectListPosNone);
+   } while (link != g_objectListPosNone);
 
    UaAssert(false); // when reached here, item didn't belong in this list
 }
@@ -219,33 +215,33 @@ void ObjectList::Load(Base::Savegame& sg)
    Create();
 
    // read in list start positions
-   unsigned int ui=0;
-   for(ui=0; ui<64*64; ui++)
-      m_tilemapListStart[ui] = sg.Read16();
+   unsigned int tileIndex = 0;
+   for (tileIndex = 0; tileIndex < c_underworldTilemapSize * c_underworldTilemapSize; tileIndex++)
+      m_tilemapListStart[tileIndex] = sg.Read16();
 
    // read in object list
-   Uint16 uiSize = sg.Read16();
+   Uint16 size = sg.Read16();
 
-   for(ui=0; ui<uiSize; ui++)
+   for (tileIndex = 0; tileIndex < size; tileIndex++)
    {
       // read in object type
       EObjectType objectType =
          static_cast<EObjectType>(sg.Read8());
 
       // generate proper object ptr, depending on object type
-      ObjectPtr& pObj = m_objectList[ui];
-      if (objectType == ::Underworld::objectNone)
-         pObj.reset();
+      ObjectPtr& object = m_objectList[tileIndex];
+      if (objectType == Underworld::objectNone)
+         object.reset();
       else
-      if (objectType == ::Underworld::objectNormal)
-         pObj = ObjectPtr(new Object);
-      else
-      if (objectType == ::Underworld::objectNpc)
-         pObj = ObjectPtr(new NpcObject);
+         if (objectType == Underworld::objectNormal)
+            object = ObjectPtr(new Object);
+         else
+            if (objectType == Underworld::objectNpc)
+               object = ObjectPtr(new NpcObject);
 
       // load contents
-      if (pObj.get() != NULL)
-         pObj->Load(sg);
+      if (object.get() != NULL)
+         object->Load(sg);
    }
 
    sg.EndSection();
@@ -256,37 +252,36 @@ void ObjectList::Save(Base::Savegame& sg) const
    sg.BeginSection("objectlist");
 
    // write list with start positions
-   unsigned int ui=0;
-   for(ui=0; ui<64*64; ui++)
-      sg.Write16(m_tilemapListStart[ui]);
+   unsigned int tileIndex = 0;
+   for (tileIndex = 0; tileIndex < c_underworldTilemapSize * c_underworldTilemapSize; tileIndex++)
+      sg.Write16(m_tilemapListStart[tileIndex]);
 
    // write out object list
-   Uint16 uiSize = static_cast<Uint16>(m_objectList.size());
-   sg.Write16(uiSize);
+   Uint16 size = static_cast<Uint16>(m_objectList.size());
+   sg.Write16(size);
 
-   for(ui=0; ui<uiSize; ui++)
+   for (tileIndex = 0; tileIndex < size; tileIndex++)
    {
       // write out object type
-      const ObjectPtr& pObj = m_objectList[ui];
-      if (pObj.get() == NULL)
+      const ObjectPtr& object = m_objectList[tileIndex];
+      if (object.get() == NULL)
          sg.Write8(static_cast<Uint8>(::Underworld::objectNone));
       else
       {
-         sg.Write8(static_cast<Uint8>(pObj->GetObjectType()));
+         sg.Write8(static_cast<Uint8>(object->GetObjectType()));
 
          // write out object infos, too
-         pObj->Save(sg);
+         object->Save(sg);
       }
    }
 
    sg.EndSection();
 }
 
-/*! Compacts object list by rearranging objects and adjusting links and
-    special links; note that no object list positions must be kept, since
-    they will be invalidated after calling this function.
-    \todo implement
-*/
+/// Compacts object list by rearranging objects and adjusting links and
+/// special links; note that no object list positions must be kept, since
+/// they will be invalidated after calling this function.
+/// \todo implement
 void ObjectList::Compact()
 {
 }

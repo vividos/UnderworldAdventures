@@ -1,71 +1,59 @@
-/*
-   Underworld Adventures - an Ultima Underworld remake project
-   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file player.cpp
-
-   \brief player
-
-*/
-
-// needed includes
+//
+// Underworld Adventures - an Ultima Underworld remake project
+// Copyright (c) 2002,2003,2004,2005,2006,2019 Michael Fink
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file player.cpp
+/// \brief player
+//
 #include "underw.hpp"
 #include "player.hpp"
 #include "savegame.hpp"
 
 using Underworld::Player;
 
-// Player methods
-
 Player::Player()
-:m_strName("GRONKEY"),
- m_xpos(32.0), m_ypos(32.0),
- m_dHeight(0.0),
- m_dRotateAngle(0.0),
- m_dPanAngle(0.0)
+   :m_name("GRONKEY"),
+   m_xpos(32.0), m_ypos(32.0),
+   m_height(0.0),
+   m_rotateAngle(0.0),
+   m_panAngle(0.0)
 {
-   memset(m_aAttributes, 0, SDL_TABLESIZE(m_aAttributes));
-   memset(m_aSkills, 0, SDL_TABLESIZE(m_aSkills));
+   memset(m_attributes, 0, SDL_TABLESIZE(m_attributes));
+   memset(m_skills, 0, SDL_TABLESIZE(m_skills));
 }
 
 void Player::Load(Base::Savegame& sg)
 {
    sg.BeginSection("player");
 
-   // read in name
-   sg.ReadString(m_strName);
+   sg.ReadString(m_name);
 
-   // read position
    m_xpos = sg.Read32() / 256.0;
    m_ypos = sg.Read32() / 256.0;
-   m_dHeight = sg.Read32() / 256.0;
-   m_dRotateAngle = sg.Read32() / 256.0;
-   m_dPanAngle = sg.Read32() / 256.0;
+   m_height = sg.Read32() / 256.0;
+   m_rotateAngle = sg.Read32() / 256.0;
+   m_panAngle = sg.Read32() / 256.0;
 
-   // read attributes and skills
-   unsigned int ui=0;
-   for(ui=0; ui<SDL_TABLESIZE(m_aAttributes); ui++)
-      m_aAttributes[ui] = sg.Read16();
+   unsigned int index = 0;
+   for (index = 0; index < SDL_TABLESIZE(m_attributes); index++)
+      m_attributes[index] = sg.Read16();
 
-   for(ui=0; ui<SDL_TABLESIZE(m_aSkills); ui++)
-      m_aSkills[ui] = sg.Read16();
+   for (index = 0; index < SDL_TABLESIZE(m_skills); index++)
+      m_skills[index] = sg.Read16();
 
    sg.EndSection();
 
@@ -79,23 +67,20 @@ void Player::Save(Base::Savegame& sg) const
 {
    sg.BeginSection("player");
 
-   // write name
-   sg.WriteString(m_strName.c_str());
+   sg.WriteString(m_name.c_str());
 
-   // write position
-   sg.Write32(static_cast<Uint32>(m_xpos*256.0));
-   sg.Write32(static_cast<Uint32>(m_ypos*256.0));
-   sg.Write32(static_cast<Uint32>(m_dHeight*256.0));
-   sg.Write32(static_cast<Uint32>(m_dRotateAngle*256.0));
-   sg.Write32(static_cast<Uint32>(m_dPanAngle*256.0));
+   sg.Write32(static_cast<Uint32>(m_xpos * 256.0));
+   sg.Write32(static_cast<Uint32>(m_ypos * 256.0));
+   sg.Write32(static_cast<Uint32>(m_height * 256.0));
+   sg.Write32(static_cast<Uint32>(m_rotateAngle * 256.0));
+   sg.Write32(static_cast<Uint32>(m_panAngle * 256.0));
 
-   // write attributes and skills
-   unsigned int ui=0;
-   for(ui=0; ui<SDL_TABLESIZE(m_aAttributes); ui++)
-      sg.Write16(m_aAttributes[ui]);
+   unsigned int index = 0;
+   for (index = 0; index < SDL_TABLESIZE(m_attributes); index++)
+      sg.Write16(m_attributes[index]);
 
-   for(ui=0; ui<SDL_TABLESIZE(m_aSkills); ui++)
-      sg.Write16(m_aSkills[ui]);
+   for (index = 0; index < SDL_TABLESIZE(m_skills); index++)
+      sg.Write16(m_skills[index]);
 
    sg.EndSection();
 
@@ -105,10 +90,10 @@ void Player::Save(Base::Savegame& sg) const
    m_questFlags.Save(sg);
 }
 
-/*! Fills the player-related fields of the savegame info struct. */
+/// Fills the player-related fields of the savegame info struct.
 void Player::FillSavegamePlayerInfos(Base::SavegameInfo& info)
 {
-   info.strPlayerName = m_strName;
+   info.strPlayerName = m_name;
 
    info.uiGender = GetAttribute(attrGender);
    info.uiAppearance = GetAttribute(attrAppearance);
