@@ -43,10 +43,10 @@ public:
    GameStrings() {}
 
    /// returns if block ID is available
-   bool IsBlockAvail(Uint16 blockId);
+   bool IsBlockAvail(Uint16 blockId) const;
 
    /// returns a whole string block
-   const std::vector<std::string>& GetStringBlock(Uint16 blockId);
+   const std::vector<std::string>& GetStringBlock(Uint16 blockId) const;
 
    /// returns a set of all string blocks available
    const std::set<Uint16>& GetStringBlockSet() const
@@ -55,7 +55,7 @@ public:
    }
 
    /// returns a string from given block
-   std::string GetString(Uint16 blockId, unsigned int stringNumber);
+   std::string GetString(Uint16 blockId, unsigned int stringNumber) const;
 
 private:
    friend Import::GameStringsImporter;

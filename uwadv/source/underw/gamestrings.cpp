@@ -22,12 +22,12 @@
 #include "underw.hpp"
 #include "gamestrings.hpp"
 
-bool GameStrings::IsBlockAvail(Uint16 blockId)
+bool GameStrings::IsBlockAvail(Uint16 blockId) const
 {
    return m_blockSet.find(blockId) != m_blockSet.end();
 }
 
-const std::vector<std::string>& GameStrings::GetStringBlock(Uint16 blockId)
+const std::vector<std::string>& GameStrings::GetStringBlock(Uint16 blockId) const
 {
    if (!IsBlockAvail(blockId))
    {
@@ -37,10 +37,12 @@ const std::vector<std::string>& GameStrings::GetStringBlock(Uint16 blockId)
       return dummyBlock;
    }
 
-   return m_allStrings[blockId];
+   auto iter = m_allStrings.find(blockId);
+   return iter->second;
 }
 
-std::string GameStrings::GetString(Uint16 blockId, unsigned int stringNumber)
+std::string GameStrings::GetString(Uint16 blockId, unsigned int stringNumber) const
+
 {
    if (!IsBlockAvail(blockId))
    {
