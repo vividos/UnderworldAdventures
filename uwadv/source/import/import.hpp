@@ -77,49 +77,6 @@ namespace Import
       void load_conv_code_imported_funcs(CodeVM& vm, FILE *fd);
    };
 
-   // strings loading
-
-
-   /// strings.pak wrapper class
-   class ua_strings_pak_file
-   {
-   public:
-      /// ctor
-      ua_strings_pak_file();
-      /// dtor
-      ~ua_strings_pak_file();
-
-      /// opens strings.pak file in data folder of current game
-      void open(Base::Settings& settings);
-
-      /// opens a strings.pak file with given name
-      void open(const char* filename);
-
-      /// opens from rwops structure; file is kept open permanently
-      void open(SDL_RWops* rwops);
-
-      /// returns if a given block id is available)
-      bool is_avail(Uint16 block_id);
-
-      /// loads a single string block
-      void load_stringblock(Uint16 block_id, std::vector<std::string>& strblock);
-
-      /// adds all blocks in the file to the block
-      void add_to_blockset(std::set<Uint16>& blockset);
-
-   public:
-      /// filename of .pak file
-      std::string filename;
-
-      /// rwops structure when we're loading from an rwops file
-      SDL_RWops* rwops_file;
-
-      /// a vector with all huffman nodes for the given .pak file
-      std::vector<ua_strings_pak_huff_node> allnodes;
-
-      /// a map of all blocks available in the file
-      std::map<Uint16, Uint32> allblocks;
-   };
 #endif
 
    // inline functions

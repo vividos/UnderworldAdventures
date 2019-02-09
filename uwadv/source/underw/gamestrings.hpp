@@ -27,6 +27,11 @@
 #include <set>
 #include "settings.hpp"
 
+namespace Import
+{
+   class GameStringsImporter;
+}
+
 /// \brief Game strings class
 /// \details Game strings are contained in blocks that contain a list of strings. Each
 /// block contains specific strings, for item descriptions, cutscene text or
@@ -44,13 +49,28 @@ public:
    const std::vector<std::string>& GetStringBlock(Uint16 blockId);
 
    /// returns a set of all string blocks available
-   const std::set<Uint16>& GetStringBlockSet()
+   const std::set<Uint16>& GetStringBlockSet() const
    {
       return m_blockSet;
    }
 
    /// returns a string from given block
    std::string GetString(Uint16 blockId, unsigned int stringNumber);
+
+private:
+   friend Import::GameStringsImporter;
+
+   /// returns a set of all string blocks available
+   std::set<Uint16>& GetStringBlockSet()
+   {
+      return m_blockSet;
+   }
+
+   /// returns a set of all string blocks available
+   std::map<Uint16, std::vector<std::string>>& GetAllStrings()
+   {
+      return m_allStrings;
+   }
 
 private:
    /// a map with all string blocks
