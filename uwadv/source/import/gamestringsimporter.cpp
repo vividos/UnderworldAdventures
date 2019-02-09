@@ -21,9 +21,7 @@
 //
 #include "import.hpp"
 #include "gamestringsimporter.hpp"
-#include "base.hpp"
 #include "resourcemanager.hpp"
-#include "file.hpp"
 #include "gamestrings.hpp"
 
 using Import::GameStringsImporter;

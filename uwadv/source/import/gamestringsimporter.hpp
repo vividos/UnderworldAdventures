@@ -22,6 +22,7 @@
 #pragma once
 
 #include "base.hpp"
+#include "file.hpp"
 #include <map>
 #include <vector>
 
