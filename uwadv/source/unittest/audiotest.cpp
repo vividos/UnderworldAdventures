@@ -1,31 +1,24 @@
-/*
-   Underworld Adventures - an Ultima Underworld remake project
-   Copyright (c) 2006,2019 Michael Fink
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file audiotest.cpp
-
-   \brief audio classes test
-
-*/
-
-// needed includes
+//
+// Underworld Adventures - an Ultima Underworld remake project
+// Copyright (c) 2006,2019 Michael Fink
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file audiotest.cpp
+/// \brief audio classes test
+//
 #include "unittest.hpp"
 #include "audio.hpp"
 #include "midiplayer.hpp"
@@ -39,169 +32,175 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTest
 {
-
-//! Audio test
-/*! Note that this test is normally not run; comment in the test
-    suite function to run the test.
-*/
-TEST_CLASS(TestAudio)
-{
-//! auto-init class for SDL audio subsystem and SDL_mixer
-class SDLMixerIniter
-{
-public:
-   //! ctor; inits audio
-   SDLMixerIniter()
+   /// \brief Audio tests
+   /// Note that this test is normally not run; comment in the test
+   /// suite function to run the test.
+   TEST_CLASS(TestAudio)
    {
-      SDL_Init(SDL_INIT_AUDIO);
-      Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 4096);
-   }
-   //! ctor; uninits audio
-   ~SDLMixerIniter()
-   {
-      Mix_CloseAudio();
-      SDL_QuitSubSystem(SDL_INIT_AUDIO);
-   }
-};
-
-
-/*! Tests audio manager music track playback */
-TEST_METHOD(TestAudioManager)
-{
-   Base::Settings settings = GetTestSettings();
-
-   settings.SetValue(Base::settingAudioEnabled, true);
-   settings.SetValue(Base::settingGamePrefix, std::string("uw1"));
-   settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw1Path));
-
-   {
-      Audio::AudioManager audioMgr(settings);
-      audioMgr.StartMusicTrack(0, true);
-
-      SDL_Delay(20*1000);
-
-      audioMgr.StopMusic();
-   }
-
-   settings.SetValue(Base::settingGamePrefix, std::string("uw2"));
-   settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw2Path));
-
-   {
-      Audio::AudioManager audioMgr(settings);
-      audioMgr.StartMusicTrack(1, true);
-
-      SDL_Delay(30*1000);
-
-      audioMgr.StopMusic();
-   }
-
-}
-
-/*! Tests midi player .xmi playback */
-TEST_METHOD(TestMidiPlayer)
-{
-   SDLMixerIniter mixerIniter;
-
-   Base::Settings& settings = GetTestSettings();
-
-   Base::ResourceManager resourceManager(settings);
-
-   // load all uw1 midis
-   {
-      const char* midisUw1[] =
+      /// auto-init class for SDL audio subsystem and SDL_mixer
+      class SDLMixerIniter
       {
-         "UW01.XMI",
-         "UW02.XMI",
-         "UW03.XMI",
-         "UW04.XMI",
-         "UW05.XMI",
-         "UW06.XMI",
-         "UW07.XMI",
-         "UW10.XMI",
-         "UW11.XMI",
-         "UW12.XMI",
-         "UW13.XMI",
-         "UW15.XMI"
+      public:
+         /// ctor; inits audio
+         SDLMixerIniter()
+         {
+            SDL_Init(SDL_INIT_AUDIO);
+            Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 4096);
+         }
+         /// ctor; uninits audio
+         ~SDLMixerIniter()
+         {
+            Mix_CloseAudio();
+            SDL_QuitSubSystem(SDL_INIT_AUDIO);
+         }
       };
 
-      Audio::MidiPlayer player(settings);
-
-      for(unsigned int i=0; i<SDL_TABLESIZE(midisUw1); i++)
+      /// Tests audio manager music track playback, uw1
+      TEST_METHOD(TestAudioManagerUw1)
       {
-         std::string strFilename = std::string("/sound/") + midisUw1[i];
+         Base::Settings settings = GetTestSettings();
 
-         Base::SDL_RWopsPtr rwops = resourceManager.GetUnderworldFile(Base::resourceGameUw1, strFilename);
+         settings.SetValue(Base::settingAudioEnabled, true);
+         settings.SetValue(Base::settingGamePrefix, std::string("uw1"));
+         settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw1Path));
 
-         player.PlayFile(rwops, false);
-         player.Stop();
+
+         Audio::AudioManager audioMgr(settings);
+         audioMgr.StartMusicTrack(0, true);
+
+         SDL_Delay(20 * 1000);
+
+         audioMgr.StopMusic();
       }
-   }
 
-   // load all uw2 midis
-   {
-      const char* midisUw2[] =
+      /// Tests audio manager music track playback, uw2
+      TEST_METHOD(TestAudioManagerUw2)
       {
-         "UWA01.XMI",
-         "UWA02.XMI",
-         "UWA03.XMI",
-         "UWA04.XMI",
-         "UWA05.XMI",
-         "UWA06.XMI",
-         "UWA07.XMI",
-         "UWA10.XMI",
-         "UWA11.XMI",
-         "UWA12.XMI",
-         "UWA13.XMI",
-         "UWA14.XMI",
-         "UWA15.XMI",
-         "UWA16.XMI",
-         "UWA17.XMI",
-         "UWA30.XMI",
-         "UWA31.XMI"
-      };
+         Base::Settings settings = GetTestSettings();
 
-      Audio::MidiPlayer player(settings);
+         settings.SetValue(Base::settingGamePrefix, std::string("uw2"));
+         settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw2Path));
 
-      for(unsigned int i=0; i<SDL_TABLESIZE(midisUw2); i++)
-      {
-         std::string strFilename = std::string("/sound/") + midisUw2[i];
+         Audio::AudioManager audioMgr(settings);
+         audioMgr.StartMusicTrack(1, true);
 
-         Base::SDL_RWopsPtr rwops = resourceManager.GetUnderworldFile(Base::resourceGameUw2, strFilename);
+         SDL_Delay(30 * 1000);
 
-         player.PlayFile(rwops, false);
-         player.Stop();
+         audioMgr.StopMusic();
       }
-   }
-}
 
-/*! Tests playing back sound effects */
-TEST_METHOD(TestPlaySound)
-{
-   Base::Settings settings = GetTestSettings();
+      /// Tests midi player .xmi playback, uw1
+      TEST_METHOD(TestMidiPlayerUw1)
+      {
+         SDLMixerIniter mixerIniter;
 
-   settings.SetValue(Base::settingAudioEnabled, true);
+         Base::Settings& settings = GetTestSettings();
+         Base::ResourceManager resourceManager(settings);
 
-   settings.SetValue(Base::settingGamePrefix, std::string("uw1"));
-   settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw1Path));
+         const char* midisUw1[] =
+         {
+            "UW01.XMI",
+            "UW02.XMI",
+            "UW03.XMI",
+            "UW04.XMI",
+            "UW05.XMI",
+            "UW06.XMI",
+            "UW07.XMI",
+            "UW10.XMI",
+            "UW11.XMI",
+            "UW12.XMI",
+            "UW13.XMI",
+            "UW15.XMI"
+         };
 
-   {
-      Audio::AudioManager audioMgr(settings);
-      audioMgr.PlaySound("26");
-      SDL_Delay(2*1000);
-      audioMgr.PlaySound("27");
-      SDL_Delay(7*1000);
-      audioMgr.PlaySound("28");
-      SDL_Delay(4*1000);
-   }
+         Audio::MidiPlayer player(settings);
 
-   settings.SetValue(Base::settingGamePrefix, std::string("uw2"));
-   settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw2Path));
-   {
-      Audio::AudioManager audioMgr(settings);
-      audioMgr.PlaySound("BSP00");
+         for (unsigned int i = 0; i < SDL_TABLESIZE(midisUw1); i++)
+         {
+            std::string strFilename = std::string("/sound/") + midisUw1[i];
 
-      SDL_Delay(16*1000);
-   }
-}
-};
+            Base::SDL_RWopsPtr rwops = resourceManager.GetUnderworldFile(Base::resourceGameUw1, strFilename);
+
+            player.PlayFile(rwops, false);
+            player.Stop();
+         }
+      }
+
+      /// Tests midi player .xmi playback, uw2
+      TEST_METHOD(TestMidiPlayerUw2)
+      {
+         SDLMixerIniter mixerIniter;
+
+         Base::Settings& settings = GetTestSettings();
+         Base::ResourceManager resourceManager(settings);
+
+         const char* midisUw2[] =
+         {
+            "UWA01.XMI",
+            "UWA02.XMI",
+            "UWA03.XMI",
+            "UWA04.XMI",
+            "UWA05.XMI",
+            "UWA06.XMI",
+            "UWA07.XMI",
+            "UWA10.XMI",
+            "UWA11.XMI",
+            "UWA12.XMI",
+            "UWA13.XMI",
+            "UWA14.XMI",
+            "UWA15.XMI",
+            "UWA16.XMI",
+            "UWA17.XMI",
+            "UWA30.XMI",
+            "UWA31.XMI"
+         };
+
+         Audio::MidiPlayer player(settings);
+
+         for (unsigned int i = 0; i < SDL_TABLESIZE(midisUw2); i++)
+         {
+            std::string strFilename = std::string("/sound/") + midisUw2[i];
+
+            Base::SDL_RWopsPtr rwops = resourceManager.GetUnderworldFile(Base::resourceGameUw2, strFilename);
+
+            player.PlayFile(rwops, false);
+            player.Stop();
+         }
+      }
+
+      /// Tests playing back sound effects
+      TEST_METHOD(TestPlaySoundUw1)
+      {
+         Base::Settings settings = GetTestSettings();
+
+         settings.SetValue(Base::settingAudioEnabled, true);
+
+         settings.SetValue(Base::settingGamePrefix, std::string("uw1"));
+         settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw1Path));
+
+         Audio::AudioManager audioMgr(settings);
+         audioMgr.PlaySound("26");
+         SDL_Delay(2 * 1000);
+         audioMgr.PlaySound("27");
+         SDL_Delay(7 * 1000);
+         audioMgr.PlaySound("28");
+         SDL_Delay(4 * 1000);
+      }
+
+      /// Tests playing back sound effects, uw2
+      TEST_METHOD(TestPlaySoundUw2)
+      {
+         Base::Settings settings = GetTestSettings();
+
+         settings.SetValue(Base::settingAudioEnabled, true);
+
+         settings.SetValue(Base::settingGamePrefix, std::string("uw2"));
+         settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw2Path));
+
+         Audio::AudioManager audioMgr(settings);
+         audioMgr.PlaySound("BSP00");
+
+         SDL_Delay(16 * 1000);
+      }
+   };
 } // namespace UnitTest

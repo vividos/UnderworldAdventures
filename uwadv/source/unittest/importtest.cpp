@@ -1,35 +1,32 @@
-/*
-   Underworld Adventures - an Ultima Underworld remake project
-   Copyright (c) 2006,2019 Michael Fink
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file importtest.cpp
-
-   \brief import functions test
-
-*/
-
-// needed includes
+//
+// Underworld Adventures - an Ultima Underworld remake project
+// Copyright (c) 2006,2019 Michael Fink
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file importtest.cpp
+/// \brief import functions test
+//
 #include "unittest.hpp"
 #include "settings.hpp"
 #include "resourcemanager.hpp"
 #include "import.hpp"
+#include "levelimporter.hpp"
+#include "playerimporter.hpp"
+#include "gamestrings.hpp"
+#include "gamestringsimporter.hpp"
 #include "properties.hpp"
 #include "levellist.hpp"
 #include "player.hpp"
@@ -38,134 +35,159 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTest
 {
-
-//! Import test
-/*! Tests importing all kinds of original game data files. */
-TEST_CLASS(TestImport)
-{
-/*! Tests importing object properties */
-TEST_METHOD(TestObjectPropertiesImport)
-{
-   Base::Settings& settings = GetTestSettings();
-
-   settings.SetValue(Base::settingGamePrefix, std::string("uw1"));
-   settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw1Path));
-
+   /// Tests importing all kinds of original game data files.
+   TEST_CLASS(TestImport)
    {
-      Base::ResourceManager resourceManager(settings);
+      /// Tests importing object properties, uw1
+      TEST_METHOD(TestObjectPropertiesImportUw1)
+      {
+         Base::Settings& settings = GetTestSettings();
 
-      // load properties
-      Underworld::ObjectProperties objectProperties;
+         settings.SetValue(Base::settingGamePrefix, std::string("uw1"));
+         settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw1Path));
 
-      Import::ImportProperties(resourceManager, objectProperties);
+         Base::ResourceManager resourceManager(settings);
 
-      // test if all property vectors are filled
-      Assert::IsTrue(0x0200 == objectProperties.GetVectorCommonObjectProperties().size());
-      Assert::IsTrue(0x0010 == objectProperties.GetVectorMeleeWeaponProperties().size());
-      Assert::IsTrue(0x0010 == objectProperties.GetVectorRangedWeaponProperties().size());
-      Assert::IsTrue(0x0020 == objectProperties.GetVectorArmourAndWearableProperties().size());
-      Assert::IsTrue(0x0040 == objectProperties.GetVectorCritterProperties().size());
-      Assert::IsTrue(0x0010 == objectProperties.GetVectorContainerProperties().size());
-      Assert::IsTrue(0x0010 == objectProperties.GetVectorLightSourceProperties().size());
-      Assert::IsTrue(0x0010 == objectProperties.GetVectorAnimatedObjectProperties().size());
-   }
+         // load properties
+         Underworld::ObjectProperties objectProperties;
 
-   settings.SetValue(Base::settingGamePrefix, std::string("uw2"));
-   settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw2Path));
+         Import::ImportProperties(resourceManager, objectProperties);
 
-   {
-      Base::ResourceManager resourceManager(settings);
+         // test if all property vectors are filled
+         Assert::IsTrue(0x0200 == objectProperties.GetVectorCommonObjectProperties().size());
+         Assert::IsTrue(0x0010 == objectProperties.GetVectorMeleeWeaponProperties().size());
+         Assert::IsTrue(0x0010 == objectProperties.GetVectorRangedWeaponProperties().size());
+         Assert::IsTrue(0x0020 == objectProperties.GetVectorArmourAndWearableProperties().size());
+         Assert::IsTrue(0x0040 == objectProperties.GetVectorCritterProperties().size());
+         Assert::IsTrue(0x0010 == objectProperties.GetVectorContainerProperties().size());
+         Assert::IsTrue(0x0010 == objectProperties.GetVectorLightSourceProperties().size());
+         Assert::IsTrue(0x0010 == objectProperties.GetVectorAnimatedObjectProperties().size());
+      }
 
-      // load properties
-      Underworld::ObjectProperties objectProperties;
+      /// Tests importing object properties, uw2
+      TEST_METHOD(TestObjectPropertiesImportUw2)
+      {
+         Base::Settings& settings = GetTestSettings();
 
-      Import::ImportProperties(resourceManager, objectProperties);
+         settings.SetValue(Base::settingGamePrefix, std::string("uw2"));
+         settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw2Path));
 
-      // test if all property vectors are filled
-      Assert::IsTrue(0x0200 == objectProperties.GetVectorCommonObjectProperties().size());
-      Assert::IsTrue(0x0010 == objectProperties.GetVectorMeleeWeaponProperties().size());
-      Assert::IsTrue(0x0010 == objectProperties.GetVectorRangedWeaponProperties().size());
-      Assert::IsTrue(0x0020 == objectProperties.GetVectorArmourAndWearableProperties().size());
-      Assert::IsTrue(0x0040 == objectProperties.GetVectorCritterProperties().size());
-      Assert::IsTrue(0x0010 == objectProperties.GetVectorContainerProperties().size());
-      Assert::IsTrue(0x0010 == objectProperties.GetVectorLightSourceProperties().size());
-      Assert::IsTrue(0x0010 == objectProperties.GetVectorAnimatedObjectProperties().size());
-   }
-}
+         Base::ResourceManager resourceManager(settings);
 
-/*! Tests loading level list */
-TEST_METHOD(TestLevelListImport)
-{
-   Base::Settings& settings = GetTestSettings();
+         // load properties
+         Underworld::ObjectProperties objectProperties;
+
+         Import::ImportProperties(resourceManager, objectProperties);
+
+         // test if all property vectors are filled
+         Assert::IsTrue(0x0200 == objectProperties.GetVectorCommonObjectProperties().size());
+         Assert::IsTrue(0x0010 == objectProperties.GetVectorMeleeWeaponProperties().size());
+         Assert::IsTrue(0x0010 == objectProperties.GetVectorRangedWeaponProperties().size());
+         Assert::IsTrue(0x0020 == objectProperties.GetVectorArmourAndWearableProperties().size());
+         Assert::IsTrue(0x0040 == objectProperties.GetVectorCritterProperties().size());
+         Assert::IsTrue(0x0010 == objectProperties.GetVectorContainerProperties().size());
+         Assert::IsTrue(0x0010 == objectProperties.GetVectorLightSourceProperties().size());
+         Assert::IsTrue(0x0010 == objectProperties.GetVectorAnimatedObjectProperties().size());
+      }
+
+      /// Tests loading level list, uw_demo
+      TEST_METHOD(TestLevelListImportUwDemo)
+      {
+         Base::Settings& settings = GetTestSettings();
 
 #if 0
-   // uw_demo loading
-   settings.SetValue(Base::settingGamePrefix, std::string("uw1"));
-   settings.SetValue(Base::settingUw1IsUwdemo, true);
-   settings.SetValue(Base::settingUnderworldPath, "d:\\uwadv\\uw_demo\\");
+         // uw_demo loading
+         settings.SetValue(Base::settingGamePrefix, std::string("uw1"));
+         settings.SetValue(Base::settingUw1IsUwdemo, true);
+         settings.SetValue(Base::settingUnderworldPath, "d:\\uwadv\\uw_demo\\");
 
-   {
-      Base::ResourceManager resourceManager(settings);
-      Import::LevelImporter levelImporter(resourceManager);
+         Base::ResourceManager resourceManager(settings);
+         Import::LevelImporter levelImporter(resourceManager);
 
-      Underworld::LevelList levelList;
-      levelImporter.LoadUwDemoLevel(levelList);
+         Underworld::LevelList levelList;
+         levelImporter.LoadUwDemoLevel(levelList);
 
-      UaAssert(levelList.GetNumLevels() == 1);
-   }
+         UaAssert(levelList.GetNumLevels() == 1);
 
-   settings.SetValue(Base::settingUw1IsUwdemo, false);
+         settings.SetValue(Base::settingUw1IsUwdemo, false);
 #endif
+      }
 
-   settings.SetValue(Base::settingGamePrefix, std::string("uw1"));
-   settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw1Path));
+      /// Tests loading level list, uw1
+      TEST_METHOD(TestLevelListImportUw1)
+      {
+         Base::Settings& settings = GetTestSettings();
 
-   {
-      Base::ResourceManager resourceManager(settings);
-      Import::LevelImporter levelImporter(resourceManager);
+         settings.SetValue(Base::settingGamePrefix, std::string("uw1"));
+         settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw1Path));
 
-      Underworld::LevelList levelList;
-      levelImporter.LoadUw1Levels(levelList);
+         Base::ResourceManager resourceManager(settings);
+         Import::LevelImporter levelImporter(resourceManager);
 
-      UaAssert(levelList.GetNumLevels() == 9);
-   }
+         Underworld::LevelList levelList;
+         levelImporter.LoadUw1Levels(levelList);
 
-   settings.SetValue(Base::settingGamePrefix, std::string("uw2"));
-   settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw2Path));
+         UaAssert(levelList.GetNumLevels() == 9);
+      }
 
-   {
-      Base::ResourceManager resourceManager(settings);
-      Import::LevelImporter levelImporter(resourceManager);
+      /// Tests loading level list, uw2
+      TEST_METHOD(TestLevelListImportUw2)
+      {
+         Base::Settings& settings = GetTestSettings();
 
-      Underworld::LevelList levelList;
-      levelImporter.LoadUw2Levels(levelList);
+         settings.SetValue(Base::settingGamePrefix, std::string("uw2"));
+         settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw2Path));
 
-      UaAssert(levelList.GetNumLevels() == 80);
-   }
-}
+         Base::ResourceManager resourceManager(settings);
+         Import::LevelImporter levelImporter(resourceManager);
 
-/*! Tests loading player infos */
-TEST_METHOD(TestPlayerImport)
-{
-   Base::Settings& settings = GetTestSettings();
+         Underworld::LevelList levelList;
+         levelImporter.LoadUw2Levels(levelList);
 
-   {
-      Base::ResourceManager resourceManager(settings);
+         UaAssert(levelList.GetNumLevels() == 80);
+      }
 
-      Underworld::Player player;
+      /// Tests loading player infos, uw1
+      TEST_METHOD(TestPlayerImportUw1)
+      {
+         Base::Settings& settings = GetTestSettings();
 
-      Import::PlayerImporter playerImporter(resourceManager);
-      playerImporter.LoadPlayer(player, settings.GetString(Base::settingUw1Path));
-   }
+         Base::ResourceManager resourceManager(settings);
 
-   {
-      Base::ResourceManager resourceManager(settings);
+         Underworld::Player player;
 
-      Underworld::Player player;
+         Import::PlayerImporter playerImporter(resourceManager);
+         playerImporter.LoadPlayer(player, settings.GetString(Base::settingUw1Path));
+      }
 
-      Import::PlayerImporter playerImporter(resourceManager);
-      playerImporter.LoadPlayer(player, settings.GetString(Base::settingUw2Path));
-   }
-}
-};
+      /// Tests loading player infos, uw2
+      TEST_METHOD(TestPlayerImportUw2)
+      {
+         Base::Settings& settings = GetTestSettings();
+
+         Base::ResourceManager resourceManager(settings);
+
+         Underworld::Player player;
+
+         Import::PlayerImporter playerImporter(resourceManager);
+         playerImporter.LoadPlayer(player, settings.GetString(Base::settingUw2Path));
+      }
+
+      /// Tests loading game strings
+      TEST_METHOD(TestGameStringsLoader)
+      {
+         Base::Settings& settings = GetTestSettings();
+
+         Base::ResourceManager resourceManager(settings);
+
+         GameStrings gs;
+         Import::GameStringsImporter importer(gs);
+         Import::PlayerImporter playerImporter(resourceManager);
+         importer.LoadDefaultStringsPakFile(resourceManager);
+
+         Assert::IsTrue(gs.IsBlockAvail(0x0c00));
+         Assert::IsTrue(gs.IsBlockAvail(0x0e01));
+         Assert::IsTrue(gs.GetString(0x0001, 0).size() > 0);
+      }
+   };
 } // namespace UnitTest
