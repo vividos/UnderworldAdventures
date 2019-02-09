@@ -1,206 +1,199 @@
-/*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file strpak.cpp
-
-   string unpack and pack tool
-
-   huffman tree building was done using this tutorial:
-   http://www.crs4.it/~luigi/MPEG/huffman_tutorial.html
-
-*/
-
-// needed includes
+//
+// Underworld Adventures - an Ultima Underworld hacking project
+// Copyright (c) 2002,2003,2004,2005,2019 Underworld Adventures Team
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file strpak.cpp
+/// string unpack and pack tool
+//
+// \todo move comment
+// huffman tree building was done using this tutorial:
+// http://www.crs4.it/~luigi/MPEG/huffman_tutorial.html
+//
+//
 #include "common.hpp"
 #include "gamestrings.hpp"
-#include "io_endian.hpp"
+#include "gamestringsimporter.hpp"
+#include "file.hpp"
+#include "textfile.hpp"
+#include <sstream>
+#include <iomanip>
 
-
-// structs
-
-//! huffman extended node structure
+/// huffman extended node structure
 struct ua_huff_node_ext
 {
-  int symbol;
-  int parent;
-  int left;
-  int right;
-  unsigned int freq;
+   int symbol;
+   int parent;
+   int left;
+   int right;
+   unsigned int freq;
 };
 
-
-// global functions
-
-//! unpacks a string pack file
-void strpak_unpack_strings(const char *infile,const char *outfile)
+/// unpacks a string pack file
+void strpak_unpack_strings(const char *infile, const char *outputFilename)
 {
    // load game strings
-   ua_gamestrings gs;
+   GameStrings gs;
    try
    {
-      printf("loading game strings from file %s ...\n",infile);
-      gs.add_pak_file(infile);
+      printf("loading game strings from file %s ...\n", infile);
+      Import::GameStringsImporter importer(gs);
+      importer.LoadStringsPakFile(infile);
    }
-   catch(...)
+   catch (...)
    {
       printf("error while loading game strings!\n");
       return;
    }
 
    // open output file
-   FILE *out = fopen(outfile,"w");
-   if (out==NULL)
+   Base::TextFile out(outputFilename, Base::modeWrite);
+   if (!out.IsOpen())
    {
       printf("could not open output file!\n");
       return;
    }
 
+   const GameStrings& cgs = gs;
+   const std::set<Uint16>& stringBlocks = cgs.GetStringBlockSet();
+
    // print out some more infos
    {
-      FILE *test = fopen(infile,"rb");
+      Base::File test(infile, Base::modeRead);
       Uint16 nodes = 0;
-      if (test!=NULL)
-      {
-         nodes = fread16(test);
-         fclose(test);
-      }
+      if (test.IsOpen())
+         nodes = test.Read16();
 
       printf("%u huffman tree nodes, %u string blocks.\n",
-         nodes,gs.get_stringblock_set().size());
+         nodes,
+         cgs.GetStringBlockSet().size());
    }
 
-   printf("writing output file %s ...\n",outfile);
+   printf("writing output file %s ...\n", outputFilename);
 
-   // get "all strings" map
-   std::set<Uint16> stringblocks = gs.get_stringblock_set();
-
-   fprintf(out,"%s: %u string blocks.\n",infile,stringblocks.size());
+   std::stringstream buffer;
+   buffer << infile << ": " << stringBlocks.size() << " string blocks.";
+   out.WriteLine(buffer.str().c_str());
 
    // dump all blocks
-   std::set<Uint16>::iterator iter,stop;
-   iter = stringblocks.begin(); stop = stringblocks.end();
+   std::set<Uint16>::iterator iter, stop;
+   iter = stringBlocks.begin(); stop = stringBlocks.end();
 
-   for(;iter!=stop; iter++)
+   for (; iter != stop; iter++)
    {
-      Uint16 block_id = *iter;
-      std::vector<std::string> stringlist;
-      gs.get_stringblock(block_id, stringlist);
+      Uint16 blockId = *iter;
+      std::vector<std::string> stringList = gs.GetStringBlock(blockId);
 
-      fprintf(out,"\nblock: %04x; %u strings.\n",block_id,stringlist.size());
+      out.WriteLine("");
+      buffer << "block: " << std::hex << std::setfill('0') << std::setw(4) << blockId << "; " << stringList.size() << " strings.";
+      out.WriteLine(buffer.str().c_str());
 
       // print all strings in list
-      unsigned int i,max=stringlist.size();
-      for(i=0; i<max; i++)
+      unsigned int i, max = stringList.size();
+      for (i = 0; i < max; i++)
       {
-         std::string line(stringlist[i]);
+         std::string line(stringList[i]);
 
          // replace newlines with string "\n"
          std::string::size_type pos;
-         while( (pos=line.find('\n')) != std::string::npos)
-            line.replace(pos,1,"\\n");
+         while ((pos = line.find('\n')) != std::string::npos)
+            line.replace(pos, 1, "\\n");
 
-         fprintf(out,"%u: %s\n",i,line.c_str());
+         buffer << i << ": " << line;
+         out.WriteLine(buffer.str().c_str());
       }
    }
-
-   fclose(out);
 
    printf("done!\n");
 }
 
-//! repacks a string pack file
-void strpak_pack_strings(const char *infile,const char *outfile,const char *nodefile=NULL)
+/// repacks a string pack file
+void strpak_pack_strings(const char* infile, const char* outputFilename, const char* nodeFilename = NULL)
 {
    // open input file
-   FILE *in = fopen(infile,"r");
-   if (in==NULL)
+   FILE* in = fopen(infile, "r");
+   if (in == NULL)
    {
       printf("could not open input file!\n");
       return;
    }
 
-   printf("loading raw game strings from file %s ...\n",infile);
+   printf("loading raw game strings from file %s ...\n", infile);
 
    // string storage structs
-   std::map<int,std::vector<std::string> > allstrings;
+   std::map<int, std::vector<std::string> > allStrings;
    std::vector<std::string> block;
-   int curblock=-1;
+   int currentBlock = -1;
 
    // initialize character frequency info
    unsigned int char_freq[256];
-   { for(unsigned int i=0; i<256; char_freq[i++]=0); }
+   { for (unsigned int i = 0; i < 256; char_freq[i++] = 0); }
 
    // read over first line
    char buffer[2048];
-   fgets(buffer,2048,in);
+   fgets(buffer, 2048, in);
 
    // parse input file
-   while(!feof(in))
+   while (!feof(in))
    {
       // read a line
-      fgets(buffer,2048,in);
+      fgets(buffer, 2048, in);
       if (feof(in)) break;
 
       // remove newline
       unsigned int len = strlen(buffer);
-      if (buffer[len-1]=='\n') buffer[len-1]=0;
+      if (buffer[len - 1] == '\n') buffer[len - 1] = 0;
 
       // skip empty lines
-      if (strlen(buffer)==0) continue;
+      if (strlen(buffer) == 0) continue;
 
-      if (strncmp(buffer,"block: ",7)==0)
+      if (strncmp(buffer, "block: ", 7) == 0)
       {
-         if (curblock!=-1)
+         if (currentBlock != -1)
          {
-            // store old block in allstrings
-            allstrings.insert(
-               std::make_pair<int,std::vector<std::string> >(curblock,block));
+            // store old block in allStrings
+            allStrings[currentBlock] = block;
          }
 
          // start of a new block
-         curblock = strtol(buffer+7,NULL,16);
+         currentBlock = strtol(buffer + 7, NULL, 16);
          block.clear();
          continue;
       }
 
       // must be a string line
-      char *pos = strchr(buffer,':');
-      if (pos==NULL)
+      char *pos = strchr(buffer, ':');
+      if (pos == NULL)
       {
-         printf("line %u of block contained no ':'\n",block.size());
+         printf("line %u of block contained no ':'\n", block.size());
          continue; // should not happen
       }
-      pos+=2; // move forward to actual string
+      pos += 2; // move forward to actual string
 
       // replace "\n" with real newlines
       char *pos2;
-      while( (pos2 = strstr(pos,"\\n") )!=NULL)
+      while ((pos2 = strstr(pos, "\\n")) != NULL)
       {
          pos2[0] = '\n';
-         memmove(pos2+1,pos2+2,strlen(pos2+1));
+         memmove(pos2 + 1, pos2 + 2, strlen(pos2 + 1));
       }
 
       // calculate char frequencies for that string
       unsigned int max = strlen(pos);
-      for(unsigned int i=0; i<max; i++)
+      for (unsigned int i = 0; i < max; i++)
          char_freq[static_cast<Uint8>(pos[i])]++;
 
       char_freq[static_cast<Uint8>('|')]++;
@@ -213,56 +206,55 @@ void strpak_pack_strings(const char *infile,const char *outfile,const char *node
    fclose(in);
 
    // store last block, too
-   allstrings.insert(
-      std::make_pair<int,std::vector<std::string> >(curblock,block));
+   allStrings[currentBlock] = block;
 
    // now that we have all the strings, build the huffman tree
    printf("building huffman tree ...\n");
 
    // reverse char lookup table
    unsigned int char_lookup[256];
-   { for(unsigned int i=0; i<256; char_lookup[i++]=0); }
+   { for (unsigned int i = 0; i < 256; char_lookup[i++] = 0); }
 
    // build up list with all leaf nodes
    // use all characters that have frequencies above 0
    std::vector<ua_huff_node_ext> huffnodes;
    {
-      unsigned int j=0;
-      for(unsigned int i=0; i<256; i++)
-      if (char_freq[i]>0)
-      {
-         ua_huff_node_ext node;
-         node.symbol = i;
-         node.parent = 0; // we don't know yet
-         node.left = -1;  // no children
-         node.right = -1;
-         node.freq = char_freq[i];
-         huffnodes.push_back(node);
+      unsigned int j = 0;
+      for (unsigned int i = 0; i < 256; i++)
+         if (char_freq[i] > 0)
+         {
+            ua_huff_node_ext node;
+            node.symbol = i;
+            node.parent = 0; // we don't know yet
+            node.left = -1;  // no children
+            node.right = -1;
+            node.freq = char_freq[i];
+            huffnodes.push_back(node);
 
-         char_lookup[i] = j++;
-      }
+            char_lookup[i] = j++;
+         }
    }
 
    unsigned int valid_chars = huffnodes.size();
 
    // build huffman tree
-   while(true)
+   while (true)
    {
-      unsigned int i,max;
+      unsigned int i, max;
 
-      int node1=-1,node2=-1;
-      unsigned int freq1=0,freq2=0;
+      int node1 = -1, node2 = -1;
+      unsigned int freq1 = 0, freq2 = 0;
 
       // find two nodes with the least frequencies
       max = huffnodes.size();
-      for(i=0; i<max; i++)
-      if (huffnodes[i].freq!=0 && (freq1==0 || huffnodes[i].freq < freq1))
-      {
-         node1=i;
-         freq1=huffnodes[i].freq;
-      }
+      for (i = 0; i < max; i++)
+         if (huffnodes[i].freq != 0 && (freq1 == 0 || huffnodes[i].freq < freq1))
+         {
+            node1 = i;
+            freq1 = huffnodes[i].freq;
+         }
 
-      if (node1==-1)
+      if (node1 == -1)
       {
          printf("didn't find any node with frequency != 0!\n");
          break; // didn't find any node; should never happen, though
@@ -271,17 +263,17 @@ void strpak_pack_strings(const char *infile,const char *outfile,const char *node
       huffnodes[node1].freq = 0;
 
       // search for second node
-      for(i=0; i<max; i++)
-      if (huffnodes[i].freq!=0 && (freq2==0 || huffnodes[i].freq < freq2))
-      {
-         node2=i;
-         freq2=huffnodes[i].freq;
-      }
+      for (i = 0; i < max; i++)
+         if (huffnodes[i].freq != 0 && (freq2 == 0 || huffnodes[i].freq < freq2))
+         {
+            node2 = i;
+            freq2 = huffnodes[i].freq;
+         }
 
-      if (node2==-1)
+      if (node2 == -1)
       {
          // only found one node, the root node
-         huffnodes[node1].parent=0xff;
+         huffnodes[node1].parent = 0xff;
          break; // we're finished
       }
 
@@ -294,56 +286,56 @@ void strpak_pack_strings(const char *infile,const char *outfile,const char *node
          node.parent = 0; // we don't know yet
          node.left = node1;
          node.right = node2;
-         node.freq = freq1+freq2;
+         node.freq = freq1 + freq2;
          huffnodes.push_back(node);
       }
 
-      unsigned int last = huffnodes.size()-1;
-      huffnodes[node1].parent=last;
-      huffnodes[node2].parent=last;
+      unsigned int last = huffnodes.size() - 1;
+      huffnodes[node1].parent = last;
+      huffnodes[node2].parent = last;
    }
 
-
    // load nodes from template node file, when available
-   if (nodefile!=NULL)
+   if (nodeFilename != NULL)
    {
-      printf("loading external huffman node list from file %s ...\n",nodefile);
+      printf("loading external huffman node list from file %s ...\n", nodeFilename);
 
       huffnodes.clear();
-      { for(int i=0; i<256; char_lookup[i++]=0); }
+      { for (int i = 0; i < 256; char_lookup[i++] = 0); }
 
-      FILE *fd = fopen(nodefile,"rb");
+      Base::File nodeFile(nodeFilename, Base::modeRead);
 
       // number of nodes
-      Uint16 nodenum = fread16(fd);
+      Uint16 nodenum = nodeFile.Read16();
       huffnodes.resize(nodenum);
 
-      for(Uint16 k=0; k<nodenum; k++)
+      for (Uint16 k = 0; k < nodenum; k++)
       {
-         huffnodes[k].symbol = fgetc(fd);
-         huffnodes[k].parent = fgetc(fd);
-         huffnodes[k].left   = fgetc(fd);
-         huffnodes[k].right  = fgetc(fd);
+         huffnodes[k].symbol = nodeFile.Read8();
+         huffnodes[k].parent = nodeFile.Read8();
+         huffnodes[k].left = nodeFile.Read8();
+         huffnodes[k].right = nodeFile.Read8();
       }
 
       // build lookup table
-      for(Uint16 n=0; n<=nodenum/2; n++)
+      for (Uint16 n = 0; n <= nodenum / 2; n++)
       {
-         char_lookup[static_cast<Uint8>(huffnodes[n].symbol)]=n;
+         char_lookup[static_cast<Uint8>(huffnodes[n].symbol)] = n;
       }
-/*
+
+      /*
       // dump external huffman tree list
       FILE *dump = fopen("uw-huffnodes-list.txt","w");
       for(Uint16 z=0; z<nodenum; z++)
          fprintf(dump,"%04x: symbol=%02x parent=%02x left=%02x right=%02x\n",
             z,huffnodes[z].symbol,huffnodes[z].parent,huffnodes[z].left,huffnodes[z].right);
       fclose(dump);
-*/
+      */
    }
 
 
    // for a node list, we need at most 0x100 huffnodes
-   if (huffnodes.size()>0x100)
+   if (huffnodes.size() > 0x100)
    {
       printf("error! huffnodes limit of 256 nodes exceeded! "
          "please only use ASCII charset!\n");
@@ -351,102 +343,94 @@ void strpak_pack_strings(const char *infile,const char *outfile,const char *node
    }
 
    printf("huffman tree: %u characters, %u nodes\n",
-      valid_chars,huffnodes.size()+1);
-
+      valid_chars, huffnodes.size() + 1);
 
    // write the output file
-   FILE *out = fopen(outfile,"wb");
-   if (out==NULL)
+   Base::File outputFile(outputFilename, Base::modeWrite);
+   if (!outputFile.IsOpen())
    {
       printf("could not open output file!\n");
       return;
    }
 
-   printf("writing output file %s ...\nblocks: ",outfile);
+   printf("writing output file %s ...\nblocks: ", outputFilename);
 
    // write huffnode table
    {
-      // number of nodes
-      Uint16 max = huffnodes.size();
-      fwrite16(out,max);
+      Uint16 max = static_cast<Uint16>(huffnodes.size());
+      outputFile.Write16(max);
 
-      // write all nodes
-      for(Uint16 i=0; i<max; i++)
+      for (Uint16 i = 0; i < max; i++)
       {
-         const ua_huff_node_ext &curnode = huffnodes[i];
-         fputc(curnode.symbol,out);
-         fputc(curnode.parent,out);
-         fputc(curnode.left,out);
-         fputc(curnode.right,out);
+         const ua_huff_node_ext& currentNode = huffnodes[i];
+         outputFile.Write8(currentNode.symbol);
+         outputFile.Write8(currentNode.parent);
+         outputFile.Write8(currentNode.left);
+         outputFile.Write8(currentNode.right);
       }
 
-      // number of blocks
-      Uint16 numblocks = allstrings.size();
-      fwrite16(out,numblocks);
+      Uint16 numBlocks = static_cast<Uint16>(allStrings.size());
+      outputFile.Write16(numBlocks);
 
-      // now, write all blocks
-      std::map<int,std::vector<std::string> >::iterator iter,stop;
-      iter = allstrings.begin(); stop = allstrings.end();
+      std::map<int, std::vector<std::string> >::iterator iter, stop;
+      iter = allStrings.begin(); stop = allStrings.end();
 
       // init block offsets list
-      std::vector<Uint32> block_offsets;
+      std::vector<Uint32> blockOffsets;
 
       // remember offset of block directory
-      long bdir_pos = ftell(out);
+      long blockDirPos = outputFile.Tell();
 
-      for(;iter!=stop; iter++)
+      for (; iter != stop; iter++)
       {
-         const std::pair<int,std::vector<std::string> > &block = *iter;
-
-         // write block directory entry
-         fwrite16(out,static_cast<Uint16>(block.first));
-         fwrite32(out,0); // we don't know yet
+         outputFile.Write16(static_cast<Uint16>(iter->first));
+         outputFile.Write16(0); // we don't know yet
       }
 
       // write blocks
-      iter = allstrings.begin();
-      for(;iter!=stop; iter++)
+      iter = allStrings.begin();
+      for (; iter != stop; iter++)
       {
-         const std::vector<std::string> &stringlist = (*iter).second;
+         const std::vector<std::string> &stringList = (*iter).second;
 
          printf(".");
 
          // remember block offset
-         block_offsets.push_back(static_cast<Uint32>(ftell(out)));
+         blockOffsets.push_back(static_cast<Uint32>(outputFile.Tell()));
 
          // write block header
-         Uint16 numstrings = stringlist.size();
-         fwrite16(out,numstrings);
+         Uint16 numStrings = static_cast<Uint16>(stringList.size());
+         outputFile.Write16(numStrings);
 
          // remember start of string offsets
-         long str_offsets_pos = ftell(out);
+         long stringOffsetsPos = outputFile.Tell();
 
-         for(int k=0; k<numstrings; k++)
-            fwrite16(out,0); // relative offsets to strings data
+         for (int k = 0; k < numStrings; k++)
+            outputFile.Write16(0); // relative offsets to strings data
 
          // all string offsets for this block
-         std::vector<Uint16> string_offsets;
+         std::vector<Uint16> stringOffsets;
 
          // used for calculation of relative string offsets
-         long rel_string_offset = ftell(out);
+         long relativeStringOffsets = outputFile.Tell();
 
          // write every string
-         for(Uint16 i=0; i<numstrings; i++)
+         for (Uint16 i = 0; i < numStrings; i++)
          {
             // remember relative offset
-            string_offsets.push_back(static_cast<Uint16>(ftell(out)-rel_string_offset));
+            stringOffsets.push_back(static_cast<Uint16>(outputFile.Tell() - relativeStringOffsets));
 
-            unsigned int bits=0;
-            Uint16 raw=0;
+            unsigned int bits = 0;
+            Uint16 raw = 0;
 
             // encode every character using the lookup table and the
             // huffman tree
-            const char *str = stringlist[i].c_str();
+            const char *str = stringList[i].c_str();
             unsigned int len = strlen(str);
-            for(unsigned int n=0; n<len; n++)
+            for (unsigned int n = 0; n < len; n++)
             {
                Uint8 c = static_cast<Uint8>(str[n]);
-               unsigned int pos = char_lookup[c],pos2;
+               unsigned int pos = char_lookup[c], pos2;
 
                // all bits to encode the char
                std::vector<bool> allbits;
@@ -460,24 +444,24 @@ void strpak_pack_strings(const char *infile,const char *outfile,const char *node
                   else
                      allbits.push_back(true); // we used the right path
 
-                  pos=pos2; // parent is new node
+                  pos = pos2; // parent is new node
 
-               } while(huffnodes[pos].parent != 0xff);
+               } while (huffnodes[pos].parent != 0xff);
 
                // now we have all bits for this char, in the reverse order
                // put them to bytes and write them
                unsigned int maxbits = allbits.size();
-               for(unsigned int p=maxbits; p>0; p--)
+               for (unsigned int p = maxbits; p > 0; p--)
                {
-                  bool bit = allbits[p-1];
+                  bool bit = allbits[p - 1];
                   if (bit)
                      raw |= 0x80;
-                  raw <<=1;
+                  raw <<= 1;
                   bits++;
 
-                  if (bits==8)
+                  if (bits == 8)
                   {
-                     fputc( (raw>>8)&0xff, out);
+                     outputFile.Write8((raw >> 8) & 0xff);
                      raw = 0;
                      bits = 0;
                   }
@@ -486,69 +470,65 @@ void strpak_pack_strings(const char *infile,const char *outfile,const char *node
             // end of string
 
             // write all pending bits
-            if (bits>0)
+            if (bits > 0)
             {
-               raw <<=(8-bits);
-               fputc( (raw>>8)&0xff, out);
+               raw <<= (8 - bits);
+               outputFile.Write8((raw >> 8) & 0xff);
             }
          }
 
          // remember current end of file
-         long cur_pos = ftell(out);
+         long cur_pos = outputFile.Tell();
 
          // now write all string offsets
-         fseek(out,str_offsets_pos,SEEK_SET);
+         outputFile.Seek(stringOffsetsPos, Base::seekBegin);
 
-         for(int m=0; m<numstrings; m++)
-            fwrite16(out,string_offsets[m]);
+         for (int m = 0; m < numStrings; m++)
+            outputFile.Write16(stringOffsets[m]);
 
          // go back to end of file
-         fseek(out,cur_pos,SEEK_SET);
+         outputFile.Seek(cur_pos, Base::seekBegin);
       }
 
       // now write all block offsets
-      fseek(out,bdir_pos,SEEK_SET);
+      outputFile.Seek(blockDirPos, Base::seekBegin);
 
-      unsigned int numoffsets = block_offsets.size();
-      for(unsigned int j=0; j<numoffsets; j++)
+      unsigned int numOffsets = blockOffsets.size();
+      for (unsigned int j = 0; j < numOffsets; j++)
       {
-         fseek(out,2,SEEK_CUR);
-         fwrite32(out,block_offsets[j]);
+         outputFile.Seek(2, Base::seekBegin);
+         outputFile.Write32(blockOffsets[j]);
       }
    }
-
-   fclose(out);
 
    printf("\ndone.\n");
 }
 
-
-// main function
-
+/// main function
 int main(int argc, char* argv[])
 {
    printf("strpak - ultima underworld game strings pack and unpack tool\n\n");
 
-   if (argc<4)
+   if (argc < 4)
    {
       printf("syntax: strpak <command> <input-file> <output-file>\n"
-             "   command can either be \"pack\" or \"unpack\".\n");
+         "   command can either be \"pack\" or \"unpack\".\n");
       printf("example: strpak unpack strings.pak uw-strings.txt\n"
-             "         strpak pack uw-strings.txt strings2.pak\n\n");
+         "         strpak pack uw-strings.txt strings2.pak\n\n");
       return 1;
    }
 
-   if (strcmp("unpack",argv[1])==0)
+   if (strcmp("unpack", argv[1]) == 0)
    {
-      strpak_unpack_strings(argv[2],argv[3]);
+      strpak_unpack_strings(argv[2], argv[3]);
    }
    else
-   if (strcmp("pack",argv[1])==0)
-   {
-      strpak_pack_strings(argv[2],argv[3]);
-   }
-   else
-      printf("unknown command \"%s\"\n",argv[1]);
+      if (strcmp("pack", argv[1]) == 0)
+      {
+         strpak_pack_strings(argv[2], argv[3]);
+      }
+      else
+         printf("unknown command \"%s\"\n", argv[1]);
 
    return 0;
 }
