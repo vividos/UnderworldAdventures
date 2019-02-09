@@ -1,32 +1,26 @@
-/*
-   Underworld Adventures - an Ultima Underworld remake project
-   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file maploader.cpp
-
-   \brief tilemap and texture mapping loading
-
-*/
-
-// needed includes
+//
+// Underworld Adventures - an Ultima Underworld remake project
+// Copyright (c) 2002,2003,2004,2005,2006,2019 Michael Fink
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file maploader.cpp
+/// \brief tilemap and texture mapping loading
+//
 #include "import.hpp"
+#include "levelimporter.hpp"
 #include "tilemap.hpp"
 
 using Import::LevelImporter;
@@ -35,8 +29,8 @@ using Import::GetBits;
 
 // tables
 
-//! maps type numbers read from lev.ark to level map tile type enum
-Underworld::TilemapTileType g_aTileTypeMapping[16] =
+/// maps type numbers read from lev.ark to level map tile type enum
+Underworld::TilemapTileType g_tileTypeMapping[16] =
 {
    Underworld::tileSolid,
    Underworld::tileOpen,
@@ -56,100 +50,93 @@ Underworld::TilemapTileType g_aTileTypeMapping[16] =
    Underworld::tileSolid
 };
 
-
-// LevelImporter methods
-
-void LevelImporter::LoadTilemap(Underworld::Tilemap& tilemap, std::vector<Uint16>& vecTextureMapping,
-   TileStartLinkList& tileStartLinkList, bool bUw2Mode)
+void LevelImporter::LoadTilemap(Underworld::Tilemap& tilemap, std::vector<Uint16>& textureMapping,
+   TileStartLinkList& tileStartLinkList, bool uw2Mode)
 {
    tilemap.Destroy();
    tilemap.Create();
 
    // read in map info
-   for (Uint16 ypos=0; ypos < 64; ypos++)
-   for (Uint16 xpos=0; xpos < 64; xpos++)
-   {
-      Underworld::TileInfo& tileInfo = tilemap.GetTileInfo(xpos, ypos);
-
-      Uint32 uiTileInfo1 = m_file.Read16();
-      Uint32 uiTileInfo2 = m_file.Read16();
-
-      // extract infos from tile word
-      tileInfo.m_type = g_aTileTypeMapping[GetBits(uiTileInfo1, 0, 4)];
-
-      // all size values in height units
-      tileInfo.m_uiFloor = static_cast<Uint16>(GetBits(uiTileInfo1, 4, 4) << 3);
-      tileInfo.m_uiCeiling = 128;
-      tileInfo.m_uiSlope = 8; // height units per tile
-
-      // texture indices
-      Uint8 uiFloorIndex = static_cast<Uint8>(GetBits(uiTileInfo1, 10, 4)); // 4 bit wide
-      Uint8 uiWallIndex = static_cast<Uint8>(GetBits(uiTileInfo2, 0, 6)); // 6 bit wide
-
-      if (!bUw2Mode)
+   for (Uint16 ypos = 0; ypos < 64; ypos++)
+      for (Uint16 xpos = 0; xpos < 64; xpos++)
       {
-         // restrict to proper texture map indices
-         if (uiFloorIndex >= 10)
-            uiFloorIndex = 0;
-         if (uiWallIndex >= 48)
-            uiWallIndex = 0;
+         Underworld::TileInfo& tileInfo = tilemap.GetTileInfo(xpos, ypos);
+
+         Uint32 uiTileInfo1 = m_file.Read16();
+         Uint32 uiTileInfo2 = m_file.Read16();
+
+         // extract infos from tile word
+         tileInfo.m_type = g_tileTypeMapping[GetBits(uiTileInfo1, 0, 4)];
+
+         // all size values in height units
+         tileInfo.m_floor = static_cast<Uint16>(GetBits(uiTileInfo1, 4, 4) << 3);
+         tileInfo.m_ceiling = 128;
+         tileInfo.m_slope = 8; // height units per tile
+
+         // texture indices
+         Uint8 floorIndex = static_cast<Uint8>(GetBits(uiTileInfo1, 10, 4)); // 4 bit wide
+         Uint8 wallIndex = static_cast<Uint8>(GetBits(uiTileInfo2, 0, 6)); // 6 bit wide
+
+         if (!uw2Mode)
+         {
+            // restrict to proper texture map indices
+            if (floorIndex >= 10)
+               floorIndex = 0;
+            if (wallIndex >= 48)
+               wallIndex = 0;
+         }
+
+         tileInfo.m_textureWall = textureMapping[wallIndex];
+         tileInfo.m_textureFloor = textureMapping[floorIndex + (uw2Mode ? 0 : 48)];
+         tileInfo.m_textureCeiling = textureMapping[uw2Mode ? 32 : (9 + 48)];
+
+         // tile object list start
+         Uint16 uiLink = static_cast<Uint16>(GetBits(uiTileInfo2, 6, 10));
+         tileStartLinkList.SetLinkStart(xpos, ypos, uiLink);
+
+         // special flags
+         tileInfo.m_isMagicDisabled = GetBits(uiTileInfo1, 14, 1) != 0;
+         tileInfo.m_isDoorPresent = GetBits(uiTileInfo1, 15, 1) != 0;
+         tileInfo.m_isSpecialLightFeature = GetBits(uiTileInfo1, 8, 1) != 0;
+
+         // bit 9 is always 0
+         UaAssert(0 == GetBits(uiTileInfo1, 9, 1));
       }
-
-      tileInfo.m_uiTextureWall = vecTextureMapping[uiWallIndex];
-      tileInfo.m_uiTextureFloor = vecTextureMapping[uiFloorIndex + (bUw2Mode ? 0 : 48)];
-      tileInfo.m_uiTextureCeiling = vecTextureMapping[bUw2Mode ? 32 : (9+48)];
-
-      // tile object list start
-      Uint16 uiLink = static_cast<Uint16>(GetBits(uiTileInfo2, 6, 10));
-      tileStartLinkList.SetLinkStart(xpos, ypos, uiLink);
-
-      // special flags
-      tileInfo.m_bMagicDisabled = GetBits(uiTileInfo1, 14, 1) != 0;
-      tileInfo.m_bDoorPresent = GetBits(uiTileInfo1, 15, 1) != 0;
-      tileInfo.m_bSpecialLightFeature = GetBits(uiTileInfo1, 8, 1) != 0;
-
-      // bit 9 is always 0
-      UaAssert(0 == GetBits(uiTileInfo1, 9, 1));
-   }
 }
 
-/*! The texture mapping is stored in the vecTextureMapping as indices into
-    stock textures. In uw1 mode there are 48 wall textures, followed by 10
-    floor textures, followed by 6 empty entries, ending with 6 door textures.
-    In uw2 mode there are 64 textures used for wall and floor (floor textures
-    only use a 4 bit mapping and so only use the first 16 entries), followed
-    by 6 door textures. vecTextureMapping always contains 70 entries after
-    loading.
-*/
-void LevelImporter::LoadTextureMapping(std::vector<Uint16>& vecTextureMapping, bool bUw2Mode)
+/// The texture mapping is stored in the textureMapping as indices into
+/// stock textures. In uw1 mode there are 48 wall textures, followed by 10
+/// floor textures, followed by 6 empty entries, ending with 6 door textures.
+/// In uw2 mode there are 64 textures used for wall and floor (floor textures
+/// only use a 4 bit mapping and so only use the first 16 entries), followed
+/// by 6 door textures. textureMapping always contains 70 entries after
+/// loading.
+void LevelImporter::LoadTextureMapping(std::vector<Uint16>& textureMapping, bool uw2Mode)
 {
-   unsigned int uiTex;
-
-   if (!bUw2Mode)
+   if (!uw2Mode)
    {
       // uw1 mapping
-      vecTextureMapping.resize(48+10);
+      textureMapping.resize(48 + 10);
 
       // wall textures
-      for (uiTex=0; uiTex < 48; uiTex++)
-         vecTextureMapping[uiTex] = m_file.Read16() + Base::c_uiStockTexturesWall;
+      for (unsigned int textureIndex = 0; textureIndex < 48; textureIndex++)
+         textureMapping[textureIndex] = m_file.Read16() + Base::c_uiStockTexturesWall;
 
       // floor textures
-      for (uiTex=48; uiTex < 48+10; uiTex++)
-         vecTextureMapping[uiTex] = m_file.Read16() + Base::c_uiStockTexturesFloor;
+      for (unsigned int textureIndex = 48; textureIndex < 48 + 10; textureIndex++)
+         textureMapping[textureIndex] = m_file.Read16() + Base::c_uiStockTexturesFloor;
    }
    else
    {
       // uw2 mapping
-      vecTextureMapping.resize(64);
+      textureMapping.resize(64);
 
       // combined wall/floor textures
-      unsigned int uiTex;
-      for (uiTex=0; uiTex < 64; uiTex++)
-         vecTextureMapping[uiTex] = m_file.Read16();
+      for (unsigned int textureIndex = 0; textureIndex < 64; textureIndex++)
+         textureMapping[textureIndex] = m_file.Read16();
    }
 
    // door textures
-   for (unsigned int uiTex=0; uiTex < 6; uiTex++)
-      vecTextureMapping.push_back(m_file.Read8() + Base::c_uiStockTexturesDoors);
+   for (unsigned int textureIndex = 0; textureIndex < 6; textureIndex++)
+      textureMapping.push_back(m_file.Read8() + Base::c_uiStockTexturesDoors);
 }
