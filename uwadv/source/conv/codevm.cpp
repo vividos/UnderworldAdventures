@@ -1,347 +1,339 @@
-/*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file codevm.cpp
-
-   \brief conv code execution functions
-
-*/
-
-// needed includes
+//
+// Underworld Adventures - an Ultima Underworld hacking project
+// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file codevm.cpp
+/// \brief conv code execution functions
+//
 #include "common.hpp"
 #include "codevm.hpp"
 #include "opcodes.hpp"
 #include <sstream>
 
+using Conv::CodeVM;
 
-// ua_conv_code_vm methods
-
-ua_conv_code_vm::ua_conv_code_vm()
-:code_callback(NULL)
+CodeVM::CodeVM()
+   :m_conversationSlot(0),
+   m_stringBlock(0),
+   m_instructionPointer(0xffff),
+   m_basePointer(0xffff),
+   m_reservedGlobals(0),
+   m_callLevel(0),
+   m_resultRegister(0xffff),
+   m_finished(true),
+   m_codeCallback(NULL)
 {
-   instrp = basep = result_register = 0xffff;
-   call_level = glob_reserved = 0;
-   finished = true;
 }
 
-ua_conv_code_vm::~ua_conv_code_vm()
+void CodeVM::Init(Conv::ICodeCallback* codeCallback,
+   const Underworld::ConvGlobals& globals)
 {
-}
-
-void ua_conv_code_vm::init(ua_conv_code_callback* the_code_callback,
-   ua_conv_globals &cg)
-{
-   code_callback = the_code_callback;
+   m_codeCallback = codeCallback;
 
    // reset pointer
-   instrp = 0;
-   basep = 0xffff;
-   result_register = 0;
-   finished = false;
-   call_level=1;
+   m_instructionPointer = 0;
+   m_basePointer = 0xffff;
+   m_resultRegister = 0;
+   m_finished = false;
+   m_callLevel = 1;
 
    // init stack: 4k should be enough for anybody.
-   stack.init(4096);
+   m_stack.Init(4096);
 
    // reserve stack for globals/private globals
-   stack.set_stackp(glob_reserved);
+   m_stack.SetStackPointer(m_reservedGlobals);
 
    // load private globals onto stack
    {
-      const std::vector<Uint16>& glob = cg.get_globals(conv_slot);
+      const std::vector<Uint16>& slotGlobals = globals.GetSlotGlobals(m_conversationSlot);
 
-      unsigned int max=glob.size();
-      for(unsigned int i=0; i<max; i++)
-         stack.set(i,glob[i]);
+      unsigned int max = static_cast<Uint16>(slotGlobals.size());
+      for (unsigned int i = 0; i < max; i++)
+         m_stack.Set(i, slotGlobals[i]);
    }
 
    // load imported globals onto stack
    {
-      std::map<Uint16,ua_conv_imported_item>::iterator iter,stop;
-      iter = imported_globals.begin();
-      stop = imported_globals.end();
+      std::map<Uint16, ImportedItem>::iterator iter, stop;
+      iter = m_mapImportedGlobals.begin();
+      stop = m_mapImportedGlobals.end();
 
-      for(;iter!=stop; iter++)
+      for (; iter != stop; ++iter)
       {
          Uint16 pos = (*iter).first;
-         ua_conv_imported_item& iitem = (*iter).second;
+         ImportedItem& iitem = (*iter).second;
 
-         Uint16 val = get_global(iitem.name.c_str());
+         Uint16 val = GetGlobal(iitem.name.c_str());
 
-         stack.set(pos,val);
+         m_stack.Set(pos, val);
       }
    }
 }
 
-void ua_conv_code_vm::done(ua_conv_globals &cg)
+void CodeVM::Done(Underworld::ConvGlobals& globals)
 {
-   if (conv_slot==0xffff)
+   if (m_conversationSlot == 0xffff)
       return;
 
    // store back globals from stack
-   std::vector<Uint16>& glob = cg.get_globals(conv_slot);
+   std::vector<Uint16>& slotGlobals = globals.GetSlotGlobals(m_conversationSlot);
 
-   unsigned int max=glob.size();
-   for(unsigned int i=0; i<max; i++)
-      glob[i] = stack.at(i);
+   unsigned int max = static_cast<Uint16>(slotGlobals.size());
+   for (unsigned int i = 0; i < max; i++)
+      slotGlobals[i] = m_stack.At(i);
 }
 
-bool ua_conv_code_vm::step()
+bool CodeVM::Step()
 {
-   if (finished)
+   if (m_finished)
       return false;
 
-   ua_assert(instrp<code.size());
+   UaAssert(m_instructionPointer < m_code.size());
 
-   Uint16 arg1=0,arg2=0;
-   Uint16 opcode = code[instrp];
+   Uint16 arg1 = 0, arg2 = 0;
+   Uint16 opcode = m_code[m_instructionPointer];
 
    // execute one instruction
-   switch(opcode)
+   switch (opcode)
    {
    case op_NOP:
       break;
 
    case op_OPADD:
-      arg1 = stack.pop();
-      arg2 = stack.pop();
-      stack.push(arg1 + arg2);
+      arg1 = m_stack.Pop();
+      arg2 = m_stack.Pop();
+      m_stack.Push(arg1 + arg2);
       break;
 
    case op_OPMUL:
-      arg1 = stack.pop();
-      arg2 = stack.pop();
-      stack.push(arg1 * arg2);
+      arg1 = m_stack.Pop();
+      arg2 = m_stack.Pop();
+      m_stack.Push(arg1 * arg2);
       break;
 
    case op_OPSUB:
-      arg1 = stack.pop();
-      arg2 = stack.pop();
-      stack.push(arg2 - arg1);
+      arg1 = m_stack.Pop();
+      arg2 = m_stack.Pop();
+      m_stack.Push(arg2 - arg1);
       break;
 
    case op_OPDIV:
-      arg1 = stack.pop();
-      arg2 = stack.pop();
-      if (arg1==0)
+      arg1 = m_stack.Pop();
+      arg2 = m_stack.Pop();
+      if (arg1 == 0)
       {
-         ua_trace("code_vm: OPDIV: division by zero\n");
-         finished = true;
+         UaTrace("CodeVM: OPDIV: division by zero\n");
+         m_finished = true;
          return false;
       }
-      stack.push(arg2 / arg1);
+      m_stack.Push(arg2 / arg1);
       break;
 
    case op_OPMOD:
-      arg1 = stack.pop();
-      arg2 = stack.pop();
-      if (arg1==0)
+      arg1 = m_stack.Pop();
+      arg2 = m_stack.Pop();
+      if (arg1 == 0)
       {
-         ua_trace("code_vm: OPMOD: division by zero\n");
-         finished = true;
+         UaTrace("CodeVM: OPMOD: division by zero\n");
+         m_finished = true;
          return false;
       }
-      stack.push(arg2 % arg1);
+      m_stack.Push(arg2 % arg1);
       break;
 
    case op_OPOR:
-      arg1 = stack.pop();
-      arg2 = stack.pop();
-      stack.push(arg2 || arg1);
+      arg1 = m_stack.Pop();
+      arg2 = m_stack.Pop();
+      m_stack.Push(arg2 || arg1);
       break;
 
    case op_OPAND:
-      arg1 = stack.pop();
-      arg2 = stack.pop();
-      stack.push(arg2 && arg1);
+      arg1 = m_stack.Pop();
+      arg2 = m_stack.Pop();
+      m_stack.Push(arg2 && arg1);
       break;
 
    case op_OPNOT:
-      stack.push(!stack.pop());
+      m_stack.Push(!m_stack.Pop());
       break;
 
    case op_TSTGT:
-      arg1 = stack.pop();
-      arg2 = stack.pop();
-      stack.push(arg2 > arg1);
+      arg1 = m_stack.Pop();
+      arg2 = m_stack.Pop();
+      m_stack.Push(arg2 > arg1);
       break;
 
    case op_TSTGE:
-      arg1 = stack.pop();
-      arg2 = stack.pop();
-      stack.push(arg2 >= arg1);
+      arg1 = m_stack.Pop();
+      arg2 = m_stack.Pop();
+      m_stack.Push(arg2 >= arg1);
       break;
 
    case op_TSTLT:
-      arg1 = stack.pop();
-      arg2 = stack.pop();
-      stack.push(arg2 < arg1);
+      arg1 = m_stack.Pop();
+      arg2 = m_stack.Pop();
+      m_stack.Push(arg2 < arg1);
       break;
 
    case op_TSTLE:
-      arg1 = stack.pop();
-      arg2 = stack.pop();
-      stack.push(arg2 <= arg1);
+      arg1 = m_stack.Pop();
+      arg2 = m_stack.Pop();
+      m_stack.Push(arg2 <= arg1);
       break;
 
    case op_TSTEQ:
-      arg1 = stack.pop();
-      arg2 = stack.pop();
-      stack.push(arg2 == arg1);
+      arg1 = m_stack.Pop();
+      arg2 = m_stack.Pop();
+      m_stack.Push(arg2 == arg1);
       break;
 
    case op_TSTNE:
-      arg1 = stack.pop();
-      arg2 = stack.pop();
-      stack.push(arg2 != arg1);
+      arg1 = m_stack.Pop();
+      arg2 = m_stack.Pop();
+      m_stack.Push(arg2 != arg1);
       break;
 
    case op_JMP:
-      instrp = code[instrp+1]-1;
+      m_instructionPointer = m_code[m_instructionPointer + 1] - 1;
       break;
 
    case op_BEQ:
-      arg1 = stack.pop();
+      arg1 = m_stack.Pop();
       if (arg1 == 0)
-         instrp += code[instrp+1];
+         m_instructionPointer += m_code[m_instructionPointer + 1];
       else
-         instrp++;
+         m_instructionPointer++;
       break;
 
    case op_BNE:
-      arg1 = stack.pop();
+      arg1 = m_stack.Pop();
       if (arg1 != 0)
-         instrp += code[instrp+1];
+         m_instructionPointer += m_code[m_instructionPointer + 1];
       else
-         instrp++;
+         m_instructionPointer++;
       break;
 
    case op_BRA:
-      instrp += code[instrp+1];
+      m_instructionPointer += m_code[m_instructionPointer + 1];
       break;
 
    case op_CALL: // local function
       // stack value points to next instruction after call
-      stack.push(instrp+1);
-      instrp = code[instrp+1]-1;
-      call_level++;
+      m_stack.Push(m_instructionPointer + 1);
+      m_instructionPointer = m_code[m_instructionPointer + 1] - 1;
+      m_callLevel++;
       break;
 
    case op_CALLI: // imported function
+   {
+      arg1 = m_code[++m_instructionPointer];
+
+      if (m_mapImportedFunctions.find(arg1) == m_mapImportedFunctions.end())
       {
-         arg1 = code[++instrp];
-
-         std::string funcname;
-         if (imported_funcs.find(arg1) == imported_funcs.end())
-         {
-            ua_trace("code_vm: couldn't find imported function 0x%04x\n",arg1);
-            finished = true;
-            return false;
-         }
-
-         imported_func(imported_funcs[arg1].name.c_str());
+         UaTrace("CodeVM: couldn't find imported function 0x%04x\n", arg1);
+         m_finished = true;
+         return false;
       }
-      break;
+
+      ImportedFunc(m_mapImportedFunctions[arg1].name.c_str());
+   }
+   break;
 
    case op_RET:
-      if (--call_level)
+      if (--m_callLevel)
       {
          // conversation ended
-         finished = true;
+         m_finished = true;
       }
       else
       {
-         arg1 = stack.pop();
-         instrp = arg1;
+         arg1 = m_stack.Pop();
+         m_instructionPointer = arg1;
       }
       break;
 
    case op_PUSHI:
-      stack.push(code[++instrp]);
-         break;
+      m_stack.Push(m_code[++m_instructionPointer]);
+      break;
 
    case op_PUSHI_EFF:
-      stack.push(basep + (Sint16)code[++instrp]);
+      m_stack.Push(m_basePointer + (Sint16)m_code[++m_instructionPointer]);
       break;
 
    case op_POP:
-      stack.pop();
+      m_stack.Pop();
       break;
 
    case op_SWAP:
-      arg1 = stack.pop();
-      arg2 = stack.pop();
-      stack.push(arg1);
-      stack.push(arg2);
+      arg1 = m_stack.Pop();
+      arg2 = m_stack.Pop();
+      m_stack.Push(arg1);
+      m_stack.Push(arg2);
       break;
 
    case op_PUSHBP:
-      stack.push(basep);
+      m_stack.Push(m_basePointer);
       break;
 
    case op_POPBP:
-      arg1 = stack.pop();
-      basep = arg1;
+      arg1 = m_stack.Pop();
+      m_basePointer = arg1;
       break;
 
    case op_SPTOBP:
-      basep = stack.get_stackp();
+      m_basePointer = m_stack.GetStackPointer();
       break;
 
    case op_BPTOSP:
-      stack.set_stackp(basep);
+      m_stack.SetStackPointer(m_basePointer);
       break;
 
    case op_ADDSP:
-      {
-         arg1 = stack.pop();
+   {
+      arg1 = m_stack.Pop();
 
-         // fill reserved stack space with dummy values
-         for(int i=0; i<arg1; i++)
-            stack.push(0xdddd);
-      }
-      break;
+      // fill reserved stack space with dummy values
+      for (int i = 0; i < arg1; i++)
+         m_stack.Push(0xdddd);
+   }
+   break;
 
    case op_FETCHM:
-      arg1 = stack.pop();
+      arg1 = m_stack.Pop();
 
-      fetch_value(arg1);
+      FetchValue(arg1);
 
-      stack.push(stack.at(arg1));
+      m_stack.Push(m_stack.At(arg1));
       break;
 
    case op_STO:
-      arg1 = stack.pop();
-      arg2 = stack.pop();
+      arg1 = m_stack.Pop();
+      arg2 = m_stack.Pop();
 
-      store_value(arg2,arg1);
+      StoreValue(arg2, arg1);
 
-      stack.set(arg2,arg1);
+      m_stack.Set(arg2, arg1);
       break;
 
    case op_OFFSET:
-      arg1 = stack.pop();
-      arg2 = stack.pop();
-      arg1 += arg2 - 1 ;
-      stack.push(arg1);
+      arg1 = m_stack.Pop();
+      arg2 = m_stack.Pop();
+      arg1 += arg2 - 1;
+      m_stack.Push(arg1);
       break;
 
    case op_START:
@@ -349,22 +341,22 @@ bool ua_conv_code_vm::step()
       break;
 
    case op_SAVE_REG:
-      arg1 = stack.pop();
-      result_register = arg1;
+      arg1 = m_stack.Pop();
+      m_resultRegister = arg1;
       break;
 
    case op_PUSH_REG:
-      stack.push(result_register);
+      m_stack.Push(m_resultRegister);
       break;
 
    case op_EXIT_OP:
       // finish processing (we still might be in some sub function)
-      finished = true;
+      m_finished = true;
       break;
 
    case op_SAY_OP:
-      arg1 = stack.pop();
-      say_op(arg1);
+      arg1 = m_stack.Pop();
+      SayOp(arg1);
       break;
 
    case op_RESPOND_OP:
@@ -372,124 +364,147 @@ bool ua_conv_code_vm::step()
       break;
 
    case op_OPNEG:
-      arg1 = stack.pop();
-      stack.push(-arg1);
+      arg1 = m_stack.Pop();
+      m_stack.Push(-arg1);
       break;
 
    default: // unknown opcode
-      ua_trace("code_vm: unknown opcode 0x%04x\n",opcode);
-      finished=true;
+      UaTrace("CodeVM: unknown opcode 0x%04x\n", opcode);
+      m_finished = true;
       break;
    }
 
    // process next instruction
-   ++instrp;
+   ++m_instructionPointer;
 
-   return !finished;
+   return !m_finished;
 }
 
-void ua_conv_code_vm::replace_placeholder(std::string& str)
+void CodeVM::ReplacePlaceholder(std::string& text)
 {
    std::string::size_type pos = 0;
-   while( (pos = str.find('@',pos)) != std::string::npos )
+   while ((pos = text.find('@', pos)) != std::string::npos)
    {
-      char source = str[pos+1];
-      char vartype = str[pos+2];
+      char source = text[pos + 1];
+      char vartype = text[pos + 2];
 
       signed int param = 0;
       unsigned int value = 0;
-      unsigned int num_len = 0;
+      unsigned int length = 0;
       {
-         const char* startpos = str.c_str()+pos;
+         const char* startpos = text.c_str() + pos;
          char* endpos = NULL;
-         param = (signed int)strtol(startpos+3,&endpos,10);
-         num_len = endpos-startpos;
+         param = (signed int)strtol(startpos + 3, &endpos, 10);
+         length = endpos - startpos;
       }
 
       // get param value
-      switch(source)
+      switch (source)
       {
-      case 'G':
-         value = stack.at(static_cast<unsigned int>(param));
+      case 'G': // conv global, directly from stack
+         value = m_stack.At(static_cast<Uint16>(static_cast<unsigned int>(param)));
          break;
-      case 'S':
-         value = stack.at(static_cast<unsigned int>(basep+param));
+      case 'S': // value from parameter passed to function
+         value = m_stack.At(static_cast<Uint16>(static_cast<unsigned int>(m_basePointer + param)));
          break;
-      case 'P':
-         param = stack.at(static_cast<unsigned int>(basep+param));
-         value = stack.at(static_cast<unsigned int>(param));
+      case 'P': // pointer value from parameter passed to function
+         param = m_stack.At(static_cast<Uint16>(static_cast<unsigned int>(m_basePointer + param)));
+         value = m_stack.At(static_cast<Uint16>(static_cast<unsigned int>(param)));
          break;
       }
 
-      std::string varstr;
+      std::string variableText;
 
-      switch(vartype)
+      switch (vartype)
       {
-      case 'S':
-         varstr = get_local_string(value);
+      case 'S': // string
+         variableText = GetLocalString(static_cast<Uint16>(value));
          break;
-      case 'I':
-         {
-            std::ostringstream buffer;
-            buffer << value;
-            varstr.assign(buffer.str());
-         }
-         break;
+      case 'I': // integer
+      {
+         std::ostringstream buffer;
+         buffer << value;
+         variableText.assign(buffer.str());
+      }
+      break;
       }
 
       // insert value string
-      str.replace(pos,num_len,varstr.c_str());
+      text.replace(pos, length, variableText.c_str());
    }
 }
 
-void ua_conv_code_vm::set_result_register(Uint16 val)
+void CodeVM::SetResultRegister(Uint16 value)
 {
-   result_register = val;
+   m_resultRegister = value;
 }
 
-void ua_conv_code_vm::imported_func(const char* funcname)
+void CodeVM::ImportedFunc(const char* functionName)
 {
-   ua_trace("code_vm: executing function \"%s\" with %u arguments\n",
-      funcname, stack.at(stack.get_stackp()));
+   UaTrace("CodeVM: executing function \"%s\" with %u arguments\n",
+      functionName, m_stack.At(m_stack.GetStackPointer()));
 
-   result_register = code_callback->external_func(funcname, stack);
+   if (std::string(functionName) == "babl_menu")
+   {
+      std::vector<Uint16> answerStringIds;
+
+      // arg1 is ignored
+      Uint16 arg2 = m_stack.At(m_stack.GetStackPointer() - 1);
+      while (m_stack.At(arg2) != 0)
+      {
+         answerStringIds.push_back(m_stack.At(arg2));
+         arg2++;
+      }
+
+      m_resultRegister = m_codeCallback->BablMenu(answerStringIds);
+   }
+   else
+      m_resultRegister = m_codeCallback->ExternalFunc(functionName, m_stack);
 }
 
-std::string ua_conv_code_vm::get_local_string(Uint16 str_nr)
+Uint16 CodeVM::AllocString(const char* text)
 {
-   return std::string("");
+   Uint16 pos = static_cast<Uint16>(m_localStrings.size());
+   m_localStrings.push_back(std::string(text));
+   return pos;
 }
 
-void ua_conv_code_vm::say_op(Uint16 index)
+std::string CodeVM::GetLocalString(Uint16 stringIndex)
 {
-   code_callback->say(index);
+   UaAssert(stringIndex < m_localStrings.size());
+   return m_localStrings[stringIndex];
 }
 
-Uint16 ua_conv_code_vm::get_global(const char* globname)
+void CodeVM::SayOp(Uint16 stringNumber)
 {
-   ua_trace("code_vm: get global: unknown global %s\n", globname);
+   m_codeCallback->Say(stringNumber);
+}
+
+Uint16 CodeVM::GetGlobal(const char* globalsName)
+{
+   UaTrace("CodeVM: get global: unknown global %s\n", globalsName);
    return 0;
 }
 
-void ua_conv_code_vm::set_global(const char* globname, Uint16 val)
+void CodeVM::SetGlobal(const char* globname, Uint16 value)
 {
-   ua_trace("code_vm: set_global: unknown global %s = %04x\n", globname, val);
+   UaTrace("CodeVM: SetGlobal: unknown global %hs = %04x\n", globname, value);
 }
 
-void ua_conv_code_vm::store_value(Uint16 at, Uint16 val)
+void CodeVM::StoreValue(Uint16 at, Uint16 value)
 {
-   std::map<Uint16,ua_conv_imported_item>::iterator iter =
-      imported_globals.find(at);
+   std::map<Uint16, ImportedItem>::iterator iter =
+      m_mapImportedGlobals.find(at);
 
-   if (iter!=imported_globals.end())
-      ua_trace("code_vm: storing: %s = %04x\n",iter->second.name.c_str(),val);
+   if (iter != m_mapImportedGlobals.end())
+      UaTrace("CodeVM: storing: %hs = %04x\n", iter->second.name.c_str(), value);
 }
 
-void ua_conv_code_vm::fetch_value(Uint16 at)
+void CodeVM::FetchValue(Uint16 at)
 {
-   std::map<Uint16,ua_conv_imported_item>::iterator iter =
-      imported_globals.find(at);
+   std::map<Uint16, ImportedItem>::iterator iter =
+      m_mapImportedGlobals.find(at);
 
-   if (iter!=imported_globals.end())
-      ua_trace("code_vm: fetching %s returned %04x\n",iter->second.name.c_str(),stack.at(at));
+   if (iter != m_mapImportedGlobals.end())
+      UaTrace("CodeVM: fetching %hs returned %04x\n", iter->second.name.c_str(), m_stack.At(at));
 }
