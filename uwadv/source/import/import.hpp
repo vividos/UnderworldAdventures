@@ -31,6 +31,7 @@ namespace Base
 {
    class ResourceManager;
    class Settings;
+   class File;
 }
 
 namespace Underworld
@@ -40,6 +41,13 @@ namespace Underworld
    class ObjectList;
    class Tilemap;
    class Player;
+   class ConvGlobals;
+   class Underworld;
+}
+
+namespace Conv
+{
+   class CodeVM;
 }
 
 /// import classes
@@ -49,12 +57,17 @@ namespace Import
    void ImportProperties(Base::ResourceManager& resourceManager,
       Underworld::ObjectProperties& properties);
 
+   /// Loads conversation globals from bglobals.dat or babglobs.dat
+   void LoadConvGlobals(Underworld::ConvGlobals& globals,
+      Base::Settings& settings, const char* folder, bool initial);
+
+   /// Loads conversation code into virtual machine
+   bool LoadConvCode(Conv::CodeVM& vm, const char* cnvfile, Uint16 conv);
+
+   /// Loads imported functions list
+   void LoadConvCodeImportedFunctions(Conv::CodeVM& vm, Base::File& file);
+
 #if 0
-   // forward references
-   class ua_conv_globals;
-   class CodeVM;
-
-
    /// imports common to uw1 and uw2
    class ua_uw_import
    {
@@ -64,17 +77,6 @@ namespace Import
       /// loads underworld objects from folder
       void load_underworld(Underworld& underw, Base::Settings& settings,
          const char* folder, bool initial);
-
-      /// loads conversation globals
-      void load_conv_globals(ua_conv_globals& globals, Base::Settings& settings,
-         const char* folder, bool initial);
-
-      /// loads conversation code into virtual machine
-      bool load_conv_code(CodeVM& vm, const char* cnvfile, Uint16 conv);
-
-   protected:
-      /// loads imported functions list
-      void load_conv_code_imported_funcs(CodeVM& vm, FILE *fd);
    };
 
 #endif

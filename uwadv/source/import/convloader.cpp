@@ -1,150 +1,127 @@
-/*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file convloader.cpp
-
-   \brief conversation code and conv. globals loader
-
-*/
-
-// needed includes
-#include "common.hpp"
+//
+// Underworld Adventures - an Ultima Underworld hacking project
+// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file convloader.cpp
+/// \brief conversation code and conv. globals loader
+//
 #include "import.hpp"
-#include "io_endian.hpp"
+#include "file.hpp"
 #include "codevm.hpp"
+#include "exception.hpp"
 
-
-//! Loads conversation globals from bglobals.dat or babglobs.dat
-/*! When initial is set to true, the file to load only contains size entries,
-    and no actual data; all globals are initalized with 0 then.
-*/
-void ua_uw_import::load_conv_globals(ua_conv_globals& globals,
-   ua_settings& settings, const char* folder, bool initial)
+/// When initial is set to true, the file to load only contains size entries,
+/// and no actual data; all globals are initalized with 0 then.
+void Import::LoadConvGlobals(Underworld::ConvGlobals& convGlobals,
+   Base::Settings& settings, const char* folder, bool initial)
 {
-   std::string bgname(settings.get_string(ua_setting_uw_path));
-   bgname.append(folder);
-   bgname.append(initial ? "babglobs.dat" : "bglobals.dat");
+   std::string globalsName = settings.GetString(Base::settingUnderworldPath);
+   globalsName.append(folder);
+   globalsName.append(initial ? "babglobs.dat" : "bglobals.dat");
 
-   // try to open file
-   FILE *fd = fopen(bgname.c_str(),"rb");
-   if (fd==NULL)
+   Base::File file(globalsName, Base::modeRead);
+   if (!file.IsOpen())
    {
       std::string text("error loading conv. globals file: ");
-      text.append(bgname);
-      throw ua_exception(text.c_str());
+      text.append(globalsName);
+      throw Base::Exception(text.c_str());
    }
 
-   std::vector< std::vector<Uint16> >& allglobals = globals.get_allglobals();
+   std::vector<std::vector<Uint16>>& allGlobals = convGlobals.GetAllGlobalsList();
 
    // read in all slot/size/[globals] infos
-   while (!feof(fd))
+   while (file.Tell() < file.FileLength())
    {
-      Uint16 slot = fread16(fd);
-      Uint16 size = fread16(fd);
+      Uint16 slot = file.Read16();
+      Uint16 size = file.Read16();
 
       std::vector<Uint16> globals;
-      globals.resize(size,0);
+      globals.resize(size, 0);
 
       if (!initial)
       {
          // read in globals
-         for(Uint16 i=0; i<size; i++)
-            globals.push_back(fread16(fd));
+         for (Uint16 i = 0; i < size; i++)
+            globals.push_back(file.Read16());
       }
 
-      // put globals in allglobals list
-      if (slot>allglobals.size())
-         allglobals.resize(slot);
+      // put globals in allGlobals list
+      if (slot > allGlobals.size())
+         allGlobals.resize(slot);
 
-      allglobals.insert(allglobals.begin()+slot,globals);
+      allGlobals.insert(allGlobals.begin() + slot, globals);
    }
-
-   fclose(fd);
 }
 
-
-// ua_conv_vm methods
-
-/*! Loads conversation code from given file, into the virtual machine.
-    It loads all imported symbols (functions and globals) and puts the opcodes
-    into the vm's code segment. The method ua_conv_code_vm::init() can then be
-    called after this method.
-
-    \param vm conversation code virtual machine
-    \param cnvfile conversation filename, e.g. cnv.ark
-    \param conv convesation slot of code to load
-*/
-bool ua_uw_import::load_conv_code(ua_conv_code_vm& vm, const char* cnvfile,
-   Uint16 conv)
+/// Loads conversation code from given file, into the virtual machine.
+/// It loads all imported symbols (functions and globals) and puts the opcodes
+/// into the vm's code segment. The method ua_conv_code_vm::init() can then be
+/// called after this method.
+/// \param vm conversation code virtual machine
+/// \param cnvfile conversation filename, e.g. cnv.ark
+/// \param conv convesation slot of code to load
+bool Import::LoadConvCode(Conv::CodeVM& vm, const char* cnvfile, Uint16 conv)
 {
-   FILE *fd = fopen(cnvfile,"rb");
-   if (fd==NULL)
-      throw ua_exception("could not open conversation file");
+   Base::File file(cnvfile, Base::modeRead);
+   if (!file.IsOpen())
+      throw Base::Exception("could not open conversation file");
 
-   // read number of entries
-   Uint16 entries = fread16(fd);
+   Uint16 entries = file.Read16();
 
-   if (conv>=entries)
-   {
-      fclose(fd);
-      throw ua_exception("invalid conversation!");
-   }
+   if (conv >= entries)
+      throw Base::Exception("invalid conversation!");
 
-   fseek(fd,conv*4+2,SEEK_SET);
+   file.Seek(conv * 4 + 2, Base::seekBegin);
 
-   Uint32 offset = fread32(fd);
+   Uint32 offset = file.Read32();
 
-   if (offset==0)
+   if (offset == 0)
    {
       // no conversation available
-      fclose(fd);
       return false;
    }
 
    // read conversation header
-   fseek(fd,offset,SEEK_SET);
+   file.Seek(offset, Base::seekBegin);
 
-   Uint32 unk1 = fread32(fd); // always 0x00000828
+   Uint32 unknown1 = file.Read32(); // always 0x00000828
 
-   Uint16 codesize = fread16(fd);
-   Uint16 unk2 = fread16(fd); // always 0x0000
-   Uint16 unk3 = fread16(fd); // always 0x0000
+   Uint16 codeSize = file.Read16();
+   Uint16 unknown2 = file.Read16(); // always 0x0000
+   Uint16 unknown3 = file.Read16(); // always 0x0000
+   unknown1; unknown2; unknown3;
 
-   Uint16 strblock = fread16(fd); // string block to use
-   vm.set_strblock(strblock);
+   Uint16 stringBlock = file.Read16(); // string block to use
+   vm.SetStringBlock(stringBlock);
 
-   Uint16 glob_reserved = fread16(fd); // number of stack words reserved for globals
-   vm.set_globals_reserved(glob_reserved);
+   Uint16 reservedGlobals = file.Read16(); // number of stack words reserved for globals
+   vm.SetReservedGlobals(reservedGlobals);
 
    // load imported functions
-   load_conv_code_imported_funcs(vm, fd);
+   LoadConvCodeImportedFunctions(vm, file);
 
    // load code
-   std::vector<Uint16>& code = vm.get_code_segment();
+   std::vector<Uint16>& code = vm.GetCodeSegment();
 
-   code.resize(codesize,0);
-   for(Uint16 i=0; i<codesize; i++)
-      code[i] = fread16(fd);
+   code.resize(codeSize, 0);
+   for (Uint16 i = 0; i < codeSize; i++)
+      code[i] = file.Read16();
 
-   fclose(fd);
+   file.Close();
 
    // fix for Marrowsuck conversation; it has a wrong opcode on 0x076e
    if (conv == 6)
@@ -167,69 +144,68 @@ bool ua_uw_import::load_conv_code(ua_conv_code_vm& vm, const char* cnvfile,
       code[0x04fd] = 3;
    }
 
-   vm.set_conv_slot(conv);
+   vm.SetConversationSlot(conv);
 
    return true;
 }
 
-void ua_uw_import::load_conv_code_imported_funcs(ua_conv_code_vm& vm,
-   FILE *fd)
+void Import::LoadConvCodeImportedFunctions(Conv::CodeVM& vm, Base::File& file)
 {
-   std::map<Uint16,ua_conv_imported_item>& imported_funcs = vm.get_imported_funcs();
-   std::map<Uint16,ua_conv_imported_item>& imported_globals = vm.get_imported_globals();
+   std::map<Uint16, Conv::ImportedItem>& importedFunctions = vm.GetImportedFunctions();
+   std::map<Uint16, Conv::ImportedItem>& importedGlobals = vm.GetImportedGlobals();
 
-   imported_funcs.clear();
-   imported_globals.clear();
+   importedFunctions.clear();
+   importedGlobals.clear();
 
-   // read number of imported funcs
-   Uint16 funcs = fread16(fd);
+   // read number of imported numFunctions
+   Uint16 numFunctions = file.Read16();
 
-   for(int i=0; i<funcs; i++)
+   for (int functionIndex = 0; functionIndex < numFunctions; functionIndex++)
    {
       // length of function name
-      Uint16 fname_len = fread16(fd);
-      if (fname_len>255) fname_len = 255;
+      Uint16 functionNameLength = file.Read16();
+      if (functionNameLength > 255) functionNameLength = 255;
 
-      char funcname[256];
-      fread(funcname,1,fname_len,fd);
-      funcname[fname_len]=0;
+      char functionName[256];
+      file.ReadBuffer(reinterpret_cast<Uint8*>(functionName), functionNameLength);
+      functionName[functionNameLength] = 0;
 
-      // function ID
-      Uint16 func_id = fread16(fd);
-      Uint16 fn_unknown1 = fread16(fd); // always seems to be 1
-      Uint16 import_type = fread16(fd);
-      Uint16 ret_type = fread16(fd);
+      Uint16 functionId = file.Read16();
+      Uint16 functionUnknown1 = file.Read16(); // always seems to be 1
+      Uint16 importType = file.Read16();
+      Uint16 returnType = file.Read16();
+      functionUnknown1;
 
       // fill imported item struct
-      ua_conv_imported_item iitem;
+      Conv::ImportedItem importedItem;
 
       // determine return type
-      switch(ret_type)
+      switch (returnType)
       {
-      case 0x0000: iitem.datatype = ua_dt_void; break;
-      case 0x0129: iitem.datatype = ua_dt_int; break;
-      case 0x012b: iitem.datatype = ua_dt_string; break;
+      case 0x0000: importedItem.datatype = Conv::dataTypeVoid; break;
+      case 0x0129: importedItem.datatype = Conv::dataTypeInt; break;
+      case 0x012b: importedItem.datatype = Conv::dataTypeString; break;
       default:
-         throw ua_exception("unknown return type in conv imports list");
+         throw Base::Exception("unknown return type in conv imports list");
       }
 
-      iitem.name = funcname;
+      importedItem.name = functionName;
 
       // store imported item in appropriate list
-      switch(import_type)
+      switch (importType)
       {
       case 0x0111:
          // imported function
-         imported_funcs[func_id] = iitem;
+         importedFunctions[functionId] = importedItem;
          break;
 
       case 0x010F:
          // imported global
-         imported_globals[func_id] = iitem;
+         importedGlobals[functionId] = importedItem;
          break;
 
       default:
-         throw ua_exception("unknown import type in conv imports list");
+         throw Base::Exception("unknown import type in conv imports list");
          break;
       }
    }
