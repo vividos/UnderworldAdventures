@@ -21,6 +21,7 @@
 //
 #pragma once
 
+#include "base.hpp"
 #include <string>
 #include <SDL_types.h>
 #include <SDL_rwops.h>
