@@ -1,30 +1,24 @@
-/*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002-2005 Michael Fink
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
+//
+// Underworld Adventures - an Ultima Underworld hacking project
+// Copyright (c) 2002-2005,2019 Michael Fink
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
 // common hacking include stuff
-
-#ifndef uwadv_hacking_h_
-#define uwadv_hacking_h_
-
-# pragma warning( disable : 4786 ) // identifier was truncated to '255' characters in the debug information
+//
+#pragma once
 
 #include <stdio.h>
 #include <string.h>
@@ -35,35 +29,55 @@
 #include <vector>
 #include <map>
 
+#include <SDL.h>
+
 #define UWPATH "e:\\uw1\\"
 //#define UWPATH "e:\\uw2\\"
 
 #undef HAVE_UW2
 //#define HAVE_UW2
 
+// fread/fwrite functions
 
-//! game string container class
+/// reads a 16-bit int
+inline Uint16 fread16(FILE* fd)
+{
+   Uint16 data;
+   fread(&data, 1, 2, fd);
+   return data;
+}
+
+/// reads a 32-bit int
+inline Uint32 fread32(FILE* fd)
+{
+   Uint32 data;
+   fread(&data, 1, 4, fd);
+   return data;
+}
+
+
+/// game string container class
 class ua_gamestrings
 {
 public:
-   //! ctor
-   ua_gamestrings(){}
+   /// ctor
+   ua_gamestrings() {}
 
-   //! loads all game strings from a file
+   /// loads all game strings from a file
    void load(const char *filename);
 
-   //! returns a game string
+   /// returns a game string
    std::string get_string(unsigned int block, unsigned int string_nr);
 
 protected:
-   //! game string container
-   std::map<int,std::vector<std::string> > allstrings;
+   /// game string container
+   std::map<int, std::vector<std::string>> allstrings;
 };
 
-
-inline void tga_writeheader(FILE *fd, int width, int height, int type=2, int colmap=0, bool bottomup=false)
+/// writes TGA file header
+inline void tga_writeheader(FILE* fd, unsigned short width, unsigned short height, unsigned char type = 2, unsigned char colmap = 0, bool bottomup = false)
 {
-   #pragma pack(push,1)
+#pragma pack(push,1)
 
    // tga header struct
    struct tgaheader
@@ -78,21 +92,30 @@ inline void tga_writeheader(FILE *fd, int width, int height, int type=2, int col
       unsigned char colormapdepth;
 
       // x and y origin
-      unsigned short xorigin,yorigin;
+      unsigned short xorigin, yorigin;
       // width and height
-      unsigned short width,height;
+      unsigned short width, height;
 
       // bits per pixel, either 16, 24 or 32
       unsigned char bitsperpixel;
       unsigned char imagedescriptor;
    } tgaheader =
    {
-      0, colmap, type,   0, (colmap==1?256:0), (colmap==1?24:0),
-      0, 0, width, height, colmap==1?8:32, bottomup ? 0x00 : 0x20
+      0,
+      colmap,
+      type,
+
+      0,
+      (unsigned short)(colmap == 1 ? 256 : 0),
+      (unsigned char)(colmap == 1 ? 24 : 0),
+
+      0, 0,
+      width, height,
+
+      (unsigned char)(colmap == 1 ? 8 : 32),
+      (unsigned char)(bottomup ? 0x00 : 0x20)
    };
 #pragma pack(pop)
 
-   fwrite(&tgaheader,1,18,fd);
+   fwrite(&tgaheader, 1, 18, fd);
 }
-
-#endif

@@ -1,32 +1,28 @@
-/*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002 Michael Fink
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
+//
+// Underworld Adventures - an Ultima Underworld hacking project
+// Copyright (c) 2002,2019 Michael Fink
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
 // conversations decoding
+//
+#include "hacking.h"
 
-#include "../hacking.h"
+static const char* fname = UWPATH "data\\Cnv.ark";
 
-
-const char *fname = UWPATH "data\\Cnv.ark";
-
-void dump_import_funcs(FILE *fd, FILE *dest)
+void dump_import_funcs(FILE* fd, FILE* dest)
 {
    // read number of imported funcs
    unsigned short funcs;
@@ -87,7 +83,7 @@ struct
    int args;
    const char *argcode;
    const char *comment;
-} instructions[0x2a] = 
+} instructions[0x2a] =
 {
    { "NOP", 0,  "", "" },
    { "OPADD", 0, "", "pushes s[0]+s[1]" },
@@ -133,7 +129,7 @@ struct
    { "OPNEG", 0, "", "negate, s[0] = -s[0]" },
 };
 
-void decode_instructions(unsigned short* allcodes, FILE *dest,unsigned int codesize)
+void decode_instructions(unsigned short* allcodes, FILE* dest,unsigned int codesize)
 {
    fprintf(dest,";\n; code section\n;\n");
    for(unsigned int i=0; i<codesize; i++)
@@ -171,9 +167,9 @@ void decode_instructions(unsigned short* allcodes, FILE *dest,unsigned int codes
 }
 
 
-int main()
+int cnvdec_main()
 {
-   FILE *fd = fopen(fname,"rb");
+   FILE* fd = fopen(fname,"rb");
 
    if (fd==NULL)
    {
@@ -182,7 +178,7 @@ int main()
    }
 
    // open destination file
-   FILE *dest = fopen("uw1-cnvdec.txt","w");
+   FILE* dest = fopen("uw1-cnvdec.txt","w");
    fprintf(dest,";\n; decoded conversations\n");
 
    // read number of entries
