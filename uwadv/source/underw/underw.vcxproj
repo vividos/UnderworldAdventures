@@ -68,6 +68,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="convglobals.cpp" />
+    <ClCompile Include="gamelogic.cpp" />
     <ClCompile Include="inventory.cpp" />
     <ClCompile Include="levellist.cpp" />
     <ClCompile Include="mapnotes.cpp" />
@@ -86,6 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="convglobals.hpp" />
+    <ClInclude Include="gamelogic.hpp" />
     <ClInclude Include="inventory.hpp" />
     <ClInclude Include="level.hpp" />
     <ClInclude Include="levellist.hpp" />

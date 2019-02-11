@@ -50,6 +50,9 @@
     <ClCompile Include="gamestrings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="gamelogic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="convglobals.hpp">
@@ -95,6 +98,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="gamestrings.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gamelogic.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
