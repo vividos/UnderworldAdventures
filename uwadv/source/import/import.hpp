@@ -84,24 +84,24 @@ namespace Import
    // inline functions
 
    /// retrieves bits from given value
-   inline Uint8 GetBits(Uint8 uiValue, unsigned int start, unsigned int count)
+   inline Uint8 GetBits(Uint8 value, unsigned int start, unsigned int count)
    {
       UaAssert(start < 8 && start + count <= 8);
-      return static_cast<Uint8>(uiValue >> start) & static_cast<Uint8>((1 << count) - 1);
+      return static_cast<Uint8>(value >> start) & static_cast<Uint8>((1 << count) - 1);
    }
 
    /// retrieves bits from given value
-   inline Uint16 GetBits(Uint16 uiValue, unsigned int start, unsigned int count)
+   inline Uint16 GetBits(Uint16 value, unsigned int start, unsigned int count)
    {
       UaAssert(start < 16 && start + count <= 16);
-      return static_cast<Uint16>(uiValue >> start) & static_cast<Uint16>((1 << count) - 1);
+      return static_cast<Uint16>(value >> start) & static_cast<Uint16>((1 << count) - 1);
    }
 
    /// retrieves bits from given value
-   inline Uint32 GetBits(Uint32 uiValue, unsigned int start, unsigned int count)
+   inline Uint32 GetBits(Uint32 value, unsigned int start, unsigned int count)
    {
       UaAssert(start < 32 && start + count <= 32);
-      return (uiValue >> start) & ((1 << count) - 1);
+      return (value >> start) & ((1 << count) - 1);
    }
 
 } // namespace Import
