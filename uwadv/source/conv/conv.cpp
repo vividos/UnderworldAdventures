@@ -22,29 +22,27 @@
 #include "common.hpp"
 #include "conv.hpp"
 #include "underworld.hpp"
-#include "game_interface.hpp"
+#include "gamelogic.hpp"
 
 using Conv::Conversation;
 
 void Conversation::Init(unsigned int conversationLevel,
-   Uint16 conversationObjectPos, IBasicGame& game,
+   Uint16 conversationObjectPos,
    Conv::ICodeCallback* codeCallback,
    std::vector<std::string>& localStrings)
 {
    m_conversationLevel = conversationLevel;
    m_conversationObjectPos = conversationObjectPos;
 
-   m_game = &game;
-
    m_localStrings.insert(m_localStrings.begin(), localStrings.begin(), localStrings.end());
 
-   CodeVM::Init(codeCallback, m_game->GetUnderworld().GetPlayer().GetConvGlobals());
+   CodeVM::Init(codeCallback, m_gameLogic.GetUnderworld().GetPlayer().GetConvGlobals());
 }
 
-void Conversation::Done(IBasicGame& game)
+void Conversation::Done()
 {
    // write back conv. globals
-   CodeVM::Done(game.GetUnderworld().GetPlayer().GetConvGlobals());
+   CodeVM::Done(m_gameLogic.GetUnderworld().GetPlayer().GetConvGlobals());
 }
 
 // *=implemented, x=assert
@@ -219,7 +217,7 @@ void Conversation::ImportedFunc(const char* functionName)
       arg2 = m_stack.At(arg2);
 
       // check player gender
-      if (m_game->GetUnderworld().GetPlayer().GetAttribute(Underworld::attrGender) == 0)
+      if (m_gameLogic.GetUnderworld().GetPlayer().GetAttribute(Underworld::attrGender) == 0)
          arg1 = arg2;
 
       m_resultRegister = arg1;
@@ -235,10 +233,10 @@ Uint16 Conversation::GetGlobal(const char* globalName)
    std::string globname(globalName);
    Uint16 val = 0;
 
-   Underworld::Player& player = m_game->GetUnderworld().GetPlayer();
+   Underworld::Player& player = m_gameLogic.GetUnderworld().GetPlayer();
 
    // get npc object to talk to
-   Underworld::ObjectPtr npc_obj = m_game->GetUnderworld().GetLevelList().
+   Underworld::ObjectPtr npc_obj = m_gameLogic.GetUnderworld().GetLevelList().
       GetLevel(m_conversationLevel).GetObjectList().GetObject(m_conversationObjectPos);
 
    UaAssert(Underworld::IsNpcObject(npc_obj));
@@ -304,10 +302,10 @@ void Conversation::SetGlobal(const char* globalName, Uint16 val)
 
    std::string globname(globalName);
 
-   Underworld::Player& player = m_game->GetUnderworld().GetPlayer();
+   Underworld::Player& player = m_gameLogic.GetUnderworld().GetPlayer();
 
    // get npc object to talk to
-   Underworld::ObjectPtr npc_obj = m_game->GetUnderworld().GetLevelList().
+   Underworld::ObjectPtr npc_obj = m_gameLogic.GetUnderworld().GetLevelList().
       GetLevel(m_conversationLevel).GetObjectList().GetObject(m_conversationObjectPos);
 
    UaAssert(Underworld::IsNpcObject(npc_obj));

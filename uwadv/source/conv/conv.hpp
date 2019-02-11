@@ -24,7 +24,10 @@
 #include "codevm.hpp"
 //#include "dbgserver.hpp"
 
-class IBasicGame;
+namespace Underworld
+{
+   class GameLogic;
+}
 
 namespace Conv
 {
@@ -37,20 +40,21 @@ namespace Conv
    {
    public:
       /// ctor
-      Conversation()
-         :m_game(NULL),
+      Conversation(Underworld::GameLogic& gameLogic)
+         :m_gameLogic(gameLogic),
          m_conversationLevel(0),
          m_conversationObjectPos(0)
       {
       }
 
       /// inits basic conversation
-      virtual void Init(unsigned int conversationLevel, Uint16 conversationObjectPos,
-         IBasicGame& game, ICodeCallback* codeCallback,
+      virtual void Init(unsigned int conversationLevel,
+         Uint16 conversationObjectPos,
+         ICodeCallback* codeCallback,
          std::vector<std::string>& localStrings);
 
       /// cleans up basic conversation
-      virtual void Done(IBasicGame& game);
+      virtual void Done();
 
    protected:
       // virtual methods from CodeVM
@@ -59,8 +63,8 @@ namespace Conv
       virtual void SetGlobal(const char* globname, Uint16 val);
 
    protected:
-      /// game interface
-      IBasicGame* m_game;
+      /// game logic object
+      Underworld::GameLogic& m_gameLogic;
 
       /// underworld level of conversation partner
       unsigned int m_conversationLevel;
