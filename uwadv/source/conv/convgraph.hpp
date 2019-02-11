@@ -268,9 +268,9 @@ namespace Conv
       void Decompile();
 
    private:
-   /// initializes graph with opcodes
-   void InitGraph(const std::vector<Uint16>& code,
-      Uint16 codestart, Uint16 codeend);
+      /// initializes graph with opcodes
+      void InitGraph(const std::vector<Uint16>& code,
+         Uint16 codestart, Uint16 codeend);
 
       /// collect all call, branch and jump references
       void CollectXrefs();

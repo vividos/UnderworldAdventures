@@ -115,116 +115,115 @@ void CodeGraph::Decompile()
    }
 }
 
-void CodeGraph::format_graph_item(std::string& item_text,
-   const CodeGraphItem& item) const
+std::string CodeGraphItem::Format() const
 {
-   switch (item.m_type)
+   std::string item_text;
+
+   switch (m_type)
    {
-   case Conv::typeFuncStart:
-      item_text = "typeFuncStart";
+   case typeFuncStart:
+      item_text = "function start";
       break;
 
-   case Conv::typeFuncEnd:
-      item_text = "typeFuncEnd";
+   case typeFuncEnd:
+      item_text = "function end";
       break;
 
-   case Conv::typeOpcode:
-      format_opcode(item_text, item);
+   case typeOpcode:
+      item_text = FormatOpcode();
       break;
 
-   case Conv::typeStatement:
-      item_text = item.statement_data.statement;
+   case typeStatement:
+      item_text = statement_data.statement;
       break;
 
-   case Conv::typeOperator:
+   case typeOperator:
    {
       std::ostringstream buffer;
       buffer <<
-         (item.m_isProcessed ? "   // " : "") <<
+         (m_isProcessed ? "   // " : "") <<
          "operator " <<
-         g_convInstructions[item.operator_data.op_opcode].mnemonic <<
-         ", needs " << item.operator_data.needed_expr << " expressions, yields " <<
-         (item.operator_data.returns_expr ? "an" : "no") << " expression; level=" <<
-         item.operator_data.prec_level;
+         g_convInstructions[operator_data.op_opcode].mnemonic <<
+         ", needs " << operator_data.needed_expr << " expressions, yields " <<
+         (operator_data.returns_expr ? "an" : "no") << " expression;" <<
+         (operator_data.sto_swap_args ? " swaps args;" : "") <<
+         " level=" << operator_data.prec_level;
 
       item_text = buffer.str();
    }
    break;
 
-   case Conv::typeExpression:
+   case typeExpression:
    {
       std::ostringstream buffer;
       buffer <<
-         (item.m_isProcessed ? "   // " : "") <<
+         (m_isProcessed ? "   // " : "") <<
          "expression: " <<
-         item.expression_data.expression <<
-         (item.expression_data.is_address ? " (address-of)" : " (value-of)") <<
-         "; level=" << item.expression_data.prec_level;
+         expression_data.expression <<
+         (expression_data.is_address ? " (address-of)" : " (value-of)") <<
+         "; level=" << expression_data.prec_level;
       item_text = buffer.str();
    }
    break;
 
    default:
+      UaAssert(false);
       item_text = "// unknown graph item type!";
       break;
    }
+
+   return item_text;
 }
 
-void CodeGraph::format_opcode(std::string& opcode_text,
-   const CodeGraphItem& item) const
+std::string CodeGraphItem::FormatOpcode() const
 {
-   UaAssert(item.m_type == typeOpcode);
+   UaAssert(m_type == typeOpcode);
 
    std::ostringstream buffer;
    buffer << "   ";
 
-   if (item.m_isProcessed)
+   if (m_isProcessed)
       buffer << "// ";
 
    // code segment address
    buffer << std::setfill('0') << std::setw(4) <<
-      std::setbase(16) << item.m_pos << " ";
+      std::setbase(16) << m_pos << " ";
 
-   if (item.opcode_data.opcode > op_last)
+   if (opcode_data.opcode > op_last)
    {
       // unknown opcode
       buffer << "??? (0x" << std::setfill('0') <<
-         std::setw(4) << std::setbase(16) << item.opcode_data.opcode << ")";
+         std::setw(4) << std::setbase(16) << opcode_data.opcode << ")";
    }
    else
    {
-      Uint16 opcode = item.opcode_data.opcode;
+      Uint16 opcode = opcode_data.opcode;
 
       buffer << g_convInstructions[opcode].mnemonic;
 
-      if (g_convInstructions[item.opcode_data.opcode].args > 0 &&
-         item.opcode_data.jump_target.size() > 0 &&
+      if (g_convInstructions[opcode_data.opcode].args > 0 &&
+         opcode_data.jump_target.size() > 0 &&
          (opcode == op_JMP || opcode == op_BEQ || opcode == op_BNE ||
             opcode == op_BRA || opcode == op_CALL))
       {
          // label available
-         buffer << " " << item.opcode_data.jump_target;
+         buffer << " " << opcode_data.jump_target;
       }
-      else
-         if (opcode == op_CALLI)
-         {
-            // intrinsic function name
-            Uint16 ifunc = item.opcode_data.arg;
-            UaAssert(m_mapImportedFunctions.find(ifunc) != m_mapImportedFunctions.end());
-
-            buffer << " " << m_mapImportedFunctions.find(ifunc)->second.name;
-         }
-         else
-            if (g_convInstructions[item.opcode_data.opcode].args > 0)
-            {
-               // unknown, not resolved by CollectXrefs, or PUSH, PUSHI_EFF
-               // just format the string
-               buffer << " 0x" << std::setfill('0') <<
-                  std::setw(4) << std::setbase(16) << item.opcode_data.arg;
-            }
+      else if (opcode == op_CALLI)
+      {
+         // intrinsic function name
+         buffer << " " << opcode_data.jump_target;
+      }
+      else if (g_convInstructions[opcode_data.opcode].args > 0)
+      {
+         // unknown, not resolved by collect_xrefs, or PUSH, PUSHI_EFF
+         // just format the string
+         buffer << " 0x" << std::setfill('0') <<
+            std::setw(4) << std::setbase(16) << opcode_data.arg;
+      }
    }
 
-   opcode_text = buffer.str();
+   return buffer.str();
 }
 
 void CodeGraph::CollectXrefs()
@@ -1980,5 +1979,17 @@ std::string CodeGraph::GetMemoryVarName(Uint16 mem_idx)
       buffer << "global_" << mem_idx;
 
       return buffer.str();
+   }
+}
+
+const char* CodeGraph::DataTypeToString(Conv::EDataType type)
+{
+   switch (type)
+   {
+   case dataTypeVoid: return "void";
+   case dataTypeInt: return "int";
+   case dataTypeString: return "string";
+   default:
+      return "unknown";
    }
 }
