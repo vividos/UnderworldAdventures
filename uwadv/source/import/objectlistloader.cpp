@@ -202,7 +202,7 @@ void ObjectListLoader::AddNpcInfos(Underworld::ObjectPtr& obj, Uint8* npcInfos)
    UaAssert(npcInfos != NULL);
 
    Underworld::NpcObject& npc = CastToNpcObject(obj);
-   Underworld::NpcInfo npcInfo = npc.GetNpcInfo();
+   Underworld::NpcInfo& npcInfo = npc.GetNpcInfo();
 
    npcInfo.npc_hp = npcInfos[0x0000];
 
