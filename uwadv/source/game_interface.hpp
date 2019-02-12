@@ -36,17 +36,28 @@
 
 
 // forward references
-class ua_audio_manager;
-class ua_settings;
-class ua_files_manager;
-class ua_savegames_manager;
+namespace Base
+{
+   class Settings;
+   class ResourceManager;
+   class SavegamesManager;
+}
+namespace Audio
+{
+   class AudioManager;
+}
+namespace Underworld
+{
+   class Underworld;
+   class GameLogic;
+}
 class ua_image_manager;
 class ua_renderer;
-class ua_scripting;
-class ua_underworld;
+class IScripting;
 class ua_debug_server;
 class ua_screen;
-class ua_gamestrings;
+class GameStrings;
+class IUserInterface;
 
 
 // enums
@@ -74,7 +85,7 @@ enum ua_game_events
 // classes
 
 //! basic game interface class, without ui stuff
-class ua_basic_game_interface
+class IBasicGame
 {
 public:
    //! returns game tickrate
@@ -84,25 +95,29 @@ public:
    virtual bool pause_game(bool pause)=0;
 
    //! returns settings object
-   virtual ua_settings& get_settings()=0;
+   virtual Base::Settings& get_settings()=0;
 
    //! returns settings object
-   virtual ua_files_manager& get_files_manager()=0;
+   virtual Base::ResourceManager& GetResourceManager()=0;
 
    //! returns savegames manager object
-   virtual ua_savegames_manager& get_savegames_manager()=0;
+   virtual Base::SavegamesManager& get_savegames_manager()=0;
 
    //! returns scripting object
-   virtual ua_scripting& get_scripting()=0;
-   
+   virtual IScripting& get_scripting()=0;
+
    //! returns debugger object
    virtual ua_debug_server& get_debugger()=0;
 
    //! returns game strings object
-   virtual ua_gamestrings& get_gamestrings()=0;
+   virtual GameStrings& GetGameStrings()=0;
 
    //! returns underworld object
-   virtual ua_underworld& get_underworld()=0;
+   virtual Underworld::Underworld& GetUnderworld()=0;
+
+   virtual Underworld::GameLogic& GetGameLogic() = 0;
+
+   virtual IUserInterface* GetUserInterface() = 0;
 
    //! initializes game; only called after all stuff is initialized and ready
    virtual void init_game()=0;
@@ -113,11 +128,11 @@ public:
 
 
 //! game interface class
-class ua_game_interface: public ua_basic_game_interface
+class IGame: public IBasicGame
 {
 public:
    //! returns audio manager
-   virtual ua_audio_manager& get_audio_manager()=0;
+   virtual Audio::AudioManager& get_audio_manager()=0;
 
    //! returns image manager object
    virtual ua_image_manager& get_image_manager()=0;
@@ -138,7 +153,7 @@ public:
 
 protected:
    //! ctor
-   ua_game_interface(){}
+   IGame(){}
 };
 
 

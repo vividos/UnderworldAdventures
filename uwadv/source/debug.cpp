@@ -30,9 +30,11 @@
 #include "debug.hpp"
 #include "dbgserver.hpp"
 #include "game_interface.hpp"
+#include "gamelogic.hpp"
 #include "underworld.hpp"
 #include "gamestrings.hpp"
 #include "image.hpp"
+#include <algorithm>
 
 
 // impl. classes
@@ -115,7 +117,7 @@ ua_debug_server::ua_debug_server()
    debug_lib = new ua_debug_lib_context;
 #endif
 
-   ua_assert(debug_lib != NULL);
+   UaAssert(debug_lib != NULL);
 }
 
 ua_debug_server::~ua_debug_server()
@@ -124,8 +126,8 @@ ua_debug_server::~ua_debug_server()
 
    SDL_DestroySemaphore(sem_debugger);
 
-   if (thread_debugger != NULL)
-      SDL_KillThread(thread_debugger);
+   // TODO if (thread_debugger != NULL)
+   //   SDL_KillThread(thread_debugger);
 
    debug_lib->done();
    delete debug_lib;
@@ -136,25 +138,25 @@ void ua_debug_server::init()
 {
    debug_lib->init();
 
-   ua_trace("debug server inited; debugger is %savailable\n",
+   UaTrace("debug server inited; debugger is %savailable\n",
       debug_lib->is_avail() ? "" : "not ");
 }
 
-bool ua_debug_server::start_debugger(ua_basic_game_interface* the_game)
+bool ua_debug_server::start_debugger(IBasicGame* the_game)
 {
    game = the_game;
 
    // check if debugger already runs
    if (debug_lib->is_avail() && SDL_SemValue(sem_debugger)==0)
    {
-      ua_trace("starting uadebug thread\n");
+      UaTrace("starting uadebug thread\n");
 
       // start new thread
-      thread_debugger = SDL_CreateThread(thread_proc,this);
+      thread_debugger = SDL_CreateThread(thread_proc, "debugger-thread", this);
    }
    else
    {
-      ua_trace(!debug_lib->is_avail() ?
+      UaTrace(!debug_lib->is_avail() ?
          "debugger not available\n" : "debugger already running\n");
    }
 
@@ -180,8 +182,8 @@ void ua_debug_server::tick()
       {
          // change level per underworld object
          schedule_prepare = false;
-         ua_underworld& underw = game->get_underworld();
-         underw.change_level(underw.get_player().get_attr(ua_attr_maplevel));
+         Underworld::GameLogic& gameLogic = game->GetGameLogic();
+         gameLogic.ChangeLevel(gameLogic.GetUnderworld().GetPlayer().GetAttribute(Underworld::attrMapLevel));
       }
 
       lock(false);
@@ -192,7 +194,7 @@ void ua_debug_server::shutdown()
 {
    if (debug_lib->is_avail() && thread_debugger != NULL)
    {
-      ua_trace("shutting down debugger...\n");
+      UaTrace("shutting down debugger...\n");
 
       // send quit message
       ua_debug_server_message msg;
@@ -227,7 +229,7 @@ int ua_debug_server::thread_proc(void* ptr)
    if (This->debug_lib->is_avail())
       This->debug_lib->debug_start(This);
 
-   ua_trace("uadebug thread ended\n");
+   UaTrace("uadebug thread ended\n");
 
    // decrease semaphore count
    SDL_SemWait(This->sem_debugger);
@@ -247,7 +249,7 @@ void ua_debug_server::start_code_debugger(ua_debug_code_interface* code_debugger
    lock(true);
    add_message(msg);
 
-   all_code_debugger.insert(std::make_pair<unsigned int, ua_debug_code_interface*>(debugger_id, code_debugger));
+   all_code_debugger.insert(std::make_pair(debugger_id, code_debugger));
 
    lock(false);
 }
@@ -273,7 +275,7 @@ void ua_debug_server::end_code_debugger(ua_debug_code_interface* code_debugger)
       }
    }
 
-   ua_assert(iter != stop); // assert when pointer was not found
+   UaAssert(iter != stop); // assert when pointer was not found
 
    // send "end" message
    ua_debug_server_message msg;
@@ -284,11 +286,12 @@ void ua_debug_server::end_code_debugger(ua_debug_code_interface* code_debugger)
    lock(false);
 }
 
+#if 0
 void ua_debug_server::start_code_debugger(ua_debug_code_interface* code_debugger)
 {
    unsigned int debugger_id = ++last_code_debugger_id;
 
-   ua_trace("debug: starting code debugger, id=%u\n", debugger_id);
+   UaTrace("debug: starting code debugger, id=%u\n", debugger_id);
 
    code_debugger->set_debugger_id(debugger_id);
 
@@ -299,7 +302,7 @@ void ua_debug_server::start_code_debugger(ua_debug_code_interface* code_debugger
 
    lock(true);
 
-   all_code_debugger.insert(std::make_pair<unsigned int, ua_debug_code_interface*>(debugger_id, code_debugger));
+   all_code_debugger.insert(std::make_pair(debugger_id, code_debugger));
 
    add_message(msg);
 
@@ -327,9 +330,9 @@ void ua_debug_server::end_code_debugger(ua_debug_code_interface* code_debugger)
       }
    }
 
-   ua_assert(iter != stop); // assert when pointer was not found
+   UaAssert(iter != stop); // assert when pointer was not found
 
-   ua_trace("debug: ending code debugger, id=%u\n", debugger_id);
+   UaTrace("debug: ending code debugger, id=%u\n", debugger_id);
 
    // remove all "start code debugger" messages from the same code debugger
    unsigned int max = static_cast<unsigned int>(message_queue.size());
@@ -352,6 +355,7 @@ void ua_debug_server::end_code_debugger(ua_debug_code_interface* code_debugger)
    add_message(msg);
    lock(false);
 }
+#endif
 
 void ua_debug_server::send_code_debugger_status_update(unsigned int debugger_id)
 {
@@ -398,7 +402,7 @@ unsigned int ua_debug_server::get_flag(unsigned int flag_id)
       break;
 
    default:
-      ua_assert(false);
+      UaAssert(false);
       break;
    }
    return flag;
@@ -406,9 +410,9 @@ unsigned int ua_debug_server::get_flag(unsigned int flag_id)
 
 unsigned int ua_debug_server::get_game_path(char* buffer, unsigned int bufsize)
 {
-   ua_settings& settings = game->get_settings();
+   Base::Settings& settings = game->get_settings();
 
-   std::string prefix = settings.get_string(ua_setting_game_prefix);
+   std::string prefix = settings.GetString(Base::settingGamePrefix);
    if (prefix.size()==0)
    {
       if (buffer != NULL)
@@ -416,7 +420,7 @@ unsigned int ua_debug_server::get_game_path(char* buffer, unsigned int bufsize)
       return 0;
    }
 
-   std::string game_path = settings.get_string(ua_setting_uadata_path);
+   std::string game_path = settings.GetString(Base::settingUadataPath);
    game_path += prefix;
 
    std::string::size_type strsize = game_path.size();
@@ -427,7 +431,7 @@ unsigned int ua_debug_server::get_game_path(char* buffer, unsigned int bufsize)
    strncpy(buffer, game_path.c_str(), strsize);
    buffer[strsize] = 0;
 
-   return ua_min(game_path.size(), bufsize);
+   return std::min(game_path.size(), bufsize);
 }
 
 void ua_debug_server::load_game(const char* path)
@@ -435,7 +439,7 @@ void ua_debug_server::load_game(const char* path)
    game->done_game();
 
    std::string strpath(path);
-   game->get_settings().set_value(ua_setting_game_prefix, strpath);
+   game->get_settings().SetValue(Base::settingGamePrefix, strpath);
 
    game->init_game();
 }
@@ -490,13 +494,13 @@ double ua_debug_server::get_player_pos_info(unsigned int idx)
    double val = 0.0;
    if (game == NULL) return val;
 
-   ua_player& pl = game->get_underworld().get_player();
+   Underworld::Player& pl = game->GetUnderworld().GetPlayer();
    switch(idx)
    {
-   case 0: val = pl.get_xpos(); break;
-   case 1: val = pl.get_ypos(); break;
-   case 2: val = pl.get_height(); break;
-   case 3: val = pl.get_angle_rot(); break;
+   case 0: val = pl.GetXPos(); break;
+   case 1: val = pl.GetYPos(); break;
+   case 2: val = pl.GetHeight(); break;
+   case 3: val = pl.GetRotateAngle(); break;
    default:
       break;
    }
@@ -507,13 +511,13 @@ void ua_debug_server::set_player_pos_info(unsigned int idx, double val)
 {
    if (game == NULL) return;
 
-   ua_player& pl = game->get_underworld().get_player();
+   Underworld::Player& pl = game->GetUnderworld().GetPlayer();
    switch(idx)
    {
-   case 0: pl.set_pos(val, pl.get_ypos()); break;
-   case 1: pl.set_pos(pl.get_xpos(), val); break;
-   case 2: pl.set_height(val); break;
-   case 3: pl.set_angle_rot(val); break;
+   case 0: pl.SetPos(val, pl.GetYPos()); break;
+   case 1: pl.SetPos(pl.GetXPos(), val); break;
+   case 2: pl.SetHeight(val); break;
+   case 3: pl.SetRotateAngle(val); break;
    default:
       break;
    }
@@ -522,21 +526,21 @@ void ua_debug_server::set_player_pos_info(unsigned int idx, double val)
 unsigned int ua_debug_server::get_player_attr(unsigned int idx)
 {
    if (game == NULL) return 0;
-   return game->get_underworld().get_player().get_attr((ua_player_attributes)idx);
+   return game->GetUnderworld().GetPlayer().GetAttribute((Underworld::EPlayerAttribute)idx);
 }
 
 void ua_debug_server::set_player_attr(unsigned int idx, unsigned int val)
 {
    if (game == NULL) return;
 
-   ua_player& pl = game->get_underworld().get_player();
+   Underworld::Player& pl = game->GetUnderworld().GetPlayer();
 
-   unsigned int oldlevel = pl.get_attr(ua_attr_maplevel);
+   unsigned int oldlevel = pl.GetAttribute(Underworld::attrMapLevel);
 
-   pl.set_attr((ua_player_attributes)idx,val);
+   pl.SetAttribute((Underworld::EPlayerAttribute)idx,val);
 
    // changing level? then schedule new level preparation
-   if (ua_attr_maplevel == (ua_player_attributes)idx && oldlevel != val)
+   if (Underworld::attrMapLevel == (Underworld::EPlayerAttribute)idx && oldlevel != val)
    {
       // note: cannot prepare textures in this thread, since it doesn't own
       //       the OpenGL rendering context.
@@ -544,18 +548,18 @@ void ua_debug_server::set_player_attr(unsigned int idx, unsigned int val)
    }
 }
 
-unsigned int ua_debug_server::get_num_levels()
+unsigned int ua_debug_server::GetNumLevels()
 {
    if (game == NULL) return 0;
-   return game->get_underworld().get_levelmaps_list().get_num_levels();
+   return game->GetUnderworld().GetLevelList().GetNumLevels();
 }
 
 double ua_debug_server::get_tile_height(unsigned int level, double xpos,
    double ypos)
 {
    if (game == NULL) return 0.0;
-   return game->get_underworld().get_levelmaps_list().get_level(level).
-      get_floor_height(xpos,ypos);
+   return game->GetUnderworld().GetLevelList().GetLevel(level).
+      GetTilemap().GetFloorHeight(xpos,ypos);
 }
 
 unsigned int ua_debug_server::get_tile_info_value(unsigned int level,
@@ -563,39 +567,39 @@ unsigned int ua_debug_server::get_tile_info_value(unsigned int level,
 {
    unsigned int val = 0;
 
-   ua_levelmap_tile& tile = game->get_underworld().get_levelmaps_list().
-      get_level(level).get_tile(xpos,ypos);
+   Underworld::TileInfo& tile = game->GetUnderworld().GetLevelList().
+      GetLevel(level).GetTilemap().GetTileInfo(xpos,ypos);
 
    switch(type)
    {
    case ua_tile_info_type:
-      val = tile.type;
+      val = tile.m_type;
       break;
    case ua_tile_info_floor_height:
-      val = tile.floor;
+      val = tile.m_floor;
       break;
    case ua_tile_info_ceiling_height:
-      val = tile.ceiling;
+      val = tile.m_ceiling;
       break;
    case ua_tile_info_slope:
-      val = tile.slope;
+      val = tile.m_slope;
       break;
    case ua_tile_info_tex_wall:
-      val = tile.texture_wall;
+      val = tile.m_textureWall;
       break;
    case ua_tile_info_tex_floor:
-      val = tile.texture_floor;
+      val = tile.m_textureFloor;
       break;
    case ua_tile_info_tex_ceil:
-      val = tile.texture_ceiling;
+      val = tile.m_textureCeiling;
       break;
    case ua_tile_info_objlist_start:
-      val = game->get_underworld().get_levelmaps_list().
-         get_level(level).get_mapobjects().get_tile_list_start(xpos,ypos);
+      val = game->GetUnderworld().GetLevelList().
+         GetLevel(level).GetObjectList().GetListStart(xpos,ypos);
       break;
 
    default:
-      ua_assert(false);
+      UaAssert(false);
       break;
    }
    return val;
@@ -605,40 +609,40 @@ void ua_debug_server::set_tile_info_value(unsigned int level,
    unsigned int xpos, unsigned int ypos, unsigned int type,
    unsigned int val)
 {
-   ua_levelmap_tile& tile = game->get_underworld().get_levelmaps_list().
-      get_level(level).get_tile(xpos,ypos);
+   Underworld::TileInfo& tile = game->GetUnderworld().GetLevelList().
+      GetLevel(level).GetTilemap().GetTileInfo(xpos,ypos);
 
    switch(type)
    {
    case ua_tile_info_type:
-      tile.type = static_cast<ua_levelmap_tiletype>(val);
+      tile.m_type = static_cast<Underworld::TilemapTileType>(val);
       break;
    case ua_tile_info_floor_height:
-      tile.floor = static_cast<Uint16>(val);
+      tile.m_floor = static_cast<Uint16>(val);
       break;
    case ua_tile_info_ceiling_height:
-      tile.ceiling = static_cast<Uint16>(val);
+      tile.m_ceiling = static_cast<Uint16>(val);
       break;
    case ua_tile_info_slope:
-      tile.slope = static_cast<Uint8>(val);
+      tile.m_slope = static_cast<Uint8>(val);
       break;
    case ua_tile_info_tex_wall:
-      tile.texture_wall = static_cast<Uint16>(val);
+      tile.m_textureWall = static_cast<Uint16>(val);
       break;
    case ua_tile_info_tex_floor:
-      tile.texture_floor = static_cast<Uint16>(val);
+      tile.m_textureFloor = static_cast<Uint16>(val);
       break;
    case ua_tile_info_tex_ceil:
-      tile.texture_ceiling = static_cast<Uint16>(val);
+      tile.m_textureCeiling = static_cast<Uint16>(val);
       break;
    case ua_tile_info_objlist_start:
-      ua_assert(false); // TODO implement
-      game->get_underworld().get_levelmaps_list().
-         get_level(level).get_mapobjects();//.get_tile_list_start(xpos,ypos);
+      UaAssert(false); // TODO implement
+      game->GetUnderworld().GetLevelList().
+         GetLevel(level).GetObjectList();//.GetListStart(xpos,ypos);
       break;
 
    default:
-      ua_assert(false);
+      UaAssert(false);
       break;
    }
 }
@@ -648,55 +652,56 @@ unsigned int ua_debug_server::get_objlist_info(unsigned int level,
 {
    unsigned int val = 0;
 
-   ua_object& obj = game->get_underworld().get_levelmaps_list().
-      get_level(level).get_mapobjects().get_object(pos);
+   Underworld::ObjectPtr obj = game->GetUnderworld().GetLevelList().
+      GetLevel(level).GetObjectList().GetObject(pos);
 
-   ua_object_info& objinfo = obj.get_object_info();
-   ua_object_info_ext& extobjinfo = obj.get_ext_object_info();
+   Underworld::ObjectInfo& objinfo = obj->GetObjectInfo();
+   Underworld::ObjectPositionInfo& posInfo = obj->GetPosInfo();
+
    switch(type)
    {
    case ua_objlist_info_item_id:
-      val = objinfo.item_id;
+      val = objinfo.m_itemID;
       break;
    case ua_objlist_info_link:
-      val = objinfo.link;
+      val = objinfo.m_link;
       break;
    case ua_objlist_info_quality:
-      val = objinfo.quality;
+      val = objinfo.m_quality;
       break;
    case ua_objlist_info_owner:
-      val = objinfo.owner;
+      val = objinfo.m_owner;
       break;
    case ua_objlist_info_quantity:
-      val = objinfo.quantity;
+      val = objinfo.m_quantity;
       break;
    case ua_objlist_info_xpos:
-      val = extobjinfo.xpos;
+      val = posInfo.m_xpos;
       break;
    case ua_objlist_info_ypos:
-      val = extobjinfo.ypos;
+      val = posInfo.m_ypos;
       break;
    case ua_objlist_info_zpos:
-      val = extobjinfo.zpos;
+      val = posInfo.m_zpos;
       break;
    case ua_objlist_info_heading:
-      val = extobjinfo.heading;
+      val = posInfo.m_heading;
       break;
    case ua_objlist_info_flags:
-      val = objinfo.flags;
+      val = objinfo.m_flags;
       break;
    case ua_objlist_info_ench:
-      val = objinfo.enchanted;
+      val = objinfo.m_isEnchanted;
       break;
    case ua_objlist_info_is_quant:
-      val = objinfo.is_quantity;
+      val = objinfo.m_isQuantity;
       break;
    case ua_objlist_info_hidden:
-      val = objinfo.is_hidden;
+      val = objinfo.m_isHidden;
       break;
 
    default:
-      ua_assert(false);
+      UaAssert(false);
       break;
    }
    return val;
@@ -707,55 +712,56 @@ void ua_debug_server::set_objlist_info(unsigned int level,
 {
    unsigned int val = 0;
 
-   ua_object& obj = game->get_underworld().get_levelmaps_list().
-      get_level(level).get_mapobjects().get_object(pos);
+   Underworld::ObjectPtr obj = game->GetUnderworld().GetLevelList().
+      GetLevel(level).GetObjectList().GetObject(pos);
 
-   ua_object_info& objinfo = obj.get_object_info();
-   ua_object_info_ext& extobjinfo = obj.get_ext_object_info();
+   Underworld::ObjectInfo& objinfo = obj->GetObjectInfo();
+   Underworld::ObjectPositionInfo& posInfo = obj->GetPosInfo();
+
    switch(type)
    {
    case ua_objlist_info_item_id:
-      objinfo.item_id = value;
+      objinfo.m_itemID = value;
       break;
    case ua_objlist_info_link:
-      objinfo.link = value;
+      objinfo.m_link = value;
       break;
    case ua_objlist_info_quality:
-      objinfo.quality = value;
+      objinfo.m_quality = value;
       break;
    case ua_objlist_info_owner:
-      objinfo.owner = value;
+      objinfo.m_owner = value;
       break;
    case ua_objlist_info_quantity:
-      objinfo.quantity = value;
+      objinfo.m_quantity = value;
       break;
    case ua_objlist_info_xpos:
-      val = extobjinfo.xpos = value;
+      val = posInfo.m_xpos = value;
       break;
    case ua_objlist_info_ypos:
-      val = extobjinfo.ypos = value;
+      val = posInfo.m_ypos = value;
       break;
    case ua_objlist_info_zpos:
-      val = extobjinfo.zpos = value;
+      val = posInfo.m_zpos = value;
       break;
    case ua_objlist_info_heading:
-      val = extobjinfo.heading = value;
+      val = posInfo.m_heading = value;
       break;
    case ua_objlist_info_flags:
-      objinfo.flags = value;
+      objinfo.m_flags = value;
       break;
    case ua_objlist_info_ench:
-      objinfo.enchanted = value != 0;
+      objinfo.m_isEnchanted = value != 0;
       break;
    case ua_objlist_info_is_quant:
-      objinfo.is_quantity = value != 0;
+      objinfo.m_isQuantity = value != 0;
       break;
    case ua_objlist_info_hidden:
-      objinfo.is_hidden = value != 0;
+      objinfo.m_isHidden = value != 0;
       break;
 
    default:
-      ua_assert(false);
+      UaAssert(false);
       break;
    }
 }
@@ -763,7 +769,8 @@ void ua_debug_server::set_objlist_info(unsigned int level,
 bool ua_debug_server::enum_gamestr_block(unsigned int index,
    unsigned int& blocknum)
 {
-   std::set<Uint16>& blockset = game->get_gamestrings().get_stringblock_set();
+   const GameStrings& gameStrings = game->GetGameStrings();
+   const std::set<Uint16>& blockset = gameStrings.GetStringBlockSet();
 
    if (index > blockset.size())
       return false;
@@ -781,8 +788,7 @@ bool ua_debug_server::enum_gamestr_block(unsigned int index,
 
 unsigned int ua_debug_server::get_gamestr_blocksize(unsigned int block)
 {
-   std::vector<std::string> strblock;
-   game->get_gamestrings().get_stringblock(block, strblock);
+   const std::vector<std::string>& strblock = game->GetGameStrings().GetStringBlock(block);
 
    return strblock.size();
 }
@@ -790,7 +796,7 @@ unsigned int ua_debug_server::get_gamestr_blocksize(unsigned int block)
 unsigned int ua_debug_server::get_game_string(unsigned int block,
    unsigned int nr, char* buffer, unsigned int maxsize)
 {
-   std::string str = game->get_gamestrings().get_string(block, nr);
+   std::string str = game->GetGameStrings().GetString(block, nr);
    std::string::size_type strsize = str.size();
 
    if (buffer == NULL || maxsize == 0 || maxsize < strsize+1)
