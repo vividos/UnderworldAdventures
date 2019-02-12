@@ -297,7 +297,7 @@ void SavegamesManager::GetSavegameInfo(unsigned int index, SavegameInfo& info)
 }
 
 /// \param index index in savegame list
-/// \param bStoreImage when true, the savegame preview image is stored
+/// \param storeImage when true, the savegame preview image is stored
 ///        internally, so when user decides to save again the same savegame
 ///        state, we already have a preview image. Set to false when just
 ///        doing savegame information querying.
@@ -397,4 +397,10 @@ std::string SavegamesManager::GetQuicksaveFilename() const
       "/quicksave_" + m_gamePrefix + ".uas";
 
    return quicksaveName;
+}
+
+Savegame SavegamesManager::GetSavegameFromFile(const char* filename)
+{
+   Savegame sg(filename);
+   return sg;
 }

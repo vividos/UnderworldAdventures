@@ -219,11 +219,14 @@ namespace Base
          m_imageSavegame = vecImageRGBA;
       }
 
-   protected:
+      /// returns a savegame directly from given file
+      Savegame GetSavegameFromFile(const char* filename);
+
+   private:
       /// returns filename of quicksave savegame
       std::string GetQuicksaveFilename() const;
 
-   protected:
+   private:
       /// savegame folder name
       std::string m_savegameFolder;
 
