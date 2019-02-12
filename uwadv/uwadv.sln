@@ -25,7 +25,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "conv", "source\conv\conv.vc
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{8AB01551-9ABA-4108-B761-BA600FFF704A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "strpak", "source\tools\strpak.vcxproj", "{55D7C852-393E-4F7C-B8A5-072921A141C4}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "strpak", "source\tools\strpak\strpak.vcxproj", "{55D7C852-393E-4F7C-B8A5-072921A141C4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "thirdparty", "thirdparty", "{973B57CA-C119-411A-8994-16CD9FB18BBB}"
 EndProject

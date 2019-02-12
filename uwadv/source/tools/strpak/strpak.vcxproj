@@ -30,11 +30,11 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\uwadv-release.props" />
+    <Import Project="..\..\uwadv-release.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\uwadv-debug.props" />
+    <Import Project="..\..\uwadv-debug.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -80,10 +80,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\import\import.vcxproj">
+    <ProjectReference Include="..\..\import\import.vcxproj">
       <Project>{a974fda8-7d50-4b04-892a-edb00b68f7d6}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\underw\underw.vcxproj">
+    <ProjectReference Include="..\..\underw\underw.vcxproj">
       <Project>{4cc50617-2229-460e-9a80-3c517a2d9090}</Project>
     </ProjectReference>
   </ItemGroup>
