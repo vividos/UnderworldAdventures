@@ -109,22 +109,6 @@
     <ProjectReference Include="..\underw\underw.vcxproj">
       <Project>{4cc50617-2229-460e-9a80-3c517a2d9090}</Project>
     </ProjectReference>
-    <ProjectReference Include="audio.vcxproj">
-      <Project>{38a9e85a-3f97-4589-b801-dd7097fc14da}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-    <ProjectReference Include="base.vcxproj">
-      <Project>{e1210703-9adb-4ed7-ae0c-b7e39a15e01f}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-    <ProjectReference Include="import.vcxproj">
-      <Project>{a974fda8-7d50-4b04-892a-edb00b68f7d6}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-    <ProjectReference Include="underw.vcxproj">
-      <Project>{4cc50617-2229-460e-9a80-3c517a2d9090}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

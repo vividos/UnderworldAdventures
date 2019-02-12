@@ -150,9 +150,8 @@
     <ClInclude Include="vocfile.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="base.vcxproj">
+    <ProjectReference Include="..\base\base.vcxproj">
       <Project>{e1210703-9adb-4ed7-ae0c-b7e39a15e01f}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

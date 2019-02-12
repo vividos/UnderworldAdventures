@@ -90,12 +90,11 @@
     <ClInclude Include="playerimporter.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\base\base.vcxproj">
+      <Project>{e1210703-9adb-4ed7-ae0c-b7e39a15e01f}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\underw\underw.vcxproj">
       <Project>{4cc50617-2229-460e-9a80-3c517a2d9090}</Project>
-    </ProjectReference>
-    <ProjectReference Include="base.vcxproj">
-      <Project>{e1210703-9adb-4ed7-ae0c-b7e39a15e01f}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
