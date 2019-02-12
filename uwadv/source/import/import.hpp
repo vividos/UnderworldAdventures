@@ -67,19 +67,8 @@ namespace Import
    /// Loads imported functions list
    void LoadConvCodeImportedFunctions(Conv::CodeVM& vm, Base::File& file);
 
-#if 0
-   /// imports common to uw1 and uw2
-   class ua_uw_import
-   {
-   public:
-      // underworld objects loading
-
-      /// loads underworld objects from folder
-      void load_underworld(Underworld& underw, Base::Settings& settings,
-         const char* folder, bool initial);
-   };
-
-#endif
+   /// Loads a whole underworld initial data
+   void LoadUnderworld(Base::Settings& settings, Base::ResourceManager& resourceManager, Underworld::Underworld& underworld);
 
    // inline functions
 
