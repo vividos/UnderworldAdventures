@@ -121,7 +121,7 @@ namespace Conv
          OperatorData()
             :op_opcode(0),
             op_arg(0),
-            needed_expr(0),
+            numNeededExpressions(0),
             returns_expr(false),
             returned_type(dataTypeVoid),
             sto_swap_args(false),
@@ -133,7 +133,7 @@ namespace Conv
          Uint16 op_opcode, op_arg;
 
          /// number of expression this operator consumes
-         Uint16 needed_expr;
+         Uint16 numNeededExpressions;
 
          /// indicates if operator returns an expression
          bool returns_expr;
@@ -153,7 +153,7 @@ namespace Conv
       {
          /// ctor
          ExpressionData()
-            :is_address(false),
+            :isAddress(false),
             is_pushi_imm(false),
             pushi_imm_value(0),
             prec_level(0xff)
@@ -164,7 +164,7 @@ namespace Conv
          std::string expression;
 
          /// indicates if expression is an address to a memory location or a value
-         bool is_address;
+         bool isAddress;
 
          /// indicates if expression comes from an PUSHI opcode
          bool is_pushi_imm;
@@ -270,7 +270,7 @@ namespace Conv
    private:
       /// initializes graph with opcodes
       void InitGraph(const std::vector<Uint16>& code,
-         Uint16 codestart, Uint16 codeend);
+         Uint16 codeStart, Uint16 codeEnd);
 
       /// collect all call, branch and jump references
       void CollectXrefs();
@@ -278,74 +278,144 @@ namespace Conv
       /// finds function starts and ends
       void FindFunctions();
 
-      /// fixes call and jump targets
-      void fix_call_jump_targets();
+      /// finds function entry point code
+      bool FindFunctionEntryPoint(graph_iterator& iter, graph_iterator stop, FuncInfo& funcInfo);
 
-      /// analyzes function for expressions and operators
-      void AnalyzeFunction(FuncInfo& info);
+      /// finds function exit code
+      bool FindFunctionExitPoint(graph_iterator& iter, graph_iterator stop, FuncInfo& funcInfo);
 
-      /// adds array info to function
-      void add_array_info(FuncInfo& info, Uint16 local_idx,
-         Uint16 offset);
+      /// updates CALL opcode jump targets
+      void UpdateCallJumpTargets();
 
-      /// combines operators with needed expressions
-      void combine_operators(const graph_iterator& start,
-         const graph_iterator& stop);
+      /// analyze all functions in the analysis queue
+      void ProcessFunctionQueue();
 
-      /// checks if babl_menu or babl_fmenu follows STO operation
-      void CheckBablMenu(graph_iterator& start, const graph_iterator& stop,
-         graph_iterator& lvalue, graph_iterator& rvalue);
+      /// analyzes function
+      void AnalyzeFunction(FuncInfo& funcInfo);
 
-      /// find out control structs
-      void find_control_structs(const graph_iterator& start,
-         const graph_iterator& stop);
+      // operator / expression analysis functions
 
-      /// adds if and if-else statements
-      void process_if_else(bool with_else, const graph_iterator& expr_iter,
-         graph_iterator else_iter, const graph_iterator& endif_iter);
+      /// adds operator for given opcode item
+      CodeGraphItem& AddOperator(graph_iterator& iter,
+         Uint16 numNeededExpressions, bool returnsExpression, EDataType returnedType);
 
-      /// adds switch-case statements
-      void process_switch(graph_iterator expr_iter, graph_iterator jmp_iter);
+      /// adds statement for given opcode item
+      CodeGraphItem& AddStatement(graph_iterator iter, std::string text, bool setProcessed = true);
 
-      /// determines if the expressions matches structure for a switch statement
-      bool is_switch_statement(graph_iterator expr_iter, graph_iterator op_iter);
+      /// adds a generic expression
+      CodeGraphItem& AddExpression(graph_iterator& iter, std::string text, bool isAddress);
 
-      /// adds while statement
-      void process_while(const graph_iterator& expr_iter,
-         const graph_iterator& while_end_iter);
+      /// adds expression for local array access
+      void AddLocalArrayExpression(graph_iterator iter, FuncInfo& funcInfo);
 
-      /// does function post processing
-      void post_process_function(FuncInfo& info);
+      /// adds array access info for given function
+      void AddArrayInfo(FuncInfo& info, Uint16 localIndex, Uint16 offset);
 
-      /// adds goto jumps
-      void add_goto_jumps(const graph_iterator& start,
-         const graph_iterator& stop);
+      /// adds call operator
+      void AddCallOperator(graph_iterator& iter, graph_iterator stop,
+         const FuncInfo& funcInfo, bool bIntrinsic);
 
+      /// adds assignment operator
+      void AddAssignmentOperator(graph_iterator iter);
+
+      /// adds expression for address-of local var
+      void AddAddressOfLocalVarExpression(graph_iterator& iter, graph_iterator stop, FuncInfo& funcInfo);
+
+      /// adds immediate expression (rvalue)
+      void AddImmediateExpression(graph_iterator& iter, graph_iterator stop);
+
+      /// combines operators with expressions
+      void CombineOperators(FuncInfo& funcInfo);
+
+      /// collects all expressions for an operator
+      void CollectExpressions(graph_iterator start, graph_iterator end,
+         unsigned int numNeededExpressions, std::vector<graph_iterator>& expressions, bool& isStatementBetween);
+
+      /// combines operator with found expressions
+      void CombineOperatorAndExpressions(graph_iterator operatorIter, graph_iterator stop,
+         graph_iterator insertIter, std::vector<graph_iterator>& expressions);
+
+      /// combines call operator with its parameters
+      void CombineCallOperator(graph_iterator operatorIter,
+         graph_iterator insertIter, std::vector<graph_iterator>& expressions);
+
+      /// combines return operator with expression
+      void CombineReturnExpression(graph_iterator insertIter, std::vector<graph_iterator>& expressions);
+
+      /// combines an lvalue expression and dereferences it, creating a new expression
+      void CombineDereferenceExpression(graph_iterator insertIter, std::vector<graph_iterator>& expressions);
+
+      /// combines array and index expressions
+      void CombineArrayExpression(graph_iterator insertIter, std::vector<graph_iterator>& expressions);
+
+      /// combines arithmetical or logical operator expressions
+      void AddBinaryExpression(graph_iterator operatorIter,
+         graph_iterator insertIter, std::vector<graph_iterator>& expressions);
+
+      /// combines unary arithmetical or logical operator with expression
+      void AddUnaryExpression(graph_iterator operatorIter,
+         graph_iterator insertIter, std::vector<graph_iterator>& expressions, std::string prefix);
+
+      /// combines say operator with expression
+      void CombineSayOp(graph_iterator insertIter, std::vector<graph_iterator>& expressions);
+
+      /// combines assignment expression (lvalue and rvalue)
+      void CombineAssignmentExpressions(graph_iterator operatorIter, graph_iterator stop,
+         graph_iterator insertIter, std::vector<graph_iterator>& expressions);
+
+      /// checks if an assignment expression may contain string assignment for babl_menu and babl_fmenu
+      void CheckBablMenu(graph_iterator& start,
+         const graph_iterator& stop, graph_iterator& lvalue, graph_iterator& rvalue);
+
+      // statement analysis functions
+
+      /// finds switch-case structures
+      void FindSwitchCase(FuncInfo& funcInfo);
+
+      /// adds next switch case statements
+      bool FindAndAddNextSwitchCase(graph_iterator& expressionIter, graph_iterator stop, Uint16& switchEnd, bool& switchAdded);
+
+      /// finds while statements
+      void FindWhile(FuncInfo& funcInfo);
+
+      /// finds if and if-else statements
+      void FindIfElse(FuncInfo& funcInfo);
+
+      /// adds goto and labels for remaining jumps
+      void AddGotoJumps(FuncInfo& funcInfo);
+
+      // post processing functions
+
+      /// post processes function
+      void PostProcessFunction(FuncInfo& funcInfo);
+
+      /// marks functions unused, with only callers that are unused themselves
+      void MarkFunctionsUnused();
 
       // helper functions
 
-      void format_graph_item(std::string& item_text,
-         const CodeGraphItem& item) const;
-
-      /// formats text for an opcode graph item
-      void format_opcode(std::string& opcode_text,
-         const CodeGraphItem& item) const;
-
-      /// finds pos in graph of first item with target == item.pos
+      /// finds first iterator for code position, or end() iterator
       graph_iterator FindPos(Uint16 target);
 
-   /// checks if next following opcodes match a given pattern
-      bool MatchOpcodePattern(const graph_iterator iter, Uint16* pattern,
-         unsigned int length) const;
+      /// checks if a given iter points to an opcode item and if it contains given opcode
+      bool IsOpcode(const_graph_iterator iter, Uint16 opcode) const;
 
-      /// returns true when item at iterator is given (unprocessed) opcode
-      bool is_opcode(graph_iterator iter, Uint16 opcode) const;
+      /// finds opcode pattern in given range
+      graph_iterator FindOpcodePattern(graph_iterator iter, graph_iterator stop,
+         const Uint16* pattern, unsigned int length);
 
-      /// converts expression with immediate value from PUSHI to global variable
+      /// checks if next following opcodes match a given pattern
+      bool MatchOpcodePattern(const_graph_iterator iter, const_graph_iterator stop,
+         const Uint16* pattern, unsigned int length) const;
+
+      /// sets following N opcodes to "processed"
+      void SetOpcodesProcessed(graph_iterator iter, graph_iterator stop, unsigned int numOpcodes);
+
+      /// returns variable name of a global or imported variable
+      std::string GetMemoryVarName(Uint16 memoryIndex) const;
+
+      /// conver immediate value to global
       void PushiImmediateToGlobal(graph_iterator iter);
-
-      /// returns memory variable name from memory index
-      std::string GetMemoryVarName(Uint16 mem_idx);
 
       /// converts data type to string
       static const char* DataTypeToString(EDataType type);
@@ -358,13 +428,13 @@ namespace Conv
       FunctionMap m_functionMap;
 
       /// queue of functions to analyze
-      std::deque<FuncInfo> m_analysis_queue;
+      std::deque<std::string> m_analysisQueue;
 
       /// set with processed functions
-      std::set<Uint16> m_processed_funcs;
+      std::set<Uint16> m_processedFunctions;
 
       /// number of globals on stack before imported vars
-      Uint16 nglobals;
+      Uint16 m_numGlobals;
 
       /// all conversation strings
       std::vector<std::string> m_strings;

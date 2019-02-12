@@ -26,94 +26,7 @@
 #include <iomanip>
 #include <algorithm>
 
-using Conv::CodeGraph;
-using Conv::CodeGraphItem;
-
-CodeGraph::CodeGraph(std::vector<Uint16> code,
-   Uint16 codestart, Uint16 codeend,
-   std::vector<std::string>& strings,
-   std::map<Uint16, Conv::ImportedItem>& myimported_funcs,
-   std::map<Uint16, Conv::ImportedItem>& myimported_vars,
-   Uint16 myglob_reserved)
-{
-   m_strings.clear();
-   m_strings = strings;
-
-   m_mapImportedFunctions.clear();
-   m_mapImportedFunctions = myimported_funcs;
-
-   m_mapImportedVariables.clear();
-   m_mapImportedVariables = myimported_vars;
-
-   m_processed_funcs.clear();
-
-   nglobals = myglob_reserved;
-
-   // convert code segment to graph
-   for (Uint16 i = codestart; i < codeend; i++)
-   {
-      // fill item struct
-      CodeGraphItem item;
-      item.m_pos = i;
-      item.opcode_data.opcode = code[i];
-
-      if (item.opcode_data.opcode <= op_last &&
-         g_convInstructions[item.opcode_data.opcode].args != 0)
-         item.opcode_data.arg = code[++i];
-      else
-         item.opcode_data.arg = 0;
-
-      // add it to graph
-      m_graph.push_back(item);
-   }
-}
-
-void CodeGraph::Disassemble()
-{
-   CollectXrefs();
-}
-
-void CodeGraph::Decompile()
-{
-   CollectXrefs();
-   FindFunctions();
-   fix_call_jump_targets();
-
-   // initially add start() as function
-   {
-      FuncInfo start_func;
-      start_func.return_type = dataTypeVoid;
-      start_func.start = 0;
-
-      m_analysis_queue.push_back(start_func);
-   }
-
-   // analyze all functions in the analysis queue
-   // the queue may grow while analyzing a function
-   while (m_analysis_queue.size() > 0)
-   {
-      FuncInfo info = m_analysis_queue.front();
-      m_analysis_queue.pop_front();
-
-      graph_iterator iter = FindPos(info.start);
-
-      UaAssert(0 != iter->m_labelName.size());
-
-      // check if function was already analyzed
-      if (m_functionMap.find(iter->m_labelName) == m_functionMap.end())
-      {
-         //UaTrace("analyzing function \"%s\" at %04x\n", iter->m_labelName.c_str(), info.start);
-
-         AnalyzeFunction(info);
-
-         post_process_function(info);
-
-         // add to known functions
-         //m_functionMap.insert(std::make_pair<std::string, Conv::FuncInfo>(iter->m_labelName, info));
-         m_functionMap[iter->m_labelName] = info;
-      }
-   }
-}
+using namespace Conv;
 
 std::string CodeGraphItem::Format() const
 {
@@ -144,7 +57,7 @@ std::string CodeGraphItem::Format() const
          (m_isProcessed ? "   // " : "") <<
          "operator " <<
          g_convInstructions[operator_data.op_opcode].mnemonic <<
-         ", needs " << operator_data.needed_expr << " expressions, yields " <<
+         ", needs " << operator_data.numNeededExpressions << " expressions, yields " <<
          (operator_data.returns_expr ? "an" : "no") << " expression;" <<
          (operator_data.sto_swap_args ? " swaps args;" : "") <<
          " level=" << operator_data.prec_level;
@@ -160,7 +73,7 @@ std::string CodeGraphItem::Format() const
          (m_isProcessed ? "   // " : "") <<
          "expression: " <<
          expression_data.expression <<
-         (expression_data.is_address ? " (address-of)" : " (value-of)") <<
+         (expression_data.isAddress ? " (address-of)" : " (value-of)") <<
          "; level=" << expression_data.prec_level;
       item_text = buffer.str();
    }
@@ -226,33 +139,93 @@ std::string CodeGraphItem::FormatOpcode() const
    return buffer.str();
 }
 
+CodeGraph::CodeGraph(std::vector<Uint16> code,
+   Uint16 codeStart, Uint16 codeEnd,
+   std::vector<std::string>& strings,
+   std::map<Uint16, Conv::ImportedItem>& mapImportedFunctions,
+   std::map<Uint16, Conv::ImportedItem>& mapImportedVariables,
+   Uint16 reservedGlobals)
+   :m_strings(strings),
+   m_mapImportedFunctions(mapImportedFunctions),
+   m_mapImportedVariables(mapImportedVariables),
+   m_numGlobals(reservedGlobals)
+{
+   InitGraph(code, codeStart, codeEnd);
+}
+
+void CodeGraph::Disassemble()
+{
+   CollectXrefs();
+}
+
+void CodeGraph::Decompile()
+{
+   CollectXrefs();
+   FindFunctions();
+   UpdateCallJumpTargets();
+
+   // initially add main() to analysis queue
+   m_analysisQueue.push_back("main");
+
+   ProcessFunctionQueue();
+
+   MarkFunctionsUnused();
+}
+
+void CodeGraph::InitGraph(const std::vector<Uint16>& code,
+   Uint16 codeStart, Uint16 codeEnd)
+{
+   // convert code segment to graph
+   for (Uint16 i = codeStart; i < codeEnd; i++)
+   {
+      // fill item struct
+      CodeGraphItem item;
+      item.m_pos = i;
+      item.opcode_data.opcode = code[i];
+
+      if (item.opcode_data.opcode <= op_last &&
+         g_convInstructions[item.opcode_data.opcode].args != 0)
+         item.opcode_data.arg = code[++i];
+      else
+         item.opcode_data.arg = 0;
+
+      // add it to graph
+      m_graph.push_back(item);
+   }
+}
+
 void CodeGraph::CollectXrefs()
 {
-   UaAssert(m_graph.size() > 0);
+   UaAssert(!m_graph.empty());
 
    // start function
-   m_graph.front().m_labelName = "start";
-   m_graph.front().m_xrefCount = 1;
+   CodeGraphItem& startItem = m_graph.front();
+   startItem.m_labelName = "start";
+   startItem.m_xrefCount = 1;
 
-   graph_iterator iter, stop;
-   iter = m_graph.begin();
-   stop = m_graph.end();
+   graph_iterator iter = m_graph.begin(), stop = m_graph.end();
 
-   for (; iter != stop; iter++)
+   for (; iter != stop; ++iter)
    {
       CodeGraphItem& item = *iter;
       if (item.m_type != typeOpcode)
          continue;
+
       Uint16 opcode = item.opcode_data.opcode;
 
-      if (opcode == op_JMP || opcode == op_BEQ || opcode == op_BNE ||
-         opcode == op_BRA || opcode == op_CALL)
+      if (opcode == op_JMP ||
+         opcode == op_BEQ ||
+         opcode == op_BNE ||
+         opcode == op_BRA ||
+         opcode == op_CALL)
       {
          // calculate jump target
          Uint16 target = item.opcode_data.arg;
 
          // adjust for relative jumps
-         if (opcode == op_BEQ || opcode == op_BNE || opcode == op_BRA)
+         if (opcode == op_BEQ ||
+            opcode == op_BNE ||
+            opcode == op_BRA)
             target = static_cast<Uint16>((static_cast<Uint32>(target) + static_cast<Uint32>(item.m_pos + 1)) & 0xFFFF);
 
          // find target position
@@ -277,132 +250,173 @@ void CodeGraph::CollectXrefs()
          // increase xref count
          target_item.m_xrefCount++;
       }
+
+      if (opcode == op_CALLI)
+      {
+         // for intrinsic calls, set target name
+         Uint16 ifunc = item.opcode_data.arg;
+         UaAssert(m_mapImportedFunctions.find(ifunc) != m_mapImportedFunctions.end());
+
+         item.opcode_data.jump_target = m_mapImportedFunctions.find(ifunc)->second.name;
+      }
    }
 }
 
-/*! Searches for function entry and exit code and inserts additional
-    highlevel icodes.
-
-   function entry code:
-   PUSHBP
-   SPTOBP
-   PUSHI #n   // n: locals size
-   ADDSP
-
-   and function exit code:
-   BPTOSP
-   POPBP
-   RET
-*/
+/// Searches for function entry and exit code and inserts additional graph items.
+///
+/// function entry code:
+/// PUSHBP
+/// SPTOBP
+/// PUSHI #n   // n: locals size
+/// ADDSP
+///
+/// and function exit code:
+/// BPTOSP
+/// POPBP
+/// RET
 void CodeGraph::FindFunctions()
 {
-   graph_iterator iter, stop;
-   iter = m_graph.begin();
-   stop = m_graph.end();
+   graph_iterator iter = m_graph.begin(), stop = m_graph.end();
 
-   // go through code and search for functions
-   for (; iter != stop; iter++)
+   while (iter != stop)
    {
-      // check for function entry code
-      Uint16 pattern_func_start[4] =
-      { op_PUSHBP, op_SPTOBP, op_PUSHI, op_ADDSP };
+      FuncInfo funcInfo;
 
-      if (MatchOpcodePattern(iter, pattern_func_start, 4))
-      {
-         // found entry code
+      if (!FindFunctionEntryPoint(iter, stop, funcInfo))
+         break;
 
-         // test if function started with START opcode
-         bool func_start = false;
-         if (iter != m_graph.begin())
-         {
-            graph_iterator iter_start = iter;
-            iter_start--;
+      if (!FindFunctionExitPoint(iter, stop, funcInfo))
+         break;
 
-            func_start = iter_start->m_type == typeOpcode &&
-               iter_start->opcode_data.opcode == op_START;
-
-            if (func_start)
-               --iter;
-         }
-
-         // set up new function start item
-         CodeGraphItem& item = *iter;
-
-         CodeGraphItem func_item;
-         func_item.m_type = typeFuncStart;
-         func_item.m_pos = item.m_pos;
-         func_item.m_xrefCount = item.m_xrefCount;
-
-         // generate function name from label, if applicable
-         if (item.m_labelName.size() == 0 && item.m_xrefCount == 0)
-         {
-            // unused func
-            std::ostringstream buffer;
-            buffer << "unused_" << std::setfill('0') <<
-               std::setw(4) << std::setbase(16) << item.m_pos;
-            item.m_labelName = buffer.str();
-         }
-         else
-            if (item.m_labelName.find("label_") == 0)
-            {
-               // label to func
-               item.m_labelName.replace(0, 6, "func_");
-            }
-
-         func_item.m_labelName = item.m_labelName;
-         item.m_labelName = "";
-         item.m_xrefCount = 0;
-
-         m_graph.insert(iter, func_item); // insert before iter
-
-         // advance iterator
-
-         // started with START opcode?
-         if (func_start)
-         {
-            iter->m_isProcessed = true; iter++; // jump over START
-         }
-         iter->m_isProcessed = true; iter++; // PUSHBP
-         iter->m_isProcessed = true; iter++; // SPTOBP
-
-         // find out number of local variables
-         //func_item.function_data.locals_size = iter->opcode_data.arg;
-
-         iter->m_isProcessed = true; iter++; // PUSHI
-         iter->m_isProcessed = true;         // ADDSP
-      }
-
-      // check for function exit code
-      Uint16 pattern_func_end[3] = { op_BPTOSP, op_POPBP, op_RET };
-
-      if (MatchOpcodePattern(iter, pattern_func_end, 3))
-      {
-         // set up new function end item
-         CodeGraphItem& item = *iter;
-
-         CodeGraphItem func_item;
-         func_item.m_type = typeFuncEnd;
-         func_item.m_pos = item.m_pos;
-
-         m_graph.insert(iter, func_item);
-
-         iter->m_isProcessed = true; iter++; // BPTOSP
-         iter->m_isProcessed = true; iter++; // POPBP
-         iter->m_isProcessed = true;         // RET
-      }
+      m_functionMap.insert(std::make_pair(funcInfo.name, funcInfo));
    }
 }
 
-void CodeGraph::fix_call_jump_targets()
+bool CodeGraph::FindFunctionEntryPoint(graph_iterator& iter, graph_iterator stop, FuncInfo& funcInfo)
 {
-   graph_iterator iter, stop;
-   iter = m_graph.begin();
-   stop = m_graph.end();
+   // find next function entry code
+   const Uint16 pattern_func_start[4] =
+   { op_PUSHBP, op_SPTOBP, op_PUSHI, op_ADDSP };
+
+   graph_iterator found = FindOpcodePattern(iter, stop, pattern_func_start, 4);
+
+   if (found == stop)
+      return false; // no more functions
+
+   // found entry code
+   iter = found;
+
+   // set up new function start item
+   CodeGraphItem& opcode_item = *iter;
+
+   CodeGraphItem func_item;
+   func_item.m_type = typeFuncStart;
+   func_item.m_pos = opcode_item.m_pos;
+
+   // find out number of local variables
+   graph_iterator iter_pushi = iter;
+   std::advance(iter_pushi, 2);
+   Uint16 numLocals = iter_pushi->opcode_data.arg;
+
+   funcInfo.locals_types.resize(numLocals);
+
+   // generate function name from label, if applicable
+   if (opcode_item.m_pos == 0 || opcode_item.m_pos == 1)
+   {
+      opcode_item.m_labelName = "main";
+      opcode_item.m_xrefCount = 1;
+   }
+   else
+      if (opcode_item.m_labelName.size() == 0 && opcode_item.m_xrefCount == 0)
+      {
+         // unused func
+         std::ostringstream buffer;
+         buffer << "unused_" << std::setfill('0') <<
+            std::setw(4) << std::setbase(16) << opcode_item.m_pos;
+         opcode_item.m_labelName = buffer.str();
+      }
+      else
+         if (opcode_item.m_labelName.find("label_") == 0)
+         {
+            // label to func
+            opcode_item.m_labelName.replace(0, 6, "func_");
+         }
+
+   func_item.m_labelName = opcode_item.m_labelName;
+   opcode_item.m_labelName = "";
+
+   func_item.m_xrefCount = opcode_item.m_xrefCount;
+   opcode_item.m_xrefCount = 0;
+
+   // test if function has START opcode before this one
+   bool func_start = false;
+   if (iter != m_graph.begin())
+   {
+      graph_iterator iter_start = iter;
+      --iter_start;
+
+      func_start = iter_start->m_type == typeOpcode &&
+         iter_start->opcode_data.opcode == op_START;
+
+      if (func_start)
+      {
+         --iter;
+         --func_item.m_pos;
+      }
+   }
+
+   // insert new func item
+   m_graph.insert(iter, func_item); // insert before iter
+
+   // advance iterator
+   SetOpcodesProcessed(iter, stop, func_start ? 5 : 4);
+
+   funcInfo.start = func_item.m_pos;
+   funcInfo.name = func_item.m_labelName;
+
+   return true;
+}
+
+bool CodeGraph::FindFunctionExitPoint(graph_iterator& iter, graph_iterator stop, FuncInfo& funcInfo)
+{
+   const Uint16 pattern_func_end[3] = { op_BPTOSP, op_POPBP, op_RET };
+   graph_iterator found = FindOpcodePattern(iter, stop, pattern_func_end, 3);
+
+   if (found == stop)
+      return false;
+
+   iter = found;
+
+   // set up new function end item
+   CodeGraphItem& end_opcode_item = *iter;
+
+   CodeGraphItem end_item;
+   end_item.m_type = typeFuncEnd;
+   end_item.m_pos = end_opcode_item.m_pos;
+
+   // transer xref count and label
+   end_item.m_xrefCount = end_opcode_item.m_xrefCount;
+   end_opcode_item.m_xrefCount = 0;
+
+   end_item.m_labelName = end_opcode_item.m_labelName;
+
+   m_graph.insert(iter, end_item);
+
+   SetOpcodesProcessed(iter, stop, 3);
+
+   funcInfo.end = end_item.m_pos;
+
+   return true;
+}
+
+void CodeGraph::UpdateCallJumpTargets()
+{
+   graph_iterator iter = m_graph.begin(), stop = m_graph.end();
 
    // go through code and search for functions
-   for (; iter != stop; iter++)
+   for (; iter != stop; ++iter)
    {
-      // as a "service" we correct jump targets for opcodes here
+      // correct jump targets for opcodes here
       if (iter->m_type == typeOpcode && iter->opcode_data.opcode == op_CALL)
       {
          graph_iterator target_iter = FindPos(iter->opcode_data.arg);
@@ -411,488 +425,272 @@ void CodeGraph::fix_call_jump_targets()
    }
 }
 
-void CodeGraph::AnalyzeFunction(Conv::FuncInfo& info)
+void CodeGraph::ProcessFunctionQueue()
 {
-   // search start and end of function
-   graph_iterator iter, start, stop;
-   start = stop = FindPos(info.start);
+   // the queue may grow while analyzing a function
+   while (!m_analysisQueue.empty())
+   {
+      std::string funcName = m_analysisQueue.front();
+      m_analysisQueue.pop_front();
 
-   // search first opcode
-   while (start != m_graph.end() && start->m_type != typeOpcode)
-      start++;
+      if (m_functionMap.find(funcName) == m_functionMap.end())
+      {
+         UaAssert(false);
+         continue; // function not found!
+      }
 
-   stop = start;
+      FuncInfo& funcInfo = m_functionMap[funcName];
 
-   // search function end
-   while (stop != m_graph.end() && stop->m_type != typeFuncEnd)
-      stop++;
+      if (m_processedFunctions.find(funcInfo.start) != m_processedFunctions.end())
+         continue; // already analyzed
 
-   // go through the function and replace with expressions and operations
-   // expressions are incomplete values on the stack
-   // operations are complete control statements that may consume zero or more
-   // expressions
-   for (iter = start; iter != stop; iter++)
+      m_processedFunctions.insert(funcInfo.start);
+
+      //graph_iterator iter = FindPos(funcInfo.start);
+
+      UaTrace("analyzing function \"%s\" at %04x\n",
+         funcName.c_str(), funcInfo.start);
+
+      AnalyzeFunction(funcInfo);
+
+      CombineOperators(funcInfo);
+
+      FindSwitchCase(funcInfo);
+
+      FindWhile(funcInfo);
+
+      FindIfElse(funcInfo);
+
+      AddGotoJumps(funcInfo);
+
+      PostProcessFunction(funcInfo);
+   }
+}
+
+void CodeGraph::AnalyzeFunction(FuncInfo& funcInfo)
+{
+   graph_iterator iter = FindPos(funcInfo.start), stop = FindPos(funcInfo.end);
+
+   if (iter == m_graph.end())
+   {
+      UaAssert(false);
+      // opcode for function vanished?
+      return;
+   }
+
+   // Go through the function and replace with expressions and operations;
+   // Expressions are incomplete values on the stack.
+   // Operations are complete control statements that may consume zero or more
+   // expressions.
+   for (; iter != stop; ++iter)
    {
       // only examine opcodes that weren't processed yet
       if (iter->m_type != typeOpcode || iter->m_isProcessed)
          continue;
 
-      Uint16 pattern_local_array[3] = { op_PUSHI, op_PUSHI_EFF, op_OFFSET };
-      Uint16 pattern_return_stmt[2] = { op_SAVE_REG, op_POP };
+      // first, try some pattern we need to process before looking at single opcodes
+      const Uint16 pattern_local_array[3] = { op_PUSHI, op_PUSHI_EFF, op_OFFSET };
 
-      Conv::CodeGraphItem& item = *iter;
+      if (MatchOpcodePattern(iter, stop, pattern_local_array, 3))
+      {
+         AddLocalArrayExpression(iter, funcInfo);
+
+         SetOpcodesProcessed(iter, stop, 3);
+
+         std::advance(iter, 3 - 1);
+         continue;
+      }
+
+      const Uint16 pattern_return_stmt[2] = { op_SAVE_REG, op_POP };
+
+      if (MatchOpcodePattern(iter, stop, pattern_return_stmt, 2))
+      {
+         AddOperator(iter, 1, false, dataTypeVoid);
+
+         SetOpcodesProcessed(iter, stop, 2);
+
+         // remember return type
+         funcInfo.return_type = dataTypeInt;
+
+         std::advance(iter, 2 - 1);
+         continue;
+      }
+
+      CodeGraphItem& item = *iter;
       Uint16 opcode = item.opcode_data.opcode;
 
-      // check for some simple control structures
-      if (opcode == op_SAY_OP)
+      switch (opcode)
       {
-         // say op
-         item.m_isProcessed = true;
+      case op_SAY_OP:
+         // consumes 1 expression, returns none
+         AddOperator(iter, 1, false, dataTypeVoid);
+         break;
 
-         // consumes 1 expression
-         CodeGraphItem oper_item;
-         oper_item.m_type = typeOperator;
-         oper_item.m_pos = iter->m_pos;
-         oper_item.operator_data.op_opcode = opcode;
-         oper_item.operator_data.needed_expr = 1;
-         oper_item.operator_data.returns_expr = false;
-         oper_item.operator_data.prec_level =
-            g_convInstructions[opcode].op_prec_level;
+      case op_EXIT_OP:
+         AddStatement(iter, "exit;");
+         break;
 
-         // insert just before this opcode
-         m_graph.insert(iter, oper_item);
-      }
-      else if (opcode == op_EXIT_OP)
-      {
-         // exit statement
-         item.m_isProcessed = true;
+         // intrinsic function call
+      case op_CALLI:
+         AddCallOperator(iter, stop, funcInfo, true);
+         break;
 
-         CodeGraphItem oper_item;
-         oper_item.m_type = typeStatement;
-         oper_item.m_pos = iter->m_pos;
-         oper_item.statement_data.statement = "exit;";
-
-         m_graph.insert(iter, oper_item);
-      }
-      else if (opcode == op_CALLI)
-      {
-         // intrinsic call
-         item.m_isProcessed = true;
-         Uint16 intrisic_no = item.opcode_data.arg;
-
-         --iter; // previous PUSHI opcode tells number of arguments
-
-         UaAssert(true == is_opcode(iter, op_PUSHI));
-
-         // set PUSHI opcode to processed
-         iter->m_isProcessed = true;
-
-         CodeGraphItem oper_item;
-         oper_item.m_type = typeOperator;
-         oper_item.m_pos = iter->m_pos;
-
-         // note: this number may be wrong, e.g. for babl_menu
-         //oper_item.control_data.needed_expr = iter->opcode_data.arg;
-
-         // find out number of function args by counting following POP opcodes
-         Uint16 arguments = 0;
-         graph_iterator pop_iter = iter; pop_iter++; pop_iter++;
-         while (pop_iter != stop && is_opcode(pop_iter, op_POP))
-         {
-            pop_iter->m_isProcessed = true;
-            arguments++;
-            pop_iter++;
-         }
-
-         oper_item.operator_data.op_opcode = opcode;
-         oper_item.operator_data.op_arg = intrisic_no;
-         // note: CALLI functions have 2 parameter, but the 1st is the number
-         // of arguments, so subtract 1 from this number again
-         oper_item.operator_data.needed_expr = arguments - 1;
-
-         oper_item.operator_data.returns_expr = false;
-
-         // check if a PUSH_REG follows
-         if (is_opcode(pop_iter, op_PUSH_REG))
-         {
-            pop_iter->m_isProcessed = true;
-            oper_item.operator_data.returns_expr = true;
-         }
-
-         oper_item.operator_data.prec_level =
-            g_convInstructions[opcode].op_prec_level;
-
-         // insert just before this opcode
-         m_graph.insert(iter, oper_item);
-
-         ++iter;
-      }
-      else if (opcode == op_CALL)
-      {
          // local function call
-         Uint16 call_target = item.opcode_data.arg;
-         item.m_isProcessed = true;
+      case op_CALL:
+         AddCallOperator(iter, stop, funcInfo, false);
+         break;
 
-         CodeGraphItem oper_item;
-         oper_item.m_type = typeOperator;
-         oper_item.m_pos = iter->m_pos;
+         // compare/arithmetic/logical operators
+      case op_TSTEQ:
+      case op_TSTGT:
+      case op_TSTGE:
+      case op_TSTLT:
+      case op_TSTLE:
+      case op_TSTNE:
+      case op_OPOR:
+      case op_OPAND:
+      case op_OPADD:
+      case op_OPSUB:
+      case op_OPMUL:
+      case op_OPDIV:
+      case op_OPMOD:
+         // binary operator, returns one int expression
+         AddOperator(iter, 2, true, dataTypeInt);
+         break;
 
-         // find out number of function args by counting following POP opcodes
-         Uint16 arguments = 0;
-         graph_iterator pop_iter = iter; pop_iter++;
-         while (pop_iter != stop && is_opcode(pop_iter, op_POP))
-         {
-            pop_iter->m_isProcessed = true;
-            arguments++;
-            pop_iter++;
-         }
+      case op_OPNEG: // unary negate
+      case op_OPNOT: // logical not
+         AddOperator(iter, 1, true, dataTypeInt);
+         break;
 
-         oper_item.operator_data.op_opcode = opcode;
-         oper_item.operator_data.op_arg = call_target;
-         oper_item.operator_data.needed_expr = arguments;
-
-         oper_item.operator_data.returns_expr = false;
-
-         // check if a PUSH_REG follows
-         if (is_opcode(pop_iter, op_PUSH_REG))
-         {
-            pop_iter->m_isProcessed = true;
-            oper_item.operator_data.returns_expr = true;
-         }
-
-         oper_item.operator_data.prec_level =
-            g_convInstructions[opcode].op_prec_level;
-
-         // insert just before this opcode
-         m_graph.insert(iter, oper_item);
-
-         // function call
-         FuncInfo new_info;
-         new_info.start = item.opcode_data.arg;
-         new_info.return_type = dataTypeVoid; // type is void until known better
-         // note: info.param_types is unknown for now
-
-         // is recursive call?
-         if (new_info.start == info.start)
-            UaTrace("discovered recursive function call at %04x\n", item.m_pos);
-         else
-         {
-            // put in analysis queue, when not already processed
-            if (m_processed_funcs.find(new_info.start) == m_processed_funcs.end())
-            {
-               m_processed_funcs.insert(new_info.start);
-               m_analysis_queue.push_back(new_info);
-            }
-         }
-      }
-      // compare/arithmetic/logical operators
-      else if (opcode == op_TSTEQ || opcode == op_TSTGT || opcode == op_TSTGE ||
-         opcode == op_TSTLT || opcode == op_TSTLE || opcode == op_TSTNE ||
-         opcode == op_OPOR || opcode == op_OPAND || opcode == op_OPADD ||
-         opcode == op_OPSUB || opcode == op_OPMUL || opcode == op_OPDIV ||
-         opcode == op_OPMOD)
-      {
-         // binary operator
-         item.m_isProcessed = true;
-
-         CodeGraphItem oper_item;
-         oper_item.m_type = typeOperator;
-         oper_item.m_pos = iter->m_pos;
-         oper_item.operator_data.op_opcode = opcode;
-         oper_item.operator_data.needed_expr = 2;
-         oper_item.operator_data.returns_expr = true;
-         oper_item.operator_data.returned_type = dataTypeInt;
-         oper_item.operator_data.prec_level =
-            g_convInstructions[opcode].op_prec_level;
-
-         m_graph.insert(iter, oper_item);
-      }
-      // unary negate
-      else if (opcode == op_OPNEG)
-      {
-         // unary operator
-         item.m_isProcessed = true;
-
-         CodeGraphItem oper_item;
-         oper_item.m_type = typeOperator;
-         oper_item.m_pos = iter->m_pos;
-         oper_item.operator_data.op_opcode = opcode;
-         oper_item.operator_data.needed_expr = 1;
-         oper_item.operator_data.returns_expr = true;
-         oper_item.operator_data.returned_type = dataTypeInt;
-         oper_item.operator_data.prec_level =
-            g_convInstructions[opcode].op_prec_level;
-
-         m_graph.insert(iter, oper_item);
-      }
-      // logical not
-      else if (opcode == op_OPNOT)
-      {
-         // unary operator
-         item.m_isProcessed = true;
-
-         CodeGraphItem oper_item;
-         oper_item.m_type = typeOperator;
-         oper_item.m_pos = iter->m_pos;
-         oper_item.operator_data.op_opcode = opcode;
-         oper_item.operator_data.needed_expr = 1;
-         oper_item.operator_data.returns_expr = true;
-         oper_item.operator_data.returned_type = dataTypeInt;
-         oper_item.operator_data.prec_level =
-            g_convInstructions[opcode].op_prec_level;
-
-         m_graph.insert(iter, oper_item);
-      }
-      else
          // assignment operator
-         if (opcode == op_STO)
-         {
-            item.m_isProcessed = true;
+      case op_STO:
+         AddAssignmentOperator(iter);
+         break;
 
-            CodeGraphItem oper_item;
-            oper_item.m_type = typeOperator;
-            oper_item.m_pos = iter->m_pos;
-            oper_item.operator_data.op_opcode = opcode;
-            oper_item.operator_data.needed_expr = 2;
-            oper_item.operator_data.returns_expr = false;
-            oper_item.operator_data.returned_type = dataTypeVoid;
-            oper_item.operator_data.prec_level =
-               g_convInstructions[opcode].op_prec_level;
+         // address-of local var
+      case op_PUSHI_EFF: // note: must be checked after pattern_local_array
+         AddAddressOfLocalVarExpression(iter, stop, funcInfo);
+         break;
 
-            // check if a SWAP precedes the STO opcode
-            graph_iterator swap_iter = iter;
-            UaAssert(iter != m_graph.begin());
-            swap_iter--;
-
-            if (is_opcode(swap_iter, op_SWAP))
-            {
-               oper_item.operator_data.sto_swap_args = true;
-
-               swap_iter->m_isProcessed = true;
-            }
-
-            m_graph.insert(iter, oper_item);
-         }
-      // local array
-         else if (MatchOpcodePattern(iter, pattern_local_array,
-            SDL_TABLESIZE(pattern_local_array)))
-         {
-            // array offset
-            graph_iterator arr_iter = iter;
-            Uint16 offset = arr_iter->opcode_data.arg;
-            arr_iter->m_isProcessed = true;
-
-            // TODO arrays with offset == 0 really allowed?
-            UaAssert(offset <= 0x7fff && offset >= 0);
-            arr_iter++;
-
-            // local var index
-            Uint16 local_idx = arr_iter->opcode_data.arg;
-            arr_iter->m_isProcessed = true;
-            arr_iter++;
-
-            // offset
-            arr_iter->m_isProcessed = true;
-
-            // set up expression item
-            CodeGraphItem local_array_item;
-            local_array_item.m_type = typeExpression;
-            local_array_item.m_pos = iter->m_pos;
-            local_array_item.expression_data.is_address = true;
-
-            std::ostringstream buffer;
-            buffer << "local_" << local_idx <<
-               "[" << offset << "]";
-
-            local_array_item.expression_data.expression = buffer.str();
-
-            // add to info.array_info
-            add_array_info(info, local_idx, offset);
-
-            m_graph.insert(iter, local_array_item);
-            iter++; iter++;
-         }
-      // address-of local var
-         else if (opcode == op_PUSHI_EFF)
-         {
-            // local var index
-            Uint16 local_idx = iter->opcode_data.arg;
-            iter->m_isProcessed = true;
-
-            // set up expression item
-            CodeGraphItem local_var_item;
-            local_var_item.m_type = typeExpression;
-            local_var_item.m_pos = iter->m_pos;
-            local_var_item.expression_data.is_address = true;
-
-            // check if a FETCHM follows; then it's not the address of the
-            // local var but the value
-            graph_iterator fetchm_iter = iter; fetchm_iter++;
-            UaAssert(fetchm_iter != m_graph.end());
-            if (is_opcode(fetchm_iter, op_FETCHM))
-            {
-               fetchm_iter->m_isProcessed = true;
-               local_var_item.expression_data.is_address = false;
-            }
-
-            std::ostringstream buffer;
-            if (local_idx > 0x7fff)
-            {
-               unsigned int param_num = (-(Sint16)local_idx) - 1;
-
-               // param value
-               buffer << "param" << param_num;
-
-               // this expression is an address, since param values are always
-               // passed by reference
-               local_var_item.expression_data.is_address = true;
-
-               // set param info
-               if (param_num > info.param_types.size())
-                  info.param_types.resize(param_num, dataTypeInt);
-            }
-            else
-            {
-               buffer << "local_" << local_idx;
-
-               // add local variable info
-               if (local_idx >= info.locals_types.size())
-                  info.locals_types.resize(local_idx + 1, dataTypeUnknown);
-
-               UaAssert(local_idx < info.locals_types.size());
-
-               info.locals_types[local_idx] = dataTypeInt;
-            }
-
-            local_var_item.expression_data.expression = buffer.str();
-
-            m_graph.insert(iter, local_var_item);
-         }
-      // immediate value
-         else if (opcode == op_PUSHI)
-         {
-            // check if CALLI follows; if yes, don't process this PUSHI
-            graph_iterator next_iter = iter; next_iter++;
-            if (!is_opcode(next_iter, op_CALLI))
-            {
-               iter->m_isProcessed = true;
-
-               // set up expression item
-               CodeGraphItem immediate_item;
-               immediate_item.m_type = typeExpression;
-               immediate_item.m_pos = iter->m_pos;
-               immediate_item.expression_data.is_address = false;
-
-               // check if a FETCHM follows; then it's not an immediate value,
-               // but the value of a global var
-               graph_iterator fetchm_iter = iter; fetchm_iter++;
-               UaAssert(fetchm_iter != m_graph.end());
-
-               if (is_opcode(fetchm_iter, op_FETCHM))
-               {
-                  fetchm_iter->m_isProcessed = true;
-
-                  // global or private variable value
-                  Uint16 var_idx = iter->opcode_data.arg;
-
-                  immediate_item.expression_data.expression = GetMemoryVarName(var_idx);
-               }
-               else
-               {
-                  // might be an immediate or a global address
-                  std::ostringstream buffer;
-                  buffer << iter->opcode_data.arg;
-
-                  immediate_item.expression_data.expression = buffer.str();
-                  immediate_item.expression_data.pushi_imm_value = iter->opcode_data.arg;
-                  immediate_item.expression_data.is_pushi_imm = true;
-               }
-
-               m_graph.insert(iter, immediate_item);
-            }
-         }
-      // return-statement
-         else if (MatchOpcodePattern(iter, pattern_return_stmt,
-            SDL_TABLESIZE(pattern_return_stmt)))
-         {
-            // returns value from function
-            iter->m_isProcessed = true;
-
-            graph_iterator next_iter = iter; next_iter++;
-            UaAssert(next_iter != m_graph.begin());
-            next_iter->m_isProcessed = true;
-
-            // set up expression item
-            CodeGraphItem return_item;
-            return_item.m_type = typeOperator;
-            return_item.m_pos = iter->m_pos;
-            return_item.operator_data.op_opcode = opcode;
-            return_item.operator_data.needed_expr = 1;
-            return_item.operator_data.returns_expr = false;
-            return_item.operator_data.returned_type = dataTypeInt;
-            return_item.operator_data.prec_level =
-               g_convInstructions[opcode].op_prec_level;
-
-            m_graph.insert(iter, return_item);
-
-            // remember return type
-            info.return_type = dataTypeInt;
-         }
-      // dereference-operator
-      if (opcode == op_FETCHM)
+         // immediate value
+      case op_PUSHI:
+         // check if CALLI follows; if yes, don't process this PUSHI
       {
-         // turns an address-of variable to value-of variable
-         iter->m_isProcessed = true;
-
-         // set up expression item
-         CodeGraphItem deref_item;
-         deref_item.m_type = typeOperator;
-         deref_item.m_pos = iter->m_pos;
-         deref_item.operator_data.op_opcode = opcode;
-         deref_item.operator_data.needed_expr = 1;
-         deref_item.operator_data.returns_expr = true;
-         deref_item.operator_data.returned_type = dataTypeInt;
-         deref_item.operator_data.prec_level =
-            g_convInstructions[opcode].op_prec_level;
-
-         m_graph.insert(iter, deref_item);
+         graph_iterator next_iter = iter;
+         ++next_iter;
+         if (IsOpcode(next_iter, op_CALLI))
+            continue;
       }
-      else
+
+      AddImmediateExpression(iter, stop);
+      break;
+
+      // dereference-operator
+      case op_FETCHM:
+         // turns an address-of variable to value-of variable
+         AddOperator(iter, 1, true, dataTypeInt);
+         break;
+
          // array-index-operator
-         if (opcode == op_OFFSET)
-         {
-            // indexes an array
-            iter->m_isProcessed = true;
-
-            // set up expression item
-            CodeGraphItem arr_idx_item;
-            arr_idx_item.m_type = typeOperator;
-            arr_idx_item.m_pos = iter->m_pos;
-            arr_idx_item.operator_data.op_opcode = opcode;
-            arr_idx_item.operator_data.needed_expr = 2;
-            arr_idx_item.operator_data.returns_expr = true;
-            arr_idx_item.operator_data.returned_type = dataTypeInt;
-            arr_idx_item.operator_data.prec_level =
-               g_convInstructions[opcode].op_prec_level;
-
-            m_graph.insert(iter, arr_idx_item);
-         }
+      case op_OFFSET:
+         AddOperator(iter, 2, true, dataTypeInt);
+         break;
+      }
    }
-
-   combine_operators(start, stop);
-   find_control_structs(start, stop);
-   add_goto_jumps(start, stop);
 }
 
-void CodeGraph::add_array_info(Conv::FuncInfo& info, Uint16 local_idx, Uint16 offset)
+CodeGraphItem& CodeGraph::AddOperator(graph_iterator& iter,
+   Uint16 numNeededExpressions, bool returnsExpression, EDataType returnedType)
 {
-   unsigned int max = info.array_info.size();
+   CodeGraphItem& item = *iter;
+   item.m_isProcessed = true;
+
+   Uint16 opcode = item.opcode_data.opcode;
+
+   CodeGraphItem operatorItem;
+   operatorItem.m_type = typeOperator;
+   operatorItem.m_pos = iter->m_pos;
+   operatorItem.operator_data.op_opcode = opcode;
+   operatorItem.operator_data.numNeededExpressions = numNeededExpressions;
+   operatorItem.operator_data.returns_expr = returnsExpression;
+   operatorItem.operator_data.returned_type = returnedType;
+   operatorItem.operator_data.prec_level =
+      g_convInstructions[opcode].op_prec_level;
+
+   return *m_graph.insert(iter, operatorItem);
+}
+
+CodeGraphItem& CodeGraph::AddStatement(graph_iterator iter, std::string text, bool setProcessed)
+{
+   CodeGraphItem& item = *iter;
+
+   if (setProcessed)
+      item.m_isProcessed = true;
+
+   CodeGraphItem statementItem;
+   statementItem.m_type = typeStatement;
+   statementItem.m_pos = iter->m_pos;
+   statementItem.statement_data.statement = text;
+
+   return *m_graph.insert(iter, statementItem);
+}
+
+CodeGraphItem& CodeGraph::AddExpression(graph_iterator& iter, std::string text, bool isAddress)
+{
+   CodeGraphItem& item = *iter;
+   item.m_isProcessed = true;
+
+   CodeGraphItem expressionItem;
+   expressionItem.m_type = typeExpression;
+   expressionItem.m_pos = iter->m_pos;
+   expressionItem.expression_data.expression = text;
+   expressionItem.expression_data.isAddress = isAddress;
+
+   if (!iter->m_labelName.empty())
+   {
+      expressionItem.m_labelName = iter->m_labelName;
+      iter->m_labelName.clear();
+   }
+
+   return *m_graph.insert(iter, expressionItem);
+}
+
+void CodeGraph::AddLocalArrayExpression(graph_iterator iter, FuncInfo& funcInfo)
+{
+   // get array offset, from the op_PUSHI
+   graph_iterator arr_iter = iter;
+   UaAssert(arr_iter->m_type == typeOpcode && arr_iter->opcode_data.opcode == op_PUSHI);
+   Uint16 offset = arr_iter->opcode_data.arg;
+
+   // TODO arrays with offset == 0 really allowed?
+   UaAssert(offset <= 0x7fff && offset >= 0);
+   ++arr_iter;
+
+   // get local var index, from op_PUSHI_EFF
+   UaAssert(arr_iter->m_type == typeOpcode && arr_iter->opcode_data.opcode == op_PUSHI_EFF);
+
+   Uint16 localIndex = arr_iter->opcode_data.arg;
+   ++arr_iter;
+
+   // add expression
+   std::ostringstream buffer;
+   buffer << "local_" << localIndex << "[" << offset << "]";
+
+   AddExpression(iter, buffer.str(), true);
+
+   AddArrayInfo(funcInfo, localIndex, offset);
+}
+
+void CodeGraph::AddArrayInfo(FuncInfo& funcInfo, Uint16 localIndex, Uint16 offset)
+{
+   unsigned int max = funcInfo.array_info.size();
    for (unsigned int i = 0; i < max; i++)
    {
-      if (info.array_info[i].local_start == local_idx)
+      if (funcInfo.array_info[i].local_start == localIndex)
       {
          // found info; update array size
-         ArrayInfo& array_info = info.array_info[i];
+         ArrayInfo& array_info = funcInfo.array_info[i];
          array_info.array_size = std::max<unsigned int>(array_info.array_size, offset);
 
          return;
@@ -901,361 +699,596 @@ void CodeGraph::add_array_info(Conv::FuncInfo& info, Uint16 local_idx, Uint16 of
 
    // new array
    ArrayInfo array_info;
-   array_info.local_start = local_idx;
+   array_info.local_start = localIndex;
    array_info.array_size = offset;
 
-   info.array_info.push_back(array_info);
+   funcInfo.array_info.push_back(array_info);
 }
 
-/*!
-    search operators and try to build new expressions until no operators are
-    left
-*/
-void CodeGraph::combine_operators(/*FuncInfo& info*/
-   const graph_iterator& start, const graph_iterator& stop)
+void CodeGraph::AddCallOperator(graph_iterator& iter, graph_iterator stop, const FuncInfo& funcInfo, bool bIntrinsic)
 {
+   iter->m_isProcessed = true;
+
+   // note: when bIntrinsic == true, this is the intrinsic number
+   //       when bIntrinsic == false, it is the local function pos
+   Uint16 call_target = iter->opcode_data.arg;
+   std::string target_name = iter->opcode_data.jump_target;
+
+   if (bIntrinsic)
+   {
+      --iter; // previous PUSHI opcode tells number of arguments
+      UaAssert(true == IsOpcode(iter, op_PUSHI));
+
+      // set PUSHI opcode to "processed"
+      iter->m_isProcessed = true;
+
+      // Note: This number may be wrong, e.g. for babl_menu
+      // therefore we do not use this, but do the POP counting below.
+      //oper_item.control_data.numNeededExpressions = iter->opcode_data.arg;
+   }
+
+   // find out number of function args by counting following POP opcodes
+   Uint16 arguments = 0;
+
+   graph_iterator pop_iter = iter;
+   std::advance(pop_iter, bIntrinsic ? 2 : 1);
+
+   while (pop_iter != stop && IsOpcode(pop_iter, op_POP))
+   {
+      pop_iter->m_isProcessed = true;
+      ++arguments;
+      ++pop_iter;
+   }
+
+   // check if a PUSH_REG follows
+   bool bReturnValue = false;
+   if (IsOpcode(pop_iter, op_PUSH_REG))
+   {
+      pop_iter->m_isProcessed = true;
+      bReturnValue = true;
+   }
+
+   // note: CALLI functions have 2 parameter, but the 1st is the number
+   // of arguments, so subtract 1 from this number again
+   if (bIntrinsic)
+      --arguments;
+
+   // operator with "arguments" needed expressions
+   CodeGraphItem& operatorItem = AddOperator(iter, arguments, bReturnValue,
+      bReturnValue ? dataTypeInt : dataTypeVoid);
+
+   // correct opcode
+   if (bIntrinsic)
+      operatorItem.operator_data.op_opcode = op_CALLI;
+
+   operatorItem.operator_data.prec_level = g_convInstructions[op_CALL].op_prec_level;
+
+   operatorItem.operator_data.op_arg = call_target;
+
+   std::advance(iter, arguments + (bReturnValue ? 1 : 0) - 1);
+
+   if (!bIntrinsic)
+   {
+      // is recursive call?
+      if (call_target == funcInfo.start)
+      {
+         UaTrace("discovered recursive function call to %hs() at %04x\n",
+            target_name.c_str(), iter->m_pos);
+         return;
+      }
+
+      // add to list of caller
+      UaAssert(m_functionMap.find(target_name) != m_functionMap.end());
+
+      FuncInfo& calledFuncInfo = m_functionMap[target_name];
+      calledFuncInfo.caller.insert(funcInfo.name);
+
+      // put in analysis queue, when not already processed
+      if (m_processedFunctions.find(call_target) == m_processedFunctions.end())
+         m_analysisQueue.push_back(target_name);
+   }
+}
+
+void CodeGraph::AddAssignmentOperator(graph_iterator iter)
+{
+   iter->m_isProcessed = true;
+
+   // check if a SWAP precedes the STO opcode
+   graph_iterator swap_iter = iter;
+   UaAssert(iter != m_graph.begin());
+   --swap_iter;
+
+   bool bStoSwapArgs = false;
+   if (IsOpcode(swap_iter, op_SWAP))
+   {
+      swap_iter->m_isProcessed = true;
+
+      bStoSwapArgs = true;
+   }
+
+   CodeGraphItem& operatorItem =
+      AddOperator(iter, 2, false, dataTypeVoid);
+
+   operatorItem.operator_data.sto_swap_args = bStoSwapArgs;
+}
+
+void CodeGraph::AddAddressOfLocalVarExpression(graph_iterator& iter, graph_iterator stop, FuncInfo& funcInfo)
+{
+   // local var index
+   Uint16 localIndex = iter->opcode_data.arg;
+   iter->m_isProcessed = true;
+
+   // set up expression item
+   bool isAddress = true;
+
+   // check if a FETCHM follows; then it's not the address of the
+   // local var but the value
+   graph_iterator fetchm_iter = iter;
+   ++fetchm_iter;
+   UaAssert(fetchm_iter != m_graph.end());
+
+   bool bIsFetchm = IsOpcode(fetchm_iter, op_FETCHM);
+   if (bIsFetchm)
+   {
+      fetchm_iter->m_isProcessed = true;
+      isAddress = false;
+   }
+
+   std::ostringstream buffer;
+   if (localIndex > 0x7fff)
+   {
+      unsigned int paramNum = (-(Sint16)localIndex) - 1;
+
+      // param value
+      buffer << "param" << paramNum;
+
+      // this expression is an address, since param values are always
+      // passed by reference
+      isAddress = true;
+
+      // set param info
+      if (paramNum > funcInfo.param_types.size())
+         funcInfo.param_types.resize(paramNum, dataTypeInt);
+   }
+   else
+   {
+      buffer << "local_" << localIndex;
+
+      // add local variable info
+      if (localIndex >= funcInfo.locals_types.size())
+         funcInfo.locals_types.resize(localIndex + 1, dataTypeUnknown);
+
+      UaAssert(localIndex < funcInfo.locals_types.size());
+
+      funcInfo.locals_types[localIndex] = dataTypeInt;
+   }
+
+   AddExpression(iter, buffer.str(), isAddress);
+
+   if (bIsFetchm)
+      ++iter;
+}
+
+void CodeGraph::AddImmediateExpression(graph_iterator& iter, graph_iterator stop)
+{
+   iter->m_isProcessed = true;
+
+   // check if a FETCHM follows; then it's not an immediate value,
+   // but the value of a global var
+   graph_iterator fetchm_iter = iter;
+   ++fetchm_iter;
+   UaAssert(fetchm_iter != m_graph.end());
+
+   if (IsOpcode(fetchm_iter, op_FETCHM))
+   {
+      fetchm_iter->m_isProcessed = true;
+
+      // global or private variable value
+      Uint16 varIndex = iter->opcode_data.arg;
+
+      std::string text = GetMemoryVarName(varIndex);
+
+      AddExpression(iter, text, false);
+
+      ++iter;
+   }
+   else
+   {
+      // might be an immediate (or a global address, which is resolved later)
+      std::ostringstream buffer;
+      buffer << iter->opcode_data.arg;
+
+      CodeGraphItem& pushImmItem = AddExpression(iter, buffer.str(), false);
+
+      pushImmItem.expression_data.pushi_imm_value = iter->opcode_data.arg;
+      pushImmItem.expression_data.is_pushi_imm = true;
+   }
+}
+
+void CodeGraph::CombineOperators(FuncInfo& funcInfo)
+{
+   graph_iterator start = FindPos(funcInfo.start),
+      stop = FindPos(funcInfo.end);
+
    while (true)
    {
       // search next operator
-      graph_iterator iter, last_oper = m_graph.end();
-      for (iter = start; iter != stop; iter++)
+      bool bFound = false;
+      graph_iterator iter;
+      for (iter = start; iter != stop; ++iter)
       {
          if (iter->m_type == typeOperator && !iter->m_isProcessed)
          {
             // found operator
-            last_oper = iter;
+            bFound = true;
             break;
          }
       }
 
-      if (last_oper == m_graph.end())
+      if (!bFound)
          break; // no more operators
 
       // combine found operator with expressions to form new expression
-      graph_iterator oper = last_oper;
+      graph_iterator operatorIter = iter;
 
-      bool statement_between = false;
+      // check if a statement appears between this operator and the
+      // expressions used, insert the new expression on the place the
+      // operator is located; the reason for this is because uw1 conv.
+      // code can use temporary local variables that are initialized and
+      // used as parameter for function calls
+      bool isStatementBetween = false;
 
-      // search n previous expressions
+      // search N previous expressions
       std::vector<graph_iterator> expressions;
 
-      Uint16 min_expr_pos = oper->m_pos;
-
-      iter = oper;
-      while (iter != start && expressions.size() < oper->operator_data.needed_expr)
+      if (operatorIter->operator_data.numNeededExpressions > 0)
       {
-         if (iter->m_type == typeExpression && !iter->m_isProcessed)
+         CollectExpressions(start, operatorIter,
+            operatorIter->operator_data.numNeededExpressions, expressions, isStatementBetween);
+      }
+
+      // when statement was in between, insert at operator place
+      // when not: are there expressions? when not, insert at operator place
+      // else insert at first expression place
+      graph_iterator insertIter = operatorIter;
+      if (!isStatementBetween)
+      {
+         // since expressions are sorted later-to-earlier, use last iter as insert point
+         if (!expressions.empty())
+            insertIter = expressions.back();
+      }
+
+      CombineOperatorAndExpressions(operatorIter, stop, insertIter, expressions);
+
+      // transfer label from fist expression
+      if (!expressions.empty())
+      {
+         graph_iterator last_expr_iter = expressions.back();
+         if (!last_expr_iter->m_labelName.empty())
          {
-            // found an expression
-            expressions.push_back(iter);
-
-            // remember expression with minimum position
-            if (iter->m_pos < min_expr_pos)
-               min_expr_pos = iter->m_pos;
+            insertIter->m_labelName = last_expr_iter->m_labelName;
+            last_expr_iter->m_labelName.clear();
          }
-         if (iter->m_type == typeStatement)
-            statement_between = true;
-         iter--;
-      }
-
-      UaAssert(iter != start);
-      UaAssert(expressions.size() == oper->operator_data.needed_expr);
-
-      // set up new item; for now we assume it's another expression
-      CodeGraphItem new_expression;
-      new_expression.m_pos = min_expr_pos;
-
-      // now that we have n expressions, we can combine it with the operator
-      switch (oper->operator_data.op_opcode)
-      {
-      case op_CALL:
-      case op_CALLI:
-      {
-         std::ostringstream buffer;
-
-         if (oper->operator_data.op_opcode == op_CALLI)
-         {
-            Uint16 val = oper->operator_data.op_arg;
-            UaAssert(m_mapImportedFunctions.find(val) != m_mapImportedFunctions.end());
-
-            buffer << m_mapImportedFunctions.find(val)->second.name;
-         }
-         else
-            buffer << "func_" << std::setfill('0') <<
-            std::setw(4) << std::setbase(16) << oper->operator_data.op_arg;
-         buffer << "(";
-
-         // do parameter
-         unsigned int max = expressions.size();
-         for (unsigned int n = 0; n < max; n++)
-         {
-            CodeGraphItem& param = *expressions[n];
-
-            // check if lvalue is from PUSHI opcode
-            if (param.expression_data.is_pushi_imm)
-               PushiImmediateToGlobal(expressions[n]);
-
-            // param must be address, since all params are passed by reference/pointer
-            UaAssert(true == param.expression_data.is_address);
-
-            buffer << param.expression_data.expression;
-
-            if (n < max - 1)
-               buffer << ", ";
-         }
-
-         // since a statement appeared between this operator and the
-         // expressions used, insert the new expression on the place the
-         // operator is located; the reason for this is because uw1 conv.
-         // code can use temporary local variables that are initialized and
-         // used as parameter for function calls
-         if (statement_between)
-            new_expression.m_pos = oper->m_pos;
-
-         // decide if function call returns data
-         if (oper->operator_data.returns_expr)
-         {
-            buffer << ")";
-
-            new_expression.m_type = typeExpression;
-            new_expression.expression_data.expression = buffer.str();
-            new_expression.expression_data.is_address = false;
-         }
-         else
-         {
-            buffer << ");";
-
-            new_expression.m_type = typeStatement;
-            new_expression.statement_data.statement = buffer.str();
-         }
-      }
-      break;
-
-      case op_SAVE_REG:
-      {
-         UaAssert(expressions.size() == 1);
-         UaAssert(false == expressions[0]->expression_data.is_address)
-
-            new_expression.m_type = typeStatement;
-
-         std::ostringstream buffer;
-         buffer << "return " <<
-            expressions[0]->expression_data.expression << ";";
-
-         new_expression.statement_data.statement = buffer.str();
-      }
-      break;
-
-      case op_FETCHM:
-      {
-         UaAssert(expressions.size() == 1);
-         UaAssert(true == expressions[0]->expression_data.is_address);
-
-         new_expression.m_type = typeExpression;
-         new_expression.expression_data = expressions[0]->expression_data;
-         new_expression.expression_data.is_address = false;
-      }
-      break;
-
-      case op_OFFSET:
-      {
-         UaAssert(expressions.size() == 2);
-
-         // check if expression 0 is from PUSHI opcode
-         if (expressions[0]->expression_data.is_pushi_imm)
-            PushiImmediateToGlobal(expressions[0]);
-
-         UaAssert(true == expressions[0]->expression_data.is_address);
-         UaAssert(false == expressions[1]->expression_data.is_address);
-
-         new_expression.m_type = typeExpression;
-         new_expression.expression_data.is_address = true;
-
-         std::ostringstream buffer;
-
-         buffer << expressions[0]->expression_data.expression <<
-            "[" << expressions[1]->expression_data.expression << "]";
-
-         new_expression.expression_data.expression = buffer.str();
-      }
-      break;
-
-      // comparison operators
-      case op_TSTEQ:
-      case op_TSTNE:
-      case op_TSTGT:
-      case op_TSTGE:
-      case op_TSTLT:
-      case op_TSTLE:
-         // arithmetic and logical operators
-      case op_OPADD:
-      case op_OPMUL:
-      case op_OPSUB:
-      case op_OPDIV:
-      case op_OPMOD:
-      case op_OPOR:
-      case op_OPAND:
-      {
-         UaAssert(expressions.size() == 2);
-
-         new_expression.m_type = typeExpression;
-
-         graph_iterator rvalue, lvalue;
-         rvalue = expressions[0];
-         lvalue = expressions[1];
-
-         unsigned int precedence = oper->operator_data.prec_level;
-
-         // check that both lvalue and rvalue are value-of
-         UaAssert(false == lvalue->expression_data.is_address);
-         UaAssert(false == rvalue->expression_data.is_address);
-
-         // do new expression
-         // when an expression used has a higher proecedence, put
-         // parenthesis around that expression
-         std::ostringstream buffer;
-
-         // lvalue
-         if (precedence > lvalue->expression_data.prec_level)
-            buffer << "(" << lvalue->expression_data.expression << ")";
-         else
-            buffer << lvalue->expression_data.expression;
-
-         // operator char
-         buffer << " " << g_convInstructions[oper->operator_data.op_opcode].operator_text << " ";
-
-         // rvalue
-         if (precedence > rvalue->expression_data.prec_level)
-            buffer << "(" << rvalue->expression_data.expression << ")";
-         else
-            buffer << rvalue->expression_data.expression;
-
-         new_expression.expression_data.expression = buffer.str();
-         new_expression.expression_data.is_address = false;
-
-         // the new expression has the lowest precedence of all used expressions
-         unsigned int new_prec = std::min(expressions[0]->expression_data.prec_level,
-            expressions[1]->expression_data.prec_level);
-         new_prec = std::min(new_prec, precedence);
-
-         new_expression.expression_data.prec_level = new_prec;
-      }
-      break;
-
-      case op_OPNEG:
-      {
-         UaAssert(expressions.size() == 1);
-         UaAssert(false == expressions[0]->expression_data.is_address);
-
-         new_expression.m_type = typeExpression;
-         new_expression.expression_data = expressions[0]->expression_data;
-
-         std::string newtext("-");
-         newtext += new_expression.expression_data.expression;
-
-         new_expression.expression_data.expression = newtext;
-      }
-      break;
-
-      case op_OPNOT:
-      {
-         UaAssert(expressions.size() == 1);
-         UaAssert(false == expressions[0]->expression_data.is_address);
-
-         new_expression.m_type = typeExpression;
-         new_expression.expression_data = expressions[0]->expression_data;
-
-         std::string newtext("!");
-         newtext += new_expression.expression_data.expression;
-
-         new_expression.expression_data.expression = newtext;
-      }
-      break;
-
-      case op_SAY_OP:
-      {
-         UaAssert(expressions.size() == 1);
-
-         // no, we have a statement
-         new_expression.m_type = typeStatement;
-
-         // SAY with PUSHI before?
-         UaAssert(true == expressions[0]->expression_data.is_pushi_imm);
-
-         Uint16 string_id = expressions[0]->expression_data.pushi_imm_value;
-         UaAssert(string_id < m_strings.size());
-
-         // replace linefeeds in text
-         std::string outtext(m_strings[string_id]);
-
-         std::string::size_type pos = 0;
-         while (std::string::npos != (pos = outtext.find('\n')))
-            outtext.replace(pos, 1, "\\n");
-
-         std::ostringstream buffer;
-         buffer << "say(\"" << outtext << "\");";
-         new_expression.statement_data.statement = buffer.str();
-      }
-      break;
-
-      case op_STO:
-      {
-         UaAssert(expressions.size() == 2);
-
-         new_expression.m_type = typeStatement;
-
-         graph_iterator rvalue, lvalue;
-         rvalue = expressions[0];
-         lvalue = expressions[1];
-
-         // swap iterators if SWAP opcode was found
-         if (oper->operator_data.sto_swap_args)
-            std::swap(rvalue, lvalue);
-
-         // check if lvalue is from PUSHI opcode
-         if (lvalue->expression_data.is_pushi_imm)
-            PushiImmediateToGlobal(lvalue);
-
-         // check if assignment is for call to babl_menu or babl_fmenu
-         CheckBablMenu(oper, stop, lvalue, rvalue);
-
-         // check that lvalue is address-of and rvalue is value-of
-         UaAssert(true == lvalue->expression_data.is_address);
-         UaAssert(false == rvalue->expression_data.is_address);
-
-         std::ostringstream buffer;
-         buffer << lvalue->expression_data.expression << " = " <<
-            rvalue->expression_data.expression << ";";
-
-         new_expression.statement_data.statement = buffer.str();
-
-         // also relocate store expression; see op_CALL/op_CALLI part for
-         // further comments
-         if (statement_between)
-            new_expression.m_pos = expressions[0]->m_pos;
-      }
-      break;
-
-      default:
-         // opcode appeared that wasn't processed
-         UaAssert(false);
-         break;
       }
 
       // mark operator as "done"
-      oper->m_isProcessed = true;
+      operatorIter->m_isProcessed = true;
 
       // mark expressions as "done"
       unsigned int max = expressions.size();
       for (unsigned int i = 0; i < max; i++)
          expressions[i]->m_isProcessed = true;
-
-      // insert new expression before first expression used for this new one
-      graph_iterator insert_iter = FindPos(new_expression.m_pos);
-      UaAssert(insert_iter != m_graph.end());
-
-      m_graph.insert(insert_iter, new_expression);
    }
+}
+
+void CodeGraph::CollectExpressions(graph_iterator start, graph_iterator end,
+   unsigned int numNeededExpressions, std::vector<graph_iterator>& expressions, bool& isStatementBetween)
+{
+   graph_iterator iter = end;
+   --iter;
+   while (iter != start && expressions.size() < numNeededExpressions)
+   {
+      if (iter->m_type == typeExpression && !iter->m_isProcessed)
+      {
+         // found an expression
+         expressions.push_back(iter);
+      }
+
+      // remember if there was a statement
+      // uw conv code supports something like "in-parameter value setting" like this:
+      // get_quest(local_123 = 4);
+      // when this is the case, remember that there were statements between
+      if (iter->m_type == typeStatement)
+         isStatementBetween = true;
+
+      --iter;
+   }
+
+   // not enough expressions found between operator and start of function?
+   UaAssert(iter != start);
+   UaAssert(expressions.size() == end->operator_data.numNeededExpressions);
+}
+
+void CodeGraph::CombineOperatorAndExpressions(graph_iterator operatorIter, graph_iterator stop,
+   graph_iterator insertIter, std::vector<graph_iterator>& expressions)
+{
+   switch (operatorIter->operator_data.op_opcode)
+   {
+   case op_CALL:
+   case op_CALLI:
+      CombineCallOperator(operatorIter, insertIter, expressions);
+      break;
+
+      // create a "return" statement
+   case op_SAVE_REG:
+      CombineReturnExpression(insertIter, expressions);
+      break;
+
+   case op_FETCHM:
+      CombineDereferenceExpression(insertIter, expressions);
+      break;
+
+   case op_OFFSET:
+      CombineArrayExpression(insertIter, expressions);
+      break;
+
+      // comparison operators
+   case op_TSTEQ:
+   case op_TSTNE:
+   case op_TSTGT:
+   case op_TSTGE:
+   case op_TSTLT:
+   case op_TSTLE:
+      // arithmetic and logical operators
+   case op_OPADD:
+   case op_OPMUL:
+   case op_OPSUB:
+   case op_OPDIV:
+   case op_OPMOD:
+   case op_OPOR:
+   case op_OPAND:
+      AddBinaryExpression(operatorIter, insertIter, expressions);
+      break;
+
+   case op_OPNEG:
+      AddUnaryExpression(operatorIter, insertIter, expressions, "-");
+      break;
+
+   case op_OPNOT:
+      AddUnaryExpression(operatorIter, insertIter, expressions, "!");
+      break;
+
+   case op_SAY_OP:
+      CombineSayOp(insertIter, expressions);
+      break;
+
+   case op_STO:
+      CombineAssignmentExpressions(operatorIter, stop, insertIter, expressions);
+      break;
+
+   default:
+      // opcode appeared that wasn't processed
+      UaAssert(false);
+      break;
+   }
+}
+
+void CodeGraph::CombineCallOperator(graph_iterator operatorIter,
+   graph_iterator insertIter, std::vector<graph_iterator>& expressions)
+{
+   std::ostringstream buffer;
+
+   bool bIntrinsic = operatorIter->operator_data.op_opcode == op_CALLI;
+   if (bIntrinsic)
+   {
+      // intrinsic
+      Uint16 val = operatorIter->operator_data.op_arg;
+      UaAssert(m_mapImportedFunctions.find(val) != m_mapImportedFunctions.end());
+
+      buffer << m_mapImportedFunctions.find(val)->second.name;
+   }
+   else
+   {
+      buffer << "func_" << std::setfill('0') <<
+         std::setw(4) << std::setbase(16) << operatorIter->operator_data.op_arg;
+   }
+
+   buffer << "(";
+
+   // do parameter
+   unsigned int max = expressions.size();
+   for (unsigned int n = 0; n < max; n++)
+   {
+      CodeGraphItem& param = *expressions[n];
+
+      // check if lvalue is from PUSHI opcode
+      if (param.expression_data.is_pushi_imm)
+         PushiImmediateToGlobal(expressions[n]);
+
+      // param must be address, since all params are passed by reference/pointer
+      UaAssert(true == param.expression_data.isAddress);
+
+      buffer << param.expression_data.expression;
+
+      if (n < max - 1)
+         buffer << ", ";
+   }
+
+   // decide if function call returns data
+   if (operatorIter->operator_data.returns_expr)
+   {
+      buffer << ")";
+
+      AddExpression(insertIter, buffer.str(), false);
+   }
+   else
+   {
+      buffer << ");";
+
+      AddStatement(insertIter, buffer.str());
+   }
+}
+
+void CodeGraph::CombineReturnExpression(graph_iterator insertIter, std::vector<graph_iterator>& expressions)
+{
+   UaAssert(expressions.size() == 1);
+   UaAssert(false == expressions[0]->expression_data.isAddress);
+
+   std::ostringstream buffer;
+   buffer << "return " <<
+      expressions[0]->expression_data.expression << ";";
+
+   AddStatement(insertIter, buffer.str());
+}
+
+void CodeGraph::CombineDereferenceExpression(graph_iterator insertIter, std::vector<graph_iterator>& expressions)
+{
+   UaAssert(expressions.size() == 1);
+   UaAssert(true == expressions[0]->expression_data.isAddress);
+
+   CodeGraphItem& newExpression = AddExpression(insertIter, "", false);
+   newExpression.expression_data = expressions[0]->expression_data;
+   newExpression.expression_data.isAddress = false;
+}
+
+void CodeGraph::CombineArrayExpression(graph_iterator insertIter, std::vector<graph_iterator>& expressions)
+{
+   UaAssert(expressions.size() == 2);
+
+   // check if expression 0 is from PUSHI opcode
+   if (expressions[0]->expression_data.is_pushi_imm)
+      PushiImmediateToGlobal(expressions[0]);
+
+   UaAssert(true == expressions[0]->expression_data.isAddress);
+   UaAssert(false == expressions[1]->expression_data.isAddress);
+
+   std::ostringstream buffer;
+
+   buffer << expressions[0]->expression_data.expression <<
+      "[" << expressions[1]->expression_data.expression << "]";
+
+   AddExpression(insertIter, buffer.str(), true);
+}
+
+void CodeGraph::AddBinaryExpression(graph_iterator operatorIter,
+   graph_iterator insertIter, std::vector<graph_iterator>& expressions)
+{
+   UaAssert(expressions.size() == 2);
+
+   graph_iterator rvalue, lvalue;
+   rvalue = expressions[0];
+   lvalue = expressions[1];
+
+   // check special case: left side of equality op is immediate value
+   if (operatorIter->operator_data.op_opcode == op_TSTEQ)
+   {
+      if (lvalue->expression_data.is_pushi_imm)
+         std::swap(rvalue, lvalue);
+   }
+
+   unsigned int precedence = operatorIter->operator_data.prec_level;
+
+   // check that both lvalue and rvalue are value-of
+   UaAssert(false == lvalue->expression_data.isAddress);
+   UaAssert(false == rvalue->expression_data.isAddress);
+
+   // when an expression used has a higher precedence, put
+   // parenthesis around that expression
+   std::ostringstream buffer;
+
+   // lvalue
+   if (precedence > lvalue->expression_data.prec_level)
+      buffer << "(" << lvalue->expression_data.expression << ")";
+   else
+      buffer << lvalue->expression_data.expression;
+
+   // operator character
+   buffer << " " << g_convInstructions[operatorIter->operator_data.op_opcode].operator_text << " ";
+
+   // rvalue
+   if (precedence > rvalue->expression_data.prec_level)
+      buffer << "(" << rvalue->expression_data.expression << ")";
+   else
+      buffer << rvalue->expression_data.expression;
+
+   CodeGraphItem& newExpression = AddExpression(insertIter, buffer.str(), false);
+
+   // the new expression has the lowest precedence of all used expressions
+   unsigned int new_precedence = std::min(expressions[0]->expression_data.prec_level,
+      expressions[1]->expression_data.prec_level);
+   new_precedence = std::min(new_precedence, precedence);
+
+   newExpression.expression_data.prec_level = new_precedence;
+}
+
+void CodeGraph::AddUnaryExpression(graph_iterator operatorIter,
+   graph_iterator insertIter, std::vector<graph_iterator>& expressions, std::string prefix)
+{
+   UaAssert(expressions.size() == 1);
+   UaAssert(false == expressions[0]->expression_data.isAddress);
+
+   CodeGraphItem& newExpression = AddExpression(insertIter, "", false);
+
+   newExpression.expression_data = expressions[0]->expression_data;
+
+   std::string newtext = prefix + newExpression.expression_data.expression;
+
+   newExpression.expression_data.expression = newtext;
+}
+
+void CodeGraph::CombineSayOp(graph_iterator insertIter, std::vector<graph_iterator>& expressions)
+{
+   UaAssert(expressions.size() == 1);
+
+   // add statement
+   // SAY with PUSHI before?
+   UaAssert(true == expressions[0]->expression_data.is_pushi_imm);
+
+   Uint16 string_id = expressions[0]->expression_data.pushi_imm_value;
+   UaAssert(string_id < m_strings.size());
+
+   // replace linefeeds in text
+   std::string outtext(m_strings[string_id]);
+
+   std::string::size_type pos = 0;
+   while (std::string::npos != (pos = outtext.find('\n')))
+      outtext.replace(pos, 1, "\\n");
+
+   std::ostringstream buffer;
+   buffer << "say(\"" << outtext << "\");";
+
+   AddStatement(insertIter, buffer.str());
+}
+
+void CodeGraph::CombineAssignmentExpressions(graph_iterator operatorIter, graph_iterator stop,
+   graph_iterator insertIter, std::vector<graph_iterator>& expressions)
+{
+   UaAssert(expressions.size() == 2);
+
+   graph_iterator rvalue, lvalue;
+   rvalue = expressions[0];
+   lvalue = expressions[1];
+
+   // swap iterators if SWAP opcode was found
+   if (operatorIter->operator_data.sto_swap_args)
+      std::swap(rvalue, lvalue);
+
+   // check if lvalue is from PUSHI opcode
+   if (lvalue->expression_data.is_pushi_imm)
+      PushiImmediateToGlobal(lvalue);
+
+   // check if assignment is for call to babl_menu or babl_fmenu
+   CheckBablMenu(operatorIter, stop, lvalue, rvalue);
+
+   // check that lvalue is address-of and rvalue is value-of
+   UaAssert(true == lvalue->expression_data.isAddress);
+   UaAssert(false == rvalue->expression_data.isAddress);
+
+   std::ostringstream buffer;
+   buffer << lvalue->expression_data.expression << " = " <<
+      rvalue->expression_data.expression << ";";
+
+   AddStatement(insertIter, buffer.str());
 }
 
 void CodeGraph::CheckBablMenu(graph_iterator& start,
@@ -1269,511 +1302,523 @@ void CodeGraph::CheckBablMenu(graph_iterator& start,
       return;
 
    graph_iterator iter = start;
-   while (iter != stop && start != m_graph.end())
+   while (iter != stop)
    {
-      // search for babl_menu and babl_fmenu intrinsic calls
-      if (iter->m_type == typeOpcode &&
-         iter->opcode_data.opcode == op_CALLI)
+      // search for intrinsic calls
+      if (iter->m_type == typeOperator &&
+         iter->operator_data.op_opcode == op_CALLI)
+         break; // found
+
+      ++iter;
+   }
+
+   if (iter == stop)
+      return; // no operator with intrinsic found before end
+
+   // check for babl_menu and babl_fmenu calls
+   std::string intr_name =
+      m_mapImportedFunctions.find(iter->operator_data.op_arg)->second.name;
+
+   if (intr_name != "babl_menu" && intr_name != "babl_fmenu")
+      return;
+
+   if (intr_name == "babl_fmenu")
+   {
+      // check that lvalue array value matches arg0 of babl_fmenu
+      graph_iterator prev_iter = iter;
+      --prev_iter;
+      if (prev_iter->m_type == typeOpcode &&
+         prev_iter->opcode_data.opcode == op_PUSHI_EFF)
       {
-         std::string intr_name(
-            m_mapImportedFunctions.find(iter->opcode_data.arg)->second.name);
+         std::ostringstream buffer;
+         buffer << "local_" << prev_iter->opcode_data.arg << "[";
 
-         if (intr_name != "babl_menu"/* && intr_name != "babl_fmenu"*/)
-            break;
-
-         if (intr_name == "babl_menu")
-         {
-            // TODO check that lvalue array value matches arg0 of babl_menu
-         }
-         /*
-                  if (intr_name == "babl_fmenu")
-                  {
-                     // TODO check that lvalue array value matches arg0 of babl_fmenu
-                  }
-         */
-         // determine string id and format string
-         Uint16 str_id = rvalue->expression_data.pushi_imm_value;
-
-         if (str_id >= m_strings.size())
-            break;
-
-         UaAssert(str_id < m_strings.size());
-
-         if (str_id > 0)
-         {
-            std::ostringstream buffer;
-            buffer << "\"" << m_strings[str_id].c_str() << "\"";
-
-            rvalue->expression_data.expression = buffer.str();
-            rvalue->expression_data.is_pushi_imm = false;
-         }
-         break;
+         if (lvalue->expression_data.expression.find(buffer.str()) == std::string::npos)
+            return; // not an expression for the "strings array" argument of babl_fmenu
       }
+   }
 
-      iter++;
+   // determine string id and format string
+   Uint16 str_id = rvalue->expression_data.pushi_imm_value;
+
+   if (str_id >= m_strings.size())
+      return; // invalid string id
+
+   UaAssert(str_id < m_strings.size());
+
+   if (str_id > 0)
+   {
+      std::ostringstream buffer;
+      buffer << "\"" << m_strings[str_id].c_str() << "\""
+         << "; // " << str_id;
+
+      rvalue->expression_data.expression = buffer.str();
+      rvalue->expression_data.is_pushi_imm = false;
    }
 }
 
-void CodeGraph::find_control_structs(const graph_iterator& start,
-   const graph_iterator& stop)
+/// For switch-case statement(s), code looks like this:
+///
+///   {expression1}             switch (variable-part)
+///   BEQ label1                case (value-part1)
+///   {code}                       {code}
+///   JMP label_end ------+        break;
+/// label1:               |
+///   {expression2}       |     case (value-part2)
+///   BEQ label2 ----+    |
+///   {code}         |    |        {code}
+///   JMP label_end -|----+        break;
+/// label2:  <-------+    |
+///   {expression}        |     case (value-part3)
+///   BEQ label3 ----+    |
+///   {code}         |    |        {code}
+///   JMP label_end -|----+        break;
+///                  V    V
+///    ...               ...
+/// labelN:               |     case (value-partN)
+///   {expression}        |
+///   BEQ label_end ------+
+///   {code}              |        {code}
+///   JMP label_end ------+        break;
+/// label_end:   <--------+     switch-end
+///   ...
+///
+/// Expression is split into the "variable-part" of an == operator and the "value-part" that
+/// is used in every case expression.
+void CodeGraph::FindSwitchCase(FuncInfo& funcInfo)
 {
-   graph_iterator iter;
+   graph_iterator iter = FindPos(funcInfo.start),
+      stop = FindPos(funcInfo.end);
 
-   // search for remaining opcodes
-   for (iter = start; iter != stop; iter++)
+   // find open expression
+   for (; iter != stop; ++iter)
+   {
+      bool bIsExpression = iter->m_type == typeExpression && !iter->m_isProcessed;
+      if (!bIsExpression)
+         continue;
+
+      bool switchAdded = false;
+
+      Uint16 switchEnd = 0;
+
+      graph_iterator expressionIter = iter;
+
+      do
+      {
+         bool bRet = FindAndAddNextSwitchCase(expressionIter, stop, switchEnd, switchAdded);
+         if (!bRet)
+            break;
+
+         // check if next expression is an expression
+         if (expressionIter->m_type != typeExpression || expressionIter->m_isProcessed == true)
+         {
+            if (switchAdded)
+            {
+               graph_iterator switch_end_iter = expressionIter;
+               --switch_end_iter;
+               AddStatement(switch_end_iter, "} // end-switch", false);
+
+               break;
+            }
+         }
+
+      } while (switchEnd != 0 && expressionIter->m_pos < switchEnd);
+   }
+}
+
+bool CodeGraph::FindAndAddNextSwitchCase(graph_iterator& expressionIter, graph_iterator stop, Uint16& switchEnd, bool& switchAdded)
+{
+   // a BEQ opcode must follow
+   graph_iterator beq_iter = expressionIter;
+   for (; beq_iter != stop; ++beq_iter)
+   {
+      if (!beq_iter->m_isProcessed && beq_iter->m_type == typeOpcode)
+      {
+         if (beq_iter->opcode_data.opcode == op_BEQ)
+            break; // found
+         else
+         {
+            beq_iter = stop;
+            break;
+         }
+      }
+   }
+
+   if (beq_iter == stop)
+      return false; // no BEQ found, try next expression
+
+   // find next JMP opcode, which is the break statement
+   graph_iterator break_iter = beq_iter;
+   ++break_iter;
+   for (; break_iter != stop; ++break_iter)
+   {
+      if (!break_iter->m_isProcessed && break_iter->m_type == typeOpcode)
+      {
+         if (break_iter->opcode_data.opcode == op_JMP)
+            break; // found
+         else
+         {
+            break_iter = stop; // other opcode; give up
+            break;
+         }
+      }
+   }
+
+   if (break_iter == stop)
+      return false; // no JMP found, try next expression
+
+   // check if there is a second JMP immediately after this
+   graph_iterator second_jmp_iter = break_iter;
+   ++second_jmp_iter;
+   if (second_jmp_iter != stop &&
+      !second_jmp_iter->m_isProcessed &&
+      second_jmp_iter->m_type == typeOpcode &&
+      second_jmp_iter->opcode_data.opcode == op_JMP)
+   {
+      // is this really a "goto" jump? or fall-through?
+
+      // check if both jump targets are equal
+      if (break_iter->opcode_data.jump_target_pos != second_jmp_iter->opcode_data.jump_target_pos)
+      {
+         std::ostringstream buffer;
+         buffer << "goto " << break_iter->opcode_data.jump_target << ";";
+
+         AddStatement(break_iter, buffer.str());
+      }
+      else
+         break_iter->m_isProcessed = true;
+
+      ++break_iter;
+   }
+
+   // when first call, check if target of BEQ is an expression
+   if (!switchAdded)
+   {
+      graph_iterator next_expr_iter = FindPos(beq_iter->opcode_data.jump_target_pos);
+
+      if (next_expr_iter->m_type != typeExpression || next_expr_iter->m_isProcessed)
+         return false; // no expression; maybe we found an if without else statement
+   }
+
+   if (switchEnd == 0)
+      switchEnd = break_iter->opcode_data.jump_target_pos;
+
+   graph_iterator case_iter = expressionIter;
+
+   // insert switch statement
+   std::string expression = expressionIter->expression_data.expression;
+   if (!switchAdded)
+   {
+      std::string::size_type pos = expression.find(" == ");
+      if (pos == std::string::npos)
+      {
+         // no expression "variable == value" found; give up
+         return false;
+      }
+
+      {
+         std::ostringstream buffer;
+         buffer << "switch (" << expression.substr(0, pos) << ") {";
+
+         AddStatement(expressionIter, buffer.str());
+      }
+
+      switchAdded = true;
+
+      ++case_iter;
+   }
+
+   // add case statement
+   {
+      std::string::size_type pos = expression.find(" == ");
+      std::string case_value = expression.substr(pos + 4);
+
+      std::ostringstream buffer;
+      buffer << "case " << case_value << ":";
+
+      CodeGraphItem& caseStatement = AddStatement(case_iter, buffer.str());
+      caseStatement.statement_data.indent_change_after = 1;
+   }
+
+   case_iter->m_isProcessed = true;
+   beq_iter->m_isProcessed = true;
+
+   // add break statement
+   CodeGraphItem& breakStatement = AddStatement(break_iter, "break;");
+   breakStatement.statement_data.indent_change_after = -1;
+
+   // jump to next block via beq_iter
+   expressionIter = FindPos(beq_iter->opcode_data.jump_target_pos);
+
+   return true;
+}
+
+/// For while statement, code looks like this:
+///
+/// label1:   <----+
+///   {expression} |
+///   BEQ label2 --|--+
+///   {code}       |  |
+///   BRA label1 --+  |
+/// label2:   <-------+
+///   ...
+///
+void CodeGraph::FindWhile(FuncInfo& funcInfo)
+{
+   graph_iterator iter = FindPos(funcInfo.start),
+      stop = FindPos(funcInfo.end);
+
+   // find open expression
+   for (; iter != stop; ++iter)
+   {
+      bool bIsExpression = iter->m_type == typeExpression && !iter->m_isProcessed;
+      if (!bIsExpression)
+         continue;
+
+      graph_iterator expressionIter = iter;
+
+      // a BEQ opcode must follow
+      graph_iterator beq_iter = expressionIter;
+      for (; beq_iter != stop; ++beq_iter)
+      {
+         if (!beq_iter->m_isProcessed && beq_iter->m_type == typeOpcode)
+         {
+            if (beq_iter->opcode_data.opcode == op_BEQ)
+               break; // found
+            else
+            {
+               beq_iter = stop;
+               break;
+            }
+         }
+      }
+
+      if (beq_iter == stop)
+         continue; // no BEQ found, try next expression
+
+      // BEQ must jump down (when not, there is another control structure)
+      UaAssert(beq_iter->m_pos < beq_iter->opcode_data.jump_target_pos);
+
+      // check jump target
+
+      // check if both jump targets are equal
+      Uint16 target_pos = beq_iter->opcode_data.jump_target_pos;
+      graph_iterator target_iter = FindPos(target_pos);
+
+      // check if there is a BRA opcode before this one
+      graph_iterator bra_iter = target_iter;
+      --bra_iter;
+
+      bool bIsBranch = !bra_iter->m_isProcessed && beq_iter->m_type == typeOpcode && bra_iter->opcode_data.opcode == op_BRA;
+      if (!bIsBranch)
+         continue;
+
+      Uint16 bra_target_pos = bra_iter->opcode_data.jump_target_pos;
+
+      if (bra_target_pos > target_pos)
+         continue; // a BRA opcode, but jumps down; might be a if statement
+
+      // check that BRA target points to our expression
+      if (expressionIter->m_pos != bra_target_pos)
+      {
+         // The BRA target doesn't point to the expression used at
+         // the start of the while() loop. That indicates a for()
+         // statement which isn't parsed yet. The BRA opcode
+         // instead jumps to the for loop break condition check.
+         // Happens in conv 10.
+         UaTrace("possible for() statement found on pos %04x\n",
+            bra_target_pos);
+
+         continue;
+      }
+
+      // add statements
+      std::ostringstream buffer;
+      buffer << "while (" << expressionIter->expression_data.expression << ") {";
+
+      CodeGraphItem& whileStatement = AddStatement(expressionIter, buffer.str());
+      whileStatement.statement_data.indent_change_after = 1;
+
+      beq_iter->m_isProcessed = true;
+
+      CodeGraphItem& whileEndStatement = AddStatement(bra_iter, "} // end-while");
+      whileEndStatement.statement_data.indent_change_before = -1;
+   }
+}
+
+/// An if without else branch, code looks like this:
+///
+///   {expression}
+///   BEQ label1 -----+
+///   {code}          |
+/// label1:   <-------+
+///   ...
+///
+/// For if-else, code looks like this:
+///
+///   {expression}
+///   BEQ label1 -----+
+///   {code}          |
+///   BRA label2 --+  |
+/// label1:   <----|--+
+///   {code}       |
+/// label2:   <----+
+///   ...
+///
+void CodeGraph::FindIfElse(FuncInfo& funcInfo)
+{
+   graph_iterator iter = FindPos(funcInfo.start),
+      stop = FindPos(funcInfo.end);
+
+   // find open expression
+   for (; iter != stop; ++iter)
+   {
+      bool bIsExpression = iter->m_type == typeExpression && !iter->m_isProcessed;
+      if (!bIsExpression)
+         continue;
+
+      graph_iterator expressionIter = iter;
+
+      // a BEQ opcode must follow
+      graph_iterator beq_iter = expressionIter;
+      for (; beq_iter != stop; ++beq_iter)
+      {
+         if (!beq_iter->m_isProcessed && beq_iter->m_type == typeOpcode)
+         {
+            if (beq_iter->opcode_data.opcode == op_BEQ)
+               break; // found
+            else
+            {
+               beq_iter = stop;
+               break;
+            }
+         }
+      }
+
+      if (beq_iter == stop)
+         continue; // no BEQ found, try next expression
+
+      // BEQ must jump down (when not, there is another control structure)
+      UaAssert(beq_iter->m_pos < beq_iter->opcode_data.jump_target_pos);
+
+      // check jump target
+
+      // check if both jump targets are equal
+      Uint16 beq_target_pos = beq_iter->opcode_data.jump_target_pos;
+      graph_iterator target_iter = FindPos(beq_target_pos);
+
+      // check if there is a BRA or JMP opcode before this one
+      graph_iterator bra_iter = target_iter;
+      --bra_iter;
+
+      graph_iterator else_iter = stop;
+      graph_iterator endif_iter = stop;
+
+      // sometimes code uses JMP instead of BRA; maybe with empty if body?
+      bool bHaveElse = !bra_iter->m_isProcessed &&
+         beq_iter->m_type == typeOpcode &&
+         (bra_iter->opcode_data.opcode == op_BRA ||
+            bra_iter->opcode_data.opcode == op_JMP);
+
+      if (bHaveElse)
+      {
+         Uint16 bra_target_pos = bra_iter->opcode_data.jump_target_pos;
+
+         if (bra_target_pos < beq_target_pos)
+         {
+            UaAssert(false); // should be discovered by FindWhile() already!
+            continue; // a BRA opcode, but jumps up; might be a while statement
+         }
+
+         bra_iter->m_isProcessed = true;
+
+         else_iter = bra_iter;
+         ++else_iter;
+
+         endif_iter = FindPos(bra_target_pos);
+      }
+      else
+      {
+         endif_iter = target_iter;
+      }
+
+      beq_iter->m_isProcessed = true;
+
+      // insert statements
+      std::ostringstream buffer;
+      buffer << "if (" << expressionIter->expression_data.expression << ") {";
+
+      CodeGraphItem& ifStatement = AddStatement(expressionIter, buffer.str());
+      ifStatement.statement_data.indent_change_after = 1;
+
+      if (else_iter != stop)
+      {
+         CodeGraphItem& elseStatement = AddStatement(else_iter, "} else {", false);
+         elseStatement.statement_data.indent_change_before = -1;
+         elseStatement.statement_data.indent_change_after = 1;
+      }
+
+      CodeGraphItem& endifStatement = AddStatement(endif_iter, "} // end-if", false);
+      endifStatement.statement_data.indent_change_before = -1;
+   }
+}
+
+void CodeGraph::AddGotoJumps(FuncInfo& funcInfo)
+{
+   graph_iterator iter = FindPos(funcInfo.start),
+      stop = FindPos(funcInfo.end);
+
+   // find remaining opcodes
+   for (; iter != stop; ++iter)
    {
       // only examine opcodes that weren't processed yet
       if (iter->m_type != typeOpcode || iter->m_isProcessed)
          continue;
 
-      Uint16 opcode = iter->opcode_data.opcode;
-
-      // start for if, if-else, while and switch statement
-      if (opcode == op_BEQ)
+      if (iter->opcode_data.opcode == op_JMP)
       {
-         CodeGraphItem item = *iter;
-
-         iter->m_isProcessed = true;
-
-         // search expression before this opcode
-         graph_iterator expr_iter = iter;
-
-         while (expr_iter != start && (expr_iter->m_type != typeExpression || expr_iter->m_isProcessed))
-            expr_iter--;
-
-         UaAssert(expr_iter != start);
-         UaAssert(expr_iter->m_type == typeExpression);
-
-         // now examine jump target of BEQ opcode, label1
-         graph_iterator label1_iter = FindPos(iter->opcode_data.jump_target_pos);
-
-         graph_iterator op_iter = label1_iter;
-         op_iter--;
-
-         // check if an opcode precedes label1
-         if (op_iter->m_type == typeOpcode && !op_iter->m_isProcessed)
-         {
-            // yes, opcode before label1
-            // when we have BRA, it might be "if-else" or "while"
-            if (is_opcode(op_iter, op_BRA))
-            {
-               // it's "while" when the BRA jumps up, else it's "if-else"
-               if (op_iter->opcode_data.jump_target_pos < op_iter->m_pos)
-               {
-                  // "while" control statement
-                  // check that the BRA target points to the expression found
-                  //UaAssert(expr_iter->m_pos == op_iter->opcode_data.jump_target_pos);
-                  if (expr_iter->m_pos != op_iter->opcode_data.jump_target_pos)
-                  {
-                     // the BRA target doesn't point to the expression used at
-                     // the start of the while() loop. that indicates a for()
-                     // statement which isn't parsed yet. the BRA opcode
-                     // instead jumps to the for loop break condition check
-                     // happens in conv 10
-                     UaTrace("possible for() statement found on pos %04x\n",
-                        expr_iter->m_pos);
-                  }
-
-                  graph_iterator label2_iter = FindPos(op_iter->opcode_data.jump_target_pos);
-
-                  process_while(expr_iter, label1_iter);
-
-                  // mark items as "done"
-                  expr_iter->m_isProcessed = true;
-               }
-               else
-               {
-                  // "if-else", determine endif position
-                  graph_iterator endif_iter =
-                     FindPos(op_iter->opcode_data.jump_target_pos);
-
-                  process_if_else(true, expr_iter, label1_iter, endif_iter);
-               }
-
-               // mark items as "done"
-               op_iter->m_isProcessed = true;
-               expr_iter->m_isProcessed = true;
-            }
-            else
-               // when we have JMP, it is "switch"
-               if (is_opcode(op_iter, op_JMP))
-               {
-                  // determine if we have a switch statement
-                  if (is_switch_statement(expr_iter, op_iter))
-                     process_switch(expr_iter, op_iter);
-                  else
-                     process_if_else(false, expr_iter, m_graph.end(), label1_iter);
-               }
-               else
-                  // unknown opcode
-                  UaAssert(false);
-         }
-         else
-         {
-            // no opcode, so it must be simple "if"
-            process_if_else(false, expr_iter, m_graph.end(), label1_iter);
-         }
-      }
-   }
-}
-
-void CodeGraph::process_if_else(bool with_else,
-   const graph_iterator& expr_iter, graph_iterator else_iter,
-   const graph_iterator& endif_iter)
-{
-   expr_iter->m_isProcessed = true;
-
-   // if (expr) statement and opening brace
-   {
-      CodeGraphItem if_statement;
-
-      // if statement
-      if_statement.m_type = typeStatement;
-      if_statement.m_pos = expr_iter->m_pos;
-
-      std::ostringstream buffer;
-      buffer << "if (" << expr_iter->expression_data.expression << ")";
-
-      if_statement.statement_data.statement = buffer.str();
-
-      m_graph.insert(expr_iter, if_statement);
-
-      // opening brace
-      if_statement.statement_data.statement = "{";
-      if_statement.statement_data.indent_change_after = 1;
-
-      m_graph.insert(expr_iter, if_statement);
-   }
-
-   // else statement
-   if (with_else)
-   {
-      UaAssert(else_iter != m_graph.end())
-
-         CodeGraphItem else_statement;
-
-      else_statement.m_type = typeStatement;
-      else_statement.m_pos = else_iter->m_pos;
-      else_statement.statement_data.statement = "}";
-      else_statement.statement_data.indent_change_before = -1;
-
-      m_graph.insert(else_iter, else_statement);
-
-      else_statement.statement_data.statement = "else";
-      else_statement.statement_data.indent_change_before = 0;
-
-      m_graph.insert(else_iter, else_statement);
-
-      else_statement.statement_data.statement = "{";
-      else_statement.statement_data.indent_change_after = 1;
-
-      m_graph.insert(else_iter, else_statement);
-   }
-
-   // closing brace
-   {
-      CodeGraphItem endif_statement;
-
-      endif_statement.m_type = typeStatement;
-      endif_statement.m_pos = endif_iter->m_pos - 2;
-
-      std::ostringstream buffer;
-#ifdef HAVE_END_STMT_INFO
-      buffer << "} // end if (" << expr_iter->expression_data.expression << ")";
-#else
-      buffer << "} // end if";
-#endif
-
-      endif_statement.statement_data.statement = buffer.str();
-      endif_statement.statement_data.indent_change_before = -1;
-
-      m_graph.insert(endif_iter, endif_statement);
-   }
-}
-
-void CodeGraph::process_switch(
-   graph_iterator expr_iter, graph_iterator jmp_iter)
-{
-   // first expression; find out switch variable
-   std::string expr_base(expr_iter->expression_data.expression);
-   std::string::size_type pos = expr_base.find(" == ");
-   UaAssert(pos != std::string::npos);
-
-   // switch statement
-   {
-      CodeGraphItem switch_statement;
-      switch_statement.m_type = typeStatement;
-      switch_statement.m_pos = expr_iter->m_pos;
-
-      std::ostringstream buffer;
-      buffer << "switch (" << expr_base.substr(0, pos) << ")";
-
-      switch_statement.statement_data.statement = buffer.str();
-
-      m_graph.insert(expr_iter, switch_statement);
-
-      // opening brace
-      switch_statement.statement_data.statement = "{";
-      switch_statement.statement_data.indent_change_after = 1;
-
-      m_graph.insert(expr_iter, switch_statement);
-   }
-   pos += 4;
-
-   graph_iterator switch_end_iter =
-      FindPos(jmp_iter->opcode_data.jump_target_pos);
-
-   std::string expr(expr_base);
-
-   // process as many case statements we can find
-   do
-   {
-      // case statement
-      {
-         CodeGraphItem case_statement;
-         case_statement.m_type = typeStatement;
-         case_statement.m_pos = expr_iter->m_pos;
-
          std::ostringstream buffer;
-         buffer << "case " << expr.substr(pos) << ":";
+         buffer << "goto " << iter->opcode_data.jump_target << ";";
 
-         case_statement.statement_data.statement = buffer.str();
-         case_statement.statement_data.indent_change_before = -1;
-         case_statement.statement_data.indent_change_after = 1;
+         AddStatement(iter, buffer.str());
 
-         m_graph.insert(expr_iter, case_statement);
+         graph_iterator target_iter = FindPos(iter->opcode_data.jump_target_pos);
+
+         // check if a label was already inserted
+         if (target_iter->m_type != typeStatement ||
+            target_iter->statement_data.statement.find("label") != 0)
+         {
+            // insert goto target label
+            std::ostringstream buffer2;
+            buffer2 << iter->opcode_data.jump_target << ":;";
+
+            CodeGraphItem& labelStatement = AddStatement(iter, buffer2.str());
+            labelStatement.statement_data.indent_change_before = -1;
+            labelStatement.statement_data.indent_change_after = 1;
+         }
       }
-
-      // break statement
-      {
-         CodeGraphItem break_statement;
-         break_statement.m_type = typeStatement;
-         break_statement.m_pos = jmp_iter->m_pos;
-
-         break_statement.statement_data.statement = "break;";
-
-         m_graph.insert(jmp_iter, break_statement);
-      }
-
-      expr_iter->m_isProcessed = true;
-      jmp_iter->m_isProcessed = true;
-
-      // determine new expression iterator
-      expr_iter = jmp_iter;
-      expr_iter++;
-
-      // already at end of switch statement?
-      if (expr_iter == switch_end_iter)
-         break;
-
-      // TODO debug code
-      CodeGraphItem& expr_item = *expr_iter;
-      // TODO fix this: switch with only one expression, conv 6
-      if (expr_item.m_type != typeExpression)
-         break;
-
-      // determine next case value from expression
-      UaAssert(expr_iter->m_type == typeExpression);
-      expr = expr_iter->expression_data.expression;
-
-      UaAssert(0 == expr.find(expr_base.substr(0, pos)));
-
-      graph_iterator op_beq_iter = expr_iter;
-      op_beq_iter++;
-
-      // search next BEQ opcode
-      while ((op_beq_iter->m_type != typeOpcode ||
-         op_beq_iter->m_isProcessed) &&
-         op_beq_iter != switch_end_iter)
-         op_beq_iter++;
-
-      UaAssert(op_beq_iter->m_type == typeOpcode);
-      UaAssert(is_opcode(op_beq_iter, op_BEQ));
-
-      op_beq_iter->m_isProcessed = true;
-
-      Uint16 jmp_item_pos = op_beq_iter->opcode_data.jump_target_pos;
-      jmp_iter = FindPos(jmp_item_pos);
-      jmp_iter--;
-
-      CodeGraphItem& jmp_item = *jmp_iter;
-
-      // search opcode before item
-      while (jmp_iter->m_type != typeOpcode &&
-         jmp_iter->m_pos < jmp_item_pos)
-      {
-         jmp_iter--;
-         CodeGraphItem& jmp_item = *jmp_iter;
-      }
-
-      UaAssert(jmp_iter->m_type == typeOpcode);
-      UaAssert(is_opcode(jmp_iter, op_JMP));
-
-   } while (expr_iter != switch_end_iter);
-
-
-   // switch end statement
-   {
-      CodeGraphItem switch_statement;
-      switch_statement.m_type = typeStatement;
-      // use end switch iterator pos, only 2 opcodes before
-      switch_statement.m_pos = switch_end_iter->m_pos - 2;
-
-      std::ostringstream buffer;
-#ifdef HAVE_END_STMT_INFO
-      buffer << "} // end switch (" << expr.substr(0, pos - 4) << ")";
-#else
-      buffer << "} // end switch";
-#endif
-
-      switch_statement.statement_data.statement = buffer.str();
-      switch_statement.statement_data.indent_change_before = -1;
-
-      m_graph.insert(switch_end_iter, switch_statement);
+      else
+         UaAssert(false); // unhandled open opcode
    }
 }
 
-bool CodeGraph::is_switch_statement(graph_iterator expr_iter,
-   graph_iterator jmp_iter)
-{
-   // check if expression contains "==" operator
-   std::string expr_base(expr_iter->expression_data.expression);
-   std::string::size_type pos = expr_base.find(" == ");
-
-   // definitely no switch statement
-   if (std::string::npos == pos)
-      return false;
-
-   // collect all expressions
-   std::vector<std::string> allexpressions;
-
-   graph_iterator switch_end_iter =
-      FindPos(jmp_iter->opcode_data.jump_target_pos);
-
-   do
-   {
-      // remember expression
-      allexpressions.push_back(expr_iter->expression_data.expression);
-
-      // determine new expression iterator
-      expr_iter = jmp_iter;
-      expr_iter++;
-
-      // already at end of switch statement?
-      if (expr_iter == switch_end_iter)
-         break;
-
-      // switch with only one expression?
-      if (expr_iter->m_type != typeExpression)
-         break;
-
-      graph_iterator op_beq_iter = expr_iter;
-      op_beq_iter++;
-
-      // search next BEQ opcode
-      while ((op_beq_iter->m_type != typeOpcode ||
-         op_beq_iter->m_isProcessed) &&
-         op_beq_iter != switch_end_iter)
-         op_beq_iter++;
-
-      // special case for uw1, conversation 7:
-      if (op_beq_iter->m_type != typeOpcode)
-         break;
-
-      UaAssert(op_beq_iter->m_type == typeOpcode);
-      UaAssert(is_opcode(op_beq_iter, op_BEQ));
-
-      jmp_iter = FindPos(op_beq_iter->opcode_data.jump_target_pos);
-      jmp_iter--;
-
-      // special case for uw1, conversation 136, 144
-      if (jmp_iter->m_type != typeOpcode || !is_opcode(jmp_iter, op_JMP))
-         break;
-
-      UaAssert(jmp_iter->m_type == typeOpcode);
-      UaAssert(is_opcode(jmp_iter, op_JMP));
-
-   } while (expr_iter != switch_end_iter);
-
-   // only one expression?
-   unsigned int max = allexpressions.size();
-   if (max <= 1)
-      return false;
-
-   // compare all expressions for same pattern
-   for (unsigned int i = 1; i < max; i++)
-   {
-      if (std::string::npos == allexpressions[i].find(" == "))
-         return false;
-
-      if (0 != allexpressions[i].find(expr_base.substr(0, pos)))
-         return false;
-   }
-
-   return true;
-}
-
-void CodeGraph::process_while(
-   const graph_iterator& expr_iter, const graph_iterator& while_end_iter)
-{
-   // while-statement
-   CodeGraphItem while_statement;
-
-   while_statement.m_type = typeStatement;
-   while_statement.m_pos = expr_iter->m_pos;
-
-   std::ostringstream buffer;
-   buffer << "while (" << expr_iter->expression_data.expression << ")";
-
-   while_statement.statement_data.statement = buffer.str();
-
-   m_graph.insert(expr_iter, while_statement);
-
-   // opening brace
-   while_statement.statement_data.statement = "{";
-   while_statement.statement_data.indent_change_after = 1;
-
-   m_graph.insert(expr_iter, while_statement);
-
-   // closing brace
-   std::ostringstream buffer2;
-#ifdef HAVE_END_STMT_INFO
-   buffer2 << "} // end while (" << expr_iter->expression_data.expression << ")";
-#else
-   buffer2 << "} // end while";
-#endif
-
-   while_statement.statement_data.statement = buffer2.str();
-   while_statement.statement_data.indent_change_before = -1;
-   while_statement.statement_data.indent_change_after = 0;
-   while_statement.m_pos = while_end_iter->m_pos - 2;
-
-   m_graph.insert(while_end_iter, while_statement);
-}
-
-void CodeGraph::post_process_function(Conv::FuncInfo& info)
+void CodeGraph::PostProcessFunction(FuncInfo& funcInfo)
 {
    // get function start
-   graph_iterator func_start = FindPos(info.start);
-   CodeGraphItem& item = *func_start;
-   UaAssert(item.m_type == typeFuncStart);
-
-   item.m_isProcessed = true;
-
-   CodeGraphItem func_item;
-   func_item.m_type = typeStatement;
-   func_item.m_pos = item.m_pos;
+   graph_iterator iter = FindPos(funcInfo.start);
+   CodeGraphItem& startItem = *iter;
+   UaAssert(startItem.m_type == typeFuncStart);
 
    std::ostringstream buffer;
 
    // return type
-   buffer << DataTypeToString(info.return_type) << " ";
+   buffer << DataTypeToString(funcInfo.return_type) << " ";
 
    // function name
-   buffer << item.m_labelName << "(";
+   buffer << startItem.m_labelName << "(";
 
    // parameters
-   const std::vector<EDataType>& param_types = info.param_types;
+   const std::vector<EDataType>& param_types = funcInfo.param_types;
 
    unsigned int max = param_types.size();
    for (unsigned int i = 0; i < max; i++)
@@ -1784,155 +1829,139 @@ void CodeGraph::post_process_function(Conv::FuncInfo& info)
    }
 
    buffer << ")";
-   buffer << " // referenced " << item.m_xrefCount << " times";
+   buffer << " // referenced " << startItem.m_xrefCount << " times";
 
-   func_item.statement_data.statement = buffer.str();
-
-   m_graph.insert(func_start, func_item);
-
-   func_item.m_labelName = "";
+   CodeGraphItem& startStatement = AddStatement(iter, buffer.str());
+   startStatement.statement_data.indent_change_after = 0;
 
    // opening brace
-   func_item.statement_data.statement = "{";
-   func_item.statement_data.indent_change_after = 1;
+   CodeGraphItem& funcBrace = AddStatement(iter, "{");
+   funcBrace.statement_data.indent_change_after = 1;
 
-   m_graph.insert(func_start, func_item);
-
-   func_item.statement_data.indent_change_after = 0;
-
-   // all locals and arrays
-   CodeGraphItem locals_item;
-   locals_item.m_type = typeStatement;
-   locals_item.m_pos = item.m_pos;
-
-   max = info.locals_types.size();
+   // add all locals and arrays
+   max = funcInfo.locals_types.size();
    for (unsigned int j = 0; j < max; j++)
    {
-      EDataType type = info.locals_types[j];
+      EDataType type = funcInfo.locals_types[j];
 
       if (type != dataTypeUnknown)
       {
-         std::ostringstream buffer;
-         buffer << DataTypeToString(type) << " local_" << j << ";";
+         std::ostringstream buffer2;
+         buffer2 << DataTypeToString(type) << " local_" << j << ";";
 
-         locals_item.statement_data.statement = buffer.str();
-
-         m_graph.insert(func_start, locals_item);
+         AddStatement(iter, buffer2.str());
       }
    }
 
    // arrays
-   max = info.array_info.size();
+   max = funcInfo.array_info.size();
    for (unsigned int n = 0; n < max; n++)
    {
-      ArrayInfo array_info = info.array_info[n];
+      ArrayInfo array_info = funcInfo.array_info[n];
 
-      std::ostringstream buffer;
+      std::ostringstream buffer2;
 
-      UaAssert(array_info.local_start <= info.locals_types.size());
+      UaAssert(array_info.local_start <= funcInfo.locals_types.size());
 
-      buffer << DataTypeToString(info.locals_types[array_info.local_start]) <<
+      buffer2 << DataTypeToString(funcInfo.locals_types[array_info.local_start]) <<
          " local_" << array_info.local_start <<
          "[" << array_info.array_size << "];";
 
-      locals_item.statement_data.statement = buffer.str();
-
-      m_graph.insert(func_start, locals_item);
+      AddStatement(iter, buffer2.str());
    }
 
    // add function end
-   graph_iterator func_end = func_start;
-   while (func_end != m_graph.end() && func_end->m_type != typeFuncEnd)
-      func_end++;
-   UaAssert(func_end != m_graph.end() && func_end->m_type == typeFuncEnd);
+   iter = FindPos(funcInfo.end);
+   while (iter != m_graph.end() && iter->m_type != typeFuncEnd)
+      ++iter;
 
-   func_end->m_isProcessed = true;
-
-   func_item.m_type = typeStatement;
-   func_item.m_pos = func_end->m_pos;
-   func_item.statement_data.statement = "}";
-   func_item.statement_data.indent_change_before = -1;
-
-   m_graph.insert(func_end, func_item);
+   CodeGraphItem& endStatement = AddStatement(iter++, "} // end-function");
+   endStatement.statement_data.indent_change_before = -1;
 
    // empty line
-   func_item.statement_data.statement = "";
-   func_item.statement_data.indent_change_before = 0;
-
-   m_graph.insert(func_end, func_item);
+   AddStatement(iter, "");
 }
 
-void CodeGraph::add_goto_jumps(const graph_iterator& start,
-   const graph_iterator& stop)
+void CodeGraph::MarkFunctionsUnused()
 {
-   graph_iterator iter;
-
-   // search for remaining opcodes
-   for (iter = start; iter != stop; iter++)
+   std::for_each(m_functionMap.begin(), m_functionMap.end(), [&](const FunctionMap::value_type& val)
    {
-      // only examine opcodes that weren't processed yet
-      if (iter->m_type != typeOpcode || iter->m_isProcessed)
-         continue;
+      const FuncInfo& funcInfo = val.second;
 
-      if (iter->opcode_data.opcode == op_JMP)
+      Uint16 startPos = funcInfo.start;
+      if (m_processedFunctions.find(startPos) == m_processedFunctions.end())
       {
-         iter->m_isProcessed = true;
+         if (funcInfo.name.find("unused_") == 0)
+            return;
 
-         // insert goto statement
-         CodeGraphItem goto_item;
-         goto_item.m_type = typeStatement;
-         goto_item.m_pos = iter->m_pos;
+         // unused; mark with 0 xrefs
+         graph_iterator iter = FindPos(funcInfo.start);
+         UaAssert(iter != m_graph.end());
 
-         std::ostringstream buffer;
-         buffer << "goto " << iter->opcode_data.jump_target << ";";
-         goto_item.statement_data.statement = buffer.str();
-
-         m_graph.insert(iter, goto_item);
-
-         graph_iterator target_iter =
-            FindPos(iter->opcode_data.jump_target_pos);
-
-         // check if a label was already inserted
-         if (target_iter->m_type != typeStatement ||
-            target_iter->statement_data.statement.find("label") != 0)
-         {
-            // insert goto target label
-            CodeGraphItem label_item;
-            label_item.m_type = typeStatement;
-            label_item.m_pos = target_iter->m_pos;
-
-            std::ostringstream buffer2;
-            buffer2 << iter->opcode_data.jump_target << ":;";
-            label_item.statement_data.statement = buffer2.str();
-            label_item.statement_data.indent_change_before = -1;
-            label_item.statement_data.indent_change_after = 1;
-
-            m_graph.insert(target_iter, label_item);
-         }
+         UaTrace("removing function %s, it is never called\n", funcInfo.name.c_str());
+         iter->m_xrefCount = 0;
       }
-   }
+   });
 }
+
+// helper functions
 
 CodeGraph::graph_iterator CodeGraph::FindPos(Uint16 target)
 {
-   graph_iterator iter, stop;
-   iter = m_graph.begin();
-   stop = m_graph.end();
+   graph_iterator iter = m_graph.begin(), stop = m_graph.end();
 
-   for (; iter != stop; iter++)
+   for (; iter != stop; ++iter)
       if (iter->m_pos == target)
          return iter;
 
    // should not happen
-   UaAssert(0);
+   UaAssert(false);
    return stop;
 }
 
-bool CodeGraph::MatchOpcodePattern(graph_iterator iter, Uint16* pattern,
-   unsigned int length) const
+bool CodeGraph::IsOpcode(const_graph_iterator iter, Uint16 opcode) const
+{
+   return (iter->m_type == typeOpcode &&
+      iter->opcode_data.opcode == opcode);
+}
+
+CodeGraph::graph_iterator CodeGraph::FindOpcodePattern(graph_iterator iter, graph_iterator stop,
+   const Uint16* pattern, unsigned int length)
+{
+   unsigned int matchCount = 0;
+
+   graph_iterator found = stop;
+
+   for (; iter != stop; ++iter)
+   {
+      if (iter->m_type != typeOpcode)
+         continue;
+
+      if (iter->opcode_data.opcode == pattern[matchCount])
+      {
+         if (matchCount == 0)
+            found = iter;
+
+         ++matchCount;
+
+         if (matchCount == length)
+            return found; // found! return start
+      }
+      else
+      {
+         matchCount = 0; // reset; not all pattern opcodes matched
+         found = stop;
+      }
+   }
+
+   return stop;
+}
+
+bool CodeGraph::MatchOpcodePattern(const_graph_iterator iter, const_graph_iterator stop,
+   const Uint16* pattern, unsigned int length) const
 {
    for (unsigned int i = 0; i < length; i++, iter++)
-      if (iter == m_graph.end() || iter->m_type != typeOpcode ||
+      if (iter == stop || iter->m_type != typeOpcode ||
          iter->opcode_data.opcode != pattern[i])
          return false;
 
@@ -1940,34 +1969,25 @@ bool CodeGraph::MatchOpcodePattern(graph_iterator iter, Uint16* pattern,
    return true;
 }
 
-bool CodeGraph::is_opcode(graph_iterator iter, Uint16 opcode) const
+void CodeGraph::SetOpcodesProcessed(graph_iterator iter, graph_iterator stop,
+   unsigned int numOpcodes)
 {
-   return (iter->m_type == typeOpcode &&
-      iter->opcode_data.opcode == opcode);
+   for (unsigned int i = 0; i < numOpcodes && iter != stop; ++iter)
+   {
+      if (iter->m_type == typeOpcode)
+      {
+         iter->m_isProcessed = true;
+         i++;
+      }
+   }
 }
 
-void CodeGraph::PushiImmediateToGlobal(graph_iterator iter)
+std::string CodeGraph::GetMemoryVarName(Uint16 memoryIndex) const
 {
-   UaAssert(iter->m_type == typeExpression);
-   UaAssert(true == iter->expression_data.is_pushi_imm);
-   UaAssert(false == iter->expression_data.is_address);
+   UaAssert(memoryIndex < m_numGlobals);
 
-   // resolve to proper address
-   Uint16 mem_idx = iter->expression_data.pushi_imm_value;
-
-   iter->expression_data.expression = GetMemoryVarName(mem_idx);
-
-   iter->expression_data.is_pushi_imm = false;
-   iter->expression_data.pushi_imm_value = 0;
-   iter->expression_data.is_address = true;
-}
-
-std::string CodeGraph::GetMemoryVarName(Uint16 mem_idx)
-{
-   UaAssert(mem_idx < nglobals);
-
-   std::map<Uint16, Conv::ImportedItem>::iterator iter =
-      m_mapImportedVariables.find(mem_idx);
+   std::map<Uint16, ImportedItem>::const_iterator iter =
+      m_mapImportedVariables.find(memoryIndex);
 
    if (iter != m_mapImportedVariables.end())
    {
@@ -1976,10 +1996,26 @@ std::string CodeGraph::GetMemoryVarName(Uint16 mem_idx)
    else
    {
       std::ostringstream buffer;
-      buffer << "global_" << mem_idx;
+      buffer << "global_" << memoryIndex;
 
       return buffer.str();
    }
+}
+
+void CodeGraph::PushiImmediateToGlobal(graph_iterator iter)
+{
+   UaAssert(iter->m_type == typeExpression);
+   UaAssert(true == iter->expression_data.is_pushi_imm);
+   UaAssert(false == iter->expression_data.isAddress);
+
+   // resolve to proper address
+   Uint16 memoryIndex = iter->expression_data.pushi_imm_value;
+
+   iter->expression_data.expression = GetMemoryVarName(memoryIndex);
+
+   iter->expression_data.is_pushi_imm = false;
+   iter->expression_data.pushi_imm_value = 0;
+   iter->expression_data.isAddress = true;
 }
 
 const char* CodeGraph::DataTypeToString(Conv::EDataType type)
@@ -1990,6 +2026,7 @@ const char* CodeGraph::DataTypeToString(Conv::EDataType type)
    case dataTypeInt: return "int";
    case dataTypeString: return "string";
    default:
+      UaAssert(false);
       return "unknown";
    }
 }
