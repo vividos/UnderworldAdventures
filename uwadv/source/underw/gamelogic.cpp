@@ -42,7 +42,7 @@ void GameLogic::EvaluateUnderworld(double time)
    if (m_isStopped)
       return;
 
-   double elapsed = m_lastEvalTime > 0 ? time - m_lastEvalTime : 0.1;
+   //double elapsed = m_lastEvalTime > 0 ? time - m_lastEvalTime : 0.1;
 
    if (m_isAttacking)
    {

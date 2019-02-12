@@ -93,9 +93,9 @@ namespace UnitTest
       /// Tests loading level list, uw_demo
       TEST_METHOD(TestLevelListImportUwDemo)
       {
+#if 0
          Base::Settings& settings = GetTestSettings();
 
-#if 0
          // uw_demo loading
          settings.SetValue(Base::settingGamePrefix, std::string("uw1"));
          settings.SetValue(Base::settingUw1IsUwdemo, true);
