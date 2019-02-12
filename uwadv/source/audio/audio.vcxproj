@@ -30,11 +30,11 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\source\uwadv-release.props" />
+    <Import Project="..\uwadv-release.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\source\uwadv-debug.props" />
+    <Import Project="..\uwadv-debug.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -71,83 +71,83 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\source\audio\audio.cpp">
+    <ClCompile Include="audio.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\source\audio\midiplayer.cpp" />
-    <ClCompile Include="..\..\source\audio\midi\CoreAudioMidiDriver.cpp">
+    <ClCompile Include="midiplayer.cpp" />
+    <ClCompile Include="midi\CoreAudioMidiDriver.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\source\audio\midi\LowLevelMidiDriver.cpp">
+    <ClCompile Include="midi\LowLevelMidiDriver.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\source\audio\midi\MidiDriver.cpp">
+    <ClCompile Include="midi\MidiDriver.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\source\audio\midi\WindowsMidiDriver.cpp">
+    <ClCompile Include="midi\WindowsMidiDriver.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\source\audio\midi\XMidiEventList.cpp">
+    <ClCompile Include="midi\XMidiEventList.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\source\audio\midi\XMidiFile.cpp">
+    <ClCompile Include="midi\XMidiFile.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\source\audio\midi\XMidiSequence.cpp">
+    <ClCompile Include="midi\XMidiSequence.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\source\audio\playlist.cpp" />
-    <ClCompile Include="..\..\source\audio\resamp.c">
+    <ClCompile Include="playlist.cpp" />
+    <ClCompile Include="resamp.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\source\audio\vocfile.cpp" />
-    <ClCompile Include="..\..\source\audio\vocresample.cpp" />
+    <ClCompile Include="vocfile.cpp" />
+    <ClCompile Include="vocresample.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\source\audio\audio.hpp" />
-    <ClInclude Include="..\..\source\audio\midiplayer.hpp" />
-    <ClInclude Include="..\..\source\audio\midi\common_types.h" />
-    <ClInclude Include="..\..\source\audio\midi\CoreAudioMidiDriver.h" />
-    <ClInclude Include="..\..\source\audio\midi\IDataSource.h" />
-    <ClInclude Include="..\..\source\audio\midi\LowLevelMidiDriver.h" />
-    <ClInclude Include="..\..\source\audio\midi\MidiDriver.h" />
-    <ClInclude Include="..\..\source\audio\midi\ODataSource.h" />
-    <ClInclude Include="..\..\source\audio\midi\pent_include.h" />
-    <ClInclude Include="..\..\source\audio\midi\WindowsMidiDriver.h" />
-    <ClInclude Include="..\..\source\audio\midi\XMidiEvent.h" />
-    <ClInclude Include="..\..\source\audio\midi\XMidiEventList.h" />
-    <ClInclude Include="..\..\source\audio\midi\XMidiFile.h" />
-    <ClInclude Include="..\..\source\audio\midi\XMidiNoteStack.h" />
-    <ClInclude Include="..\..\source\audio\midi\XMidiSequence.h" />
-    <ClInclude Include="..\..\source\audio\midi\XMidiSequenceHandler.h" />
-    <ClInclude Include="..\..\source\audio\playlist.hpp" />
-    <ClInclude Include="..\..\source\audio\resamp.h" />
-    <ClInclude Include="..\..\source\audio\vocfile.hpp" />
+    <ClInclude Include="audio.hpp" />
+    <ClInclude Include="midiplayer.hpp" />
+    <ClInclude Include="midi\common_types.h" />
+    <ClInclude Include="midi\CoreAudioMidiDriver.h" />
+    <ClInclude Include="midi\IDataSource.h" />
+    <ClInclude Include="midi\LowLevelMidiDriver.h" />
+    <ClInclude Include="midi\MidiDriver.h" />
+    <ClInclude Include="midi\ODataSource.h" />
+    <ClInclude Include="midi\pent_include.h" />
+    <ClInclude Include="midi\WindowsMidiDriver.h" />
+    <ClInclude Include="midi\XMidiEvent.h" />
+    <ClInclude Include="midi\XMidiEventList.h" />
+    <ClInclude Include="midi\XMidiFile.h" />
+    <ClInclude Include="midi\XMidiNoteStack.h" />
+    <ClInclude Include="midi\XMidiSequence.h" />
+    <ClInclude Include="midi\XMidiSequenceHandler.h" />
+    <ClInclude Include="playlist.hpp" />
+    <ClInclude Include="resamp.h" />
+    <ClInclude Include="vocfile.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="base.vcxproj">

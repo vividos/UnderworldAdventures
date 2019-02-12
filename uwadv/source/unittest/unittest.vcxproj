@@ -31,11 +31,11 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\source\uwadv-release.props" />
+    <Import Project="..\uwadv-release.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\source\uwadv-debug.props" />
+    <Import Project="..\uwadv-debug.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -74,27 +74,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\source\unittest\archivefiletest.cpp" />
-    <ClCompile Include="..\..\source\unittest\audiotest.cpp" />
-    <ClCompile Include="..\..\source\unittest\cfgfiletest.cpp" />
-    <ClCompile Include="..\..\source\unittest\filesystemtest.cpp" />
-    <ClCompile Include="..\..\source\unittest\filetest.cpp" />
-    <ClCompile Include="..\..\source\unittest\importtest.cpp" />
-    <ClCompile Include="..\..\source\unittest\keymaptest.cpp" />
-    <ClCompile Include="..\..\source\unittest\resourcemanagertest.cpp" />
-    <ClCompile Include="..\..\source\unittest\savegametest.cpp" />
-    <ClCompile Include="..\..\source\unittest\settingstest.cpp" />
-    <ClCompile Include="..\..\source\unittest\stringtest.cpp" />
-    <ClCompile Include="..\..\source\unittest\tempfolder.cpp" />
-    <ClCompile Include="..\..\source\unittest\underworldtest.cpp" />
-    <ClCompile Include="..\..\source\unittest\unittest.cpp">
+    <ClCompile Include="archivefiletest.cpp" />
+    <ClCompile Include="audiotest.cpp" />
+    <ClCompile Include="cfgfiletest.cpp" />
+    <ClCompile Include="filesystemtest.cpp" />
+    <ClCompile Include="filetest.cpp" />
+    <ClCompile Include="importtest.cpp" />
+    <ClCompile Include="keymaptest.cpp" />
+    <ClCompile Include="resourcemanagertest.cpp" />
+    <ClCompile Include="savegametest.cpp" />
+    <ClCompile Include="settingstest.cpp" />
+    <ClCompile Include="stringtest.cpp" />
+    <ClCompile Include="tempfolder.cpp" />
+    <ClCompile Include="underworldtest.cpp" />
+    <ClCompile Include="unittest.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\source\unittest\tempfolder.hpp" />
-    <ClInclude Include="..\..\source\unittest\unittest.hpp" />
+    <ClInclude Include="tempfolder.hpp" />
+    <ClInclude Include="unittest.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\audio\audio.vcxproj">

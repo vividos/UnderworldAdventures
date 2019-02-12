@@ -17,102 +17,102 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\source\audio\audio.cpp">
+    <ClCompile Include="audio.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\audio\midiplayer.cpp">
+    <ClCompile Include="midiplayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\audio\playlist.cpp">
+    <ClCompile Include="playlist.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\audio\resamp.c">
+    <ClCompile Include="resamp.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\audio\vocfile.cpp">
+    <ClCompile Include="vocfile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\audio\vocresample.cpp">
+    <ClCompile Include="vocresample.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\audio\midi\CoreAudioMidiDriver.cpp">
+    <ClCompile Include="midi\CoreAudioMidiDriver.cpp">
       <Filter>Midi Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\audio\midi\LowLevelMidiDriver.cpp">
+    <ClCompile Include="midi\LowLevelMidiDriver.cpp">
       <Filter>Midi Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\audio\midi\MidiDriver.cpp">
+    <ClCompile Include="midi\MidiDriver.cpp">
       <Filter>Midi Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\audio\midi\WindowsMidiDriver.cpp">
+    <ClCompile Include="midi\WindowsMidiDriver.cpp">
       <Filter>Midi Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\audio\midi\XMidiEventList.cpp">
+    <ClCompile Include="midi\XMidiEventList.cpp">
       <Filter>Midi Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\audio\midi\XMidiFile.cpp">
+    <ClCompile Include="midi\XMidiFile.cpp">
       <Filter>Midi Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\audio\midi\XMidiSequence.cpp">
+    <ClCompile Include="midi\XMidiSequence.cpp">
       <Filter>Midi Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\source\audio\audio.hpp">
+    <ClInclude Include="audio.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\audio\midiplayer.hpp">
+    <ClInclude Include="midiplayer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\audio\playlist.hpp">
+    <ClInclude Include="playlist.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\audio\resamp.h">
+    <ClInclude Include="resamp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\audio\vocfile.hpp">
+    <ClInclude Include="vocfile.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\audio\midi\common_types.h">
+    <ClInclude Include="midi\common_types.h">
       <Filter>Midi Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\audio\midi\CoreAudioMidiDriver.h">
+    <ClInclude Include="midi\CoreAudioMidiDriver.h">
       <Filter>Midi Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\audio\midi\IDataSource.h">
+    <ClInclude Include="midi\IDataSource.h">
       <Filter>Midi Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\audio\midi\LowLevelMidiDriver.h">
+    <ClInclude Include="midi\LowLevelMidiDriver.h">
       <Filter>Midi Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\audio\midi\MidiDriver.h">
+    <ClInclude Include="midi\MidiDriver.h">
       <Filter>Midi Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\audio\midi\ODataSource.h">
+    <ClInclude Include="midi\ODataSource.h">
       <Filter>Midi Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\audio\midi\pent_include.h">
+    <ClInclude Include="midi\pent_include.h">
       <Filter>Midi Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\audio\midi\WindowsMidiDriver.h">
+    <ClInclude Include="midi\WindowsMidiDriver.h">
       <Filter>Midi Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\audio\midi\XMidiEvent.h">
+    <ClInclude Include="midi\XMidiEvent.h">
       <Filter>Midi Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\audio\midi\XMidiEventList.h">
+    <ClInclude Include="midi\XMidiEventList.h">
       <Filter>Midi Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\audio\midi\XMidiFile.h">
+    <ClInclude Include="midi\XMidiFile.h">
       <Filter>Midi Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\audio\midi\XMidiNoteStack.h">
+    <ClInclude Include="midi\XMidiNoteStack.h">
       <Filter>Midi Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\audio\midi\XMidiSequence.h">
+    <ClInclude Include="midi\XMidiSequence.h">
       <Filter>Midi Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\audio\midi\XMidiSequenceHandler.h">
+    <ClInclude Include="midi\XMidiSequenceHandler.h">
       <Filter>Midi Header Files</Filter>
     </ClInclude>
   </ItemGroup>

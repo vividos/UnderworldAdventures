@@ -11,54 +11,54 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\source\unittest\archivefiletest.cpp">
+    <ClCompile Include="archivefiletest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\unittest\audiotest.cpp">
+    <ClCompile Include="audiotest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\unittest\cfgfiletest.cpp">
+    <ClCompile Include="cfgfiletest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\unittest\filesystemtest.cpp">
+    <ClCompile Include="filesystemtest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\unittest\filetest.cpp">
+    <ClCompile Include="filetest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\unittest\importtest.cpp">
+    <ClCompile Include="importtest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\unittest\keymaptest.cpp">
+    <ClCompile Include="keymaptest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\unittest\resourcemanagertest.cpp">
+    <ClCompile Include="resourcemanagertest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\unittest\savegametest.cpp">
+    <ClCompile Include="savegametest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\unittest\settingstest.cpp">
+    <ClCompile Include="settingstest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\unittest\stringtest.cpp">
+    <ClCompile Include="stringtest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\unittest\tempfolder.cpp">
+    <ClCompile Include="tempfolder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\unittest\underworldtest.cpp">
+    <ClCompile Include="underworldtest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\unittest\unittest.cpp">
+    <ClCompile Include="unittest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\source\unittest\tempfolder.hpp">
+    <ClInclude Include="tempfolder.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\unittest\unittest.hpp">
+    <ClInclude Include="unittest.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
