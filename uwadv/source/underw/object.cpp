@@ -29,6 +29,36 @@ using Underworld::NpcInfo;
 using Underworld::Object;
 using Underworld::NpcObject;
 
+NpcObject& Object::GetNpcObject()
+{
+   UaAssert(IsNpcObject()); // must be an NPC object; check before calling this method!
+
+   if (!IsNpcObject())
+      throw Base::Exception("not an NPC object!");
+
+   NpcObject* npc = dynamic_cast<NpcObject*>(this);
+   UaAssert(npc != NULL);
+   if (npc == NULL)
+      throw Base::Exception("not an NPC object - should not happen!");
+
+   return *npc;
+}
+
+const NpcObject& Object::GetNpcObject() const
+{
+   UaAssert(IsNpcObject()); // must be an NPC object; check before calling this method!
+
+   if (!IsNpcObject())
+      throw Base::Exception("not an NPC object!");
+
+   NpcObject const* npc = dynamic_cast<NpcObject const*>(this);
+   UaAssert(npc != NULL);
+   if (npc == NULL)
+      throw Base::Exception("not an NPC object - should not happen!");
+
+   return *npc;
+}
+
 void ObjectInfo::Load(Base::Savegame& sg)
 {
    m_itemID = sg.Read16();

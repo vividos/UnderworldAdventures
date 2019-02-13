@@ -28,6 +28,8 @@ namespace Base
 
 namespace Underworld
 {
+   class NpcObject;
+
    /// item id for unused object
    const Uint16 c_itemIDNone = 0xffff;
 
@@ -178,6 +180,15 @@ namespace Underworld
       /// returns object position info; const version
       const ObjectPositionInfo& GetPosInfo() const { return m_posInfo; }
 
+      /// returns if this object is an NPC object
+      bool IsNpcObject() const { return GetObjectType() == objectNpc; }
+
+      /// returns NPC object when this object is an NPC; check with IsNpcObject() before calling!
+      NpcObject& GetNpcObject();
+
+      /// returns NPC object when this object is an NPC; const version
+      const NpcObject& Object::GetNpcObject() const;
+
       // loading / saving
 
       /// loads object from savegame
@@ -236,28 +247,5 @@ namespace Underworld
 
    /// smart pointer to Object
    typedef std::shared_ptr<Object> ObjectPtr;
-
-
-   /// returns if given object is a NPC object
-   inline bool IsNpcObject(const ObjectPtr& ptr)
-   {
-      return ptr->GetObjectType() == objectNpc;
-   }
-
-   /// \brief Casts object ptr to NPC object
-   /// \details Check pointer with IsNpcObject() before attempting to cast.
-   inline NpcObject& CastToNpcObject(ObjectPtr& ptr)
-   {
-      UaAssert(IsNpcObject(ptr) == true);
-      return *reinterpret_cast<NpcObject*>(ptr.get());
-   }
-
-   /// \brief Casts object ptr to NPC object
-   /// \details Check pointer with IsNpcObject() before attempting to cast.
-   inline const NpcObject& CastToNpcObject(const ObjectPtr& ptr)
-   {
-      UaAssert(IsNpcObject(ptr) == true);
-      return *reinterpret_cast<const NpcObject*>(ptr.get());
-   }
 
 } // namespace Underworld

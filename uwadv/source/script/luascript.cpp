@@ -924,7 +924,7 @@ int LuaScripting::objlist_get_info(lua_State* L)
    lua_pushnumber(L, static_cast<double>(info.m_quantity));
    lua_settable(L, -3);
 
-   bool isNpc = Underworld::IsNpcObject(obj);
+   bool isNpc = obj->IsNpcObject();
 
    lua_pushstring(L, "npc_used");
    lua_pushnumber(L, isNpc ? 1.0 : 0.0);
@@ -933,7 +933,7 @@ int LuaScripting::objlist_get_info(lua_State* L)
    // add npc infos
    if (isNpc)
    {
-      Underworld::NpcObject& npc = Underworld::CastToNpcObject(obj);
+      Underworld::NpcObject& npc = obj->GetNpcObject();
       Underworld::NpcInfo& npcInfo = npc.GetNpcInfo();
 
       lua_pushstring(L, "npc_hp");

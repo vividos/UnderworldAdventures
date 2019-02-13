@@ -198,10 +198,10 @@ Underworld::ObjectPtr ObjectListLoader::AddObject(Uint16 uiPos, Uint8 xpos, Uint
 /// \todo find out more npc object properties
 void ObjectListLoader::AddNpcInfos(Underworld::ObjectPtr& obj, Uint8* npcInfos)
 {
-   UaAssert(IsNpcObject(obj) == true);
+   UaAssert(obj->IsNpcObject() == true);
    UaAssert(npcInfos != NULL);
 
-   Underworld::NpcObject& npc = CastToNpcObject(obj);
+   Underworld::NpcObject& npc = obj->GetNpcObject();
    Underworld::NpcInfo& npcInfo = npc.GetNpcInfo();
 
    npcInfo.npc_hp = npcInfos[0x0000];

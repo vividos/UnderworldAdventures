@@ -239,9 +239,9 @@ Uint16 Conversation::GetGlobal(const char* globalName)
    Underworld::ObjectPtr npc_obj = m_gameLogic.GetUnderworld().GetLevelList().
       GetLevel(m_conversationLevel).GetObjectList().GetObject(m_conversationObjectPos);
 
-   UaAssert(Underworld::IsNpcObject(npc_obj));
+   UaAssert(npc_obj->IsNpcObject());
 
-   Underworld::NpcInfo& info_ext = Underworld::CastToNpcObject(npc_obj).GetNpcInfo();
+   Underworld::NpcInfo& info_ext = npc_obj->GetNpcObject().GetNpcInfo();
 
    if (globname.compare("play_name") == 0)
       val = AllocString(player.GetName().c_str());
@@ -308,9 +308,9 @@ void Conversation::SetGlobal(const char* globalName, Uint16 val)
    Underworld::ObjectPtr npc_obj = m_gameLogic.GetUnderworld().GetLevelList().
       GetLevel(m_conversationLevel).GetObjectList().GetObject(m_conversationObjectPos);
 
-   UaAssert(Underworld::IsNpcObject(npc_obj));
+   UaAssert(npc_obj->IsNpcObject());
 
-   Underworld::NpcInfo& info_ext = Underworld::CastToNpcObject(npc_obj).GetNpcInfo();
+   Underworld::NpcInfo& info_ext = npc_obj->GetNpcObject().GetNpcInfo();
 
    if (globname.compare("play_name") == 0)
    {
