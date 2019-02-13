@@ -60,9 +60,19 @@ function template_body_menu()
    <img src="top2.jpg" align="right" alt="Underworld Adventures logo part 2"/>
   </td></tr></table>
  </td></tr></table>
-
-
 <!-- title end -->
+
+<!-- redirect note -->
+ <table width="100%" border="0" bgcolor="black" cellspacing="0" cellpadding="1" align="center" style="margin-top: 6px; margin-bottom: 2px">
+ <tr><td>
+  <table width="100%" border="0" bgcolor="white" cellspacing="0" cellpadding="0" align="center">
+  <tr><td bgcolor="#ffea00" height="40" style="padding:6px">
+    The new Underworld Adventures project homepage can be found here:<br/>
+	<b style="text-si"><a href="https://vividos.github.io/UnderworldAdventures/">https://vividos.github.io/UnderworldAdventures/</a></b>
+  </td></tr></table>
+ </td></tr></table>
+<!-- redirect note end -->
+
 </td></tr>
 
 <tr valign="top"><td>
@@ -149,7 +159,7 @@ function template_bottom($whichphp)
 /* output "last modified" date -------------------------------------------- */
 
    $modified = stat($whichphp);
-   echo date(" Y-m-d H:i:s ",$modified[9]);   
+   echo date(" Y-m-d H:i:s ",$modified[9]);
 
 /* ------------------------------------------------------------------------ */
     ?>
