@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{B025880D-30B9-404B-85EE-31A54F438036}</ProjectGuid>
+    <ProjectName>uadata</ProjectName>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)output\bin\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)output\intermediate\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)output\bin\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)output\intermediate\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <PostBuildEvent>
+      <Command>call build.cmd "$(OutDir)"</Command>
+    </PostBuildEvent>
+    <CustomBuild>
+      <Command>"$(OutDir)luac.exe" -o "%(RelativeDir)%(FileName).lob" "%(FullPath)"</Command>
+      <Message>Compiling Lua script...</Message>
+      <Outputs>%(RelativeDir)%(FileName).lob</Outputs>
+    </CustomBuild>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <PostBuildEvent>
+      <Command>call build.cmd "$(OutDir)"</Command>
+    </PostBuildEvent>
+    <CustomBuild>
+      <Command>"$(OutDir)luac.exe" -o "%(RelativeDir)%(FileName).lob" "%(FullPath)"</Command>
+      <Message>Compiling Lua script...</Message>
+      <Outputs>%(RelativeDir)%(FileName).lob</Outputs>
+    </CustomBuild>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <None Include="build.cmd" />
+    <None Include="models\static\apple.wrl" />
+    <None Include="models\static\backpack.wrl" />
+    <None Include="models\static\bag.wrl" />
+    <None Include="models\static\barrel.wrl" />
+    <None Include="models\static\bed_frame.wrl" />
+    <None Include="models\static\bone1.wrl" />
+    <None Include="models\static\bread.wrl" />
+    <None Include="models\static\candle.wrl" />
+    <None Include="models\static\chair.wrl" />
+    <None Include="models\static\chest.wrl" />
+    <None Include="models\static\flute.wrl" />
+    <None Include="models\static\grass1.wrl" />
+    <None Include="models\static\grass2.wrl" />
+    <None Include="models\static\grass3.wrl" />
+    <None Include="models\static\muffin.wrl" />
+    <None Include="models\static\mushroom.wrl" />
+    <None Include="models\static\rune_a.wrl" />
+    <None Include="models\static\skull.wrl" />
+    <None Include="models\static\steak.wrl" />
+    <None Include="models\static\table.wrl" />
+    <None Include="models\static\water.wrl" />
+    <None Include="uw1\audio\music.m3u" />
+    <None Include="uw1\game.cfg" />
+    <None Include="uw1\keymap.cfg" />
+    <None Include="uw1\model3d.cfg" />
+    <CustomBuild Include="uw1\scripts\createchar.lua">
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="uw1\scripts\critter.lua">
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="uw1\scripts\cutscene.lua">
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="uw1\scripts\dump.lua">
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="uw1\scripts\game.lua">
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="uw1\scripts\inventory.lua">
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="uw1\scripts\lookat.lua">
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="uw1\scripts\objlist.lua">
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="uw1\scripts\traps.lua">
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="uw1\scripts\triggers.lua">
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="uw1\scripts\uwinterface.lua">
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <None Include="uw2\audio\music.m3u" />
+    <None Include="uw2\game.cfg" />
+    <None Include="uw2\keymap.cfg" />
+    <None Include="uw2\model3d.cfg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="common\uw1title.tga" />
+    <Image Include="common\uw2title.tga" />
+    <Image Include="models\static\textures\apple.tga" />
+    <Image Include="models\static\textures\backpack.tga" />
+    <Image Include="models\static\textures\bag.tga" />
+    <Image Include="models\static\textures\barrel.tga" />
+    <Image Include="models\static\textures\bone.tga" />
+    <Image Include="models\static\textures\bread.tga" />
+    <Image Include="models\static\textures\candle.tga" />
+    <Image Include="models\static\textures\flute.tga" />
+    <Image Include="models\static\textures\grass.tga" />
+    <Image Include="models\static\textures\muffin.tga" />
+    <Image Include="models\static\textures\mushroom.tga" />
+    <Image Include="models\static\textures\plank.tga" />
+    <Image Include="models\static\textures\skull.tga" />
+    <Image Include="models\static\textures\steak.tga" />
+    <Image Include="models\static\textures\water.tga" />
+    <Image Include="models\static\textures\wdchest.tga" />
+    <Image Include="models\static\textures\wood.tga" />
+    <Image Include="uw1\acknowledgements-blank.tga" />
+    <Image Include="uwadv-loading.tga" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

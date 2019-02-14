@@ -1,0 +1,220 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="common">
+      <UniqueIdentifier>{3d85e8bc-108f-4ae8-a1ad-6fc4bc073541}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="uw1">
+      <UniqueIdentifier>{4bd47f02-cd0d-4af0-b3fc-9fe037d8bd4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="uw2">
+      <UniqueIdentifier>{a0e52c4f-be7a-4133-b98b-d7d35488cb5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="uw2\audio">
+      <UniqueIdentifier>{4a3dfcff-f017-4258-8424-166bc38e26a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="uw1\audio">
+      <UniqueIdentifier>{7f6525b7-b9a3-4f32-a88f-ded80153aed1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="uw1\scripts">
+      <UniqueIdentifier>{b06fbf0b-afc3-4882-84d3-0bc1bcf60068}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="models">
+      <UniqueIdentifier>{4b500645-ac88-4db1-8042-367d37af7bd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="models\static">
+      <UniqueIdentifier>{ae5ca99a-6244-49df-8379-b77c8e8e030c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="models\static\textures">
+      <UniqueIdentifier>{01ac5572-e1a8-4f1d-a6fa-3533b56f720f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="common\uw1title.tga">
+      <Filter>common</Filter>
+    </Image>
+    <Image Include="common\uw2title.tga">
+      <Filter>common</Filter>
+    </Image>
+    <Image Include="uw1\acknowledgements-blank.tga">
+      <Filter>uw1</Filter>
+    </Image>
+    <Image Include="models\static\textures\apple.tga">
+      <Filter>models\static\textures</Filter>
+    </Image>
+    <Image Include="models\static\textures\backpack.tga">
+      <Filter>models\static\textures</Filter>
+    </Image>
+    <Image Include="models\static\textures\bag.tga">
+      <Filter>models\static\textures</Filter>
+    </Image>
+    <Image Include="models\static\textures\barrel.tga">
+      <Filter>models\static\textures</Filter>
+    </Image>
+    <Image Include="models\static\textures\bone.tga">
+      <Filter>models\static\textures</Filter>
+    </Image>
+    <Image Include="models\static\textures\bread.tga">
+      <Filter>models\static\textures</Filter>
+    </Image>
+    <Image Include="models\static\textures\candle.tga">
+      <Filter>models\static\textures</Filter>
+    </Image>
+    <Image Include="models\static\textures\flute.tga">
+      <Filter>models\static\textures</Filter>
+    </Image>
+    <Image Include="models\static\textures\grass.tga">
+      <Filter>models\static\textures</Filter>
+    </Image>
+    <Image Include="models\static\textures\muffin.tga">
+      <Filter>models\static\textures</Filter>
+    </Image>
+    <Image Include="models\static\textures\mushroom.tga">
+      <Filter>models\static\textures</Filter>
+    </Image>
+    <Image Include="models\static\textures\plank.tga">
+      <Filter>models\static\textures</Filter>
+    </Image>
+    <Image Include="models\static\textures\skull.tga">
+      <Filter>models\static\textures</Filter>
+    </Image>
+    <Image Include="models\static\textures\steak.tga">
+      <Filter>models\static\textures</Filter>
+    </Image>
+    <Image Include="models\static\textures\water.tga">
+      <Filter>models\static\textures</Filter>
+    </Image>
+    <Image Include="models\static\textures\wdchest.tga">
+      <Filter>models\static\textures</Filter>
+    </Image>
+    <Image Include="models\static\textures\wood.tga">
+      <Filter>models\static\textures</Filter>
+    </Image>
+    <Image Include="uwadv-loading.tga" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="uw1\game.cfg">
+      <Filter>uw1</Filter>
+    </None>
+    <None Include="uw1\keymap.cfg">
+      <Filter>uw1</Filter>
+    </None>
+    <None Include="uw1\model3d.cfg">
+      <Filter>uw1</Filter>
+    </None>
+    <None Include="uw2\game.cfg">
+      <Filter>uw2</Filter>
+    </None>
+    <None Include="uw2\keymap.cfg">
+      <Filter>uw2</Filter>
+    </None>
+    <None Include="uw2\model3d.cfg">
+      <Filter>uw2</Filter>
+    </None>
+    <None Include="uw1\audio\music.m3u">
+      <Filter>uw1\audio</Filter>
+    </None>
+    <None Include="uw2\audio\music.m3u">
+      <Filter>uw2\audio</Filter>
+    </None>
+    <None Include="uw1\scripts\uwinterface.lua">
+      <Filter>uw1\scripts</Filter>
+    </None>
+    <None Include="uw1\scripts\traps.lua">
+      <Filter>uw1\scripts</Filter>
+    </None>
+    <None Include="models\static\bone1.wrl">
+      <Filter>models\static</Filter>
+    </None>
+    <None Include="models\static\bread.wrl">
+      <Filter>models\static</Filter>
+    </None>
+    <None Include="models\static\candle.wrl">
+      <Filter>models\static</Filter>
+    </None>
+    <None Include="models\static\chair.wrl">
+      <Filter>models\static</Filter>
+    </None>
+    <None Include="models\static\chest.wrl">
+      <Filter>models\static</Filter>
+    </None>
+    <None Include="models\static\flute.wrl">
+      <Filter>models\static</Filter>
+    </None>
+    <None Include="models\static\grass1.wrl">
+      <Filter>models\static</Filter>
+    </None>
+    <None Include="models\static\grass2.wrl">
+      <Filter>models\static</Filter>
+    </None>
+    <None Include="models\static\grass3.wrl">
+      <Filter>models\static</Filter>
+    </None>
+    <None Include="models\static\muffin.wrl">
+      <Filter>models\static</Filter>
+    </None>
+    <None Include="models\static\mushroom.wrl">
+      <Filter>models\static</Filter>
+    </None>
+    <None Include="models\static\rune_a.wrl">
+      <Filter>models\static</Filter>
+    </None>
+    <None Include="models\static\skull.wrl">
+      <Filter>models\static</Filter>
+    </None>
+    <None Include="models\static\steak.wrl">
+      <Filter>models\static</Filter>
+    </None>
+    <None Include="models\static\table.wrl">
+      <Filter>models\static</Filter>
+    </None>
+    <None Include="models\static\water.wrl">
+      <Filter>models\static</Filter>
+    </None>
+    <None Include="models\static\apple.wrl">
+      <Filter>models\static</Filter>
+    </None>
+    <None Include="models\static\backpack.wrl">
+      <Filter>models\static</Filter>
+    </None>
+    <None Include="models\static\bag.wrl">
+      <Filter>models\static</Filter>
+    </None>
+    <None Include="models\static\barrel.wrl">
+      <Filter>models\static</Filter>
+    </None>
+    <None Include="models\static\bed_frame.wrl">
+      <Filter>models\static</Filter>
+    </None>
+    <None Include="build.cmd" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="uw1\scripts\createchar.lua">
+      <Filter>uw1\scripts</Filter>
+    </CustomBuild>
+    <CustomBuild Include="uw1\scripts\critter.lua">
+      <Filter>uw1\scripts</Filter>
+    </CustomBuild>
+    <CustomBuild Include="uw1\scripts\cutscene.lua">
+      <Filter>uw1\scripts</Filter>
+    </CustomBuild>
+    <CustomBuild Include="uw1\scripts\dump.lua">
+      <Filter>uw1\scripts</Filter>
+    </CustomBuild>
+    <CustomBuild Include="uw1\scripts\game.lua">
+      <Filter>uw1\scripts</Filter>
+    </CustomBuild>
+    <CustomBuild Include="uw1\scripts\inventory.lua">
+      <Filter>uw1\scripts</Filter>
+    </CustomBuild>
+    <CustomBuild Include="uw1\scripts\lookat.lua">
+      <Filter>uw1\scripts</Filter>
+    </CustomBuild>
+    <CustomBuild Include="uw1\scripts\objlist.lua">
+      <Filter>uw1\scripts</Filter>
+    </CustomBuild>
+    <CustomBuild Include="uw1\scripts\triggers.lua">
+      <Filter>uw1\scripts</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

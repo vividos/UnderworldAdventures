@@ -46,6 +46,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hacking", "hacking\hacking.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "convdec", "source\tools\convdec\convdec.vcxproj", "{52EFCEBD-03BD-4590-987B-7A561CC8E6D5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "uadata", "uadata", "{58D0EC59-74E9-4E35-A8F1-9212EFCE9EA2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "uadata", "uadata\uadata.vcxproj", "{B025880D-30B9-404B-85EE-31A54F438036}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B32FCCB5-C0F4-41D7-B9E2-DD7EDBE2230A} = {B32FCCB5-C0F4-41D7-B9E2-DD7EDBE2230A}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -112,6 +119,10 @@ Global
 		{52EFCEBD-03BD-4590-987B-7A561CC8E6D5}.Debug|Win32.Build.0 = Debug|Win32
 		{52EFCEBD-03BD-4590-987B-7A561CC8E6D5}.Release|Win32.ActiveCfg = Release|Win32
 		{52EFCEBD-03BD-4590-987B-7A561CC8E6D5}.Release|Win32.Build.0 = Release|Win32
+		{B025880D-30B9-404B-85EE-31A54F438036}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B025880D-30B9-404B-85EE-31A54F438036}.Debug|Win32.Build.0 = Debug|Win32
+		{B025880D-30B9-404B-85EE-31A54F438036}.Release|Win32.ActiveCfg = Release|Win32
+		{B025880D-30B9-404B-85EE-31A54F438036}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -134,6 +145,7 @@ Global
 		{ECCDC58D-597D-4815-955E-F5E83A6CCA78} = {8AB01551-9ABA-4108-B761-BA600FFF704A}
 		{CD390093-B69C-44E5-8F23-0458F91ED5D7} = {D099CDEB-6A21-4E5A-959B-2A3D39E2B6F0}
 		{52EFCEBD-03BD-4590-987B-7A561CC8E6D5} = {8AB01551-9ABA-4108-B761-BA600FFF704A}
+		{B025880D-30B9-404B-85EE-31A54F438036} = {58D0EC59-74E9-4E35-A8F1-9212EFCE9EA2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {62C784B6-0AE4-42AB-833B-6267BA627046}
