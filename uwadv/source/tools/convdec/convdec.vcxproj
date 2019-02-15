@@ -31,8 +31,6 @@
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <SccProjectName />
-    <SccLocalPath />
     <ProjectGuid>{52EFCEBD-03BD-4590-987B-7A561CC8E6D5}</ProjectGuid>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -73,16 +71,6 @@
     <OutDir>$(SolutionDir)output\bin\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <ClCompile />
-    <Midl>
-      <TypeLibraryName>.\../output/debug/convdec\convdec.tlb</TypeLibraryName>
-    </Midl>
-    <ResourceCompile>
-      <Culture>0x0409</Culture>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ResourceCompile>
-    <Bscmake />
-    <Link />
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)source\conv;$(SolutionDir)source\underw;$(SolutionDir)source\import;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
@@ -91,15 +79,6 @@
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)source\conv;$(SolutionDir)source\underw;$(SolutionDir)source\import;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
-    <Midl>
-      <TypeLibraryName>.\../output/release/convdec\convdec.tlb</TypeLibraryName>
-    </Midl>
-    <ResourceCompile>
-      <Culture>0x0409</Culture>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ResourceCompile>
-    <Bscmake />
-    <Link />
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
