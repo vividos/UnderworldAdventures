@@ -13,13 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -40,7 +38,6 @@ END
 
 3 TEXTINCLUDE 
 BEGIN
-    "CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST ""uwadv.exe.manifest""\r\n"
     "\0"
 END
 
@@ -56,14 +53,15 @@ END
 // remains consistent on all systems.
 IDI_ICON                ICON                    "Uus.ico"
 
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,9,0,0
- PRODUCTVERSION 0,9,0,0
+ FILEVERSION 0,10,0,0
+ PRODUCTVERSION 0,10,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x29L
@@ -81,14 +79,14 @@ BEGIN
             VALUE "Comments", "Underworld Adventures is a project to recreate Ultima Underworld 1 on modern operating systems."
             VALUE "CompanyName", "Underworld Adventures Team"
             VALUE "FileDescription", "Underworld Adventures Game"
-            VALUE "FileVersion", "0.9-mojito"
+            VALUE "FileVersion", "0.10-test"
             VALUE "InternalName", "uwadv"
-            VALUE "LegalCopyright", "Copyright © 2002,2003,2004,2005 Underworld Adventures Team"
+            VALUE "LegalCopyright", "Copyright © 2002,2003,2004,2005,2019 Underworld Adventures Team"
             VALUE "LegalTrademarks", " "
             VALUE "OriginalFilename", "uwadv.exe"
             VALUE "PrivateBuild", " "
             VALUE "ProductName", "Underworld Adventures"
-            VALUE "ProductVersion", "0.9-mojito"
+            VALUE "ProductVersion", "0.10-test"
             VALUE "SpecialBuild", " "
         END
     END
@@ -98,17 +96,7 @@ BEGIN
     END
 END
 
-#endif    // English (U.S.) resources
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
-
-#ifndef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// Generated from the TEXTINCLUDE 3 resource.
-//
-CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "uwadv.exe.manifest"
-
-/////////////////////////////////////////////////////////////////////////////
-#endif    // not APSTUDIO_INVOKED

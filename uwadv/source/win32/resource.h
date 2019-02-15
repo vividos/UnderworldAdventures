@@ -1,14 +1,8 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
+// Microsoft Visual C++ generated include file.
 // Used by uwadv_res.rc
 //
-#define IDR_MENU                        101
 #define IDI_ICON                        102
-#define ID_GAME_EXIT                    40001
-#define ID_GAME_LOAD                    40002
-#define ID_GAME_SAVE                    40003
-#define ID_SETTINGS_AUDIO               40004
-#define ID_SETTINGS_GENERAL             40005
 
 // Next default values for new objects
 // 

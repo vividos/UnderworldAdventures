@@ -1,96 +1,63 @@
-/*
-   Underworld Adventures - an Ultima Underworld remake project
-   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file main.cpp
-
-   \brief the game's main function
-
-*/
-/*! \mainpage
-
-  Module relations are as follows:<br>
-  \dotfile ua-module-dependencies.dot Module Dependencies
-
-*/
-
-// needed includes
+//
+// Underworld Adventures - an Ultima Underworld remake project
+// Copyright (c) 2002,2003,2004,2005,2006,2019 Michael Fink
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file main.cpp
+/// \brief the game's main function
+//
+/// \mainpage
+///  Module relations are as follows:<br>
+///  \dotfile ua-module-dependencies.dot Module Dependencies
+//
 #include "base.hpp"
-#include <SDL_main.h>
-//#include "uwadv.hpp"
+#include "uwadv.hpp"
 
-
-// external functions
-
-//! function to create game object; created by macro ua_uwadv_game_implement
-//extern ua_uwadv_game* ua_game_create();
-
-
-// to have console output, use a genuine main(), not the SDL_main one
-#ifdef HAVE_CONSOLE
-#undef main
-#endif
-
-
-//! main function
+/// main function
 int main(int argc, char* argv[])
 {
-/*   
-   ua_uwadv_game* ua;
-
-   // create new game object
-   ua = ua_game_create();
-
-   if (ua == NULL)
-      return 1;
-
 #ifndef HAVE_DEBUG // in debug mode the debugger catches the exceptions
    try
 #endif
    {
+      ua_uwadv_game game;
+
       // init and run the game
-      ua->init();
-      ua->parse_args(static_cast<unsigned int>(argc),
+      game.init();
+      game.parse_args(static_cast<unsigned int>(argc),
          const_cast<const char**>(argv));
 
-      ua->run();
+      game.run();
 
-      ua->done();
+      game.done();
    }
 #ifndef HAVE_DEBUG
-   catch (ua_exception& e)
+   catch (Base::Exception& ex)
    {
       std::string text("An unhandled exception was encountered:\n\r");
-      text.append(e.what());
+      text.append(ex.what());
 
       ua->error_msg(text.c_str());
    }
-   catch (std::exception& e)
+   catch (std::exception& ex)
    {
-      ua_trace("caught std::exception: %s\n", e.what());
+      UaTrace("caught std::exception: %s\n", ex.what());
       ua->error_msg("std::exception");
    }
 #endif
 
-   delete ua;
-   ua = NULL;
-*/
    return 0;
 }

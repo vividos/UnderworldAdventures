@@ -33,7 +33,12 @@ struct ua_debug_server_message
 {
    /// ctor
    ua_debug_server_message()
-      :msg_type(ua_msg_unknown), msg_arg1(0), msg_arg2(0), msg_arg3(0.0){}
+      :msg_type(ua_msg_unknown),
+      msg_arg1(0),
+      msg_arg2(0),
+      msg_arg3(0.0)
+   {
+   }
 
    /// message type; see enum ua_debug_server_message_type
    ua_debug_server_message_type msg_type;
@@ -49,26 +54,22 @@ struct ua_debug_server_message
    std::string msg_text;
 };
 
-
-// classes
-
 class ua_debug_lib_context
 {
 public:
-   virtual ~ua_debug_lib_context(){}
+   virtual ~ua_debug_lib_context() {}
    /// inits debug server
-   virtual void init(){}
+   virtual void init() {}
    /// cleans up debug server
-   virtual void done(){}
+   virtual void done() {}
    /// returns if debugger is available
-   virtual bool is_avail(){ return false; }
+   virtual bool is_avail() { return false; }
    /// starts debugger
    virtual void debug_start(ua_debug_server_interface* server) { server; }
 };
 
-
 /// server side class for underworld debugger
-class ua_debug_server: public ua_debug_server_interface
+class ua_debug_server : public ua_debug_server_interface
 {
 public:
    /// ctor
@@ -109,67 +110,67 @@ protected:
 
    // ua_debug_server_interface methods
 
-   virtual bool check_interface_version(unsigned int interface_ver);
+   virtual bool check_interface_version(unsigned int interface_ver) override;
 
-   virtual unsigned int get_flag(unsigned int flag_id);
+   virtual unsigned int get_flag(unsigned int flag_id) override;
 
-   virtual unsigned int get_game_path(char* buffer, unsigned int bufsize);
+   virtual unsigned int get_game_path(char* buffer, unsigned int bufsize) override;
 
-   virtual void load_game(const char* path);
+   virtual void load_game(const char* path) override;
 
-   virtual bool pause_game(bool pause);
+   virtual bool pause_game(bool pause) override;
 
-   virtual unsigned int get_message_num();
+   virtual unsigned int get_message_num() override;
 
    virtual bool get_message(unsigned int& msg_type,
       unsigned int& msg_arg1, unsigned int& msg_arg2, double& msg_arg3,
-      unsigned int& msg_text_size);
+      unsigned int& msg_text_size) override;
 
-   virtual bool get_message_text(char* buffer, unsigned int bufsize);
+   virtual bool get_message_text(char* buffer, unsigned int bufsize) override;
 
-   virtual bool pop_message();
+   virtual bool pop_message() override;
 
-   virtual double get_player_pos_info(unsigned int idx);
+   virtual double get_player_pos_info(unsigned int idx) override;
 
-   virtual void set_player_pos_info(unsigned int idx, double val);
+   virtual void set_player_pos_info(unsigned int idx, double val) override;
 
-   virtual unsigned int get_player_attr(unsigned int idx);
+   virtual unsigned int get_player_attr(unsigned int idx) override;
 
-   virtual void set_player_attr(unsigned int idx, unsigned int val);
+   virtual void set_player_attr(unsigned int idx, unsigned int val) override;
 
-   virtual unsigned int GetNumLevels();
+   virtual unsigned int GetNumLevels() override;
 
    virtual double get_tile_height(unsigned int level, double xpos,
-      double ypos);
+      double ypos) override;
 
    virtual unsigned int get_tile_info_value(unsigned int level,
-      unsigned int xpos, unsigned int ypos, unsigned int type);
+      unsigned int xpos, unsigned int ypos, unsigned int type) override;
 
    virtual void set_tile_info_value(unsigned int level,
       unsigned int xpos, unsigned int ypos, unsigned int type,
-      unsigned int val);
+      unsigned int val) override;
 
    virtual unsigned int get_objlist_info(unsigned int level,
-      unsigned int pos, unsigned int type);
+      unsigned int pos, unsigned int type) override;
 
    virtual void set_objlist_info(unsigned int level,
-      unsigned int pos, unsigned int type, unsigned int value);
+      unsigned int pos, unsigned int type, unsigned int value) override;
 
    virtual bool enum_gamestr_block(unsigned int index,
-      unsigned int& blocknum);
+      unsigned int& blocknum) override;
 
-   virtual unsigned int get_gamestr_blocksize(unsigned int block);
+   virtual unsigned int get_gamestr_blocksize(unsigned int block) override;
 
    virtual unsigned int get_game_string(unsigned int block, unsigned int nr,
-      char* buffer, unsigned int maxsize);
+      char* buffer, unsigned int maxsize) override;
 
    virtual bool get_object_list_imagelist(unsigned int& num_objects,
-      unsigned char* buffer, unsigned int size);
+      unsigned char* buffer, unsigned int size) override;
 
    /// adds message to client message queue
    void add_message(ua_debug_server_message& msg);
 
-   virtual ua_debug_code_interface* get_code_debugger(unsigned int debugger_id);
+   virtual ua_debug_code_interface* get_code_debugger(unsigned int debugger_id) override;
 
 protected:
    /// debug library context

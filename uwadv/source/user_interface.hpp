@@ -23,7 +23,7 @@
 
 #include "base.hpp"
 
-   /// actions that the user performs
+/// actions that the user performs
 enum EUserInterfaceUserAction
 {
    /// dummy action

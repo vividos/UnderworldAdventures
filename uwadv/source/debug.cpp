@@ -1,31 +1,24 @@
-/*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file debug.cpp
-
-   \brief debug server implementation
-
-*/
-
-// needed includes
+//
+// Underworld Adventures - an Ultima Underworld hacking project
+// Copyright (c) 2002,2003,2004,2005,2019 Underworld Adventures Team
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file debug.cpp
+/// \brief debug server implementation
+//
 #include "common.hpp"
 #include "debug.hpp"
 #include "dbgserver.hpp"
@@ -36,15 +29,15 @@
 #include "image.hpp"
 #include <algorithm>
 
-
-// impl. classes
-
 #ifdef WIN32
-//! win32 debug lib context
-class ua_debug_lib_context_win32: public ua_debug_lib_context
+/// win32 debug lib context
+class ua_debug_lib_context_win32 : public ua_debug_lib_context
 {
 public:
-   ua_debug_lib_context_win32():dll(NULL){}
+   ua_debug_lib_context_win32()
+      :dll(NULL)
+   {
+   }
 
    virtual void init()
    {
@@ -58,12 +51,12 @@ public:
 
    virtual bool is_avail()
    {
-      return dll != NULL && ::GetProcAddress(dll,"uadebug_start") != NULL;
+      return dll != NULL && ::GetProcAddress(dll, "uadebug_start") != NULL;
    }
 
    virtual void debug_start(ua_debug_server_interface* server)
    {
-      typedef void (*uadebug_start_func)(void*);
+      typedef void(*uadebug_start_func)(void*);
 
       // get function pointer
       uadebug_start_func uadebug_start =
@@ -74,38 +67,40 @@ public:
    }
 
 protected:
-   //! DLL module handle
+   /// DLL module handle
    HMODULE dll;
 };
 #endif
 
 #ifdef LINUX
-//! linux debug lib context
+/// linux debug lib context
 /*! Uses dlopen() and dlsym() to load the shared object libuadebug.so and
     start the debugger
 */
-class ua_debug_lib_context_linux: public ua_debug_lib_context
+class ua_debug_lib_context_linux : public ua_debug_lib_context
 {
 public:
-   //! ctor
-   ua_debug_lib_context_linux(){}
-   //! inits debug server
-   virtual void init(){}
-   //! cleans up debug server
-   virtual void done(){}
-   //! returns if debugger is available
-   virtual bool is_avail(){ return false; }
-   //! starts debugger
-   virtual void debug_start(ua_debug_server_interface* server){}
+   /// ctor
+   ua_debug_lib_context_linux() {}
+   /// inits debug server
+   virtual void init() {}
+   /// cleans up debug server
+   virtual void done() {}
+   /// returns if debugger is available
+   virtual bool is_avail() { return false; }
+   /// starts debugger
+   virtual void debug_start(ua_debug_server_interface* server) {}
 };
 #endif
 
-
-// ua_debug_server methods
-
 ua_debug_server::ua_debug_server()
-:debug_lib(NULL), thread_debugger(NULL), sem_debugger(NULL), mutex_lock(NULL),
- game(NULL), schedule_prepare(false), last_code_debugger_id(0)
+   :debug_lib(NULL),
+   thread_debugger(NULL),
+   sem_debugger(NULL),
+   mutex_lock(NULL),
+   game(NULL),
+   schedule_prepare(false),
+   last_code_debugger_id(0)
 {
    // init mutex, semaphore and thread handle
    mutex_lock = SDL_CreateMutex();
@@ -147,7 +142,7 @@ bool ua_debug_server::start_debugger(IBasicGame* the_game)
    game = the_game;
 
    // check if debugger already runs
-   if (debug_lib->is_avail() && SDL_SemValue(sem_debugger)==0)
+   if (debug_lib->is_avail() && SDL_SemValue(sem_debugger) == 0)
    {
       UaTrace("starting uadebug thread\n");
 
@@ -202,11 +197,11 @@ void ua_debug_server::shutdown()
 
       lock(true);
       message_queue.clear();
-       add_message(msg);
+      add_message(msg);
       lock(false);
 
       // wait for thread
-      SDL_WaitThread(thread_debugger,NULL);
+      SDL_WaitThread(thread_debugger, NULL);
       thread_debugger = NULL;
    }
 }
@@ -264,7 +259,7 @@ void ua_debug_server::end_code_debugger(ua_debug_code_interface* code_debugger)
    stop = all_code_debugger.end();
 
    unsigned int debugger_id = 0;
-   for(; iter != stop; iter++)
+   for (; iter != stop; iter++)
    {
       if (iter->second == code_debugger)
       {
@@ -319,7 +314,7 @@ void ua_debug_server::end_code_debugger(ua_debug_code_interface* code_debugger)
    stop = all_code_debugger.end();
 
    unsigned int debugger_id = 0;
-   for(; iter != stop; iter++)
+   for (; iter != stop; iter++)
    {
       if (iter->second == code_debugger)
       {
@@ -336,7 +331,7 @@ void ua_debug_server::end_code_debugger(ua_debug_code_interface* code_debugger)
 
    // remove all "start code debugger" messages from the same code debugger
    unsigned int max = static_cast<unsigned int>(message_queue.size());
-   for (unsigned int n=0; n<max; n++)
+   for (unsigned int n = 0; n < max; n++)
    {
       ua_debug_server_message& queue_msg = message_queue[n];
       if (queue_msg.msg_type == ua_msg_start_code_debugger && queue_msg.msg_arg1 == debugger_id)
@@ -368,7 +363,7 @@ void ua_debug_server::send_code_debugger_status_update(unsigned int debugger_id)
 
    // remove all previous "status update" messages from the same code debugger
    unsigned int max = static_cast<unsigned int>(message_queue.size());
-   for (unsigned int n=0; n<max; n++)
+   for (unsigned int n = 0; n < max; n++)
    {
       ua_debug_server_message& queue_msg = message_queue[n];
       if (queue_msg.msg_type == msg.msg_type && queue_msg.msg_arg1 == msg.msg_arg1)
@@ -391,7 +386,7 @@ bool ua_debug_server::check_interface_version(unsigned int interface_ver)
 unsigned int ua_debug_server::get_flag(unsigned int flag_id)
 {
    unsigned int flag = 0;
-   switch(flag_id)
+   switch (flag_id)
    {
    case ua_flag_is_studio_mode:
 #ifdef COMPILE_UASTUDIO
@@ -413,7 +408,7 @@ unsigned int ua_debug_server::get_game_path(char* buffer, unsigned int bufsize)
    Base::Settings& settings = game->get_settings();
 
    std::string prefix = settings.GetString(Base::settingGamePrefix);
-   if (prefix.size()==0)
+   if (prefix.size() == 0)
    {
       if (buffer != NULL)
          buffer[0] = 0;
@@ -458,35 +453,35 @@ bool ua_debug_server::get_message(unsigned int& msg_type,
    unsigned int& msg_arg1, unsigned int& msg_arg2, double& msg_arg3,
    unsigned int& msg_text_size)
 {
-   if (message_queue.size()>0)
+   if (message_queue.size() > 0)
    {
       ua_debug_server_message& msg = message_queue.front();
       msg_type = msg.msg_type;
       msg_arg1 = msg.msg_arg1;
       msg_arg2 = msg.msg_arg2;
       msg_arg3 = msg.msg_arg3;
-      msg_text_size = msg.msg_text.size()+1;
+      msg_text_size = msg.msg_text.size() + 1;
    }
-   return message_queue.size()>0;
+   return message_queue.size() > 0;
 }
 
 bool ua_debug_server::get_message_text(char* buffer, unsigned int bufsize)
 {
-   if (message_queue.size()>0)
+   if (message_queue.size() > 0)
    {
       ua_debug_server_message& msg = message_queue.front();
-      strncpy(buffer,msg.msg_text.c_str(), bufsize);
+      strncpy(buffer, msg.msg_text.c_str(), bufsize);
    }
-   return message_queue.size()>0;
+   return message_queue.size() > 0;
 }
 
 bool ua_debug_server::pop_message()
 {
-   if (message_queue.size()>0)
+   if (message_queue.size() > 0)
    {
       message_queue.pop_front();
    }
-   return message_queue.size()>0;
+   return message_queue.size() > 0;
 }
 
 double ua_debug_server::get_player_pos_info(unsigned int idx)
@@ -495,7 +490,7 @@ double ua_debug_server::get_player_pos_info(unsigned int idx)
    if (game == NULL) return val;
 
    Underworld::Player& pl = game->GetUnderworld().GetPlayer();
-   switch(idx)
+   switch (idx)
    {
    case 0: val = pl.GetXPos(); break;
    case 1: val = pl.GetYPos(); break;
@@ -512,7 +507,7 @@ void ua_debug_server::set_player_pos_info(unsigned int idx, double val)
    if (game == NULL) return;
 
    Underworld::Player& pl = game->GetUnderworld().GetPlayer();
-   switch(idx)
+   switch (idx)
    {
    case 0: pl.SetPos(val, pl.GetYPos()); break;
    case 1: pl.SetPos(pl.GetXPos(), val); break;
@@ -537,7 +532,7 @@ void ua_debug_server::set_player_attr(unsigned int idx, unsigned int val)
 
    unsigned int oldlevel = pl.GetAttribute(Underworld::attrMapLevel);
 
-   pl.SetAttribute((Underworld::EPlayerAttribute)idx,val);
+   pl.SetAttribute((Underworld::EPlayerAttribute)idx, val);
 
    // changing level? then schedule new level preparation
    if (Underworld::attrMapLevel == (Underworld::EPlayerAttribute)idx && oldlevel != val)
@@ -559,7 +554,7 @@ double ua_debug_server::get_tile_height(unsigned int level, double xpos,
 {
    if (game == NULL) return 0.0;
    return game->GetUnderworld().GetLevelList().GetLevel(level).
-      GetTilemap().GetFloorHeight(xpos,ypos);
+      GetTilemap().GetFloorHeight(xpos, ypos);
 }
 
 unsigned int ua_debug_server::get_tile_info_value(unsigned int level,
@@ -568,9 +563,9 @@ unsigned int ua_debug_server::get_tile_info_value(unsigned int level,
    unsigned int val = 0;
 
    Underworld::TileInfo& tile = game->GetUnderworld().GetLevelList().
-      GetLevel(level).GetTilemap().GetTileInfo(xpos,ypos);
+      GetLevel(level).GetTilemap().GetTileInfo(xpos, ypos);
 
-   switch(type)
+   switch (type)
    {
    case ua_tile_info_type:
       val = tile.m_type;
@@ -595,7 +590,7 @@ unsigned int ua_debug_server::get_tile_info_value(unsigned int level,
       break;
    case ua_tile_info_objlist_start:
       val = game->GetUnderworld().GetLevelList().
-         GetLevel(level).GetObjectList().GetListStart(xpos,ypos);
+         GetLevel(level).GetObjectList().GetListStart(xpos, ypos);
       break;
 
    default:
@@ -610,9 +605,9 @@ void ua_debug_server::set_tile_info_value(unsigned int level,
    unsigned int val)
 {
    Underworld::TileInfo& tile = game->GetUnderworld().GetLevelList().
-      GetLevel(level).GetTilemap().GetTileInfo(xpos,ypos);
+      GetLevel(level).GetTilemap().GetTileInfo(xpos, ypos);
 
-   switch(type)
+   switch (type)
    {
    case ua_tile_info_type:
       tile.m_type = static_cast<Underworld::TilemapTileType>(val);
@@ -658,7 +653,7 @@ unsigned int ua_debug_server::get_objlist_info(unsigned int level,
    Underworld::ObjectInfo& objinfo = obj->GetObjectInfo();
    Underworld::ObjectPositionInfo& posInfo = obj->GetPosInfo();
 
-   switch(type)
+   switch (type)
    {
    case ua_objlist_info_item_id:
       val = objinfo.m_itemID;
@@ -718,7 +713,7 @@ void ua_debug_server::set_objlist_info(unsigned int level,
    Underworld::ObjectInfo& objinfo = obj->GetObjectInfo();
    Underworld::ObjectPositionInfo& posInfo = obj->GetPosInfo();
 
-   switch(type)
+   switch (type)
    {
    case ua_objlist_info_item_id:
       objinfo.m_itemID = value;
@@ -776,7 +771,7 @@ bool ua_debug_server::enum_gamestr_block(unsigned int index,
       return false;
 
    std::set<Uint16>::const_iterator iter = blockset.begin();
-   for(unsigned int n=0; n<index && iter != blockset.end(); n++)
+   for (unsigned int n = 0; n < index && iter != blockset.end(); n++)
       iter++;
 
    if (iter == blockset.end())
@@ -799,7 +794,7 @@ unsigned int ua_debug_server::get_game_string(unsigned int block,
    std::string str = game->GetGameStrings().GetString(block, nr);
    std::string::size_type strsize = str.size();
 
-   if (buffer == NULL || maxsize == 0 || maxsize < strsize+1)
+   if (buffer == NULL || maxsize == 0 || maxsize < strsize + 1)
       return strsize + 1;
 
    strncpy(buffer, str.c_str(), strsize);
@@ -824,20 +819,20 @@ bool ua_debug_server::get_object_list_imagelist(unsigned int& num_objects, unsig
 
    unsigned int xres = img_list[0].get_xres(), yres = img_list[0].get_yres(), max = img_list.size();
 
-   unsigned int needed_space = max*xres*yres*4;
+   unsigned int needed_space = max * xres*yres * 4;
    if (size < needed_space)
       return false;
 
    Uint8* pixels = new Uint8[xres*yres*max];
 
-   for(unsigned int n=0; n<max; n++)
+   for (unsigned int n = 0; n < max; n++)
       memcpy(&pixels[n*xres*yres], &img_list[n].get_pixels()[0], xres*yres);
 
    // convert color indices to 32-bit texture
    Uint32* palptr = reinterpret_cast<Uint32*>(img_list[0].get_palette().get());
    Uint32* texptr = reinterpret_cast<Uint32*>(buffer);
 
-   for(unsigned int i=0; i<xres*yres*max; i++)
+   for (unsigned int i = 0; i < xres*yres*max; i++)
       *texptr++ = palptr[pixels[i]];
 
    delete[] pixels;

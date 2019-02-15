@@ -1,114 +1,89 @@
-/*
-   Underworld Adventures - an Ultima Underworld remake project
-   Copyright (c) 2002,2003,2004,2005,2006 Michael Fink
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file uwadv.cpp
-
-   \brief main game and loop code
-
-*/
-
-// needed includes
+//
+// Underworld Adventures - an Ultima Underworld remake project
+// Copyright (c) 2002,2003,2004,2005,2006,2019 Michael Fink
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file uwadv.cpp
+/// \brief main game and loop code
+//
 #include "base.hpp"
-/*
 #include "uwadv.hpp"
+#include "textfile.hpp"
 #include "gamecfg.hpp"
 #include "screens/uwadv_menu.hpp"
 #include "screens/ingame_orig.hpp"
 #include "screens/start_splash.hpp"
+#include "import/gamestringsimporter.hpp"
 #include <ctime>
+#include <SDL.h>
+#include <SDL_opengl.h>
 
+#ifdef WIN32
+#include <SDL_syswm.h>
+#include "win32/resource.h"
+#endif
 
 #define HAVE_FRAMECOUNT
 
-
-#ifndef WIN32
-//! Generic game class. win32 has a specialization in game_win32
-ua_uwadv_game_implement(ua_uwadv_game);
-#endif
-
-
-// tables
-
-//! command line argument type
+/// command line argument type
 enum ua_game_arg_type
 {
-   ua_arg_help, //!< help option
-   ua_arg_game, //!< game option, to specify custom games
-   ua_arg_unittest, //!< runs unit tests
+   ua_arg_help, ///< help option
+   ua_arg_game, ///< game option, to specify custom games
 };
 
-//! command line argument data
+/// command line argument data
 struct ua_arg_entry
 {
-   ua_game_arg_type type;  //!< type of argument
-   const char* shortopt;   //!< short option chars
-   const char* longopt;    //!< long option string
-   unsigned int numparams; //!< number of parameters for option
+   ua_game_arg_type type;  ///< type of argument
+   const char* shortopt;   ///< short option chars
+   const char* longopt;    ///< long option string
+   unsigned int numparams; ///< number of parameters for option
 };
 
-//! all command line arguments that uwadv understands
+/// all command line arguments that uwadv understands
 static
 ua_arg_entry arg_params[] =
 {
    { ua_arg_help, "hH?", "help", 0 },
    { ua_arg_game, "g", "game", 1 },
-#ifdef HAVE_UNITTEST
-   { ua_arg_unittest, "u", "unittest", 0 },
-#endif
 };
 
-
-// ua_uwadv_game methods
-
 ua_uwadv_game::ua_uwadv_game()
-:tickrate(20), exit_game(false), screen_to_destroy(NULL), scripting(NULL),
- run_unittests(false), paused(false)
+   :tickrate(20),
+   exit_game(false),
+   screen_to_destroy(NULL),
+   scripting(NULL),
+   paused(false)
 {
-   // print game name
    printf("Underworld Adventures"
 #ifdef HAVE_DEBUG
       " (debug mode)"
 #endif
-      "\nhttp://uwadv.sourceforge.net/\n\n");
+      "\nhttps://vividos.github.com/UnderworldAdventures/\n\n");
 
-   // print STLport version, if applicable
-#ifdef _STLPORT_VERSION
-   ua_trace("using STLport %u.%u.%u"
-#ifdef _STLP_DEBUG
-      " (debug)"
-#endif
-      "\n",
-      _STLPORT_VERSION>>8, (_STLPORT_VERSION>>4)&15, _STLPORT_VERSION&15);
-#endif
-
-   // init random number generator
    srand((unsigned)time(NULL));
 }
 
 void ua_uwadv_game::init()
 {
-   ua_trace("initializing game ...\n\n");
+   UaTrace("initializing game ...\n\n");
 
    // init files manager; settings are loaded here, too
-   files_manager.init(settings);
+   m_resourceManager = std::make_unique<Base::ResourceManager>(settings);
 
    // find out selected screen resolution
    {
@@ -116,64 +91,60 @@ void ua_uwadv_game::init()
       width = 640;
       height = 480;
 
-      std::string screen_res(settings.get_string(ua_setting_screen_resolution));
+      std::string screen_res(settings.GetString(Base::settingScreenResolution));
 
       // parse resolution string, format is <xres> x <yres>
       std::string::size_type pos = screen_res.find('x');
       if (pos != std::string::npos)
       {
-         std::string yres_str(screen_res.c_str()+pos+1);
+         std::string yres_str(screen_res.c_str() + pos + 1);
 
-         width = static_cast<unsigned int>( strtol(screen_res.c_str(),NULL,10) );
-         height = static_cast<unsigned int>( strtol(yres_str.c_str(),NULL,10) );
+         width = static_cast<unsigned int>(strtol(screen_res.c_str(), NULL, 10));
+         height = static_cast<unsigned int>(strtol(yres_str.c_str(), NULL, 10));
       }
    }
 
    // init SDL window
    init_sdl();
 
-   // switch off cursor
-   SDL_ShowCursor(0);
-
    // normal game start
    init_action = 0;
    curscreen = NULL;
 }
 
-/*! Reads in command line arguments
-    Args can be of the form "-<char>" (short option) or "--<string>" (long
-    option). The table arg_params specifies all options that can be processed
-    by uwadv.
-    \li shortopt contains all chars which can be used for this option
-    \li longopt is the string that is used for the long option
-    \li numparams specifies how many parameters are used for the specific option
-
-    \param argc number of arguments, just like in the main() call
-    \param argv argument strings
-*/
+/// \brief Reads in command line arguments
+/// Args can be of the form "-<char>" (short option) or "--<string>" (long
+/// option). The table arg_params specifies all options that can be processed
+/// by uwadv.
+/// \li shortopt contains all chars which can be used for this option
+/// \li longopt is the string that is used for the long option
+/// \li numparams specifies how many parameters are used for the specific option
+///
+/// \param argc number of arguments, just like in the main() call
+/// \param argv argument strings
 void ua_uwadv_game::parse_args(unsigned int argc, const char** argv)
 {
-   ua_trace("parsing command line arguments\n");
+   UaTrace("parsing command line arguments\n");
 
-   for(unsigned int i=1; i<argc; i++)
+   for (unsigned int i = 1; i < argc; i++)
    {
       std::string arg(argv[i]);
-      if (arg.size()==0)
+      if (arg.size() == 0)
          continue;
 
       bool use_shortopt = true;
 
       // check if short or long arg
-      if (arg.at(0)=='-')
+      if (arg.at(0) == '-')
       {
-         if (arg.size()>1 && arg.at(1)=='-')
+         if (arg.size() > 1 && arg.at(1) == '-')
          {
             // long option
             use_shortopt = false;
-            arg.erase(0,2);
+            arg.erase(0, 2);
          }
          else
-            arg.erase(0,1);
+            arg.erase(0, 1);
       }
       else
       {
@@ -186,8 +157,8 @@ void ua_uwadv_game::parse_args(unsigned int argc, const char** argv)
       }
 
       // search for arg in table
-      unsigned int entry=0;
-      for(;entry<SDL_TABLESIZE(arg_params); entry++)
+      unsigned int entry = 0;
+      for (; entry < SDL_TABLESIZE(arg_params); entry++)
       {
          std::string::size_type pos = 0;
 
@@ -197,28 +168,28 @@ void ua_uwadv_game::parse_args(unsigned int argc, const char** argv)
          else
             pos = arg.find(arg_params[entry].longopt);
 
-         if (pos != std::string::npos && pos ==0)
+         if (pos != std::string::npos && pos == 0)
             break; // found entry
       }
 
-      if (entry==SDL_TABLESIZE(arg_params))
+      if (entry == SDL_TABLESIZE(arg_params))
       {
-         ua_trace(" %s option not found in table: %s\n",
+         UaTrace(" %s option not found in table: %s\n",
             use_shortopt ? "short" : "long",
             arg.c_str());
          continue;
       }
 
       // check if enough parameters were passed
-      if (i+arg_params[entry].numparams>=argc)
+      if (i + arg_params[entry].numparams >= argc)
       {
-         ua_trace(" not enough parameters for option %s (%u required)\n",
-            argv[i],arg_params[entry].numparams);
+         UaTrace(" not enough parameters for option %s (%u required)\n",
+            argv[i], arg_params[entry].numparams);
          return;
       }
 
       // check actual parameter
-      switch(arg_params[entry].type)
+      switch (arg_params[entry].type)
       {
          // print help string
       case ua_arg_help:
@@ -227,26 +198,22 @@ void ua_uwadv_game::parse_args(unsigned int argc, const char** argv)
             " available options:\n"
             "  -h -? -H  --help           shows help\n"
             "  -g <game> --game <game>    starts custom game\n"
-            );
+         );
          return;
          break;
 
          // game prefix
       case ua_arg_game:
-         {
-            init_action = 2;
+      {
+         init_action = 2;
 
-            std::string custom_game_prefix(argv[i+1]);
-            settings.set_value(ua_setting_game_prefix, custom_game_prefix);
-         }
-         break;
-
-         // unit tests
-      case ua_arg_unittest:
-         run_unittests = true;
-         break;
+         std::string custom_game_prefix(argv[i + 1]);
+         settings.SetValue(Base::settingGamePrefix, custom_game_prefix);
+      }
+      break;
 
       default:
+         UaAssert(false); // invalid option
          break;
       }
 
@@ -257,84 +224,74 @@ void ua_uwadv_game::parse_args(unsigned int argc, const char** argv)
 
 void ua_uwadv_game::run()
 {
-   if (run_unittests)
-   {
-#ifdef HAVE_UNITTEST
-      ua_unittest_run();
-#else
-      ua_trace("unit tests not compiled in, skipping\n");
-#endif
-   }
-
-   switch(init_action)
+   switch (init_action)
    {
    case 0: // normal start
       // start with uwadv menu screen
-      replace_screen(new ua_uwadv_menu_screen(*this),false);
+      replace_screen(new ua_uwadv_menu_screen(*this), false);
       break;
 
    case 1: // load savegame
-      {
-         ua_trace("loading savegame from file %s\n",savegame_name.c_str());
+   {
+      UaTrace("loading savegame from file %s\n", savegame_name.c_str());
 
-         ua_savegame sg = savegames_manager.get_savegame_from_file(
-            savegame_name.c_str());
+      Base::Savegame sg = savegames_manager->GetSavegameFromFile(savegame_name.c_str());
 
-         // set game prefix
-         settings.set_value(ua_setting_game_prefix,
-            sg.get_savegame_info().game_prefix);
+      // set game prefix
+      settings.SetValue(Base::settingGamePrefix,
+         sg.GetSavegameInfo().strGamePrefix);
 
-         init_game();
+      init_game();
 
-         underworld.load_game(sg);
+      GetUnderworld().Load(sg);
 
-         // immediately start game
-         replace_screen(new ua_ingame_orig_screen(*this),false);
-      }
-      break;
+      // immediately start game
+      replace_screen(new ua_ingame_orig_screen(*this), false);
+   }
+   break;
 
    case 2: // start custom game
-      {
-         // set prefix
-         ua_trace("starting custom game\n");
-         //settings.set_value(ua_setting_game_prefix,custom_game_prefix);
+   {
+      // set prefix
+      UaTrace("starting custom game\n");
+      //settings.SetValue(Base::settingGamePrefix,custom_game_prefix);
 
-         init_game();
+      init_game();
 
 #ifndef HAVE_DEBUG
-         // start splash screen
-         replace_screen(new ua_start_splash_screen(*this),false);
+      // start splash screen
+      replace_screen(new ua_start_splash_screen(*this), false);
 #else
-         // for uw2 testing; splash screens don't work yet
-         //underworld.import_savegame(settings,"data/",true);
-         replace_screen(new ua_ingame_orig_screen(*this),false);
+      // for uw2 testing; splash screens don't work yet
+      //underworld.import_savegame(settings,"data/",true);
+      replace_screen(new ua_ingame_orig_screen(*this), false);
 #endif
-      }
-      break;
+   }
+   break;
 
    default:
       break;
    }
 
 
-   ua_trace("\nmain loop started\n");
+   UaTrace("\nmain loop started\n");
 
    Uint32 now, then;
    Uint32 fcstart;
    fcstart = then = SDL_GetTicks();
 
-   unsigned int ticks=0, renders=0;
+   unsigned int ticks = 0, renders = 0;
 
    exit_game = false;
 
    // main game loop
-   while(!exit_game)
+   while (!exit_game)
    {
       now = SDL_GetTicks();
 
-      while ((now - then) > (1000.0/tickrate))
+      while ((now - then) > (1000.0 / tickrate))
       {
-         then += Uint32(1000.0/tickrate);
+         then += Uint32(1000.0 / tickrate);
 
          ticks++;
 
@@ -374,20 +331,20 @@ void ua_uwadv_game::run()
 
       renders++;
 
-      if ((now - then) > (1000.0/tickrate))
-         then = now - Uint32(1000.0/tickrate);
+      if ((now - then) > (1000.0 / tickrate))
+         then = now - Uint32(1000.0 / tickrate);
 
 #ifdef HAVE_FRAMECOUNT
       now = SDL_GetTicks();
 
-      if (now-fcstart > 2000)
+      if (now - fcstart > 2000)
       {
          // set new caption
          char buffer[256];
-         sprintf(buffer,"Underworld Adventures: %3.1f ticks/s, %3.1f frames/s",
-            ticks*1000.0/(now-fcstart),renders*1000.0/(now-fcstart));
+         sprintf(buffer, "Underworld Adventures: %3.1f ticks/s, %3.1f frames/s",
+            ticks*1000.0 / (now - fcstart), renders*1000.0 / (now - fcstart));
 
-         SDL_WM_SetCaption(buffer,NULL);
+         // TODO SDL_SetWindowTitle(NULL, buffer);
 
          // restart counting
          ticks = renders = 0;
@@ -395,20 +352,20 @@ void ua_uwadv_game::run()
 #ifdef HAVE_DEBUG
          // reset time count when rendering lasted longer than 5 seconds
          // it's likely that we just debugged through some code
-         if (now-then > 5000)
+         if (now - then > 5000)
             then = now;
 #endif
       }
 #endif
    }
 
-   ua_trace("main loop ended\n\n");
+   UaTrace("main loop ended\n\n");
 }
 
 void ua_uwadv_game::done()
 {
    // free current screen
-   if (curscreen!=NULL)
+   if (curscreen != NULL)
    {
       curscreen->destroy();
       delete curscreen;
@@ -417,7 +374,7 @@ void ua_uwadv_game::done()
 
    // free all screens on screen stack
    unsigned int max = screenstack.size();
-   for(unsigned int i=0; i<max; i++)
+   for (unsigned int i = 0; i < max; i++)
    {
       screenstack[i]->destroy();
       delete screenstack[i];
@@ -430,7 +387,7 @@ void ua_uwadv_game::done()
 
 void ua_uwadv_game::error_msg(const char* msg)
 {
-   ua_trace(msg);
+   SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Underworld Adventures", msg, NULL);
 }
 
 bool ua_uwadv_game::pause_game(bool pause)
@@ -444,102 +401,134 @@ void ua_uwadv_game::init_sdl()
 {
    // output SDL version number
    {
-      const SDL_version* ver = SDL_Linked_Version();
-      ua_trace("using SDL %u.%u.%u\n",ver->major, ver->minor, ver->patch);
+      SDL_version version = { 0 };
+      SDL_GetVersion(&version);
+      UaTrace("using SDL %u.%u.%u\n", version.major, version.minor, version.patch);
    }
 
    // first, initialize SDL's video subsystem
-   if(SDL_Init(SDL_INIT_VIDEO) < 0)
+   if (SDL_Init(SDL_INIT_VIDEO) < 0)
    {
       std::string text("video initialization failed: ");
       text.append(SDL_GetError());
-      throw ua_exception(text.c_str());
+      throw Base::Exception(text.c_str());
    }
 
    // Information about the current video settings
+#if 0
    const SDL_VideoInfo* info = NULL;
    info = SDL_GetVideoInfo();
 
-   if(!info)
+   if (!info)
    {
       // this should probably never happen
       std::string text("video query failed: ");
       text.append(SDL_GetError());
-      throw ua_exception(text.c_str());
+      throw Base::Exception(text.c_str());
    }
 
    // print video driver stats
    {
       char buffer[256];
-      SDL_VideoDriverName(buffer,256);
-      ua_trace("video driver: %s, ram available: %u k\n",
-         buffer,info->video_mem);
+      SDL_VideoDriverName(buffer, 256);
+      UaTrace("video driver: %s, ram available: %u k\n",
+         buffer, info->video_mem);
    }
 
    // set window caption
-   SDL_WM_SetCaption("Underworld Adventures",NULL);
+   SDL_WM_SetCaption(, NULL);
 
    // set up OpenGL attributes
-   SDL_GL_SetAttribute(SDL_GL_RED_SIZE,5);
-   SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,5);
-   SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,5);
-   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,16);
-   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,1);
+   SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
+   SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 5);
+   SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
+   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
    // setup video mode
    int bpp = info->vfmt->BitsPerPixel;
    int flags = SDL_OPENGL |
-      (settings.get_bool(ua_setting_fullscreen) ? SDL_FULLSCREEN : 0);
+      (settings.GetBool(ua_setting_fullscreen) ? SDL_FULLSCREEN : 0);
 
-   ua_trace("setting video mode: %u x %u, %u bits%s\n", width, height, bpp,
-      settings.get_bool(ua_setting_fullscreen) ? ", fullscreen" : "");
+   UaTrace("setting video mode: %u x %u, %u bits%s\n", width, height, bpp,
+      settings.GetBool(Base::settingFullscreen) ? ", fullscreen" : "");
+#endif
 
-   if(SDL_SetVideoMode(width, height, bpp, flags)==0)
+   int flags = settings.GetBool(Base::settingFullscreen) ? SDL_WINDOW_FULLSCREEN : 0;
+
+   m_window = SDL_CreateWindow(
+      "Underworld Adventures",
+      SDL_WINDOWPOS_UNDEFINED,
+      SDL_WINDOWPOS_UNDEFINED,
+      width, height,
+      flags | SDL_WINDOW_OPENGL);
+
+   if (m_window == NULL)
    {
       std::string text("video mode set failed: ");
       text.append(SDL_GetError());
-      throw ua_exception(text.c_str());
+      throw Base::Exception(text.c_str());
    }
 
-   ua_trace("\n");
+#ifdef WIN32
+   HINSTANCE inst = (HINSTANCE)GetModuleHandle(NULL);
+
+   HICON icon = ::LoadIcon(inst, MAKEINTRESOURCE(IDI_ICON));
+   HICON icon_small = (HICON)::LoadImage(inst,
+      MAKEINTRESOURCE(IDI_ICON), IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR);
+
+   SDL_SysWMinfo wminfo;
+   SDL_VERSION(&wminfo.version);
+
+   if (SDL_GetWindowWMInfo(m_window, &wminfo) == 1)
+   {
+      HWND hwnd = wminfo.info.win.window;
+      ::SendMessage(hwnd, WM_SETICON, ICON_BIG, (LPARAM)icon);
+      ::SendMessage(hwnd, WM_SETICON, ICON_SMALL, (LPARAM)icon_small);
+   }
+#endif
+
+   m_context = SDL_GL_CreateContext(m_window);
+
+   UaTrace("\n");
 
    // output some OpenGL diagnostics
    {
       GLint redbits, greenbits, bluebits, alphabits, depthbits;
-      glGetIntegerv(GL_RED_BITS,&redbits);
-      glGetIntegerv(GL_GREEN_BITS,&greenbits);
-      glGetIntegerv(GL_BLUE_BITS,&bluebits);
-      glGetIntegerv(GL_ALPHA_BITS,&alphabits);
-      glGetIntegerv(GL_DEPTH_BITS,&depthbits);
+      glGetIntegerv(GL_RED_BITS, &redbits);
+      glGetIntegerv(GL_GREEN_BITS, &greenbits);
+      glGetIntegerv(GL_BLUE_BITS, &bluebits);
+      glGetIntegerv(GL_ALPHA_BITS, &alphabits);
+      glGetIntegerv(GL_DEPTH_BITS, &depthbits);
 
-      ua_trace("OpenGL stats:\n bit depths: red/green/blue/alpha = %u/%u/%u/%u, depth=%u\n",
+      UaTrace("OpenGL stats:\n bit depths: red/green/blue/alpha = %u/%u/%u/%u, depth=%u\n",
          redbits, greenbits, bluebits, alphabits, depthbits);
 
       GLint maxtexsize, maxlights, maxnamestack, maxmodelstack, maxprojstack;
-      glGetIntegerv(GL_MAX_TEXTURE_SIZE,&maxtexsize);
-      glGetIntegerv(GL_MAX_LIGHTS,&maxlights);
-      glGetIntegerv(GL_MAX_NAME_STACK_DEPTH,&maxnamestack);
-      glGetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH,&maxmodelstack);
-      glGetIntegerv(GL_MAX_PROJECTION_STACK_DEPTH,&maxprojstack);
+      glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxtexsize);
+      glGetIntegerv(GL_MAX_LIGHTS, &maxlights);
+      glGetIntegerv(GL_MAX_NAME_STACK_DEPTH, &maxnamestack);
+      glGetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH, &maxmodelstack);
+      glGetIntegerv(GL_MAX_PROJECTION_STACK_DEPTH, &maxprojstack);
 
-      ua_trace(" max. texture size = %u x %u, max. lights = %u\n",
+      UaTrace(" max. texture size = %u x %u, max. lights = %u\n",
          maxtexsize, maxtexsize, maxlights);
 
-      ua_trace(" stack depths: name stack = %u, modelview stack = %u, proj. stack = %u\n",
+      UaTrace(" stack depths: name stack = %u, modelview stack = %u, proj. stack = %u\n",
          maxnamestack, maxmodelstack, maxprojstack);
 
-      const GLubyte* vendor,* renderer,* version;
+      const GLubyte* vendor, *renderer, *version;
       vendor = glGetString(GL_VENDOR);
       renderer = glGetString(GL_RENDERER);
       version = glGetString(GL_VERSION);
 
-      ua_trace(" vendor: %s\n renderer: %s\n version: %s\n",
-         vendor,renderer,version);
+      UaTrace(" vendor: %s\n renderer: %s\n version: %s\n",
+         vendor, renderer, version);
 
       GLboolean stereo;
       glGetBooleanv(GL_STEREO, &stereo);
 
-      ua_trace(" supports stereo mode: %s\n\n",
+      UaTrace(" supports stereo mode: %s\n\n",
          stereo == GL_TRUE ? "yes" : "no");
    }
 
@@ -551,29 +540,25 @@ void ua_uwadv_game::process_events()
 {
    SDL_Event event;
 
-   // get another event
-   while(SDL_PollEvent(&event))
+   while (SDL_PollEvent(&event))
    {
       // let the screen handle the event first
       curscreen->process_event(event);
 
-      switch(event.type)
+      switch (event.type)
       {
       case SDL_KEYDOWN:
-         // handle key presses
          if (event.key.keysym.sym == SDLK_x &&
             (event.key.keysym.mod & KMOD_ALT) != 0)
             exit_game = true;
          break;
 
       case SDL_QUIT:
-         // handle quit requests
-         exit_game=true;
+         exit_game = true;
          break;
 
       case SDL_USEREVENT:
-         // handle user events
-         switch(event.user.code)
+         switch (event.user.code)
          {
          case ua_event_destroy_screen:
             pop_screen();
@@ -594,89 +579,82 @@ void ua_uwadv_game::process_events()
 
 void ua_uwadv_game::init_game()
 {
-   std::string prefix(settings.get_string(ua_setting_game_prefix));
+   std::string prefix(settings.GetString(Base::settingGamePrefix));
 
-   ua_trace("initializing game; prefix: %s\n",prefix.c_str());
+   UaTrace("initializing game; prefix: %s\n", prefix.c_str());
 
    // load game config file
    std::string gamecfg_name(prefix);
    gamecfg_name.append("/game.cfg");
 
    // set new game prefix
-   savegames_manager.set_game_prefix(prefix.c_str());
+   savegames_manager->SetNewGamePrefix(prefix.c_str());
 
    // try to load %prefix%/game.cfg
    {
-      ua_gamecfg_loader cfgloader(*this,&scripting);
+      ua_gamecfg_loader cfgloader(*this, &scripting);
 
-      SDL_RWops* gamecfg = files_manager.get_uadata_file(gamecfg_name.c_str());
+      Base::SDL_RWopsPtr gamecfg = m_resourceManager->GetResourceFile(gamecfg_name.c_str());
 
       // no game.cfg found? too bad ...
       if (gamecfg == NULL)
       {
          std::string text("could not find game.cfg for game prefix ");
          text.append(prefix.c_str());
-         throw ua_exception(text.c_str());
+         throw Base::Exception(text.c_str());
       }
 
-      cfgloader.load(gamecfg);
+      Base::TextFile textFile(gamecfg);
+      cfgloader.Load(textFile);
    }
 
-   ua_trace("using generic uw-path: %s\n",
-      settings.get_string(ua_setting_uw_path).c_str());
+   UaTrace("using generic uw-path: %s\n",
+      settings.GetString(Base::settingUnderworldPath).c_str());
 
-   // init savegames manager
-   savegames_manager.init(settings);
+   savegames_manager = std::make_unique<Base::SavegamesManager>(settings);
 
-   // init image manager
    image_manager.init(settings);
 
-   // init renderer
-   renderer.init(*this);
+   renderer.init(*this, m_window);
 
-   // init underworld
-   underworld.init(settings,files_manager);
-   underworld.set_scripting(scripting);
+   IUserInterface* userInterface;
+   m_gameLogic = std::make_unique<Underworld::GameLogic>(userInterface, scripting);
 
-   // load game strings
-   ua_trace("loading game strings ... ");
-   get_gamestrings().init(settings);
-   ua_trace("done\n");
+   UaTrace("loading game strings ... ");
+   Import::GameStringsImporter importer(GetGameStrings());
+   importer.LoadDefaultStringsPakFile(GetResourceManager());
+   UaTrace("done\n");
 
-   // init audio
-   audio_manager.init(settings,files_manager);
+   audio_manager = std::make_unique<Audio::AudioManager>(settings);
 
-   // init debug server
    debug.init();
 
    // load language specific .pak file
    {
-      ua_trace("loading language-specific strings ... ");
+      UaTrace("loading language-specific strings ... ");
 
       std::string langpak_name(prefix);
       langpak_name.append("/lang.pak");
 
-      SDL_RWops* rwops = files_manager.get_uadata_file(langpak_name.c_str());
+      Base::SDL_RWopsPtr rwops = m_resourceManager->GetResourceFile(langpak_name.c_str());
       if (rwops != NULL)
       {
-         get_gamestrings().add_pak_file(rwops);
-         // note: don't call SDL_RWclose, the ua_gamestrings file will do that
+         Import::GameStringsImporter importer(GetGameStrings());
+         importer.LoadStringsPakFile(rwops);
 
-         ua_trace("language \"%s\"\n",
-            get_gamestrings().get_string(0x0a00,0).c_str());
+         UaTrace("language \"%s\"\n",
+            GetGameStrings().GetString(0x0a00, 0).c_str());
       }
       else
-         ua_trace("not available\n");
+         UaTrace("not available\n");
    }
 
-   // reset tick timer
    reset_tick_timer = true;
 }
 
 void ua_uwadv_game::done_game()
 {
    debug.shutdown();
-   underworld.done();
 
    if (scripting != NULL)
    {
@@ -694,7 +672,7 @@ void ua_uwadv_game::pop_screen()
    curscreen->destroy();
    delete curscreen;
 
-   if (screenstack.size()!=0)
+   if (screenstack.size() != 0)
    {
       // get last pushed screen
       curscreen = screenstack.back();
@@ -750,4 +728,3 @@ void ua_uwadv_game::remove_screen()
    event.user.code = ua_event_destroy_screen;
    SDL_PushEvent(&event);
 }
-*/
