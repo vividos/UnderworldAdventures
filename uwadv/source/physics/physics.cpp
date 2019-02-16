@@ -1,76 +1,59 @@
-/*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file physics.cpp
-
-   \brief game physics implementation
-
-   used collision detection and response code from this paper:
-   http://www.peroxide.dk/papers/collision/collision.pdf
-   previous document:
-   http://www.peroxide.dk/download/tutorials/tut10/pxdtut10.html
-
-*/
-
-// needed includes
+//
+// Underworld Adventures - an Ultima Underworld hacking project
+// Copyright (c) 2002,2003,2004,2005,2019 Underworld Adventures Team
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file physics.cpp
+/// \brief game physics implementation
+/// used collision detection and response code from this paper:
+/// http://www.peroxide.dk/papers/collision/collision.pdf
+/// previous document:
+/// http://www.peroxide.dk/download/tutorials/tut10/pxdtut10.html
+//
 #include "common.hpp"
 #include "physics.hpp"
 
-
-// constants
-
-//! trick to get smoother CD
+/// trick to get smoother CD
 const double ua_physics_cd_liftoff = 0.5;
 
-//! minimum distance
+/// minimum distance
 const double ua_physics_min_distance = 0.005;
 
-
-// function prototypes
 
 bool ua_physics_check_point_in_triangle(const ua_vector3d& point,
    const ua_vector3d& pa, const ua_vector3d& pb, const ua_vector3d& pc);
 
 
-// structs
-
-//! collision check data
+/// collision check data
 struct ua_collision_data
 {
-   //! ellipsoid radius
+   /// ellipsoid radius
    ua_vector3d ellipsoid;
 
    // information about the move being requested (in eSpace)
-   ua_vector3d dir;        //!< direction
-   ua_vector3d norm_dir;   //!< normalized dir
-   ua_vector3d base_point; //!< base point
+   ua_vector3d dir;        ///< direction
+   ua_vector3d norm_dir;   ///< normalized dir
+   ua_vector3d base_point; ///< base point
 
    // hit information
-   bool found_collision;   //!< indicates if collision was found
-   double nearest_dist;    //!< dist to nearest triangle
-   ua_vector3d intersect_point;  //!< direction intersection point
+   bool found_collision;   ///< indicates if collision was found
+   double nearest_dist;    ///< dist to nearest triangle
+   ua_vector3d intersect_point;  ///< direction intersection point
 };
 
-
-// ua_physics_model methods
 
 void ua_physics_model::init(ua_physics_model_callback* the_callback)
 {
@@ -84,7 +67,7 @@ void ua_physics_model::init(ua_physics_model_callback* the_callback)
 void ua_physics_model::eval_physics(double time_elapsed)
 {
    unsigned int max = tracked_bodies.size();
-   for(unsigned int i=0; i<max; i++)
+   for (unsigned int i = 0; i < max; i++)
    {
       ua_physics_body& body = *tracked_bodies[i];
 
@@ -109,12 +92,10 @@ void ua_physics_model::track_object(ua_physics_body& body)
    track_object(body, effect_force);
 }
 
-/*!
-    \param body physics body to track
-    \param dir direction vector of object
-    \param gravity_force indicates if we're processing a gravity force
-    \return true if we collided with triangle
-*/
+/// \param body physics body to track
+/// \param dir direction vector of object
+/// \param gravity_force indicates if we're processing a gravity force
+/// \return true if we collided with triangle
 bool ua_physics_model::track_object(ua_physics_body& body, ua_vector3d dir,
    bool gravity_force)
 {
@@ -125,9 +106,10 @@ bool ua_physics_model::track_object(ua_physics_body& body, ua_vector3d dir,
 
    ua_vector3d pos = body.get_pos();
 
-extern bool my_movement;
-if (my_movement)
-   ua_trace("old pos: %2.3f / %2.3f / %2.3f\n", pos.x, pos.y, pos.z);
+   // \todo
+   extern bool my_movement;
+   if (my_movement)
+      UaTrace("old pos: %2.3f / %2.3f / %2.3f\n", pos.x, pos.y, pos.z);
 
    if (!gravity_force)
       pos.z += 0.5;
@@ -153,24 +135,22 @@ if (my_movement)
    if (!gravity_force)
       pos.z -= 0.5;
 
-if (my_movement)
-   ua_trace("new pos: %2.3f / %2.3f / %2.3f\n", pos.x, pos.y, pos.z);
-my_movement = false;
+   if (my_movement)
+      UaTrace("new pos: %2.3f / %2.3f / %2.3f\n", pos.x, pos.y, pos.z);
+   my_movement = false;
 
    // limit height when falling out of the map
-   if (pos.z<0.0) pos.z = 0.0;
+   if (pos.z < 0.0) pos.z = 0.0;
 
    body.set_pos(pos);
 
    return collided;
 }
 
-/*! 
-    \param data collision data package
-    \param pos current position in eSpace
-    \param dir current direction vector in eSpace
-    \return true when a collision occured
-*/
+/// \param data collision data package
+/// \param pos current position in eSpace
+/// \param dir current direction vector in eSpace
+/// \return true when a collision occured
 bool ua_physics_model::collide_with_world(ua_collision_data& data,
    ua_vector3d& pos, const ua_vector3d& dir)
 {
@@ -250,7 +230,7 @@ bool ua_physics_model::collide_with_world(ua_collision_data& data,
    // call the function with the new position and velocity
    collision_recursion_depth++;
 
-   collide_with_world(data, new_basepoint,new_dir);
+   collide_with_world(data, new_basepoint, new_dir);
    pos = new_basepoint;
 
    collision_recursion_depth--;
@@ -268,11 +248,11 @@ void ua_physics_model::check_collision(ua_collision_data& data)
    std::vector<ua_triangle3d_textured> alltriangles;
 
    if (callback != NULL)
-      callback->get_surrounding_triangles(xpos,ypos,alltriangles);
+      callback->get_surrounding_triangles(xpos, ypos, alltriangles);
 
    // check all triangles
    unsigned int max = alltriangles.size();
-   for(unsigned int i=0; i<max; i++)
+   for (unsigned int i = 0; i < max; i++)
    {
       ua_triangle3d_textured& tri = alltriangles[i];
 
@@ -285,9 +265,8 @@ void ua_physics_model::check_collision(ua_collision_data& data)
    }
 }
 
-/*! Checks triangle for collision; triangle vertices must already be in
-    ellipsoid space.
-*/
+/// Checks triangle for collision; triangle vertices must already be in
+/// ellipsoid space.
 void ua_physics_model::check_triangle(ua_collision_data& data,
    const ua_vector3d& p1, const ua_vector3d& p2, const ua_vector3d& p3)
 {
@@ -332,11 +311,11 @@ void ua_physics_model::check_triangle(ua_collision_data& data,
    else
    {
       // N dot D is not 0. calculate intersection interval
-      t0 = (-1.0-dist_triangle) / normal_dot_dir;
-      t1 = ( 1.0-dist_triangle) / normal_dot_dir;
+      t0 = (-1.0 - dist_triangle) / normal_dot_dir;
+      t1 = (1.0 - dist_triangle) / normal_dot_dir;
 
       // swap so t0 < t1
-      if (t0 > t1) std::swap(t0,t1);
+      if (t0 > t1) std::swap(t0, t1);
 
       // check that at least one result is within range
       if (t0 > 1.0 || t1 < 0.0)
@@ -397,7 +376,7 @@ void ua_physics_model::check_triangle(ua_collision_data& data,
       ua_vector3d base = data.base_point;
 
       double dir_sq_length = dir.length(); dir_sq_length *= dir_sq_length;
-      double a,b,c;
+      double a, b, c;
       double new_t;
 
       // For each vertex or edge a quadratic equation have to
@@ -409,10 +388,10 @@ void ua_physics_model::check_triangle(ua_collision_data& data,
       a = dir_sq_length;
 
       // P1
-      b = 2.0*(dir.dot(base-p1));
-      c = (p1-base).length(); c *= c;
+      b = 2.0*(dir.dot(base - p1));
+      c = (p1 - base).length(); c *= c;
       c -= 1.0;
-      if (get_lowest_root(a,b,c,t,new_t))
+      if (get_lowest_root(a, b, c, t, new_t))
       {
          t = new_t;
          found = true;
@@ -420,10 +399,10 @@ void ua_physics_model::check_triangle(ua_collision_data& data,
       }
 
       // P2
-      b = 2.0*(dir.dot(base-p2));
-      c = (p2-base).length(); c *= c;
+      b = 2.0*(dir.dot(base - p2));
+      c = (p2 - base).length(); c *= c;
       c -= 1.0;
-      if (get_lowest_root(a,b,c,t,new_t))
+      if (get_lowest_root(a, b, c, t, new_t))
       {
          t = new_t;
          found = true;
@@ -431,10 +410,10 @@ void ua_physics_model::check_triangle(ua_collision_data& data,
       }
 
       // P3
-      b = 2.0*(dir.dot(base-p3));
-      c = (p3-base).length(); c *= c;
+      b = 2.0*(dir.dot(base - p3));
+      c = (p3 - base).length(); c *= c;
       c -= 1.0;
-      if (get_lowest_root(a,b,c,t,new_t))
+      if (get_lowest_root(a, b, c, t, new_t))
       {
          t = new_t;
          found = true;
@@ -455,14 +434,14 @@ void ua_physics_model::check_triangle(ua_collision_data& data,
          base_to_vertex_sq_length *= base_to_vertex_sq_length;
 
          // calculate parameters for equation
-         a = edge_sq_length*-dir_sq_length + edge_dot_dir*edge_dot_dir;
-         b = edge_sq_length*(2.0*dir.dot(base_to_vertex)) -
+         a = edge_sq_length * -dir_sq_length + edge_dot_dir * edge_dot_dir;
+         b = edge_sq_length * (2.0*dir.dot(base_to_vertex)) -
             2.0*edge_dot_dir*edge_dot_base_to_vertex;
-         c = edge_sq_length*(1-base_to_vertex_sq_length) +
-            edge_dot_base_to_vertex*edge_dot_base_to_vertex;
+         c = edge_sq_length * (1 - base_to_vertex_sq_length) +
+            edge_dot_base_to_vertex * edge_dot_base_to_vertex;
 
          // does this swept sphere collide against infinite edge?
-         if (get_lowest_root(a,b,c,t,new_t))
+         if (get_lowest_root(a, b, c, t, new_t))
          {
             // check if intersection is within line segment:
             double f = (edge_dot_dir*new_t - edge_dot_base_to_vertex) /
@@ -492,14 +471,14 @@ void ua_physics_model::check_triangle(ua_collision_data& data,
          base_to_vertex_sq_length *= base_to_vertex_sq_length;
 
          // calculate parameters for equation
-         a = edge_sq_length*-dir_sq_length + edge_dot_dir*edge_dot_dir;
-         b = edge_sq_length*(2.0*dir.dot(base_to_vertex)) -
+         a = edge_sq_length * -dir_sq_length + edge_dot_dir * edge_dot_dir;
+         b = edge_sq_length * (2.0*dir.dot(base_to_vertex)) -
             2.0*edge_dot_dir*edge_dot_base_to_vertex;
-         c = edge_sq_length*(1-base_to_vertex_sq_length) +
-            edge_dot_base_to_vertex*edge_dot_base_to_vertex;
+         c = edge_sq_length * (1 - base_to_vertex_sq_length) +
+            edge_dot_base_to_vertex * edge_dot_base_to_vertex;
 
          // does this swept sphere collide against infinite edge?
-         if (get_lowest_root(a,b,c,t,new_t))
+         if (get_lowest_root(a, b, c, t, new_t))
          {
             // check if intersection is within line segment:
             double f = (edge_dot_dir*new_t - edge_dot_base_to_vertex) /
@@ -529,14 +508,14 @@ void ua_physics_model::check_triangle(ua_collision_data& data,
          base_to_vertex_sq_length *= base_to_vertex_sq_length;
 
          // calculate parameters for equation
-         a = edge_sq_length*-dir_sq_length + edge_dot_dir*edge_dot_dir;
-         b = edge_sq_length*(2.0*dir.dot(base_to_vertex)) -
+         a = edge_sq_length * -dir_sq_length + edge_dot_dir * edge_dot_dir;
+         b = edge_sq_length * (2.0*dir.dot(base_to_vertex)) -
             2.0*edge_dot_dir*edge_dot_base_to_vertex;
-         c = edge_sq_length*(1-base_to_vertex_sq_length) +
-            edge_dot_base_to_vertex*edge_dot_base_to_vertex;
+         c = edge_sq_length * (1 - base_to_vertex_sq_length) +
+            edge_dot_base_to_vertex * edge_dot_base_to_vertex;
 
          // does this swept sphere collide against infinite edge?
-         if (get_lowest_root(a,b,c,t,new_t))
+         if (get_lowest_root(a, b, c, t, new_t))
          {
             // check if intersection is within line segment:
             double f = (edge_dot_dir*new_t - edge_dot_base_to_vertex) /
@@ -560,12 +539,12 @@ void ua_physics_model::check_triangle(ua_collision_data& data,
    if (found)
    {
       // distance to collision: 't' is time of collision
-      double dist_coll = t*data.dir.length();
+      double dist_coll = t * data.dir.length();
 
       // does this triangle qualify for the closest hit?
       // it does if it's the first hit or the closest
       if (!data.found_collision ||
-          dist_coll < data.nearest_dist)
+         dist_coll < data.nearest_dist)
       {
          // collision information necessary for sliding
          data.nearest_dist = dist_coll;
@@ -575,15 +554,14 @@ void ua_physics_model::check_triangle(ua_collision_data& data,
    }
 }
 
-/*! Calculates lowest root of quadratic equation of the form
-    ax^2 + bx + c = 0; the solution that is returned is positive and lower
-    than max_r. Other solutions are disregarded.
-*/
+/// Calculates lowest root of quadratic equation of the form
+/// ax^2 + bx + c = 0; the solution that is returned is positive and lower
+/// than max_r. Other solutions are disregarded.
 bool ua_physics_model::get_lowest_root(double a, double b, double c,
    double max_r, double& root)
 {
    // check if a solution exists
-   double determinant = b*b - 4.0*a*c;
+   double determinant = b * b - 4.0*a*c;
 
    // if determinant is negative it means no solutions
    if (determinant < 0.0)
@@ -592,11 +570,11 @@ bool ua_physics_model::get_lowest_root(double a, double b, double c,
    // calculate the two roots: (if determinant == 0 then
    // x1==x2 but let’s disregard that slight optimization)
    double sqrt_d = sqrt(determinant);
-   double r1 = (-b - sqrt_d) / (2*a);
-   double r2 = (-b + sqrt_d) / (2*a);
+   double r1 = (-b - sqrt_d) / (2 * a);
+   double r2 = (-b + sqrt_d) / (2 * a);
 
    // sort so x1 <= x2
-   if (r1 > r2) std::swap(r1,r2);
+   if (r1 > r2) std::swap(r1, r2);
 
    // get lowest root
    if (r1 > 0 && r1 < max_r)
@@ -617,33 +595,30 @@ bool ua_physics_model::get_lowest_root(double a, double b, double c,
    return false;
 }
 
-
-// helper math functions
-
-/*! \todo replace in() macro test with somewhat more portable */
+/// \todo replace in() macro test with somewhat more portable
 bool ua_physics_check_point_in_triangle(const ua_vector3d& point,
    const ua_vector3d& pa, const ua_vector3d& pb, const ua_vector3d& pc)
 {
-   ua_vector3d e10=pb-pa;
-   ua_vector3d e20=pc-pa;
-     
-   float a,b,c,ac_bb;
+   ua_vector3d e10 = pb - pa;
+   ua_vector3d e20 = pc - pa;
+
+   float a, b, c, ac_bb;
 
    a = e10.dot(e10);
    b = e10.dot(e20);
    c = e20.dot(e20);
-   ac_bb=(a*c)-(b*b);
+   ac_bb = (a*c) - (b*b);
 
-   ua_vector3d vp = ua_vector3d(point.x-pa.x, point.y-pa.y, point.z-pa.z);
+   ua_vector3d vp = ua_vector3d(point.x - pa.x, point.y - pa.y, point.z - pa.z);
 
    float d = vp.dot(e10);
    float e = vp.dot(e20);
 
-   float x = (d*c)-(e*b);
-   float y = (e*a)-(d*b);
-   float z = x+y-ac_bb;
+   float x = (d*c) - (e*b);
+   float y = (e*a) - (d*b);
+   float z = x + y - ac_bb;
 
 #define in(a) ((Uint32&) a)
 
-   return (( in(z)& ~(in(x)|in(y)) ) & 0x80000000)!=0;
+   return ((in(z)& ~(in(x) | in(y))) & 0x80000000) != 0;
 }
