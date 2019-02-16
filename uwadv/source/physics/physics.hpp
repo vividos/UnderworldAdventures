@@ -22,11 +22,10 @@
 #pragma once
 
 #include "uamath.hpp"
-#include "triangle3d.hpp""
+#include "triangle3d.hpp"
 #include "physicsbody.hpp"
 #include <vector>
 
-class ua_underworld;
 struct ua_collision_data;
 
 /// physics parameter
