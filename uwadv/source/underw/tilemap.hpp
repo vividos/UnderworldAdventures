@@ -136,7 +136,7 @@ namespace Underworld
       const TileInfo& GetTileInfo(unsigned int xpos, unsigned int ypos) const;
 
       /// returns vector of used stock texture ids
-      std::set<Uint16>& GetUsedTextures() { return m_setUsedTextures; }
+      const std::set<Uint16>& GetUsedTextures() const { return m_setUsedTextures; }
 
       /// returns tiles list
       std::vector<TileInfo>& GetVectorTileInfo() { return m_tilesList; }
