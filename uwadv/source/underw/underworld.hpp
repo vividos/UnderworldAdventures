@@ -53,6 +53,12 @@ namespace Underworld
       /// returns player; const version
       const Player& GetPlayer() const { return m_player; }
 
+      /// returns current player level
+      Level& GetCurrentLevel();
+
+      /// returns current player level; const version
+      const Level& GetCurrentLevel() const;
+
       // loading / saving
 
       /// loads the underworld from a savegame

@@ -60,10 +60,16 @@ namespace Underworld
       unsigned int GetAttackPower() { return m_attackPower; }
 
       /// returns current player level
-      Level& GetCurrentLevel();
+      Level& GetCurrentLevel()
+      {
+         return m_underworld.GetCurrentLevel();
+      }
 
       /// returns current player level; const version
-      const Level& GetCurrentLevel() const;
+      const Level& GetCurrentLevel() const
+      {
+         return m_underworld.GetCurrentLevel();
+      }
 
       /// changes current player level
       void ChangeLevel(unsigned int level);

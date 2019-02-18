@@ -96,18 +96,6 @@ void GameLogic::UserAction(EUserInterfaceUserAction action,
    }
 }
 
-Underworld::Level& GameLogic::GetCurrentLevel()
-{
-   unsigned int currentLevel = m_underworld.GetPlayer().GetAttribute(::Underworld::attrMapLevel);
-   return m_underworld.GetLevelList().GetLevel(currentLevel);
-}
-
-const Underworld::Level& GameLogic::GetCurrentLevel() const
-{
-   unsigned int currentLevel = m_underworld.GetPlayer().GetAttribute(::Underworld::attrMapLevel);
-   return m_underworld.GetLevelList().GetLevel(currentLevel);
-}
-
 void GameLogic::ChangeLevel(unsigned int level)
 {
    // check if game wants to change to unknown level
