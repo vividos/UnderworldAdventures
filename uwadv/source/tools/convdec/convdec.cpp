@@ -22,7 +22,7 @@
 #include "conv.hpp"
 #include "convdec.hpp"
 #include "convgraph.hpp"
-#include "import.hpp"
+#include "convloader.hpp"
 #include "gamestrings.hpp"
 #include "gamestringsimporter.hpp"
 
