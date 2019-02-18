@@ -16,44 +16,34 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file import.hpp
-/// \brief game data import
+/// \file bits.hpp
+/// \brief bit handling
 //
 #pragma once
 
 #include "base.hpp"
-#include "file.hpp"
-#include "bits.hpp"
-#include <vector>
-#include <set>
-#include <map>
 
-namespace Base
-{
-   class ResourceManager;
-   class Settings;
-   class File;
-}
-
-namespace Underworld
-{
-   class ObjectProperties;
-   class LevelList;
-   class ObjectList;
-   class Tilemap;
-   class Player;
-   class ConvGlobals;
-   class Underworld;
-}
-
-/// import classes
 namespace Import
 {
-   /// imports all object properties
-   void ImportProperties(Base::ResourceManager& resourceManager,
-      Underworld::ObjectProperties& properties);
+   /// retrieves bits from given value
+   inline Uint8 GetBits(Uint8 value, unsigned int start, unsigned int count)
+   {
+      UaAssert(start < 8 && start + count <= 8);
+      return static_cast<Uint8>(value >> start) & static_cast<Uint8>((1 << count) - 1);
+   }
 
-   /// Loads a whole underworld initial data
-   void LoadUnderworld(Base::Settings& settings, Base::ResourceManager& resourceManager, Underworld::Underworld& underworld);
+   /// retrieves bits from given value
+   inline Uint16 GetBits(Uint16 value, unsigned int start, unsigned int count)
+   {
+      UaAssert(start < 16 && start + count <= 16);
+      return static_cast<Uint16>(value >> start) & static_cast<Uint16>((1 << count) - 1);
+   }
+
+   /// retrieves bits from given value
+   inline Uint32 GetBits(Uint32 value, unsigned int start, unsigned int count)
+   {
+      UaAssert(start < 32 && start + count <= 32);
+      return (value >> start) & ((1 << count) - 1);
+   }
 
 } // namespace Import

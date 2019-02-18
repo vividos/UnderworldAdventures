@@ -20,29 +20,3 @@
 /// \brief import precompiled header support
 //
 #include "import.hpp"
-#include "underworld.hpp"
-#include "levelimporter.hpp"
-#include "playerimporter.hpp"
-
-void Import::LoadUnderworld(Base::Settings& settings, Base::ResourceManager& resourceManager, Underworld::Underworld& underworld)
-{
-   LevelImporter levelImporter(resourceManager);
-   switch (settings.GetGametype())
-   {
-   case Base::gameUw1:
-      if (settings.GetBool(Base::settingUw1IsUwdemo))
-         levelImporter.LoadUwDemoLevel(underworld.GetLevelList());
-      else
-         levelImporter.LoadUw1Levels(underworld.GetLevelList());
-      break;
-
-   case Base::gameUw2:
-      levelImporter.LoadUw2Levels(underworld.GetLevelList());
-      break;
-   }
-
-   PlayerImporter playerImport(resourceManager);
-   playerImport.LoadPlayer(underworld.GetPlayer(), settings.GetString(Base::settingUnderworldPath));
-
-   Import::LoadConvGlobals(underworld.GetPlayer().GetConvGlobals(), settings, "data", true);
-}

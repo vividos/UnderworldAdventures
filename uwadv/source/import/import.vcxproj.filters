@@ -35,6 +35,9 @@
     <ClCompile Include="convloader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="uwloader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="import.hpp">
@@ -50,6 +53,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="gamestringsimporter.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="convloader.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="bits.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

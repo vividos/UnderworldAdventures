@@ -16,17 +16,12 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file import.hpp
-/// \brief game data import
+/// \file convloader.hpp
+/// \brief conversation loader
 //
 #pragma once
 
 #include "base.hpp"
-#include "file.hpp"
-#include "bits.hpp"
-#include <vector>
-#include <set>
-#include <map>
 
 namespace Base
 {
@@ -37,23 +32,24 @@ namespace Base
 
 namespace Underworld
 {
-   class ObjectProperties;
-   class LevelList;
-   class ObjectList;
-   class Tilemap;
-   class Player;
    class ConvGlobals;
-   class Underworld;
 }
 
-/// import classes
+namespace Conv
+{
+   class CodeVM;
+}
+
 namespace Import
 {
-   /// imports all object properties
-   void ImportProperties(Base::ResourceManager& resourceManager,
-      Underworld::ObjectProperties& properties);
+   /// Loads conversation globals from bglobals.dat or babglobs.dat
+   void LoadConvGlobals(Underworld::ConvGlobals& globals,
+      Base::Settings& settings, const char* folder, bool initial);
 
-   /// Loads a whole underworld initial data
-   void LoadUnderworld(Base::Settings& settings, Base::ResourceManager& resourceManager, Underworld::Underworld& underworld);
+   /// Loads conversation code into virtual machine
+   bool LoadConvCode(Conv::CodeVM& vm, const char* cnvfile, Uint16 conv);
+
+   /// Loads imported functions list
+   void LoadConvCodeImportedFunctions(Conv::CodeVM& vm, Base::File& file);
 
 } // namespace Import

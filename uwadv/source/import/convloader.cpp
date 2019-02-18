@@ -20,6 +20,7 @@
 /// \brief conversation code and conv. globals loader
 //
 #include "import.hpp"
+#include "convloader.hpp"
 #include "file.hpp"
 #include "codevm.hpp"
 #include "exception.hpp"

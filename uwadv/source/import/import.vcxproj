@@ -81,8 +81,11 @@
     <ClCompile Include="objectlistloader.cpp" />
     <ClCompile Include="playerimporter.cpp" />
     <ClCompile Include="propertiesloader.cpp" />
+    <ClCompile Include="uwloader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="bits.hpp" />
+    <ClInclude Include="convloader.hpp" />
     <ClInclude Include="import.hpp" />
     <ClInclude Include="importgfx.hpp" />
     <ClInclude Include="gamestringsimporter.hpp" />
