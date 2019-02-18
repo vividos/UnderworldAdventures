@@ -71,6 +71,9 @@ namespace Underworld
       /// removes object from list for given tile
       void RemoveObjectFromTileList(Uint16 objectPos, Uint8 xpos, Uint8 ypos);
 
+      /// returns object list size
+      Uint16 GetObjectListSize() const { return static_cast<Uint16>(m_objectList.size()); }
+
       // loading / saving
 
       /// loads object list from savegame
