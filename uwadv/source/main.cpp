@@ -50,12 +50,12 @@ int main(int argc, char* argv[])
       std::string text("An unhandled exception was encountered:\n\r");
       text.append(ex.what());
 
-      ua->error_msg(text.c_str());
+      SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Underworld Adventures", text.c_str(), NULL);
    }
    catch (std::exception& ex)
    {
       UaTrace("caught std::exception: %s\n", ex.what());
-      ua->error_msg("std::exception");
+      SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Underworld Adventures", "std::exception", NULL);
    }
 #endif
 

@@ -385,11 +385,6 @@ void ua_uwadv_game::done()
    SDL_Quit();
 }
 
-void ua_uwadv_game::error_msg(const char* msg)
-{
-   SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Underworld Adventures", msg, NULL);
-}
-
 bool ua_uwadv_game::pause_game(bool pause)
 {
    bool old_paused = paused;

@@ -54,9 +54,6 @@ public:
    /// cleans up all stuff
    void done();
 
-   /// shows the user an error message
-   void error_msg(const char* msg);
-
    // IBasicGame methods
    virtual double get_tickrate() override
    {
