@@ -266,6 +266,11 @@ SavegamesManager::SavegamesManager(const Base::Settings& settings)
    }
 }
 
+void SavegamesManager::SetNewGamePrefix(const std::string& newGamePrefix)
+{
+   m_gamePrefix = newGamePrefix;
+}
+
 /// \todo filter out savegames that don't have the same prefix
 void SavegamesManager::Rescan()
 {
