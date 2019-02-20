@@ -106,7 +106,7 @@ Uint16 Inventory::GetContainerPos() const
 
    unsigned int topPos = m_containerStack.size() - 1;
 
-   UaAssert(true == IsContainer(GetObject(m_containerStack[topPos]).m_itemID));
+   UaAssert(true == IsContainer(GetObjectInfo(m_containerStack[topPos]).m_itemID));
    return m_containerStack[topPos];
 }
 
@@ -117,15 +117,15 @@ Uint16 Inventory::GetParentContainerPos() const
 
    unsigned int parentPos = m_containerStack.size() - 2;
 
-   UaAssert(true == IsContainer(GetObject(m_containerStack[parentPos]).m_itemID));
+   UaAssert(true == IsContainer(GetObjectInfo(m_containerStack[parentPos]).m_itemID));
    return m_containerStack[parentPos];
 }
 
 /// \todo check if object is in current container
 void Inventory::OpenContainer(Uint16 pos)
 {
-   UaAssert(true == IsContainer(GetObject(pos).m_itemID));
-   UaAssert(false == GetObject(pos).m_isQuantity);
+   UaAssert(true == IsContainer(GetObjectInfo(pos).m_itemID));
+   UaAssert(false == GetObjectInfo(pos).m_isQuantity);
    UaAssert(GetContainerPos() != pos); // container already open
 
    // check if user wants to open container from paperdoll
@@ -136,7 +136,7 @@ void Inventory::OpenContainer(Uint16 pos)
    }
 
    // quantity field is used as pointer to content of containers
-   Uint16 link = GetObject(pos).m_quantity;
+   Uint16 link = GetObjectInfo(pos).m_quantity;
 
    BuildSlotList(link);
 
@@ -147,7 +147,7 @@ void Inventory::OpenContainer(Uint16 pos)
 void Inventory::CloseContainer()
 {
    UaAssert(m_containerStack.size() > 0);
-   UaAssert(true == IsContainer(GetObject(m_containerStack.back()).m_itemID));
+   UaAssert(true == IsContainer(GetObjectInfo(m_containerStack.back()).m_itemID));
 
    Uint16 pos = c_inventorySlotNoItem; // start of topmost item list at list pos 0
 
@@ -160,10 +160,10 @@ void Inventory::CloseContainer()
    {
       pos = m_containerStack.back();
 
-      UaAssert(false == GetObject(pos).m_isQuantity);
+      UaAssert(false == GetObjectInfo(pos).m_isQuantity);
 
       // quantity is used as pointer to content of container
-      pos = GetObject(pos).m_quantity;
+      pos = GetObjectInfo(pos).m_quantity;
    }
 
    BuildSlotList(pos);
@@ -179,7 +179,7 @@ void Inventory::CloseContainer()
 ///         isn't change.
 bool Inventory::AddToContainer(Uint16& pos, Uint16 containerPos)
 {
-   UaAssert(GetObject(pos).m_link == 0);
+   UaAssert(GetObjectInfo(pos).m_link == 0);
 
    if (containerPos == c_inventorySlotNoItem)
    {
@@ -189,10 +189,10 @@ bool Inventory::AddToContainer(Uint16& pos, Uint16 containerPos)
       Uint16 ui;
       for (ui = 0; ui < 8; ui++)
       {
-         if (GetObject(ui).m_itemID == c_itemIDNone)
+         if (GetObjectInfo(ui).m_itemID == c_itemIDNone)
          {
             // copy object to that slot
-            GetObject(ui) = GetObject(pos);
+            GetObjectInfo(ui) = GetObjectInfo(pos);
 
             // free object
             Free(pos);
@@ -206,33 +206,33 @@ bool Inventory::AddToContainer(Uint16& pos, Uint16 containerPos)
    }
    else
    {
-      UaAssert(true == IsContainer(GetObject(containerPos).m_itemID));
-      UaAssert(false == GetObject(containerPos).m_isQuantity);
+      UaAssert(true == IsContainer(GetObjectInfo(containerPos).m_itemID));
+      UaAssert(false == GetObjectInfo(containerPos).m_isQuantity);
 
       // add to container
-      if (GetObject(containerPos).m_quantity == 0)
+      if (GetObjectInfo(containerPos).m_quantity == 0)
       {
          // no object in container
-         GetObject(containerPos).m_quantity = pos;
+         GetObjectInfo(containerPos).m_quantity = pos;
       }
       else
       {
          // search last object in list
-         Uint16 link = GetObject(containerPos).m_quantity;
+         Uint16 link = GetObjectInfo(containerPos).m_quantity;
          Uint16 lastLink = link;
          while (link != 0)
          {
             lastLink = link;
-            link = GetObject(link).m_link;
+            link = GetObjectInfo(link).m_link;
          }
 
-         GetObject(lastLink).m_link = pos;
+         GetObjectInfo(lastLink).m_link = pos;
       }
    }
 
    if (containerPos == GetContainerPos())
    {
-      Uint16 pos1stObj = containerPos == c_inventorySlotNoItem ? c_inventorySlotNoItem : GetObject(containerPos).m_quantity;
+      Uint16 pos1stObj = containerPos == c_inventorySlotNoItem ? c_inventorySlotNoItem : GetObjectInfo(containerPos).m_quantity;
       BuildSlotList(pos1stObj);
    }
 
@@ -242,17 +242,17 @@ bool Inventory::AddToContainer(Uint16& pos, Uint16 containerPos)
 void Inventory::RemoveFromContainer(Uint16 pos, Uint16 containerPos)
 {
    // if the object to remove is a container, it must not have items in it
-   if (IsContainer(GetObject(pos).m_itemID))
+   if (IsContainer(GetObjectInfo(pos).m_itemID))
    {
-      UaAssert(false == GetObject(pos).m_isQuantity);
-      UaAssert(GetObject(pos).m_quantity == 0);
+      UaAssert(false == GetObjectInfo(pos).m_isQuantity);
+      UaAssert(GetObjectInfo(pos).m_quantity == 0);
    }
 
    if (containerPos == c_inventorySlotNoItem)
    {
       // remove from topmost container
       UaAssert(pos < slotPlayerObjectsStart); // must be in range
-      UaAssert(0 == GetObject(pos).m_link); // must not have a link
+      UaAssert(0 == GetObjectInfo(pos).m_link); // must not have a link
 
       // as topmost container items don't have m_link set, there is no need
       // to remove linking; just free object
@@ -260,39 +260,39 @@ void Inventory::RemoveFromContainer(Uint16 pos, Uint16 containerPos)
    }
    else
    {
-      UaAssert(false == GetObject(containerPos).m_isQuantity);
+      UaAssert(false == GetObjectInfo(containerPos).m_isQuantity);
 
       // search container for object
-      Uint16 link = GetObject(containerPos).m_quantity;
+      Uint16 link = GetObjectInfo(containerPos).m_quantity;
       UaAssert(link != 0); // no objects in container?
 
       if (link == pos)
       {
          // first object in list
-         GetObject(containerPos).m_quantity = GetObject(link).m_link;
+         GetObjectInfo(containerPos).m_quantity = GetObjectInfo(link).m_link;
       }
       else
       {
          // search for object in list
          while (link != 0)
          {
-            if (GetObject(link).m_link == pos)
+            if (GetObjectInfo(link).m_link == pos)
             {
                // chain to object after the one to remove
-               GetObject(link).m_link = GetObject(pos).m_link;
+               GetObjectInfo(link).m_link = GetObjectInfo(pos).m_link;
                break;
             }
 
-            link = GetObject(link).m_link;
+            link = GetObjectInfo(link).m_link;
          }
       }
 
-      GetObject(pos).m_link = 0;
+      GetObjectInfo(pos).m_link = 0;
    }
 
    if (containerPos == GetContainerPos())
    {
-      Uint16 pos1stObj = containerPos == c_inventorySlotNoItem ? c_inventorySlotNoItem : GetObject(containerPos).m_quantity;
+      Uint16 pos1stObj = containerPos == c_inventorySlotNoItem ? c_inventorySlotNoItem : GetObjectInfo(containerPos).m_quantity;
       BuildSlotList(pos1stObj);
    }
 }
@@ -306,7 +306,7 @@ void Inventory::RemoveFromContainer(Uint16 pos, Uint16 containerPos)
 bool Inventory::FloatObject(Uint16 pos)
 {
    UaAssert(m_floatingObjectPos == c_inventorySlotNoItem); // must have no floating object
-   UaAssert(GetObject(pos).m_link == 0); // must not be in a container
+   UaAssert(GetObjectInfo(pos).m_link == 0); // must not be in a container
 
    m_floatingObjectPos = pos;
 
@@ -459,7 +459,7 @@ void Inventory::BuildSlotList(Uint16 pos)
          m_slotList.push_back(pos);
 
          // get next object
-         pos = GetObject(pos).m_link;
+         pos = GetObjectInfo(pos).m_link;
       }
    }
 }

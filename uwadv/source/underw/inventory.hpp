@@ -101,14 +101,14 @@ namespace Underworld
       void Free(Uint16 pos);
 
       /// retrieves an object from the list
-      ObjectInfo& GetObject(Uint16 index)
+      ObjectInfo& GetObjectInfo(Uint16 index)
       {
          UaAssert(index < m_objectList.size());
          return m_objectList[index];
       }
 
       /// retrieves an object from the list
-      const ObjectInfo& GetObject(Uint16 index) const
+      const ObjectInfo& GetObjectInfo(Uint16 index) const
       {
          UaAssert(index < m_objectList.size());
          return m_objectList[index];
