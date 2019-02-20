@@ -29,6 +29,10 @@
 
 extern "C"
 {
+#include "lua/include/lua.h"
+#include "lua/include/lualib.h"
+#include "lua/include/luadebug.h"
+
 #include "lua/src/lstate.h"
 #include "lua/src/lobject.h"
 }

@@ -28,18 +28,9 @@
 #include <map>
 #include <set>
 
-extern "C"
-{
-#include "lua/include/lua.h"
-#include "lua/include/lualib.h"
-#include "lua/include/luadebug.h"
-}
-
-
-// forward references
 class IGame;
-
-// classes
+struct lua_State;
+struct lua_Debug;
 
 /// lua scripting class
 class LuaScripting : public IScripting, public ua_debug_code_interface
