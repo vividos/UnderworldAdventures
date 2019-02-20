@@ -185,6 +185,11 @@ namespace Underworld
       /// Returns runebag; const version
       const Runebag& GetRunebag() const { return m_runebag; }
 
+      /// Returns runeshelf
+      Runeshelf& GetRuneshelf() { return m_runeshelf; }
+      /// Returns runeshelf; const version
+      const Runeshelf& GetRuneshelf() const { return m_runeshelf; }
+
       /// Returns conversation globals
       ConvGlobals& GetConvGlobals() { return m_convGlobals; }
       /// Returns conversation globals; const version
@@ -229,6 +234,9 @@ namespace Underworld
       /// runebag
       Runebag m_runebag;
 
+      /// runeshelf
+      Runeshelf m_runeshelf;
+
       /// conversation globals
       ConvGlobals m_convGlobals;
 
@@ -236,7 +244,6 @@ namespace Underworld
       QuestFlags m_questFlags;
 
       // \todo missing:
-      // Runeshelf
       // active spells
       // attack power (gem)
       // days of imprisonment / date

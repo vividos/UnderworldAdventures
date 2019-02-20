@@ -59,6 +59,7 @@ void Player::Load(Base::Savegame& sg)
 
    m_inventory.Load(sg);
    m_runebag.Load(sg);
+   m_runeshelf.Load(sg);
    m_convGlobals.Load(sg);
    m_questFlags.Load(sg);
 }
@@ -86,6 +87,7 @@ void Player::Save(Base::Savegame& sg) const
 
    m_inventory.Save(sg);
    m_runebag.Save(sg);
+   m_runeshelf.Save(sg);
    m_convGlobals.Save(sg);
    m_questFlags.Save(sg);
 }
