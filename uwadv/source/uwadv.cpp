@@ -239,7 +239,7 @@ void ua_uwadv_game::run()
 
       // set game prefix
       settings.SetValue(Base::settingGamePrefix,
-         sg.GetSavegameInfo().strGamePrefix);
+         sg.GetSavegameInfo().gamePrefix);
 
       init_game();
 

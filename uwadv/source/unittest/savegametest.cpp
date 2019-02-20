@@ -38,7 +38,7 @@ namespace UnitTest
          std::string strSavegameFile = testFolder.GetPathName() + "/savegame.uas";
 
          Base::SavegameInfo info;
-         info.strTitle = "title01";
+         info.title = "title01";
 
          const std::string strTestStr("abcd 123 #!");
 
@@ -79,7 +79,7 @@ namespace UnitTest
             savegame.EndSection();
 
             Base::SavegameInfo& info2 = savegame.GetSavegameInfo();
-            Assert::IsTrue(info.strTitle == info2.strTitle);
+            Assert::IsTrue(info.title == info2.title);
          }
       }
 
@@ -131,7 +131,7 @@ namespace UnitTest
          {
             Base::Savegame sg = savegamesManager.LoadSavegame(0);
             Assert::IsTrue(0x42 == sg.Read8());
-            Assert::IsTrue(sg.GetSavegameInfo().strGamePrefix == c_strGamePrefix);
+            Assert::IsTrue(sg.GetSavegameInfo().gamePrefix == c_strGamePrefix);
          }
 
          // clean up savegame again
@@ -170,13 +170,13 @@ namespace UnitTest
          {
             Base::SavegameInfo info;
             savegamesManager.GetSavegameInfo(0, info);
-            Assert::IsTrue(info.strTitle == "Quicksave Savegame");
+            Assert::IsTrue(info.title == "Quicksave Savegame");
          }
 
          {
             Base::Savegame sg = savegamesManager.LoadQuicksaveSavegame();
             Assert::IsTrue(0x42 == sg.Read8());
-            Assert::IsTrue(sg.GetSavegameInfo().strGamePrefix == c_strGamePrefix);
+            Assert::IsTrue(sg.GetSavegameInfo().gamePrefix == c_strGamePrefix);
          }
 
          // clean up savegame again

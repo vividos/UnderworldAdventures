@@ -48,17 +48,17 @@ const char* c_savegameNotFound = "savegame file not found";
 
 SavegameInfo::SavegameInfo()
    :gameType(Base::gameUw1),
-   strTitle("no savegame title"),
-   uiGender(0),
-   uiAppearance(0),
-   uiProfession(0),
-   uiMapLevel(0),
-   uiStrength(0),
-   uiDexterity(0),
-   uiIntelligence(0),
-   uiVitality(0),
-   uiImageXRes(0),
-   uiImageYRes(0)
+   title("no savegame title"),
+   gender(0),
+   appearance(0),
+   profession(0),
+   mapLevel(0),
+   strength(0),
+   dexterity(0),
+   intelligence(0),
+   vitality(0),
+   imageXRes(0),
+   imageYRes(0)
 {
    // note: this may not be Year 2038 save, depending on what compiler and runtime is used
    // since the date is only used to show it to the user, it should be no problem, though
@@ -78,8 +78,8 @@ void SavegameInfo::Load(Savegame& savegame)
 {
    // savegame infos
    gameType = savegame.Read8() == 0 ? Base::gameUw1 : Base::gameUw2;
-   savegame.ReadString(strTitle);
-   savegame.ReadString(strGamePrefix);
+   savegame.ReadString(title);
+   savegame.ReadString(gamePrefix);
 
    // read save date
    if (savegame.GetVersion() >= 2)
@@ -94,29 +94,29 @@ void SavegameInfo::Load(Savegame& savegame)
    }
 
    // player infos
-   savegame.ReadString(strPlayerName);
+   savegame.ReadString(playerName);
 
-   uiGender = savegame.Read8();
-   uiAppearance = savegame.Read8();
-   uiProfession = savegame.Read8();
-   uiMapLevel = savegame.Read8();
+   gender = savegame.Read8();
+   appearance = savegame.Read8();
+   profession = savegame.Read8();
+   mapLevel = savegame.Read8();
 
-   uiStrength = savegame.Read8();
-   uiDexterity = savegame.Read8();
-   uiIntelligence = savegame.Read8();
-   uiVitality = savegame.Read8();
+   strength = savegame.Read8();
+   dexterity = savegame.Read8();
+   intelligence = savegame.Read8();
+   vitality = savegame.Read8();
 
    // read image
-   uiImageXRes = savegame.Read16();
-   uiImageYRes = savegame.Read16();
+   imageXRes = savegame.Read16();
+   imageYRes = savegame.Read16();
 
-   unsigned int max = uiImageXRes * uiImageYRes;
+   unsigned int max = imageXRes * imageYRes;
 
-   vecImageRGBA.clear();
-   vecImageRGBA.resize(max);
+   imageRGBA.clear();
+   imageRGBA.resize(max);
 
    for (unsigned int i = 0; i < max; i++)
-      vecImageRGBA[i] = savegame.Read32();
+      imageRGBA[i] = savegame.Read32();
 }
 
 void SavegameInfo::Save(Savegame& savegame)
@@ -124,8 +124,8 @@ void SavegameInfo::Save(Savegame& savegame)
    // savegame infos
    savegame.Write8(gameType == Base::gameUw1 ? 0 : 1);
 
-   savegame.WriteString(strTitle);
-   savegame.WriteString(strGamePrefix);
+   savegame.WriteString(title);
+   savegame.WriteString(gamePrefix);
 
    // write save date
    if (savegame.GetVersion() >= 2)
@@ -140,25 +140,25 @@ void SavegameInfo::Save(Savegame& savegame)
    }
 
    // player infos
-   savegame.WriteString(strPlayerName);
+   savegame.WriteString(playerName);
 
-   savegame.Write8(static_cast<Uint8>(uiGender));
-   savegame.Write8(static_cast<Uint8>(uiAppearance));
-   savegame.Write8(static_cast<Uint8>(uiProfession));
-   savegame.Write8(static_cast<Uint8>(uiMapLevel));
+   savegame.Write8(static_cast<Uint8>(gender));
+   savegame.Write8(static_cast<Uint8>(appearance));
+   savegame.Write8(static_cast<Uint8>(profession));
+   savegame.Write8(static_cast<Uint8>(mapLevel));
 
-   savegame.Write8(static_cast<Uint8>(uiStrength));
-   savegame.Write8(static_cast<Uint8>(uiDexterity));
-   savegame.Write8(static_cast<Uint8>(uiIntelligence));
-   savegame.Write8(static_cast<Uint8>(uiVitality));
+   savegame.Write8(static_cast<Uint8>(strength));
+   savegame.Write8(static_cast<Uint8>(dexterity));
+   savegame.Write8(static_cast<Uint8>(intelligence));
+   savegame.Write8(static_cast<Uint8>(vitality));
 
    // write image
-   savegame.Write16(static_cast<Uint16>(uiImageXRes));
-   savegame.Write16(static_cast<Uint16>(uiImageYRes));
+   savegame.Write16(static_cast<Uint16>(imageXRes));
+   savegame.Write16(static_cast<Uint16>(imageYRes));
 
-   unsigned int max = uiImageXRes * uiImageYRes;
+   unsigned int max = imageXRes * imageYRes;
    for (unsigned int i = 0; i < max; i++)
-      savegame.Write32(vecImageRGBA[i]);
+      savegame.Write32(imageRGBA[i]);
 }
 
 
@@ -312,7 +312,7 @@ Savegame SavegamesManager::LoadSavegame(unsigned int index, bool storeImage)
    if (storeImage)
    {
       const SavegameInfo& info = sg.GetSavegameInfo();
-      SetSaveScreenshot(info.uiImageXRes, info.uiImageYRes, info.vecImageRGBA);
+      SetSaveScreenshot(info.imageXRes, info.imageYRes, info.imageRGBA);
    }
 
    return sg;
@@ -351,11 +351,11 @@ Savegame SavegamesManager::SaveSavegame(SavegameInfo info, unsigned int index)
    else
       savegameFilename = GetSavegameFilename(index);
 
-   info.strGamePrefix = m_gamePrefix;
+   info.gamePrefix = m_gamePrefix;
 
-   info.uiImageXRes = m_imageXRes;
-   info.uiImageYRes = m_imageYRes;
-   info.vecImageRGBA = m_imageSavegame;
+   info.imageXRes = m_imageXRes;
+   info.imageYRes = m_imageYRes;
+   info.imageRGBA = m_imageSavegame;
 
    return Savegame(savegameFilename, info);
 }
@@ -378,12 +378,12 @@ Savegame SavegamesManager::SaveQuicksaveSavegame(SavegameInfo info)
 
    std::string quicksaveName = GetQuicksaveFilename();
 
-   info.strTitle = "Quicksave Savegame";
-   info.strGamePrefix = m_gamePrefix;
+   info.title = "Quicksave Savegame";
+   info.gamePrefix = m_gamePrefix;
 
-   info.uiImageXRes = m_imageXRes;
-   info.uiImageYRes = m_imageYRes;
-   info.vecImageRGBA = m_imageSavegame;
+   info.imageXRes = m_imageXRes;
+   info.imageYRes = m_imageYRes;
+   info.imageRGBA = m_imageSavegame;
 
    return Savegame(quicksaveName, info);
 }

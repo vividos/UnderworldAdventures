@@ -51,10 +51,10 @@ namespace Base
       Base::EUwGameType gameType;
 
       /// savegame title
-      std::string strTitle;
+      std::string title;
 
       /// name of game prefix
-      std::string strGamePrefix;
+      std::string gamePrefix;
 
       /// date when savegame was saved
       struct SaveDate
@@ -74,25 +74,25 @@ namespace Base
       } saveDate;
 
       // player infos
-      std::string strPlayerName; ///< player name
-      unsigned int uiGender;     ///< player gender (0=male, 1=female)
-      unsigned int uiAppearance; ///< player appearance (0..4)
-      unsigned int uiProfession; ///< player profession (0..7)
-      unsigned int uiMapLevel;   ///< current map level
+      std::string playerName; ///< player name
+      unsigned int gender;     ///< player gender (0=male, 1=female)
+      unsigned int appearance; ///< player appearance (0..4)
+      unsigned int profession; ///< player profession (0..7)
+      unsigned int mapLevel;   ///< current map level
 
       // basic player stats
-      unsigned int uiStrength;   ///< strength
-      unsigned int uiDexterity;  ///< dexterity
-      unsigned int uiIntelligence; ///< intelligence
-      unsigned int uiVitality;   ///< vitality
+      unsigned int strength;   ///< strength
+      unsigned int dexterity;  ///< dexterity
+      unsigned int intelligence; ///< intelligence
+      unsigned int vitality;   ///< vitality
 
       // savegame preview screenshot
 
-      unsigned int uiImageXRes;  ///< screenshot x res
-      unsigned int uiImageYRes;  ///< screenshot y res
+      unsigned int imageXRes;  ///< screenshot x res
+      unsigned int imageYRes;  ///< screenshot y res
 
       /// screenshot bytes in RGBA format
-      std::vector<Uint32> vecImageRGBA;
+      std::vector<Uint32> imageRGBA;
    };
 
    /// \brief Savegame class
@@ -212,11 +212,11 @@ namespace Base
 
       /// sets screenshot for next savegame to be saved
       void SetSaveScreenshot(unsigned int xres, unsigned int yres,
-         const std::vector<Uint32>& vecImageRGBA)
+         const std::vector<Uint32>& imageRGBA)
       {
          m_imageXRes = xres;
          m_imageYRes = yres;
-         m_imageSavegame = vecImageRGBA;
+         m_imageSavegame = imageRGBA;
       }
 
       /// returns a savegame directly from given file

@@ -93,15 +93,15 @@ void Player::Save(Base::Savegame& sg) const
 /// Fills the player-related fields of the savegame info struct.
 void Player::FillSavegamePlayerInfos(Base::SavegameInfo& info)
 {
-   info.strPlayerName = m_name;
+   info.playerName = m_name;
 
-   info.uiGender = GetAttribute(attrGender);
-   info.uiAppearance = GetAttribute(attrAppearance);
-   info.uiProfession = GetAttribute(attrProfession);
-   info.uiMapLevel = GetAttribute(attrMapLevel);
+   info.gender = GetAttribute(attrGender);
+   info.appearance = GetAttribute(attrAppearance);
+   info.profession = GetAttribute(attrProfession);
+   info.mapLevel = GetAttribute(attrMapLevel);
 
-   info.uiStrength = GetAttribute(attrStrength);
-   info.uiDexterity = GetAttribute(attrDexterity);
-   info.uiIntelligence = GetAttribute(attrIntelligence);
-   info.uiVitality = GetAttribute(attrVitality);
+   info.strength = GetAttribute(attrStrength);
+   info.dexterity = GetAttribute(attrDexterity);
+   info.intelligence = GetAttribute(attrIntelligence);
+   info.vitality = GetAttribute(attrVitality);
 }

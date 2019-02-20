@@ -114,8 +114,8 @@ void PlayerImporter::LoadPlayer(Underworld::Player& player, const std::string& p
    player.SetPos(xpos, ypos);
    player.SetHeight(zpos);
 
-   Uint16 uiMapLevel = Uint16(playerInfos[0x005C]) | (Uint16(playerInfos[0x005D]) << 8);
-   player.SetAttribute(Underworld::attrMapLevel, uiMapLevel);
+   Uint16 mapLevel = Uint16(playerInfos[0x005C]) | (Uint16(playerInfos[0x005D]) << 8);
+   player.SetAttribute(Underworld::attrMapLevel, mapLevel);
 
    double rangle = playerInfos[0x0054] * (360.0 / 8.0);
    player.SetRotateAngle(rangle);

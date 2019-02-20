@@ -45,7 +45,7 @@ namespace UnitTest
          std::string strSavegameFile = testFolder.GetPathName() + "/savegame.uas";
 
          Base::SavegameInfo info;
-         info.strTitle = "title01";
+         info.title = "title01";
 
          // write savegame
          {
