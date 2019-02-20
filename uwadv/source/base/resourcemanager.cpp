@@ -50,11 +50,10 @@ ResourceManager::ResourceManager(const Settings& settings)
 
 /// The search order for resource files is as follows:
 /// If a real file exists in the "uadata-path" folder, it is opened and returned.
-/// All "uadata??.uar" files in the folder are searched for the file. Search for
-/// the file is started with the last .uar file. This way a user can override files
-/// found in the base uadata00.uar with his own files.
-/// .uar files are .zip files that contain files and subfolders.
-/// SDL_RWFromZZIP is used to open files inside .uar files.
+/// All "uadata??.zip" files in the folder are searched for the file. Search for
+/// the file is started with the last .zip file. This way a user can override files
+/// found in the base uadata00.zip with his own files.
+/// SDL_RWFromZZIP is used to open files inside .zip files.
 Base::SDL_RWopsPtr ResourceManager::GetResourceFile(const std::string& relativeFilename)
 {
    UaAssert(m_uadataPath.size() > 0); // must have called LoadSettings() before
@@ -68,7 +67,7 @@ Base::SDL_RWopsPtr ResourceManager::GetResourceFile(const std::string& relativeF
       return rwops; // found real file
 
    // find all uadata resource files
-   std::string uarFileSpec = m_uadataPath + "/uadata??.uar";
+   std::string uarFileSpec = m_uadataPath + "/uadata??.zip";
    std::vector<std::string> fileList;
    Base::FileSystem::FindFiles(uarFileSpec, fileList);
 
