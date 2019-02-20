@@ -24,6 +24,9 @@
 #include <vector>
 #include "object.hpp"
 
+// Win32 headers define this
+#undef GetObject
+
 namespace Base
 {
    class Savegame;
