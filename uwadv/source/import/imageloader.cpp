@@ -1,45 +1,36 @@
-/*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+//
+// Underworld Adventures - an Ultima Underworld hacking project
+// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file imageloader.cpp
+/// \brief *.gr, *.byt files and palette loading
+//
+#include "import.hpp"
+#include "imageloader.hpp"
+#include "indexedimage.hpp"
+#include <algorithm>
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
+using Import::ImageLoader;
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file imageloader.cpp
-
-   \brief *.gr, *.byt files and palette loading
-
-*/
-
-// needed includes
-#include "common.hpp"
-#include "image.hpp"
-#include "importgfx.hpp"
-#include "io_endian.hpp"
-
-
-// global methods
-
-/*! decodes the underworld rle format, for word lengths up to 8 bit, and
-    stores the pixels in an array.
-*/
-void ua_image_decode_rle(FILE *fd, Uint8* pixels, unsigned int bits,
+// decodes the underworld rle format, for word lengths up to 8 bit, and
+// stores the pixels in an array.
+void ImageDecodeRLE(Base::File& file, Uint8* pixels, unsigned int bits,
    unsigned int datalen, unsigned int maxpix, unsigned char *auxpalidx,
-   unsigned int padding=0, unsigned int linewidth=0)
+   unsigned int padding = 0, unsigned int linewidth = 0)
 {
    unsigned int linecount = 0;
    unsigned int bufpos = 0;
@@ -47,66 +38,66 @@ void ua_image_decode_rle(FILE *fd, Uint8* pixels, unsigned int bits,
    // bit extraction variables
    unsigned int bits_avail = 0;
    unsigned int rawbits = 0;
-   unsigned int bitmask = ((1<<bits)-1) << (8-bits);
+   unsigned int bitmask = ((1 << bits) - 1) << (8 - bits);
    unsigned int nibble;
 
    // rle decoding vars
-   unsigned int pixcount=0;
-   unsigned int stage=0; // we start in stage 0
-   unsigned int count=0;
-   unsigned int record=0; // we start with record 0=repeat (3=run)
-   unsigned int repeatcount=0;
+   unsigned int pixcount = 0;
+   unsigned int stage = 0; // we start in stage 0
+   unsigned int count = 0;
+   unsigned int record = 0; // we start with record 0=repeat (3=run)
+   unsigned int repeatcount = 0;
 
-   while(datalen>0 && pixcount<maxpix)
+   while (datalen > 0 && pixcount < maxpix)
    {
       // get new bits
-      if (bits_avail<bits)
+      if (bits_avail < bits)
       {
          // not enough bits available
-         if (bits_avail>0)
+         if (bits_avail > 0)
          {
-            nibble = ((rawbits & bitmask) >> (8-bits_avail));
+            nibble = ((rawbits & bitmask) >> (8 - bits_avail));
             nibble <<= (bits - bits_avail);
          }
          else
             nibble = 0;
 
-         rawbits = (unsigned int)fgetc(fd);
+         rawbits = (unsigned int)file.Read8();
          if ((int)rawbits == EOF)
             return;
 
-//         printf("fgetc: %02x\n",rawbits);
+         //printf("fgetc: %02x\n",rawbits);
 
          unsigned int shiftval = 8 - (bits - bits_avail);
 
          nibble |= (rawbits >> shiftval);
 
-         rawbits = (rawbits << (8-shiftval)) & 0xFF;
+         rawbits = (rawbits << (8 - shiftval)) & 0xFF;
 
          bits_avail = shiftval;
       }
       else
       {
          // we still have enough bits
-         nibble = (rawbits & bitmask)>>(8-bits);
+         nibble = (rawbits & bitmask) >> (8 - bits);
          bits_avail -= bits;
          rawbits <<= bits;
       }
 
-//      printf("nibble: %02x\n",nibble);
+      //printf("nibble: %02x\n",nibble);
 
       // now that we have a nibble
       datalen--;
 
-      switch(stage)
+      switch (stage)
       {
       case 0: // we retrieve a new count
-         if (nibble==0)
+         if (nibble == 0)
             stage++;
          else
          {
             count = nibble;
-            stage=6;
+            stage = 6;
          }
          break;
       case 1:
@@ -115,8 +106,8 @@ void ua_image_decode_rle(FILE *fd, Uint8* pixels, unsigned int bits,
          break;
 
       case 2:
-         count = (count<<4) | nibble;
-         if (count==0)
+         count = (count << 4) | nibble;
+         if (count == 0)
             stage++;
          else
             stage = 6;
@@ -125,84 +116,84 @@ void ua_image_decode_rle(FILE *fd, Uint8* pixels, unsigned int bits,
       case 3:
       case 4:
       case 5:
-         count = (count<<4) | nibble;
+         count = (count << 4) | nibble;
          stage++;
          break;
       }
 
-      if (stage<6) continue;
+      if (stage < 6) continue;
 
-      switch(record)
+      switch (record)
       {
       case 0:
          // repeat record stage 1
-//         printf("repeat: new count: %x\n",count);
+         //printf("repeat: new count: %x\n",count);
 
-         if (count==1)
+         if (count == 1)
          {
-            record=3; // skip this record; a run follows
+            record = 3; // skip this record; a run follows
             break;
          }
 
-         if (count==2)
+         if (count == 2)
          {
-            record=2; // multiple run records
+            record = 2; // multiple run records
             break;
          }
 
-         record=1; // read next nibble; it's the color to repeat
+         record = 1; // read next nibble; it's the color to repeat
          continue;
 
       case 1:
          // repeat record stage 2
 
+      {
+         // repeat 'nibble' color 'count' times
+         for (unsigned int n = 0; n < count; n++)
          {
-            // repeat 'nibble' color 'count' times
-            for(unsigned int n=0; n<count; n++)
+            pixels[bufpos++] = auxpalidx[nibble];
+
+            // add padding space when needed
+            if (padding != 0 && ++linecount >= linewidth)
             {
-               pixels[bufpos++] = auxpalidx[nibble];
-
-               // add padding space when needed
-               if (padding != 0 && ++linecount >= linewidth)
-               {
-                  linecount = 0;
-                  bufpos += padding;
-               }
-
-               if (++pixcount>=maxpix)
-                  break;
+               linecount = 0;
+               bufpos += padding;
             }
-         }
 
-//         printf("repeat: wrote %x times a '%x'\n",count,nibble);
+            if (++pixcount >= maxpix)
+               break;
+         }
+      }
 
-         if (repeatcount==0)
-         {
-            record=3; // next one is a run record
-         }
-         else
-         {
-            repeatcount--;
-            record=0; // continue with repeat records
-         }
-         break;
+      //printf("repeat: wrote %x times a '%x'\n",count,nibble);
+
+      if (repeatcount == 0)
+      {
+         record = 3; // next one is a run record
+      }
+      else
+      {
+         repeatcount--;
+         record = 0; // continue with repeat records
+      }
+      break;
 
       case 2:
          // multiple repeat stage
 
          // 'count' specifies the number of repeat record to appear
-//         printf("multiple repeat: %u\n",count);
-         repeatcount = count-1;
-         record=0;
+         //printf("multiple repeat: %u\n",count);
+         repeatcount = count - 1;
+         record = 0;
          break;
 
       case 3:
          // run record stage 1
          // copy 'count' nibbles
 
-//         printf("run: count: %x\n",count);
+         //printf("run: count: %x\n",count);
 
-         record=4; // retrieve next nibble
+         record = 4; // retrieve next nibble
          continue;
 
       case 4:
@@ -219,9 +210,9 @@ void ua_image_decode_rle(FILE *fd, Uint8* pixels, unsigned int bits,
             bufpos += padding;
          }
 
-         if (--count==0)
+         if (--count == 0)
          {
-//            printf("run: finished\n");
+            //printf("run: finished\n");
             record = 0; // next one is a repeat again
          }
          else
@@ -229,175 +220,160 @@ void ua_image_decode_rle(FILE *fd, Uint8* pixels, unsigned int bits,
          break;
       }
 
-      stage=0;
+      stage = 0;
       // end of while loop
    }
 }
 
-
-// ua_uw_import_gfx methods
-
-void ua_uw_import_gfx::load_palettes(const char* allpalname,
-   ua_palette256_ptr allpalettes[8])
+void ImageLoader::LoadPalettes(const char* allpalname,
+   Palette256Ptr allpalettes[8])
 {
-   FILE* fd = fopen(allpalname,"rb");
-   if (fd==NULL)
+   Base::File file(allpalname, Base::modeRead);
+   if (!file.IsOpen())
    {
       std::string text("could not open palette file ");
       text.append(allpalname);
-      throw ua_exception(text.c_str());
+      throw Base::Exception(text.c_str());
    }
 
    // palettes are stored in ancient vga color format
-   for(unsigned int pal=0; pal<8; pal++)
+   for (unsigned int pal = 0; pal < 8; pal++)
    {
-      allpalettes[pal] = ua_palette256_ptr(new ua_palette256);
+      allpalettes[pal] = std::make_shared<Palette256>();
 
-      ua_palette256& palette = *allpalettes[pal];
+      Palette256& palette = *allpalettes[pal];
 
-      for(unsigned int color=0; color<256; color++)
+      for (unsigned int color = 0; color < 256; color++)
       {
-         palette.set(color,0, fgetc(fd)<<2);
-         palette.set(color,1, fgetc(fd)<<2);
-         palette.set(color,2, fgetc(fd)<<2);
-         palette.set(color,3, color==0 ? 0 : 255);
+         palette.set(static_cast<Uint8>(color), 0, file.Read8() << 2);
+         palette.set(static_cast<Uint8>(color), 1, file.Read8() << 2);
+         palette.set(static_cast<Uint8>(color), 2, file.Read8() << 2);
+         palette.set(static_cast<Uint8>(color), 3, color == 0 ? 0 : 255);
       }
    }
-
-   fclose(fd);
 }
 
-void ua_uw_import_gfx::load_aux_palettes(const char* auxpalname,
+void ImageLoader::LoadAuxPalettes(const char* auxpalname,
    Uint8 allauxpals[32][16])
 {
-   FILE *fd = fopen(auxpalname,"rb");
-   if (fd==NULL)
-      throw ua_exception("could not open file allpals.dat");
+   Base::File file(auxpalname, Base::modeRead);
+   if (!file.IsOpen())
+      throw Base::Exception("could not open file allpals.dat");
 
-   // the standard guarantees me that the [32][16] array is contiguous
-   fread(allauxpals, 32*16, 1, fd);
-   fclose(fd);
+   // the standard guarantees that the [32][16] array is contiguous
+   Uint8* buffer = &allauxpals[0][0];
+   file.ReadBuffer(buffer, 32 * 16);
 }
 
-void ua_uw_import_gfx::load_image_gr(ua_image& img, const char* imgname,
+void ImageLoader::LoadImageGr(IndexedImage& img, const char* imgname,
    unsigned int imgnum, Uint8 auxpalettes[32][16])
 {
-   // open file
-   FILE* fd = fopen(imgname,"rb");
-   if (fd==NULL)
+   Base::File file(imgname, Base::modeRead);
+   if (!file.IsOpen())
    {
       std::string text("could not open image: ");
       text.append(imgname);
-      throw ua_exception(text.c_str());
+      throw Base::Exception(text.c_str());
    }
 
-   // get file length
-   fseek(fd,0,SEEK_END);
-   unsigned long filelen = ftell(fd);
-   fseek(fd,0,SEEK_SET);
+   unsigned long filelen = file.FileLength();
 
    // read in toc
-   Uint8 id = fgetc(fd); // always 1 for .gr files
-   Uint16 entries = fread16(fd);
+   Uint8 id = file.Read8(); // always 1 for .gr files
+   UaAssert(id == 1); id;
+
+   Uint16 entries = file.Read16();
 
    if (imgnum >= entries)
       imgnum = 0; // image number not valid
 
    // seek to offset
-   fseek(fd,4*imgnum,SEEK_CUR);
-   Uint32 offset = fread32(fd);
+   file.Seek(4 * imgnum, Base::seekCurrent);
+   Uint32 offset = file.Read32();
 
    if (offset >= filelen)
       return;
 
-   fseek(fd,offset,SEEK_SET);
+   file.Seek(offset, Base::seekBegin);
 
    // load image into pixel vector
-   bool special_panels = (strstr("panels.gr",imgname) != NULL);
-   load_image_gr_impl(img,fd,auxpalettes,special_panels);
-
-   fclose(fd);
+   bool special_panels = (strstr("panels.gr", imgname) != NULL);
+   LoadImageGrImpl(img, file, auxpalettes, special_panels);
 }
 
-void ua_uw_import_gfx::load_image_byt(const char* imgname, Uint8* pixels)
+void ImageLoader::LoadImageByt(const char* imgname, Uint8* pixels)
 {
    // open file
-   FILE* fd = fopen(imgname,"rb");
-   if (fd == NULL)
+   Base::File file(imgname, Base::modeRead);
+   if (!file.IsOpen())
    {
       std::string text("could not open raw image: ");
       text.append(imgname);
-      throw ua_exception(text.c_str());
+      throw Base::Exception(text.c_str());
    }
 
    // raw image
-   fread(&pixels[0],1,320*200,fd);
-
-   fclose(fd);
+   file.ReadBuffer(&pixels[0], 320 * 200);
 }
 
-void ua_uw_import_gfx::load_image_gr_list(std::vector<ua_image>& imglist,
+void ImageLoader::LoadImageGrList(std::vector<IndexedImage>& imglist,
    const char* imgname, unsigned int img_from, unsigned int img_to,
    Uint8 auxpalettes[32][16])
 {
-   // open file
-   FILE* fd = fopen(imgname,"rb");
-   if (fd==NULL)
+   Base::File file(imgname, Base::modeRead);
+   if (!file.IsOpen())
    {
       std::string text("could not open image list: ");
       text.append(imgname);
-      throw ua_exception(text.c_str());
+      throw Base::Exception(text.c_str());
    }
 
-   // get file length
-   fseek(fd,0,SEEK_END);
-   unsigned long filelen = ftell(fd);
-   fseek(fd,0,SEEK_SET);
+   unsigned long filelen = file.FileLength();
 
    // read in toc
-   Uint8 id = fgetc(fd); // always 1
-   Uint16 entries = fread16(fd);
+   Uint8 id = file.Read8(); // always 1
+   UaAssert(id == 1); id;
 
-   if (img_to==0) img_to=entries;
+   Uint16 entries = file.Read16();
+
+   if (img_to == 0)
+      img_to = entries;
 
    if (img_from >= entries || img_to < img_from)
    {
-      fclose(fd);
       return;
    }
 
    // read in all offsets
    std::vector<Uint32> offsets;
-   offsets.resize(entries,0);
+   offsets.resize(entries, 0);
 
-   for(Uint16 i=0; i<entries; i++)
-      offsets[i]=fread32(fd);
+   for (Uint16 i = 0; i < entries; i++)
+      offsets[i] = file.Read32();
 
-   bool special_panels = (strstr(imgname,"panels.gr") != NULL);
+   bool special_panels = (strstr(imgname, "panels.gr") != NULL);
 
-   for(Uint16 j=img_from; j<img_to; j++)
+   for (unsigned int j = img_from; j < img_to; j++)
    {
-      if (offsets[j]>=filelen)
+      if (offsets[j] >= filelen)
          continue;
 
-      fseek(fd,offsets[j],SEEK_SET);
+      file.Seek(offsets[j], Base::seekBegin);
 
-      ua_image img;
+      IndexedImage img;
       imglist.push_back(img);
 
-      ua_image& lastimg = imglist.back();//[imglist.size()-1];
+      IndexedImage& lastimg = imglist.back();
 
       // load image
-      load_image_gr_impl(lastimg,fd,auxpalettes,special_panels);
+      LoadImageGrImpl(lastimg, file, auxpalettes, special_panels);
    }
-
-   fclose(fd);
 }
 
-void ua_uw_import_gfx::load_image_gr_impl(ua_image& img, FILE* fd,
+void ImageLoader::LoadImageGrImpl(IndexedImage& img, Base::File& file,
    Uint8 auxpalidx[32][16], bool special_panels)
 {
-   Uint8 type, width, height, auxpal=0;
+   Uint8 type, width, height, auxpal = 0;
    Uint16 datalen;
 
    if (special_panels)
@@ -406,65 +382,65 @@ void ua_uw_import_gfx::load_image_gr_impl(ua_image& img, FILE* fd,
       type = 4; // 8-bit uncompressed
       width = 83;
       height = 114;
-      datalen = width*height;
+      datalen = width * height;
    }
    else
    {
       // read in image header
-      type = fgetc(fd);
-      width = fgetc(fd);
-      height = fgetc(fd);
+      type = file.Read8();
+      width = file.Read8();
+      height = file.Read8();
 
       // read in auxpal, when needed
-      if (type==0x08 || type==0x0a)
-         auxpal = fgetc(fd);
+      if (type == 0x08 || type == 0x0a)
+         auxpal = file.Read8();
 
-      if (auxpal>0x1f) auxpal=0;
+      if (auxpal > 0x1f) auxpal = 0;
 
       // read in data length
-      datalen = fread16(fd);
+      datalen = file.Read16();
    }
 
-   img.create(width,height);
+   img.create(width, height);
 
-   switch(type)
+   switch (type)
    {
    case 0x04: // 8-bit uncompressed
+   {
+      unsigned int pixcount = 0;
+
+      while (datalen > 0)
       {
-         unsigned int pixcount=0;
+         Uint16 size = std::min<Uint16>(datalen, 1024);
 
-         while (datalen>0)
-         {
-            unsigned int size = ua_min(datalen,1024);
+         file.ReadBuffer(&img.get_pixels()[pixcount], size);
 
-            fread(&img.get_pixels()[pixcount],1,size,fd);
-
-            datalen -= size;
-            pixcount += size;
-         }
+         datalen -= size;
+         pixcount += size;
       }
-      break;
+   }
+   break;
 
    case 0x08: // 4-bit rle compressed
-      ua_image_decode_rle(fd,&img.get_pixels()[0],4,datalen,width*height,auxpalidx[auxpal],0,0);
+      ImageDecodeRLE(file, &img.get_pixels()[0], 4, datalen, width*height, auxpalidx[auxpal], 0, 0);
       break;
 
    case 0x0a: // 4-bit uncompressed
-      {
-         unsigned int pixcount=0, maxpix = width*height;
-         Uint8* pal = auxpalidx[auxpal];
-         Uint8 rawbyte;
-         Uint8* pixels = &img.get_pixels()[0];
+   {
+      unsigned int pixcount = 0, maxpix = width * height;
+      Uint8* pal = auxpalidx[auxpal];
+      Uint8 rawbyte;
+      Uint8* pixels = &img.get_pixels()[0];
 
-         while (datalen>0)
-         {
-            rawbyte = fgetc(fd);
-            pixels[pixcount++] = pal[rawbyte >> 4];
-            if (pixcount>=maxpix) break;
-            pixels[pixcount++] = pal[rawbyte&0x0f];
-            datalen--;
-         }
+      while (datalen > 0)
+      {
+         rawbyte = file.Read8();
+         pixels[pixcount++] = pal[rawbyte >> 4];
+         if (pixcount >= maxpix) break;
+         pixels[pixcount++] = pal[rawbyte & 0x0f];
+         datalen--;
       }
-      break;
+   }
+   break;
    }
 }

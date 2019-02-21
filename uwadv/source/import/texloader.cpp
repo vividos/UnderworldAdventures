@@ -1,121 +1,99 @@
-/*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file texloader.cpp
-
-   \brief texture loading implementation
-
-*/
-
-// needed includes
-#include "common.hpp"
+//
+// Underworld Adventures - an Ultima Underworld hacking project
+// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file texloader.cpp
+/// \brief texture loading implementation
+//
+#include "import.hpp"
+#include "textureloader.hpp"
 #include "texture.hpp"
-#include "importgfx.hpp"
-#include "io_endian.hpp"
+#include "file.hpp"
+#include <algorithm>
 
-
-// extern texture import functions
-
-extern void ua_import_tga(SDL_RWops* rwops, unsigned int& xres, unsigned int& yres,
+extern void ua_import_tga(Base::File& file, unsigned int& xres, unsigned int& yres,
    unsigned int& origx, unsigned int& origy, std::vector<Uint32>& texels);
 
-
-// ua_texture methods
-
-void ua_texture::load(SDL_RWops* rwops)
+void ua_texture::load(Base::SDL_RWopsPtr rwops)
 {
-   unsigned int origx,origy;
+   unsigned int origx, origy;
 
    // currently we only have tga texture import
    // TODO: check for file type and load accordingly
-   ua_import_tga(rwops,xres,yres,origx,origy,texels);
+   Base::File file(rwops);
+   ua_import_tga(file, xres, yres, origx, origy, texels);
 
    // calculate max. u and v coordinates
-   u = ((double)origx)/xres;
-   v = ((double)origy)/yres;
+   u = ((double)origx) / xres;
+   v = ((double)origy) / yres;
 }
 
-
-// ua_uw_import_gfx methods
-
-void ua_uw_import_gfx::load_textures(std::vector<ua_image>& tex_images,
-   unsigned int startidx, const char* texname,
-   ua_palette256_ptr palette)
+void Import::TextureLoader::LoadTextures(
+   std::vector<IndexedImage>& textureImages,
+   unsigned int startIndex,
+   const char* textureName,
+   Palette256Ptr palette)
 {
-   FILE* fd = fopen(texname,"rb");
-   if (fd==NULL)
+   Base::File file(textureName, Base::modeRead);
+   if (!file.IsOpen())
    {
       std::string text("could not open texture file: ");
-      text.append(texname);
-      throw ua_exception(text.c_str());
+      text.append(textureName);
+      throw Base::Exception(text.c_str());
    }
 
-   // get file length
-   fseek(fd,0,SEEK_END);
-   Uint32 filelen = ftell(fd);
-   fseek(fd,0,SEEK_SET);
+   Uint32 fileLength = file.FileLength();
 
-   // get header values
-   Uint8 val = fgetc(fd); // always 2 (.tr)
-   unsigned int xyres = fgetc(fd); // x and y resolution (square textures)
+   Uint8 val = file.Read8(); // always 2 (.tr)
+   UaAssert(val == 2); val;
 
-   Uint16 entries = fread16(fd);
+   unsigned int xyres = file.Read8(); // x and y resolution (square textures)
 
-   // reserve needed entries
-   if (startidx+entries > tex_images.size())
-      tex_images.resize(startidx+entries);
+   Uint16 numTextures = file.Read16();
 
-   // read in all offsets
-   std::vector<Uint32> offsets(entries);
-   for(unsigned int i=0; i<entries; i++)
-      offsets[i] = fread32(fd);
+   if (startIndex + numTextures > textureImages.size())
+      textureImages.resize(startIndex + numTextures);
 
-   // read in all textures
-   for(unsigned int tex=0; tex<entries; tex++)
+   std::vector<Uint32> offsets(numTextures);
+   for (unsigned int i = 0; i < numTextures; i++)
+      offsets[i] = file.Read32();
+
+   for (unsigned int textureIndex = 0; textureIndex < numTextures; textureIndex++)
    {
-      if (offsets[tex] >= filelen)
+      if (offsets[textureIndex] >= fileLength)
          continue;
 
-      // seek to texture entry
-      fseek(fd,offsets[tex],SEEK_SET);
+      file.Seek(offsets[textureIndex], Base::seekBegin);
 
-      // alloc memory for texture
-      unsigned int datalen = xyres*xyres;
+      unsigned int dataLength = xyres * xyres;
 
-      // create new image
-      ua_image& teximg = tex_images[startidx+tex];
-      teximg.create(xyres,xyres);
-      Uint8* pixels = &teximg.get_pixels()[0];
+      IndexedImage& textureImage = textureImages[startIndex + textureIndex];
+      textureImage.create(xyres, xyres);
+      Uint8* pixels = textureImage.get_pixels().data();
 
-      teximg.set_palette(palette);
+      textureImage.set_palette(palette);
 
-      unsigned int idx = 0;
-      while(datalen>0)
+      unsigned int bufferIndex = 0;
+      while (dataLength > 0)
       {
-         unsigned int size = ua_min(datalen,4096);
-         unsigned int read = fread(pixels+idx,1,size,fd);
-         idx += read;
-         datalen -= read;
+         unsigned int size = std::min(dataLength, 4096U);
+         unsigned int read = file.ReadBuffer(pixels + bufferIndex, size);
+         bufferIndex += read;
+         dataLength -= read;
       }
    }
-
-   fclose(fd);
 }

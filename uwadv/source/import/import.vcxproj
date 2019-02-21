@@ -69,6 +69,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="convloader.cpp" />
+    <ClCompile Include="imageloader.cpp" />
     <ClCompile Include="import.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">import.hpp</PrecompiledHeaderFile>
@@ -81,16 +82,20 @@
     <ClCompile Include="objectlistloader.cpp" />
     <ClCompile Include="playerimporter.cpp" />
     <ClCompile Include="propertiesloader.cpp" />
+    <ClCompile Include="texloader.cpp" />
+    <ClCompile Include="tgaimport.cpp" />
     <ClCompile Include="uwloader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bits.hpp" />
     <ClInclude Include="convloader.hpp" />
+    <ClInclude Include="imageloader.hpp" />
     <ClInclude Include="import.hpp" />
     <ClInclude Include="importgfx.hpp" />
     <ClInclude Include="gamestringsimporter.hpp" />
     <ClInclude Include="levelimporter.hpp" />
     <ClInclude Include="playerimporter.hpp" />
+    <ClInclude Include="textureloader.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\base\base.vcxproj">
