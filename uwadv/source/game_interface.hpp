@@ -36,7 +36,7 @@ namespace Underworld
    class Underworld;
    class GameLogic;
 }
-class ua_image_manager;
+class ImageManager;
 class ua_renderer;
 class IScripting;
 class ua_debug_server;
@@ -120,7 +120,7 @@ public:
    virtual Audio::AudioManager& get_audio_manager() = 0;
 
    /// returns image manager object
-   virtual ua_image_manager& get_image_manager() = 0;
+   virtual ImageManager& get_image_manager() = 0;
 
    /// returns renderer object
    virtual ua_renderer& get_renderer() = 0;

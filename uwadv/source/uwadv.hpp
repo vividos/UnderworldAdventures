@@ -25,7 +25,7 @@
 #include "base/resourcemanager.hpp"
 #include "ui/screen.hpp"
 #include "audio/audio.hpp"
-#include "ui/image.hpp"
+#include "ui/indexedimage.hpp"
 #include "renderer/renderer.hpp"
 #include "script/scripting.hpp"
 #include "underw/gamelogic.hpp"
@@ -113,7 +113,7 @@ public:
       return *audio_manager.get();
    }
 
-   virtual ua_image_manager& get_image_manager() override
+   virtual ImageManager& get_image_manager() override
    {
       return image_manager;
    }
@@ -187,7 +187,7 @@ protected:
    std::unique_ptr<Base::SavegamesManager> savegames_manager;
 
    /// image manager
-   ua_image_manager image_manager;
+   ImageManager image_manager;
 
    /// renderer class
    ua_renderer renderer;

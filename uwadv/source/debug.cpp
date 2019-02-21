@@ -26,7 +26,7 @@
 #include "gamelogic.hpp"
 #include "underworld.hpp"
 #include "gamestrings.hpp"
-#include "image.hpp"
+#include "indexedimage.hpp"
 #include <algorithm>
 
 #ifdef WIN32
@@ -805,8 +805,8 @@ unsigned int ua_debug_server::get_game_string(unsigned int block,
 
 bool ua_debug_server::get_object_list_imagelist(unsigned int& num_objects, unsigned char* buffer, unsigned int size)
 {
-   ua_image_manager img_manager;
-   std::vector<ua_image> img_list;
+   ImageManager img_manager;
+   std::vector<IndexedImage> img_list;
 
    img_manager.init(game->get_settings());
    img_manager.load_list(img_list, "objects");
