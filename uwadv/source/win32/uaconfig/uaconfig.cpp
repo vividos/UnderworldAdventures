@@ -376,7 +376,7 @@ void ConfigDlg::SaveConfig()
    settings_filename_backup += ".bak";
 
    rename(m_settingsFilename.c_str(), settings_filename_backup.c_str());
-   m_settings.Save(settings_filename_backup.c_str(), m_settingsFilename.c_str());
+   m_settings.Save(m_settingsFilename.c_str(), settings_filename_backup.c_str());
    remove(settings_filename_backup.c_str());
 }
 
