@@ -71,6 +71,7 @@
     <ClCompile Include="convloader.cpp" />
     <ClCompile Include="critloader.cpp" />
     <ClCompile Include="cutsloader.cpp" />
+    <ClCompile Include="fontloader.cpp" />
     <ClCompile Include="imageloader.cpp" />
     <ClCompile Include="import.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -93,9 +94,9 @@
     <ClInclude Include="bits.hpp" />
     <ClInclude Include="convloader.hpp" />
     <ClInclude Include="cutsloader.hpp" />
+    <ClInclude Include="fontloader.hpp" />
     <ClInclude Include="imageloader.hpp" />
     <ClInclude Include="import.hpp" />
-    <ClInclude Include="importgfx.hpp" />
     <ClInclude Include="crittersloader.hpp" />
     <ClInclude Include="gamestringsimporter.hpp" />
     <ClInclude Include="levelimporter.hpp" />

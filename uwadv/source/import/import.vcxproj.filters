@@ -44,6 +44,9 @@
     <ClCompile Include="texloader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="fontloader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="critloader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -59,9 +62,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="import.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="importgfx.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="levelimporter.hpp">
@@ -83,6 +83,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="textureloader.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fontloader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cutsloader.hpp">

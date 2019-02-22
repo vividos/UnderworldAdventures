@@ -34,11 +34,15 @@
 
 // needed includes
 #include <vector>
-#include "image.hpp"
+#include "indexedimage.hpp"
 
 
 // forward references
-class ua_settings;
+class Settings;
+namespace Import
+{
+   class FontLoader;
+}
 
 
 // typedefs
@@ -47,7 +51,7 @@ class ua_settings;
 typedef enum
 {
    //! "font4x5p.sys", height 4px, for inventory object count
-   ua_font_small = 0,   
+   ua_font_small = 0,
    //! "font5x6i.sys", height 7px, for character stats screen
    ua_font_italic = 1,
    ua_font_normal = 2,  //!< "font5x6p.sys", height 6px, for scroll messages
@@ -68,7 +72,7 @@ public:
    ua_font(){}
 
    //! loads a font
-   void load(ua_settings& settings, ua_font_id fontid);
+   void load(Base::Settings& settings, ua_font_id fontid);
 
    //! returns height of chars in pixels
    unsigned int get_charheight(){ return charheight; }
@@ -77,9 +81,11 @@ public:
    unsigned int calc_length(const char* str);
 
    //! creates image from string, using the font, using a foreground palette index
-   void create_string(ua_image& image, const char* str, Uint8 fg_idx);
+   void create_string(IndexedImage& image, const char* str, Uint8 fg_idx);
 
 protected:
+   friend Import::FontLoader;
+
    //! font data
    std::vector<Uint8> fontdata;
 
@@ -103,9 +109,6 @@ protected:
 
    //! number of characters in font
    unsigned int nchars;
-
-   // import friend class
-   friend class ua_uw_import_gfx;
 };
 
 

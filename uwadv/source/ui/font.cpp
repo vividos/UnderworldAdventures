@@ -64,7 +64,7 @@ unsigned int ua_font::calc_length(const char* str)
    return width;
 }
 
-void ua_font::create_string(ua_image& image, const char* str, Uint8 fg_idx)
+void ua_font::create_string(IndexedImage& image, const char* str, Uint8 fg_idx)
 {
    // create image with proper size
    unsigned int width = calc_length(str), len = strlen(str);
