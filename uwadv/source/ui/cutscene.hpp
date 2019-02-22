@@ -61,10 +61,10 @@ public:
    ua_cutscene(){ curframe=(unsigned int)-1; }
 
    //! loads a cutscene by main and sub number
-//   void load(ua_settings& settings, unsigned int main, unsigned int sub);
+//   void load(Base::Settings& settings, unsigned int main, unsigned int sub);
 
    //! loads a cutscene by relative filename
-   void load(ua_settings& settings, const char* filename);
+   void load(Base::Settings& settings, const char* filename);
 
    //! loads a cutscene by absolute filename
    void load(const char* filename);

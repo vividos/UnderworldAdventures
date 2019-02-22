@@ -28,13 +28,13 @@
 // needed includes
 #include "common.hpp"
 #include "cutscene.hpp"
-#include "importgfx.hpp"
+#include "cutsloader.hpp"
 
 
 // ua_cutscene methods
 
 /*
-void ua_cutscene::load(ua_settings& settings, unsigned int main,
+void ua_cutscene::load(Base::Settings& settings, unsigned int main,
    unsigned int sub)
 {
    char buffer[32];
@@ -43,9 +43,9 @@ void ua_cutscene::load(ua_settings& settings, unsigned int main,
    load(settings,buffer);
 }
 */
-void ua_cutscene::load(ua_settings& settings, const char* relfilename)
+void ua_cutscene::load(Base::Settings& settings, const char* relfilename)
 {
-   std::string filename(settings.get_string(ua_setting_uw_path));
+   std::string filename(settings.GetString(Base::settingUnderworldPath));
    filename.append(relfilename);
 
    load(filename.c_str());
@@ -53,8 +53,7 @@ void ua_cutscene::load(ua_settings& settings, const char* relfilename)
 
 void ua_cutscene::load(const char* filename)
 {
-   ua_uw_import_gfx import;
-   import.load_cutscene(filename, image, lpdarray, lpages, records);
+   Import::CutsceneLoader::LoadCutscene(filename, image, lpdarray, lpages, records);
 
    curframe = (unsigned int)-1;
 }
@@ -93,7 +92,7 @@ void ua_cutscene::decode_frame(unsigned int framenum)
          break;
 
    if (i>=largepages)
-      throw ua_exception("could not find frame in large pages");
+      throw Base::Exception("could not find frame in large pages");
 
    // calculate large page pointer
    Uint16* curlp16 = reinterpret_cast<Uint16*>(&lpages[0x10000*i]);
@@ -120,8 +119,7 @@ void ua_cutscene::decode_frame(unsigned int framenum)
       src += ( src16[1] + ( src16[1] & 1 ));
 
    // extract the pixel data
-   ua_uw_import_gfx import;
-   import.extract_cutscene_data(&src[4], &image.get_pixels()[0],
+   Import::CutsceneLoader::extract_cutscene_data(&src[4], &image.get_pixels()[0],
       image.get_xres()*image.get_yres());
 }
 
