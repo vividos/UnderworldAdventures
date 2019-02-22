@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{253FDC75-1CE6-48EF-951A-C3FB7A1D9B69}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\uwadv-release.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\uwadv-debug.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>15.0.28127.55</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules />
+    <CodeAnalysisRuleAssemblies />
+    <OutDir>$(SolutionDir)output\bin\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules />
+    <CodeAnalysisRuleAssemblies />
+    <OutDir>$(SolutionDir)output\bin\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)source\conv;$(SolutionDir)source\import;$(SolutionDir)source\renderer;$(SolutionDir)source\script;$(SolutionDir)source\ui;$(SolutionDir)source\underw;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader />
+      <PrecompiledHeaderFile>common.hpp</PrecompiledHeaderFile>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>SDL2main.lib;opengl32.lib;glu32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)source\conv;$(SolutionDir)source\import;$(SolutionDir)source\renderer;$(SolutionDir)source\script;$(SolutionDir)source\ui;$(SolutionDir)source\underw;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader />
+      <PrecompiledHeaderFile>common.hpp</PrecompiledHeaderFile>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>SDL2main.lib;opengl32.lib;glu32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="debug.cpp" />
+    <ClCompile Include="gamecfg.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="uwadv.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\dbgserver.hpp" />
+    <ClInclude Include="common.hpp" />
+    <ClInclude Include="debug.hpp" />
+    <ClInclude Include="gamecfg.hpp" />
+    <ClInclude Include="game_interface.hpp" />
+    <ClInclude Include="triangle3d.hpp" />
+    <ClInclude Include="uamath.hpp" />
+    <ClInclude Include="user_interface.hpp" />
+    <ClInclude Include="uwadv.hpp" />
+    <ClInclude Include="..\win32\resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\win32\Uus.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\win32\uwadv_res.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\audio\audio.vcxproj">
+      <Project>{38a9e85a-3f97-4589-b801-dd7097fc14da}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\base\base.vcxproj">
+      <Project>{e1210703-9adb-4ed7-ae0c-b7e39a15e01f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\import\import.vcxproj">
+      <Project>{a974fda8-7d50-4b04-892a-edb00b68f7d6}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\renderer\renderer.vcxproj">
+      <Project>{db683b59-d89d-4074-80a1-ad9a71c16dfc}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\screens\screens.vcxproj">
+      <Project>{c635f36d-9901-4bf4-a919-a600053c3a28}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\script\script.vcxproj">
+      <Project>{4548e978-a076-4ba2-88b3-a41f46e53b16}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\underw\underw.vcxproj">
+      <Project>{4cc50617-2229-460e-9a80-3c517a2d9090}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

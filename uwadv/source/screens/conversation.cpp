@@ -27,7 +27,7 @@
 #include "gamelogic.hpp"
 #include "renderer.hpp"
 #include "audio.hpp"
-#include "debug.hpp"
+#include "uwadv/debug.hpp"
 #include "convloader.hpp"
 #include <sstream>
 

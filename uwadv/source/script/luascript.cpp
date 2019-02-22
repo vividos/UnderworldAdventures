@@ -24,7 +24,7 @@
 #include "game_interface.hpp"
 #include "user_interface.hpp"
 #include "gamestrings.hpp"
-#include "debug.hpp"
+#include "uwadv/debug.hpp"
 #include "resourcemanager.hpp"
 
 extern "C"
