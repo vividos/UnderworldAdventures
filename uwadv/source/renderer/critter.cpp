@@ -1,64 +1,52 @@
-/*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file critter.cpp
-
-   \brief critter frames manager implementation
-
-*/
-
-// needed includes
+//
+// Underworld Adventures - an Ultima Underworld hacking project
+// Copyright (c) 2002,2003,2004,2005,2019 Underworld Adventures Team
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file critter.cpp
+/// \brief critter frames manager implementation
+//
 #include "common.hpp"
 #include "critter.hpp"
-#include "objects.hpp"
-#include "importgfx.hpp"
-
-
-// constants
+#include "object.hpp"
+#include "objectlist.hpp"
+#include "crittersloader.hpp"
 
 const double ua_critter_frames_manager::critter_fps = 3.0;
 
-
-// ua_critter methods
-
 ua_critter::ua_critter()
-:xres(0), yres(0), maxframes(0)
+   :xres(0), yres(0), maxframes(0)
 {
 }
 
-/*! Prepares textures for this critter. */
+/// Prepares textures for this critter.
 void ua_critter::prepare()
 {
    reset_prepare();
 
    tex.resize(maxframes);
 
-   for(unsigned int i=0; i<maxframes; i++)
+   for (unsigned int i = 0; i < maxframes; i++)
    {
       ua_texture& curtex = tex[i];
       curtex.init(1);
    }
 
    frame_uploaded.clear();
-   frame_uploaded.resize(maxframes,false);
+   frame_uploaded.resize(maxframes, false);
 }
 
 void ua_critter::reset_prepare()
@@ -68,7 +56,7 @@ void ua_critter::reset_prepare()
 
 ua_texture& ua_critter::get_texture(unsigned int frame)
 {
-//   ua_assert(frame < frame_uploaded.size() && frame != 0xFF);
+   //UaAssert(frame < frame_uploaded.size() && frame != 0xFF);
    if (frame == 0xff)
       frame = 0;
 
@@ -77,52 +65,43 @@ ua_texture& ua_critter::get_texture(unsigned int frame)
       frame_uploaded[frame] = true;
 
       tex[frame].convert(&allframe_bytes[frame*xres*yres],
-         xres,yres, *palette.get(), 0);
+         xres, yres, *palette.get(), 0);
 
-      tex[frame].upload(0,false);
+      tex[frame].upload(0, false);
       // using mipmapped textures (2nd param "true") disables the alpha
       // channel somehow; might be a driver problem
    }
    return tex[frame];
 }
 
-/*! Updates animation frame for given object. When the end of the animation is
-    reached, it restarts with the first frame of the animation state.
-
-    \param obj object to modify animframe
-*/
-void ua_critter::update_frame(ua_object& obj)
+/// Updates animation frame for given object. When the end of the animation is
+/// reached, it restarts with the first frame of the animation state.
+/// \param obj object to modify animframe
+void ua_critter::update_frame(Underworld::Object& obj)
 {
-   Uint8& animframe = obj.get_ext_object_info().animframe;
-   Uint8& animstate = obj.get_ext_object_info().animstate;
+   Underworld::NpcInfo& info = obj.GetNpcObject().GetNpcInfo();
+   Uint8& animframe = info.m_animationFrame;
+   Uint8& animstate = info.m_animationState;
 
    ++animframe;
 
    if (segmentlist[animstate].size() > animframe ||
-       segmentlist[animstate][animframe] == 0xff)
+      segmentlist[animstate][animframe] == 0xff)
       animframe = 0;
 }
 
-
-// ua_critter_frames_manager methods
-
-/*! Initializes critter frames manager. Imports all critter frames.
-
-    \param settings settings to use
-    \param img_manager image manager to load critters
-*/
-void ua_critter_frames_manager::init(ua_settings& settings, ua_image_manager& img_manager)
+/// Initializes critter frames manager. Imports all critter frames.
+/// \param settings settings to use
+/// \param img_manager image manager to load critters
+void ua_critter_frames_manager::init(Base::Settings& settings, ImageManager& img_manager)
 {
    // load all critters' frames
-   ua_uw_import_gfx import;
-   import.load_critters(allcritters,settings,img_manager.get_palette(0));
+   Import::CrittersLoader::load_critters(allcritters, settings, img_manager.get_palette(0));
 }
 
-/*! Prepares all critter frames for all critters in given map.
-
-    \param new_mapobjects object list with new map objects to prepare
-*/
-void ua_critter_frames_manager::prepare(ua_object_list* new_mapobjects)
+/// Prepares all critter frames for all critters in given map.
+/// \param new_mapobjects object list with new map objects to prepare
+void ua_critter_frames_manager::prepare(Underworld::ObjectList* new_mapobjects)
 {
    mapobjects = new_mapobjects;
    object_indices.clear();
@@ -134,20 +113,23 @@ void ua_critter_frames_manager::prepare(ua_object_list* new_mapobjects)
    // go through all critters and reset them
    {
       unsigned int max = allcritters.size();
-      for(unsigned int i=0; i<max; i++)
+      for (unsigned int i = 0; i < max; i++)
          allcritters[i].reset_prepare();
    }
 
    // go through master object list and check which object frames have to be managed
-   const std::vector<ua_object>& objlist = mapobjects->get_master_obj_list();
+   Uint16 max = mapobjects->GetObjectListSize();
 
-   unsigned int max = objlist.size();
-   for(unsigned int i=0; i<max; i++)
+   for (Uint16 i = 0; i < max; i++)
    {
-      const ua_object& obj = objlist[i];
+      const Underworld::ObjectPtr objPtr = mapobjects->GetObject(i);
+      if (objPtr == NULL)
+         continue;
+
+      const Underworld::Object& obj = *objPtr;
 
       // NPC object?
-      Uint16 item_id = obj.get_object_info().item_id;
+      Uint16 item_id = obj.GetObjectInfo().m_itemID;
       if (item_id >= 0x0040 && item_id < 0x0080)
       {
          // remember object list pos
@@ -155,16 +137,14 @@ void ua_critter_frames_manager::prepare(ua_object_list* new_mapobjects)
          object_framecount.push_back(0.0);
 
          // prepare texture
-         allcritters[item_id-0x0040].prepare();
+         allcritters[item_id - 0x0040].prepare();
       }
    }
 }
 
-/*! Does tick processing for critter frames. Goes through all managed objects
-    and checks if the frame has to be updated for an object.
-
-    \param tickrate tick rate in ticks/second
-*/
+/// Does tick processing for critter frames. Goes through all managed objects
+/// and checks if the frame has to be updated for an object.
+/// \param tickrate tick rate in ticks/second
 void ua_critter_frames_manager::tick(double tickrate)
 {
    if (mapobjects == NULL)
@@ -172,20 +152,20 @@ void ua_critter_frames_manager::tick(double tickrate)
 
    // check all objects if they have to be updated
    unsigned int max = object_indices.size();
-   for(unsigned int i=0; i<max; i++)
+   for (unsigned int i = 0; i < max; i++)
    {
       double& framecount = object_framecount[i];
-      framecount += 1.0/tickrate;
-      if (framecount > 1.0/critter_fps)
+      framecount += 1.0 / tickrate;
+      if (framecount > 1.0 / critter_fps)
       {
          // next frame
-         framecount -= 1.0/critter_fps;
+         framecount -= 1.0 / critter_fps;
 
          Uint16 index = object_indices[i];
-         ua_object& obj = mapobjects->get_object(index);
+         Underworld::ObjectPtr obj = mapobjects->GetObject(index);
 
          // update
-         allcritters[(obj.get_object_info().item_id-0x0040)%0x003f].update_frame(obj);
+         allcritters[(obj->GetObjectInfo().m_itemID - 0x0040) % 0x003f].update_frame(*obj);
       }
    }
 }
