@@ -117,7 +117,7 @@ void Import::CrittersLoader::load_critter(ua_critter& critter, const char* filen
          std::string pagefile(filename);
 
          char buffer[8];
-         sprintf(buffer, ".n%02u", curpage++);
+         snprintf(buffer, sizeof(buffer), ".n%02u", curpage++);
          pagefile.append(buffer);
 
          // try to open pagefile
