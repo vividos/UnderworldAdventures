@@ -83,6 +83,7 @@ void ua_uwadv_game::init()
    UaTrace("initializing game ...\n\n");
 
    // init files manager; settings are loaded here, too
+   Base::LoadSettings(settings);
    m_resourceManager = std::make_unique<Base::ResourceManager>(settings);
 
    // find out selected screen resolution
@@ -512,13 +513,13 @@ void ua_uwadv_game::init_sdl()
       UaTrace(" stack depths: name stack = %u, modelview stack = %u, proj. stack = %u\n",
          maxnamestack, maxmodelstack, maxprojstack);
 
-      const GLubyte* vendor, *renderer, *version;
+      const GLubyte* vendor, *rendererName, *version;
       vendor = glGetString(GL_VENDOR);
-      renderer = glGetString(GL_RENDERER);
+      rendererName = glGetString(GL_RENDERER);
       version = glGetString(GL_VERSION);
 
       UaTrace(" vendor: %s\n renderer: %s\n version: %s\n",
-         vendor, renderer, version);
+         vendor, rendererName, version);
 
       GLboolean stereo;
       glGetBooleanv(GL_STEREO, &stereo);
@@ -576,6 +577,8 @@ void ua_uwadv_game::init_game()
 {
    std::string prefix(settings.GetString(Base::settingGamePrefix));
 
+   savegames_manager = std::make_unique<Base::SavegamesManager>(settings);
+
    UaTrace("initializing game; prefix: %s\n", prefix.c_str());
 
    // load game config file
@@ -605,8 +608,6 @@ void ua_uwadv_game::init_game()
 
    UaTrace("using generic uw-path: %s\n",
       settings.GetString(Base::settingUnderworldPath).c_str());
-
-   savegames_manager = std::make_unique<Base::SavegamesManager>(settings);
 
    image_manager.init(settings);
 
