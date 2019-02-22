@@ -28,7 +28,7 @@ namespace UnitTest
 {
    /// \brief ResourceManager class tests
    /// Tests resource manager that loads resource files.
-   /// \todo test search order of .uar files
+   /// \todo test search order of uadataXX.zip files
    TEST_CLASS(TestSettings)
    {
       /// Tests a bug when calling SetValue with a const char* argument that gets

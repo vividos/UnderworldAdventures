@@ -30,10 +30,10 @@ namespace UnitTest
 {
    /// \brief ResourceManager class tests
    /// Tests resource manager that loads resource files.
-   /// \todo test search order of .uar files
+   /// \todo test search order of uadataXX.zip files
    TEST_CLASS(TestResourceManager)
    {
-      /// Tests opening of resource files that may be zipped into an .uar file.
+      /// Tests opening of resource files that may be zipped into a .zip file.
       /// Assumes that a valid "uwadv.cfg" file can be found where Underworld
       /// Adventures would expect the file.
       TEST_METHOD(TestResourceLoading)
