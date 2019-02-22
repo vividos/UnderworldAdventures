@@ -27,7 +27,7 @@
 #include "audio.hpp"
 #include "save_game.hpp"
 #include "cutscene_view.hpp"
-#include "debug.hpp"
+#include "uwadv/debug.hpp"
 #include "conversation.hpp"
 #include "models.hpp"
 
