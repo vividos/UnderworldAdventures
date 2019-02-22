@@ -44,7 +44,13 @@
     <ClCompile Include="texloader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="critloader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="tgaimport.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="modeldecode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -74,6 +80,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="textureloader.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="crittersloader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
