@@ -177,7 +177,7 @@ void ua_renderer_impl::render_object(const Underworld::Level& level,
 
 #ifndef HAVE_DEBUG
    // don't render invisible objects
-   if (obj.GetObjectInfo().is_hidden)
+   if (obj.GetObjectInfo().m_isHidden)
       return;
 #endif
 
