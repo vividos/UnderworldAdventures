@@ -270,7 +270,7 @@ void ua_debug_server::end_code_debugger(ua_debug_code_interface* code_debugger)
       }
    }
 
-   UaAssert(iter != stop); // assert when pointer was not found
+   //UaAssert(iter != stop); // assert when pointer was not found
 
    // send "end" message
    ua_debug_server_message msg;
