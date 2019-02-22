@@ -606,7 +606,12 @@ unsigned int ua_create_character_screen::drawtext(const char* str, int x, int y,
          if (xalign == 2)
             x -= textlength;
    }
-   img_screen.get_image().paste_rect(img_text, 0, 0, img_text.get_xres(), img_text.get_yres(), x, y, true);
+
+   if (img_text.get_xres() > 0)
+   {
+      img_screen.get_image().paste_rect(img_text, 0, 0, img_text.get_xres(), img_text.get_yres(), x, y, true);
+   }
+
    return textlength;
 }
 
