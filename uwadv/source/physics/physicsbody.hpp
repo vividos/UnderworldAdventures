@@ -31,7 +31,7 @@ public:
    virtual ~ua_physics_body() {}
 
    /// sets new elapsed time; used at the begin of tracking this object
-   virtual void set_new_elapsed_time(double time_elapsed) {}
+   virtual void set_new_elapsed_time(double time_elapsed) { time_elapsed; }
 
    /// returns body position of the center
    virtual ua_vector3d get_pos() = 0;
