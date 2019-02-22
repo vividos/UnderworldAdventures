@@ -39,6 +39,7 @@
 
 
 // forward references
+union SDL_Event;
 
 
 // structs
