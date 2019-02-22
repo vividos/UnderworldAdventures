@@ -1,49 +1,39 @@
-/*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file panel.cpp
-
-   \brief inventory/stats/rune bag panel
-
-*/
-
-// needed includes
+//
+// Underworld Adventures - an Ultima Underworld hacking project
+// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file panel.cpp
+/// \brief inventory/stats/rune bag panel
+//
 #include "common.hpp"
 #include "panel.hpp"
 #include "underworld.hpp"
 #include "scripting.hpp"
 #include "gamestrings.hpp"
+#include "uamath.hpp"
 #include <sstream>
 
-
-//! time to rotate panel
+/// time to rotate panel
 const double ua_panel_rotate_time = 2.5;
 
-
-// tables
-
-//! inventory area types
+/// inventory area types
 enum ua_panel_inventory_area_id
 {
-   ua_area_inv_slot0=0,
+   ua_area_inv_slot0 = 0,
    ua_area_inv_slot1,
    ua_area_inv_slot2,
    ua_area_inv_slot3,
@@ -73,7 +63,7 @@ enum ua_panel_inventory_area_id
    ua_area_none
 };
 
-//! inventory area table
+/// inventory area table
 struct {
    ua_panel_inventory_area_id area_id;
    unsigned int xmin, xmax, ymin, ymax;
@@ -108,9 +98,6 @@ struct {
    { ua_area_paperdoll_feet,  32, 54, 61, 75 },
 };
 
-
-// ua_panel methods
-
 ua_panel::ua_panel()
 {
 }
@@ -119,26 +106,26 @@ void ua_panel::init(ua_panel_parent_interface* the_panel_parent, unsigned int xp
    unsigned int ypos)
 {
    panel_parent = the_panel_parent;
-   ua_game_interface& game = panel_parent->get_game_interface();
+   IGame& game = panel_parent->get_game_interface();
 
    panel_type = ua_panel_inventory;
-   armor_female = game.get_underworld().get_player().get_attr(ua_attr_gender) != 0;
+   armor_female = game.GetUnderworld().GetPlayer().GetAttribute(Underworld::attrGender) != 0;
    tickrate = game.get_tickrate();
    stats_scrollstart = 0;
    rotate_panel = false;
    rotate_angle = 0.0;
-   rotation_oldstyle = !game.get_settings().get_bool(ua_setting_uwadv_features);
+   rotation_oldstyle = !game.get_settings().GetBool(Base::settingUwadvFeatures);
 
    slot_start = 0;
    check_dragging = false;
 
    // load image lists
-   ua_image_manager& img_manager = game.get_image_manager();
+   ImageManager& img_manager = game.get_image_manager();
 
-   img_manager.load_list(img_panels, "panels", 0,3);
+   img_manager.load_list(img_panels, "panels", 0, 3);
    img_manager.load_list(img_chains, "chains");
    img_manager.load(img_inv_bagpanel, "inv", 6);
-   img_manager.load_list(img_inv_updown, "buttons", 27,29);
+   img_manager.load_list(img_inv_updown, "buttons", 27, 29);
 
    img_manager.load_list(img_armor, armor_female ? "armor_f" : "armor_m");
 
@@ -150,18 +137,18 @@ void ua_panel::init(ua_panel_parent_interface* the_panel_parent, unsigned int xp
    font_weight.load(game.get_settings(), ua_font_normal);
 
    // create image
-   get_image().create(85,116);
+   get_image().create(85, 116);
    get_image().set_palette(img_manager.get_palette(0));
 
-   ua_image_quad::init(game,xpos,ypos);
+   ua_image_quad::init(game, xpos, ypos);
 
    {
-      img_chains_top.init(game,xpos+37, ypos-4);
-      img_chains_top.get_image().create(10,4);
+      img_chains_top.init(game, xpos + 37, ypos - 4);
+      img_chains_top.get_image().create(10, 4);
       img_chains_top.get_image().set_palette(game.get_image_manager().get_palette(0));
 
-      img_chains_bottom.init(game,xpos+37, ypos+114);
-      img_chains_bottom.get_image().create(10,18);
+      img_chains_bottom.init(game, xpos + 37, ypos + 114);
+      img_chains_bottom.get_image().create(10, 18);
       img_chains_bottom.get_image().set_palette(game.get_image_manager().get_palette(0));
 
       update_chains();
@@ -200,7 +187,7 @@ void ua_panel::draw()
          wnd_width = unsigned(save_width*fabs(cos(ua_deg2rad(rotate_angle))));
       }
 
-      wnd_xpos = save_xpos+save_width/2-wnd_width/2;
+      wnd_xpos = save_xpos + save_width / 2 - wnd_width / 2;
 
       ua_image_quad::draw();
 
@@ -215,8 +202,8 @@ void ua_panel::draw()
    img_chains_bottom.draw();
 }
 
-/*! \todo when pressing bottom chain, check if user has an item on cursor
-    and prevent switching then. */
+/// \todo when pressing bottom chain, check if user has an item on cursor
+/// and prevent switching then.
 bool ua_panel::process_event(SDL_Event& event)
 {
    // don't process events when in rotate mode
@@ -226,11 +213,11 @@ bool ua_panel::process_event(SDL_Event& event)
    // check if bottom chain was pressed
    if (event.type == SDL_MOUSEBUTTONUP)
    {
-      unsigned int xpos=0, ypos=0;
+      unsigned int xpos = 0, ypos = 0;
       calc_mousepos(event, xpos, ypos);
 
       // in window?
-      if (img_chains_bottom.in_window(xpos,ypos))
+      if (img_chains_bottom.in_window(xpos, ypos))
       {
          rotate_panel = true;
          rotate_angle = 0.0;
@@ -256,13 +243,13 @@ void ua_panel::mouse_event(bool button_clicked, bool left_button,
       mousex -= wnd_xpos; mousey -= wnd_ypos;
 
       // determine area
-      for(unsigned int i=0; i<SDL_TABLESIZE(ua_panel_inventory_areas); i++)
+      for (unsigned int i = 0; i < SDL_TABLESIZE(ua_panel_inventory_areas); i++)
       {
          // check ranges
          if (mousex >= ua_panel_inventory_areas[i].xmin &&
-             mousex <= ua_panel_inventory_areas[i].xmax &&
-             mousey >= ua_panel_inventory_areas[i].ymin &&
-             mousey <= ua_panel_inventory_areas[i].ymax)
+            mousex <= ua_panel_inventory_areas[i].xmax &&
+            mousey >= ua_panel_inventory_areas[i].ymin &&
+            mousey <= ua_panel_inventory_areas[i].ymax)
          {
             area = ua_panel_inventory_areas[i].area_id;
             break;
@@ -270,38 +257,38 @@ void ua_panel::mouse_event(bool button_clicked, bool left_button,
       }
 
       if (button_clicked)
-         inventory_click(button_down,left_button,area);
+         inventory_click(button_down, left_button, area);
       else
       {
          // check item dragging
-         if (check_dragging && drag_area != area)
+         if (check_dragging && drag_area != static_cast<unsigned int>(area))
          {
-            ua_inventory& inv = panel_parent->get_game_interface().
-               get_underworld().get_inventory();
+            Underworld::Inventory& inv = panel_parent->get_game_interface().
+               GetUnderworld().GetPlayer().GetInventory();
 
             // user dragged item out of area
             check_dragging = false;
-            inv.float_item(drag_item);
+            inv.FloatObject(drag_item);
 
             update_cursor_image();
             update_panel();
 
          }
       }
-/*
-#ifdef HAVE_DEBUG
-      if (area != ua_area_none)
-      {
-         update_inventory();
-         get_image().ua_image::fill_rect(
-            ua_panel_inventory_areas[i].xmin,
-            ua_panel_inventory_areas[i].ymin,
-            ua_panel_inventory_areas[i].xmax-ua_panel_inventory_areas[i].xmin,
-            ua_panel_inventory_areas[i].ymax-ua_panel_inventory_areas[i].ymin, 13);
-         update();
-      }
-#endif
-*/
+      /*
+      #ifdef HAVE_DEBUG
+            if (area != ua_area_none)
+            {
+               update_inventory();
+               get_image().IndexedImage::fill_rect(
+                  ua_panel_inventory_areas[i].xmin,
+                  ua_panel_inventory_areas[i].ymin,
+                  ua_panel_inventory_areas[i].xmax-ua_panel_inventory_areas[i].xmin,
+                  ua_panel_inventory_areas[i].ymax-ua_panel_inventory_areas[i].ymin, 13);
+               update();
+            }
+      #endif
+      */
    }
 
    if (panel_type == ua_panel_stats && button_clicked && !button_down)
@@ -312,12 +299,12 @@ void ua_panel::mouse_event(bool button_clicked, bool left_button,
          bool leftbutton = mousex < 43;
          if (leftbutton)
          {
-            if (stats_scrollstart>0)
+            if (stats_scrollstart > 0)
                stats_scrollstart--;
          }
          else
          {
-            if (stats_scrollstart<14)
+            if (stats_scrollstart < 14)
                stats_scrollstart++;
          }
          update_panel();
@@ -335,16 +322,16 @@ void ua_panel::mouse_event(bool button_clicked, bool left_button,
          mousex /= 18;
          mousey /= 15;
 
-         ua_trace("runebag: mouse hit rune %u\n", mousex+mousey*4);
+         UaTrace("runebag: mouse hit rune %u\n", mousex + mousey * 4);
       }
       else
       {
          if (mousex >= 21 && mousex < 68 && mousey >= 96 && mousey < 111)
          {
-            ua_trace("runebag: mouse hit \"reset shelf\" area\n");
+            UaTrace("runebag: mouse hit \"reset shelf\" area\n");
          }
          else
-            ua_trace("runebag: mouse hit outside\n");
+            UaTrace("runebag: mouse hit outside\n");
       }
    }
 }
@@ -357,7 +344,7 @@ void ua_panel::tick()
       rotate_angle += 180.0 / (ua_panel_rotate_time * tickrate);
 
       // check if we have to update the chains
-      if (unsigned(old_angle/180.0*8.0) != unsigned(rotate_angle/180.0*8.0))
+      if (unsigned(old_angle / 180.0*8.0) != unsigned(rotate_angle / 180.0*8.0))
          update_chains();
 
       // do we have to change panel image?
@@ -383,12 +370,12 @@ void ua_panel::update_panel()
       update_inventory();
    else
       // stats panel?
-   if (panel_type == ua_panel_stats)
-      update_stats();
-   else
-      // runebag panel?
-   if (panel_type == ua_panel_runebag)
-      update_runebag();
+      if (panel_type == ua_panel_stats)
+         update_stats();
+      else
+         // runebag panel?
+         if (panel_type == ua_panel_runebag)
+            update_runebag();
 
    update();
 }
@@ -396,11 +383,11 @@ void ua_panel::update_panel()
 void ua_panel::update_chains()
 {
    unsigned int chain_add = rotate_panel ?
-      unsigned(rotate_angle/180.0*8.0)%8 : 0;
+      unsigned(rotate_angle / 180.0*8.0) % 8 : 0;
 
    // set chains images
-   img_chains_top.get_image().paste_image(img_chains[8+(chain_add)%8], 0,0);
-   img_chains_bottom.get_image().paste_image(img_chains[chain_add%8], 0,0);
+   img_chains_top.get_image().paste_image(img_chains[8 + (chain_add) % 8], 0, 0);
+   img_chains_bottom.get_image().paste_image(img_chains[chain_add % 8], 0, 0);
 
    img_chains_top.update();
    img_chains_bottom.update();
@@ -408,24 +395,24 @@ void ua_panel::update_chains()
 
 void ua_panel::update_inventory()
 {
-   ua_image& img = get_image();
+   IndexedImage& img = get_image();
 
-   ua_inventory& inv = panel_parent->get_game_interface().
-      get_underworld().get_inventory();
-   ua_player& pl = panel_parent->get_game_interface().
-      get_underworld().get_player();
+   Underworld::Inventory& inv = panel_parent->get_game_interface().
+      GetUnderworld().GetPlayer().GetInventory();
+   Underworld::Player& pl = panel_parent->get_game_interface().
+      GetUnderworld().GetPlayer();
 
    // background image
-   img.paste_image(img_panels[0],1,1);
+   img.paste_image(img_panels[0], 1, 1);
 
-   bool female = pl.get_attr(ua_attr_gender)!=0;
+   bool female = pl.GetAttribute(Underworld::attrGender) != 0;
 
    // player appearance
    {
-      unsigned int bodyimg = pl.get_attr(ua_attr_appearance)%5 +
+      unsigned int bodyimg = pl.GetAttribute(Underworld::attrAppearance) % 5 +
          (female ? 5 : 0);
 
-      img.paste_image(img_bodies[bodyimg],25,5);
+      img.paste_image(img_bodies[bodyimg], 25, 5);
    }
 
    // check if paperdoll images have to be reloaded (e.g. when changed in
@@ -442,49 +429,49 @@ void ua_panel::update_inventory()
    // start index; 0 is used in the main inventory
    unsigned int start = 0;
 
-   if (inv.get_container_item_id() != ua_item_none)
+   Uint16 cont_id = inv.GetObjectInfo(inv.GetContainerPos()).m_itemID;
+   if (cont_id != Underworld::c_itemIDNone)
    {
       // inside a container
 
       // draw alternative inventory panel
-      img.paste_image(img_inv_bagpanel,1,74);
+      img.paste_image(img_inv_bagpanel, 1, 74);
 
       // draw up/down arrows
-      if (slot_start>0)
-         img.paste_image(img_inv_updown[0],61,64,true); // up
+      if (slot_start > 0)
+         img.paste_image(img_inv_updown[0], 61, 64, true); // up
 
-      if (inv.get_num_slots()-slot_start>=8)
-         img.paste_image(img_inv_updown[1],71,64,true); // down
+      if (inv.GetNumSlots() - slot_start >= 8)
+         img.paste_image(img_inv_updown[1], 71, 64, true); // down
 
       // draw container we're in
-      Uint16 cont_id = inv.get_container_item_id();
-      img.paste_image(img_objects[cont_id],6,58,true);
+      img.paste_image(img_objects[cont_id], 6, 58, true);
 
       // begin at current slot start
       start = slot_start;
    }
    // paste inventory slots
-   for(unsigned int i=0; i<8; i++)
+   for (unsigned int i = 0; i < 8; i++)
    {
-      if (start+i < inv.get_num_slots())
+      if (start + i < inv.GetNumSlots())
       {
-         Uint16 item = inv.get_slot_item(start+i);
-         Uint16 item_id = inv.get_item(item).item_id;
+         Uint16 item_pos = inv.GetSlotListPos(start + i);
+         Uint16 item_id = inv.GetObjectInfo(item_pos).m_itemID;
 
          // draw item
          if (item_id != 0xffff)
          {
             unsigned int
-               destx = 7 + (i&3)*19,
-               desty = 76 + (i>>2)*18;
+               destx = 7 + (i & 3) * 19,
+               desty = 76 + (i >> 2) * 18;
 
-            img.paste_image(img_objects[item_id], destx,desty, true);
+            img.paste_image(img_objects[item_id], destx, desty, true);
          }
       }
    }
 
    // do paperdoll items
-   for(unsigned int j=ua_slot_lefthand; j<ua_slot_max; j++)
+   for (unsigned int j = Underworld::slotLeftHand; j < Underworld::slotMax; j++)
    {
       // paperdoll image coordinates
       static unsigned int slot_coords[] =
@@ -500,26 +487,26 @@ void ua_panel::update_inventory()
       };
 
       unsigned int destx, desty;
-      destx = slot_coords[(j-ua_slot_lefthand)*2]+1;
-      desty = slot_coords[(j-ua_slot_lefthand)*2+1]+1;
+      destx = slot_coords[(j - Underworld::slotLeftHand) * 2] + 1;
+      desty = slot_coords[(j - Underworld::slotLeftHand) * 2 + 1] + 1;
 
       // paste item
-      Uint16 item_id = inv.get_item(j).item_id;
+      Uint16 item_id = inv.GetObjectInfo(j).m_itemID;
       if (item_id != 0xffff)
       {
-         if (j<ua_slot_paperdoll_start)
+         if (j < Underworld::slotPaperdollStart)
          {
             // normal object
-            img.paste_image(img_objects[item_id], destx,desty, true);
+            img.paste_image(img_objects[item_id], destx, desty, true);
          }
          else
          {
             // paperdoll image
             unsigned int quality = 3; // can be between 0..3
             Uint16 armorimg = item_id < 0x002f ?
-               (item_id-0x0020)+15*quality : (item_id-0x002f+60);
+               (item_id - 0x0020) + 15 * quality : (item_id - 0x002f + 60);
 
-            img.paste_image(img_armor[armorimg], destx,desty, true);
+            img.paste_image(img_armor[armorimg], destx, desty, true);
          }
       }
    }
@@ -527,107 +514,110 @@ void ua_panel::update_inventory()
    // inventory weight
    {
       std::ostringstream buffer;
-      buffer << static_cast<unsigned int>(inv.get_inventory_weight());
+      unsigned int weight = 0;
+      // TODO
+      //unsigned int weight = panel_parent->get_game_interface().GetGameLogic().GetInventoryWeight(inv);
+      buffer << weight;
 
-      ua_image img_weight;
-      font_weight.create_string(img_weight,buffer.str().c_str(),224);
-      img.paste_image(img_weight, 70-img_weight.get_xres()/2,53, true);
+      IndexedImage img_weight;
+      font_weight.create_string(img_weight, buffer.str().c_str(), 224);
+      img.paste_image(img_weight, 70 - img_weight.get_xres() / 2, 53, true);
    }
 }
 
 void ua_panel::update_stats()
 {
-   ua_image& img = get_image();
+   IndexedImage& img = get_image();
 
-   ua_player& pl = panel_parent->get_game_interface().
-      get_underworld().get_player();
+   Underworld::Player& pl = panel_parent->get_game_interface().
+      GetUnderworld().GetPlayer();
 
-   ua_gamestrings& gstr = panel_parent->get_game_interface().
-      get_gamestrings();
+   GameStrings& gstr = panel_parent->get_game_interface().
+      GetGameStrings();
 
-   img.paste_image(img_panels[2],1,1);
+   img.paste_image(img_panels[2], 1, 1);
 
-   ua_image img_temp;
+   IndexedImage img_temp;
    unsigned int xpos;
    std::string text;
-   
+
    // player name
-   text = pl.get_name();
-   xpos = ( 83 - font_stats.calc_length(text.c_str()) )/2;
-   font_stats.create_string(img_temp, pl.get_name().c_str(), 1);
-   img.paste_rect(img_temp, 0,0, img_temp.get_xres(),img_temp.get_yres(), xpos, 7, true);
+   text = pl.GetName();
+   xpos = (83 - font_stats.calc_length(text.c_str())) / 2;
+   font_stats.create_string(img_temp, pl.GetName().c_str(), 1);
+   img.paste_rect(img_temp, 0, 0, img_temp.get_xres(), img_temp.get_yres(), xpos, 7, true);
 
    // player profession
-   unsigned int prof = pl.get_attr(ua_attr_profession)&7;
-   text = gstr.get_string(2,prof+23);
-   ua_str_uppercase(text);
+   unsigned int prof = pl.GetAttribute(Underworld::attrProfession) & 7;
+   text = gstr.GetString(2, prof + 23);
+   Base::String::Uppercase(text);
 
    font_stats.create_string(img_temp, text.c_str(), 1);
-   img.paste_rect(img_temp, 0,0, img_temp.get_xres(),img_temp.get_yres(), 7, 15, true);
+   img.paste_rect(img_temp, 0, 0, img_temp.get_xres(), img_temp.get_yres(), 7, 15, true);
 
    // player main stats
-   for(unsigned int i=0; i<7; i++)
+   for (unsigned int i = 0; i < 7; i++)
    {
       std::ostringstream buffer;
-      switch(i)
+      switch (i)
       {
-      case 0: buffer << pl.get_attr(ua_attr_exp_level) << "TH"; break;
-      case 1: buffer << pl.get_attr(ua_attr_strength); break;
-      case 2: buffer << pl.get_attr(ua_attr_dexterity); break;
-      case 3: buffer << pl.get_attr(ua_attr_intelligence); break;
-      case 4: buffer << pl.get_attr(ua_attr_vitality) << "/" <<
-                 pl.get_attr(ua_attr_max_vitality); break;
-      case 5: buffer << pl.get_attr(ua_attr_mana) << "/" <<
-                 pl.get_attr(ua_attr_max_mana); break;
+      case 0: buffer << pl.GetAttribute(Underworld::attrExperienceLevel) << "TH"; break;
+      case 1: buffer << pl.GetAttribute(Underworld::attrStrength); break;
+      case 2: buffer << pl.GetAttribute(Underworld::attrDexterity); break;
+      case 3: buffer << pl.GetAttribute(Underworld::attrIntelligence); break;
+      case 4: buffer << pl.GetAttribute(Underworld::attrVitality) << "/" <<
+         pl.GetAttribute(Underworld::attrMaxVitality); break;
+      case 5: buffer << pl.GetAttribute(Underworld::attrMana) << "/" <<
+         pl.GetAttribute(Underworld::attrMaxMana); break;
 
-      case 6: buffer << pl.get_attr(ua_attr_exp_points); break;
+      case 6: buffer << pl.GetAttribute(Underworld::attrExperiencePoints); break;
       }
 
       xpos = 77 - font_stats.calc_length(buffer.str().c_str());
 
       font_stats.create_string(img_temp, buffer.str().c_str(), 1);
-      img.paste_rect(img_temp, 0,0, img_temp.get_xres(),img_temp.get_yres(), xpos, i*7+15, true);
+      img.paste_rect(img_temp, 0, 0, img_temp.get_xres(), img_temp.get_yres(), xpos, i * 7 + 15, true);
 
       buffer.str().erase();
    }
 
    // player skills
-   for(unsigned int n=0; n<6; n++)
+   for (unsigned int n = 0; n < 6; n++)
    {
       std::ostringstream buffer;
 
       // skill name
-      text = gstr.get_string(2,n+stats_scrollstart+31);
-      ua_str_uppercase(text);
+      text = gstr.GetString(2, n + stats_scrollstart + 31);
+      Base::String::Uppercase(text);
 
       font_stats.create_string(img_temp, text.c_str(), 104);
-      img.paste_rect(img_temp, 0,0, img_temp.get_xres(),img_temp.get_yres(), 7, n*7+65, true);
+      img.paste_rect(img_temp, 0, 0, img_temp.get_xres(), img_temp.get_yres(), 7, n * 7 + 65, true);
 
       // skill value
-      unsigned int skill = pl.get_skill(
-         static_cast<ua_player_skills>(ua_skill_attack+n+stats_scrollstart));
+      unsigned int skill = pl.GetSkill(
+         static_cast<Underworld::EPlayerSkill>(Underworld::skillAttack + n + stats_scrollstart));
 
       buffer << skill;
 
       xpos = 77 - font_stats.calc_length(buffer.str().c_str());
 
       font_stats.create_string(img_temp, buffer.str().c_str(), 104);
-      img.paste_rect(img_temp, 0,0, img_temp.get_xres(),img_temp.get_yres(), xpos, n*7+65, true);
+      img.paste_rect(img_temp, 0, 0, img_temp.get_xres(), img_temp.get_yres(), xpos, n * 7 + 65, true);
    }
 }
 
 void ua_panel::update_runebag()
 {
-   ua_image& img = get_image();
-   img.paste_image(img_panels[1],1,1);
+   IndexedImage& img = get_image();
+   img.paste_image(img_panels[1], 1, 1);
 
-   std::bitset<24>& runebag = panel_parent->get_game_interface().
-      get_underworld().get_player().get_runes().get_runebag();
+   Underworld::Runebag& runebag = panel_parent->get_game_interface().
+      GetUnderworld().GetPlayer().GetRunebag();
 
-   for(unsigned int i=0; i<24; i++)
-      if (runebag.test(i))
-         img.paste_rect(img_objects[0x00e8+i], 0,0, 14,14,
-            (i&3)*18+9, (i>>2)*15+6, true);
+   for (unsigned int i = 0; i < 24; i++)
+      if (runebag.IsInBag(static_cast<Underworld::ERuneType>(i)))
+         img.paste_rect(img_objects[0x00e8 + i], 0, 0, 14, 14,
+         (i & 3) * 18 + 9, (i >> 2) * 15 + 6, true);
 }
 
 void ua_panel::inventory_click(bool button_down, bool left_button,
@@ -636,20 +626,20 @@ void ua_panel::inventory_click(bool button_down, bool left_button,
    ua_panel_inventory_area_id area =
       static_cast<ua_panel_inventory_area_id>(the_area);
 
-   ua_inventory& inv = panel_parent->get_game_interface().
-      get_underworld().get_inventory();
+   Underworld::Inventory& inv = panel_parent->get_game_interface().
+      GetUnderworld().GetPlayer().GetInventory();
 
    // check scroll up/down buttons
-   if (!button_down && area == ua_area_inv_scroll_up && slot_start>0)
+   if (!button_down && area == ua_area_inv_scroll_up && slot_start > 0)
    {
-      slot_start -= slot_start > 4? 4 : slot_start;
+      slot_start -= slot_start > 4 ? 4 : slot_start;
       update_panel();
       update();
       return;
    }
 
    if (!button_down && area == ua_area_inv_scroll_down &&
-      inv.get_num_slots()-slot_start>=8)
+      inv.GetNumSlots() - slot_start >= 8)
    {
       slot_start += 4;
       update_panel();
@@ -658,30 +648,30 @@ void ua_panel::inventory_click(bool button_down, bool left_button,
    }
 
    // find out itemlist pos
-   Uint16 item = ua_slot_no_item;
+   Uint16 item_pos = Underworld::c_inventorySlotNoItem;
    {
-      switch(area)
+      switch (area)
       {
       case ua_area_inv_slot0: case ua_area_inv_slot1:
       case ua_area_inv_slot2: case ua_area_inv_slot3:
       case ua_area_inv_slot4: case ua_area_inv_slot5:
       case ua_area_inv_slot6: case ua_area_inv_slot7:
-         item = inv.get_slot_item(slot_start+unsigned(area-ua_area_inv_slot0));
+         item_pos = inv.GetSlotListPos(slot_start + unsigned(area - ua_area_inv_slot0));
          break;
 
-      case ua_area_equip_left_hand: item = ua_slot_lefthand; break;
-      case ua_area_equip_left_shoulder: item = ua_slot_leftshoulder; break;
-      case ua_area_equip_left_ring: item = ua_slot_leftfinger; break;
+      case ua_area_equip_left_hand: item_pos = Underworld::slotLeftHand; break;
+      case ua_area_equip_left_shoulder: item_pos = Underworld::slotLeftShoulder; break;
+      case ua_area_equip_left_ring: item_pos = Underworld::slotLeftFinger; break;
 
-      case ua_area_equip_right_hand: item = ua_slot_righthand; break;
-      case ua_area_equip_right_shoulder: item = ua_slot_rightshoulder; break;
-      case ua_area_equip_right_ring: item = ua_slot_rightfinger; break;
+      case ua_area_equip_right_hand: item_pos = Underworld::slotRightHand; break;
+      case ua_area_equip_right_shoulder: item_pos = Underworld::slotRightShoulder; break;
+      case ua_area_equip_right_ring: item_pos = Underworld::slotRightFinger; break;
 
-      case ua_area_paperdoll_head: item = ua_slot_paperdoll_head; break;
-      case ua_area_paperdoll_chest: item = ua_slot_paperdoll_chest; break;
-      case ua_area_paperdoll_hand: item = ua_slot_paperdoll_hands; break;
-      case ua_area_paperdoll_legs: item = ua_slot_paperdoll_legs; break;
-      case ua_area_paperdoll_feet: item = ua_slot_paperdoll_feet; break;
+      case ua_area_paperdoll_head: item_pos = Underworld::slotPaperdollHead; break;
+      case ua_area_paperdoll_chest: item_pos = Underworld::slotPaperdollChest; break;
+      case ua_area_paperdoll_hand: item_pos = Underworld::slotPaperdollHands; break;
+      case ua_area_paperdoll_legs: item_pos = Underworld::slotPaperdollLegs; break;
+      case ua_area_paperdoll_feet: item_pos = Underworld::slotPaperdollFeet; break;
 
       case ua_area_inv_container: break;
       default: area = ua_area_none; break;
@@ -696,7 +686,7 @@ void ua_panel::inventory_click(bool button_down, bool left_button,
    {
       // start checking for dragging items
       check_dragging = true;
-      drag_item = item;
+      drag_item = item_pos;
       drag_area = area;
       return;
    }
@@ -710,17 +700,17 @@ void ua_panel::inventory_click(bool button_down, bool left_button,
    check_dragging = false;
 
    // check if we have a floating item
-   if (inv.get_floating_item() != ua_slot_no_item)
+   if (inv.GetFloatingObjectPos() != Underworld::c_inventorySlotNoItem)
    {
       // yes, floating
 
       // check for container icon "slot"
-      if (area==ua_area_inv_container)
+      if (area == ua_area_inv_container)
       {
-         if (inv.get_container_item_id() != ua_slot_no_item)
+         if (inv.GetContainerPos() != Underworld::c_inventorySlotNoItem)
          {
             // put item into parent's container, if possible
-            inv.drop_floating_item_parent();
+            inv.DropFloatingObject(inv.GetParentContainerPos()); // TODO debug .drop_floating_item_parent();
          }
       }
       else
@@ -732,7 +722,7 @@ void ua_panel::inventory_click(bool button_down, bool left_button,
          // items dropped onto a container are put into that container
          // items that are combineable will be combined
          // items that don't fit into a paperdoll slot will be rejected
-         inv.drop_floating_item(item);
+         inv.DropFloatingObject(inv.GetContainerPos(), item_pos); // TODO debug
       }
 
       update_cursor_image();
@@ -743,22 +733,22 @@ void ua_panel::inventory_click(bool button_down, bool left_button,
    // no floating object
 
    // click on container icon
-   if (area==ua_area_inv_container)
+   if (area == ua_area_inv_container)
    {
       // close container when not topmost
-      if (inv.get_container_item_id() != ua_slot_no_item)
-         inv.close_container();
+      if (inv.GetContainerPos() != Underworld::c_inventorySlotNoItem)
+         inv.CloseContainer();
 
       update_panel();
       return;
    }
 
    // check if container
-   if (item != ua_slot_no_item &&
-       inv.is_container(inv.get_item(item).item_id))
+   if (item_pos != Underworld::c_inventorySlotNoItem &&
+      inv.IsContainer(inv.GetObjectInfo(item_pos).m_itemID))
    {
       // open container
-      inv.open_container(item);
+      inv.OpenContainer(item_pos);
       //cursor_is_object = false;
       slot_start = 0;
 
@@ -766,45 +756,44 @@ void ua_panel::inventory_click(bool button_down, bool left_button,
       return;
    }
 
-   ua_scripting* scripting = panel_parent->get_game_interface().
-      get_underworld().get_scripting();
+   IScripting& scripting = panel_parent->get_game_interface().get_scripting();
 
    // perform left/right click action
    if (left_button)
    {
       // trigger "use" action
-      if (item != ua_item_none && scripting != NULL)
-         scripting->user_action(ua_action_use_object_inventory, item);
+      if (item_pos != Underworld::c_itemIDNone/* && scripting != NULL*/)
+         scripting.UserAction(ua_action_use_object_inventory, item_pos);
    }
    else
    {
       // trigger "look" action
-      if (item != ua_item_none && scripting != NULL)
-         scripting->user_action(ua_action_look_object_inventory, item);
+      if (item_pos != Underworld::c_itemIDNone/* && scripting != NULL*/)
+         scripting.UserAction(ua_action_look_object_inventory, item_pos);
    }
 }
 
 void ua_panel::update_cursor_image()
 {
-   ua_inventory& inv = panel_parent->get_game_interface().
-      get_underworld().get_inventory();
+   Underworld::Inventory& inv = panel_parent->get_game_interface().
+      GetUnderworld().GetPlayer().GetInventory();
 
    Uint16 cursor_object = 0;
    bool cursor_is_object = false;
 
    // check if we still have a floating object
-   if (inv.get_floating_item() != ua_slot_no_item)
+   if (inv.GetFloatingObjectPos() != Underworld::c_inventorySlotNoItem)
    {
       // still floating? then set new cursor object
-      cursor_object =  inv.get_item(inv.get_floating_item()).item_id;
-      cursor_is_object = cursor_object != ua_slot_no_item;
+      cursor_object = inv.GetObjectInfo(inv.GetFloatingObjectPos()).m_itemID;
+      cursor_is_object = cursor_object != Underworld::c_inventorySlotNoItem;
    }
 
    if (cursor_is_object)
-      panel_parent->set_cursor(cursor_object+0x0100,true);
+      panel_parent->set_cursor(cursor_object + 0x0100, true);
    else
    {
-      panel_parent->set_cursor(-1,true);
-      panel_parent->set_cursor(0,false);
+      panel_parent->set_cursor(-1, true);
+      panel_parent->set_cursor(0, false);
    }
 }

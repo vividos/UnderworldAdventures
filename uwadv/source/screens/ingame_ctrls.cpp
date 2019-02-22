@@ -1,58 +1,49 @@
-/*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file ingame_ctrls.cpp
-
-   \brief ingame screen controls
-
-*/
-
-// needed includes
+//
+// Underworld Adventures - an Ultima Underworld hacking project
+// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file ingame_ctrls.cpp
+/// \brief ingame screen controls
+//
 #include "common.hpp"
 #include "ingame_ctrls.hpp"
 #include "ingame_orig.hpp"
 #include "underworld.hpp"
+#include "gamelogic.hpp"
 #include "renderer.hpp"
 
-
-// ua_ingame_compass methods
-
-void ua_ingame_compass::init(ua_game_interface& game, unsigned int xpos,
+void ua_ingame_compass::init(IGame& game, unsigned int xpos,
    unsigned int ypos)
 {
    // init image
-   get_image().create(52,26);
+   get_image().create(52, 26);
 
-   ua_image_quad::init(game,xpos,ypos);
+   ua_image_quad::init(game, xpos, ypos);
 
    // load compass images
    {
-      std::vector<ua_image> temp_compass;
-      game.get_image_manager().load_list(temp_compass,"compass");
+      std::vector<IndexedImage> temp_compass;
+      game.get_image_manager().load_list(temp_compass, "compass");
 
-      ua_palette256_ptr pal0 = game.get_image_manager().get_palette(0);
+      Palette256Ptr pal0 = game.get_image_manager().get_palette(0);
 
       img_compass.resize(16);
 
-      static unsigned int compass_tip_coords[16*2] =
+      static unsigned int compass_tip_coords[16 * 2] =
       {
          24, 0, 16, 2,  8, 3,  4, 6,
           0,10,  0,14,  4,16, 12,19,
@@ -61,17 +52,17 @@ void ua_ingame_compass::init(ua_game_interface& game, unsigned int xpos,
       };
 
       // create compass images and add needle tips and right/bottom borders
-      for(unsigned int n=0; n<16; n++)
+      for (unsigned int n = 0; n < 16; n++)
       {
-         ua_image& img = img_compass[n];
-         img.create(52,26);
+         IndexedImage& img = img_compass[n];
+         img.create(52, 26);
          img.set_palette(pal0);
 
-         img.paste_image(temp_compass[n&3],0,0);
+         img.paste_image(temp_compass[n & 3], 0, 0);
 
          // compass needle
-         img.paste_image(temp_compass[n+4],
-            compass_tip_coords[n*2],compass_tip_coords[n*2+1]);
+         img.paste_image(temp_compass[n + 4],
+            compass_tip_coords[n * 2], compass_tip_coords[n * 2 + 1]);
       }
    }
 
@@ -83,11 +74,11 @@ void ua_ingame_compass::draw()
    // check if we have to reupload the image
 
    // calculate current angle and images
-   ua_player& player = parent->get_game_interface().get_underworld().
-      get_player();
+   Underworld::Player& player = parent->get_game_interface().GetUnderworld().
+      GetPlayer();
 
-   double angle = fmod(-player.get_angle_rot()+90.0+360.0,360.0);
-   unsigned int compassimg = unsigned((angle+11.25)/22.5)&15;
+   double angle = fmod(-player.GetRotateAngle() + 90.0 + 360.0, 360.0);
+   unsigned int compassimg = unsigned((angle + 11.25) / 22.5) & 15;
 
    // prepare texture
    if (compass_curimg != compassimg)
@@ -96,7 +87,7 @@ void ua_ingame_compass::draw()
       compass_curimg = compassimg;
 
       unsigned int dest = has_border ? 1 : 0;
-      get_image().paste_image(img_compass[compassimg],dest,dest);
+      get_image().paste_image(img_compass[compassimg], dest, dest);
 
       update();
    }
@@ -108,45 +99,40 @@ void ua_ingame_compass::mouse_event(bool button_clicked, bool left_button,
    bool button_down, unsigned int mousex, unsigned int mousey)
 {
    if (button_clicked && !button_down)
-      parent->get_game_interface().get_underworld().user_action(ua_action_clicked_compass);
+      parent->get_game_interface().GetGameLogic().UserAction(ua_action_clicked_compass);
 }
 
-
-// ua_ingame_runeshelf methods
-
-void ua_ingame_runeshelf::init(ua_game_interface& game, unsigned int xpos,
+void ua_ingame_runeshelf::init(IGame& game, unsigned int xpos,
    unsigned int ypos)
 {
-   get_image().create(46,16);
+   get_image().create(46, 16);
 
    // load images 232..255; A-Z without X and Z
-   game.get_image_manager().load_list(img_runestones, "objects", 232,256);
+   game.get_image_manager().load_list(img_runestones, "objects", 232, 256);
 
-   ua_image_quad::init(game,xpos,ypos);
+   ua_image_quad::init(game, xpos, ypos);
 }
 
-/*! Updates the runeshelf image from runeshelf content. */
+/// Updates the runeshelf image from runeshelf content.
 void ua_ingame_runeshelf::update_runeshelf()
 {
-   ua_image& img_shelf = get_image();
+   IndexedImage& img_shelf = get_image();
    img_shelf.clear(0);
 
-   ua_runes& runes = parent->get_game_interface().get_underworld().
-      get_player().get_runes();
+   Underworld::Runeshelf& runeshelf = parent->get_game_interface().GetUnderworld().
+      GetPlayer().GetRuneshelf();
 
-   unsigned int rune[3] = { 0, 0, 0 };
-
-   unsigned int max = runes.get_runeshelf_count()%3;
-   for(unsigned int i=0; i<max; i++)
+   unsigned int max = runeshelf.GetNumRunes() % 3;
+   for (unsigned int i = 0; i < max; i++)
    {
-      Uint8 rune = runes.get_runeshelf_rune(i)%24;
+      Underworld::ERuneType rune = static_cast<Underworld::ERuneType>(runeshelf.GetRune(i) % 24);
 
       // paste appropriate rune image
-      ua_image& img_rune = img_runestones[rune];
+      IndexedImage& img_rune = img_runestones[rune];
 
       unsigned int dest = has_border ? 1 : 0;
-      img_shelf.paste_rect(img_rune, 0,0, 14,14,
-         i*15+dest, dest, true);
+      img_shelf.paste_rect(img_rune, 0, 0, 14, 14,
+         i * 15 + dest, dest, true);
    }
 
    update();
@@ -156,44 +142,40 @@ void ua_ingame_runeshelf::mouse_event(bool button_clicked, bool left_button,
    bool button_down, unsigned int mousex, unsigned int mousey)
 {
    if (button_clicked && !button_down)
-      parent->get_game_interface().get_underworld().user_action(ua_action_clicked_runeshelf);
+      parent->get_game_interface().GetGameLogic().UserAction(ua_action_clicked_runeshelf);
 }
 
-
-// ua_ingame_spell_area methods
-
-void ua_ingame_spell_area::init(ua_game_interface& game, unsigned int xpos,
+void ua_ingame_spell_area::init(IGame& game, unsigned int xpos,
    unsigned int ypos)
 {
-   get_image().create(51,18);
+   get_image().create(51, 18);
 
    // load images 232..255; A-Z without X and Z
    game.get_image_manager().load_list(img_spells, "spells");
 
-   ua_image_quad::init(game,xpos,ypos);
+   ua_image_quad::init(game, xpos, ypos);
 }
 
-/*! Updates the active spell area image.
-    \todo actually get spells from ua_underworld
-*/
+/// Updates the active spell area image.
+/// \todo actually get spells from Underworld
 void ua_ingame_spell_area::update_spell_area()
 {
-   ua_image& img_area = get_image();
+   IndexedImage& img_area = get_image();
    img_area.clear(0);
 
    unsigned int spell[3] = { 0, 0, 0 };
 
-   for(unsigned int i=0; i<3; i++)
+   for (unsigned int i = 0; i < 3; i++)
    {
       if (spell[i] == 0)
          continue;
 
       // paste appropriate spell image
-      ua_image& img_spell = img_spells[(spell[i]-1)%21];
+      IndexedImage& img_spell = img_spells[(spell[i] - 1) % 21];
 
       unsigned int dest = has_border ? 1 : 0;
-      img_area.paste_rect(img_spell, 0,0, 16,18,
-         i*17+dest, dest, true);
+      img_area.paste_rect(img_spell, 0, 0, 16, 18,
+         i * 17 + dest, dest, true);
    }
 
    update();
@@ -203,67 +185,64 @@ void ua_ingame_spell_area::mouse_event(bool button_clicked, bool left_button,
    bool button_down, unsigned int mousex, unsigned int mousey)
 {
    if (button_clicked && !button_down)
-      parent->get_game_interface().get_underworld().user_action(ua_action_clicked_spells);
+      parent->get_game_interface().GetGameLogic().UserAction(ua_action_clicked_spells);
 }
 
-
-// ua_ingame_flask methods
-
-void ua_ingame_flask::init(ua_game_interface& game, unsigned int xpos,
+void ua_ingame_flask::init(IGame& game, unsigned int xpos,
    unsigned int ypos)
 {
-   get_image().create(24,33);
+   get_image().create(24, 33);
 
    // load flask images
    {
-      std::vector<ua_image> temp_flasks;
+      std::vector<IndexedImage> temp_flasks;
       game.get_image_manager().load_list(temp_flasks, "flasks");
 
       unsigned int maximg = vitality_flask ? 28 : 14;
       img_flask.resize(maximg);
 
       // paste together all flask fill heights
-      for(unsigned int i=0; i<maximg; i+=14)
+      for (unsigned int i = 0; i < maximg; i += 14)
       {
-         ua_image base_img = temp_flasks[75];
+         IndexedImage base_img = temp_flasks[75];
 
          static unsigned int flask_pos[13] =
          { 26, 24, 22, 20, 18, 16, 15, 14, 13, 11, 9, 7, 5 };
 
-         unsigned int offset = vitality_flask ? (i==0 ? 0 : 50) : 25;
+         unsigned int offset = vitality_flask ? (i == 0 ? 0 : 50) : 25;
 
          // image 0 is the empty flask
          img_flask[i] = base_img;
 
          // generate all images
-         for(unsigned int j=0; j<13; j++)
+         for (unsigned int j = 0; j < 13; j++)
          {
-            base_img.paste_image(temp_flasks[offset+j], 0, flask_pos[j]);
-            img_flask[i+j+1] = base_img;
+            base_img.paste_image(temp_flasks[offset + j], 0, flask_pos[j]);
+            img_flask[i + j + 1] = base_img;
          }
       }
    }
 
-   ua_image_quad::init(game,xpos,ypos);
+   ua_image_quad::init(game, xpos, ypos);
 
-   last_image = 14*2;
+   last_image = 14 * 2;
    is_poisoned = false;
 }
 
 void ua_ingame_flask::draw()
 {
-   ua_player& player = parent->get_game_interface().get_underworld().
-      get_player();
-   is_poisoned = player.get_attr(ua_attr_poisoned) != 0;
+   Underworld::Player& player = parent->get_game_interface().GetUnderworld().
+      GetPlayer();
+   is_poisoned = player.GetAttribute(Underworld::attrPoisoned) != 0;
 
-   unsigned int curval = player.get_attr(
-      vitality_flask ? ua_attr_vitality : ua_attr_mana);
-   unsigned int maxval = player.get_attr(
-      vitality_flask ? ua_attr_max_vitality : ua_attr_max_mana);
-   unsigned int curimg = unsigned((curval*13.0)/maxval);
+   unsigned int curval = player.GetAttribute(
+      vitality_flask ? Underworld::attrVitality : Underworld::attrMana);
+   unsigned int maxval = player.GetAttribute(
+      vitality_flask ? Underworld::attrMaxVitality : Underworld::attrMaxMana);
+   unsigned int curimg = unsigned((curval*13.0) / maxval);
 
    // check if flask image has to be update
-   unsigned int new_image = vitality_flask && is_poisoned ? curimg+14 : curimg;
+   unsigned int new_image = vitality_flask && is_poisoned ? curimg + 14 : curimg;
 
    if (last_image != new_image)
    {
@@ -277,7 +256,7 @@ void ua_ingame_flask::draw()
 void ua_ingame_flask::update_flask()
 {
    unsigned int dest = has_border ? 1 : 0;
-   get_image().paste_image(img_flask[last_image], dest,dest);
+   get_image().paste_image(img_flask[last_image], dest, dest);
    update();
 }
 
@@ -285,30 +264,27 @@ void ua_ingame_flask::mouse_event(bool button_clicked, bool left_button,
    bool button_down, unsigned int mousex, unsigned int mousey)
 {
    if (button_clicked && !button_down)
-      parent->get_game_interface().get_underworld().user_action(
+      parent->get_game_interface().GetGameLogic().UserAction(
          vitality_flask ? ua_action_clicked_vitality_flask : ua_action_clicked_mana_flask);
 }
 
-
-// ua_ingame_gargoyle_eyes methods
-
-void ua_ingame_gargoyle_eyes::init(ua_game_interface& game, unsigned int xpos,
+void ua_ingame_gargoyle_eyes::init(IGame& game, unsigned int xpos,
    unsigned int ypos)
 {
-   get_image().create(20,3);
+   get_image().create(20, 3);
 
    game.get_image_manager().load_list(img_eyes, "eyes");
 
-   ua_image_quad::init(game,xpos,ypos);
+   ua_image_quad::init(game, xpos, ypos);
 }
 
-/*! \todo update eyes from data in ua_underworld */
+/// \todo update eyes from data in Underworld
 void ua_ingame_gargoyle_eyes::update_eyes()
 {
    unsigned int new_image = 0;
 
    unsigned int dest = has_border ? 1 : 0;
-   get_image().paste_image(img_eyes[new_image], dest,dest);
+   get_image().paste_image(img_eyes[new_image], dest, dest);
    update();
 }
 
@@ -316,33 +292,30 @@ void ua_ingame_gargoyle_eyes::mouse_event(bool button_clicked, bool left_button,
    bool button_down, unsigned int mousex, unsigned int mousey)
 {
    if (button_clicked && !button_down)
-      parent->get_game_interface().get_underworld().user_action(ua_action_clicked_gargoyle);
+      parent->get_game_interface().GetGameLogic().UserAction(ua_action_clicked_gargoyle);
 }
 
-
-// ua_ingame_dragon methods
-
 ua_ingame_dragon::ua_ingame_dragon(bool drg_left)
-:dragon_left(drg_left)
+   :dragon_left(drg_left)
 {
 }
 
-void ua_ingame_dragon::init(ua_game_interface& game, unsigned int xpos,
+void ua_ingame_dragon::init(IGame& game, unsigned int xpos,
    unsigned int ypos)
 {
    // load images
-   game.get_image_manager().load_list(img_dragon,"dragons",
-      dragon_left? 0 : 18, dragon_left ? 18 : 36);
+   game.get_image_manager().load_list(img_dragon, "dragons",
+      dragon_left ? 0 : 18, dragon_left ? 18 : 36);
 
    // prepare image
-   ua_image& img = get_image();
+   IndexedImage& img = get_image();
 
-   img.create(37,104);
+   img.create(37, 104);
    img.set_palette(game.get_image_manager().get_palette(0));
    img.clear(0);
 
 
-   ua_image_quad::init(game,xpos,ypos);
+   ua_image_quad::init(game, xpos, ypos);
 
 
    // dragon part that's never moving
@@ -353,7 +326,7 @@ void ua_ingame_dragon::init(ua_game_interface& game, unsigned int xpos,
 
 void ua_ingame_dragon::update_dragon()
 {
-   ua_image& img = get_image();
+   IndexedImage& img = get_image();
 
    unsigned int head_frame = 1;
    img.paste_image(img_dragon[head_frame], 0, 80);
@@ -368,22 +341,22 @@ void ua_ingame_dragon::mouse_event(bool button_clicked, bool left_button,
    bool button_down, unsigned int mousex, unsigned int mousey)
 {
    if (button_clicked && !button_down)
-      parent->get_game_interface().get_underworld().user_action(ua_action_clicked_dragons);
+      parent->get_game_interface().GetGameLogic().UserAction(ua_action_clicked_dragons);
 }
 
-
-// ua_ingame_3dview methods
-
-void ua_ingame_3dview::init(ua_game_interface& game, unsigned int xpos,
+void ua_ingame_3dview::init(IGame& game, unsigned int xpos,
    unsigned int ypos)
 {
-   ua_image_quad::init(game,xpos,ypos);
+   ua_image_quad::init(game, xpos, ypos);
 
-   wnd_width = 224-54+1;
-   wnd_height = 131-20+1;
+   wnd_width = 224 - 54 + 1;
+   wnd_height = 131 - 20 + 1;
 
    mouse_move = false;
    in_view3d = false;
+
+   m_playerPhysics = std::make_unique<ua_player_physics_object>(
+      game.GetUnderworld().GetPlayer(), game.get_settings().GetBool(Base::settingUwadvFeatures));
 }
 
 void ua_ingame_3dview::draw()
@@ -396,32 +369,33 @@ bool ua_ingame_3dview::process_event(SDL_Event& event)
    if (event.type == SDL_MOUSEMOTION)
    {
       // check if user leaves the 3d view
-      unsigned int xpos=0, ypos=0;
+      unsigned int xpos = 0, ypos = 0;
       calc_mousepos(event, xpos, ypos);
-      if (in_view3d && !in_window(xpos,ypos))
+      if (in_view3d && !in_window(xpos, ypos))
       {
          if (mouse_move)
          {
             // limit mouse position
-            if (xpos<wnd_xpos) xpos=wnd_xpos;
-            if (xpos>=wnd_xpos+wnd_width) xpos=wnd_xpos+wnd_width-1;
-            if (ypos<wnd_ypos) ypos=wnd_ypos;
-            if (ypos>=wnd_ypos+wnd_height) ypos=wnd_ypos+wnd_height-1;
+            if (xpos < wnd_xpos) xpos = wnd_xpos;
+            if (xpos >= wnd_xpos + wnd_width) xpos = wnd_xpos + wnd_width - 1;
+            if (ypos < wnd_ypos) ypos = wnd_ypos;
+            if (ypos >= wnd_ypos + wnd_height) ypos = wnd_ypos + wnd_height - 1;
 
             // calculate real screen coordinates
-            SDL_Surface* surf = SDL_GetVideoSurface();
+            int windowWidth = 320, windowHeight = 200;
+            // TODO check if needed
+            //SDL_GetWindowSize(m_window, &windowWidth, &windowHeight);
 
-            if (surf != NULL)
             {
-               xpos = unsigned((xpos / 320.0) * surf->w);
-               ypos = unsigned((ypos / 200.0) * surf->h);
+               xpos = unsigned((xpos / 320.0) * windowWidth);
+               ypos = unsigned((ypos / 200.0) * windowHeight);
 
-               SDL_WarpMouse(xpos,ypos);
+               // TODO replacement? SDL_WarpMouse(xpos,ypos);
             }
 
             // update event mouse pos values
-            event.motion.xrel += Sint16(xpos)-event.motion.x;
-            event.motion.yrel += Sint16(ypos)-event.motion.y;
+            event.motion.xrel += Sint16(xpos) - event.motion.x;
+            event.motion.yrel += Sint16(ypos) - event.motion.y;
             event.motion.x = xpos;
             event.motion.y = ypos;
          }
@@ -429,7 +403,7 @@ bool ua_ingame_3dview::process_event(SDL_Event& event)
          {
             // user left the window
             in_view3d = false;
-            parent->set_cursor(0,false);
+            parent->set_cursor(0, false);
          }
       }
    }
@@ -444,10 +418,8 @@ void ua_ingame_3dview::mouse_event(bool button_clicked, bool left_button,
    in_view3d = true;
 
    // calculate relative mouse pos in window
-   double relx = double(mousex-wnd_xpos)/wnd_width;
-   double rely = double(mousey-wnd_ypos)/wnd_height;
-
-   ua_player& pl = parent->get_game_interface().get_underworld().get_player();
+   double relx = double(mousex - wnd_xpos) / wnd_width;
+   double rely = double(mousey - wnd_ypos) / wnd_height;
 
    // when pressing left mouse button, start mouse move mode
    if (button_clicked && left_button)
@@ -459,15 +431,15 @@ void ua_ingame_3dview::mouse_event(bool button_clicked, bool left_button,
       {
          // disable all modes (when possible)
          if (!parent->get_move_state(ua_move_walk_forward) &&
-             !parent->get_move_state(ua_move_run_forward) &&
-             !parent->get_move_state(ua_move_walk_backwards))
-            pl.set_movement_mode(0,ua_move_walk);
+            !parent->get_move_state(ua_move_run_forward) &&
+            !parent->get_move_state(ua_move_walk_backwards))
+            m_playerPhysics->set_movement_mode(0, ua_move_walk);
 
          if (!parent->get_move_state(ua_move_turn_left) &&
-             !parent->get_move_state(ua_move_turn_right))
-            pl.set_movement_mode(0,ua_move_rotate);
+            !parent->get_move_state(ua_move_turn_right))
+            m_playerPhysics->set_movement_mode(0, ua_move_rotate);
 
-         pl.set_movement_mode(0,ua_move_slide);
+         m_playerPhysics->set_movement_mode(0, ua_move_slide);
       }
    }
 
@@ -478,35 +450,43 @@ void ua_ingame_3dview::mouse_event(bool button_clicked, bool left_button,
 
       int new_cursor_image = -1;
 
-      if (rely>=0.75)
+      if (rely >= 0.75)
       {
          // lower part of screen
-         if (relx<0.33){ slide = -1.0; new_cursor_image = 3; } else
-         if (relx>=0.66){ slide = 1.0; new_cursor_image = 4; } else
-            { walk = -0.4*(rely-0.75)/0.25; new_cursor_image = 2; }
+         if (relx < 0.33) { slide = -1.0; new_cursor_image = 3; }
+         else
+            if (relx >= 0.66) { slide = 1.0; new_cursor_image = 4; }
+            else
+            {
+               walk = -0.4*(rely - 0.75) / 0.25; new_cursor_image = 2;
+            }
       }
       else
-      if (rely>=0.6)
-      {
-         // middle part
-         if (relx<0.33){ rotate = (0.33-relx)/0.33; new_cursor_image = 5; } else
-         if (relx>=0.66){ rotate = -(relx-0.66)/0.33; new_cursor_image = 6; } else
-            new_cursor_image = 0;
-      }
-      else
-      {
-         // upper part
-         if (relx<0.33){ rotate = (0.33-relx)/0.33; new_cursor_image = 7; } else
-         if (relx>=0.66){ rotate = -(relx-0.66)/0.33; new_cursor_image = 8; } else
-            new_cursor_image = 1;
+         if (rely >= 0.6)
+         {
+            // middle part
+            if (relx < 0.33) { rotate = (0.33 - relx) / 0.33; new_cursor_image = 5; }
+            else
+               if (relx >= 0.66) { rotate = -(relx - 0.66) / 0.33; new_cursor_image = 6; }
+               else
+                  new_cursor_image = 0;
+         }
+         else
+         {
+            // upper part
+            if (relx < 0.33) { rotate = (0.33 - relx) / 0.33; new_cursor_image = 7; }
+            else
+               if (relx >= 0.66) { rotate = -(relx - 0.66) / 0.33; new_cursor_image = 8; }
+               else
+                  new_cursor_image = 1;
 
-         // walking speed increases in range [0.6; 0.2] only
-         walk = (0.6-rely)/0.4;
-         if (walk>1.0) walk = 1.0;
-      }
+            // walking speed increases in range [0.6; 0.2] only
+            walk = (0.6 - rely) / 0.4;
+            if (walk > 1.0) walk = 1.0;
+         }
 
       if (new_cursor_image != -1)
-         parent->set_cursor(new_cursor_image,false);
+         parent->set_cursor(new_cursor_image, false);
    }
 
    // mouse move mode?
@@ -515,37 +495,37 @@ void ua_ingame_3dview::mouse_event(bool button_clicked, bool left_button,
       // disable all modes (when not active through keyboard movement)
       // and update movement modes and factors
       if (!parent->get_move_state(ua_move_walk_forward) &&
-          !parent->get_move_state(ua_move_run_forward) &&
-          !parent->get_move_state(ua_move_walk_backwards))
+         !parent->get_move_state(ua_move_run_forward) &&
+         !parent->get_move_state(ua_move_walk_backwards))
       {
-         pl.set_movement_mode(0,ua_move_walk);
+         m_playerPhysics->set_movement_mode(0, ua_move_walk);
 
-         if (walk<10.0)
+         if (walk < 10.0)
          {
-            pl.set_movement_mode(ua_move_walk);
-            pl.set_movement_factor(ua_move_walk,walk);
+            m_playerPhysics->set_movement_mode(ua_move_walk);
+            m_playerPhysics->set_movement_factor(ua_move_walk, walk);
          }
       }
 
       if (!parent->get_move_state(ua_move_turn_left) &&
-          !parent->get_move_state(ua_move_turn_right))
+         !parent->get_move_state(ua_move_turn_right))
       {
-         pl.set_movement_mode(0,ua_move_rotate);
+         m_playerPhysics->set_movement_mode(0, ua_move_rotate);
 
-         if (rotate<10.0)
+         if (rotate < 10.0)
          {
-            pl.set_movement_mode(ua_move_rotate);
-            pl.set_movement_factor(ua_move_rotate,rotate);
+            m_playerPhysics->set_movement_mode(ua_move_rotate);
+            m_playerPhysics->set_movement_factor(ua_move_rotate, rotate);
          }
       }
 
       {
-         pl.set_movement_mode(0,ua_move_slide);
+         m_playerPhysics->set_movement_mode(0, ua_move_slide);
 
-         if (slide<10.0)
+         if (slide < 10.0)
          {
-            pl.set_movement_mode(ua_move_slide);
-            pl.set_movement_factor(ua_move_slide,slide);
+            m_playerPhysics->set_movement_mode(ua_move_slide);
+            m_playerPhysics->set_movement_factor(ua_move_slide, slide);
          }
       }
    }
@@ -556,32 +536,32 @@ void ua_ingame_3dview::mouse_event(bool button_clicked, bool left_button,
       if (button_down)
       {
          // start combat weapon drawback
-         parent->get_game_interface().get_underworld().
-            user_action(ua_action_combat_draw,
+         parent->get_game_interface().GetGameLogic().
+            UserAction(ua_action_combat_draw,
                rely < 0.33 ? 0 : rely < 0.67 ? 1 : 2);
       }
       else
       {
          // end combat weapon drawback
-         parent->get_game_interface().get_underworld().
-            user_action(ua_action_combat_release, 0);
+         parent->get_game_interface().GetGameLogic().
+            UserAction(ua_action_combat_release, 0);
       }
    }
 
    // check right mouse button down
    if (button_clicked && button_down && !left_button)
    {
-      int x,y;
-      SDL_GetMouseState(&x,&y);
+      int x, y;
+      SDL_GetMouseState(&x, &y);
 
-      unsigned int tilex=0, tiley=0, id=0;
+      unsigned int tilex = 0, tiley = 0, id = 0;
       bool is_object = true;
 
       ua_renderer& renderer = parent->get_game_interface().get_renderer();
-      renderer.select_pick(parent->get_game_interface().get_underworld(),
-         x,y,tilex,tiley,is_object,id);
+      renderer.select_pick(parent->get_game_interface().GetUnderworld(),
+         x, y, tilex, tiley, is_object, id);
 
-      switch(parent->get_gamemode())
+      switch (parent->get_gamemode())
       {
          // "look" or default action
       case ua_mode_default:
@@ -589,17 +569,17 @@ void ua_ingame_3dview::mouse_event(bool button_clicked, bool left_button,
          if (is_object)
          {
             if (id != 0)
-               parent->get_game_interface().get_underworld().
-                  user_action(ua_action_look_object, id);
+               parent->get_game_interface().GetGameLogic().
+               UserAction(ua_action_look_object, id);
          }
          else
          {
             // user clicked on a texture
-            ua_trace("looking at wall/ceiling, tile=%02x/%02x, id=%04x\n",
-               tilex,tiley,id);
+            UaTrace("looking at wall/ceiling, tile=%02x/%02x, id=%04x\n",
+               tilex, tiley, id);
 
-            parent->get_game_interface().get_underworld().
-               user_action(ua_action_look_wall, id);
+            parent->get_game_interface().GetGameLogic().
+               UserAction(ua_action_look_wall, id);
          }
          break;
 
@@ -607,13 +587,13 @@ void ua_ingame_3dview::mouse_event(bool button_clicked, bool left_button,
       case ua_mode_use:
          if (is_object)
          {
-            parent->get_game_interface().get_underworld().
-               user_action(ua_action_use_object, id);
+            parent->get_game_interface().GetGameLogic().
+               UserAction(ua_action_use_object, id);
          }
          else
          {
-            parent->get_game_interface().get_underworld().
-               user_action(ua_action_use_wall, id);
+            parent->get_game_interface().GetGameLogic().
+               UserAction(ua_action_use_wall, id);
          }
          break;
 
@@ -621,8 +601,8 @@ void ua_ingame_3dview::mouse_event(bool button_clicked, bool left_button,
       case ua_mode_get:
          if (is_object)
          {
-            parent->get_game_interface().get_underworld().
-               user_action(ua_action_get_object, id);
+            parent->get_game_interface().GetGameLogic().
+               UserAction(ua_action_get_object, id);
          }
          break;
 
@@ -630,8 +610,8 @@ void ua_ingame_3dview::mouse_event(bool button_clicked, bool left_button,
       case ua_mode_talk:
          if (is_object)
          {
-            parent->get_game_interface().get_underworld().
-               user_action(ua_action_talk_object, id);
+            parent->get_game_interface().GetGameLogic().
+               UserAction(ua_action_talk_object, id);
          }
          break;
 
@@ -641,20 +621,17 @@ void ua_ingame_3dview::mouse_event(bool button_clicked, bool left_button,
    }
 }
 
-
-// ua_ingame_powergem methods
-
-void ua_ingame_powergem::init(ua_game_interface& game, unsigned int xpos,
+void ua_ingame_powergem::init(IGame& game, unsigned int xpos,
    unsigned int ypos)
 {
    attack_mode = false;
 
    game.get_image_manager().load_list(img_powergem, "power");
 
-   get_image().create(31,12);
+   get_image().create(31, 12);
    get_image().set_palette(game.get_image_manager().get_palette(0));
 
-   ua_image_quad::init(game, xpos,ypos);
+   ua_image_quad::init(game, xpos, ypos);
 }
 
 void ua_ingame_powergem::update_gem()
@@ -662,21 +639,21 @@ void ua_ingame_powergem::update_gem()
    unsigned int frame = 0;
 
    unsigned int power =
-      parent->get_game_interface().get_underworld().get_attack_power();
+      parent->get_game_interface().GetGameLogic().GetAttackPower();
 
    if (power > 0)
    {
       if (power >= 100)
-         frame = (maxpower_frame&3)+10;
+         frame = (maxpower_frame & 3) + 10;
       else
       {
-         frame = (unsigned(power/100.0*8.0)%9)+1;
+         frame = (unsigned(power / 100.0*8.0) % 9) + 1;
          maxpower_frame = 0;
       }
    }
 
    unsigned int dest = has_border ? 1 : 0;
-   get_image().paste_image(img_powergem[frame], dest,dest);
+   get_image().paste_image(img_powergem[frame], dest, dest);
 
    update();
 }
@@ -688,23 +665,20 @@ void ua_ingame_powergem::mouse_event(bool button_clicked, bool left_button,
 
 void ua_ingame_powergem::tick()
 {
-/*
-   // check if we have to update
-   unsigned int power =
-      parent->get_game_interface().get_underworld().get_attack_power();
-   if (power >= 100)
-   {
-      if (++maxpower_frame>3)
-         maxpower_frame = 0;
-      update_gem();
-   }
-*/
+   /*
+      // check if we have to update
+      unsigned int power =
+         parent->get_game_interface().GetUnderworld().GetAttackPower();
+      if (power >= 100)
+      {
+         if (++maxpower_frame>3)
+            maxpower_frame = 0;
+         update_gem();
+      }
+   */
 }
 
-
-// ua_ingame_move_arrows methods
-
-void ua_ingame_move_arrows::init(ua_game_interface& game, unsigned int xpos,
+void ua_ingame_move_arrows::init(IGame& game, unsigned int xpos,
    unsigned int ypos)
 {
    ua_image_quad::init(game, xpos, ypos);
@@ -712,7 +686,7 @@ void ua_ingame_move_arrows::init(ua_game_interface& game, unsigned int xpos,
    wnd_width = 63;
    wnd_height = 14;
 
-   selected_key = ua_key_nokey;
+   selected_key = Base::keyNone;
 }
 
 void ua_ingame_move_arrows::draw()
@@ -726,15 +700,15 @@ bool ua_ingame_move_arrows::process_event(SDL_Event& event)
 
    if (event.type == SDL_MOUSEMOTION)
    {
-      unsigned int xpos=0, ypos=0;
+      unsigned int xpos = 0, ypos = 0;
       calc_mousepos(event, xpos, ypos);
 
       // leaving window while move arrow is pressed?
-      if (selected_key != ua_key_nokey && !in_window(xpos,ypos))
+      if (selected_key != Base::keyNone && !in_window(xpos, ypos))
       {
          // unpress (release) key
          parent->key_event(false, selected_key);
-         selected_key = ua_key_nokey;
+         selected_key = Base::keyNone;
       }
    }
 
@@ -746,16 +720,16 @@ void ua_ingame_move_arrows::mouse_event(bool button_clicked, bool left_button,
 {
    mousex -= wnd_xpos;
 
-   ua_key_value new_selected_key = ua_key_nokey;
+   Base::EKeyType new_selected_key = Base::keyNone;
 
    // check which button the mouse is over
    if (mousex < 19)
-      new_selected_key = ua_key_turn_left;
+      new_selected_key = Base::keyTurnLeft;
    else
-   if (mousex < 44)
-      new_selected_key = ua_key_walk_forward;
-   else
-      new_selected_key = ua_key_turn_right;
+      if (mousex < 44)
+         new_selected_key = Base::keyWalkForward;
+      else
+         new_selected_key = Base::keyTurnRight;
 
    // button activity?
    if (button_clicked)
@@ -764,13 +738,13 @@ void ua_ingame_move_arrows::mouse_event(bool button_clicked, bool left_button,
       parent->key_event(button_down, new_selected_key);
 
       if (!button_down)
-         selected_key = ua_key_nokey;
+         selected_key = Base::keyNone;
       else
          selected_key = new_selected_key;
    }
    else
    {
-      if (selected_key != ua_key_nokey)
+      if (selected_key != Base::keyNone)
       {
          // mouse was moved; check if arrow changed
          if (new_selected_key != selected_key)
@@ -785,16 +759,13 @@ void ua_ingame_move_arrows::mouse_event(bool button_clicked, bool left_button,
    }
 }
 
-
-// ua_ingame_command_buttons tables
-
-//! menu info table struct for command panels
+/// menu info table struct for command panels
 struct ua_ingame_command_menu_info
 {
-   int base_image;         //!< number of the base image in optbtns.gr
-   unsigned int images[7]; //!< button images numbers
-   bool selectable[7];     //!< indicates if a button can be pressed
-   int opt_index[7];       //!< index to add to image number when selected
+   int base_image;         ///< number of the base image in optbtns.gr
+   unsigned int images[7]; ///< button images numbers
+   bool selectable[7];     ///< indicates if a button can be pressed
+   int opt_index[7];       ///< index to add to image number when selected
 
 } ua_ingame_command_menu_table[8] =
 {
@@ -810,7 +781,7 @@ struct ua_ingame_command_menu_info
       { true,true,true,true,true,true,true },
       // this line is used for showing music, sound, detail status directly in
       // the options menu, but unfortunately there are no images (see optb.gr)
-      //{ -1, -1, 0, 1, 2, -1, -1 } 
+      //{ -1, -1, 0, 1, 2, -1, -1 }
       { -1, -1, -1, -1, -1, -1, -1 }
    },
    { // ua_cmd_menu_quit
@@ -851,22 +822,19 @@ struct ua_ingame_command_menu_info
    },
 };
 
-
-// ua_ingame_command_buttons methods
-
-void ua_ingame_command_buttons::init(ua_game_interface& game, unsigned int xpos,
+void ua_ingame_command_buttons::init(IGame& game, unsigned int xpos,
    unsigned int ypos)
 {
    // load images
-   game.get_image_manager().load_list(img_buttons,"optbtns");
+   game.get_image_manager().load_list(img_buttons, "optbtns");
 
-   game.get_image_manager().load_list(img_actions,"lfti");
+   game.get_image_manager().load_list(img_actions, "lfti");
 
    // create image
-   ua_image& img = get_image();
+   IndexedImage& img = get_image();
    img.set_palette(game.get_image_manager().get_palette(0));
 
-   ua_image_quad::init(game,xpos,ypos);
+   ua_image_quad::init(game, xpos, ypos);
 
    options[0] = options[1] = options[2] = 0;
    button_selected = -1;
@@ -900,13 +868,13 @@ void ua_ingame_command_buttons::select_previous_button(bool jump_to_start)
    if (jump_to_start)
    {
       // jump to start of selectable buttons
-      while (button_selected>0 && menuinfo.selectable[button_selected-1])
+      while (button_selected > 0 && menuinfo.selectable[button_selected - 1])
          button_selected--;
    }
    else
    {
       // go to previous button
-      if (button_selected>0 && menuinfo.selectable[button_selected-1])
+      if (button_selected > 0 && menuinfo.selectable[button_selected - 1])
          button_selected--;
    }
 
@@ -927,13 +895,13 @@ void ua_ingame_command_buttons::select_next_button(bool jump_to_end)
    if (jump_to_end)
    {
       // jump to end of selectable buttons
-      while (button_selected<7 && menuinfo.selectable[button_selected+1])
+      while (button_selected < 7 && menuinfo.selectable[button_selected + 1])
          button_selected++;
    }
    else
    {
       // go to next button
-      if (button_selected<7 && menuinfo.selectable[button_selected+1])
+      if (button_selected < 7 && menuinfo.selectable[button_selected + 1])
          button_selected++;
    }
 
@@ -942,38 +910,37 @@ void ua_ingame_command_buttons::select_next_button(bool jump_to_end)
       update_menu();
 }
 
-
 void ua_ingame_command_buttons::update_menu()
 {
    // check if in range
    if (menu >= ua_cmd_menu_max ||
-       menu > SDL_TABLESIZE(ua_ingame_command_menu_table))
+      menu > SDL_TABLESIZE(ua_ingame_command_menu_table))
       return;
 
-   ua_image& img = get_image();
+   IndexedImage& img = get_image();
    ua_ingame_command_menu_info& menuinfo = ua_ingame_command_menu_table[menu];
 
    // re-set window position
-   static unsigned int window_pos[6*2] = { 4,10, 4,10, 4,10, 4,10, 3,10, 3,9 };
+   static unsigned int window_pos[6 * 2] = { 4,10, 4,10, 4,10, 4,10, 3,10, 3,9 };
 
-   wnd_xpos = window_pos[menuinfo.base_image*2];
-   wnd_ypos = window_pos[menuinfo.base_image*2+1];
+   wnd_xpos = window_pos[menuinfo.base_image * 2];
+   wnd_ypos = window_pos[menuinfo.base_image * 2 + 1];
 
    wnd_width = 35;
    wnd_height = 108;
-   img.create(wnd_width,wnd_height);
+   img.create(wnd_width, wnd_height);
 
    // base image
-   img.paste_image(img_buttons[menuinfo.base_image], 0,0);
+   img.paste_image(img_buttons[menuinfo.base_image], 0, 0);
 
    static unsigned int button_pos[7] = { 2, 17, 32, 47, 62, 77, 92 };
-   static unsigned int action_pos[6*2] = { 4,0, 3,17, 2,37, 2,55, 4,70, 4,89 };
+   static unsigned int action_pos[6 * 2] = { 4,0, 3,17, 2,37, 2,55, 4,70, 4,89 };
 
    // paste button images
    if (menu == ua_cmd_menu_actions)
    {
       // special: actions menu
-      for(unsigned int i=0; i<6; i++)
+      for (unsigned int i = 0; i < 6; i++)
       {
          unsigned int btn = menuinfo.images[i];
 
@@ -981,16 +948,16 @@ void ua_ingame_command_buttons::update_menu()
          if (button_selected >= 0 && i == unsigned(button_selected))
             btn++;
 
-         img.paste_image(img_actions[btn], action_pos[i*2], action_pos[i*2+1]);
+         img.paste_image(img_actions[btn], action_pos[i * 2], action_pos[i * 2 + 1]);
       }
    }
    else
    {
       // normal menu images
-      for(unsigned int i=0; i<7; i++)
+      for (unsigned int i = 0; i < 7; i++)
       {
          unsigned int btn = menuinfo.images[i];
-         if (btn==0)
+         if (btn == 0)
             continue;
 
          if (menuinfo.opt_index[i] >= 0)
@@ -1021,7 +988,7 @@ void ua_ingame_command_buttons::mouse_event(bool button_clicked,
    unsigned int mousey)
 {
    // check if a mouse button is down
-   if (!button_clicked && (SDL_GetMouseState(NULL, NULL) & (SDL_BUTTON_LMASK|SDL_BUTTON_RMASK)) == 0)
+   if (!button_clicked && (SDL_GetMouseState(NULL, NULL) & (SDL_BUTTON_LMASK | SDL_BUTTON_RMASK)) == 0)
       return; // no button was pressed
 
    // check if user is currently toggling off a button
@@ -1031,7 +998,7 @@ void ua_ingame_command_buttons::mouse_event(bool button_clicked,
       return;
    }
 
-   unsigned int ypos = mousey-wnd_ypos;
+   unsigned int ypos = mousey - wnd_ypos;
 
    static unsigned int button_pos[8] = { 2, 17, 32, 47, 62, 77, 92, 107 };
    static unsigned int action_pos[8] = { 0, 17, 35, 54, 70, 90, 107, 107 };
@@ -1040,11 +1007,11 @@ void ua_ingame_command_buttons::mouse_event(bool button_clicked,
    ua_ingame_command_menu_info& menuinfo = ua_ingame_command_menu_table[menu];
 
    // find selected button
-   for(unsigned int i=0; i<7; i++)
+   for (unsigned int i = 0; i < 7; i++)
    {
       if (menuinfo.selectable[i] && (
-          (menu == ua_cmd_menu_actions && ypos >= (action_pos[i]) && ypos < (action_pos[i+1])) ||
-          (menu != ua_cmd_menu_actions && ypos >= (button_pos[i]) && ypos < (button_pos[i+1]))
+         (menu == ua_cmd_menu_actions && ypos >= (action_pos[i]) && ypos < (action_pos[i + 1])) ||
+         (menu != ua_cmd_menu_actions && ypos >= (button_pos[i]) && ypos < (button_pos[i + 1]))
          ))
       {
          button_selected = i;
@@ -1054,7 +1021,7 @@ void ua_ingame_command_buttons::mouse_event(bool button_clicked,
 
    // toggle buttons in action menu
    if (menu == ua_cmd_menu_actions && last_button_selected == button_selected &&
-       button_clicked && button_down)
+      button_clicked && button_down)
    {
       button_selected = -1;
       toggle_off = true;
@@ -1082,11 +1049,11 @@ void ua_ingame_command_buttons::do_button_action()
    ua_ingame_command_menu old_menu = menu;
    bool option_changed = false;
 
-   switch(menu)
+   switch (menu)
    {
       // action menu
    case ua_cmd_menu_actions:
-      switch(button_selected)
+      switch (button_selected)
       {
          // button "options"
       case 0:
@@ -1098,55 +1065,55 @@ void ua_ingame_command_buttons::do_button_action()
       default:
          // update game mode; note: the code assumes that ua_ingame_game_mode
          // values are contiguous
-         parent->set_gamemode(ua_ingame_game_mode(button_selected-1+ua_mode_talk));
+         parent->set_gamemode(ua_ingame_game_mode(button_selected - 1 + ua_mode_talk));
          break;
       }
       break;
 
       // options menu
    case ua_cmd_menu_options:
-      switch(button_selected)
+      switch (button_selected)
       {
       case 0: // save game
-         parent->schedule_action(ua_action_save_game,true);
+         parent->schedule_action(ua_action_save_game, true);
          menu = ua_cmd_menu_actions;
          button_selected = saved_action_button;
-         parent->set_gamemode(ua_ingame_game_mode(button_selected-1+ua_mode_talk));
+         parent->set_gamemode(ua_ingame_game_mode(button_selected - 1 + ua_mode_talk));
          //menu = ua_cmd_menu_save; // old-style save menu
          //button_selected = 1;
          break;
 
       case 1: // restore game
-         parent->schedule_action(ua_action_load_game,true);
+         parent->schedule_action(ua_action_load_game, true);
          menu = ua_cmd_menu_actions;
          button_selected = saved_action_button;
-         parent->set_gamemode(ua_ingame_game_mode(button_selected-1+ua_mode_talk));
+         parent->set_gamemode(ua_ingame_game_mode(button_selected - 1 + ua_mode_talk));
          //menu = ua_cmd_menu_restore; // old-style restore menu
          //button_selected = 1;
          break;
 
       case 2: // music
          menu = ua_cmd_menu_music;
-         button_selected = options[0]+2;
+         button_selected = options[0] + 2;
          option_changed = true;
          break;
 
       case 3: // sound
          menu = ua_cmd_menu_sound;
-         button_selected = options[1]+2;
+         button_selected = options[1] + 2;
          option_changed = true;
          break;
 
       case 4: // detail
          menu = ua_cmd_menu_details;
-         button_selected = options[2]+2;
+         button_selected = options[2] + 2;
          option_changed = true;
          break;
 
       case 5: // return to game
          menu = ua_cmd_menu_actions;
          button_selected = saved_action_button;
-         parent->set_gamemode(ua_ingame_game_mode(button_selected-1+ua_mode_talk));
+         parent->set_gamemode(ua_ingame_game_mode(button_selected - 1 + ua_mode_talk));
          break;
 
       case 6: // quit game
@@ -1161,10 +1128,10 @@ void ua_ingame_command_buttons::do_button_action()
 
       // "really quit?" question
    case ua_cmd_menu_quit:
-      switch(button_selected)
+      switch (button_selected)
       {
       case 2: // yes
-         parent->schedule_action(ua_action_exit,true);
+         parent->schedule_action(ua_action_exit, true);
          break;
 
       case 3: // no
@@ -1179,11 +1146,11 @@ void ua_ingame_command_buttons::do_button_action()
       // music / sound
    case ua_cmd_menu_music:
    case ua_cmd_menu_sound:
-      switch(button_selected)
+      switch (button_selected)
       {
       case 2:
       case 3:
-         options[menu == ua_cmd_menu_music ? 0 : 1] = (button_selected-2)&1;
+         options[menu == ua_cmd_menu_music ? 0 : 1] = (button_selected - 2) & 1;
          option_changed = true;
          break;
 
@@ -1198,13 +1165,13 @@ void ua_ingame_command_buttons::do_button_action()
       break;
 
    case ua_cmd_menu_details:
-      switch(button_selected)
+      switch (button_selected)
       {
       case 2:// low ... very high
       case 3:
       case 4:
       case 5:
-         options[2] = (button_selected-2)&3;
+         options[2] = (button_selected - 2) & 3;
          option_changed = true;
          break;
 
@@ -1220,7 +1187,7 @@ void ua_ingame_command_buttons::do_button_action()
 
    case ua_cmd_menu_save:
    case ua_cmd_menu_restore:
-      switch(button_selected)
+      switch (button_selected)
       {
       case 5: // cancel
          button_selected = menu == ua_cmd_menu_save ? 0 : 1;

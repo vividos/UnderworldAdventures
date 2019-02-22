@@ -1,39 +1,29 @@
-/*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003 Underworld Adventures Team
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file ingame_new.cpp
-
-   \brief new ingame user interface
-
-*/
-
-// needed includes
+//
+// Underworld Adventures - an Ultima Underworld hacking project
+// Copyright (c) 2002,2003,2019 Underworld Adventures Team
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file ingame_new.cpp
+/// \brief new ingame user interface
+//
 #include "common.hpp"
 #include "ingame_new.hpp"
 #include "uamath.hpp"
 #include "renderer.hpp"
 #include "underworld.hpp"
-
-
-// ua_ingame_new_screen methods
 
 void ua_ingame_new_screen::init()
 {
@@ -47,13 +37,8 @@ void ua_ingame_new_screen::init()
 
    tickcount = 0;
 
-
-
    glDisable(GL_BLEND);
-   glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-
-
-
+   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
    ua_settings &settings = game->get_settings();
 
@@ -66,16 +51,16 @@ void ua_ingame_new_screen::init()
       std::string keymap_name(settings.get_string(ua_setting_game_prefix));
       keymap_name.append("/keymap.cfg");
 
-      ua_trace(" keymap: %s\n",keymap_name.c_str());
+      ua_trace(" keymap: %s\n", keymap_name.c_str());
       keymap.load(game->get_files_manager().get_uadata_file(keymap_name.c_str()));
 
       // load custom keymap
       keymap_name = settings.get_string(ua_setting_custom_keymap);
 
-      ua_trace(" keymap: %s",keymap_name.c_str());
-      SDL_RWops* rwops = SDL_RWFromFile(keymap_name.c_str(),"rb");
+      ua_trace(" keymap: %s", keymap_name.c_str());
+      SDL_RWops* rwops = SDL_RWFromFile(keymap_name.c_str(), "rb");
 
-      if (rwops!=NULL)
+      if (rwops != NULL)
          keymap.load(rwops);
       else
          ua_trace(" => not available");
@@ -98,7 +83,7 @@ void ua_ingame_new_screen::init()
 
 
    // init mouse cursor
-   mousecursor.init(*game,0);
+   mousecursor.init(*game, 0);
    mousecursor.show(true);
 
    register_window(&mousecursor);
@@ -114,8 +99,8 @@ void ua_ingame_new_screen::destroy()
 
 void ua_ingame_new_screen::draw()
 {
-//   glClearColor(1.0, 0.0, 0.0, 0.0);
-   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+   //   glClearColor(1.0, 0.0, 0.0, 0.0);
+   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
    // setup 3d world
    ua_vector3d view_offset(0.0, 0.0, 0.0);
@@ -123,12 +108,12 @@ void ua_ingame_new_screen::draw()
 
    game->get_renderer().render_underworld(game->get_underworld());
 
-//   glEnable(GL_TEXTURE_2D);
+   //   glEnable(GL_TEXTURE_2D);
 
 
 
 
-   // render 2d user interface
+      // render 2d user interface
    game->get_renderer().setup_camera2d();
 
    ua_screen::draw();
@@ -143,7 +128,7 @@ void ua_ingame_new_screen::key_event(bool key_down, ua_key_value key)
 {
    ua_player& pl = game->get_underworld().get_player();
 
-   switch(key)
+   switch (key)
    {
       // run forward keys
    case ua_key_run_forward:
@@ -151,18 +136,18 @@ void ua_ingame_new_screen::key_event(bool key_down, ua_key_value key)
       move_run_forward = key_down;
       if (key_down)
       {
-         pl.set_movement_factor(ua_move_walk,1.0);
+         pl.set_movement_factor(ua_move_walk, 1.0);
          pl.set_movement_mode(ua_move_walk);
       }
       else
       {
          if (move_walk_backwards)
-            pl.set_movement_factor(ua_move_walk,-0.4);
+            pl.set_movement_factor(ua_move_walk, -0.4);
          else
             if (move_walk_forward)
-               pl.set_movement_factor(ua_move_walk,0.6);
+               pl.set_movement_factor(ua_move_walk, 0.6);
             else
-               pl.set_movement_mode(0,ua_move_walk);
+               pl.set_movement_mode(0, ua_move_walk);
       }
 
       break;
@@ -173,18 +158,18 @@ void ua_ingame_new_screen::key_event(bool key_down, ua_key_value key)
       move_walk_forward = key_down;
       if (key_down)
       {
-         pl.set_movement_factor(ua_move_walk,0.6);
+         pl.set_movement_factor(ua_move_walk, 0.6);
          pl.set_movement_mode(ua_move_walk);
       }
       else
       {
          if (move_walk_backwards)
-            pl.set_movement_factor(ua_move_walk,-0.4);
+            pl.set_movement_factor(ua_move_walk, -0.4);
          else
             if (move_run_forward)
-               pl.set_movement_factor(ua_move_walk,1.0);
+               pl.set_movement_factor(ua_move_walk, 1.0);
             else
-               pl.set_movement_mode(0,ua_move_walk);
+               pl.set_movement_mode(0, ua_move_walk);
       }
       break;
 
@@ -194,15 +179,15 @@ void ua_ingame_new_screen::key_event(bool key_down, ua_key_value key)
       move_turn_left = key_down;
       if (key_down)
       {
-         pl.set_movement_factor(ua_move_rotate,1.0);
+         pl.set_movement_factor(ua_move_rotate, 1.0);
          pl.set_movement_mode(ua_move_rotate);
       }
       else
       {
          if (move_turn_right)
-            pl.set_movement_factor(ua_move_rotate,-1.0);
+            pl.set_movement_factor(ua_move_rotate, -1.0);
          else
-            pl.set_movement_mode(0,ua_move_rotate);
+            pl.set_movement_mode(0, ua_move_rotate);
       }
       break;
 
@@ -212,15 +197,15 @@ void ua_ingame_new_screen::key_event(bool key_down, ua_key_value key)
       move_turn_right = key_down;
       if (key_down)
       {
-         pl.set_movement_factor(ua_move_rotate,-1.0);
+         pl.set_movement_factor(ua_move_rotate, -1.0);
          pl.set_movement_mode(ua_move_rotate);
       }
       else
       {
          if (move_turn_left)
-            pl.set_movement_factor(ua_move_rotate,1.0);
+            pl.set_movement_factor(ua_move_rotate, 1.0);
          else
-            pl.set_movement_mode(0,ua_move_rotate);
+            pl.set_movement_mode(0, ua_move_rotate);
       }
       break;
 
@@ -228,22 +213,22 @@ void ua_ingame_new_screen::key_event(bool key_down, ua_key_value key)
    case ua_key_slide_left:
       if (key_down)
       {
-         pl.set_movement_factor(ua_move_slide,-1.0);
+         pl.set_movement_factor(ua_move_slide, -1.0);
          pl.set_movement_mode(ua_move_slide);
       }
       else
-         pl.set_movement_mode(0,ua_move_slide);
+         pl.set_movement_mode(0, ua_move_slide);
       break;
 
       // slide right key
    case ua_key_slide_right:
       if (key_down)
       {
-         pl.set_movement_factor(ua_move_slide,1.0);
+         pl.set_movement_factor(ua_move_slide, 1.0);
          pl.set_movement_mode(ua_move_slide);
       }
       else
-         pl.set_movement_mode(0,ua_move_slide);
+         pl.set_movement_mode(0, ua_move_slide);
       break;
 
       // walk backwards keys
@@ -253,15 +238,15 @@ void ua_ingame_new_screen::key_event(bool key_down, ua_key_value key)
 
       if (key_down)
       {
-         pl.set_movement_factor(ua_move_walk,-0.4);
+         pl.set_movement_factor(ua_move_walk, -0.4);
          pl.set_movement_mode(ua_move_walk);
       }
       else
       {
          if (move_walk_forward || move_run_forward)
-            pl.set_movement_factor(ua_move_walk,move_run_forward ? 1.0 : 0.6);
+            pl.set_movement_factor(ua_move_walk, move_run_forward ? 1.0 : 0.6);
          else
-            pl.set_movement_mode(0,ua_move_walk);
+            pl.set_movement_mode(0, ua_move_walk);
       }
       break;
 
@@ -269,30 +254,30 @@ void ua_ingame_new_screen::key_event(bool key_down, ua_key_value key)
    case ua_key_look_up:
       if (key_down)
       {
-         pl.set_movement_factor(ua_move_lookup,1.0);
+         pl.set_movement_factor(ua_move_lookup, 1.0);
          pl.set_movement_mode(ua_move_lookup);
       }
       else
-         pl.set_movement_mode(0,ua_move_lookup);
+         pl.set_movement_mode(0, ua_move_lookup);
       break;
 
       // look down key
    case ua_key_look_down:
       if (key_down)
       {
-         pl.set_movement_factor(ua_move_lookup,-1.0);
+         pl.set_movement_factor(ua_move_lookup, -1.0);
          pl.set_movement_mode(ua_move_lookup);
       }
       else
-         pl.set_movement_mode(0,ua_move_lookup);
+         pl.set_movement_mode(0, ua_move_lookup);
       break;
 
       // center look key
    case ua_key_center_view:
       if (key_down)
       {
-         pl.set_movement_mode(0,ua_move_lookup);
-         pl.set_movement_factor(ua_move_lookup,0.0);
+         pl.set_movement_mode(0, ua_move_lookup);
+         pl.set_movement_factor(ua_move_lookup, 0.0);
          pl.set_angle_pan(0.0);
       }
       break;
@@ -301,11 +286,11 @@ void ua_ingame_new_screen::key_event(bool key_down, ua_key_value key)
    case ua_key_ua_return_menu:
       if (key_down)
       {
-/*
-         fade_state = 2;
-         fade_ticks = 0;
-         fadeout_action = 0; // return to menu
-*/
+         /*
+                  fade_state = 2;
+                  fade_ticks = 0;
+                  fadeout_action = 0; // return to menu
+         */
       }
       break;
 
@@ -352,17 +337,17 @@ void ua_ingame_new_screen::key_event(bool key_down, ua_key_value key)
    case ua_key_game_restore_game:
       if (key_down)
       {
-/*
-         fade_state = 2;
-         fade_ticks = 0;
-         fadeout_action = 1; // load game
+         /*
+                  fade_state = 2;
+                  fade_ticks = 0;
+                  fadeout_action = 1; // load game
 
-         // TODO why render a preview image when restoring?
-         // render savegame preview image
-         do_screenshot(false,80,50);
-         core->get_savegames_mgr().set_save_screenshot(
-            screenshot_rgba,screenshot_xres,screenshot_yres);
-*/
+                  // TODO why render a preview image when restoring?
+                  // render savegame preview image
+                  do_screenshot(false,80,50);
+                  core->get_savegames_mgr().set_save_screenshot(
+                     screenshot_rgba,screenshot_xres,screenshot_yres);
+         */
       }
       break;
 
@@ -370,16 +355,16 @@ void ua_ingame_new_screen::key_event(bool key_down, ua_key_value key)
    case ua_key_game_save_game:
       if (key_down)
       {
-/*
-         fade_state = 2;
-         fade_ticks = 0;
-         fadeout_action = 2; // save game
+         /*
+                  fade_state = 2;
+                  fade_ticks = 0;
+                  fadeout_action = 2; // save game
 
-         // render savegame preview image
-         do_screenshot(false,80,50);
-         core->get_savegames_mgr().set_save_screenshot(
-            screenshot_rgba,screenshot_xres,screenshot_yres);
-*/
+                  // render savegame preview image
+                  do_screenshot(false,80,50);
+                  core->get_savegames_mgr().set_save_screenshot(
+                     screenshot_rgba,screenshot_xres,screenshot_yres);
+         */
       }
       break;
 
@@ -387,7 +372,7 @@ void ua_ingame_new_screen::key_event(bool key_down, ua_key_value key)
    case ua_key_ua_debug:
       if (key_down)
       {
-//         game->get_debug_interface()->start_debugger();
+         //         game->get_debug_interface()->start_debugger();
       }
       break;
 
@@ -412,7 +397,7 @@ void ua_ingame_new_screen::tick()
 //   if (gamemode != ua_mode_options)
    {
       // only evaluate when the user is not in the options menu
-      game->get_underworld().eval_underworld(double(tickcount)/game->get_tickrate());
+      game->get_underworld().eval_underworld(double(tickcount) / game->get_tickrate());
 
       tickcount++;
    }

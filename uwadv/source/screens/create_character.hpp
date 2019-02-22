@@ -1,195 +1,180 @@
-/*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004 Underworld Adventures Team
+//
+// Underworld Adventures - an Ultima Underworld hacking project
+// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file create_character.hpp
+/// \brief create character screen
+/// shows the screen where the user can create a player character for a
+/// new game.
+//
+#pragma once
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file create_character.hpp
-
-   \brief create character screen
-
-   shows the screen where the user can create a player character for a 
-   new game.
-
-*/
-
-// include guard
-#ifndef uwadv_create_character_hpp_
-#define uwadv_create_character_hpp_
-
-// needed includes
 #include "screen.hpp"
 #include "imgquad.hpp"
 #include "font.hpp"
 #include "mousecursor.hpp"
 #include "script/luascript.hpp"
 
+namespace Underworld
+{
+   class Player;
+}
 
-// forward references
-class ua_player;
-
-
-// classes
-
-//! create character screen class
-/*! \todo reimplement using new ua_window and ua_screen features
-*/
-class ua_create_character_screen: public ua_screen
+/// \brief create character screen class
+/// \todo reimplement using new ua_window and ua_screen features
+class ua_create_character_screen : public ua_screen
 {
 public:
-   //! ctor
-   ua_create_character_screen(ua_game_interface& game):ua_screen(game){}
+   /// ctor
+   ua_create_character_screen(IGame& game) :ua_screen(game) {}
 
    // virtual functions from ua_screen
-   virtual void init();
-   virtual void destroy();
-   virtual void draw();
-   virtual bool process_event(SDL_Event& event);
-   virtual void tick();
+   virtual void init() override;
+   virtual void destroy() override;
+   virtual void draw() override;
+   virtual bool process_event(SDL_Event& event) override;
+   virtual void tick() override;
 
    // registered lua C functions
 
-   //! performs an action given by the script
+   /// performs an action given by the script
    static int cchar_do_action(lua_State *L);
 
 protected:
-   //! loads and initializes lua script
+   /// loads and initializes lua script
    void init_luascript();
 
-   //! performs an action given by the script
+   /// performs an action given by the script
    void do_action();
 
-   //! does a button press
+   /// does a button press
    void press_button(int button);
 
-   //! determines clicked button in current group, -1 if none
+   /// determines clicked button in current group, -1 if none
    int getbuttonover();
 
-   //! draws text at a coordinate (xalign: 0=left, 1=center, 2=right), returns width of text in pixels
+   /// draws text at a coordinate (xalign: 0=left, 1=center, 2=right), returns width of text in pixels
    unsigned int drawtext(const char *str, int x, int y, int xalign = 0, unsigned char color = 0);
-   //! draws a text with given text id and string block
+   /// draws a text with given text id and string block
    unsigned int drawtext(int strnum, int x, int y, int xalign = 0, unsigned char color = 0, int custstrblock = -1);
 
-   //! draw a number at a coordinate, number is always right-aligned, returns width of text in pixels
+   /// draw a number at a coordinate, number is always right-aligned, returns width of text in pixels
    unsigned int drawnumber(unsigned int num, int x, int y, unsigned char color = 0);
 
-   //! draws a button at a coordinate (xc is horizontal center, y vertical top)
+   /// draws a button at a coordinate (xc is horizontal center, y vertical top)
    void drawbutton(int buttontype, bool highlight, int strnum, int xc, int y);
 
-   //! draws a buttongroup
+   /// draws a buttongroup
    void drawbuttongroup();
 
-   //! handleinputchar
+   /// handleinputchar
    void handleinputchar(char c);
 
-   //! call cchar_global in script 
+   /// call cchar_global in script
    void cchar_global(int globalaction, int seed);
 
 protected:
-   //! lua scripting interface
-   ua_lua_scripting lua;
+   /// lua scripting interface
+   LuaScripting lua;
 
-   //! mouse cursor
+   /// mouse cursor
    ua_mousecursor mousecursor;
 
-   //! string block for button and label text
+   /// string block for button and label text
    unsigned int strblock;
 
-   //! button and text font
+   /// button and text font
    ua_font font;
 
-   //! ended
+   /// ended
    bool ended;
 
-   //! start a new game
+   /// start a new game
    bool newgame;
 
-   //! the player
-   ua_player* pplayer;
+   /// the player
+   Underworld::Player* pplayer;
 
-   //! buttons changed
+   /// buttons changed
    bool changed;
 
-   //! current fading stage
+   /// current fading stage
    unsigned int fadingstage;
 
-   //! current tickcount
+   /// current tickcount
    unsigned int tickcount;
 
-   //! indicates if the mouse button is down
+   /// indicates if the mouse button is down
    bool buttondown;
 
-   //! image
+   /// image
    ua_image_quad img_screen;
 
-   //! bg image
-   ua_image bgimg;
+   /// bg image
+   IndexedImage bgimg;
 
-   //! image list with buttons
-   std::vector<ua_image> img_buttons;
+   /// image list with buttons
+   std::vector<IndexedImage> img_buttons;
 
-   //! number of selected button, or -1 if none
+   /// number of selected button, or -1 if none
    int selected_button;
 
-   //! number of previous button
+   /// number of previous button
    int prev_button;
 
-   //! input text
+   /// input text
    std::string inputtext;
 
-   //! button images
+   /// button images
    std::vector<unsigned char> btnimgs;
 
-   //! x-coordinate for center of buttongroup
+   /// x-coordinate for center of buttongroup
    unsigned int bgxpos;
 
-   //! palette color index of normal text
+   /// palette color index of normal text
    unsigned char textcolor_normal;
 
-   //! palette color index of highlighted text
+   /// palette color index of highlighted text
    unsigned char textcolor_highlight;
 
-   //! string number of caption in current button group (0 if none)
+   /// string number of caption in current button group (0 if none)
    unsigned int btng_caption;
 
-   //! button type of current button group
+   /// button type of current button group
    unsigned int btng_buttontype;
 
-   //! normal button image for current button group
+   /// normal button image for current button group
    unsigned char btng_buttonimg_normal;
 
-   //! highlighted button image for current button group
+   /// highlighted button image for current button group
    unsigned char btng_buttonimg_highlight;
 
-   //! number of buttons in current group
+   /// number of buttons in current group
    unsigned int btng_buttoncount;
 
-   //! number of buttons per column in current group
+   /// number of buttons per column in current group
    int btng_buttonspercolumn;
 
-   //! array of string numbers for buttons in current group
+   /// array of string numbers for buttons in current group
    std::vector<unsigned int> btng_buttons;
 
-   //! countdown time in seconds for timer buttons
+   /// countdown time in seconds for timer buttons
    double countdowntime;
 
-   //! tickcount for countdown timer
+   /// tickcount for countdown timer
    unsigned int cdttickcount;
 };
-
-#endif

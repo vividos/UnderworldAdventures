@@ -1,34 +1,27 @@
-/*
-   Underworld Adventures - an Ultima Underworld hacking project
-   Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file ingame_orig.cpp
-
-   \brief ingame user interface, from the original uw1
-
-*/
-
-// needed includes
+//
+// Underworld Adventures - an Ultima Underworld hacking project
+// Copyright (c) 2002,2003,2004,2005,2019 Underworld Adventures Team
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file ingame_orig.cpp
+/// \brief ingame user interface, from the original uw1
+//
 #include "common.hpp"
 #include "ingame_orig.hpp"
-#include "files.hpp"
+#include "resourcemanager.hpp"
 #include "renderer.hpp"
 #include "underworld.hpp"
 #include "audio.hpp"
@@ -38,24 +31,19 @@
 #include "conversation.hpp"
 #include "models.hpp"
 
-
-// constants
-
-//! time to fade in/out
+/// time to fade in/out
 const double ua_ingame_orig_screen::fade_time = 0.5;
 
-//! x resolution of savegame screenshot
+/// x resolution of savegame screenshot
 const unsigned int ua_ingame_screenshot_xres = 160;
-//! y resolution of savegame screenshot
+/// y resolution of savegame screenshot
 const unsigned int ua_ingame_screenshot_yres = 100;
 
-
-// ua_ingame_orig_screen methods
-
-/*! Constructor; sets parent pointers for ingame controls */
-ua_ingame_orig_screen::ua_ingame_orig_screen(ua_game_interface& game)
-:ua_screen(game), vitality_flask(true), mana_flask(false),
- dragon_left(true), dragon_right(false)
+/// ctor; sets parent pointers for ingame controls
+ua_ingame_orig_screen::ua_ingame_orig_screen(IGame& game)
+   :ua_screen(game), vitality_flask(true), mana_flask(false),
+   dragon_left(true), dragon_right(false),
+   m_playerPhysics(game.GetUnderworld().GetPlayer(), game.get_settings().GetBool(Base::settingUwadvFeatures))
 {
    compass.set_parent(this);
    runeshelf.set_parent(this);
@@ -75,7 +63,7 @@ void ua_ingame_orig_screen::init()
 {
    ua_screen::init();
 
-   ua_trace("orig. ingame user interface started\n");
+   UaTrace("orig. ingame user interface started\n");
 
    // init all variables
    move_turn_left = move_turn_right = move_walk_forward =
@@ -93,55 +81,26 @@ void ua_ingame_orig_screen::init()
 
    game.get_image_manager().load_list(img_objects, "objects");
 
-
-
    // set OpenGL flags
    glDisable(GL_BLEND);
-   glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-
+   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
    uw_notify(ua_notify_level_change);
 
-
-   ua_settings& settings = game.get_settings();
+   Base::Settings& settings = game.get_settings();
 
    // load keymap
-   ua_trace("loading keymaps ...\n");
-   {
-      keymap.init(settings);
-
-      // load keymap from uadata resources
-      std::string keymap_name(settings.get_string(ua_setting_game_prefix));
-      keymap_name.append("/keymap.cfg");
-
-      ua_trace(" keymap: %s\n",keymap_name.c_str());
-      keymap.load(game.get_files_manager().get_uadata_file(keymap_name.c_str()));
-
-      // load custom keymap
-      keymap_name = settings.get_string(ua_setting_custom_keymap);
-
-      ua_trace(" keymap: %s",keymap_name.c_str());
-      SDL_RWops* rwops = SDL_RWFromFile(keymap_name.c_str(),"rb");
-
-      if (rwops!=NULL)
-         keymap.load(rwops);
-      else
-         ua_trace(" => not available");
-
-      ua_trace("\n");
-   }
-
+   keymap.Init(settings);
    register_keymap(&keymap);
-
 
    // init images/subwindows
 
    // load background
    {
-      if (settings.get_gametype() == ua_game_uw2)
+      if (settings.GetGametype() == Base::gameUw2)
       {
          // uw2: no background for now
-         img_background.get_image().create(320,200);
+         img_background.get_image().create(320, 200);
       }
       else
       {
@@ -149,18 +108,18 @@ void ua_ingame_orig_screen::init()
          const char* mainscreenname = "data/main.byt";
 
          // replace name when using uw_demo
-         if (settings.get_bool(ua_setting_uw1_is_uw_demo))
+         if (settings.GetBool(Base::settingUw1IsUwdemo))
             mainscreenname = "data/dmain.byt";
 
-         game.get_image_manager().ua_image_manager::load(img_background.get_image(),
+         game.get_image_manager().ImageManager::load(img_background.get_image(),
             mainscreenname, 0, 0, ua_img_byt);
       }
 
-      img_background.init(game, 0,0);
+      img_background.init(game, 0, 0);
 
-      img_background.get_image().fill_rect(236,7, 83,114, 0); // panel area
-      img_background.get_image().fill_rect(272,3, 10,4, 0);
-      img_background.get_image().fill_rect(272,121, 10,18, 0);
+      img_background.get_image().fill_rect(236, 7, 83, 114, 0); // panel area
+      img_background.get_image().fill_rect(272, 3, 10, 4, 0);
+      img_background.get_image().fill_rect(272, 121, 10, 18, 0);
 
       img_background.update();
 
@@ -168,13 +127,13 @@ void ua_ingame_orig_screen::init()
    }
 
    // init 3d view window
-   view3d.init(game,54,20);
+   view3d.init(game, 54, 20);
    register_window(&view3d);
 
-   game.get_renderer().set_viewport3d(52,19, 172,112);
+   game.get_renderer().set_viewport3d(52, 19, 172, 112);
 
    // init compass
-   compass.init(game, 112,131);
+   compass.init(game, 112, 131);
    compass.add_border(img_background.get_image());
    compass.update();
    register_window(&compass);
@@ -184,10 +143,10 @@ void ua_ingame_orig_screen::init()
       unsigned int scrollwidth = 290;
 
       // adjust scroll width for uw_demo
-      if (game.get_settings().get_bool(ua_setting_uw1_is_uw_demo))
+      if (game.get_settings().GetBool(Base::settingUw1IsUwdemo))
          scrollwidth = 218;
 
-      textscroll.init(game, 15,169, scrollwidth,30, 42);
+      textscroll.init(game, 15, 169, scrollwidth, 30, 42);
       //textscroll.init(game, 11,169, 299,29, 42);
       textscroll.set_color_code(ua_cc_black);
 
@@ -197,61 +156,61 @@ void ua_ingame_orig_screen::init()
       register_window(&textscroll);
 
       // fill message scroll background area
-      img_background.get_image().fill_rect(16,169, scrollwidth,30, 42);
+      img_background.get_image().fill_rect(16, 169, scrollwidth, 30, 42);
    }
 
    // runeshelf
-   runeshelf.init(game, 176,138);
+   runeshelf.init(game, 176, 138);
    runeshelf.update_runeshelf();
    register_window(&runeshelf);
 
    // active spells
-   spellarea.init(game, 52,136);
+   spellarea.init(game, 52, 136);
    spellarea.update_spell_area();
    register_window(&spellarea);
 
    // vitality/mana flasks
-   vitality_flask.init(game, 248,125);
+   vitality_flask.init(game, 248, 125);
    vitality_flask.add_border(img_background.get_image());
    register_window(&vitality_flask);
 
-   mana_flask.init(game, 284,125);
+   mana_flask.init(game, 284, 125);
    mana_flask.add_border(img_background.get_image());
    register_window(&mana_flask);
 
    // gargoyle eyes
-   gargoyle_eyes.init(game, 128,4);
+   gargoyle_eyes.init(game, 128, 4);
    //gargoyle_eyes.add_border(img_background.get_image());
    gargoyle_eyes.update_eyes();
    register_window(&gargoyle_eyes);
 
    // left and right side dragons
-   dragon_left.init(game, 36,65);
+   dragon_left.init(game, 36, 65);
    register_window(&dragon_left);
 
-   dragon_right.init(game, 204,65);
+   dragon_right.init(game, 204, 65);
    register_window(&dragon_right);
 
    // init command buttons
-   command_buttons.init(game, 0,0); // buttons are self-repositioning
+   command_buttons.init(game, 0, 0); // buttons are self-repositioning
    register_window(&command_buttons);
 
    // init panel
-   panel.init(this,235,6);
+   panel.init(this, 235, 6);
    register_window(&panel);
 
    // init powergem
-   powergem.init(game,4,139);
+   powergem.init(game, 4, 139);
    powergem.add_border(img_background.get_image());
    powergem.update_gem();
    register_window(&powergem);
 
    // init move arrows
-   move_arrows.init(game,107,154);
+   move_arrows.init(game, 107, 154);
    register_window(&move_arrows);
 
    // init mouse cursor
-   mousecursor.init(game,0);
+   mousecursor.init(game, 0);
    mousecursor.show(true);
 
    register_window(&mousecursor);
@@ -261,24 +220,24 @@ void ua_ingame_orig_screen::init()
 
 void ua_ingame_orig_screen::suspend()
 {
-   ua_trace("suspending orig. ingame user interface\n\n");
+   UaTrace("suspending orig. ingame user interface\n\n");
 
    game.get_renderer().clear();
 
 
    // unregister ourselves
-   game.get_underworld().register_callback();
-
-
+   // TODO what to do?
+   //game.GetUserInterface().GetGameLogic().register_callback();
 }
 
 void ua_ingame_orig_screen::resume()
 {
-   ua_trace("resuming orig. ingame user interface\n");
+   UaTrace("resuming orig. ingame user interface\n");
 
 
    // register us as callback
-   game.get_underworld().register_callback(this);
+   // TODO what to do?
+   //game.GetGameLogic().register_callback(this);
 
 
    // setup fade-in
@@ -288,12 +247,12 @@ void ua_ingame_orig_screen::resume()
    if (fadeout_action == ua_action_conversation)
    {
       // after conversations, play "Dark Abyss"
-      game.get_audio_manager().start_music(ua_music_uw1_dark_abyss,true);
+      game.get_audio_manager().StartMusicTrack(Audio::musicUw1_DarkAbyss, true);
    }
    else
    {
       // normal start, play "Descent"
-      game.get_audio_manager().start_music(ua_music_uw1_descent,true);
+      game.get_audio_manager().StartMusicTrack(Audio::musicUw1_Descent, true);
    }
 }
 
@@ -306,12 +265,12 @@ void ua_ingame_orig_screen::destroy()
 
 
 
-   ua_trace("orig. ingame user interface finished\n\n");
+   UaTrace("orig. ingame user interface finished\n\n");
 }
 
 void ua_ingame_orig_screen::draw()
 {
-   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
    // 3d world
    {
@@ -320,7 +279,7 @@ void ua_ingame_orig_screen::draw()
       game.get_renderer().setup_camera3d(view_offset);
 
       // render a const world
-      game.get_renderer().render_underworld(game.get_underworld());
+      game.get_renderer().render_underworld(game.GetUnderworld());
    }
 
    // render 2d user interface
@@ -335,22 +294,22 @@ void ua_ingame_orig_screen::draw()
          Uint8 alpha = fading.get_fade_value();
          if (alpha < 255)
          {
-            glColor4ub(0,0,0,255-alpha);
-            glBindTexture(GL_TEXTURE_2D,0);
+            glColor4ub(0, 0, 0, 255 - alpha);
+            glBindTexture(GL_TEXTURE_2D, 0);
 
             // draw quad
             glBegin(GL_QUADS);
-            glVertex2i( 52,  68);
-            glVertex2i(226,  68);
+            glVertex2i(52, 68);
+            glVertex2i(226, 68);
             glVertex2i(226, 182);
-            glVertex2i( 52, 182);
+            glVertex2i(52, 182);
             glEnd();
          }
 
-         glColor3ub(alpha,alpha,alpha);
+         glColor3ub(alpha, alpha, alpha);
       }
       else
-         glColor3ub(255,255,255);
+         glColor3ub(255, 255, 255);
 
       // draw all registered windows
       ua_screen::draw();
@@ -364,227 +323,227 @@ bool ua_ingame_orig_screen::process_event(SDL_Event& event)
    return ua_screen::process_event(event);
 }
 
-void ua_ingame_orig_screen::key_event(bool key_down, ua_key_value key)
+void ua_ingame_orig_screen::key_event(bool key_down, Base::EKeyType key)
 {
-   ua_player& pl = game.get_underworld().get_player();
+   Underworld::Player& pl = game.GetUnderworld().GetPlayer();
    ua_ingame_game_mode last_gamemode = gamemode;
 
-   switch(key)
+   switch (key)
    {
       // run forward keys
-   case ua_key_run_forward:
-   case ua_key_run_forward_easymove:
+   case Base::keyRunForward:
+   case Base::keyRunForwardEasymove:
       move_run_forward = key_down;
       if (key_down)
       {
-         pl.set_movement_factor(ua_move_walk,1.0);
-         pl.set_movement_mode(ua_move_walk);
+         m_playerPhysics.set_movement_factor(ua_move_walk, 1.0);
+         m_playerPhysics.set_movement_mode(ua_move_walk);
       }
       else
       {
          if (move_walk_backwards)
-            pl.set_movement_factor(ua_move_walk,-0.4);
+            m_playerPhysics.set_movement_factor(ua_move_walk, -0.4);
          else
             if (move_walk_forward)
-               pl.set_movement_factor(ua_move_walk,0.6);
+               m_playerPhysics.set_movement_factor(ua_move_walk, 0.6);
             else
                if (!view3d.get_mouse_move())
-                  pl.set_movement_mode(0,ua_move_walk);
+                  m_playerPhysics.set_movement_mode(0, ua_move_walk);
       }
 
       break;
 
       // walk forward keys
-   case ua_key_walk_forward:
-   case ua_key_walk_forward_easymove:
+   case Base::keyWalkForward:
+   case Base::keyWalkForwardEasymove:
       move_walk_forward = key_down;
       if (key_down)
       {
-         pl.set_movement_factor(ua_move_walk,0.6);
-         pl.set_movement_mode(ua_move_walk);
+         m_playerPhysics.set_movement_factor(ua_move_walk, 0.6);
+         m_playerPhysics.set_movement_mode(ua_move_walk);
       }
       else
       {
          if (move_walk_backwards)
-            pl.set_movement_factor(ua_move_walk,-0.4);
+            m_playerPhysics.set_movement_factor(ua_move_walk, -0.4);
          else
             if (move_run_forward)
-               pl.set_movement_factor(ua_move_walk,1.0);
+               m_playerPhysics.set_movement_factor(ua_move_walk, 1.0);
             else
                if (!view3d.get_mouse_move())
-                  pl.set_movement_mode(0,ua_move_walk);
+                  m_playerPhysics.set_movement_mode(0, ua_move_walk);
       }
       break;
 
       // turn left keys
-   case ua_key_turn_left:
-   case ua_key_turn_left_easymove:
+   case Base::keyTurnLeft:
+   case Base::keyTurnLeftEasymove:
       move_turn_left = key_down;
       if (key_down)
       {
-         pl.set_movement_factor(ua_move_rotate,1.0);
-         pl.set_movement_mode(ua_move_rotate);
+         m_playerPhysics.set_movement_factor(ua_move_rotate, 1.0);
+         m_playerPhysics.set_movement_mode(ua_move_rotate);
       }
       else
       {
          if (move_turn_right)
-            pl.set_movement_factor(ua_move_rotate,-1.0);
+            m_playerPhysics.set_movement_factor(ua_move_rotate, -1.0);
          else
             if (!view3d.get_mouse_move())
-               pl.set_movement_mode(0,ua_move_rotate);
+               m_playerPhysics.set_movement_mode(0, ua_move_rotate);
       }
       break;
 
       // turn right keys
-   case ua_key_turn_right:
-   case ua_key_turn_right_easymove:
+   case Base::keyTurnRight:
+   case Base::keyTurnRightEasymove:
       move_turn_right = key_down;
       if (key_down)
       {
-         pl.set_movement_factor(ua_move_rotate,-1.0);
-         pl.set_movement_mode(ua_move_rotate);
+         m_playerPhysics.set_movement_factor(ua_move_rotate, -1.0);
+         m_playerPhysics.set_movement_mode(ua_move_rotate);
       }
       else
       {
          if (move_turn_left)
-            pl.set_movement_factor(ua_move_rotate,1.0);
+            m_playerPhysics.set_movement_factor(ua_move_rotate, 1.0);
          else
             if (!view3d.get_mouse_move())
-               pl.set_movement_mode(0,ua_move_rotate);
+               m_playerPhysics.set_movement_mode(0, ua_move_rotate);
       }
       break;
 
       // slide left key
-   case ua_key_slide_left:
+   case Base::keySlideLeft:
       if (key_down)
       {
-         pl.set_movement_factor(ua_move_slide,-1.0);
-         pl.set_movement_mode(ua_move_slide);
+         m_playerPhysics.set_movement_factor(ua_move_slide, -1.0);
+         m_playerPhysics.set_movement_mode(ua_move_slide);
       }
       else
          if (!view3d.get_mouse_move())
-            pl.set_movement_mode(0,ua_move_slide);
+            m_playerPhysics.set_movement_mode(0, ua_move_slide);
       break;
 
       // slide right key
-   case ua_key_slide_right:
+   case Base::keySlideRight:
       if (key_down)
       {
-         pl.set_movement_factor(ua_move_slide,1.0);
-         pl.set_movement_mode(ua_move_slide);
+         m_playerPhysics.set_movement_factor(ua_move_slide, 1.0);
+         m_playerPhysics.set_movement_mode(ua_move_slide);
       }
       else
          if (!view3d.get_mouse_move())
-            pl.set_movement_mode(0,ua_move_slide);
+            m_playerPhysics.set_movement_mode(0, ua_move_slide);
       break;
 
       // walk backwards keys
-   case ua_key_walk_backwards:
-   case ua_key_walk_backwards_easymove:
+   case Base::keyWalkBackwards:
+   case Base::keyWalkBackwardsEasymove:
       move_walk_backwards = key_down;
 
       if (key_down)
       {
-         pl.set_movement_factor(ua_move_walk,-0.4);
-         pl.set_movement_mode(ua_move_walk);
+         m_playerPhysics.set_movement_factor(ua_move_walk, -0.4);
+         m_playerPhysics.set_movement_mode(ua_move_walk);
       }
       else
       {
          if (move_walk_forward || move_run_forward)
-            pl.set_movement_factor(ua_move_walk,move_run_forward ? 1.0 : 0.6);
+            m_playerPhysics.set_movement_factor(ua_move_walk, move_run_forward ? 1.0 : 0.6);
          else
             if (!view3d.get_mouse_move())
-               pl.set_movement_mode(0,ua_move_walk);
+               m_playerPhysics.set_movement_mode(0, ua_move_walk);
       }
       break;
 
       // look up key
-   case ua_key_look_up:
+   case Base::keyLookUp:
       if (key_down)
       {
-         pl.set_movement_factor(ua_move_lookup,1.0);
-         pl.set_movement_mode(ua_move_lookup);
+         m_playerPhysics.set_movement_factor(ua_move_lookup, 1.0);
+         m_playerPhysics.set_movement_mode(ua_move_lookup);
       }
       else
-         pl.set_movement_mode(0,ua_move_lookup);
+         m_playerPhysics.set_movement_mode(0, ua_move_lookup);
       break;
 
       // look down key
-   case ua_key_look_down:
+   case Base::keyLookDown:
       if (key_down)
       {
-         pl.set_movement_factor(ua_move_lookup,-1.0);
-         pl.set_movement_mode(ua_move_lookup);
+         m_playerPhysics.set_movement_factor(ua_move_lookup, -1.0);
+         m_playerPhysics.set_movement_mode(ua_move_lookup);
       }
       else
-         pl.set_movement_mode(0,ua_move_lookup);
+         m_playerPhysics.set_movement_mode(0, ua_move_lookup);
       break;
 
       // center look key
-   case ua_key_center_view:
+   case Base::keyCenterView:
       if (key_down)
       {
-         pl.set_movement_mode(0,ua_move_lookup);
-         pl.set_movement_factor(ua_move_lookup,0.0);
-         pl.set_angle_pan(0.0);
+         m_playerPhysics.set_movement_mode(0, ua_move_lookup);
+         m_playerPhysics.set_movement_factor(ua_move_lookup, 0.0);
+         pl.SetPanAngle(0.0);
       }
       break;
 
-   case ua_key_menu_up:
+   case Base::keyMenuUp:
       if (key_down && gamemode == ua_mode_options)
          command_buttons.select_previous_button();
       break;
 
-   case ua_key_menu_down:
+   case Base::keyMenuDown:
       if (key_down && gamemode == ua_mode_options)
          command_buttons.select_next_button();
       break;
 
-   case ua_key_menu_left:
-   case ua_key_menu_right:
+   case Base::keyMenuLeft:
+   case Base::keyMenuRight:
       // note: as we don't have menus with 2 columns, these are unused here
       break;
 
-   case ua_key_menu_top_of_list:
-   case ua_key_menu_top_of_list2:
+   case Base::keyMenuTopOfList:
+   case Base::keyMenuTopOfList2:
       if (key_down && gamemode == ua_mode_options)
          command_buttons.select_previous_button(true);
       break;
 
-   case ua_key_menu_bottom_of_list:
-   case ua_key_menu_bottom_of_list2:
+   case Base::keyMenuBottomOfList:
+   case Base::keyMenuBottomOfList2:
       if (key_down && gamemode == ua_mode_options)
          command_buttons.select_next_button(true);
       break;
 
-   case ua_key_menu_press_button:
+   case Base::keyMenuPressButton:
       if (key_down && gamemode == ua_mode_options)
          command_buttons.do_button_action();
       break;
 
       // combat keys
-   case ua_key_combat_bash:
-   case ua_key_combat_slash:
-   case ua_key_combat_thrust:
+   case Base::keyCombatBash:
+   case Base::keyCombatSlash:
+   case Base::keyCombatThrust:
       if (gamemode == ua_mode_fight)
       {
          if (key_down)
          {
             // start combat weapon drawback
-            game.get_underworld().user_action(ua_action_combat_draw,
-               key == ua_key_combat_bash ? 0 :
-               key == ua_key_combat_slash ? 1 : 2);
+            game.GetGameLogic().UserAction(ua_action_combat_draw,
+               key == Base::keyCombatBash ? 0 :
+               key == Base::keyCombatSlash ? 1 : 2);
          }
          else
          {
             // end combat weapon drawback
-            game.get_underworld().user_action(ua_action_combat_release, 0);
+            game.GetGameLogic().UserAction(ua_action_combat_release, 0);
          }
       }
       break;
 
       // options menu
-   case ua_key_special_options:
+   case Base::keySpecialOptions:
       if (key_down && gamemode != ua_mode_options)
       {
          command_buttons.select_button(0);
@@ -593,7 +552,7 @@ void ua_ingame_orig_screen::key_event(bool key_down, ua_key_value key)
       break;
 
       // talk mode
-   case ua_key_special_talk_mode:
+   case Base::keySpecialTalkMode:
       if (key_down || gamemode == ua_mode_options)
          break;
 
@@ -610,7 +569,7 @@ void ua_ingame_orig_screen::key_event(bool key_down, ua_key_value key)
       break;
 
       // get mode
-   case ua_key_special_get_mode:
+   case Base::keySpecialGetMode:
       if (key_down || gamemode == ua_mode_options)
          break;
 
@@ -627,7 +586,7 @@ void ua_ingame_orig_screen::key_event(bool key_down, ua_key_value key)
       break;
 
       // look mode
-   case ua_key_special_look_mode:
+   case Base::keySpecialLookMode:
       if (key_down || gamemode == ua_mode_options)
          break;
 
@@ -644,13 +603,13 @@ void ua_ingame_orig_screen::key_event(bool key_down, ua_key_value key)
       break;
 
       // fight mode
-   case ua_key_special_fight_mode:
+   case Base::keySpecialFightMode:
       if (key_down || gamemode == ua_mode_options)
          break;
 
       if (gamemode != ua_mode_fight)
       {
-         /*bool ret = */game.get_underworld().user_action(ua_action_combat_enter);
+         /*bool ret = */game.GetGameLogic().UserAction(ua_action_combat_enter);
          //if (ret)
          {
             command_buttons.select_button(4);
@@ -666,7 +625,7 @@ void ua_ingame_orig_screen::key_event(bool key_down, ua_key_value key)
       break;
 
       // use mode
-   case ua_key_special_use_mode:
+   case Base::keySpecialUseMode:
       if (key_down || gamemode == ua_mode_options)
          break;
 
@@ -682,75 +641,75 @@ void ua_ingame_orig_screen::key_event(bool key_down, ua_key_value key)
       }
       break;
 
-   case ua_key_special_flip_panel:
+   case Base::keySpecialFlipPanel:
       break;
 
-   case ua_key_special_cast_spell:
+   case Base::keySpecialCastSpell:
       if (!key_down)
-         game.get_underworld().user_action(ua_action_clicked_spells);
+         game.GetGameLogic().UserAction(ua_action_clicked_spells);
       break;
 
-   case ua_key_special_use_track:
+   case Base::keySpecialUseTrack:
       if (!key_down)
-         game.get_underworld().user_action(ua_action_track_creatures);
+         game.GetGameLogic().UserAction(ua_action_track_creatures);
       break;
 
-   case ua_key_special_sleep:
+   case Base::keySpecialSleep:
       if (!key_down)
-         game.get_underworld().user_action(ua_action_sleep);
+         game.GetGameLogic().UserAction(ua_action_sleep);
       break;
 
       // quicksave key
-   case ua_key_special_quicksave:
+   case Base::keySpecialQuicksave:
       if (key_down)
       {
          uw_print("\\0quicksaving...");
-         schedule_action(ua_action_quicksave,false);
+         schedule_action(ua_action_quicksave, false);
       }
       break;
 
       // quickload key
-   case ua_key_special_quickload:
-      if (key_down && game.get_savegames_manager().quicksave_avail())
+   case Base::keySpecialQuickload:
+      if (key_down && game.get_savegames_manager().IsQuicksaveAvail())
       {
          uw_print("\\0quickloading...");
-         schedule_action(ua_action_quickload,false);
+         schedule_action(ua_action_quickload, false);
       }
       break;
 
       // "load game" key
-   case ua_key_game_restore_game:
+   case Base::keyGameRestoreGame:
       if (key_down)
          schedule_action(ua_action_load_game, true);
       break;
 
       // "save game" key
-   case ua_key_game_save_game:
+   case Base::keyGameSaveGame:
       if (key_down)
          schedule_action(ua_action_save_game, true);
       break;
 
       // returns from menu to game
-   case ua_key_game_return_to_game:
+   case Base::keyGameReturnToGame:
       break;
 
       // "debugger" key
-   case ua_key_ua_debug:
+   case Base::keyUaDebug:
       if (key_down)
          game.get_debugger().start_debugger(&game);
       break;
 
       // exit screen key
-   case ua_key_ua_return_menu:
+   case Base::keyUaReturnMenu:
       if (key_down)
          schedule_action(ua_action_exit, true);
       break;
 
       // "screenshot" key
-   case ua_key_ua_screenshot:
+   case Base::keyUaScreenshot:
       if (key_down)
       {
-         // take a screenshot
+         // TODO take a screenshot
 //         do_screenshot(false);
 //         save_screenshot();
       }
@@ -763,7 +722,7 @@ void ua_ingame_orig_screen::key_event(bool key_down, ua_key_value key)
    // leaving fight mode?
    if (last_gamemode != gamemode && last_gamemode == ua_mode_fight)
    {
-      game.get_underworld().user_action(ua_action_combat_leave);
+      game.GetGameLogic().UserAction(ua_action_combat_leave);
    }
 }
 
@@ -775,7 +734,7 @@ void ua_ingame_orig_screen::tick()
    // only evaluate when the user is not in the options menu
    if (fadeout_action == ua_action_none && gamemode != ua_mode_options)
    {
-      game.get_underworld().eval_underworld(double(tickcount)/game.get_tickrate());
+      game.GetGameLogic().EvaluateUnderworld(double(tickcount) / game.get_tickrate());
 
       tickcount++;
 
@@ -809,13 +768,13 @@ void ua_ingame_orig_screen::schedule_action(ua_ingame_orig_action action, bool f
    if (fadeout_before)
    {
       fade_state = 2;
-      fading.init(false,game.get_tickrate(), fade_time);
+      fading.init(false, game.get_tickrate(), fade_time);
    }
    else
       fade_state = 5; // special schedule_action fade state
 
    // check which action we scheduled
-   switch(action)
+   switch (action)
    {
    case ua_action_save_game:
    case ua_action_quicksave:
@@ -829,10 +788,10 @@ void ua_ingame_orig_screen::schedule_action(ua_ingame_orig_action action, bool f
    }
 }
 
-/*! \todo implement all actions */
+/// \todo implement all actions
 void ua_ingame_orig_screen::do_action(ua_ingame_orig_action action)
 {
-   switch(action)
+   switch (action)
    {
    case ua_action_none:
       break;
@@ -844,51 +803,48 @@ void ua_ingame_orig_screen::do_action(ua_ingame_orig_action action)
 
       // start "load game" screen
    case ua_action_load_game:
-      game.replace_screen(new ua_save_game_screen(game,false,true),true);
+      game.replace_screen(new ua_save_game_screen(game, false, true), true);
       break;
 
       // start "save game" screen
    case ua_action_save_game:
-      game.replace_screen(new ua_save_game_screen(game,false,false),true);
+      game.replace_screen(new ua_save_game_screen(game, false, false), true);
       break;
 
       // quickloading
    case ua_action_quickload:
-      if (game.get_savegames_manager().quicksave_avail())
+      if (game.get_savegames_manager().IsQuicksaveAvail())
       {
-         ua_savegame_info info;
-         ua_savegame sg = game.get_savegames_manager().
-            get_quicksave_savegame(false,info);
-         game.get_underworld().load_game(sg);
+         Base::Savegame sg = game.get_savegames_manager().LoadQuicksaveSavegame();
+         game.GetUnderworld().Load(sg);
          uw_print("quickloading done.");
       }
       break;
 
       // quicksaving
    case ua_action_quicksave:
-      {
-         // set player infos
-         ua_savegame_info info;
-         ua_player& pl = game.get_underworld().get_player();
-         pl.fill_savegame_infos(info);
-         info.game_prefix = game.get_settings().get_string(ua_setting_game_prefix);
+   {
+      // set player infos
+      Base::SavegameInfo info;
+      Underworld::Player& pl = game.GetUnderworld().GetPlayer();
+      pl.FillSavegamePlayerInfos(info);
+      info.gamePrefix = game.get_settings().GetString(Base::settingGamePrefix);
 
-         ua_savegame sg = game.get_savegames_manager().
-            get_quicksave_savegame(true,info);
+      Base::Savegame sg = game.get_savegames_manager().SaveQuicksaveSavegame(info);
 
-         game.get_underworld().save_game(sg);
-         uw_print("quicksaving done.");
-      }
-      break;
+      game.GetUnderworld().Save(sg);
+      uw_print("quicksaving done.");
+   }
+   break;
 
-      // starts conversation
+   // starts conversation
    case ua_action_conversation:
-      game.replace_screen(new ua_conversation_screen(game,fadeout_param),true);
+      game.replace_screen(new ua_conversation_screen(game, fadeout_param), true);
       break;
 
       // shows cutscene
    case ua_action_cutscene:
-      game.replace_screen(new ua_cutscene_view_screen(game,fadeout_param),true);
+      game.replace_screen(new ua_cutscene_view_screen(game, fadeout_param), true);
       break;
 
    default:
@@ -899,7 +855,7 @@ void ua_ingame_orig_screen::do_action(ua_ingame_orig_action action)
 bool ua_ingame_orig_screen::get_move_state(ua_ingame_move_state movestate)
 {
    bool state = false;
-   switch(movestate)
+   switch (movestate)
    {
    case ua_move_turn_left: state = move_turn_left; break;
    case ua_move_turn_right: state = move_turn_right; break;
@@ -911,15 +867,13 @@ bool ua_ingame_orig_screen::get_move_state(ua_ingame_move_state movestate)
    return state;
 }
 
-/*! Sets a new cursor image for the mouse cursor. There can be normal cursor
-    images and prioritized cursor images. The last ones cannot be changed or
-    resetted by unprioritized ones. Passing a negative index resets priority
-    mode and sets the negated index as normal cursor index. If the cursor
-    index is > 0x100, an object image is used for the cursor image.
-
-    \param index cursor image index to set
-    \param priority indicates if priority cursor image should be set
-*/
+/// Sets a new cursor image for the mouse cursor. There can be normal cursor
+/// images and prioritized cursor images. The last ones cannot be changed or
+/// resetted by unprioritized ones. Passing a negative index resets priority
+/// mode and sets the negated index as normal cursor index. If the cursor
+/// index is > 0x100, an object image is used for the cursor image.
+/// \param index cursor image index to set
+/// \param priority indicates if priority cursor image should be set
 void ua_ingame_orig_screen::set_cursor(int index, bool priority)
 {
    if (!priority && priority_cursor)
@@ -934,10 +888,10 @@ void ua_ingame_orig_screen::set_cursor(int index, bool priority)
       index = -index;
    }
 
-   if (index>0x100)
+   if (index > 0x100)
    {
       // change mouse cursor type to object image
-      mousecursor.set_custom(img_objects[unsigned(index)-0x100]);
+      mousecursor.set_custom(img_objects[unsigned(index) - 0x100]);
    }
    else
    {
@@ -946,10 +900,10 @@ void ua_ingame_orig_screen::set_cursor(int index, bool priority)
    }
 }
 
-void ua_ingame_orig_screen::uw_notify(ua_underworld_notification notify,
+void ua_ingame_orig_screen::uw_notify(EUserInterfaceNotification notify,
    unsigned int param)
 {
-   switch(notify)
+   switch (notify)
    {
    case ua_notify_update_powergem:
       powergem.update_gem();
@@ -977,12 +931,12 @@ void ua_ingame_orig_screen::uw_notify(ua_underworld_notification notify,
       break;
 
    case ua_notify_level_change:
-      game.get_renderer().prepare_level(game.get_underworld().get_current_level());
+      game.get_renderer().prepare_level(game.GetUnderworld().GetCurrentLevel());
       break;
 
    case ua_notify_select_target:
       //target_select_mode = true
-      set_cursor(param+0x100,true);
+      set_cursor(param + 0x100, true);
       break;
 
    default:
@@ -1001,54 +955,55 @@ void ua_ingame_orig_screen::uw_start_conversation(Uint16 list_pos)
    schedule_action(ua_action_conversation, true);
 }
 
-void ua_ingame_orig_screen::uw_get_object_triangles(unsigned int x,
-   unsigned int y, const ua_object& obj,
-   std::vector<ua_triangle3d_textured>& alltriangles)
-{
-   game.get_renderer().get_model3d_bounding_triangles(x,y,obj,alltriangles);
-}
+// TODO move? delete?
+//void ua_ingame_orig_screen::uw_get_object_triangles(unsigned int x,
+//   unsigned int y, const Underworld::Object& obj,
+//   std::vector<ua_triangle3d_textured>& alltriangles)
+//{
+//   game.get_renderer().get_model3d_bounding_triangles(x,y,obj,alltriangles);
+//}
 
 void ua_ingame_orig_screen::do_savegame_screenshot(
    unsigned int xres, unsigned int yres)
 {
    std::vector<Uint32> screenshot_rgba;
-   unsigned int screenshot_xres,screenshot_yres;
+   unsigned int screenshot_xres, screenshot_yres;
 
    // set up viewport and camera
    // note: viewport is set only for having a proper aspect ratio; the real
    // viewport is set some more lines below
-   game.get_renderer().set_viewport3d(0,0, xres,yres);
+   game.get_renderer().set_viewport3d(0, 0, xres, yres);
 
-   ua_vector3d view_offset(0,0,20.0);
+   ua_vector3d view_offset(0, 0, 20.0);
    game.get_renderer().setup_camera3d(view_offset);
 
-   glViewport(0,0,xres,yres);
+   glViewport(0, 0, xres, yres);
 
    glClear(GL_COLOR_BUFFER_BIT);
 
    // render a const world
-   game.get_renderer().render_underworld(game.get_underworld());
+   game.get_renderer().render_underworld(game.GetUnderworld());
 
    // prepare screenshot
    screenshot_xres = xres;
    screenshot_yres = yres;
 
    screenshot_rgba.clear();
-   screenshot_rgba.resize(xres*yres,0);
+   screenshot_rgba.resize(xres*yres, 0);
 
    // read in scanlines
    glReadBuffer(GL_BACK);
 
-   for(unsigned int i=0; i<yres; i++)
+   for (unsigned int i = 0; i < yres; i++)
    {
-      glReadPixels(0, yres-i-1, xres, 1, GL_RGBA, GL_UNSIGNED_BYTE,
+      glReadPixels(0, yres - i - 1, xres, 1, GL_RGBA, GL_UNSIGNED_BYTE,
          &screenshot_rgba[i*xres]);
    }
 
    // reset viewport to original
-   game.get_renderer().set_viewport3d(52,19, 172,112);
+   game.get_renderer().set_viewport3d(52, 19, 172, 112);
 
    // set in savegames manager
-   game.get_savegames_manager().set_save_screenshot(
-      screenshot_rgba,screenshot_xres,screenshot_yres);
+   game.get_savegames_manager().SetSaveScreenshot(
+      screenshot_xres, screenshot_yres, screenshot_rgba);
 }

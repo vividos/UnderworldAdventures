@@ -24,7 +24,7 @@
    \brief start menu screen
 
 */
-//! \ingroup screens
+/// \ingroup screens
 
 //@{
 
@@ -41,7 +41,7 @@
 
 // classes
 
-//! start menu screen class
+/// start menu screen class
 /*! The screen displays the main game menu. The user can select one of the
     menu items "Introduction", "Create Character", "Acknowledgements" or
     "Journey Onward" (only available when savegames are detected). Above
@@ -52,9 +52,9 @@
 class ua_start_menu_screen: public ua_screen
 {
 public:
-   //! ctor
-   ua_start_menu_screen(ua_game_interface& game);
-   //! dtor
+   /// ctor
+   ua_start_menu_screen(IGame& game);
+   /// dtor
    virtual ~ua_start_menu_screen(){}
 
    // virtual functions from ua_screen
@@ -68,50 +68,50 @@ public:
       unsigned int mousex, unsigned int mousey);
 
 protected:
-   //! called when resuming the screen
+   /// called when resuming the screen
    void resume();
 
-   //! does a button press
+   /// does a button press
    void press_button();
 
-   //! determines selected area by mouse coordinates
+   /// determines selected area by mouse coordinates
    int get_selected_area();
 
 protected:
    // constants
 
-   //! time to fade in/out
+   /// time to fade in/out
    static const double fade_time;
 
-   //! palette shifts per second
+   /// palette shifts per second
    static const double palette_shifts_per_second;
 
 
-   //! fading helper
+   /// fading helper
    ua_fading_helper fader;
 
-   //! mouse cursor
+   /// mouse cursor
    ua_mousecursor mousecursor;
 
-   //! current stage
+   /// current stage
    unsigned int stage;
 
-   //! count for palette shifting
+   /// count for palette shifting
    double shiftcount;
 
-   //! number of selected area, or -1 if none
+   /// number of selected area, or -1 if none
    int selected_area;
 
-   //! indicates if "journey onward" is available
+   /// indicates if "journey onward" is available
    bool journey_avail;
 
-   //! start screen image
+   /// start screen image
    ua_image_quad img_screen;
 
-   //! image list with buttons
-   std::vector<ua_image> img_buttons;
+   /// image list with buttons
+   std::vector<IndexedImage> img_buttons;
 
-   //! indicates if image quad texture should be reuploaded
+   /// indicates if image quad texture should be reuploaded
    bool reupload_image;
 };
 
