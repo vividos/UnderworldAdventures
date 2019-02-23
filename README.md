@@ -18,6 +18,10 @@ This is the source code repository. The folders contain the following:
 * [uwadv](uwadv/README.md): Contains the Underworld Adventures source code.
 * webpages: Contains the old home page that was hosted on SourceForge.net.
 
+The repository also contains the latest version of the
+[uw-formats.txt](https://github.com/vividos/UnderworldAdventures/blob/master/uwadv/docs/uw-formats.txt) file,
+the file formats descriptions of the Ultima Underworld 1 and 2 games.
+
 # Build
 
 The project has an automated build provided by AppVeyor that always hosts the
