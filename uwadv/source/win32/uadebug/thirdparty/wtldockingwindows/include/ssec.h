@@ -161,7 +161,7 @@ protected:
 	template<class T>
 	void shift(T begin,T end,distance n)
 	{
-		std::transform(begin,end,begin,std::bind2nd(std::plus<position>(),n));
+		std::transform(begin,end,begin,std::bind(std::plus<position>(), std::placeholders::_1, n));
 	}
 public:
 	ssection()

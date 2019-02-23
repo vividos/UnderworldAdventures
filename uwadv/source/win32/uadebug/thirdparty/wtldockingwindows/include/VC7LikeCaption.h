@@ -137,7 +137,7 @@ protected:
 				pen.CreatePen(PS_SOLID, 1, ::GetSysColor(bDescendantHasFocus ? COLOR_CAPTIONTEXT : COLOR_BTNTEXT));
 
 				HPEN hPenOld = dc.SelectPen(pen);
-				const sp=2;
+				const int sp=2;
 				dc.MoveTo(left+cxOffset+sp, top+cyOffset+sp +1);
 				dc.LineTo(right+cxOffset-sp -1, bottom+cyOffset-sp);
 				dc.MoveTo(left+cxOffset+sp, bottom+cyOffset - sp-1);

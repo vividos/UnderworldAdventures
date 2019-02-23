@@ -256,7 +256,7 @@ class CPackageWindowFrame : public IFrame
 	typedef TTraits	CTraits;
 protected:
 	template<class TTraits >
-	struct CPackageWindowT : CPackageWindowImpl<CPackageWindowT, CWndFramesPackage<TTraits> >
+	struct CPackageWindowT : CPackageWindowImpl<CPackageWindowT<TTraits>, CWndFramesPackage<TTraits> >
 	{
 	public:
 		DECLARE_WND_CLASS(_T("CPackageWindowFrame::CPackageWindow"))

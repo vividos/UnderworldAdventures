@@ -150,6 +150,7 @@ protected:
 	struct CWndFrameTraits : ssec::spraits<T, typename T::position, typename T::distance/*,TMinDist*/>
 	{
 		typedef ssec::spraits<T,position,position/*,TMinDist*/> baseClass;
+		typedef typename T::distance distance;
 		static distance min_distance(const T& x)
 		{
 			const distance dist=TMinDist;
@@ -455,7 +456,7 @@ public:
 /*
 	bool StartSliding(HWND hWnd,const CPoint& pt,const CRect& rc,bool bGhostMove)
 	{
-		std::auto_ptr<CSplitterMoveTrackerBase> pTracker;
+		std::shared_ptr<CSplitterMoveTrackerBase> pTracker;
 
 		if(bGhostMove)
 			pTracker.reset(new CSplitterMoveTrackerGhost(hWnd,*this,pt,rc));
@@ -478,7 +479,7 @@ public:
 			CEmbeddedSplitterBar splitter(!IsHorizontal(),(*i),rc);
 			if(splitter.IsPtIn(pt))
 			{
-				std::auto_ptr<CSplitterMoveTrackerBase> pTracker;
+				std::shared_ptr<CSplitterMoveTrackerBase> pTracker;
 
 #if (_MSC_VER >= 1310)
 				if(bGhostMove)
@@ -487,10 +488,10 @@ public:
 					pTracker.reset(new CSplitterMoveTrackerFull(hWnd,*this,pt,rc));
 #else // (_MSC_VER < 1310)
 				if(bGhostMove)
-					pTracker=std::auto_ptr<CSplitterMoveTrackerBase>(
+					pTracker=std::shared_ptr<CSplitterMoveTrackerBase>(
 										new CSplitterMoveTrackerGhost(hWnd,*this,pt,rc));
 				else
-					pTracker=std::auto_ptr<CSplitterMoveTrackerBase>(
+					pTracker=std::shared_ptr<CSplitterMoveTrackerBase>(
 										new CSplitterMoveTrackerFull(hWnd,*this,pt,rc));
 #endif
 
@@ -835,7 +836,7 @@ protected:
 #ifdef USE_BOOST
 	mutable boost::shared_ptr<T> m_ptr;
 #else
-	mutable std::auto_ptr<T> m_ptr;
+	mutable std::shared_ptr<T> m_ptr;
 #endif
 };
 
@@ -918,6 +919,7 @@ class CSubWndFramesPackage :
 	typedef CSubWndFramesPackage<TPackageFrame,TTraits> thisClass;
 	typedef CWndFramesPackageBase<CFrame,TTraits >		baseClass;
 	typedef typename TPackageFrame	CPackageFrame;
+   typedef typename baseClass::const_iterator const_iterator;
 	enum {controlledLen=(15+CSplitterBar::sbThickness)};
 	struct  CDockOrientationFlag
 	{

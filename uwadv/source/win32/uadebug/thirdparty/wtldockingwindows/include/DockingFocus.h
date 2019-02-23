@@ -140,7 +140,7 @@ private:
 
 	LRESULT CALLBACK CBTProc(int nCode, WPARAM wParam, LPARAM lParam)
 	{
-		LPMSG lpMsg	= (LPMSG) lParam;
+      LPMSG lpMsg = (LPMSG)lParam; lpMsg;
 		if (nCode == HCBT_SETFOCUS)
 		{
 			InvalidateCaption((HWND)wParam);

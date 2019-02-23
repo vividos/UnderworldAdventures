@@ -25,7 +25,7 @@ namespace dockwins{
 
 template<class TTraits=COutlookLikeDockingBoxTraits>
 class CTabDockingBox :
-			public  CDockingBoxBaseImpl<CTabDockingBox,CWindow,TTraits>
+			public  CDockingBoxBaseImpl<CTabDockingBox<TTraits>,CWindow,TTraits>
 {
 	typedef	CDockingBoxBaseImpl<CTabDockingBox,CWindow,TTraits> baseClass;
 	typedef CTabDockingBox  thisClass;

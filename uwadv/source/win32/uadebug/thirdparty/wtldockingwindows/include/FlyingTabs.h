@@ -260,11 +260,11 @@ public:
 				CTabMoveTracker tracker(*this,index);
 				if(TrackDragAndDrop(tracker,m_hWnd))
 				{
-					CTCHITTESTINFO tchti = { 0 };
-					::GetCursorPos(&tchti.pt);
-					ScreenToClient(&tchti.pt);
-					int index=HitTest(&tchti);
-					if(index==-1)
+					CTCHITTESTINFO tchti2 = { 0 };
+					::GetCursorPos(&tchti2.pt);
+					ScreenToClient(&tchti2.pt);
+					int index2=HitTest(&tchti2);
+					if(index2==-1)
 					{
 						MSG msg;
 						while(PeekMessage(&msg, NULL, NULL, NULL, PM_REMOVE))

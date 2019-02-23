@@ -1715,7 +1715,7 @@ public:
 ///////////////////////////////////////////////////////////
 	void StartResizing(const CPoint& pt)
 	{
-		std::auto_ptr<CSizeTrackerFull> pTracker;
+		std::shared_ptr<CSizeTrackerFull> pTracker;
 		CDWSettings settings;
 		if(settings.GhostDrag())
 		{
