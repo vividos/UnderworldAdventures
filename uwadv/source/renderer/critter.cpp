@@ -120,7 +120,7 @@ void ua_critter_frames_manager::prepare(Underworld::ObjectList* new_mapobjects)
    // go through master object list and check which object frames have to be managed
    Uint16 max = mapobjects->GetObjectListSize();
 
-   for (Uint16 i = 0; i < max; i++)
+   for (Uint16 i = 1; i < max; i++)
    {
       const Underworld::ObjectPtr objPtr = mapobjects->GetObject(i);
       if (objPtr == NULL)
