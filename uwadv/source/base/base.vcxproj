@@ -61,6 +61,10 @@
       <AdditionalDependencies>zlibstat.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)source\thirdparty\zlib1211\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
+    <PreLinkEvent>
+      <Command>copy "$(SolutionDir)source\thirdparty\zlib1211\lib\zlibstat.pdb" "$(SolutionDir)output\lib\$(Configuration)\"</Command>
+      <Message>Copying zlibstat.pdb...</Message>
+    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -73,6 +77,10 @@
       <AdditionalDependencies>zlibstat.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)source\thirdparty\zlib1211\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
+    <PreLinkEvent>
+      <Command>copy "$(SolutionDir)source\thirdparty\zlib1211\lib\zlibstat.pdb" "$(SolutionDir)output\lib\$(Configuration)\"</Command>
+      <Message>Copying zlibstat.pdb...</Message>
+    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="archivefile.cpp" />
