@@ -33,7 +33,7 @@
 
 LRESULT CLuaSourceView::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-   m_hWndClient = m_view.Create(m_hWnd, rcDefault, NULL,
+   m_hWndClient = m_view.Create(NULL, m_hWnd, rcDefault, NULL,
       WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_HSCROLL | WS_VSCROLL, WS_EX_CLIENTEDGE);
 
    m_view.StyleSetFont(STYLE_DEFAULT, _T("Lucida Console"));
@@ -63,7 +63,8 @@ LRESULT CLuaSourceView::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
       "local nil not or repeat return then until while "
       "uw player objlist tilemap runes conv quest prop"); // uwadv objects
 
-   m_view.SetInitialTabWidth(3);
+   m_view.SetTabWidth(3);
+   m_view.SetUseTabs(false);
 
    bHandled = FALSE;
    return 1;

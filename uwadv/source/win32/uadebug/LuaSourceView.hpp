@@ -33,41 +33,7 @@
 
 // includes
 #include "Resource.h"
-
-// classes
-
-class CLuaSourceCtrl: public CScintillaWindowImpl<CLuaSourceCtrl>
-{
-   typedef CScintillaWindowImpl<CLuaSourceCtrl> baseClass;
-
-public:
-   CLuaSourceCtrl(){}
-   virtual ~CLuaSourceCtrl(){}
-
-   DECLARE_WND_CLASS(NULL)
-
-   BOOL PreTranslateMessage(MSG* pMsg)
-   {
-      pMsg;
-      return FALSE;
-   }
-
-protected:
-   BEGIN_MSG_MAP(CLuaSourceCtrl)
-      CHAIN_MSG_MAP(baseClass)
-   END_MSG_MAP()
-
-   int HandleNotify(LPARAM lParam)
-   {
-      return baseClass::HandleNotify(lParam);
-   }
-
-// Handler prototypes (uncomment arguments if needed):
-//   LRESULT MessageHandler(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-//   LRESULT CommandHandler(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-//   LRESULT NotifyHandler(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/)
-};
-
+#include <atlscintilla.h>
 
 class CLuaSourceView : public CChildWindowBase<IDR_LUA_SOURCE_FRAME>
 {
@@ -93,13 +59,13 @@ public:
    {
       m_cszFilename = pszFilename;
       UpdateFilename();
-      return m_view.OpenFile(pszFilename);
+      return m_view.Load(pszFilename);
    }
 
    //! saves file
    bool SaveFile()
    {
-      bool bRet = m_view.SaveFile(m_cszFilename);
+      bool bRet = m_view.Save(m_cszFilename);
       SetModified(false);
       UpdateFilename();
       return bRet;
@@ -123,7 +89,7 @@ protected:
    BEGIN_MSG_MAP(thisClass)
       MESSAGE_HANDLER(WM_CREATE, OnCreate)
       MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
-      MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
+      // TODO MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
       COMMAND_ID_HANDLER(ID_EDIT_CUT, OnEditCut)
       COMMAND_ID_HANDLER(ID_EDIT_COPY, OnEditCopy)
       COMMAND_ID_HANDLER(ID_EDIT_PASTE, OnEditPaste)
@@ -137,15 +103,16 @@ protected:
    LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
    LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
-   LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
-   {
-      LPMSG pMsg = (LPMSG)lParam;
+   // TODO needed?
+   //LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+   //{
+   //   LPMSG pMsg = (LPMSG)lParam;
 
-      if(baseClass::PreTranslateMessage(pMsg))
-         return TRUE;
+   //   if(baseClass::PreTranslateMessage(pMsg))
+   //      return TRUE;
 
-      return m_view.PreTranslateMessage(pMsg);
-   }
+   //   return m_view.PreTranslateMessage(pMsg);
+   //}
 
    LRESULT OnEditCut(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
    {
@@ -182,7 +149,7 @@ protected:
 
 protected:
    //! scintilla edit view
-   CLuaSourceCtrl m_view;
+   CScintillaWindow m_view;
 
    //! indicates if file is modified
    bool m_bModified;

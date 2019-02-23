@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{D71D5409-E534-46C3-A7DF-41F92F8E254B}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
+    <UseOfAtl>Static</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
+    <UseOfAtl>Static</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\uwadv-release.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\uwadv-debug.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>15.0.28127.55</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules />
+    <CodeAnalysisRuleAssemblies />
+    <OutDir>$(SolutionDir)output\bin\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules />
+    <CodeAnalysisRuleAssemblies />
+    <OutDir>$(SolutionDir)output\bin\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)source\win32\uadebug\thirdparty\menuxp;$(SolutionDir)source\win32\uadebug\thirdparty\scintilla;$(SolutionDir)source\win32\uadebug\thirdparty\tabbingframework\include;$(SolutionDir)source\win32\uadebug\thirdparty\wtldockingwindows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdatl.hpp</PrecompiledHeaderFile>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>SciLexer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)\thirdparty\scintilla\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)source\win32\uadebug\thirdparty\menuxp;$(SolutionDir)source\win32\uadebug\thirdparty\scintilla;$(SolutionDir)source\win32\uadebug\thirdparty\tabbingframework\include;$(SolutionDir)source\win32\uadebug\thirdparty\wtldockingwindows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdatl.hpp</PrecompiledHeaderFile>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>SciLexer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)\thirdparty\scintilla\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="BreakpointList.cpp" />
+    <ClCompile Include="DebugClient.cpp" />
+    <ClCompile Include="EditListViewCtrl.cpp" />
+    <ClCompile Include="Filename.cpp" />
+    <ClCompile Include="GameStringsView.cpp" />
+    <ClCompile Include="HotspotList.cpp" />
+    <ClCompile Include="LuaSourceView.cpp" />
+    <ClCompile Include="MainFrame.cpp" />
+    <ClCompile Include="ObjectList.cpp" />
+    <ClCompile Include="PlayerInfo.cpp" />
+    <ClCompile Include="ProjectInfo.cpp" />
+    <ClCompile Include="ProjectManager.cpp" />
+    <ClCompile Include="PropertyListCtrl.cpp" />
+    <ClCompile Include="stdatl.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">stdatl.hpp</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdatl.hpp</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TileInfo.cpp" />
+    <ClCompile Include="TileMapViewCtrl.cpp" />
+    <ClCompile Include="uadebug.cpp" />
+    <ClCompile Include="WatchesList.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AboutDlg.hpp" />
+    <ClInclude Include="BreakpointList.hpp" />
+    <ClInclude Include="DebugClient.hpp" />
+    <ClInclude Include="EditListViewCtrl.hpp" />
+    <ClInclude Include="Filename.hpp" />
+    <ClInclude Include="GameStringsView.hpp" />
+    <ClInclude Include="HotspotList.hpp" />
+    <ClInclude Include="LuaSourceView.hpp" />
+    <ClInclude Include="MainFrame.hpp" />
+    <ClInclude Include="ObjectList.hpp" />
+    <ClInclude Include="PlayerInfo.hpp" />
+    <ClInclude Include="ProjectInfo.hpp" />
+    <ClInclude Include="ProjectManager.hpp" />
+    <ClInclude Include="PropertyListCtrl.hpp" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="stdatl.hpp" />
+    <ClInclude Include="TileInfo.hpp" />
+    <ClInclude Include="TileMapView.hpp" />
+    <ClInclude Include="TileMapViewCtrl.hpp" />
+    <ClInclude Include="WatchesList.hpp" />
+    <ClInclude Include="WindowBase.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="res\cursor_tilemap.cur" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\Des.ico" />
+    <Image Include="res\game_strings.ico" />
+    <Image Include="res\Lua.ico" />
+    <Image Include="res\Sanct.ico" />
+    <Image Include="res\tb_debug.bmp" />
+    <Image Include="res\tb_game_strings.bmp" />
+    <Image Include="res\tb_lua_source.bmp" />
+    <Image Include="res\tb_main.bmp" />
+    <Image Include="res\tb_mainframe.bmp" />
+    <Image Include="res\tb_standard.bmp" />
+    <Image Include="res\tb_tilemap.bmp" />
+    <Image Include="res\tilemap_view.ico" />
+    <Image Include="res\tree_project.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="uadebug_res.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\..\..\packages\wtl.10.0.8280\build\native\wtl.targets" Condition="Exists('..\..\..\packages\wtl.10.0.8280\build\native\wtl.targets')" />
+  </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\..\packages\wtl.10.0.8280\build\native\wtl.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\wtl.10.0.8280\build\native\wtl.targets'))" />
+  </Target>
+</Project>

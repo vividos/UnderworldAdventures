@@ -59,7 +59,7 @@ void CProjectInfoWindow::UpdateData()
 
    CString cszProjectName(_T("No project open."));
    if (projectManager.IsOpen())
-      cszProjectName.Format(_T("Project: %s"), projectManager.GetProjectName());
+      cszProjectName.Format(_T("Project: %s"), projectManager.GetProjectName().GetString());
 
    m_treeCtrl.SetItemText(m_treeCtrl.GetRootItem(), cszProjectName);
 
@@ -132,7 +132,7 @@ void CProjectInfoWindow::CreateActivateWindow(CDockingWindowBase& dockingWindow)
    if (dockingWindow.m_hWnd == NULL)
    {
       CRect rect(CPoint(0,0), dockingWindow.GetFloatingSize());
-      
+
       DWORD dwStyle = WS_OVERLAPPEDWINDOW | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
       dockingWindow.Create(m_hWnd, rect, dockingWindow.GetDockWindowCaption(), dwStyle);
    }
@@ -375,7 +375,7 @@ void CProjectInfoWindow::RefreshLevelList()
    for (unsigned int n=0; n<nMax; n++)
    {
       CString cszLevelName;
-      cszLevelName.Format(_T("Level %u: %s"), n+1, debugClient.GetLevelName(n));
+      cszLevelName.Format(_T("Level %u: %s"), n+1, debugClient.GetLevelName(n).GetString());
 
       if (nLevel == n)
          cszLevelName += g_pszActive;
@@ -428,9 +428,9 @@ void CProjectInfoWindow::RefreshCodeDebuggerList()
 
          CString cszGameCfgPath(debugClient.GetGameCfgPath());
 
-         unsigned int nMax = cdi.GetSourcefileCount();
-         for (unsigned int n=0; n<nMax; n++)
-            InsertSourceFile(hSubItem, enType, cdi.GetSourcefileFilename(n), cszGameCfgPath, nCodeDebuggerID);
+         unsigned int maxSourceFiles = cdi.GetSourcefileCount();
+         for (unsigned int sourceFileIndex=0; sourceFileIndex < maxSourceFiles; sourceFileIndex++)
+            InsertSourceFile(hSubItem, enType, cdi.GetSourcefileFilename(sourceFileIndex), cszGameCfgPath, nCodeDebuggerID);
 
          m_treeCtrl.Expand(hSubItem);
       }

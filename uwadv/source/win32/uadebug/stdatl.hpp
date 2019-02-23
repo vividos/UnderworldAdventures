@@ -32,9 +32,9 @@
 #pragma once
 
 // change these values to use different versions
-#define WINVER      0x0400
-#define _WIN32_IE   0x0400
-#define _RICHEDIT_VER   0x0100
+#define WINVER         0x0601
+#define _WIN32_WINNT   0x0601
+#define _WIN32_IE      0x0700
 
 #ifdef _DEBUG
 #define _CRTDBG_MAP_ALLOC
@@ -71,13 +71,20 @@ extern CAppModule _Module;
 #include <atlcrack.h>
 
 // Tabbed Framework includes
+#pragma warning(push)
+#pragma warning(disable: 4838) // conversion from 'int' to 'UINT_PTR' requires a narrowing conversion
 #if (_MSC_VER < 1300)
 #  define _TABBEDMDI_MESSAGES_EXTERN_REGISTER
 #endif
 #include <atlgdix.h>
 #include <TabbedMDI.h>
+#pragma warning(pop)
 
 // Docking Framework includes
+#pragma warning(push)
+#pragma warning(disable: 4100) // 'hWnd': unreferenced formal parameter)
+#pragma warning(disable: 4244) // '=' : conversion from 'BOOL' to 'ATOM', possible loss of data
+#pragma warning(disable: 4456) // declaration of 'bRes' hides previous local declaration
 #include <DockMisc.h>
 #include <ExtDockingWindow.h>
 #include <DockingFrame.h>
@@ -88,6 +95,7 @@ extern CAppModule _Module;
 #include <DockingBox.h>
 #include <TabDockingBox.h>
 #include <VC7LikeCaption.h>
+#pragma warning(pop)
 
 // Menu XP includes
 #include "MenuXP.h"

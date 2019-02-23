@@ -139,7 +139,7 @@ void CTileMapViewCtrl::DoPaint(CDCHandle hDC)
          // draw objects dots when tile has object list attached
          if (info.m_nObjlistStart != 0)
          {
-            COLORREF color = RGB(255,128,0); // orange
+            COLORREF colorObject = RGB(255,128,0); // orange
             unsigned int nLeftBase = rc.left + x * m_nTileSizeX;
             unsigned int dx = m_nTileSizeX;
             unsigned int nTopBase = rc.top + y * m_nTileSizeY;
@@ -149,9 +149,9 @@ void CTileMapViewCtrl::DoPaint(CDCHandle hDC)
             if (nBoxSizeX < 2) nBoxSizeX = 2;
             if (nBoxSizeY < 2) nBoxSizeY = 2;
 
-            dc.FillSolidRect(nLeftBase+unsigned(0.2*dx), nTopBase+unsigned(0.2*dy), nBoxSizeX, nBoxSizeY, color);
-            dc.FillSolidRect(nLeftBase+unsigned(0.7*dx), nTopBase+unsigned(0.3*dy), nBoxSizeX, nBoxSizeY, color);
-            dc.FillSolidRect(nLeftBase+unsigned(0.4*dx), nTopBase+unsigned(0.6*dy), nBoxSizeX, nBoxSizeY, color);
+            dc.FillSolidRect(nLeftBase+unsigned(0.2*dx), nTopBase+unsigned(0.2*dy), nBoxSizeX, nBoxSizeY, colorObject);
+            dc.FillSolidRect(nLeftBase+unsigned(0.7*dx), nTopBase+unsigned(0.3*dy), nBoxSizeX, nBoxSizeY, colorObject);
+            dc.FillSolidRect(nLeftBase+unsigned(0.4*dx), nTopBase+unsigned(0.6*dy), nBoxSizeX, nBoxSizeY, colorObject);
          }
       }
 

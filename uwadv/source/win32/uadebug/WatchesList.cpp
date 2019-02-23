@@ -39,6 +39,9 @@ void CWatchesListWindow::ReceiveNotification(CDebugWindowNotification& notify)
 {
    switch (notify.m_enCode)
    {
+   case ncUnknown:
+   default:
+      break;
    }
 }
 

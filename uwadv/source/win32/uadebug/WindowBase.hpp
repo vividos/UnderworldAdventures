@@ -194,7 +194,7 @@ protected:
 //! base class for child windows with tabbing support
 template <unsigned IDR_WINDOW>
 class CChildWindowBase:
-   public CTabbedMDIChildWindowImpl<CChildWindowBase>,
+   public CTabbedMDIChildWindowImpl<CChildWindowBase<IDR_WINDOW> >,
    public CDebugWindowBase
 {
    typedef CChildWindowBase thisClass;

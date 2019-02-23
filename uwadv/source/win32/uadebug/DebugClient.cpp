@@ -314,6 +314,8 @@ unsigned int CDebugClientCodeDebuggerInterface::GetCallstackHeight() const
 void CDebugClientCodeDebuggerInterface::GetCallstackInfo(unsigned int nAtLevel, SCallstackInfo& callstackInfo) const
 {
    ATLASSERT(nAtLevel < GetCallstackHeight());
+   nAtLevel;
+   callstackInfo;
    // TODO implement
 }
 
@@ -350,6 +352,9 @@ bool CDebugClientCodeDebuggerInterface::GetSourceFromCodePos(unsigned int nCodeP
 {
    unsigned int nSourcefileIndex = 0; // TODO
    cszFilename = GetSourcefileFilename(nSourcefileIndex);
+   nCodePos;
+   nLine;
+   nLineDisplacement;
 
    // TODO implement
    return false;
@@ -427,7 +432,7 @@ void CDebugClientInterface::PauseGame(bool pause)
 
 unsigned int CDebugClientInterface::GetNumLevels()
 {
-   return m_pDebugInterface->get_num_levels();
+   return m_pDebugInterface->GetNumLevels();
 }
 
 void CDebugClientInterface::SetWorkingLevel(unsigned int level)
@@ -437,17 +442,21 @@ void CDebugClientInterface::SetWorkingLevel(unsigned int level)
 
 CString CDebugClientInterface::GetLevelName(unsigned int level) const
 {
+   level;
    // TODO
    return _T("unknown");
 }
 
 void CDebugClientInterface::InsertNewLevel(unsigned int before_level)
 {
+   before_level;
    // TODO implement
 }
 
 void CDebugClientInterface::MoveLevel(unsigned int level, unsigned int level_insert_point)
 {
+   level;
+   level_insert_point;
    // TODO implement
 }
 

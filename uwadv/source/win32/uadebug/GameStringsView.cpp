@@ -87,7 +87,7 @@ void CGameStringsView::InitCombobox()
          if (nBlock >= 0x0e00 && nBlock < 0x0f00)
          {
             CString cszNpcName = debugClient.GetGameString(7, nBlock-0xe00+16);
-            cszBlockName.Format(_T("Conversation [%s]"), cszNpcName);
+            cszBlockName.Format(_T("Conversation [%s]"), cszNpcName.GetString());
          }
          else
          if (nBlock >= 0x0f00 && nBlock < 0x1000)
@@ -143,10 +143,10 @@ LRESULT CGameStringsView::OnComboSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, H
    for(unsigned int n=0; n<max; n++)
    {
       cszNr.Format(_T("%04x (%u)"), n, n);
-      int nItem = m_listStrings.InsertItem(m_listStrings.GetItemCount(), cszNr);
+      int nItem2 = m_listStrings.InsertItem(m_listStrings.GetItemCount(), cszNr);
       cszText = debugClient.GetGameString(nBlock, n);
       cszText.Replace(_T("\n"), _T("\\n"));
-      m_listStrings.SetItemText(nItem, 1, cszText);
+      m_listStrings.SetItemText(nItem2, 1, cszText);
    }
 
    m_listStrings.SetRedraw(TRUE);

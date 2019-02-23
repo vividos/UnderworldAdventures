@@ -73,7 +73,7 @@ the control in different ways:
       CPropertyListCtrl m_view;
 
    In CMainFrame, add this to the bottom of the message map:
-   
+
       [...]
       REFLECT_NOTIFICATIONS()
    END_MSG_MAP()
@@ -92,12 +92,12 @@ the control in different ways:
    CDialogImpl):
 
    In your dialog class, add a private member:
-   
+
       CPropertyListCtrl m_propertyList;
 
    In your dialog class, add this to the bottom of the message map, again to
    reflect notifications back to the control:
-   
+
       [...]
       REFLECT_NOTIFICATIONS()
    END_MSG_MAP()
@@ -571,7 +571,7 @@ template <class T,
    class TWinTraits = CPropertyListCtrlWinTraits>
 class ATL_NO_VTABLE CPropertyListCtrlImpl :
    public ATL::CWindowImpl<T, TBase, TWinTraits>,
-   public CCustomDraw<CPropertyListCtrlImpl>
+   public CCustomDraw<CPropertyListCtrlImpl<T, TBase, TWinTraits> >
 {
    //! type of base class
    typedef TBase BaseClass;
@@ -631,7 +631,7 @@ protected:
       delete m_pInplaceEdit;
       m_pInplaceEdit = 0;
       return 0;
-   }   
+   }
 
    //! called when user left-clicks on the list control
    LRESULT OnLeftButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
