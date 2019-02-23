@@ -21,6 +21,7 @@
 //
 #include "common.hpp"
 #include "gamecfg.hpp"
+#include "textfile.hpp"
 #include "game_interface.hpp"
 #include "settings.hpp"
 #include "filesystem.hpp"
@@ -37,6 +38,77 @@ bool ua_file_isavail(const std::string& base, const char* fname)
    filename += fname;
 
    return Base::FileSystem::FileExists(filename.c_str());
+}
+
+void ua_gamecfg_loader::Load(Base::TextFile& file)
+{
+   std::string line, key, value;
+   while (file.Tell() < file.FileLength())
+   {
+      file.ReadLine(line);
+
+      if (SplitKeyValue(line, key, value))
+         load_value(key.c_str(), value.c_str());
+   }
+}
+
+bool ua_gamecfg_loader::SplitKeyValue(std::string& line, std::string& key, std::string& value)
+{
+   if (line.empty())
+      return false;
+
+   // trim spaces at start of line
+   for (; line.size() > 0 && isspace(line.at(0));)
+      line.erase(0, 1);
+
+   // comment line?
+   if (line.size() == 0 || line.at(0) == '#' || line.at(0) == ';')
+      return false;
+
+   // comment somewhere in the line?
+   std::string::size_type pos2 = line.find('#');
+   if (pos2 != std::string::npos)
+   {
+      // remove comment
+      line.erase(pos2);
+   }
+
+   // trim spaces at end of line
+   {
+      int len;
+      do
+      {
+         len = line.size() - 1;
+         if (isspace(line.at(len)))
+            line.erase(len);
+         else
+            break;
+      } while (line.size() > 0);
+   }
+
+   // empty line?
+   if (line.size() == 0)
+      return false;
+
+   // replace all '\t' with ' '
+   std::string::size_type pos = 0;
+   while ((pos = line.find('\t', pos)) != std::string::npos)
+      line.replace(pos, 1, " ");
+
+   // there must be at least one space, to separate key from value
+   pos = line.find(' ');
+   if (pos == std::string::npos)
+      return false;
+
+   // retrieve key and value
+   key = line.substr(0, pos);
+   value = line.substr(pos + 1);
+
+   // trim spaces at start of "value"
+   for (; value.size() > 0 && isspace(value.at(0));)
+      value.erase(0, 1);
+
+   return true;
 }
 
 /// Processes a keyword/value pair. The following keywords are currently

@@ -32,7 +32,7 @@ class IScripting;
 /// prefixed with the current game prefix (%game-prefix%/game.cfg).
 ///
 /// To start loading, call Base::ConfigFile::Load().
-class ua_gamecfg_loader : public Base::ConfigFile
+class ua_gamecfg_loader
 {
 public:
    /// ctor
@@ -42,10 +42,16 @@ public:
    {
    }
 
+   /// loads game.cfg from given text file
+   void Load(Base::TextFile& file);
+
    /// returns game name
    const char* get_game_name() { return game_name.c_str(); }
 
 private:
+   /// splits a text file line into key and value, when found
+   bool SplitKeyValue(std::string& line, std::string& key, std::string& value);
+
    /// called to load a specific value
    virtual void load_value(const char* name, const char* value);
 
