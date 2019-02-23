@@ -2,10 +2,10 @@
                Ultima Underworld 1 and 2 Formats Specification
 
                             Underworld Adventures
-                        http://uwadv.sourceforge.net/
+               https://vividos.github.com/UnderworldAdventures
  +--------------------------------------------------------------------------+
 
-Document version: 1.69, as of 2019-02-07
+Document version: 1.70, as of 2019-02-23
 
 
 Table of Contents
@@ -122,6 +122,8 @@ Table of Contents
    <http://bearcity.pwp.blueyonder.co.uk/>), Ulf Wohlers (Objects and 3D
    models), Fabian Pache (about map details and 3d models, uw2 conversations
    uw2 player save <http://uw2rev.sourceforge.net>).
+   Further infos came from Hank Morgan's UnderworldExporter project
+   <https://github.com/hankmorgan/UnderworldExporter>.
 
    Further infos about weapon animation and miscellaneous bits about uw were
    contributed by Telemachos from peroxide.dk.
@@ -130,6 +132,7 @@ Table of Contents
    file at the start of all of this.
 
    This file is probably:
+   Copyright (c) 2014-2018 Hank Morgan
    Copyright (c) 2008,2009 Julien Langer
    Copyright (c) 2002,2008,2009 Fabian Pache
    Copyright (c) 2000,2001,2002,2003 Jim Cameron
@@ -1553,8 +1556,8 @@ Table of Contents
    000b   0003   Int16  0-3    npc_goal
                         4-11   npc_gtarg
    000d   0005   Int16  0-3    npc_level
-                        4-11   
-                        8      
+                        4-11
+                        8
                         13     npc_talkedto
                         14-15  npc_attitude
    000f   0007   Int16  6- 12  npc height?
@@ -1567,7 +1570,7 @@ Table of Contents
                         4-9    npc_yhome
                         10-15  npc_xhome
    0018   0010   Int8   0-4:   npc_heading?
-                        5-7:   
+                        5-7:
    0019   0011   Int8   0-6:   npc_hunger (?)
    001a   0012   Int8          npc_whoami
 
@@ -1931,7 +1934,7 @@ Table of Contents
 
    0120  a_spell
          spell object used by wands, spell traps, magical items;
-         the "quality" field 
+         the "quality" field
 
    013b  a_map
          the map is shown when looked at the map in inventory. The string at
@@ -2057,7 +2060,7 @@ Table of Contents
 
    01ca  a_silver tree [uw1]
          animated objects; "owner" field determines current animation overlay
-         
+
    01cf  a_moving door
          object that is used during opening a door
 
@@ -3778,7 +3781,7 @@ Table of Contents
 	      	     	       door submodel rendering. Not sure what this
 			       actually does. Possibly related to door angle
 			       and visibility.
-	      0004   Int16     Pointer to first model node of submodel to 
+	      0004   Int16     Pointer to first model node of submodel to
 	      	     	       render. Offset is relative to the location of
 			       the current node (BA).
 
@@ -3861,10 +3864,13 @@ Table of Contents
 
       for(int i=0; i<220; i++)
       {
-         if (i==80) incrnum = 3;
+         if (i==80 || i==160) incrnum = 3;
          data[i] ^= (xorvalue+incrnum);
          incrnum += 3;
       }
+
+   Note that the initial "player.dat" file in the "data" folder isn't
+   encrypted at all and doesn't contain the first xor byte.
 
    After decryption, the file contains the following:
 
@@ -3895,35 +3901,88 @@ Table of Contents
    0034   Int8    Swimming
    0035   Int8    current vitality
    0036   Int8    max. vitality
-   0037   Int8    current mana, (play_mana)
+   0037   Int8    current mana (play_mana)
    0038   Int8    max. mana
-   0039   Int8    hunger, play_hunger
-   ...
+   0039   Int8    hunger (play_hunger)
+   003A   Int8    fatigue (or swapped with 0039?)
+   003B   Int8    unknown
+   003C   Int8    unknown
    003D   Int8    character level (play_level)
-   ...
+   003E   Int16   active spell 1
+   0040   Int16   active spell 2
+   0042   Int16   active spell 3
    0044   3*8bits rune flags (*)
-   ...
+   0047   Int8    selected rune 1 (0x24 == none)
+   0048   Int8    selected rune 2
+   0049   Int8    selected rune 3
    004A   Int16   current weight carried (in 0.1 stones)
-   ...
    004C   Int16   maximum weight in 0.1 stones.
                   Value is always 300 + 13 * [001E] (strength)
    004E   Int32   experience in 0.1 points
-   ...
    0052   Int8    Number of skill points available
+   0053   Int8    same as 0052?
    ...
-   0054   Int16   x-position in level
-   0056   Int16   y-position
-   0058   Int16   z-position
-   005A   Int16   heading
-   005C   Int16   dungeon level
+   0055   Int16   x-position in level
+   0057   Int16   y-position
+   0059   Int16   z-position
+   005B   Int8    heading (0..7?)
+   005C   Int8    dungeon level
+   005D   Int8    unknown
+   005E   Int8    moon stone/silver tree
+                  bits 0..3: level of moon stone
+                  bits 4..7: level of silver tree
+   005F   Int8    misc. bits
+                  bits 0..1: incense dream bits
+                  bits 2..5: play_poison
+                  bits 6..7: no. of active spells
+   0060   Int8    various plot flags
+   0061   Int8    unknown
+   0062   Int8    MiscQuestVars? drunkeness level in lower hex digit (?)
+   0063   Int8    bits 4..7: light level
+   0064   Int8    character class details
+                  bit 0: hand left/right
+                  bit 1: gender, 0: male, 1: female
+                  bit 2..4: body (0-4)
+                  bit 5..7: class
+                     0: fighter, 1: mage, 2: bard, 3: tinker
+                     4: druid, 5: paladin, 6: ranger, 7: shepard
+   0065   Int32   Quest flags 0-31 (bits 0..31)
+   0069   Int8    Quest flag 32
+   006A   Int8    Quest flag 33
+   006B   Int8    Quest flag 34
+   006C   Int8    Quest flag 35
+   006D   Int8    num. talismans remaining
+   006E   Int8    Garamon dream related
+   006F   Int8    unknown
+   0070-00A4      conv. variables? 0-52
    ...
-   005F   Int8    bits 2..5: play_poison
+   00B4   Int8    difficulty (0=normal, 1=easy)
+   00B5   Int8    game options
    ...
-   0062   Int8    drunkeness level in lower hex digit (?)
+   00CE   Int16   game time related (frame ticks?)
+   00D0   Int8    hour of day (sort of)
+   00D1   Int8    game day (sort of)
    ...
-   00CE   Int32   game time
+   00DC   Int8    current vitality (duplicate of 0035)?
    ...
-   00DC   Int8    (???) current vitality
+   00F7-011C Int16  all these fields are indices into the inventory list
+                    that starts at offset 311 or 0x0137
+   00F7   Int16   Helm
+   00F9   Int16   Chest
+   00FB   Int16   Gloves
+   00FD   Int16   Leggings
+   00FF   Int16   Boots
+   0101   Int16   Top right shoulder
+   0103   Int16   Top left shoulder
+   0105   Int16   Right hand
+   0107   Int16   Left hand
+   0109   Int16   Right ring
+   010B   Int16   Left ring
+   010D   Int16   Backpack 0
+   ...
+   011B   Int16   Backpack 7
+   ...
+   0137   ???     Inventory
 
    (*) The rune field is a bitfield, where an 1 indicates an available
        rune. Bits are seen from most to least significant. The 'A' rune is
