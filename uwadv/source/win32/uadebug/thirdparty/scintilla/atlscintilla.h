@@ -3099,6 +3099,7 @@ public:
 		{
 #ifndef STATIC_SCILEXER
 			m_scintilla = ::LoadLibrary( _T("SciLexer.dll"));
+			instance;
 #else
 			Scintilla_RegisterClasses( instance );
 #endif
