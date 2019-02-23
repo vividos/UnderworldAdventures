@@ -635,8 +635,8 @@ void ua_uwadv_game::init_game()
       Base::SDL_RWopsPtr rwops = m_resourceManager->GetResourceFile(langpak_name.c_str());
       if (rwops != NULL)
       {
-         Import::GameStringsImporter importer(GetGameStrings());
-         importer.LoadStringsPakFile(rwops);
+         Import::GameStringsImporter gamestringsImporter(GetGameStrings());
+         gamestringsImporter.LoadStringsPakFile(rwops);
 
          UaTrace("language \"%s\"\n",
             GetGameStrings().GetString(0x0a00, 0).c_str());
