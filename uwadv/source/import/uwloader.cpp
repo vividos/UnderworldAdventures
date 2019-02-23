@@ -44,7 +44,7 @@ void Import::LoadUnderworld(Base::Settings& settings, Base::ResourceManager& res
    }
 
    PlayerImporter playerImport(resourceManager);
-   playerImport.LoadPlayer(underworld.GetPlayer(), settings.GetString(Base::settingUnderworldPath));
+   playerImport.LoadPlayer(underworld.GetPlayer(), settings.GetString(Base::settingUnderworldPath) + "data/");
 
    Import::LoadConvGlobals(underworld.GetPlayer().GetConvGlobals(), settings, "data", true);
 }

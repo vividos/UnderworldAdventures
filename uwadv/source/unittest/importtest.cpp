@@ -157,7 +157,7 @@ namespace UnitTest
          Underworld::Player player;
 
          Import::PlayerImporter playerImporter(resourceManager);
-         playerImporter.LoadPlayer(player, settings.GetString(Base::settingUw1Path));
+         playerImporter.LoadPlayer(player, settings.GetString(Base::settingUw1Path) + "data/");
       }
 
       /// Tests loading player infos, uw2
@@ -170,7 +170,7 @@ namespace UnitTest
          Underworld::Player player;
 
          Import::PlayerImporter playerImporter(resourceManager);
-         playerImporter.LoadPlayer(player, settings.GetString(Base::settingUw2Path));
+         playerImporter.LoadPlayer(player, settings.GetString(Base::settingUw2Path) + "data/");
       }
 
       /// Tests loading game strings

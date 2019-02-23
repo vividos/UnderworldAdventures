@@ -31,7 +31,7 @@ using Import::PlayerImporter;
 /// \todo xpos and ypos only store tile position; how is intra-tile coordiate be calculated?
 void PlayerImporter::LoadPlayer(Underworld::Player& player, const std::string& path)
 {
-   Base::File file(path + "/data/player.dat", Base::modeRead);
+   Base::File file(path + "player.dat", Base::modeRead);
 
    Uint8 xorBase = file.Read8();
 
