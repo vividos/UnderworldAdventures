@@ -29,24 +29,25 @@ using Import::PlayerImporter;
 
 /// \todo import more player settings, including conv globals and inventory
 /// \todo xpos and ypos only store tile position; how is intra-tile coordiate be calculated?
-void PlayerImporter::LoadPlayer(Underworld::Player& player, const std::string& path)
+void PlayerImporter::LoadPlayer(Underworld::Player& player, const std::string& path, bool initialPlayer)
 {
    Base::File file(path + "player.dat", Base::modeRead);
 
-   Uint8 xorBase = file.Read8();
+   Uint8 xorBase = !initialPlayer ? file.Read8() : 0;
 
    std::vector<Uint8> playerInfos(0x00dd);
-   playerInfos[0] = xorBase;
+   file.ReadBuffer(playerInfos.data(), playerInfos.size());
 
-   file.ReadBuffer(&playerInfos[1], playerInfos.size() - 1);
-
-   Uint8 currentNumber = 3;
-   for (unsigned int i = 0; i < 220; i++)
+   if (!initialPlayer)
    {
-      if (i == 80)
-         currentNumber = 3;
-      playerInfos[i] ^= (xorBase + currentNumber);
-      currentNumber += 3;
+      Uint8 currentNumber = 3;
+      for (unsigned int i = 0; i < 220; i++)
+      {
+         if (i == 80)
+            currentNumber = 3;
+         playerInfos[i] ^= (xorBase + currentNumber);
+         currentNumber += 3;
+      }
    }
 
    char buffer[15] = {0};

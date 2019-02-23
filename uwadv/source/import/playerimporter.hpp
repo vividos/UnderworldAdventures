@@ -45,8 +45,8 @@ namespace Import
       {
       }
 
-      /// loads player and inventory
-      void LoadPlayer(Underworld::Player& player, const std::string& path);
+      /// loads player and inventory; path must specify the "data" or a "SaveN" folder
+      void LoadPlayer(Underworld::Player& player, const std::string& path, bool initialPlayer);
 
    private:
       /// resource manager
