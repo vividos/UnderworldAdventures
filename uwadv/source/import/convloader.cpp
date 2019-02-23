@@ -32,6 +32,7 @@ void Import::LoadConvGlobals(Underworld::ConvGlobals& convGlobals,
 {
    std::string globalsName = settings.GetString(Base::settingUnderworldPath);
    globalsName.append(folder);
+   globalsName.append("/");
    globalsName.append(initial ? "babglobs.dat" : "bglobals.dat");
 
    Base::File file(globalsName, Base::modeRead);

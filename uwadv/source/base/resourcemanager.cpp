@@ -59,7 +59,7 @@ Base::SDL_RWopsPtr ResourceManager::GetResourceFile(const std::string& relativeF
    UaAssert(m_uadataPath.size() > 0); // must have called LoadSettings() before
 
    // first, we try to open the real file
-   std::string filename = m_uadataPath + "/" + relativeFilename;
+   std::string filename = m_uadataPath + relativeFilename;
 
    SDL_RWopsPtr rwops = MakeRWopsPtr(SDL_RWFromFile(filename.c_str(), "rb"));
 
