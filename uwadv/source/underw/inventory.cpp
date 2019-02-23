@@ -28,6 +28,7 @@ using Underworld::Inventory;
 Inventory::Inventory()
    :m_floatingObjectPos(c_inventorySlotNoItem)
 {
+   Create();
 }
 
 void Inventory::Create()
