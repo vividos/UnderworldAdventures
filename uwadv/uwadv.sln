@@ -70,6 +70,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "physics", "source\physics\p
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "uadebug", "source\win32\uadebug\uadebug.vcxproj", "{D71D5409-E534-46C3-A7DF-41F92F8E254B}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "uastudio", "source\win32\uastudio\uastudio.vcxproj", "{CEDCD4DD-3CC4-4944-85EB-BB0601250BA0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -168,6 +170,10 @@ Global
 		{D71D5409-E534-46C3-A7DF-41F92F8E254B}.Debug|Win32.Build.0 = Debug|Win32
 		{D71D5409-E534-46C3-A7DF-41F92F8E254B}.Release|Win32.ActiveCfg = Release|Win32
 		{D71D5409-E534-46C3-A7DF-41F92F8E254B}.Release|Win32.Build.0 = Release|Win32
+		{CEDCD4DD-3CC4-4944-85EB-BB0601250BA0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CEDCD4DD-3CC4-4944-85EB-BB0601250BA0}.Debug|Win32.Build.0 = Debug|Win32
+		{CEDCD4DD-3CC4-4944-85EB-BB0601250BA0}.Release|Win32.ActiveCfg = Release|Win32
+		{CEDCD4DD-3CC4-4944-85EB-BB0601250BA0}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -198,6 +204,7 @@ Global
 		{B025880D-30B9-404B-85EE-31A54F438036} = {58D0EC59-74E9-4E35-A8F1-9212EFCE9EA2}
 		{6917CDD3-2EEF-4B6D-9256-ED5B64391341} = {F4E92C83-ECFD-4C0C-B40B-1136FE3B73ED}
 		{D71D5409-E534-46C3-A7DF-41F92F8E254B} = {F4E92C83-ECFD-4C0C-B40B-1136FE3B73ED}
+		{CEDCD4DD-3CC4-4944-85EB-BB0601250BA0} = {F4E92C83-ECFD-4C0C-B40B-1136FE3B73ED}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {62C784B6-0AE4-42AB-833B-6267BA627046}
