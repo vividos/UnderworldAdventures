@@ -9,7 +9,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)source;$(SolutionDir)source\base;$(SolutionDir)source\thirdparty\SDL2-2.0.9\include;$(SolutionDir)source\thirdparty\SDL2_mixer-2.0.4\include;$(SolutionDir)source\thirdparty\zlib128\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)source;$(SolutionDir)source\base;$(SolutionDir)source\thirdparty\SDL2-2.0.9\include;$(SolutionDir)source\thirdparty\SDL2_mixer-2.0.4\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level4</WarningLevel>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
