@@ -575,6 +575,9 @@ void ua_uwadv_game::process_events()
 
 void ua_uwadv_game::init_game()
 {
+   // re-init, with proper underworld path
+   m_resourceManager = std::make_unique<Base::ResourceManager>(settings);
+
    std::string prefix(settings.GetString(Base::settingGamePrefix));
 
    savegames_manager = std::make_unique<Base::SavegamesManager>(settings);
