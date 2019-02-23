@@ -264,11 +264,12 @@ void uastudio::done_game()
    }
 }
 
-#undef main
-
 /// uastudio main function
-int main()
+int main(int argc, char* argv[])
 {
+   argc;
+   argv;
+
 #ifndef HAVE_DEBUG // in debug mode the debugger catches exceptions
    try
    {

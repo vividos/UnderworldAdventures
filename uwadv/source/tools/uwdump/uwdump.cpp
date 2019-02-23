@@ -169,9 +169,7 @@ void CheckGameType()
    isUw2 = false;
 }
 
-#undef main
-
-int main(char argc, char* argv[])
+int main(int argc, char* argv[])
 {
    printf("uwdump - Ultima Underworld data dump program\n"
       "Copyright (c) 2003,2004,2019 Michael Fink\n\n");

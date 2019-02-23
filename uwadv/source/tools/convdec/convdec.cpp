@@ -143,7 +143,7 @@ void Decompiler::Write(FILE* fd)
 }
 
 
-int main(char argc, char* argv[])
+int main(int argc, char* argv[])
 {
    printf("convdec - Ultima Underworld conversation code decompiler\n"
       "Copyright (c) 2003,2004,2019 Michael Fink\n\n");
