@@ -246,8 +246,7 @@ void ua_quad_tile_collector::visible_tile(unsigned int xpos, unsigned int ypos)
 #include <SDL.h>
 
 #ifdef _MSC_VER
-#pragma comment(lib, "SDL.lib")
-#pragma comment(lib, "SDLmain.lib")
+#pragma comment(lib, "SDL2main.lib")
 #endif
 
 
