@@ -117,12 +117,6 @@
     <None Include="uw2\audio\music.m3u">
       <Filter>uw2\audio</Filter>
     </None>
-    <None Include="uw1\scripts\uwinterface.lua">
-      <Filter>uw1\scripts</Filter>
-    </None>
-    <None Include="uw1\scripts\traps.lua">
-      <Filter>uw1\scripts</Filter>
-    </None>
     <None Include="models\static\bone1.wrl">
       <Filter>models\static</Filter>
     </None>
@@ -214,6 +208,12 @@
       <Filter>uw1\scripts</Filter>
     </CustomBuild>
     <CustomBuild Include="uw1\scripts\triggers.lua">
+      <Filter>uw1\scripts</Filter>
+    </CustomBuild>
+    <CustomBuild Include="uw1\scripts\uwinterface.lua">
+      <Filter>uw1\scripts</Filter>
+    </CustomBuild>
+    <CustomBuild Include="uw1\scripts\traps.lua">
       <Filter>uw1\scripts</Filter>
     </CustomBuild>
   </ItemGroup>
