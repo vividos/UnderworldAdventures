@@ -28,6 +28,12 @@
 // History (Date/Author/Description):
 // ----------------------------------
 //
+// 2005/07/13: Daniel Bowen
+// - Namespace qualify the use of more ATL and WTL classes.
+//
+// 2005/03/14: Daniel Bowen
+// - Fix warnings when compiling for 64-bit.
+//
 // 2004/06/28: Daniel Bowen:
 // - Clean up warnings on level 4
 //
@@ -109,7 +115,7 @@
 //
 //extern "C" const int _fltused = 0;
 
-template<typename T, typename TItem = CCustomTabItem, class TBase = CWindow, class TWinTraits = CCustomTabCtrlWinTraits>
+template<typename T, typename TItem = CCustomTabItem, class TBase = ATL::CWindow, class TWinTraits = CCustomTabCtrlWinTraits>
 class CDotNetTabCtrlImpl : 
 	public CCustomTabCtrl<T, TItem, TBase, TWinTraits>
 {
@@ -193,7 +199,7 @@ public:
 
 		// Background brush
 		if(!m_hbrBackground.IsNull()) m_hbrBackground.DeleteObject();
-		CWindowDC dcWindow(NULL);
+		WTL::CWindowDC dcWindow(NULL);
 		int nBitsPerPixel = dcWindow.GetDeviceCaps(BITSPIXEL);
 		if(nBitsPerPixel > 8)
 		{
@@ -303,7 +309,7 @@ public:
 public:
 	void DrawBackground(RECT rcClient, LPNMCTCCUSTOMDRAW lpNMCustomDraw)
 	{
-		CDCHandle dc( lpNMCustomDraw->nmcd.hdc );
+		WTL::CDCHandle dc( lpNMCustomDraw->nmcd.hdc );
 
 		// Set up the text color and background mode
 		dc.SetTextColor(lpNMCustomDraw->clrBtnText);
@@ -429,7 +435,7 @@ public:
 
 		bool bHighlighted = (CDIS_MARKED == (lpNMCustomDraw->nmcd.uItemState & CDIS_MARKED));
 
-		CDCHandle dc(lpNMCustomDraw->nmcd.hdc);
+		WTL::CDCHandle dc(lpNMCustomDraw->nmcd.hdc);
 
 		rcTab.right--;
 		if(bHighlighted)
@@ -441,13 +447,13 @@ public:
 			dc.FillSolidRect(&rcTab, lpNMCustomDraw->clrSelectedTab);
 		}
 
-		CPen penText, penHilight;
+		WTL::CPen penText, penHilight;
 		penText.CreatePen(PS_SOLID, 1, lpNMCustomDraw->clrBtnText);
 		penHilight.CreatePen(PS_SOLID, 1, lpNMCustomDraw->clrBtnHighlight);
 
 		if(CTCS_BOTTOM == (dwStyle & CTCS_BOTTOM))
 		{
-			CPenHandle penOld = dc.SelectPen(penText);
+			WTL::CPenHandle penOld = dc.SelectPen(penText);
 
 			dc.MoveTo(rcTab.right, rcTab.top);
 			dc.LineTo(rcTab.right, rcTab.bottom);
@@ -459,7 +465,7 @@ public:
 		}
 		else
 		{
-			CPenHandle penOld = dc.SelectPen(penHilight);
+			WTL::CPenHandle penOld = dc.SelectPen(penHilight);
 
 			dc.MoveTo(rcTab.left, rcTab.bottom-1);
 			dc.LineTo(rcTab.left, rcTab.top);
@@ -478,7 +484,7 @@ public:
 		bool bHighlighted = (CDIS_MARKED == (lpNMCustomDraw->nmcd.uItemState & CDIS_MARKED));
 
 		int nItem = (int)lpNMCustomDraw->nmcd.dwItemSpec;
-		CDCHandle dc( lpNMCustomDraw->nmcd.hdc );
+		WTL::CDCHandle dc( lpNMCustomDraw->nmcd.hdc );
 
 		if(bHighlighted)
 		{
@@ -504,9 +510,9 @@ public:
 		}
 		else
 		{
-			CPen pen;
+			WTL::CPen pen;
 			pen.CreatePen(PS_SOLID, 1, lpNMCustomDraw->clrBtnShadow);
-			CPenHandle penOld = dc.SelectPen(pen);
+			WTL::CPenHandle penOld = dc.SelectPen(pen);
 			if(CTCS_BOTTOM == (dwStyle & CTCS_BOTTOM))
 			{
 				// Important!  Be sure and keep within "our" tab area horizontally
@@ -525,7 +531,7 @@ public:
 
 	void DrawItem_ImageAndText(DWORD /*dwStyle*/, LPNMCTCCUSTOMDRAW lpNMCustomDraw, int nIconVerticalCenter, RECT& rcTab, RECT& rcText)
 	{
-		CDCHandle dc( lpNMCustomDraw->nmcd.hdc );
+		WTL::CDCHandle dc( lpNMCustomDraw->nmcd.hdc );
 		bool bHighlighted = (CDIS_MARKED == (lpNMCustomDraw->nmcd.uItemState & CDIS_MARKED));
 		bool bSelected = (CDIS_SELECTED == (lpNMCustomDraw->nmcd.uItemState & CDIS_SELECTED));
 		bool bHot = (CDIS_HOT == (lpNMCustomDraw->nmcd.uItemState & CDIS_HOT));
@@ -606,7 +612,7 @@ public:
 		{
 			::InflateRect(&rcText, -m_settings.iPadding, 0);
 
-			CString sText = pItem->GetText();
+			_CSTRING_NS::CString sText = pItem->GetText();
 			dc.DrawText(sText, sText.GetLength(), &rcText, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_PATH_ELLIPSIS);
 		}
 
@@ -616,15 +622,15 @@ public:
 
 	void DrawCloseButton(LPNMCTCCUSTOMDRAW lpNMCustomDraw)
 	{
-		CDCHandle dc( lpNMCustomDraw->nmcd.hdc );
+		WTL::CDCHandle dc( lpNMCustomDraw->nmcd.hdc );
 
-		CPen penButtons;
+		WTL::CPen penButtons;
 		penButtons.CreatePen(PS_SOLID, 1, lpNMCustomDraw->clrTextInactive);
-		CBrush brushArrow;
+		WTL::CBrush brushArrow;
 		brushArrow.CreateSolidBrush(lpNMCustomDraw->clrTextInactive);
 
-		CPenHandle penOld = dc.SelectPen(penButtons);
-		CBrushHandle brushOld = dc.SelectBrush(brushArrow);
+		WTL::CPenHandle penOld = dc.SelectPen(penButtons);
+		WTL::CBrushHandle brushOld = dc.SelectBrush(brushArrow);
 
 		RECT rcX = m_rcCloseButton;
 
@@ -666,15 +672,15 @@ public:
 
 	void DrawScrollButtons(LPNMCTCCUSTOMDRAW lpNMCustomDraw)
 	{
-		CDCHandle dc( lpNMCustomDraw->nmcd.hdc );
+		WTL::CDCHandle dc( lpNMCustomDraw->nmcd.hdc );
 
-		CPen penButtons;
+		WTL::CPen penButtons;
 		penButtons.CreatePen(PS_SOLID, 1, lpNMCustomDraw->clrTextInactive);
-		CBrush brushArrow;
+		WTL::CBrush brushArrow;
 		brushArrow.CreateSolidBrush(lpNMCustomDraw->clrTextInactive);
 
-		CPenHandle penOld = dc.SelectPen(penButtons);
-		CBrushHandle brushOld = dc.SelectBrush(brushArrow);
+		WTL::CPenHandle penOld = dc.SelectPen(penButtons);
+		WTL::CBrushHandle brushOld = dc.SelectBrush(brushArrow);
 
 		RECT rcArrowRight = m_rcScrollRight;
 		RECT rcArrowLeft = m_rcScrollLeft;
@@ -1004,7 +1010,7 @@ public:
 
 		//DWORD dwStyle = this->GetStyle();
 
-		CClientDC dc(m_hWnd);
+		WTL::CClientDC dc(m_hWnd);
 		//HFONT hOldFont = dc.SelectFont(lpNMCustomDraw->hFontInactive);
 		HFONT hOldFont = dc.SelectFont(m_font);
 
@@ -1043,7 +1049,7 @@ public:
 			if(pItem->UsingText())
 			{
 				RECT rcText = {0};
-				CString sText = pItem->GetText();
+				_CSTRING_NS::CString sText = pItem->GetText();
 				dc.DrawText(sText, sText.GetLength(), &rcText, DT_SINGLELINE | DT_CALCRECT);
 				rcItem.right += (rcText.right - rcText.left) + (m_settings.iPadding * 2);
 			}
@@ -1101,7 +1107,7 @@ public:
 				bool bMakeInactiveSameSize = ((nMinInactiveWidth * nRatioWithSelectionFullSize) < nInactiveSameSizeWidth);
 
 				xpos = m_settings.iIndent;
-				for(i=0; i<nCount; ++i )
+				for(size_t i=0; i<nCount; ++i )
 				{
 					TItem* pItem = m_Items[i];
 					ATLASSERT(pItem != NULL);
@@ -1133,7 +1139,7 @@ public:
 
 				xpos = m_settings.iIndent;
 
-				for(i=0; i<nCount; ++i)
+				for(size_t i=0; i<nCount; ++i)
 				{
 					rcItem.left = rcItem.right = xpos;
 					rcItem.right += cxItem;
@@ -1155,7 +1161,7 @@ public:
 		RECT rcClient;
 		this->GetClientRect(&rcClient);
 
-		CClientDC dc(m_hWnd);
+		WTL::CClientDC dc(m_hWnd);
 		//HFONT hOldFont = dc.SelectFont(lpNMCustomDraw->hFontInactive);
 		HFONT hOldFont = dc.SelectFont(m_font);
 
@@ -1192,7 +1198,7 @@ public:
 			if(pItem->UsingText())
 			{
 				RECT rcText = {0};
-				CString sText = pItem->GetText();
+				_CSTRING_NS::CString sText = pItem->GetText();
 				dc.DrawText(sText, sText.GetLength(), &rcText, DT_SINGLELINE | DT_CALCRECT);
 				rcItem.right += (rcText.right - rcText.left) + (m_settings.iPadding * 2);
 			}
@@ -1223,11 +1229,11 @@ public:
 
 template <class TItem = CCustomTabItem>
 class CDotNetTabCtrl :
-	public CDotNetTabCtrlImpl<CDotNetTabCtrl, TItem>
+	public CDotNetTabCtrlImpl<CDotNetTabCtrl<TItem>, TItem>
 {
 protected:
 	typedef CDotNetTabCtrl thisClass;
-	typedef CDotNetTabCtrlImpl<CDotNetTabCtrl, TItem> baseClass;
+	typedef CDotNetTabCtrlImpl<CDotNetTabCtrl<TItem>, TItem> baseClass;
 
 // Constructors:
 public:
@@ -1245,7 +1251,7 @@ public:
 	//END_MSG_MAP()
 };
 
-template<typename T, typename TItem = CCustomTabItem, class TBase = CWindow, class TWinTraits = CCustomTabCtrlWinTraits>
+template<typename T, typename TItem = CCustomTabItem, class TBase = ATL::CWindow, class TWinTraits = CCustomTabCtrlWinTraits>
 class CDotNetButtonTabCtrlImpl : 
 	public CDotNetTabCtrlImpl<T, TItem, TBase, TWinTraits>
 {
@@ -1338,9 +1344,9 @@ public:
 // Overrides for painting from CDotNetTabCtrlImpl
 public:
 
-	void DrawBackground(RECT rcClient, LPNMCTCCUSTOMDRAW lpNMCustomDraw)
+	void DrawBackground(RECT /*rcClient*/, LPNMCTCCUSTOMDRAW lpNMCustomDraw)
 	{
-		CDCHandle dc( lpNMCustomDraw->nmcd.hdc );
+		WTL::CDCHandle dc( lpNMCustomDraw->nmcd.hdc );
 
 		// Set up the text color and background mode
 		dc.SetTextColor(lpNMCustomDraw->clrBtnText);
@@ -1365,23 +1371,23 @@ public:
 		dc.SelectBrush(hOldBrush);
 	}
 
-	void DrawItem_InitBounds(DWORD dwStyle, RECT rcItem, RECT& rcTab, RECT& rcText, int& nIconVerticalCenter)
+	void DrawItem_InitBounds(DWORD /*dwStyle*/, RECT /*rcItem*/, RECT& rcTab, RECT& /*rcText*/, int& nIconVerticalCenter)
 	{
 		rcTab.top += 3;
 		rcTab.bottom -= 3;
 		nIconVerticalCenter = (rcTab.bottom + rcTab.top) / 2;
 	}
 
-	void DrawItem_TabSelected(DWORD dwStyle, LPNMCTCCUSTOMDRAW lpNMCustomDraw, RECT& rcTab)
+	void DrawItem_TabSelected(DWORD /*dwStyle*/, LPNMCTCCUSTOMDRAW lpNMCustomDraw, RECT& rcTab)
 	{
 		// Tab is selected, so paint as select
 
 		bool bHighlighted = (CDIS_MARKED == (lpNMCustomDraw->nmcd.uItemState & CDIS_MARKED));
 
-		CDCHandle dc( lpNMCustomDraw->nmcd.hdc );
+		WTL::CDCHandle dc( lpNMCustomDraw->nmcd.hdc );
 
-		CPen penOutline;
-		CBrush brushSelected;
+		WTL::CPen penOutline;
+		WTL::CBrush brushSelected;
 		if(bHighlighted)
 		{
 			penOutline.CreatePen(PS_SOLID, 1, lpNMCustomDraw->clrBtnHighlight);

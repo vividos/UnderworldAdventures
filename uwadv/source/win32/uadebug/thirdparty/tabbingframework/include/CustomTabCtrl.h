@@ -13,9 +13,9 @@
 // Copyright (c) 2002-2004 Daniel Bowen.
 //
 // This code may be used in compiled form in any way you desire. This
-// file may be redistributed by any means PROVIDING it is 
-// not sold for profit without the authors written consent, and 
-// providing that this notice and the authors name is included. 
+// file may be redistributed by any means PROVIDING it is
+// not sold for profit without the authors written consent, and
+// providing that this notice and the authors name is included.
 //
 // This file is provided "as is" with no expressed or implied warranty.
 // The author accepts no liability if it causes any damage to you or your
@@ -25,6 +25,12 @@
 //
 // History (Date/Author/Description):
 // ----------------------------------
+//
+// 2005/07/13: Daniel Bowen
+// - Namespace qualify the use of more ATL and WTL classes.
+//
+// 2005/03/14: Daniel Bowen
+// - Fix warnings when compiling for 64-bit.
 //
 // 2004/06/28: Daniel Bowen
 // - More ATLASSERTs
@@ -78,7 +84,7 @@
 // 2003/06/27: Daniel Bowen
 // - Update comment referencing DECLARE_WND_CLASS to be DECLARE_WND_CLASS_EX instead
 // - If the creation of the window fails, don't try to initialize.
-// 
+//
 // 2003/06/03: Daniel Bowen
 // - Fix compile errors for VC 7.1
 //
@@ -151,7 +157,7 @@
 //     This is a change from previous versions,
 //     where if the index was the same as the current selection,
 //     the method returned immediately.
-//   
+//
 // - DeleteItem -
 //   * When bUpdateSelection is true:
 //     Now, when you delete the selected item, instead of
@@ -160,11 +166,11 @@
 //     was the last item, the new last item is selected.
 //     If the selected item was the only remaining item,
 //     the selection is cleared.
-//     
+//
 //
 // 2002/06/13: Daniel Bowen
 // - Fix small bug with scroll-repeat when scrolling right.
-// 
+//
 // 2002/06/12: Daniel Bowen
 // - Publish codeproject article.  For history prior
 //   to the release of the article, please see the article
@@ -205,10 +211,6 @@
 
 #if (_WIN32_IE < 0x0400)
   #error CustomTabCtrl.h requires _WIN32_IE >= 0x0400
-#endif
-
-#ifndef GCLP_HCURSOR
-#define GCLP_HCURSOR GCL_HCURSOR
 #endif
 
 // Window styles:
@@ -351,15 +353,15 @@ class CCustomTabItem
 protected:
 	RECT m_rcItem;
 	int m_nImage;
-	CString m_sText;
-	CString m_sToolTip;
+	_CSTRING_NS::CString m_sText;
+	_CSTRING_NS::CString m_sToolTip;
 	bool m_bHighlighted;
 	bool m_bCanClose;
 
 public:
 	// NOTE: These are here for backwards compatibility.
 	//  Use the new CTFI_NONE, CTFI_RECT, etc.
-	typedef enum FieldFlags
+	enum FieldFlags
 	{
 		eCustomTabItem_None    = CTFI_NONE,
 		eCustomTabItem_Rect    = CTFI_RECT,
@@ -438,7 +440,7 @@ public:
 		return true;
 	}
 
-	CString GetText() const
+	_CSTRING_NS::CString GetText() const
 	{
 		return m_sText;
 	}
@@ -452,7 +454,7 @@ public:
 		return true;
 	}
 
-	CString GetToolTip() const
+	_CSTRING_NS::CString GetToolTip() const
 	{
 		return m_sToolTip;
 	}
@@ -485,7 +487,7 @@ public:
 		m_bCanClose = bCanClose;
 		return true;
 	}
-	
+
 
 // Methods:
 public:
@@ -557,7 +559,7 @@ protected:
 public:
 	// NOTE: This is here for backwards compatibility.
 	//  Use the new CTFI_TABVIEW instead
-	typedef enum FieldFlags
+	enum FieldFlags
 	{
 		eCustomTabItem_TabView = CTFI_TABVIEW,
 	};
@@ -646,21 +648,6 @@ public:
 	}
 };
 
-typedef CWinTraits<WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | CTCS_TOOLTIPS, 0> CCustomTabCtrlWinTraits;
-
-template <class T, class TItem = CCustomTabItem, class TBase = CWindow, class TWinTraits = CCustomTabCtrlWinTraits>
-class ATL_NO_VTABLE CCustomTabCtrl : 
-	public CWindowImpl< T, TBase, TWinTraits >,
-	public COffscreenDrawRect< T >
-{
-public:
-	// Expose the item type (that's a template parameter to this base class)
-	typedef typename TItem TItem;
-
-protected:
-	typedef CWindowImpl< T, TBase, TWinTraits > baseClass;
-	typedef COffscreenDrawRect< T > offscreenDrawClass;
-
 #if (_ATL_VER < 0x0700)
 // With ATL 7, CAtlArray was introduced which is better than
 //  CSimpleArray. Among other things, it supports inserting
@@ -674,12 +661,14 @@ protected:
 //  can't call its versions of functions (so you have
 //  to use the CAtlArray style of functions)
 
+namespace ATL {
+
 template<typename E>
-class CAtlArray : protected CSimpleArray<E>
+class CAtlArray : protected ATL::CSimpleArray<E>
 {
 protected:
 	typedef CAtlArray thisClass;
-	typedef CSimpleArray<E> baseClass;
+	typedef ATL::CSimpleArray<E> baseClass;
 
 public:
 
@@ -738,18 +727,37 @@ public:
 
 };
 
+}; // namespace ATL
+
 #endif // (_ATL_VER < 0x0700)
+
+
+
+typedef ATL::CWinTraits<WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | CTCS_TOOLTIPS, 0> CCustomTabCtrlWinTraits;
+
+template <class T, class TItem = CCustomTabItem, class TBase = ATL::CWindow, class TWinTraits = CCustomTabCtrlWinTraits>
+class ATL_NO_VTABLE CCustomTabCtrl :
+	public ATL::CWindowImpl< T, TBase, TWinTraits >,
+	public COffscreenDrawRect< T >
+{
+public:
+	// Expose the item type (that's a template parameter to this base class)
+	typedef typename TItem TItem;
+
+protected:
+	typedef ATL::CWindowImpl< T, TBase, TWinTraits > baseClass;
+	typedef COffscreenDrawRect< T > offscreenDrawClass;
 
 // Member variables
 protected:
 	int m_iCurSel;
 	int m_iHotItem;
 	CTCSETTINGS m_settings;
-	CAtlArray< TItem* > m_Items;
-	CFont m_font;
-	CFont m_fontSel;
-	CImageList m_imageList;
-	CToolTipCtrl m_tooltip;
+	ATL::CAtlArray< TItem* > m_Items;
+	WTL::CFont m_font;
+	WTL::CFont m_fontSel;
+	WTL::CImageList m_imageList;
+	WTL::CToolTipCtrl m_tooltip;
 
 	RECT m_rcTabItemArea;
 	RECT m_rcScrollLeft;
@@ -777,7 +785,7 @@ protected:
 	//       Valid values are 0-63 (the value is bit shifted to/from position).
 	//  SR - Scroll repeat speed.  Valid values are no-repeat,
 	//       slow repeat, normal repeat and fast repeat
-	//  HT - Current hot tracked item (if its a tab, then m_iHotItem is the hot tab item) 
+	//  HT - Current hot tracked item (if its a tab, then m_iHotItem is the hot tab item)
 	//  MD - Item under mouse when mouse button down message was sent
 	//       but before mouse button up message is sent
 	//  MO - Item current under mouse cursor
@@ -1120,7 +1128,12 @@ public:
 			m_dwState &= ~ectcDraggingItem;
 
 			// Restore the default cursor
+// need conditional code because types don't match in winuser.h
+#ifdef _WIN64
 			::SetCursor((HCURSOR)::GetClassLongPtr(m_hWnd, GCLP_HCURSOR));
+#else
+			::SetCursor((HCURSOR)LongToHandle(::GetClassLongPtr(m_hWnd, GCLP_HCURSOR)));
+#endif
 
 			if(m_hCursorMove != NULL)
 			{
@@ -1227,7 +1240,7 @@ public:
 			this->GetItemRect(index, &rcItem);
 
 			int itemMiddlePointX = rcItem.left + ((rcItem.right - rcItem.left) / 2);
-			
+
 			if((m_iDragItem < index) && (ptCursor.x > itemMiddlePointX))
 			{
 				// They're dragging an item from left to right,
@@ -2110,7 +2123,7 @@ public:
 			// tool ID = tab index + 1	(to avoid 0 as an ID)
 			//
 			// We supply the RECT elsewhere and the text here
-			UINT id = pToolTipInfo->hdr.idFrom;
+			UINT_PTR id = pToolTipInfo->hdr.idFrom;
 			if(id > 0 && id <= m_Items.GetCount())
 			{
 				TItem* pItem = m_Items[id-1];
@@ -2288,8 +2301,8 @@ public:
 
 	void UpdateLayout_ScrollToFit(RECT rcTabItemArea)
 	{
-		CClientDC dc(m_hWnd);
-		HFONT hOldFont = dc.SelectFont(this->GetFont());    
+		WTL::CClientDC dc(m_hWnd);
+		HFONT hOldFont = dc.SelectFont(this->GetFont());
 
 		int height = rcTabItemArea.bottom-rcTabItemArea.top;
 
@@ -2306,7 +2319,7 @@ public:
 				if( pItem->UsingText() )
 				{
 					RECT rcText = { 0 };
-					CString sText = pItem->GetText();
+					_CSTRING_NS::CString sText = pItem->GetText();
 					dc.DrawText(sText, sText.GetLength(), &rcText, DT_SINGLELINE | DT_CALCRECT);
 					rc.right += (rcText.right-rcText.left) + (m_settings.iPadding*2);
 				}
@@ -2350,7 +2363,7 @@ public:
 				// don't intersect at all, we still need
 				// to update the tool rect, or we'll get the wrong
 				// tooltip in some cases.
-				m_tooltip.SetToolRect(m_hWnd, i+1, &rcIntersect);
+				m_tooltip.SetToolRect(m_hWnd, (UINT)i+1, &rcIntersect);
 			}
 		}
 	}
@@ -2556,7 +2569,7 @@ public:
 		{
 			pT->DoPostPaint(rcClient, &nmc);
 		}
-		
+
 		if( CDRF_NOTIFYPOSTPAINT == (lResCustom & CDRF_NOTIFYPOSTPAINT) )
 		{
 			pnmcd->dwDrawStage = CDDS_POSTPAINT;
@@ -2620,7 +2633,7 @@ public:
 		// NOTE: Your derived class might be able to do a
 		//  better job of erasing only the necessary area
 		//  (using the clip box, etc.)
-		CDCHandle dc(lpNMCustomDraw->nmcd.hdc);
+		WTL::CDCHandle dc(lpNMCustomDraw->nmcd.hdc);
 
 		HBRUSH hOldBrush = dc.SelectBrush(lpNMCustomDraw->hBrushBackground);
 		dc.PatBlt(rcClient.left, rcClient.top, rcClient.right-rcClient.left, rcClient.bottom-rcClient.top, PATCOPY);
@@ -2665,18 +2678,18 @@ public:
 		return baseClass::UnsubclassWindow(bForce);
 	}
 
-	CImageList SetImageList(HIMAGELIST hImageList)
+	WTL::CImageList SetImageList(HIMAGELIST hImageList)
 	{
 		CImageList imageListOld = m_imageList;
 		m_imageList = hImageList;
 		return imageListOld;
 	}
-	CImageList& GetImageList() const
+	WTL::CImageList& GetImageList() const
 	{
 		return m_imageList;
 	}
 
-	CToolTipCtrl GetTooltips() const
+	WTL::CToolTipCtrl GetTooltips() const
 	{
 		return m_tooltip;
 	}
@@ -2774,7 +2787,7 @@ public:
 		// We supply the RECT and text elsewhere.
 		if(m_tooltip.IsWindow())
 		{
-			m_tooltip.AddTool(m_hWnd, LPSTR_TEXTCALLBACK, &rcDefault, nNewCount);
+			m_tooltip.AddTool(m_hWnd, LPSTR_TEXTCALLBACK, &rcDefault, (UINT)nNewCount);
 		}
 
 		pT->UpdateLayout();
@@ -2806,13 +2819,13 @@ public:
 		{
 			if(nFromIndex == (size_t)m_iCurSel)
 			{
-				pT->SetCurSel(nToIndex);
+				pT->SetCurSel((int)nToIndex);
 			}
 		}
 
 		if(bNotify)
 		{
-			NMCTC2ITEMS nmh = {{ m_hWnd, this->GetDlgCtrlID(), CTCN_MOVEITEM }, nFromIndex, nToIndex, {-1,-1}};
+			NMCTC2ITEMS nmh = {{ m_hWnd, this->GetDlgCtrlID(), CTCN_MOVEITEM }, (int)nFromIndex, (int)nToIndex, {-1,-1}};
 			::SendMessage(GetParent(), WM_NOTIFY, nmh.hdr.idFrom, (LPARAM)&nmh);
 		}
 
@@ -2845,17 +2858,17 @@ public:
 		{
 			if(nFromIndex == (size_t)m_iCurSel)
 			{
-				pT->SetCurSel(nToIndex);
+				pT->SetCurSel((int)nToIndex);
 			}
 			else if(nToIndex == (size_t)m_iCurSel)
 			{
-				pT->SetCurSel(nFromIndex);
+				pT->SetCurSel((int)nFromIndex);
 			}
 		}
 
 		if(bNotify)
 		{
-			NMCTC2ITEMS nmh = {{ m_hWnd, this->GetDlgCtrlID(), CTCN_SWAPITEMPOSITIONS }, nFromIndex, nToIndex, {-1,-1}};
+			NMCTC2ITEMS nmh = {{ m_hWnd, this->GetDlgCtrlID(), CTCN_SWAPITEMPOSITIONS }, (int)nFromIndex, (int)nToIndex, {-1,-1}};
 			::SendMessage(GetParent(), WM_NOTIFY, nmh.hdr.idFrom, (LPARAM)&nmh);
 		}
 
@@ -2876,7 +2889,7 @@ public:
 		if(bNotify)
 		{
 			// Returning TRUE tells us not to delete the item
-			NMCTCITEM nmh = {{ m_hWnd, this->GetDlgCtrlID(), CTCN_DELETEITEM }, nItem, {-1,-1}};
+			NMCTCITEM nmh = {{ m_hWnd, this->GetDlgCtrlID(), CTCN_DELETEITEM }, (int)nItem, {-1,-1}};
 			if( TRUE == ::SendMessage(GetParent(), WM_NOTIFY, nmh.hdr.idFrom, (LPARAM)&nmh) )
 			{
 				// Cancel the attempt
@@ -2979,7 +2992,7 @@ public:
 		// We supply the RECT and text elsewhere.
 		if(m_tooltip.IsWindow())
 		{
-			m_tooltip.DelTool(m_hWnd, m_Items.GetCount());
+			m_tooltip.DelTool(m_hWnd, (UINT)m_Items.GetCount());
 		}
 
 		TItem* pItem = m_Items[nItem];
@@ -3160,7 +3173,7 @@ public:
 				{
 					// TODO: check for ONITEMLABEL, ONITEMICON
 					pHitTestInfo->flags = CTCHT_ONITEM;
-					return i;
+					return (int)i;
 				}
 			}
 		}
@@ -3317,9 +3330,9 @@ public:
 		return TRUE;
 	}
 
-	void SetPadding(int iPadding) 
-	{ 
-		m_iPadding = iPadding; 
+	void SetPadding(int iPadding)
+	{
+		m_iPadding = iPadding;
 		T* pT = static_cast<T*>(this);
 		pT->UpdateLayout();
 		this->Invalidate();
@@ -3353,7 +3366,7 @@ public:
 		{
 			if(m_Items[i]->MatchItem(pFindItem, eFlags))
 			{
-				return i;
+				return (int)i;
 			}
 		}
 

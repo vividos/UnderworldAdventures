@@ -29,7 +29,7 @@
 
 template <class TItem = CCustomTabItem>
 class CButtonTabCtrl : 
-   public CCustomTabCtrl<CButtonTabCtrl, TItem>
+   public CCustomTabCtrl<CButtonTabCtrl<TItem>, TItem>
 {
 protected:
     typedef CCustomTabCtrl<CButtonTabCtrl, TItem> customTabClass;
@@ -96,7 +96,7 @@ public:
 
 template <class TItem = CCustomTabItem>
 class CFolderTabCtrl : 
-   public CCustomTabCtrl<CFolderTabCtrl, TItem>
+   public CCustomTabCtrl<CFolderTabCtrl<TItem>, TItem>
 {
 protected:
     typedef CCustomTabCtrl<CFolderTabCtrl, TItem> customTabClass;
@@ -227,7 +227,7 @@ public:
 
 template <class TItem = CCustomTabItem>
 class CSimpleDotNetTabCtrl : 
-   public CCustomTabCtrl<CSimpleDotNetTabCtrl, TItem>
+   public CCustomTabCtrl<CSimpleDotNetTabCtrl<TItem>, TItem>
 {
 protected:
     typedef CCustomTabCtrl<CSimpleDotNetTabCtrl, TItem> customTabClass;

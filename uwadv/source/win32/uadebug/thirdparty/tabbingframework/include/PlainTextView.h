@@ -69,7 +69,7 @@ public:
 		return lRet;
 	}
 
-	LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 	{
 		this->DestroyAccelerators();
 
@@ -82,40 +82,33 @@ protected:
 
 	void InitializeFont(void)
 	{
-		CClientDC dc(m_hWnd);
-
-		// Set the font
-		LOGFONT lf = {0};
-		::ZeroMemory(&lf, sizeof(LOGFONT));
-		const int PointSize = 8;
-		lf.lfHeight = -MulDiv(PointSize, GetDeviceCaps(dc, LOGPIXELSY), 72);
-		::lstrcpy(lf.lfFaceName, _T("Courier New"));
-		m_font.Attach( ::CreateFontIndirect(&lf) );
-
 		// Set the font of the edit control.
+		CLogFont logFont;
+		CClientDC dc(m_hWnd);
+		logFont.SetHeight(8, dc);
+		::lstrcpy(logFont.lfFaceName, _T("Courier New"));
+
+		m_font.Attach(logFont.CreateFontIndirect());
 		this->SetFont(m_font);
 
-
-		// Set the tab stops to 4 characters
-
-		CFontHandle hOldFont = dc.SelectFont(m_font);
-
-		// Retreive text metrics for that font and return the previously
-		// selected font.
+		// Set the tab stops to 4 characters.
+		// Tab stops are in dialog units.
 		TEXTMETRIC tm = {0};
+		CFontHandle oldFont = dc.SelectFont(m_font);
 		dc.GetTextMetrics(&tm);
-		dc.SelectFont(hOldFont);
+		dc.SelectFont(oldFont);
 
 		// Tab stops are in dialog units. We'll use a 4 character tab stop
-		int nDialogUnitsX = ::MulDiv(4, tm.tmAveCharWidth, LOWORD(GetDialogBaseUnits()));
-		int nTabStops = 4*nDialogUnitsX;
-		this->SetTabStops(nTabStops);
+		int dialogUnitsX = ::MulDiv(4, tm.tmAveCharWidth, LOWORD(GetDialogBaseUnits()));
+		int tabStops = 4*dialogUnitsX;
+
+		this->SetTabStops(tabStops);
 	}
 
 
 	void CreateAccelerators(void)
 	{
-		const int cAccel = 12;
+		const int cAccel = 13;
 		ACCEL AccelTable[cAccel] = {
 			{FVIRTKEY | FCONTROL | FNOINVERT,  'A',        ID_EDIT_SELECT_ALL},
 			{FVIRTKEY | FCONTROL | FNOINVERT,  'X',        ID_EDIT_CUT},
@@ -123,6 +116,7 @@ protected:
 			{FVIRTKEY | FCONTROL | FNOINVERT,  'V',        ID_EDIT_PASTE},
 			{FVIRTKEY | FCONTROL | FNOINVERT,  'F',        ID_EDIT_FIND},
 			{FVIRTKEY | FNOINVERT,             VK_F3,      ID_EDIT_REPEAT},
+			{FVIRTKEY | FSHIFT | FNOINVERT,    VK_F3,      ID_EDIT_REPEAT},
 			{FVIRTKEY | FCONTROL | FNOINVERT,  'H',        ID_EDIT_REPLACE},
 			{FVIRTKEY | FCONTROL | FNOINVERT,  'Z',        ID_EDIT_UNDO},
 			{FVIRTKEY | FCONTROL | FNOINVERT,  'Y',        ID_EDIT_REDO},

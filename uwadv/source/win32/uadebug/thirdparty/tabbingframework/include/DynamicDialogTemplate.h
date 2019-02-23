@@ -30,6 +30,8 @@
 // To find out more about in-memory dialog templates, see the MSDN library
 // for a description of DLGTEMPLATE and DLGITEMTEMPLATE
 
+namespace DynamicDialog {
+
 struct DynamicDialogItemSize
 {
 public:
@@ -244,10 +246,9 @@ public:
 			// Get a pointer to the "end"
 			BYTE* pOffset = (BYTE*)pDialogTemplate + m_bytesUsed;
 
-			// align DLGITEMTEMPLATE on DWORD boundary
-
-			// Fill out the structure and following bytes for the control
-			DLGITEMTEMPLATE* pDialogItem = (DLGITEMTEMPLATE*) Align_DWORD ((WORD*)pOffset);
+			// Fill out the structure and following bytes for the control.
+			// DLGITEMTEMPLATE structures should be aligned on DWORD boundaries.
+			DLGITEMTEMPLATE* pDialogItem = (DLGITEMTEMPLATE*) (((DWORD_PTR)pOffset + 3) & ~3);
 			pDialogItem->style = style;
 			pDialogItem->dwExtendedStyle = dwExtendedStyle;
 			pDialogItem->x  = x;
@@ -338,7 +339,7 @@ public:
 			x, y, cx, cy,
 			id,
 			text, text ? ::lstrlenW(text) + 1 : 0,
-			classAtom, classAtomWordCount);
+			(const wchar_t*)classAtom, classAtomWordCount);
 	}
 	bool AddControl(
 		    DWORD style, DWORD dwExtendedStyle,
@@ -352,7 +353,7 @@ public:
 			dialogItemSize.x, dialogItemSize.y, dialogItemSize.cx, dialogItemSize.cy,
 			id,
 			text, text ? ::lstrlenW(text) + 1 : 0,
-			classAtom, classAtomWordCount);
+			(const wchar_t*)classAtom, classAtomWordCount);
 	}
 
 	bool AddButtonControl(
@@ -455,14 +456,6 @@ public:
 	{
 		return this->AddControl(style, dwExtendedStyle, dialogItemSize,
 			id, text, eClassAtom_ComboBox);
-	}
-
-	static inline unsigned short* Align_DWORD(unsigned short* pWordPtr)
-	{
-		ULONG ul = 3UL + PtrToUlong(pWordPtr);
-		ul >>= 2;
-		ul <<= 2;
-		return (unsigned short*)ULongToPtr(ul);
 	}
 };
 
@@ -479,8 +472,8 @@ class CDynamicDialogExTemplate
 // Important!  If ATL::CDialogImpl ever changes, reflect those changes here.
 //  We don't inherit from CDialogImpl at all and completely duplicate (and
 //  appropriately modify) everything it does.
-template <class T, class TBase = CWindow, class TDynamicDialogTemplate = CDynamicDialogTemplate>
-class ATL_NO_VTABLE CDynamicDialogImpl : public CDialogImplBaseT< TBase >
+template <class T, class TBase = ATL::CWindow, class TDynamicDialogTemplate = CDynamicDialogTemplate>
+class ATL_NO_VTABLE CDynamicDialogImpl : public ATL::CDialogImplBaseT< TBase >
 {
 protected:
 	TDynamicDialogTemplate m_dynamicDialogTemplate;
@@ -504,7 +497,7 @@ public:
 		pT->ConstructDialogResource();
 
 		ATLASSERT((bool)m_dynamicDialogTemplate);
-		_AtlWinModule.AddCreateWndData(&m_thunk.cd, (CDialogImplBaseT< TBase >*)this);
+		_AtlWinModule.AddCreateWndData(&m_thunk.cd, (ATL::CDialogImplBaseT< TBase >*)this);
 #ifdef _DEBUG
 		m_bModal = true;
 #endif //_DEBUG
@@ -528,7 +521,7 @@ public:
 		pT->ConstructDialogResource();
 
 		ATLASSERT((bool)m_dynamicDialogTemplate);
-		_AtlWinModule.AddCreateWndData(&m_thunk.cd, (CDialogImplBaseT< TBase >*)this);
+		_AtlWinModule.AddCreateWndData(&m_thunk.cd, (ATL::CDialogImplBaseT< TBase >*)this);
 #ifdef _DEBUG
 		m_bModal = false;
 #endif //_DEBUG
@@ -561,11 +554,11 @@ public:
 //  either during a "Create" call, or when there's an implicit or explict cast to PROPSHEETPAGE*
 //  (such as when "AddPage" is called on the sheet with the page as the argument).
 
-template <class T, class TBase = CPropertyPageWindow, class TDynamicDialogTemplate = CDynamicDialogTemplate>
-class ATL_NO_VTABLE CDynamicPropertyPageImpl : public CPropertyPageImpl< T, TBase >
+template <class T, class TBase = WTL::CPropertyPageWindow, class TDynamicDialogTemplate = CDynamicDialogTemplate>
+class ATL_NO_VTABLE CDynamicPropertyPageImpl : public WTL::CPropertyPageImpl< T, TBase >
 {
 protected:
-	typedef CPropertyPageImpl< T, TBase > baseClass;
+	typedef WTL::CPropertyPageImpl< T, TBase > baseClass;
 
 protected:
 	bool m_dialogResourceInitialized;
@@ -645,6 +638,8 @@ public:
 		}
 	}
 };
+
+}; // namespace DynamicDialog
 
 
 #endif //__DynamicDialogTemplate_h__

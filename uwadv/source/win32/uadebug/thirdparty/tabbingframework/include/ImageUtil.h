@@ -33,7 +33,8 @@ namespace ImageUtil
 	inline HBITMAP CreateCheckboxImage(HDC dcScreen,
 		eCheckbox checkState,
 		int cx, int cy,
-		COLORREF transparentColor)
+		COLORREF transparentColor,
+		HWND hWndControl = NULL)
 	{
 #ifdef __ATLTHEME_H__
 		UINT stateDTB = CBS_CHECKEDNORMAL;
@@ -70,21 +71,23 @@ namespace ImageUtil
 #endif
 
 		HBITMAP bitmap = NULL;
-		CDC dc;
+		WTL::CDC dc;
 		dc.CreateCompatibleDC(dcScreen);
 		if(!dc.IsNull())
 		{
-			CRect rcImage(0,0,cx,cy);
-			bitmap = ::CreateCompatibleBitmap(dcScreen, rcImage.Width(), rcImage.Height());
-			CBitmapHandle hOldBitmap = dc.SelectBitmap(bitmap);
+			RECT rcImage = {0,0,cx,cy};
+			bitmap = ::CreateCompatibleBitmap(dcScreen, cx, cy);
+			WTL::CBitmapHandle hOldBitmap = dc.SelectBitmap(bitmap);
 
 			dc.FillSolidRect(&rcImage, transparentColor);
-			rcImage.DeflateRect(1,1);
+			::InflateRect(&rcImage, -1, -1);
 #ifdef __ATLTHEME_H__
-			CTheme theme;
-			if(theme.OpenThemeData(m_list, L"Button"))
+			WTL::CTheme theme;
+			if(theme.OpenThemeData(hWndControl, L"Button"))
 			{
 				theme.DrawThemeBackground(dc, BP_CHECKBOX, stateDTB, &rcImage);
+
+				theme.CloseThemeData();
 			}
 			else
 			{

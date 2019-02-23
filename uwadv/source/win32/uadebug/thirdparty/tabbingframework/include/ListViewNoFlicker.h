@@ -31,7 +31,7 @@ protected:
 	typedef CListViewNoFlickerT<T> thisClass;
 
 protected:
-	CWindow m_headerCtrl;
+	ATL::CWindow m_headerCtrl;
 
 public:
 	CListViewNoFlickerT() : m_headerCtrl(NULL)
@@ -64,48 +64,50 @@ public:
 		MESSAGE_HANDLER(WM_PRINTCLIENT, OnPaint)
 	END_MSG_MAP()
 
-	LRESULT OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
 		// Erase the background in OnPaint.
 		// This is part of the key to flicker free drawing.
 		return 1;
 	}
 
-	LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	LRESULT OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
 		T* pT = static_cast<T*>(this);
 		if( wParam != NULL )
 		{
-			CMemDC memdc((HDC)wParam, NULL);
+			WTL::CMemDC memdc((HDC)wParam, NULL);
 			pT->DoPaint(memdc.m_hDC, memdc.m_rc);
 		}
 		else
 		{
-			CPaintDC dc(pT->m_hWnd);
-			CMemDC memdc(dc.m_hDC, &dc.m_ps.rcPaint);
+			WTL::CPaintDC dc(pT->m_hWnd);
+			WTL::CMemDC memdc(dc.m_hDC, &dc.m_ps.rcPaint);
 			pT->DoPaint(memdc.m_hDC, dc.m_ps.rcPaint);
 		}
 		return 0;
 	}
 
-	inline void DoPaint(CDCHandle dc, RECT& rcClip)
+	inline void DoPaint(WTL::CDCHandle dc, RECT& rcClip)
 	{
 		T* pT = static_cast<T*>(this);
 
-		// We'll let the list view's WM_ERASEBKGND message draw
-		// into our offscreen buffer in case its doing
-		// something more than filling the area with COLOR_WINDOW
-		//memdc.FillSolidRect(&memdc.m_rc, ::GetSysColor(COLOR_WINDOW));
-		pT->DefWindowProc( WM_ERASEBKGND, (WPARAM)(HDC)dc, 0);
-		pT->DefWindowProc( WM_PAINT, (WPARAM)(HDC)dc, 0);
-
 		if(m_headerCtrl.IsWindow())
 		{
-			// The "erase background" will have already been taken
-			// care of with the list view's erasing
+			// Draw the header first
+			m_headerCtrl.SendMessage(WM_ERASEBKGND, (WPARAM)(HDC)dc, 0);
 			m_headerCtrl.SendMessage(WM_PAINT, (WPARAM)(HDC)dc, 0);
 			m_headerCtrl.ValidateRect(&rcClip);
+
+			// Prevent the header being drawn over
+			CRect rcHeader;
+			m_headerCtrl.GetClientRect(&rcHeader);
+			dc.ExcludeClipRect(&rcHeader);
 		}
+
+		// Now draw the listview
+		pT->DefWindowProc(WM_ERASEBKGND, (WPARAM)(HDC)dc, 0);
+		pT->DefWindowProc(WM_PAINT, (WPARAM)(HDC)dc, 0);
 	}
 
 };
@@ -169,7 +171,7 @@ public:
 		return lRet;
 	}
 
-	LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 	{
 		noFlickerClass::Uninitialize();
 
