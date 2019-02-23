@@ -51,7 +51,7 @@ void PlayerImporter::LoadPlayer(Underworld::Player& player, const std::string& p
    }
 
    char buffer[15] = {0};
-   memcpy(&playerInfos[0], buffer, 14);
+   memcpy(buffer, &playerInfos[0], 14);
    buffer[14] = 0;
 
    player.SetName(std::string(buffer));
@@ -115,7 +115,7 @@ void PlayerImporter::LoadPlayer(Underworld::Player& player, const std::string& p
    player.SetPos(xpos, ypos);
    player.SetHeight(zpos);
 
-   Uint16 mapLevel = Uint16(playerInfos[0x005C]) | (Uint16(playerInfos[0x005D]) << 8);
+   Uint16 mapLevel = Uint16(playerInfos[0x005B]) | (Uint16(playerInfos[0x005C]) << 8);
    player.SetAttribute(Underworld::attrMapLevel, mapLevel);
 
    double rangle = playerInfos[0x0054] * (360.0 / 8.0);
