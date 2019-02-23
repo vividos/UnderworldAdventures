@@ -429,27 +429,31 @@ void ua_panel::update_inventory()
    // start index; 0 is used in the main inventory
    unsigned int start = 0;
 
-   Uint16 cont_id = inv.GetObjectInfo(inv.GetContainerPos()).m_itemID;
-   if (cont_id != Underworld::c_itemIDNone)
+   if (inv.GetContainerPos() != Underworld::c_inventorySlotNoItem)
    {
-      // inside a container
+      Uint16 cont_id = inv.GetObjectInfo(inv.GetContainerPos()).m_itemID;
+      if (cont_id != Underworld::c_itemIDNone)
+      {
+         // inside a container
 
-      // draw alternative inventory panel
-      img.paste_image(img_inv_bagpanel, 1, 74);
+         // draw alternative inventory panel
+         img.paste_image(img_inv_bagpanel, 1, 74);
 
-      // draw up/down arrows
-      if (slot_start > 0)
-         img.paste_image(img_inv_updown[0], 61, 64, true); // up
+         // draw up/down arrows
+         if (slot_start > 0)
+            img.paste_image(img_inv_updown[0], 61, 64, true); // up
 
-      if (inv.GetNumSlots() - slot_start >= 8)
-         img.paste_image(img_inv_updown[1], 71, 64, true); // down
+         if (inv.GetNumSlots() - slot_start >= 8)
+            img.paste_image(img_inv_updown[1], 71, 64, true); // down
 
-      // draw container we're in
-      img.paste_image(img_objects[cont_id], 6, 58, true);
+         // draw container we're in
+         img.paste_image(img_objects[cont_id], 6, 58, true);
 
-      // begin at current slot start
-      start = slot_start;
+         // begin at current slot start
+         start = slot_start;
+      }
    }
+
    // paste inventory slots
    for (unsigned int i = 0; i < 8; i++)
    {
