@@ -53,8 +53,8 @@
       <Command>call build.cmd "$(OutDir)"</Command>
     </PostBuildEvent>
     <CustomBuild>
-      <Command>"$(OutDir)luac.exe" -o "%(RelativeDir)%(FileName).lob" "%(FullPath)"</Command>
-      <Message>Compiling Lua script...</Message>
+      <Command>"$(OutDir)tools\luac.exe" -o "%(RelativeDir)%(FileName).lob" "%(FullPath)"</Command>
+      <Message>Compiling Lua script "%(Filename)%(Extension)"...</Message>
       <Outputs>%(RelativeDir)%(FileName).lob</Outputs>
     </CustomBuild>
   </ItemDefinitionGroup>
@@ -63,8 +63,8 @@
       <Command>call build.cmd "$(OutDir)"</Command>
     </PostBuildEvent>
     <CustomBuild>
-      <Command>"$(OutDir)luac.exe" -o "%(RelativeDir)%(FileName).lob" "%(FullPath)"</Command>
-      <Message>Compiling Lua script...</Message>
+      <Command>"$(OutDir)tools\luac.exe" -o "%(RelativeDir)%(FileName).lob" "%(FullPath)"</Command>
+      <Message>Compiling Lua script "%(Filename)%(Extension)"...</Message>
       <Outputs>%(RelativeDir)%(FileName).lob</Outputs>
     </CustomBuild>
   </ItemDefinitionGroup>
