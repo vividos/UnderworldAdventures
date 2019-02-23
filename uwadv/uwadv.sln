@@ -38,6 +38,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "strpak", "source\tools\strpak\strpak.vcxproj", "{55D7C852-393E-4F7C-B8A5-072921A141C4}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "uwadv", "source\uwadv\uwadv.vcxproj", "{253FDC75-1CE6-48EF-951A-C3FB7A1D9B69}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CD1023B7-2E03-48A9-81FA-0F6AB70DE9AE} = {CD1023B7-2E03-48A9-81FA-0F6AB70DE9AE}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "thirdparty", "thirdparty", "{973B57CA-C119-411A-8994-16CD9FB18BBB}"
 EndProject
