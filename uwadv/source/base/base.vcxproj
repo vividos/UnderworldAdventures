@@ -106,12 +106,14 @@
     <ClInclude Include="file.hpp" />
     <ClInclude Include="filesystem.hpp" />
     <ClInclude Include="keymap.hpp" />
+    <ClInclude Include="math.hpp" />
     <ClInclude Include="resourcemanager.hpp" />
     <ClInclude Include="savegame.hpp" />
     <ClInclude Include="SDL_rwops_gzfile.h" />
     <ClInclude Include="settings.hpp" />
     <ClInclude Include="string.hpp" />
     <ClInclude Include="textfile.hpp" />
+    <ClInclude Include="triangle3d.hpp" />
     <ClInclude Include="uw2decode.hpp" />
   </ItemGroup>
   <ItemGroup>

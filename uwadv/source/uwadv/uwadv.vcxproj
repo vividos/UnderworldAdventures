@@ -96,7 +96,6 @@
     <ClInclude Include="gamecfg.hpp" />
     <ClInclude Include="game_interface.hpp" />
     <ClInclude Include="triangle3d.hpp" />
-    <ClInclude Include="uamath.hpp" />
     <ClInclude Include="user_interface.hpp" />
     <ClInclude Include="uwadv.hpp" />
     <ClInclude Include="..\win32\resource.h" />

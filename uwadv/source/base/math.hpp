@@ -16,7 +16,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file uamath.hpp
+/// \file math.hpp
 /// \brief math stuff
 //
 // Note: all angle params should be passed to the functions in degrees, not

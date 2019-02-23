@@ -97,5 +97,11 @@
     <ClInclude Include="uw2decode.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="math.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="triangle3d.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -24,7 +24,7 @@
 #include "underworld.hpp"
 #include "scripting.hpp"
 #include "gamestrings.hpp"
-#include "uamath.hpp"
+#include "math.hpp"
 #include <sstream>
 
 /// time to rotate panel

@@ -23,7 +23,7 @@
 
 #include <vector>
 #include <utility>
-#include "uamath.hpp"
+#include "math.hpp"
 
 /// \brief view frustum
 /// The view frustum represents a 2d top view of the visible area in OpenGL.

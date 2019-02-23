@@ -21,7 +21,7 @@
 //
 #pragma once
 
-#include "uamath.hpp"
+#include "math.hpp"
 #include "level.hpp"
 #include "critter.hpp"
 #include "models.hpp"

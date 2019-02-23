@@ -21,7 +21,7 @@
 //
 #pragma once
 
-#include "uamath.hpp"
+#include "math.hpp"
 
 /// \brief vertex in 3d space
 /// Represents a vertex in 3d space, which can form a triangle. The vertex

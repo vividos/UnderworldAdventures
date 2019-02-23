@@ -31,7 +31,7 @@
 #include "ingame_ctrls.hpp"
 #include "panel.hpp"
 #include "underworld.hpp"
-#include "uamath.hpp"
+#include "math.hpp"
 #include "physics/playerphysics.hpp"
 
 /// game modes

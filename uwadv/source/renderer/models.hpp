@@ -21,7 +21,7 @@
 //
 #pragma once
 
-#include "uamath.hpp"
+#include "math.hpp"
 #include "triangle3d.hpp"
 #include "texture.hpp"
 #include "object.hpp"

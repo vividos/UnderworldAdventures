@@ -21,7 +21,7 @@
 //
 #pragma once
 
-#include "uamath.hpp"
+#include "math.hpp"
 
 /// \brief a body in the world that can be applied to physics
 class ua_physics_body

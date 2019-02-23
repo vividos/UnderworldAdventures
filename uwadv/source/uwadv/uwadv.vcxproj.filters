@@ -47,9 +47,6 @@
     <ClInclude Include="user_interface.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="uamath.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="triangle3d.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>

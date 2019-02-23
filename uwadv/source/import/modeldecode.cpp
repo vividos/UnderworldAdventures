@@ -24,7 +24,7 @@
 #include "model_builtin.hpp"
 #include "renderer.hpp"
 #include "file.hpp"
-#include "uamath.hpp"
+#include "math.hpp"
 #include <vector>
 #include "tessellator.hpp"
 

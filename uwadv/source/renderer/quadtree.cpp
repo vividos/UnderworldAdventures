@@ -24,7 +24,7 @@
 //
 #include "common.hpp"
 #include "quadtree.hpp"
-#include "uamath.hpp"
+#include "math.hpp"
 
 ua_frustum2d::ua_frustum2d(double xpos, double ypos,
    double angle, double fov, double farplane)

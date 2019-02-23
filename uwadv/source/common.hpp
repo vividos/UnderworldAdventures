@@ -39,7 +39,7 @@
 
 // uwadv includes
 #include "base.hpp"
-#include "uamath.hpp"
+#include "math.hpp"
 #include "settings.hpp"
 #include "game_interface.hpp"
 #include "user_interface.hpp"
