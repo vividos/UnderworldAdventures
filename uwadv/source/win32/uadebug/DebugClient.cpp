@@ -1,35 +1,26 @@
-/*
-   Underworld Adventures Debugger - a debugger tool for Underworld Adventures
-   Copyright (c) 2004,2005 Michael Fink
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file DebugClient.cpp
-
-   \brief debugger client class
-
-*/
-
-// includes
+//
+// Underworld Adventures Debugger - a debugger tool for Underworld Adventures
+// Copyright (c) 2004,2005,2019 Michael Fink
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file DebugClient.cpp
+/// \brief debugger client class
+//
 #include "stdatl.hpp"
 #include "DebugClient.hpp"
-
-// data
 
 LPCTSTR g_aszAttrNames[] =
 {
@@ -86,8 +77,8 @@ LPCTSTR g_aszAttrNames[] =
 };
 
 
-// pos and name don't count as columns in CDebugClient
-const int g_nObjListColumns = 15-2;
+/// pos and name don't count as columns in CDebugClient
+const int g_nObjListColumns = 15 - 2;
 
 struct SObjectListColumnInfo
 {
@@ -114,12 +105,9 @@ struct SObjectListColumnInfo
    { _T("hidden"),   55,   false,   1 },
 };
 
-
-// CDebugClientPlayerInterface methods
-
 unsigned int CDebugClientPlayerInterface::GetAttrCount()
 {
-   return sizeof(g_aszAttrNames)/sizeof(g_aszAttrNames[0])-4;
+   return sizeof(g_aszAttrNames) / sizeof(g_aszAttrNames[0]) - 4;
 }
 
 LPCTSTR CDebugClientPlayerInterface::GetPosInfoName(unsigned int info)
@@ -131,7 +119,7 @@ LPCTSTR CDebugClientPlayerInterface::GetPosInfoName(unsigned int info)
 LPCTSTR CDebugClientPlayerInterface::GetAttrName(unsigned int attr)
 {
    ATLASSERT(attr < GetAttrCount());
-   return g_aszAttrNames[attr+4];
+   return g_aszAttrNames[attr + 4];
 }
 
 unsigned int CDebugClientPlayerInterface::GetAttribute(unsigned int attr)
@@ -173,7 +161,7 @@ void CDebugClientPlayerInterface::Teleport(unsigned int level, double xpos, doub
 
 unsigned int CDebugClientObjectInterface::GetColumnCount() const
 {
-   return sizeof(g_aColumnInfo)/sizeof(g_aColumnInfo[0]);
+   return sizeof(g_aColumnInfo) / sizeof(g_aColumnInfo[0]);
 }
 
 LPCTSTR CDebugClientObjectInterface::GetColumnName(unsigned int nColumn) const
@@ -221,7 +209,7 @@ unsigned int CDebugClientObjectInterface::GetItemInfo(unsigned int nPos, unsigne
       return nPos;
 
    // remap to fields
-   nSubcode = nSubcode == 1 ? 0 : nSubcode-2;
+   nSubcode = nSubcode == 1 ? 0 : nSubcode - 2;
 
    return m_pDebugInterface->get_objlist_info(m_nLevel, nPos, nSubcode);
 }
@@ -232,13 +220,10 @@ void CDebugClientObjectInterface::SetItemInfo(unsigned int nPos, unsigned int nS
    ATLASSERT(nSubcode != 0 && nSubcode != 2); // can't set pos and name
 
    // remap to fields
-   nSubcode = nSubcode == 1 ? 0 : nSubcode-2;
+   nSubcode = nSubcode == 1 ? 0 : nSubcode - 2;
 
    m_pDebugInterface->set_objlist_info(m_nLevel, nPos, nSubcode, nInfo);
 }
-
-
-// CDebugClientCodeDebuggerInterface methods
 
 T_enCodeDebuggerType CDebugClientCodeDebuggerInterface::GetDebuggerType()
 {
@@ -330,10 +315,10 @@ CString CDebugClientCodeDebuggerInterface::GetSourcefileFilename(unsigned int nI
 
    unsigned int nSize = m_pCodeDebugger->get_sourcefile_name(nIndex, NULL, 0);
 
-   CHAR* szText = new CHAR[nSize+1];
+   CHAR* szText = new CHAR[nSize + 1];
    szText[nSize] = 0;
 
-   m_pCodeDebugger->get_sourcefile_name(nIndex, szText, nSize+1);
+   m_pCodeDebugger->get_sourcefile_name(nIndex, szText, nSize + 1);
 
    USES_CONVERSION;
    CFilename sourceFilename(A2CT(szText));
@@ -397,7 +382,7 @@ CString CDebugClientInterface::GetGameCfgPath()
    CHAR szBuffer[512];
    szBuffer[511] = 0;
 
-   m_pDebugInterface->get_game_path(szBuffer,511);
+   m_pDebugInterface->get_game_path(szBuffer, 511);
 
    USES_CONVERSION;
    CFilename gamePath(A2CT(szBuffer));
@@ -500,10 +485,10 @@ CString CDebugClientInterface::GetGameString(unsigned int block, unsigned int nr
 {
    unsigned int nLen = m_pDebugInterface->get_game_string(block, nr, NULL, 0);
 
-   CHAR* szBuffer = new CHAR[nLen+1];
+   CHAR* szBuffer = new CHAR[nLen + 1];
    szBuffer[nLen] = 0;
 
-   m_pDebugInterface->get_game_string(block, nr, szBuffer, nLen+1);
+   m_pDebugInterface->get_game_string(block, nr, szBuffer, nLen + 1);
 
    USES_CONVERSION;
    CString cszText = A2CT(szBuffer);
@@ -537,7 +522,7 @@ unsigned int CDebugClientInterface::GetCodeDebuggerByIndex(unsigned int nIndex) 
 bool CDebugClientInterface::IsValidCodeDebuggerID(unsigned int nCodeDebuggerID) const
 {
    int nMax = m_anCodeDebuggerIDs.GetSize();
-   for(int n=0; n<nMax; n++)
+   for (int n = 0; n < nMax; n++)
    {
       if (m_anCodeDebuggerIDs[n] == nCodeDebuggerID)
          return true;
@@ -564,30 +549,30 @@ CImageList CDebugClientInterface::GetObjectImageList()
    unsigned int num_objects = 0;
    m_pDebugInterface->get_object_list_imagelist(num_objects, NULL, 0);
 
-   BYTE* pBitmapData = new BYTE[num_objects*16*16*4];
+   BYTE* pBitmapData = new BYTE[num_objects * 16 * 16 * 4];
 
-   m_pDebugInterface->get_object_list_imagelist(num_objects, pBitmapData, num_objects*16*16*4);
+   m_pDebugInterface->get_object_list_imagelist(num_objects, pBitmapData, num_objects * 16 * 16 * 4);
 
    // convert from RGBA to BGRA; CImageList needs this
-   for(unsigned int i=0; i<num_objects*16*16; i++)
+   for (unsigned int i = 0; i < num_objects * 16 * 16; i++)
    {
-      BYTE nSwap = pBitmapData[i*4+0];
-      pBitmapData[i*4+0] = pBitmapData[i*4+2];
-      pBitmapData[i*4+2] = nSwap;
+      BYTE nSwap = pBitmapData[i * 4 + 0];
+      pBitmapData[i * 4 + 0] = pBitmapData[i * 4 + 2];
+      pBitmapData[i * 4 + 2] = nSwap;
    };
 
    CImageList imageList;
    imageList.Create(16, 16, ILC_COLOR32, 0, num_objects);
 
-   for(unsigned int n=0; n<num_objects; n++)
+   for (unsigned int n = 0; n < num_objects; n++)
    {
-      BYTE buffer[16*16*4];
+      BYTE buffer[16 * 16 * 4];
 
-      memcpy(buffer, &pBitmapData[n*16*16*4], 16*16*4);
+      memcpy(buffer, &pBitmapData[n * 16 * 16 * 4], 16 * 16 * 4);
 
       CBitmap bitmap;
-      bitmap.CreateBitmap(16,  16, 1, 32, buffer);
-      imageList.Add(bitmap, RGB(255,255,255));
+      bitmap.CreateBitmap(16, 16, 1, 32, buffer);
+      imageList.Add(bitmap, RGB(255, 255, 255));
    }
 
    delete[] pBitmapData;
@@ -609,8 +594,8 @@ bool CDebugClientInterface::GetMessage(CDebugClientMessage& msg)
    unsigned int nTextSize = 0;
    m_pDebugInterface->get_message(msg.m_nType, msg.m_nArg1, msg.m_nArg2, msg.m_dArg3, nTextSize);
 
-   CHAR* szBuffer = new CHAR[nTextSize+1];
-   szBuffer[nTextSize]=0;
+   CHAR* szBuffer = new CHAR[nTextSize + 1];
+   szBuffer[nTextSize] = 0;
 
    ATLVERIFY(true == m_pDebugInterface->get_message_text(szBuffer, nTextSize));
 

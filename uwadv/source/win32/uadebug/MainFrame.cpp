@@ -1,43 +1,31 @@
-/*
-   Underworld Adventures Debugger - a debugger tool for Underworld Adventures
-   Copyright (c) 2004,2005 Michael Fink
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file MainFrame.cpp
-
-   \brief main application frame
-
-*/
-
-// includes
+//
+// Underworld Adventures Debugger - a debugger tool for Underworld Adventures
+// Copyright (c) 2004,2005,2019 Michael Fink
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file MainFrame.cpp
+/// \brief main application frame
+//
 #include "stdatl.hpp"
 #include "aboutdlg.hpp"
 #include "MainFrame.hpp"
 #include "LuaSourceView.hpp"
 #include "GameStringsView.hpp"
 
-// constants
-
 LPCTSTR g_pszLuaFileFilter = _T("Lua Source Files (*.lua)\0*.lua\0All Files (*.*)\0*.*\0\0");
-
-
-// CMainFrame methods
 
 bool CMainFrame::InitDebugClient(void* pDebugClient)
 {
@@ -121,9 +109,9 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
    m_tabbedChildWindow.SetReflectNotifications(true);
 
-   m_tabbedChildWindow.SetTabStyles(CTCS_TOOLTIPS|CTCS_SCROLL);
+   m_tabbedChildWindow.SetTabStyles(CTCS_TOOLTIPS | CTCS_SCROLL);
    m_tabbedChildWindow.Create(m_hWnd, rcDefault);
-   m_tabbedChildWindow.ModifyStyleEx(WS_EX_CLIENTEDGE,0);
+   m_tabbedChildWindow.ModifyStyleEx(WS_EX_CLIENTEDGE, 0);
 
    CreateMDIClient();
 
@@ -224,7 +212,7 @@ void CMainFrame::ProcessServerMessages()
       ATLTRACE(_T("server message: type=%s\n"),
          msg.m_nType == 0 ? _T("shutdown") :
          msg.m_nType == 1 ? _T("attach") :
-         msg.m_nType == 2 ? _T("detach") : _T("unknown") );
+         msg.m_nType == 2 ? _T("detach") : _T("unknown"));
 
       switch (msg.m_nType)
       {
@@ -234,52 +222,52 @@ void CMainFrame::ProcessServerMessages()
          break;
 
       case 1: // debugger attach
-         {
-            ATLTRACE(_T("server message: type=code debugger attach, id=%u\n"), msg.m_nArg1);
-            unsigned int nCodeDebuggerID = msg.m_nArg1;
-            ATLASSERT(FALSE == m_debugClient.IsValidCodeDebuggerID(nCodeDebuggerID));
+      {
+         ATLTRACE(_T("server message: type=code debugger attach, id=%u\n"), msg.m_nArg1);
+         unsigned int nCodeDebuggerID = msg.m_nArg1;
+         ATLASSERT(FALSE == m_debugClient.IsValidCodeDebuggerID(nCodeDebuggerID));
 
-            m_debugClient.AddCodeDebugger(nCodeDebuggerID);
+         m_debugClient.AddCodeDebugger(nCodeDebuggerID);
 
-            // prepare debug info
-            m_debugClient.GetCodeDebuggerInterface(nCodeDebuggerID).PrepareDebugInfo();
+         // prepare debug info
+         m_debugClient.GetCodeDebuggerInterface(nCodeDebuggerID).PrepareDebugInfo();
 
-            // send notification about code debugger update
-            CDebugWindowNotification notify;
-            notify.m_enCode = ncCodeDebuggerUpdate;
-            notify.m_nParam1 = utAttach;
-            notify.m_nParam2 = msg.m_nArg1;
-            SendNotification(notify);
-         }
-         break;
+         // send notification about code debugger update
+         CDebugWindowNotification notify;
+         notify.m_enCode = ncCodeDebuggerUpdate;
+         notify.m_nParam1 = utAttach;
+         notify.m_nParam2 = msg.m_nArg1;
+         SendNotification(notify);
+      }
+      break;
 
       case 2: // debugger detach
-         {
-            ATLTRACE(_T("server message: type=code debugger detach, id=%u\n"), msg.m_nArg1);
+      {
+         ATLTRACE(_T("server message: type=code debugger detach, id=%u\n"), msg.m_nArg1);
 
-            ATLASSERT(true == m_debugClient.IsValidCodeDebuggerID(msg.m_nArg1));
-            m_debugClient.RemoveCodeDebugger(msg.m_nArg1);
+         ATLASSERT(true == m_debugClient.IsValidCodeDebuggerID(msg.m_nArg1));
+         m_debugClient.RemoveCodeDebugger(msg.m_nArg1);
 
-            CDebugWindowNotification notify;
-            notify.m_enCode = ncCodeDebuggerUpdate;
-            notify.m_nParam1 = utDetach;
-            notify.m_nParam2 = msg.m_nArg1;
-            SendNotification(notify);
-         }
-         break;
+         CDebugWindowNotification notify;
+         notify.m_enCode = ncCodeDebuggerUpdate;
+         notify.m_nParam1 = utDetach;
+         notify.m_nParam2 = msg.m_nArg1;
+         SendNotification(notify);
+      }
+      break;
 
       case 3: // code debugger update
-         {
-            ATLTRACE(_T("server message: type=code debugger update, id=%u\n"), msg.m_nArg1);
+      {
+         ATLTRACE(_T("server message: type=code debugger update, id=%u\n"), msg.m_nArg1);
 
-            // send notification about code debugger update
-            CDebugWindowNotification notify;
-            notify.m_enCode = ncCodeDebuggerUpdate;
-            notify.m_nParam1 = utUpdateState;
-            notify.m_nParam2 = msg.m_nArg1;
-            SendNotification(notify);
-         }
-         break;
+         // send notification about code debugger update
+         CDebugWindowNotification notify;
+         notify.m_enCode = ncCodeDebuggerUpdate;
+         notify.m_nParam1 = utUpdateState;
+         notify.m_nParam2 = msg.m_nArg1;
+         SendNotification(notify);
+      }
+      break;
 
       case 4:
          ATLASSERT(false);
@@ -324,7 +312,7 @@ LRESULT CMainFrame::OnFileSave(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 
    // search active Lua child frame
    int nMax = m_apLuaChildWindows.GetSize();
-   for (int n=0; n<nMax; n++)
+   for (int n = 0; n < nMax; n++)
    {
       if (hWnd == m_apLuaChildWindows[n]->m_hWnd)
       {
@@ -343,7 +331,7 @@ LRESULT CMainFrame::OnFileSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
    // search active Lua child frame
    int nMax = m_apLuaChildWindows.GetSize();
-   for (int n=0; n<nMax; n++)
+   for (int n = 0; n < nMax; n++)
    {
       if (hWnd == m_apLuaChildWindows[n]->m_hWnd)
       {
@@ -367,7 +355,7 @@ LRESULT CMainFrame::OnFileSaveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 {
    // go through all Lua child frames and save file when necessary
    int nMax = m_apLuaChildWindows.GetSize();
-   for (int n=0; n<nMax; n++)
+   for (int n = 0; n < nMax; n++)
       if (m_apLuaChildWindows[n]->IsModified())
          m_apLuaChildWindows[n]->SaveFile();
 
@@ -506,8 +494,8 @@ LRESULT CMainFrame::OnViewTilemap(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
    {
       const CTileMapViewCtrl& tilemap = m_tilemapChildFrame.GetTilemapViewCtrl();
 
-      int cx = tilemap.GetTileSizeX()*64 + GetSystemMetrics(SM_CXSIZEFRAME)*2;
-      int cy = tilemap.GetTileSizeY()*64 + GetSystemMetrics(SM_CYSIZEFRAME)*2 + GetSystemMetrics(SM_CYCAPTION);
+      int cx = tilemap.GetTileSizeX() * 64 + GetSystemMetrics(SM_CXSIZEFRAME) * 2;
+      int cy = tilemap.GetTileSizeY() * 64 + GetSystemMetrics(SM_CYSIZEFRAME) * 2 + GetSystemMetrics(SM_CYCAPTION);
 
       CRect rect(0, 0, cx, cy);
       m_tilemapChildFrame.CreateEx(m_hWndClient, rect);
@@ -566,7 +554,7 @@ bool CMainFrame::ShowHideDockingWindow(CDockingWindowBase& dockingWindow)
 {
    // determine if docking window is visible
    bool bVisible = dockingWindow.IsWindow() && dockingWindow.IsWindowVisible() &&
-       (dockingWindow.IsDocking() || dockingWindow.IsFloating());
+      (dockingWindow.IsDocking() || dockingWindow.IsFloating());
 
    if (bVisible)
    {
@@ -585,8 +573,8 @@ bool CMainFrame::ShowHideDockingWindow(CDockingWindowBase& dockingWindow)
 
       if (!dockingWindow.IsWindow())
       {
-         CRect rect(CPoint(0,0), dockingWindow.GetFloatingSize());
-        
+         CRect rect(CPoint(0, 0), dockingWindow.GetFloatingSize());
+
          DWORD dwStyle = WS_OVERLAPPEDWINDOW | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
          dockingWindow.Create(m_hWnd, rect, dockingWindow.GetDockWindowCaption(), dwStyle);
       }
@@ -615,7 +603,7 @@ LRESULT CMainFrame::OnUndockWindow(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, 
    CDockingWindowBase* pWindowBase = NULL;
    UINT nViewId = 0;
 
-   switch(id)
+   switch (id)
    {
    case idPlayerInfoWindow:
       pWindowBase = &m_playerInfoWindow;
@@ -684,7 +672,7 @@ void CMainFrame::SendNotification(CDebugWindowNotification& notify,
    bool fExcludeSender, CDebugWindowBase* pSender)
 {
    int nMax = m_apDebugWindows.GetSize();
-   for (int n=0; n<nMax; n++)
+   for (int n = 0; n < nMax; n++)
    {
       if (fExcludeSender && pSender == m_apDebugWindows[n])
          continue;
@@ -730,7 +718,7 @@ void CMainFrame::RemoveDebugWindow(CDebugWindowBase* pDebugWindow)
    pDebugWindow->DoneDebugWindow();
 
    int nMax = m_apDebugWindows.GetSize();
-   for (int n=0; n<nMax; n++)
+   for (int n = 0; n < nMax; n++)
       if (pDebugWindow == m_apDebugWindows[n])
       {
          m_apDebugWindows.RemoveAt(n);
@@ -748,7 +736,7 @@ void CMainFrame::OpenLuaSourceFile(LPCTSTR pszFilename)
    cszOpenFilename.MakeLower();
 
    int nMax = m_apLuaChildWindows.GetSize();
-   for (int n=0; n<nMax; n++)
+   for (int n = 0; n < nMax; n++)
    {
       CString cszWindowFilename = m_apLuaChildWindows[n]->GetFilename();
       cszWindowFilename.MakeLower();
@@ -783,7 +771,7 @@ void CMainFrame::RemoveLuaChildView(CLuaSourceView* pChildView)
    pChildView->DoneDebugWindow();
 
    int nMax = m_apLuaChildWindows.GetSize();
-   for (int n=0; n<nMax; n++)
+   for (int n = 0; n < nMax; n++)
       if (pChildView == m_apLuaChildWindows[n])
       {
          m_apLuaChildWindows.RemoveAt(n);

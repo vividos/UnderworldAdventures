@@ -1,54 +1,42 @@
-/*
-   Underworld Adventures Debugger - a debugger tool for Underworld Adventures
-   Copyright (c) 2004,2005 Michael Fink
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file PlayerInfo.hpp
-
-   \brief player info docking window
-
-*/
-//! \ingroup uadebug
-
-//@{
-
-// include guard
+//
+// Underworld Adventures Debugger - a debugger tool for Underworld Adventures
+// Copyright (c) 2004,2005,2019 Michael Fink
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file PlayerInfo.hpp
+/// \brief player info docking window
+//
 #pragma once
 
-// includes
 #include "PropertyListCtrl.hpp"
 
-// classes
-
-//! player info docking window
+/// player info docking window
 class CPlayerInfoWindow :
    public CDockingWindowBase,
-//   public IEditListViewCallback,
+   //public IEditListViewCallback,
    public nsPropertyList::IPropertyStorage
 {
    typedef CPlayerInfoWindow thisClass;
    typedef CDockingWindowBase baseClass;
-public:
-   //! ctor
-   CPlayerInfoWindow():baseClass(idPlayerInfoWindow){}
 
-   DECLARE_DOCKING_WINDOW(_T("Player Info"), CSize(200,100)/*docked*/, CSize(200,600)/*floating*/, dockwins::CDockingSide::sRight)
+public:
+   /// ctor
+   CPlayerInfoWindow() :baseClass(idPlayerInfoWindow) {}
+
+   DECLARE_DOCKING_WINDOW(_T("Player Info"), CSize(200, 100)/*docked*/, CSize(200, 600)/*floating*/, dockwins::CDockingSide::sRight)
 
    DECLARE_WND_CLASS(_T("PlayerInfoWindow"))
    BEGIN_MSG_MAP(thisClass)
@@ -65,29 +53,27 @@ protected:
    LRESULT OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
    // virtual methods from CDockingWindowBase
-   void ReceiveNotification(CDebugWindowNotification& notify);
+   void ReceiveNotification(CDebugWindowNotification& notify) override;
 
-   //! updates player info data
+   /// updates player info data
    void UpdateData();
 
    // virtual methods from IEditListViewCallback
-//   virtual void OnUpdatedValue(unsigned int nItem, unsigned int nSubItem, LPCTSTR pszValue);
+   //virtual void OnUpdatedValue(unsigned int nItem, unsigned int nSubItem, LPCTSTR pszValue) override;
 
    // virtual methods from nsPropertyList::IPropertyStorage
-   virtual void GetProperty(unsigned int nPropertyItemId, CString& cszProperty);
-   virtual void SetProperty(unsigned int nPropertyItemId, const CString& cszProperty);
-   virtual bool VerifyProperty(unsigned int nPropertyItemId, const CString& cszProperty);
+   virtual void GetProperty(unsigned int nPropertyItemId, CString& cszProperty) override;
+   virtual void SetProperty(unsigned int nPropertyItemId, const CString& cszProperty) override;
+   virtual bool VerifyProperty(unsigned int nPropertyItemId, const CString& cszProperty) override;
 
 protected:
-   //! player info list 
+   /// player info list
    //CEditListViewCtrl m_listCtrl;
    CPropertyListCtrl m_listCtrl;
 
    double m_adValues[4];
    unsigned int m_anValues[42];
 
-   //! indicates if control is read-only
+   /// indicates if control is read-only
    bool m_bReadonly;
 };
-
-//@}

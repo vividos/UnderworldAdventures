@@ -1,36 +1,27 @@
-/*
-   Underworld Adventures Debugger - a debugger tool for Underworld Adventures
-   Copyright (c) 2004,2005 Michael Fink
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file GameStringsView.cpp
-
-   \brief game strings view
-
-*/
-
-// includes
+//
+// Underworld Adventures Debugger - a debugger tool for Underworld Adventures
+// Copyright (c) 2004,2005,2019 Michael Fink
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file GameStringsView.cpp
+/// \brief game strings view
+//
 #include "stdatl.hpp"
 #include "GameStringsView.hpp"
 #include "DebugClient.hpp"
-
-// methods
 
 CGameStringsView::~CGameStringsView()
 {
@@ -49,7 +40,7 @@ LRESULT CGameStringsView::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
    m_listStrings.GetClientRect(&rect);
 
    int nWidth = 60;
-   int nWidth2 = rect.Width()-nWidth-2-::GetSystemMetrics(SM_CXVSCROLL);
+   int nWidth2 = rect.Width() - nWidth - 2 - ::GetSystemMetrics(SM_CXVSCROLL);
 
    m_listStrings.InsertColumn(0, _T("Nr."), LVCFMT_LEFT, nWidth, 0);
    m_listStrings.InsertColumn(1, _T("Text"), LVCFMT_LEFT, nWidth2, 0);
@@ -64,10 +55,10 @@ void CGameStringsView::InitCombobox()
 
    unsigned int nIndex = 0, nBlock = 0;
    CString cszBlockName;
-   while(debugClient.EnumGameStringsBlock(nIndex, nBlock))
+   while (debugClient.EnumGameStringsBlock(nIndex, nBlock))
    {
       // determine block name
-      switch(nBlock)
+      switch (nBlock)
       {
       case 1: cszBlockName = _T("Basic Game Strings,"); break;
       case 2: cszBlockName = _T("Character creation strings, mantras,"); break;
@@ -84,16 +75,16 @@ void CGameStringsView::InitCombobox()
          if (nBlock >= 0x0c00 && nBlock < 0x0e00)
             cszBlockName = _T("Cutscenes");
          else
-         if (nBlock >= 0x0e00 && nBlock < 0x0f00)
-         {
-            CString cszNpcName = debugClient.GetGameString(7, nBlock-0xe00+16);
-            cszBlockName.Format(_T("Conversation [%s]"), cszNpcName.GetString());
-         }
-         else
-         if (nBlock >= 0x0f00 && nBlock < 0x1000)
-            cszBlockName = _T("Conversation (generic)");
-         else
-            cszBlockName = _T("Unknown");
+            if (nBlock >= 0x0e00 && nBlock < 0x0f00)
+            {
+               CString cszNpcName = debugClient.GetGameString(7, nBlock - 0xe00 + 16);
+               cszBlockName.Format(_T("Conversation [%s]"), cszNpcName.GetString());
+            }
+            else
+               if (nBlock >= 0x0f00 && nBlock < 0x1000)
+                  cszBlockName = _T("Conversation (generic)");
+               else
+                  cszBlockName = _T("Unknown");
          break;
       }
 
@@ -112,13 +103,13 @@ void CGameStringsView::InitCombobox()
 
    m_comboBlocks.SetCurSel(0);
    BOOL bDummy = TRUE;
-   OnComboSelChange(0,0,0, bDummy);
+   OnComboSelChange(0, 0, 0, bDummy);
 }
 
 LRESULT CGameStringsView::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
    CSize size = CSize(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-   m_listStrings.MoveWindow(0,40,size.cx+1, size.cy-40, TRUE);
+   m_listStrings.MoveWindow(0, 40, size.cx + 1, size.cy - 40, TRUE);
 
    return 0;
 }
@@ -140,7 +131,7 @@ LRESULT CGameStringsView::OnComboSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, H
 
    CString cszNr, cszText;
    unsigned int max = debugClient.GetGameStringBlockSize(nBlock);
-   for(unsigned int n=0; n<max; n++)
+   for (unsigned int n = 0; n < max; n++)
    {
       cszNr.Format(_T("%04x (%u)"), n, n);
       int nItem2 = m_listStrings.InsertItem(m_listStrings.GetItemCount(), cszNr);

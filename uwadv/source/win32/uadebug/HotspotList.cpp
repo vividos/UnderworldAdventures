@@ -1,47 +1,38 @@
-/*
-   Underworld Adventures Debugger - a debugger tool for Underworld Adventures
-   Copyright (c) 2004,2005 Michael Fink
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file HotspotList.cpp
-
-   \brief hotspot list
-
-*/
-
-// includes
+//
+// Underworld Adventures Debugger - a debugger tool for Underworld Adventures
+// Copyright (c) 2004,2005,2019 Michael Fink
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file HotspotList.cpp
+/// \brief hotspot list
+//
 #include "stdatl.hpp"
 #include "HotspotList.hpp"
 #include "DebugClient.hpp"
 
-// data
-
-//! struct with infos about a hotspot
+/// struct with infos about a hotspot
 struct SHotspotItem
 {
-   LPCTSTR szName;       //!< hotspot name
-   unsigned int nLevel;  //!< level of hotspot; 0-based
-   double xpos, ypos;   //!< x and y position of hotspot
+   LPCTSTR szName;       ///< hotspot name
+   unsigned int nLevel;  ///< level of hotspot; 0-based
+   double xpos, ypos;   ///< x and y position of hotspot
 };
 
-//! list with all hotspots
-/*! numbers in brackets indicate positions in the ultima underworld 1 clue book */
+/// \brief list with all hotspots
+/// numbers in brackets indicate positions in the ultima underworld 1 clue book
 SHotspotItem g_aHotspotItems[] =
 {
    { _T("Level 1: Entrance of the Abyss"),         0, 32.0,  2.0 },
@@ -94,28 +85,25 @@ SHotspotItem g_aHotspotItems[] =
    { NULL, 0, 0.0, 0.0 } // end of list marker
 };
 
-
-// CHotspotListWindow methods
-
 LRESULT CHotspotListWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
    // create and set up list control
    CRect rcDef;
    GetClientRect(rcDef);
    m_listCtrl.Create(m_hWnd, rcDef, NULL,
-      WS_CHILD | WS_VISIBLE | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER );
+      WS_CHILD | WS_VISIBLE | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER);
 
-   m_listCtrl.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES);
+   m_listCtrl.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 
    m_listCtrl.InsertColumn(0, _T("Hotspot"), LVCFMT_LEFT, 300, -1);
    m_listCtrl.InsertColumn(1, _T("Location"), LVCFMT_LEFT, 150, -1);
 
    // insert all hotspot items
-   unsigned int i=0;
+   unsigned int i = 0;
    while (g_aHotspotItems[i].szName != NULL)
    {
       SHotspotItem& item = g_aHotspotItems[i];
-      int nPos = m_listCtrl.InsertItem(i,item.szName);
+      int nPos = m_listCtrl.InsertItem(i, item.szName);
 
       CString cszPosition;
       cszPosition.Format(_T("Level %u, Pos %2.1f/%2.1f"),
@@ -130,11 +118,11 @@ LRESULT CHotspotListWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 
 LRESULT CHotspotListWindow::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 {
-   if(wParam != SIZE_MINIMIZED )
+   if (wParam != SIZE_MINIMIZED)
    {
       RECT rc;
       GetClientRect(&rc);
-      m_listCtrl.SetWindowPos(NULL, &rc ,SWP_NOZORDER | SWP_NOACTIVATE );
+      m_listCtrl.SetWindowPos(NULL, &rc, SWP_NOZORDER | SWP_NOACTIVATE);
    }
    bHandled = FALSE;
    return 1;

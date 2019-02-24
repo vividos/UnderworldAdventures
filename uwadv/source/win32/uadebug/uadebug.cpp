@@ -1,42 +1,33 @@
-/*
-   Underworld Adventures Debugger - a debugger tool for Underworld Adventures
-   Copyright (c) 2004,2005 Michael Fink
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file uadebug.cpp
-
-   \brief debugger entry point and main application function
-
-*/
-
-// includes
+//
+// Underworld Adventures Debugger - a debugger tool for Underworld Adventures
+// Copyright (c) 2004,2005,2019 Michael Fink
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file uadebug.cpp
+/// \brief debugger entry point and main application function
+//
 #include "stdatl.hpp"
 #include "Resource.h"
 #include "MainFrame.hpp"
 
-// globals and defines
 CAppModule _Module;
+
 HINSTANCE g_hInstance = 0;
 
-// methods
-
-//! runs application
+/// runs application
 int Run(void* pDebugClient, int nCmdShow = SW_SHOWDEFAULT)
 {
    CMainFrame wndMain;
@@ -46,7 +37,7 @@ int Run(void* pDebugClient, int nCmdShow = SW_SHOWDEFAULT)
    CMessageLoop theLoop;
    _Module.AddMessageLoop(&theLoop);
 
-   if(wndMain.CreateEx() == NULL)
+   if (wndMain.CreateEx() == NULL)
    {
       ATLTRACE(_T("Main window creation failed!\n"));
       return 0;
@@ -61,14 +52,14 @@ int Run(void* pDebugClient, int nCmdShow = SW_SHOWDEFAULT)
    return nRet;
 }
 
-//! debugger start function
+/// debugger start function
 extern "C"
 __declspec(dllexport)
 void uadebug_start(void* pDebugClient)
 {
    // init all sort of stuff
 #ifdef _DEBUG
-   ::_CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
+   ::_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
    // init COM
@@ -107,7 +98,7 @@ void uadebug_start(void* pDebugClient)
    ::CoUninitialize();
 }
 
-//! DLL Entry Point
+/// DLL Entry Point
 extern "C"
 BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID /*lpReserved*/)
 {

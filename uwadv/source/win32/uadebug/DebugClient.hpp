@@ -1,66 +1,51 @@
-/*
-   Underworld Adventures Debugger - a debugger tool for Underworld Adventures
-   Copyright (c) 2004,2005 Michael Fink
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file DebugClient.hpp
-
-   \brief debugger client class
-
-*/
-//! \ingroup uadebug
-
-//@{
-
-// include guard
+//
+// Underworld Adventures Debugger - a debugger tool for Underworld Adventures
+// Copyright (c) 2004,2005,2019 Michael Fink
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file DebugClient.hpp
+/// \brief debugger client class
+//
 #pragma once
 
-// includes
-
-// forward references
 class ua_debug_server_interface;
 
-// classes
-
-//! debug server message that is received by the client
+/// debug server message that is received by the client
 struct CDebugClientMessage
 {
-   //! ctor
+   /// ctor
    CDebugClientMessage()
-      :m_nType(0), m_nArg1(0), m_nArg2(0), m_dArg3(0.0){}
+      :m_nType(0), m_nArg1(0), m_nArg2(0), m_dArg3(0.0) {}
 
-   //! message type; see enum ua_debug_server_message_type
+   /// message type; see enum ua_debug_server_message_type
    unsigned int m_nType;
 
-   //! message argument 1
+   /// message argument 1
    unsigned int m_nArg1;
-   //! message argument 2
+   /// message argument 2
    unsigned int m_nArg2;
-   //! message argument 3
+   /// message argument 3
    double m_dArg3;
 
-   //! message text
+   /// message text
    CString m_cszText;
 };
 
 
-//! player info interface
+/// player info interface
 class CDebugClientPlayerInterface
 {
 public:
@@ -71,25 +56,25 @@ public:
    double GetPosInfo(unsigned int info);
    unsigned int GetAttribute(unsigned int attr);
 
-   //! retrieves positional info; info can be 0..3
+   /// retrieves positional info; info can be 0..3
    void SetPosInfo(unsigned int info, double val);
 
-   //! retrieves attributes info; attr can be 0..3
+   /// retrieves attributes info; attr can be 0..3
    void SetAttribute(unsigned int attr, unsigned int val);
 
    void Teleport(unsigned int level, double xpos, double ypos);
 
 private:
-   CDebugClientPlayerInterface(){}
+   CDebugClientPlayerInterface() {}
 
-   //! pointer to debug server interface
+   /// pointer to debug server interface
    ua_debug_server_interface* m_pDebugInterface;
 
    friend class CDebugClientInterface;
 };
 
 
-//! object list interface
+/// object list interface
 class CDebugClientObjectInterface
 {
 public:
@@ -107,9 +92,9 @@ public:
    void SetItemInfo(unsigned int nPos, unsigned int nSubcode, unsigned int nInfo);
 
 private:
-   CDebugClientObjectInterface(){}
+   CDebugClientObjectInterface() {}
 
-   //! pointer to debug server interface
+   /// pointer to debug server interface
    ua_debug_server_interface* m_pDebugInterface;
 
    unsigned int m_nLevel;
@@ -118,25 +103,25 @@ private:
 };
 
 
-//! code debugger type; corresponds with ua_debug_code_debugger_type in dbgserver.hpp
+/// code debugger type; corresponds with ua_debug_code_debugger_type in dbgserver.hpp
 enum T_enCodeDebuggerType
 {
-   cdtUwConv=0,   //!< uw conversation script
-   cdtLuaScript   //!< Lua script
+   cdtUwConv = 0,   ///< uw conversation script
+   cdtLuaScript   ///< Lua script
 };
 
-//! code debugger state; corresponds with ua_debug_code_debugger_state in dbgserver.hpp
+/// code debugger state; corresponds with ua_debug_code_debugger_state in dbgserver.hpp
 enum T_enCodeDebuggerState
 {
-   cdsInactive=0,
+   cdsInactive = 0,
    cdsRunning,
    cdsBreak,
 };
 
-//! code debugger command; corresponds with ua_debug_code_debugger_command in dbgserver.hpp
+/// code debugger command; corresponds with ua_debug_code_debugger_command in dbgserver.hpp
 enum T_enCodeDebuggerCommand
 {
-   cdcRun=0,
+   cdcRun = 0,
    cdcStepOver,
    cdcStepInto,
    cdcStepOut
@@ -145,11 +130,11 @@ enum T_enCodeDebuggerCommand
 
 struct SCodePosition
 {
-   //! index value to retrieve source file name
+   /// index value to retrieve source file name
    unsigned int m_nSourceFileNameIndex;
    unsigned int m_nSourceFileLine;
 
-   //! code position; if not available, -1 is put in here
+   /// code position; if not available, -1 is put in here
    unsigned int m_nCodePos;
 };
 
@@ -167,33 +152,33 @@ struct SCallstackInfo
 
 
 
-//! code debugger interface
+/// code debugger interface
 class CDebugClientCodeDebuggerInterface
 {
 public:
-   virtual ~CDebugClientCodeDebuggerInterface(){}
+   virtual ~CDebugClientCodeDebuggerInterface() {}
 
    // misc.
 
-   //! returns code debugger type
+   /// returns code debugger type
    T_enCodeDebuggerType GetDebuggerType();
 
-   //! prepares debug info for code debugger
+   /// prepares debug info for code debugger
    void PrepareDebugInfo();
 
-   //! returns true when source file is available
+   /// returns true when source file is available
    bool IsSourceAvail() const;
 
-   //! returns true when code is available
+   /// returns true when code is available
    bool IsCodeAvail() const;
 
-   //! sets new debugger command
+   /// sets new debugger command
    void SetCommand(T_enCodeDebuggerCommand enCommand);
 
-   //! returns current code debugger state
+   /// returns current code debugger state
    T_enCodeDebuggerState GetState() const;
 
-   //! returns current code position
+   /// returns current code position
    SCodePosition GetCurrentPos();
 
    // breakpoints
@@ -211,20 +196,20 @@ public:
    // sourcecode files count; only valid if IsSourceAvail() returns a value > 0
    unsigned int GetSourcefileCount() const;
 
-   //! returns sourcecode filename by index
+   /// returns sourcecode filename by index
    CString GetSourcefileFilename(unsigned int nIndex);
 
-   //! returns sourcecode filename and line by code position
+   /// returns sourcecode filename and line by code position
    bool GetSourceFromCodePos(unsigned int nCodePos, CString& cszFilename, unsigned int& nLine, unsigned int& nLineDisplacement);
 
 protected:
-   //! ctor
-   CDebugClientCodeDebuggerInterface(){}
+   /// ctor
+   CDebugClientCodeDebuggerInterface() {}
 
-   //! pointer to code debugger interface
+   /// pointer to code debugger interface
    class ua_debug_code_interface* m_pCodeDebugger;
 
-   //! pointer to debug interface
+   /// pointer to debug interface
    class CDebugClientInterface* m_pDebugClient;
 
    friend class CDebugClientInterface;
@@ -233,7 +218,7 @@ protected:
 
 enum T_enTileInfoType
 {
-   tiType=0,
+   tiType = 0,
    tiFloorHeight,
    tiCeilingHeight,
    tiSlope,
@@ -243,12 +228,12 @@ enum T_enTileInfoType
    tiObjlistStart
 };
 
-//! debugger client interface
-class CDebugClientInterface  
+/// debugger client interface
+class CDebugClientInterface
 {
 public:
-   CDebugClientInterface(){}
-   virtual ~CDebugClientInterface(){}
+   CDebugClientInterface() {}
+   virtual ~CDebugClientInterface() {}
 
    bool Init(ua_debug_server_interface* pDebugInterface);
 
@@ -316,14 +301,12 @@ public:
    bool GetMessage(CDebugClientMessage& msg);
 
 private:
-   //! pointer to debug server interface
+   /// pointer to debug server interface
    ua_debug_server_interface* m_pDebugInterface;
 
-   //! current level we're operating
+   /// current level we're operating
    unsigned int m_nLevel;
 
-   //! array with all valid code debugger IDs
+   /// array with all valid code debugger IDs
    CSimpleArray<unsigned int> m_anCodeDebuggerIDs;
 };
-
-//@}

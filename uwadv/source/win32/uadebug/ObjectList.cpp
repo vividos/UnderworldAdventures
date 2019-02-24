@@ -1,60 +1,48 @@
-/*
-   Underworld Adventures Debugger - a debugger tool for Underworld Adventures
-   Copyright (c) 2004,2005 Michael Fink
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file ObjectList.cpp
-
-   \brief object list docking window
-
-*/
-
-// includes
+//
+// Underworld Adventures Debugger - a debugger tool for Underworld Adventures
+// Copyright (c) 2004,2005,2019 Michael Fink
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file ObjectList.cpp
+/// \brief object list docking window
+//
 #include "stdatl.hpp"
 #include "ObjectList.hpp"
 #include "DebugClient.hpp"
 #include "MainFrame.hpp"
 
-// CObjectListInfo methods
-
 void CObjectListInfo::Init(unsigned int nColumns)
 {
    m_nColumns = nColumns;
-   m_pObjectList = new unsigned int[nColumns*0x400];
-   ZeroMemory(&m_pObjectList[0], nColumns*0x400);
+   m_pObjectList = new unsigned int[nColumns * 0x400];
+   ZeroMemory(&m_pObjectList[0], nColumns * 0x400);
 }
 
 unsigned int CObjectListInfo::GetItem(unsigned int nPos, unsigned int nIndex)
 {
-   return m_pObjectList[nPos*m_nColumns+nIndex];
+   return m_pObjectList[nPos*m_nColumns + nIndex];
 }
 
 void CObjectListInfo::SetItem(unsigned int nPos, unsigned int nIndex, unsigned int nValue)
 {
-   m_pObjectList[nPos*m_nColumns+nIndex] = nValue;
+   m_pObjectList[nPos*m_nColumns + nIndex] = nValue;
 }
 
-
-// CObjectListWindow methods
-
 CObjectListWindow::CObjectListWindow()
-:baseClass(idObjectListWindow), m_bObjlistInfoInited(false)
+   :baseClass(idObjectListWindow), m_bObjlistInfoInited(false)
 {
    m_pItemNameList = new CSimpleArray<CString>;
 }
@@ -66,7 +54,7 @@ CObjectListWindow::~CObjectListWindow()
 
 void CObjectListWindow::ReceiveNotification(CDebugWindowNotification& notify)
 {
-   switch(notify.m_enCode)
+   switch (notify.m_enCode)
    {
    case ncUpdateData:
       UpdateData();
@@ -102,13 +90,13 @@ void CObjectListWindow::UpdateData()
       m_objectList.Init(nColumns);
    }
 
-   for(unsigned int pos=0; pos<0x400; pos++)
+   for (unsigned int pos = 0; pos < 0x400; pos++)
    {
-      for(unsigned int i=0; i<nColumns; i++)
+      for (unsigned int i = 0; i < nColumns; i++)
       {
-         if (i==0 || i==2) continue; // don't ask for "pos" or "name" field
+         if (i == 0 || i == 2) continue; // don't ask for "pos" or "name" field
 
-         unsigned int val = objectInfo.GetItemInfo(pos,i);
+         unsigned int val = objectInfo.GetItemInfo(pos, i);
          m_objectList.SetItem(pos, i, val);
       }
 
@@ -132,9 +120,9 @@ LRESULT CObjectListWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
    m_listCtrl.Create(m_hWnd, rcDef, NULL,
       WS_CHILD | WS_VISIBLE | LVS_REPORT | LVS_EDITLABELS | LVS_SHOWSELALWAYS | LVS_OWNERDATA | LVS_SINGLESEL | LVS_SHAREIMAGELISTS | LVS_NOSORTHEADER);
 
-   m_listCtrl.SetItemCountEx(0x400, LVSICF_NOINVALIDATEALL|LVSICF_NOSCROLL);
+   m_listCtrl.SetItemCountEx(0x400, LVSICF_NOINVALIDATEALL | LVSICF_NOSCROLL);
 
-   m_listCtrl.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES);
+   m_listCtrl.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 
    m_listCtrl.SetImageList(m_pMainFrame->GetObjectImageList(), LVSIL_SMALL);
 
@@ -143,7 +131,7 @@ LRESULT CObjectListWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
    CDebugClientObjectInterface objectInfo = debugClient.GetObjectInterface();
    unsigned int nColumns = objectInfo.GetColumnCount();
 
-   for(unsigned int n=0; n<nColumns; n++)
+   for (unsigned int n = 0; n < nColumns; n++)
       m_listCtrl.InsertColumn(n, objectInfo.GetColumnName(n), LVCFMT_LEFT, objectInfo.GetColumnSize(n), -1);
 
    m_listCtrl.Init(this);
@@ -151,7 +139,7 @@ LRESULT CObjectListWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
    // allow editing all columns except column 0 and 2
    m_listCtrl.SetColumnEditable(1, true);
 
-   for(unsigned int i=3; i<nColumns; i++)
+   for (unsigned int i = 3; i < nColumns; i++)
       m_listCtrl.SetColumnEditable(i, true);
 
    return 0;
@@ -217,7 +205,7 @@ LRESULT CObjectListWindow::OnGetDispInfo(WPARAM /*wParam*/, NMHDR* pNMHDR, BOOL&
    {
       CString cszText;
 
-      switch(nColumn)
+      switch (nColumn)
       {
       case 0: // pos
          cszText.Format(_T("%04x"), nItem);
@@ -254,8 +242,8 @@ LRESULT CObjectListWindow::OnGetDispInfo(WPARAM /*wParam*/, NMHDR* pNMHDR, BOOL&
          break;
       }
 
-      _tcsncpy(pDispInfo->item.pszText, (LPCTSTR)cszText, pDispInfo->item.cchTextMax-1);
-      pDispInfo->item.pszText[pDispInfo->item.cchTextMax-1] = 0;
+      _tcsncpy(pDispInfo->item.pszText, (LPCTSTR)cszText, pDispInfo->item.cchTextMax - 1);
+      pDispInfo->item.pszText[pDispInfo->item.cchTextMax - 1] = 0;
    }
 
    if (pDispInfo->item.mask & LVIF_IMAGE)

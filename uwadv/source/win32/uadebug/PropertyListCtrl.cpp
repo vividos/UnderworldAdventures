@@ -1,5 +1,6 @@
+//
 // Property List Control
-// Copyright (C) 2005 Michael Fink
+// Copyright (C) 2005,2019 Michael Fink
 //
 // The use and distribution terms for this software are covered by the
 // Common Public License 1.0 (http://opensource.org/licenses/cpl.php)
@@ -7,8 +8,7 @@
 // By using this software in any fashion, you are agreeing to be bound by
 // the terms of this license. You must not remove this notice, or
 // any other, from this software.
-
-// needed includes
+//
 #include "stdatl.hpp"
 #include "PropertyListCtrl.hpp"
 
@@ -25,7 +25,7 @@ void CInplaceTextEditControl::Create(HWND hWnd, CRect rect, LPCTSTR pszPropertyV
    SetWindowText(pszPropertyValue);
 
    SetFocus();
-   SetSel(0,-1);
+   SetSel(0, -1);
 
    // set font of owner
    HFONT hFont = CWindow(hWnd).GetFont();
@@ -37,7 +37,7 @@ bool CInplaceTextEditControl::AcceptChanges()
    // get text
    CString cszText;
    int nLength = GetWindowTextLength();
-   CWindow::GetWindowText(cszText.GetBuffer(nLength+1), nLength+1);
+   CWindow::GetWindowText(cszText.GetBuffer(nLength + 1), nLength + 1);
    cszText.ReleaseBuffer(nLength);
 
    return m_pInplaceParentCallback->EndLabelEdit(cszText);
@@ -49,7 +49,7 @@ void CInplaceTextEditControl::Finish()
    if (!m_bFinished)
    {
       m_bFinished = true;
-//      ::SetFocus(GetParent());
+      //::SetFocus(GetParent());
       DestroyWindow();
    }
 }
@@ -105,19 +105,19 @@ LRESULT CInplaceTextEditControl::OnNcDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, L
 // CPropertyListCtrlBase methods
 
 CPropertyListCtrlBase::CPropertyListCtrlBase()
-:m_nSortOrder(PLSO_CATEGORIZED),
- m_crGrayBackground(RGB(224,224,224)),
- m_pStorage(NULL),
- m_nInplaceEditItem(0),
- m_pInplaceEdit(NULL),
- m_nLeftAreaSize(14),
- m_bReadonly(false)
+   :m_nSortOrder(PLSO_CATEGORIZED),
+   m_crGrayBackground(RGB(224, 224, 224)),
+   m_pStorage(NULL),
+   m_nInplaceEditItem(0),
+   m_pInplaceEdit(NULL),
+   m_nLeftAreaSize(14),
+   m_bReadonly(false)
 {
 }
 
 void CPropertyListCtrlBase::AddGroups(SPropertyGroupInfo* pGroupInfo)
 {
-   while(pGroupInfo != NULL && pGroupInfo->m_nPropertyGroupId != UINT(-1))
+   while (pGroupInfo != NULL && pGroupInfo->m_nPropertyGroupId != UINT(-1))
    {
       m_mapAllGroups.SetAt(pGroupInfo->m_nPropertyGroupId, *pGroupInfo);
       pGroupInfo++;
@@ -126,7 +126,7 @@ void CPropertyListCtrlBase::AddGroups(SPropertyGroupInfo* pGroupInfo)
 
 void CPropertyListCtrlBase::AddItems(SPropertyItemInfo* pItemInfo)
 {
-   while(pItemInfo != NULL && pItemInfo->m_nPropertyId != UINT(-1))
+   while (pItemInfo != NULL && pItemInfo->m_nPropertyId != UINT(-1))
    {
       m_mapAllItems.SetAt(pItemInfo->m_nPropertyId, *pItemInfo);
       pItemInfo++;
@@ -259,8 +259,7 @@ void CPropertyListCtrlBase::LeftButtonClick(CPoint pt, unsigned int nItem, unsig
       // toggle group item expansion
       ExpandGroupItem(nItem, !IsPropertyGroupExpanded(nItem));
    }
-   else
-   if (!IsListItemAPropertyGroup(nItem) && nSubItem == 1)
+   else if (!IsListItemAPropertyGroup(nItem) && nSubItem == 1)
    {
       // yes, user clicked on a property value subitem
       EditProperty(nItem);
@@ -285,7 +284,7 @@ void CPropertyListCtrlBase::BuildPropertiesList()
       SPropertyGroupInfo propGroupInfo;
       UINT nGroupId = UINT(-1);
 
-      POSITION posGroups=m_mapAllGroups.GetStartPosition();
+      POSITION posGroups = m_mapAllGroups.GetStartPosition();
       while (posGroups != NULL)
       {
          m_mapAllGroups.GetNextAssoc(posGroups, nGroupId, propGroupInfo);
@@ -354,7 +353,7 @@ void CPropertyListCtrlBase::GetSubItemRect(unsigned int nItem, unsigned int nSub
    GetItemRect(nItem, rect, LVIR_LABEL);
 
    unsigned int xpos = 0;
-   for(unsigned int n=0; n<nSubItem; n++)
+   for (unsigned int n = 0; n < nSubItem; n++)
       xpos += GetColumnWidth(static_cast<int>(n));
 
    if (nSubItem != 0)
@@ -489,7 +488,7 @@ void CPropertyListCtrlBase::DrawGroupItem(unsigned int nItem, CDCHandle dc, UINT
 
    // draw group name text
    HFONT oldFont = dc.SelectFont(m_fontGroupItem);
-   dc.SetTextColor(RGB(128,128,128));
+   dc.SetTextColor(RGB(128, 128, 128));
 
    dc.DrawText(cszText, cszText.GetLength(), rectText,
       DT_LEFT | DT_BOTTOM | DT_EDITCONTROL | DT_SINGLELINE | DT_END_ELLIPSIS | DT_NOPREFIX);
@@ -514,7 +513,7 @@ void CPropertyListCtrlBase::DrawGroupItem(unsigned int nItem, CDCHandle dc, UINT
    }
 */
 
-   // draw box with plus or minus sign
+// draw box with plus or minus sign
    CRect rectBox(rect);
    GetPlusMinusBoxRect(rectBox);
 
@@ -522,18 +521,18 @@ void CPropertyListCtrlBase::DrawGroupItem(unsigned int nItem, CDCHandle dc, UINT
 
    // draw inner area
    CRect rectBoxInner(rectBox);
-   rectBoxInner.DeflateRect(1,1);
-   dc.FillSolidRect(rectBoxInner, RGB(255,255,255));
+   rectBoxInner.DeflateRect(1, 1);
+   dc.FillSolidRect(rectBoxInner, RGB(255, 255, 255));
 
    // draw minus sign
-   dc.MoveTo(rectBox.left+2, rectBox.top+4);
-   dc.LineTo(rectBox.left+7, rectBox.top+4);
+   dc.MoveTo(rectBox.left + 2, rectBox.top + 4);
+   dc.LineTo(rectBox.left + 7, rectBox.top + 4);
 
    // complete plus sign when not expanded
    if (!IsPropertyGroupExpanded(nItem))
    {
-      dc.MoveTo(rectBox.left+4, rectBox.top+2);
-      dc.LineTo(rectBox.left+4, rectBox.top+7);
+      dc.MoveTo(rectBox.left + 4, rectBox.top + 2);
+      dc.LineTo(rectBox.left + 4, rectBox.top + 7);
    }
 }
 
@@ -541,7 +540,7 @@ void CPropertyListCtrlBase::DrawPropertyNameItem(unsigned int nItem, CDCHandle d
 {
    CRect rect;
    GetItemRect(nItem, rect, LVIR_BOUNDS);
-   rect.right = GetColumnWidth(0)-1;
+   rect.right = GetColumnWidth(0) - 1;
 
    CRect rectFrontBar(rect);
    rectFrontBar.right = rectFrontBar.left + m_nLeftAreaSize;
@@ -555,19 +554,19 @@ void CPropertyListCtrlBase::DrawPropertyNameItem(unsigned int nItem, CDCHandle d
    pen.CreatePen(PS_SOLID, 1, m_crGrayBackground);
    HPEN oldPen = dc.SelectPen(pen);
 
-   dc.MoveTo(rectFrontBar.left, rectNameArea.bottom-1);
-   dc.LineTo(rectNameArea.right-1, rectNameArea.bottom-1);
-   dc.LineTo(rectNameArea.right-1, rectNameArea.top-1);
+   dc.MoveTo(rectFrontBar.left, rectNameArea.bottom - 1);
+   dc.LineTo(rectNameArea.right - 1, rectNameArea.bottom - 1);
+   dc.LineTo(rectNameArea.right - 1, rectNameArea.top - 1);
 
    dc.SelectPen(oldPen);
 
-   rectNameArea.DeflateRect(0,0,1,1);
+   rectNameArea.DeflateRect(0, 0, 1, 1);
 
    // draw blue selection box when selected
-   COLORREF crNameArea = RGB(255,255,255);
+   COLORREF crNameArea = RGB(255, 255, 255);
    bool bIsFocused = (uItemState & CDIS_FOCUS) != 0;
    if (bIsFocused)
-      crNameArea = RGB(0,0,128);
+      crNameArea = RGB(0, 0, 128);
 
    dc.FillSolidRect(rectNameArea, crNameArea);
 
@@ -578,9 +577,9 @@ void CPropertyListCtrlBase::DrawPropertyNameItem(unsigned int nItem, CDCHandle d
    UINT nPropertyId = GetListItemPropertyItemId(nItem);
    CString cszText = GetPropertyItemName(nPropertyId);
 
-   COLORREF crText = bIsFocused ? RGB(255,255,255) : RGB(0,0,0);
+   COLORREF crText = bIsFocused ? RGB(255, 255, 255) : RGB(0, 0, 0);
    if (m_bReadonly) // TODO check if item is readonly
-      crText = RGB(128,128,128);
+      crText = RGB(128, 128, 128);
 
    dc.SetTextColor(crText);
 
@@ -601,15 +600,15 @@ void CPropertyListCtrlBase::DrawPropertyValueItem(unsigned int nItem, CDCHandle 
    pen.CreatePen(PS_SOLID, 1, m_crGrayBackground);
    HPEN oldPen = dc.SelectPen(pen);
 
-   dc.MoveTo(rectNameArea.left, rectNameArea.bottom-1);
-   dc.LineTo(rectNameArea.right-1, rectNameArea.bottom-1);
-   dc.LineTo(rectNameArea.right-1, rectNameArea.top-1);
+   dc.MoveTo(rectNameArea.left, rectNameArea.bottom - 1);
+   dc.LineTo(rectNameArea.right - 1, rectNameArea.bottom - 1);
+   dc.LineTo(rectNameArea.right - 1, rectNameArea.top - 1);
    dc.SelectPen(oldPen);
 
-   rectNameArea.DeflateRect(0,0,1,1);
+   rectNameArea.DeflateRect(0, 0, 1, 1);
 
    // draw name area background
-   dc.FillSolidRect(rectNameArea, RGB(255,255,255));
+   dc.FillSolidRect(rectNameArea, RGB(255, 255, 255));
 
    rectNameArea.left += 3;
    rectNameArea.bottom -= 2;
@@ -618,7 +617,7 @@ void CPropertyListCtrlBase::DrawPropertyValueItem(unsigned int nItem, CDCHandle 
    UINT nPropertyId = GetListItemPropertyItemId(nItem);
    CString cszText = GetPropertyItemValue(nPropertyId);
 
-   dc.SetTextColor(RGB(0,0,0));
+   dc.SetTextColor(RGB(0, 0, 0));
 
    dc.DrawText(cszText, cszText.GetLength(), rectNameArea,
       DT_LEFT | DT_BOTTOM | DT_EDITCONTROL | DT_SINGLELINE | DT_END_ELLIPSIS | DT_NOPREFIX);

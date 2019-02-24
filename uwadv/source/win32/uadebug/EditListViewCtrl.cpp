@@ -1,35 +1,26 @@
-/*
-   Underworld Adventures Debugger - a debugger tool for Underworld Adventures
-   Copyright (c) 2004,2005 Michael Fink
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   $Id$
-
-*/
-/*! \file EditListViewCtrl.cpp
-
-   \brief editable list view control
-
-*/
-
-// includes
+//
+// Underworld Adventures Debugger - a debugger tool for Underworld Adventures
+// Copyright (c) 2004,2005,2019 Michael Fink
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file EditListViewCtrl.cpp
+/// \brief editable list view control
+//
 #include "stdatl.hpp"
 #include "EditListViewCtrl.hpp"
-
-// CEditListInplaceEditCtrl methods
 
 bool CEditListInplaceEditCtrl::AcceptChanges()
 {
@@ -67,7 +58,7 @@ void CEditListInplaceEditCtrl::Finish()
 
 LRESULT CEditListInplaceEditCtrl::OnChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 {
-   switch(wParam)
+   switch (wParam)
    {
    case VK_RETURN:
       if (!AcceptChanges())
@@ -105,9 +96,6 @@ LRESULT CEditListInplaceEditCtrl::OnNcDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, 
    return 0;
 }
 
-
-// CEditListViewCtrl methods
-
 void CEditListViewCtrl::Init(IEditListViewCallback* pCallback)
 {
    m_pCallback = pCallback;
@@ -119,7 +107,7 @@ void CEditListViewCtrl::Init(IEditListViewCallback* pCallback)
 
    m_abEditableColumns.RemoveAll();
 
-   for(int n=0; n<nColumn; n++)
+   for (int n = 0; n < nColumn; n++)
       m_abEditableColumns.Add(false);
 }
 
@@ -148,7 +136,7 @@ LRESULT CEditListViewCtrl::OnLeftButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LP
    int xlparam = GET_X_LPARAM(lParam);
    int column = 0;
 
-   while(xpos < (unsigned)xlparam)
+   while (xpos < (unsigned)xlparam)
       xpos += GetColumnWidth(column++);
    column--;
 
@@ -169,27 +157,27 @@ LRESULT CEditListViewCtrl::OnLeftButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LP
    SelectItem(item);
 
    // create edit-control
-   CEditListInplaceEditCtrl* pEdit = new CEditListInplaceEditCtrl(item,column);
+   CEditListInplaceEditCtrl* pEdit = new CEditListInplaceEditCtrl(item, column);
 
    RECT rect;
    GetItemRect(item, &rect, LVIR_LABEL);
 
    unsigned int startx = 0;
-   for(int n=0; n<column; n++)
+   for (int n = 0; n < column; n++)
       startx += GetColumnWidth(n);
 
-   rect.left = column == 0 ? rect.left : startx+3;
+   rect.left = column == 0 ? rect.left : startx + 3;
    rect.right = startx + GetColumnWidth(column);
    rect.bottom--;
 
    _TCHAR szBuffer[256];
-   GetItemText(item,column,szBuffer,256);
+   GetItemText(item, column, szBuffer, 256);
 
    pEdit->Create(m_hWnd, rect, _T(""));
    pEdit->SetWindowText(szBuffer);
 
    pEdit->SetFocus();
-   pEdit->SetSel(0,-1);
+   pEdit->SetSel(0, -1);
 
    HFONT hFont = GetFont();
    pEdit->SetFont(hFont);
