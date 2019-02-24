@@ -16,8 +16,6 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 --
--- $Id$
---
 
 --
 -- createchar.lua - lua cutscene script; controls the character creation screen
@@ -28,7 +26,7 @@
 -- registered C functions:
 --
 -- cuts_do_action(actioncode, actionparam_1...actionparam_n)
---   actioncode is one of the values below; number and type of actionparams 
+--   actioncode is one of the values below; number and type of actionparams
 --   depend on the action.
 --
 
@@ -52,7 +50,7 @@ actSetPlayerName = 9   -- does what the name suggests (param1=name)
 actSetPlayerAttr = 10  -- does what the name suggests (param1=attribute, param2=value)
 actSetPlayerSkill = 11 -- does what the name suggests (param1=skill, param2=value)
 
--- labels/button values, these must match entries in string table 
+-- labels/button values, these must match entries in string table
 -- starting at block cchar_strblock.
 ccvNone = 0
 ccvSex = 1
@@ -237,7 +235,7 @@ function cchar_global(globalaction, seed)
       cchar_do_action(actEnd)
    else
       -- show the first button group
-      curstep = 0 
+      curstep = 0
       psex = 0
       pclass = 0
       pstr = 0
@@ -305,7 +303,7 @@ function cchar_buttonclick(button, text)
 
       elseif curgroup==21 then
          if strlen(text)<1 then
-            return  -- don't accept an empty name   
+            return  -- don't accept an empty name
          else
             pname = text
             cchar_do_action(actSetPlayerName, pname)
@@ -327,7 +325,7 @@ function cchar_buttonclick(button, text)
    -- special case, player skills button groups (depend on player class)
    elseif curgroup>=3 and curgroup<=17 then
 
-      if curgroup==3 then   -- player class selection button 
+      if curgroup==3 then   -- player class selection button
          cchar_do_action(actSetPlayerAttr, player_attr_profession, button)
          pclass = button
          curstep = 0
@@ -375,7 +373,7 @@ function cchar_buttonclick(button, text)
             cchar_addskill(ccvTrack, random(4,13))
          end
 
-      else   -- class specific skill selection button 
+      else   -- class specific skill selection button
          cchar_addskill(ccharui.btngroups[curgroup].btns[button+1], random(4,13))
          curstep = curstep + 1
       end
@@ -395,8 +393,8 @@ function cchar_buttonclick(button, text)
    if curgroup>0 then
       cchar_do_action(actUIClear)
 
-      if curgroup>1 then 
-         cchar_do_action(actSetUIText, psex+ccvMale, 18, 21, alLeft) 
+      if curgroup>1 then
+         cchar_do_action(actSetUIText, psex+ccvMale, 18, 21, alLeft)
       end
       if curgroup>3 then
          -- common stats
