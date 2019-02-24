@@ -43,8 +43,9 @@ void PlayerImporter::LoadPlayer(Underworld::Player& player, const std::string& p
       Uint8 currentNumber = 3;
       for (unsigned int i = 0; i < 220; i++)
       {
-         if (i == 80)
+         if (i == 80 || i == 160)
             currentNumber = 3;
+
          playerInfos[i] ^= (xorBase + currentNumber);
          currentNumber += 3;
       }
@@ -111,14 +112,15 @@ void PlayerImporter::LoadPlayer(Underworld::Player& player, const std::string& p
    Uint16 expPoints = Uint16(playerInfos[0x004E]) | (Uint16(playerInfos[0x004F]) << 8);
    player.SetAttribute(Underworld::attrExperiencePoints, expPoints);
 
-   double xpos = playerInfos[0x0054], ypos = playerInfos[0x0056], zpos = playerInfos[0x0058];
+   // only use high byte for positions
+   double xpos = playerInfos[0x0056], ypos = playerInfos[0x0058], zpos = playerInfos[0x005A];
    player.SetPos(xpos, ypos);
    player.SetHeight(zpos);
 
-   Uint16 mapLevel = Uint16(playerInfos[0x005B]) | (Uint16(playerInfos[0x005C]) << 8);
+   Uint8 mapLevel = playerInfos[0x005C];
    player.SetAttribute(Underworld::attrMapLevel, mapLevel);
 
-   double rangle = playerInfos[0x0054] * (360.0 / 8.0);
+   double rangle = playerInfos[0x005B] * (360.0 / 8.0);
    player.SetRotateAngle(rangle);
 
    /*
