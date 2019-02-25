@@ -115,5 +115,8 @@
     <ClInclude Include="midi\XMidiSequenceHandler.h">
       <Filter>Midi Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="IODataSource.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

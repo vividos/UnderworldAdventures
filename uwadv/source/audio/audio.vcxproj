@@ -132,6 +132,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="audio.hpp" />
+    <ClInclude Include="IODataSource.hpp" />
     <ClInclude Include="midiplayer.hpp" />
     <ClInclude Include="midi\common_types.h" />
     <ClInclude Include="midi\CoreAudioMidiDriver.h" />
