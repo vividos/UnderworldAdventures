@@ -24,13 +24,13 @@
 #include "Resource.h"
 
 /// gamestrings view form
-class CGameStringsView :
-   public CDialogImpl<CGameStringsView>,
-   public CDebugWindowBase
+class GameStringsView :
+   public CDialogImpl<GameStringsView>,
+   public DebugWindowBase
 {
 public:
-   CGameStringsView() {}
-   virtual ~CGameStringsView();
+   GameStringsView() {}
+   virtual ~GameStringsView();
 
    enum { IDD = IDD_GAMESTRINGS };
 
@@ -40,7 +40,7 @@ public:
    }
 
 protected:
-   BEGIN_MSG_MAP(CGameStringsView)
+   BEGIN_MSG_MAP(GameStringsView)
       MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
       MESSAGE_HANDLER(WM_SIZE, OnSize)
       COMMAND_CODE_HANDLER(CBN_SELCHANGE, OnComboSelChange);
@@ -50,9 +50,9 @@ protected:
    LRESULT OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
    LRESULT OnComboSelChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
-   virtual void InitDebugWindow(IMainFrame* pMainFrame)
+   virtual void InitDebugWindow(IMainFrame* mainFrame)
    {
-      CDebugWindowBase::InitDebugWindow(pMainFrame);
+      DebugWindowBase::InitDebugWindow(mainFrame);
       InitCombobox();
    }
 
@@ -68,14 +68,14 @@ protected:
 };
 
 /// gamestrings frame
-class CGameStringsViewChildFrame : public CChildWindowBase<IDR_GAME_STRINGS>
+class GameStringsViewChildFrame : public ChildWindowBase<IDR_GAME_STRINGS>
 {
-   typedef CGameStringsViewChildFrame thisClass;
-   typedef CChildWindowBase<IDR_GAME_STRINGS> baseClass;
+   typedef GameStringsViewChildFrame thisClass;
+   typedef ChildWindowBase<IDR_GAME_STRINGS> baseClass;
 public:
-   CGameStringsViewChildFrame()
+   GameStringsViewChildFrame()
    {
-      m_bDynamicWindow = true;
+      m_isDynamicWindow = true;
    }
 
 protected:
@@ -97,40 +97,40 @@ protected:
    LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
    {
       bHandled = FALSE;
-      m_pMainFrame->RemoveDebugWindow(&m_view);
-      m_pMainFrame->RemoveDebugWindow(this);
+      m_mainFrame->RemoveDebugWindow(&m_view);
+      m_mainFrame->RemoveDebugWindow(this);
       return 0;
    }
 
    LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
    {
-      LPMSG pMsg = (LPMSG)lParam;
+      LPMSG msg = (LPMSG)lParam;
 
-      if (baseClass::PreTranslateMessage(pMsg))
+      if (baseClass::PreTranslateMessage(msg))
          return TRUE;
 
-      return m_view.PreTranslateMessage(pMsg);
+      return m_view.PreTranslateMessage(msg);
    }
 
-   virtual void InitDebugWindow(IMainFrame* pMainFrame)
+   virtual void InitDebugWindow(IMainFrame* mainFrame)
    {
-      baseClass::InitDebugWindow(pMainFrame);
-      pMainFrame->AddDebugWindow(&m_view);
+      baseClass::InitDebugWindow(mainFrame);
+      mainFrame->AddDebugWindow(&m_view);
    }
 
    virtual void DoneDebugWindow()
    {
-      m_pMainFrame->RemoveDebugWindow(&m_view);
+      m_mainFrame->RemoveDebugWindow(&m_view);
       baseClass::DoneDebugWindow();
    }
 
-   virtual void ReceiveNotification(CDebugWindowNotification& notify)
+   virtual void ReceiveNotification(DebugWindowNotification& notify)
    {
       // relay notification to descendant window, if needed
-      if (notify.m_bRelayToDescendants)
-         m_pMainFrame->SendNotification(notify, &m_view);
+      if (notify.m_relayToDescendants)
+         m_mainFrame->SendNotification(notify, &m_view);
    }
 
 protected:
-   CGameStringsView m_view;
+   GameStringsView m_view;
 };

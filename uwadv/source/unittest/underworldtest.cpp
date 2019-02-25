@@ -20,11 +20,11 @@
 /// \brief Underworld classes test
 //
 #include "unittest.hpp"
-#include "savegame.hpp"
-#include "filesystem.hpp"
-#include "underworld.hpp"
-#include "objectlist.hpp"
-#include "inventory.hpp"
+#include "Savegame.hpp"
+#include "FileSystem.hpp"
+#include "Underworld.hpp"
+#include "ObjectList.hpp"
+#include "Inventory.hpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -45,7 +45,7 @@ namespace UnitTest
          std::string strSavegameFile = testFolder.GetPathName() + "/savegame.uas";
 
          Base::SavegameInfo info;
-         info.title = "title01";
+         info.m_title = "title01";
 
          // write savegame
          {

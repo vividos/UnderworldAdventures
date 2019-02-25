@@ -22,7 +22,7 @@
 #include "stdatl.hpp"
 #include "DebugClient.hpp"
 
-LPCTSTR g_aszAttrNames[] =
+LPCTSTR g_attributeNames[] =
 {
    _T("xpos"),
    _T("ypos"),
@@ -77,16 +77,16 @@ LPCTSTR g_aszAttrNames[] =
 };
 
 
-/// pos and name don't count as columns in CDebugClient
-const int g_nObjListColumns = 15 - 2;
+/// pos and name don't count as columns in DebugClient
+const int c_objectListColumns = 15 - 2;
 
-struct SObjectListColumnInfo
+struct ObjectListColumnInfo
 {
-   LPCTSTR pszColumnName;
-   int nColumnSize;
-   bool bFormatHex;
-   unsigned nFormatHexLength;
-} g_aColumnInfo[] =
+   LPCTSTR columnName;
+   int columnSize;
+   bool formatAsHex;
+   unsigned formatHexLength;
+} g_columnInfo[] =
 {
    { _T("pos"),      70,   true,    4 },
    { _T("item_id"),  55,   true,    4 },
@@ -105,198 +105,198 @@ struct SObjectListColumnInfo
    { _T("hidden"),   55,   false,   1 },
 };
 
-unsigned int CDebugClientPlayerInterface::GetAttrCount()
+unsigned int DebugClientPlayerInterface::GetAttrCount()
 {
-   return sizeof(g_aszAttrNames) / sizeof(g_aszAttrNames[0]) - 4;
+   return sizeof(g_attributeNames) / sizeof(g_attributeNames[0]) - 4;
 }
 
-LPCTSTR CDebugClientPlayerInterface::GetPosInfoName(unsigned int info)
+LPCTSTR DebugClientPlayerInterface::GetPosInfoName(unsigned int info)
 {
    ATLASSERT(info < 4);
-   return g_aszAttrNames[info];
+   return g_attributeNames[info];
 }
 
-LPCTSTR CDebugClientPlayerInterface::GetAttrName(unsigned int attr)
+LPCTSTR DebugClientPlayerInterface::GetAttrName(unsigned int attr)
 {
    ATLASSERT(attr < GetAttrCount());
-   return g_aszAttrNames[attr + 4];
+   return g_attributeNames[attr + 4];
 }
 
-unsigned int CDebugClientPlayerInterface::GetAttribute(unsigned int attr)
+unsigned int DebugClientPlayerInterface::GetAttribute(unsigned int attr)
 {
    ATLASSERT(attr < GetAttrCount());
-   return m_pDebugInterface->get_player_attr(attr);
+   return m_debugInterface->GetPlayerAttribute(attr);
 }
 
-double CDebugClientPlayerInterface::GetPosInfo(unsigned int info)
+double DebugClientPlayerInterface::GetPosInfo(unsigned int info)
 {
    ATLASSERT(info < 4);
-   return m_pDebugInterface->get_player_pos_info(info);
+   return m_debugInterface->GetPlayerPosInfo(info);
 }
 
-void CDebugClientPlayerInterface::SetAttribute(unsigned int attr, unsigned int val)
+void DebugClientPlayerInterface::SetAttribute(unsigned int attr, unsigned int val)
 {
    ATLASSERT(attr < GetAttrCount());
-   m_pDebugInterface->set_player_attr(attr, val);
+   m_debugInterface->SetPlayerAttribute(attr, val);
 }
 
-void CDebugClientPlayerInterface::SetPosInfo(unsigned int info, double val)
+void DebugClientPlayerInterface::SetPosInfo(unsigned int info, double val)
 {
    ATLASSERT(info < 4);
-   m_pDebugInterface->set_player_pos_info(info, val);
+   m_debugInterface->SetPlayerPosInfo(info, val);
 }
 
-void CDebugClientPlayerInterface::Teleport(unsigned int level, double xpos, double ypos)
+void DebugClientPlayerInterface::Teleport(unsigned int level, double xpos, double ypos)
 {
-   m_pDebugInterface->set_player_attr(4, level);
-   m_pDebugInterface->set_player_pos_info(0, xpos);
-   m_pDebugInterface->set_player_pos_info(1, ypos);
+   m_debugInterface->SetPlayerAttribute(4, level);
+   m_debugInterface->SetPlayerPosInfo(0, xpos);
+   m_debugInterface->SetPlayerPosInfo(1, ypos);
 
-   double height = m_pDebugInterface->get_tile_height(level, xpos, ypos);
-   m_pDebugInterface->set_player_pos_info(2, height);
+   double height = m_debugInterface->GetTileHeight(level, xpos, ypos);
+   m_debugInterface->SetPlayerPosInfo(2, height);
 }
 
 
-// CDebugClientObjectInterface methods
+// DebugClientObjectListInterface methods
 
-unsigned int CDebugClientObjectInterface::GetColumnCount() const
+unsigned int DebugClientObjectListInterface::GetColumnCount() const
 {
-   return sizeof(g_aColumnInfo) / sizeof(g_aColumnInfo[0]);
+   return sizeof(g_columnInfo) / sizeof(g_columnInfo[0]);
 }
 
-LPCTSTR CDebugClientObjectInterface::GetColumnName(unsigned int nColumn) const
+LPCTSTR DebugClientObjectListInterface::GetColumnName(unsigned int columnIndex) const
 {
-   ATLASSERT(nColumn < GetColumnCount());
-   return g_aColumnInfo[nColumn].pszColumnName;
+   ATLASSERT(columnIndex < GetColumnCount());
+   return g_columnInfo[columnIndex].columnName;
 }
 
-unsigned int CDebugClientObjectInterface::GetColumnSize(unsigned int nColumn) const
+unsigned int DebugClientObjectListInterface::GetColumnSize(unsigned int columnIndex) const
 {
-   ATLASSERT(nColumn < GetColumnCount());
-   return g_aColumnInfo[nColumn].nColumnSize;
+   ATLASSERT(columnIndex < GetColumnCount());
+   return g_columnInfo[columnIndex].columnSize;
 }
 
-bool CDebugClientObjectInterface::ViewColumnAsHex(unsigned int nColumn) const
+bool DebugClientObjectListInterface::ViewColumnAsHex(unsigned int columnIndex) const
 {
-   ATLASSERT(nColumn < GetColumnCount());
-   return g_aColumnInfo[nColumn].bFormatHex;
+   ATLASSERT(columnIndex < GetColumnCount());
+   return g_columnInfo[columnIndex].formatAsHex;
 }
 
-unsigned int CDebugClientObjectInterface::ColumnHexDigitCount(unsigned int nColumn) const
+unsigned int DebugClientObjectListInterface::ColumnHexDigitCount(unsigned int columnIndex) const
 {
-   ATLASSERT(nColumn < GetColumnCount());
-   return g_aColumnInfo[nColumn].nFormatHexLength;
+   ATLASSERT(columnIndex < GetColumnCount());
+   return g_columnInfo[columnIndex].formatHexLength;
 }
 
-unsigned int CDebugClientObjectInterface::GetItemId(unsigned int nPos)
+unsigned int DebugClientObjectListInterface::GetItemId(unsigned int pos)
 {
-   ATLASSERT(nPos < 0x400);
-   return GetItemInfo(nPos, 1); // 1 currently is the item_id field
+   ATLASSERT(pos < 0x400);
+   return GetItemInfo(pos, 1); // 1 currently is the item_id field
 }
 
-unsigned int CDebugClientObjectInterface::GetItemNext(unsigned int nPos)
+unsigned int DebugClientObjectListInterface::GetItemNext(unsigned int pos)
 {
-   ATLASSERT(nPos < 0x400);
-   return GetItemInfo(nPos, 3); // 3 currently is the next field
+   ATLASSERT(pos < 0x400);
+   return GetItemInfo(pos, 3); // 3 currently is the next field
 }
 
-unsigned int CDebugClientObjectInterface::GetItemInfo(unsigned int nPos, unsigned int nSubcode)
+unsigned int DebugClientObjectListInterface::GetItemInfo(unsigned int pos, unsigned int subcode)
 {
-   ATLASSERT(nPos < 0x400);
-   ATLASSERT(nSubcode != 2); // can't get name
+   ATLASSERT(pos < 0x400);
+   ATLASSERT(subcode != 2); // can't get name
 
-   if (nSubcode == 0)
-      return nPos;
+   if (subcode == 0)
+      return pos;
 
    // remap to fields
-   nSubcode = nSubcode == 1 ? 0 : nSubcode - 2;
+   subcode = subcode == 1 ? 0 : subcode - 2;
 
-   return m_pDebugInterface->get_objlist_info(m_nLevel, nPos, nSubcode);
+   return m_debugInterface->GetObjectListInfo(m_level, pos, subcode);
 }
 
-void CDebugClientObjectInterface::SetItemInfo(unsigned int nPos, unsigned int nSubcode, unsigned int nInfo)
+void DebugClientObjectListInterface::SetItemInfo(unsigned int pos, unsigned int subcode, unsigned int nInfo)
 {
-   ATLASSERT(nPos < 0x400);
-   ATLASSERT(nSubcode != 0 && nSubcode != 2); // can't set pos and name
+   ATLASSERT(pos < 0x400);
+   ATLASSERT(subcode != 0 && subcode != 2); // can't set pos and name
 
    // remap to fields
-   nSubcode = nSubcode == 1 ? 0 : nSubcode - 2;
+   subcode = subcode == 1 ? 0 : subcode - 2;
 
-   m_pDebugInterface->set_objlist_info(m_nLevel, nPos, nSubcode, nInfo);
+   m_debugInterface->SetObjectListInfo(m_level, pos, subcode, nInfo);
 }
 
-T_enCodeDebuggerType CDebugClientCodeDebuggerInterface::GetDebuggerType()
+CodeDebuggerType IDebugClientCodeDebugger::GetDebuggerType()
 {
-   return static_cast<T_enCodeDebuggerType>(m_pCodeDebugger->get_debugger_type());
+   return static_cast<CodeDebuggerType>(m_codeDebugger->GetDebuggerType());
 }
 
-void CDebugClientCodeDebuggerInterface::PrepareDebugInfo()
+void IDebugClientCodeDebugger::PrepareDebugInfo()
 {
-   m_pCodeDebugger->prepare_debug_info();
+   m_codeDebugger->PrepareDebugInfo();
 }
 
-bool CDebugClientCodeDebuggerInterface::IsSourceAvail() const
+bool IDebugClientCodeDebugger::IsSourceAvail() const
 {
    // TODO implement
    return true;
 }
 
-bool CDebugClientCodeDebuggerInterface::IsCodeAvail() const
+bool IDebugClientCodeDebugger::IsCodeAvail() const
 {
    // TODO implement
    return true;
 }
 
-void CDebugClientCodeDebuggerInterface::SetCommand(T_enCodeDebuggerCommand enCommand)
+void IDebugClientCodeDebugger::SetCommand(CodeDebuggerCommand command)
 {
-   m_pCodeDebugger->set_debugger_command(static_cast<ua_debug_code_debugger_command>(enCommand));
-   m_pCodeDebugger->set_debugger_state(ua_debugger_state_running);
+   m_codeDebugger->SetDebuggerCommand(static_cast<DebugServerCodeDebuggerCommand>(command));
+   m_codeDebugger->SetDebuggerState(codeDebuggerStateRunning);
 }
 
-T_enCodeDebuggerState CDebugClientCodeDebuggerInterface::GetState() const
+CodeDebuggerState IDebugClientCodeDebugger::GetState() const
 {
-   return static_cast<T_enCodeDebuggerState>(m_pCodeDebugger->get_debugger_state());
+   return static_cast<CodeDebuggerState>(m_codeDebugger->GetDebuggerState());
 }
 
-SCodePosition CDebugClientCodeDebuggerInterface::GetCurrentPos()
+CodePosition IDebugClientCodeDebugger::GetCurrentPos()
 {
-   SCodePosition pos;
+   CodePosition pos;
 
    bool bSourcefileIsValid = false;
 
-   m_pCodeDebugger->get_current_pos(pos.m_nSourceFileNameIndex,
-      pos.m_nSourceFileLine, pos.m_nCodePos, bSourcefileIsValid);
+   m_codeDebugger->GetCurrentPos(pos.m_sourceFileNameIndex,
+      pos.m_sourceFileLine, pos.m_codePosition, bSourcefileIsValid);
 
    if (bSourcefileIsValid)
-      pos.m_nCodePos = unsigned(-1);
+      pos.m_codePosition = unsigned(-1);
    else
-      pos.m_nSourceFileNameIndex = unsigned(-1);
+      pos.m_sourceFileNameIndex = unsigned(-1);
 
    return pos;
 }
 
-unsigned int CDebugClientCodeDebuggerInterface::GetBreakpointCount() const
+unsigned int IDebugClientCodeDebugger::GetBreakpointCount() const
 {
-   return m_pCodeDebugger->get_num_breakpoints();
+   return m_codeDebugger->GetNumBreakpoints();
 }
 
-void CDebugClientCodeDebuggerInterface::GetBreakpointInfo(unsigned int nBreakpointIndex, SBreakpointInfo& breakpointInfo) const
+void IDebugClientCodeDebugger::GetBreakpointInfo(unsigned int nBreakpointIndex, BreakpointInfo& breakpointInfo) const
 {
    ATLASSERT(nBreakpointIndex < GetBreakpointCount());
-   m_pCodeDebugger->get_breakpoint_info(nBreakpointIndex,
-      breakpointInfo.m_location.m_nSourceFileNameIndex,
-      breakpointInfo.m_location.m_nSourceFileLine,
-      breakpointInfo.m_location.m_nCodePos,
-      breakpointInfo.m_bIsVisible);
+   m_codeDebugger->GetBreakpointInfo(nBreakpointIndex,
+      breakpointInfo.m_location.m_sourceFileNameIndex,
+      breakpointInfo.m_location.m_sourceFileLine,
+      breakpointInfo.m_location.m_codePosition,
+      breakpointInfo.m_isVisible);
 }
 
-unsigned int CDebugClientCodeDebuggerInterface::GetCallstackHeight() const
+unsigned int IDebugClientCodeDebugger::GetCallstackHeight() const
 {
    // TODO implement
    return 0;
 }
 
-void CDebugClientCodeDebuggerInterface::GetCallstackInfo(unsigned int nAtLevel, SCallstackInfo& callstackInfo) const
+void IDebugClientCodeDebugger::GetCallstackInfo(unsigned int nAtLevel, CallstackInfo& callstackInfo) const
 {
    ATLASSERT(nAtLevel < GetCallstackHeight());
    nAtLevel;
@@ -304,21 +304,21 @@ void CDebugClientCodeDebuggerInterface::GetCallstackInfo(unsigned int nAtLevel, 
    // TODO implement
 }
 
-unsigned int CDebugClientCodeDebuggerInterface::GetSourcefileCount() const
+unsigned int IDebugClientCodeDebugger::GetSourceFileCount() const
 {
-   return m_pCodeDebugger->get_num_sourcefiles();
+   return m_codeDebugger->GetNumSourcefiles();
 }
 
-CString CDebugClientCodeDebuggerInterface::GetSourcefileFilename(unsigned int nIndex)
+CString IDebugClientCodeDebugger::GetSourceFileName(unsigned int index)
 {
-   ATLASSERT(nIndex < GetSourcefileCount());
+   ATLASSERT(index < GetSourceFileCount());
 
-   unsigned int nSize = m_pCodeDebugger->get_sourcefile_name(nIndex, NULL, 0);
+   unsigned int nSize = m_codeDebugger->GetSourcefileName(index, NULL, 0);
 
    CHAR* szText = new CHAR[nSize + 1];
    szText[nSize] = 0;
 
-   m_pCodeDebugger->get_sourcefile_name(nIndex, szText, nSize + 1);
+   m_codeDebugger->GetSourcefileName(index, szText, nSize + 1);
 
    USES_CONVERSION;
    CFilename sourceFilename(A2CT(szText));
@@ -332,57 +332,57 @@ CString CDebugClientCodeDebuggerInterface::GetSourcefileFilename(unsigned int nI
    return sourceFilename.Get();
 }
 
-bool CDebugClientCodeDebuggerInterface::GetSourceFromCodePos(unsigned int nCodePos,
-   CString& cszFilename, unsigned int& nLine, unsigned int& nLineDisplacement)
+bool IDebugClientCodeDebugger::GetSourceFromCodePos(unsigned int codePos,
+   CString& filename, unsigned int& lineNumber, unsigned int& lineDisplacement)
 {
-   unsigned int nSourcefileIndex = 0; // TODO
-   cszFilename = GetSourcefileFilename(nSourcefileIndex);
-   nCodePos;
-   nLine;
-   nLineDisplacement;
+   unsigned int sourcefileIndex = 0; // TODO
+   filename = GetSourceFileName(sourcefileIndex);
+   codePos;
+   lineNumber;
+   lineDisplacement;
 
    // TODO implement
    return false;
 }
 
 
-// CDebugClientInterface methods
+// DebugClient methods
 
-bool CDebugClientInterface::Init(ua_debug_server_interface* pDebugInterface)
+bool DebugClient::Init(IDebugServer* pDebugInterface)
 {
-   m_pDebugInterface = pDebugInterface;
+   m_debugInterface = pDebugInterface;
 
    // check interface
-   if (!m_pDebugInterface->check_interface_version())
+   if (!m_debugInterface->CheckInterfaceVersion())
       return false;
 
    // get level
-   m_nLevel = m_pDebugInterface->get_player_attr(4);
+   m_level = m_debugInterface->GetPlayerAttribute(4);
 
    return true;
 }
 
-void CDebugClientInterface::Lock(bool bLock)
+void DebugClient::Lock(bool locked)
 {
-   m_pDebugInterface->lock(bLock);
+   m_debugInterface->Lock(locked);
 }
 
-bool CDebugClientInterface::IsStudioMode()
+bool DebugClient::IsStudioMode()
 {
-   return 1 == m_pDebugInterface->get_flag(ua_flag_is_studio_mode);
+   return 1 == m_debugInterface->GetFlag(debugServerFlagIsStudioMode);
 }
 
-unsigned int CDebugClientInterface::GetFlag(unsigned int flag)
+unsigned int DebugClient::GetFlag(unsigned int flag)
 {
-   return m_pDebugInterface->get_flag(flag);
+   return m_debugInterface->GetFlag(flag);
 }
 
-CString CDebugClientInterface::GetGameCfgPath()
+CString DebugClient::GetGameConfigPath()
 {
    CHAR szBuffer[512];
    szBuffer[511] = 0;
 
-   m_pDebugInterface->get_game_path(szBuffer, 511);
+   m_debugInterface->GetGamePath(szBuffer, 511);
 
    USES_CONVERSION;
    CFilename gamePath(A2CT(szBuffer));
@@ -393,102 +393,102 @@ CString CDebugClientInterface::GetGameCfgPath()
    return gamePath.Get();
 }
 
-void CDebugClientInterface::LoadGameCfg(LPCTSTR pszPrefix)
+void DebugClient::LoadGameConfig(LPCTSTR pszPrefix)
 {
-   m_pDebugInterface->load_game(pszPrefix);
+   m_debugInterface->LoadGame(pszPrefix);
 }
 
-bool CDebugClientInterface::IsGamePaused()
+bool DebugClient::IsGamePaused()
 {
-   m_pDebugInterface->lock(true);
-   bool paused = m_pDebugInterface->pause_game(true);
-   m_pDebugInterface->pause_game(paused);
-   m_pDebugInterface->lock(false);
+   m_debugInterface->Lock(true);
+   bool paused = m_debugInterface->PauseGame(true);
+   m_debugInterface->PauseGame(paused);
+   m_debugInterface->Lock(false);
 
    return paused;
 }
 
-void CDebugClientInterface::PauseGame(bool pause)
+void DebugClient::PauseGame(bool pause)
 {
-   m_pDebugInterface->lock(true);
-   m_pDebugInterface->pause_game(pause);
-   m_pDebugInterface->lock(false);
+   m_debugInterface->Lock(true);
+   m_debugInterface->PauseGame(pause);
+   m_debugInterface->Lock(false);
 }
 
-unsigned int CDebugClientInterface::GetNumLevels()
+unsigned int DebugClient::GetNumLevels()
 {
-   return m_pDebugInterface->GetNumLevels();
+   return m_debugInterface->GetNumLevels();
 }
 
-void CDebugClientInterface::SetWorkingLevel(unsigned int level)
+void DebugClient::SetWorkingLevel(unsigned int level)
 {
-   m_nLevel = level;
+   m_level = level;
 }
 
-CString CDebugClientInterface::GetLevelName(unsigned int level) const
+CString DebugClient::GetLevelName(unsigned int level) const
 {
    level;
    // TODO
    return _T("unknown");
 }
 
-void CDebugClientInterface::InsertNewLevel(unsigned int before_level)
+void DebugClient::InsertNewLevel(unsigned int before_level)
 {
    before_level;
    // TODO implement
 }
 
-void CDebugClientInterface::MoveLevel(unsigned int level, unsigned int level_insert_point)
+void DebugClient::MoveLevel(unsigned int level, unsigned int level_insert_point)
 {
    level;
    level_insert_point;
    // TODO implement
 }
 
-CDebugClientPlayerInterface CDebugClientInterface::GetPlayerInterface()
+DebugClientPlayerInterface DebugClient::GetPlayerInterface()
 {
-   CDebugClientPlayerInterface playerInterface;
-   playerInterface.m_pDebugInterface = m_pDebugInterface;
+   DebugClientPlayerInterface playerInterface;
+   playerInterface.m_debugInterface = m_debugInterface;
    return playerInterface;
 }
 
-CDebugClientObjectInterface CDebugClientInterface::GetObjectInterface()
+DebugClientObjectListInterface DebugClient::GetObjectInterface()
 {
-   CDebugClientObjectInterface objectInterface;
-   objectInterface.m_pDebugInterface = m_pDebugInterface;
-   objectInterface.m_nLevel = m_nLevel;
+   DebugClientObjectListInterface objectInterface;
+   objectInterface.m_debugInterface = m_debugInterface;
+   objectInterface.m_level = m_level;
    return objectInterface;
 }
 
 
-unsigned int CDebugClientInterface::GetTileInfo(unsigned int xpos, unsigned int ypos, T_enTileInfoType type)
+unsigned int DebugClient::GetTileInfo(unsigned int xpos, unsigned int ypos, TileInfoType type)
 {
-   return m_pDebugInterface->get_tile_info_value(m_nLevel, xpos, ypos, static_cast<unsigned int>(type));
+   return m_debugInterface->GetTileInfoValue(m_level, xpos, ypos, static_cast<unsigned int>(type));
 }
 
-void CDebugClientInterface::SetTileInfo(unsigned int xpos, unsigned int ypos, T_enTileInfoType type, unsigned int val)
+void DebugClient::SetTileInfo(unsigned int xpos, unsigned int ypos, TileInfoType type, unsigned int val)
 {
-   m_pDebugInterface->set_tile_info_value(m_nLevel, xpos, ypos, static_cast<unsigned int>(type), val);
+   m_debugInterface->SetTileInfoValue(m_level, xpos, ypos, static_cast<unsigned int>(type), val);
 }
 
-bool CDebugClientInterface::EnumGameStringsBlock(int index, unsigned int& block)
+bool DebugClient::EnumGameStringsBlock(int index, unsigned int& block)
 {
-   return m_pDebugInterface->enum_gamestr_block(index, block);
+   return m_debugInterface->EnumGameStringsBlocks(index, block);
 }
 
-unsigned int CDebugClientInterface::GetGameStringBlockSize(unsigned int block)
+unsigned int DebugClient::GetGameStringBlockSize(unsigned int block)
 {
-   return m_pDebugInterface->get_gamestr_blocksize(block);
+   return m_debugInterface->GetGameStringsBlockSize(block);
 }
 
-CString CDebugClientInterface::GetGameString(unsigned int block, unsigned int nr)
+CString DebugClient::GetGameString(unsigned int block, unsigned int nr)
 {
-   unsigned int nLen = m_pDebugInterface->get_game_string(block, nr, NULL, 0);
+   unsigned int nLen = m_debugInterface->GetGameString(block, nr, NULL, 0);
 
    CHAR* szBuffer = new CHAR[nLen + 1];
    szBuffer[nLen] = 0;
 
-   m_pDebugInterface->get_game_string(block, nr, szBuffer, nLen + 1);
+   m_debugInterface->GetGameString(block, nr, szBuffer, nLen + 1);
 
    USES_CONVERSION;
    CString cszText = A2CT(szBuffer);
@@ -497,64 +497,64 @@ CString CDebugClientInterface::GetGameString(unsigned int block, unsigned int nr
    return cszText;
 }
 
-void CDebugClientInterface::AddCodeDebugger(unsigned int nCodeDebuggerID)
+void DebugClient::AddCodeDebugger(unsigned int codeDebuggerId)
 {
-   if (!IsValidCodeDebuggerID(nCodeDebuggerID))
-      m_anCodeDebuggerIDs.Add(nCodeDebuggerID);
+   if (!IsValidCodeDebuggerId(codeDebuggerId))
+      m_codeDebuggerIdList.Add(codeDebuggerId);
 }
 
-void CDebugClientInterface::RemoveCodeDebugger(unsigned int nCodeDebuggerID)
+void DebugClient::RemoveCodeDebugger(unsigned int codeDebuggerId)
 {
-   ATLVERIFY(TRUE == m_anCodeDebuggerIDs.Remove(nCodeDebuggerID));
+   ATLVERIFY(TRUE == m_codeDebuggerIdList.Remove(codeDebuggerId));
 }
 
-unsigned int CDebugClientInterface::GetCodeDebuggerCount() const
+unsigned int DebugClient::GetCodeDebuggerCount() const
 {
-   return static_cast<unsigned int>(m_anCodeDebuggerIDs.GetSize());
+   return static_cast<unsigned int>(m_codeDebuggerIdList.GetSize());
 }
 
-unsigned int CDebugClientInterface::GetCodeDebuggerByIndex(unsigned int nIndex) const
+unsigned int DebugClient::GetCodeDebuggerByIndex(unsigned int index) const
 {
-   ATLASSERT(nIndex < GetCodeDebuggerCount());
-   return m_anCodeDebuggerIDs[nIndex];
+   ATLASSERT(index < GetCodeDebuggerCount());
+   return m_codeDebuggerIdList[index];
 }
 
-bool CDebugClientInterface::IsValidCodeDebuggerID(unsigned int nCodeDebuggerID) const
+bool DebugClient::IsValidCodeDebuggerId(unsigned int codeDebuggerId) const
 {
-   int nMax = m_anCodeDebuggerIDs.GetSize();
+   int nMax = m_codeDebuggerIdList.GetSize();
    for (int n = 0; n < nMax; n++)
    {
-      if (m_anCodeDebuggerIDs[n] == nCodeDebuggerID)
+      if (m_codeDebuggerIdList[n] == codeDebuggerId)
          return true;
    }
 
    return false;
 }
 
-CDebugClientCodeDebuggerInterface CDebugClientInterface::GetCodeDebuggerInterface(unsigned int nCodeDebuggerID)
+IDebugClientCodeDebugger DebugClient::GetCodeDebuggerInterface(unsigned int codeDebuggerId)
 {
-   ATLASSERT(true == IsValidCodeDebuggerID(nCodeDebuggerID));
+   ATLASSERT(true == IsValidCodeDebuggerId(codeDebuggerId));
 
-   CDebugClientCodeDebuggerInterface cdi;
-   cdi.m_pCodeDebugger = m_pDebugInterface->get_code_debugger(nCodeDebuggerID);
-   ATLASSERT(cdi.m_pCodeDebugger != NULL);
+   IDebugClientCodeDebugger cdi;
+   cdi.m_codeDebugger = m_debugInterface->GetCodeDebugger(codeDebuggerId);
+   ATLASSERT(cdi.m_codeDebugger != NULL);
 
-   cdi.m_pDebugClient = this;
+   cdi.m_debugClient = this;
 
    return cdi;
 }
 
-CImageList CDebugClientInterface::GetObjectImageList()
+CImageList DebugClient::GetObjectImageList()
 {
-   unsigned int num_objects = 0;
-   m_pDebugInterface->get_object_list_imagelist(num_objects, NULL, 0);
+   unsigned int numObjects = 0;
+   m_debugInterface->GetObjectListImagelist(numObjects, NULL, 0);
 
-   BYTE* pBitmapData = new BYTE[num_objects * 16 * 16 * 4];
+   BYTE* pBitmapData = new BYTE[numObjects * 16 * 16 * 4];
 
-   m_pDebugInterface->get_object_list_imagelist(num_objects, pBitmapData, num_objects * 16 * 16 * 4);
+   m_debugInterface->GetObjectListImagelist(numObjects, pBitmapData, numObjects * 16 * 16 * 4);
 
    // convert from RGBA to BGRA; CImageList needs this
-   for (unsigned int i = 0; i < num_objects * 16 * 16; i++)
+   for (unsigned int i = 0; i < numObjects * 16 * 16; i++)
    {
       BYTE nSwap = pBitmapData[i * 4 + 0];
       pBitmapData[i * 4 + 0] = pBitmapData[i * 4 + 2];
@@ -562,9 +562,9 @@ CImageList CDebugClientInterface::GetObjectImageList()
    };
 
    CImageList imageList;
-   imageList.Create(16, 16, ILC_COLOR32, 0, num_objects);
+   imageList.Create(16, 16, ILC_COLOR32, 0, numObjects);
 
-   for (unsigned int n = 0; n < num_objects; n++)
+   for (unsigned int n = 0; n < numObjects; n++)
    {
       BYTE buffer[16 * 16 * 4];
 
@@ -580,31 +580,31 @@ CImageList CDebugClientInterface::GetObjectImageList()
    return imageList;
 }
 
-bool CDebugClientInterface::GetMessage(CDebugClientMessage& msg)
+bool DebugClient::GetMessage(DebugClientMessage& msg)
 {
-   m_pDebugInterface->lock(true);
+   m_debugInterface->Lock(true);
 
-   unsigned int nNum = m_pDebugInterface->get_message_num();
+   unsigned int nNum = m_debugInterface->GetNumMessages();
    if (nNum == 0)
    {
-      m_pDebugInterface->lock(false);
+      m_debugInterface->Lock(false);
       return false;
    }
 
    unsigned int nTextSize = 0;
-   m_pDebugInterface->get_message(msg.m_nType, msg.m_nArg1, msg.m_nArg2, msg.m_dArg3, nTextSize);
+   m_debugInterface->GetMessage(msg.m_messageType, msg.m_messageArg1, msg.m_messageArg2, msg.m_messageArg3, nTextSize);
 
    CHAR* szBuffer = new CHAR[nTextSize + 1];
    szBuffer[nTextSize] = 0;
 
-   ATLVERIFY(true == m_pDebugInterface->get_message_text(szBuffer, nTextSize));
+   ATLVERIFY(true == m_debugInterface->GetMessageText(szBuffer, nTextSize));
 
-   msg.m_cszText = szBuffer;
+   msg.m_messageText = szBuffer;
    delete[] szBuffer;
 
-   m_pDebugInterface->pop_message();
+   m_debugInterface->PopMessage();
 
-   m_pDebugInterface->lock(false);
+   m_debugInterface->Lock(false);
 
    return true;
 }

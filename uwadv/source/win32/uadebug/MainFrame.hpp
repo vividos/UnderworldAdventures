@@ -34,19 +34,19 @@
 #define WM_UNDOCK_WINDOW (WM_APP + 10)
 
 /// debugger app main frame
-class CMainFrame :
-   public dockwins::CMDIDockingFrameImpl<CMainFrame>,
-   public CUpdateUI<CMainFrame>,
+class MainFrame :
+   public dockwins::CMDIDockingFrameImpl<MainFrame>,
+   public CUpdateUI<MainFrame>,
    public CMessageFilter,
    public CIdleHandler,
    public IMainFrame
 {
-   typedef dockwins::CMDIDockingFrameImpl<CMainFrame> baseClass;
+   typedef dockwins::CMDIDockingFrameImpl<MainFrame> baseClass;
 public:
    DECLARE_FRAME_WND_CLASS(NULL, IDR_MAINFRAME)
 
    /// MDI command bar for tabbing, with XP look
-   CTabbedMDICommandBarCtrlXP m_CmdBar;
+   CTabbedMDICommandBarCtrlXP m_commandBar;
 
    /// tabbed MDI client window
    CTabbedMDIClient<CDotNetTabCtrl<CTabViewTabItem> > m_tabbedClient;
@@ -56,22 +56,22 @@ public:
 
    // docking windows
 
-   CPlayerInfoWindow m_playerInfoWindow;
-   CObjectListWindow m_objectListWindow;
-   CHotspotListWindow m_hotspotListWindow;
-   CTileInfoWindow m_tileInfoWindow;
+   PlayerInfoWindow m_playerInfoWindow;
+   ObjectListWindow m_objectListWindow;
+   HotspotListWindow m_hotspotListWindow;
+   TileInfoWindow m_tileInfoWindow;
    CProjectInfoWindow m_projectInfoWindow;
 
    // statically allocated child windows
 
-   CTileMapViewChildFrame m_tilemapChildFrame;
+   TileMapViewChildFrame m_tilemapChildFrame;
 
    /// image list with all icons for underworld objects; 16x16
-   CImageList m_ilObjects;
+   CImageList m_objectImageList;
 
 public:
    /// initializes debug client of main frame
-   bool InitDebugClient(void* pDebugClient);
+   bool InitDebugClient(void* debugClient);
 
    virtual BOOL PreTranslateMessage(MSG* pMsg);
 
@@ -82,7 +82,7 @@ public:
    void ProcessServerMessages();
 
    // message map
-   BEGIN_MSG_MAP(CMainFrame)
+   BEGIN_MSG_MAP(MainFrame)
       MESSAGE_HANDLER(WM_CREATE, OnCreate)
       COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
       COMMAND_ID_HANDLER(ID_FILE_NEW, OnFileNew)
@@ -113,13 +113,13 @@ public:
       // ID_HELP_INDEX
       MESSAGE_HANDLER(WM_UNDOCK_WINDOW, OnUndockWindow)
       CHAIN_MDI_CHILD_COMMANDS()
-      CHAIN_MSG_MAP(CUpdateUI<CMainFrame>)
+      CHAIN_MSG_MAP(CUpdateUI<MainFrame>)
       CHAIN_MSG_MAP(baseClass)
       REFLECT_NOTIFICATIONS()
    END_MSG_MAP()
 
    // update map for menus and toolbars
-   BEGIN_UPDATE_UI_MAP(CMainFrame)
+   BEGIN_UPDATE_UI_MAP(MainFrame)
       UPDATE_ELEMENT(ID_UNDERWORLD_RUN, UPDUI_MENUPOPUP | UPDUI_TOOLBAR)
       UPDATE_ELEMENT(ID_UNDERWORLD_PAUSE, UPDUI_MENUPOPUP | UPDUI_TOOLBAR)
       UPDATE_ELEMENT(ID_VIEW_TOOLBAR, UPDUI_MENUPOPUP)
@@ -134,13 +134,6 @@ public:
       UPDATE_ELEMENT(ID_VIEW_TILEMAP, UPDUI_MENUPOPUP | UPDUI_TOOLBAR)
       UPDATE_ELEMENT(ID_VIEW_GAMESTRINGS, UPDUI_MENUPOPUP | UPDUI_TOOLBAR)
    END_UPDATE_UI_MAP()
-
-   // Handler prototypes (uncomment arguments if needed):
-   //   LRESULT MessageHandler(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-   //   LRESULT CommandHandler(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-   //   LRESULT NotifyHandler(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/)
-
-      // message handler
 
    LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
    LRESULT OnFileExit(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -190,45 +183,45 @@ public:
    }
 
    /// shows or hides docking windows
-   bool ShowHideDockingWindow(CDockingWindowBase& dockingWindow);
+   bool ShowHideDockingWindow(DockingWindowBase& dockingWindow);
 
    /// called per PostMessage from UndockWindow() to really undock a docking window
    LRESULT OnUndockWindow(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
    // virtual methods from IMainFrame
 
-   virtual CDebugClientInterface& GetDebugClientInterface();
-   virtual CProjectManager& GetProjectManager() { return m_projectManager; }
-   virtual CImageList GetCommonImageList() { return m_ilCommonImages; }
-   virtual bool IsGameStopped() const { return m_bStopped; }
-   virtual void SendNotification(CDebugWindowNotification& notify, CDebugWindowBase* pDebugWindow);
-   virtual void SendNotification(CDebugWindowNotification& notify,
-      bool fExcludeSender = false, CDebugWindowBase* pSender = NULL);
-   virtual CImageList& GetObjectImageList();
-   virtual void DockDebugWindow(CDockingWindowBase& dockingWindow);
-   virtual void UndockWindow(T_enDockingWindowID windowID, CDockingWindowBase* pDockingWindow);
-   virtual void AddDebugWindow(CDebugWindowBase* pDebugWindow);
-   virtual void RemoveDebugWindow(CDebugWindowBase* pDebugWindow);
-   virtual void OpenLuaSourceFile(LPCTSTR pszFilename);
-   virtual void AddLuaChildView(CLuaSourceView* pChildView);
-   virtual void RemoveLuaChildView(CLuaSourceView* pChildView);
+   virtual DebugClient& GetDebugClientInterface() override;
+   virtual ProjectManager& GetProjectManager() override { return m_projectManager; }
+   virtual CImageList GetCommonImageList() override { return m_commonImageList; }
+   virtual bool IsGameStopped() const override { return m_isStopped; }
+   virtual void SendNotification(DebugWindowNotification& notify, DebugWindowBase* debugWindow) override;
+   virtual void SendNotification(DebugWindowNotification& notify,
+      bool excludeSender = false, DebugWindowBase* sender = NULL) override;
+   virtual CImageList& GetObjectImageList() override;
+   virtual void DockDebugWindow(DockingWindowBase& dockingWindow) override;
+   virtual void UndockWindow(DockingWindowId windowId, DockingWindowBase* dockingWindow) override;
+   virtual void AddDebugWindow(DebugWindowBase* debugWindow) override;
+   virtual void RemoveDebugWindow(DebugWindowBase* debugWindow) override;
+   virtual void OpenLuaSourceFile(LPCTSTR filename) override;
+   virtual void AddLuaChildView(LuaSourceView* childView) override;
+   virtual void RemoveLuaChildView(LuaSourceView* childView) override;
 
 private:
    /// debug client interface
-   CDebugClientInterface m_debugClient;
+   DebugClient m_debugClient;
 
    /// indicates if game is stopped
-   bool m_bStopped;
+   bool m_isStopped;
 
    /// project manager
-   CProjectManager m_projectManager;
+   ProjectManager m_projectManager;
 
    /// array with pointer to all debug windows
-   CSimpleArray<CDebugWindowBase*> m_apDebugWindows;
+   CSimpleArray<DebugWindowBase*> m_debugWindowList;
 
    /// array with pointer to all lua child windows
-   CSimpleArray<CLuaSourceView*> m_apLuaChildWindows;
+   CSimpleArray<LuaSourceView*> m_luaChildWindows;
 
    /// common image list
-   CImageList m_ilCommonImages;
+   CImageList m_commonImageList;
 };

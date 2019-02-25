@@ -20,7 +20,7 @@
 /// \brief String test
 //
 #include "unittest.hpp"
-#include "string.hpp"
+#include "String.hpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

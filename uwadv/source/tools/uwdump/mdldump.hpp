@@ -21,10 +21,10 @@
 //
 #pragma once
 
-#include "gamestrings.hpp"
+#include "GameStrings.hpp"
 
 /// dumps builtin models
-class ua_dump_builtin_models
+class DumpBuiltinModels
 {
 public:
    void start(std::string& basepath, bool isUw2);

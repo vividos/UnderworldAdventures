@@ -21,10 +21,10 @@
 //
 #pragma once
 
-#include "gamestrings.hpp"
+#include "GameStrings.hpp"
 
 /// dumps object properties
-class ua_dump_obj_properties
+class DumpObjectProperties
 {
 public:
    void start(std::string& basepath);

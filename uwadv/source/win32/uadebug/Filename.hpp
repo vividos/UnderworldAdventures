@@ -28,13 +28,13 @@ public:
    /// empty ctor
    CFilename() {}
    /// ctor
-   CFilename(LPCTSTR pszFilename);
+   CFilename(LPCTSTR filename);
 
    /// sets path/filename
-   void Set(LPCTSTR pszFilename);
+   void Set(LPCTSTR filename);
 
    /// returns path/filename
-   CString Get() const { return m_cszFilename; }
+   CString Get() const { return m_filename; }
 
    /// returns if given filename is a valid object, either a file or folder name that exists
    bool IsValidObject() const;
@@ -54,16 +54,16 @@ public:
    /// returns filename part of path/filename
    CString GetFilename() const;
 
-   /// makes path absolute; if it's a relative path, pszBaseDirectory is the base directory
-   void MakeAbsolute(LPCTSTR pszBaseDirectory);
+   /// makes path absolute; if it's a relative path, baseDirectory is the base directory
+   void MakeAbsolute(LPCTSTR baseDirectory);
 
    /// makes path absolute to current directory
    void MakeAbsoluteToCurrentDir();
 
    /// makes path relative to given path; returns true when paths were made relative
-   bool MakeRelativeTo(LPCTSTR pszPathname);
+   bool MakeRelativeTo(LPCTSTR pathname);
 
 protected:
    /// path/filename to manage
-   CString m_cszFilename;
+   CString m_filename;
 };

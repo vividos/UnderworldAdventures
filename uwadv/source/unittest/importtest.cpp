@@ -20,16 +20,16 @@
 /// \brief import functions test
 //
 #include "unittest.hpp"
-#include "settings.hpp"
-#include "resourcemanager.hpp"
-#include "import.hpp"
-#include "levelimporter.hpp"
-#include "playerimporter.hpp"
-#include "gamestrings.hpp"
-#include "gamestringsimporter.hpp"
-#include "properties.hpp"
-#include "levellist.hpp"
-#include "player.hpp"
+#include "Settings.hpp"
+#include "ResourceManager.hpp"
+#include "Import.hpp"
+#include "LevelImporter.hpp"
+#include "PlayerImporter.hpp"
+#include "GameStrings.hpp"
+#include "GameStringsImporter.hpp"
+#include "Properties.hpp"
+#include "LevelList.hpp"
+#include "Player.hpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -54,14 +54,14 @@ namespace UnitTest
          Import::ImportProperties(resourceManager, objectProperties);
 
          // test if all property vectors are filled
-         Assert::IsTrue(0x0200 == objectProperties.GetVectorCommonObjectProperties().size());
-         Assert::IsTrue(0x0010 == objectProperties.GetVectorMeleeWeaponProperties().size());
-         Assert::IsTrue(0x0010 == objectProperties.GetVectorRangedWeaponProperties().size());
-         Assert::IsTrue(0x0020 == objectProperties.GetVectorArmourAndWearableProperties().size());
-         Assert::IsTrue(0x0040 == objectProperties.GetVectorCritterProperties().size());
-         Assert::IsTrue(0x0010 == objectProperties.GetVectorContainerProperties().size());
-         Assert::IsTrue(0x0010 == objectProperties.GetVectorLightSourceProperties().size());
-         Assert::IsTrue(0x0010 == objectProperties.GetVectorAnimatedObjectProperties().size());
+         Assert::IsTrue(0x0200 == objectProperties.GetCommonObjectPropertiesList().size());
+         Assert::IsTrue(0x0010 == objectProperties.GetMeleeWeaponPropertiesList().size());
+         Assert::IsTrue(0x0010 == objectProperties.GetRangedWeaponPropertiesList().size());
+         Assert::IsTrue(0x0020 == objectProperties.GetArmourAndWearablePropertiesList().size());
+         Assert::IsTrue(0x0040 == objectProperties.GetCritterPropertiesList().size());
+         Assert::IsTrue(0x0010 == objectProperties.GetContainerPropertiesList().size());
+         Assert::IsTrue(0x0010 == objectProperties.GetLightSourcePropertiesList().size());
+         Assert::IsTrue(0x0010 == objectProperties.GetAnimatedObjectProperties().size());
       }
 
       /// Tests importing object properties, uw2
@@ -80,14 +80,14 @@ namespace UnitTest
          Import::ImportProperties(resourceManager, objectProperties);
 
          // test if all property vectors are filled
-         Assert::IsTrue(0x0200 == objectProperties.GetVectorCommonObjectProperties().size());
-         Assert::IsTrue(0x0010 == objectProperties.GetVectorMeleeWeaponProperties().size());
-         Assert::IsTrue(0x0010 == objectProperties.GetVectorRangedWeaponProperties().size());
-         Assert::IsTrue(0x0020 == objectProperties.GetVectorArmourAndWearableProperties().size());
-         Assert::IsTrue(0x0040 == objectProperties.GetVectorCritterProperties().size());
-         Assert::IsTrue(0x0010 == objectProperties.GetVectorContainerProperties().size());
-         Assert::IsTrue(0x0010 == objectProperties.GetVectorLightSourceProperties().size());
-         Assert::IsTrue(0x0010 == objectProperties.GetVectorAnimatedObjectProperties().size());
+         Assert::IsTrue(0x0200 == objectProperties.GetCommonObjectPropertiesList().size());
+         Assert::IsTrue(0x0010 == objectProperties.GetMeleeWeaponPropertiesList().size());
+         Assert::IsTrue(0x0010 == objectProperties.GetRangedWeaponPropertiesList().size());
+         Assert::IsTrue(0x0020 == objectProperties.GetArmourAndWearablePropertiesList().size());
+         Assert::IsTrue(0x0040 == objectProperties.GetCritterPropertiesList().size());
+         Assert::IsTrue(0x0010 == objectProperties.GetContainerPropertiesList().size());
+         Assert::IsTrue(0x0010 == objectProperties.GetLightSourcePropertiesList().size());
+         Assert::IsTrue(0x0010 == objectProperties.GetAnimatedObjectProperties().size());
       }
 
       /// Tests loading level list, uw_demo

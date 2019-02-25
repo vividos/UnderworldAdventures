@@ -23,8 +23,8 @@
 ///  Module relations are as follows:<br>
 ///  \dotfile ua-module-dependencies.dot Module Dependencies
 //
-#include "base.hpp"
-#include "uwadv.hpp"
+#include "Base.hpp"
+#include "Game.hpp"
 
 /// main function
 int main(int argc, char* argv[])
@@ -33,16 +33,16 @@ int main(int argc, char* argv[])
    try
 #endif
    {
-      ua_uwadv_game game;
+      Game game;
 
       // init and run the game
-      game.init();
-      game.parse_args(static_cast<unsigned int>(argc),
+      game.Init();
+      game.ParseArgs(static_cast<unsigned int>(argc),
          const_cast<const char**>(argv));
 
-      game.run();
+      game.Run();
 
-      game.done();
+      game.Done();
    }
 #ifndef HAVE_DEBUG
    catch (Base::Exception& ex)

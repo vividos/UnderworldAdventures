@@ -20,7 +20,7 @@
 /// \brief Settings test
 //
 #include "unittest.hpp"
-#include "settings.hpp"
+#include "Settings.hpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

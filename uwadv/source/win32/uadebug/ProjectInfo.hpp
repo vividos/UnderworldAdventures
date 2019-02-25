@@ -23,7 +23,7 @@
 
 #include "DebugClient.hpp"
 
-class CDockingWindowBase;
+class DockingWindowBase;
 
 /// window info about code debugger
 struct SCodeDebuggerInfo
@@ -31,17 +31,17 @@ struct SCodeDebuggerInfo
    SCodeDebuggerInfo()
       :m_pWatchesWindow(NULL), m_pBreakpointWindow(NULL), m_pCallstackWindow(NULL) {}
 
-   CDockingWindowBase* m_pBreakpointWindow;
-   CDockingWindowBase* m_pWatchesWindow;
-   CDockingWindowBase* m_pCallstackWindow;
-   //CDockingWindowBase* m_pMemoryWindow;
+   DockingWindowBase* m_pBreakpointWindow;
+   DockingWindowBase* m_pWatchesWindow;
+   DockingWindowBase* m_pCallstackWindow;
+   //DockingWindowBase* m_pMemoryWindow;
 };
 
 /// player info docking window
-class CProjectInfoWindow : public CDockingWindowBase
+class CProjectInfoWindow : public DockingWindowBase
 {
    typedef CProjectInfoWindow thisClass;
-   typedef CDockingWindowBase baseClass;
+   typedef DockingWindowBase baseClass;
 
    enum T_enTreeItemType
    {
@@ -63,18 +63,18 @@ class CProjectInfoWindow : public CDockingWindowBase
       STreeItemInfo() : m_enType(tiNone), m_nInfo(0) {}
 
       /// item info ctor for tiLevel, tiCodeDebugger, tiWindow
-      STreeItemInfo(T_enTreeItemType enType, unsigned int nInfo, unsigned int nCodeDebuggerID = 0)
-         : m_enType(enType), m_nCodeDebuggerID(nCodeDebuggerID), m_nInfo(nInfo) {}
+      STreeItemInfo(T_enTreeItemType enType, unsigned int nInfo, unsigned int codeDebuggerId = 0)
+         : m_enType(enType), m_codeDebuggerId(codeDebuggerId), m_nInfo(nInfo) {}
 
       /// item info ctor for tiLuaFilename, tiConvCodeFilename
-      STreeItemInfo(LPCTSTR pszInfo, unsigned int nInfo = wtNone, T_enTreeItemType enType = tiNone, unsigned int nCodeDebuggerID = 0)
-         : m_enType(enType), m_nCodeDebuggerID(nCodeDebuggerID), m_nInfo(nInfo), m_cszInfo(pszInfo) {}
+      STreeItemInfo(LPCTSTR pszInfo, unsigned int nInfo = wtNone, T_enTreeItemType enType = tiNone, unsigned int codeDebuggerId = 0)
+         : m_enType(enType), m_codeDebuggerId(codeDebuggerId), m_nInfo(nInfo), m_cszInfo(pszInfo) {}
 
       /// type of tree item
       T_enTreeItemType m_enType;
 
       /// code debugger id, if any
-      unsigned int m_nCodeDebuggerID;
+      unsigned int m_codeDebuggerId;
 
       /// string info; for filename items
       CString m_cszInfo;
@@ -110,20 +110,20 @@ protected:
    LRESULT OnDblClick(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
    LRESULT OnDeleteItem(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 
-   // virtual methods from CDockingWindowBase
-   virtual void ReceiveNotification(CDebugWindowNotification& notify) override;
+   // virtual methods from DockingWindowBase
+   virtual void ReceiveNotification(DebugWindowNotification& notify) override;
 
    /// updates project info data
    void UpdateData();
 
    /// handles code debugger update message
-   void OnCodeDebuggerUpdate(CDebugWindowNotification& notify);
+   void OnCodeDebuggerUpdate(DebugWindowNotification& notify);
 
    /// creates and docks or activates code debugger window
-   void CreateActivateWindow(CDockingWindowBase& dockingWindow);
+   void CreateActivateWindow(DockingWindowBase& dockingWindow);
 
    /// undocks and closes a code debugger window
-   void UndockCloseWindow(CDockingWindowBase& dockingWindow);
+   void UndockCloseWindow(DockingWindowBase& dockingWindow);
 
    /// refreshes level list
    void RefreshLevelList();
@@ -132,8 +132,8 @@ protected:
    void RefreshCodeDebuggerList();
 
    /// inserts source file; display name is relative to given path
-   void InsertSourceFile(HTREEITEM hParentItem, T_enCodeDebuggerType enType,
-      LPCTSTR pszFilename, LPCTSTR pszPathRelativeTo, unsigned int nCodeDebuggerID);
+   void InsertSourceFile(HTREEITEM hParentItem, CodeDebuggerType enType,
+      LPCTSTR filename, LPCTSTR pszPathRelativeTo, unsigned int codeDebuggerId);
 
    /// returns tree item info for a given item
    STreeItemInfo GetTreeItemInfo(HTREEITEM hItem);

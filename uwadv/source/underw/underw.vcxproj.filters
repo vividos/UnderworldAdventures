@@ -11,96 +11,96 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="convglobals.cpp">
+    <ClCompile Include="ConvGlobals.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="inventory.cpp">
+    <ClCompile Include="GameLogic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="levellist.cpp">
+    <ClCompile Include="GameStrings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mapnotes.cpp">
+    <ClCompile Include="Inventory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="object.cpp">
+    <ClCompile Include="LevelList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="objectlist.cpp">
+    <ClCompile Include="MapNotes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="player.cpp">
+    <ClCompile Include="Object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="runes.cpp">
+    <ClCompile Include="ObjectList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="tilemap.cpp">
+    <ClCompile Include="Player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QuestFlags.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Runes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="underw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="underworld.cpp">
+    <ClCompile Include="Underworld.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="questflags.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="gamestrings.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="gamelogic.cpp">
+    <ClCompile Include="TileMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="convglobals.hpp">
+    <ClInclude Include="ConvGlobals.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="inventory.hpp">
+    <ClInclude Include="GameLogic.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="level.hpp">
+    <ClInclude Include="GameStrings.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="levellist.hpp">
+    <ClInclude Include="Inventory.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="mapnotes.hpp">
+    <ClInclude Include="Level.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="object.hpp">
+    <ClInclude Include="LevelList.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="objectlist.hpp">
+    <ClInclude Include="MapNotes.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="player.hpp">
+    <ClInclude Include="Object.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="properties.hpp">
+    <ClInclude Include="ObjectList.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="questflags.hpp">
+    <ClInclude Include="Player.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="runes.hpp">
+    <ClInclude Include="Properties.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="tilemap.hpp">
+    <ClInclude Include="QuestFlags.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Runes.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="underw.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="underworld.hpp">
+    <ClInclude Include="Underworld.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gamestrings.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="gamelogic.hpp">
+    <ClInclude Include="Tilemap.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

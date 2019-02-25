@@ -20,13 +20,13 @@
 /// \brief audio classes test
 //
 #include "unittest.hpp"
-#include "audio.hpp"
-#include "midiplayer.hpp"
-#include "settings.hpp"
+#include "Audio.hpp"
+#include "MidiPlayer.hpp"
+#include "Settings.hpp"
 #include <SDL.h>
 #include <SDL_mixer.h>
-#include "file.hpp"
-#include "resourcemanager.hpp"
+#include "File.hpp"
+#include "ResourceManager.hpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -117,9 +117,9 @@ namespace UnitTest
 
          for (unsigned int i = 0; i < SDL_TABLESIZE(midisUw1); i++)
          {
-            std::string strFilename = std::string("/sound/") + midisUw1[i];
+            std::string filename = std::string("/sound/") + midisUw1[i];
 
-            Base::SDL_RWopsPtr rwops = resourceManager.GetUnderworldFile(Base::resourceGameUw1, strFilename);
+            Base::SDL_RWopsPtr rwops = resourceManager.GetUnderworldFile(Base::resourceGameUw1, filename);
 
             player.PlayFile(rwops, false);
             player.Stop();
@@ -159,9 +159,9 @@ namespace UnitTest
 
          for (unsigned int i = 0; i < SDL_TABLESIZE(midisUw2); i++)
          {
-            std::string strFilename = std::string("/sound/") + midisUw2[i];
+            std::string filename = std::string("/sound/") + midisUw2[i];
 
-            Base::SDL_RWopsPtr rwops = resourceManager.GetUnderworldFile(Base::resourceGameUw2, strFilename);
+            Base::SDL_RWopsPtr rwops = resourceManager.GetUnderworldFile(Base::resourceGameUw2, filename);
 
             player.PlayFile(rwops, false);
             player.Stop();

@@ -30,7 +30,7 @@
 #define uwadv_audio_midi_pent_include_h_
 
 // needed includes
-#include "base.hpp"
+#include "Base.hpp"
 
 #ifdef HAVE_MSVC
 #pragma warning(disable: 4100) // 'T' : unreferenced formal parameter
@@ -58,7 +58,7 @@
 #define FORGET_OBJECT(x) (x = NULL)
 
 
-#include "string.hpp"
+#include "String.hpp"
 
 namespace Pentagram
 {

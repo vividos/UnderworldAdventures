@@ -24,54 +24,57 @@
 #include "resource.h"
 #include <atlscintilla.h>
 
-class CLuaSourceView : public CChildWindowBase<IDR_LUA_SOURCE_FRAME>
+class LuaSourceView : public ChildWindowBase<IDR_LUA_SOURCE_FRAME>
 {
-   typedef CLuaSourceView thisClass;
-   typedef CChildWindowBase<IDR_LUA_SOURCE_FRAME> baseClass;
+   typedef LuaSourceView thisClass;
+   typedef ChildWindowBase<IDR_LUA_SOURCE_FRAME> baseClass;
 
 public:
    /// ctor
-   CLuaSourceView() :m_bModified(false) { m_bDynamicWindow = true; }
+   LuaSourceView() :m_isModified(false)
+   {
+      m_isDynamicWindow = true;
+   }
 
    /// returns filename
-   LPCTSTR GetFilename() const { return m_cszFilename; }
+   LPCTSTR GetFilename() const { return m_filename; }
 
    /// creates a new unnamed file
    void NewFile()
    {
-      m_cszFilename = _T("unnamed.lua");
+      m_filename = _T("unnamed.lua");
       UpdateFilename();
    }
 
    /// opens file with given name
-   bool OpenFile(LPCTSTR pszFilename)
+   bool OpenFile(LPCTSTR filename)
    {
-      m_cszFilename = pszFilename;
+      m_filename = filename;
       UpdateFilename();
-      return m_view.Load(pszFilename);
+      return m_view.Load(filename);
    }
 
    /// saves file
    bool SaveFile()
    {
-      bool bRet = m_view.Save(m_cszFilename);
+      bool ret = m_view.Save(m_filename);
       SetModified(false);
       UpdateFilename();
-      return bRet;
+      return ret;
    }
 
    /// saves file under another name
-   bool SaveAs(CString cszNewFilename)
+   bool SaveAs(CString newFilename)
    {
-      m_cszFilename = cszNewFilename;
+      m_filename = newFilename;
       return SaveFile();
    }
 
    /// returns "modified" state of file
-   bool IsModified() const { return m_bModified; }
+   bool IsModified() const { return m_isModified; }
 
    /// sets "modified" state of file
-   void SetModified(bool bModified) { m_bModified = bModified; }
+   void SetModified(bool modified) { m_isModified = modified; }
 
 protected:
    BEGIN_MSG_MAP(thisClass)
@@ -138,8 +141,8 @@ protected:
    CScintillaWindow m_view;
 
    /// indicates if file is modified
-   bool m_bModified;
+   bool m_isModified;
 
    /// filename
-   CString m_cszFilename;
+   CString m_filename;
 };

@@ -20,8 +20,8 @@
 /// \brief Savegame test
 //
 #include "unittest.hpp"
-#include "savegame.hpp"
-#include "filesystem.hpp"
+#include "Savegame.hpp"
+#include "FileSystem.hpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -38,7 +38,7 @@ namespace UnitTest
          std::string strSavegameFile = testFolder.GetPathName() + "/savegame.uas";
 
          Base::SavegameInfo info;
-         info.title = "title01";
+         info.m_title = "title01";
 
          const std::string strTestStr("abcd 123 #!");
 
@@ -79,7 +79,7 @@ namespace UnitTest
             savegame.EndSection();
 
             Base::SavegameInfo& info2 = savegame.GetSavegameInfo();
-            Assert::IsTrue(info.title == info2.title);
+            Assert::IsTrue(info.m_title == info2.m_title);
          }
       }
 
@@ -109,8 +109,8 @@ namespace UnitTest
          Base::Settings settings;
          settings.SetValue(Base::settingSavegameFolder, savegameFolder);
 
-         const std::string c_strGamePrefix = "uw3";
-         settings.SetValue(Base::settingGamePrefix, c_strGamePrefix);
+         const std::string c_gamePrefix = "uw3";
+         settings.SetValue(Base::settingGamePrefix, c_gamePrefix);
 
          Base::SavegamesManager savegamesManager(settings);
 
@@ -131,7 +131,7 @@ namespace UnitTest
          {
             Base::Savegame sg = savegamesManager.LoadSavegame(0);
             Assert::IsTrue(0x42 == sg.Read8());
-            Assert::IsTrue(sg.GetSavegameInfo().gamePrefix == c_strGamePrefix);
+            Assert::IsTrue(sg.GetSavegameInfo().m_gamePrefix == c_gamePrefix);
          }
 
          // clean up savegame again
@@ -147,8 +147,8 @@ namespace UnitTest
          Base::Settings settings;
          settings.SetValue(Base::settingSavegameFolder, savegameFolder);
 
-         const std::string c_strGamePrefix = "uw3";
-         settings.SetValue(Base::settingGamePrefix, c_strGamePrefix);
+         const std::string c_gamePrefix = "uw3";
+         settings.SetValue(Base::settingGamePrefix, c_gamePrefix);
 
          Base::SavegamesManager savegamesManager(settings);
 
@@ -170,13 +170,13 @@ namespace UnitTest
          {
             Base::SavegameInfo info;
             savegamesManager.GetSavegameInfo(0, info);
-            Assert::IsTrue(info.title == "Quicksave Savegame");
+            Assert::IsTrue(info.m_title == "Quicksave Savegame");
          }
 
          {
             Base::Savegame sg = savegamesManager.LoadQuicksaveSavegame();
             Assert::IsTrue(0x42 == sg.Read8());
-            Assert::IsTrue(sg.GetSavegameInfo().gamePrefix == c_strGamePrefix);
+            Assert::IsTrue(sg.GetSavegameInfo().m_gamePrefix == c_gamePrefix);
          }
 
          // clean up savegame again

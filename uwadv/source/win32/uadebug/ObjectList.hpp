@@ -21,29 +21,29 @@
 //
 #pragma once
 
-class CObjectListInfo
+class ObjectListInfo
 {
 public:
-   CObjectListInfo() :m_pObjectList(NULL), m_nColumns(0) {}
-   ~CObjectListInfo() { delete m_pObjectList; }
+   ObjectListInfo() :m_objectList(NULL), m_columns(0) {}
+   ~ObjectListInfo() { delete m_objectList; }
 
    void Init(unsigned int nColumns);
-   unsigned int GetItem(unsigned int nPos, unsigned int nIndex);
-   void SetItem(unsigned int nPos, unsigned int nIndex, unsigned int nValue);
+   unsigned int GetItem(unsigned int pos, unsigned int index);
+   void SetItem(unsigned int pos, unsigned int index, unsigned int value);
 
 protected:
-   unsigned int m_nColumns;
-   unsigned int* m_pObjectList;
+   unsigned int m_columns;
+   unsigned int* m_objectList;
 };
 
-class CObjectListWindow : public CDockingWindowBase,
+class ObjectListWindow : public DockingWindowBase,
    public IEditListViewCallback
 {
-   typedef CObjectListWindow thisClass;
-   typedef CDockingWindowBase baseClass;
+   typedef ObjectListWindow thisClass;
+   typedef DockingWindowBase baseClass;
 public:
-   CObjectListWindow();
-   virtual ~CObjectListWindow();
+   ObjectListWindow();
+   virtual ~ObjectListWindow();
 
    DECLARE_DOCKING_WINDOW(_T("Master Object List"), CSize(200, 100)/*docked*/, CSize(500, 150)/*floating*/, dockwins::CDockingSide::sBottom)
 
@@ -68,17 +68,17 @@ protected:
    LRESULT OnGetDispInfo(WPARAM /*wParam*/, NMHDR* /*pNMHDR*/, BOOL& /*bHandled*/);
    LRESULT OnBeginLabelEdit(WPARAM /*wParam*/, NMHDR* /*pNMHDR*/, BOOL& /*bHandled*/);
 
-   virtual void ReceiveNotification(CDebugWindowNotification& notify);
+   virtual void ReceiveNotification(DebugWindowNotification& notify);
 
    void UpdateData();
 
-   virtual void OnUpdatedValue(unsigned int nItem, unsigned int nSubItem, LPCTSTR pszValue);
+   virtual void OnUpdatedValue(unsigned int item, unsigned int subItem, LPCTSTR value) override;
 
 protected:
-   CEditListViewCtrl m_listCtrl;
+   EditListViewCtrl m_listCtrl;
 
-   bool m_bObjlistInfoInited;
+   bool m_objectListInfoInited;
 
-   CObjectListInfo m_objectList;
-   CSimpleArray<CString>* m_pItemNameList;
+   ObjectListInfo m_objectList;
+   CSimpleArray<CString>* m_itemNameList;
 };

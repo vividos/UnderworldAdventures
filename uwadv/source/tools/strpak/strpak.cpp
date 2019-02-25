@@ -25,15 +25,15 @@
 //
 //
 #include "common.hpp"
-#include "gamestrings.hpp"
-#include "gamestringsimporter.hpp"
-#include "file.hpp"
-#include "textfile.hpp"
+#include "GameStrings.hpp"
+#include "GameStringsImporter.hpp"
+#include "File.hpp"
+#include "TextFile.hpp"
 #include <sstream>
 #include <iomanip>
 
 /// huffman extended node structure
-struct ua_huff_node_ext
+struct HuffmanNodeExt
 {
    int symbol;
    int parent;
@@ -217,13 +217,13 @@ void strpak_pack_strings(const char* infile, const char* outputFilename, const c
 
    // build up list with all leaf nodes
    // use all characters that have frequencies above 0
-   std::vector<ua_huff_node_ext> huffnodes;
+   std::vector<HuffmanNodeExt> huffnodes;
    {
       unsigned int j = 0;
       for (unsigned int i = 0; i < 256; i++)
          if (char_freq[i] > 0)
          {
-            ua_huff_node_ext node;
+            HuffmanNodeExt node;
             node.symbol = i;
             node.parent = 0; // we don't know yet
             node.left = -1;  // no children
@@ -281,7 +281,7 @@ void strpak_pack_strings(const char* infile, const char* outputFilename, const c
 
       // we have a new node
       {
-         ua_huff_node_ext node;
+         HuffmanNodeExt node;
          node.symbol = 0;
          node.parent = 0; // we don't know yet
          node.left = node1;
@@ -362,7 +362,7 @@ void strpak_pack_strings(const char* infile, const char* outputFilename, const c
 
       for (Uint16 i = 0; i < max; i++)
       {
-         const ua_huff_node_ext& currentNode = huffnodes[i];
+         const HuffmanNodeExt& currentNode = huffnodes[i];
          outputFile.Write8(currentNode.symbol);
          outputFile.Write8(currentNode.parent);
          outputFile.Write8(currentNode.left);

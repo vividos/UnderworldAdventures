@@ -23,18 +23,21 @@
 
 #define WM_DELETEME (WM_USER+11)
 
-typedef CWinTraits<WS_VISIBLE | WS_CHILD, 0> CEditListInplaceEditCtrlTraits;
+typedef CWinTraits<WS_VISIBLE | WS_CHILD, 0> EditListInplaceEditCtrlTraits;
 
 /// in-place edit control for editable list view control
-class CEditListInplaceEditCtrl : public CWindowImpl<CEditListInplaceEditCtrl, CEdit, CEditListInplaceEditCtrlTraits>
+class EditListInplaceEditCtrl : public CWindowImpl<EditListInplaceEditCtrl, CEdit, EditListInplaceEditCtrlTraits>
 {
 public:
    /// ctor
-   CEditListInplaceEditCtrl(int nItem, int nColumn)
-      :m_bFinished(false), m_nItem(nItem), m_nColumn(nColumn) {}
+   EditListInplaceEditCtrl(int item, int columnIndex)
+      :m_isFinished(false),
+      m_item(item),
+      m_columnIndex(columnIndex)
+   {
+   }
 
-   // message map
-   BEGIN_MSG_MAP(CEditListViewCtrl)
+   BEGIN_MSG_MAP(EditListInplaceEditCtrl)
       ATLASSERT_ADDED_REFLECT_NOTIFICATIONS()
       MESSAGE_HANDLER(WM_CHAR, OnChar)
       MESSAGE_HANDLER(WM_KILLFOCUS, OnKillFocus)
@@ -45,15 +48,13 @@ protected:
    bool AcceptChanges();
    void Finish();
 
-   // message handler
-
    LRESULT OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
    LRESULT OnKillFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
    LRESULT OnNcDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 protected:
-   bool m_bFinished;
-   int m_nItem, m_nColumn;
+   bool m_isFinished;
+   int m_item, m_columnIndex;
 };
 
 /// callback class for subitem editing
@@ -64,18 +65,21 @@ public:
    virtual ~IEditListViewCallback() {}
 
    /// called when a value was edited
-   virtual void OnUpdatedValue(unsigned int nItem, unsigned int nSubItem, LPCTSTR pszValue) = 0;
+   virtual void OnUpdatedValue(unsigned int item, unsigned int subItem, LPCTSTR value) = 0;
 };
 
 
 /// editable list view control
-class CEditListViewCtrl : public CWindowImpl<CEditListViewCtrl, CListViewCtrl>
+class EditListViewCtrl : public CWindowImpl<EditListViewCtrl, CListViewCtrl>
 {
 public:
    /// ctor
-   CEditListViewCtrl() :m_pCallback(NULL), m_bReadonly(false) {}
+   EditListViewCtrl()
+      :m_callback(NULL), m_isReadOnly(false)
+   {
+   }
 
-   BEGIN_MSG_MAP(CEditListViewCtrl)
+   BEGIN_MSG_MAP(EditListViewCtrl)
       ATLASSERT_ADDED_REFLECT_NOTIFICATIONS() // checks for forgotten REFLECT_NOTIFICATIONS() macro in base class
       MESSAGE_HANDLER(WM_LBUTTONDOWN, OnLeftButtonDown)
       MESSAGE_HANDLER(WM_DELETEME, OnDeleteMe)
@@ -84,12 +88,12 @@ public:
    END_MSG_MAP()
 
    /// initializes edit list view
-   void Init(IEditListViewCallback* pCallback = NULL);
+   void Init(IEditListViewCallback* callback = NULL);
 
    /// sets a columns "editable" flag
-   void SetColumnEditable(unsigned int nColumn, bool bEditable = true);
+   void SetColumnEditable(unsigned int columnIndex, bool isEditable = true);
 
-   void SetReadonly(bool bReadonly) { m_bReadonly = bReadonly; }
+   void SetReadOnly(bool readOnly) { m_isReadOnly = readOnly; }
 
    LRESULT OnLeftButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
    LRESULT OnDeleteMe(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -98,10 +102,10 @@ public:
 
 private:
    /// pointer to callback interface, if any
-   IEditListViewCallback* m_pCallback;
+   IEditListViewCallback* m_callback;
 
    /// array with flags if a column is editable
-   CSimpleArray<bool> m_abEditableColumns;
+   CSimpleArray<bool> m_editableColumnList;
 
-   bool m_bReadonly;
+   bool m_isReadOnly;
 };

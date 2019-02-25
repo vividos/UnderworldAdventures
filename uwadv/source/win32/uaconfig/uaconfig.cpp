@@ -21,7 +21,7 @@
 //
 #include "common.hpp"
 #include "uaconfig.hpp"
-#include "filesystem.hpp"
+#include "FileSystem.hpp"
 #include <string>
 #include <atlconv.h>
 #include <mmsystem.h> // for midiOutGet*

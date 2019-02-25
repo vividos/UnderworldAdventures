@@ -26,7 +26,7 @@
 extern CComModule _Module;
 #include <atlwin.h>
 #include "resource.h"
-#include "settings.hpp"
+#include "Settings.hpp"
 
 /// tooltip control
 class TooltipCtrl

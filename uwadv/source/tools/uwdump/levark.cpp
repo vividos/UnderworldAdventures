@@ -21,16 +21,16 @@
 //
 #include "common.hpp"
 #include "levark.hpp"
-#include "file.hpp"
-#include "bits.hpp"
-#include "gamestringsimporter.hpp"
-#include "archivefile.hpp"
+#include "File.hpp"
+#include "Bits.hpp"
+#include "GameStringsImporter.hpp"
+#include "ArchiveFile.hpp"
 #include <algorithm>
 #include <bitset>
 
 using Import::GetBits;
 
-void ua_dump_level_archive::start(std::string& basepath, std::string& param, bool isUw2)
+void DumpLevelArchive::start(std::string& basepath, std::string& param, bool isUw2)
 {
    printf("level archive dumping\nprocessing file %s%s\n",
       basepath.c_str(), param.c_str());
@@ -341,7 +341,7 @@ void ua_dump_level_archive::start(std::string& basepath, std::string& param, boo
    printf("dumped %u levels.\n", dumpedlevels);
 }
 
-void ua_dump_level_archive::process_level()
+void DumpLevelArchive::process_level()
 {
    // fix is_quantity flag for all triggers and "a_delete object trap"
    for (unsigned int j = 0; j < 0x0400; j++)
@@ -368,7 +368,7 @@ void ua_dump_level_archive::process_level()
    }
 }
 
-void ua_dump_level_archive::dump_infos(bool isUw2)
+void DumpLevelArchive::dump_infos(bool isUw2)
 {
    printf("dumping infos for level %u (0x%02x)\n\n", level, level);
 
@@ -510,7 +510,7 @@ void ua_dump_level_archive::dump_infos(bool isUw2)
    printf("\n");
 }
 
-void ua_dump_level_archive::dump_special_link_chain(std::bitset<0x400>& visited, unsigned int pos,
+void DumpLevelArchive::dump_special_link_chain(std::bitset<0x400>& visited, unsigned int pos,
    unsigned int indent)
 {
    unsigned int step = 0;
@@ -598,7 +598,7 @@ void ua_dump_level_archive::dump_special_link_chain(std::bitset<0x400>& visited,
    }
 }
 
-void ua_dump_level_archive::dump_item(Uint16 pos)
+void DumpLevelArchive::dump_item(Uint16 pos)
 {
    Uint16* objptr = &objinfos[pos * 4];
 
@@ -811,7 +811,7 @@ void ua_dump_level_archive::dump_item(Uint16 pos)
    printf("\n");
 }
 
-void ua_dump_level_archive::dump_npcinfos(Uint16 pos)
+void DumpLevelArchive::dump_npcinfos(Uint16 pos)
 {
    Uint16* objptr = &objinfos[pos * 4];
    Uint8* infoptr = &npcinfos[pos * 19];
@@ -863,7 +863,7 @@ void ua_dump_level_archive::dump_npcinfos(Uint16 pos)
    printf("\n");
 }
 
-void ua_dump_level_archive::follow_link(Uint16 link, unsigned int tilepos, bool special)
+void DumpLevelArchive::follow_link(Uint16 link, unsigned int tilepos, bool special)
 {
    if (++follow_level > 32)
    {

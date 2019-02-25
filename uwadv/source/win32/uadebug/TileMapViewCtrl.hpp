@@ -24,63 +24,63 @@
 #include "Resource.h"
 #include <atlscrl.h>
 
-class CDebugClientInterface;
+class DebugClient;
 
 /// info about a tile on the tilemap
-struct CTileMapInfo
+struct TileMapInfo
 {
 public:
    /// ctor
-   CTileMapInfo() :m_nType(0), m_nFloorHeight(0), m_nCeilingHeight(0), m_nSlope(0),
-      m_nTexWall(0), m_nTexFloor(0), m_nTexCeil(0) {}
+   TileMapInfo() :m_tileType(0), m_floorHeight(0), m_ceilingHeight(0), m_slope(0),
+      m_textureWall(0), m_textureFloor(0), m_textureCeiling(0) {}
 
-   unsigned int m_nType;
-   unsigned int m_nFloorHeight;
-   unsigned int m_nCeilingHeight;
-   unsigned int m_nSlope;
-   unsigned int m_nTexWall;
-   unsigned int m_nTexFloor;
-   unsigned int m_nTexCeil;
-   unsigned int m_nObjlistStart;
+   unsigned int m_tileType;
+   unsigned int m_floorHeight;
+   unsigned int m_ceilingHeight;
+   unsigned int m_slope;
+   unsigned int m_textureWall;
+   unsigned int m_textureFloor;
+   unsigned int m_textureCeiling;
+   unsigned int m_nObjectListStart;
 };
 
 /// tilemap view control; draws tilemap
-class CTileMapViewCtrl :
-   public CScrollWindowImpl<CTileMapViewCtrl, CWindow>,
-   public CDebugWindowBase
+class TileMapViewCtrl :
+   public CScrollWindowImpl<TileMapViewCtrl, CWindow>,
+   public DebugWindowBase
 {
-   typedef CScrollWindowImpl<CTileMapViewCtrl, CWindow> baseClass;
+   typedef CScrollWindowImpl<TileMapViewCtrl, CWindow> baseClass;
 public:
    DECLARE_WND_CLASS_EX(_T("TileMapViewCtrl"), CS_DBLCLKS, COLOR_WINDOW);
 
    /// ctor
-   CTileMapViewCtrl();
+   TileMapViewCtrl();
    /// dtor
-   virtual ~CTileMapViewCtrl() {}
+   virtual ~TileMapViewCtrl() {}
 
    /// returns tile x size
-   unsigned int GetTileSizeX() const { return m_nTileSizeX; }
+   unsigned int GetTileSizeX() const { return m_tileSizeX; }
    /// returns tile y size
-   unsigned int GetTileSizeY() const { return m_nTileSizeY; }
+   unsigned int GetTileSizeY() const { return m_tileSizeY; }
 
    /// handles scrolled painting; called by CScrollWindowImpl
    void DoPaint(CDCHandle dc);
 
 protected:
-   // virtual methods from CDebugWindowBase
-   virtual void ReceiveNotification(CDebugWindowNotification& notify);
+   // virtual methods from DebugWindowBase
+   virtual void ReceiveNotification(DebugWindowNotification& notify);
 
    /// initializes scrolling
    void Init();
 
    /// returns tile map info for a given tile
-   CTileMapInfo& GetTileMapInfo(unsigned int x, unsigned int y);
+   TileMapInfo& GetTileMapInfo(unsigned int x, unsigned int y);
 
    /// updates tile map values
    void UpdateTileMap();
 
 protected:
-   BEGIN_MSG_MAP(CTileMapViewCtrl)
+   BEGIN_MSG_MAP(TileMapViewCtrl)
       MESSAGE_HANDLER(WM_CREATE, OnCreate)
       MESSAGE_HANDLER(WM_LBUTTONDOWN, OnLButtonDown)
       COMMAND_ID_HANDLER(ID_TILEMAP_ZOOMIN, OnTilemapZoomIn)
@@ -101,11 +101,11 @@ protected:
 
 protected:
    /// array with all tile map infos
-   CAtlArray<CTileMapInfo> m_aMapInfo;
+   CAtlArray<TileMapInfo> m_tileMapInfos;
 
    /// current tile x and y size
-   unsigned int m_nTileSizeX, m_nTileSizeY;
+   unsigned int m_tileSizeX, m_tileSizeY;
 
    /// selected tile x and y coordinates;
-   unsigned int m_nSelectedTileX, m_nSelectedTileY;
+   unsigned int m_selectedTileX, m_selectedTileY;
 };

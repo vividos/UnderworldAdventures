@@ -20,9 +20,9 @@
 /// \brief ResourceManager test
 //
 #include "unittest.hpp"
-#include "resourcemanager.hpp"
-#include "settings.hpp"
-#include "file.hpp"
+#include "ResourceManager.hpp"
+#include "Settings.hpp"
+#include "File.hpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

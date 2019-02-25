@@ -20,8 +20,8 @@
 /// \brief File and TextFile test
 //
 #include "unittest.hpp"
-#include "file.hpp"
-#include "textfile.hpp"
+#include "File.hpp"
+#include "TextFile.hpp"
 #include <SDL_rwops.h>
 #include "SDL_rwops_gzfile.h"
 

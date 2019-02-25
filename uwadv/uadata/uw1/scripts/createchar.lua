@@ -104,9 +104,9 @@ ccvAppraise = 49
 ccvSwimming = 50
 
 -- button types
-btText = 0       -- standard button with text from string table, btns contains stringtable index
-btImage = 1      -- square button with image, btns contains index of image
-btInput = 2      -- input area, btns contains the stringtable index of the label of the input area
+buttonText = 0       -- standard button with text from string table, btns contains stringtable index
+buttonImage = 1      -- square button with image, btns contains index of image
+buttonInput = 2      -- input area, btns contains the stringtable index of the label of the input area
 btTimer = 3      -- countdown timer, heading contains time in msec before virtual button 0 is pressed, values in btns are ignored
 
 -- text alignment types
@@ -133,9 +133,9 @@ ccharui = {
    btngroups = -- table with all buttons groups (a.k.a. "screens")
    {
      -- general buttons
-      [1] = { heading = ccvSex,  btntype = btText,  btns = { ccvMale, ccvFemale } },
-      [2] = { heading = ccvHandedness, btntype = btText, btns = { ccvLeft, ccvRight } },
-      [3] = { heading = ccvClass, btntype = btText, btns = { ccvFighter, ccvMage, ccvBard, ccvTinker, ccvDruid, ccvPaladin, ccvRanger, ccvShepard } },
+      [1] = { heading = ccvSex,  btntype = buttonText,  btns = { ccvMale, ccvFemale } },
+      [2] = { heading = ccvHandedness, btntype = buttonText, btns = { ccvLeft, ccvRight } },
+      [3] = { heading = ccvClass, btntype = buttonText, btns = { ccvFighter, ccvMage, ccvBard, ccvTinker, ccvDruid, ccvPaladin, ccvRanger, ccvShepard } },
 
      -- fighter skills
       [4] = { heading = ccvSkill, btntype = btnText, btns = { ccvAttack, ccvDefence } },
@@ -170,13 +170,13 @@ ccharui = {
       [17]= { heading = ccvSkill, btntype = btnText, btns = { ccvTraps, ccvSneak, ccvAppraise, ccvTrack, ccvLore, ccvSearch, ccvAcrobat, ccvSwimming, ccvCasting, ccvMana } },
 
      -- appearance
-      [18]= { heading = ccvNone, btntype = btImage, btns = {  7,  8,  9, 10, 11 } },
-      [19]= { heading = ccvNone, btntype = btImage, btns = { 12, 13, 14, 15, 16 } },
+      [18]= { heading = ccvNone, btntype = buttonImage, btns = {  7,  8,  9, 10, 11 } },
+      [19]= { heading = ccvNone, btntype = buttonImage, btns = { 12, 13, 14, 15, 16 } },
 
      -- general buttons
-      [20]= { heading = ccvDifficulty, btntype = btText, btns = { ccvStandard, ccvEasy } },
-      [21]= { heading = ccvNone, btntype = btInput, btns = { ccvName }},
-      [22]= { heading = ccvKeep, btntype = btText, btns = { ccvYes, ccvNo } },
+      [20]= { heading = ccvDifficulty, btntype = buttonText, btns = { ccvStandard, ccvEasy } },
+      [21]= { heading = ccvNone, btntype = buttonInput, btns = { ccvName }},
+      [22]= { heading = ccvKeep, btntype = buttonText, btns = { ccvYes, ccvNo } },
 
       [23]= { heading = 1000, btntype = btTimer, btns = { } }
    },

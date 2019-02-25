@@ -21,16 +21,16 @@
 //
 #pragma once
 
-class CBreakpointListWindow :
-   public CDockingWindowBase//,
+class BreakpointListWindow :
+   public DockingWindowBase//,
    //public IEditListViewCallback
 {
-   typedef CBreakpointListWindow thisClass;
-   typedef CDockingWindowBase baseClass;
+   typedef BreakpointListWindow thisClass;
+   typedef DockingWindowBase baseClass;
 
 public:
-   CBreakpointListWindow(unsigned int nCodeDebuggerID);
-   ~CBreakpointListWindow() {}
+   BreakpointListWindow(unsigned int codeDebuggerId);
+   ~BreakpointListWindow() {}
 
    DECLARE_DOCKING_WINDOW(GetDockingCaption(), CSize(200, 100)/*docked*/, CSize(500, 150)/*floating*/, dockwins::CDockingSide::sBottom)
 
@@ -52,14 +52,14 @@ public:
    // TODO add specific name
    CString GetDockingCaption() const { return _T("Breakpoints"); }
 
-   virtual void ReceiveNotification(CDebugWindowNotification& notify);
+   virtual void ReceiveNotification(DebugWindowNotification& notify);
 
-   //virtual void OnUpdatedValue(unsigned int nItem, unsigned int nSubItem, LPCTSTR pszValue) override;
+   //virtual void OnUpdatedValue(unsigned int item, unsigned int subItem, LPCTSTR value) override;
 
 protected:
    /// edit list view with all breakpoints
    CListViewCtrl m_listCtrl;
 
    /// code debugger id
-   unsigned int m_nCodeDebuggerID;
+   unsigned int m_codeDebuggerId;
 };

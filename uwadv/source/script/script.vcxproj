@@ -69,11 +69,11 @@
     <Lib />
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="luascript.cpp" />
+    <ClCompile Include="LuaScripting.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="luascript.hpp" />
-    <ClInclude Include="scripting.hpp" />
+    <ClInclude Include="LuaScripting.hpp" />
+    <ClInclude Include="IScripting.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\thirdparty\lua\lua.vcxproj">

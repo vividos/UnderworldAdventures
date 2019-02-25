@@ -23,21 +23,21 @@
 #include "TileMapViewCtrl.hpp"
 #include "DebugClient.hpp"
 
-CTileMapViewCtrl::CTileMapViewCtrl()
+TileMapViewCtrl::TileMapViewCtrl()
 {
-   m_aMapInfo.SetCount(64 * 64);
-   m_nTileSizeX = m_nTileSizeY = 8;
+   m_tileMapInfos.SetCount(64 * 64);
+   m_tileSizeX = m_tileSizeY = 8;
 
-   m_nSelectedTileX = m_nSelectedTileY = unsigned(-1);
+   m_selectedTileX = m_selectedTileY = unsigned(-1);
 }
 
-void CTileMapViewCtrl::DoPaint(CDCHandle hDC)
+void TileMapViewCtrl::DoPaint(CDCHandle hDC)
 {
    CRect rc;
    rc.SetRectEmpty();
 
-   rc.bottom = rc.top + 64 * m_nTileSizeX;
-   rc.right = rc.left + 64 * m_nTileSizeY;
+   rc.bottom = rc.top + 64 * m_tileSizeX;
+   rc.right = rc.left + 64 * m_tileSizeY;
 
    {
       CMemDC dc(hDC, &rc);
@@ -47,21 +47,21 @@ void CTileMapViewCtrl::DoPaint(CDCHandle hDC)
       for (unsigned int y = 0; y < 64; y++)
          for (unsigned int x = 0; x < 64; x++)
          {
-            CTileMapInfo& info = GetTileMapInfo(x, 63 - y);
+            TileMapInfo& info = GetTileMapInfo(x, 63 - y);
 
             COLORREF color = RGB(255, 255, 255);
 
-            if (info.m_nTexFloor == 272 || info.m_nTexFloor == 273 ||
-               info.m_nTexFloor == 288 || info.m_nTexFloor == 289 || info.m_nTexFloor == 290)
+            if (info.m_textureFloor == 272 || info.m_textureFloor == 273 ||
+               info.m_textureFloor == 288 || info.m_textureFloor == 289 || info.m_textureFloor == 290)
                color = RGB(64, 64, 255);
 
-            if (info.m_nTexFloor == 280 || info.m_nTexFloor == 281)
+            if (info.m_textureFloor == 280 || info.m_textureFloor == 281)
                color = RGB(255, 64, 64);
 
-            if (info.m_nType == 0)
+            if (info.m_tileType == 0)
                color = RGB(0, 0, 0);
 
-            switch (info.m_nType)
+            switch (info.m_tileType)
             {
             case 0: // solid
             case 1: // open
@@ -69,7 +69,7 @@ void CTileMapViewCtrl::DoPaint(CDCHandle hDC)
             case 7: // slope e
             case 8: // slope s
             case 9: // slope w
-               dc.FillSolidRect(rc.left + x * m_nTileSizeX, rc.top + y * m_nTileSizeY, m_nTileSizeX, m_nTileSizeY, color);
+               dc.FillSolidRect(rc.left + x * m_tileSizeX, rc.top + y * m_tileSizeY, m_tileSizeX, m_tileSizeY, color);
                break;
 
             case 2:
@@ -77,31 +77,31 @@ void CTileMapViewCtrl::DoPaint(CDCHandle hDC)
             case 4:
             case 5:
             {
-               dc.FillSolidRect(rc.left + x * m_nTileSizeX, rc.top + y * m_nTileSizeY, m_nTileSizeX, m_nTileSizeY, RGB(0, 0, 0));
+               dc.FillSolidRect(rc.left + x * m_tileSizeX, rc.top + y * m_tileSizeY, m_tileSizeX, m_tileSizeY, RGB(0, 0, 0));
 
                POINT points[3];
 
-               switch (info.m_nType)
+               switch (info.m_tileType)
                {
                case 2: // diagonal se
-                  points[0] = CPoint(rc.left + (x + 0)*m_nTileSizeX, rc.top + (y + 1)*m_nTileSizeY);
-                  points[1] = CPoint(rc.left + (x + 1)*m_nTileSizeX, rc.top + (y + 1)*m_nTileSizeY);
-                  points[2] = CPoint(rc.left + (x + 1)*m_nTileSizeX, rc.top + (y + 0)*m_nTileSizeY);
+                  points[0] = CPoint(rc.left + (x + 0)*m_tileSizeX, rc.top + (y + 1)*m_tileSizeY);
+                  points[1] = CPoint(rc.left + (x + 1)*m_tileSizeX, rc.top + (y + 1)*m_tileSizeY);
+                  points[2] = CPoint(rc.left + (x + 1)*m_tileSizeX, rc.top + (y + 0)*m_tileSizeY);
                   break;
                case 3: // diagonal sw
-                  points[0] = CPoint(rc.left + (x + 0)*m_nTileSizeX, rc.top + (y + 1)*m_nTileSizeY);
-                  points[1] = CPoint(rc.left + (x + 1)*m_nTileSizeX, rc.top + (y + 1)*m_nTileSizeY);
-                  points[2] = CPoint(rc.left + (x + 0)*m_nTileSizeX, rc.top + (y + 0)*m_nTileSizeY);
+                  points[0] = CPoint(rc.left + (x + 0)*m_tileSizeX, rc.top + (y + 1)*m_tileSizeY);
+                  points[1] = CPoint(rc.left + (x + 1)*m_tileSizeX, rc.top + (y + 1)*m_tileSizeY);
+                  points[2] = CPoint(rc.left + (x + 0)*m_tileSizeX, rc.top + (y + 0)*m_tileSizeY);
                   break;
                case 4: // diagonal nw
-                  points[0] = CPoint(rc.left + (x + 0)*m_nTileSizeX, rc.top + (y + 1)*m_nTileSizeY);
-                  points[1] = CPoint(rc.left + (x + 1)*m_nTileSizeX, rc.top + (y + 0)*m_nTileSizeY);
-                  points[2] = CPoint(rc.left + (x + 0)*m_nTileSizeX, rc.top + (y + 0)*m_nTileSizeY);
+                  points[0] = CPoint(rc.left + (x + 0)*m_tileSizeX, rc.top + (y + 1)*m_tileSizeY);
+                  points[1] = CPoint(rc.left + (x + 1)*m_tileSizeX, rc.top + (y + 0)*m_tileSizeY);
+                  points[2] = CPoint(rc.left + (x + 0)*m_tileSizeX, rc.top + (y + 0)*m_tileSizeY);
                   break;
                case 5: // diagonal ne
-                  points[0] = CPoint(rc.left + (x + 1)*m_nTileSizeX, rc.top + (y + 1)*m_nTileSizeY);
-                  points[1] = CPoint(rc.left + (x + 1)*m_nTileSizeX, rc.top + (y + 0)*m_nTileSizeY);
-                  points[2] = CPoint(rc.left + (x + 0)*m_nTileSizeX, rc.top + (y + 0)*m_nTileSizeY);
+                  points[0] = CPoint(rc.left + (x + 1)*m_tileSizeX, rc.top + (y + 1)*m_tileSizeY);
+                  points[1] = CPoint(rc.left + (x + 1)*m_tileSizeX, rc.top + (y + 0)*m_tileSizeY);
+                  points[2] = CPoint(rc.left + (x + 0)*m_tileSizeX, rc.top + (y + 0)*m_tileSizeY);
                   break;
                }
 
@@ -128,13 +128,13 @@ void CTileMapViewCtrl::DoPaint(CDCHandle hDC)
             }
 
             // draw objects dots when tile has object list attached
-            if (info.m_nObjlistStart != 0)
+            if (info.m_nObjectListStart != 0)
             {
                COLORREF colorObject = RGB(255, 128, 0); // orange
-               unsigned int nLeftBase = rc.left + x * m_nTileSizeX;
-               unsigned int dx = m_nTileSizeX;
-               unsigned int nTopBase = rc.top + y * m_nTileSizeY;
-               unsigned int dy = m_nTileSizeY;
+               unsigned int nLeftBase = rc.left + x * m_tileSizeX;
+               unsigned int dx = m_tileSizeX;
+               unsigned int nTopBase = rc.top + y * m_tileSizeY;
+               unsigned int dy = m_tileSizeY;
                unsigned int nBoxSizeX = unsigned(0.3*dy);
                unsigned int nBoxSizeY = unsigned(0.3*dy);
                if (nBoxSizeX < 2) nBoxSizeX = 2;
@@ -147,65 +147,65 @@ void CTileMapViewCtrl::DoPaint(CDCHandle hDC)
          }
 
       // draw border around selected tile
-      if (m_nSelectedTileX != unsigned(-1) && m_nSelectedTileY != unsigned(-1))
+      if (m_selectedTileX != unsigned(-1) && m_selectedTileY != unsigned(-1))
       {
-         unsigned int nLineSizeX = unsigned(0.15*m_nTileSizeX);
-         unsigned int nLineSizeY = unsigned(0.15*m_nTileSizeY);
+         unsigned int nLineSizeX = unsigned(0.15*m_tileSizeX);
+         unsigned int nLineSizeY = unsigned(0.15*m_tileSizeY);
          if (nLineSizeX == 0) nLineSizeX = 0;
          if (nLineSizeY == 0) nLineSizeY = 0;
          COLORREF crBorder = RGB(255, 0, 0);
-         unsigned int nPosX = rc.left + m_nSelectedTileX * m_nTileSizeX;
-         unsigned int nPosY = rc.top + (63 - m_nSelectedTileY)*m_nTileSizeY;
+         unsigned int posX = rc.left + m_selectedTileX * m_tileSizeX;
+         unsigned int posY = rc.top + (63 - m_selectedTileY)*m_tileSizeY;
 
          // top, bottom, left, right
-         dc.FillSolidRect(nPosX, nPosY, m_nTileSizeX, nLineSizeY, crBorder);
-         dc.FillSolidRect(nPosX, nPosY + m_nTileSizeY - nLineSizeY, m_nTileSizeX, nLineSizeY, crBorder);
-         dc.FillSolidRect(nPosX, nPosY, nLineSizeX, m_nTileSizeY, crBorder);
-         dc.FillSolidRect(nPosX + m_nTileSizeX - nLineSizeX, nPosY, nLineSizeX, m_nTileSizeY, crBorder);
+         dc.FillSolidRect(posX, posY, m_tileSizeX, nLineSizeY, crBorder);
+         dc.FillSolidRect(posX, posY + m_tileSizeY - nLineSizeY, m_tileSizeX, nLineSizeY, crBorder);
+         dc.FillSolidRect(posX, posY, nLineSizeX, m_tileSizeY, crBorder);
+         dc.FillSolidRect(posX + m_tileSizeX - nLineSizeX, posY, nLineSizeX, m_tileSizeY, crBorder);
       }
 
    } // <-- CMemDC dtor
 }
 
-void CTileMapViewCtrl::ReceiveNotification(CDebugWindowNotification& notify)
+void TileMapViewCtrl::ReceiveNotification(DebugWindowNotification& notify)
 {
-   switch (notify.m_enCode)
+   switch (notify.m_notifyCode)
    {
-   case ncUpdateData:
+   case notifyCodeUpdateData:
       UpdateTileMap();
       RedrawWindow(NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW); // force redraw
       break;
 
-   case ncChangedLevel:
+   case notifyCodeChangedLevel:
       // invalidate selected tile pos
-      m_nSelectedTileX = m_nSelectedTileY = unsigned(-1);
+      m_selectedTileX = m_selectedTileY = unsigned(-1);
       UpdateTileMap();
       RedrawWindow(NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW); // force redraw
       break;
    }
 }
 
-void CTileMapViewCtrl::Init()
+void TileMapViewCtrl::Init()
 {
-   SetScrollSize(m_nTileSizeX * 64, m_nTileSizeY * 64);
-   SetScrollPage(m_nTileSizeX * 16, m_nTileSizeY * 16);
-   SetScrollLine(m_nTileSizeX * 4, m_nTileSizeY * 4);
+   SetScrollSize(m_tileSizeX * 64, m_tileSizeY * 64);
+   SetScrollPage(m_tileSizeX * 16, m_tileSizeY * 16);
+   SetScrollLine(m_tileSizeX * 4, m_tileSizeY * 4);
 
    // resize parent frame window, too
-   //GetParent().MoveWindow(0, 0, m_nTileSizeX*64+10, m_nTileSizeY*64+10);
+   //GetParent().MoveWindow(0, 0, m_tileSizeX*64+10, m_tileSizeY*64+10);
 }
 
-CTileMapInfo& CTileMapViewCtrl::GetTileMapInfo(unsigned int x, unsigned int y)
+TileMapInfo& TileMapViewCtrl::GetTileMapInfo(unsigned int x, unsigned int y)
 {
    ATLASSERT(x < 64);
    ATLASSERT(y < 64);
 
-   return m_aMapInfo[(y << 6) + x];
+   return m_tileMapInfos[(y << 6) + x];
 }
 
-void CTileMapViewCtrl::UpdateTileMap()
+void TileMapViewCtrl::UpdateTileMap()
 {
-   CDebugClientInterface& debugClient = m_pMainFrame->GetDebugClientInterface();
+   DebugClient& debugClient = m_mainFrame->GetDebugClientInterface();
 
    debugClient.Lock(true);
 
@@ -213,72 +213,72 @@ void CTileMapViewCtrl::UpdateTileMap()
    for (unsigned int y = 0; y < 64; y++)
       for (unsigned int x = 0; x < 64; x++)
       {
-         CTileMapInfo& info = GetTileMapInfo(x, y);
-         info.m_nType = debugClient.GetTileInfo(x, y, tiType);
-         info.m_nFloorHeight = debugClient.GetTileInfo(x, y, tiFloorHeight);
-         info.m_nCeilingHeight = debugClient.GetTileInfo(x, y, tiCeilingHeight);
-         info.m_nSlope = debugClient.GetTileInfo(x, y, tiSlope);
-         info.m_nTexWall = debugClient.GetTileInfo(x, y, tiTextureWall);
-         info.m_nTexFloor = debugClient.GetTileInfo(x, y, tiTextureFloor);
-         info.m_nTexCeil = debugClient.GetTileInfo(x, y, tiTextureCeil);
-         info.m_nObjlistStart = debugClient.GetTileInfo(x, y, tiObjlistStart);
+         TileMapInfo& info = GetTileMapInfo(x, y);
+         info.m_tileType = debugClient.GetTileInfo(x, y, tiType);
+         info.m_floorHeight = debugClient.GetTileInfo(x, y, tiFloorHeight);
+         info.m_ceilingHeight = debugClient.GetTileInfo(x, y, tiCeilingHeight);
+         info.m_slope = debugClient.GetTileInfo(x, y, tiSlope);
+         info.m_textureWall = debugClient.GetTileInfo(x, y, tiTextureWall);
+         info.m_textureFloor = debugClient.GetTileInfo(x, y, tiTextureFloor);
+         info.m_textureCeiling = debugClient.GetTileInfo(x, y, tiTextureCeil);
+         info.m_nObjectListStart = debugClient.GetTileInfo(x, y, tiObjlistStart);
       }
 
    debugClient.Lock(false);
 }
 
-LRESULT CTileMapViewCtrl::OnLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+LRESULT TileMapViewCtrl::OnLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
    CPoint pt(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 
    // add offset from scrolling
-   CPoint ptOffset;
-   GetScrollOffset(ptOffset);
+   CPoint offset;
+   GetScrollOffset(offset);
 
-   pt += ptOffset;
+   pt += offset;
 
    // convert to tile coordinates
-   pt.x /= m_nTileSizeX;
-   pt.y /= m_nTileSizeY;
+   pt.x /= m_tileSizeX;
+   pt.y /= m_tileSizeY;
 
    // check range
    if (pt.x < 0 || pt.x >= 64 || pt.y < 0 || pt.y >= 64)
       return 1;
 
-   m_nSelectedTileX = pt.x;
-   m_nSelectedTileY = 63 - pt.y;
+   m_selectedTileX = pt.x;
+   m_selectedTileY = 63 - pt.y;
 
    // send notification about tile selection
-   CDebugWindowNotification notify;
-   notify.m_enCode = ncSelectedTile;
-   notify.m_nParam1 = m_nSelectedTileX;
-   notify.m_nParam2 = m_nSelectedTileY;
+   DebugWindowNotification notify;
+   notify.m_notifyCode = notifyCodeSelectedTile;
+   notify.m_param1 = m_selectedTileX;
+   notify.m_param2 = m_selectedTileY;
 
-   m_pMainFrame->SendNotification(notify, true, this);
+   m_mainFrame->SendNotification(notify, true, this);
 
    RedrawWindow(NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
 
    return 0;
 }
 
-LRESULT CTileMapViewCtrl::OnTilemapZoomIn(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT TileMapViewCtrl::OnTilemapZoomIn(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-   if (m_nTileSizeX < 16)
+   if (m_tileSizeX < 16)
    {
-      m_nTileSizeX++;
-      m_nTileSizeY++;
+      m_tileSizeX++;
+      m_tileSizeY++;
 
       Init();
    }
    return 0;
 }
 
-LRESULT CTileMapViewCtrl::OnTilemapZoomOut(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT TileMapViewCtrl::OnTilemapZoomOut(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-   if (m_nTileSizeX > 2)
+   if (m_tileSizeX > 2)
    {
-      m_nTileSizeX--;
-      m_nTileSizeY--;
+      m_tileSizeX--;
+      m_tileSizeY--;
 
       Init();
    }

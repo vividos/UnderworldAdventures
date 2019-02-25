@@ -23,13 +23,13 @@
 #include "TileInfo.hpp"
 #include "DebugClient.hpp"
 
-CTileInfoForm::CTileInfoForm()
-   :m_bInited(false)
+TileInfoForm::TileInfoForm()
+   :m_isInited(false)
 {
-   m_nTileX = m_nTileY = unsigned(-1);
+   m_tileX = m_tileY = unsigned(-1);
 }
 
-LRESULT CTileInfoForm::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT TileInfoForm::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
    m_tileInfoList.SubclassWindow(GetDlgItem(IDC_LIST_TILE_PROPERTIES));
    m_tileInfoList.InsertColumn(0, _T("Property"), LVCFMT_LEFT, 90, -1);
@@ -42,24 +42,24 @@ LRESULT CTileInfoForm::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
    m_objectList.InsertColumn(0, _T("Objects"), LVCFMT_LEFT, 190, -1);
    m_objectList.Init();
 
-   m_objectList.SetImageList(m_pMainFrame->GetObjectImageList(), LVSIL_NORMAL);
-   m_objectList.SetImageList(m_pMainFrame->GetObjectImageList(), LVSIL_SMALL);
+   m_objectList.SetImageList(m_mainFrame->GetObjectImageList(), LVSIL_NORMAL);
+   m_objectList.SetImageList(m_mainFrame->GetObjectImageList(), LVSIL_SMALL);
 
    SetDlgItemText(IDC_EDIT_TILEPOS, _T("Info"));
 
    return 0;
 }
 
-LRESULT CTileInfoForm::OnButtonBeam(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT TileInfoForm::OnButtonBeam(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-   CDebugClientInterface& debugClient = m_pMainFrame->GetDebugClientInterface();
+   DebugClient& debugClient = m_mainFrame->GetDebugClientInterface();
    debugClient.GetPlayerInterface().Teleport(
-      debugClient.GetWorkingLevel(), m_nTileX + 0.5, m_nTileY + 0.5);
+      debugClient.GetWorkingLevel(), m_tileX + 0.5, m_tileY + 0.5);
 
    return 0;
 }
 
-LRESULT CTileInfoForm::OnListItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+LRESULT TileInfoForm::OnListItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
    NMLISTVIEW* pNMListView = reinterpret_cast<NMLISTVIEW*>(pnmh);
 
@@ -71,53 +71,53 @@ LRESULT CTileInfoForm::OnListItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
       unsigned int nItemPos = m_objectList.GetItemData(pNMListView->iItem);
 
       // send notification that an object was clicked
-      CDebugWindowNotification notify;
-      notify.m_enCode = ncSelectedObject;
-      notify.m_nParam1 = nItemPos;
+      DebugWindowNotification notify;
+      notify.m_notifyCode = notifyCodeSelectedObject;
+      notify.m_param1 = nItemPos;
 
-      m_pMainFrame->SendNotification(notify, true, this);
+      m_mainFrame->SendNotification(notify, true, this);
    }
    return 0;
 }
 
-void CTileInfoForm::ReceiveNotification(CDebugWindowNotification& notify)
+void TileInfoForm::ReceiveNotification(DebugWindowNotification& notify)
 {
-   switch (notify.m_enCode)
+   switch (notify.m_notifyCode)
    {
-   case ncUpdateData:
+   case notifyCodeUpdateData:
       UpdateTileInfo();
       break;
 
-   case ncSelectedTile:
-      m_nTileX = notify.m_nParam1;
-      m_nTileY = notify.m_nParam2;
+   case notifyCodeSelectedTile:
+      m_tileX = notify.m_param1;
+      m_tileY = notify.m_param2;
       UpdateTileInfo();
       break;
    }
 }
 
-void CTileInfoForm::UpdateTileInfo()
+void TileInfoForm::UpdateTileInfo()
 {
-   if (m_nTileX == unsigned(-1) || m_nTileY == unsigned(-1))
+   if (m_tileX == unsigned(-1) || m_tileY == unsigned(-1))
    {
       m_tileInfoList.DeleteAllItems();
       m_objectList.DeleteAllItems();
       return;
    }
 
-   CString cszText;
-   cszText.Format(_T("x: %02x y: %02x"), m_nTileX, m_nTileY);
-   SetDlgItemText(IDC_EDIT_TILEPOS, cszText);
+   CString text;
+   text.Format(_T("x: %02x y: %02x"), m_tileX, m_tileY);
+   SetDlgItemText(IDC_EDIT_TILEPOS, text);
 
    m_tileInfoList.SetRedraw(FALSE);
    m_tileInfoList.DeleteAllItems();
 
-   CDebugClientInterface& debugClient = m_pMainFrame->GetDebugClientInterface();
+   DebugClient& debugClient = m_mainFrame->GetDebugClientInterface();
    debugClient.Lock(true);
 
    for (unsigned int i = 0; i < 7; i++)
    {
-      static LPCTSTR apszTileInfoNames[] =
+      static LPCTSTR tileInfoNames[] =
       {
          _T("Type"),
          _T("Floor"),
@@ -128,33 +128,33 @@ void CTileInfoForm::UpdateTileInfo()
          _T("Ceil Tex")
       };
 
-      unsigned int nValue = unsigned(-1);
+      unsigned int value = unsigned(-1);
       switch (i)
       {
-      case 0: nValue = debugClient.GetTileInfo(m_nTileX, m_nTileY, tiType); break;
-      case 1: nValue = debugClient.GetTileInfo(m_nTileX, m_nTileY, tiFloorHeight); break;
-      case 2: nValue = debugClient.GetTileInfo(m_nTileX, m_nTileY, tiCeilingHeight); break;
-      case 3: nValue = debugClient.GetTileInfo(m_nTileX, m_nTileY, tiSlope); break;
-      case 4: nValue = debugClient.GetTileInfo(m_nTileX, m_nTileY, tiTextureWall); break;
-      case 5: nValue = debugClient.GetTileInfo(m_nTileX, m_nTileY, tiTextureFloor); break;
-      case 6: nValue = debugClient.GetTileInfo(m_nTileX, m_nTileY, tiTextureCeil); break;
+      case 0: value = debugClient.GetTileInfo(m_tileX, m_tileY, tiType); break;
+      case 1: value = debugClient.GetTileInfo(m_tileX, m_tileY, tiFloorHeight); break;
+      case 2: value = debugClient.GetTileInfo(m_tileX, m_tileY, tiCeilingHeight); break;
+      case 3: value = debugClient.GetTileInfo(m_tileX, m_tileY, tiSlope); break;
+      case 4: value = debugClient.GetTileInfo(m_tileX, m_tileY, tiTextureWall); break;
+      case 5: value = debugClient.GetTileInfo(m_tileX, m_tileY, tiTextureFloor); break;
+      case 6: value = debugClient.GetTileInfo(m_tileX, m_tileY, tiTextureCeil); break;
       }
 
-      int nItem = m_tileInfoList.InsertItem(m_tileInfoList.GetItemCount(), apszTileInfoNames[i]);
+      int nItem = m_tileInfoList.InsertItem(m_tileInfoList.GetItemCount(), tileInfoNames[i]);
 
-      cszText.Format(_T("%u (%04x)"), nValue, nValue);
+      text.Format(_T("%u (%04x)"), value, value);
 
       if (i >= 4)
       {
-         cszText += _T(" ");
-         if (nValue < 256)
-            cszText += debugClient.GetGameString(10, nValue);
+         text += _T(" ");
+         if (value < 256)
+            text += debugClient.GetGameString(10, value);
          else
             // formula to calculate string for texture above 0xFF; uw1 specific!
-            cszText += debugClient.GetGameString(10, 512 - (nValue - 256));
+            text += debugClient.GetGameString(10, 512 - (value - 256));
       }
 
-      m_tileInfoList.SetItemText(nItem, 1, cszText);
+      m_tileInfoList.SetItemText(nItem, 1, text);
    }
 
    debugClient.Lock(false);
@@ -166,28 +166,28 @@ void CTileInfoForm::UpdateTileInfo()
    UpdateObjectInfo();
 }
 
-void CTileInfoForm::UpdateObjectInfo()
+void TileInfoForm::UpdateObjectInfo()
 {
    m_objectList.SetRedraw(FALSE);
    m_objectList.DeleteAllItems();
 
-   CDebugClientInterface& debugClient = m_pMainFrame->GetDebugClientInterface();
+   DebugClient& debugClient = m_mainFrame->GetDebugClientInterface();
    debugClient.Lock(true);
 
-   unsigned int nPos = debugClient.GetTileInfo(m_nTileX, m_nTileY, tiObjlistStart);
+   unsigned int pos = debugClient.GetTileInfo(m_tileX, m_tileY, tiObjlistStart);
 
-   CDebugClientObjectInterface objectInfo = debugClient.GetObjectInterface();
+   DebugClientObjectListInterface objectInfo = debugClient.GetObjectInterface();
 
-   while (nPos != 0)
+   while (pos != 0)
    {
-      unsigned int nItemId = objectInfo.GetItemId(nPos);
+      unsigned int itemId = objectInfo.GetItemId(pos);
 
-      CString cszItemName(debugClient.GetGameString(4, nItemId));
+      CString cszItemName(debugClient.GetGameString(4, itemId));
 
-      int nItem = m_objectList.InsertItem(m_objectList.GetItemCount(), cszItemName, nItemId);
-      m_objectList.SetItemData(nItem, nPos);
+      int nItem = m_objectList.InsertItem(m_objectList.GetItemCount(), cszItemName, itemId);
+      m_objectList.SetItemData(nItem, pos);
 
-      nPos = objectInfo.GetItemNext(nPos);
+      pos = objectInfo.GetItemNext(pos);
    }
 
    m_objectList.SetColumnWidth(0, LVSCW_AUTOSIZE_USEHEADER);
@@ -197,7 +197,7 @@ void CTileInfoForm::UpdateObjectInfo()
    m_objectList.SetRedraw(TRUE);
 }
 
-LRESULT CTileInfoWindow::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+LRESULT TileInfoWindow::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 {
    if (wParam != SIZE_MINIMIZED)
    {
@@ -210,7 +210,7 @@ LRESULT CTileInfoWindow::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
    return 1;
 }
 
-LRESULT CTileInfoWindow::OnSetFocus(UINT, WPARAM, LPARAM, BOOL& bHandled)
+LRESULT TileInfoWindow::OnSetFocus(UINT, WPARAM, LPARAM, BOOL& bHandled)
 {
    if (m_form.m_hWnd != NULL && m_form.IsWindowVisible())
       m_form.SetFocus();

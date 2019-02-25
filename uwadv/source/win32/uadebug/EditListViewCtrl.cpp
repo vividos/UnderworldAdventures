@@ -22,7 +22,7 @@
 #include "stdatl.hpp"
 #include "EditListViewCtrl.hpp"
 
-bool CEditListInplaceEditCtrl::AcceptChanges()
+bool EditListInplaceEditCtrl::AcceptChanges()
 {
    _TCHAR szBuffer[256];
    GetWindowText(szBuffer, 256);
@@ -33,30 +33,30 @@ bool CEditListInplaceEditCtrl::AcceptChanges()
    dispinfo.hdr.code = LVN_ENDLABELEDIT;
 
    dispinfo.item.mask = LVIF_TEXT;
-   dispinfo.item.iItem = m_nItem;
-   dispinfo.item.iSubItem = m_nColumn;
+   dispinfo.item.iItem = m_item;
+   dispinfo.item.iSubItem = m_columnIndex;
    dispinfo.item.pszText = szBuffer;
 
    HWND hWnd = ::GetParent(GetParent());
    int nRet = ::SendMessage(hWnd, WM_NOTIFY, 0, (LPARAM)&dispinfo);
 
    if (nRet == 1)
-      ListView_SetItemText(GetParent(), m_nItem, m_nColumn, szBuffer);
+      ListView_SetItemText(GetParent(), m_item, m_columnIndex, szBuffer);
 
    return nRet != 0;
 }
 
-void CEditListInplaceEditCtrl::Finish()
+void EditListInplaceEditCtrl::Finish()
 {
-   if (!m_bFinished)
+   if (!m_isFinished)
    {
-      m_bFinished = true;
+      m_isFinished = true;
       ::SetFocus(GetParent());
       DestroyWindow();
    }
 }
 
-LRESULT CEditListInplaceEditCtrl::OnChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+LRESULT EditListInplaceEditCtrl::OnChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 {
    switch (wParam)
    {
@@ -79,9 +79,9 @@ LRESULT CEditListInplaceEditCtrl::OnChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*
    return 0;
 }
 
-LRESULT CEditListInplaceEditCtrl::OnKillFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT EditListInplaceEditCtrl::OnKillFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-   if (!m_bFinished)
+   if (!m_isFinished)
    {
       AcceptChanges();
       Finish();
@@ -89,35 +89,35 @@ LRESULT CEditListInplaceEditCtrl::OnKillFocus(UINT /*uMsg*/, WPARAM /*wParam*/, 
    return 0;
 }
 
-LRESULT CEditListInplaceEditCtrl::OnNcDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT EditListInplaceEditCtrl::OnNcDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
    ::PostMessage(GetParent(), WM_DELETEME, 0, reinterpret_cast<LPARAM>(this));
    m_hWnd = NULL;
    return 0;
 }
 
-void CEditListViewCtrl::Init(IEditListViewCallback* pCallback)
+void EditListViewCtrl::Init(IEditListViewCallback* callback)
 {
-   m_pCallback = pCallback;
+   m_callback = callback;
 
-   int nColumn = 0;
+   int columnIndex = 0;
    LVCOLUMN col;
    col.mask = LVCF_WIDTH;
-   while (GetColumn(nColumn, &col)) nColumn++;
+   while (GetColumn(columnIndex, &col)) columnIndex++;
 
-   m_abEditableColumns.RemoveAll();
+   m_editableColumnList.RemoveAll();
 
-   for (int n = 0; n < nColumn; n++)
-      m_abEditableColumns.Add(false);
+   for (int n = 0; n < columnIndex; n++)
+      m_editableColumnList.Add(false);
 }
 
-void CEditListViewCtrl::SetColumnEditable(unsigned int nColumn, bool bEditable)
+void EditListViewCtrl::SetColumnEditable(unsigned int columnIndex, bool bEditable)
 {
-   ATLASSERT(nColumn < static_cast<unsigned int>(m_abEditableColumns.GetSize()));
-   m_abEditableColumns[nColumn] = bEditable;
+   ATLASSERT(columnIndex < static_cast<unsigned int>(m_editableColumnList.GetSize()));
+   m_editableColumnList[columnIndex] = bEditable;
 }
 
-LRESULT CEditListViewCtrl::OnLeftButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+LRESULT EditListViewCtrl::OnLeftButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
    SetFocus();
 
@@ -157,7 +157,7 @@ LRESULT CEditListViewCtrl::OnLeftButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LP
    SelectItem(item);
 
    // create edit-control
-   CEditListInplaceEditCtrl* pEdit = new CEditListInplaceEditCtrl(item, column);
+   EditListInplaceEditCtrl* pEdit = new EditListInplaceEditCtrl(item, column);
 
    RECT rect;
    GetItemRect(item, &rect, LVIR_LABEL);
@@ -185,16 +185,16 @@ LRESULT CEditListViewCtrl::OnLeftButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LP
    return 0;
 }
 
-LRESULT CEditListViewCtrl::OnDeleteMe(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+LRESULT EditListViewCtrl::OnDeleteMe(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
-   CEditListInplaceEditCtrl* pEdit = reinterpret_cast<CEditListInplaceEditCtrl*>(lParam);
+   EditListInplaceEditCtrl* pEdit = reinterpret_cast<EditListInplaceEditCtrl*>(lParam);
    delete pEdit;
    return 0;
 }
 
-LRESULT CEditListViewCtrl::OnBeginLabelEdit(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+LRESULT EditListViewCtrl::OnBeginLabelEdit(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
-   if (m_bReadonly)
+   if (m_isReadOnly)
       return 1;
 
    NMLVDISPINFO* pLvDispInfo = reinterpret_cast<NMLVDISPINFO*>(pnmh);
@@ -204,8 +204,8 @@ LRESULT CEditListViewCtrl::OnBeginLabelEdit(int /*idCtrl*/, LPNMHDR pnmh, BOOL& 
       return 0;
 
    // disallow editing columns that are non-editable
-   ATLASSERT(nSubItem < m_abEditableColumns.GetSize());
-   if (!m_abEditableColumns[nSubItem])
+   ATLASSERT(nSubItem < m_editableColumnList.GetSize());
+   if (!m_editableColumnList[nSubItem])
    {
       // when column 0, at least select item
       if (nSubItem == 0 && (GetStyle() & LVS_SINGLESEL) != 0)
@@ -216,9 +216,9 @@ LRESULT CEditListViewCtrl::OnBeginLabelEdit(int /*idCtrl*/, LPNMHDR pnmh, BOOL& 
    return 0;
 }
 
-LRESULT CEditListViewCtrl::OnEndLabelEdit(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+LRESULT EditListViewCtrl::OnEndLabelEdit(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
-   ATLASSERT(m_bReadonly == false);
+   ATLASSERT(m_isReadOnly == false);
 
    NMLVDISPINFO* pLvDispInfo = reinterpret_cast<NMLVDISPINFO*>(pnmh);
    if (pLvDispInfo->item.iItem == -1)
@@ -227,8 +227,8 @@ LRESULT CEditListViewCtrl::OnEndLabelEdit(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*
    // get edited text
    LPCTSTR pszText = pLvDispInfo->item.pszText;
 
-   if (m_pCallback != NULL)
-      m_pCallback->OnUpdatedValue(static_cast<unsigned int>(pLvDispInfo->item.iItem),
+   if (m_callback != NULL)
+      m_callback->OnUpdatedValue(static_cast<unsigned int>(pLvDispInfo->item.iItem),
          static_cast<unsigned int>(pLvDispInfo->item.iSubItem), pszText);
 
    return 1;

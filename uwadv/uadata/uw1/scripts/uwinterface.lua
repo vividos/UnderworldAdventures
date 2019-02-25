@@ -24,7 +24,7 @@
 -- constants
 
 -- player constants
--- these should be in sync with the enums in player.hpp
+-- these should be in sync with the enums in Player.hpp
 
 -- attributes
 player_attr_gender=0      
@@ -74,7 +74,7 @@ player_skill_swimming=19
 
 
 -- tilemap constants
--- these should be in sync with the enums in level.hpp
+-- these should be in sync with the enums in Level.hpp
 
 -- tilemap types
 tilemap_type_solid = 0

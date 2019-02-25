@@ -22,25 +22,25 @@
 #include "stdatl.hpp"
 #include "ProjectManager.hpp"
 
-CProjectManager::CProjectManager()
-   :m_bOpen(false), m_cszProjectName(_T("Unknown"))
+ProjectManager::ProjectManager()
+   :m_isOpen(false), m_projectName(_T("Unknown"))
 {
 }
 
-CProjectManager::~CProjectManager()
+ProjectManager::~ProjectManager()
 {
 }
 
-void CProjectManager::LoadProject(LPCTSTR /*pszProjectFilename*/)
+void ProjectManager::LoadProject(LPCTSTR /*projectFilename*/)
 {
-   m_bOpen = true;
+   m_isOpen = true;
 }
 
-void CProjectManager::CloseProject()
+void ProjectManager::CloseProject()
 {
-   m_bOpen = false;
+   m_isOpen = false;
 }
 
-void CProjectManager::SaveProject()
+void ProjectManager::SaveProject()
 {
 }

@@ -22,15 +22,15 @@
 #pragma once
 
 /// hotspot list docking window
-class CHotspotListWindow : public CDockingWindowBase
+class HotspotListWindow : public DockingWindowBase
 {
-   typedef CHotspotListWindow thisClass;
-   typedef CDockingWindowBase baseClass;
+   typedef HotspotListWindow thisClass;
+   typedef DockingWindowBase baseClass;
 public:
    /// ctor
-   CHotspotListWindow() :baseClass(idHotspotListWindow) {}
+   HotspotListWindow() :baseClass(idHotspotListWindow) {}
    /// dtor
-   virtual ~CHotspotListWindow() {}
+   virtual ~HotspotListWindow() {}
 
    DECLARE_DOCKING_WINDOW(_T("Hotspot List"), CSize(250, 100)/*docked*/, CSize(450, 300)/*floating*/, dockwins::CDockingSide::sLeft)
 

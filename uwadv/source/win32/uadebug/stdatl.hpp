@@ -95,7 +95,7 @@ extern CAppModule _Module;
 #include <SciLexer.h>
 
 // Underworld Adventures includes
-#include "dbgserver.hpp"
+#include "uwadv/DebugServer.hpp"
 
 
 // array length macro

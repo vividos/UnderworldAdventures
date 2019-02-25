@@ -24,20 +24,20 @@
 #include "Resource.h"
 #include "TileMapViewCtrl.hpp"
 
-class CMainFrame;
-class CDebugClientInterface;
+class MainFrame;
+class DebugClient;
 
 /// child frame for tilemap control
-class CTileMapViewChildFrame : public CChildWindowBase<IDR_TILEMAP_VIEW>
+class TileMapViewChildFrame : public ChildWindowBase<IDR_TILEMAP_VIEW>
 {
-   typedef CTileMapViewChildFrame thisClass;
-   typedef CChildWindowBase<IDR_TILEMAP_VIEW> baseClass;
+   typedef TileMapViewChildFrame thisClass;
+   typedef ChildWindowBase<IDR_TILEMAP_VIEW> baseClass;
 public:
    /// ctor
-   CTileMapViewChildFrame() {}
+   TileMapViewChildFrame() {}
 
    /// returns tilemap view control
-   const CTileMapViewCtrl& GetTilemapViewCtrl() const { return m_view; }
+   const TileMapViewCtrl& GetTilemapViewCtrl() const { return m_view; }
 
 protected:
    BEGIN_MSG_MAP(thisClass)
@@ -66,28 +66,28 @@ protected:
       return FALSE;
    }
 
-   // virtual methods from CChildWindowBase
+   // virtual methods from ChildWindowBase
 
-   virtual void InitDebugWindow(IMainFrame* pMainFrame) override
+   virtual void InitDebugWindow(IMainFrame* mainFrame) override
    {
-      baseClass::InitDebugWindow(pMainFrame);
-      pMainFrame->AddDebugWindow(&m_view);
+      baseClass::InitDebugWindow(mainFrame);
+      mainFrame->AddDebugWindow(&m_view);
    }
 
    virtual void DoneDebugWindow() override
    {
-      m_pMainFrame->RemoveDebugWindow(&m_view);
+      m_mainFrame->RemoveDebugWindow(&m_view);
       baseClass::DoneDebugWindow();
    }
 
-   virtual void ReceiveNotification(CDebugWindowNotification& notify) override
+   virtual void ReceiveNotification(DebugWindowNotification& notify) override
    {
       // relay notification to descendant window, if needed
-      if (notify.m_bRelayToDescendants)
-         m_pMainFrame->SendNotification(notify, &m_view);
+      if (notify.m_relayToDescendants)
+         m_mainFrame->SendNotification(notify, &m_view);
    }
 
 protected:
    /// tilemap control
-   CTileMapViewCtrl m_view;
+   TileMapViewCtrl m_view;
 };

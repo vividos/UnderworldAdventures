@@ -20,10 +20,10 @@
 /// \brief Keymap test
 //
 #include "unittest.hpp"
-#include "keymap.hpp"
-#include "settings.hpp"
-#include "textfile.hpp"
-#include "filesystem.hpp"
+#include "Keymap.hpp"
+#include "Settings.hpp"
+#include "TextFile.hpp"
+#include "FileSystem.hpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

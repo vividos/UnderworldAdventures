@@ -21,11 +21,11 @@
 //
 #include "common.hpp"
 #include "prop.hpp"
-#include "gamestringsimporter.hpp"
+#include "GameStringsImporter.hpp"
 #include <algorithm>
 #include <bitset>
 
-void ua_dump_obj_properties::start(std::string& basepath)
+void DumpObjectProperties::start(std::string& basepath)
 {
    printf("object properties dumping\nprocessing file %s%s\n",
       basepath.c_str(), "data/comobj.dat");

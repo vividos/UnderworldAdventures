@@ -38,8 +38,8 @@
 #include <SDL_opengl.h>
 
 // uwadv includes
-#include "base.hpp"
-#include "math.hpp"
-#include "settings.hpp"
-#include "game_interface.hpp"
-#include "user_interface.hpp"
+#include "Base.hpp"
+#include "Math.hpp"
+#include "Settings.hpp"
+#include "GameInterface.hpp"
+#include "IUserInterface.hpp"

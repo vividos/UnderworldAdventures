@@ -83,46 +83,50 @@
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="archivefile.cpp" />
-    <ClCompile Include="base.cpp">
+    <ClCompile Include="ArchiveFile.cpp" />
+    <ClCompile Include="Base.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="cfgfile.cpp" />
-    <ClCompile Include="file.cpp" />
-    <ClCompile Include="filesystem.cpp" />
-    <ClCompile Include="keymap.cpp" />
-    <ClCompile Include="resourcemanager.cpp" />
-    <ClCompile Include="savegame.cpp" />
+    <ClCompile Include="ConfigFile.cpp" />
+    <ClCompile Include="File.cpp" />
+    <ClCompile Include="FileSystem.cpp" />
+    <ClCompile Include="Keymap.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="Savegame.cpp" />
     <ClCompile Include="SDL_rwops_gzfile.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="settings.cpp" />
-    <ClCompile Include="settingsloader.cpp" />
-    <ClCompile Include="string.cpp" />
-    <ClCompile Include="textfile.cpp" />
-    <ClCompile Include="uw2decode.cpp" />
+    <ClCompile Include="Settings.cpp" />
+    <ClCompile Include="SettingsLoader.cpp" />
+    <ClCompile Include="String.cpp" />
+    <ClCompile Include="TextFile.cpp" />
+    <ClCompile Include="Uw2decode.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="archivefile.hpp" />
-    <ClInclude Include="base.hpp" />
-    <ClInclude Include="cfgfile.hpp" />
-    <ClInclude Include="exception.hpp" />
-    <ClInclude Include="file.hpp" />
-    <ClInclude Include="filesystem.hpp" />
-    <ClInclude Include="keymap.hpp" />
-    <ClInclude Include="math.hpp" />
-    <ClInclude Include="resourcemanager.hpp" />
-    <ClInclude Include="savegame.hpp" />
+    <ClInclude Include="..\common.hpp" />
+    <ClInclude Include="..\GameInterface.hpp" />
+    <ClInclude Include="..\IDebugServer.hpp" />
+    <ClInclude Include="..\IUserInterface.hpp" />
+    <ClInclude Include="ArchiveFile.hpp" />
+    <ClInclude Include="Base.hpp" />
+    <ClInclude Include="ConfigFile.hpp" />
+    <ClInclude Include="Exception.hpp" />
+    <ClInclude Include="File.hpp" />
+    <ClInclude Include="FileSystem.hpp" />
+    <ClInclude Include="Keymap.hpp" />
+    <ClInclude Include="Math.hpp" />
+    <ClInclude Include="ResourceManager.hpp" />
+    <ClInclude Include="Savegame.hpp" />
     <ClInclude Include="SDL_rwops_gzfile.h" />
-    <ClInclude Include="settings.hpp" />
-    <ClInclude Include="string.hpp" />
-    <ClInclude Include="textfile.hpp" />
-    <ClInclude Include="triangle3d.hpp" />
-    <ClInclude Include="uw2decode.hpp" />
+    <ClInclude Include="Settings.hpp" />
+    <ClInclude Include="String.hpp" />
+    <ClInclude Include="TextFile.hpp" />
+    <ClInclude Include="Triangle3d.hpp" />
+    <ClInclude Include="Uw2decode.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\thirdparty\zziplib\zziplib.vcxproj">

@@ -20,8 +20,8 @@
 /// \brief ConfigFile class test
 //
 #include "unittest.hpp"
-#include "cfgfile.hpp"
-#include "textfile.hpp"
+#include "ConfigFile.hpp"
+#include "TextFile.hpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -37,9 +37,9 @@ namespace UnitTest
          TempFolder testFolder;
          std::string strPath = testFolder.GetPathName();
 
-         std::string strFilename = strPath + "/test.cfg";
+         std::string filename = strPath + "/test.cfg";
          {
-            Base::TextFile file(strFilename, Base::modeWrite);
+            Base::TextFile file(filename, Base::modeWrite);
             file.WriteLine("# comment line");
             file.WriteLine("  # another comment  ");
             file.WriteLine("; alternative comment");
@@ -52,7 +52,7 @@ namespace UnitTest
          }
 
          Base::ConfigFile cfgFile;
-         cfgFile.Load(strFilename);
+         cfgFile.Load(filename);
 
          Base::ConfigValueMap& cfgMap = cfgFile.GetValueMap();
 
@@ -68,10 +68,10 @@ namespace UnitTest
          TempFolder testFolder;
          std::string strPath = testFolder.GetPathName();
 
-         std::string strFilename = strPath + "/test.cfg";
+         std::string filename = strPath + "/test.cfg";
          std::string strFilenameNew = strPath + "/test2.cfg";
          {
-            Base::TextFile file(strFilename, Base::modeWrite);
+            Base::TextFile file(filename, Base::modeWrite);
             file.WriteLine("  # comment line  "); // comment lines are trimmed for space only
             file.WriteLine("key1 value1"); // normal pair
             file.WriteLine("   key2 \t  \t value2  "); // pair with whitespace in between
@@ -82,13 +82,13 @@ namespace UnitTest
          // load, modify, save
          {
             Base::ConfigFile cfgFile;
-            cfgFile.Load(strFilename);
+            cfgFile.Load(filename);
 
             Base::ConfigValueMap& cfgMap = cfgFile.GetValueMap();
             cfgMap["key1"] = "uwadv1";
             cfgMap["key2"] = "uwadv2";
 
-            cfgFile.Save(strFilename, strFilenameNew);
+            cfgFile.Save(filename, strFilenameNew);
          }
 
          // check resulting text file

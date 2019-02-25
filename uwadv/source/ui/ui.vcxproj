@@ -67,29 +67,29 @@
     <Lib />
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="cutscene.cpp" />
-    <ClCompile Include="font.cpp" />
-    <ClCompile Include="indexedimage.cpp" />
-    <ClCompile Include="imgquad.cpp" />
-    <ClCompile Include="mousecursor.cpp" />
-    <ClCompile Include="palette256.cpp" />
-    <ClCompile Include="screen.cpp" />
-    <ClCompile Include="textedit.cpp" />
-    <ClCompile Include="textscroll.cpp" />
-    <ClCompile Include="window.cpp" />
+    <ClCompile Include="Cutscene.cpp" />
+    <ClCompile Include="Font.cpp" />
+    <ClCompile Include="IndexedImage.cpp" />
+    <ClCompile Include="ImageQuad.cpp" />
+    <ClCompile Include="MouseCursor.cpp" />
+    <ClCompile Include="Palette256.cpp" />
+    <ClCompile Include="Screen.cpp" />
+    <ClCompile Include="TextEditWindow.cpp" />
+    <ClCompile Include="TextScroll.cpp" />
+    <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cutscene.hpp" />
-    <ClInclude Include="fading.hpp" />
-    <ClInclude Include="font.hpp" />
-    <ClInclude Include="indexedimage.hpp" />
-    <ClInclude Include="imgquad.hpp" />
-    <ClInclude Include="mousecursor.hpp" />
-    <ClInclude Include="palette256.hpp" />
-    <ClInclude Include="screen.hpp" />
-    <ClInclude Include="textedit.hpp" />
-    <ClInclude Include="textscroll.hpp" />
-    <ClInclude Include="window.hpp" />
+    <ClInclude Include="Cutscene.hpp" />
+    <ClInclude Include="FadingHelper.hpp" />
+    <ClInclude Include="Font.hpp" />
+    <ClInclude Include="IndexedImage.hpp" />
+    <ClInclude Include="ImageQuad.hpp" />
+    <ClInclude Include="MouseCursor.hpp" />
+    <ClInclude Include="Palette256.hpp" />
+    <ClInclude Include="Screen.hpp" />
+    <ClInclude Include="TextEditWindow.hpp" />
+    <ClInclude Include="TextScroll.hpp" />
+    <ClInclude Include="Window.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\base\base.vcxproj">

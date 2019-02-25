@@ -21,32 +21,32 @@
 //
 #pragma once
 
-class ua_debug_server_interface;
+class IDebugServer;
 
 /// debug server message that is received by the client
-struct CDebugClientMessage
+struct DebugClientMessage
 {
    /// ctor
-   CDebugClientMessage()
-      :m_nType(0), m_nArg1(0), m_nArg2(0), m_dArg3(0.0) {}
+   DebugClientMessage()
+      :m_messageType(0), m_messageArg1(0), m_messageArg2(0), m_messageArg3(0.0) {}
 
-   /// message type; see enum ua_debug_server_message_type
-   unsigned int m_nType;
+   /// message type; see enum DebugServerMessageType
+   unsigned int m_messageType;
 
    /// message argument 1
-   unsigned int m_nArg1;
+   unsigned int m_messageArg1;
    /// message argument 2
-   unsigned int m_nArg2;
+   unsigned int m_messageArg2;
    /// message argument 3
-   double m_dArg3;
+   double m_messageArg3;
 
    /// message text
-   CString m_cszText;
+   CString m_messageText;
 };
 
 
 /// player info interface
-class CDebugClientPlayerInterface
+class DebugClientPlayerInterface
 {
 public:
    unsigned int GetAttrCount();
@@ -65,61 +65,61 @@ public:
    void Teleport(unsigned int level, double xpos, double ypos);
 
 private:
-   CDebugClientPlayerInterface() {}
+   DebugClientPlayerInterface() {}
 
    /// pointer to debug server interface
-   ua_debug_server_interface* m_pDebugInterface;
+   IDebugServer* m_debugInterface;
 
-   friend class CDebugClientInterface;
+   friend class DebugClient;
 };
 
 
 /// object list interface
-class CDebugClientObjectInterface
+class DebugClientObjectListInterface
 {
 public:
    unsigned int GetColumnCount() const;
 
-   LPCTSTR GetColumnName(unsigned int nColumn) const;
-   unsigned int GetColumnSize(unsigned int nColumn) const;
-   bool ViewColumnAsHex(unsigned int nColumn) const;
-   unsigned int ColumnHexDigitCount(unsigned int nColumn) const;
+   LPCTSTR GetColumnName(unsigned int columnIndex) const;
+   unsigned int GetColumnSize(unsigned int columnIndex) const;
+   bool ViewColumnAsHex(unsigned int columnIndex) const;
+   unsigned int ColumnHexDigitCount(unsigned int columnIndex) const;
 
-   unsigned int GetItemId(unsigned int nPos);
-   unsigned int GetItemNext(unsigned int nPos);
+   unsigned int GetItemId(unsigned int pos);
+   unsigned int GetItemNext(unsigned int pos);
 
-   unsigned int GetItemInfo(unsigned int nPos, unsigned int nSubcode);
-   void SetItemInfo(unsigned int nPos, unsigned int nSubcode, unsigned int nInfo);
+   unsigned int GetItemInfo(unsigned int pos, unsigned int subcode);
+   void SetItemInfo(unsigned int pos, unsigned int subcode, unsigned int nInfo);
 
 private:
-   CDebugClientObjectInterface() {}
+   DebugClientObjectListInterface() {}
 
    /// pointer to debug server interface
-   ua_debug_server_interface* m_pDebugInterface;
+   IDebugServer* m_debugInterface;
 
-   unsigned int m_nLevel;
+   unsigned int m_level;
 
-   friend class CDebugClientInterface;
+   friend class DebugClient;
 };
 
 
-/// code debugger type; corresponds with ua_debug_code_debugger_type in dbgserver.hpp
-enum T_enCodeDebuggerType
+/// code debugger type; corresponds with DebugServerCodeDebuggerType in DebugServer.hpp
+enum CodeDebuggerType
 {
    cdtUwConv = 0,   ///< uw conversation script
    cdtLuaScript   ///< Lua script
 };
 
-/// code debugger state; corresponds with ua_debug_code_debugger_state in dbgserver.hpp
-enum T_enCodeDebuggerState
+/// code debugger state; corresponds with DebugServerCodeDebuggerState in DebugServer.hpp
+enum CodeDebuggerState
 {
    cdsInactive = 0,
    cdsRunning,
    cdsBreak,
 };
 
-/// code debugger command; corresponds with ua_debug_code_debugger_command in dbgserver.hpp
-enum T_enCodeDebuggerCommand
+/// code debugger command; corresponds with DebugServerCodeDebuggerCommand in DebugServer.hpp
+enum CodeDebuggerCommand
 {
    cdcRun = 0,
    cdcStepOver,
@@ -128,40 +128,40 @@ enum T_enCodeDebuggerCommand
 };
 
 
-struct SCodePosition
+struct CodePosition
 {
    /// index value to retrieve source file name
-   unsigned int m_nSourceFileNameIndex;
-   unsigned int m_nSourceFileLine;
+   unsigned int m_sourceFileNameIndex;
+   unsigned int m_sourceFileLine;
 
    /// code position; if not available, -1 is put in here
-   unsigned int m_nCodePos;
+   unsigned int m_codePosition;
 };
 
-struct SBreakpointInfo
+struct BreakpointInfo
 {
-   bool m_bIsVisible;
-   SCodePosition m_location;
+   bool m_isVisible;
+   CodePosition m_location;
 };
 
-struct SCallstackInfo
+struct CallstackInfo
 {
-   unsigned int m_nPos;
-   unsigned int m_nReturnPos;
+   unsigned int m_pos;
+   unsigned int m_returnPos;
 };
 
 
 
 /// code debugger interface
-class CDebugClientCodeDebuggerInterface
+class IDebugClientCodeDebugger
 {
 public:
-   virtual ~CDebugClientCodeDebuggerInterface() {}
+   virtual ~IDebugClientCodeDebugger() {}
 
    // misc.
 
    /// returns code debugger type
-   T_enCodeDebuggerType GetDebuggerType();
+   CodeDebuggerType GetDebuggerType();
 
    /// prepares debug info for code debugger
    void PrepareDebugInfo();
@@ -173,50 +173,50 @@ public:
    bool IsCodeAvail() const;
 
    /// sets new debugger command
-   void SetCommand(T_enCodeDebuggerCommand enCommand);
+   void SetCommand(CodeDebuggerCommand command);
 
    /// returns current code debugger state
-   T_enCodeDebuggerState GetState() const;
+   CodeDebuggerState GetState() const;
 
    /// returns current code position
-   SCodePosition GetCurrentPos();
+   CodePosition GetCurrentPos();
 
    // breakpoints
 
    unsigned int GetBreakpointCount() const;
-   void GetBreakpointInfo(unsigned int nBreakpointIndex, SBreakpointInfo& breakpointInfo) const;
+   void GetBreakpointInfo(unsigned int nBreakpointIndex, BreakpointInfo& breakpointInfo) const;
 
    // call stack
 
    unsigned int GetCallstackHeight() const;
-   void GetCallstackInfo(unsigned int nAtLevel, SCallstackInfo& callstackInfo) const;
+   void GetCallstackInfo(unsigned int atLevel, CallstackInfo& callstackInfo) const;
 
    // sourcecode files
 
    // sourcecode files count; only valid if IsSourceAvail() returns a value > 0
-   unsigned int GetSourcefileCount() const;
+   unsigned int GetSourceFileCount() const;
 
    /// returns sourcecode filename by index
-   CString GetSourcefileFilename(unsigned int nIndex);
+   CString GetSourceFileName(unsigned int index);
 
    /// returns sourcecode filename and line by code position
-   bool GetSourceFromCodePos(unsigned int nCodePos, CString& cszFilename, unsigned int& nLine, unsigned int& nLineDisplacement);
+   bool GetSourceFromCodePos(unsigned int codePos, CString& filename, unsigned int& lineNumber, unsigned int& lineDisplacement);
 
 protected:
    /// ctor
-   CDebugClientCodeDebuggerInterface() {}
+   IDebugClientCodeDebugger() {}
 
    /// pointer to code debugger interface
-   class ua_debug_code_interface* m_pCodeDebugger;
+   class ICodeDebugger* m_codeDebugger;
 
    /// pointer to debug interface
-   class CDebugClientInterface* m_pDebugClient;
+   class DebugClient* m_debugClient;
 
-   friend class CDebugClientInterface;
+   friend class DebugClient;
 };
 
 
-enum T_enTileInfoType
+enum TileInfoType
 {
    tiType = 0,
    tiFloorHeight,
@@ -229,21 +229,21 @@ enum T_enTileInfoType
 };
 
 /// debugger client interface
-class CDebugClientInterface
+class DebugClient
 {
 public:
-   CDebugClientInterface() {}
-   virtual ~CDebugClientInterface() {}
+   DebugClient() {}
+   virtual ~DebugClient() {}
 
-   bool Init(ua_debug_server_interface* pDebugInterface);
+   bool Init(IDebugServer* pDebugInterface);
 
-   void Lock(bool bLock);
+   void Lock(bool locked);
 
    bool IsStudioMode();
    unsigned int GetFlag(unsigned int flag);
-   CString GetGameCfgPath();
+   CString GetGameConfigPath();
 
-   void LoadGameCfg(LPCTSTR pszPrefix);
+   void LoadGameConfig(LPCTSTR pszPrefix);
 
    bool IsGamePaused();
    void PauseGame(bool pause);
@@ -252,7 +252,7 @@ public:
 
    unsigned int GetNumLevels();
    void SetWorkingLevel(unsigned int level);
-   unsigned int GetWorkingLevel() const { return m_nLevel; }
+   unsigned int GetWorkingLevel() const { return m_level; }
 
    CString GetLevelName(unsigned int level) const;
 
@@ -263,15 +263,15 @@ public:
 
    // sub-interfaces
 
-   CDebugClientPlayerInterface GetPlayerInterface();
+   DebugClientPlayerInterface GetPlayerInterface();
 
-   CDebugClientObjectInterface GetObjectInterface();
+   DebugClientObjectListInterface GetObjectInterface();
 
 
    // tile info
 
-   unsigned int GetTileInfo(unsigned int xpos, unsigned int ypos, T_enTileInfoType type);
-   void SetTileInfo(unsigned int xpos, unsigned int ypos, T_enTileInfoType type, unsigned int val);
+   unsigned int GetTileInfo(unsigned int xpos, unsigned int ypos, TileInfoType type);
+   void SetTileInfo(unsigned int xpos, unsigned int ypos, TileInfoType type, unsigned int val);
 
 
    // game strings
@@ -283,30 +283,30 @@ public:
 
    // code debugger access
 
-   void AddCodeDebugger(unsigned int nCodeDebuggerID);
-   void RemoveCodeDebugger(unsigned int nCodeDebuggerID);
+   void AddCodeDebugger(unsigned int codeDebuggerId);
+   void RemoveCodeDebugger(unsigned int codeDebuggerId);
 
-   bool IsValidCodeDebuggerID(unsigned int nCodeDebuggerID) const;
+   bool IsValidCodeDebuggerId(unsigned int codeDebuggerId) const;
 
    unsigned int GetCodeDebuggerCount() const;
-   unsigned int GetCodeDebuggerByIndex(unsigned int nIndex) const;
+   unsigned int GetCodeDebuggerByIndex(unsigned int index) const;
 
-   CDebugClientCodeDebuggerInterface GetCodeDebuggerInterface(unsigned int nCodeDebuggerID);
+   IDebugClientCodeDebugger GetCodeDebuggerInterface(unsigned int codeDebuggerId);
 
 
    // misc.
 
    CImageList GetObjectImageList();
 
-   bool GetMessage(CDebugClientMessage& msg);
+   bool GetMessage(DebugClientMessage& msg);
 
 private:
    /// pointer to debug server interface
-   ua_debug_server_interface* m_pDebugInterface;
+   IDebugServer* m_debugInterface;
 
    /// current level we're operating
-   unsigned int m_nLevel;
+   unsigned int m_level;
 
    /// array with all valid code debugger IDs
-   CSimpleArray<unsigned int> m_anCodeDebuggerIDs;
+   CSimpleArray<unsigned int> m_codeDebuggerIdList;
 };

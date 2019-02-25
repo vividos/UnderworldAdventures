@@ -67,16 +67,16 @@
     <Lib />
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="codevm.cpp" />
-    <ClCompile Include="conv.cpp" />
-    <ClCompile Include="convgraph.cpp" />
+    <ClCompile Include="CodeVM.cpp" />
+    <ClCompile Include="Conversation.cpp" />
+    <ClCompile Include="CodeGraph.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="codevm.hpp" />
-    <ClInclude Include="conv.hpp" />
-    <ClInclude Include="convgraph.hpp" />
-    <ClInclude Include="convstack.hpp" />
-    <ClInclude Include="opcodes.hpp" />
+    <ClInclude Include="CodeVM.hpp" />
+    <ClInclude Include="Conversation.hpp" />
+    <ClInclude Include="CodeGraph.hpp" />
+    <ClInclude Include="ConvStack.hpp" />
+    <ClInclude Include="Opcodes.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\base\base.vcxproj">

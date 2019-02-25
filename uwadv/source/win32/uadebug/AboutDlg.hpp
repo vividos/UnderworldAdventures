@@ -24,12 +24,12 @@
 #include "resource.h"
 
 /// about dialog
-class CAboutDlg : public CDialogImpl<CAboutDlg>
+class AboutDlg : public CDialogImpl<AboutDlg>
 {
 public:
    enum { IDD = IDD_ABOUTBOX };
 
-   BEGIN_MSG_MAP(CAboutDlg)
+   BEGIN_MSG_MAP(AboutDlg)
       MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
       COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
       COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)

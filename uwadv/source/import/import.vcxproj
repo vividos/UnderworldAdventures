@@ -68,40 +68,40 @@
     <Lib />
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="convloader.cpp" />
-    <ClCompile Include="critloader.cpp" />
-    <ClCompile Include="cutsloader.cpp" />
-    <ClCompile Include="fontloader.cpp" />
-    <ClCompile Include="imageloader.cpp" />
-    <ClCompile Include="import.cpp">
+    <ClCompile Include="ConvLoader.cpp" />
+    <ClCompile Include="CrittersLoader.cpp" />
+    <ClCompile Include="CutsceneLoader.cpp" />
+    <ClCompile Include="FontLoader.cpp" />
+    <ClCompile Include="ImageLoader.cpp" />
+    <ClCompile Include="Import.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">import.hpp</PrecompiledHeaderFile>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">import.hpp</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="gamestringsimporter.cpp" />
-    <ClCompile Include="levellimporter.cpp" />
-    <ClCompile Include="maploader.cpp" />
-    <ClCompile Include="modeldecode.cpp" />
-    <ClCompile Include="objectlistloader.cpp" />
-    <ClCompile Include="playerimporter.cpp" />
-    <ClCompile Include="propertiesloader.cpp" />
-    <ClCompile Include="texloader.cpp" />
-    <ClCompile Include="tgaimport.cpp" />
-    <ClCompile Include="uwloader.cpp" />
+    <ClCompile Include="GameStringsImporter.cpp" />
+    <ClCompile Include="LevellImporter.cpp" />
+    <ClCompile Include="MapLoader.cpp" />
+    <ClCompile Include="ModelDecoder.cpp" />
+    <ClCompile Include="ObjectListLoader.cpp" />
+    <ClCompile Include="PlayerImporter.cpp" />
+    <ClCompile Include="PropertiesLoader.cpp" />
+    <ClCompile Include="TextureLoader.cpp" />
+    <ClCompile Include="TgaImport.cpp" />
+    <ClCompile Include="UnderworldLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="bits.hpp" />
-    <ClInclude Include="convloader.hpp" />
-    <ClInclude Include="cutsloader.hpp" />
-    <ClInclude Include="fontloader.hpp" />
-    <ClInclude Include="imageloader.hpp" />
-    <ClInclude Include="import.hpp" />
-    <ClInclude Include="crittersloader.hpp" />
-    <ClInclude Include="gamestringsimporter.hpp" />
-    <ClInclude Include="levelimporter.hpp" />
-    <ClInclude Include="playerimporter.hpp" />
-    <ClInclude Include="textureloader.hpp" />
+    <ClInclude Include="Bits.hpp" />
+    <ClInclude Include="ConvLoader.hpp" />
+    <ClInclude Include="CutsceneLoader.hpp" />
+    <ClInclude Include="FontLoader.hpp" />
+    <ClInclude Include="ImageLoader.hpp" />
+    <ClInclude Include="Import.hpp" />
+    <ClInclude Include="CrittersLoader.hpp" />
+    <ClInclude Include="GameStringsImporter.hpp" />
+    <ClInclude Include="LevelImporter.hpp" />
+    <ClInclude Include="PlayerImporter.hpp" />
+    <ClInclude Include="TextureLoader.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\base\base.vcxproj">

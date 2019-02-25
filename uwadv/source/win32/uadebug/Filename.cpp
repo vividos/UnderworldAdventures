@@ -22,63 +22,63 @@
 #include "stdatl.hpp"
 #include "Filename.hpp"
 
-CFilename::CFilename(LPCTSTR pszFilename)
+CFilename::CFilename(LPCTSTR filename)
 {
-   Set(pszFilename);
+   Set(filename);
 }
 
-void CFilename::Set(LPCTSTR pszFilename)
+void CFilename::Set(LPCTSTR filename)
 {
-   m_cszFilename = pszFilename;
+   m_filename = filename;
 
    // replace unix-style slashes
-   m_cszFilename.Replace(_T("/"), _T("\\"));
+   m_filename.Replace(_T("/"), _T("\\"));
 
    // add trailing backslash, if it's a folder
-   if (m_cszFilename.GetLength() > 0 && (m_cszFilename.Right(1) != _T('\\')) && IsFolder())
-      m_cszFilename += _T('\\');
+   if (m_filename.GetLength() > 0 && (m_filename.Right(1) != _T('\\')) && IsFolder())
+      m_filename += _T('\\');
 
    // canonicalize path, if not relative
    if (!IsRelativePath())
    {
-      CString cszTemp(m_cszFilename), cszCanonical;
+      CString temp(m_filename), canonical;
 
-      BOOL bRet = ::PathCanonicalize(cszCanonical.GetBuffer(MAX_PATH), cszTemp);
-      cszCanonical.ReleaseBuffer();
-      if (bRet == TRUE)
-         m_cszFilename = cszCanonical;
+      BOOL ret = ::PathCanonicalize(canonical.GetBuffer(MAX_PATH), temp);
+      canonical.ReleaseBuffer();
+      if (ret == TRUE)
+         m_filename = canonical;
    }
 }
 
 bool CFilename::IsValidObject() const
 {
-   return ::GetFileAttributes(m_cszFilename) != 0xFFFFFFFF;
+   return ::GetFileAttributes(m_filename) != 0xFFFFFFFF;
 }
 
 bool CFilename::IsFolder() const
 {
-   DWORD nAttr = ::GetFileAttributes(m_cszFilename);
-   return nAttr != 0xFFFFFFFF && (nAttr & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY;
+   DWORD attributes = ::GetFileAttributes(m_filename);
+   return attributes != 0xFFFFFFFF && (attributes & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY;
 }
 
 bool CFilename::IsFile() const
 {
-   DWORD nAttr = ::GetFileAttributes(m_cszFilename);
-   return nAttr != 0xFFFFFFFF && (nAttr & FILE_ATTRIBUTE_DIRECTORY) != FILE_ATTRIBUTE_DIRECTORY;
+   DWORD attributes = ::GetFileAttributes(m_filename);
+   return attributes != 0xFFFFFFFF && (attributes & FILE_ATTRIBUTE_DIRECTORY) != FILE_ATTRIBUTE_DIRECTORY;
 }
 
 bool CFilename::IsRelativePath() const
 {
-   CString cszPathname(GetPathname());
-   if (cszPathname.IsEmpty())
+   CString pathname(GetPathname());
+   if (pathname.IsEmpty())
       return true; // empty paths are relative to current directory
 
    // on windows, paths are absolute if they start with "C:" or similar
-   if (cszPathname.GetLength() > 2 && cszPathname.GetAt(1) == _T(':'))
+   if (pathname.GetLength() > 2 && pathname.GetAt(1) == _T(':'))
       return false;
 
    // if it starts with a slash, the path is absolute to the current drive
-   if (cszPathname.GetLength() > 1 && cszPathname.GetAt(0) == _T('\\'))
+   if (pathname.GetLength() > 1 && pathname.GetAt(0) == _T('\\'))
       return false;
 
    // in any other case the path is relative
@@ -87,35 +87,35 @@ bool CFilename::IsRelativePath() const
 
 CString CFilename::GetPathname() const
 {
-   int nPos = m_cszFilename.ReverseFind(_T('\\'));
-   if (nPos == -1)
+   int pos = m_filename.ReverseFind(_T('\\'));
+   if (pos == -1)
       return CString();
    else
-      return m_cszFilename.Left(nPos + 1);
+      return m_filename.Left(pos + 1);
 }
 
 CString CFilename::GetFilename() const
 {
-   int nPos = m_cszFilename.ReverseFind(_T('\\'));
-   return m_cszFilename.Mid(nPos + 1);
+   int pos = m_filename.ReverseFind(_T('\\'));
+   return m_filename.Mid(pos + 1);
 }
 
-void CFilename::MakeAbsolute(LPCTSTR pszBaseDirectory)
+void CFilename::MakeAbsolute(LPCTSTR baseDirectory)
 {
    if (IsRelativePath())
    {
-      CFilename fileBase(pszBaseDirectory);
+      CFilename fileBase(baseDirectory);
       ATLASSERT(false == fileBase.IsRelativePath()); // base directory must be absolute!
 
-      CString cszTemp = fileBase.GetPathname();
-      cszTemp += m_cszFilename;
+      CString temp = fileBase.GetPathname();
+      temp += m_filename;
 
-      CString cszNewFilename;
-      BOOL bRet = ::PathCanonicalize(cszNewFilename.GetBuffer(MAX_PATH), cszTemp);
-      cszNewFilename.ReleaseBuffer();
+      CString newFilename;
+      BOOL ret = ::PathCanonicalize(newFilename.GetBuffer(MAX_PATH), temp);
+      newFilename.ReleaseBuffer();
 
-      if (bRet == TRUE)
-         m_cszFilename = cszNewFilename;
+      if (ret == TRUE)
+         m_filename = newFilename;
    }
 }
 
@@ -124,37 +124,37 @@ void CFilename::MakeAbsoluteToCurrentDir()
    if (!IsRelativePath())
       return;
 
-   CString cszCurrentDir;
-   ::GetCurrentDirectory(MAX_PATH, cszCurrentDir.GetBuffer(MAX_PATH));
-   cszCurrentDir.ReleaseBuffer();
+   CString currentDir;
+   ::GetCurrentDirectory(MAX_PATH, currentDir.GetBuffer(MAX_PATH));
+   currentDir.ReleaseBuffer();
 
-   MakeAbsolute(cszCurrentDir);
+   MakeAbsolute(currentDir);
 }
 
-bool CFilename::MakeRelativeTo(LPCTSTR pszPathname)
+bool CFilename::MakeRelativeTo(LPCTSTR pathname)
 {
    if (IsRelativePath())
       return false; // only absolute paths may be made relative to each other
 
-   CFilename fileRelativeTo(pszPathname);
+   CFilename fileRelativeTo(pathname);
 
-   CString cszNewPath;
-   BOOL bRet = ::PathRelativePathTo(cszNewPath.GetBuffer(MAX_PATH),
+   CString newPath;
+   BOOL ret = ::PathRelativePathTo(newPath.GetBuffer(MAX_PATH),
       fileRelativeTo.GetPathname(),
       FILE_ATTRIBUTE_DIRECTORY
       ,
-      m_cszFilename,
+      m_filename,
       IsFolder() ? FILE_ATTRIBUTE_DIRECTORY : 0
    );
-   cszNewPath.ReleaseBuffer();
+   newPath.ReleaseBuffer();
 
-   if (bRet == TRUE)
+   if (ret == TRUE)
    {
-      if (cszNewPath.GetLength() > 0 && cszNewPath.GetAt(0) == _T('\\'))
-         m_cszFilename = cszNewPath.Mid(1);
+      if (newPath.GetLength() > 0 && newPath.GetAt(0) == _T('\\'))
+         m_filename = newPath.Mid(1);
       else
-         m_cszFilename = cszNewPath;
+         m_filename = newPath;
    }
 
-   return bRet == TRUE;
+   return ret == TRUE;
 }

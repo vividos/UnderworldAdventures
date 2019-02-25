@@ -27,7 +27,7 @@
 #pragma once
 
 #include <CppUnitTest.h>
-#include "base.hpp"
+#include "Base.hpp"
 #include "tempfolder.hpp"
 
 namespace Base

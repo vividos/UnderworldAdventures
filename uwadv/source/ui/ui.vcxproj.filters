@@ -11,69 +11,69 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="cutscene.cpp">
+    <ClCompile Include="Cutscene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="font.cpp">
+    <ClCompile Include="Font.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="imgquad.cpp">
+    <ClCompile Include="ImageQuad.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mousecursor.cpp">
+    <ClCompile Include="IndexedImage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="screen.cpp">
+    <ClCompile Include="MouseCursor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="textedit.cpp">
+    <ClCompile Include="Palette256.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="textscroll.cpp">
+    <ClCompile Include="Screen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="window.cpp">
+    <ClCompile Include="TextEditWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="palette256.cpp">
+    <ClCompile Include="TextScroll.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="indexedimage.cpp">
+    <ClCompile Include="Window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cutscene.hpp">
+    <ClInclude Include="Cutscene.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="fading.hpp">
+    <ClInclude Include="FadingHelper.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="font.hpp">
+    <ClInclude Include="Font.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="imgquad.hpp">
+    <ClInclude Include="ImageQuad.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="mousecursor.hpp">
+    <ClInclude Include="IndexedImage.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="screen.hpp">
+    <ClInclude Include="MouseCursor.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="textedit.hpp">
+    <ClInclude Include="Palette256.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="textscroll.hpp">
+    <ClInclude Include="Screen.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="window.hpp">
+    <ClInclude Include="TextEditWindow.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="palette256.hpp">
+    <ClInclude Include="TextScroll.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="indexedimage.hpp">
+    <ClInclude Include="Window.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -24,49 +24,49 @@
 #include "DebugClient.hpp"
 #include "MainFrame.hpp"
 
-void CObjectListInfo::Init(unsigned int nColumns)
+void ObjectListInfo::Init(unsigned int columns)
 {
-   m_nColumns = nColumns;
-   m_pObjectList = new unsigned int[nColumns * 0x400];
-   ZeroMemory(&m_pObjectList[0], nColumns * 0x400);
+   m_columns = columns;
+   m_objectList = new unsigned int[columns * 0x400];
+   ZeroMemory(&m_objectList[0], columns * 0x400);
 }
 
-unsigned int CObjectListInfo::GetItem(unsigned int nPos, unsigned int nIndex)
+unsigned int ObjectListInfo::GetItem(unsigned int pos, unsigned int index)
 {
-   return m_pObjectList[nPos*m_nColumns + nIndex];
+   return m_objectList[pos * m_columns + index];
 }
 
-void CObjectListInfo::SetItem(unsigned int nPos, unsigned int nIndex, unsigned int nValue)
+void ObjectListInfo::SetItem(unsigned int pos, unsigned int index, unsigned int value)
 {
-   m_pObjectList[nPos*m_nColumns + nIndex] = nValue;
+   m_objectList[pos * m_columns + index] = value;
 }
 
-CObjectListWindow::CObjectListWindow()
-   :baseClass(idObjectListWindow), m_bObjlistInfoInited(false)
+ObjectListWindow::ObjectListWindow()
+   :baseClass(idObjectListWindow), m_objectListInfoInited(false)
 {
-   m_pItemNameList = new CSimpleArray<CString>;
+   m_itemNameList = new CSimpleArray<CString>;
 }
 
-CObjectListWindow::~CObjectListWindow()
+ObjectListWindow::~ObjectListWindow()
 {
-   delete m_pItemNameList;
+   delete m_itemNameList;
 }
 
-void CObjectListWindow::ReceiveNotification(CDebugWindowNotification& notify)
+void ObjectListWindow::ReceiveNotification(DebugWindowNotification& notify)
 {
-   switch (notify.m_enCode)
+   switch (notify.m_notifyCode)
    {
-   case ncUpdateData:
+   case notifyCodeUpdateData:
       UpdateData();
       break;
 
-   case ncChangedLevel:
+   case notifyCodeChangedLevel:
       UpdateData();
       break;
 
-   case ncSelectedObject:
-      m_listCtrl.EnsureVisible(notify.m_nParam1, FALSE);
-      m_listCtrl.SelectItem(notify.m_nParam1);
+   case notifyCodeSelectedObject:
+      m_listCtrl.EnsureVisible(notify.m_param1, FALSE);
+      m_listCtrl.SelectItem(notify.m_param1);
       break;
 
    default:
@@ -74,25 +74,25 @@ void CObjectListWindow::ReceiveNotification(CDebugWindowNotification& notify)
    }
 }
 
-void CObjectListWindow::UpdateData()
+void ObjectListWindow::UpdateData()
 {
-   m_pItemNameList->RemoveAll();
+   m_itemNameList->RemoveAll();
 
-   CDebugClientInterface& debugClient = m_pMainFrame->GetDebugClientInterface();
+   DebugClient& debugClient = m_mainFrame->GetDebugClientInterface();
    debugClient.Lock(true);
 
-   CDebugClientObjectInterface objectInfo = debugClient.GetObjectInterface();
-   unsigned int nColumns = objectInfo.GetColumnCount();
+   DebugClientObjectListInterface objectInfo = debugClient.GetObjectInterface();
+   unsigned int columns = objectInfo.GetColumnCount();
 
-   if (!m_bObjlistInfoInited)
+   if (!m_objectListInfoInited)
    {
-      m_bObjlistInfoInited = true;
-      m_objectList.Init(nColumns);
+      m_objectListInfoInited = true;
+      m_objectList.Init(columns);
    }
 
    for (unsigned int pos = 0; pos < 0x400; pos++)
    {
-      for (unsigned int i = 0; i < nColumns; i++)
+      for (unsigned int i = 0; i < columns; i++)
       {
          if (i == 0 || i == 2) continue; // don't ask for "pos" or "name" field
 
@@ -101,11 +101,11 @@ void CObjectListWindow::UpdateData()
       }
 
       // get string for item_id
-      unsigned int nItemId = m_objectList.GetItem(pos, 1);
-      if (nItemId != 0xFFFF)
-         m_pItemNameList->Add(debugClient.GetGameString(4, nItemId));
+      unsigned int itemId = m_objectList.GetItem(pos, 1);
+      if (itemId != 0xFFFF)
+         m_itemNameList->Add(debugClient.GetGameString(4, itemId));
       else
-         m_pItemNameList->Add(_T(""));
+         m_itemNameList->Add(_T(""));
    }
 
    debugClient.Lock(false);
@@ -113,7 +113,7 @@ void CObjectListWindow::UpdateData()
    m_listCtrl.Update(-1);
 }
 
-LRESULT CObjectListWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT ObjectListWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
    CRect rcDef;
    GetClientRect(rcDef);
@@ -124,14 +124,14 @@ LRESULT CObjectListWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 
    m_listCtrl.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 
-   m_listCtrl.SetImageList(m_pMainFrame->GetObjectImageList(), LVSIL_SMALL);
+   m_listCtrl.SetImageList(m_mainFrame->GetObjectImageList(), LVSIL_SMALL);
 
 
-   CDebugClientInterface& debugClient = m_pMainFrame->GetDebugClientInterface();
-   CDebugClientObjectInterface objectInfo = debugClient.GetObjectInterface();
-   unsigned int nColumns = objectInfo.GetColumnCount();
+   DebugClient& debugClient = m_mainFrame->GetDebugClientInterface();
+   DebugClientObjectListInterface objectInfo = debugClient.GetObjectInterface();
+   unsigned int columns = objectInfo.GetColumnCount();
 
-   for (unsigned int n = 0; n < nColumns; n++)
+   for (unsigned int n = 0; n < columns; n++)
       m_listCtrl.InsertColumn(n, objectInfo.GetColumnName(n), LVCFMT_LEFT, objectInfo.GetColumnSize(n), -1);
 
    m_listCtrl.Init(this);
@@ -139,13 +139,13 @@ LRESULT CObjectListWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
    // allow editing all columns except column 0 and 2
    m_listCtrl.SetColumnEditable(1, true);
 
-   for (unsigned int i = 3; i < nColumns; i++)
+   for (unsigned int i = 3; i < columns; i++)
       m_listCtrl.SetColumnEditable(i, true);
 
    return 0;
 }
 
-LRESULT CObjectListWindow::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+LRESULT ObjectListWindow::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 {
    if (wParam != SIZE_MINIMIZED)
    {
@@ -157,7 +157,7 @@ LRESULT CObjectListWindow::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*
    return 1;
 }
 
-LRESULT CObjectListWindow::OnSetFocus(UINT, WPARAM, LPARAM, BOOL& bHandled)
+LRESULT ObjectListWindow::OnSetFocus(UINT, WPARAM, LPARAM, BOOL& bHandled)
 {
    if (m_listCtrl.m_hWnd != NULL && m_listCtrl.IsWindowVisible())
       m_listCtrl.SetFocus();
@@ -166,90 +166,90 @@ LRESULT CObjectListWindow::OnSetFocus(UINT, WPARAM, LPARAM, BOOL& bHandled)
    return 1;
 }
 
-void CObjectListWindow::OnUpdatedValue(unsigned int nItem, unsigned int nSubItem, LPCTSTR pszText)
+void ObjectListWindow::OnUpdatedValue(unsigned int item, unsigned int subItem, LPCTSTR text)
 {
-   ATLASSERT(nSubItem > 0 && nSubItem != 2);
-   ATLASSERT(pszText != NULL);
+   ATLASSERT(subItem > 0 && subItem != 2);
+   ATLASSERT(text != NULL);
 
-   CDebugClientInterface& debugClient = m_pMainFrame->GetDebugClientInterface();
+   DebugClient& debugClient = m_mainFrame->GetDebugClientInterface();
    debugClient.Lock(true);
 
-   CDebugClientObjectInterface objectInfo = debugClient.GetObjectInterface();
+   DebugClientObjectListInterface objectInfo = debugClient.GetObjectInterface();
 
-   int nBase = objectInfo.ViewColumnAsHex(nSubItem) ? 16 : 10;
-   unsigned int nValue = static_cast<unsigned int>(_tcstoul(pszText, NULL, nBase));
+   int nBase = objectInfo.ViewColumnAsHex(subItem) ? 16 : 10;
+   unsigned int value = static_cast<unsigned int>(_tcstoul(text, NULL, nBase));
 
-   objectInfo.SetItemInfo(nItem, nSubItem, nValue);
+   objectInfo.SetItemInfo(item, subItem, value);
 
    debugClient.Lock(false);
 
-   m_listCtrl.Update(nItem);
+   m_listCtrl.Update(item);
 }
 
-LRESULT CObjectListWindow::OnGetDispInfo(WPARAM /*wParam*/, NMHDR* pNMHDR, BOOL& /*bHandled*/)
+LRESULT ObjectListWindow::OnGetDispInfo(WPARAM /*wParam*/, NMHDR* pNMHDR, BOOL& /*bHandled*/)
 {
    // UpdateData() not called yet?
-   if (m_pItemNameList->GetSize() < 0x400)
+   if (m_itemNameList->GetSize() < 0x400)
       return 1;
 
    NMLVDISPINFO* pDispInfo = (NMLVDISPINFO*)pNMHDR;
 
-   CDebugClientInterface& debugClient = m_pMainFrame->GetDebugClientInterface();
+   DebugClient& debugClient = m_mainFrame->GetDebugClientInterface();
    debugClient.Lock(true);
 
-   unsigned int nItem = static_cast<unsigned int>(pDispInfo->item.iItem);
-   unsigned int nColumn = static_cast<unsigned int>(pDispInfo->item.iSubItem);
-   unsigned int nItemId = m_objectList.GetItem(nItem, 1);
+   unsigned int item = static_cast<unsigned int>(pDispInfo->item.iItem);
+   unsigned int columnIndex = static_cast<unsigned int>(pDispInfo->item.iSubItem);
+   unsigned int itemId = m_objectList.GetItem(item, 1);
 
    if (pDispInfo->item.mask & LVIF_TEXT)
    {
-      CString cszText;
+      CString text;
 
-      switch (nColumn)
+      switch (columnIndex)
       {
       case 0: // pos
-         cszText.Format(_T("%04x"), nItem);
+         text.Format(_T("%04x"), item);
          break;
       case 1: // item_id
-         if (nItemId != 0xffff)
-            cszText.Format(_T("0x%04x"), nItemId);
+         if (itemId != 0xffff)
+            text.Format(_T("0x%04x"), itemId);
          else
-            cszText = _T("none");
+            text = _T("none");
          break;
 
       case 2: // name
-         if (m_pItemNameList != NULL && m_pItemNameList->GetSize() >= 0x400)
-            cszText = (*m_pItemNameList)[nItem];
+         if (m_itemNameList != NULL && m_itemNameList->GetSize() >= 0x400)
+            text = (*m_itemNameList)[item];
          else
-            cszText = _T("???");
+            text = _T("???");
          break;
 
       default:
-         if (nItemId != 0xffff)
+         if (itemId != 0xffff)
          {
-            CDebugClientObjectInterface objectInfo = debugClient.GetObjectInterface();
+            DebugClientObjectListInterface objectInfo = debugClient.GetObjectInterface();
 
-            unsigned int nValue = nColumn == 0 ? nItem : m_objectList.GetItem(nItem, nColumn);
-            if (objectInfo.ViewColumnAsHex(nColumn))
+            unsigned int value = columnIndex == 0 ? item : m_objectList.GetItem(item, columnIndex);
+            if (objectInfo.ViewColumnAsHex(columnIndex))
             {
-               CString cszTemp;
-               cszTemp.Format(_T("%%0%ux"), objectInfo.ColumnHexDigitCount(nColumn));
-               cszText.Format(cszTemp, nValue);
+               CString temp;
+               temp.Format(_T("%%0%ux"), objectInfo.ColumnHexDigitCount(columnIndex));
+               text.Format(temp, value);
             }
             else
-               cszText.Format(_T("%u"), nValue);
+               text.Format(_T("%u"), value);
          }
          break;
       }
 
-      _tcsncpy(pDispInfo->item.pszText, (LPCTSTR)cszText, pDispInfo->item.cchTextMax - 1);
+      _tcsncpy(pDispInfo->item.pszText, (LPCTSTR)text, pDispInfo->item.cchTextMax - 1);
       pDispInfo->item.pszText[pDispInfo->item.cchTextMax - 1] = 0;
    }
 
    if (pDispInfo->item.mask & LVIF_IMAGE)
    {
       // item_id is image number
-      pDispInfo->item.iImage = nItemId;
+      pDispInfo->item.iImage = itemId;
    }
 
    debugClient.Lock(false);
@@ -257,24 +257,24 @@ LRESULT CObjectListWindow::OnGetDispInfo(WPARAM /*wParam*/, NMHDR* pNMHDR, BOOL&
    return 0;
 }
 
-LRESULT CObjectListWindow::OnBeginLabelEdit(WPARAM /*wParam*/, NMHDR* pNMHDR, BOOL& bHandled)
+LRESULT ObjectListWindow::OnBeginLabelEdit(WPARAM /*wParam*/, NMHDR* pNMHDR, BOOL& bHandled)
 {
    NMLVDISPINFO* pLvDispInfo = reinterpret_cast<NMLVDISPINFO*>(pNMHDR);
 
    int nItemPos = pLvDispInfo->item.iItem;
-   unsigned int nItemId = m_objectList.GetItem(nItemPos, 1);
+   unsigned int itemId = m_objectList.GetItem(nItemPos, 1);
 
    if (pLvDispInfo->item.iSubItem == 0)
    {
       m_listCtrl.SelectItem(nItemPos);
 
-      CDebugWindowNotification notify;
-      notify.m_enCode = ncSelectedObject;
-      notify.m_nParam1 = nItemPos;
-      m_pMainFrame->SendNotification(notify, true, this);
+      DebugWindowNotification notify;
+      notify.m_notifyCode = notifyCodeSelectedObject;
+      notify.m_param1 = nItemPos;
+      m_mainFrame->SendNotification(notify, true, this);
    }
 
-   if (nItemId == 0xFFFF)
+   if (itemId == 0xFFFF)
       return 1;
 
    bHandled = FALSE;

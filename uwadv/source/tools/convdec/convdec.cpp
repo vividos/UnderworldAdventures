@@ -19,12 +19,12 @@
 /// \file convdec.cpp
 /// \brief Underworld conversation code decompiler
 //
-#include "conv.hpp"
+#include "Conversation.hpp"
 #include "convdec.hpp"
-#include "convgraph.hpp"
-#include "convloader.hpp"
-#include "gamestrings.hpp"
-#include "gamestringsimporter.hpp"
+#include "CodeGraph.hpp"
+#include "ConvLoader.hpp"
+#include "GameStrings.hpp"
+#include "GameStringsImporter.hpp"
 
 using namespace Conv;
 

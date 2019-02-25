@@ -21,13 +21,13 @@
 //
 #include "common.hpp"
 #include "mdldump.hpp"
-#include "models.hpp"
-#include "filesystem.hpp"
+#include "Model3D.hpp"
+#include "FileSystem.hpp"
 
-extern bool ua_model_decode_builtins(const char* filename,
-   std::vector<ua_model3d_ptr>& allmodels, bool dump = false);
+extern bool DecodeBuiltInModels(const char* filename,
+   std::vector<Model3DPtr>& allModels, bool dump = false);
 
-void ua_dump_builtin_models::start(std::string& basepath, bool isUw2)
+void DumpBuiltinModels::start(std::string& basepath, bool isUw2)
 {
    std::string exe_name(basepath);
    exe_name.append(isUw2 ? "uw2.exe" : "uw.exe");
@@ -40,6 +40,6 @@ void ua_dump_builtin_models::start(std::string& basepath, bool isUw2)
    }
 
    // decode and dump
-   std::vector<ua_model3d_ptr> allmodels;
-   ua_model_decode_builtins(exe_name.c_str(), allmodels, true);
+   std::vector<Model3DPtr> allModels;
+   DecodeBuiltInModels(exe_name.c_str(), allModels, true);
 }

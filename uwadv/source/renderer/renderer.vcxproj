@@ -69,24 +69,24 @@
     <Lib />
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="critter.cpp" />
-    <ClCompile Include="models.cpp" />
-    <ClCompile Include="model_builtin.cpp" />
-    <ClCompile Include="quadtree.cpp" />
-    <ClCompile Include="renderer.cpp" />
-    <ClCompile Include="renderer_impl.cpp" />
-    <ClCompile Include="tessellator.cpp" />
-    <ClCompile Include="texture.cpp" />
+    <ClCompile Include="Critter.cpp" />
+    <ClCompile Include="Model3D.cpp" />
+    <ClCompile Include="Model3DBuiltIn.cpp" />
+    <ClCompile Include="Quadtree.cpp" />
+    <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="RendererImpl.cpp" />
+    <ClCompile Include="PolygonTessellator.cpp" />
+    <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="critter.hpp" />
-    <ClInclude Include="models.hpp" />
-    <ClInclude Include="model_builtin.hpp" />
-    <ClInclude Include="quadtree.hpp" />
-    <ClInclude Include="renderer.hpp" />
-    <ClInclude Include="renderer_impl.hpp" />
-    <ClInclude Include="tessellator.hpp" />
-    <ClInclude Include="texture.hpp" />
+    <ClInclude Include="Critter.hpp" />
+    <ClInclude Include="Model3D.hpp" />
+    <ClInclude Include="Model3DBuiltIn.hpp" />
+    <ClInclude Include="Quadtree.hpp" />
+    <ClInclude Include="Renderer.hpp" />
+    <ClInclude Include="RendererImpl.hpp" />
+    <ClInclude Include="PolygonTessellator.hpp" />
+    <ClInclude Include="Texture.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\base\base.vcxproj">

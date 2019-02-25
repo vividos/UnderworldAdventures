@@ -20,8 +20,8 @@
 /// \brief unit test implementation
 //
 #include "unittest.hpp"
-#include "settings.hpp"
-#include "filesystem.hpp"
+#include "Settings.hpp"
+#include "FileSystem.hpp"
 
 /// settings common for all unit tests
 static Base::Settings g_settings;

@@ -67,35 +67,35 @@
     <Lib />
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="acknowledgements.cpp" />
-    <ClCompile Include="conversation.cpp" />
-    <ClCompile Include="create_character.cpp" />
-    <ClCompile Include="cutscene_view.cpp" />
-    <ClCompile Include="ingame_ctrls.cpp" />
-    <ClCompile Include="ingame_orig.cpp" />
-    <ClCompile Include="map_view.cpp">
+    <ClCompile Include="AcknowledgementsScreen.cpp" />
+    <ClCompile Include="ConversationScreen.cpp" />
+    <ClCompile Include="CreateCharacterScreen.cpp" />
+    <ClCompile Include="CutsceneViewScreen.cpp" />
+    <ClCompile Include="IngameControls.cpp" />
+    <ClCompile Include="OriginalIngameScreen.cpp" />
+    <ClCompile Include="MapViewScreen.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="panel.cpp" />
-    <ClCompile Include="save_game.cpp" />
-    <ClCompile Include="start_menu.cpp" />
-    <ClCompile Include="start_splash.cpp" />
-    <ClCompile Include="uwadv_menu.cpp" />
+    <ClCompile Include="Panel.cpp" />
+    <ClCompile Include="SaveGameScreen.cpp" />
+    <ClCompile Include="StartMenuScreen.cpp" />
+    <ClCompile Include="StartSplashScreen.cpp" />
+    <ClCompile Include="UwadvMenuScreen.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="acknowledgements.hpp" />
-    <ClInclude Include="conversation.hpp" />
-    <ClInclude Include="create_character.hpp" />
-    <ClInclude Include="cutscene_view.hpp" />
-    <ClInclude Include="ingame_ctrls.hpp" />
-    <ClInclude Include="ingame_orig.hpp" />
-    <ClInclude Include="map_view.hpp" />
-    <ClInclude Include="panel.hpp" />
-    <ClInclude Include="save_game.hpp" />
-    <ClInclude Include="start_menu.hpp" />
-    <ClInclude Include="start_splash.hpp" />
-    <ClInclude Include="uwadv_menu.hpp" />
+    <ClInclude Include="AcknowledgementsScreen.hpp" />
+    <ClInclude Include="ConversationScreen.hpp" />
+    <ClInclude Include="CreateCharacterScreen.hpp" />
+    <ClInclude Include="CutsceneViewScreen.hpp" />
+    <ClInclude Include="IngameControls.hpp" />
+    <ClInclude Include="OriginalIngameScreen.hpp" />
+    <ClInclude Include="MapViewScreen.hpp" />
+    <ClInclude Include="Panel.hpp" />
+    <ClInclude Include="SaveGameScreen.hpp" />
+    <ClInclude Include="StartMenuScreen.hpp" />
+    <ClInclude Include="StartSplashScreen.hpp" />
+    <ClInclude Include="UwadvMenuScreen.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\base\base.vcxproj">

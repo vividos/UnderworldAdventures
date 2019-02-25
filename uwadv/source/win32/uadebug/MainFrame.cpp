@@ -25,12 +25,12 @@
 #include "LuaSourceView.hpp"
 #include "GameStringsView.hpp"
 
-LPCTSTR g_pszLuaFileFilter = _T("Lua Source Files (*.lua)\0*.lua\0All Files (*.*)\0*.*\0\0");
+LPCTSTR g_luaFileFilter = _T("Lua Source Files (*.lua)\0*.lua\0All Files (*.*)\0*.*\0\0");
 
-bool CMainFrame::InitDebugClient(void* pDebugClient)
+bool MainFrame::InitDebugClient(void* debugClient)
 {
    // check debug interface version
-   if (!m_debugClient.Init(reinterpret_cast<ua_debug_server_interface*>(pDebugClient)))
+   if (!m_debugClient.Init(reinterpret_cast<IDebugServer*>(debugClient)))
    {
       ::MessageBox(NULL,
          _T("This version of Underworld Adventures Debugger isn't compatible with the version of ")
@@ -42,26 +42,26 @@ bool CMainFrame::InitDebugClient(void* pDebugClient)
       return false;
    }
 
-   m_bStopped = m_debugClient.IsGamePaused();
-   UIEnable(ID_UNDERWORLD_RUN, m_bStopped ? TRUE : FALSE, TRUE);
-   UIEnable(ID_UNDERWORLD_PAUSE, m_bStopped ? FALSE : TRUE, TRUE);
+   m_isStopped = m_debugClient.IsGamePaused();
+   UIEnable(ID_UNDERWORLD_RUN, m_isStopped ? TRUE : FALSE, TRUE);
+   UIEnable(ID_UNDERWORLD_PAUSE, m_isStopped ? FALSE : TRUE, TRUE);
 
    // load project
-   CString cszGameCfgPath = m_debugClient.GetGameCfgPath();
+   CString gameConfigPath = m_debugClient.GetGameConfigPath();
 
-   if (FALSE == cszGameCfgPath.IsEmpty())
+   if (FALSE == gameConfigPath.IsEmpty())
    {
-      cszGameCfgPath += _T("game.cfg");
-      m_projectManager.LoadProject(cszGameCfgPath);
+      gameConfigPath += _T("game.cfg");
+      m_projectManager.LoadProject(gameConfigPath);
    }
 
    // get object imagelist
-   m_ilObjects = m_debugClient.GetObjectImageList();
+   m_objectImageList = m_debugClient.GetObjectImageList();
 
    return true;
 }
 
-LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
    // set caption
    if (m_debugClient.IsStudioMode())
@@ -70,13 +70,13 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
    }
 
    // create command bar window
-   HWND hWndCmdBar = m_CmdBar.Create(m_hWnd, rcDefault, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE);
+   HWND hWndCmdBar = m_commandBar.Create(m_hWnd, rcDefault, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE);
    // attach menu
-   m_CmdBar.AttachMenu(GetMenu());
+   m_commandBar.AttachMenu(GetMenu());
    // load command bar images
-   m_CmdBar.LoadImages(IDR_MAINFRAME);
-   m_CmdBar.LoadImages(IDR_TOOLBAR_STANDARD);
-   m_CmdBar.LoadImages(IDR_TOOLBAR_DEBUG);
+   m_commandBar.LoadImages(IDR_MAINFRAME);
+   m_commandBar.LoadImages(IDR_TOOLBAR_STANDARD);
+   m_commandBar.LoadImages(IDR_TOOLBAR_DEBUG);
    // remove old menu
    SetMenu(NULL);
 
@@ -119,7 +119,7 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
    m_tabbedClient.SetTabOwnerParent(m_hWnd);
    ATLVERIFY(TRUE == m_tabbedClient.SubclassWindow(m_hWndMDIClient));
 
-   m_CmdBar.SetMDIClient(m_hWndMDIClient);
+   m_commandBar.SetMDIClient(m_hWndMDIClient);
 
    // register object for message filtering and idle updates
    CMessageLoop* pLoop = _Module.GetMessageLoop();
@@ -139,21 +139,21 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
    return 0;
 }
 
-BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
+BOOL MainFrame::PreTranslateMessage(MSG* msg)
 {
-   if (pMsg == NULL)
+   if (msg == NULL)
       return FALSE;
 
-   bool bCalledBaseClass = false;
+   bool calledBaseClass = false;
 
-   if (pMsg->hwnd == m_hWnd || pMsg->hwnd == m_hWndMDIClient)
+   if (msg->hwnd == m_hWnd || msg->hwnd == m_hWndMDIClient)
    {
       // Message is sent directly to main frame or
       // to the MDIClient window
-      if (baseClass::PreTranslateMessage(pMsg))
+      if (baseClass::PreTranslateMessage(msg))
          return TRUE;
 
-      bCalledBaseClass = true;
+      calledBaseClass = true;
    }
 
    HWND hWndFocus = ::GetFocus();
@@ -165,36 +165,36 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
       // or a descendant
       // NOTE: IsChild checks if the window is a direct child or a descendant
 
-      if (baseClass::PreTranslateMessage(pMsg))
+      if (baseClass::PreTranslateMessage(msg))
          return TRUE;
 
-      bCalledBaseClass = true;
+      calledBaseClass = true;
 
       if (hWndMDIActive != NULL)
       {
-         return (BOOL)::SendMessage(hWndMDIActive, WM_FORWARDMSG, 0, (LPARAM)pMsg);
+         return (BOOL)::SendMessage(hWndMDIActive, WM_FORWARDMSG, 0, (LPARAM)msg);
       }
    }
 
-   if (!bCalledBaseClass)
+   if (!calledBaseClass)
    {
       // If the base class hasn't already had a shot at doing
       // PreTranslateMessage (because the main frame or an
       // MDI child didn't have focus), call it now
-      if (baseClass::PreTranslateMessage(pMsg))
+      if (baseClass::PreTranslateMessage(msg))
          return TRUE;
 
       // Give active MDI child a chance.
       if (hWndMDIActive != NULL)
       {
-         return (BOOL)::SendMessage(hWndMDIActive, WM_FORWARDMSG, 0, (LPARAM)pMsg);
+         return (BOOL)::SendMessage(hWndMDIActive, WM_FORWARDMSG, 0, (LPARAM)msg);
       }
    }
 
    return FALSE;
 }
 
-BOOL CMainFrame::OnIdle()
+BOOL MainFrame::OnIdle()
 {
    UIUpdateToolBar();
 
@@ -203,18 +203,18 @@ BOOL CMainFrame::OnIdle()
    return FALSE;
 }
 
-void CMainFrame::ProcessServerMessages()
+void MainFrame::ProcessServerMessages()
 {
    // check for new messages
-   CDebugClientMessage msg;
-   while (m_debugClient.GetMessage(msg))
+   DebugClientMessage message;
+   while (m_debugClient.GetMessage(message))
    {
       ATLTRACE(_T("server message: type=%s\n"),
-         msg.m_nType == 0 ? _T("shutdown") :
-         msg.m_nType == 1 ? _T("attach") :
-         msg.m_nType == 2 ? _T("detach") : _T("unknown"));
+         message.m_messageType == 0 ? _T("shutdown") :
+         message.m_messageType == 1 ? _T("attach") :
+         message.m_messageType == 2 ? _T("detach") : _T("unknown"));
 
-      switch (msg.m_nType)
+      switch (message.m_messageType)
       {
       case 0: // shutdown request
          ATLTRACE(_T("server message: type=shutdown\n"));
@@ -223,48 +223,48 @@ void CMainFrame::ProcessServerMessages()
 
       case 1: // debugger attach
       {
-         ATLTRACE(_T("server message: type=code debugger attach, id=%u\n"), msg.m_nArg1);
-         unsigned int nCodeDebuggerID = msg.m_nArg1;
-         ATLASSERT(FALSE == m_debugClient.IsValidCodeDebuggerID(nCodeDebuggerID));
+         ATLTRACE(_T("server message: type=code debugger attach, id=%u\n"), message.m_messageArg1);
+         unsigned int codeDebuggerId = message.m_messageArg1;
+         ATLASSERT(FALSE == m_debugClient.IsValidCodeDebuggerId(codeDebuggerId));
 
-         m_debugClient.AddCodeDebugger(nCodeDebuggerID);
+         m_debugClient.AddCodeDebugger(codeDebuggerId);
 
          // prepare debug info
-         m_debugClient.GetCodeDebuggerInterface(nCodeDebuggerID).PrepareDebugInfo();
+         m_debugClient.GetCodeDebuggerInterface(codeDebuggerId).PrepareDebugInfo();
 
          // send notification about code debugger update
-         CDebugWindowNotification notify;
-         notify.m_enCode = ncCodeDebuggerUpdate;
-         notify.m_nParam1 = utAttach;
-         notify.m_nParam2 = msg.m_nArg1;
+         DebugWindowNotification notify;
+         notify.m_notifyCode = notifyCodeCodeDebuggerUpdate;
+         notify.m_param1 = codeDebuggerAttach;
+         notify.m_param2 = message.m_messageArg1;
          SendNotification(notify);
       }
       break;
 
       case 2: // debugger detach
       {
-         ATLTRACE(_T("server message: type=code debugger detach, id=%u\n"), msg.m_nArg1);
+         ATLTRACE(_T("server message: type=code debugger detach, id=%u\n"), message.m_messageArg1);
 
-         ATLASSERT(true == m_debugClient.IsValidCodeDebuggerID(msg.m_nArg1));
-         m_debugClient.RemoveCodeDebugger(msg.m_nArg1);
+         ATLASSERT(true == m_debugClient.IsValidCodeDebuggerId(message.m_messageArg1));
+         m_debugClient.RemoveCodeDebugger(message.m_messageArg1);
 
-         CDebugWindowNotification notify;
-         notify.m_enCode = ncCodeDebuggerUpdate;
-         notify.m_nParam1 = utDetach;
-         notify.m_nParam2 = msg.m_nArg1;
+         DebugWindowNotification notify;
+         notify.m_notifyCode = notifyCodeCodeDebuggerUpdate;
+         notify.m_param1 = codeDebuggerDetach;
+         notify.m_param2 = message.m_messageArg1;
          SendNotification(notify);
       }
       break;
 
       case 3: // code debugger update
       {
-         ATLTRACE(_T("server message: type=code debugger update, id=%u\n"), msg.m_nArg1);
+         ATLTRACE(_T("server message: type=code debugger update, id=%u\n"), message.m_messageArg1);
 
          // send notification about code debugger update
-         CDebugWindowNotification notify;
-         notify.m_enCode = ncCodeDebuggerUpdate;
-         notify.m_nParam1 = utUpdateState;
-         notify.m_nParam2 = msg.m_nArg1;
+         DebugWindowNotification notify;
+         notify.m_notifyCode = notifyCodeCodeDebuggerUpdate;
+         notify.m_param1 = codeDebuggerUpdateState;
+         notify.m_param2 = message.m_messageArg1;
          SendNotification(notify);
       }
       break;
@@ -276,29 +276,29 @@ void CMainFrame::ProcessServerMessages()
    }
 }
 
-LRESULT CMainFrame::OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT MainFrame::OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
    PostMessage(WM_CLOSE);
    return 0;
 }
 
-LRESULT CMainFrame::OnFileNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT MainFrame::OnFileNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-   CLuaSourceView* pChild = new CLuaSourceView;
-   pChild->CreateEx(m_hWndClient);
-   MDIMaximize(pChild->m_hWnd);
-   AddLuaChildView(pChild);
+   LuaSourceView* child = new LuaSourceView;
+   child->CreateEx(m_hWndClient);
+   MDIMaximize(child->m_hWnd);
+   AddLuaChildView(child);
 
-   pChild->NewFile();
+   child->NewFile();
 
    return 0;
 }
 
-LRESULT CMainFrame::OnFileOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT MainFrame::OnFileOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
    // ask for filename
    CFileDialog dlg(TRUE, _T(".lua"), NULL, OFN_FILEMUSTEXIST,
-      g_pszLuaFileFilter, m_hWnd);
+      g_luaFileFilter, m_hWnd);
 
    if (IDOK == dlg.DoModal())
       OpenLuaSourceFile(dlg.m_ofn.lpstrFile);
@@ -306,18 +306,18 @@ LRESULT CMainFrame::OnFileOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
    return 0;
 }
 
-LRESULT CMainFrame::OnFileSave(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT MainFrame::OnFileSave(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
    HWND hWnd = MDIGetActive();
 
    // search active Lua child frame
-   int nMax = m_apLuaChildWindows.GetSize();
-   for (int n = 0; n < nMax; n++)
+   int maxIndex = m_luaChildWindows.GetSize();
+   for (int index = 0; index < maxIndex; index++)
    {
-      if (hWnd == m_apLuaChildWindows[n]->m_hWnd)
+      if (hWnd == m_luaChildWindows[index]->m_hWnd)
       {
          // found window; save file
-         m_apLuaChildWindows[n]->SaveFile();
+         m_luaChildWindows[index]->SaveFile();
          break;
       }
    }
@@ -325,24 +325,24 @@ LRESULT CMainFrame::OnFileSave(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
    return 0;
 }
 
-LRESULT CMainFrame::OnFileSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT MainFrame::OnFileSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
    HWND hWnd = MDIGetActive();
 
    // search active Lua child frame
-   int nMax = m_apLuaChildWindows.GetSize();
-   for (int n = 0; n < nMax; n++)
+   int maxIndex = m_luaChildWindows.GetSize();
+   for (int index = 0; index < maxIndex; index++)
    {
-      if (hWnd == m_apLuaChildWindows[n]->m_hWnd)
+      if (hWnd == m_luaChildWindows[index]->m_hWnd)
       {
-         CString cszFilename = m_apLuaChildWindows[n]->GetFilename();
+         CString filename = m_luaChildWindows[index]->GetFilename();
 
          // found window; ask for filename
-         CFileDialog dlg(FALSE, _T(".lua"), cszFilename, OFN_OVERWRITEPROMPT,
-            g_pszLuaFileFilter, m_hWnd);
+         CFileDialog dlg(FALSE, _T(".lua"), filename, OFN_OVERWRITEPROMPT,
+            g_luaFileFilter, m_hWnd);
 
          if (IDOK == dlg.DoModal())
-            m_apLuaChildWindows[n]->SaveAs(dlg.m_ofn.lpstrFile);
+            m_luaChildWindows[index]->SaveAs(dlg.m_ofn.lpstrFile);
 
          break;
       }
@@ -351,148 +351,148 @@ LRESULT CMainFrame::OnFileSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
    return 0;
 }
 
-LRESULT CMainFrame::OnFileSaveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT MainFrame::OnFileSaveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
    // go through all Lua child frames and save file when necessary
-   int nMax = m_apLuaChildWindows.GetSize();
-   for (int n = 0; n < nMax; n++)
-      if (m_apLuaChildWindows[n]->IsModified())
-         m_apLuaChildWindows[n]->SaveFile();
+   int maxIndex = m_luaChildWindows.GetSize();
+   for (int index = 0; index < maxIndex; index++)
+      if (m_luaChildWindows[index]->IsModified())
+         m_luaChildWindows[index]->SaveFile();
 
    return 0;
 }
 
-LRESULT CMainFrame::OnGameNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT MainFrame::OnGameNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
    return 0;
 }
 
-LRESULT CMainFrame::OnGameOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT MainFrame::OnGameOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
    return 0;
 }
 
-LRESULT CMainFrame::OnButtonUnderworldRunPause(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT MainFrame::OnButtonUnderworldRunPause(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
    ATLASSERT(wID == ID_UNDERWORLD_RUN || wID == ID_UNDERWORLD_PAUSE);
 
-   m_bStopped = wID == ID_UNDERWORLD_RUN ? false : true;
-   UIEnable(ID_UNDERWORLD_RUN, m_bStopped ? TRUE : FALSE, TRUE);
-   UIEnable(ID_UNDERWORLD_PAUSE, m_bStopped ? FALSE : TRUE, TRUE);
+   m_isStopped = wID == ID_UNDERWORLD_RUN ? false : true;
+   UIEnable(ID_UNDERWORLD_RUN, m_isStopped ? TRUE : FALSE, TRUE);
+   UIEnable(ID_UNDERWORLD_PAUSE, m_isStopped ? FALSE : TRUE, TRUE);
 
    // tell underworld to stop
    m_debugClient.Lock(true);
-   m_debugClient.PauseGame(m_bStopped);
+   m_debugClient.PauseGame(m_isStopped);
    m_debugClient.Lock(false);
 
    // send notification to all windows
-   CDebugWindowNotification notify;
-   notify.m_enCode = m_bStopped ? ncSetReadonly : ncSetReadWrite;
+   DebugWindowNotification notify;
+   notify.m_notifyCode = m_isStopped ? notifyCodeSetReadonly : notifyCodeSetReadWrite;
    SendNotification(notify);
 
    // when stopping, also update data
-   if (m_bStopped)
+   if (m_isStopped)
    {
-      notify.m_enCode = ncUpdateData;
+      notify.m_notifyCode = notifyCodeUpdateData;
       SendNotification(notify);
    }
 
    return 0;
 }
 
-LRESULT CMainFrame::OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT MainFrame::OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-   static BOOL bVisible = TRUE;   // initially visible
-   bVisible = !bVisible;
+   static BOOL isVisible = TRUE;   // initially visible
+   isVisible = !isVisible;
 
    CReBarCtrl rebar = m_hWndToolBar;
-   int nBandIndex = rebar.IdToIndex(ATL_IDW_BAND_FIRST + 1);   // toolbar is 2nd added band
-   rebar.ShowBand(nBandIndex, bVisible);
+   int bandIndex = rebar.IdToIndex(ATL_IDW_BAND_FIRST + 1);   // toolbar is 2nd added band
+   rebar.ShowBand(bandIndex, isVisible);
 
-   UISetCheck(ID_VIEW_TOOLBAR, bVisible);
+   UISetCheck(ID_VIEW_TOOLBAR, isVisible);
    UpdateLayout();
    return 0;
 }
 
-LRESULT CMainFrame::OnViewToolBarStandard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT MainFrame::OnViewToolBarStandard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-   static BOOL bVisible = TRUE;   // initially visible
-   bVisible = !bVisible;
+   static BOOL isVisible = TRUE;   // initially visible
+   isVisible = !isVisible;
 
    CReBarCtrl rebar = m_hWndToolBar;
-   int nBandIndex = rebar.IdToIndex(ATL_IDW_BAND_FIRST + 2);   // toolbar is 3rd added band
-   rebar.ShowBand(nBandIndex, bVisible);
+   int bandIndex = rebar.IdToIndex(ATL_IDW_BAND_FIRST + 2);   // toolbar is 3rd added band
+   rebar.ShowBand(bandIndex, isVisible);
 
-   UISetCheck(ID_VIEW_TOOLBAR_STANDARD, bVisible);
+   UISetCheck(ID_VIEW_TOOLBAR_STANDARD, isVisible);
    UpdateLayout();
    return 0;
 }
 
-LRESULT CMainFrame::OnViewToolBarDebug(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT MainFrame::OnViewToolBarDebug(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-   static BOOL bVisible = TRUE;   // initially visible
-   bVisible = !bVisible;
+   static BOOL isVisible = TRUE;   // initially visible
+   isVisible = !isVisible;
 
    CReBarCtrl rebar = m_hWndToolBar;
-   int nBandIndex = rebar.IdToIndex(ATL_IDW_BAND_FIRST + 3);   // toolbar is 4th added band
-   rebar.ShowBand(nBandIndex, bVisible);
+   int bandIndex = rebar.IdToIndex(ATL_IDW_BAND_FIRST + 3);   // toolbar is 4th added band
+   rebar.ShowBand(bandIndex, isVisible);
 
-   UISetCheck(ID_VIEW_TOOLBAR_DEBUG, bVisible);
+   UISetCheck(ID_VIEW_TOOLBAR_DEBUG, isVisible);
    UpdateLayout();
    return 0;
 }
 
-LRESULT CMainFrame::OnViewStatusBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT MainFrame::OnViewStatusBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-   BOOL bVisible = !::IsWindowVisible(m_hWndStatusBar);
-   ::ShowWindow(m_hWndStatusBar, bVisible ? SW_SHOWNOACTIVATE : SW_HIDE);
-   UISetCheck(ID_VIEW_STATUS_BAR, bVisible);
+   BOOL isVisible = !::IsWindowVisible(m_hWndStatusBar);
+   ::ShowWindow(m_hWndStatusBar, isVisible ? SW_SHOWNOACTIVATE : SW_HIDE);
+   UISetCheck(ID_VIEW_STATUS_BAR, isVisible);
    UpdateLayout();
    return 0;
 }
 
-LRESULT CMainFrame::OnViewPlayerInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT MainFrame::OnViewPlayerInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-   bool bVisible = ShowHideDockingWindow(m_playerInfoWindow);
-   UISetCheck(ID_VIEW_PLAYERINFO, bVisible);
+   bool isVisible = ShowHideDockingWindow(m_playerInfoWindow);
+   UISetCheck(ID_VIEW_PLAYERINFO, isVisible);
    return 0;
 }
 
-LRESULT CMainFrame::OnViewObjectList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT MainFrame::OnViewObjectList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-   bool bVisible = ShowHideDockingWindow(m_objectListWindow);
-   UISetCheck(ID_VIEW_OBJECTLIST, bVisible);
+   bool isVisible = ShowHideDockingWindow(m_objectListWindow);
+   UISetCheck(ID_VIEW_OBJECTLIST, isVisible);
    return 0;
 }
 
-LRESULT CMainFrame::OnViewHotspotList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT MainFrame::OnViewHotspotList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-   bool bVisible = ShowHideDockingWindow(m_hotspotListWindow);
-   UISetCheck(ID_VIEW_HOTSPOT, bVisible);
+   bool isVisible = ShowHideDockingWindow(m_hotspotListWindow);
+   UISetCheck(ID_VIEW_HOTSPOT, isVisible);
    return 0;
 }
 
-LRESULT CMainFrame::OnViewTileInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT MainFrame::OnViewTileInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-   bool bVisible = ShowHideDockingWindow(m_tileInfoWindow);
-   UISetCheck(ID_VIEW_TILEINFO, bVisible);
+   bool isVisible = ShowHideDockingWindow(m_tileInfoWindow);
+   UISetCheck(ID_VIEW_TILEINFO, isVisible);
    return 0;
 }
 
-LRESULT CMainFrame::OnViewProjectInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT MainFrame::OnViewProjectInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-   bool bVisible = ShowHideDockingWindow(m_projectInfoWindow);
-   UISetCheck(ID_VIEW_PROJECT, bVisible);
+   bool isVisible = ShowHideDockingWindow(m_projectInfoWindow);
+   UISetCheck(ID_VIEW_PROJECT, isVisible);
    return 0;
 }
 
-LRESULT CMainFrame::OnViewTilemap(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT MainFrame::OnViewTilemap(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-   BOOL bVisible = ::IsWindowVisible(m_tilemapChildFrame);
+   BOOL isVisible = ::IsWindowVisible(m_tilemapChildFrame);
 
-   if (!bVisible)
+   if (!isVisible)
    {
-      const CTileMapViewCtrl& tilemap = m_tilemapChildFrame.GetTilemapViewCtrl();
+      const TileMapViewCtrl& tilemap = m_tilemapChildFrame.GetTilemapViewCtrl();
 
       int cx = tilemap.GetTileSizeX() * 64 + GetSystemMetrics(SM_CXSIZEFRAME) * 2;
       int cy = tilemap.GetTileSizeY() * 64 + GetSystemMetrics(SM_CYSIZEFRAME) * 2 + GetSystemMetrics(SM_CYCAPTION);
@@ -502,13 +502,13 @@ LRESULT CMainFrame::OnViewTilemap(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
       AddDebugWindow(&m_tilemapChildFrame);
 
       // send notifications
-      CDebugWindowNotification notify;
-      notify.m_enCode = m_bStopped ? ncSetReadonly : ncSetReadWrite;
-      notify.m_bRelayToDescendants = true;
+      DebugWindowNotification notify;
+      notify.m_notifyCode = m_isStopped ? notifyCodeSetReadonly : notifyCodeSetReadWrite;
+      notify.m_relayToDescendants = true;
 
       SendNotification(notify, &m_tilemapChildFrame);
 
-      notify.m_enCode = ncUpdateData;
+      notify.m_notifyCode = notifyCodeUpdateData;
       SendNotification(notify, &m_tilemapChildFrame);
    }
    else
@@ -517,46 +517,46 @@ LRESULT CMainFrame::OnViewTilemap(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
       MDIDestroy(m_tilemapChildFrame.m_hWnd);
    }
 
-   UISetCheck(ID_VIEW_TILEMAP, !bVisible);
+   UISetCheck(ID_VIEW_TILEMAP, !isVisible);
    UpdateLayout();
    return 0;
 }
 
-LRESULT CMainFrame::OnViewGameStrings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT MainFrame::OnViewGameStrings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-   CGameStringsViewChildFrame* pChild = new CGameStringsViewChildFrame;
-   pChild->CreateEx(m_hWndClient);
+   GameStringsViewChildFrame* child = new GameStringsViewChildFrame;
+   child->CreateEx(m_hWndClient);
 
-   AddDebugWindow(pChild);
-   MDIMaximize(pChild->m_hWnd);
+   AddDebugWindow(child);
+   MDIMaximize(child->m_hWnd);
 
    // send read/write and update data notification
-   CDebugWindowNotification notify;
-   notify.m_enCode = m_bStopped ? ncSetReadonly : ncSetReadWrite;
-   notify.m_bRelayToDescendants = true;
+   DebugWindowNotification notify;
+   notify.m_notifyCode = m_isStopped ? notifyCodeSetReadonly : notifyCodeSetReadWrite;
+   notify.m_relayToDescendants = true;
 
-   SendNotification(notify, pChild);
+   SendNotification(notify, child);
 
-   notify.m_enCode = ncUpdateData;
-   SendNotification(notify, pChild);
+   notify.m_notifyCode = notifyCodeUpdateData;
+   SendNotification(notify, child);
 
    return 0;
 }
 
-LRESULT CMainFrame::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT MainFrame::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-   CAboutDlg dlg;
+   AboutDlg dlg;
    dlg.DoModal();
    return 0;
 }
 
-bool CMainFrame::ShowHideDockingWindow(CDockingWindowBase& dockingWindow)
+bool MainFrame::ShowHideDockingWindow(DockingWindowBase& dockingWindow)
 {
    // determine if docking window is visible
-   bool bVisible = dockingWindow.IsWindow() && dockingWindow.IsWindowVisible() &&
+   bool isVisible = dockingWindow.IsWindow() && dockingWindow.IsWindowVisible() &&
       (dockingWindow.IsDocking() || dockingWindow.IsFloating());
 
-   if (bVisible)
+   if (isVisible)
    {
       // when docking, undock window, else hide window
       if (dockingWindow.IsDocking())
@@ -575,66 +575,66 @@ bool CMainFrame::ShowHideDockingWindow(CDockingWindowBase& dockingWindow)
       {
          CRect rect(CPoint(0, 0), dockingWindow.GetFloatingSize());
 
-         DWORD dwStyle = WS_OVERLAPPEDWINDOW | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
-         dockingWindow.Create(m_hWnd, rect, dockingWindow.GetDockWindowCaption(), dwStyle);
+         DWORD style = WS_OVERLAPPEDWINDOW | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
+         dockingWindow.Create(m_hWnd, rect, dockingWindow.GetDockWindowCaption(), style);
       }
 
       DockDebugWindow(dockingWindow);
 
       // update data in control
-      CDebugWindowNotification notify;
-      notify.m_enCode = ncUpdateData;
-      notify.m_bRelayToDescendants = true;
+      DebugWindowNotification notify;
+      notify.m_notifyCode = notifyCodeUpdateData;
+      notify.m_relayToDescendants = true;
       SendNotification(notify, &dockingWindow);
 
       // also set window to readonly / writable
-      notify.m_enCode = m_bStopped ? ncSetReadonly : ncSetReadWrite;
+      notify.m_notifyCode = m_isStopped ? notifyCodeSetReadonly : notifyCodeSetReadWrite;
       SendNotification(notify, &dockingWindow);
    }
 
-   return !bVisible;
+   return !isVisible;
 }
 
-LRESULT CMainFrame::OnUndockWindow(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+LRESULT MainFrame::OnUndockWindow(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
-   T_enDockingWindowID id = static_cast<T_enDockingWindowID>(wParam);
-   CDockingWindowBase& dockingWindow = *reinterpret_cast<CDockingWindowBase*>(lParam);
+   DockingWindowId id = static_cast<DockingWindowId>(wParam);
+   DockingWindowBase& dockingWindow = *reinterpret_cast<DockingWindowBase*>(lParam);
 
-   CDockingWindowBase* pWindowBase = NULL;
-   UINT nViewId = 0;
+   DockingWindowBase* windowBase = NULL;
+   UINT viewId = 0;
 
    switch (id)
    {
    case idPlayerInfoWindow:
-      pWindowBase = &m_playerInfoWindow;
-      nViewId = ID_VIEW_PLAYERINFO;
+      windowBase = &m_playerInfoWindow;
+      viewId = ID_VIEW_PLAYERINFO;
       break;
 
    case idObjectListWindow:
-      pWindowBase = &m_objectListWindow;
-      nViewId = ID_VIEW_OBJECTLIST;
+      windowBase = &m_objectListWindow;
+      viewId = ID_VIEW_OBJECTLIST;
       break;
 
    case idHotspotListWindow:
-      pWindowBase = &m_hotspotListWindow;
-      nViewId = ID_VIEW_HOTSPOT;
+      windowBase = &m_hotspotListWindow;
+      viewId = ID_VIEW_HOTSPOT;
       break;
 
    case idTileInfoWindow:
-      pWindowBase = &m_tileInfoWindow;
-      nViewId = ID_VIEW_TILEINFO;
+      windowBase = &m_tileInfoWindow;
+      viewId = ID_VIEW_TILEINFO;
       break;
 
    case idProjectInfoWindow:
-      pWindowBase = &m_projectInfoWindow;
-      nViewId = ID_VIEW_PROJECT;
+      windowBase = &m_projectInfoWindow;
+      viewId = ID_VIEW_PROJECT;
       break;
 
    case idBreakpointWindow:
       // breakpoint windows are created from CProjectInfoWindow, so we don't
       // know exactly the window base pointer
-      pWindowBase = &dockingWindow;
-      nViewId = 0;
+      windowBase = &dockingWindow;
+      viewId = 0;
       break;
 
    default:
@@ -643,139 +643,139 @@ LRESULT CMainFrame::OnUndockWindow(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, 
    }
 
    // window ID must match
-   ATLASSERT(id == pWindowBase->GetWindowId());
+   ATLASSERT(id == windowBase->GetWindowId());
 
-   if (nViewId != 0)
+   if (viewId != 0)
    {
-      bool bFloating = pWindowBase->IsFloating();
+      bool isFloating = windowBase->IsFloating();
 
       // TODO check if window is closed when floating
-      if (!bFloating)
-         UISetCheck(nViewId, FALSE);
+      if (!isFloating)
+         UISetCheck(viewId, FALSE);
    }
 
    UpdateLayout();
    return 0;
 }
 
-CDebugClientInterface& CMainFrame::GetDebugClientInterface()
+DebugClient& MainFrame::GetDebugClientInterface()
 {
    return m_debugClient;
 }
 
-void CMainFrame::SendNotification(CDebugWindowNotification& notify, CDebugWindowBase* pDebugWindow)
+void MainFrame::SendNotification(DebugWindowNotification& notify, DebugWindowBase* debugWindow)
 {
-   pDebugWindow->ReceiveNotification(notify);
+   debugWindow->ReceiveNotification(notify);
 }
 
-void CMainFrame::SendNotification(CDebugWindowNotification& notify,
-   bool fExcludeSender, CDebugWindowBase* pSender)
+void MainFrame::SendNotification(DebugWindowNotification& notify,
+   bool excludeSender, DebugWindowBase* sender)
 {
-   int nMax = m_apDebugWindows.GetSize();
-   for (int n = 0; n < nMax; n++)
+   int maxIndex = m_debugWindowList.GetSize();
+   for (int index = 0; index < maxIndex; index++)
    {
-      if (fExcludeSender && pSender == m_apDebugWindows[n])
+      if (excludeSender && sender == m_debugWindowList[index])
          continue;
 
-      SendNotification(notify, m_apDebugWindows[n]);
+      SendNotification(notify, m_debugWindowList[index]);
    }
 }
 
-CImageList& CMainFrame::GetObjectImageList()
+CImageList& MainFrame::GetObjectImageList()
 {
-   return m_ilObjects;
+   return m_objectImageList;
 }
 
-void CMainFrame::DockDebugWindow(CDockingWindowBase& dockingWindow)
+void MainFrame::DockDebugWindow(DockingWindowBase& dockingWindow)
 {
    CSize dockSize = dockingWindow.GetDockingSize();
    dockwins::CDockingSide dockSide = dockingWindow.GetPreferredDockingSide();
 
    // TODO search proper bar to dock to
-   int nBar = 0;
+   int bar = 0;
 
    DockWindow(dockingWindow, dockSide,
-      nBar, float(0.0)/*fPctPos*/, dockSize.cx, dockSize.cy);
+      bar, float(0.0)/*fPctPos*/, dockSize.cx, dockSize.cy);
 }
 
-void CMainFrame::UndockWindow(T_enDockingWindowID windowID, CDockingWindowBase* pDockingWindow)
+void MainFrame::UndockWindow(DockingWindowId windowId, DockingWindowBase* dockingWindow)
 {
-   PostMessage(WM_UNDOCK_WINDOW, static_cast<WPARAM>(windowID), reinterpret_cast<LPARAM>(pDockingWindow));
+   PostMessage(WM_UNDOCK_WINDOW, static_cast<WPARAM>(windowId), reinterpret_cast<LPARAM>(dockingWindow));
 }
 
-void CMainFrame::AddDebugWindow(CDebugWindowBase* pDebugWindow)
+void MainFrame::AddDebugWindow(DebugWindowBase* debugWindow)
 {
-   ATLASSERT(pDebugWindow != NULL);
+   ATLASSERT(debugWindow != NULL);
 
-   pDebugWindow->InitDebugWindow(this);
-   m_apDebugWindows.Add(pDebugWindow);
+   debugWindow->InitDebugWindow(this);
+   m_debugWindowList.Add(debugWindow);
 }
 
-void CMainFrame::RemoveDebugWindow(CDebugWindowBase* pDebugWindow)
+void MainFrame::RemoveDebugWindow(DebugWindowBase* debugWindow)
 {
-   ATLASSERT(pDebugWindow != NULL);
+   ATLASSERT(debugWindow != NULL);
 
-   pDebugWindow->DoneDebugWindow();
+   debugWindow->DoneDebugWindow();
 
-   int nMax = m_apDebugWindows.GetSize();
-   for (int n = 0; n < nMax; n++)
-      if (pDebugWindow == m_apDebugWindows[n])
+   int maxIndex = m_debugWindowList.GetSize();
+   for (int index = 0; index < maxIndex; index++)
+      if (debugWindow == m_debugWindowList[index])
       {
-         m_apDebugWindows.RemoveAt(n);
-         n--;
-         nMax--;
+         m_debugWindowList.RemoveAt(index);
+         index--;
+         maxIndex--;
       }
 }
 
-void CMainFrame::OpenLuaSourceFile(LPCTSTR pszFilename)
+void MainFrame::OpenLuaSourceFile(LPCTSTR filename)
 {
-   ATLASSERT(pszFilename != NULL);
+   ATLASSERT(filename != NULL);
 
    // search if file is already open
-   CString cszOpenFilename(pszFilename);
-   cszOpenFilename.MakeLower();
+   CString openFilename(filename);
+   openFilename.MakeLower();
 
-   int nMax = m_apLuaChildWindows.GetSize();
-   for (int n = 0; n < nMax; n++)
+   int maxIndex = m_luaChildWindows.GetSize();
+   for (int index = 0; index < maxIndex; index++)
    {
-      CString cszWindowFilename = m_apLuaChildWindows[n]->GetFilename();
-      cszWindowFilename.MakeLower();
+      CString windowFilename = m_luaChildWindows[index]->GetFilename();
+      windowFilename.MakeLower();
 
-      if (cszWindowFilename == cszOpenFilename)
+      if (windowFilename == openFilename)
       {
-         MDIActivate(m_apLuaChildWindows[n]->m_hWnd);
+         MDIActivate(m_luaChildWindows[index]->m_hWnd);
          return;
       }
    }
 
-   CLuaSourceView* pChild = new CLuaSourceView;
-   pChild->CreateEx(m_hWndClient);
-   MDIMaximize(pChild->m_hWnd);
-   AddLuaChildView(pChild);
+   LuaSourceView* child = new LuaSourceView;
+   child->CreateEx(m_hWndClient);
+   MDIMaximize(child->m_hWnd);
+   AddLuaChildView(child);
 
-   pChild->OpenFile(pszFilename);
+   child->OpenFile(filename);
 }
 
-void CMainFrame::AddLuaChildView(CLuaSourceView* pChildView)
+void MainFrame::AddLuaChildView(LuaSourceView* childView)
 {
-   ATLASSERT(pChildView != NULL);
+   ATLASSERT(childView != NULL);
 
-   pChildView->InitDebugWindow(this);
-   m_apLuaChildWindows.Add(pChildView);
+   childView->InitDebugWindow(this);
+   m_luaChildWindows.Add(childView);
 }
 
-void CMainFrame::RemoveLuaChildView(CLuaSourceView* pChildView)
+void MainFrame::RemoveLuaChildView(LuaSourceView* childView)
 {
-   ATLASSERT(pChildView != NULL);
+   ATLASSERT(childView != NULL);
 
-   pChildView->DoneDebugWindow();
+   childView->DoneDebugWindow();
 
-   int nMax = m_apLuaChildWindows.GetSize();
-   for (int n = 0; n < nMax; n++)
-      if (pChildView == m_apLuaChildWindows[n])
+   int maxIndex = m_luaChildWindows.GetSize();
+   for (int index = 0; index < maxIndex; index++)
+      if (childView == m_luaChildWindows[index])
       {
-         m_apLuaChildWindows.RemoveAt(n);
-         n--;
-         nMax--;
+         m_luaChildWindows.RemoveAt(index);
+         index--;
+         maxIndex--;
       }
 }

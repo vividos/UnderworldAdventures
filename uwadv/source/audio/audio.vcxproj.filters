@@ -17,22 +17,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="audio.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="midiplayer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="playlist.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="resamp.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="vocfile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="vocresample.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="midi\CoreAudioMidiDriver.cpp">
@@ -56,21 +41,24 @@
     <ClCompile Include="midi\XMidiSequence.cpp">
       <Filter>Midi Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Audio.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MidiPlayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Playlist.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VoiceFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VoiceResample.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="audio.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="midiplayer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="playlist.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="resamp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="vocfile.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="midi\common_types.h">
@@ -116,6 +104,18 @@
       <Filter>Midi Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IODataSource.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MidiPlayer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Playlist.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VoiceFile.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

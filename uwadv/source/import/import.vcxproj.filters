@@ -11,87 +11,87 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="import.cpp">
+    <ClCompile Include="ConvLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="maploader.cpp">
+    <ClCompile Include="CrittersLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="playerimporter.cpp">
+    <ClCompile Include="CutsceneLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="levellimporter.cpp">
+    <ClCompile Include="FontLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="objectlistloader.cpp">
+    <ClCompile Include="GameStringsImporter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="propertiesloader.cpp">
+    <ClCompile Include="ImageLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gamestringsimporter.cpp">
+    <ClCompile Include="Import.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="convloader.cpp">
+    <ClCompile Include="LevellImporter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="uwloader.cpp">
+    <ClCompile Include="MapLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="imageloader.cpp">
+    <ClCompile Include="ModelDecoder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="texloader.cpp">
+    <ClCompile Include="ObjectListLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="fontloader.cpp">
+    <ClCompile Include="PlayerImporter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="critloader.cpp">
+    <ClCompile Include="PropertiesLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cutsloader.cpp">
+    <ClCompile Include="TextureLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="tgaimport.cpp">
+    <ClCompile Include="UnderworldLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="modeldecode.cpp">
+    <ClCompile Include="TgaImport.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="import.hpp">
+    <ClInclude Include="Bits.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="levelimporter.hpp">
+    <ClInclude Include="ConvLoader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="playerimporter.hpp">
+    <ClInclude Include="CrittersLoader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gamestringsimporter.hpp">
+    <ClInclude Include="CutsceneLoader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="convloader.hpp">
+    <ClInclude Include="FontLoader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="bits.hpp">
+    <ClInclude Include="GameStringsImporter.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="imageloader.hpp">
+    <ClInclude Include="ImageLoader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="textureloader.hpp">
+    <ClInclude Include="Import.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="fontloader.hpp">
+    <ClInclude Include="LevelImporter.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="cutsloader.hpp">
+    <ClInclude Include="PlayerImporter.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="crittersloader.hpp">
+    <ClInclude Include="TextureLoader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

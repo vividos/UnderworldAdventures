@@ -11,54 +11,54 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="critter.cpp">
+    <ClCompile Include="Critter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="model_builtin.cpp">
+    <ClCompile Include="Model3D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="models.cpp">
+    <ClCompile Include="Model3DBuiltIn.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="quadtree.cpp">
+    <ClCompile Include="Quadtree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="renderer.cpp">
+    <ClCompile Include="Renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="renderer_impl.cpp">
+    <ClCompile Include="RendererImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="tessellator.cpp">
+    <ClCompile Include="Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="texture.cpp">
+    <ClCompile Include="PolygonTessellator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="critter.hpp">
+    <ClInclude Include="Critter.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="model_builtin.hpp">
+    <ClInclude Include="Model3D.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="models.hpp">
+    <ClInclude Include="Quadtree.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="quadtree.hpp">
+    <ClInclude Include="Model3DBuiltIn.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="renderer.hpp">
+    <ClInclude Include="Renderer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="renderer_impl.hpp">
+    <ClInclude Include="RendererImpl.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="tessellator.hpp">
+    <ClInclude Include="Texture.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="texture.hpp">
+    <ClInclude Include="PolygonTessellator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

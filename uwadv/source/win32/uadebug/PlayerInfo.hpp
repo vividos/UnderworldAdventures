@@ -24,17 +24,17 @@
 #include "PropertyListCtrl.hpp"
 
 /// player info docking window
-class CPlayerInfoWindow :
-   public CDockingWindowBase,
+class PlayerInfoWindow :
+   public DockingWindowBase,
    //public IEditListViewCallback,
-   public nsPropertyList::IPropertyStorage
+   public PropertyList::IPropertyStorage
 {
-   typedef CPlayerInfoWindow thisClass;
-   typedef CDockingWindowBase baseClass;
+   typedef PlayerInfoWindow thisClass;
+   typedef DockingWindowBase baseClass;
 
 public:
    /// ctor
-   CPlayerInfoWindow() :baseClass(idPlayerInfoWindow) {}
+   PlayerInfoWindow() :baseClass(idPlayerInfoWindow) {}
 
    DECLARE_DOCKING_WINDOW(_T("Player Info"), CSize(200, 100)/*docked*/, CSize(200, 600)/*floating*/, dockwins::CDockingSide::sRight)
 
@@ -52,28 +52,28 @@ protected:
    LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
    LRESULT OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
-   // virtual methods from CDockingWindowBase
-   void ReceiveNotification(CDebugWindowNotification& notify) override;
+   // virtual methods from DockingWindowBase
+   void ReceiveNotification(DebugWindowNotification& notify) override;
 
    /// updates player info data
    void UpdateData();
 
    // virtual methods from IEditListViewCallback
-   //virtual void OnUpdatedValue(unsigned int nItem, unsigned int nSubItem, LPCTSTR pszValue) override;
+   //virtual void OnUpdatedValue(unsigned int item, unsigned int subItem, LPCTSTR value) override;
 
-   // virtual methods from nsPropertyList::IPropertyStorage
-   virtual void GetProperty(unsigned int nPropertyItemId, CString& cszProperty) override;
-   virtual void SetProperty(unsigned int nPropertyItemId, const CString& cszProperty) override;
-   virtual bool VerifyProperty(unsigned int nPropertyItemId, const CString& cszProperty) override;
+   // virtual methods from PropertyList::IPropertyStorage
+   virtual void GetProperty(unsigned int propertyItemId, CString& propertyValue) override;
+   virtual void SetProperty(unsigned int propertyItemId, const CString& propertyValue) override;
+   virtual bool VerifyProperty(unsigned int propertyItemId, const CString& propertyValue) override;
 
 protected:
    /// player info list
-   //CEditListViewCtrl m_listCtrl;
-   CPropertyListCtrl m_listCtrl;
+   //EditListViewCtrl m_listCtrl;
+   PropertyListCtrl m_listCtrl;
 
-   double m_adValues[4];
-   unsigned int m_anValues[42];
+   double m_doubleValues[4];
+   unsigned int m_intValues[42];
 
    /// indicates if control is read-only
-   bool m_bReadonly;
+   bool m_isReadOnly;
 };

@@ -23,167 +23,167 @@
 #include "PlayerInfo.hpp"
 #include "DebugClient.hpp"
 
-enum T_enPropertyGroup
+enum PropertyGroup
 {
-   enGroupPosition = 0,
-   enGroupAttributes,
-   enGroupSkills
+   groupPosition = 0,
+   groupAttributes,
+   groupSkills
 };
 
 BEGIN_PROPERTY_GROUP_LIST(g_aPropertyGroups)
-PROPERTY_GROUP(enGroupPosition, PROPERTY_STRING(_T("Position")))
-PROPERTY_GROUP(enGroupAttributes, PROPERTY_STRING(_T("Attributes")))
-PROPERTY_GROUP(enGroupSkills, PROPERTY_STRING(_T("Skills")))
+PROPERTY_GROUP(groupPosition, PROPERTY_STRING(_T("Position")))
+PROPERTY_GROUP(groupAttributes, PROPERTY_STRING(_T("Attributes")))
+PROPERTY_GROUP(groupSkills, PROPERTY_STRING(_T("Skills")))
 END_PROPERTY_GROUP_LIST()
 
-enum T_enPropertyItem
+enum PropertyItem
 {
-   enPropPosX = 0x0000,
-   enPropPosY,
-   enPropPosZ,
-   enPropPosAngle,
+   propertyPosX = 0x0000,
+   propertyPosY,
+   propertyPosZ,
+   propertyPosAngle,
 
-   enPropAttrGender,
-   enPropAttrHandedness,
-   enPropAttrAppearance,
-   enPropAttrProfession,
-   enPropAttrMaplevel,
-   enPropAttrStrength,
-   enPropAttrDexterity,
-   enPropAttrIntelligence,
-   enPropAttrVitality,
-   enPropAttrMaxVitality,
-   enPropAttrMana,
-   enPropAttrMaxMana,
-   enPropAttrWeariness,
-   enPropAttrHungriness,
-   enPropAttrPoisoned,
-   enPropAttrMentalstate,
-   enPropAttrNightvision,
-   enPropAttrTalks,
-   enPropAttrKills,
-   enPropAttrExpLevel,
-   enPropAttrExpPoints,
-   enPropAttrDifficulty,
+   propertyAttrGender,
+   propertyAttrHandedness,
+   propertyAttrAppearance,
+   propertyAttrProfession,
+   propertyAttrMaplevel,
+   propertyAttrStrength,
+   propertyAttrDexterity,
+   propertyAttrIntelligence,
+   propertyAttrVitality,
+   propertyAttrMaxVitality,
+   propertyAttrMana,
+   propertyAttrMaxMana,
+   propertyAttrWeariness,
+   propertyAttrHungriness,
+   propertyAttrPoisoned,
+   propertyAttrMentalstate,
+   propertyAttrNightvision,
+   propertyAttrTalks,
+   propertyAttrKills,
+   propertyAttrExpLevel,
+   propertyAttrExpPoints,
+   propertyAttrDifficulty,
 
-   enPropSkillAttack,
-   enPropSkillDefense,
-   enPropSkillUnarmed,
-   enPropSkillSword,
-   enPropSkillAxe,
-   enPropSkillMace,
-   enPropSkillMissile,
-   enPropSkillMana,
-   enPropSkillLore,
-   enPropSkillCasting,
-   enPropSkillTraps,
-   enPropSkillSearch,
-   enPropSkillTrack,
-   enPropSkillSneak,
-   enPropSkillRepair,
-   enPropSkillCharm,
-   enPropSkillPicklock,
-   enPropSkillAcrobat,
-   enPropSkillAppraise,
-   enPropSkillSwimming
+   propertySkillAttack,
+   propertySkillDefense,
+   propertySkillUnarmed,
+   propertySkillSword,
+   propertySkillAxe,
+   propertySkillMace,
+   propertySkillMissile,
+   propertySkillMana,
+   propertySkillLore,
+   propertySkillCasting,
+   propertySkillTraps,
+   propertySkillSearch,
+   propertySkillTrack,
+   propertySkillSneak,
+   propertySkillRepair,
+   propertySkillCharm,
+   propertySkillPicklock,
+   propertySkillAcrobat,
+   propertySkillAppraise,
+   propertySkillSwimming
 };
 
 
 BEGIN_PROPERTY_ITEM_LIST(g_aPropertyItems)
-PROPERTY_ITEM(enPropPosX, enGroupPosition, enPropertyTypeText, PROPERTY_STRING(_T("xpos")), PROPERTY_STRING(_T("X tilemap position.")))
-PROPERTY_ITEM(enPropPosY, enGroupPosition, enPropertyTypeText, PROPERTY_STRING(_T("ypos")), PROPERTY_STRING(_T("Z tilemap position.")))
-PROPERTY_ITEM(enPropPosZ, enGroupPosition, enPropertyTypeText, PROPERTY_STRING(_T("zpos")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropPosAngle, enGroupPosition, enPropertyTypeText, PROPERTY_STRING(_T("Angle")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertyPosX, groupPosition, propertyTypeText, PROPERTY_STRING(_T("xpos")), PROPERTY_STRING(_T("X tilemap position.")))
+PROPERTY_ITEM(propertyPosY, groupPosition, propertyTypeText, PROPERTY_STRING(_T("ypos")), PROPERTY_STRING(_T("Z tilemap position.")))
+PROPERTY_ITEM(propertyPosZ, groupPosition, propertyTypeText, PROPERTY_STRING(_T("zpos")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertyPosAngle, groupPosition, propertyTypeText, PROPERTY_STRING(_T("Angle")), PROPERTY_STRING(_T("TODO")))
 
-PROPERTY_ITEM(enPropAttrGender, enGroupAttributes, enPropertyTypeText, PROPERTY_STRING(_T("Gender")), PROPERTY_STRING(_T("Gender; 0 means male, 1 means female.")))
-PROPERTY_ITEM(enPropAttrHandedness, enGroupAttributes, enPropertyTypeText, PROPERTY_STRING(_T("Handedness")), PROPERTY_STRING(_T("Handedness; 0 means left-handedness; 1 means right-handedness.")))
-PROPERTY_ITEM(enPropAttrAppearance, enGroupAttributes, enPropertyTypeText, PROPERTY_STRING(_T("Appearance")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropAttrProfession, enGroupAttributes, enPropertyTypeText, PROPERTY_STRING(_T("Profession")), PROPERTY_STRING(_T("Map level; 0-based.")))
-PROPERTY_ITEM(enPropAttrMaplevel, enGroupAttributes, enPropertyTypeText, PROPERTY_STRING(_T("Map Level")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropAttrStrength, enGroupAttributes, enPropertyTypeText, PROPERTY_STRING(_T("Strength")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropAttrDexterity, enGroupAttributes, enPropertyTypeText, PROPERTY_STRING(_T("Dexterity")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropAttrIntelligence, enGroupAttributes, enPropertyTypeText, PROPERTY_STRING(_T("Intelligence")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropAttrVitality, enGroupAttributes, enPropertyTypeText, PROPERTY_STRING(_T("Vitality")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropAttrMaxVitality, enGroupAttributes, enPropertyTypeText, PROPERTY_STRING(_T("Max. Vitality")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropAttrMana, enGroupAttributes, enPropertyTypeText, PROPERTY_STRING(_T("Mana")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropAttrMaxMana, enGroupAttributes, enPropertyTypeText, PROPERTY_STRING(_T("Max. Mana")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropAttrWeariness, enGroupAttributes, enPropertyTypeText, PROPERTY_STRING(_T("Weariness")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropAttrHungriness, enGroupAttributes, enPropertyTypeText, PROPERTY_STRING(_T("Hungriness")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropAttrPoisoned, enGroupAttributes, enPropertyTypeText, PROPERTY_STRING(_T("Poisoned")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropAttrMentalstate, enGroupAttributes, enPropertyTypeText, PROPERTY_STRING(_T("Mental State")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropAttrNightvision, enGroupAttributes, enPropertyTypeText, PROPERTY_STRING(_T("Night Vision")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropAttrTalks, enGroupAttributes, enPropertyTypeText, PROPERTY_STRING(_T("No. Talks")), PROPERTY_STRING(_T("Number of conversations.")))
-PROPERTY_ITEM(enPropAttrKills, enGroupAttributes, enPropertyTypeText, PROPERTY_STRING(_T("No. Kills")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropAttrExpLevel, enGroupAttributes, enPropertyTypeText, PROPERTY_STRING(_T("Exp. Level")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropAttrExpPoints, enGroupAttributes, enPropertyTypeText, PROPERTY_STRING(_T("Experience")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropAttrDifficulty, enGroupAttributes, enPropertyTypeText, PROPERTY_STRING(_T("Difficulty")), PROPERTY_STRING(_T("Difficulty; 0 means easy, 1 means normal.")))
+PROPERTY_ITEM(propertyAttrGender, groupAttributes, propertyTypeText, PROPERTY_STRING(_T("Gender")), PROPERTY_STRING(_T("Gender; 0 means male, 1 means female.")))
+PROPERTY_ITEM(propertyAttrHandedness, groupAttributes, propertyTypeText, PROPERTY_STRING(_T("Handedness")), PROPERTY_STRING(_T("Handedness; 0 means left-handedness; 1 means right-handedness.")))
+PROPERTY_ITEM(propertyAttrAppearance, groupAttributes, propertyTypeText, PROPERTY_STRING(_T("Appearance")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertyAttrProfession, groupAttributes, propertyTypeText, PROPERTY_STRING(_T("Profession")), PROPERTY_STRING(_T("Map level; 0-based.")))
+PROPERTY_ITEM(propertyAttrMaplevel, groupAttributes, propertyTypeText, PROPERTY_STRING(_T("Map Level")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertyAttrStrength, groupAttributes, propertyTypeText, PROPERTY_STRING(_T("Strength")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertyAttrDexterity, groupAttributes, propertyTypeText, PROPERTY_STRING(_T("Dexterity")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertyAttrIntelligence, groupAttributes, propertyTypeText, PROPERTY_STRING(_T("Intelligence")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertyAttrVitality, groupAttributes, propertyTypeText, PROPERTY_STRING(_T("Vitality")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertyAttrMaxVitality, groupAttributes, propertyTypeText, PROPERTY_STRING(_T("Max. Vitality")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertyAttrMana, groupAttributes, propertyTypeText, PROPERTY_STRING(_T("Mana")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertyAttrMaxMana, groupAttributes, propertyTypeText, PROPERTY_STRING(_T("Max. Mana")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertyAttrWeariness, groupAttributes, propertyTypeText, PROPERTY_STRING(_T("Weariness")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertyAttrHungriness, groupAttributes, propertyTypeText, PROPERTY_STRING(_T("Hungriness")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertyAttrPoisoned, groupAttributes, propertyTypeText, PROPERTY_STRING(_T("Poisoned")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertyAttrMentalstate, groupAttributes, propertyTypeText, PROPERTY_STRING(_T("Mental State")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertyAttrNightvision, groupAttributes, propertyTypeText, PROPERTY_STRING(_T("Night Vision")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertyAttrTalks, groupAttributes, propertyTypeText, PROPERTY_STRING(_T("No. Talks")), PROPERTY_STRING(_T("Number of conversations.")))
+PROPERTY_ITEM(propertyAttrKills, groupAttributes, propertyTypeText, PROPERTY_STRING(_T("No. Kills")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertyAttrExpLevel, groupAttributes, propertyTypeText, PROPERTY_STRING(_T("Exp. Level")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertyAttrExpPoints, groupAttributes, propertyTypeText, PROPERTY_STRING(_T("Experience")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertyAttrDifficulty, groupAttributes, propertyTypeText, PROPERTY_STRING(_T("Difficulty")), PROPERTY_STRING(_T("Difficulty; 0 means easy, 1 means normal.")))
 
-PROPERTY_ITEM(enPropSkillAttack, enGroupSkills, enPropertyTypeText, PROPERTY_STRING(_T("Attack")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropSkillDefense, enGroupSkills, enPropertyTypeText, PROPERTY_STRING(_T("Defense")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropSkillUnarmed, enGroupSkills, enPropertyTypeText, PROPERTY_STRING(_T("Unarmed")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropSkillSword, enGroupSkills, enPropertyTypeText, PROPERTY_STRING(_T("Sword")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropSkillAxe, enGroupSkills, enPropertyTypeText, PROPERTY_STRING(_T("Axe")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropSkillMace, enGroupSkills, enPropertyTypeText, PROPERTY_STRING(_T("Mace")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropSkillMissile, enGroupSkills, enPropertyTypeText, PROPERTY_STRING(_T("Missile")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropSkillMana, enGroupSkills, enPropertyTypeText, PROPERTY_STRING(_T("Mana")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropSkillLore, enGroupSkills, enPropertyTypeText, PROPERTY_STRING(_T("Lore")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropSkillCasting, enGroupSkills, enPropertyTypeText, PROPERTY_STRING(_T("Casting")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropSkillTraps, enGroupSkills, enPropertyTypeText, PROPERTY_STRING(_T("Traps")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropSkillSearch, enGroupSkills, enPropertyTypeText, PROPERTY_STRING(_T("Search")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropSkillTrack, enGroupSkills, enPropertyTypeText, PROPERTY_STRING(_T("Track")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropSkillSneak, enGroupSkills, enPropertyTypeText, PROPERTY_STRING(_T("Sneak")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropSkillRepair, enGroupSkills, enPropertyTypeText, PROPERTY_STRING(_T("Repair")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropSkillCharm, enGroupSkills, enPropertyTypeText, PROPERTY_STRING(_T("Charm")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropSkillPicklock, enGroupSkills, enPropertyTypeText, PROPERTY_STRING(_T("Picklock")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropSkillAcrobat, enGroupSkills, enPropertyTypeText, PROPERTY_STRING(_T("Acrobat")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropSkillAppraise, enGroupSkills, enPropertyTypeText, PROPERTY_STRING(_T("Appraise")), PROPERTY_STRING(_T("TODO")))
-PROPERTY_ITEM(enPropSkillSwimming, enGroupSkills, enPropertyTypeText, PROPERTY_STRING(_T("Swimming")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertySkillAttack, groupSkills, propertyTypeText, PROPERTY_STRING(_T("Attack")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertySkillDefense, groupSkills, propertyTypeText, PROPERTY_STRING(_T("Defense")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertySkillUnarmed, groupSkills, propertyTypeText, PROPERTY_STRING(_T("Unarmed")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertySkillSword, groupSkills, propertyTypeText, PROPERTY_STRING(_T("Sword")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertySkillAxe, groupSkills, propertyTypeText, PROPERTY_STRING(_T("Axe")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertySkillMace, groupSkills, propertyTypeText, PROPERTY_STRING(_T("Mace")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertySkillMissile, groupSkills, propertyTypeText, PROPERTY_STRING(_T("Missile")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertySkillMana, groupSkills, propertyTypeText, PROPERTY_STRING(_T("Mana")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertySkillLore, groupSkills, propertyTypeText, PROPERTY_STRING(_T("Lore")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertySkillCasting, groupSkills, propertyTypeText, PROPERTY_STRING(_T("Casting")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertySkillTraps, groupSkills, propertyTypeText, PROPERTY_STRING(_T("Traps")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertySkillSearch, groupSkills, propertyTypeText, PROPERTY_STRING(_T("Search")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertySkillTrack, groupSkills, propertyTypeText, PROPERTY_STRING(_T("Track")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertySkillSneak, groupSkills, propertyTypeText, PROPERTY_STRING(_T("Sneak")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertySkillRepair, groupSkills, propertyTypeText, PROPERTY_STRING(_T("Repair")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertySkillCharm, groupSkills, propertyTypeText, PROPERTY_STRING(_T("Charm")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertySkillPicklock, groupSkills, propertyTypeText, PROPERTY_STRING(_T("Picklock")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertySkillAcrobat, groupSkills, propertyTypeText, PROPERTY_STRING(_T("Acrobat")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertySkillAppraise, groupSkills, propertyTypeText, PROPERTY_STRING(_T("Appraise")), PROPERTY_STRING(_T("TODO")))
+PROPERTY_ITEM(propertySkillSwimming, groupSkills, propertyTypeText, PROPERTY_STRING(_T("Swimming")), PROPERTY_STRING(_T("TODO")))
 END_PROPERTY_ITEM_LIST()
 
-void CPlayerInfoWindow::ReceiveNotification(CDebugWindowNotification& notify)
+void PlayerInfoWindow::ReceiveNotification(DebugWindowNotification& notify)
 {
-   switch (notify.m_enCode)
+   switch (notify.m_notifyCode)
    {
-   case ncUpdateData:
+   case notifyCodeUpdateData:
       UpdateData();
       break;
 
-   case ncSetReadonly:
-      m_bReadonly = true;
-      m_listCtrl.SetReadonly(true);
+   case notifyCodeSetReadonly:
+      m_isReadOnly = true;
+      m_listCtrl.SetReadOnly(true);
       m_listCtrl.SetBkColor(RGB(255, 0, 255));
       break;
 
-   case ncSetReadWrite:
-      m_listCtrl.SetReadonly(false);
+   case notifyCodeSetReadWrite:
+      m_listCtrl.SetReadOnly(false);
       m_listCtrl.SetBkColor(RGB(255, 255, 255));
-      m_bReadonly = false;
+      m_isReadOnly = false;
       break;
    }
 }
 
-void CPlayerInfoWindow::UpdateData()
+void PlayerInfoWindow::UpdateData()
 {
-   CDebugClientInterface& debugClient = m_pMainFrame->GetDebugClientInterface();
+   DebugClient& debugClient = m_mainFrame->GetDebugClientInterface();
    debugClient.Lock(true);
 
-   CDebugClientPlayerInterface playerInfo = debugClient.GetPlayerInterface();
+   DebugClientPlayerInterface playerInfo = debugClient.GetPlayerInterface();
 
    // update all position info values
    for (unsigned int i = 0; i < 4; i++)
-      m_adValues[i] = playerInfo.GetPosInfo(i);
+      m_doubleValues[i] = playerInfo.GetPosInfo(i);
 
    // update all attributes
    unsigned int max = playerInfo.GetAttrCount();
    for (unsigned int n = 0; n < max; n++)
-      m_anValues[n] = playerInfo.GetAttribute(n);
+      m_intValues[n] = playerInfo.GetAttribute(n);
 
    debugClient.Lock(false);
 
    m_listCtrl.UpdateValues();
 }
 
-LRESULT CPlayerInfoWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT PlayerInfoWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
    // create and set up list control
    CRect rcDef;
@@ -198,8 +198,8 @@ LRESULT CPlayerInfoWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
       m_listCtrl.InsertColumn(1, (LPCTSTR)_T("Value"), LVCFMT_LEFT, 90, -1);
 
       // insert all text descriptions
-      CDebugClientInterface& debugClient = m_pMainFrame->GetDebugClientInterface();
-      CDebugClientPlayerInterface playerInfo = debugClient.GetPlayerInterface();
+      DebugClient& debugClient = m_mainFrame->GetDebugClientInterface();
+      DebugClientPlayerInterface playerInfo = debugClient.GetPlayerInterface();
 
       for(unsigned int n=0; n<4; n++)
          m_listCtrl.InsertItem(m_listCtrl.GetItemCount(), playerInfo.GetPosInfoName(n));
@@ -224,16 +224,16 @@ LRESULT CPlayerInfoWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
    return 0;
 }
 /*
-void CPlayerInfoWindow::OnUpdatedValue(unsigned int item, unsigned int nSubItem, LPCTSTR pszText)
+void PlayerInfoWindow::OnUpdatedValue(unsigned int item, unsigned int nSubItem, LPCTSTR pszText)
 {
    nSubItem;
    ATLASSERT(nSubItem == 1);
    ATLASSERT(pszText != NULL);
 
-   CDebugClientInterface& debugClient = m_pMainFrame->GetDebugClientInterface();
+   DebugClient& debugClient = m_mainFrame->GetDebugClientInterface();
    debugClient.Lock(true);
 
-   CDebugClientPlayerInterface playerInfo = debugClient.GetPlayerInterface();
+   DebugClientPlayerInterface playerInfo = debugClient.GetPlayerInterface();
 
    if (item < 4)
    {
@@ -252,70 +252,70 @@ void CPlayerInfoWindow::OnUpdatedValue(unsigned int item, unsigned int nSubItem,
 }
 */
 
-void CPlayerInfoWindow::GetProperty(unsigned int nPropertyItemId, CString& cszProperty)
+void PlayerInfoWindow::GetProperty(unsigned int propertyItemId, CString& propertyValue)
 {
-   CDebugClientInterface& debugClient = m_pMainFrame->GetDebugClientInterface();
+   DebugClient& debugClient = m_mainFrame->GetDebugClientInterface();
    debugClient.Lock(true);
 
-   if (nPropertyItemId < 4)
+   if (propertyItemId < 4)
    {
       // position
-      cszProperty.Format(_T("%3.2f"), m_adValues[nPropertyItemId]);
+      propertyValue.Format(_T("%3.2f"), m_doubleValues[propertyItemId]);
    }
    else
    {
       // attributes and skills
-      cszProperty.Format(_T("%u"), m_anValues[nPropertyItemId - 4]);
+      propertyValue.Format(_T("%u"), m_intValues[propertyItemId - 4]);
    }
 
    debugClient.Lock(false);
 }
 
-void CPlayerInfoWindow::SetProperty(unsigned int nPropertyItemId, const CString& cszProperty)
+void PlayerInfoWindow::SetProperty(unsigned int propertyItemId, const CString& propertyValue)
 {
-   CDebugClientInterface& debugClient = m_pMainFrame->GetDebugClientInterface();
+   DebugClient& debugClient = m_mainFrame->GetDebugClientInterface();
    debugClient.Lock(true);
 
-   CDebugClientPlayerInterface playerInfo = debugClient.GetPlayerInterface();
+   DebugClientPlayerInterface playerInfo = debugClient.GetPlayerInterface();
 
-   if (nPropertyItemId < 4)
+   if (propertyItemId < 4)
    {
       // position
-      double dValue = ::_tcstod(cszProperty, NULL);
-      playerInfo.SetPosInfo(nPropertyItemId, dValue);
+      double dValue = ::_tcstod(propertyValue, NULL);
+      playerInfo.SetPosInfo(propertyItemId, dValue);
    }
    else
    {
       // attributes and skills
-      unsigned int nValue = static_cast<unsigned int>(_tcstoul(cszProperty, NULL, 10));
-      m_anValues[nPropertyItemId - 4] = nValue;
+      unsigned int value = static_cast<unsigned int>(_tcstoul(propertyValue, NULL, 10));
+      m_intValues[propertyItemId - 4] = value;
 
-      playerInfo.SetAttribute(nPropertyItemId - 4, nValue);
+      playerInfo.SetAttribute(propertyItemId - 4, value);
    }
 
    debugClient.Lock(false);
 }
 
-bool CPlayerInfoWindow::VerifyProperty(unsigned int nPropertyItemId, const CString& cszProperty)
+bool PlayerInfoWindow::VerifyProperty(unsigned int propertyItemId, const CString& propertyValue)
 {
-   CString cszCheck(cszProperty);
+   CString check(propertyValue);
 
    // allowed characters
    LPCTSTR pszChars = _T("0123456789");
 
-   if (nPropertyItemId < 4)
+   if (propertyItemId < 4)
       pszChars = _T("0123456789.");
 
    // remove all valid chars
-   int nPos = 0;
-   while (-1 != (nPos = cszCheck.FindOneOf(pszChars)))
-      cszCheck.Delete(nPos);
+   int pos = 0;
+   while (-1 != (pos = check.FindOneOf(pszChars)))
+      check.Delete(pos);
 
    // property is valid when no more chars in string
-   return cszCheck.IsEmpty();
+   return check.IsEmpty();
 }
 
-LRESULT CPlayerInfoWindow::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+LRESULT PlayerInfoWindow::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 {
    if (wParam != SIZE_MINIMIZED)
    {
@@ -328,7 +328,7 @@ LRESULT CPlayerInfoWindow::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*
    return 1;
 }
 
-LRESULT CPlayerInfoWindow::OnSetFocus(UINT, WPARAM, LPARAM, BOOL& bHandled)
+LRESULT PlayerInfoWindow::OnSetFocus(UINT, WPARAM, LPARAM, BOOL& bHandled)
 {
    if (m_listCtrl.m_hWnd != NULL && m_listCtrl.IsWindowVisible())
       m_listCtrl.SetFocus();

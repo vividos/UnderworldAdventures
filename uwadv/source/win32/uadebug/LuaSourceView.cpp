@@ -22,7 +22,7 @@
 #include "stdatl.hpp"
 #include "LuaSourceView.hpp"
 
-LRESULT CLuaSourceView::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+LRESULT LuaSourceView::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
    m_hWndClient = m_view.Create(NULL, m_hWnd, rcDefault, NULL,
       WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_HSCROLL | WS_VSCROLL, WS_EX_CLIENTEDGE);
@@ -60,25 +60,25 @@ LRESULT CLuaSourceView::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
    return 1;
 }
 
-LRESULT CLuaSourceView::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+LRESULT LuaSourceView::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
    bHandled = FALSE;
-   m_pMainFrame->RemoveLuaChildView(this);
+   m_mainFrame->RemoveLuaChildView(this);
    return 0;
 }
 
-void CLuaSourceView::UpdateFilename()
+void LuaSourceView::UpdateFilename()
 {
-   CFilename fileName(m_cszFilename);
-   CString cszFilename = fileName.GetFilename();
+   CFilename fileName(m_filename);
+   CString filename = fileName.GetFilename();
 
    if (IsModified())
-      cszFilename += _T("*");
+      filename += _T("*");
 
-   CString cszTitleName(_T("Lua Source File - "));
-   cszTitleName += fileName.Get();
+   CString titleText(_T("Lua Source File - "));
+   titleText += fileName.Get();
 
-   SetTitle(cszTitleName);
-   SetTabText(cszFilename);
-   SetTabToolTip(m_cszFilename);
+   SetTitle(titleText);
+   SetTabText(filename);
+   SetTabToolTip(m_filename);
 }

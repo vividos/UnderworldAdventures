@@ -25,25 +25,25 @@
 
 CAppModule _Module;
 
-HINSTANCE g_hInstance = 0;
+HINSTANCE g_instance = 0;
 
 /// runs application
-int Run(void* pDebugClient, int nCmdShow = SW_SHOWDEFAULT)
+int Run(void* debugClient, int cmdShow = SW_SHOWDEFAULT)
 {
-   CMainFrame wndMain;
-   if (!wndMain.InitDebugClient(pDebugClient))
+   MainFrame mainFrame;
+   if (!mainFrame.InitDebugClient(debugClient))
       return 1;
 
    CMessageLoop theLoop;
    _Module.AddMessageLoop(&theLoop);
 
-   if (wndMain.CreateEx() == NULL)
+   if (mainFrame.CreateEx() == NULL)
    {
       ATLTRACE(_T("Main window creation failed!\n"));
       return 0;
    }
 
-   wndMain.ShowWindow(nCmdShow);
+   mainFrame.ShowWindow(cmdShow);
 
    int nRet = theLoop.Run();
 
@@ -55,7 +55,7 @@ int Run(void* pDebugClient, int nCmdShow = SW_SHOWDEFAULT)
 /// debugger start function
 extern "C"
 __declspec(dllexport)
-void uadebug_start(void* pDebugClient)
+void uadebug_start(void* debugClient)
 {
    // init all sort of stuff
 #ifdef _DEBUG
@@ -63,8 +63,8 @@ void uadebug_start(void* pDebugClient)
 #endif
 
    // init COM
-   HRESULT hRes = ::CoInitialize(NULL);
-   ATLASSERT(SUCCEEDED(hRes));
+   HRESULT res = ::CoInitialize(NULL);
+   ATLASSERT(SUCCEEDED(res));
 
    // this resolves ATL window thunking problem when Microsoft Layer for Unicode (MSLU) is used
    ::DefWindowProc(NULL, 0, 0, 0L);
@@ -84,15 +84,15 @@ void uadebug_start(void* pDebugClient)
 #endif
 #endif
 
-   DWORD dwMajor = 0, dwMinor = 0;
-   ::AtlGetCommCtrlVersion(&dwMajor, &dwMinor);
-   ATLTRACE(_T("using common controls version %u.%u\n"), dwMajor, dwMinor);
+   DWORD major = 0, minor = 0;
+   ::AtlGetCommCtrlVersion(&major, &minor);
+   ATLTRACE(_T("using common controls version %u.%u\n"), major, minor);
 
-   hRes = _Module.Init(NULL, g_hInstance/*, &LIBID_ATLLib*/);
-   ATLASSERT(SUCCEEDED(hRes));
+   res = _Module.Init(NULL, g_instance/*, &LIBID_ATLLib*/);
+   ATLASSERT(SUCCEEDED(res));
 
    // run WTL application
-   Run(pDebugClient, SW_SHOW);
+   Run(debugClient, SW_SHOW);
 
    _Module.Term();
    ::CoUninitialize();
@@ -105,7 +105,7 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID /*lpReserved*/)
    if (dwReason == DLL_PROCESS_ATTACH)
    {
       // remember instance handle
-      g_hInstance = hInstance;
+      g_instance = hInstance;
       DisableThreadLibraryCalls(hInstance);
    }
 

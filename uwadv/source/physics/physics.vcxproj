@@ -63,22 +63,17 @@
     <Lib />
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="geometry.cpp" />
-    <ClCompile Include="pathfinder.cpp" />
-    <ClCompile Include="physics.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">physics.hpp</PrecompiledHeaderFile>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">physics.hpp</PrecompiledHeaderFile>
-    </ClCompile>
-    <ClCompile Include="playerphysics.cpp" />
+    <ClCompile Include="GeometryProvider.cpp" />
+    <ClCompile Include="Pathfinder.cpp" />
+    <ClCompile Include="PhysicsModel.cpp" />
+    <ClCompile Include="PlayerPhysicsObject.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="geometry.hpp" />
-    <ClInclude Include="pathfinder.hpp" />
-    <ClInclude Include="physics.hpp" />
-    <ClInclude Include="physicsbody.hpp" />
-    <ClInclude Include="playerphysics.hpp" />
+    <ClInclude Include="GeometryProvider.hpp" />
+    <ClInclude Include="Pathfinder.hpp" />
+    <ClInclude Include="PhysicsModel.hpp" />
+    <ClInclude Include="PhysicsBody.hpp" />
+    <ClInclude Include="PlayerPhysicsObject.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\base\base.vcxproj">

@@ -20,9 +20,9 @@
 /// \brief ArchiveFile test
 //
 #include "unittest.hpp"
-#include "archivefile.hpp"
-#include "settings.hpp"
-#include "resourcemanager.hpp"
+#include "ArchiveFile.hpp"
+#include "Settings.hpp"
+#include "ResourceManager.hpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

@@ -20,11 +20,11 @@
 /// \brief uw1 and uw2 dump program
 //
 #include "common.hpp"
-#include "filesystem.hpp"
+#include "FileSystem.hpp"
 #include "levark.hpp"
 #include "prop.hpp"
 #include "mdldump.hpp"
-#include "gamestringsimporter.hpp"
+#include "GameStringsImporter.hpp"
 
 enum DumpCommand
 {
@@ -187,21 +187,21 @@ int main(int argc, char* argv[])
    {
    case commandLevelDecoding: // lev.ark decoding
    {
-      ua_dump_level_archive levdump;
+      DumpLevelArchive levdump;
       levdump.start(basePath, param, isUw2);
    }
    break;
 
    case commandObjectProperties: // object properties decoding
    {
-      ua_dump_obj_properties objprop;
+      DumpObjectProperties objprop;
       objprop.start(basePath);
    }
    break;
 
    case commandModelDump: // builtin model dumping
    {
-      ua_dump_builtin_models mdldump;
+      DumpBuiltinModels mdldump;
       mdldump.start(basePath, isUw2);
    }
    break;

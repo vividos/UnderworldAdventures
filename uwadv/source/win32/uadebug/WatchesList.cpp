@@ -22,20 +22,20 @@
 #include "stdatl.hpp"
 #include "WatchesList.hpp"
 
-CWatchesListWindow::CWatchesListWindow(unsigned int nCodeDebuggerID)
-:CDockingWindowBase(idWatchesWindow),
- m_nCodeDebuggerID(nCodeDebuggerID)
+WatchesListWindow::WatchesListWindow(unsigned int codeDebuggerId)
+:DockingWindowBase(idWatchesWindow),
+ m_codeDebuggerId(codeDebuggerId)
 {
 }
 
-void CWatchesListWindow::ReceiveNotification(CDebugWindowNotification& notify)
+void WatchesListWindow::ReceiveNotification(DebugWindowNotification& notify)
 {
-   switch (notify.m_enCode)
+   switch (notify.m_notifyCode)
    {
-   case ncUnknown:
+   case notifyCodeUnknown:
    default:
       break;
    }
 }
 
-//void CWatchesListWindow::OnUpdatedValue(unsigned int nItem, unsigned int nSubItem, LPCTSTR pszValue);
+//void WatchesListWindow::OnUpdatedValue(unsigned int nItem, unsigned int nSubItem, LPCTSTR pszValue);

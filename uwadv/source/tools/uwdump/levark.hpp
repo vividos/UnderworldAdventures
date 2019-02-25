@@ -21,12 +21,12 @@
 //
 #pragma once
 
-#include "gamestrings.hpp"
+#include "GameStrings.hpp"
 #include <set>
 #include <bitset>
 
 /// dumps level archives
-class ua_dump_level_archive
+class DumpLevelArchive
 {
 public:
    void start(std::string& basepath, std::string& param, bool isUw2);

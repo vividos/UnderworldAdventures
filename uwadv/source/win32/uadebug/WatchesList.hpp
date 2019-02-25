@@ -21,16 +21,16 @@
 //
 #pragma once
 
-class CWatchesListWindow :
-   public CDockingWindowBase//,
+class WatchesListWindow :
+   public DockingWindowBase//,
    //public IEditListViewCallback
 {
-   typedef CWatchesListWindow thisClass;
-   typedef CDockingWindowBase baseClass;
+   typedef WatchesListWindow thisClass;
+   typedef DockingWindowBase baseClass;
 
 public:
-   CWatchesListWindow(unsigned int nCodeDebuggerID);
-   ~CWatchesListWindow() {}
+   WatchesListWindow(unsigned int codeDebuggerId);
+   ~WatchesListWindow() {}
 
    DECLARE_DOCKING_WINDOW(_T("Watches"), CSize(200, 100)/*docked*/, CSize(500, 150)/*floating*/, dockwins::CDockingSide::sBottom)
 
@@ -42,14 +42,14 @@ public:
       DEFAULT_REFLECTION_HANDLER()
    END_MSG_MAP()
 
-   virtual void ReceiveNotification(CDebugWindowNotification& notify) override;
+   virtual void ReceiveNotification(DebugWindowNotification& notify) override;
 
-   //virtual void OnUpdatedValue(unsigned int nItem, unsigned int nSubItem, LPCTSTR pszValue) override;
+   //virtual void OnUpdatedValue(unsigned int item, unsigned int subItem, LPCTSTR value) override;
 
 protected:
    /// edit list view with all breakpoints
    CListViewCtrl m_listCtrl;
 
    /// code debugger id
-   unsigned int m_nCodeDebuggerID;
+   unsigned int m_codeDebuggerId;
 };

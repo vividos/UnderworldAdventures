@@ -26,20 +26,20 @@
 #include "Resource.h"
 
 /// form with tile infos
-class CTileInfoForm :
-   public CDialogImpl<CTileInfoForm>,
-   public CDebugWindowBase
+class TileInfoForm :
+   public CDialogImpl<TileInfoForm>,
+   public DebugWindowBase
 {
 public:
-   CTileInfoForm();
-   virtual ~CTileInfoForm() {}
+   TileInfoForm();
+   virtual ~TileInfoForm() {}
 
    // dialog form id // TODO change id
    enum { IDD = IDD_TILE_INFO };
 
-   BOOL PreTranslateMessage(MSG* pMsg)
+   BOOL PreTranslateMessage(MSG* msg)
    {
-      return IsDialogMessage(pMsg);
+      return IsDialogMessage(msg);
    }
 
    BEGIN_MSG_MAP(CTileMapViewWindow)
@@ -54,9 +54,9 @@ protected:
    LRESULT OnButtonBeam(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnListItemChanged(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 
-   // virtual methods from CDebugWindowBase
+   // virtual methods from DebugWindowBase
 
-   virtual void ReceiveNotification(CDebugWindowNotification& notify) override;
+   virtual void ReceiveNotification(DebugWindowNotification& notify) override;
 
    void UpdateData();
 
@@ -64,28 +64,28 @@ protected:
    void UpdateObjectInfo();
 
 protected:
-   CEditListViewCtrl m_tileInfoList;
-   CEditListViewCtrl m_objectList;
+   EditListViewCtrl m_tileInfoList;
+   EditListViewCtrl m_objectList;
 
-   bool m_bInited;
+   bool m_isInited;
 
-   unsigned int m_nTileX, m_nTileY;
+   unsigned int m_tileX, m_tileY;
 };
 
 
 /// player info docking window
-class CTileInfoWindow : public CDockingWindowBase
+class TileInfoWindow : public DockingWindowBase
 {
-   typedef CTileInfoWindow thisClass;
-   typedef CDockingWindowBase baseClass;
+   typedef TileInfoWindow thisClass;
+   typedef DockingWindowBase baseClass;
 public:
    /// ctor
-   CTileInfoWindow() :baseClass(idTileInfoWindow) {}
-   virtual ~CTileInfoWindow() {}
+   TileInfoWindow() :baseClass(idTileInfoWindow) {}
+   virtual ~TileInfoWindow() {}
 
-   BOOL PreTranslateMessage(MSG* pMsg)
+   BOOL PreTranslateMessage(MSG* msg)
    {
-      return m_form.PreTranslateMessage(pMsg);
+      return m_form.PreTranslateMessage(msg);
    }
 
    DECLARE_DOCKING_WINDOW(_T("Tile Info"), CSize(300, 700)/*docked*/, CSize(200, 300)/*floating*/, dockwins::CDockingSide::sRight)
@@ -112,28 +112,28 @@ protected:
    LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
    LRESULT OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
-   // virtual methods from CDebugWindowBase
+   // virtual methods from DebugWindowBase
 
-   virtual void InitDebugWindow(IMainFrame* pMainFrame) override
+   virtual void InitDebugWindow(IMainFrame* mainFrame) override
    {
-      CDebugWindowBase::InitDebugWindow(pMainFrame);
-      pMainFrame->AddDebugWindow(&m_form);
+      DebugWindowBase::InitDebugWindow(mainFrame);
+      mainFrame->AddDebugWindow(&m_form);
    }
 
    virtual void DoneDebugWindow() override
    {
-      m_pMainFrame->RemoveDebugWindow(&m_form);
-      CDebugWindowBase::DoneDebugWindow();
+      m_mainFrame->RemoveDebugWindow(&m_form);
+      DebugWindowBase::DoneDebugWindow();
    }
 
-   virtual void ReceiveNotification(CDebugWindowNotification& notify) override
+   virtual void ReceiveNotification(DebugWindowNotification& notify) override
    {
       // relay notification to descendant window, if needed
-      if (notify.m_bRelayToDescendants)
-         m_pMainFrame->SendNotification(notify, &m_form);
+      if (notify.m_relayToDescendants)
+         m_mainFrame->SendNotification(notify, &m_form);
    }
 
 protected:
    /// tile info dialog
-   CTileInfoForm m_form;
+   TileInfoForm m_form;
 };

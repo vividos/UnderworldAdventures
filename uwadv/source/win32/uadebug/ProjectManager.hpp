@@ -21,24 +21,24 @@
 //
 #pragma once
 
-class CProjectManager
+class ProjectManager
 {
 public:
-   CProjectManager();
-   virtual ~CProjectManager();
+   ProjectManager();
+   virtual ~ProjectManager();
 
-   bool IsOpen() const { return m_bOpen; }
+   bool IsOpen() const { return m_isOpen; }
 
-   void LoadProject(LPCTSTR pszProjectFilename);
+   void LoadProject(LPCTSTR projectFilename);
 
    void CloseProject();
 
    void SaveProject();
 
-   CString GetProjectName() const { return m_cszProjectName; }
+   CString GetProjectName() const { return m_projectName; }
 
 protected:
-   CString m_cszProjectFilename;
-   CString m_cszProjectName;
-   bool m_bOpen;
+   CString m_projectFilename;
+   CString m_projectName;
+   bool m_isOpen;
 };

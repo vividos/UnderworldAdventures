@@ -11,30 +11,30 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="codevm.cpp">
+    <ClCompile Include="Conversation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="conv.cpp">
+    <ClCompile Include="CodeGraph.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="convgraph.cpp">
+    <ClCompile Include="CodeVM.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="codevm.hpp">
+    <ClInclude Include="Conversation.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="conv.hpp">
+    <ClInclude Include="CodeGraph.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="convgraph.hpp">
+    <ClInclude Include="ConvStack.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="convstack.hpp">
+    <ClInclude Include="CodeVM.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="opcodes.hpp">
+    <ClInclude Include="Opcodes.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

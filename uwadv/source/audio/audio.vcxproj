@@ -73,11 +73,11 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="audio.cpp">
+    <ClCompile Include="Audio.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="midiplayer.cpp" />
+    <ClCompile Include="MidiPlayer.cpp" />
     <ClCompile Include="midi\CoreAudioMidiDriver.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
@@ -120,20 +120,20 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="playlist.cpp" />
+    <ClCompile Include="Playlist.cpp" />
     <ClCompile Include="resamp.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="vocfile.cpp" />
-    <ClCompile Include="vocresample.cpp" />
+    <ClCompile Include="VoiceFile.cpp" />
+    <ClCompile Include="VoiceResample.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="audio.hpp" />
+    <ClInclude Include="Audio.hpp" />
     <ClInclude Include="IODataSource.hpp" />
-    <ClInclude Include="midiplayer.hpp" />
+    <ClInclude Include="MidiPlayer.hpp" />
     <ClInclude Include="midi\common_types.h" />
     <ClInclude Include="midi\CoreAudioMidiDriver.h" />
     <ClInclude Include="midi\IDataSource.h" />
@@ -148,9 +148,9 @@
     <ClInclude Include="midi\XMidiNoteStack.h" />
     <ClInclude Include="midi\XMidiSequence.h" />
     <ClInclude Include="midi\XMidiSequenceHandler.h" />
-    <ClInclude Include="playlist.hpp" />
+    <ClInclude Include="Playlist.hpp" />
     <ClInclude Include="resamp.h" />
-    <ClInclude Include="vocfile.hpp" />
+    <ClInclude Include="VoiceFile.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\base\base.vcxproj">

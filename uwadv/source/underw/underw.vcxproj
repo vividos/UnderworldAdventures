@@ -67,41 +67,41 @@
     <Lib />
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="convglobals.cpp" />
-    <ClCompile Include="gamelogic.cpp" />
-    <ClCompile Include="inventory.cpp" />
-    <ClCompile Include="levellist.cpp" />
-    <ClCompile Include="mapnotes.cpp" />
-    <ClCompile Include="object.cpp" />
-    <ClCompile Include="objectlist.cpp" />
-    <ClCompile Include="player.cpp" />
-    <ClCompile Include="runes.cpp" />
-    <ClCompile Include="tilemap.cpp" />
+    <ClCompile Include="ConvGlobals.cpp" />
+    <ClCompile Include="GameLogic.cpp" />
+    <ClCompile Include="Inventory.cpp" />
+    <ClCompile Include="LevelList.cpp" />
+    <ClCompile Include="MapNotes.cpp" />
+    <ClCompile Include="Object.cpp" />
+    <ClCompile Include="ObjectList.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Runes.cpp" />
+    <ClCompile Include="TileMap.cpp" />
     <ClCompile Include="underw.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="underworld.cpp" />
-    <ClCompile Include="gamestrings.cpp" />
-    <ClCompile Include="questflags.cpp" />
+    <ClCompile Include="Underworld.cpp" />
+    <ClCompile Include="GameStrings.cpp" />
+    <ClCompile Include="QuestFlags.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="convglobals.hpp" />
-    <ClInclude Include="gamelogic.hpp" />
-    <ClInclude Include="inventory.hpp" />
-    <ClInclude Include="level.hpp" />
-    <ClInclude Include="levellist.hpp" />
-    <ClInclude Include="mapnotes.hpp" />
-    <ClInclude Include="object.hpp" />
-    <ClInclude Include="objectlist.hpp" />
-    <ClInclude Include="player.hpp" />
-    <ClInclude Include="properties.hpp" />
-    <ClInclude Include="questflags.hpp" />
-    <ClInclude Include="runes.hpp" />
-    <ClInclude Include="tilemap.hpp" />
+    <ClInclude Include="ConvGlobals.hpp" />
+    <ClInclude Include="GameLogic.hpp" />
+    <ClInclude Include="Inventory.hpp" />
+    <ClInclude Include="Level.hpp" />
+    <ClInclude Include="LevelList.hpp" />
+    <ClInclude Include="MapNotes.hpp" />
+    <ClInclude Include="Object.hpp" />
+    <ClInclude Include="ObjectList.hpp" />
+    <ClInclude Include="Player.hpp" />
+    <ClInclude Include="Properties.hpp" />
+    <ClInclude Include="QuestFlags.hpp" />
+    <ClInclude Include="Runes.hpp" />
+    <ClInclude Include="Tilemap.hpp" />
     <ClInclude Include="underw.hpp" />
-    <ClInclude Include="underworld.hpp" />
-    <ClInclude Include="gamestrings.hpp" />
+    <ClInclude Include="Underworld.hpp" />
+    <ClInclude Include="GameStrings.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\base\base.vcxproj">

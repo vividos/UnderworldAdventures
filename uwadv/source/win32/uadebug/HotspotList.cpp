@@ -24,16 +24,16 @@
 #include "DebugClient.hpp"
 
 /// struct with infos about a hotspot
-struct SHotspotItem
+struct HotspotItem
 {
-   LPCTSTR szName;       ///< hotspot name
-   unsigned int nLevel;  ///< level of hotspot; 0-based
+   LPCTSTR name;       ///< hotspot name
+   unsigned int level;  ///< level of hotspot; 0-based
    double xpos, ypos;   ///< x and y position of hotspot
 };
 
 /// \brief list with all hotspots
 /// numbers in brackets indicate positions in the ultima underworld 1 clue book
-SHotspotItem g_aHotspotItems[] =
+HotspotItem g_hotspotItems[] =
 {
    { _T("Level 1: Entrance of the Abyss"),         0, 32.0,  2.0 },
    { _T("Level 1: Bragit (7)"),                    0, 17.0,  6.0 },
@@ -85,7 +85,7 @@ SHotspotItem g_aHotspotItems[] =
    { NULL, 0, 0.0, 0.0 } // end of list marker
 };
 
-LRESULT CHotspotListWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT HotspotListWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
    // create and set up list control
    CRect rcDef;
@@ -100,23 +100,23 @@ LRESULT CHotspotListWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 
    // insert all hotspot items
    unsigned int i = 0;
-   while (g_aHotspotItems[i].szName != NULL)
+   while (g_hotspotItems[i].name != NULL)
    {
-      SHotspotItem& item = g_aHotspotItems[i];
-      int nPos = m_listCtrl.InsertItem(i, item.szName);
+      HotspotItem& item = g_hotspotItems[i];
+      int pos = m_listCtrl.InsertItem(i, item.name);
 
-      CString cszPosition;
-      cszPosition.Format(_T("Level %u, Pos %2.1f/%2.1f"),
-         item.nLevel, item.xpos, item.ypos);
+      CString position;
+      position.Format(_T("Level %u, Pos %2.1f/%2.1f"),
+         item.level, item.xpos, item.ypos);
 
-      m_listCtrl.SetItemText(nPos, 1, cszPosition);
+      m_listCtrl.SetItemText(pos, 1, position);
       i++;
    }
 
    return 0;
 }
 
-LRESULT CHotspotListWindow::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+LRESULT HotspotListWindow::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 {
    if (wParam != SIZE_MINIMIZED)
    {
@@ -128,7 +128,7 @@ LRESULT CHotspotListWindow::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam
    return 1;
 }
 
-LRESULT CHotspotListWindow::OnSetFocus(UINT, WPARAM, LPARAM, BOOL& bHandled)
+LRESULT HotspotListWindow::OnSetFocus(UINT, WPARAM, LPARAM, BOOL& bHandled)
 {
    if (m_listCtrl.m_hWnd != NULL && m_listCtrl.IsWindowVisible())
       m_listCtrl.SetFocus();
@@ -137,20 +137,20 @@ LRESULT CHotspotListWindow::OnSetFocus(UINT, WPARAM, LPARAM, BOOL& bHandled)
    return 1;
 }
 
-LRESULT CHotspotListWindow::OnDblClick(WPARAM /*wParam*/, NMHDR* pNMHDR, BOOL& /*bHandled*/)
+LRESULT HotspotListWindow::OnDblClick(WPARAM /*wParam*/, NMHDR* pNMHDR, BOOL& /*bHandled*/)
 {
    LPNMITEMACTIVATE lpnmitem = (LPNMITEMACTIVATE)pNMHDR;
-   int nItem = lpnmitem->iItem;
-   if (nItem == -1)
+   int itemIndex = lpnmitem->iItem;
+   if (itemIndex == -1)
       return 0;
 
-   CDebugClientInterface& debugClient = m_pMainFrame->GetDebugClientInterface();
+   DebugClient& debugClient = m_mainFrame->GetDebugClientInterface();
 
    // teleport to selected hotspot
-   SHotspotItem& item = g_aHotspotItems[nItem];
+   HotspotItem& item = g_hotspotItems[itemIndex];
 
    debugClient.Lock(true);
-   debugClient.GetPlayerInterface().Teleport(item.nLevel, item.xpos, item.ypos);
+   debugClient.GetPlayerInterface().Teleport(item.level, item.xpos, item.ypos);
    debugClient.Lock(false);
 
    return 0;

@@ -38,24 +38,24 @@ RegisterTabbedMDIMessages g_RegisterTabbedMDIMessages;
 /// us. If not, the user forgot to add the macro.
 void CheckAddedReflectNotifications(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-   static bool m_fInCheck = false;
-   static bool m_fCheckPassed = false;
+   static bool s_inCheck = false;
+   static bool s_checkPassed = false;
 
-   if (!m_fCheckPassed)
+   if (!s_checkPassed)
    {
-      if (m_fInCheck)
+      if (s_inCheck)
       {
          // did we get the proper notification message?
          if (uMsg == OCM_NOTIFY && wParam == (WPARAM)-1 && ((LPNMHDR)lParam)->code == (UINT)-1)
          {
-            m_fInCheck = false;
-            m_fCheckPassed = true;
+            s_inCheck = false;
+            s_checkPassed = true;
          }
       }
       else
       {
          // start check
-         m_fInCheck = true;
+         s_inCheck = true;
 
          // prepare notification
          NMHDR nmhdr;
@@ -64,8 +64,8 @@ void CheckAddedReflectNotifications(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
          nmhdr.idFrom = static_cast<UINT_PTR>(-1);
          ::SendMessage(::GetParent(hWnd), WM_NOTIFY, (WPARAM)-1, (LPARAM)&nmhdr);
 
-         ATLASSERT(m_fCheckPassed == true); // Warning! forgot to add REFLECT_NOTIFICATIONS() to base class!
-         m_fInCheck = false;
+         ATLASSERT(s_checkPassed == true); // Warning! forgot to add REFLECT_NOTIFICATIONS() to base class!
+         s_inCheck = false;
       }
    }
 }

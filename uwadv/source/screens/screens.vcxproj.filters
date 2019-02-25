@@ -11,78 +11,78 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="acknowledgements.cpp">
+    <ClCompile Include="ConversationScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="conversation.cpp">
+    <ClCompile Include="CreateCharacterScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="create_character.cpp">
+    <ClCompile Include="CutsceneViewScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cutscene_view.cpp">
+    <ClCompile Include="SaveGameScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ingame_ctrls.cpp">
+    <ClCompile Include="StartMenuScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ingame_orig.cpp">
+    <ClCompile Include="StartSplashScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="map_view.cpp">
+    <ClCompile Include="UwadvMenuScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="panel.cpp">
+    <ClCompile Include="MapViewScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="save_game.cpp">
+    <ClCompile Include="OriginalIngameScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="start_menu.cpp">
+    <ClCompile Include="IngameControls.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="start_splash.cpp">
+    <ClCompile Include="AcknowledgementsScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="uwadv_menu.cpp">
+    <ClCompile Include="Panel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="acknowledgements.hpp">
+    <ClInclude Include="ConversationScreen.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="conversation.hpp">
+    <ClInclude Include="AcknowledgementsScreen.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="create_character.hpp">
+    <ClInclude Include="CreateCharacterScreen.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="cutscene_view.hpp">
+    <ClInclude Include="CutsceneViewScreen.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ingame_ctrls.hpp">
+    <ClInclude Include="SaveGameScreen.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ingame_orig.hpp">
+    <ClInclude Include="StartMenuScreen.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="map_view.hpp">
+    <ClInclude Include="StartSplashScreen.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="panel.hpp">
+    <ClInclude Include="UwadvMenuScreen.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="save_game.hpp">
+    <ClInclude Include="MapViewScreen.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="start_menu.hpp">
+    <ClInclude Include="OriginalIngameScreen.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="start_splash.hpp">
+    <ClInclude Include="IngameControls.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="uwadv_menu.hpp">
+    <ClInclude Include="Panel.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

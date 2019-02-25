@@ -22,13 +22,13 @@
 #include "stdatl.hpp"
 #include "BreakpointList.hpp"
 
-CBreakpointListWindow::CBreakpointListWindow(unsigned int nCodeDebuggerID)
-   :CDockingWindowBase(idBreakpointWindow),
-   m_nCodeDebuggerID(nCodeDebuggerID)
+BreakpointListWindow::BreakpointListWindow(unsigned int codeDebuggerId)
+   :DockingWindowBase(idBreakpointWindow),
+   m_codeDebuggerId(codeDebuggerId)
 {
 }
 
-LRESULT CBreakpointListWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT BreakpointListWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
    CRect rcDef;
    GetClientRect(rcDef);
@@ -40,7 +40,7 @@ LRESULT CBreakpointListWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
    return 0;
 }
 
-LRESULT CBreakpointListWindow::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+LRESULT BreakpointListWindow::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 {
    if (wParam != SIZE_MINIMIZED)
    {
@@ -52,7 +52,7 @@ LRESULT CBreakpointListWindow::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPa
    return 1;
 }
 
-LRESULT CBreakpointListWindow::OnSetFocus(UINT, WPARAM, LPARAM, BOOL& bHandled)
+LRESULT BreakpointListWindow::OnSetFocus(UINT, WPARAM, LPARAM, BOOL& bHandled)
 {
    if (m_listCtrl.m_hWnd != NULL && m_listCtrl.IsWindowVisible())
       m_listCtrl.SetFocus();
@@ -61,14 +61,14 @@ LRESULT CBreakpointListWindow::OnSetFocus(UINT, WPARAM, LPARAM, BOOL& bHandled)
    return 1;
 }
 
-void CBreakpointListWindow::ReceiveNotification(CDebugWindowNotification& notify)
+void BreakpointListWindow::ReceiveNotification(DebugWindowNotification& notify)
 {
-   switch (notify.m_enCode)
+   switch (notify.m_notifyCode)
    {
-   case ncUnknown:
+   case notifyCodeUnknown:
    default:
       break;
    }
 }
 
-//void CBreakpointListWindow::OnUpdatedValue(unsigned int nItem, unsigned int nSubItem, LPCTSTR pszValue);
+//void BreakpointListWindow::OnUpdatedValue(unsigned int nItem, unsigned int nSubItem, LPCTSTR pszValue);
