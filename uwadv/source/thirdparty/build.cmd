@@ -11,4 +11,5 @@ echo Copying thirdparty files to %OUTDIR%
 
 mkdir %OUTDIR% 2> nul
 copy SDL2-2.0.9\lib\x86\SDL2.dll %OUTDIR%
+copy SDL2-2.0.9\lib\x86\SDL2.dll %OUTDIR%\tools
 copy SDL2_mixer-2.0.4\lib\x86\*.dll %OUTDIR%
