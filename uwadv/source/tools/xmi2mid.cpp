@@ -21,7 +21,9 @@
 /// this program converts the first track of an XMIDI file (*.xmi) to a midi
 /// file (*.mid), using MT32 to GM conversion
 //
-#include "../audio/xmidi.hpp"
+#include "../audio/midi/XMidiFile.h"
+#include "../audio/midi/XMidiEventList.h"
+#include "../audio/IODataSource.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -34,33 +36,33 @@ int main(int argc, char* argv[])
    }
 
    int music_conversion;
-   music_conversion = XMIDI_CONVERT_MT32_TO_GM;
-   //music_conversion = XMIDI_CONVERT_MT32_TO_GS;
-   //music_conversion = XMIDI_CONVERT_MT32_TO_GS127;
-   //music_conversion = XMIDI_CONVERT_NOCONVERSION;
+   music_conversion = XMIDIFILE_CONVERT_MT32_TO_GM;
+   //music_conversion = XMIDIFILE_CONVERT_MT32_TO_GS;
+   //music_conversion = XMIDIFILE_CONVERT_MT32_TO_GS127;
+   //music_conversion = XMIDIFILE_CONVERT_NOCONVERSION;
 
-      // load xmi file
-   XMIDI midifile(music_conversion);
+   // load xmi file
+   Detail::InputDataSource inputSource(Base::MakeRWopsPtr(SDL_RWFromFile(argv[1], "rb")));
 
-   if (!midifile.Load(argv[1]))
+   XMidiFile midifile(&inputSource, music_conversion);
+
+   XMidiEventList* eventlist = midifile.GetEventList(0);
+
+   if (eventlist == NULL)
    {
-      printf("could not open file %s!\n", argv[1]);
+      printf("could not create event list!\n");
       return 1;
    }
 
-   XMIDIEventList *eventlist = midifile.GetEventList(0);
-
-   if (eventlist != NULL)
+   Base::SDL_RWopsPtr rwops = Base::MakeRWopsPtr(SDL_RWFromFile(argv[2], "wb"));
+   if (rwops == NULL)
    {
-      SDL_RWops *outf = SDL_RWFromFile(argv[2], "wb");
-
-      eventlist->Write(outf);
-
-      SDL_RWclose(outf);
-      SDL_FreeRW(outf);
+      printf("could not create output file %s\n", argv[2]);
+      return 2;
    }
-   else
-      printf("could not create event list!\n");
+
+   Detail::OutputDataSource outSource(rwops);
+   eventlist->write(&outSource);
 
    return 0;
 }
