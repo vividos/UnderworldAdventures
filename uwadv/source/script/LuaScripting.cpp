@@ -464,7 +464,7 @@ void LuaScripting::WaitDebuggerContinue()
       SDL_Delay(10); // TODO
 }
 
-//! registers a C function inside a table
+/// registers a C function inside a table
 #define lua_register_table(L, n, f) { \
    lua_pushstring(L, n); lua_pushcfunction(L, f); lua_settable(L,-3); }
 

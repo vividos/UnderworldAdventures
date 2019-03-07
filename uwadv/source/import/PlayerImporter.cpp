@@ -57,22 +57,22 @@ void PlayerImporter::LoadPlayer(Underworld::Player& player, const std::string& p
 
    player.SetName(std::string(buffer));
    /*
-      attrGender=0,     //!< 0 means male
-      attrHandedness=1, //!< 0 means left-handedness
-      attrAppearance=2, //!< values from 0..4
-      attrProfession=3, //!< values from 0..7, fighter, mage, bard, ...
+      attrGender=0,     ///< 0 means male
+      attrHandedness=1, ///< 0 means left-handedness
+      attrAppearance=2, ///< values from 0..4
+      attrProfession=3, ///< values from 0..7, fighter, mage, bard, ...
 
       attrWeariness=12,
-      attrPoisoned=14,    //!< 1 when poisoned
-      attrMentalState=15, //!< drunk, tripping, etc. 0 means normal
+      attrPoisoned=14,    ///< 1 when poisoned
+      attrMentalState=15, ///< drunk, tripping, etc. 0 means normal
       attrNightVision=16,
 
-      attrTalks=17,       //!< number of conversations
-      attrKills=18,       //!< number of successful kills
-      attrExperienceLevel=19,   //!< experience level
-      attrExperiencePoints=20,  //!< number of experience points
+      attrTalks=17,       ///< number of conversations
+      attrKills=18,       ///< number of successful kills
+      attrExperienceLevel=19,   ///< experience level
+      attrExperiencePoints=20,  ///< number of experience points
 
-      attrDifficulty=21,  //!< 0=easy, 1=normal
+      attrDifficulty=21,  ///< 0=easy, 1=normal
    */
    player.SetAttribute(Underworld::attrStrength, playerInfos[0x001E]);
    player.SetAttribute(Underworld::attrDexterity, playerInfos[0x001F]);
@@ -139,7 +139,7 @@ void PlayerImporter::LoadPlayer(Underworld::Player& player, const std::string& p
    */
 
    // runes
-   //! \todo wrong; rune A is stored in bit 7 of first word, not in bit 0
+   /// \todo wrong; rune A is stored in bit 7 of first word, not in bit 0
    Uint32 uiRunes = Uint32(playerInfos[0x0044]) ||
       (Uint32(playerInfos[0x0045]) << 8) ||
       (Uint32(playerInfos[0x0046]) << 16);

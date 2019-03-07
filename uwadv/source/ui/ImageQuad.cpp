@@ -23,14 +23,14 @@
 #include "ImageQuad.hpp"
 #include "Renderer.hpp"
 
-///! Does image quad initialisation; Window::create() is called and needed
-///  texture(s) are init'ed. When there's no palette for the image yet, palette
-///  0 is retrieved and set.
-///  The method is virtual and can be derived to do window/control specific
-///  init'ing before or after calling this method.
-///  \param game reference to game interface
-///  \param xpos x position on Screen
-///  \param ypos y position
+/// \brief Does image quad initialisation; Window::create() is called and needed
+/// texture(s) are init'ed. When there's no palette for the image yet, palette
+/// 0 is retrieved and set.
+/// The method is virtual and can be derived to do window/control specific
+/// init'ing before or after calling this method.
+/// \param game reference to game interface
+/// \param xpos x position on Screen
+/// \param ypos y position
 void ImageQuad::Init(IGame& game, unsigned int xpos,
    unsigned int ypos)
 {

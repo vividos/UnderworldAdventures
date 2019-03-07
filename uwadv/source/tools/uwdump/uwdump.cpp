@@ -29,9 +29,9 @@
 enum DumpCommand
 {
    commandNone = 0,
-   commandLevelDecoding,//!< level decoding
-   commandObjectProperties, //!< object properties dumping
-   commandModelDump, //!< builtin models dumping
+   commandLevelDecoding,///< level decoding
+   commandObjectProperties, ///< object properties dumping
+   commandModelDump, ///< builtin models dumping
 };
 
 bool isUw2 = false;

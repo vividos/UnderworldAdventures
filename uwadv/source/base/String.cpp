@@ -68,7 +68,7 @@ bool Base::String::ConvertToUnicode(const std::string& str, std::wstring& wstr)
 }
 
 /*
-//! \ todo implement for platforms other than Win32
+/// \todo implement for platforms other than Win32
 bool Base::String::ConvertToUTF8(const std::wstring& wstr, std::vector<Uint8>& vecUtf8Data)
 {
 #ifdef HAVE_WIN32
