@@ -84,9 +84,9 @@ void strpak_unpack_strings(const char *infile, const char *outputFilename)
 
    printf("writing output file %s ...\n", outputFilename);
 
-   std::stringstream buffer;
-   buffer << infile << ": " << stringBlocks.size() << " string blocks.";
-   out.WriteLine(buffer.str().c_str());
+   std::stringstream bufferHeader;
+   bufferHeader << infile << ": " << stringBlocks.size() << " string blocks.";
+   out.WriteLine(bufferHeader.str().c_str());
 
    // dump all blocks
    std::set<Uint16>::iterator iter, stop;
@@ -98,8 +98,10 @@ void strpak_unpack_strings(const char *infile, const char *outputFilename)
       std::vector<std::string> stringList = gs.GetStringBlock(blockId);
 
       out.WriteLine("");
-      buffer << "block: " << std::hex << std::setfill('0') << std::setw(4) << blockId << "; " << stringList.size() << " strings.";
-      out.WriteLine(buffer.str().c_str());
+
+      std::stringstream bufferBlock;
+      bufferBlock << "block: " << std::hex << std::setfill('0') << std::setw(4) << blockId << "; " << stringList.size() << " strings.";
+      out.WriteLine(bufferBlock.str().c_str());
 
       // print all strings in list
       unsigned int i, max = stringList.size();
@@ -112,8 +114,9 @@ void strpak_unpack_strings(const char *infile, const char *outputFilename)
          while ((pos = line.find('\n')) != std::string::npos)
             line.replace(pos, 1, "\\n");
 
-         buffer << i << ": " << line;
-         out.WriteLine(buffer.str().c_str());
+         std::stringstream bufferLine;
+         bufferLine << i << ": " << line;
+         out.WriteLine(bufferLine.str().c_str());
       }
    }
 
