@@ -51,7 +51,7 @@ namespace UnitTest
             Assert::IsTrue(false == Base::FileSystem::FolderExists(strPath));
             Assert::IsTrue(false == Base::FileSystem::FileExists(strPath));
          }
-         catch (Base::FileSystemException& ex)
+         catch (const Base::FileSystemException& ex)
          {
             ex;
             Assert::Fail();
@@ -75,7 +75,7 @@ namespace UnitTest
             // note: folder list must not contain "." or ".."
             Assert::IsTrue(vFileList.size() == 0);
          }
-         catch (Base::FileSystemException& ex)
+         catch (const Base::FileSystemException& ex)
          {
             ex;
             Assert::Fail();

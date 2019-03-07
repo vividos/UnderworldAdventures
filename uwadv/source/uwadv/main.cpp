@@ -45,14 +45,14 @@ int main(int argc, char* argv[])
       game.Done();
    }
 #ifndef HAVE_DEBUG
-   catch (Base::Exception& ex)
+   catch (const Base::Exception& ex)
    {
       std::string text("An unhandled exception was encountered:\n\r");
       text.append(ex.what());
 
       SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Underworld Adventures", text.c_str(), NULL);
    }
-   catch (std::exception& ex)
+   catch (const std::exception& ex)
    {
       UaTrace("caught std::exception: %s\n", ex.what());
       SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Underworld Adventures", "std::exception", NULL);
