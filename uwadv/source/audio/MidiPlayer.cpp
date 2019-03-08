@@ -61,7 +61,7 @@ void MidiPlayer::PlayFile(Base::SDL_RWopsPtr rwops, bool repeat)
    Detail::InputDataSource dataSource(rwops);
 
    XMidiFile* xmidiFile = new XMidiFile(&dataSource, XMIDIFILE_CONVERT_MT32_TO_GM);
-   m_xmidiFile = std::auto_ptr<XMidiFile>(xmidiFile);
+   m_xmidiFile = std::unique_ptr<XMidiFile>(xmidiFile);
 
    // get event list of track 0 (uw .xmi's always only have track 0)
    XMidiEventList* xmiEventList = xmidiFile->GetEventList(0);
