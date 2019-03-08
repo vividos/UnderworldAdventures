@@ -29,6 +29,12 @@
 /// main function
 int main(int argc, char* argv[])
 {
+#ifndef HAVE_DEBUG
+   // redirect stdout and stderr, since SDL2 doesn't do that for us anymore
+   FILE* redirectedStdout = freopen("stdout.txt", "wt", stdout);
+   FILE* redirectedStderr = freopen("stderr.txt", "wt", stderr);
+#endif
+
 #ifndef HAVE_DEBUG // in debug mode the debugger catches the exceptions
    try
 #endif
@@ -57,6 +63,14 @@ int main(int argc, char* argv[])
       UaTrace("caught std::exception: %s\n", ex.what());
       SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Underworld Adventures", "std::exception", NULL);
    }
+#endif
+
+#ifndef HAVE_DEBUG
+   fflush(redirectedStdout);
+   fclose(redirectedStdout);
+
+   fflush(redirectedStderr);
+   fclose(redirectedStderr);
 #endif
 
    return 0;
