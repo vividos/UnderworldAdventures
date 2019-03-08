@@ -22,7 +22,6 @@
 #pragma once
 
 #include "CodeVM.hpp"
-#include "IDebugServer.hpp"
 
 namespace Underworld
 {
@@ -72,45 +71,5 @@ namespace Conv
       /// object position of conversation partner
       Uint16 m_conversationObjectPos;
    };
-
-#if 0
-   /// \todo move to own file
-   class ConversationDebugger : public Conversation, public ICodeDebugger
-   {
-   public:
-      ConversationDebugger();
-
-      /// inits debuggable conversation
-      virtual void Init(unsigned int conv_level, Uint16 conv_objpos,
-         IBasicGame& game, ICodeCallback* codeCallback,
-         std::vector<std::string>& localStrings);
-
-      /// cleans up debuggable conversation
-      virtual void Done(IBasicGame& game);
-
-   protected:
-      // virtual methods from ICodeDebugger
-      virtual DebugServerCodeDebuggerType GetDebuggerType();
-      virtual void PrepareDebugInfo();
-      virtual DebugServerCodeDebuggerState GetDebuggerState() const;
-      virtual void SetDebuggerState(DebugServerCodeDebuggerState state);
-      virtual DebugServerCodeDebuggerCommand GetDebuggerCommand() const;
-      virtual void SetDebuggerCommand(DebugServerCodeDebuggerCommand command);
-      virtual void GetCurrentPos(unsigned int& sourcefileIndex, unsigned int& sourcefileLine,
-         unsigned int& codePosition, bool& isSourcefileValid);
-      virtual unsigned int GetNumSourcefiles() const;
-      virtual unsigned int GetSourcefileName(unsigned int index, char* buffer, unsigned int len);
-      virtual unsigned int GetNumBreakpoints();
-      virtual void GetBreakpointInfo(unsigned int breakpointIndex,
-         unsigned int& sourcefileIndex, unsigned int& sourcefileLine,
-         unsigned int& codePosition, bool& visible);
-
-   protected:
-      std::string temp_decompile;
-
-      DebugServerCodeDebuggerState state;
-      DebugServerCodeDebuggerCommand command;
-   };
-#endif
 
 } // namespace Conv

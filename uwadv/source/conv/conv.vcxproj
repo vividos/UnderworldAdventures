@@ -75,6 +75,7 @@
     <ClInclude Include="CodeVM.hpp" />
     <ClInclude Include="Conversation.hpp" />
     <ClInclude Include="CodeGraph.hpp" />
+    <ClInclude Include="ConversationDebugger.hpp" />
     <ClInclude Include="ConvStack.hpp" />
     <ClInclude Include="Opcodes.hpp" />
   </ItemGroup>
