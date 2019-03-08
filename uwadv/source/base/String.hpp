@@ -34,11 +34,11 @@ namespace Base
       /// converts a string to uppercase
       void Uppercase(std::string& str);
 
-      /// converts a string to unicode
-      bool ConvertToUnicode(const std::string& str, std::wstring& wstr);
+      /// converts an UTF-8 string to  unicode string
+      std::wstring ConvertToUnicode(const std::string& utf8str);
 
-      /// converts a string to UTF8 representation of unicode
-      //bool ConvertToUTF8(const std::wstring& wstr, std::vector<Uint8>& vecUtf8Data);
+      /// converts an unicode string to UTF-8 representation
+      std::string ConvertToUTF8(const std::wstring& wstr);
    }
 
 } // namespace Base

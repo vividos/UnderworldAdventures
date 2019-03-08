@@ -45,8 +45,6 @@ namespace UnitTest
       }
 
       /// Tests conversion to unicode and UTF8
-      /// Note: UTF8 conversion test is currently commented out, since it isn't
-      /// implemented.
       TEST_METHOD(TestConversion)
       {
          const char* c_cstrTestString = "abcd1234";
@@ -54,19 +52,17 @@ namespace UnitTest
 
          // conversion to unicode
          std::string str1(c_cstrTestString);
-         std::wstring wstr1;
-         Assert::IsTrue(true == Base::String::ConvertToUnicode(str1, wstr1));
+         std::wstring wstr1 = Base::String::ConvertToUnicode(str1);
 
          Assert::IsTrue(wstr1 == c_cstrTestStringW);
 
          // conversion to UTF8
-         //std::wstring wstr2(L"\xfeff");
-         //std::vector<Uint8> vData;
-         //Assert::IsTrue(true == Base::String::ConvertToUTF8(wstr2, vData));
-         //Assert::IsTrue(vData.size() == 3);
+         std::wstring wstr2(L"\xfeff");
+         std::string utf8data = Base::String::ConvertToUTF8(wstr2);
+         Assert::IsTrue(utf8data.size() == 3);
 
-         //Uint8 auiData[] = { 0xef, 0xbb, 0xbf };
-         //Assert::IsTrue(0 == memcmp(auiData, &vData[0], 3));
+         Uint8 data[] = { 0xef, 0xbb, 0xbf };
+         Assert::IsTrue(0 == memcmp(data, utf8data.data(), 3));
       }
    };
 } // namespace UnitTest

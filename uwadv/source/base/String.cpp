@@ -23,6 +23,7 @@
 #include "String.hpp"
 #include <algorithm>
 #include <cctype>
+#include <codecvt>
 
 void Base::String::Lowercase(std::string& str)
 {
@@ -36,37 +37,14 @@ void Base::String::Uppercase(std::string& str)
       [](char c) -> char { return static_cast<char>(std::toupper(c)); });
 }
 
-bool Base::String::ConvertToUnicode(const std::string& str, std::wstring& wstr)
+std::wstring Base::String::ConvertToUnicode(const std::string& utf8str)
 {
-   size_t iSize = mbstowcs(NULL, str.c_str(), 0);
-   if (iSize <= 0)
-      return false;
-
-   wstr.resize(iSize);
-   return -1 != mbstowcs(&*wstr.begin(), str.c_str(), wstr.size());
+   std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
+   return conv.from_bytes(utf8str);
 }
 
-/*
-/// \todo implement for platforms other than Win32
-bool Base::String::ConvertToUTF8(const std::wstring& wstr, std::vector<Uint8>& vecUtf8Data)
+std::string Base::String::ConvertToUTF8(const std::wstring& wstr)
 {
-#ifdef HAVE_WIN32
-   int iSize = ::WideCharToMultiByte(CP_UTF8, 0,
-      wstr.c_str(), static_cast<int>(wstr.size()),
-      NULL, 0,
-      NULL, NULL);
-
-   vecUtf8Data.resize(iSize);
-
-   int iRet = ::WideCharToMultiByte(CP_UTF8, 0,
-      wstr.c_str(), static_cast<int>(wstr.size()),
-      reinterpret_cast<LPSTR>(&vecUtf8Data[0]), iSize,
-      NULL, NULL);
-
-   return iRet != 0;
-#else
-   // implement UTF8 conversion
-   return false;
-#endif
+   std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
+   return conv.to_bytes(wstr);
 }
-*/
