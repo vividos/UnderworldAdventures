@@ -1494,6 +1494,9 @@ bool CodeGraph::FindAndAddNextSwitchCase(graph_iterator& expressionIter, graph_i
 
       if (next_expr_iter->m_type != typeExpression || next_expr_iter->m_isProcessed)
          return false; // no expression; maybe we found an if without else statement
+
+      if (next_expr_iter->expression_data.expression.find(" == ") == std::string::npos)
+         return false; // no expression that contains a comparison
    }
 
    if (switchEnd == 0)
@@ -1526,11 +1529,21 @@ bool CodeGraph::FindAndAddNextSwitchCase(graph_iterator& expressionIter, graph_i
 
    // add case statement
    {
-      std::string::size_type pos = expression.find(" == ");
-      std::string case_value = expression.substr(pos + 4);
-
       std::ostringstream buffer;
-      buffer << "case " << case_value << ":";
+
+      std::string::size_type pos = expression.find(" == ");
+      if (pos != std::string::npos)
+      {
+         std::string case_value = expression.substr(pos + 4);
+
+         buffer << "case " << case_value << ":";
+      }
+      else
+      {
+         // no expression "variable == value" found; give up
+         UaAssert(false);
+         return false;
+      }
 
       CodeGraphItem& caseStatement = AddStatement(case_iter, buffer.str());
       caseStatement.statement_data.indent_change_after = 1;
