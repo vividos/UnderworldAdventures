@@ -36,7 +36,7 @@ namespace Underworld
 namespace Import
 {
    /// imports player
-   class PlayerImporter : public Base::NonCopyable
+   class PlayerImporter
    {
    public:
       /// ctor

@@ -199,7 +199,7 @@ namespace Detail
 
 
    /// keymap config file loader
-   class KeymapConfigLoader : public Base::NonCopyable
+   class KeymapConfigLoader
    {
    public:
       /// ctor
@@ -221,6 +221,13 @@ namespace Detail
 
       /// sets key type and value in map
       void SetKeyValue(KeyType& key, const std::string& keyValue);
+
+   private:
+      /// deleted copy ctor
+      KeymapConfigLoader(const KeymapConfigLoader&) = delete;
+
+      /// deleted assignment operator
+      KeymapConfigLoader& operator=(const KeymapConfigLoader&) = delete;
 
    private:
       /// reference to config file being loade

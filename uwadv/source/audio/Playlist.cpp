@@ -33,7 +33,7 @@ namespace Detail
    /// can contain, among the placeholders recognized by
    /// ResourceManager, the placeholder %uw-path%
    /// that specifies the current uw path. \todo fix description
-   class PlaylistLoader : public Base::NonCopyable
+   class PlaylistLoader
    {
    public:
       /// ctor
@@ -47,6 +47,13 @@ namespace Detail
 
       /// loads playlist
       void Load();
+
+   private:
+      /// deleted copy ctor
+      PlaylistLoader(const PlaylistLoader&) = delete;
+
+      /// deleted assignment operator
+      PlaylistLoader& operator=(const PlaylistLoader&) = delete;
 
    private:
       /// text file to load playlist from

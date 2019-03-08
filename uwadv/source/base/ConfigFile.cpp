@@ -28,7 +28,7 @@
 namespace Detail
 {
    /// config file loader class
-   class ConfigFileLoader : public Base::NonCopyable
+   class ConfigFileLoader
    {
    public:
       /// ctor without saving file
@@ -46,6 +46,13 @@ namespace Detail
 
       /// returns if config file is open
       bool IsOutputFileOpen() const { return m_outputFile.IsOpen(); }
+
+   private:
+      /// deleted copy ctor
+      ConfigFileLoader(const ConfigFileLoader&) = delete;
+
+      /// deleted assignment operator
+      ConfigFileLoader& operator=(const ConfigFileLoader&) = delete;
 
    private:
       /// indicates if config file is being rewritten

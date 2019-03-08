@@ -59,7 +59,7 @@ namespace Import
 
 
    /// imports levels
-   class LevelImporter : public Base::NonCopyable
+   class LevelImporter
    {
    public:
       /// ctor

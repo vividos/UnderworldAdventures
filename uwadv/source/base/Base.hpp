@@ -96,28 +96,6 @@ int UaTracePrintf(const char *fmt, ...);
 # define UaTrace true ? 0 : UaTracePrintf
 #endif
 
-/// \brief Base classes namespace
-/// \details Contains all base classes, functions and types used in uwadv.
-namespace Base
-{
-   /// \brief Base class for noncopyable classes
-   /// Base class to prevent a derived class from being copyable (e.g. to put
-   /// into a container).
-   /// \todo replace with C++11 deleted ctor
-   class NonCopyable
-   {
-   public:
-      /// ctor; derived classes must be publicly constructible
-      NonCopyable() {}
-   private:
-      /// copy ctor; derived classes must not be able to copy construct
-      NonCopyable(const NonCopyable&);
-      /// assignment operator; same as with copy ctor
-      NonCopyable& operator=(const NonCopyable&);
-   };
-
-} // namespace Base
-
 #include "Exception.hpp"
 #include "String.hpp"
 #include <memory>
@@ -125,6 +103,8 @@ namespace Base
 
 struct SDL_RWops;
 
+/// \brief Base classes namespace
+/// \details Contains all base classes, functions and types used in uwadv.
 namespace Base
 {
    /// smart pointer to SDL_RWops struct

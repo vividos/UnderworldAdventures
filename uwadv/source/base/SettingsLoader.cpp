@@ -30,7 +30,7 @@ namespace Detail
    std::string GetPersonalFolderPath();
 
    /// settings loader
-   class SettingsLoader : public Base::NonCopyable
+   class SettingsLoader
    {
    public:
       /// ctor
@@ -53,6 +53,13 @@ namespace Detail
    protected:
       /// resolves placeholder in path to create a valid path
       void ResolvePath(std::string& path);
+
+   private:
+      /// deleted copy ctor
+      SettingsLoader(const SettingsLoader&) = delete;
+
+      /// deleted assignment operator
+      SettingsLoader& operator=(const SettingsLoader&) = delete;
 
    private:
       /// settings to load

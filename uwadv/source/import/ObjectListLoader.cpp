@@ -28,7 +28,7 @@ using Import::GetBits;
 namespace Detail
 {
    /// loads object list
-   class ObjectListLoader : public Base::NonCopyable
+   class ObjectListLoader
    {
    public:
       /// ctor
@@ -51,6 +51,13 @@ namespace Detail
 
       /// adds NPC infos to object
       void AddNpcInfos(Underworld::ObjectPtr& obj, Uint8* npcInfos);
+
+   private:
+      /// deleted copy ctor
+      ObjectListLoader(const ObjectListLoader&) = delete;
+
+      /// deleted assignment operator
+      ObjectListLoader& operator=(const ObjectListLoader&) = delete;
 
    private:
       /// object list
