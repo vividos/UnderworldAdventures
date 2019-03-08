@@ -22,6 +22,7 @@
 #include "Import.hpp"
 #include "LevelImporter.hpp"
 #include "Tilemap.hpp"
+#include "Constants.hpp"
 
 using Import::LevelImporter;
 using Import::TileStartLinkList;

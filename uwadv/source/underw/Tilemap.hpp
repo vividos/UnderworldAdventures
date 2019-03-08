@@ -22,6 +22,7 @@
 #pragma once
 
 #include "Base.hpp"
+#include "Constants.hpp"
 #include <vector>
 #include <set>
 

@@ -114,6 +114,7 @@
     <ClInclude Include="ArchiveFile.hpp" />
     <ClInclude Include="Base.hpp" />
     <ClInclude Include="ConfigFile.hpp" />
+    <ClInclude Include="Constants.hpp" />
     <ClInclude Include="Exception.hpp" />
     <ClInclude Include="File.hpp" />
     <ClInclude Include="FileSystem.hpp" />

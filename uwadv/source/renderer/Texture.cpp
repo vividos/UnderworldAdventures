@@ -21,6 +21,7 @@
 //
 #include "common.hpp"
 #include "Texture.hpp"
+#include "Constants.hpp"
 #include "GameInterface.hpp"
 #include "TextureLoader.hpp"
 #include <gl/GLU.h>
@@ -212,7 +213,7 @@ void TextureManager::Init(IGame& game)
       wallTexturesFilename.append(
          settings.GetBool(Base::settingUw1IsUwdemo) ? "data/dw64.tr" : "data/w64.tr");
 
-      Import::TextureLoader::LoadTextures(m_allStockTextureImages, c_stockTextureWall,
+      Import::TextureLoader::LoadTextures(m_allStockTextureImages, Base::c_stockTexturesWall,
          wallTexturesFilename.c_str(), m_palette0);
 
       // load all floor textures
@@ -220,12 +221,12 @@ void TextureManager::Init(IGame& game)
       floorTexturesFilename.append(
          settings.GetBool(Base::settingUw1IsUwdemo) ? "data/df32.tr" : "data/f32.tr");
 
-      Import::TextureLoader::LoadTextures(m_allStockTextureImages, c_stockTextureFloor,
+      Import::TextureLoader::LoadTextures(m_allStockTextureImages, Base::c_stockTexturesFloor,
          floorTexturesFilename.c_str(), m_palette0);
 
       // load objects
       {
-         m_allStockTextureImages.resize(c_stockTextureObjects);
+         m_allStockTextureImages.resize(Base::c_stockTexturesObjects);
 
          // add images to list; we can do this, since the list isn't clear()ed
          // before adding more images
@@ -234,19 +235,19 @@ void TextureManager::Init(IGame& game)
 
       // load switches/levers/pull chains
       {
-         m_allStockTextureImages.resize(c_stockTextureSwitches);
+         m_allStockTextureImages.resize(Base::c_stockTexturesSwitches);
          game.GetImageManager().LoadList(m_allStockTextureImages, "tmflat");
       }
 
       // load door textures
       {
-         m_allStockTextureImages.resize(c_stockTextureDoor);
+         m_allStockTextureImages.resize(Base::c_stockTexturesDoors);
          game.GetImageManager().LoadList(m_allStockTextureImages, "doors");
       }
 
       // load tmobj textures
       {
-         m_allStockTextureImages.resize(c_stockTextureTmobj);
+         m_allStockTextureImages.resize(Base::c_stockTexturesTmobj);
          game.GetImageManager().LoadList(m_allStockTextureImages, "tmobj");
       }
 
@@ -274,7 +275,7 @@ void TextureManager::Init(IGame& game)
       std::string texturesFilename(settings.GetString(Base::settingUnderworldPath));
       texturesFilename.append("data/t64.tr");
 
-      Import::TextureLoader::LoadTextures(m_allStockTextureImages, c_stockTextureWall,
+      Import::TextureLoader::LoadTextures(m_allStockTextureImages, Base::c_stockTexturesWall,
          texturesFilename.c_str(), m_palette0);
 
       m_stockTextureAnimationInfos.resize(m_allStockTextureImages.size(),
@@ -343,7 +344,7 @@ void TextureManager::Prepare(unsigned int index)
    if (maxPaletteIndex == 1)
    {
       // only allow mipmaps for non-object images
-      bool mipmap = (index < c_stockTextureObjects) || (index > c_stockTextureObjects + 0x0200);
+      bool mipmap = (index < Base::c_stockTexturesObjects) || (index > Base::c_stockTexturesObjects + 0x0200);
 
       // unanimated texture
       // convert to texture object

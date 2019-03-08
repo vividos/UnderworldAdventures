@@ -26,6 +26,7 @@
 #include "Model3D.hpp"
 #include "Underworld.hpp"
 #include "GameInterface.hpp"
+#include "Constants.hpp"
 #include <SDL_opengl.h>
 #include <gl/GLU.h>
 
@@ -342,14 +343,14 @@ void Renderer::PrepareLevel(Underworld::Level& level)
 
    // prepare all switch, door and tmobj textures
    {
-      for (unsigned int n = 0; n < 16; n++) textureManager.Prepare(c_stockTextureSwitches + n);
-      for (unsigned int n = 0; n < 13; n++) textureManager.Prepare(c_stockTextureDoor + n);
-      for (unsigned int n = 0; n < 33; n++) textureManager.Prepare(c_stockTextureTmobj + n);
+      for (unsigned int n = 0; n < 16; n++) textureManager.Prepare(Base::c_stockTexturesSwitches + n);
+      for (unsigned int n = 0; n < 13; n++) textureManager.Prepare(Base::c_stockTexturesDoors + n);
+      for (unsigned int n = 0; n < 33; n++) textureManager.Prepare(Base::c_stockTexturesTmobj + n);
    }
 
    // prepare all object images
    {
-      for (unsigned int n = 0; n < 0x01c0; n++) textureManager.Prepare(c_stockTextureObjects + n);
+      for (unsigned int n = 0; n < 0x01c0; n++) textureManager.Prepare(Base::c_stockTexturesObjects + n);
    }
 
    UaTrace("done\npreparing critter images... ");

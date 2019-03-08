@@ -118,5 +118,8 @@
     <ClInclude Include="..\IUserInterface.hpp">
       <Filter>Common Include Files</Filter>
     </ClInclude>
+    <ClInclude Include="Constants.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

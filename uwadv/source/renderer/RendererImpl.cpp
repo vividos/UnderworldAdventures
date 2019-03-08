@@ -23,6 +23,7 @@
 #include "RendererImpl.hpp"
 #include "Quadtree.hpp"
 #include "GeometryProvider.hpp"
+#include "Constants.hpp"
 
 /// \brief height scale factor
 /// This value scales down underworld z coordinates to coordinates in the
@@ -258,7 +259,7 @@ void RendererImpl::RenderObject(const Underworld::Level& level,
             itemId = 0x00e0; // generic rune-on-the-floor item
 
          // normal object
-         m_textureManager.Use(itemId + c_stockTextureObjects);
+         m_textureManager.Use(itemId + Base::c_stockTexturesObjects);
          RenderSprite(base, 0.5*quadWidth, quadWidth, false, 1.0, 1.0);
       }
 }
@@ -304,19 +305,19 @@ void RendererImpl::RenderDecal(const Object& obj, unsigned int x, unsigned int y
    switch(itemId)
    {
    case 0x0161: // a_lever
-      tex = obj.GetObjectInfo().flags + 4 + c_stockTextureTmobj;
+      tex = obj.GetObjectInfo().flags + 4 + c_stockTexturesTmobj;
       break;
 
    case 0x0162: // a_switch
-      tex = obj.GetObjectInfo().flags + 12 + c_stockTextureTmobj;
+      tex = obj.GetObjectInfo().flags + 12 + c_stockTexturesTmobj;
       break;
 
    case 0x0166: // some_writing
-      tex = (obj.GetObjectInfo().flags & 7) + 20 + c_stockTextureTmobj;
+      tex = (obj.GetObjectInfo().flags & 7) + 20 + c_stockTexturesTmobj;
       break;
 
    default: // 0x017x
-      tex = (itemId & 15) + c_stockTextureSwitches;
+      tex = (itemId & 15) + c_stockTextureswitches;
       break;
    }
 
@@ -403,7 +404,7 @@ void RendererImpl::RenderTmapObject(const Object& obj, unsigned int x, unsigned 
 
 #ifdef HAVE_DEBUG
    // render "tmap_c" or "tmap_s" overlay
-   GetTextureManager().use(obj.GetObjectInfo().m_itemID+c_stockTextureObjects);
+   GetTextureManager().use(obj.GetObjectInfo().m_itemID+c_stockTexturesObjects);
 
    glBegin(GL_QUADS);
    glTexCoord2d(u2,v2); glVertex3d(pos.x+dir.x, pos.y+dir.y, pos.z);

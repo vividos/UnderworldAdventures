@@ -22,6 +22,7 @@
 #include "Import.hpp"
 #include "LevelImporter.hpp"
 #include "ObjectList.hpp"
+#include "Constants.hpp"
 
 using Import::GetBits;
 

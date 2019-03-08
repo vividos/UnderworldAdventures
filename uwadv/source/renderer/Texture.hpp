@@ -34,19 +34,6 @@
 class TextureManager;
 class IGame;
 
-/// start of stock wall textures
-const unsigned int c_stockTextureWall = 0x0000;
-/// start of stock floor textures
-const unsigned int c_stockTextureFloor = 0x0100;
-/// object textures
-const unsigned int c_stockTextureObjects = 0x0200;
-/// switch/lever/pull chain textures
-const unsigned int c_stockTextureSwitches = 0x0400;
-/// door textures
-const unsigned int c_stockTextureDoor = 0x0410;
-/// tmobj textures
-const unsigned int c_stockTextureTmobj = 0x0420;
-
 /// \brief texture class; represents one or more texture images
 /// The Texture class can be used to store and upload textures to OpenGL.
 /// Textures are usually of size 2^n x 2^m (where n and m are integral

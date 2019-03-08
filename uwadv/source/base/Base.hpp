@@ -113,21 +113,4 @@ namespace Base
    /// creates SDL_RWops shared ptr from pointer
    SDL_RWopsPtr MakeRWopsPtr(SDL_RWops* rwops);
 
-
-   // stock texture indices
-   // \todo move to more appropriate place
-
-   /// start of stock wall textures
-   const Uint16 c_stockTexturesWall = 0x0000;
-   /// start of stock floor textures
-   const Uint16 c_stockTexturesFloor = 0x0100;
-   /// object textures
-   const Uint16 c_stockTexturesObjects = 0x0200;
-   /// switch/lever/pull chain textures
-   const Uint16 c_stockTexturesSwitches = 0x0400;
-   /// door textures
-   const Uint16 c_stockTexturesDoors = 0x0410;
-   /// tmobj textures
-   const Uint16 c_stockTexturesTmobj = 0x0420;
-
 } // namespace Base
