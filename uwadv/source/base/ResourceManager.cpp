@@ -31,13 +31,6 @@
 using Base::ResourceManager;
 using Base::Settings;
 
-namespace Detail
-{
-   std::string GetHomePath();
-
-} // namespace Detail
-
-
 /// The settingUadataPath setting must be set in the settings object.
 ResourceManager::ResourceManager(const Settings& settings)
    :m_uadataPath(settings.GetString(Base::settingUadataPath)),
