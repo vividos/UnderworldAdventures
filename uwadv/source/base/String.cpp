@@ -22,39 +22,18 @@
 #include "Base.hpp"
 #include "String.hpp"
 #include <algorithm>
-
-namespace Detail
-{
-   /// functor for std::transform to change a string to lowercase or uppercase
-   /// \todo replace with lambda function
-   class CaseChangeFunctor
-   {
-   public:
-      /// ctor
-      /// \param bToLower when true, a lowercase operation is provided, else a uppercase op.
-      CaseChangeFunctor(bool toLower)
-         :toLower(toLower)
-      {
-      }
-
-      /// function operator for use in algorithms
-      char operator()(char ch) { return static_cast<char>(toLower ? tolower(ch) : toupper(ch)); }
-
-   private:
-      /// type of case change
-      bool toLower;
-   };
-
-}
+#include <cctype>
 
 void Base::String::Lowercase(std::string& str)
 {
-   std::transform(str.begin(), str.end(), str.begin(), Detail::CaseChangeFunctor(true));
+   std::transform(str.begin(), str.end(), str.begin(),
+      [](char c) -> char { return static_cast<char>(std::tolower(c)); });
 }
 
 void Base::String::Uppercase(std::string& str)
 {
-   std::transform(str.begin(), str.end(), str.begin(), Detail::CaseChangeFunctor(false));
+   std::transform(str.begin(), str.end(), str.begin(),
+      [](char c) -> char { return static_cast<char>(std::toupper(c)); });
 }
 
 bool Base::String::ConvertToUnicode(const std::string& str, std::wstring& wstr)
