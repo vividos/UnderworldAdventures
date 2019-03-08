@@ -420,6 +420,9 @@ namespace Conv
       /// converts data type to string
       static const char* DataTypeToString(DataType type);
 
+      /// gets function name for function at given pos
+      static std::string GetFunctionName(Uint16 pos);
+
    private:
       /// conversation graph
       GraphList m_graph;

@@ -335,12 +335,10 @@ bool CodeGraph::FindFunctionEntryPoint(graph_iterator& iter, graph_iterator stop
             std::setw(4) << std::setbase(16) << opcode_item.m_pos;
          opcode_item.m_labelName = buffer.str();
       }
-      else
-         if (opcode_item.m_labelName.find("label_") == 0)
-         {
-            // label to func
-            opcode_item.m_labelName.replace(0, 6, "func_");
-         }
+   else if (opcode_item.m_labelName.find("label_") == 0)
+   {
+      opcode_item.m_labelName = GetFunctionName(opcode_item.m_pos);
+   }
 
    func_item.m_labelName = opcode_item.m_labelName;
    opcode_item.m_labelName = "";
@@ -1089,8 +1087,7 @@ void CodeGraph::CombineCallOperator(graph_iterator operatorIter,
    }
    else
    {
-      buffer << "func_" << std::setfill('0') <<
-         std::setw(4) << std::setbase(16) << operatorIter->operator_data.op_arg;
+      buffer << GetFunctionName(operatorIter->operator_data.op_arg);
    }
 
    buffer << "(";
@@ -2029,4 +2026,58 @@ const char* CodeGraph::DataTypeToString(Conv::DataType type)
       UaAssert(false);
       return "unknown";
    }
+}
+
+std::string CodeGraph::GetFunctionName(Uint16 pos)
+{
+   std::ostringstream buffer;
+
+   switch (pos)
+   {
+   case 0x0012:
+      buffer << "set_global_and_exit";
+      break;
+
+   case 0x0081: // uw1
+   case 0x008b: // uw1
+   case 0x0110: // uw2
+      buffer << "target_player_and_exit";
+      break;
+
+   case 0x00b1: // uw1
+   case 0x0136: // uw2
+      buffer << "set_npc_attitude_and_exit";
+      break;
+
+   case 0x00c2: // uw1
+      buffer << "set_npc_attitude_2_and_exit";
+      break;
+
+   case 0x00d1: // uw1
+      buffer << "set_npc_attitude_1_and_exit";
+      break;
+
+   case 0x00e0:
+      buffer << "set_global_and_exit2";
+      break;
+
+   case 0x00ea:
+      buffer << "get_game_time";
+      break;
+
+   case 0x0106:
+      buffer << "subtract_and_check_game_time";
+      break;
+
+   case 0x018f:
+      buffer << "subtract_and_compare_game_times";
+      break;
+
+   default:
+      buffer << "func_" << std::setfill('0') <<
+         std::setw(4) << std::setbase(16) << pos;
+      break;
+   }
+
+   return buffer.str();
 }
