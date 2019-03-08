@@ -34,7 +34,8 @@ m_strings(strings)
 {
    Conv::CodeVM codeVM;
 
-   Import::LoadConvCode(codeVM, (basePath + "data/cnv.ark").c_str(), conversationNumber);
+   if (!Import::LoadConvCode(codeVM, (basePath + "data/cnv.ark").c_str(), conversationNumber))
+      return;
 
    std::vector<std::string> stringBlock = strings.GetStringBlock(0x0e00 + conversationNumber);
 
@@ -60,6 +61,14 @@ void Decompiler::Write(FILE* fd)
    fputs(m_strings.GetString(7, m_conversationNumber + 16).c_str(), fd);
    fputs("\n\n", fd);
    fflush(fd);
+
+   if (m_codeGraph == NULL ||
+      m_codeGraph->GetGraph().empty())
+   {
+      fputs("; conversation contained no code\n", fd);
+      fflush(fd);
+      return;
+   }
 
    int indentLevel = 0;
    const Conv::CodeGraph::GraphList& g = m_codeGraph->GetGraph();
