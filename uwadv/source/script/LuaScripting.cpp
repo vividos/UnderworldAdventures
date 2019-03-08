@@ -477,7 +477,7 @@ void LuaScripting::RegisterFunctions()
    lua_newtable(L);
    lua_register_table(L, "print", PrintScroll);
    lua_register_table(L, "get_string", uw_get_string);
-   lua_register_table(L, "ChangeLevel", uw_change_level);
+   lua_register_table(L, "change_level", uw_change_level);
    lua_register_table(L, "start_conv", uw_start_conv);
    lua_setglobal(L, "uw");
 
@@ -486,9 +486,9 @@ void LuaScripting::RegisterFunctions()
    lua_register_table(L, "get_info", player_get_info);
    lua_register_table(L, "set_info", player_set_info);
    lua_register_table(L, "get_attr", player_get_attr);
-   lua_register_table(L, "SetAttribute", player_set_attr);
+   lua_register_table(L, "set_attribute", player_set_attr);
    lua_register_table(L, "get_skill", player_get_skill);
-   lua_register_table(L, "SetSkill", player_set_skill);
+   lua_register_table(L, "set_skill", player_set_skill);
    lua_setglobal(L, "player");
 
    // objectList object
@@ -516,8 +516,8 @@ void LuaScripting::RegisterFunctions()
    // conv object
    lua_newtable(L);
    lua_register_table(L, "is_avail", conv_is_avail);
-   lua_register_table(L, "GetGlobal", conv_get_global);
-   lua_register_table(L, "SetGlobal", conv_set_global);
+   lua_register_table(L, "get_global", conv_get_global);
+   lua_register_table(L, "set_global", conv_set_global);
    lua_setglobal(L, "conv");
 
    // quest object
