@@ -141,7 +141,7 @@ void GameStringsImporter::LoadStringBlock(Uint16 blockId)
          int node = nodenum - 1; // starting node
 
          // huffman tree decode loop
-         while (char(m_allNodes[node].left) != -1 && char(m_allNodes[node].left) != -1)
+         while (char(m_allNodes[node].left) != -1 && char(m_allNodes[node].right) != -1)
          {
             if (bit == 0)
             {
