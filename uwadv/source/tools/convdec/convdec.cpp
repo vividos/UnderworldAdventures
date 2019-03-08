@@ -153,7 +153,7 @@ int main(int argc, char* argv[])
       printf("syntax: convdec <basepath> <slotnumber>\n"
          "   basepath is the path to the uw1 or uw2 folder.\n"
          "   slotnumber is the conversation slot number to decompile, either\n"
-         "   as decimal or hex\n");
+         "   as decimal or hex; slotnumber can also be * to decompile all conversations\n");
       printf("example: convdev . 0x0001\n"
          "         convdev \"c:\\uw1\\\" 42\n\n");
       return 1;
@@ -174,8 +174,22 @@ int main(int argc, char* argv[])
    Import::GameStringsImporter importer(gameStrings);
    importer.LoadStringsPakFile((basePath + "data/strings.pak").c_str());
 
-   Conv::Decompiler cnvdec(slotNumber, basePath, gameStrings);
-   cnvdec.Write(stdout);
+   if (slotText != "*")
+   {
+      Conv::Decompiler cnvdec(slotNumber, basePath, gameStrings);
+      cnvdec.Write(stdout);
+   }
+   else
+   {
+      for (slotNumber = 0; slotNumber < 0x1ff; slotNumber++)
+      {
+         if (gameStrings.IsBlockAvail(0x0e00 + slotNumber))
+         {
+            Conv::Decompiler cnvdec(slotNumber, basePath, gameStrings);
+            cnvdec.Write(stdout);
+         }
+      }
+   }
 
    return 0;
 }
