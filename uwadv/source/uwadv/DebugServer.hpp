@@ -27,6 +27,7 @@
 #include "IDebugServer.hpp"
 
 class IBasicGame;
+class DebuggerLibContext;
 
 /// debug server message that gets sent to client
 struct DebugServerMessage
@@ -52,20 +53,6 @@ struct DebugServerMessage
 
    /// message text
    std::string messageText;
-};
-
-class DebuggerLibContext
-{
-public:
-   virtual ~DebuggerLibContext() {}
-   /// inits debug server
-   virtual void Init() {}
-   /// cleans up debug server
-   virtual void Done() {}
-   /// returns if debugger is available
-   virtual bool IsAvail() { return false; }
-   /// starts debugger
-   virtual void StartDebugger(IDebugServer* server) { server; }
 };
 
 /// server side class for underworld debugger
@@ -174,7 +161,7 @@ protected:
 
 protected:
    /// debug library context
-   DebuggerLibContext* m_debugLibrary;
+   std::unique_ptr<DebuggerLibContext> m_debugLibrary;
 
    /// debug thread
    SDL_Thread* m_debuggerThread;

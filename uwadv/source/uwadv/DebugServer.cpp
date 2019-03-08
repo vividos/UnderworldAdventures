@@ -28,72 +28,50 @@
 #include "IndexedImage.hpp"
 #include <algorithm>
 
-#ifdef WIN32
-/// win32 debug lib context
-class DebuggerLibContextWin32 : public DebuggerLibContext
+/// debugger lib context
+class DebuggerLibContext
 {
 public:
-   DebuggerLibContextWin32()
-      :m_dll(NULL)
+   /// ctor; inits debug server
+   DebuggerLibContext()
    {
+      // SDL adds the .dll or .so extension
+      m_uadebugLib = SDL_LoadObject("uadebug");
    }
 
-   virtual void Init() override
+   /// dtor; cleans up debug server
+   ~DebuggerLibContext()
    {
-      m_dll = ::LoadLibrary("uadebug.dll");
+      SDL_UnloadObject(m_uadebugLib);
    }
 
-   virtual void Done() override
+   /// returns if debugger is available
+   bool IsAvail()
    {
-      ::FreeLibrary(m_dll);
+      return m_uadebugLib != NULL &&
+         SDL_LoadFunction(m_uadebugLib, "uadebug_start") != NULL;
    }
 
-   virtual bool IsAvail() override
+   /// starts debugger
+   void StartDebugger(IDebugServer* server)
    {
-      return m_dll != NULL && ::GetProcAddress(m_dll, "uadebug_start") != NULL;
-   }
+      UaAssert(IsAvail());
 
-   virtual void StartDebugger(IDebugServer* server) override
-   {
-      typedef void(*uadebug_start_func)(void*);
+      typedef void(*UadebugStartFunc)(void*);
 
-      // get function pointer
-      uadebug_start_func uadebug_start =
-         (uadebug_start_func)::GetProcAddress(m_dll, "uadebug_start");
+      UadebugStartFunc uadebug_start =
+         (UadebugStartFunc)SDL_LoadFunction(m_uadebugLib, "uadebug_start");
 
-      // start debugger
       uadebug_start(server);
    }
 
-protected:
-   /// DLL module handle
-   HMODULE m_dll;
+private:
+   /// module handle to uadebug shared library
+   void* m_uadebugLib;
 };
-#endif
-
-#ifdef LINUX
-/// \brief linux debug lib context
-/// Uses dlopen() and dlsym() to load the shared object libuadebug.so and
-/// start the debugger
-class DebuggerContextLinux : public DebuggerLibContext
-{
-public:
-   /// ctor
-   DebuggerContextLinux() {}
-   /// inits debug server
-   virtual void Init() override {}
-   /// cleans up debug server
-   virtual void Done() override {}
-   /// returns if debugger is available
-   virtual bool IsAvail() override { return false; }
-   /// starts debugger
-   virtual void StartDebugger(IDebugServer* server) override {}
-};
-#endif
 
 DebugServer::DebugServer()
-   :m_debugLibrary(NULL),
-   m_debuggerThread(NULL),
+   :m_debuggerThread(NULL),
    m_debuggerSemaphore(NULL),
    m_underworldLock(NULL),
    m_game(NULL),
@@ -103,14 +81,6 @@ DebugServer::DebugServer()
    // init mutex, semaphore and thread handle
    m_underworldLock = SDL_CreateMutex();
    m_debuggerSemaphore = SDL_CreateSemaphore(0);
-
-#ifdef WIN32
-   m_debugLibrary = new DebuggerLibContextWin32;
-#else
-   m_debugLibrary = new DebuggerLibContext;
-#endif
-
-   UaAssert(m_debugLibrary != NULL);
 }
 
 DebugServer::~DebugServer()
@@ -121,15 +91,12 @@ DebugServer::~DebugServer()
 
    // TODO if (m_debuggerThread != NULL)
    //   SDL_KillThread(m_debuggerThread);
-
-   m_debugLibrary->Done();
-   delete m_debugLibrary;
-   m_debugLibrary = NULL;
 }
 
 void DebugServer::Init()
 {
-   m_debugLibrary->Init();
+   m_debugLibrary = std::make_unique<DebuggerLibContext>();
+   UaAssert(m_debugLibrary != NULL);
 
    UaTrace("debug server inited; debugger is %savailable\n",
       m_debugLibrary->IsAvail() ? "" : "not ");
