@@ -439,17 +439,76 @@ void CodeVM::SetResultRegister(Uint16 value)
    m_resultRegister = value;
 }
 
+// *=implemented, x=assert
+//   babl_menu
+//   babl_fmenu
+//   print
+//   babl_ask
+// * compare
+// * random
+// x plural
+// * contains
+// x append
+// x copy
+// x find
+// * length
+// x val
+// x say
+// x respond
+//   get_quest
+//   set_quest
+//   sex
+//   show_inv
+//   give_to_npc
+//   give_ptr_npc
+//   take_from_npc
+//   take_id_from_npc
+//   identify_inv
+//   do_offer
+//   do_demand
+//   do_inv_create
+//   do_inv_delete
+//   check_inv_quality
+//   set_inv_quality
+//   count_inv
+//   setup_to_barter
+//   end_barter
+//   do_judgement
+//   do_decline
+//   pause
+//   set_likes_dislikes
+//   gronk_door
+//   set_race_attitude
+//   place_object
+//   take_from_npc_inv
+//   add_to_npc_inv
+//   remove_talker
+//   set_attitude
+//   x_skills
+//   x_traps
+//   x_obj_pos
+//   x_obj_stuff
+//   find_inv
+//   find_barter
+//   find_barter_total
+
 void CodeVM::ImportedFunc(const char* functionName)
 {
    UaTrace("CodeVM: executing function \"%s\" with %u arguments\n",
       functionName, m_stack.At(m_stack.GetStackPointer()));
+
+   std::string funcname(functionName);
+
+   Uint16 argpos = m_stack.GetStackPointer();
+   Uint16 argcount = m_stack.At(argpos);
+   argpos--;
 
    if (std::string(functionName) == "babl_menu")
    {
       std::vector<Uint16> answerStringIds;
 
       // arg1 is ignored
-      Uint16 arg2 = m_stack.At(m_stack.GetStackPointer() - 1);
+      Uint16 arg2 = m_stack.At(argpos - 1);
       while (m_stack.At(arg2) != 0)
       {
          answerStringIds.push_back(m_stack.At(arg2));
@@ -457,6 +516,106 @@ void CodeVM::ImportedFunc(const char* functionName)
       }
 
       m_resultRegister = m_codeCallback->BablMenu(answerStringIds);
+   }
+   else if (funcname.compare("compare") == 0)
+   {
+      UaAssert(argcount == 2);
+
+      // get arguments
+      Uint16 arg1 = m_stack.At(argpos--);
+      arg1 = m_stack.At(arg1);
+
+      Uint16 arg2 = m_stack.At(argpos);
+      arg2 = m_stack.At(arg2);
+
+      // get strings
+      std::string str1(m_localStrings[arg1]), str2(m_localStrings[arg2]);
+
+      Base::String::Lowercase(str1);
+      Base::String::Lowercase(str2);
+
+      // check if first string contains second
+      m_resultRegister = str1 == str2;
+   }
+   else if (funcname.compare("random") == 0)
+   {
+      UaAssert(argcount == 1);
+
+      Uint16 arg = m_stack.At(argpos--);
+      arg = m_stack.At(arg);
+
+      // this code assumes that rand() can return RAND_MAX
+
+      // rnum is in the range [0..1[
+      double rnum = double(rand()) / double(RAND_MAX + 1);
+      rnum *= arg; // now in range [0..arg[
+      m_resultRegister = Uint16(rnum + 1.0); // now from [1..arg+1[
+   }
+   else if (funcname.compare("plural") == 0)
+   {
+      UaTrace("CodeVM: intrinsic plural() not implemented");
+      UaAssert(false);
+   }
+   else if (funcname.compare("contains") == 0)
+   {
+      UaAssert(argcount == 2);
+
+      // get arguments
+      Uint16 arg1 = m_stack.At(argpos--);
+      arg1 = m_stack.At(arg1);
+
+      Uint16 arg2 = m_stack.At(argpos);
+      arg2 = m_stack.At(arg2);
+
+      // get strings
+      std::string str1(m_localStrings[arg1]), str2(m_localStrings[arg2]);
+
+      Base::String::Lowercase(str1);
+      Base::String::Lowercase(str2);
+
+      // check if first string contains second
+      m_resultRegister = str1.find(str2) != std::string::npos;
+   }
+   else if (funcname.compare("append") == 0)
+   {
+      UaTrace("CodeVM: intrinsic append() not implemented");
+      UaAssert(false);
+   }
+   else if (funcname.compare("copy") == 0)
+   {
+      UaTrace("CodeVM: intrinsic copy() not implemented");
+      UaAssert(false);
+   }
+   else if (funcname.compare("find") == 0)
+   {
+      UaTrace("CodeVM: intrinsic find() not implemented");
+      UaAssert(false);
+   }
+   else if (funcname.compare("length") == 0)
+   {
+      UaAssert(argcount == 1);
+
+      // get argument
+      Uint16 arg = m_stack.At(argpos--);
+      arg = m_stack.At(arg);
+
+      // return string length
+      m_resultRegister = static_cast<Uint16>(m_localStrings[arg].size());
+   }
+   else if (funcname.compare("val") == 0)
+   {
+      UaTrace("CodeVM: intrinsic val() not implemented");
+      UaAssert(false);
+   }
+   else if (funcname.compare("say") == 0)
+   {
+      UaTrace("CodeVM: intrinsic say() not implemented");
+      UaAssert(false);
+   }
+   else if (funcname.compare("respond") == 0)
+   {
+      UaTrace("CodeVM: intrinsic respond() not implemented");
+      UaAssert(false);
    }
    else
       m_resultRegister = m_codeCallback->ExternalFunc(functionName, m_stack);

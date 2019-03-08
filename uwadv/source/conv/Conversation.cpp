@@ -50,19 +50,19 @@ void Conversation::Done()
 //   babl_fmenu
 //   print
 //   babl_ask
-// * compare
-// * random
-// x plural
-// * contains
-// x append
-// x copy
-// x find
-// * length
-// x val
-// x say
-// x respond
-// * get_quest
-// * set_quest
+//   compare
+//   random
+//   plural
+//   contains
+//   append
+//   copy
+//   find
+//   length
+//   val
+//   say
+//   respond
+//   get_quest
+//   set_quest
 // * sex
 //   show_inv
 //   give_to_npc
@@ -97,7 +97,6 @@ void Conversation::Done()
 //   find_inv
 //   find_barter
 //   find_barter_total
-/// \todo move more function implementations to CodeVM
 void Conversation::ImportedFunc(const char* functionName)
 {
    std::string funcname(functionName);
@@ -106,107 +105,7 @@ void Conversation::ImportedFunc(const char* functionName)
    Uint16 argcount = m_stack.At(argpos);
    argpos--;
 
-   if (funcname.compare("compare") == 0)
-   {
-      UaAssert(argcount == 2);
-
-      // get arguments
-      Uint16 arg1 = m_stack.At(argpos--);
-      arg1 = m_stack.At(arg1);
-
-      Uint16 arg2 = m_stack.At(argpos);
-      arg2 = m_stack.At(arg2);
-
-      // get strings
-      std::string str1(m_localStrings[arg1]), str2(m_localStrings[arg2]);
-
-      Base::String::Lowercase(str1);
-      Base::String::Lowercase(str2);
-
-      // check if first string contains second
-      m_resultRegister = str1 == str2;
-   }
-   else if (funcname.compare("random") == 0)
-   {
-      UaAssert(argcount == 1);
-
-      Uint16 arg = m_stack.At(argpos--);
-      arg = m_stack.At(arg);
-
-      // this code assumes that rand() can return RAND_MAX
-
-      // rnum is in the range [0..1[
-      double rnum = double(rand()) / double(RAND_MAX + 1);
-      rnum *= arg; // now in range [0..arg[
-      m_resultRegister = Uint16(rnum + 1.0); // now from [1..arg+1[
-   }
-   else if (funcname.compare("plural") == 0)
-   {
-      UaTrace("CodeVM: intrinsic plural() not implemented");
-      UaAssert(false);
-   }
-   else if (funcname.compare("contains") == 0)
-   {
-      UaAssert(argcount == 2);
-
-      // get arguments
-      Uint16 arg1 = m_stack.At(argpos--);
-      arg1 = m_stack.At(arg1);
-
-      Uint16 arg2 = m_stack.At(argpos);
-      arg2 = m_stack.At(arg2);
-
-      // get strings
-      std::string str1(m_localStrings[arg1]), str2(m_localStrings[arg2]);
-
-      Base::String::Lowercase(str1);
-      Base::String::Lowercase(str2);
-
-      // check if first string contains second
-      m_resultRegister = str1.find(str2) != std::string::npos;
-   }
-   else if (funcname.compare("append") == 0)
-   {
-      UaTrace("CodeVM: intrinsic append() not implemented");
-      UaAssert(false);
-   }
-   else if (funcname.compare("copy") == 0)
-   {
-      UaTrace("CodeVM: intrinsic copy() not implemented");
-      UaAssert(false);
-   }
-   else if (funcname.compare("find") == 0)
-   {
-      UaTrace("CodeVM: intrinsic find() not implemented");
-      UaAssert(false);
-   }
-   else if (funcname.compare("length") == 0)
-   {
-      UaAssert(argcount == 1);
-
-      // get argument
-      Uint16 arg = m_stack.At(argpos--);
-      arg = m_stack.At(arg);
-
-      // return string length
-      m_resultRegister = static_cast<Uint16>(m_localStrings[arg].size());
-   }
-   else if (funcname.compare("val") == 0)
-   {
-      UaTrace("CodeVM: intrinsic val() not implemented");
-      UaAssert(false);
-   }
-   else if (funcname.compare("say") == 0)
-   {
-      UaTrace("CodeVM: intrinsic say() not implemented");
-      UaAssert(false);
-   }
-   else if (funcname.compare("respond") == 0)
-   {
-      UaTrace("CodeVM: intrinsic respond() not implemented");
-      UaAssert(false);
-   }
-   else if (funcname.compare("sex") == 0)
+   if (funcname.compare("sex") == 0)
    {
       UaAssert(argcount == 2);
 
