@@ -1872,11 +1872,15 @@ void CodeGraph::PostProcessFunction(FuncInfo& funcInfo)
 
       UaAssert(array_info.local_start <= funcInfo.locals_types.size());
 
-      buffer2 << DataTypeToString(funcInfo.locals_types[array_info.local_start]) <<
-         " local_" << array_info.local_start <<
-         "[" << array_info.array_size << "];";
+      DataType type = funcInfo.locals_types[array_info.local_start];
+      if (type != dataTypeUnknown)
+      {
+         buffer2 << DataTypeToString(type) <<
+            " local_" << array_info.local_start <<
+            "[" << array_info.array_size << "];";
 
-      AddStatement(iter, buffer2.str());
+         AddStatement(iter, buffer2.str());
+      }
    }
 
    // add function end
