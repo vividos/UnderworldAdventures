@@ -326,15 +326,14 @@ bool CodeGraph::FindFunctionEntryPoint(graph_iterator& iter, graph_iterator stop
       opcode_item.m_labelName = "main";
       opcode_item.m_xrefCount = 1;
    }
-   else
-      if (opcode_item.m_labelName.size() == 0 && opcode_item.m_xrefCount == 0)
-      {
-         // unused func
-         std::ostringstream buffer;
-         buffer << "unused_" << std::setfill('0') <<
-            std::setw(4) << std::setbase(16) << opcode_item.m_pos;
-         opcode_item.m_labelName = buffer.str();
-      }
+   else if (opcode_item.m_labelName.size() == 0 && opcode_item.m_xrefCount == 0)
+   {
+      // unused func
+      std::ostringstream buffer;
+      buffer << "unused_" << std::setfill('0') <<
+         std::setw(4) << std::setbase(16) << opcode_item.m_pos;
+      opcode_item.m_labelName = buffer.str();
+   }
    else if (opcode_item.m_labelName.find("label_") == 0)
    {
       opcode_item.m_labelName = GetFunctionName(opcode_item.m_pos);
@@ -703,16 +702,16 @@ void CodeGraph::AddArrayInfo(FuncInfo& funcInfo, Uint16 localIndex, Uint16 offse
    funcInfo.array_info.push_back(array_info);
 }
 
-void CodeGraph::AddCallOperator(graph_iterator& iter, graph_iterator stop, const FuncInfo& funcInfo, bool bIntrinsic)
+void CodeGraph::AddCallOperator(graph_iterator& iter, graph_iterator stop, const FuncInfo& funcInfo, bool isIntrinsic)
 {
    iter->m_isProcessed = true;
 
-   // note: when bIntrinsic == true, this is the intrinsic number
-   //       when bIntrinsic == false, it is the local function pos
+   // note: when isIntrinsic == true, this is the intrinsic number
+   //       when isIntrinsic == false, it is the local function pos
    Uint16 call_target = iter->opcode_data.arg;
    std::string target_name = iter->opcode_data.jump_target;
 
-   if (bIntrinsic)
+   if (isIntrinsic)
    {
       --iter; // previous PUSHI opcode tells number of arguments
       UaAssert(true == IsOpcode(iter, op_PUSHI));
@@ -729,7 +728,7 @@ void CodeGraph::AddCallOperator(graph_iterator& iter, graph_iterator stop, const
    Uint16 arguments = 0;
 
    graph_iterator pop_iter = iter;
-   std::advance(pop_iter, bIntrinsic ? 2 : 1);
+   std::advance(pop_iter, isIntrinsic ? 2 : 1);
 
    while (pop_iter != stop && IsOpcode(pop_iter, op_POP))
    {
@@ -748,7 +747,7 @@ void CodeGraph::AddCallOperator(graph_iterator& iter, graph_iterator stop, const
 
    // note: CALLI functions have 2 parameter, but the 1st is the number
    // of arguments, so subtract 1 from this number again
-   if (bIntrinsic)
+   if (isIntrinsic)
       --arguments;
 
    // operator with "arguments" needed expressions
@@ -756,7 +755,7 @@ void CodeGraph::AddCallOperator(graph_iterator& iter, graph_iterator stop, const
       bReturnValue ? dataTypeInt : dataTypeVoid);
 
    // correct opcode
-   if (bIntrinsic)
+   if (isIntrinsic)
       operatorItem.operator_data.op_opcode = op_CALLI;
 
    operatorItem.operator_data.prec_level = g_convInstructions[op_CALL].op_prec_level;
@@ -765,7 +764,7 @@ void CodeGraph::AddCallOperator(graph_iterator& iter, graph_iterator stop, const
 
    std::advance(iter, arguments + (bReturnValue ? 1 : 0) - 1);
 
-   if (!bIntrinsic)
+   if (!isIntrinsic)
    {
       // is recursive call?
       if (call_target == funcInfo.start)
@@ -1076,8 +1075,8 @@ void CodeGraph::CombineCallOperator(graph_iterator operatorIter,
 {
    std::ostringstream buffer;
 
-   bool bIntrinsic = operatorIter->operator_data.op_opcode == op_CALLI;
-   if (bIntrinsic)
+   bool isIntrinsic = operatorIter->operator_data.op_opcode == op_CALLI;
+   if (isIntrinsic)
    {
       // intrinsic
       Uint16 val = operatorIter->operator_data.op_arg;

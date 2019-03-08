@@ -313,7 +313,7 @@ namespace Conv
 
       /// adds call operator
       void AddCallOperator(graph_iterator& iter, graph_iterator stop,
-         const FuncInfo& funcInfo, bool bIntrinsic);
+         const FuncInfo& funcInfo, bool isIntrinsic);
 
       /// adds assignment operator
       void AddAssignmentOperator(graph_iterator iter);

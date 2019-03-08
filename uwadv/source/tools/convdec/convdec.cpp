@@ -36,12 +36,12 @@ m_strings(strings)
 
    Import::LoadConvCode(codeVM, (basePath + "data/cnv.ark").c_str(), conversationNumber);
 
-   std::vector<std::string> vecStrings = strings.GetStringBlock(0x0e00 + conversationNumber);
+   std::vector<std::string> stringBlock = strings.GetStringBlock(0x0e00 + conversationNumber);
 
    m_codeGraph.reset(new Conv::CodeGraph(codeVM.GetCodeSegment(),
       0,
       static_cast<Uint16>(codeVM.GetCodeSegment().size()),
-      vecStrings,
+      stringBlock,
       codeVM.GetImportedFunctions(),
       codeVM.GetImportedGlobals(),
       codeVM.GetReservedGlobals()));

@@ -538,20 +538,19 @@ DebugServerCodeDebuggerType LuaScripting::GetDebuggerType()
    return codeDebuggerTypeLuaScript;
 }
 
-/*! Prepares debugging info.
-    The Lua struct Proto contains all informations about a function prototype.
-    It also contains line number info when a source file was loaded. The
-    format of the "lineinfo" array is as follows:
-    The lineinfo array contains "nlineinfo" items, which is always an odd
-    number. The last item contains MAX_INT to signal an end. The list contains
-    pairs of int values. The first one describes a line number and is coded to
-    save space. If the value is negative, it is a relative value to the
-    previous line number. The first line number is 1 (one). If the value is
-    positive, it is not a line number offset and the line number stays the
-    same. The second value is a program counter into the compiled bytecode.
-    It points to the start of the code that is generated from the line
-    described in the first value.
-*/
+/// Prepares debugging info.
+/// The Lua struct Proto contains all informations about a function prototype.
+/// It also contains line number info when a source file was loaded. The
+/// format of the "lineinfo" array is as follows:
+/// The lineinfo array contains "nlineinfo" items, which is always an odd
+/// number. The last item contains MAX_INT to signal an end. The list contains
+/// pairs of int values. The first one describes a line number and is coded to
+/// save space. If the value is negative, it is a relative value to the
+/// previous line number. The first line number is 1 (one). If the value is
+/// positive, it is not a line number offset and the line number stays the
+/// same. The second value is a program counter into the compiled bytecode.
+/// It points to the start of the code that is generated from the line
+/// described in the first value.
 void LuaScripting::PrepareDebugInfo()
 {
    // retrieve debug info from lua struct
@@ -567,8 +566,8 @@ void LuaScripting::PrepareDebugInfo()
       if (iter == m_allLineNumbers.end())
       {
          // insert new set; we have a new filename
-         std::set<unsigned int> empty_set;
-         m_allLineNumbers[filename] = empty_set;
+         std::set<unsigned int> emptySet;
+         m_allLineNumbers[filename] = emptySet;
          iter = m_allLineNumbers.find(filename);
       }
 

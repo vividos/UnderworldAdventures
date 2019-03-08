@@ -57,9 +57,9 @@ namespace Conv
 
    protected:
       // virtual methods from CodeVM
-      virtual void ImportedFunc(const char* funcname);
-      virtual Uint16 GetGlobal(const char* globname);
-      virtual void SetGlobal(const char* globname, Uint16 val);
+      virtual void ImportedFunc(const char* funcname) override;
+      virtual Uint16 GetGlobal(const char* globname) override;
+      virtual void SetGlobal(const char* globname, Uint16 val) override;
 
    protected:
       /// game logic object
