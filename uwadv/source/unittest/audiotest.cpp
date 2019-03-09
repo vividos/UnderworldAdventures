@@ -64,7 +64,7 @@ namespace UnitTest
          settings.SetValue(Base::settingGamePrefix, std::string("uw1"));
          settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw1Path));
 
-         Base::ResourceManager resourceManager(settings);
+         Base::ResourceManager resourceManager{ settings };
 
          Audio::AudioManager audioMgr(settings, resourceManager);
          audioMgr.StartMusicTrack(0, true);
@@ -82,7 +82,7 @@ namespace UnitTest
          settings.SetValue(Base::settingGamePrefix, std::string("uw2"));
          settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw2Path));
 
-         Base::ResourceManager resourceManager(settings);
+         Base::ResourceManager resourceManager{ settings };
 
          Audio::AudioManager audioMgr(settings, resourceManager);
          audioMgr.StartMusicTrack(1, true);
@@ -98,7 +98,7 @@ namespace UnitTest
          SDLMixerIniter mixerIniter;
 
          Base::Settings& settings = GetTestSettings();
-         Base::ResourceManager resourceManager(settings);
+         Base::ResourceManager resourceManager{ settings };
 
          const char* midisUw1[] =
          {
@@ -135,7 +135,7 @@ namespace UnitTest
          SDLMixerIniter mixerIniter;
 
          Base::Settings& settings = GetTestSettings();
-         Base::ResourceManager resourceManager(settings);
+         Base::ResourceManager resourceManager{ settings };
 
          const char* midisUw2[] =
          {
@@ -181,7 +181,7 @@ namespace UnitTest
          settings.SetValue(Base::settingGamePrefix, std::string("uw1"));
          settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw1Path));
 
-         Base::ResourceManager resourceManager(settings);
+         Base::ResourceManager resourceManager{ settings };
 
          Audio::AudioManager audioMgr(settings, resourceManager);
          audioMgr.PlaySound("26");
@@ -202,7 +202,7 @@ namespace UnitTest
          settings.SetValue(Base::settingGamePrefix, std::string("uw2"));
          settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw2Path));
 
-         Base::ResourceManager resourceManager(settings);
+         Base::ResourceManager resourceManager{ settings };
 
          Audio::AudioManager audioMgr(settings, resourceManager);
          audioMgr.PlaySound("BSP00");

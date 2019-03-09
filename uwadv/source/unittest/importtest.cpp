@@ -46,7 +46,7 @@ namespace UnitTest
          settings.SetValue(Base::settingGamePrefix, std::string("uw1"));
          settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw1Path));
 
-         Base::ResourceManager resourceManager(settings);
+         Base::ResourceManager resourceManager{ settings };
 
          // load properties
          Underworld::ObjectProperties objectProperties;
@@ -72,7 +72,7 @@ namespace UnitTest
          settings.SetValue(Base::settingGamePrefix, std::string("uw2"));
          settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw2Path));
 
-         Base::ResourceManager resourceManager(settings);
+         Base::ResourceManager resourceManager{ settings };
 
          // load properties
          Underworld::ObjectProperties objectProperties;
@@ -101,7 +101,7 @@ namespace UnitTest
          settings.SetValue(Base::settingUw1IsUwdemo, true);
          settings.SetValue(Base::settingUnderworldPath, "d:\\uwadv\\uw_demo\\");
 
-         Base::ResourceManager resourceManager(settings);
+         Base::ResourceManager resourceManager{ settings };
          Import::LevelImporter levelImporter(resourceManager);
 
          Underworld::LevelList levelList;
@@ -121,7 +121,7 @@ namespace UnitTest
          settings.SetValue(Base::settingGamePrefix, std::string("uw1"));
          settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw1Path));
 
-         Base::ResourceManager resourceManager(settings);
+         Base::ResourceManager resourceManager{ settings };
          Import::LevelImporter levelImporter(resourceManager);
 
          Underworld::LevelList levelList;
@@ -138,7 +138,7 @@ namespace UnitTest
          settings.SetValue(Base::settingGamePrefix, std::string("uw2"));
          settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw2Path));
 
-         Base::ResourceManager resourceManager(settings);
+         Base::ResourceManager resourceManager{ settings };
          Import::LevelImporter levelImporter(resourceManager);
 
          Underworld::LevelList levelList;
@@ -152,7 +152,7 @@ namespace UnitTest
       {
          Base::Settings& settings = GetTestSettings();
 
-         Base::ResourceManager resourceManager(settings);
+         Base::ResourceManager resourceManager{ settings };
 
          Underworld::Player player;
 
@@ -165,7 +165,7 @@ namespace UnitTest
       {
          Base::Settings& settings = GetTestSettings();
 
-         Base::ResourceManager resourceManager(settings);
+         Base::ResourceManager resourceManager{ settings };
 
          Underworld::Player player;
 
@@ -178,7 +178,7 @@ namespace UnitTest
       {
          Base::Settings& settings = GetTestSettings();
 
-         Base::ResourceManager resourceManager(settings);
+         Base::ResourceManager resourceManager{ settings };
 
          GameStrings gs;
          Import::GameStringsImporter importer(gs);

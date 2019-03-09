@@ -39,7 +39,7 @@ m_strings(strings)
 
    Base::Settings settings;
    settings.SetValue(Base::settingUnderworldPath, basePath);
-   Base::ResourceManager resourceManager(settings);
+   Base::ResourceManager resourceManager{ settings };
 
    if (Base::FileSystem::FileExists(basePath + "uw2.exe"))
       settings.SetGameType(Base::gameUw2);
