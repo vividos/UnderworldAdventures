@@ -56,6 +56,12 @@ namespace Base
       /// re-scans all available files after the "underworld" path was set in the settings
       void Rescan(const Settings& settings);
 
+      /// checks if uw1 game files are available (and returns if it's the uw_demo
+      bool CheckUw1GameFilesAvailable(bool& isUw1Demo) const;
+
+      /// checks if uw2 game files are available
+      bool CheckUw2GameFilesAvailable() const;
+
    private:
       /// re-scans all underworld data filenames in the given path
       void RescanUnderworldFilenames(std::string uwPath);
@@ -70,8 +76,11 @@ namespace Base
       void CheckAndAddZipArchive(const std::string& zipFilename,
          const std::map<std::string, std::string>& mapRelativeLowercaseFilenamesToZipArchiveFilename);
 
+      /// checks if a file with given filename is available, either as physical file or in a zip archive
+      bool IsUnderworldFileAvailable(const char* relativeFilename) const;
+
       /// maps a requested filename to a real file system filename, for the underworld data files
-      void MapUnderworldFilename(std::string& filenameToMap);
+      void MapUnderworldFilename(std::string& filenameToMap) const;
 
    private:
       /// home path

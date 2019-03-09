@@ -31,15 +31,6 @@
 #include "GameStrings.hpp"
 #include "GameStringsImporter.hpp"
 
-/// checks if a file with given filename is available
-bool IsFileAvailable(const std::string& base, const char* fname)
-{
-   std::string filename = base;
-   filename += fname;
-
-   return Base::FileSystem::FileExists(filename.c_str());
-}
-
 void GameConfigLoader::Load(Base::TextFile& file)
 {
    std::string line, key, value;
@@ -163,36 +154,17 @@ void GameConfigLoader::load_value(const char* the_name, const char* the_value)
          if (base.empty())
             throw Base::Exception("path to uw1 was not specified in config file");
 
-         settings.SetGameType(Base::gameUw1);
-         settings.SetValue(Base::settingUw1IsUwdemo, false);
+         // check game files
+         Base::ResourceManager& resourceManager = game.GetResourceManager();
 
-         do
+         bool uw1IsDemo = false;
+         if (resourceManager.CheckUw1GameFilesAvailable(uw1IsDemo))
          {
-            // check for uw game files
-            if (IsFileAvailable(base, "data/cnv.ark") ||
-               IsFileAvailable(base, "data/strings.pak") ||
-               IsFileAvailable(base, "data/pals.dat") ||
-               IsFileAvailable(base, "data/allpals.dat"))
-            {
-               // could be uw1 or uw_demo
-               if (IsFileAvailable(base, "uw.exe"))
-                  break; // found all needed files
-               else
-                  // check if we only have the demo
-                  if (IsFileAvailable(base, "uwdemo.exe") &&
-                     IsFileAvailable(base, "data/level13.st") &&
-                     IsFileAvailable(base, "data/level13.anx") &&
-                     IsFileAvailable(base, "data/level13.txm"))
-                  {
-                     // found all needed files for uw_demo
-                     settings.SetValue(Base::settingUw1IsUwdemo, true);
-                     break;
-                  }
-            }
-
+            settings.SetGameType(Base::gameUw1);
+            settings.SetValue(Base::settingUw1IsUwdemo, uw1IsDemo);
+         }
+         else
             throw Base::Exception("could not find relevant uw1 game files");
-
-         } while (false);
 
          // set generic uw path to uw1 path
          settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw1Path));
@@ -205,12 +177,11 @@ void GameConfigLoader::load_value(const char* the_name, const char* the_value)
             throw Base::Exception("path to uw2 was not specified in config file");
 
          // check for uw2 game files
-         if (!IsFileAvailable(base, "data/cnv.ark") ||
-            !IsFileAvailable(base, "data/strings.pak") ||
-            !IsFileAvailable(base, "data/pals.dat") ||
-            !IsFileAvailable(base, "data/allpals.dat") ||
-            !IsFileAvailable(base, "uw2.exe") ||
-            !IsFileAvailable(base, "data/t64.tr"))
+         Base::ResourceManager& resourceManager = game.GetResourceManager();
+
+         if (resourceManager.CheckUw2GameFilesAvailable())
+            settings.SetGameType(Base::gameUw2);
+         else
             throw Base::Exception("could not find relevant uw2 game files");
 
          // set generic uw path to uw2 path

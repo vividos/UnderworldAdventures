@@ -258,7 +258,67 @@ void ResourceManager::CheckAndAddZipArchive(const std::string& zipFilename,
    }
 }
 
-void ResourceManager::MapUnderworldFilename(std::string& filenameToMap)
+bool ResourceManager::CheckUw1GameFilesAvailable(bool& isUw1Demo) const
+{
+   isUw1Demo = false;
+
+   // check for uw game files
+   if (IsUnderworldFileAvailable("data/cnv.ark") ||
+      IsUnderworldFileAvailable("data/strings.pak") ||
+      IsUnderworldFileAvailable("data/pals.dat") ||
+      IsUnderworldFileAvailable("data/allpals.dat"))
+   {
+      // could be uw1 or uw_demo
+      if (IsUnderworldFileAvailable("uw.exe"))
+         return true; // found all needed files
+      else
+         // check if we only have the demo
+         if (IsUnderworldFileAvailable("uwdemo.exe") &&
+            IsUnderworldFileAvailable("data/level13.st") &&
+            IsUnderworldFileAvailable("data/level13.anx") &&
+            IsUnderworldFileAvailable("data/level13.txm"))
+         {
+            // found all needed files for uw_demo
+            isUw1Demo = true;
+            return true;
+         }
+   }
+
+   return false;
+}
+
+bool ResourceManager::CheckUw2GameFilesAvailable() const
+{
+   return IsUnderworldFileAvailable("data/scd.ark") ||
+      IsUnderworldFileAvailable("data/strings.pak") ||
+      IsUnderworldFileAvailable("data/pals.dat") ||
+      IsUnderworldFileAvailable("data/allpals.dat") ||
+      IsUnderworldFileAvailable("uw2.exe") ||
+      IsUnderworldFileAvailable("data/t64.tr");
+}
+
+bool ResourceManager::IsUnderworldFileAvailable(const char* relativeFilename) const
+{
+   std::string filename = relativeFilename;
+   String::Lowercase(filename);
+
+   if (m_mapRelativeLowercaseFilenamesToZipArchiveFilename.find(filename) !=
+      m_mapRelativeLowercaseFilenamesToZipArchiveFilename.end())
+      return true; // found in a zip archive
+
+   std::string absoluteFilename = m_uw1Path + filename;
+   MapUnderworldFilename(absoluteFilename);
+
+   if (Base::FileSystem::FileExists(absoluteFilename.c_str()))
+      return true;
+
+   absoluteFilename = m_uw2Path + filename;
+   MapUnderworldFilename(absoluteFilename);
+
+   return Base::FileSystem::FileExists(absoluteFilename.c_str());
+}
+
+void ResourceManager::MapUnderworldFilename(std::string& filenameToMap) const
 {
    std::string lowercaseFilename = filenameToMap;
    String::Lowercase(lowercaseFilename);
