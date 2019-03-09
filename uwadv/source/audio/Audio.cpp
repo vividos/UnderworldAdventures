@@ -51,6 +51,12 @@ namespace Detail
       /// returns current music track
       Mix_Music*& GetCurrentTrack() { return m_currentTrack; }
 
+      /// returns track data for current music track
+      Base::SDL_RWopsPtr& GetCurrentMusicTrackData()
+      {
+         return m_currentMusicTrackData;
+      }
+
       /// returns resource manager
       const Base::ResourceManager& GetResourceManager() const { return m_resourceManager; }
 
@@ -72,6 +78,9 @@ namespace Detail
 
       /// current music track
       Mix_Music* m_currentTrack;
+
+      /// current music track data
+      Base::SDL_RWopsPtr m_currentMusicTrackData;
 
       /// path to current uw game
       std::string m_underworldPath;
@@ -264,16 +273,14 @@ void AudioManager::StartMusicTrack(unsigned int musicTrack, bool repeat)
       Mix_Music*& mm = m_data->GetCurrentTrack();
 
       if (mm)
+      {
          Mix_FreeMusic(mm);
+         m_data->GetCurrentMusicTrackData().reset();
+      }
 
       // start music track via SDL_mixer
-      m_data->GetResourceManager().ResolvePlaceholderFilename(trackName);
-      mm = Mix_LoadMUS(trackName.c_str());
-
-      // \todo note: doesn't work right now, since RWops struct is immediately deleted, but
-      // SDL_Mixer expects it to live on
-      //Base::SDL_RWopsPtr rwops = m_data->GetResourceManager().GetFileWithPlaceholder(trackName);
-      //mm = Mix_LoadMUSType_RW(rwops.get(), MUS_OGG, 0);
+      m_data->GetCurrentMusicTrackData() = m_data->GetResourceManager().GetFileWithPlaceholder(trackName);
+      mm = Mix_LoadMUSType_RW(m_data->GetCurrentMusicTrackData().get(), MUS_OGG, 0);
 
       if (mm)
          Mix_PlayMusic(mm, repeat ? -1 : 0);
@@ -303,6 +310,8 @@ void AudioManager::StopMusic()
    {
       Mix_FreeMusic(mm);
       mm = NULL;
+
+      m_data->GetCurrentMusicTrackData().reset();
    }
 
    m_data->GetMidiPlayer().Stop();
