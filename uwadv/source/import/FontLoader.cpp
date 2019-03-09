@@ -24,6 +24,7 @@
 #include "Import.hpp"
 #include "FontLoader.hpp"
 #include "Font.hpp"
+#include "ResourceManager.hpp"
 #include "File.hpp"
 
 /// uw1 font names
@@ -37,21 +38,20 @@ const char* g_fontNames[6] =
    "fontchar.sys"
 };
 
-void Font::Load(Base::Settings& settings, FontId fontId)
+void Font::Load(Base::ResourceManager& resourceManager, FontId fontId)
 {
    if (fontId >= (int)SDL_TABLESIZE(g_fontNames))
       throw Base::Exception("Font::init: invalid font id");
 
-   std::string fontFilename(settings.GetString(Base::settingUnderworldPath));
-   fontFilename.append("data/");
+   std::string fontFilename = "data/";
    fontFilename.append(g_fontNames[fontId]);
 
-   Import::FontLoader::LoadFont(fontFilename.c_str(), *this);
+   Import::FontLoader::LoadFont(resourceManager, fontFilename.c_str(), *this);
 }
 
-void Import::FontLoader::LoadFont(const char* fontFilename, Font& font)
+void Import::FontLoader::LoadFont(Base::ResourceManager& resourceManager, const char* fontFilename, Font& font)
 {
-   Base::File file(fontFilename, Base::modeRead);
+   Base::File file = resourceManager.GetUnderworldFile(Base::resourceGameUw, fontFilename);
    if (!file.IsOpen())
    {
       std::string text("could not open font file: ");

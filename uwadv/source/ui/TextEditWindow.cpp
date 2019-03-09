@@ -40,7 +40,7 @@ void TextEditWindow::Init(IGame& game, unsigned int xpos,
    m_border = border;
    m_cursorPos = m_text.size();
 
-   m_font.Load(game.GetSettings(), fontNormal);
+   m_font.Load(game.GetResourceManager(), fontNormal);
 
    // adjust widths when having a border
    if (border)

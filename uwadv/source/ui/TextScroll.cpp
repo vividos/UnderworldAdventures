@@ -53,7 +53,7 @@ void TextScroll::Init(IGame& game, unsigned int xpos,
    m_scrollBaseX = m_scrollBaseY = 0;
 
    // load font
-   m_normalFont.Load(game.GetSettings(), fontNormal);
+   m_normalFont.Load(game.GetResourceManager(), fontNormal);
 
    // calculate number of lines
    m_maxLines = unsigned(height / m_normalFont.GetCharHeight());

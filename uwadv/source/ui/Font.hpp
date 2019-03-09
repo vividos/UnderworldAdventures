@@ -56,7 +56,7 @@ public:
    Font() {}
 
    /// loads a font
-   void Load(Base::Settings& settings, FontId fontId);
+   void Load(Base::ResourceManager& resourceManager, FontId fontId);
 
    /// returns height of chars in pixels
    unsigned int GetCharHeight() { return m_charHeight; }

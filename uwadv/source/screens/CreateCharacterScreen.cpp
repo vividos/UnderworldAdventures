@@ -115,7 +115,7 @@ void CreateCharacterScreen::Init()
    m_game.GetImageManager().LoadList(m_buttonImages, "chrbtns", 0, 0, 3);
 
    // init text
-   m_font.Load(m_game.GetSettings(), fontCharacterGeneration);
+   m_font.Load(m_game.GetResourceManager(), fontCharacterGeneration);
 
    m_screenImage.Init(m_game, 0, 0);
    m_screenImage.GetImage() = m_backgroundImage;

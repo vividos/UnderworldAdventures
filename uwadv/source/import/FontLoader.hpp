@@ -23,12 +23,19 @@
 
 class Font;
 
+namespace Base
+{
+   class ResourceManager;
+}
+
 namespace Import
 {
+   /// font loader
    class FontLoader
    {
    public:
-      static void LoadFont(const char* fontname, Font& font);
+      /// loads given font
+      static void LoadFont(Base::ResourceManager& resourceManager, const char* fontname, Font& font);
    };
 
 } // namespace Import

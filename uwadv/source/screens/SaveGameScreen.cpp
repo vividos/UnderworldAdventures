@@ -85,7 +85,7 @@ void SaveGameButton::Init(SaveGameScreen* screen,
       DrawImageEdges(m_buttonImages[1], 0, 0, c_buttonWidth, 16, false);
       DrawImageEdges(m_buttonImages[2], 0, 0, c_buttonWidth, 16, true);
 
-      m_normalFont.Load(game.GetSettings(), fontButtons);
+      m_normalFont.Load(game.GetResourceManager(), fontButtons);
 
       Base::String::Uppercase(buttonText);
    }
@@ -104,7 +104,7 @@ void SaveGameButton::Init(SaveGameScreen* screen,
       IndexedImage& button2 = m_buttonImages[2];
       button2.PasteRect(button2, 66, 0, 1, 16, c_buttonWidth - 1, 0);
 
-      m_normalFont.Load(game.GetSettings(), fontCharacterGeneration);
+      m_normalFont.Load(game.GetResourceManager(), fontCharacterGeneration);
    }
 
    {
@@ -199,7 +199,7 @@ void SaveGamesList::Init(SaveGameScreen* screen,
    m_selectedSavegameItemIndex = -1;
 
    // load font
-   m_normalFont.Load(game.GetSettings(), fontNormal);
+   m_normalFont.Load(game.GetResourceManager(), fontNormal);
 
    // setup image
    ImageQuad::Init(game, xpos, ypos);
@@ -335,7 +335,7 @@ void SaveGameScreen::Init()
    if (m_game.GetSettings().GetBool(Base::settingUw1IsUwdemo))
    {
       // we only have the uw_demo, and no character screen
-      m_buttonFont.Load(m_game.GetSettings(), fontNormal);
+      m_buttonFont.Load(m_game.GetResourceManager(), fontNormal);
 
       m_game.GetImageManager().LoadList(m_facesImages, "bodies", 0, 0);
 
@@ -367,7 +367,7 @@ void SaveGameScreen::Init()
    else
    {
       // normal uw1 game
-      m_buttonFont.Load(m_game.GetSettings(), fontCharacterGeneration);
+      m_buttonFont.Load(m_game.GetResourceManager(), fontCharacterGeneration);
 
       m_game.GetImageManager().LoadList(m_facesImages, "chrbtns", 17, 0, 3);
 

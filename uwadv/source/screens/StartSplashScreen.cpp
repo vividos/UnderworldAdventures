@@ -70,7 +70,7 @@ void StartSplashScreen::Init()
       // write a string under the demo title
       Font font;
       IndexedImage tempImage;
-      font.Load(m_game.GetSettings(), fontBig);
+      font.Load(m_game.GetResourceManager(), fontBig);
       font.CreateString(tempImage, "Underworld Adventures", 198);
 
       double scale = 0.9;

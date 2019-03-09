@@ -125,7 +125,7 @@ void CutsceneViewScreen::Init()
    }
 
    // init subtitle text
-   m_bigFont.Load(settings, fontBig);
+   m_bigFont.Load(m_game.GetResourceManager(), fontBig);
 }
 
 void CutsceneViewScreen::Destroy()

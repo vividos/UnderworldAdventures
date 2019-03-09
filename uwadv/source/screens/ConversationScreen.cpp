@@ -75,7 +75,7 @@ void ConversationScreen::Init()
    glDisable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-   m_normalFont.Load(m_game.GetSettings(), fontNormal);
+   m_normalFont.Load(m_game.GetResourceManager(), fontNormal);
 
    // background image
    {

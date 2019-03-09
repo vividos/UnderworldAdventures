@@ -133,8 +133,8 @@ void Panel::Init(IPanelParent* panelParent, unsigned int xpos,
    imageManager.LoadList(m_inventoryObjectImages, "objects");
 
    // load fonts
-   m_statsFont.Load(game.GetSettings(), fontItalic);
-   m_inventoryWeightFont.Load(game.GetSettings(), fontNormal);
+   m_statsFont.Load(game.GetResourceManager(), fontItalic);
+   m_inventoryWeightFont.Load(game.GetResourceManager(), fontNormal);
 
    // create image
    GetImage().Create(85, 116);
