@@ -84,8 +84,9 @@ Base::SDL_RWopsPtr ResourceManager::GetResourceFile(const std::string& relativeF
    return rwops;
 }
 
-/// \todo implement reading from a zip file, e.g. uw_demo.zip
-Base::SDL_RWopsPtr ResourceManager::GetUnderworldFile(Base::UnderworldResourcePath resourcePath, const std::string& relativeFilename) const
+Base::SDL_RWopsPtr ResourceManager::GetUnderworldFile(
+   Base::UnderworldResourcePath resourcePath,
+   const std::string& relativeFilename) const
 {
    // check zip archives
    if (resourcePath == resourceGameUw)
