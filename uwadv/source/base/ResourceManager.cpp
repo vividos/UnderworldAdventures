@@ -45,6 +45,45 @@ ResourceManager::ResourceManager(const Settings& settings)
    Rescan(settings);
 }
 
+/// returns a file that can contain placeholder like %uw-path% and %uadata%
+Base::SDL_RWopsPtr ResourceManager::GetFileWithPlaceholder(const std::string& filename) const
+{
+   if (filename.find("%uadata%") == 0)
+   {
+      std::string uadataRelativePath = filename.substr(8);
+      if (uadataRelativePath.substr(0, 1) == "/")
+         uadataRelativePath = uadataRelativePath.substr(1);
+
+      return GetResourceFile(uadataRelativePath);
+   }
+   else if (filename.find("%uw-path%") == 0)
+   {
+      std::string uwpathRelativePath = filename.substr(9);
+      if (uwpathRelativePath.substr(0, 1) == "/")
+         uwpathRelativePath = uwpathRelativePath.substr(1);
+
+      return GetUnderworldFile(Base::resourceGameUw, uwpathRelativePath);
+   }
+   else if (Base::FileSystem::FileExists(filename.c_str()))
+   {
+      return GetFile(filename);
+   }
+   else
+      throw Base::FileSystemException("couldn't find file for filename with placeholders", filename, ENOENT);
+}
+
+/// resolves a filename that contains placeholders
+void ResourceManager::ResolvePlaceholderFilename(std::string& filename) const
+{
+   std::string::size_type pos;
+
+   while (std::string::npos != (pos = filename.find("%uadata%")))
+      filename.replace(pos, 8, m_uadataPath.c_str());
+
+   while (std::string::npos != (pos = filename.find("%uw-path%")))
+      filename.replace(pos, 9, m_uwPath.c_str());
+}
+
 /// The search order for resource files is as follows:
 /// If a real file exists in the "uadata-path" folder, it is opened and returned.
 /// All "uadata??.zip" files in the folder are searched for the file. Search for

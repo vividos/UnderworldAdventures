@@ -44,6 +44,12 @@ namespace Base
       /// ctor
       ResourceManager(const Settings& settings);
 
+      /// returns a file that can contain placeholder like %uw-path% and %uadata%
+      SDL_RWopsPtr GetFileWithPlaceholder(const std::string& filename) const;
+
+      /// resolves a filename that contains placeholders
+      void ResolvePlaceholderFilename(std::string& filename) const;
+
       /// returns "uadata" resource file
       SDL_RWopsPtr GetResourceFile(const std::string& relativeFilename) const;
 
