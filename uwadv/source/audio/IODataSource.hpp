@@ -35,13 +35,13 @@ namespace Detail
    /// provides implementation for Pentagram's IDataSource interface to input
    /// .xmi files into XMidiFile.
    /// The SDL_RWops ptr is closed automatically by this class.
-   /// \todo reimplement using Base::File
    class InputDataSource : public IDataSource
    {
    public:
       /// ctor
       InputDataSource(Base::SDL_RWopsPtr rwops)
-         :m_rwops(rwops)
+         :m_rwops(rwops),
+         m_fileSize((uint32)-1)
       {
       }
       /// dtor
@@ -107,14 +107,17 @@ namespace Detail
       }
 
       /// returns size of file
-      /// \todo optimize fetching size by storing size value
       virtual uint32 getSize() override
       {
+         if (m_fileSize != (uint32)-1)
+            return m_fileSize;
+
          uint32 curPos = static_cast<uint32>(SDL_RWtell(m_rwops.get()));
          SDL_RWseek(m_rwops.get(), 0L, SEEK_END);
-         uint32 u = getPos();
+         m_fileSize = getPos();
          seek(curPos);
-         return u;
+
+         return m_fileSize;
       }
 
       /// returns current file pos
@@ -132,6 +135,9 @@ namespace Detail
    private:
       /// rwops ptr
       Base::SDL_RWopsPtr m_rwops;
+
+      /// cached file size
+      uint32 m_fileSize;
    };
 
    /// \brief Output data source for Pentagram code
