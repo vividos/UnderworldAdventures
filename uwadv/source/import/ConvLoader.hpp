@@ -44,10 +44,11 @@ namespace Import
 {
    /// Loads conversation globals from bglobals.dat or babglobs.dat
    void LoadConvGlobals(Underworld::ConvGlobals& globals,
-      Base::Settings& settings, const char* folder, bool initial);
+      Base::ResourceManager& resourceManager, const char* folder, bool initial);
 
    /// Loads conversation code into virtual machine
-   bool LoadConvCode(Conv::CodeVM& vm, const char* cnvArkFilename, Uint16 conversationSlot);
+   bool LoadConvCode(Conv::CodeVM& vm, Base::Settings& settings, Base::ResourceManager& resourceManager,
+      const char* cnvArkFilename, Uint16 conversationSlot);
 
    /// Loads imported functions list
    void LoadConvCodeImportedFunctions(Conv::CodeVM& vm, Base::File& file);

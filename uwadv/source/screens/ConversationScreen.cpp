@@ -202,7 +202,8 @@ void ConversationScreen::Init()
       cnv_name.append("data/cnv.ark");
 
       // load code into vm
-      Import::LoadConvCode(m_codeVM, cnv_name.c_str(), static_cast<Uint16>(convslot));
+      Import::LoadConvCode(m_codeVM, m_game.GetSettings(), m_game.GetResourceManager(),
+         cnv_name.c_str(), static_cast<Uint16>(convslot));
 
       // get local strings
       // note: convslot is used to load strings, not the strblock value set in

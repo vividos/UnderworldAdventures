@@ -25,6 +25,9 @@
 #include "ConvLoader.hpp"
 #include "GameStrings.hpp"
 #include "GameStringsImporter.hpp"
+#include "Settings.hpp"
+#include "ResourceManager.hpp"
+#include "FileSystem.hpp"
 
 using namespace Conv;
 
@@ -34,7 +37,14 @@ m_strings(strings)
 {
    Conv::CodeVM codeVM;
 
-   if (!Import::LoadConvCode(codeVM, (basePath + "data/cnv.ark").c_str(), conversationNumber))
+   Base::Settings settings;
+   settings.SetValue(Base::settingUnderworldPath, basePath);
+   Base::ResourceManager resourceManager(settings);
+
+   if (Base::FileSystem::FileExists(basePath + "uw2.exe"))
+      settings.SetGameType(Base::gameUw2);
+
+   if (!Import::LoadConvCode(codeVM, settings, resourceManager, "cnv.ark", conversationNumber))
       return;
 
    std::vector<std::string> stringBlock = strings.GetStringBlock(0x0e00 + conversationNumber);

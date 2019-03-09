@@ -21,21 +21,24 @@
 //
 #include "Import.hpp"
 #include "ConvLoader.hpp"
+#include "ResourceManager.hpp"
 #include "File.hpp"
+#include "ArchiveFile.hpp"
 #include "CodeVM.hpp"
 #include "Exception.hpp"
 
 /// When initial is set to true, the file to load only contains size entries,
 /// and no actual data; all globals are initalized with 0 then.
+/// \param folder the folder to use, either the "data" or one of the SaveN folders.
+/// \param initial indicates if initial conv. globals should be loaded
 void Import::LoadConvGlobals(Underworld::ConvGlobals& convGlobals,
-   Base::Settings& settings, const char* folder, bool initial)
+   Base::ResourceManager& resourceManager, const char* folder, bool initial)
 {
-   std::string globalsName = settings.GetString(Base::settingUnderworldPath);
-   globalsName.append(folder);
+   std::string globalsName = folder;
    globalsName.append("/");
    globalsName.append(initial ? "babglobs.dat" : "bglobals.dat");
 
-   Base::File file(globalsName, Base::modeRead);
+   Base::File file { resourceManager.GetUnderworldFile(Base::resourceGameUw, globalsName) };
    if (!file.IsOpen())
    {
       std::string text("error loading conv. globals file: ");
@@ -74,33 +77,33 @@ void Import::LoadConvGlobals(Underworld::ConvGlobals& convGlobals,
 /// into the vm's code segment. The method CodeVM::Init() can then be
 /// called after this method.
 /// \param vm conversation code virtual machine
+/// \param settings settings to use
+/// \param resourceManager resource manager to load from
 /// \param cnvArkFilename conversation filename, e.g. cnv.ark
 /// \param conv convesation slot of code to load
-bool Import::LoadConvCode(Conv::CodeVM& vm, const char* cnvArkFilename, Uint16 conversationSlot)
+bool Import::LoadConvCode(Conv::CodeVM& vm, Base::Settings& settings, Base::ResourceManager& resourceManager,
+   const char* cnvArkFilename, Uint16 conversationSlot)
 {
-   Base::File file(cnvArkFilename, Base::modeRead);
-   if (!file.IsOpen())
+   Base::SDL_RWopsPtr rwops = resourceManager.GetUnderworldFile(Base::resourceGameUw, std::string("data/") + cnvArkFilename);
+   if (rwops == NULL)
       throw Base::Exception("could not open conversation file");
 
-   Uint16 entries = file.Read16();
+   bool isUw2 = settings.GetGameType() == Base::gameUw2;
+   Base::ArchiveFile arkFile(rwops, isUw2);
 
-   if (conversationSlot >= entries)
+   if (conversationSlot >= arkFile.GetNumFiles())
       throw Base::Exception("invalid conversation!");
 
-   file.Seek(conversationSlot * 4 + 2, Base::seekBegin);
-
-   Uint32 offset = file.Read32();
-
-   if (offset == 0)
+   if (!arkFile.IsAvailable(conversationSlot))
    {
       // no conversation available
       return false;
    }
 
-   // read conversation header
-   file.Seek(offset, Base::seekBegin);
+   Base::File file = arkFile.GetFile(conversationSlot);
 
    Uint32 unknown1 = file.Read32(); // always 0x00000828
+   UaAssert(unknown1 == 0x0828);
 
    Uint16 codeSize = file.Read16();
    Uint16 unknown2 = file.Read16(); // always 0x0000
