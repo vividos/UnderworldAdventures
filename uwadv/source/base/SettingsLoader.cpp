@@ -159,8 +159,7 @@ namespace Detail
          std::string::size_type pos = path.find_last_of("\\/");
          if (pos != std::string::npos && pos != path.size() - 1)
          {
-            // add slash
-            path += "/";
+            path += Base::FileSystem::PathSeparator;
          }
 
          m_settings.SetValue(type, path);
@@ -204,7 +203,7 @@ namespace Detail
       // replace any double-slashes occured from previous replacements
       while (std::string::npos != (pos = path.find("//")) ||
          std::string::npos != (pos = path.find("\\\\")))
-         path.replace(pos, 2, "/");
+         path.replace(pos, 2, Base::FileSystem::PathSeparator);
    }
 
 } // namespace Detail

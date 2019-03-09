@@ -59,7 +59,7 @@ bool ParseArgs(unsigned int argc, const char** argv)
                basePath.assign(&argv[i][2]);
 
             if (basePath.find_last_of("\\/") != basePath.size() - 1)
-               basePath.append("/");
+               basePath.append(Base::FileSystem::PathSeparator);
          }
          break;
 

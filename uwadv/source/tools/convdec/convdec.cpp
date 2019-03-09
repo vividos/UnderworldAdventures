@@ -179,7 +179,7 @@ int main(int argc, char* argv[])
    }
 
    std::string basePath = argv[1];
-   basePath += "/";
+   basePath += Base::FileSystem::PathSeparator;
 
    std::string slotText = argv[2];
 
