@@ -254,7 +254,7 @@ void AudioManager::StartMusicTrack(unsigned int musicTrack, bool repeat)
       try
       {
          Base::SDL_RWopsPtr rwops = m_data->GetResourceManager().
-            GetUnderworldFile(Base::resourceGameUw, trackName);
+            GetFile(trackName);
 
          // start midi player track
          m_data->GetMidiPlayer().PlayFile(rwops, repeat);
