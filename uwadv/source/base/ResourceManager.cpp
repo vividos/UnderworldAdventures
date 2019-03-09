@@ -87,8 +87,21 @@ Base::SDL_RWopsPtr ResourceManager::GetResourceFile(const std::string& relativeF
 /// \todo implement reading from a zip file, e.g. uw_demo.zip
 Base::SDL_RWopsPtr ResourceManager::GetUnderworldFile(Base::UnderworldResourcePath resourcePath, const std::string& relativeFilename)
 {
-   std::string basePath;
+   // check zip archives
+   if (resourcePath == resourceGameUw)
+   {
+      std::string lowercaseRelativeFilename = relativeFilename;
+      String::Lowercase(lowercaseRelativeFilename);
 
+      auto iter = m_mapRelativeLowercaseFilenamesToZipArchiveFilename.find(lowercaseRelativeFilename);
+      if (iter != m_mapRelativeLowercaseFilenamesToZipArchiveFilename.end())
+      {
+         return MakeRWopsPtr(::SDL_RWFromZZIP(iter->second.c_str(), "rb"));
+      }
+   }
+
+   // check file system
+   std::string basePath;
    switch (resourcePath)
    {
    case resourceGameUw: basePath = m_uwPath; break;
@@ -97,7 +110,6 @@ Base::SDL_RWopsPtr ResourceManager::GetUnderworldFile(Base::UnderworldResourcePa
    }
 
    std::string filename = basePath + relativeFilename;
-
    return GetFile(filename);
 }
 
