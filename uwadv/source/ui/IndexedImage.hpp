@@ -24,8 +24,12 @@
 #include <vector>
 #include <memory>
 #include "Base.hpp"
-#include "Settings.hpp"
 #include "Palette256.hpp"
+
+namespace Base
+{
+   class ResourceManager;
+}
 
 /// image loading type
 enum ImageType
@@ -33,7 +37,6 @@ enum ImageType
    imageGr = 0, ///< image from *.gr files
    imageByt,    ///< image from *.byt files
 };
-
 
 /// single image
 class IndexedImage
@@ -121,10 +124,13 @@ class ImageManager
 {
 public:
    /// ctor
-   ImageManager() {}
+   ImageManager(Base::ResourceManager& resourceManager)
+      :m_resourceManager(resourceManager)
+   {
+   }
 
    /// inits image manager
-   void Init(Base::Settings& settings);
+   void Init();
 
    /// loads a single image
    void Load(IndexedImage& image, const char* basename, unsigned int imageNumber = 0,
@@ -142,8 +148,8 @@ public:
    }
 
 protected:
-   /// path to uw folder
-   std::string m_underworldPath;
+   /// resource manager to use for loading
+   Base::ResourceManager& m_resourceManager;
 
    /// smart ptr to all all palettes
    Palette256Ptr m_allPalettes[8];

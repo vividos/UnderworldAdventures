@@ -613,7 +613,8 @@ void Game::InitGame()
    UaTrace("using generic uw-path: %s\n",
       m_settings.GetString(Base::settingUnderworldPath).c_str());
 
-   m_imageManager.Init(m_settings);
+   m_imageManager = std::make_unique<ImageManager>(GetResourceManager());
+   m_imageManager->Init();
 
    m_renderer.Init(*this, m_window);
 

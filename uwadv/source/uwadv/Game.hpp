@@ -117,7 +117,7 @@ public:
 
    virtual ImageManager& GetImageManager() override
    {
-      return m_imageManager;
+      return *m_imageManager;
    }
 
    virtual Renderer& GetRenderer() override
@@ -189,7 +189,7 @@ protected:
    std::unique_ptr<Base::SavegamesManager> m_savegamesManager;
 
    /// image manager
-   ImageManager m_imageManager;
+   std::unique_ptr<ImageManager> m_imageManager;
 
    /// renderer class
    Renderer m_renderer;

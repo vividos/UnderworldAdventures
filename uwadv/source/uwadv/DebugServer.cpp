@@ -718,19 +718,19 @@ unsigned int DebugServer::GetGameString(unsigned int block,
 
 bool DebugServer::GetObjectListImagelist(unsigned int& numObjects, unsigned char* buffer, unsigned int size)
 {
-   ImageManager imageManager;
-   std::vector<IndexedImage> img_list;
+   ImageManager imageManager{ m_game->GetResourceManager() };
+   imageManager.Init();
 
-   imageManager.Init(m_game->GetSettings());
-   imageManager.LoadList(img_list, "objects");
+   std::vector<IndexedImage> imageList;
+   imageManager.LoadList(imageList, "objects");
 
    if (buffer == NULL || size == 0)
    {
-      numObjects = img_list.size();
+      numObjects = imageList.size();
       return true;
    }
 
-   unsigned int xres = img_list[0].GetXRes(), yres = img_list[0].GetYRes(), max = img_list.size();
+   unsigned int xres = imageList[0].GetXRes(), yres = imageList[0].GetYRes(), max = imageList.size();
 
    unsigned int needed_space = max * xres*yres * 4;
    if (size < needed_space)
@@ -739,10 +739,10 @@ bool DebugServer::GetObjectListImagelist(unsigned int& numObjects, unsigned char
    Uint8* pixels = new Uint8[xres*yres*max];
 
    for (unsigned int n = 0; n < max; n++)
-      memcpy(&pixels[n*xres*yres], &img_list[n].GetPixels()[0], xres*yres);
+      memcpy(&pixels[n*xres*yres], &imageList[n].GetPixels()[0], xres*yres);
 
    // convert color indices to 32-bit texture
-   Uint32* palptr = reinterpret_cast<Uint32*>(img_list[0].GetPalette().get());
+   Uint32* palptr = reinterpret_cast<Uint32*>(imageList[0].GetPalette().get());
    Uint32* texptr = reinterpret_cast<Uint32*>(buffer);
 
    for (unsigned int i = 0; i < xres*yres*max; i++)

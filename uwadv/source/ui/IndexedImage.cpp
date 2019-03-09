@@ -133,23 +133,11 @@ void IndexedImage::ClonePalette()
 }
 
 
-void ImageManager::Init(Base::Settings& settings)
+void ImageManager::Init()
 {
-   m_underworldPath = settings.GetString(Base::settingUnderworldPath);
-
-   Import::ImageLoader loader;
-
-   // load all palettes
-   std::string filename(m_underworldPath);
-   filename.append("data/pals.dat");
-
-   loader.LoadPalettes(filename.c_str(), m_allPalettes);
-
-   // load all auxiliary palettes
-   filename.assign(m_underworldPath);
-   filename.append("data/allpals.dat");
-
-   loader.LoadAuxPalettes(filename.c_str(), m_allAuxPalettes);
+   Import::ImageLoader loader{ m_resourceManager };
+   loader.LoadPalettes(m_allPalettes);
+   loader.LoadAuxPalettes(m_allAuxPalettes);
 }
 
 /// when loading *.gr images, just specify the filename without the .gr and
@@ -162,25 +150,21 @@ void ImageManager::Load(IndexedImage& image, const char* basename, unsigned int 
    {
    case imageGr:
    {
-      std::string filename(m_underworldPath);
-      filename.append("data/");
+      std::string filename("data/");
       filename.append(basename);
       filename.append(".gr");
 
-      Import::ImageLoader loader;
+      Import::ImageLoader loader{ m_resourceManager };
       loader.LoadImageGr(image, filename.c_str(), imgnum, m_allAuxPalettes);
    }
    break;
 
    case imageByt:
    {
-      std::string filename(m_underworldPath);
-      filename.append(basename);
-
       image.Create(320, 200);
 
-      Import::ImageLoader loader;
-      loader.LoadImageByt(filename.c_str(), &image.GetPixels()[0]);
+      Import::ImageLoader loader{ m_resourceManager };
+      loader.LoadImageByt(basename, &image.GetPixels()[0]);
    }
    break;
 
@@ -197,13 +181,12 @@ void ImageManager::LoadList(std::vector<IndexedImage>& imageList, const char* ba
    unsigned int imageFrom, unsigned int imageTo,
    unsigned int paletteIndex)
 {
-   std::string filename(m_underworldPath);
-   filename.append("data/");
+   std::string filename("data/");
    filename.append(basename);
    filename.append(".gr");
 
    // import the images
-   Import::ImageLoader loader;
+   Import::ImageLoader loader{ m_resourceManager };
 
    loader.LoadImageGrList(imageList, filename.c_str(), imageFrom, imageTo,
       m_allAuxPalettes);

@@ -26,6 +26,7 @@
 namespace Base
 {
    class Settings;
+   class ResourceManager;
    class File;
 }
 
@@ -33,24 +34,28 @@ class IndexedImage;
 
 namespace Import
 {
+   /// image loader
    class ImageLoader
    {
    public:
       /// ctor
-      ImageLoader() {}
+      ImageLoader(Base::ResourceManager& resourceManager)
+         :m_resourceManager(resourceManager)
+      {
+      }
 
       /// loads 8 main palettes
-      void LoadPalettes(const char* allPalettesName, Palette256Ptr allPalettes[8]);
+      void LoadPalettes(Palette256Ptr allPalettes[8]);
 
       /// loads all 32 auxiliary palettes with 16 indices each
-      void LoadAuxPalettes(const char* auxPalettesName, Uint8 allAuxPalettes[32][16]);
+      void LoadAuxPalettes(Uint8 allAuxPalettes[32][16]);
 
       /// loads a *.gr image
-      void LoadImageGr(IndexedImage& img, const char* imageName, unsigned int imgnum,
+      void LoadImageGr(IndexedImage& img, const char* imageName, unsigned int imageNumber,
          Uint8 allAuxPalettes[32][16]);
 
       /// loads a list of image from a *.gr file
-      void LoadImageGrList(std::vector<IndexedImage>& imglist,
+      void LoadImageGrList(std::vector<IndexedImage>& imageList,
          const char* imageName, unsigned int imageFrom, unsigned int imageTo,
          Uint8 allAuxPalettes[32][16]);
 
@@ -61,6 +66,10 @@ namespace Import
       /// loads *.gr image into pixels array
       void LoadImageGrImpl(IndexedImage& image, Base::File& file, Uint8 auxPalettes[32][16],
          bool special_panels);
+
+   private:
+      /// resource manager to use for loading
+      Base::ResourceManager& m_resourceManager;
    };
 
 } // namespace Import

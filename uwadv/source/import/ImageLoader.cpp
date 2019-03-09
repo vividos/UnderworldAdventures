@@ -22,6 +22,7 @@
 #include "Import.hpp"
 #include "ImageLoader.hpp"
 #include "IndexedImage.hpp"
+#include "ResourceManager.hpp"
 #include <algorithm>
 
 using Import::ImageLoader;
@@ -225,10 +226,10 @@ void ImageDecodeRLE(Base::File& file, Uint8* pixels, unsigned int bits,
    }
 }
 
-void ImageLoader::LoadPalettes(const char* allPalettesName,
-   Palette256Ptr allPalettes[8])
+void ImageLoader::LoadPalettes(Palette256Ptr allPalettes[8])
 {
-   Base::File file(allPalettesName, Base::modeRead);
+   const char* allPalettesName = "data/pals.dat";
+   Base::File file = m_resourceManager.GetUnderworldFile(Base::resourceGameUw, allPalettesName);
    if (!file.IsOpen())
    {
       std::string text("could not open palette file ");
@@ -253,10 +254,11 @@ void ImageLoader::LoadPalettes(const char* allPalettesName,
    }
 }
 
-void ImageLoader::LoadAuxPalettes(const char* auxPalettesName,
-   Uint8 allAuxPalettes[32][16])
+void ImageLoader::LoadAuxPalettes(Uint8 allAuxPalettes[32][16])
 {
-   Base::File file(auxPalettesName, Base::modeRead);
+   const char* auxPalettesName = "data/allpals.dat";
+
+   Base::File file = m_resourceManager.GetUnderworldFile(Base::resourceGameUw, auxPalettesName);
    if (!file.IsOpen())
       throw Base::Exception("could not open file allpals.dat");
 
@@ -265,10 +267,10 @@ void ImageLoader::LoadAuxPalettes(const char* auxPalettesName,
    file.ReadBuffer(buffer, 32 * 16);
 }
 
-void ImageLoader::LoadImageGr(IndexedImage& img, const char* imageName,
-   unsigned int imgnum, Uint8 allAuxPalettes[32][16])
+void ImageLoader::LoadImageGr(IndexedImage& image, const char* imageName,
+   unsigned int imageNumber, Uint8 allAuxPalettes[32][16])
 {
-   Base::File file(imageName, Base::modeRead);
+   Base::File file = m_resourceManager.GetUnderworldFile(Base::resourceGameUw, imageName);
    if (!file.IsOpen())
    {
       std::string text("could not open image: ");
@@ -276,7 +278,7 @@ void ImageLoader::LoadImageGr(IndexedImage& img, const char* imageName,
       throw Base::Exception(text.c_str());
    }
 
-   unsigned long filelen = file.FileLength();
+   unsigned long fileLength = file.FileLength();
 
    // read in toc
    Uint8 id = file.Read8(); // always 1 for .gr files
@@ -284,27 +286,26 @@ void ImageLoader::LoadImageGr(IndexedImage& img, const char* imageName,
 
    Uint16 entries = file.Read16();
 
-   if (imgnum >= entries)
-      imgnum = 0; // image number not valid
+   if (imageNumber >= entries)
+      imageNumber = 0; // image number not valid
 
    // seek to offset
-   file.Seek(4 * imgnum, Base::seekCurrent);
+   file.Seek(4 * imageNumber, Base::seekCurrent);
    Uint32 offset = file.Read32();
 
-   if (offset >= filelen)
+   if (offset >= fileLength)
       return;
 
    file.Seek(offset, Base::seekBegin);
 
    // load image into pixel vector
-   bool special_panels = (strstr("panels.gr", imageName) != NULL);
-   LoadImageGrImpl(img, file, allAuxPalettes, special_panels);
+   bool isSpecialPanelsGr = (strstr("panels.gr", imageName) != NULL);
+   LoadImageGrImpl(image, file, allAuxPalettes, isSpecialPanelsGr);
 }
 
 void ImageLoader::LoadImageByt(const char* imageName, Uint8* pixels)
 {
-   // open file
-   Base::File file(imageName, Base::modeRead);
+   Base::File file = m_resourceManager.GetUnderworldFile(Base::resourceGameUw, imageName);
    if (!file.IsOpen())
    {
       std::string text("could not open raw image: ");
@@ -316,11 +317,11 @@ void ImageLoader::LoadImageByt(const char* imageName, Uint8* pixels)
    file.ReadBuffer(&pixels[0], 320 * 200);
 }
 
-void ImageLoader::LoadImageGrList(std::vector<IndexedImage>& imglist,
+void ImageLoader::LoadImageGrList(std::vector<IndexedImage>& imageList,
    const char* imageName, unsigned int imageFrom, unsigned int imageTo,
    Uint8 allAuxPalettes[32][16])
 {
-   Base::File file(imageName, Base::modeRead);
+   Base::File file = m_resourceManager.GetUnderworldFile(Base::resourceGameUw, imageName);
    if (!file.IsOpen())
    {
       std::string text("could not open image list: ");
@@ -328,7 +329,7 @@ void ImageLoader::LoadImageGrList(std::vector<IndexedImage>& imglist,
       throw Base::Exception(text.c_str());
    }
 
-   unsigned long filelen = file.FileLength();
+   unsigned long fileLength = file.FileLength();
 
    // read in toc
    Uint8 id = file.Read8(); // always 1
@@ -351,32 +352,32 @@ void ImageLoader::LoadImageGrList(std::vector<IndexedImage>& imglist,
    for (Uint16 i = 0; i < entries; i++)
       offsets[i] = file.Read32();
 
-   bool special_panels = (strstr(imageName, "panels.gr") != NULL);
+   bool isSpecialPanelsGr = (strstr(imageName, "panels.gr") != NULL);
 
    for (unsigned int j = imageFrom; j < imageTo; j++)
    {
-      if (offsets[j] >= filelen)
+      if (offsets[j] >= fileLength)
          continue;
 
       file.Seek(offsets[j], Base::seekBegin);
 
-      IndexedImage img;
-      imglist.push_back(img);
+      IndexedImage image;
+      imageList.push_back(image);
 
-      IndexedImage& lastimg = imglist.back();
+      IndexedImage& lastImage = imageList.back();
 
       // load image
-      LoadImageGrImpl(lastimg, file, allAuxPalettes, special_panels);
+      LoadImageGrImpl(lastImage, file, allAuxPalettes, isSpecialPanelsGr);
    }
 }
 
 void ImageLoader::LoadImageGrImpl(IndexedImage& img, Base::File& file,
-   Uint8 auxPalettes[32][16], bool special_panels)
+   Uint8 auxPalettes[32][16], bool isSpecialPanelsGr)
 {
    Uint8 type, width, height, auxpal = 0;
    Uint16 datalen;
 
-   if (special_panels)
+   if (isSpecialPanelsGr)
    {
       // special case for "panels.gr" that lacks a normal header
       type = 4; // 8-bit uncompressed
