@@ -159,7 +159,6 @@ namespace Detail
    ///
    /// \param sourceSamples source audio samples
    /// \param destSamples resampled audio
-   /// \todo make dest vector smaller
    void ResampleChunk12048_22050(const std::vector<double>& sourceSamples,
       std::vector<double>& destSamples)
    {
@@ -185,7 +184,7 @@ namespace Detail
       // resize and remove last samples (could be distorted)
       destSamples.resize(outputSamples - SDL_TABLESIZE(delayLine));
 
-      // TODO destSamples.swap(std::vector<double>(destSamples));
+      std::vector<double>(destSamples).swap(destSamples);
    }
 
 } // namespace Detail
