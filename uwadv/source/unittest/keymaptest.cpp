@@ -22,6 +22,7 @@
 #include "unittest.hpp"
 #include "Keymap.hpp"
 #include "Settings.hpp"
+#include "ResourceManager.hpp"
 #include "TextFile.hpp"
 #include "FileSystem.hpp"
 
@@ -51,8 +52,10 @@ namespace UnitTest
 
          settings.SetValue(Base::settingGamePrefix, std::string("uw1"));
 
+         Base::ResourceManager resourceManager{ settings };
+
          Base::Keymap keymap;
-         keymap.Init(settings);
+         keymap.Init(settings, resourceManager);
       }
 
       /// Tests loading custom keymaps and checking that keys mappings are properly
@@ -83,9 +86,11 @@ namespace UnitTest
          settings.SetValue(Base::settingCustomKeymap, strCustomKeymapFile);
          settings.SetValue(Base::settingGamePrefix, std::string("uw1"));
 
+         Base::ResourceManager resourceManager{ settings };
+
          // load custom keymap
          Base::Keymap keymap;
-         keymap.Init(settings);
+         keymap.Init(settings, resourceManager);
 
          // verify settings
          Assert::IsTrue(keymap.FindKey(SDLK_a, static_cast<SDL_Keymod>(KMOD_CTRL | KMOD_SHIFT | KMOD_ALT)) == Base::keyMenuTopOfList2);

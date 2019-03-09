@@ -359,7 +359,7 @@ namespace Detail
 
 /// Loads global keymap for chosen game (game prefix must be set in settings
 /// object) and custom keymap specified in settings.
-void Keymap::Init(const Base::Settings& settings)
+void Keymap::Init(const Base::Settings& settings, Base::ResourceManager& resourceManager)
 {
    UaTrace("loading keymaps ...\n");
 
@@ -373,9 +373,8 @@ void Keymap::Init(const Base::Settings& settings)
 
    // load main keymap
    Base::ConfigFile configFile;
-   Base::ResourceManager resManager(settings);
    {
-      SDL_RWopsPtr rwops = resManager.GetResourceFile(keymapName);
+      SDL_RWopsPtr rwops = resourceManager.GetResourceFile(keymapName);
       if (rwops.get() == NULL)
          throw Base::FileSystemException("file not found", keymapName, ENOENT);
 

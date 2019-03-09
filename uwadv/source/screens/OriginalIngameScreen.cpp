@@ -90,7 +90,7 @@ void OriginalIngameScreen::Init()
    Base::Settings& settings = m_game.GetSettings();
 
    // load keymap
-   m_keymap.Init(settings);
+   m_keymap.Init(settings, m_game.GetResourceManager());
    RegisterKeymap(&m_keymap);
 
    // init images/m_subWindows

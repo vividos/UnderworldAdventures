@@ -27,6 +27,7 @@
 namespace Base
 {
    class Settings;
+   class ResourceManager;
 
    /// \brief logical key types
    /// defines all keys that are used during the game.
@@ -133,7 +134,7 @@ namespace Base
       }
 
       /// initializes keymap
-      void Init(const Settings& settings);
+      void Init(const Settings& settings, Base::ResourceManager& resourceManager);
 
       /// finds key by given key amd modifier value
       KeyType FindKey(SDL_Keycode key, SDL_Keymod mod);
