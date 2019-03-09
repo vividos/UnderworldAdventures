@@ -203,26 +203,25 @@ void TextureManager::Init(IGame& game)
 {
    m_palette0 = game.GetImageManager().GetPalette(0);
 
-   Base::Settings& settings = game.GetSettings();
+   Import::TextureLoader loader{ game.GetResourceManager() };
 
    // load stock textures
+   Base::Settings& settings = game.GetSettings();
    if (settings.GetGameType() == Base::gameUw1)
    {
       // load all wall textures
-      std::string wallTexturesFilename(settings.GetString(Base::settingUnderworldPath));
-      wallTexturesFilename.append(
-         settings.GetBool(Base::settingUw1IsUwdemo) ? "data/dw64.tr" : "data/w64.tr");
+      const char* wallTexturesFilename =
+         settings.GetBool(Base::settingUw1IsUwdemo) ? "data/dw64.tr" : "data/w64.tr";
 
-      Import::TextureLoader::LoadTextures(m_allStockTextureImages, Base::c_stockTexturesWall,
-         wallTexturesFilename.c_str(), m_palette0);
+      loader.LoadTextures(m_allStockTextureImages, Base::c_stockTexturesWall,
+         wallTexturesFilename, m_palette0);
 
       // load all floor textures
-      std::string floorTexturesFilename(settings.GetString(Base::settingUnderworldPath));
-      floorTexturesFilename.append(
-         settings.GetBool(Base::settingUw1IsUwdemo) ? "data/df32.tr" : "data/f32.tr");
+      const char* floorTexturesFilename =
+         settings.GetBool(Base::settingUw1IsUwdemo) ? "data/df32.tr" : "data/f32.tr";
 
-      Import::TextureLoader::LoadTextures(m_allStockTextureImages, Base::c_stockTexturesFloor,
-         floorTexturesFilename.c_str(), m_palette0);
+      loader.LoadTextures(m_allStockTextureImages, Base::c_stockTexturesFloor,
+         floorTexturesFilename, m_palette0);
 
       // load objects
       {
@@ -272,11 +271,10 @@ void TextureManager::Init(IGame& game)
    else if (settings.GetGameType() == Base::gameUw2)
    {
       // load all textures
-      std::string texturesFilename(settings.GetString(Base::settingUnderworldPath));
-      texturesFilename.append("data/t64.tr");
+      const char* texturesFilename = "data/t64.tr";
 
-      Import::TextureLoader::LoadTextures(m_allStockTextureImages, Base::c_stockTexturesWall,
-         texturesFilename.c_str(), m_palette0);
+      loader.LoadTextures(m_allStockTextureImages, Base::c_stockTexturesWall,
+         texturesFilename, m_palette0);
 
       m_stockTextureAnimationInfos.resize(m_allStockTextureImages.size(),
          std::make_pair<unsigned int, unsigned int>(0, 1));

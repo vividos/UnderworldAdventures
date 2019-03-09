@@ -23,17 +23,32 @@
 
 #include "IndexedImage.hpp"
 
+namespace Base
+{
+   class ResourceManager;
+}
+
 namespace Import
 {
    /// texture loader
    class TextureLoader
    {
    public:
+      /// ctor
+      TextureLoader(Base::ResourceManager& resourceManager)
+         :m_resourceManager(resourceManager)
+      {
+      }
+
       /// loads texture images
-      static void LoadTextures(
+      void LoadTextures(
          std::vector<IndexedImage>& textureImages,
          unsigned int startIndex, const char* textureName,
          Palette256Ptr palette);
+
+   private:
+      /// resource manager to use for loading
+      Base::ResourceManager& m_resourceManager;
    };
 
 } // namespace Import

@@ -22,6 +22,7 @@
 #include "Import.hpp"
 #include "TextureLoader.hpp"
 #include "Texture.hpp"
+#include "ResourceManager.hpp"
 #include "File.hpp"
 #include <algorithm>
 
@@ -48,7 +49,7 @@ void Import::TextureLoader::LoadTextures(
    const char* textureName,
    Palette256Ptr palette)
 {
-   Base::File file(textureName, Base::modeRead);
+   Base::File file = m_resourceManager.GetUnderworldFile(Base::resourceGameUw, textureName);
    if (!file.IsOpen())
    {
       std::string text("could not open texture file: ");
@@ -58,8 +59,8 @@ void Import::TextureLoader::LoadTextures(
 
    Uint32 fileLength = file.FileLength();
 
-   Uint8 val = file.Read8(); // always 2 (.tr)
-   UaAssert(val == 2); val;
+   Uint8 value = file.Read8(); // always 2 (.tr)
+   UaAssert(value == 2); value;
 
    unsigned int xyres = file.Read8(); // x and y resolution (square textures)
 
