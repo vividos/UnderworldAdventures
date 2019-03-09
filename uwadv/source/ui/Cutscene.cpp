@@ -34,17 +34,11 @@ void Cutscene::Load(Base::Settings& settings, unsigned int main,
 }
 */
 
-void Cutscene::Load(Base::Settings& settings, const char* relfilename)
+void Cutscene::Load(Base::ResourceManager& resourceManager, const char* relativeFilename)
 {
-   std::string filename(settings.GetString(Base::settingUnderworldPath));
-   filename.append(relfilename);
-
-   Load(filename.c_str());
-}
-
-void Cutscene::Load(const char* filename)
-{
-   Import::CutsceneLoader::LoadCutscene(filename, m_image, m_largePageDescriptorList, m_largePages, m_numRecords);
+   Import::CutsceneLoader::LoadCutscene(
+      resourceManager, relativeFilename,
+      m_image, m_largePageDescriptorList, m_largePages, m_numRecords);
 
    m_currentFrame = (unsigned int)-1;
 }

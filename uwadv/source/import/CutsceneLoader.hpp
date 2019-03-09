@@ -21,19 +21,27 @@
 //
 #pragma once
 
-class Settings;
 class IndexedImage;
 struct LargePageDescriptor;
 
+namespace Base
+{
+   class ResourceManager;
+}
+
 namespace Import
 {
+   /// cutscene loader
    class CutsceneLoader
    {
    public:
       /// loads cutscene data
-      static void LoadCutscene(const char* filename, IndexedImage& image,
+      static void LoadCutscene(Base::ResourceManager& resourceManager,
+         const char* filename,
+         IndexedImage& image,
          std::vector<LargePageDescriptor>& largePageDescriptorList,
-         std::vector<Uint8>& largePages, unsigned int& numRecords);
+         std::vector<Uint8>& largePages,
+         unsigned int& numRecords);
 
       /// extracts cutscene data from source data
       static void ExtractCutsceneData(Uint8* source, Uint8* dest, unsigned int maxPixel);

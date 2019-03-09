@@ -24,14 +24,18 @@
 #include "Cutscene.hpp"
 #include "CutsceneLoader.hpp"
 #include "IndexedImage.hpp"
+#include "ResourceManager.hpp"
 #include "File.hpp"
 #include <algorithm>
 
-void Import::CutsceneLoader::LoadCutscene(const char* filename, IndexedImage& image,
+void Import::CutsceneLoader::LoadCutscene(Base::ResourceManager& resourceManager,
+   const char* filename,
+   IndexedImage& image,
    std::vector<LargePageDescriptor>& largePageDescriptorList,
-   std::vector<Uint8>& largePages, unsigned int& numRecords)
+   std::vector<Uint8>& largePages,
+   unsigned int& numRecords)
 {
-   Base::File file(filename, Base::modeRead);
+   Base::File file = resourceManager.GetUnderworldFile(Base::resourceGameUw, filename);
    if (!file.IsOpen())
    {
       std::string text("could not open cutscene file ");

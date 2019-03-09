@@ -488,7 +488,7 @@ void CutsceneViewScreen::DoAction()
       animname.append(lua_tostring(L, -1));
 
       // load animation
-      m_cutsceneAnimation.Load(m_game.GetSettings(), animname.c_str());
+      m_cutsceneAnimation.Load(m_game.GetResourceManager(), animname.c_str());
       m_cutsceneAnimation.Init(m_game, 0, 0);
       m_showAnimation = true;
       m_loopAnimation = true;

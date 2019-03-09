@@ -50,7 +50,7 @@ void AcknowledgementsScreen::Init()
    m_currentFrame = 0;
 
    // init cutscene quad
-   m_ackCutscene.Load(m_game.GetSettings(), "cuts/cs012.n01");
+   m_ackCutscene.Load(m_game.GetResourceManager(), "cuts/cs012.n01");
    m_ackCutscene.Init(m_game, 0, 0);
    m_ackCutscene.UpdateFrame(m_currentFrame);
 

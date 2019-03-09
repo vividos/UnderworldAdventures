@@ -215,7 +215,7 @@ void StartSplashScreen::Tick()
       UaTrace("loading animation\n");
 
       // load animation
-      m_currentCutscene.Load(m_game.GetSettings(), "cuts/cs011.n01");
+      m_currentCutscene.Load(m_game.GetResourceManager(), "cuts/cs011.n01");
       m_currentCutscene.Init(m_game, 0, 0);
 
       m_currentFrame = 0;

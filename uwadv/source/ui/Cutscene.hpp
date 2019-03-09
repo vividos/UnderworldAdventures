@@ -22,9 +22,13 @@
 #pragma once
 
 #include <vector>
-#include "Settings.hpp"
 #include "ImageQuad.hpp"
 #include "Texture.hpp"
+
+namespace Base
+{
+   class ResourceManager;
+}
 
 /// large page descriptor struct type
 struct LargePageDescriptor
@@ -45,15 +49,8 @@ public:
       m_currentFrame = (unsigned int)-1;
    }
 
-   /// loads a cutscene by main and sub number
-   //void Load(Base::Settings& settings, unsigned int main, unsigned int sub);
-
    /// loads a cutscene by relative filename
-   void Load(Base::Settings& settings, const char* filename);
-
-   /// loads a cutscene by absolute filename
-   void Load(const char* filename);
-
+   void Load(Base::ResourceManager& resourceManager, const char* relativeFilename);
 
    /// returns maximum number of frames
    unsigned int GetMaxFrames() { return m_numRecords; }
