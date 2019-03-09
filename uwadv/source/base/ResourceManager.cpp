@@ -25,6 +25,7 @@
 #include "FileSystem.hpp"
 #include <SDL_rwops.h>
 #include <algorithm>
+#include <zziplib.h>
 #include <SDL_rwops_zzip.h>
 #include <cerrno>
 #include <deque>
@@ -118,6 +119,7 @@ void ResourceManager::Rescan(const Settings& settings)
       return;
 
    RescanUnderworldFilenames(m_uwPath);
+   RescanUnderworldZipArchives(m_uwPath);
 }
 
 void ResourceManager::RescanUnderworldFilenames(std::string uwPath)
@@ -149,6 +151,110 @@ void ResourceManager::RescanUnderworldFilenames(std::string uwPath)
          m_mapLowercaseFilenamesToActualFilenames.insert(
             std::make_pair(lowerFilename, filename));
       }
+   }
+}
+
+void ResourceManager::RescanUnderworldZipArchives(const std::string& uwPath)
+{
+   std::vector<std::string> fileList;
+   FileSystem::FindFiles(uwPath + "*.zip", fileList);
+
+   // also find GoG.com zip archive
+   FileSystem::FindFiles(uwPath + "*.gog", fileList);
+
+   for (auto zipFilename : fileList)
+      RescanZipArchive(zipFilename);
+}
+
+void ResourceManager::RescanZipArchive(const std::string& zipFilename)
+{
+   zzip_error_t errorCode = ZZIP_NO_ERROR;
+   ZZIP_DIR* archive = zzip_dir_open(zipFilename.c_str(), &errorCode);
+   std::shared_ptr<ZZIP_DIR> autoFree(archive,
+      [](ZZIP_DIR* dir) { if (dir != NULL) zzip_dir_close(dir); });
+
+   if (archive == NULL || errorCode != ZZIP_NO_ERROR)
+   {
+      UaTrace("couldn't open zip archive: %s (%s)\n",
+         zipFilename.c_str(),
+         zzip_strerror(errorCode));
+      return;
+   }
+
+   std::map<std::string, std::string> mapRelativeLowercaseFilenamesToZipArchiveFilename;
+
+   ZZIP_DIRENT dirEntry = { 0 };
+   int ret;
+   while ((ret = zzip_dir_read(archive, &dirEntry)) != 0)
+   {
+      std::string relativeFilename = dirEntry.d_name;
+
+      // ignore non-relative entries
+      if (relativeFilename.find("/") == 0 ||
+         relativeFilename.find("..") != std::string::npos)
+         continue;
+
+      std::string lowercaseRelativeFilename = relativeFilename;
+      String::Lowercase(lowercaseRelativeFilename);
+
+      // the "inside" zip archive filename can be opened SDL_RWFromZZIP() directly
+      std::string insideZipArchiveFilename =
+         zipFilename + "/" + relativeFilename;
+
+      mapRelativeLowercaseFilenamesToZipArchiveFilename.insert(
+         std::make_pair(lowercaseRelativeFilename, insideZipArchiveFilename));
+   }
+
+   CheckAndAddZipArchive(zipFilename, mapRelativeLowercaseFilenamesToZipArchiveFilename);
+}
+
+void ResourceManager::CheckAndAddZipArchive(const std::string& zipFilename,
+   const std::map<std::string, std::string>& theMap)
+{
+   // check neccesary files in the zip archive mapping
+   auto end = theMap.end();
+   bool foundDemo = theMap.find("uwdemo.exe") != end && theMap.find("data/level13.st") != end;
+   bool foundUw1 = theMap.find("uw.exe") != end && theMap.find("data/lev.ark") != end;
+   bool foundUw2 = theMap.find("uw2.exe") != end && theMap.find("data/sdc.ark") != end;
+
+   /// GoG.com's Ultima Underworld has both uw1 and uw2 in a game.gog that's a zip archive
+   bool foundGogUw1Uw2 =
+      theMap.find("uw/uw.exe") != end && theMap.find("uw/data/lev.ark") != end &&
+      theMap.find("uw2/uw2.exe") != end && theMap.find("uw2/data/sdc.ark") != end;
+
+   if (foundDemo || foundUw1 || foundUw2 || foundGogUw1Uw2)
+   {
+      m_mapRelativeLowercaseFilenamesToZipArchiveFilename.insert(
+         theMap.begin(),
+         theMap.end());
+   }
+   else
+   {
+      std::string reason = "zip archive doesn't contain uw_demo, uw1 or uw2 game files";
+
+      if (theMap.find("uw_demo.exe") != end &&
+         theMap.size() == 1)
+      {
+         reason = "zip archive only contains the uw_demo.exe self extracting archive for uw_demo; please extract it with dosbox first";
+      }
+      else if (theMap.find("uw_demo.exe") != end &&
+         theMap.find("data/level13.st") == end)
+      {
+         reason = "zip archive is a corrupt uw_demo zip archive that is missing its subfolder files; please use a valid zip archive";
+      }
+      else if (theMap.find("uw.lzh") != end &&
+         theMap.find("cnv.lzh") != end)
+      {
+         reason = "zip archive contains the installation files for uw1, not the extracted game files itself";
+      }
+      else if (theMap.find("base0001.lzh") != end)
+      {
+         reason = "zip archive contains the installation files for uw2, not the extracted game files itself";
+      }
+
+      UaTrace("zip archive \"%s\" rejected: %s\n",
+         zipFilename.c_str(),
+         reason.c_str());
    }
 }
 

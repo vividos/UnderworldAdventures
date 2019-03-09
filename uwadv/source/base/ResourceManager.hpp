@@ -60,6 +60,16 @@ namespace Base
       /// re-scans all underworld data filenames in the given path
       void RescanUnderworldFilenames(std::string uwPath);
 
+      /// re-scans all zip archies that may contain underworld data files
+      void RescanUnderworldZipArchives(const std::string& uwPath);
+
+      /// re-scans a single zip archive
+      void RescanZipArchive(const std::string& zipFilename);
+
+      /// checks contents of zip file (by checking mapping) and adds it to the global mapping
+      void CheckAndAddZipArchive(const std::string& zipFilename,
+         const std::map<std::string, std::string>& mapRelativeLowercaseFilenamesToZipArchiveFilename);
+
       /// maps a requested filename to a real file system filename, for the underworld data files
       void MapUnderworldFilename(std::string& filenameToMap);
 
@@ -81,6 +91,9 @@ namespace Base
 
       /// mapping from lowercase filenames to actual file system filenames
       std::map<std::string, std::string> m_mapLowercaseFilenamesToActualFilenames;
+
+      /// maps from relative paths of underworld files to "inside" zip archive filename
+      std::map<std::string, std::string> m_mapRelativeLowercaseFilenamesToZipArchiveFilename;
    };
 
 } // namespace Base
