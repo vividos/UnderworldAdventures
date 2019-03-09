@@ -27,6 +27,7 @@
 #include <algorithm>
 #include <SDL_rwops_zzip.h>
 #include <cerrno>
+#include <deque>
 
 using Base::ResourceManager;
 using Base::Settings;
@@ -39,6 +40,8 @@ ResourceManager::ResourceManager(const Settings& settings)
    m_uw2Path(settings.GetString(Base::settingUw2Path))
 {
    UaAssert(m_uadataPath.size() > 0);
+
+   Rescan(settings);
 }
 
 /// The search order for resource files is as follows:
@@ -81,21 +84,26 @@ Base::SDL_RWopsPtr ResourceManager::GetResourceFile(const std::string& relativeF
 }
 
 /// \todo implement reading from a zip file, e.g. uw_demo.zip
-Base::SDL_RWopsPtr ResourceManager::GetUnderworldFile(Base::UnderworldResourcePath resourcePath, const std::string& relativeFilePath)
+Base::SDL_RWopsPtr ResourceManager::GetUnderworldFile(Base::UnderworldResourcePath resourcePath, const std::string& relativeFilename)
 {
-   std::string filename;
+   std::string basePath;
 
    switch (resourcePath)
    {
-   case resourceGameUw: filename = m_uwPath; break;
-   case resourceGameUw1: filename = m_uw1Path; break;
-   case resourceGameUw2: filename = m_uw2Path; break;
+   case resourceGameUw: basePath = m_uwPath; break;
+   case resourceGameUw1: basePath = m_uw1Path; break;
+   case resourceGameUw2: basePath = m_uw2Path; break;
    }
 
-   std::string realFilePath(relativeFilePath);
-   MapUnderworldFilename(realFilePath);
+   std::string filename = basePath + relativeFilename;
 
-   filename += realFilePath;
+   return GetFile(filename);
+}
+
+Base::SDL_RWopsPtr ResourceManager::GetFile(const std::string& absoluteFilename)
+{
+   std::string filename = absoluteFilename;
+   MapUnderworldFilename(filename);
 
    if (!Base::FileSystem::FileExists(filename))
       throw Base::FileSystemException("couldn't find uw game file", filename, ENOENT);
@@ -103,8 +111,57 @@ Base::SDL_RWopsPtr ResourceManager::GetUnderworldFile(Base::UnderworldResourcePa
    return MakeRWopsPtr(SDL_RWFromFile(filename.c_str(), "rb"));
 }
 
-/// \todo implement mapping
-void ResourceManager::MapUnderworldFilename(std::string& relativeFilename)
+void ResourceManager::Rescan(const Settings& settings)
 {
-   Base::String::Lowercase(relativeFilename);
+   m_uwPath = settings.GetString(Base::settingUnderworldPath);
+   if (m_uwPath.empty())
+      return;
+
+   RescanUnderworldFilenames(m_uwPath);
+}
+
+void ResourceManager::RescanUnderworldFilenames(std::string uwPath)
+{
+   m_mapLowercaseFilenamesToActualFilenames.clear();
+
+   std::deque<std::string> folderList;
+   folderList.push_back(uwPath);
+
+   while (!folderList.empty())
+   {
+      std::string path = folderList.front();
+      folderList.pop_front();
+
+      std::vector<std::string> fileList;
+      FileSystem::FindFiles(path + "*.*", fileList);
+
+      for (auto filename : fileList)
+      {
+         if (FileSystem::FolderExists(filename))
+         {
+            folderList.push_back(filename + FileSystem::PathSeparator);
+            continue;
+         }
+
+         std::string lowerFilename = filename;
+         String::Lowercase(lowerFilename);
+
+         m_mapLowercaseFilenamesToActualFilenames.insert(
+            std::make_pair(lowerFilename, filename));
+      }
+   }
+}
+
+void ResourceManager::MapUnderworldFilename(std::string& filenameToMap)
+{
+   std::string lowercaseFilename = filenameToMap;
+   String::Lowercase(lowercaseFilename);
+
+   // normalize path separators to get a file system match
+   std::replace(lowercaseFilename.begin(), lowercaseFilename.end(), '/', FileSystem::PathSeparator[0]);
+   std::replace(lowercaseFilename.begin(), lowercaseFilename.end(), '\\', FileSystem::PathSeparator[0]);
+
+   auto iter = m_mapLowercaseFilenamesToActualFilenames.find(lowercaseFilename);
+   if (iter != m_mapLowercaseFilenamesToActualFilenames.end())
+      filenameToMap = iter->second;
 }

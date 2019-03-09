@@ -22,6 +22,7 @@
 #pragma once
 
 #include <string>
+#include <map>
 
 namespace Base
 {
@@ -47,13 +48,22 @@ namespace Base
       SDL_RWopsPtr GetResourceFile(const std::string& relativeFilename);
 
       /// returns ultima underworld file
-      SDL_RWopsPtr GetUnderworldFile(UnderworldResourcePath resourcePath, const std::string& relativeFilePath);
+      SDL_RWopsPtr GetUnderworldFile(UnderworldResourcePath resourcePath, const std::string& relativeFilename);
 
-   protected:
-      /// maps lowercase filename to real filename for underworld data files
-      void MapUnderworldFilename(std::string& relativeFilename);
+      /// returns a file that already has a full path
+      SDL_RWopsPtr GetFile(const std::string& absoluteFilename);
 
-   protected:
+      /// re-scans all available files after the "underworld" path was set in the settings
+      void Rescan(const Settings& settings);
+
+   private:
+      /// re-scans all underworld data filenames in the given path
+      void RescanUnderworldFilenames(std::string uwPath);
+
+      /// maps a requested filename to a real file system filename, for the underworld data files
+      void MapUnderworldFilename(std::string& filenameToMap);
+
+   private:
       /// home path
       std::string m_homePath;
 
@@ -68,6 +78,9 @@ namespace Base
 
       /// path to uw2 game
       std::string m_uw2Path;
+
+      /// mapping from lowercase filenames to actual file system filenames
+      std::map<std::string, std::string> m_mapLowercaseFilenamesToActualFilenames;
    };
 
 } // namespace Base
