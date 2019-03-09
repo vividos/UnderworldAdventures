@@ -29,6 +29,9 @@ namespace Base
    /// \brief file system functions
    namespace FileSystem
    {
+      /// the path separator character as string, for this file system (e.g. \ on Windows, / on Linux).
+      extern const char* PathSeparator;
+
       /// returns a file list (full paths) from given search path with wildcards
       void FindFiles(const std::string& searchPath, std::vector<std::string>& fileList);
 

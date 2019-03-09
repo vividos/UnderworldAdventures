@@ -43,6 +43,12 @@
 #include <sys/stat.h>
 #endif
 
+#if defined(HAVE_WIN32)
+const char* Base::FileSystem::PathSeparator = "\\";
+#else
+const char* Base::FileSystem::PathSeparator = "/";
+#endif
+
 /// common error text when folder cannot be created
 const char* c_strCreateFolderError = "couldn't create folder";
 
