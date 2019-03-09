@@ -23,6 +23,7 @@
 #include "Import.hpp"
 #include "Critter.hpp"
 #include "CrittersLoader.hpp"
+#include "ResourceManager.hpp"
 #include "File.hpp"
 #include <SDL.h>
 
@@ -37,15 +38,15 @@ void ImageDecodeRLE(Base::File& file, Uint8* pixels, unsigned int bits,
    unsigned int padding = 0, unsigned int lineWidth = 0);
 
 void Import::CrittersLoader::LoadCritters(std::vector<Critter>& allCritters,
-   Base::Settings& settings, Palette256Ptr palette0)
+   Palette256Ptr palette0)
 {
-   if (settings.GetGameType() == Base::gameUw1)
+   if (m_settings.GetGameType() == Base::gameUw1)
    {
-      LoadCrittersUw1(allCritters, settings, palette0);
+      LoadCrittersUw1(allCritters, palette0);
    }
    else
    {
-      LoadCrittersUw2(allCritters, settings, palette0);
+      LoadCrittersUw2(allCritters, palette0);
    }
 }
 
@@ -100,6 +101,7 @@ void Import::CrittersLoader::LoadCritterFrames(Critter& critter, const char* fil
 
          // allocate needed number of bytes
          m_allFrameBytes.resize(maxframes * xres * yres);
+         UaAssert(!m_allFrameBytes.empty());
 
 #if defined(DO_CRITLOAD_DEBUG) && defined(HAVE_DEBUG)
          memset(&m_allFrameBytes[0], 0xcc, maxframes * xres * yres);
@@ -114,16 +116,17 @@ void Import::CrittersLoader::LoadCritterFrames(Critter& critter, const char* fil
       while (true)
       {
          // construct next pagefile name
-         std::string pagefile(filename);
+         std::string pagefile = filename;
 
          char buffer[8];
          snprintf(buffer, sizeof(buffer), ".n%02u", curpage++);
          pagefile.append(buffer);
 
          // try to open pagefile
-         Base::File file(pagefile.c_str(), Base::modeRead);
-         if (!file.IsOpen())
+         if (!m_resourceManager.IsUnderworldFileAvailable(pagefile.c_str()))
             break; // no more page files
+
+         Base::File file = m_resourceManager.GetUnderworldFile(Base::resourceGameUw, pagefile.c_str());
 
          // load animation
          Uint8 auxpal[32];
@@ -290,7 +293,7 @@ void Import::CrittersLoader::LoadCritterFrames(Critter& critter, const char* fil
 }
 
 void Import::CrittersLoader::LoadCrittersUw1(std::vector<Critter>& allCritters,
-   Base::Settings& settings, Palette256Ptr palette0)
+   Palette256Ptr palette0)
 {
    allCritters.clear();
    allCritters.resize(0x0040);
@@ -302,11 +305,10 @@ void Import::CrittersLoader::LoadCrittersUw1(std::vector<Critter>& allCritters,
    Uint8 animnames[32][8];
 
    // open assoc.anm file
-   std::string assocname(settings.GetString(Base::settingUnderworldPath));
-   assocname.append(
-      settings.GetBool(Base::settingUw1IsUwdemo) ? "crit/dassoc.anm" : "crit/assoc.anm");
+   const char* assocname =
+      m_settings.GetBool(Base::settingUw1IsUwdemo) ? "crit/dassoc.anm" : "crit/assoc.anm";
 
-   Base::File assoc(assocname.c_str(), Base::modeRead);
+   Base::File assoc = m_resourceManager.GetUnderworldFile(Base::resourceGameUw, assocname);
    if (!assoc.IsOpen())
       throw Base::Exception("could not find assoc.anm");
 
@@ -343,11 +345,9 @@ void Import::CrittersLoader::LoadCrittersUw1(std::vector<Critter>& allCritters,
       // construct critter filename base
       if (animnames[anim][0] != 0)
       {
-         std::string critfile(settings.GetString(Base::settingUnderworldPath));
 
-         char buffer[16];
-         snprintf(buffer, sizeof(buffer), "crit/cr%02opage", anim); // yeah, octal!
-         critfile.append(buffer);
+         char critterFile[16];
+         snprintf(critterFile, sizeof(critterFile), "crit/cr%02opage", anim); // yeah, octal!
 
          //UaTrace("loading critter %02x from cr%02opage.*, auxpal=%02x\n",
          //   i,anim,auxpal);
@@ -358,7 +358,7 @@ void Import::CrittersLoader::LoadCrittersUw1(std::vector<Critter>& allCritters,
          critter.maxframes = critframes[anim];
 #endif
          // load it
-         LoadCritterFrames(critter, critfile.c_str(), auxpal);
+         LoadCritterFrames(critter, critterFile, auxpal);
 
          critter.SetPalette(palette0);
       }
@@ -368,10 +368,9 @@ void Import::CrittersLoader::LoadCrittersUw1(std::vector<Critter>& allCritters,
 }
 
 void Import::CrittersLoader::LoadCrittersUw2(std::vector<Critter>& allCritters,
-   Base::Settings& settings, Palette256Ptr palette0)
+   Palette256Ptr palette0)
 {
    // TODO implement
    allCritters;
-   settings;
    palette0;
 }

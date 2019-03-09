@@ -57,7 +57,7 @@ void Renderer::Init(IGame& game, SDL_Window* window)
 
    GetTextureManager().Init(game);
    GetModel3DManager().Init(game);
-   GetCritterFramesManager().Init(game.GetSettings(), game.GetImageManager());
+   GetCritterFramesManager().Init(game.GetSettings(), game.GetResourceManager(), game.GetImageManager());
 
    // culling: only render front face, counter clockwise
    glCullFace(GL_BACK);

@@ -21,9 +21,14 @@
 //
 #pragma once
 
-#include "Settings.hpp"
 #include "IndexedImage.hpp"
 #include "Texture.hpp"
+
+namespace Base
+{
+   class Settings;
+   class ResourceManager;
+}
 
 namespace Underworld
 {
@@ -118,7 +123,7 @@ public:
    CritterFramesManager() {}
 
    /// initialize frames manager
-   void Init(Base::Settings& settings, ImageManager& imageManager);
+   void Init(Base::Settings& settings, Base::ResourceManager& resourceManager, ImageManager& imageManager);
 
    /// resets controlled object frames and prepares new critter objects
    void Prepare(Underworld::ObjectList* mapObjects);

@@ -23,33 +23,52 @@
 
 #include "IndexedImage.hpp"
 
-class Settings;
 class Font;
 class IndexedImage;
 struct LargePageDescriptor;
 class Critter;
+
+namespace Base
+{
+   class Settings;
+   class ResourceManager;
+}
 
 namespace Import
 {
    class CrittersLoader
    {
    public:
+      /// ctor
+      CrittersLoader(Base::Settings& settings, Base::ResourceManager& resourceManager)
+         :m_settings(settings),
+         m_resourceManager(resourceManager)
+      {
+      }
+
       /// loads all critters
-      static void LoadCritters(std::vector<Critter>& allCritters,
-         Base::Settings& settings, Palette256Ptr palette0);
+      void LoadCritters(std::vector<Critter>& allCritters,
+         Palette256Ptr palette0);
 
       /// loads all frames of a critter
-      static void LoadCritterFrames(Critter& critter, const char* filename,
+      void LoadCritterFrames(Critter& critter, const char* filename,
          unsigned int usedAuxPalette);
 
    private:
       /// loads all uw1 critters
-      static void LoadCrittersUw1(std::vector<Critter>& allCritters,
-         Base::Settings& settings, Palette256Ptr palette0);
+      void LoadCrittersUw1(std::vector<Critter>& allCritters,
+         Palette256Ptr palette0);
 
       /// loads all uw2 critters
-      static void LoadCrittersUw2(std::vector<Critter>& allCritters,
-         Base::Settings& settings, Palette256Ptr palette0);
+      void LoadCrittersUw2(std::vector<Critter>& allCritters,
+         Palette256Ptr palette0);
+
+   private:
+      /// settings to determine what game type we have
+      Base::Settings& m_settings;
+
+      /// resource manager to use for loading
+      Base::ResourceManager& m_resourceManager;
    };
 
 } // namespace Import

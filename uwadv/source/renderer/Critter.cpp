@@ -93,11 +93,13 @@ void Critter::UpdateFrame(Underworld::Object& obj)
 
 /// Initializes critter frames manager. Imports all critter frames.
 /// \param settings settings to use
+/// \param resourceManager resource manager to use
 /// \param imageManager image manager to load critters
-void CritterFramesManager::Init(Base::Settings& settings, ImageManager& imageManager)
+void CritterFramesManager::Init(Base::Settings& settings, Base::ResourceManager& resourceManager, ImageManager& imageManager)
 {
    // load all critters' frames
-   Import::CrittersLoader::LoadCritters(m_allCritters, settings, imageManager.GetPalette(0));
+   Import::CrittersLoader loader{ settings, resourceManager };
+   loader.LoadCritters(m_allCritters, imageManager.GetPalette(0));
 }
 
 /// Prepares all critter frames for all critters in given map.
