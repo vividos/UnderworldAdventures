@@ -51,7 +51,7 @@ ResourceManager::ResourceManager(const Settings& settings)
 /// the file is started with the last .zip file. This way a user can override files
 /// found in the base uadata00.zip with his own files.
 /// SDL_RWFromZZIP is used to open files inside .zip files.
-Base::SDL_RWopsPtr ResourceManager::GetResourceFile(const std::string& relativeFilename)
+Base::SDL_RWopsPtr ResourceManager::GetResourceFile(const std::string& relativeFilename) const
 {
    UaAssert(m_uadataPath.size() > 0); // must have called LoadSettings() before
 
@@ -85,7 +85,7 @@ Base::SDL_RWopsPtr ResourceManager::GetResourceFile(const std::string& relativeF
 }
 
 /// \todo implement reading from a zip file, e.g. uw_demo.zip
-Base::SDL_RWopsPtr ResourceManager::GetUnderworldFile(Base::UnderworldResourcePath resourcePath, const std::string& relativeFilename)
+Base::SDL_RWopsPtr ResourceManager::GetUnderworldFile(Base::UnderworldResourcePath resourcePath, const std::string& relativeFilename) const
 {
    // check zip archives
    if (resourcePath == resourceGameUw)
@@ -113,7 +113,7 @@ Base::SDL_RWopsPtr ResourceManager::GetUnderworldFile(Base::UnderworldResourcePa
    return GetFile(filename);
 }
 
-Base::SDL_RWopsPtr ResourceManager::GetFile(const std::string& absoluteFilename)
+Base::SDL_RWopsPtr ResourceManager::GetFile(const std::string& absoluteFilename) const
 {
    std::string filename = absoluteFilename;
    MapUnderworldFilename(filename);

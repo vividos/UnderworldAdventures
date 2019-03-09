@@ -45,13 +45,13 @@ namespace Base
       ResourceManager(const Settings& settings);
 
       /// returns "uadata" resource file
-      SDL_RWopsPtr GetResourceFile(const std::string& relativeFilename);
+      SDL_RWopsPtr GetResourceFile(const std::string& relativeFilename) const;
 
       /// returns ultima underworld file
-      SDL_RWopsPtr GetUnderworldFile(UnderworldResourcePath resourcePath, const std::string& relativeFilename);
+      SDL_RWopsPtr GetUnderworldFile(UnderworldResourcePath resourcePath, const std::string& relativeFilename) const;
 
       /// returns a file that already has a full path
-      SDL_RWopsPtr GetFile(const std::string& absoluteFilename);
+      SDL_RWopsPtr GetFile(const std::string& absoluteFilename) const;
 
       /// re-scans all available files after the "underworld" path was set in the settings
       void Rescan(const Settings& settings);
