@@ -131,8 +131,8 @@ void GameStudio::Init()
    m_settings.SetValue(Base::settingUnderworldPath, m_settings.GetString(Base::settingUw1Path));
    m_settings.SetValue(Base::settingGamePrefix, prefix);
 
-   // re-init, with proper underworld path
-   m_resourceManager = std::make_unique<Base::ResourceManager>(m_settings);
+   // rescan files, with proper underworld path
+   m_resourceManager->Rescan(m_settings);
 
    // init savegames manager
    m_savegamesManager = std::make_unique<Base::SavegamesManager>(m_settings);

@@ -229,6 +229,7 @@ void Game::Run()
    {
    case 0: // normal start
       // start with uwadv menu screen
+      //ReplaceScreen(new UwadvMenuScreen(*this), false);
       ReplaceScreen(new UwadvMenuScreen(*this), false);
       break;
 
@@ -575,8 +576,8 @@ void Game::ProcessEvents()
 
 void Game::InitGame()
 {
-   // re-init, with proper underworld path
-   m_resourceManager = std::make_unique<Base::ResourceManager>(m_settings);
+   // rescan, with proper underworld path
+   m_resourceManager->Rescan(m_settings);
 
    std::string prefix(m_settings.GetString(Base::settingGamePrefix));
 
