@@ -35,7 +35,7 @@ using Import::GameStringsImporter;
 /// \param resourceManager resource manager
 void GameStringsImporter::LoadDefaultStringsPakFile(Base::ResourceManager& resourceManager)
 {
-   LoadStringsPakFile(resourceManager.GetUnderworldFile(Base::resourceGameUw1, "data/strings.pak"));
+   LoadStringsPakFile(resourceManager.GetUnderworldFile(Base::resourceGameUw, "data/strings.pak"));
 }
 
 /// Opens a strings.pak file or a file that has the same format (e.g. created
