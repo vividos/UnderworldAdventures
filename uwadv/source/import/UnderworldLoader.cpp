@@ -27,7 +27,7 @@
 
 void Import::LoadUnderworld(Base::Settings& settings, Base::ResourceManager& resourceManager, Underworld::Underworld& underworld)
 {
-   LevelImporter levelImporter(resourceManager);
+   LevelImporter levelImporter{ resourceManager };
    switch (settings.GetGameType())
    {
    case Base::gameUw1:
@@ -42,8 +42,8 @@ void Import::LoadUnderworld(Base::Settings& settings, Base::ResourceManager& res
       break;
    }
 
-   PlayerImporter playerImport(resourceManager);
-   playerImport.LoadPlayer(underworld.GetPlayer(), settings.GetString(Base::settingUnderworldPath) + "data/", true);
+   PlayerImporter playerImport{ resourceManager };
+   playerImport.LoadPlayer(underworld.GetPlayer(), "data", true);
 
    Import::LoadConvGlobals(underworld.GetPlayer().GetConvGlobals(), resourceManager, "data", true);
 }
