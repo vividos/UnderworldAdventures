@@ -88,16 +88,6 @@ namespace Detail
          if (line.size() == 0)
             continue;
 
-         // replace keywords
-
-         // replace %uadata%
-         while (std::string::npos != (pos = line.find("%uadata%")))
-            line.replace(pos, 8, m_uadataPath.c_str());
-
-         // replace %uw-path%
-         while (std::string::npos != (pos = line.find("%uw-path%")))
-            line.replace(pos, 9, m_underworldPath.c_str());
-
          m_playlist.push_back(line);
       }
    }

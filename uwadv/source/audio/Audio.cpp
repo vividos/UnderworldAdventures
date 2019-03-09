@@ -248,11 +248,11 @@ void AudioManager::StartMusicTrack(unsigned int musicTrack, bool repeat)
    {
       try
       {
-         Base::SDL_RWopsPtr rwops = m_data->GetResourceManager().
-            GetFile(trackName);
+         Base::SDL_RWopsPtr rwops = m_data->GetResourceManager().GetFileWithPlaceholder(trackName);
 
          // start midi player track
-         m_data->GetMidiPlayer().PlayFile(rwops, repeat);
+         if (rwops != NULL)
+            m_data->GetMidiPlayer().PlayFile(rwops, repeat);
       }
       catch (const Base::Exception&)
       {
@@ -267,7 +267,14 @@ void AudioManager::StartMusicTrack(unsigned int musicTrack, bool repeat)
          Mix_FreeMusic(mm);
 
       // start music track via SDL_mixer
+      m_data->GetResourceManager().ResolvePlaceholderFilename(trackName);
       mm = Mix_LoadMUS(trackName.c_str());
+
+      // \todo note: doesn't work right now, since RWops struct is immediately deleted, but
+      // SDL_Mixer expects it to live on
+      //Base::SDL_RWopsPtr rwops = m_data->GetResourceManager().GetFileWithPlaceholder(trackName);
+      //mm = Mix_LoadMUSType_RW(rwops.get(), MUS_OGG, 0);
+
       if (mm)
          Mix_PlayMusic(mm, repeat ? -1 : 0);
       else
