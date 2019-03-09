@@ -41,22 +41,18 @@ namespace Detail
    {
    public:
       /// ctor
-      AudioManagerData(const Base::Settings& settings)
+      AudioManagerData(const Base::Settings& settings, const Base::ResourceManager& resourceManager)
          :m_midiPlayer(settings),
          m_currentTrack(NULL),
-         m_resourceManager(settings),
-         m_underworldPath(settings.GetString(Base::settingUnderworldPath))
+         m_resourceManager(resourceManager)
       {
       }
-
-      /// returns underworld game path
-      std::string GetUwPath() const { return m_underworldPath; }
 
       /// returns current music track
       Mix_Music*& GetCurrentTrack() { return m_currentTrack; }
 
       /// returns resource manager
-      Base::ResourceManager& GetResourceManager() { return m_resourceManager; }
+      const Base::ResourceManager& GetResourceManager() const { return m_resourceManager; }
 
       /// returns playlist
       Audio::Playlist& GetPlaylist() { return m_playlist; }
@@ -72,7 +68,7 @@ namespace Detail
       Audio::Playlist m_playlist;
 
       /// resource manager
-      Base::ResourceManager m_resourceManager;
+      const Base::ResourceManager& m_resourceManager;
 
       /// current music track
       Mix_Music* m_currentTrack;
@@ -98,8 +94,8 @@ using Audio::AudioManager;
 
 /// Initializes audio subsystem using SDL and SDL_mixer. Note that game type
 /// must have been set to properly load the playlist.
-AudioManager::AudioManager(const Base::Settings& settings)
-   :m_data(new Detail::AudioManagerData(settings))
+AudioManager::AudioManager(const Base::Settings& settings, const Base::ResourceManager& resourceManager)
+   :m_data(new Detail::AudioManagerData(settings, resourceManager))
 {
    UaAssert(m_data.get() != NULL);
 
@@ -144,7 +140,6 @@ AudioManager::AudioManager(const Base::Settings& settings)
       std::string playlistFilename =
          settings.GetString(Base::settingGamePrefix) + "/audio/music.m3u";
 
-      Base::ResourceManager resourceManager(settings);
       Base::SDL_RWopsPtr rwops = resourceManager.GetResourceFile(playlistFilename);
       if (rwops.get() != NULL)
          m_data->GetPlaylist() = Playlist(settings, rwops);
@@ -171,7 +166,7 @@ void AudioManager::PlaySound(const std::string& soundName)
    UaAssert(m_data.get() != NULL);
 
    // construct filename
-   std::string vocFilename = std::string("/sound/") + soundName + ".voc";
+   std::string vocFilename = std::string("sound/") + soundName + ".voc";
 
    // get .voc file
    Base::SDL_RWopsPtr rwops;

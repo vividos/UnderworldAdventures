@@ -626,7 +626,7 @@ void Game::InitGame()
    importer.LoadDefaultStringsPakFile(GetResourceManager());
    UaTrace("done\n");
 
-   m_audioManager = std::make_unique<Audio::AudioManager>(m_settings);
+   m_audioManager = std::make_unique<Audio::AudioManager>(GetSettings(), GetResourceManager());
 
    m_debugServer.Init();
 

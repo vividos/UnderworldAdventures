@@ -28,6 +28,7 @@
 namespace Base
 {
    class Settings;
+   class ResourceManager;
 }
 
 namespace Detail
@@ -133,7 +134,7 @@ namespace Audio
    {
    public:
       /// ctor
-      AudioManager(const Base::Settings& settings);
+      AudioManager(const Base::Settings& settings, const Base::ResourceManager& resourceManager);
       /// dtor
       ~AudioManager();
 

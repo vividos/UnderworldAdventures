@@ -64,8 +64,9 @@ namespace UnitTest
          settings.SetValue(Base::settingGamePrefix, std::string("uw1"));
          settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw1Path));
 
+         Base::ResourceManager resourceManager(settings);
 
-         Audio::AudioManager audioMgr(settings);
+         Audio::AudioManager audioMgr(settings, resourceManager);
          audioMgr.StartMusicTrack(0, true);
 
          SDL_Delay(20 * 1000);
@@ -81,7 +82,9 @@ namespace UnitTest
          settings.SetValue(Base::settingGamePrefix, std::string("uw2"));
          settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw2Path));
 
-         Audio::AudioManager audioMgr(settings);
+         Base::ResourceManager resourceManager(settings);
+
+         Audio::AudioManager audioMgr(settings, resourceManager);
          audioMgr.StartMusicTrack(1, true);
 
          SDL_Delay(30 * 1000);
@@ -178,7 +181,9 @@ namespace UnitTest
          settings.SetValue(Base::settingGamePrefix, std::string("uw1"));
          settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw1Path));
 
-         Audio::AudioManager audioMgr(settings);
+         Base::ResourceManager resourceManager(settings);
+
+         Audio::AudioManager audioMgr(settings, resourceManager);
          audioMgr.PlaySound("26");
          SDL_Delay(2 * 1000);
          audioMgr.PlaySound("27");
@@ -197,7 +202,9 @@ namespace UnitTest
          settings.SetValue(Base::settingGamePrefix, std::string("uw2"));
          settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw2Path));
 
-         Audio::AudioManager audioMgr(settings);
+         Base::ResourceManager resourceManager(settings);
+
+         Audio::AudioManager audioMgr(settings, resourceManager);
          audioMgr.PlaySound("BSP00");
 
          SDL_Delay(16 * 1000);
