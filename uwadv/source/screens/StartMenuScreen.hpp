@@ -31,7 +31,6 @@
 /// menu items "Introduction", "Create Character", "Acknowledgements" or
 /// "Journey Onward" (only available when savegames are detected). Above
 /// the menu there is a "warping" Ultima Underworld logo.
-/// \todo implement the buttons using a generic Button class
 class StartMenuScreen : public Screen
 {
 public:

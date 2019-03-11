@@ -249,7 +249,6 @@ void StartMenuScreen::PressButton()
    }
 }
 
-/// \todo remove leftbuttondown and rightbuttondown usage
 void StartMenuScreen::MouseEvent(bool buttonClicked, bool leftButton, bool buttonDown,
    unsigned int mouseX, unsigned int mouseY)
 {

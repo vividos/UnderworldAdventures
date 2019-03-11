@@ -74,7 +74,7 @@ namespace Audio
       musicUw1_MapsAndLegends
    };
 
-   /// \brief enumeration of all sound effects
+   /// \brief enumeration of all sound effects from uw2
    /// \todo find out and add add remaining audio sfx types
    enum SoundEffectType
    {
