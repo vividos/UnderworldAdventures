@@ -589,8 +589,8 @@ void Game::InitGame()
    std::string gamecfg_name(prefix);
    gamecfg_name.append("/game.cfg");
 
-   // set new game prefix
    m_savegamesManager->SetNewGamePrefix(prefix.c_str());
+   m_savegamesManager->Rescan();
 
    // try to load %prefix%/game.cfg
    {
