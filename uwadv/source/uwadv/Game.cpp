@@ -430,23 +430,7 @@ void Game::InitSDL()
       throw Base::Exception(text.c_str());
    }
 
-#ifdef WIN32
-   HINSTANCE inst = (HINSTANCE)GetModuleHandle(NULL);
-
-   HICON icon = ::LoadIcon(inst, MAKEINTRESOURCE(IDI_ICON));
-   HICON icon_small = (HICON)::LoadImage(inst,
-      MAKEINTRESOURCE(IDI_ICON), IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR);
-
-   SDL_SysWMinfo wminfo;
-   SDL_VERSION(&wminfo.version);
-
-   if (SDL_GetWindowWMInfo(m_window, &wminfo) == 1)
-   {
-      HWND hwnd = wminfo.info.win.window;
-      ::SendMessage(hwnd, WM_SETICON, ICON_BIG, (LPARAM)icon);
-      ::SendMessage(hwnd, WM_SETICON, ICON_SMALL, (LPARAM)icon_small);
-   }
-#endif
+   SetWindowIcon();
 
    m_context = SDL_GL_CreateContext(m_window);
 
@@ -653,4 +637,25 @@ void Game::RemoveScreen()
    event.type = SDL_USEREVENT;
    event.user.code = gameEventDestroyScreen;
    SDL_PushEvent(&event);
+}
+
+void Game::SetWindowIcon() const
+{
+#ifdef WIN32
+   HINSTANCE inst = (HINSTANCE)GetModuleHandle(NULL);
+
+   HICON icon = ::LoadIcon(inst, MAKEINTRESOURCE(IDI_ICON));
+   HICON icon_small = (HICON)::LoadImage(inst,
+      MAKEINTRESOURCE(IDI_ICON), IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR);
+
+   SDL_SysWMinfo wminfo;
+   SDL_VERSION(&wminfo.version);
+
+   if (SDL_GetWindowWMInfo(m_window, &wminfo) == 1)
+   {
+      HWND hwnd = wminfo.info.win.window;
+      ::SendMessage(hwnd, WM_SETICON, ICON_BIG, (LPARAM)icon);
+      ::SendMessage(hwnd, WM_SETICON, ICON_SMALL, (LPARAM)icon_small);
+   }
+#endif
 }

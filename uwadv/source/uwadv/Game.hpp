@@ -140,6 +140,9 @@ protected:
    /// deletes current screen and pops off last screen from m_screenStack
    void PopScreen();
 
+   /// sets window icon
+   void SetWindowIcon() const;
+
 protected:
    /// game configuration
    Base::Settings m_settings;
