@@ -50,6 +50,9 @@ public:
    /// initializes renderer
    void Init(IGame& game, SDL_Window* window);
 
+   /// output some OpenGL diagnostics
+   static void PrintOpenGLDiagnostics();
+
    /// cleans up renderer
    void Done();
 

@@ -413,46 +413,7 @@ void Game::InitSDL()
       throw Base::Exception(text.c_str());
    }
 
-   // Information about the current video settings
-#if 0
-   const SDL_VideoInfo* info = NULL;
-   info = SDL_GetVideoInfo();
-
-   if (!info)
-   {
-      // this should probably never happen
-      std::string text("video query failed: ");
-      text.append(SDL_GetError());
-      throw Base::Exception(text.c_str());
-   }
-
-   // print video driver stats
-   {
-      char buffer[256];
-      SDL_VideoDriverName(buffer, 256);
-      UaTrace("video driver: %s, ram available: %u k\n",
-         buffer, info->video_mem);
-   }
-
-   // set window caption
-   SDL_WM_SetCaption(, NULL);
-
-   // set up OpenGL attributes
-   SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
-   SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 5);
-   SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
-   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
-   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-
    // setup video mode
-   int bpp = info->vfmt->BitsPerPixel;
-   int flags = SDL_OPENGL |
-      (m_settings.GetBool(ua_setting_fullscreen) ? SDL_FULLSCREEN : 0);
-
-   UaTrace("setting video mode: %u x %u, %u bits%s\n", m_width, m_height, bpp,
-      m_settings.GetBool(Base::settingFullscreen) ? ", fullscreen" : "");
-#endif
-
    int flags = m_settings.GetBool(Base::settingFullscreen) ? SDL_WINDOW_FULLSCREEN : 0;
 
    m_window = SDL_CreateWindow(
@@ -491,45 +452,7 @@ void Game::InitSDL()
 
    UaTrace("\n");
 
-   // output some OpenGL diagnostics
-   {
-      GLint redbits, greenbits, bluebits, alphabits, depthbits;
-      glGetIntegerv(GL_RED_BITS, &redbits);
-      glGetIntegerv(GL_GREEN_BITS, &greenbits);
-      glGetIntegerv(GL_BLUE_BITS, &bluebits);
-      glGetIntegerv(GL_ALPHA_BITS, &alphabits);
-      glGetIntegerv(GL_DEPTH_BITS, &depthbits);
-
-      UaTrace("OpenGL stats:\n bit depths: red/green/blue/alpha = %u/%u/%u/%u, depth=%u\n",
-         redbits, greenbits, bluebits, alphabits, depthbits);
-
-      GLint maxtexsize, maxlights, maxnamestack, maxmodelstack, maxprojstack;
-      glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxtexsize);
-      glGetIntegerv(GL_MAX_LIGHTS, &maxlights);
-      glGetIntegerv(GL_MAX_NAME_STACK_DEPTH, &maxnamestack);
-      glGetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH, &maxmodelstack);
-      glGetIntegerv(GL_MAX_PROJECTION_STACK_DEPTH, &maxprojstack);
-
-      UaTrace(" max. texture size = %u x %u, max. lights = %u\n",
-         maxtexsize, maxtexsize, maxlights);
-
-      UaTrace(" stack depths: name stack = %u, modelview stack = %u, proj. stack = %u\n",
-         maxnamestack, maxmodelstack, maxprojstack);
-
-      const GLubyte* vendor, *rendererName, *version;
-      vendor = glGetString(GL_VENDOR);
-      rendererName = glGetString(GL_RENDERER);
-      version = glGetString(GL_VERSION);
-
-      UaTrace(" vendor: %s\n renderer: %s\n version: %s\n",
-         vendor, rendererName, version);
-
-      GLboolean stereo;
-      glGetBooleanv(GL_STEREO, &stereo);
-
-      UaTrace(" supports stereo mode: %s\n\n",
-         stereo == GL_TRUE ? "yes" : "no");
-   }
+   Renderer::PrintOpenGLDiagnostics();
 
    // setup OpenGL viewport; doesn't change during game
    glViewport(0, 0, m_width, m_height);
