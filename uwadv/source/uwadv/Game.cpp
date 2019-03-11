@@ -36,7 +36,9 @@
 #include "win32/resource.h"
 #endif
 
+#ifdef HAVE_DEBUG
 #define HAVE_FRAMECOUNT
+#endif
 
 /// command line argument type
 enum ArgumentType
@@ -343,10 +345,10 @@ void Game::Run()
       {
          // set new caption
          char buffer[256];
-         sprintf(buffer, "Underworld Adventures: %3.1f ticks/s, %3.1f frames/s",
+         snprintf(buffer, sizeof(buffer), "Underworld Adventures: %3.1f ticks/s, %3.1f frames/s",
             ticks*1000.0 / (now - fcstart), renders*1000.0 / (now - fcstart));
 
-         // TODO SDL_SetWindowTitle(NULL, buffer);
+         SDL_SetWindowTitle(m_window, buffer);
 
          // restart counting
          ticks = renders = 0;
