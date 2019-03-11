@@ -85,6 +85,11 @@ void StartMenuScreen::Resume()
    m_selectedArea = -1;
    m_shiftCount = 0.0;
    m_reuploadImage = true;
+
+   if (m_game.GetAudioManager().IsMusicFadeoutOrStopped())
+   {
+      m_game.GetAudioManager().StartMusicTrack(Audio::musicUw1_Introduction, false);
+   }
 }
 
 void StartMenuScreen::Destroy()
@@ -289,7 +294,7 @@ void StartMenuScreen::MouseEvent(bool buttonClicked, bool leftButton, bool butto
 
                // fade out music when selecting "introduction"
                if (m_selectedArea == 0)
-                  m_game.GetAudioManager().FadeoutMusic(s_fadeTime);
+                  m_game.GetAudioManager().FadeoutMusic(static_cast<int>(s_fadeTime * 1000));
             }
          }
       }

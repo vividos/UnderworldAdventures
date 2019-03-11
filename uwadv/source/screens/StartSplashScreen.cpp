@@ -187,7 +187,7 @@ bool StartSplashScreen::ProcessEvent(SDL_Event& event)
 
          // fade out music when we have the demo (ingame starts after this)
          if (m_game.GetSettings().GetBool(Base::settingUw1IsUwdemo))
-            m_game.GetAudioManager().FadeoutMusic(c_blendTime);
+            m_game.GetAudioManager().FadeoutMusic(static_cast<int>(c_blendTime * 1000));
 
          // init fadeout
          m_fader.Init(false, m_game.GetTickRate(), c_blendTime);

@@ -329,7 +329,7 @@ bool ConversationScreen::ProcessEvent(SDL_Event& event)
             m_waitCount = 0;
 
             // fade out music
-            m_game.GetAudioManager().FadeoutMusic(s_fadeTime);
+            m_game.GetAudioManager().FadeoutMusic(static_cast<int>(s_fadeTime * 1000));
          }
       break;
 

@@ -26,6 +26,7 @@
 #include "Renderer.hpp"
 #include "Underworld.hpp"
 #include "GameStrings.hpp"
+#include "Audio.hpp"
 #include <sstream>
 
 const unsigned int SaveGameButton::c_buttonWidth = 55;
@@ -611,6 +612,7 @@ void SaveGameScreen::PressButton(SaveGameButtonId buttonId)
       // fade out and do action
       m_fadeState = 2;
       m_fader.Init(false, m_game.GetTickRate(), s_fadeTime);
+      m_game.GetAudioManager().FadeoutMusic(static_cast<int>(s_fadeTime * 1000));
    }
    break;
 

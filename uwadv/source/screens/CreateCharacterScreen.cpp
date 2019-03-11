@@ -432,8 +432,11 @@ void CreateCharacterScreen::DoAction()
       m_newGame = (n > 1) && (static_cast<unsigned int>(lua_tonumber(L, 2)) == 1);
       m_fadingStage = unsigned(-1);
 
-      // fade out music
-      m_game.GetAudioManager().FadeoutMusic(c_fadeTime);
+      if (m_newGame)
+      {
+         // fade out music
+         m_game.GetAudioManager().FadeoutMusic(static_cast<int>(c_fadeTime * 1000));
+      }
 
       //UaTrace("end request by char. creation script\n");
       break;

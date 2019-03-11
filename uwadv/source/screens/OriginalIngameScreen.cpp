@@ -755,8 +755,8 @@ void OriginalIngameScreen::Tick()
    }
 
    // resume when reentering the screen
-   if (m_fadeState == 3)
-      Resume();
+   //if (m_fadeState == 3)
+   //   Resume();
 }
 
 void OriginalIngameScreen::ScheduleAction(IngameAction action, bool fadeoutBefore)
@@ -779,6 +779,10 @@ void OriginalIngameScreen::ScheduleAction(IngameAction action, bool fadeoutBefor
       // render savegame preview image
       DoSavegameScreenshot(c_ingameScreenshotXRes,
          c_ingameScreenshotYRes);
+      break;
+
+   case ingameActionExit:
+      m_game.GetAudioManager().FadeoutMusic(static_cast<int>(s_fadeTime * 1000));
       break;
 
    default:
