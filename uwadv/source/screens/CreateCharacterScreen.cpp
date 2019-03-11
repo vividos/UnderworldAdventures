@@ -703,18 +703,7 @@ int CreateCharacterScreen::GetButtonOver()
    // convert to 320x200 screen coordinates
    int xpos, ypos;
    SDL_GetMouseState(&xpos, &ypos);
-
-   int windowWidth = 320, windowHeight = 200;
-   // TODO check if needed
-   //SDL_GetWindowSize(m_window, &windowWidth, &windowHeight);
-
-   //if (surf != NULL)
-   {
-      xpos = int(xpos * 320.0 / windowWidth);
-      ypos = int(ypos * 200.0 / windowHeight);
-   }
-   //else
-   //   xpos = ypos = 0;
+   MapWindowPosition(xpos, ypos);
 
    // determine column
    int columns = m_buttonGroupButtonCount / m_buttonGroupButtonsPerColumn;

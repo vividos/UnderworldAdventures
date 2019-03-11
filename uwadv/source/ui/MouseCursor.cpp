@@ -107,13 +107,10 @@ bool MouseCursor::ProcessEvent(SDL_Event& event)
 {
    if (event.type == SDL_MOUSEMOTION)
    {
-      // convert to 320x200 screen coordinates
-      int windowWidth = 320, windowHeight = 200;
-      // TODO check if needed
-      //SDL_GetWindowSize(m_window, &windowWidth, &windowHeight);
+      CalcMousePosition(event, m_windowXPos, m_windowYPos);
 
-      m_windowXPos = unsigned(event.motion.x * 320.0 / windowWidth - m_windowWidth / 2.0);
-      m_windowYPos = unsigned(event.motion.y * 200.0 / windowHeight + m_windowHeight / 2.0);
+      m_windowXPos -= m_windowWidth / 2.0;
+      m_windowYPos += m_windowHeight / 2.0;
    }
 
    return false;

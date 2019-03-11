@@ -22,6 +22,7 @@
 #pragma once
 
 union SDL_Event;
+class Screen;
 
 /// window base class
 class Window
@@ -65,10 +66,16 @@ public:
    /// determines if point is inside window
    bool IsInWindow(unsigned int xpos, unsigned int ypos);
 
-   /// calculates mouse position from event.motion.x/y
+   /// sets the screen where this window belongs to
+   void SetScreen(Screen* screen) { m_screen = screen; }
+
+   /// calculates mouse position from event.motion.x/y or event.button.x/y
    void CalcMousePosition(SDL_Event& event, unsigned int& xpos, unsigned int& ypos);
 
 protected:
+   /// screen where this window belongs to
+   Screen* m_screen;
+
    /// window position
    unsigned int m_windowXPos, m_windowYPos;
 

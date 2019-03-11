@@ -21,6 +21,7 @@
 //
 #include "common.hpp"
 #include "Window.hpp"
+#include "Screen.hpp"
 
 Window::Window()
    :m_windowXPos(0), m_windowYPos(0), m_windowWidth(0), m_windowHeight(0)
@@ -75,21 +76,19 @@ bool Window::IsInWindow(unsigned int xpos, unsigned int ypos)
 /// type SDL_MOUSEMOTION, SDL_MOUSEBUTTONDOWN or SDL_MOUSEBUTTONUP
 void Window::CalcMousePosition(SDL_Event& event, unsigned int& xpos, unsigned int& ypos)
 {
-   // get coordinates
-   xpos = event.type == SDL_MOUSEMOTION ? event.motion.x : event.button.x;
-   ypos = event.type == SDL_MOUSEMOTION ? event.motion.y : event.button.y;
+   int posx = event.type == SDL_MOUSEMOTION ? event.motion.x : event.button.x;
+   int posy = event.type == SDL_MOUSEMOTION ? event.motion.y : event.button.y;
 
-   // convert to 320x200 screen coordinates
-   // TODO check if needed
-   //SDL_Surface* surf = SDL_GetVideoSurface();
-   int windowWidth = 320, windowHeight = 200;
-   //SDL_GetWindowSize(m_window, &windowWidth, &windowHeight);
-
-   //if (surf != NULL)
+   if (m_screen != NULL)
    {
-      xpos = unsigned(xpos * 320.0 / windowWidth);
-      ypos = unsigned(ypos * 200.0 / windowHeight);
+      m_screen->MapWindowPosition(posx, posy);
+
+      xpos = posx;
+      ypos = posy;
    }
-   //else
-   //   xpos = ypos = 0;
+   else
+   {
+      UaAssert(false); // screen should have been set
+      xpos = ypos = 0;
+   }
 }

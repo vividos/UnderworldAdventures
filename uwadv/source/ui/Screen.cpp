@@ -34,11 +34,12 @@ Screen::~Screen()
 void Screen::Init()
 {
    Window::Create(0, 0, 320, 200);
+   SetScreen(this);
 }
 
 void Screen::Destroy()
 {
-   // destroy all m_subWindows
+   // destroy all subwindows
    unsigned int max = m_subWindows.size();
    for (unsigned int i = 0; i < max; i++)
       m_subWindows[i]->Destroy();
@@ -46,7 +47,7 @@ void Screen::Destroy()
 
 void Screen::Draw()
 {
-   // draw all m_subWindows
+   // draw all subwindows
    unsigned int max = m_subWindows.size();
    for (unsigned int i = 0; i < max; i++)
       m_subWindows[i]->Draw();
@@ -54,7 +55,7 @@ void Screen::Draw()
 
 bool Screen::ProcessEvent(SDL_Event& event)
 {
-   // send event to all m_subWindows
+   // send event to all subwindows
    {
       unsigned int max = m_subWindows.size();
       for (unsigned int i = 0; i < max; i++)
@@ -82,7 +83,7 @@ bool Screen::ProcessEvent(SDL_Event& event)
          event.type == SDL_MOUSEBUTTONDOWN,
          xpos, ypos);
 
-      // send event to m_subWindows that are in that area
+      // send event to subwindows that are in that area
       unsigned int max = m_subWindows.size();
       for (unsigned int i = 0; i < max; i++)
       {
@@ -127,20 +128,30 @@ void Screen::KeyEvent(bool keyDown, Base::KeyType key)
 
 void Screen::Tick()
 {
-   // send tick to all m_subWindows
+   // send tick to all subwindows
    unsigned int max = m_subWindows.size();
    for (unsigned int i = 0; i < max; i++)
       m_subWindows[i]->Tick();
 }
 
-/// note that for all m_subWindows the draw() and destroy() functions are
+/// note that for all subwindows the draw() and destroy() functions are
 /// called
 void Screen::RegisterWindow(Window* window)
 {
    m_subWindows.push_back(window);
+   window->SetScreen(this);
 }
 
 void Screen::RegisterKeymap(Base::Keymap* keymap)
 {
    m_screenKeymap = keymap;
+}
+
+void Screen::MapWindowPosition(int& xpos, int& ypos) const
+{
+   int windowWidth = m_game.GetScreenXRes();
+   int windowHeight = m_game.GetScreenYRes();
+
+   xpos = unsigned(xpos * 320.0 / windowWidth);
+   ypos = unsigned(ypos * 200.0 / windowHeight);
 }

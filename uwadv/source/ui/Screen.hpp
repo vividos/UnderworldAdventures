@@ -60,8 +60,11 @@ public:
    /// registers a keymap
    void RegisterKeymap(Base::Keymap* keymap);
 
+   /// converts window position to 320x200 screen coordinates
+   void MapWindowPosition(int& xpos, int& ypos) const;
+
 protected:
-   /// list of all m_subWindows controlled by the screen
+   /// list of all subwindows controlled by the screen
    std::vector<Window*> m_subWindows;
 
    /// game interface

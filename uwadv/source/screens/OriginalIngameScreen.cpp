@@ -93,7 +93,7 @@ void OriginalIngameScreen::Init()
    m_keymap.Init(settings, m_game.GetResourceManager());
    RegisterKeymap(&m_keymap);
 
-   // init images/m_subWindows
+   // init images/subwindows
 
    // load background
    {
