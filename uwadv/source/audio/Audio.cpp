@@ -317,6 +317,12 @@ void AudioManager::StopMusic()
    m_data->GetMidiPlayer().Stop();
 }
 
+bool AudioManager::IsMusicFadeoutOrStopped() const
+{
+   return MIX_FADING_OUT == Mix_FadingMusic() ||
+      m_data->GetCurrentMusicTrackData() == NULL;
+}
+
 /*
 void DumpChunk(const char* soundname, Mix_Chunk* mc)
 {

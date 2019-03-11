@@ -119,8 +119,8 @@ namespace Audio
    /// To use the class, just call init() at program start and then call the play
    /// functions to play music, sfx or *.voc files.
    ///
-   /// - play_sound(soundname) plays the file %uw-path%/sound/{soundname}.voc
-   /// - play_sfx() takes an enum defined below
+   /// - PlaySound(soundname) plays the file %uw-path%/sound/{soundname}.voc
+   /// - PlaySoundEffect() takes an enum defined below
    /// - StartMusicTrack() takes a playlist index; playlists are loaded from
    ///                 %uadata%/{game-prefix}/audio/music.m3u.
    ///
@@ -155,6 +155,9 @@ namespace Audio
 
       /// stops music track playback
       void StopMusic();
+
+      /// returns if music is currently fading out or is stopped
+      bool IsMusicFadeoutOrStopped() const;
 
    private:
       /// audio manager internal data
