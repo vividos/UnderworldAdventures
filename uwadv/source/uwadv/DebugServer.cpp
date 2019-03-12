@@ -431,28 +431,44 @@ void DebugServer::SetPlayerPosInfo(unsigned int idx, double val)
    }
 }
 
-unsigned int DebugServer::GetPlayerAttribute(unsigned int idx)
+unsigned int DebugServer::GetPlayerAttribute(unsigned int index)
 {
    if (m_game == NULL) return 0;
-   return m_game->GetUnderworld().GetPlayer().GetAttribute((Underworld::PlayerAttribute)idx);
+   if (index < Underworld::attrMax)
+   {
+      return m_game->GetUnderworld().GetPlayer().GetAttribute((Underworld::PlayerAttribute)index);
+   }
+   else
+   {
+      unsigned int skillIndex = index - Underworld::attrMax;
+      return m_game->GetUnderworld().GetPlayer().GetSkill((Underworld::PlayerSkill)skillIndex);
+   }
 }
 
-void DebugServer::SetPlayerAttribute(unsigned int idx, unsigned int val)
+void DebugServer::SetPlayerAttribute(unsigned int index, unsigned int value)
 {
    if (m_game == NULL) return;
 
    Underworld::Player& pl = m_game->GetUnderworld().GetPlayer();
 
-   unsigned int oldlevel = pl.GetAttribute(Underworld::attrMapLevel);
-
-   pl.SetAttribute((Underworld::PlayerAttribute)idx, val);
-
-   // changing level? then schedule new level preparation
-   if (Underworld::attrMapLevel == (Underworld::PlayerAttribute)idx && oldlevel != val)
+   if (index < Underworld::attrMax)
    {
-      // note: cannot prepare textures in this thread, since it doesn't own
-      //       the OpenGL rendering context.
-      m_schedulePrepare = true;
+      unsigned int oldlevel = pl.GetAttribute(Underworld::attrMapLevel);
+
+      pl.SetAttribute((Underworld::PlayerAttribute)index, value);
+
+      // changing level? then schedule new level preparation
+      if (Underworld::attrMapLevel == (Underworld::PlayerAttribute)index && oldlevel != value)
+      {
+         // note: cannot prepare textures in this thread, since it doesn't own
+         //       the OpenGL rendering context.
+         m_schedulePrepare = true;
+      }
+   }
+   else
+   {
+      unsigned int skillIndex = index - Underworld::attrMax;
+      m_game->GetUnderworld().GetPlayer().SetSkill((Underworld::PlayerSkill)skillIndex, value);
    }
 }
 
