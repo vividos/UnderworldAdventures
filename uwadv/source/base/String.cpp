@@ -37,6 +37,24 @@ void Base::String::Uppercase(std::string& str)
       [](char c) -> char { return static_cast<char>(std::toupper(c)); });
 }
 
+void Base::String::TrimStart(std::string& text)
+{
+   for (; !text.empty() && isspace(text.at(0));)
+      text.erase(0, 1);
+}
+
+void Base::String::TrimEnd(std::string& text)
+{
+   while (!text.empty())
+   {
+      size_t length = text.size() - 1;
+      if (isspace(text.at(length)))
+         text.erase(length);
+      else
+         break;
+   }
+}
+
 std::wstring Base::String::ConvertToUnicode(const std::string& utf8str)
 {
    std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;

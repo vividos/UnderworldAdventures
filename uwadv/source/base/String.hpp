@@ -34,6 +34,12 @@ namespace Base
       /// converts a string to uppercase
       void Uppercase(std::string& str);
 
+      /// trims spaces at start of string
+      void TrimStart(std::string& text);
+
+      /// trims spaces at end of string
+      void TrimEnd(std::string& text);
+
       /// converts an UTF-8 string to  unicode string
       std::wstring ConvertToUnicode(const std::string& utf8str);
 
