@@ -143,6 +143,9 @@ protected:
    /// sets window icon
    void SetWindowIcon() const;
 
+   /// toggles fullscreen and windowed mode
+   void ToggleFullscreen();
+
 protected:
    /// game configuration
    Base::Settings m_settings;

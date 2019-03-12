@@ -414,7 +414,7 @@ void Game::InitSDL()
    }
 
    // setup video mode
-   int flags = m_settings.GetBool(Base::settingFullscreen) ? SDL_WINDOW_FULLSCREEN : 0;
+   int flags = m_settings.GetBool(Base::settingFullscreen) ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0;
 
    m_window = SDL_CreateWindow(
       "Underworld Adventures",
@@ -438,7 +438,7 @@ void Game::InitSDL()
 
    Renderer::PrintOpenGLDiagnostics();
 
-   // setup OpenGL viewport; doesn't change during game
+   // setup OpenGL viewport
    glViewport(0, 0, m_width, m_height);
 }
 
@@ -457,6 +457,10 @@ void Game::ProcessEvents()
          if (event.key.keysym.sym == SDLK_x &&
             (event.key.keysym.mod & KMOD_ALT) != 0)
             m_exitGame = true;
+
+         if (event.key.keysym.sym == SDLK_RETURN &&
+            (event.key.keysym.mod & KMOD_ALT) != 0)
+            ToggleFullscreen();
          break;
 
       case SDL_QUIT:
@@ -658,4 +662,19 @@ void Game::SetWindowIcon() const
       ::SendMessage(hwnd, WM_SETICON, ICON_SMALL, (LPARAM)icon_small);
    }
 #endif
+}
+
+void Game::ToggleFullscreen()
+{
+   bool isFullscreen = !m_settings.GetBool(Base::settingFullscreen);
+   m_settings.SetValue(Base::settingFullscreen, isFullscreen);
+
+   SDL_SetWindowFullscreen(m_window, isFullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+
+   int width, height;
+   SDL_GetWindowSize(m_window, &width, &height);
+   m_width = width;
+   m_height = height;
+
+   glViewport(0, 0, m_width, m_height);
 }
