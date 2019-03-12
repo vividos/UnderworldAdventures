@@ -151,8 +151,6 @@ void Game::ParseArgs(unsigned int argc, const char** argv)
       }
       else
       {
-         // TODO support "" arguments
-
          // user specified a savegame to load
          m_initAction = 1;
          m_savegameName = arg;
@@ -231,7 +229,6 @@ void Game::Run()
    {
    case 0: // normal start
       // start with uwadv menu screen
-      //ReplaceScreen(new UwadvMenuScreen(*this), false);
       ReplaceScreen(new UwadvMenuScreen(*this), false);
       break;
 
@@ -242,8 +239,11 @@ void Game::Run()
       Base::Savegame sg = m_savegamesManager->GetSavegameFromFile(m_savegameName.c_str());
 
       // set game prefix
-      m_settings.SetValue(Base::settingGamePrefix,
-         sg.GetSavegameInfo().m_gamePrefix);
+      std::string gamePrefix = sg.GetSavegameInfo().m_gamePrefix;
+      m_settings.SetValue(Base::settingGamePrefix, gamePrefix);
+
+      m_settings.SetValue(Base::settingUnderworldPath,
+         m_settings.GetString(gamePrefix == "uw1" ? Base::settingUw1Path : Base::settingUw2Path));
 
       InitGame();
 
@@ -494,14 +494,13 @@ void Game::InitGame()
 
    std::string prefix(m_settings.GetString(Base::settingGamePrefix));
 
-   m_savegamesManager = std::make_unique<Base::SavegamesManager>(m_settings);
-
    UaTrace("initializing game; prefix: %s\n", prefix.c_str());
 
    // load game config file
-   std::string gamecfg_name(prefix);
-   gamecfg_name.append("/game.cfg");
+   std::string gameConfigFilename(prefix);
+   gameConfigFilename.append("/game.cfg");
 
+   m_savegamesManager = std::make_unique<Base::SavegamesManager>(m_settings);
    m_savegamesManager->SetNewGamePrefix(prefix.c_str());
    m_savegamesManager->Rescan();
 
@@ -509,17 +508,17 @@ void Game::InitGame()
    {
       GameConfigLoader cfgloader(*this, &m_scripting);
 
-      Base::SDL_RWopsPtr gamecfg = m_resourceManager->GetResourceFile(gamecfg_name.c_str());
+      Base::SDL_RWopsPtr gameConfig = m_resourceManager->GetResourceFile(gameConfigFilename.c_str());
 
       // no game.cfg found? too bad ...
-      if (gamecfg == NULL)
+      if (gameConfig == NULL)
       {
          std::string text("could not find game.cfg for game prefix ");
          text.append(prefix.c_str());
          throw Base::Exception(text.c_str());
       }
 
-      Base::TextFile textFile(gamecfg);
+      Base::TextFile textFile(gameConfig);
       cfgloader.Load(textFile);
    }
 
