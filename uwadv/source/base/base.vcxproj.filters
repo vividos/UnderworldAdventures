@@ -56,6 +56,9 @@
     <ClCompile Include="Uw2decode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="KeyValuePairTextFileReader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SDL_rwops_gzfile.h">
@@ -119,6 +122,9 @@
       <Filter>Common Include Files</Filter>
     </ClInclude>
     <ClInclude Include="Constants.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyValuePairTextFileReader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

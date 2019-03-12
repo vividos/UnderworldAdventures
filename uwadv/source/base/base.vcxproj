@@ -92,6 +92,7 @@
     <ClCompile Include="File.cpp" />
     <ClCompile Include="FileSystem.cpp" />
     <ClCompile Include="Keymap.cpp" />
+    <ClCompile Include="KeyValuePairTextFileReader.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Savegame.cpp" />
     <ClCompile Include="SDL_rwops_gzfile.c">
@@ -119,6 +120,7 @@
     <ClInclude Include="File.hpp" />
     <ClInclude Include="FileSystem.hpp" />
     <ClInclude Include="Keymap.hpp" />
+    <ClInclude Include="KeyValuePairTextFileReader.hpp" />
     <ClInclude Include="Math.hpp" />
     <ClInclude Include="ResourceManager.hpp" />
     <ClInclude Include="Savegame.hpp" />
