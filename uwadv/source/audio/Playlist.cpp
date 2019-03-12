@@ -37,9 +37,9 @@ namespace Detail
    {
    public:
       /// ctor
-      PlaylistLoader(const Base::Settings& settings, Base::SDL_RWopsPtr rwops, std::vector<std::string> &vecPlaylist)
+      PlaylistLoader(const Base::Settings& settings, Base::SDL_RWopsPtr rwops, std::vector<std::string> &playlist)
          : m_playlistFile(rwops),
-         m_playlist(vecPlaylist),
+         m_playlist(playlist),
          m_underworldPath(settings.GetString(Base::settingUnderworldPath)),
          m_uadataPath(settings.GetString(Base::settingUadataPath))
       {
@@ -69,7 +69,6 @@ namespace Detail
       std::string m_uadataPath;
    };
 
-   /// \todo trim spaces in lines
    void PlaylistLoader::Load()
    {
       long fileLength = m_playlistFile.FileLength();
@@ -84,8 +83,10 @@ namespace Detail
          if (pos != std::string::npos)
             line.erase(pos);
 
-         // \todo trim spaces in lines
-         if (line.size() == 0)
+         Base::String::TrimStart(line);
+         Base::String::TrimEnd(line);
+
+         if (line.empty())
             continue;
 
          m_playlist.push_back(line);
