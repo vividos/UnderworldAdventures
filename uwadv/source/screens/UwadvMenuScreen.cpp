@@ -110,30 +110,5 @@ void UwadvMenuScreen::Tick()
    // now that we know the generic uw path, we can init the whole game stuff
    m_game.InitGame();
 
-#ifdef HAVE_DEBUG
-   m_game.ReplaceScreen(new StartMenuScreen(m_game), false);
-
-   /*
-      paste one:
-      --------------------
-      m_game.GetUnderworld().import_savegame(m_game.GetSettings(),"data/",true);
-      m_game.ReplaceScreen(new OriginalIngameScreen(m_game),false);
-      --------------------
-      m_game.ReplaceScreen(new SaveGameScreen(m_game,true,false),false);
-      --------------------
-      m_game.ReplaceScreen(new StartMenuScreen(m_game),false);
-      --------------------
-      m_game.ReplaceScreen(new StartSplashScreen(m_game),false);
-      --------------------
-      m_game.GetUnderworld().import_savegame(m_game.GetSettings(),"data/",true);
-      m_game.GetUnderworld().get_scripts().lua_started_newgame();
-      m_game.ReplaceScreen(new OriginalIngameScreen(m_game),false);
-      --------------------
-   */
-#else
-
-   // for now, immediately start splash screen
    m_game.ReplaceScreen(new StartSplashScreen(m_game), false);
-
-#endif
 }
