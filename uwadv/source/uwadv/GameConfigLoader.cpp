@@ -22,6 +22,7 @@
 #include "common.hpp"
 #include "GameConfigLoader.hpp"
 #include "TextFile.hpp"
+#include "KeyValuePairTextFileReader.hpp"
 #include "GameInterface.hpp"
 #include "Settings.hpp"
 #include "FileSystem.hpp"
@@ -33,73 +34,13 @@
 
 void GameConfigLoader::Load(Base::TextFile& file)
 {
-   std::string line, key, value;
-   while (file.Tell() < file.FileLength())
+   Base::KeyValuePairTextFileReader reader(file);
+
+   std::string key, value;
+   while (reader.Next(key, value))
    {
-      file.ReadLine(line);
-
-      if (SplitKeyValue(line, key, value))
-         load_value(key.c_str(), value.c_str());
+      ProcessParameter(key, value);
    }
-}
-
-bool GameConfigLoader::SplitKeyValue(std::string& line, std::string& key, std::string& value)
-{
-   if (line.empty())
-      return false;
-
-   // trim spaces at start of line
-   for (; line.size() > 0 && isspace(line.at(0));)
-      line.erase(0, 1);
-
-   // comment line?
-   if (line.size() == 0 || line.at(0) == '#' || line.at(0) == ';')
-      return false;
-
-   // comment somewhere in the line?
-   std::string::size_type pos2 = line.find('#');
-   if (pos2 != std::string::npos)
-   {
-      // remove comment
-      line.erase(pos2);
-   }
-
-   // trim spaces at end of line
-   {
-      int len;
-      do
-      {
-         len = line.size() - 1;
-         if (isspace(line.at(len)))
-            line.erase(len);
-         else
-            break;
-      } while (line.size() > 0);
-   }
-
-   // empty line?
-   if (line.size() == 0)
-      return false;
-
-   // replace all '\t' with ' '
-   std::string::size_type pos = 0;
-   while ((pos = line.find('\t', pos)) != std::string::npos)
-      line.replace(pos, 1, " ");
-
-   // there must be at least one space, to separate key from value
-   pos = line.find(' ');
-   if (pos == std::string::npos)
-      return false;
-
-   // retrieve key and value
-   key = line.substr(0, pos);
-   value = line.substr(pos + 1);
-
-   // trim spaces at start of "value"
-   for (; value.size() > 0 && isspace(value.at(0));)
-      value.erase(0, 1);
-
-   return true;
 }
 
 /// Processes a keyword/value pair. The following keywords are currently
@@ -109,30 +50,26 @@ bool GameConfigLoader::SplitKeyValue(std::string& line, std::string& key, std::s
 /// load-script: loads a given script into scripting engine
 /// use-resources: specifies which resources the game has to use (uw1 or uw2)
 /// import-strings: imports gamestrings from custom .pak file
-/// \param the_name the keyword name
-/// \param the_value the keyword value
-void GameConfigLoader::load_value(const char* the_name, const char* the_value)
+/// \param name the keyword name
+/// \param value the keyword value
+void GameConfigLoader::ProcessParameter(std::string name, std::string value)
 {
-   std::string name(the_name);
-   std::string value(the_value);
-
    if (name.compare("game-name") == 0)
    {
-      game_name = value;
+      m_gameName = value;
    }
    else if (name.compare("init-scripting") == 0)
    {
       if (value == "lua")
       {
          // init Lua scripting
-         *scripting = IScripting::CreateScripting(scriptingLanguageLua);
+         *m_scripting = IScripting::CreateScripting(scriptingLanguageLua);
 
          // check if scripting was set
-         if (*scripting == NULL)
+         if (*m_scripting == NULL)
             throw Base::Exception("could not create scripting object");
 
-         // init scripting
-         (*scripting)->Init(&game);
+         (*m_scripting)->Init(&m_game);
       }
       else
          UaTrace("unsupported scripting language \"%s\"\n", value.c_str());
@@ -140,11 +77,11 @@ void GameConfigLoader::load_value(const char* the_name, const char* the_value)
    else if (name.compare("load-script") == 0)
    {
       // load given lua script name
-      game.GetScripting().LoadScript(value.c_str());
+      m_game.GetScripting().LoadScript(value.c_str());
    }
    else if (name.compare("use-resources") == 0)
    {
-      Base::Settings& settings = game.GetSettings();
+      Base::Settings& settings = m_game.GetSettings();
 
       // check if resources to use are available
       if (value.compare("uw1") == 0)
@@ -155,7 +92,7 @@ void GameConfigLoader::load_value(const char* the_name, const char* the_value)
             throw Base::Exception("path to uw1 was not specified in config file");
 
          // check game files
-         Base::ResourceManager& resourceManager = game.GetResourceManager();
+         Base::ResourceManager& resourceManager = m_game.GetResourceManager();
 
          bool uw1IsDemo = false;
          if (resourceManager.CheckUw1GameFilesAvailable(uw1IsDemo))
@@ -177,7 +114,7 @@ void GameConfigLoader::load_value(const char* the_name, const char* the_value)
             throw Base::Exception("path to uw2 was not specified in config file");
 
          // check for uw2 game files
-         Base::ResourceManager& resourceManager = game.GetResourceManager();
+         Base::ResourceManager& resourceManager = m_game.GetResourceManager();
 
          if (resourceManager.CheckUw2GameFilesAvailable())
             settings.SetGameType(Base::gameUw2);
@@ -199,12 +136,12 @@ void GameConfigLoader::load_value(const char* the_name, const char* the_value)
    else if (name.compare("import-strings") == 0)
    {
       // load game strings
-      Base::SDL_RWopsPtr rwops = game.GetResourceManager().GetResourceFile(value.c_str());
+      Base::SDL_RWopsPtr rwops = m_game.GetResourceManager().GetResourceFile(value.c_str());
 
       if (rwops != NULL)
       {
          // add strings.pak-like file
-         Import::GameStringsImporter importer(game.GetGameStrings());
+         Import::GameStringsImporter importer(m_game.GetGameStrings());
          importer.LoadStringsPakFile(rwops);
       }
       else

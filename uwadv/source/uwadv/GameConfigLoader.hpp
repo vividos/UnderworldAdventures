@@ -36,9 +36,10 @@ class GameConfigLoader
 {
 public:
    /// ctor
-   GameConfigLoader(IBasicGame& the_game,
-      IScripting** the_scripting)
-      :game(the_game), scripting(the_scripting)
+   GameConfigLoader(IBasicGame& game,
+      IScripting** scripting)
+      :m_game(game),
+      m_scripting(scripting)
    {
    }
 
@@ -46,22 +47,19 @@ public:
    void Load(Base::TextFile& file);
 
    /// returns game name
-   const char* get_game_name() { return game_name.c_str(); }
+   const char* GetGameName() { return m_gameName.c_str(); }
 
 private:
-   /// splits a text file line into key and value, when found
-   bool SplitKeyValue(std::string& line, std::string& key, std::string& value);
-
-   /// called to load a specific value
-   virtual void load_value(const char* name, const char* value);
+   /// processes a parameter from the game config file
+   void ProcessParameter(std::string name, std::string value);
 
 private:
    /// game interface
-   IBasicGame& game;
+   IBasicGame& m_game;
 
    /// pointer to pointer to scripting object to initialize
-   IScripting** scripting;
+   IScripting** m_scripting;
 
    /// game name
-   std::string game_name;
+   std::string m_gameName;
 };
