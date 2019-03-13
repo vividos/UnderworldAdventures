@@ -33,6 +33,7 @@
 #include "GameInterface.hpp"
 #include "DebugServer.hpp"
 #include "GameStrings.hpp"
+#include "physics/PhysicsModel.hpp"
 
 /// main game class
 class Game :
