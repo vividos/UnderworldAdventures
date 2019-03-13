@@ -281,11 +281,14 @@ public:
       unsigned int xpos, unsigned int ypos, unsigned int type,
       unsigned int val) = 0;
 
-   /// returns master object list info
+   /// returns if an object at given object list index is available
+   virtual bool IsObjectListIndexAvail(unsigned int level, unsigned int pos) const = 0;
+
+   /// returns object list info
    virtual unsigned int GetObjectListInfo(unsigned int level,
       unsigned int pos, unsigned int type) = 0;
 
-   /// sets master object list info
+   /// sets object list info
    virtual void SetObjectListInfo(unsigned int level,
       unsigned int pos, unsigned int type, unsigned int value) = 0;
 

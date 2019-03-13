@@ -88,6 +88,7 @@ public:
    unsigned int GetItemId(unsigned int pos);
    unsigned int GetItemNext(unsigned int pos);
 
+   bool IsItemInfoAvail(unsigned int pos) const;
    unsigned int GetItemInfo(unsigned int pos, unsigned int subcode);
    void SetItemInfo(unsigned int pos, unsigned int subcode, unsigned int nInfo);
 

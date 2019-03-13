@@ -137,6 +137,8 @@ protected:
       unsigned int xpos, unsigned int ypos, unsigned int type,
       unsigned int val) override;
 
+   virtual bool IsObjectListIndexAvail(unsigned int level, unsigned int pos) const override;
+
    virtual unsigned int GetObjectListInfo(unsigned int level,
       unsigned int pos, unsigned int type) override;
 

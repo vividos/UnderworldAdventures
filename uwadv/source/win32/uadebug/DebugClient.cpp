@@ -200,6 +200,11 @@ unsigned int DebugClientObjectListInterface::GetItemNext(unsigned int pos)
    return GetItemInfo(pos, 3); // 3 currently is the next field
 }
 
+bool DebugClientObjectListInterface::IsItemInfoAvail(unsigned int pos) const
+{
+   return m_debugInterface->IsObjectListIndexAvail(m_level, pos);
+}
+
 unsigned int DebugClientObjectListInterface::GetItemInfo(unsigned int pos, unsigned int subcode)
 {
    ATLASSERT(pos < 0x400);
@@ -207,6 +212,9 @@ unsigned int DebugClientObjectListInterface::GetItemInfo(unsigned int pos, unsig
 
    if (subcode == 0)
       return pos;
+
+   if (pos == 0)
+      return 0;
 
    // remap to fields
    subcode = subcode == 1 ? 0 : subcode - 2;

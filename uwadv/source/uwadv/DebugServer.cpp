@@ -571,6 +571,17 @@ void DebugServer::SetTileInfoValue(unsigned int level,
    }
 }
 
+bool DebugServer::IsObjectListIndexAvail(unsigned int level, unsigned int pos) const
+{
+   if (pos == 0)
+      return false;
+
+   Underworld::ObjectPtr obj = m_game->GetUnderworld().GetLevelList().
+      GetLevel(level).GetObjectList().GetObject(pos);
+
+   return obj != NULL;
+}
+
 unsigned int DebugServer::GetObjectListInfo(unsigned int level,
    unsigned int pos, unsigned int type)
 {
@@ -578,6 +589,9 @@ unsigned int DebugServer::GetObjectListInfo(unsigned int level,
 
    Underworld::ObjectPtr obj = m_game->GetUnderworld().GetLevelList().
       GetLevel(level).GetObjectList().GetObject(pos);
+
+   if (obj == NULL)
+      return 0;
 
    Underworld::ObjectInfo& objinfo = obj->GetObjectInfo();
    Underworld::ObjectPositionInfo& posInfo = obj->GetPosInfo();
