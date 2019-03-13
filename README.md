@@ -30,3 +30,7 @@ binaries of the latest build:
 [![Build status](https://ci.appveyor.com/api/projects/status/pi4hkego4ja858u4?svg=true)](https://ci.appveyor.com/project/vividos/underworldadventures)
 
 (click on Artifacts to download the uwadv.zip archive)
+
+The project is occasionally checked with SonarCloud:
+
+[![Quality Gate](https://sonarcloud.io/api/badges/gate?key=UnderworldAdventures)](https://sonarcloud.io/dashboard?id=UnderworldAdventures)

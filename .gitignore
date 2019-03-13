@@ -335,3 +335,5 @@ stuff/
 uwadv/CoverageReport/
 uwadv/cppcheck/cppcheck.txt
 uwadv/doxygen/doxygen-warnings.txt
+uwadv/.sonarqube/
+uwadv/bw-output/
