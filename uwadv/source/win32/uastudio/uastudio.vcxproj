@@ -113,6 +113,9 @@
     <ProjectReference Include="..\..\underw\underw.vcxproj">
       <Project>{4cc50617-2229-460e-9a80-3c517a2d9090}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\uadebug\uadebug.vcxproj">
+      <Project>{d71d5409-e534-46c3-a7df-41f92f8e254b}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
