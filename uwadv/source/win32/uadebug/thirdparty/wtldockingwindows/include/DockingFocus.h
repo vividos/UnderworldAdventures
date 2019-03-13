@@ -107,7 +107,7 @@ public:
 		static CDockingFocusHandler* pThis;
 		if (t)
 		{
-			ATLASSERT(0 == pThis);
+			//ATLASSERT(0 == pThis); // don't assert when creating second window with CDockingFocusHandler
 			pThis=t;
 		}
 		ATLASSERT(0 != pThis);
