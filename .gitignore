@@ -333,3 +333,4 @@ ASALocalRun/
 stuff/
 *.lob
 uwadv/CoverageReport/
+uwadv/cppcheck/cppcheck.txt
