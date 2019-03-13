@@ -594,7 +594,7 @@ namespace PropertyList
          REFLECTED_NOTIFY_CODE_HANDLER(LVN_ODCACHEHINT, OnOdCacheHint)
          REFLECTED_NOTIFY_CODE_HANDLER(LVN_BEGINLABELEDIT, OnBeginLabelEdit) // item editing
          REFLECTED_NOTIFY_CODE_HANDLER(LVN_ENDLABELEDIT, OnEndLabelEdit)
-         REFLECTED_NOTIFY_CODE_HANDLER(LVN_ITEMCHANGED, OitemChanged)
+         REFLECTED_NOTIFY_CODE_HANDLER(LVN_ITEMCHANGED, OnItemChanged)
          DEFAULT_REFLECTION_HANDLER()
       END_MSG_MAP()
 
@@ -648,7 +648,6 @@ namespace PropertyList
       /// called for virtual lists to retrieve item content
       LRESULT OnGetDispInfo(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
       {
-         // TODO not needed, since we retrieve item text in draw handler
          NMLVDISPINFO* dispInfo = reinterpret_cast<NMLVDISPINFO*>(pnmh);
 
          dispInfo->item.mask |= LVIF_DI_SETITEM; // store infos and don't ask for them again
@@ -690,7 +689,7 @@ namespace PropertyList
       }
 
       /// called when item aspect changed
-      LRESULT OitemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+      LRESULT OnItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
       {
          NMLISTVIEW* pNMListView = reinterpret_cast<NMLISTVIEW*>(pnmh);
 
@@ -710,18 +709,18 @@ namespace PropertyList
 
       DWORD OnPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW /*lpNMCustomDraw*/)
       {
-         // get item drawing messages and post-paint messages (TODO needed?)
-         return CDRF_NOTIFYITEMDRAW | CDRF_NOTIFYPOSTPAINT;
+         // get item drawing messages
+         return CDRF_NOTIFYITEMDRAW /*| CDRF_NOTIFYPOSTPAINT*/;
       }
 
-      DWORD OitemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW /*lpNMCustomDraw*/)
+      DWORD OnItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW /*lpNMCustomDraw*/)
       {
          // get item drawing messages for all subitems
          return CDRF_NOTIFYSUBITEMDRAW;
       }
 
       /// called when drawing subitems
-      DWORD OsubItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW lpNMCustomDraw)
+      DWORD OnSubItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW lpNMCustomDraw)
       {
          DWORD item = lpNMCustomDraw->dwItemSpec;
 
@@ -729,7 +728,7 @@ namespace PropertyList
          unsigned int subItem = static_cast<unsigned int>(lpNMLVCustomDraw->iSubItem);
 
          CDCHandle dc(lpNMCustomDraw->hdc);
-         DrawItem(item, subItem, dc, lpNMCustomDraw->itemState);
+         DrawItem(item, subItem, dc, lpNMCustomDraw->uItemState);
 
          return CDRF_SKIPDEFAULT;
       }
