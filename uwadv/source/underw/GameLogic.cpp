@@ -21,14 +21,12 @@
 //
 #include "underw.hpp"
 #include "GameLogic.hpp"
-#include "IUserInterface.hpp"
 #include "IScripting.hpp"
 
 using Underworld::GameLogic;
 
-GameLogic::GameLogic(IUserInterface* callback, IScripting* scripting)
-   :m_userInterface(callback),
-   m_scripting(scripting)
+GameLogic::GameLogic(IScripting* scripting)
+   :m_scripting(scripting)
 {
    m_lastEvalTime = -1.0;
 
@@ -106,7 +104,7 @@ void GameLogic::ChangeLevel(unsigned int level)
    // clear activated move triggers
    m_activeTriggers.clear();
 
-   // tell m_userInterface and scripting about change
+   // tell user interface and scripting about change
    if (m_userInterface != NULL)
       m_userInterface->Notify(::notifyLevelChange);
 

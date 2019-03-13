@@ -237,7 +237,8 @@ void GameStudio::InitGame()
       cfgloader.Load(textFile);
    }
 
-   m_gameLogic = std::make_unique<Underworld::GameLogic>(this, m_scripting);
+   m_gameLogic = std::make_unique<Underworld::GameLogic>(m_scripting);
+   GetGameLogic().RegisterUserInterface(this);
 
    Import::GameStringsImporter importer(GetGameStrings());
    importer.LoadDefaultStringsPakFile(GetResourceManager());

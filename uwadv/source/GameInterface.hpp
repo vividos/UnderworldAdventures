@@ -97,6 +97,7 @@ public:
 
    virtual Underworld::GameLogic& GetGameLogic() = 0;
 
+   /// returns user interface instance; may be null
    virtual IUserInterface* GetUserInterface() = 0;
 
    /// initializes game; only called after all stuff is initialized and ready
@@ -125,6 +126,9 @@ public:
 
    /// removes current screen at next event processing
    virtual void RemoveScreen() = 0;
+
+   /// registers or unregisters user interface
+   virtual void RegisterUserInterface(IUserInterface* userInterface) = 0;
 
    /// returns screen x resolution
    virtual unsigned int GetScreenXRes() = 0;

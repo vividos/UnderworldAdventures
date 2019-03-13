@@ -127,6 +127,7 @@ public:
 
    virtual void ReplaceScreen(Screen* newScreen, bool saveCurrent) override;
    virtual void RemoveScreen() override;
+   virtual void RegisterUserInterface(IUserInterface* userInterface) override;
    virtual unsigned int GetScreenXRes() override { return m_width; }
    virtual unsigned int GetScreenYRes() override { return m_height; }
 

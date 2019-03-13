@@ -45,7 +45,13 @@ namespace Underworld
    {
    public:
       /// ctor
-      GameLogic(IUserInterface* userInterface, IScripting* scripting);
+      GameLogic(IScripting* scripting);
+
+      /// registers or unregisters user interface
+      void RegisterUserInterface(IUserInterface* userInterface)
+      {
+         m_userInterface = userInterface;
+      }
 
       /// evaluates whole underworld for a given time point
       void EvaluateUnderworld(double time);
@@ -96,7 +102,7 @@ namespace Underworld
       void CheckMoveTrigger();
 
    protected:
-      /// interface to user interface
+      /// interface to user interface; may be null
       IUserInterface* m_userInterface;
 
       /// pointer to scripting class

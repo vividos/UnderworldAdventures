@@ -224,18 +224,14 @@ void OriginalIngameScreen::Suspend()
 
    m_game.GetRenderer().Clear();
 
-   // unregister ourselves
-   // TODO what to do?
-   //m_game.GetUserInterface().GetGameLogic().register_callback();
+   m_game.RegisterUserInterface(NULL);
 }
 
 void OriginalIngameScreen::Resume()
 {
    UaTrace("resuming orig. ingame user interface\n");
 
-   // register us as callback
-   // TODO what to do?
-   //m_game.GetGameLogic().register_callback(this);
+   m_game.RegisterUserInterface(this);
 
 
    // setup fade-in

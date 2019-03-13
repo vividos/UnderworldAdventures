@@ -530,8 +530,7 @@ void Game::InitGame()
 
    m_renderer.Init(*this, m_window);
 
-   IUserInterface* userInterface;
-   m_gameLogic = std::make_unique<Underworld::GameLogic>(userInterface, m_scripting);
+   m_gameLogic = std::make_unique<Underworld::GameLogic>(m_scripting);
 
    UaTrace("loading game strings ... ");
    Import::GameStringsImporter importer(GetGameStrings());
@@ -640,6 +639,12 @@ void Game::RemoveScreen()
    event.type = SDL_USEREVENT;
    event.user.code = gameEventDestroyScreen;
    SDL_PushEvent(&event);
+}
+
+void Game::RegisterUserInterface(IUserInterface* userInterface)
+{
+   GetGameLogic().RegisterUserInterface(userInterface);
+   m_userInterface = userInterface;
 }
 
 void Game::SetWindowIcon() const
