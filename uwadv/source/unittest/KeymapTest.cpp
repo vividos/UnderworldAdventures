@@ -82,7 +82,7 @@ namespace UnitTest
 
          // set up settings
          Base::Settings settings;
-         settings.SetValue(Base::settingUadataPath, testFolder.GetPathName());
+         settings.SetValue(Base::settingUadataPath, testFolder.GetPathName() + "/");
          settings.SetValue(Base::settingCustomKeymap, customKeymapFile);
          settings.SetValue(Base::settingGamePrefix, std::string("uw1"));
 

@@ -172,7 +172,7 @@ namespace UnitTest
             Base::File testFile(rwops);
             Assert::IsTrue(true == testFile.IsOpen());
 
-            Assert::IsTrue(0 == testFile.FileLength());
+            Assert::IsTrue(-1 == testFile.FileLength());
             Assert::IsTrue(0 == testFile.Tell());
 
             testFile.Write8(0x42);
@@ -193,7 +193,7 @@ namespace UnitTest
             Assert::IsTrue(true == testFile.IsOpen());
 
             /// file length isn't known for gz-streams
-            Assert::IsTrue(0 == testFile.FileLength());
+            Assert::IsTrue(-1 == testFile.FileLength());
             Assert::IsTrue(0 == testFile.Tell());
 
             Assert::IsTrue(0x42 == testFile.Read8());

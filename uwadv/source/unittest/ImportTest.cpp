@@ -151,26 +151,28 @@ namespace UnitTest
       TEST_METHOD(TestPlayerImportUw1)
       {
          Base::Settings& settings = GetTestSettings();
+         settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw1Path));
 
          Base::ResourceManager resourceManager{ settings };
 
          Underworld::Player player;
 
          Import::PlayerImporter playerImporter(resourceManager);
-         playerImporter.LoadPlayer(player, settings.GetString(Base::settingUw1Path) + "data/", true);
+         playerImporter.LoadPlayer(player, "data", true);
       }
 
       /// Tests loading player infos, uw2
       TEST_METHOD(TestPlayerImportUw2)
       {
          Base::Settings& settings = GetTestSettings();
+         settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw2Path));
 
          Base::ResourceManager resourceManager{ settings };
 
          Underworld::Player player;
 
          Import::PlayerImporter playerImporter(resourceManager);
-         playerImporter.LoadPlayer(player, settings.GetString(Base::settingUw2Path) + "data/", true);
+         playerImporter.LoadPlayer(player, "data", true);
       }
 
       /// Tests loading game strings
