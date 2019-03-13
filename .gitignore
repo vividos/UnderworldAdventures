@@ -334,3 +334,4 @@ stuff/
 *.lob
 uwadv/CoverageReport/
 uwadv/cppcheck/cppcheck.txt
+uwadv/doxygen/doxygen-warnings.txt
