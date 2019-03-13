@@ -35,7 +35,9 @@
 #include "GameStrings.hpp"
 
 /// main game class
-class Game : public IGame
+class Game :
+   public IGame,
+   public IPhysicsModelCallback
 {
 public:
    /// ctor
@@ -106,6 +108,10 @@ public:
    {
       return m_userInterface;
    }
+   virtual IPhysicsModelCallback& GetPhysicsModelCallback() override
+   {
+      return *this;
+   }
 
    // IGame methods
    virtual void InitGame() override;
@@ -130,6 +136,10 @@ public:
    virtual void RegisterUserInterface(IUserInterface* userInterface) override;
    virtual unsigned int GetScreenXRes() override { return m_width; }
    virtual unsigned int GetScreenYRes() override { return m_height; }
+
+   // virtual methods from IPhysicsModelCallback
+   virtual void GetSurroundingTriangles(unsigned int xpos,
+      unsigned int ypos, std::vector<Triangle3dTextured>& allTriangles) override;
 
 protected:
    /// initializes SDL and creates a window

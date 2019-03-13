@@ -43,6 +43,7 @@ class DebugServer;
 class Screen;
 class GameStrings;
 class IUserInterface;
+class IPhysicsModelCallback;
 
 /// game events that can be sent to the event queue via SDL_PushEvent using SDL_USEREVENT
 enum GameEvents
@@ -99,6 +100,9 @@ public:
 
    /// returns user interface instance; may be null
    virtual IUserInterface* GetUserInterface() = 0;
+
+   /// returns physics model callback
+   virtual IPhysicsModelCallback& GetPhysicsModelCallback() = 0;
 
    /// initializes game; only called after all stuff is initialized and ready
    virtual void InitGame() = 0;

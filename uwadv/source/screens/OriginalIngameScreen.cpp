@@ -953,14 +953,6 @@ void OriginalIngameScreen::StartConversation(Uint16 listPos)
    ScheduleAction(ingameActionConversation, true);
 }
 
-// TODO move? delete?
-//void OriginalIngameScreen::uw_get_object_triangles(unsigned int x,
-//   unsigned int y, const Underworld::Object& obj,
-//   std::vector<Triangle3dTextured>& allTriangles)
-//{
-//   m_game.GetRenderer().GetModel3DBoundingTriangles(x,y,obj,allTriangles);
-//}
-
 void OriginalIngameScreen::DoSavegameScreenshot(
    unsigned int xres, unsigned int yres)
 {

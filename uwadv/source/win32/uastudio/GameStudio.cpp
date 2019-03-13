@@ -31,12 +31,14 @@
 #include "GameStrings.hpp"
 #include "uwadv/DebugServer.hpp"
 #include "uwadv/GameConfigLoader.hpp"
+#include "physics/PhysicsModel.hpp"
 #include <ctime>
 
 /// Underworld Adventures studio
 class GameStudio :
    public IBasicGame,
-   public IUserInterface
+   public IUserInterface,
+   public IPhysicsModelCallback
 {
 public:
    /// ctor
@@ -61,6 +63,7 @@ public:
    virtual Underworld::Underworld& GetUnderworld() override { return m_gameLogic->GetUnderworld(); }
    virtual Underworld::GameLogic& GetGameLogic() override { return *m_gameLogic.get(); }
    virtual IUserInterface* GetUserInterface() override { return this; }
+   virtual IPhysicsModelCallback& GetPhysicsModelCallback() override { return *this; }
 
    // virtual IGame methods
    virtual void InitGame();
@@ -85,6 +88,13 @@ public:
    virtual void StartConversation(Uint16 listPos) override
    {
       UaTrace("StartConversation: listPos=%04x\n", listPos);
+   }
+
+   // virtual IPhysicsModelCallback methods
+   virtual void GetSurroundingTriangles(unsigned int xpos,
+      unsigned int ypos, std::vector<Triangle3dTextured>& allTriangles) override
+   {
+      // returns no triangles
    }
 
 protected:
