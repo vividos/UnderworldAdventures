@@ -614,7 +614,7 @@ STRINGTABLE
 BEGIN
     ID_VIEW_PLAYERINFO      "Show or hide Player Info window\nPlayer Info"
     ID_VIEW_HOTSPOT         "Show or hide list with all hotspots in the game\nHotspot List"
-    ID_VIEW_OBJECTLIST      "Show or hide Master Object List\nMaster Object List"
+    ID_VIEW_OBJECTLIST      "Show or hide Object List\nMaster Object List"
     ID_FILE_OPEN_PROJECT    "Open Project\nOpen a new game project."
     ID_FILE_CLOSE_PROJECT   "Close Project\nClose the current game project."
     ID_UNDERWORLD_RUN       "Run Underworld\nRun"

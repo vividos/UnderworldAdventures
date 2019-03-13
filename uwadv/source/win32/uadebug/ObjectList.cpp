@@ -44,12 +44,10 @@ void ObjectListInfo::SetItem(unsigned int pos, unsigned int index, unsigned int 
 ObjectListWindow::ObjectListWindow()
    :baseClass(idObjectListWindow), m_objectListInfoInited(false)
 {
-   m_itemNameList = new CSimpleArray<CString>;
 }
 
 ObjectListWindow::~ObjectListWindow()
 {
-   delete m_itemNameList;
 }
 
 void ObjectListWindow::ReceiveNotification(DebugWindowNotification& notify)
@@ -76,7 +74,8 @@ void ObjectListWindow::ReceiveNotification(DebugWindowNotification& notify)
 
 void ObjectListWindow::UpdateData()
 {
-   m_itemNameList->RemoveAll();
+   m_itemNameList.RemoveAll();
+   m_unallocatedItemListIndices.clear();
 
    DebugClient& debugClient = m_mainFrame->GetDebugClientInterface();
    debugClient.Lock(true);
@@ -92,6 +91,13 @@ void ObjectListWindow::UpdateData()
 
    for (unsigned int pos = 0; pos < 0x400; pos++)
    {
+      if (!objectInfo.IsItemInfoAvail(pos))
+      {
+         m_itemNameList.Add(_T("unallocated"));
+         m_unallocatedItemListIndices.insert(pos);
+         continue;
+      }
+
       for (unsigned int i = 0; i < columns; i++)
       {
          if (i == 0 || i == 2) continue; // don't ask for "pos" or "name" field
@@ -103,9 +109,9 @@ void ObjectListWindow::UpdateData()
       // get string for item_id
       unsigned int itemId = m_objectList.GetItem(pos, 1);
       if (itemId != 0xFFFF)
-         m_itemNameList->Add(debugClient.GetGameString(4, itemId));
+         m_itemNameList.Add(debugClient.GetGameString(4, itemId));
       else
-         m_itemNameList->Add(_T(""));
+         m_itemNameList.Add(_T(""));
    }
 
    debugClient.Lock(false);
@@ -189,17 +195,29 @@ void ObjectListWindow::OnUpdatedValue(unsigned int item, unsigned int subItem, L
 LRESULT ObjectListWindow::OnGetDispInfo(WPARAM /*wParam*/, NMHDR* pNMHDR, BOOL& /*bHandled*/)
 {
    // UpdateData() not called yet?
-   if (m_itemNameList->GetSize() < 0x400)
+   if (m_itemNameList.GetSize() == 0)
       return 1;
 
    NMLVDISPINFO* pDispInfo = (NMLVDISPINFO*)pNMHDR;
 
-   DebugClient& debugClient = m_mainFrame->GetDebugClientInterface();
-   debugClient.Lock(true);
-
    unsigned int item = static_cast<unsigned int>(pDispInfo->item.iItem);
    unsigned int columnIndex = static_cast<unsigned int>(pDispInfo->item.iSubItem);
    unsigned int itemId = m_objectList.GetItem(item, 1);
+
+   if (m_unallocatedItemListIndices.find(pDispInfo->item.iItem) != m_unallocatedItemListIndices.end())
+   {
+      pDispInfo->item.mask &= ~LVIF_IMAGE;
+      pDispInfo->item.iImage = 0;
+
+      if (columnIndex != 0 && columnIndex != 2)
+      {
+         pDispInfo->item.pszText = NULL;
+         return 0;
+      }
+   }
+
+   DebugClient& debugClient = m_mainFrame->GetDebugClientInterface();
+   debugClient.Lock(true);
 
    if (pDispInfo->item.mask & LVIF_TEXT)
    {
@@ -218,8 +236,8 @@ LRESULT ObjectListWindow::OnGetDispInfo(WPARAM /*wParam*/, NMHDR* pNMHDR, BOOL& 
          break;
 
       case 2: // name
-         if (m_itemNameList != NULL && m_itemNameList->GetSize() >= 0x400)
-            text = (*m_itemNameList)[item];
+         if (item < static_cast<unsigned int>(m_itemNameList.GetSize()))
+            text = m_itemNameList[item];
          else
             text = _T("???");
          break;

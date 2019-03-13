@@ -21,6 +21,8 @@
 //
 #pragma once
 
+#include <set>
+
 class ObjectListInfo
 {
 public:
@@ -45,7 +47,7 @@ public:
    ObjectListWindow();
    virtual ~ObjectListWindow();
 
-   DECLARE_DOCKING_WINDOW(_T("Master Object List"), CSize(200, 100)/*docked*/, CSize(500, 150)/*floating*/, dockwins::CDockingSide::sBottom)
+   DECLARE_DOCKING_WINDOW(_T("Object List"), CSize(200, 100)/*docked*/, CSize(500, 150)/*floating*/, dockwins::CDockingSide::sBottom)
 
    DECLARE_WND_CLASS_EX(_T("ObjectListWindow"), CS_DBLCLKS, COLOR_WINDOW)
 
@@ -80,5 +82,6 @@ protected:
    bool m_objectListInfoInited;
 
    ObjectListInfo m_objectList;
-   CSimpleArray<CString>* m_itemNameList;
+   CSimpleArray<CString> m_itemNameList;
+   std::set<unsigned int> m_unallocatedItemListIndices;
 };
