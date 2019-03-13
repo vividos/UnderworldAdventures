@@ -16,10 +16,10 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file importtest.cpp
+/// \file ImportTest.cpp
 /// \brief import functions test
 //
-#include "unittest.hpp"
+#include "UnitTest.hpp"
 #include "Settings.hpp"
 #include "ResourceManager.hpp"
 #include "Import.hpp"
@@ -36,7 +36,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 namespace UnitTest
 {
    /// Tests importing all kinds of original game data files.
-   TEST_CLASS(TestImport)
+   TEST_CLASS(ImportTest)
    {
       /// Tests importing object properties, uw1
       TEST_METHOD(TestObjectPropertiesImportUw1)

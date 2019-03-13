@@ -16,10 +16,10 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file audiotest.cpp
+/// \file AudioTest.cpp
 /// \brief audio classes test
 //
-#include "unittest.hpp"
+#include "UnitTest.hpp"
 #include "Audio.hpp"
 #include "MidiPlayer.hpp"
 #include "Settings.hpp"
@@ -35,7 +35,7 @@ namespace UnitTest
    /// \brief Audio tests
    /// Note that this test is normally not run; comment in the test
    /// suite function to run the test.
-   TEST_CLASS(TestAudio)
+   TEST_CLASS(AudioTest)
    {
       /// auto-init class for SDL audio subsystem and SDL_mixer
       class SDLMixerIniter

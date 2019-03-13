@@ -16,10 +16,10 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file underworldtest.cpp
+/// \file UnderworldTest.cpp
 /// \brief Underworld classes test
 //
-#include "unittest.hpp"
+#include "UnitTest.hpp"
 #include "Savegame.hpp"
 #include "FileSystem.hpp"
 #include "Underworld.hpp"
@@ -34,7 +34,7 @@ namespace UnitTest
 
    /// \brief Underworld classes test
    /// Tests underworld main functionality.
-   TEST_CLASS(TestUnderworld)
+   TEST_CLASS(UnderworldTest)
    {
       /// Tests saving and restoring underworld.
       /// \todo insert data into various underworld objects and check if the data

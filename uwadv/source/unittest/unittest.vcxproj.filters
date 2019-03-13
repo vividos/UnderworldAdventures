@@ -11,54 +11,54 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="archivefiletest.cpp">
+    <ClCompile Include="ConfigFileTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="audiotest.cpp">
+    <ClCompile Include="ArchiveFileTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cfgfiletest.cpp">
+    <ClCompile Include="AudioTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="filesystemtest.cpp">
+    <ClCompile Include="FileSystemTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="filetest.cpp">
+    <ClCompile Include="FileTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="importtest.cpp">
+    <ClCompile Include="ImportTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="keymaptest.cpp">
+    <ClCompile Include="KeymapTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="resourcemanagertest.cpp">
+    <ClCompile Include="ResourceManagerTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="savegametest.cpp">
+    <ClCompile Include="SavegameTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="settingstest.cpp">
+    <ClCompile Include="SettingsTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="stringtest.cpp">
+    <ClCompile Include="StringTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="tempfolder.cpp">
+    <ClCompile Include="TempFolder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="underworldtest.cpp">
+    <ClCompile Include="UnderworldTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="unittest.cpp">
+    <ClCompile Include="UnitTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="tempfolder.hpp">
+    <ClInclude Include="TempFolder.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="unittest.hpp">
+    <ClInclude Include="UnitTest.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

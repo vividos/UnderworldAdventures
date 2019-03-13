@@ -16,10 +16,10 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file unittest.cpp
+/// \file UnitTest.cpp
 /// \brief unit test implementation
 //
-#include "unittest.hpp"
+#include "UnitTest.hpp"
 #include "Settings.hpp"
 #include "FileSystem.hpp"
 
@@ -58,8 +58,3 @@ Base::Settings& UnitTest::GetTestSettings()
 
    return g_settings;
 }
-
-//int main()
-//{
-//   return 42;
-//}

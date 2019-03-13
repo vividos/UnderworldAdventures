@@ -17,10 +17,10 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 //
-/// \file filesystemtest.cpp
+/// \file FilesyStemTest.cpp
 /// \brief FileSystem tests
 //
-#include "unittest.hpp"
+#include "UnitTest.hpp"
 #include "FileSystem.hpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -29,27 +29,27 @@ namespace UnitTest
 {
    /// \brief FileSystem class tests
    /// Tests file system functions provided by Base::FileSystem.
-   TEST_CLASS(TestFileSystem)
+   TEST_CLASS(FileSystemTest)
    {
       /// Tests creating and removing folders.
       TEST_METHOD(TestCreateRemoveFolder)
       {
          TempFolder testFolder;
-         std::string strPath = testFolder.GetPathName();
+         std::string path = testFolder.GetPathName();
 
-         strPath += "/TestFolder";
+         path += "/TestFolder";
 
          try
          {
-            Base::FileSystem::MakeFolder(strPath);
+            Base::FileSystem::MakeFolder(path);
 
-            Assert::IsTrue(true == Base::FileSystem::FolderExists(strPath));
-            Assert::IsTrue(false == Base::FileSystem::FileExists(strPath));
+            Assert::IsTrue(true == Base::FileSystem::FolderExists(path));
+            Assert::IsTrue(false == Base::FileSystem::FileExists(path));
 
-            Base::FileSystem::RemoveFolder(strPath);
+            Base::FileSystem::RemoveFolder(path);
 
-            Assert::IsTrue(false == Base::FileSystem::FolderExists(strPath));
-            Assert::IsTrue(false == Base::FileSystem::FileExists(strPath));
+            Assert::IsTrue(false == Base::FileSystem::FolderExists(path));
+            Assert::IsTrue(false == Base::FileSystem::FileExists(path));
          }
          catch (const Base::FileSystemException& ex)
          {
@@ -64,13 +64,13 @@ namespace UnitTest
       TEST_METHOD(TestListFiles)
       {
          TempFolder testFolder;
-         std::string strPath = testFolder.GetPathName();
+         std::string path = testFolder.GetPathName();
 
          // test empty folder
          try
          {
             std::vector<std::string> vFileList;
-            Base::FileSystem::FindFiles(strPath + "/*.*", vFileList);
+            Base::FileSystem::FindFiles(path + "/*.*", vFileList);
 
             // note: folder list must not contain "." or ".."
             Assert::IsTrue(vFileList.size() == 0);

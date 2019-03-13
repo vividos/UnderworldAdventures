@@ -16,10 +16,10 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file savegametest.cpp
+/// \file SavegameTest.cpp
 /// \brief Savegame test
 //
-#include "unittest.hpp"
+#include "UnitTest.hpp"
 #include "Savegame.hpp"
 #include "FileSystem.hpp"
 
@@ -29,7 +29,7 @@ namespace UnitTest
 {
    /// \brief Savegame and SavegamesManager class tests
    /// Tests savegames and the savegames manager.
-   TEST_CLASS(TestSavegame)
+   TEST_CLASS(SavegameTest)
    {
       /// Tests saving and restoring a savegame.
       TEST_METHOD(TestSaveRestore)

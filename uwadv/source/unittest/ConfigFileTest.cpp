@@ -16,10 +16,10 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file cfgfiletest.cpp
+/// \file ConfigFileTest.cpp
 /// \brief ConfigFile class test
 //
-#include "unittest.hpp"
+#include "UnitTest.hpp"
 #include "ConfigFile.hpp"
 #include "TextFile.hpp"
 
@@ -29,15 +29,15 @@ namespace UnitTest
 {
    /// \brief ConfigFile test
    /// Tests loading and rewriting config files via ConfigFile.
-   TEST_CLASS(TestConfigFile)
+   TEST_CLASS(ConfigFileTest)
    {
       /// Tests loading a config file.
       TEST_METHOD(TestLoadFile)
       {
          TempFolder testFolder;
-         std::string strPath = testFolder.GetPathName();
+         std::string path = testFolder.GetPathName();
 
-         std::string filename = strPath + "/test.cfg";
+         std::string filename = path + "/test.cfg";
          {
             Base::TextFile file(filename, Base::modeWrite);
             file.WriteLine("# comment line");
@@ -66,10 +66,10 @@ namespace UnitTest
       TEST_METHOD(TestRewriteFile)
       {
          TempFolder testFolder;
-         std::string strPath = testFolder.GetPathName();
+         std::string path = testFolder.GetPathName();
 
-         std::string filename = strPath + "/test.cfg";
-         std::string strFilenameNew = strPath + "/test2.cfg";
+         std::string filename = path + "/test.cfg";
+         std::string strFilenameNew = path + "/test2.cfg";
          {
             Base::TextFile file(filename, Base::modeWrite);
             file.WriteLine("  # comment line  "); // comment lines are trimmed for space only

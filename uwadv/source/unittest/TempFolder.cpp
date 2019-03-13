@@ -19,7 +19,7 @@
 /// \file tempfolder.cpp
 /// \brief unit test temp folder implementation
 //
-#include "unittest.hpp"
+#include "UnitTest.hpp"
 #include "FileSystem.hpp"
 #include <sstream>
 #include <iomanip>
@@ -27,40 +27,40 @@
 using UnitTest::TempFolder;
 
 /// temp base folder
-const char* c_cstrTempFolder = ".";
+const char* c_tempFolder = ".";
 
 TempFolder::TempFolder()
 {
-   std::string strCurrentFolder(c_cstrTempFolder);
+   std::string currentFolder(c_tempFolder);
 
    // find folder name
-   for (int iNum = 0;; iNum++)
+   for (int folderNumber = 0;; folderNumber++)
    {
       std::stringstream buffer;
-      buffer << strCurrentFolder << "/temp-unittest/dir-" <<
-         std::setfill('0') << std::setw(4) << iNum;
+      buffer << currentFolder << "/temp-unittest/dir-" <<
+         std::setfill('0') << std::setw(4) << folderNumber;
 
-      m_strPathname = buffer.str();
+      m_pathname = buffer.str();
 
-      if (!Base::FileSystem::FolderExists(m_strPathname))
+      if (!Base::FileSystem::FolderExists(m_pathname))
          break; // folder doesn't exist
    }
 
-   Base::FileSystem::MakeFolder(m_strPathname);
+   Base::FileSystem::MakeFolder(m_pathname);
 }
 
 TempFolder::~TempFolder()
 {
    // remove folder contents and folder
-   Base::FileSystem::RecursiveRemoveFolder(m_strPathname);
+   Base::FileSystem::RecursiveRemoveFolder(m_pathname);
 
    // try to delete base folder, too
    try
    {
-      std::string strTempFolder(c_cstrTempFolder);
-      strTempFolder += "temp-unittest";
+      std::string tempFolder(c_tempFolder);
+      tempFolder += "temp-unittest";
 
-      Base::FileSystem::RemoveFolder(strTempFolder);
+      Base::FileSystem::RemoveFolder(tempFolder);
    }
    catch (const Base::FileSystemException& ex)
    {

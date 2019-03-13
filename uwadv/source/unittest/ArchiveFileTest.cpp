@@ -16,10 +16,10 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file archivefiletest.cpp
+/// \file ArchiveFileTest.cpp
 /// \brief ArchiveFile test
 //
-#include "unittest.hpp"
+#include "UnitTest.hpp"
 #include "ArchiveFile.hpp"
 #include "Settings.hpp"
 #include "ResourceManager.hpp"
@@ -33,7 +33,7 @@ namespace UnitTest
    /// \todo check file lengths in uw1 mode, once file length is known (see
    ///       ArchiveFile todo's).
    /// \todo decode what scd.ark contains
-   TEST_CLASS(TestArchiveFile)
+   TEST_CLASS(ArchiveFileTest)
    {
       /// load uw1 levels
       TEST_METHOD(TestArchiveFileLoadLevelsUw1)

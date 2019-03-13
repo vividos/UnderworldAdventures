@@ -16,10 +16,10 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file filetest.cpp
+/// \file FileTest.cpp
 /// \brief File and TextFile test
 //
-#include "unittest.hpp"
+#include "UnitTest.hpp"
 #include "File.hpp"
 #include "TextFile.hpp"
 #include <SDL_rwops.h>
@@ -38,13 +38,13 @@ namespace UnitTest
       TEST_METHOD(TestFileReadWrite)
       {
          TempFolder testFolder;
-         std::string strFile = testFolder.GetPathName() + "/testfile.bin";
+         std::string path = testFolder.GetPathName() + "/testfile.bin";
 
          Uint8 testData[] = { 0x00, 0x42, 0xab, 0x54, 0x12, 0x68, 0xff, 0xfe, 0x80 };
 
          // write test file
          {
-            Base::File testFile(strFile, Base::modeWrite);
+            Base::File testFile(path, Base::modeWrite);
             Assert::IsTrue(true == testFile.IsOpen());
 
             Assert::IsTrue(0 == testFile.FileLength());
@@ -61,7 +61,7 @@ namespace UnitTest
 
          // read test file
          {
-            Base::File testFile(strFile, Base::modeRead);
+            Base::File testFile(path, Base::modeRead);
             Assert::IsTrue(true == testFile.IsOpen());
 
             Assert::IsTrue(1 + 2 + 4 + SDL_TABLESIZE(testData) == testFile.FileLength());
@@ -160,13 +160,13 @@ namespace UnitTest
       TEST_METHOD(TestGzipFileReadWrite)
       {
          TempFolder testFolder;
-         std::string strFile = testFolder.GetPathName() + "/testfile.gz";
+         std::string path = testFolder.GetPathName() + "/testfile.gz";
 
          Uint8 testData[] = { 0x00, 0x42, 0xab, 0x54, 0x12, 0x68, 0xff, 0xfe, 0x80 };
 
          // write test file
          {
-            Base::SDL_RWopsPtr rwops = Base::MakeRWopsPtr(SDL_RWFromGzFile(strFile.c_str(), "wb9"));
+            Base::SDL_RWopsPtr rwops = Base::MakeRWopsPtr(SDL_RWFromGzFile(path.c_str(), "wb9"));
             Assert::IsTrue(rwops.get() != NULL);
 
             Base::File testFile(rwops);
@@ -186,7 +186,7 @@ namespace UnitTest
 
          // read test file
          {
-            Base::SDL_RWopsPtr rwops = Base::MakeRWopsPtr(SDL_RWFromGzFile(strFile.c_str(), "rb"));
+            Base::SDL_RWopsPtr rwops = Base::MakeRWopsPtr(SDL_RWFromGzFile(path.c_str(), "rb"));
             Assert::IsTrue(rwops.get() != NULL);
 
             Base::File testFile(rwops);

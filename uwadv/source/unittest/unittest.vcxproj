@@ -75,27 +75,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="archivefiletest.cpp" />
-    <ClCompile Include="audiotest.cpp" />
-    <ClCompile Include="cfgfiletest.cpp" />
-    <ClCompile Include="filesystemtest.cpp" />
-    <ClCompile Include="filetest.cpp" />
-    <ClCompile Include="importtest.cpp" />
-    <ClCompile Include="keymaptest.cpp" />
-    <ClCompile Include="resourcemanagertest.cpp" />
-    <ClCompile Include="savegametest.cpp" />
-    <ClCompile Include="settingstest.cpp" />
-    <ClCompile Include="stringtest.cpp" />
-    <ClCompile Include="tempfolder.cpp" />
-    <ClCompile Include="underworldtest.cpp" />
-    <ClCompile Include="unittest.cpp">
+    <ClCompile Include="ArchiveFileTest.cpp" />
+    <ClCompile Include="AudioTest.cpp" />
+    <ClCompile Include="ConfigFileTest.cpp" />
+    <ClCompile Include="FileSystemTest.cpp" />
+    <ClCompile Include="FileTest.cpp" />
+    <ClCompile Include="ImportTest.cpp" />
+    <ClCompile Include="KeymapTest.cpp" />
+    <ClCompile Include="ResourceManagerTest.cpp" />
+    <ClCompile Include="SavegameTest.cpp" />
+    <ClCompile Include="SettingsTest.cpp" />
+    <ClCompile Include="StringTest.cpp" />
+    <ClCompile Include="TempFolder.cpp" />
+    <ClCompile Include="UnderworldTest.cpp" />
+    <ClCompile Include="UnitTest.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="tempfolder.hpp" />
-    <ClInclude Include="unittest.hpp" />
+    <ClInclude Include="TempFolder.hpp" />
+    <ClInclude Include="UnitTest.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\audio\audio.vcxproj">

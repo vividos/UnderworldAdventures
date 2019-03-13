@@ -16,11 +16,13 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file settingstest.cpp
-/// \brief Settings test
+/// \file ResourceManagerTest.cpp
+/// \brief ResourceManager test
 //
-#include "unittest.hpp"
+#include "UnitTest.hpp"
+#include "ResourceManager.hpp"
 #include "Settings.hpp"
+#include "File.hpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -29,20 +31,21 @@ namespace UnitTest
    /// \brief ResourceManager class tests
    /// Tests resource manager that loads resource files.
    /// \todo test search order of uadataXX.zip files
-   TEST_CLASS(TestSettings)
+   TEST_CLASS(ResourceManagerTest)
    {
-      /// Tests a bug when calling SetValue with a const char* argument that gets
-      /// implicitly converted to bool, calling the wrong function as result.
-      TEST_METHOD(TestSetValueStringBug)
+      /// Tests opening of resource files that may be zipped into a .zip file.
+      /// Assumes that a valid "uwadv.cfg" file can be found where Underworld
+      /// Adventures would expect the file.
+      TEST_METHOD(TestResourceLoading)
       {
-         Base::Settings settings;
+         Base::Settings& settings = GetTestSettings();
 
-         // fails by converting text to bool
-         // note: when passing a variable of type const char*, at least a warning is printed:
-         //       warning C4800: 'const char *' : forcing value to bool
-         //       'true' or 'false' (performance warning)
-         settings.SetValue(Base::settingUnderworldPath, "c:\\uwadv");
-         Assert::IsTrue(settings.GetString(Base::settingUnderworldPath) == "c:\\uwadv");
+         Base::ResourceManager resourceManager{ settings };
+         Base::SDL_RWopsPtr rwops = resourceManager.GetResourceFile("uw1/keymap.cfg");
+         Assert::IsNotNull(rwops.get());
+
+         Base::File file(rwops);
+         Assert::IsTrue(file.FileLength() > 0);
       }
    };
 } // namespace UnitTest

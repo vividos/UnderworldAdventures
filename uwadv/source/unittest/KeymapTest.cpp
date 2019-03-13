@@ -16,10 +16,10 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file keymaptest.cpp
+/// \file KeymapTest.cpp
 /// \brief Keymap test
 //
-#include "unittest.hpp"
+#include "UnitTest.hpp"
 #include "Keymap.hpp"
 #include "Settings.hpp"
 #include "ResourceManager.hpp"
@@ -32,7 +32,7 @@ namespace UnitTest
 {
    /// \brief Keymap class tests
    /// Tests loading keymaps and custom keymaps and checks loaded key mappings.
-   TEST_CLASS(TestKeymap)
+   TEST_CLASS(KeymapTest)
    {
       /// Tests inserting a key mapping into a Keymap and checking if it can be
       /// found again.
@@ -64,11 +64,11 @@ namespace UnitTest
       {
          // write custom keymap file
          TempFolder testFolder;
-         std::string strCustomKeymapFile;
+         std::string customKeymapFile;
          {
-            strCustomKeymapFile = testFolder.GetPathName() + "/custom.cfg";
+            customKeymapFile = testFolder.GetPathName() + "/custom.cfg";
 
-            Base::TextFile keymapFile(strCustomKeymapFile, Base::modeWrite);
+            Base::TextFile keymapFile(customKeymapFile, Base::modeWrite);
             keymapFile.WriteLine("menu-top-of-list2 shift alt ctrl A");
             keymapFile.WriteLine("ua-debug ctrl F12");
          }
@@ -83,7 +83,7 @@ namespace UnitTest
          // set up settings
          Base::Settings settings;
          settings.SetValue(Base::settingUadataPath, testFolder.GetPathName());
-         settings.SetValue(Base::settingCustomKeymap, strCustomKeymapFile);
+         settings.SetValue(Base::settingCustomKeymap, customKeymapFile);
          settings.SetValue(Base::settingGamePrefix, std::string("uw1"));
 
          Base::ResourceManager resourceManager{ settings };

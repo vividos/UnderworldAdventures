@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2004,2005,2006,2019 Michael Fink
+// Copyright (c) 2006,2019 Michael Fink
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,29 +16,30 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file unittest.hpp
-/// \brief unit test implementation
-/// Unit testing is used to verify that Underworld Adventures and its
-/// components are working and stay working. There should be a test for all
-/// classes and functions that are written. If a bug is found, a test should
-/// be written (if possible) that fails. When the bug is fixed the test should
-/// has to pass then.
+/// \file TempFolder.hpp
+/// \brief unit test temp folder
 //
 #pragma once
 
-#include <CppUnitTest.h>
-#include "Base.hpp"
-#include "tempfolder.hpp"
-
-namespace Base
-{
-   class Settings;
-}
-
-/// unit tests namespace
 namespace UnitTest
 {
-   /// returns global settings object to use during tests
-   Base::Settings& GetTestSettings();
+   /// \brief Temp folder for unit tests
+   /// The temporary folder is created at construction of the object, and at
+   /// destruction the folder is tried to be emptied and deleted.
+   class TempFolder
+   {
+   public:
+      /// ctor; creates folder
+      TempFolder();
+      /// dtor; empties and deletes folder
+      ~TempFolder();
+
+      /// returns pathname of folder
+      std::string GetPathName() const { return m_pathname; }
+
+   private:
+      /// pathname of folder
+      std::string m_pathname;
+   };
 
 } // namespace UnitTest

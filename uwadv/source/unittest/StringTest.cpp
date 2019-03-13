@@ -16,20 +16,19 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file stringtest.cpp
+/// \file StringTest.cpp
 /// \brief String test
 //
-#include "unittest.hpp"
+#include "UnitTest.hpp"
 #include "String.hpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTest
 {
-
    /// \brief String functions tests
    /// Tests string functions provided by Base::String.
-   TEST_CLASS(TestString)
+   TEST_CLASS(StringTest)
    {
       /// Tests case changing via Lowercase and Uppercase
       TEST_METHOD(TestCaseChange)
