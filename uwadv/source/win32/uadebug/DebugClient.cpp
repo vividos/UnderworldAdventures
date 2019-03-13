@@ -435,8 +435,22 @@ void DebugClient::SetWorkingLevel(unsigned int level)
 
 CString DebugClient::GetLevelName(unsigned int level) const
 {
-   level;
-   // TODO
+   switch (level)
+   {
+   case 0: return _T("Goblins");
+   case 1: return _T("Mountainmen");
+   case 2: return _T("Lizardmen");
+   case 3: return _T("Knights");
+   case 4: return _T("Ghouls");
+   case 5: return _T("Mages");
+   case 6: return _T("Tyball");
+   case 7: return _T("Volcano");
+   case 8: return _T("Moogate");
+   default:
+      ATLASSERT(false);
+      break;
+   }
+
    return _T("unknown");
 }
 
