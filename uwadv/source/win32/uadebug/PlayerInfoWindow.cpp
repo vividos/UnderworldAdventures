@@ -16,11 +16,11 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file PlayerInfo.cpp
+/// \file PlayerInfoWindow.cpp
 /// \brief player info docking window
 //
 #include "stdatl.hpp"
-#include "PlayerInfo.hpp"
+#include "PlayerInfoWindow.hpp"
 #include "DebugClient.hpp"
 
 enum PropertyGroup

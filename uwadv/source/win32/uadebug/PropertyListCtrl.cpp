@@ -9,6 +9,9 @@
 // the terms of this license. You must not remove this notice, or
 // any other, from this software.
 //
+/// \file PropertyListCtrl.cpp
+/// \brief Property List Control implementation
+//
 #include "stdatl.hpp"
 #include "PropertyListCtrl.hpp"
 

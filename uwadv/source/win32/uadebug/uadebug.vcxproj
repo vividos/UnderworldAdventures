@@ -83,17 +83,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BreakpointList.cpp" />
+    <ClCompile Include="BreakpointListWindow.cpp" />
     <ClCompile Include="DebugClient.cpp" />
     <ClCompile Include="EditListViewCtrl.cpp" />
     <ClCompile Include="Filename.cpp" />
     <ClCompile Include="GameStringsView.cpp" />
-    <ClCompile Include="HotspotList.cpp" />
+    <ClCompile Include="HotspotListWindow.cpp" />
     <ClCompile Include="LuaSourceView.cpp" />
     <ClCompile Include="MainFrame.cpp" />
-    <ClCompile Include="ObjectList.cpp" />
-    <ClCompile Include="PlayerInfo.cpp" />
-    <ClCompile Include="ProjectInfo.cpp" />
+    <ClCompile Include="ObjectListWindow.cpp" />
+    <ClCompile Include="PlayerInfoWindow.cpp" />
+    <ClCompile Include="ProjectInfoWindow.cpp" />
     <ClCompile Include="ProjectManager.cpp" />
     <ClCompile Include="PropertyListCtrl.cpp" />
     <ClCompile Include="stdatl.cpp">
@@ -102,32 +102,32 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdatl.hpp</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="TileInfo.cpp" />
+    <ClCompile Include="TileInfoWindow.cpp" />
     <ClCompile Include="TileMapViewCtrl.cpp" />
     <ClCompile Include="uadebug.cpp" />
-    <ClCompile Include="WatchesList.cpp" />
+    <ClCompile Include="WatchesListWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AboutDlg.hpp" />
-    <ClInclude Include="BreakpointList.hpp" />
+    <ClInclude Include="BreakpointListWindow.hpp" />
     <ClInclude Include="DebugClient.hpp" />
     <ClInclude Include="EditListViewCtrl.hpp" />
     <ClInclude Include="Filename.hpp" />
     <ClInclude Include="GameStringsView.hpp" />
-    <ClInclude Include="HotspotList.hpp" />
+    <ClInclude Include="HotspotListWindow.hpp" />
     <ClInclude Include="LuaSourceView.hpp" />
     <ClInclude Include="MainFrame.hpp" />
-    <ClInclude Include="ObjectList.hpp" />
-    <ClInclude Include="PlayerInfo.hpp" />
-    <ClInclude Include="ProjectInfo.hpp" />
+    <ClInclude Include="ObjectListWindow.hpp" />
+    <ClInclude Include="PlayerInfoWindow.hpp" />
+    <ClInclude Include="ProjectInfoWindow.hpp" />
     <ClInclude Include="ProjectManager.hpp" />
     <ClInclude Include="PropertyListCtrl.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="stdatl.hpp" />
-    <ClInclude Include="TileInfo.hpp" />
+    <ClInclude Include="TileInfoWindow.hpp" />
     <ClInclude Include="TileMapView.hpp" />
     <ClInclude Include="TileMapViewCtrl.hpp" />
-    <ClInclude Include="WatchesList.hpp" />
+    <ClInclude Include="WatchesListWindow.hpp" />
     <ClInclude Include="WindowBase.hpp" />
   </ItemGroup>
   <ItemGroup>

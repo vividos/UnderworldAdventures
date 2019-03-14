@@ -16,11 +16,11 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file ObjectList.cpp
+/// \file ObjectListWindow.cpp
 /// \brief object list docking window
 //
 #include "stdatl.hpp"
-#include "ObjectList.hpp"
+#include "ObjectListWindow.hpp"
 #include "DebugClient.hpp"
 #include "MainFrame.hpp"
 

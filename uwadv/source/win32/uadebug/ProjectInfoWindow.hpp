@@ -26,9 +26,9 @@
 class DockingWindowBase;
 
 /// window info about code debugger
-struct SCodeDebuggerInfo
+struct CodeDebuggerInfo
 {
-   SCodeDebuggerInfo()
+   CodeDebuggerInfo()
       :m_pWatchesWindow(NULL), m_pBreakpointWindow(NULL), m_pCallstackWindow(NULL) {}
 
    DockingWindowBase* m_pBreakpointWindow;
@@ -38,12 +38,12 @@ struct SCodeDebuggerInfo
 };
 
 /// player info docking window
-class CProjectInfoWindow : public DockingWindowBase
+class ProjectInfoWindow : public DockingWindowBase
 {
-   typedef CProjectInfoWindow thisClass;
+   typedef ProjectInfoWindow thisClass;
    typedef DockingWindowBase baseClass;
 
-   enum T_enTreeItemType
+   enum ProjectTreeItemType
    {
       tiNone = 1, tiLevel, tiLuaFilename, tiConvCodeFilename, tiCodeDebugger, tiWindow
    };
@@ -57,21 +57,21 @@ class CProjectInfoWindow : public DockingWindowBase
       //wtMemory,
    };
 
-   struct STreeItemInfo
+   struct ProjectTreeItemInfo
    {
       /// default ctor
-      STreeItemInfo() : m_enType(tiNone), m_nInfo(0) {}
+      ProjectTreeItemInfo() : m_enType(tiNone), m_nInfo(0) {}
 
       /// item info ctor for tiLevel, tiCodeDebugger, tiWindow
-      STreeItemInfo(T_enTreeItemType enType, unsigned int nInfo, unsigned int codeDebuggerId = 0)
+      ProjectTreeItemInfo(ProjectTreeItemType enType, unsigned int nInfo, unsigned int codeDebuggerId = 0)
          : m_enType(enType), m_codeDebuggerId(codeDebuggerId), m_nInfo(nInfo) {}
 
       /// item info ctor for tiLuaFilename, tiConvCodeFilename
-      STreeItemInfo(LPCTSTR pszInfo, unsigned int nInfo = wtNone, T_enTreeItemType enType = tiNone, unsigned int codeDebuggerId = 0)
+      ProjectTreeItemInfo(LPCTSTR pszInfo, unsigned int nInfo = wtNone, ProjectTreeItemType enType = tiNone, unsigned int codeDebuggerId = 0)
          : m_enType(enType), m_codeDebuggerId(codeDebuggerId), m_nInfo(nInfo), m_cszInfo(pszInfo) {}
 
       /// type of tree item
-      T_enTreeItemType m_enType;
+      ProjectTreeItemType m_enType;
 
       /// code debugger id, if any
       unsigned int m_codeDebuggerId;
@@ -85,8 +85,8 @@ class CProjectInfoWindow : public DockingWindowBase
 
 public:
    /// ctor
-   CProjectInfoWindow() :baseClass(idProjectInfoWindow), m_bIgnoreSelections(false) {}
-   virtual ~CProjectInfoWindow() {}
+   ProjectInfoWindow() :baseClass(idProjectInfoWindow), m_bIgnoreSelections(false) {}
+   virtual ~ProjectInfoWindow() {}
 
    DECLARE_DOCKING_WINDOW(_T("Project"), CSize(250, 100)/*docked*/, CSize(250, 400)/*floating*/, dockwins::CDockingSide::sLeft)
 
@@ -136,10 +136,10 @@ protected:
       LPCTSTR filename, LPCTSTR pszPathRelativeTo, unsigned int codeDebuggerId);
 
    /// returns tree item info for a given item
-   STreeItemInfo GetTreeItemInfo(HTREEITEM hItem);
+   ProjectTreeItemInfo GetTreeItemInfo(HTREEITEM hItem);
 
    /// sets item info for a tree item
-   void SetTreeItemInfo(HTREEITEM hItem, const STreeItemInfo& itemInfo);
+   void SetTreeItemInfo(HTREEITEM hItem, const ProjectTreeItemInfo& itemInfo);
 
    /// removes all subitems from a parent item
    void RemoveSubitems(HTREEITEM hParentItem);
@@ -161,5 +161,5 @@ protected:
    HTREEITEM m_hItemCodeDebugger;
 
    /// map with all code debugger infos
-   CAtlMap<unsigned int, SCodeDebuggerInfo> m_aCodeDebuggerInfos;
+   CAtlMap<unsigned int, CodeDebuggerInfo> m_aCodeDebuggerInfos;
 };

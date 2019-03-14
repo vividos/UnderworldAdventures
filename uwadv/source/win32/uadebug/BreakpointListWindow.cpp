@@ -16,11 +16,11 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file ObjectList.cpp
+/// \file BreakpointListWindow.cpp
 /// \brief code debugger breakpoint window
 //
 #include "stdatl.hpp"
-#include "BreakpointList.hpp"
+#include "BreakpointListWindow.hpp"
 
 BreakpointListWindow::BreakpointListWindow(unsigned int codeDebuggerId)
    :DockingWindowBase(idBreakpointWindow),

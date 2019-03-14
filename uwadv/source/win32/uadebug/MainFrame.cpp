@@ -631,7 +631,7 @@ LRESULT MainFrame::OnUndockWindow(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
       break;
 
    case idBreakpointWindow:
-      // breakpoint windows are created from CProjectInfoWindow, so we don't
+      // breakpoint windows are created from ProjectInfoWindow, so we don't
       // know exactly the window base pointer
       windowBase = &dockingWindow;
       viewId = 0;

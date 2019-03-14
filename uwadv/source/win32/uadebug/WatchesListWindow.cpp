@@ -16,11 +16,11 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file WatchesList.cpp
+/// \file WatchesListWindow.cpp
 /// \brief code debugger watches window
 //
 #include "stdatl.hpp"
-#include "WatchesList.hpp"
+#include "WatchesListWindow.hpp"
 
 WatchesListWindow::WatchesListWindow(unsigned int codeDebuggerId)
 :DockingWindowBase(idWatchesWindow),

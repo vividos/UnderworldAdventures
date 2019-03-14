@@ -23,12 +23,12 @@
 
 #include "DebugClient.hpp"
 #include "ProjectManager.hpp"
-#include "ProjectInfo.hpp"
-#include "PlayerInfo.hpp"
-#include "ObjectList.hpp"
-#include "HotspotList.hpp"
+#include "ProjectInfoWindow.hpp"
+#include "PlayerInfoWindow.hpp"
+#include "ObjectListWindow.hpp"
+#include "HotspotListWindow.hpp"
 #include "TileMapView.hpp"
-#include "TileInfo.hpp"
+#include "TileInfoWindow.hpp"
 #include "Resource.h"
 
 #define WM_UNDOCK_WINDOW (WM_APP + 10)
@@ -60,7 +60,7 @@ public:
    ObjectListWindow m_objectListWindow;
    HotspotListWindow m_hotspotListWindow;
    TileInfoWindow m_tileInfoWindow;
-   CProjectInfoWindow m_projectInfoWindow;
+   ProjectInfoWindow m_projectInfoWindow;
 
    // statically allocated child windows
 
