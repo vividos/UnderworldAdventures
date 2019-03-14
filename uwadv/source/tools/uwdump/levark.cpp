@@ -49,6 +49,7 @@ void DumpLevelArchive::start(std::string& basepath, std::string& param, bool isU
       }
       catch (...)
       {
+         printf("error while loading game strings");
       }
    }
 

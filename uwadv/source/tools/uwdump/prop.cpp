@@ -44,6 +44,7 @@ void DumpObjectProperties::start(std::string& basepath)
       }
       catch (...)
       {
+         printf("error while loading game strings");
       }
    }
 
