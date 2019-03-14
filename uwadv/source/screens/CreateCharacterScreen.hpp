@@ -18,7 +18,7 @@
 //
 /// \file CreateCharacterScreen.hpp
 /// \brief create character screen
-/// shows the screen where the user can create a player character for a
+/// \details shows the screen where the user can create a player character for a
 /// new game.
 //
 #pragma once

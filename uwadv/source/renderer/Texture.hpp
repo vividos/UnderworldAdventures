@@ -18,7 +18,7 @@
 //
 /// \file Texture.hpp
 /// \brief texture management classes
-/// Texture::convert() converts image pixels to 32-bit texture data
+/// \details Texture::convert() converts image pixels to 32-bit texture data
 /// Texture::use() activates a texture name for use in rendering
 /// Texture::upload() uploads a converted texture to the graphics card
 /// \note texture size for multiple textures is calculated when convert()ing

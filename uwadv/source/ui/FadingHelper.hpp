@@ -18,7 +18,7 @@
 //
 /// \file FadingHelper.hpp
 /// \brief fading class
-/// The fading helper class FadingHelper helps fading in or out screens,
+/// \details The fading helper class FadingHelper helps fading in or out screens,
 /// e.g. when one leaves an active screen. The class manages a value in the
 /// range 0 to 255 that can be used in a call to glColor3ub(). The init()
 /// method can be called multiple times. The Tick() method (should be called

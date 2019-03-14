@@ -19,7 +19,7 @@
 //
 /// \file FileSystem.cpp
 /// \brief file system implementation
-/// Parts of this file's code was taken from Exult
+/// \details Parts of this file's code was taken from Exult
 //
 #include <cerrno>
 #include "Base.hpp"

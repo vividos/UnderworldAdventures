@@ -18,7 +18,7 @@
 //
 /// \file MouseCursor.hpp
 /// \brief mouse cursor
-/// Lightweight mouse cursor class that wraps functionality needed for
+/// \details Lightweight mouse cursor class that wraps functionality needed for
 /// every screen that shows a cursor, nothing more, nothing less. All
 /// texture/graphic options must be set by the user of the class.
 //

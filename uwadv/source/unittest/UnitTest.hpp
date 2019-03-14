@@ -18,7 +18,7 @@
 //
 /// \file UnitTest.hpp
 /// \brief unit test implementation
-/// Unit testing is used to verify that Underworld Adventures and its
+/// \details Unit testing is used to verify that Underworld Adventures and its
 /// components are working and stay working. There should be a test for all
 /// classes and functions that are written. If a bug is found, a test should
 /// be written (if possible) that fails. When the bug is fixed the test should

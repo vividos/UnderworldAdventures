@@ -18,7 +18,7 @@
 //
 /// \file AcknowledgementsScreen.cpp
 /// \brief acknowledgements implementation
-/// stage 0: show animation frame
+/// \details stage 0: show animation frame
 /// stage 1: crossfade to next frame
 //
 #include "common.hpp"

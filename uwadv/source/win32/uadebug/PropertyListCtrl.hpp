@@ -10,8 +10,9 @@
 // any other, from this software.
 //
 /// \file PropertyListCtrl.hpp
+/// \brief Property List Control
+/// \details
 ///
-/// Property List Control
 /// Copyright (C) 2005,2019 Michael Fink
 ///
 /// A property list control presents properties to the use which the user may

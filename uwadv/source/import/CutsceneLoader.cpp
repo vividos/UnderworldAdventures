@@ -18,7 +18,7 @@
 //
 /// \file CutsceneLoader.cpp
 /// \brief cutscenes loader
-/// for more infos about the cutscene format, see the file docs/uw-formats.txt
+/// \details for more infos about the cutscene format, see the file docs/uw-formats.txt
 //
 #include "Import.hpp"
 #include "Cutscene.hpp"

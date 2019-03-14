@@ -18,7 +18,7 @@
 //
 /// \file Font.cpp
 /// \brief font creation and handling
-/// functions to create a image from a string, in a specific font. fonts are
+/// \details functions to create a image from a string, in a specific font. fonts are
 /// loaded in Font::init() (in resource/fontloader.cpp).
 ///
 /// font pixels are stored in an array, which can be accessed like this:

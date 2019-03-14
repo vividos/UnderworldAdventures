@@ -18,7 +18,7 @@
 //
 /// \file PhysicsModel.cpp
 /// \brief game physics implementation
-/// used collision detection and response code from this paper:
+/// \details used collision detection and response code from this paper:
 /// http://www.peroxide.dk/papers/collision/collision.pdf
 /// previous document:
 /// http://www.peroxide.dk/download/tutorials/tut10/pxdtut10.html
