@@ -55,7 +55,6 @@ extern "C"
 __declspec(dllexport)
 void uadebug_start(void* debugClient)
 {
-   // init all sort of stuff
 #ifdef _DEBUG
    ::_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
@@ -80,6 +79,7 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID /*lpReserved*/)
 
       HRESULT res = _Module.Init(NULL, hInstance);
       ATLASSERT(SUCCEEDED(res));
+      res;
    }
    else if (dwReason == DLL_PROCESS_DETACH)
    {
