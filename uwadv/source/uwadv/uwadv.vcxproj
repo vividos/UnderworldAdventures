@@ -68,6 +68,9 @@
       <Command>if not exist "$(OutDir)uwadv.cfg" copy "$(SolutionDir)source\win32\uwadv.cfg" "$(OutDir)uwadv.cfg"</Command>
       <Message>Copying uwadv.cfg...</Message>
     </PostBuildEvent>
+    <Manifest>
+      <AdditionalManifestFiles>$(SolutionDir)source\win32\commctrl6.manifest %(AdditionalManifestFiles)</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -84,6 +87,9 @@
       <Message>Copying uwadv.cfg...</Message>
       <Command>if not exist "$(OutDir)uwadv.cfg" copy "$(SolutionDir)source\win32\uwadv.cfg" "$(OutDir)uwadv.cfg"</Command>
     </PostBuildEvent>
+    <Manifest>
+      <AdditionalManifestFiles>$(SolutionDir)source\win32\commctrl6.manifest %(AdditionalManifestFiles)</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DebugServer.cpp" />
