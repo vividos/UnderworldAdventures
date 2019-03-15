@@ -95,6 +95,7 @@ extern CAppModule _Module;
 #include <SciLexer.h>
 
 // Underworld Adventures includes
+#include "common.hpp"
 #include "uwadv/DebugServer.hpp"
 
 

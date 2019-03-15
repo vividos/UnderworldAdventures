@@ -28,7 +28,6 @@
 
 // get rid of warnings
 #ifdef _MSC_VER
-# pragma warning(disable: 4290) // C++ Exception Specification ignored
 # pragma warning(disable: 4244) // conversion from 'x' to 'y', possible loss of data
 # pragma warning(disable: 4100) // unreferenced formal parameter
 #endif

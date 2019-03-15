@@ -336,10 +336,10 @@ bool Inventory::DropFloatingObject(Uint16 containerPos, Uint16 objectPos)
    if (containerPos == c_inventorySlotNoItem)
    {
       // must be a topmost slot or paperdoll pos, or "no item" pos
-      UaAssert(objectPos < Underworld::slotMax || objectPos == c_inventorySlotNoItem);
+      UaAssert(objectPos < ::Underworld::slotMax || objectPos == c_inventorySlotNoItem);
 
       // dropping to topmost slot or paperdoll?
-      if (objectPos < Underworld::slotMax)
+      if (objectPos < ::Underworld::slotMax)
       {
          // just drop on existing object
          return DropOnObject(containerPos, objectPos);

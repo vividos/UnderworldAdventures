@@ -230,13 +230,13 @@ void ObjectList::Load(Base::Savegame& sg)
 
       // generate proper object ptr, depending on object type
       ObjectPtr& object = m_objectList[tileIndex];
-      if (objectType == Underworld::objectNone)
+      if (objectType == ::Underworld::objectNone)
          object.reset();
       else
-         if (objectType == Underworld::objectNormal)
+         if (objectType == ::Underworld::objectNormal)
             object = ObjectPtr(new Object);
          else
-            if (objectType == Underworld::objectNpc)
+            if (objectType == ::Underworld::objectNpc)
                object = ObjectPtr(new NpcObject);
 
       // load contents
