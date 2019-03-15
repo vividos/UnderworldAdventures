@@ -31,7 +31,7 @@ public:
    virtual ~PhysicsBody() {}
 
    /// sets new elapsed time; used at the begin of tracking this object
-   virtual void SetNewElapsedTime(double elapsedTime) { elapsedTime; }
+   virtual void SetNewElapsedTime(double elapsedTime) { UNUSED(elapsedTime); }
 
    /// returns body position of the center
    virtual Vector3d GetPosition() = 0;

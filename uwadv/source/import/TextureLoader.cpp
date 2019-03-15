@@ -60,7 +60,8 @@ void Import::TextureLoader::LoadTextures(
    Uint32 fileLength = file.FileLength();
 
    Uint8 value = file.Read8(); // always 2 (.tr)
-   UaAssert(value == 2); value;
+   UaAssert(value == 2);
+   UNUSED(value);
 
    unsigned int xyres = file.Read8(); // x and y resolution (square textures)
 

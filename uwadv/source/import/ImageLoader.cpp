@@ -282,7 +282,8 @@ void ImageLoader::LoadImageGr(IndexedImage& image, const char* imageName,
 
    // read in toc
    Uint8 id = file.Read8(); // always 1 for .gr files
-   UaAssert(id == 1); id;
+   UaAssert(id == 1);
+   UNUSED(id);
 
    Uint16 entries = file.Read16();
 
@@ -333,7 +334,8 @@ void ImageLoader::LoadImageGrList(std::vector<IndexedImage>& imageList,
 
    // read in toc
    Uint8 id = file.Read8(); // always 1
-   UaAssert(id == 1); id;
+   UaAssert(id == 1);
+   UNUSED(id);
 
    Uint16 entries = file.Read16();
 

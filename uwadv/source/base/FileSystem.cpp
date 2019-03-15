@@ -303,7 +303,7 @@ void Base::FileSystem::RecursiveRemoveFolder(const std::string& pathname)
          }
          catch (const Base::Exception& ex)
          {
-            ex;
+            UNUSED(ex);
          }
       }
       else
@@ -321,7 +321,7 @@ void Base::FileSystem::RecursiveRemoveFolder(const std::string& pathname)
    }
    catch (const Base::Exception& ex)
    {
-      ex;
+      UNUSED(ex);
    }
 }
 

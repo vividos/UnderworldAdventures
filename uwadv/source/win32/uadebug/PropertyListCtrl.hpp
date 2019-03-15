@@ -271,7 +271,12 @@ namespace PropertyList
       virtual void SetProperty(unsigned int propertyItemId, const CString& propertyValue) = 0;
 
       /// verifies if property value for given property id is correct
-      virtual bool VerifyProperty(unsigned int propertyItemId, const CString& propertyValue) { propertyItemId; propertyValue; return true; }
+      virtual bool VerifyProperty(unsigned int propertyItemId, const CString& propertyValue)
+      {
+         (void)propertyItemId;
+         (void)propertyValue;
+         return true;
+      }
    };
 
 
@@ -506,8 +511,8 @@ namespace PropertyList
       void DrawPropertyValueItem(unsigned int item, CDCHandle dc, UINT itemState);
 
       // virtual methods from IInplaceParentCallback
-      virtual bool EndLabelEdit(const CString& value);
-      virtual void NoticeFinish(IInplaceEditControl* inplaceEdit);
+      virtual bool EndLabelEdit(const CString& value) override;
+      virtual void NoticeFinish(IInplaceEditControl* inplaceEdit) override;
 
    protected:
       /// normal text

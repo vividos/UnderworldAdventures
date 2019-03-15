@@ -216,7 +216,7 @@ void AudioManager::StopSound()
 /// \todo implement
 void AudioManager::PlaySoundEffect(Audio::SoundEffectType sfxType)
 {
-   sfxType;
+   UNUSED(sfxType);
 }
 
 /// Starts playing back a sound track from the music playlist. Midi files with

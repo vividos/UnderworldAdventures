@@ -477,7 +477,8 @@ Uint16 ConversationScreen::ExternalFunc(const char* the_funcname,
    std::string funcname(the_funcname);
 
    Uint16 argpos = stack.GetStackPointer();
-   Uint16 argcount = stack.At(argpos); argcount;
+   Uint16 argcount = stack.At(argpos);
+   UNUSED(argcount);
    argpos--;
 
    Uint16 result_register = 0xffff;

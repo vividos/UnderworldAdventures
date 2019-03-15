@@ -79,7 +79,7 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID /*lpReserved*/)
 
       HRESULT res = _Module.Init(NULL, hInstance);
       ATLASSERT(SUCCEEDED(res));
-      res;
+      UNUSED(res);
    }
    else if (dwReason == DLL_PROCESS_DETACH)
    {

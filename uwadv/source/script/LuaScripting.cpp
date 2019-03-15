@@ -619,6 +619,7 @@ void LuaScripting::GetCurrentPos(unsigned int& sourcefileIndex,
    unsigned int& sourcefileLine, unsigned int& codePosition,
    bool& isSourcefileValid)
 {
+   UNUSED(codePosition);
    sourcefileIndex = m_currentPositionSourcefileIndex;
    sourcefileLine = m_currentPositionSourcefileLine;
    isSourcefileValid = true;
@@ -987,6 +988,7 @@ int LuaScripting::objlist_get_info(lua_State* L)
 /// \todo implement
 int LuaScripting::objlist_set_info(lua_State* L)
 {
+   UNUSED(L);
    return 0;
 }
 

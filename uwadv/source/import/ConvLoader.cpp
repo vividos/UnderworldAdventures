@@ -104,11 +104,13 @@ bool Import::LoadConvCode(Conv::CodeVM& vm, Base::Settings& settings, Base::Reso
 
    Uint32 unknown1 = file.Read32(); // always 0x00000828
    UaAssert(unknown1 == 0x0828);
+   UNUSED(unknown1);
 
    Uint16 codeSize = file.Read16();
    Uint16 unknown2 = file.Read16(); // always 0x0000
    Uint16 unknown3 = file.Read16(); // always 0x0000
-   unknown1; unknown2; unknown3;
+   UNUSED(unknown2);
+   UNUSED(unknown3);
 
    Uint16 stringBlock = file.Read16(); // string block to use
    vm.SetStringBlock(stringBlock);
@@ -179,7 +181,7 @@ void Import::LoadConvCodeImportedFunctions(Conv::CodeVM& vm, Base::File& file)
       Uint16 functionUnknown1 = file.Read16(); // always seems to be 1
       Uint16 importType = file.Read16();
       Uint16 returnType = file.Read16();
-      functionUnknown1;
+      UNUSED(functionUnknown1);
 
       // fill imported item struct
       Conv::ImportedItem importedItem;

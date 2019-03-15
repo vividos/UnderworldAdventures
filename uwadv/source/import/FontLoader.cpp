@@ -64,7 +64,7 @@ void Import::FontLoader::LoadFont(Base::ResourceManager& resourceManager, const 
    // read in header
    Uint16 dummy;
    dummy = file.Read16();
-   dummy;
+   UNUSED(dummy);
 
    font.m_charSize = file.Read16();
    font.m_spaceWidth = file.Read16();

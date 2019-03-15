@@ -32,6 +32,12 @@
 # pragma warning(disable: 4100) // unreferenced formal parameter
 #endif
 
+#ifndef UNUSED
+/// Use this to mark any (potentially) unused function parameter names in the
+/// function body.
+#define UNUSED(x) ((void)(x))
+#endif
+
 // SDL includes
 #include <SDL.h>
 #include <SDL_opengl.h>

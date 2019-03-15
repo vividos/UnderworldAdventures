@@ -179,5 +179,5 @@ Vector3d PlayerPhysicsObject::GetGravityForce()
 void PlayerPhysicsObject::HitFloor()
 {
    double fallHeight = m_fallHeightStart - m_player.GetHeight();
-   fallHeight;
+   UNUSED(fallHeight);
 }

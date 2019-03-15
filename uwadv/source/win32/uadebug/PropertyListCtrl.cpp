@@ -656,11 +656,11 @@ bool PropertyListCtrlBase::EndLabelEdit(const CString& value)
    return 1 == nRet;
 }
 
-// TODO pass pInplaceEdit at all?
-void PropertyListCtrlBase::NoticeFinish(IInplaceEditControl* pInplaceEdit)
+// TODO pass inplaceEdit at all?
+void PropertyListCtrlBase::NoticeFinish(IInplaceEditControl* inplaceEdit)
 {
-   pInplaceEdit;
-   ATLASSERT(m_inplaceEdit == pInplaceEdit);
+   (void)inplaceEdit;
+   ATLASSERT(m_inplaceEdit == inplaceEdit);
 
    PostMessage(PLM_FINISH_INPLACE, 0, reinterpret_cast<LPARAM>(this));
 }

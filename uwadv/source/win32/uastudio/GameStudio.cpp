@@ -279,8 +279,8 @@ void GameStudio::DoneGame()
 /// uastudio main function
 int main(int argc, char* argv[])
 {
-   argc;
-   argv;
+   UNUSED(argc);
+   UNUSED(argv);
 
 #ifndef HAVE_DEBUG // in debug mode the debugger catches exceptions
    try
@@ -295,7 +295,7 @@ int main(int argc, char* argv[])
    }
    catch (const Base::Exception& ex)
    {
-      std::string text("caught Base::Exception:\n\r");
+      std::string text("caught Base::Exception: %s\n\r", ex.what());
       text.append(ex.what());
       UaTrace(text.c_str());
 
@@ -303,8 +303,7 @@ int main(int argc, char* argv[])
    }
    catch (const std::exception& ex)
    {
-      ex;
-      UaTrace("caught std::exception\n");
+      UaTrace("caught std::exception: %s\n", ex.what());
       SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Underworld Adventures Studio", "std::exception", NULL);
    }
 #endif

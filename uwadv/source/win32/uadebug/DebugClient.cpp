@@ -304,11 +304,11 @@ unsigned int IDebugClientCodeDebugger::GetCallstackHeight() const
    return 0;
 }
 
-void IDebugClientCodeDebugger::GetCallstackInfo(unsigned int nAtLevel, CallstackInfo& callstackInfo) const
+void IDebugClientCodeDebugger::GetCallstackInfo(unsigned int atLevel, CallstackInfo& callstackInfo) const
 {
-   ATLASSERT(nAtLevel < GetCallstackHeight());
-   nAtLevel;
-   callstackInfo;
+   ATLASSERT(atLevel < GetCallstackHeight());
+   UNUSED(atLevel);
+   UNUSED(callstackInfo);
    // TODO implement
 }
 
@@ -345,9 +345,9 @@ bool IDebugClientCodeDebugger::GetSourceFromCodePos(unsigned int codePos,
 {
    unsigned int sourcefileIndex = 0; // TODO
    filename = GetSourceFileName(sourcefileIndex);
-   codePos;
-   lineNumber;
-   lineDisplacement;
+   UNUSED(codePos);
+   UNUSED(lineNumber);
+   UNUSED(lineDisplacement);
 
    // TODO implement
    return false;
@@ -454,16 +454,16 @@ CString DebugClient::GetLevelName(unsigned int level) const
    return _T("unknown");
 }
 
-void DebugClient::InsertNewLevel(unsigned int before_level)
+void DebugClient::InsertNewLevel(unsigned int beforeLevel)
 {
-   before_level;
+   UNUSED(beforeLevel);
    // TODO implement
 }
 
 void DebugClient::MoveLevel(unsigned int level, unsigned int level_insert_point)
 {
-   level;
-   level_insert_point;
+   UNUSED(level);
+   UNUSED(level_insert_point);
    // TODO implement
 }
 

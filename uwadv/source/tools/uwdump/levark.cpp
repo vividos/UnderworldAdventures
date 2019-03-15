@@ -276,8 +276,8 @@ void DumpLevelArchive::start(std::string& basepath, std::string& param, bool isU
          {
             for (unsigned int i = 0; i < 64 * 64; i++)
             {
-               Uint16 tileword1 = file.Read16(); tileword1;
-               Uint16 tileword2 = file.Read16(); tileword2;
+               Uint16 tileword1 = file.Read16(); UNUSED(tileword1);
+               Uint16 tileword2 = file.Read16(); UNUSED(tileword2);
 
                Uint16 index = GetBits(tileword2, 6, 10);
                tilemap_links.push_back(index);

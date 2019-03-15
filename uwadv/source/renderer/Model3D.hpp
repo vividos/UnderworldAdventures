@@ -48,14 +48,18 @@ public:
    virtual void Render(const Underworld::Object& object, TextureManager& textureManager,
       Vector3d& base)
    {
-      object; textureManager; base;
+      UNUSED(object);
+      UNUSED(textureManager);
+      UNUSED(base);
    }
 
    /// returns bounding triangles for collision detection
    virtual void GetBoundingTriangles(const Underworld::Object& object,
       Vector3d& base, std::vector<Triangle3dTextured>& allTriangles)
    {
-      object; base; allTriangles;
+      UNUSED(object);
+      UNUSED(base);
+      UNUSED(allTriangles);
    }
 };
 

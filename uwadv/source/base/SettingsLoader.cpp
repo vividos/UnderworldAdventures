@@ -118,8 +118,8 @@ namespace Detail
             }
             catch (const Base::FileSystemException& ex)
             {
-               ex;
-               UaTrace("couldn't load config file: %s\n", configFilename.c_str());
+               UNUSED(ex);
+               UaTrace("couldn't load config file: %s (%s)\n", configFilename.c_str(), ex.what());
             }
          }
       }

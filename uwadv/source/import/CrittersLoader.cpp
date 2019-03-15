@@ -209,7 +209,7 @@ void Import::CrittersLoader::LoadCritterFrames(Critter& critter, const char* fil
          {
             unsigned int noffsets = file.Read8();
             unsigned int unknown1 = file.Read8();
-            unknown1;
+            UNUSED(unknown1);
 
             if (pass == 0)
             {
@@ -371,6 +371,6 @@ void Import::CrittersLoader::LoadCrittersUw2(std::vector<Critter>& allCritters,
    Palette256Ptr palette0)
 {
    // TODO implement
-   allCritters;
-   palette0;
+   UNUSED(allCritters);
+   UNUSED(palette0);
 }
