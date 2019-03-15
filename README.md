@@ -33,4 +33,4 @@ binaries of the latest build:
 
 The project is occasionally checked with SonarCloud:
 
-[![Quality Gate](https://sonarcloud.io/api/badges/gate?key=UnderworldAdventures)](https://sonarcloud.io/dashboard?id=UnderworldAdventures)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=UnderworldAdventures&metric=alert_status)](https://sonarcloud.io/dashboard?id=UnderworldAdventures)
