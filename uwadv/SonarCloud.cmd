@@ -25,6 +25,7 @@ set PATH=%PATH%;%SONARQUBE%\build-wrapper-win-x86;%SONARQUBE%\sonar-scanner-msbu
 REM
 REM Build using SonarQube scanner for MSBuild
 REM
+rmdir .\.sonarqube /s /q 2> nul
 rmdir .\bw-output /s /q 2> nul
 
 SonarScanner.MSBuild.exe begin ^
@@ -38,7 +39,7 @@ SonarScanner.MSBuild.exe begin ^
 REM
 REM Rebuild Release|Win32
 REM
-build-wrapper-win-x86-64.exe --out-dir bw-output msbuild uwadv.sln /m /property:Configuration=SonarCloud,Platform=Win32 /target:Rebuild
+build-wrapper-win-x86-64.exe --out-dir bw-output msbuild uwadv.sln /m /property:Configuration=SonarCloud,Platform=Win32 /target:Restore;Rebuild
 
 SonarScanner.MSBuild.exe end /d:"sonar.login=%SONARLOGIN%"
 
