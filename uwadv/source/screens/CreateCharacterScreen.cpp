@@ -42,7 +42,7 @@ extern "C"
 {
 #include "lua.h"
 #include "lualib.h"
-#include "luadebug.h"
+#include "lauxlib.h"
 }
 
 /// time needed to fade in/out text
@@ -364,9 +364,9 @@ void CreateCharacterScreen::InitLuaScript()
    lua_State* L = m_lua.GetLuaState();
 
    // open lualib libraries
-   lua_baselibopen(L);
-   lua_strlibopen(L);
-   lua_mathlibopen(L);
+   luaL_requiref(L, "_G", luaopen_base, 1); lua_pop(L, 1);
+   luaL_requiref(L, LUA_STRLIBNAME, luaopen_string, 1); lua_pop(L, 1);
+   luaL_requiref(L, LUA_MATHLIBNAME, luaopen_math, 1); lua_pop(L, 1);
 
    // register C functions
    lua_register(L, "cchar_do_action", cchar_do_action);
@@ -394,10 +394,11 @@ void CreateCharacterScreen::cchar_global(int globalaction, int seed)
    lua_getglobal(L, "cchar_global");
    lua_pushnumber(L, globalaction);
    lua_pushnumber(L, seed);
-   int ret = lua_call(L, 2, 0);
+   int ret = lua_pcall(L, 2, 0, 0);
    if (ret != 0)
    {
-      UaTrace("Lua function call cchar_global ended with error code %u\n", ret);
+      const char* errorText = lua_tostring(L, -1);
+      UaTrace("Lua function call cchar_global ended with error code %u: %s\n", ret, errorText);
       m_isEnded = true;
    }
 }
@@ -453,7 +454,7 @@ void CreateCharacterScreen::DoAction()
       if (m_game.GetSettings().GetBool(Base::settingUwadvFeatures))
          m_highlightTextColor = 162; // orange, palette #3
 
-      int ic = lua_getn(L, 6);
+      int ic = lua_rawlen(L, 6);
       if (ic > 5) ic = 5;
       for (int i = 0; i < ic; i++)
       {
@@ -479,7 +480,7 @@ void CreateCharacterScreen::DoAction()
       }
       else
       {
-         m_buttonGroupButtonCount = lua_getn(L, 4);
+         m_buttonGroupButtonCount = lua_rawlen(L, 4);
          if ((m_buttonGroupButtonType == buttonInput) && (m_buttonGroupButtonCount > 0))
          {
             m_inputText.erase();
@@ -739,14 +740,16 @@ void CreateCharacterScreen::PressButton(int button)
    if (m_buttonGroupButtonType == buttonInput)
    {
       lua_pushstring(L, m_inputText.c_str());
-      ret = lua_call(L, 2, 0);
+      ret = lua_pcall(L, 2, 0, 0);
    }
    else
-      ret = lua_call(L, 1, 0);
+      ret = lua_pcall(L, 1, 0, 0);
+
    if (ret != 0)
    {
-      UaTrace("Lua function call cchar_buttonclick(0x%08x,%u) ended with error code %u\n",
-         this, button, ret);
+      const char* errorText = lua_tostring(L, -1);
+      UaTrace("Lua function call cchar_buttonclick(0x%08x,%u) ended with error code %u: %s\n",
+         this, button, ret, errorText);
       m_isEnded = true;
    }
 }

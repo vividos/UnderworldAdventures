@@ -29,12 +29,12 @@
 
 extern "C"
 {
-#include "lua/include/lua.h"
-#include "lua/include/lualib.h"
-#include "lua/include/luadebug.h"
-
-#include "lua/src/lstate.h"
-#include "lua/src/lobject.h"
+#include "lua.h"
+#include "lualib.h"
+#include "ldebug.h"
+#include "lstate.h"
+#include "lobject.h"
+#include "lauxlib.h"
 }
 
 const char* LuaScripting::s_selfName = "_scripting_self";
@@ -44,20 +44,61 @@ LuaScripting::LuaScripting()
 {
 }
 
+int OnLuaPanic(lua_State* L)
+{
+   const char* errorText = lua_tostring(L, -1);
+   lua_pop(L, 1);
+   UaTrace("Lua panic handler reported error: %s", errorText);
+
+   for (int stackIndex = 0;; stackIndex++)
+   {
+      lua_Debug debug = { 0 };
+
+      int ret = lua_getstack(L, stackIndex, &debug);
+      if (ret == 0)
+         break;
+
+      try
+      {
+         lua_getinfo(L, "Sl", &debug);
+      }
+      catch (...)
+      {
+         // may throw exception of type  struct lua_longjmp
+         UaTrace("exception during lua_getinfo()\n");
+      }
+
+      try
+      {
+         UaTrace("%hs:%u\n",
+            debug.short_src,
+            debug.currentline);
+      }
+      catch (...)
+      {
+         UaTrace("exception during formatting debug info()\n");
+      }
+   }
+
+   return 0;
+}
+
 void LuaScripting::Init(IBasicGame* game)
 {
    m_game = game;
 
    // init lua state
-   L = lua_open(256);
+   L = luaL_newstate();
+
+   lua_atpanic(L, OnLuaPanic);
 
    // open lualib libraries
-   lua_baselibopen(L);
-   lua_strlibopen(L);
-   lua_mathlibopen(L);
+   luaopen_base(L);
+   luaopen_string(L);
+   luaopen_math(L);
 
    // set "self" pointer userdata
-   lua_pushuserdata(L, this);
+   lua_pushlightuserdata(L, this);
    lua_setglobal(L, s_selfName);
 
    RegisterFunctions();
@@ -126,13 +167,16 @@ void LuaScripting::Done()
 
 void LuaScripting::CheckedCall(int nargs, int nresults)
 {
-   lua_setcallhook(L, DebugHookCall);
-   lua_setlinehook(L, DebugHookLine);
+   lua_sethook(L, DebugHook, LUA_MASKCALL | LUA_MASKRET | LUA_MASKLINE, 0);
 
-   lua_call(L, nargs, nresults);
+   int ret = lua_pcall(L, nargs, nresults, 0);
+   if (ret != 0)
+   {
+      const char* errorText = lua_tostring(L, -1);
+      UaTrace("Error in Lua function call; error code %u: %s\n", ret, errorText);
+   }
 
-   lua_setcallhook(L, NULL);
-   lua_setlinehook(L, NULL);
+   lua_sethook(L, NULL, 0, 0);
 }
 
 void LuaScripting::InitNewGame()
@@ -303,14 +347,17 @@ int LuaScripting::LoadScript(Base::SDL_RWopsPtr rwops, const char* chunkname)
       buffer.resize(len + 1, 0);
 
       SDL_RWread(rwops.get(), &buffer[0], len, 1);
-      buffer[len] = 0;
    }
 
    // execute script
-   int ret = lua_dobuffer(L, &buffer[0], len, chunkname);
+   int ret = luaL_loadbuffer(L, buffer.data(), len, chunkname);
 
-   if (ret != 0)
+   if (ret != LUA_OK)
       UaTrace("Lua script loading ended with error code %u\n", ret);
+
+   ret = lua_pcall(L, 0, LUA_MULTRET, 0);
+   if (ret != LUA_OK)
+      UaTrace("Lua script calling ended with error code %u\n", ret);
 
    return ret;
 }
@@ -325,7 +372,7 @@ LuaScripting& LuaScripting::GetScriptingFromSelf(lua_State* L)
    LuaScripting* self = NULL;
 
    lua_getglobal(L, s_selfName);
-   if (!lua_isuserdata(L, -1))
+   if (!lua_islightuserdata(L, -1))
       throw Base::Exception("'self' parameter wasn't set by LuaScripting");
 
    // get pointer to underworld
@@ -339,7 +386,7 @@ LuaScripting& LuaScripting::GetScriptingFromSelf(lua_State* L)
    return *self;
 }
 
-void LuaScripting::DebugHookCall(lua_State* L, lua_Debug* ar)
+void LuaScripting::DebugHook(lua_State* L, lua_Debug* ar)
 {
    lua_getstack(L, 0, ar);
    lua_getinfo(L, "Snlu", ar);
@@ -354,20 +401,9 @@ void LuaScripting::DebugHookCall(lua_State* L, lua_Debug* ar)
    script.DebugHook(ar);
 }
 
-void LuaScripting::DebugHookLine(lua_State* L, lua_Debug* ar)
-{
-   lua_getstack(L, 0, ar);
-   lua_getinfo(L, "Snlu", ar);
-
-   LuaScripting& script = GetScriptingFromSelf(L);
-   UaAssert(script.GetLuaState() == L);
-
-   script.DebugHook(ar);
-}
-
 void LuaScripting::DebugHook(lua_Debug* ar)
 {
-   UaTrace("debug: event=%s, name=%s, start=%d, line=%d, in=%s\n",
+   UaTrace("debug: event=%d, name=%s, start=%d, line=%d, in=%s\n",
       ar->event, ar->name, ar->linedefined, ar->currentline, ar->source);
 
    if (ar->source != NULL)
@@ -399,13 +435,13 @@ void LuaScripting::DebugHook(lua_Debug* ar)
          break;
 
       case codeDebuggerCommandStepOver:
-         if (0 == strcmp(ar->event, "line"))
+         if (ar->event == LUA_HOOKLINE)
          {
             if (m_stepOverFunctionCallDepth == 0)
                SetDebuggerState(codeDebuggerStateBreak);
          }
          else
-            if (0 == strcmp(ar->event, "call"))
+            if (ar->event == LUA_HOOKCALL)
             {
                if (GetDebuggerState() == codeDebuggerStateRunning)
                   m_stepOverFunctionCallDepth++; //
@@ -413,7 +449,7 @@ void LuaScripting::DebugHook(lua_Debug* ar)
                   m_stepOverFunctionCallDepth = 0; // start of stepping over a function
             }
             else
-               if (0 == strcmp(ar->event, "return"))
+               if (ar->event == LUA_HOOKRET)
                {
                   --m_stepOverFunctionCallDepth; // returning from function
                   if (m_stepOverFunctionCallDepth == 0)
@@ -426,14 +462,14 @@ void LuaScripting::DebugHook(lua_Debug* ar)
          break;
 
       case codeDebuggerCommandStepInto:
-         if (0 == strcmp(ar->event, "line"))
+         if (ar->event == LUA_HOOKLINE)
          {
             SetDebuggerState(codeDebuggerStateBreak);
          }
          break;
 
       case codeDebuggerCommandStepOut:
-         if (0 == strcmp(ar->event, "return"))
+         if (ar->event == LUA_HOOKRET)
          {
             // when returning set "step over" command to stop at the next line
             SetDebuggerState(codeDebuggerStateRunning);
@@ -542,7 +578,7 @@ DebugServerCodeDebuggerType LuaScripting::GetDebuggerType()
 /// The Lua struct Proto contains all informations about a function prototype.
 /// It also contains line number info when a source file was loaded. The
 /// format of the "lineinfo" array is as follows:
-/// The lineinfo array contains "nlineinfo" items, which is always an odd
+/// The lineinfo array contains "sizelineinfo" items, which is always an odd
 /// number. The last item contains MAX_INT to signal an end. The list contains
 /// pairs of int values. The first one describes a line number and is coded to
 /// save space. If the value is negative, it is a relative value to the
@@ -555,10 +591,10 @@ void LuaScripting::PrepareDebugInfo()
 {
    // retrieve debug info from lua struct
    // go through list of all function prototype structures
-   Proto* proto = L->rootproto;
+   Proto* proto = NULL; // L->rootproto; TODO how to get Proto from L?
    while (proto != NULL)
    {
-      std::string filename(proto->source->str);
+      std::string filename(getstr(proto->source));
 
       // find line numbers set
       std::map<std::string, std::set<unsigned int> >::iterator iter =
@@ -574,7 +610,7 @@ void LuaScripting::PrepareDebugInfo()
       // go through all lineinfo value pairs
       int* lineinfo = proto->lineinfo;
       int curline = 0;
-      for (int n = 0; n < proto->nlineinfo && lineinfo[n] != MAX_INT; n += 2)
+      for (int n = 0; n < proto->sizelineinfo && lineinfo[n] != MAX_INT; n += 2)
       {
          // value negative? then add offset
          if (lineinfo[n] < 0)
@@ -583,7 +619,7 @@ void LuaScripting::PrepareDebugInfo()
          iter->second.insert(static_cast<unsigned int>(curline));
       }
 
-      proto = proto->next;
+      // proto = proto->next; // TODO how to advance?
    }
 }
 

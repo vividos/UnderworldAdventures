@@ -31,7 +31,7 @@ extern "C"
 {
 #include "lua.h"
 #include "lualib.h"
-#include "luadebug.h"
+#include "ldebug.h"
 }
 
 /// frames per second for cutscene animation
@@ -110,17 +110,18 @@ void CutsceneViewScreen::Init()
    lua_State* L = m_lua.GetLuaState();
 
    // set "this" pointer
-   lua_pushuserdata(L, this);
+   lua_pushlightuserdata(L, this);
    lua_setglobal(L, s_luaThisPointerName);
 
    // call "cuts_init(cutscene)"
    lua_getglobal(L, "cuts_init");
    lua_pushnumber(L, static_cast<double>(m_cutsceneNumber));
-   int ret = lua_call(L, 1, 0);
+   int ret = lua_pcall(L, 1, 0, 0);
    if (ret != 0)
    {
-      UaTrace("Lua function call cuts_init(%u) ended with error code %u\n",
-         m_cutsceneNumber, ret);
+      const char* errorText = lua_tostring(L, -1);
+      UaTrace("Lua function call cuts_init(%u) ended with error code %u: %s\n",
+         m_cutsceneNumber, ret, errorText);
       m_isEnded = true;
    }
 
@@ -315,11 +316,12 @@ void CutsceneViewScreen::Tick()
    {
       lua_getglobal(m_lua.GetLuaState(), "cuts_tick");
       lua_pushnumber(m_lua.GetLuaState(), ticktime);
-      int ret = lua_call(m_lua.GetLuaState(), 1, 0);
+      int ret = lua_pcall(m_lua.GetLuaState(), 1, 0, 0);
       if (ret != 0)
       {
-         UaTrace("Lua function call cuts_tick(%3.2f) ended with error code %u\n",
-            ticktime, ret);
+         const char* errorText = lua_tostring(m_lua.GetLuaState(), -1);
+         UaTrace("Lua function call cuts_tick(%3.2f) ended with error code %u: %s\n",
+            ticktime, ret, errorText);
          m_isEnded = true;
          return;
       }
@@ -528,7 +530,7 @@ int CutsceneViewScreen::cuts_do_action(lua_State* L)
    // check for "self" parameter being userdata
 
    lua_getglobal(L, s_luaThisPointerName);
-   if (lua_isuserdata(L, -1))
+   if (lua_islightuserdata(L, -1))
    {
       // get pointer to screen
       CutsceneViewScreen *self =

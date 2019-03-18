@@ -69,8 +69,7 @@ protected:
    /// returns scripting class from Lua state
    static LuaScripting& GetScriptingFromSelf(lua_State* L);
 
-   static void DebugHookCall(lua_State* L, lua_Debug* ar);
-   static void DebugHookLine(lua_State* L, lua_Debug* ar);
+   static void DebugHook(lua_State* L, lua_Debug* ar);
 
    void DebugHook(lua_Debug* ar);
 
