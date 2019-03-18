@@ -1,5 +1,7 @@
 /*
-Copyright (C) 2003-2005  The Pentagram Team
+Code originally written by Max Horn for ScummVM,
+minor tweaks by various other people of the ScummVM, Pentagram
+and Exult teams.
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,6 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+
 #ifndef COREAUDIOMIDIDRIVER_H_INCLUDED
 #define COREAUDIOMIDIDRIVER_H_INCLUDED
 
@@ -24,17 +27,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "LowLevelMidiDriver.h"
 
-#include <AudioUnit/AudioUnit.h>
-#include <CoreMIDI/CoreMIDI.h>
+#include <AudioToolbox/AUGraph.h>
+#include <CoreServices/CoreServices.h>
 
 class CoreAudioMidiDriver : public LowLevelMidiDriver
 {
-	AudioUnit au_MusicDevice;
-	AudioUnit au_output;
-
-	MIDIClientRef	mClient;
-	MIDIPortRef		mOutPort;
-	MIDIEndpointRef	mDest;
+	AUGraph _auGraph;
+	AudioUnit _synth;
 
 	static const MidiDriverDesc	desc;
 	static MidiDriver *createInstance() {
@@ -45,7 +44,6 @@ public:
 	static const MidiDriverDesc* getDesc() { return &desc; }
 
 	CoreAudioMidiDriver();
-	~CoreAudioMidiDriver();
 
 protected:
 	virtual int			open();

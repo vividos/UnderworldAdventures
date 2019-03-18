@@ -18,7 +18,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "pent_include.h"
 #include <cstring>
-#include <SDL_thread.h>
 
 #ifndef PENTAGRAM_IN_EXULT
 #include "IDataSource.h"
@@ -41,6 +40,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define LLMD_MSG_THREAD_INIT			-1	
 #define LLMD_MSG_THREAD_INIT_FAILED		-2
 #define LLMD_MSG_THREAD_EXIT			-3
+
+// If the time to wait is less than this then we yield instead of waiting on the condition variable
+// This must be great than or equal to 2
+#define LLMD_MINIMUM_YIELD_THRESHOLD 6
 
 //#define DO_SMP_TEST
 
@@ -124,7 +127,6 @@ static const uint32 all_dev_reset_base = 0x7f0000;
 static const uint32 display_base = 0x200000;	// Note, these are 7 bit!
 static const uint32 display_mem_size = 0x14;	// Display is 20 ASCII characters (32-127)
 
-
 // Convert 14 Bit base address to real
 static inline int ConvBaseToActual(uint32 address_base)
 {
@@ -137,7 +139,7 @@ using std::string;
 using std::endl;
 
 LowLevelMidiDriver::LowLevelMidiDriver() :
-	MidiDriver(), mutex(0), cbmutex(0), 
+	MidiDriver(), mutex(0), cbmutex(0),cond(0), 
 	global_volume(255), thread(0)
 {
 }
@@ -176,6 +178,7 @@ int LowLevelMidiDriver::initMidiDriver(uint32 samp_rate, bool is_stereo)
 
 	mutex = SDL_CreateMutex();
 	cbmutex = SDL_CreateMutex();
+	cond = SDL_CreateCond();
 	thread = 0;
 	sample_rate = samp_rate;
 	stereo = is_stereo;
@@ -200,9 +203,11 @@ int LowLevelMidiDriver::initMidiDriver(uint32 samp_rate, bool is_stereo)
 		perr << "Failed to initialize midi player (code: " << code << ")" << endl;
 		SDL_DestroyMutex(mutex);
 		SDL_DestroyMutex(cbmutex);
+		SDL_DestroyCond(cond);
 		thread = 0;
 		mutex = 0;
 		cbmutex = 0;
+		cond = 0;
 	}
 	else
 		initialized = true;
@@ -223,9 +228,11 @@ void LowLevelMidiDriver::destroyMidiDriver()
 
 	SDL_DestroyMutex(mutex);
 	SDL_DestroyMutex(cbmutex);
+	SDL_DestroyCond(cond);
 	cbmutex = 0;
 	mutex = 0;
 	thread = 0;
+	cond = 0;
 
 	giveinfo();
 }
@@ -389,6 +396,7 @@ void LowLevelMidiDriver::sendComMessage(ComMessage& message)
 {
 	lockComMessage();
 	messages.push(message);
+	SDL_CondSignal(cond);
 	unlockComMessage();
 }
 
@@ -517,7 +525,52 @@ int LowLevelMidiDriver::threadMain()
 	{
 		xmidi_clock = SDL_GetTicks()*6;
 		if (playSequences()) break;
-		yield();
+
+		sint32 time_till_next = 0x7FFFFFFF;
+
+		for (int i = 0; i < LLMD_NUM_SEQ; i++)
+		{
+			int seq = i;
+
+			if (sequences[seq])
+			{
+				sint32 ms = sequences[seq]->timeTillNext();
+				if (ms < time_till_next) time_till_next = ms;
+			}
+		}
+
+		if (time_till_next <= LLMD_MINIMUM_YIELD_THRESHOLD)
+		{
+			bool wait = false;
+			lockComMessage();
+			if (messages.empty()) wait = true;
+			unlockComMessage();
+			if (wait) 
+			{
+				//printf("Yielding\n");
+				yield();
+				//printf("Finished Yielding\n");
+			}
+			else
+			{
+				//printf("Messages in queue, not Yielding\n");
+			}
+		}
+		else
+		{
+			lockComMessage();
+				if (messages.empty())
+				{
+					//printf("Waiting %i ms\n", time_till_next-2);
+					SDL_CondWaitTimeout(cond, mutex,time_till_next-2);
+					//printf("Finished Waiting\n");
+				}
+				else
+				{
+					//printf("Messages in queue, not waiting\n");
+				}
+			unlockComMessage();
+		}
 	}
 
 	// Display messages          0123456789ABCDEF0123
@@ -655,10 +708,10 @@ bool LowLevelMidiDriver::playSequences ()
 
 		while (sequences[seq] && !peekComMessageType())
 		{
-			sint32 time_till_next = sequences[seq]->playEvent();
+			sint32 pending_events = sequences[seq]->playEvent();
 
-			if (time_till_next > 0) break;
-			else if (time_till_next == -1)
+			if (pending_events > 0) break;
+			else if (pending_events == -1)
 			{
 				delete sequences[seq]; 
 				sequences[seq] = 0;
@@ -760,10 +813,9 @@ bool LowLevelMidiDriver::playSequences ()
 
 						playing[message.sequence] = true;
 
-						uint16 mask = sequences[message.sequence]->getChanMask();
-
 						// Allocate some channels
 						/*
+						uint16 mask = sequences[message.sequence]->getChanMask();
 						for (i = 0; i < 16; i++)
 							if (mask & (1<<i)) allocateChannel(message.sequence, i);
 						*/
@@ -903,7 +955,7 @@ void LowLevelMidiDriver::sequenceSendSysEx(uint16 sequence_id, uint8 status, con
 			uint32 timbre_unk_add_start = ConvBaseToActual(timbre_unk_base);
 			uint32 timbre_unk_add_end = timbre_unk_add_start + timbre_mem_offset(128);
 
-			uint32 sysex_size = length-(4+3+1+1);
+			//uint32 sysex_size = length-(4+3+1+1);
 
 			if (actual_address >= timbre_add_start && actual_address < timbre_add_end)
 			{

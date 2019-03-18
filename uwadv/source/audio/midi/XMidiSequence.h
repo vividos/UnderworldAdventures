@@ -42,8 +42,14 @@ public:
 	~XMidiSequence();
 
 	//! Play a single waiting event
-	//! \return ms till next event. -1 is no more events
-	sint32				playEvent();
+	//! \return <0 if there is no more events
+	//! \return 0 if there are pending events that can be played imediately
+	//! \return >0 if there are pending events in the future
+	int					playEvent();
+
+	//! Get the time till the next event
+	//! \return ms till next event (can be negative if running behind time). 
+	sint32				timeTillNext();
 
 	//! Set a new volume to use
 	//! \param new_vol the new volume level (0-255)

@@ -134,7 +134,7 @@ void XMidiSequence::ChannelShadow::reset()
 	xbank = 0;
 }
 
-sint32 XMidiSequence::playEvent()
+int XMidiSequence::playEvent()
 {
 	XMidiEvent *note;
 
@@ -142,15 +142,23 @@ sint32 XMidiSequence::playEvent()
 	while ((note = notes_on.PopTime(getRealTime())) != 0)
 		handler->sequenceSendEvent(sequence_id, note->status + (note->data[0] << 8));
 
+	// No events left, but we still have notes on, so say we are still playing, if not report we've finished
+	if (!event)
+	{
+		if (notes_on.GetNotes()) return 1;
+		else return -1;
+	}
+
+	// Effectively paused, so indicate it 
+	if (speed <= 0 || paused) return 1;
+
 	// Play all waiting notes;
 	sint32 aim = ((event->time-last_tick)*5000)/speed;
 	sint32 diff = aim - getTime ();
 
-	if (diff > 5) return diff/6;	// Yes, this this 'will' return 0 if diff is small
+	if (diff > 5) return 1;
 
 	addOffset(aim);
-
-	if (paused) return 1;
 
 	last_tick = event->time;
 
@@ -237,17 +245,45 @@ sint32 XMidiSequence::playEvent()
 		// If we are not repeating, then return saying we are end
 		else
 		{
+			if (notes_on.GetNotes()) return 1;
 			return -1;
 		}
 	}
 
-	if (!event) return -1;
+	if (!event)
+	{
+		if (notes_on.GetNotes()) return 1;
+		else return -1;
+	}
 
 	aim = ((event->time-last_tick)*5000)/speed;
 	diff = aim - getTime ();
 
-	if (diff < 0) return 0;
-	else return 1;
+	if (diff < 0) return 0; // Next event is ready now!
+	return 1; 
+}
+
+sint32 XMidiSequence::timeTillNext()
+{
+	sint32 sixthoToNext = 0x7FFFFFFF; // Int max
+
+	// Time remaining on notes currently being played
+	XMidiEvent *note;
+	note = notes_on.GetNotes();
+	if (note) {
+		sint32 diff = note->ex.note_on.note_time - getRealTime();
+		if (diff < sixthoToNext) sixthoToNext = diff; 
+	}
+
+	// Time till the next event, if we are playing
+	if (speed > 0 && event && !paused)
+	{
+		sint32 aim = ((event->time-last_tick)*5000)/speed;
+		sint32 diff = aim - getTime ();
+
+		if (diff < sixthoToNext) sixthoToNext = diff;
+	}
+	return sixthoToNext/6;
 }
 
 void XMidiSequence::updateShadowForEvent(XMidiEvent *event)
@@ -322,7 +358,7 @@ void XMidiSequence::updateShadowForEvent(XMidiEvent *event)
 
 void XMidiSequence::sendEvent()
 {
-	unsigned int chan = event->status & 0xF;
+	//unsigned int chan = event->status & 0xF;
 	unsigned int type = event->status >> 4;
 	uint32 data = event->data[0] | (event->data[1] << 8);
 

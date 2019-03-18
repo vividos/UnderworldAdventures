@@ -157,6 +157,7 @@ private:
 	std::queue<ComMessage>	messages;
 	SDL_mutex				*mutex;
 	SDL_mutex				*cbmutex;
+	SDL_cond                *cond;
 	sint32					peekComMessageType();
 	void					sendComMessage(ComMessage& message);
 	void					waitTillNoComMessages();

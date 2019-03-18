@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "MidiDriver.h"
 #include "WindowsMidiDriver.h"
+//#include "CoreMidiDriver.h"
 #include "CoreAudioMidiDriver.h"
 //#include "FMOplMidiDriver.h"
 //#include "TimidityMidiDriver.h"
@@ -55,6 +56,9 @@ static void InitMidiDriverVector()
 
 #ifdef USE_CORE_AUDIO_MIDI
 	midi_drivers.push_back(CoreAudioMidiDriver::getDesc());
+#endif
+#ifdef USE_CORE_MIDI
+	midi_drivers.push_back(CoreMidiDriver::getDesc());
 #endif
 #ifdef USE_WINDOWS_MIDI
 	midi_drivers.push_back(WindowsMidiDriver::getDesc());
