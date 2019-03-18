@@ -1,77 +1,60 @@
 /*
-** $Id$
-** a generic input stream interface
+** $Id: lzio.c,v 1.37.1.1 2017/04/19 17:20:42 roberto Exp $
+** Buffered streams
 ** See Copyright Notice in lua.h
 */
 
+#define lzio_c
+#define LUA_CORE
+
+#include "lprefix.h"
 
 
-#include <stdio.h>
 #include <string.h>
 
 #include "lua.h"
 
+#include "llimits.h"
+#include "lmem.h"
+#include "lstate.h"
 #include "lzio.h"
 
 
-
-/* ----------------------------------------------------- memory buffers --- */
-
-static int zmfilbuf (ZIO* z) {
-  (void)z;  /* to avoid warnings */
-  return EOZ;
+int luaZ_fill (ZIO *z) {
+  size_t size;
+  lua_State *L = z->L;
+  const char *buff;
+  lua_unlock(L);
+  buff = z->reader(L, z->data, &size);
+  lua_lock(L);
+  if (buff == NULL || size == 0)
+    return EOZ;
+  z->n = size - 1;  /* discount char being returned */
+  z->p = buff;
+  return cast_uchar(*(z->p++));
 }
 
 
-ZIO* zmopen (ZIO* z, const char* b, size_t size, const char *name) {
-  if (b==NULL) return NULL;
-  z->n = size;
-  z->p = (const unsigned char *)b;
-  z->filbuf = zmfilbuf;
-  z->u = NULL;
-  z->name = name;
-  return z;
-}
-
-/* ------------------------------------------------------------ strings --- */
-
-ZIO* zsopen (ZIO* z, const char* s, const char *name) {
-  if (s==NULL) return NULL;
-  return zmopen(z, s, strlen(s), name);
-}
-
-/* -------------------------------------------------------------- FILEs --- */
-
-static int zffilbuf (ZIO* z) {
-  size_t n;
-  if (feof((FILE *)z->u)) return EOZ;
-  n = fread(z->buffer, 1, ZBSIZE, (FILE *)z->u);
-  if (n==0) return EOZ;
-  z->n = n-1;
-  z->p = z->buffer;
-  return *(z->p++);
-}
-
-
-ZIO* zFopen (ZIO* z, FILE* f, const char *name) {
-  if (f==NULL) return NULL;
+void luaZ_init (lua_State *L, ZIO *z, lua_Reader reader, void *data) {
+  z->L = L;
+  z->reader = reader;
+  z->data = data;
   z->n = 0;
-  z->p = z->buffer;
-  z->filbuf = zffilbuf;
-  z->u = f;
-  z->name = name;
-  return z;
+  z->p = NULL;
 }
 
 
 /* --------------------------------------------------------------- read --- */
-size_t zread (ZIO *z, void *b, size_t n) {
+size_t luaZ_read (ZIO *z, void *b, size_t n) {
   while (n) {
     size_t m;
-    if (z->n == 0) {
-      if (z->filbuf(z) == EOZ)
-        return n;  /* return number of missing bytes */
-      zungetc(z);  /* put result from `filbuf' in the buffer */
+    if (z->n == 0) {  /* no bytes in buffer? */
+      if (luaZ_fill(z) == EOZ)  /* try to read more */
+        return n;  /* no more input; return number of missing bytes */
+      else {
+        z->n++;  /* luaZ_fill consumed first byte; put it back */
+        z->p--;
+      }
     }
     m = (n <= z->n) ? n : z->n;  /* min. between n and z->n */
     memcpy(b, z->p, m);
@@ -82,3 +65,4 @@ size_t zread (ZIO *z, void *b, size_t n) {
   }
   return 0;
 }
+

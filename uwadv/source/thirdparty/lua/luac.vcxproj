@@ -77,19 +77,12 @@
     <Link />
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\luac\dump.c" />
-    <ClCompile Include="src\luac\luac.c" />
-    <ClCompile Include="src\luac\opt.c" />
-    <ClCompile Include="src\luac\print.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\luac\luac.h" />
-    <ClInclude Include="src\luac\print.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="lua.vcxproj">
       <Project>{6df863da-184b-4ea4-ac30-865e4ca87c39}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\luac.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,163 +1,165 @@
 /*
-** $Id$
+** $Id: ltm.c,v 2.38.1.1 2017/04/19 17:39:34 roberto Exp $
 ** Tag methods
 ** See Copyright Notice in lua.h
 */
 
+#define ltm_c
+#define LUA_CORE
 
-#include <stdio.h>
+#include "lprefix.h"
+
+
 #include <string.h>
 
 #include "lua.h"
 
+#include "ldebug.h"
 #include "ldo.h"
-#include "lmem.h"
 #include "lobject.h"
 #include "lstate.h"
+#include "lstring.h"
+#include "ltable.h"
 #include "ltm.h"
+#include "lvm.h"
 
 
-const char *const luaT_eventname[] = {  /* ORDER TM */
-  "gettable", "settable", "index", "getglobal", "setglobal", "add", "sub",
-  "mul", "div", "pow", "unm", "lt", "concat", "gc", "function",
-  "le", "gt", "ge",  /* deprecated options!! */
-  NULL
+static const char udatatypename[] = "userdata";
+
+LUAI_DDEF const char *const luaT_typenames_[LUA_TOTALTAGS] = {
+  "no value",
+  "nil", "boolean", udatatypename, "number",
+  "string", "table", "function", udatatypename, "thread",
+  "proto" /* this last case is used for tests only */
 };
-
-
-static int findevent (const char *name) {
-  int i;
-  for (i=0; luaT_eventname[i]; i++)
-    if (strcmp(luaT_eventname[i], name) == 0)
-      return i;
-  return -1;  /* name not found */
-}
-
-
-static int luaI_checkevent (lua_State *L, const char *name, int t) {
-  int e = findevent(name);
-  if (e >= TM_N)
-    luaO_verror(L, "event `%.50s' is deprecated", name);
-  if (e == TM_GC && t == LUA_TTABLE)
-    luaO_verror(L, "event `gc' for tables is deprecated");
-  if (e < 0)
-    luaO_verror(L, "`%.50s' is not a valid event name", name);
-  return e;
-}
-
-
-
-/* events in LUA_TNIL are all allowed, since this is used as a
-*  'placeholder' for "default" fallbacks
-*/
-/* ORDER LUA_T, ORDER TM */
-static const char luaT_validevents[NUM_TAGS][TM_N] = {
-  {1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},  /* LUA_TUSERDATA */
-  {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},  /* LUA_TNIL */
-  {1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1},  /* LUA_TNUMBER */
-  {1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},  /* LUA_TSTRING */
-  {0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},  /* LUA_TTABLE */
-  {1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0}   /* LUA_TFUNCTION */
-};
-
-int luaT_validevent (int t, int e) {  /* ORDER LUA_T */
-  return (t >= NUM_TAGS) ?  1 : luaT_validevents[t][e];
-}
-
-
-static void init_entry (lua_State *L, int tag) {
-  int i;
-  for (i=0; i<TM_N; i++)
-    luaT_gettm(L, tag, i) = NULL;
-  L->TMtable[tag].collected = NULL;
-}
 
 
 void luaT_init (lua_State *L) {
-  int t;
-  luaM_growvector(L, L->TMtable, 0, NUM_TAGS, struct TM, "", MAX_INT);
-  L->nblocks += NUM_TAGS*sizeof(struct TM);
-  L->last_tag = NUM_TAGS-1;
-  for (t=0; t<=L->last_tag; t++)
-    init_entry(L, t);
-}
-
-
-LUA_API int lua_newtag (lua_State *L) {
-  luaM_growvector(L, L->TMtable, L->last_tag, 1, struct TM,
-                  "tag table overflow", MAX_INT);
-  L->nblocks += sizeof(struct TM);
-  L->last_tag++;
-  init_entry(L, L->last_tag);
-  return L->last_tag;
-}
-
-
-static void checktag (lua_State *L, int tag) {
-  if (!(0 <= tag && tag <= L->last_tag))
-    luaO_verror(L, "%d is not a valid tag", tag);
-}
-
-void luaT_realtag (lua_State *L, int tag) {
-  if (!validtag(tag))
-    luaO_verror(L, "tag %d was not created by `newtag'", tag);
-}
-
-
-LUA_API int lua_copytagmethods (lua_State *L, int tagto, int tagfrom) {
-  int e;
-  checktag(L, tagto);
-  checktag(L, tagfrom);
-  for (e=0; e<TM_N; e++) {
-    if (luaT_validevent(tagto, e))
-      luaT_gettm(L, tagto, e) = luaT_gettm(L, tagfrom, e);
-  }
-  return tagto;
-}
-
-
-int luaT_tag (const TObject *o) {
-  int t = ttype(o);
-  switch (t) {
-    case LUA_TUSERDATA: return tsvalue(o)->u.d.tag;
-    case LUA_TTABLE:    return hvalue(o)->htag;
-    default:            return t;
+  static const char *const luaT_eventname[] = {  /* ORDER TM */
+    "__index", "__newindex",
+    "__gc", "__mode", "__len", "__eq",
+    "__add", "__sub", "__mul", "__mod", "__pow",
+    "__div", "__idiv",
+    "__band", "__bor", "__bxor", "__shl", "__shr",
+    "__unm", "__bnot", "__lt", "__le",
+    "__concat", "__call"
+  };
+  int i;
+  for (i=0; i<TM_N; i++) {
+    G(L)->tmname[i] = luaS_new(L, luaT_eventname[i]);
+    luaC_fix(L, obj2gco(G(L)->tmname[i]));  /* never collect these names */
   }
 }
 
 
-LUA_API void lua_gettagmethod (lua_State *L, int t, const char *event) {
-  int e;
-  e = luaI_checkevent(L, event, t);
-  checktag(L, t);
-  if (luaT_validevent(t, e) && luaT_gettm(L, t, e)) {
-    clvalue(L->top) = luaT_gettm(L, t, e);
-    ttype(L->top) = LUA_TFUNCTION;
+/*
+** function to be used with macro "fasttm": optimized for absence of
+** tag methods
+*/
+const TValue *luaT_gettm (Table *events, TMS event, TString *ename) {
+  const TValue *tm = luaH_getshortstr(events, ename);
+  lua_assert(event <= TM_EQ);
+  if (ttisnil(tm)) {  /* no tag method? */
+    events->flags |= cast_byte(1u<<event);  /* cache this fact */
+    return NULL;
   }
-  else
-    ttype(L->top) = LUA_TNIL;
-  incr_top;
+  else return tm;
 }
 
 
-LUA_API void lua_settagmethod (lua_State *L, int t, const char *event) {
-  int e = luaI_checkevent(L, event, t);
-  checktag(L, t);
-  if (!luaT_validevent(t, e))
-    luaO_verror(L, "cannot change `%.20s' tag method for type `%.20s'%.20s",
-                luaT_eventname[e], luaO_typenames[t],
-                (t == LUA_TTABLE || t == LUA_TUSERDATA) ?
-                   " with default tag" : "");
-  switch (ttype(L->top - 1)) {
-    case LUA_TNIL:
-      luaT_gettm(L, t, e) = NULL;
+const TValue *luaT_gettmbyobj (lua_State *L, const TValue *o, TMS event) {
+  Table *mt;
+  switch (ttnov(o)) {
+    case LUA_TTABLE:
+      mt = hvalue(o)->metatable;
       break;
-    case LUA_TFUNCTION:
-      luaT_gettm(L, t, e) = clvalue(L->top - 1);
+    case LUA_TUSERDATA:
+      mt = uvalue(o)->metatable;
       break;
     default:
-      lua_error(L, "tag method must be a function (or nil)");
+      mt = G(L)->mt[ttnov(o)];
   }
-  L->top--;
+  return (mt ? luaH_getshortstr(mt, G(L)->tmname[event]) : luaO_nilobject);
+}
+
+
+/*
+** Return the name of the type of an object. For tables and userdata
+** with metatable, use their '__name' metafield, if present.
+*/
+const char *luaT_objtypename (lua_State *L, const TValue *o) {
+  Table *mt;
+  if ((ttistable(o) && (mt = hvalue(o)->metatable) != NULL) ||
+      (ttisfulluserdata(o) && (mt = uvalue(o)->metatable) != NULL)) {
+    const TValue *name = luaH_getshortstr(mt, luaS_new(L, "__name"));
+    if (ttisstring(name))  /* is '__name' a string? */
+      return getstr(tsvalue(name));  /* use it as type name */
+  }
+  return ttypename(ttnov(o));  /* else use standard type name */
+}
+
+
+void luaT_callTM (lua_State *L, const TValue *f, const TValue *p1,
+                  const TValue *p2, TValue *p3, int hasres) {
+  ptrdiff_t result = savestack(L, p3);
+  StkId func = L->top;
+  setobj2s(L, func, f);  /* push function (assume EXTRA_STACK) */
+  setobj2s(L, func + 1, p1);  /* 1st argument */
+  setobj2s(L, func + 2, p2);  /* 2nd argument */
+  L->top += 3;
+  if (!hasres)  /* no result? 'p3' is third argument */
+    setobj2s(L, L->top++, p3);  /* 3rd argument */
+  /* metamethod may yield only when called from Lua code */
+  if (isLua(L->ci))
+    luaD_call(L, func, hasres);
+  else
+    luaD_callnoyield(L, func, hasres);
+  if (hasres) {  /* if has result, move it to its place */
+    p3 = restorestack(L, result);
+    setobjs2s(L, p3, --L->top);
+  }
+}
+
+
+int luaT_callbinTM (lua_State *L, const TValue *p1, const TValue *p2,
+                    StkId res, TMS event) {
+  const TValue *tm = luaT_gettmbyobj(L, p1, event);  /* try first operand */
+  if (ttisnil(tm))
+    tm = luaT_gettmbyobj(L, p2, event);  /* try second operand */
+  if (ttisnil(tm)) return 0;
+  luaT_callTM(L, tm, p1, p2, res, 1);
+  return 1;
+}
+
+
+void luaT_trybinTM (lua_State *L, const TValue *p1, const TValue *p2,
+                    StkId res, TMS event) {
+  if (!luaT_callbinTM(L, p1, p2, res, event)) {
+    switch (event) {
+      case TM_CONCAT:
+        luaG_concaterror(L, p1, p2);
+      /* call never returns, but to avoid warnings: *//* FALLTHROUGH */
+      case TM_BAND: case TM_BOR: case TM_BXOR:
+      case TM_SHL: case TM_SHR: case TM_BNOT: {
+        lua_Number dummy;
+        if (tonumber(p1, &dummy) && tonumber(p2, &dummy))
+          luaG_tointerror(L, p1, p2);
+        else
+          luaG_opinterror(L, p1, p2, "perform bitwise operation on");
+      }
+      /* calls never return, but to avoid warnings: *//* FALLTHROUGH */
+      default:
+        luaG_opinterror(L, p1, p2, "perform arithmetic on");
+    }
+  }
+}
+
+
+int luaT_callorderTM (lua_State *L, const TValue *p1, const TValue *p2,
+                      TMS event) {
+  if (!luaT_callbinTM(L, p1, p2, L->top, event))
+    return -1;  /* no metamethod */
+  else
+    return !l_isfalse(L->top);
 }
 

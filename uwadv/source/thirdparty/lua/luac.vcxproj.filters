@@ -11,25 +11,8 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\luac\dump.c">
+    <ClCompile Include="src\luac.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\luac\luac.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\luac\opt.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\luac\print.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\luac\luac.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\luac\print.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

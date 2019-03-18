@@ -1,5 +1,5 @@
 /*
-** $Id$
+** $Id: lzio.h,v 1.31.1.1 2017/04/19 17:20:42 roberto Exp $
 ** Buffered streams
 ** See Copyright Notice in lua.h
 */
@@ -8,46 +8,59 @@
 #ifndef lzio_h
 #define lzio_h
 
-#include <stdio.h>
+#include "lua.h"
 
+#include "lmem.h"
 
-
-/* For Lua only */
-#define zFopen	luaZ_Fopen
-#define zsopen	luaZ_sopen
-#define zmopen	luaZ_mopen
-#define zread	luaZ_read
 
 #define EOZ	(-1)			/* end of stream */
 
-typedef struct zio ZIO;
+typedef struct Zio ZIO;
 
-ZIO* zFopen (ZIO* z, FILE* f, const char *name);	/* open FILEs */
-ZIO* zsopen (ZIO* z, const char* s, const char *name);	/* string */
-ZIO* zmopen (ZIO* z, const char* b, size_t size, const char *name); /* memory */
+#define zgetc(z)  (((z)->n--)>0 ?  cast_uchar(*(z)->p++) : luaZ_fill(z))
 
-size_t zread (ZIO* z, void* b, size_t n);	/* read next n bytes */
 
-#define zgetc(z)	(((z)->n--)>0 ? ((int)*(z)->p++): (z)->filbuf(z))
-#define zungetc(z)	(++(z)->n,--(z)->p)
-#define zname(z)	((z)->name)
+typedef struct Mbuffer {
+  char *buffer;
+  size_t n;
+  size_t buffsize;
+} Mbuffer;
+
+#define luaZ_initbuffer(L, buff) ((buff)->buffer = NULL, (buff)->buffsize = 0)
+
+#define luaZ_buffer(buff)	((buff)->buffer)
+#define luaZ_sizebuffer(buff)	((buff)->buffsize)
+#define luaZ_bufflen(buff)	((buff)->n)
+
+#define luaZ_buffremove(buff,i)	((buff)->n -= (i))
+#define luaZ_resetbuffer(buff) ((buff)->n = 0)
+
+
+#define luaZ_resizebuffer(L, buff, size) \
+	((buff)->buffer = luaM_reallocvchar(L, (buff)->buffer, \
+				(buff)->buffsize, size), \
+	(buff)->buffsize = size)
+
+#define luaZ_freebuffer(L, buff)	luaZ_resizebuffer(L, buff, 0)
+
+
+LUAI_FUNC void luaZ_init (lua_State *L, ZIO *z, lua_Reader reader,
+                                        void *data);
+LUAI_FUNC size_t luaZ_read (ZIO* z, void *b, size_t n);	/* read next n bytes */
 
 
 
 /* --------- Private Part ------------------ */
 
-#ifndef ZBSIZE
-#define ZBSIZE	256			/* buffer size */
-#endif
-
-struct zio {
-  size_t n;				/* bytes still unread */
-  const unsigned char* p;		/* current position in buffer */
-  int (*filbuf)(ZIO* z);
-  void* u;				/* additional data */
-  const char *name;
-  unsigned char buffer[ZBSIZE];		/* buffer */
+struct Zio {
+  size_t n;			/* bytes still unread */
+  const char *p;		/* current position in buffer */
+  lua_Reader reader;		/* reader function */
+  void *data;			/* additional data */
+  lua_State *L;			/* Lua state (for reader) */
 };
 
+
+LUAI_FUNC int luaZ_fill (ZIO *z);
 
 #endif
