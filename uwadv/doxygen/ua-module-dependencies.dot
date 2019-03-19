@@ -20,7 +20,7 @@
    process with dot tool to produce graph image
 
 */
-digraph G {
+digraph G
 {
    node [shape=box,fontsize=10,height=0.2,width=0.4,fontname="Helvetica",style=filled,color=".7 .3 1.0"];
 
@@ -37,7 +37,7 @@ digraph G {
    "Import" -> "Base";
    "Import" -> "Underw";
 
-   "Lua" [URL="\ref Lua"];
+   "Lua" [URL="\ref LuaScripting"];
 
    "Renderer" [URL="\ref Renderer"];
    "Renderer" -> "Base";
@@ -47,7 +47,7 @@ digraph G {
    "Screens" -> "UI";
    "Screens" -> "Script";
 
-   "Script" [URL="\ref Script"];
+   "Script" [URL="\ref LuaScripting"];
    "Script" -> "Base";
    "Script" -> "Lua";
    "Script" -> "Underw";
