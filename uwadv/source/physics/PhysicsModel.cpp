@@ -104,6 +104,8 @@ bool PhysicsModel::TrackObject(PhysicsBody& body, Vector3d dir,
    data.ellipsoid = body.GetEllipsoid();
    data.found_collision = false;
 
+   UaAssert(data.ellipsoid.length() > 1e-6); // ellipsoid must not be of zero size
+
    Vector3d pos = body.GetPosition();
 
    // \todo

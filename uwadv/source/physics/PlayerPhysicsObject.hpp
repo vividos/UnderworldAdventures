@@ -78,9 +78,6 @@ private:
    /// ref to player
    Underworld::Player& m_player;
 
-   /// player ellipsoid
-   Vector3d m_ellipsoid;
-
    /// current movement mode
    unsigned int m_movementMode;
 

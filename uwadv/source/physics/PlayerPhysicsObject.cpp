@@ -44,12 +44,13 @@ const double c_playerEllipsoidZ = 11.9;
 
 PlayerPhysicsObject::PlayerPhysicsObject(Underworld::Player& player, bool enhancedFeatures)
    :m_player(player),
-   m_ellipsoid(c_playerEllipsoidX, c_playerEllipsoidY, c_playerEllipsoidZ),
    m_movementMode(0),
    m_fallTime(0.0),
    m_fallHeightStart(0.0),
    m_maxPanAngle(enhancedFeatures ? 45.0 : 75.0)
 {
+   m_ellipsoid = Vector3d(c_playerEllipsoidX, c_playerEllipsoidY, c_playerEllipsoidZ);
+
    m_moveFactors[moveWalk] = 0.0;
    m_moveFactors[moveRotate] = 0.0;
    m_moveFactors[moveLookUpDown] = 0.0;
