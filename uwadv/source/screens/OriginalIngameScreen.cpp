@@ -730,6 +730,9 @@ void OriginalIngameScreen::Tick()
    {
       m_game.GetGameLogic().EvaluateUnderworld(double(m_tickCount) / m_game.GetTickRate());
 
+      double elapsedTime = 1.0 / m_game.GetTickRate();
+      m_game.GetPhysicsModel().EvaluatePhysics(elapsedTime);
+
       m_tickCount++;
 
       // do renderer-specific tick processing

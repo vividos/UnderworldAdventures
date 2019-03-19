@@ -132,6 +132,11 @@ public:
       return m_renderer;
    }
 
+   virtual PhysicsModel& GetPhysicsModel() override
+   {
+      return m_physicsModel;
+   }
+
    virtual void ReplaceScreen(Screen* newScreen, bool saveCurrent) override;
    virtual void RemoveScreen() override;
    virtual void RegisterUserInterface(IUserInterface* userInterface) override;
@@ -218,6 +223,9 @@ protected:
    /// game logic object
    /// underworld object
    std::unique_ptr<Underworld::GameLogic> m_gameLogic;
+
+   /// Physics model for the game
+   PhysicsModel m_physicsModel;
 
    /// user interface; the ingame screen
    IUserInterface* m_userInterface;

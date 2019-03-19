@@ -533,6 +533,8 @@ void Game::InitGame()
 
    m_gameLogic = std::make_unique<Underworld::GameLogic>(m_scripting);
 
+   m_physicsModel.Init(this);
+
    UaTrace("loading game strings ... ");
    Import::GameStringsImporter importer(GetGameStrings());
    importer.LoadDefaultStringsPakFile(GetResourceManager());
