@@ -16,8 +16,6 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-   $Id$
-
    Underworld Adventures module dependencies
    process with dot tool to produce graph image
 
@@ -31,7 +29,7 @@ digraph G {
 
    "Audio" [URL="\ref Audio"];
    "Audio" -> "Base";
-  
+
    "Conv" [URL="\ref Conv"];
    "Conv" -> "Base";
 
@@ -43,7 +41,7 @@ digraph G {
 
    "Renderer" [URL="\ref Renderer"];
    "Renderer" -> "Base";
-   
+
    "Screens" [URL="\ref Screens"];
    "Screens" -> "Base";
    "Screens" -> "UI";
@@ -60,6 +58,6 @@ digraph G {
 
    "Underw" [URL="\ref Underworld"];
    "Underw" -> "Base";
-   
+
    "ZzipLib";
 }
