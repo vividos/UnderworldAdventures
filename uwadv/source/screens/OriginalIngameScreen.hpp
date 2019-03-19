@@ -104,6 +104,12 @@ public:
    /// returns move state
    bool GetMoveState(IngameMoveState state);
 
+   /// returns player physics tracking object
+   PlayerPhysicsObject& GetPlayerPhysicsObject()
+   {
+      return m_playerPhysics;
+   }
+
    // virtual methods from IPanelParent
 
    /// sets cursor image
@@ -232,5 +238,6 @@ protected:
    // classes that need direct access to this class
    friend class IngameCommandButtons;
 
+   /// player physics tracking object
    PlayerPhysicsObject m_playerPhysics;
 };

@@ -25,6 +25,13 @@
 #include "Underworld.hpp"
 #include "GameLogic.hpp"
 #include "Renderer.hpp"
+#include "physics/PhysicsModel.hpp"
+
+PlayerPhysicsObject& OriginalIngameControl::GetPlayerPhysicsObject()
+{
+   UaAssert(m_parent != NULL);
+   return m_parent->GetPlayerPhysicsObject();
+}
 
 void IngameCompass::Init(IGame& game, unsigned int xpos,
    unsigned int ypos)

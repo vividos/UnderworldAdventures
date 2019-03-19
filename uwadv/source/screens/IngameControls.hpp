@@ -34,6 +34,9 @@ public:
    /// sets parent window
    void SetParent(OriginalIngameScreen* parent) { m_parent = parent; }
 
+   /// returns player physics tracking object
+   PlayerPhysicsObject& GetPlayerPhysicsObject();
+
 protected:
    /// parent screen
    OriginalIngameScreen* m_parent;
