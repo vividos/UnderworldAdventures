@@ -19,7 +19,7 @@
 /// \file AudioTest.cpp
 /// \brief audio classes test
 //
-#include "UnitTest.hpp"
+#include "pch.hpp"
 #include "Audio.hpp"
 #include "MidiPlayer.hpp"
 #include "Settings.hpp"

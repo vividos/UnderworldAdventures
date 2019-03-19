@@ -19,7 +19,7 @@
 /// \file PropertiesLoader.cpp
 /// \brief object property loader
 //
-#include "Import.hpp"
+#include "pch.hpp"
 #include "ResourceManager.hpp"
 #include "File.hpp"
 #include "Properties.hpp"

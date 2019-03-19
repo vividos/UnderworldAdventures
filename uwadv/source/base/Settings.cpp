@@ -19,7 +19,7 @@
 /// \file Settings.cpp
 /// \brief game settings implementation
 //
-#include "Base.hpp"
+#include "pch.hpp"
 #include "Settings.hpp"
 #include <sstream>
 

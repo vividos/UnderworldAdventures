@@ -23,7 +23,7 @@
 /// previous document:
 /// http://www.peroxide.dk/download/tutorials/tut10/pxdtut10.html
 //
-#include "common.hpp"
+#include "pch.hpp"
 #include "PhysicsModel.hpp"
 
 /// trick to get smoother CD

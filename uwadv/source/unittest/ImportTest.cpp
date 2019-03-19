@@ -19,7 +19,7 @@
 /// \file ImportTest.cpp
 /// \brief import functions test
 //
-#include "UnitTest.hpp"
+#include "pch.hpp"
 #include "Settings.hpp"
 #include "ResourceManager.hpp"
 #include "Import.hpp"

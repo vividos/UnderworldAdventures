@@ -19,7 +19,7 @@
 /// \file IndexedImage.cpp
 /// \brief indexed image creation and manipulation
 //
-#include "common.hpp"
+#include "pch.hpp"
 #include "IndexedImage.hpp"
 #include "ImageLoader.hpp"
 

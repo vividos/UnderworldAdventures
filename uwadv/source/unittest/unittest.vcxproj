@@ -57,8 +57,6 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)source\audio;$(SolutionDir)source\conv;$(SolutionDir)source\import;$(SolutionDir)source\underw;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>unittest.hpp</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <AdditionalDependencies>SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -67,8 +65,6 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)source\audio;$(SolutionDir)source\conv;$(SolutionDir)source\import;$(SolutionDir)source\underw;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>unittest.hpp</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <AdditionalDependencies>SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -82,18 +78,20 @@
     <ClCompile Include="FileTest.cpp" />
     <ClCompile Include="ImportTest.cpp" />
     <ClCompile Include="KeymapTest.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="ResourceManagerTest.cpp" />
     <ClCompile Include="SavegameTest.cpp" />
     <ClCompile Include="SettingsTest.cpp" />
     <ClCompile Include="StringTest.cpp" />
     <ClCompile Include="TempFolder.cpp" />
     <ClCompile Include="UnderworldTest.cpp" />
-    <ClCompile Include="UnitTest.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-    </ClCompile>
+    <ClCompile Include="UnitTest.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="pch.hpp" />
     <ClInclude Include="TempFolder.hpp" />
     <ClInclude Include="UnitTest.hpp" />
   </ItemGroup>

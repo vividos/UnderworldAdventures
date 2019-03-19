@@ -19,6 +19,7 @@
 /// \file UnitTest.cpp
 /// \brief unit test implementation
 //
+#include "pch.hpp"
 #include "UnitTest.hpp"
 #include "Settings.hpp"
 #include "FileSystem.hpp"

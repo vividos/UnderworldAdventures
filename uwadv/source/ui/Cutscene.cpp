@@ -19,7 +19,7 @@
 /// \file Cutscene.cpp
 /// \brief cutscene frame extraction
 //
-#include "common.hpp"
+#include "pch.hpp"
 #include "Cutscene.hpp"
 #include "CutsceneLoader.hpp"
 

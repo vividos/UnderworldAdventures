@@ -19,7 +19,7 @@
 /// \file UwadvMenuScreen.cpp
 /// \brief uwadv menu implementation
 //
-#include "common.hpp"
+#include "pch.hpp"
 #include "UwadvMenuScreen.hpp"
 #include "Settings.hpp"
 #include "Renderer.hpp"

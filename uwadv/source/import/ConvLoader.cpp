@@ -19,7 +19,7 @@
 /// \file ConvLoader.cpp
 /// \brief conversation code and conv. globals loader
 //
-#include "Import.hpp"
+#include "pch.hpp"
 #include "ConvLoader.hpp"
 #include "ResourceManager.hpp"
 #include "File.hpp"

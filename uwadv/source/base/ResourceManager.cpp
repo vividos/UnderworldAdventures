@@ -19,7 +19,7 @@
 /// \file ResourceManager.cpp
 /// \brief resource manager implementation
 //
-#include "Base.hpp"
+#include "pch.hpp"
 #include "ResourceManager.hpp"
 #include "Settings.hpp"
 #include "FileSystem.hpp"

@@ -29,7 +29,7 @@
 /// the x coord. pixels have the value 0 for transparent or 1 for solid. the
 /// function Font::CreateString() matches the '1' to a specific color
 /// palette index.
-#include "common.hpp"
+#include "pch.hpp"
 #include "Font.hpp"
 #include <cstring>
 

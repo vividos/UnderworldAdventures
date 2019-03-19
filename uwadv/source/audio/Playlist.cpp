@@ -19,7 +19,7 @@
 /// \file Playlist.cpp
 /// \brief music playlist implementation
 //
-#include "Audio.hpp"
+#include "pch.hpp"
 #include "Playlist.hpp"
 #include "Settings.hpp"
 #include "TextFile.hpp"

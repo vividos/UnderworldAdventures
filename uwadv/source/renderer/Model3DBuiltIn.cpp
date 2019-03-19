@@ -19,7 +19,7 @@
 /// \file Model3DBuiltIn.cpp
 /// \brief builtin models
 //
-#include "common.hpp"
+#include "pch.hpp"
 #include "Model3DBuiltIn.hpp"
 
 extern bool DecodeBuiltInModels(const char* filename,

@@ -59,7 +59,6 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)source\win32\uadebug\thirdparty\menuxp;$(SolutionDir)source\win32\uadebug\thirdparty\scintilla;$(SolutionDir)source\win32\uadebug\thirdparty\tabbingframework\include;$(SolutionDir)source\win32\uadebug\thirdparty\wtldockingwindows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdatl.hpp</PrecompiledHeaderFile>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
@@ -72,7 +71,6 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)source\win32\uadebug\thirdparty\menuxp;$(SolutionDir)source\win32\uadebug\thirdparty\scintilla;$(SolutionDir)source\win32\uadebug\thirdparty\tabbingframework\include;$(SolutionDir)source\win32\uadebug\thirdparty\wtldockingwindows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdatl.hpp</PrecompiledHeaderFile>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>

@@ -19,7 +19,7 @@
 /// \file Uw2decode.cpp
 /// \brief Ultima Underworld 2 .ark compression format decoder
 //
-#include "Base.hpp"
+#include "pch.hpp"
 #include "Uw2decode.hpp"
 
 using Base::File;

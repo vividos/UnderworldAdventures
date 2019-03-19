@@ -19,7 +19,7 @@
 /// \file TextScroll.cpp
 /// \brief text scroll implementation
 //
-#include "common.hpp"
+#include "pch.hpp"
 #include "TextScroll.hpp"
 #include "IndexedImage.hpp"
 #include <algorithm>

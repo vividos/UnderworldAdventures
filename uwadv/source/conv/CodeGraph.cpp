@@ -19,7 +19,7 @@
 /// \file CodeGraph.cpp
 /// \brief conversation graph
 //
-#include "common.hpp"
+#include "pch.hpp"
 #include "CodeGraph.hpp"
 #include "Opcodes.hpp"
 #include <sstream>

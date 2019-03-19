@@ -21,8 +21,8 @@
 /// \brief file system implementation
 /// \details Parts of this file's code was taken from Exult
 //
+#include "pch.hpp"
 #include <cerrno>
-#include "Base.hpp"
 #include "FileSystem.hpp"
 
 #ifdef HAVE_WIN32

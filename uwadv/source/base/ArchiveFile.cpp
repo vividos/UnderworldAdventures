@@ -19,7 +19,7 @@
 /// \file ArchiveFile.cpp
 /// \brief Archive file class
 //
-#include "Base.hpp"
+#include "pch.hpp"
 #include "ArchiveFile.hpp"
 #include "Uw2decode.hpp"
 

@@ -19,7 +19,7 @@
 /// \file ImageLoader.cpp
 /// \brief *.gr, *.byt files and palette loading
 //
-#include "Import.hpp"
+#include "pch.hpp"
 #include "ImageLoader.hpp"
 #include "IndexedImage.hpp"
 #include "ResourceManager.hpp"

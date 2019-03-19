@@ -19,7 +19,7 @@
 /// \file OriginalIngameScreen.cpp
 /// \brief ingame user interface, from the original uw1
 //
-#include "common.hpp"
+#include "pch.hpp"
 #include "OriginalIngameScreen.hpp"
 #include "ResourceManager.hpp"
 #include "Renderer.hpp"

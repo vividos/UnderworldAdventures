@@ -19,7 +19,7 @@
 /// \file Conversation.cpp
 /// \brief conversations
 //
-#include "common.hpp"
+#include "pch.hpp"
 #include "Conversation.hpp"
 #include "Underworld.hpp"
 #include "GameLogic.hpp"

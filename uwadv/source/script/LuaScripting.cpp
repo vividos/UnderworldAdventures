@@ -19,7 +19,7 @@
 /// \file LuaScripting.cpp
 /// \brief Lua scripting implementation
 //
-#include "common.hpp"
+#include "pch.hpp"
 #include "LuaScripting.hpp"
 #include "GameInterface.hpp"
 #include "IUserInterface.hpp"

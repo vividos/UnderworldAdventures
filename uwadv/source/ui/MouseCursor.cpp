@@ -19,7 +19,7 @@
 /// \file MouseCursor.cpp
 /// \brief mouse cursor
 //
-#include "common.hpp"
+#include "pch.hpp"
 #include "MouseCursor.hpp"
 #include "GameInterface.hpp"
 #include "Renderer.hpp"

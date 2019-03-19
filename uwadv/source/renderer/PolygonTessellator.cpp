@@ -19,7 +19,7 @@
 /// \file PolygonTessellator.cpp
 /// \brief polygon tessellator implementation
 //
-#include "common.hpp"
+#include "pch.hpp"
 #include "PolygonTessellator.hpp"
 
 PolygonTessellator::PolygonTessellator()

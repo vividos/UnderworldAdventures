@@ -56,6 +56,7 @@
     <ClCompile>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ProgramDataBaseFileName>.\../output/release/xmi2mid/intermediate\</ProgramDataBaseFileName>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <Midl>
       <TypeLibraryName>.\../output/release/xmi2mid\xmi2mid.tlb</TypeLibraryName>
@@ -73,6 +74,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>WIN32;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <Midl>
       <TypeLibraryName>.\../output/debug/xmi2mid\xmi2mid.tlb</TypeLibraryName>

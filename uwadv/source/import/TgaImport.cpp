@@ -45,7 +45,7 @@
 /// when decoding 16-bits-per-pixel-images, the rgb intensities are crunched
 /// into one 16-bit word. look for the code comment below
 //
-#include "Import.hpp"
+#include "pch.hpp"
 #include "File.hpp"
 #include <algorithm>
 

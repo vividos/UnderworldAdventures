@@ -19,7 +19,7 @@
 /// \file Base.cpp
 /// \brief common classes and functions implementation
 //
-#include "Base.hpp"
+#include "pch.hpp"
 #include <cstdio>
 #include <cstdarg>
 #include <sstream>

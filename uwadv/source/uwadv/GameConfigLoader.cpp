@@ -19,7 +19,7 @@
 /// \file GameConfigLoader.cpp
 /// \brief game config loader
 //
-#include "common.hpp"
+#include "pch.hpp"
 #include "GameConfigLoader.hpp"
 #include "TextFile.hpp"
 #include "KeyValuePairTextFileReader.hpp"

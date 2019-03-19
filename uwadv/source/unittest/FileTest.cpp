@@ -19,7 +19,7 @@
 /// \file FileTest.cpp
 /// \brief File and TextFile test
 //
-#include "UnitTest.hpp"
+#include "pch.hpp"
 #include "File.hpp"
 #include "TextFile.hpp"
 #include <SDL_rwops.h>

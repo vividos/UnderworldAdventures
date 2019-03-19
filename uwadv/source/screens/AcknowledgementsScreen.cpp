@@ -21,7 +21,7 @@
 /// \details stage 0: show animation frame
 /// stage 1: crossfade to next frame
 //
-#include "common.hpp"
+#include "pch.hpp"
 #include "AcknowledgementsScreen.hpp"
 #include "IndexedImage.hpp"
 #include "Renderer.hpp"

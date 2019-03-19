@@ -19,7 +19,7 @@
 /// \file DebugServer.cpp
 /// \brief debug server implementation
 //
-#include "common.hpp"
+#include "pch.hpp"
 #include "DebugServer.hpp"
 #include "GameInterface.hpp"
 #include "GameLogic.hpp"

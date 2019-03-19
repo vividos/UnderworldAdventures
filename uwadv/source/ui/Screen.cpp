@@ -19,7 +19,7 @@
 /// \file Screen.cpp
 /// \brief screen base implementation
 //
-#include "common.hpp"
+#include "pch.hpp"
 #include "Screen.hpp"
 
 Screen::Screen(IGame& gameInterface)

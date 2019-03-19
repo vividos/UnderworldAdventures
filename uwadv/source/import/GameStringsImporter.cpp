@@ -19,7 +19,7 @@
 /// \file GameStringsImporter.cpp
 /// \brief game strings loader
 //
-#include "Import.hpp"
+#include "pch.hpp"
 #include "GameStringsImporter.hpp"
 #include "ResourceManager.hpp"
 #include "GameStrings.hpp"

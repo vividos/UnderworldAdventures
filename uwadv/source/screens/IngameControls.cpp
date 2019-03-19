@@ -19,7 +19,7 @@
 /// \file IngameControls.cpp
 /// \brief ingame screen controls
 //
-#include "common.hpp"
+#include "pch.hpp"
 #include "IngameControls.hpp"
 #include "OriginalIngameScreen.hpp"
 #include "Underworld.hpp"

@@ -20,7 +20,7 @@
 /// \brief cutscenes loader
 /// \details for more infos about the cutscene format, see the file docs/uw-formats.txt
 //
-#include "Import.hpp"
+#include "pch.hpp"
 #include "Cutscene.hpp"
 #include "CutsceneLoader.hpp"
 #include "IndexedImage.hpp"

@@ -19,7 +19,7 @@
 /// \file MidiPlayer.cpp
 /// \brief midi playback class implementation
 //
-#include "Audio.hpp"
+#include "pch.hpp"
 #include "MidiPlayer.hpp"
 #include "Settings.hpp"
 #pragma warning(push)

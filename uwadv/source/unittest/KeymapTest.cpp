@@ -19,7 +19,7 @@
 /// \file KeymapTest.cpp
 /// \brief Keymap test
 //
-#include "UnitTest.hpp"
+#include "pch.hpp"
 #include "Keymap.hpp"
 #include "Settings.hpp"
 #include "ResourceManager.hpp"

@@ -19,7 +19,7 @@
 /// \file Panel.cpp
 /// \brief inventory/stats/rune bag panel
 //
-#include "common.hpp"
+#include "pch.hpp"
 #include "Panel.hpp"
 #include "Underworld.hpp"
 #include "IScripting.hpp"

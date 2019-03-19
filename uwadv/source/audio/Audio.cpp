@@ -22,6 +22,7 @@
 /// playback using SDL and SDL_mixer and the midi classes borrowed from
 /// Pentagram.
 //
+#include "pch.hpp"
 #include "Audio.hpp"
 #include "Playlist.hpp"
 #include "Base.hpp"

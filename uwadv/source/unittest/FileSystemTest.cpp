@@ -20,7 +20,7 @@
 /// \file FileSystemTest.cpp
 /// \brief FileSystem tests
 //
-#include "UnitTest.hpp"
+#include "pch.hpp"
 #include "FileSystem.hpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;

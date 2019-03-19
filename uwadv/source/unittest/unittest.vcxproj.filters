@@ -53,12 +53,18 @@
     <ClCompile Include="UnitTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TempFolder.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="UnitTest.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

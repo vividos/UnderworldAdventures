@@ -44,13 +44,13 @@
     <ClCompile Include="Runes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="underw.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Underworld.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TileMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -94,13 +94,13 @@
     <ClInclude Include="Runes.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="underw.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Underworld.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Tilemap.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

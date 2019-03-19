@@ -19,7 +19,7 @@
 /// \file ConfigFileTest.cpp
 /// \brief ConfigFile class test
 //
-#include "UnitTest.hpp"
+#include "pch.hpp"
 #include "ConfigFile.hpp"
 #include "TextFile.hpp"
 

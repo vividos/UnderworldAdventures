@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2005,2006,2019 Michael Fink
+// Copyright (c) 2019 Michael Fink
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,7 +16,12 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file Import.cpp
-/// \brief import precompiled header support
+/// \file conv/pch.hpp
+/// \brief precompiled header support
 //
-#include "Import.hpp"
+#pragma once
+
+#include "common.hpp"
+#include "Base.hpp"
+#include "Opcodes.hpp"
+#include "CodeVM.hpp"

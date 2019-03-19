@@ -53,16 +53,12 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)source\underw;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeader />
-      <PrecompiledHeaderFile>common.hpp</PrecompiledHeaderFile>
     </ClCompile>
     <Lib />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)source\underw;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeader />
-      <PrecompiledHeaderFile>common.hpp</PrecompiledHeaderFile>
     </ClCompile>
     <Lib />
   </ItemDefinitionGroup>
@@ -70,6 +66,10 @@
     <ClCompile Include="CodeVM.cpp" />
     <ClCompile Include="Conversation.cpp" />
     <ClCompile Include="CodeGraph.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CodeVM.hpp" />
@@ -78,6 +78,7 @@
     <ClInclude Include="ConversationDebugger.hpp" />
     <ClInclude Include="ConvStack.hpp" />
     <ClInclude Include="Opcodes.hpp" />
+    <ClInclude Include="pch.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\base\base.vcxproj">

@@ -19,7 +19,7 @@
 /// \file Model3D.cpp
 /// \brief 3D models handling
 //
-#include "common.hpp"
+#include "pch.hpp"
 #include "Model3D.hpp"
 #include "Model3DBuiltIn.hpp"
 #include "GameInterface.hpp"

@@ -19,7 +19,7 @@
 /// \file Savegame.cpp
 /// \brief savegame and savegames manager classes implementation
 //
-#include "Base.hpp"
+#include "pch.hpp"
 #include "Savegame.hpp"
 #include "FileSystem.hpp"
 #include "SDL_rwops_gzfile.h"

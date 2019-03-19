@@ -19,7 +19,7 @@
 /// \file VoiceResample.cpp
 /// \brief voc file resample implementation
 //
-#include "Audio.hpp"
+#include "pch.hpp"
 #include <SDL_mixer.h>
 #include "resamp.h"
 #include <vector>

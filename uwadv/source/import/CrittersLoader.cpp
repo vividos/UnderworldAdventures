@@ -20,7 +20,7 @@
 /// \brief critter images loading implementation
 /// for more infos about critters, see file docs/uw-formats.txt
 //
-#include "Import.hpp"
+#include "pch.hpp"
 #include "Critter.hpp"
 #include "CrittersLoader.hpp"
 #include "ResourceManager.hpp"

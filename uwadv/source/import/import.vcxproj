@@ -54,16 +54,12 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)source\conv;$(SolutionDir)source\renderer;$(SolutionDir)source\ui;$(SolutionDir)source\underw;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>import.hpp</PrecompiledHeaderFile>
     </ClCompile>
     <Lib />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)source\conv;$(SolutionDir)source\renderer;$(SolutionDir)source\ui;$(SolutionDir)source\underw;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>import.hpp</PrecompiledHeaderFile>
     </ClCompile>
     <Lib />
   </ItemDefinitionGroup>
@@ -73,11 +69,9 @@
     <ClCompile Include="CutsceneLoader.cpp" />
     <ClCompile Include="FontLoader.cpp" />
     <ClCompile Include="ImageLoader.cpp" />
-    <ClCompile Include="Import.cpp">
+    <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">import.hpp</PrecompiledHeaderFile>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">import.hpp</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="GameStringsImporter.cpp" />
     <ClCompile Include="LevellImporter.cpp" />
@@ -100,6 +94,7 @@
     <ClInclude Include="CrittersLoader.hpp" />
     <ClInclude Include="GameStringsImporter.hpp" />
     <ClInclude Include="LevelImporter.hpp" />
+    <ClInclude Include="pch.hpp" />
     <ClInclude Include="PlayerImporter.hpp" />
     <ClInclude Include="TextureLoader.hpp" />
   </ItemGroup>

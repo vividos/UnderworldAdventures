@@ -19,7 +19,7 @@
 /// \file Game.cpp
 /// \brief main game and loop code
 //
-#include "Base.hpp"
+#include "pch.hpp"
 #include "Game.hpp"
 #include "TextFile.hpp"
 #include "GameConfigLoader.hpp"

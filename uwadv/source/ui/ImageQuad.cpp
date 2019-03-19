@@ -19,7 +19,7 @@
 /// \file ImageQuad.cpp
 /// \brief image quad implementation
 //
-#include "common.hpp"
+#include "pch.hpp"
 #include "ImageQuad.hpp"
 #include "Renderer.hpp"
 

@@ -19,7 +19,7 @@
 /// \file GameStrings.cpp
 /// \brief game strings loading implementation
 //
-#include "underw.hpp"
+#include "pch.hpp"
 #include "GameStrings.hpp"
 
 bool GameStrings::IsBlockAvail(Uint16 blockId) const

@@ -16,6 +16,8 @@
       <SDLCheck>true</SDLCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.hpp</PrecompiledHeaderFile>
     </ClCompile>
     <Lib>
       <OutputFile>$(SolutionDir)output\lib\$(Configuration)\$(TargetName)$(TargetExt)</OutputFile>

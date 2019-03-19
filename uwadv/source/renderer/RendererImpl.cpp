@@ -19,7 +19,7 @@
 /// \file RendererImpl.cpp
 /// \brief renderer implementation
 //
-#include "common.hpp"
+#include "pch.hpp"
 #include "RendererImpl.hpp"
 #include "Quadtree.hpp"
 #include "GeometryProvider.hpp"

@@ -54,8 +54,6 @@
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)source\thirdparty\zziplib;$(SolutionDir)source\thirdparty\zlib1211\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;ZLIB_WINAPI;Z_LARGE64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>base.hpp</PrecompiledHeaderFile>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>zlibstat.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -70,8 +68,6 @@
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)source\thirdparty\zziplib;$(SolutionDir)source\thirdparty\zlib1211\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;ZLIB_WINAPI;Z_LARGE64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>base.hpp</PrecompiledHeaderFile>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>zlibstat.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -84,15 +80,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ArchiveFile.cpp" />
-    <ClCompile Include="Base.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-    </ClCompile>
+    <ClCompile Include="Base.cpp" />
     <ClCompile Include="ConfigFile.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="FileSystem.cpp" />
     <ClCompile Include="Keymap.cpp" />
     <ClCompile Include="KeyValuePairTextFileReader.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Savegame.cpp" />
     <ClCompile Include="SDL_rwops_gzfile.c">
@@ -122,6 +119,7 @@
     <ClInclude Include="Keymap.hpp" />
     <ClInclude Include="KeyValuePairTextFileReader.hpp" />
     <ClInclude Include="Math.hpp" />
+    <ClInclude Include="pch.hpp" />
     <ClInclude Include="ResourceManager.hpp" />
     <ClInclude Include="Savegame.hpp" />
     <ClInclude Include="SDL_rwops_gzfile.h" />

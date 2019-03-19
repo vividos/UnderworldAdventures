@@ -19,7 +19,7 @@
 /// \file Palette256.cpp
 /// \brief palette class
 //
-#include "common.hpp"
+#include "pch.hpp"
 #include "Palette256.hpp"
 
 Palette256::Palette256()

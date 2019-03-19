@@ -19,8 +19,8 @@
 /// \file ConfigFile.cpp
 /// \brief config file loading implementation
 //
+#include "pch.hpp"
 #include <cerrno>
-#include "Base.hpp"
 #include "ConfigFile.hpp"
 #include "TextFile.hpp"
 

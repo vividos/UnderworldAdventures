@@ -19,7 +19,7 @@
 /// \file GeometryProvider.cpp
 /// \brief level geometry provider implementation
 //
-#include "common.hpp"
+#include "pch.hpp"
 #include "GeometryProvider.hpp"
 
 /// side of currently rendered wall; used internally

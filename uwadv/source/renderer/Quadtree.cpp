@@ -22,7 +22,7 @@
 // There is a test main() function, just define TEST_QUADTREE and compile
 // as a single project.
 //
-#include "common.hpp"
+#include "pch.hpp"
 #include "Quadtree.hpp"
 #include "Math.hpp"
 

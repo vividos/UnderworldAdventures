@@ -19,7 +19,7 @@
 /// \file TextEditWindow.cpp
 /// \brief text edit window
 //
-#include "common.hpp"
+#include "pch.hpp"
 #include "TextEditWindow.hpp"
 
 TextEditWindow::~TextEditWindow()

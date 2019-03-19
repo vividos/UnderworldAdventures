@@ -19,7 +19,7 @@
 /// \file String.cpp
 /// \brief string functions implementation
 //
-#include "Base.hpp"
+#include "pch.hpp"
 #include "String.hpp"
 #include <algorithm>
 #include <cctype>

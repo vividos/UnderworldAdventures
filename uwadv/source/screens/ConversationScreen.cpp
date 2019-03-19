@@ -19,7 +19,7 @@
 /// \file ConversationScreen.cpp
 /// \brief conversation screen implementation
 //
-#include "common.hpp"
+#include "pch.hpp"
 #include "ConversationScreen.hpp"
 #include "Object.hpp"
 #include "GameStrings.hpp"

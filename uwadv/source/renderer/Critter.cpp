@@ -19,7 +19,7 @@
 /// \file Critter.cpp
 /// \brief critter frames manager implementation
 //
-#include "common.hpp"
+#include "pch.hpp"
 #include "Critter.hpp"
 #include "Object.hpp"
 #include "ObjectList.hpp"

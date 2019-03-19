@@ -20,6 +20,8 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <SDLCheck>true</SDLCheck>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.hpp</PrecompiledHeaderFile>
     </ClCompile>
     <Lib>
       <OutputFile>$(SolutionDir)output\lib\$(Configuration)\$(TargetName)$(TargetExt)</OutputFile>

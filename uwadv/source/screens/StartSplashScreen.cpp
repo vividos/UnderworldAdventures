@@ -19,7 +19,7 @@
 /// \file StartSplashScreen.cpp
 /// \brief start splash screens implementation
 //
-#include "common.hpp"
+#include "pch.hpp"
 #include "StartSplashScreen.hpp"
 #include "Audio.hpp"
 #include "Savegame.hpp"

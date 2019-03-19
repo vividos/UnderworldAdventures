@@ -19,7 +19,7 @@
 /// \file Pathfinder.cpp
 /// \brief pathfinding algorithm implementation
 //
-#include "common.hpp"
+#include "pch.hpp"
 #include "Pathfinder.hpp"
 
 bool PathfinderAStar::FindPath(unsigned int fromx, unsigned int fromy,

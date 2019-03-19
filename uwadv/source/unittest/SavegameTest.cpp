@@ -19,7 +19,7 @@
 /// \file SavegameTest.cpp
 /// \brief Savegame test
 //
-#include "UnitTest.hpp"
+#include "pch.hpp"
 #include "Savegame.hpp"
 #include "FileSystem.hpp"
 

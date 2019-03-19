@@ -19,7 +19,7 @@
 /// \file VoiceFile.cpp
 /// \brief .voc file implementation
 //
-#include "Audio.hpp"
+#include "pch.hpp"
 #include "VoiceFile.hpp"
 #include <SDL_rwops.h>
 #include <SDL_endian.h>

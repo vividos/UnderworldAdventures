@@ -53,16 +53,12 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)source\import;$(SolutionDir)source\renderer;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeader />
-      <PrecompiledHeaderFile>common.hpp</PrecompiledHeaderFile>
     </ClCompile>
     <Lib />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)source\import;$(SolutionDir)source\renderer;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeader />
-      <PrecompiledHeaderFile>common.hpp</PrecompiledHeaderFile>
     </ClCompile>
     <Lib />
   </ItemDefinitionGroup>
@@ -73,6 +69,10 @@
     <ClCompile Include="ImageQuad.cpp" />
     <ClCompile Include="MouseCursor.cpp" />
     <ClCompile Include="Palette256.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Screen.cpp" />
     <ClCompile Include="TextEditWindow.cpp" />
     <ClCompile Include="TextScroll.cpp" />
@@ -86,6 +86,7 @@
     <ClInclude Include="ImageQuad.hpp" />
     <ClInclude Include="MouseCursor.hpp" />
     <ClInclude Include="Palette256.hpp" />
+    <ClInclude Include="pch.hpp" />
     <ClInclude Include="Screen.hpp" />
     <ClInclude Include="TextEditWindow.hpp" />
     <ClInclude Include="TextScroll.hpp" />

@@ -27,7 +27,7 @@
 /// use fading helper class for fading purposes
 /// put global constants as static members into class
 //
-#include "common.hpp"
+#include "pch.hpp"
 #include "CreateCharacterScreen.hpp"
 #include "OriginalIngameScreen.hpp"
 #include "Audio.hpp"

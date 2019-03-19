@@ -19,7 +19,7 @@
 /// \file StringTest.cpp
 /// \brief String test
 //
-#include "UnitTest.hpp"
+#include "pch.hpp"
 #include "String.hpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;

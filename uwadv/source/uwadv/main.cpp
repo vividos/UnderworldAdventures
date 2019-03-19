@@ -23,6 +23,7 @@
 ///  Module relations are as follows:<br>
 ///  \dotfile ua-module-dependencies.dot Module Dependencies
 //
+#include "pch.hpp"
 #include "Base.hpp"
 #include "Game.hpp"
 

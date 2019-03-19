@@ -19,7 +19,7 @@
 /// \file ArchiveFileTest.cpp
 /// \brief ArchiveFile test
 //
-#include "UnitTest.hpp"
+#include "pch.hpp"
 #include "ArchiveFile.hpp"
 #include "Settings.hpp"
 #include "ResourceManager.hpp"

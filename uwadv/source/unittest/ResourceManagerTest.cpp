@@ -19,7 +19,7 @@
 /// \file ResourceManagerTest.cpp
 /// \brief ResourceManager test
 //
-#include "UnitTest.hpp"
+#include "pch.hpp"
 #include "ResourceManager.hpp"
 #include "Settings.hpp"
 #include "File.hpp"

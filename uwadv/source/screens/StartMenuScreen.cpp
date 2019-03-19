@@ -19,7 +19,7 @@
 /// \file StartMenuScreen.cpp
 /// \brief start menu screen implementation
 //
-#include "common.hpp"
+#include "pch.hpp"
 #include "StartMenuScreen.hpp"
 #include "Audio.hpp"
 #include "Renderer.hpp"

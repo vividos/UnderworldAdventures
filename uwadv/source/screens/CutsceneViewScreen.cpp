@@ -20,7 +20,7 @@
 /// \brief cutscene view implementation
 /// \todo replace fading in/out with FadingHelper
 //
-#include "common.hpp"
+#include "pch.hpp"
 #include "CutsceneViewScreen.hpp"
 #include "Audio.hpp"
 #include "Renderer.hpp"

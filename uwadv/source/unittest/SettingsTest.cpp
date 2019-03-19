@@ -19,7 +19,7 @@
 /// \file SettingsTest.cpp
 /// \brief Settings test
 //
-#include "UnitTest.hpp"
+#include "pch.hpp"
 #include "Settings.hpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;

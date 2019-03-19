@@ -19,7 +19,7 @@
 /// \file UnderworldTest.cpp
 /// \brief Underworld classes test
 //
-#include "UnitTest.hpp"
+#include "pch.hpp"
 #include "Savegame.hpp"
 #include "FileSystem.hpp"
 #include "Underworld.hpp"
