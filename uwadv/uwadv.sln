@@ -51,6 +51,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "thirdparty", "source\thirdp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{2DC9BCF9-45AB-470E-8D94-A2336A3BB735}"
 	ProjectSection(SolutionItems) = preProject
+		README.Developer.md = README.Developer.md
 		docs\uw-formats.txt = docs\uw-formats.txt
 	EndProjectSection
 EndProject
