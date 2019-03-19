@@ -82,6 +82,16 @@ public:
       m_trackedBodies.push_back(body);
    }
 
+   /// removes physics body
+   void RemoveTrackBody(PhysicsBody* body)
+   {
+      auto iter = std::find(m_trackedBodies.begin(), m_trackedBodies.end(), body);
+      UaAssert(iter != m_trackedBodies.end());
+
+      if (iter != m_trackedBodies.end())
+         m_trackedBodies.erase(iter);
+   }
+
 private:
    /// tracks object movement for given direction vector
    bool TrackObject(PhysicsBody& body, Vector3d dir,
