@@ -231,8 +231,6 @@ protected:
 
    /// indicates that mouse movement is currently on
    bool m_mouseMove;
-
-   std::unique_ptr<PlayerPhysicsObject> m_playerPhysics;
 };
 
 
