@@ -30,6 +30,7 @@
 #include "uwadv/DebugServer.hpp"
 #include "ConversationScreen.hpp"
 #include "Model3D.hpp"
+#include "physics/PhysicsModel.hpp"
 
 /// time to fade in/out
 const double OriginalIngameScreen::s_fadeTime = 0.5;
@@ -224,6 +225,8 @@ void OriginalIngameScreen::Suspend()
 
    m_game.GetRenderer().Clear();
 
+   m_game.GetPhysicsModel().RemoveTrackBody(&m_playerPhysics);
+
    m_game.RegisterUserInterface(NULL);
 }
 
@@ -233,6 +236,7 @@ void OriginalIngameScreen::Resume()
 
    m_game.RegisterUserInterface(this);
 
+   m_game.GetPhysicsModel().AddTrackBody(&m_playerPhysics);
 
    // setup fade-in
    m_fadeState = 0;
@@ -731,6 +735,7 @@ void OriginalIngameScreen::Tick()
       m_game.GetGameLogic().EvaluateUnderworld(double(m_tickCount) / m_game.GetTickRate());
 
       double elapsedTime = 1.0 / m_game.GetTickRate();
+      m_playerPhysics.RotateMove(elapsedTime);
       m_game.GetPhysicsModel().EvaluatePhysics(elapsedTime);
 
       m_tickCount++;
