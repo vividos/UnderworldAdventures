@@ -29,7 +29,7 @@
 Frustum2d::Frustum2d(double xpos, double ypos,
    double angle, double fov, double farplane)
 {
-   m_points[0].set(xpos - 3.0*cos(Deg2rad(angle)), ypos - 3.0*sin(Deg2rad(angle)));
+   m_points[0].Set(xpos - 3.0*cos(Deg2rad(angle)), ypos - 3.0*sin(Deg2rad(angle)));
 
    // move camera pos a bit behind
    farplane += 3.0;
@@ -44,8 +44,8 @@ Frustum2d::Frustum2d(double xpos, double ypos,
    double wx = len * cos(Deg2rad(angle + 90.0));
    double wy = len * sin(Deg2rad(angle + 90.0));
 
-   m_points[1].set(vx + wx, vy + wy);
-   m_points[2].set(vx - wx, vy - wy);
+   m_points[1].Set(vx + wx, vy + wy);
+   m_points[2].Set(vx - wx, vy - wy);
 }
 
 /// Determines if the given point is inside the view frustum.

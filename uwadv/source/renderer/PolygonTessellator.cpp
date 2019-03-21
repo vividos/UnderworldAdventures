@@ -141,7 +141,7 @@ void GL_CALLBACK PolygonTessellator::OnCombinedData(GLdouble coords[3],
 {
    Vertex3d* vert = new Vertex3d;
 
-   vert->pos.set(coords[0], coords[1], coords[2]);
+   vert->pos.Set(coords[0], coords[1], coords[2]);
    vert->u =
       weight[0] * vertexData[0]->u +
       weight[1] * vertexData[1]->u +

@@ -64,8 +64,8 @@ void Model3DBuiltIn::Render(const Underworld::Object& object,
       vec1 -= tri.m_vertices[0].pos;
       vec2 -= tri.m_vertices[0].pos;
 
-      normal.cross(vec1, vec2);
-      normal.normalize();
+      normal.Cross(vec1, vec2);
+      normal.Normalize();
       normal *= -1;
 
       glNormal3d(normal.x, normal.y, normal.z);
@@ -176,24 +176,24 @@ void Model3DSpecial::GetBoundingTriangles(const Underworld::Object& object,
       Vector3d ext(0.5, 0.5, 0.062 + 1.6);
 
       Triangle3dTextured tri;
-      tri.set(0, base.x - ext.x, base.y - ext.y, base.z + ext.z, 0.0, 0.0);
-      tri.set(1, base.x + ext.x, base.y - ext.y, base.z + ext.z, 0.0, 0.0);
-      tri.set(2, base.x + ext.x, base.y + ext.y, base.z + ext.z, 0.0, 0.0);
+      tri.Set(0, base.x - ext.x, base.y - ext.y, base.z + ext.z, 0.0, 0.0);
+      tri.Set(1, base.x + ext.x, base.y - ext.y, base.z + ext.z, 0.0, 0.0);
+      tri.Set(2, base.x + ext.x, base.y + ext.y, base.z + ext.z, 0.0, 0.0);
       allTriangles.push_back(tri);
 
-      tri.set(0, base.x - ext.x, base.y - ext.y, base.z + ext.z, 0.0, 0.0);
-      tri.set(1, base.x + ext.x, base.y + ext.y, base.z + ext.z, 0.0, 0.0);
-      tri.set(2, base.x - ext.x, base.y + ext.y, base.z + ext.z, 0.0, 0.0);
+      tri.Set(0, base.x - ext.x, base.y - ext.y, base.z + ext.z, 0.0, 0.0);
+      tri.Set(1, base.x + ext.x, base.y + ext.y, base.z + ext.z, 0.0, 0.0);
+      tri.Set(2, base.x - ext.x, base.y + ext.y, base.z + ext.z, 0.0, 0.0);
       allTriangles.push_back(tri);
 
-      tri.set(0, base.x - ext.x, base.y - ext.y, base.z, 0.0, 0.0);
-      tri.set(2, base.x + ext.x, base.y - ext.y, base.z, 0.0, 0.0);
-      tri.set(1, base.x + ext.x, base.y + ext.y, base.z, 0.0, 0.0);
+      tri.Set(0, base.x - ext.x, base.y - ext.y, base.z, 0.0, 0.0);
+      tri.Set(2, base.x + ext.x, base.y - ext.y, base.z, 0.0, 0.0);
+      tri.Set(1, base.x + ext.x, base.y + ext.y, base.z, 0.0, 0.0);
       allTriangles.push_back(tri);
 
-      tri.set(0, base.x - ext.x, base.y - ext.y, base.z, 0.0, 0.0);
-      tri.set(2, base.x + ext.x, base.y + ext.y, base.z, 0.0, 0.0);
-      tri.set(1, base.x - ext.x, base.y + ext.y, base.z, 0.0, 0.0);
+      tri.Set(0, base.x - ext.x, base.y - ext.y, base.z, 0.0, 0.0);
+      tri.Set(2, base.x + ext.x, base.y + ext.y, base.z, 0.0, 0.0);
+      tri.Set(1, base.x - ext.x, base.y + ext.y, base.z, 0.0, 0.0);
       allTriangles.push_back(tri);
    }
 }

@@ -205,96 +205,96 @@ void GeometryProvider::GetTileTriangles(unsigned int xpos,
       floor_tri1.m_textureNumber = floor_tri2.m_textureNumber = tile.m_textureFloor;
 
       // common ceiling quad
-      ceil_tri1.set(0, x, y, ceil_height, 0.0, 0.0);
-      ceil_tri1.set(1, x + 1, y + 1, ceil_height, 1.0, 1.0);
-      ceil_tri1.set(2, x + 1, y, ceil_height, 1.0, 0.0);
-      ceil_tri2.set(0, x, y, ceil_height, 0.0, 0.0);
-      ceil_tri2.set(1, x, y + 1, ceil_height, 0.0, 1.0);
-      ceil_tri2.set(2, x + 1, y + 1, ceil_height, 1.0, 1.0);
+      ceil_tri1.Set(0, x, y, ceil_height, 0.0, 0.0);
+      ceil_tri1.Set(1, x + 1, y + 1, ceil_height, 1.0, 1.0);
+      ceil_tri1.Set(2, x + 1, y, ceil_height, 1.0, 0.0);
+      ceil_tri2.Set(0, x, y, ceil_height, 0.0, 0.0);
+      ceil_tri2.Set(1, x, y + 1, ceil_height, 0.0, 1.0);
+      ceil_tri2.Set(2, x + 1, y + 1, ceil_height, 1.0, 1.0);
 
       switch (tile.m_type)
       {
       case Underworld::tileOpen:
-         floor_tri1.set(0, x, y, floor_height, 0.0, 0.0);
-         floor_tri1.set(1, x + 1, y, floor_height, 1.0, 0.0);
-         floor_tri1.set(2, x + 1, y + 1, floor_height, 1.0, 1.0);
-         floor_tri2.set(0, x, y, floor_height, 0.0, 0.0);
-         floor_tri2.set(1, x + 1, y + 1, floor_height, 1.0, 1.0);
-         floor_tri2.set(2, x, y + 1, floor_height, 0.0, 1.0);
+         floor_tri1.Set(0, x, y, floor_height, 0.0, 0.0);
+         floor_tri1.Set(1, x + 1, y, floor_height, 1.0, 0.0);
+         floor_tri1.Set(2, x + 1, y + 1, floor_height, 1.0, 1.0);
+         floor_tri2.Set(0, x, y, floor_height, 0.0, 0.0);
+         floor_tri2.Set(1, x + 1, y + 1, floor_height, 1.0, 1.0);
+         floor_tri2.Set(2, x, y + 1, floor_height, 0.0, 1.0);
          break;
 
       case Underworld::tileDiagonal_se:
-         floor_tri1.set(0, x, y, floor_height, 0.0, 0.0);
-         floor_tri1.set(1, x + 1, y, floor_height, 1.0, 0.0);
-         floor_tri1.set(2, x + 1, y + 1, floor_height, 1.0, 1.0);
+         floor_tri1.Set(0, x, y, floor_height, 0.0, 0.0);
+         floor_tri1.Set(1, x + 1, y, floor_height, 1.0, 0.0);
+         floor_tri1.Set(2, x + 1, y + 1, floor_height, 1.0, 1.0);
          tri2_used = false;
          break;
 
       case Underworld::tileDiagonal_sw:
-         floor_tri1.set(0, x, y, floor_height, 0.0, 0.0);
-         floor_tri1.set(1, x + 1, y, floor_height, 1.0, 0.0);
-         floor_tri1.set(2, x, y + 1, floor_height, 0.0, 1.0);
+         floor_tri1.Set(0, x, y, floor_height, 0.0, 0.0);
+         floor_tri1.Set(1, x + 1, y, floor_height, 1.0, 0.0);
+         floor_tri1.Set(2, x, y + 1, floor_height, 0.0, 1.0);
 
-         ceil_tri1.set(0, x, y, ceil_height, 0.0, 0.0);
-         ceil_tri1.set(1, x, y + 1, ceil_height, 0.0, 1.0);
-         ceil_tri1.set(2, x + 1, y, ceil_height, 1.0, 0.0);
+         ceil_tri1.Set(0, x, y, ceil_height, 0.0, 0.0);
+         ceil_tri1.Set(1, x, y + 1, ceil_height, 0.0, 1.0);
+         ceil_tri1.Set(2, x + 1, y, ceil_height, 1.0, 0.0);
          tri2_used = false;
          break;
 
       case Underworld::tileDiagonal_nw:
-         floor_tri1.set(0, x, y, floor_height, 0.0, 0.0);
-         floor_tri1.set(1, x + 1, y + 1, floor_height, 1.0, 1.0);
-         floor_tri1.set(2, x, y + 1, floor_height, 0.0, 1.0);
+         floor_tri1.Set(0, x, y, floor_height, 0.0, 0.0);
+         floor_tri1.Set(1, x + 1, y + 1, floor_height, 1.0, 1.0);
+         floor_tri1.Set(2, x, y + 1, floor_height, 0.0, 1.0);
          ceil_tri1 = ceil_tri2;
          tri2_used = false;
          break;
 
       case Underworld::tileDiagonal_ne:
-         floor_tri1.set(0, x, y + 1, floor_height, 0.0, 1.0);
-         floor_tri1.set(1, x + 1, y, floor_height, 1.0, 0.0);
-         floor_tri1.set(2, x + 1, y + 1, floor_height, 1.0, 1.0);
+         floor_tri1.Set(0, x, y + 1, floor_height, 0.0, 1.0);
+         floor_tri1.Set(1, x + 1, y, floor_height, 1.0, 0.0);
+         floor_tri1.Set(2, x + 1, y + 1, floor_height, 1.0, 1.0);
 
-         ceil_tri1.set(0, x, y + 1, ceil_height, 0.0, 1.0);
-         ceil_tri1.set(1, x + 1, y + 1, ceil_height, 1.0, 1.0);
-         ceil_tri1.set(2, x + 1, y, ceil_height, 1.0, 0.0);
+         ceil_tri1.Set(0, x, y + 1, ceil_height, 0.0, 1.0);
+         ceil_tri1.Set(1, x + 1, y + 1, ceil_height, 1.0, 1.0);
+         ceil_tri1.Set(2, x + 1, y, ceil_height, 1.0, 0.0);
 
          tri2_used = false;
          break;
       case Underworld::tileSlope_n:
 
-         floor_tri1.set(0, x, y, floor_height, 0.0, 0.0);
-         floor_tri1.set(1, x + 1, y, floor_height, 1.0, 0.0);
-         floor_tri1.set(2, x + 1, y + 1, floor_slope_height, 1.0, 1.0);
-         floor_tri2.set(0, x, y, floor_height, 0.0, 0.0);
-         floor_tri2.set(1, x + 1, y + 1, floor_slope_height, 1.0, 1.0);
-         floor_tri2.set(2, x, y + 1, floor_slope_height, 0.0, 1.0);
+         floor_tri1.Set(0, x, y, floor_height, 0.0, 0.0);
+         floor_tri1.Set(1, x + 1, y, floor_height, 1.0, 0.0);
+         floor_tri1.Set(2, x + 1, y + 1, floor_slope_height, 1.0, 1.0);
+         floor_tri2.Set(0, x, y, floor_height, 0.0, 0.0);
+         floor_tri2.Set(1, x + 1, y + 1, floor_slope_height, 1.0, 1.0);
+         floor_tri2.Set(2, x, y + 1, floor_slope_height, 0.0, 1.0);
          break;
 
       case Underworld::tileSlope_s:
-         floor_tri1.set(0, x, y, floor_slope_height, 0.0, 0.0);
-         floor_tri1.set(1, x + 1, y, floor_slope_height, 1.0, 0.0);
-         floor_tri1.set(2, x + 1, y + 1, floor_height, 1.0, 1.0);
-         floor_tri2.set(0, x, y, floor_slope_height, 0.0, 0.0);
-         floor_tri2.set(1, x + 1, y + 1, floor_height, 1.0, 1.0);
-         floor_tri2.set(2, x, y + 1, floor_height, 0.0, 1.0);
+         floor_tri1.Set(0, x, y, floor_slope_height, 0.0, 0.0);
+         floor_tri1.Set(1, x + 1, y, floor_slope_height, 1.0, 0.0);
+         floor_tri1.Set(2, x + 1, y + 1, floor_height, 1.0, 1.0);
+         floor_tri2.Set(0, x, y, floor_slope_height, 0.0, 0.0);
+         floor_tri2.Set(1, x + 1, y + 1, floor_height, 1.0, 1.0);
+         floor_tri2.Set(2, x, y + 1, floor_height, 0.0, 1.0);
          break;
 
       case Underworld::tileSlope_e:
-         floor_tri1.set(0, x, y, floor_height, 0.0, 0.0);
-         floor_tri1.set(1, x + 1, y, floor_slope_height, 1.0, 0.0);
-         floor_tri1.set(2, x + 1, y + 1, floor_slope_height, 1.0, 1.0);
-         floor_tri2.set(0, x, y, floor_height, 0.0, 0.0);
-         floor_tri2.set(1, x + 1, y + 1, floor_slope_height, 1.0, 1.0);
-         floor_tri2.set(2, x, y + 1, floor_height, 0.0, 1.0);
+         floor_tri1.Set(0, x, y, floor_height, 0.0, 0.0);
+         floor_tri1.Set(1, x + 1, y, floor_slope_height, 1.0, 0.0);
+         floor_tri1.Set(2, x + 1, y + 1, floor_slope_height, 1.0, 1.0);
+         floor_tri2.Set(0, x, y, floor_height, 0.0, 0.0);
+         floor_tri2.Set(1, x + 1, y + 1, floor_slope_height, 1.0, 1.0);
+         floor_tri2.Set(2, x, y + 1, floor_height, 0.0, 1.0);
          break;
 
       case Underworld::tileSlope_w:
-         floor_tri1.set(0, x, y, floor_slope_height, 0.0, 0.0);
-         floor_tri1.set(1, x + 1, y, floor_height, 1.0, 0.0);
-         floor_tri1.set(2, x + 1, y + 1, floor_height, 1.0, 1.0);
-         floor_tri2.set(0, x, y, floor_slope_height, 0.0, 0.0);
-         floor_tri2.set(1, x + 1, y + 1, floor_height, 1.0, 1.0);
-         floor_tri2.set(2, x, y + 1, floor_slope_height, 0.0, 1.0);
+         floor_tri1.Set(0, x, y, floor_slope_height, 0.0, 0.0);
+         floor_tri1.Set(1, x + 1, y, floor_height, 1.0, 0.0);
+         floor_tri1.Set(2, x + 1, y + 1, floor_height, 1.0, 1.0);
+         floor_tri2.Set(0, x, y, floor_slope_height, 0.0, 0.0);
+         floor_tri2.Set(1, x + 1, y + 1, floor_height, 1.0, 1.0);
+         floor_tri2.Set(2, x, y + 1, floor_slope_height, 0.0, 1.0);
          break;
 
       default: break;
@@ -330,23 +330,23 @@ void GeometryProvider::AddWall(Triangle3dTextured& tri1, Triangle3dTextured& tri
    // add triangles with proper winding
    if (side == left || side == front)
    {
-      tri1.set(0, x1, y1, z1, 0.0, v1);
-      tri1.set(1, x2, y2, z2, 1.0, v2);
-      tri1.set(2, x2, y2, nz2, 1.0, v3);
+      tri1.Set(0, x1, y1, z1, 0.0, v1);
+      tri1.Set(1, x2, y2, z2, 1.0, v2);
+      tri1.Set(2, x2, y2, nz2, 1.0, v3);
 
-      tri2.set(0, x1, y1, z1, 0.0, v1);
-      tri2.set(1, x2, y2, nz2, 1.0, v3);
-      tri2.set(2, x1, y1, nz1, 0.0, v4);
+      tri2.Set(0, x1, y1, z1, 0.0, v1);
+      tri2.Set(1, x2, y2, nz2, 1.0, v3);
+      tri2.Set(2, x1, y1, nz1, 0.0, v4);
    }
    else
    {
-      tri1.set(0, x1, y1, z1, 1.0, v1);
-      tri1.set(1, x1, y1, nz1, 1.0, v4);
-      tri1.set(2, x2, y2, nz2, 0.0, v3);
+      tri1.Set(0, x1, y1, z1, 1.0, v1);
+      tri1.Set(1, x1, y1, nz1, 1.0, v4);
+      tri1.Set(2, x2, y2, nz2, 0.0, v3);
 
-      tri2.set(0, x1, y1, z1, 1.0, v1);
-      tri2.set(1, x2, y2, nz2, 0.0, v3);
-      tri2.set(2, x2, y2, z2, 0.0, v2);
+      tri2.Set(0, x1, y1, z1, 1.0, v1);
+      tri2.Set(1, x2, y2, nz2, 0.0, v3);
+      tri2.Set(2, x2, y2, z2, 0.0, v2);
    }
 }
 

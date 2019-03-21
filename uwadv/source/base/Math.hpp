@@ -27,7 +27,7 @@
 #include <cmath>
 
 #ifdef _MSC_VER
-// pragmas for visual c++
+// pragmas for Visual C++
 #pragma inline_depth( 255 )
 #pragma inline_recursion( on )
 #pragma auto_inline( on )
@@ -46,51 +46,178 @@ const double c_pi = 3.141592653589793;
 class Vector2d
 {
 public:
-   /// vector elements
-   double x, y;
+   double x; ///< vector x element
+   double y; ///< vector y element
 
 public:
    /// ctor
-   Vector2d();
+   Vector2d()
+      :x(0.0),
+      y(0.0)
+   {
+   }
+
    /// copy ctor
-   Vector2d(const Vector2d& vec);
-   /// assign operator
-   Vector2d& operator=(const Vector2d& vec);
+   Vector2d(const Vector2d& vec)
+      :x(vec.x),
+      y(vec.y)
+   {
+   }
+
+   /// move ctor
+   Vector2d(const Vector2d&& vec)
+      :x(vec.x),
+      y(vec.y)
+   {
+   }
 
    /// ctor with x and y coordinates
-   Vector2d(double ax, double ay);
+   Vector2d(double _x, double _y)
+      :x(_x),
+      y(_y)
+   {
+   }
 
-   /// sets vector by giving vector elements
-   void set(double nx, double ny);
+   // operators
 
-   /// sets vector by giving two vectors
-   void set(const Vector2d& v1, const Vector2d& v2);
+   /// assign operator
+   Vector2d& operator=(const Vector2d& vec)
+   {
+      if (this == &vec)
+         return *this;
 
-   /// sets vector by giving polar coordinates (angle in degree, not radians)
-   void set_polar(double len, double angle);
+      x = vec.x;
+      y = vec.y;
+      return *this;
+   }
+
+   /// move assign operator
+   Vector2d& operator=(const Vector2d&& vec)
+   {
+      if (this == &vec)
+         return *this;
+
+      x = vec.x;
+      y = vec.y;
+      return *this;
+   }
 
    /// add assignment
-   Vector2d& operator+=(const Vector2d& vec);
+   Vector2d& operator+=(const Vector2d& vec)
+   {
+      x += vec.x;
+      y += vec.y;
+      return *this;
+   }
 
    /// subtract assignment
-   Vector2d& operator-=(const Vector2d& vec);
+   Vector2d& operator-=(const Vector2d& vec)
+   {
+      x -= vec.x;
+      y -= vec.y;
+      return *this;
+   }
 
    /// multiplication assignment
-   Vector2d& operator*=(double sc);
+   Vector2d& operator*=(double scalar)
+   {
+      x *= scalar;
+      y *= scalar;
+      return *this;
+   }
+
+   // operations
+
+   /// sets vector by giving vector elements
+   void Set(double _x, double _y)
+   {
+      x = _x;
+      y = _y;
+   }
+
+   /// sets vector by giving two vectors
+   void Set(const Vector2d& v1, const Vector2d& v2)
+   {
+      x = v2.x - v1.x;
+      y = v2.y - v1.y;
+   }
+
+   /// sets vector by giving polar coordinates (angle in degree, not radians)
+   void SetPolar(double length, double angle)
+   {
+      x = length * cos(Deg2rad(angle));
+      y = length * sin(Deg2rad(angle));
+   }
+
 
    /// returns length of vector
-   double length() const;
+   double Length() const
+   {
+      return sqrt(x * x + y * y);
+   }
 
    /// normalizes vector
-   void normalize();
+   void Normalize()
+   {
+      operator*=(1.0 / Length());
+   }
 
-   /// calculates the inner (dot) product
-   double dot(const Vector2d& vec) const;
+   /// calculates the inner (dot) product of this and another vector
+   double Dot(const Vector2d& vec) const
+   {
+      return x * vec.x + y * vec.y;
+   }
 
    /// rotates vector; angle in degree
-   void rotate(double angle);
+   void Rotate(double angle)
+   {
+      double temp = x * cos(Deg2rad(angle)) - y * sin(Deg2rad(angle));
+      y = x * sin(Deg2rad(angle)) + y * cos(Deg2rad(angle));
+      x = temp;
+   }
 };
 
+// free functions
+
+/// unary minus
+inline Vector2d operator-(const Vector2d& vec)
+{
+   return Vector2d(-vec.x, -vec.y);
+};
+
+/// add operator
+inline Vector2d operator+(const Vector2d& v1, const Vector2d& v2)
+{
+   return Vector2d(v1.x + v2.x, v1.y + v2.y);
+}
+
+/// subtract operator
+inline Vector2d operator-(const Vector2d& v1, const Vector2d& v2)
+{
+   return Vector2d(v1.x - v2.x, v1.y - v2.y);
+}
+
+/// scalar multiplication, vector * scalar
+inline Vector2d operator*(const Vector2d& vec, const double scalar)
+{
+   Vector2d ret(vec);
+   ret *= scalar;
+   return ret;
+}
+
+/// scalar multiplication, scalar * vector
+inline Vector2d operator*(const double scalar, const Vector2d& vec)
+{
+   Vector2d ret(vec);
+   ret *= scalar;
+   return ret;
+}
+
+/// division by scalar
+inline Vector2d operator/(const Vector2d& vec, const double scalar)
+{
+   return Vector2d(vec.x / scalar, vec.y / scalar);
+}
 
 /// \brief 3D vector class
 /// The class represents a 3 dimensional vector with x, y and z coordinates.
@@ -98,368 +225,270 @@ public:
 class Vector3d
 {
 public:
-   /// vector elements
-   double x, y, z;
+   double x; ///< vector x element
+   double y; ///< vector y element
+   double z; ///< vector z element
 
 public:
    /// ctor
-   Vector3d();
+   Vector3d()
+      :x(0.0),
+      y(0.0),
+      z(0.0)
+   {
+   }
 
    /// copy ctor
-   Vector3d(const Vector3d& vec);
+   Vector3d(const Vector3d& vec)
+      :x(vec.x),
+      y(vec.y),
+      z(vec.z)
+   {
+   }
+
+   /// move ctor
+   Vector3d(const Vector3d&& vec)
+      :x(vec.x),
+      y(vec.y),
+      z(vec.z)
+   {
+   }
 
    /// ctor with x, y and z coordinates
-   Vector3d(double ax, double ay, double az);
+   Vector3d(double _x, double _y, double _z)
+      :x(_x),
+      y(_y),
+      z(_z)
+   {
+   }
 
-   /// assign operator
-   Vector3d& operator=(const Vector3d& vec);
+   // operators
+
+   /// assignment operator
+   Vector3d& operator=(const Vector3d& vec)
+   {
+      if (this == &vec)
+         return *this;
+
+      x = vec.x;
+      y = vec.y;
+      z = vec.z;
+      return *this;
+   }
+
+   /// move assignment operator
+   Vector3d& operator=(const Vector3d&& vec)
+   {
+      if (this == &vec)
+         return *this;
+
+      x = vec.x;
+      y = vec.y;
+      z = vec.z;
+      return *this;
+   }
 
    /// add assignment
-   Vector3d& operator+=(const Vector3d& vec);
+   Vector3d& operator+=(const Vector3d& vec)
+   {
+      x += vec.x;
+      y += vec.y;
+      z += vec.z;
+      return *this;
+   }
 
    /// subtract assignment
-   Vector3d& operator-=(const Vector3d& vec);
+   Vector3d& operator-=(const Vector3d& vec)
+   {
+      x -= vec.x;
+      y -= vec.y;
+      z -= vec.z;
+      return *this;
+   }
 
    /// multiplication assignment
-   Vector3d& operator*=(double sc);
+   Vector3d& operator*=(double scalar)
+   {
+      x *= scalar;
+      y *= scalar;
+      z *= scalar;
+      return *this;
+   }
 
-   /// multiplication assignment with vector
-   Vector3d& operator*=(const Vector3d& vec);
 
-   /// division assignment with vector
-   Vector3d& operator/=(const Vector3d& vec);
+   /// multiplication assignment with vector (element-wise multiplication)
+   Vector3d& operator*=(const Vector3d& vec)
+   {
+      x *= vec.x;
+      y *= vec.y;
+      z *= vec.z;
+      return *this;
+   }
 
-   /// addition
-   inline Vector3d operator+(const Vector3d& v) const;
+   /// division assignment with vector (element-wise division)
+   Vector3d& operator/=(const Vector3d& vec)
+   {
+      x /= vec.x;
+      y /= vec.y;
+      z /= vec.z;
+      return *this;
+   }
 
-   /// subtraction
-   inline Vector3d operator-(const Vector3d& v) const;
-
-   /// scalar multiplication
-   inline Vector3d operator*(const double f) const;
-
-   /// unary minus
-   inline Vector3d operator-() const;
+   // operations
 
    /// sets vector by giving vector elements
-   void set(double nx, double ny, double nz);
+   void Set(double _x, double _y, double _z)
+   {
+      x = _x;
+      y = _y;
+      z = _z;
+   }
 
    /// returns length of vector
-   double length() const;
+   double Length() const
+   {
+      return sqrt(x * x + y * y + z * z);
+   }
 
    /// normalizes vector
-   void normalize();
+   void Normalize()
+   {
+      operator*=(1.0 / Length());
+   }
 
    /// calculates inner (dot) product
-   double dot(const Vector3d& vec) const;
+   double Dot(const Vector3d& vec) const
+   {
+      return x * vec.x + y * vec.y + z * vec.z;
+   }
 
    /// calculates outer (cross) product
-   void cross(const Vector3d& first, const Vector3d& second);
+   void Cross(const Vector3d& first, const Vector3d& second)
+   {
+      Set(first.y * second.z - first.z * second.y,
+         first.z * second.x - first.x * second.z,
+         first.x * second.y - first.y * second.x);
+   }
 
    /// rotate vector around x axis
-   void rotate_x(double angle);
+   void RotateX(double angle)
+   {
+      double y_temp = y, angle_rad = Deg2rad(angle);
+      y = y * cos(angle_rad) - z * sin(angle_rad);
+      z = y_temp * sin(angle_rad) + z * cos(angle_rad);
+   }
 
    /// rotate vector around y axis
-   void rotate_y(double angle);
+   void RotateY(double angle)
+   {
+      double x_temp = x, angle_rad = Deg2rad(angle);
+      x = x * cos(angle_rad) + z * sin(angle_rad);
+      z = -x_temp * sin(angle_rad) + z * cos(angle_rad);
+   }
 
    /// rotate vector around z axis
-   void rotate_z(double angle);
+   void RotateZ(double angle)
+   {
+      double x_temp = x, angle_rad = Deg2rad(angle);
+      x = x * cos(angle_rad) - y * sin(angle_rad);
+      y = x_temp * sin(angle_rad) + y * cos(angle_rad);
+   }
 
-   /// rotates vector around axis
-   void rotate(const Vector3d& axis, double angle);
+   /// \brief rotates vector around axis
+   /// \details calculates rotated vector using the rotation matrix given at
+   ///http://www.makegames.com/3drotation/
+   void Rotate(const Vector3d& axis, double angle)
+   {
+      double c = cos(Deg2rad(angle));
+      double s = sin(Deg2rad(angle));
+      double t = 1 - c;
+
+      double ax = axis.x, ay = axis.y, az = axis.z;
+
+      Set((t*ax*ax + c)*x + (t*ax*ay - s * az)*y + (t*ax*az + s * ay)*z,
+         (t*ax*ay + s * az)*x + (t*ay*ay + c)*y + (t*ay*az - s * ax)*z,
+         (t*ax*az - s * ay)*x + (t*ay*az + s * ax)*y + (t*az*az + c)*z);
+   }
 };
 
+// free functions
+
+/// unary minus
+inline Vector3d operator-(const Vector3d& vec)
+{
+   return Vector3d(-vec.x, -vec.y, -vec.z);
+};
+
+/// add operator
+inline Vector3d operator+(const Vector3d& v1, const Vector3d& v2)
+{
+   return Vector3d(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
+}
+
+/// subtract operator
+inline Vector3d operator-(const Vector3d& v1, const Vector3d& v2)
+{
+   return Vector3d(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
+}
+
+/// scalar multiplication, vector * scalar
+inline Vector3d operator*(const Vector3d& vec, const double scalar)
+{
+   Vector3d ret(vec);
+   ret *= scalar;
+   return ret;
+}
+
+/// scalar multiplication, scalar * vector
+inline Vector3d operator*(const double scalar, const Vector3d& vec)
+{
+   Vector3d ret(vec);
+   ret *= scalar;
+   return ret;
+}
+
+/// division by scalar
+inline Vector3d operator/(const Vector3d& vec, const double scalar)
+{
+   return Vector3d(vec.x / scalar, vec.y / scalar, vec.z / scalar);
+}
 
 /// plane in 3d
 class Plane3d
 {
 public:
    /// ctor; takes origin and normal vector
-   Plane3d(const Vector3d& the_origin, const Vector3d& the_normal);
+   Plane3d(const Vector3d& the_origin, const Vector3d& the_normal)
+      :origin(the_origin), normal(the_normal)
+   {
+      equation_3 = -normal.Dot(origin);
+   }
 
    /// ctor; constructs plane from triangle
-   Plane3d(Vector3d p1, Vector3d p2, Vector3d p3);
+   Plane3d(Vector3d p1, Vector3d p2, Vector3d p3)
+      : origin(p1)
+   {
+      p2 -= p1;
+      p3 -= p1;
+      normal.Cross(p2, p3);
+      normal.Normalize();
+      equation_3 = -normal.Dot(origin);
+   }
 
    /// calculates if plane is front-facing to given direction vector
-   bool is_front_facing_to(const Vector3d& dir) const;
+   bool IsFrontFacingTo(const Vector3d& direction) const
+   {
+      double dot = normal.Dot(direction);
+      return dot <= 0.0;
+   }
 
    /// calculates signed distance to plane
-   double signed_dist_to(const Vector3d& point) const;
+   double SignedDistanceTo(const Vector3d& point) const
+   {
+      return point.Dot(normal) + equation_3;
+   }
 
    Vector3d origin; ///< plane origin
    Vector3d normal; ///< plane normal
    double equation_3;  ///< 3rd plane equation param
 };
-
-// inline methods
-
-// Vector2d methods
-
-inline Vector2d::Vector2d()
-{
-   x = y = 0.0;
-}
-
-inline Vector2d::Vector2d(const Vector2d& vec)
-{
-   x = vec.x;
-   y = vec.y;
-}
-
-inline Vector2d& Vector2d::operator=(const Vector2d& vec)
-{
-   x = vec.x;
-   y = vec.y;
-   return *this;
-}
-
-inline Vector2d::Vector2d(double ax, double ay)
-{
-   x = ax;
-   y = ay;
-}
-
-inline void Vector2d::set(double nx, double ny)
-{
-   x = nx;
-   y = ny;
-}
-
-inline void Vector2d::set(const Vector2d& v1, const Vector2d& v2)
-{
-   x = v2.x - v1.x;
-   y = v2.y - v1.y;
-}
-
-inline void Vector2d::set_polar(double len, double angle)
-{
-   x = len * cos(Deg2rad(angle));
-   y = len * sin(Deg2rad(angle));
-}
-
-inline Vector2d& Vector2d::operator+=(const Vector2d& vec)
-{
-   x += vec.x;
-   y += vec.y;
-   return *this;
-}
-
-inline Vector2d& Vector2d::operator-=(const Vector2d& vec)
-{
-   x -= vec.x;
-   y -= vec.y;
-   return *this;
-}
-
-inline Vector2d& Vector2d::operator*=(double sc)
-{
-   x *= sc;
-   y *= sc;
-   return *this;
-}
-
-inline double Vector2d::length() const
-{
-   return sqrt(x*x + y * y);
-}
-
-inline void Vector2d::normalize()
-{
-   (*this) *= (1.0 / length());
-}
-
-inline double Vector2d::dot(const Vector2d& vec) const
-{
-   return x * vec.x + y * vec.y;
-}
-
-inline void Vector2d::rotate(double angle)
-{
-   double temp = x * cos(Deg2rad(angle)) - y * sin(Deg2rad(angle));
-   y = x * sin(Deg2rad(angle)) + y * cos(Deg2rad(angle));
-   x = temp;
-}
-
-
-// Vector3d methods
-
-inline Vector3d::Vector3d()
-{
-   x = y = z = 0.0;
-}
-
-inline Vector3d::Vector3d(const Vector3d& vec)
-   :x(vec.x), y(vec.y), z(vec.z)
-{
-}
-
-inline Vector3d::Vector3d(double ax, double ay, double az)
-   : x(ax), y(ay), z(az)
-{
-}
-
-inline Vector3d& Vector3d::operator=(const Vector3d& vec)
-{
-   x = vec.x;
-   y = vec.y;
-   z = vec.z;
-   return *this;
-}
-
-inline Vector3d& Vector3d::operator+=(const Vector3d& vec)
-{
-   x += vec.x;
-   y += vec.y;
-   z += vec.z;
-   return *this;
-}
-
-inline Vector3d& Vector3d::operator-=(const Vector3d& vec)
-{
-   x -= vec.x;
-   y -= vec.y;
-   z -= vec.z;
-   return *this;
-}
-
-inline Vector3d& Vector3d::operator*=(double sc)
-{
-   x *= sc;
-   y *= sc;
-   z *= sc;
-   return *this;
-}
-
-inline Vector3d& Vector3d::operator*=(const Vector3d& vec)
-{
-   x *= vec.x;
-   y *= vec.y;
-   z *= vec.z;
-   return *this;
-}
-
-inline Vector3d& Vector3d::operator/=(const Vector3d& vec)
-{
-   x /= vec.x;
-   y /= vec.y;
-   z /= vec.z;
-   return *this;
-}
-
-inline Vector3d Vector3d::operator-(const Vector3d& vec) const
-{
-   return Vector3d(x - vec.x, y - vec.y, z - vec.z);
-}
-
-inline Vector3d Vector3d::operator+(const Vector3d& vec) const
-{
-   return Vector3d(x + vec.x, y + vec.y, z + vec.z);
-}
-
-inline Vector3d Vector3d::operator*(const double d) const
-{
-   return Vector3d(x*d, y*d, z*d);
-}
-
-inline Vector3d Vector3d::operator-() const
-{
-   return Vector3d(-x, -y, -z);
-}
-
-
-inline void Vector3d::set(double nx, double ny, double nz)
-{
-   x = nx;
-   y = ny;
-   z = nz;
-}
-
-inline double Vector3d::length() const
-{
-   return sqrt(x*x + y * y + z * z);
-}
-
-inline void Vector3d::normalize()
-{
-   (*this) *= (1.0 / length());
-}
-
-inline double Vector3d::dot(const Vector3d& vec) const
-{
-   return x * vec.x + y * vec.y + z * vec.z;
-}
-
-inline void Vector3d::cross(const Vector3d& first, const Vector3d& second)
-{
-   set(first.y * second.z - first.z * second.y,
-      first.z * second.x - first.x * second.z,
-      first.x * second.y - first.y * second.x);
-}
-
-inline void Vector3d::rotate_x(double angle)
-{
-   double y_temp = y, angle_rad = Deg2rad(angle);
-   y = y * cos(angle_rad) - z * sin(angle_rad);
-   z = y_temp * sin(angle_rad) + z * cos(angle_rad);
-}
-
-inline void Vector3d::rotate_y(double angle)
-{
-   double x_temp = x, angle_rad = Deg2rad(angle);
-   x = x * cos(angle_rad) + z * sin(angle_rad);
-   z = -x_temp * sin(angle_rad) + z * cos(angle_rad);
-}
-
-inline void Vector3d::rotate_z(double angle)
-{
-   double x_temp = x, angle_rad = Deg2rad(angle);
-   x = x * cos(angle_rad) - y * sin(angle_rad);
-   y = x_temp * sin(angle_rad) + y * cos(angle_rad);
-}
-
-/*! calculates rotated vector using the rotation matrix given at
-    http://www.makegames.com/3drotation/
-*/
-inline void Vector3d::rotate(const Vector3d& axis, double angle)
-{
-   double c = cos(Deg2rad(angle));
-   double s = sin(Deg2rad(angle));
-   double t = 1 - c;
-
-   double ax = axis.x, ay = axis.y, az = axis.z;
-
-   set((t*ax*ax + c)*x + (t*ax*ay - s * az)*y + (t*ax*az + s * ay)*z,
-      (t*ax*ay + s * az)*x + (t*ay*ay + c)*y + (t*ay*az - s * ax)*z,
-      (t*ax*az - s * ay)*x + (t*ay*az + s * ax)*y + (t*az*az + c)*z);
-}
-
-
-// Plane3d methods
-
-inline Plane3d::Plane3d(const Vector3d& the_origin,
-   const Vector3d& the_normal)
-   :origin(the_origin), normal(the_normal)
-{
-   equation_3 = -(normal.x*origin.x + normal.y*origin.y + normal.z*origin.z);
-}
-
-inline Plane3d::Plane3d(Vector3d p1, Vector3d p2, Vector3d p3)
-   : origin(p1)
-{
-   p2 -= p1;
-   p3 -= p1;
-   normal.cross(p2, p3);
-   normal.normalize();
-   equation_3 = -(normal.x*origin.x + normal.y*origin.y + normal.z*origin.z);
-}
-
-inline bool Plane3d::is_front_facing_to(const Vector3d& dir) const
-{
-   double dot = normal.dot(dir);
-   return dot <= 0.0;
-}
-
-inline double Plane3d::signed_dist_to(const Vector3d& point) const
-{
-   return point.dot(normal) + equation_3;
-}

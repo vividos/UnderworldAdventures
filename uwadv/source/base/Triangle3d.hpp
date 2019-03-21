@@ -54,9 +54,9 @@ struct Triangle3dTextured
    Vertex3d m_vertices[3];
 
    /// sets triangle point properties
-   void set(unsigned int point, double x, double y, double z, double u, double v)
+   void Set(unsigned int point, double x, double y, double z, double u, double v)
    {
-      m_vertices[point].pos.set(x, y, z);
+      m_vertices[point].pos.Set(x, y, z);
       m_vertices[point].u = u;
       m_vertices[point].v = v;
    }

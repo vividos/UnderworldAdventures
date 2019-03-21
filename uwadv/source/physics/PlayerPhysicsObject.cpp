@@ -152,7 +152,7 @@ Vector3d PlayerPhysicsObject::GetDirection()
 
       // construct direction vector
       dir.x = 1.0;
-      dir.rotate_z(angle);
+      dir.RotateZ(angle);
       dir *= speed;
    }
 

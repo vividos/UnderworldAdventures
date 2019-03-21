@@ -104,7 +104,7 @@ bool PhysicsModel::TrackObject(PhysicsBody& body, Vector3d dir,
    data.ellipsoid = body.GetEllipsoid();
    data.found_collision = false;
 
-   UaAssert(data.ellipsoid.length() > 1e-6); // ellipsoid must not be of zero size
+   UaAssert(data.ellipsoid.Length() > 1e-6); // ellipsoid must not be of zero size
 
    Vector3d pos = body.GetPosition();
 
@@ -165,7 +165,7 @@ bool PhysicsModel::CollideWithWorld(CollisionData& data,
    // set up collision data we send to the mesh
    data.base_point = pos;
    data.norm_dir = data.dir = dir;
-   data.norm_dir.normalize();
+   data.norm_dir.Normalize();
    data.found_collision = false;
 
    // check triangle mesh collision (calls the collision routines)
@@ -189,7 +189,7 @@ bool PhysicsModel::CollideWithWorld(CollisionData& data,
    if (data.nearest_dist >= min_distance)
    {
       Vector3d dir2(dir);
-      dir2.normalize();
+      dir2.Normalize();
       dir2 *= (data.nearest_dist - min_distance);
 
       new_basepoint = data.base_point;
@@ -198,7 +198,7 @@ bool PhysicsModel::CollideWithWorld(CollisionData& data,
       // adjust polygon intersection point (so sliding
       // plane will be unaffected by the fact that we
       // move slightly less than collision tells us)
-      dir2.normalize();
+      dir2.Normalize();
       dir2 *= min_distance;
       data.intersect_point -= dir2;
    }
@@ -206,13 +206,13 @@ bool PhysicsModel::CollideWithWorld(CollisionData& data,
    // determine the sliding plane
    Vector3d slideplane_normal = new_basepoint;
    slideplane_normal -= data.intersect_point;
-   slideplane_normal.normalize();
+   slideplane_normal.Normalize();
 
    Plane3d sliding_plane(data.intersect_point, slideplane_normal);
 
    // calculate new destination point
    Vector3d new_destpoint = slideplane_normal;
-   new_destpoint *= -sliding_plane.signed_dist_to(dest_point);
+   new_destpoint *= -sliding_plane.SignedDistanceTo(dest_point);
    new_destpoint += dest_point;
 
    // generate the slide vector, which will become our new velocity vector for
@@ -223,7 +223,7 @@ bool PhysicsModel::CollideWithWorld(CollisionData& data,
    // recurse
 
    // don't recurse if the new direction is very small
-   if (new_dir.length() < min_distance)
+   if (new_dir.Length() < min_distance)
    {
       pos = new_basepoint;
       return true;
@@ -280,7 +280,7 @@ void PhysicsModel::CheckTriangle(CollisionData& data,
 
    // is triangle front-facing to the direction vector?
    // we only check front-facing triangles
-   if (!triangle_plane.is_front_facing_to(data.norm_dir))
+   if (!triangle_plane.IsFrontFacingTo(data.norm_dir))
       return;
 
    // triangle is front-facing
@@ -291,10 +291,10 @@ void PhysicsModel::CheckTriangle(CollisionData& data,
 
    // calculate signed distance from sphere
    // position to triangle plane
-   double dist_triangle = triangle_plane.signed_dist_to(data.base_point);
+   double dist_triangle = triangle_plane.SignedDistanceTo(data.base_point);
 
    // cache this as we're going to use it a few times below
-   double normal_dot_dir = triangle_plane.normal.dot(data.dir);
+   double normal_dot_dir = triangle_plane.normal.Dot(data.dir);
 
    // if sphere is travelling parallel to the plane
    if (normal_dot_dir == 0.0)
@@ -380,7 +380,7 @@ void PhysicsModel::CheckTriangle(CollisionData& data,
       Vector3d dir = data.dir;
       Vector3d base = data.base_point;
 
-      double dir_sq_length = dir.length(); dir_sq_length *= dir_sq_length;
+      double dir_sq_length = dir.Length(); dir_sq_length *= dir_sq_length;
       double a, b, c;
       double new_t;
 
@@ -393,8 +393,8 @@ void PhysicsModel::CheckTriangle(CollisionData& data,
       a = dir_sq_length;
 
       // P1
-      b = 2.0*(dir.dot(base - p1));
-      c = (p1 - base).length(); c *= c;
+      b = 2.0*(dir.Dot(base - p1));
+      c = (p1 - base).Length(); c *= c;
       c -= 1.0;
       if (GetLowestRoot(a, b, c, t, new_t))
       {
@@ -404,8 +404,8 @@ void PhysicsModel::CheckTriangle(CollisionData& data,
       }
 
       // P2
-      b = 2.0*(dir.dot(base - p2));
-      c = (p2 - base).length(); c *= c;
+      b = 2.0*(dir.Dot(base - p2));
+      c = (p2 - base).Length(); c *= c;
       c -= 1.0;
       if (GetLowestRoot(a, b, c, t, new_t))
       {
@@ -415,8 +415,8 @@ void PhysicsModel::CheckTriangle(CollisionData& data,
       }
 
       // P3
-      b = 2.0*(dir.dot(base - p3));
-      c = (p3 - base).length(); c *= c;
+      b = 2.0*(dir.Dot(base - p3));
+      c = (p3 - base).Length(); c *= c;
       c -= 1.0;
       if (GetLowestRoot(a, b, c, t, new_t))
       {
@@ -431,16 +431,16 @@ void PhysicsModel::CheckTriangle(CollisionData& data,
       {
          Vector3d edge = p2 - p1;
          Vector3d base_to_vertex = p1 - base;
-         double edge_sq_length = edge.length();
+         double edge_sq_length = edge.Length();
          edge_sq_length *= edge_sq_length;
-         double edge_dot_dir = edge.dot(dir);
-         double edge_dot_base_to_vertex = edge.dot(base_to_vertex);
-         double base_to_vertex_sq_length = base_to_vertex.length();
+         double edge_dot_dir = edge.Dot(dir);
+         double edge_dot_base_to_vertex = edge.Dot(base_to_vertex);
+         double base_to_vertex_sq_length = base_to_vertex.Length();
          base_to_vertex_sq_length *= base_to_vertex_sq_length;
 
          // calculate parameters for equation
          a = edge_sq_length * -dir_sq_length + edge_dot_dir * edge_dot_dir;
-         b = edge_sq_length * (2.0*dir.dot(base_to_vertex)) -
+         b = edge_sq_length * (2.0*dir.Dot(base_to_vertex)) -
             2.0*edge_dot_dir*edge_dot_base_to_vertex;
          c = edge_sq_length * (1 - base_to_vertex_sq_length) +
             edge_dot_base_to_vertex * edge_dot_base_to_vertex;
@@ -468,16 +468,16 @@ void PhysicsModel::CheckTriangle(CollisionData& data,
       {
          Vector3d edge = p3 - p2;
          Vector3d base_to_vertex = p2 - base;
-         double edge_sq_length = edge.length();
+         double edge_sq_length = edge.Length();
          edge_sq_length *= edge_sq_length;
-         double edge_dot_dir = edge.dot(dir);
-         double edge_dot_base_to_vertex = edge.dot(base_to_vertex);
-         double base_to_vertex_sq_length = base_to_vertex.length();
+         double edge_dot_dir = edge.Dot(dir);
+         double edge_dot_base_to_vertex = edge.Dot(base_to_vertex);
+         double base_to_vertex_sq_length = base_to_vertex.Length();
          base_to_vertex_sq_length *= base_to_vertex_sq_length;
 
          // calculate parameters for equation
          a = edge_sq_length * -dir_sq_length + edge_dot_dir * edge_dot_dir;
-         b = edge_sq_length * (2.0*dir.dot(base_to_vertex)) -
+         b = edge_sq_length * (2.0*dir.Dot(base_to_vertex)) -
             2.0*edge_dot_dir*edge_dot_base_to_vertex;
          c = edge_sq_length * (1 - base_to_vertex_sq_length) +
             edge_dot_base_to_vertex * edge_dot_base_to_vertex;
@@ -505,16 +505,16 @@ void PhysicsModel::CheckTriangle(CollisionData& data,
       {
          Vector3d edge = p1 - p3;
          Vector3d base_to_vertex = p3 - base;
-         double edge_sq_length = edge.length();
+         double edge_sq_length = edge.Length();
          edge_sq_length *= edge_sq_length;
-         double edge_dot_dir = edge.dot(dir);
-         double edge_dot_base_to_vertex = edge.dot(base_to_vertex);
-         double base_to_vertex_sq_length = base_to_vertex.length();
+         double edge_dot_dir = edge.Dot(dir);
+         double edge_dot_base_to_vertex = edge.Dot(base_to_vertex);
+         double base_to_vertex_sq_length = base_to_vertex.Length();
          base_to_vertex_sq_length *= base_to_vertex_sq_length;
 
          // calculate parameters for equation
          a = edge_sq_length * -dir_sq_length + edge_dot_dir * edge_dot_dir;
-         b = edge_sq_length * (2.0*dir.dot(base_to_vertex)) -
+         b = edge_sq_length * (2.0*dir.Dot(base_to_vertex)) -
             2.0*edge_dot_dir*edge_dot_base_to_vertex;
          c = edge_sq_length * (1 - base_to_vertex_sq_length) +
             edge_dot_base_to_vertex * edge_dot_base_to_vertex;
@@ -544,7 +544,7 @@ void PhysicsModel::CheckTriangle(CollisionData& data,
    if (found)
    {
       // distance to collision: 't' is time of collision
-      double dist_coll = t * data.dir.length();
+      double dist_coll = t * data.dir.Length();
 
       // does this triangle qualify for the closest hit?
       // it does if it's the first hit or the closest
@@ -609,15 +609,15 @@ bool CheckPointInTriangle(const Vector3d& point,
 
    float a, b, c, ac_bb;
 
-   a = e10.dot(e10);
-   b = e10.dot(e20);
-   c = e20.dot(e20);
+   a = e10.Dot(e10);
+   b = e10.Dot(e20);
+   c = e20.Dot(e20);
    ac_bb = (a*c) - (b*b);
 
    Vector3d vp = Vector3d(point.x - pa.x, point.y - pa.y, point.z - pa.z);
 
-   float d = vp.dot(e10);
-   float e = vp.dot(e20);
+   float d = vp.Dot(e10);
+   float e = vp.Dot(e20);
 
    float x = (d*c) - (e*b);
    float y = (e*a) - (d*b);

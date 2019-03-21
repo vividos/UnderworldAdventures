@@ -105,11 +105,11 @@ void RendererImpl::Render(const Underworld::Level& level, Vector3d pos,
       glGetFloatv(GL_MODELVIEW_MATRIX, modelview);
 
       // retrieve right and up vectors
-      m_billboardRightVector.set(modelview[0], modelview[4], modelview[8]);
-      m_billboardUpVector.set(modelview[1], modelview[5], modelview[9]);
+      m_billboardRightVector.Set(modelview[0], modelview[4], modelview[8]);
+      m_billboardUpVector.Set(modelview[1], modelview[5], modelview[9]);
 
-      m_billboardRightVector.normalize();
-      m_billboardUpVector.normalize();
+      m_billboardRightVector.Normalize();
+      m_billboardUpVector.Normalize();
    }
 
    // draw all visible tiles
@@ -283,10 +283,10 @@ void RendererImpl::RenderDecal(const Object& obj, unsigned int x, unsigned int y
 
    switch(extinfo.heading)
    {
-   case 0: to_right.set(1.0,0.0);  base.x += extinfo.xpos/8.0; base.y += 1.0-wall_offset; break;
-   case 2: to_right.set(0.0,-1.0); base.y += extinfo.ypos/8.0; base.x += 1.0-wall_offset; break;
-   case 4: to_right.set(-1.0,0.0); base.x += extinfo.xpos/8.0; base.y += wall_offset; break;
-   case 6: to_right.set(0.0,1.0);  base.y += extinfo.ypos/8.0; base.x += wall_offset; break;
+   case 0: to_right.Set(1.0,0.0);  base.x += extinfo.xpos/8.0; base.y += 1.0-wall_offset; break;
+   case 2: to_right.Set(0.0,-1.0); base.y += extinfo.ypos/8.0; base.x += 1.0-wall_offset; break;
+   case 4: to_right.Set(-1.0,0.0); base.x += extinfo.xpos/8.0; base.y += wall_offset; break;
+   case 6: to_right.Set(0.0,1.0);  base.y += extinfo.ypos/8.0; base.x += wall_offset; break;
 
    default:
       while(false);
@@ -295,7 +295,7 @@ void RendererImpl::RenderDecal(const Object& obj, unsigned int x, unsigned int y
 
    const double decalheight = 1.0/8.0;
 
-   to_right.normalize();
+   to_right.Normalize();
    to_right *= decalheight;
 
    // select texture
@@ -366,18 +366,18 @@ void RendererImpl::RenderTmapObject(const Object& obj, unsigned int x, unsigned 
    Vector3d dir;
    switch(extinfo.heading)
    {
-   case 0: dir.set(1.0, 0.0, 0.0); break;
-   case 2: dir.set(0.0, 1.0, 0.0); break;
-   case 4: dir.set(-1.0, 0.0, 0.0); break;
-   case 6: dir.set(0.0, -1.0, 0.0); break;
+   case 0: dir.Set(1.0, 0.0, 0.0); break;
+   case 2: dir.Set(0.0, 1.0, 0.0); break;
+   case 4: dir.Set(-1.0, 0.0, 0.0); break;
+   case 6: dir.Set(0.0, -1.0, 0.0); break;
 
-   case 1: dir.set(1.0, -1.0, 0.0); break;
-   case 3: dir.set(-1.0, -1.0, 0.0); break;
-   case 5: dir.set(-1.0, 1.0, 0.0); break;
-   case 7: dir.set(1.0, 1.0, 0.0); break;
+   case 1: dir.Set(1.0, -1.0, 0.0); break;
+   case 3: dir.Set(-1.0, -1.0, 0.0); break;
+   case 5: dir.Set(-1.0, 1.0, 0.0); break;
+   case 7: dir.Set(1.0, 1.0, 0.0); break;
    }
 
-   dir.normalize();
+   dir.Normalize();
    dir *= 0.5;
 
    // add fractional position
@@ -388,7 +388,7 @@ void RendererImpl::RenderTmapObject(const Object& obj, unsigned int x, unsigned 
    {
       // in selection mode, offset object pos
       Vector3d offset(dir);
-      offset.rotate_z(-90.0);
+      offset.RotateZ(-90.0);
       offset *= 0.01;
 
       pos += offset;
