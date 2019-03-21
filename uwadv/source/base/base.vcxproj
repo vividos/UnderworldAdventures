@@ -120,6 +120,7 @@
     <ClInclude Include="KeyValuePairTextFileReader.hpp" />
     <ClInclude Include="Math.hpp" />
     <ClInclude Include="pch.hpp" />
+    <ClInclude Include="Plane3d.hpp" />
     <ClInclude Include="ResourceManager.hpp" />
     <ClInclude Include="Savegame.hpp" />
     <ClInclude Include="SDL_rwops_gzfile.h" />
@@ -128,6 +129,8 @@
     <ClInclude Include="TextFile.hpp" />
     <ClInclude Include="Triangle3d.hpp" />
     <ClInclude Include="Uw2decode.hpp" />
+    <ClInclude Include="Vector2d.hpp" />
+    <ClInclude Include="Vector3d.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\thirdparty\zziplib\zziplib.vcxproj">
