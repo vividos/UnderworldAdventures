@@ -70,6 +70,11 @@ public:
    {
    }
 
+   /// dtor
+   ~Vector2d()
+   {
+   }
+
    // operators
 
    /// assign operator

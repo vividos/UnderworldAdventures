@@ -1014,7 +1014,7 @@ int LuaScripting::objlist_insert(lua_State* L)
    LuaScripting& self = GetScriptingFromSelf(L);
    Underworld::ObjectList& objectList =
       self.m_game->GetGameLogic().GetCurrentLevel().GetObjectList();
-   objectList;
+   UNUSED(objectList);
 
    return 0;//1;
 }
@@ -1072,7 +1072,7 @@ int LuaScripting::tilemap_set_info(lua_State* L)
    // retrieve current level
    LuaScripting& self = GetScriptingFromSelf(L);
    Underworld::Level& level = self.m_game->GetGameLogic().GetCurrentLevel();
-   level;
+   UNUSED(level);
 
    return 0;
 }
@@ -1289,7 +1289,7 @@ int LuaScripting::prop_get_special(lua_State* L)
    LuaScripting& self = GetScriptingFromSelf(L);
    Underworld::ObjectProperties& prop =
       self.m_game->GetGameLogic().GetObjectProperties();
-   prop;
+   UNUSED(prop);
 
    return 0;//1;
 }

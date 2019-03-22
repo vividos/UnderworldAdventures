@@ -76,6 +76,11 @@ public:
    {
    }
 
+   /// dtor
+   ~Vector3d()
+   {
+   }
+
    // operators
 
    /// assignment operator
