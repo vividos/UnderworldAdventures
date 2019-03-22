@@ -175,7 +175,7 @@ void Model3DSpecial::GetBoundingTriangles(const Underworld::Object& object,
       // bridge triangles
       Vector3d ext(0.5, 0.5, 0.062 + 1.6);
 
-      Triangle3dTextured tri;
+      Triangle3dTextured tri{ 0 }; // TODO set proper bridge texture
       tri.Set(0, base.x - ext.x, base.y - ext.y, base.z + ext.z, 0.0, 0.0);
       tri.Set(1, base.x + ext.x, base.y - ext.y, base.z + ext.z, 0.0, 0.0);
       tri.Set(2, base.x + ext.x, base.y + ext.y, base.z + ext.z, 0.0, 0.0);

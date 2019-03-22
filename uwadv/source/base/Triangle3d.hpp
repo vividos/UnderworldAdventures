@@ -35,6 +35,12 @@ struct Vertex3d
    {
    }
 
+   /// ctor, setting vertex elements
+   Vertex3d(const Vector3d& pos_, double u = 0.0, double v = 0.0)
+      :pos(pos_)
+   {
+   }
+
    /// vertex position
    Vector3d pos;
 
@@ -47,6 +53,22 @@ struct Vertex3d
 /// also is a m_textureNumber member to specify used texture.
 struct Triangle3dTextured
 {
+   /// ctor, only setting texture number
+   Triangle3dTextured(Uint16 textureNumber)
+      :m_textureNumber(textureNumber)
+   {
+   }
+
+   /// ctor, setting vertex elements
+   Triangle3dTextured(Uint16 textureNumber,
+      const Vertex3d& pos1, const Vertex3d& pos2, const Vertex3d& pos3)
+      :m_textureNumber(textureNumber)
+   {
+      m_vertices[0] = pos1;
+      m_vertices[1] = pos2;
+      m_vertices[2] = pos3;
+   }
+
    /// stock texture number used
    Uint16 m_textureNumber;
 

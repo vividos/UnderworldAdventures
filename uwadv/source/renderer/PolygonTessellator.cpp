@@ -104,11 +104,10 @@ void GL_CALLBACK PolygonTessellator::OnVertexData(Vertex3d* vert, PolygonTessell
    if (This->m_vertexCache.size() == 2)
    {
       // construct triangle
-      Triangle3dTextured tri;
-      tri.m_vertices[0] = This->m_vertexCache[0];
-      tri.m_vertices[1] = This->m_vertexCache[1];
-      tri.m_vertices[2] = *vert;
-      tri.m_textureNumber = This->m_currentTextureNumber;
+      Triangle3dTextured tri{ This->m_currentTextureNumber,
+         This->m_vertexCache[0],
+         This->m_vertexCache[1],
+         *vert };
 
       This->m_triangles.push_back(tri);
 
