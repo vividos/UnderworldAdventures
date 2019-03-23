@@ -73,6 +73,7 @@
   <ItemGroup>
     <ClCompile Include="ArchiveFileTest.cpp" />
     <ClCompile Include="AudioTest.cpp" />
+    <ClCompile Include="CollisionDetectionTest.cpp" />
     <ClCompile Include="ConfigFileTest.cpp" />
     <ClCompile Include="FileSystemTest.cpp" />
     <ClCompile Include="FileTest.cpp" />
@@ -104,6 +105,9 @@
     </ProjectReference>
     <ProjectReference Include="..\import\import.vcxproj">
       <Project>{a974fda8-7d50-4b04-892a-edb00b68f7d6}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\physics\physics.vcxproj">
+      <Project>{6917cdd3-2eef-4b6d-9256-ed5b64391341}</Project>
     </ProjectReference>
     <ProjectReference Include="..\underw\underw.vcxproj">
       <Project>{4cc50617-2229-460e-9a80-3c517a2d9090}</Project>
