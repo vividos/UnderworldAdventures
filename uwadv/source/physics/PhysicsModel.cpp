@@ -38,13 +38,13 @@ bool CheckPointInTriangle(const Vector3d& point,
    const Vector3d& pa, const Vector3d& pb, const Vector3d& pc);
 
 
-/// collision check data
+/// collision data
 struct CollisionData
 {
-   // default ctor
+   /// default ctor
    CollisionData()
-      :found_collision(false),
-      nearest_dist(1e20) // should be "infinite enough"
+      :foundCollision(false),
+      nearestDistance(1e20) // should be "infinite enough"
    {
    }
 
@@ -52,14 +52,14 @@ struct CollisionData
    Vector3d ellipsoid;
 
    // information about the move being requested (in eSpace)
-   Vector3d dir;        ///< direction
-   Vector3d norm_dir;   ///< normalized dir
-   Vector3d base_point; ///< base point
+   Vector3d velocity;            ///< velocity direction
+   Vector3d normalizedVelocity;  ///< normalized velocity
+   Vector3d basePoint;           ///< base point
 
    // hit information
-   bool found_collision;   ///< indicates if collision was found
-   double nearest_dist;    ///< dist to nearest triangle
-   Vector3d intersect_point;  ///< direction intersection point
+   bool foundCollision;       ///< indicates if collision was found
+   double nearestDistance;    ///< dist to nearest triangle
+   Vector3d intersectPoint;   ///< intersection point of collision
 };
 
 
@@ -96,21 +96,21 @@ void PhysicsModel::TrackObject(PhysicsBody& body)
    }
 
    // apply effect forces, e.g. jump traps, up vector for bouncing balls
-   Vector3d effect_force;
-   TrackObject(body, effect_force);
+   Vector3d effectForce;
+   TrackObject(body, effectForce);
 }
 
 /// \param body physics body to track
-/// \param dir direction vector of object
+/// \param velocity velocity direction vector of object
 /// \param gravityForce indicates if we're processing a gravity force
 /// \return true if we collided with triangle
-bool PhysicsModel::TrackObject(PhysicsBody& body, Vector3d dir,
+bool PhysicsModel::TrackObject(PhysicsBody& body, Vector3d velocity,
    bool gravityForce)
 {
    // setup collision package for this tracking
    CollisionData data;
    data.ellipsoid = body.GetEllipsoid();
-   data.found_collision = false;
+   data.foundCollision = false;
 
    UaAssert(data.ellipsoid.Length() > 1e-6); // ellipsoid must not be of zero size
 
@@ -126,12 +126,12 @@ bool PhysicsModel::TrackObject(PhysicsBody& body, Vector3d dir,
 
    // transform to ellipsoid space
    pos /= data.ellipsoid;
-   dir /= data.ellipsoid;
+   velocity /= data.ellipsoid;
 
    // call recursive collision response function
    m_collisionRecursionDepth = 0;
 
-   bool collided = CollideWithWorld(data, pos, dir);
+   bool collided = CollideWithWorld(data, pos, velocity);
 
    if (gravityForce && collided)
    {
@@ -159,87 +159,85 @@ bool PhysicsModel::TrackObject(PhysicsBody& body, Vector3d dir,
 
 /// \param data collision data package
 /// \param pos current position in eSpace
-/// \param dir current direction vector in eSpace
+/// \param velocity current direction vector in eSpace
 /// \return true when a collision occured
 bool PhysicsModel::CollideWithWorld(CollisionData& data,
-   Vector3d& pos, const Vector3d& dir)
+   Vector3d& pos, const Vector3d& velocity)
 {
-   double min_distance = c_physicsMinDistance;
+   double minDistance = c_physicsMinDistance;
 
    // do we need to worry?
    if (m_collisionRecursionDepth > 5)
       return true;
 
    // set up collision data we send to the mesh
-   data.base_point = pos;
-   data.norm_dir = data.dir = dir;
-   data.norm_dir.Normalize();
-   data.found_collision = false;
+   data.basePoint = pos;
+   data.normalizedVelocity = data.velocity = velocity;
+   data.normalizedVelocity.Normalize();
+   data.foundCollision = false;
 
    // check triangle mesh collision (calls the collision routines)
    CheckCollision(data);
 
    // if no collision we just move along the direction
-   if (!data.found_collision)
+   if (!data.foundCollision)
    {
-      pos += dir;
+      pos += velocity;
       return false; // no collision
    }
 
    // collision occured
 
-   Vector3d dest_point(pos); dest_point += dir;
-   Vector3d new_basepoint(pos);
+   Vector3d destinationPoint = pos + velocity;
+   Vector3d newBasePoint = pos;
 
    // only update if we are not already very close
    // and if so we only move very close to intersection ...
    // not to the exact spot
-   if (data.nearest_dist >= min_distance)
+   if (data.nearestDistance >= minDistance)
    {
-      Vector3d dir2(dir);
-      dir2.Normalize();
-      dir2 *= (data.nearest_dist - min_distance);
+      Vector3d velocity2(velocity);
+      velocity2.Normalize();
+      velocity2 *= data.nearestDistance - minDistance;
 
-      new_basepoint = data.base_point + dir2;
+      newBasePoint = data.basePoint + velocity2;
 
       // adjust polygon intersection point (so sliding
       // plane will be unaffected by the fact that we
       // move slightly less than collision tells us)
-      dir2.Normalize();
-      dir2 *= min_distance;
-      data.intersect_point -= dir2;
+      velocity2.Normalize();
+      velocity2 *= minDistance;
+      data.intersectPoint -= velocity2;
    }
 
    // determine the sliding plane
-   Vector3d slideplane_normal = new_basepoint - data.intersect_point;
-   slideplane_normal.Normalize();
+   Vector3d slidePlaneNormal = newBasePoint - data.intersectPoint;
+   slidePlaneNormal.Normalize();
 
-   Plane3d sliding_plane(data.intersect_point, slideplane_normal);
+   Plane3d slidingPlane(data.intersectPoint, slidePlaneNormal);
 
    // calculate new destination point
-   Vector3d new_destpoint = slideplane_normal;
-   new_destpoint *= -sliding_plane.SignedDistanceTo(dest_point);
-   new_destpoint += dest_point;
+   Vector3d newDestinationPoint =
+      -slidingPlane.SignedDistanceTo(destinationPoint) * slidePlaneNormal + destinationPoint;
 
    // generate the slide vector, which will become our new velocity vector for
    // the next iteration
-   Vector3d new_dir = new_destpoint;
-   new_dir -= data.intersect_point;
+   Vector3d newVelocity = newDestinationPoint - data.intersectPoint;
 
    // recurse
 
    // don't recurse if the new direction is very small
-   if (new_dir.Length() < min_distance)
+   if (newVelocity.Length() < minDistance)
    {
-      pos = new_basepoint;
+      pos = newBasePoint;
       return true;
    }
 
    // call the function with the new position and velocity
    m_collisionRecursionDepth++;
 
-   CollideWithWorld(data, new_basepoint, new_dir);
-   pos = new_basepoint;
+   CollideWithWorld(data, newBasePoint, newVelocity);
+   pos = newBasePoint;
 
    m_collisionRecursionDepth--;
 
@@ -249,8 +247,8 @@ bool PhysicsModel::CollideWithWorld(CollisionData& data,
 
 void PhysicsModel::CheckCollision(CollisionData& data)
 {
-   unsigned int xpos = static_cast<unsigned int>(data.base_point.x*data.ellipsoid.x);
-   unsigned int ypos = static_cast<unsigned int>(data.base_point.y*data.ellipsoid.y);
+   unsigned int xpos = static_cast<unsigned int>(data.basePoint.x * data.ellipsoid.x);
+   unsigned int ypos = static_cast<unsigned int>(data.basePoint.y * data.ellipsoid.y);
 
    // retrieve all tile triangles to check
    std::vector<Triangle3dTextured> allTriangles;
@@ -260,9 +258,9 @@ void PhysicsModel::CheckCollision(CollisionData& data)
 
    // check all triangles
    unsigned int max = allTriangles.size();
-   for (unsigned int i = 0; i < max; i++)
+   for (unsigned int index = 0; index < max; index++)
    {
-      Triangle3dTextured& tri = allTriangles[i];
+      Triangle3dTextured& tri = allTriangles[index];
 
       // get triangle points and convert to ellipsoid space
       tri.m_vertices[0].pos /= data.ellipsoid;
@@ -282,30 +280,30 @@ void PhysicsModel::CheckTriangle(CollisionData& data,
    const Vector3d& p1, const Vector3d& p2, const Vector3d& p3)
 {
    // construct plane containing this triangle
-   Plane3d triangle_plane(p1, p2, p3);
+   Plane3d trianglePlane(p1, p2, p3);
 
    // is triangle front-facing to the direction vector?
    // we only check front-facing triangles
-   if (!triangle_plane.IsFrontFacingTo(data.norm_dir))
+   if (!trianglePlane.IsFrontFacingTo(data.normalizedVelocity))
       return;
 
    // triangle is front-facing
 
    // get interval of plane intersection
    double t0, t1;
-   bool embedded = false;
+   bool isEmbedded = false;
 
    // calculate signed distance from sphere
    // position to triangle plane
-   double dist_triangle = triangle_plane.SignedDistanceTo(data.base_point);
+   double distanceToTriangle = trianglePlane.SignedDistanceTo(data.basePoint);
 
    // cache this as we're going to use it a few times below
-   double normal_dot_dir = triangle_plane.normal.Dot(data.dir);
+   double normalDotVelocity = trianglePlane.normal.Dot(data.velocity);
 
    // if sphere is travelling parallel to the plane
-   if (normal_dot_dir == 0.0)
+   if (normalDotVelocity == 0.0)
    {
-      if (fabs(dist_triangle) >= 1.0)
+      if (fabs(distanceToTriangle) >= 1.0)
       {
          // sphere is not embedded in plane; no collision possible
          return;
@@ -314,19 +312,20 @@ void PhysicsModel::CheckTriangle(CollisionData& data,
       {
          // sphere is embedded in plane
          // it intersects in the whole range [0..1]
-         embedded = true;
+         isEmbedded = true;
          t0 = 0.0;
          t1 = 1.0;
       }
    }
    else
    {
-      // N dot D is not 0. calculate intersection interval
-      t0 = (-1.0 - dist_triangle) / normal_dot_dir;
-      t1 = (1.0 - dist_triangle) / normal_dot_dir;
+      // N dot D is not 0; calculate intersection interval
+      t0 = (-1.0 - distanceToTriangle) / normalDotVelocity;
+      t1 = (1.0 - distanceToTriangle) / normalDotVelocity;
 
       // swap so t0 < t1
-      if (t0 > t1) std::swap(t0, t1);
+      if (t0 > t1)
+         std::swap(t0, t1);
 
       // check that at least one result is within range
       if (t0 > 1.0 || t1 < 0.0)
@@ -347,7 +346,7 @@ void PhysicsModel::CheckTriangle(CollisionData& data,
    // between which the swept sphere intersects with the
    // triangle plane. If any collision is to occur it must
    // happen within this interval.
-   Vector3d collision_point;
+   Vector3d collisionPoint;
    bool found = false;
    double t = 1.0;
 
@@ -356,17 +355,16 @@ void PhysicsModel::CheckTriangle(CollisionData& data,
    // as this is when the sphere rests on the front side
    // of the triangle plane. Note, this can only happen if
    // the sphere is not embedded in the triangle plane.
-   if (!embedded)
+   if (!isEmbedded)
    {
-      Vector3d plane_intersect_point;
-      plane_intersect_point = t0 * data.dir + data.base_point - triangle_plane.normal;
+      Vector3d planeIntersectionPoint;
+      planeIntersectionPoint = t0 * data.velocity + data.basePoint - trianglePlane.normal;
 
-      if (CheckPointInTriangle(plane_intersect_point,
-         p1, p2, p3))
+      if (CheckPointInTriangle(planeIntersectionPoint, p1, p2, p3))
       {
          found = true;
          t = t0;
-         collision_point = plane_intersect_point;
+         collisionPoint = planeIntersectionPoint;
       }
    }
 
@@ -380,10 +378,11 @@ void PhysicsModel::CheckTriangle(CollisionData& data,
    if (!found)
    {
       // some commonly used terms
-      Vector3d dir = data.dir;
-      Vector3d base = data.base_point;
+      Vector3d velocity = data.velocity;
+      Vector3d base = data.basePoint;
 
-      double dir_sq_length = dir.Length(); dir_sq_length *= dir_sq_length;
+      double velocityLengthSquared = velocity.Length();
+      velocityLengthSquared *= velocityLengthSquared;
       double a, b, c;
       double new_t;
 
@@ -393,39 +392,39 @@ void PhysicsModel::CheckTriangle(CollisionData& data,
       // parameters a,b and c for each test.
 
       // check against points
-      a = dir_sq_length;
+      a = velocityLengthSquared;
 
       // P1
-      b = 2.0*(dir.Dot(base - p1));
+      b = 2.0 * (velocity.Dot(base - p1));
       c = (p1 - base).Length(); c *= c;
       c -= 1.0;
       if (GetLowestRoot(a, b, c, t, new_t))
       {
          t = new_t;
          found = true;
-         collision_point = p1;
+         collisionPoint = p1;
       }
 
       // P2
-      b = 2.0*(dir.Dot(base - p2));
+      b = 2.0 * (velocity.Dot(base - p2));
       c = (p2 - base).Length(); c *= c;
       c -= 1.0;
       if (GetLowestRoot(a, b, c, t, new_t))
       {
          t = new_t;
          found = true;
-         collision_point = p2;
+         collisionPoint = p2;
       }
 
       // P3
-      b = 2.0*(dir.Dot(base - p3));
+      b = 2.0 * (velocity.Dot(base - p3));
       c = (p3 - base).Length(); c *= c;
       c -= 1.0;
       if (GetLowestRoot(a, b, c, t, new_t))
       {
          t = new_t;
          found = true;
-         collision_point = p3;
+         collisionPoint = p3;
       }
 
       // check against edges
@@ -433,36 +432,36 @@ void PhysicsModel::CheckTriangle(CollisionData& data,
       // p1 -> p2
       {
          Vector3d edge = p2 - p1;
-         Vector3d base_to_vertex = p1 - base;
-         double edge_sq_length = edge.Length();
-         edge_sq_length *= edge_sq_length;
-         double edge_dot_dir = edge.Dot(dir);
-         double edge_dot_base_to_vertex = edge.Dot(base_to_vertex);
-         double base_to_vertex_sq_length = base_to_vertex.Length();
-         base_to_vertex_sq_length *= base_to_vertex_sq_length;
+         Vector3d baseToVertex = p1 - base;
+         double edgeLengthSquared = edge.Length();
+         edgeLengthSquared *= edgeLengthSquared;
+         double edgeDotVelocity = edge.Dot(velocity);
+         double edgeDotBaseToVertex = edge.Dot(baseToVertex);
+         double baseToVertexLengthSquared = baseToVertex.Length();
+         baseToVertexLengthSquared *= baseToVertexLengthSquared;
 
          // calculate parameters for equation
-         a = edge_sq_length * -dir_sq_length + edge_dot_dir * edge_dot_dir;
-         b = edge_sq_length * (2.0*dir.Dot(base_to_vertex)) -
-            2.0*edge_dot_dir*edge_dot_base_to_vertex;
-         c = edge_sq_length * (1 - base_to_vertex_sq_length) +
-            edge_dot_base_to_vertex * edge_dot_base_to_vertex;
+         a = edgeLengthSquared * -velocityLengthSquared + edgeDotVelocity * edgeDotVelocity;
+         b = edgeLengthSquared * (2.0 * velocity.Dot(baseToVertex)) -
+            2.0*edgeDotVelocity * edgeDotBaseToVertex;
+         c = edgeLengthSquared * (1 - baseToVertexLengthSquared) +
+            edgeDotBaseToVertex * edgeDotBaseToVertex;
 
          // does this swept sphere collide against infinite edge?
          if (GetLowestRoot(a, b, c, t, new_t))
          {
             // check if intersection is within line segment:
-            double f = (edge_dot_dir*new_t - edge_dot_base_to_vertex) /
-               edge_sq_length;
+            double f = (edgeDotVelocity * new_t - edgeDotBaseToVertex) /
+               edgeLengthSquared;
 
             if (f >= 0.0 && f < 1.0)
             {
                // intersection took place within segment
                t = new_t;
                found = true;
-               collision_point = edge;
-               collision_point *= f;
-               collision_point += p1;
+               collisionPoint = edge;
+               collisionPoint *= f;
+               collisionPoint += p1;
             }
          }
       }
@@ -470,36 +469,36 @@ void PhysicsModel::CheckTriangle(CollisionData& data,
       // p2 -> p3
       {
          Vector3d edge = p3 - p2;
-         Vector3d base_to_vertex = p2 - base;
-         double edge_sq_length = edge.Length();
-         edge_sq_length *= edge_sq_length;
-         double edge_dot_dir = edge.Dot(dir);
-         double edge_dot_base_to_vertex = edge.Dot(base_to_vertex);
-         double base_to_vertex_sq_length = base_to_vertex.Length();
-         base_to_vertex_sq_length *= base_to_vertex_sq_length;
+         Vector3d baseToVertex = p2 - base;
+         double edgeLengthSquared = edge.Length();
+         edgeLengthSquared *= edgeLengthSquared;
+         double edgeDotVelocity = edge.Dot(velocity);
+         double edgeDotBaseToVertex = edge.Dot(baseToVertex);
+         double baseToVertexLengthSquared = baseToVertex.Length();
+         baseToVertexLengthSquared *= baseToVertexLengthSquared;
 
          // calculate parameters for equation
-         a = edge_sq_length * -dir_sq_length + edge_dot_dir * edge_dot_dir;
-         b = edge_sq_length * (2.0*dir.Dot(base_to_vertex)) -
-            2.0*edge_dot_dir*edge_dot_base_to_vertex;
-         c = edge_sq_length * (1 - base_to_vertex_sq_length) +
-            edge_dot_base_to_vertex * edge_dot_base_to_vertex;
+         a = edgeLengthSquared * -velocityLengthSquared + edgeDotVelocity * edgeDotVelocity;
+         b = edgeLengthSquared * (2.0 * velocity.Dot(baseToVertex)) -
+            2.0*edgeDotVelocity * edgeDotBaseToVertex;
+         c = edgeLengthSquared * (1 - baseToVertexLengthSquared) +
+            edgeDotBaseToVertex * edgeDotBaseToVertex;
 
          // does this swept sphere collide against infinite edge?
          if (GetLowestRoot(a, b, c, t, new_t))
          {
             // check if intersection is within line segment:
-            double f = (edge_dot_dir*new_t - edge_dot_base_to_vertex) /
-               edge_sq_length;
+            double f = (edgeDotVelocity * new_t - edgeDotBaseToVertex) /
+               edgeLengthSquared;
 
             if (f >= 0.0 && f < 1.0)
             {
                // intersection took place within segment
                t = new_t;
                found = true;
-               collision_point = edge;
-               collision_point *= f;
-               collision_point += p2;
+               collisionPoint = edge;
+               collisionPoint *= f;
+               collisionPoint += p2;
             }
          }
       }
@@ -507,36 +506,36 @@ void PhysicsModel::CheckTriangle(CollisionData& data,
       // p3 -> p1
       {
          Vector3d edge = p1 - p3;
-         Vector3d base_to_vertex = p3 - base;
-         double edge_sq_length = edge.Length();
-         edge_sq_length *= edge_sq_length;
-         double edge_dot_dir = edge.Dot(dir);
-         double edge_dot_base_to_vertex = edge.Dot(base_to_vertex);
-         double base_to_vertex_sq_length = base_to_vertex.Length();
-         base_to_vertex_sq_length *= base_to_vertex_sq_length;
+         Vector3d baseToVertex = p3 - base;
+         double edgeLengthSquared = edge.Length();
+         edgeLengthSquared *= edgeLengthSquared;
+         double edgeDotVelocity = edge.Dot(velocity);
+         double edgeDotBaseToVertex = edge.Dot(baseToVertex);
+         double baseToVertexLengthSquared = baseToVertex.Length();
+         baseToVertexLengthSquared *= baseToVertexLengthSquared;
 
          // calculate parameters for equation
-         a = edge_sq_length * -dir_sq_length + edge_dot_dir * edge_dot_dir;
-         b = edge_sq_length * (2.0*dir.Dot(base_to_vertex)) -
-            2.0*edge_dot_dir*edge_dot_base_to_vertex;
-         c = edge_sq_length * (1 - base_to_vertex_sq_length) +
-            edge_dot_base_to_vertex * edge_dot_base_to_vertex;
+         a = edgeLengthSquared * -velocityLengthSquared + edgeDotVelocity * edgeDotVelocity;
+         b = edgeLengthSquared * (2.0 * velocity.Dot(baseToVertex)) -
+            2.0 * edgeDotVelocity * edgeDotBaseToVertex;
+         c = edgeLengthSquared * (1 - baseToVertexLengthSquared) +
+            edgeDotBaseToVertex * edgeDotBaseToVertex;
 
          // does this swept sphere collide against infinite edge?
          if (GetLowestRoot(a, b, c, t, new_t))
          {
             // check if intersection is within line segment:
-            double f = (edge_dot_dir*new_t - edge_dot_base_to_vertex) /
-               edge_sq_length;
+            double f = (edgeDotVelocity * new_t - edgeDotBaseToVertex) /
+               edgeLengthSquared;
 
             if (f >= 0.0 && f < 1.0)
             {
                // intersection took place within segment
                t = new_t;
                found = true;
-               collision_point = edge;
-               collision_point *= f;
-               collision_point += p3;
+               collisionPoint = edge;
+               collisionPoint *= f;
+               collisionPoint += p3;
             }
          }
       }
@@ -547,29 +546,29 @@ void PhysicsModel::CheckTriangle(CollisionData& data,
    if (found)
    {
       // distance to collision: 't' is time of collision
-      double dist_coll = t * data.dir.Length();
+      double distanceToCollision = t * data.velocity.Length();
 
       // does this triangle qualify for the closest hit?
       // it does if it's the first hit or the closest
-      if (!data.found_collision ||
-         dist_coll < data.nearest_dist)
+      if (!data.foundCollision ||
+         distanceToCollision < data.nearestDistance)
       {
          // collision information necessary for sliding
-         data.nearest_dist = dist_coll;
-         data.intersect_point = collision_point;
-         data.found_collision = true;
+         data.nearestDistance = distanceToCollision;
+         data.intersectPoint = collisionPoint;
+         data.foundCollision = true;
       }
    }
 }
 
 /// Calculates lowest root of quadratic equation of the form
 /// ax^2 + bx + c = 0; the solution that is returned is positive and lower
-/// than max_r. Other solutions are disregarded.
+/// than maxR. Other solutions are disregarded.
 bool PhysicsModel::GetLowestRoot(double a, double b, double c,
-   double max_r, double& root)
+   double maxR, double& root)
 {
    // check if a solution exists
-   double determinant = b * b - 4.0*a*c;
+   double determinant = b * b - 4.0 * a * c;
 
    // if determinant is negative it means no solutions
    if (determinant < 0.0)
@@ -577,15 +576,16 @@ bool PhysicsModel::GetLowestRoot(double a, double b, double c,
 
    // calculate the two roots: (if determinant == 0 then
    // x1==x2 but let’s disregard that slight optimization)
-   double sqrt_d = sqrt(determinant);
-   double r1 = (-b - sqrt_d) / (2 * a);
-   double r2 = (-b + sqrt_d) / (2 * a);
+   double sqrtD = sqrt(determinant);
+   double r1 = (-b - sqrtD) / (2 * a);
+   double r2 = (-b + sqrtD) / (2 * a);
 
    // sort so x1 <= x2
-   if (r1 > r2) std::swap(r1, r2);
+   if (r1 > r2)
+      std::swap(r1, r2);
 
    // get lowest root
-   if (r1 > 0 && r1 < max_r)
+   if (r1 > 0 && r1 < maxR)
    {
       root = r1;
       return true;
@@ -593,7 +593,7 @@ bool PhysicsModel::GetLowestRoot(double a, double b, double c,
 
    // it is possible that we want x2 - this can happen
    // if x1 < 0
-   if (r2 > 0 && r2 < max_r)
+   if (r2 > 0 && r2 < maxR)
    {
       root = r2;
       return true;

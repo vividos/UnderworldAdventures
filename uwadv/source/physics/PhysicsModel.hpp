@@ -94,12 +94,12 @@ public:
 
 private:
    /// tracks object movement for given direction vector
-   bool TrackObject(PhysicsBody& body, Vector3d dir,
+   bool TrackObject(PhysicsBody& body, Vector3d velocity,
       bool gravityForce = false);
 
    /// recursive collision response calculation
    bool CollideWithWorld(CollisionData& data, Vector3d& pos,
-      const Vector3d& dir);
+      const Vector3d& velocity);
 
    /// checks mesh for collision
    void CheckCollision(CollisionData& data);
