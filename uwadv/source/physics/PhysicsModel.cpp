@@ -392,40 +392,9 @@ void PhysicsModel::CheckTriangle(CollisionData& data,
       // parameters a,b and c for each test.
 
       // check against points
-      a = velocityLengthSquared;
-
-      // P1
-      b = 2.0 * (velocity.Dot(base - p1));
-      c = (p1 - base).Length(); c *= c;
-      c -= 1.0;
-      if (GetLowestRoot(a, b, c, t, new_t))
-      {
-         t = new_t;
-         found = true;
-         collisionPoint = p1;
-      }
-
-      // P2
-      b = 2.0 * (velocity.Dot(base - p2));
-      c = (p2 - base).Length(); c *= c;
-      c -= 1.0;
-      if (GetLowestRoot(a, b, c, t, new_t))
-      {
-         t = new_t;
-         found = true;
-         collisionPoint = p2;
-      }
-
-      // P3
-      b = 2.0 * (velocity.Dot(base - p3));
-      c = (p3 - base).Length(); c *= c;
-      c -= 1.0;
-      if (GetLowestRoot(a, b, c, t, new_t))
-      {
-         t = new_t;
-         found = true;
-         collisionPoint = p3;
-      }
+      found |= CheckCollisionWithPoint(data, p1, t, collisionPoint);
+      found |= CheckCollisionWithPoint(data, p2, t, collisionPoint);
+      found |= CheckCollisionWithPoint(data, p3, t, collisionPoint);
 
       // check against edges
 
@@ -559,6 +528,29 @@ void PhysicsModel::CheckTriangle(CollisionData& data,
          data.foundCollision = true;
       }
    }
+}
+
+bool PhysicsModel::CheckCollisionWithPoint(CollisionData& data,
+   const Vector3d& point, double& t, Vector3d& collisionPoint)
+{
+   double velocityLengthSquared = data.velocity.Length();
+   velocityLengthSquared *= velocityLengthSquared;
+
+   double a = velocityLengthSquared;
+   double b = 2.0 * data.velocity.Dot(data.basePoint - point);
+   double c = (point - data.basePoint).Length();
+   c *= c;
+   c -= 1.0;
+
+   double new_t;
+   if (GetLowestRoot(a, b, c, t, new_t))
+   {
+      t = new_t;
+      collisionPoint = point;
+      return true;
+   }
+
+   return false;
 }
 
 /// Calculates lowest root of quadratic equation of the form
