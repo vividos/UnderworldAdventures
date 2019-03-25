@@ -112,6 +112,10 @@ private:
    static bool CheckCollisionWithPoint(CollisionData& data,
       const Vector3d& point, double& t, Vector3d& collisionPoint);
 
+   /// checks collision with triangle edge
+   static bool CheckCollisionWithEdge(CollisionData& data,
+      const Vector3d& p1, const Vector3d& p2, double& t, Vector3d& collisionPoint);
+
    /// solves quadratic equation and returns solution < t
    static bool GetLowestRoot(double a, double b, double c, double t,
       double& new_t);

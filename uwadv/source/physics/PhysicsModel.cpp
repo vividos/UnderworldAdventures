@@ -377,15 +377,6 @@ void PhysicsModel::CheckTriangle(CollisionData& data,
 
    if (!found)
    {
-      // some commonly used terms
-      Vector3d velocity = data.velocity;
-      Vector3d base = data.basePoint;
-
-      double velocityLengthSquared = velocity.Length();
-      velocityLengthSquared *= velocityLengthSquared;
-      double a, b, c;
-      double new_t;
-
       // For each vertex or edge a quadratic equation have to
       // be solved. We parameterize this equation as
       // a*t^2 + b*t + c = 0 and below we calculate the
@@ -397,117 +388,9 @@ void PhysicsModel::CheckTriangle(CollisionData& data,
       found |= CheckCollisionWithPoint(data, p3, t, collisionPoint);
 
       // check against edges
-
-      // p1 -> p2
-      {
-         Vector3d edge = p2 - p1;
-         Vector3d baseToVertex = p1 - base;
-         double edgeLengthSquared = edge.Length();
-         edgeLengthSquared *= edgeLengthSquared;
-         double edgeDotVelocity = edge.Dot(velocity);
-         double edgeDotBaseToVertex = edge.Dot(baseToVertex);
-         double baseToVertexLengthSquared = baseToVertex.Length();
-         baseToVertexLengthSquared *= baseToVertexLengthSquared;
-
-         // calculate parameters for equation
-         a = edgeLengthSquared * -velocityLengthSquared + edgeDotVelocity * edgeDotVelocity;
-         b = edgeLengthSquared * (2.0 * velocity.Dot(baseToVertex)) -
-            2.0*edgeDotVelocity * edgeDotBaseToVertex;
-         c = edgeLengthSquared * (1 - baseToVertexLengthSquared) +
-            edgeDotBaseToVertex * edgeDotBaseToVertex;
-
-         // does this swept sphere collide against infinite edge?
-         if (GetLowestRoot(a, b, c, t, new_t))
-         {
-            // check if intersection is within line segment:
-            double f = (edgeDotVelocity * new_t - edgeDotBaseToVertex) /
-               edgeLengthSquared;
-
-            if (f >= 0.0 && f < 1.0)
-            {
-               // intersection took place within segment
-               t = new_t;
-               found = true;
-               collisionPoint = edge;
-               collisionPoint *= f;
-               collisionPoint += p1;
-            }
-         }
-      }
-
-      // p2 -> p3
-      {
-         Vector3d edge = p3 - p2;
-         Vector3d baseToVertex = p2 - base;
-         double edgeLengthSquared = edge.Length();
-         edgeLengthSquared *= edgeLengthSquared;
-         double edgeDotVelocity = edge.Dot(velocity);
-         double edgeDotBaseToVertex = edge.Dot(baseToVertex);
-         double baseToVertexLengthSquared = baseToVertex.Length();
-         baseToVertexLengthSquared *= baseToVertexLengthSquared;
-
-         // calculate parameters for equation
-         a = edgeLengthSquared * -velocityLengthSquared + edgeDotVelocity * edgeDotVelocity;
-         b = edgeLengthSquared * (2.0 * velocity.Dot(baseToVertex)) -
-            2.0*edgeDotVelocity * edgeDotBaseToVertex;
-         c = edgeLengthSquared * (1 - baseToVertexLengthSquared) +
-            edgeDotBaseToVertex * edgeDotBaseToVertex;
-
-         // does this swept sphere collide against infinite edge?
-         if (GetLowestRoot(a, b, c, t, new_t))
-         {
-            // check if intersection is within line segment:
-            double f = (edgeDotVelocity * new_t - edgeDotBaseToVertex) /
-               edgeLengthSquared;
-
-            if (f >= 0.0 && f < 1.0)
-            {
-               // intersection took place within segment
-               t = new_t;
-               found = true;
-               collisionPoint = edge;
-               collisionPoint *= f;
-               collisionPoint += p2;
-            }
-         }
-      }
-
-      // p3 -> p1
-      {
-         Vector3d edge = p1 - p3;
-         Vector3d baseToVertex = p3 - base;
-         double edgeLengthSquared = edge.Length();
-         edgeLengthSquared *= edgeLengthSquared;
-         double edgeDotVelocity = edge.Dot(velocity);
-         double edgeDotBaseToVertex = edge.Dot(baseToVertex);
-         double baseToVertexLengthSquared = baseToVertex.Length();
-         baseToVertexLengthSquared *= baseToVertexLengthSquared;
-
-         // calculate parameters for equation
-         a = edgeLengthSquared * -velocityLengthSquared + edgeDotVelocity * edgeDotVelocity;
-         b = edgeLengthSquared * (2.0 * velocity.Dot(baseToVertex)) -
-            2.0 * edgeDotVelocity * edgeDotBaseToVertex;
-         c = edgeLengthSquared * (1 - baseToVertexLengthSquared) +
-            edgeDotBaseToVertex * edgeDotBaseToVertex;
-
-         // does this swept sphere collide against infinite edge?
-         if (GetLowestRoot(a, b, c, t, new_t))
-         {
-            // check if intersection is within line segment:
-            double f = (edgeDotVelocity * new_t - edgeDotBaseToVertex) /
-               edgeLengthSquared;
-
-            if (f >= 0.0 && f < 1.0)
-            {
-               // intersection took place within segment
-               t = new_t;
-               found = true;
-               collisionPoint = edge;
-               collisionPoint *= f;
-               collisionPoint += p3;
-            }
-         }
-      }
+      found |= CheckCollisionWithEdge(data, p1, p2, t, collisionPoint);
+      found |= CheckCollisionWithEdge(data, p2, p3, t, collisionPoint);
+      found |= CheckCollisionWithEdge(data, p3, p1, t, collisionPoint);
 
    } // !found
 
@@ -548,6 +431,50 @@ bool PhysicsModel::CheckCollisionWithPoint(CollisionData& data,
       t = new_t;
       collisionPoint = point;
       return true;
+   }
+
+   return false;
+}
+
+bool PhysicsModel::CheckCollisionWithEdge(CollisionData& data,
+   const Vector3d& p1, const Vector3d& p2, double& t, Vector3d& collisionPoint)
+{
+   Vector3d edge = p2 - p1;
+   Vector3d baseToVertex = p1 - data.basePoint;
+   double edgeLengthSquared = edge.Length();
+   edgeLengthSquared *= edgeLengthSquared;
+   double edgeDotVelocity = edge.Dot(data.velocity);
+   double edgeDotBaseToVertex = edge.Dot(baseToVertex);
+   double baseToVertexLengthSquared = baseToVertex.Length();
+   baseToVertexLengthSquared *= baseToVertexLengthSquared;
+
+   // calculate parameters for equation
+   double velocityLengthSquared = data.velocity.Length();
+   velocityLengthSquared *= velocityLengthSquared;
+
+   double a = edgeLengthSquared * -velocityLengthSquared + edgeDotVelocity * edgeDotVelocity;
+   double b = edgeLengthSquared * (2.0 * data.velocity.Dot(baseToVertex)) -
+      2.0 * edgeDotVelocity * edgeDotBaseToVertex;
+   double c = edgeLengthSquared * (1 - baseToVertexLengthSquared) +
+      edgeDotBaseToVertex * edgeDotBaseToVertex;
+
+   // does this swept sphere collide against infinite edge?
+   double new_t;
+   if (GetLowestRoot(a, b, c, t, new_t))
+   {
+      // check if intersection is within line segment:
+      double f = (edgeDotVelocity * new_t - edgeDotBaseToVertex) /
+         edgeLengthSquared;
+
+      if (f >= 0.0 && f < 1.0)
+      {
+         // intersection took place within segment
+         t = new_t;
+         collisionPoint = edge;
+         collisionPoint *= f;
+         collisionPoint += p1;
+         return true;
+      }
    }
 
    return false;
