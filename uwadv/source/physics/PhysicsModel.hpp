@@ -109,7 +109,7 @@ private:
       const Vector3d& p2, const Vector3d& p3);
 
    /// solves quadratic equation and returns solution < t
-   bool GetLowestRoot(double a, double b, double c, double t,
+   static bool GetLowestRoot(double a, double b, double c, double t,
       double& new_t);
 
 protected:

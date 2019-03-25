@@ -41,6 +41,13 @@ bool CheckPointInTriangle(const Vector3d& point,
 /// collision check data
 struct CollisionData
 {
+   // default ctor
+   CollisionData()
+      :found_collision(false),
+      nearest_dist(1e20) // should be "infinite enough"
+   {
+   }
+
    /// ellipsoid radius
    Vector3d ellipsoid;
 
@@ -114,8 +121,8 @@ bool PhysicsModel::TrackObject(PhysicsBody& body, Vector3d dir,
    if (my_movement)
       UaTrace("old pos: %2.3f / %2.3f / %2.3f\n", pos.x, pos.y, pos.z);
 
-   if (!gravityForce)
-      pos.z += 0.5;
+   //if (!gravityForce)
+   //   pos.z += 0.5;
 
    // transform to ellipsoid space
    pos /= data.ellipsoid;
@@ -135,8 +142,8 @@ bool PhysicsModel::TrackObject(PhysicsBody& body, Vector3d dir,
    // transform position back to normal space and set it
    pos *= data.ellipsoid;
 
-   if (!gravityForce)
-      pos.z -= 0.5;
+   //if (!gravityForce)
+   //   pos.z -= 0.5;
 
    if (my_movement)
       UaTrace("new pos: %2.3f / %2.3f / %2.3f\n", pos.x, pos.y, pos.z);
@@ -193,8 +200,7 @@ bool PhysicsModel::CollideWithWorld(CollisionData& data,
       dir2.Normalize();
       dir2 *= (data.nearest_dist - min_distance);
 
-      new_basepoint = data.base_point;
-      new_basepoint += dir2;
+      new_basepoint = data.base_point + dir2;
 
       // adjust polygon intersection point (so sliding
       // plane will be unaffected by the fact that we
@@ -205,8 +211,7 @@ bool PhysicsModel::CollideWithWorld(CollisionData& data,
    }
 
    // determine the sliding plane
-   Vector3d slideplane_normal = new_basepoint;
-   slideplane_normal -= data.intersect_point;
+   Vector3d slideplane_normal = new_basepoint - data.intersect_point;
    slideplane_normal.Normalize();
 
    Plane3d sliding_plane(data.intersect_point, slideplane_normal);
@@ -308,7 +313,7 @@ void PhysicsModel::CheckTriangle(CollisionData& data,
       else
       {
          // sphere is embedded in plane
-         // it intersets in the whole range [0..1]
+         // it intersects in the whole range [0..1]
          embedded = true;
          t0 = 0.0;
          t1 = 1.0;
@@ -354,10 +359,7 @@ void PhysicsModel::CheckTriangle(CollisionData& data,
    if (!embedded)
    {
       Vector3d plane_intersect_point;
-      plane_intersect_point += data.dir;
-      plane_intersect_point *= t0;
-      plane_intersect_point += data.base_point;
-      plane_intersect_point -= triangle_plane.normal;
+      plane_intersect_point = t0 * data.dir + data.base_point - triangle_plane.normal;
 
       if (CheckPointInTriangle(plane_intersect_point,
          p1, p2, p3))
@@ -601,8 +603,25 @@ bool PhysicsModel::GetLowestRoot(double a, double b, double c,
    return false;
 }
 
-/// \todo replace in() macro test with somewhat more portable
+bool IsSameSide(const Vector3d& p1,
+   const Vector3d& p2, const Vector3d& a, const Vector3d& b)
+{
+   Vector3d cp1; cp1.Cross(b - a, p1 - a);
+   Vector3d cp2; cp2.Cross(b - a, p2 - a);
+
+   return cp1.Dot(cp2) >= 0;
+}
+
 bool CheckPointInTriangle(const Vector3d& point,
+   const Vector3d& pa, const Vector3d& pb, const Vector3d& pc)
+{
+   return IsSameSide(point, pa, pb, pc) &&
+      IsSameSide(point, pb, pa, pc) &&
+      IsSameSide(point, pc, pa, pb);
+}
+
+/// \todo replace in() macro test with somewhat more portable
+bool CheckPointInTriangleFast(const Vector3d& point,
    const Vector3d& pa, const Vector3d& pb, const Vector3d& pc)
 {
    Vector3d e10 = pb - pa;
