@@ -47,6 +47,9 @@ public:
 
    // gravity related
 
+   /// returns if gravity should be checked for this body
+   virtual bool IsGravityActive() const { return true; }
+
    /// resets gravity when hitting floor
    virtual void ResetGravity() {}
 

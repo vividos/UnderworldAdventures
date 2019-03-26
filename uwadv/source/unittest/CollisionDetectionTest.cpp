@@ -69,9 +69,10 @@ namespace UnitTest
    {
    public:
       /// ctor
-      TestPhysicsBody(Vector3d pos, Vector3d dir)
+      TestPhysicsBody(Vector3d pos, Vector3d dir, bool useGravity = false)
          :m_pos(pos),
-         m_dir(dir)
+         m_dir(dir),
+         m_useGravity(useGravity)
       {
          // test perfect sphere
          m_ellipsoid = Vector3d{ 1.0, 1.0, 1.0 };
@@ -97,6 +98,11 @@ namespace UnitTest
          return m_dir;
       }
 
+      /// returns if gravity is active for this body
+      virtual bool IsGravityActive() const override
+      {
+         return m_useGravity;
+      }
 
    private:
       /// body position
@@ -104,6 +110,9 @@ namespace UnitTest
 
       /// body direction
       Vector3d m_dir;
+
+      /// indicates if test body should use gravity
+      bool m_useGravity;
    };
 
    /// \brief CollisionDetection tests
