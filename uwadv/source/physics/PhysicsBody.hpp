@@ -43,7 +43,7 @@ public:
    virtual Vector3d GetDirection() { return Vector3d(0, 0, 0); }
 
    /// returns ellipsoid of body
-   const Vector3d& GetEllipsoid() { return m_ellipsoid; }
+   const Vector3d& GetEllipsoid() const { return m_ellipsoid; }
 
    // gravity related
 

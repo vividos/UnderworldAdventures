@@ -133,14 +133,14 @@ bool PhysicsModel::TrackObject(PhysicsBody& body, Vector3d velocity,
 
    bool collided = CollideWithWorld(data, pos, velocity);
 
+   // transform position back to normal space and set it
+   pos *= data.ellipsoid;
+
    if (gravityForce && collided)
    {
       body.HitFloor();
       body.ResetGravity();
    }
-
-   // transform position back to normal space and set it
-   pos *= data.ellipsoid;
 
    //if (!gravityForce)
    //   pos.z -= 0.5;
@@ -150,7 +150,8 @@ bool PhysicsModel::TrackObject(PhysicsBody& body, Vector3d velocity,
    my_movement = false;
 
    // limit height when falling out of the map
-   if (pos.z < 0.0) pos.z = 0.0;
+   if (pos.z < 0.0)
+      pos.z = 0.0;
 
    body.SetPosition(pos);
 
@@ -380,7 +381,7 @@ void PhysicsModel::CheckTriangle(CollisionData& data,
       // For each vertex or edge a quadratic equation have to
       // be solved. We parameterize this equation as
       // a*t^2 + b*t + c = 0 and below we calculate the
-      // parameters a,b and c for each test.
+      // parameters a, b and c for each test.
 
       // check against points
       found |= CheckCollisionWithPoint(data, p1, t, collisionPoint);
@@ -392,7 +393,7 @@ void PhysicsModel::CheckTriangle(CollisionData& data,
       found |= CheckCollisionWithEdge(data, p2, p3, t, collisionPoint);
       found |= CheckCollisionWithEdge(data, p3, p1, t, collisionPoint);
 
-   } // !found
+   }
 
    // set result
    if (found)
@@ -425,10 +426,10 @@ bool PhysicsModel::CheckCollisionWithPoint(CollisionData& data,
    c *= c;
    c -= 1.0;
 
-   double new_t;
-   if (GetLowestRoot(a, b, c, t, new_t))
+   double newT;
+   if (GetLowestRoot(a, b, c, t, newT))
    {
-      t = new_t;
+      t = newT;
       collisionPoint = point;
       return true;
    }
@@ -459,20 +460,18 @@ bool PhysicsModel::CheckCollisionWithEdge(CollisionData& data,
       edgeDotBaseToVertex * edgeDotBaseToVertex;
 
    // does this swept sphere collide against infinite edge?
-   double new_t;
-   if (GetLowestRoot(a, b, c, t, new_t))
+   double newT;
+   if (GetLowestRoot(a, b, c, t, newT))
    {
       // check if intersection is within line segment:
-      double f = (edgeDotVelocity * new_t - edgeDotBaseToVertex) /
+      double f = (edgeDotVelocity * newT - edgeDotBaseToVertex) /
          edgeLengthSquared;
 
       if (f >= 0.0 && f < 1.0)
       {
          // intersection took place within segment
-         t = new_t;
-         collisionPoint = edge;
-         collisionPoint *= f;
-         collisionPoint += p1;
+         t = newT;
+         collisionPoint = f * edge + p1;
          return true;
       }
    }

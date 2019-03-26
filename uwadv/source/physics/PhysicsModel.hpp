@@ -118,7 +118,7 @@ private:
 
    /// solves quadratic equation and returns solution < t
    static bool GetLowestRoot(double a, double b, double c, double t,
-      double& new_t);
+      double& newT);
 
 protected:
    /// model parameters
