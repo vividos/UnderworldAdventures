@@ -33,10 +33,19 @@ const double c_cdLiftoff = 0.5;
 /// minimum distance
 const double c_physicsMinDistance = 0.005;
 
-
-bool CheckPointInTriangle(const Vector3d& point,
-   const Vector3d& pa, const Vector3d& pb, const Vector3d& pc);
-
+CollisionDetection::CollisionDetection(const std::vector<Triangle3dTextured>& allTriangles,
+   const PhysicsBody& body)
+   :m_allTriangles(allTriangles.begin(), allTriangles.end()),
+   m_collisionRecursionDepth(0)
+{
+   const Vector3d& ellipsoid = body.GetEllipsoid();
+   for (auto triangle : m_allTriangles)
+   {
+      triangle.m_vertices[0].pos /= ellipsoid;
+      triangle.m_vertices[1].pos /= ellipsoid;
+      triangle.m_vertices[2].pos /= ellipsoid;
+   }
+}
 
 /// collision data
 struct CollisionData
@@ -66,7 +75,6 @@ struct CollisionData
 void PhysicsModel::Init(IPhysicsModelCallback* callback)
 {
    m_callback = callback;
-   m_collisionRecursionDepth = 0;
 
    // initial params
    SetPhysicsParam(physicsGravity, true);
@@ -84,28 +92,26 @@ void PhysicsModel::EvaluatePhysics(double elapsedTime)
    }
 }
 
+/// \param body physics body to track
 void PhysicsModel::TrackObject(PhysicsBody& body)
 {
-   // apply direction
-   TrackObject(body, body.GetDirection());
+   Vector3d pos = body.GetPosition();
 
-   if (GetPhysicsParam(physicsGravity))
-   {
-      // apply gravity
-      TrackObject(body, body.GetGravityForce(), true);
-   }
+   unsigned int xpos = static_cast<unsigned int>(pos.x);
+   unsigned int ypos = static_cast<unsigned int>(pos.y);
 
-   // apply effect forces, e.g. jump traps, up vector for bouncing balls
-   Vector3d effectForce;
-   TrackObject(body, effectForce);
+   // retrieve all tile triangles to check
+   std::vector<Triangle3dTextured> allTriangles;
+
+   if (m_callback != NULL)
+      m_callback->GetSurroundingTriangles(xpos, ypos, allTriangles);
+
+   CollisionDetection detection{ allTriangles, body };
+   detection.TrackObject(body);
 }
 
-/// \param body physics body to track
-/// \param velocity velocity direction vector of object
-/// \param gravityForce indicates if we're processing a gravity force
-/// \return true if we collided with triangle
-bool PhysicsModel::TrackObject(PhysicsBody& body, Vector3d velocity,
-   bool gravityForce)
+/// tracks object movement using current parameters
+void CollisionDetection::TrackObject(PhysicsBody& body)
 {
    Vector3d pos = body.GetPosition();
 
@@ -114,34 +120,38 @@ bool PhysicsModel::TrackObject(PhysicsBody& body, Vector3d velocity,
    if (my_movement)
       UaTrace("old pos: %2.3f / %2.3f / %2.3f\n", pos.x, pos.y, pos.z);
 
-   //if (!gravityForce)
-   //   pos.z += 0.5;
+   // apply direction
+   //pos.z += 0.5;
+   CollideAndSlide(body, pos, body.GetDirection());
+   //pos.z -= 0.5;
 
-   bool collided = CollideAndSlide(body, pos, velocity);
-
-   if (gravityForce && collided)
+   if (body.IsGravityActive())
    {
-      body.HitFloor();
-      body.ResetGravity();
+      // apply gravity
+      bool hitFloor = CollideAndSlide(body, pos, body.GetGravityForce());
+      if (hitFloor)
+      {
+         body.HitFloor();
+         body.ResetGravity();
+      }
    }
 
-   //if (!gravityForce)
-   //   pos.z -= 0.5;
-
-   if (my_movement)
-      UaTrace("new pos: %2.3f / %2.3f / %2.3f\n", pos.x, pos.y, pos.z);
-   my_movement = false;
+   // apply effect forces, e.g. jump traps, up vector for bouncing balls
+   Vector3d effectForce;
+   CollideAndSlide(body, pos, effectForce);
 
    // limit height when falling out of the map
    if (pos.z < 0.0)
       pos.z = 0.0;
 
-   body.SetPosition(pos);
+   if (my_movement)
+      UaTrace("new pos: %2.3f / %2.3f / %2.3f\n", pos.x, pos.y, pos.z);
+   my_movement = false;
 
-   return collided;
+   body.SetPosition(pos);
 }
 
-bool PhysicsModel::CollideAndSlide(PhysicsBody& body, Vector3d& pos, Vector3d velocity)
+bool CollisionDetection::CollideAndSlide(PhysicsBody& body, Vector3d& pos, Vector3d velocity)
 {
    // setup collision package for this tracking
    CollisionData data;
@@ -169,7 +179,7 @@ bool PhysicsModel::CollideAndSlide(PhysicsBody& body, Vector3d& pos, Vector3d ve
 /// \param pos current position in eSpace
 /// \param velocity current direction vector in eSpace
 /// \return true when a collision occured
-bool PhysicsModel::CollideWithWorld(CollisionData& data,
+bool CollisionDetection::CollideWithWorld(CollisionData& data,
    Vector3d& pos, const Vector3d& velocity)
 {
    double minDistance = c_physicsMinDistance;
@@ -253,27 +263,13 @@ bool PhysicsModel::CollideWithWorld(CollisionData& data,
    return true;
 }
 
-void PhysicsModel::CheckCollision(CollisionData& data)
+void CollisionDetection::CheckCollision(CollisionData& data)
 {
-   unsigned int xpos = static_cast<unsigned int>(data.basePoint.x * data.ellipsoid.x);
-   unsigned int ypos = static_cast<unsigned int>(data.basePoint.y * data.ellipsoid.y);
-
-   // retrieve all tile triangles to check
-   std::vector<Triangle3dTextured> allTriangles;
-
-   if (m_callback != NULL)
-      m_callback->GetSurroundingTriangles(xpos, ypos, allTriangles);
-
-   // check all triangles
-   unsigned int max = allTriangles.size();
+   // check all triangles; already in ellipsoid space
+   unsigned int max = m_allTriangles.size();
    for (unsigned int index = 0; index < max; index++)
    {
-      Triangle3dTextured& tri = allTriangles[index];
-
-      // get triangle points and convert to ellipsoid space
-      tri.m_vertices[0].pos /= data.ellipsoid;
-      tri.m_vertices[1].pos /= data.ellipsoid;
-      tri.m_vertices[2].pos /= data.ellipsoid;
+      const Triangle3dTextured& tri = m_allTriangles[index];
 
       CheckTriangle(data,
          tri.m_vertices[0].pos,
@@ -284,7 +280,7 @@ void PhysicsModel::CheckCollision(CollisionData& data)
 
 /// Checks triangle for collision; triangle vertices must already be in
 /// ellipsoid space.
-void PhysicsModel::CheckTriangle(CollisionData& data,
+void CollisionDetection::CheckTriangle(CollisionData& data,
    const Vector3d& p1, const Vector3d& p2, const Vector3d& p3)
 {
    // construct plane containing this triangle
@@ -421,7 +417,7 @@ void PhysicsModel::CheckTriangle(CollisionData& data,
    }
 }
 
-bool PhysicsModel::CheckCollisionWithPoint(CollisionData& data,
+bool CollisionDetection::CheckCollisionWithPoint(CollisionData& data,
    const Vector3d& point, double& t, Vector3d& collisionPoint)
 {
    double velocityLengthSquared = data.velocity.Length();
@@ -444,7 +440,7 @@ bool PhysicsModel::CheckCollisionWithPoint(CollisionData& data,
    return false;
 }
 
-bool PhysicsModel::CheckCollisionWithEdge(CollisionData& data,
+bool CollisionDetection::CheckCollisionWithEdge(CollisionData& data,
    const Vector3d& p1, const Vector3d& p2, double& t, Vector3d& collisionPoint)
 {
    Vector3d edge = p2 - p1;
@@ -489,7 +485,7 @@ bool PhysicsModel::CheckCollisionWithEdge(CollisionData& data,
 /// Calculates lowest root of quadratic equation of the form
 /// ax^2 + bx + c = 0; the solution that is returned is positive and lower
 /// than maxR. Other solutions are disregarded.
-bool PhysicsModel::GetLowestRoot(double a, double b, double c,
+bool CollisionDetection::GetLowestRoot(double a, double b, double c,
    double maxR, double& root)
 {
    // check if a solution exists
@@ -537,7 +533,7 @@ bool IsSameSide(const Vector3d& p1,
    return cp1.Dot(cp2) >= 0;
 }
 
-bool CheckPointInTriangle(const Vector3d& point,
+bool CollisionDetection::CheckPointInTriangle(const Vector3d& point,
    const Vector3d& pa, const Vector3d& pb, const Vector3d& pc)
 {
    return IsSameSide(point, pa, pb, pc) &&

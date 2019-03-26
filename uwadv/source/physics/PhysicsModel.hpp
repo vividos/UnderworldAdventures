@@ -73,7 +73,7 @@ public:
    /// evaluate physics on objects
    void EvaluatePhysics(double elapsedTime);
 
-   /// tracks object movement using current parameters
+   /// tracks object movement for given body
    void TrackObject(PhysicsBody& body);
 
    /// add physics body to track to model
@@ -93,10 +93,29 @@ public:
    }
 
 private:
-   /// tracks object movement for given direction vector
-   bool TrackObject(PhysicsBody& body, Vector3d velocity,
-      bool gravityForce = false);
+   /// model parameters
+   bool m_params[physicsParamMax];
 
+   /// callback interface pointer
+   IPhysicsModelCallback* m_callback;
+
+   /// list of pointer to bodies tracked by physics model
+   std::vector<PhysicsBody*> m_trackedBodies;
+};
+
+/// \brief Collision detection algorithm that implements "collide and slide" along triangles of
+/// the level geometry.
+class CollisionDetection
+{
+public:
+   /// ctor
+   CollisionDetection(const std::vector<Triangle3dTextured>& allTriangles,
+      const PhysicsBody& body);
+
+   /// tracks object movement of given physics body
+   void TrackObject(PhysicsBody& body);
+
+private:
    /// collides physics body with world and slides it along sliding plane
    bool CollideAndSlide(PhysicsBody& body, Vector3d& pos, Vector3d velocity);
 
@@ -123,16 +142,14 @@ private:
    static bool GetLowestRoot(double a, double b, double c, double t,
       double& newT);
 
-protected:
-   /// model parameters
-   bool m_params[physicsParamMax];
+   /// checks if a given point is inside of a triangle given by 3 points
+   static bool CheckPointInTriangle(const Vector3d& point,
+      const Vector3d& pa, const Vector3d& pb, const Vector3d& pc);
+
+private:
+   /// all triangles, in ellipsoid space
+   std::vector<Triangle3dTextured> m_allTriangles;
 
    /// recursion depth for CollideWithWorld()
    int m_collisionRecursionDepth;
-
-   /// callback interface pointer
-   IPhysicsModelCallback* m_callback;
-
-   /// list of pointer to bodies tracked by physics model
-   std::vector<PhysicsBody*> m_trackedBodies;
 };
