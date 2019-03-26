@@ -36,6 +36,7 @@
 #include "ConvStack.hpp"
 #include "ConvGlobals.hpp"
 
+/// \brief Conversation namespace
 namespace Conv
 {
    /// function types

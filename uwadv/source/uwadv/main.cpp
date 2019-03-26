@@ -20,8 +20,8 @@
 /// \brief the game's main function
 //
 /// \mainpage
-///  Module relations are as follows:<br>
-///  \dotfile ua-module-dependencies.dot Module Dependencies
+/// Module relations are as follows:<br>
+/// \dotfile ua-module-dependencies.dot Module Dependencies
 //
 #include "pch.hpp"
 #include "Base.hpp"
