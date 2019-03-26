@@ -32,11 +32,11 @@ namespace UnitTest
    /// \brief collision detection class under test
    /// \details this currently wraps PhysicsModel and wraps IPhysicsModelCallback and should be
    /// refactored to usec by PhysicsModel instead
-   class CollisitionDetection : private IPhysicsModelCallback
+   class CollisionDetection : private IPhysicsModelCallback
    {
    public:
       /// ctor
-      CollisitionDetection(const std::vector<Triangle3dTextured>& allTriangles)
+      CollisionDetection(const std::vector<Triangle3dTextured>& allTriangles, const PhysicsBody& body)
          :m_allTriangles(allTriangles.begin(), allTriangles.end())
       {
       }
@@ -114,11 +114,11 @@ namespace UnitTest
       TEST_METHOD(TestNoCollisionNoTriangles)
       {
          // set up
-         CollisitionDetection detection{ std::vector<Triangle3dTextured>() };
-
          Vector3d initialPos{ 0.0, 0.0, 0.0 };
          Vector3d velocity{ 1.0, 0.0, 0.0 };
          TestPhysicsBody body{ initialPos, velocity };
+
+         CollisionDetection detection{ std::vector<Triangle3dTextured>(), body };
 
          // run
          detection.TrackObject(body);
@@ -131,16 +131,16 @@ namespace UnitTest
       TEST_METHOD(TestNoCollisionTrianglesOutOfReach)
       {
          // set up
-         CollisitionDetection detection{ std::vector<Triangle3dTextured> {
+         Vector3d initialPos{ 0.0, 0.0, 0.0 };
+         Vector3d velocity{ 1.0, 0.0, 0.0 };
+         TestPhysicsBody body{ initialPos, velocity };
+
+         CollisionDetection detection{ std::vector<Triangle3dTextured> {
             Triangle3dTextured{0,
                Vertex3d{Vector3d{ 20.0, 20.0, 20.0 }},
                Vertex3d{Vector3d{ 20.0, 21.0, 20.0 }},
                Vertex3d{Vector3d{ 21.0, 20.0, 20.0 }}}
-         } };
-
-         Vector3d initialPos{ 0.0, 0.0, 0.0 };
-         Vector3d velocity{ 1.0, 0.0, 0.0 };
-         TestPhysicsBody body{ initialPos, velocity };
+         }, body};
 
          // run
          detection.TrackObject(body);
@@ -153,17 +153,17 @@ namespace UnitTest
       TEST_METHOD(TestNoCollisionTrianglesBackFacing)
       {
          // set up
-         CollisitionDetection detection{ std::vector<Triangle3dTextured> {
+         Vector3d initialPos{ 0.0, 0.0, 0.0 };
+         Vector3d velocity{ 1.0, 0.0, 0.0 };
+         TestPhysicsBody body{ initialPos, velocity };
+
+         CollisionDetection detection{ std::vector<Triangle3dTextured> {
             Triangle3dTextured{0,
                Vertex3d{Vector3d{ 1.5, -10.0, -10.0 }},
                Vertex3d{Vector3d{ 1.5, 10.0, -10.0 }},
                Vertex3d{Vector3d{ 1.5, 10.0, 10.0 }}
             }
-         } };
-
-         Vector3d initialPos{ 0.0, 0.0, 0.0 };
-         Vector3d velocity{ 1.0, 0.0, 0.0 };
-         TestPhysicsBody body{ initialPos, velocity };
+         }, body };
 
          // run
          detection.TrackObject(body);
@@ -176,16 +176,16 @@ namespace UnitTest
       TEST_METHOD(TestNoCollisionNoForwardVelocity)
       {
          // set up
-         CollisitionDetection detection{ std::vector<Triangle3dTextured> {
+         Vector3d initialPos{ 0.0, 0.0, 0.0 };
+         Vector3d velocity{ 0.0, 0.0, 0.0 };
+         TestPhysicsBody body{ initialPos, velocity };
+
+         CollisionDetection detection{ std::vector<Triangle3dTextured> {
             Triangle3dTextured{0,
                Vertex3d{Vector3d{ 20.0, 20.0, 20.0 }},
                Vertex3d{Vector3d{ 20.0, 21.0, 20.0 }},
                Vertex3d{Vector3d{ 21.0, 20.0, 20.0 }}}
-         } };
-
-         Vector3d initialPos{ 0.0, 0.0, 0.0 };
-         Vector3d velocity{ 0.0, 0.0, 0.0 };
-         TestPhysicsBody body{ initialPos, velocity};
+         }, body };
 
          // run
          detection.TrackObject(body);
@@ -200,16 +200,16 @@ namespace UnitTest
       TEST_METHOD(TestCollisionTriangleInside)
       {
          // set up
-         CollisitionDetection detection{ std::vector<Triangle3dTextured> {
+         Vector3d initialPos{ 0.0, 0.0, 0.0 };
+         Vector3d velocity{ 1.0, 0.0, 0.0 };
+         TestPhysicsBody body{ initialPos, velocity };
+
+         CollisionDetection detection{ std::vector<Triangle3dTextured> {
             Triangle3dTextured{0,
                Vertex3d{Vector3d{ 1.5, -10.0, -10.0 }},
                Vertex3d{Vector3d{ 1.5, 10.0, 10.0 }},
                Vertex3d{Vector3d{ 1.5, 10.0, -10.0 }}}
-         } };
-
-         Vector3d initialPos{ 0.0, 0.0, 0.0 };
-         Vector3d velocity{ 1.0, 0.0, 0.0 };
-         TestPhysicsBody body{ initialPos, velocity };
+         }, body };
 
          // run
          detection.TrackObject(body);
@@ -226,16 +226,16 @@ namespace UnitTest
       TEST_METHOD(TestCollisionTriangleInsideSphere)
       {
          // set up
-         CollisitionDetection detection{ std::vector<Triangle3dTextured> {
+         Vector3d initialPos{ 0.0, 0.0, 0.0 };
+         Vector3d velocity{ 1.0, 0.0, 0.0 };
+         TestPhysicsBody body{ initialPos, velocity };
+
+         CollisionDetection detection{ std::vector<Triangle3dTextured> {
             Triangle3dTextured{0,
                Vertex3d{Vector3d{ 0.75, -10.0, -10.0 }},
                Vertex3d{Vector3d{ 0.75, 10.0, 10.0 }},
                Vertex3d{Vector3d{ 0.75, 10.0, -10.0 }}}
-         } };
-
-         Vector3d initialPos{ 0.0, 0.0, 0.0 };
-         Vector3d velocity{ 1.0, 0.0, 0.0 };
-         TestPhysicsBody body{ initialPos, velocity };
+         }, body };
 
          // run
          detection.TrackObject(body);
@@ -252,16 +252,16 @@ namespace UnitTest
       TEST_METHOD(TestCollisionTriangleInsideWithSlidingPlane)
       {
          // set up
-         CollisitionDetection detection{ std::vector<Triangle3dTextured> {
+         Vector3d initialPos{ 0.0, 0.0, 0.0 };
+         Vector3d velocity{ 1.0, 0.0, 0.0 };
+         TestPhysicsBody body{ initialPos, velocity };
+
+         CollisionDetection detection{ std::vector<Triangle3dTextured> {
             Triangle3dTextured{0,
                Vertex3d{Vector3d{ 1.0, 10.0, -2.0 }},
                Vertex3d{Vector3d{ 1.0, -10.0, -2.0 }},
                Vertex3d{Vector3d{ 2.0, 0.0, 3.0 }}}
-         } };
-
-         Vector3d initialPos{ 0.0, 0.0, 0.0 };
-         Vector3d velocity{ 1.0, 0.0, 0.0 };
-         TestPhysicsBody body{ initialPos, velocity };
+         }, body };
 
          // run
          detection.TrackObject(body);
@@ -279,16 +279,16 @@ namespace UnitTest
       TEST_METHOD(TestCollisionTrianglePoint)
       {
          // set up
-         CollisitionDetection detection{ std::vector<Triangle3dTextured> {
+         Vector3d initialPos{ 0.0, 0.0, 0.0 };
+         Vector3d velocity{ 1.0, 0.0, 0.0 };
+         TestPhysicsBody body{ initialPos, velocity };
+
+         CollisionDetection detection{ std::vector<Triangle3dTextured> {
             Triangle3dTextured{0,
                Vertex3d{Vector3d{ 1.5, 0.0, 0.0 }},
                Vertex3d{Vector3d{ 20.0, 10.0, 0.0 }},
                Vertex3d{Vector3d{ 20.0, -10.0, 0.0 }}}
-         } };
-
-         Vector3d initialPos{ 0.0, 0.0, 0.0 };
-         Vector3d velocity{ 1.0, 0.0, 0.0 };
-         TestPhysicsBody body{ initialPos, velocity };
+         }, body };
 
          // run
          detection.TrackObject(body);
@@ -304,16 +304,16 @@ namespace UnitTest
       TEST_METHOD(TestCollisionTrianglePointVariant2)
       {
          // set up
-         CollisitionDetection detection{ std::vector<Triangle3dTextured> {
+         Vector3d initialPos{ 0.0, 0.0, 0.0 };
+         Vector3d velocity{ 1.0, 0.0, 0.0 };
+         TestPhysicsBody body{ initialPos, velocity };
+
+         CollisionDetection detection{ std::vector<Triangle3dTextured> {
             Triangle3dTextured{0,
                Vertex3d{Vector3d{ 20.0, -10.0, 0.0 }},
                Vertex3d{Vector3d{ 1.5, 0.0, 0.0 }},
                Vertex3d{Vector3d{ 20.0, 10.0, 0.0 }}}
-         } };
-
-         Vector3d initialPos{ 0.0, 0.0, 0.0 };
-         Vector3d velocity{ 1.0, 0.0, 0.0 };
-         TestPhysicsBody body{ initialPos, velocity };
+         }, body };
 
          // run
          detection.TrackObject(body);
@@ -329,16 +329,16 @@ namespace UnitTest
       TEST_METHOD(TestCollisionTrianglePointVariant3)
       {
          // set up
-         CollisitionDetection detection{ std::vector<Triangle3dTextured> {
+         Vector3d initialPos{ 0.0, 0.0, 0.0 };
+         Vector3d velocity{ 1.0, 0.0, 0.0 };
+         TestPhysicsBody body{ initialPos, velocity };
+
+         CollisionDetection detection{ std::vector<Triangle3dTextured> {
             Triangle3dTextured{0,
                Vertex3d{Vector3d{ 20.0, 10.0, 0.0 }},
                Vertex3d{Vector3d{ 20.0, -10.0, 0.0 }},
                Vertex3d{Vector3d{ 1.5, 0.0, 0.0 }}}
-         } };
-
-         Vector3d initialPos{ 0.0, 0.0, 0.0 };
-         Vector3d velocity{ 1.0, 0.0, 0.0 };
-         TestPhysicsBody body{ initialPos, velocity };
+         }, body };
 
          // run
          detection.TrackObject(body);
@@ -355,16 +355,16 @@ namespace UnitTest
       TEST_METHOD(TestCollisionTriangleEdge)
       {
          // set up
-         CollisitionDetection detection{ std::vector<Triangle3dTextured> {
+         Vector3d initialPos{ 0.0, 0.0, 0.0 };
+         Vector3d velocity{ 1.0, 0.0, 0.0 };
+         TestPhysicsBody body{ initialPos, velocity };
+
+         CollisionDetection detection{ std::vector<Triangle3dTextured> {
             Triangle3dTextured{0,
                Vertex3d{Vector3d{ 1.5, 10.0, 0.0 }},
                Vertex3d{Vector3d{ 1.5, -10.0, 0.0 }},
                Vertex3d{Vector3d{ 20.0, 0.0, 2.0 }}} // last point is moved "up" a bit
-         } };
-
-         Vector3d initialPos{ 0.0, 0.0, 0.0 };
-         Vector3d velocity{ 1.0, 0.0, 0.0 };
-         TestPhysicsBody body{ initialPos, velocity };
+         }, body };
 
          // run
          detection.TrackObject(body);
@@ -380,16 +380,16 @@ namespace UnitTest
       TEST_METHOD(TestCollisionTriangleEdgeVariant2)
       {
          // set up
-         CollisitionDetection detection{ std::vector<Triangle3dTextured> {
+         Vector3d initialPos{ 0.0, 0.0, 0.0 };
+         Vector3d velocity{ 1.0, 0.0, 0.0 };
+         TestPhysicsBody body{ initialPos, velocity };
+
+         CollisionDetection detection{ std::vector<Triangle3dTextured> {
             Triangle3dTextured{0,
                Vertex3d{Vector3d{ 20.0, 0.0, 2.0 }},
                Vertex3d{Vector3d{ 1.5, 10.0, 0.0 }},
                Vertex3d{Vector3d{ 1.5, -10.0, 0.0 }}}
-         } };
-
-         Vector3d initialPos{ 0.0, 0.0, 0.0 };
-         Vector3d velocity{ 1.0, 0.0, 0.0 };
-         TestPhysicsBody body{ initialPos, velocity };
+         }, body };
 
          // run
          detection.TrackObject(body);
@@ -405,16 +405,16 @@ namespace UnitTest
       TEST_METHOD(TestCollisionTriangleEdgeVariant3)
       {
          // set up
-         CollisitionDetection detection{ std::vector<Triangle3dTextured> {
+         Vector3d initialPos{ 0.0, 0.0, 0.0 };
+         Vector3d velocity{ 1.0, 0.0, 0.0 };
+         TestPhysicsBody body{ initialPos, velocity };
+
+         CollisionDetection detection{ std::vector<Triangle3dTextured> {
             Triangle3dTextured{0,
                Vertex3d{Vector3d{ 1.5, -10.0, 0.0 }},
                Vertex3d{Vector3d{ 20.0, 0.0, 2.0 }},
                Vertex3d{Vector3d{ 1.5, 10.0, 0.0 }}}
-         } };
-
-         Vector3d initialPos{ 0.0, 0.0, 0.0 };
-         Vector3d velocity{ 1.0, 0.0, 0.0 };
-         TestPhysicsBody body{ initialPos, velocity };
+         }, body };
 
          // run
          detection.TrackObject(body);
@@ -430,16 +430,16 @@ namespace UnitTest
       TEST_METHOD(TestCollisionTriangleEdgeWithSlidingPlane)
       {
          // set up
-         CollisitionDetection detection{ std::vector<Triangle3dTextured> {
+         Vector3d initialPos{ 0.0, 0.0, 0.0 };
+         Vector3d velocity{ 1.0, 0.0, 0.0 };
+         TestPhysicsBody body{ initialPos, velocity };
+
+         CollisionDetection detection{ std::vector<Triangle3dTextured> {
             Triangle3dTextured{0,
                Vertex3d{Vector3d{ 1.5, 10.0, -1.0 }},
                Vertex3d{Vector3d{ 1.5, -10.0, -1.0 }},
                Vertex3d{Vector3d{ 4.0, 0.0, 5.0 }}} // last point is moved "up" a bit
-         } };
-
-         Vector3d initialPos{ 0.0, 0.0, 0.0 };
-         Vector3d velocity{ 1.0, 0.0, 0.0 };
-         TestPhysicsBody body{ initialPos, velocity };
+         }, body };
 
          // run
          detection.TrackObject(body);
@@ -456,7 +456,11 @@ namespace UnitTest
       TEST_METHOD(TestCollisionCorner90DegreesWalls)
       {
          // set up
-         CollisitionDetection detection{ std::vector<Triangle3dTextured> {
+         Vector3d initialPos{ 0.0, 0.0, 0.0 };
+         Vector3d velocity{ 3.0, 3.0, 0.0 };
+         TestPhysicsBody body{ initialPos, velocity };
+
+         CollisionDetection detection{ std::vector<Triangle3dTextured> {
             Triangle3dTextured{0,
                Vertex3d{Vector3d{ 2.0, 2.0, -2.0 }},
                Vertex3d{Vector3d{ 2.0, -2.0, -2.0 }},
@@ -467,11 +471,7 @@ namespace UnitTest
                Vertex3d{Vector3d{ 2.0, 2.0, -2.0 }},
                Vertex3d{Vector3d{ 2.0, 2.0, 10.0 }}
             }
-         } };
-
-         Vector3d initialPos{ 0.0, 0.0, 0.0 };
-         Vector3d velocity{ 3.0, 3.0, 0.0 };
-         TestPhysicsBody body{ initialPos, velocity };
+         }, body };
 
          // run
          detection.TrackObject(body);
@@ -487,7 +487,11 @@ namespace UnitTest
       TEST_METHOD(TestCollisionCorner90DegreesWallsWithSliding)
       {
          // set up
-         CollisitionDetection detection{ std::vector<Triangle3dTextured> {
+         Vector3d initialPos{ 0.0, 0.0, 0.0 };
+         Vector3d velocity{ 3.0, 3.0, 0.0 };
+         TestPhysicsBody body{ initialPos, velocity };
+
+         CollisionDetection detection{ std::vector<Triangle3dTextured> {
             Triangle3dTextured{0,
                Vertex3d{Vector3d{ 2.0, 3.0, -2.0 }},
                Vertex3d{Vector3d{ 2.0, -2.0, -2.0 }},
@@ -498,11 +502,7 @@ namespace UnitTest
                Vertex3d{Vector3d{ 2.0, 3.0, -2.0 }},
                Vertex3d{Vector3d{ 2.0, 3.0, 10.0 }}
             }
-         } };
-
-         Vector3d initialPos{ 0.0, 0.0, 0.0 };
-         Vector3d velocity{ 3.0, 3.0, 0.0 };
-         TestPhysicsBody body{ initialPos, velocity };
+         }, body };
 
          // run
          detection.TrackObject(body);
@@ -518,7 +518,11 @@ namespace UnitTest
       TEST_METHOD(TestCollisionCornerPointedAngleWalls)
       {
          // set up
-         CollisitionDetection detection{ std::vector<Triangle3dTextured> {
+         Vector3d initialPos{ 0.0, 0.0, 0.0 };
+         Vector3d velocity{ 3.0, 0.0, 0.0 };
+         TestPhysicsBody body{ initialPos, velocity };
+
+         CollisionDetection detection{ std::vector<Triangle3dTextured> {
             Triangle3dTextured{0,
                Vertex3d{Vector3d{ 3.0, 0.0, -2.0 }},
                Vertex3d{Vector3d{ 0.0, -2.0, -2.0 }},
@@ -529,11 +533,7 @@ namespace UnitTest
                Vertex3d{Vector3d{ 3.0, 0.0, -2.0 }},
                Vertex3d{Vector3d{ 3.0, 0.0, 10.0 }}
             }
-         } };
-
-         Vector3d initialPos{ 0.0, 0.0, 0.0 };
-         Vector3d velocity{ 3.0, 0.0, 0.0 };
-         TestPhysicsBody body{ initialPos, velocity };
+         }, body };
 
          // run
          detection.TrackObject(body);
@@ -550,7 +550,11 @@ namespace UnitTest
       TEST_METHOD(TestCollisionCornerPointedAngleWallsAndSlidingPlane)
       {
          // set up
-         CollisitionDetection detection{ std::vector<Triangle3dTextured> {
+         Vector3d initialPos{ 0.0, 0.0, 0.0 };
+         Vector3d velocity{ 3.0, 0.0, 0.0 };
+         TestPhysicsBody body{ initialPos, velocity };
+
+         CollisionDetection detection{ std::vector<Triangle3dTextured> {
             Triangle3dTextured{0,
                Vertex3d{Vector3d{ 3.0, 0.0, -2.0 }},
                Vertex3d{Vector3d{ 0.0, -2.0, -2.0 }},
@@ -561,11 +565,7 @@ namespace UnitTest
                Vertex3d{Vector3d{ 3.0, 1.0, -2.0 }},
                Vertex3d{Vector3d{ 3.0, 1.0, 10.0 }}
             }
-         } };
-
-         Vector3d initialPos{ 0.0, 0.0, 0.0 };
-         Vector3d velocity{ 3.0, 0.0, 0.0 };
-         TestPhysicsBody body{ initialPos, velocity };
+         }, body };
 
          // run
          detection.TrackObject(body);
@@ -580,16 +580,16 @@ namespace UnitTest
       TEST_METHOD(TestCollisionTriangleParallelToVelocity)
       {
          // set up
-         CollisitionDetection detection{ std::vector<Triangle3dTextured> {
+         Vector3d initialPos{ 0.0, 0.0, 0.0 };
+         Vector3d velocity{ 1.0, 0.0, 0.0 };
+         TestPhysicsBody body{ initialPos, velocity };
+
+         CollisionDetection detection{ std::vector<Triangle3dTextured> {
             Triangle3dTextured{0,
                Vertex3d{Vector3d{ -2.0, -1.0, -10.0 }},
                Vertex3d{Vector3d{ -2.0, -1.0, 10.0 }},
                Vertex3d{Vector3d{ 10.0, -1.0, 0.0 }}}
-         } };
-
-         Vector3d initialPos{ 0.0, 0.0, 0.0 };
-         Vector3d velocity{ 1.0, 0.0, 0.0 };
-         TestPhysicsBody body{ initialPos, velocity };
+         }, body };
 
          // run
          detection.TrackObject(body);
@@ -604,16 +604,16 @@ namespace UnitTest
       TEST_METHOD(TestCollisionTriangleAlmostParallelToVelocity)
       {
          // set up
-         CollisitionDetection detection{ std::vector<Triangle3dTextured> {
+         Vector3d initialPos{ 0.0, 0.0, 0.0 };
+         Vector3d velocity{ 1.0, 0.0, 0.0 };
+         TestPhysicsBody body{ initialPos, velocity };
+
+         CollisionDetection detection{ std::vector<Triangle3dTextured> {
             Triangle3dTextured{0,
                Vertex3d{Vector3d{ -2.0, -1.0, -10.0 }},
                Vertex3d{Vector3d{ -2.0, -1.0, 10.0 }},
                Vertex3d{Vector3d{ 10.0, -0.9, 0.0 }}} // a little up from y = 1.0, creating an angle
-         } };
-
-         Vector3d initialPos{ 0.0, 0.0, 0.0 };
-         Vector3d velocity{ 1.0, 0.0, 0.0 };
-         TestPhysicsBody body{ initialPos, velocity };
+         }, body };
 
          // run
          detection.TrackObject(body);
@@ -629,16 +629,16 @@ namespace UnitTest
       TEST_METHOD(TestCollisionTriangleAlreadyEmbeddedIntoSphere)
       {
          // set up
-         CollisitionDetection detection{ std::vector<Triangle3dTextured> {
+         Vector3d initialPos{ 0.0, 0.0, 0.0 };
+         Vector3d velocity{ 1.0, 0.0, 0.0 };
+         TestPhysicsBody body{ initialPos, velocity };
+
+         CollisionDetection detection{ std::vector<Triangle3dTextured> {
             Triangle3dTextured{0,
                Vertex3d{Vector3d{ -2.0, -0.4, -10.0 }},
                Vertex3d{Vector3d{ -2.0, -0.4, 10.0 }},
                Vertex3d{Vector3d{ 10.0, -0.4, 0.0 }}}
-         } };
-
-         Vector3d initialPos{ 0.0, 0.0, 0.0 };
-         Vector3d velocity{ 1.0, 0.0, 0.0 };
-         TestPhysicsBody body{ initialPos, velocity };
+         }, body };
 
          // run
          detection.TrackObject(body);
@@ -654,16 +654,16 @@ namespace UnitTest
       TEST_METHOD(TestCollisionTriangleEmbeddedAndLeavesSphere)
       {
          // set up
-         CollisitionDetection detection{ std::vector<Triangle3dTextured> {
+         Vector3d initialPos{ 0.0, 0.0, 0.0 };
+         Vector3d velocity{ 1.0, 0.0, 0.0 };
+         TestPhysicsBody body{ initialPos, velocity };
+
+         CollisionDetection detection{ std::vector<Triangle3dTextured> {
             Triangle3dTextured{0,
                Vertex3d{Vector3d{ 0.5, -0.5, -10.0 }},
                Vertex3d{Vector3d{ 0.5, -0.5, 10.0 }},
                Vertex3d{Vector3d{ -10.0, -0.5, 0.0 }}}
-         } };
-
-         Vector3d initialPos{ 0.0, 0.0, 0.0 };
-         Vector3d velocity{ 1.0, 0.0, 0.0 };
-         TestPhysicsBody body{ initialPos, velocity };
+         }, body };
 
          // run
          detection.TrackObject(body);
@@ -679,16 +679,16 @@ namespace UnitTest
       TEST_METHOD(TestCollisionTriangleEmbeddedAndHitsEdge)
       {
          // set up
-         CollisitionDetection detection{ std::vector<Triangle3dTextured> {
+         Vector3d initialPos{ 0.0, 0.0, 0.0 };
+         Vector3d velocity{ 1.0, 0.0, 0.0 };
+         TestPhysicsBody body{ initialPos, velocity };
+
+         CollisionDetection detection{ std::vector<Triangle3dTextured> {
             Triangle3dTextured{0,
                Vertex3d{Vector3d{ 1.5, -0.5, -10.0 }},
                Vertex3d{Vector3d{ 1.5, -0.5, 10.0 }},
                Vertex3d{Vector3d{ -10.0, -0.5, 0.0 }}}
-         } };
-
-         Vector3d initialPos{ 0.0, 0.0, 0.0 };
-         Vector3d velocity{ 1.0, 0.0, 0.0 };
-         TestPhysicsBody body{ initialPos, velocity };
+         }, body };
 
          // run
          detection.TrackObject(body);
@@ -705,7 +705,11 @@ namespace UnitTest
       TEST_METHOD(TestCollisionTwoTrianglesWithDifferentDistances)
       {
          // set up
-         CollisitionDetection detection{ std::vector<Triangle3dTextured> {
+         Vector3d initialPos{ 0.0, 0.0, 0.0 };
+         Vector3d velocity{ 3.0, 0.0, 0.0 };
+         TestPhysicsBody body{ initialPos, velocity };
+
+         CollisionDetection detection{ std::vector<Triangle3dTextured> {
             Triangle3dTextured{0,
                Vertex3d{Vector3d{ 3.0, 2.0, -2.0 }},
                Vertex3d{Vector3d{ 3.0, -2.0, -2.0 }},
@@ -716,11 +720,7 @@ namespace UnitTest
                Vertex3d{Vector3d{ 2.0, -2.0, -2.0 }},
                Vertex3d{Vector3d{ 2.0, 0.0, 2.0 }}
             }
-         } };
-
-         Vector3d initialPos{ 0.0, 0.0, 0.0 };
-         Vector3d velocity{ 3.0, 0.0, 0.0 };
-         TestPhysicsBody body{ initialPos, velocity };
+         }, body };
 
          // run
          detection.TrackObject(body);
@@ -740,8 +740,12 @@ namespace UnitTest
       TEST_METHOD(TestCollisionWalkingUpAStep)
       {
          // set up
+         Vector3d initialPos{ 0.0, 0.0, 0.0 };
+         Vector3d velocity{ 1.0, 0.0, 0.0 };
+         TestPhysicsBody body{ initialPos, velocity };
+
          const double stepHeight = 0.2;
-         CollisitionDetection detection{ std::vector<Triangle3dTextured> {
+         CollisionDetection detection{ std::vector<Triangle3dTextured> {
             Triangle3dTextured{0, // triangle where sphere is resting on
                Vertex3d{Vector3d{ 1.5, -1.0, -10.0 }},
                Vertex3d{Vector3d{ 1.5, -1.0, 10.0 }},
@@ -757,11 +761,7 @@ namespace UnitTest
                Vertex3d{Vector3d{ 1.5, -1.0 + stepHeight, 10.0 }},
                Vertex3d{Vector3d{ 10.0, -1.0 + stepHeight, 0.0 }}
             }
-         } };
-
-         Vector3d initialPos{ 0.0, 0.0, 0.0 };
-         Vector3d velocity{ 1.0, 0.0, 0.0 };
-         TestPhysicsBody body{ initialPos, velocity };
+         }, body };
 
          // run until 10 iterations were done, or the sphere has climbed the stair
          unsigned int iteration = 0;
@@ -779,8 +779,12 @@ namespace UnitTest
       TEST_METHOD(TestCollisionWalkingUpAStepTooLargeToClimb)
       {
          // set up
+         Vector3d initialPos{ 0.0, 0.0, 0.0 };
+         Vector3d velocity{ 1.0, 0.0, 0.0 };
+         TestPhysicsBody body{ initialPos, velocity };
+
          const double stepHeight = 1.1; // must be more than the sphere radius
-         CollisitionDetection detection{ std::vector<Triangle3dTextured> {
+         CollisionDetection detection{ std::vector<Triangle3dTextured> {
             Triangle3dTextured{0, // triangle where sphere is resting on
                Vertex3d{Vector3d{ 1.5, -1.0, -10.0 }},
                Vertex3d{Vector3d{ 1.5, -1.0, 10.0 }},
@@ -796,11 +800,7 @@ namespace UnitTest
                Vertex3d{Vector3d{ 1.5, -1.0 + stepHeight, 10.0 }},
                Vertex3d{Vector3d{ 10.0, -1.0 + stepHeight, 0.0 }}
             }
-         } };
-
-         Vector3d initialPos{ 0.0, 0.0, 0.0 };
-         Vector3d velocity{ 1.0, 0.0, 0.0 };
-         TestPhysicsBody body{ initialPos, velocity };
+         }, body };
 
          // run until 10 iterations were done, or the sphere has climbed the stair
          unsigned int iteration = 0;
@@ -822,8 +822,12 @@ namespace UnitTest
       TEST_METHOD(TestCollisionWalkingDownAStep)
       {
          // set up
+         Vector3d initialPos{ 0.0, 0.0, 0.0 };
+         Vector3d velocity{ 1.0, -0.5, 0.0 }; // v has y component also
+         TestPhysicsBody body{ initialPos, velocity };
+
          const double stepHeight = 0.6;
-         CollisitionDetection detection{ std::vector<Triangle3dTextured> {
+         CollisionDetection detection{ std::vector<Triangle3dTextured> {
             Triangle3dTextured{0, // triangle where sphere is resting on
                Vertex3d{Vector3d{ 1.5, -1.0, -10.0 }},
                Vertex3d{Vector3d{ 1.5, -1.0, 10.0 }},
@@ -839,11 +843,7 @@ namespace UnitTest
                Vertex3d{Vector3d{ 1.5, -1.0 - stepHeight, 10.0 }},
                Vertex3d{Vector3d{ 10.0, -1.0 - stepHeight, 0.0 }}
             }
-         } };
-
-         Vector3d initialPos{ 0.0, 0.0, 0.0 };
-         Vector3d velocity{ 1.0, -0.5, 0.0 }; // v has y component also
-         TestPhysicsBody body{ initialPos, velocity };
+         }, body };
 
          // run until 10 iterations were done, or the sphere has climbed down the stair
          unsigned int iteration = 0;
