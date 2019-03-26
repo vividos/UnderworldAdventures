@@ -107,13 +107,6 @@ void PhysicsModel::TrackObject(PhysicsBody& body)
 bool PhysicsModel::TrackObject(PhysicsBody& body, Vector3d velocity,
    bool gravityForce)
 {
-   // setup collision package for this tracking
-   CollisionData data;
-   data.ellipsoid = body.GetEllipsoid();
-   data.foundCollision = false;
-
-   UaAssert(data.ellipsoid.Length() > 1e-6); // ellipsoid must not be of zero size
-
    Vector3d pos = body.GetPosition();
 
    // \todo
@@ -124,17 +117,7 @@ bool PhysicsModel::TrackObject(PhysicsBody& body, Vector3d velocity,
    //if (!gravityForce)
    //   pos.z += 0.5;
 
-   // transform to ellipsoid space
-   pos /= data.ellipsoid;
-   velocity /= data.ellipsoid;
-
-   // call recursive collision response function
-   m_collisionRecursionDepth = 0;
-
-   bool collided = CollideWithWorld(data, pos, velocity);
-
-   // transform position back to normal space and set it
-   pos *= data.ellipsoid;
+   bool collided = CollideAndSlide(body, pos, velocity);
 
    if (gravityForce && collided)
    {
@@ -154,6 +137,30 @@ bool PhysicsModel::TrackObject(PhysicsBody& body, Vector3d velocity,
       pos.z = 0.0;
 
    body.SetPosition(pos);
+
+   return collided;
+}
+
+bool PhysicsModel::CollideAndSlide(PhysicsBody& body, Vector3d& pos, Vector3d velocity)
+{
+   // setup collision package for this tracking
+   CollisionData data;
+   data.ellipsoid = body.GetEllipsoid();
+   data.foundCollision = false;
+
+   UaAssert(data.ellipsoid.Length() > 1e-6); // ellipsoid must not be of zero size
+
+   // transform to ellipsoid space
+   pos /= data.ellipsoid;
+   velocity /= data.ellipsoid;
+
+   // call recursive collision response function
+   m_collisionRecursionDepth = 0;
+
+   bool collided = CollideWithWorld(data, pos, velocity);
+
+   // transform position back to normal space
+   pos *= data.ellipsoid;
 
    return collided;
 }
