@@ -22,48 +22,14 @@
 #include "pch.hpp"
 #include "Math.hpp"
 #include "Triangle3d.hpp"
-#include "physics/PhysicsModel.hpp"
+#include "physics/PhysicsBody.hpp"
+#include "physics/CollisionDetection.hpp"
 #include <vector>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTest
 {
-   /// \brief collision detection class under test
-   /// \details this currently wraps PhysicsModel and wraps IPhysicsModelCallback and should be
-   /// refactored to usec by PhysicsModel instead
-   class CollisionDetection : private IPhysicsModelCallback
-   {
-   public:
-      /// ctor
-      CollisionDetection(const std::vector<Triangle3dTextured>& allTriangles, const PhysicsBody& body)
-         :m_allTriangles(allTriangles.begin(), allTriangles.end())
-      {
-      }
-
-      void TrackObject(PhysicsBody& body)
-      {
-         PhysicsModel model;
-         model.Init(this);
-         model.SetPhysicsParam(physicsGravity, true);
-
-         model.TrackObject(body);
-      }
-
-   private:
-      // virtual methods from IPhysicsModelCallback
-
-      /// returns surrounding triangles on given position
-      virtual void GetSurroundingTriangles(unsigned int xpos,
-         unsigned int ypos, std::vector<Triangle3dTextured>& allTriangles) override
-      {
-         allTriangles.assign(m_allTriangles.begin(), m_allTriangles.end());
-      }
-
-   private:
-      std::vector<Triangle3dTextured> m_allTriangles;
-   };
-
    /// physics body under test
    class TestPhysicsBody : public PhysicsBody
    {

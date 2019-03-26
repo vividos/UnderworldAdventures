@@ -61,6 +61,7 @@
     <Lib />
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CollisionDetection.cpp" />
     <ClCompile Include="GeometryProvider.cpp" />
     <ClCompile Include="Pathfinder.cpp" />
     <ClCompile Include="pch.cpp">
@@ -71,6 +72,7 @@
     <ClCompile Include="PlayerPhysicsObject.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CollisionDetection.hpp" />
     <ClInclude Include="GeometryProvider.hpp" />
     <ClInclude Include="Pathfinder.hpp" />
     <ClInclude Include="pch.hpp" />
