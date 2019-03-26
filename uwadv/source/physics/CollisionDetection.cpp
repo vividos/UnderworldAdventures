@@ -487,8 +487,8 @@ bool CollisionDetection::GetLowestRoot(double a, double b, double c,
 bool IsSameSide(const Vector3d& p1,
    const Vector3d& p2, const Vector3d& a, const Vector3d& b)
 {
-   Vector3d cp1; cp1.Cross(b - a, p1 - a);
-   Vector3d cp2; cp2.Cross(b - a, p2 - a);
+   Vector3d cp1 = Vector3d::Cross(b - a, p1 - a);
+   Vector3d cp2 = Vector3d::Cross(b - a, p2 - a);
 
    return cp1.Dot(cp2) >= 0;
 }

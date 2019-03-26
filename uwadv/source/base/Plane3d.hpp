@@ -45,9 +45,7 @@ public:
    Plane3d(Vector3d p1, Vector3d p2, Vector3d p3)
       : origin(p1)
    {
-      p2 -= p1;
-      p3 -= p1;
-      normal.Cross(p2, p3);
+      normal = Vector3d::Cross(p2 - p1, p3 - p1);
       normal.Normalize();
       equation_3 = -normal.Dot(origin);
    }

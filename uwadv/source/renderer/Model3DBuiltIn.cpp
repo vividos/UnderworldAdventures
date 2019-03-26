@@ -64,7 +64,7 @@ void Model3DBuiltIn::Render(const Underworld::Object& object,
       vec1 -= tri.m_vertices[0].pos;
       vec2 -= tri.m_vertices[0].pos;
 
-      normal.Cross(vec1, vec2);
+      normal = Vector3d::Cross(vec1, vec2);
       normal.Normalize();
       normal *= -1;
 

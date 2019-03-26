@@ -182,9 +182,10 @@ public:
    }
 
    /// calculates outer (cross) product
-   void Cross(const Vector3d& first, const Vector3d& second)
+   static Vector3d Cross(const Vector3d& first, const Vector3d& second)
    {
-      Set(first.y * second.z - first.z * second.y,
+      return Vector3d(
+         first.y * second.z - first.z * second.y,
          first.z * second.x - first.x * second.z,
          first.x * second.y - first.y * second.x);
    }
