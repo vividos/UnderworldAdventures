@@ -38,7 +38,8 @@ struct CollisionData
    /// default ctor
    CollisionData()
       :foundCollision(false),
-      nearestDistance(1e20) // should be "infinite enough"
+      nearestDistance(1e20), // should be "infinite enough"
+      debugOutput(false)
    {
    }
 
@@ -54,6 +55,8 @@ struct CollisionData
    bool foundCollision;       ///< indicates if collision was found
    double nearestDistance;    ///< dist to nearest triangle
    Vector3d intersectPoint;   ///< intersection point of collision
+
+   bool debugOutput; ///< indicates if debug output should be made
 };
 
 CollisionDetection::CollisionDetection(const std::vector<Triangle3dTextured>& allTriangles,
@@ -74,15 +77,22 @@ CollisionDetection::CollisionDetection(const std::vector<Triangle3dTextured>& al
 void CollisionDetection::TrackObject(PhysicsBody& body)
 {
    Vector3d pos = body.GetPosition();
+   Vector3d dir = body.GetDirection();
 
-   // \todo
-   extern bool my_movement;
-   if (my_movement)
-      UaTrace("old pos: %2.3f / %2.3f / %2.3f\n", pos.x, pos.y, pos.z);
+#ifdef HAVE_DEBUG
+   bool debugOutput = body.GetDirection().Length() > 1e-3;
+#else
+   bool debugOutput = false;
+#endif
+
+   if (debugOutput)
+      UaTrace("tracking physics body at pos (%2.3f / %2.3f / %2.3f), velocity (%2.3f / %2.3f / %2.3f), length=%1.3f\n",
+         pos.x, pos.y, pos.z,
+         dir.x, dir.y, dir.z, dir.Length());
 
    // apply direction
    //pos.z += 0.5;
-   CollideAndSlide(body, pos, body.GetDirection());
+   CollideAndSlide(body, pos, dir);
    //pos.z -= 0.5;
 
    if (body.IsGravityActive())
@@ -104,11 +114,10 @@ void CollisionDetection::TrackObject(PhysicsBody& body)
    if (pos.z < 0.0)
       pos.z = 0.0;
 
-   if (my_movement)
-      UaTrace("new pos: %2.3f / %2.3f / %2.3f\n", pos.x, pos.y, pos.z);
-   my_movement = false;
-
    body.SetPosition(pos);
+
+   if (debugOutput)
+      UaTrace("finished tracking physics body, new pos (%2.3f / %2.3f / %2.3f)\n\n", pos.x, pos.y, pos.z);
 }
 
 bool CollisionDetection::CollideAndSlide(PhysicsBody& body, Vector3d& pos, Vector3d velocity)
@@ -117,6 +126,9 @@ bool CollisionDetection::CollideAndSlide(PhysicsBody& body, Vector3d& pos, Vecto
    CollisionData data;
    data.ellipsoid = body.GetEllipsoid();
    data.foundCollision = false;
+#ifdef HAVE_DEBUG
+   data.debugOutput = velocity.Length() > 1e-3 /* && velocity.z >= 0*/;
+#endif
 
    UaAssert(data.ellipsoid.Length() > 1e-6); // ellipsoid must not be of zero size
 
@@ -142,6 +154,9 @@ bool CollisionDetection::CollideAndSlide(PhysicsBody& body, Vector3d& pos, Vecto
 bool CollisionDetection::CollideWithWorld(CollisionData& data,
    Vector3d& pos, const Vector3d& velocity)
 {
+   if (data.debugOutput)
+      UaTrace("  iteration %i\n", m_collisionRecursionDepth);
+
    double minDistance = c_physicsMinDistance;
 
    // do we need to worry?
@@ -161,6 +176,9 @@ bool CollisionDetection::CollideWithWorld(CollisionData& data,
    if (!data.foundCollision)
    {
       pos += velocity;
+
+      if (data.debugOutput)
+         UaTrace("  no collision; exiting\n");
       return false; // no collision
    }
 
@@ -202,12 +220,20 @@ bool CollisionDetection::CollideWithWorld(CollisionData& data,
    // the next iteration
    Vector3d newVelocity = newDestinationPoint - data.intersectPoint;
 
+   if (data.debugOutput)
+      UaTrace("  new base point (%2.3f / %2.3f / %2.3f), new velocity (%2.3f / %2.3f / %2.3f)\n",
+         newBasePoint.x, newBasePoint.y, newBasePoint.z,
+         newVelocity.x, newVelocity.y, newVelocity.z);
+
    // recurse
 
    // don't recurse if the new direction is very small
    if (newVelocity.Length() < minDistance)
    {
       pos = newBasePoint;
+      if (data.debugOutput)
+         UaTrace("  stop recursing, velocity length below min. distance\n");
+
       return true;
    }
 
@@ -229,6 +255,9 @@ void CollisionDetection::CheckCollision(CollisionData& data)
    unsigned int max = m_allTriangles.size();
    for (unsigned int index = 0; index < max; index++)
    {
+      if (data.debugOutput)
+         UaTrace("    checking triangle %i...", index);
+
       const Triangle3dTextured& tri = m_allTriangles[index];
 
       CheckTriangle(data,
@@ -249,7 +278,11 @@ void CollisionDetection::CheckTriangle(CollisionData& data,
    // is triangle front-facing to the direction vector?
    // we only check front-facing triangles
    if (!trianglePlane.IsFrontFacingTo(data.normalizedVelocity))
+   {
+      if (data.debugOutput)
+         UaTrace("not front-facing\n");
       return;
+   }
 
    // triangle is front-facing
 
@@ -270,6 +303,8 @@ void CollisionDetection::CheckTriangle(CollisionData& data,
       if (fabs(distanceToTriangle) >= 1.0)
       {
          // sphere is not embedded in plane; no collision possible
+         if (data.debugOutput)
+            UaTrace("velocity parallel to triangle, but not embedded\n");
          return;
       }
       else
@@ -279,6 +314,9 @@ void CollisionDetection::CheckTriangle(CollisionData& data,
          isEmbedded = true;
          t0 = 0.0;
          t1 = 1.0;
+
+         if (data.debugOutput)
+            UaTrace("sphere embedded in triangle plane\n");
       }
    }
    else
@@ -296,6 +334,8 @@ void CollisionDetection::CheckTriangle(CollisionData& data,
       {
          // both t values are outside values [0,1]
          // no collision possible
+         if (data.debugOutput)
+            UaTrace("no collision possible intersection, at t0=%1.3f, t1=%1.3f\n", t0, t1);
          return;
       }
 
@@ -304,6 +344,9 @@ void CollisionDetection::CheckTriangle(CollisionData& data,
       if (t1 < 0.0) t1 = 0.0;
       if (t0 > 1.0) t0 = 1.0;
       if (t1 > 1.0) t1 = 1.0;
+
+      if (data.debugOutput)
+         UaTrace("sphere colliding with triangle plane at %1.3f and %1.3f\n", t0, t1);
    }
 
    // OK, at this point we have two time values t0 and t1
@@ -329,6 +372,10 @@ void CollisionDetection::CheckTriangle(CollisionData& data,
          found = true;
          t = t0;
          collisionPoint = planeIntersectionPoint;
+
+         if (data.debugOutput)
+            UaTrace("      sphere collides with triangle inside, at (%2.3f / %2.3f / %2.3f), t=%1.3f\n",
+               collisionPoint.x, collisionPoint.y, collisionPoint.z, t);
       }
    }
 
@@ -355,6 +402,10 @@ void CollisionDetection::CheckTriangle(CollisionData& data,
       found |= CheckCollisionWithEdge(data, p1, p2, t, collisionPoint);
       found |= CheckCollisionWithEdge(data, p2, p3, t, collisionPoint);
       found |= CheckCollisionWithEdge(data, p3, p1, t, collisionPoint);
+
+      if (found && data.debugOutput)
+         UaTrace("      sphere collides with triangle edge or point, at (%2.3f / %2.3f / %2.3f), t=%1.3f\n",
+            collisionPoint.x, collisionPoint.y, collisionPoint.z, t);
 
    }
 
