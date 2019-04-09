@@ -45,7 +45,7 @@ There are several platforms on which Underworld Adventures can run.
 ### 2.1 Microsoft Visual Studio on Windows
 
 Underworld Adventures can be compiled using the latest Visual Studio version
-from Microsoft. As of writing this document, Visual Studio 2017 was the
+from Microsoft. As of writing this document, Visual Studio 2019 is the
 current version. Any later version should also work. Either Community or
 Professional version should work. Install the "C++" workload.
 
