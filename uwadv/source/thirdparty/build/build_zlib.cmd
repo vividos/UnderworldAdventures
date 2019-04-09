@@ -12,7 +12,7 @@ REM set this to the folder name of the root folder in the zip archive
 set PREFIX=zlib-1.2.11
 
 REM set this to your Visual Studio installation folder
-set VSINSTALL=%ProgramFiles(x86)%\Microsoft Visual Studio\2017\Community
+set VSINSTALL=%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Community
 
 REM download package
 set URL=http://zlib.net/%ZIPNAME%.zip
@@ -28,8 +28,8 @@ call "%VSINSTALL%\Common7\Tools\VsDevCmd.bat"
 
 pushd %PREFIX%\contrib\vstudio\vc14\
 
-REM update Toolset to v141, in order to use VS2017
-powershell -Command "& {(Get-Content zlibstat.vcxproj) -replace \"v140\",\"v141\" | out-file zlibstat.vcxproj}"
+REM update Toolset to v141, in order to use VS2019
+powershell -Command "& {(Get-Content zlibstat.vcxproj) -replace \"v140\",\"v142\" | out-file zlibstat.vcxproj}"
 
 REM compile
 msbuild zlibstat.vcxproj /m /p:Configuration=ReleaseWithoutAsm /p:Platform=Win32 /t:Rebuild
