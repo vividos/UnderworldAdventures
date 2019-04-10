@@ -232,16 +232,11 @@ bool CollisionDetection::CollideWithWorld(CollisionData& data,
       return true;
    }
 
-   // call the function with the new position and velocity
    m_collisionRecursionDepth++;
 
-   CollideWithWorld(data, newBasePoint, newVelocity);
+   // call the function with the new position and velocity
    pos = newBasePoint;
-
-   m_collisionRecursionDepth--;
-
-   // recursion call might have not collided with something, but we surely had
-   return true;
+   return CollideWithWorld(data, pos, newVelocity);
 }
 
 void CollisionDetection::CheckCollision(CollisionData& data)
