@@ -65,7 +65,7 @@ CollisionDetection::CollisionDetection(const std::vector<Triangle3dTextured>& al
    m_collisionRecursionDepth(0)
 {
    const Vector3d& ellipsoid = body.GetEllipsoid();
-   for (auto triangle : m_allTriangles)
+   for (auto& triangle : m_allTriangles)
    {
       triangle.m_vertices[0].pos /= ellipsoid;
       triangle.m_vertices[1].pos /= ellipsoid;
