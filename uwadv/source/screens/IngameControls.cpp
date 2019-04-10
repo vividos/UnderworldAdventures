@@ -246,7 +246,7 @@ void IngameFlask::Draw()
       m_isVitalityFlask ? Underworld::attrVitality : Underworld::attrMana);
    unsigned int maxval = player.GetAttribute(
       m_isVitalityFlask ? Underworld::attrMaxVitality : Underworld::attrMaxMana);
-   unsigned int curimg = unsigned((curval*13.0) / maxval);
+   unsigned int curimg = maxval == 0 ? 0 : unsigned((curval*13.0) / maxval);
 
    // check if flask image has to be update
    unsigned int new_image = m_isVitalityFlask && m_isPoisoned ? curimg + 14 : curimg;

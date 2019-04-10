@@ -118,7 +118,9 @@ class IngameFlask : public OriginalIngameControl
 public:
    /// ctor
    IngameFlask(bool isVitalityFlask)
-      :m_isVitalityFlask(isVitalityFlask)
+      :m_isVitalityFlask(isVitalityFlask),
+      m_isPoisoned(false),
+      m_lastFlaskImageIndex(0)
    {
    }
 
