@@ -26,9 +26,6 @@
 #include "PhysicsBody.hpp"
 #include "Plane3d.hpp"
 
-/// trick to get smoother CD
-const double c_cdLiftoff = 0.5;
-
 /// minimum distance
 const double c_physicsMinDistance = 0.005;
 
