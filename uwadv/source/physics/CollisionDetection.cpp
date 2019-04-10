@@ -91,9 +91,7 @@ void CollisionDetection::TrackObject(PhysicsBody& body)
          dir.x, dir.y, dir.z, dir.Length());
 
    // apply direction
-   //pos.z += 0.5;
    CollideAndSlide(body, pos, dir);
-   //pos.z -= 0.5;
 
    if (body.IsGravityActive())
    {
