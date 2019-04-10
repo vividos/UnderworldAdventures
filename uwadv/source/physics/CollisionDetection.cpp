@@ -20,11 +20,14 @@
 /// \brief collision detection for physics bodies
 /// \details used collision detection and response code from this paper:
 /// http://www.peroxide.dk/papers/collision/collision.pdf
+/// and fixes to the algorithm from this paper:
+/// https://arxiv.org/ftp/arxiv/papers/1211/1211.0059.pdf
 //
 #include "pch.hpp"
 #include "CollisionDetection.hpp"
 #include "PhysicsBody.hpp"
 #include "Plane3d.hpp"
+#include <algorithm>
 
 /// minimum distance
 const double c_physicsMinDistance = 0.005;
@@ -182,27 +185,22 @@ bool CollisionDetection::CollideWithWorld(CollisionData& data,
    Vector3d destinationPoint = pos + velocity;
    Vector3d newBasePoint = pos;
 
-   // only update if we are not already very close
-   // and if so we only move very close to intersection ...
-   // not to the exact spot
-   if (data.nearestDistance >= minDistance)
+   // calculate touch point and new base point (code from arxiv paper, chapter III.A.)
+   Vector3d touchPoint;
    {
-      Vector3d velocity2(velocity);
-      velocity2.Normalize();
-      velocity2 *= data.nearestDistance - minDistance;
+      touchPoint = data.basePoint + data.nearestDistance * data.normalizedVelocity;
 
-      newBasePoint = data.basePoint + velocity2;
+      double distance = data.normalizedVelocity.Length() * data.nearestDistance;
 
-      // adjust polygon intersection point (so sliding
-      // plane will be unaffected by the fact that we
-      // move slightly less than collision tells us)
-      velocity2.Normalize();
-      velocity2 *= minDistance;
-      data.intersectPoint -= velocity2;
+      double shortDistance = std::max(distance - c_physicsMinDistance, 0.0);
+
+      Vector3d nearPoint = data.basePoint + shortDistance * data.normalizedVelocity;
+
+      newBasePoint = nearPoint;
    }
 
    // determine the sliding plane
-   Vector3d slidePlaneNormal = newBasePoint - data.intersectPoint;
+   Vector3d slidePlaneNormal = touchPoint - data.intersectPoint;
    slidePlaneNormal.Normalize();
 
    Plane3d slidingPlane(data.intersectPoint, slidePlaneNormal);
