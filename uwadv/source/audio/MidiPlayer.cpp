@@ -51,6 +51,14 @@ MidiPlayer::~MidiPlayer()
       m_midiDriver->destroyMidiDriver();
 }
 
+void MidiPlayer::LoadTimbreLibrary(Base::SDL_RWopsPtr rwops, bool isMT) const
+{
+   Detail::InputDataSource dataSource(rwops);
+
+   m_midiDriver->loadTimbreLibrary(&dataSource,
+      isMT ? MidiDriver::TIMBRE_LIBRARY_XMIDI_MT : MidiDriver::TIMBRE_LIBRARY_XMIDI_AD);
+}
+
 void MidiPlayer::PlayFile(Base::SDL_RWopsPtr rwops, bool repeat)
 {
    if (m_midiDriver.get() == NULL)

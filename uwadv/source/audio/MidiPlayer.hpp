@@ -43,6 +43,9 @@ namespace Audio
       /// dtor
       ~MidiPlayer();
 
+      /// loads timbre library (uw.ad, uw.mt files)
+      void LoadTimbreLibrary(Base::SDL_RWopsPtr rwops, bool isMT) const;
+
       /// starts playing midi file, with track number
       void PlayFile(Base::SDL_RWopsPtr rwops, bool repeat = false);
 

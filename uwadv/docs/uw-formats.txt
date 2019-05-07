@@ -5,7 +5,7 @@
                https://vividos.github.com/UnderworldAdventures
  +--------------------------------------------------------------------------+
 
-Document version: 1.71, as of 2019-05-07
+Document version: 1.72, as of 2019-05-07
 
 
 Table of Contents
@@ -283,8 +283,8 @@ Table of Contents
    uwXX.xmi       underworld extended midi music
    awXX.xmi       the same, for adlib music (?)
    sounds.dat     sound effect midi commands
-   uw.mt          MT32 sound effects data
-   uw.ad          adlib stuff
+   uw.mt          MT32 timbre library
+   uw.ad          adlib timbre library
    *.adv          device driver for midi/wave output:
 
    adlib.adv      Ad Lib Music Synthesizer Card
@@ -459,7 +459,7 @@ Table of Contents
    dm??.adv       digital music drivers
    sample.opl
    sp??.voc       sound effects
-   uw.opl
+   uw.opl         OPL timbre library
    uw??.voc       guardian laughter
    uwa??.xmi      adlib music files
    uwr??.xmi      roland music files

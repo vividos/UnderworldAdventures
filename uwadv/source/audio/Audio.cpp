@@ -154,6 +154,11 @@ AudioManager::AudioManager(const Base::Settings& settings, const Base::ResourceM
       if (rwops.get() != NULL)
          m_data->GetPlaylist() = Playlist(settings, rwops);
    }
+
+   UaTrace("loading timbre library from file sound/uw.mt...\n");
+
+   Base::SDL_RWopsPtr rwops = m_data->GetResourceManager().GetUnderworldFile(Base::resourceGameUw, "sound/uw.mt");
+   m_data->GetMidiPlayer().LoadTimbreLibrary(rwops, true);
 }
 
 /// Shuts down SDL audio subsystem and SDL_mixer.
