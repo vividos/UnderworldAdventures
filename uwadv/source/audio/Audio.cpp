@@ -159,6 +159,8 @@ AudioManager::AudioManager(const Base::Settings& settings, const Base::ResourceM
 
    Base::SDL_RWopsPtr rwops = m_data->GetResourceManager().GetUnderworldFile(Base::resourceGameUw, "sound/uw.mt");
    m_data->GetMidiPlayer().LoadTimbreLibrary(rwops, true);
+
+   UaTrace("\n");
 }
 
 /// Shuts down SDL audio subsystem and SDL_mixer.

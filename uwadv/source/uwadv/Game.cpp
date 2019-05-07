@@ -538,7 +538,7 @@ void Game::InitGame()
    UaTrace("loading game strings ... ");
    Import::GameStringsImporter importer(GetGameStrings());
    importer.LoadDefaultStringsPakFile(GetResourceManager());
-   UaTrace("done\n");
+   UaTrace("done\n\n");
 
    m_audioManager = std::make_unique<Audio::AudioManager>(GetSettings(), GetResourceManager());
 
