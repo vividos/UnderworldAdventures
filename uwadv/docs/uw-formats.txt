@@ -5,7 +5,7 @@
                https://vividos.github.com/UnderworldAdventures
  +--------------------------------------------------------------------------+
 
-Document version: 1.70, as of 2019-02-23
+Document version: 1.71, as of 2019-05-07
 
 
 Table of Contents
@@ -117,16 +117,18 @@ Table of Contents
    file and subsequently found out more unknown data structures and discussed
    about file formats with me. Many thanks, Jim!
 
-   Additional information came from Alistair Brown (basic object format, via
-   the Underworld II editor available at
-   <http://bearcity.pwp.blueyonder.co.uk/>), Ulf Wohlers (Objects and 3D
-   models), Fabian Pache (about map details and 3d models, uw2 conversations
-   uw2 player save <http://uw2rev.sourceforge.net>).
-   Further infos came from Hank Morgan's UnderworldExporter project
-   <https://github.com/hankmorgan/UnderworldExporter>.
-
-   Further infos about weapon animation and miscellaneous bits about uw were
-   contributed by Telemachos from peroxide.dk.
+   Additional information came from:
+   - Alistair Brown (basic object format, via the Underworld II editor
+     available at http://bearcity.pwp.blueyonder.co.uk/)
+   - Ulf Wohlers (Objects and 3D models)
+   - Fabian Pache (about map details and 3d models, uw2 conversations uw2
+     player save http://uw2rev.sourceforge.net)
+   - Hank Morgan, from his UnderworldExporter project
+     https://github.com/hankmorgan/UnderworldExporter.
+   - Marc A. Pelletier (coren), from the Labyrinth of Worlds project
+     (http://low.sourceforge.net/)
+   - Telemachos (http://www.peroxide.dk/), infos about weapon animation and
+     miscellaneous bits about uw.
 
    I also like to thank Telemachos who pointed me to the TSSHP's file formats
    file at the start of all of this.
@@ -3023,8 +3025,14 @@ Table of Contents
    -------------------------------------------------------------------------
 
    id=002c name="x_skills" ret_type=int
-   parameters:   unknown
-   description:  unknown
+   parameters:   arg1: when 10001, increase skill by 1?
+                       when 9999, return skill value?
+                 arg2: skill to use; one of:
+                    0 attack, 1 defense, 2 unarmed, 3 swords
+                    6 missile, 7 mana, 8 lore, 9 casting,
+                    10 disarm, 11 searching, 14 repair,
+                    15 charisma, 16 lockpick, 18 evaluation, 19 swimming
+   description:  improves skill?
    return value: unknown
    -------------------------------------------------------------------------
 
@@ -3052,6 +3060,7 @@ Table of Contents
    description:  sets object properties for object in inventory object list.
                  if a property shouldn't be set, -1 is passed for the
                  property value.
+                 [uw2] sewer key is arg6=28, arg8=1
    -------------------------------------------------------------------------
 
    id=0030 name="find_inv" ret_type=int
@@ -3189,9 +3198,19 @@ Table of Contents
 
    0x3e set_sequence          [x]
 
+   -------------------------------------------------------------------------
 
+   Here is a detailed description of every builtin function. arg0 is always
+   the first argument (the last value pushed on the stack) and specifies the
+   number of arguments passed.
 
-
+   id=000f name="babl_hack" ret_type=?
+   parameters:   arg0: ???
+                   9 = merzan deal evaluation (b=525, then 0)
+                 arg1: ???
+   description:  ???
+   return value: ???
+   -------------------------------------------------------------------------
 
 
 7.7  Imported variables
@@ -3273,7 +3292,11 @@ Table of Contents
 
 7.8.2 UW2 quest flags
 
-   TODO
+   flag   description
+
+    109   Lord British gave his startgame speech
+    110   Mors Gotha is invading the castle
+    112   The Avatar is persona non grata (?)
 
  +--------------------------------------------------------------------------+
 
