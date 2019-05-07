@@ -1,13 +1,10 @@
 Underworld Adventures Todo-List
 -------------------------------
 
-This file contains the todo-list for the uwadv project. 
-
+This file contains the todo-list for the uwadv project.
 
 [renderer] using display lists for all tiles in current map; method to update
 a tile, e.g. when it's a moving one, or when debugger changed the tile
-
-[misc] README.dev.txt: explain coding styles better, with examples, etc.
 
 [misc] README.dev.txt: describe how to write unit tests and how to incorporate
 them
@@ -18,10 +15,6 @@ several ua_image_quad objects
 [uadebug] do code-debugger class
 
 [uadebug] add project management, reading game.cfg, etc.
-
-[misc] write ebuild script for gentoo
-
-[misc] write FreeBSD "ports" configuration
 
 [renderer] get decal rendering to work, for switches, levers, etc., and tmap
 objects
@@ -35,14 +28,9 @@ savegame
 
 [import] add importing uw1 and uw2 player info
 
-[underworld] add uw_status object or similar
-
 [import] tgaimport: add all needed tga image modes
 
-[screens] rewrite character creation
-
-[screens] in character creation, only stop music when entering game, not when
-escaping/restarting
+[screens] refactor character creation
 
 [screens] adjust scroll size in uw_demo
 
@@ -52,20 +40,14 @@ escaping/restarting
 
 [screens] conversation: add all imported functions implementation
 
-[conv] do interface class for ua_conv_vm
-
 [screens] add endgame screen (with stats etc.)
 
 [scripting] add implementation for all Lua C functions
-
-[underworld] add object list alloc/dealloc/insert/delete methods
 
 [screens] ingame_orig: add getting items
 
 [audio] add sound effects reusing from uw2 sounds
 
 [renderer] implement uw 3d models
-
-[screens] use unicode translation in character screen
 
 [screens] ingame: implement right-dragging as using
