@@ -57,6 +57,9 @@ void UaAssertCheck(bool cond, const char* cond_str, const char* file, int line)
 
 #ifdef HAVE_WIN32
       OutputDebugStringA(buffer.str().c_str());
+
+      if (IsDebuggerPresent())
+         DebugBreak();
 #endif
       throw Base::RuntimeException(buffer.str().c_str());
    }
