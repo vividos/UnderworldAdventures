@@ -94,8 +94,8 @@ AC_ARG_ENABLE(debug,
 
 
 # checking for SDL
-AM_PATH_SDL(1.2.3,,[AC_MSG_ERROR([
-Underworld Adventures needs at least SDL 1.2.3 or higher installed.
+AM_PATH_SDL2(2.0.9,,[AC_MSG_ERROR([
+Underworld Adventures needs at least SDL 2.0.9 or higher installed.
 SDL is available here: http://www.libsdl.org/
 ])])
 
