@@ -21,17 +21,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "pent_include.h"
 
+#ifdef PENTAGRAM_IN_EXULT
+#include "gamma.h"
+#endif
+
 class IDataSource;
 class OIDataSource;
 struct XMidiEvent;
 class XMidiEventList;
 
 // Conversion types for Midi files
-#define XMIDIFILE_CONVERT_NOCONVERSION		0
+#define XMIDIFILE_CONVERT_NOCONVERSION		4
 #define XMIDIFILE_CONVERT_MT32_TO_GM		1
 #define XMIDIFILE_CONVERT_MT32_TO_GS		2
 #define XMIDIFILE_CONVERT_MT32_TO_GS127		3
-#define XMIDIFILE_CONVERT_GM_TO_MT32		4
+#define XMIDIFILE_CONVERT_GM_TO_MT32		0
 
 #define XMIDIFILE_CONVERT_GS127_TO_GS		5
 #define XMIDIFILE_HINT_U7VOICE_MT_FILE		6
@@ -51,20 +55,24 @@ private:
 	XMidiEvent			*branches;
 	XMidiEvent			*current;
 	XMidiEvent			*notes_on;
-	
+	XMidiEvent			*x_patch_bank_cur;
+	XMidiEvent			*x_patch_bank_first;
+
 	const static char	mt32asgm[128];
 	const static char	mt32asgs[256];
 	const static char	gmasmt32[128];
 	bool 				bank127[16];
 	int					convert_type;
-	
+
 	bool				do_reverb;
 	bool				do_chorus;
 	int					chorus_value;
 	int					reverb_value;
 
+#ifdef PENTAGRAM_IN_EXULT
 	// Midi Volume Curve Modification
-	//static GammaTable<unsigned char>	VolumeCurve;
+	static GammaTable<unsigned char>	VolumeCurve;
+#endif
 
 public:
 	XMidiFile(IDataSource *source, int pconvert);
@@ -74,13 +82,19 @@ public:
 
 	// External Event list functions
 	XMidiEventList *GetEventList (uint32 track);
+	XMidiEventList *StealEventList ()
+		{
+		XMidiEventList *tmp = GetEventList(0);
+		events = NULL;
+		return tmp;
+		}
 
 	// Not yet implimented
 	// int apply_patch (int track, DataSource *source);
 
 private:
 	XMidiFile(); // No default constructor
-    
+
     struct first_state {			// Status,	Data[0]
 		XMidiEvent		*patch[16];	// 0xC
 		XMidiEvent		*bank[16];	// 0xB,		0
@@ -107,7 +121,7 @@ private:
 
 	int ExtractTracksFromXmi (IDataSource *source);
 	int ExtractTracksFromMid (IDataSource *source, const uint32 ppqn, const int num_tracks, const bool type1);
-	
+
 	int ExtractTracks (IDataSource *source);
 
 	int ExtractTracksFromU7V (IDataSource *source);

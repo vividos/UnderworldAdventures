@@ -140,7 +140,7 @@ public:
 	// Finds the note that has same pitch and channel, and sets its after touch to our velocity
 	inline void SetAftertouch(XMidiEvent *event) {
 
-		XMidiEvent *prev = 0;
+		//XMidiEvent *prev = 0;
 		XMidiEvent *note = notes;
 		while (note) {
 
@@ -148,7 +148,7 @@ public:
 				note->ex.note_on.actualvel = event->data[1];
 				return;
 			}
-			prev = note;
+			//prev = note;
 			note = note->ex.note_on.next_note;
 		}
 	}

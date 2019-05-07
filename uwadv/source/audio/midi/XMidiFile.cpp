@@ -16,6 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <cstdlib>
+
 #include "pent_include.h"
 #include "XMidiFile.h"
 #include "XMidiEvent.h"
@@ -25,50 +27,33 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef PENTAGRAM_IN_EXULT
 #include "game.h"
 #include "databuf.h"
+#include "Configuration.h"
 #else
 #include "IDataSource.h"
 #include "ODataSource.h"
 #endif
 
+// uwadv
 #pragma warning(disable: 4456) // declaration of 'x' hides previous local declaration
 #pragma warning(disable: 4458) // declaration of 'x' hides class member
 #pragma warning(disable: 4459) // declaration of 'display' hides global declaration
 
-#ifndef UNDER_CE
 using std::atof;
 using std::atoi;
 using std::memcmp;
 using std::memcpy;
 using std::memset;
 using std::size_t;
-#endif
 using std::string;
 using std::endl;
 
-#ifndef UNDER_CE
 #define XMidiEvent__Malloc XMidiEvent::Malloc
 #define XMidiEvent__Calloc XMidiEvent::Calloc
-#else
-
-template<class T>
-static inline T* XMidiEvent__Malloc(size_t num=1)
-{
-	return static_cast<T*>(std::malloc(num));
-}
-
-template<class T>
-static inline T* XMidiEvent__Calloc(size_t num=1,size_t sz=0)
-{
-	if(!sz) sz=sizeof(T);
-	return static_cast<T*>(std::calloc(num,sz));
-}
-
-#endif
 
 //#include "gamma.h"
 
 // This is used to correct incorrect patch, vol and pan changes in midi files
-// The bias is just a value to used to work out if a vol and pan belong with a 
+// The bias is just a value to used to work out if a vol and pan belong with a
 // patch change. This is to ensure that the default state of a midi file is with
 // the tracks centred, unless the first patch change says otherwise.
 #define PATCH_VOL_PAN_BIAS	5
@@ -173,7 +158,7 @@ const char XMidiFile::mt32asgm[128] = {
 	57,	// 91	Trombone 2
 	60,	// 92	French Horn 1
 	60,	// 93	French Horn 2
-	58,	// 94	Tuba	
+	58,	// 94	Tuba
 	61,	// 95	Brass Section 1
 	61,	// 96	Brass Section 2
 	11,	// 97	Vibes 1
@@ -306,7 +291,7 @@ const char XMidiFile::mt32asgs[256] = {
 	57, 0,	// 91	Trombone 2
 	60, 0,	// 92	French Horn 1
 	60, 0,	// 93	French Horn 2
-	58, 0,	// 94	Tuba	
+	58, 0,	// 94	Tuba
 	61, 0,	// 95	Brass Section 1
 	61, 0,	// 96	Brass Section 2
 	11, 0,	// 97	Vibes 1
@@ -374,7 +359,7 @@ const char XMidiFile::gmasmt32[128] =
 // MT32 SysEx
 //
 static const uint32 sysex_data_start = 7;		// Data starts at byte 7
-static const uint32 sysex_max_data_size = 256;
+//static const uint32 sysex_max_data_size = 256;
 
 
 //
@@ -385,16 +370,16 @@ static const uint32 rhythm_base = 0x030110;	// Note, these are 7 bit!
 static const uint32 rhythm_mem_size = 4;
 
 static const uint32 rhythm_first_note = 24;
-static const uint32 rhythm_num_notes = 64;
+//static const uint32 rhythm_num_notes = 64;
 
 // Memory offset based on index in the table
-static inline uint32 rhythm_mem_offset(uint32 index_num) { 
-	return index_num * 4; 
+static inline uint32 rhythm_mem_offset(uint32 index_num) {
+	return index_num * 4;
 }
 
 // Memory offset based on note key num
-static inline uint32 rhythm_mem_offset_note(uint32 rhythm_note_num) { 
-	return (rhythm_note_num-rhythm_first_note) * 4; 
+static inline uint32 rhythm_mem_offset_note(uint32 rhythm_note_num) {
+	return rhythm_mem_offset(rhythm_note_num-rhythm_first_note);
 }
 
 struct RhythmSetupData {
@@ -441,14 +426,18 @@ static const PatchMemData patch_template = {
 	1,		// reverb_switch
 	0		// dummy
 };
-	
+
 
 //
 // System Area Consts
 //
 static const uint32 system_base = 0x100000;	// Note, these are 7 bit!
-static const uint32 system_mem_size = 0x17;	// Display is 20 ASCII characters (32-127)
-#define system_mem_offset(setting) ((uintptr)(&((systemArea*)0)->setting))
+//static const uint32 system_mem_size = 0x17;	// Display is 20 ASCII characters (32-127)
+#include <cstddef>
+#ifndef offsetof	// Broken <cstddef>? Just in case...
+#   define offsetof(type, field) reinterpret_cast<uintptr>(&(static_cast<type *>(0)->field))
+#endif
+#define system_mem_offset(setting) offsetof(systemArea, setting)
 
 struct systemArea {
 	char masterTune;					// MASTER TUNE 0-127 432.1-457.6Hz
@@ -472,16 +461,16 @@ static const uint32 display_mem_size = 0x14;	// Display is 20 ASCII characters (
 
 // Display messages                         0123456789ABCDEF0123
 #ifdef PENTAGRAM_IN_EXULT
-static const char display[]              = " Uploading Timbres! ";
-static const char display_black_gate[]   = "BG Uploading Timbres";
-static const char display_serpent_isle[] = "SI Uploading Timbres";
+//static const char display[]              = " Uploading Timbres! ";
+//static const char display_black_gate[]   = "BG Uploading Timbres";
+//static const char display_serpent_isle[] = "SI Uploading Timbres";
 
 static const char display_beginning[] =    "--==|  Exult!  |==--";
 static const char display_beginning_bg[] = " U7: The Black Gate ";
 static const char display_beginning_si[] = "U7: The Serpent Isle";
 #else
 
-static const char display[]              = " Uploading Timbres! ";
+//static const char display[]              = " Uploading Timbres! ";
 static const char display_beginning[] =    "--=| Pentagram! |=--";
 #endif
 
@@ -503,7 +492,7 @@ static uint8 U7PercussionNotes[] = {
 	81, 82, 83, 84, 85, 86, 87, 0
 };
 
-// The RhythmSetup data 
+// The RhythmSetup data
 static RhythmSetupData U7PercussionData[] = {
 	{	0,	0x5A,	0x07,	0	},	// 28
    	{	6,	0x64,	0x07,	1	},	// 33
@@ -522,7 +511,9 @@ static RhythmSetupData U7PercussionData[] = {
 	{	4,	0x64,	0x08,	1	}	// 87
 };
 
-//GammaTable<unsigned char> XMidiFile::VolumeCurve(128);
+#ifdef PENTAGRAM_IN_EXULT
+GammaTable<unsigned char> XMidiFile::VolumeCurve(128);
+#endif
 
 // Constructor
 XMidiFile::XMidiFile(IDataSource *source, int pconvert) : num_tracks(0),
@@ -530,7 +521,7 @@ XMidiFile::XMidiFile(IDataSource *source, int pconvert) : num_tracks(0),
 						do_reverb(false), do_chorus(false)
 {
 	std::memset(bank127,0,sizeof(bank127));
-	
+
 	ExtractTracks (source);
 
 	// SysEx data
@@ -542,7 +533,7 @@ XMidiFile::~XMidiFile()
 	if (events)
 	{
 		for (int i=0; i < num_tracks; i++) {
-			events[i]->decerementCounter();
+			events[i]->decrementCounter();
 			events[i] = NULL;
 		}
 		//delete [] events;
@@ -594,14 +585,14 @@ void XMidiFile::CreateNewEvent (int time)
 		if (current->next->time > time)
 		{
 			XMidiEvent *event = XMidiEvent__Calloc<XMidiEvent>();
-			
+
 			event->next = current->next;
 			current->next = event;
 			current = event;
 			current->time = time;
 			return;
 		}
-		
+
 		current = current->next;
 	}
 
@@ -647,7 +638,7 @@ int XMidiFile::GetVLQ2 (IDataSource *source, uint32 &quant)
 	int i;
 	quant = 0;
 	int data = 0;
-	
+
 	for (i = 0; i < 4; i++)
 	{
 		data = source->read1();
@@ -708,8 +699,11 @@ void XMidiFile::ApplyFirstState(first_state &fs, int chan_mask)
 
 		if (!temp)
 		{
-//			if (convert_type) vol->data[1] = VolumeCurve[90];
+#ifdef PENTAGRAM_IN_EXULT
+			if (convert_type) vol->data[1] = VolumeCurve[90];
+#else
 			if (convert_type) vol->data[1] = 90;
+#endif
 			else vol->data[1] = 90;
 		}
 		else
@@ -721,7 +715,7 @@ void XMidiFile::ApplyFirstState(first_state &fs, int chan_mask)
 			bank = NULL;
 
 		temp = bank;
-		
+
 		bank = XMidiEvent__Calloc<XMidiEvent>();
 		bank->status = channel|(MIDI_STATUS_CONTROLLER << 4);
 
@@ -764,235 +758,20 @@ void XMidiFile::ApplyFirstState(first_state &fs, int chan_mask)
 		pan->time = 0;
 		patch->time = 0;
 		bank->time = 0;
-		
+
 		if (do_reverb && do_chorus) reverb->next = chorus;
 		else if (do_reverb) reverb->next = bank;
 		if (do_chorus) chorus->next = bank;
 		bank->next = vol;
 		vol->next = pan;
 		pan->next = patch;
-		
+
 		patch->next = list;
 		if (do_reverb) list = reverb;
 		else if (do_chorus) list = chorus;
 		else list = bank;
 	}
 }
-
-#ifndef BEOS
-// Unsigned 64 Bit Int emulation. Only supports SOME operations
-struct uint64 {
-	uint32	low;		// Low is first so uint64 can be cast as uint32 to get low dword
-	uint32	high;		// 
-
-	uint64() : low(0), high(0) { }
-	uint64(uint32 i) : low(i), high(0) { }
-	uint64(uint32 h, uint32 l) : low(l), high(h) { }
-	uint64(const uint64 &i) : low(i.low), high(i.high) { }
-
-	inline void addlow(uint32 l) {
-		uint32 mid = (low >> 16);
-		low = (low & 0xFFFF) + (l & 0xFFFF);
-		mid += (low >> 16) + (l >> 16);
-		low = (low&0xFFFF) + (mid << 16);
-		high += mid >> 16;
-	}
-
-	// uint64 operations
-
-	inline uint64 & operator = (uint64 &o) {
-		low = o.low;
-		high = o.high;
-		return *this;
-	}
-
-	inline uint64 & operator += (uint64 &o) {
-		addlow(o.low);
-		high += o.high;
-		return *this;
-	}
-
-	inline uint64 operator + (uint64 &o) {
-		uint64 n(*this);
-		n.addlow(o.low);
-		n.high += o.high;
-		return n;
-	}
-
-	// uint32 operations
-
-	inline uint64 & operator = (uint32 i) {
-		low = i;
-		high = 0;
-		return *this;
-	}
-
-	inline uint64 & operator += (uint32 i) {
-		addlow(i);
-		return *this;
-	}
-
-	inline uint64 operator + (uint32 i) {
-		uint64 n(*this);
-		n.addlow(i);
-		return n;
-	}
-
-	inline uint64 & operator *= (uint32 i) {
-		// High 16 bits
-		uint32 h1 =   i >> 16;
-		uint32 h2 = low >> 16;
-		//uint32 h3 = high >> 16;
-
-		// Low 16 Bits
-		uint32 l1 =   i & 0xFFFF;
-		uint32 l2 = low & 0xFFFF;
-		uint32 l3 = high & 0xFFFF;
-
-		// The accumulator
-		uint32 accum;
-
-		// 0 -> 32
-		low = l1*l2;
-		high = 0;
-
-		// 16 -> 48
-		accum = h1*l2;
-		addlow(accum<<16);
-		high += accum>>16;
-
-		// 16 -> 48
-		accum = l1*h2;
-		addlow(accum<<16);	
-		high += accum>>16;
-
-		// 32 -> 64
-		high += h1*h2;
-
-		// 32 -> 64
-		high += l1*l3;
-
-		// 48 -> 80
-		high += (h1*l3) << 16;
-
-		// 48 -> 80
-		high += (l1*l3) << 16;
-
-		return *this;
-	}
-
-	inline uint64 operator * (uint32 i) {
-		uint64 n(*this);
-		return n*=i;
-	}
-
-	inline uint64 & operator /= (uint32 div) {
-
-		// If there isn't a high dword, we only need to work on the low dword
-		if (!high) {
-			low /= div;
-			return *this;
-		}
-
-		// modulus of last division
-		uint32 mod = high;
-		uint32 l = low;
-
-		// Low shift
-		uint32 shift = 32;
-		low = 0;
-
-		// Only High DWORD
-		// Can divide
-		if (mod >= div) {
-			high = mod / div;
-			mod %= div;
-		}
-		else high = 0;
-
-		// Only Both high and low
-		while (--shift) {
-
-			mod <<= 1;
-			mod |= (l>>shift) & 1;
-
-			// Can divide
-			if (mod >= div) {
-				uint32 v = mod / div;
-				mod %= div;
-				addlow(v << shift);
-				high += v >> (32 - shift);
-			}
-		}
-
-
-		// Only Low DWORD
-		mod <<= 1;
-		mod |= l & 1;
-
-		// Can divide
-		if (mod >= div) {
-			uint32 v = mod / div;
-			mod %= div;
-			addlow(v << shift);
-		}
-
-		return *this;
-	}
-
-	inline uint64 operator / (uint32 i) {
-		uint64 n(*this);
-		return n/=i;
-	}
-
-	inline uint64 & operator %= (uint32 div) {
-
-		// If there isn't a high dword, we only need to work on the low dword
-		if (!high) {
-			low %= div;
-			return *this;
-		}
-
-		// Remainder of last division
-		uint32 mod = high;
-
-		// Low shift
-		uint32 shift = 32;
-
-		while (1) {
-
-			// Can divide
-			if (mod >= div) mod %= div;
-
-			if (shift == 0) break;
-
-			mod <<= 1;
-			shift--;
-			mod |= (low>>shift) & 1;
-		}
-
-		high = 0;
-		low = mod;
-
-		return *this;
-	}
-
-	inline uint64 operator % (uint32 i) {
-		uint64 n(*this);
-		return n%=i;
-	}
-
-	inline operator uint32 ()
-	{
-		return low;
-	}
-
-	void printx() {
-		if (high) std::printf ("%X%08X", high, low);
-		else printf ("%X", low);
-	}
-};
-#endif
 
 //
 // AdjustTimings
@@ -1029,12 +808,12 @@ void XMidiFile::AdjustTimings(uint32 ppqn)
 
 			time_prev = event->time;
 			event->time = (hs*6)/5 + (6*hs_rem)/(5*ppqn);
-				
+
 			// Note on and note off handling
 			if (event->status <= 0x9F) {
 
 				// Add if it's a note on and remove if it's a note off
-				if ((event->status>>4) == MIDI_STATUS_NOTE_ON && event->data[1]) 
+				if ((event->status>>4) == MIDI_STATUS_NOTE_ON && event->data[1])
 					notes.Push(event);
 				else {
 					XMidiEvent *prev = notes.FindAndPop(event);
@@ -1047,7 +826,7 @@ void XMidiFile::AdjustTimings(uint32 ppqn)
 				tempo = (event->ex.sysex_data.buffer[0] << 16) +
 					(event->ex.sysex_data.buffer[1] << 8) +
 					event->ex.sysex_data.buffer[2];
-					
+
 				event->ex.sysex_data.buffer[0] = 0x07;
 				event->ex.sysex_data.buffer[1] = 0xA1;
 				event->ex.sysex_data.buffer[2] = 0x20;
@@ -1085,10 +864,10 @@ int XMidiFile::ConvertEvent (const int time, const unsigned char status, IDataSo
 	if ((status >> 4) == 0xB && data == 0)
 	{
 		data = source->read1();
-		
+
 		bank127[status&0xF] = false;
-		
-		if (convert_type == XMIDIFILE_CONVERT_MT32_TO_GM 
+
+		if (convert_type == XMIDIFILE_CONVERT_MT32_TO_GM
 			|| convert_type == XMIDIFILE_CONVERT_MT32_TO_GS
 			|| convert_type == XMIDIFILE_CONVERT_MT32_TO_GS127)
 			return 2;
@@ -1156,6 +935,16 @@ int XMidiFile::ConvertEvent (const int time, const unsigned char status, IDataSo
 	if ((status >> 4) == 0xC) {
 		if (!fs.patch[status&0xF] || fs.patch[status&0xF]->time > time)
 			fs.patch[status&0xF] = current;
+
+		// Add it to the patch and bank change list
+		if (x_patch_bank_first == 0) {
+			x_patch_bank_first = current;
+		}
+		else {
+			x_patch_bank_cur ->next_patch_bank = current;
+		}
+		x_patch_bank_cur = current;
+		current->next_patch_bank = 0;
 	}
 	// Controllers
 	else if ((status >> 4) == 0xB) {
@@ -1174,6 +963,18 @@ int XMidiFile::ConvertEvent (const int time, const unsigned char status, IDataSo
 			current->ex.branch_index.next_branch = branches;
 			branches = current;
 		}
+		// XMidi Bank Change
+		else if (current->data[0] == XMIDI_CONTROLLER_BANK_CHANGE)	{
+			// Add it to the patch and bank change list
+			if (x_patch_bank_first == 0) {
+				x_patch_bank_first = current;
+			}
+			else {
+				x_patch_bank_cur ->next_patch_bank = current;
+			}
+			x_patch_bank_cur = current;
+			current->next_patch_bank = 0;
+		}
 	}
 
 	if (size == 1)
@@ -1181,9 +982,11 @@ int XMidiFile::ConvertEvent (const int time, const unsigned char status, IDataSo
 
 	current->data[1] = source->read1();
 
+#ifdef PENTAGRAM_IN_EXULT
 	// Volume modify the volume controller, only if converting
-//	if (convert_type && (current->status >> 4) == MIDI_STATUS_CONTROLLER && current->data[0] == 7)
-//		current->data[1] = VolumeCurve[current->data[1]];
+	if (convert_type && (current->status >> 4) == MIDI_STATUS_CONTROLLER && current->data[0] == 7)
+		current->data[1] = VolumeCurve[current->data[1]];
+#endif
 
 	return 2;
 }
@@ -1201,9 +1004,25 @@ int XMidiFile::ConvertNote (const int time, const unsigned char status, IDataSou
 	current->data[0] = data;
 	current->data[1] = source->read1();
 
+#ifdef PENTAGRAM_IN_EXULT
 	// Volume modify the note on's, only if converting
-//	if (convert_type && (current->status >> 4) == MIDI_STATUS_NOTE_ON && current->data[1])
-//		current->data[1] = VolumeCurve[current->data[1]];
+	if (convert_type && (current->status >> 4) == MIDI_STATUS_NOTE_ON && current->data[1])
+		current->data[1] = VolumeCurve[current->data[1]];
+#endif
+
+	// Perc track note on
+	if (status == 0x99 && current->data[1] != 0 && convert_type == XMIDIFILE_CONVERT_NOCONVERSION)
+	{
+		// Add it to the patch and bank change list
+		if (x_patch_bank_first == 0) {
+			x_patch_bank_first = current;
+		}
+		else {
+			x_patch_bank_cur->next_patch_bank = current;
+		}
+		x_patch_bank_cur = current;
+		current->next_patch_bank = 0;
+	}
 
 	if (size == 2)
 		return 2;
@@ -1212,20 +1031,20 @@ int XMidiFile::ConvertNote (const int time, const unsigned char status, IDataSou
 
 	// Get the duration
 	int i = GetVLQ (source, delta);
-	
+
 	// Set the duration
 	current->ex.note_on.duration = delta;
 
 	// This is an optimization
 	XMidiEvent *prev = current;
-		
+
 	// Create a note off
 	CreateNewEvent (time+delta);
 
 	current->status = status;
 	current->data[0] = data;
 	current->data[1] = 0;
-	
+
 	// Optimization
 	current = prev;
 
@@ -1236,15 +1055,15 @@ int XMidiFile::ConvertNote (const int time, const unsigned char status, IDataSou
 int XMidiFile::ConvertSystemMessage (const int time, const unsigned char status, IDataSource *source)
 {
 	int i=0;
-	
+
 	CreateNewEvent (time);
 	current->status = status;
-	
+
 	// Handling of Meta events
 	if (status == 0xFF)
 	{
 		current->data[0] = source->read1();
-		i++;	
+		i++;
 	}
 
 	i += GetVLQ (source, current->ex.sysex_data.len);
@@ -1254,7 +1073,7 @@ int XMidiFile::ConvertSystemMessage (const int time, const unsigned char status,
 		current->ex.sysex_data.buffer = NULL;
 		return i;
 	}
-	
+
 	current->ex.sysex_data.buffer = XMidiEvent__Malloc<unsigned char>(current->ex.sysex_data.len);
 
 	source->read (reinterpret_cast<char *>(current->ex.sysex_data.buffer), current->ex.sysex_data.len);
@@ -1272,7 +1091,7 @@ int XMidiFile::CreateMT32SystemMessage(const int time, uint32 address_base, uint
 
 	// Allocate the buffer
 	current->ex.sysex_data.len = sysex_data_start+len+2;
-	unsigned char *sysex_buffer = current->ex.sysex_data.buffer = 
+	unsigned char *sysex_buffer = current->ex.sysex_data.buffer =
 			XMidiEvent__Malloc<unsigned char>(current->ex.sysex_data.len);
 
 	// MT32 Sysex Header
@@ -1332,14 +1151,14 @@ int XMidiFile::ConvertFiletoList (IDataSource *source, const bool is_xmi, first_
 			time += data;
 
 			data = source->read1();
-		
+
 			if (data >= 0x80)
 			{
 				status = data;
 			}
 			else
 				source->skip (-1);
-		}	
+		}
 		else
 		{
 			GetVLQ2 (source, data);
@@ -1365,21 +1184,21 @@ int XMidiFile::ConvertFiletoList (IDataSource *source, const bool is_xmi, first_
 			case MIDI_STATUS_PITCH_WHEEL:
 			ConvertEvent (time, status, source, 2, fs);
 			break;
-			
+
 
 			// 1 byte data
 			case MIDI_STATUS_PROG_CHANGE:
 			case MIDI_STATUS_PRESSURE:
 			ConvertEvent (time, status, source, 1, fs);
 			break;
-			
+
 
 			case MIDI_STATUS_SYSEX:
 			if (status == 0xFF)
 			{
 				int	pos = source->getPos();
 				uint32	data = source->read1();
-				
+
 				if (data == 0x2F)					// End, of track
 					end = 1;
 				else if (data == 0x51 && is_xmi)	// XMidiFile doesn't use tempo
@@ -1388,7 +1207,7 @@ int XMidiFile::ConvertFiletoList (IDataSource *source, const bool is_xmi, first_
 					source->skip(data);
 					break;
 				}
-				
+
 				source->seek (pos);
 			}
 			ConvertSystemMessage (time, status, source);
@@ -1426,7 +1245,7 @@ int XMidiFile::ExtractTracksFromXmi (IDataSource *source)
 			len = source->read4high();
 		}
 
-		if (memcmp(buf,"EVNT",4))
+		if (memcmp(buf,"EVNT",4) != 0)
 		{
 			source->skip ((len+1)&~1);
 			continue;
@@ -1434,6 +1253,8 @@ int XMidiFile::ExtractTracksFromXmi (IDataSource *source)
 
 		list = NULL;
 		branches = NULL;
+		x_patch_bank_first = NULL;
+		x_patch_bank_cur = NULL;
 		memset(&fs, 0, sizeof(fs));
 
 		int begin = source->getPos ();
@@ -1454,6 +1275,7 @@ int XMidiFile::ExtractTracksFromXmi (IDataSource *source)
 		events[num]->events = list;
 		events[num]->branches = branches;
 		events[num]->chan_mask = chan_mask;
+		events[num]->x_patch_bank = x_patch_bank_first;
 
 		// Increment Counter
 		num++;
@@ -1478,6 +1300,8 @@ int XMidiFile::ExtractTracksFromMid (IDataSource *source, const uint32 ppqn, con
 
 	list = NULL;
 	branches = NULL;
+	x_patch_bank_first = NULL;
+	x_patch_bank_cur = NULL;
 
 	while (source->getPos() < source->getSize() && num != num_tracks)
 	{
@@ -1485,7 +1309,7 @@ int XMidiFile::ExtractTracksFromMid (IDataSource *source, const uint32 ppqn, con
 		source->read (buf, 4);
 		len = source->read4high();
 
-		if (memcmp(buf,"MTrk",4))
+		if (memcmp(buf,"MTrk",4) != 0)
 		{
 			source->skip (len);
 			continue;
@@ -1501,22 +1325,28 @@ int XMidiFile::ExtractTracksFromMid (IDataSource *source, const uint32 ppqn, con
 			AdjustTimings(ppqn);
 			events[num]->events = list;
 			events[num]->branches = branches;
+			events[num]->chan_mask = chan_mask;
+			events[num]->x_patch_bank = x_patch_bank_first;
 			branches = NULL;
 			list = NULL;
+			x_patch_bank_first = NULL;
+			x_patch_bank_cur = NULL;
 			memset(&fs, 0, sizeof(fs));
 			chan_mask = 0;
 		}
-		
+
 		// Increment Counter
-		num++;		
+		num++;
 		source->seek (begin+len);
 	}
 
-	if (type1) { 
+	if (type1) {
 		ApplyFirstState(fs, chan_mask);
 		AdjustTimings(ppqn);
 		events[0]->events = list;
 		events[0]->branches = branches;
+		events[0]->chan_mask = chan_mask;
+		events[0]->x_patch_bank = x_patch_bank_first;
 		return num == num_tracks ? 1 : 0;
 	}
 
@@ -1538,9 +1368,9 @@ int XMidiFile::ExtractTracks (IDataSource *source)
 	if (convert_type >= XMIDIFILE_HINT_U7VOICE_MT_FILE)
 		convert_type = XMIDIFILE_CONVERT_NOCONVERSION;
 
-	/*
+#ifdef PENTAGRAM_IN_EXULT
 	string s;
-	
+
 	config->value("config/audio/midi/reverb/enabled",s,"no");
 	if (s == "yes") do_reverb = true;
 	config->set("config/audio/midi/reverb/enabled",s,true);
@@ -1551,7 +1381,7 @@ int XMidiFile::ExtractTracks (IDataSource *source)
 	if (reverb_value > 127) reverb_value = 127;
 	else if (reverb_value < 0) reverb_value = 0;
 	config->set("config/audio/midi/reverb/level",reverb_value,true);
-	
+
 	config->value("config/audio/midi/chorus/enabled",s,"no");
 	if (s == "yes") do_chorus = true;
 	config->set("config/audio/midi/chorus/enabled",s,true);
@@ -1562,50 +1392,50 @@ int XMidiFile::ExtractTracks (IDataSource *source)
 	if (chorus_value > 127) chorus_value = 127;
 	else if (chorus_value < 0) chorus_value = 0;
 	config->set("config/audio/midi/chorus/level",chorus_value,true);
-	
+
 	config->value("config/audio/midi/volume_curve",s,"---");
 	if (s == "---") config->value("config/audio/midi/gamma",s,"1");
 	VolumeCurve.set_gamma (atof(s.c_str()));
-	int igam = (int) ((VolumeCurve.get_gamma()*10000)+0.5); 
-	snprintf (buf, 32, "%d.%04d", igam/10000, igam%10000); 
+	int igam = static_cast<int>((VolumeCurve.get_gamma()*10000)+0.5);
+	snprintf (buf, 32, "%d.%04d", igam/10000, igam%10000);
 	config->set("config/audio/midi/volume_curve",buf,true);
-	*/
+#else
 	do_reverb = false;
 	do_chorus = false;
 	reverb_value = 0;
 	chorus_value = 0;
-
+#endif
 	// Read first 4 bytes of header
 	source->read (buf, 4);
 
 	// Could be XMidiFile
 	if (!memcmp (buf, "FORM", 4))
 	{
-		// Read length of 
+		// Read length of
 		len = source->read4high();
 
 		start = source->getPos();
-		
+
 		// Read 4 bytes of type
 		source->read (buf, 4);
 
 		// XDIRless XMidiFile, we can handle them here.
 		if (!memcmp (buf, "XMID", 4))
-		{	
+		{
 			perr << "Warning: XMidiFile doesn't have XDIR" << endl;
 			num_tracks = 1;
-			
+
 		} // Not an XMidiFile that we recognise
-		else if (memcmp (buf, "XDIR", 4))
-		{	
+		else if (memcmp (buf, "XDIR", 4) != 0)
+		{
 			perr << "Not a recognised XMID" << endl;
 			return 0;
-			
+
 		} // Seems Valid
-		else 
+		else
 		{
 			num_tracks = 0;
-		
+
 			for (i = 4; i < len; i++)
 			{
 				// Read 4 bytes of type
@@ -1613,12 +1443,12 @@ int XMidiFile::ExtractTracks (IDataSource *source)
 
 				// Read length of chunk
 				chunk_len = source->read4high();
-			
+
 				// Add eight bytes
 				i+=8;
-				
-				if (memcmp (buf, "INFO", 4))
-				{	
+
+				if (memcmp (buf, "INFO", 4) != 0)
+				{
 					// Must allign
 					source->skip((chunk_len+1)&~1);
 					i+= (chunk_len+1)&~1;
@@ -1628,43 +1458,43 @@ int XMidiFile::ExtractTracks (IDataSource *source)
 				// Must be at least 2 bytes long
 				if (chunk_len < 2)
 					break;
-				
+
 				num_tracks = source->read2();
 				break;
 			}
-		
+
 			// Didn't get to fill the header
 			if (num_tracks == 0)
 			{
 				perr << "Not a valid XMID" << endl;
 				return 0;
 			}
-		
+
 			// Ok now to start part 2
 			// Goto the right place
 			source->seek (start+((len+1)&~1));
-		
+
 			// Read 4 bytes of type
 			source->read (buf, 4);
 
 			// Not an XMID
-			if (memcmp (buf, "CAT ", 4))
+			if (memcmp (buf, "CAT ", 4) != 0)
 			{
 				perr << "Not a recognised XMID (" << buf[0] << buf[1] << buf[2] << buf[3] << ") should be (CAT )" << endl;
-				return 0;	
+				return 0;
 			}
-			
+
 			// Now read length of this track
 			len = source->read4high();
-			
+
 			// Read 4 bytes of type
 			source->read (buf, 4);
 
 			// Not an XMID
-			if (memcmp (buf, "XMID", 4))
+			if (memcmp (buf, "XMID", 4) != 0)
 			{
 				perr << "Not a recognised XMID (" << buf[0] << buf[1] << buf[2] << buf[3] << ") should be (XMID)" << endl;
-				return 0;	
+				return 0;
 			}
 
 		}
@@ -1672,7 +1502,7 @@ int XMidiFile::ExtractTracks (IDataSource *source)
 		// Ok it's an XMID, so pass it to the ExtractCode
 
 		events = XMidiEvent__Calloc<XMidiEventList*>(num_tracks); //new XMidiEvent *[info.tracks];
-		
+
 		for (i = 0; i < num_tracks; i++)
 			events[i] = XMidiEvent__Calloc<XMidiEventList>();
 
@@ -1681,22 +1511,22 @@ int XMidiFile::ExtractTracks (IDataSource *source)
 		if (count != num_tracks)
 		{
 			perr << "Error: unable to extract all (" << num_tracks << ") tracks specified from XMidiFile. Only ("<< count << ")" << endl;
-			
+
 			int i = 0;
-			
+
 			for (i = 0; i < num_tracks; i++) {
-				events[i]->decerementCounter();
+				events[i]->decrementCounter();
 				events[i] = NULL;
 			}
-			
+
 			//delete [] events;
 			XMidiEvent::Free (events);
-			
-			return 0;		
+
+			return 0;
 		}
 
 		return 1;
-		
+
 	}// Definately a Midi
 	else if (!memcmp (buf, "MThd", 4))
 	{
@@ -1710,7 +1540,7 @@ int XMidiFile::ExtractTracks (IDataSource *source)
 		}
 
 		int type = source->read2high();
-		
+
 		int actual_num = num_tracks = source->read2high();
 
 		// Type 1 only has 1 track, even though it says it has more
@@ -1721,26 +1551,26 @@ int XMidiFile::ExtractTracks (IDataSource *source)
 
 		for (i = 0; i < num_tracks; i++)
 			events[i] = XMidiEvent__Calloc<XMidiEventList>();
-		
+
 		count = ExtractTracksFromMid (source, ppqn, actual_num, type == 1);
 
 		if (count != num_tracks)
 		{
 			perr << "Error: unable to extract all (" << num_tracks << ") tracks specified from MIDI. Only ("<< count << ")" << endl;
-			
+
 			for (i = 0; i < num_tracks; i++) {
-				events[i]->decerementCounter();
+				events[i]->decrementCounter();
 				events[i] = NULL;
 			}
-			
+
 			XMidiEvent::Free (events);
-			
+
 			return 0;
-				
+
 		}
 
 		return 1;
-		
+
 	}// A RIFF Midi, just pass the source back to this function at the start of the midi file
 	else if (!memcmp (buf, "RIFF", 4))
 	{
@@ -1749,9 +1579,9 @@ int XMidiFile::ExtractTracks (IDataSource *source)
 
 		// Read 4 bytes of type
 		source->read (buf, 4);
-		
+
 		// Not an RMID
-		if (memcmp (buf, "RMID", 4))
+		if (memcmp (buf, "RMID", 4) != 0)
 		{
 			perr << "Invalid RMID" << endl;
 			return 0;
@@ -1763,36 +1593,36 @@ int XMidiFile::ExtractTracks (IDataSource *source)
 		{
 			// Read 4 bytes of type
 			source->read (buf, 4);
-			
+
 			chunk_len = source->read4();
-			
+
 			i+=8;
-				
-			if (memcmp (buf, "data", 4))
-			{	
+
+			if (memcmp (buf, "data", 4) != 0)
+			{
 				// Must allign
 				source->skip ((chunk_len+1)&~1);
 				i+= (chunk_len+1)&~1;
 				continue;
 			}
-			
+
 			return ExtractTracks (source);
 
 		}
-		
+
 		perr << "Failed to find midi data in RIFF Midi" << endl;
 		return 0;
 	}
-	else if (format_hint == XMIDIFILE_HINT_U7VOICE_MT_FILE) 
+	else if (format_hint == XMIDIFILE_HINT_U7VOICE_MT_FILE)
 	{
 		return ExtractTracksFromU7V(source);
 	}
-	else if (format_hint == XMIDIFILE_HINT_XMIDI_MT_FILE) 
+	else if (format_hint == XMIDIFILE_HINT_XMIDI_MT_FILE)
 	{
 		return ExtractTracksFromXMIDIMT(source);
 	}
-	
-	return 0;	
+
+	return 0;
 }
 
 int XMidiFile::ExtractTracksFromU7V (IDataSource *source)
@@ -1818,7 +1648,7 @@ int XMidiFile::ExtractTracksFromU7V (IDataSource *source)
 
 	if (source->getSize() != 247*num_timbres+1) {
 		perr << "File size didn't match timbre count. Wont convert." << std::endl;
-		return 0;	
+		return 0;
 	}
 
 	//
@@ -1844,12 +1674,12 @@ int XMidiFile::ExtractTracksFromU7V (IDataSource *source)
 
 		// Default patch
 		PatchMemData patch_data = patch_template;
-	
+
 		// Set the timbre num
 		patch_data.timbre_num = i;
 
-		CreateMT32SystemMessage(time, 
-				patch_base, 
+		CreateMT32SystemMessage(time,
+				patch_base,
 				patch_mem_offset(source->read1()-1),
 				patch_mem_size,
 				&patch_data );
@@ -1874,7 +1704,7 @@ int XMidiFile::ExtractTracksFromU7V (IDataSource *source)
 		int count = j-i;
 
 		CreateMT32SystemMessage(time,
-				rhythm_base, 
+				rhythm_base,
 				rhythm_mem_offset_note(U7PercussionNotes[i]),
 				rhythm_mem_size*count,
 				&U7PercussionData[i] );
@@ -1887,10 +1717,10 @@ int XMidiFile::ExtractTracksFromU7V (IDataSource *source)
 	// Set system volume
 	//
 
-	char seventy = 70;
+	//char seventy = 70;
 
-	CreateMT32SystemMessage(time, system_base, system_mem_offset(masterVol), 1,&seventy);
-	time += time_inc; 
+	//CreateMT32SystemMessage(time, system_base, system_mem_offset(masterVol), 1,&seventy);
+	//time += time_inc;
 
 	// Apply the first state
 	//ApplyFirstState(fs, chan_mask);
@@ -1976,7 +1806,7 @@ int XMidiFile::ExtractTracksFromXMIDIMT (IDataSource *source)
 
 void XMidiFile::InsertDisplayEvents()
 {
-	// Change the display 
+	// Change the display
 	current = list = events[0]->events;
 	while (current->next) current = current->next;
 
@@ -1985,22 +1815,25 @@ void XMidiFile::InsertDisplayEvents()
 	// Display
 	//
 
-	const char *display = ::display;
+	//const char *display = ::display;
 	const char *display_beginning = ::display_beginning;
 #ifdef PENTAGRAM_IN_EXULT
 	if (Game::get_game_type() == SERPENT_ISLE)
 	{
-		display = display_serpent_isle;
+		//display = display_serpent_isle;
 		display_beginning = display_beginning_si;
 	}
 	else if (Game::get_game_type() == BLACK_GATE)
 	{
-		display = display_black_gate;
+		//display = display_black_gate;
 		display_beginning = display_beginning_bg;
 	}
 #endif
 
-	CreateMT32SystemMessage(current->time, display_base, 0, display_mem_size, display );
+	char seventy = 70;
+	CreateMT32SystemMessage(current->time+1, system_base, system_mem_offset(masterVol), 1,&seventy);
+
+	//CreateMT32SystemMessage(current->time, display_base, 0, display_mem_size, display );
 	CreateMT32SystemMessage(-1, display_base, 0, display_mem_size, display_beginning );
 
 	events[0]->events = list;

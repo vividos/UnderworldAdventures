@@ -16,6 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include <cstdlib>
+
 #include "pent_include.h"
 #include "XMidiEvent.h"
 #include "XMidiEventList.h"
@@ -26,14 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ODataSource.h"
 #endif
 
-#ifndef UNDER_CE
-using std::atof;
-using std::atoi;
-using std::memcmp;
-using std::memcpy;
-using std::memset;
 using std::size_t;
-#endif
 using std::string;
 using std::endl;
 
@@ -46,7 +41,7 @@ using std::endl;
 int XMidiEventList::write (ODataSource *dest)
 {
 	int len = 0;
-	
+
 	if (!events)
 	{
 		perr << "No midi data loaded." << endl;
@@ -60,18 +55,18 @@ int XMidiEventList::write (ODataSource *dest)
 		len = convertListToMTrk (NULL);
 		return 14 + len;
 	}
-		
+
 	dest->write1 ('M');
 	dest->write1 ('T');
 	dest->write1 ('h');
 	dest->write1 ('d');
-	
+
 	dest->write4high (6);
 
 	dest->write2high (0);
 	dest->write2high (1);
 	dest->write2high (60);	// The PPQN
-		
+
 	len = convertListToMTrk (dest);
 
 	return len + 14;
@@ -99,7 +94,7 @@ int XMidiEventList::putVLQ(ODataSource *dest, uint32 value)
 		dest->write1(buffer & 0xFF);
 		buffer >>= 8;
 	}
-	
+
 	return i;
 }
 
@@ -146,9 +141,9 @@ uint32 XMidiEventList::convertListToMTrk (ODataSource *dest)
 			if (dest) dest->write1(event->status);
 			i++;
 		}
-		
+
 		last_status = event->status;
-		
+
 		switch (event->status >> 4)
 		{
 			// 2 bytes data
@@ -161,7 +156,7 @@ uint32 XMidiEventList::convertListToMTrk (ODataSource *dest)
 			}
 			i += 2;
 			break;
-			
+
 
 			// 1 bytes data
 			// Program Change and Channel Pressure
@@ -169,7 +164,7 @@ uint32 XMidiEventList::convertListToMTrk (ODataSource *dest)
 			if (dest) dest->write1(event->data[0]);
 			i++;
 			break;
-			
+
 
 			// Variable length
 			// SysEx
@@ -179,20 +174,20 @@ uint32 XMidiEventList::convertListToMTrk (ODataSource *dest)
 				if (dest) dest->write1(event->data[0]);
 				i++;
 			}
-	
+
 			i += putVLQ (dest, event->ex.sysex_data.len);
-			
+
 			if (event->ex.sysex_data.len)
 			{
 				for (j = 0; j < event->ex.sysex_data.len; j++)
 				{
-					if (dest) dest->write1(event->ex.sysex_data.buffer[j]); 
+					if (dest) dest->write1(event->ex.sysex_data.buffer[j]);
 					i++;
 				}
 			}
 
 			break;
-			
+
 
 			// Never occur
 			default:
@@ -220,27 +215,11 @@ uint32 XMidiEventList::convertListToMTrk (ODataSource *dest)
 	return i;
 }
 
-void XMidiEventList::decerementCounter()
+void XMidiEventList::decrementCounter()
 {
 	if (--counter < 0) {
-		deleteEventList(events);
+		events->FreeThis();
+		events = 0;
 		XMidiEvent::Free(this);
-	}
-}
-
-void XMidiEventList::deleteEventList (XMidiEvent *mlist)
-{
-	XMidiEvent *event;
-	XMidiEvent *next;
-	
-	next = mlist;
-	event = mlist;
-
-	while ((event = next))
-	{
-		next = event->next;
-		// We only do this with sysex
-		if ((event->status>>4) == 0xF && event->ex.sysex_data.buffer) XMidiEvent::Free (event->ex.sysex_data.buffer);
-		XMidiEvent::Free (event);
 	}
 }

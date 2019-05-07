@@ -23,7 +23,7 @@ class XMidiEventList;
 class IDataSource;
 
 
-//! midi driver settings
+//! uwadv: midi driver settings
 struct MidiDriverSettings
 {
    MidiDriverSettings():m_iWin32MidiDevice(-1){}
@@ -114,7 +114,9 @@ public:
 
 	//! Get the callback data for a specified sequence
 	//! \param seq_num The Sequence to get callback data from
-	virtual uint32		getSequenceCallbackData(int seq_num) { return 0; }
+	virtual uint32		getSequenceCallbackData(int seq_num) {
+		return 0;
+	}
 
 	//! Is this a Software Synth/Sample producer
 	virtual bool		isSampleProducer() { return false; }
@@ -122,7 +124,8 @@ public:
 	//! Produce Samples when doing Software Synthesizing
 	//! \param samples The buffer to fill with samples
 	//! \param bytes The number of bytes of music to produce
-	virtual void		produceSamples(sint16 *samples, uint32 bytes) { }
+	virtual void		produceSamples(sint16 *samples, uint32 bytes) {
+	}
 
 	//! Is this a FM Synth and should use the Adlib Tracks?
 	virtual bool		isFMSynth() { return false; }
@@ -134,10 +137,11 @@ public:
 	virtual bool		noTimbreSupport() { return false; }
 
 	//! Load the Timbre Library
-	virtual void		loadTimbreLibrary(IDataSource*, TimbreLibraryType type) { };
+	virtual void		loadTimbreLibrary(IDataSource*, TimbreLibraryType type) {
+	}
 
 	//! Destructor
-	virtual ~MidiDriver() { };
+	virtual ~MidiDriver() { }
 
 	//
 	// Statics to Initialize Midi Drivers and to get info
@@ -153,14 +157,14 @@ public:
 	//! Create an Instance of a MidiDriver
 	//! \param driverName Name of the prefered driver to create
 	//! \return The created MidiDriver instance
-	static MidiDriver	*createInstance(std::string driverName,uint32 sample_rate,bool stereo,
+	static MidiDriver	*createInstance(const std::string& driverName,uint32 sample_rate,bool stereo,
       MidiDriverSettings settings);
 
 protected:
 	//! Get a configuration setting for the midi driver
-	std::string getConfigSetting(std::string name, std::string defaultval);
+	std::string getConfigSetting(std::string const &name, std::string const &defaultval);
 
-   //! settings
+   //! uwadv: settings
    MidiDriverSettings m_settings;
 };
 

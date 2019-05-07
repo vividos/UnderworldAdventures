@@ -57,6 +57,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define XMIDI_CONTROLLER_CALLBACK_TRIG		0x77	// Callback Trigger
 #define XMIDI_CONTROLLER_SEQ_BRANCH_INDEX	0x78	// Sequence Branch Index
 
+#ifdef WIN32
+#include <cstdlib>
+using std::malloc;
+using std::calloc;
+using std::free;
+#endif
 
 // Maximum number of for loops we'll allow (used by LowLevelMidiDriver)
 // The specs say 4, so that is what we;ll use
@@ -90,6 +96,8 @@ struct XMidiEvent
 	} ex;
 
 	XMidiEvent		*next;
+
+	XMidiEvent		*next_patch_bank;		// next patch or bank change event
 
 
 	// Here's a bit of joy: WIN32 isn't SMP safe if we use operator new and 
@@ -131,6 +139,23 @@ struct XMidiEvent
 		::operator delete(ptr);
 	#endif
 	}
+
+	void FreeThis() 
+	{
+		// Free all our children first. Using a loop instead of recursive 
+		// because it could have nasty effects on the stack otherwise
+		for (XMidiEvent *e = next; e; e = next)
+		{
+			next = e->next;
+			e->next = 0;
+			e->FreeThis();
+		}
+
+		// We only do this with sysex
+		if ((status>>4) == 0xF && ex.sysex_data.buffer) Free (ex.sysex_data.buffer);
+		Free (this);
+	}
+
 };
 
 #endif //XMIDIEVENT_H_INCLUDED

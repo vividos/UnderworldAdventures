@@ -149,7 +149,7 @@ private:
 
 	//! Initialize the XMidi clock to begin now
 	inline void initClock ()
-	{ start = handler->getTickCount(sequence_id)+24; }
+	{ start = handler->getTickCount(sequence_id); }
 
 	//! Add an offset to the XMidi clock
 	inline void addOffset (uint32 offset)

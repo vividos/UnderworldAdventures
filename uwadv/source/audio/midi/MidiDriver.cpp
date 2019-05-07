@@ -23,8 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "MidiDriver.h"
 #include "WindowsMidiDriver.h"
-//#include "CoreMidiDriver.h"
 #include "CoreAudioMidiDriver.h"
+//#include "CoreMidiDriver.h"
 //#include "FMOplMidiDriver.h"
 //#include "TimidityMidiDriver.h"
 //#include "ALSAMidiDriver.h"
@@ -35,13 +35,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef PENTAGRAM_IN_EXULT
 #include "MT32EmuMidiDriver.h"
 #include "mixer_midiout.h"
-#include "amiga_midi.h"
-#include "be_midi.h"
 #include "forked_player.h"
 #include "KMIDI.h"
 #endif
 
 
+#ifdef PENTAGRAM_IN_EXULT
+#include "Configuration.h"
+#else
+//#include "SettingManager.h"
+#endif
 
 static MidiDriver *Disabled_CreateInstance() { return 0; }
 
@@ -52,8 +55,11 @@ static std::vector<const MidiDriver::MidiDriverDesc*> midi_drivers;
 
 static void InitMidiDriverVector()
 {
-	if (midi_drivers.size()) return;
+	if (!midi_drivers.empty()) return;
 
+#ifdef USE_FMOPL_MIDI
+	midi_drivers.push_back(FMOplMidiDriver::getDesc());
+#endif
 #ifdef USE_CORE_AUDIO_MIDI
 	midi_drivers.push_back(CoreAudioMidiDriver::getDesc());
 #endif
@@ -87,17 +93,8 @@ static void InitMidiDriverVector()
 #ifdef USE_FORKED_PLAYER_MIDI
 	midi_drivers.push_back(forked_player::getDesc());
 #endif
-#ifdef USE_BEOS_MIDI
-	midi_drivers.push_back(Be_midi::getDesc());
-#endif
-#ifdef USE_AMIGA_MIDI
-	midi_drivers.push_back(AmigaMIDI::getDesc());
-#endif
 #ifdef USE_MIXER_MIDI
 	midi_drivers.push_back(Mixer_MidiOut::getDesc());
-#endif
-#ifdef USE_FMOPL_MIDI
-	midi_drivers.push_back(FMOplMidiDriver::getDesc());
 #endif
 
 	midi_drivers.push_back(&Disabled_desc);
@@ -122,7 +119,7 @@ std::string MidiDriver::getDriverName(uint32 index)
 }
 
 // Create an Instance of a MidiDriver
-MidiDriver *MidiDriver::createInstance(std::string desired_driver,uint32 sample_rate,bool stereo,
+MidiDriver *MidiDriver::createInstance(const std::string& desired_driver,uint32 sample_rate,bool stereo,
    MidiDriverSettings settings)
 {
 	InitMidiDriverVector();
@@ -132,12 +129,12 @@ MidiDriver *MidiDriver::createInstance(std::string desired_driver,uint32 sample_
 	const char * drv = desired_driver.c_str();
 
 	// Has the config file specified disabled midi?
-	if ( Pentagram::strcasecmp(drv, "disabled"))
+	if ( Pentagram::strcasecmp(drv, "disabled") != 0)
 	{
 		std::vector<const MidiDriver::MidiDriverDesc*>::iterator it;
 
 		// Ok, it hasn't so search for the driver
-		for (it = midi_drivers.begin(); it < midi_drivers.end(); it++) {
+		for (it = midi_drivers.begin(); it < midi_drivers.end(); ++it) {
 
 			// Found it (case insensitive)
 			if (!Pentagram::strcasecmp(drv, (*it)->name)) {
@@ -155,6 +152,7 @@ MidiDriver *MidiDriver::createInstance(std::string desired_driver,uint32 sample_
 					else
 					{
 						pout << "Success!" << std::endl;
+						break;
 					}
 				}
 			}
@@ -198,11 +196,12 @@ MidiDriver *MidiDriver::createInstance(std::string desired_driver,uint32 sample_
 }
 
 
-std::string MidiDriver::getConfigSetting(std::string name,
-										 std::string defaultval)
+std::string MidiDriver::getConfigSetting(std::string const &name,
+										 std::string const &defaultval)
 {
 	std::string val;
 
+   // uwadv
    if (name == "windows_midi_device")
    {
       std::ostringstream buffer;
