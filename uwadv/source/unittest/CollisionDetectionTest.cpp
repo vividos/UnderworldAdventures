@@ -221,6 +221,30 @@ namespace UnitTest
             L"vector position must be equal the expected position");
       }
 
+      /// Tests special case: colliding physics body with a triangle inside multiple times; the
+      /// body must not go through the triangle.
+      TEST_METHOD(TestCollisionTriangleInsideManyIterations)
+      {
+         // set up
+         Vector3d initialPos{ 0.0, 0.0, 0.0 };
+         Vector3d velocity{ 1.0, 0.0, 0.0 };
+         TestPhysicsBody body{ initialPos, velocity };
+
+         CollisionDetection detection{ std::vector<Triangle3dTextured> {
+            Triangle3dTextured{0,
+               Vertex3d{Vector3d{ 1.5, -10.0, -10.0 }},
+               Vertex3d{Vector3d{ 1.5, 10.0, 10.0 }},
+               Vertex3d{Vector3d{ 1.5, 10.0, -10.0 }}}
+         }, body };
+
+         // run + check
+         for (unsigned int iteration = 0; iteration < 1000; iteration++)
+         {
+            detection.TrackObject(body);
+            Assert::IsTrue(body.GetPosition().x < 0.5, L"body must not be beyond the triangle");
+         }
+      }
+
       /// Tests colliding physics body with a triangle inside that is not perpendicular to the
       /// velocity, so that the sphere collides with the triangle and a sliding plane is used to
       /// displace the plane "up".
