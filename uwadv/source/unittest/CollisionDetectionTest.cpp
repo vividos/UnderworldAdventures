@@ -574,6 +574,37 @@ namespace UnitTest
          Assert::AreEqual(0.0, body.GetPosition().z, 0.01, L"z pos must not be modified");
       }
 
+      /// Tests special case: corner with obtuse angle walls and sliding along one of the
+      /// triangles.
+      TEST_METHOD(TestCollisionCornerObtuseAngleWallsSlidingAlong)
+      {
+         // set up
+         Vector3d initialPos{ 0.0, 0.0, 0.0 };
+         Vector3d velocity{ 3.0, 0.0, 0.0 };
+         TestPhysicsBody body{ initialPos, velocity };
+
+         CollisionDetection detection{ std::vector<Triangle3dTextured> {
+            Triangle3dTextured{0,
+               Vertex3d{Vector3d{ 2.0, -1.0, 10.0 }},
+               Vertex3d{Vector3d{ 2.0, -1.0, -10.0 }},
+               Vertex3d{Vector3d{ -10.0, -1.0, 0.0 }}
+            },
+            Triangle3dTextured{0,
+               Vertex3d{Vector3d{ 2.0, -1.0, -10.0 }},
+               Vertex3d{Vector3d{ 2.0, -1.0, 10.0 }},
+               Vertex3d{Vector3d{ 12.0, 9.0, 10.0 }}
+            }
+         }, body };
+
+         // run
+         detection.TrackObject(body);
+
+         // check
+         Assert::IsTrue(body.GetPosition().x > 2.2, L"x pos must be beyond 2.2");
+         Assert::IsTrue(body.GetPosition().y > 0.0, L"y pos must be 'up' a bit");
+         Assert::AreEqual(0.0, body.GetPosition().z, 0.01, L"z pos must not be modified");
+      }
+
       /// Tests special case: triangle is parallel to velocity; no collision, just moving along
       /// the triangle without a sliding plane.
       TEST_METHOD(TestCollisionTriangleParallelToVelocity)
@@ -595,6 +626,37 @@ namespace UnitTest
 
          // check
          Vector3d expectedPos{ 1.0, 0.0, 0.0 };
+         Assert::AreEqual(0.0, (body.GetPosition() - expectedPos).Length(), 0.01,
+            L"vector position must be equal the expected position");
+      }
+
+      /// Tests special case: two triangles are parallel to velocity, and the sphere slides along
+      /// the edges where the trianges connect.
+      TEST_METHOD(TestCollisionTwoTrianglesParallelToVelocity)
+      {
+         // set up
+         Vector3d initialPos{ 0.0, 0.0, 0.0 };
+         Vector3d velocity{ 3.0, -0.1, 0.0 };
+         TestPhysicsBody body{ initialPos, velocity };
+
+         CollisionDetection detection{ std::vector<Triangle3dTextured> {
+            Triangle3dTextured{0,
+               Vertex3d{Vector3d{ 2.0, -1.0, 10.0 }},
+               Vertex3d{Vector3d{ 2.0, -1.0, -10.0 }},
+               Vertex3d{Vector3d{ -10.0, -1.0, 0.0 }}
+            },
+            Triangle3dTextured{0,
+               Vertex3d{Vector3d{ 2.0, -1.0, -10.0 }},
+               Vertex3d{Vector3d{ 2.0, -1.0, 10.0 }},
+               Vertex3d{Vector3d{ 10.0, -1.0, 0.0 }}
+            }
+         }, body };
+
+         // run
+         detection.TrackObject(body);
+
+         // check
+         Vector3d expectedPos{ 3.0, 0.0, 0.0 };
          Assert::AreEqual(0.0, (body.GetPosition() - expectedPos).Length(), 0.01,
             L"vector position must be equal the expected position");
       }
