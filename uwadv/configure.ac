@@ -163,11 +163,6 @@ UADATAPATH=${datadir}/games/uwadv/
 
 
 
-# see if we have xsltproc/docbook stylesheets so we can build docs
-# this sets the 'have_xsltproc' automake conditional
-AX_CHECK_DOCBOOK
-
-
 # set up compiler flags
 CFLAGS="$CFLAGS -I. -I${srcdir} $OPT_FLAGS $SDL_CFLAGS"
 CXXFLAGS="$CXXFLAGS -I. -I${srcdir} $OPT_FLAGS $SDL_CFLAGS"
