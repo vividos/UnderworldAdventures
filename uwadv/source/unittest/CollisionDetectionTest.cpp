@@ -792,16 +792,11 @@ namespace UnitTest
             L"vector position must be equal the expected position");
       }
 
-      // test is currently ignored, since collision detection gets stuck on some edge
-      BEGIN_TEST_METHOD_ATTRIBUTE(TestCollisionWalkingUpAStep)
-         TEST_IGNORE()
-      END_TEST_METHOD_ATTRIBUTE()
-
       /// Tests simulating walking up a stair, in multiple time steps
       TEST_METHOD(TestCollisionWalkingUpAStep)
       {
          // set up
-         Vector3d initialPos{ 0.0, 0.0, 0.0 };
+         Vector3d initialPos{ 0.0, 0.1, 0.0 };
          Vector3d velocity{ 1.0, 0.0, 0.0 };
          TestPhysicsBody body{ initialPos, velocity };
 
@@ -874,24 +869,19 @@ namespace UnitTest
          Assert::IsTrue(body.GetPosition().x < 2.5, L"stair must not have been climbed successfully");
       }
 
-      // test is currently ignored, since collision detection gets stuck on some edge
-      BEGIN_TEST_METHOD_ATTRIBUTE(TestCollisionWalkingDownAStep)
-         TEST_IGNORE()
-      END_TEST_METHOD_ATTRIBUTE()
-
       /// Tests simulating walking down a stair, in multiple time steps
       TEST_METHOD(TestCollisionWalkingDownAStep)
       {
          // set up
-         Vector3d initialPos{ 0.0, 0.0, 0.0 };
+         Vector3d initialPos{ 0.0, 0.1, 0.0 };
          Vector3d velocity{ 1.0, -0.5, 0.0 }; // v has y component also
          TestPhysicsBody body{ initialPos, velocity };
 
          const double stepHeight = 0.6;
          CollisionDetection detection{ std::vector<Triangle3dTextured> {
             Triangle3dTextured{0, // triangle where sphere is resting on
-               Vertex3d{Vector3d{ 1.5, -1.0, -10.0 }},
                Vertex3d{Vector3d{ 1.5, -1.0, 10.0 }},
+               Vertex3d{Vector3d{ 1.5, -1.0, -10.0 }},
                Vertex3d{Vector3d{ -10.0, -1.0, 0.0 }}
             },
             Triangle3dTextured{0, // triangle that builds the stair
@@ -908,14 +898,14 @@ namespace UnitTest
 
          // run until 10 iterations were done, or the sphere has climbed down the stair
          unsigned int iteration = 0;
-         while (iteration++ < 10 && body.GetPosition().y < stepHeight)
+         while (iteration++ < 10 && body.GetPosition().y > -stepHeight + 0.05)
             detection.TrackObject(body);
 
          // check
          Assert::IsTrue(iteration < 10, L"stair must have been climbed with less than 10 iterations");
 
          Assert::IsTrue(body.GetPosition().x >= 2.5, L"stair must have been climbed down successfully");
-         Assert::IsTrue(body.GetPosition().y <= -stepHeight, L"sphere must have reached step level");
+         Assert::IsTrue(body.GetPosition().y <= -stepHeight + 0.05, L"sphere must have reached step level");
       }
    };
 } // namespace UnitTest
