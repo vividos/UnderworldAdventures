@@ -8,17 +8,21 @@ Underworld Adventures is Copyright (C) 2002,2003,2004,2019 Underworld Adventures
 Underworld Adventures is available from
    https://vividos.github.io/UnderworldAdventures/
 
-# Content
+## Content
 
 This Readme file contains the Manual for end users of the Underworld
 Adventures project. Please use the table of contents to navigate the document.
 
-[1. Quick start and quick reference](#1-quick-start-and-quick-reference)
+[1. Quick start and quick reference](#1-quick-start-and-quick-reference)<br/>
+[2. Installing and configuring Underworld Adventures](#2-installing-and-configuring-underworld-adventures)<br/>
+[3. Configuring Underworld Adventures](#3-configuring-underworld-adventures)<br/>
+[4. Gameplay](#4-gameplay)<br/>
 
+[A. Tools for Underworld Adventures](#a-tools-for-underworld-adventures)<br/>
+[B. Underworld Adventures Music](#b-underworld-adventures-music)<br/>
+[C. Underworld Adventures Debugger](#c-underworld-adventures-debugger)<br/>
 
-[x. Underworld Adventures Music](#x-underworld-adventures)<br/>
-
-# 1. Quick start and quick reference
+## 1 Quick start and quick reference
 
 You need a copy of the game to run Underworld Adventures. Install the game to
 any folder you like and start the uaconfig.exe tool. Set the Ultima Underworld
@@ -32,13 +36,13 @@ talking to people or picking up objects.
 Enjoy the game and return to this manual if you need more in-depth
 information.
 
-# 2. Installing and configuring Underworld Adventures
+## 2 Installing and configuring Underworld Adventures
 
 This chapter explains how to install the games and configure Ultima Underworld
 to use the game's resources. To play Underworld Adventures, you definitely
 need the original game files.
 
-### Install media
+### 2.1 Install media
 
 Ultima Underworld 1 was originally distributed on install disks, which had to
 be installed on a hard drive in order to run the game. Later it was also
@@ -46,7 +50,7 @@ released on a CD-ROM distribution called "Electronic Arts Presents CD-Rom
 Classics: Ultima Underworld I & II" CD. Nowadays you can get the games on
 gog.com, in yet another format.
 
-#### Running the original installer
+### 2.2 Running the original installer
 
 The original installer is a 16-bit DOS executable, which doesn't run on modern
 64-bit processors anymore. You can install the game using DosBox, though,
@@ -60,12 +64,12 @@ as drive D:
 
 The installed game files should then be available in the mounted folder.
 
-#### Using the game files directly
+### 2.3 Using the game files directly
 
 This is most straight-forward; just copy the game files (uw.exe, the "data"
 and any additional folders) to your hard disk.
 
-#### gog.com distribution
+### 2.4 gog.com distribution
 
 The gog.com installer extracts several files to your hard disk. The actual
 games are stored in a file called "game.gog", which is actually an ISO file
@@ -73,7 +77,7 @@ that is mounted when starting the game using DosBox. Open the "game.gog" file
 with your favourite ISO tool and extract the files on your hard disk. Note
 that the popular 7-zip can also open and extract the file without problems.
 
-### System requirements
+### 2.5 System requirements
 
 Nowadays, any computer with an on-board graphics card that supports 3D
 graphics can be used to run Underworld Adventures. Also, modern CPUs are not
@@ -83,24 +87,24 @@ Back in 2004, when the project was started, at least a 600 MHz CPU was needed,
 along with a decent 3D-Graphics card with current OpenGL drivers, e.g. an
 Nvidia GeForce. For sound output a dedicated sound card was often useful.
 
-### Configuring Underworld Adventures
+## 3. Configuring Underworld Adventures
 
 This chapter describes how to set up and configure Underworld Adventures
 to run the old Ultima Underworld games.
 
-### Tool "uaconfig"
+### 3.1 Tool "uaconfig"
 
 TODO
 
-### Configuration file
+### 3.2 Configuration file
 
 TODO
 
-### Command line options
+### 3.3 Command line options
 
 TODO
 
-### Operating system specific installation
+### 3.4 Operating system specific installation
 
 This chapter contains operating system specific documentation about Underworld
 Adventures.
@@ -115,18 +119,16 @@ default, the library looks for these patches on UNIX in
 http://www.libsdl.org/projects/SDL_mixer/timidity/timidity.tar.gz
 
 
-## 3. Gameplay
+## 4 Gameplay
 
 Underworld Adventures tries to reproduce the old games as faithfully as
 possible, including graphics and controls. If you still have the manual for
 the game, you can also use this for reference. However, there are a few
 differences, which are explained in more detail later.
 
-### 
-
-
 ### Keyboard mapping configuration
 
+TODO
 
 ### Saving and loading games
 
@@ -148,7 +150,7 @@ key F11 saves the current game to a special Quicksave slot. With F12 one
 can restore the previously saved quicksave savegame. The key bindings can be
 modified in the keymap.cfg.
 
-## Differences to the original game
+### Differences to the original game
 
 While creating Underworld Adventures there were some things that were done
 differently than in the original games. Reasons for this are mainly
@@ -170,7 +172,7 @@ setting in the configure file.
   position in the input field.
 
 
-## x. Tools for Underworld Adventures
+## A. Tools for Underworld Adventures
 
 This chapter describes the tools that come with the binary distribution of
 Underworld Adventures. Note that on Windows, most tools need the file
@@ -179,7 +181,7 @@ Underworld Adventures. Note that on Windows, most tools need the file
 Tools that work together with Ultima Underworld 2, too, have a [uw1/2] next to
 their name.
 
-### x.1 strpak - Underworld Game Strings Pack/Unpack Tool [uw1/2]
+### A.1 strpak - Underworld Game Strings Pack/Unpack Tool [uw1/2]
 
 strpak is a tool that lets you unpack the game strings in the file
 "strings.pak" to a raw text file. It also can take a raw text file that is
@@ -226,7 +228,7 @@ Then modify some stuff inside the created text file, e.g. translate strings.
 Be sure to keep a copy of the original "strings.pak" around, in case anything
 bad happens.
 
-### x.2. xmi2mid - XMIDI to MIDI converter [uw1/2]
+### A.2. xmi2mid - XMIDI to MIDI converter [uw1/2]
 
 xmi2mid is a converter for XMIDI files (*.xmi) that are used in Ultima
 Underworld (and many other games) to ordinary midi (*.mid) files. Only the
@@ -239,7 +241,7 @@ The program prints out an error if something strange occured, else the midi
 file is created.
 
 
-## x. Underworld Adventures Music
+## B. Underworld Adventures Music
 
 Underworld Adventures contains an (incomplete) set of newly arranged music
 pieces. This chapter describes the software used and arrangements made in the
@@ -315,7 +317,7 @@ done to the original arrangement. More appropriate patches were
 chosen.
 
 
-# x. Underworld Adventures Debugger
+# C. Underworld Adventures Debugger
 
 The Underworld Adventures Debugger is an add-on software to Underworld
 Adventures that shows various game states and data and is mainly used for
