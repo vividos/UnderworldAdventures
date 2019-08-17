@@ -152,7 +152,7 @@ void OriginalIngameScreen::Init()
       m_textScroll.SetColorCode(colorCodeBlack);
 
       m_textScroll.Print("Welcome to the Underworld Adventures!\n"
-         " \\3http://uwadv.sourceforge.net/\\0");
+         " \\3https://vividos.github.com/UnderworldAdventures\\0");
 
       RegisterWindow(&m_textScroll);
 
