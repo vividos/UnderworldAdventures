@@ -1,6 +1,6 @@
 #
 # Underworld Adventures - an Ultima Underworld hacking project
-# Copyright (c) 2002,2003,2004,2005 Underworld Adventures Team
+# Copyright (c) 2002,2003,2004,2005,2019 Underworld Adventures Team
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,8 +17,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 # mingw32 makefile for Underworld Adventures
-#
-# $Id$
 #
 
 # -------------------------------------------------------------------
@@ -43,52 +41,10 @@ MINGW_PATH = d:/devel/mingw
 UWADV_VERSION = 0.10-test1
 
 # -------------------------------------------------------------------
-# STLport configuration
-# -------------------------------------------------------------------
-
-# set to "yes" if you have STLport (and modify STLPORT_PATH then)
-WITH_STLPORT = no
-
-# path to where STLport was installed and built
-STLPORT_PATH = d:/devel/packages/STLport
-
-# -------------------------------------------------------------------
-# wxWidgets configuration
-# -------------------------------------------------------------------
-
-# set to "yes" if you have wxWidgets
-WITH_WXWIDGETS = no
-
-# path to wxWidgets base dir (only needed for uadebug.dll)
-WXWIN_PATH = d:/devel/packages/wxMSW
-
-# -------------------------------------------------------------------
-# docbook configuration
-# -------------------------------------------------------------------
-
-# set to "yes if you have docbook-xsl installed somewhere
-WITH_DOCBOOK_XSL = yes
-
-# base path to docbook-xsl package
-# note: for some reason xsltproc doesn't like all slashes in the path
-DOCBOOK_XSL_BASEPATH = d:\\devel/packages/docbook-xsl-1.64.0
-
-# xsl-transformation processor to use
-# choose either "xsltproc" or "msxsl" and configure paths below
-XSLT_PROCESSOR = xsltproc
-
-# path and filename for the xsltproc utility
-XSLTPROC_PATH = d:/devel/tools/xslt/xsltproc.exe
-
-# path and filename for the msxsl utility
-MSXSL_PATH = d:/devel/tools/xslt/msxsl.exe
-
-# -------------------------------------------------------------------
 # configuration details
 # -------------------------------------------------------------------
 
 # change this value only if you have a non-standard mingw32 setup
-# (i.e. when the uwadv-mingw32-source-setup-?.zip wasn't used)
 
 # path to SDL include
 SDL_INCLUDE = -I$(MINGW_PATH)/include/sdl/
@@ -109,7 +65,7 @@ AR = ar
 CFLAGS =
 CXXFLAGS =
 LDFLAGS = -mwindows -s
-DEFINES = 
+DEFINES =
 
 # debug options
 ifeq ("$(WITH_DEBUGGING)", "yes")
@@ -134,41 +90,11 @@ else
  uwadv_SDL_LIB = -lSDLmain -lSDL -lSDL_mixer
 endif
 
-# STLport
-ifeq ("$(WITH_STLPORT)", "yes")
- STLPORT_INCLUDE = -I$(STLPORT_PATH)/stlport/
- STLPORT_LIB = -L$(STLPORT_PATH)/lib/
- DEFINES += -D_STLP_USE_AUTO_LINK -D_STLP_VERBOSE_AUTO_LINK
- ifeq ("$(WITH_DEBUGGING)", "yes")
-  DEFINES += -D_STLP_DEBUG -D_STLP_USE_STATIC_LIB
-  #-D_STLP_DEBUG_ALLOC -D_STLP_USE_SYSTEM_ASSERT
-  #-D_STLP_USE_NEWALLOC 
-  STLPORT_LIB += -lstlport_mingw32_stldebug_static
- else
-  STLPORT_LIB += -lstlport_mingw32_static
- endif
-else
- STLPORT_INCLUDE =
- STLPORT_LIB =
-endif
-
-INCLUDES = $(SDL_INCLUDE) $(STLPORT_INCLUDE) $(ZLIB_INCLUDE) \
+INCLUDES = $(SDL_INCLUDE) $(ZLIB_INCLUDE) \
 	-Isource -Isource/audio -Isource/base -Isource/conv -Isource/import \
-	-Isource/renderer -Isource/script -Isource/ui -Isource/underw \
-	-Isource/script/lua/include -Isource/base/zziplib
-
-# wxWidgets
-ifeq ("$(WITH_WXWIDGETS)", "yes")
- INCLUDES += -I$(WXWIN_PATH)/include/ -I$(WXWIN_PATH)/contrib/include/ -I$(WXWIN_PATH)/lib/mswd/
- DEFINES += -D__GNUWIN32__ -D__WXMSW__ -D_X86_=1 -DWIN32 -D_WIN32 -DWINVER=0x0400
- WXWIN_LIB = -L$(WXWIN_PATH)/lib/ -L$(WXWIN_PATH)/contrib/lib/ \
-	-lwxmsw -lfl -lole32 -loleaut32 -luuid \
-	-lcomctl32 -lwsock32
-	# -lwinspool -lcomdlg32 -ladvapi32 -lshell32 \
-	# -lzlib -lpng -ljpeg -ltiff -lregex
-else
- WXWIN_LIB =
-endif
+	-Isource/physics -Isource/renderer -Isource/screens -Isource/script \
+	-Isource/ui -Isource/underw -Isource/uwadv \
+	-Isource/thirdparty/lua/include -Isource/thirdparty/zziplib
 
 
 CFLAGS += $(DEFINES) $(INCLUDES)
@@ -178,12 +104,12 @@ CFLAGS += $(DEFINES) $(INCLUDES)
 # -------------------------------------------------------------------
 
 
-all: uwadv tools data manual
+all: uwadv tools data
 
 
 # lua objects
 
-include source/script/lua/Makefile.common
+include source/thirdparty/lua/Makefile.common
 
 liblua_EXT = liblua.a
 
@@ -195,7 +121,7 @@ liblua_OBJS = $(liblua_Cs:%.c=source/script/lua/%.o)
 
 # zziplib objects
 
-include source/base/zziplib/Makefile.common
+include source/thirdparty/zziplib/Makefile.common
 
 libzziplib_EXT = libzziplib.a
 
@@ -210,7 +136,7 @@ include source/Makefile.common
 uwadv_EXEC = uwadv.exe
 
 uwadv_win32objects = \
-	source/win32/game_win32.o \
+	source/win32/crashdump.o \
 	source/win32/uwadv_res.o
 
 uwadv_CPPs = $(filter %.cpp,$(uwadv_SOURCES))
@@ -221,7 +147,7 @@ uwadv_OBJS = $(uwadv_CPPs:%.cpp=source/%.o) \
 
 uwadv_LIBS = $(WIN32_LIB) -lwinmm $(OPENGL_LIB) \
 	-L. -lzziplib -llua \
-	$(uwadv_SDL_LIB) $(STLPORT_LIB) -lz
+	$(uwadv_SDL_LIB) -lz
 
 
 ifeq ("$(WITH_CONSOLE)", "yes")
@@ -240,23 +166,19 @@ include source/debug/Makefile.common
 uadebug_CPPs = $(filter %.cpp,$(libuadebug_la_SOURCES))
 uadebug_OBJS = $(uadebug_CPPs:%.cpp=source/debug/%.o)
 
-uadebug_LIBS = $(WXWIN_LIB) $(WIN32_LIB) $(STLPORT_LIB)
+uadebug_LIBS = $(WXWIN_LIB) $(WIN32_LIB)
 uadebug_LDFLAGS =
 
 
-# ua config program
+# uaconfig program
 
 uaconfig_EXEC = uaconfig.exe
 
 uaconfig_OBJS = \
 	source/win32/uaconfig/uaconfig.o \
-	source/win32/uaconfig/uaconfig_res.o \
-	source/base/cfgfile.o \
-	source/base/settings.o \
-	source/base/utils.o
+	source/win32/uaconfig/uaconfig_res.o
 
-uaconfig_LIBS = $(WIN32_LIB) $(SDL_LIB) -lwinmm $(STLPORT_LIB)
-
+uaconfig_LIBS = $(WIN32_LIB) $(SDL_LIB) -lwinmm
 
 
 # tools
@@ -280,7 +202,7 @@ cnvdbg_OBJS = $(cnvdbg_CPPs:%.cpp=source/tools/%.o)
 
 cnvdbg_LDFLAGS = -mconsole
 cnvdbg_LIBS = -lmingw32 -lkernel32 -luser32 libuatools.a \
-	$(SDL_LIB) $(STLPORT_LIB) -lz
+	$(SDL_LIB) -lz
 
 
 # xmidi to midi converter
@@ -303,7 +225,7 @@ mapdisp_OBJS = $(mapdisp_CPPs:%.cpp=source/tools/%.o)
 
 mapdisp_LDFLAGS =
 mapdisp_LIBS = -lmingw32 -lkernel32 -luser32 libuatools.a \
-	$(SDL_LIB) $(STLPORT_LIB) $(OPENGL_LIB) -lz
+	$(SDL_LIB) $(OPENGL_LIB) -lz
 
 
 # animation viewer
@@ -315,7 +237,7 @@ animview_OBJS = $(animview_CPPs:%.cpp=source/tools/%.o)
 
 animview_LDFLAGS =
 animview_LIBS = -lmingw32 -lkernel32 -luser32 libuatools.a \
-	$(SDL_LIB) $(STLPORT_LIB) $(OPENGL_LIB)
+	$(SDL_LIB) $(OPENGL_LIB)
 
 
 # string pack/unpack tool
@@ -326,7 +248,7 @@ strpak_CPPs = $(filter %.cpp,$(strpak_SOURCES))
 strpak_OBJS = $(strpak_CPPs:%.cpp=source/tools/%.o)
 
 strpak_LDFLAGS = -mconsole
-strpak_LIBS = -lmingw32 -lkernel32 -luser32 libuatools.a $(SDL_LIB) $(STLPORT_LIB)
+strpak_LIBS = -lmingw32 -lkernel32 -luser32 libuatools.a $(SDL_LIB)
 
 
 # uw dump tool
@@ -340,7 +262,7 @@ uwdump_OBJS = $(uwdump_CPPs:%.cpp=source/tools/uwdump/%.o)
 
 uwdump_LDFLAGS = -mconsole
 uwdump_LIBS = -lmingw32 -lkernel32 -luser32 libuatools.a \
-	$(SDL_LIB) $(STLPORT_LIB)
+	$(SDL_LIB)
 
 
 # uw model view tool
@@ -351,19 +273,7 @@ uwmdlview_OBJS = $(uwmdlview_CPPs:%.cpp=source/tools/%.o)
 
 uwmdlview_LDFLAGS = -mconsole
 uwmdlview_LIBS = -lmingw32 -lkernel32 -luser32 libuatools.a \
-	$(SDL_LIB) $(STLPORT_LIB) $(OPENGL_LIB) -lz
-
-
-# manuals
-
-ifeq ("$(WITH_DOCBOOK_XSL)", "yes")
-
-manual_SOURCES = docs/docbook/uwadv-manual.xml docs/docbook/uadebug-manual.xml
-manual_TARGETS = $(manual_SOURCES:%.xml=%.html)
-
-endif
-
-
+	$(SDL_LIB) $(OPENGL_LIB) -lz
 
 
 # -------------------------------------------------------------------
@@ -466,11 +376,6 @@ uadata/uadata00.uar: $(uadata_uarFILES)
 data-clean:
 	cd uadata; rm -f $(luaOBJECTS) uadata00.uar
 
-manual: $(manual_TARGETS)
-
-manual-clean:
-	rm -f $(manual_TARGETS)
-
 luac:
 	cd source/script/lua/src/luac && make
 
@@ -495,12 +400,11 @@ toolsinstall: tools
 	cp $(TOOLS) $(UWADV_PATH)/tools/
 	cp docs/README.tools.txt $(UWADV_PATH)/tools/
 
-installer: install manual
+installer: install
 	cp win32/uwadv.nsi $(UWADV_PATH)
 	cp docs/License.installer.txt $(UWADV_PATH)
 	cp Copying $(UWADV_PATH)
 	cp docs/README.uwadv.txt $(UWADV_PATH)
-	cp $(manual_TARGETS) $(UWADV_PATH)
 	cp docs/uw1-keyboard.txt $(UWADV_PATH)
 	cp docs/Changes $(UWADV_PATH)/Changes.txt
 	cp docs/Authors.txt $(UWADV_PATH)
@@ -508,7 +412,7 @@ installer: install manual
 	cd $(UWADV_PATH) && ./upx -9 uaconfig.exe
 	cd $(UWADV_PATH) && ./makensis.exe //DVERSION="$(UWADV_VERSION)" uwadv.nsi
 
-clean: data-clean luac-clean manual-clean
+clean: data-clean luac-clean
 	rm -f $(uwadv_EXEC) $(cnvdbg_EXEC) $(xmi2mid_EXEC) \
 		$(mapdisp_EXEC) $(animview_EXEC) $(strpak_EXEC) \
 		$(uaconfig_EXEC) $(libuatools_EXT) $(uwdump_EXEC) \
@@ -535,21 +439,5 @@ clean: data-clean luac-clean manual-clean
 %.lob: %.lua luac
 	source/script/lua/bin/luac -o $@ $<
 
-
-ifeq ("$(WITH_DOCBOOK_XSL)", "yes")
-
- ifeq ("$(XSLT_PROCESSOR)", "xsltproc")
-
-docs/docbook/%.html: docs/docbook/%.xml
-	$(XSLTPROC_PATH) --nonet $(DOCBOOK_XSL_BASEPATH)/html/docbook.xsl docs/docbook/$*.xml > $@
-
- else
-  ifeq ("$(XSLT_PROCESSOR)", "msxsl")
-
-docs/docbook/%.html: docs/docbook/%.xml
-	$(MSXSL_PATH) docs/docbook/$*.xml $(DOCBOOK_XSL_BASEPATH)/html/docbook.xsl -xe -o $@
-  endif
- endif
-endif
 
 # -------------------------------------------------------------------
