@@ -1,29 +1,32 @@
-# README for Developers #
+# README for Developers
 
 This is the Readme file for developers. Please use the table of contents to
 navigate the document.
 
-[1. Introduction](#intro)<br/>
+[1. Introduction](#1-introduction)<br/>
 
-[2. Compiling Underworld Adventures](#compiling)<br/>
-[2.1 Microsoft Visual Studio on Windows](#visualstudio)<br/>
-[2.2 gcc/clang on Linux](#gcc-clang-linux)<br/>
-[2.2.1 Building from Git](#building-git)<br/>
-[2.2.2 Building from source package](#building-source)<br/>
-[2.3 Other operating systems](#other-os)<br/>
+[2. Compiling Underworld Adventures](#2-compiling-underworld-adventures)<br/>
+[2.1 Microsoft Visual Studio on Windows](#2-1-microsoft-visual-studio-on-windows)<br/>
+[2.2 gcc/clang on Linux](#2-2-gcc-clang-on-linux)<br/>
+[2.2.1 Building from Git](#2-2-1-building-from-git)<br/>
+[2.2.2 Building from source package](#2-2-2-building-from-source-package)<br/>
+[2.3 MinGW on Windows](#2-3-mingw-on-windows)<br/>
+[2.4 Other operating systems](#2-4-other-operating-systems)<br/>
 
-[3. Developing Underworld Adventures](#developing)<br/>
-[3.1 Code guidelines](#code-guidelines)<br/>
-[3.2 Source code repository](#source-repository)<br/>
-[3.2.1 Git repository](#git-repository)<br/>
-[3.2.2 GitHub issues & pull requests](#github-issues-pr)<br/>
-[3.3 Release Checklist](#release-checklist)<br/>
-[3.4 Source code documentation](#source-docs)<br/>
-[3.5 Resource files in the "data" folder](#resource-files)<br/>
+[3. Developing Underworld Adventures](#3-developing-underworld-adventures)<br/>
+[3.1 Code guidelines](#3-1-code-guidelines)<br/>
+[3.2 Source code repository](#3-2-source-code-repository)<br/>
+[3.2.1 Git repository](#3-2-1-git-repository)<br/>
+[3.2.2 GitHub issues & pull requests](#3-2-2-github-issues-pull-requests)<br/>
+[3.3 Release Checklist](#3-3-release-checklist)<br/>
+[3.4 Source code documentation](#3-4-source-code-documentation)<br/>
+[3.5 Resource files in the "data" folder](#3-5-resource-files-in-the-data-folder)<br/>
 
-[4. Lua Scripting](#lua-scripting)<br/>
+[4. Lua Scripting](#4-lua-scripting)<br/>
 
-[A. Third-Party libraries and licenses](#thirdparty)<br/>
+[A. Authors](#a-authors)<br/>
+
+[B. Third-Party libraries and licenses](#b-third-party-libraries-and-licenses)<br/>
 
 ## 1. Introduction
 
@@ -141,7 +144,69 @@ you can uninstall it by running (as root):
 
     make uninstall
 
-### 2.3 Other operating systems
+### 2.3 MinGW on Windows
+
+MinGW stands for "Minimalist Gnu for Windows" and can be obtained in various
+versions, e.g. MinGW32 or MinGW64. The binary distributions come with a Gnu
+bash console called MSYS and can be used to build Underworld Adventures.
+
+#### Setup
+
+To let the system find the compiler, you should add something like this to
+your "autoexec.bat":
+
+   PATH=%PATH%;c:\mingw\bin
+
+You could also change the PATH variable assignment in /etc/profile using MSYS.
+All further examples in this file assume that MinGW was installed to
+"c:\mingw\".
+
+#### Compiling
+
+To specify some paths, open the file "Makefile.mingw" in the main project
+folder.
+
+The variable `UWADV_PATH` contains the path where Underworld Adventures is
+installed when performing a "make install" or "make update" (see below for
+make targets).
+
+The variable `MINGW_PATH` should be set to the base path of the MinGW
+installation. It is mainly to specify the SDL include path.
+
+There are some settings that can be set to "yes" or "no". These are:
+
+- WITH_CONSOLE: enables separate console output and disables writing of the
+                stdout.txt and stderr.txt file. default: "no"
+- WITH_DEBUGGING: enables some experimental code for developers. Basically
+                  defines `HAVE_DEBUG` in the source code. default: "no"
+
+To compile, start MSYS and change ("cd") to the main project dir. The command
+to compile the project looks like this:
+
+    make -f Makefile.mingw <target>
+
+where `target` can be one of several words:
+
+- uwadv:       builds uwadv.exe and copies a template uwadv.cfg to the main
+               project dir
+- tools:       builds all tools (each tool can be built separately using one
+               of these targets: `cnvdbg xmi2mid mapdisp animview strpak`)
+- data:        builds all needed data files
+- install:     builds uwadv and data and installs the files in the path
+               specified by "UWADV_PATH". overwrites uwadv.cfg
+- update:      the same as "install" but doesn't copy the uwadv.cfg file
+- clean:       cleans all built source and data files
+- luac:        builds the Lua compiler that can be used to verify Lua scripts
+- toolsinstall: installs all tools in a "tools" subfolder of "UWADV_PATH"
+
+#### Using autoconf and automake
+
+If you're adventurous, you can try compiling Underworld Adventures using the
+autoconf and automake tools. You need the msysDTK-packages as well as the
+autoconf, automake and libtool packages extracted over your existing MinGW
+installation. Continue with the instructions in chapter 2.3. Good Luck!
+
+### 2.4 Other operating systems
 
 Other Unix based operating system (FreeBSD, MacOS X etc.) may work like on
 Linux, but no guarantees if it works. If you want to port the project to a new
@@ -287,7 +352,7 @@ like this: "uadataXX.zip" (printf syntax: "uadata%02u.zip").
 
 When the game searches for a "uadata" file, e.g. "uw1/sound/test.wav", it
 first searches the true folder, "uadata/uw1/sound/test.wav". If that
-doesn't exist, all "uadata??.uar" files are tested if the file is in one of
+doesn't exist, all "uadata??.zip" files are tested if the file is in one of
 it. When not found, an exception is thrown.
 
 The Makefile in the "uadata" source folder creates packaged files that have
@@ -305,7 +370,7 @@ that are lua files compiled with "luac".
 Lua scripts are searched in the same way as other files, but first the
 ".lua" one is searched, then the ".lob". That allows for changes to ".lua"
 files while developing, but for releases the compiled ".lob" files inside
-".uar" files are distributed only.
+"uadata??.zip" files are distributed only.
 
 
 ## 4. Lua Scripting
@@ -314,7 +379,25 @@ For Lua to C interfaces or other information about Lua with uwadv, look
 into the file "README.Lua.txt".
 
 
-## A. Third-Party libraries and licenses
+## A. Authors
+
+This chapter lists all authors and contributors of Underworld Adventures.
+
+- Michael Fink (vividos; code, documentation)
+- Willem Jan Palenstijn (wjp; Linux port)
+- Dirk Manders (phlask; Lua cutscenes and character creation)
+- Jim Cameron (hairyjim; inspiration)
+- Kasper Fauerby (Telemachos; ideas and collision detection code)
+- Martin Gircys-Shetty (QQtis; music)
+- Ryan Nunn (Colourless Dragon; XMIDI and Windows MidiOut driver)
+- Tels (SDL_mixer MIDI driver)
+- Cuneyt Cuneyitoglu (perl script to convert uw1 files/folders to lowercase)
+- Radoslaw Grzanka (Debian port)
+- Sam Matthews (servus; ideas)
+- Marc A. Pelletier (Coren; ideas)
+
+
+## B. Third-Party libraries and licenses
 
 Some third-party libraries are used throughout the project, to gain some
 functionality that otherwise would be hard to do, or to get a platform
