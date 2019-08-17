@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.271
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29123.88
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "source", "source", "{F4E92C83-ECFD-4C0C-B40B-1136FE3B73ED}"
 EndProject
@@ -52,6 +52,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{2DC9BCF9-45AB-470E-8D94-A2336A3BB735}"
 	ProjectSection(SolutionItems) = preProject
 		README.Developer.md = README.Developer.md
+		README.Manual.md = README.Manual.md
 		docs\uw-formats.txt = docs\uw-formats.txt
 	EndProjectSection
 EndProject
