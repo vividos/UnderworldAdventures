@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 class XMidiEventList;
 class XMidiSequence;
 
+#include <atomic>
 #include <queue>
 #include <SDL.h>
 #include <SDL_thread.h>
@@ -261,7 +262,7 @@ private:
 	static int				threadMain_Static(void *data);
 	int						threadMain();
 	// Thread flag -- set to true when ready to quit
-	bool					quit_thread;
+	std::atomic<bool>		quit_thread;
 
 	// Software methods
 	int						initSoftwareSynth();
