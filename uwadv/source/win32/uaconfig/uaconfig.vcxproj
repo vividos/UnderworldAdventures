@@ -86,6 +86,7 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="uaconfig_res.rc" />
+    <ResourceCompile Include="versioninfo.rc" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\base\base.vcxproj">

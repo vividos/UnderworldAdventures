@@ -110,6 +110,7 @@
     <ClInclude Include="..\GameInterface.hpp" />
     <ClInclude Include="..\IDebugServer.hpp" />
     <ClInclude Include="..\IUserInterface.hpp" />
+    <ClInclude Include="..\version.hpp" />
     <ClInclude Include="ArchiveFile.hpp" />
     <ClInclude Include="Base.hpp" />
     <ClInclude Include="ConfigFile.hpp" />

@@ -112,6 +112,7 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\win32\uwadv_res.rc" />
+    <ResourceCompile Include="..\win32\versioninfo.rc" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\audio\audio.vcxproj">

@@ -142,5 +142,8 @@
     <ClInclude Include="Plane3d.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\version.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

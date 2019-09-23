@@ -149,6 +149,7 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="uadebug_res.rc" />
+    <ResourceCompile Include="versioninfo.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
