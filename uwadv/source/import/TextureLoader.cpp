@@ -85,17 +85,9 @@ void Import::TextureLoader::LoadTextures(
 
       IndexedImage& textureImage = textureImages[startIndex + textureIndex];
       textureImage.Create(xyres, xyres);
-      Uint8* pixels = textureImage.GetPixels().data();
-
       textureImage.SetPalette(palette);
 
-      unsigned int bufferIndex = 0;
-      while (dataLength > 0)
-      {
-         unsigned int size = std::min(dataLength, 4096U);
-         unsigned int read = file.ReadBuffer(pixels + bufferIndex, size);
-         bufferIndex += read;
-         dataLength -= read;
-      }
+      Uint8* pixels = textureImage.GetPixels().data();
+      file.ReadBuffer(pixels, dataLength);
    }
 }
