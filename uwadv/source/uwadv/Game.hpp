@@ -27,6 +27,7 @@
 #include "ui/Screen.hpp"
 #include "audio/Audio.hpp"
 #include "ui/IndexedImage.hpp"
+#include "ui/ImageManager.hpp"
 #include "renderer/RenderWindow.hpp"
 #include "renderer/Renderer.hpp"
 #include "script/IScripting.hpp"

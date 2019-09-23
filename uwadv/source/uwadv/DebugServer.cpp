@@ -26,6 +26,7 @@
 #include "Underworld.hpp"
 #include "GameStrings.hpp"
 #include "IndexedImage.hpp"
+#include "ImageManager.hpp"
 #include <algorithm>
 
 /// debugger lib context

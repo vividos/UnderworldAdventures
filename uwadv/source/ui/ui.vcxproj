@@ -66,6 +66,7 @@
   <ItemGroup>
     <ClCompile Include="Cutscene.cpp" />
     <ClCompile Include="Font.cpp" />
+    <ClCompile Include="ImageManager.cpp" />
     <ClCompile Include="IndexedImage.cpp" />
     <ClCompile Include="ImageQuad.cpp" />
     <ClCompile Include="MouseCursor.cpp" />
@@ -83,6 +84,7 @@
     <ClInclude Include="Cutscene.hpp" />
     <ClInclude Include="FadingHelper.hpp" />
     <ClInclude Include="Font.hpp" />
+    <ClInclude Include="ImageManager.hpp" />
     <ClInclude Include="IndexedImage.hpp" />
     <ClInclude Include="ImageQuad.hpp" />
     <ClInclude Include="MouseCursor.hpp" />

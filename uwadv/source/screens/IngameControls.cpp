@@ -25,6 +25,7 @@
 #include "Underworld.hpp"
 #include "GameLogic.hpp"
 #include "Renderer.hpp"
+#include "ImageManager.hpp"
 #include "physics/PhysicsModel.hpp"
 
 PlayerPhysicsObject& OriginalIngameControl::GetPlayerPhysicsObject()

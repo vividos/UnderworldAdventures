@@ -24,6 +24,7 @@
 #include "Object.hpp"
 #include "ObjectList.hpp"
 #include "CrittersLoader.hpp"
+#include "ImageManager.hpp"
 
 const double CritterFramesManager::s_critterFramesPerSecond = 3.0;
 

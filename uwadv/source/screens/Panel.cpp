@@ -24,6 +24,7 @@
 #include "Underworld.hpp"
 #include "IScripting.hpp"
 #include "GameStrings.hpp"
+#include "ImageManager.hpp"
 #include "Math.hpp"
 #include <sstream>
 

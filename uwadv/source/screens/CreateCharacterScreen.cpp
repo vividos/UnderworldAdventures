@@ -35,6 +35,7 @@
 #include "GameStrings.hpp"
 #include "Underworld.hpp"
 #include "Import.hpp"
+#include "ImageManager.hpp"
 #include <sstream>
 #include <ctime>
 

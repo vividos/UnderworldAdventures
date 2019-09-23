@@ -27,6 +27,7 @@
 #include "Underworld.hpp"
 #include "GameStrings.hpp"
 #include "Audio.hpp"
+#include "ImageManager.hpp"
 #include <sstream>
 
 const unsigned int SaveGameButton::c_buttonWidth = 55;

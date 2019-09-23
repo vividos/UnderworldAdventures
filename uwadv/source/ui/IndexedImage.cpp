@@ -21,7 +21,6 @@
 //
 #include "pch.hpp"
 #include "IndexedImage.hpp"
-#include "ImageLoader.hpp"
 
 IndexedImage::IndexedImage()
    :m_xres(0), m_yres(0)
@@ -130,69 +129,4 @@ void IndexedImage::ClonePalette()
       return;
 
    m_palette = Palette256Ptr(new Palette256(*m_palette));
-}
-
-
-void ImageManager::Init()
-{
-   Import::ImageLoader loader{ m_resourceManager };
-   loader.LoadPalettes(m_allPalettes);
-   loader.LoadAuxPalettes(m_allAuxPalettes);
-}
-
-/// when loading *.gr images, just specify the filename without the .gr and
-/// without path; for *.byt images specify the complete relative path to the
-/// file;
-void ImageManager::Load(IndexedImage& image, const char* basename, unsigned int imgnum,
-   unsigned int paletteIndex, ImageType type)
-{
-   switch (type)
-   {
-   case imageGr:
-   {
-      std::string filename("data/");
-      filename.append(basename);
-      filename.append(".gr");
-
-      Import::ImageLoader loader{ m_resourceManager };
-      loader.LoadImageGr(image, filename.c_str(), imgnum, m_allAuxPalettes);
-   }
-   break;
-
-   case imageByt:
-   {
-      image.Create(320, 200);
-
-      Import::ImageLoader loader{ m_resourceManager };
-      loader.LoadImageByt(basename, &image.GetPixels()[0]);
-   }
-   break;
-
-   default:
-      break;
-   }
-
-   image.SetPalette(m_allPalettes[paletteIndex]);
-}
-
-/// just specify the filename without the .gr and without path.
-/// imageTo is the image number after the last image loaded
-void ImageManager::LoadList(std::vector<IndexedImage>& imageList, const char* basename,
-   unsigned int imageFrom, unsigned int imageTo,
-   unsigned int paletteIndex)
-{
-   std::string filename("data/");
-   filename.append(basename);
-   filename.append(".gr");
-
-   // import the images
-   Import::ImageLoader loader{ m_resourceManager };
-
-   loader.LoadImageGrList(imageList, filename.c_str(), imageFrom, imageTo,
-      m_allAuxPalettes);
-
-   // set palette ptr for all images
-   unsigned int max = imageList.size();
-   for (unsigned int i = 0; i < max; i++)
-      imageList[i].SetPalette(m_allPalettes[paletteIndex]);
 }

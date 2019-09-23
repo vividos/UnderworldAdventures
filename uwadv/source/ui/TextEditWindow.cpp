@@ -21,6 +21,7 @@
 //
 #include "pch.hpp"
 #include "TextEditWindow.hpp"
+#include "ImageManager.hpp"
 
 TextEditWindow::~TextEditWindow()
 {

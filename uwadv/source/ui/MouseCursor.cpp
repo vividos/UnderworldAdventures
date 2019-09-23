@@ -23,6 +23,7 @@
 #include "MouseCursor.hpp"
 #include "GameInterface.hpp"
 #include "Renderer.hpp"
+#include "ImageManager.hpp"
 
 void MouseCursor::Init(IGame& game, unsigned int initialType)
 {

@@ -29,6 +29,7 @@
 #include "CreateCharacterScreen.hpp"
 #include "OriginalIngameScreen.hpp"
 #include "SaveGameScreen.hpp"
+#include "ImageManager.hpp"
 
 /// time to fade in/out
 const double StartMenuScreen::s_fadeTime = 0.5;

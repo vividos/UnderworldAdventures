@@ -31,6 +31,7 @@
 #include "ConversationScreen.hpp"
 #include "Model3D.hpp"
 #include "physics/PhysicsModel.hpp"
+#include "ImageManager.hpp"
 
 /// time to fade in/out
 const double OriginalIngameScreen::s_fadeTime = 0.5;

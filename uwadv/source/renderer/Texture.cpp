@@ -24,6 +24,7 @@
 #include "Constants.hpp"
 #include "GameInterface.hpp"
 #include "TextureLoader.hpp"
+#include "ImageManager.hpp"
 #include <gl/GLU.h>
 
 const double TextureManager::s_animationFramesPerSecond = 1.5;

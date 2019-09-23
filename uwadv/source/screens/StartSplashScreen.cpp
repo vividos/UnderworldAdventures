@@ -28,6 +28,7 @@
 #include "StartMenuScreen.hpp"
 #include "OriginalIngameScreen.hpp"
 #include "Import.hpp"
+#include "ImageManager.hpp"
 
 /// number of seconds the splash screen images are shown
 const double StartSplashScreen::c_showTime = 4.0;

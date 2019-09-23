@@ -22,6 +22,7 @@
 #include "pch.hpp"
 #include "ImageQuad.hpp"
 #include "Renderer.hpp"
+#include "ImageManager.hpp"
 
 /// \brief Does image quad initialisation; Window::create() is called and needed
 /// texture(s) are init'ed. When there's no palette for the image yet, palette

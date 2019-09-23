@@ -29,6 +29,7 @@
 #include "Audio.hpp"
 #include "uwadv/DebugServer.hpp"
 #include "ConvLoader.hpp"
+#include "ImageManager.hpp"
 #include <sstream>
 
 /// time to fade in / out screen
