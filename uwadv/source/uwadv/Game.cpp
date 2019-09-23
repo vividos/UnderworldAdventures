@@ -33,7 +33,6 @@
 #include <SDL_opengl.h>
 
 #ifdef WIN32
-#include <SDL_syswm.h>
 #include "win32/resource.h"
 #endif
 
@@ -332,7 +331,7 @@ void Game::Run()
 
       // draw the screen
       m_currentScreen->Draw();
-      m_renderer.SwapBuffers();
+      m_renderWindow->SwapBuffers();
 
       renders++;
 
@@ -349,7 +348,7 @@ void Game::Run()
          snprintf(buffer, sizeof(buffer), "Underworld Adventures: %3.1f ticks/s, %3.1f frames/s",
             ticks*1000.0 / (now - fcstart), renders*1000.0 / (now - fcstart));
 
-         SDL_SetWindowTitle(m_window, buffer);
+         m_renderWindow->SetWindowTitle(buffer);
 
          // restart counting
          ticks = renders = 0;
@@ -414,33 +413,18 @@ void Game::InitSDL()
       throw Base::Exception(text.c_str());
    }
 
-   // setup video mode
-   int flags = m_settings.GetBool(Base::settingFullscreen) ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0;
-
-   m_window = SDL_CreateWindow(
-      "Underworld Adventures",
-      SDL_WINDOWPOS_UNDEFINED,
-      SDL_WINDOWPOS_UNDEFINED,
+   m_renderWindow = std::make_unique<RenderWindow>(
       m_width, m_height,
-      flags | SDL_WINDOW_OPENGL);
+      "Underworld Adventures",
+      m_settings.GetBool(Base::settingFullscreen));
 
-   if (m_window == NULL)
-   {
-      std::string text("video mode set failed: ");
-      text.append(SDL_GetError());
-      throw Base::Exception(text.c_str());
-   }
-
-   SetWindowIcon();
-
-   m_context = SDL_GL_CreateContext(m_window);
+#ifdef WIN32
+   m_renderWindow->SetWindowIcon(IDI_ICON);
+#endif
 
    UaTrace("\n");
 
    Renderer::PrintOpenGLDiagnostics();
-
-   // setup OpenGL viewport
-   glViewport(0, 0, m_width, m_height);
 }
 
 void Game::ProcessEvents()
@@ -529,7 +513,7 @@ void Game::InitGame()
    m_imageManager = std::make_unique<ImageManager>(GetResourceManager());
    m_imageManager->Init();
 
-   m_renderer.Init(*this, m_window);
+   m_renderer.Init(*this, m_renderWindow.get());
 
    m_gameLogic = std::make_unique<Underworld::GameLogic>(m_scripting);
 
@@ -692,38 +676,10 @@ void Game::GetSurroundingTriangles(unsigned int xpos,
    }
 }
 
-void Game::SetWindowIcon() const
-{
-#ifdef WIN32
-   HINSTANCE inst = (HINSTANCE)GetModuleHandle(NULL);
-
-   HICON icon = ::LoadIcon(inst, MAKEINTRESOURCE(IDI_ICON));
-   HICON icon_small = (HICON)::LoadImage(inst,
-      MAKEINTRESOURCE(IDI_ICON), IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR);
-
-   SDL_SysWMinfo wminfo;
-   SDL_VERSION(&wminfo.version);
-
-   if (SDL_GetWindowWMInfo(m_window, &wminfo) == 1)
-   {
-      HWND hwnd = wminfo.info.win.window;
-      ::SendMessage(hwnd, WM_SETICON, ICON_BIG, (LPARAM)icon);
-      ::SendMessage(hwnd, WM_SETICON, ICON_SMALL, (LPARAM)icon_small);
-   }
-#endif
-}
-
 void Game::ToggleFullscreen()
 {
    bool isFullscreen = !m_settings.GetBool(Base::settingFullscreen);
    m_settings.SetValue(Base::settingFullscreen, isFullscreen);
 
-   SDL_SetWindowFullscreen(m_window, isFullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
-
-   int width, height;
-   SDL_GetWindowSize(m_window, &width, &height);
-   m_width = width;
-   m_height = height;
-
-   glViewport(0, 0, m_width, m_height);
+   m_renderWindow->SetFullscreen(isFullscreen);
 }

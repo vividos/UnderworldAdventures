@@ -22,6 +22,7 @@
 #include "pch.hpp"
 #include "Renderer.hpp"
 #include "RendererImpl.hpp"
+#include "RenderWindow.hpp"
 #include "Critter.hpp"
 #include "Model3D.hpp"
 #include "Underworld.hpp"
@@ -47,7 +48,7 @@ Renderer::~Renderer()
 /// Initializes the renderer, the texture manager, critter frames manager and
 /// OpenGL flags common to 2d and 3d rendering.
 /// \param game game interface
-void Renderer::Init(IGame& game, SDL_Window* window)
+void Renderer::Init(IGame& game, RenderWindow* window)
 {
    m_window = window;
 
@@ -136,7 +137,7 @@ void Renderer::Clear()
 {
    glClearColor(0, 0, 0, 0);
    glClear(GL_COLOR_BUFFER_BIT);
-   SDL_GL_SwapWindow(m_window);
+   m_window->SwapBuffers();
 }
 
 TextureManager& Renderer::GetTextureManager()
@@ -165,7 +166,7 @@ void Renderer::SetViewport3D(unsigned int xpos, unsigned int ypos,
    unsigned int width, unsigned int height)
 {
    int windowWidth = 0, windowHeight = 0;
-   SDL_GetWindowSize(m_window, &windowWidth, &windowHeight);
+   m_window->GetWindowSize(windowWidth, windowHeight);
 
    // calculate viewport for given window
    xpos = unsigned((windowWidth / 320.0) * double(xpos));
@@ -186,7 +187,7 @@ void Renderer::SetupCamera2D()
 {
    // set viewport
    int windowWidth = 0, windowHeight = 0;
-   SDL_GetWindowSize(m_window, &windowWidth, &windowHeight);
+   m_window->GetWindowSize(windowWidth, windowHeight);
    glViewport(0, 0, windowWidth, windowHeight);
 
    // setup orthogonal projection
@@ -294,7 +295,7 @@ void Renderer::SelectPick(const Underworld::Underworld& underworld, unsigned int
       glLoadIdentity();
 
       int windowWidth = 0, windowHeight = 0;
-      SDL_GetWindowSize(m_window, &windowWidth, &windowHeight);
+      m_window->GetWindowSize(windowWidth, windowHeight);
 
       gluPickMatrix(xpos, windowHeight - ypos, 5.0, 5.0, m_viewport);
 
@@ -357,12 +358,6 @@ void Renderer::SelectPick(const Underworld::Underworld& underworld, unsigned int
       isObject = renderId < 0x0400;
       id = renderId - (isObject ? 0 : 0x0400);
    }
-}
-
-/// Swaps OpenGL screen buffers
-void Renderer::SwapBuffers()
-{
-   SDL_GL_SwapWindow(m_window);
 }
 
 /// Prepares renderer for new level.

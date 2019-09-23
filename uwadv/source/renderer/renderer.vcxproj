@@ -77,6 +77,7 @@
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RendererImpl.cpp" />
     <ClCompile Include="PolygonTessellator.cpp" />
+    <ClCompile Include="RenderWindow.cpp" />
     <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -88,6 +89,7 @@
     <ClInclude Include="Renderer.hpp" />
     <ClInclude Include="RendererImpl.hpp" />
     <ClInclude Include="PolygonTessellator.hpp" />
+    <ClInclude Include="RenderWindow.hpp" />
     <ClInclude Include="Texture.hpp" />
   </ItemGroup>
   <ItemGroup>

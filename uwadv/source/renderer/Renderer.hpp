@@ -33,10 +33,10 @@ namespace Underworld
    class Object;
 }
 
+class RenderWindow;
 class RendererImpl;
 class CritterFramesManager;
 class Model3DManager;
-struct SDL_Window;
 
 /// underworld renderer
 class Renderer
@@ -48,7 +48,7 @@ public:
    ~Renderer();
 
    /// initializes renderer
-   void Init(IGame& game, SDL_Window* window);
+   void Init(IGame& game, RenderWindow* window);
 
    /// output some OpenGL diagnostics
    static void PrintOpenGLDiagnostics();
@@ -88,9 +88,6 @@ public:
       unsigned int& tileX, unsigned int& tileY,
       bool& isObject, unsigned int& id);
 
-   /// swaps screen buffers
-   void SwapBuffers();
-
    /// prepares renderer for given level (e.g. when changing levels)
    void PrepareLevel(Underworld::Level& level);
 
@@ -104,7 +101,7 @@ public:
 
 protected:
    /// window
-   SDL_Window* m_window;
+   RenderWindow* m_window;
 
    /// renderer implementation
    RendererImpl* m_rendererImpl;

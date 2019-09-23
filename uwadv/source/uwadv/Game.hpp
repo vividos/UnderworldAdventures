@@ -27,6 +27,7 @@
 #include "ui/Screen.hpp"
 #include "audio/Audio.hpp"
 #include "ui/IndexedImage.hpp"
+#include "renderer/RenderWindow.hpp"
 #include "renderer/Renderer.hpp"
 #include "script/IScripting.hpp"
 #include "underw/GameLogic.hpp"
@@ -157,9 +158,6 @@ protected:
    /// deletes current screen and pops off last screen from m_screenStack
    void PopScreen();
 
-   /// sets window icon
-   void SetWindowIcon() const;
-
    /// toggles fullscreen and windowed mode
    void ToggleFullscreen();
 
@@ -170,9 +168,8 @@ protected:
    /// resource files manager
    std::unique_ptr<Base::ResourceManager> m_resourceManager;
 
-   SDL_Window* m_window;
-
-   SDL_GLContext m_context;
+   /// render window
+   std::unique_ptr<RenderWindow> m_renderWindow;
 
    /// screen width
    unsigned int m_width;
