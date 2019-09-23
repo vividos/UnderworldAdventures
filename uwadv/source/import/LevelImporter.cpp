@@ -132,6 +132,10 @@ void Import::LevelImporter::LoadObjectList(Underworld::ObjectList& objectList,
          Uint16 link = tileStartLinkList.GetLinkStart(xpos, ypos);
 
          if (link != 0)
+         {
             loader.FollowLink(link, xpos, ypos);
+
+            objectList.SetListStart(link, xpos, ypos);
+         }
       }
 }

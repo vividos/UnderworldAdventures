@@ -32,6 +32,11 @@ namespace Base
    class Savegame;
 }
 
+namespace Import
+{
+   class LevelImporter;
+}
+
 namespace Underworld
 {
    /// object position for "no position"
@@ -89,6 +94,8 @@ namespace Underworld
       void Compact();
 
    private:
+      friend Import::LevelImporter;
+
       /// sets object list start for tile on given coordinates
       void SetListStart(Uint16 objectPos, Uint8 xpos, Uint8 ypos);
 
