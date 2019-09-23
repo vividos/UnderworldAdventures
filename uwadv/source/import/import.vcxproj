@@ -94,6 +94,7 @@
     <ClInclude Include="CrittersLoader.hpp" />
     <ClInclude Include="GameStringsImporter.hpp" />
     <ClInclude Include="LevelImporter.hpp" />
+    <ClInclude Include="ObjectListLoader.hpp" />
     <ClInclude Include="pch.hpp" />
     <ClInclude Include="PlayerImporter.hpp" />
     <ClInclude Include="TextureLoader.hpp" />

@@ -97,5 +97,8 @@
     <ClInclude Include="pch.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ObjectListLoader.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

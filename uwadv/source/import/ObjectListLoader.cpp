@@ -20,63 +20,14 @@
 /// \brief objects list loader
 //
 #include "pch.hpp"
+#include "ObjectListLoader.hpp"
 #include "LevelImporter.hpp"
 #include "ObjectList.hpp"
 #include "Constants.hpp"
 
 using Import::GetBits;
 
-namespace Detail
-{
-   /// loads object list
-   class ObjectListLoader
-   {
-   public:
-      /// ctor
-      ObjectListLoader(Underworld::ObjectList& objectList,
-         std::vector<Uint16>& objectWordsList,
-         std::vector<Uint8>& npcInfosList,
-         std::vector<Uint16>& textureMapping)
-         :m_objectList(objectList),
-         m_objectWordsList(objectWordsList),
-         m_npcInfosList(npcInfosList),
-         m_textureMapping(textureMapping)
-      {}
-
-      /// follows link and adds all objects it finds (may get called recursively)
-      void FollowLink(Uint16 link, Uint8 xpos, Uint8 ypos);
-
-      /// adds object to object list
-      Underworld::ObjectPtr AddObject(Uint16 uiPos, Uint8 xpos, Uint8 ypos,
-         Uint16 uiObjectWord[4], Uint8* npcInfos);
-
-      /// adds NPC infos to object
-      void AddNpcInfos(Underworld::ObjectPtr& obj, Uint8* npcInfos);
-
-   private:
-      /// deleted copy ctor
-      ObjectListLoader(const ObjectListLoader&) = delete;
-
-      /// deleted assignment operator
-      ObjectListLoader& operator=(const ObjectListLoader&) = delete;
-
-   private:
-      /// object list
-      Underworld::ObjectList& m_objectList;
-
-      /// object list words (4x Uint16 for each slot)
-      std::vector<Uint16>& m_objectWordsList;
-
-      /// NPC info bytes (19x Uint8 for each NPC)
-      std::vector<Uint8>& m_npcInfosList;
-
-      /// texture mapping
-      std::vector<Uint16>& m_textureMapping;
-   };
-
-} // namespace Detail
-
-using Detail::ObjectListLoader;
+using Import::ObjectListLoader;
 
 void ObjectListLoader::FollowLink(Uint16 link, Uint8 xpos, Uint8 ypos)
 {
@@ -225,42 +176,4 @@ void ObjectListLoader::AddNpcInfos(Underworld::ObjectPtr& obj, Uint8* npcInfos)
    npcInfo.m_npc_yhome = static_cast<Uint8>(GetBits(value0E, 4, 6));
 
    npcInfo.m_npc_whoami = npcInfos[0x0012];
-}
-
-void Import::LevelImporter::LoadObjectList(Underworld::ObjectList& objectList,
-   const TileStartLinkList& tileStartLinkList, std::vector<Uint16>& textureMapping)
-{
-   objectList.Destroy();
-   objectList.Create();
-
-   // read in master object list
-   std::vector<Uint16> objectWordsList;
-   objectWordsList.reserve(0x0400 * 4);
-
-   std::vector<Uint8> npcInfosList;
-   npcInfosList.resize(0x0100 * 19);
-
-   for (Uint16 itemIndex = 0; itemIndex < 0x400; itemIndex++)
-   {
-      objectWordsList.push_back(m_file.Read16());
-      objectWordsList.push_back(m_file.Read16());
-      objectWordsList.push_back(m_file.Read16());
-      objectWordsList.push_back(m_file.Read16());
-
-      // read NPC info bytes
-      if (itemIndex < 0x100)
-         m_file.ReadBuffer(&npcInfosList[itemIndex * 19], 19);
-   }
-
-   Detail::ObjectListLoader loader(objectList, objectWordsList, npcInfosList, textureMapping);
-
-   // follow each reference in all tiles
-   for (Uint8 ypos = 0; ypos < 64; ypos++)
-      for (Uint8 xpos = 0; xpos < 64; xpos++)
-      {
-         Uint16 link = tileStartLinkList.GetLinkStart(xpos, ypos);
-
-         if (link != 0)
-            loader.FollowLink(link, xpos, ypos);
-      }
 }

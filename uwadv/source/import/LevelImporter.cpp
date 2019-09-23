@@ -25,6 +25,7 @@
 #include "Level.hpp"
 #include "ResourceManager.hpp"
 #include "ArchiveFile.hpp"
+#include "ObjectListLoader.hpp"
 
 using Import::LevelImporter;
 
@@ -95,4 +96,42 @@ void LevelImporter::LoadUwLevels(Underworld::LevelList& levelList, bool uw2Mode,
       // load object list
       LoadObjectList(level.GetObjectList(), tileStartLinkList, textureMapping);
    }
+}
+
+void Import::LevelImporter::LoadObjectList(Underworld::ObjectList& objectList,
+   const TileStartLinkList& tileStartLinkList, std::vector<Uint16>& textureMapping)
+{
+   objectList.Destroy();
+   objectList.Create();
+
+   // read in master object list
+   std::vector<Uint16> objectWordsList;
+   objectWordsList.reserve(0x0400 * 4);
+
+   std::vector<Uint8> npcInfosList;
+   npcInfosList.resize(0x0100 * 19);
+
+   for (Uint16 itemIndex = 0; itemIndex < 0x400; itemIndex++)
+   {
+      objectWordsList.push_back(m_file.Read16());
+      objectWordsList.push_back(m_file.Read16());
+      objectWordsList.push_back(m_file.Read16());
+      objectWordsList.push_back(m_file.Read16());
+
+      // read NPC info bytes
+      if (itemIndex < 0x100)
+         m_file.ReadBuffer(&npcInfosList[itemIndex * 19], 19);
+   }
+
+   ObjectListLoader loader(objectList, objectWordsList, npcInfosList, textureMapping);
+
+   // follow each reference in all tiles
+   for (Uint8 ypos = 0; ypos < 64; ypos++)
+      for (Uint8 xpos = 0; xpos < 64; xpos++)
+      {
+         Uint16 link = tileStartLinkList.GetLinkStart(xpos, ypos);
+
+         if (link != 0)
+            loader.FollowLink(link, xpos, ypos);
+      }
 }
