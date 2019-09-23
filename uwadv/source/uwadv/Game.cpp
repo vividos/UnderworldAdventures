@@ -36,10 +36,6 @@
 #include "win32/resource.h"
 #endif
 
-#ifdef HAVE_DEBUG
-#define HAVE_FRAMECOUNT
-#endif
-
 /// command line argument type
 enum ArgumentType
 {
@@ -65,8 +61,12 @@ ArgumentEntry s_ArgumentParams[] =
 };
 
 Game::Game()
-   :m_tickRate(20),
-   m_exitGame(false),
+#ifdef HAVE_DEBUG
+   :MainGameLoop("Underworld Adventures", true),
+#else
+   :MainGameLoop("Underworld Adventures", false),
+#endif
+   m_tickRate(20),
    m_screenToDestroy(NULL),
    m_scripting(NULL),
    m_isPaused(false)
@@ -278,92 +278,40 @@ void Game::Run()
    }
 
 
-   UaTrace("\nmain loop started\n");
+   UaTrace("\n");
 
-   Uint32 now, then;
-   Uint32 fcstart;
-   fcstart = then = SDL_GetTicks();
+   MainGameLoop::RunGameLoop(m_tickRate);
+}
 
-   unsigned int ticks = 0, renders = 0;
+void Game::UpdateCaption(const char* windowTitle)
+{
+   m_renderWindow->SetWindowTitle(windowTitle);
+}
 
-   m_exitGame = false;
+void Game::OnTick(bool& resetTickTimer)
+{
+   // do game logic
+   m_currentScreen->Tick();
 
-   // main game loop
-   while (!m_exitGame)
+   // check if there is a screen to destroy
+   if (m_screenToDestroy != nullptr)
    {
-      now = SDL_GetTicks();
+      m_screenToDestroy->Destroy();
+      delete m_screenToDestroy;
+      m_screenToDestroy = nullptr;
 
-      while ((now - then) > (1000.0 / m_tickRate))
-      {
-         then += Uint32(1000.0 / m_tickRate);
-
-         ticks++;
-
-         // do game logic
-         m_currentScreen->Tick();
-
-         // check if there is a screen to destroy
-         if (m_screenToDestroy != NULL)
-         {
-            m_screenToDestroy->Destroy();
-            delete m_screenToDestroy;
-            m_screenToDestroy = NULL;
-
-            m_resetTickTimer = true;
-            break;
-         }
-      }
-
-      // do server side debug processing
-      m_debugServer.Tick();
-
-      // process incoming events
-      ProcessEvents();
-
-      if (m_exitGame) break;
-
-      // reset timer when needed
-      if (m_resetTickTimer)
-      {
-         then = now = SDL_GetTicks();
-         m_resetTickTimer = false;
-      }
-
-      // draw the screen
-      m_currentScreen->Draw();
-      m_renderWindow->SwapBuffers();
-
-      renders++;
-
-      if ((now - then) > (1000.0 / m_tickRate))
-         then = now - Uint32(1000.0 / m_tickRate);
-
-#ifdef HAVE_FRAMECOUNT
-      now = SDL_GetTicks();
-
-      if (now - fcstart > 2000)
-      {
-         // set new caption
-         char buffer[256];
-         snprintf(buffer, sizeof(buffer), "Underworld Adventures: %3.1f ticks/s, %3.1f frames/s",
-            ticks*1000.0 / (now - fcstart), renders*1000.0 / (now - fcstart));
-
-         m_renderWindow->SetWindowTitle(buffer);
-
-         // restart counting
-         ticks = renders = 0;
-         fcstart = now;
-#ifdef HAVE_DEBUG
-         // reset time count when rendering lasted longer than 5 seconds
-         // it's likely that we just debugged through some code
-         if (now - then > 5000)
-            then = now;
-#endif
-      }
-#endif
+      resetTickTimer = true;
    }
 
-   UaTrace("main loop ended\n\n");
+   // do server side debug processing
+   m_debugServer.Tick();
+}
+
+void Game::OnRender()
+{
+   // draw the screen
+   m_currentScreen->Draw();
+   m_renderWindow->SwapBuffers();
 }
 
 void Game::Done()
@@ -427,48 +375,36 @@ void Game::InitSDL()
    Renderer::PrintOpenGLDiagnostics();
 }
 
-void Game::ProcessEvents()
+void Game::OnEvent(SDL_Event& event)
 {
-   SDL_Event event;
+   // let the screen handle the event first
+   m_currentScreen->ProcessEvent(event);
 
-   while (SDL_PollEvent(&event))
+   switch (event.type)
    {
-      // let the screen handle the event first
-      m_currentScreen->ProcessEvent(event);
+   case SDL_KEYDOWN:
+      if (event.key.keysym.sym == SDLK_x &&
+         (event.key.keysym.mod & KMOD_ALT) != 0)
+         QuitLoop();
 
-      switch (event.type)
+      if (event.key.keysym.sym == SDLK_RETURN &&
+         (event.key.keysym.mod & KMOD_ALT) != 0)
+         ToggleFullscreen();
+      break;
+
+   case SDL_USEREVENT:
+      switch (event.user.code)
       {
-      case SDL_KEYDOWN:
-         if (event.key.keysym.sym == SDLK_x &&
-            (event.key.keysym.mod & KMOD_ALT) != 0)
-            m_exitGame = true;
-
-         if (event.key.keysym.sym == SDLK_RETURN &&
-            (event.key.keysym.mod & KMOD_ALT) != 0)
-            ToggleFullscreen();
-         break;
-
-      case SDL_QUIT:
-         m_exitGame = true;
-         break;
-
-      case SDL_USEREVENT:
-         switch (event.user.code)
-         {
-         case gameEventDestroyScreen:
-            PopScreen();
-            if (m_currentScreen == NULL)
-               return; // don't process events anymore
-            break;
-
-         default:
-            break;
-         }
+      case gameEventDestroyScreen:
+         PopScreen();
+         if (m_currentScreen == NULL)
+            return; // don't process events anymore
          break;
 
       default:
          break;
       }
+      break;
    }
 }
 
@@ -589,7 +525,7 @@ void Game::PopScreen()
    {
       // no more screens available
       m_currentScreen = NULL;
-      m_exitGame = true;
+      QuitLoop();
    }
 }
 

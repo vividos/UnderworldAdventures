@@ -32,12 +32,14 @@
 #include "script/IScripting.hpp"
 #include "underw/GameLogic.hpp"
 #include "GameInterface.hpp"
+#include "MainGameLoop.hpp"
 #include "DebugServer.hpp"
 #include "GameStrings.hpp"
 #include "physics/PhysicsModel.hpp"
 
 /// main game class
 class Game :
+   public MainGameLoop,
    public IGame,
    public IPhysicsModelCallback
 {
@@ -148,12 +150,23 @@ public:
    virtual void GetSurroundingTriangles(unsigned int xpos,
       unsigned int ypos, std::vector<Triangle3dTextured>& allTriangles) override;
 
-protected:
-   /// initializes SDL and creates a window
-   void InitSDL();
+   // MainGameLoop virtual methods
+
+   /// sets new window title
+   virtual void UpdateCaption(const char* windowTitle) override;
+
+   /// does tick processing
+   virtual void OnTick(bool& resetTickTimer) override;
+
+   /// renders the screen
+   virtual void OnRender() override;
 
    /// processes SDL events
-   void ProcessEvents();
+   virtual void OnEvent(SDL_Event& event) override;
+
+private:
+   /// initializes SDL and creates a window
+   void InitSDL();
 
    /// deletes current screen and pops off last screen from m_screenStack
    void PopScreen();
@@ -179,9 +192,6 @@ protected:
 
    /// controls how many ticks per second are done
    const unsigned int m_tickRate;
-
-   /// indicates if game can be exited
-   bool m_exitGame;
 
    /// indicates if the game is currently paused
    bool m_isPaused;
