@@ -101,6 +101,7 @@ void ImageDecodeRLE(Base::File& file, Uint8* pixels, unsigned int bits,
             stage = 6;
          }
          break;
+
       case 1:
          count = nibble;
          stage++;
@@ -122,7 +123,8 @@ void ImageDecodeRLE(Base::File& file, Uint8* pixels, unsigned int bits,
          break;
       }
 
-      if (stage < 6) continue;
+      if (stage < 6)
+         continue;
 
       switch (record)
       {
@@ -246,6 +248,7 @@ void ImageLoader::LoadPalettes(Palette256Ptr allPalettes[8])
 
       for (unsigned int color = 0; color < 256; color++)
       {
+         // palette is in RGB format, and uses only 6 lower bits
          palette.Set(static_cast<Uint8>(color), 0, file.Read8() << 2);
          palette.Set(static_cast<Uint8>(color), 1, file.Read8() << 2);
          palette.Set(static_cast<Uint8>(color), 2, file.Read8() << 2);
@@ -262,7 +265,7 @@ void ImageLoader::LoadAuxPalettes(Uint8 allAuxPalettes[32][16])
    if (!file.IsOpen())
       throw Base::Exception("could not open file allpals.dat");
 
-   // the standard guarantees that the [32][16] array is contiguous
+   // the C++ standard guarantees that the [32][16] array is contiguous
    Uint8* buffer = &allAuxPalettes[0][0];
    file.ReadBuffer(buffer, 32 * 16);
 }
@@ -398,7 +401,8 @@ void ImageLoader::LoadImageGrImpl(IndexedImage& img, Base::File& file,
       if (type == 0x08 || type == 0x0a)
          auxpal = file.Read8();
 
-      if (auxpal > 0x1f) auxpal = 0;
+      if (auxpal > 0x1f)
+         auxpal = 0;
 
       // read in data length
       datalen = file.Read16();
@@ -425,7 +429,7 @@ void ImageLoader::LoadImageGrImpl(IndexedImage& img, Base::File& file,
    break;
 
    case 0x08: // 4-bit rle compressed
-      ImageDecodeRLE(file, &img.GetPixels()[0], 4, datalen, width*height, auxPalettes[auxpal], 0, 0);
+      ImageDecodeRLE(file, &img.GetPixels()[0], 4, datalen, width * height, auxPalettes[auxpal], 0, 0);
       break;
 
    case 0x0a: // 4-bit uncompressed
@@ -439,7 +443,10 @@ void ImageLoader::LoadImageGrImpl(IndexedImage& img, Base::File& file,
       {
          rawbyte = file.Read8();
          pixels[pixcount++] = pal[rawbyte >> 4];
-         if (pixcount >= maxpix) break;
+
+         if (pixcount >= maxpix)
+            break;
+
          pixels[pixcount++] = pal[rawbyte & 0x0f];
          datalen--;
       }

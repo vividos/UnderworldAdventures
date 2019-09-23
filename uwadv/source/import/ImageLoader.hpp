@@ -54,7 +54,7 @@ namespace Import
       void LoadImageGr(IndexedImage& img, const char* imageName, unsigned int imageNumber,
          Uint8 allAuxPalettes[32][16]);
 
-      /// loads a list of image from a *.gr file
+      /// loads a list of images from a *.gr file
       void LoadImageGrList(std::vector<IndexedImage>& imageList,
          const char* imageName, unsigned int imageFrom, unsigned int imageTo,
          Uint8 allAuxPalettes[32][16]);

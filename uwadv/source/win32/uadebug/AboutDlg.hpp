@@ -27,6 +27,7 @@
 class AboutDlg : public CDialogImpl<AboutDlg>
 {
 public:
+   /// dialog id
    enum { IDD = IDD_ABOUTBOX };
 
    BEGIN_MSG_MAP(AboutDlg)

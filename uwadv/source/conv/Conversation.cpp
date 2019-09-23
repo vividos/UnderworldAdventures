@@ -45,6 +45,7 @@ void Conversation::Done()
    CodeVM::Done(m_gameLogic.GetUnderworld().GetPlayer().GetConvGlobals());
 }
 
+// The following functions are implemented:
 // *=implemented, x=assert
 //   babl_menu
 //   babl_fmenu

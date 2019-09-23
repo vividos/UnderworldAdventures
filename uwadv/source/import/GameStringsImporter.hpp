@@ -35,21 +35,27 @@ namespace Base
 
 namespace Import
 {
+   /// importer for game strings
    class GameStringsImporter
    {
    public:
+      /// ctor; takes gamestrings object to populate
       GameStringsImporter(GameStrings& gs)
          :m_gs(gs)
       {
       }
 
+      /// loads the default strings.pak file
       void LoadDefaultStringsPakFile(Base::ResourceManager& resourceManager);
 
+      /// loads strings.pak file from given filename
       void LoadStringsPakFile(const char* filename);
 
+      /// loads strings.pak file from RWops object
       void LoadStringsPakFile(Base::SDL_RWopsPtr rwops);
 
    private:
+      /// loads string block from open .pak file
       void LoadStringBlock(Uint16 blockId);
 
    private:
@@ -62,10 +68,13 @@ namespace Import
          int right;  ///< right node
       };
 
+      /// game strings object to populate
       GameStrings& m_gs;
 
+      /// .pak file
       Base::File m_pak;
 
+      /// file size of .pak file
       long m_fileSize;
 
       /// a map of all blocks and their offsets available in the file

@@ -73,7 +73,7 @@ namespace Conv
       /// formats opcode (item must have type typeOpcode)
       std::string FormatOpcode() const;
 
-      /// data for the typeOpcode itemtype
+      /// data for the typeOpcode graph item
       struct OpcodeData
       {
          /// ctor
@@ -114,7 +114,7 @@ namespace Conv
          int indent_change_after;
       };
 
-      /// data for the typeOperator itemtype
+      /// data for the typeOperator graph item
       struct OperatorData
       {
          /// ctor

@@ -40,6 +40,7 @@ public:
    /// set value
    void Set(Uint8 index, Uint8 component, Uint8 value)
    {
+      UaAssert(component < 4);
       m_palette[index][component] = value;
    }
 

@@ -29,6 +29,7 @@ namespace Detail
 {
    /// \brief Data decoding for uw2 compression format
    /// See uw-formats.txt for a detailed description how the data is compressed.
+   /// The code was adapted from the LoW project: http://low.sourceforge.net/
    Uint32 Uw2DecodeData(const std::vector<Uint8>& sourceData, Uint8* destBuffer, Uint32 destSize)
    {
       Uint32 destCount = 0;
@@ -117,13 +118,11 @@ namespace Detail
       return 0;
    }
 
-} // namespace Detailed
+} // namespace Detail
 
 /// Reads in compressed blocks from uw2 .ark files and creates a file with
 /// decoded data. Note that the given file must already be at the proper block
 /// start position.
-///
-/// The code was adapted from the LoW project: http://low.sourceforge.net/
 ///
 /// \param file file in .ark format, at the block start position
 /// \param isCompressed indicates if block is actually compressed
