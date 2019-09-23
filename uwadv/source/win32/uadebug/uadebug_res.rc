@@ -16,10 +16,8 @@
 // German (Germany) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
-#ifdef _WIN32
 LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -42,18 +40,17 @@ END
 //
 
 IDB_TREE_PROJECT        BITMAP                  "res\\tree_project.bmp"
+
 #endif    // German (Germany) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -81,18 +78,24 @@ END
 //
 
 IDR_MAINFRAME           BITMAP                  "res\\tb_mainframe.bmp"
+
 IDR_LUA_SOURCE_FRAME    BITMAP                  "res\\tb_lua_source.bmp"
+
 IDR_GAME_STRINGS        BITMAP                  "res\\tb_game_strings.bmp"
+
 IDR_TILEMAP_VIEW        BITMAP                  "res\\tb_tilemap.bmp"
+
 IDR_TOOLBAR_DEBUG       BITMAP                  "res\\tb_debug.bmp"
+
 IDR_TOOLBAR_STANDARD    BITMAP                  "res\\tb_standard.bmp"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Toolbar
 //
 
-IDR_MAINFRAME TOOLBAR  16, 15
+IDR_MAINFRAME TOOLBAR 16, 15
 BEGIN
     BUTTON      ID_GAME_NEW
     SEPARATOR
@@ -112,7 +115,7 @@ BEGIN
     BUTTON      ID_WINDOW_TILE_VERT
 END
 
-IDR_LUA_SOURCE_FRAME TOOLBAR  16, 15
+IDR_LUA_SOURCE_FRAME TOOLBAR 16, 15
 BEGIN
     BUTTON      ID_GAME_NEW
     SEPARATOR
@@ -136,7 +139,7 @@ BEGIN
     BUTTON      ID_WINDOW_TILE_VERT
 END
 
-IDR_GAME_STRINGS TOOLBAR  16, 15
+IDR_GAME_STRINGS TOOLBAR 16, 15
 BEGIN
     BUTTON      ID_GAME_NEW
     SEPARATOR
@@ -157,7 +160,7 @@ BEGIN
     BUTTON      ID_BUTTON32820
 END
 
-IDR_TILEMAP_VIEW TOOLBAR  16, 15
+IDR_TILEMAP_VIEW TOOLBAR 16, 15
 BEGIN
     BUTTON      ID_GAME_NEW
     SEPARATOR
@@ -176,7 +179,7 @@ BEGIN
     BUTTON      ID_WINDOW_TILE_VERT
 END
 
-IDR_TOOLBAR_DEBUG TOOLBAR  16, 15
+IDR_TOOLBAR_DEBUG TOOLBAR 16, 15
 BEGIN
     BUTTON      ID_DEBUG_RUN
     BUTTON      ID_DEBUG_STEP_INTO
@@ -186,7 +189,7 @@ BEGIN
     BUTTON      ID_VIEW_OUTPUT
 END
 
-IDR_TOOLBAR_STANDARD TOOLBAR  16, 15
+IDR_TOOLBAR_STANDARD TOOLBAR 16, 15
 BEGIN
     BUTTON      ID_UNDERWORLD_RUN
     BUTTON      ID_UNDERWORLD_PAUSE
@@ -206,7 +209,7 @@ END
 // Menu
 //
 
-IDR_MAINFRAME MENU 
+IDR_MAINFRAME MENU
 BEGIN
     POPUP "&File"
     BEGIN
@@ -238,7 +241,7 @@ BEGIN
     END
 END
 
-IDR_LUA_SOURCE_FRAME MENU 
+IDR_LUA_SOURCE_FRAME MENU
 BEGIN
     POPUP "&File"
     BEGIN
@@ -290,7 +293,7 @@ BEGIN
     END
 END
 
-IDR_TILEMAP_VIEW MENU 
+IDR_TILEMAP_VIEW MENU
 BEGIN
     POPUP "&File"
     BEGIN
@@ -317,7 +320,6 @@ BEGIN
     POPUP "Tilemap"
     BEGIN
         MENUITEM "Beam to current location",    ID_TILEMAP_BEAMTOCURRENTLOCATION
-
     END
     POPUP "&View"
     BEGIN
@@ -352,9 +354,13 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\Sanct.ico"
+
 IDR_LUA_SOURCE_FRAME    ICON                    "res\\Lua.ico"
+
 IDR_GAME_STRINGS        ICON                    "res\\game_strings.ico"
+
 IDR_TILEMAP_VIEW        ICON                    "res\\tilemap_view.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -367,8 +373,7 @@ CAPTION "About Underworld Adventures Debugger"
 FONT 8, "Tahoma", 0, 0, 0x0
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,130,81,50,14
-    CTEXT           "Underworld Adventures Debugger\n\nCopyright (C) 2004, 2005 Michael Fink",
-                    IDC_STATIC,26,43,78,46
+    CTEXT           "Underworld Adventures Debugger\n\nCopyright (C) 2004, 2005 Michael Fink",IDC_STATIC,26,43,78,46
     ICON            IDR_MAINFRAME,IDC_STATIC,55,19,20,20
     GROUPBOX        "",IDC_STATIC,7,7,115,88
 END
@@ -378,16 +383,11 @@ STYLE DS_SETFONT | WS_CHILD | WS_VISIBLE
 EXSTYLE WS_EX_CLIENTEDGE
 FONT 8, "Tahoma", 0, 0, 0x1
 BEGIN
-    EDITTEXT        IDC_EDIT_TILEPOS,7,7,55,12,ES_AUTOHSCROLL | ES_READONLY | 
-                    NOT WS_BORDER
+    EDITTEXT        IDC_EDIT_TILEPOS,7,7,55,12,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
     PUSHBUTTON      "Beam!",IDC_BUTTON_BEAM,87,7,50,14
-    CONTROL         "List1",IDC_LIST_TILE_PROPERTIES,"SysListView32",
-                    LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | 
-                    LVS_NOCOLUMNHEADER | WS_BORDER | WS_TABSTOP,7,26,130,89
+    CONTROL         "List1",IDC_LIST_TILE_PROPERTIES,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_NOCOLUMNHEADER | WS_BORDER | WS_TABSTOP,7,26,130,89
     LTEXT           "Objects:",IDC_STATIC,7,121,28,8
-    CONTROL         "List1",IDC_LIST_OBJECTS,"SysListView32",LVS_REPORT | 
-                    LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_NOCOLUMNHEADER | 
-                    WS_BORDER | WS_TABSTOP,7,132,130,116
+    CONTROL         "List1",IDC_LIST_OBJECTS,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_NOCOLUMNHEADER | WS_BORDER | WS_TABSTOP,7,132,130,116
 END
 
 IDD_GAMESTRINGS DIALOGEX 0, 0, 433, 295
@@ -395,12 +395,9 @@ STYLE DS_SETFONT | WS_CHILD | WS_VISIBLE
 EXSTYLE WS_EX_CLIENTEDGE
 FONT 8, "Tahoma", 0, 0, 0x1
 BEGIN
-    CONTROL         "List1",IDC_LIST_STRINGS,"SysListView32",LVS_REPORT | 
-                    LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_TABSTOP,7,26,
-                    419,262,WS_EX_STATICEDGE
+    CONTROL         "List1",IDC_LIST_STRINGS,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_TABSTOP,7,26,419,262,WS_EX_STATICEDGE
     LTEXT           "Text Block:",IDC_STATIC,7,11,37,8
-    COMBOBOX        IDC_COMBO_TEXTBLOCK,59,7,233,469,CBS_DROPDOWNLIST | 
-                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_TEXTBLOCK,59,7,233,469,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
 END
 
 
@@ -410,7 +407,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
@@ -445,7 +442,7 @@ END
 // Accelerator
 //
 
-IDR_MAINFRAME ACCELERATORS 
+IDR_MAINFRAME ACCELERATORS
 BEGIN
     "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
     VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
@@ -473,12 +470,13 @@ END
 
 IDC_CURSOR_TILEMAP      CURSOR                  "res\\cursor_tilemap.cur"
 
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // String Table
 //
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDR_MAINFRAME           "Underworld Adventures Debugger"
     IDR_LUA_SOURCE_FRAME    "Lua Source File"
@@ -486,7 +484,7 @@ BEGIN
     IDR_TILEMAP_VIEW        "Tilemap View"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_FILE_NEW             "Create a new document\nNew"
     ID_FILE_OPEN            "Open an existing document\nOpen"
@@ -499,19 +497,19 @@ BEGIN
     ID_FILE_PRINT_PREVIEW   "Display full pages\nPrint Preview"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_APP_ABOUT            "Display program information, version number and copyright\nAbout"
     ID_APP_EXIT             "Quit the application; prompts to save documents\nExit"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_NEXT_PANE            "Switch to the next window pane\nNext Pane"
     ID_PREV_PANE            "Switch back to the previous window pane\nPrevious Pane"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_WINDOW_NEW           "Open another window for the active document\nNew Window"
     ID_WINDOW_ARRANGE       "Arrange icons at the bottom of the window\nArrange Icons"
@@ -521,7 +519,7 @@ BEGIN
     ID_WINDOW_SPLIT         "Split the active window into panes\nSplit"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_EDIT_CLEAR           "Erase the selection\nErase"
     ID_EDIT_CLEAR_ALL       "Erase everything\nErase All"
@@ -536,13 +534,13 @@ BEGIN
     ID_EDIT_REDO            "Redo the previously undone action\nRedo"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_VIEW_TOOLBAR         "Show or hide the toolbar\nToggle ToolBar"
     ID_VIEW_STATUS_BAR      "Show or hide the status bar\nToggle StatusBar"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ATL_IDS_SCSIZE          "Change the window size"
     ATL_IDS_SCMOVE          "Change the window position"
@@ -553,24 +551,24 @@ BEGIN
     ATL_IDS_SCCLOSE         "Close the active window and prompts to save the documents"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ATL_IDS_SCRESTORE       "Restore the window to normal size"
     ATL_IDS_SCTASKLIST      "Activate Task List"
     ATL_IDS_MDICHILD        "Activate this window"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ATL_IDS_IDLEMESSAGE     "Ready"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ATL_IDS_MRU_FILE        "Open this document"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_VIEW_PLAYERINFO      "Show or hide Player Info window\nPlayer Info"
     ID_VIEW_HOTSPOT         "Show or hide list with all hotspots in the game\nHotspot List"
@@ -582,20 +580,20 @@ BEGIN
     ID_VIEW_TILEMAP         "Show tilemap view window\nTilemap View"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_VIEW_GAMESTRINGS     "Show a window with all game strings\nGame Strings"
     ID_VIEW_PROJECT         "Show or hide Project Info Window\nProject Info"
     ID_VIEW_TILEINFO        "Show or hide tile info window\nTile Info"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_FILE_SAVEALL         "Save all open documents\nSave All"
     ID_UNDERWORLD_PAUSE     "Pause Underworld\nPause"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_DEBUG_STEP_INTO      "Steps into functions\nStep Into"
     ID_DEBUG_STEP_OVER      "Steps over functions\nStep Over"
@@ -608,7 +606,7 @@ BEGIN
                             "Show or hide the standard toolbar\nToggle Standard ToolBar"
 END
 
-#endif    // English (U.S.) resources
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
