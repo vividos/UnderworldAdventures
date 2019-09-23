@@ -74,7 +74,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="GameStringsImporter.cpp" />
-    <ClCompile Include="LevellImporter.cpp" />
+    <ClCompile Include="LevelImporter.cpp" />
     <ClCompile Include="MapLoader.cpp" />
     <ClCompile Include="ModelDecoder.cpp" />
     <ClCompile Include="ObjectListLoader.cpp" />
