@@ -64,10 +64,6 @@ public:
    /// creates a new bitmap
    void Create(unsigned int width, unsigned int height);
 
-   /// copies a rectangular area to the given image
-//   void CopyRect(IndexedImage& to_img, unsigned int startx, unsigned int starty,
-//      unsigned int width, unsigned int height);
-
    /// pastes a rectangular area from given image
    void PasteRect(const IndexedImage& from_img, unsigned int fromx, unsigned int fromy,
       unsigned width, unsigned height, unsigned int destx, unsigned int desty,

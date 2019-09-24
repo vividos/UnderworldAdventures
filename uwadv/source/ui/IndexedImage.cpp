@@ -34,27 +34,6 @@ void IndexedImage::Create(unsigned int width, unsigned int height)
    m_pixels.resize(width*height);
 }
 
-/*
-// currently commented out; look if the function is used at all and remove it
-// when not
-void IndexedImage::CopyRect(IndexedImage &image, unsigned int startx, unsigned int starty,
-   unsigned int width, unsigned int height)
-{
-   image.Create(width,height,0,palette);
-
-   // get source and destination ptr
-   Uint8* src = &m_pixels[0]+starty*xres+startx;
-   Uint8* dest = &image.GetPixels()[0];
-
-   // copy line by line
-   for(unsigned int y=0; y<height; y++)
-   {
-      memcpy(dest,&src[y*xres],width);
-      dest += width;
-   }
-}
-*/
-
 /// when image to paste and image that is pasted is the same one, then
 /// non-transparent pastes are only successful when the source and target
 /// areas don't overlap
