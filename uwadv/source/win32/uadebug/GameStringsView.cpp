@@ -23,27 +23,21 @@
 #include "GameStringsView.hpp"
 #include "DebugClient.hpp"
 
-GameStringsView::~GameStringsView()
-{
-   m_listStrings.Detach();
-   m_comboBlocks.Detach();
-}
-
 LRESULT GameStringsView::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-   m_listStrings.Attach(GetDlgItem(IDC_LIST_STRINGS));
-   m_comboBlocks.Attach(GetDlgItem(IDC_COMBO_TEXTBLOCK));
+   DoDataExchange(DDX_LOAD);
+   DlgResize_Init(false, false);
 
    m_listStrings.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
 
    CRect rect;
    m_listStrings.GetClientRect(&rect);
 
-   int width = 60;
-   int width2 = rect.Width() - width - 2 - ::GetSystemMetrics(SM_CXVSCROLL);
+   int columnWidth = 65;
+   int columnWidth2 = rect.Width() - columnWidth - 2 - ::GetSystemMetrics(SM_CXVSCROLL);
 
-   m_listStrings.InsertColumn(0, _T("Nr."), LVCFMT_LEFT, width, 0);
-   m_listStrings.InsertColumn(1, _T("Text"), LVCFMT_LEFT, width2, 0);
+   m_listStrings.InsertColumn(0, _T("Nr."), LVCFMT_LEFT, columnWidth, 0);
+   m_listStrings.InsertColumn(1, _T("Text"), LVCFMT_LEFT, columnWidth2, 0);
 
    return 0;
 }
@@ -74,17 +68,15 @@ void GameStringsView::InitCombobox()
       default:
          if (blockNumber >= 0x0c00 && blockNumber < 0x0e00)
             blockName = _T("Cutscenes");
+         else if (blockNumber >= 0x0e00 && blockNumber < 0x0f00)
+         {
+            CString cszNpcName = debugClient.GetGameString(7, blockNumber - 0xe00 + 16);
+            blockName.Format(_T("Conversation [%s]"), cszNpcName.GetString());
+         }
+         else if (blockNumber >= 0x0f00 && blockNumber < 0x1000)
+            blockName = _T("Conversation (generic)");
          else
-            if (blockNumber >= 0x0e00 && blockNumber < 0x0f00)
-            {
-               CString cszNpcName = debugClient.GetGameString(7, blockNumber - 0xe00 + 16);
-               blockName.Format(_T("Conversation [%s]"), cszNpcName.GetString());
-            }
-            else
-               if (blockNumber >= 0x0f00 && blockNumber < 0x1000)
-                  blockName = _T("Conversation (generic)");
-               else
-                  blockName = _T("Unknown");
+            blockName = _T("Unknown");
          break;
       }
 
@@ -93,8 +85,8 @@ void GameStringsView::InitCombobox()
       blockNumText.Format(_T(" Block %04x (%d)"), blockNumber, blockNumber);
       blockName += blockNumText;
 
-      int item = m_comboBlocks.AddString(blockName);
-      m_comboBlocks.SetItemData(item, blockNumber);
+      int itemIndex = m_comboBlocks.AddString(blockName);
+      m_comboBlocks.SetItemData(itemIndex, blockNumber);
 
       ++index;
    }
@@ -102,16 +94,7 @@ void GameStringsView::InitCombobox()
    debugClient.Lock(false);
 
    m_comboBlocks.SetCurSel(0);
-   BOOL dummy = TRUE;
-   OnComboSelChange(0, 0, 0, dummy);
-}
-
-LRESULT GameStringsView::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
-{
-   CSize size = CSize(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-   m_listStrings.MoveWindow(0, 40, size.cx + 1, size.cy - 40, TRUE);
-
-   return 0;
+   UpdateStringsList(0);
 }
 
 LRESULT GameStringsView::OnComboSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -120,8 +103,15 @@ LRESULT GameStringsView::OnComboSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HW
    if (item == CB_ERR)
       return 0;
 
-   int blockNumber = m_comboBlocks.GetItemData(item);
+   unsigned int blockNumber = m_comboBlocks.GetItemData(item);
 
+   UpdateStringsList(blockNumber);
+
+   return 0;
+}
+
+void GameStringsView::UpdateStringsList(unsigned int blockNumber)
+{
    DebugClient& debugClient = m_mainFrame->GetDebugClientInterface();
    debugClient.Lock(true);
 
@@ -131,18 +121,16 @@ LRESULT GameStringsView::OnComboSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
    CString number, text;
    unsigned int max = debugClient.GetGameStringBlockSize(blockNumber);
-   for (unsigned int index = 0; index < max; index++)
+   for (unsigned int stringIndex = 0; stringIndex < max; stringIndex++)
    {
-      number.Format(_T("%04x (%u)"), index, index);
-      int item2 = m_listStrings.InsertItem(m_listStrings.GetItemCount(), number);
-      text = debugClient.GetGameString(blockNumber, index);
+      number.Format(_T("%04x (%u)"), stringIndex, stringIndex);
+      int itemIndex = m_listStrings.InsertItem(m_listStrings.GetItemCount(), number);
+      text = debugClient.GetGameString(blockNumber, stringIndex);
       text.Replace(_T("\n"), _T("\\n"));
-      m_listStrings.SetItemText(item2, 1, text);
+      m_listStrings.SetItemText(itemIndex, 1, text);
    }
 
    m_listStrings.SetRedraw(TRUE);
 
    debugClient.Lock(false);
-
-   return 0;
 }
