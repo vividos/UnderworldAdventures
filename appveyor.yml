@@ -4,7 +4,7 @@
 #
 # AppVeyor build configuration file
 #
-version: 0.10.{build}
+version: 0.10.0.{build}
 
 image: Visual Studio 2019
 
@@ -22,8 +22,8 @@ build:
   verbosity: minimal
 
 after_build:
-- cmd: cd uwadv\output\bin\Release && "c:\Program Files\7-Zip\7z.exe" a -r -x!pdb\ -x!hacking.exe -x!unittest.* -x!*.exp -x!*.lib ..\..\..\..\uwadv.zip *.*
+- cmd: cd uwadv\output\bin\Release && "c:\Program Files\7-Zip\7z.exe" a -r -x!pdb\ -x!hacking.exe -x!unittest.* -x!*.exp -x!*.lib ..\..\..\..\uwadv-%appveyor_build_version%.zip *.*
 
 artifacts:
-- path: uwadv.zip
+- path: uwadv-*.zip
   name: Underworld Adventures Zip Archive
