@@ -24,19 +24,19 @@
 #include "DebugClient.hpp"
 
 TileInfoForm::TileInfoForm()
-   :m_isInited(false)
 {
    m_tileX = m_tileY = unsigned(-1);
 }
 
 LRESULT TileInfoForm::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-   m_tileInfoList.SubclassWindow(GetDlgItem(IDC_LIST_TILE_PROPERTIES));
+   DoDataExchange(DDX_LOAD);
+   DlgResize_Init(false, false);
+
    m_tileInfoList.InsertColumn(0, _T("Property"), LVCFMT_LEFT, 90, -1);
    m_tileInfoList.InsertColumn(1, _T("Value"), LVCFMT_LEFT, 100, -1);
    m_tileInfoList.Init(/*TODO this*/);
 
-   m_objectList.SubclassWindow(GetDlgItem(IDC_LIST_OBJECTS));
    m_objectList.ModifyStyle(0, LVS_SHAREIMAGELISTS);
 
    m_objectList.InsertColumn(0, _T("Objects"), LVCFMT_LEFT, 190, -1);
@@ -45,7 +45,7 @@ LRESULT TileInfoForm::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
    m_objectList.SetImageList(m_mainFrame->GetObjectImageList(), LVSIL_NORMAL);
    m_objectList.SetImageList(m_mainFrame->GetObjectImageList(), LVSIL_SMALL);
 
-   SetDlgItemText(IDC_EDIT_TILEPOS, _T("Info"));
+   m_tilePos.SetWindowText(_T("Info"));
 
    return 0;
 }
@@ -68,12 +68,12 @@ LRESULT TileInfoForm::OnListItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bH
       (pNMListView->uOldState & LVIS_FOCUSED) == 0 &&
       (pNMListView->uNewState & LVIS_FOCUSED) != 0)
    {
-      unsigned int nItemPos = m_objectList.GetItemData(pNMListView->iItem);
+      unsigned int itemPos = m_objectList.GetItemData(pNMListView->iItem);
 
       // send notification that an object was clicked
       DebugWindowNotification notify;
       notify.m_notifyCode = notifyCodeSelectedObject;
-      notify.m_param1 = nItemPos;
+      notify.m_param1 = itemPos;
 
       m_mainFrame->SendNotification(notify, true, this);
    }
@@ -107,7 +107,7 @@ void TileInfoForm::UpdateTileInfo()
 
    CString text;
    text.Format(_T("x: %02x y: %02x"), m_tileX, m_tileY);
-   SetDlgItemText(IDC_EDIT_TILEPOS, text);
+   m_tilePos.SetWindowText(text);
 
    m_tileInfoList.SetRedraw(FALSE);
    m_tileInfoList.DeleteAllItems();
@@ -140,7 +140,7 @@ void TileInfoForm::UpdateTileInfo()
       case 6: value = debugClient.GetTileInfo(m_tileX, m_tileY, tiTextureCeil); break;
       }
 
-      int nItem = m_tileInfoList.InsertItem(m_tileInfoList.GetItemCount(), tileInfoNames[i]);
+      int itemIndex = m_tileInfoList.InsertItem(m_tileInfoList.GetItemCount(), tileInfoNames[i]);
 
       text.Format(_T("%u (%04x)"), value, value);
 
@@ -154,7 +154,7 @@ void TileInfoForm::UpdateTileInfo()
             text += debugClient.GetGameString(10, 512 - (value - 256));
       }
 
-      m_tileInfoList.SetItemText(nItem, 1, text);
+      m_tileInfoList.SetItemText(itemIndex, 1, text);
    }
 
    debugClient.Lock(false);
@@ -182,10 +182,10 @@ void TileInfoForm::UpdateObjectInfo()
    {
       unsigned int itemId = objectInfo.GetItemId(pos);
 
-      CString cszItemName(debugClient.GetGameString(4, itemId));
+      CString itemName(debugClient.GetGameString(4, itemId));
 
-      int nItem = m_objectList.InsertItem(m_objectList.GetItemCount(), cszItemName, itemId);
-      m_objectList.SetItemData(nItem, pos);
+      int itemIndex = m_objectList.InsertItem(m_objectList.GetItemCount(), itemName, itemId);
+      m_objectList.SetItemData(itemIndex, pos);
 
       pos = objectInfo.GetItemNext(pos);
    }
@@ -201,11 +201,12 @@ LRESULT TileInfoWindow::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, 
 {
    if (wParam != SIZE_MINIMIZED)
    {
-      // reposition tree control
+      // reposition form control
       RECT rc;
       GetClientRect(&rc);
       m_form.SetWindowPos(NULL, &rc, SWP_NOZORDER | SWP_NOACTIVATE);
    }
+
    bHandled = FALSE;
    return 1;
 }

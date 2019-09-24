@@ -28,61 +28,89 @@
 /// form with tile infos
 class TileInfoForm :
    public CDialogImpl<TileInfoForm>,
+   public CDialogResize<TileInfoForm>,
+   public CWinDataExchange<TileInfoForm>,
    public DebugWindowBase
 {
 public:
+   /// ctor
    TileInfoForm();
+   /// dtor
    virtual ~TileInfoForm() {}
 
-   // dialog form id // TODO change id
+   /// dialog form ID
    enum { IDD = IDD_TILE_INFO };
 
+   /// called to translate dialog messages
    BOOL PreTranslateMessage(MSG* msg)
    {
       return IsDialogMessage(msg);
    }
 
-   BEGIN_MSG_MAP(CTileMapViewWindow)
+private:
+   BEGIN_MSG_MAP(TileInfoForm)
       MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
       COMMAND_HANDLER(IDC_BUTTON_BEAM, BN_CLICKED, OnButtonBeam)
       NOTIFY_HANDLER(IDC_LIST_OBJECTS, LVN_ITEMCHANGED, OnListItemChanged)
+      CHAIN_MSG_MAP(CDialogResize<TileInfoForm>)
       REFLECT_NOTIFICATIONS()
    END_MSG_MAP()
 
-protected:
+   BEGIN_DLGRESIZE_MAP(TileInfoForm)
+      DLGRESIZE_CONTROL(IDC_EDIT_TILEPOS, DLSZ_SIZE_X)
+      DLGRESIZE_CONTROL(IDC_BUTTON_BEAM, DLSZ_MOVE_X)
+      DLGRESIZE_CONTROL(IDC_LIST_TILE_PROPERTIES, DLSZ_SIZE_X)
+      DLGRESIZE_CONTROL(IDC_LIST_OBJECTS, DLSZ_SIZE_X | DLSZ_SIZE_Y)
+   END_DLGRESIZE_MAP()
+
+   BEGIN_DDX_MAP(TileInfoForm)
+      DDX_CONTROL_HANDLE(IDC_EDIT_TILEPOS, m_tilePos)
+      DDX_CONTROL(IDC_LIST_TILE_PROPERTIES, m_tileInfoList)
+      DDX_CONTROL(IDC_LIST_OBJECTS, m_objectList)
+   END_DDX_MAP()
+
+   /// called to init dialog
    LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+
+   /// called when the user clicked on the "Beam" button
    LRESULT OnButtonBeam(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+
+   /// called when selected object list item has changed
    LRESULT OnListItemChanged(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 
    // virtual methods from DebugWindowBase
 
+   /// receives debug window notifications
    virtual void ReceiveNotification(DebugWindowNotification& notify) override;
 
-   void UpdateData();
-
+   /// updates tile info
    void UpdateTileInfo();
+
+   /// updates object info
    void UpdateObjectInfo();
 
-protected:
-   EditListViewCtrl m_tileInfoList;
-   EditListViewCtrl m_objectList;
+private:
+   CEdit m_tilePos;  ///< current tile position text
+   EditListViewCtrl m_tileInfoList; ///< tile info list
+   EditListViewCtrl m_objectList;   ///< object list for current tile
 
-   bool m_isInited;
-
-   unsigned int m_tileX, m_tileY;
+   unsigned int m_tileX;   ///< current tile X position
+   unsigned int m_tileY;   ///< current tile Y position
 };
 
-
-/// player info docking window
+/// tile info docking window
 class TileInfoWindow : public DockingWindowBase
 {
    typedef TileInfoWindow thisClass;
    typedef DockingWindowBase baseClass;
+
 public:
    /// ctor
    TileInfoWindow() :baseClass(idTileInfoWindow) {}
+   /// dtor
    virtual ~TileInfoWindow() {}
 
+   /// called to translate dialog messages
    BOOL PreTranslateMessage(MSG* msg)
    {
       return m_form.PreTranslateMessage(msg);
@@ -92,6 +120,7 @@ public:
 
    DECLARE_WND_CLASS_EX(_T("TileInfo"), CS_DBLCLKS, COLOR_WINDOW)
 
+private:
    BEGIN_MSG_MAP(thisClass)
       MESSAGE_HANDLER(WM_CREATE, OnCreate)
       MESSAGE_HANDLER(WM_SIZE, OnSize)
@@ -99,8 +128,7 @@ public:
       CHAIN_MSG_MAP(baseClass)
    END_MSG_MAP()
 
-protected:
-
+   /// called when window is created
    LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
    {
       bHandled = FALSE;
@@ -109,23 +137,29 @@ protected:
       return 0;
    }
 
+   /// called to resize form window
    LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
+   /// called when focus is set to this window
    LRESULT OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
    // virtual methods from DebugWindowBase
 
+   /// initializes debug window
    virtual void InitDebugWindow(IMainFrame* mainFrame) override
    {
       DebugWindowBase::InitDebugWindow(mainFrame);
       mainFrame->AddDebugWindow(&m_form);
    }
 
+   /// cleans up debug window
    virtual void DoneDebugWindow() override
    {
       m_mainFrame->RemoveDebugWindow(&m_form);
       DebugWindowBase::DoneDebugWindow();
    }
 
+   /// receives debug window notifications
    virtual void ReceiveNotification(DebugWindowNotification& notify) override
    {
       // relay notification to descendant window, if needed
@@ -133,7 +167,7 @@ protected:
          m_mainFrame->SendNotification(notify, &m_form);
    }
 
-protected:
+private:
    /// tile info dialog
    TileInfoForm m_form;
 };
