@@ -373,7 +373,7 @@ CAPTION "About Underworld Adventures Debugger"
 FONT 8, "Tahoma", 0, 0, 0x0
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,130,81,50,14
-    CTEXT           "Underworld Adventures Debugger\n\nCopyright (C) 2004, 2005 Michael Fink",IDC_STATIC,26,43,78,46
+    CTEXT           "Underworld Adventures Debugger\n\nCopyright (C) 2004-2019 Michael Fink",IDC_STATIC,26,43,78,46
     ICON            IDR_MAINFRAME,IDC_STATIC,55,19,20,20
     GROUPBOX        "",IDC_STATIC,7,7,115,88
 END
