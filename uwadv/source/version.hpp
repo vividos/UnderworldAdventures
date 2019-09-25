@@ -1,4 +1,4 @@
-//
+﻿//
 // Underworld Adventures - an Ultima Underworld remake project
 // Copyright (c) 2019 Underworld Adventures Team
 //
@@ -31,6 +31,6 @@
 #define STRINGIFY(s) STRINGIFY2(s)
 #define STRINGIFY2(s) #s
 
-#define COPYRIGHT_TEXT "Copyright � 2002-" STRINGIFY(BUILD_YEAR) " Underworld Adventures Team"
+#define COPYRIGHT_TEXT "Copyright © 2002-" STRINGIFY(BUILD_YEAR) " Underworld Adventures Team"
 
 #define VERSION_TEXT STRINGIFY(MAJOR_VERSION) "." STRINGIFY(MINOR_VERSION) "-" CODENAME
