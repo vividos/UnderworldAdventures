@@ -1,6 +1,6 @@
 REM
-REM Underworld Adventures - an Ultima Underworld hacking project
-REM Copyright (c) 2019 Michael Fink
+REM Underworld Adventures - an Ultima Underworld remake project
+REM Copyright (c) 2019 Underworld Adventures Team
 REM
 REM Build script for uadata zip archive
 REM

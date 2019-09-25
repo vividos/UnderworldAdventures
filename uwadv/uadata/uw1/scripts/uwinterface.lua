@@ -1,6 +1,6 @@
 --
--- Underworld Adventures - an Ultima Underworld hacking project
--- Copyright (c) 2002 Michael Fink
+-- Underworld Adventures - an Ultima Underworld remake project
+-- Copyright (c) 2002 Underworld Adventures Team
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -27,11 +27,11 @@
 -- these should be in sync with the enums in Player.hpp
 
 -- attributes
-player_attr_gender=0      
-player_attr_handedness=1  
-player_attr_appearance=2  
-player_attr_profession=3  
-player_attr_maplevel=4 
+player_attr_gender=0
+player_attr_handedness=1
+player_attr_appearance=2
+player_attr_profession=3
+player_attr_maplevel=4
 player_attr_strength=5
 player_attr_dexterity=6
 player_attr_intelligence=7

@@ -1,6 +1,6 @@
 //
 // Property List Control
-// Copyright (C) 2005,2019 Michael Fink
+// Copyright (C) 2005,2019 Underworld Adventures Team
 //
 // The use and distribution terms for this software are covered by the
 // Common Public License 1.0 (http://opensource.org/licenses/cpl.php)

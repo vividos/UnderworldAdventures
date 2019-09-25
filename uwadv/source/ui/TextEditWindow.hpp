@@ -1,5 +1,5 @@
 //
-// Underworld Adventures - an Ultima Underworld hacking project
+// Underworld Adventures - an Ultima Underworld remake project
 // Copyright (c) 2004,2019 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify

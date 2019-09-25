@@ -1,5 +1,5 @@
 --
--- Underworld Adventures - an Ultima Underworld hacking project
+-- Underworld Adventures - an Ultima Underworld remake project
 -- Copyright (c) 2002 Michael Fink
 -- Copyright (c) 2002 Dirk Manders
 --

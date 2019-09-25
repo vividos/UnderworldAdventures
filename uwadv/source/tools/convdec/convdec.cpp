@@ -1,5 +1,5 @@
 //
-// Underworld Adventures - an Ultima Underworld hacking project
+// Underworld Adventures - an Ultima Underworld remake project
 // Copyright (c) 2014,2019 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
@@ -165,7 +165,7 @@ void Decompiler::Write(FILE* fd)
 int main(int argc, char* argv[])
 {
    printf("convdec - Ultima Underworld conversation code decompiler\n"
-      "Copyright (c) 2003,2004,2019 Michael Fink\n\n");
+      "Copyright (c) 2003,2004,2019 Underworld Adventures Team\n\n");
 
    if (argc < 3)
    {
