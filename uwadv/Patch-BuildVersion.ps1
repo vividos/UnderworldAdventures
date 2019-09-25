@@ -31,6 +31,6 @@ $versionHeader = $versionHeader -replace "RELEASE_NUMBER [0-9]+","RELEASE_NUMBER
 $versionHeader = $versionHeader -replace "BUILD_NUMBER [0-9]+","BUILD_NUMBER $buildNumber"
 $versionHeader = $versionHeader -replace "BUILD_YEAR [0-9]+","BUILD_YEAR $buildYear"
 
-Out-File -FilePath "$scriptPath\source\version.hpp" -InputObject $versionHeader -Encoding UTF8
+Out-File -FilePath "$scriptPath\source\version.hpp" -InputObject $versionHeader -Encoding ASCII
 
 Write-Host "Done patching."
