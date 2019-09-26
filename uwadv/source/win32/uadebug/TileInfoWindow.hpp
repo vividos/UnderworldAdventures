@@ -21,7 +21,6 @@
 //
 #pragma once
 
-#include "WindowBase.hpp"
 #include "EditListViewCtrl.hpp"
 #include "Resource.h"
 

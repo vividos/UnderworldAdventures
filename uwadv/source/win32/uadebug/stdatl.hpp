@@ -118,5 +118,7 @@ void CheckAddedReflectNotifications(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 
 // project-specific often-used includes
 #include "Filename.hpp"
-#include "WindowBase.hpp"
+#include "DebugWindowBase.hpp"
+#include "DockingWindowBase.hpp"
+#include "ChildWindowBase.hpp"
 #include "EditListViewCtrl.hpp"

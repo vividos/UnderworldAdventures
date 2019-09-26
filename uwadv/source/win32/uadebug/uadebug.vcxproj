@@ -108,11 +108,14 @@
   <ItemGroup>
     <ClInclude Include="AboutDlg.hpp" />
     <ClInclude Include="BreakpointListWindow.hpp" />
+    <ClInclude Include="ChildWindowBase.hpp" />
     <ClInclude Include="DebugClient.hpp" />
+    <ClInclude Include="DockingWindowBase.hpp" />
     <ClInclude Include="EditListViewCtrl.hpp" />
     <ClInclude Include="Filename.hpp" />
     <ClInclude Include="GameStringsView.hpp" />
     <ClInclude Include="HotspotListWindow.hpp" />
+    <ClInclude Include="IMainFrame.hpp" />
     <ClInclude Include="LuaSourceView.hpp" />
     <ClInclude Include="MainFrame.hpp" />
     <ClInclude Include="ObjectListWindow.hpp" />
@@ -126,7 +129,7 @@
     <ClInclude Include="TileMapView.hpp" />
     <ClInclude Include="TileMapViewCtrl.hpp" />
     <ClInclude Include="WatchesListWindow.hpp" />
-    <ClInclude Include="WindowBase.hpp" />
+    <ClInclude Include="DebugWindowBase.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
