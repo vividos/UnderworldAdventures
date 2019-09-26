@@ -21,18 +21,10 @@
 //
 #include "stdatl.hpp"
 
-#if (_ATL_VER < 0x0700)
-#include <atlimpl.cpp>
-#endif //(_ATL_VER < 0x0700)
-
-#if (_MSC_VER < 1300)
-RegisterTabbedMDIMessages g_RegisterTabbedMDIMessages;
-#endif
-
 #include <dockimpl.cpp>
 
 /// \brief checks if parent window reflects notifications
-/// The check is done by sending a WM_NOTIFY message with notification code
+/// \details The check is done by sending a WM_NOTIFY message with notification code
 /// 0xFFFF (which surely isn't used by the control) to the parent class and
 /// checking if the notification is reflected through an OCM_NOTIFY message to
 /// us. If not, the user forgot to add the macro.

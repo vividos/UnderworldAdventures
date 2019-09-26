@@ -22,9 +22,7 @@
 #pragma once
 
 // change these values to use different versions
-#define WINVER         0x0601
-#define _WIN32_WINNT   0x0601
-#define _WIN32_IE      0x0700
+#define _WIN32_WINNT   _WIN32_WINNT_WIN7
 
 #ifdef _DEBUG
 #define _CRTDBG_MAP_ALLOC
@@ -41,18 +39,16 @@
 #define GetGValue(rgb)      ((BYTE)((((WORD)(rgb&0xFFFF)) >> 8)&0xFF))
 #define GetBValue(rgb)      ((BYTE)(((rgb)>>16)&0xFF))
 
-#if (_ATL_VER >= 0x700) // >= ATL 7
-#define _WTL_NO_CSTRING
 #include <atlcoll.h>
 #include <atlstr.h>
-#endif
+
+// WTL includes
+#define _WTL_NO_CSTRING
 #include <atlapp.h>
 
 extern CAppModule _Module;
 
 #include <atlwin.h>
-
-// WTL includes
 #include <atlmisc.h>
 #include <atlframe.h>
 #include <atlctrls.h>
@@ -101,13 +97,14 @@ extern CAppModule _Module;
 #define ARRAYLENGTH(arr) (sizeof(arr) / sizeof((arr)[0]) )
 
 
-// check macro to check if the REFLECT_NOTIFICATIONS() macro was added to the parent class
+/// check macro to check if the REFLECT_NOTIFICATIONS() macro was added to the parent class
 #define ATLASSERT_ADDED_REFLECT_NOTIFICATIONS() CheckAddedReflectNotifications(hWnd, uMsg, wParam, lParam);
 
+/// helper function to check if the REFLECT_NOTIFICATIONS() macro was added to the parent class
 void CheckAddedReflectNotifications(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 
-// macro to route individual command messages to member variables
+/// macro to route individual command messages to member variables
 #define COMMAND_ROUTE_TO_MEMBER(uCmd, m_Member) \
    if (uMsg == WM_COMMAND && LOWORD(wParam) == uCmd) \
       CHAIN_MSG_MAP_MEMBER(m_Member)
