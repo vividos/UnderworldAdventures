@@ -94,7 +94,7 @@ void GameStringsView::InitCombobox()
    debugClient.Lock(false);
 
    m_comboBlocks.SetCurSel(0);
-   UpdateStringsList(0);
+   UpdateStringsList(1);
 }
 
 LRESULT GameStringsView::OnComboSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
