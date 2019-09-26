@@ -12,12 +12,6 @@ The third party sourcecode package contains includes and libraries for
 compiling the win32 WTL version of the Underworld Adventures Debugger. Here's
 a list of packages included:
 
-menuxp/
-
-  XP-style menus from CodeProject project, hacked up by Michael Fink to support
-  the tabbing framework mentioned below.
-  http://www.codeproject.com/wtl/menuxp_wtl.asp
-
 scintilla/
 
   ATL wrapper for the scintilla library. Scintilla provides a sourcecode

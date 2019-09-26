@@ -45,8 +45,8 @@ class MainFrame :
 public:
    DECLARE_FRAME_WND_CLASS(NULL, IDR_MAINFRAME)
 
-   /// MDI command bar for tabbing, with XP look
-   CTabbedMDICommandBarCtrlXP m_commandBar;
+   /// MDI command bar for tabbing
+   CTabbedMDICommandBarCtrl m_commandBar;
 
    /// tabbed MDI client window
    CTabbedMDIClient<CDotNetTabCtrl<CTabViewTabItem> > m_tabbedClient;

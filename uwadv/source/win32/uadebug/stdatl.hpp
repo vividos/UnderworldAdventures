@@ -88,9 +88,6 @@ extern CAppModule _Module;
 #include <VC7LikeCaption.h>
 #pragma warning(pop)
 
-// Menu XP includes
-#include "MenuXP.h"
-
 // Scintilla wrapper includes
 #include <atlscintilla.h>
 #include <SciLexer.h>
