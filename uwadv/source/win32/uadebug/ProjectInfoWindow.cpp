@@ -19,7 +19,7 @@
 /// \file ProjectInfoWindow.cpp
 /// \brief project info docking window
 //
-#include "stdatl.hpp"
+#include "pch.hpp"
 #include "ProjectInfoWindow.hpp"
 #include "ProjectManager.hpp"
 #include "Resource.h"

@@ -19,7 +19,7 @@
 /// \file ObjectListWindow.cpp
 /// \brief object list docking window
 //
-#include "stdatl.hpp"
+#include "pch.hpp"
 #include "ObjectListWindow.hpp"
 #include "DebugClient.hpp"
 #include "MainFrame.hpp"

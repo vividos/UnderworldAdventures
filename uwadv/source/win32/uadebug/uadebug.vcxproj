@@ -59,7 +59,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)source\win32\uadebug\thirdparty\menuxp;$(SolutionDir)source\win32\uadebug\thirdparty\scintilla;$(SolutionDir)source\win32\uadebug\thirdparty\tabbingframework\include;$(SolutionDir)source\win32\uadebug\thirdparty\wtldockingwindows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderFile>stdatl.hpp</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>pch.hpp</PrecompiledHeaderFile>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -71,7 +71,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)source\win32\uadebug\thirdparty\menuxp;$(SolutionDir)source\win32\uadebug\thirdparty\scintilla;$(SolutionDir)source\win32\uadebug\thirdparty\tabbingframework\include;$(SolutionDir)source\win32\uadebug\thirdparty\wtldockingwindows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderFile>stdatl.hpp</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>pch.hpp</PrecompiledHeaderFile>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -94,11 +94,9 @@
     <ClCompile Include="ProjectInfoWindow.cpp" />
     <ClCompile Include="ProjectManager.cpp" />
     <ClCompile Include="PropertyListCtrl.cpp" />
-    <ClCompile Include="stdatl.cpp">
+    <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">stdatl.hpp</PrecompiledHeaderFile>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdatl.hpp</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="TileInfoWindow.cpp" />
     <ClCompile Include="TileMapViewCtrl.cpp" />
@@ -124,7 +122,7 @@
     <ClInclude Include="ProjectManager.hpp" />
     <ClInclude Include="PropertyListCtrl.hpp" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="stdatl.hpp" />
+    <ClInclude Include="pch.hpp" />
     <ClInclude Include="TileInfoWindow.hpp" />
     <ClInclude Include="TileMapView.hpp" />
     <ClInclude Include="TileMapViewCtrl.hpp" />

@@ -19,7 +19,7 @@
 /// \file EditListViewCtrl.cpp
 /// \brief editable list view control
 //
-#include "stdatl.hpp"
+#include "pch.hpp"
 #include "EditListViewCtrl.hpp"
 
 bool EditListInplaceEditCtrl::AcceptChanges()

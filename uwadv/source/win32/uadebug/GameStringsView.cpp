@@ -19,7 +19,7 @@
 /// \file GameStringsView.cpp
 /// \brief game strings view
 //
-#include "stdatl.hpp"
+#include "pch.hpp"
 #include "GameStringsView.hpp"
 #include "DebugClient.hpp"
 

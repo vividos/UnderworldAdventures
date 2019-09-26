@@ -19,7 +19,7 @@
 /// \file LuaSourceView.cpp
 /// \brief Lua source file view
 //
-#include "stdatl.hpp"
+#include "pch.hpp"
 #include "LuaSourceView.hpp"
 
 LRESULT LuaSourceView::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)

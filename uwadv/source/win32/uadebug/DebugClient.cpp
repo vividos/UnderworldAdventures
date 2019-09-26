@@ -19,7 +19,7 @@
 /// \file DebugClient.cpp
 /// \brief debugger client class
 //
-#include "stdatl.hpp"
+#include "pch.hpp"
 #include "DebugClient.hpp"
 
 LPCTSTR g_attributeNames[] =

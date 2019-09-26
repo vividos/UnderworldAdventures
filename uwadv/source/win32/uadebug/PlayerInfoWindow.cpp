@@ -19,7 +19,7 @@
 /// \file PlayerInfoWindow.cpp
 /// \brief player info docking window
 //
-#include "stdatl.hpp"
+#include "pch.hpp"
 #include "PlayerInfoWindow.hpp"
 #include "DebugClient.hpp"
 

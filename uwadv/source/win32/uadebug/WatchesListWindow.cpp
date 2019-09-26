@@ -19,7 +19,7 @@
 /// \file WatchesListWindow.cpp
 /// \brief code debugger watches window
 //
-#include "stdatl.hpp"
+#include "pch.hpp"
 #include "WatchesListWindow.hpp"
 
 WatchesListWindow::WatchesListWindow(unsigned int codeDebuggerId)

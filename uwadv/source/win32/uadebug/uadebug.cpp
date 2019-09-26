@@ -19,7 +19,7 @@
 /// \file uadebug.cpp
 /// \brief debugger entry point and main application function
 //
-#include "stdatl.hpp"
+#include "pch.hpp"
 #include "Resource.h"
 #include "MainFrame.hpp"
 

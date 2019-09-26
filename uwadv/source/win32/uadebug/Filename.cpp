@@ -19,7 +19,7 @@
 /// \file Filename.cpp
 /// \brief filename management
 //
-#include "stdatl.hpp"
+#include "pch.hpp"
 #include "Filename.hpp"
 
 CFilename::CFilename(LPCTSTR filename)

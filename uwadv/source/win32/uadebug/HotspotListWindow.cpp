@@ -19,7 +19,7 @@
 /// \file HotspotListWindow.cpp
 /// \brief hotspot list
 //
-#include "stdatl.hpp"
+#include "pch.hpp"
 #include "HotspotListWindow.hpp"
 #include "DebugClient.hpp"
 

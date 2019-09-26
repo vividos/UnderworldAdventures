@@ -19,7 +19,7 @@
 /// \file MainFrame.cpp
 /// \brief main application frame
 //
-#include "stdatl.hpp"
+#include "pch.hpp"
 #include "aboutdlg.hpp"
 #include "MainFrame.hpp"
 #include "LuaSourceView.hpp"
