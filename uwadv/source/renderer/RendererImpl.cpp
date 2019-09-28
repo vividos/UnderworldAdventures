@@ -186,8 +186,6 @@ void RendererImpl::RenderObject(const Underworld::Level& level,
       return;
 
    const Underworld::ObjectPositionInfo& posInfo = obj.GetPosInfo();
-   const Underworld::NpcObject& npc = obj.GetNpcObject();
-   const Underworld::NpcInfo& npcInfo = npc.GetNpcInfo();
 
    // get base coordinates
    Vector3d base = CalcObjectPosition(x, y, obj);
@@ -203,6 +201,13 @@ void RendererImpl::RenderObject(const Underworld::Level& level,
       // critters
       if (itemId >= 0x0040 && itemId < 0x0080)
       {
+         UaAssert(obj.IsNpcObject());
+         if (!obj.IsNpcObject())
+            return; // shouldn't happen
+
+         const Underworld::NpcObject& npc = obj.GetNpcObject();
+         const Underworld::NpcInfo& npcInfo = npc.GetNpcInfo();
+
          // critter object
          Critter& crit = GetCritterFramesManager().GetCritter(itemId - 0x0040);
          unsigned int curframe = crit.GetFrame(npcInfo.m_animationState, npcInfo.m_animationFrame);
