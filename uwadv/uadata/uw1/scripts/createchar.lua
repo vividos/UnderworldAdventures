@@ -225,7 +225,7 @@ ccharui = {
 function cchar_global(globalaction, seed)
    if globalaction==gactInit then
       skills = {}
-      randomseed(seed)
+      math.randomseed(seed)
       cchar_do_action(actSetInitVal, ccharui.strblock, ccharui.btngxcoord, ccharui.textcolor_normal, ccharui.textcolor_highlight, ccharui.btnimages)
       finished = 0
    end
@@ -302,7 +302,7 @@ function cchar_buttonclick(button, text)
          cchar_do_action(actSetPlayerAttr, player_attr_difficulty, button)
 
       elseif curgroup==21 then
-         if strlen(text)<1 then
+         if string.len(text)<1 then
             return  -- don't accept an empty name
          else
             pname = text
@@ -330,10 +330,10 @@ function cchar_buttonclick(button, text)
          pclass = button
          curstep = 0
 
-         pstr = random(20,30)
-         pdex = random(15,25)
-         pint = random(12,22)
-         pvit = random(33,36)
+         pstr = math.random(20,30)
+         pdex = math.random(15,25)
+         pint = math.random(12,22)
+         pvit = math.random(33,36)
          cchar_do_action(actSetPlayerAttr, player_attr_strength, pstr)
          cchar_do_action(actSetPlayerAttr, player_attr_dexterity, pdex)
          cchar_do_action(actSetPlayerAttr, player_attr_intelligence, pint)
@@ -358,23 +358,23 @@ function cchar_buttonclick(button, text)
 
 
          -- the attack and defence skill appear for all player classes
-         cchar_addskill(ccvAttack, random(4,13))
-         cchar_addskill(ccvDefence, random(4,13))
+         cchar_addskill(ccvAttack, math.random(4,13))
+         cchar_addskill(ccvDefence, math.random(4,13))
 
          -- add class specific inital skills
          if button==1 or button==4 then   -- mage/druid
-            cchar_addskill(ccvMana, random(4,13))
-            cchar_addskill(ccvCasting, random(4,13))
+            cchar_addskill(ccvMana, math.random(4,13))
+            cchar_addskill(ccvCasting, math.random(4,13))
          elseif button==3 then            -- tinker
-            cchar_addskill(ccvRepair, random(4,13))
+            cchar_addskill(ccvRepair, math.random(4,13))
          elseif button==5 then            -- paladin
-            cchar_addskill(ccvCharm, random(4,13))
+            cchar_addskill(ccvCharm, math.random(4,13))
          elseif button==6 then            -- ranger
-            cchar_addskill(ccvTrack, random(4,13))
+            cchar_addskill(ccvTrack, math.random(4,13))
          end
 
       else   -- class specific skill selection button
-         cchar_addskill(ccharui.btngroups[curgroup].btns[button+1], random(4,13))
+         cchar_addskill(ccharui.btngroups[curgroup].btns[button+1], math.random(4,13))
          curstep = curstep + 1
       end
       curgroup = ccharui.skillorder[pclass][curstep]
