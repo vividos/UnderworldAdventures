@@ -46,9 +46,9 @@ Renderer::~Renderer()
 /// \param game game interface
 void Renderer::InitGame(IGame& game)
 {
-   m_rendererImpl = new RendererImpl(game);
+   m_rendererImpl = new UnderworldRenderer(game);
    if (m_rendererImpl == NULL)
-      throw Base::Exception("couldn't create RendererImpl class");
+      throw Base::Exception("couldn't create UnderworldRenderer class");
 
    // culling: only render front face, counter clockwise
    glCullFace(GL_BACK);
@@ -288,7 +288,7 @@ void Renderer::GetModel3DBoundingTriangles(unsigned int x,
    Model3DManager& modelManager = m_rendererImpl->GetModel3DManager();
    if (modelManager.IsModelAvailable(object.GetObjectInfo().m_itemID))
    {
-      Vector3d base = RendererImpl::CalcObjectPosition(x, y, object);
+      Vector3d base = UnderworldRenderer::CalcObjectPosition(x, y, object);
       modelManager.GetBoundingTriangles(object, base, allTriangles);
    }
 }

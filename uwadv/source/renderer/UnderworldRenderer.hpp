@@ -38,12 +38,12 @@ class IGame;
 /// It should only appear in OpenGL function calls.
 extern const double c_renderHeightScale;
 
-/// renderer implementation
-class RendererImpl
+/// Underworld renderer implementation
+class UnderworldRenderer
 {
 public:
    /// ctor
-   RendererImpl(IGame& game);
+   UnderworldRenderer(IGame& game);
 
    /// prepares renderer for rendering a new level
    void PrepareLevel(Underworld::Level& level);

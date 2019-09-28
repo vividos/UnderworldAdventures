@@ -26,7 +26,7 @@
 
 const double c_renderHeightScale = 0.125 * 0.25;
 
-RendererImpl::RendererImpl(IGame& game)
+UnderworldRenderer::UnderworldRenderer(IGame& game)
    :m_selectionMode(false)
 {
    m_textureManager.Init(game);
@@ -37,7 +37,7 @@ RendererImpl::RendererImpl(IGame& game)
 /// Does tick processing for renderer for texture and critter frames
 /// animation.
 /// \param tickRate tick rate in ticks/second
-void RendererImpl::Tick(double tickRate)
+void UnderworldRenderer::Tick(double tickRate)
 {
    // do texture manager tick processing
    m_textureManager.Tick(tickRate);
@@ -48,7 +48,7 @@ void RendererImpl::Tick(double tickRate)
 
 /// Prepares renderer for new level.
 /// \param level level to prepare for
-void RendererImpl::PrepareLevel(Underworld::Level& level)
+void UnderworldRenderer::PrepareLevel(Underworld::Level& level)
 {
    UaTrace("preparing textures for level... ");
 
@@ -90,7 +90,7 @@ void RendererImpl::PrepareLevel(Underworld::Level& level)
 /// \param panAngle angle to pan up/down the view
 /// \param rotateAngle angle to rotate left/right the view
 /// \param fieldOfView angle of field of view
-void RendererImpl::Render(const Underworld::Level& level, Vector3d pos,
+void UnderworldRenderer::Render(const Underworld::Level& level, Vector3d pos,
    double panAngle, double rotateAngle, double fieldOfView)
 {
    {
@@ -138,7 +138,7 @@ void RendererImpl::Render(const Underworld::Level& level, Vector3d pos,
 /// \param level the level in which the objects are
 /// \param x tile x coordinate of tile which objects are to render
 /// \param y tile y coordinate of tile which objects are to render
-void RendererImpl::RenderObjects(const Underworld::Level& level,
+void UnderworldRenderer::RenderObjects(const Underworld::Level& level,
    unsigned int x, unsigned int y)
 {
    glPushName((y << 8) + x);
@@ -184,7 +184,7 @@ void RendererImpl::RenderObjects(const Underworld::Level& level,
 /// \param obj object to render; const object
 /// \param x x tile coordinate of object
 /// \param y y tile coordinate of object
-void RendererImpl::RenderObject(const Underworld::Level& level,
+void UnderworldRenderer::RenderObject(const Underworld::Level& level,
    const Underworld::Object& obj, unsigned int x, unsigned int y)
 {
 #ifndef HAVE_DEBUG
@@ -284,7 +284,7 @@ void RendererImpl::RenderObject(const Underworld::Level& level,
 }
 
 /*
-void RendererImpl::RenderDecal(const Object& obj, unsigned int x, unsigned int y)
+void UnderworldRenderer::RenderDecal(const Object& obj, unsigned int x, unsigned int y)
 {
    // 0x0161 a_lever
    // 0x0162 a_switch
@@ -365,7 +365,7 @@ void RendererImpl::RenderDecal(const Object& obj, unsigned int x, unsigned int y
       glDisable(GL_POLYGON_OFFSET_FILL);
 }
 
-void RendererImpl::RenderTmapObject(const Object& obj, unsigned int x, unsigned int y)
+void UnderworldRenderer::RenderTmapObject(const Object& obj, unsigned int x, unsigned int y)
 {
    // 0x016e / 0x016f special tmap object
    Underworld::NpcObject& npc = obj.GetNpcObject();
@@ -469,7 +469,7 @@ void RendererImpl::RenderTmapObject(const Object& obj, unsigned int x, unsigned 
 /// \param v maximum v texture coordinate
 /// \param moveU u-coordinate offset to move base, e.g. to hotspot
 /// \param moveV v-coordinate offset to move base, e.g. to hotspot
-void RendererImpl::RenderSprite(Vector3d base,
+void UnderworldRenderer::RenderSprite(Vector3d base,
    double width, double height, bool ignoreUpVector, double u, double v,
    double moveU, double moveV)
 {
@@ -548,14 +548,14 @@ void RendererImpl::RenderSprite(Vector3d base,
 /// Renders a wall-aligned textured quad.
 /// \param width
 /// \param height
-void RendererImpl::render_aligned_quad(const Object& obj, //const Vector3d& base,
+void UnderworldRenderer::render_aligned_quad(const Object& obj, //const Vector3d& base,
    double width, double height, Uint16 textureNumber, bool ignoreUpVector)
 {
 }
 */
 
 /// calculates object position in 3D world
-Vector3d RendererImpl::CalcObjectPosition(unsigned int x, unsigned int y,
+Vector3d UnderworldRenderer::CalcObjectPosition(unsigned int x, unsigned int y,
    const Underworld::Object& obj)
 {
    const Underworld::ObjectPositionInfo& posInfo = obj.GetPosInfo();

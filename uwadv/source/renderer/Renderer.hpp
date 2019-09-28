@@ -34,7 +34,7 @@ namespace Underworld
 }
 
 class Viewport;
-class RendererImpl;
+class UnderworldRenderer;
 class CritterFramesManager;
 class Model3DManager;
 
@@ -93,8 +93,8 @@ protected:
    /// viewport
    Viewport* m_viewport;
 
-   /// renderer implementation
-   RendererImpl* m_rendererImpl;
+   /// Underworld renderer implementation
+   UnderworldRenderer* m_rendererImpl;
 
    /// camera view offset
    Vector3d m_viewOffset;
