@@ -111,6 +111,12 @@ void RenderWindow::SetWindowIcon(int iconId)
 #endif
 }
 
+void RenderWindow::Clear()
+{
+   glClearColor(0, 0, 0, 0);
+   glClear(GL_COLOR_BUFFER_BIT);
+}
+
 /// Swaps OpenGL screen buffers
 void RenderWindow::SwapBuffers()
 {

@@ -372,6 +372,10 @@ void Game::InitSDL()
 
    UaTrace("\n");
 
+   m_viewport = std::make_unique<Viewport>(*m_renderWindow.get());
+
+   m_renderer.SetViewport(m_viewport.get());
+
    Renderer::PrintOpenGLDiagnostics();
 }
 
@@ -449,7 +453,7 @@ void Game::InitGame()
    m_imageManager = std::make_unique<ImageManager>(GetResourceManager());
    m_imageManager->Init();
 
-   m_renderer.Init(*this, m_renderWindow.get());
+   m_renderer.InitGame(*this);
 
    m_gameLogic = std::make_unique<Underworld::GameLogic>(m_scripting);
 
@@ -502,7 +506,8 @@ void Game::DoneGame()
 void Game::PopScreen()
 {
    // clear screen; this can take a while
-   m_renderer.Clear();
+   m_renderWindow->Clear();
+   m_renderWindow->SwapBuffers();
 
    m_currentScreen->Destroy();
    delete m_currentScreen;
@@ -532,7 +537,8 @@ void Game::PopScreen()
 void Game::ReplaceScreen(Screen* newScreen, bool saveCurrent)
 {
    // clear screen; this can take a while
-   m_renderer.Clear();
+   m_renderWindow->Clear();
+   m_renderWindow->SwapBuffers();
 
    if (saveCurrent)
    {

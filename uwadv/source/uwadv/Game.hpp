@@ -29,6 +29,7 @@
 #include "ui/IndexedImage.hpp"
 #include "ui/ImageManager.hpp"
 #include "renderer/RenderWindow.hpp"
+#include "renderer/Viewport.hpp"
 #include "renderer/Renderer.hpp"
 #include "script/IScripting.hpp"
 #include "underw/GameLogic.hpp"
@@ -136,6 +137,18 @@ public:
       return m_renderer;
    }
 
+   virtual RenderWindow& GetRenderWindow() override
+   {
+      UaAssert(m_renderWindow != nullptr);
+      return *m_renderWindow.get();
+   }
+
+   virtual Viewport& GetViewport() override
+   {
+      UaAssert(m_viewport != nullptr);
+      return *m_viewport.get();
+   }
+
    virtual PhysicsModel& GetPhysicsModel() override
    {
       return m_physicsModel;
@@ -184,6 +197,9 @@ protected:
 
    /// render window
    std::unique_ptr<RenderWindow> m_renderWindow;
+
+   /// render viewport
+   std::unique_ptr<Viewport> m_viewport;
 
    /// screen width
    unsigned int m_width;

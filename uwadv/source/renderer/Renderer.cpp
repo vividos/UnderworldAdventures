@@ -22,17 +22,13 @@
 #include "pch.hpp"
 #include "Renderer.hpp"
 #include "RendererImpl.hpp"
-#include "RenderWindow.hpp"
+#include "Viewport.hpp"
 #include "Critter.hpp"
 #include "Model3D.hpp"
 #include "Underworld.hpp"
 #include "GameInterface.hpp"
 #include "Constants.hpp"
 #include <SDL_opengl.h>
-#include <gl/GLU.h>
-
-/// near plane distance from the camera
-const double Renderer::c_nearDistance = 0.05;
 
 Renderer::Renderer()
    :m_viewOffset(0.0, 0.0, 0.0),
@@ -48,10 +44,8 @@ Renderer::~Renderer()
 /// Initializes the renderer, the texture manager, critter frames manager and
 /// OpenGL flags common to 2d and 3d rendering.
 /// \param game game interface
-void Renderer::Init(IGame& game, RenderWindow* window)
+void Renderer::InitGame(IGame& game)
 {
-   m_window = window;
-
    m_rendererImpl = new RendererImpl;
    if (m_rendererImpl == NULL)
       throw Base::Exception("couldn't create RendererImpl class");
@@ -132,14 +126,6 @@ void Renderer::Done()
    glDisable(GL_FOG);
 }
 
-/// Clears the OpenGL framebuffer with black and swaps pages.
-void Renderer::Clear()
-{
-   glClearColor(0, 0, 0, 0);
-   glClear(GL_COLOR_BUFFER_BIT);
-   m_window->SwapBuffers();
-}
-
 TextureManager& Renderer::GetTextureManager()
 {
    return m_rendererImpl->GetTextureManager();
@@ -155,47 +141,12 @@ CritterFramesManager& Renderer::GetCritterFramesManager()
    return m_rendererImpl->GetCritterFramesManager();
 }
 
-/// Sets the viewport to use in 3d window; for 2d the whole surface size is
-/// set as viewport. The viewport only has to be set once and is used in
-/// SetupCamera3D().
-/// \param xpos x position of viewport, in image coordinates (320x200 max.)
-/// \param ypos y position of viewport
-/// \param width width of viewport
-/// \param height height of viewport
-void Renderer::SetViewport3D(unsigned int xpos, unsigned int ypos,
-   unsigned int width, unsigned int height)
-{
-   int windowWidth = 0, windowHeight = 0;
-   m_window->GetWindowSize(windowWidth, windowHeight);
-
-   // calculate viewport for given window
-   xpos = unsigned((windowWidth / 320.0) * double(xpos));
-   ypos = unsigned((windowHeight / 200.0) * double(ypos));
-   width = unsigned((windowWidth / 320.0) * double(width));
-   height = unsigned((windowHeight / 200.0) * double(height));
-
-   m_viewport[0] = xpos;
-   m_viewport[1] = windowHeight - ypos - height;
-   m_viewport[2] = width;
-   m_viewport[3] = height;
-}
-
 /// Sets up camera for 2d user interface rendering. All triangles (e.g. quads)
 /// should be rendered with z coordinate = 0. Also disables fog, blending and
 /// depth test.
-void Renderer::SetupCamera2D()
+void Renderer::SetupForUserInterface()
 {
-   // set viewport
-   int windowWidth = 0, windowHeight = 0;
-   m_window->GetWindowSize(windowWidth, windowHeight);
-   glViewport(0, 0, windowWidth, windowHeight);
-
-   // setup orthogonal projection
-   glMatrixMode(GL_PROJECTION);
-   glLoadIdentity();
-   gluOrtho2D(0, 320, 0, 200);
-   glMatrixMode(GL_MODELVIEW);
-   glLoadIdentity();
+   m_viewport->SetupCamera2D();
 
    glDisable(GL_DEPTH_TEST);
    glDisable(GL_BLEND);
@@ -207,26 +158,14 @@ void Renderer::SetupCamera2D()
 /// \param viewOffset view offset that is added to the player's position
 /// \param fieldOfView field of view angle
 /// \param farDistance distance from camera to far plane
-void Renderer::SetupCamera3D(const Vector3d& viewOffset,
+void Renderer::SetupFor3D(const Vector3d& viewOffset,
    double fieldOfView, double farDistance)
 {
    m_viewOffset = viewOffset;
    m_farDistance = farDistance;
    m_fieldOfView = fieldOfView;
 
-   // set viewport
-   glViewport(m_viewport[0], m_viewport[1], m_viewport[2], m_viewport[3]);
-
-   // set projection matrix
-   glMatrixMode(GL_PROJECTION);
-   glLoadIdentity();
-
-   double aspectRatio = double(m_viewport[2]) / m_viewport[3];
-   gluPerspective(m_fieldOfView, aspectRatio, c_nearDistance, m_farDistance);
-
-   // switch back to modelview matrix
-   glMatrixMode(GL_MODELVIEW);
-   glLoadIdentity();
+   m_viewport->SetupCamera3D(fieldOfView, farDistance);
 
    glEnable(GL_DEPTH_TEST);
 
@@ -289,22 +228,8 @@ void Renderer::SelectPick(const Underworld::Underworld& underworld, unsigned int
    glPushMatrix();
 
    // set up projection matrix for selection rendering
-   {
-      glViewport(m_viewport[0], m_viewport[1], m_viewport[2], m_viewport[3]);
-
-      glLoadIdentity();
-
-      int windowWidth = 0, windowHeight = 0;
-      m_window->GetWindowSize(windowWidth, windowHeight);
-
-      gluPickMatrix(xpos, windowHeight - ypos, 5.0, 5.0, m_viewport);
-
-      double aspectRatio = double(m_viewport[2]) / m_viewport[3];
-      gluPerspective(m_fieldOfView, aspectRatio, c_nearDistance, m_farDistance);
-
-      // switch back to modelview matrix
-      glMatrixMode(GL_MODELVIEW);
-   }
+   m_viewport->SetupCamera3D(m_fieldOfView, m_farDistance,
+      true, xpos, ypos);
 
    // render scene
    m_rendererImpl->SetSelectionMode(true);

@@ -43,6 +43,9 @@ public:
    /// sets new window title
    void SetWindowTitle(const char* title);
 
+   /// clears the screen with black color, without swapping buffers
+   void Clear();
+
    /// swaps screen buffers
    void SwapBuffers();
 

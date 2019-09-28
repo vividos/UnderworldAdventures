@@ -38,6 +38,9 @@ namespace Underworld
 }
 class ImageManager;
 class Renderer;
+class RenderWindow;
+class Viewport;
+class RenderWindow;
 class IScripting;
 class DebugServer;
 class Screen;
@@ -97,6 +100,7 @@ public:
    /// returns underworld object
    virtual Underworld::Underworld& GetUnderworld() = 0;
 
+   /// returns game logic object
    virtual Underworld::GameLogic& GetGameLogic() = 0;
 
    /// returns user interface instance; may be null
@@ -125,6 +129,12 @@ public:
 
    /// returns renderer object
    virtual Renderer& GetRenderer() = 0;
+
+   /// returns renderer viewport
+   virtual RenderWindow& GetRenderWindow() = 0;
+
+   /// returns renderer viewport
+   virtual Viewport& GetViewport() = 0;
 
    /// returns physics model
    virtual PhysicsModel& GetPhysicsModel() = 0;

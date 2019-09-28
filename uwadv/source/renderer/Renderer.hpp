@@ -33,7 +33,7 @@ namespace Underworld
    class Object;
 }
 
-class RenderWindow;
+class Viewport;
 class RendererImpl;
 class CritterFramesManager;
 class Model3DManager;
@@ -47,8 +47,14 @@ public:
    /// dtor
    ~Renderer();
 
+   /// sets viewport, once available
+   void SetViewport(Viewport* viewport)
+   {
+      m_viewport = viewport;
+   }
+
    /// initializes renderer
-   void Init(IGame& game, RenderWindow* window);
+   void InitGame(IGame& game);
 
    /// output some OpenGL diagnostics
    static void PrintOpenGLDiagnostics();
@@ -56,9 +62,7 @@ public:
    /// cleans up renderer
    void Done();
 
-   /// cleans screen with black color and updates frame
-   void Clear();
-
+private:
    /// returns texture manager
    TextureManager& GetTextureManager();
 
@@ -68,15 +72,12 @@ public:
    /// returns critter frames manager
    CritterFramesManager& GetCritterFramesManager();
 
-   /// sets viewport to render 3d scene
-   void SetViewport3D(unsigned int xpos, unsigned int ypos,
-      unsigned int width, unsigned int height);
-
+public:
    /// sets up camera for 2d user interface rendering
-   void SetupCamera2D();
+   void SetupForUserInterface();
 
    /// sets up camera for 3d scene rendering
-   void SetupCamera3D(const Vector3d& m_viewOffset, double fieldOfView = 90.0,
+   void SetupFor3D(const Vector3d& viewOffset, double fieldOfView = 90.0,
       double farDistance = 16.0);
 
    /// renders current view of the underworld
@@ -100,8 +101,8 @@ public:
       std::vector<Triangle3dTextured>& allTriangles);
 
 protected:
-   /// window
-   RenderWindow* m_window;
+   /// viewport
+   Viewport* m_viewport;
 
    /// renderer implementation
    RendererImpl* m_rendererImpl;
@@ -114,12 +115,4 @@ protected:
 
    /// distance of far plane
    double m_farDistance;
-
-   /// 3d viewport to use
-   GLint m_viewport[4];
-
-   // constants
-
-   /// near plane distance
-   static const double c_nearDistance;
 };

@@ -48,7 +48,7 @@ void StartSplashScreen::Init()
    // start intro midi music
    m_game.GetAudioManager().StartMusicTrack(Audio::musicUw1_Introduction, false);
 
-   m_game.GetRenderer().SetupCamera2D();
+   m_game.GetRenderer().SetupForUserInterface();
 
    // load first image
    {

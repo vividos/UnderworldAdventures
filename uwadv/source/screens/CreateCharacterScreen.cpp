@@ -103,7 +103,7 @@ void CreateCharacterScreen::Init()
    UaTrace("character creation screen started\n");
 
    // setup screen
-   m_game.GetRenderer().SetupCamera2D();
+   m_game.GetRenderer().SetupForUserInterface();
 
    glDisable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

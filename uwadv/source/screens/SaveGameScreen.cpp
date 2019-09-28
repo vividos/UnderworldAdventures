@@ -24,6 +24,7 @@
 #include "SaveGameScreen.hpp"
 #include "OriginalIngameScreen.hpp"
 #include "Renderer.hpp"
+#include "RenderWindow.hpp"
 #include "Underworld.hpp"
 #include "GameStrings.hpp"
 #include "Audio.hpp"
@@ -325,7 +326,7 @@ void SaveGameScreen::Init()
 
    UaTrace("save game screen started\n");
 
-   m_game.GetRenderer().SetupCamera2D();
+   m_game.GetRenderer().SetupForUserInterface();
 
    glDisable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -565,7 +566,8 @@ void SaveGameScreen::Tick()
                   m_savegamesList.GetSelectedSavegame()).c_str());
 
             // clear screen; loading takes a while
-            m_game.GetRenderer().Clear();
+            m_game.GetRenderWindow().Clear();
+            m_game.GetRenderWindow().SwapBuffers();
 
             // load savegame
             Base::Savegame sg = m_game.GetSavegamesManager().GetSavegameFromFile(

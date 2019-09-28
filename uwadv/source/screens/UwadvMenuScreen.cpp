@@ -40,7 +40,7 @@ void UwadvMenuScreen::Init()
    UaTrace("uwadv menu screen started\n");
 
    // init 2d camera
-   m_game.GetRenderer().SetupCamera2D();
+   m_game.GetRenderer().SetupForUserInterface();
    glEnable(GL_TEXTURE_2D);
 
    // load texture

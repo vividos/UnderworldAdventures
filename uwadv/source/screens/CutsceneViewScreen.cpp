@@ -50,7 +50,7 @@ void CutsceneViewScreen::Init()
    UaTrace("cutscene view screen started\n"
       "showing cutscene %u\n", m_cutsceneNumber);
 
-   m_game.GetRenderer().SetupCamera2D();
+   m_game.GetRenderer().SetupForUserInterface();
 
    glDisable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

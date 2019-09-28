@@ -23,6 +23,8 @@
 #include "OriginalIngameScreen.hpp"
 #include "ResourceManager.hpp"
 #include "Renderer.hpp"
+#include "RenderWindow.hpp"
+#include "Viewport.hpp"
 #include "Underworld.hpp"
 #include "Audio.hpp"
 #include "SaveGameScreen.hpp"
@@ -132,7 +134,7 @@ void OriginalIngameScreen::Init()
    m_view3d.Init(m_game, 54, 20);
    RegisterWindow(&m_view3d);
 
-   m_game.GetRenderer().SetViewport3D(52, 19, 172, 112);
+   m_game.GetViewport().SetViewport3D(52, 19, 172, 112);
 
    // init compass
    m_compass.Init(m_game, 112, 131);
@@ -224,7 +226,8 @@ void OriginalIngameScreen::Suspend()
 {
    UaTrace("suspending orig. ingame user interface\n\n");
 
-   m_game.GetRenderer().Clear();
+   m_game.GetRenderWindow().Clear();
+   m_game.GetRenderWindow().SwapBuffers();
 
    m_game.GetPhysicsModel().RemoveTrackBody(&m_playerPhysics);
 
@@ -275,7 +278,7 @@ void OriginalIngameScreen::Draw()
    {
       // set up 3d world
       Vector3d m_viewOffset(0.0, 0.0, 20.0);
-      m_game.GetRenderer().SetupCamera3D(m_viewOffset);
+      m_game.GetRenderer().SetupFor3D(m_viewOffset);
 
       // render a const world
       m_game.GetRenderer().RenderUnderworld(m_game.GetUnderworld());
@@ -283,7 +286,7 @@ void OriginalIngameScreen::Draw()
 
    // render 2d user interface
    {
-      m_game.GetRenderer().SetupCamera2D();
+      m_game.GetRenderer().SetupForUserInterface();
 
       glEnable(GL_BLEND);
 
@@ -971,10 +974,10 @@ void OriginalIngameScreen::DoSavegameScreenshot(
    // set up viewport and camera
    // note: viewport is set only for having a proper aspect ratio; the real
    // viewport is set some more lines below
-   m_game.GetRenderer().SetViewport3D(0, 0, xres, yres);
+   m_game.GetViewport().SetViewport3D(0, 0, xres, yres);
 
    Vector3d m_viewOffset(0, 0, 20.0);
-   m_game.GetRenderer().SetupCamera3D(m_viewOffset);
+   m_game.GetRenderer().SetupFor3D(m_viewOffset);
 
    glViewport(0, 0, xres, yres);
 
@@ -1000,7 +1003,7 @@ void OriginalIngameScreen::DoSavegameScreenshot(
    }
 
    // reset viewport to original
-   m_game.GetRenderer().SetViewport3D(52, 19, 172, 112);
+   m_game.GetViewport().SetViewport3D(52, 19, 172, 112);
 
    // set in savegames manager
    m_game.GetSavegamesManager().SetSaveScreenshot(

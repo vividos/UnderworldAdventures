@@ -79,6 +79,7 @@
     <ClCompile Include="PolygonTessellator.cpp" />
     <ClCompile Include="RenderWindow.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="Viewport.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Critter.hpp" />
@@ -91,6 +92,7 @@
     <ClInclude Include="PolygonTessellator.hpp" />
     <ClInclude Include="RenderWindow.hpp" />
     <ClInclude Include="Texture.hpp" />
+    <ClInclude Include="Viewport.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\base\base.vcxproj">
