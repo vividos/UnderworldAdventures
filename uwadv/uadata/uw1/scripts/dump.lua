@@ -1,6 +1,6 @@
 --
 -- Underworld Adventures - an Ultima Underworld remake project
--- Copyright (c) 2002,2003,2004 Underworld Adventures Team
+-- Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -46,24 +46,24 @@ function dump_objinfo_table(objpos)
       category = "sp_link"
    end
 
-   print( "dumping object info, objpos = " .. format("%04x",objpos) .."\n" ..
+   print( "dumping object info, objpos = " .. string.format("%04x",objpos) .."\n" ..
 
-      " item_id = " .. format("%04x",objinfo.item_id) ..
+      " item_id = " .. string.format("%04x",objinfo.item_id) ..
       " (" .. uw.get_string(4,objinfo.item_id) .. ")," ..
 
-      " link_next = " .. format("%04x",objinfo.link_next) .. "\n" ..
+      " link_next = " .. string.format("%04x",objinfo.link_next) .. "\n" ..
 
-      format(" quality = %04x,",objinfo.quality) ..
-      format(" owner = %04x, ",objinfo.owner) ..
-      category .. format(" = %04x\n",objinfo.quantity) ..
+      string.format(" quality = %04x,",objinfo.quality) ..
+      string.format(" owner = %04x, ",objinfo.owner) ..
+      category .. string.format(" = %04x\n",objinfo.quantity) ..
 
       " pos = " .. objinfo.xpos .. " / " .. objinfo.ypos ..
       ", height = " .. objinfo.zpos .. ", heading  = " .. objinfo.heading ..
-      format(", tile = %02x/%02x\n", objinfo.tilex, objinfo.tiley) ..
+      string.format(", tile = %02x/%02x\n", objinfo.tilex, objinfo.tiley) ..
 
       " enchanted = " .. objinfo.enchanted ..
       ", is_quantity = " .. objinfo.is_quantity ..
-      ", flags = " .. format("%04x\n",objinfo.flags)
+      ", flags = " .. string.format("%04x\n",objinfo.flags)
    )
 
    if objinfo.npc_used > 0
@@ -99,19 +99,19 @@ function dump_invinfo_table(inv_pos)
       category = "sp_link"
    end
 
-   print( "dumping inventory item info, inv_pos = " .. format("%04x",inv_pos) .."\n" ..
-      " item_id = " .. format("%04x",objinfo.item_id) ..
+   print( "dumping inventory item info, inv_pos = " .. string.format("%04x",inv_pos) .."\n" ..
+      " item_id = " .. string.format("%04x",objinfo.item_id) ..
       " (" .. uw.get_string(4,objinfo.item_id) .. ")," ..
 
-      " link = " .. format("%04x",objinfo.link) .. "\n" ..
+      " link = " .. string.format("%04x",objinfo.link) .. "\n" ..
 
-      format(" quality = %04x,",objinfo.quality) ..
-      format(" owner = %04x, ",objinfo.owner) ..
-      category .. format(" = %04x\n",objinfo.quantity) ..
+      string.format(" quality = %04x,",objinfo.quality) ..
+      string.format(" owner = %04x, ",objinfo.owner) ..
+      category .. string.format(" = %04x\n",objinfo.quantity) ..
 
       " enchanted = " .. objinfo.enchanted ..
       ", is_quantity = " .. objinfo.is_quantity ..
-      ", flags = " .. format("%04x\n",objinfo.flags)
+      ", flags = " .. string.format("%04x\n",objinfo.flags)
    )
 
 end

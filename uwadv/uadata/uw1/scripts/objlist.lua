@@ -1,6 +1,6 @@
 --
 -- Underworld Adventures - an Ultima Underworld remake project
--- Copyright (c) 2002,2003,2004 Underworld Adventures Team
+-- Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -89,7 +89,7 @@ end
 -- called when using object in object list
 function object_use(objpos)
 
-   print( "using object " .. format("%04x",objpos) .. " name=" ..
+   print( "using object " .. string.format("%04x",objpos) .. " name=" ..
       uw.get_string(4, objlist.get_info(objpos).item_id) )
 
    -- check for use trigger
