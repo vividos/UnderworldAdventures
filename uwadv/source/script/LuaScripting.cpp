@@ -547,7 +547,7 @@ void LuaScripting::RegisterFunctions()
    lua_register_table(L, "set_info", objlist_set_info);
    lua_register_table(L, "delete", objlist_delete);
    lua_register_table(L, "insert", objlist_insert);
-   lua_setglobal(L, "objectList");
+   lua_setglobal(L, "objlist");
 
    // tilemap object
    lua_newtable(L);
