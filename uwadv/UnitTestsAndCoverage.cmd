@@ -29,8 +29,12 @@ REM Run unit tests
 REM
 OpenCppCoverage.exe ^
    --continue_after_cpp_exception --cover_children ^
-   --sources source\unittest --sources source\base --sources source\audio ^
-   --sources source\import --sources source\underw ^
+   --sources source\unittest ^
+   --sources source\base ^
+   --sources source\audio ^
+   --sources source\import ^
+   --sources source\physics ^
+   --sources source\underw ^
    --excluded_sources packages ^
    --excluded_sources source\thirdparty ^
    --excluded_sources source\audio\midi ^
