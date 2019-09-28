@@ -21,12 +21,21 @@
 //
 #pragma once
 
-#include "Math.hpp"
-#include "Level.hpp"
+#include "Texture.hpp"
 #include "Critter.hpp"
 #include "Model3D.hpp"
-#include "Quadtree.hpp"
-#include "GeometryProvider.hpp"
+
+namespace Underworld
+{
+   class Level;
+}
+class TextureManager;
+
+/// \brief height scale factor
+/// This value scales down underworld z coordinates to coordinates in the
+/// OpenGL world. It can be used to adjust the heightness of the underworld.
+/// It should only appear in OpenGL function calls.
+extern const double c_renderHeightScale;
 
 /// renderer implementation
 class RendererImpl
@@ -99,28 +108,4 @@ protected:
 
    /// billboard right and up vectors
    Vector3d m_billboardRightVector, m_billboardUpVector;
-};
-
-/// level tile renderer class
-class LevelTilemapRenderer : public IQuadtreeCallback
-{
-public:
-   /// ctor
-   LevelTilemapRenderer(const Underworld::Level& level, RendererImpl& rendererImpl)
-      :m_level(level), m_rendererImpl(rendererImpl), m_geometryProvider(level)
-   {
-   }
-
-   /// callback function to render tile
-   virtual void OnVisibleTile(unsigned int xpos, unsigned int ypos);
-
-protected:
-   /// ref to level
-   const Underworld::Level& m_level;
-
-   /// geometry provider for level
-   GeometryProvider m_geometryProvider;
-
-   /// ref back to renderer implementation
-   RendererImpl& m_rendererImpl;
 };

@@ -21,58 +21,10 @@
 //
 #include "pch.hpp"
 #include "UnderworldRenderer.hpp"
-#include "Quadtree.hpp"
-#include "GeometryProvider.hpp"
+#include "LevelTilemapRenderer.hpp"
 #include "Constants.hpp"
 
-/// \brief height scale factor
-/// This value scales down underworld z coordinates to coordinates in the
-/// OpenGL world. It can be used to adjust the heightness of the underworld.
-/// It should only appear in OpenGL function calls.
-const double c_heightScale = 0.125 * 0.25;
-
-/// Callback function to render a visible tile; determined by Quad. The
-/// function renders all triangles of that tile and all objects in it. The
-/// function uses glPushName() to let the Renderer::SelectPick() method
-/// know what triangles belong to what tile.
-/// \param xpos tile x coordinate of visible tile
-/// \param ypos tile y coordinate of visible tile
-void LevelTilemapRenderer::OnVisibleTile(unsigned int xpos, unsigned int ypos)
-{
-   glPushName((ypos << 8) + xpos);
-
-   std::vector<Triangle3dTextured> allTriangles;
-   m_geometryProvider.GetTileTriangles(xpos, ypos, allTriangles);
-
-   unsigned int maxTriangles = allTriangles.size();
-   for (unsigned int triangleIndex = 0; triangleIndex < maxTriangles; triangleIndex++)
-   {
-      Triangle3dTextured& triangle = allTriangles[triangleIndex];
-
-      m_rendererImpl.GetTextureManager().Use(triangle.m_textureNumber);
-
-      // set texture parameter
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-      // remember used texture number
-      glPushName(triangle.m_textureNumber + 0x0400);
-
-      glBegin(GL_TRIANGLES);
-      for (int j = 0; j < 3; j++)
-      {
-         glTexCoord2d(triangle.m_vertices[j].u, triangle.m_vertices[j].v);
-         glVertex3d(triangle.m_vertices[j].pos.x, triangle.m_vertices[j].pos.y,
-            triangle.m_vertices[j].pos.z * c_heightScale);
-      }
-      glEnd();
-      glPopName();
-   }
-
-   m_rendererImpl.RenderObjects(m_level, xpos, ypos);
-
-   glPopName();
-}
+const double c_renderHeightScale = 0.125 * 0.25;
 
 RendererImpl::RendererImpl()
    :m_selectionMode(false)
@@ -94,7 +46,7 @@ void RendererImpl::Render(const Underworld::Level& level, Vector3d pos,
       glRotated(-rotateAngle + 90.0, 0.0, 0.0, 1.0);
 
       // move to position on map
-      glTranslated(-pos.x, -pos.y, -pos.z*c_heightScale);
+      glTranslated(-pos.x, -pos.y, -pos.z*c_renderHeightScale);
    }
 
    // calculate billboard right and up vectors
@@ -115,7 +67,7 @@ void RendererImpl::Render(const Underworld::Level& level, Vector3d pos,
    // draw all visible tiles
    Frustum2d fr(pos.x, pos.y, rotateAngle, fieldOfView, 8.0);
 
-   LevelTilemapRenderer tileRenderer(level, *this);
+   LevelTilemapRenderer tileRenderer(level, *this, m_textureManager);
 
    glColor3ub(192, 192, 192);
 
@@ -193,7 +145,7 @@ void RendererImpl::RenderObject(const Underworld::Level& level,
    // check if a 3d model is available for that item
    if (GetModel3DManager().IsModelAvailable(itemId))
    {
-      base.z = posInfo.m_zpos * c_heightScale;
+      base.z = posInfo.m_zpos * c_renderHeightScale;
 
       GetModel3DManager().Render(obj, m_textureManager, base);
    }
@@ -280,7 +232,7 @@ void RendererImpl::RenderDecal(const Object& obj, unsigned int x, unsigned int y
    Underworld::NpcObject& npc = obj.GetNpcObject();
    Underworld::NpcInfo& npcInfo = npc.GetNpcInfo();
    Vector3d base(static_cast<double>(x),static_cast<double>(y),
-      extinfo.zpos*c_heightScale);
+      extinfo.zpos*c_renderHeightScale);
 
    Vector2d to_right;
 
@@ -358,7 +310,7 @@ void RendererImpl::RenderTmapObject(const Object& obj, unsigned int x, unsigned 
    Underworld::NpcInfo& npcInfo = npc.GetNpcInfo();
 
    Vector3d pos(static_cast<double>(x),static_cast<double>(y),
-      extinfo.zpos*c_heightScale);
+      extinfo.zpos*c_renderHeightScale);
 
    unsigned int x_fr = extinfo.xpos;
    unsigned int y_fr = extinfo.ypos;
@@ -467,7 +419,7 @@ void RendererImpl::RenderSprite(Vector3d base,
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
    // scale z axis before any calculation is done
-   base.z *= c_heightScale;
+   base.z *= c_renderHeightScale;
 
    // move base to new location
    base += m_billboardRightVector * moveU*width;

@@ -67,6 +67,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Critter.cpp" />
+    <ClCompile Include="LevelTilemapRenderer.cpp" />
     <ClCompile Include="Model3D.cpp" />
     <ClCompile Include="Model3DBuiltIn.cpp" />
     <ClCompile Include="pch.cpp">
@@ -83,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Critter.hpp" />
+    <ClInclude Include="LevelTilemapRenderer.hpp" />
     <ClInclude Include="Model3D.hpp" />
     <ClInclude Include="Model3DBuiltIn.hpp" />
     <ClInclude Include="pch.hpp" />
