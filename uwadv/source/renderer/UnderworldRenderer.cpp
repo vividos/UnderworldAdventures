@@ -67,7 +67,7 @@ void RendererImpl::Render(const Underworld::Level& level, Vector3d pos,
    // draw all visible tiles
    Frustum2d fr(pos.x, pos.y, rotateAngle, fieldOfView, 8.0);
 
-   LevelTilemapRenderer tileRenderer(level, *this, m_textureManager);
+   LevelTilemapRenderer tileRenderer(level, m_textureManager);
 
    glColor3ub(192, 192, 192);
 
@@ -77,6 +77,7 @@ void RendererImpl::Render(const Underworld::Level& level, Vector3d pos,
       [&](unsigned int tilePosX, unsigned int tilePosY)
       {
          tileRenderer.RenderTile(tilePosX, tilePosY);
+         RenderObjects(level, tilePosX, tilePosY);
       });
 }
 
@@ -87,6 +88,8 @@ void RendererImpl::Render(const Underworld::Level& level, Vector3d pos,
 void RendererImpl::RenderObjects(const Underworld::Level& level,
    unsigned int x, unsigned int y)
 {
+   glPushName((y << 8) + x);
+
    // enable alpha blending
    glEnable(GL_BLEND);
 
@@ -118,6 +121,8 @@ void RendererImpl::RenderObjects(const Underworld::Level& level,
    // disable alpha blending again
    glDisable(GL_ALPHA_TEST);
    glDisable(GL_BLEND);
+
+   glPopName();
 }
 
 /// Renders an object at a time. When a 3d model for that object exists, the

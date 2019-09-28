@@ -28,7 +28,6 @@ namespace Underworld
 {
    class Level;
 }
-class RendererImpl;
 class TextureManager;
 
 /// level tile renderer class
@@ -36,7 +35,7 @@ class LevelTilemapRenderer
 {
 public:
    /// ctor
-   LevelTilemapRenderer(const Underworld::Level& level, RendererImpl& rendererImpl,
+   LevelTilemapRenderer(const Underworld::Level& level,
       TextureManager& m_textureManager);
 
    /// renders a single tile
@@ -51,7 +50,4 @@ private:
 
    /// geometry provider for level
    GeometryProvider m_geometryProvider;
-
-   /// ref back to renderer implementation
-   RendererImpl& m_rendererImpl;
 };

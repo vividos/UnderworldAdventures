@@ -22,23 +22,20 @@
 #include "pch.hpp"
 #include "LevelTilemapRenderer.hpp"
 #include "Texture.hpp"
-#include "UnderworldRenderer.hpp"
 
 extern const double c_renderHeightScale;
 
-LevelTilemapRenderer::LevelTilemapRenderer(const Underworld::Level& level, RendererImpl& rendererImpl,
+LevelTilemapRenderer::LevelTilemapRenderer(const Underworld::Level& level,
    TextureManager& textureManager)
    :m_level(level),
    m_textureManager(textureManager),
-   m_rendererImpl(rendererImpl),
    m_geometryProvider(level)
 {
 }
 
-/// Callback function to render a visible tile; determined by Quad. The
-/// function renders all triangles of that tile and all objects in it. The
-/// function uses glPushName() to let the Renderer::SelectPick() method
-/// know what triangles belong to what tile.
+/// Renders a single tile. The function renders all triangles of that tile.
+/// The function uses glPushName() to let the SelectPick() method know what
+/// triangles belong to what tile.
 /// \param xpos tile x coordinate of visible tile
 /// \param ypos tile y coordinate of visible tile
 void LevelTilemapRenderer::RenderTile(unsigned int xpos, unsigned int ypos)
@@ -72,8 +69,6 @@ void LevelTilemapRenderer::RenderTile(unsigned int xpos, unsigned int ypos)
       glEnd();
       glPopName();
    }
-
-   m_rendererImpl.RenderObjects(m_level, xpos, ypos);
 
    glPopName();
 }
