@@ -211,179 +211,168 @@ void UnderworldRenderer::RenderObject(const Underworld::Level& level,
 
       m_modelManager.Render(obj, m_textureManager, base);
    }
+   // critters
+   else if (itemId >= 0x0040 && itemId < 0x0080)
+   {
+      UaAssert(obj.IsNpcObject());
+      if (!obj.IsNpcObject())
+         return; // shouldn't happen
+
+      const Underworld::NpcObject& npc = obj.GetNpcObject();
+      const Underworld::NpcInfo& npcInfo = npc.GetNpcInfo();
+
+      // critter object
+      Critter& crit = m_critterManager.GetCritter(itemId - 0x0040);
+      unsigned int curframe = crit.GetFrame(npcInfo.m_animationState, npcInfo.m_animationFrame);
+      Texture& tex = crit.GetTexture(curframe);
+
+      tex.Use(0);
+
+      // adjust height for hotspot
+      base.z -= 0.0;
+
+      double u = crit.GetHotspotU(curframe) / tex.GetTexU();
+      double v = crit.GetHotspotV(curframe) / tex.GetTexV();
+
+      u = 1.0 - u * 2.0;
+      v = v - 1.0;
+
+      // fix for rotworm; hotspot always too high
+      if (itemId == 0x0040) v += 0.25;
+
+      RenderSprite(base, 0.4, 0.88, true,
+         tex.GetTexU(), tex.GetTexV(), u, v);
+   }
+   // switches/levers/buttons/pull chains
+   else if ((itemId >= 0x0170 && itemId <= 0x017f) ||
+      itemId == 0x0161 || // a_lever
+      itemId == 0x0162 || // a_switch
+      itemId == 0x0166)   // some_writing
+   {
+      RenderDecal(obj, x, y);
+   }
+   // special tmap object
+   else if (itemId == 0x016e || itemId == 0x016f)
+   {
+      RenderTmapObject(obj, x, y);
+   }
    else
-      // critters
-      if (itemId >= 0x0040 && itemId < 0x0080)
+   {
+      // normal object
+      double quadWidth = 0.25;
+
+      // items that have to be drawn at the ceiling?
+      if (itemId == 0x00d3 || itemId == 0x00d4) // a_stalactite / a_plant
       {
-         UaAssert(obj.IsNpcObject());
-         if (!obj.IsNpcObject())
-            return; // shouldn't happen
-
-         const Underworld::NpcObject& npc = obj.GetNpcObject();
-         const Underworld::NpcInfo& npcInfo = npc.GetNpcInfo();
-
-         // critter object
-         Critter& crit = m_critterManager.GetCritter(itemId - 0x0040);
-         unsigned int curframe = crit.GetFrame(npcInfo.m_animationState, npcInfo.m_animationFrame);
-         Texture& tex = crit.GetTexture(curframe);
-
-         tex.Use(0);
-
-         // adjust height for hotspot
-         base.z -= 0.0;
-
-         double u = crit.GetHotspotU(curframe) / tex.GetTexU();
-         double v = crit.GetHotspotV(curframe) / tex.GetTexV();
-
-         u = 1.0 - u * 2.0;
-         v = v - 1.0;
-
-         // fix for rotworm; hotspot always too high
-         if (itemId == 0x0040) v += 0.25;
-
-         RenderSprite(base, 0.4, 0.88, true,
-            tex.GetTexU(), tex.GetTexV(), u, v);
+         // adjust height
+         base.z = level.GetTilemap().GetTileInfo(x, y).m_ceiling - quadWidth;
       }
-      else
-         /* TODO reactivate
-            // switches/levers/buttons/pull chains
-            if ((itemId >= 0x0170 && itemId <= 0x017f) ||
-                  itemId == 0x0161 || // a_lever
-                  itemId == 0x0162 || // a_switch
-                  itemId == 0x0166)   // some_writing
-            {
-               render_aligned_quad(object);
-            }
-            else
-            // special tmap object
-            if (itemId == 0x016e || itemId == 0x016f)
-            {
-               render_aligned_quad();
-            }
-            else
-         */
-      {
-         // normal object
-         double quadWidth = 0.25;
 
-         // items that have to be drawn at the ceiling?
-         if (itemId == 0x00d3 || itemId == 0x00d4) // a_stalactite / a_plant
-         {
-            // adjust height
-            base.z = level.GetTilemap().GetTileInfo(x, y).m_ceiling - quadWidth;
-         }
+      // rune items?
+      if (itemId >= 0x00e8 && itemId < 0x0100)
+         itemId = 0x00e0; // generic rune-on-the-floor item
 
-         // rune items?
-         if (itemId >= 0x00e8 && itemId < 0x0100)
-            itemId = 0x00e0; // generic rune-on-the-floor item
-
-         // normal object
-         m_textureManager.Use(itemId + Base::c_stockTexturesObjects);
-         RenderSprite(base, 0.5 * quadWidth, quadWidth, false, 1.0, 1.0);
-      }
+      // normal object
+      m_textureManager.Use(itemId + Base::c_stockTexturesObjects);
+      RenderSprite(base, 0.5 * quadWidth, quadWidth, false, 1.0, 1.0);
+   }
 }
 
-/*
-void UnderworldRenderer::RenderDecal(const Object& obj, unsigned int x, unsigned int y)
+/// \details renders the following objects:
+/// - 0x0161 a_lever
+/// - 0x0162 a_switch
+/// - 0x0166 some writing
+/// - 0x017x buttons/switches/levers/pull chain
+void UnderworldRenderer::RenderDecal(const Underworld::Object& obj, unsigned int x, unsigned int y)
 {
-   // 0x0161 a_lever
-   // 0x0162 a_switch
-   // 0x0166 some writing
-   // 0x017x buttons/switches/levers/pull chain
+   const Underworld::ObjectPositionInfo& posInfo = obj.GetPosInfo();
 
-   Underworld::NpcObject& npc = obj.GetNpcObject();
-   Underworld::NpcInfo& npcInfo = npc.GetNpcInfo();
-   Vector3d base(static_cast<double>(x),static_cast<double>(y),
-      extinfo.zpos*c_renderHeightScale);
+   Vector3d base(static_cast<double>(x), static_cast<double>(y),
+      posInfo.m_zpos * c_renderHeightScale);
 
    Vector2d to_right;
 
    const double wall_offset = m_selectionMode ? 0.02 : 0.00;
 
-   switch(extinfo.heading)
+   switch (posInfo.m_heading)
    {
-   case 0: to_right.Set(1.0,0.0);  base.x += extinfo.xpos/8.0; base.y += 1.0-wall_offset; break;
-   case 2: to_right.Set(0.0,-1.0); base.y += extinfo.ypos/8.0; base.x += 1.0-wall_offset; break;
-   case 4: to_right.Set(-1.0,0.0); base.x += extinfo.xpos/8.0; base.y += wall_offset; break;
-   case 6: to_right.Set(0.0,1.0);  base.y += extinfo.ypos/8.0; base.x += wall_offset; break;
+   case 0: to_right.Set(1.0, 0.0);  base.x += posInfo.m_xpos / 8.0; base.y += 1.0 - wall_offset; break;
+   case 2: to_right.Set(0.0, -1.0); base.y += posInfo.m_ypos / 8.0; base.x += 1.0 - wall_offset; break;
+   case 4: to_right.Set(-1.0, 0.0); base.x += posInfo.m_xpos / 8.0; base.y += wall_offset; break;
+   case 6: to_right.Set(0.0, 1.0);  base.y += posInfo.m_ypos / 8.0; base.x += wall_offset; break;
 
    default:
-      while(false);
+      while (false);
       break; // should not occur
    }
 
-   const double decalheight = 1.0/8.0;
+   const double decalheight = 1.0 / 8.0;
 
    to_right.Normalize();
    to_right *= decalheight;
 
    // select texture
-   Uint16 itemId = obj.GetObjectInfo().m_itemID;
+   const Underworld::ObjectInfo& info = obj.GetObjectInfo();
    unsigned int tex = 0;
 
-   switch(itemId)
+   switch (info.m_itemID)
    {
    case 0x0161: // a_lever
-      tex = obj.GetObjectInfo().flags + 4 + c_stockTexturesTmobj;
+      tex = info.m_flags + 4 + Base::c_stockTexturesTmobj;
       break;
 
    case 0x0162: // a_switch
-      tex = obj.GetObjectInfo().flags + 12 + c_stockTexturesTmobj;
+      tex = info.m_flags + 12 + Base::c_stockTexturesTmobj;
       break;
 
    case 0x0166: // some_writing
-      tex = (obj.GetObjectInfo().flags & 7) + 20 + c_stockTexturesTmobj;
+      tex = (info.m_flags & 7) + 20 + Base::c_stockTexturesTmobj;
       break;
 
    default: // 0x017x
-      tex = (itemId & 15) + c_stockTextureswitches;
+      tex = (info.m_itemID & 15) + Base::c_stockTexturesSwitches;
       break;
    }
 
-   GetTextureManager().use(tex);
+   m_textureManager.Use(tex);
 
-   double u1,v1,u2,v2;
+   double u1, v1, u2, v2;
    u1 = v1 = 0.0;
    u2 = v2 = 1.0;
 
    // enable polygon offset
-   if (!m_selectionMode)
-   {
-      glPolygonOffset(-2.0, -2.0);
-      glEnable(GL_POLYGON_OFFSET_FILL);
-   }
+   glPolygonOffset(-2.0, -2.0);
+   glEnable(GL_POLYGON_OFFSET_FILL);
 
    // render quad
    glBegin(GL_QUADS);
-   glTexCoord2d(u1,v2); glVertex3d(base.x-to_right.x,base.y-to_right.y,base.z-decalheight);
-   glTexCoord2d(u2,v2); glVertex3d(base.x+to_right.x,base.y+to_right.y,base.z-decalheight);
-   glTexCoord2d(u2,v1); glVertex3d(base.x+to_right.x,base.y+to_right.y,base.z+decalheight);
-   glTexCoord2d(u1,v1); glVertex3d(base.x-to_right.x,base.y-to_right.y,base.z+decalheight);
+   glTexCoord2d(u1, v2); glVertex3d(base.x - to_right.x, base.y - to_right.y, base.z - decalheight);
+   glTexCoord2d(u2, v2); glVertex3d(base.x + to_right.x, base.y + to_right.y, base.z - decalheight);
+   glTexCoord2d(u2, v1); glVertex3d(base.x + to_right.x, base.y + to_right.y, base.z + decalheight);
+   glTexCoord2d(u1, v1); glVertex3d(base.x - to_right.x, base.y - to_right.y, base.z + decalheight);
    glEnd();
 
-   if (!m_selectionMode)
-      glDisable(GL_POLYGON_OFFSET_FILL);
+   glDisable(GL_POLYGON_OFFSET_FILL);
 }
 
-void UnderworldRenderer::RenderTmapObject(const Object& obj, unsigned int x, unsigned int y)
+/// \details renders 0x016e / 0x016f special tmap object
+void UnderworldRenderer::RenderTmapObject(const Underworld::Object& obj, unsigned int x, unsigned int y)
 {
-   // 0x016e / 0x016f special tmap object
-   Underworld::NpcObject& npc = obj.GetNpcObject();
-   Underworld::NpcInfo& npcInfo = npc.GetNpcInfo();
+   const Underworld::ObjectPositionInfo& posInfo = obj.GetPosInfo();
 
-   Vector3d pos(static_cast<double>(x),static_cast<double>(y),
-      extinfo.zpos*c_renderHeightScale);
+   Vector3d pos(static_cast<double>(x), static_cast<double>(y),
+      posInfo.m_zpos * c_renderHeightScale);
 
-   unsigned int x_fr = extinfo.xpos;
-   unsigned int y_fr = extinfo.ypos;
+   unsigned int x_fr = posInfo.m_xpos;
+   unsigned int y_fr = posInfo.m_ypos;
 
    // hack: fixing some tmap decals
-   if (x_fr>4) x_fr++;
-   if (y_fr>4) y_fr++;
+   if (x_fr > 4) x_fr++;
+   if (y_fr > 4) y_fr++;
 
    // determine direction
    Vector3d dir;
-   switch(extinfo.heading)
+   switch (posInfo.m_heading)
    {
    case 0: dir.Set(1.0, 0.0, 0.0); break;
    case 2: dir.Set(0.0, 1.0, 0.0); break;
@@ -417,42 +406,42 @@ void UnderworldRenderer::RenderTmapObject(const Object& obj, unsigned int x, uns
    glPolygonOffset(-2.0, -2.0);
    glEnable(GL_POLYGON_OFFSET_FILL);
 
-   double u1,v1,u2,v2;
+   double u1, v1, u2, v2;
    u1 = v1 = 0.0;
    u2 = v2 = 1.0;
 
 #ifdef HAVE_DEBUG
    // render "tmap_c" or "tmap_s" overlay
-   GetTextureManager().use(obj.GetObjectInfo().m_itemID+c_stockTexturesObjects);
+   const Underworld::ObjectInfo& info = obj.GetObjectInfo();
+   m_textureManager.Use(info.m_itemID + Base::c_stockTexturesObjects);
 
    glBegin(GL_QUADS);
-   glTexCoord2d(u2,v2); glVertex3d(pos.x+dir.x, pos.y+dir.y, pos.z);
-   glTexCoord2d(u2,v1); glVertex3d(pos.x+dir.x, pos.y+dir.y, pos.z+1.0);
-   glTexCoord2d(u1,v1); glVertex3d(pos.x-dir.x, pos.y-dir.y, pos.z+1.0);
-   glTexCoord2d(u1,v2); glVertex3d(pos.x-dir.x, pos.y-dir.y, pos.z);
+   glTexCoord2d(u2, v2); glVertex3d(pos.x + dir.x, pos.y + dir.y, pos.z);
+   glTexCoord2d(u2, v1); glVertex3d(pos.x + dir.x, pos.y + dir.y, pos.z + 1.0);
+   glTexCoord2d(u1, v1); glVertex3d(pos.x - dir.x, pos.y - dir.y, pos.z + 1.0);
+   glTexCoord2d(u1, v2); glVertex3d(pos.x - dir.x, pos.y - dir.y, pos.z);
    glEnd();
 #endif
 
-   GetTextureManager().use(obj.GetObjectInfo().owner);
+   m_textureManager.Use(info.m_owner);
    u1 = v1 = 0.0;
    u2 = v2 = 1.0;
 
    // use wall color
-   glColor3ub(128,128,128);
+   glColor3ub(128, 128, 128);
 
    glBegin(GL_QUADS);
-   glTexCoord2d(u2,v2); glVertex3d(pos.x+dir.x, pos.y+dir.y, pos.z);
-   glTexCoord2d(u2,v1); glVertex3d(pos.x+dir.x, pos.y+dir.y, pos.z+1.0);
-   glTexCoord2d(u1,v1); glVertex3d(pos.x-dir.x, pos.y-dir.y, pos.z+1.0);
-   glTexCoord2d(u1,v2); glVertex3d(pos.x-dir.x, pos.y-dir.y, pos.z);
+   glTexCoord2d(u2, v2); glVertex3d(pos.x + dir.x, pos.y + dir.y, pos.z);
+   glTexCoord2d(u2, v1); glVertex3d(pos.x + dir.x, pos.y + dir.y, pos.z + 1.0);
+   glTexCoord2d(u1, v1); glVertex3d(pos.x - dir.x, pos.y - dir.y, pos.z + 1.0);
+   glTexCoord2d(u1, v2); glVertex3d(pos.x - dir.x, pos.y - dir.y, pos.z);
    glEnd();
 
    // switch back to object color
-   glColor3ub(192,192,192);
+   glColor3ub(192, 192, 192);
 
    glDisable(GL_POLYGON_OFFSET_FILL);
 }
-*/
 
 /// Renders a billboarded drawn sprite; the texture has to be use()d before
 /// calling, and the max u and v coordinates have to be passed

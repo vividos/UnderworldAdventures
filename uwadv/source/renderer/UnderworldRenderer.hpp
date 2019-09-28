@@ -78,18 +78,17 @@ private:
       bool ignoreUpVector, double u, double v,
       double moveU = 0.0, double moveV = 0.0);
 
-   /*
-      /// renders decal
-      void RenderDecal(const Underworld::Object& obj, unsigned int x, unsigned int y);
+   /// renders decal
+   void RenderDecal(const Underworld::Object& object, unsigned int x, unsigned int y);
 
-      /// renders tmap object
-      void RenderTmapObject(const Underworld::Object& obj, unsigned int x, unsigned int y);
+   /// renders tmap object
+   void RenderTmapObject(const Underworld::Object& object, unsigned int x, unsigned int y);
 
-      /// draws a billboarded quad
-      void DrawBillboardQuad(Vector3d base,
-         double quadwidth, double quadheight,
-         double u1,double v1,double u2,double v2);
-   */
+   /// draws a billboarded quad
+   void DrawBillboardQuad(Vector3d base,
+      double quadwidth, double quadheight,
+      double u1, double v1, double u2, double v2);
+
 private:
    /// texture manager
    TextureManager m_textureManager;
