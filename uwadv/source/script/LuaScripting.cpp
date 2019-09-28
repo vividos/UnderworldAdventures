@@ -536,7 +536,7 @@ void LuaScripting::RegisterFunctions()
    lua_register_table(L, "get_info", player_get_info);
    lua_register_table(L, "set_info", player_set_info);
    lua_register_table(L, "get_attr", player_get_attr);
-   lua_register_table(L, "set_attribute", player_set_attr);
+   lua_register_table(L, "set_attr", player_set_attr);
    lua_register_table(L, "get_skill", player_get_skill);
    lua_register_table(L, "set_skill", player_set_skill);
    lua_setglobal(L, "player");
