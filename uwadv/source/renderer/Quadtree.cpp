@@ -82,7 +82,7 @@ static unsigned int quad_type[64 * 64];
 /// \param frustum view frustum
 /// \param callback callback interface to notify caller of visible tiles
 void Quad::FindVisibleTiles(const Frustum2d& frustum,
-   IQuadtreeCallback& callback)
+   T_onVisibileTileFunc callback)
 {
 #ifdef TEST_QUADTREE
    used_iter++;
@@ -101,7 +101,7 @@ void Quad::FindVisibleTiles(const Frustum2d& frustum,
       for (unsigned int x = m_xmin; x < m_xmax; x++)
          for (unsigned int y = m_ymin; y < m_ymax; y++)
          {
-            callback.OnVisibleTile(x, y);
+            callback(x, y);
 #ifdef TEST_QUADTREE
             quad_type[x * 64 + y] = 1;
 #endif
@@ -124,7 +124,7 @@ void Quad::FindVisibleTiles(const Frustum2d& frustum,
       if (one)
       {
          // and is partly visible
-         callback.OnVisibleTile(m_xmin, m_ymin);
+         callback(m_xmin, m_ymin);
 #ifdef TEST_QUADTREE
          quad_type[xmin * 64 + ymin] = 2;
 #endif

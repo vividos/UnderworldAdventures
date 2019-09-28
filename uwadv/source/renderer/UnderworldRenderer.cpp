@@ -73,7 +73,11 @@ void RendererImpl::Render(const Underworld::Level& level, Vector3d pos,
 
    // find tiles
    Quad q(0, 64, 0, 64);
-   q.FindVisibleTiles(fr, tileRenderer);
+   q.FindVisibleTiles(fr,
+      [&](unsigned int tilePosX, unsigned int tilePosY)
+      {
+         tileRenderer.RenderTile(tilePosX, tilePosY);
+      });
 }
 
 /// Renders all objects in a tile.

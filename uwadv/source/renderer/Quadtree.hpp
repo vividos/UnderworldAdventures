@@ -23,6 +23,7 @@
 
 #include <vector>
 #include <utility>
+#include <functional>
 #include "Math.hpp"
 
 /// \brief view frustum
@@ -47,13 +48,8 @@ protected:
    Vector2d m_points[3];
 };
 
-/// callback class interface
-class IQuadtreeCallback
-{
-public:
-   /// callback method that is called when a visible tile is found
-   virtual void OnVisibleTile(unsigned int xpos, unsigned int ypos) = 0;
-};
+/// callback function for quadtree traversal
+typedef std::function<void(unsigned int xpos, unsigned int ypos)> T_onVisibileTileFunc;
 
 /// represents a single quadtree quad
 class Quad
@@ -64,7 +60,7 @@ public:
       unsigned int ymin, unsigned int ymax);
 
    /// finds all visible tiles in given view frustum
-   void FindVisibleTiles(const Frustum2d& frustum, IQuadtreeCallback& callback);
+   void FindVisibleTiles(const Frustum2d& frustum, T_onVisibileTileFunc callback);
 
    /// returns true when the quad intersects the frustum
    bool CheckIntersection(const Frustum2d& frustum) const;
@@ -78,11 +74,11 @@ protected:
 typedef std::pair<unsigned int, unsigned int> QuadTileCoordinates;
 
 /// visible tile collector helper class
-class QuadtreeTileCollector : public IQuadtreeCallback
+class QuadtreeTileCollector
 {
 public:
-   // method from IQuadtreeCallback
-   virtual void OnVisibleTile(unsigned int xpos, unsigned int ypos) override;
+   // T_onVisibileTileFunc implementation
+   void OnVisibleTile(unsigned int xpos, unsigned int ypos);
 
    /// returns tile list
    std::vector<QuadTileCoordinates>& GetTileList() { return m_tileList; }

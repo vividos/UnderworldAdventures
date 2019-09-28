@@ -41,7 +41,7 @@ LevelTilemapRenderer::LevelTilemapRenderer(const Underworld::Level& level, Rende
 /// know what triangles belong to what tile.
 /// \param xpos tile x coordinate of visible tile
 /// \param ypos tile y coordinate of visible tile
-void LevelTilemapRenderer::OnVisibleTile(unsigned int xpos, unsigned int ypos)
+void LevelTilemapRenderer::RenderTile(unsigned int xpos, unsigned int ypos)
 {
    glPushName((ypos << 8) + xpos);
 

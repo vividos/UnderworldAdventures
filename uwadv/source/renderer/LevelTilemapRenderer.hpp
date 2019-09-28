@@ -32,15 +32,15 @@ class RendererImpl;
 class TextureManager;
 
 /// level tile renderer class
-class LevelTilemapRenderer : public IQuadtreeCallback
+class LevelTilemapRenderer
 {
 public:
    /// ctor
    LevelTilemapRenderer(const Underworld::Level& level, RendererImpl& rendererImpl,
       TextureManager& m_textureManager);
 
-   /// callback function to render tile
-   virtual void OnVisibleTile(unsigned int xpos, unsigned int ypos);
+   /// renders a single tile
+   void RenderTile(unsigned int xpos, unsigned int ypos);
 
 private:
    /// ref to level
