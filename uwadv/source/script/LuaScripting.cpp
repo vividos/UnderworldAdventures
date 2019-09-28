@@ -92,10 +92,15 @@ void LuaScripting::Init(IBasicGame* game)
 
    lua_atpanic(L, OnLuaPanic);
 
-   // open lualib libraries
-   luaopen_base(L);
-   luaopen_string(L);
-   luaopen_math(L);
+   // add Lua libraries
+   luaL_requiref(L, "_G", luaopen_base, 1);
+   lua_pop(L, 1);
+
+   luaL_requiref(L, LUA_STRLIBNAME, luaopen_string, 1);
+   lua_pop(L, 1);
+
+   luaL_requiref(L, LUA_MATHLIBNAME, luaopen_math, 1);
+   lua_pop(L, 1);
 
    // set "self" pointer userdata
    lua_pushlightuserdata(L, this);
