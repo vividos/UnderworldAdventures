@@ -46,13 +46,9 @@ Renderer::~Renderer()
 /// \param game game interface
 void Renderer::InitGame(IGame& game)
 {
-   m_rendererImpl = new RendererImpl;
+   m_rendererImpl = new RendererImpl(game);
    if (m_rendererImpl == NULL)
       throw Base::Exception("couldn't create RendererImpl class");
-
-   GetTextureManager().Init(game);
-   GetModel3DManager().Init(game);
-   GetCritterFramesManager().Init(game.GetSettings(), game.GetResourceManager(), game.GetImageManager());
 
    // culling: only render front face, counter clockwise
    glCullFace(GL_BACK);
@@ -124,21 +120,6 @@ void Renderer::Done()
    m_rendererImpl = NULL;
 
    glDisable(GL_FOG);
-}
-
-TextureManager& Renderer::GetTextureManager()
-{
-   return m_rendererImpl->GetTextureManager();
-}
-
-Model3DManager& Renderer::GetModel3DManager()
-{
-   return m_rendererImpl->GetModel3DManager();
-}
-
-CritterFramesManager& Renderer::GetCritterFramesManager()
-{
-   return m_rendererImpl->GetCritterFramesManager();
 }
 
 /// Sets up camera for 2d user interface rendering. All triangles (e.g. quads)
@@ -289,38 +270,7 @@ void Renderer::SelectPick(const Underworld::Underworld& underworld, unsigned int
 /// \param level level to prepare for
 void Renderer::PrepareLevel(Underworld::Level& level)
 {
-   UaTrace("preparing textures for level... ");
-   TextureManager& textureManager = GetTextureManager();
-
-   // reset stock texture usage
-   textureManager.Reset();
-
-   // prepare all used wall/ceiling textures
-   {
-      const std::set<Uint16>& usedTextures = level.GetTilemap().GetUsedTextures();
-
-      for (Uint16 textureId : usedTextures)
-         textureManager.Prepare(textureId);
-   }
-
-   // prepare all switch, door and tmobj textures
-   {
-      for (unsigned int n = 0; n < 16; n++) textureManager.Prepare(Base::c_stockTexturesSwitches + n);
-      for (unsigned int n = 0; n < 13; n++) textureManager.Prepare(Base::c_stockTexturesDoors + n);
-      for (unsigned int n = 0; n < 33; n++) textureManager.Prepare(Base::c_stockTexturesTmobj + n);
-   }
-
-   // prepare all object images
-   {
-      for (unsigned int n = 0; n < 0x01c0; n++) textureManager.Prepare(Base::c_stockTexturesObjects + n);
-   }
-
-   UaTrace("done\npreparing critter images... ");
-
-   // prepare critters controlled by critter frames manager
-   GetCritterFramesManager().Prepare(&level.GetObjectList());
-
-   UaTrace("done\n");
+   m_rendererImpl->PrepareLevel(level);
 }
 
 /// Does tick processing for renderer for texture and critter frames
@@ -328,21 +278,17 @@ void Renderer::PrepareLevel(Underworld::Level& level)
 /// \param tickRate tick rate in ticks/second
 void Renderer::Tick(double tickRate)
 {
-   // do texture manager tick processing
-   GetTextureManager().Tick(tickRate);
-
-   // do critter frames processing, too
-   GetCritterFramesManager().Tick(tickRate);
+   m_rendererImpl->Tick(tickRate);
 }
 
 void Renderer::GetModel3DBoundingTriangles(unsigned int x,
    unsigned int y, const Underworld::Object& object,
    std::vector<Triangle3dTextured>& allTriangles)
 {
-   Model3DManager& modelManager = GetModel3DManager();
+   Model3DManager& modelManager = m_rendererImpl->GetModel3DManager();
    if (modelManager.IsModelAvailable(object.GetObjectInfo().m_itemID))
    {
-      Vector3d base = m_rendererImpl->CalcObjectPosition(x, y, object);
+      Vector3d base = RendererImpl::CalcObjectPosition(x, y, object);
       modelManager.GetBoundingTriangles(object, base, allTriangles);
    }
 }

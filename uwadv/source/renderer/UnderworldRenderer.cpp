@@ -26,9 +26,62 @@
 
 const double c_renderHeightScale = 0.125 * 0.25;
 
-RendererImpl::RendererImpl()
+RendererImpl::RendererImpl(IGame& game)
    :m_selectionMode(false)
 {
+   m_textureManager.Init(game);
+   m_modelManager.Init(game);
+   m_critterManager.Init(game.GetSettings(), game.GetResourceManager(), game.GetImageManager());
+}
+
+/// Does tick processing for renderer for texture and critter frames
+/// animation.
+/// \param tickRate tick rate in ticks/second
+void RendererImpl::Tick(double tickRate)
+{
+   // do texture manager tick processing
+   m_textureManager.Tick(tickRate);
+
+   // do critter frames processing, too
+   m_critterManager.Tick(tickRate);
+}
+
+/// Prepares renderer for new level.
+/// \param level level to prepare for
+void RendererImpl::PrepareLevel(Underworld::Level& level)
+{
+   UaTrace("preparing textures for level... ");
+
+   // reset stock texture usage
+   m_textureManager.Reset();
+
+   // prepare all used wall/ceiling textures
+   {
+      const std::set<Uint16>& usedTextures = level.GetTilemap().GetUsedTextures();
+
+      for (Uint16 textureId : usedTextures)
+         m_textureManager.Prepare(textureId);
+   }
+
+   // prepare all switch, door and tmobj textures
+   {
+      for (unsigned int n = 0; n < 16; n++) m_textureManager.Prepare(Base::c_stockTexturesSwitches + n);
+      for (unsigned int n = 0; n < 13; n++) m_textureManager.Prepare(Base::c_stockTexturesDoors + n);
+      for (unsigned int n = 0; n < 33; n++) m_textureManager.Prepare(Base::c_stockTexturesTmobj + n);
+   }
+
+   // prepare all object images
+   {
+      for (unsigned int n = 0; n < 0x01c0; n++)
+         m_textureManager.Prepare(Base::c_stockTexturesObjects + n);
+   }
+
+   UaTrace("done\npreparing critter images... ");
+
+   // prepare critters controlled by critter frames manager
+   m_critterManager.Prepare(&level.GetObjectList());
+
+   UaTrace("done\n");
 }
 
 /// Renders the visible parts of a level.
@@ -46,7 +99,7 @@ void RendererImpl::Render(const Underworld::Level& level, Vector3d pos,
       glRotated(-rotateAngle + 90.0, 0.0, 0.0, 1.0);
 
       // move to position on map
-      glTranslated(-pos.x, -pos.y, -pos.z*c_renderHeightScale);
+      glTranslated(-pos.x, -pos.y, -pos.z * c_renderHeightScale);
    }
 
    // calculate billboard right and up vectors
@@ -134,13 +187,13 @@ void RendererImpl::RenderObjects(const Underworld::Level& level,
 void RendererImpl::RenderObject(const Underworld::Level& level,
    const Underworld::Object& obj, unsigned int x, unsigned int y)
 {
-   Uint16 itemId = obj.GetObjectInfo().m_itemID;
-
 #ifndef HAVE_DEBUG
    // don't render invisible objects
    if (obj.GetObjectInfo().m_isHidden)
       return;
 #endif
+
+   Uint16 itemId = obj.GetObjectInfo().m_itemID;
 
    // hack: don't render some objects we currently don't support
    if ((itemId >= 0x00da && itemId <= 0x00df) || itemId == 0x012e)
@@ -152,11 +205,11 @@ void RendererImpl::RenderObject(const Underworld::Level& level,
    Vector3d base = CalcObjectPosition(x, y, obj);
 
    // check if a 3d model is available for that item
-   if (GetModel3DManager().IsModelAvailable(itemId))
+   if (m_modelManager.IsModelAvailable(itemId))
    {
       base.z = posInfo.m_zpos * c_renderHeightScale;
 
-      GetModel3DManager().Render(obj, m_textureManager, base);
+      m_modelManager.Render(obj, m_textureManager, base);
    }
    else
       // critters
@@ -170,7 +223,7 @@ void RendererImpl::RenderObject(const Underworld::Level& level,
          const Underworld::NpcInfo& npcInfo = npc.GetNpcInfo();
 
          // critter object
-         Critter& crit = GetCritterFramesManager().GetCritter(itemId - 0x0040);
+         Critter& crit = m_critterManager.GetCritter(itemId - 0x0040);
          unsigned int curframe = crit.GetFrame(npcInfo.m_animationState, npcInfo.m_animationFrame);
          Texture& tex = crit.GetTexture(curframe);
 
@@ -226,7 +279,7 @@ void RendererImpl::RenderObject(const Underworld::Level& level,
 
          // normal object
          m_textureManager.Use(itemId + Base::c_stockTexturesObjects);
-         RenderSprite(base, 0.5*quadWidth, quadWidth, false, 1.0, 1.0);
+         RenderSprite(base, 0.5 * quadWidth, quadWidth, false, 1.0, 1.0);
       }
 }
 
@@ -431,8 +484,8 @@ void RendererImpl::RenderSprite(Vector3d base,
    base.z *= c_renderHeightScale;
 
    // move base to new location
-   base += m_billboardRightVector * moveU*width;
-   base += m_billboardUpVector * moveV*height;
+   base += m_billboardRightVector * moveU * width;
+   base += m_billboardUpVector * moveV * height;
 
    // calculate vectors for quad
    Vector3d base2(base);
@@ -503,7 +556,7 @@ void RendererImpl::render_aligned_quad(const Object& obj, //const Vector3d& base
 
 /// calculates object position in 3D world
 Vector3d RendererImpl::CalcObjectPosition(unsigned int x, unsigned int y,
-   const Underworld::Object& obj) const
+   const Underworld::Object& obj)
 {
    const Underworld::ObjectPositionInfo& posInfo = obj.GetPosInfo();
 

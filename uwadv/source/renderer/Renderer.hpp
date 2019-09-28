@@ -62,17 +62,6 @@ public:
    /// cleans up renderer
    void Done();
 
-private:
-   /// returns texture manager
-   TextureManager& GetTextureManager();
-
-   /// returns 3d model manager
-   Model3DManager& GetModel3DManager();
-
-   /// returns critter frames manager
-   CritterFramesManager& GetCritterFramesManager();
-
-public:
    /// sets up camera for 2d user interface rendering
    void SetupForUserInterface();
 

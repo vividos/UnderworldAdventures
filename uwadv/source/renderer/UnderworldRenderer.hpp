@@ -30,6 +30,7 @@ namespace Underworld
    class Level;
 }
 class TextureManager;
+class IGame;
 
 /// \brief height scale factor
 /// This value scales down underworld z coordinates to coordinates in the
@@ -42,36 +43,32 @@ class RendererImpl
 {
 public:
    /// ctor
-   RendererImpl();
+   RendererImpl(IGame& game);
+
+   /// prepares renderer for rendering a new level
+   void PrepareLevel(Underworld::Level& level);
+
+   /// called for every game tick
+   void Tick(double tickRate);
+
+   /// sets selection mode on or off
+   void SetSelectionMode(bool enabled) { m_selectionMode = enabled; }
 
    /// renders underworld level at given player pos and angles
    void Render(const Underworld::Level& level, Vector3d pos,
       double panAngle, double rotateAngle, double fieldOfView);
 
-//private:
-//   friend class Renderer;
-
-   /// returns texture manager
-   TextureManager& GetTextureManager() { return m_textureManager; }
-
-   /// returns critter frames manager
-   CritterFramesManager& GetCritterFramesManager() { return m_critterManager; }
-
    /// returns 3d models manager
    Model3DManager& GetModel3DManager() { return m_modelManager; }
 
-//public:
-   /// renders the objects of a tile
+   /// calculates object position in 3d world
+   static Vector3d CalcObjectPosition(unsigned int x, unsigned int y,
+      const Underworld::Object& object);
+
+private:
+   /// renders all objects of a tile
    void RenderObjects(const Underworld::Level& level, unsigned int x, unsigned int y);
 
-   /// sets selection mode on or off
-   void SetSelectionMode(bool enabled) { m_selectionMode = enabled; }
-
-   /// calculates object position in 3d world
-   Vector3d CalcObjectPosition(unsigned int x, unsigned int y,
-      const Underworld::Object& object) const;
-
-protected:
    /// renders a single object
    void RenderObject(const Underworld::Level& level, const Underworld::Object& object,
       unsigned int x, unsigned int y);
@@ -93,7 +90,7 @@ protected:
          double quadwidth, double quadheight,
          double u1,double v1,double u2,double v2);
    */
-protected:
+private:
    /// texture manager
    TextureManager m_textureManager;
 
