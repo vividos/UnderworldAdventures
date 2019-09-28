@@ -57,13 +57,47 @@ void GameLogic::EvaluateUnderworld(double time)
    m_lastEvalTime = time;
 }
 
+static const char* UserActionToDisplayText(UserInterfaceUserAction action)
+{
+   switch (action)
+   {
+   case userActionNothing: return "Nothing";
+   case userActionLookObject: return "LookObject";
+   case userActionLookObjectInventory: return "LookObjectInventory";
+   case userActionLookWall: return "LookWall";
+   case userActionUseObject: return "UseObject";
+   case userActionUseObjectInventory: return "UseObjectInventory";
+   case userActionUseWall: return "UseWall";
+   case userActionGetObject: return "GetObject";
+   case userActionTalkObject: return "TalkObject";
+   case userActionClickedActiveSpell: return "ClickedActiveSpell";
+   case userActionClickedRuneshelf: return "ClickedRuneshelf";
+   case userActionClickedCompass: return "ClickedCompass";
+   case userActionClickedVitalityFlash: return "ClickedVitalityFlask";
+   case userActionClickedManaFlask: return "ClickedManaFlask";
+   case userActionClickedGargoyle: return "ClickedGargoyle";
+   case userActionClickedDragons: return "ClickedDragons";
+   case userActionTrackCreatures: return "TrackCreatures";
+   case userActionSleep: return "Sleep";
+   case userActionCombatEnter: return "CombatEnter";
+   case userActionCombatLeave: return "CombatLeave";
+   case userActionCombatDrawBack: return "CombatDrawBack";
+   case userActionCombatRelease: return "CombatRelease";
+   case userActionTargetSelected: return "TargetSelected";
+   default:
+      UaAssert(false);
+      return "???";
+   }
+}
+
 void GameLogic::UserAction(UserInterfaceUserAction action,
    unsigned int param)
 {
    if (m_scripting == NULL)
       return;
 
-   UaTrace("user action: action=%u param=%u\n", action, param);
+   UaTrace("user action: action=%s param=%u\n",
+      UserActionToDisplayText(action), param);
 
    switch (action)
    {
