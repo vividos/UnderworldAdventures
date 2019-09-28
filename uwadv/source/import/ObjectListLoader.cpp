@@ -115,10 +115,6 @@ Underworld::ObjectPtr ObjectListLoader::AddObject(Uint16 pos, Uint8 tilePosX, Ui
    {
       Uint16 itemID = objInfo.m_itemID;
 
-#ifdef HAVE_DEBUG
-      objInfo.m_isHidden = false; // unhide all objects for debugging
-#endif
-
       // fix is_quantity flag for triggers and "delete object" traps
       if ((itemID >= 0x01a0 && itemID <= 0x01bf) ||
          itemID == 0x018b)
