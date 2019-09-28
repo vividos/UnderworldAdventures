@@ -69,10 +69,16 @@ protected:
    /// returns scripting class from Lua state
    static LuaScripting& GetScriptingFromSelf(lua_State* L);
 
+   /// debug hook called from Lua
    static void DebugHook(lua_State* L, lua_Debug* ar);
 
+   /// translate Lua debug hook event codes to readable text
+   static const char* LuaDebugEventNameFromInt(int event);
+
+   /// debug hook called from Lua; now with actual scripting object
    void DebugHook(lua_Debug* ar);
 
+   /// checks if a breakpoint was reached
    void CheckBreakpoints();
 
    /// waits for the debugger to continue debugging

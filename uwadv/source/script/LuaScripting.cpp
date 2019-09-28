@@ -401,10 +401,24 @@ void LuaScripting::DebugHook(lua_State* L, lua_Debug* ar)
    script.DebugHook(ar);
 }
 
+const char* LuaScripting::LuaDebugEventNameFromInt(int event)
+{
+   switch (event)
+   {
+   case LUA_HOOKCALL: return "call";
+   case LUA_HOOKRET: return "return";
+   case LUA_HOOKTAILCALL: return "tailcall";
+   case LUA_HOOKLINE: return "line";
+   case LUA_HOOKCOUNT: return "count";
+   default:
+      return "???";
+   }
+}
+
 void LuaScripting::DebugHook(lua_Debug* ar)
 {
-   UaTrace("debug: event=%d, name=%s, start=%d, line=%d, in=%s\n",
-      ar->event, ar->name, ar->linedefined, ar->currentline, ar->source);
+   UaTrace("debug: event=%s, name=%s, start=%d, line=%d, in=%s\n",
+      LuaDebugEventNameFromInt(ar->event), ar->name, ar->linedefined, ar->currentline, ar->source);
 
    if (ar->source != NULL)
    {
