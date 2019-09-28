@@ -410,9 +410,9 @@ void UnderworldRenderer::RenderTmapObject(const Underworld::Object& obj, unsigne
    u1 = v1 = 0.0;
    u2 = v2 = 1.0;
 
+   const Underworld::ObjectInfo& info = obj.GetObjectInfo();
 #ifdef HAVE_DEBUG
    // render "tmap_c" or "tmap_s" overlay
-   const Underworld::ObjectInfo& info = obj.GetObjectInfo();
    m_textureManager.Use(info.m_itemID + Base::c_stockTexturesObjects);
 
    glBegin(GL_QUADS);
