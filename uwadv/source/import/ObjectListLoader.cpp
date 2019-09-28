@@ -26,58 +26,58 @@
 #include "Constants.hpp"
 
 using Import::GetBits;
-
 using Import::ObjectListLoader;
 
-void ObjectListLoader::FollowLink(Uint16 link, Uint8 xpos, Uint8 ypos)
+void ObjectListLoader::FollowLink(Uint16 link, Uint8 tilePosX, Uint8 tilePosY)
 {
    while (link != 0)
    {
-      UaAssert(link > 0);
-
       // object already visited?
-      if (m_objectList.GetObject(link).get() != NULL)
+      if (m_objectList.GetObject(link).get() != nullptr)
       {
          // object is chained from more than one object
          Underworld::ObjectPositionInfo& posInfo = m_objectList.GetObject(link)->GetPosInfo();
 
          // object already has valid tile coordinates?
-         if (posInfo.m_xpos == Underworld::c_tileNotAPos && posInfo.m_ypos == Underworld::c_tileNotAPos)
+         if (posInfo.m_tileX == Underworld::c_tileNotAPos && posInfo.m_tileY == Underworld::c_tileNotAPos)
          {
             // no, so set them
-            posInfo.m_xpos = xpos;
-            posInfo.m_ypos = ypos;
+            posInfo.m_tileX = tilePosX;
+            posInfo.m_tileY = tilePosY;
          }
-         /*
-                  Uint16 itemID = m_objectList.GetObject(link)->GetObjectInfo().m_itemID;
-                  UaTrace("object already visited: pos%04x, item_id=%04x, at x=%02x y=%02x\n",
-                     link, itemID, posInfo.m_xpos, posInfo.m_ypos);
-         */
+#ifdef HAVE_DEBUG
+         else if (tilePosX != Underworld::c_tileNotAPos && tilePosY != Underworld::c_tileNotAPos)
+         {
+            Uint16 itemID = m_objectList.GetObject(link)->GetObjectInfo().m_itemID;
+            UaTrace("object already visited: pos=%04x, itemID=%04x, at x=%02x y=%02x\n",
+               link, itemID, posInfo.m_tileX, posInfo.m_tileY);
+         }
+#endif
          return;
       }
 
       // add object to object list
-      Uint8* pNpcData = link < 0x0100 ? &m_npcInfosList[link * 19] : NULL;
+      Uint8* npcInfos = link < 0x0100 ? &m_npcInfosList[link * 19] : nullptr;
 
-      Underworld::ObjectPtr obj = AddObject(link, xpos, ypos,
-         &m_objectWordsList[link * 4], pNpcData);
+      Underworld::ObjectPtr obj = AddObject(link, tilePosX, tilePosY,
+         &m_objectWordsList[link * 4], npcInfos);
 
       // check special property and add recursively
       if (!obj->GetObjectInfo().m_isQuantity)
       {
-         Uint16 uiQuantity = obj->GetObjectInfo().m_quantity;
-         if (uiQuantity != 0)
-            FollowLink(uiQuantity, Underworld::c_tileNotAPos, Underworld::c_tileNotAPos);
+         Uint16 quantity = obj->GetObjectInfo().m_quantity;
+         if (quantity != 0)
+            FollowLink(quantity, Underworld::c_tileNotAPos, Underworld::c_tileNotAPos);
       }
 
       link = obj->GetObjectInfo().m_link;
    }
 }
 
-Underworld::ObjectPtr ObjectListLoader::AddObject(Uint16 uiPos, Uint8 xpos, Uint8 ypos,
-   Uint16 uiObjectWord[4], Uint8* npcInfos)
+Underworld::ObjectPtr ObjectListLoader::AddObject(Uint16 pos, Uint8 tilePosX, Uint8 tilePosY,
+   Uint16 objectWord[4], Uint8* npcInfos)
 {
-   Underworld::ObjectPtr obj = uiPos < 0x100 ?
+   Underworld::ObjectPtr obj = pos < 0x100 ?
       Underworld::ObjectPtr(new Underworld::NpcObject) : Underworld::ObjectPtr(new Underworld::Object);
 
    // set object properties
@@ -85,37 +85,39 @@ Underworld::ObjectPtr ObjectListLoader::AddObject(Uint16 uiPos, Uint8 xpos, Uint
    Underworld::ObjectPositionInfo& objPosInfo = obj->GetPosInfo();
 
    // word 0000
-   objInfo.m_itemID = GetBits(uiObjectWord[0], 0, 9);
-   objInfo.m_flags = GetBits(uiObjectWord[0], 9, 4);
-   objInfo.m_isEnchanted = GetBits(uiObjectWord[0], 12, 1) != 0;
-   objInfo.m_isQuantity = GetBits(uiObjectWord[0], 15, 1) != 0;
-   objInfo.m_isHidden = GetBits(uiObjectWord[0], 14, 1) != 0;
+   objInfo.m_itemID = GetBits(objectWord[0], 0, 9);
+   objInfo.m_flags = GetBits(objectWord[0], 9, 4);
+   objInfo.m_isEnchanted = GetBits(objectWord[0], 12, 1) != 0;
+   objInfo.m_isQuantity = GetBits(objectWord[0], 15, 1) != 0;
+   objInfo.m_isHidden = GetBits(objectWord[0], 14, 1) != 0;
 
    // word 0002
-   objPosInfo.m_zpos = static_cast<Uint8>(GetBits(uiObjectWord[1], 0, 7));
-   objPosInfo.m_heading = static_cast<Uint8>(GetBits(uiObjectWord[1], 7, 3));
-   objPosInfo.m_ypos = static_cast<Uint8>(GetBits(uiObjectWord[1], 10, 3));
-   objPosInfo.m_xpos = static_cast<Uint8>(GetBits(uiObjectWord[1], 13, 3));
+   objPosInfo.m_zpos = static_cast<Uint8>(GetBits(objectWord[1], 0, 7));
+   objPosInfo.m_heading = static_cast<Uint8>(GetBits(objectWord[1], 7, 3));
+   objPosInfo.m_ypos = static_cast<Uint8>(GetBits(objectWord[1], 10, 3));
+   objPosInfo.m_xpos = static_cast<Uint8>(GetBits(objectWord[1], 13, 3));
 
    // word 0004
-   objInfo.m_quality = GetBits(uiObjectWord[2], 0, 6);
-   objInfo.m_link = GetBits(uiObjectWord[2], 6, 10);
+   objInfo.m_quality = GetBits(objectWord[2], 0, 6);
+   objInfo.m_link = GetBits(objectWord[2], 6, 10);
 
    // word 0006
-   objInfo.m_owner = GetBits(uiObjectWord[3], 0, 6);
-   objInfo.m_quantity = GetBits(uiObjectWord[3], 6, 10);
+   objInfo.m_owner = GetBits(objectWord[3], 0, 6);
+   objInfo.m_quantity = GetBits(objectWord[3], 6, 10);
 
-   objPosInfo.m_tileX = xpos;
-   objPosInfo.m_tileY = ypos;
+   objPosInfo.m_tileX = tilePosX;
+   objPosInfo.m_tileY = tilePosY;
 
-   if (uiPos < 0x0100)
+   if (pos < 0x0100)
       AddNpcInfos(obj, npcInfos);
 
    // object modifications
    {
       Uint16 itemID = objInfo.m_itemID;
 
-      objInfo.m_isHidden = false; // unhide all objects for now
+#ifdef HAVE_DEBUG
+      objInfo.m_isHidden = false; // unhide all objects for debugging
+#endif
 
       // fix is_quantity flag for triggers and "delete object" traps
       if ((itemID >= 0x01a0 && itemID <= 0x01bf) ||
@@ -147,7 +149,7 @@ Underworld::ObjectPtr ObjectListLoader::AddObject(Uint16 uiPos, Uint8 xpos, Uint
       }
    }
 
-   m_objectList.SetObject(uiPos, obj);
+   m_objectList.SetObject(pos, obj);
    return obj;
 }
 

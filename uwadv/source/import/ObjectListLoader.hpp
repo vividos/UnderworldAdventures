@@ -41,11 +41,11 @@ namespace Import
       {}
 
       /// follows link and adds all objects it finds (may get called recursively)
-      void FollowLink(Uint16 link, Uint8 xpos, Uint8 ypos);
+      void FollowLink(Uint16 link, Uint8 tilePosX, Uint8 tilePosY);
 
       /// adds object to object list
-      Underworld::ObjectPtr AddObject(Uint16 uiPos, Uint8 xpos, Uint8 ypos,
-         Uint16 uiObjectWord[4], Uint8* npcInfos);
+      Underworld::ObjectPtr AddObject(Uint16 uiPos, Uint8 tilePosX, Uint8 tilePosY,
+         Uint16 objectWord[4], Uint8* npcInfos);
 
       /// adds NPC infos to object
       void AddNpcInfos(Underworld::ObjectPtr& obj, Uint8* npcInfos);
