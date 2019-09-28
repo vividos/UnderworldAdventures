@@ -16,8 +16,8 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file RendererImpl.hpp
-/// \brief renderer implementation class
+/// \file UnderworldRenderer.hpp
+/// \brief renderer for the Underworld object
 //
 #pragma once
 
@@ -39,6 +39,9 @@ public:
    void Render(const Underworld::Level& level, Vector3d pos,
       double panAngle, double rotateAngle, double fieldOfView);
 
+//private:
+//   friend class Renderer;
+
    /// returns texture manager
    TextureManager& GetTextureManager() { return m_textureManager; }
 
@@ -48,6 +51,7 @@ public:
    /// returns 3d models manager
    Model3DManager& GetModel3DManager() { return m_modelManager; }
 
+//public:
    /// renders the objects of a tile
    void RenderObjects(const Underworld::Level& level, unsigned int x, unsigned int y);
 

@@ -16,11 +16,11 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file RendererImpl.cpp
-/// \brief renderer implementation
+/// \file UnderworldRenderer.cpp
+/// \brief Underworld renderer implementation
 //
 #include "pch.hpp"
-#include "RendererImpl.hpp"
+#include "UnderworldRenderer.hpp"
 #include "Quadtree.hpp"
 #include "GeometryProvider.hpp"
 #include "Constants.hpp"
