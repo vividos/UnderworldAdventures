@@ -47,6 +47,87 @@
                 updated occasionally.
             </p>
 
+            <h3>2019-09-28</h3>
+            <p>
+                I'm occasionally working on uwadv, this time refactoring some classes in the
+                renderer in order to fix bugs or enable some commented out code. From time to time
+                I get the thought of "how could I possibly write such bad code", but I guess so is
+                developer's life cycle.
+            </p>
+
+            <p>
+                Decals and tmap objects (levers and dials) are now rendered again. Also there was
+                some fixes to the object loader that would not link objects to their tiles,
+                resulting in no objects displayed at all. Also some fixes for Lua code that should
+                be written differently in Lua 5.3.
+            </p>
+
+            <p>
+                In other news, the AppVeyor build service that builds the whole uwadv project om
+                every check in now produces versioned zip files, and also the main executables now
+                all have a version info resource.
+            </p>
+
+            <hr />
+
+            <h3>2019-09-19</h3>
+            <p>
+                I just noticed that the uwadv project was mentioned on
+                <a href="http://gigi.nullneuron.net/ultima/index.php">Dino's Ultima Page</a>, one
+                of the view still active Ultima fan pages. I occasionally read the pages for
+                details on Ultima Underworld or just to reminisce about the old days playing
+                Ultima games.
+            </p>
+
+            <hr />
+
+            <h3>2019-05-09</h3>
+
+            <p>
+                I worked on collision detection, writing unit test and trying to fix bugs when
+                walking through the level. Telemachos' tutorial from past times was a great help,
+                but over the years some people noticed some numerical instabilities in the
+                algorithm, leading to some articles. I tried to incorporate the fixes proposed,
+                but am not entirely satisfied.
+            </p>
+
+            <p>
+                I also merged in the changes in the MIDI code from the Exult source that shares
+                the code with Pentagram (and now also with Underworld Adventures). I figured out
+                that the file "uw.mt" in Ultima Underworld is a Timbre library (whatever that is)
+                and that the MIDI code can load the file. I'm not sure if there's an audible
+                difference, though.
+            </p>
+
+            <hr />
+
+            <h3>2019-04-09</h3>
+            <hr />
+
+            <p>
+                I'm currently working on cleaning up the code base from the refactoring that I
+                started in 2003, before quit working on the project in 2007. I'm using Visual
+                Studio 2019 Community edition, which works great and even got back the resource
+                editor. Some tools are already ported, some are still missing. I also updated to
+                the latest libraries of SDL2 and zzip.
+            </p>
+
+            <p>
+                Back then I started to improve the code base by rewriting the libraries, starting
+                from the base library and half-finishing the import library. Nowadays I would do
+                things differently, trying to evolve the code base, but it seems I'm a bit smarter
+                after 16 years. There's lots to be done, and no set time for a new release, since
+                I'm only working on the project occasionally.
+            </p>
+
+            <p>
+                One of the first new features is that converting the file names of the original
+                uw1 or uw2 files to lowercase isn't necessary anymore, as the resource manager in
+                uwadv now builds a mapping from logical filenames to actual filenames on the hard
+                disk. The same resource manager allows that the game files can directly be loaded
+                from a zip archive, so extracting the game files isn't necessary anymore.
+            </p>
+
             <h3>2019-02-02</h3>
             <p>
                 Today I moved the source code for Underworld Adventures from SourceForge's CVS
