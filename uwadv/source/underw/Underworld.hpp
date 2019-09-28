@@ -34,7 +34,6 @@ namespace Base
 namespace Underworld
 {
    /// The underworld
-   /// \todo add init'ing of m_properties
    class Underworld
    {
    public:
