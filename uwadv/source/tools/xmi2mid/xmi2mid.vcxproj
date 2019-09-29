@@ -33,11 +33,11 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\uwadv-debug.props" />
+    <Import Project="..\..\uwadv-debug.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\uwadv-release.props" />
+    <Import Project="..\..\uwadv-release.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -55,12 +55,9 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ProgramDataBaseFileName>.\../output/release/xmi2mid/intermediate\</ProgramDataBaseFileName>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <Midl>
-      <TypeLibraryName>.\../output/release/xmi2mid\xmi2mid.tlb</TypeLibraryName>
-    </Midl>
+    <Midl />
     <ResourceCompile>
       <Culture>0x0409</Culture>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -76,9 +73,7 @@
       <PreprocessorDefinitions>WIN32;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <Midl>
-      <TypeLibraryName>.\../output/debug/xmi2mid\xmi2mid.tlb</TypeLibraryName>
-    </Midl>
+    <Midl />
     <ResourceCompile>
       <Culture>0x0409</Culture>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -93,7 +88,7 @@
     <ClCompile Include="xmi2mid.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\audio\audio.vcxproj">
+    <ProjectReference Include="..\..\audio\audio.vcxproj">
       <Project>{38a9e85a-3f97-4589-b801-dd7097fc14da}</Project>
     </ProjectReference>
   </ItemGroup>

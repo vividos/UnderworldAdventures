@@ -21,9 +21,9 @@
 /// this program converts the first track of an XMIDI file (*.xmi) to a midi
 /// file (*.mid), using MT32 to GM conversion
 //
-#include "../audio/midi/XMidiFile.h"
-#include "../audio/midi/XMidiEventList.h"
-#include "../audio/IODataSource.hpp"
+#include "../../audio/midi/XMidiFile.h"
+#include "../../audio/midi/XMidiEventList.h"
+#include "../../audio/IODataSource.hpp"
 
 int main(int argc, char* argv[])
 {
