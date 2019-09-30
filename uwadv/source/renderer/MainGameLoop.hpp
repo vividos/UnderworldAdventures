@@ -21,7 +21,10 @@
 //
 #pragma once
 
+#include <string>
 #include <atomic>
+
+union SDL_Event;
 
 /// main game loop for SDL2 game
 class MainGameLoop
@@ -58,6 +61,7 @@ private:
    /// window title to use for formatting
    std::string m_windowTitle;
 
+   /// indicates if frame count should be updated in the title
    bool m_updateFrameCount;
 
    /// indicates that the game loop should exit
@@ -66,4 +70,3 @@ private:
    /// indicates if the application is currently active (in foreground)
    bool m_appActive;
 };
-

@@ -47,6 +47,9 @@
     <ClCompile Include="LevelTilemapRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MainGameLoop.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Critter.hpp">
@@ -83,6 +86,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LevelTilemapRenderer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MainGameLoop.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
