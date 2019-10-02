@@ -60,7 +60,7 @@
     <ResourceCompile Include="..\win32\uwadv_res.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
-    <ResourceCompile Include="versioninfo.rc">
+    <ResourceCompile Include="..\win32\versioninfo.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
