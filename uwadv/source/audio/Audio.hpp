@@ -160,6 +160,16 @@ namespace Audio
       bool IsMusicFadeoutOrStopped() const;
 
    private:
+      /// init SDL audio subsystem and SDL_mixer
+      void InitAudioSubsystem();
+
+      /// loads music playlist
+      void LoadMusicPlaylist(const Base::Settings& settings, const Base::ResourceManager& resourceManager);
+
+      /// loads timbre library from game files
+      void LoadTimbreLibrary();
+
+   private:
       /// audio manager internal data
       std::unique_ptr<Detail::AudioManagerData> m_data;
    };

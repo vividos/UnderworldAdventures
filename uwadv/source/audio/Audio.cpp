@@ -117,48 +117,11 @@ AudioManager::AudioManager(const Base::Settings& settings, const Base::ResourceM
       return;
    }
 
-   // init SDL audio subsystem and SDL_mixer
-   {
-      SDL_Init(SDL_INIT_AUDIO);
-      Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 4096);
-      Mix_ChannelFinished(Detail::MixerChannelFinished);
+   InitAudioSubsystem();
 
-      UaTrace(" %s\n", Mix_GetError());
+   LoadMusicPlaylist(settings, resourceManager);
 
-      // print out SDL_mixer version
-      const SDL_version* mixerVersion = Mix_Linked_Version();
-      UaTrace("using SDL_mixer %u.%u.%u\n",
-         mixerVersion->major, mixerVersion->minor, mixerVersion->patch);
-
-      int iSampleFrequency = 0;
-      Uint16 uiFormat = 0;
-      int iChannels = 0;
-      Mix_QuerySpec(&iSampleFrequency, &uiFormat, &iChannels);
-
-      UaTrace("samplerate: %u Hz, %u channels, format: %s\n",
-         iSampleFrequency, iChannels,
-         uiFormat == AUDIO_U8 ? "U8" :
-         uiFormat == AUDIO_S8 ? "S8" :
-         uiFormat == AUDIO_U16LSB ? "U16LSB" :
-         uiFormat == AUDIO_S16LSB ? "S16LSB" :
-         uiFormat == AUDIO_U16MSB ? "U16MSB" :
-         uiFormat == AUDIO_S16MSB ? "S16MSB" : "unknown");
-   }
-
-   // load playlist
-   {
-      std::string playlistFilename =
-         settings.GetString(Base::settingGamePrefix) + "/audio/music.m3u";
-
-      Base::SDL_RWopsPtr rwops = resourceManager.GetResourceFile(playlistFilename);
-      if (rwops.get() != NULL)
-         m_data->GetPlaylist() = Playlist(settings, rwops);
-   }
-
-   UaTrace("loading timbre library from file sound/uw.mt...\n");
-
-   Base::SDL_RWopsPtr rwops = m_data->GetResourceManager().GetUnderworldFile(Base::resourceGameUw, "sound/uw.mt");
-   m_data->GetMidiPlayer().LoadTimbreLibrary(rwops, true);
+   LoadTimbreLibrary();
 
    UaTrace("\n");
 }
@@ -329,6 +292,69 @@ bool AudioManager::IsMusicFadeoutOrStopped() const
 {
    return MIX_FADING_OUT == Mix_FadingMusic() ||
       m_data->GetCurrentMusicTrackData() == NULL;
+}
+
+void AudioManager::InitAudioSubsystem()
+{
+   SDL_Init(SDL_INIT_AUDIO);
+   Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 4096);
+   Mix_ChannelFinished(Detail::MixerChannelFinished);
+
+   UaTrace(" %s\n", Mix_GetError());
+
+   // print out SDL_mixer version
+   const SDL_version* mixerVersion = Mix_Linked_Version();
+   UaTrace("using SDL_mixer %u.%u.%u\n",
+      mixerVersion->major, mixerVersion->minor, mixerVersion->patch);
+
+   int iSampleFrequency = 0;
+   Uint16 format = 0;
+   int numChannels = 0;
+   Mix_QuerySpec(&iSampleFrequency, &format, &numChannels);
+
+   UaTrace("samplerate: %u Hz, %u channels, format: %s\n",
+      iSampleFrequency, numChannels,
+      format == AUDIO_U8 ? "U8" :
+      format == AUDIO_S8 ? "S8" :
+      format == AUDIO_U16LSB ? "U16LSB" :
+      format == AUDIO_S16LSB ? "S16LSB" :
+      format == AUDIO_U16MSB ? "U16MSB" :
+      format == AUDIO_S16MSB ? "S16MSB" : "unknown");
+}
+
+void AudioManager::LoadMusicPlaylist(const Base::Settings& settings, const Base::ResourceManager& resourceManager)
+{
+   // first try digital music soundtrack
+   std::string digitalMusicPlaylistFilename =
+      settings.GetString(Base::settingGamePrefix) + "/audio/digitalmusic.m3u";
+
+   Base::SDL_RWopsPtr rwops = resourceManager.GetResourceFile(digitalMusicPlaylistFilename);
+   if (rwops.get() != NULL)
+   {
+      m_data->GetPlaylist() = Playlist(settings, rwops);
+      return;
+   }
+
+   // then try MIDI soundtrack
+   std::string playlistFilename =
+      settings.GetString(Base::settingGamePrefix) + "/audio/music.m3u";
+
+   rwops = resourceManager.GetResourceFile(playlistFilename);
+   if (rwops.get() != NULL)
+      m_data->GetPlaylist() = Playlist(settings, rwops);
+}
+
+void AudioManager::LoadTimbreLibrary()
+{
+   if (m_data->GetResourceManager().IsUnderworldFileAvailable("sound/uw.mt"))
+   {
+      UaTrace("loading timbre library from file sound/uw.mt...\n");
+
+      Base::SDL_RWopsPtr rwops = m_data->GetResourceManager().GetUnderworldFile(Base::resourceGameUw, "sound/uw.mt");
+      m_data->GetMidiPlayer().LoadTimbreLibrary(rwops, true);
+   }
+   else
+      UaTrace("no timbre library file sound/uw.mt available.\n");
 }
 
 /*
