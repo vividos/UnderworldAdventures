@@ -154,6 +154,9 @@ namespace Underworld
       /// drops floating object into container given by container position
       bool DropFloatingObject(Uint16 containerPos, Uint16 objectIndex = c_inventorySlotNoItem);
 
+      /// inserts new item and makes it floating; returns slot
+      Uint16 InsertFloatingItem(const ObjectInfo& info);
+
       // loading / saving
 
       /// loads inventory from savegame

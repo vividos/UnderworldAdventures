@@ -21,6 +21,7 @@
 //
 #include "pch.hpp"
 #include "Inventory.hpp"
+#include "Object.hpp"
 #include "Savegame.hpp"
 
 using Underworld::Inventory;
@@ -377,6 +378,25 @@ bool Inventory::DropFloatingObject(Uint16 containerPos, Uint16 objectPos)
    }
 
    return false;
+}
+
+Uint16 Inventory::InsertFloatingItem(const ::Underworld::ObjectInfo& info)
+{
+   // already have a floating object?
+   if (m_floatingObjectPos != c_inventorySlotNoItem)
+      return c_inventorySlotNoItem;
+
+   Uint16 pos = Allocate();
+   if (pos == c_inventorySlotNoItem)
+      return pos;
+
+   ::Underworld::ObjectInfo& newobj = GetObjectInfo(pos);
+   newobj = info;
+   newobj.m_link = 0;
+
+   FloatObject(pos);
+
+   return pos;
 }
 
 bool Inventory::DropOnObject(Uint16 /*containerPos*/, Uint16 /*pos*/)
