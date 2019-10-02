@@ -119,3 +119,29 @@ function on_change_level()
    -- fun_replace_tilemap_solids()
 
 end
+
+
+-- called when user clicked on the compass
+function ui_clicked_compass()
+   -- TODO implement
+end
+
+-- called when user clicked on the vitality flask
+function ui_clicked_vitality_flask()
+   -- TODO implement
+end
+
+-- called when user clicked on the mana flask
+function ui_clicked_mana_flask()
+   -- TODO implement
+end
+
+-- called when user clicked on the gargoyle above the 3D window
+function ui_clicked_gargoyle()
+   -- TODO implement
+end
+
+-- called when user clicked on one of the dragons
+function ui_clicked_dragons()
+   -- TODO implement
+end
