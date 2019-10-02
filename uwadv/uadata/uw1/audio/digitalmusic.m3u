@@ -1,0 +1,15 @@
+#
+# Ultima Underworld 1 digital music playlist
+#
+%uadata%/uw1/audio/uw01_intro.ogg
+%uw-path%sound/uw02.xmi
+%uadata%/uw1/audio/uw03_descent.ogg
+%uadata%/uw1/audio/uw04_wanderer.ogg
+%uw-path%sound/uw05.xmi
+%uw-path%sound/uw06.xmi
+%uw-path%sound/uw07.xmi
+%uw-path%sound/uw10.xmi
+%uw-path%sound/uw11.xmi
+%uw-path%sound/uw12.xmi
+%uw-path%sound/uw13.xmi
+%uadata%/uw1/audio/uw15_maps_legends.ogg
