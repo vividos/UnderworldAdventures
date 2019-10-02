@@ -114,7 +114,7 @@ void PlayerPhysicsObject::SetNewElapsedTime(double elapsedTime)
 
 Vector3d PlayerPhysicsObject::GetPosition()
 {
-   return Vector3d(m_player.GetXPos(), m_player.GetYPos(), m_player.GetHeight() + c_playerEllipsoidZ / 2.0);
+   return Vector3d(m_player.GetXPos(), m_player.GetYPos(), m_player.GetHeight() + c_playerEllipsoidZ / 2.0 + 0.05);
 }
 
 void PlayerPhysicsObject::SetPosition(Vector3d& pos)
