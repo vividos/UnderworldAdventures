@@ -91,6 +91,11 @@ void LevelImporter::LoadTilemap(Underworld::Tilemap& tilemap, std::vector<Uint16
          tileInfo.m_textureFloor = textureMapping[floorIndex + (uw2Mode ? 0 : 48)];
          tileInfo.m_textureCeiling = textureMapping[uw2Mode ? 32 : (9 + 48)];
 
+         std::set<Uint16>& setUsedTextures = tilemap.GetUsedTextures();
+         setUsedTextures.insert(tileInfo.m_textureWall);
+         setUsedTextures.insert(tileInfo.m_textureFloor);
+         setUsedTextures.insert(tileInfo.m_textureCeiling);
+
          // tile object list start
          Uint16 uiLink = static_cast<Uint16>(GetBits(uiTileInfo2, 6, 10));
          tileStartLinkList.SetLinkStart(xpos, ypos, uiLink);
