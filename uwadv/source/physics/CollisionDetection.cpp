@@ -29,6 +29,9 @@
 #include "Plane3d.hpp"
 #include <algorithm>
 
+// define this to get verbose debug output for collision detection
+#undef DEBUG_OUTPUT
+
 /// minimum distance
 const double c_physicsMinDistance = 0.005;
 
@@ -79,8 +82,8 @@ void CollisionDetection::TrackObject(PhysicsBody& body)
    Vector3d pos = body.GetPosition();
    Vector3d dir = body.GetDirection();
 
-#ifdef HAVE_DEBUG
-   bool debugOutput = body.GetDirection().Length() > 1e-3;
+#if defined(HAVE_DEBUG) && defined(DEBUG_OUTPUT)
+   bool debugOutput = dir.Length() > 1e-6 && dir.z >= 0;
 #else
    bool debugOutput = false;
 #endif
@@ -124,8 +127,8 @@ bool CollisionDetection::CollideAndSlide(PhysicsBody& body, Vector3d& pos, Vecto
    CollisionData data;
    data.ellipsoid = body.GetEllipsoid();
    data.foundCollision = false;
-#ifdef HAVE_DEBUG
-   data.debugOutput = velocity.Length() > 1e-3 /* && velocity.z >= 0*/;
+#if defined(HAVE_DEBUG) && defined(DEBUG_OUTPUT)
+   data.debugOutput = velocity.Length() > 1e-6 && velocity.z >= 0;
 #endif
 
    UaAssert(data.ellipsoid.Length() > 1e-6); // ellipsoid must not be of zero size
@@ -166,6 +169,9 @@ bool CollisionDetection::CollideWithWorld(CollisionData& data,
    data.normalizedVelocity = data.velocity = velocity;
    data.normalizedVelocity.Normalize();
    data.foundCollision = false;
+
+   if (data.debugOutput)
+      UaTrace("velocity in espace (%2.3f / %2.3f / %2.3f)\n\n", velocity.x, velocity.y, velocity.z);
 
    // check triangle mesh collision (calls the collision routines)
    CheckCollision(data);
