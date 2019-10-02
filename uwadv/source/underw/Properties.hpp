@@ -209,7 +209,7 @@ namespace Underworld
       const CommonObjectProperty& GetCommonProperty(Uint16 itemId) const
       {
          UaAssert(itemId <= 0x01ff);
-         UaAssert(itemId < m_meleeWeaponPropertiesList.size());
+         UaAssert(itemId < m_commonObjectPropertyList.size());
          return m_commonObjectPropertyList[itemId];
       }
 
