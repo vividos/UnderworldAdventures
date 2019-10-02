@@ -101,8 +101,8 @@ end
 -- called when (trying to) picking up an object
 function object_get(objpos)
 
-   -- check if the user already has item in hand
-   if inventory.float_get_item() ~= inv_item_none
+   -- check if the user already has an item in hand
+   if inventory.float_get_item() ~= inv_slot_no_item
    then
       return
    end
@@ -118,9 +118,9 @@ function object_get(objpos)
    end
 
    -- check if object is near enough
-   local xdist,ydist = player.get_pos()
-   xdist = xdist - (objinfo.tilex + objinfo.xpos / 8.0)
-   ydist = ydist - (objinfo.tiley + objinfo.ypos / 8.0)
+   local player_info = player.get_info();
+   local xdist = player_info.xpos - (objinfo.tilex + objinfo.xpos / 8.0)
+   local ydist = player_info.ypos - (objinfo.tiley + objinfo.ypos / 8.0)
 
    -- further away than 1.4 tiles?
    local dist = xdist*xdist + ydist*ydist
@@ -133,10 +133,6 @@ function object_get(objpos)
    end
 
    -- add object to inventory and float it
-   if inventory.float_add_item(objpos) ~= ua_slot_no_item
-   then
-      -- remove from master object list
-      objlist.delete(objpos)
-   end
+   inventory.float_add_item(objpos)
 
 end

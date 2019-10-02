@@ -1,6 +1,6 @@
 --
 -- Underworld Adventures - an Ultima Underworld remake project
--- Copyright (c) 2002,2003,2004 Underworld Adventures Team
+-- Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -106,7 +106,7 @@ function inventory_look(inv_pos)
 
    inv_objinfo = inventory.get_info(inv_pos)
 
-   if inv_objinfo.item_id ~= inv_item_none
+   if inv_objinfo.item_id ~= inv_slot_no_item
    then
       look_at_objinfo(inv_objinfo,1)
    end

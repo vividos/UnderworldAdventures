@@ -1,6 +1,6 @@
 --
 -- Underworld Adventures - an Ultima Underworld remake project
--- Copyright (c) 2002 Underworld Adventures Team
+-- Copyright (c) 2002,2019 Underworld Adventures Team
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -90,4 +90,4 @@ tilemap_type_slope_w = 9
 
 
 -- inventory constants
-inv_item_none = 0xffff
+inv_slot_no_item = 0xffff
