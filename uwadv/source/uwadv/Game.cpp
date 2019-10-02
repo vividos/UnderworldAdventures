@@ -26,6 +26,7 @@
 #include "screens/UwadvMenuScreen.hpp"
 #include "screens/OriginalIngameScreen.hpp"
 #include "screens/StartSplashScreen.hpp"
+#include "import/Import.hpp"
 #include "import/GameStringsImporter.hpp"
 #include "physics/GeometryProvider.hpp"
 #include <ctime>
@@ -455,6 +456,8 @@ void Game::InitGame()
    Import::GameStringsImporter importer(GetGameStrings());
    importer.LoadDefaultStringsPakFile(GetResourceManager());
    UaTrace("done\n\n");
+
+   Import::ImportProperties(GetResourceManager(), GetGameLogic().GetObjectProperties());
 
    m_audioManager = std::make_unique<Audio::AudioManager>(GetSettings(), GetResourceManager());
 

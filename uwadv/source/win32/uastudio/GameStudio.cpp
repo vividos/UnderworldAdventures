@@ -253,6 +253,8 @@ void GameStudio::InitGame()
    Import::GameStringsImporter importer(GetGameStrings());
    importer.LoadDefaultStringsPakFile(GetResourceManager());
 
+   Import::ImportProperties(GetResourceManager(), GetGameLogic().GetObjectProperties());
+
    UaTrace("using generic uw-path: %s\n",
       m_settings.GetString(Base::settingUnderworldPath).c_str());
 
