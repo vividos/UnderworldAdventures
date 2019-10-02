@@ -554,6 +554,13 @@ void LuaScripting::RegisterFunctions()
    lua_register_table(L, "insert", objlist_insert);
    lua_setglobal(L, "objlist");
 
+   // inventory object
+   lua_newtable(L);
+   lua_register_table(L, "get_info", inventory_get_info);
+   lua_register_table(L, "float_get_item", inventory_float_get_item);
+   lua_register_table(L, "float_add_item", inventory_float_add_item);
+   lua_setglobal(L, "inventory");
+
    // tilemap object
    lua_newtable(L);
    lua_register_table(L, "get_info", tilemap_get_info);
@@ -911,8 +918,8 @@ int LuaScripting::objlist_get_info(lua_State* L)
    Uint16 objectPos = static_cast<Uint16>(lua_tonumber(L, -1));
 
    Underworld::ObjectPtr obj = objectList.GetObject(objectPos);
-   Underworld::ObjectInfo& info = obj->GetObjectInfo();
-   Underworld::ObjectPositionInfo& posInfo = obj->GetPosInfo();
+   const Underworld::ObjectInfo& info = obj->GetObjectInfo();
+   const Underworld::ObjectPositionInfo& posInfo = obj->GetPosInfo();
 
    // create new table and fill it with infos
    lua_newtable(L);
@@ -921,26 +928,7 @@ int LuaScripting::objlist_get_info(lua_State* L)
    lua_pushnumber(L, static_cast<double>(objectPos));
    lua_settable(L, -3);
 
-   lua_pushstring(L, "item_id");
-   lua_pushnumber(L, static_cast<double>(info.m_itemID));
-   lua_settable(L, -3);
-
-   lua_pushstring(L, "enchanted");
-   lua_pushnumber(L, info.m_isEnchanted ? 1.0 : 0.0);
-   lua_settable(L, -3);
-
-   lua_pushstring(L, "is_quantity");
-   lua_pushnumber(L, info.m_isQuantity ? 1.0 : 0.0);
-   lua_settable(L, -3);
-
-   lua_pushstring(L, "is_hidden");
-   lua_pushnumber(L, info.m_isHidden ? 1.0 : 0.0);
-   lua_settable(L, -3);
-
-   lua_pushstring(L, "flags");
-   lua_pushnumber(L, static_cast<double>(info.m_flags));
-   lua_settable(L, -3);
-
+   AddObjectInfoTableFields(L, info);
 
    lua_pushstring(L, "xpos");
    lua_pushnumber(L, static_cast<double>(posInfo.m_xpos));
@@ -1040,6 +1028,29 @@ int LuaScripting::objlist_get_info(lua_State* L)
    return 1;
 }
 
+void LuaScripting::AddObjectInfoTableFields(lua_State* L, const Underworld::ObjectInfo& info)
+{
+   lua_pushstring(L, "item_id");
+   lua_pushnumber(L, static_cast<double>(info.m_itemID));
+   lua_settable(L, -3);
+
+   lua_pushstring(L, "enchanted");
+   lua_pushnumber(L, info.m_isEnchanted ? 1.0 : 0.0);
+   lua_settable(L, -3);
+
+   lua_pushstring(L, "is_quantity");
+   lua_pushnumber(L, info.m_isQuantity ? 1.0 : 0.0);
+   lua_settable(L, -3);
+
+   lua_pushstring(L, "is_hidden");
+   lua_pushnumber(L, info.m_isHidden ? 1.0 : 0.0);
+   lua_settable(L, -3);
+
+   lua_pushstring(L, "flags");
+   lua_pushnumber(L, static_cast<double>(info.m_flags));
+   lua_settable(L, -3);
+}
+
 /// \todo implement
 int LuaScripting::objlist_set_info(lua_State* L)
 {
@@ -1072,6 +1083,71 @@ int LuaScripting::objlist_insert(lua_State* L)
    UNUSED(objectList);
 
    return 0;//1;
+}
+
+int LuaScripting::inventory_get_info(lua_State* L)
+{
+   LuaScripting& self = GetScriptingFromSelf(L);
+   Underworld::Inventory& inventory =
+      self.m_game->GetGameLogic().GetUnderworld().GetPlayer().GetInventory();
+
+   Uint16 inventoryPos = static_cast<Uint16>(lua_tonumber(L, -1));
+
+   // create new table and fill it with infos
+   lua_newtable(L);
+
+   if (inventoryPos != Underworld::c_inventorySlotNoItem)
+   {
+      const Underworld::ObjectInfo& info = inventory.GetObjectInfo(inventoryPos);
+      AddObjectInfoTableFields(L, info);
+   }
+   else
+   {
+      lua_pushstring(L, "item_id");
+      lua_pushnumber(L, static_cast<double>(inventoryPos));
+      lua_settable(L, -3);
+   }
+
+   // leave table on stack and return it
+   return 1;
+}
+
+int LuaScripting::inventory_float_get_item(lua_State* L)
+{
+   LuaScripting& self = GetScriptingFromSelf(L);
+   Underworld::Inventory& inventory =
+      self.m_game->GetGameLogic().GetUnderworld().GetPlayer().GetInventory();
+
+   Uint16 slot = inventory.GetFloatingObjectPos();
+
+   lua_pushnumber(L, static_cast<double>(slot));
+
+   return 1;
+}
+
+int LuaScripting::inventory_float_add_item(lua_State* L)
+{
+   LuaScripting& self = GetScriptingFromSelf(L);
+   Underworld::Inventory& inventory =
+      self.m_game->GetGameLogic().GetUnderworld().GetPlayer().GetInventory();
+
+   Underworld::ObjectList& objectList =
+      self.m_game->GetGameLogic().GetCurrentLevel().GetObjectList();
+
+   Uint16 objectListPos = static_cast<Uint16>(lua_tonumber(L, -1));
+
+   Underworld::ObjectPtr obj = objectList.GetObject(objectListPos);
+   const Underworld::ObjectInfo& info = obj->GetObjectInfo();
+   const Underworld::ObjectPositionInfo& posInfo = obj->GetPosInfo();
+
+   Uint16 inventorySlot = inventory.InsertFloatingItem(info);
+
+   objectList.RemoveObjectFromTileList(objectListPos, posInfo.m_tileX, posInfo.m_tileY);
+   objectList.Free(objectListPos);
+
+   lua_pushnumber(L, static_cast<double>(inventorySlot));
+
+   return 1;
 }
 
 int LuaScripting::tilemap_get_info(lua_State* L)

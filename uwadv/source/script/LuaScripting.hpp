@@ -160,6 +160,10 @@ protected:
    static int objlist_delete(lua_State* L);  ///< objlist.delete
    static int objlist_insert(lua_State* L);  ///< objlist.insert
 
+   static int inventory_get_info(lua_State* L);  ///< inventory.get_info
+   static int inventory_float_get_item(lua_State* L);  ///< inventory.float_get_item
+   static int inventory_float_add_item(lua_State* L);  ///< inventory.float_add_item
+
    static int tilemap_get_info(lua_State* L);///< tilemap.get_info
    static int tilemap_set_info(lua_State* L);///< tilemap.set_info
    static int tilemap_get_floor_height(lua_State* L); ///< tilemap.get_floor_height
@@ -177,4 +181,7 @@ protected:
 
    static int prop_get_common(lua_State* L); ///< prop.get_common
    static int prop_get_special(lua_State* L);///< prop.get_special
+
+   /// adds ObjectInfo to the table currently on top of the stack
+   static void AddObjectInfoTableFields(lua_State* L, const Underworld::ObjectInfo& info);
 };
