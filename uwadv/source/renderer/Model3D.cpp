@@ -49,9 +49,16 @@ void Model3DManager::Init(IGame& game)
    std::string configFilename(settings.GetString(Base::settingGamePrefix));
    configFilename.append("/model3d.cfg");
 
-   UaTrace(" loading config file: %s\n", configFilename.c_str());
-   Base::TextFile textFile(game.GetResourceManager().GetResourceFile(configFilename.c_str()));
-   Base::ConfigFile::Load(textFile);
+   if (!game.GetResourceManager().IsUnderworldFileAvailable(configFilename.c_str()))
+   {
+      UaTrace(" model 3D config file not available: %s\n", configFilename.c_str());
+   }
+   else
+   {
+      UaTrace(" loading config file: %s\n", configFilename.c_str());
+      Base::TextFile textFile(game.GetResourceManager().GetResourceFile(configFilename.c_str()));
+      Base::ConfigFile::Load(textFile);
+   }
 }
 
 void Model3DManager::load_value(const char* the_name, const char* the_value)
