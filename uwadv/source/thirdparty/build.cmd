@@ -7,10 +7,12 @@ REM
 
 set OUTDIR=%1
 
-echo Copying thirdparty files to %OUTDIR%
+echo Copying thirdparty files and manuals to %OUTDIR%
 
 mkdir %OUTDIR% 2> nul
 mkdir %OUTDIR%\tools 2> nul
 copy SDL2-2.0.10\lib\x86\SDL2.dll %OUTDIR%
 copy SDL2-2.0.10\lib\x86\SDL2.dll %OUTDIR%\tools
 copy SDL2_mixer-2.0.4\lib\x86\*.dll %OUTDIR%
+copy ..\..\README.Manual.md %OUTDIR%\README.Manual.txt
+copy ..\..\README.Tools.md %OUTDIR%\tools\README.Tools.txt
