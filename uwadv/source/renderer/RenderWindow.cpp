@@ -31,6 +31,15 @@ RenderWindow::RenderWindow(int width, int height, const char* title, bool fullsc
    :m_width(width),
    m_height(height)
 {
+   if (SDL_Init(SDL_INIT_VIDEO) < 0)
+   {
+      UaTrace("error initializing video: %s\n", SDL_GetError());
+
+      std::string text("error initializing video: ");
+      text.append(SDL_GetError());
+      throw Base::Exception(text.c_str());
+   }
+
    // setup video mode
    int flags = fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0;
 

@@ -353,14 +353,6 @@ void Game::InitSDL()
       UaTrace("using SDL %u.%u.%u\n", version.major, version.minor, version.patch);
    }
 
-   // first, initialize SDL's video subsystem
-   if (SDL_Init(SDL_INIT_VIDEO) < 0)
-   {
-      std::string text("video initialization failed: ");
-      text.append(SDL_GetError());
-      throw Base::Exception(text.c_str());
-   }
-
    m_renderWindow = std::make_unique<RenderWindow>(
       m_width, m_height,
       "Underworld Adventures",
