@@ -54,6 +54,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{2DC9BCF9-4
 	ProjectSection(SolutionItems) = preProject
 		README.Developer.md = README.Developer.md
 		README.Manual.md = README.Manual.md
+		README.Tools.md = README.Tools.md
 		docs\uw-formats.txt = docs\uw-formats.txt
 	EndProjectSection
 EndProject

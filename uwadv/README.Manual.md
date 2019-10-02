@@ -18,9 +18,8 @@ Adventures project. Please use the table of contents to navigate the document.
 [3. Configuring Underworld Adventures](#3-configuring-underworld-adventures)<br/>
 [4. Gameplay](#4-gameplay)<br/>
 
-[A. Tools for Underworld Adventures](#a-tools-for-underworld-adventures)<br/>
-[B. Underworld Adventures Music](#b-underworld-adventures-music)<br/>
-[C. Underworld Adventures Debugger](#c-underworld-adventures-debugger)<br/>
+[A. Underworld Adventures Music](#b-underworld-adventures-music)<br/>
+[B. Underworld Adventures Debugger](#c-underworld-adventures-debugger)<br/>
 
 ## 1 Quick start and quick reference
 
@@ -172,76 +171,7 @@ setting in the configure file.
   position in the input field.
 
 
-## A. Tools for Underworld Adventures
-
-This chapter describes the tools that come with the binary distribution of
-Underworld Adventures. Note that on Windows, most tools need the file
-"SDL2.dll" to work.
-
-Tools that work together with Ultima Underworld 2, too, have a [uw1/2] next to
-their name.
-
-### A.1 strpak - Underworld Game Strings Pack/Unpack Tool [uw1/2]
-
-strpak is a tool that lets you unpack the game strings in the file
-"strings.pak" to a raw text file. It also can take a raw text file that is
-properly formatted (like the output of unpacking) and produce a new packed
-game strings file. This can be used for translation of the game strings.
-
-The program needs some parameters to work. Here's the syntax:
-
-    strpak <command> <input-file> <output-file>
-
-`<command>` can either be "unpack" or "pack". Unpacking expects a "strings.pak"-
-like file, and writes to the output-file as text. Packing wants a raw text
-file as input (see below) and writes a new "strings.pak"-like output file.
-
-The file format for the input file for the "pack" command is the same as the
-output of the "unpack" command:
-
-    block: <block-id>; <rest is ignored>
-    <number>: string number one
-    <number>: this one contains a newline: \n there, it is
-    <number>: and this is another one
-
-    block: <block-id>; <rest is ignored>
-    <number>: yes, another block
-
-Note that empty lines are ignored, as well as the very first line in the file.
-After the block-id, which must be a four-digit hexadecimal number, there must
-be a semicolon. A string line contains a number followed by a ':' and exactly
-one space. All content that is after that space counts as valid string data.
-Newlines are expressed with "\n".
-
-For more info about game strings and how they are used in Ultima Underworld,
-especially in the conversations, just look into the "docs/uw-formats.txt" in
-the source distribution of Underworld Adventures.
-
-Short example (strpak is placed in the uw_demo folder of the Underworld Demo):
-
-    strpak unpack data/strings.pak uw_demo-strings.txt
-
-Then modify some stuff inside the created text file, e.g. translate strings.
-
-    strpak pack uw_demo-strings.txt data/strings.pak
-
-Be sure to keep a copy of the original "strings.pak" around, in case anything
-bad happens.
-
-### A.2. xmi2mid - XMIDI to MIDI converter [uw1/2]
-
-xmi2mid is a converter for XMIDI files (*.xmi) that are used in Ultima
-Underworld (and many other games) to ordinary midi (*.mid) files. Only the
-first track of an XMIDI file is extracted, though. The calling syntax for the
-program is:
-
-    xmi2mid <xmi-file> <mid-file>
-
-The program prints out an error if something strange occured, else the midi
-file is created.
-
-
-## B. Underworld Adventures Music
+## A. Underworld Adventures Music
 
 Underworld Adventures contains an (incomplete) set of newly arranged music
 pieces. This chapter describes the software used and arrangements made in the
@@ -317,7 +247,7 @@ done to the original arrangement. More appropriate patches were
 chosen.
 
 
-# C. Underworld Adventures Debugger
+# B. Underworld Adventures Debugger
 
 The Underworld Adventures Debugger is an add-on software to Underworld
 Adventures that shows various game states and data and is mainly used for
