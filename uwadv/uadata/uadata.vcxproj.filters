@@ -181,6 +181,8 @@
       <Filter>models\static</Filter>
     </None>
     <None Include="build.cmd" />
+    <None Include="README.Data.md" />
+    <None Include="Underworld Adventures Soundtrack.m3u" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="uw1\scripts\createchar.lua">

@@ -91,6 +91,8 @@
     <None Include="models\static\steak.wrl" />
     <None Include="models\static\table.wrl" />
     <None Include="models\static\water.wrl" />
+    <None Include="README.Data.md" />
+    <None Include="Underworld Adventures Soundtrack.m3u" />
     <None Include="uw1\audio\music.m3u" />
     <None Include="uw1\game.cfg" />
     <None Include="uw1\keymap.cfg" />
