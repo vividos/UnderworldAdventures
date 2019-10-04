@@ -29,6 +29,27 @@
 
 using Import::LevelImporter;
 
+void LevelImporter::LoadLevels(const Base::Settings& settings, Underworld::LevelList& levelList)
+{
+   if (settings.GetGameType() == Base::gameUw1)
+   {
+      bool isUw1Demo = settings.GetBool(Base::settingUw1IsUwdemo);
+      if (isUw1Demo)
+         LoadUwDemoLevel(levelList);
+      else
+         LoadUw1Levels(levelList);
+   }
+   else if (settings.GetGameType() == Base::gameUw2)
+   {
+      LoadUw2Levels(levelList);
+   }
+   else
+   {
+      UaTrace("game type wasn't set!");
+      UaAssert(false);
+   }
+}
+
 void LevelImporter::LoadUwDemoLevel(Underworld::LevelList& levelList)
 {
    UaTrace("importing uw_demo level map\n");

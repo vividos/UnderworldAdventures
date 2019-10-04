@@ -68,6 +68,9 @@ namespace Import
       {
       }
 
+      /// loads levels, based on the game prefix
+      void LoadLevels(const Base::Settings& settings, Underworld::LevelList& levelList);
+
       /// loads uw_demo level into level list
       void LoadUwDemoLevel(Underworld::LevelList& levelList);
 
