@@ -127,6 +127,9 @@ namespace Underworld
          m_isUsed = false;
       }
 
+      /// returns if the tilemap is used (it contains tiles)
+      bool IsUsed() const { return m_isUsed; }
+
       /// returns floor height on specific position
       double GetFloorHeight(double xpos, double ypos);
 
