@@ -44,6 +44,10 @@ namespace Base
       /// ctor
       ResourceManager(const Settings& settings);
 
+      /// detects game type based on the settingUnderworldPath settings value and sets game type,
+      /// settingGamePrefix and settingUw1IsUwdemo settings
+      void DetectGameType(Settings& settings) const;
+
       /// returns a file that can contain placeholder like %uw-path% and %uadata%
       SDL_RWopsPtr GetFileWithPlaceholder(const std::string& filename) const;
 
@@ -65,7 +69,7 @@ namespace Base
       /// checks if a file with given filename is available, either as physical file or in a zip archive
       bool IsUnderworldFileAvailable(const char* relativeFilename) const;
 
-      /// checks if uw1 game files are available (and returns if it's the uw_demo
+      /// checks if uw1 game files are available (and returns if it's the uw_demo)
       bool CheckUw1GameFilesAvailable(bool& isUw1Demo) const;
 
       /// checks if uw2 game files are available

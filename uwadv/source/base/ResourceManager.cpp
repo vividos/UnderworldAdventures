@@ -45,6 +45,25 @@ ResourceManager::ResourceManager(const Settings& settings)
    Rescan(settings);
 }
 
+void ResourceManager::DetectGameType(Settings& settings) const
+{
+   settings.SetGameType(Base::gameUw1);
+
+   bool isUw1Demo;
+   if (CheckUw1GameFilesAvailable(isUw1Demo))
+   {
+      settings.SetGameType(Base::gameUw1);
+      settings.SetValue(Base::settingGamePrefix, isUw1Demo ? "uw_demo" : "uw1");
+
+      settings.SetValue(Base::settingUw1IsUwdemo, isUw1Demo);
+   }
+   else if (CheckUw2GameFilesAvailable())
+   {
+      settings.SetGameType(Base::gameUw2);
+      settings.SetValue(Base::settingGamePrefix, "uw2");
+   }
+}
+
 /// returns a file that can contain placeholder like %uw-path% and %uadata%
 Base::SDL_RWopsPtr ResourceManager::GetFileWithPlaceholder(const std::string& filename) const
 {
