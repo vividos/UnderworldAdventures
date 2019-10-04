@@ -373,4 +373,7 @@ void Import::CrittersLoader::LoadCrittersUw2(std::vector<Critter>& allCritters,
    // TODO implement
    UNUSED(allCritters);
    UNUSED(palette0);
+
+   allCritters.clear();
+   allCritters.resize(0x0040);
 }
