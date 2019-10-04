@@ -9,7 +9,7 @@ Underworld Adventures is available from
 
 This chapter describes the tools that come with the binary distribution of
 Underworld Adventures. Note that on Windows, most tools need the file
-"SDL2.dll" to work.
+"SDL2.dll" to work. When copying tools around, also include that file.
 
 Tools that also work with Ultima Underworld 2 have a [uw1/2] next to their
 name.
@@ -72,3 +72,9 @@ program is:
 
 The program prints out an error if something strange occured, else the midi
 file is created.
+
+### luac - Lua Compiler
+
+This is a tool that is used by the Underworld Studio (uastudio.exe) and
+Underworld Debugger to compile Lua scripts to binary files. See more at:
+https://www.lua.org/manual/5.3/luac.html
