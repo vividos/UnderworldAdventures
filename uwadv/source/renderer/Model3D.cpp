@@ -45,53 +45,53 @@ void Model3DManager::Init(IGame& game)
 
    DecodeBuiltInModels(underworldExeFilename.c_str(), m_allBuiltInModels, false);
 
-   // loading %game%/model3d.cfg
-   std::string configFilename(settings.GetString(Base::settingGamePrefix));
-   configFilename.append("/model3d.cfg");
-
-   if (!game.GetResourceManager().IsUnderworldFileAvailable(configFilename.c_str()))
-   {
-      UaTrace(" model 3D config file not available: %s\n", configFilename.c_str());
-   }
-   else
-   {
-      UaTrace(" loading config file: %s\n", configFilename.c_str());
-      Base::TextFile textFile(game.GetResourceManager().GetResourceFile(configFilename.c_str()));
-      Base::ConfigFile::Load(textFile);
-   }
+   LoadModelConfigFile(settings, game.GetResourceManager());
 }
 
-void Model3DManager::load_value(const char* the_name, const char* the_value)
+void Model3DManager::LoadModelConfigFile(const Base::Settings& settings, const Base::ResourceManager& resourceManager)
 {
-   std::string name(the_name);
-   std::string value(the_value);
+   std::string configFilename{ settings.GetString(Base::settingGamePrefix) };
+   configFilename.append("/model3d.cfg");
 
-   // get item id
+   UaTrace(" loading config file: %s\n", configFilename.c_str());
+
+   Base::SDL_RWopsPtr configFilePtr = resourceManager.GetResourceFile(configFilename.c_str());
+
+   if (configFilePtr == nullptr)
+   {
+      UaTrace(" model 3D config file not available\n");
+      return;
+   }
+
+   Base::TextFile textFile{ configFilePtr };
+   Base::ConfigFile configFile;
+   configFile.Load(textFile);
+
+   for (const auto& pair : configFile.GetValueMap())
+      AddModel(pair.first, pair.second);
+}
+
+void Model3DManager::AddModel(const std::string& name, const std::string& value)
+{
    Uint16 itemId;
    if (name.find("0x") == 0)
       itemId = strtol(name.c_str() + 2, NULL, 16);
    else
       itemId = strtol(name.c_str(), NULL, 10);
 
-   // get filename/builtin number
    if (value.find("builtin") == 0)
    {
-      // we have a builtin graphics
       unsigned int builtInNumber = strtol(value.c_str() + 7, NULL, 16);
 
-      // insert builtin model
       Model3DPtr model = m_allBuiltInModels[builtInNumber];
 
-      m_allModels.insert(
-         std::make_pair(itemId, model));
+      m_allModels.insert(std::make_pair(itemId, model));
    }
-   if (value.find("special") == 0)
+   else if (value.find("special") == 0)
    {
-      Model3DSpecial* modelSpecial = new Model3DSpecial;
-      Model3DPtr model = Model3DPtr(modelSpecial);
+      Model3DPtr model = std::make_shared<Model3DSpecial>();
 
-      m_allModels.insert(
-         std::make_pair(itemId, model));
+      m_allModels.insert(std::make_pair(itemId, model));
    }
    else
    {
@@ -125,11 +125,9 @@ void Model3DManager::Render(const Underworld::Object& object,
 {
    Uint16 itemId = object.GetObjectInfo().m_itemID;
 
-   // try to find model object
    std::map<Uint16, Model3DPtr>::iterator iter =
       m_allModels.find(itemId);
 
-   // render
    if (iter != m_allModels.end())
       iter->second->Render(object, textureManager, base);
 }
@@ -139,7 +137,6 @@ void Model3DManager::GetBoundingTriangles(const Underworld::Object& object,
 {
    Uint16 itemId = object.GetObjectInfo().m_itemID;
 
-   // try to find model object
    std::map<Uint16, Model3DPtr>::iterator iter =
       m_allModels.find(itemId);
 

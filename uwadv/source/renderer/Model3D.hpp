@@ -67,7 +67,7 @@ public:
 typedef std::shared_ptr<Model3D> Model3DPtr;
 
 /// 3d model manager
-class Model3DManager : private Base::ConfigFile
+class Model3DManager
 {
 public:
    /// ctor
@@ -87,12 +87,14 @@ public:
    void GetBoundingTriangles(const Underworld::Object& obj, Vector3d& base,
       std::vector<Triangle3dTextured>& allTriangles);
 
-protected:
-   /// called to load a specific value
-   /// \todo fix loading model3d.cfg file
-   virtual void load_value(const char* name, const char* value);
+private:
+   /// loads model3d.cfg file
+   void LoadModelConfigFile(const Base::Settings& settings, const Base::ResourceManager& resourceManager);
 
-protected:
+   /// adds a new model
+   void AddModel(const std::string& name, const std::string& value);
+
+private:
    /// map with all 3d model objects
    std::map<Uint16, Model3DPtr> m_allModels;
 
