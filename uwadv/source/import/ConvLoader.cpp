@@ -84,7 +84,7 @@ void Import::LoadConvGlobals(Underworld::ConvGlobals& convGlobals,
 bool Import::LoadConvCode(Conv::CodeVM& vm, Base::Settings& settings, Base::ResourceManager& resourceManager,
    const char* cnvArkFilename, Uint16 conversationSlot)
 {
-   Base::SDL_RWopsPtr rwops = resourceManager.GetUnderworldFile(Base::resourceGameUw, std::string("data/") + cnvArkFilename);
+   Base::SDL_RWopsPtr rwops = resourceManager.GetUnderworldFile(Base::resourceGameUw, cnvArkFilename);
    if (rwops == NULL)
       throw Base::Exception("could not open conversation file");
 

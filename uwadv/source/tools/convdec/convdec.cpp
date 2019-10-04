@@ -44,7 +44,7 @@ m_strings(strings)
    if (Base::FileSystem::FileExists(basePath + "uw2.exe"))
       settings.SetGameType(Base::gameUw2);
 
-   if (!Import::LoadConvCode(codeVM, settings, resourceManager, "cnv.ark", conversationNumber))
+   if (!Import::LoadConvCode(codeVM, settings, resourceManager, "data/cnv.ark", conversationNumber))
       return;
 
    std::vector<std::string> stringBlock = strings.GetStringBlock(0x0e00 + conversationNumber);

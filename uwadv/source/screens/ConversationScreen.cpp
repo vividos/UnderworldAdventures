@@ -199,12 +199,9 @@ void ConversationScreen::Init()
 
    // init conversation code virtual machine
    {
-      std::string cnv_name(m_game.GetSettings().GetString(Base::settingUnderworldPath));
-      cnv_name.append("data/cnv.ark");
-
       // load code into vm
       Import::LoadConvCode(m_codeVM, m_game.GetSettings(), m_game.GetResourceManager(),
-         cnv_name.c_str(), static_cast<Uint16>(convslot));
+         "data/cnv.ark", static_cast<Uint16>(convslot));
 
       // get local strings
       // note: convslot is used to load strings, not the strblock value set in
