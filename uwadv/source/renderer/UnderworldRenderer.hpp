@@ -31,6 +31,7 @@ namespace Underworld
 }
 class TextureManager;
 class IGame;
+struct RenderOptions;
 
 /// \brief height scale factor
 /// This value scales down underworld z coordinates to coordinates in the
@@ -55,7 +56,7 @@ public:
    void SetSelectionMode(bool enabled) { m_selectionMode = enabled; }
 
    /// renders underworld level at given player pos and angles
-   void Render(const Underworld::Level& level, Vector3d pos,
+   void Render(const RenderOptions& renderOptions, const Underworld::Level& level, Vector3d pos,
       double panAngle, double rotateAngle, double fieldOfView);
 
    /// returns 3d models manager

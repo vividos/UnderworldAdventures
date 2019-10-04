@@ -172,7 +172,7 @@ void Renderer::RenderUnderworld(const Underworld::Underworld& underworld)
    pos += m_viewOffset;
 
    // render map
-   m_rendererImpl->Render(underworld.GetCurrentLevel(), pos, player.GetPanAngle(),
+   m_rendererImpl->Render(m_renderOptions, underworld.GetCurrentLevel(), pos, player.GetPanAngle(),
       player.GetRotateAngle(), m_fieldOfView);
 }
 

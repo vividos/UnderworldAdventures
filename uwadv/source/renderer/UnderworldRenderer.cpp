@@ -22,6 +22,7 @@
 #include "pch.hpp"
 #include "UnderworldRenderer.hpp"
 #include "LevelTilemapRenderer.hpp"
+#include "RenderOptions.hpp"
 #include "Constants.hpp"
 
 const double c_renderHeightScale = 0.125 * 0.25;
@@ -85,12 +86,14 @@ void UnderworldRenderer::PrepareLevel(Underworld::Level& level)
 }
 
 /// Renders the visible parts of a level.
+/// \param renderOptions render options to use
 /// \param level the level to render
 /// \param pos position of the viewer, e.g. the player
 /// \param panAngle angle to pan up/down the view
 /// \param rotateAngle angle to rotate left/right the view
 /// \param fieldOfView angle of field of view
-void UnderworldRenderer::Render(const Underworld::Level& level, Vector3d pos,
+void UnderworldRenderer::Render(const RenderOptions& renderOptions,
+   const Underworld::Level& level, Vector3d pos,
    double panAngle, double rotateAngle, double fieldOfView)
 {
    {
@@ -117,21 +120,31 @@ void UnderworldRenderer::Render(const Underworld::Level& level, Vector3d pos,
       m_billboardUpVector.Normalize();
    }
 
-   // draw all visible tiles
-   Frustum2d fr(pos.x, pos.y, rotateAngle, fieldOfView, 8.0);
-
    LevelTilemapRenderer tileRenderer(level, m_textureManager);
 
    glColor3ub(192, 192, 192);
 
-   // find tiles
-   Quad q(0, 64, 0, 64);
-   q.FindVisibleTiles(fr,
-      [&](unsigned int tilePosX, unsigned int tilePosY)
-      {
-         tileRenderer.RenderTile(tilePosX, tilePosY);
-         RenderObjects(level, tilePosX, tilePosY);
-      });
+   if (renderOptions.m_renderVisibleTilesUsingOctree)
+   {
+      // draw all visible tiles
+      Frustum2d fr(pos.x, pos.y, rotateAngle, fieldOfView, 8.0);
+
+      // find tiles
+      Quad q(0, 64, 0, 64);
+      q.FindVisibleTiles(fr,
+         [&](unsigned int tilePosX, unsigned int tilePosY)
+         {
+            tileRenderer.RenderTile(tilePosX, tilePosY);
+            RenderObjects(level, tilePosX, tilePosY);
+         });
+   }
+   else
+   {
+      // draw all tiles
+      for (unsigned int tilePosX = 0; tilePosX < 64; tilePosX++)
+         for (unsigned int tilePosY = 0; tilePosY < 64; tilePosY++)
+            tileRenderer.RenderTile(tilePosX, tilePosY);
+   }
 }
 
 /// Renders all objects in a tile.
@@ -276,7 +289,7 @@ void UnderworldRenderer::RenderObject(const Underworld::Level& level,
       m_textureManager.Use(itemId + Base::c_stockTexturesObjects);
       RenderSprite(base, 0.5 * quadWidth, quadWidth, false, 1.0, 1.0);
    }
-}
+   }
 
 /// \details renders the following objects:
 /// - 0x0161 a_lever
@@ -288,7 +301,7 @@ void UnderworldRenderer::RenderDecal(const Underworld::Object& obj, unsigned int
    const Underworld::ObjectPositionInfo& posInfo = obj.GetPosInfo();
 
    Vector3d base(static_cast<double>(x), static_cast<double>(y),
-      posInfo.m_zpos * c_renderHeightScale);
+      posInfo.m_zpos* c_renderHeightScale);
 
    Vector2d to_right;
 
@@ -361,7 +374,7 @@ void UnderworldRenderer::RenderTmapObject(const Underworld::Object& obj, unsigne
    const Underworld::ObjectPositionInfo& posInfo = obj.GetPosInfo();
 
    Vector3d pos(static_cast<double>(x), static_cast<double>(y),
-      posInfo.m_zpos * c_renderHeightScale);
+      posInfo.m_zpos* c_renderHeightScale);
 
    unsigned int x_fr = posInfo.m_xpos;
    unsigned int y_fr = posInfo.m_ypos;

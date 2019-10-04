@@ -92,6 +92,7 @@
     <ClInclude Include="pch.hpp" />
     <ClInclude Include="Quadtree.hpp" />
     <ClInclude Include="Renderer.hpp" />
+    <ClInclude Include="RenderOptions.hpp" />
     <ClInclude Include="UnderworldRenderer.hpp" />
     <ClInclude Include="PolygonTessellator.hpp" />
     <ClInclude Include="RenderWindow.hpp" />

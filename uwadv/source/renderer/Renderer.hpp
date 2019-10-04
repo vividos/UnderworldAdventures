@@ -25,6 +25,7 @@
 #include "Triangle3d.hpp"
 #include "Texture.hpp"
 #include "Settings.hpp"
+#include "RenderOptions.hpp"
 
 namespace Underworld
 {
@@ -62,6 +63,9 @@ public:
    /// cleans up renderer
    void Done();
 
+   /// returns current render options
+   RenderOptions& GetRenderOptions() { return m_renderOptions; }
+
    /// sets up camera for 2d user interface rendering
    void SetupForUserInterface();
 
@@ -89,7 +93,10 @@ public:
       const Underworld::Object& object,
       std::vector<Triangle3dTextured>& allTriangles);
 
-protected:
+private:
+   /// current render options
+   RenderOptions m_renderOptions;
+
    /// viewport
    Viewport* m_viewport;
 

@@ -88,6 +88,9 @@
     <ClInclude Include="LevelTilemapRenderer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RenderOptions.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="MainGameLoop.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
