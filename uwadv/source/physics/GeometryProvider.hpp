@@ -24,6 +24,14 @@
 #include "Level.hpp"
 #include "Triangle3d.hpp"
 
+/// tile wall side
+enum TileWallSide
+{
+   sideLeft = 0, sideRight, sideFront, sideBack,
+   sideMin = sideLeft,
+   sideMax = sideBack
+};
+
 /// level geometry provider class
 class GeometryProvider
 {
@@ -38,21 +46,22 @@ public:
    void GetTileTriangles(unsigned int xpos, unsigned int ypos,
       std::vector<Triangle3dTextured>& allTriangles);
 
-protected:
+private:
    /// helper function for GetTileTriangles()
    void AddWall(Triangle3dTextured& tri1, Triangle3dTextured& tri2,
-      unsigned int side,
+      TileWallSide side,
       double x1, double y1, double z1,
       double x2, double y2, double z2,
       double nz1, double nz2, double ceiling);
 
    /// retrieves tile coordinates
-   void GetTileCoords(unsigned int side, Underworld::TilemapTileType type,
-      unsigned int basex, unsigned int basey, Uint16 basez, Uint16 slope, Uint16 ceiling,
-      Uint16& x1, Uint16& y1, Uint16& z1,
-      Uint16& x2, Uint16& y2, Uint16& z2);
+   void GetTileCoords(TileWallSide side,
+      const Underworld::TileInfo& tileInfo,
+      unsigned int basex, unsigned int basey,
+      Uint16& x1, Uint16& y1, Uint16& zpos1,
+      Uint16& x2, Uint16& y2, Uint16& zpos2);
 
-protected:
+private:
    /// level to work with
    const Underworld::Level& m_level;
 };

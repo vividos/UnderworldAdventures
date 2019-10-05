@@ -22,12 +22,6 @@
 #include "pch.hpp"
 #include "GeometryProvider.hpp"
 
-/// side of currently rendered wall; used internally
-enum WallType
-{
-   left, right, front, back
-};
-
 /// Returns all triangles generated for tile with given coordinates.
 /// \param xpos x tile position
 /// \param ypos y tile position
@@ -57,25 +51,25 @@ void GeometryProvider::GetTileTriangles(unsigned int xpos,
          {
          case Underworld::tileDiagonal_se:
             AddWall(diag_tri1, diag_tri2,
-               left, x, y, floor_height, x + 1, y + 1, floor_height,
+               sideLeft, x, y, floor_height, x + 1, y + 1, floor_height,
                ceil_height, ceil_height, ceil_height);
             break;
 
          case Underworld::tileDiagonal_sw:
             AddWall(diag_tri1, diag_tri2,
-               left, x, y + 1, floor_height, x + 1, y, floor_height,
+               sideLeft, x, y + 1, floor_height, x + 1, y, floor_height,
                ceil_height, ceil_height, ceil_height);
             break;
 
          case Underworld::tileDiagonal_nw:
             AddWall(diag_tri1, diag_tri2,
-               left, x + 1, y + 1, floor_height, x, y, floor_height,
+               sideLeft, x + 1, y + 1, floor_height, x, y, floor_height,
                ceil_height, ceil_height, ceil_height);
             break;
 
          case Underworld::tileDiagonal_ne:
             AddWall(diag_tri1, diag_tri2,
-               left, x + 1, y, floor_height, x, y + 1, floor_height,
+               sideLeft, x + 1, y, floor_height, x, y + 1, floor_height,
                ceil_height, ceil_height, ceil_height);
             break;
 
@@ -91,30 +85,30 @@ void GeometryProvider::GetTileTriangles(unsigned int xpos,
       }
 
       // draw every wall side
-      for (unsigned int side = left; side <= back; side++)
+      for (TileWallSide side = sideMin; side <= sideMax; side = TileWallSide(side + 1))
       {
          // ignore some walls for diagonal wall tiles
-         if ((tile.m_type == Underworld::tileDiagonal_se && (side == left || side == front)) ||
-            (tile.m_type == Underworld::tileDiagonal_sw && (side == right || side == front)) ||
-            (tile.m_type == Underworld::tileDiagonal_nw && (side == right || side == back)) ||
-            (tile.m_type == Underworld::tileDiagonal_ne && (side == left || side == back)))
+         if ((tile.m_type == Underworld::tileDiagonal_se && (side == sideLeft || side == sideFront)) ||
+            (tile.m_type == Underworld::tileDiagonal_sw && (side == sideRight || side == sideFront)) ||
+            (tile.m_type == Underworld::tileDiagonal_nw && (side == sideRight || side == sideBack)) ||
+            (tile.m_type == Underworld::tileDiagonal_ne && (side == sideLeft || side == sideBack)))
             continue;
 
          Uint16 x1, y1, z1, x2, y2, z2;
 
          // get current tile coordinates
-         GetTileCoords(side, tile.m_type,
-            Uint16(x), Uint16(y), Uint16(tile.m_floor), Uint16(tile.m_slope), Uint16(tile.m_ceiling),
+         GetTileCoords(side, tile,
+            Uint16(x), Uint16(y),
             x1, y1, z1, x2, y2, z2);
 
          // get adjacent tile coordinates
          Uint16 nx = 0, ny = 0, nz1, nz2;
          switch (side)
          {
-         case left:  nx = Uint16(x) - 1; ny = Uint16(y); break;
-         case right: nx = Uint16(x) + 1; ny = Uint16(y); break;
-         case front: ny = Uint16(y) + 1; nx = Uint16(x); break;
-         case back:  ny = Uint16(y) - 1; nx = Uint16(x); break;
+         case sideLeft:  nx = Uint16(x) - 1; ny = Uint16(y); break;
+         case sideRight: nx = Uint16(x) + 1; ny = Uint16(y); break;
+         case sideFront: ny = Uint16(y) + 1; nx = Uint16(x); break;
+         case sideBack:  ny = Uint16(y) - 1; nx = Uint16(x); break;
          }
 
          if (nx < 64 && ny < 64)
@@ -131,18 +125,17 @@ void GeometryProvider::GetTileTriangles(unsigned int xpos,
             else
             {
                // get z coordinates for the adjacent tile
-               unsigned int adjside;
+               TileWallSide adjside;
                switch (side)
                {
-               case left: adjside = right; break;
-               case right: adjside = left; break;
-               case front: adjside = back; break;
-               default: adjside = front; break;
+               case sideLeft: adjside = sideRight; break;
+               case sideRight: adjside = sideLeft; break;
+               case sideFront: adjside = sideBack; break;
+               default: adjside = sideFront; break;
                }
 
                Uint16 dummy = 0;
-               GetTileCoords(adjside, ntile.m_type, nx, ny,
-                  ntile.m_floor, ntile.m_slope, ntile.m_ceiling,
+               GetTileCoords(adjside, ntile, nx, ny,
                   dummy, dummy, nz1, dummy, dummy, nz2);
 
                // if the wall to the adjacent tile goes up (e.g. a stair),
@@ -305,7 +298,7 @@ void GeometryProvider::GetTileTriangles(unsigned int xpos,
 }
 
 void GeometryProvider::AddWall(Triangle3dTextured& tri1, Triangle3dTextured& tri2,
-   unsigned int side,
+   TileWallSide side,
    double x1, double y1, double z1,
    double x2, double y2, double z2,
    double nz1, double nz2, double ceiling)
@@ -321,7 +314,7 @@ void GeometryProvider::AddWall(Triangle3dTextured& tri1, Triangle3dTextured& tri
    v4 = (ceiling - nz1) / 32.0;
 
    // add triangles with proper winding
-   if (side == left || side == front)
+   if (side == sideLeft || side == sideFront)
    {
       tri1.Set(0, x1, y1, z1, 0.0, v1);
       tri1.Set(1, x2, y2, z2, 1.0, v2);
@@ -344,64 +337,68 @@ void GeometryProvider::AddWall(Triangle3dTextured& tri1, Triangle3dTextured& tri
 }
 
 void GeometryProvider::GetTileCoords(
-   unsigned int side, Underworld::TilemapTileType type,
-   unsigned int basex, unsigned int basey, Uint16 basez, Uint16 slope, Uint16 ceiling,
-   Uint16& x1, Uint16& y1, Uint16& z1,
-   Uint16& x2, Uint16& y2, Uint16& z2)
+   TileWallSide side,
+   const Underworld::TileInfo& tileInfo,
+   unsigned int basex, unsigned int basey,
+   Uint16& x1, Uint16& y1, Uint16& zpos1,
+   Uint16& x2, Uint16& y2, Uint16& zpos2)
 {
    // determine x and y coordinates
    switch (side)
    {
-   case left:
+   case sideLeft:
       x1 = basex; x2 = basex;
       y1 = basey; y2 = basey + 1;
       break;
-   case right:
+   case sideRight:
       x1 = basex + 1; x2 = basex + 1;
       y1 = basey; y2 = basey + 1;
       break;
-   case front:
+   case sideFront:
       x1 = basex; x2 = basex + 1;
       y1 = basey + 1; y2 = basey + 1;
       break;
-   case back:
+   case sideBack:
       x1 = basex; x2 = basex + 1;
       y1 = basey; y2 = basey;
       break;
    }
 
    // determine z coordinates
-   z1 = z2 = basez;
+   zpos1 = zpos2 = tileInfo.m_floor;
+
+   Underworld::TilemapTileType type = tileInfo.m_type;
+
    switch (side)
    {
-   case left:
-      if (type == Underworld::tileSlope_w || type == Underworld::tileSlope_s) z1 += slope;
-      if (type == Underworld::tileSlope_w || type == Underworld::tileSlope_n) z2 += slope;
+   case sideLeft:
+      if (type == Underworld::tileSlope_w || type == Underworld::tileSlope_s) zpos1 += tileInfo.m_slope;
+      if (type == Underworld::tileSlope_w || type == Underworld::tileSlope_n) zpos2 += tileInfo.m_slope;
       // note: wall height set to ceiling
       // as this function is called for adjacent tile walls only
       if (type == Underworld::tileDiagonal_se || type == Underworld::tileDiagonal_ne)
-         z1 = z2 = ceiling;
+         zpos1 = zpos2 = tileInfo.m_ceiling;
       break;
 
-   case right:
-      if (type == Underworld::tileSlope_e || type == Underworld::tileSlope_s) z1 += slope;
-      if (type == Underworld::tileSlope_e || type == Underworld::tileSlope_n) z2 += slope;
+   case sideRight:
+      if (type == Underworld::tileSlope_e || type == Underworld::tileSlope_s) zpos1 += tileInfo.m_slope;
+      if (type == Underworld::tileSlope_e || type == Underworld::tileSlope_n) zpos2 += tileInfo.m_slope;
       if (type == Underworld::tileDiagonal_sw || type == Underworld::tileDiagonal_nw)
-         z1 = z2 = ceiling;
+         zpos1 = zpos2 = tileInfo.m_ceiling;
       break;
 
-   case front:
-      if (type == Underworld::tileSlope_n || type == Underworld::tileSlope_w) z1 += slope;
-      if (type == Underworld::tileSlope_n || type == Underworld::tileSlope_e) z2 += slope;
+   case sideFront:
+      if (type == Underworld::tileSlope_n || type == Underworld::tileSlope_w) zpos1 += tileInfo.m_slope;
+      if (type == Underworld::tileSlope_n || type == Underworld::tileSlope_e) zpos2 += tileInfo.m_slope;
       if (type == Underworld::tileDiagonal_se || type == Underworld::tileDiagonal_sw)
-         z1 = z2 = ceiling;
+         zpos1 = zpos2 = tileInfo.m_ceiling;
       break;
 
-   case back:
-      if (type == Underworld::tileSlope_s || type == Underworld::tileSlope_w) z1 += slope;
-      if (type == Underworld::tileSlope_s || type == Underworld::tileSlope_e) z2 += slope;
+   case sideBack:
+      if (type == Underworld::tileSlope_s || type == Underworld::tileSlope_w) zpos1 += tileInfo.m_slope;
+      if (type == Underworld::tileSlope_s || type == Underworld::tileSlope_e) zpos2 += tileInfo.m_slope;
       if (type == Underworld::tileDiagonal_nw || type == Underworld::tileDiagonal_ne)
-         z1 = z2 = ceiling;
+         zpos1 = zpos2 = tileInfo.m_ceiling;
       break;
    }
 }
