@@ -27,11 +27,39 @@ CAppModule _Module;
 
 class IDebugServer;
 
-/// runs application
-int Run(IDebugServer* debugServer, int cmdShow = SW_SHOWDEFAULT)
+/// debugger application
+class Debugger
+{
+public:
+   /// ctor
+   Debugger(IDebugServer* debugServer);
+
+   /// runs debugger application
+   int Run();
+
+private:
+   /// debug client
+   IDebugServer* m_debugServer;
+};
+
+Debugger::Debugger(IDebugServer* debugServer)
+   :m_debugServer(debugServer)
+{
+#ifdef _DEBUG
+   ::_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
+
+   AtlInitCommonControls(ICC_COOL_CLASSES | ICC_BAR_CLASSES);
+
+   DWORD major = 0, minor = 0;
+   ::AtlGetCommCtrlVersion(&major, &minor);
+   ATLTRACE(_T("using common controls version %u.%u\n"), major, minor);
+}
+
+int Debugger::Run()
 {
    MainFrame mainFrame;
-   if (!mainFrame.InitDebugClient(debugServer))
+   if (!mainFrame.InitDebugClient(m_debugServer))
       return 1;
 
    CMessageLoop theLoop;
@@ -43,7 +71,7 @@ int Run(IDebugServer* debugServer, int cmdShow = SW_SHOWDEFAULT)
       return 0;
    }
 
-   mainFrame.ShowWindow(cmdShow);
+   mainFrame.ShowWindow(SW_SHOW);
 
    int nRet = theLoop.Run();
 
@@ -57,18 +85,8 @@ extern "C"
 __declspec(dllexport)
 void uadebug_start(IDebugServer* debugServer)
 {
-#ifdef _DEBUG
-   ::_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif
-
-   AtlInitCommonControls(ICC_COOL_CLASSES | ICC_BAR_CLASSES);
-
-   DWORD major = 0, minor = 0;
-   ::AtlGetCommCtrlVersion(&major, &minor);
-   ATLTRACE(_T("using common controls version %u.%u\n"), major, minor);
-
-   // run WTL application
-   Run(debugServer, SW_SHOW);
+   Debugger debugger(debugServer);
+   debugger.Run();
 }
 
 /// DLL Entry Point
