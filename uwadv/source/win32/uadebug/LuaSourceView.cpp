@@ -27,7 +27,7 @@ LRESULT LuaSourceView::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
    m_hWndClient = m_view.Create(NULL, m_hWnd, rcDefault, NULL,
       WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_HSCROLL | WS_VSCROLL, WS_EX_CLIENTEDGE);
 
-   m_view.StyleSetFont(STYLE_DEFAULT, _T("Lucida Console"));
+   m_view.StyleSetFont(STYLE_DEFAULT, "Lucida Console");
    m_view.SetEdgeColumn(80);
    m_view.SetEdgeMode(EDGE_LINE);
 

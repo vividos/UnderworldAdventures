@@ -403,7 +403,8 @@ CString DebugClient::GetGameConfigPath()
 
 void DebugClient::LoadGameConfig(LPCTSTR pszPrefix)
 {
-   m_debugInterface->LoadGame(pszPrefix);
+   CStringA prefixA(pszPrefix);
+   m_debugInterface->LoadGame(prefixA);
 }
 
 bool DebugClient::IsGamePaused()
