@@ -33,6 +33,8 @@
 
 #define WM_UNDOCK_WINDOW (WM_APP + 10)
 
+class IDebugServer;
+
 /// debugger app main frame
 class MainFrame :
    public dockwins::CMDIDockingFrameImpl<MainFrame>,
@@ -71,7 +73,7 @@ public:
 
 public:
    /// initializes debug client of main frame
-   bool InitDebugClient(void* debugClient);
+   bool InitDebugClient(IDebugServer* debugServer);
 
    virtual BOOL PreTranslateMessage(MSG* pMsg);
 

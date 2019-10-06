@@ -25,11 +25,13 @@
 
 CAppModule _Module;
 
+class IDebugServer;
+
 /// runs application
-int Run(void* debugClient, int cmdShow = SW_SHOWDEFAULT)
+int Run(IDebugServer* debugServer, int cmdShow = SW_SHOWDEFAULT)
 {
    MainFrame mainFrame;
-   if (!mainFrame.InitDebugClient(debugClient))
+   if (!mainFrame.InitDebugClient(debugServer))
       return 1;
 
    CMessageLoop theLoop;
@@ -53,7 +55,7 @@ int Run(void* debugClient, int cmdShow = SW_SHOWDEFAULT)
 /// debugger start function
 extern "C"
 __declspec(dllexport)
-void uadebug_start(void* debugClient)
+void uadebug_start(IDebugServer* debugServer)
 {
 #ifdef _DEBUG
    ::_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
@@ -66,7 +68,7 @@ void uadebug_start(void* debugClient)
    ATLTRACE(_T("using common controls version %u.%u\n"), major, minor);
 
    // run WTL application
-   Run(debugClient, SW_SHOW);
+   Run(debugServer, SW_SHOW);
 }
 
 /// DLL Entry Point

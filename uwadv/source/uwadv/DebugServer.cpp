@@ -58,7 +58,7 @@ public:
    {
       UaAssert(IsAvail());
 
-      typedef void(*UadebugStartFunc)(void*);
+      typedef void(*UadebugStartFunc)(IDebugServer*);
 
       UadebugStartFunc uadebug_start =
          (UadebugStartFunc)SDL_LoadFunction(m_uadebugLib, "uadebug_start");

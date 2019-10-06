@@ -27,10 +27,10 @@
 
 LPCTSTR g_luaFileFilter = _T("Lua Source Files (*.lua)\0*.lua\0All Files (*.*)\0*.*\0\0");
 
-bool MainFrame::InitDebugClient(void* debugClient)
+bool MainFrame::InitDebugClient(IDebugServer* debugServer)
 {
    // check debug interface version
-   if (!m_debugClient.Init(reinterpret_cast<IDebugServer*>(debugClient)))
+   if (!m_debugClient.Init(debugServer))
    {
       ::MessageBox(NULL,
          _T("This version of Underworld Adventures Debugger isn't compatible with the version of ")
