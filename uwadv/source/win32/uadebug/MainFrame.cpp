@@ -63,6 +63,16 @@ bool MainFrame::InitDebugClient(IDebugServer* debugServer)
 
 LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+   if (!RunTimeHelper::IsRibbonUIAvailable())
+   {
+      ::MessageBox(NULL,
+         _T("Underworld Adventures Debugger only runs on Windows 7 or higher."),
+         _T("Underworld Adventures Debugger"), MB_OK);
+
+      SendMessage(WM_CLOSE);
+      return 0;
+   }
+
    // set caption
    if (m_debugClient.IsStudioMode())
    {
@@ -70,43 +80,13 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
    }
 
    // create command bar window
-   HWND hWndCmdBar = m_commandBar.Create(m_hWnd, rcDefault, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE);
-   // attach menu
-   m_commandBar.AttachMenu(GetMenu());
-   // load command bar images
-   m_commandBar.LoadImages(IDR_MAINFRAME);
-   m_commandBar.LoadImages(IDR_TOOLBAR_STANDARD);
-   m_commandBar.LoadImages(IDR_TOOLBAR_DEBUG);
+   m_commandBar.Create(m_hWnd, rcDefault, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE);
    // remove old menu
    SetMenu(NULL);
 
-   // set up toolbars and status bar
-   {
-      HWND hWndToolBar = CreateSimpleToolBarCtrl(m_hWnd, IDR_MAINFRAME, FALSE, ATL_SIMPLE_TOOLBAR_PANE_STYLE);
+   CreateSimpleStatusBar();
 
-      CreateSimpleReBar(ATL_SIMPLE_REBAR_NOBORDER_STYLE);
-      AddSimpleReBarBand(hWndCmdBar);
-      AddSimpleReBarBand(hWndToolBar, NULL, TRUE);
-
-      // misc command bar
-      HWND hWndMainToolBar = CreateSimpleToolBarCtrl(m_hWnd, IDR_TOOLBAR_STANDARD, FALSE, ATL_SIMPLE_TOOLBAR_PANE_STYLE, ATL_IDW_TOOLBAR);
-      AddSimpleReBarBand(hWndMainToolBar, NULL, FALSE);
-
-      // debug command bar
-      HWND hWndDebugToolBar = CreateSimpleToolBarCtrl(m_hWnd, IDR_TOOLBAR_DEBUG, FALSE, ATL_SIMPLE_TOOLBAR_PANE_STYLE, ATL_IDW_TOOLBAR);
-      AddSimpleReBarBand(hWndDebugToolBar, NULL, FALSE);
-
-      CreateSimpleStatusBar();
-
-      UIAddToolBar(hWndToolBar);
-      UIAddToolBar(hWndMainToolBar);
-      UIAddToolBar(hWndDebugToolBar);
-      UISetCheck(ID_VIEW_TOOLBAR, 1);
-      UISetCheck(ID_VIEW_TOOLBAR_STANDARD, 1);
-      UISetCheck(ID_VIEW_TOOLBAR_DEBUG, 1);
-      UISetCheck(ID_VIEW_STATUS_BAR, 1);
-   }
-
+   ShowRibbonUI(true);
    CreateMDIClient();
 
    // subclass MDI client
@@ -355,13 +335,13 @@ LRESULT MainFrame::OnFileSaveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
    return 0;
 }
 
-LRESULT MainFrame::OnGameNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT MainFrame::OnFileNewProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
    // TODO implement
    return 0;
 }
 
-LRESULT MainFrame::OnGameOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT MainFrame::OnFileOpenProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
    // TODO implement
    return 0;
@@ -392,57 +372,6 @@ LRESULT MainFrame::OnButtonUnderworldRunPause(WORD /*wNotifyCode*/, WORD wID, HW
       SendNotification(notify);
    }
 
-   return 0;
-}
-
-LRESULT MainFrame::OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-   static BOOL isVisible = TRUE;   // initially visible
-   isVisible = !isVisible;
-
-   CReBarCtrl rebar = m_hWndToolBar;
-   int bandIndex = rebar.IdToIndex(ATL_IDW_BAND_FIRST + 1);   // toolbar is 2nd added band
-   rebar.ShowBand(bandIndex, isVisible);
-
-   UISetCheck(ID_VIEW_TOOLBAR, isVisible);
-   UpdateLayout();
-   return 0;
-}
-
-LRESULT MainFrame::OnViewToolBarStandard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-   static BOOL isVisible = TRUE;   // initially visible
-   isVisible = !isVisible;
-
-   CReBarCtrl rebar = m_hWndToolBar;
-   int bandIndex = rebar.IdToIndex(ATL_IDW_BAND_FIRST + 2);   // toolbar is 3rd added band
-   rebar.ShowBand(bandIndex, isVisible);
-
-   UISetCheck(ID_VIEW_TOOLBAR_STANDARD, isVisible);
-   UpdateLayout();
-   return 0;
-}
-
-LRESULT MainFrame::OnViewToolBarDebug(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-   static BOOL isVisible = TRUE;   // initially visible
-   isVisible = !isVisible;
-
-   CReBarCtrl rebar = m_hWndToolBar;
-   int bandIndex = rebar.IdToIndex(ATL_IDW_BAND_FIRST + 3);   // toolbar is 4th added band
-   rebar.ShowBand(bandIndex, isVisible);
-
-   UISetCheck(ID_VIEW_TOOLBAR_DEBUG, isVisible);
-   UpdateLayout();
-   return 0;
-}
-
-LRESULT MainFrame::OnViewStatusBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-   BOOL isVisible = !::IsWindowVisible(m_hWndStatusBar);
-   ::ShowWindow(m_hWndStatusBar, isVisible ? SW_SHOWNOACTIVATE : SW_HIDE);
-   UISetCheck(ID_VIEW_STATUS_BAR, isVisible);
-   UpdateLayout();
    return 0;
 }
 

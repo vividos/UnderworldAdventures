@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Application xmlns="http://schemas.microsoft.com/windows/2009/Ribbon">
+
+  <Application.Commands>
+    <!-- File commands -->
+    <Command Name="uadebug_FILE_NEW_PROJECT" Symbol="ID_FILE_NEW_PROJECT" Id="32800" LabelTitle="New Project" />
+    <Command Name="uadebug_FILE_OPEN_PROJECT" Symbol="ID_FILE_OPEN_PROJECT" Id="32801" LabelTitle="Open Project" />
+
+    <Command Name="wtl_FILE_OPEN" Symbol="ID_FILE_OPEN" Id="0xE101" LabelTitle="Open" />
+    <Command Name="wtl_FILE_SAVE" Symbol="ID_FILE_SAVE" Id="0xE103" LabelTitle="Save" />
+    <Command Name="wtl_FILE_SAVE_AS" Symbol="ID_FILE_SAVE_AS" Id="0xE104" LabelTitle="Save As..." />
+    <Command Name="uadebug_FILE_SAVE_ALL" Symbol="ID_FILE_SAVE_ALL" Id="32802" LabelTitle="Save All" />
+
+    <Command Name="wtl_APP_ABOUT" Symbol="ID_APP_ABOUT" Id="0xE140" LabelTitle="About" />
+    <Command Name="wtl_APP_EXIT" Symbol="ID_APP_EXIT" Id="0xE141" LabelTitle="Exit" />
+
+    <!-- Underworld commands -->
+    <Command Name="uadebug_UNDERWORLD_RUN" Symbol="ID_UNDERWORLD_RUN" Id="32803" LabelTitle="Run" />
+    <Command Name="uadebug_UNDERWORLD_PAUSE" Symbol="ID_UNDERWORLD_PAUSE" Id="32804" LabelTitle="Pause" />
+
+    <!-- Clipboard commands -->
+    <Command Name="wtl_EDIT_UNDO" Symbol="ID_EDIT_UNDO" Id="0xE12B" LabelTitle="Undo" />
+    <Command Name="wtl_EDIT_REDO" Symbol="ID_EDIT_REDO" Id="0xE12C" LabelTitle="Redo" />
+    <Command Name="wtl_EDIT_CUT" Symbol="ID_EDIT_CUT" Id="0xE123" LabelTitle="Cut" />
+    <Command Name="wtl_EDIT_COPY" Symbol="ID_EDIT_COPY" Id="0xE122" LabelTitle="Copy" />
+    <Command Name="wtl_EDIT_PASTE" Symbol="ID_EDIT_PASTE" Id="0xE125" LabelTitle="Paste" />
+
+    <!-- View commands -->
+    <Command Name="uadebug_VIEW_PROJECT" Symbol="ID_VIEW_PROJECT" Id="32768" LabelTitle="Project" />
+    <Command Name="uadebug_VIEW_PLAYERINFO" Symbol="ID_VIEW_PLAYERINFO" Id="32769" LabelTitle="Player info" />
+    <Command Name="uadebug_VIEW_TILEMAP" Symbol="ID_VIEW_TILEMAP" Id="32770" LabelTitle="Tilemap" />
+    <Command Name="uadebug_VIEW_OBJECTLIST" Symbol="ID_VIEW_OBJECTLIST" Id="32771" LabelTitle="Object List" />
+    <Command Name="uadebug_VIEW_GAMESTRINGS" Symbol="ID_VIEW_GAMESTRINGS" Id="32772" LabelTitle="Game Strings" />
+    <Command Name="uadebug_VIEW_HOTSPOT" Symbol="ID_VIEW_HOTSPOT" Id="32773" LabelTitle="Hotspot List" />
+    <Command Name="uadebug_VIEW_TILEINFO" Symbol="ID_VIEW_TILEINFO" Id="32774" LabelTitle="Tile Info" />
+    <Command Name="uadebug_VIEW_OUTPUT" Symbol="ID_VIEW_OUTPUT" Id="32775" LabelTitle="Output" />
+
+    <!-- Debug commands -->
+    <Command Name="uadebug_DEBUG_BREAK" Symbol="ID_DEBUG_PAUSE" Id="32805" LabelTitle="Break" />
+    <Command Name="uadebug_DEBUG_RUN" Symbol="ID_DEBUG_RUN" Id="32806" LabelTitle="Run" />
+    <Command Name="uadebug_DEBUG_STEP_INTO" Symbol="ID_DEBUG_STEP_INTO" Id="32807" LabelTitle="Step Into" />
+    <Command Name="uadebug_DEBUG_STEP_OVER" Symbol="ID_DEBUG_STEP_OVER" Id="32808" LabelTitle="Step Over" />
+    <Command Name="uadebug_DEBUG_STEP_OUT" Symbol="ID_DEBUG_STEP_OUT" Id="32809" LabelTitle="Step Out" />
+
+    <!-- Window commands -->
+    <Command Name="wtl_WINDOW_CASCADE" Symbol="ID_WINDOW_CASCADE" Id="0xE132" LabelTitle="Cascade" />
+    <Command Name="wtl_WINDOW_TILE_HORZ" Symbol="ID_WINDOW_TILE_HORZ" Id="0xE133" LabelTitle="Tile Horizontally" />
+    <Command Name="wtl_WINDOW_TILE_VERT" Symbol="ID_WINDOW_TILE_VERT" Id="0xE134" LabelTitle="Tile Vertically" />
+
+    <!-- Tabs -->
+    <Command Name="TabHome" Symbol="ID_TAB_HOME" LabelTitle="Home" />
+    <Command Name="TabDebug" Symbol="ID_TAB_DEBUG" LabelTitle="Debug" />
+
+    <!-- Groups -->
+    <Command Name="GroupFile" Symbol="ID_GROUP_FILE" LabelTitle="File" />
+    <Command Name="GroupGame" Symbol="ID_GROUP_GAME" LabelTitle="Game" />
+    <Command Name="GroupViews" Symbol="ID_GROUP_VIEW" LabelTitle="Views" />
+    <Command Name="GroupEdit" Symbol="ID_GROUP_EDIT" LabelTitle="Edit" />
+    <Command Name="GroupDebug" Symbol="ID_GROUP_DEBUG" LabelTitle="Debug" />
+    <Command Name="GroupWindow" Symbol="ID_GROUP_WINDOW" LabelTitle="Window" />
+
+    <!-- App Menu, MRU list, Help button and Quick Access Toolbar -->
+    <Command Name="AppMenu" Symbol="ID_RIBBON_APP_MENU" />
+    <Command Name="SaveMore" Symbol="ID_SAVEMORE" />
+    <Command Name="QAT" Symbol="ID_RIBBON_QAT" />
+  </Application.Commands>
+
+  <Application.Views>
+    <Ribbon>
+      <!-- Application Menu -->
+      <Ribbon.ApplicationMenu >
+        <ApplicationMenu CommandName="AppMenu" >
+          <MenuGroup Class="StandardItems" >
+            <Button CommandName="wtl_FILE_OPEN" />
+            <!-- Saving SplitButton -->
+            <SplitButton CommandName="SaveMore">
+              <SplitButton.ButtonItem>
+                <Button CommandName="wtl_FILE_SAVE" />
+              </SplitButton.ButtonItem>
+              <SplitButton.MenuGroups>
+                <MenuGroup Class="StandardItems">
+                  <Button CommandName="wtl_FILE_SAVE" />
+                  <Button CommandName="wtl_FILE_SAVE_AS" />
+                </MenuGroup>
+              </SplitButton.MenuGroups>
+            </SplitButton>
+          </MenuGroup>
+          <MenuGroup >
+            <Button CommandName="wtl_APP_EXIT" />
+          </MenuGroup>
+        </ApplicationMenu>
+      </Ribbon.ApplicationMenu >
+
+      <!-- Help button -->
+      <Ribbon.HelpButton>
+        <HelpButton CommandName="wtl_APP_ABOUT" />
+      </Ribbon.HelpButton>
+
+      <!-- QAT (Quick Access Toolbar) -->
+      <Ribbon.QuickAccessToolbar>
+        <QuickAccessToolbar CommandName="QAT">
+          <QuickAccessToolbar.ApplicationDefaults>
+            <Button CommandName="wtl_FILE_OPEN" />
+            <Button CommandName="wtl_FILE_SAVE" />
+          </QuickAccessToolbar.ApplicationDefaults>
+        </QuickAccessToolbar>
+      </Ribbon.QuickAccessToolbar>
+
+      <Ribbon.Tabs>
+        <Tab CommandName="TabHome">
+          <Tab.ScalingPolicy>
+            <ScalingPolicy>
+              <ScalingPolicy.IdealSizes>
+                <Scale Group="GroupFile" Size="Large" />
+                <Scale Group="GroupEdit" Size="Medium" />
+                <Scale Group="GroupViews" Size="Large" />
+              </ScalingPolicy.IdealSizes>
+            </ScalingPolicy>
+          </Tab.ScalingPolicy>
+
+          <Group CommandName="GroupFile">
+            <SizeDefinition>
+              <GroupSizeDefinition Size="Large">
+                <ControlSizeDefinition ControlName="uadebug_FILE_NEW_PROJECT" ImageSize="Large" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_FILE_OPEN_PROJECT" ImageSize="Large" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="wtl_FILE_OPEN" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="wtl_FILE_SAVE" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="wtl_FILE_SAVE_AS" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_FILE_SAVE_ALL" ImageSize="Small" IsLabelVisible="true" />
+              </GroupSizeDefinition>
+              <GroupSizeDefinition Size="Medium">
+                <ControlSizeDefinition ControlName="uadebug_FILE_NEW_PROJECT" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_FILE_OPEN_PROJECT" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="wtl_FILE_OPEN" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="wtl_FILE_SAVE" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="wtl_FILE_SAVE_AS" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_FILE_SAVE_ALL" ImageSize="Small" IsLabelVisible="true" />
+              </GroupSizeDefinition>
+              <GroupSizeDefinition Size="Small">
+                <ControlSizeDefinition ControlName="uadebug_FILE_NEW_PROJECT" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_FILE_OPEN_PROJECT" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="wtl_FILE_OPEN" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="wtl_FILE_SAVE" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="wtl_FILE_SAVE_AS" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_FILE_SAVE_ALL" ImageSize="Small" IsLabelVisible="true" />
+              </GroupSizeDefinition>
+            </SizeDefinition>
+            <Button CommandName="uadebug_FILE_NEW_PROJECT" />
+            <Button CommandName="uadebug_FILE_OPEN_PROJECT" />
+            <Button CommandName="wtl_FILE_OPEN" />
+            <Button CommandName="wtl_FILE_SAVE" />
+            <Button CommandName="wtl_FILE_SAVE_AS" />
+            <Button CommandName="uadebug_FILE_SAVE_ALL" />
+          </Group>
+
+          <Group CommandName="GroupEdit" SizeDefinition="FiveButtons">
+            <Button CommandName="wtl_EDIT_UNDO" />
+            <Button CommandName="wtl_EDIT_REDO" />
+            <Button CommandName="wtl_EDIT_PASTE" />
+            <Button CommandName="wtl_EDIT_CUT" />
+            <Button CommandName="wtl_EDIT_COPY" />
+          </Group>
+
+          <Group CommandName="GroupGame">
+            <SizeDefinition>
+              <GroupSizeDefinition Size="Large">
+                <ControlSizeDefinition ControlName="uadebug_UNDERWORLD_RUN" ImageSize="Large" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_UNDERWORLD_PAUSE" ImageSize="Large" IsLabelVisible="true" />
+              </GroupSizeDefinition>
+              <GroupSizeDefinition Size="Medium">
+                <ControlSizeDefinition ControlName="uadebug_UNDERWORLD_RUN" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_UNDERWORLD_PAUSE" ImageSize="Small" IsLabelVisible="true" />
+              </GroupSizeDefinition>
+              <GroupSizeDefinition Size="Small">
+                <ControlSizeDefinition ControlName="uadebug_UNDERWORLD_RUN" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_UNDERWORLD_PAUSE" ImageSize="Small" IsLabelVisible="true" />
+              </GroupSizeDefinition>
+            </SizeDefinition>
+            <Button CommandName="uadebug_UNDERWORLD_RUN" />
+            <Button CommandName="uadebug_UNDERWORLD_PAUSE" />
+          </Group>
+
+          <Group CommandName="GroupViews">
+            <SizeDefinition>
+              <GroupSizeDefinition Size="Large">
+                <ControlSizeDefinition ControlName="uadebug_VIEW_PROJECT" ImageSize="Large" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_VIEW_PLAYERINFO" ImageSize="Large" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_VIEW_TILEMAP" ImageSize="Large" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_VIEW_OBJECTLIST" ImageSize="Large" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_VIEW_GAMESTRINGS" ImageSize="Large" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_VIEW_HOTSPOT" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_VIEW_TILEINFO" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_VIEW_OUTPUT" ImageSize="Small" IsLabelVisible="true" />
+              </GroupSizeDefinition>
+              <GroupSizeDefinition Size="Medium">
+                <ControlSizeDefinition ControlName="uadebug_VIEW_PROJECT" ImageSize="Large" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_VIEW_PLAYERINFO" ImageSize="Large" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_VIEW_TILEMAP" ImageSize="Large" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_VIEW_OBJECTLIST" ImageSize="Large" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_VIEW_GAMESTRINGS" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_VIEW_HOTSPOT" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_VIEW_TILEINFO" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_VIEW_OUTPUT" ImageSize="Small" IsLabelVisible="true" />
+              </GroupSizeDefinition>
+              <GroupSizeDefinition Size="Small">
+                <ControlSizeDefinition ControlName="uadebug_VIEW_PROJECT" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_VIEW_PLAYERINFO" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_VIEW_TILEMAP" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_VIEW_OBJECTLIST" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_VIEW_GAMESTRINGS" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_VIEW_HOTSPOT" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_VIEW_TILEINFO" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_VIEW_OUTPUT" ImageSize="Small" IsLabelVisible="true" />
+              </GroupSizeDefinition>
+            </SizeDefinition>
+            <Button CommandName="uadebug_VIEW_PROJECT" />
+            <Button CommandName="uadebug_VIEW_PLAYERINFO" />
+            <Button CommandName="uadebug_VIEW_TILEMAP" />
+            <Button CommandName="uadebug_VIEW_OBJECTLIST" />
+            <Button CommandName="uadebug_VIEW_GAMESTRINGS" />
+            <Button CommandName="uadebug_VIEW_HOTSPOT" />
+            <Button CommandName="uadebug_VIEW_TILEINFO" />
+            <Button CommandName="uadebug_VIEW_OUTPUT" />
+          </Group>
+        </Tab>
+      </Ribbon.Tabs>
+    </Ribbon>
+  </Application.Views>
+</Application>

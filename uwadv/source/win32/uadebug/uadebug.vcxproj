@@ -66,6 +66,7 @@
       <AdditionalDependencies>SciLexer.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)\thirdparty\scintilla\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>Windows</SubSystem>
+      <DelayLoadDLLs>propsys.dll;dwmapi.dll</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -78,6 +79,7 @@
       <AdditionalDependencies>SciLexer.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)\thirdparty\scintilla\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>Windows</SubSystem>
+      <DelayLoadDLLs>propsys.dll;dwmapi.dll</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -123,6 +125,7 @@
     <ClInclude Include="PropertyListCtrl.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="pch.hpp" />
+    <ClInclude Include="res\Ribbon.h" />
     <ClInclude Include="TileInfoWindow.hpp" />
     <ClInclude Include="TileMapView.hpp" />
     <ClInclude Include="TileMapViewCtrl.hpp" />
@@ -132,25 +135,61 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="res\cursor_tilemap.cur" />
+    <None Include="res\Ribbon.bml" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="res\app_exit.bmp" />
+    <Image Include="res\debug_break.bmp" />
+    <Image Include="res\debug_run.bmp" />
+    <Image Include="res\debug_step_into.bmp" />
+    <Image Include="res\debug_step_out.bmp" />
+    <Image Include="res\debug_step_over.bmp" />
     <Image Include="res\Des.ico" />
+    <Image Include="res\edit_copy.bmp" />
+    <Image Include="res\edit_cut.bmp" />
+    <Image Include="res\edit_paste.bmp" />
+    <Image Include="res\edit_redo.bmp" />
+    <Image Include="res\edit_undo.bmp" />
+    <Image Include="res\file_new_project.bmp" />
+    <Image Include="res\file_open.bmp" />
+    <Image Include="res\file_open_project.bmp" />
+    <Image Include="res\file_save.bmp" />
+    <Image Include="res\file_save_all.bmp" />
+    <Image Include="res\file_save_as.bmp" />
     <Image Include="res\gamestrings.ico" />
     <Image Include="res\Lua.ico" />
     <Image Include="res\Sanct.ico" />
-    <Image Include="res\tb_debug.bmp" />
-    <Image Include="res\tb_game_strings.bmp" />
-    <Image Include="res\tb_lua_source.bmp" />
-    <Image Include="res\tb_main.bmp" />
     <Image Include="res\tb_mainframe.bmp" />
-    <Image Include="res\tb_standard.bmp" />
-    <Image Include="res\tb_tilemap.bmp" />
     <Image Include="res\tilemap.ico" />
     <Image Include="res\tree_project.bmp" />
+    <Image Include="res\underworld_pause.bmp" />
+    <Image Include="res\underworld_run.bmp" />
+    <Image Include="res\view_gamestrings.bmp" />
+    <Image Include="res\view_hostpotlist.bmp" />
+    <Image Include="res\view_objectlist.bmp" />
+    <Image Include="res\view_output.bmp" />
+    <Image Include="res\view_playerinfo.bmp" />
+    <Image Include="res\view_project.bmp" />
+    <Image Include="res\view_tileinfo.bmp" />
+    <Image Include="res\view_tilemap.bmp" />
+    <Image Include="res\window_cascade.bmp" />
+    <Image Include="res\window_horizontal.bmp" />
+    <Image Include="res\window_vertical.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <ResourceCompile Include="res\Ribbon.rc" />
     <ResourceCompile Include="uadebug_res.rc" />
     <ResourceCompile Include="versioninfo.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="res\Ribbon.xml">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">uicc %(FullPath) %(RootDir)%(Directory)%(Filename).bml /header:%(RootDir)%(Directory)%(Filename).h /res:%(RootDir)%(Directory)%(Filename).rc</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">uicc %(FullPath) %(RootDir)%(Directory)%(Filename).bml /header:%(RootDir)%(Directory)%(Filename).h /res:%(RootDir)%(Directory)%(Filename).rc</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling %(Identity)...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling %(Identity)...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)%(Filename).bml;%(RootDir)%(Directory)%(Filename).rc;%(RootDir)%(Directory)%(Filename).h;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)%(Filename).bml;%(RootDir)%(Directory)%(Filename).rc;%(RootDir)%(Directory)%(Filename).h;%(Outputs)</Outputs>
+    </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

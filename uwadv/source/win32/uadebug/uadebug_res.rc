@@ -26,18 +26,18 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // TEXTINCLUDE
 //
 
-3 TEXTINCLUDE
+3 TEXTINCLUDE 
 BEGIN
     "\r\n"
     "\0"
 END
 
-1 TEXTINCLUDE
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE
+2 TEXTINCLUDE 
 BEGIN
     "#include ""atlres.h""\r\n"
     "\0"
@@ -53,131 +53,65 @@ END
 
 IDB_TREE_PROJECT        BITMAP                  "res\\tree_project.bmp"
 
-IDR_MAINFRAME           BITMAP                  "res\\tb_mainframe.bmp"
+ID_FILE_NEW_PROJECT     BITMAP                  "res\\file_new_project.bmp"
 
-IDR_LUA_SOURCE_FRAME    BITMAP                  "res\\tb_lua_source.bmp"
+ID_FILE_OPEN_PROJECT    BITMAP                  "res\\file_open_project.bmp"
 
-IDR_GAME_STRINGS        BITMAP                  "res\\tb_game_strings.bmp"
+ID_FILE_OPEN            BITMAP                  "res\\file_open.bmp"
 
-IDR_TILEMAP_VIEW        BITMAP                  "res\\tb_tilemap.bmp"
+ID_FILE_SAVE            BITMAP                  "res\\file_save.bmp"
 
-IDR_TOOLBAR_DEBUG       BITMAP                  "res\\tb_debug.bmp"
+ID_FILE_SAVE_AS         BITMAP                  "res\\file_save_as.bmp"
 
-IDR_TOOLBAR_STANDARD    BITMAP                  "res\\tb_standard.bmp"
+ID_FILE_SAVE_ALL        BITMAP                  "res\\file_save_all.bmp"
 
+ID_APP_EXIT             BITMAP                  "res\\app_exit.bmp"
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// Toolbar
-//
+ID_EDIT_UNDO            BITMAP                  "res\\edit_undo.bmp"
 
-IDR_MAINFRAME TOOLBAR 16, 15
-BEGIN
-    BUTTON      ID_GAME_NEW
-    SEPARATOR
-    BUTTON      ID_FILE_NEW
-    BUTTON      ID_FILE_OPEN
-    BUTTON      ID_FILE_SAVE
-    BUTTON      ID_FILE_SAVEALL
-    SEPARATOR
-    BUTTON      ID_EDIT_CUT
-    BUTTON      ID_EDIT_COPY
-    BUTTON      ID_EDIT_PASTE
-    SEPARATOR
-    BUTTON      ID_APP_ABOUT
-    SEPARATOR
-    BUTTON      ID_WINDOW_CASCADE
-    BUTTON      ID_WINDOW_TILE_HORZ
-    BUTTON      ID_WINDOW_TILE_VERT
-END
+ID_EDIT_REDO            BITMAP                  "res\\edit_redo.bmp"
 
-IDR_LUA_SOURCE_FRAME TOOLBAR 16, 15
-BEGIN
-    BUTTON      ID_GAME_NEW
-    SEPARATOR
-    BUTTON      ID_FILE_NEW
-    BUTTON      ID_FILE_OPEN
-    BUTTON      ID_FILE_SAVE
-    BUTTON      ID_FILE_SAVEALL
-    SEPARATOR
-    BUTTON      ID_EDIT_UNDO
-    BUTTON      ID_EDIT_REDO
-    SEPARATOR
-    BUTTON      ID_EDIT_CUT
-    BUTTON      ID_EDIT_COPY
-    BUTTON      ID_EDIT_PASTE
-    SEPARATOR
-    BUTTON      ID_FILE_PRINT
-    BUTTON      ID_APP_ABOUT
-    SEPARATOR
-    BUTTON      ID_WINDOW_CASCADE
-    BUTTON      ID_WINDOW_TILE_HORZ
-    BUTTON      ID_WINDOW_TILE_VERT
-END
+ID_EDIT_CUT             BITMAP                  "res\\edit_cut.bmp"
 
-IDR_GAME_STRINGS TOOLBAR 16, 15
-BEGIN
-    BUTTON      ID_GAME_NEW
-    SEPARATOR
-    BUTTON      ID_FILE_NEW
-    BUTTON      ID_FILE_OPEN
-    BUTTON      ID_FILE_SAVE
-    BUTTON      ID_FILE_SAVEALL
-    SEPARATOR
-    BUTTON      ID_EDIT_CUT
-    BUTTON      ID_EDIT_COPY
-    BUTTON      ID_EDIT_PASTE
-    SEPARATOR
-    BUTTON      ID_APP_ABOUT
-    SEPARATOR
-    BUTTON      ID_WINDOW_CASCADE
-    BUTTON      ID_WINDOW_TILE_HORZ
-    BUTTON      ID_WINDOW_TILE_VERT
-    BUTTON      ID_BUTTON32820
-END
+ID_EDIT_COPY            BITMAP                  "res\\edit_copy.bmp"
 
-IDR_TILEMAP_VIEW TOOLBAR 16, 15
-BEGIN
-    BUTTON      ID_GAME_NEW
-    SEPARATOR
-    BUTTON      ID_FILE_NEW
-    BUTTON      ID_FILE_OPEN
-    BUTTON      ID_FILE_SAVE
-    SEPARATOR
-    BUTTON      ID_EDIT_CUT
-    BUTTON      ID_EDIT_COPY
-    BUTTON      ID_EDIT_PASTE
-    SEPARATOR
-    BUTTON      ID_APP_ABOUT
-    SEPARATOR
-    BUTTON      ID_WINDOW_CASCADE
-    BUTTON      ID_WINDOW_TILE_HORZ
-    BUTTON      ID_WINDOW_TILE_VERT
-END
+ID_EDIT_PASTE           BITMAP                  "res\\edit_paste.bmp"
 
-IDR_TOOLBAR_DEBUG TOOLBAR 16, 15
-BEGIN
-    BUTTON      ID_DEBUG_RUN
-    BUTTON      ID_DEBUG_STEP_INTO
-    BUTTON      ID_DEBUG_STEP_OVER
-    BUTTON      ID_DEBUG_STEP_OUT
-    SEPARATOR
-    BUTTON      ID_VIEW_OUTPUT
-END
+ID_VIEW_PROJECT         BITMAP                  "res\\view_project.bmp"
 
-IDR_TOOLBAR_STANDARD TOOLBAR 16, 15
-BEGIN
-    BUTTON      ID_UNDERWORLD_RUN
-    BUTTON      ID_UNDERWORLD_PAUSE
-    SEPARATOR
-    BUTTON      ID_VIEW_PROJECT
-    BUTTON      ID_VIEW_PLAYERINFO
-    BUTTON      ID_VIEW_OBJECTLIST
-    BUTTON      ID_VIEW_HOTSPOT
-    BUTTON      ID_VIEW_TILEMAP
-    BUTTON      ID_VIEW_TILEINFO
-    BUTTON      ID_VIEW_GAMESTRINGS
-END
+ID_VIEW_PLAYERINFO      BITMAP                  "res\\view_playerinfo.bmp"
+
+ID_VIEW_TILEMAP         BITMAP                  "res\\view_tilemap.bmp"
+
+ID_VIEW_OBJECTLIST      BITMAP                  "res\\view_objectlist.bmp"
+
+ID_VIEW_GAMESTRINGS     BITMAP                  "res\\view_gamestrings.bmp"
+
+ID_VIEW_HOTSPOT         BITMAP                  "res\\view_hostpotlist.bmp"
+
+ID_VIEW_TILEINFO        BITMAP                  "res\\view_tileinfo.bmp"
+
+ID_VIEW_OUTPUT          BITMAP                  "res\\view_output.bmp"
+
+ID_UNDERWORLD_RUN       BITMAP                  "res\\underworld_run.bmp"
+
+ID_UNDERWORLD_PAUSE     BITMAP                  "res\\underworld_pause.bmp"
+
+ID_DEBUG_PAUSE          BITMAP                  "res\\debug_break.bmp"
+
+ID_DEBUG_RUN            BITMAP                  "res\\debug_run.bmp"
+
+ID_DEBUG_STEP_INTO      BITMAP                  "res\\debug_step_into.bmp"
+
+ID_DEBUG_STEP_OVER      BITMAP                  "res\\debug_step_over.bmp"
+
+ID_DEBUG_STEP_OUT       BITMAP                  "res\\debug_step_out.bmp"
+
+ID_WINDOW_CASCADE       BITMAP                  "res\\window_cascade.bmp"
+
+ID_WINDOW_TILE_HORZ     BITMAP                  "res\\window_horizontal.bmp"
+
+ID_WINDOW_TILE_VERT     BITMAP                  "res\\window_vertical.bmp"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -193,127 +127,17 @@ BEGIN
         MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
         MENUITEM SEPARATOR
         MENUITEM "Open &Project",               ID_FILE_OPEN_PROJECT
-        MENUITEM "&Close Project",              ID_FILE_CLOSE_PROJECT
         MENUITEM SEPARATOR
         MENUITEM "E&xit",                       ID_APP_EXIT
     END
     POPUP "&View"
     BEGIN
-        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
-        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
-        MENUITEM "St&andard Toolbar",           ID_VIEW_TOOLBAR_STANDARD
-        MENUITEM "&Debug Toolbar",              ID_VIEW_TOOLBAR_DEBUG
-        MENUITEM SEPARATOR
         MENUITEM "P&roject Info",               ID_VIEW_PROJECT
         MENUITEM "&Player Info",                ID_VIEW_PLAYERINFO
         MENUITEM "Master &Object List",         ID_VIEW_OBJECTLIST
         MENUITEM "&Hotspot List",               ID_VIEW_HOTSPOT
         MENUITEM "Tile&map View",               ID_VIEW_TILEMAP
         MENUITEM "&Game Strings",               ID_VIEW_GAMESTRINGS
-    END
-    POPUP "&Help"
-    BEGIN
-        MENUITEM "&About Underworld Adventures Debugger...", ID_APP_ABOUT
-    END
-END
-
-IDR_LUA_SOURCE_FRAME MENU
-BEGIN
-    POPUP "&File"
-    BEGIN
-        MENUITEM "&New\tCtrl+N",                ID_FILE_NEW
-        MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
-        MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVE
-        MENUITEM "Save &As...",                 ID_FILE_SAVE_AS
-        MENUITEM SEPARATOR
-        MENUITEM "&Print...\tCtrl+P",           ID_FILE_PRINT
-        MENUITEM "Print Pre&view",              ID_FILE_PRINT_PREVIEW
-        MENUITEM "P&rint Setup...",             ID_FILE_PRINT_SETUP
-        MENUITEM SEPARATOR
-        MENUITEM "E&xit",                       ID_APP_EXIT
-    END
-    POPUP "&Edit"
-    BEGIN
-        MENUITEM "&Undo\tCtrl+Z",               ID_EDIT_UNDO
-        MENUITEM "&Redo\tCtrl+Y",               ID_EDIT_REDO
-        MENUITEM SEPARATOR
-        MENUITEM "Cu&t\tCtrl+X",                ID_EDIT_CUT
-        MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
-        MENUITEM "&Paste\tCtrl+V",              ID_EDIT_PASTE
-    END
-    POPUP "Lua"
-    BEGIN
-        MENUITEM "Compile and Update",          ID_LUA_COMPILEANDUPDATE
-    END
-    POPUP "&View"
-    BEGIN
-        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
-        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
-        MENUITEM SEPARATOR
-        MENUITEM "&Player Info",                ID_VIEW_PLAYERINFO
-        MENUITEM "Master &Object List",         ID_VIEW_OBJECTLIST
-        MENUITEM "&Hotspot List",               ID_VIEW_HOTSPOT
-        MENUITEM "Tile&map View",               ID_VIEW_TILEMAP
-        MENUITEM "&Game Strings",               ID_VIEW_GAMESTRINGS
-    END
-    POPUP "&Window"
-    BEGIN
-        MENUITEM "&Cascade",                    ID_WINDOW_CASCADE
-        MENUITEM "Tile &Horizontally",          ID_WINDOW_TILE_HORZ
-        MENUITEM "&Tile Vertically",            ID_WINDOW_TILE_VERT
-        MENUITEM "Arrange &Icons",              ID_WINDOW_ARRANGE
-    END
-    POPUP "&Help"
-    BEGIN
-        MENUITEM "&About Underworld Adventures Debugger...", ID_APP_ABOUT
-    END
-END
-
-IDR_TILEMAP_VIEW MENU
-BEGIN
-    POPUP "&File"
-    BEGIN
-        MENUITEM "&New\tCtrl+N",                ID_FILE_NEW
-        MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
-        MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVE
-        MENUITEM "Save &As...",                 ID_FILE_SAVE_AS
-        MENUITEM SEPARATOR
-        MENUITEM "&Print...\tCtrl+P",           ID_FILE_PRINT
-        MENUITEM "Print Pre&view",              ID_FILE_PRINT_PREVIEW
-        MENUITEM "P&rint Setup...",             ID_FILE_PRINT_SETUP
-        MENUITEM SEPARATOR
-        MENUITEM "E&xit",                       ID_APP_EXIT
-    END
-    POPUP "&Edit"
-    BEGIN
-        MENUITEM "&Undo\tCtrl+Z",               ID_EDIT_UNDO
-        MENUITEM "&Redo\tCtrl+Y",               ID_EDIT_REDO
-        MENUITEM SEPARATOR
-        MENUITEM "Cu&t\tCtrl+X",                ID_EDIT_CUT
-        MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
-        MENUITEM "&Paste\tCtrl+V",              ID_EDIT_PASTE
-    END
-    POPUP "Tilemap"
-    BEGIN
-        MENUITEM "Beam to current location",    ID_TILEMAP_BEAMTOCURRENTLOCATION
-    END
-    POPUP "&View"
-    BEGIN
-        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
-        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
-        MENUITEM SEPARATOR
-        MENUITEM "&Player Info",                ID_VIEW_PLAYERINFO
-        MENUITEM "Master &Object List",         ID_VIEW_OBJECTLIST
-        MENUITEM "&Hotspot List",               ID_VIEW_HOTSPOT
-        MENUITEM "Tile&map View",               ID_VIEW_TILEMAP
-        MENUITEM "&Game Strings",               ID_VIEW_GAMESTRINGS
-    END
-    POPUP "&Window"
-    BEGIN
-        MENUITEM "&Cascade",                    ID_WINDOW_CASCADE
-        MENUITEM "Tile &Horizontally",          ID_WINDOW_TILE_HORZ
-        MENUITEM "&Tile Vertically",            ID_WINDOW_TILE_VERT
-        MENUITEM "Arrange &Icons",              ID_WINDOW_ARRANGE
     END
     POPUP "&Help"
     BEGIN
@@ -336,6 +160,7 @@ IDR_LUA_SOURCE_FRAME    ICON                    "res\\Lua.ico"
 IDR_GAMESTRINGS_VIEW    ICON                    "res\\gamestrings.ico"
 
 IDR_TILEMAP_VIEW        ICON                    "res\\tilemap.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -427,9 +252,7 @@ BEGIN
     VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT, NOINVERT
     VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT, NOINVERT
     "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL, NOINVERT
-    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
     "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
-    "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL, NOINVERT
     "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
     VK_F6,          ID_NEXT_PANE,           VIRTKEY, NOINVERT
     VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT, NOINVERT
@@ -461,15 +284,10 @@ END
 
 STRINGTABLE
 BEGIN
-    ID_FILE_NEW             "Create a new document\nNew"
     ID_FILE_OPEN            "Open an existing document\nOpen"
     ID_FILE_CLOSE           "Close the active document\nClose"
     ID_FILE_SAVE            "Save the active document\nSave"
     ID_FILE_SAVE_AS         "Save the active document with a new name\nSave As"
-    ID_FILE_PAGE_SETUP      "Change the printing options\nPage Setup"
-    ID_FILE_PRINT_SETUP     "Change the printer and printing options\nPrint Setup"
-    ID_FILE_PRINT           "Print the active document\nPrint"
-    ID_FILE_PRINT_PREVIEW   "Display full pages\nPrint Preview"
 END
 
 STRINGTABLE
@@ -486,12 +304,9 @@ END
 
 STRINGTABLE
 BEGIN
-    ID_WINDOW_NEW           "Open another window for the active document\nNew Window"
-    ID_WINDOW_ARRANGE       "Arrange icons at the bottom of the window\nArrange Icons"
     ID_WINDOW_CASCADE       "Arrange windows so they overlap\nCascade Windows"
     ID_WINDOW_TILE_HORZ     "Arrange windows as non-overlapping tiles\nTile Windows"
     ID_WINDOW_TILE_VERT     "Arrange windows as non-overlapping tiles\nTile Windows"
-    ID_WINDOW_SPLIT         "Split the active window into panes\nSplit"
 END
 
 STRINGTABLE
@@ -507,12 +322,6 @@ BEGIN
     ID_EDIT_SELECT_ALL      "Select the entire document\nSelect All"
     ID_EDIT_UNDO            "Undo the last action\nUndo"
     ID_EDIT_REDO            "Redo the previously undone action\nRedo"
-END
-
-STRINGTABLE
-BEGIN
-    ID_VIEW_TOOLBAR         "Show or hide the toolbar\nToggle ToolBar"
-    ID_VIEW_STATUS_BAR      "Show or hide the status bar\nToggle StatusBar"
 END
 
 STRINGTABLE
@@ -545,40 +354,27 @@ END
 
 STRINGTABLE
 BEGIN
-    ID_VIEW_PLAYERINFO      "Show or hide Player Info window\nPlayer Info"
-    ID_VIEW_HOTSPOT         "Show or hide list with all hotspots in the game\nHotspot List"
-    ID_VIEW_OBJECTLIST      "Show or hide Object List\nMaster Object List"
-    ID_FILE_OPEN_PROJECT    "Open Project\nOpen a new game project."
-    ID_FILE_CLOSE_PROJECT   "Close Project\nClose the current game project."
-    ID_UNDERWORLD_RUN       "Run Underworld\nRun"
-    ID_VIEW_TILEMAPVIEW     "Tilemap View\nShow tilemap view window"
-    ID_VIEW_TILEMAP         "Show tilemap view window\nTilemap View"
-END
-
-STRINGTABLE
-BEGIN
-    ID_VIEW_GAMESTRINGS     "Show a window with all game strings\nGame Strings"
     ID_VIEW_PROJECT         "Show or hide Project Info Window\nProject Info"
+    ID_VIEW_PLAYERINFO      "Show or hide Player Info window\nPlayer Info"
+    ID_VIEW_TILEMAP         "Show tilemap view window\nTilemap View"
+    ID_VIEW_OBJECTLIST      "Show or hide Object List\nObject List"
+    ID_VIEW_GAMESTRINGS     "Show a window with all game strings\nGame Strings"
+    ID_VIEW_HOTSPOT         "Show or hide list with all hotspots in the game\nHotspot List"
     ID_VIEW_TILEINFO        "Show or hide tile info window\nTile Info"
+    ID_VIEW_OUTPUT          "Show Output Window\nOutput Window"
 END
 
 STRINGTABLE
 BEGIN
-    ID_FILE_SAVEALL         "Save all open documents\nSave All"
+    ID_FILE_NEW_PROJECT     "Create a new game\nNew Game"
+    ID_FILE_OPEN_PROJECT    "Open Project\nOpen a new game project."
+    ID_FILE_SAVE_ALL        "Save all open documents\nSave All"
+    ID_UNDERWORLD_RUN       "Run Underworld\nRun"
     ID_UNDERWORLD_PAUSE     "Pause Underworld\nPause"
-END
-
-STRINGTABLE
-BEGIN
+    ID_DEBUG_RUN            "Starts or continues running code in active code debugger\nStart"
     ID_DEBUG_STEP_INTO      "Steps into functions\nStep Into"
     ID_DEBUG_STEP_OVER      "Steps over functions\nStep Over"
     ID_DEBUG_STEP_OUT       "Leaves current function\nStep Out"
-    ID_DEBUG_RUN            "Starts or continues running code in active code debugger\nStart"
-    ID_GAME_NEW             "Create a new game\nNew Game"
-    ID_VIEW_OUTPUT          "Show Output Window\nOutput Window"
-    ID_VIEW_TOOLBAR_DEBUG   "Show or hide the debug toolbar\nToggle Debug ToolBar"
-    ID_VIEW_TOOLBAR_STANDARD 
-                            "Show or hide the standard toolbar\nToggle Standard ToolBar"
 END
 
 #endif    // English (United States) resources

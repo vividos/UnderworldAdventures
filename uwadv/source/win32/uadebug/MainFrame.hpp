@@ -35,15 +35,28 @@
 
 class IDebugServer;
 
+/// main frame base class that supports MDI windows, docking windows and ribbon
+template <class T,
+   class TBase = CMDIWindow,
+   class TWinTraits = dockwins::CDockingFrameTraits>
+class ATL_NO_VTABLE CRibbonMDIDockingFrameWindowImpl :
+   public dockwins::CDockingFrameImplBase<T, CRibbonMDIFrameWindowImpl<T, TBase, TWinTraits>, TWinTraits>
+{
+   typedef dockwins::CDockingFrameImplBase<T, CRibbonMDIFrameWindowImpl<T, TBase, TWinTraits>, TWinTraits> baseClass;
+
+public:
+   DECLARE_WND_CLASS(_T("CRibbonMDIDockingFrameWindowImpl"))
+};
+
 /// debugger app main frame
 class MainFrame :
-   public dockwins::CMDIDockingFrameImpl<MainFrame>,
-   public CUpdateUI<MainFrame>,
+   public CRibbonMDIDockingFrameWindowImpl<MainFrame>,
    public CMessageFilter,
    public CIdleHandler,
    public IMainFrame
 {
-   typedef dockwins::CMDIDockingFrameImpl<MainFrame> baseClass;
+   typedef CRibbonMDIDockingFrameWindowImpl<MainFrame> baseClass;
+
 public:
    DECLARE_FRAME_WND_CLASS(NULL, IDR_MAINFRAME)
 
@@ -69,14 +82,10 @@ private:
       COMMAND_ID_HANDLER(ID_FILE_SAVE, OnFileSave)
       COMMAND_ID_HANDLER(ID_FILE_SAVE_AS, OnFileSaveAs)
       COMMAND_ID_HANDLER(ID_FILE_SAVE_ALL, OnFileSaveAll)
-      COMMAND_ID_HANDLER(ID_GAME_NEW, OnGameNew)
-      //COMMAND_ID_HANDLER(ID_GAME_OPEN, OnGameOpen)
+      COMMAND_ID_HANDLER(ID_FILE_NEW_PROJECT, OnFileNewProject)
+      COMMAND_ID_HANDLER(ID_FILE_OPEN_PROJECT, OnFileOpenProject)
       COMMAND_ID_HANDLER(ID_UNDERWORLD_RUN, OnButtonUnderworldRunPause)
       COMMAND_ID_HANDLER(ID_UNDERWORLD_PAUSE, OnButtonUnderworldRunPause)
-      COMMAND_ID_HANDLER(ID_VIEW_TOOLBAR, OnViewToolBar)
-      COMMAND_ID_HANDLER(ID_VIEW_TOOLBAR_STANDARD, OnViewToolBarStandard)
-      COMMAND_ID_HANDLER(ID_VIEW_TOOLBAR_DEBUG, OnViewToolBarDebug)
-      COMMAND_ID_HANDLER(ID_VIEW_STATUS_BAR, OnViewStatusBar)
       COMMAND_ID_HANDLER(ID_VIEW_PLAYERINFO, OnViewPlayerInfo)
       COMMAND_ID_HANDLER(ID_VIEW_OBJECTLIST, OnViewObjectList)
       COMMAND_ID_HANDLER(ID_VIEW_HOTSPOT, OnViewHotspotList)
@@ -90,7 +99,6 @@ private:
       COMMAND_ID_HANDLER(ID_WINDOW_ARRANGE, OnWindowArrangeIcons)
       MESSAGE_HANDLER(WM_UNDOCK_WINDOW, OnUndockWindow)
       CHAIN_MDI_CHILD_COMMANDS()
-      CHAIN_MSG_MAP(CUpdateUI<MainFrame>)
       CHAIN_MSG_MAP(baseClass)
       REFLECT_NOTIFICATIONS()
    END_MSG_MAP()
@@ -99,10 +107,6 @@ private:
    BEGIN_UPDATE_UI_MAP(MainFrame)
       UPDATE_ELEMENT(ID_UNDERWORLD_RUN, UPDUI_MENUPOPUP | UPDUI_TOOLBAR)
       UPDATE_ELEMENT(ID_UNDERWORLD_PAUSE, UPDUI_MENUPOPUP | UPDUI_TOOLBAR)
-      UPDATE_ELEMENT(ID_VIEW_TOOLBAR, UPDUI_MENUPOPUP)
-      UPDATE_ELEMENT(ID_VIEW_TOOLBAR_STANDARD, UPDUI_MENUPOPUP)
-      UPDATE_ELEMENT(ID_VIEW_TOOLBAR_DEBUG, UPDUI_MENUPOPUP)
-      UPDATE_ELEMENT(ID_VIEW_STATUS_BAR, UPDUI_MENUPOPUP)
       UPDATE_ELEMENT(ID_VIEW_PLAYERINFO, UPDUI_MENUPOPUP | UPDUI_TOOLBAR)
       UPDATE_ELEMENT(ID_VIEW_OBJECTLIST, UPDUI_MENUPOPUP | UPDUI_TOOLBAR)
       UPDATE_ELEMENT(ID_VIEW_HOTSPOT, UPDUI_MENUPOPUP | UPDUI_TOOLBAR)
@@ -119,13 +123,9 @@ private:
    LRESULT OnFileSave(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnFileSaveAs(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnFileSaveAll(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-   LRESULT OnGameNew(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-   LRESULT OnGameOpen(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnFileNewProject(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnFileOpenProject(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnButtonUnderworldRunPause(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-   LRESULT OnViewToolBar(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-   LRESULT OnViewToolBarStandard(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-   LRESULT OnViewToolBarDebug(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-   LRESULT OnViewStatusBar(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnViewPlayerInfo(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnViewObjectList(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnViewHotspotList(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);

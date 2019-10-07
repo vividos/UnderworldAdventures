@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx</Extensions>
     </Filter>
+    <Filter Include="Resource Files\Generated Ribbon Files">
+      <UniqueIdentifier>{d04a90f2-fe4b-4d38-84e3-6773e132b844}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DebugClient.cpp">
@@ -143,12 +146,18 @@
     <ClInclude Include="pch.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="res\Ribbon.h">
+      <Filter>Resource Files\Generated Ribbon Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\cursor_tilemap.cur">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="packages.config" />
+    <None Include="res\Ribbon.bml">
+      <Filter>Resource Files\Generated Ribbon Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\Des.ico">
@@ -163,31 +172,106 @@
     <Image Include="res\Sanct.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\tb_debug.bmp">
+    <Image Include="res\tree_project.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\tb_game_strings.bmp">
+    <Image Include="res\edit_copy.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\tb_lua_source.bmp">
+    <Image Include="res\edit_cut.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\tb_main.bmp">
+    <Image Include="res\edit_paste.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\edit_redo.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\edit_undo.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\file_new_project.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\file_open.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\file_open_project.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\file_save.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\file_save_all.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\file_save_as.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\debug_step_over.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\debug_step_out.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\debug_step_into.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\debug_run.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\debug_break.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\app_exit.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\underworld_pause.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\underworld_run.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\view_gamestrings.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\view_hostpotlist.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\view_objectlist.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\view_output.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\view_playerinfo.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\view_project.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\view_tileinfo.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\view_tilemap.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\window_horizontal.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\window_vertical.bmp">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\tb_mainframe.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\tb_standard.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\tb_tilemap.bmp">
+    <Image Include="res\gamestrings.ico">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\tilemap.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\tree_project.bmp">
+    <Image Include="res\window_cascade.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
@@ -198,5 +282,13 @@
     <ResourceCompile Include="versioninfo.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+    <ResourceCompile Include="res\Ribbon.rc">
+      <Filter>Resource Files\Generated Ribbon Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="res\Ribbon.xml">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

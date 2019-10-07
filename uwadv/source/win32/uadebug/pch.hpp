@@ -56,6 +56,7 @@ extern CAppModule _Module;
 #include <atlddx.h>
 #include <atlctrlw.h>
 #include <atlcrack.h>
+#include <atlribbon.h>
 
 // Tabbed Framework includes
 #pragma warning(push)
