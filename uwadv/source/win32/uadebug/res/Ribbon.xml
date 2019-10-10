@@ -112,8 +112,10 @@
             <ScalingPolicy>
               <ScalingPolicy.IdealSizes>
                 <Scale Group="GroupFile" Size="Large" />
-                <Scale Group="GroupEdit" Size="Medium" />
+                <Scale Group="GroupEdit" Size="Small" />
+                <Scale Group="GroupGame" Size="Medium" />
                 <Scale Group="GroupViews" Size="Large" />
+                <Scale Group="GroupWindow" Size="Medium" />
               </ScalingPolicy.IdealSizes>
             </ScalingPolicy>
           </Tab.ScalingPolicy>
@@ -153,7 +155,30 @@
             <Button CommandName="uadebug_FILE_SAVE_ALL" />
           </Group>
 
-          <Group CommandName="GroupEdit" SizeDefinition="FiveButtons">
+          <Group CommandName="GroupEdit">
+            <SizeDefinition>
+              <GroupSizeDefinition Size="Large">
+                <ControlSizeDefinition ControlName="wtl_EDIT_UNDO" ImageSize="Large" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="wtl_EDIT_REDO" ImageSize="Large" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="wtl_EDIT_PASTE" ImageSize="Large" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="wtl_EDIT_CUT" ImageSize="Large" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="wtl_EDIT_COPY" ImageSize="Large" IsLabelVisible="true" />
+              </GroupSizeDefinition>
+              <GroupSizeDefinition Size="Medium">
+                <ControlSizeDefinition ControlName="wtl_EDIT_UNDO" ImageSize="Large" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="wtl_EDIT_REDO" ImageSize="Large" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="wtl_EDIT_PASTE" ImageSize="Large" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="wtl_EDIT_CUT" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="wtl_EDIT_COPY" ImageSize="Small" IsLabelVisible="true" />
+              </GroupSizeDefinition>
+              <GroupSizeDefinition Size="Small">
+                <ControlSizeDefinition ControlName="wtl_EDIT_UNDO" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="wtl_EDIT_REDO" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="wtl_EDIT_PASTE" ImageSize="Large" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="wtl_EDIT_CUT" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="wtl_EDIT_COPY" ImageSize="Small" IsLabelVisible="true" />
+              </GroupSizeDefinition>
+            </SizeDefinition>
             <Button CommandName="wtl_EDIT_UNDO" />
             <Button CommandName="wtl_EDIT_REDO" />
             <Button CommandName="wtl_EDIT_PASTE" />
@@ -222,7 +247,72 @@
             <Button CommandName="uadebug_VIEW_TILEINFO" />
             <Button CommandName="uadebug_VIEW_OUTPUT" />
           </Group>
+
+          <Group CommandName="GroupWindow">
+            <SizeDefinition>
+              <GroupSizeDefinition Size="Large">
+                <ControlSizeDefinition ControlName="wtl_WINDOW_CASCADE" ImageSize="Large" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="wtl_WINDOW_TILE_HORZ" ImageSize="Large" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="wtl_WINDOW_TILE_VERT" ImageSize="Large" IsLabelVisible="true" />
+              </GroupSizeDefinition>
+              <GroupSizeDefinition Size="Medium">
+                <ControlSizeDefinition ControlName="wtl_WINDOW_CASCADE" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="wtl_WINDOW_TILE_HORZ" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="wtl_WINDOW_TILE_VERT" ImageSize="Small" IsLabelVisible="true" />
+              </GroupSizeDefinition>
+              <GroupSizeDefinition Size="Small">
+                <ControlSizeDefinition ControlName="wtl_WINDOW_CASCADE" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="wtl_WINDOW_TILE_HORZ" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="wtl_WINDOW_TILE_VERT" ImageSize="Small" IsLabelVisible="true" />
+              </GroupSizeDefinition>
+            </SizeDefinition>
+            <Button CommandName="wtl_WINDOW_CASCADE" />
+            <Button CommandName="wtl_WINDOW_TILE_HORZ" />
+            <Button CommandName="wtl_WINDOW_TILE_VERT" />
+          </Group>
         </Tab>
+
+        <Tab CommandName="TabDebug">
+          <Tab.ScalingPolicy>
+            <ScalingPolicy>
+              <ScalingPolicy.IdealSizes>
+                <Scale Group="GroupDebug" Size="Medium" />
+              </ScalingPolicy.IdealSizes>
+            </ScalingPolicy>
+          </Tab.ScalingPolicy>
+
+          <Group CommandName="GroupDebug">
+            <SizeDefinition>
+              <GroupSizeDefinition Size="Large">
+                <ControlSizeDefinition ControlName="uadebug_DEBUG_BREAK" ImageSize="Large" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_DEBUG_RUN" ImageSize="Large" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_DEBUG_STEP_INTO" ImageSize="Large" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_DEBUG_STEP_OVER" ImageSize="Large" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_DEBUG_STEP_OUT" ImageSize="Large" IsLabelVisible="true" />
+              </GroupSizeDefinition>
+              <GroupSizeDefinition Size="Medium">
+                <ControlSizeDefinition ControlName="uadebug_DEBUG_BREAK" ImageSize="Large" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_DEBUG_RUN" ImageSize="Large" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_DEBUG_STEP_INTO" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_DEBUG_STEP_OVER" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_DEBUG_STEP_OUT" ImageSize="Small" IsLabelVisible="true" />
+              </GroupSizeDefinition>
+              <GroupSizeDefinition Size="Small">
+                <ControlSizeDefinition ControlName="uadebug_DEBUG_BREAK" ImageSize="Large" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_DEBUG_RUN" ImageSize="Large" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_DEBUG_STEP_INTO" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_DEBUG_STEP_OVER" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_DEBUG_STEP_OUT" ImageSize="Small" IsLabelVisible="true" />
+              </GroupSizeDefinition>
+            </SizeDefinition>
+            <Button CommandName="uadebug_DEBUG_BREAK" />
+            <Button CommandName="uadebug_DEBUG_RUN" />
+            <Button CommandName="uadebug_DEBUG_STEP_INTO" />
+            <Button CommandName="uadebug_DEBUG_STEP_OVER" />
+            <Button CommandName="uadebug_DEBUG_STEP_OUT" />
+          </Group>
+        </Tab>
+
       </Ribbon.Tabs>
     </Ribbon>
   </Application.Views>
