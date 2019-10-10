@@ -46,6 +46,22 @@ class ATL_NO_VTABLE CRibbonMDIDockingFrameWindowImpl :
 
 public:
    DECLARE_WND_CLASS(_T("CRibbonMDIDockingFrameWindowImpl"))
+
+   /// Returns client rect, with ribbon taken in consideration.
+   /// This is done since CDockingFrameImplBase tries to adjust the docking
+   /// windows in UpdateLayout() and calls GetClientRect(), but the ribbon is
+   /// not part of the non-client area and would get obscured.
+   BOOL GetClientRect(LPRECT rect)
+   {
+      BOOL ret = baseClass::GetClientRect(rect);
+
+      if (this->IsRibbonUI() && !this->IsRibbonHidden())
+      {
+         rect->top += this->GetRibbonHeight();
+      }
+
+      return ret;
+   }
 };
 
 /// debugger app main frame

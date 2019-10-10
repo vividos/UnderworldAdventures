@@ -42,12 +42,12 @@ class ATL_NO_VTABLE CDockingFrameImplBase : public TBase
 	typedef CDockingFrameImplBase<T,TBase,TWinTraits>	thisClass;
 #endif
 	typedef typename TBase								baseClass;
-	typedef typename TWinTraits							CTraits; 
+	typedef typename TWinTraits							CTraits;
 	typedef typename CTraits::CSplitterBar				CSplitterBar;
-	typedef CPackageWindowFrame<CTraits>				CPackageFrame; 
+	typedef CPackageWindowFrame<CTraits>				CPackageFrame;
 	typedef CSubWndFramesPackage<CPackageFrame,CTraits>	CWndPackage;
-	typedef typename CDWSettings::CStyle				CStyle; 
-	struct  CDockOrientationFlag  
+	typedef typename CDWSettings::CStyle				CStyle;
+	struct  CDockOrientationFlag
 	{
 		enum{hor=0x80000000,ver=0};
 		static void SetVertical(DWORD& flag)
@@ -100,7 +100,8 @@ public:
 	void UpdateLayout(BOOL bResizeBars = TRUE)
 	{
 		CRect rc;
-		GetClientRect(&rc);
+		T* pThis = static_cast<T*>(this);
+		pThis->GetClientRect(&rc);
 		UpdateBarsPosition(rc, bResizeBars);
 		CClientDC dc(m_hWnd);
 #ifdef DF_AUTO_HIDE_FEATURES
