@@ -190,6 +190,9 @@ private:
    /// called per PostMessage from UndockWindow() to really undock a docking window
    LRESULT OnUndockWindow(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
+   /// starts uastudio.exe
+   void StartStudioApp();
+
    // virtual methods from IMainFrame
 
    virtual DebugClient& GetDebugClientInterface() override;

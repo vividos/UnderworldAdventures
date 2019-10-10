@@ -73,10 +73,13 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
       return 0;
    }
 
-   // set caption
    if (m_debugClient.IsStudioMode())
    {
-      // TODO set uastudio mode
+      SetWindowText(_T("Underworld Adventures Studio"));
+   }
+   else
+   {
+      UIEnable(ID_FILE_OPEN_PROJECT, false);
    }
 
    // create command bar window
@@ -337,6 +340,17 @@ LRESULT MainFrame::OnFileSaveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
 LRESULT MainFrame::OnFileNewProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+   if (!m_debugClient.IsStudioMode())
+   {
+      AtlMessageBox(m_hWnd,
+         _T("You're currently debugging a Underworld Adventures game.\n")
+         _T("Starting new Underworld Adventures application..."),
+         IDR_MAINFRAME, MB_OK);
+
+      StartStudioApp();
+      return 0;
+   }
+
    // TODO implement
    return 0;
 }
@@ -702,4 +716,15 @@ void MainFrame::RemoveLuaChildView(LuaSourceView* childView)
          index--;
          maxIndex--;
       }
+}
+
+void MainFrame::StartStudioApp()
+{
+   CString uastudioPath;
+   GetModuleFileName(NULL, uastudioPath.GetBuffer(MAX_PATH), MAX_PATH);
+   uastudioPath.ReleaseBuffer();
+
+   uastudioPath.Replace(_T("uwadv.exe"), _T("uastudio.exe"));
+
+   ShellExecute(m_hWnd, NULL, uastudioPath, _T("--newproject"), NULL, SW_SHOWNORMAL);
 }
