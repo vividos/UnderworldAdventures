@@ -32,12 +32,12 @@ bool MainFrame::InitDebugClient(IDebugServer* debugServer)
    // check debug interface version
    if (!m_debugClient.Init(debugServer))
    {
-      ::MessageBox(NULL,
+      AtlMessageBox(m_hWnd,
          _T("This version of Underworld Adventures Debugger isn't compatible with the version of ")
          _T("Underworld Adventures you are currently using.\n")
          _T("Please use the appropriate version or update the Underworld Debugger. ")
          _T("The debugger is now exiting."),
-         _T("Underworld Adventures Debugger"), MB_OK);
+         IDR_MAINFRAME, MB_OK);
 
       return false;
    }
@@ -65,9 +65,9 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 {
    if (!RunTimeHelper::IsRibbonUIAvailable())
    {
-      ::MessageBox(NULL,
+      AtlMessageBox(m_hWnd,
          _T("Underworld Adventures Debugger only runs on Windows 7 or higher."),
-         _T("Underworld Adventures Debugger"), MB_OK);
+         IDR_MAINFRAME, MB_OK);
 
       SendMessage(WM_CLOSE);
       return 0;
