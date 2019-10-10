@@ -107,15 +107,9 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
       UISetCheck(ID_VIEW_STATUS_BAR, 1);
    }
 
-   m_tabbedChildWindow.SetReflectNotifications(true);
-
-   m_tabbedChildWindow.SetTabStyles(CTCS_TOOLTIPS | CTCS_SCROLL);
-   m_tabbedChildWindow.Create(m_hWnd, rcDefault);
-   m_tabbedChildWindow.ModifyStyleEx(WS_EX_CLIENTEDGE, 0);
-
    CreateMDIClient();
 
-   // subclass mdi client
+   // subclass MDI client
    m_tabbedClient.SetTabOwnerParent(m_hWnd);
    ATLVERIFY(TRUE == m_tabbedClient.SubclassWindow(m_hWndMDIClient));
 
@@ -127,7 +121,6 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
    pLoop->AddMessageFilter(this);
    pLoop->AddIdleHandler(this);
 
-   // floating stuff
    InitializeDockingFrame();
 
    // dock some often-needed windows
@@ -364,11 +357,13 @@ LRESULT MainFrame::OnFileSaveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
 LRESULT MainFrame::OnGameNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+   // TODO implement
    return 0;
 }
 
 LRESULT MainFrame::OnGameOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+   // TODO implement
    return 0;
 }
 

@@ -47,34 +47,10 @@ class MainFrame :
 public:
    DECLARE_FRAME_WND_CLASS(NULL, IDR_MAINFRAME)
 
-   /// MDI command bar for tabbing
-   CTabbedMDICommandBarCtrl m_commandBar;
-
-   /// tabbed MDI client window
-   CTabbedMDIClient<CDotNetTabCtrl<CTabViewTabItem> > m_tabbedClient;
-
-   /// tabbed child window
-   CTabbedChildWindow< CDotNetTabCtrl<CTabViewTabItem> > m_tabbedChildWindow;
-
-   // docking windows
-
-   PlayerInfoWindow m_playerInfoWindow;
-   ObjectListWindow m_objectListWindow;
-   HotspotListWindow m_hotspotListWindow;
-   TileInfoWindow m_tileInfoWindow;
-   ProjectInfoWindow m_projectInfoWindow;
-
-   // statically allocated child windows
-
-   TileMapViewChildFrame m_tilemapChildFrame;
-
-   /// image list with all icons for underworld objects; 16x16
-   CImageList m_objectImageList;
-
-public:
    /// initializes debug client of main frame
    bool InitDebugClient(IDebugServer* debugServer);
 
+private:
    virtual BOOL PreTranslateMessage(MSG* pMsg);
 
    /// called for idle processing
@@ -87,6 +63,7 @@ public:
    BEGIN_MSG_MAP(MainFrame)
       MESSAGE_HANDLER(WM_CREATE, OnCreate)
       COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
+      COMMAND_ID_HANDLER(ID_APP_ABOUT, OnAppAbout)
       COMMAND_ID_HANDLER(ID_FILE_NEW, OnFileNew)
       COMMAND_ID_HANDLER(ID_FILE_OPEN, OnFileOpen)
       COMMAND_ID_HANDLER(ID_FILE_SAVE, OnFileSave)
@@ -111,8 +88,6 @@ public:
       COMMAND_ID_HANDLER(ID_WINDOW_TILE_HORZ, OnWindowTileHorizontal)
       COMMAND_ID_HANDLER(ID_WINDOW_TILE_VERT, OnWindowTileVertical)
       COMMAND_ID_HANDLER(ID_WINDOW_ARRANGE, OnWindowArrangeIcons)
-      COMMAND_ID_HANDLER(ID_APP_ABOUT, OnAppAbout)
-      // ID_HELP_INDEX
       MESSAGE_HANDLER(WM_UNDOCK_WINDOW, OnUndockWindow)
       CHAIN_MDI_CHILD_COMMANDS()
       CHAIN_MSG_MAP(CUpdateUI<MainFrame>)
@@ -209,6 +184,24 @@ public:
    virtual void RemoveLuaChildView(LuaSourceView* childView) override;
 
 private:
+   /// MDI command bar for tabbing
+   CTabbedMDICommandBarCtrl m_commandBar;
+
+   /// tabbed MDI client window
+   CTabbedMDIClient<CDotNetTabCtrl<CTabViewTabItem>> m_tabbedClient;
+
+   // docking windows
+
+   PlayerInfoWindow m_playerInfoWindow;
+   ObjectListWindow m_objectListWindow;
+   HotspotListWindow m_hotspotListWindow;
+   TileInfoWindow m_tileInfoWindow;
+   ProjectInfoWindow m_projectInfoWindow;
+
+   // statically allocated child windows
+
+   TileMapViewChildFrame m_tilemapChildFrame;
+
    /// debug client interface
    DebugClient m_debugClient;
 
@@ -226,4 +219,7 @@ private:
 
    /// common image list
    CImageList m_commonImageList;
+
+   /// image list with all icons for underworld objects; 16x16
+   CImageList m_objectImageList;
 };
