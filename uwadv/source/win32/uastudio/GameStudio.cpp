@@ -295,18 +295,14 @@ int main(int argc, char* argv[])
       studio.Done();
 #ifndef HAVE_DEBUG
    }
-   catch (const Base::Exception& ex)
-   {
-      std::string text("caught Base::Exception: %s\n\r", ex.what());
-      text.append(ex.what());
-      UaTrace(text.c_str());
-
-      SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Underworld Adventures Studio", text.c_str(), NULL);
-   }
    catch (const std::exception& ex)
    {
-      UaTrace("caught std::exception: %s\n", ex.what());
-      SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Underworld Adventures Studio", "std::exception", NULL);
+      std::string text("Error occured: ");
+      text.append(ex.what());
+
+      UaTrace(text.c_str());
+
+      SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Underworld Adventures Studio", text.c_str(), nullptr);
    }
 #endif
 
