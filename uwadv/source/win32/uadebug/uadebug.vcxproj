@@ -135,7 +135,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\Des.ico" />
-    <Image Include="res\game_strings.ico" />
+    <Image Include="res\gamestrings.ico" />
     <Image Include="res\Lua.ico" />
     <Image Include="res\Sanct.ico" />
     <Image Include="res\tb_debug.bmp" />
@@ -145,7 +145,7 @@
     <Image Include="res\tb_mainframe.bmp" />
     <Image Include="res\tb_standard.bmp" />
     <Image Include="res\tb_tilemap.bmp" />
-    <Image Include="res\tilemap_view.ico" />
+    <Image Include="res\tilemap.ico" />
     <Image Include="res\tree_project.bmp" />
   </ItemGroup>
   <ItemGroup>

@@ -333,10 +333,9 @@ IDR_MAINFRAME           ICON                    "res\\Sanct.ico"
 
 IDR_LUA_SOURCE_FRAME    ICON                    "res\\Lua.ico"
 
-IDR_GAME_STRINGS        ICON                    "res\\game_strings.ico"
+IDR_GAMESTRINGS_VIEW    ICON                    "res\\gamestrings.ico"
 
-IDR_TILEMAP_VIEW        ICON                    "res\\tilemap_view.ico"
-
+IDR_TILEMAP_VIEW        ICON                    "res\\tilemap.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -456,7 +455,7 @@ STRINGTABLE
 BEGIN
     IDR_MAINFRAME           "Underworld Adventures Debugger"
     IDR_LUA_SOURCE_FRAME    "Lua Source File"
-    IDR_GAME_STRINGS        "Game Strings"
+    IDR_GAMESTRINGS_VIEW    "Game Strings"
     IDR_TILEMAP_VIEW        "Tilemap View"
 END
 

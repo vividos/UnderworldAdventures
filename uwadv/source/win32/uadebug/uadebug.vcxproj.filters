@@ -154,7 +154,7 @@
     <Image Include="res\Des.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\game_strings.ico">
+    <Image Include="res\gamestrings.ico">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\Lua.ico">
@@ -184,7 +184,7 @@
     <Image Include="res\tb_tilemap.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\tilemap_view.ico">
+    <Image Include="res\tilemap.ico">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\tree_project.bmp">

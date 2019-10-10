@@ -7,7 +7,7 @@
 #define IDD_GAMESTRINGS                 102
 #define IDR_MAINFRAME                   128
 #define IDR_LUA_SOURCE_FRAME            129
-#define IDR_GAME_STRINGS                130
+#define IDR_GAMESTRINGS_VIEW            130
 #define IDR_TILEMAP_VIEW                131
 #define IDC_CURSOR_TILEMAP              200
 #define IDR_TOOLBAR_MAIN                201

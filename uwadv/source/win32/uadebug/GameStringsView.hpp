@@ -90,10 +90,10 @@ private:
 };
 
 /// game strings child frame
-class GameStringsViewChildFrame : public ChildWindowBase<IDR_GAME_STRINGS>
+class GameStringsViewChildFrame : public ChildWindowBase<IDR_GAMESTRINGS_VIEW>
 {
    typedef GameStringsViewChildFrame thisClass;
-   typedef ChildWindowBase<IDR_GAME_STRINGS> baseClass;
+   typedef ChildWindowBase<IDR_GAMESTRINGS_VIEW> baseClass;
 
 public:
    /// ctor
