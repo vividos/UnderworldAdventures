@@ -36,7 +36,7 @@ void MapNotes::Load(Base::Savegame& sg)
    m_mapNotesList.clear();
    m_mapNotesList.resize(numEntries);
 
-   for (unsigned int entryIndex = 0; entryIndex < numEntries; entryIndex++)
+   for (size_t entryIndex = 0; entryIndex < numEntries; entryIndex++)
    {
       MapNote& mapNote = m_mapNotesList[entryIndex];
 
@@ -54,7 +54,7 @@ void MapNotes::Save(Base::Savegame& sg) const
    Uint16 numEntries = static_cast<Uint16>(m_mapNotesList.size());
    sg.Write16(numEntries);
 
-   for (unsigned int entryIndex = 0; entryIndex < numEntries; entryIndex++)
+   for (size_t entryIndex = 0; entryIndex < numEntries; entryIndex++)
    {
       const MapNote& mapNote = m_mapNotesList[entryIndex];
 

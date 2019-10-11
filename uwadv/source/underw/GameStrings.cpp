@@ -41,7 +41,7 @@ const std::vector<std::string>& GameStrings::GetStringBlock(Uint16 blockId) cons
    return iter->second;
 }
 
-std::string GameStrings::GetString(Uint16 blockId, unsigned int stringNumber) const
+std::string GameStrings::GetString(Uint16 blockId, size_t stringNumber) const
 
 {
    if (!IsBlockAvail(blockId))

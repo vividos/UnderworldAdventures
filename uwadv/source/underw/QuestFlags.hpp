@@ -37,20 +37,20 @@ namespace Underworld
       QuestFlags() {}
 
       /// returns number of flags
-      unsigned int GetFlagCount() const { return m_questFlags.size(); }
+      size_t GetFlagCount() const { return m_questFlags.size(); }
 
       /// returns quest flag by index
-      Uint16 GetFlag(unsigned int flagIndex) const
+      Uint16 GetFlag(size_t flagIndex) const
       {
          UaAssert(flagIndex < GetFlagCount());
          return m_questFlags[flagIndex];
       }
 
       /// sets quest flag
-      void SetFlag(unsigned int flagIndex, Uint16 uiFlagValue)
+      void SetFlag(size_t flagIndex, Uint16 flagValue)
       {
          UaAssert(flagIndex < GetFlagCount());
-         m_questFlags[flagIndex] = uiFlagValue;
+         m_questFlags[flagIndex] = flagValue;
       }
 
       // loading / saving

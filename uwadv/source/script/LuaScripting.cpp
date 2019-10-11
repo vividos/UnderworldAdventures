@@ -427,11 +427,11 @@ void LuaScripting::DebugHook(lua_Debug* ar)
 
    if (ar->source != NULL)
    {
-      m_currentPositionSourcefileIndex = unsigned(-1);
+      m_currentPositionSourcefileIndex = size_t(-1);
 
       // find out current index
-      unsigned int max = m_loadedScriptFiles.size();
-      for (unsigned int n = 0; n < max; n++)
+      size_t max = m_loadedScriptFiles.size();
+      for (size_t n = 0; n < max; n++)
          if (m_loadedScriptFiles[n] == ar->source)
          {
             m_currentPositionSourcefileIndex = n;
@@ -677,8 +677,8 @@ void LuaScripting::SetDebuggerCommand(DebugServerCodeDebuggerCommand debuggerCom
    //   m_debuggerState = codeDebuggerStateRunning;
 }
 
-void LuaScripting::GetCurrentPos(unsigned int& sourcefileIndex,
-   unsigned int& sourcefileLine, unsigned int& codePosition,
+void LuaScripting::GetCurrentPos(size_t& sourcefileIndex,
+   size_t& sourcefileLine, size_t& codePosition,
    bool& isSourcefileValid)
 {
    UNUSED(codePosition);
@@ -687,12 +687,12 @@ void LuaScripting::GetCurrentPos(unsigned int& sourcefileIndex,
    isSourcefileValid = true;
 }
 
-unsigned int LuaScripting::GetNumSourcefiles() const
+size_t LuaScripting::GetNumSourcefiles() const
 {
    return static_cast<unsigned int>(m_loadedScriptFiles.size());
 }
 
-unsigned int LuaScripting::GetSourcefileName(unsigned int index, char* buffer, unsigned int len)
+size_t LuaScripting::GetSourcefileName(size_t index, char* buffer, size_t length)
 {
    std::string filename(m_loadedScriptFiles[index]);
    if (filename.size() > 0 && filename[0] == '@')
@@ -700,7 +700,7 @@ unsigned int LuaScripting::GetSourcefileName(unsigned int index, char* buffer, u
 
    size_t size = filename.size();
 
-   if (buffer == NULL || len == 0 || len < size + 1)
+   if (buffer == NULL || length == 0 || length < size + 1)
       return size + 1;
 
    strncpy(buffer, filename.c_str(), size);
@@ -709,20 +709,20 @@ unsigned int LuaScripting::GetSourcefileName(unsigned int index, char* buffer, u
    return filename.size() + 1;
 }
 
-unsigned int LuaScripting::GetNumBreakpoints()
+size_t LuaScripting::GetNumBreakpoints() const
 {
    return m_breakpointsList.size();
 }
 
-void LuaScripting::GetBreakpointInfo(unsigned int breakpointIndex,
-   unsigned int& sourcefileIndex, unsigned int& sourcefileLine,
-   unsigned int& codePosition, bool& visible)
+void LuaScripting::GetBreakpointInfo(size_t breakpointIndex,
+   size_t& sourcefileIndex, size_t& sourcefileLine,
+   size_t& codePosition, bool& visible) const
 {
    UaAssert(breakpointIndex < GetNumBreakpoints());
    if (breakpointIndex >= GetNumBreakpoints())
       return;
 
-   DebugCodeBreakpointInfo& info = m_breakpointsList[breakpointIndex];
+   const DebugCodeBreakpointInfo& info = m_breakpointsList[breakpointIndex];
 
    visible = info.visible;
    sourcefileIndex = info.pos.sourcefileIndex;
@@ -761,7 +761,7 @@ int LuaScripting::uw_change_level(lua_State* L)
 {
    LuaScripting& self = GetScriptingFromSelf(L);
 
-   unsigned int level = static_cast<unsigned int>(lua_tonumber(L, -1));
+   size_t level = static_cast<unsigned int>(lua_tonumber(L, -1));
 
    self.m_game->GetGameLogic().ChangeLevel(level);
 

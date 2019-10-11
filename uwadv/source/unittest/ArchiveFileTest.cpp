@@ -79,8 +79,8 @@ namespace UnitTest
          Assert::IsTrue(file.GetNumFiles() == 11); // 11 bitmaps
 
          // all files are exactly 64000 bytes long (320x200 bitmap)
-         unsigned int maxFiles = file.GetNumFiles();
-         for (unsigned int index = 0; index < maxFiles; index++)
+         size_t maxFiles = file.GetNumFiles();
+         for (size_t index = 0; index < maxFiles; index++)
             if (index != 3 && index != 10) // entries 3 and 10 are unused
             {
                Base::File f = file.GetFile(index);
@@ -161,8 +161,8 @@ namespace UnitTest
          Base::ArchiveFile file(resourceMgr.GetUnderworldFile(Base::resourceGameUw2, "data/scd.ark"), true);
          Assert::IsTrue(file.GetNumFiles() == 16);
 
-         unsigned int maxFiles = file.GetNumFiles();
-         for (unsigned int index = 0; index < maxFiles; index++)
+         size_t maxFiles = file.GetNumFiles();
+         for (size_t index = 0; index < maxFiles; index++)
             if (file.IsAvailable(index))
             {
                Base::File f = file.GetFile(index);

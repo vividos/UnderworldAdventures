@@ -146,9 +146,9 @@ public:
 	//
 	// Statics to Initialize Midi Drivers and to get info
 	//
-	
+
 	//! Get the number of devices
-	static int			getDriverCount();
+	static size_t			getDriverCount();
 
 	//! Get the name of a driver
 	//! \param index Driver number

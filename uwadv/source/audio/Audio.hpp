@@ -148,7 +148,7 @@ namespace Audio
       void PlaySoundEffect(SoundEffectType sfxType);
 
       /// starts music track playback
-      void StartMusicTrack(unsigned int musicTrack, bool repeat);
+      void StartMusicTrack(size_t musicTrack, bool repeat);
 
       /// fades out currently playing music track; fadeout time in milliseconds
       void FadeoutMusic(int timeInMs);

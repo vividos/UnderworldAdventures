@@ -102,7 +102,7 @@ namespace Base
       /// reads 32-bit value from file
       Uint32 Read32() const { return SDL_ReadLE32(m_rwops.get()); }
       /// reads array from file into buffer
-      unsigned int ReadBuffer(Uint8* buffer, unsigned int length) const;
+      size_t ReadBuffer(Uint8* buffer, size_t length) const;
 
       /// writes 8-bit value to file
       void Write8(Uint8 value);
@@ -111,7 +111,7 @@ namespace Base
       /// writes 32-bit value to file
       void Write32(Uint32 value) { SDL_WriteLE32(m_rwops.get(), value); }
       /// writes buffer to file
-      void WriteBuffer(const Uint8* buffer, unsigned int length);
+      void WriteBuffer(const Uint8* buffer, size_t length);
 
       /// closes file
       void Close();

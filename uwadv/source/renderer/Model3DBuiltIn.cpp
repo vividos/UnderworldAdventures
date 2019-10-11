@@ -30,16 +30,16 @@ void Model3DBuiltIn::Render(const Underworld::Object& object,
 {
    glDisable(GL_CULL_FACE);
 
-   unsigned int maxTriangles = m_triangles.size();
+   size_t maxTriangles = m_triangles.size();
 
    Vector3d origin;
 
-   for (unsigned int triangleIndex = 0; triangleIndex < maxTriangles; triangleIndex++)
+   for (size_t triangleIndex = 0; triangleIndex < maxTriangles; triangleIndex++)
    {
 #if 0
       //#ifdef HAVE_DEBUG
             // select debug triangle color
-      switch (m_triangles[i].m_textureNumber)
+      switch (m_triangles[triangleIndex].m_textureNumber)
       {
       case 1:
          glColor3ub(255, 0, 0); // red

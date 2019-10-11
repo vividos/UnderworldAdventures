@@ -681,8 +681,8 @@ void CodeGraph::AddLocalArrayExpression(graph_iterator iter, FuncInfo& funcInfo)
 
 void CodeGraph::AddArrayInfo(FuncInfo& funcInfo, Uint16 localIndex, Uint16 offset)
 {
-   unsigned int max = funcInfo.array_info.size();
-   for (unsigned int i = 0; i < max; i++)
+   size_t max = funcInfo.array_info.size();
+   for (size_t i = 0; i < max; i++)
    {
       if (funcInfo.array_info[i].local_start == localIndex)
       {
@@ -972,8 +972,8 @@ void CodeGraph::CombineOperators(FuncInfo& funcInfo)
       operatorIter->m_isProcessed = true;
 
       // mark expressions as "done"
-      unsigned int max = expressions.size();
-      for (unsigned int i = 0; i < max; i++)
+      size_t max = expressions.size();
+      for (size_t i = 0; i < max; i++)
          expressions[i]->m_isProcessed = true;
    }
 }
@@ -1092,8 +1092,8 @@ void CodeGraph::CombineCallOperator(graph_iterator operatorIter,
    buffer << "(";
 
    // do parameter
-   unsigned int max = expressions.size();
-   for (unsigned int n = 0; n < max; n++)
+   size_t max = expressions.size();
+   for (size_t n = 0; n < max; n++)
    {
       CodeGraphItem& param = *expressions[n];
 
@@ -1829,8 +1829,8 @@ void CodeGraph::PostProcessFunction(FuncInfo& funcInfo)
    // parameters
    const std::vector<DataType>& param_types = funcInfo.param_types;
 
-   unsigned int max = param_types.size();
-   for (unsigned int i = 0; i < max; i++)
+   size_t max = param_types.size();
+   for (size_t i = 0; i < max; i++)
    {
       buffer << DataTypeToString(param_types[i]) << " param" << i + 1;
       if (i < max - 1)
@@ -1849,7 +1849,7 @@ void CodeGraph::PostProcessFunction(FuncInfo& funcInfo)
 
    // add all locals and arrays
    max = funcInfo.locals_types.size();
-   for (unsigned int j = 0; j < max; j++)
+   for (size_t j = 0; j < max; j++)
    {
       DataType type = funcInfo.locals_types[j];
 
@@ -1864,7 +1864,7 @@ void CodeGraph::PostProcessFunction(FuncInfo& funcInfo)
 
    // arrays
    max = funcInfo.array_info.size();
-   for (unsigned int n = 0; n < max; n++)
+   for (size_t n = 0; n < max; n++)
    {
       ArrayInfo array_info = funcInfo.array_info[n];
 

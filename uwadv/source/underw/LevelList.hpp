@@ -38,17 +38,17 @@ namespace Underworld
       LevelList() {}
 
       /// returns number of levels in list
-      unsigned int GetNumLevels() const { return m_levelList.size(); }
+      size_t GetNumLevels() const { return m_levelList.size(); }
 
       /// returns level
-      Level& GetLevel(unsigned int levelIndex)
+      Level& GetLevel(size_t levelIndex)
       {
          UaAssert(levelIndex < GetNumLevels());
          return m_levelList[levelIndex];
       }
 
       /// returns level; const version
-      const Level& GetLevel(unsigned int levelIndex) const
+      const Level& GetLevel(size_t levelIndex) const
       {
          UaAssert(levelIndex < GetNumLevels());
          return m_levelList[levelIndex];

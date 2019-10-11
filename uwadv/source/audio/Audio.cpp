@@ -201,7 +201,7 @@ void AudioManager::PlaySoundEffect(Audio::SoundEffectType sfxType)
 /// \param musicTrack the position in music playlist of the track to play back
 /// \param repeat indicates if track should be repeated when it has stopped
 /// \todo use MusicTrackUw1 or a similar mapping to start music instead
-void AudioManager::StartMusicTrack(unsigned int musicTrack, bool repeat)
+void AudioManager::StartMusicTrack(size_t musicTrack, bool repeat)
 {
    Playlist& playlist = m_data->GetPlaylist();
 

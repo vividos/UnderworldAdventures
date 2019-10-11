@@ -63,7 +63,7 @@ ArchiveFile::ArchiveFile(Base::SDL_RWopsPtr rwops, bool uw2Mode)
 
 /// Archive file entry is available when the file offset is not 0.
 /// In uw2 the data size must be greater than 0, too.
-bool ArchiveFile::IsAvailable(unsigned int index) const
+bool ArchiveFile::IsAvailable(size_t index) const
 {
    UaAssert(index < GetNumFiles());
    if (!m_uw2Mode)
@@ -76,7 +76,7 @@ bool ArchiveFile::IsAvailable(unsigned int index) const
 /// pointer that may depend on the archive file's internal SDL_RWops struct.
 /// Only use one archive file pointer at one time!
 /// \todo improve uw1 mode with finding out length using offsets
-Base::File ArchiveFile::GetFile(unsigned int index)
+Base::File ArchiveFile::GetFile(size_t index)
 {
    UaAssert(index < GetNumFiles());
    UaAssert(true == IsAvailable(index));

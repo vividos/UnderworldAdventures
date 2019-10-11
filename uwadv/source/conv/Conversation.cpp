@@ -26,7 +26,7 @@
 
 using Conv::Conversation;
 
-void Conversation::Init(unsigned int conversationLevel,
+void Conversation::Init(size_t conversationLevel,
    Uint16 conversationObjectPos,
    Conv::ICodeCallback* codeCallback,
    std::vector<std::string>& localStrings)

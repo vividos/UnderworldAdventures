@@ -55,7 +55,7 @@ public:
    }
 
    /// returns a string from given block
-   std::string GetString(Uint16 blockId, unsigned int stringNumber) const;
+   std::string GetString(Uint16 blockId, size_t stringNumber) const;
 
 private:
    friend Import::GameStringsImporter;

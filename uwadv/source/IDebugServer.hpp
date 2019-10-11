@@ -172,22 +172,22 @@ public:
    virtual void SetDebuggerCommand(DebugServerCodeDebuggerCommand command) = 0;
 
    /// returns current position
-   virtual void GetCurrentPos(unsigned int& sourcefileIndex, unsigned int& sourcefileLine,
-      unsigned int& codePosition, bool& isSourcefileValid) = 0;
+   virtual void GetCurrentPos(size_t& sourcefileIndex, size_t& sourcefileLine,
+      size_t& codePosition, bool& isSourcefileValid) = 0;
 
    /// returns number of source files
-   virtual unsigned int GetNumSourcefiles() const = 0;
+   virtual size_t GetNumSourcefiles() const = 0;
 
    /// returns sourcefile name by index
-   virtual unsigned int GetSourcefileName(unsigned int index, char* buffer, unsigned int len) = 0;
+   virtual size_t GetSourcefileName(size_t index, char* buffer, size_t length) = 0;
 
    /// returns number of breakpoints
-   virtual unsigned int GetNumBreakpoints() = 0;
+   virtual size_t GetNumBreakpoints() const = 0;
 
    /// returns breakpoint info for a given breakpoint index
-   virtual void GetBreakpointInfo(unsigned int breakpointIndex,
-      unsigned int& sourcefileIndex, unsigned int& sourcefileLine,
-      unsigned int& codePosition, bool& visible) = 0;
+   virtual void GetBreakpointInfo(size_t breakpointIndex,
+      size_t& sourcefileIndex, size_t& sourcefileLine,
+      size_t& codePosition, bool& visible) const = 0;
 
 protected:
    /// sets debugger id
@@ -222,7 +222,7 @@ public:
    virtual unsigned int GetFlag(unsigned int flagId) = 0;
 
    /// returns current game path, or "" when none
-   virtual unsigned int GetGamePath(char* buffer, unsigned int bufferSize) = 0;
+   virtual size_t GetGamePath(char* buffer, size_t bufferSize) = 0;
 
    /// loads new game, or unloads game when "" is set as path
    virtual void LoadGame(const char* path) = 0;
@@ -236,15 +236,15 @@ public:
    // messaging stuff
 
    /// returns number of messages in the message queue
-   virtual unsigned int GetNumMessages() = 0;
+   virtual size_t GetNumMessages() = 0;
 
    /// returns current message
    virtual bool GetMessage(unsigned int& messageType,
       unsigned int& messageArg1, unsigned int& messageArg2, double& messageArg3,
-      unsigned int& messageTextSize) = 0;
+      size_t& messageTextSize) = 0;
 
    /// returns message text of current message
-   virtual bool GetMessageText(char* buffer, unsigned int bufferSize) = 0;
+   virtual bool GetMessageText(char* buffer, size_t bufferSize) = 0;
 
    /// removes current message
    virtual bool PopMessage() = 0;
@@ -252,62 +252,62 @@ public:
    // player stuff
 
    /// gets player position info; 0=xpos, 1=ypos, 2=height, 3=rotangle
-   virtual double GetPlayerPosInfo(unsigned int idx) = 0;
+   virtual double GetPlayerPosInfo(size_t index) = 0;
 
    /// sets player position info
-   virtual void SetPlayerPosInfo(unsigned int idx, double val) = 0;
+   virtual void SetPlayerPosInfo(size_t index, double value) = 0;
 
    /// returns player attribute
-   virtual unsigned int GetPlayerAttribute(unsigned int idx) = 0;
+   virtual unsigned int GetPlayerAttribute(size_t index) = 0;
 
    /// sets player attribute
-   virtual void SetPlayerAttribute(unsigned int idx, unsigned int val) = 0;
+   virtual void SetPlayerAttribute(size_t index, unsigned int value) = 0;
 
    // level/tile stuff
 
    /// returns number of levels
-   virtual unsigned int GetNumLevels() = 0;
+   virtual size_t GetNumLevels() = 0;
 
    /// returns tile height at given coordinates
-   virtual double GetTileHeight(unsigned int level, double xpos,
+   virtual double GetTileHeight(size_t level, double xpos,
       double ypos) = 0;
 
    /// returns tile info value
-   virtual unsigned int GetTileInfoValue(unsigned int level,
+   virtual unsigned int GetTileInfoValue(size_t level,
       unsigned int xpos, unsigned int ypos, unsigned int type) = 0;
 
    /// sets tile info value
-   virtual void SetTileInfoValue(unsigned int level,
+   virtual void SetTileInfoValue(size_t level,
       unsigned int xpos, unsigned int ypos, unsigned int type,
-      unsigned int val) = 0;
+      unsigned int value) = 0;
 
    /// returns if an object at given object list index is available
-   virtual bool IsObjectListIndexAvail(unsigned int level, unsigned int pos) const = 0;
+   virtual bool IsObjectListIndexAvail(size_t level, size_t pos) const = 0;
 
    /// returns object list info
-   virtual unsigned int GetObjectListInfo(unsigned int level,
-      unsigned int pos, unsigned int type) = 0;
+   virtual unsigned int GetObjectListInfo(size_t level,
+      size_t pos, unsigned int type) = 0;
 
    /// sets object list info
-   virtual void SetObjectListInfo(unsigned int level,
-      unsigned int pos, unsigned int type, unsigned int value) = 0;
+   virtual void SetObjectListInfo(size_t level,
+      size_t pos, unsigned int type, unsigned int value) = 0;
 
    // game strings stuff
 
    /// enumerates game string blocks
-   virtual bool EnumGameStringsBlocks(unsigned int index,
-      unsigned int& blockNumber) = 0;
+   virtual bool EnumGameStringsBlocks(size_t index,
+      size_t& blockNumber) = 0;
 
    /// returns number of strings in the given block
-   virtual unsigned int GetGameStringsBlockSize(unsigned int block) = 0;
+   virtual size_t GetGameStringsBlockSize(size_t block) = 0;
 
    /// returns game string
-   virtual unsigned int GetGameString(unsigned int block, unsigned int nr,
-      char* buffer, unsigned int maxsize) = 0;
+   virtual size_t GetGameString(size_t block, size_t number,
+      char* buffer, size_t maxsize) = 0;
 
    /// retrieves an object list imagelist in 32-bit RGBA format
-   virtual bool GetObjectListImagelist(unsigned int& numObjects,
-      unsigned char* buffer, unsigned int size) = 0;
+   virtual bool GetObjectListImagelist(size_t& numObjects,
+      unsigned char* buffer, size_t size) = 0;
 
    // code debugger
 

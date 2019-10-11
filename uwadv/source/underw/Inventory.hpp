@@ -115,10 +115,10 @@ namespace Underworld
       // slot list handling
 
       /// returns number of slots in list
-      unsigned int GetNumSlots() const { return m_slotList.size(); }
+      size_t GetNumSlots() const { return m_slotList.size(); }
 
       /// returns object position of object stored in one of the slots
-      Uint16 GetSlotListPos(unsigned int index) const;
+      Uint16 GetSlotListPos(size_t index) const;
 
       // container handling
 

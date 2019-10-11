@@ -116,16 +116,16 @@ protected:
    Font m_normalFont;
 
    /// maximal number of lines to show
-   unsigned int m_maxLines;
+   size_t m_maxLines;
 
    /// number of first visible line
-   unsigned int m_firstVisibleLine;
+   size_t m_firstVisibleLine;
 
    /// indicates if user has to press a key to see the rest of the scroll text
    bool m_isWaitingMore;
 
    /// line where the [MORE] is shown; only valid in 'more mode'
-   unsigned int m_moreLineIndex;
+   size_t m_moreLineIndex;
 
    /// all text lines printed so far
    std::vector<std::string> m_textLines;

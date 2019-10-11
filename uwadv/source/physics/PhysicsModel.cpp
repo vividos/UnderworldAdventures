@@ -34,10 +34,10 @@ void PhysicsModel::Init(IPhysicsModelCallback* callback)
 
 void PhysicsModel::EvaluatePhysics(double elapsedTime)
 {
-   unsigned int max = m_trackedBodies.size();
-   for (unsigned int i = 0; i < max; i++)
+   size_t max = m_trackedBodies.size();
+   for (size_t index = 0; index < max; index++)
    {
-      PhysicsBody& body = *m_trackedBodies[i];
+      PhysicsBody& body = *m_trackedBodies[index];
 
       body.SetNewElapsedTime(elapsedTime);
       TrackObject(body);

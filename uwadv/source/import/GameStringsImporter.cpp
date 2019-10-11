@@ -124,7 +124,7 @@ void GameStringsImporter::LoadStringBlock(Uint16 blockId)
       stringOffsets[offsetIndex] = m_pak.Read16();
 
    Uint32 currentOffset = offset + (numStrings + 1) * sizeof(Uint16);
-   unsigned int nodenum = m_allNodes.size();
+   size_t nodenum = m_allNodes.size();
 
    for (Uint16 stringIndex = 0; stringIndex < numStrings; stringIndex++)
    {
@@ -138,7 +138,7 @@ void GameStringsImporter::LoadStringBlock(Uint16 blockId)
 
       do
       {
-         int node = nodenum - 1; // starting node
+         size_t node = nodenum - 1; // starting node
 
          // huffman tree decode loop
          while (char(m_allNodes[node].left) != -1 && char(m_allNodes[node].right) != -1)

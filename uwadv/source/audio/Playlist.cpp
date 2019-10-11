@@ -104,7 +104,7 @@ Playlist::Playlist(const Base::Settings& settings, Base::SDL_RWopsPtr rwops)
    loader.Load();
 }
 
-std::string Playlist::GetPlaylistTrack(unsigned int trackIndex) const
+std::string Playlist::GetPlaylistTrack(size_t trackIndex) const
 {
    UaAssert(trackIndex < m_playlist.size());
    return m_playlist[trackIndex];

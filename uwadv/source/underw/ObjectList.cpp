@@ -63,14 +63,14 @@ Uint16 ObjectList::Allocate()
       pos = static_cast<Uint16>(m_objectList.size());
 
       // enlarge list by factor 1,25
-      unsigned int uiNewSize = m_objectList.size();
-      uiNewSize += uiNewSize >> 2;
+      size_t newSize = m_objectList.size();
+      newSize += newSize >> 2;
 
       // limit to Uint16 range
-      if (uiNewSize >= 0x10000)
-         uiNewSize = 0x10000;
+      if (newSize >= 0x10000)
+         newSize = 0x10000;
 
-      m_objectList.resize(uiNewSize);
+      m_objectList.resize(newSize);
    }
 
    return pos;

@@ -156,8 +156,8 @@ void SavegameInfo::Save(Savegame& savegame)
    savegame.Write16(static_cast<Uint16>(m_imageXRes));
    savegame.Write16(static_cast<Uint16>(m_imageYRes));
 
-   unsigned int max = m_imageXRes * m_imageYRes;
-   for (unsigned int i = 0; i < max; i++)
+   size_t max = m_imageXRes * m_imageYRes;
+   for (size_t i = 0; i < max; i++)
       savegame.Write32(m_imageRGBA[i]);
 }
 
@@ -290,7 +290,7 @@ void SavegamesManager::Rescan()
    std::sort(m_savegamesList.begin(), m_savegamesList.end());
 }
 
-void SavegamesManager::GetSavegameInfo(unsigned int index, SavegameInfo& info)
+void SavegamesManager::GetSavegameInfo(size_t index, SavegameInfo& info)
 {
    UaAssert(index < m_savegamesList.size());
 
@@ -303,7 +303,7 @@ void SavegamesManager::GetSavegameInfo(unsigned int index, SavegameInfo& info)
 ///        internally, so when user decides to save again the same savegame
 ///        state, we already have a preview image. Set to false when just
 ///        doing savegame information querying.
-Savegame SavegamesManager::LoadSavegame(unsigned int index, bool storeImage)
+Savegame SavegamesManager::LoadSavegame(size_t index, bool storeImage)
 {
    UaAssert(index < m_savegamesList.size());
 
@@ -324,14 +324,14 @@ Savegame SavegamesManager::LoadSavegame(unsigned int index, bool storeImage)
 /// \param info savegame info to store in savegame
 /// \param index index of savegame slot to overwrite; if the default
 ///                parameter -1 is used, a new slot is used.
-Savegame SavegamesManager::SaveSavegame(SavegameInfo info, unsigned int index)
+Savegame SavegamesManager::SaveSavegame(SavegameInfo info, size_t index)
 {
    UaAssert(m_savegameFolder.size() > 0);
 
    std::string savegameFilename;
 
    // search new slot on default parameter
-   if (index == unsigned(-1))
+   if (index == size_t(-1))
    {
       // Note: This is only going to work when no two instances of uwadv do the
       // same searching at the same time, which is normally not the case.

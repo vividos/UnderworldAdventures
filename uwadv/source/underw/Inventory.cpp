@@ -67,7 +67,7 @@ Uint16 Inventory::Allocate()
       pos = static_cast<Uint16>(m_objectList.size());
 
       // enlarge list by factor 1,25
-      unsigned int newSize = m_objectList.size();
+      size_t newSize = m_objectList.size();
       newSize += newSize >> 2;
 
       // limit to Uint16 range
@@ -88,7 +88,7 @@ void Inventory::Free(Uint16 pos)
    m_objectList[pos].m_itemID = c_itemIDNone;
 }
 
-Uint16 Inventory::GetSlotListPos(unsigned int index) const
+Uint16 Inventory::GetSlotListPos(size_t index) const
 {
    UaAssert(index < GetNumSlots());
 
@@ -106,7 +106,7 @@ Uint16 Inventory::GetContainerPos() const
    if (m_containerStack.size() == 0)
       return c_inventorySlotNoItem; // topmost
 
-   unsigned int topPos = m_containerStack.size() - 1;
+   size_t topPos = m_containerStack.size() - 1;
 
    UaAssert(true == IsContainer(GetObjectInfo(m_containerStack[topPos]).m_itemID));
    return m_containerStack[topPos];
@@ -117,7 +117,7 @@ Uint16 Inventory::GetParentContainerPos() const
    if (m_containerStack.size() <= 1)
       return c_inventorySlotNoItem; // topmost
 
-   unsigned int parentPos = m_containerStack.size() - 2;
+   size_t parentPos = m_containerStack.size() - 2;
 
    UaAssert(true == IsContainer(GetObjectInfo(m_containerStack[parentPos]).m_itemID));
    return m_containerStack[parentPos];

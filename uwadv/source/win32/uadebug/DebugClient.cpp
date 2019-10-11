@@ -276,22 +276,22 @@ CodePosition IDebugClientCodeDebugger::GetCurrentPos()
       pos.m_sourceFileLine, pos.m_codePosition, bSourcefileIsValid);
 
    if (bSourcefileIsValid)
-      pos.m_codePosition = unsigned(-1);
+      pos.m_codePosition = size_t(-1);
    else
-      pos.m_sourceFileNameIndex = unsigned(-1);
+      pos.m_sourceFileNameIndex = size_t(-1);
 
    return pos;
 }
 
-unsigned int IDebugClientCodeDebugger::GetBreakpointCount() const
+size_t IDebugClientCodeDebugger::GetBreakpointCount() const
 {
    return m_codeDebugger->GetNumBreakpoints();
 }
 
-void IDebugClientCodeDebugger::GetBreakpointInfo(unsigned int nBreakpointIndex, BreakpointInfo& breakpointInfo) const
+void IDebugClientCodeDebugger::GetBreakpointInfo(size_t breakpointIndex, BreakpointInfo& breakpointInfo) const
 {
-   ATLASSERT(nBreakpointIndex < GetBreakpointCount());
-   m_codeDebugger->GetBreakpointInfo(nBreakpointIndex,
+   ATLASSERT(breakpointIndex < GetBreakpointCount());
+   m_codeDebugger->GetBreakpointInfo(breakpointIndex,
       breakpointInfo.m_location.m_sourceFileNameIndex,
       breakpointInfo.m_location.m_sourceFileLine,
       breakpointInfo.m_location.m_codePosition,
@@ -312,21 +312,21 @@ void IDebugClientCodeDebugger::GetCallstackInfo(unsigned int atLevel, CallstackI
    // TODO implement
 }
 
-unsigned int IDebugClientCodeDebugger::GetSourceFileCount() const
+size_t IDebugClientCodeDebugger::GetSourceFileCount() const
 {
    return m_codeDebugger->GetNumSourcefiles();
 }
 
-CString IDebugClientCodeDebugger::GetSourceFileName(unsigned int index)
+CString IDebugClientCodeDebugger::GetSourceFileName(size_t index)
 {
    ATLASSERT(index < GetSourceFileCount());
 
-   unsigned int nSize = m_codeDebugger->GetSourcefileName(index, NULL, 0);
+   size_t size = m_codeDebugger->GetSourcefileName(index, NULL, 0);
 
-   CHAR* szText = new CHAR[nSize + 1];
-   szText[nSize] = 0;
+   CHAR* szText = new CHAR[size + 1];
+   szText[size] = 0;
 
-   m_codeDebugger->GetSourcefileName(index, szText, nSize + 1);
+   m_codeDebugger->GetSourcefileName(index, szText, size + 1);
 
    USES_CONVERSION;
    CFilename sourceFilename(A2CT(szText));
@@ -343,7 +343,7 @@ CString IDebugClientCodeDebugger::GetSourceFileName(unsigned int index)
 bool IDebugClientCodeDebugger::GetSourceFromCodePos(unsigned int codePos,
    CString& filename, unsigned int& lineNumber, unsigned int& lineDisplacement)
 {
-   unsigned int sourcefileIndex = 0; // TODO
+   size_t sourcefileIndex = 0; // TODO
    filename = GetSourceFileName(sourcefileIndex);
    UNUSED(codePos);
    UNUSED(lineNumber);
@@ -424,7 +424,7 @@ void DebugClient::PauseGame(bool pause)
    m_debugInterface->Lock(false);
 }
 
-unsigned int DebugClient::GetNumLevels()
+size_t DebugClient::GetNumLevels()
 {
    return m_debugInterface->GetNumLevels();
 }

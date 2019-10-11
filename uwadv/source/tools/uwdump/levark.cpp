@@ -98,13 +98,13 @@ void DumpLevelArchive::start(std::string& basepath, std::string& param, bool isU
 
          // dump blocks
          printf("block  offset    size  description\n");
-         unsigned int max = offsets_list.size() - 1;
-         for (unsigned int i = 0; i < max; i++)
+         size_t max = offsets_list.size() - 1;
+         for (size_t i = 0; i < max; i++)
          {
             Uint32 offset = offsets_list[i];
 
             // search offset
-            unsigned int a, max2 = offsets_ordered.size();
+            size_t a, max2 = offsets_ordered.size();
             for (a = 0; a < max2 && offsets_ordered[a] != offset; a++);
 
             Uint32 next_offset = offsets_ordered[i + 1];

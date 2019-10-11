@@ -120,7 +120,7 @@ protected:
    Font m_normalFont;
 
    /// first list item to show
-   unsigned int m_firstListItemIndex;
+   size_t m_firstListItemIndex;
 
    /// index of selected savegame (or -1 when none)
    int m_selectedSavegameItemIndex;

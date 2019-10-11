@@ -78,7 +78,7 @@ namespace Underworld
       }
 
       /// changes current player level
-      void ChangeLevel(unsigned int level);
+      void ChangeLevel(size_t level);
 
       /// returns game strings
       GameStrings& GetGameStrings()

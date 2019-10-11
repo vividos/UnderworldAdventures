@@ -317,7 +317,7 @@ unsigned int DebugServer::GetFlag(unsigned int flagId)
    return flag;
 }
 
-unsigned int DebugServer::GetGamePath(char* buffer, unsigned int bufferSize)
+size_t DebugServer::GetGamePath(char* buffer, size_t bufferSize)
 {
    Base::Settings& settings = m_game->GetSettings();
 
@@ -332,7 +332,7 @@ unsigned int DebugServer::GetGamePath(char* buffer, unsigned int bufferSize)
    std::string game_path = settings.GetString(Base::settingUadataPath);
    game_path += prefix;
 
-   std::string::size_type strsize = game_path.size();
+   size_t strsize = game_path.size();
 
    if (bufferSize < strsize + 1)
       return strsize + 1;
@@ -358,14 +358,14 @@ bool DebugServer::PauseGame(bool pause)
    return m_game->PauseGame(pause);
 }
 
-unsigned int DebugServer::GetNumMessages()
+size_t DebugServer::GetNumMessages()
 {
    return m_messageQueue.size();
 }
 
 bool DebugServer::GetMessage(unsigned int& messageType,
    unsigned int& messageArg1, unsigned int& messageArg2, double& messageArg3,
-   unsigned int& messageTextSize)
+   size_t& messageTextSize)
 {
    if (m_messageQueue.size() > 0)
    {
@@ -376,79 +376,86 @@ bool DebugServer::GetMessage(unsigned int& messageType,
       messageArg3 = msg.messageArg3;
       messageTextSize = msg.messageText.size() + 1;
    }
+
    return m_messageQueue.size() > 0;
 }
 
-bool DebugServer::GetMessageText(char* buffer, unsigned int bufferSize)
+bool DebugServer::GetMessageText(char* buffer, size_t bufferSize)
 {
    if (m_messageQueue.size() > 0)
    {
       DebugServerMessage& msg = m_messageQueue.front();
       strncpy(buffer, msg.messageText.c_str(), bufferSize);
    }
+
    return m_messageQueue.size() > 0;
 }
 
 bool DebugServer::PopMessage()
 {
    if (m_messageQueue.size() > 0)
-   {
       m_messageQueue.pop_front();
-   }
+
    return m_messageQueue.size() > 0;
 }
 
-double DebugServer::GetPlayerPosInfo(unsigned int idx)
+double DebugServer::GetPlayerPosInfo(size_t index)
 {
-   double val = 0.0;
-   if (m_game == NULL) return val;
+   double value = 0.0;
+   if (m_game == NULL)
+      return value;
 
    Underworld::Player& pl = m_game->GetUnderworld().GetPlayer();
-   switch (idx)
+   switch (index)
    {
-   case 0: val = pl.GetXPos(); break;
-   case 1: val = pl.GetYPos(); break;
-   case 2: val = pl.GetHeight(); break;
-   case 3: val = pl.GetRotateAngle(); break;
+   case 0: value = pl.GetXPos(); break;
+   case 1: value = pl.GetYPos(); break;
+   case 2: value = pl.GetHeight(); break;
+   case 3: value = pl.GetRotateAngle(); break;
    default:
       break;
    }
-   return val;
+
+   return value;
 }
 
-void DebugServer::SetPlayerPosInfo(unsigned int idx, double val)
+void DebugServer::SetPlayerPosInfo(size_t index, double value)
 {
-   if (m_game == NULL) return;
+   if (m_game == NULL)
+      return;
 
    Underworld::Player& pl = m_game->GetUnderworld().GetPlayer();
-   switch (idx)
+   switch (index)
    {
-   case 0: pl.SetPos(val, pl.GetYPos()); break;
-   case 1: pl.SetPos(pl.GetXPos(), val); break;
-   case 2: pl.SetHeight(val); break;
-   case 3: pl.SetRotateAngle(val); break;
+   case 0: pl.SetPos(value, pl.GetYPos()); break;
+   case 1: pl.SetPos(pl.GetXPos(), value); break;
+   case 2: pl.SetHeight(value); break;
+   case 3: pl.SetRotateAngle(value); break;
    default:
       break;
    }
 }
 
-unsigned int DebugServer::GetPlayerAttribute(unsigned int index)
+unsigned int DebugServer::GetPlayerAttribute(size_t index)
 {
-   if (m_game == NULL) return 0;
+   if (m_game == NULL)
+      return 0;
+
    if (index < Underworld::attrMax)
    {
       return m_game->GetUnderworld().GetPlayer().GetAttribute((Underworld::PlayerAttribute)index);
    }
    else
    {
-      unsigned int skillIndex = index - Underworld::attrMax;
+      size_t skillIndex = index - Underworld::attrMax;
       return m_game->GetUnderworld().GetPlayer().GetSkill((Underworld::PlayerSkill)skillIndex);
    }
 }
 
-void DebugServer::SetPlayerAttribute(unsigned int index, unsigned int value)
+void DebugServer::SetPlayerAttribute(size_t index, unsigned int value)
 {
-   if (m_game == NULL) return;
+   if (m_game == NULL)
+      return;
 
    Underworld::Player& pl = m_game->GetUnderworld().GetPlayer();
 
@@ -468,29 +475,31 @@ void DebugServer::SetPlayerAttribute(unsigned int index, unsigned int value)
    }
    else
    {
-      unsigned int skillIndex = index - Underworld::attrMax;
+      size_t skillIndex = index - Underworld::attrMax;
       m_game->GetUnderworld().GetPlayer().SetSkill((Underworld::PlayerSkill)skillIndex, value);
    }
 }
 
-unsigned int DebugServer::GetNumLevels()
+size_t DebugServer::GetNumLevels()
 {
-   if (m_game == NULL) return 0;
+   if (m_game == NULL)
+      return 0;
    return m_game->GetUnderworld().GetLevelList().GetNumLevels();
 }
 
-double DebugServer::GetTileHeight(unsigned int level, double xpos,
+double DebugServer::GetTileHeight(size_t level, double xpos,
    double ypos)
 {
-   if (m_game == NULL) return 0.0;
+   if (m_game == NULL)
+      return 0.0;
    return m_game->GetUnderworld().GetLevelList().GetLevel(level).
       GetTilemap().GetFloorHeight(xpos, ypos);
 }
 
-unsigned int DebugServer::GetTileInfoValue(unsigned int level,
+unsigned int DebugServer::GetTileInfoValue(size_t level,
    unsigned int xpos, unsigned int ypos, unsigned int type)
 {
-   unsigned int val = 0;
+   unsigned int value = 0;
 
    Underworld::TileInfo& tile = m_game->GetUnderworld().GetLevelList().
       GetLevel(level).GetTilemap().GetTileInfo(xpos, ypos);
@@ -498,41 +507,41 @@ unsigned int DebugServer::GetTileInfoValue(unsigned int level,
    switch (type)
    {
    case debuggerTileInfoType:
-      val = tile.m_type;
+      value = tile.m_type;
       break;
    case debuggerTileInfoFloorHeight:
-      val = tile.m_floor;
+      value = tile.m_floor;
       break;
    case debuggerTileInfoCeilingHeight:
-      val = tile.m_ceiling;
+      value = tile.m_ceiling;
       break;
    case debuggerTileInfoSlope:
-      val = tile.m_slope;
+      value = tile.m_slope;
       break;
    case debuggerTileInfoTextureWall:
-      val = tile.m_textureWall;
+      value = tile.m_textureWall;
       break;
    case debuggerTileInfoTextureFloor:
-      val = tile.m_textureFloor;
+      value = tile.m_textureFloor;
       break;
    case debuggerTileInfoTextureCeiling:
-      val = tile.m_textureCeiling;
+      value = tile.m_textureCeiling;
       break;
    case debuggerTileInfoObjectListStart:
-      val = m_game->GetUnderworld().GetLevelList().
+      value = m_game->GetUnderworld().GetLevelList().
          GetLevel(level).GetObjectList().GetListStart(xpos, ypos);
       break;
-
    default:
       UaAssert(false);
       break;
    }
-   return val;
+
+   return value;
 }
 
-void DebugServer::SetTileInfoValue(unsigned int level,
+void DebugServer::SetTileInfoValue(size_t level,
    unsigned int xpos, unsigned int ypos, unsigned int type,
-   unsigned int val)
+   unsigned int value)
 {
    Underworld::TileInfo& tile = m_game->GetUnderworld().GetLevelList().
       GetLevel(level).GetTilemap().GetTileInfo(xpos, ypos);
@@ -540,56 +549,55 @@ void DebugServer::SetTileInfoValue(unsigned int level,
    switch (type)
    {
    case debuggerTileInfoType:
-      tile.m_type = static_cast<Underworld::TilemapTileType>(val);
+      tile.m_type = static_cast<Underworld::TilemapTileType>(value);
       break;
    case debuggerTileInfoFloorHeight:
-      tile.m_floor = static_cast<Uint16>(val);
+      tile.m_floor = static_cast<Uint16>(value);
       break;
    case debuggerTileInfoCeilingHeight:
-      tile.m_ceiling = static_cast<Uint16>(val);
+      tile.m_ceiling = static_cast<Uint16>(value);
       break;
    case debuggerTileInfoSlope:
-      tile.m_slope = static_cast<Uint8>(val);
+      tile.m_slope = static_cast<Uint8>(value);
       break;
    case debuggerTileInfoTextureWall:
-      tile.m_textureWall = static_cast<Uint16>(val);
+      tile.m_textureWall = static_cast<Uint16>(value);
       break;
    case debuggerTileInfoTextureFloor:
-      tile.m_textureFloor = static_cast<Uint16>(val);
+      tile.m_textureFloor = static_cast<Uint16>(value);
       break;
    case debuggerTileInfoTextureCeiling:
-      tile.m_textureCeiling = static_cast<Uint16>(val);
+      tile.m_textureCeiling = static_cast<Uint16>(value);
       break;
    case debuggerTileInfoObjectListStart:
       UaAssert(false); // TODO implement
       m_game->GetUnderworld().GetLevelList().
          GetLevel(level).GetObjectList();//.GetListStart(xpos,ypos);
       break;
-
    default:
       UaAssert(false);
       break;
    }
 }
 
-bool DebugServer::IsObjectListIndexAvail(unsigned int level, unsigned int pos) const
+bool DebugServer::IsObjectListIndexAvail(size_t level, size_t pos) const
 {
    if (pos == 0)
       return false;
 
    Underworld::ObjectPtr obj = m_game->GetUnderworld().GetLevelList().
-      GetLevel(level).GetObjectList().GetObject(pos);
+      GetLevel(level).GetObjectList().GetObject(static_cast<Uint16>(pos));
 
    return obj != NULL;
 }
 
-unsigned int DebugServer::GetObjectListInfo(unsigned int level,
-   unsigned int pos, unsigned int type)
+unsigned int DebugServer::GetObjectListInfo(size_t level,
+   size_t pos, unsigned int type)
 {
-   unsigned int val = 0;
+   unsigned int value = 0;
 
    Underworld::ObjectPtr obj = m_game->GetUnderworld().GetLevelList().
-      GetLevel(level).GetObjectList().GetObject(pos);
+      GetLevel(level).GetObjectList().GetObject(static_cast<Uint16>(pos));
 
    if (obj == NULL)
       return 0;
@@ -600,59 +608,57 @@ unsigned int DebugServer::GetObjectListInfo(unsigned int level,
    switch (type)
    {
    case debuggerObjectListInfoItemId:
-      val = objinfo.m_itemID;
+      value = objinfo.m_itemID;
       break;
    case debuggerObjectListInfoLink:
-      val = objinfo.m_link;
+      value = objinfo.m_link;
       break;
    case debuggerObjectListInfoQuality:
-      val = objinfo.m_quality;
+      value = objinfo.m_quality;
       break;
    case debuggerObjectListInfoOwner:
-      val = objinfo.m_owner;
+      value = objinfo.m_owner;
       break;
    case debuggerObjectListInfoQuantity:
-      val = objinfo.m_quantity;
+      value = objinfo.m_quantity;
       break;
    case debuggerObjectListInfoXPos:
-      val = posInfo.m_xpos;
+      value = posInfo.m_xpos;
       break;
    case debuggerObjectListInfoYPos:
-      val = posInfo.m_ypos;
+      value = posInfo.m_ypos;
       break;
    case debuggerObjectListInfoZPos:
-      val = posInfo.m_zpos;
+      value = posInfo.m_zpos;
       break;
    case debuggerObjectListInfoHeading:
-      val = posInfo.m_heading;
+      value = posInfo.m_heading;
       break;
    case debuggerObjectListInfoFlags:
-      val = objinfo.m_flags;
+      value = objinfo.m_flags;
       break;
    case debuggerObjectListInfoEnchanted:
-      val = objinfo.m_isEnchanted;
+      value = objinfo.m_isEnchanted;
       break;
    case debuggerObjectListInfoIsQuantity:
-      val = objinfo.m_isQuantity;
+      value = objinfo.m_isQuantity;
       break;
    case debuggerObjectListInfoHidden:
-      val = objinfo.m_isHidden;
+      value = objinfo.m_isHidden;
       break;
-
    default:
       UaAssert(false);
       break;
    }
-   return val;
+
+   return value;
 }
 
-void DebugServer::SetObjectListInfo(unsigned int level,
-   unsigned int pos, unsigned int type, unsigned int value)
+void DebugServer::SetObjectListInfo(size_t level,
+   size_t pos, unsigned int type, unsigned int value)
 {
-   unsigned int val = 0;
-
    Underworld::ObjectPtr obj = m_game->GetUnderworld().GetLevelList().
-      GetLevel(level).GetObjectList().GetObject(pos);
+      GetLevel(level).GetObjectList().GetObject(static_cast<Uint16>(pos));
 
    Underworld::ObjectInfo& objinfo = obj->GetObjectInfo();
    Underworld::ObjectPositionInfo& posInfo = obj->GetPosInfo();
@@ -675,16 +681,16 @@ void DebugServer::SetObjectListInfo(unsigned int level,
       objinfo.m_quantity = value;
       break;
    case debuggerObjectListInfoXPos:
-      val = posInfo.m_xpos = value;
+      posInfo.m_xpos = value;
       break;
    case debuggerObjectListInfoYPos:
-      val = posInfo.m_ypos = value;
+      posInfo.m_ypos = value;
       break;
    case debuggerObjectListInfoZPos:
-      val = posInfo.m_zpos = value;
+      posInfo.m_zpos = value;
       break;
    case debuggerObjectListInfoHeading:
-      val = posInfo.m_heading = value;
+      posInfo.m_heading = value;
       break;
    case debuggerObjectListInfoFlags:
       objinfo.m_flags = value;
@@ -698,15 +704,14 @@ void DebugServer::SetObjectListInfo(unsigned int level,
    case debuggerObjectListInfoHidden:
       objinfo.m_isHidden = value != 0;
       break;
-
    default:
       UaAssert(false);
       break;
    }
 }
 
-bool DebugServer::EnumGameStringsBlocks(unsigned int index,
-   unsigned int& blockNumber)
+bool DebugServer::EnumGameStringsBlocks(size_t index,
+   size_t& blockNumber)
 {
    const GameStrings& gameStrings = m_game->GetGameStrings();
    const std::set<Uint16>& blockset = gameStrings.GetStringBlockSet();
@@ -721,33 +726,33 @@ bool DebugServer::EnumGameStringsBlocks(unsigned int index,
    if (iter == blockset.end())
       return false;
 
-   blockNumber = static_cast<unsigned int>(*iter);
+   blockNumber = static_cast<size_t>(*iter);
    return true;
 }
 
-unsigned int DebugServer::GetGameStringsBlockSize(unsigned int block)
+size_t DebugServer::GetGameStringsBlockSize(size_t block)
 {
-   const std::vector<std::string>& strblock = m_game->GetGameStrings().GetStringBlock(block);
+   const std::vector<std::string>& stringBlock = m_game->GetGameStrings().GetStringBlock(static_cast<Uint16>(block));
 
-   return strblock.size();
+   return stringBlock.size();
 }
 
-unsigned int DebugServer::GetGameString(unsigned int block,
-   unsigned int nr, char* buffer, unsigned int maxsize)
+size_t DebugServer::GetGameString(size_t block,
+   size_t number, char* buffer, size_t maxSize)
 {
-   std::string str = m_game->GetGameStrings().GetString(block, nr);
-   std::string::size_type strsize = str.size();
+   std::string text = m_game->GetGameStrings().GetString(static_cast<Uint16>(block), number);
+   size_t strsize = text.size();
 
-   if (buffer == NULL || maxsize == 0 || maxsize < strsize + 1)
+   if (buffer == NULL || maxSize == 0 || maxSize < strsize + 1)
       return strsize + 1;
 
-   strncpy(buffer, str.c_str(), strsize);
+   strncpy(buffer, text.c_str(), strsize);
    buffer[strsize] = 0;
 
    return strsize;
 }
 
-bool DebugServer::GetObjectListImagelist(unsigned int& numObjects, unsigned char* buffer, unsigned int size)
+bool DebugServer::GetObjectListImagelist(size_t& numObjects, unsigned char* buffer, size_t size)
 {
    ImageManager imageManager{ m_game->GetResourceManager() };
    imageManager.Init();
@@ -761,23 +766,23 @@ bool DebugServer::GetObjectListImagelist(unsigned int& numObjects, unsigned char
       return true;
    }
 
-   unsigned int xres = imageList[0].GetXRes(), yres = imageList[0].GetYRes(), max = imageList.size();
+   size_t xres = imageList[0].GetXRes(), yres = imageList[0].GetYRes(), max = imageList.size();
 
-   unsigned int needed_space = max * xres*yres * 4;
-   if (size < needed_space)
+   size_t neededSpace = max * xres * yres * 4;
+   if (size < neededSpace)
       return false;
 
-   Uint8* pixels = new Uint8[xres*yres*max];
+   Uint8* pixels = new Uint8[xres * yres * max];
 
-   for (unsigned int n = 0; n < max; n++)
-      memcpy(&pixels[n*xres*yres], &imageList[n].GetPixels()[0], xres*yres);
+   for (size_t index = 0; index < max; index++)
+      memcpy(&pixels[index * xres * yres], &imageList[index].GetPixels()[0], xres * yres);
 
    // convert color indices to 32-bit texture
    Uint32* palptr = reinterpret_cast<Uint32*>(imageList[0].GetPalette().get());
    Uint32* texptr = reinterpret_cast<Uint32*>(buffer);
 
-   for (unsigned int i = 0; i < xres*yres*max; i++)
-      *texptr++ = palptr[pixels[i]];
+   for (size_t index = 0; index < xres * yres * max; index++)
+      *texptr++ = palptr[pixels[index]];
 
    delete[] pixels;
 

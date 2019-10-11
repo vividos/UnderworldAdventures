@@ -57,10 +57,10 @@ namespace Underworld
       MapNotes() { }
 
       /// returns number of notes
-      unsigned int GetMapNoteCount() const { return m_mapNotesList.size(); }
+      size_t GetMapNoteCount() const { return m_mapNotesList.size(); }
 
       /// returns a single note
-      MapNote& GetNote(unsigned int mapNoteIndex)
+      MapNote& GetNote(size_t mapNoteIndex)
       {
          UaAssert(mapNoteIndex < GetMapNoteCount());
          return m_mapNotesList[mapNoteIndex];

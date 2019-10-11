@@ -41,10 +41,10 @@ namespace Audio
       Playlist(const Base::Settings& settings, Base::SDL_RWopsPtr rwops);
 
       /// returns number of tracks in playlist
-      unsigned int GetCount() const { return m_playlist.size(); }
+      size_t GetCount() const { return m_playlist.size(); }
 
       /// returns track per number
-      std::string GetPlaylistTrack(unsigned int trackIndex) const;
+      std::string GetPlaylistTrack(size_t trackIndex) const;
 
    private:
       /// playlist

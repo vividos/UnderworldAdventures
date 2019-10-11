@@ -71,10 +71,10 @@ namespace Underworld
       Runeshelf() {}
 
       /// returns number of runes on shelf (max. 3 runes)
-      unsigned int GetNumRunes() const { return m_runeshelf.size(); }
+      size_t GetNumRunes() const { return m_runeshelf.size(); }
 
       /// returns rune on shelf position
-      RuneType GetRune(unsigned int shelfIndex) const
+      RuneType GetRune(size_t shelfIndex) const
       {
          UaAssert(shelfIndex < m_runeshelf.size());
          return m_runeshelf[shelfIndex];

@@ -456,7 +456,7 @@ void Panel::UpdateInventory()
    }
 
    // paste inventory slots
-   for (unsigned int i = 0; i < 8; i++)
+   for (size_t i = 0; i < 8; i++)
    {
       if (start + i < inventory.GetNumSlots())
       {

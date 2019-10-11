@@ -101,60 +101,60 @@ protected:
 
    virtual unsigned int GetFlag(unsigned int flagId) override;
 
-   virtual unsigned int GetGamePath(char* buffer, unsigned int bufferSize) override;
+   virtual size_t GetGamePath(char* buffer, size_t bufferSize) override;
 
    virtual void LoadGame(const char* path) override;
 
    virtual bool PauseGame(bool pause) override;
 
-   virtual unsigned int GetNumMessages() override;
+   virtual size_t GetNumMessages() override;
 
    virtual bool GetMessage(unsigned int& messageType,
       unsigned int& messageArg1, unsigned int& messageArg2, double& messageArg3,
-      unsigned int& messageTextSize) override;
+      size_t& messageTextSize) override;
 
-   virtual bool GetMessageText(char* buffer, unsigned int bufferSize) override;
+   virtual bool GetMessageText(char* buffer, size_t bufferSize) override;
 
    virtual bool PopMessage() override;
 
-   virtual double GetPlayerPosInfo(unsigned int idx) override;
+   virtual double GetPlayerPosInfo(size_t index) override;
 
-   virtual void SetPlayerPosInfo(unsigned int idx, double val) override;
+   virtual void SetPlayerPosInfo(size_t index, double value) override;
 
-   virtual unsigned int GetPlayerAttribute(unsigned int idx) override;
+   virtual unsigned int GetPlayerAttribute(size_t index) override;
 
-   virtual void SetPlayerAttribute(unsigned int idx, unsigned int val) override;
+   virtual void SetPlayerAttribute(size_t index, unsigned int value) override;
 
-   virtual unsigned int GetNumLevels() override;
+   virtual size_t GetNumLevels() override;
 
-   virtual double GetTileHeight(unsigned int level, double xpos,
+   virtual double GetTileHeight(size_t level, double xpos,
       double ypos) override;
 
-   virtual unsigned int GetTileInfoValue(unsigned int level,
+   virtual unsigned int GetTileInfoValue(size_t level,
       unsigned int xpos, unsigned int ypos, unsigned int type) override;
 
-   virtual void SetTileInfoValue(unsigned int level,
+   virtual void SetTileInfoValue(size_t level,
       unsigned int xpos, unsigned int ypos, unsigned int type,
-      unsigned int val) override;
+      unsigned int value) override;
 
-   virtual bool IsObjectListIndexAvail(unsigned int level, unsigned int pos) const override;
+   virtual bool IsObjectListIndexAvail(size_t level, size_t pos) const override;
 
-   virtual unsigned int GetObjectListInfo(unsigned int level,
-      unsigned int pos, unsigned int type) override;
+   virtual unsigned int GetObjectListInfo(size_t level,
+      size_t pos, unsigned int type) override;
 
-   virtual void SetObjectListInfo(unsigned int level,
-      unsigned int pos, unsigned int type, unsigned int value) override;
+   virtual void SetObjectListInfo(size_t level,
+      size_t pos, unsigned int type, unsigned int value) override;
 
-   virtual bool EnumGameStringsBlocks(unsigned int index,
-      unsigned int& blockNumber) override;
+   virtual bool EnumGameStringsBlocks(size_t index,
+      size_t& blockNumber) override;
 
-   virtual unsigned int GetGameStringsBlockSize(unsigned int block) override;
+   virtual size_t GetGameStringsBlockSize(size_t block) override;
 
-   virtual unsigned int GetGameString(unsigned int block, unsigned int nr,
-      char* buffer, unsigned int maxsize) override;
+   virtual size_t GetGameString(size_t block, size_t number,
+      char* buffer, size_t maxsize) override;
 
-   virtual bool GetObjectListImagelist(unsigned int& numObjects,
-      unsigned char* buffer, unsigned int size) override;
+   virtual bool GetObjectListImagelist(size_t& numObjects,
+      unsigned char* buffer, size_t size) override;
 
    /// adds message to client message queue
    void AddMessage(DebugServerMessage& msg);

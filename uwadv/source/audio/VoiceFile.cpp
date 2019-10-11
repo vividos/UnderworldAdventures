@@ -147,10 +147,10 @@ namespace Detail
       // afterwards when doing resampling from 12048 Hz to 22050 Hz
       std::vector<double> sourceSamples, destSamples;
 
-      unsigned int size = m_audioSample.size();
+      size_t size = m_audioSample.size();
       sourceSamples.resize(size * 2, 0);
 
-      for (unsigned int index = 0; index < size; index++)
+      for (size_t index = 0; index < size; index++)
          sourceSamples[index * 2] = static_cast<double>(m_audioSample[index]);
 
       ResampleChunk12048_22050(sourceSamples, destSamples);
@@ -161,7 +161,7 @@ namespace Detail
       size = destSamples.size();
       m_audioSample.resize(size);
 
-      for (unsigned int index = 0; index < size - 7; index++)
+      for (size_t index = 0; index < size - 7; index++)
          m_audioSample[index] = static_cast<Sint16>(destSamples[index]);
 
       m_sampleRate = 44100;
@@ -173,14 +173,14 @@ namespace Detail
    void VoiceFileLoader::GenerateWaveFile(std::vector<Uint8>& waveFile)
    {
       // prepare data bytes array for wave file
-      unsigned int fileSize = 12 + 24 + 8 + m_audioSample.size() * sizeof(Sint16);
+      size_t fileSize = 12 + 24 + 8 + m_audioSample.size() * sizeof(Sint16);
       waveFile.resize(fileSize);
 
-      SDL_RWops* rwops = ::SDL_RWFromMem(&waveFile[0], waveFile.size());
+      SDL_RWops* rwops = ::SDL_RWFromMem(&waveFile[0], static_cast<int>(waveFile.size()));
 
       // header: 12 bytes
       SDL_RWwrite(rwops, "RIFF", 4, 1);
-      SDL_WriteLE32(rwops, fileSize - 8);
+      SDL_WriteLE32(rwops, static_cast<Uint32>(fileSize - 8));
       SDL_RWwrite(rwops, "WAVE", 4, 1);
 
       // format chunk: 24 bytes
@@ -195,8 +195,8 @@ namespace Detail
 
       // data chunk: 8 + numsamples*sizeof(Sint16) bytes
       SDL_RWwrite(rwops, "data", 4, 1);
-      unsigned int size = m_audioSample.size();
-      SDL_WriteLE32(rwops, size * sizeof(Sint16)); // size
+      size_t size = m_audioSample.size();
+      SDL_WriteLE32(rwops, static_cast<Uint32>(size * sizeof(Sint16))); // size
 
       for (unsigned int index = 0; index < size; index++)
          SDL_WriteLE16(rwops, m_audioSample[index]);
@@ -218,5 +218,5 @@ VoiceFile::VoiceFile(Base::SDL_RWopsPtr rwops)
 
 Base::SDL_RWopsPtr VoiceFile::GetFileData() const
 {
-   return Base::MakeRWopsPtr(SDL_RWFromConstMem(&m_fileData[0], m_fileData.size()));
+   return Base::MakeRWopsPtr(SDL_RWFromConstMem(&m_fileData[0], static_cast<int>(m_fileData.size())));
 }

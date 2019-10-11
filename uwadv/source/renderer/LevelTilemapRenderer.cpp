@@ -45,8 +45,8 @@ void LevelTilemapRenderer::RenderTile(unsigned int xpos, unsigned int ypos)
    std::vector<Triangle3dTextured> allTriangles;
    m_geometryProvider.GetTileTriangles(xpos, ypos, allTriangles);
 
-   unsigned int maxTriangles = allTriangles.size();
-   for (unsigned int triangleIndex = 0; triangleIndex < maxTriangles; triangleIndex++)
+   size_t maxTriangles = allTriangles.size();
+   for (size_t triangleIndex = 0; triangleIndex < maxTriangles; triangleIndex++)
    {
       Triangle3dTextured& triangle = allTriangles[triangleIndex];
 
@@ -60,11 +60,11 @@ void LevelTilemapRenderer::RenderTile(unsigned int xpos, unsigned int ypos)
       glPushName(triangle.m_textureNumber + 0x0400);
 
       glBegin(GL_TRIANGLES);
-      for (int j = 0; j < 3; j++)
+      for (size_t vertexIndex = 0; vertexIndex < 3; vertexIndex++)
       {
-         glTexCoord2d(triangle.m_vertices[j].u, triangle.m_vertices[j].v);
-         glVertex3d(triangle.m_vertices[j].pos.x, triangle.m_vertices[j].pos.y,
-            triangle.m_vertices[j].pos.z * c_renderHeightScale);
+         glTexCoord2d(triangle.m_vertices[vertexIndex].u, triangle.m_vertices[vertexIndex].v);
+         glVertex3d(triangle.m_vertices[vertexIndex].pos.x, triangle.m_vertices[vertexIndex].pos.y,
+            triangle.m_vertices[vertexIndex].pos.z * c_renderHeightScale);
       }
       glEnd();
       glPopName();

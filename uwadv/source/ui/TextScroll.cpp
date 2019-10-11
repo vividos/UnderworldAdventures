@@ -74,8 +74,8 @@ void TextScroll::Init(IGame& game, unsigned int xpos,
 /// \return true when the user has to press a key and a "[MORE]" text is shown
 bool TextScroll::Print(const char* text)
 {
-   unsigned int start_line = m_textLines.size();
-   unsigned int last_textlines_size = start_line;
+   size_t start_line = m_textLines.size();
+   size_t last_textlines_size = start_line;
    std::string line, msgtext(text);
    std::string::size_type pos = 0;
    do
@@ -219,25 +219,26 @@ void TextScroll::UpdateScroll()
    IndexedImage tempImage;
 
    // process all lines visible in the scroll
-   unsigned int max = std::min(m_maxLines, m_textLines.size());
-   for (unsigned int i = 0; i < max; i++)
+   size_t max = std::min(m_maxLines, m_textLines.size());
+   for (size_t lineIndex = 0; lineIndex < max; lineIndex++)
    {
       // check if we are at the end of the m_textLines vector
-      if (i + m_firstVisibleLine >= m_textLines.size()) break;
+      if (lineIndex + m_firstVisibleLine >= m_textLines.size()) break;
 
       // create line string
-      CreateColoredString(tempImage, m_textLines[m_firstVisibleLine + i].c_str());
-      if (tempImage.GetXRes() == 0) continue; // empty line
+      CreateColoredString(tempImage, m_textLines[m_firstVisibleLine + lineIndex].c_str());
+      if (tempImage.GetXRes() == 0)
+         continue; // empty line
 
       // calc y position
-      unsigned int ypos = i * m_normalFont.GetCharHeight() + m_scrollBaseY;
+      unsigned int ypos = lineIndex * m_normalFont.GetCharHeight() + m_scrollBaseY;
 
       // paste it into final image
       m_image.PasteRect(tempImage, 0, 0, tempImage.GetXRes(), tempImage.GetYRes(),
          m_scrollBaseX, ypos, true);
 
       // add [MORE] string on proper line
-      if (m_isWaitingMore && m_moreLineIndex == i + m_firstVisibleLine)
+      if (m_isWaitingMore && m_moreLineIndex == lineIndex + m_firstVisibleLine)
       {
          IndexedImage img_more;
          CreateColoredString(img_more, c_textScrollMoreText);

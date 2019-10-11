@@ -178,7 +178,7 @@ namespace Detail
       // resample
       resamp0(c_interpolationFactor, c_decimationFactor, numTaps,
          &currentPhase, c_coeff, delayLine,
-         sourceSamples.size(), &sourceSamples[0],
+         static_cast<int>(sourceSamples.size()), &sourceSamples[0],
          &destSamples[0], &outputSamples);
 
       // resize and remove last samples (could be distorted)

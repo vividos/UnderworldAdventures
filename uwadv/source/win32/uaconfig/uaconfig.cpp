@@ -137,7 +137,7 @@ LRESULT ConfigDlg::OnSetUw1Path(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
       GetDlgItemText(IDC_EDIT_UW1_PATH, buffer, MAX_PATH);
 
       // add slash when needed
-      unsigned int len = _tcslen(buffer);
+      size_t len = _tcslen(buffer);
       if (len > 0 && buffer[len - 1] != _T('\\') && buffer[len - 1] != _T('/'))
          _tcscat_s(buffer, _T("\\"));
    }

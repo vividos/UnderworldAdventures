@@ -178,23 +178,23 @@ namespace Base
       void Rescan();
 
       /// returns number of available savegames
-      unsigned int GetSavegamesCount() const { return m_savegamesList.size(); }
+      size_t GetSavegamesCount() const { return m_savegamesList.size(); }
 
       /// returns savegame infos
-      void GetSavegameInfo(unsigned int uiIndex, SavegameInfo& info);
+      void GetSavegameInfo(size_t, SavegameInfo& info);
 
       /// returns filename of savegame file
-      std::string GetSavegameFilename(unsigned int index) const
+      std::string GetSavegameFilename(size_t index) const
       {
          UaAssert(index < m_savegamesList.size());
          return m_savegamesList[index];
       }
 
       /// opens savegame for loading
-      Savegame LoadSavegame(unsigned int index, bool storeImage = false);
+      Savegame LoadSavegame(size_t index, bool storeImage = false);
 
       /// opens savegame for saving
-      Savegame SaveSavegame(SavegameInfo info, unsigned int index = unsigned(-1));
+      Savegame SaveSavegame(SavegameInfo info, size_t index = size_t(-1));
 
       /// returns true when a quicksave savegame is available
       bool IsQuicksaveAvail() const;

@@ -89,15 +89,13 @@ Uint8 File::Read8() const
    return value;
 }
 
-unsigned int File::ReadBuffer(Uint8* buffer, unsigned int length) const
+size_t File::ReadBuffer(Uint8* buffer, size_t length) const
 {
    UaAssert(m_rwops.get() != NULL);
 
-   int ret = SDL_RWread(m_rwops.get(), buffer, 1, length);
-   if (ret < 0)
-      ret = 0;
+   size_t ret = SDL_RWread(m_rwops.get(), buffer, 1, length);
 
-   return static_cast<unsigned int>(ret);
+   return ret;
 }
 
 void File::Write8(Uint8 value)
@@ -107,7 +105,7 @@ void File::Write8(Uint8 value)
    SDL_RWwrite(m_rwops.get(), &value, 1, 1);
 }
 
-void File::WriteBuffer(const Uint8* buffer, unsigned int length)
+void File::WriteBuffer(const Uint8* buffer, size_t length)
 {
    UaAssert(m_rwops.get() != NULL);
 

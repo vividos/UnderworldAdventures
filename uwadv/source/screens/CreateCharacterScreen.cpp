@@ -406,13 +406,14 @@ void CreateCharacterScreen::cchar_global(int globalaction, int seed)
 
 void CreateCharacterScreen::HandleInputCharacter(char c)
 {
-   int i = m_inputText.size();
+   size_t i = m_inputText.size();
    if (c == 8)
    {
       if (i > 0)
          m_inputText.erase(i - 1);
       return;
    }
+
    if (i >= 31)
       return;
    m_inputText += c;
@@ -455,9 +456,9 @@ void CreateCharacterScreen::DoAction()
       if (m_game.GetSettings().GetBool(Base::settingUwadvFeatures))
          m_highlightTextColor = 162; // orange, palette #3
 
-      int ic = lua_rawlen(L, 6);
+      size_t ic = lua_rawlen(L, 6);
       if (ic > 5) ic = 5;
-      for (int i = 0; i < ic; i++)
+      for (size_t i = 0; i < ic; i++)
       {
          lua_rawgeti(L, 6, i + 1);
          m_buttonImageIndices[i] = static_cast<unsigned int>(lua_tonumber(L, 7));

@@ -32,9 +32,9 @@ PolygonTessellator::~PolygonTessellator()
    gluDeleteTess(m_tessellator);
 
    // free vertices created through combining
-   unsigned int max = m_combinedVertices.size();
-   for (unsigned int i = 0; i < max; i++)
-      delete m_combinedVertices[i];
+   size_t max = m_combinedVertices.size();
+   for (size_t index = 0; index < max; index++)
+      delete m_combinedVertices[index];
 
    m_combinedVertices.clear();
 }
@@ -73,13 +73,13 @@ const std::vector<Triangle3dTextured>& PolygonTessellator::Tessellate(Uint16 tex
    gluTessBeginContour(m_tessellator);
 
    // put all polygon vertices into tesselator
-   unsigned int max = m_polygonVertexList.size();
-   for (unsigned int i = 0; i < max; i++)
+   size_t max = m_polygonVertexList.size();
+   for (size_t index = 0; index < max; index++)
    {
-      Vertex3d& vertex = m_polygonVertexList[i];
+      Vertex3d& vertex = m_polygonVertexList[index];
       GLdouble coords[3] = { vertex.pos.x, vertex.pos.y, vertex.pos.z };
 
-      gluTessVertex(m_tessellator, coords, &m_polygonVertexList[i]);
+      gluTessVertex(m_tessellator, coords, &m_polygonVertexList[index]);
    }
 
    gluTessEndContour(m_tessellator);

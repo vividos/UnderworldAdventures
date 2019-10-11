@@ -48,14 +48,14 @@ namespace Conv
       virtual void SetDebuggerState(DebugServerCodeDebuggerState state) override;
       virtual DebugServerCodeDebuggerCommand GetDebuggerCommand() const override;
       virtual void SetDebuggerCommand(DebugServerCodeDebuggerCommand command) override;
-      virtual void GetCurrentPos(unsigned int& sourcefileIndex, unsigned int& sourcefileLine,
-         unsigned int& codePosition, bool& isSourcefileValid) override;
-      virtual unsigned int GetNumSourcefiles() const override;
-      virtual unsigned int GetSourcefileName(unsigned int index, char* buffer, unsigned int len) override;
-      virtual unsigned int GetNumBreakpoints() override;
-      virtual void GetBreakpointInfo(unsigned int breakpointIndex,
-         unsigned int& sourcefileIndex, unsigned int& sourcefileLine,
-         unsigned int& codePosition, bool& visible) override;
+      virtual void GetCurrentPos(size_t& sourcefileIndex, size_t& sourcefileLine,
+         size_t& codePosition, bool& isSourcefileValid) override;
+      virtual size_t GetNumSourcefiles() const override;
+      virtual size_t GetSourcefileName(size_t index, char* buffer, size_t length) override;
+      virtual size_t GetNumBreakpoints() const override;
+      virtual void GetBreakpointInfo(size_t breakpointIndex,
+         size_t& sourcefileIndex, size_t& sourcefileLine,
+         size_t& codePosition, bool& visible) const override;
 
    protected:
       std::string temp_decompile;

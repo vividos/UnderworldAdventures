@@ -220,14 +220,14 @@ void SaveGamesList::UpdateList()
    unsigned int charHeight = m_normalFont.GetCharHeight();
 
    // show savegames, but only as much entries as fit
-   unsigned int numItems = m_savegamesManager->GetSavegamesCount() + (m_showNewSavegameEntry ? 0 : 1);
+   size_t numItems = m_savegamesManager->GetSavegamesCount() + (m_showNewSavegameEntry ? 0 : 1);
 
-   unsigned int maxItems = unsigned(GetImage().GetYRes() / charHeight);
+   size_t maxItems = unsigned(GetImage().GetYRes() / charHeight);
 
    if (numItems - m_firstListItemIndex > maxItems)
       numItems = m_firstListItemIndex + 17;
 
-   for (unsigned int i = m_firstListItemIndex; i < numItems; i++)
+   for (size_t i = m_firstListItemIndex; i < numItems; i++)
    {
       bool selected = int(i) == m_selectedSavegameItemIndex;
 
@@ -288,13 +288,13 @@ void SaveGamesList::MouseEvent(bool buttonClicked, bool leftButton,
 {
    if (buttonClicked && buttonDown)
    {
-      // determine
-      unsigned int item = (mouseY - m_windowYPos - 2) / (m_normalFont.GetCharHeight() + 1);
+      // determine item
+      size_t item = (mouseY - m_windowYPos - 2) / (m_normalFont.GetCharHeight() + 1);
       item += m_firstListItemIndex;
 
       int lastSelectedIndex = m_selectedSavegameItemIndex;
 
-      unsigned int numItems = m_savegamesManager->GetSavegamesCount() + (m_showNewSavegameEntry ? 0 : 1);
+      size_t numItems = m_savegamesManager->GetSavegamesCount() + (m_showNewSavegameEntry ? 0 : 1);
 
       // check if user selected an empty slot
       if (item < numItems)
@@ -608,7 +608,7 @@ void SaveGameScreen::PressButton(SaveGameButtonId buttonId)
    {
       // check if user tries to load the "new slot" entry
       if (m_savegamesList.GetSelectedSavegame() == -1 ||
-         static_cast<unsigned int>(m_savegamesList.GetSelectedSavegame()) >=
+         static_cast<size_t>(m_savegamesList.GetSelectedSavegame()) >=
          m_game.GetSavegamesManager().GetSavegamesCount())
          break;
 
@@ -652,7 +652,7 @@ void SaveGameScreen::UpdateInfo()
    infoImage.Clear(0);
 
    if (selectedSavegameItemIndex >= 0 &&
-      static_cast<unsigned int>(selectedSavegameItemIndex) < m_game.GetSavegamesManager().GetSavegamesCount())
+      static_cast<size_t>(selectedSavegameItemIndex) < m_game.GetSavegamesManager().GetSavegamesCount())
    {
       // get savegame infos
       Base::SavegameInfo info;
@@ -746,7 +746,7 @@ void SaveGameScreen::AskForSavegameDescription()
 
    // select new slot when no savegame was selected
    int selectedSavegameItemIndex = m_savegamesList.GetSelectedSavegame();
-   if (selectedSavegameItemIndex != -1 && static_cast<unsigned int>(selectedSavegameItemIndex) < sgmgr.GetSavegamesCount())
+   if (selectedSavegameItemIndex != -1 && static_cast<size_t>(selectedSavegameItemIndex) < sgmgr.GetSavegamesCount())
    {
       // retrieve savegame title
       Base::SavegameInfo info;
@@ -779,7 +779,7 @@ void SaveGameScreen::SaveGameToDisk()
 
    // saving over existing game?
    int selectedSavegameItemIndex = m_savegamesList.GetSelectedSavegame();
-   if (selectedSavegameItemIndex != -1 && static_cast<unsigned int>(selectedSavegameItemIndex) < sgmgr.GetSavegamesCount())
+   if (selectedSavegameItemIndex != -1 && static_cast<size_t>(selectedSavegameItemIndex) < sgmgr.GetSavegamesCount())
    {
       UaTrace("saving game over old savegame slot, filename %s\n",
          sgmgr.GetSavegameFilename(selectedSavegameItemIndex).c_str());

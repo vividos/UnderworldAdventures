@@ -130,8 +130,8 @@ void IngameRuneshelf::UpdateRuneshelf()
    Underworld::Runeshelf& runeshelf = m_parent->GetGameInterface().GetUnderworld().
       GetPlayer().GetRuneshelf();
 
-   unsigned int max = runeshelf.GetNumRunes() % 3;
-   for (unsigned int i = 0; i < max; i++)
+   size_t max = runeshelf.GetNumRunes() % 3;
+   for (size_t i = 0; i < max; i++)
    {
       Underworld::RuneType rune = static_cast<Underworld::RuneType>(runeshelf.GetRune(i) % 24);
 

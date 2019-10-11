@@ -415,8 +415,8 @@ void ProjectInfoWindow::RefreshCodeDebuggerList()
 
          CString cszGameCfgPath(debugClient.GetGameConfigPath());
 
-         unsigned int maxSourceFiles = cdi.GetSourceFileCount();
-         for (unsigned int sourceFileIndex = 0; sourceFileIndex < maxSourceFiles; sourceFileIndex++)
+         size_t maxSourceFiles = cdi.GetSourceFileCount();
+         for (size_t sourceFileIndex = 0; sourceFileIndex < maxSourceFiles; sourceFileIndex++)
             InsertSourceFile(hSubItem, enType, cdi.GetSourceFileName(sourceFileIndex), cszGameCfgPath, codeDebuggerId);
 
          m_treeCtrl.Expand(hSubItem);

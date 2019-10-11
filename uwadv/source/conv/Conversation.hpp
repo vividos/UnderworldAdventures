@@ -47,7 +47,7 @@ namespace Conv
       }
 
       /// inits basic conversation
-      virtual void Init(unsigned int conversationLevel,
+      virtual void Init(size_t conversationLevel,
          Uint16 conversationObjectPos,
          ICodeCallback* codeCallback,
          std::vector<std::string>& localStrings);
@@ -66,7 +66,7 @@ namespace Conv
       Underworld::GameLogic& m_gameLogic;
 
       /// underworld level of conversation partner
-      unsigned int m_conversationLevel;
+      size_t m_conversationLevel;
 
       /// object position of conversation partner
       Uint16 m_conversationObjectPos;

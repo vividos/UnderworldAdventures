@@ -246,8 +246,8 @@ bool CollisionDetection::CollideWithWorld(CollisionData& data,
 void CollisionDetection::CheckCollision(CollisionData& data)
 {
    // check all triangles; already in ellipsoid space
-   unsigned int max = m_allTriangles.size();
-   for (unsigned int index = 0; index < max; index++)
+   size_t max = m_allTriangles.size();
+   for (size_t index = 0; index < max; index++)
    {
       if (data.debugOutput)
          UaTrace("    checking triangle %i...", index);

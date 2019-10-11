@@ -128,7 +128,7 @@ void GameLogic::UserAction(UserInterfaceUserAction action,
    }
 }
 
-void GameLogic::ChangeLevel(unsigned int level)
+void GameLogic::ChangeLevel(size_t level)
 {
    // check if game wants to change to unknown level
    UaAssert(level < m_underworld.GetLevelList().GetNumLevels());

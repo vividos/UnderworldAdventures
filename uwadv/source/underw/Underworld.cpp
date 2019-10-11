@@ -25,13 +25,13 @@
 
 Underworld::Level& Underworld::Underworld::GetCurrentLevel()
 {
-   unsigned int currentLevel = GetPlayer().GetAttribute(::Underworld::attrMapLevel);
+   size_t currentLevel = GetPlayer().GetAttribute(::Underworld::attrMapLevel);
    return GetLevelList().GetLevel(currentLevel);
 }
 
 const Underworld::Level& Underworld::Underworld::GetCurrentLevel() const
 {
-   unsigned int currentLevel = GetPlayer().GetAttribute(::Underworld::attrMapLevel);
+   size_t currentLevel = GetPlayer().GetAttribute(::Underworld::attrMapLevel);
    return GetLevelList().GetLevel(currentLevel);
 }
 

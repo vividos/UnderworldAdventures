@@ -116,9 +116,9 @@ void CritterFramesManager::Prepare(Underworld::ObjectList* mapObjects)
 
    // go through all critters and reset them
    {
-      unsigned int max = m_allCritters.size();
-      for (unsigned int i = 0; i < max; i++)
-         m_allCritters[i].ResetPrepare();
+      size_t max = m_allCritters.size();
+      for (size_t index = 0; index < max; index++)
+         m_allCritters[index].ResetPrepare();
    }
 
    // go through master object list and check which object frames have to be managed
@@ -155,18 +155,18 @@ void CritterFramesManager::Tick(double tickRate)
       return;
 
    // check all objects if they have to be updated
-   unsigned int max = m_objectIndices.size();
-   for (unsigned int i = 0; i < max; i++)
+   size_t max = m_objectIndices.size();
+   for (size_t index = 0; index < max; index++)
    {
-      double& framecount = m_objectFrameCount[i];
+      double& framecount = m_objectFrameCount[index];
       framecount += 1.0 / tickRate;
       if (framecount > 1.0 / s_critterFramesPerSecond)
       {
          // next frame
          framecount -= 1.0 / s_critterFramesPerSecond;
 
-         Uint16 index = m_objectIndices[i];
-         Underworld::ObjectPtr obj = m_mapObjects->GetObject(index);
+         Uint16 objectIndex = m_objectIndices[index];
+         Underworld::ObjectPtr obj = m_mapObjects->GetObject(objectIndex);
 
          // update
          m_allCritters[(obj->GetObjectInfo().m_itemID - 0x0040) % 0x003f].UpdateFrame(*obj);

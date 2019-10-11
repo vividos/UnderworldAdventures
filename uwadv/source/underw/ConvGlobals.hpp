@@ -49,7 +49,7 @@ namespace Underworld
       ConvGlobals() { }
 
       /// returns number of slots
-      unsigned int GetSlotCount() const { return m_allGlobalsList.size(); }
+      size_t GetSlotCount() const { return m_allGlobalsList.size(); }
 
       // loading / saving
 

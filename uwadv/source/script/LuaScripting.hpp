@@ -97,14 +97,14 @@ protected:
    virtual void SetDebuggerState(DebugServerCodeDebuggerState state) override;
    virtual DebugServerCodeDebuggerCommand GetDebuggerCommand() const override;
    virtual void SetDebuggerCommand(DebugServerCodeDebuggerCommand command) override;
-   virtual void GetCurrentPos(unsigned int& sourcefileIndex, unsigned int& sourcefileLine,
-      unsigned int& codePosition, bool& isSourcefileValid) override;
-   virtual unsigned int GetNumSourcefiles() const override;
-   virtual unsigned int GetSourcefileName(unsigned int index, char* buffer, unsigned int len) override;
-   virtual unsigned int GetNumBreakpoints() override;
-   virtual void GetBreakpointInfo(unsigned int breakpointIndex,
-      unsigned int& sourcefileIndex, unsigned int& sourcefileLine,
-      unsigned int& codePosition, bool& visible) override;
+   virtual void GetCurrentPos(size_t& sourcefileIndex, size_t& sourcefileLine,
+      size_t& codePosition, bool& isSourcefileValid) override;
+   virtual size_t GetNumSourcefiles() const override;
+   virtual size_t GetSourcefileName(size_t index, char* buffer, size_t length) override;
+   virtual size_t GetNumBreakpoints() const override;
+   virtual void GetBreakpointInfo(size_t breakpointIndex,
+      size_t& sourcefileIndex, size_t& sourcefileLine,
+      size_t& codePosition, bool& visible) const override;
 
 protected:
    /// lua state information
@@ -129,13 +129,13 @@ protected:
    DebugServerCodeDebuggerCommand m_debuggerCommand;
 
    /// current position sourcefile index
-   unsigned int m_currentPositionSourcefileIndex;
+   size_t m_currentPositionSourcefileIndex;
 
    /// current position sourcefile line
-   unsigned int m_currentPositionSourcefileLine;
+   size_t m_currentPositionSourcefileLine;
 
    /// function call depth when doing "step over"
-   unsigned int m_stepOverFunctionCallDepth;
+   size_t m_stepOverFunctionCallDepth;
 
    /// list with all breakpoints
    std::vector<DebugCodeBreakpointInfo> m_breakpointsList;

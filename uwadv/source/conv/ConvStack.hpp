@@ -75,7 +75,7 @@ namespace Conv
       }
 
       /// returns current size of stack
-      unsigned int Size()
+      size_t Size()
       {
          return m_stack.size();
       }

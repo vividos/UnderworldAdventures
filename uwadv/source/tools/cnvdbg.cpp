@@ -130,7 +130,7 @@ void ua_conv_debugger::start()
          // print out status
          if (ret)
          {
-            printf("loaded conversation #%u.\n",conv);
+            printf("loaded conversation #%i.\n",conv);
             ua_conv_code_vm::init(cg,gs.get_block(strblock));
             printf("conversation partner: \"%s\"\n",
                gs.get_string(7,16+conv_nr).c_str());
@@ -138,7 +138,7 @@ void ua_conv_debugger::start()
             loaded=true;
          }
          else
-            printf("conversation %u not available!\n",conv);
+            printf("conversation %i not available!\n",conv);
 
          continue;
       }
@@ -413,7 +413,7 @@ void ua_conv_debugger::imported_func(Uint16 number)
       int nr=1;
       while(stack.at(arg2)!=0)
       {
-         printf("%u. %s\n",nr++,
+         printf("%i. %s\n",nr++,
             gs.get_string(strblock,stack.at(arg2)).c_str());
          arg2++;
       }
@@ -442,7 +442,7 @@ void ua_conv_debugger::imported_func(Uint16 number)
       int nr=1;
       while(stack.at(arg2)!=0)
       {
-         printf("%u. %s\n",nr++,
+         printf("%i. %s\n",nr++,
             gs.get_string(strblock,stack.at(arg2)).c_str());
          arg2++;
       }

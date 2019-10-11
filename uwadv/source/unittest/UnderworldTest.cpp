@@ -179,8 +179,8 @@ namespace UnitTest
 
          // to test compaction, delete every other element
          {
-            unsigned int uiMax = vecAllPos.size();
-            for (unsigned int ui = 0; ui < uiMax; ui += 2)
+            size_t max = vecAllPos.size();
+            for (size_t ui = 0; ui < max; ui += 2)
             {
                ol.RemoveObjectFromTileList(vecAllPos[ui], 32, 16);
                ol.Free(vecAllPos[ui]);

@@ -48,7 +48,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static MidiDriver *Disabled_CreateInstance() { return 0; }
 
-static const MidiDriver::MidiDriverDesc Disabled_desc = 
+static const MidiDriver::MidiDriverDesc Disabled_desc =
 		MidiDriver::MidiDriverDesc ("Disabled", Disabled_CreateInstance);
 
 static std::vector<const MidiDriver::MidiDriverDesc*> midi_drivers;
@@ -102,7 +102,7 @@ static void InitMidiDriverVector()
 
 
 // Get the number of devices
-int MidiDriver::getDriverCount()
+size_t MidiDriver::getDriverCount()
 {
 	InitMidiDriverVector();
 	return midi_drivers.size();
@@ -147,8 +147,8 @@ MidiDriver *MidiDriver::createInstance(const std::string& desired_driver,uint32 
 					if (new_driver->initMidiDriver(sample_rate,stereo)) {
 						pout << "Failed!" << std::endl;
 						delete new_driver;
-						new_driver = 0; 
-					} 
+						new_driver = 0;
+					}
 					else
 					{
 						pout << "Success!" << std::endl;
@@ -158,7 +158,7 @@ MidiDriver *MidiDriver::createInstance(const std::string& desired_driver,uint32 
 			}
 		}
 
-		// Uh oh, we didn't manage to load a driver! 
+		// Uh oh, we didn't manage to load a driver!
 		// Search for the first working one
 		if (!new_driver) for (it = midi_drivers.begin(); it < midi_drivers.end(); it++) {
 
@@ -168,7 +168,7 @@ MidiDriver *MidiDriver::createInstance(const std::string& desired_driver,uint32 
 			if (new_driver) {
 
 				// Got it
-				if (!new_driver->initMidiDriver(sample_rate,stereo)) 
+				if (!new_driver->initMidiDriver(sample_rate,stereo))
 				{
 					pout << "Success!" << std::endl;
 					break;
@@ -178,7 +178,7 @@ MidiDriver *MidiDriver::createInstance(const std::string& desired_driver,uint32 
 
 				// Oh well, try the next one
 				delete new_driver;
-				new_driver = 0; 
+				new_driver = 0;
 			}
 		}
 	}

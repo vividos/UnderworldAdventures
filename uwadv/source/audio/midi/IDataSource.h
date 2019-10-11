@@ -47,7 +47,7 @@ class IDataSource
 			else if (num_bytes == 3) return read3();
 			else return read4();
 		}
-		
+
 		sint32 readXS(uint32 num_bytes)
 		{
 			assert(num_bytes > 0 && num_bytes <= 4);
@@ -73,13 +73,13 @@ class IDataSource
 			sint32 exponent = ((i >> 23) & 0xFF);
 
 			// Zero
-			if (!exponent && !mantissa) 
+			if (!exponent && !mantissa)
 				return 0.0F;
 			// Infinity and NaN (don't handle them)
 			else if (exponent == 0xFF)
 				return 0.0F;
 			// Normalized - Add the leading one
-			else if (exponent) 
+			else if (exponent)
 				mantissa |= 0x400000;
 			// Denormalized - Set the exponent to 1
 			else
@@ -97,7 +97,7 @@ class IDataSource
 			{
 				char character =  static_cast<char>(read1());
 
-				if (character == '\r') continue;	// Skip cr 
+				if (character == '\r') continue;	// Skip cr
 				else if (character == '\n')	break;	// break on line feed
 
 				str+= character;
@@ -110,8 +110,8 @@ class IDataSource
 		virtual uint32 getPos()=0;
 		virtual bool eof()=0;
 
-		virtual std::ifstream *GetRawIfstream() { 
-			return 0; 
+		virtual std::ifstream *GetRawIfstream() {
+			return 0;
 		}
 
 		/* SDL_RWops functions: */
@@ -141,7 +141,7 @@ class IDataSource
 			IDataSource*ids = static_cast<IDataSource*>
 				(context->hidden.unknown.data1);
 			if (size == 0) return 0;
-			int nbytes = ids->read(ptr, maxnum*size);
+			sint32 nbytes = ids->read(ptr, static_cast<sint32>(maxnum*size));
 			return (nbytes/size);
 		}
 		static size_t rw_write(SDL_RWops * /*context*/, const void * /*ptr*/,
@@ -272,7 +272,7 @@ class IFileDataSource: public IDataSource
 	virtual bool eof() { in->get(); bool ret = in->eof(); if (!ret) in->unget(); return ret; }
 
 	virtual std::ifstream *GetRawIfstream() {
-		return in; 
+		return in;
 	}
 };
 
@@ -347,7 +347,7 @@ public:
 		if (is_text) ConvertTextBuffer();
 	}
 
-	virtual ~IBufferDataSource() { 
+	virtual ~IBufferDataSource() {
 		if (free_buffer && buf) delete [] const_cast<uint8 *>(buf);
 		free_buffer = false;
 		buf = buf_ptr = 0;
@@ -398,7 +398,7 @@ public:
 		b0 = *buf_ptr++;
 		return (b0 | (b1<<8) | (b2<<16) | (b3<<24));
 	}
-	
+
 	virtual sint32 read(void *str, sint32 num_bytes) {
 		if (buf_ptr >= buf + size) return 0;
 		sint32 count = num_bytes;

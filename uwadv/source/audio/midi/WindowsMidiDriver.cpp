@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifdef USE_WINDOWS_MIDI
 
-const MidiDriver::MidiDriverDesc WindowsMidiDriver::desc = 
+const MidiDriver::MidiDriverDesc WindowsMidiDriver::desc =
 		MidiDriver::MidiDriverDesc("Windows", createInstance);
 
 using std::endl;
@@ -39,8 +39,8 @@ using std::endl;
 #include <winbase.h>
 #include <cstdlib>
 
-WindowsMidiDriver::WindowsMidiDriver() : 
-	LowLevelMidiDriver(), dev_num(-1), midi_port(0), 
+WindowsMidiDriver::WindowsMidiDriver() :
+	LowLevelMidiDriver(), dev_num(-1), midi_port(0),
 	_streamBuffer(0), _streamBufferSize(0), _streamEvent(0)
 {
 #ifdef WIN32_USE_DUAL_MIDIDRIVERS
@@ -86,7 +86,7 @@ int WindowsMidiDriver::open()
 
 	// List all the midi devices.
 	MIDIOUTCAPS caps;
-	signed long dev_count = static_cast<signed long>(midiOutGetNumDevs()); 
+	signed long dev_count = static_cast<signed long>(midiOutGetNumDevs());
 	pout << dev_count << " Midi Devices Detected" << endl;
 	pout << "Listing midi devices:" << endl;
 
@@ -111,7 +111,7 @@ int WindowsMidiDriver::open()
 	pout << "Using device " << dev_num << ": "<< caps.szPname << endl;
 
 	_streamEvent = CreateEvent(NULL, true, true, NULL);
-	UINT mmsys_err = midiOutOpen(&midi_port, dev_num, reinterpret_cast<uintptr>(_streamEvent), 0, CALLBACK_EVENT);
+	UINT mmsys_err = midiOutOpen(&midi_port, dev_num, reinterpret_cast<DWORD_PTR>(_streamEvent), 0, CALLBACK_EVENT);
 
 #ifdef WIN32_USE_DUAL_MIDIDRIVERS
 	if (dev_num2 != -2 && mmsys_err != MMSYSERR_NOERROR)
@@ -132,7 +132,7 @@ int WindowsMidiDriver::open()
 
 	// Set Win32 Midi Device num
 	//config->set("config/audio/midi/win32_device", dev_num, true);
-	
+
 	return 0;
 }
 
@@ -154,7 +154,7 @@ void WindowsMidiDriver::close()
 void WindowsMidiDriver::send(uint32 message)
 {
 #ifdef WIN32_USE_DUAL_MIDIDRIVERS
-	if (message & 0x1 && midi_port2 != 0) 
+	if (message & 0x1 && midi_port2 != 0)
 		midiOutShortMsg(midi_port2,  message);
 	else
 		midiOutShortMsg(midi_port,  message);

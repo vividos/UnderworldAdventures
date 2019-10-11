@@ -132,11 +132,11 @@ enum CodeDebuggerCommand
 struct CodePosition
 {
    /// index value to retrieve source file name
-   unsigned int m_sourceFileNameIndex;
-   unsigned int m_sourceFileLine;
+   size_t m_sourceFileNameIndex;
+   size_t m_sourceFileLine;
 
    /// code position; if not available, -1 is put in here
-   unsigned int m_codePosition;
+   size_t m_codePosition;
 };
 
 struct BreakpointInfo
@@ -184,8 +184,8 @@ public:
 
    // breakpoints
 
-   unsigned int GetBreakpointCount() const;
-   void GetBreakpointInfo(unsigned int nBreakpointIndex, BreakpointInfo& breakpointInfo) const;
+   size_t GetBreakpointCount() const;
+   void GetBreakpointInfo(size_t breakpointIndex, BreakpointInfo& breakpointInfo) const;
 
    // call stack
 
@@ -195,10 +195,10 @@ public:
    // sourcecode files
 
    // sourcecode files count; only valid if IsSourceAvail() returns a value > 0
-   unsigned int GetSourceFileCount() const;
+   size_t GetSourceFileCount() const;
 
    /// returns sourcecode filename by index
-   CString GetSourceFileName(unsigned int index);
+   CString GetSourceFileName(size_t index);
 
    /// returns sourcecode filename and line by code position
    bool GetSourceFromCodePos(unsigned int codePos, CString& filename, unsigned int& lineNumber, unsigned int& lineDisplacement);
@@ -251,7 +251,7 @@ public:
 
    // level stuff
 
-   unsigned int GetNumLevels();
+   size_t GetNumLevels();
    void SetWorkingLevel(unsigned int level);
    unsigned int GetWorkingLevel() const { return m_level; }
 

@@ -77,7 +77,7 @@ void strpak_unpack_strings(const char *infile, const char *outputFilename)
       if (test.IsOpen())
          nodes = test.Read16();
 
-      printf("%u huffman tree nodes, %u string blocks.\n",
+      printf("%u huffman tree nodes, %zu string blocks.\n",
          nodes,
          cgs.GetStringBlockSet().size());
    }
@@ -104,10 +104,10 @@ void strpak_unpack_strings(const char *infile, const char *outputFilename)
       out.WriteLine(bufferBlock.str().c_str());
 
       // print all strings in list
-      unsigned int i, max = stringList.size();
-      for (i = 0; i < max; i++)
+      size_t max = stringList.size();
+      for (size_t index = 0; index < max; index++)
       {
-         std::string line(stringList[i]);
+         std::string line(stringList[index]);
 
          // replace newlines with string "\n"
          std::string::size_type pos;
@@ -115,7 +115,7 @@ void strpak_unpack_strings(const char *infile, const char *outputFilename)
             line.replace(pos, 1, "\\n");
 
          std::stringstream bufferLine;
-         bufferLine << i << ": " << line;
+         bufferLine << index << ": " << line;
          out.WriteLine(bufferLine.str().c_str());
       }
    }
@@ -157,11 +157,13 @@ void strpak_pack_strings(const char* infile, const char* outputFilename, const c
       if (feof(in)) break;
 
       // remove newline
-      unsigned int len = strlen(buffer);
-      if (buffer[len - 1] == '\n') buffer[len - 1] = 0;
+      size_t len = strlen(buffer);
+      if (buffer[len - 1] == '\n')
+         buffer[len - 1] = 0;
 
       // skip empty lines
-      if (strlen(buffer) == 0) continue;
+      if (strlen(buffer) == 0)
+         continue;
 
       if (strncmp(buffer, "block: ", 7) == 0)
       {
@@ -181,7 +183,7 @@ void strpak_pack_strings(const char* infile, const char* outputFilename, const c
       char *pos = strchr(buffer, ':');
       if (pos == NULL)
       {
-         printf("line %u of block contained no ':'\n", block.size());
+         printf("line %zu of block contained no ':'\n", block.size());
          continue; // should not happen
       }
       pos += 2; // move forward to actual string
@@ -195,9 +197,9 @@ void strpak_pack_strings(const char* infile, const char* outputFilename, const c
       }
 
       // calculate char frequencies for that string
-      unsigned int max = strlen(pos);
-      for (unsigned int i = 0; i < max; i++)
-         char_freq[static_cast<Uint8>(pos[i])]++;
+      size_t max = strlen(pos);
+      for (size_t index = 0; index < max; index++)
+         char_freq[static_cast<Uint8>(pos[index])]++;
 
       char_freq[static_cast<Uint8>('|')]++;
 
@@ -206,6 +208,7 @@ void strpak_pack_strings(const char* infile, const char* outputFilename, const c
       thestring.append("|"); // end marker
       block.push_back(thestring);
    }
+
    fclose(in);
 
    // store last block, too
@@ -216,7 +219,10 @@ void strpak_pack_strings(const char* infile, const char* outputFilename, const c
 
    // reverse char lookup table
    unsigned int char_lookup[256];
-   { for (unsigned int i = 0; i < 256; char_lookup[i++] = 0); }
+   {
+      for (size_t i = 0; i < 256;
+      char_lookup[i++] = 0);
+   }
 
    // build up list with all leaf nodes
    // use all characters that have frequencies above 0
@@ -238,12 +244,12 @@ void strpak_pack_strings(const char* infile, const char* outputFilename, const c
          }
    }
 
-   unsigned int valid_chars = huffnodes.size();
+   size_t validChars = huffnodes.size();
 
    // build huffman tree
    while (true)
    {
-      unsigned int i, max;
+      size_t i, max;
 
       int node1 = -1, node2 = -1;
       unsigned int freq1 = 0, freq2 = 0;
@@ -253,7 +259,7 @@ void strpak_pack_strings(const char* infile, const char* outputFilename, const c
       for (i = 0; i < max; i++)
          if (huffnodes[i].freq != 0 && (freq1 == 0 || huffnodes[i].freq < freq1))
          {
-            node1 = i;
+            node1 = static_cast<int>(i);
             freq1 = huffnodes[i].freq;
          }
 
@@ -269,7 +275,7 @@ void strpak_pack_strings(const char* infile, const char* outputFilename, const c
       for (i = 0; i < max; i++)
          if (huffnodes[i].freq != 0 && (freq2 == 0 || huffnodes[i].freq < freq2))
          {
-            node2 = i;
+            node2 = static_cast<int>(i);
             freq2 = huffnodes[i].freq;
          }
 
@@ -293,7 +299,7 @@ void strpak_pack_strings(const char* infile, const char* outputFilename, const c
          huffnodes.push_back(node);
       }
 
-      unsigned int last = huffnodes.size() - 1;
+      int last = static_cast<int>(huffnodes.size() - 1);
       huffnodes[node1].parent = last;
       huffnodes[node2].parent = last;
    }
@@ -345,8 +351,8 @@ void strpak_pack_strings(const char* infile, const char* outputFilename, const c
       return;
    }
 
-   printf("huffman tree: %u characters, %u nodes\n",
-      valid_chars, huffnodes.size() + 1);
+   printf("huffman tree: %zu characters, %zu nodes\n",
+      validChars, huffnodes.size() + 1);
 
    // write the output file
    Base::File outputFile(outputFilename, Base::modeWrite);
@@ -429,8 +435,8 @@ void strpak_pack_strings(const char* infile, const char* outputFilename, const c
             // encode every character using the lookup table and the
             // huffman tree
             const char *str = stringList[i].c_str();
-            unsigned int len = strlen(str);
-            for (unsigned int n = 0; n < len; n++)
+            size_t len = strlen(str);
+            for (size_t n = 0; n < len; n++)
             {
                Uint8 c = static_cast<Uint8>(str[n]);
                unsigned int pos = char_lookup[c], pos2;
@@ -453,8 +459,8 @@ void strpak_pack_strings(const char* infile, const char* outputFilename, const c
 
                // now we have all bits for this char, in the reverse order
                // put them to bytes and write them
-               unsigned int maxbits = allbits.size();
-               for (unsigned int p = maxbits; p > 0; p--)
+               size_t maxbits = allbits.size();
+               for (size_t p = maxbits; p > 0; p--)
                {
                   bool bit = allbits[p - 1];
                   if (bit)
@@ -496,11 +502,11 @@ void strpak_pack_strings(const char* infile, const char* outputFilename, const c
       // now write all block offsets
       outputFile.Seek(blockDirPos, Base::seekBegin);
 
-      unsigned int numOffsets = blockOffsets.size();
-      for (unsigned int j = 0; j < numOffsets; j++)
+      size_t numOffsets = blockOffsets.size();
+      for (size_t offsetIndex = 0; offsetIndex < numOffsets; offsetIndex++)
       {
          outputFile.Seek(2, Base::seekBegin);
-         outputFile.Write32(blockOffsets[j]);
+         outputFile.Write32(blockOffsets[offsetIndex]);
       }
    }
 

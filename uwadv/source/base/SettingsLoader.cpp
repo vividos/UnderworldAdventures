@@ -103,8 +103,8 @@ namespace Detail
    {
       // go through the list of all config files
       bool loadedConfigFile = false;
-      unsigned int maxIndex = m_configFilesList.size();
-      for (unsigned int index = 0; index < maxIndex; index++)
+      size_t maxIndex = m_configFilesList.size();
+      for (size_t index = 0; index < maxIndex; index++)
       {
          const std::string& configFilename = m_configFilesList[index];
          if (Base::FileSystem::FileExists(configFilename))

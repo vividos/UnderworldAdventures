@@ -326,11 +326,11 @@ void Game::Done()
    }
 
    // free all screens on screen stack
-   unsigned int max = m_screenStack.size();
-   for (unsigned int i = 0; i < max; i++)
+   size_t max = m_screenStack.size();
+   for (size_t screenIndex = 0; screenIndex < max; screenIndex++)
    {
-      m_screenStack[i]->Destroy();
-      delete m_screenStack[i];
+      m_screenStack[screenIndex]->Destroy();
+      delete m_screenStack[screenIndex];
    }
 
    DoneGame();

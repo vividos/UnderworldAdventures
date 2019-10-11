@@ -55,7 +55,7 @@ void Texture::Done()
 
    // delete all texture names
    if (m_textureNames.size() > 0)
-      glDeleteTextures(m_textureNames.size(), &m_textureNames[0]);
+      glDeleteTextures(static_cast<GLsizei>(m_textureNames.size()), &m_textureNames[0]);
    m_textureNames.clear();
 }
 
@@ -299,10 +299,10 @@ void TextureManager::Tick(double tickRate)
       m_animationCount -= 1.0 / s_animationFramesPerSecond;
 
       // next animation frame
-      unsigned int max = m_stockTextureAnimationInfos.size();
-      for (unsigned int i = 0; i < max; i++)
+      size_t max = m_stockTextureAnimationInfos.size();
+      for (size_t index = 0; index < max; index++)
       {
-         std::pair<unsigned int, unsigned int>& info = m_stockTextureAnimationInfos[i];
+         std::pair<unsigned int, unsigned int>& info = m_stockTextureAnimationInfos[index];
 
          if (info.second > 1)
          {
@@ -320,9 +320,9 @@ void TextureManager::Reset()
    glBindTexture(GL_TEXTURE_2D, 0);
 
    // call "done" for all stock textures
-   unsigned int max = m_stockTextures.size();
-   for (unsigned int i = 0; i < max; i++)
-      m_stockTextures[i].Done();
+   size_t max = m_stockTextures.size();
+   for (size_t index = 0; index < max; index++)
+      m_stockTextures[index].Done();
 
    m_lastTextureName = 0;
 }

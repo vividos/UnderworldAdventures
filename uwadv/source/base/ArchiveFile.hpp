@@ -60,13 +60,13 @@ namespace Base
       ArchiveFile(SDL_RWopsPtr rwops, bool uw2Mode = false);
 
       /// returns number of files in archive
-      unsigned int GetNumFiles() const { return m_offsetList.size(); }
+      size_t GetNumFiles() const { return m_offsetList.size(); }
 
       /// checks if an archive file slot is available
-      bool IsAvailable(unsigned int index) const;
+      bool IsAvailable(size_t index) const;
 
       /// returns archive file
-      Base::File GetFile(unsigned int index);
+      Base::File GetFile(size_t index);
 
    private:
       /// archive file
