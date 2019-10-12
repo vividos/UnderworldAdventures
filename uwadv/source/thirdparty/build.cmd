@@ -14,5 +14,7 @@ mkdir %OUTDIR%\tools 2> nul
 copy SDL2-2.0.10\lib\x86\SDL2.dll %OUTDIR%
 copy SDL2-2.0.10\lib\x86\SDL2.dll %OUTDIR%\tools
 copy SDL2_mixer-2.0.4\lib\x86\*.dll %OUTDIR%
+copy ..\win32\uadebug\thirdparty\scintilla\lib\SciLexer.dll %OUTDIR%
+copy ..\win32\uadebug\thirdparty\scintilla\lib\lua.properties %OUTDIR%
 copy ..\..\README.Manual.md %OUTDIR%\README.Manual.txt
 copy ..\..\README.Tools.md %OUTDIR%\tools\README.Tools.txt
