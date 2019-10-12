@@ -10,7 +10,7 @@ image: Visual Studio 2019
 
 platform: Win32
 
-configuration: Release
+configuration: AppVeyor
 
 before_build:
 - ps: uwadv\Patch-BuildVersion.ps1 -version $env:appveyor_build_version
