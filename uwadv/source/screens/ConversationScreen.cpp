@@ -206,16 +206,14 @@ void ConversationScreen::Init()
       // get local strings
       // note: convslot is used to load strings, not the strblock value set in
       // conv header
-      std::vector<std::string> localstrings = m_game.GetGameStrings().GetStringBlock(m_codeVM.GetStringBlock());
+      std::vector<std::string> localStrings = m_game.GetGameStrings().GetStringBlock(m_codeVM.GetStringBlock());
 
-      // TODO m_codeVM.Init(this,game.GetUnderworld().get_conv_globals());
+      size_t level = m_game.GetUnderworld().GetPlayer().GetAttribute(Underworld::attrMapLevel);
+      m_codeVM.Init(level, m_convObjectPos, this, localStrings);
 
       // notify debugger of start of code debugger
       // \todo only works with ConversationDebugger class
-      //game.GetDebugger().StartCodeDebugger(&m_codeVM);
-
-      unsigned int level = m_game.GetUnderworld().GetPlayer().GetAttribute(Underworld::attrMapLevel);
-      m_codeVM.Init(level, m_convObjectPos, this, localstrings);
+      //m_game.GetDebugger().StartCodeDebugger(&m_convDebugger);
    }
 
    m_state = convScreenStateFadeIn;
