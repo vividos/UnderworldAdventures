@@ -422,8 +422,8 @@ const char* LuaScripting::LuaDebugEventNameFromInt(int event)
 
 void LuaScripting::DebugHook(lua_Debug* ar)
 {
-   UaTrace("debug: event=%s, name=%s, start=%d, line=%d, in=%s\n",
-      LuaDebugEventNameFromInt(ar->event), ar->name, ar->linedefined, ar->currentline, ar->source);
+   //UaTrace("debug: event=%s, name=%s, start=%d, line=%d, in=%s\n",
+   //   LuaDebugEventNameFromInt(ar->event), ar->name, ar->linedefined, ar->currentline, ar->source);
 
    if (ar->source != NULL)
    {
