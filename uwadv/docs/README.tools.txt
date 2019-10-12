@@ -6,38 +6,6 @@ interesting for the common user. The source
 code for them resides in the source/tools/ folder.  It can be copied into the same folder
 as the .exe files.
 
-mapdisp - Underworld Map Display [uw1/2]
---------------------------------
-
-mapdisp is a program to show an "eagle's eye" view of each level of the
-underworld. The user can rotate and move the level to view all details of a
-specific level.
-
-The program should be placed in the Ultima Underworld 1, 2, or demo folder,
-directly where the original executable file resides.
-
-To rotate the level around the center, drag with the left mouse key (press
-down left mouse button anywhere in the screen, move the mouse around, and
-release the button again). To move the level around, drag with the right mouse
-button. The up and down cursor keys moves towards or from the viewer's point.
-
-Finally, Page Up and Page Down select another level in the abyss, either above
-or beyond the current (when using the uw_demo this won't work, since the demo
-only has one underworld level stored). The window caption shows infos about
-the current level.
-
-mapdisp can be started with the parameter "allmaps"; it then shows all maps
-simultaneously as they would be in real space. You can move around the scene
-as usual.
-
-Reference Card:
-
-   action            result
-   left-drag         rotates level around center
-   right-drag        moves level centerpoint
-   up / down key     moves level towards or from the viewer
-   page up / down    changes underworld level
-
 
 animview - Underworld Cutscenes Animation Viewer
 ------------------------------------------------

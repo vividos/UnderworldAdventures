@@ -14,6 +14,43 @@ Underworld Adventures. Note that on Windows, most tools need the file
 Tools that also work with Ultima Underworld 2 have a [uw1/2] next to their
 name.
 
+### mapdisp - Underworld Map Display [uw1/2]
+
+mapdisp is a program to show an "eagle's eye" view of each level of the
+underworld. The user can rotate and move the camera to view all details of a
+specific level.
+
+The program should be placed in the Ultima Underworld 1, 2, or demo folder,
+directly where the original executable file resides.
+
+You can move around the camera viewpoint either with the cursor keys or with
+WASD keys like in the game. When left-clicking on the view, the camera angle
+can be changed. The camera always moves in the view direction.
+
+Page Up and Page Down keys select another level in the abyss, either above
+or beyond the current leve (when using the uw_demo this won't work, since the
+demo only has one underworld level stored). The window caption shows infos about
+the current level.
+
+Screenshots can be created by pressing the "print screen" key. A file
+`mapdisp-shot.tga` is created in the executable's folder. When holding down
+the Shift key while pressing "print screen", a large screenshot is taken and
+stored.
+
+mapdisp can be started with the parameter "allmaps"; it then shows all maps
+simultaneously as they would be in real space. You can move around the scene
+as usual.
+
+Reference Card:
+
+    action                 result
+    left-drag              rotates camera view
+    WASD, cursor keys      moves level towards or from the viewer
+    page up / down         changes underworld level
+    print screen           takes a screenshot
+    shift + print screen   takes a large screenshot
+
+
 ### strpak - Underworld Game Strings Pack/Unpack Tool [uw1/2]
 
 strpak is a tool that lets you unpack the game strings in the file
