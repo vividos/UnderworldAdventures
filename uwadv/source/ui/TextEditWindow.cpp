@@ -78,7 +78,7 @@ void TextEditWindow::UpdateText()
 
    // prefix text
    IndexedImage tempImage;
-   if (m_prefix.size() > 0)
+   if (!m_prefix.empty())
    {
       m_font.CreateString(tempImage, m_prefix.c_str(), m_prefixColor);
 
@@ -89,7 +89,7 @@ void TextEditWindow::UpdateText()
    unsigned int prefix_xpos = tempImage.GetXRes();
 
    // main text
-   if (m_text.size() > 0)
+   if (!m_text.empty())
    {
       m_font.CreateString(tempImage, m_text.c_str(), m_textColor);
 
@@ -173,7 +173,7 @@ bool TextEditWindow::ProcessEvent(SDL_Event& event)
          break;
 
       case SDLK_DELETE:
-         if (m_text.size() > 0 && m_cursorPos < m_text.size())
+         if (!m_text.empty() && m_cursorPos < m_text.size())
          {
             m_text.erase(m_cursorPos, 1);
             handled = true;

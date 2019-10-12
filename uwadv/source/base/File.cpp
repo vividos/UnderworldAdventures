@@ -27,7 +27,7 @@ using Base::File;
 File::File(const std::string& filename, Base::FileOpenMode openMode)
    :m_fileLength(-1)
 {
-   UaAssert(filename.size() > 0);
+   UaAssert(!filename.empty());
 
    SDL_RWops* rwops = SDL_RWFromFile(filename.c_str(),
       openMode == modeRead ? "rb" : "wb");

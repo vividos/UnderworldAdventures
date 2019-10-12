@@ -133,7 +133,7 @@ void Game::ParseArgs(unsigned int argc, const char** argv)
    for (unsigned int i = 1; i < argc; i++)
    {
       std::string arg(argv[i]);
-      if (arg.size() == 0)
+      if (arg.empty())
          continue;
 
       bool use_shortopt = true;
@@ -507,7 +507,7 @@ void Game::PopScreen()
    m_currentScreen->Destroy();
    delete m_currentScreen;
 
-   if (m_screenStack.size() != 0)
+   if (!m_screenStack.empty())
    {
       // get last pushed screen
       m_currentScreen = m_screenStack.back();

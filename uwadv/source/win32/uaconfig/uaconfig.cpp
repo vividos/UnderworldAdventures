@@ -158,7 +158,7 @@ LRESULT ConfigDlg::OnSetUw1Path(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
       ::SHGetPathFromIDList(lpIL, buffer);
 
    std::string uw1path = CT2CA(buffer);
-   if (uw1path.size() == 0)
+   if (uw1path.empty())
       return 0;
 
    char last = uw1path.at(uw1path.size() - 1);

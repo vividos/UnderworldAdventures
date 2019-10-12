@@ -93,7 +93,7 @@ void IndexedImage::FillRect(unsigned int startx, unsigned int starty,
 
 void IndexedImage::Clear(Uint8 index)
 {
-   if (m_pixels.size() > 0)
+   if (!m_pixels.empty())
       memset(&m_pixels[0], index, m_pixels.size());
 }
 

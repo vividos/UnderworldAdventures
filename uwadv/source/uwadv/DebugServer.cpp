@@ -322,7 +322,7 @@ size_t DebugServer::GetGamePath(char* buffer, size_t bufferSize)
    Base::Settings& settings = m_game->GetSettings();
 
    std::string prefix = settings.GetString(Base::settingGamePrefix);
-   if (prefix.size() == 0)
+   if (prefix.empty())
    {
       if (buffer != NULL)
          buffer[0] = 0;
@@ -367,7 +367,7 @@ bool DebugServer::GetMessage(unsigned int& messageType,
    unsigned int& messageArg1, unsigned int& messageArg2, double& messageArg3,
    size_t& messageTextSize)
 {
-   if (m_messageQueue.size() > 0)
+   if (!m_messageQueue.empty())
    {
       DebugServerMessage& msg = m_messageQueue.front();
       messageType = msg.messageType;
@@ -377,26 +377,26 @@ bool DebugServer::GetMessage(unsigned int& messageType,
       messageTextSize = msg.messageText.size() + 1;
    }
 
-   return m_messageQueue.size() > 0;
+   return !m_messageQueue.empty();
 }
 
 bool DebugServer::GetMessageText(char* buffer, size_t bufferSize)
 {
-   if (m_messageQueue.size() > 0)
+   if (!m_messageQueue.empty())
    {
       DebugServerMessage& msg = m_messageQueue.front();
       strncpy(buffer, msg.messageText.c_str(), bufferSize);
    }
 
-   return m_messageQueue.size() > 0;
+   return !m_messageQueue.empty();
 }
 
 bool DebugServer::PopMessage()
 {
-   if (m_messageQueue.size() > 0)
+   if (!m_messageQueue.empty())
       m_messageQueue.pop_front();
 
-   return m_messageQueue.size() > 0;
+   return !m_messageQueue.empty();
 }
 
 double DebugServer::GetPlayerPosInfo(size_t index)

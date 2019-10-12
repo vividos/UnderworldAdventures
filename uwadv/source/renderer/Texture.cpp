@@ -54,7 +54,7 @@ void Texture::Done()
    m_texels.clear();
 
    // delete all texture names
-   if (m_textureNames.size() > 0)
+   if (!m_textureNames.empty())
       glDeleteTextures(static_cast<GLsizei>(m_textureNames.size()), &m_textureNames[0]);
    m_textureNames.clear();
 }

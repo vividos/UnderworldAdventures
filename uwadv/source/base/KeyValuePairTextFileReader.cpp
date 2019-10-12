@@ -48,7 +48,7 @@ bool KeyValuePairTextFileReader::SplitKeyValue(std::string& line, std::string& k
    Base::String::TrimStart(line);
 
    // comment line?
-   if (line.size() == 0 || line.at(0) == '#' || line.at(0) == ';')
+   if (line.empty() || line[0] == '#' || line[0] == ';')
       return false;
 
    // comment somewhere in the line?

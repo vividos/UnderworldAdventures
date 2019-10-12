@@ -252,7 +252,7 @@ SavegamesManager::SavegamesManager(const Base::Settings& settings)
    m_imageXRes(0),
    m_imageYRes(0)
 {
-   UaAssert(m_savegameFolder.size() > 0);
+   UaAssert(!m_savegameFolder.empty());
 
    UaTrace("savegames manager is using zlib %s\n", ZLIB_VERSION);
 
@@ -271,7 +271,7 @@ void SavegamesManager::SetNewGamePrefix(const std::string& newGamePrefix)
 /// \todo filter out savegames that don't have the same prefix
 void SavegamesManager::Rescan()
 {
-   UaAssert(m_savegameFolder.size() > 0);
+   UaAssert(!m_savegameFolder.empty());
 
    m_savegamesList.clear();
 
@@ -279,7 +279,7 @@ void SavegamesManager::Rescan()
    Base::FileSystem::FindFiles(strSearchPath, m_savegamesList);
 
    // add quicksave savegame name
-   if (m_gamePrefix.size() > 0 && IsQuicksaveAvail())
+   if (!m_gamePrefix.empty() && IsQuicksaveAvail())
    {
       std::string strQuicksaveName = GetQuicksaveFilename();
       m_savegamesList.push_back(strQuicksaveName);
@@ -326,7 +326,7 @@ Savegame SavegamesManager::LoadSavegame(size_t index, bool storeImage)
 ///                parameter -1 is used, a new slot is used.
 Savegame SavegamesManager::SaveSavegame(SavegameInfo info, size_t index)
 {
-   UaAssert(m_savegameFolder.size() > 0);
+   UaAssert(!m_savegameFolder.empty());
 
    std::string savegameFilename;
 
@@ -376,7 +376,7 @@ bool SavegamesManager::IsQuicksaveAvail() const
 
 Savegame SavegamesManager::SaveQuicksaveSavegame(SavegameInfo info)
 {
-   UaAssert(m_gamePrefix.size() > 0);
+   UaAssert(!m_gamePrefix.empty());
 
    std::string quicksaveName = GetQuicksaveFilename();
 
@@ -392,8 +392,8 @@ Savegame SavegamesManager::SaveQuicksaveSavegame(SavegameInfo info)
 
 std::string SavegamesManager::GetQuicksaveFilename() const
 {
-   UaAssert(m_savegameFolder.size() > 0);
-   UaAssert(m_gamePrefix.size() > 0);
+   UaAssert(!m_savegameFolder.empty());
+   UaAssert(!m_gamePrefix.empty());
 
    std::string quicksaveName = m_savegameFolder +
       "/quicksave_" + m_gamePrefix + ".uas";

@@ -189,7 +189,7 @@ namespace UnitTest
 
          Assert::IsTrue(gs.IsBlockAvail(0x0c00));
          Assert::IsTrue(gs.IsBlockAvail(0x0e01));
-         Assert::IsTrue(gs.GetString(0x0001, 0).size() > 0);
+         Assert::IsTrue(!gs.GetString(0x0001, 0).empty());
       }
    };
 } // namespace UnitTest

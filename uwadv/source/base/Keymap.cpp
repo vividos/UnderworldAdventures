@@ -329,7 +329,7 @@ namespace Detail
          strKeyName.erase(pos, 5);
       }
 
-      for (; strKeyName.size() > 0 && isspace(strKeyName[0]);)
+      for (; !strKeyName.empty() && isspace(strKeyName[0]);)
          strKeyName.erase(0, 1);
 
       // check for single alphanumeric char
@@ -365,7 +365,7 @@ void Keymap::Init(const Base::Settings& settings, Base::ResourceManager& resourc
 
    // load keymap from uadata resources
    std::string keymapName(settings.GetString(Base::settingGamePrefix));
-   UaAssert(keymapName.size() > 0);
+   UaAssert(!keymapName.empty());
 
    keymapName += "/keymap.cfg";
 

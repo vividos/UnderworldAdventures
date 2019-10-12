@@ -125,7 +125,7 @@ namespace UnitTest
          Assert::IsTrue(1 == savegamesManager.GetSavegamesCount());
          Assert::IsTrue(false == savegamesManager.IsQuicksaveAvail());
 
-         Assert::IsTrue(savegamesManager.GetSavegameFilename(0).size() > 0);
+         Assert::IsTrue(!savegamesManager.GetSavegameFilename(0).empty());
          Assert::IsTrue(savegamesManager.GetSavegameFilename(0).find("uasave00000.uas") > 0);
 
          {
@@ -163,7 +163,7 @@ namespace UnitTest
          Assert::IsTrue(1 == savegamesManager.GetSavegamesCount());
          Assert::IsTrue(true == savegamesManager.IsQuicksaveAvail());
 
-         Assert::IsTrue(savegamesManager.GetSavegameFilename(0).size() > 0);
+         Assert::IsTrue(!savegamesManager.GetSavegameFilename(0).empty());
          Assert::IsTrue(savegamesManager.GetSavegameFilename(0).find("quicksave") > 0);
 
          // check savegame info for quicksave

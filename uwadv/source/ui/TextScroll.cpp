@@ -162,10 +162,10 @@ bool TextScroll::Print(const char* text)
          }
 
          // trim space when needed
-         if (line.size() > 0 && line.at(0) == ' ')
+         if (!line.empty() && line[0] == ' ')
             line.erase(0, 1);
 
-      } while (line.size() > 0);
+      } while (!line.empty());
 
    } while (pos != std::string::npos);
 
@@ -296,8 +296,8 @@ void TextScroll::CreateColoredString(IndexedImage& image, const char* text)
    IndexedImage tempImage;
 
    // no color code at start? then insert one
-   if (line.size() > 0 && line.at(0) != '\\' &&
-      !(line.at(1) >= '0' && line.at(1) <= '9'))
+   if (line.size() > 1 && line[0] != '\\' &&
+      !(line[1] >= '0' && line[1] <= '9'))
       line.insert(0, "\\0");
 
    // loop assumes that 'line' always start with a color code
@@ -330,7 +330,7 @@ void TextScroll::CreateColoredString(IndexedImage& image, const char* text)
 
       } while (pos != std::string::npos && pos + 1 < line.size());
 
-      if (part.size() > 0)
+      if (!part.empty())
       {
          // create substring with color
          Uint8 text_color = c_textScrollColors[(color - '0') % 10];
@@ -348,7 +348,7 @@ void TextScroll::CreateColoredString(IndexedImage& image, const char* text)
       // remove processed text
       line.erase(0, part.size());
 
-   } while (line.size() > 0);
+   } while (!line.empty());
 }
 
 /// Clears the scroll's contents and updates the image quad.

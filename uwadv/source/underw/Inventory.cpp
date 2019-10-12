@@ -103,7 +103,7 @@ bool Inventory::IsContainer(Uint16 itemID) const
 
 Uint16 Inventory::GetContainerPos() const
 {
-   if (m_containerStack.size() == 0)
+   if (m_containerStack.empty())
       return c_inventorySlotNoItem; // topmost
 
    size_t topPos = m_containerStack.size() - 1;
@@ -148,17 +148,17 @@ void Inventory::OpenContainer(Uint16 pos)
 
 void Inventory::CloseContainer()
 {
-   UaAssert(m_containerStack.size() > 0);
-   UaAssert(true == IsContainer(GetObjectInfo(m_containerStack.back()).m_itemID));
+   UaAssert(!m_containerStack.empty());
+   UaAssert(IsContainer(GetObjectInfo(m_containerStack.back()).m_itemID));
 
    Uint16 pos = c_inventorySlotNoItem; // start of topmost item list at list pos 0
 
    // remove current container link
-   if (m_containerStack.size() > 0)
+   if (!m_containerStack.empty())
       m_containerStack.pop_back();
 
    // get previous topmost item index
-   if (m_containerStack.size() > 0)
+   if (!m_containerStack.empty())
    {
       pos = m_containerStack.back();
 

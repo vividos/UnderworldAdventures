@@ -40,7 +40,7 @@ ResourceManager::ResourceManager(const Settings& settings)
    m_uw1Path(settings.GetString(Base::settingUw1Path)),
    m_uw2Path(settings.GetString(Base::settingUw2Path))
 {
-   UaAssert(m_uadataPath.size() > 0);
+   UaAssert(!m_uadataPath.empty());
 
    Rescan(settings);
 }
@@ -111,7 +111,7 @@ void ResourceManager::ResolvePlaceholderFilename(std::string& filename) const
 /// SDL_RWFromZZIP is used to open files inside .zip files.
 Base::SDL_RWopsPtr ResourceManager::GetResourceFile(const std::string& relativeFilename) const
 {
-   UaAssert(m_uadataPath.size() > 0); // must have called LoadSettings() before
+   UaAssert(!m_uadataPath.empty()); // must have called LoadSettings() before
 
    // first, we try to open the real file
    std::string filename = m_uadataPath + relativeFilename;

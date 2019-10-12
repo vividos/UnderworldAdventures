@@ -73,7 +73,7 @@ namespace UnitTest
             Base::FileSystem::FindFiles(path + "/*.*", vFileList);
 
             // note: folder list must not contain "." or ".."
-            Assert::IsTrue(vFileList.size() == 0);
+            Assert::IsTrue(vFileList.empty());
          }
          catch (const Base::FileSystemException& ex)
          {

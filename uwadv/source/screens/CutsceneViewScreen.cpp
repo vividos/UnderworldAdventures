@@ -378,7 +378,7 @@ void CutsceneViewScreen::CreateTextImage(const char* str)
       } while (!text.empty());
 
       // re-assemble the text strings in a new image
-      if (lines.size() == 0)
+      if (lines.empty())
          return; // there definitely went something wrong
 
       // create new image

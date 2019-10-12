@@ -115,7 +115,7 @@ std::string CodeGraphItem::FormatOpcode() const
       buffer << g_convInstructions[opcode].mnemonic;
 
       if (g_convInstructions[opcode_data.opcode].args > 0 &&
-         opcode_data.jump_target.size() > 0 &&
+         !opcode_data.jump_target.empty() &&
          (opcode == op_JMP || opcode == op_BEQ || opcode == op_BNE ||
             opcode == op_BRA || opcode == op_CALL))
       {
@@ -326,7 +326,7 @@ bool CodeGraph::FindFunctionEntryPoint(graph_iterator& iter, graph_iterator stop
       opcode_item.m_labelName = "main";
       opcode_item.m_xrefCount = 1;
    }
-   else if (opcode_item.m_labelName.size() == 0 && opcode_item.m_xrefCount == 0)
+   else if (opcode_item.m_labelName.empty() && opcode_item.m_xrefCount == 0)
    {
       // unused func
       std::ostringstream buffer;

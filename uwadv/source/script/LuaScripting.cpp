@@ -695,7 +695,7 @@ size_t LuaScripting::GetNumSourcefiles() const
 size_t LuaScripting::GetSourcefileName(size_t index, char* buffer, size_t length)
 {
    std::string filename(m_loadedScriptFiles[index]);
-   if (filename.size() > 0 && filename[0] == '@')
+   if (!filename.empty() && filename[0] == '@')
       filename.erase(0, 1); // remove @ char
 
    size_t size = filename.size();
