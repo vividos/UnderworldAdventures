@@ -138,16 +138,18 @@ void ImportTgaImage(Base::File& file, unsigned int& xres, unsigned int& yres,
    // determine texture resolution (must be 2^n)
    {
       xres = 16;
-      while (xres < origx && xres < 2048) xres <<= 1;
+      while (xres < origx && xres < 2048)
+         xres <<= 1;
 
       yres = 16;
-      while (yres < origy && yres < 2048) yres <<= 1;
+      while (yres < origy && yres < 2048)
+         yres <<= 1;
 
       info.xres = xres;
       info.yres = yres;
 
-      texels.resize(xres*yres, 0x00000000);
-      info.scanline.resize(xres*yres * 4);
+      texels.resize(xres * yres, 0x00000000);
+      info.scanline.resize(xres * yres * 4);
    }
 
    // skip id header and color table
@@ -156,7 +158,7 @@ void ImportTgaImage(Base::File& file, unsigned int& xres, unsigned int& yres,
 
    // load scanlines (saved top-down)
    for (unsigned int line = 0; line < origy; line++)
-      TgaReadScanline(file, info, &texels[line*xres]);
+      TgaReadScanline(file, info, &texels[line * xres]);
 
    // (saved bottom-up)
 //   for(int line=origy-1; line>=0; line--)
@@ -224,14 +226,12 @@ void TgaReadScanline(Base::File& file, TgaInfo& info, Uint32* line)
       // uses GGGBBBBB ARRRRRGG storage
       for (unsigned int i = 0; i < info.width; i++)
       {
-         /* TODO
-                     int offs1 = i<<2, offs2 = (i<<1)+i;
-                     line[offs1+0] = (scanline[offs2+1] & (~0x7c)) << 1;
-                     line[offs1+1] = ((scanline[offs2+1] & (~0x03)) << 6)
-                                    | ((scanline[offs2+0] & (~0xe0)) >> 2);
-                     line[offs1+2] = (scanline[offs2+0] & (~0x1f)) << 3;
-                     line[offs1+3] = (scanline[offs2+1] & 0x80)>0 ? 255 : 0; // alpha value
-         */
+         int offset1 = i << 2, offset2 = (i << 1) + i;
+         line[offset1 + 0] = (info.scanline[offset2 + 1] & (~0x7c)) << 1;
+         line[offset1 + 1] = ((info.scanline[offset2 + 1] & (~0x03)) << 6)
+            | ((info.scanline[offset2 + 0] & (~0xe0)) >> 2);
+         line[offset1 + 2] = (info.scanline[offset2 + 0] & (~0x1f)) << 3;
+         line[offset1 + 3] = (info.scanline[offset2 + 1] & 0x80) > 0 ? 255 : 0; // alpha value
       }
    }
    break;
@@ -250,18 +250,16 @@ void TgaReadScanline(Base::File& file, TgaInfo& info, Uint32* line)
 
    case 4: // 32-bit
    {
-      /* TODO
-               memcpy(line,scanline,xres*4);
+      memcpy(line, info.scanline.data(), info.width * 4);
 
-               // change order from BGRA to RGBA
-               for(int i=0;i<info.width;i++)
-               {
-                  int offs = i<<2, help;
-                  help = line[offs+0];
-                  line[offs+0] = line[offs+2];
-                  line[offs+2] = help;
-               }
-      */
+      // change order from BGRA to RGBA
+      for (unsigned int i = 0; i < info.width; i++)
+      {
+         unsigned int offs = i << 2, help;
+         help = line[offs + 0];
+         line[offs + 0] = line[offs + 2];
+         line[offs + 2] = help;
+      }
    }
    break;
    }
