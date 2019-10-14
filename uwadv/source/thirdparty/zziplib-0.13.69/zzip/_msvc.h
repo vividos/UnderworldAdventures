@@ -156,7 +156,7 @@
 
 /* Version number of package */
 #ifndef ZZIP_VERSION 
-#define ZZIP_VERSION  "0.13.x" 
+#define ZZIP_VERSION  "0.13.69"
 #endif
 
 /* Define to 1 if your processor stores words with the most significant byte
