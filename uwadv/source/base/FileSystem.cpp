@@ -22,25 +22,14 @@
 /// \details Parts of this file's code was taken from Exult
 //
 #include "pch.hpp"
-#include <cerrno>
 #include "FileSystem.hpp"
+#include <filesystem>
 
 #ifdef HAVE_WIN32
 #ifdef HAVE_MINGW
 #define _WIN32_IE 0x0500 // define this to find SHGFP_TYPE_CURRENT in shlobj.h
 #endif
-
-#include <windows.h> // for GetFileAttribtes, CreateDirectory
 #include <shlobj.h> // for SHGetFolderPathA
-#include <io.h> // for _findfirst, _findnext, _findclose
-#endif
-
-#if defined(HAVE_MINGW) && !defined(HAVE_CONFIG_H)
-#define HAVE_SYS_STAT_H
-#endif
-
-#ifdef HAVE_SYS_STAT_H
-#include <sys/stat.h>
 #endif
 
 #if defined(HAVE_WIN32)
@@ -49,14 +38,46 @@ const char* Base::FileSystem::PathSeparator = "\\";
 const char* Base::FileSystem::PathSeparator = "/";
 #endif
 
-/// common error text when folder cannot be created
-const char* c_strCreateFolderError = "couldn't create folder";
+bool PatternMatches(const std::string& path, const std::string& pattern)
+{
+   std::string::const_iterator pathIter = path.begin();
+   for (std::string::const_iterator patternIter = pattern.begin(); patternIter != pattern.end();
+      ++patternIter)
+   {
+      switch (*patternIter)
+      {
+      case '?':
+         if (pathIter == path.end())
+            return false;
 
-/// common error text when folder cannot be removed
-const char* c_strRemoveFolderError = "couldn't remove folder";
+         ++pathIter;
+         break;
 
+      case '*':
+      {
+         if (patternIter + 1 == pattern.end())
+            return true;
 
-#if defined(HAVE_WIN32) // use win32 API (or better, Microsoft's C runtime)
+         const size_t max = strlen(&*pathIter);
+         for (size_t i = 0; i < max; ++i)
+         {
+            if (PatternMatches(&*(patternIter + 1), &*(pathIter + i)))
+               return true;
+
+            return false;
+         }
+      }
+
+      default:
+         if (*pathIter != *patternIter)
+            return false;
+
+         ++pathIter;
+      }
+   }
+
+   return pathIter == path.end();
+}
 
 /// The meta-files "." and ".." are not added to the file list.
 void Base::FileSystem::FindFiles(const std::string& searchPath, std::vector<std::string>& fileList)
@@ -67,261 +88,81 @@ void Base::FileSystem::FindFiles(const std::string& searchPath, std::vector<std:
    if (pos != std::string::npos)
       basePath.erase(pos + 1);
 
-   // try to find files by pathname
-   _finddata_t fileinfo;
+   std::string pattern = searchPath.substr(pos + 1);
 
-   long handle = _findfirst(searchPath.c_str(), &fileinfo);
-   if (handle != -1)
+   for (auto entry : std::filesystem::directory_iterator(std::filesystem::path{ basePath }))
    {
-      std::string filename;
-
-      do
-      {
-         // check for the meta-files
-         if (strncmp(fileinfo.name, ".", 1) != 0 &&
-            strncmp(fileinfo.name, "..", 2) != 0)
-         {
-            filename = basePath + fileinfo.name;
-
-            // add to filelist
-            fileList.push_back(filename);
-         }
-
-      } while (0 == _findnext(handle, &fileinfo));
-
-      _findclose(handle);
+      if (entry.is_regular_file() &&
+         PatternMatches(entry.path().filename().string(), pattern))
+         fileList.push_back(entry.path().string());
    }
 }
-
-#elif defined(HAVE_GLOB_H) // this system has glob.h
-
-#include <glob.h>
-
-/// The meta-files "." and ".." are not added to the file list.
-void Base::FileSystem::FindFiles(const std::string& searchPath, std::vector<std::string>& fileList)
-{
-   std::string path(searchPath);
-
-   glob_t globres;
-   int err = glob(path.c_str(), GLOB_NOSORT, 0, &globres);
-
-   // check for return code
-   switch (err)
-   {
-   case 0: // ok
-      for (unsigned int i = 0; i < globres.gl_pathc; i++)
-         fileList.push_back(globres.gl_pathv[i]);
-
-      globfree(&globres);
-      return;
-
-   case 3: // no matches
-      break;
-
-   default: // error
-      UaTrace("glob error: %u\n", err);
-      break;
-   }
-}
-
-#elif defined(HAVE_BEOS)
-
-#error "please port Exult's U7ListFiles() function in files/listfiles.cc to uwadv!"
-
-#else
-
-#error "no implementation for FileSystem::FindFiles()!"
-
-// if you get this error, you have to supply a custom version of
-// FileSystem::FindFiles() for your system, together with the proper ifdef's to
-// enable it.
-
-#endif
 
 void Base::FileSystem::RemoveFile(const std::string& filename)
 {
-#ifdef HAVE_WIN32
+   std::error_code ec;
+   std::filesystem::remove(
+      std::filesystem::path(filename), ec);
 
-#ifdef HAVE_UNICODE
-   std::wstring wfilename;
-   String::ConvertToUnicode(filename, wfilename);
-   DeleteFileW(wfilename.c_str());
-#else
-   DeleteFileA(filename.c_str());
-#endif
-
-#else
-   remove(filename.c_str());
-#endif
+   if (ec)
+      UaTrace("error removing file: %s (%s)", filename.c_str(), ec.message().c_str());
 }
 
 /// implementation borrowed from Exult, files/utils.cc
 void Base::FileSystem::MakeFolder(const std::string& folderName)
 {
-   std::string name(folderName);
+   std::error_code ec;
+   std::filesystem::create_directories(
+      std::filesystem::path(folderName), ec);
 
-   std::string::size_type pos = name.find_last_not_of('/');
-
-   if (pos != std::string::npos)
-      name.resize(pos + 1);
-
+   if (ec)
    {
-      std::string parent(name);
-
-      std::string::size_type pos2 = parent.find_last_of('/');
-
-      if (pos2 != std::string::npos)
-         parent.erase(pos2);
-
-      bool exists = FolderExists(parent);
-      if (!exists)
-      {
-         // call recursively
-         MakeFolder(parent);
-      }
+      UaTrace("error creating folder: %s (%s)", folderName.c_str(), ec.message().c_str());
+      throw Base::FileSystemException("couldn't create folder", folderName, ec.value());
    }
-
-#if defined(HAVE_WIN32)
-
-   // win32 API
-#ifdef HAVE_UNICODE
-   std::wstring wname;
-   String::ConvertToUnicode(name, wname);
-
-   BOOL ret = CreateDirectoryW(wname.c_str(), NULL);
-#else
-   BOOL ret = CreateDirectoryA(name.c_str(), NULL);
-#endif
-   if (ret == FALSE)
-   {
-      DWORD errror = GetLastError();
-      if (errror != ERROR_ALREADY_EXISTS)
-         throw Base::FileSystemException(c_strCreateFolderError, name, errror);
-   }
-
-#else
-
-   // posix (?)
-   int iRet = mkdir(name.c_str(), 0700); // create dir if not already there
-   if (iRet != 0 && errno != EEXIST)
-      throw Base::FileSystemException(c_strCreateFolderError, name, errno);
-
-#endif
 }
 
 void Base::FileSystem::RemoveFolder(const std::string& folderName)
 {
-#if defined(HAVE_WIN32)
+   std::error_code ec;
+   std::filesystem::remove(
+      std::filesystem::path(folderName), ec);
 
-   // win32 API
-#ifdef HAVE_UNICODE
-   std::wstring wfolderName;
-   String::ConvertToUnicode(folderName, wfolderName);
-
-   BOOL ret = RemoveDirectoryW(wfolderName.c_str());
-#else
-   BOOL ret = RemoveDirectoryA(folderName.c_str());
-#endif
-   if (ret == FALSE)
-      throw Base::FileSystemException(c_strRemoveFolderError, folderName, GetLastError());
-
-#else
-
-   // posix (?)
-   int iRet = rmdir(folderName.c_str());
-   if (iRet != 0 && errno != EEXIST)
-      throw Base::FileSystemException(c_strRemoveFolderError, folderName, errno);
-
-#endif
+   if (ec)
+   {
+      UaTrace("error deleting folder: %s (%s)", folderName.c_str(), ec.message().c_str());
+      throw Base::FileSystemException("couldn't delete folder", folderName, ec.value());
+   }
 }
 
 bool Base::FileSystem::FileExists(const std::string& filename)
 {
-#ifdef HAVE_WIN32
-   // win32 API
-#ifdef HAVE_UNICODE
-   std::wstring wfilename;
-   String::ConvertToUnicode(filename, wfilename);
-
-   DWORD ret = GetFileAttributesW(wfilename.c_str());
-#else
-   DWORD ret = GetFileAttributesA(filename.c_str());
-#endif
-   return (ret != (DWORD)-1) &&
-      (ret & FILE_ATTRIBUTE_DIRECTORY) == 0;
-#else
-   // every other sane system
-   struct stat sbuf;
+   std::error_code ec;
    return
-      (stat(filename.c_str(), &sbuf) == 0) &&
-      !S_ISDIR(sbuf.st_mode);
-#endif
+      std::filesystem::exists(std::filesystem::path(filename), ec) &&
+      std::filesystem::is_regular_file(filename, ec) &&
+      !ec;
 }
 
 bool Base::FileSystem::FolderExists(const std::string& folderName)
 {
-#ifdef HAVE_MSVC
-   // win32 API
-#ifdef HAVE_UNICODE
-   std::wstring wfolderName;
-   String::ConvertToUnicode(folderName, wfolderName);
-
-   DWORD ret = GetFileAttributesW(wfolderName.c_str());
-#else
-   DWORD ret = GetFileAttributesA(folderName.c_str());
-#endif
-   return (ret != (DWORD)-1) &&
-      (ret & FILE_ATTRIBUTE_DIRECTORY) != 0;
-#else
-   // every other sane system
-   struct stat sbuf;
+   std::error_code ec;
    return
-      (stat(folderName.c_str(), &sbuf) == 0) &&
-      S_ISDIR(sbuf.st_mode);
-#endif
+      std::filesystem::exists(std::filesystem::path(folderName), ec) &&
+      std::filesystem::is_directory(folderName, ec) &&
+      !ec;
 }
 
 void Base::FileSystem::RecursiveRemoveFolder(const std::string& pathname)
 {
-   // collect all files and folders
-   std::vector<std::string> fileList;
-   std::string searchPath(pathname);
-   searchPath += "/*.*";
-   FindFiles(searchPath, fileList);
+   std::error_code ec;
+   std::filesystem::remove_all(
+      std::filesystem::path(pathname), ec);
 
-   std::vector<std::string>::size_type max = fileList.size();
-   for (std::vector<std::string>::size_type i = 0; i < max; i++)
+   if (ec)
    {
-      std::string filename(fileList[i]);
-
-      // is a file? then try to remove it
-      if (FileExists(filename))
-      {
-         try
-         {
-            RemoveFile(filename);
-         }
-         catch (const Base::Exception& ex)
-         {
-            UNUSED(ex);
-         }
-      }
-      else
-         // is a folder? try to remove contents
-         if (FolderExists(filename))
-         {
-            RecursiveRemoveFolder(filename);
-         }
-   }
-
-   // try to remove this folder
-   try
-   {
-      RemoveFolder(pathname);
-   }
-   catch (const Base::Exception& ex)
-   {
-      UNUSED(ex);
+      UaTrace("error deleting folder: %s (%s)", pathname.c_str(), ec.message().c_str());
+      throw Base::FileSystemException("couldn't delete folder recursively", pathname, ec.value());
    }
 }
 
@@ -350,8 +191,6 @@ std::string Base::FileSystem::GetHomePath()
 #ifdef HAVE_MACOSX
          // JCD: in Mac OS X, we put user config into user's Library folder
          homePath += "/Library/Preferences/Underworld Adventures/";
-#elif defined( HAVE_BEOS )
-         homePath += "/config/settings/uwadv/";
 #else
          homePath += "/.uwadv/";
 #endif
