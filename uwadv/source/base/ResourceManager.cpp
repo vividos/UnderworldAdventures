@@ -25,8 +25,8 @@
 #include "FileSystem.hpp"
 #include <SDL_rwops.h>
 #include <algorithm>
-#include <zziplib.h>
-#include <SDL_rwops_zzip.h>
+#include <zzip/zzip.h>
+#include <SDL/SDL_rwops_zzip.h>
 #include <cerrno>
 #include <deque>
 
