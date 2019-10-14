@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ Underworld Adventures - an Ultima Underworld remake project
+ Copyright (c) 2005,2006,2019 Underworld Adventures Team
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ Windows Setup for Underworld Adventures.
+-->
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+
+  <?define SourceFolder = "$(var.SolutionDir)" ?>
+  <?define OutputFolder = "$(var.uwadv.TargetDir)" ?>
+
+  <Product Id="*" Name="Underworld Adventures" Language="1033" Version="1.0.0.0"
+           Manufacturer="Underworld Adventures Team" UpgradeCode="064a803a-4444-4470-9829-9e67dee93ff0">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine"
+             Description="Underworld Adventures Setup"
+             Comments="This installs Underworld Adventures"
+             Keywords="Underworld Adventures, Ultima, Ultima Underworld, Stygian Abyss" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Feature Id="FeatureUnderworldAdventures" Title="Underworld Adventures" Level="1">
+      <ComponentGroupRef Id="UnderworldAdventures" />
+      <ComponentGroupRef Id="UnderworldAdventuresTools" />
+      <ComponentGroupRef Id="UnderworldAdventuresData" />
+    </Feature>
+
+    <!-- User Interface -->
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+    <UIRef Id="WixUI_InstallDir" />
+    <WixVariable Id="WixUILicenseRtf" Value="license.rtf" />
+    <WixVariable Id="WixUIBannerBmp" Value="TopWizardBar.jpg" />
+    <WixVariable Id="WixUIDialogBmp" Value="BackgroundImage.jpg" />
+
+    <UI>
+      <ProgressText Action="ExecuteAction">System is being prepared for setup...</ProgressText>
+      <ProgressText Action="InstallInitialize">Setup is being initialized...</ProgressText>
+    </UI>
+
+    <Property Id="ARPURLINFOABOUT"><![CDATA[https://vividos.github.io/UnderworldAdventures/]]></Property>
+    <Property Id="ARPCOMMENTS"><![CDATA[For more information, please visit https://vividos.github.io/UnderworldAdventures/]]></Property>
+  </Product>
+
+  <Fragment>
+    <!-- All directories -->
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLFOLDER" Name="Underworld Adventures">
+          <Directory Id="ToolsFolder" Name="tools" />
+          <Directory Id="DataFolder" Name="data" />
+        </Directory>
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="UnderworldAdventuresShortcutFolder" Name="Underworld Adventures" />
+      </Directory>
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <!-- Apps and DLLs -->
+    <ComponentGroup Id="UnderworldAdventures" Directory="INSTALLFOLDER">
+      <Component Id="UnderworldAdventuresApp">
+        <File Id="UwadvExe" Name="uwadv.exe" KeyPath="yes" Source="$(var.OutputFolder)uwadv.exe" />
+
+        <!-- file association with .uas savegames -->
+        <ProgId Id="UnderworldAdventuresSavegame" Advertise="no"
+                Description="Underworld Adventures Savegame" Icon="UwadvExe">
+          <Extension Id="uas" Advertise="no">
+            <Verb Id="open" Command="Open" TargetFile="UwadvExe" Argument='"%s"' />
+          </Extension>
+        </ProgId>
+        <RegistryKey Root="HKCR" Key="Applications\uwadv.exe\SupportedTypes">
+          <RegistryValue Name=".uas" Type="string" Value="" />
+        </RegistryKey>
+      </Component>
+
+      <Component Id="UnderworldAdventuresShortcut">
+        <RegistryKey Root="HKCU" Key="Software\Underworld Adventures\Install">
+          <RegistryValue Name="UwadvShortcutPresent" Value="" Type="string" KeyPath="yes" />
+        </RegistryKey>
+        <Shortcut Id="UwadvShortcut" Directory="UnderworldAdventuresShortcutFolder" Name="Underworld Adventures"
+                  Target="[INSTALLFOLDER]uwadv.exe" IconIndex="0" Show="normal"
+                  Description="Starts Underworld Adventures" Advertise="no" WorkingDirectory="INSTALLFOLDER">
+          <Icon Id="UusIcon" SourceFile="$(var.SourceFolder)source\win32\Uus.ico" />
+        </Shortcut>
+        <RemoveFolder Directory="UnderworldAdventuresShortcutFolder" On="uninstall" Id="UwadvShortcut" />
+      </Component>
+
+      <Component Id="UnderworldAdventuresConfigFile">
+        <File Id="UwadvCfg" Name="uwadv.cfg" DiskId="1" KeyPath="yes"
+              Source="$(var.SourceFolder)source\win32\uwadv.cfg" />
+      </Component>
+
+      <Component Id="UnderworldAdventuresConfigApp">
+        <File Id="UaconfigExe" Name="uaconfig.exe" KeyPath="yes" Source="$(var.OutputFolder)uaconfig.exe" />
+      </Component>
+
+      <Component Id="UnderworldAdventuresConfigShortcut">
+        <RegistryKey Root="HKCU" Key="Software\Underworld Adventures\Install">
+          <RegistryValue Name="UaconfigShortcutPresent" Value="" Type="string" KeyPath="yes" />
+        </RegistryKey>
+        <Shortcut Id="UaconfigShortcut" Directory="UnderworldAdventuresShortcutFolder" Name="Configuration"
+                  Target="[INSTALLFOLDER]uaconfig.exe" Show="normal"
+                  Description="Starts Underworld Adventures Configuration" WorkingDirectory="INSTALLFOLDER">
+          <Icon Id="CorpIco" SourceFile="$(var.SourceFolder)source\win32\uaconfig\Corp.ico" />
+        </Shortcut>
+        <RemoveFolder Directory="UnderworldAdventuresShortcutFolder" On="uninstall" Id="UaconfigShortcut" />
+      </Component>
+
+      <Component Id="UnderworldAdventuresManual">
+        <File Id="ReadmeManualTxt" Name="README.Manual.txt" Source="$(var.OutputFolder)README.Manual.txt" />
+      </Component>
+
+      <Component Id="Sdl2Dll">
+        <File Id="Sdl2Dll" Name="SDL2.dll" Source="$(var.OutputFolder)SDL2.dll" />
+      </Component>
+
+      <Component Id="Sdl2MixerDll">
+        <File Id="Sdl2MixerDll" Name="SDL2_mixer.dll" Source="$(var.OutputFolder)SDL2_mixer.dll" />
+      </Component>
+
+      <Component Id="LibFlac8Dll">
+        <File Id="LibFlac8Dll" Name="libFLAC-8.dll" Source="$(var.OutputFolder)libFLAC-8.dll" />
+      </Component>
+
+      <Component Id="LibModplug1Dll">
+        <File Id="LibModplug1Dll" Name="libmodplug-1.dll" Source="$(var.OutputFolder)libmodplug-1.dll" />
+      </Component>
+
+      <Component Id="LibMpg1230Dll">
+        <File Id="LibMpg1230Dll" Name="libmpg123-0.dll" Source="$(var.OutputFolder)libmpg123-0.dll" />
+      </Component>
+      <Component Id="LibOgg0Dll">
+        <File Id="LibOgg0Dll" Name="libogg-0.dll" Source="$(var.OutputFolder)libogg-0.dll" />
+      </Component>
+
+      <Component Id="LibOpus0Dll">
+        <File Id="LibOpus0Dll" Name="libopus-0.dll" Source="$(var.OutputFolder)libopus-0.dll" />
+      </Component>
+
+      <Component Id="LibOpusFile0Dll">
+        <File Id="LibOpusFile0Dll" Name="libopusfile-0.dll" Source="$(var.OutputFolder)libopusfile-0.dll" />
+      </Component>
+
+      <Component Id="LibVorbis0Dll">
+        <File Id="LibVorbis0Dll" Name="libvorbis-0.dll" Source="$(var.OutputFolder)libvorbis-0.dll" />
+      </Component>
+
+      <Component Id="LibVorbisFile0Dll">
+        <File Id="LibVorbisFile0Dll" Name="libvorbisfile-3.dll" Source="$(var.OutputFolder)libvorbisfile-3.dll" />
+      </Component>
+
+      <Component Id="UnderworldAdventuresStudioApp">
+        <File Id="UastudioExe" Name="uastudio.exe" KeyPath="yes" Source="$(var.OutputFolder)uastudio.exe" />
+      </Component>
+
+      <Component Id="UnderworldAdventuresDebuggerDll">
+        <File Id="UadebugDll" Name="uadebug.dll" Source="$(var.OutputFolder)uadebug.dll" />
+      </Component>
+
+      <Component Id="ScintillaLexer">
+        <File Id="SciLexerDll" Name="SciLexer.dll" Source="$(var.OutputFolder)SciLexer.dll" />
+      </Component>
+    </ComponentGroup>
+
+    <ComponentGroup Id="UnderworldAdventuresTools" Directory="ToolsFolder">
+
+      <!-- Tools -->
+      <Component Id="StrPakTool">
+        <File Id="StrPakExe" Name="strpak.exe" Source="$(var.OutputFolder)tools\strpak.exe" />
+      </Component>
+
+      <Component Id="LuaCompiler">
+        <File Id="LuaCExe" Name="luac.exe" Source="$(var.OutputFolder)tools\luac.exe" />
+      </Component>
+    </ComponentGroup>
+
+    <ComponentGroup Id="UnderworldAdventuresData" Directory="DataFolder">
+      <!-- Data -->
+      <Component Id="UnderworldAdventuresResource00">
+        <File Id="Uadata00Zip" Name="uadata00.zip" Source="$(var.OutputFolder)data\uadata00.zip" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+
+</Wix>
