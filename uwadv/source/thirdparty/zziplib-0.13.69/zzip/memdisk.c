@@ -114,7 +114,7 @@ zzip_mem_disk_fdopen(int fd)
     ___ ZZIP_MEM_DISK *dir = zzip_mem_disk_new();
     if (zzip_mem_disk_load(dir, disk) == -1)
     {
-       debug2("unable to load disk fd %s", fd);
+       debug2("unable to load disk fd %i", fd);
     }
     return dir;
     ____;
