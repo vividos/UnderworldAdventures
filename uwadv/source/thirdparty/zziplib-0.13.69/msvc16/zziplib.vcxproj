@@ -10,6 +10,50 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\SDL\SDL_rwops_zzip.h" />
+    <ClInclude Include="..\zzip\autoconf.h" />
+    <ClInclude Include="..\zzip\conf.h" />
+    <ClInclude Include="..\zzip\fetch.h" />
+    <ClInclude Include="..\zzip\file.h" />
+    <ClInclude Include="..\zzip\format.h" />
+    <ClInclude Include="..\zzip\fseeko.h" />
+    <ClInclude Include="..\zzip\info.h" />
+    <ClInclude Include="..\zzip\lib.h" />
+    <ClInclude Include="..\zzip\memdisk.h" />
+    <ClInclude Include="..\zzip\mmapped.h" />
+    <ClInclude Include="..\zzip\plugin.h" />
+    <ClInclude Include="..\zzip\stdint.h" />
+    <ClInclude Include="..\zzip\types.h" />
+    <ClInclude Include="..\zzip\write.h" />
+    <ClInclude Include="..\zzip\zzip.h" />
+    <ClInclude Include="..\zzip\zzip32.h" />
+    <ClInclude Include="..\zzip\_msvc.h" />
+    <ClInclude Include="..\zzip\__debug.h" />
+    <ClInclude Include="..\zzip\__dirent.h" />
+    <ClInclude Include="..\zzip\__errno.h" />
+    <ClInclude Include="..\zzip\__fnmatch.h" />
+    <ClInclude Include="..\zzip\__hints.h" />
+    <ClInclude Include="..\zzip\__mkdir.h" />
+    <ClInclude Include="..\zzip\__mmap.h" />
+    <ClInclude Include="..\zzip\__string.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\SDL\SDL_rwops_zzcat.c" />
+    <ClCompile Include="..\SDL\SDL_rwops_zzip.c" />
+    <ClCompile Include="..\zzip\dir.c" />
+    <ClCompile Include="..\zzip\err.c" />
+    <ClCompile Include="..\zzip\fetch.c" />
+    <ClCompile Include="..\zzip\file.c" />
+    <ClCompile Include="..\zzip\fseeko.c" />
+    <ClCompile Include="..\zzip\info.c" />
+    <ClCompile Include="..\zzip\memdisk.c" />
+    <ClCompile Include="..\zzip\mmapped.c" />
+    <ClCompile Include="..\zzip\plugin.c" />
+    <ClCompile Include="..\zzip\stat.c" />
+    <ClCompile Include="..\zzip\write.c" />
+    <ClCompile Include="..\zzip\zip.c" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{BD30CDD7-5A97-40E6-AE94-2C671363D03C}</ProjectGuid>
@@ -41,27 +85,27 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\uwadv-debug.props" />
+    <Import Project="..\..\..\uwadv-debug.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\uwadv-release.props" />
+    <Import Project="..\..\..\uwadv-release.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>.;$(SolutionDir)source\thirdparty\zlib1211\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;ZLIB_WINAPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..;$(ProjectDir)..\SDL;$(SolutionDir)source\thirdparty\zlib1211\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;ZLIB_WINAPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>.;$(SolutionDir)source\thirdparty\zlib1211\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;ZLIB_WINAPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..;$(ProjectDir)..\SDL;$(SolutionDir)source\thirdparty\zlib1211\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;ZLIB_WINAPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <Link>
@@ -69,32 +113,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <None Include="ChangeLog" />
-    <None Include="COPYING.LGPL" />
-    <None Include="COPYING.ZZIP" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="SDL_rwops_zzip.c" />
-    <ClCompile Include="zzip-dir.c" />
-    <ClCompile Include="zzip-err.c" />
-    <ClCompile Include="zzip-file.c" />
-    <ClCompile Include="zzip-info.c" />
-    <ClCompile Include="zzip-io.c" />
-    <ClCompile Include="zzip-stat.c" />
-    <ClCompile Include="zzip-zip.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="SDL_rwops_zzip.h" />
-    <ClInclude Include="zzip-conf.h" />
-    <ClInclude Include="zzip-file.h" />
-    <ClInclude Include="zzip-io.h" />
-    <ClInclude Include="zzip-msvc.h" />
-    <ClInclude Include="zzip-stdint.h" />
-    <ClInclude Include="zzip.h" />
-    <ClInclude Include="zzipformat.h" />
-    <ClInclude Include="zziplib.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

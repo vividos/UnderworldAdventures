@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "hacking", "hacking", "{D099
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "base", "source\base\base.vcxproj", "{E1210703-9ADB-4ED7-AE0C-B7E39A15E01F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zziplib", "source\thirdparty\zziplib\zziplib.vcxproj", "{BD30CDD7-5A97-40E6-AE94-2C671363D03C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zziplib", "source\thirdparty\zziplib-0.13.69\msvc16\zziplib.vcxproj", "{BD30CDD7-5A97-40E6-AE94-2C671363D03C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "import", "source\import\import.vcxproj", "{A974FDA8-7D50-4B04-892A-EDB00B68F7D6}"
 EndProject

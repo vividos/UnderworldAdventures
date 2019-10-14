@@ -135,7 +135,7 @@
     <ClInclude Include="Vector3d.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\thirdparty\zziplib\zziplib.vcxproj">
+    <ProjectReference Include="..\thirdparty\zziplib-0.13.69\msvc16\zziplib.vcxproj">
       <Project>{bd30cdd7-5a97-40e6-ae94-2c671363d03c}</Project>
     </ProjectReference>
   </ItemGroup>

@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="SDL">
+      <UniqueIdentifier>{584b0880-a204-4fac-9168-cdc82712352e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="zzip">
+      <UniqueIdentifier>{c20454cd-2e52-4e7d-aab8-3dc789e00cda}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\SDL\SDL_rwops_zzip.h">
+      <Filter>SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zzip\__debug.h">
+      <Filter>zzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zzip\__dirent.h">
+      <Filter>zzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zzip\__errno.h">
+      <Filter>zzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zzip\__fnmatch.h">
+      <Filter>zzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zzip\__hints.h">
+      <Filter>zzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zzip\__mkdir.h">
+      <Filter>zzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zzip\__mmap.h">
+      <Filter>zzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zzip\__string.h">
+      <Filter>zzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zzip\_msvc.h">
+      <Filter>zzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zzip\autoconf.h">
+      <Filter>zzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zzip\conf.h">
+      <Filter>zzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zzip\fetch.h">
+      <Filter>zzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zzip\file.h">
+      <Filter>zzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zzip\format.h">
+      <Filter>zzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zzip\fseeko.h">
+      <Filter>zzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zzip\info.h">
+      <Filter>zzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zzip\lib.h">
+      <Filter>zzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zzip\memdisk.h">
+      <Filter>zzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zzip\mmapped.h">
+      <Filter>zzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zzip\plugin.h">
+      <Filter>zzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zzip\stdint.h">
+      <Filter>zzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zzip\types.h">
+      <Filter>zzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zzip\write.h">
+      <Filter>zzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zzip\zzip.h">
+      <Filter>zzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zzip\zzip32.h">
+      <Filter>zzip</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\SDL\SDL_rwops_zzcat.c">
+      <Filter>SDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SDL\SDL_rwops_zzip.c">
+      <Filter>SDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\zzip\dir.c">
+      <Filter>zzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\zzip\err.c">
+      <Filter>zzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\zzip\fetch.c">
+      <Filter>zzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\zzip\file.c">
+      <Filter>zzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\zzip\fseeko.c">
+      <Filter>zzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\zzip\info.c">
+      <Filter>zzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\zzip\memdisk.c">
+      <Filter>zzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\zzip\mmapped.c">
+      <Filter>zzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\zzip\plugin.c">
+      <Filter>zzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\zzip\stat.c">
+      <Filter>zzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\zzip\write.c">
+      <Filter>zzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\zzip\zip.c">
+      <Filter>zzip</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
