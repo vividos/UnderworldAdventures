@@ -29,6 +29,9 @@ namespace Base
    /// \brief String functions
    namespace String
    {
+      /// replaces a string in a text with a replacement text
+      void Replace(std::string& text, const std::string& textToFind, const std::string& replacementText);
+
       /// converts a string to lowercase
       void Lowercase(std::string& str);
       /// converts a string to uppercase

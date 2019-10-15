@@ -25,6 +25,19 @@
 #include <cctype>
 #include <codecvt>
 
+/// \see https://stackoverflow.com/questions/3418231/replace-part-of-a-string-with-another-string
+void Base::String::Replace(std::string& text, const std::string& textToFind, const std::string& replacementText)
+{
+   if (textToFind.empty())
+      return;
+   size_t startPos = 0;
+   while ((startPos = text.find(textToFind, startPos)) != std::string::npos)
+   {
+      text.replace(startPos, textToFind.length(), replacementText);
+      startPos += replacementText.length(); // In case 'replacementText' contains 'textToFind', like replacing 'x' with 'yx'
+   }
+}
+
 void Base::String::Lowercase(std::string& str)
 {
    std::transform(str.begin(), str.end(), str.begin(),
