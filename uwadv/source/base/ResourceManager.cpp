@@ -131,7 +131,7 @@ Base::SDL_RWopsPtr ResourceManager::GetResourceFile(const std::string& relativeF
 
    std::sort(fileList.begin(), fileList.end());
 
-   // search for the file, starting with the last .uar file
+   // search for the file, starting with the last zip archive
    for (int i = static_cast<int>(fileList.size()) - 1; i >= 0; i--)
    {
       // try to open from zip file
