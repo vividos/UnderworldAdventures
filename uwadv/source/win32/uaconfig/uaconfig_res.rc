@@ -1,5 +1,7 @@
 // Microsoft Visual C++ generated resource script.
 //
+#pragma code_page(65001)
+
 #include "resource.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
@@ -17,7 +19,6 @@
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-#pragma code_page(1252)
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -50,34 +51,34 @@ END
 // Dialog
 //
 
-IDD_UACONFIG DIALOGEX 0, 0, 282, 164
+IDD_UACONFIG DIALOGEX 0, 0, 342, 189
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Underworld Adventures Configuration"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-    LTEXT           "General Settings",IDC_STATIC,4,2,53,8
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,60,6,218,1
-    LTEXT           "&Ultima Underworld I Path",IDC_STATIC,9,16,82,8
-    EDITTEXT        IDC_EDIT_UW1_PATH,92,12,137,12,ES_AUTOHSCROLL | WS_GROUP
-    PUSHBUTTON      "&Browse ...",IDC_BUTTON_SET_UW1_PATH,233,12,43,13
-    LTEXT           "Cutscenes &Narration",IDC_STATIC,9,31,82,8
-    COMBOBOX        IDC_COMBO_CUTS_NARRATION,92,27,90,46,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "General Settings",IDC_STATIC,7,7,60,8
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,71,12,264,1
+    LTEXT           "&Ultima Underworld I Path",IDC_STATIC,14,23,82,8
+    EDITTEXT        IDC_EDIT_UW1_PATH,113,19,171,12,ES_AUTOHSCROLL | WS_GROUP
+    PUSHBUTTON      "&Browse ...",IDC_BUTTON_SET_UW1_PATH,292,18,43,13
+    LTEXT           "Cutscenes &Narration",IDC_STATIC,14,39,82,8
+    COMBOBOX        IDC_COMBO_CUTS_NARRATION,114,35,84,46,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Enable Underworld Adventures &features",IDC_CHECK_ENABLE_FEATURES,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,9,44,173,10
-    LTEXT           "Graphics Settings",IDC_STATIC,4,57,56,8
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,64,61,212,1
-    LTEXT           "&Screen Resolution",IDC_STATIC,9,72,82,8
-    COMBOBOX        IDC_COMBO_SCREEN_RESOLUTION,92,68,90,103,CBS_DROPDOWN | WS_VSCROLL | WS_GROUP | WS_TABSTOP
-    CONTROL         "F&ullscreen Mode",IDC_CHECK_FULLSCREEN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,193,70,85,10
-    CONTROL         "S&mooth User Interface",IDC_CHECK_SMOOTHUI,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,9,85,151,10
-    LTEXT           "Audio Settings",IDC_STATIC,4,98,46,8
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,54,102,223,1
-    CONTROL         "Enable &audio output",IDC_CHECK_ENABLE_AUDIO,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,9,110,134,10
-    LTEXT           "MIDI &device",IDC_STATIC,9,124,82,8
-    COMBOBOX        IDC_COMBO_MIDI_DEVICE,92,122,137,83,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,4,140,274,1
-    PUSHBUTTON      "&Cancel",IDCANCEL,172,146,50,14
-    PUSHBUTTON      "&OK",IDOK,228,146,50,14
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,54,184,10
+    LTEXT           "Graphics Settings",IDC_STATIC,7,73,64,8
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,73,77,262,1
+    LTEXT           "&Screen Resolution",IDC_STATIC,14,87,82,8
+    COMBOBOX        IDC_COMBO_SCREEN_RESOLUTION,114,83,84,103,CBS_DROPDOWN | WS_VSCROLL | WS_GROUP | WS_TABSTOP
+    CONTROL         "F&ullscreen Mode",IDC_CHECK_FULLSCREEN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,206,85,129,10
+    CONTROL         "S&mooth User Interface",IDC_CHECK_SMOOTHUI,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,101,151,10
+    LTEXT           "Audio Settings",IDC_STATIC,7,119,57,8
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,65,122,270,1
+    CONTROL         "Enable &audio output",IDC_CHECK_ENABLE_AUDIO,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,131,134,10
+    LTEXT           "MIDI &device",IDC_STATIC,14,145,82,8
+    COMBOBOX        IDC_COMBO_MIDI_DEVICE,114,143,171,83,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,7,163,328,1
+    PUSHBUTTON      "&Cancel",IDCANCEL,228,171,50,14
+    PUSHBUTTON      "&OK",IDOK,285,171,50,14
 END
 
 
@@ -91,17 +92,23 @@ GUIDELINES DESIGNINFO
 BEGIN
     IDD_UACONFIG, DIALOG
     BEGIN
-        LEFTMARGIN, 4
-        RIGHTMARGIN, 278
-        VERTGUIDE, 9
-        VERTGUIDE, 92
-        VERTGUIDE, 182
-        VERTGUIDE, 193
-        VERTGUIDE, 229
-        TOPMARGIN, 2
-        BOTTOMMARGIN, 160
-        HORZGUIDE, 24
-        HORZGUIDE, 39
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 335
+        VERTGUIDE, 14
+        VERTGUIDE, 114
+        VERTGUIDE, 198
+        VERTGUIDE, 206
+        VERTGUIDE, 285
+        VERTGUIDE, 292
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 185
+        HORZGUIDE, 15
+        HORZGUIDE, 31
+        HORZGUIDE, 47
+        HORZGUIDE, 64
+        HORZGUIDE, 95
+        HORZGUIDE, 111
+        HORZGUIDE, 127
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -115,6 +122,17 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_ICON_UACONFIG       ICON                    "Corp.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_UACONFIG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
 
 
 /////////////////////////////////////////////////////////////////////////////
