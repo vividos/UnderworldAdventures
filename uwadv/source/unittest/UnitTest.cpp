@@ -58,6 +58,7 @@ Base::Settings& UnitTest::GetTestSettings()
    }
 
    g_settings.SetValue(Base::settingUnderworldPath, g_settings.GetString(Base::settingUw1Path));
+   g_settings.SetValue(Base::settingGamePrefix, "uw1");
 
    return g_settings;
 }
