@@ -38,18 +38,21 @@ const char* Base::FileSystem::PathSeparator = "\\";
 const char* Base::FileSystem::PathSeparator = "/";
 #endif
 
+/// matches a wildcard pattern; \see
+/// https://stackoverflow.com/questions/3300419/file-name-matching-with-wildcard
 bool PatternMatches(const std::string& path, const std::string& pattern)
 {
+   //if (pattern == "*" || patttern == "*.*")
+   //   return true;
+
    std::string::const_iterator pathIter = path.begin();
-   for (std::string::const_iterator patternIter = pattern.begin(); patternIter != pattern.end();
-      ++patternIter)
+   for (std::string::const_iterator patternIter = pattern.begin(); patternIter != pattern.end(); ++patternIter)
    {
       switch (*patternIter)
       {
       case '?':
          if (pathIter == path.end())
             return false;
-
          ++pathIter;
          break;
 
@@ -58,20 +61,16 @@ bool PatternMatches(const std::string& path, const std::string& pattern)
          if (patternIter + 1 == pattern.end())
             return true;
 
-         const size_t max = strlen(&*pathIter);
-         for (size_t i = 0; i < max; ++i)
-         {
-            if (PatternMatches(&*(patternIter + 1), &*(pathIter + i)))
+         size_t max = strlen(&*pathIter);
+         for (size_t i = 0; i < max; i++)
+            if (PatternMatches(&*pathIter + i, &*patternIter + 1))
                return true;
-
-            return false;
-         }
+         return false;
       }
 
       default:
          if (*pathIter != *patternIter)
             return false;
-
          ++pathIter;
       }
    }
