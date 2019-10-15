@@ -116,15 +116,18 @@ Base::SDL_RWopsPtr ResourceManager::GetResourceFile(const std::string& relativeF
    // first, we try to open the real file
    std::string filename = m_uadataPath + relativeFilename;
 
+   std::replace(filename.begin(), filename.end(), '/', FileSystem::PathSeparator[0]);
+   std::replace(filename.begin(), filename.end(), '\\', FileSystem::PathSeparator[0]);
+
    SDL_RWopsPtr rwops = MakeRWopsPtr(SDL_RWFromFile(filename.c_str(), "rb"));
 
    if (rwops.get() != NULL)
       return rwops; // found real file
 
    // find all uadata resource files
-   std::string uarFileSpec = m_uadataPath + "/uadata??.zip";
+   std::string zipFileSpec = m_uadataPath + "uadata??.zip";
    std::vector<std::string> fileList;
-   Base::FileSystem::FindFiles(uarFileSpec, fileList);
+   Base::FileSystem::FindFiles(zipFileSpec, fileList);
 
    std::sort(fileList.begin(), fileList.end());
 
@@ -132,7 +135,13 @@ Base::SDL_RWopsPtr ResourceManager::GetResourceFile(const std::string& relativeF
    for (int i = static_cast<int>(fileList.size()) - 1; i >= 0; i--)
    {
       // try to open from zip file
-      std::string zipPath(fileList[i] + "/" + relativeFilename);
+      std::string zipPath = fileList[i];
+
+      std::replace(zipPath.begin(), zipPath.end(), '/', FileSystem::PathSeparator[0]);
+      std::replace(zipPath.begin(), zipPath.end(), '\\', FileSystem::PathSeparator[0]);
+      zipPath.replace(zipPath.find(".zip"), 4, "");
+
+      zipPath += "/" + relativeFilename;
 
       rwops = MakeRWopsPtr(SDL_RWFromZZIP(zipPath.c_str(), "rb"));
       if (rwops.get() != NULL)
