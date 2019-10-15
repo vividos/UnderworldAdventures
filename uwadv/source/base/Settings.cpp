@@ -64,8 +64,8 @@ Settings::Settings()
    :m_gameType(gameUw1)
 {
    // set some initial values
-   SetValue(settingUadataPath, std::string("./uadata/"));
-   SetValue(settingSavegameFolder, std::string("./uasave/"));
+   SetValue(settingUadataPath, std::string("./data/"));
+   SetValue(settingSavegameFolder, std::string("./savegames/"));
    SetValue(settingFullscreen, false);
    SetValue(settingCutsceneNarration, std::string("sound"));
    SetValue(settingWin32MidiDevice, -1);
