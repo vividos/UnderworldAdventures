@@ -65,13 +65,10 @@ bool KeyValuePairTextFileReader::SplitKeyValue(std::string& line, std::string& k
    if (line.empty())
       return false;
 
-   // replace all '\t' with ' '
-   std::string::size_type pos = 0;
-   while ((pos = line.find('\t', pos)) != std::string::npos)
-      line.replace(pos, 1, " ");
+   Base::String::Replace(line, "\t", " ");
 
    // there must be at least one space, to separate key from value
-   pos = line.find(' ');
+   std::string::size_type pos = line.find(' ');
    if (pos == std::string::npos)
       return false;
 

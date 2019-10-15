@@ -1246,9 +1246,7 @@ void CodeGraph::CombineSayOp(graph_iterator insertIter, std::vector<graph_iterat
    // replace linefeeds in text
    std::string outtext(m_strings[string_id]);
 
-   std::string::size_type pos = 0;
-   while (std::string::npos != (pos = outtext.find('\n')))
-      outtext.replace(pos, 1, "\\n");
+   Base::String::Replace(outtext, "\n", "\\n");
 
    std::ostringstream buffer;
    buffer << "say(\"" << outtext << "\");";

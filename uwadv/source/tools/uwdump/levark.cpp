@@ -721,11 +721,9 @@ void DumpLevelArchive::dump_item(Uint16 pos)
       case 0x0190: // a_text string trap
       {
          Uint16 id = (quality << 5) | owner;
-         std::string text(gstr.GetString(9, id));
+         std::string text = gstr.GetString(9, id);
 
-         std::string::size_type pos2;
-         while (std::string::npos != (pos2 = text.find("\n")))
-            text.replace(pos2, 1, "\\n");
+         Base::String::Replace(text, "\n", "\\n");
 
          printf("[string=%04x text=\"%s\"", id, text.c_str());
          if (!is_quantity)

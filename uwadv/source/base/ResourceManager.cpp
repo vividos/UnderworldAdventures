@@ -94,13 +94,8 @@ Base::SDL_RWopsPtr ResourceManager::GetFileWithPlaceholder(const std::string& fi
 /// resolves a filename that contains placeholders
 void ResourceManager::ResolvePlaceholderFilename(std::string& filename) const
 {
-   std::string::size_type pos;
-
-   while (std::string::npos != (pos = filename.find("%uadata%")))
-      filename.replace(pos, 8, m_uadataPath.c_str());
-
-   while (std::string::npos != (pos = filename.find("%uw-path%")))
-      filename.replace(pos, 9, m_uwPath.c_str());
+   Base::String::Replace(filename, "%uadata%", m_uadataPath);
+   Base::String::Replace(filename, "%uw-path%", m_uwPath);
 }
 
 /// The search order for resource files is as follows:
@@ -139,7 +134,7 @@ Base::SDL_RWopsPtr ResourceManager::GetResourceFile(const std::string& relativeF
 
       std::replace(zipPath.begin(), zipPath.end(), '/', FileSystem::PathSeparator[0]);
       std::replace(zipPath.begin(), zipPath.end(), '\\', FileSystem::PathSeparator[0]);
-      zipPath.replace(zipPath.find(".zip"), 4, "");
+      Base::String::Replace(zipPath, ".zip", "");
 
       zipPath += "/" + relativeFilename;
 

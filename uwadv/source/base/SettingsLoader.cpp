@@ -188,22 +188,13 @@ namespace Detail
             path.replace(pos, 1, home);
       }
 
-      // replace %uahome%
-      while (std::string::npos != (pos = path.find("%uahome%")))
-         path.replace(pos, 8, m_homePath.c_str());
+      Base::String::Replace(path, "%uahome%", m_homePath);
+      Base::String::Replace(path, "%uadata%", m_uadataPath);
+      Base::String::Replace(path, "%personal-folder%", m_personalFolder);
 
-      // replace %uadata%
-      while (std::string::npos != (pos = path.find("%uadata%")))
-         path.replace(pos, 8, m_uadataPath.c_str());
-
-      // replace %personal-folder%
-      while (std::string::npos != (pos = path.find("%personal-folder%")))
-         path.replace(pos, 17, m_personalFolder.c_str());
-
-      // replace any double-slashes occured from previous replacements
-      while (std::string::npos != (pos = path.find("//")) ||
-         std::string::npos != (pos = path.find("\\\\")))
-         path.replace(pos, 2, Base::FileSystem::PathSeparator);
+      // replace any double-slashes from previous replacements
+      Base::String::Replace(path, "//", "\\");
+      Base::String::Replace(path, "\\", Base::FileSystem::PathSeparator);
    }
 
 } // namespace Detail

@@ -107,12 +107,9 @@ void strpak_unpack_strings(const char *infile, const char *outputFilename)
       size_t max = stringList.size();
       for (size_t index = 0; index < max; index++)
       {
-         std::string line(stringList[index]);
+         std::string line{ stringList[index] };
 
-         // replace newlines with string "\n"
-         std::string::size_type pos;
-         while ((pos = line.find('\n')) != std::string::npos)
-            line.replace(pos, 1, "\\n");
+         Base::String::Replace(line, "\n", "\\n");
 
          std::stringstream bufferLine;
          bufferLine << index << ": " << line;
