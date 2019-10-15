@@ -16,8 +16,8 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file uaconfig.hpp
-/// \brief Underworld Adventures win32 config program
+/// \file ConfigDlg.hpp
+/// \brief Config dialog
 //
 #pragma once
 
@@ -25,6 +25,7 @@
 #include <atlbase.h>
 extern CComModule _Module;
 #include <atlwin.h>
+
 #include "resource.h"
 #include "Settings.hpp"
 #include "TooltipCtrl.hpp"
@@ -42,13 +43,14 @@ public:
    /// runs dialog main loop
    void RunDialog();
 
+private:
    // message map
    BEGIN_MSG_MAP(ConfigDlg)
       MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
       MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
       COMMAND_ID_HANDLER(IDOK, OnSaveExit)
       COMMAND_ID_HANDLER(IDCANCEL, OnExit)
-      COMMAND_ID_HANDLER(IDC_BUTTON_SET_UW1_PATH, OnSetUw1Path);
+      COMMAND_ID_HANDLER(IDC_BUTTON_SET_UW1_PATH, OnSetUw1Path)
    END_MSG_MAP()
 
    /// translates messages before processing
@@ -59,7 +61,6 @@ public:
       return FALSE;
    }
 
-protected:
    // message handler
 
    /// called on initing dialog

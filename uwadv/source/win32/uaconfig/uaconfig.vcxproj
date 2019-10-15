@@ -75,12 +75,13 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ConfigDlg.cpp" />
     <ClCompile Include="uaconfig.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
     <ClInclude Include="TooltipCtrl.hpp" />
-    <ClInclude Include="uaconfig.hpp" />
+    <ClInclude Include="ConfigDlg.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Corp.ico" />
