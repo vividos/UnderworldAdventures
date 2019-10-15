@@ -27,7 +27,7 @@
 #include "PlayerInfoWindow.hpp"
 #include "ObjectListWindow.hpp"
 #include "HotspotListWindow.hpp"
-#include "TileMapView.hpp"
+#include "TileMapViewChildFrame.hpp"
 #include "TileInfoWindow.hpp"
 #include "Resource.h"
 

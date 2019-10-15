@@ -101,9 +101,6 @@
     <ClInclude Include="PropertyListCtrl.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TileMapView.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="TileMapViewCtrl.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -148,6 +145,9 @@
     </ClInclude>
     <ClInclude Include="res\Ribbon.h">
       <Filter>Resource Files\Generated Ribbon Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TileMapViewChildFrame.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
