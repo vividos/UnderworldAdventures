@@ -39,7 +39,7 @@ Base::Settings& UnitTest::GetTestSettings()
    }
 
    // check settings if they are right
-   std::string filename = g_settings.GetString(Base::settingUw1Path) + "/uw.exe";
+   std::string filename = g_settings.GetString(Base::settingUw1Path) + "uw.exe";
    if (!Base::FileSystem::FileExists(filename))
    {
       UaTrace("The Ultima Underworld 1 files cannot be found in %s\n"
@@ -48,7 +48,7 @@ Base::Settings& UnitTest::GetTestSettings()
       throw std::runtime_error("Couldn't find Ultima Underworld 1 files");
    }
 
-   filename = g_settings.GetString(Base::settingUw2Path) + "/uw2.exe";
+   filename = g_settings.GetString(Base::settingUw2Path) + "uw2.exe";
    if (!Base::FileSystem::FileExists(filename))
    {
       UaTrace("The Ultima Underworld 2 files cannot be found in %s\n"
@@ -56,6 +56,8 @@ Base::Settings& UnitTest::GetTestSettings()
          filename.c_str());
       throw std::runtime_error("Couldn't find Ultima Underworld 1 files");
    }
+
+   g_settings.SetValue(Base::settingUnderworldPath, g_settings.GetString(Base::settingUw1Path));
 
    return g_settings;
 }

@@ -26,6 +26,9 @@
     <ClInclude Include="uaconfig.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TooltipCtrl.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Corp.ico">
