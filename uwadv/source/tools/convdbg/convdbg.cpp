@@ -554,7 +554,7 @@ int main(int argc, char* argv[])
 #ifndef HAVE_DEBUG
    catch (const std::exception & ex)
    {
-      printf("caught an exception: \"%s\"\n", e.what());
+      printf("caught an exception: \"%s\"\n", ex.what());
    }
    catch (...)
    {
