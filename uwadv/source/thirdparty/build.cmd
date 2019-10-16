@@ -18,3 +18,4 @@ copy ..\win32\uadebug\thirdparty\scintilla\lib\SciLexer.dll %OUTDIR%
 copy ..\win32\uadebug\thirdparty\scintilla\lib\lua.properties %OUTDIR%
 copy ..\..\README.Manual.md %OUTDIR%\README.Manual.txt
 copy ..\..\README.Tools.md %OUTDIR%\tools\README.Tools.txt
+copy ..\..\docs\uw1-walkthrough.txt %OUTDIR%\uw1-walkthrough.txt
