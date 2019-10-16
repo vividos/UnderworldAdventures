@@ -129,9 +129,6 @@ void GameStudio::Init()
 {
    UaTrace("Underworld Adventures Studio\n\n");
 
-   // init random number generator
-   srand((unsigned)time(NULL));
-
    // init files manager; settings are loaded here, too
    Base::LoadSettings(m_settings);
    m_resourceManager = std::make_unique<Base::ResourceManager>(m_settings);

@@ -32,6 +32,7 @@
 
 #include <string>
 #include <vector>
+#include <random>
 #include "Savegame.hpp"
 #include "ConvStack.hpp"
 #include "ConvGlobals.hpp"
@@ -206,6 +207,9 @@ namespace Conv
 
       /// code callback pointer
       ICodeCallback* m_codeCallback;
+
+      /// random number generator
+      std::mt19937 m_rng;
    };
 
 } // namespace Conv

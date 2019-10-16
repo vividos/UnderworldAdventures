@@ -35,7 +35,8 @@ CodeVM::CodeVM()
    m_callLevel(0),
    m_resultRegister(0xffff),
    m_finished(true),
-   m_codeCallback(NULL)
+   m_codeCallback(NULL),
+   m_rng(std::random_device()())
 {
 }
 
@@ -544,12 +545,9 @@ void CodeVM::ImportedFunc(const char* functionName)
       Uint16 arg = m_stack.At(argpos--);
       arg = m_stack.At(arg);
 
-      // this code assumes that rand() can return RAND_MAX
-
-      // rnum is in the range [0..1[
-      double rnum = double(rand()) / double(RAND_MAX + 1);
-      rnum *= arg; // now in range [0..arg[
-      m_resultRegister = Uint16(rnum + 1.0); // now from [1..arg+1[
+      // generate random number in range [1..arg]
+      std::uniform_int_distribution<> dist(1, arg);
+      m_resultRegister = dist(m_rng);
    }
    else if (function == "plural")
    {

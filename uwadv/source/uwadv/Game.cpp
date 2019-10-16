@@ -77,8 +77,6 @@ Game::Game()
       " (debug mode)"
 #endif
       "\nhttps://vividos.github.com/UnderworldAdventures/\n\n");
-
-   srand((unsigned)time(NULL));
 }
 
 void Game::Init()
