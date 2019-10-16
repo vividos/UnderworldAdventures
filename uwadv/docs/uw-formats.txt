@@ -5,7 +5,7 @@
                https://vividos.github.com/UnderworldAdventures
  +--------------------------------------------------------------------------+
 
-Document version: 1.72, as of 2019-05-07
+Document version: 1.73, as of 2019-10-16
 
 
 Table of Contents
@@ -2445,7 +2445,7 @@ Table of Contents
      of them as global variables.
 
    * Private Globals store infos saved after exiting conversations. Sizes of
-     this area are determined by the file "babglobals.dat".
+     this area are determined by the file "babglobs.dat".
 
    * Local Variables store infos during conversation. They are lost when
      conversation ends.
@@ -2508,12 +2508,12 @@ Table of Contents
 
    Each conversation has a set of private global variables that are saved
    across conversations. The initial size of the area is stored in the file
-   "babglobals.dat". When a game is saved, the globals are stored in the file
+   "babglobs.dat". When a game is saved, the globals are stored in the file
    "bglobals.dat". The layout of both files is as follows:
 
    0000   Int16     number of conversation slot
    0002   Int16     size of private global data for that conv.(=n)
-   0004   n*Int16   all globals for that slot (omitted in "babglobals.dat")
+   0004   n*Int16   all globals for that slot (omitted in "babglobs.dat")
    ...              repeat until file end
 
    On conversation start the game globals listed in the import table is
