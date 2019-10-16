@@ -11,7 +11,8 @@ navigate the document.
 [2.2.1 Building from Git](#2-2-1-building-from-git)<br/>
 [2.2.2 Building from source package](#2-2-2-building-from-source-package)<br/>
 [2.3 MinGW on Windows](#2-3-mingw-on-windows)<br/>
-[2.4 Other operating systems](#2-4-other-operating-systems)<br/>
+[2.4 Xcode on macOS](#2-4-xcode-on-macos)<br/>
+[2.5 Other operating systems](#2-5-other-operating-systems)<br/>
 
 [3. Developing Underworld Adventures](#3-developing-underworld-adventures)<br/>
 [3.1 Code guidelines](#3-1-code-guidelines)<br/>
@@ -206,7 +207,20 @@ autoconf and automake tools. You need the msysDTK-packages as well as the
 autoconf, automake and libtool packages extracted over your existing MinGW
 installation. Continue with the instructions in chapter 2.3. Good Luck!
 
-### 2.4 Other operating systems
+### 2.4 Xcode on macOS
+
+There is an Xcode project in the "uwadv/macosx" folder that can be opened with
+Xcode 11 or later. Additionally, the SDL2 and SDL_Mixer frameworks have to be
+installed on the system.
+
+Detailed instructions on how to setting up SDL2 and SDL_Mixer on a macOS
+computer can be followed here:
+http://lazyfoo.net/tutorials/SDL/01_hello_SDL/mac/index.php
+
+Note: The macOS project is only occasionally updated and may fail to compile.
+Also it's not clear how to run and debug the project. Help wanted!
+
+### 2.5 Other operating systems
 
 Other Unix based operating system (FreeBSD, MacOS X etc.) may work like on
 Linux, but no guarantees if it works. If you want to port the project to a new
