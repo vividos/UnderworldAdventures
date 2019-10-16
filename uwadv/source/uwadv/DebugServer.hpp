@@ -91,7 +91,7 @@ public:
    /// sends code debugger update message
    void SendCodeDebuggerStatusUpdate(unsigned int debuggerId);
 
-protected:
+private:
    /// debugger thread procedure
    static int ThreadProc(void* ptr);
 
@@ -161,7 +161,7 @@ protected:
 
    virtual ICodeDebugger* GetCodeDebugger(unsigned int debuggerId) override;
 
-protected:
+private:
    /// debug library context
    std::unique_ptr<DebuggerLibContext> m_debugLibrary;
 

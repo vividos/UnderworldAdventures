@@ -212,7 +212,7 @@ namespace Detail
       /// loads keymap from config file into Keymap object
       void Load();
 
-   protected:
+   private:
       /// initializes internal key type and key name mappings
       void InitKeyMappings();
 

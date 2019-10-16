@@ -47,7 +47,7 @@ public:
       REFLECT_NOTIFICATIONS()
    END_MSG_MAP()
 
-protected:
+private:
    LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
    LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
    LRESULT OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -66,7 +66,7 @@ protected:
    virtual void SetProperty(unsigned int propertyItemId, const CString& propertyValue) override;
    virtual bool VerifyProperty(unsigned int propertyItemId, const CString& propertyValue) override;
 
-protected:
+private:
    /// player info list
    //EditListViewCtrl m_listCtrl;
    PropertyListCtrl m_listCtrl;

@@ -33,7 +33,7 @@ public:
    unsigned int GetItem(unsigned int pos, unsigned int index);
    void SetItem(unsigned int pos, unsigned int index, unsigned int value);
 
-protected:
+private:
    unsigned int m_columns;
    unsigned int* m_objectList;
 };
@@ -63,7 +63,7 @@ public:
       DEFAULT_REFLECTION_HANDLER()
    END_MSG_MAP()
 
-protected:
+private:
    LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
    LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
    LRESULT OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -76,7 +76,7 @@ protected:
 
    virtual void OnUpdatedValue(unsigned int item, unsigned int subItem, LPCTSTR value) override;
 
-protected:
+private:
    EditListViewCtrl m_listCtrl;
 
    bool m_objectListInfoInited;

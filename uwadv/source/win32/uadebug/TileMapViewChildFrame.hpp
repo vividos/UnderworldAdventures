@@ -39,7 +39,7 @@ public:
    /// returns tilemap view control
    const TileMapViewCtrl& GetTilemapViewCtrl() const { return m_view; }
 
-protected:
+private:
    BEGIN_MSG_MAP(thisClass)
       MESSAGE_HANDLER(WM_CREATE, OnCreate)
       MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
@@ -87,7 +87,7 @@ protected:
          m_mainFrame->SendNotification(notify, &m_view);
    }
 
-protected:
+private:
    /// tilemap control
    TileMapViewCtrl m_view;
 };

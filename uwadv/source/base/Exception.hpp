@@ -69,7 +69,7 @@ namespace Base
       /// returns OS specific error code for the file system error
       unsigned int GetOSErrorCode() const { return m_osErrorCode; }
 
-   protected:
+   private:
       /// filename involved with the exception
       std::string m_filename;
 

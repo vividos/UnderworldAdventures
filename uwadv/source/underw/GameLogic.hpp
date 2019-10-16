@@ -101,7 +101,7 @@ namespace Underworld
       /// checks if player is near move triggers
       void CheckMoveTrigger();
 
-   protected:
+   private:
       /// interface to user interface; may be null
       IUserInterface* m_userInterface;
 

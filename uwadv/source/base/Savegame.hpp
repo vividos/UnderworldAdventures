@@ -140,7 +140,7 @@ namespace Base
       /// returns savegame info
       SavegameInfo& GetSavegameInfo() { return m_info; }
 
-   protected:
+   private:
       /// current savegame version
       static const Uint32 s_currentVersion;
 

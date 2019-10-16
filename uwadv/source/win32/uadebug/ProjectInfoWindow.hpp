@@ -102,7 +102,7 @@ public:
    CHAIN_MSG_MAP(baseClass)
    END_MSG_MAP()
 
-protected:
+private:
    LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
    LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
    LRESULT OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -144,7 +144,7 @@ protected:
    /// removes all subitems from a parent item
    void RemoveSubitems(HTREEITEM hParentItem);
 
-protected:
+private:
    /// project info tree
    CTreeViewCtrl m_treeCtrl;
 

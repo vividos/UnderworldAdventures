@@ -142,11 +142,10 @@ namespace Base
       /// inserts a new key mapping
       void InsertKeyMapping(SDL_Keycode key, SDL_Keymod mod, KeyType keyType);
 
-   public:
+   private:
       /// mapping from SDL keysym/modifier pair to key type value
       typedef std::map<Uint32, KeyType> KeymapMapping;
 
-   protected:
       /// map with combined SDL "key/mod" and key types
       KeymapMapping m_mapKeys;
    };

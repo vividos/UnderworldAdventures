@@ -60,11 +60,11 @@ public:
    virtual bool FindPath(unsigned int fromx, unsigned int fromy,
       unsigned int tox, unsigned int toy, PathList& pathlist) = 0;
 
-protected:
+private:
    /// checks if object can pass from xpos/ypos in specified direction
    bool CanPass(unsigned int xpos, unsigned int ypos, unsigned int dir);
 
-protected:
+private:
    /// path flag array
    bool m_pathFlags[pathfindFlagMax];
 

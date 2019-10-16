@@ -37,7 +37,7 @@ public:
 
    CString GetProjectName() const { return m_projectName; }
 
-protected:
+private:
    CString m_projectFilename;
    CString m_projectName;
    bool m_isOpen;

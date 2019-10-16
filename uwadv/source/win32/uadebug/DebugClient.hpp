@@ -203,7 +203,7 @@ public:
    /// returns sourcecode filename and line by code position
    bool GetSourceFromCodePos(unsigned int codePos, CString& filename, unsigned int& lineNumber, unsigned int& lineDisplacement);
 
-protected:
+private:
    /// ctor
    IDebugClientCodeDebugger() {}
 

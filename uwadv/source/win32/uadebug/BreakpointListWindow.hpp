@@ -56,7 +56,7 @@ public:
 
    //virtual void OnUpdatedValue(unsigned int item, unsigned int subItem, LPCTSTR value) override;
 
-protected:
+private:
    /// edit list view with all breakpoints
    CListViewCtrl m_listCtrl;
 

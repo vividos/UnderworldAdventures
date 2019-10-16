@@ -71,7 +71,7 @@ namespace Base
       /// returns map with all config values
       ConfigValueMap& GetValueMap() { return m_mapValues; }
 
-   protected:
+   private:
       /// map with all config key/value pairs
       ConfigValueMap m_mapValues;
    };

@@ -76,7 +76,7 @@ public:
    /// sets "modified" state of file
    void SetModified(bool modified) { m_isModified = modified; }
 
-protected:
+private:
    BEGIN_MSG_MAP(thisClass)
       MESSAGE_HANDLER(WM_CREATE, OnCreate)
       MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
@@ -136,7 +136,7 @@ protected:
    /// updates displayed filename
    void UpdateFilename();
 
-protected:
+private:
    /// scintilla edit view
    CScintillaWindow m_view;
 

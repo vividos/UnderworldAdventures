@@ -44,7 +44,7 @@ public:
       MESSAGE_HANDLER(WM_NCDESTROY, OnNcDestroy)
    END_MSG_MAP()
 
-protected:
+private:
    bool AcceptChanges();
    void Finish();
 
@@ -52,7 +52,7 @@ protected:
    LRESULT OnKillFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
    LRESULT OnNcDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
-protected:
+private:
    bool m_isFinished;
    int m_item, m_columnIndex;
 };

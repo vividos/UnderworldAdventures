@@ -66,7 +66,7 @@ public:
    /// handles scrolled painting; called by CScrollWindowImpl
    void DoPaint(CDCHandle dc);
 
-protected:
+private:
    // virtual methods from DebugWindowBase
    virtual void ReceiveNotification(DebugWindowNotification& notify);
 
@@ -79,7 +79,7 @@ protected:
    /// updates tile map values
    void UpdateTileMap();
 
-protected:
+private:
    BEGIN_MSG_MAP(TileMapViewCtrl)
       MESSAGE_HANDLER(WM_CREATE, OnCreate)
       MESSAGE_HANDLER(WM_LBUTTONDOWN, OnLButtonDown)
@@ -99,7 +99,7 @@ protected:
    LRESULT OnTilemapZoomIn(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
    LRESULT OnTilemapZoomOut(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-protected:
+private:
    /// array with all tile map infos
    CAtlArray<TileMapInfo> m_tileMapInfos;
 

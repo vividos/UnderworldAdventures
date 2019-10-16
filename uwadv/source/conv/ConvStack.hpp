@@ -93,7 +93,7 @@ namespace Conv
          m_stackPointer = value;
       }
 
-   protected:
+   private:
       /// stack pointer; always points to top element of stack
       Uint16 m_stackPointer;
 

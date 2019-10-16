@@ -50,11 +50,10 @@ namespace Detail
       /// checks paths of various settings variables
       void CheckPaths();
 
-   protected:
+   private:
       /// resolves placeholder in path to create a valid path
       void ResolvePath(std::string& path);
 
-   private:
       /// deleted copy ctor
       SettingsLoader(const SettingsLoader&) = delete;
 

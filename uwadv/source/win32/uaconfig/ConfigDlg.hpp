@@ -98,7 +98,7 @@ private:
    /// shows message box
    void ShowMessageBox(LPCTSTR text, UINT type = MB_OK);
 
-protected:
+private:
    /// loads config file
    void LoadConfig();
 
@@ -108,7 +108,7 @@ protected:
    /// saves config file
    void SaveConfig();
 
-protected:
+private:
    /// window m_caption
    std::string m_caption;
 

@@ -97,7 +97,7 @@ public:
       // returns no triangles
    }
 
-protected:
+private:
    /// game settings
    Base::Settings m_settings;
 

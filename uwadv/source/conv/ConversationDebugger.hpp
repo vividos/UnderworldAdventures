@@ -57,7 +57,7 @@ namespace Conv
          size_t& sourcefileIndex, size_t& sourcefileLine,
          size_t& codePosition, bool& visible) const override;
 
-   protected:
+   private:
       std::string temp_decompile;
 
       DebugServerCodeDebuggerState state;

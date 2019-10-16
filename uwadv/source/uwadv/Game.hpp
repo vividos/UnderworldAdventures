@@ -188,7 +188,7 @@ private:
    /// toggles fullscreen and windowed mode
    void ToggleFullscreen();
 
-protected:
+private:
    /// game configuration
    Base::Settings m_settings;
 

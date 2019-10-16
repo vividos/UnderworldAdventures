@@ -63,7 +63,7 @@ public:
    /// makes path relative to given path; returns true when paths were made relative
    bool MakeRelativeTo(LPCTSTR pathname);
 
-protected:
+private:
    /// path/filename to manage
    CString m_filename;
 };

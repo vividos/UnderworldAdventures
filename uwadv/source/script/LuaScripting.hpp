@@ -62,7 +62,7 @@ public:
    virtual ItemCombineStatus ItemCombine(Uint16 itemId1,
       Uint16 itemId2, Uint16& resultId) override;
 
-protected:
+private:
    /// loads a script
    int LoadScript(Base::SDL_RWopsPtr rwops, const char* chunkname);
 
@@ -106,7 +106,7 @@ protected:
       size_t& sourcefileIndex, size_t& sourcefileLine,
       size_t& codePosition, bool& visible) const override;
 
-protected:
+private:
    /// lua state information
    lua_State* L;
 
@@ -140,7 +140,7 @@ protected:
    /// list with all breakpoints
    std::vector<DebugCodeBreakpointInfo> m_breakpointsList;
 
-protected:
+private:
    // registered C functions callable from Lua
    // prototype: static int xyz(lua_State* L);
    static int PrintScroll(lua_State* L);        ///< Lua function uw.print

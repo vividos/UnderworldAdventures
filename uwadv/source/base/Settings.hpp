@@ -141,11 +141,11 @@ namespace Base
       /// inserts an integer value
       void SetValue(SettingsType type, int ialue);
 
-   protected:
+   private:
       /// searches type name from string name
       bool SearchTypeFromString(const std::string& keyName, SettingsType& type);
 
-   protected:
+   private:
       /// settings map typedef
       typedef std::map<SettingsType, std::string> SettingsMap;
 
