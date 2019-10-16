@@ -18,8 +18,9 @@ Adventures project. Please use the table of contents to navigate the document.
 [3. Configuring Underworld Adventures](#3-configuring-underworld-adventures)<br/>
 [4. Gameplay](#4-gameplay)<br/>
 
-[A. Underworld Adventures Music](#b-underworld-adventures-music)<br/>
-[B. Underworld Adventures Debugger](#c-underworld-adventures-debugger)<br/>
+[A. Underworld Adventures Music](#a-underworld-adventures-music)<br/>
+[B. Underworld Adventures Debugger](#b-underworld-adventures-debugger)<br/>
+[C. Release Notes](#c-release-notes)<br/>
 
 ## 1 Quick start and quick reference
 
@@ -282,3 +283,155 @@ The following contnet windows can be shown:
 - Object list
 
 Note: The debugger is a work in progress and may not be completely functional.
+
+
+# C. Release Notes
+
+## Release Notes for "0.9-mojito", 2004-04-10
+
+This release doesn't have many new things. There even are features left out.
+The reason for that is a restructuring and refactoring of source code that was
+done over the last few months. The release mainly was done to show that the
+project is still alive and active. Expect more things to work again in the
+future.
+
+Underworld Adventures now has a (not yet complete) manual that you can read.
+On Windows it is available from the "Underworld Adventures" program group. For
+Linux it is installed into /usr/share/doc/uwadv-0.9_mojito/.
+
+There is a new version of the music pack with a digitally rearranged
+soundtrack for Ultima Underworld 1 available. It can be obtained from
+http://uwadv.sourceforge.net/, in the download section.
+
+Changes:
+* restructured and refactored code
+* added config option to show "pixely" user interface
+* added splash screen when starting the game
+* new savegame format (incompatible to previous versions)
+* updated and improved physics code
+* added stats and runebag panel
+
+## Release Notes for "0.8-hot-chili", 2003-04-24 
+
+This release has a lot of new features inside. Picking up objects from the
+underworld was built in (via the "get"-icon). Lava and water textures are now
+animated, giving a nice effect; also NPC's are now animated. Added drawing of
+levers, buttons and pull chains (although they lack functionality for now,
+since doors are not rendered yet). Bridges are now added to allow the
+adventurer to visit more of the underworld.
+
+Finally a savegame feature was added (press CTRL+R or CTRL+S in game),
+together with a quicksave (F11) and quickload (F12) functionality. The 3d
+models incorporated in the last release were too small, due to a bug, which is
+now fixed, too. Some of them can e.g. be found in the rat's room on the first
+level, at Lakshi Longtooth's campfire on level 4 or in the abyss' library on
+the 6th level. Happy hunting!
+
+Changes:
+* added simple NPC animation
+* added picking up items from the underworld
+* added animated lava and water textures
+* added switches, levers and pull chains
+* implemented some traps and triggers
+* added bridges
+* added savegames loading/saving
+* added quicksave functionality
+* fixed 3d models sizes
+
+## Release Notes for "0.7-muffin", 2003-02-11
+
+In this release there is basic support for conversations. Just click on the
+"talk" command button on the left and click on people in the underworld you
+see. Inventory interactions with NPC's are not supported yet, and some
+conversations may end unexpectedly when an unknown script function is called
+internally.
+
+Some objects are replaced by 3d models done by Sam Matthews. Just look out for
+them in the underworld.
+
+Changes:
+* added support for 3d models for static objects
+* conversations work (no inventory interaction yet)
+* removed usage of big textures larger than 256x256 (voodoo3 cards
+  should work now)
+
+## Release Notes for "0.6-rotworm stew", 2002-11-21
+
+There are some new features in this release: 
+
+Mouse movement mode: You can move around the levels using the mouse. Just
+place the mouse cursor over the 3d window and left-click to start moving.
+During using mouse movement mode you cannot leave the window, as in the
+original game.
+ 
+Looking at objects and walls: You can look at these by right-clicking on them.
+For this, you have to be in "default" or "look" command mode. "default" mode
+is when no command icons (those on the left side) are on, and "look" mode is
+when the "eye" symbol is highlighted.
+
+Level changing: To let the user explore more of the Abyss than just the first
+level, there are some keyboard keys to change the levels. Press Alt + PageDown
+to descend a level, and Alt + PageUp to move one level up. You are usualy
+placed at different interesting spots when changing levels. Users of the
+"uw_demo" can use these keys to change positions in the first level.
+
+SPOILER WARNING: Since this is considered cheating, you might see things that
+                 you should not see before ending the game. So better don't
+                 descend beyond level 8!
+
+Changes:
+* added looking at objects in the underworld
+* initial rendering of NPC and critter sprites; no animation yet
+* added mouse movement
+* added customization of key mappings
+* added support for digital remakes of the underworld soundtrack
+* added support of changing levels via Alt+PageUp and Alt+PageDown
+* rewrote collision detection; added gravity
+* Tools: improved conversation script decompiling
+* Linux: fixed midi playback on Linux
+* Linux: added manual pages
+
+## Release Notes for "0.5-butterfinger", 2002-08-22
+
+Changes:
+* added character creation
+* Linux: finished build system, including binary RPMs
+* Windows: added installer and configuration program
+
+## Release Notes for snapshot "0.4b-cheesecake", 2002-08-12
+
+Changes:
+* Linux: improved build system
+
+## Release Notes for "0.4-cheesecake", 2002-07-30
+
+Changes:
+* added introduction scene
+* added acknowledgements screen
+* added inventory handling
+* added fullscreen mode
+
+## Release Notes for "0.3-poppypastry", 2002-07-08 
+
+Changes:
+* added splash screen and start menu
+* added initial collision detection
+
+## Release Notes for "0.2-grainroll", 2002-06-20
+
+Changes:
+* added rendering objects to the abyss
+* textures are rendered correctly now
+* Tools: added conversation script decompiler and animation viewer
+
+## Release Notes for 0.1-ricecraecker, 2002-05-05
+
+Changes:
+* set up SourceForge project and CVS repository
+* player is able to run around on first level of abyss; no clipping yet
+* introduction music plays
+
+## Release Notes for "uwadv-stuff-preview", 2002-04-08
+
+Changes:
+* made a simple level map viewer
