@@ -41,7 +41,7 @@ namespace Base
       }
 
       /// dtor
-      ~Exception() throw() {}
+      ~Exception() noexcept {}
    };
 
    /// \brief Exception that is thrown for file system errors
@@ -61,7 +61,7 @@ namespace Base
       }
 
       /// dtor
-      ~FileSystemException() throw() {}
+      ~FileSystemException() noexcept {}
 
       /// returns filename of the file that was involved when the exception was thrown
       std::string GetFilename() const { return m_filename; }
