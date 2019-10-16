@@ -50,44 +50,6 @@ An optional parameter "sepmesh" seperates triangles for ceiling, water and
 lava into an own object.
 
 
-uwdump - Ultima Underworld data dump program
----------------------------------------------
-
-uwdump is a program to extract and show information about many data structures
-used in Ultima Underworld. Textual output is always written to standard output
-where it can be redirected, e.g. to a text file. The program has the following
-syntax:
-
-   uwdump <options> <command> <options>
-
-Options and the command can be in any order, but there can only be one
-command. Here is a list of supported commands:
-
-   leveldump <file>
-      dumps the level map archive lev.ark given as <basepath><file>; it prints
-      an overview of the .ark file block structure, the master object list
-      with all fields described in uw-formats.txt, npc extra infos, npc
-      inventories, a list of traps, special link ("sp_link") chains and the
-      texture mapping. the infos are dumped for every level in the file.
-
-   propdump
-      dumps common object properties from <basepath>/data/comobj.dat and
-      special object properties from <basepath>/data/objects.dat
-
-The following options are available for all commands:
-
-  -d<basepath>   sets uw1/uw2 path; using current folder when not specified
-                 (game type is auto-detected)
-  -2             set game type to ultima underworld 2 without further checking
-
-Here are some examples for calling uwdump. It is assumed that the current
-folder is the game's main folder:
-
-   uwdump -d c:\uw1\ leveldump data\lev.ark > uw1-leveldump.txt
-   uwdump leveldump save1\lev.ark
-   uwdump -d c:\uw2\ propdump > uw2-properties.txt
-
-
 uwmdlview - Ultima Underworld builtin 3d model viewer [uw1/2]
 -----------------------------------------------------
 
