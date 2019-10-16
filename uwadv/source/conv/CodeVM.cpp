@@ -497,7 +497,7 @@ void CodeVM::ImportedFunc(const char* functionName)
    UaTrace("CodeVM: executing function \"%s\" with %u arguments\n",
       functionName, m_stack.At(m_stack.GetStackPointer()));
 
-   std::string funcname(functionName);
+   std::string function(functionName);
 
    Uint16 argpos = m_stack.GetStackPointer();
    Uint16 argcount = m_stack.At(argpos);
@@ -517,7 +517,7 @@ void CodeVM::ImportedFunc(const char* functionName)
 
       m_resultRegister = m_codeCallback->BablMenu(answerStringIds);
    }
-   else if (funcname.compare("compare") == 0)
+   else if (function == "compare")
    {
       UaAssert(argcount == 2);
 
@@ -537,7 +537,7 @@ void CodeVM::ImportedFunc(const char* functionName)
       // check if first string contains second
       m_resultRegister = str1 == str2;
    }
-   else if (funcname.compare("random") == 0)
+   else if (function == "random")
    {
       UaAssert(argcount == 1);
 
@@ -551,12 +551,12 @@ void CodeVM::ImportedFunc(const char* functionName)
       rnum *= arg; // now in range [0..arg[
       m_resultRegister = Uint16(rnum + 1.0); // now from [1..arg+1[
    }
-   else if (funcname.compare("plural") == 0)
+   else if (function == "plural")
    {
       UaTrace("CodeVM: intrinsic plural() not implemented");
       UaAssert(false);
    }
-   else if (funcname.compare("contains") == 0)
+   else if (function == "contains")
    {
       UaAssert(argcount == 2);
 
@@ -576,22 +576,22 @@ void CodeVM::ImportedFunc(const char* functionName)
       // check if first string contains second
       m_resultRegister = str1.find(str2) != std::string::npos;
    }
-   else if (funcname.compare("append") == 0)
+   else if (function == "append")
    {
       UaTrace("CodeVM: intrinsic append() not implemented");
       UaAssert(false);
    }
-   else if (funcname.compare("copy") == 0)
+   else if (function == "copy")
    {
       UaTrace("CodeVM: intrinsic copy() not implemented");
       UaAssert(false);
    }
-   else if (funcname.compare("find") == 0)
+   else if (function == "find")
    {
       UaTrace("CodeVM: intrinsic find() not implemented");
       UaAssert(false);
    }
-   else if (funcname.compare("length") == 0)
+   else if (function == "length")
    {
       UaAssert(argcount == 1);
 
@@ -602,17 +602,17 @@ void CodeVM::ImportedFunc(const char* functionName)
       // return string length
       m_resultRegister = static_cast<Uint16>(m_localStrings[arg].size());
    }
-   else if (funcname.compare("val") == 0)
+   else if (function == "val")
    {
       UaTrace("CodeVM: intrinsic val() not implemented");
       UaAssert(false);
    }
-   else if (funcname.compare("say") == 0)
+   else if (function == "say")
    {
       UaTrace("CodeVM: intrinsic say() not implemented");
       UaAssert(false);
    }
-   else if (funcname.compare("respond") == 0)
+   else if (function == "respond")
    {
       UaTrace("CodeVM: intrinsic respond() not implemented");
       UaAssert(false);
