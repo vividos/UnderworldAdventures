@@ -44,7 +44,7 @@ namespace Import
 {
    /// Loads conversation globals from bglobals.dat or babglobs.dat
    void LoadConvGlobals(Underworld::ConvGlobals& globals,
-      Base::ResourceManager& resourceManager, const char* folder, bool initial);
+      Base::ResourceManager& resourceManager, const char* relativeGlobalsFilename);
 
    /// Loads conversation code into virtual machine
    bool LoadConvCode(Conv::CodeVM& vm, Base::Settings& settings, Base::ResourceManager& resourceManager,

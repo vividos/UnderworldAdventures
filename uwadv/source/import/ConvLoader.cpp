@@ -29,20 +29,18 @@
 
 /// When initial is set to true, the file to load only contains size entries,
 /// and no actual data; all globals are initalized with 0 then.
-/// \param folder the folder to use, either the "data" or one of the SaveN folders.
-/// \param initial indicates if initial conv. globals should be loaded
+/// \param globalsFilename relative conv. globals filename, e.g. data/babglobs.dat
 void Import::LoadConvGlobals(Underworld::ConvGlobals& convGlobals,
-   Base::ResourceManager& resourceManager, const char* folder, bool initial)
+   Base::ResourceManager& resourceManager, const char* relativeGlobalsFilename)
 {
-   std::string globalsName = folder;
-   globalsName.append("/");
-   globalsName.append(initial ? "babglobs.dat" : "bglobals.dat");
+   bool isInitialConvGlobals =
+      std::string(relativeGlobalsFilename).find("babglobs.dat") != std::string::npos;
 
-   Base::File file { resourceManager.GetUnderworldFile(Base::resourceGameUw, globalsName) };
+   Base::File file { resourceManager.GetUnderworldFile(Base::resourceGameUw, relativeGlobalsFilename) };
    if (!file.IsOpen())
    {
       std::string text("error loading conv. globals file: ");
-      text.append(globalsName);
+      text.append(relativeGlobalsFilename);
       throw Base::Exception(text.c_str());
    }
 
@@ -57,7 +55,7 @@ void Import::LoadConvGlobals(Underworld::ConvGlobals& convGlobals,
       std::vector<Uint16> globals;
       globals.resize(size, 0);
 
-      if (!initial)
+      if (!isInitialConvGlobals)
       {
          // read in globals
          for (Uint16 i = 0; i < size; i++)

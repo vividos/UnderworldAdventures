@@ -45,5 +45,5 @@ void Import::LoadUnderworld(Base::Settings& settings, Base::ResourceManager& res
    PlayerImporter playerImport{ resourceManager };
    playerImport.LoadPlayer(underworld.GetPlayer(), "data", true);
 
-   Import::LoadConvGlobals(underworld.GetPlayer().GetConvGlobals(), resourceManager, "data", true);
+   Import::LoadConvGlobals(underworld.GetPlayer().GetConvGlobals(), resourceManager, "data/babglobs.dat");
 }
