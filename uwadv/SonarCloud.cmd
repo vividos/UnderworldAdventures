@@ -33,8 +33,9 @@ SonarScanner.MSBuild.exe begin ^
     /v:"0.10" ^
     /d:"sonar.cfamily.build-wrapper-output=%CD%\bw-output" ^
     /d:"sonar.host.url=https://sonarcloud.io" ^
-    /d:"sonar.organization=vividos-github" ^
+    /o:"vividos-github" ^
     /d:"sonar.login=%SONARLOGIN%"
+if errorlevel 1 goto end
 
 REM
 REM Rebuild Release|Win32
