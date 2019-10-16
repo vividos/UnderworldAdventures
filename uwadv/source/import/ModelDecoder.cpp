@@ -622,7 +622,7 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
          break;
 
       default:
-         UaModelTrace("unknown command at offset 0x%08x\n", file.Tell() - 2);
+         UaModelTrace("unknown command at offset 0x%08lx\n", file.Tell() - 2);
          return;
       }
       UaModelTrace("\n");

@@ -77,6 +77,8 @@ private:
 public:
 	XMidiFile(IDataSource *source, int pconvert);
 	~XMidiFile();
+	XMidiFile(const XMidiFile&) = delete;
+	XMidiFile& operator=(const XMidiFile&) = delete;
 
 	int number_of_tracks() { return num_tracks; }
 

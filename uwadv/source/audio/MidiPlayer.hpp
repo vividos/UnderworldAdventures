@@ -42,6 +42,10 @@ namespace Audio
       MidiPlayer(const Base::Settings& settings);
       /// dtor
       ~MidiPlayer();
+      /// deleted copy ctor
+      MidiPlayer(const MidiPlayer&) = delete;
+      /// deleted assignment operator
+      MidiPlayer& operator=(const MidiPlayer&) = delete;
 
       /// loads timbre library (uw.ad, uw.mt files)
       void LoadTimbreLibrary(Base::SDL_RWopsPtr rwops, bool isMT) const;

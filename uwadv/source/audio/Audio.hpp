@@ -137,6 +137,10 @@ namespace Audio
       AudioManager(const Base::Settings& settings, const Base::ResourceManager& resourceManager);
       /// dtor
       ~AudioManager();
+      /// deleted copy ctor
+      AudioManager(const AudioManager&) = delete;
+      /// deleted assignment operator
+      AudioManager& operator=(const AudioManager&) = delete;
 
       /// plays a sound file; stops when finished
       void PlaySound(const std::string& soundName);

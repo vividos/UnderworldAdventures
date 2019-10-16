@@ -78,6 +78,9 @@ namespace Base
       /// assignment operator
       File& operator=(const File& file)
       {
+         if (&file == this)
+            return *this;
+
          m_rwops = file.m_rwops;
          m_fileLength = file.m_fileLength;
          return *this;

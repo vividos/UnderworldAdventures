@@ -41,6 +41,9 @@ public:
 	//! Destructor
 	~XMidiSequence();
 
+	XMidiSequence(const XMidiSequence&) = delete;
+	XMidiSequence& operator=(const XMidiSequence&) = delete;
+
 	//! Play a single waiting event
 	//! \return <0 if there is no more events
 	//! \return 0 if there are pending events that can be played imediately

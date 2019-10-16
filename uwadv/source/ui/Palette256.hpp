@@ -34,6 +34,8 @@ public:
    Palette256();
    /// copy ctor
    Palette256(const Palette256& lhs);
+   /// dtor
+   ~Palette256() {}
    /// assignment operator
    const Palette256& operator=(const Palette256& lhs);
 
@@ -53,7 +55,7 @@ public:
    /// rotates palette indices
    void Rotate(Uint8 start, Uint8 len, bool forward);
 
-protected:
+private:
    /// a GL_RGBA compatible palette
    Uint8 m_palette[256][4];
 };

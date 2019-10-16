@@ -108,12 +108,12 @@ public:
       return m_yres;
    }
 
-protected:
+private:
    /// converts pixels and a palette to texture
    void Convert(Uint8* pixels, unsigned int origx, unsigned int origy,
       Palette256& palette, unsigned int numTextures);
 
-protected:
+private:
    /// upper left texture coordinates
    double m_u, m_v;
 
@@ -138,6 +138,10 @@ public:
    TextureManager();
    /// dtor
    ~TextureManager();
+   /// deleted copy ctor
+   TextureManager(const TextureManager&) = delete;
+   /// deleted assignment operator
+   TextureManager& operator=(const TextureManager&) = delete;
 
    /// initializes texture manager; loads stock textures
    void Init(IGame& game);

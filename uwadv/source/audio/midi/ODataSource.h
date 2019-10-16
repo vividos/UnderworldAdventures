@@ -31,6 +31,8 @@ class ODataSource
 	public:
 		ODataSource() {}
 		virtual ~ODataSource() {}
+		ODataSource(const ODataSource&) = delete;
+		ODataSource& operator=(const ODataSource&) = delete;
 
 		virtual void write1(uint32)=0;
 		virtual void write2(uint16)=0;

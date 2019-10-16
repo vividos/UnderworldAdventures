@@ -30,6 +30,8 @@ class IDataSource
 	public:
 		IDataSource() {}
 		virtual ~IDataSource() {}
+		IDataSource(const IDataSource&) = delete;
+		IDataSource& operator=(const IDataSource&) = delete;
 
 		virtual uint8 read1()=0;
 		virtual uint16 read2()=0;
