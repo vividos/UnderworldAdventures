@@ -42,16 +42,16 @@ public:
    // new virtual methods
 
    /// called to update caption
-   virtual void UpdateCaption(const char* windowTitle) { windowTitle; }
+   virtual void UpdateCaption(const char* windowTitle) { UNUSED(windowTitle); }
 
    /// processes game logic
-   virtual void OnTick(bool& resetTickTimer) { resetTickTimer; }
+   virtual void OnTick(bool& resetTickTimer) { UNUSED(resetTickTimer); }
 
    /// renders screen
    virtual void OnRender() {}
 
    /// called when new event was received
-   virtual void OnEvent(SDL_Event& event) { event; }
+   virtual void OnEvent(SDL_Event& event) { UNUSED(event); }
 
 private:
    /// processes new events

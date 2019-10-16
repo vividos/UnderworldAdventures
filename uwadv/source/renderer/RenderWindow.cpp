@@ -99,7 +99,7 @@ void RenderWindow::SetWindowTitle(const char* title)
 
 void RenderWindow::SetWindowIcon(int iconId)
 {
-   iconId;
+   UNUSED(iconId);
 
 #ifdef WIN32
    HINSTANCE inst = (HINSTANCE)GetModuleHandle(NULL);

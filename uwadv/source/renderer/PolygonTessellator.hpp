@@ -50,7 +50,12 @@ public:
    /// tessellates the polygon and returns triangles
    const std::vector<Triangle3dTextured>& Tessellate(Uint16 textureNumber);
 
-protected:
+private:
+   /// deleted copy ctor
+   PolygonTessellator(const PolygonTessellator&) = delete;
+   /// deleted assignment operator
+   PolygonTessellator& operator=(const PolygonTessellator&) = delete;
+
    // static callback functions
 
    /// called when triangle data begins
@@ -69,7 +74,7 @@ protected:
       Vertex3d* vertexData[4], GLfloat weight[4], Vertex3d** outputData,
       PolygonTessellator* This);
 
-protected:
+private:
    /// GLU tessellator object
    GLUtesselator* m_tessellator;
 

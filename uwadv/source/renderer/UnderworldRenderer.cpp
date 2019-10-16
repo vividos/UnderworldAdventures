@@ -315,7 +315,7 @@ void UnderworldRenderer::RenderDecal(const Underworld::Object& obj, unsigned int
    case 6: to_right.Set(0.0, 1.0);  base.y += posInfo.m_ypos / 8.0; base.x += wall_offset; break;
 
    default:
-      while (false);
+      UaAssert(false);
       break; // should not occur
    }
 

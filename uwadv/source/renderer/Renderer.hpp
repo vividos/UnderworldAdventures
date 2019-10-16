@@ -48,6 +48,11 @@ public:
    /// dtor
    ~Renderer();
 
+   /// deleted copy ctor
+   Renderer(const Renderer&) = delete;
+   /// deleted assignment operator
+   Renderer& operator=(const Renderer&) = delete;
+
    /// sets viewport, once available
    void SetViewport(Viewport* viewport)
    {
