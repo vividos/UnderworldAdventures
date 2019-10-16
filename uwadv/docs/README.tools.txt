@@ -34,53 +34,6 @@ using the Deluxe Paint Animator file format (*.anm).
 
 
 
-cnvdbg - Underworld Conversation Debugger
------------------------------------------
-
-cnvdbg is a conversation script debugger for Ultima Underworld 1. Conversation
-is done with an assembler-like language that runs in a virtual machine. The
-debugger looks and behaves more or less like gdb, the GNU debugger.
-
-The program needs some parameters to work. Here's the syntax:
-
-   cnvdbg <cnv-file> <str-file> <bglobals-file>
-
-<cnv-file> is the file that contains the conversations, usually
-"data/cnv.ark". <str-file> is the file where the strings can be extracted.
-Most of the time this will be "data/strings.pak". The last parameter is a file
-with conversation globals. This can be found in saved game's folders. This
-file could be "Save1/bglobals.dat".
-
-If you are in the base folder of the Ultima Underworld installation, you just
-could call cnvdbg like this:
-
-   cnvdbg data/cnv.ark data/strings.pak Save1/bglobals.dat
-
-The debugger then should load and initialize, and the debugger command line
-should appear, showing a ">", waiting for commands. Here's a list of available
-ones (also shows up when you use the command "help"):
-
-   help       h shows this help
-   conv n       loads a conversation (conv slot n in decimal, not hex)
-   reg        r shows registers
-   info       i shows info about the virtual machine, including breakpoints
-   list [n]   l lists instructions from code memory 0x<n> on (or from current ip)
-   dump       d dumps complete stack
-   step       s advances an instruction
-   cont       c continues until a breakpoint occurs
-   break n    b toggles a breakpoint at code pos 0x<n>
-   verbose    v toggles verboseness of debugger
-   reset        resets virtual machine (e.g. after an exception)
-   exit/quit  x quits the debugger
-
-   short keys can be used for the commands, e.g. 's' for step
-   some commands are only available when a conversation is loaded
-
-For more information about the inner workings of the conversation system of
-Ultima Underworld, just look into the file "docs/uw-formats.txt" in the source
-distribution of Underworld Adventures.
-
-
 map3ds - Level Map to 3DS format converter [uw1/2]
 ------------------------------------------
 

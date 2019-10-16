@@ -98,6 +98,50 @@ Then modify some stuff inside the created text file, e.g. translate strings.
 Be sure to keep a copy of the original "strings.pak" around, in case anything
 bad happens.
 
+### convdbg - Underworld Conversation Debugger
+
+convdbg is a conversation script debugger for Ultima Underworld. Conversation
+is done with an assembler-like language that runs in a virtual machine. The
+debugger looks and behaves more or less like gdb, the GNU debugger.
+
+The program needs some parameters to work. Here's the syntax:
+
+    convdbg <underworld-path> <bglobals-file>
+
+`<underworld-path>` is the path to the Ultima Underworld 1 or 2 folder, ending
+with a backslasl. The parameter `<bglobals-file>` is the relative file path
+to the conversation globals, e.g. the default `"data\babglobs.dat"` or a
+`bglobals.dat` from a savegame folder.
+
+If you are in the install folder of Ultima Underworld, you can just call
+convdbg like this:
+
+    convdbg .\ Save1/bglobals.dat
+
+The debugger then should load and initialize, and the debugger command line
+should appear, showing a ">", waiting for commands. Here's a list of available
+ones (also shows up when you use the command "help"):
+
+    help       h shows this help
+    conv n       loads a conversation (conv slot n in decimal, not hex)
+    reg        r shows registers
+    info       i shows info about the virtual machine, including breakpoints
+    list [n]   l lists instructions from code memory 0x<n> on (or from current ip)
+    dump       d dumps complete stack
+    step       s advances an instruction
+    cont       c continues until a breakpoint occurs
+    break n    b toggles a breakpoint at code pos 0x<n>
+    verbose    v toggles verboseness of debugger
+    reset        resets virtual machine (e.g. after an exception)
+    exit/quit  x quits the debugger
+
+    short keys can be used for the commands, e.g. 's' for step
+    some commands are only available when a conversation is loaded
+
+For more information about the inner workings of the conversation system of
+Ultima Underworld, just look into the file "docs/uw-formats.txt" in the source
+distribution of Underworld Adventures.
+
 ### xmi2mid - XMIDI to MIDI converter [uw1/2]
 
 xmi2mid is a converter for XMIDI files (*.xmi) that are used in Ultima
