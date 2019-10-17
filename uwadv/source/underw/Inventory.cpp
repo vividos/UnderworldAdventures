@@ -22,6 +22,7 @@
 #include "pch.hpp"
 #include "Inventory.hpp"
 #include "Object.hpp"
+#include "Properties.hpp"
 #include "Savegame.hpp"
 
 using Underworld::Inventory;
@@ -95,9 +96,9 @@ Uint16 Inventory::GetSlotListPos(size_t index) const
    return m_slotList[index];
 }
 
-/// \todo use ObjectProperties to check
 bool Inventory::IsContainer(Uint16 itemID) const
 {
+   // note: this is hardcoded, as both games have the same item ID range
    return itemID >= 0x0080 && itemID < 0x008f;
 }
 
@@ -483,4 +484,54 @@ void Inventory::BuildSlotList(Uint16 pos)
          pos = GetObjectInfo(pos).m_link;
       }
    }
+}
+
+unsigned int Inventory::GetInventoryWeight(const Underworld::ObjectProperties& properties) const
+{
+   // weight in 1/10 stones
+   unsigned int weightInTenth = 0;
+
+   // calculate weight from 8 topmost items and the paperdoll items
+   for (Uint16 pos = slotTopmostFirstItem; pos < slotMax; pos++)
+      weightInTenth += GetObjectWeight(pos, properties);
+
+   return weightInTenth;
+}
+
+unsigned int Inventory::GetObjectWeight(Uint16 pos,
+   const Underworld::ObjectProperties& properties) const
+{
+   if (pos == c_inventorySlotNoItem ||
+      pos == GetFloatingObjectPos())
+      return 0;
+
+   const ObjectInfo& objectInfo = GetObjectInfo(pos);
+   if (objectInfo.m_itemID == c_itemIDNone)
+      return 0;
+
+   const CommonObjectProperty& commonProperty = properties.GetCommonProperty(objectInfo.m_itemID);
+
+   unsigned int weightInTenth = commonProperty.m_mass;
+
+   if (commonProperty.m_isContainer &&
+      !objectInfo.m_isQuantity &&
+      objectInfo.m_quantity != 0)
+   {
+      Uint16 link = objectInfo.m_quantity;
+      while (link != 0)
+      {
+         weightInTenth += GetObjectWeight(link, properties);
+
+         const ObjectInfo& nextObjectInfo = GetObjectInfo(link);
+         link = nextObjectInfo.m_link;
+      }
+   }
+
+   // follow inventory link chain
+   if (objectInfo.m_link != 0)
+   {
+      weightInTenth += GetObjectWeight(objectInfo.m_link, properties);
+   }
+
+   return weightInTenth;
 }

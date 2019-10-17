@@ -146,6 +146,14 @@ void GameLogic::ChangeLevel(size_t level)
       m_scripting->OnChangingLevel();
 }
 
+unsigned int GameLogic::GetInventoryWeight() const
+{
+   const Inventory& inventory = GetUnderworld().GetPlayer().GetInventory();
+   const ObjectProperties& properties = this->GetObjectProperties();
+
+   return inventory.GetInventoryWeight(properties) / 10;
+}
+
 void GameLogic::CheckMoveTrigger()
 {
    double playerPos[3] =

@@ -31,6 +31,8 @@ namespace Base
 
 namespace Underworld
 {
+   class ObjectProperties;
+
    /// inventory position that indicates "no item"
    const Uint16 c_inventorySlotNoItem = 0xffff;
 
@@ -157,6 +159,9 @@ namespace Underworld
       /// inserts new item and makes it floating; returns slot
       Uint16 InsertFloatingItem(const ObjectInfo& info);
 
+      /// calculates current inventory weight, in 1/10 stones
+      unsigned int GetInventoryWeight(const ObjectProperties& properties) const;
+
       // loading / saving
 
       /// loads inventory from savegame
@@ -171,6 +176,11 @@ namespace Underworld
 
       /// drops floating object on given one
       bool DropOnObject(Uint16 containerPos, Uint16 pos);
+
+      /// returns weight of item (and contained items, if it's a container)
+      /// in 1/10 stones
+      unsigned int GetObjectWeight(Uint16 pos,
+         const ObjectProperties& properties) const;
 
    private:
       /// object list

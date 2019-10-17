@@ -91,8 +91,17 @@ namespace Underworld
       /// returns object properties; const version
       const ObjectProperties& GetObjectProperties() const { return m_properties; }
 
+      /// calculates inventory weight of the player, in whole stones, based on the weight of the objects
+      unsigned int GetInventoryWeight() const;
+
       /// returns underworld
       Underworld& GetUnderworld()
+      {
+         return m_underworld;
+      }
+
+      /// returns const underworld
+      const Underworld& GetUnderworld() const
       {
          return m_underworld;
       }
