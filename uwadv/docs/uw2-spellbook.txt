@@ -1,0 +1,177 @@
+
+
+
+                   _________________________________________
+                   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+                   Ultima Underworld II: Labyrinth of Worlds
+                             The Complete Spellbook
+                   _________________________________________
+                   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+                               January 22, 2005
+                                 Version 1.11
+
+                           Written by:  Dan Simpson
+                                Email:  dsimpson.faqs@gmail.com
+
+
+                                 Email Policy: (read before emailing me!)
+          ===============================================================
+          Use Underworld 2 Spellbook as the email subject.
+
+          Finally don't email me questions about anything that isn't
+          related to the spellcasting system in UW2, chances are I can't
+          help you!
+
+
+                                     Notes
+-------------------------------------------------------------------------------
+ The most recent version of this FAQ can be found at:
+    http://www.gamefaqs.com/
+
+ For those of you who lost, or never had, documentation.  Plus I wanted all
+ the spells to be in one place.
+
+ A brief word on the Runes:  There are 24 Runes in the game, corresponding to
+ 24 letters of the Alphabet (X and Z are the 2 missing letters).  Each rune
+ starts with the letter that it corresponds to, ex. Grav is 'G'.  In this
+ reference, I list all spells using only the individual letter.
+
+ A brief word on "non standard" spells:  Some spells were not listed in the
+ reference card that came with Underworld II.  These spells are found
+ throughout the game, either by talking to someone, or finding a scroll.
+ These spells will be marked by a *.  All non-standard spells come from Mitch
+ Aigner's really good UW2 FAQ, which can also be found at GameFAQs.
+
+ This FAQ looks best in Courier New at about 9 points.
+-------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------
+First Circle:
+-------------------------------------------------------------------------------
+
+*Bounce               UDP     When you run into things, you will bounce
+Create Food           IMY     Creates food in front of you, randomly
+Detect Trap           WJ      Detects traps in a target
+Light                 IL       --
+*Locate               BWE     If you can't see where you are on a map, use this
+Luck                  BOI      --
+Magic Arrow           OJ       --
+Resist Blows          BIS     Slightly increases your Armor Class
+
+-------------------------------------------------------------------------------
+Second Circle:
+-------------------------------------------------------------------------------
+
+Cause Fear            QC      Makes your enemies afraid of you
+Deadly Seeker         OWJ     Sends a deadly vapor towards a target
+*Dispel Hunger        QMY      --
+Jump (Leap)           UP      Allows you to jump higher
+Lesser Heal           IBM      --
+Rune of Flame         IFJ     Creates a firey rune
+Slow Fall             RDP      --
+*Valor                QAC     Increases your fighting abilities
+
+
+-------------------------------------------------------------------------------
+Third Circle:                                                                 
+-------------------------------------------------------------------------------
+
+Bleeding              JM      Makes your enemies bleed
+Cure Poison           AN       --
+Dispel Rune           AJO      --
+Lightning             OG       --
+Night Vision          QL      Let's you see in the dark (everything in B&W)
+*Repel Undead         AKC      --
+Speed                 RTP     Makes you move faster?
+Water Walk            YP       --
+
+
+-------------------------------------------------------------------------------
+Fourth Circle:
+-------------------------------------------------------------------------------
+
+Flameproof            SF      Protection from fires
+*Frost                IAF     A cold attack
+Heal                  IM       --
+Missile Protection    GSP      --
+Poison Weapon         NJY      --
+Remove Trap           AJ       --
+Study Monster         WM      Shows you some monster stats (vitality, weapon)
+*Thick Skin           IS      Slightly better than Resist Blows
+
+
+-------------------------------------------------------------------------------
+Fifth Circle:
+-------------------------------------------------------------------------------
+
+Fireball              PF       --
+Levitate              UHP     When you turn "fly" off, it becomes "slow fall"
+*Mending              RSY     Fully repairs weapons/armors (works on all armors)
+Name Enchantment      OWY     Identifies items names
+Open                  EY      Opens a door or locked chest
+*Rune of Stasis       ITJ     Sets a timed trap
+Smite Undead          ACM      --
+Telekinesis           OPY     Allows you to grab/manipulate distant objects
+
+
+-------------------------------------------------------------------------------
+Sixth Circle:
+-------------------------------------------------------------------------------
+
+Charm                 QRW     Turns a hostile creature to a friendly one
+Daylight              VIL     Makes it as bright as day
+Gate Travel           VRP     Allows quick travel (w/moonstone)
+Greater Heal          VIM      --
+Invisibility          VSL
+*Map Area             WE      Maps your immediate surroundings
+Paralyze              AEP     Paralyzes your enemies
+Sheet Lightning       VOG     Sends out random lightning
+
+
+-------------------------------------------------------------------------------
+Seventh Circle:
+-------------------------------------------------------------------------------
+
+*Enchant Item         VOY     Makes an item magical, can be used repeatedly
+Magic Satellite       OPG      --
+Mass Confusion        VAW     Confuses all nearby enemies
+Portal                VEY      --
+Reveal                OAQ     Makes invisible things visible
+Shockwave             JH       --
+*Summon Demon         KAM     Creates a hostile demon
+*Tremor               VPY     Causes a small quake
+
+
+-------------------------------------------------------------------------------
+Eigth Circle:
+-------------------------------------------------------------------------------
+
+*Armageddon           VKC     Kills everything!
+Flame Wind            FH       --
+Fly                   VHP     A more effective levitate, in that you can move
+Freeze Time           AT       --
+Iron Flesh            IVS     Provides really good protection
+Restoration           VM      The best Heal
+Roaming Sight         OPW      --
+*Smite Foe            VJM     Kills foes instantly
+
+
+This document was created simply because I was unable to find any online
+spell reference of its kind, and so decided to create this.  As far as I know,
+no other such reference exists.  Also I believe this to be all the spells in 
+the game, but I could be wrong.  If you know of any more spells than are listed
+here, please email me at:    dsimpson.faqs@gmail.com
+
+Finally, why wasn't UW or UW2 released in the Ultima: Collection?
+
+_______________________________________________________________________________
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+This Document is Copyright 2000-2005 by Dan Simpson
+Ultima Underworld II is Copyright 1993 by Origin
+
+I am not affiliated with Origin or anyone who had anything to do with the
+creation of this game.  This FAQ may be posted on any site so long as NOTHING 
+IS CHANGED and you EMAIL ME telling me that you are posting it.  You may not 
+charge for, or in any way profit from this FAQ.

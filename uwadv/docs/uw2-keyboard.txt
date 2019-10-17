@@ -1,0 +1,142 @@
+
+
+
+                   _________________________________________
+                   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+                   Ultima Underworld II: Labyrinth of Worlds
+                               Keyboard Commands
+                   _________________________________________
+                   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+                               January 22, 2005
+                                 Version 1.11
+                     
+                           Written by:  Dan Simpson
+                                Email:  dsimpson.faqs@gmail.com
+
+
+                                 Email Policy: (read before emailing me!)
+          ===============================================================
+          Use Underworld 2 Keyboard Commands as the email subject.
+
+          Finally don't email me questions about anything that isn't
+          related to the Keyboard Commands in UW2, chances are I can't
+          help you!
+
+
+                                     Notes
+-------------------------------------------------------------------------------
+ The most recent version of this FAQ can be found at:
+    http://www.gamefaqs.com/
+
+ For those of you who lost, or never had, documentation.  The commands here
+ are very similar to the first UW, but with a few noticable changes.
+
+ This FAQ looks best in Courier New at about 9 points.
+-------------------------------------------------------------------------------
+
+
+Moving around:
+-------------------------------------------------------------------------------
+
+       ^           'W' - is running forward
+       |           'S' - is walking forward
+  <-   |   ->      'A' - is turning to the left
+    \  W  /        'D' - is turning to the right
+     A S D         'Z' - will strafe left
+  <--Z X C -->     'C' - will strafe right
+       |           'X' - is walking backwards (there is no running backwards)
+       V           'J' - Jumping (use SHIFT to do a standing long jump)
+                   'E' - Elevate (used during levitation)
+                   'Q' - Go down (opposite of elevate)
+
+
+Looking Around: (useful for attacking enemies above or below you)
+-------------------------------------------------------------------------------
+
+  '1' - will look up incrementally: the more you press it, the more up you look
+  '2' - will look forward (undoing looking up or down)
+  '3' - will look down
+
+
+Attacking:
+-------------------------------------------------------------------------------
+
+  F1 - Enters attack mode (and turns it off)
+  'p' - attack high (hacking)
+  ';' - attack the middle (hacking)
+  '.' - attack low (stabbing)
+
+
+The "F" Commands:
+-------------------------------------------------------------------------------
+
+  F1 - Begins the Combat Mode
+  F2 - Use Mode
+  F3 - Grab Mode
+  F4 - Talking Mode
+  F5 - Looking Mode
+  F6 - Game Options (also counts as a Pause)
+  F7 - switches from the Inventory to the Stats' screens
+  F8 - Cast the spell in your spell space
+  F9 - Look around for monsters, and will tell you where the monsters are
+  F10 - Sleep (if you have a bedroll)
+
+
+CTRL Keys:
+-------------------------------------------------------------------------------
+
+  CTRL-H - Left/Right hand mouse
+  CTRL-J - Calibrate Joystick
+  CTRL-Q - Quits the game
+  CTRL-R - Restores a game
+  CTRL-S - Saves a game
+  CTRL-D - Details level
+  CTRL-F - Sound On/Off
+  CTRL-M - Music On/Off
+  ESC cancels any of these
+
+
+Mouse:
+-------------------------------------------------------------------------------
+
+  You can move the mouse around with the arrow keys.
+                         __
+  0 - left mouse button    |__ the ones on the numeric pad
+  . - right mouse button __|
+  TAB - move cursor to the next "hot spot" to the right**
+  SHIFT TAB - same but to the left
+
+  ** Note: "hot spots" are the 3 main areas on the screen, the left side panel,
+           the main graphic screen, and the character area.
+
+
+Misc:
+-------------------------------------------------------------------------------
+
+  ALT-Q  - Saves a screenshot as a GIF
+  ALT-F7 - Version of the game
+  ALT-F8 - Tells you your location (first number is Level, then 2 digits for X,
+           and 2 for Y, so a 16524 is on level one, x 65, y 24)
+
+
+
+This document was created simply because I was unable to find any online
+keyboard reference of any kind, and so decided to create my own by trying every
+key on the keyboard in the game.  As far as I know, no other such reference
+exists.  Also I believe this to be all the keyboard commands in the game, but I
+could be wrong.  If you know of any more keyboard commands than are listed
+here, please email me at:    dsimpson.faqs@gmail.com
+Finally, why wasn't UW or UW2 released in the Ultima: Collection?
+
+_______________________________________________________________________________
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+This Document is Copyright 2000-2005 by Dan Simpson
+Ultima Underworld II is Copyright 1993 by Origin
+
+I am not affiliated with Origin or anyone who had anything to do with the
+creation of this game.  This FAQ may be posted on any site so long as NOTHING
+IS CHANGED and you EMAIL ME telling me that you are posting it.  You may not
+charge for, or in any way profit from this FAQ.
+
+Manage Settings
