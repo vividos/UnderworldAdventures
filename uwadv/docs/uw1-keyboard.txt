@@ -1,3 +1,6 @@
+
+
+
                       ____________________________________
                       ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
                       Ultima Underworld: The Stygian Abyss
@@ -5,108 +8,108 @@
                       ____________________________________
                       ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-                             Version 1.3 (3-26-00)
-                     by Dan Simpson (manymoose@hotmail.com)
+                               January 22, 2005
+                                 Version 1.31
+
+                           Written by:  Dan Simpson
+                                Email:  dsimpson.faqs@gmail.com
 
 
-   Email Policy:  If you are going to email me about this game, please put
-                  Ultima Underworld as the subject.  Or UW.  Also please realize
-                  that I am not hiding cheats or any other information, i.e.
-                  everything I know about Ultima Underworld's Keyboard Commands
-                  are in this guide.
+                                 Email Policy: (read before emailing me!)
+          ===============================================================
+          Use Underworld Keyboard Commands as the email subject.
 
-                  Finally don't email me questions about anything that isn't
-                  related to the Keyboard Commands in UW, chances are I can't
-                  help you!
+          Finally don't email me questions about anything that isn't
+          related to the Keyboard Commands in UW, chances are I can't
+          help you!
 
 
-                              _______________
-.--------------------========= N  O  T  E  S =========-------------------------.
-|                             ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                                  |
-| The most recent version of this FAQ can be found at:                         |
-|    http://www.gamefaqs.com/                                                  |
-|                                                                              |
-| For those of you who lost, or never had, documentation.  The commands here   |
-| are very similar to the first UW, but with a few noticable changes.          |
-|                                                                              |
-| This FAQ looks best in Courier New at about 9 points.                        |
-'--------------------=================================-------------------------'
+                                     Notes
+-------------------------------------------------------------------------------
+ The most recent version of this FAQ can be found at:
+    http://www.gamefaqs.com/
+
+ For those of you who lost, or never had, documentation.  The commands here
+ are very similar to the first UW, but with a few noticable changes.
+
+ This FAQ looks best in Courier New at about 9 points.
+-------------------------------------------------------------------------------
 
 
 Moving around:
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
-     ^           'W' - is running forward
-     |           'S' - is walking forward       _
-<-   |   ->      'A' - is turning to the left    |_ Hold SHIFT to turn faster
-  \  W  /        'D' - is turning to the right  _|
-   A S D         'Z' - will strafe left
-<--Z X C -->     'C' - will strafe right
-     |           'X' - is walking backwards (there is no running backwards)
-     V           'J' - Jumping (use SHIFT to do a standing long jump)
-                 'E' - Elevate (used during levitation)
-                 'Q' - Go down (opposite of elevate)
+       ^           'W' - is running forward
+       |           'S' - is walking forward       _
+  <-   |   ->      'A' - is turning to the left    |_ Hold SHIFT to turn faster
+    \  W  /        'D' - is turning to the right  _|
+     A S D         'Z' - will strafe left
+  <--Z X C -->     'C' - will strafe right
+       |           'X' - is walking backwards (there is no running backwards)
+       V           'J' - Jumping (use SHIFT to do a standing long jump)
+                   'E' - Elevate (used during levitation)
+                   'Q' - Go down (opposite of elevate)
 
 
 Looking Around: (useful for attacking enemies above or below you)
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
-'1' - will look down incrementally (the more you press it, the more down you look!)
-'2' - will look forward (undoing looking up or down)
-'3' - will look up
+  '1' - will look up incrementally: the more you press it, the more up you look
+  '2' - will look forward (undoing looking up or down)
+  '3' - will look down
 
 
 Attacking:
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
-F5 - Enters attack mode (and turns it off)
-'p' - attack high (hacking)
-';' - attack the middle (hacking)
-'.' - attack low (stabbing)
+  F5 - Enters attack mode (and turns it off)
+  'p' - attack high (hacking)
+  ';' - attack the middle (hacking)
+  '.' - attack low (stabbing)
 
 
 Side Bar:
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
-F1 - top side bar, brings up the game menu
-F2 to F6 - the rest of the Side Bar from top down
-F7 - switches from the Inventory to the Stats' screens
-F8 - Cast the spell in your spell space
-F9 - Look around for monsters, and will tell you where the monsters are
-F10 - Sleep (if you have a bedroll)
+  F1 - top side bar, brings up the game menu
+  F2 to F6 - the rest of the Side Bar from top down
+  F7 - switches from the Inventory to the Stats' screens
+  F8 - Cast the spell in your spell space
+  F9 - Look around for monsters, and will tell you where the monsters are
+  F10 - Sleep (if you have a bedroll)
 
 
 CTRL Keys:
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
-CTRL-Q - Quits the game
-CTRL-R - Restores a game
-CTRL-S - Saves a game
-CTRL-D - Details level
-CTRL-F - Sound On/Off
-CTRL-M - Music On/Off
-ESC cancels any of these
+  CTRL-Q - Quits the game
+  CTRL-R - Restores a game
+  CTRL-S - Saves a game
+  CTRL-D - Details level
+  CTRL-F - Sound On/Off
+  CTRL-M - Music On/Off
+  ESC cancels any of these
 
 
 Mouse:
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
-You can move the mouse around with the arrow keys.
-                       __
-0 - left mouse button    |__ the ones on the numeric pad
-. - right mouse button __|
-TAB - move cursor to the next "hot spot" to the right
-SHIFT TAB - same but to the left
-** Note: "hot spots" are the 3 main areas on the screen, the left side panel,
-         the main graphic screen, and the character area.
+  You can move the mouse around with the arrow keys.
+                         __
+  0 - left mouse button    |__ the ones on the numeric pad
+  . - right mouse button __|
+  TAB - move cursor to the next "hot spot" to the right
+  SHIFT TAB - same but to the left
+  ** Note: "hot spots" are the 3 main areas on the screen, the left side panel,
+           the main graphic screen, and the character area.
 
 
 Misc:
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
-ALT-F7 - Version of the game
-ALT-F8 - Tells you your location (first number is Level, then 2 digits for X,
-         and 2 for Y, so a 16524 is on level one, x 65, y 24)
+  ALT-F7 - Version of the game
+  ALT-F8 - Tells you your location (first number is Level, then 2 digits for X,
+           and 2 for Y, so a 16524 is on level one, x 65, y 24)
 
 
 
@@ -115,16 +118,16 @@ keyboard reference of any kind, and so decided to create my own by trying every
 key on the keyboard in the game.  As far as I know, no other such reference
 exists.  Also I believe this to be all the keyboard commands in the game, but I
 could be wrong.  If you know of any more keyboard commands than are listed here,
-please email me at:    manymoose@hotmail.com
+please email me at:    dsimpson.faqs@gmail.com
 
 Finally, why wasn't UW released in the Ultima: Collection?
 
-________________________________________________________________________________
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-This Document is Copyright 2000 by Dan Simpson
+_______________________________________________________________________________
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+This Document is Copyright 2000-2005 by Dan Simpson
 Ultima Underworld is Copyright 1992 by Origin
 
 I am not affiliated with Origin or anyone who had anything to do with the
-creation of this game.  This FAQ may be posted on any site so long as NOTHING IS
-CHANGED and you EMAIL ME telling me that you are posting it.  You may not charge
-for, or in any way profit from this FAQ.
+creation of this game.  This FAQ may be posted on any site so long as NOTHING 
+IS CHANGED and you EMAIL ME telling me that you are posting it.  You may not 
+charge for, or in any way profit from this FAQ.
