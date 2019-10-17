@@ -1147,6 +1147,9 @@ int LuaScripting::inventory_float_add_item(lua_State* L)
 
    lua_pushnumber(L, static_cast<double>(inventorySlot));
 
+   // param is the item ID
+   self.m_game->GetUserInterface()->Notify(notifySelectTarget, info.m_itemID);
+
    return 1;
 }
 

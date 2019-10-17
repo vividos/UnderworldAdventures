@@ -110,6 +110,9 @@ enum UserInterfaceNotification
    notifyUpdateSpellArea,
    notifyAnimateDragons,
    notifyLevelChange,
+
+   /// notifies that the user either should select a target or picked up an item
+   /// the parameter specifies the item ID of the picked up item
    notifySelectTarget,
    notifyPlayerHit,
    notifyPlayerDrowning,
