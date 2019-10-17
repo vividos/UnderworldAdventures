@@ -518,11 +518,12 @@ void Panel::UpdateInventory()
 
    // inventory weight
    {
+      unsigned int strength = m_panelParent->GetGameInterface().GetUnderworld().GetPlayer().GetAttribute(Underworld::attrStrength);
+      unsigned int inventoryWeight = m_panelParent->GetGameInterface().GetGameLogic().GetInventoryWeight();
+      unsigned int leftWeight = strength * 2 - inventoryWeight;
+
       std::ostringstream buffer;
-      unsigned int weight = 0;
-      // TODO
-      //unsigned int weight = m_panelParent->GetGameInterface().GetGameLogic().GetInventoryWeight(inventory);
-      buffer << weight;
+      buffer << leftWeight;
 
       IndexedImage img_weight;
       m_inventoryWeightFont.CreateString(img_weight, buffer.str().c_str(), 224);
