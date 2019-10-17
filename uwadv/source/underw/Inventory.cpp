@@ -31,6 +31,40 @@ Inventory::Inventory()
    :m_floatingObjectPos(c_inventorySlotNoItem)
 {
    Create();
+
+#ifdef HAVE_DEBUG
+   // test item inventory
+   Uint16 testInventory[] =
+   {
+      0x0080, 0x0082, 0x008f, 0x0088, // 8 top slots
+      0x0095, 0x0116, 0x00b4, 0x0080,
+      0x000e, 0x0037, // hands
+      0xffff, 0x0094, // shoulder
+      0x0038, 0xffff, // finger
+      0x0024, 0x0021, 0x0027, 0x002f, 0x002d, // paperdoll
+      0x00b6, 0x0130, 0x0138, 0x0031 // 4 first objects
+   };
+
+   // init with some stuff
+   for (unsigned int index = 0; index < slotMax + 4; index++)
+   {
+      m_objectList[index].m_itemID = testInventory[index];
+      m_objectList[index].m_link = 0;
+   }
+
+   // set some container links
+   GetObjectInfo(0).m_quantity = slotMax;
+   GetObjectInfo(1).m_quantity = slotMax + 1;
+   GetObjectInfo(3).m_quantity = slotMax + 2;
+   GetObjectInfo(7).m_quantity = slotMax + 3;
+
+   GetObjectInfo(0).m_isQuantity = false;
+   GetObjectInfo(1).m_isQuantity = false;
+   GetObjectInfo(3).m_isQuantity = false;
+   GetObjectInfo(7).m_isQuantity = false;
+
+   BuildSlotList(c_inventorySlotNoItem);
+#endif
 }
 
 void Inventory::Create()
@@ -460,7 +494,7 @@ void Inventory::Save(Base::Savegame& sg) const
 }
 
 /// \param pos position of first object to build slot list with. when pos
-///        is equal to c_inventorySlotNoItem, the "top" slot list is built.
+/// is equal to c_inventorySlotNoItem, the "top" slot list is built.
 void Inventory::BuildSlotList(Uint16 pos)
 {
    // rebuild slot list
