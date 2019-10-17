@@ -21,6 +21,8 @@
 //
 #include "pch.hpp"
 #include "Screen.hpp"
+#include "GameInterface.hpp"
+#include "RenderWindow.hpp"
 
 Screen::Screen(IGame& gameInterface)
    :m_game(gameInterface), m_screenKeymap(NULL)
@@ -154,4 +156,18 @@ void Screen::MapWindowPosition(int& xpos, int& ypos) const
 
    xpos = unsigned(xpos * 320.0 / windowWidth);
    ypos = unsigned(ypos * 200.0 / windowHeight);
+}
+
+void Screen::UnmapWindowPosition(unsigned int& xpos, unsigned int& ypos) const
+{
+   int windowWidth = m_game.GetScreenXRes();
+   int windowHeight = m_game.GetScreenYRes();
+
+   xpos = unsigned((xpos / 320.0) * windowWidth);
+   ypos = unsigned((ypos / 200.0) * windowHeight);
+}
+
+void Screen::SetMousePos(unsigned int xpos, unsigned int ypos)
+{
+   m_game.GetRenderWindow().SetMousePos(xpos, ypos);
 }

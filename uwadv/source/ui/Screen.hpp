@@ -63,6 +63,12 @@ public:
    /// converts window position to 320x200 screen coordinates
    void MapWindowPosition(int& xpos, int& ypos) const;
 
+   /// converts 320x200 screen coordinate to real window position
+   void UnmapWindowPosition(unsigned int& xpos, unsigned int& ypos) const;
+
+   /// sets new mouse position; in real window coordinates
+   void SetMousePos(unsigned int xpos, unsigned int ypos);
+
 protected:
    /// list of all subwindows controlled by the screen
    std::vector<Window*> m_subWindows;

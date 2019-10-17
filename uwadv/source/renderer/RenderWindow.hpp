@@ -43,6 +43,9 @@ public:
    /// sets new window title
    void SetWindowTitle(const char* title);
 
+   /// sets mouse on a new position; in window screen coordinates
+   void SetMousePos(unsigned int xpos, unsigned int ypos);
+
    /// clears the screen with black color, without swapping buffers
    void Clear();
 

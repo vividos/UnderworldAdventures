@@ -97,6 +97,11 @@ void RenderWindow::SetWindowTitle(const char* title)
    SDL_SetWindowTitle(m_window, title);
 }
 
+void RenderWindow::SetMousePos(unsigned int xpos, unsigned int ypos)
+{
+   SDL_WarpMouseInWindow(m_window, xpos, ypos);
+}
+
 void RenderWindow::SetWindowIcon(int iconId)
 {
    UNUSED(iconId);
