@@ -386,17 +386,9 @@ bool Ingame3DView::ProcessEvent(SDL_Event& event)
             if (ypos < m_windowYPos) ypos = m_windowYPos;
             if (ypos >= m_windowYPos + m_windowHeight) ypos = m_windowYPos + m_windowHeight - 1;
 
-            // calculate real screen coordinates
-            int windowWidth = 320, windowHeight = 200;
-            // TODO check if needed
-            //SDL_GetWindowSize(m_window, &windowWidth, &windowHeight);
-
-            {
-               xpos = unsigned((xpos / 320.0) * windowWidth);
-               ypos = unsigned((ypos / 200.0) * windowHeight);
-
-               // TODO replacement? SDL_WarpMouse(xpos,ypos);
-            }
+            // calculate real screen coordinates and set new pos
+            m_screen->UnmapWindowPosition(xpos, ypos);
+            m_screen->SetMousePos(xpos, ypos);
 
             // update event mouse pos values
             event.motion.xrel += Sint16(xpos) - event.motion.x;
