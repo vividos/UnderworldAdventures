@@ -43,6 +43,9 @@
 // History (Date/Author/Description):
 // ----------------------------------
 //
+// 2019/10/17: vividos
+// - Added CCustomTabOwnerImpl::SetImageSize() method
+//
 // 2005/07/13: Daniel Bowen
 // - Namespace qualify the use of more ATL and WTL classes.
 //
@@ -813,6 +816,12 @@ public:
 		}
 
 		return bSuccess;
+	}
+
+	void SetImageSize(int cx, int cy)
+	{
+		m_cxImage = cx;
+		m_cyImage = cy;
 	}
 };
 

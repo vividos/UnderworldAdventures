@@ -28,6 +28,9 @@
 // History (Date/Author/Description):
 // ----------------------------------
 //
+// 2019/10/17: vividos
+// - Changed text drawing of CDotNetTabCtrlImpl to use DT_END_ELLIPSIS
+//
 // 2005/07/13: Daniel Bowen
 // - Namespace qualify the use of more ATL and WTL classes.
 //
@@ -613,7 +616,7 @@ public:
 			::InflateRect(&rcText, -m_settings.iPadding, 0);
 
 			_CSTRING_NS::CString sText = pItem->GetText();
-			dc.DrawText(sText, sText.GetLength(), &rcText, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_PATH_ELLIPSIS);
+			dc.DrawText(sText, sText.GetLength(), &rcText, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS);
 		}
 
 		dc.SetTextColor(crPrevious);
