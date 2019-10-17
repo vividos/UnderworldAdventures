@@ -1,0 +1,19 @@
+# top-most .editorconfig file
+root = true
+
+# all files
+[*]
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+tab_width = 3
+# end_of_line omitted to let the editor decide and git convert
+
+# code files
+[*.{cpp,hpp,c,h,lua}]
+indent_style = space
+indent_size = 3
+
+# makefiles
+[Makefile.*]
+indent_style = tab
