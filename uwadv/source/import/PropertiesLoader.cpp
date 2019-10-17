@@ -53,6 +53,9 @@ void Import::ImportProperties(Base::ResourceManager& resourceManager,
       unsigned int maxIndex = (file.FileLength() - 2) / 11;
       UaAssert(maxIndex == 0x0200);
 
+      Uint16 unknown = file.Read16();
+      UaAssert(unknown == 0x0E01);
+
       propertiesList.reserve(maxIndex);
       Uint8 data[11];
 
