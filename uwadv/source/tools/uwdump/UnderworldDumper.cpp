@@ -32,6 +32,7 @@
 extern void DumpLevArk(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
 extern void DumpObjectProperties(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
 extern void DumpUwExe(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
+extern void DumpCombineData(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
 
 typedef std::function<void(const std::string & filename, const GameStrings & gameStrings, bool isUw2)> T_fileHandler;
 
@@ -39,6 +40,7 @@ std::map<std::string, T_fileHandler> g_dumpFileHandlerMap =
 {
    { "lev.ark", DumpLevArk },
    { "comobj.dat", DumpObjectProperties },
+   { "cmb.dat", DumpCombineData },
    { "uw.exe", DumpUwExe },
    { "uw2.exe", DumpUwExe },
    { "uwdemo.exe", DumpUwExe },
