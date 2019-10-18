@@ -16,41 +16,20 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file prop.cpp
+/// \file DumpObjectProperties.cpp
 /// \brief object properties decoding implementation
 //
 #include "common.hpp"
-#include "prop.hpp"
-#include "GameStringsImporter.hpp"
+#include "GameStrings.hpp"
+#include "File.hpp"
 #include <algorithm>
 #include <bitset>
 
-void DumpObjectProperties::start(std::string& basepath)
+void DumpObjectProperties(const std::string& filename, const GameStrings& gameStrings, bool isUw2)
 {
-   printf("object properties dumping\nprocessing file %s%s\n",
-      basepath.c_str(), "data/comobj.dat");
+   UNUSED(isUw2);
 
-   // load game strings
-   {
-      std::string strpak(basepath);
-      strpak.append("data/strings.pak");
-      try
-      {
-         Base::Settings settings;
-         settings.SetValue(Base::settingUnderworldPath, basepath);
-
-         Import::GameStringsImporter importer(gstr);
-         importer.LoadStringsPakFile(strpak.c_str());
-      }
-      catch (...)
-      {
-         printf("error while loading game strings");
-      }
-   }
-
-   // try to open file
-   std::string filename(basepath);
-   filename.append("data/comobj.dat");
+   printf("object properties dumping\n");
 
    Base::File file(filename.c_str(), Base::modeRead);
    if (!file.IsOpen())
@@ -59,7 +38,6 @@ void DumpObjectProperties::start(std::string& basepath)
       return;
    }
 
-   // get file length
    Uint32 filelen = file.FileLength();
 
    unsigned int entries = (filelen - 2) / 11;
@@ -68,9 +46,8 @@ void DumpObjectProperties::start(std::string& basepath)
       filelen, entries, (filelen - 2) % 11);
 
    {
-      Uint8 start1, start2;
-      start1 = file.Read8();
-      start2 = file.Read8();
+      Uint8 start1 = file.Read8();
+      Uint8 start2 = file.Read8();
 
       printf("start bytes: %02x %02x\n\n", start1, start2);
    }
@@ -112,6 +89,6 @@ void DumpObjectProperties::start(std::string& basepath)
       printf("type=%01x ", (data[7] >> 1) & 15);
       printf("look_at=%01x ", (data[10] >> 4) & 1);
 
-      printf("name=%s\n", gstr.GetString(4, i).c_str());
+      printf("name=%s\n", gameStrings.GetString(4, i).c_str());
    }
 }

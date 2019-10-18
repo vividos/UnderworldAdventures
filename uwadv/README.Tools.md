@@ -111,18 +111,16 @@ syntax:
 Options and the command can be in any order, but there can only be one
 command. Here is a list of supported commands:
 
-- leveldump `<file>`
+`dump <file>`
 
-dumps the level map archive lev.ark given as `<basepath><file>`; it prints
-an overview of the .ark file block structure, the master object list
-with all fields described in uw-formats.txt, npc extra infos, npc
-inventories, a list of traps, special link ("sp_link") chains and the
-texture mapping. the infos are dumped for every level in the file.
+Dumps the specified file. Depending on the filename, different information is
+dumped. The file path can contain wildcards to dump many or all files at once.
+Note that not all files are currently supported for dumping.
 
-- propdump
+`view <file>`
 
-dumps common object properties from `<basepath>/data/comobj.dat` and
-special object properties from `<basepath>/data/objects.dat`
+Views a specified file with a dedicated viewer, e.g. images or 3D models. Note
+that only some files are supported for viewing.
 
 The following options are available for all commands:
 
@@ -133,9 +131,9 @@ The following options are available for all commands:
 Here are some examples for calling uwdump. It is assumed that the current
 folder is the game's main folder:
 
-   uwdump -d c:\uw1\ leveldump data\lev.ark > uw1-leveldump.txt
-   uwdump leveldump save1\lev.ark
-   uwdump -d c:\uw2\ propdump > uw2-properties.txt
+    uwdump -d c:\uw1\ dump c:\uw1\data\lev.ark > uw1-leveldump.txt
+    uwdump dump save1\lev.ark
+    uwdump -d . dump data\comobj.dat > uw1-properties.txt
 
 
 ### convdbg - Underworld Conversation Debugger

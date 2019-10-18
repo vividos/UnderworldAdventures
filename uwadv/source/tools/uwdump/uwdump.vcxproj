@@ -73,15 +73,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="levark.cpp" />
-    <ClCompile Include="mdldump.cpp" />
-    <ClCompile Include="prop.cpp" />
+    <ClCompile Include="DumpLevelArchive.cpp" />
+    <ClCompile Include="DumpUwExe.cpp" />
+    <ClCompile Include="DumpObjectProperties.cpp" />
+    <ClCompile Include="UnderworldDumper.cpp" />
     <ClCompile Include="uwdump.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="levark.hpp" />
-    <ClInclude Include="mdldump.hpp" />
-    <ClInclude Include="prop.hpp" />
+    <ClInclude Include="DumpLevelArchive.hpp" />
+    <ClInclude Include="UnderworldDumper.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\base\base.vcxproj">

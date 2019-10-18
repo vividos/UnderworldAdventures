@@ -16,20 +16,22 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file prop.hpp
-/// \brief object properties decoding
+/// \file DumpUwExe.cpp
+/// \brief builtin models dumping implementation
 //
-#pragma once
+#include "common.hpp"
+#include "Model3D.hpp"
+#include "FileSystem.hpp"
 
-#include "GameStrings.hpp"
+class GameStrings;
 
-/// dumps object properties
-class DumpObjectProperties
+extern bool DecodeBuiltInModels(const char* filename,
+   std::vector<Model3DPtr>& allModels, bool dump = false);
+
+void DumpUwExe(const std::string& filename, const GameStrings& gameStrings, bool isUw2)
 {
-public:
-   void start(std::string& basepath);
+   printf("3D models dumping\n");
 
-protected:
-   /// game strings
-   GameStrings gstr;
-};
+   std::vector<Model3DPtr> allModels;
+   DecodeBuiltInModels(filename.c_str(), allModels, true);
+}

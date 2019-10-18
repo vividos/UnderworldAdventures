@@ -16,46 +16,29 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file levark.cpp
+/// \file DumpLevelArchive.cpp
 /// \brief level archive decoding implementation
 //
 #include "common.hpp"
-#include "levark.hpp"
+#include "DumpLevelArchive.hpp"
 #include "File.hpp"
 #include "Bits.hpp"
-#include "GameStringsImporter.hpp"
+#include "GameStrings.hpp"
 #include "ArchiveFile.hpp"
 #include <algorithm>
 #include <bitset>
 
 using Import::GetBits;
 
-void DumpLevelArchive::start(std::string& basepath, std::string& param, bool isUw2)
+void DumpLevArk(const std::string& filename, const GameStrings& gameStrings, bool isUw2)
 {
-   printf("level archive dumping\nprocessing file %s%s\n",
-      basepath.c_str(), param.c_str());
+   DumpLevelArchive dumper{ gameStrings };
+   dumper.start(filename, isUw2);
+}
 
-   // load game strings
-   {
-      std::string strpak(basepath);
-      strpak.append("data/strings.pak");
-      try
-      {
-         Base::Settings settings;
-         settings.SetValue(Base::settingUnderworldPath, basepath);
-
-         Import::GameStringsImporter importer(gstr);
-         importer.LoadStringsPakFile(strpak.c_str());
-      }
-      catch (...)
-      {
-         printf("error while loading game strings");
-      }
-   }
-
-   // try to open file
-   std::string filename(basepath);
-   filename.append(param);
+void DumpLevelArchive::start(const std::string& filename, bool isUw2)
+{
+   printf("level archive dumping\n");
 
    Base::File file(filename.c_str(), Base::modeRead);
 
@@ -700,7 +683,7 @@ void DumpLevelArchive::dump_item(Uint16 pos)
       {
       case 0x016e: // special tmap object
          printf("[texidx=%02x tex=%04x texname=\"%s\"", owner, texmapping[owner],
-            gstr.GetString(10, texmapping[owner]).c_str());
+            m_gameStrings.GetString(10, texmapping[owner]).c_str());
          if (!is_quantity)
             printf(" sp_link=%04x", special);
          printf("] ");
@@ -721,7 +704,7 @@ void DumpLevelArchive::dump_item(Uint16 pos)
       case 0x0190: // a_text string trap
       {
          Uint16 id = (quality << 5) | owner;
-         std::string text = gstr.GetString(9, id);
+         std::string text = m_gameStrings.GetString(9, id);
 
          Base::String::Replace(text, "\n", "\\n");
 
@@ -788,7 +771,7 @@ void DumpLevelArchive::dump_item(Uint16 pos)
          Uint16 zpos = GetBits(objptr[1], 0, 7);
 
          printf("[item_id=%04x name=%s enabled=%01x",
-            item_id_trap, gstr.GetString(4, item_id_trap).c_str(), zpos);
+            item_id_trap, m_gameStrings.GetString(4, item_id_trap).c_str(), zpos);
 
          if (!is_quantity)
             printf(" sp_link=%04x", special);
@@ -806,7 +789,7 @@ void DumpLevelArchive::dump_item(Uint16 pos)
          break;
       }
 
-   printf("name=%s", gstr.GetString(4, item_id).c_str());
+   printf("name=%s", m_gameStrings.GetString(4, item_id).c_str());
    printf("\n");
 }
 
@@ -851,11 +834,11 @@ void DumpLevelArchive::dump_npcinfos(Uint16 pos)
    printf("] ");
 
    // npc type and name
-   printf("type=%-20.20s ", gstr.GetString(4, item_id).c_str());
+   printf("type=%-20.20s ", m_gameStrings.GetString(4, item_id).c_str());
 
    printf("whoami=%02x ", infoptr[18]);
    if (infoptr[18] != 0)
-      printf("name=%s", gstr.GetString(7, infoptr[18] + 16).c_str());
+      printf("name=%s", m_gameStrings.GetString(7, infoptr[18] + 16).c_str());
    else
       printf("name=n/a");
 

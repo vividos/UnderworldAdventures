@@ -16,20 +16,26 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file levark.hpp
+/// \file DumpLevelArchive.hpp
 /// \brief lev.ark level archive decoding
 //
 #pragma once
 
-#include "GameStrings.hpp"
 #include <set>
 #include <bitset>
+
+class GameStrings;
 
 /// dumps level archives
 class DumpLevelArchive
 {
 public:
-   void start(std::string& basepath, std::string& param, bool isUw2);
+   DumpLevelArchive(const GameStrings& gameStrings)
+      :m_gameStrings(gameStrings)
+   {
+   }
+
+   void start(const std::string& filename, bool isUw2);
    void process_level();
    void dump_infos(bool isUw2);
    void dump_special_link_chain(std::bitset<0x400>& visited, unsigned int pos, unsigned int indent = 0);
@@ -38,7 +44,7 @@ public:
 
    void follow_link(Uint16 link, unsigned int tilepos, bool special);
 
-protected:
+private:
    /// current underworld level
    unsigned int level;
 
@@ -70,5 +76,5 @@ protected:
    std::vector<Uint16> texmapping;
 
    /// game strings
-   GameStrings gstr;
+   const GameStrings& m_gameStrings;
 };

@@ -11,27 +11,27 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="levark.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="mdldump.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="prop.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="uwdump.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UnderworldDumper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DumpObjectProperties.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DumpLevelArchive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DumpUwExe.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="levark.hpp">
+    <ClInclude Include="UnderworldDumper.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="mdldump.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="prop.hpp">
+    <ClInclude Include="DumpLevelArchive.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
