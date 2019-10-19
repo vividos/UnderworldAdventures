@@ -24,6 +24,6 @@ project files.
 
 There are some doc files in this folder:
 
-- [README.Manual.txt](): Official manual for Underworld Adventures
-- [README.Tools.txt](): Document describing all Underworld Adventures tools
-- [README.Developer.txt](): Developer informations about the project
+- [README.Manual.txt](README.Manual.txt): Official manual for Underworld Adventures
+- [README.Tools.txt](README.Manual.txt): Document describing all Underworld Adventures tools
+- [README.Developer.txt](README.Manual.txt): Developer informations about the project
