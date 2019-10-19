@@ -18,6 +18,9 @@ This is the source code repository. The folders contain the following:
 * docs: Contains the official home page source code.
 * [uwadv](uwadv/README.md): Contains the Underworld Adventures source code.
 
+There is a feature matrix document that describes what Underworld Adventures
+implements and what isn't working yet: [Features.md](uwadv/docs/Features.md).
+
 The repository also contains the latest version of the
 [uw-formats.txt](https://github.com/vividos/UnderworldAdventures/blob/master/uwadv/docs/uw-formats.txt) file,
 the file formats descriptions of the Ultima Underworld 1 and 2 games.
