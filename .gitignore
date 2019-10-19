@@ -345,3 +345,4 @@ uwadv/bw-output/
 /uwadv/source/win32/uadebug/res/Ribbon.h
 /uwadv/source/win32/uadebug/res/Ribbon.rc
 /uwadv/win32/setup/install-log.txt
+CoverageReport*.xml

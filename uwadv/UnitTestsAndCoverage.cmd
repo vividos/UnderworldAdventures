@@ -38,6 +38,7 @@ OpenCppCoverage.exe ^
    --excluded_sources packages ^
    --excluded_sources source\thirdparty ^
    --excluded_sources source\audio\midi ^
+   --export_type SonarQube:CoverageReport-SonarQube.xml ^
    --export_type html:CoverageReport ^
    --modules unittest.dll ^
    --excluded_modules vstest.console.exe ^
