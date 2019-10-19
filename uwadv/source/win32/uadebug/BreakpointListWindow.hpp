@@ -52,6 +52,7 @@ public:
    // TODO add specific name
    CString GetDockingCaption() const { return _T("Breakpoints"); }
 
+   /// receives debug window notifications
    virtual void ReceiveNotification(DebugWindowNotification& notify);
 
    //virtual void OnUpdatedValue(unsigned int item, unsigned int subItem, LPCTSTR value) override;

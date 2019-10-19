@@ -47,6 +47,7 @@ namespace Import
       Base::ResourceManager& resourceManager, const char* relativeGlobalsFilename);
 
    /// Loads conversation code into virtual machine
+   /// \param conversationSlot the npc_whoami variable of the NPC to talk to
    bool LoadConvCode(Conv::CodeVM& vm, Base::Settings& settings, Base::ResourceManager& resourceManager,
       const char* cnvArkFilename, Uint16 conversationSlot);
 
