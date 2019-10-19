@@ -27,6 +27,10 @@
 #include "Base.hpp"
 #include "Game.hpp"
 
+#ifdef HAVE_WIN32
+#include "win32/CrashReporting.hpp"
+#endif
+
 /// main function
 int main(int argc, char* argv[])
 {
@@ -34,6 +38,10 @@ int main(int argc, char* argv[])
    // redirect stdout and stderr, since SDL2 doesn't do that for us anymore
    FILE* redirectedStdout = freopen("stdout.txt", "wt", stdout);
    FILE* redirectedStderr = freopen("stderr.txt", "wt", stderr);
+#endif
+
+#ifdef HAVE_WIN32
+   InitCrashReporting("uwadv");
 #endif
 
 #ifndef HAVE_DEBUG // in debug mode the debugger catches the exceptions

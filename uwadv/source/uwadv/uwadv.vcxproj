@@ -88,6 +88,7 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\win32\CrashReporting.cpp" />
     <ClCompile Include="DebugServer.cpp" />
     <ClCompile Include="GameConfigLoader.cpp" />
     <ClCompile Include="main.cpp" />
@@ -99,6 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\IDebugServer.hpp" />
+    <ClInclude Include="..\win32\CrashReporting.hpp" />
     <ClInclude Include="DebugServer.hpp" />
     <ClInclude Include="GameConfigLoader.hpp" />
     <ClInclude Include="Game.hpp" />
