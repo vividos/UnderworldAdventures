@@ -36,7 +36,7 @@ ArchiveFile::ArchiveFile(Base::SDL_RWopsPtr rwops, bool uw2Mode)
 
    m_offsetList.resize(count);
 
-   for (Uint16 index = 0; index < count; index++)
+   for (size_t index = 0; index < count; index++)
       m_offsetList[index] = m_archiveFile.Read32();
 
    // read in extended tables, in uw2 mode
@@ -44,20 +44,19 @@ ArchiveFile::ArchiveFile(Base::SDL_RWopsPtr rwops, bool uw2Mode)
    {
       m_fileEntryInfoList.resize(count);
 
-      Uint16 ui;
-      for (ui = 0; ui < count; ui++)
+      for (size_t index = 0; index < count; index++)
       {
-         Uint32 uiFlags = m_archiveFile.Read32();
-         //UaAssert((uiFlags & 1) != 0); // flag is always set, except for scd.ark
-         m_fileEntryInfoList[ui].m_isCompressed = (uiFlags & 2) != 0;
-         m_fileEntryInfoList[ui].m_allocatedExtraSpace = (uiFlags & 4) != 0;
+         Uint32 flags = m_archiveFile.Read32();
+         //UaAssert((flags & 1) != 0); // flag is always set, except for scd.ark
+         m_fileEntryInfoList[index].m_isCompressed = (flags & 2) != 0;
+         m_fileEntryInfoList[index].m_allocatedExtraSpace = (flags & 4) != 0;
       }
 
-      for (ui = 0; ui < count; ui++)
-         m_fileEntryInfoList[ui].m_dataSize = m_archiveFile.Read32();
+      for (size_t index = 0; index < count; index++)
+         m_fileEntryInfoList[index].m_dataSize = m_archiveFile.Read32();
 
-      for (ui = 0; ui < count; ui++)
-         m_fileEntryInfoList[ui].m_availSize = m_archiveFile.Read32();
+      for (size_t index = 0; index < count; index++)
+         m_fileEntryInfoList[index].m_availSize = m_archiveFile.Read32();
    }
 }
 
