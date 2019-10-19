@@ -171,6 +171,9 @@ void DumpLevelArchive::start(const std::string& filename, bool isUw2)
          SDL_RWops* rwops = SDL_RWFromFile(filename.c_str(), "rb");
          Base::ArchiveFile ark(Base::MakeRWopsPtr(rwops));
 
+         if (!ark.IsAvailable(level))
+            continue;
+
          Base::File levelFile = ark.GetFile(level);
          if (!levelFile.IsOpen())
             continue;
@@ -217,7 +220,9 @@ void DumpLevelArchive::start(const std::string& filename, bool isUw2)
          }
 
          // read in free list
+         if (false)
          {
+            // note: invalid offsets
             Uint16 mobile_items = decoded[0x7c02] | (decoded[0x7c03] << 8);
             Uint16 static_items = decoded[0x7c04] | (decoded[0x7c05] << 8);
 
