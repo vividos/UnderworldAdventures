@@ -21,7 +21,7 @@ Start splash / menu screen        | :heavy_check_mark:
 Create character screen           | :heavy_check_mark:
 Cutscene screen                   | :heavy_check_mark:
 Load/save game screen             | :heavy_check_mark:
-Ingame screen                     | : warning:
+Ingame screen                     | :warning:
 Map view                          | :x:
 Conversation screen               | :warning:
 Acknowledgements screen           | :heavy_check_mark:
@@ -108,6 +108,7 @@ Putting down objects        | :x:
 Throwing objects            | :x:
 Inventory handling          | :soon:
 Combining objects           | :x:
+Using objects               | :x:
 Casting spells              | :x:
 Modifying tilemap           | :x:
 Triggers & traps            | :warning:
@@ -166,6 +167,8 @@ Feature | State
 Load data from in zip archives     | :heavy_check_mark:
 Load data from uw_demo lhasfx .exe | :x:
 Load data from game.gog ISO file   | :x:
+Support portuguese translation     | :x:
+Support russian translation        | :x:
 
 ## Projects
 
