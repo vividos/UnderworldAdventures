@@ -30,13 +30,13 @@
 
 
 -- formats item name and article
-function format_item_name(item_id,quantity)
+function format_item_name(item_id, quantity)
 
    local article, name
 
-   name = uw.get_string(4,item_id)
+   name = uw.get_string(4, item_id)
 
-   local pos_amp = strfind(name, "&", 1, 1)
+   local pos_amp = string.find(name, "&", 1, true)
 
    -- more than one object?
    if pos_amp ~= nil
@@ -44,25 +44,25 @@ function format_item_name(item_id,quantity)
       if quantity > 1
       then
          -- take "plural" part of description
-         name = strsub(name, pos_amp+1)
+         name = string.sub(name, pos_amp + 1)
       else
          -- delete plural part of string
-         name = strsub(name, 1, pos_amp-1)
+         name = string.sub(name, 1, pos_amp - 1)
       end
    end
 
    -- find out article
-   local pos_us = strfind(name, "_", 1, 1)
+   local pos_us = string.find(name, "_", 1, true)
 
    if pos_us == nil
    then
       article = ""
    else
       -- take article
-      article = strsub(name, 1, pos_us-1)
+      article = string.sub(name, 1, pos_us - 1)
 
       -- delete article from name
-      name = strsub(name, pos_us+1)
+      name = string.sub(name, pos_us + 1)
    end
 
    return article, name
@@ -77,7 +77,7 @@ function look_at_special(objinfo)
    then
       -- print more detailed string
       uw.print( uw.get_string(8,objinfo.flags + 368) )
-      uw.print( uw.get_string(8,objinfo.quantity-512) )
+      uw.print( uw.get_string(8,objinfo.quantity - 512) )
 
       return 1
    end
@@ -96,7 +96,7 @@ end
 
 
 -- called to print a generic "look at" description
-function look_at_objinfo(objinfo,is_inv)
+function look_at_objinfo(objinfo, is_inv)
 
    local quantity = 0
 
@@ -113,7 +113,7 @@ function look_at_objinfo(objinfo,is_inv)
 
    local article, name = format_item_name(objinfo.item_id, quantity)
 
-   if strlen(article) > 0
+   if string.len(article) > 0
    then
       article = article .. " "
    end
@@ -124,7 +124,7 @@ function look_at_objinfo(objinfo,is_inv)
    if objinfo.item_id >= 0x0040 and objinfo.item_id < 0x0080
    then
       -- get attitude string
-      attitude = uw.get_string(5,96+objinfo.npc_attitude) .. " ";
+      attitude = uw.get_string(5, 96 + objinfo.npc_attitude) .. " ";
 
       if attitude == "upset "
       then
@@ -134,7 +134,7 @@ function look_at_objinfo(objinfo,is_inv)
       -- do "named" string
       if objinfo.npc_whoami ~= nil and objinfo.npc_whoami > 0
       then
-         named = " named " .. uw.get_string(7,objinfo.npc_whoami+16)
+         named = " named " .. uw.get_string(7, objinfo.npc_whoami + 16)
       end
 
    end
@@ -149,7 +149,7 @@ function look_at_objinfo(objinfo,is_inv)
       if prop_item.can_have_owner > 0 and objinfo.owner > 0 and objinfo.owner <= 28
       then
          -- do owner string
-         owner = " belonging to" .. uw.get_string(1,objinfo.owner+370)
+         owner = " belonging to" .. uw.get_string(1, objinfo.owner + 370)
       end
    end
 
@@ -165,11 +165,11 @@ function look_at_objinfo(objinfo,is_inv)
          if objinfo.item_id == 0x013b
          then
             -- map scroll, "Enscribed upon the scroll is your map."
-            uw.print(uw.get_string(1,151))
+            uw.print(uw.get_string(1, 151))
          else
             -- normal book
             uw.print("You read the " .. name .. "...")
-            uw.print(uw.get_string(3,objinfo.quantity-512))
+            uw.print(uw.get_string(3, objinfo.quantity - 512))
          end
       end
 
@@ -183,10 +183,10 @@ function look_at_wall(tex_id)
 
    if tex_id >= 256
    then
-      tex_id = 510-(tex_id-256)
+      tex_id = 510 - (tex_id - 256)
    end
 
    -- print description
-   uw.print( "You see " .. uw.get_string(10,tex_id) )
+   uw.print( "You see " .. uw.get_string(10, tex_id) )
 
 end
