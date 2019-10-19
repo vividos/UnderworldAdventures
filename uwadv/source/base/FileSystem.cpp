@@ -38,12 +38,12 @@ const char* Base::FileSystem::PathSeparator = "\\";
 const char* Base::FileSystem::PathSeparator = "/";
 #endif
 
-/// matches a wildcard pattern; \see
+/// matches a wildcard pattern; case insensitive; \see
 /// https://stackoverflow.com/questions/3300419/file-name-matching-with-wildcard
 bool PatternMatches(const std::string& path, const std::string& pattern)
 {
-   //if (pattern == "*" || patttern == "*.*")
-   //   return true;
+   if (pattern == "*" || pattern == "*.*")
+      return true;
 
    std::string::const_iterator pathIter = path.begin();
    for (std::string::const_iterator patternIter = pattern.begin(); patternIter != pattern.end(); ++patternIter)
@@ -69,7 +69,7 @@ bool PatternMatches(const std::string& path, const std::string& pattern)
       }
 
       default:
-         if (*pathIter != *patternIter)
+         if (tolower(*pathIter) != tolower(*patternIter))
             return false;
          ++pathIter;
       }
