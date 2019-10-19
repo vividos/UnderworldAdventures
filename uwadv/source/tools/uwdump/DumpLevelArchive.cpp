@@ -30,8 +30,14 @@
 
 using Import::GetBits;
 
+extern void DumpArkArchive(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
+
 void DumpLevArk(const std::string& filename, const GameStrings& gameStrings, bool isUw2)
 {
+   // first dump general .ark structure
+   DumpArkArchive(filename, gameStrings, isUw2);
+   printf("\n");
+
    DumpLevelArchive dumper{ gameStrings };
    dumper.start(filename, isUw2);
 }

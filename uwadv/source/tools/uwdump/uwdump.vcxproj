@@ -73,6 +73,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DumpArkArchive.cpp" />
     <ClCompile Include="DumpCombineData.cpp" />
     <ClCompile Include="DumpLevelArchive.cpp" />
     <ClCompile Include="DumpUwExe.cpp" />
