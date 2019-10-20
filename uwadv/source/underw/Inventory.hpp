@@ -147,13 +147,15 @@ namespace Underworld
 
       // floating item support
 
-      /// returns position of currently floating item, or c_inventorySlotNoItem when none
+      /// returns position of currently floating item, or c_inventorySlotNoItem
+      /// when none is currently floating
       Uint16 GetFloatingObjectPos() const { return m_floatingObjectPos; }
 
       /// makes an object in the inventory "floating"
-      bool FloatObject(Uint16 pos);
+      void FloatObject(Uint16 pos);
 
-      /// drops floating object into container given by container position
+      /// drops currently floating object into container, given by container
+      /// position, and possibly onto an object
       bool DropFloatingObject(Uint16 containerPos, Uint16 objectIndex = c_inventorySlotNoItem);
 
       /// inserts new item and makes it floating; returns slot

@@ -385,7 +385,7 @@ namespace UnitTest
          {
             Uint16 uiFloatObjPos1 = inv.Allocate();
             inv.GetObjectInfo(uiFloatObjPos1).m_itemID = 0x0001;
-            Assert::IsTrue(true == inv.FloatObject(uiFloatObjPos1));
+            inv.FloatObject(uiFloatObjPos1);
          }
 
          // drop to parent container, the topmost one
@@ -413,7 +413,7 @@ namespace UnitTest
          {
             Uint16 uiFloatObjPos2 = inv.Allocate();
             inv.GetObjectInfo(uiFloatObjPos2).m_itemID = 0x0002;
-            Assert::IsTrue(true == inv.FloatObject(uiFloatObjPos2));
+            inv.FloatObject(uiFloatObjPos2);
          }
 
          // drop to parent container, the parent one

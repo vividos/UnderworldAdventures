@@ -158,12 +158,11 @@ Uint16 Inventory::GetParentContainerPos() const
    return m_containerStack[parentPos];
 }
 
-/// \todo check if object is in current container
 void Inventory::OpenContainer(Uint16 pos)
 {
    UaAssert(true == IsContainer(GetObjectInfo(pos).m_itemID));
-   UaAssert(false == GetObjectInfo(pos).m_isQuantity);
-   UaAssert(GetContainerPos() != pos); // container already open
+   UaAssert(GetObjectInfo(pos).m_isQuantity == false);
+   UaAssert(GetContainerPos() != pos); // container must not already be open
 
    // check if user wants to open container from paperdoll
    if (pos >= slotPlayerObjectsStart && pos < slotMax)
@@ -173,6 +172,7 @@ void Inventory::OpenContainer(Uint16 pos)
    }
 
    // quantity field is used as pointer to content of containers
+   UaAssert(GetObjectInfo(pos).m_isQuantity == false);
    Uint16 link = GetObjectInfo(pos).m_quantity;
 
    BuildSlotList(link);
@@ -186,20 +186,18 @@ void Inventory::CloseContainer()
    UaAssert(!m_containerStack.empty());
    UaAssert(IsContainer(GetObjectInfo(m_containerStack.back()).m_itemID));
 
-   Uint16 pos = c_inventorySlotNoItem; // start of topmost item list at list pos 0
-
-   // remove current container link
+   // remove current container link from stack
    if (!m_containerStack.empty())
       m_containerStack.pop_back();
 
    // get previous topmost item index
+   Uint16 pos = c_inventorySlotNoItem; // in case of topmost container
    if (!m_containerStack.empty())
    {
       pos = m_containerStack.back();
 
-      UaAssert(false == GetObjectInfo(pos).m_isQuantity);
-
       // quantity is used as pointer to content of container
+      UaAssert(GetObjectInfo(pos).m_isQuantity == false);
       pos = GetObjectInfo(pos).m_quantity;
    }
 
@@ -213,48 +211,50 @@ void Inventory::CloseContainer()
 ///        c_inventorySlotNoItem is given, it is added to topmost container
 /// \return true if object could be added, or false when not (e.g. when
 ///         container is full; when false is returned, the value of pos
-///         isn't change.
+///         isn't changed.
 bool Inventory::AddToContainer(Uint16& pos, Uint16 containerPos)
 {
-   UaAssert(GetObjectInfo(pos).m_link == 0);
+   UaAssert(GetObjectInfo(pos).m_link == 0); // object must not have linked objects
 
    if (containerPos == c_inventorySlotNoItem)
    {
       // adding to topmost container
 
       // try to find an unused space
-      Uint16 ui;
-      for (ui = 0; ui < 8; ui++)
+      Uint16 topmostPos;
+      for (topmostPos = 0; topmostPos < 8; topmostPos++)
       {
-         if (GetObjectInfo(ui).m_itemID == c_itemIDNone)
+         if (GetObjectInfo(topmostPos).m_itemID == c_itemIDNone)
          {
             // copy object to that slot
-            GetObjectInfo(ui) = GetObjectInfo(pos);
+            GetObjectInfo(topmostPos) = GetObjectInfo(pos);
 
             // free object
             Free(pos);
-            pos = ui;
+            pos = topmostPos;
             break;
          }
       }
 
-      if (ui == 8)
-         return false; // no space to drop
+      if (topmostPos == 8)
+         return false; // found no space to drop
    }
    else
    {
-      UaAssert(true == IsContainer(GetObjectInfo(containerPos).m_itemID));
-      UaAssert(false == GetObjectInfo(containerPos).m_isQuantity);
+      // TODO check if object fits into container type, or if max. number of items is reached
 
-      // add to container
+      // adding to container at containerPos
+      UaAssert(true == IsContainer(GetObjectInfo(containerPos).m_itemID));
+      UaAssert(GetObjectInfo(containerPos).m_isQuantity == false);
+
       if (GetObjectInfo(containerPos).m_quantity == 0)
       {
-         // no object in container
+         // no object in container yet; add it as the first
          GetObjectInfo(containerPos).m_quantity = pos;
       }
       else
       {
-         // search last object in list
+         // find last object in list
          Uint16 link = GetObjectInfo(containerPos).m_quantity;
          Uint16 lastLink = link;
          while (link != 0)
@@ -267,8 +267,10 @@ bool Inventory::AddToContainer(Uint16& pos, Uint16 containerPos)
       }
    }
 
+   // adding to current container?
    if (containerPos == GetContainerPos())
    {
+      // refresh slot list
       Uint16 pos1stObj = containerPos == c_inventorySlotNoItem ? c_inventorySlotNoItem : GetObjectInfo(containerPos).m_quantity;
       BuildSlotList(pos1stObj);
    }
@@ -281,13 +283,13 @@ void Inventory::RemoveFromContainer(Uint16 pos, Uint16 containerPos)
    // if the object to remove is a container, it must not have items in it
    if (IsContainer(GetObjectInfo(pos).m_itemID))
    {
-      UaAssert(false == GetObjectInfo(pos).m_isQuantity);
+      UaAssert(GetObjectInfo(pos).m_isQuantity == false);
       UaAssert(GetObjectInfo(pos).m_quantity == 0);
    }
 
    if (containerPos == c_inventorySlotNoItem)
    {
-      // remove from topmost container
+      // removing from topmost container
       UaAssert(pos < slotPlayerObjectsStart); // must be in range
       UaAssert(0 == GetObjectInfo(pos).m_link); // must not have a link
 
@@ -297,15 +299,16 @@ void Inventory::RemoveFromContainer(Uint16 pos, Uint16 containerPos)
    }
    else
    {
-      UaAssert(false == GetObjectInfo(containerPos).m_isQuantity);
+      // removing from non-topmost container
+      UaAssert(GetObjectInfo(containerPos).m_isQuantity == false);
 
       // search container for object
       Uint16 link = GetObjectInfo(containerPos).m_quantity;
-      UaAssert(link != 0); // no objects in container?
+      UaAssert(link != 0); // no objects in container? should not happen
 
       if (link == pos)
       {
-         // first object in list
+         // first object in list; link next one as first
          GetObjectInfo(containerPos).m_quantity = GetObjectInfo(link).m_link;
       }
       else
@@ -324,80 +327,82 @@ void Inventory::RemoveFromContainer(Uint16 pos, Uint16 containerPos)
          }
       }
 
+      // unlink object to remove
       GetObjectInfo(pos).m_link = 0;
    }
 
+   // adding to current container?
    if (containerPos == GetContainerPos())
    {
+      // refresh slot list
       Uint16 pos1stObj = containerPos == c_inventorySlotNoItem ? c_inventorySlotNoItem : GetObjectInfo(containerPos).m_quantity;
       BuildSlotList(pos1stObj);
    }
 }
 
 /// \param pos position of object to convert to the floating object
-/// \return if the given object can be made floated; reasons for not be able
-/// \note check weight constraints before making an object floating; an object
-///       is considered part of the inventory as soon as it is added as
-///       floating object.
-/// \todo check if bool return value is needed; not needed, remove it!
-bool Inventory::FloatObject(Uint16 pos)
+void Inventory::FloatObject(Uint16 pos)
 {
-   UaAssert(m_floatingObjectPos == c_inventorySlotNoItem); // must have no floating object
+   UaAssert(m_floatingObjectPos == c_inventorySlotNoItem); // must have no floating object yet
    UaAssert(GetObjectInfo(pos).m_link == 0); // must not be in a container
 
    m_floatingObjectPos = pos;
-
-   return true;
 }
 
 /// Dropping floating objects must support four different scenarios:
-/// - dropping objects to the symbol of the currently open container (the parent)
-/// - dropping objects to an empty place in the container, basically adding
-///   it to the end of the slot list
-/// - dropping objects to the paperdoll or paperdoll slots
-/// - dropping object to an item in the container; this generates three further
-///   possibilities:
-///   - when the object is a container, drop item in this container (if possible)
-///   - when the objects can be combined, the new object is dropped (there still
+/// 1. Dropping object to the symbol of the currently open container (the parent)
+///    (both containerPos and objectPos are 0xffff)
+/// 2. Dropping object to an empty place in the container, basically adding
+///    it to the end of the slot list (only objectPos is 0xffff)
+/// 3. Dropping objects to the topmost slots or paperdoll slots (containerPos
+///    is 0xffff, objectPos is in the paperdoll pos range)
+/// 4. Dropping object to an item in the container (both containerPos and
+///    objectPos are set); this generates three further possibilities:
+/// 4a. When the object is a container, drop item in this container (if possible)
+/// 4b. When the objects can be combined, the new object is dropped (there still
 ///     may be a floating object afterwards, e.g. lighting incense with a torch)
-///   - when the objects can't be combined, the objects just swap
-/// \param containerPos container pos which should be used to drop item
-/// \param objectPos object position in container
-/// \return returns if dropping floating item succeeded; reasons for failure is
-///         when the container to drop to is full, the object type cannot be
-///         dropped in that container, ... TODO
+/// 4c. When the objects can't be combined, the objects just swap
+/// \param containerPos position of container item which should be used to drop item
+/// \param objectPos object position of object in container to drop onto
+/// \return returns if dropping floating item succeeded; reasons for failure are
+///         when the container to drop to is full, or the object type cannot be
+///         dropped in that container.
 bool Inventory::DropFloatingObject(Uint16 containerPos, Uint16 objectPos)
 {
    // add to topmost container / paperdoll?
    if (containerPos == c_inventorySlotNoItem)
    {
-      // must be a topmost slot or paperdoll pos, or "no item" pos
+      // must be a topmost slot, or a paperdoll pos, or the "no item" pos
       UaAssert(objectPos < ::Underworld::slotMax || objectPos == c_inventorySlotNoItem);
 
-      // dropping to topmost slot or paperdoll?
-      if (objectPos < ::Underworld::slotMax)
+      // dropping to topmost container?
+      if (objectPos == c_inventorySlotNoItem)
       {
-         // just drop on existing object
-         return DropOnObject(containerPos, objectPos);
-      }
-      else
-      {
-         // add to topmost container, at end
+         // scenario 1: add to topmost container, at the end
          bool ret = AddToContainer(m_floatingObjectPos, containerPos);
 
          if (ret)
             m_floatingObjectPos = c_inventorySlotNoItem;
+
          return ret;
+      }
+      else
+      {
+         // scenario 3: drop on topmost object (0..7) or paperdoll
+
+         // just drop on (maybe existing) object
+         return DropOnObject(containerPos, objectPos);
       }
    }
    else
    {
       // no, adding to specified container
+      // TODO combine this with above code
 
       // add to end of container?
-      // TODO move together with above code
       if (objectPos == c_inventorySlotNoItem)
       {
+         // scenario 2: adding to end of container
          bool ret = AddToContainer(m_floatingObjectPos, containerPos);
 
          if (ret)
@@ -407,12 +412,10 @@ bool Inventory::DropFloatingObject(Uint16 containerPos, Uint16 objectPos)
       }
       else
       {
-         // swap at specific pos in container
-         DropOnObject(containerPos, objectPos);
+         // scenario 4: drop op (maybe existing) object
+         return DropOnObject(containerPos, objectPos);
       }
    }
-
-   return false;
 }
 
 Uint16 Inventory::InsertFloatingItem(const ::Underworld::ObjectInfo& info)
@@ -541,14 +544,14 @@ unsigned int Inventory::GetObjectWeight(Uint16 pos,
 
    const ObjectInfo& objectInfo = GetObjectInfo(pos);
    if (objectInfo.m_itemID == c_itemIDNone)
-      return 0;
+      return 0; // unallocated
 
    const CommonObjectProperty& commonProperty = properties.GetCommonProperty(objectInfo.m_itemID);
 
    unsigned int weightInTenth = commonProperty.m_mass;
 
    if (commonProperty.m_isContainer &&
-      !objectInfo.m_isQuantity &&
+      objectInfo.m_isQuantity == false &&
       objectInfo.m_quantity != 0)
    {
       Uint16 link = objectInfo.m_quantity;
@@ -559,12 +562,6 @@ unsigned int Inventory::GetObjectWeight(Uint16 pos,
          const ObjectInfo& nextObjectInfo = GetObjectInfo(link);
          link = nextObjectInfo.m_link;
       }
-   }
-
-   // follow inventory link chain
-   if (objectInfo.m_link != 0)
-   {
-      weightInTenth += GetObjectWeight(objectInfo.m_link, properties);
    }
 
    return weightInTenth;
