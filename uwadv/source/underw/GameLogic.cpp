@@ -33,6 +33,8 @@ GameLogic::GameLogic(IScripting* scripting)
    m_isStopped = false;
    m_isAttacking = false;
    m_attackPower = 0;
+
+   m_underworld.GetPlayer().GetInventory().SetObjectProperties(GetObjectProperties());
 }
 
 void GameLogic::EvaluateUnderworld(double time)
@@ -149,9 +151,8 @@ void GameLogic::ChangeLevel(size_t level)
 unsigned int GameLogic::GetInventoryWeight() const
 {
    const Inventory& inventory = GetUnderworld().GetPlayer().GetInventory();
-   const ObjectProperties& properties = this->GetObjectProperties();
 
-   return inventory.GetInventoryWeight(properties) / 10;
+   return inventory.GetInventoryWeight() / 10;
 }
 
 void GameLogic::CheckMoveTrigger()

@@ -27,8 +27,11 @@
 
 using Underworld::Inventory;
 
+Underworld::ObjectProperties g_emptyObjectProperties;
+
 Inventory::Inventory()
-   :m_floatingObjectPos(c_inventorySlotNoItem)
+   :m_floatingObjectPos(c_inventorySlotNoItem),
+   m_objectProperties(g_emptyObjectProperties)
 {
    Create();
 
@@ -523,20 +526,19 @@ void Inventory::BuildSlotList(Uint16 pos)
    }
 }
 
-unsigned int Inventory::GetInventoryWeight(const Underworld::ObjectProperties& properties) const
+unsigned int Inventory::GetInventoryWeight() const
 {
    // weight in 1/10 stones
    unsigned int weightInTenth = 0;
 
    // calculate weight from 8 topmost items and the paperdoll items
    for (Uint16 pos = slotTopmostFirstItem; pos < slotMax; pos++)
-      weightInTenth += GetObjectWeight(pos, properties);
+      weightInTenth += GetObjectWeight(pos);
 
    return weightInTenth;
 }
 
-unsigned int Inventory::GetObjectWeight(Uint16 pos,
-   const Underworld::ObjectProperties& properties) const
+unsigned int Inventory::GetObjectWeight(Uint16 pos) const
 {
    if (pos == c_inventorySlotNoItem ||
       pos == GetFloatingObjectPos())
@@ -546,7 +548,7 @@ unsigned int Inventory::GetObjectWeight(Uint16 pos,
    if (objectInfo.m_itemID == c_itemIDNone)
       return 0; // unallocated
 
-   const CommonObjectProperty& commonProperty = properties.GetCommonProperty(objectInfo.m_itemID);
+   const CommonObjectProperty& commonProperty = m_objectProperties.get().GetCommonProperty(objectInfo.m_itemID);
 
    unsigned int weightInTenth = commonProperty.m_mass;
 
@@ -557,7 +559,7 @@ unsigned int Inventory::GetObjectWeight(Uint16 pos,
       Uint16 link = objectInfo.m_quantity;
       while (link != 0)
       {
-         weightInTenth += GetObjectWeight(link, properties);
+         weightInTenth += GetObjectWeight(link);
 
          const ObjectInfo& nextObjectInfo = GetObjectInfo(link);
          link = nextObjectInfo.m_link;

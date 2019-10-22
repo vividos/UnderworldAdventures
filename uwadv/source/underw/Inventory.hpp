@@ -86,6 +86,13 @@ namespace Underworld
       /// ctor
       Inventory();
 
+      /// sets reference to object properties; needed for container properties
+      /// and calculating weight
+      void SetObjectProperties(const ObjectProperties& objectProperties)
+      {
+         m_objectProperties = std::cref(objectProperties);
+      }
+
       /// create inventory
       void Create();
 
@@ -162,7 +169,7 @@ namespace Underworld
       Uint16 InsertFloatingItem(const ObjectInfo& info);
 
       /// calculates current inventory weight, in 1/10 stones
-      unsigned int GetInventoryWeight(const ObjectProperties& properties) const;
+      unsigned int GetInventoryWeight() const;
 
       // loading / saving
 
@@ -181,8 +188,7 @@ namespace Underworld
 
       /// returns weight of item (and contained items, if it's a container)
       /// in 1/10 stones
-      unsigned int GetObjectWeight(Uint16 pos,
-         const ObjectProperties& properties) const;
+      unsigned int GetObjectWeight(Uint16 pos) const;
 
    private:
       /// object list
@@ -196,6 +202,9 @@ namespace Underworld
 
       /// floating object position
       Uint16 m_floatingObjectPos;
+
+      /// reference to object properties
+      std::reference_wrapper<const ObjectProperties> m_objectProperties;
    };
 
 } // namespace Underworld
