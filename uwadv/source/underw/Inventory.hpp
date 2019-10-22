@@ -186,6 +186,15 @@ namespace Underworld
       /// drops floating object on given one
       bool DropOnObject(Uint16 containerPos, Uint16 pos);
 
+      /// determines if an object can be dropped on the given pos, e.g. a paperdoll pos
+      bool CanDropItemOnPos(const ObjectInfo& objectInfo, Uint16 pos) const;
+
+      /// checks if object type can be placed in that slot
+      bool CheckObjectTypeSlotType(Uint16 itemID, Uint16 pos) const;
+
+      /// checks if container accepts an object with given item ID
+      bool IsContainerAcceptedObjectType(Uint16 containerItemId, Uint16 objectItemId) const;
+
       /// returns weight of item (and contained items, if it's a container)
       /// in 1/10 stones
       unsigned int GetObjectWeight(Uint16 pos) const;

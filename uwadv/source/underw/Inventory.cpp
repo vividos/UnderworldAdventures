@@ -244,8 +244,6 @@ bool Inventory::AddToContainer(Uint16& pos, Uint16 containerPos)
    }
    else
    {
-      // TODO check if object fits into container type, or if max. number of items is reached
-
       // adding to container at containerPos
       UaAssert(true == IsContainer(GetObjectInfo(containerPos).m_itemID));
       UaAssert(GetObjectInfo(containerPos).m_isQuantity == false);
@@ -372,6 +370,9 @@ void Inventory::FloatObject(Uint16 pos)
 ///         dropped in that container.
 bool Inventory::DropFloatingObject(Uint16 containerPos, Uint16 objectPos)
 {
+   if (!CanDropItemOnPos(GetObjectInfo(m_floatingObjectPos), objectPos))
+      return false;
+
    // add to topmost container / paperdoll?
    if (containerPos == c_inventorySlotNoItem)
    {
@@ -444,6 +445,106 @@ bool Inventory::DropOnObject(Uint16 /*containerPos*/, Uint16 /*pos*/)
 {
    // TODO implement
    UaAssert(false);
+   return false;
+}
+
+bool Inventory::CanDropItemOnPos(const ::Underworld::ObjectInfo& objectInfo, Uint16 pos) const
+{
+   // dropping on parent container?
+   if (pos == c_inventorySlotNoItem)
+      return true; // always allow
+
+   // check if container allows object type and has capacity
+   if (IsContainer(m_objectList[pos].m_itemID))
+   {
+      UaAssert(GetObjectInfo(pos).m_isQuantity == false);
+
+      // check if container limit is reached
+      const ContainerProperty& containerProperty =
+         m_objectProperties.get().GetContainerProperty(m_objectList[pos].m_itemID);
+
+      if (containerProperty.m_capacity != 0)
+      {
+         unsigned int weightInTenths = GetObjectWeight(pos);
+         if (weightInTenths > containerProperty.m_capacity)
+            return false;
+      }
+
+      if (!IsContainerAcceptedObjectType(m_objectList[pos].m_itemID, objectInfo.m_itemID))
+         return false;
+   }
+
+   return CheckObjectTypeSlotType(objectInfo.m_itemID, pos);
+}
+
+bool Inventory::CheckObjectTypeSlotType(Uint16 itemID, Uint16 pos) const
+{
+   if (pos < slotPaperdollStart || pos >= slotMax)
+      return true;
+
+   // get inventory object category
+   ArmourCategory category = armourNone;
+
+   if (itemID >= 0x0020 && itemID < 0x0040)
+   {
+      const ArmourAndWearableProperty& property =
+         m_objectProperties.get().GetArmourAndWearableProperty(itemID);
+
+      category = property.m_category;
+   }
+
+   // check for rings
+   if ((pos == slotRightFinger || pos == slotLeftFinger) &&
+      category != armourRing)
+      return false;
+
+   // check for paperdoll items
+   if ((pos == slotPaperdollHead && category != armourHat) ||
+      (pos == slotPaperdollChest && category != armourBodyArmour) ||
+      (pos == slotPaperdollHands && category != armourGloves) ||
+      (pos == slotPaperdollLegs && category != armourLeggings) ||
+      (pos == slotPaperdollFeet && category != armourBoots))
+      return false;
+
+   return true;
+}
+
+bool Inventory::IsContainerAcceptedObjectType(Uint16 containerItemId, Uint16 objectItemId) const
+{
+   const ContainerProperty& containerProperty =
+      m_objectProperties.get().GetContainerProperty(containerItemId);
+
+   // check object type
+   switch (containerProperty.m_acceptedObjectClass)
+   {
+   case -1:
+      return true; // any type is accepted
+
+   case 0: // runes
+      if (objectItemId >= 0x00e8 && objectItemId <= 0x00ff)
+         return true;
+      break;
+
+   case 1: // arrows, crossbow bolts
+      if (objectItemId == 0x0151 || objectItemId == 0x0152)
+         return true;
+      break;
+
+   case 2: // scrolls, maps
+      if (objectItemId >= 0x0138 && objectItemId <= 0x013f)
+         return true;
+      break;
+
+   case 3: // edibles
+      if (objectItemId >= 0x00b0 && objectItemId <= 0x00bf)
+         return true;
+      break;
+
+   default:
+      UaAssert(false); // invalid accepted object class
+      break;
+   }
+
    return false;
 }
 
