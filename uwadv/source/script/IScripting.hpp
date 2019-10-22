@@ -31,16 +31,6 @@ enum ScriptingLanguage
    scriptingLanguageLua = 0,
 };
 
-/// item combining result status
-/// \todo move to game.hpp
-enum ItemCombineStatus
-{
-   itemCombineFailed = 0, ///< failed to combine the items
-   itemCombineDestroyFirst, ///< succeeded; destroyed first item
-   itemCombineDestroySecond, ///< succeeded; destroyed second item
-   itemCombineDestroyBoth, ///< succeeded; destroyed both items
-};
-
 /// scripting interface class
 class IScripting
 {
@@ -73,18 +63,6 @@ public:
 
    /// notifies script that the current level has changed
    virtual void OnChangingLevel() = 0;
-
-   /// \brief Combines two items
-   /// Tries to combine two objects; returns resulting object id or
-   /// Underworld::c_itemIDNone, when items couldn't be combined.
-   ///
-   /// \param itemId1 item id of object to combine
-   /// \param itemId2 item id of object to combine with
-   /// \param resultId item id of result object
-   /// \return status of item combining
-   ///
-   virtual ItemCombineStatus ItemCombine(Uint16 itemId1, Uint16 itemId2,
-      Uint16& resultId) = 0;
 
    /// creates new scripting object
    static IScripting* CreateScripting(ScriptingLanguage lang);

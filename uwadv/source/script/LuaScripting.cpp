@@ -327,18 +327,6 @@ void LuaScripting::OnChangingLevel()
    CheckedCall(0, 0);
 }
 
-ItemCombineStatus LuaScripting::ItemCombine(Uint16 itemId1,
-   Uint16 itemId2, Uint16& resultId)
-{
-   lua_getglobal(L, "item_combine");
-   lua_pushnumber(L, static_cast<double>(itemId1));
-   lua_pushnumber(L, static_cast<double>(itemId2));
-   CheckedCall(2, 2);
-
-   resultId = Underworld::c_itemIDNone;
-   return itemCombineFailed;
-}
-
 int LuaScripting::LoadScript(Base::SDL_RWopsPtr rwops, const char* chunkname)
 {
    // load script into buffer

@@ -59,8 +59,6 @@ public:
    virtual void UserAction(UserInterfaceUserAction action,
       unsigned int param) override;
    virtual void OnChangingLevel() override;
-   virtual ItemCombineStatus ItemCombine(Uint16 itemId1,
-      Uint16 itemId2, Uint16& resultId) override;
 
 private:
    /// loads a script
