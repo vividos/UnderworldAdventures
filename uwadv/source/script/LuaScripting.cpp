@@ -942,21 +942,8 @@ int LuaScripting::objlist_get_info(lua_State* L)
    lua_pushnumber(L, static_cast<double>(posInfo.m_tileY));
    lua_settable(L, -3);
 
-
-   lua_pushstring(L, "quality");
-   lua_pushnumber(L, static_cast<double>(info.m_quality));
-   lua_settable(L, -3);
-
-   lua_pushstring(L, "link_next");
+   lua_pushstring(L, "link");
    lua_pushnumber(L, static_cast<double>(info.m_link));
-   lua_settable(L, -3);
-
-   lua_pushstring(L, "owner");
-   lua_pushnumber(L, static_cast<double>(info.m_owner));
-   lua_settable(L, -3);
-
-   lua_pushstring(L, "quantity");
-   lua_pushnumber(L, static_cast<double>(info.m_quantity));
    lua_settable(L, -3);
 
    bool isNpc = obj->IsNpcObject();
@@ -1022,7 +1009,23 @@ void LuaScripting::AddObjectInfoTableFields(lua_State* L, const Underworld::Obje
    lua_pushnumber(L, static_cast<double>(info.m_itemID));
    lua_settable(L, -3);
 
-   lua_pushstring(L, "enchanted");
+   lua_pushstring(L, "link");
+   lua_pushinteger(L, info.m_link);
+   lua_settable(L, -3);
+
+   lua_pushstring(L, "quality");
+   lua_pushinteger(L, info.m_quality);
+   lua_settable(L, -3);
+
+   lua_pushstring(L, "owner");
+   lua_pushinteger(L, info.m_owner);
+   lua_settable(L, -3);
+
+   lua_pushstring(L, "quantity");
+   lua_pushinteger(L, info.m_quantity);
+   lua_settable(L, -3);
+
+   lua_pushstring(L, "is_enchanted");
    lua_pushnumber(L, info.m_isEnchanted ? 1.0 : 0.0);
    lua_settable(L, -3);
 

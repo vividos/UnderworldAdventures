@@ -46,24 +46,24 @@ function dump_objinfo_table(objpos)
       category = "sp_link"
    end
 
-   print( "dumping object info, objpos = " .. string.format("%04x",objpos) .."\n" ..
+   print( "dumping object info, objpos = " .. string.format("%04x", objpos) .."\n" ..
 
-      " item_id = " .. string.format("%04x",objinfo.item_id) ..
-      " (" .. uw.get_string(4,objinfo.item_id) .. ")," ..
+      " item_id = " .. string.format("%04x", objinfo.item_id) ..
+      " (" .. uw.get_string(4, objinfo.item_id) .. ")," ..
 
-      " link_next = " .. string.format("%04x",objinfo.link_next) .. "\n" ..
+      " link= " .. string.format("%04x", objinfo.link) .. "\n" ..
 
-      string.format(" quality = %04x,",objinfo.quality) ..
-      string.format(" owner = %04x, ",objinfo.owner) ..
-      category .. string.format(" = %04x\n",objinfo.quantity) ..
+      string.format(" quality = %04x,", objinfo.quality) ..
+      string.format(" owner = %04x, ", objinfo.owner) ..
+      category .. string.format(" = %04x\n", objinfo.quantity) ..
 
       " pos = " .. objinfo.xpos .. " / " .. objinfo.ypos ..
       ", height = " .. objinfo.zpos .. ", heading  = " .. objinfo.heading ..
       string.format(", tile = %02x/%02x\n", objinfo.tilex, objinfo.tiley) ..
 
-      " enchanted = " .. objinfo.enchanted ..
+      " is_enchanted = " .. objinfo.is_enchanted ..
       ", is_quantity = " .. objinfo.is_quantity ..
-      ", flags = " .. string.format("%04x\n",objinfo.flags)
+      ", flags = " .. string.format("%04x\n", objinfo.flags)
    )
 
    if objinfo.npc_used > 0
@@ -89,6 +89,12 @@ function dump_invinfo_table(inv_pos)
 
    local category = "quantity"
 
+   if objinfo.item_id == inv_slot_no_item
+   then
+      print(" dumping inventory item info, inv_pos = ffff\n")
+      return
+   end
+
    if objinfo.is_quantity > 0
    then
       if objinfo.quantity >= 512
@@ -99,19 +105,19 @@ function dump_invinfo_table(inv_pos)
       category = "sp_link"
    end
 
-   print( "dumping inventory item info, inv_pos = " .. string.format("%04x",inv_pos) .."\n" ..
-      " item_id = " .. string.format("%04x",objinfo.item_id) ..
-      " (" .. uw.get_string(4,objinfo.item_id) .. ")," ..
+   print( "dumping inventory item info, inv_pos = " .. string.format("%04x", inv_pos) .."\n" ..
+      " item_id = " .. string.format("%04x", objinfo.item_id) ..
+      " (" .. uw.get_string(4, objinfo.item_id) .. ")," ..
 
-      " link = " .. string.format("%04x",objinfo.link) .. "\n" ..
+      " link = " .. string.format("%04x", objinfo.link) .. "\n" ..
 
-      string.format(" quality = %04x,",objinfo.quality) ..
-      string.format(" owner = %04x, ",objinfo.owner) ..
-      category .. string.format(" = %04x\n",objinfo.quantity) ..
+      string.format(" quality = %04x,", objinfo.quality) ..
+      string.format(" owner = %04x, ", objinfo.owner) ..
+      category .. string.format(" = %04x\n", objinfo.quantity) ..
 
-      " enchanted = " .. objinfo.enchanted ..
+      " is_enchanted = " .. objinfo.is_enchanted ..
       ", is_quantity = " .. objinfo.is_quantity ..
-      ", flags = " .. string.format("%04x\n",objinfo.flags)
+      ", flags = " .. string.format("%04x\n", objinfo.flags)
    )
 
 end
