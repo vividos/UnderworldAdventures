@@ -70,6 +70,20 @@ Inventory::Inventory()
 #endif
 }
 
+void Inventory::AddItemCombineRule(Uint16 firstItemID, Uint16 secondItemID,
+   Uint16 resultItemID, unsigned int itemDestroyedMask)
+{
+   UaAssert(itemDestroyedMask >= 1 && itemDestroyedMask <= 3);
+
+   ItemCombineRule rule;
+   rule.m_itemID1 = firstItemID;
+   rule.m_itemID2 = secondItemID;
+   rule.m_resultItemID = resultItemID;
+   rule.m_itemDestroyedMask = itemDestroyedMask;
+
+   m_itemCombineRuleList.push_back(rule);
+}
+
 void Inventory::Create()
 {
    m_objectList.resize(0x0100);

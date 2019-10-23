@@ -93,6 +93,15 @@ namespace Underworld
          m_objectProperties = std::cref(objectProperties);
       }
 
+      /// adds new item combine rule
+      /// \param firstItemID ID of first item
+      /// \param secondItemID ID of second item
+      /// \param resultItemID ID of resulting item
+      /// \param itemDestroyedMask mask that determines which objects are destroyed;
+      ///        1 means the first object, 2 means the second object and 3 means both objects
+      void AddItemCombineRule(Uint16 firstItemID, Uint16 secondItemID,
+         Uint16 resultItemID, unsigned int itemDestroyedMask);
+
       /// create inventory
       void Create();
 
@@ -214,6 +223,18 @@ namespace Underworld
 
       /// reference to object properties
       std::reference_wrapper<const ObjectProperties> m_objectProperties;
+
+      /// rule for item combining
+      struct ItemCombineRule
+      {
+         Uint16 m_itemID1;
+         Uint16 m_itemID2;
+         Uint16 m_resultItemID;
+         unsigned int m_itemDestroyedMask;
+      };
+
+      /// list of item combine rules
+      std::vector<ItemCombineRule> m_itemCombineRuleList;
    };
 
 } // namespace Underworld
