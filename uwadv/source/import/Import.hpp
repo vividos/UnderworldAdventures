@@ -37,6 +37,7 @@ namespace Base
 namespace Underworld
 {
    class ObjectProperties;
+   class Inventory;
    class Underworld;
 }
 
@@ -46,6 +47,10 @@ namespace Import
    /// imports all object properties
    void ImportProperties(Base::ResourceManager& resourceManager,
       Underworld::ObjectProperties& properties);
+
+   /// imports all item combine entries
+   void ImportItemCombineEntries(Base::ResourceManager& resourceManager,
+      Underworld::Inventory& inventory);
 
    /// Loads a whole underworld initial data
    void LoadUnderworld(Base::Settings& settings, Base::ResourceManager& resourceManager, Underworld::Underworld& underworld);

@@ -456,6 +456,7 @@ void Game::InitGame()
    UaTrace("done\n\n");
 
    Import::ImportProperties(GetResourceManager(), GetGameLogic().GetObjectProperties());
+   Import::ImportItemCombineEntries(GetResourceManager(), GetGameLogic().GetUnderworld().GetPlayer().GetInventory());
 
    m_audioManager = std::make_unique<Audio::AudioManager>(GetSettings(), GetResourceManager());
 
