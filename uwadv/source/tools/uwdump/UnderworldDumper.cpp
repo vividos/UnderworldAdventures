@@ -152,16 +152,12 @@ void UnderworldDumper::Run()
    switch (m_command)
    {
    case commandDump:
-   {
       DumpFile(m_param);
-   }
-   break;
+      break;
 
    case commandView:
-   {
       ViewFile(m_param);
-   }
-   break;
+      break;
 
    default:
       printf("no command given; show help with parameter -h\n");
