@@ -662,8 +662,14 @@ void Panel::OnInventoryClick(bool buttonDown, bool leftButton,
       case areaInventorySlot2: case areaInventorySlot3:
       case areaInventorySlot4: case areaInventorySlot5:
       case areaInventorySlot6: case areaInventorySlot7:
-         item_pos = inventory.GetSlotListPos(m_inventorySlotStart + unsigned(area - areaInventorySlot0));
+      {
+         size_t containerIndex = m_inventorySlotStart + unsigned(area - areaInventorySlot0);
+         if (containerIndex < inventory.GetNumSlots())
+            item_pos = inventory.GetSlotListPos(containerIndex);
+         else
+            item_pos = ::Underworld::c_inventorySlotNoItem; // dropping after end of slot list
          break;
+      }
 
       case areaEquipmentLeftHand: item_pos = Underworld::slotLeftHand; break;
       case areaEquipmentLeftShoulder: item_pos = Underworld::slotLeftShoulder; break;
@@ -716,7 +722,7 @@ void Panel::OnInventoryClick(bool buttonDown, bool leftButton,
          if (inventory.GetContainerPos() != Underworld::c_inventorySlotNoItem)
          {
             // put item into parent's container, if possible
-            inventory.DropFloatingObject(inventory.GetParentContainerPos()); // TODO debug .drop_floating_item_parent();
+            inventory.DropFloatingObject(inventory.GetParentContainerPos());
          }
       }
       else
@@ -728,7 +734,7 @@ void Panel::OnInventoryClick(bool buttonDown, bool leftButton,
          // items dropped onto a container are put into that container
          // items that are combineable will be combined
          // items that don't fit into a paperdoll slot will be rejected
-         inventory.DropFloatingObject(inventory.GetContainerPos(), item_pos); // TODO debug
+         inventory.DropFloatingObject(inventory.GetContainerPos(), item_pos);
       }
 
       UpdateCursorImage();
