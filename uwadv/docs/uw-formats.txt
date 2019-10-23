@@ -5,7 +5,7 @@
                https://vividos.github.com/UnderworldAdventures
  +--------------------------------------------------------------------------+
 
-Document version: 1.73, as of 2019-10-16
+Document version: 1.74, as of 2019-10-23
 
 
 Table of Contents
@@ -215,7 +215,7 @@ Table of Contents
    chargen.byt    character generation bitmap, palette #3
    charhead.gr    character images, for conversations
    chrbtns.gr     character generation graphics, palette #3
-   chrgen.dat
+   chrgen.dat     character generation data?
    cmb.dat        item combining rules
    cnv.ark        conversation scripts
    comobj.dat     common object properties
@@ -418,7 +418,7 @@ Table of Contents
    lev.ark        compressed levelmap archive
    lighting.dat
    pals.dat       11 palettes
-   scd.ark
+   scd.ark        NPC schedules?
    weap.cm        weapon animation auxiliary palettes (see 3.8)
    weap.dat       weapon animation x and y coordinates (see 3.8)
 
@@ -1194,7 +1194,7 @@ Table of Contents
    00000080 - 000000FF      palette cycling information
    00000100 - 000004FF      initial palette information 256 x[blue green red 0]
    00000500 - ........      short page header
-   00000B00 - 00010AFF		page 0
+   00000B00 - 00010AFF      page 0
    00010B00 - 00020AFF      page 1
    ....
 
@@ -1456,7 +1456,7 @@ Table of Contents
         9-12   4   "flags"     Flags
           12   1   "enchant"   Enchantment flag (enchantable objects only)
           13   1   "doordir"   Direction flag (doors)
-          14   1   "invis"     Invisible flag (don't draw this object)
+          14 Â  1   "invis"     Invisible flag (don't draw this object)
           15   1   "is_quant"  Quantity flag (link field is quantity/special)
         OR
         9-15       texture number
@@ -2145,10 +2145,10 @@ Table of Contents
          "sp_link" field. as the door points to a lock, there can't be another
          trigger associated with it.
 
-	 the "quality" value decides if a door trap only opens, closes or
-	 toggles doors.
-	 1: try open
-	 2: try close
+    the "quality" value decides if a door trap only opens, closes or
+    toggles doors.
+         1: try open
+         2: try close
          3: toggle door state
 
    0189  a_ward trap
@@ -2292,8 +2292,9 @@ Table of Contents
    The number of object properties is determined by (filelen-2) / 11   (each
    entry is 11 bytes long).
 
-   The first two bytes of the file contain unknown information. Each entry has
-   the following format:
+   The first two bytes of the file contain unknown information (always 01 0E
+   in both uw1 and uw2). Then entries for all items follow. Each entry has the
+   following format:
 
    0000  Int8    height
    0001  Int16   mass/stuff:
@@ -2381,9 +2382,22 @@ Table of Contents
 
    * Critters table  (0x0040-0x007f)
 
-   0000-4 5*Int8 unknown TODO
+   0000-3 4*Int8 armor: amount of damage subtracted from attacks; either one
+                 value and 3x FF is used, or 4 (often) different values are,
+                 used, for body, ??, ?? and head
+   0004   Int8   vitality
    0005   Int8   npc_power
+   000f   Int8   poison score
+   0011   Int8   attack power
+   0012   Int8   defense power
+   0013   Int8   weapon
+   0014   Int8   damage
+   001c   Int8   eyes: number of feet (really?)
    0006-48 42*Int8 unknown TODO
+
+   Parts of this table were found by comparing with this bestiary table:
+   https://gamefaqs.gamespot.com/pc/564592-ultima-underworld-ii-labyrinth-of-worlds/faqs/74915
+   The tables are from the Ultima Underworld II Clue Book.
 
    * Containers table (0x0080-0x008f)
 
@@ -2424,6 +2438,7 @@ Table of Contents
    it is a 1, the object is destroyed. (It is always the case that at least
    one of the source objects is destroyed: you can't create something from
    nothing, at least not this way).
+   [uw2] Empty slots are marked with three 0xffff words.
 
 
  +--------------------------------------------------------------------------+
@@ -3797,16 +3812,16 @@ Table of Contents
               0006   Fixed     vertex y position
 
           This defines a translation to apply to coming nodes. Note that z
-	  and y seem to be swapped.
+          and y seem to be swapped.
 
      00BA   render door submodel
               0002   Int16     Pointer to some initial set up data for the
-	      	     	       door submodel rendering. Not sure what this
-			       actually does. Possibly related to door angle
-			       and visibility.
-	      0004   Int16     Pointer to first model node of submodel to
-	      	     	       render. Offset is relative to the location of
-			       the current node (BA).
+                               door submodel rendering. Not sure what this
+                               actually does. Possibly related to door angle
+                               and visibility.
+              0004   Int16     Pointer to first model node of submodel to
+                               render. Offset is relative to the location of
+                               the current node (BA).
 
  +--------------------------------------------------------------------------+
 
@@ -3824,17 +3839,18 @@ Table of Contents
    together. The file header has a slightly different format than in uw1's
    files:
 
-     0000  Int16  number of blocks in file (=nblocks)
+     0000  Int16  number of blocks in file (=numBlocks)
      0004  Int32  unknown (always 0)
 
-   Now follow 4 tables, each one is "nblocks" long and consists of Int32's.
+   Now follow 4 tables, each one is "numBlocks" long and consists of Int32's.
 
      Table 1: offset table
        absolute file offset to block
        an offset of 0 means the entry is not (yet) used
 
      Table 2: flags for the datachunk
-       Bit 0: block should be compressed (always set in uw2)
+       Bit 0: block should be compressed (always set in uw2, except for
+              scd.ark)
        Bit 1: actually is compressed
        Bit 2: the chunk has extra space allocated in case the compression
               isn't as effective next time. The "available space" value is
@@ -4083,7 +4099,7 @@ Table of Contents
      - not resetting MS between loops is intentional.
       - unlike the first two rounds, the last two rounds are cut short.
       - the algorithm to fill MA was derived from an assembly trace of
-        Robin Wöhlers uw2edit.exe. He uses a round 0 before the first round
+        Robin WÃ¶hlers uw2edit.exe. He uses a round 0 before the first round
         which is subsequently overwritten. This first round only results in
         increasing MS by 7, thus the first line of the algorithm outlined here.
 
@@ -4136,6 +4152,10 @@ Table of Contents
 
    This section lists files with unknown meaning.
 
+   chrgen.dat
+   ----------
+   Character generation data?
+
    skills.dat
    ----------
    The file contains infos about the skills in character creation for every
@@ -4157,10 +4177,10 @@ Table of Contents
    xfer.dat
    ----------
    The Underworld games use the (colour-index) translation tables in
-   data/xfer.dat for the transparencies (each transparency index has a
-   table). [The numbers here are an attempt to back-convert from the
-   translation table to RGBA values using a hairy little program of my own
-   devising. They look "about right", so I'm inclined to leave them.]
+  Â data/xfer.dat for the transparencies (each transparency index has a
+  Â table). [The numbers here are an attempt to back-convert from the
+  Â translation table to RGBA values using a hairy little program of my own
+  Â devising. They look "about right", so I'm inclined to leave them.]
    (description from TSSHP CVS)
 
 
