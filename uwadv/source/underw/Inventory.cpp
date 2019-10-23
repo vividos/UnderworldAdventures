@@ -459,11 +459,44 @@ Uint16 Inventory::InsertItem(const ::Underworld::ObjectInfo& info)
    return pos;
 }
 
-bool Inventory::DropOnObject(Uint16 /*containerPos*/, Uint16 /*pos*/)
+/// \param pos object position to drop to; may be empty
+bool Inventory::DropOnObject(Uint16 containerPos, Uint16 pos)
 {
-   // TODO implement
-   UaAssert(false);
-   return false;
+   // is target pos empty?
+   if (m_objectList[pos].m_itemID == c_itemIDNone)
+   {
+      // empty, then just drop it there
+      GetObjectInfo(pos) = GetObjectInfo(m_floatingObjectPos);
+      Free(m_floatingObjectPos);
+      m_floatingObjectPos = c_inventorySlotNoItem;
+
+      Uint16 pos1stObj = containerPos == c_inventorySlotNoItem ? c_inventorySlotNoItem : GetObjectInfo(containerPos).m_quantity;
+      BuildSlotList(pos1stObj);
+      return true;
+   }
+
+   // scenario 4a: is it a container object?
+   if (IsContainer(m_objectList[pos].m_itemID))
+   {
+      UaAssert(GetObjectInfo(pos).m_isQuantity == false);
+
+      // add to container, checking restrictions
+      bool ret = AddToContainer(m_floatingObjectPos, pos);
+
+      if (ret)
+         m_floatingObjectPos = c_inventorySlotNoItem;
+
+      return ret;
+   }
+
+   // scenario 4b: dropping on existing object; try to combine it
+   if (TryCombineItems(pos, m_floatingObjectPos))
+      return true;
+
+   // scenario 4c: no combining; just swap the objects
+   SwapObjectWithFloating(containerPos, pos);
+
+   return true;
 }
 
 bool Inventory::CanDropItemOnPos(const ::Underworld::ObjectInfo& objectInfo, Uint16 pos) const
@@ -564,6 +597,108 @@ bool Inventory::IsContainerAcceptedObjectType(Uint16 containerItemId, Uint16 obj
    }
 
    return false;
+}
+
+bool Inventory::TryCombineItems(Uint16 pos1, Uint16 pos2)
+{
+   Uint16 resultID = c_itemIDNone;
+   unsigned int itemDestroyedMask = 0;
+
+   for (const auto& rule : m_itemCombineRuleList)
+   {
+      if (m_objectList[pos1].m_itemID == rule.m_itemID1 &&
+         m_objectList[pos2].m_itemID == rule.m_itemID2)
+      {
+         resultID = rule.m_resultItemID;
+         itemDestroyedMask = rule.m_itemDestroyedMask;
+      }
+
+      if (m_objectList[pos1].m_itemID == rule.m_itemID2 &&
+         m_objectList[pos2].m_itemID == rule.m_itemID1)
+      {
+         resultID = rule.m_resultItemID;
+         itemDestroyedMask =
+            ((rule.m_itemDestroyedMask & 1) << 1) |
+            ((rule.m_itemDestroyedMask & 2) >> 1);
+      }
+   }
+
+   if (resultID == c_itemIDNone || itemDestroyedMask == 0)
+      return false;
+
+   Uint16 containerPos = GetContainerPos();
+
+   switch (itemDestroyedMask)
+   {
+   case 1: // replace first item
+      m_objectList[pos1].m_itemID = resultID;
+      break;
+
+   case 2: // replace second item
+      m_objectList[pos2].m_itemID = resultID;
+      break;
+
+   case 3: // replace first and delete second item
+      m_objectList[pos1].m_itemID = resultID;
+      RemoveFromContainer(pos2, containerPos);
+      if (pos2 == m_floatingObjectPos)
+         m_floatingObjectPos = c_inventorySlotNoItem;
+      break;
+
+   default:
+      UaAssert(false); // invalid mask
+      break;
+   }
+
+   Uint16 pos1stObj = containerPos == c_inventorySlotNoItem ? c_inventorySlotNoItem : GetObjectInfo(containerPos).m_quantity;
+   BuildSlotList(pos1stObj);
+
+   return true;
+}
+
+void Inventory::SwapObjectWithFloating(Uint16 containerPos, Uint16 pos)
+{
+   if (containerPos == c_inventorySlotNoItem)
+   {
+      // swap with topmost item
+      std::swap(m_objectList[pos], m_objectList[m_floatingObjectPos]);
+   }
+   else
+   {
+      // swap floating object in chain
+      Uint16 link = GetObjectInfo(containerPos).m_quantity;
+      UaAssert(link != 0); // no objects in container? should not happen
+
+      if (link == pos)
+      {
+         // first object in list; change link of next one
+         GetObjectInfo(containerPos).m_quantity = m_floatingObjectPos;
+         GetObjectInfo(m_floatingObjectPos).m_link = GetObjectInfo(pos).m_link;
+      }
+      else
+      {
+         // search for object in list
+         while (link != 0)
+         {
+            if (GetObjectInfo(link).m_link == pos)
+            {
+               // chain previous object to the floating object
+               Uint16 nextLink = GetObjectInfo(link).m_link;
+               GetObjectInfo(link).m_link = GetObjectInfo(m_floatingObjectPos).m_link;
+               GetObjectInfo(m_floatingObjectPos).m_link = nextLink;
+               break;
+            }
+
+            link = GetObjectInfo(link).m_link;
+         }
+      }
+
+      m_floatingObjectPos = pos;
+      GetObjectInfo(m_floatingObjectPos).m_link = 0;
+   }
+
+   Uint16 pos1stObj = containerPos == c_inventorySlotNoItem ? c_inventorySlotNoItem : GetObjectInfo(containerPos).m_quantity;
+   BuildSlotList(pos1stObj);
 }
 
 void Inventory::Load(Base::Savegame& sg)

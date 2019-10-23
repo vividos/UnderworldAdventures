@@ -204,6 +204,12 @@ namespace Underworld
       /// checks if container accepts an object with given item ID
       bool IsContainerAcceptedObjectType(Uint16 containerItemId, Uint16 objectItemId) const;
 
+      /// tries to combine items
+      bool TryCombineItems(Uint16 pos1, Uint16 pos2);
+
+      /// swaps object with floating object; pos is contained in given container
+      void SwapObjectWithFloating(Uint16 containerPos, Uint16 pos);
+
       /// returns weight of item (and contained items, if it's a container)
       /// in 1/10 stones
       unsigned int GetObjectWeight(Uint16 pos) const;
