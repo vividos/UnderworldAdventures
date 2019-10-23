@@ -359,9 +359,19 @@ void Inventory::RemoveFromContainer(Uint16 pos, Uint16 containerPos)
 void Inventory::FloatObject(Uint16 pos)
 {
    UaAssert(m_floatingObjectPos == c_inventorySlotNoItem); // must have no floating object yet
-   UaAssert(GetObjectInfo(pos).m_link == 0); // must not be in a container
 
-   m_floatingObjectPos = pos;
+   if (pos < slotPlayerObjectsStart)
+   {
+      // in topmost slot
+      m_floatingObjectPos = InsertItem(GetObjectInfo(pos));
+      GetObjectInfo(pos).m_itemID = c_itemIDNone;
+   }
+   else
+   {
+      // in a container
+      m_floatingObjectPos = pos;
+      RemoveFromContainer(pos, GetContainerPos());
+   }
 }
 
 /// Dropping floating objects must support four different scenarios:
@@ -391,7 +401,7 @@ bool Inventory::DropFloatingObject(Uint16 containerPos, Uint16 objectPos)
    if (containerPos == c_inventorySlotNoItem)
    {
       // must be a topmost slot, or a paperdoll pos, or the "no item" pos
-      UaAssert(objectPos < ::Underworld::slotMax || objectPos == c_inventorySlotNoItem);
+      UaAssert(objectPos < slotMax || objectPos == c_inventorySlotNoItem);
 
       // dropping to topmost container?
       if (objectPos == c_inventorySlotNoItem)
@@ -436,21 +446,15 @@ bool Inventory::DropFloatingObject(Uint16 containerPos, Uint16 objectPos)
    }
 }
 
-Uint16 Inventory::InsertFloatingItem(const ::Underworld::ObjectInfo& info)
+Uint16 Inventory::InsertItem(const ::Underworld::ObjectInfo& info)
 {
-   // already have a floating object?
-   if (m_floatingObjectPos != c_inventorySlotNoItem)
-      return c_inventorySlotNoItem;
-
    Uint16 pos = Allocate();
    if (pos == c_inventorySlotNoItem)
       return pos;
 
-   ::Underworld::ObjectInfo& newobj = GetObjectInfo(pos);
+   ObjectInfo& newobj = GetObjectInfo(pos);
    newobj = info;
    newobj.m_link = 0;
-
-   FloatObject(pos);
 
    return pos;
 }

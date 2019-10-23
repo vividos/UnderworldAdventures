@@ -1131,7 +1131,8 @@ int LuaScripting::inventory_float_add_item(lua_State* L)
    const Underworld::ObjectInfo& info = obj->GetObjectInfo();
    const Underworld::ObjectPositionInfo& posInfo = obj->GetPosInfo();
 
-   Uint16 inventorySlot = inventory.InsertFloatingItem(info);
+   Uint16 inventorySlot = inventory.InsertItem(info);
+   inventory.FloatObject(inventorySlot);
 
    objectList.RemoveObjectFromTileList(objectListPos, posInfo.m_tileX, posInfo.m_tileY);
    objectList.Free(objectListPos);

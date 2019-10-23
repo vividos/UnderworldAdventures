@@ -175,7 +175,7 @@ namespace Underworld
       bool DropFloatingObject(Uint16 containerPos, Uint16 objectIndex = c_inventorySlotNoItem);
 
       /// inserts new item and makes it floating; returns slot
-      Uint16 InsertFloatingItem(const ObjectInfo& info);
+      Uint16 InsertItem(const ObjectInfo& info);
 
       /// calculates current inventory weight, in 1/10 stones
       unsigned int GetInventoryWeight() const;
