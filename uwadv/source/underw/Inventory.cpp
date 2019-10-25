@@ -254,7 +254,12 @@ bool Inventory::AddToContainer(Uint16& pos, Uint16 containerPos)
       }
 
       if (topmostPos == 8)
+      {
+         UaTrace("no space in topmost container\n");
          return false; // found no space to drop
+      }
+
+      UaTrace("adding to topmost container pos\n");
    }
    else
    {
@@ -266,6 +271,8 @@ bool Inventory::AddToContainer(Uint16& pos, Uint16 containerPos)
       {
          // no object in container yet; add it as the first
          GetObjectInfo(containerPos).m_quantity = pos;
+
+         UaTrace("adding to empty container\n");
       }
       else
       {
@@ -279,6 +286,8 @@ bool Inventory::AddToContainer(Uint16& pos, Uint16 containerPos)
          }
 
          GetObjectInfo(lastLink).m_link = pos;
+
+         UaTrace("adding to container, after pos %04x\n", lastLink);
       }
    }
 
@@ -397,6 +406,8 @@ bool Inventory::DropFloatingObject(Uint16 containerPos, Uint16 objectPos)
    if (!CanDropItemOnPos(GetObjectInfo(m_floatingObjectPos), objectPos))
       return false;
 
+   UaTrace("dropping inventory object at %04x in container %04x...", containerPos, objectPos);
+
    // add to topmost container / paperdoll?
    if (containerPos == c_inventorySlotNoItem)
    {
@@ -465,6 +476,8 @@ bool Inventory::DropOnObject(Uint16 containerPos, Uint16 pos)
    // is target pos empty?
    if (m_objectList[pos].m_itemID == c_itemIDNone)
    {
+      UaTrace("in empty pos %04x\n", pos);
+
       // empty, then just drop it there
       GetObjectInfo(pos) = GetObjectInfo(m_floatingObjectPos);
       Free(m_floatingObjectPos);
@@ -478,6 +491,8 @@ bool Inventory::DropOnObject(Uint16 containerPos, Uint16 pos)
    // scenario 4a: is it a container object?
    if (IsContainer(m_objectList[pos].m_itemID))
    {
+      UaTrace("dropping into container...");
+
       UaAssert(GetObjectInfo(pos).m_isQuantity == false);
 
       // add to container, checking restrictions
@@ -626,6 +641,12 @@ bool Inventory::TryCombineItems(Uint16 pos1, Uint16 pos2)
    if (resultID == c_itemIDNone || itemDestroyedMask == 0)
       return false;
 
+   UaTrace("combining items %04x and %04x to %04x, mask %i\n",
+      m_objectList[pos1].m_itemID,
+      m_objectList[pos2].m_itemID,
+      resultID,
+      itemDestroyedMask);
+
    Uint16 containerPos = GetContainerPos();
 
    switch (itemDestroyedMask)
@@ -661,6 +682,7 @@ void Inventory::SwapObjectWithFloating(Uint16 containerPos, Uint16 pos)
    if (containerPos == c_inventorySlotNoItem)
    {
       // swap with topmost item
+      UaTrace("swapping with topmost item\n");
       std::swap(m_objectList[pos], m_objectList[m_floatingObjectPos]);
    }
    else
@@ -671,6 +693,8 @@ void Inventory::SwapObjectWithFloating(Uint16 containerPos, Uint16 pos)
 
       if (link == pos)
       {
+         UaTrace("swapping with first item in chain\n");
+
          // first object in list; change link of next one
          GetObjectInfo(containerPos).m_quantity = m_floatingObjectPos;
          GetObjectInfo(m_floatingObjectPos).m_link = GetObjectInfo(pos).m_link;
@@ -686,6 +710,8 @@ void Inventory::SwapObjectWithFloating(Uint16 containerPos, Uint16 pos)
                Uint16 nextLink = GetObjectInfo(link).m_link;
                GetObjectInfo(link).m_link = GetObjectInfo(m_floatingObjectPos).m_link;
                GetObjectInfo(m_floatingObjectPos).m_link = nextLink;
+
+               UaTrace("swapping with item in chain, in pos %04x\n", link);
                break;
             }
 
