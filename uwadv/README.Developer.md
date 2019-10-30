@@ -29,22 +29,25 @@ navigate the document.
 
 [B. Third-Party libraries and licenses](#b-third-party-libraries-and-licenses)<br/>
 
+
 ## 1. Introduction
 
 This document is an introduction for developers who want to compile from
-source code, just wait to understand the source code or event want to start
+source code, just want to understand the source code or even want to start
 coding for the Underworld Adventures project. The document describes all that
 a developer has to know. For further reference the source code documentation
 can be used.
 
 Underworld Adventures is developed entirely in C++, with a few external
-libraries. Lua was chosen as the script language to use. For more on Lua
-interfaces to the game, please look into the chapter "Lua Scripting".
+libraries. Lua is used as the scripting language to use. For more on Lua
+scripting and the interfaces to the game, please check out the chapter
+"Lua Scripting".
 
 
 ## 2. Compiling Underworld Adventures
 
-There are several platforms on which Underworld Adventures can run.
+There are several platforms on which Underworld Adventures can be built and
+run.
 
 ### 2.1 Microsoft Visual Studio on Windows
 
@@ -53,12 +56,13 @@ from Microsoft. As of writing this document, Visual Studio 2019 is the
 current version. Any later version should also work. Either Community or
 Professional version should work. Install the "C++" workload.
 
-Open the "uwadv.sln" file located in this folder. You see several projects.
+Open the "uwadv.sln" file located in the "uwadv" folder. In the project
+workspace, you will see several projects, organized by some solution folders.
 Set the "uwadv" project as startup project and select either Debug or Release
 configuration. Compile all projects using "Build > Build Solution" or start
 debugging with F5, which also builds the relevant projects.
 
-All output files are stored in the "output" folder directly beneath this
+All output files are stored in the "output" folder directly under the base
 folder. You see a "bin" folder where the resulting binary files are placed,
 an "intermediate" and "lib" folders with built files. The folders are further
 subdivided in "Debug" and "Release" folders.
@@ -66,22 +70,23 @@ subdivided in "Debug" and "Release" folders.
 In order to debug the project directly in its created "bin" folder, go to the
 "uwadv" project's properties, and in the "Debugging" section set the value for
 "Working Directory" to "$(OutDir)" (without the double quotes). This way the
-game can find its uwadv.cfg and related resources.
+game can find its uwadv.cfg and related resources. A default uwadv.cfg file is
+copied to the folder as well, if it doesn't exist yet.
 
 More information about running Underworld Adventures can be found in the file
-"README.Manual.txt".
+["README.Manual.md"](README.Manual.md).
 
 ### 2.2 gcc/clang on Linux
 
 To compile and install Underworld Adventures, you need several development
 packages. These are:
 
- - GCC 7.0 or higher, or
- - CLang 5.0 or higher
- - SDL2 2.0.9 (or higher)
- - SDL_mixer 2.0.5 (or higher)
+- GCC 7.0 or higher, or
+- CLang 5.0 or higher
+- SDL2 2.0.10 (or higher)
+- SDL_mixer 2.0.5 (or higher)
 
-To hear Midi music using SDL_mixer, you additionally need the sound patches
+To hear MIDI music using SDL_mixer, you additionally need the sound patches
 available on the SDL_mixer home page.
 
 All the packages can be installed using the package manager of your Linux
@@ -96,12 +101,12 @@ using a source package, read the following respective sub topics.
 
 To build from Git you will need several other tools, including:
 
- - autoconf 2.53 (or higher)
- - automake 1.6.3 (or higher)
- - libtool 1.4.1 (or higher)
+- autoconf 2.53 (or higher)
+- automake 1.6.3 (or higher)
+- libtool 1.4.1 (or higher)
 
 To generate the required files, go to the main uwadv directory (containing
-configure.ac), and run
+the file `configure.ac`), and run
 
     ./autogen.sh
 
@@ -110,12 +115,12 @@ package.
 
 #### 2.2.2 Building from source package
 
-To start compiling, go to the main uwadv directory (containing "configure"),
-and run
+To start compiling, go to the main uwadv directory (containing the file
+`configure`), and run
 
     ./configure
 
-The configure script should detect all needed things to compile Underworld
+The configure script detects all necessary settings to compile Underworld
 Adventures, such as the C++ compiler, paths to SDL, SDL_mixer and the OpenGL
 include file. There are several options that can be passed to the configure
 script:
@@ -134,11 +139,11 @@ finished, the executable "uwadv" is built. Now type (as root now):
     make install
 
 The built files are now installed into their proper folders.
-(The binary is installed into /usr/local/bin/ by default, the data files
-into /usr/local/share/games/uwadv/)
+(The binary is installed into `/usr/local/bin/` by default, the data files
+into `/usr/local/share/games/uwadv/`)
 
 More information about running Underworld Adventures can be found in the file
-"README.Manual.txt".
+["README.Manual.md"](README.Manual.md).
 
 Uninstalling: If you built and installed Underworld Adventures from source,
 you can uninstall it by running (as root):
@@ -156,15 +161,15 @@ bash console called MSYS and can be used to build Underworld Adventures.
 To let the system find the compiler, you should add something like this to
 your "autoexec.bat":
 
-   PATH=%PATH%;c:\mingw\bin
+    PATH=%PATH%;c:\mingw\bin
 
-You could also change the PATH variable assignment in /etc/profile using MSYS.
+You could also change the PATH variable assignment in `/etc/profile` using MSYS.
 All further examples in this file assume that MinGW was installed to
-"c:\mingw\".
+`c:\mingw\`.
 
 #### Compiling
 
-To specify some paths, open the file "Makefile.mingw" in the main project
+To specify some paths, open the file `Makefile.mingw` in the main project
 folder.
 
 The variable `UWADV_PATH` contains the path where Underworld Adventures is
@@ -172,16 +177,16 @@ installed when performing a "make install" or "make update" (see below for
 make targets).
 
 The variable `MINGW_PATH` should be set to the base path of the MinGW
-installation. It is mainly to specify the SDL include path.
+installation. It is there mainly to specify the SDL include path.
 
-There are some settings that can be set to "yes" or "no". These are:
+There are some settings that can be set to `yes` or `no`. These are:
 
-- WITH_CONSOLE: enables separate console output and disables writing of the
-                stdout.txt and stderr.txt file. default: "no"
-- WITH_DEBUGGING: enables some experimental code for developers. Basically
-                  defines `HAVE_DEBUG` in the source code. default: "no"
+- `WITH_CONSOLE`: enables separate console output and disables writing of the
+                stdout.txt and stderr.txt file. default: `no`
+- `WITH_DEBUGGING` enables some experimental code for developers. Basically
+                  defines `HAVE_DEBUG` in the source code. default: `no`
 
-To compile, start MSYS and change ("cd") to the main project dir. The command
+To compile, start MSYS and change (`cd`) to the main project dir. The command
 to compile the project looks like this:
 
     make -f Makefile.mingw <target>
@@ -194,11 +199,11 @@ where `target` can be one of several words:
                of these targets: `cnvdbg xmi2mid mapdisp animview strpak`)
 - data:        builds all needed data files
 - install:     builds uwadv and data and installs the files in the path
-               specified by "UWADV_PATH". overwrites uwadv.cfg
-- update:      the same as "install" but doesn't copy the uwadv.cfg file
+               specified by `UWADV_PATH`. Overwrites `uwadv.cfg`
+- update:      the same as `install` but doesn't copy the `uwadv.cfg` file
 - clean:       cleans all built source and data files
 - luac:        builds the Lua compiler that can be used to verify Lua scripts
-- toolsinstall: installs all tools in a "tools" subfolder of "UWADV_PATH"
+- toolsinstall: installs all tools in a `tools` subfolder of `UWADV_PATH`
 
 #### Using autoconf and automake
 
@@ -209,12 +214,12 @@ installation. Continue with the instructions in chapter 2.3. Good Luck!
 
 ### 2.4 Xcode on macOS
 
-There is an Xcode project in the "uwadv/macosx" folder that can be opened with
+There is an Xcode project in the `uwadv/macosx` folder that can be opened with
 Xcode 11 or later. Additionally, the SDL2 and SDL_Mixer frameworks have to be
 installed on the system.
 
-Detailed instructions on how to setting up SDL2 and SDL_Mixer on a macOS
-computer can be followed here:
+Detailed instructions on how to set up SDL2 and SDL_Mixer on a macOS computer
+can be found here:
 http://lazyfoo.net/tutorials/SDL/01_hello_SDL/mac/index.php
 
 Note: The macOS project is only occasionally updated and may fail to compile.
@@ -226,7 +231,10 @@ Other Unix based operating system (FreeBSD, MacOS X etc.) may work like on
 Linux, but no guarantees if it works. If you want to port the project to a new
 platform, please contact the project team.
 
+
 ## 3. Developing Underworld Adventures
+
+This chapter contains infos about developing uwadv further.
 
 ## 3.1 Code guidelines
 
@@ -235,16 +243,18 @@ should follow when commiting code via Git:
 
 - tabs should be converted to spaces, indendation size is 3 spaces; don't
   reindent code that wasn't changed by you
-- always document your code, use doxygen-style comments for functions
-- don't use "using namespace std;", use e.g. std::string instead
+- always document your code, use doxygen-style comments for functions and
+  classes
+- don't import whole namespaces, e.g. with `using namespace std;`; instead
+  use e.g. `std::string` instead
 - use C++ style casts when possible
-- use std::ostringstream instead of sprintf()
-- use "T* var" and "T& var" for references and pointers (not "T *var" or
-  "T &var")
+- use `std::ostringstream` instead of `sprintf()`
+- use `T* var` and `T& var` for pointers and references (not `T *var` or
+  `T &var`)
 - throw exceptions on serious errors (e.g. when you absolutely can't
   continue)
 - use SDL functionality where possible, to stay platform independent
-- use SDL data types, such as Uint32, Uint16 when needed
+- use SDL data types, such as `Uint32`, `Uint16` when needed
 - don't accumulate all your changes in one Git commit, separate commits
   that doesn't have something in common
 
@@ -258,27 +268,29 @@ the official site:
 
 There are some Git GUIs for Windows; I recommend:
 
-* GitExtensions: https://gitextensions.github.io/
+- GitExtensions: https://gitextensions.github.io/
 
   The tool shows a window with the currently opened repository and the commit
-  history. Almost all necessary commands are available as 
+  history. All necessary commands are available as (context) menu items.
 
 ### 3.2.1 Git repository
 
 Some guidelines:
 
 - Development happens on the `master` branch.
-- All pull requests should be based on `master` as well.
-- Tag names are in the format `x.x-codename`, e.g. `0.9-mojito`.
+- All pull requests (PRs) should be based on `master` as well.
+- Tag names for versions are in the format `x.x-codename`, e.g.
+  `0.9-mojito`.
 - Please set Unix-to-DOS line ending option `core.autolf` to `true`.
 - You can use branches in PRs, but rebase them on master before requesting the
   PR.
 
 ### 3.2.2 GitHub issues & pull requests
 
-For bug reports or enhancement wishes, please write a GitHub issue. Also write
-an issue if you want to work on any part of the project, or comment an
-existing ticket. Only then work on the bug or feature, and then submit a PR.
+For bug reports or enhancement wishes, please write a GitHub issue first. Also
+write an issue if you want to work on any part of the project, or comment on
+an existing ticket. Only then work on the bug or feature, and then submit a
+PR.
 
 Pull requests must contain commits that are clear and can be understood from
 only reading the diff or by additionally reading the commit text. Be verbose
@@ -287,10 +299,10 @@ in a separate commit, or even a separate pull request if it's large. Follow
 the coding guidelines.
 
 If you want to add small amounts of code, or want to make small additions to
-documentation (e.g. the uw-formats.txt file), just open an issue and I'll add
-the change manually. You can also send an email to me; visit the
-[Development](https://vividos.github.io/UnderworldAdventures/development.html)
-page.
+documentation (e.g. the [uw-formats.txt](uw-formats.txt) file), just open an
+issue and I'll add the change manually. You can also send an email to me;
+visit the [Development](https://vividos.github.io/UnderworldAdventures/development.html)
+page on how to contact the team.
 
 ## 3.3 Release Checklist
 
@@ -300,36 +312,40 @@ Adventures release:
 1. Think about the next funny release name
 
 2. Be sure that the project (uwadv, tools) compiles AND works on all
-   systems where build files exist. Be sure to test against uw1 and
-   uw_demo. Build systems to test for are: mingw32, mingw32 configure.ac,
+   systems where build files exist. Be sure to test against `uw1` and
+   `uw_demo`. Build systems to test for are: mingw32, mingw32 configure.ac,
    MSVC, Linux configure.ac, Linux RPM
 
-3. Adjust version numbers in configure.ac, source/Makefile.mingw,
-   source/doxygen/doxygen.cfg, source/win32/uwadv_res.rc,
-   source/win32/uadebug/uadebug_res.rc and
-   source/win32/uaconfig/uaconfig_res.rc
+3. Run all unit tests and run the SonarCloud analysis and fix all reported
+   bugs
 
-4. Update ChangeLog file and commit it
+4. Adjust version numbers in the following files:
+   - configure.ac
+   - source/Makefile.mingw
+   - source/doxygen/doxygen.cfg
+   - source/version.hpp
 
-5. Add and push a Git tag to the repository, with version and release name as
+5. Update release notes in [README.Manual.md](README.Manual.md) file
+
+6. Add and push a Git tag to the repository, with version and release name as
    tag name.
 
-6. Build the Windows and Linux versions of the source and binary packages,
+7. Build the Windows and Linux versions of the source and binary packages,
    using the AppVeyor build service.
 
-7. Upload built packages to GitHub, as a new release
+8. Upload built packages to GitHub, as a new release
 
 9. Update Underworld Adventures home page with latest news
 
 ## 3.4 Source code documentation
 
-The Underworld Adventures source code is heavily commented using
-doxygen-style comments for modules, files, classes, class members, structs,
-enums and typedefs. The source code documentation generated via doxygen can
+The Underworld Adventures source code is commented using doxygen-style
+comments for modules, files, classes, class members, structs, enums and
+typedefs. The source code documentation generated via doxygen can
 be used as reference to understand the source code.
 
-The source code documentation can be generated with the following commands
-(change into the "doxygen" folder before):
+The source code documentation can be generated with the following command
+(change into the `uwadv/doxygenÂ´ folder before):
 
     doxygen doxygen.cfg
 
@@ -338,7 +354,7 @@ output of the tools is automatically listed in the "Error List" window.
 
 The HTML documentation is created in the folder "html", where "index.html"
 is the entry point to the source code documentation. The file
-"doxygen-warnings.txt" contains the program's warnings.
+`doxygen-warnings.txt` contains the program's warnings.
 
 doxygen is available from this site:
 
@@ -360,14 +376,14 @@ files of Ultima Underworld, but are needed for the game to run. They can
 contain enhancements to graphics, new audio files, game scripts or new 3D
 models.
 
-The "Underworld Adventures Resource" file (extension .zip) package the
+The "Underworld Adventures Resource" file (file extension `.zip`) package the
 contents of the "uadata" source tree into one or more files. Name scheme looks
-like this: "uadataXX.zip" (printf syntax: "uadata%02u.zip").
+like this: `uadataXX.zip` (printf syntax: `uadata%02u.zip`).
 
-When the game searches for a "uadata" file, e.g. "uw1/sound/test.wav", it
-first searches the true folder, "uadata/uw1/sound/test.wav". If that
-doesn't exist, all "uadata??.zip" files are tested if the file is in one of
-it. When not found, an exception is thrown.
+When the game searches for a "uadata" file, e.g. `uw1/sound/test.wav`, it
+first searches the actual folder, `uadata/uw1/sound/test.wav`. If that
+doesn't exist, all `uadata??.zip` files are tested if the file is in one of
+them. When the file isn't found at all, an exception is thrown.
 
 The Makefile in the "uadata" source folder creates packaged files that have
 all the files from the whole uadata tree in one file. Just do a
@@ -375,16 +391,16 @@ all the files from the whole uadata tree in one file. Just do a
     make all
 
 to build all packaged files that are needed for distribution. For
-developing and debugging the raw files can be used.
+developing and debugging, the raw files can also be used.
 
-Lua scripts can have the extension ".lua" or ".lob". ".lua" files contain
-scripts as text, i.e. not precompiled. ".lob" files are "lua object" files,
-that are lua files compiled with "luac".
+Lua scripts can have the extension `.lua` or `.lob`. The `.lua` files
+contain Lua scripts as text, i.e. not precompiled. `.lob` files are
+`lua object` files, Lua scripts that were compiled with the `luac` tool.
 
-Lua scripts are searched in the same way as other files, but first the
-".lua" one is searched, then the ".lob". That allows for changes to ".lua"
-files while developing, but for releases the compiled ".lob" files inside
-"uadata??.zip" files are distributed only.
+Lua scripts are searched in the same way as other files, but first the file
+with the `.lua` file extension is searched, then the one with `.lob`. That
+allows for changes to `.lua` files while developing. For releases the
+compiled `.lob` files inside `uadata??.zip` files are distributed only.
 
 
 ## 4. Lua Scripting
@@ -413,14 +429,13 @@ This chapter lists all authors and contributors of Underworld Adventures.
 
 ## B. Third-Party libraries and licenses
 
-Some third-party libraries are used throughout the project, to gain some
-functionality that otherwise would be hard to do, or to get a platform
-independent game.
+Some third-party libraries are used throughout the project, in order to
+implement them for ourselves.
 
 ### SDL2 & SDL_Mixer
 
 The project is using the [SDL2 library](https://www.libsdl.org/) to implement
-the cross-platform game.
+the cross-platform game application.
 
 The project is using the
 [SDL_Mixer library](https://www.libsdl.org/projects/SDL_mixer/) to implement
@@ -436,7 +451,7 @@ implement part of the game logic.
 The Lua scripting language library is licensed under the
 [MIT license](https://www.lua.org/license.html).
 
-> Copyright © 1994–2018 Lua.org, PUC-Rio.
+> Copyright Â© 1994â€“2018 Lua.org, PUC-Rio.
 >
 > Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 >
