@@ -5,6 +5,8 @@ Here's a description of all documents in this folder:
 ## General documents
 
 - [Features.md](Features.md): Feature matrix for Underworld Adventures
+- [README.Manual.md](README.Manual.md): Official manual for Underworld Adventures
+- [README.Tools.md](README.Tools.md): Document describing all Underworld Adventures tools
 
 ## Game documents
 
@@ -17,3 +19,4 @@ Here's a description of all documents in this folder:
 ## For Developers
 
 - [uw-formats.txt]() Format specifications for Ultima Underworld 1 and 2
+- [README.Developer.md](README.Developer.md): Developer informations about the project

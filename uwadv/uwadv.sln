@@ -53,9 +53,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{2DC9BCF9-45AB-470E-8D94-A2336A3BB735}"
 	ProjectSection(SolutionItems) = preProject
 		docs\Features.md = docs\Features.md
-		README.Developer.md = README.Developer.md
-		README.Manual.md = README.Manual.md
-		README.Tools.md = README.Tools.md
+		docs\README.Developer.md = docs\README.Developer.md
+		docs\README.Manual.md = docs\README.Manual.md
+		docs\README.Tools.md = docs\README.Tools.md
 		docs\uw-formats.txt = docs\uw-formats.txt
 	EndProjectSection
 EndProject
