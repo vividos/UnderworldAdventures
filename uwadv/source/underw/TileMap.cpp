@@ -27,7 +27,7 @@
 using Underworld::Tilemap;
 using Underworld::TileInfo;
 
-double Tilemap::GetFloorHeight(double xpos, double ypos)
+double Tilemap::GetFloorHeight(double xpos, double ypos) const
 {
    if (xpos < 0.0 ||
       xpos >= double(c_underworldTilemapSize) ||
@@ -37,7 +37,7 @@ double Tilemap::GetFloorHeight(double xpos, double ypos)
 
    double height = 0.0;
 
-   TileInfo& tile = GetTileInfo(static_cast<Uint8>(xpos), static_cast<Uint8>(ypos));
+   const TileInfo& tile = GetTileInfo(static_cast<Uint8>(xpos), static_cast<Uint8>(ypos));
 
    switch (tile.m_type)
    {

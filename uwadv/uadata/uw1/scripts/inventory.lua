@@ -41,7 +41,7 @@ function inventory_look(inv_pos)
 
    inv_objinfo = inventory.get_info(inv_pos)
 
-   if inv_objinfo.item_id ~= inv_slot_no_item
+   if inv_objinfo.item_id ~= inventory_slot_no_item
    then
       look_at_objinfo(inv_objinfo,1)
    end

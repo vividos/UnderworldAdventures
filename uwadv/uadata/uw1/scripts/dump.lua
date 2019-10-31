@@ -30,10 +30,10 @@
 -- functions
 
 
--- dumps objlist table entries
+-- dumps objectlist table entries
 function dump_objinfo_table(objpos)
 
-   local objinfo = objlist.get_info(objpos)
+   local objinfo = objectlist.get_info(objpos)
    local category = "quantity"
 
    if objinfo.is_quantity > 0
@@ -66,7 +66,7 @@ function dump_objinfo_table(objpos)
       ", flags = " .. string.format("%04x\n", objinfo.flags)
    )
 
-   if objinfo.npc_used > 0
+   if objinfo.is_npc
    then
       print( " npc_hp = " .. objinfo.npc_hp .. "\n" ..
          " npc_goal = " .. objinfo.npc_goal .. "\n" ..
@@ -89,7 +89,7 @@ function dump_invinfo_table(inv_pos)
 
    local category = "quantity"
 
-   if objinfo.item_id == inv_slot_no_item
+   if objinfo.item_id == inventory_slot_no_item
    then
       print(" dumping inventory item info, inv_pos = ffff\n")
       return

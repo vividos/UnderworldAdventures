@@ -131,7 +131,7 @@ namespace Underworld
       bool IsUsed() const { return m_isUsed; }
 
       /// returns floor height on specific position
-      double GetFloorHeight(double xpos, double ypos);
+      double GetFloorHeight(double xpos, double ypos) const;
 
       /// returns a tile info struct
       TileInfo& GetTileInfo(unsigned int xpos, unsigned int ypos);

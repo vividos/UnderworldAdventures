@@ -118,7 +118,7 @@
     <CustomBuild Include="uw1\scripts\lookat.lua">
       <FileType>Document</FileType>
     </CustomBuild>
-    <CustomBuild Include="uw1\scripts\objlist.lua">
+    <CustomBuild Include="uw1\scripts\objectlist.lua">
       <FileType>Document</FileType>
     </CustomBuild>
     <CustomBuild Include="uw1\scripts\traps.lua">

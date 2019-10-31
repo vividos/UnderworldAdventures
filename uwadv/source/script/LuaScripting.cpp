@@ -193,14 +193,14 @@ void LuaScripting::InitNewGame()
 void LuaScripting::EvalCritter(Uint16 pos)
 {
    lua_getglobal(L, "critter_eval");
-   lua_pushnumber(L, static_cast<double>(pos));
+   lua_pushinteger(L, pos);
    CheckedCall(1, 0);
 }
 
 void LuaScripting::TriggerSetOff(Uint16 pos)
 {
-   lua_getglobal(L, "TriggerSetOff");
-   lua_pushnumber(L, static_cast<double>(pos));
+   lua_getglobal(L, "trigger_set_off");
+   lua_pushinteger(L, pos);
    CheckedCall(1, 0);
 }
 
@@ -211,49 +211,49 @@ void LuaScripting::UserAction(UserInterfaceUserAction action,
    {
    case userActionLookObject:
       lua_getglobal(L, "object_look");
-      lua_pushnumber(L, static_cast<double>(param));
+      lua_pushinteger(L, param);
       CheckedCall(1, 0);
       break;
 
    case userActionLookObjectInventory:
       lua_getglobal(L, "inventory_look");
-      lua_pushnumber(L, static_cast<double>(param));
+      lua_pushinteger(L, param);
       CheckedCall(1, 0);
       break;
 
    case userActionLookWall:
       lua_getglobal(L, "look_at_wall");
-      lua_pushnumber(L, static_cast<double>(param));
+      lua_pushinteger(L, param);
       CheckedCall(1, 0);
       break;
 
    case userActionUseObject:
       lua_getglobal(L, "object_use");
-      lua_pushnumber(L, static_cast<double>(param));
+      lua_pushinteger(L, param);
       CheckedCall(1, 0);
       break;
 
    case userActionUseObjectInventory:
       lua_getglobal(L, "inventory_use");
-      lua_pushnumber(L, static_cast<double>(param));
+      lua_pushinteger(L, param);
       CheckedCall(1, 0);
       break;
 
    case userActionUseWall:
       lua_getglobal(L, "wall_use");
-      lua_pushnumber(L, static_cast<double>(param));
+      lua_pushinteger(L, param);
       CheckedCall(1, 0);
       break;
 
    case userActionGetObject:
       lua_getglobal(L, "object_get");
-      lua_pushnumber(L, static_cast<double>(param));
+      lua_pushinteger(L, param);
       CheckedCall(1, 0);
       break;
 
    case userActionTalkObject:
       lua_getglobal(L, "object_talk");
-      lua_pushnumber(L, static_cast<double>(param));
+      lua_pushinteger(L, param);
       CheckedCall(1, 0);
       break;
 
@@ -264,41 +264,36 @@ void LuaScripting::UserAction(UserInterfaceUserAction action,
 
    case userActionClickedRuneshelf:
       lua_getglobal(L, "spell_cancel");
-      lua_pushnumber(L, static_cast<double>(param));
+      lua_pushinteger(L, param);
       CheckedCall(1, 0);
       break;
 
    case userActionClickedCompass:
       lua_getglobal(L, "ui_clicked_compass");
-      lua_pushnumber(L, static_cast<double>(param));
-      CheckedCall(1, 0);
+      CheckedCall(0, 0);
       break;
 
    case userActionClickedVitalityFlash:
       lua_getglobal(L, "ui_clicked_vitality_flask");
-      lua_pushnumber(L, static_cast<double>(param));
-      CheckedCall(1, 0);
+      CheckedCall(0, 0);
       break;
 
    case userActionClickedManaFlask:
       lua_getglobal(L, "ui_clicked_mana_flask");
-      lua_pushnumber(L, static_cast<double>(param));
-      CheckedCall(1, 0);
+      CheckedCall(0, 0);
       break;
 
    case userActionClickedGargoyle:
       lua_getglobal(L, "ui_clicked_gargoyle");
-      lua_pushnumber(L, static_cast<double>(param));
-      CheckedCall(1, 0);
+      CheckedCall(0, 0);
       break;
 
    case userActionClickedDragons:
       lua_getglobal(L, "ui_clicked_dragons");
-      lua_pushnumber(L, static_cast<double>(param));
-      CheckedCall(1, 0);
+      CheckedCall(0, 0);
       break;
 
-      // userActionCombatEnter
+      // TODO userActionCombatEnter
       // userActionCombatDrawBack
       // userActionCombatLeave
       // userActionCombatRelease
@@ -310,10 +305,14 @@ void LuaScripting::UserAction(UserInterfaceUserAction action,
 
    case userActionSleep:
       lua_getglobal(L, "sleep");
-      CheckedCall(0, 0);
+      lua_pushboolean(L, param != 0);
+      CheckedCall(1, 1);
       break;
 
    case userActionTargetSelected:
+      lua_getglobal(L, "target_selected");
+      lua_pushinteger(L, param);
+      CheckedCall(1, 0);
       break;
 
    default:
@@ -447,25 +446,23 @@ void LuaScripting::DebugHook(lua_Debug* ar)
             if (m_stepOverFunctionCallDepth == 0)
                SetDebuggerState(codeDebuggerStateBreak);
          }
-         else
-            if (ar->event == LUA_HOOKCALL)
-            {
-               if (GetDebuggerState() == codeDebuggerStateRunning)
-                  m_stepOverFunctionCallDepth++; //
-               else
-                  m_stepOverFunctionCallDepth = 0; // start of stepping over a function
-            }
+         else if (ar->event == LUA_HOOKCALL)
+         {
+            if (GetDebuggerState() == codeDebuggerStateRunning)
+               m_stepOverFunctionCallDepth++; //
             else
-               if (ar->event == LUA_HOOKRET)
-               {
-                  --m_stepOverFunctionCallDepth; // returning from function
-                  if (m_stepOverFunctionCallDepth == 0)
-                  {
-                     // returned from stepped over function
-                     SetDebuggerState(codeDebuggerStateRunning);
-                     SetDebuggerCommand(codeDebuggerCommandStepInto);
-                  }
-               }
+               m_stepOverFunctionCallDepth = 0; // start of stepping over a function
+         }
+         else if (ar->event == LUA_HOOKRET)
+         {
+            --m_stepOverFunctionCallDepth; // returning from function
+            if (m_stepOverFunctionCallDepth == 0)
+            {
+               // returned from stepped over function
+               SetDebuggerState(codeDebuggerStateRunning);
+               SetDebuggerCommand(codeDebuggerCommandStepInto);
+            }
+         }
          break;
 
       case codeDebuggerCommandStepInto:
@@ -499,6 +496,7 @@ void LuaScripting::DebugHook(lua_Debug* ar)
 
 void LuaScripting::CheckBreakpoints()
 {
+   // TODO
 }
 
 void LuaScripting::WaitDebuggerContinue()
@@ -511,17 +509,17 @@ void LuaScripting::WaitDebuggerContinue()
 #define lua_register_table(L, n, f) { \
    lua_pushstring(L, n); lua_pushcfunction(L, f); lua_settable(L,-3); }
 
-/*! Functions that are callable via Lua are organized in global tables; this
-    way we simulate objects that can be accessed, e.g. in uw.print("text")
-*/
+/// Functions that are callable via Lua are organized in global tables; this
+/// way we simulate objects that can be accessed, e.g. in uw.print("text")
 void LuaScripting::RegisterFunctions()
 {
    // uw object
    lua_newtable(L);
-   lua_register_table(L, "print", PrintScroll);
+   lua_register_table(L, "print", uw_print);
    lua_register_table(L, "get_string", uw_get_string);
    lua_register_table(L, "change_level", uw_change_level);
    lua_register_table(L, "start_conv", uw_start_conv);
+   lua_register_table(L, "show_cutscene", uw_show_cutscene);
    lua_setglobal(L, "uw");
 
    // player object
@@ -536,16 +534,16 @@ void LuaScripting::RegisterFunctions()
 
    // objectList object
    lua_newtable(L);
-   lua_register_table(L, "get_info", objlist_get_info);
-   lua_register_table(L, "set_info", objlist_set_info);
-   lua_register_table(L, "delete", objlist_delete);
-   lua_register_table(L, "insert", objlist_insert);
-   lua_setglobal(L, "objlist");
+   lua_register_table(L, "get_info", objectlist_get_info);
+   lua_register_table(L, "set_info", objectlist_set_info);
+   lua_register_table(L, "delete", objectlist_delete);
+   lua_register_table(L, "insert", objectlist_insert);
+   lua_setglobal(L, "objectlist");
 
    // inventory object
    lua_newtable(L);
    lua_register_table(L, "get_info", inventory_get_info);
-   lua_register_table(L, "float_get_item", inventory_float_get_item);
+   lua_register_table(L, "get_floating_item", inventory_get_floating_item);
    lua_register_table(L, "float_add_item", inventory_float_add_item);
    lua_setglobal(L, "inventory");
 
@@ -554,14 +552,14 @@ void LuaScripting::RegisterFunctions()
    lua_register_table(L, "get_info", tilemap_get_info);
    lua_register_table(L, "set_info", tilemap_set_info);
    lua_register_table(L, "get_floor_height", tilemap_get_floor_height);
-   lua_register_table(L, "get_objlist_link", tilemap_get_objlist_link);
+   lua_register_table(L, "get_objlist_link", tilemap_get_object_list_link);
    lua_setglobal(L, "tilemap");
 
    // runes object
    lua_newtable(L);
-   lua_register_table(L, "set", runes_set);
-   lua_register_table(L, "test", runes_test);
-   lua_setglobal(L, "runes");
+   lua_register_table(L, "set", runebag_set);
+   lua_register_table(L, "test", runebag_test);
+   lua_setglobal(L, "runebag");
 
    // conv object
    lua_newtable(L);
@@ -604,6 +602,7 @@ DebugServerCodeDebuggerType LuaScripting::GetDebuggerType()
 void LuaScripting::PrepareDebugInfo()
 {
    // retrieve debug info from lua struct
+   // TODO reimplement
    // go through list of all function prototype structures
    Proto* proto = NULL; // L->rootproto; TODO how to get Proto from L?
    while (proto != NULL)
@@ -718,7 +717,7 @@ void LuaScripting::GetBreakpointInfo(size_t breakpointIndex,
    codePosition = info.pos.codePosition;
 }
 
-int LuaScripting::PrintScroll(lua_State* L)
+int LuaScripting::uw_print(lua_State* L)
 {
    LuaScripting& self = GetScriptingFromSelf(L);
 
@@ -735,12 +734,12 @@ int LuaScripting::uw_get_string(lua_State* L)
 {
    LuaScripting& self = GetScriptingFromSelf(L);
 
-   unsigned int block = static_cast<unsigned int>(lua_tonumber(L, -2));
-   unsigned int num = static_cast<unsigned int>(lua_tonumber(L, -1));
+   Uint16 block = static_cast<Uint16>(lua_tointeger(L, -2));
+   size_t number = static_cast<size_t>(lua_tointeger(L, -1));
 
    // retrieve game string
-   std::string str(self.m_game->GetGameStrings().GetString(block, num));
-   lua_pushstring(L, str.c_str());
+   std::string text{ self.m_game->GetGameStrings().GetString(block, number) };
+   lua_pushstring(L, text.c_str());
 
    return 1;
 }
@@ -749,7 +748,7 @@ int LuaScripting::uw_change_level(lua_State* L)
 {
    LuaScripting& self = GetScriptingFromSelf(L);
 
-   size_t level = static_cast<unsigned int>(lua_tonumber(L, -1));
+   size_t level = static_cast<size_t>(lua_tointeger(L, -1));
 
    self.m_game->GetGameLogic().ChangeLevel(level);
 
@@ -763,17 +762,73 @@ int LuaScripting::uw_start_conv(lua_State* L)
    IUserInterface* callback = self.m_game->GetUserInterface();
    if (callback != NULL)
    {
-      Uint16 conv_obj = static_cast<Uint16>(lua_tonumber(L, -1));
-      callback->StartConversation(conv_obj);
+      Uint16 conversationObjectPos = static_cast<Uint16>(lua_tointeger(L, -1));
+      callback->StartConversation(conversationObjectPos);
    }
+
+   return 0;
+}
+
+int LuaScripting::uw_show_cutscene(lua_State* L)
+{
+   LuaScripting& self = GetScriptingFromSelf(L);
+
+   IUserInterface* callback = self.m_game->GetUserInterface();
+   if (callback != NULL)
+   {
+      size_t cutsceneNumber = static_cast<size_t>(lua_tointeger(L, -1));
+      // TODO
+      //callback->ShowCutscene(cutsceneNumber);
+   }
+
+   return 0;
+}
+
+int LuaScripting::uw_show_ingame_anim(lua_State* L)
+{
+   LuaScripting& self = GetScriptingFromSelf(L);
+
+   IUserInterface* callback = self.m_game->GetUserInterface();
+   if (callback != NULL)
+   {
+      unsigned int ingameAnimationNumber = static_cast<unsigned int>(lua_tointeger(L, -1));
+      callback->Notify(notifyUpdateShowIngameAnimation, ingameAnimationNumber);
+   }
+
+   return 0;
+}
+
+int LuaScripting::uw_cursor_use_item(lua_State* L)
+{
+   LuaScripting& self = GetScriptingFromSelf(L);
+
+   IUserInterface* callback = self.m_game->GetUserInterface();
+   if (callback != NULL)
+   {
+      unsigned int ingameAnimationNumber = static_cast<unsigned int>(lua_tointeger(L, -1));
+      // TODO implement
+   }
+
+   return 0;
+}
+
+int LuaScripting::uw_cursor_target(lua_State* L)
+{
+   LuaScripting& self = GetScriptingFromSelf(L);
+
+   IUserInterface* callback = self.m_game->GetUserInterface();
+   if (callback != NULL)
+   {
+      // TODO implement
+   }
+
    return 0;
 }
 
 int LuaScripting::player_get_info(lua_State* L)
 {
-   // retrieve player object
    LuaScripting& self = GetScriptingFromSelf(L);
-   Underworld::Player& player = self.m_game->GetUnderworld().GetPlayer();
+   const Underworld::Player& player = self.m_game->GetUnderworld().GetPlayer();
 
    // create new table and fill it with infos
    lua_newtable(L);
@@ -804,13 +859,12 @@ int LuaScripting::player_get_info(lua_State* L)
 
 int LuaScripting::player_set_info(lua_State* L)
 {
-   // retrieve player object
    LuaScripting& self = GetScriptingFromSelf(L);
    Underworld::Player& player = self.m_game->GetUnderworld().GetPlayer();
 
    if (!lua_istable(L, -1))
    {
-      UaTrace("player_set_info: got wrong parameter\n");
+      UaTrace("player.set_info: wrong number of parameters\n");
       return 0;
    }
 
@@ -843,26 +897,24 @@ int LuaScripting::player_set_info(lua_State* L)
 
 int LuaScripting::player_get_attr(lua_State* L)
 {
-   // retrieve player object
    LuaScripting& self = GetScriptingFromSelf(L);
-   Underworld::Player& player = self.m_game->GetUnderworld().GetPlayer();
+   const Underworld::Player& player = self.m_game->GetUnderworld().GetPlayer();
 
    Underworld::PlayerAttribute attr =
-      static_cast<Underworld::PlayerAttribute>(static_cast<int>(lua_tonumber(L, -1)));
+      static_cast<Underworld::PlayerAttribute>(lua_tointeger(L, -1));
 
-   lua_pushnumber(L, static_cast<double>(player.GetAttribute(attr)));
+   lua_pushinteger(L, static_cast<lua_Integer>(player.GetAttribute(attr)));
    return 1;
 }
 
 int LuaScripting::player_set_attr(lua_State* L)
 {
-   // retrieve player object
    LuaScripting& self = GetScriptingFromSelf(L);
    Underworld::Player& player = self.m_game->GetUnderworld().GetPlayer();
 
    Underworld::PlayerAttribute attrType =
-      static_cast<Underworld::PlayerAttribute>(static_cast<int>(lua_tonumber(L, -2)));
-   unsigned int attrValue = static_cast<unsigned int>(lua_tonumber(L, -1));
+      static_cast<Underworld::PlayerAttribute>(lua_tointeger(L, -2));
+   Uint16 attrValue = static_cast<Uint16>(lua_tointeger(L, -1));
 
    player.SetAttribute(attrType, attrValue);
    return 0;
@@ -870,132 +922,125 @@ int LuaScripting::player_set_attr(lua_State* L)
 
 int LuaScripting::player_get_skill(lua_State* L)
 {
-   // retrieve player object
    LuaScripting& self = GetScriptingFromSelf(L);
-   Underworld::Player& player = self.m_game->GetUnderworld().GetPlayer();
+   const Underworld::Player& player = self.m_game->GetUnderworld().GetPlayer();
 
    Underworld::PlayerSkill skillType =
-      static_cast<Underworld::PlayerSkill>(static_cast<int>(lua_tonumber(L, -1)));
+      static_cast<Underworld::PlayerSkill>(lua_tointeger(L, -1));
 
-   lua_pushnumber(L, static_cast<double>(player.GetSkill(skillType)));
+   lua_pushinteger(L, player.GetSkill(skillType));
    return 1;
 }
 
 int LuaScripting::player_set_skill(lua_State* L)
 {
-   // retrieve player object
    LuaScripting& self = GetScriptingFromSelf(L);
    Underworld::Player& player = self.m_game->GetUnderworld().GetPlayer();
 
    Underworld::PlayerSkill skillType =
-      static_cast<Underworld::PlayerSkill>(static_cast<int>(lua_tonumber(L, -2)));
-   unsigned int skill_value = static_cast<unsigned int>(lua_tonumber(L, -1));
+      static_cast<Underworld::PlayerSkill>(lua_tointeger(L, -2));
+   Uint16 skillValue = static_cast<Uint16>(lua_tointeger(L, -1));
 
-   player.SetSkill(skillType, skill_value);
+   player.SetSkill(skillType, skillValue);
    return 0;
 }
 
-int LuaScripting::objlist_get_info(lua_State* L)
+int LuaScripting::objectlist_get_info(lua_State* L)
 {
-   // retrieve object list
    LuaScripting& self = GetScriptingFromSelf(L);
-   Underworld::ObjectList& objectList =
+   const Underworld::ObjectList& objectList =
       self.m_game->GetGameLogic().GetCurrentLevel().GetObjectList();
 
    // get object pos and object
-   Uint16 objectPos = static_cast<Uint16>(lua_tonumber(L, -1));
+   Uint16 objectPos = static_cast<Uint16>(lua_tointeger(L, -1));
 
-   Underworld::ObjectPtr obj = objectList.GetObject(objectPos);
+   const Underworld::ObjectPtr obj = objectList.GetObject(objectPos);
    const Underworld::ObjectInfo& info = obj->GetObjectInfo();
    const Underworld::ObjectPositionInfo& posInfo = obj->GetPosInfo();
 
    // create new table and fill it with infos
    lua_newtable(L);
 
-   lua_pushstring(L, "objectPos");
-   lua_pushnumber(L, static_cast<double>(objectPos));
+   lua_pushstring(L, "objectlist_pos");
+   lua_pushinteger(L, objectPos);
    lua_settable(L, -3);
 
    AddObjectInfoTableFields(L, info);
 
    lua_pushstring(L, "xpos");
-   lua_pushnumber(L, static_cast<double>(posInfo.m_xpos));
+   lua_pushinteger(L, posInfo.m_xpos);
    lua_settable(L, -3);
 
    lua_pushstring(L, "ypos");
-   lua_pushnumber(L, static_cast<double>(posInfo.m_ypos));
+   lua_pushinteger(L, posInfo.m_ypos);
    lua_settable(L, -3);
 
    lua_pushstring(L, "zpos");
-   lua_pushnumber(L, static_cast<double>(posInfo.m_zpos));
+   lua_pushinteger(L, posInfo.m_zpos);
    lua_settable(L, -3);
 
    lua_pushstring(L, "heading");
-   lua_pushnumber(L, static_cast<double>(posInfo.m_heading));
+   lua_pushinteger(L, posInfo.m_heading);
    lua_settable(L, -3);
 
    lua_pushstring(L, "tilex");
-   lua_pushnumber(L, static_cast<double>(posInfo.m_tileX));
+   lua_pushinteger(L, posInfo.m_tileX);
    lua_settable(L, -3);
 
    lua_pushstring(L, "tiley");
-   lua_pushnumber(L, static_cast<double>(posInfo.m_tileY));
-   lua_settable(L, -3);
-
-   lua_pushstring(L, "link");
-   lua_pushnumber(L, static_cast<double>(info.m_link));
+   lua_pushinteger(L, posInfo.m_tileY);
    lua_settable(L, -3);
 
    bool isNpc = obj->IsNpcObject();
 
-   lua_pushstring(L, "npc_used");
-   lua_pushnumber(L, isNpc ? 1.0 : 0.0);
+   lua_pushstring(L, "is_npc");
+   lua_pushboolean(L, isNpc);
    lua_settable(L, -3);
 
    // add npc infos
    if (isNpc)
    {
-      Underworld::NpcObject& npc = obj->GetNpcObject();
-      Underworld::NpcInfo& npcInfo = npc.GetNpcInfo();
+      const Underworld::NpcObject& npc = obj->GetNpcObject();
+      const Underworld::NpcInfo& npcInfo = npc.GetNpcInfo();
 
       lua_pushstring(L, "npc_hp");
-      lua_pushnumber(L, static_cast<double>(npcInfo.m_npc_hp));
+      lua_pushinteger(L, npcInfo.m_npc_hp);
       lua_settable(L, -3);
 
       lua_pushstring(L, "npc_goal");
-      lua_pushnumber(L, static_cast<double>(npcInfo.m_npc_goal));
+      lua_pushinteger(L, npcInfo.m_npc_goal);
       lua_settable(L, -3);
 
       lua_pushstring(L, "npc_gtarg");
-      lua_pushnumber(L, static_cast<double>(npcInfo.m_npc_gtarg));
+      lua_pushinteger(L, npcInfo.m_npc_gtarg);
       lua_settable(L, -3);
 
       lua_pushstring(L, "npc_level");
-      lua_pushnumber(L, static_cast<double>(npcInfo.m_npc_level));
+      lua_pushinteger(L, npcInfo.m_npc_level);
       lua_settable(L, -3);
 
       lua_pushstring(L, "npc_talkedto");
-      lua_pushnumber(L, npcInfo.m_npc_talkedto ? 1.0 : 0.0);
+      lua_pushboolean(L, npcInfo.m_npc_talkedto);
       lua_settable(L, -3);
 
       lua_pushstring(L, "npc_attitude");
-      lua_pushnumber(L, static_cast<double>(npcInfo.m_npc_attitude));
+      lua_pushinteger(L, npcInfo.m_npc_attitude);
       lua_settable(L, -3);
 
       lua_pushstring(L, "npc_xhome");
-      lua_pushnumber(L, static_cast<double>(npcInfo.m_npc_xhome));
+      lua_pushinteger(L, npcInfo.m_npc_xhome);
       lua_settable(L, -3);
 
       lua_pushstring(L, "npc_yhome");
-      lua_pushnumber(L, static_cast<double>(npcInfo.m_npc_yhome));
+      lua_pushinteger(L, npcInfo.m_npc_yhome);
       lua_settable(L, -3);
 
       lua_pushstring(L, "npc_hunger");
-      lua_pushnumber(L, static_cast<double>(npcInfo.m_npc_hunger));
+      lua_pushinteger(L, npcInfo.m_npc_hunger);
       lua_settable(L, -3);
 
       lua_pushstring(L, "npc_whoami");
-      lua_pushnumber(L, static_cast<double>(npcInfo.m_npc_whoami));
+      lua_pushinteger(L, npcInfo.m_npc_whoami);
       lua_settable(L, -3);
    }
 
@@ -1006,7 +1051,7 @@ int LuaScripting::objlist_get_info(lua_State* L)
 void LuaScripting::AddObjectInfoTableFields(lua_State* L, const Underworld::ObjectInfo& info)
 {
    lua_pushstring(L, "item_id");
-   lua_pushnumber(L, static_cast<double>(info.m_itemID));
+   lua_pushinteger(L, info.m_itemID);
    lua_settable(L, -3);
 
    lua_pushstring(L, "link");
@@ -1026,37 +1071,35 @@ void LuaScripting::AddObjectInfoTableFields(lua_State* L, const Underworld::Obje
    lua_settable(L, -3);
 
    lua_pushstring(L, "is_enchanted");
-   lua_pushnumber(L, info.m_isEnchanted ? 1.0 : 0.0);
+   lua_pushboolean(L, info.m_isEnchanted);
    lua_settable(L, -3);
 
    lua_pushstring(L, "is_quantity");
-   lua_pushnumber(L, info.m_isQuantity ? 1.0 : 0.0);
+   lua_pushboolean(L, info.m_isQuantity);
    lua_settable(L, -3);
 
    lua_pushstring(L, "is_hidden");
-   lua_pushnumber(L, info.m_isHidden ? 1.0 : 0.0);
+   lua_pushboolean(L, info.m_isHidden);
    lua_settable(L, -3);
 
    lua_pushstring(L, "flags");
-   lua_pushnumber(L, static_cast<double>(info.m_flags));
+   lua_pushinteger(L, info.m_flags);
    lua_settable(L, -3);
 }
 
 /// \todo implement
-int LuaScripting::objlist_set_info(lua_State* L)
+int LuaScripting::objectlist_set_info(lua_State* L)
 {
    UNUSED(L);
    return 0;
 }
 
-int LuaScripting::objlist_delete(lua_State* L)
+int LuaScripting::objectlist_delete(lua_State* L)
 {
-   // retrieve object list
    LuaScripting& self = GetScriptingFromSelf(L);
    Underworld::ObjectList& objectList =
       self.m_game->GetGameLogic().GetCurrentLevel().GetObjectList();
 
-   // get object pos and object
    Uint16 objectPos = static_cast<Uint16>(lua_tonumber(L, -1));
 
    objectList.Free(objectPos);
@@ -1065,9 +1108,8 @@ int LuaScripting::objlist_delete(lua_State* L)
 }
 
 /*! \todo implement */
-int LuaScripting::objlist_insert(lua_State* L)
+int LuaScripting::objectlist_insert(lua_State* L)
 {
-   // retrieve object list
    LuaScripting& self = GetScriptingFromSelf(L);
    Underworld::ObjectList& objectList =
       self.m_game->GetGameLogic().GetCurrentLevel().GetObjectList();
@@ -1079,39 +1121,44 @@ int LuaScripting::objlist_insert(lua_State* L)
 int LuaScripting::inventory_get_info(lua_State* L)
 {
    LuaScripting& self = GetScriptingFromSelf(L);
-   Underworld::Inventory& inventory =
+   const Underworld::Inventory& inventory =
       self.m_game->GetGameLogic().GetUnderworld().GetPlayer().GetInventory();
 
-   Uint16 inventoryPos = static_cast<Uint16>(lua_tonumber(L, -1));
-
-   // create new table and fill it with infos
-   lua_newtable(L);
+   Uint16 inventoryPos = static_cast<Uint16>(lua_tointeger(L, -1));
 
    if (inventoryPos != Underworld::c_inventorySlotNoItem)
    {
       const Underworld::ObjectInfo& info = inventory.GetObjectInfo(inventoryPos);
-      AddObjectInfoTableFields(L, info);
-   }
-   else
-   {
-      lua_pushstring(L, "item_id");
-      lua_pushnumber(L, static_cast<double>(inventoryPos));
-      lua_settable(L, -3);
+
+      if (info.m_itemID != Underworld::c_itemIDNone)
+      {
+         // create new table and fill it with infos
+         lua_newtable(L);
+
+         lua_pushstring(L, "inventory_pos");
+         lua_pushinteger(L, inventoryPos);
+         lua_settable(L, -3);
+
+         AddObjectInfoTableFields(L, info);
+
+         // leave table on stack and return it
+         return 1;
+      }
    }
 
-   // leave table on stack and return it
+   lua_pushnil(L);
    return 1;
 }
 
-int LuaScripting::inventory_float_get_item(lua_State* L)
+int LuaScripting::inventory_get_floating_item(lua_State* L)
 {
    LuaScripting& self = GetScriptingFromSelf(L);
-   Underworld::Inventory& inventory =
+   const Underworld::Inventory& inventory =
       self.m_game->GetGameLogic().GetUnderworld().GetPlayer().GetInventory();
 
-   Uint16 slot = inventory.GetFloatingObjectPos();
+   Uint16 inventoryPos = inventory.GetFloatingObjectPos();
 
-   lua_pushnumber(L, static_cast<double>(slot));
+   lua_pushinteger(L, inventoryPos);
 
    return 1;
 }
@@ -1125,19 +1172,19 @@ int LuaScripting::inventory_float_add_item(lua_State* L)
    Underworld::ObjectList& objectList =
       self.m_game->GetGameLogic().GetCurrentLevel().GetObjectList();
 
-   Uint16 objectListPos = static_cast<Uint16>(lua_tonumber(L, -1));
+   Uint16 objectListPos = static_cast<Uint16>(lua_tointeger(L, -1));
 
    Underworld::ObjectPtr obj = objectList.GetObject(objectListPos);
    const Underworld::ObjectInfo& info = obj->GetObjectInfo();
    const Underworld::ObjectPositionInfo& posInfo = obj->GetPosInfo();
 
-   Uint16 inventorySlot = inventory.InsertItem(info);
-   inventory.FloatObject(inventorySlot);
+   Uint16 inventoryPos = inventory.InsertItem(info);
+   inventory.FloatObject(inventoryPos);
 
    objectList.RemoveObjectFromTileList(objectListPos, posInfo.m_tileX, posInfo.m_tileY);
    objectList.Free(objectListPos);
 
-   lua_pushnumber(L, static_cast<double>(inventorySlot));
+   lua_pushinteger(L, static_cast<double>(inventoryPos));
 
    // param is the item ID
    self.m_game->GetUserInterface()->Notify(notifySelectTarget, info.m_itemID);
@@ -1147,41 +1194,39 @@ int LuaScripting::inventory_float_add_item(lua_State* L)
 
 int LuaScripting::tilemap_get_info(lua_State* L)
 {
-   // retrieve current level
    LuaScripting& self = GetScriptingFromSelf(L);
-   Underworld::Level& level = self.m_game->GetGameLogic().GetCurrentLevel();
+   const Underworld::Level& level = self.m_game->GetGameLogic().GetCurrentLevel();
 
-   // get tilemap info
-   double xpos = lua_tonumber(L, -2);
-   double ypos = lua_tonumber(L, -1);
+   unsigned int xpos = static_cast<unsigned int>(lua_tointeger(L, -2));
+   unsigned int ypos = static_cast<unsigned int>(lua_tointeger(L, -1));
 
-   const Underworld::TileInfo& tileinfo = level.GetTilemap().GetTileInfo(unsigned(xpos), unsigned(ypos));
+   const Underworld::TileInfo& tileinfo = level.GetTilemap().GetTileInfo(xpos, ypos);
 
    // create new table and fill it with infos
    lua_newtable(L);
 
    lua_pushstring(L, "xpos");
-   lua_pushnumber(L, static_cast<double>(xpos));
+   lua_pushinteger(L, xpos);
    lua_settable(L, -3);
 
    lua_pushstring(L, "ypos");
-   lua_pushnumber(L, static_cast<double>(ypos));
+   lua_pushinteger(L, ypos);
    lua_settable(L, -3);
 
    lua_pushstring(L, "type");
-   lua_pushnumber(L, static_cast<double>(tileinfo.m_type));
+   lua_pushinteger(L, static_cast<double>(tileinfo.m_type));
    lua_settable(L, -3);
 
    lua_pushstring(L, "floor");
-   lua_pushnumber(L, static_cast<double>(tileinfo.m_floor));
+   lua_pushinteger(L, static_cast<double>(tileinfo.m_floor));
    lua_settable(L, -3);
 
    lua_pushstring(L, "ceiling");
-   lua_pushnumber(L, static_cast<double>(tileinfo.m_ceiling));
+   lua_pushinteger(L, static_cast<double>(tileinfo.m_ceiling));
    lua_settable(L, -3);
 
    lua_pushstring(L, "slope");
-   lua_pushnumber(L, static_cast<double>(tileinfo.m_slope));
+   lua_pushinteger(L, static_cast<double>(tileinfo.m_slope));
    lua_settable(L, -3);
 
    // TODO tileinfo.texture_floor
@@ -1195,7 +1240,6 @@ int LuaScripting::tilemap_get_info(lua_State* L)
 /*! \todo implement */
 int LuaScripting::tilemap_set_info(lua_State* L)
 {
-   // retrieve current level
    LuaScripting& self = GetScriptingFromSelf(L);
    Underworld::Level& level = self.m_game->GetGameLogic().GetCurrentLevel();
    UNUSED(level);
@@ -1205,9 +1249,8 @@ int LuaScripting::tilemap_set_info(lua_State* L)
 
 int LuaScripting::tilemap_get_floor_height(lua_State* L)
 {
-   // retrieve current level
    LuaScripting& self = GetScriptingFromSelf(L);
-   Underworld::Level& level = self.m_game->GetGameLogic().GetCurrentLevel();
+   const Underworld::Level& level = self.m_game->GetGameLogic().GetCurrentLevel();
 
    double xpos = lua_tonumber(L, -2);
    double ypos = lua_tonumber(L, -1);
@@ -1216,136 +1259,156 @@ int LuaScripting::tilemap_get_floor_height(lua_State* L)
    return 1;
 }
 
-int LuaScripting::tilemap_get_objlist_link(lua_State* L)
+int LuaScripting::tilemap_get_object_list_link(lua_State* L)
 {
-   // retrieve current level
    LuaScripting& self = GetScriptingFromSelf(L);
-   Underworld::Level& level = self.m_game->GetGameLogic().GetCurrentLevel();
+   const Underworld::Level& level = self.m_game->GetGameLogic().GetCurrentLevel();
 
-   double xpos = lua_tonumber(L, -2);
-   double ypos = lua_tonumber(L, -1);
-   Uint16 objpos = level.GetObjectList().GetListStart(unsigned(xpos), unsigned(ypos));
+   Uint8 xpos = static_cast<Uint8>(lua_tointeger(L, -2));
+   Uint8 ypos = static_cast<Uint8>(lua_tointeger(L, -1));
 
-   lua_pushnumber(L, static_cast<double>(objpos));
+   Uint16 objectPos = level.GetObjectList().GetListStart(xpos, ypos);
+
+   lua_pushinteger(L, objectPos);
    return 1;
 }
 
-int LuaScripting::runes_set(lua_State* L)
+/// allowed values are lowercase and uppercase characters of runes, or 1-based indices of runes
+Underworld::RuneType LuaScripting::GetRuneTypeFromInteger(unsigned int rune)
 {
-   // retrieve runes object
+   if (rune >= 'a' && rune < 'x')
+      rune -= 'a' - 1;
+   if (rune == 'y')
+      rune -= 'a' - 2;
+   if (rune >= 'A' && rune < 'X')
+      rune -= 'A' - 1;
+   if (rune == 'Y')
+      rune -= 'a' - 2;
+
+   return static_cast<Underworld::RuneType>(rune - 1);
+}
+
+int LuaScripting::runebag_set(lua_State* L)
+{
    LuaScripting& self = GetScriptingFromSelf(L);
    Underworld::Runebag& runeBag = self.m_game->GetUnderworld().GetPlayer().GetRunebag();
 
-   unsigned int rune = static_cast<unsigned int>(lua_tonumber(L, -2));
-   bool flag = lua_tonumber(L, -1) > 0.0;
+   unsigned int rune = static_cast<unsigned int>(lua_tointeger(L, -2));
+   Underworld::RuneType runeType = GetRuneTypeFromInteger(rune);
 
-   runeBag.SetRune(static_cast<Underworld::RuneType>(rune), flag);
+   if (runeType > Underworld::runeLast)
+   {
+      UaTrace("runebag.set: invalid rune number %i\n", rune);
+      return 0;
+   }
+
+   bool isSet = lua_toboolean(L, -1);
+
+   runeBag.SetRune(runeType, isSet);
 
    return 0;
 }
 
-int LuaScripting::runes_test(lua_State* L)
+int LuaScripting::runebag_test(lua_State* L)
 {
-   // retrieve runes object
    LuaScripting& self = GetScriptingFromSelf(L);
-   Underworld::Runebag& runeBag = self.m_game->GetUnderworld().GetPlayer().GetRunebag();
+   const Underworld::Runebag& runeBag = self.m_game->GetUnderworld().GetPlayer().GetRunebag();
 
-   unsigned int rune = static_cast<unsigned int>(lua_tonumber(L, -1));
+   unsigned int rune = static_cast<unsigned int>(lua_tointeger(L, -1));
+   Underworld::RuneType runeType = GetRuneTypeFromInteger(rune);
 
-   lua_pushnumber(L, runeBag.IsInBag(static_cast<Underworld::RuneType>(rune)) ? 1.0 : 0.0);
+   if (runeType > Underworld::runeLast)
+   {
+      UaTrace("runebag.test: invalid rune number %i\n", rune);
+      return 0;
+   }
+
+   lua_pushboolean(L, runeBag.IsInBag(runeType));
 
    return 1;
 }
 
 int LuaScripting::conv_is_avail(lua_State* L)
 {
-   // retrieve game strings object
    LuaScripting& self = GetScriptingFromSelf(L);
-   GameStrings& gameStrings = self.m_game->GetGameStrings();
+   const GameStrings& gameStrings = self.m_game->GetGameStrings();
 
-   Uint16 slot = static_cast<Uint16>(lua_tonumber(L, -1));
+   Uint16 conversationSlot = static_cast<Uint16>(lua_tointeger(L, -1));
 
-   if (!gameStrings.IsBlockAvail(slot + 0x0e00))
-      lua_pushnil(L);
-   else
-      lua_pushnumber(L, static_cast<double>(slot));
+   lua_pushboolean(L, gameStrings.IsBlockAvail(conversationSlot + 0x0e00));
 
    return 1;
 }
 
 int LuaScripting::conv_get_global(lua_State* L)
 {
-   // retrieve conv globals object
    LuaScripting& self = GetScriptingFromSelf(L);
 
-   Uint16 slot = static_cast<Uint16>(lua_tonumber(L, -1));
-   unsigned int pos = static_cast<unsigned int>(lua_tonumber(L, -2));
+   Uint16 conversationSlot = static_cast<Uint16>(lua_tointeger(L, -2));
+   unsigned int globalsPos = static_cast<unsigned int>(lua_tointeger(L, -1));
 
-   std::vector<Uint16>& globals =
-      self.m_game->GetUnderworld().GetPlayer().GetConvGlobals().GetSlotGlobals(slot);
+   const Underworld::ConvGlobals::ConvSlotGlobals& globals =
+      self.m_game->GetUnderworld().GetPlayer().GetConvGlobals().GetSlotGlobals(conversationSlot);
 
-   if (pos >= globals.size())
+   if (globalsPos >= globals.size())
    {
-      UaTrace("conv.GetGlobal: globals pos out of range!\n");
+      UaTrace("conv.get_global: globals_pos out of range!\n");
       return 0;
    }
 
-   lua_pushnumber(L, static_cast<double>(globals[pos]));
+   lua_pushinteger(L, static_cast<double>(globals[globalsPos]));
    return 1;
 }
 
 int LuaScripting::conv_set_global(lua_State* L)
 {
-   // retrieve conv globals object
    LuaScripting& self = GetScriptingFromSelf(L);
 
-   Uint16 slot = static_cast<Uint16>(lua_tonumber(L, -1));
-   unsigned int pos = static_cast<unsigned int>(lua_tonumber(L, -2));
-   Uint16 value = static_cast<Uint16>(lua_tonumber(L, -2));
+   Uint16 conversationSlot = static_cast<Uint16>(lua_tointeger(L, -3));
+   unsigned int globalsPos = static_cast<unsigned int>(lua_tointeger(L, -2));
+   Uint16 value = static_cast<Uint16>(lua_tointeger(L, -1));
 
-   std::vector<Uint16>& globals =
-      self.m_game->GetUnderworld().GetPlayer().GetConvGlobals().GetSlotGlobals(slot);
+   Underworld::ConvGlobals::ConvSlotGlobals& globals =
+      self.m_game->GetUnderworld().GetPlayer().GetConvGlobals().GetSlotGlobals(conversationSlot);
 
-   if (pos >= globals.size())
-      UaTrace("conv.SetGlobal: globals pos out of range!\n");
+   if (globalsPos >= globals.size())
+      UaTrace("conv.set_global: globals_pos out of range!\n");
    else
-      globals[pos] = value;
+      globals[globalsPos] = value;
 
    return 0;
 }
 
 int LuaScripting::quest_get_flag(lua_State* L)
 {
-   // retrieve quest flags object
    LuaScripting& self = GetScriptingFromSelf(L);
-   Underworld::QuestFlags& questFlags =
+   const Underworld::QuestFlags& questFlags =
       self.m_game->GetUnderworld().GetPlayer().GetQuestFlags();
 
-   Uint16 flagNumber = static_cast<Uint16>(lua_tonumber(L, -1));
+   Uint16 flagNumber = static_cast<Uint16>(lua_tointeger(L, -1));
 
    if (flagNumber >= questFlags.GetFlagCount())
    {
-      UaTrace("quest.get_flag: flagNumber out of range!\n");
+      UaTrace("quest.get_flag: flag_number out of range!\n");
       return 0;
    }
 
-   lua_pushnumber(L, static_cast<double>(questFlags.GetFlag(flagNumber)));
+   lua_pushinteger(L, questFlags.GetFlag(flagNumber));
 
    return 1;
 }
 
 int LuaScripting::quest_set_flag(lua_State* L)
 {
-   // retrieve quest flags object
    LuaScripting& self = GetScriptingFromSelf(L);
    Underworld::QuestFlags& questFlags =
       self.m_game->GetUnderworld().GetPlayer().GetQuestFlags();
 
-   Uint16 flagNumber = static_cast<Uint16>(lua_tonumber(L, -1));
-   Uint16 flagValue = static_cast<Uint16>(lua_tonumber(L, -2));
+   size_t flagNumber = static_cast<size_t>(lua_tointeger(L, -2));
+   Uint16 flagValue = static_cast<Uint16>(lua_tointeger(L, -1));
 
    if (flagNumber >= questFlags.GetFlagCount())
-      UaTrace("quest.set_flag: flagNumber out of range!\n");
+      UaTrace("quest.set_flag: flag_number out of range!\n");
    else
       questFlags.SetFlag(flagNumber, flagValue);
 
@@ -1354,10 +1417,9 @@ int LuaScripting::quest_set_flag(lua_State* L)
 
 int LuaScripting::prop_get_common(lua_State* L)
 {
-   // retrieve common object properties
    LuaScripting& self = GetScriptingFromSelf(L);
 
-   Uint16 item_id = static_cast<Uint16>(lua_tonumber(L, -1));
+   Uint16 item_id = static_cast<Uint16>(lua_tointeger(L, -1));
 
    const Underworld::CommonObjectProperty& prop = self.m_game->GetGameLogic().
       GetObjectProperties().GetCommonProperty(item_id);
@@ -1366,7 +1428,7 @@ int LuaScripting::prop_get_common(lua_State* L)
    lua_newtable(L);
 
    lua_pushstring(L, "item_id");
-   lua_pushnumber(L, static_cast<double>(item_id));
+   lua_pushinteger(L, item_id);
    lua_settable(L, -3);
 
    lua_pushstring(L, "height");
@@ -1386,36 +1448,36 @@ int LuaScripting::prop_get_common(lua_State* L)
    lua_settable(L, -3);
 
    lua_pushstring(L, "quality_type");
-   lua_pushnumber(L, static_cast<double>(prop.m_qualityType));
+   lua_pushinteger(L, prop.m_qualityType);
    lua_settable(L, -3);
 
    lua_pushstring(L, "can_have_owner");
-   lua_pushnumber(L, prop.m_canHaveOwner ? 1.0 : 0.0);
+   lua_pushboolean(L, prop.m_canHaveOwner);
    lua_settable(L, -3);
 
    lua_pushstring(L, "can_be_looked_at");
-   lua_pushnumber(L, prop.m_canBeLookedAt ? 1.0 : 0.0);
+   lua_pushboolean(L, prop.m_canBeLookedAt);
    lua_settable(L, -3);
 
    lua_pushstring(L, "can_be_picked_up");
-   lua_pushnumber(L, prop.m_canBePickedUp ? 1.0 : 0.0);
+   lua_pushboolean(L, prop.m_canBePickedUp);
    lua_settable(L, -3);
 
    lua_pushstring(L, "is_container");
-   lua_pushnumber(L, prop.m_isContainer ? 1.0 : 0.0);
+   lua_pushboolean(L, prop.m_isContainer);
    lua_settable(L, -3);
 
    return 1;
 }
 
-/*! \todo implement */
 int LuaScripting::prop_get_special(lua_State* L)
 {
-   // retrieve common object properties
    LuaScripting& self = GetScriptingFromSelf(L);
-   Underworld::ObjectProperties& prop =
+   const Underworld::ObjectProperties& prop =
       self.m_game->GetGameLogic().GetObjectProperties();
    UNUSED(prop);
+
+   // TODO implement
 
    return 0;//1;
 }

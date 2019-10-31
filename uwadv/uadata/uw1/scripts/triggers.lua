@@ -43,7 +43,7 @@ trig_last   = trig_unlock
 -- checks a given handle for a given trigger type and sets it off
 function trigger_check_handle(trig_id,objpos)
 
-   objinfo = objlist.get_info(objpos)
+   objinfo = objectlist.get_info(objpos)
 
    -- do we have a special linked object?
    if objinfo.is_quantity ~= 0
@@ -52,7 +52,7 @@ function trigger_check_handle(trig_id,objpos)
    end
 
    -- check if special linked obj is trigger
-   objinfo2 = objlist.get_info(objinfo.quantity)
+   objinfo2 = objectlist.get_info(objinfo.quantity)
 
    if objinfo2.item_id == trig_id and objinfo2.is_quantity == 0
    then
@@ -69,7 +69,7 @@ function trigger_set_off(objpos)
 
    dump_objinfo_table(objpos)
 
-   local objinfo = objlist.get_info(objpos)
+   local objinfo = objectlist.get_info(objpos)
 
    if objinfo.item_id < trig_first or objinfo.item_id > trig_last
    then

@@ -45,7 +45,7 @@ namespace Underworld
 
       Uint8 m_height;   ///< object height
       Uint8 m_radius;   ///< object radius
-      Uint16 m_mass;    ///< mass of object in 0.1 kg
+      Uint16 m_mass;    ///< mass of object in 0.1 stones
       Uint8 m_qualityClass;   ///< quality class
       Uint8 m_qualityType;    ///< quality type
       bool m_canHaveOwner;     ///< indicates if object can have owner ("belonging to ...")

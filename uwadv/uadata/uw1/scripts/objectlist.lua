@@ -18,7 +18,7 @@
 --
 
 --
--- objlist.lua - lua underworld script; object list functions
+-- objectlist.lua - lua underworld script; object list functions
 --
 
 -- constants
@@ -35,7 +35,7 @@ function object_look(objpos)
    print("looking at object in world")
    dump_objinfo_table(objpos)
 
-   objinfo = objlist.get_info(objpos)
+   objinfo = objectlist.get_info(objpos)
 
    -- print info
    look_at_objinfo(objinfo,0)
@@ -52,7 +52,7 @@ function object_talk(objpos)
    print("talking with object\n")
    dump_objinfo_table(objpos)
 
-   objinfo = objlist.get_info(objpos)
+   objinfo = objectlist.get_info(objpos)
 
    -- check if npc
    if objinfo.item_id < 0x0040 or objinfo.item_id >= 0x0080
@@ -90,7 +90,7 @@ end
 function object_use(objpos)
 
    print( "using object " .. string.format("%04x",objpos) .. " name=" ..
-      uw.get_string(4, objlist.get_info(objpos).item_id) )
+      uw.get_string(4, objectlist.get_info(objpos).item_id) )
 
    -- check for use trigger
    trigger_check_handle(trig_use,objpos)
@@ -102,15 +102,15 @@ end
 function object_get(objpos)
 
    -- check if the user already has an item in hand
-   if inventory.float_get_item() ~= inv_slot_no_item
+   if inventory.get_floating_item() ~= inventory_slot_no_item
    then
       return
    end
 
-   objinfo = objlist.get_info(objpos)
+   objinfo = objectlist.get_info(objpos)
 
    -- check if object can be picked up
-   if prop.get_common( objinfo.item_id ).can_be_picked_up ~= 1
+   if prop.get_common( objinfo.item_id ).can_be_picked_up
    then
       -- print: "You cannot pick that up."
       uw.print(uw.get_string(1,96))

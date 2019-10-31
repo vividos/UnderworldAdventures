@@ -53,7 +53,7 @@ trap_last = trap_text_string
 -- sets off effect of a trap
 function trap_set_off(objpos,trig_objpos)
 
-   objinfo = objlist.get_info(objpos)
+   objinfo = objectlist.get_info(objpos)
 
    print( "trap set off: " .. uw.get_string(4,objinfo.item_id))
 
@@ -89,7 +89,7 @@ function trap_set_off(objpos,trig_objpos)
       -- a_delete object trap
       if objinfo.is_quantity == 0
       then
-         objlist.delete(objinfo.quantity)
+         objectlist.delete(objinfo.quantity)
       end
 
    -- --------------------------------------------------------------

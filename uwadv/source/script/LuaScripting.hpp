@@ -40,9 +40,6 @@ public:
    LuaScripting();
    virtual ~LuaScripting() {}
 
-   /// loads a script from uadata
-   int LoadScript(IGame& game, const char* basename);
-
    /// returns lua state info struct
    lua_State* GetLuaState() { return L; }
 
@@ -82,9 +79,6 @@ private:
    /// waits for the debugger to continue debugging
    void WaitDebuggerContinue();
 
-   /// sends status update to debugger client
-   void SendDebugStatusUpdate();
-
    /// registers all callable functions
    void RegisterFunctions();
 
@@ -118,7 +112,7 @@ private:
    std::vector<std::string> m_loadedScriptFiles;
 
    /// map with all source files and line numbers
-   std::map<std::string, std::set<unsigned int> > m_allLineNumbers;
+   std::map<std::string, std::set<unsigned int>> m_allLineNumbers;
 
    /// current debugger state
    DebugServerCodeDebuggerState m_debuggerState;
@@ -141,10 +135,14 @@ private:
 private:
    // registered C functions callable from Lua
    // prototype: static int xyz(lua_State* L);
-   static int PrintScroll(lua_State* L);        ///< Lua function uw.print
+   static int uw_print(lua_State* L);        ///< Lua function uw.print
    static int uw_get_string(lua_State* L);   ///< uw.get_string
-   static int uw_change_level(lua_State* L); ///< uw.ChangeLevel
+   static int uw_change_level(lua_State* L); ///< uw.change_level
    static int uw_start_conv(lua_State* L);   ///< uw.start_conv
+   static int uw_show_cutscene(lua_State* L);      ///< uw.show_cutscene
+   static int uw_show_ingame_anim(lua_State* L);   ///< uw.show_ingame_anim
+   static int uw_cursor_use_item(lua_State* L);    ///< uw.cursor_use_item
+   static int uw_cursor_target(lua_State* L);      ///< uw.cursor_target
 
    static int player_get_info(lua_State* L); ///< player.get_info
    static int player_set_info(lua_State* L); ///< player.set_info
@@ -153,22 +151,22 @@ private:
    static int player_set_attr(lua_State* L); ///< player.SetAttribute
    static int player_set_skill(lua_State* L);///< player.SetSkill
 
-   static int objlist_get_info(lua_State* L);///< objlist.get_info
-   static int objlist_set_info(lua_State* L);///< objlist.set_info
-   static int objlist_delete(lua_State* L);  ///< objlist.delete
-   static int objlist_insert(lua_State* L);  ///< objlist.insert
+   static int objectlist_get_info(lua_State* L);///< objectlist.get_info
+   static int objectlist_set_info(lua_State* L);///< objectlist.set_info
+   static int objectlist_delete(lua_State* L);  ///< objectlist.delete
+   static int objectlist_insert(lua_State* L);  ///< objectlist.insert
 
    static int inventory_get_info(lua_State* L);  ///< inventory.get_info
-   static int inventory_float_get_item(lua_State* L);  ///< inventory.float_get_item
+   static int inventory_get_floating_item(lua_State* L);  ///< inventory.get_floating_item
    static int inventory_float_add_item(lua_State* L);  ///< inventory.float_add_item
 
    static int tilemap_get_info(lua_State* L);///< tilemap.get_info
    static int tilemap_set_info(lua_State* L);///< tilemap.set_info
    static int tilemap_get_floor_height(lua_State* L); ///< tilemap.get_floor_height
-   static int tilemap_get_objlist_link(lua_State* L); ///< tilemap.get_objlist_link
+   static int tilemap_get_object_list_link(lua_State* L); ///< tilemap.get_object_list_link
 
-   static int runes_set(lua_State* L);       ///< runes.set
-   static int runes_test(lua_State* L);      ///< runes.test
+   static int runebag_set(lua_State* L);       ///< runebag.set
+   static int runebag_test(lua_State* L);      ///< runebag.test
 
    static int conv_is_avail(lua_State* L);   ///< conv.is_avail
    static int conv_get_global(lua_State* L); ///< conv.GetGlobal
@@ -179,6 +177,9 @@ private:
 
    static int prop_get_common(lua_State* L); ///< prop.get_common
    static int prop_get_special(lua_State* L);///< prop.get_special
+
+   /// translates from rune type Integer value to RuneType
+   static Underworld::RuneType GetRuneTypeFromInteger(unsigned int rune);
 
    /// adds ObjectInfo to the table currently on top of the stack
    static void AddObjectInfoTableFields(lua_State* L, const Underworld::ObjectInfo& info);
