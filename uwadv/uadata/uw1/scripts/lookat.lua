@@ -106,7 +106,7 @@ function look_at_objinfo(objinfo, is_inv)
       return
    end
 
-   if objinfo.is_quantity > 0.0
+   if objinfo.is_quantity
    then
       quantity = objinfo.quantity
    end
@@ -146,7 +146,7 @@ function look_at_objinfo(objinfo, is_inv)
       -- check item properties
       prop_item = prop.get_common(objinfo.item_id)
 
-      if prop_item.can_have_owner > 0 and objinfo.owner > 0 and objinfo.owner <= 28
+      if prop_item.can_have_owner and objinfo.owner > 0 and objinfo.owner <= 28
       then
          -- do owner string
          owner = " belonging to" .. uw.get_string(1, objinfo.owner + 370)

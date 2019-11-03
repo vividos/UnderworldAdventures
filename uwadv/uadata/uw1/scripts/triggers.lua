@@ -46,7 +46,7 @@ function trigger_check_handle(trig_id,objpos)
    objinfo = objectlist.get_info(objpos)
 
    -- do we have a special linked object?
-   if objinfo.is_quantity ~= 0
+   if objinfo.is_quantity
    then
       return
    end
@@ -54,7 +54,7 @@ function trigger_check_handle(trig_id,objpos)
    -- check if special linked obj is trigger
    objinfo2 = objectlist.get_info(objinfo.quantity)
 
-   if objinfo2.item_id == trig_id and objinfo2.is_quantity == 0
+   if objinfo2.item_id == trig_id and objinfo2.is_quantity == false
    then
       print( "trigger set off: " .. uw.get_string(4,objinfo2.item_id))
 

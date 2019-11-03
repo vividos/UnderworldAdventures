@@ -87,7 +87,7 @@ function trap_set_off(objpos,trig_objpos)
    elseif objinfo.item_id == trap_delete_obj
    then
       -- a_delete object trap
-      if objinfo.is_quantity == 0
+      if objinfo.is_quantity == false
       then
          objectlist.delete(objinfo.quantity)
       end
@@ -114,7 +114,7 @@ function trap_set_off(objpos,trig_objpos)
    end
 
    -- set off possible additional triggers/traps
-   if objinfo.is_quantity == 0 and objinfo.quantity ~= 0
+   if objinfo.is_quantity == false and objinfo.quantity ~= 0
    then
       trigger_set_off(objinfo.quantity)
    end

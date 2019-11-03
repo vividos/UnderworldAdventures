@@ -36,7 +36,7 @@ function dump_objinfo_table(objpos)
    local objinfo = objectlist.get_info(objpos)
    local category = "quantity"
 
-   if objinfo.is_quantity > 0
+   if objinfo.is_quantity
    then
       if objinfo.quantity >= 512
       then
@@ -61,8 +61,8 @@ function dump_objinfo_table(objpos)
       ", height = " .. objinfo.zpos .. ", heading  = " .. objinfo.heading ..
       string.format(", tile = %02x/%02x\n", objinfo.tilex, objinfo.tiley) ..
 
-      " is_enchanted = " .. objinfo.is_enchanted ..
-      ", is_quantity = " .. objinfo.is_quantity ..
+      " is_enchanted = " .. (objinfo.is_enchanted and "true" or "false") ..
+      ", is_quantity = " .. (objinfo.is_quantity and "true" or "false") ..
       ", flags = " .. string.format("%04x\n", objinfo.flags)
    )
 
@@ -72,7 +72,7 @@ function dump_objinfo_table(objpos)
          " npc_goal = " .. objinfo.npc_goal .. "\n" ..
          " npc_gtarg = " .. objinfo.npc_gtarg .. "\n" ..
          " npc_level = " .. objinfo.npc_level .. "\n" ..
-         " npc_talkedto = " .. objinfo.npc_talkedto .. "\n" ..
+         " npc_talkedto = " .. (objinfo.npc_talkedto and "yes" or "no") .. "\n" ..
          " npc_attitude = " .. objinfo.npc_attitude .. "\n" ..
          " npc_xhome = " .. objinfo.npc_xhome .. "\n" ..
          " npc_yhome = " .. objinfo.npc_yhome .. "\n" ..
@@ -95,7 +95,7 @@ function dump_invinfo_table(inv_pos)
       return
    end
 
-   if objinfo.is_quantity > 0
+   if objinfo.is_quantity
    then
       if objinfo.quantity >= 512
       then
@@ -115,8 +115,8 @@ function dump_invinfo_table(inv_pos)
       string.format(" owner = %04x, ", objinfo.owner) ..
       category .. string.format(" = %04x\n", objinfo.quantity) ..
 
-      " is_enchanted = " .. objinfo.is_enchanted ..
-      ", is_quantity = " .. objinfo.is_quantity ..
+      " is_enchanted = " .. (objinfo.is_enchanted and "true" or "false") ..
+      ", is_quantity = " .. (objinfo.is_quantity and "true" or "false") ..
       ", flags = " .. string.format("%04x\n", objinfo.flags)
    )
 
