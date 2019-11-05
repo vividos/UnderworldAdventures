@@ -24,7 +24,7 @@
 
 LRESULT LuaSourceView::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-   m_hWndClient = m_view.Create(NULL, m_hWnd, rcDefault, NULL,
+   m_hWndClient = m_view.Create(CScintillaWindow::GetWndClassName(), m_hWnd, rcDefault, NULL,
       WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_HSCROLL | WS_VSCROLL, WS_EX_CLIENTEDGE);
 
    m_view.StyleSetFont(STYLE_DEFAULT, "Lucida Console");

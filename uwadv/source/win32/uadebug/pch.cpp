@@ -23,6 +23,8 @@
 
 #include <dockimpl.cpp>
 
+CScintillaAutoRegister s_scintillaAutoRegister;
+
 /// \brief checks if parent window reflects notifications
 /// \details The check is done by sending a WM_NOTIFY message with notification code
 /// 0xFFFF (which surely isn't used by the control) to the parent class and
