@@ -46,6 +46,12 @@ bool MainFrame::InitDebugClient(IDebugServer* debugServer)
    UIEnable(ID_UNDERWORLD_RUN, m_isStopped ? TRUE : FALSE, TRUE);
    UIEnable(ID_UNDERWORLD_PAUSE, m_isStopped ? FALSE : TRUE, TRUE);
 
+   UIEnable(ID_DEBUG_PAUSE, true);
+   UIEnable(ID_DEBUG_RUN, false);
+   UIEnable(ID_DEBUG_STEP_INTO, false);
+   UIEnable(ID_DEBUG_STEP_OVER, false);
+   UIEnable(ID_DEBUG_STEP_OUT, false);
+
    // load project
    CString gameConfigPath = m_debugClient.GetGameConfigPath();
 
@@ -477,6 +483,118 @@ LRESULT MainFrame::OnViewGameStrings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 
    notify.m_notifyCode = notifyCodeUpdateData;
    SendNotification(notify, child);
+
+   return 0;
+}
+
+LRESULT MainFrame::OnDebugPause(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+   m_debugClient.Lock(true);
+
+   size_t numCodeDebugger = m_debugClient.GetCodeDebuggerCount();
+   for (size_t codeDebuggerIndex = 0; codeDebuggerIndex < numCodeDebugger; codeDebuggerIndex++)
+   {
+      unsigned int codeDebuggerId = m_debugClient.GetCodeDebuggerByIndex(codeDebuggerIndex);
+
+      DebugClientCodeDebugger codeDebugger = m_debugClient.GetCodeDebuggerInterface(codeDebuggerId);
+
+      if (codeDebugger.GetState() == CodeDebuggerState::cdsRunning)
+         codeDebugger.SetCommand(CodeDebuggerCommand::cdcStepInto);
+   }
+
+   m_debugClient.Lock(false);
+
+   UIEnable(ID_DEBUG_PAUSE, false);
+   UIEnable(ID_DEBUG_RUN, true);
+   UIEnable(ID_DEBUG_STEP_INTO, false);
+   UIEnable(ID_DEBUG_STEP_OVER, false);
+   UIEnable(ID_DEBUG_STEP_OUT, false);
+
+   return 0;
+}
+
+LRESULT MainFrame::OnDebugRun(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+   m_debugClient.Lock(true);
+
+   size_t numCodeDebugger = m_debugClient.GetCodeDebuggerCount();
+   for (size_t codeDebuggerIndex = 0; codeDebuggerIndex < numCodeDebugger; codeDebuggerIndex++)
+   {
+      unsigned int codeDebuggerId = m_debugClient.GetCodeDebuggerByIndex(codeDebuggerIndex);
+
+      DebugClientCodeDebugger codeDebugger = m_debugClient.GetCodeDebuggerInterface(codeDebuggerId);
+
+      if (codeDebugger.GetState() == CodeDebuggerState::cdsBreak)
+         codeDebugger.SetCommand(CodeDebuggerCommand::cdcRun);
+   }
+
+   m_debugClient.Lock(false);
+
+   UIEnable(ID_DEBUG_PAUSE, true);
+   UIEnable(ID_DEBUG_RUN, false);
+   UIEnable(ID_DEBUG_STEP_INTO, false);
+   UIEnable(ID_DEBUG_STEP_OVER, false);
+   UIEnable(ID_DEBUG_STEP_OUT, false);
+
+   return 0;
+}
+
+LRESULT MainFrame::OnDebugStepInto(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+   m_debugClient.Lock(true);
+
+   size_t numCodeDebugger = m_debugClient.GetCodeDebuggerCount();
+   for (size_t codeDebuggerIndex = 0; codeDebuggerIndex < numCodeDebugger; codeDebuggerIndex++)
+   {
+      unsigned int codeDebuggerId = m_debugClient.GetCodeDebuggerByIndex(codeDebuggerIndex);
+
+      DebugClientCodeDebugger codeDebugger = m_debugClient.GetCodeDebuggerInterface(codeDebuggerId);
+
+      if (codeDebugger.GetState() == CodeDebuggerState::cdsBreak)
+         codeDebugger.SetCommand(CodeDebuggerCommand::cdcStepInto);
+   }
+
+   m_debugClient.Lock(false);
+
+   return 0;
+}
+
+LRESULT MainFrame::OnDebugStepOver(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+   m_debugClient.Lock(true);
+
+   size_t numCodeDebugger = m_debugClient.GetCodeDebuggerCount();
+   for (size_t codeDebuggerIndex = 0; codeDebuggerIndex < numCodeDebugger; codeDebuggerIndex++)
+   {
+      unsigned int codeDebuggerId = m_debugClient.GetCodeDebuggerByIndex(codeDebuggerIndex);
+
+      DebugClientCodeDebugger codeDebugger = m_debugClient.GetCodeDebuggerInterface(codeDebuggerId);
+
+      if (codeDebugger.GetState() == CodeDebuggerState::cdsBreak)
+         codeDebugger.SetCommand(CodeDebuggerCommand::cdcStepOver);
+   }
+
+   m_debugClient.Lock(false);
+
+   return 0;
+}
+
+LRESULT MainFrame::OnDebugStepOut(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+   m_debugClient.Lock(true);
+
+   size_t numCodeDebugger = m_debugClient.GetCodeDebuggerCount();
+   for (size_t codeDebuggerIndex = 0; codeDebuggerIndex < numCodeDebugger; codeDebuggerIndex++)
+   {
+      unsigned int codeDebuggerId = m_debugClient.GetCodeDebuggerByIndex(codeDebuggerIndex);
+
+      DebugClientCodeDebugger codeDebugger = m_debugClient.GetCodeDebuggerInterface(codeDebuggerId);
+
+      if (codeDebugger.GetState() == CodeDebuggerState::cdsBreak)
+         codeDebugger.SetCommand(CodeDebuggerCommand::cdcStepOut);
+   }
+
+   m_debugClient.Lock(false);
 
    return 0;
 }

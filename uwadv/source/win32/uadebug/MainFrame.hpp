@@ -109,6 +109,11 @@ private:
       COMMAND_ID_HANDLER(ID_VIEW_PROJECT, OnViewProjectInfo)
       COMMAND_ID_HANDLER(ID_VIEW_TILEMAP, OnViewTilemap)
       COMMAND_ID_HANDLER(ID_VIEW_GAMESTRINGS, OnViewGameStrings)
+      COMMAND_ID_HANDLER(ID_DEBUG_PAUSE, OnDebugPause)
+      COMMAND_ID_HANDLER(ID_DEBUG_RUN, OnDebugRun)
+      COMMAND_ID_HANDLER(ID_DEBUG_STEP_INTO, OnDebugStepInto)
+      COMMAND_ID_HANDLER(ID_DEBUG_STEP_OVER, OnDebugStepOver)
+      COMMAND_ID_HANDLER(ID_DEBUG_STEP_OUT, OnDebugStepOut)
       COMMAND_ID_HANDLER(ID_WINDOW_CASCADE, OnWindowCascade)
       COMMAND_ID_HANDLER(ID_WINDOW_TILE_HORZ, OnWindowTileHorizontal)
       COMMAND_ID_HANDLER(ID_WINDOW_TILE_VERT, OnWindowTileVertical)
@@ -158,6 +163,12 @@ private:
    LRESULT OnViewProjectInfo(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnViewTilemap(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnViewGameStrings(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnDebugBreak(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnDebugPause(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnDebugRun(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnDebugStepInto(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnDebugStepOver(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnDebugStepOut(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnAppAbout(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
    LRESULT OnWindowCascade(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
