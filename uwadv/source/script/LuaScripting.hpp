@@ -22,26 +22,18 @@
 #pragma once
 
 #include "Base.hpp"
-#include "LuaState.hpp"
+#include "LuaCodeDebugger.hpp"
 #include "IScripting.hpp"
-#include "IDebugServer.hpp"
-#include <vector>
-#include <map>
-#include <set>
 
 class IGame;
-struct lua_Debug;
 
 /// lua scripting class
-class LuaScripting : public LuaState, public IScripting, public ICodeDebugger
+class LuaScripting : public LuaCodeDebugger, public IScripting
 {
 public:
    /// ctor
    LuaScripting();
    virtual ~LuaScripting() {}
-
-   /// lua function call
-   void CheckedCall(int numArgs, int numResults);
 
    // virtual methods from IScripting
    virtual void Init(IBasicGame* game) override;
@@ -58,39 +50,8 @@ private:
    /// returns scripting class from Lua state
    static LuaScripting& GetScriptingFromSelf(lua_State* L);
 
-   /// debug hook called from Lua
-   static void DebugHook(lua_State* L, lua_Debug* ar);
-
-   /// translate Lua debug hook event codes to readable text
-   static const char* LuaDebugEventNameFromInt(int event);
-
-   /// debug hook called from Lua; now with actual scripting object
-   void DebugHook(lua_Debug* ar);
-
-   /// checks if a breakpoint was reached
-   void CheckBreakpoints();
-
-   /// waits for the debugger to continue debugging
-   void WaitDebuggerContinue();
-
    /// registers all callable functions
    void RegisterFunctions();
-
-   // virtual methods from ICodeDebugger
-   virtual DebugServerCodeDebuggerType GetDebuggerType() override;
-   virtual void PrepareDebugInfo() override;
-   virtual DebugServerCodeDebuggerState GetDebuggerState() const override;
-   virtual void SetDebuggerState(DebugServerCodeDebuggerState state) override;
-   virtual DebugServerCodeDebuggerCommand GetDebuggerCommand() const override;
-   virtual void SetDebuggerCommand(DebugServerCodeDebuggerCommand command) override;
-   virtual void GetCurrentPos(size_t& sourcefileIndex, size_t& sourcefileLine,
-      size_t& codePosition, bool& isSourcefileValid) override;
-   virtual size_t GetNumSourcefiles() const override;
-   virtual size_t GetSourcefileName(size_t index, char* buffer, size_t length) override;
-   virtual size_t GetNumBreakpoints() const override;
-   virtual void GetBreakpointInfo(size_t breakpointIndex,
-      size_t& sourcefileIndex, size_t& sourcefileLine,
-      size_t& codePosition, bool& visible) const override;
 
 private:
    /// ptr to basic game interface
@@ -98,30 +59,6 @@ private:
 
    /// name for 'self' global in Lua
    static const char* s_selfName;
-
-   /// array with all loaded script files
-   std::vector<std::string> m_loadedScriptFiles;
-
-   /// map with all source files and line numbers
-   std::map<std::string, std::set<unsigned int>> m_allLineNumbers;
-
-   /// current debugger state
-   DebugServerCodeDebuggerState m_debuggerState;
-
-   /// current debugger command
-   DebugServerCodeDebuggerCommand m_debuggerCommand;
-
-   /// current position sourcefile index
-   size_t m_currentPositionSourcefileIndex;
-
-   /// current position sourcefile line
-   size_t m_currentPositionSourcefileLine;
-
-   /// function call depth when doing "step over"
-   size_t m_stepOverFunctionCallDepth;
-
-   /// list with all breakpoints
-   std::vector<DebugCodeBreakpointInfo> m_breakpointsList;
 
 private:
    // registered C functions callable from Lua

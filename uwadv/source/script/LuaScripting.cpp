@@ -30,17 +30,12 @@
 extern "C"
 {
 #include "lua.h"
-#include "lualib.h"
-#include "ldebug.h"
-#include "lstate.h"
-#include "lobject.h"
-#include "lauxlib.h"
 }
 
 const char* LuaScripting::s_selfName = "_scripting_self";
 
 LuaScripting::LuaScripting()
-   :m_game(NULL), m_debuggerState(codeDebuggerStateInactive)
+   :m_game(NULL)
 {
 }
 
@@ -54,13 +49,7 @@ void LuaScripting::Init(IBasicGame* game)
 
    RegisterFunctions();
 
-   // notify debugger of start of Lua script code debugger
-   m_game->GetDebugger().StartCodeDebugger(this);
-
-   m_debuggerState = codeDebuggerStateRunning;
-   m_debuggerCommand = codeDebuggerCommandRun;
-   m_stepOverFunctionCallDepth = 0;
-   m_currentPositionSourcefileIndex = m_currentPositionSourcefileLine = unsigned(-1);
+   LuaCodeDebugger::Init(m_game->GetDebugger());
 }
 
 bool LuaScripting::LoadScript(const char* basename)
@@ -95,14 +84,10 @@ bool LuaScripting::LoadScript(const char* basename)
    std::string complete_scriptname = m_game->GetSettings().GetString(Base::settingUadataPath);
    complete_scriptname += scriptname.c_str();
 
-   int ret = LuaState::LoadScript(script, complete_scriptname.c_str());
+   int ret = LuaCodeDebugger::LoadScript(script, complete_scriptname.c_str());
 
    UaTrace("loaded Lua %sscript \"%s\"\n",
       compiled ? "compiled " : "", scriptname.c_str());
-
-   // put script name in list, if it's not a compiled one
-   if (!compiled)
-      m_loadedScriptFiles.push_back(complete_scriptname);
 
    return ret == 0;
 }
@@ -111,15 +96,6 @@ void LuaScripting::Done()
 {
    // notify debugger of end of Lua script code debugger
    m_game->GetDebugger().EndCodeDebugger(this);
-}
-
-void LuaScripting::CheckedCall(int nargs, int nresults)
-{
-   lua_sethook(L, DebugHook, LUA_MASKCALL | LUA_MASKRET | LUA_MASKLINE, 0);
-
-   LuaState::CheckedCall(nargs, nresults);
-
-   lua_sethook(L, NULL, 0, 0);
 }
 
 void LuaScripting::InitNewGame()
@@ -288,134 +264,6 @@ LuaScripting& LuaScripting::GetScriptingFromSelf(lua_State* L)
    return *self;
 }
 
-void LuaScripting::DebugHook(lua_State* L, lua_Debug* ar)
-{
-   lua_getstack(L, 0, ar);
-   lua_getinfo(L, "Snlu", ar);
-
-   // don't report C functions
-   if (0 == strcmp(ar->source, "=C"))
-      return;
-
-   LuaScripting& script = GetScriptingFromSelf(L);
-   UaAssert(script.GetLuaState() == L);
-
-   script.DebugHook(ar);
-}
-
-const char* LuaScripting::LuaDebugEventNameFromInt(int event)
-{
-   switch (event)
-   {
-   case LUA_HOOKCALL: return "call";
-   case LUA_HOOKRET: return "return";
-   case LUA_HOOKTAILCALL: return "tailcall";
-   case LUA_HOOKLINE: return "line";
-   case LUA_HOOKCOUNT: return "count";
-   default:
-      return "???";
-   }
-}
-
-void LuaScripting::DebugHook(lua_Debug* ar)
-{
-   //UaTrace("debug: event=%s, name=%s, start=%d, line=%d, in=%s\n",
-   //   LuaDebugEventNameFromInt(ar->event), ar->name, ar->linedefined, ar->currentline, ar->source);
-
-   if (ar->source != NULL)
-   {
-      m_currentPositionSourcefileIndex = size_t(-1);
-
-      // find out current index
-      size_t max = m_loadedScriptFiles.size();
-      for (size_t n = 0; n < max; n++)
-         if (m_loadedScriptFiles[n] == ar->source)
-         {
-            m_currentPositionSourcefileIndex = n;
-            break;
-         }
-   }
-
-   if (ar->currentline > 0)
-      m_currentPositionSourcefileLine = static_cast<unsigned int>(ar->currentline);
-
-   DebugServerCodeDebuggerState oldDebuggerState = GetDebuggerState();
-
-   // check commands
-   if (GetDebuggerState() == codeDebuggerStateRunning)
-   {
-      switch (GetDebuggerCommand())
-      {
-      case codeDebuggerCommandRun:
-         SetDebuggerState(codeDebuggerStateRunning);
-         break;
-
-      case codeDebuggerCommandStepOver:
-         if (ar->event == LUA_HOOKLINE)
-         {
-            if (m_stepOverFunctionCallDepth == 0)
-               SetDebuggerState(codeDebuggerStateBreak);
-         }
-         else if (ar->event == LUA_HOOKCALL)
-         {
-            if (GetDebuggerState() == codeDebuggerStateRunning)
-               m_stepOverFunctionCallDepth++; //
-            else
-               m_stepOverFunctionCallDepth = 0; // start of stepping over a function
-         }
-         else if (ar->event == LUA_HOOKRET)
-         {
-            --m_stepOverFunctionCallDepth; // returning from function
-            if (m_stepOverFunctionCallDepth == 0)
-            {
-               // returned from stepped over function
-               SetDebuggerState(codeDebuggerStateRunning);
-               SetDebuggerCommand(codeDebuggerCommandStepInto);
-            }
-         }
-         break;
-
-      case codeDebuggerCommandStepInto:
-         if (ar->event == LUA_HOOKLINE ||
-            ar->event == LUA_HOOKCALL)
-         {
-            SetDebuggerState(codeDebuggerStateBreak);
-         }
-         break;
-
-      case codeDebuggerCommandStepOut:
-         if (ar->event == LUA_HOOKRET)
-         {
-            // when returning set "step over" command to stop at the next line
-            SetDebuggerState(codeDebuggerStateRunning);
-            SetDebuggerCommand(codeDebuggerCommandStepOver);
-         }
-         break;
-      }
-   }
-
-   // check for breakpoints
-   CheckBreakpoints();
-
-   // check if state changed
-   if (oldDebuggerState != GetDebuggerState())
-      m_game->GetDebugger().SendCodeDebuggerStatusUpdate(m_debuggerId);
-
-   // wait for state to change to "running" again
-   WaitDebuggerContinue();
-}
-
-void LuaScripting::CheckBreakpoints()
-{
-   // TODO
-}
-
-void LuaScripting::WaitDebuggerContinue()
-{
-   while (GetDebuggerState() == codeDebuggerStateBreak)
-      SDL_Delay(10); // TODO
-}
-
 /// registers a C function inside a table
 #define lua_register_table(L, n, f) { \
    lua_pushstring(L, n); lua_pushcfunction(L, f); lua_settable(L,-3); }
@@ -492,141 +340,6 @@ void LuaScripting::RegisterFunctions()
    lua_setglobal(L, "prop");
 }
 
-DebugServerCodeDebuggerType LuaScripting::GetDebuggerType()
-{
-   return codeDebuggerTypeLuaScript;
-}
-
-/// Prepares debugging info.
-/// The Lua struct Proto contains all informations about a function prototype.
-/// It also contains line number info when a source file was loaded. The
-/// format of the "lineinfo" array is as follows:
-/// The lineinfo array contains "sizelineinfo" items, which is always an odd
-/// number. The last item contains MAX_INT to signal an end. The list contains
-/// pairs of int values. The first one describes a line number and is coded to
-/// save space. If the value is negative, it is a relative value to the
-/// previous line number. The first line number is 1 (one). If the value is
-/// positive, it is not a line number offset and the line number stays the
-/// same. The second value is a program counter into the compiled bytecode.
-/// It points to the start of the code that is generated from the line
-/// described in the first value.
-void LuaScripting::PrepareDebugInfo()
-{
-   // retrieve debug info from lua struct
-   // TODO reimplement
-   // go through list of all function prototype structures
-   Proto* proto = NULL; // L->rootproto; TODO how to get Proto from L?
-   while (proto != NULL)
-   {
-      std::string filename(getstr(proto->source));
-
-      // find line numbers set
-      std::map<std::string, std::set<unsigned int> >::iterator iter =
-         m_allLineNumbers.find(filename);
-      if (iter == m_allLineNumbers.end())
-      {
-         // insert new set; we have a new filename
-         std::set<unsigned int> emptySet;
-         m_allLineNumbers[filename] = emptySet;
-         iter = m_allLineNumbers.find(filename);
-      }
-
-      // go through all lineinfo value pairs
-      int* lineinfo = proto->lineinfo;
-      int curline = 0;
-      for (int n = 0; n < proto->sizelineinfo && lineinfo[n] != MAX_INT; n += 2)
-      {
-         // value negative? then add offset
-         if (lineinfo[n] < 0)
-            curline += -lineinfo[n] + 1;
-
-         iter->second.insert(static_cast<unsigned int>(curline));
-      }
-
-      // proto = proto->next; // TODO how to advance?
-   }
-}
-
-DebugServerCodeDebuggerState LuaScripting::GetDebuggerState() const
-{
-   // TODO protect access
-   return m_debuggerState;
-}
-
-void LuaScripting::SetDebuggerState(DebugServerCodeDebuggerState new_state)
-{
-   // TODO protect access
-   m_debuggerState = new_state;
-}
-
-DebugServerCodeDebuggerCommand LuaScripting::GetDebuggerCommand() const
-{
-   // TODO protect access
-   return m_debuggerCommand;
-}
-
-void LuaScripting::SetDebuggerCommand(DebugServerCodeDebuggerCommand debuggerCommand)
-{
-   //   if (GetDebuggerState() == codeDebuggerStateRunning)
-   //      return; // don't set command when still running
-
-      // TODO protect access
-   m_debuggerCommand = debuggerCommand;
-   //   m_debuggerState = codeDebuggerStateRunning;
-}
-
-void LuaScripting::GetCurrentPos(size_t& sourcefileIndex,
-   size_t& sourcefileLine, size_t& codePosition,
-   bool& isSourcefileValid)
-{
-   UNUSED(codePosition);
-   sourcefileIndex = m_currentPositionSourcefileIndex;
-   sourcefileLine = m_currentPositionSourcefileLine;
-   isSourcefileValid = true;
-}
-
-size_t LuaScripting::GetNumSourcefiles() const
-{
-   return static_cast<unsigned int>(m_loadedScriptFiles.size());
-}
-
-size_t LuaScripting::GetSourcefileName(size_t index, char* buffer, size_t length)
-{
-   std::string filename(m_loadedScriptFiles[index]);
-   if (!filename.empty() && filename[0] == '@')
-      filename.erase(0, 1); // remove @ char
-
-   size_t size = filename.size();
-
-   if (buffer == NULL || length == 0 || length < size + 1)
-      return size + 1;
-
-   strncpy(buffer, filename.c_str(), size);
-   buffer[size] = 0;
-
-   return filename.size() + 1;
-}
-
-size_t LuaScripting::GetNumBreakpoints() const
-{
-   return m_breakpointsList.size();
-}
-
-void LuaScripting::GetBreakpointInfo(size_t breakpointIndex,
-   size_t& sourcefileIndex, size_t& sourcefileLine,
-   size_t& codePosition, bool& visible) const
-{
-   UaAssert(breakpointIndex < GetNumBreakpoints());
-   if (breakpointIndex >= GetNumBreakpoints())
-      return;
-
-   const DebugCodeBreakpointInfo& info = m_breakpointsList[breakpointIndex];
-
-   visible = info.visible;
-   sourcefileIndex = info.pos.sourcefileIndex;
-   sourcefileLine = info.pos.sourcefileLine;
-   codePosition = info.pos.codePosition;
-}
 
 int LuaScripting::uw_print(lua_State* L)
 {

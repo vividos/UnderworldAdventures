@@ -66,6 +66,7 @@
     <Lib />
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="LuaCodeDebugger.cpp" />
     <ClCompile Include="LuaScripting.cpp" />
     <ClCompile Include="LuaState.cpp" />
     <ClCompile Include="pch.cpp">
@@ -74,6 +75,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="LuaCodeDebugger.hpp" />
     <ClInclude Include="LuaScripting.hpp" />
     <ClInclude Include="IScripting.hpp" />
     <ClInclude Include="LuaState.hpp" />
