@@ -27,7 +27,7 @@
 #include "ImageQuad.hpp"
 #include "Font.hpp"
 #include "MouseCursor.hpp"
-#include "script/LuaScripting.hpp"
+#include "script/CreateCharacterLuaScripting.hpp"
 
 namespace Underworld
 {
@@ -87,12 +87,9 @@ protected:
    /// HandleInputCharacter
    void HandleInputCharacter(char c);
 
-   /// call cchar_global in script
-   void cchar_global(int globalaction, int seed);
-
 protected:
    /// lua scripting interface
-   LuaScripting m_lua;
+   CreateCharacterLuaScripting m_lua;
 
    /// mouse cursor
    MouseCursor m_mouseCursor;

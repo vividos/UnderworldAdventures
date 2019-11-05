@@ -22,7 +22,6 @@
 ///
 /// \todo reimplement the whole screen, using own button window class, etc.
 /// also use unicode mode to properly capture keys
-/// get rid of the global variable to hold "this" pointer
 /// use "relative" indexing for lua C call parameters
 /// use fading helper class for fading purposes
 /// put global constants as static members into class
@@ -36,6 +35,7 @@
 #include "Underworld.hpp"
 #include "Import.hpp"
 #include "ImageManager.hpp"
+#include "script/LuaScripting.hpp"
 #include <sstream>
 #include <ctime>
 
@@ -51,13 +51,6 @@ const double c_fadeTime = 0.5;
 
 /// maximum number of buttons in a group (shown on-screen at once)
 const unsigned char c_maxNumButtons = 10;
-
-/// global script actions
-enum CreateCharGlobalAction
-{
-   gactInit = 0,   ///< initialize
-   gactDeinit = 1  ///< deinitialize
-};
 
 /// script actions
 enum CreateCharLuaAction
@@ -90,10 +83,6 @@ enum CreateCharButtonType
    buttonInput = 2,  ///< input area
    buttonTimer = 3,  ///< virtual button acting as a countdown timer
 };
-
-/// global variable that points to the current screen
-/// \todo replace with Lua uservalue
-CreateCharacterScreen* m_currenctCharCreationScreen = 0;
 
 /// \todo replace pplayer with reference to player object
 void CreateCharacterScreen::Init()
@@ -156,11 +145,7 @@ void CreateCharacterScreen::Init()
 
 void CreateCharacterScreen::Destroy()
 {
-   // close Lua
-   m_lua.Done();
    UaTrace("character creation screen ended\n\n");
-
-   m_currenctCharCreationScreen = 0;
 }
 
 void CreateCharacterScreen::Draw()
@@ -231,7 +216,7 @@ bool CreateCharacterScreen::ProcessEvent(SDL_Event& event)
       switch (event.key.keysym.sym)
       {
       case SDLK_ESCAPE:
-         cchar_global(gactDeinit, 0);
+         m_lua.CallGlobal(gactDeinit, 0);
          break;
 
       case SDLK_PAGEUP:
@@ -356,52 +341,21 @@ void CreateCharacterScreen::Tick()
    }
 }
 
-/// \todo store "this" pointer in userdata variable
 void CreateCharacterScreen::InitLuaScript()
 {
-   // initialize Lua
-   m_lua.Init(&m_game);
-
-   lua_State* L = m_lua.GetLuaState();
-
-   // open lualib libraries
-   luaL_requiref(L, "_G", luaopen_base, 1); lua_pop(L, 1);
-   luaL_requiref(L, LUA_STRLIBNAME, luaopen_string, 1); lua_pop(L, 1);
-   luaL_requiref(L, LUA_MATHLIBNAME, luaopen_math, 1); lua_pop(L, 1);
-
-   // register C functions
-   lua_register(L, "cchar_do_action", cchar_do_action);
+   m_lua.Init(std::bind(&CreateCharacterScreen::DoAction, this));
 
    // load lua interface script for constants
-   if (!m_lua.LoadScript("uw1/scripts/uwinterface"))
+   if (!LuaScripting::LoadScript(m_lua, m_game.GetSettings(), m_game.GetResourceManager(), "uw1/scripts/uwinterface"))
       m_isEnded = true;
 
    // load lua cutscene script
-   if (!m_lua.LoadScript("uw1/scripts/createchar"))
+   if (!LuaScripting::LoadScript(m_lua, m_game.GetSettings(), m_game.GetResourceManager(), "uw1/scripts/createchar"))
       m_isEnded = true;
-
-   // store pointer to this instance in a global var
-   m_currenctCharCreationScreen = this;
 
    // Init script with seed value for random numbers
-   cchar_global(gactInit, clock());
-}
-
-void CreateCharacterScreen::cchar_global(int globalaction, int seed)
-{
-   lua_State* L = m_lua.GetLuaState();
-
-   // call "cchar_global()"
-   lua_getglobal(L, "cchar_global");
-   lua_pushnumber(L, globalaction);
-   lua_pushnumber(L, seed);
-   int ret = lua_pcall(L, 2, 0, 0);
-   if (ret != 0)
-   {
-      const char* errorText = lua_tostring(L, -1);
-      UaTrace("Lua function call cchar_global ended with error code %u: %s\n", ret, errorText);
+   if (!m_lua.CallGlobal(gactInit, clock()))
       m_isEnded = true;
-   }
 }
 
 void CreateCharacterScreen::HandleInputCharacter(char c)
@@ -754,11 +708,4 @@ void CreateCharacterScreen::PressButton(int button)
          this, button, ret, errorText);
       m_isEnded = true;
    }
-}
-
-int CreateCharacterScreen::cchar_do_action(lua_State *L)
-{
-   if (m_currenctCharCreationScreen != 0)
-      m_currenctCharCreationScreen->DoAction();
-   return 0;
 }
