@@ -25,6 +25,7 @@
 #include "IUserInterface.hpp"
 #include "GameStrings.hpp"
 #include "uwadv/DebugServer.hpp"
+#include "Settings.hpp"
 #include "ResourceManager.hpp"
 
 extern "C"
@@ -54,14 +55,22 @@ void LuaScripting::Init(IBasicGame* game)
 
 bool LuaScripting::LoadScript(const char* basename)
 {
-   std::string scriptname(basename);
+   return LuaScripting::LoadScript(*this, m_game->GetSettings(), m_game->GetResourceManager(), basename);
+}
+
+bool LuaScripting::LoadScript(LuaState& lua,
+   const Base::Settings& settings,
+   const Base::ResourceManager& resourceManager,
+   const char* basename)
+{
+   std::string scriptname{ basename };
    scriptname.append(".lua");
 
    bool compiled = false;
 
    // load lua script
    Base::SDL_RWopsPtr script =
-      m_game->GetResourceManager().GetResourceFile(scriptname.c_str());
+      resourceManager.GetResourceFile(scriptname.c_str());
 
    // not found? try binary one
    if (script == NULL)
@@ -70,7 +79,7 @@ bool LuaScripting::LoadScript(const char* basename)
       scriptname.append(".lob");
       compiled = true;
 
-      script = m_game->GetResourceManager().GetResourceFile(scriptname.c_str());
+      script = resourceManager.GetResourceFile(scriptname.c_str());
    }
 
    // still not found? exception
@@ -81,15 +90,15 @@ bool LuaScripting::LoadScript(const char* basename)
       throw Base::Exception(text.c_str());
    }
 
-   std::string complete_scriptname = m_game->GetSettings().GetString(Base::settingUadataPath);
-   complete_scriptname += scriptname.c_str();
+   std::string completeScriptName = settings.GetString(Base::settingUadataPath);
+   completeScriptName += scriptname.c_str();
 
-   int ret = LuaCodeDebugger::LoadScript(script, complete_scriptname.c_str());
+   bool ret = LUA_OK == lua.LoadScript(script, completeScriptName.c_str());
 
    UaTrace("loaded Lua %sscript \"%s\"\n",
       compiled ? "compiled " : "", scriptname.c_str());
 
-   return ret == 0;
+   return ret;
 }
 
 void LuaScripting::Done()

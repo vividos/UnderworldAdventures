@@ -27,6 +27,12 @@
 
 class IGame;
 
+namespace Base
+{
+   class Settings;
+   class ResourceManager;
+}
+
 /// lua scripting class
 class LuaScripting : public LuaCodeDebugger, public IScripting
 {
@@ -34,6 +40,9 @@ public:
    /// ctor
    LuaScripting();
    virtual ~LuaScripting() {}
+
+   /// loads a script from resource manager
+   static bool LoadScript(LuaState& lua, const Base::Settings& settings, const Base::ResourceManager& resourceManager, const char* basename);
 
    // virtual methods from IScripting
    virtual void Init(IBasicGame* game) override;
