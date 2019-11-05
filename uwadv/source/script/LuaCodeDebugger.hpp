@@ -42,10 +42,10 @@ public:
    void Init(IDebugServer& debugServer);
 
    /// loads a script from rwops
-   int LoadScript(Base::SDL_RWopsPtr rwops, const char* sourceFilename);
+   virtual int LoadScript(Base::SDL_RWopsPtr rwops, const char* sourceFilename) override;
 
    /// lua function call, with debugging
-   void CheckedCall(int numArgs, int numResults);
+   virtual void CheckedCall(int numArgs, int numResults) override;
 
 private:
    /// returns code debugger class from Lua state

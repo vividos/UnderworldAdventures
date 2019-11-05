@@ -31,16 +31,16 @@ public:
    /// ctor
    LuaState();
    /// dtor
-   ~LuaState() noexcept;
+   virtual ~LuaState() noexcept;
 
    /// returns lua state info struct
    lua_State* GetLuaState() noexcept { return L; }
 
    /// loads a script from rwops
-   int LoadScript(Base::SDL_RWopsPtr rwops, const char* chunkname);
+   virtual int LoadScript(Base::SDL_RWopsPtr rwops, const char* chunkname);
 
    /// lua function call
-   void CheckedCall(int numArgs, int numResults);
+   virtual void CheckedCall(int numArgs, int numResults);
 
    /// checks Lua code for syntax errors
    static bool CheckSyntax(const std::string& luaSource, std::vector<std::string>& errorMessages);
