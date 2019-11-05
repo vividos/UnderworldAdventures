@@ -43,7 +43,7 @@ public:
    void CheckedCall(int numArgs, int numResults);
 
    /// checks Lua code for syntax errors
-   static bool CheckSyntax(const std::string& luaSource, std::vector<std::string> errorMessages);
+   static bool CheckSyntax(const std::string& luaSource, std::vector<std::string>& errorMessages);
 
    /// parses Lua code and returns line numbers of active lines
    static void GetActiveLines(const std::string& luaSource, std::vector<size_t>& lineNumbers);

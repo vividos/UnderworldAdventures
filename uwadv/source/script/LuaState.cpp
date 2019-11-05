@@ -130,7 +130,7 @@ void LuaState::CheckedCall(int numArgs, int numResults)
    }
 }
 
-bool LuaState::CheckSyntax(const std::string& luaSource, std::vector<std::string> errorMessages)
+bool LuaState::CheckSyntax(const std::string& luaSource, std::vector<std::string>& errorMessages)
 {
    if (luaSource.empty())
       return true;
