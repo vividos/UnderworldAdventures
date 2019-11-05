@@ -233,40 +233,40 @@ void DebugClientObjectListInterface::SetItemInfo(unsigned int pos, unsigned int 
    m_debugInterface->SetObjectListInfo(m_level, pos, subcode, nInfo);
 }
 
-CodeDebuggerType IDebugClientCodeDebugger::GetDebuggerType()
+CodeDebuggerType DebugClientCodeDebugger::GetDebuggerType()
 {
    return static_cast<CodeDebuggerType>(m_codeDebugger->GetDebuggerType());
 }
 
-void IDebugClientCodeDebugger::PrepareDebugInfo()
+void DebugClientCodeDebugger::PrepareDebugInfo()
 {
    m_codeDebugger->PrepareDebugInfo();
 }
 
-bool IDebugClientCodeDebugger::IsSourceAvail() const
+bool DebugClientCodeDebugger::IsSourceAvail() const
 {
    // TODO implement
    return true;
 }
 
-bool IDebugClientCodeDebugger::IsCodeAvail() const
+bool DebugClientCodeDebugger::IsCodeAvail() const
 {
    // TODO implement
    return true;
 }
 
-void IDebugClientCodeDebugger::SetCommand(CodeDebuggerCommand command)
+void DebugClientCodeDebugger::SetCommand(CodeDebuggerCommand command)
 {
    m_codeDebugger->SetDebuggerCommand(static_cast<DebugServerCodeDebuggerCommand>(command));
    m_codeDebugger->SetDebuggerState(codeDebuggerStateRunning);
 }
 
-CodeDebuggerState IDebugClientCodeDebugger::GetState() const
+CodeDebuggerState DebugClientCodeDebugger::GetState() const
 {
    return static_cast<CodeDebuggerState>(m_codeDebugger->GetDebuggerState());
 }
 
-CodePosition IDebugClientCodeDebugger::GetCurrentPos()
+CodePosition DebugClientCodeDebugger::GetCurrentPos()
 {
    CodePosition pos;
 
@@ -283,12 +283,12 @@ CodePosition IDebugClientCodeDebugger::GetCurrentPos()
    return pos;
 }
 
-size_t IDebugClientCodeDebugger::GetBreakpointCount() const
+size_t DebugClientCodeDebugger::GetBreakpointCount() const
 {
    return m_codeDebugger->GetNumBreakpoints();
 }
 
-void IDebugClientCodeDebugger::GetBreakpointInfo(size_t breakpointIndex, BreakpointInfo& breakpointInfo) const
+void DebugClientCodeDebugger::GetBreakpointInfo(size_t breakpointIndex, BreakpointInfo& breakpointInfo) const
 {
    ATLASSERT(breakpointIndex < GetBreakpointCount());
    m_codeDebugger->GetBreakpointInfo(breakpointIndex,
@@ -298,13 +298,13 @@ void IDebugClientCodeDebugger::GetBreakpointInfo(size_t breakpointIndex, Breakpo
       breakpointInfo.m_isVisible);
 }
 
-unsigned int IDebugClientCodeDebugger::GetCallstackHeight() const
+unsigned int DebugClientCodeDebugger::GetCallstackHeight() const
 {
    // TODO implement
    return 0;
 }
 
-void IDebugClientCodeDebugger::GetCallstackInfo(unsigned int atLevel, CallstackInfo& callstackInfo) const
+void DebugClientCodeDebugger::GetCallstackInfo(unsigned int atLevel, CallstackInfo& callstackInfo) const
 {
    ATLASSERT(atLevel < GetCallstackHeight());
    UNUSED(atLevel);
@@ -312,12 +312,12 @@ void IDebugClientCodeDebugger::GetCallstackInfo(unsigned int atLevel, CallstackI
    // TODO implement
 }
 
-size_t IDebugClientCodeDebugger::GetSourceFileCount() const
+size_t DebugClientCodeDebugger::GetSourceFileCount() const
 {
    return m_codeDebugger->GetNumSourcefiles();
 }
 
-CString IDebugClientCodeDebugger::GetSourceFileName(size_t index)
+CString DebugClientCodeDebugger::GetSourceFileName(size_t index)
 {
    ATLASSERT(index < GetSourceFileCount());
 
@@ -340,7 +340,7 @@ CString IDebugClientCodeDebugger::GetSourceFileName(size_t index)
    return sourceFilename.Get();
 }
 
-bool IDebugClientCodeDebugger::GetSourceFromCodePos(unsigned int codePos,
+bool DebugClientCodeDebugger::GetSourceFromCodePos(unsigned int codePos,
    CString& filename, unsigned int& lineNumber, unsigned int& lineDisplacement)
 {
    size_t sourcefileIndex = 0; // TODO
@@ -523,20 +523,23 @@ CString DebugClient::GetGameString(unsigned int block, unsigned int nr)
 void DebugClient::AddCodeDebugger(unsigned int codeDebuggerId)
 {
    if (!IsValidCodeDebuggerId(codeDebuggerId))
-      m_codeDebuggerIdList.Add(codeDebuggerId);
+      m_codeDebuggerIdList.push_back(codeDebuggerId);
 }
 
 void DebugClient::RemoveCodeDebugger(unsigned int codeDebuggerId)
 {
-   ATLVERIFY(TRUE == m_codeDebuggerIdList.Remove(codeDebuggerId));
+   ATLASSERT(IsValidCodeDebuggerId(codeDebuggerId));
+
+   auto iter = std::find(m_codeDebuggerIdList.begin(), m_codeDebuggerIdList.end(), codeDebuggerId);
+   m_codeDebuggerIdList.erase(iter);
 }
 
-unsigned int DebugClient::GetCodeDebuggerCount() const
+size_t DebugClient::GetCodeDebuggerCount() const
 {
-   return static_cast<unsigned int>(m_codeDebuggerIdList.GetSize());
+   return m_codeDebuggerIdList.size();
 }
 
-unsigned int DebugClient::GetCodeDebuggerByIndex(unsigned int index) const
+unsigned int DebugClient::GetCodeDebuggerByIndex(size_t index) const
 {
    ATLASSERT(index < GetCodeDebuggerCount());
    return m_codeDebuggerIdList[index];
@@ -544,21 +547,21 @@ unsigned int DebugClient::GetCodeDebuggerByIndex(unsigned int index) const
 
 bool DebugClient::IsValidCodeDebuggerId(unsigned int codeDebuggerId) const
 {
-   int nMax = m_codeDebuggerIdList.GetSize();
-   for (int n = 0; n < nMax; n++)
+   size_t max = m_codeDebuggerIdList.size();
+   for (size_t index = 0; index < max; index++)
    {
-      if (m_codeDebuggerIdList[n] == codeDebuggerId)
+      if (m_codeDebuggerIdList[index] == codeDebuggerId)
          return true;
    }
 
    return false;
 }
 
-IDebugClientCodeDebugger DebugClient::GetCodeDebuggerInterface(unsigned int codeDebuggerId)
+DebugClientCodeDebugger DebugClient::GetCodeDebuggerInterface(unsigned int codeDebuggerId)
 {
    ATLASSERT(true == IsValidCodeDebuggerId(codeDebuggerId));
 
-   IDebugClientCodeDebugger cdi;
+   DebugClientCodeDebugger cdi;
    cdi.m_codeDebugger = m_debugInterface->GetCodeDebugger(codeDebuggerId);
    ATLASSERT(cdi.m_codeDebugger != NULL);
 

@@ -112,7 +112,6 @@ void LuaScripting::Init(IBasicGame* game)
    m_game->GetDebugger().StartCodeDebugger(this);
 
    m_debuggerState = codeDebuggerStateRunning;
-   //   m_debuggerCommand = codeDebuggerCommandStepInto; // ensures that we break at the first line
    m_debuggerCommand = codeDebuggerCommandRun;
    m_stepOverFunctionCallDepth = 0;
    m_currentPositionSourcefileIndex = m_currentPositionSourcefileLine = unsigned(-1);
@@ -429,10 +428,10 @@ void LuaScripting::DebugHook(lua_Debug* ar)
    if (ar->currentline > 0)
       m_currentPositionSourcefileLine = static_cast<unsigned int>(ar->currentline);
 
-   DebugServerCodeDebuggerState old_state = GetDebuggerState();
+   DebugServerCodeDebuggerState oldDebuggerState = GetDebuggerState();
 
    // check commands
-//   if (GetDebuggerState() == codeDebuggerStateRunning)
+   if (GetDebuggerState() == codeDebuggerStateRunning)
    {
       switch (GetDebuggerCommand())
       {
@@ -466,7 +465,8 @@ void LuaScripting::DebugHook(lua_Debug* ar)
          break;
 
       case codeDebuggerCommandStepInto:
-         if (ar->event == LUA_HOOKLINE)
+         if (ar->event == LUA_HOOKLINE ||
+            ar->event == LUA_HOOKCALL)
          {
             SetDebuggerState(codeDebuggerStateBreak);
          }
@@ -487,7 +487,7 @@ void LuaScripting::DebugHook(lua_Debug* ar)
    CheckBreakpoints();
 
    // check if state changed
-   if (old_state != GetDebuggerState())
+   if (oldDebuggerState != GetDebuggerState())
       m_game->GetDebugger().SendCodeDebuggerStatusUpdate(m_debuggerId);
 
    // wait for state to change to "running" again

@@ -395,11 +395,11 @@ void ProjectInfoWindow::RefreshCodeDebuggerList()
    DebugClient& debugClient = m_mainFrame->GetDebugClientInterface();
    debugClient.Lock(true);
 
-   unsigned int nMax = debugClient.GetCodeDebuggerCount();
-   for (unsigned int n = 0; n < nMax; n++)
+   unsigned int maxIndex = debugClient.GetCodeDebuggerCount();
+   for (size_t index = 0; index < maxIndex; index++)
    {
-      unsigned int codeDebuggerId = debugClient.GetCodeDebuggerByIndex(n);
-      IDebugClientCodeDebugger cdi = debugClient.GetCodeDebuggerInterface(codeDebuggerId);
+      unsigned int codeDebuggerId = debugClient.GetCodeDebuggerByIndex(index);
+      DebugClientCodeDebugger cdi = debugClient.GetCodeDebuggerInterface(codeDebuggerId);
       CodeDebuggerType enType = cdi.GetDebuggerType();
 
       HTREEITEM hItem = m_treeCtrl.InsertItem(

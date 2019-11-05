@@ -153,11 +153,11 @@ struct CallstackInfo
 
 
 
-/// code debugger interface
-class IDebugClientCodeDebugger
+/// code debugger on debug client side
+class DebugClientCodeDebugger
 {
 public:
-   virtual ~IDebugClientCodeDebugger() {}
+   virtual ~DebugClientCodeDebugger() {}
 
    // misc.
 
@@ -205,7 +205,7 @@ public:
 
 private:
    /// ctor
-   IDebugClientCodeDebugger() {}
+   DebugClientCodeDebugger() {}
 
    /// pointer to code debugger interface
    class ICodeDebugger* m_codeDebugger;
@@ -289,10 +289,10 @@ public:
 
    bool IsValidCodeDebuggerId(unsigned int codeDebuggerId) const;
 
-   unsigned int GetCodeDebuggerCount() const;
-   unsigned int GetCodeDebuggerByIndex(unsigned int index) const;
+   size_t GetCodeDebuggerCount() const;
+   unsigned int GetCodeDebuggerByIndex(size_t index) const;
 
-   IDebugClientCodeDebugger GetCodeDebuggerInterface(unsigned int codeDebuggerId);
+   DebugClientCodeDebugger GetCodeDebuggerInterface(unsigned int codeDebuggerId);
 
 
    // misc.
@@ -309,5 +309,5 @@ private:
    unsigned int m_level;
 
    /// array with all valid code debugger IDs
-   CSimpleArray<unsigned int> m_codeDebuggerIdList;
+   std::vector<unsigned int> m_codeDebuggerIdList;
 };
