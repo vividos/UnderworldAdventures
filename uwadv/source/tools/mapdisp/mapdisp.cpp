@@ -191,7 +191,7 @@ private:
       throw std::runtime_error("object not available");
    }
 
-   virtual DebugServer& GetDebugger() override
+   virtual IDebugServer& GetDebugger() override
    {
       throw std::runtime_error("object not available");
    }

@@ -42,7 +42,7 @@ class RenderWindow;
 class Viewport;
 class RenderWindow;
 class IScripting;
-class DebugServer;
+class IDebugServer;
 class Screen;
 class GameStrings;
 class IUserInterface;
@@ -92,7 +92,7 @@ public:
    virtual IScripting& GetScripting() = 0;
 
    /// returns debugger object
-   virtual DebugServer& GetDebugger() = 0;
+   virtual IDebugServer& GetDebugger() = 0;
 
    /// returns game strings object
    virtual GameStrings& GetGameStrings() = 0;

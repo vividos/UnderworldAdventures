@@ -209,6 +209,9 @@ public:
    /// dtor
    virtual ~IDebugServer() {}
 
+   /// starts debugger client; returns if debugger was already running
+   virtual bool StartDebugger(IBasicGame* game) = 0;
+
    // methods called from debug client
 
    /// \brief checks interface version
@@ -232,6 +235,17 @@ public:
 
    /// pauses or unpauses game; returns previous game state
    virtual bool PauseGame(bool pause) = 0;
+
+   // code debugger stuff
+
+   /// starts code debugger
+   virtual void StartCodeDebugger(ICodeDebugger* codeDebugger) = 0;
+
+   /// ends code debugging
+   virtual void EndCodeDebugger(ICodeDebugger* codeDebugger) = 0;
+
+   /// sends code debugger update message
+   virtual void SendCodeDebuggerStatusUpdate(unsigned int debuggerId) = 0;
 
    // messaging stuff
 

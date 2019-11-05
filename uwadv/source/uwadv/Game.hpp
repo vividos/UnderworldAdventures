@@ -90,8 +90,7 @@ public:
       return *m_scripting;
    }
 
-   /// \todo replace with IDebugServer
-   virtual DebugServer& GetDebugger() override
+   virtual IDebugServer& GetDebugger() override
    {
       return m_debugServer;
    }

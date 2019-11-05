@@ -68,7 +68,7 @@ public:
    void Init();
 
    /// starts debugger client; returns if debugger was already running
-   bool StartDebugger(IBasicGame* game);
+   virtual bool StartDebugger(IBasicGame* game) override;
 
    /// returns if the debugger is running
    bool IsDebuggerRunning();
@@ -83,13 +83,13 @@ public:
    virtual void Lock(bool locked) override;
 
    /// starts code debugger
-   void StartCodeDebugger(ICodeDebugger* codeDebugger);
+   virtual void StartCodeDebugger(ICodeDebugger* codeDebugger) override;
 
    /// ends code debugging
-   void EndCodeDebugger(ICodeDebugger* codeDebugger);
+   virtual void EndCodeDebugger(ICodeDebugger* codeDebugger) override;
 
    /// sends code debugger update message
-   void SendCodeDebuggerStatusUpdate(unsigned int debuggerId);
+   virtual void SendCodeDebuggerStatusUpdate(unsigned int debuggerId) override;
 
 private:
    /// debugger thread procedure

@@ -58,7 +58,7 @@ public:
    virtual Base::ResourceManager& GetResourceManager() override { return *m_resourceManager.get(); }
    virtual Base::SavegamesManager& GetSavegamesManager() override { return *m_savegamesManager.get(); };
    virtual IScripting& GetScripting() override { return *m_scripting; }
-   virtual DebugServer& GetDebugger() override { return m_debugServer; }
+   virtual IDebugServer& GetDebugger() override { return m_debugServer; }
    virtual GameStrings& GetGameStrings() override { return m_gameStrings; };
    virtual Underworld::Underworld& GetUnderworld() override { return m_gameLogic->GetUnderworld(); }
    virtual Underworld::GameLogic& GetGameLogic() override { return *m_gameLogic.get(); }
