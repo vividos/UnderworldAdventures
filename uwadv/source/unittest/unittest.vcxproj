@@ -56,7 +56,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)source\audio;$(SolutionDir)source\conv;$(SolutionDir)source\import;$(SolutionDir)source\underw;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)source\audio;$(SolutionDir)source\conv;$(SolutionDir)source\import;$(SolutionDir)source\script;$(SolutionDir)source\thirdparty\lua\src;$(SolutionDir)source\underw;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -64,7 +64,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)source\audio;$(SolutionDir)source\conv;$(SolutionDir)source\import;$(SolutionDir)source\underw;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)source\audio;$(SolutionDir)source\conv;$(SolutionDir)source\import;$(SolutionDir)source\script;$(SolutionDir)source\thirdparty\lua\src;$(SolutionDir)source\underw;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -79,6 +79,7 @@
     <ClCompile Include="FileTest.cpp" />
     <ClCompile Include="ImportTest.cpp" />
     <ClCompile Include="KeymapTest.cpp" />
+    <ClCompile Include="LuaStateTest.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -108,6 +109,9 @@
     </ProjectReference>
     <ProjectReference Include="..\physics\physics.vcxproj">
       <Project>{6917cdd3-2eef-4b6d-9256-ed5b64391341}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\script\script.vcxproj">
+      <Project>{4548e978-a076-4ba2-88b3-a41f46e53b16}</Project>
     </ProjectReference>
     <ProjectReference Include="..\underw\underw.vcxproj">
       <Project>{4cc50617-2229-460e-9a80-3c517a2d9090}</Project>
