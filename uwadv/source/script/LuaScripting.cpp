@@ -40,67 +40,13 @@ extern "C"
 const char* LuaScripting::s_selfName = "_scripting_self";
 
 LuaScripting::LuaScripting()
-   :L(NULL), m_game(NULL), m_debuggerState(codeDebuggerStateInactive)
+   :m_game(NULL), m_debuggerState(codeDebuggerStateInactive)
 {
-}
-
-int OnLuaPanic(lua_State* L)
-{
-   const char* errorText = lua_tostring(L, -1);
-   lua_pop(L, 1);
-   UaTrace("Lua panic handler reported error: %s", errorText);
-
-   for (int stackIndex = 0;; stackIndex++)
-   {
-      lua_Debug debug = { 0 };
-
-      int ret = lua_getstack(L, stackIndex, &debug);
-      if (ret == 0)
-         break;
-
-      try
-      {
-         lua_getinfo(L, "Sl", &debug);
-      }
-      catch (...)
-      {
-         // may throw exception of type  struct lua_longjmp
-         UaTrace("exception during lua_getinfo()\n");
-      }
-
-      try
-      {
-         UaTrace("%hs:%u\n",
-            debug.short_src,
-            debug.currentline);
-      }
-      catch (...)
-      {
-         UaTrace("exception during formatting debug info()\n");
-      }
-   }
-
-   return 0;
 }
 
 void LuaScripting::Init(IBasicGame* game)
 {
    m_game = game;
-
-   // init lua state
-   L = luaL_newstate();
-
-   lua_atpanic(L, OnLuaPanic);
-
-   // add Lua libraries
-   luaL_requiref(L, "_G", luaopen_base, 1);
-   lua_pop(L, 1);
-
-   luaL_requiref(L, LUA_STRLIBNAME, luaopen_string, 1);
-   lua_pop(L, 1);
-
-   luaL_requiref(L, LUA_MATHLIBNAME, luaopen_math, 1);
-   lua_pop(L, 1);
 
    // set "self" pointer userdata
    lua_pushlightuserdata(L, this);
@@ -149,7 +95,7 @@ bool LuaScripting::LoadScript(const char* basename)
    std::string complete_scriptname = m_game->GetSettings().GetString(Base::settingUadataPath);
    complete_scriptname += scriptname.c_str();
 
-   int ret = LoadScript(script, complete_scriptname.c_str());
+   int ret = LuaState::LoadScript(script, complete_scriptname.c_str());
 
    UaTrace("loaded Lua %sscript \"%s\"\n",
       compiled ? "compiled " : "", scriptname.c_str());
@@ -165,20 +111,13 @@ void LuaScripting::Done()
 {
    // notify debugger of end of Lua script code debugger
    m_game->GetDebugger().EndCodeDebugger(this);
-
-   lua_close(L);
 }
 
 void LuaScripting::CheckedCall(int nargs, int nresults)
 {
    lua_sethook(L, DebugHook, LUA_MASKCALL | LUA_MASKRET | LUA_MASKLINE, 0);
 
-   int ret = lua_pcall(L, nargs, nresults, 0);
-   if (ret != 0)
-   {
-      const char* errorText = lua_tostring(L, -1);
-      UaTrace("Error in Lua function call; error code %u: %s\n", ret, errorText);
-   }
+   LuaState::CheckedCall(nargs, nresults);
 
    lua_sethook(L, NULL, 0, 0);
 }
@@ -323,34 +262,6 @@ void LuaScripting::OnChangingLevel()
 {
    lua_getglobal(L, "on_change_level");
    CheckedCall(0, 0);
-}
-
-int LuaScripting::LoadScript(Base::SDL_RWopsPtr rwops, const char* chunkname)
-{
-   // load script into buffer
-   std::vector<char> buffer;
-   unsigned int len = 0;
-   {
-      SDL_RWseek(rwops.get(), 0, SEEK_END);
-      len = SDL_RWtell(rwops.get());
-      SDL_RWseek(rwops.get(), 0, SEEK_SET);
-
-      buffer.resize(len + 1, 0);
-
-      SDL_RWread(rwops.get(), &buffer[0], len, 1);
-   }
-
-   // execute script
-   int ret = luaL_loadbuffer(L, buffer.data(), len, chunkname);
-
-   if (ret != LUA_OK)
-      UaTrace("Lua script loading ended with error code %u\n", ret);
-
-   ret = lua_pcall(L, 0, LUA_MULTRET, 0);
-   if (ret != LUA_OK)
-      UaTrace("Lua script calling ended with error code %u\n", ret);
-
-   return ret;
 }
 
 IScripting* IScripting::CreateScripting(ScriptingLanguage)

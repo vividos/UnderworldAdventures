@@ -22,6 +22,7 @@
 #pragma once
 
 #include "Base.hpp"
+#include "LuaState.hpp"
 #include "IScripting.hpp"
 #include "IDebugServer.hpp"
 #include <vector>
@@ -29,19 +30,15 @@
 #include <set>
 
 class IGame;
-struct lua_State;
 struct lua_Debug;
 
 /// lua scripting class
-class LuaScripting : public IScripting, public ICodeDebugger
+class LuaScripting : public LuaState, public IScripting, public ICodeDebugger
 {
 public:
    /// ctor
    LuaScripting();
    virtual ~LuaScripting() {}
-
-   /// returns lua state info struct
-   lua_State* GetLuaState() { return L; }
 
    /// lua function call
    void CheckedCall(int numArgs, int numResults);
@@ -58,9 +55,6 @@ public:
    virtual void OnChangingLevel() override;
 
 private:
-   /// loads a script
-   int LoadScript(Base::SDL_RWopsPtr rwops, const char* chunkname);
-
    /// returns scripting class from Lua state
    static LuaScripting& GetScriptingFromSelf(lua_State* L);
 
@@ -99,9 +93,6 @@ private:
       size_t& codePosition, bool& visible) const override;
 
 private:
-   /// lua state information
-   lua_State* L;
-
    /// ptr to basic game interface
    IBasicGame* m_game;
 
