@@ -1,7 +1,7 @@
 /*
 Filename: AtlScintilla.h
 Description: Defines an easy wrapper for the Scintilla control, to be used with ATL/WTL projects.
-Date: 12/15/2005
+Date: 06/11/2019
 
 Copyright (c) 2005 by Gilad Novik.
 Copyright (c) 2006 by Reece Dunn.
@@ -3137,7 +3137,7 @@ public:
 		SetReadOnly((GetFileAttributes(szFilename) & FILE_ATTRIBUTE_READONLY) ? true : false);
 		return TRUE;
 	}
-	};
+};
 
 typedef CScintillaWindowT< ATL::CWindow > CScintillaWindow;
 
@@ -3359,7 +3359,7 @@ public:
 #endif
 		}
 		++m_refCount;
-}
+	}
 
 	~CScintillaAutoRegister()
 	{
@@ -3373,7 +3373,7 @@ public:
 			Scintilla_ReleaseResources();
 #endif
 		}
-}
+	}
 };
 
 __declspec(selectany) long    CScintillaAutoRegister::m_refCount = 0;
