@@ -22,7 +22,7 @@
 #pragma once
 
 #include "resource.h"
-#include <atlscintilla.h>
+#include "LuaScriptEditorView.hpp"
 
 class LuaSourceWindow : public ChildWindowBase<IDR_LUA_SOURCE_FRAME>
 {
@@ -137,8 +137,8 @@ private:
    void UpdateFilename();
 
 private:
-   /// scintilla edit view
-   CScintillaWindow m_view;
+   /// Lua script editor view
+   LuaScriptEditorView m_view;
 
    /// indicates if file is modified
    bool m_isModified;

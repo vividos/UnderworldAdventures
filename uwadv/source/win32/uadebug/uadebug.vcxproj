@@ -89,6 +89,7 @@
     <ClCompile Include="Filename.cpp" />
     <ClCompile Include="GameStringsView.cpp" />
     <ClCompile Include="HotspotListWindow.cpp" />
+    <ClCompile Include="LuaScriptEditorView.cpp" />
     <ClCompile Include="LuaSourceView.cpp" />
     <ClCompile Include="MainFrame.cpp" />
     <ClCompile Include="ObjectListWindow.cpp" />
@@ -116,6 +117,7 @@
     <ClInclude Include="GameStringsView.hpp" />
     <ClInclude Include="HotspotListWindow.hpp" />
     <ClInclude Include="IMainFrame.hpp" />
+    <ClInclude Include="LuaScriptEditorView.hpp" />
     <ClInclude Include="LuaSourceView.hpp" />
     <ClInclude Include="MainFrame.hpp" />
     <ClInclude Include="ObjectListWindow.hpp" />

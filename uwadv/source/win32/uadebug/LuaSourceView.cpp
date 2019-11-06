@@ -24,37 +24,10 @@
 
 LRESULT LuaSourceWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-   m_hWndClient = m_view.Create(CScintillaWindow::GetWndClassName(), m_hWnd, rcDefault, NULL,
+   m_hWndClient = m_view.Create(m_hWnd, rcDefault, NULL,
       WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_HSCROLL | WS_VSCROLL, WS_EX_CLIENTEDGE);
 
-   m_view.StyleSetFont(STYLE_DEFAULT, "Lucida Console");
-   m_view.SetEdgeColumn(80);
-   m_view.SetEdgeMode(EDGE_LINE);
-
-   m_view.StyleSetFore(0, RGB(0x80, 0x80, 0x80));
-   m_view.StyleSetFore(1, RGB(0x00, 0x7f, 0x00));
-   m_view.StyleSetFore(2, RGB(0x00, 0x7f, 0x00));
-   m_view.StyleSetFore(3, RGB(0x7f, 0x7f, 0x7f));
-   m_view.StyleSetFore(4, RGB(0x00, 0x7f, 0x7f));
-   m_view.StyleSetFore(5, RGB(0x00, 0x00, 0x7f));
-   m_view.StyleSetFore(6, RGB(0x7f, 0x00, 0x7f));
-   m_view.StyleSetFore(7, RGB(0x7f, 0x00, 0x7f));
-   m_view.StyleSetFore(8, RGB(0x00, 0x7f, 0x7f));
-   m_view.StyleSetFore(9, RGB(0x7f, 0x7f, 0x7f));
-   m_view.StyleSetFore(10, RGB(0x00, 0x00, 0x00));
-   m_view.StyleSetFore(11, RGB(0x00, 0x00, 0x00));
-   m_view.StyleSetBold(5, true);
-   m_view.StyleSetBold(10, true);
-
-   m_view.SetLexer(SCLEX_LUA);
-
-   m_view.SetKeyWords(0,
-      "and break do else elseif end for function if in " // Lua keywords
-      "local nil not or repeat return then until while "
-      "uw player objectlist tilemap runebag conv quest prop"); // uwadv objects
-
-   m_view.SetTabWidth(3);
-   m_view.SetUseTabs(false);
+   m_view.SetupSourceEditor();
 
    bHandled = FALSE;
    return 1;

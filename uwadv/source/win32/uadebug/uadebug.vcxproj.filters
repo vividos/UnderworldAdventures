@@ -72,6 +72,9 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="LuaScriptEditorView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AboutDlg.hpp">
@@ -147,6 +150,9 @@
       <Filter>Resource Files\Generated Ribbon Files</Filter>
     </ClInclude>
     <ClInclude Include="TileMapViewChildFrame.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaScriptEditorView.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
