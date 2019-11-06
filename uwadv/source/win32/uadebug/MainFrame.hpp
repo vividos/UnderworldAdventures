@@ -218,9 +218,9 @@ private:
    virtual void UndockWindow(DockingWindowId windowId, DockingWindowBase* dockingWindow) override;
    virtual void AddDebugWindow(DebugWindowBase* debugWindow) override;
    virtual void RemoveDebugWindow(DebugWindowBase* debugWindow) override;
-   virtual void OpenLuaSourceFile(LPCTSTR filename) override;
-   virtual void AddLuaChildView(LuaSourceView* childView) override;
-   virtual void RemoveLuaChildView(LuaSourceView* childView) override;
+   virtual LuaSourceWindow& OpenLuaSourceFile(LPCTSTR filename) override;
+   virtual void AddLuaChildView(LuaSourceWindow* childView) override;
+   virtual void RemoveLuaChildView(LuaSourceWindow* childView) override;
 
 private:
    /// MDI command bar for tabbing
@@ -254,7 +254,7 @@ private:
    CSimpleArray<DebugWindowBase*> m_debugWindowList;
 
    /// array with pointer to all lua child windows
-   CSimpleArray<LuaSourceView*> m_luaChildWindows;
+   CSimpleArray<LuaSourceWindow*> m_luaChildWindows;
 
    /// common image list
    CImageList m_commonImageList;

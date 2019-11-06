@@ -23,7 +23,7 @@
 
 class DebugClient;
 class ProjectManager;
-class LuaSourceView;
+class LuaSourceWindow;
 struct DebugWindowNotification;
 class DockingWindowBase;
 
@@ -69,11 +69,11 @@ public:
    virtual void RemoveDebugWindow(class DebugWindowBase* window) = 0;
 
    /// opens Lua source file
-   virtual void OpenLuaSourceFile(LPCTSTR filename) = 0;
+   virtual LuaSourceWindow& OpenLuaSourceFile(LPCTSTR filename) = 0;
 
    /// adds Lua child view to main frame processing
-   virtual void AddLuaChildView(LuaSourceView* childView) = 0;
+   virtual void AddLuaChildView(LuaSourceWindow* childView) = 0;
 
    /// removes Lua child view from main frame processing
-   virtual void RemoveLuaChildView(class LuaSourceView* childView) = 0;
+   virtual void RemoveLuaChildView(class LuaSourceWindow* childView) = 0;
 };

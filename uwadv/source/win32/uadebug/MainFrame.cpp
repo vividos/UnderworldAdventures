@@ -266,7 +266,7 @@ LRESULT MainFrame::OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 
 LRESULT MainFrame::OnFileNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-   LuaSourceView* child = new LuaSourceView;
+   LuaSourceWindow* child = new LuaSourceWindow;
    child->CreateEx(m_hWndClient);
    MDIMaximize(child->m_hWnd);
    AddLuaChildView(child);
@@ -783,7 +783,7 @@ void MainFrame::RemoveDebugWindow(DebugWindowBase* debugWindow)
       }
 }
 
-void MainFrame::OpenLuaSourceFile(LPCTSTR filename)
+LuaSourceWindow& MainFrame::OpenLuaSourceFile(LPCTSTR filename)
 {
    ATLASSERT(filename != NULL);
 
@@ -800,19 +800,21 @@ void MainFrame::OpenLuaSourceFile(LPCTSTR filename)
       if (windowFilename == openFilename)
       {
          MDIActivate(m_luaChildWindows[index]->m_hWnd);
-         return;
+         return *m_luaChildWindows[index];
       }
    }
 
-   LuaSourceView* child = new LuaSourceView;
+   LuaSourceWindow* child = new LuaSourceWindow;
    child->CreateEx(m_hWndClient);
    MDIMaximize(child->m_hWnd);
    AddLuaChildView(child);
 
    child->OpenFile(filename);
+
+   return *child;
 }
 
-void MainFrame::AddLuaChildView(LuaSourceView* childView)
+void MainFrame::AddLuaChildView(LuaSourceWindow* childView)
 {
    ATLASSERT(childView != NULL);
 
@@ -820,7 +822,7 @@ void MainFrame::AddLuaChildView(LuaSourceView* childView)
    m_luaChildWindows.Add(childView);
 }
 
-void MainFrame::RemoveLuaChildView(LuaSourceView* childView)
+void MainFrame::RemoveLuaChildView(LuaSourceWindow* childView)
 {
    ATLASSERT(childView != NULL);
 

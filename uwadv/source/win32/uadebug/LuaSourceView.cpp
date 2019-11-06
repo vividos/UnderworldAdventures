@@ -22,7 +22,7 @@
 #include "pch.hpp"
 #include "LuaSourceView.hpp"
 
-LRESULT LuaSourceView::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+LRESULT LuaSourceWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
    m_hWndClient = m_view.Create(CScintillaWindow::GetWndClassName(), m_hWnd, rcDefault, NULL,
       WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_HSCROLL | WS_VSCROLL, WS_EX_CLIENTEDGE);
@@ -60,14 +60,14 @@ LRESULT LuaSourceView::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
    return 1;
 }
 
-LRESULT LuaSourceView::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+LRESULT LuaSourceWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
    bHandled = FALSE;
    m_mainFrame->RemoveLuaChildView(this);
    return 0;
 }
 
-void LuaSourceView::UpdateFilename()
+void LuaSourceWindow::UpdateFilename()
 {
    CFilename fileName(m_filename);
    CString filename = fileName.GetFilename();

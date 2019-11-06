@@ -24,14 +24,14 @@
 #include "resource.h"
 #include <atlscintilla.h>
 
-class LuaSourceView : public ChildWindowBase<IDR_LUA_SOURCE_FRAME>
+class LuaSourceWindow : public ChildWindowBase<IDR_LUA_SOURCE_FRAME>
 {
-   typedef LuaSourceView thisClass;
+   typedef LuaSourceWindow thisClass;
    typedef ChildWindowBase<IDR_LUA_SOURCE_FRAME> baseClass;
 
 public:
    /// ctor
-   LuaSourceView() :m_isModified(false)
+   LuaSourceWindow() :m_isModified(false)
    {
       m_isDynamicWindow = true;
    }
