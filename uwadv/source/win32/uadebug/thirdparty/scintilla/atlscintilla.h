@@ -34,6 +34,9 @@ History (Date/Author/Description):
 
 2019/11/06: vividos
 - Formatted with Visual Studio's "Format Documents" using .editorconfig file
+- Fixed signatures of SetSel() and HideSelection(), provided CString variants
+  of ReplaceSel() and GetSelText() and added PosFromChar(), to match the CEdit
+  class
 */
 
 #pragma once
@@ -85,6 +88,13 @@ public:
 	{
 		return GetLine(line, NULL);
 	}
+
+#if defined(__ATLSTR_H__)
+	void ReplaceSel(const CString& text)
+	{
+		ReplaceSel(CStringA(text));
+	}
+#endif
 
 	void ReplaceSel(const char* text)
 	{
@@ -502,7 +512,7 @@ public:
 		return ::SendMessage(m_hWnd, SCI_GETMODIFY, 0, 0L) != 0;
 	}
 
-	void SetSel(unsigned int start, unsigned int end)
+	void SetSel(int start, int end)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
 		::SendMessage(m_hWnd, SCI_SETSEL, start, end);
@@ -622,6 +632,17 @@ public:
 		return ::SendMessage(m_hWnd, SCI_POSITIONFROMPOINTCLOSE, x, y);
 	}
 
+	POINT PosFromChar(UINT nChar) const
+	{
+		POINT point =
+		{
+			PointXFromPosition(nChar),
+			PointYFromPosition(nChar)
+		};
+
+		return point;
+	}
+
 	int PointXFromPosition(unsigned int pos) const
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
@@ -634,11 +655,27 @@ public:
 		return ::SendMessage(m_hWnd, SCI_POINTYFROMPOSITION, 0, pos);
 	}
 
-	void HideSelection(bool normal)
+	void HideSelection(BOOL bHide = TRUE, BOOL bChangeStyle = FALSE)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		::SendMessage(m_hWnd, SCI_HIDESELECTION, normal, 0L);
+		ATLASSERT(bChangeStyle == FALSE); // changing style is not supported by Scintilla
+		::SendMessage(m_hWnd, SCI_HIDESELECTION, bHide, 0L);
 	}
+
+#if defined(__ATLSTR_H__)
+	int GetSelText(CString& text) const
+	{
+		unsigned int bufferLength = GetSelText(nullptr);
+
+		CStringA ansiText;
+		int ret = GetSelText(ansiText.GetBuffer(bufferLength + 1));
+		ansiText.ReleaseBuffer();
+
+		text = ansiText;
+
+		return ret;
+	}
+#endif
 
 	int GetSelText(char* text) const
 	{
