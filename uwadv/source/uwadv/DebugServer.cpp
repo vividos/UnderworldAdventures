@@ -67,6 +67,11 @@ public:
    }
 
 private:
+   /// deleted copy ctor
+   DebuggerLibContext(const DebuggerLibContext&) = delete;
+   /// deleted assignment operator
+   DebuggerLibContext& operator=(const DebuggerLibContext&) = delete;
+
    /// module handle to uadebug shared library
    void* m_uadebugLib;
 };

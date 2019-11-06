@@ -701,10 +701,10 @@ void XMidiFile::ApplyFirstState(first_state &fs, int chan_mask)
 		{
 #ifdef PENTAGRAM_IN_EXULT
 			if (convert_type) vol->data[1] = VolumeCurve[90];
-#else
-			if (convert_type) vol->data[1] = 90;
-#endif
 			else vol->data[1] = 90;
+#else
+			vol->data[1] = 90;
+#endif
 		}
 		else
 			vol->data[1] = temp->data[1];

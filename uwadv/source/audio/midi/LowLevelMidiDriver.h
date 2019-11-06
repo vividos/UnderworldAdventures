@@ -122,6 +122,7 @@ private:
 	struct ComMessage {
 
 		ComMessage(Messages T, int seq) : type(T), sequence(seq) { }
+		~ComMessage() {}
 
 		ComMessage(const ComMessage &other)
 		{
@@ -132,6 +133,8 @@ private:
 
 		ComMessage & operator = (const ComMessage &other)
 		{
+			if (this == &other)
+				return *this;
 			type = other.type;
 			sequence = other.sequence;
 			std::memcpy (&data, &other.data, sizeof(data));
