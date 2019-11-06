@@ -22,7 +22,7 @@
 #include "pch.hpp"
 #include "aboutdlg.hpp"
 #include "MainFrame.hpp"
-#include "LuaSourceView.hpp"
+#include "LuaSourceWindow.hpp"
 #include "GameStringsView.hpp"
 
 LPCTSTR g_luaFileFilter = _T("Lua Source Files (*.lua)\0*.lua\0All Files (*.*)\0*.*\0\0");
