@@ -1,9 +1,10 @@
 /*
 Filename: AtlScintilla.h
+Version: 2.1
 Description: Defines an easy wrapper for the Scintilla control, to be used with ATL/WTL projects.
 Date: 06/11/2019
 
-Copyright (c) 2005 by Gilad Novik.
+Copyright (c) 2005/2006 by Gilad Novik.
 Copyright (c) 2006 by Reece Dunn.
 Copyright (c) 2019 by Michael Fink.
 
@@ -38,6 +39,11 @@ History (Date/Author/Description):
   of ReplaceSel() and GetSelText() and added PosFromChar(), to match the CEdit
   class
 - Added CScintillaEditCommands and CScintillaFindReplaceImpl classes
+2019/11/15: vividos
+- Merged changes from other atlscintilla.h files found on the internet that
+  are marked "Version: 2.0" and "Modded by T.P Wang this is a trimed version".
+  Mostly variable name changes and formatting, and some added methods.
+  I marked this file "Version 2.1" to be able to tell the files apart.
 */
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -196,12 +202,12 @@ public:
 	}
 
 #if defined(__ATLSTR_H__)
-	int GetStyledText(long min, long max, CStringA& c)
+	int GetStyledText(long min, long max, CStringA& text)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
 		int length = max - min;
-		int result = GetStyledText(min, max, c.GetBuffer(length));
-		c.ReleaseBuffer(length);
+		int result = GetStyledText(min, max, text.GetBuffer(length));
+		textReleaseBuffer(length);
 		return result;
 	}
 #endif
@@ -241,7 +247,7 @@ public:
 	/** @name Searching */
 	//@{
 
-	unsigned int FindText(int flags, Sci_TextToFind& ttf) const
+	int FindText(int flags, Sci_TextToFind& ttf) const
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
 		return ::SendMessage(m_hWnd, SCI_FINDTEXT, flags, (LPARAM)&ttf);
@@ -314,22 +320,19 @@ public:
 	int SearchInTarget(const char* text, int length)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		return ::SendMessage(m_hWnd, SCI_SEARCHINTARGET, length, (LPARAM
-			)text);
+		return ::SendMessage(m_hWnd, SCI_SEARCHINTARGET, length, (LPARAM)text);
 	}
 
 	int ReplaceTarget(const char* text, int length)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		return ::SendMessage(m_hWnd, SCI_REPLACETARGET, length, (LPARAM
-			)text);
+		return ::SendMessage(m_hWnd, SCI_REPLACETARGET, length, (LPARAM)text);
 	}
 
 	int ReplaceTargetRE(const char* text, int length)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		return ::SendMessage(m_hWnd, SCI_REPLACETARGETRE, length, (LPARAM
-			)text);
+		return ::SendMessage(m_hWnd, SCI_REPLACETARGETRE, length, (LPARAM)text);
 	}
 
 	//@}
@@ -403,8 +406,7 @@ public:
 	bool GetPasteConvertEndings() const
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		return ::SendMessage(m_hWnd, SCI_GETPASTECONVERTENDINGS, 0, 0L) !=
-			0;
+		return ::SendMessage(m_hWnd, SCI_GETPASTECONVERTENDINGS, 0, 0L) != 0;
 	}
 
 	//@}
@@ -695,8 +697,7 @@ public:
 	int GetCurLine(char* text, int length) const
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		return ::SendMessage(m_hWnd, SCI_GETCURLINE, length, (LPARAM)text
-		);
+		return ::SendMessage(m_hWnd, SCI_GETCURLINE, length, (LPARAM)text);
 	}
 
 	bool SelectionIsRectangle() const
@@ -867,6 +868,12 @@ public:
 		::SendMessage(m_hWnd, SCI_SETSCROLLWIDTH, pixelWidth, 0L);
 	}
 
+	void SetScrollWidthTracking(bool track)
+	{
+		ATLASSERT(::IsWindow(m_hWnd));
+		::SendMessage(m_hWnd, SCI_SETSCROLLWIDTHTRACKING, track, 0L);
+	}
+
 	bool GetEndAtLastLine() const
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
@@ -1026,7 +1033,7 @@ public:
 	void StyleResetDefault()
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		::SendMessage(m_hWnd, SCI_STYLERESETDEFAULT);
+		::SendMessage(m_hWnd, SCI_STYLERESETDEFAULT, 0, 0L);
 	}
 
 	void StyleClearAll()
@@ -1035,7 +1042,7 @@ public:
 		::SendMessage(m_hWnd, SCI_STYLECLEARALL, 0, 0L);
 	}
 
-	void StyleSetFont(int style, const char* fontName) const
+	void StyleSetFont(int style, const char* fontName)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
 		::SendMessage(m_hWnd, SCI_STYLESETFONT, style, (LPARAM)fontName);
@@ -1086,8 +1093,7 @@ public:
 	void StyleSetCharacterSet(int style, int characterSet)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		::SendMessage(m_hWnd, SCI_STYLESETCHARACTERSET, style, characterSet
-		);
+		::SendMessage(m_hWnd, SCI_STYLESETCHARACTERSET, style, characterSet);
 	}
 
 	void StyleSetCase(int style, int caseForce)
@@ -1175,6 +1181,12 @@ public:
 		::SendMessage(m_hWnd, SCI_SETCARETLINEBACK, back, 0L);
 	}
 
+	void SetCaretLineBackAlpha(int alpha)
+	{
+		ATLASSERT(::IsWindow(m_hWnd));
+		::SendMessage(m_hWnd, SCI_SETCARETLINEBACKALPHA, alpha, 0);
+	}
+
 	int GetCaretPeriod() const
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
@@ -1208,8 +1220,7 @@ public:
 	void SetCaretSticky(bool useCaretStickyBehaviour)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		::SendMessage(m_hWnd, SCI_SETCARETSTICKY, useCaretStickyBehaviour, 0L
-		);
+		::SendMessage(m_hWnd, SCI_SETCARETSTICKY, useCaretStickyBehaviour, 0L);
 	}
 
 	void ToggleCaretSticky()
@@ -1232,6 +1243,12 @@ public:
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
 		::SendMessage(m_hWnd, SCI_SETSELBACK, useSetting, back);
+	}
+
+	void SetSelAlpha(int alpha)
+	{
+		ATLASSERT(::IsWindow(m_hWnd));
+		::SendMessage(m_hWnd, SCI_SETSELALPHA, alpha, 0L);
 	}
 
 	//@}
@@ -1413,8 +1430,7 @@ public:
 	void SetWhitespaceChars(const char* characters)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		::SendMessage(m_hWnd, SCI_SETWHITESPACECHARS, 0, (LPARAM)characters
-		);
+		::SendMessage(m_hWnd, SCI_SETWHITESPACECHARS, 0, (LPARAM)characters);
 	}
 
 	void SetCharsDefault()
@@ -1582,8 +1598,7 @@ public:
 	void MarkerDefinePixmap(int markerNumber, const char* pixmap)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		::SendMessage(m_hWnd, SCI_MARKERDEFINEPIXMAP, markerNumber, (LPARAM
-			)pixmap);
+		::SendMessage(m_hWnd, SCI_MARKERDEFINEPIXMAP, markerNumber, (LPARAM)pixmap);
 	}
 
 	void MarkerSetFore(int markerNumber, COLORREF fore)
@@ -1734,8 +1749,7 @@ public:
 	void AutoCShow(int lenEntered, const char* itemList)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		::SendMessage(m_hWnd, SCI_AUTOCSHOW, lenEntered, (LPARAM)itemList
-		);
+		::SendMessage(m_hWnd, SCI_AUTOCSHOW, lenEntered, (LPARAM)itemList);
 	}
 
 	void AutoCCancel()
@@ -1777,8 +1791,7 @@ public:
 	void AutoCSetSeparator(int separatorCharacter)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		::SendMessage(m_hWnd, SCI_AUTOCSETSEPARATOR, separatorCharacter, 0L
-		);
+		::SendMessage(m_hWnd, SCI_AUTOCSETSEPARATOR, separatorCharacter, 0L);
 	}
 
 	void AutoCSelect(const char* text)
@@ -1808,8 +1821,7 @@ public:
 	void AutoCSetFillUps(const char* characterSet)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		::SendMessage(m_hWnd, SCI_AUTOCSETFILLUPS, 0, (LPARAM)characterSet
-		);
+		::SendMessage(m_hWnd, SCI_AUTOCSETFILLUPS, 0, (LPARAM)characterSet);
 	}
 
 	bool AutoCGetChooseSingle() const
@@ -1851,15 +1863,13 @@ public:
 	bool AutoCGetDropRestOfWord() const
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		return ::SendMessage(m_hWnd, SCI_AUTOCGETDROPRESTOFWORD, 0, 0L) !=
-			0;
+		return ::SendMessage(m_hWnd, SCI_AUTOCGETDROPRESTOFWORD, 0, 0L) != 0;
 	}
 
 	void AutoCSetDropRestOfWord(bool dropRestOfWord)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		::SendMessage(m_hWnd, SCI_AUTOCSETDROPRESTOFWORD, dropRestOfWord, 0L
-		);
+		::SendMessage(m_hWnd, SCI_AUTOCSETDROPRESTOFWORD, dropRestOfWord, 0L);
 	}
 
 	void RegisterImage(int type, const char* xpmData)
@@ -1918,8 +1928,7 @@ public:
 	void UserListShow(int listType, const char* itemList)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		::SendMessage(m_hWnd, SCI_USERLISTSHOW, listType, (LPARAM)itemList
-		);
+		::SendMessage(m_hWnd, SCI_USERLISTSHOW, listType, (LPARAM)itemList);
 	}
 
 	//@}
@@ -2494,13 +2503,13 @@ public:
 	void ClearCmdKey(DWORD key)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		::SendMessage(m_hWnd, SCI_CLEARCMDKEY, key);
+		::SendMessage(m_hWnd, SCI_CLEARCMDKEY, key, 0L);
 	}
 
 	void ClearAllCmdKeys()
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		::SendMessage(m_hWnd, SCI_CLEARALLCMDKEYS);
+		::SendMessage(m_hWnd, SCI_CLEARALLCMDKEYS, 0, 0L);
 	}
 
 	void Null()
@@ -2539,10 +2548,10 @@ public:
 	/** @name Printing */
 	//@{
 
-	unsigned int FormatRange(bool draw, Sci_RangeToFormat& fr)
+	unsigned int FormatRange(bool draw, Sci_RangeToFormat& range)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		return ::SendMessage(m_hWnd, SCI_FORMATRANGE, draw, (LPARAM)&fr);
+		return ::SendMessage(m_hWnd, SCI_FORMATRANGE, draw, (LPARAM)&range);
 	}
 
 	int GetPrintMagnification() const
@@ -2645,8 +2654,7 @@ public:
 	int DocLineFromVisible(int lineDisplay) const
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		return ::SendMessage(m_hWnd, SCI_DOCLINEFROMVISIBLE, lineDisplay, 0L
-		);
+		return ::SendMessage(m_hWnd, SCI_DOCLINEFROMVISIBLE, lineDisplay, 0L);
 	}
 
 	void ShowLines(int lineStart, int lineEnd)
@@ -2915,8 +2923,7 @@ public:
 	int GetProperty(const char* key, char* buf) const
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		return ::SendMessage(m_hWnd, SCI_GETPROPERTY, (WPARAM)key, (LPARAM
-			)buf);
+		return ::SendMessage(m_hWnd, SCI_GETPROPERTY, (WPARAM)key, (LPARAM)buf);
 	}
 
 	void SetProperty(const char* key, const char* value)
@@ -2932,17 +2939,16 @@ public:
 			(LPARAM)buf);
 	}
 
-	int GetPropertyInt(const char* key) const
+	int GetPropertyInt(const char* key, int defaultValue = 0) const
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		return ::SendMessage(m_hWnd, SCI_GETPROPERTYINT, (WPARAM)key, 0L);
+		return ::SendMessage(m_hWnd, SCI_GETPROPERTYINT, (WPARAM)key, (LPARAM)defaultValue);
 	}
 
 	void SetKeyWords(int keywordSet, const char* keyWords)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		::SendMessage(m_hWnd, SCI_SETKEYWORDS, keywordSet, (LPARAM)keyWords
-		);
+		::SendMessage(m_hWnd, SCI_SETKEYWORDS, keywordSet, (LPARAM)keyWords);
 	}
 
 	int GetStyleBitsNeeded() const
@@ -2988,32 +2994,29 @@ public:
 		text.ReleaseBuffer(length - 1);
 		return result;
 	}
-#endif
 
-#if defined(__ATLSTR_H__)
-	int GetLine(int line, CStringA& c)
+	int GetLine(int line, CStringA& text)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
 		int length = GetLine(line, 0);
-		int result = GetLine(line, c.GetBuffer(length));
-		c.ReleaseBuffer(length);
+		int result = GetLine(line, text.GetBuffer(length));
+		text.ReleaseBuffer(length);
 		return result;
 	}
-	int GetSimpleLine(int line, CStringA& c)
+
+	int GetSimpleLine(int line, CStringA& text)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		TextRange Tr;
-		Tr.chrg.cpMin = PositionFromLine(line);
-		Tr.chrg.cpMax = GetLineEndPosition(line);
-		int length = Tr.chrg.cpMax - Tr.chrg.cpMin;
-		Tr.lpstrText = c.GetBuffer(length);
-		int result = GetTextRange(Tr);
-		c.ReleaseBuffer(length);
+		TextRange range;
+		range.chrg.cpMin = PositionFromLine(line);
+		range.chrg.cpMax = GetLineEndPosition(line);
+		int length = range.chrg.cpMax - range.chrg.cpMin;
+		range.lpstrText = text.GetBuffer(length);
+		int result = GetTextRange(range);
+		text.ReleaseBuffer(length);
 		return result;
 	}
-#endif
 
-#if defined(__ATLSTR_H__)
 	int GetSelText(CStringA& text)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
@@ -3022,13 +3025,11 @@ public:
 		text.ReleaseBuffer(length);
 		return result;
 	}
-#endif
 
-#if defined(__ATLSTR_H__)
 	int GetText(CStringA& text)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		int length = GetText(0, 0);
+		int length = GetLength();
 		int result = GetText(text.GetBuffer(length), length + 1);
 		text.ReleaseBuffer(length);
 		return result;
@@ -3036,44 +3037,45 @@ public:
 #endif
 
 #if defined(GTK)
-	int TargetAsUTF8(char* s)
+	int TargetAsUTF8(char* text)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		return ::SendMessage(m_hWnd, SCI_TARGETASUTF8, 0, (int)s);
+		return ::SendMessage(m_hWnd, SCI_TARGETASUTF8, 0, (LPARAM)text);
 	}
+
 	void SetLengthForEncode(int bytes)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
 		::SendMessage(m_hWnd, SCI_SETLENGTHFORENCODE, bytes);
 	}
+
 	int EncodedFromUTF8(const char* utf8, char* encoded)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		return ::SendMessage(m_hWnd, SCI_ENCODEDFROMUTF8, (int)utf8, (int)encoded);
+		return ::SendMessage(m_hWnd, SCI_ENCODEDFROMUTF8, (WPARAM)utf8, (LPARAM)encoded);
 	}
 #endif
 
 #if defined(__ATLSTR_H__)
-	int GetProperty(const char* key, CStringA& buf)
+	int GetProperty(const char* key, CStringA& value)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
 		int length = GetProperty(key, 0);
-		int result = GetProperty(key, buf.GetBuffer(length));
-		buf.ReleaseBuffer(length);
+		int result = GetProperty(key, value.GetBuffer(length));
+		value.ReleaseBuffer(length);
+		return result;
+	}
+
+	int GetPropertyExpanded(const char* key, CStringA& value)
+	{
+		ATLASSERT(::IsWindow(m_hWnd));
+		int length = GetPropertyExpanded(key, 0);
+		int result = GetPropertyExpanded(key, value.GetBuffer(length));
+		value.ReleaseBuffer(length);
 		return result;
 	}
 #endif
 
-#if defined(__ATLSTR_H__)
-	int GetPropertyExpanded(const char* key, CStringA& buf)
-	{
-		ATLASSERT(::IsWindow(m_hWnd));
-		int length = GetPropertyExpanded(key, 0);
-		int result = GetPropertyExpanded(key, buf.GetBuffer(length));
-		buf.ReleaseBuffer(length);
-		return result;
-	}
-#endif
 #ifdef INCLUDE_DEPRECATED_FEATURES
 	void SetCaretPolicy(int caretPolicy, int caretSlop)
 	{
@@ -3087,9 +3089,9 @@ public:
 		CAtlFile File;
 		if (FAILED(File.Create(szFilename, GENERIC_WRITE, FILE_SHARE_READ, CREATE_ALWAYS, 0)))
 			return FALSE;
-		char szBuffer[8192 + 1];
-		Sci_TextRange Tr;
-		Tr.lpstrText = szBuffer;
+		char buffer[8192 + 1];
+		Sci_TextRange range;
+		range.lpstrText = buffer;
 		DWORD dwWritten;
 		if (GetCodePage() == SC_CP_UTF8)
 		{
@@ -3097,13 +3099,13 @@ public:
 			if (FAILED(File.Write(UTF8, sizeof(UTF8), &dwWritten)) || dwWritten != sizeof(UTF8))
 				return FALSE;
 		}
-		for (int nIndex = 0, nLength = GetLength(); nIndex < nLength; nIndex += (int)dwWritten)
+		for (int nIndex = 0, length = GetLength(); nIndex < length; nIndex += (int)dwWritten)
 		{
-			dwWritten = (DWORD)(nLength - nIndex) > (sizeof(szBuffer) - 1) ? (sizeof(szBuffer) - 1) : (DWORD)(nLength - nIndex);
-			Tr.chrg.cpMin = nIndex;
-			Tr.chrg.cpMax = nIndex + (long)dwWritten;
-			GetTextRange(Tr);
-			if (FAILED(File.Write(szBuffer, dwWritten, &dwWritten)))
+			dwWritten = (DWORD)(length - nIndex) > (sizeof(buffer) - 1) ? (sizeof(buffer) - 1) : (DWORD)(length - nIndex);
+			range.chrg.cpMin = nIndex;
+			range.chrg.cpMax = nIndex + (long)dwWritten;
+			GetTextRange(range);
+			if (FAILED(File.Write(buffer, dwWritten, &dwWritten)))
 				return FALSE;
 		}
 		SetSavePoint();
@@ -3118,19 +3120,19 @@ public:
 		ClearAll();
 		SetUndoCollection(false);
 		static BYTE UTF8[] = { 0xEF,0xBB,0xBF };
-		char szBuffer[8192];
+		char buffer[8192];
 		DWORD dwRead;
-		if (SUCCEEDED(File.Read(szBuffer, sizeof(UTF8), dwRead)) && dwRead > 0)
+		if (SUCCEEDED(File.Read(buffer, sizeof(UTF8), dwRead)) && dwRead > 0)
 		{
-			if (dwRead != sizeof(UTF8) || memcmp(szBuffer, UTF8, sizeof(UTF8)))
+			if (dwRead != sizeof(UTF8) || memcmp(buffer, UTF8, sizeof(UTF8)))
 			{
 				SetCodePage(0);
-				AddText(szBuffer, (int)dwRead);
+				AddText(buffer, (int)dwRead);
 			}
 			else
 				SetCodePage(SC_CP_UTF8);
 		}
-		for (; SUCCEEDED(File.Read(szBuffer, sizeof(szBuffer), dwRead)) && dwRead > 0; AddText(szBuffer, (int)dwRead));
+		for (; SUCCEEDED(File.Read(buffer, sizeof(buffer), dwRead)) && dwRead > 0; AddText(buffer, (int)dwRead));
 		SetSel(0, 0);
 		SetUndoCollection(true);
 		SetSavePoint();
@@ -3139,7 +3141,7 @@ public:
 	}
 };
 
-typedef CScintillaWindowT< ATL::CWindow > CScintillaWindow;
+typedef CScintillaWindowT<ATL::CWindow> CScintillaWindow;
 
 /// \brief edit commands mixin for scintilla windows
 /// \details adds handler for "Edit | Redo" command
@@ -3287,8 +3289,8 @@ public:
 	{
 		T* pT = static_cast<T*>(this);
 
-		unsigned int uiRet = pT->FindText(flags, tf);
-		bool bRet = uiRet != (unsigned int)-1;
+		int pos = pT->FindText(flags, tf);
+		bool bRet = pos != -1;
 
 		if (bRet)
 			pT->SetSel(tf.chrgText.cpMin, tf.chrgText.cpMax);
@@ -3345,15 +3347,20 @@ private:
 class CScintillaAutoRegister
 {
 	static long    m_refCount;
+#ifndef STATIC_SCILEXER
 	static HMODULE m_scintilla;
+#endif
 public:
+#ifdef STATIC_SCILEXER
 	CScintillaAutoRegister(HINSTANCE instance = ATL::_AtlBaseModule.GetModuleInstance())
+#else
+	CScintillaAutoRegister()
+#endif
 	{
 		if (!m_refCount)
 		{
 #ifndef STATIC_SCILEXER
 			m_scintilla = ::LoadLibrary(_T("SciLexer.dll"));
-			instance;
 #else
 			Scintilla_RegisterClasses(instance);
 #endif
