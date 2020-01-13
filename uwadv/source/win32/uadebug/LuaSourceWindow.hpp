@@ -76,6 +76,12 @@ public:
    /// sets "modified" state of file
    void SetModified(bool modified) { m_isModified = modified; }
 
+   /// sets current execution line marker
+   void SetCurrentExecutionLine(int lineNumber)
+   {
+      m_view.SetCurrentExecutionLine(lineNumber);
+   }
+
 private:
    BEGIN_MSG_MAP(thisClass)
       MESSAGE_HANDLER(WM_CREATE, OnCreate)
