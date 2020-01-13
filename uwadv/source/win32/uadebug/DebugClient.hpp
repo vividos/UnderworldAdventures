@@ -133,6 +133,7 @@ struct CodePosition
 {
    /// index value to retrieve source file name
    size_t m_sourceFileNameIndex;
+   /// source file line number; 1-based
    size_t m_sourceFileLine;
 
    /// code position; if not available, -1 is put in here
