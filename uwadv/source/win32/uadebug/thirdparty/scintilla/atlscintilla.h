@@ -1,12 +1,12 @@
 /*
 Filename: AtlScintilla.h
-Version: 2.1
+Version: 2.2
 Description: Defines an easy wrapper for the Scintilla control, to be used with ATL/WTL projects.
-Date: 06/11/2019
+Date: 13/01/2020
 
 Copyright (c) 2005/2006 by Gilad Novik.
 Copyright (c) 2006 by Reece Dunn.
-Copyright (c) 2019 by Michael Fink.
+Copyright (c) 2019/2020 by Michael Fink.
 
 License Agreement (zlib license)
 -------------------------
@@ -44,6 +44,9 @@ History (Date/Author/Description):
   are marked "Version: 2.0" and "Modded by T.P Wang this is a trimed version".
   Mostly variable name changes and formatting, and some added methods.
   I marked this file "Version 2.1" to be able to tell the files apart.
+2020/01/13: vividos
+- Updated CScintillaEditCommands methods (CanCut, CanClear, etc.) to also
+  check read-only status using IsReadOnly().
 */
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3144,7 +3147,8 @@ public:
 typedef CScintillaWindowT<ATL::CWindow> CScintillaWindow;
 
 /// \brief edit commands mixin for scintilla windows
-/// \details adds handler for "Edit | Redo" command
+/// \details CEditCommands provides most of the function; this class adds the
+/// handler for "Edit | Redo" command and provides a correct CanCut().
 template <typename T>
 class CScintillaEditCommands : public CEditCommands<T>
 {
@@ -3179,6 +3183,44 @@ public:
 
 		pT->Redo();
 		return 0;
+	}
+
+	// State (update UI) helpers
+	BOOL CanCut() const
+	{
+		return !IsReadOnly() && HasSelection();
+	}
+
+	BOOL CanClear() const
+	{
+		return !IsReadOnly() && HasSelection();
+	}
+
+	BOOL CanClearAll() const
+	{
+		return !IsReadOnly() && HasText();
+	}
+
+	// Implementation
+	BOOL HasSelection() const
+	{
+		const T* pT = static_cast<const T*>(this);
+		ATLASSERT(pT->m_hWnd);
+		return (::SendMessage(pT->m_hWnd, SCI_GETSELECTIONSTART, 0, 0) != ::SendMessage(pT->m_hWnd, SCI_GETSELECTIONEND, 0, 0));
+	}
+
+	BOOL HasText() const
+	{
+		const T* pT = static_cast<const T*>(this);
+		ATLASSERT(pT->m_hWnd);
+		return ::SendMessage(pT->m_hWnd, SCI_GETLENGTH, 0, 0) != 0;
+	}
+
+	BOOL IsReadOnly() const
+	{
+		const T* pT = static_cast<const T*>(this);
+		ATLASSERT(pT->m_hWnd);
+		return ::SendMessage(pT->m_hWnd, SCI_GETREADONLY, 0, 0);
 	}
 };
 
@@ -3341,6 +3383,11 @@ private:
 		}
 
 		return 0;
+	}
+
+	BOOL CanReplace() const
+	{
+		return !IsReadOnly() && HasText();
 	}
 };
 
