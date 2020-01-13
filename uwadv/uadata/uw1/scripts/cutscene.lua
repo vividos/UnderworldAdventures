@@ -1,6 +1,6 @@
 --
 -- Underworld Adventures - an Ultima Underworld remake project
--- Copyright (c) 2002 Michael Fink
+-- Copyright (c) 2002,2019 Michael Fink
 -- Copyright (c) 2002 Dirk Manders
 --
 -- This program is free software; you can redistribute it and/or modify
@@ -25,8 +25,8 @@
 --
 -- registered C functions:
 --
--- cuts_do_action(actioncode,actionvalue)
---   actioncode is one of the values below; actionvalue can be
+-- cuts_do_action(Integer action_code, Various action_value)
+--   action_code is one of the values below; action_value can be
 --   a value depending on the action. it always must be present.
 --
 
@@ -34,7 +34,7 @@
 -- constants
 
 -- action codes that can be passed to cuts_do_action()
--- these must be in sync with the code in "source/screens/cutscene_view.cpp"
+-- these must be in sync with the code in "source/screens/CutsceneViewScreen.cpp"
 cuts_finished = 0            -- indicates that cutscene is at it's end
 cuts_set_string_block = 1    -- sets game strings block to use
 cuts_sound_play = 2          -- plays a sound, "sound/XX.voc"
@@ -46,7 +46,7 @@ cuts_text_show = 6           -- shows text instantly; value is string number
 cuts_text_hide = 7           -- hides text instantly
 
 cuts_anim_fadein = 8         -- loads animation and fades in first frame
-cuts_anim_show = 9           -- loads animation and starts it
+cuts_anim_show = 9           -- loads animation and starts it, e.g. "cs000.n02"
 cuts_anim_set_stopframe = 10 -- sets frame to stop at; value is stopframe
 cuts_anim_fadeout = 11       -- fades out current animation frame
 cuts_anim_stop = 12          -- stops animation looping
@@ -54,7 +54,7 @@ cuts_anim_hide = 13          -- hides animation
 cuts_anim_continue = 14      -- continues animation after stop
 
 -- string block base for cutscenes
-cuts_strbase = 12*256        -- 0x0c00
+cuts_string_base = 0x0c00
 
 
 -- tables
@@ -62,8 +62,8 @@ cuts_strbase = 12*256        -- 0x0c00
 -- cutscene timetables
 cutscenes = {
    [0] =  -- cutscene 0 : introduction (by Dirk Manders)
-   { 
-      strblock = cuts_strbase + 0,
+   {
+      strblock = cuts_string_base + 0,
       timetable =
       {
       -- Part 1: Prelude
@@ -101,7 +101,7 @@ cutscenes = {
          { time = 0.0, action = cuts_text_show,          value = 6 },
          { time = 0.0, action = cuts_anim_show,          value = "cs000.n05" },
          { time = 0.0, action = cuts_anim_set_stopframe, value = 15 },
-         
+
          -- 1.4: Garamon vanishes, narrator speaks again
          { time = 4.0, action = cuts_sound_play,         value = "30" },
          { time = 0.0, action = cuts_text_set_color,     value = 147 },
@@ -343,19 +343,19 @@ cutscenes = {
 
    [1] =  -- cutscene 1: endgame
    {
-      strblock = cuts_strbase + 1,
+      strblock = cuts_string_base + 1,
       timetable =
       {
-         { time=8.0, func=cuts_finished, value=0 }
+         { time = 8.0, action = cuts_finished, value = 0 }
       }
    },
 
    [2] =  -- cutscene 2: tyball action
    {
-      strblock = cuts_strbase + 2,
+      strblock = cuts_string_base + 2,
       timetable =
       {
-         { time=8.0, func=cuts_finished, value=0 }
+         { time = 8.0, func = cuts_finished, value = 0 }
       }
    }
 }
@@ -366,9 +366,9 @@ cutscenes = {
 -- initializes cutscene sequence
 function cuts_init(cutscene)
 
-   cuts = cutscene   -- number of cutscene to use
-   curtime = 0.0     -- current time frame
-   curstep = 1       -- current timetable step
+   cutscene_number = cutscene    -- number of cutscene to use
+   current_time = 0.0            -- current time frame
+   current_step = 1              -- current timetable step
 end
 
 -- processes cutscene timetable for every game tick
@@ -377,23 +377,23 @@ function cuts_tick(time)
    -- at start, set string block to use
    if time == 0.0
    then
-      cuts_do_action(cuts_set_string_block,cutscenes[cuts].strblock)
+      cuts_do_action(cuts_set_string_block, cutscenes[cutscene_number].strblock)
    end
 
    -- check if new timetable entry can be done
-   while time >= curtime + cutscenes[cuts].timetable[curstep].time
+   while time >= current_time + cutscenes[cutscene_number].timetable[current_step].time
    do
       -- perform action
       cuts_do_action(
-         cutscenes[cuts].timetable[curstep].action,
-         cutscenes[cuts].timetable[curstep].value)
+         cutscenes[cutscene_number].timetable[current_step].action,
+         cutscenes[cutscene_number].timetable[current_step].value)
 
-      -- update curtime and curstep
-      curtime = curtime + cutscenes[cuts].timetable[curstep].time;
+      -- update current_time and current_step
+      current_time = current_time + cutscenes[cutscene_number].timetable[current_step].time;
 
-      if cuts_finished ~= cutscenes[cuts].timetable[curstep].action
+      if cuts_finished ~= cutscenes[cutscene_number].timetable[current_step].action
       then
-         curstep = curstep + 1
+         current_step = current_step + 1
       end
    end
 end
