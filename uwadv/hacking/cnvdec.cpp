@@ -242,7 +242,7 @@ int cnvdec_main()
                while(offset < ((int)n-0x1000))
                   offset += 0x1000;
 
-               if(offset > n)
+               if(unsigned(offset) > n)
                {
                   //printf("repeat: error: pos %03x, count %u\n", offset, count);
                   n = length;
@@ -276,11 +276,11 @@ int cnvdec_main()
       bufptr+= 2;
 
       // output conversation info
-      fprintf(dest,"; conversation #%u: offset=0x%04x, unk1=0x%04x, codesize=0x%04x\n",
-         i, offsets[i],unknown1,codesize,length);
+      fprintf(dest,"; conversation #%u: offset=0x%04x, unk1=0x%04x, codesize=0x%04x, length=0x%04x\n",
+         i, offsets[i], unknown1, codesize, length);
 
       fprintf(dest,"; unk2=%04x, conv=%04x, init_stack=%04x\n",
-         unknown2,strblock,initstack);
+         unknown2, strblock, initstack);
 
       unsigned short globcount = *(unsigned short*)bufptr;
       bufptr+= 2;
