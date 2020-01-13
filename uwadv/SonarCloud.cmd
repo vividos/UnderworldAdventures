@@ -1,13 +1,16 @@
 @echo off
 REM
 REM Underworld Adventures - an Ultima Underworld hacking project
-REM Copyright (c) 2019 Underworld Adventures Team
+REM Copyright (c) 2019-2020 Underworld Adventures Team
 REM
 REM Runs SonarCloud analysis build
 REM
 
 REM set this to your Visual Studio installation folder
 set VSINSTALL=%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Community
+
+REM set this to your SonarQube tools folder
+set SONARQUBE=C:\Projekte\Tools\SonarQube
 
 REM
 REM Preparations
@@ -16,12 +19,6 @@ call "%VSINSTALL%\Common7\Tools\VsDevCmd.bat"
 
 if "%SONARLOGIN%" == "" echo "Environment variable SONARLOGIN is not set! Obtain a new token and set the environment variable!"
 if "%SONARLOGIN%" == "" exit 1
-
-REM
-REM Prepare SonarQube build tools
-REM
-REM set this to your SonarQube tools folder
-set SONARQUBE=D:\devel\tools\SonarQube
 
 set PATH=%PATH%;%SONARQUBE%\build-wrapper-win-x86;%SONARQUBE%\sonar-scanner-msbuild;%OPENCPPCOVERAGE%
 
