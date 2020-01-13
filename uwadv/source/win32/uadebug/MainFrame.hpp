@@ -222,6 +222,9 @@ private:
    virtual void AddLuaChildView(LuaSourceWindow* childView) override;
    virtual void RemoveLuaChildView(LuaSourceWindow* childView) override;
 
+   /// called when code debugger state has been updated
+   void OnUpdateCodeDebuggerState(DebugWindowNotification& notify);
+
 private:
    /// MDI command bar for tabbing
    CTabbedMDICommandBarCtrl m_commandBar;

@@ -536,6 +536,13 @@ LRESULT MainFrame::OnDebugRun(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
    UIEnable(ID_DEBUG_STEP_OVER, false);
    UIEnable(ID_DEBUG_STEP_OUT, false);
 
+   // remove execution line from any Lua script window
+   int maxIndex = m_luaChildWindows.GetSize();
+   for (int index = 0; index < maxIndex; index++)
+   {
+      m_luaChildWindows[index]->SetCurrentExecutionLine(-1);
+   }
+
    return 0;
 }
 
@@ -555,6 +562,19 @@ LRESULT MainFrame::OnDebugStepInto(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
    }
 
    m_debugClient.Lock(false);
+
+   UIEnable(ID_DEBUG_PAUSE, true);
+   UIEnable(ID_DEBUG_RUN, false);
+   UIEnable(ID_DEBUG_STEP_INTO, false);
+   UIEnable(ID_DEBUG_STEP_OVER, false);
+   UIEnable(ID_DEBUG_STEP_OUT, false);
+
+   // remove execution line from any Lua script window
+   int maxIndex = m_luaChildWindows.GetSize();
+   for (int index = 0; index < maxIndex; index++)
+   {
+      m_luaChildWindows[index]->SetCurrentExecutionLine(-1);
+   }
 
    return 0;
 }
@@ -576,6 +596,19 @@ LRESULT MainFrame::OnDebugStepOver(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 
    m_debugClient.Lock(false);
 
+   UIEnable(ID_DEBUG_PAUSE, true);
+   UIEnable(ID_DEBUG_RUN, false);
+   UIEnable(ID_DEBUG_STEP_INTO, false);
+   UIEnable(ID_DEBUG_STEP_OVER, false);
+   UIEnable(ID_DEBUG_STEP_OUT, false);
+
+   // remove execution line from any Lua script window
+   int maxIndex = m_luaChildWindows.GetSize();
+   for (int index = 0; index < maxIndex; index++)
+   {
+      m_luaChildWindows[index]->SetCurrentExecutionLine(-1);
+   }
+
    return 0;
 }
 
@@ -595,6 +628,19 @@ LRESULT MainFrame::OnDebugStepOut(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
    }
 
    m_debugClient.Lock(false);
+
+   UIEnable(ID_DEBUG_PAUSE, true);
+   UIEnable(ID_DEBUG_RUN, false);
+   UIEnable(ID_DEBUG_STEP_INTO, false);
+   UIEnable(ID_DEBUG_STEP_OVER, false);
+   UIEnable(ID_DEBUG_STEP_OUT, false);
+
+   // remove execution line from any Lua script window
+   int maxIndex = m_luaChildWindows.GetSize();
+   for (int index = 0; index < maxIndex; index++)
+   {
+      m_luaChildWindows[index]->SetCurrentExecutionLine(-1);
+   }
 
    return 0;
 }
@@ -721,6 +767,12 @@ DebugClient& MainFrame::GetDebugClientInterface()
 
 void MainFrame::SendNotification(DebugWindowNotification& notify, DebugWindowBase* debugWindow)
 {
+   if (notify.m_notifyCode == notifyCodeCodeDebuggerUpdate &&
+      notify.m_param1 == codeDebuggerUpdateState)
+   {
+      OnUpdateCodeDebuggerState(notify);
+   }
+
    debugWindow->ReceiveNotification(notify);
 }
 
@@ -734,6 +786,42 @@ void MainFrame::SendNotification(DebugWindowNotification& notify,
          continue;
 
       SendNotification(notify, m_debugWindowList[index]);
+   }
+}
+
+void MainFrame::OnUpdateCodeDebuggerState(DebugWindowNotification& notify)
+{
+   unsigned int codeDebuggerId = notify.m_param2;
+
+   DebugClientCodeDebugger codeDebugger = m_debugClient.GetCodeDebuggerInterface(codeDebuggerId);
+
+   CodeDebuggerState state = codeDebugger.GetState();
+   if (state == cdsRunning || state == cdsInactive)
+   {
+      UIEnable(ID_DEBUG_PAUSE, true);
+      UIEnable(ID_DEBUG_RUN, false);
+      UIEnable(ID_DEBUG_STEP_INTO, false);
+      UIEnable(ID_DEBUG_STEP_OVER, false);
+      UIEnable(ID_DEBUG_STEP_OUT, false);
+   }
+   else
+   {
+      UIEnable(ID_DEBUG_PAUSE, false);
+      UIEnable(ID_DEBUG_RUN, true);
+      UIEnable(ID_DEBUG_STEP_INTO, true);
+      UIEnable(ID_DEBUG_STEP_OVER, true);
+      UIEnable(ID_DEBUG_STEP_OUT, true);
+
+      // update code position
+      CodePosition pos = codeDebugger.GetCurrentPos();
+
+      if (pos.m_sourceFileNameIndex != (size_t)-1)
+      {
+         CString sourceFilename = codeDebugger.GetSourceFileName(pos.m_sourceFileNameIndex);
+
+         LuaSourceWindow& view = OpenLuaSourceFile(sourceFilename);
+         view.SetCurrentExecutionLine(pos.m_sourceFileLine);
+      }
    }
 }
 
