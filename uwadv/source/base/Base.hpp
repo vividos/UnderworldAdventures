@@ -33,7 +33,6 @@
 /// \def HAVE_MSVC     Microsoft Visual C++ compiler
 /// \def HAVE_GCC      Gnu gcc compiler
 /// \def HAVE_WIN32    Win32 API is available through <windows.h>
-/// \def HAVE_UNICODE  Unicode Win32 API functions should be used
 /// \def HAVE_LINUX    Linux is used as target system
 /// \def HAVE_MINGW    MinGW32 development/runtime environment
 /// \def HAVE_MACOSX   MacOS X development/runtime environment
