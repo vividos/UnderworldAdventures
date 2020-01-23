@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2006,2019 Underworld Adventures Team
+// Copyright (c) 2006,2019,2020 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -120,7 +120,7 @@ LONG WINAPI ExceptionFilterWriteMinidump(_EXCEPTION_POINTERS* exceptionInfo)
 
    static char errorMessage[MAX_PATH + 200];
    snprintf(errorMessage, sizeof(errorMessage) / sizeof(*errorMessage),
-      "The application has crashed and a crash dump was written: %Ts", minidumpFilename);
+      "The application has crashed and a crash dump was written: %s", minidumpFilename);
 
    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Underworld Adventures", errorMessage, nullptr);
 
