@@ -17,3 +17,10 @@ indent_size = 3
 # makefiles
 [Makefile.*]
 indent_style = tab
+
+# CMake
+[CMakeLists.txt,*.cmake]
+indent_style = tab
+
+[*.cmake]
+indent_style = tab
