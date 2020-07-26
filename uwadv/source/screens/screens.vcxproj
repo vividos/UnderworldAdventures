@@ -54,13 +54,13 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)source\audio;$(SolutionDir)source\conv;$(SolutionDir)source\import;$(SolutionDir)source\renderer;$(SolutionDir)source\script;$(SolutionDir)source\ui;$(SolutionDir)source\underw;$(SolutionDir)source\thirdparty\lua\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)source\audio;$(SolutionDir)source\conv;$(SolutionDir)source\import;$(SolutionDir)source\renderer;$(SolutionDir)source\script;$(SolutionDir)source\ui;$(SolutionDir)source\underworld;$(SolutionDir)source\thirdparty\lua\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Lib />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)source\audio;$(SolutionDir)source\conv;$(SolutionDir)source\import;$(SolutionDir)source\renderer;$(SolutionDir)source\script;$(SolutionDir)source\ui;$(SolutionDir)source\underw;$(SolutionDir)source\thirdparty\lua\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)source\audio;$(SolutionDir)source\conv;$(SolutionDir)source\import;$(SolutionDir)source\renderer;$(SolutionDir)source\script;$(SolutionDir)source\ui;$(SolutionDir)source\underworld;$(SolutionDir)source\thirdparty\lua\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Lib />
   </ItemDefinitionGroup>
@@ -116,7 +116,7 @@
     <ProjectReference Include="..\ui\ui.vcxproj">
       <Project>{d3b6f1de-d52f-4e99-b6e7-7d5f255721f2}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\underw\underw.vcxproj">
+    <ProjectReference Include="..\underworld\underworld.vcxproj">
       <Project>{4cc50617-2229-460e-9a80-3c517a2d9090}</Project>
     </ProjectReference>
   </ItemGroup>

@@ -32,7 +32,7 @@
 #include "renderer/Viewport.hpp"
 #include "renderer/Renderer.hpp"
 #include "script/IScripting.hpp"
-#include "underw/GameLogic.hpp"
+#include "underworld/GameLogic.hpp"
 #include "GameInterface.hpp"
 #include "MainGameLoop.hpp"
 #include "DebugServer.hpp"

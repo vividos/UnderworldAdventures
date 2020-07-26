@@ -2,11 +2,11 @@
 # Underworld Adventures - an Ultima Underworld remake project
 # Copyright (c) 2002-2020 Underworld Adventures Team
 #
-# CMakeList.txt: CMake project for underw.
+# CMakeList.txt: CMake project for underworld.
 #
 cmake_minimum_required(VERSION 3.8)
 
-project(underw)
+project(underworld)
 
 # Add source to this project's library.
 add_library(${PROJECT_NAME} STATIC

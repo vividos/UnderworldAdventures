@@ -23,6 +23,6 @@ include_directories("source")
 # Include sub-projects.
 add_subdirectory("source/base")
 add_subdirectory("source/import")
-add_subdirectory("source/underw")
+add_subdirectory("source/underworld")
 add_subdirectory("source/thirdparty/zziplib-0.13.69")
 add_subdirectory("source/tools/strpak")

@@ -56,7 +56,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)source\audio;$(SolutionDir)source\conv;$(SolutionDir)source\import;$(SolutionDir)source\script;$(SolutionDir)source\thirdparty\lua\src;$(SolutionDir)source\underw;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)source\audio;$(SolutionDir)source\conv;$(SolutionDir)source\import;$(SolutionDir)source\script;$(SolutionDir)source\thirdparty\lua\src;$(SolutionDir)source\underworld;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -64,7 +64,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)source\audio;$(SolutionDir)source\conv;$(SolutionDir)source\import;$(SolutionDir)source\script;$(SolutionDir)source\thirdparty\lua\src;$(SolutionDir)source\underw;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)source\audio;$(SolutionDir)source\conv;$(SolutionDir)source\import;$(SolutionDir)source\script;$(SolutionDir)source\thirdparty\lua\src;$(SolutionDir)source\underworld;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -113,7 +113,7 @@
     <ProjectReference Include="..\script\script.vcxproj">
       <Project>{4548e978-a076-4ba2-88b3-a41f46e53b16}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\underw\underw.vcxproj">
+    <ProjectReference Include="..\underworld\underworld.vcxproj">
       <Project>{4cc50617-2229-460e-9a80-3c517a2d9090}</Project>
     </ProjectReference>
   </ItemGroup>

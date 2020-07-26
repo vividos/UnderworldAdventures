@@ -24,7 +24,7 @@
 #include "base/ResourceManager.hpp"
 #include "base/TextFile.hpp"
 #include "script/IScripting.hpp"
-#include "underw/Underworld.hpp"
+#include "underworld/Underworld.hpp"
 #include "import/Import.hpp"
 #include "import/GameStringsImporter.hpp"
 #include "GameInterface.hpp"
