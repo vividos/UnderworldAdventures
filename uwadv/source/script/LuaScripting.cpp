@@ -410,8 +410,7 @@ int LuaScripting::uw_show_cutscene(lua_State* L)
    if (callback != NULL)
    {
       size_t cutsceneNumber = static_cast<size_t>(lua_tointeger(L, -1));
-      // TODO
-      //callback->ShowCutscene(cutsceneNumber);
+      callback->ShowCutscene(cutsceneNumber);
    }
 
    return 0;

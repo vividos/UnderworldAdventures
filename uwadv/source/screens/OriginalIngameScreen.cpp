@@ -965,6 +965,12 @@ void OriginalIngameScreen::StartConversation(Uint16 listPos)
    ScheduleAction(ingameActionConversation, true);
 }
 
+void OriginalIngameScreen::ShowCutscene(unsigned int cutsceneNumber)
+{
+   m_fadeoutParameter = cutsceneNumber;
+   ScheduleAction(ingameActionCutscene, true);
+}
+
 void OriginalIngameScreen::DoSavegameScreenshot(
    unsigned int xres, unsigned int yres)
 {

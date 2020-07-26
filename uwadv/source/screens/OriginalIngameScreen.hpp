@@ -137,6 +137,9 @@ protected:
    /// starts conversation with object in current level, on list position
    virtual void StartConversation(Uint16 listPos) override;
 
+   /// starts showing cutscene with given number
+   virtual void ShowCutscene(unsigned int cutsceneNumber) override;
+
    /// takes a screenshot for savegame preview
    void DoSavegameScreenshot(unsigned int xres, unsigned int yres);
 
