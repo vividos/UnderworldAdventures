@@ -43,6 +43,9 @@
 // History (Date/Author/Description):
 // ----------------------------------
 //
+// 2020/05/04: vividos
+// - Fixed warnings when converting tab indices between size_t and int.
+//
 // 2019/10/17: vividos
 // - Added CCustomTabOwnerImpl::SetImageSize() method
 //
@@ -559,7 +562,7 @@ public:
 			size_t nOldCount = m_TabCtrl.GetItemCount();
 
 			// The tab control takes ownership of the new item
-			nNewTabIndex = m_TabCtrl.InsertItem(nOldCount, pItem);
+			nNewTabIndex = (int)m_TabCtrl.InsertItem((int)nOldCount, pItem);
 
 			size_t nNewCount = m_TabCtrl.GetItemCount();
 

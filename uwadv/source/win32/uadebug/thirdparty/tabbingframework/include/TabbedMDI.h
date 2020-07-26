@@ -2,17 +2,17 @@
 // TabbedMDI.h - Classes that help implement a "Tabbed MDI" interface.
 //
 // Classes:
-//   CTabbedMDIFrameWindowImpl - 
+//   CTabbedMDIFrameWindowImpl -
 //      Instead of having CMainFrame inherit from
 //      CMDIFrameWindowImpl, you can have it inherit from
 //      CTabbedMDIFrameWindowImpl. For an out-of-the box WTL MDI
 //      application, there are 3 instances of CMDIFrameWindowImpl
 //      to replace with CTabbedMDIFrameWindowImpl.
-//   CTabbedMDIChildWindowImpl - 
+//   CTabbedMDIChildWindowImpl -
 //      If you want your MDI child window to have a corresponding
 //      tab in the MDI tab window, inherit from this class instead
 //      of from CMDIChildWindowImpl.
-//   CTabbedMDIClient - 
+//   CTabbedMDIClient -
 //      The CTabbedMDIFrameWindowImpl contains CTabbedMDIClient,
 //      which subclasses the "MDI Client" window
 //      (from the OS, that manages the MDI child windows).
@@ -41,8 +41,8 @@
 //      and min/max/close button in the command bar when the
 //      child is maximized.  To add additional functionality,
 //      derive your own class from CTabbedMDICommandBarCtrlImpl.
-//      
-//     
+//
+//
 //
 // Written by Daniel Bowen (dbowen@es.com)
 // Copyright (c) 2002-2005 Daniel Bowen.
@@ -51,8 +51,8 @@
 //  with the modifications by Daniel Bowen
 //
 // This code may be used in compiled form in any way you desire. This
-// file may be redistributed by any means PROVIDING it is 
-// not sold for profit without the authors written consent, and 
+// file may be redistributed by any means PROVIDING it is
+// not sold for profit without the authors written consent, and
 // providing that this notice and the authors name is included.
 //
 // This file is provided "as is" with no expressed or implied warranty.
@@ -71,7 +71,7 @@
 //   * Add GetMDITabCtrl
 //
 // 2005/04/12: Daniel Bowen
-// - CTabbedMDIClient::OnNcPaint - 
+// - CTabbedMDIClient::OnNcPaint -
 //   * CDC dc(this->GetWindowDC());
 //       should be
 //     CWindowDC dc(this->m_hWnd);
@@ -118,7 +118,7 @@
 // - Clean up warnings on level 4
 //
 // 2004/05/14: Daniel Bowen
-// - CMDITabOwnerImpl - 
+// - CMDITabOwnerImpl -
 //   * Update OnClick handling so it only sets focus to the tab view
 //     if the selected tab is being clicked. Without this update,
 //     other code that tries to minimize flickering when switching
@@ -129,7 +129,7 @@
 // 2004/04/29: Daniel Bowen
 // - Require WTL version 7.1 or later (because of WTL's CMDICommandBarCtrlImpl)
 // - New and changed registered messages for tabbed MDI children:
-//   * UWM_MDICHILDISMODIFIED - Asks whether the document(s) referenced by a 
+//   * UWM_MDICHILDISMODIFIED - Asks whether the document(s) referenced by a
 //     tabbed MDI child has been modified, and if so, the LPARAM has an
 //     ITabbedMDIChildModifiedItem* with which to fill out information.
 //     Return TRUE if there are one or more modified documents for the child.
@@ -217,7 +217,7 @@
 // 2002/12/11: Daniel Bowen
 // - New UWM_MDICHILDSAVEMODIFIED message sent to MDI child frames.
 //   The child frame receiving this should see if the "document"
-//   has been modified, and needs to be saved (usually with a 
+//   has been modified, and needs to be saved (usually with a
 //   yes/no/cancel message box).  If the user chooses to cancel,
 //   return non-zero from the UWM_MDICHILDSAVEMODIFIED handler.
 // - CTabbedMDIClient -
@@ -236,12 +236,12 @@
 //     MDIActivate (more like the MFC code in CMDIChildWnd::OnMouseActivate)
 //
 // 2002/11/21: Daniel Bowen
-// - CMDITabOwner - 
+// - CMDITabOwner -
 //   * ModifyTabStyles for use before CMDITabOwner is created as a window
 // - CTabbedMDIClient -
 //   * Expose SetDrawFlat and GetDrawFlat
 //   * Updates so that drawing flat draws correctly
-// - CTabbedMDIChildWindowImpl - 
+// - CTabbedMDIChildWindowImpl -
 //   * Handle WM_MOUSEACTIVATE, and call MDIActivate if
 //     MDI child is not already active.  This solves the problem
 //     where you have a dialog window as the view of the MDI child,
@@ -288,7 +288,7 @@
 //     be declared in this header file (whose constructor will be called
 //     by the CRT at load time).  If you are not referencing
 //     TabbedMDI.h in stdafx.h, and have multiple translation units
-//     including it, then you'll need to do it the 
+//     including it, then you'll need to do it the
 //     _TABBEDMDI_MESSAGES_EXTERN_REGISTER way.  Also, if you do
 //     use _ATL_MIN_CRT, you will get a warning unless you define
 //     _TABBEDMDI_MESSAGES_NO_WARN_ATL_MIN_CRT
@@ -308,7 +308,7 @@
 //   * New method "UseMDIChildIcon" to specify that you want the MDI
 //     tabs to include the document icon for the MDI child on the
 //     corresponding tab
-// 
+//
 // 2002/06/12: Daniel Bowen
 // - Publish codeproject article.  For history prior
 //   to the release of the article, please see the article
@@ -375,7 +375,7 @@ public:
 	typedef typename TClient TClient;
 	// Expose the type of tab control
 	typedef typename TClient::TTabCtrl TTabCtrl;
-	
+
 // Member variables
 protected:
 	TClient m_tabbedClient;
@@ -619,7 +619,7 @@ public:
 		//  problem, we won't even try to use TPM_VERPOSANIMATION.
 		WTL::CMenuHandle menu = this->GetSystemMenu(FALSE);
 
-		UINT command = (UINT)menu.TrackPopupMenu(TPM_LEFTBUTTON | TPM_VERTICAL | TPM_LEFTALIGN | TPM_TOPALIGN | TPM_RETURNCMD, 
+		UINT command = (UINT)menu.TrackPopupMenu(TPM_LEFTBUTTON | TPM_VERTICAL | TPM_LEFTALIGN | TPM_TOPALIGN | TPM_RETURNCMD,
 			GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), m_hWnd);
 
 		// See MSDN about "GetSystemMenu".  Returns codes greater than
@@ -638,7 +638,7 @@ public:
 			// implementation, you should override handling UWM_MDICHILDSHOWTABCONTEXTMENU
 			// in a derived class, and do your own context menu there.
 			// See the "TabDemo" sample for an example.
-			ATLASSERT(0 && 
+			ATLASSERT(0 &&
 				"You've tried to put a non SC_* command in the window menu.  "
 				"Please override the default context menu handling, and use a custom menu.");
 		}
@@ -1464,7 +1464,7 @@ public:
 
 		return hr;
 	}
-	
+
 #endif // __TabbedMDISave_h__
 
 	void CloseAll(bool bPreferNoPrompt = false) const
@@ -1523,7 +1523,7 @@ protected:
 			}
 
 			m_MdiTabOwner.Create(
-				m_hWndTabOwnerParent, 
+				m_hWndTabOwnerParent,
 				rcDefault, NULL,
 				WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN // start out not visible
 				);
@@ -1697,7 +1697,7 @@ public:
 		//      so it wouldn't be reliable to rely on it
 		//   2. We don't need to.  Handling the change in child
 		//      activation to display the tab, if its not there,
-		//      creates, DisplayTab will create the corresponding tab. 
+		//      creates, DisplayTab will create the corresponding tab.
 
 		// Remove the tab for the child being destroyed.
 		//  Before removing the tab, we want the default happen,
@@ -1729,7 +1729,7 @@ public:
 		//  MDI Client to change the active child (such as clicking
 		//  a different MDI child to activate it).
 		//  However, the MDI *child* will *always* receive WM_MDIACTIVATE.
-		//  In fact, the child losing focus gets WM_MDIACTIVATE, 
+		//  In fact, the child losing focus gets WM_MDIACTIVATE,
 		//  and then the child gaining focus gets WM_MDIACTIVATE
 		//  (the "deactivating" and "activating" windows are sent as
 		//  the WPARAM and LPARAM both times).
@@ -1997,7 +1997,7 @@ public:
 			int nCount = (int)::SendMessage(GetParent(), RB_GETBANDCOUNT, 0, 0L);
 			int cxDiff = (m_bChildMaximized ? 1 : -1) * (m_cxLeft + m_cxRight);
 			for(int i = 0; i < nCount; i++)
-			{ 
+			{
 #if (_WIN32_IE >= 0x0500)
 				REBARBANDINFO rbi = { sizeof(REBARBANDINFO), RBBIM_CHILD | RBBIM_CHILDSIZE | RBBIM_IDEALSIZE | RBBIM_STYLE };
 				::SendMessage(GetParent(), RB_GETBANDINFO, i, (LPARAM)&rbi);
