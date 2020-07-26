@@ -28,7 +28,9 @@ add_library(${PROJECT_NAME} STATIC
 	"PropertiesLoader.cpp"
 	"TextureLoader.cpp" "TextureLoader.hpp"
 	"TgaImport.cpp"
-	"UnderworldLoader.cpp")
+	"UnderworldLoader.cpp"
+	"vrml/WrlLexer.cpp" "vrml/WrlLexer.hpp"
+	"VrmlImporter.cpp" "VrmlImporter.hpp")
 
 target_include_directories(${PROJECT_NAME}
 	PUBLIC "${PROJECT_SOURCE_DIR}"
