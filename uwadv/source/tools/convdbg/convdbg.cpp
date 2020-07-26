@@ -542,16 +542,13 @@ int main(int argc, char* argv[])
 
    ConversationDebugger dbg;
 
-#ifndef HAVE_DEBUG
    try
-#endif
    {
       dbg.Init(argv[1], argv[2]);
 
       // start debugging
       dbg.Start();
    }
-#ifndef HAVE_DEBUG
    catch (const std::exception & ex)
    {
       printf("caught an exception: \"%s\"\n", ex.what());
@@ -560,7 +557,6 @@ int main(int argc, char* argv[])
    {
       printf("caught an unknown exception, exiting!\n");
    }
-#endif
 
    return 0;
 }

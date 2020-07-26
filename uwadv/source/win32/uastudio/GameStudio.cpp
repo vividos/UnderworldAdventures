@@ -281,16 +281,13 @@ int main(int argc, char* argv[])
    UNUSED(argc);
    UNUSED(argv);
 
-#ifndef HAVE_DEBUG // in debug mode the debugger catches exceptions
    try
    {
-#endif
       GameStudio studio;
 
       studio.Init();
       studio.Run();
       studio.Done();
-#ifndef HAVE_DEBUG
    }
    catch (const std::exception& ex)
    {
@@ -301,7 +298,6 @@ int main(int argc, char* argv[])
 
       SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Underworld Adventures Studio", text.c_str(), nullptr);
    }
-#endif
 
    return 0;
 }

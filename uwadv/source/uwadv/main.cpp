@@ -44,9 +44,7 @@ int main(int argc, char* argv[])
    InitCrashReporting("uwadv");
 #endif
 
-#ifndef HAVE_DEBUG // in debug mode the debugger catches the exceptions
    try
-#endif
    {
       Game game;
 
@@ -59,7 +57,6 @@ int main(int argc, char* argv[])
 
       game.Done();
    }
-#ifndef HAVE_DEBUG
    catch (const Base::Exception& ex)
    {
       std::string text("An unhandled exception was encountered:\n\r");
@@ -72,7 +69,6 @@ int main(int argc, char* argv[])
       UaTrace("caught std::exception: %s\n", ex.what());
       SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Underworld Adventures", "std::exception", NULL);
    }
-#endif
 
 #ifndef HAVE_DEBUG
    fflush(redirectedStdout);
