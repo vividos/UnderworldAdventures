@@ -101,7 +101,6 @@ struct TgaInfo
 
 void TgaReadScanline(Base::File& file, TgaInfo& info, Uint32* line);
 
-/// \todo implement reading bottom-up images
 void ImportTgaImage(Base::File& file, unsigned int& xres, unsigned int& yres,
    unsigned int& origx, unsigned int& origy, std::vector<Uint32>& texels)
 {
