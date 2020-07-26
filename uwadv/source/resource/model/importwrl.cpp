@@ -319,38 +319,3 @@ void ua_model3d_wrl::import_wrl(ua_game_core_interface* core, SDL_RWops* rwops,
       SDL_RWclose(rwops);
    }
 }
-
-void ua_model3d_wrl::render(ua_object& obj, ua_vector3d& base)
-{
-   // render object
-
-   tex.use();
-
-   // render all triangles in list
-   unsigned int max = coord_index.size();
-   for(unsigned int i=0; i<max; i+=3)
-   {
-      //glDisable(GL_TEXTURE_2D);
-      //glBegin(GL_LINE_LOOP);
-      glBegin(GL_TRIANGLES);
-
-      for(unsigned int n=0; n<3; n++)
-      {
-         int c_idx = coord_index[i+n];
-         int t_idx = texcoord_index[i+n];
-
-         ua_vector3d vec3d(coords[c_idx]);
-         ua_vector2d vec2d(texcoords[t_idx]);
-
-         //vec3d *= 0.008;
-         vec2d.x *= tex.get_tex_u();
-         vec2d.y *= tex.get_tex_v();
-
-         glTexCoord2d(vec2d.x,vec2d.y);
-         glVertex3d(vec3d.x+base.x,vec3d.y+base.y,vec3d.z+base.z);
-      }
-
-      glEnd();
-      //glEnable(GL_TEXTURE_2D);
-   }
-}
