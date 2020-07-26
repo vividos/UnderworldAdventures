@@ -59,7 +59,30 @@ int LuaCodeDebugger::LoadScript(Base::SDL_RWopsPtr rwops, const char* sourceFile
    // put script name in list, if it's not a compiled script
    bool compiled = std::string(sourceFilename).find(".lob") != std::string::npos;
    if (!compiled)
+   {
       m_loadedScriptFiles.push_back(sourceFilename);
+
+      // load script into buffer
+      std::vector<char> buffer;
+      unsigned int len = 0;
+      {
+         SDL_RWseek(rwops.get(), 0, SEEK_END);
+         len = SDL_RWtell(rwops.get());
+         SDL_RWseek(rwops.get(), 0, SEEK_SET);
+
+         buffer.resize(len + 1, 0);
+
+         SDL_RWread(rwops.get(), &buffer[0], len, 1);
+      }
+
+      // store active lines
+      std::string luaSource{ buffer.begin(), buffer.end() };
+
+      std::vector<size_t> lineNumbers;
+      LuaState::GetActiveLines(luaSource, lineNumbers);
+
+      m_allLineNumbers[sourceFilename] = lineNumbers;
+   }
 
    return ret;
 }
@@ -225,54 +248,9 @@ DebugServerCodeDebuggerType LuaCodeDebugger::GetDebuggerType()
    return codeDebuggerTypeLuaScript;
 }
 
-/// Prepares debugging info.
-/// The Lua struct Proto contains all informations about a function prototype.
-/// It also contains line number info when a source file was loaded. The
-/// format of the "lineinfo" array is as follows:
-/// The lineinfo array contains "sizelineinfo" items, which is always an odd
-/// number. The last item contains MAX_INT to signal an end. The list contains
-/// pairs of int values. The first one describes a line number and is coded to
-/// save space. If the value is negative, it is a relative value to the
-/// previous line number. The first line number is 1 (one). If the value is
-/// positive, it is not a line number offset and the line number stays the
-/// same. The second value is a program counter into the compiled bytecode.
-/// It points to the start of the code that is generated from the line
-/// described in the first value.
 void LuaCodeDebugger::PrepareDebugInfo()
 {
-   // retrieve debug info from lua struct
-   // TODO reimplement
-   // go through list of all function prototype structures
-   Proto* proto = NULL; // L->rootproto; TODO how to get Proto from L?
-   while (proto != NULL)
-   {
-      std::string filename(getstr(proto->source));
-
-      // find line numbers set
-      std::map<std::string, std::set<unsigned int> >::iterator iter =
-         m_allLineNumbers.find(filename);
-      if (iter == m_allLineNumbers.end())
-      {
-         // insert new set; we have a new filename
-         std::set<unsigned int> emptySet;
-         m_allLineNumbers[filename] = emptySet;
-         iter = m_allLineNumbers.find(filename);
-      }
-
-      // go through all lineinfo value pairs
-      int* lineinfo = proto->lineinfo;
-      int curline = 0;
-      for (int n = 0; n < proto->sizelineinfo && lineinfo[n] != MAX_INT; n += 2)
-      {
-         // value negative? then add offset
-         if (lineinfo[n] < 0)
-            curline += -lineinfo[n] + 1;
-
-         iter->second.insert(static_cast<unsigned int>(curline));
-      }
-
-      // proto = proto->next; // TODO how to advance?
-   }
+   // nothing to do for Lua
 }
 
 DebugServerCodeDebuggerState LuaCodeDebugger::GetDebuggerState() const
