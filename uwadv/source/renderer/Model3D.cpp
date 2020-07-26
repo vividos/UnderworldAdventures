@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2020 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,6 +25,8 @@
 #include "GameInterface.hpp"
 #include "ResourceManager.hpp"
 #include "TextFile.hpp"
+#include "VrmlImporter.hpp"
+#include "Model3DVrml.hpp"
 
 bool DecodeBuiltInModels(const char* filename,
    std::vector<Model3DPtr>& allModels, bool dump);
@@ -68,10 +70,10 @@ void Model3DManager::LoadModelConfigFile(const Base::Settings& settings, const B
    configFile.Load(textFile);
 
    for (const auto& pair : configFile.GetValueMap())
-      AddModel(pair.first, pair.second);
+      AddModel(pair.first, pair.second, resourceManager);
 }
 
-void Model3DManager::AddModel(const std::string& name, const std::string& value)
+void Model3DManager::AddModel(const std::string& name, const std::string& value, const Base::ResourceManager& resourceManager)
 {
    Uint16 itemId;
    if (name.find("0x") == 0)
@@ -95,23 +97,16 @@ void Model3DManager::AddModel(const std::string& name, const std::string& value)
    }
    else
    {
-/* TODO reactivate loading 3D models
-      std::string model_path(value);
-
       // load .wrl model
-      Model3dWrl* model = new Model3dWrl;
-      SDL_RWops* rwops = NULL;
+      std::string modelPath{ value };
+      UaTrace(" loading model %s\n", modelPath.c_str());
 
-      UaTrace(" loading model %s\n",model_path.c_str());
+      Base::SDL_RWopsPtr rwops = resourceManager.GetResourceFile(modelPath.c_str());
 
-      rwops = core->get_filesmgr().GetResourceFile(model_path.c_str());
+      Import::VrmlImporter importer{ resourceManager };
+      Model3DPtr model = importer.ImportWrl(rwops.get(), modelPath);
 
-      // import model
-      model->import_wrl(core,rwops,model_path);
-
-      m_allModels.insert(
-         std::make_pair<Uint16,Model3DPtr>(itemId,Model3DPtr(model)) );
-*/
+      m_allModels.insert(std::make_pair(itemId, model));
    }
 }
 

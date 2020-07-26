@@ -92,7 +92,7 @@ private:
    void LoadModelConfigFile(const Base::Settings& settings, const Base::ResourceManager& resourceManager);
 
    /// adds a new model
-   void AddModel(const std::string& name, const std::string& value);
+   void AddModel(const std::string& name, const std::string& value, const Base::ResourceManager& resourceManager);
 
 private:
    /// map with all 3d model objects
