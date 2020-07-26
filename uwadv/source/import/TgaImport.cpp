@@ -156,13 +156,20 @@ void ImportTgaImage(Base::File& file, unsigned int& xres, unsigned int& yres,
    if (info.idlength + info.colormaplength > 0)
       file.Seek(info.idlength + info.colormaplength, Base::seekCurrent);
 
-   // load scanlines (saved top-down)
-   for (unsigned int line = 0; line < origy; line++)
-      TgaReadScanline(file, info, &texels[line * xres]);
-
-   // (saved bottom-up)
-//   for(int line=origy-1; line>=0; line--)
-//      TgaReadScanline(rwops,info,&texels[line*xres]);
+   // load scanlines
+   bool isTopDown = (info.imagedescriptor & 0x20) != 0;
+   if (isTopDown)
+   {
+      // (saved top-down)
+      for (unsigned int line = 0; line < origy; line++)
+         TgaReadScanline(file, info, &texels[line * xres]);
+   }
+   else
+   {
+      // (saved bottom-up)
+      for (int line = origy - 1; line >= 0; line--)
+         TgaReadScanline(file, info, &texels[line * xres]);
+   }
 }
 
 /// \todo implement 16- and 32-bit scanline reading
