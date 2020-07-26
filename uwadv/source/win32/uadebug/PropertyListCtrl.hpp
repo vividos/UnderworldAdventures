@@ -327,6 +327,9 @@ namespace PropertyList
       /// ctor
       IInplaceEditControl() :m_inplaceParentCallback(NULL) {}
 
+      /// dtor
+      virtual ~IInplaceEditControl() noexcept {}
+
       /// initializes inplace edit control
       void Init(IInplaceParentCallback* inplaceParentCallback)
       {
