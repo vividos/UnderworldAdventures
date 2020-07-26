@@ -1,0 +1,15 @@
+# sdl_pnglite pkg-config source file
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: sdl_pnglite
+Description: sdl_pnglite is a pnglite-derived PNG reader and writer for SDL2.
+Version: 1.0
+Requires:
+Conflicts:
+Libs: -L${libdir} -lSDL_pnglite
+Libs.private: -lSDL_pnglite
+Cflags: -I${includedir}/SDL2
