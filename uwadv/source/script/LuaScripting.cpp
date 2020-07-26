@@ -437,8 +437,8 @@ int LuaScripting::uw_cursor_use_item(lua_State* L)
    IUserInterface* callback = self.m_game->GetUserInterface();
    if (callback != NULL)
    {
-      unsigned int ingameAnimationNumber = static_cast<unsigned int>(lua_tointeger(L, -1));
       // TODO implement
+      //unsigned int ingameAnimationNumber = static_cast<unsigned int>(lua_tointeger(L, -1));
    }
 
    return 0;
