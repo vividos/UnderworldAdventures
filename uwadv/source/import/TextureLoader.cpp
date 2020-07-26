@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2020 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,18 +25,50 @@
 #include "ResourceManager.hpp"
 #include "File.hpp"
 #include <algorithm>
+#include <SDL_pnglite.h>
 
 extern void ImportTgaImage(Base::File& file, unsigned int& xres, unsigned int& yres,
    unsigned int& origx, unsigned int& origy, std::vector<Uint32>& texels);
 
+/// imports PNG image
+bool ImportPngImage(Base::SDL_RWopsPtr rwops, unsigned int& xres, unsigned int& yres,
+   unsigned int& origx, unsigned int& origy, std::vector<Uint32>& texels)
+{
+   if (SDL_HeaderCheckPNG_RW(rwops.get(), 0, nullptr, nullptr, nullptr) != 1)
+      return false;
+
+   SDL_Surface* surf = SDL_LoadPNG_RW(rwops.get(), 0);
+   if (surf == nullptr)
+      return false;
+
+   xres = origx = surf->w;
+   yres = origy = surf->h;
+
+   // try to convert
+   texels.resize(xres * yres);
+
+   SDL_Surface* destSurf = SDL_CreateRGBSurfaceWithFormatFrom(
+      texels.data(), surf->w, surf->h, 32, surf->w * 4, SDL_PIXELFORMAT_ABGR8888);
+
+   SDL_BlitSurface(surf, nullptr, destSurf, nullptr);
+   SDL_FreeSurface(destSurf);
+
+   SDL_FreeSurface(surf);
+
+   return true;
+}
+
 void Texture::Load(Base::SDL_RWopsPtr rwops)
 {
-   unsigned int origx, origy;
+   unsigned int origx = 0, origy = 0;
 
-   // currently we only have tga texture import
-   // TODO: check for file type and load accordingly
-   Base::File file(rwops);
-   ImportTgaImage(file, m_xres, m_yres, origx, origy, m_texels);
+   // first try PNG
+   if (!ImportPngImage(rwops, m_xres, m_yres, origx, origy, m_texels))
+   {
+      // use TGA texture import
+      Base::File file{ rwops };
+      ImportTgaImage(file, m_xres, m_yres, origx, origy, m_texels);
+   }
 
    // calculate max. u and v coordinates
    m_v = ((double)origy) / m_yres;
