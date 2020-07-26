@@ -44,7 +44,7 @@ void UwadvMenuScreen::Init()
    glEnable(GL_TEXTURE_2D);
 
    // load texture
-   Base::SDL_RWopsPtr rwops = m_game.GetResourceManager().GetResourceFile("uwadv-loading.tga");
+   Base::SDL_RWopsPtr rwops = m_game.GetResourceManager().GetResourceFile("uwadv-loading.png");
 
    if (rwops != NULL)
    {

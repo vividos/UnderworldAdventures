@@ -90,7 +90,7 @@
     <Image Include="models\static\textures\wood.tga">
       <Filter>models\static\textures</Filter>
     </Image>
-    <Image Include="uwadv-loading.tga" />
+    <Image Include="uwadv-loading.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="uw1\game.cfg">

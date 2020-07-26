@@ -156,7 +156,7 @@
     <Image Include="models\static\textures\wdchest.tga" />
     <Image Include="models\static\textures\wood.tga" />
     <Image Include="uw1\acknowledgements-blank.tga" />
-    <Image Include="uwadv-loading.tga" />
+    <Image Include="uwadv-loading.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
