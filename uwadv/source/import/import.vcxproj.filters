@@ -9,6 +9,9 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
+    <Filter Include="vrml Files">
+      <UniqueIdentifier>{1eafae30-4cb1-4148-b62b-5c11cee753cd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ConvLoader.cpp">
@@ -62,6 +65,12 @@
     <ClCompile Include="ItemCombineLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="VrmlImporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vrml\WrlLexer.cpp">
+      <Filter>vrml Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bits.hpp">
@@ -103,5 +112,22 @@
     <ClInclude Include="ObjectListLoader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="vrml\FlexLexer.h">
+      <Filter>vrml Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VrmlImporter.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vrml\WrlLexer.hpp">
+      <Filter>vrml Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="vrml\wrllexer.l">
+      <Filter>vrml Files</Filter>
+    </None>
+    <None Include="vrml\flex.skl">
+      <Filter>vrml Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -84,6 +84,8 @@
     <ClCompile Include="TextureLoader.cpp" />
     <ClCompile Include="TgaImport.cpp" />
     <ClCompile Include="UnderworldLoader.cpp" />
+    <ClCompile Include="VrmlImporter.cpp" />
+    <ClCompile Include="vrml\WrlLexer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bits.hpp" />
@@ -99,6 +101,9 @@
     <ClInclude Include="pch.hpp" />
     <ClInclude Include="PlayerImporter.hpp" />
     <ClInclude Include="TextureLoader.hpp" />
+    <ClInclude Include="VrmlImporter.hpp" />
+    <ClInclude Include="vrml\FlexLexer.h" />
+    <ClInclude Include="vrml\WrlLexer.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\base\base.vcxproj">
@@ -110,6 +115,10 @@
     <ProjectReference Include="..\underworld\underworld.vcxproj">
       <Project>{4cc50617-2229-460e-9a80-3c517a2d9090}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="vrml\flex.skl" />
+    <None Include="vrml\wrllexer.l" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
