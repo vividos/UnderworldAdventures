@@ -80,10 +80,10 @@ void UwadvMenuScreen::Draw()
 
    // draw quad
    glBegin(GL_QUADS);
-   glTexCoord2d(0.0, 0.0); glVertex2i(xpos, ypos);
-   glTexCoord2d(1.0, 0.0); glVertex2i(xpos + width, ypos);
-   glTexCoord2d(1.0, 1.0); glVertex2i(xpos + width, ypos + height);
-   glTexCoord2d(0.0, 1.0); glVertex2i(xpos, ypos + height);
+   glTexCoord2d(0.0, 1.0); glVertex2i(xpos, ypos);
+   glTexCoord2d(1.0, 1.0); glVertex2i(xpos + width, ypos);
+   glTexCoord2d(1.0, 0.0); glVertex2i(xpos + width, ypos + height);
+   glTexCoord2d(0.0, 0.0); glVertex2i(xpos, ypos + height);
    glEnd();
 
    m_isRendered = true;
