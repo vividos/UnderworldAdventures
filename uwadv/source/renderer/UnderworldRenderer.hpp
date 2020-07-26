@@ -21,7 +21,7 @@
 //
 #pragma once
 
-#include "Texture.hpp"
+#include "TextureManager.hpp"
 #include "Critter.hpp"
 #include "Model3D.hpp"
 
@@ -29,7 +29,7 @@ namespace Underworld
 {
    class Level;
 }
-class TextureManager;
+
 class IGame;
 struct RenderOptions;
 

@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2020 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,22 +17,20 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 /// \file Texture.hpp
-/// \brief texture management classes
-/// \details Texture::convert() converts image pixels to 32-bit texture data
-/// Texture::use() activates a texture name for use in rendering
-/// Texture::upload() uploads a converted texture to the graphics card
-/// \note texture size for multiple textures is calculated when convert()ing
-/// the first texture. all other textures must have the same size.
+/// \brief texture class
+/// \details Texture::Convert() converts image pixels to 32-bit texture data
+/// Texture::Use() activates a texture name for use in rendering
+/// Texture::Upload() uploads a converted texture to the graphics card
+/// \note Texture size for multiple textures is calculated when Convert()ing
+/// the first texture. All other textures must have the same size.
 //
 #pragma once
 
 #include <SDL_opengl.h>
 #include <vector>
-#include "Settings.hpp"
-#include "IndexedImage.hpp"
 
-class TextureManager;
-class IGame;
+class IndexedImage;
+class Palette256;
 
 /// \brief texture class; represents one or more texture images
 /// The Texture class can be used to store and upload textures to OpenGL.
@@ -128,64 +126,4 @@ private:
 
    friend class TextureManager;
    friend class Critter;
-};
-
-/// texture manager
-class TextureManager
-{
-public:
-   /// ctor
-   TextureManager();
-   /// dtor
-   ~TextureManager();
-   /// deleted copy ctor
-   TextureManager(const TextureManager&) = delete;
-   /// deleted assignment operator
-   TextureManager& operator=(const TextureManager&) = delete;
-
-   /// initializes texture manager; loads stock textures
-   void Init(IGame& game);
-
-   /// called every game tick
-   void Tick(double tickRate);
-
-   /// resets usage of stock textures in OpenGL
-   void Reset();
-
-   /// prepares a stock texture for usage in OpenGL
-   void Prepare(unsigned int index);
-
-   /// prepares an external texture for usage in OpenGL
-   void Prepare(Texture& texture);
-
-   /// use a stock texture in OpenGL
-   void Use(unsigned int index);
-
-   /// should be called when a new texname is about to be used
-   bool UsingNewTextureName(GLuint newTextureName);
-
-   /// converts stock texture to external one
-   void MapStockToExternalTexture(unsigned int index, Texture& texture);
-
-protected:
-   /// frames per second for animated textures
-   static const double s_animationFramesPerSecond;
-
-   /// last bound texture name
-   GLuint m_lastTextureName;
-
-   /// image array of all stock textures
-   std::vector<IndexedImage> m_allStockTextureImages;
-
-   /// stock textures
-   std::vector<Texture> m_stockTextures;
-
-   /// infos about current/max texture frame for all stock textures
-   std::vector<std::pair<unsigned int, unsigned int> > m_stockTextureAnimationInfos;
-
-   /// palette 0 from image manager
-   Palette256Ptr m_palette0;
-
-   /// time counter for animated textures
-   double m_animationCount;
 };

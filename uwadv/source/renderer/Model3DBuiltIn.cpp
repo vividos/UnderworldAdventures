@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2004,2019 Underworld Adventures Team
+// Copyright (c) 2004,2019,2020 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 //
 #include "pch.hpp"
 #include "Model3DBuiltIn.hpp"
+#include "TextureManager.hpp"
 
 extern bool DecodeBuiltInModels(const char* filename,
    std::vector<Model3DPtr>& allModels, bool dump = false);
