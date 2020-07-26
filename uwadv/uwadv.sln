@@ -106,6 +106,8 @@ Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "setup", "win32\setup\setup.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "convdbg", "source\tools\convdbg\convdbg.vcxproj", "{0B492E5E-7E48-4169-8663-02517FA08DEB}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SDL_pnglite", "source\thirdparty\SDL_pnglite\SDL_pnglite.vcxproj", "{72FE0270-5AE8-41F5-B767-F58505E56360}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		AppVeyor|Win32 = AppVeyor|Win32
@@ -340,6 +342,14 @@ Global
 		{0B492E5E-7E48-4169-8663-02517FA08DEB}.Release|Win32.Build.0 = Release|Win32
 		{0B492E5E-7E48-4169-8663-02517FA08DEB}.SonarCloud|Win32.ActiveCfg = Release|Win32
 		{0B492E5E-7E48-4169-8663-02517FA08DEB}.SonarCloud|Win32.Build.0 = Release|Win32
+		{72FE0270-5AE8-41F5-B767-F58505E56360}.AppVeyor|Win32.ActiveCfg = Release|Win32
+		{72FE0270-5AE8-41F5-B767-F58505E56360}.AppVeyor|Win32.Build.0 = Release|Win32
+		{72FE0270-5AE8-41F5-B767-F58505E56360}.Debug|Win32.ActiveCfg = Debug|Win32
+		{72FE0270-5AE8-41F5-B767-F58505E56360}.Debug|Win32.Build.0 = Debug|Win32
+		{72FE0270-5AE8-41F5-B767-F58505E56360}.Release|Win32.ActiveCfg = Release|Win32
+		{72FE0270-5AE8-41F5-B767-F58505E56360}.Release|Win32.Build.0 = Release|Win32
+		{72FE0270-5AE8-41F5-B767-F58505E56360}.SonarCloud|Win32.ActiveCfg = Release|Win32
+		{72FE0270-5AE8-41F5-B767-F58505E56360}.SonarCloud|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -377,6 +387,7 @@ Global
 		{A33E3B03-CF8F-4585-ACFB-185EE413A41B} = {8AB01551-9ABA-4108-B761-BA600FFF704A}
 		{8E919990-0D76-4F96-801D-507D42210879} = {FB38AC6B-7F80-4326-99E7-7C64BC2A8D29}
 		{0B492E5E-7E48-4169-8663-02517FA08DEB} = {8AB01551-9ABA-4108-B761-BA600FFF704A}
+		{72FE0270-5AE8-41F5-B767-F58505E56360} = {973B57CA-C119-411A-8994-16CD9FB18BBB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {62C784B6-0AE4-42AB-833B-6267BA627046}
