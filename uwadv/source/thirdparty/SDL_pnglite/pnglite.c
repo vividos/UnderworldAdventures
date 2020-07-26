@@ -100,7 +100,7 @@ pnglite_init(pnglite_t *png, void* user_pointer,
 
     png->read = read_fun;
     png->write = write_fun;
-    const size_t chunk_size_max = (1L<<31) - 1;
+    const size_t chunk_size_max = (1UL<<31) - 1;
     png->chunk_size_limit = (csl != 0 && csl < chunk_size_max) ? csl: chunk_size_max;
     png->image_data_limit = (idl != 0 && idl < chunk_size_max) ? idl: chunk_size_max;
     png->user_pointer = user_pointer;
