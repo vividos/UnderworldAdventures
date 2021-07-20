@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2005,2019 Underworld Adventures Team
+// Copyright (c) 2005,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -100,13 +100,13 @@ void Conversation::Done()
 //   find_barter_total
 void Conversation::ImportedFunc(const char* functionName)
 {
-   std::string funcname(functionName);
+   std::string function{ functionName };
 
    Uint16 argpos = m_stack.GetStackPointer();
    Uint16 argcount = m_stack.At(argpos);
    argpos--;
 
-   if (funcname.compare("sex") == 0)
+   if (function == "sex")
    {
       UaAssert(argcount == 2);
 
@@ -130,41 +130,30 @@ void Conversation::ImportedFunc(const char* functionName)
 
 Uint16 Conversation::GetGlobal(const char* globalName)
 {
-   std::string globname(globalName);
+   std::string globname{ globalName };
    Uint16 val = 0;
 
-   Underworld::Player& player = m_gameLogic.GetUnderworld().GetPlayer();
+   const Underworld::Player& player = m_gameLogic.GetUnderworld().GetPlayer();
 
    // get npc object to talk to
-   Underworld::ObjectPtr npc_obj = m_gameLogic.GetUnderworld().GetLevelList().
+   const Underworld::ObjectPtr npcObject = m_gameLogic.GetUnderworld().GetLevelList().
       GetLevel(m_conversationLevel).GetObjectList().GetObject(m_conversationObjectPos);
 
-   UaAssert(npc_obj->IsNpcObject());
+   UaAssert(npcObject->IsNpcObject());
 
-   Underworld::NpcInfo& info_ext = npc_obj->GetNpcObject().GetNpcInfo();
+   const Underworld::NpcInfo& npcInfo = npcObject->GetNpcObject().GetNpcInfo();
 
-   if (globname.compare("play_name") == 0)
-      val = AllocString(player.GetName().c_str());
-   else if (globname.compare("npc_xhome") == 0)
-      val = info_ext.m_npc_xhome;
-   else if (globname.compare("npc_yhome") == 0)
-      val = info_ext.m_npc_yhome;
-   else if (globname.compare("npc_attitude") == 0)
-      val = info_ext.m_npc_attitude;
-   else if (globname.compare("npc_goal") == 0)
-      val = info_ext.m_npc_goal;
-   else if (globname.compare("npc_gtarg") == 0)
-      val = info_ext.m_npc_gtarg;
-   else if (globname.compare("npc_hp") == 0)
-      val = info_ext.m_npc_hp;
-   else if (globname.compare("npc_hunger") == 0)
-      val = info_ext.m_npc_hunger;
-   else if (globname.compare("npc_level") == 0)
-      val = info_ext.m_npc_level;
-   else if (globname.compare("npc_talkedto") == 0)
-      val = info_ext.m_npc_talkedto ? 1 : 0;
-   else if (globname.compare("npc_whoami") == 0)
-      val = info_ext.m_npc_whoami;
+   if (globname == "play_name") val = AllocString(player.GetName().c_str());
+   else if (globname == "npc_xhome") val = npcInfo.m_npc_xhome;
+   else if (globname == "npc_yhome") val = npcInfo.m_npc_yhome;
+   else if (globname == "npc_attitude") val = npcInfo.m_npc_attitude;
+   else if (globname == "npc_goal") val = npcInfo.m_npc_goal;
+   else if (globname == "npc_gtarg") val = npcInfo.m_npc_gtarg;
+   else if (globname == "npc_hp") val = npcInfo.m_npc_hp;
+   else if (globname == "npc_hunger") val = npcInfo.m_npc_hunger;
+   else if (globname == "npc_level") val = npcInfo.m_npc_level;
+   else if (globname == "npc_talkedto") val = npcInfo.m_npc_talkedto ? 1 : 0;
+   else if (globname == "npc_whoami") val = npcInfo.m_npc_whoami;
    else
    {
       return CodeVM::GetGlobal(globalName);
@@ -205,38 +194,28 @@ void Conversation::SetGlobal(const char* globalName, Uint16 val)
    Underworld::Player& player = m_gameLogic.GetUnderworld().GetPlayer();
 
    // get npc object to talk to
-   Underworld::ObjectPtr npc_obj = m_gameLogic.GetUnderworld().GetLevelList().
+   Underworld::ObjectPtr npcObject = m_gameLogic.GetUnderworld().GetLevelList().
       GetLevel(m_conversationLevel).GetObjectList().GetObject(m_conversationObjectPos);
 
-   UaAssert(npc_obj->IsNpcObject());
+   UaAssert(npcObject->IsNpcObject());
 
-   Underworld::NpcInfo& info_ext = npc_obj->GetNpcObject().GetNpcInfo();
+   Underworld::NpcInfo& npcInfo = npcObject->GetNpcObject().GetNpcInfo();
 
-   if (globname.compare("play_name") == 0)
+   if (globname == "play_name")
    {
       UaAssert(val < m_localStrings.size());
       player.SetName(m_localStrings[val]);
    }
-   else if (globname.compare("npc_xhome") == 0)
-      info_ext.m_npc_xhome = val;
-   else if (globname.compare("npc_yhome") == 0)
-      info_ext.m_npc_yhome = val;
-   else if (globname.compare("npc_attitude") == 0)
-      info_ext.m_npc_attitude = val;
-   else if (globname.compare("npc_goal") == 0)
-      info_ext.m_npc_goal = val;
-   else if (globname.compare("npc_gtarg") == 0)
-      info_ext.m_npc_gtarg = val;
-   else if (globname.compare("npc_hp") == 0)
-      info_ext.m_npc_hp = val;
-   else if (globname.compare("npc_hunger") == 0)
-      info_ext.m_npc_hunger = val;
-   else if (globname.compare("npc_level") == 0)
-      info_ext.m_npc_level = val;
-   else if (globname.compare("npc_talkedto") == 0)
-      info_ext.m_npc_talkedto = val != 0;
-   else if (globname.compare("npc_whoami") == 0)
-      info_ext.m_npc_whoami = val;
+   else if (globname == "npc_xhome") npcInfo.m_npc_xhome = val;
+   else if (globname == "npc_yhome") npcInfo.m_npc_yhome = val;
+   else if (globname == "npc_attitude") npcInfo.m_npc_attitude = val;
+   else if (globname == "npc_goal") npcInfo.m_npc_goal = val;
+   else if (globname == "npc_gtarg") npcInfo.m_npc_gtarg = val;
+   else if (globname == "npc_hp") npcInfo.m_npc_hp = val;
+   else if (globname == "npc_hunger") npcInfo.m_npc_hunger = val;
+   else if (globname == "npc_level") npcInfo.m_npc_level = val;
+   else if (globname == "npc_talkedto") npcInfo.m_npc_talkedto = val != 0;
+   else if (globname == "npc_whoami") npcInfo.m_npc_whoami = val;
    else
    {
       CodeVM::SetGlobal(globalName, val);

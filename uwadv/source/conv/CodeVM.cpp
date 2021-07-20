@@ -498,13 +498,13 @@ void CodeVM::ImportedFunc(const char* functionName)
    UaTrace("CodeVM: executing function \"%s\" with %u arguments\n",
       functionName, m_stack.At(m_stack.GetStackPointer()));
 
-   std::string function(functionName);
+   std::string function{ functionName };
 
    Uint16 argpos = m_stack.GetStackPointer();
    Uint16 argcount = m_stack.At(argpos);
    argpos--;
 
-   if (std::string(functionName) == "babl_menu")
+   if (function == "babl_menu")
    {
       std::vector<Uint16> answerStringIds;
 
@@ -530,7 +530,8 @@ void CodeVM::ImportedFunc(const char* functionName)
       arg2 = m_stack.At(arg2);
 
       // get strings
-      std::string str1(m_localStrings[arg1]), str2(m_localStrings[arg2]);
+      std::string str1{ m_localStrings[arg1] },
+         str2{ m_localStrings[arg2] };
 
       Base::String::Lowercase(str1);
       Base::String::Lowercase(str2);
@@ -546,7 +547,7 @@ void CodeVM::ImportedFunc(const char* functionName)
       arg = m_stack.At(arg);
 
       // generate random number in range [1..arg]
-      std::uniform_int_distribution<> dist(1, arg);
+      std::uniform_int_distribution<> dist{ 1, arg };
       m_resultRegister = dist(m_rng);
    }
    else if (function == "plural")
@@ -566,7 +567,8 @@ void CodeVM::ImportedFunc(const char* functionName)
       arg2 = m_stack.At(arg2);
 
       // get strings
-      std::string str1(m_localStrings[arg1]), str2(m_localStrings[arg2]);
+      std::string str1{ m_localStrings[arg1] },
+         str2{ m_localStrings[arg2] };
 
       Base::String::Lowercase(str1);
       Base::String::Lowercase(str2);
@@ -622,7 +624,7 @@ void CodeVM::ImportedFunc(const char* functionName)
 Uint16 CodeVM::AllocString(const char* text)
 {
    Uint16 pos = static_cast<Uint16>(m_localStrings.size());
-   m_localStrings.push_back(std::string(text));
+   m_localStrings.push_back(std::string{ text });
    return pos;
 }
 
