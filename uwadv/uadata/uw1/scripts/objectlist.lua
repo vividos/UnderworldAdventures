@@ -1,6 +1,6 @@
 --
 -- Underworld Adventures - an Ultima Underworld remake project
--- Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+-- Copyright (c) 2002,2003,2004,2019,2021 Underworld Adventures Team
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -110,7 +110,7 @@ function object_get(objpos)
    objinfo = objectlist.get_info(objpos)
 
    -- check if object can be picked up
-   if prop.get_common( objinfo.item_id ).can_be_picked_up
+   if not prop.get_common( objinfo.item_id ).can_be_picked_up
    then
       -- print: "You cannot pick that up."
       uw.print(uw.get_string(1,96))
