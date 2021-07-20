@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -508,8 +508,8 @@ void CodeVM::ImportedFunc(const char* functionName)
    {
       std::vector<Uint16> answerStringIds;
 
-      // arg1 is ignored
-      Uint16 arg2 = m_stack.At(argpos - 1);
+      // arg1 is ignored; use arg2 only and read until 0 is encountered
+      Uint16 arg2 = m_stack.At(argpos);
       while (m_stack.At(arg2) != 0)
       {
          answerStringIds.push_back(m_stack.At(arg2));
