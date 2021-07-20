@@ -160,10 +160,10 @@
     <None Include="res\cursor_tilemap.cur">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="packages.config" />
     <None Include="res\Ribbon.bml">
       <Filter>Resource Files\Generated Ribbon Files</Filter>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\Des.ico">
