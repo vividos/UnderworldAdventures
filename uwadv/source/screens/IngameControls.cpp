@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -557,8 +557,9 @@ void Ingame3DView::MouseEvent(bool buttonClicked, bool leftButton,
       bool is_object = true;
 
       Renderer& renderer = m_parent->GetGameInterface().GetRenderer();
-      renderer.SelectPick(m_parent->GetGameInterface().GetUnderworld(),
-         x, y, tilex, tiley, is_object, id);
+      if (!renderer.SelectPick(m_parent->GetGameInterface().GetUnderworld(),
+         x, y, tilex, tiley, is_object, id))
+         return;
 
       switch (m_parent->GetGameMode())
       {

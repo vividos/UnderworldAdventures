@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -188,7 +188,8 @@ void Renderer::RenderUnderworld(const Underworld::Underworld& underworld)
 ///           tile wall
 /// picking tutorial:
 /// http://www.lighthouse3d.com/opengl/picking/index.php3
-void Renderer::SelectPick(const Underworld::Underworld& underworld, unsigned int xpos,
+/// \returns true when an object or texture was found, or false when not
+bool Renderer::SelectPick(const Underworld::Underworld& underworld, unsigned int xpos,
    unsigned int ypos, unsigned int& tilex, unsigned int& tiley, bool& isObject,
    unsigned int& id)
 {
@@ -263,7 +264,11 @@ void Renderer::SelectPick(const Underworld::Underworld& underworld, unsigned int
       tiley = (coords >> 8) & 0x00ff;
       isObject = renderId < 0x0400;
       id = renderId - (isObject ? 0 : 0x0400);
+
+      return true;
    }
+
+   return false;
 }
 
 /// Prepares renderer for new level.

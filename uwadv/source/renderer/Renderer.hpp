@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -82,7 +82,7 @@ public:
    void RenderUnderworld(const Underworld::Underworld& underworld);
 
    /// does selection/picking
-   void SelectPick(const Underworld::Underworld& underworld,
+   bool SelectPick(const Underworld::Underworld& underworld,
       unsigned int xpos, unsigned int ypos,
       unsigned int& tileX, unsigned int& tileY,
       bool& isObject, unsigned int& id);
