@@ -9,7 +9,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)source;$(SolutionDir)source\base;$(SolutionDir)source\thirdparty\SDL2-2.0.10\include;$(SolutionDir)source\thirdparty\SDL2_mixer-2.0.4\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)source;$(SolutionDir)source\base;$(SolutionDir)source\thirdparty\SDL2-2.0.14\include;$(SolutionDir)source\thirdparty\SDL2_mixer-2.0.4\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level4</WarningLevel>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -22,10 +22,10 @@
     </ClCompile>
     <Lib>
       <OutputFile>$(SolutionDir)output\lib\$(Configuration)\$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>$(SolutionDir)output\lib\$(Configuration)\;$(SolutionDir)source\thirdparty\SDL2-2.0.10\lib\x86;$(SolutionDir)source\thirdparty\SDL2_mixer-2.0.4\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)output\lib\$(Configuration)\;$(SolutionDir)source\thirdparty\SDL2-2.0.14\lib\x86;$(SolutionDir)source\thirdparty\SDL2_mixer-2.0.4\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)output\lib\$(Configuration)\;$(SolutionDir)source\thirdparty\SDL2-2.0.10\lib\x86;$(SolutionDir)source\thirdparty\SDL2_mixer-2.0.4\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)output\lib\$(Configuration)\;$(SolutionDir)source\thirdparty\SDL2-2.0.14\lib\x86;$(SolutionDir)source\thirdparty\SDL2_mixer-2.0.4\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
