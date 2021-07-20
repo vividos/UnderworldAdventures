@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2005,2006,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2005,2006,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -62,12 +62,16 @@ int main(int argc, char* argv[])
       std::string text("An unhandled exception was encountered:\n\r");
       text.append(ex.what());
 
-      SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Underworld Adventures", text.c_str(), NULL);
+      SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Underworld Adventures", text.c_str(), nullptr);
    }
    catch (const std::exception& ex)
    {
       UaTrace("caught std::exception: %s\n", ex.what());
-      SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Underworld Adventures", "std::exception", NULL);
+
+      std::string message{ "std::exception: " };
+      message += ex.what();
+
+      SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Underworld Adventures", message.c_str(), nullptr);
    }
 
 #ifndef HAVE_DEBUG
