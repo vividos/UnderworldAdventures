@@ -647,8 +647,9 @@ Contains player related functions:
 Contains object list related functions:
 
 - `ObjectListInfo objectlist.get_info(Integer objectlist_pos)`:
-  Gets object list infos about an object in the object list. `ObjectListInfo`
-  is a table that looks as follows:
+  Gets object list infos about an object in the object list. When there's no
+  object at the given position, `nil` is returned. `ObjectListInfo` is a table
+  that looks as follows:
 
       T = {
          objectlist_pos = 0x0344,  -- object list position

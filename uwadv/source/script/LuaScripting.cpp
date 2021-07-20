@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2005,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2005,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -300,7 +300,7 @@ void LuaScripting::RegisterFunctions()
    lua_register_table(L, "set_skill", player_set_skill);
    lua_setglobal(L, "player");
 
-   // objectList object
+   // objectlist object
    lua_newtable(L);
    lua_register_table(L, "get_info", objectlist_get_info);
    lua_register_table(L, "set_info", objectlist_set_info);
@@ -585,6 +585,12 @@ int LuaScripting::objectlist_get_info(lua_State* L)
 
    // get object pos and object
    Uint16 objectPos = static_cast<Uint16>(lua_tointeger(L, -1));
+
+   if (objectPos == 0)
+   {
+      lua_pushnil(L);
+      return 1;
+   }
 
    const Underworld::ObjectPtr obj = objectList.GetObject(objectPos);
    const Underworld::ObjectInfo& info = obj->GetObjectInfo();
