@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2014,2019 Underworld Adventures Team
+// Copyright (c) 2014,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -32,8 +32,8 @@
 using namespace Conv;
 
 Decompiler::Decompiler(Uint16 conversationNumber, std::string basePath, GameStrings& strings)
-:m_conversationNumber(conversationNumber),
-m_strings(strings)
+   :m_conversationNumber(conversationNumber),
+   m_strings(strings)
 {
    Conv::CodeVM codeVM;
 
@@ -116,14 +116,14 @@ void Decompiler::Write(FILE* fd)
          }
       }
 
-      //      if (!iter->m_isProcessed && iter->m_labelName.length() != 0)
+      //if (!iter->m_isProcessed && iter->m_labelName.length() != 0)
       if (iter->m_labelName.length() != 0)
       {
          fputs(iter->m_labelName.c_str(), fd);
          fputs(":\n", fd);
       }
 
-      for (int i = 0; i<indentLevel; i++)
+      for (int i = 0; i < indentLevel; i++)
          fputs("   ", fd);
 
       std::string text = iter->Format();
@@ -165,7 +165,7 @@ void Decompiler::Write(FILE* fd)
 int main(int argc, char* argv[])
 {
    printf("convdec - Ultima Underworld conversation code decompiler\n"
-      "Copyright (c) 2003,2004,2019 Underworld Adventures Team\n\n");
+      "Copyright (c) 2003,2004,2019,2021 Underworld Adventures Team\n\n");
 
    if (argc < 3)
    {
@@ -173,8 +173,8 @@ int main(int argc, char* argv[])
          "   basepath is the path to the uw1 or uw2 folder.\n"
          "   slotnumber is the conversation slot number to decompile, either\n"
          "   as decimal or hex; slotnumber can also be * to decompile all conversations\n");
-      printf("example: convdev . 0x0001\n"
-         "         convdev \"c:\\uw1\\\" 42\n\n");
+      printf("example: convdec . 0x0001\n"
+         "         convdec \"c:\\uw1\\\" 42\n\n");
       return 1;
    }
 
@@ -195,7 +195,7 @@ int main(int argc, char* argv[])
 
    if (slotText != "*")
    {
-      Conv::Decompiler cnvdec(slotNumber, basePath, gameStrings);
+      Conv::Decompiler cnvdec{ slotNumber, basePath, gameStrings };
       cnvdec.Write(stdout);
    }
    else
@@ -204,7 +204,7 @@ int main(int argc, char* argv[])
       {
          if (gameStrings.IsBlockAvail(0x0e00 + slotNumber))
          {
-            Conv::Decompiler cnvdec(slotNumber, basePath, gameStrings);
+            Conv::Decompiler cnvdec{ slotNumber, basePath, gameStrings };
             cnvdec.Write(stdout);
          }
       }
