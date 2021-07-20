@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2005,2006,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2005,2006,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -225,7 +225,7 @@ namespace Underworld
       const RangedWeaponProperty& GetRangedWeaponProperty(Uint16 itemId) const
       {
          UaAssert(itemId >= 0x0010 && itemId <= 0x001f);
-         UaAssert(static_cast<Uint16>(itemId - 0x0010) < m_animatedObjectPropertiesList.size());
+         UaAssert(static_cast<Uint16>(itemId - 0x0010) < m_rangedWeaponPropertiesList.size());
          return m_rangedWeaponPropertiesList[itemId - 0x0010];
       }
 
@@ -233,7 +233,7 @@ namespace Underworld
       const ArmourAndWearableProperty& GetArmourAndWearableProperty(Uint16 itemId) const
       {
          UaAssert(itemId >= 0x0020 && itemId <= 0x003f);
-         UaAssert(static_cast<Uint16>(itemId - 0x0020) < m_animatedObjectPropertiesList.size());
+         UaAssert(static_cast<Uint16>(itemId - 0x0020) < m_armourAndWearablePropertiesList.size());
          return m_armourAndWearablePropertiesList[itemId - 0x0020];
       }
 
@@ -241,7 +241,7 @@ namespace Underworld
       const CritterProperty& GetCritterProperty(Uint16 itemId) const
       {
          UaAssert(itemId >= 0x0040 && itemId <= 0x007f);
-         UaAssert(static_cast<Uint16>(itemId - 0x0040) < m_animatedObjectPropertiesList.size());
+         UaAssert(static_cast<Uint16>(itemId - 0x0040) < m_critterPropertiesList.size());
          return m_critterPropertiesList[itemId - 0x0040];
       }
 
@@ -249,7 +249,7 @@ namespace Underworld
       const ContainerProperty& GetContainerProperty(Uint16 itemId) const
       {
          UaAssert(itemId >= 0x0080 && itemId <= 0x008f);
-         UaAssert(static_cast<Uint16>(itemId - 0x0080) < m_animatedObjectPropertiesList.size());
+         UaAssert(static_cast<Uint16>(itemId - 0x0080) < m_containerPropertiesList.size());
          return m_containerPropertiesList[itemId - 0x0080];
       }
 
@@ -257,7 +257,7 @@ namespace Underworld
       const LightSourceProperty& GetLightSourceProperty(Uint16 itemId) const
       {
          UaAssert(itemId >= 0x0090 && itemId <= 0x09f);
-         UaAssert(static_cast<Uint16>(itemId - 0x0090) < m_animatedObjectPropertiesList.size());
+         UaAssert(static_cast<Uint16>(itemId - 0x0090) < m_lightSourcePropertiesList.size());
          return m_lightSourcePropertiesList[itemId - 0x0090];
       }
 
