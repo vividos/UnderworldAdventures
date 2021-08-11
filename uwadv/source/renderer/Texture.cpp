@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019,2020 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2020,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -56,27 +56,27 @@ void Texture::Done()
 
 /// Converts image data to texture.
 /// \param img image to convert to texture
-/// \param numTextures index of texture to use for conversion
-void Texture::Convert(IndexedImage& image, unsigned int numTextures)
+/// \param txtureIndex index of texture to use for conversion
+void Texture::Convert(IndexedImage& image, unsigned int textureIndex)
 {
    Convert(&image.GetPixels()[0], image.GetXRes(), image.GetYRes(),
-      *image.GetPalette(), numTextures);
+      *image.GetPalette(), textureIndex);
 }
 
 /// Converts palette-indexed image data to texture. The resulting texture has
 /// a resolution of 2^n x 2^m. The texture resolution is determined when the
 /// first image is converted. There currently is a resolution limit of 2048 x
-/// 2048.
-/// \param pix array with index values to Convert
-/// \param origx x resolution of image stored in pix
-/// \param origy y resolution of image stored in pix
-/// \param pal 256 color palette to use in conversion.
-/// \param numTextures number of texture image to Convert to
+/// 2048, mainly because graphics cards may not accept larger texture sizes.
+/// \param pixels array with index values to convert
+/// \param origx x resolution of image stored in pixels
+/// \param origy y resolution of image stored in pixels
+/// \param palette 256 color palette to use in conversion
+/// \param textureIndex index of texture image to convert to
 void Texture::Convert(Uint8* pixels, unsigned int origx, unsigned int origy,
-   Palette256& palette, unsigned int numTextures)
+   Palette256& palette, unsigned int textureIndex)
 {
    // only do resolution determination for the first texture
-   if (numTextures == 0 || m_xres == 0 || m_yres == 0)
+   if (textureIndex == 0 || m_xres == 0 || m_yres == 0)
    {
       // determine texture resolution (must be 2^n)
       m_xres = 16;
@@ -93,7 +93,7 @@ void Texture::Convert(Uint8* pixels, unsigned int origx, unsigned int origy,
 
    // convert color indices to 32-bit texture
    Uint32* palptr = reinterpret_cast<Uint32*>(palette.Get());
-   Uint32* texptr = &m_texels[numTextures * m_xres * m_yres];
+   Uint32* texptr = GetTexels(textureIndex);
 
    for (unsigned int y = 0; y < origy; y++)
    {
@@ -105,12 +105,12 @@ void Texture::Convert(Uint8* pixels, unsigned int origx, unsigned int origy,
 
 /// Converts 32-bit truecolor pixel data in GL_RGBA format to texture. Be sure
 /// to only convert images with exactly the same size with this method.
-/// \param origx x resolution of pixel data in pix
-/// \param origy y resolution of pixel data in pix
+/// \param origx x resolution of pixel data in pixels
+/// \param origy y resolution of pixel data in pixels
 /// \param pix 32-bit pixel data in GL_RGBA format (red byte, green byte, ...)
-/// \param numTextures index of texture to convert
+/// \param textureIndex index of texture to convert
 void Texture::Convert(unsigned int origx, unsigned int origy, Uint32* pixels,
-   unsigned int numTextures)
+   unsigned int textureIndex)
 {
    // determine texture resolution (must be 2^n)
    m_xres = 2;
@@ -125,7 +125,7 @@ void Texture::Convert(unsigned int origx, unsigned int origy, Uint32* pixels,
    m_texels.resize(m_textureNames.size() * m_xres * m_yres, 0x00000000);
 
    // copy pixels
-   Uint32* texptr = &m_texels[numTextures * m_xres * m_yres];
+   Uint32* texptr = GetTexels(textureIndex);
    for (unsigned int y = 0; y < origy; y++)
    {
       memcpy(texptr, pixels, origx * sizeof(Uint32));
@@ -137,24 +137,24 @@ void Texture::Convert(unsigned int origx, unsigned int origy, Uint32* pixels,
 /// Use the texture in OpenGL. All further triangle, quad, etc. definitions
 /// use the texture, until another texture is used or
 /// glBindTexture(GL_TEXTURE_2D, 0) is called.
-/// \param numTextures index of texture to use
-void Texture::Use(unsigned int numTextures)
+/// \param textureIndex index of texture to use
+void Texture::Use(unsigned int textureIndex)
 {
-   if (numTextures >= m_textureNames.size())
+   if (textureIndex >= m_textureNames.size())
       return; // invalid texture index
 
-   glBindTexture(GL_TEXTURE_2D, m_textureNames[numTextures]);
+   glBindTexture(GL_TEXTURE_2D, m_textureNames[textureIndex]);
 }
 
 /// Uploads the Convert()ed texture to the graphics card. The texture doesn't
-/// have to be use()d before uploading.
-/// \param numTextures index of texture to upload
+/// have to be Use()d before uploading.
+/// \param textureIndex index of texture to upload
 /// \param mipmaps generates mipmaps when true
-void Texture::Upload(unsigned int numTextures, bool useMipmaps)
+void Texture::Upload(unsigned int textureIndex, bool useMipmaps)
 {
-   Use(numTextures);
+   Use(textureIndex);
 
-   Uint32* tex = &m_texels[numTextures * m_xres * m_yres];
+   Uint32* tex = GetTexels(textureIndex);
 
    if (useMipmaps)
    {
@@ -176,8 +176,15 @@ void Texture::Upload(unsigned int numTextures, bool useMipmaps)
 }
 
 /// Returns 32-bit texture pixels in GL_RGBA format for specified texture.
-/// \param numTextures index of texture to return m_texels
-const Uint32* Texture::GetTexels(unsigned int numTextures) const
+/// \param textureIndex index of texture to return texels
+const Uint32* Texture::GetTexels(unsigned int textureIndex) const
 {
-   return &m_texels[numTextures * m_xres * m_yres];
+   return &m_texels[textureIndex * m_xres * m_yres];
+}
+
+/// Returns 32-bit texture pixels in GL_RGBA format for specified texture.
+/// \param textureIndex index of texture to return texels
+Uint32* Texture::GetTexels(unsigned int textureIndex)
+{
+   return &m_texels[textureIndex * m_xres * m_yres];
 }
