@@ -177,6 +177,9 @@ void ObjectListWindow::OnUpdatedValue(unsigned int item, unsigned int subItem, L
    ATLASSERT(subItem > 0 && subItem != 2);
    ATLASSERT(text != NULL);
 
+   if (m_unallocatedItemListIndices.find(item) != m_unallocatedItemListIndices.end())
+      return;
+
    DebugClient& debugClient = m_mainFrame->GetDebugClientInterface();
    debugClient.Lock(true);
 
