@@ -480,12 +480,13 @@ void LowLevelMidiDriver::destroyThreadedSynth()
 
 	// We waited a while and it still didn't terminate
 	if (count == 400 && peekComMessageType() != 0) {
-		perr << "MidiPlayer Thread failed to stop in time. Killing it." << std::endl;
 #if SDL_VERSION_ATLEAST(2, 0, 0)
+		pout << "Waiting for MidiPlayer Thread to terminate" << std::endl;
 		int status_thread;
 		quit_thread = true; // The thread should stop based upon this flag
 		SDL_WaitThread(thread, &status_thread);
 #else
+		perr << "MidiPlayer Thread failed to stop in time. Killing it." << std::endl;
 		SDL_KillThread (thread);
 #endif
 	}
@@ -588,11 +589,12 @@ int LowLevelMidiDriver::threadMain()
 		}
 	}
 
+	// uwadv: don't bother showing message at exit
 	// Display messages          0123456789ABCDEF0123
-	const char exit_display[] = "Poor Poor Avatar... ";
-	sendMT32SystemMessage(display_base,0,display_mem_size,exit_display);
-	sendMT32SystemMessage(all_dev_reset_base,0,1,exit_display);
-	SDL_Delay(40);
+	//const char exit_display[] = "Poor Poor Avatar... ";
+	//sendMT32SystemMessage(display_base,0,display_mem_size,exit_display);
+	//sendMT32SystemMessage(all_dev_reset_base,0,1,exit_display);
+	//SDL_Delay(40);
 
 	// Close the device
 	close();
