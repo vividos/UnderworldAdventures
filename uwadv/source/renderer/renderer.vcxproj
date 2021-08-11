@@ -53,14 +53,14 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)source\conv;$(SolutionDir)source\import;$(SolutionDir)source\ui;$(SolutionDir)source\underworld;$(SolutionDir)source\physics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)source\conv;$(SolutionDir)source\import;$(SolutionDir)source\ui;$(SolutionDir)source\underworld;$(SolutionDir)source\physics;$(SolutionDir)source\thirdparty\hqx\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Lib />
     <Lib />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)source\conv;$(SolutionDir)source\import;$(SolutionDir)source\ui;$(SolutionDir)source\underworld;$(SolutionDir)source\physics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)source\conv;$(SolutionDir)source\import;$(SolutionDir)source\ui;$(SolutionDir)source\underworld;$(SolutionDir)source\physics;$(SolutionDir)source\thirdparty\hqx\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Lib />
     <Lib />
@@ -112,6 +112,9 @@
     </ProjectReference>
     <ProjectReference Include="..\physics\physics.vcxproj">
       <Project>{6917cdd3-2eef-4b6d-9256-ed5b64391341}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\thirdparty\hqx\hqx.vcxproj">
+      <Project>{e1af378e-282d-4355-aafb-da1fe36a5623}</Project>
     </ProjectReference>
     <ProjectReference Include="..\underworld\underworld.vcxproj">
       <Project>{4cc50617-2229-460e-9a80-3c517a2d9090}</Project>
