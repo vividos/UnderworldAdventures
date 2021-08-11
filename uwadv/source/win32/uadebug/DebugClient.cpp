@@ -233,7 +233,7 @@ void DebugClientObjectListInterface::SetItemInfo(unsigned int pos, unsigned int 
    m_debugInterface->SetObjectListInfo(m_level, pos, subcode, nInfo);
 }
 
-CodeDebuggerType DebugClientCodeDebugger::GetDebuggerType()
+CodeDebuggerType DebugClientCodeDebugger::GetDebuggerType() const
 {
    return static_cast<CodeDebuggerType>(m_codeDebugger->GetDebuggerType());
 }

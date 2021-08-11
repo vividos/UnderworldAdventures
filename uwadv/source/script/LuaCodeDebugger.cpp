@@ -243,7 +243,7 @@ void LuaCodeDebugger::WaitDebuggerContinue()
       SDL_Delay(10); // TODO
 }
 
-DebugServerCodeDebuggerType LuaCodeDebugger::GetDebuggerType()
+DebugServerCodeDebuggerType LuaCodeDebugger::GetDebuggerType() const
 {
    return codeDebuggerTypeLuaScript;
 }

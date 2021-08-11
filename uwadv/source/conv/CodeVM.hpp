@@ -124,10 +124,10 @@ namespace Conv
       std::map<Uint16, ImportedItem>& GetImportedGlobals() { return  m_mapImportedGlobals; }
 
       /// returns string block to use for this conversation
-      Uint16 GetStringBlock() { return m_stringBlock; }
+      Uint16 GetStringBlock() const { return m_stringBlock; }
 
       /// returns number of reserved global variables
-      Uint16 GetReservedGlobals() { return m_reservedGlobals; }
+      Uint16 GetReservedGlobals() const { return m_reservedGlobals; }
 
       /// returns local string value
       std::string GetLocalString(Uint16 stringIndex);

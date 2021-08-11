@@ -42,7 +42,7 @@ namespace Conv
 
    protected:
       // virtual methods from ICodeDebugger
-      virtual DebugServerCodeDebuggerType GetDebuggerType() override;
+      virtual DebugServerCodeDebuggerType GetDebuggerType() const override;
       virtual void PrepareDebugInfo() override;
       virtual DebugServerCodeDebuggerState GetDebuggerState() const override;
       virtual void SetDebuggerState(DebugServerCodeDebuggerState state) override;

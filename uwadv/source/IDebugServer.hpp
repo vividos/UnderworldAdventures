@@ -154,7 +154,7 @@ class ICodeDebugger
 {
 public:
    /// returns code debugger type
-   virtual DebugServerCodeDebuggerType GetDebuggerType() = 0;
+   virtual DebugServerCodeDebuggerType GetDebuggerType() const = 0;
 
    /// called by client to let the code debugger prepare debug info
    virtual void PrepareDebugInfo() = 0;

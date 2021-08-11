@@ -163,7 +163,7 @@ public:
    // misc.
 
    /// returns code debugger type
-   CodeDebuggerType GetDebuggerType();
+   CodeDebuggerType GetDebuggerType() const;
 
    /// prepares debug info for code debugger
    void PrepareDebugInfo();
