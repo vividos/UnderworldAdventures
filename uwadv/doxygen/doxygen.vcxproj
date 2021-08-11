@@ -39,16 +39,16 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)..\output\bin\$(ProjectName)</OutDir>
-    <IntDir>$(SolutionDir)..\output\intermediate\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)output\bin\$(ProjectName)</OutDir>
+    <IntDir>$(SolutionDir)output\intermediate\$(Configuration)\$(ProjectName)\</IntDir>
     <NMakeBuildCommandLine>call RunDoxygen.cmd</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>rmdir /S /Q "$(SolutionDir)..\bin\doxygen\" 2&gt; nul
 call RunDoxygen.cmd</NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>rmdir /S /Q "$(SolutionDir)..\bin\doxygen\" 2&gt; nul</NMakeCleanCommandLine>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)..\output\bin\$(ProjectName)</OutDir>
-    <IntDir>$(SolutionDir)..\output\intermediate\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)output\bin\$(ProjectName)</OutDir>
+    <IntDir>$(SolutionDir)output\intermediate\$(Configuration)\$(ProjectName)\</IntDir>
     <NMakeBuildCommandLine>call RunDoxygen.cmd</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>rmdir /S /Q "$(SolutionDir)..\output\bin\$(ProjectName)\" 2&gt; nul
 call RunDoxygen.cmd</NMakeReBuildCommandLine>
