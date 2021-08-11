@@ -78,6 +78,7 @@
     </ClCompile>
     <ClCompile Include="Quadtree.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="Scaler.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="UnderworldRenderer.cpp" />
     <ClCompile Include="PolygonTessellator.cpp" />
@@ -96,6 +97,7 @@
     <ClInclude Include="Quadtree.hpp" />
     <ClInclude Include="Renderer.hpp" />
     <ClInclude Include="RenderOptions.hpp" />
+    <ClInclude Include="Scaler.hpp" />
     <ClInclude Include="TextureManager.hpp" />
     <ClInclude Include="UnderworldRenderer.hpp" />
     <ClInclude Include="PolygonTessellator.hpp" />
