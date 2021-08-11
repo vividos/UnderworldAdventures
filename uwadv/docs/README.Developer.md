@@ -1022,3 +1022,10 @@ The project is using the
 [ZZIPlib library](https://github.com/gdraheim/zziplib) to read zip archives.
 The library is licensed under the
 [GNU LIBRARY GENERAL PUBLIC LICENSE, Version 2](https://github.com/gdraheim/zziplib/blob/master/COPYING.LIB)
+
+### hqx
+
+The project is using the [hqx scaler](https://github.com/grom358/hqx/)
+implementation from grom358 to scale textures and object graphics.
+The library is licensed under the
+[GNU Lesser General Public License v2.1](https://github.com/grom358/hqx/blob/master/COPYING)
