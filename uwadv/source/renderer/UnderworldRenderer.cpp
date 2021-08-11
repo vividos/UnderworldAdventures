@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2005,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2005,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -33,6 +33,10 @@ UnderworldRenderer::UnderworldRenderer(IGame& game)
    m_textureManager.Init(game);
    m_modelManager.Init(game);
    m_critterManager.Init(game.GetSettings(), game.GetResourceManager(), game.GetImageManager());
+
+   // when feature flag is set, just use the highest sacle factor; max.
+   // texture size is 64x64, which results in max. texture sizes of 256x256.
+   m_scaleFactor = game.GetSettings().GetBool(Base::settingUwadvFeatures) ? 4 : 1;
 }
 
 /// Does tick processing for renderer for texture and critter frames
@@ -61,20 +65,20 @@ void UnderworldRenderer::PrepareLevel(Underworld::Level& level)
       const std::set<Uint16>& usedTextures = level.GetTilemap().GetUsedTextures();
 
       for (Uint16 textureId : usedTextures)
-         m_textureManager.Prepare(textureId);
+         m_textureManager.Prepare(textureId, m_scaleFactor);
    }
 
    // prepare all switch, door and tmobj textures
    {
-      for (unsigned int n = 0; n < 16; n++) m_textureManager.Prepare(Base::c_stockTexturesSwitches + n);
-      for (unsigned int n = 0; n < 13; n++) m_textureManager.Prepare(Base::c_stockTexturesDoors + n);
-      for (unsigned int n = 0; n < 33; n++) m_textureManager.Prepare(Base::c_stockTexturesTmobj + n);
+      for (unsigned int n = 0; n < 16; n++) m_textureManager.Prepare(Base::c_stockTexturesSwitches + n, m_scaleFactor);
+      for (unsigned int n = 0; n < 13; n++) m_textureManager.Prepare(Base::c_stockTexturesDoors + n, m_scaleFactor);
+      for (unsigned int n = 0; n < 33; n++) m_textureManager.Prepare(Base::c_stockTexturesTmobj + n, m_scaleFactor);
    }
 
    // prepare all object images
    {
       for (unsigned int n = 0; n < 0x01c0; n++)
-         m_textureManager.Prepare(Base::c_stockTexturesObjects + n);
+         m_textureManager.Prepare(Base::c_stockTexturesObjects + n, m_scaleFactor);
    }
 
    UaTrace("done\npreparing critter images... ");

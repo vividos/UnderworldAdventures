@@ -49,7 +49,7 @@ public:
    // texture preparation
 
    /// allocates and initializes OpenGL texture object
-   void Init(unsigned int numTextures = 1);
+   void Init(unsigned int numTextures = 1, unsigned int scaleFactor = 1);
 
    /// cleans up texture name(s) after usage
    void Done();
@@ -97,13 +97,13 @@ public:
    /// returns x resolution
    unsigned int GetXRes() const
    {
-      return m_xres;
+      return m_xres * m_scaleFactor;
    }
 
    /// returns y resolution
    unsigned int GetYRes() const
    {
-      return m_yres;
+      return m_yres * m_scaleFactor;
    }
 
 private:
@@ -126,6 +126,9 @@ private:
 
    /// texture name(s)
    std::vector<GLuint> m_textureNames;
+
+   /// scale factor when scaling texture pixels; value values are 1, 2, 3 and 4
+   unsigned int m_scaleFactor;
 
    friend class TextureManager;
    friend class Critter;

@@ -22,10 +22,15 @@
 #include "pch.hpp"
 #include "Texture.hpp"
 #include "IndexedImage.hpp"
+#include "Scaler.hpp"
 #include <gl/GLU.h>
 
 Texture::Texture()
-   :m_xres(0), m_yres(0), m_u(0.0), m_v(0.0)
+   :m_xres(0),
+   m_yres(0),
+   m_u(0.0),
+   m_v(0.0),
+   m_scaleFactor(1)
 {
 }
 
@@ -33,9 +38,13 @@ Texture::Texture()
 /// are cleaned up with a call to done(). A pointer to a texture manager can
 /// be set to let the texture be managed from it.
 /// \param numTextures number of texture images to allocate
-void Texture::Init(unsigned int numTextures)
+/// \param scaleFactor scale factor for texture; default is 1; possible values
+/// are 1, 2, 3 and 4
+void Texture::Init(unsigned int numTextures, unsigned int scaleFactor)
 {
    Done();
+
+   m_scaleFactor = scaleFactor;
 
    // create texture names
    m_textureNames.resize(numTextures, 0);
@@ -85,21 +94,40 @@ void Texture::Convert(Uint8* pixels, unsigned int origx, unsigned int origy,
       m_yres = 16;
       while (m_yres < origy && m_yres < 2048) m_yres <<= 1;
 
-      m_u = ((double)origx) / m_xres;
-      m_v = ((double)origy) / m_yres;
+      m_u = ((double)origx) / m_xres / m_scaleFactor;
+      m_v = ((double)origy) / m_yres / m_scaleFactor;
 
-      m_texels.resize(m_textureNames.size() * m_xres * m_yres, 0x00000000);
+      m_texels.resize(m_textureNames.size() * m_xres * m_yres * m_scaleFactor * m_scaleFactor, 0x00000000);
    }
 
    // convert color indices to 32-bit texture
    Uint32* palptr = reinterpret_cast<Uint32*>(palette.Get());
-   Uint32* texptr = GetTexels(textureIndex);
+   Uint32* texelData = GetTexels(textureIndex);
+
+   std::vector<Uint32> unscaledTexelBuffer;
+   if (m_scaleFactor > 1)
+      unscaledTexelBuffer.resize(m_xres * m_yres);
+
+   Uint32* texptr =
+      m_scaleFactor > 1
+      ? unscaledTexelBuffer.data()
+      : texelData;
 
    for (unsigned int y = 0; y < origy; y++)
    {
       Uint32* texptr2 = &texptr[y * m_xres];
       for (unsigned int x = 0; x < origx; x++)
          *texptr2++ = palptr[pixels[y * origx + x]];
+   }
+
+   if (m_scaleFactor > 1)
+   {
+      Scaler::Scale(
+         m_scaleFactor,
+         unscaledTexelBuffer.data(),
+         texelData,
+         m_xres,
+         m_yres);
    }
 }
 
@@ -119,18 +147,36 @@ void Texture::Convert(unsigned int origx, unsigned int origy, Uint32* pixels,
    m_yres = 2;
    while (m_yres < origy && m_yres < 2048) m_yres <<= 1;
 
-   m_u = ((double)origx) / m_xres;
-   m_v = ((double)origy) / m_yres;
+   m_u = ((double)origx) / m_xres / m_scaleFactor;
+   m_v = ((double)origy) / m_yres / m_scaleFactor;
 
-   m_texels.resize(m_textureNames.size() * m_xres * m_yres, 0x00000000);
+   m_texels.resize(m_textureNames.size() * m_xres * m_yres * m_scaleFactor * m_scaleFactor, 0x00000000);
 
    // copy pixels
-   Uint32* texptr = GetTexels(textureIndex);
+   std::vector<Uint32> unscaledTexelBuffer;
+   if (m_scaleFactor > 1)
+      unscaledTexelBuffer.resize(m_xres * m_yres);
+
+   Uint32* texptr =
+      m_scaleFactor > 1
+      ? unscaledTexelBuffer.data()
+      : GetTexels(textureIndex);
+
    for (unsigned int y = 0; y < origy; y++)
    {
       memcpy(texptr, pixels, origx * sizeof(Uint32));
       pixels += origx;
       texptr += m_xres;
+   }
+
+   if (m_scaleFactor > 1)
+   {
+      Scaler::Scale(
+         m_scaleFactor,
+         pixels,
+         texptr,
+         m_xres,
+         m_yres);
    }
 }
 
@@ -159,14 +205,28 @@ void Texture::Upload(unsigned int textureIndex, bool useMipmaps)
    if (useMipmaps)
    {
       // build mipmapped textures
-      gluBuild2DMipmaps(GL_TEXTURE_2D, 3, m_xres, m_yres, GL_RGBA,
-         GL_UNSIGNED_BYTE, tex);
+      gluBuild2DMipmaps(
+         GL_TEXTURE_2D,
+         3,
+         m_xres * m_scaleFactor,
+         m_yres * m_scaleFactor,
+         GL_RGBA,
+         GL_UNSIGNED_BYTE,
+         tex);
    }
    else
    {
       // build texture
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_xres, m_yres, 0, GL_RGBA,
-         GL_UNSIGNED_BYTE, tex);
+      glTexImage2D(
+         GL_TEXTURE_2D,
+         0,
+         GL_RGBA,
+         m_xres * m_scaleFactor,
+         m_yres * m_scaleFactor,
+         0,
+         GL_RGBA,
+         GL_UNSIGNED_BYTE,
+         tex);
    }
 
    // check for errors

@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019,2020 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2020,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -50,10 +50,7 @@ public:
    void Reset();
 
    /// prepares a stock texture for usage in OpenGL
-   void Prepare(unsigned int index);
-
-   /// prepares an external texture for usage in OpenGL
-   void Prepare(Texture& texture);
+   void Prepare(unsigned int index, unsigned int scaleFactor);
 
    /// use a stock texture in OpenGL
    void Use(unsigned int index);

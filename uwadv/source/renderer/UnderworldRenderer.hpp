@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -99,6 +99,9 @@ private:
 
    /// 3d models manager
    Model3DManager m_modelManager;
+
+   /// scale factor for textures
+   unsigned int m_scaleFactor;
 
    /// indicates if in selection (picking) mode
    bool m_selectionMode;

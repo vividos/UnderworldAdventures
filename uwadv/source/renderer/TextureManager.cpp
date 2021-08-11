@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019,2020 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2020,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -170,16 +170,21 @@ void TextureManager::Reset()
 
 /// Prepares a stock texture for use in OpenGL.
 /// \param index index of stock texture to prepare
-void TextureManager::Prepare(unsigned int index)
+/// \param scaleFactor scale factor for stock texture; valid values are 1, 2,
+/// 3 and 4
+void TextureManager::Prepare(unsigned int index, unsigned int scaleFactor)
 {
    if (index >= m_allStockTextureImages.size())
       return; // not a valid index
+
+   // image must not be empty, or the game data doesn't match the graphics
+   UaAssert(!m_allStockTextureImages[index].GetPixels().empty());
 
    unsigned int maxPaletteIndex = m_stockTextureAnimationInfos[index].second;
    if (maxPaletteIndex < 1)
       return; // not an available texture
 
-   m_stockTextures[index].Init(maxPaletteIndex);
+   m_stockTextures[index].Init(maxPaletteIndex, scaleFactor);
 
    if (maxPaletteIndex == 1)
    {
