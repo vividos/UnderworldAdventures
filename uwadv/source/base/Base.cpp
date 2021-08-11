@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2005,2006,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2005,2006,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ Base::SDL_RWopsPtr Base::MakeRWopsPtr(SDL_RWops* rwops)
 }
 
 /// Throws a RuntimeException after printing out the error on the trace channel.
-void UaAssertCheck(bool cond, const char* cond_str, const char* file, int line)
+void UaAssertCheck(bool cond, const char* cond_str, const char* message, const char* file, int line)
 {
    if (!cond)
    {
@@ -52,6 +52,9 @@ void UaAssertCheck(bool cond, const char* cond_str, const char* file, int line)
       // format string
       std::ostringstream buffer;
       buffer << file << "(" << line << "): assertion failed (" << cond_str << ")";
+
+      if (message != nullptr)
+         buffer << ": " << message;
 
       UaTrace("%s\n", buffer.str().c_str());
 

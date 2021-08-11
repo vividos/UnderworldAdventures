@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2006,2019 Underworld Adventures Team
+// Copyright (c) 2006,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -69,13 +69,16 @@
 
 
 /// checks for assert
-void UaAssertCheck(bool cond, const char* cond_str, const char* file, int line);
+void UaAssertCheck(bool cond, const char* cond_str, const char* message, const char* file, int line);
 
 /// macro to check for conditions and pass source filename and line
-#define UaAssert(cond) UaAssertCheck((cond), #cond, __FILE__, __LINE__);
+#define UaAssert(cond) UaAssertCheck((cond), #cond, nullptr, __FILE__, __LINE__);
+
+/// macro to check for conditions and pass message, source filename and line
+#define UaAssertMsg(cond, message) UaAssertCheck((cond), #cond, message, __FILE__, __LINE__);
 
 /// macro to verify expression/statement
-#define UaVerify(cond) if (!(cond)) UaAssertCheck((cond), #cond, __FILE__, __LINE__);
+#define UaVerify(cond) if (!(cond)) UaAssertCheck((cond), #cond, nullptr, __FILE__, __LINE__);
 
 
 // trace messages
