@@ -7,12 +7,6 @@ navigate the document.
 
 [2. Compiling Underworld Adventures](#2-compiling-underworld-adventures)<br/>
 [2.1 Microsoft Visual Studio on Windows](#2-1-microsoft-visual-studio-on-windows)<br/>
-[2.2 gcc/clang on Linux](#2-2-gcc-clang-on-linux)<br/>
-[2.2.1 Building from Git](#2-2-1-building-from-git)<br/>
-[2.2.2 Building from source package](#2-2-2-building-from-source-package)<br/>
-[2.3 MinGW on Windows](#2-3-mingw-on-windows)<br/>
-[2.4 Xcode on macOS](#2-4-xcode-on-macos)<br/>
-[2.5 Other operating systems](#2-5-other-operating-systems)<br/>
 
 [3. Developing Underworld Adventures](#3-developing-underworld-adventures)<br/>
 [3.1 Code guidelines](#3-1-code-guidelines)<br/>
@@ -75,161 +69,6 @@ copied to the folder as well, if it doesn't exist yet.
 
 More information about running Underworld Adventures can be found in the file
 ["README.Manual.md"](README.Manual.md).
-
-### 2.2 gcc/clang on Linux
-
-To compile and install Underworld Adventures, you need several development
-packages. These are:
-
-- GCC 7.0 or higher, or
-- CLang 5.0 or higher
-- SDL2 2.0.10 (or higher)
-- SDL_mixer 2.0.5 (or higher)
-
-To hear MIDI music using SDL_mixer, you additionally need the sound patches
-available on the SDL_mixer home page.
-
-All the packages can be installed using the package manager of your Linux
-distribution of choice.
-
-Depending on if you build from scratch using the Git repository, or if you're
-using a source package, read the following respective sub topics.
-
-#### 2.2.1 Building from Git
-
-(Note that you can skip this part if you are using a source package).
-
-To build from Git you will need several other tools, including:
-
-- autoconf 2.53 (or higher)
-- automake 1.6.3 (or higher)
-- libtool 1.4.1 (or higher)
-
-To generate the required files, go to the main uwadv directory (containing
-the file `configure.ac`), and run
-
-    ./autogen.sh
-
-Once the command is finished, you have the same files as when using the source
-package.
-
-#### 2.2.2 Building from source package
-
-To start compiling, go to the main uwadv directory (containing the file
-`configure`), and run
-
-    ./configure
-
-The configure script detects all necessary settings to compile Underworld
-Adventures, such as the C++ compiler, paths to SDL, SDL_mixer and the OpenGL
-include file. There are several options that can be passed to the configure
-script:
-
-    --with-uw1=DIR          directory where UW1 is installed
-    --disable-tools         don't build the tools
-    --enable-debug          enable debugging (disables optimizations)
-
-When the configure script is finished, type:
-
-    make
-
-Now the source code should be compiled (which takes a while), and when
-finished, the executable "uwadv" is built. Now type (as root now):
-
-    make install
-
-The built files are now installed into their proper folders.
-(The binary is installed into `/usr/local/bin/` by default, the data files
-into `/usr/local/share/games/uwadv/`)
-
-More information about running Underworld Adventures can be found in the file
-["README.Manual.md"](README.Manual.md).
-
-Uninstalling: If you built and installed Underworld Adventures from source,
-you can uninstall it by running (as root):
-
-    make uninstall
-
-### 2.3 MinGW on Windows
-
-MinGW stands for "Minimalist Gnu for Windows" and can be obtained in various
-versions, e.g. MinGW32 or MinGW64. The binary distributions come with a Gnu
-bash console called MSYS and can be used to build Underworld Adventures.
-
-#### Setup
-
-To let the system find the compiler, you should add something like this to
-your "autoexec.bat":
-
-    PATH=%PATH%;c:\mingw\bin
-
-You could also change the PATH variable assignment in `/etc/profile` using MSYS.
-All further examples in this file assume that MinGW was installed to
-`c:\mingw\`.
-
-#### Compiling
-
-To specify some paths, open the file `Makefile.mingw` in the main project
-folder.
-
-The variable `UWADV_PATH` contains the path where Underworld Adventures is
-installed when performing a "make install" or "make update" (see below for
-make targets).
-
-The variable `MINGW_PATH` should be set to the base path of the MinGW
-installation. It is there mainly to specify the SDL include path.
-
-There are some settings that can be set to `yes` or `no`. These are:
-
-- `WITH_CONSOLE`: enables separate console output and disables writing of the
-                stdout.txt and stderr.txt file. default: `no`
-- `WITH_DEBUGGING` enables some experimental code for developers. Basically
-                  defines `HAVE_DEBUG` in the source code. default: `no`
-
-To compile, start MSYS and change (`cd`) to the main project dir. The command
-to compile the project looks like this:
-
-    make -f Makefile.mingw <target>
-
-where `target` can be one of several words:
-
-- uwadv:       builds uwadv.exe and copies a template uwadv.cfg to the main
-               project dir
-- tools:       builds all tools (each tool can be built separately using one
-               of these targets: `cnvdbg xmi2mid mapdisp animview strpak`)
-- data:        builds all needed data files
-- install:     builds uwadv and data and installs the files in the path
-               specified by `UWADV_PATH`. Overwrites `uwadv.cfg`
-- update:      the same as `install` but doesn't copy the `uwadv.cfg` file
-- clean:       cleans all built source and data files
-- luac:        builds the Lua compiler that can be used to verify Lua scripts
-- toolsinstall: installs all tools in a `tools` subfolder of `UWADV_PATH`
-
-#### Using autoconf and automake
-
-If you're adventurous, you can try compiling Underworld Adventures using the
-autoconf and automake tools. You need the msysDTK-packages as well as the
-autoconf, automake and libtool packages extracted over your existing MinGW
-installation. Continue with the instructions in chapter 2.3. Good Luck!
-
-### 2.4 Xcode on macOS
-
-There is an Xcode project in the `uwadv/macosx` folder that can be opened with
-Xcode 11 or later. Additionally, the SDL2 and SDL_Mixer frameworks have to be
-installed on the system.
-
-Detailed instructions on how to set up SDL2 and SDL_Mixer on a macOS computer
-can be found here:
-http://lazyfoo.net/tutorials/SDL/01_hello_SDL/mac/index.php
-
-Note: The macOS project is only occasionally updated and may fail to compile.
-Also it's not clear how to run and debug the project. Help wanted!
-
-### 2.5 Other operating systems
-
-Other Unix based operating system (FreeBSD, MacOS X etc.) may work like on
-Linux, but no guarantees if it works. If you want to port the project to a new
-platform, please contact the project team.
 
 
 ## 3. Developing Underworld Adventures
@@ -320,8 +159,6 @@ Adventures release:
    bugs
 
 4. Adjust version numbers in the following files:
-   - configure.ac
-   - source/Makefile.mingw
    - source/doxygen/doxygen.cfg
    - source/version.hpp
 

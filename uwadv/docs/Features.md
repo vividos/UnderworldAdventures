@@ -175,8 +175,6 @@ Support russian translation        | :x:
 Feature | State
 ------- | -----
 Visual Studio project       | :heavy_check_mark:
-Linux autoconf/automake     | :warning:
-macOS project               | :warning:
 Debian package              | :warning:
 AppVeyor build              | :heavy_check_mark:
 SonarCloud, cppcheck checks | :heavy_check_mark:
