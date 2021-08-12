@@ -352,14 +352,14 @@ Global
 		{72FE0270-5AE8-41F5-B767-F58505E56360}.Release|Win32.Build.0 = Release|Win32
 		{72FE0270-5AE8-41F5-B767-F58505E56360}.SonarCloud|Win32.ActiveCfg = Release|Win32
 		{72FE0270-5AE8-41F5-B767-F58505E56360}.SonarCloud|Win32.Build.0 = Release|Win32
-		{E1AF378E-282D-4355-AAFB-DA1FE36A5623}.AppVeyor|Win32.ActiveCfg = Debug|Win32
-		{E1AF378E-282D-4355-AAFB-DA1FE36A5623}.AppVeyor|Win32.Build.0 = Debug|Win32
+		{E1AF378E-282D-4355-AAFB-DA1FE36A5623}.AppVeyor|Win32.ActiveCfg = Release|Win32
+		{E1AF378E-282D-4355-AAFB-DA1FE36A5623}.AppVeyor|Win32.Build.0 = Release|Win32
 		{E1AF378E-282D-4355-AAFB-DA1FE36A5623}.Debug|Win32.ActiveCfg = Debug|Win32
 		{E1AF378E-282D-4355-AAFB-DA1FE36A5623}.Debug|Win32.Build.0 = Debug|Win32
 		{E1AF378E-282D-4355-AAFB-DA1FE36A5623}.Release|Win32.ActiveCfg = Release|Win32
 		{E1AF378E-282D-4355-AAFB-DA1FE36A5623}.Release|Win32.Build.0 = Release|Win32
-		{E1AF378E-282D-4355-AAFB-DA1FE36A5623}.SonarCloud|Win32.ActiveCfg = Debug|Win32
-		{E1AF378E-282D-4355-AAFB-DA1FE36A5623}.SonarCloud|Win32.Build.0 = Debug|Win32
+		{E1AF378E-282D-4355-AAFB-DA1FE36A5623}.SonarCloud|Win32.ActiveCfg = Release|Win32
+		{E1AF378E-282D-4355-AAFB-DA1FE36A5623}.SonarCloud|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
