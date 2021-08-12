@@ -95,8 +95,8 @@ DebugServer::~DebugServer()
 
    SDL_DestroySemaphore(m_debuggerSemaphore);
 
-   // TODO if (m_debuggerThread != NULL)
-   //   SDL_KillThread(m_debuggerThread);
+   if (m_debuggerThread != nullptr)
+      SDL_WaitThread(m_debuggerThread, nullptr);
 }
 
 void DebugServer::Init()
