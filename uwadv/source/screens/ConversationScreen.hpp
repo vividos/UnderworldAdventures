@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include "TextScroll.hpp"
 #include "MouseCursor.hpp"
 #include "Conversation.hpp"
+#include "ConversationDebugger.hpp"
 #include "TextEditWindow.hpp"
 #include "FadingHelper.hpp"
 
@@ -73,10 +74,11 @@ protected:
    /// time to wait before conversation partner answers
    static const double s_answerWaitTime;
 
-   //ConversationDebugger m_convDebugger;
-
    /// conversation code virtual machine
    Conv::Conversation m_codeVM;
+
+   /// conversation code debugger
+   Conv::ConversationDebugger m_convDebugger;
 
    // UI elements
 

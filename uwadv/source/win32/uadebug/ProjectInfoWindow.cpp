@@ -232,14 +232,16 @@ LRESULT ProjectInfoWindow::OnSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bH
    if (itemInfo.m_enType == tiLuaFilename)
    {
       // Lua source file
-      CString filename(itemInfo.m_cszInfo);
+      CString filename{ itemInfo.m_cszInfo };
       if (!filename.IsEmpty())
          m_mainFrame->OpenLuaSourceFile(filename);
    }
    else if (itemInfo.m_enType == tiConvCodeFilename)
    {
       // conversation code source file
-      // TODO open file
+      CString filename{ itemInfo.m_cszInfo };
+      if (!filename.IsEmpty())
+         m_mainFrame->OpenConvCodeSourceFile(filename);
    }
    else if (itemInfo.m_enType == tiLevel)
    {
@@ -450,34 +452,39 @@ void ProjectInfoWindow::RefreshCodeDebuggerList()
    m_treeCtrl.SetRedraw(TRUE);
 }
 
-void ProjectInfoWindow::InsertSourceFile(HTREEITEM hParentItem, CodeDebuggerType enType, LPCTSTR filename, LPCTSTR pszPathRelativeTo, unsigned int codeDebuggerId)
+void ProjectInfoWindow::InsertSourceFile(
+   HTREEITEM hParentItem,
+   CodeDebuggerType enType,
+   LPCTSTR filename,
+   LPCTSTR pszPathRelativeTo,
+   unsigned int codeDebuggerId)
 {
-   CFilename luaFilename(filename);
-   CString cszFilePath(filename);
+   CFilename sourceFilename{ filename };
+   CString filePath{ filename };
 
    if (enType == cdtLuaScript)
    {
       // make absolute path
-      luaFilename.MakeAbsoluteToCurrentDir();
-      ATLASSERT(luaFilename.IsValidObject());
+      sourceFilename.MakeAbsoluteToCurrentDir();
+      ATLASSERT(sourceFilename.IsValidObject());
 
-      cszFilePath = luaFilename.Get();
+      filePath = sourceFilename.Get();
 
       // calculate relative path
-      ATLVERIFY(true == luaFilename.MakeRelativeTo(pszPathRelativeTo));
-      //luaFilename.MakeRelativeTo(pszPathRelativeTo);
+      ATLVERIFY(true == sourceFilename.MakeRelativeTo(pszPathRelativeTo));
    }
    else if (enType == cdtUwConv)
    {
       // only show filename part
-      luaFilename.Set(luaFilename.GetFilename());
+      sourceFilename.Set(sourceFilename.GetFilename());
    }
    else
       ATLASSERT(false);
 
    // insert item
-   HTREEITEM hItem = m_treeCtrl.InsertItem(luaFilename.Get(), 1, 1, hParentItem, NULL);
-   SetTreeItemInfo(hItem, ProjectTreeItemInfo(cszFilePath, 0, enType == cdtLuaScript ? tiLuaFilename : tiConvCodeFilename, codeDebuggerId));
+   HTREEITEM hItem = m_treeCtrl.InsertItem(sourceFilename.Get(), 1, 1, hParentItem, NULL);
+   SetTreeItemInfo(hItem,
+      ProjectTreeItemInfo(filePath, 0, enType == cdtLuaScript ? tiLuaFilename : tiConvCodeFilename, codeDebuggerId));
 }
 
 ProjectInfoWindow::ProjectTreeItemInfo ProjectInfoWindow::GetTreeItemInfo(HTREEITEM hItem)

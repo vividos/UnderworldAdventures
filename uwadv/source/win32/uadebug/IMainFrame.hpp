@@ -76,4 +76,7 @@ public:
 
    /// removes Lua child view from main frame processing
    virtual void RemoveLuaChildView(class LuaSourceWindow* childView) = 0;
+
+   /// opens conversation code source file
+   virtual LuaSourceWindow& OpenConvCodeSourceFile(LPCTSTR filename) = 0;
 };

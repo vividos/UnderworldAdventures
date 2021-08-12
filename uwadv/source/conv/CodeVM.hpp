@@ -117,6 +117,9 @@ namespace Conv
       /// returns code segment
       std::vector<Uint16>& GetCodeSegment() { return m_code; }
 
+      /// returns instruction pointer
+      Uint16 GetInstructionPointer() const { return m_instructionPointer; }
+
       /// returns map with imported functions
       std::map<Uint16, ImportedItem>& GetImportedFunctions() { return m_mapImportedFunctions; }
 

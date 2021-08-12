@@ -926,6 +926,11 @@ void MainFrame::RemoveLuaChildView(LuaSourceWindow* childView)
       }
 }
 
+LuaSourceWindow& MainFrame::OpenConvCodeSourceFile(LPCTSTR filename)
+{
+   return OpenLuaSourceFile(filename);
+}
+
 void MainFrame::StartStudioApp()
 {
    CString uastudioPath;

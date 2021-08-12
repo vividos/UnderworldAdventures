@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2005,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2005,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -42,7 +42,8 @@ ConversationScreen::ConversationScreen(IGame& game,
    Uint16 convObjectPos)
    :Screen(game),
    m_convObjectPos(convObjectPos),
-   m_codeVM(game.GetGameLogic())
+   m_codeVM(game.GetGameLogic()),
+   m_convDebugger(game.GetGameLogic(), m_codeVM)
 {
 }
 
@@ -211,9 +212,7 @@ void ConversationScreen::Init()
       size_t level = m_game.GetUnderworld().GetPlayer().GetAttribute(Underworld::attrMapLevel);
       m_codeVM.Init(level, m_convObjectPos, this, localStrings);
 
-      // notify debugger of start of code debugger
-      // \todo only works with ConversationDebugger class
-      //m_game.GetDebugger().StartCodeDebugger(&m_convDebugger);
+      m_convDebugger.Init(m_game.GetDebugger());
    }
 
    m_state = convScreenStateFadeIn;
@@ -227,8 +226,7 @@ void ConversationScreen::Init()
 
 void ConversationScreen::Destroy()
 {
-   // \todo notify debugger of end of code debugger
-   //game.GetDebugger().EndCodeDebugger(&m_codeVM);
+   m_convDebugger.Done();
 
    // write back conv. globals
    m_codeVM.Done();
@@ -348,8 +346,12 @@ void ConversationScreen::Tick()
    // execute code until finished, waiting for an action or have [MORE]
    // lines to scroll
    while (m_state == convScreenStateRunning &&
-      !m_menuScroll.IsWaitingMore() && !m_conversationScroll.IsWaitingMore())
+      !m_menuScroll.IsWaitingMore() &&
+      !m_conversationScroll.IsWaitingMore() &&
+      m_convDebugger.ContinueSteppingCode())
    {
+      m_convDebugger.EvaluateDebuggerState();
+
       if (!m_codeVM.Step())
          m_state = convScreenStateWaitEnd;
    }
@@ -377,7 +379,7 @@ void ConversationScreen::Tick()
 
 void ConversationScreen::Say(Uint16 index)
 {
-   std::string str(m_codeVM.GetLocalString(index));
+   std::string str{ m_codeVM.GetLocalString(index) };
    m_codeVM.ReplacePlaceholder(str);
 
    m_conversationScroll.Print(str.c_str());

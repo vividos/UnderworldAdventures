@@ -222,6 +222,8 @@ private:
    virtual void AddLuaChildView(LuaSourceWindow* childView) override;
    virtual void RemoveLuaChildView(LuaSourceWindow* childView) override;
 
+   virtual LuaSourceWindow& OpenConvCodeSourceFile(LPCTSTR filename) override;
+
    /// called when code debugger state has been updated
    void OnUpdateCodeDebuggerState(DebugWindowNotification& notify);
 

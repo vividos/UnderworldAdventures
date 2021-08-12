@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2005,2019 Underworld Adventures Team
+// Copyright (c) 2005,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -23,24 +23,36 @@
 
 #include "Conversation.hpp"
 #include "IDebugServer.hpp"
+#include <optional>
+#include <mutex>
 
 namespace Conv
 {
+   class CodeVM;
+
    /// conversation code debugger
-   class ConversationDebugger : public Conversation, public ICodeDebugger
+   class ConversationDebugger : public ICodeDebugger
    {
    public:
-      ConversationDebugger();
+      /// ctor
+      ConversationDebugger(Underworld::GameLogic& gameLogic, CodeVM& codeVM);
 
-      /// inits debuggable conversation
-      virtual void Init(unsigned int conv_level, Uint16 conv_objpos,
-         IBasicGame& game, ICodeCallback* codeCallback,
-         std::vector<std::string>& localStrings);
+      /// initializes code debugger and notifies debug server
+      void Init(IDebugServer& debugServer);
 
       /// cleans up debuggable conversation
-      virtual void Done(IBasicGame& game);
+      void Done();
 
-   protected:
+      /// evaluate code VM for changed debugger state
+      void EvaluateDebuggerState();
+
+      /// returns if conversation should be continued by continuously calling Step()
+      bool ContinueSteppingCode() const;
+
+   private:
+      /// checks if a breakpoint was reached
+      void CheckBreakpoints();
+
       // virtual methods from ICodeDebugger
       virtual DebugServerCodeDebuggerType GetDebuggerType() const override;
       virtual void PrepareDebugInfo() override;
@@ -58,10 +70,41 @@ namespace Conv
          size_t& codePosition, bool& visible) const override;
 
    private:
-      std::string temp_decompile;
+      /// code VM to debug
+      CodeVM& m_codeVM;
 
-      DebugServerCodeDebuggerState state;
-      DebugServerCodeDebuggerCommand command;
+      /// access game logic
+      Underworld::GameLogic& m_gameLogic;
+
+      /// reference to debug server; only valid when Init() was called
+      std::optional<std::reference_wrapper<IDebugServer>> m_debugServer;
+
+      /// mutex to protect access to all following member variables
+      mutable std::mutex m_debuggerMutex;
+
+      /// current code debugger state
+      DebugServerCodeDebuggerState m_state;
+
+      /// current code debugger command
+      DebugServerCodeDebuggerCommand m_command;
+
+      /// current position sourcefile line
+      size_t m_currentPositionSourcefileLine;
+
+      /// function call depth when doing "step over"
+      size_t m_stepOverFunctionCallDepth;
+
+      /// filename of decompiled conversation; may be empty
+      std::string m_decompileFilename;
+
+      /// mapping from 1-based line numbers to code position
+      std::map<unsigned int, Uint16> m_lineToCodeMapping;
+
+      /// mapping from code position to 1-based line numbers
+      std::map<Uint16, unsigned int> m_codeToLineMapping;
+
+      /// list with all breakpoints
+      std::vector<DebugCodeBreakpointInfo> m_breakpointsList;
    };
 
 } // namespace Conv
