@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2014,2019 Underworld Adventures Team
+// Copyright (c) 2014,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ namespace Conv
       std::string GetName() const;
 
       /// writes out decompiled code
-      void Write(FILE* fd);
+      void Write(FILE* fd, bool showDisassembly);
 
    private:
       /// conversation number

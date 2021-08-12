@@ -65,7 +65,7 @@ std::string Decompiler::GetName() const
    return m_strings.GetString(7, m_conversationNumber + 16);
 }
 
-void Decompiler::Write(FILE* fd)
+void Decompiler::Write(FILE* fd, bool showDisassembly)
 {
    fputs("; conversation for ", fd);
    fputs(m_strings.GetString(7, m_conversationNumber + 16).c_str(), fd);
@@ -85,16 +85,24 @@ void Decompiler::Write(FILE* fd)
    Conv::CodeGraph::const_graph_iterator iter = g.begin(), stop = g.end();
    for (; iter != stop; ++iter)
    {
-#if 0
-      if (iter->m_isProcessed && iter->m_labelName.length() != 0 && iter->m_xrefCount > 0)
+      if (showDisassembly)
       {
-         fputs(iter->m_labelName.c_str(), fd);
-         fputs(":\n", fd);
+         // display label names that have xrefs
+         if (iter->m_isProcessed && iter->m_labelName.length() != 0 && iter->m_xrefCount > 0)
+         {
+            fputs(iter->m_labelName.c_str(), fd);
+            fputs(":\n", fd);
+         }
+
+         if (iter->m_type != Conv::typeOpcode &&
+            iter->m_type != Conv::typeStatement)
+            continue;
       }
-#else
-      if (iter->m_isProcessed)
-         continue;
-#endif
+      else
+      {
+         if (iter->m_isProcessed)
+            continue;
+      }
 
       if (iter->m_type == Conv::typeStatement && iter->statement_data.indent_change_before != 0)
          indentLevel += iter->statement_data.indent_change_before;
@@ -116,8 +124,9 @@ void Decompiler::Write(FILE* fd)
          }
       }
 
-      //if (!iter->m_isProcessed && iter->m_labelName.length() != 0)
-      if (iter->m_labelName.length() != 0)
+      // show any unprocessed labels
+      if (!iter->m_isProcessed &&
+         iter->m_labelName.length() != 0)
       {
          fputs(iter->m_labelName.c_str(), fd);
          fputs(":\n", fd);
@@ -129,12 +138,12 @@ void Decompiler::Write(FILE* fd)
       std::string text = iter->Format();
       fputs(text.c_str(), fd);
 
-#if 0
-      if (iter->m_type == Conv::typeFuncStart)
+      // show cross-references in disassembly mode
+      if (showDisassembly && iter->m_type == Conv::typeFuncStart)
       {
          std::string funcName = iter->m_labelName;
 
-         const Conv::CodeGraph::T_mapFunctions& functionMap = graph.GetFunctionMap();
+         const Conv::CodeGraph::FunctionMap& functionMap = m_codeGraph->GetFunctionMap();
 
          UaAssert(functionMap.find(funcName) != functionMap.end());
 
@@ -150,7 +159,6 @@ void Decompiler::Write(FILE* fd)
             });
          }
       }
-#endif
 
       fputs("\n", fd);
       fflush(fd);
@@ -189,6 +197,8 @@ int main(int argc, char* argv[])
 
    Uint16 slotNumber = (Uint16)strtol(slotText.c_str(), NULL, isHex ? 16 : 10);
 
+   bool showDisassembly = true;
+
    GameStrings gameStrings;
    Import::GameStringsImporter importer(gameStrings);
    importer.LoadStringsPakFile((basePath + "data/strings.pak").c_str());
@@ -196,7 +206,7 @@ int main(int argc, char* argv[])
    if (slotText != "*")
    {
       Conv::Decompiler cnvdec{ slotNumber, basePath, gameStrings };
-      cnvdec.Write(stdout);
+      cnvdec.Write(stdout, showDisassembly);
    }
    else
    {
@@ -205,7 +215,7 @@ int main(int argc, char* argv[])
          if (gameStrings.IsBlockAvail(0x0e00 + slotNumber))
          {
             Conv::Decompiler cnvdec{ slotNumber, basePath, gameStrings };
-            cnvdec.Write(stdout);
+            cnvdec.Write(stdout, showDisassembly);
          }
       }
    }
