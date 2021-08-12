@@ -14,6 +14,13 @@ tab_width = 3
 indent_style = space
 indent_size = 3
 
+# Visual C++ project files
+[*.{vcxproj,props}]
+insert_final_newline = false
+indent_style = space
+indent_size = 2
+tab_width = 2
+
 # makefiles
 [Makefile.*]
 indent_style = tab
