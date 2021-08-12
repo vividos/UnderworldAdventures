@@ -194,7 +194,8 @@ void MainFrame::ProcessServerMessages()
       ATLTRACE(_T("server message: type=%s\n"),
          message.m_messageType == 0 ? _T("shutdown") :
          message.m_messageType == 1 ? _T("attach") :
-         message.m_messageType == 2 ? _T("detach") : _T("unknown"));
+         message.m_messageType == 2 ? _T("detach") :
+         message.m_messageType == 3 ? _T("update") : _T("unknown"));
 
       switch (message.m_messageType)
       {
@@ -251,6 +252,7 @@ void MainFrame::ProcessServerMessages()
       }
       break;
 
+      default:
       case 4:
          ATLASSERT(false);
          break;
