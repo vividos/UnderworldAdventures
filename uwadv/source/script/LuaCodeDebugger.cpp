@@ -31,7 +31,8 @@ extern "C"
 const char* LuaCodeDebugger::s_selfDebuggerName = "_debugger_self";
 
 LuaCodeDebugger::LuaCodeDebugger()
-   :m_debuggerState(codeDebuggerStateInactive)
+   :m_debuggerState(codeDebuggerStateInactive),
+   m_debuggerCommand(codeDebuggerCommandRun)
 {
    m_stepOverFunctionCallDepth = 0;
    m_currentPositionSourcefileIndex = m_currentPositionSourcefileLine = unsigned(-1);
