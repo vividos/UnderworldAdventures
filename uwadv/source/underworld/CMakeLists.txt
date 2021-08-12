@@ -8,7 +8,6 @@ cmake_minimum_required(VERSION 3.8)
 
 project(underworld)
 
-# Add source to this project's library.
 add_library(${PROJECT_NAME} STATIC
 	"pch.cpp" "pch.hpp"
 	"ConvGlobals.cpp" "ConvGlobals.hpp"

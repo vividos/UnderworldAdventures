@@ -8,7 +8,6 @@ cmake_minimum_required(VERSION 3.8)
 
 project(import)
 
-# Add source to this project's library.
 add_library(${PROJECT_NAME} STATIC
 	"pch.cpp" "pch.hpp"
 	"Bits.hpp"
@@ -38,6 +37,7 @@ target_include_directories(${PROJECT_NAME}
 		"${PROJECT_SOURCE_DIR}/../conv"
 		"${PROJECT_SOURCE_DIR}/../renderer"
 		"${PROJECT_SOURCE_DIR}/../ui"
-		"${PROJECT_SOURCE_DIR}/../underw")
+		"${PROJECT_SOURCE_DIR}/../underworld"
+		"${PROJECT_SOURCE_DIR}/../thirdparty/SDL_pnglite")
 
-target_link_libraries(${PROJECT_NAME} base)
+target_link_libraries(${PROJECT_NAME} base SDL_pnglite)

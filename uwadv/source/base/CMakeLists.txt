@@ -1,18 +1,21 @@
 #
 # Underworld Adventures - an Ultima Underworld remake project
-# Copyright (c) 2002-2020 Underworld Adventures Team
+# Copyright (c) 2002-2021 Underworld Adventures Team
 #
 # CMakeList.txt: CMake project for base.
 #
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.12)
 
 project(base)
 
-# Configure zlib.
+# Configure zlib
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../thirdparty/zlib1211)
 find_package(zlib REQUIRED)
+add_compile_definitions(ZLIB_WINAPI Z_LARGE64)
 
-# Add source to this project's library.
+# ignore the compiler's warning about deprecated codecvt classes
+add_compile_definitions(_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING)
+
 add_library(${PROJECT_NAME} STATIC
 	"pch.cpp" "pch.hpp"
 	"ArchiveFile.cpp" "ArchiveFile.hpp"
@@ -41,7 +44,6 @@ add_library(${PROJECT_NAME} STATIC
 target_include_directories(${PROJECT_NAME}
 	PUBLIC "${PROJECT_SOURCE_DIR}"
 	PRIVATE
-		"${PROJECT_SOURCE_DIR}/../thirdparty/zziplib-0.13.69"
 		"${ZLIB_INCLUDE_DIRS}")
 
 target_link_libraries(${PROJECT_NAME} ${ZLIB_LIBRARIES} zziplib)

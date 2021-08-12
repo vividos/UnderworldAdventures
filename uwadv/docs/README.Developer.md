@@ -70,6 +70,13 @@ copied to the folder as well, if it doesn't exist yet.
 More information about running Underworld Adventures can be found in the file
 ["README.Manual.md"](README.Manual.md).
 
+### 2.2 CMake on Windows, Linux and macOS
+
+Underworld Adventures can be compiled using the CMake build system, which
+supports several platforms. The CMake build system supersedes the automake
+based build system and the MinGW makefiles. The minimum CMake version needed
+currently is 3.15.
+
 
 ## 3. Developing Underworld Adventures
 
@@ -152,8 +159,7 @@ Adventures release:
 
 2. Be sure that the project (uwadv, tools) compiles AND works on all
    systems where build files exist. Be sure to test against `uw1` and
-   `uw_demo`. Build systems to test for are: mingw32, mingw32 configure.ac,
-   MSVC, Linux configure.ac, Linux RPM
+   `uw_demo`. Build systems to test for are: Visual Studio, CMake.
 
 3. Run all unit tests and run the SonarCloud analysis and fix all reported
    bugs
