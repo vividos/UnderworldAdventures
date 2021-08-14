@@ -15,14 +15,14 @@ https://vividos.github.io/UnderworldAdventures/
 
 This is the source code repository. The folders contain the following:
 
-* docs: Contains the official home page source code.
+* [docs](docs/): Contains the official home page source code.
 * [uwadv](uwadv/README.md): Contains the Underworld Adventures source code.
 
 There is a feature matrix document that describes what Underworld Adventures
 implements and what isn't working yet: [Features.md](uwadv/docs/Features.md).
 
 The repository also contains the latest version of the
-[uw-formats.txt](https://github.com/vividos/UnderworldAdventures/blob/master/uwadv/docs/uw-formats.txt) file,
+[uw-formats.txt](https://github.com/vividos/UnderworldAdventures/blob/main/uwadv/docs/uw-formats.txt) file,
 the file formats descriptions of the Ultima Underworld 1 and 2 games.
 
 # Build
@@ -32,7 +32,7 @@ binaries of the latest build:
 
 [![Build status](https://ci.appveyor.com/api/projects/status/pi4hkego4ja858u4?svg=true)](https://ci.appveyor.com/project/vividos/underworldadventures)
 
-(click on Artifacts to download the uwadv.zip archive)
+(click on Artifacts to download the `uwadv.zip` archive)
 
 The project is occasionally checked with SonarCloud:
 
