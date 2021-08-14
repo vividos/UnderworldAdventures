@@ -47,6 +47,53 @@
                 updated occasionally.
             </p>
 
+            <h3>2021-08-14</h3>
+
+            <p>
+                I noticed I didn't update the devlog for some time now. Here's what happened in
+                the last and this year.
+            </p>
+            <p>
+                My overall goal is to have a binary distribution that contains all the files
+                necessary (minus the actual game data) to run Underworld Adventures. The Windows
+                build has the uwadv.exe, the uaconfig application, necessary DLLs and a manual.
+                The tools subfolder has all tools currently available and also a Readme file. The
+                data folder has the game engine's support files, which also contains the ditgital
+                music pieces made so far, once a separate download. Many changes were made to
+                better streamline the build.
+            </p>
+
+            <p>
+                I also updated most of the external libraries that the project uses, e.g. SDL2 and
+                the Lua language version. I also added SDL_pnglite to load .png files instead of
+                .tga files. I also added the hqx library that scales wall and floor textures and
+                object images in the 3D world with scale factor 4x (when the
+                "enable-uwadv-features" flag is enabled). And some time ago I reactivated the
+                VRML97 loading code that loads and displays some 3D objects made by Corey Day, a
+                long time ago.
+            </p>
+
+            <p>
+                There were also some changes to the Underworld Debugger (Alt + D) to debug both
+                Lua scripts and decompiled Conversation Code scripts. Decompiling was availabe for
+                some time with the "convdec" tool, but now you can step through the actual code.
+            </p>
+
+            <p>
+                I also took time to clean up the Visual Studio project files, added a CMake based
+                build system and removed the old autoconf/automake based system that I can't
+                maintain without much effort.
+            </p>
+
+            <p>
+                Finally, I'm trying to get rid of some bugs preventing to play the game, such
+                as starting conversations or preventing high CPU usage by enabling VSYNC. This is
+                ongoing and I hope to release a 0.10 version in the future, just to showcase what
+                the project managed to do back when it was active.
+            </p>
+
+            <hr />
+
             <h3>2019-10-10</h3>
 
             <p>
