@@ -829,8 +829,16 @@ This chapter lists all authors and contributors of Underworld Adventures.
 
 ## B. Third-Party libraries and licenses
 
-Some third-party libraries are used throughout the project, in order to
-implement them for ourselves.
+Some third-party libraries are used throughout the project. These are listed
+here.
+
+### Exult & Pentagram
+
+The project is using MIDI audio source code from the
+[Exult](https://github.com/exult/exult) project.
+
+The Exult source code is licensed using the
+[GNU General Public License 2.0 License](https://github.com/exult/exult/blob/master/COPYING).
 
 ### SDL2 & SDL_Mixer
 
