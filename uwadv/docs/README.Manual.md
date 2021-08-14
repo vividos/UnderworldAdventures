@@ -3,7 +3,7 @@
 Underworld Adventures is a project to recreate Ultima Underworld 1 on modern
 operating systems (e.g. Win32, Linux or MacOS), using the original game files.
 
-Underworld Adventures is Copyright (C) 2002,2003,2004,2019 Underworld Adventures Team
+Underworld Adventures is Copyright (C) 2002,2003,2004,2019,2021 Underworld Adventures Team
 
 Underworld Adventures is available from
    https://vividos.github.io/UnderworldAdventures/
@@ -25,8 +25,8 @@ Adventures project. Please use the table of contents to navigate the document.
 ## 1 Quick start and quick reference
 
 You need a copy of the game to run Underworld Adventures. Install the game to
-any folder you like and start the uaconfig.exe tool. Set the Ultima Underworld
-1 folder and close the tool. Start the game by running uwadv.exe.
+any folder you like and start the `uaconfig` tool. Set the Ultima Underworld
+1 folder and close the tool. Start the game by running the `uwadv` program.
 
 In the game, use the WASD keys to run and turn and X to go backwards, or the
 left mouse button pressed while moving the mouse cursor in the 3D view. Use
@@ -55,13 +55,14 @@ gog.com, in yet another format.
 The original installer is a 16-bit DOS executable, which doesn't run on modern
 64-bit processors anymore. You can install the game using DosBox, though,
 which emulates most of the MS-DOS needed, as well as the hard disk. DosBox can
-be downloaded here: TODO
+be downloaded here: https://www.dosbox.com/
 
 Run DosBox with the following command, which mounts a part of your hard disk
 as drive D:
 
-    dosbox TODO
+    dosbox -c "mount d c:\uw1_disc\"
 
+Inside DosBox, you can start the installer by calling the setup exe.
 The installed game files should then be available in the mounted folder.
 
 ### 2.3 Using the game files directly
@@ -75,7 +76,21 @@ The gog.com installer extracts several files to your hard disk. The actual
 games are stored in a file called "game.gog", which is actually an ISO file
 that is mounted when starting the game using DosBox. Open the "game.gog" file
 with your favourite ISO tool and extract the files on your hard disk. Note
-that the popular 7-zip can also open and extract the file without problems.
+that the popular 7-zip can also open and extract the file without problems:
+
+    "C:\Program Files\7-Zip\7z.exe" x game.gog -ouw1and2
+
+### 2.5 uw_demo download
+
+There is also a demo version of Ultima Underworld 1 available for free on some
+Ultima fan download sites. Usually this comes in an `uw_demo.zip` that only
+contains a single `uw_demo.exe` file. The exe file is a self-extracting
+executable using the LHA compressor. The demo game files can be extracted
+using DosBox, as shown above, or using 7-zip:
+
+    "C:\Program Files\7-Zip\7z.exe" x uw_demo.exe -ouw_demo
+
+The files are extracted into the `uw_demo` subfolder.
 
 ### 2.5 System requirements
 
