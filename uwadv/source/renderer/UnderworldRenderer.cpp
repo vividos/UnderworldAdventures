@@ -550,16 +550,6 @@ void UnderworldRenderer::RenderSprite(Vector3d base,
    glDisable(GL_POLYGON_OFFSET_FILL);
 }
 
-/* TODO reactivate
-/// Renders a wall-aligned textured quad.
-/// \param width
-/// \param height
-void UnderworldRenderer::render_aligned_quad(const Object& obj, //const Vector3d& base,
-   double width, double height, Uint16 textureNumber, bool ignoreUpVector)
-{
-}
-*/
-
 /// calculates object position in 3D world
 Vector3d UnderworldRenderer::CalcObjectPosition(unsigned int x, unsigned int y,
    const Underworld::Object& obj)
