@@ -38,7 +38,7 @@
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)source\thirdparty\zziplib-0.13.69;$(SolutionDir)source\thirdparty\zlib1211\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)source\thirdparty\zziplib-0.13.72;$(SolutionDir)source\thirdparty\zlib1211\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;ZLIB_WINAPI;Z_LARGE64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Lib>
@@ -52,7 +52,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)source\thirdparty\zziplib-0.13.69;$(SolutionDir)source\thirdparty\zlib1211\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)source\thirdparty\zziplib-0.13.72;$(SolutionDir)source\thirdparty\zlib1211\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;ZLIB_WINAPI;Z_LARGE64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Lib>
@@ -120,7 +120,7 @@
     <ClInclude Include="Vector3d.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\thirdparty\zziplib-0.13.69\msvc16\zziplib.vcxproj">
+    <ProjectReference Include="..\thirdparty\zziplib-0.13.72\msvc16\zziplib.vcxproj">
       <Project>{bd30cdd7-5a97-40e6-ae94-2c671363d03c}</Project>
     </ProjectReference>
   </ItemGroup>

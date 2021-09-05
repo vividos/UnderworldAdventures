@@ -1,47 +1,28 @@
-cmake_minimum_required (VERSION 3.1)
-project(zziplib VERSION "0.13.72" LANGUAGES C)
+#
+# Underworld Adventures - an Ultima Underworld remake project
+# Copyright (c) 2002-2020 Underworld Adventures Team
+#
+# CMakeList.txt: CMake project for zziplib.
+#
+cmake_minimum_required(VERSION 3.8)
 
-if(NOT CMAKE_BUILD_TYPE) 
-    set(CMAKE_BUILD_TYPE Release)
-endif(NOT CMAKE_BUILD_TYPE)
+project(zziplib)
 
-### Path to additional CMake modules
-# set(CMAKE_MODULE_PATH
-#     ${CMAKE_SOURCE_DIR}/cmake
-#     ${CMAKE_MODULE_PATH})
+# Configure zlib.
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../zlib1211)
+find_package(zlib REQUIRED)
+add_compile_definitions(ZLIB_WINAPI Z_LARGE64)
 
-include ( GNUInstallDirs )
+file(GLOB_RECURSE zziplib_SRC
+	"zzip/*.c" "zzip/*.h"
+	"SDL/*.c" "SDL/*.h")
 
-option(BUILD_SHARED_LIBS "Build a shared library" ON)
-option(BUILD_STATIC_LIBS "Build the static library" OFF)
-option(BUILD_TESTS "Build test programs" OFF)
-option(MSVC_STATIC_RUNTIME "Build with static runtime libs (/MT)" ON)
-option(ZZIPMMAPPED "Build libzzipmmapped (not fully portable)" ON)
-option(ZZIPFSEEKO "Build libzzipfseeko (based on posix.1 api)" ON)
-option(ZZIPWRAP "Build libzzipwrap (non-installed example)" ON)
-option(ZZIPSDL "Build zzcatsdl (includable example code)" ON)
-option(ZZIPBINS "Build bins/unzzip (unzip-like executables)" ON)
-option(ZZIPTEST "Build test/zzipself (self-extract example)" ON)
-option(ZZIPDOCS "Build docs/manpages (and website content)" ON)
+add_library(${PROJECT_NAME} STATIC ${zziplib_SRC})
 
-add_subdirectory(zzip)
+target_include_directories(${PROJECT_NAME}
+	PUBLIC "${PROJECT_SOURCE_DIR}"
+	PRIVATE
+		"${PROJECT_SOURCE_DIR}/SDL"
+		"${ZLIB_INCLUDE_DIRS}")
 
-if(ZZIPWRAP)
-add_subdirectory(zzipwrap)
-endif()
-
-if(ZZIPSDL)
-add_subdirectory(SDL)
-endif()
-
-if(ZZIPBINS)
-add_subdirectory(bins)
-endif()
-
-if(ZZIPTEST)
-add_subdirectory(test)
-endif()
-
-if(ZZIPDOCS)
-add_subdirectory(docs)
-endif()
+target_link_libraries(${PROJECT_NAME} "${ZLIB_LIBRARIES}")
