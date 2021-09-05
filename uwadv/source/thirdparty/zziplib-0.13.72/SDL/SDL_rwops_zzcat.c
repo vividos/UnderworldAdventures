@@ -7,6 +7,7 @@
 
 #include <SDL_rwops_zzip.h>
 #include <stdlib.h> /* exit */
+#include <stdio.h> /* stdout */
 
 /* mostly a copy from zzcat.c */
 
