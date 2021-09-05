@@ -1,0 +1,13 @@
+*~
+*.cache
+build
+build-*
+site.print.htm
+changes.htm
+*-linux-*
+*.pyc
+*.tmp
+__pycache__
+docs/man3
+docs/html
+Makefile
