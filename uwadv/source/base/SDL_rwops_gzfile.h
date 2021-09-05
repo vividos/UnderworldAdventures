@@ -28,7 +28,7 @@ extern "C"
 {
 #endif
 
-   /// \brief returns STL_RWops pointer to access gzip-compressed file stream (.gz)
+   /// \brief returns SDL_RWops pointer to access gzip-compressed file stream (.gz)
    /// \param filename filename of the compressed file to open
    /// \param mode mode of file to open. This is passed to gzopen and can take the
    ///        same parameters, e.g. "wb9". See zlib documentation for more.
