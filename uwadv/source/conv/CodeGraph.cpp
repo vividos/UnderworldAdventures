@@ -1661,6 +1661,29 @@ void CodeGraph::FindWhile(FuncInfo& funcInfo)
 /// label1:   <-------+
 ///   ...
 ///
+/// Another if (or if-not) variant, code looks like this:
+///
+///   {expression}
+///   BEQ label1 -----+
+///   JMP label2 ---+ |
+/// label1:   <-----|-+
+///   {code}        |
+/// label2:   <-----+
+///   ...
+///
+/// Another if-not variant, possibly a bug in the original compiler:
+///
+///   {expression}
+///   BEQ label1 -----+
+///   JMP label2 ---+ |
+///   BRA label3 -+ | |
+/// label1:   <---|-|-+
+///   JMP label3 -+ |
+/// label3:      -+ |
+///   {code}        |
+/// label2:   <-----+
+///   ...
+///
 /// For if-else, code looks like this:
 ///
 ///   {expression}
@@ -1714,35 +1737,77 @@ void CodeGraph::FindIfElse(FuncInfo& funcInfo)
       Uint16 beq_target_pos = beq_iter->opcode_data.jump_target_pos;
       graph_iterator target_iter = FindPos(beq_target_pos);
 
-      // check if there is a BRA or JMP opcode before this one
-      graph_iterator bra_iter = target_iter;
-      --bra_iter;
+      // check if there is a BRA opcode before the BEQ target
+      graph_iterator opcode_before_target_iter = target_iter;
+      --opcode_before_target_iter;
 
       graph_iterator else_iter = stop;
       graph_iterator endif_iter = stop;
+      bool negateExpression = false;
 
-      // sometimes code uses JMP instead of BRA; maybe with empty if body?
-      bool bHaveElse = !bra_iter->m_isProcessed &&
-         beq_iter->m_type == typeOpcode &&
-         (bra_iter->opcode_data.opcode == op_BRA ||
-            bra_iter->opcode_data.opcode == op_JMP);
+      bool haveElse = !opcode_before_target_iter->m_isProcessed &&
+         opcode_before_target_iter->m_type == typeOpcode &&
+         opcode_before_target_iter->opcode_data.opcode == op_BRA;
 
-      if (bHaveElse)
+      // for the second if-variant, the BEQ is followed by a JMP, or a JMP and
+      // a BRA combination
+      graph_iterator opcode_after_beq_iter = beq_iter;
+      opcode_after_beq_iter++;
+
+      bool haveIfNotVariant =
+         (beq_target_pos == beq_iter->m_pos + 4 || beq_target_pos == beq_iter->m_pos + 6) &&
+         !opcode_after_beq_iter->m_isProcessed &&
+         opcode_after_beq_iter->m_type == typeOpcode &&
+         opcode_after_beq_iter->opcode_data.opcode == op_JMP;
+
+      if (haveElse && !haveIfNotVariant)
       {
-         Uint16 bra_target_pos = bra_iter->opcode_data.jump_target_pos;
+         Uint16 bra_target_pos = opcode_before_target_iter->opcode_data.jump_target_pos;
 
          if (bra_target_pos < beq_target_pos)
          {
-            UaAssert(false); // should be discovered by FindWhile() already!
-            continue; // a BRA opcode, but jumps up; might be a while statement
+            // a BRA opcode, but jumps up; should be discovered by FindWhile() already!
+            UaAssert(false);
+            continue;
          }
 
-         bra_iter->m_isProcessed = true;
+         opcode_before_target_iter->m_isProcessed = true;
 
-         else_iter = bra_iter;
+         else_iter = opcode_before_target_iter;
          ++else_iter;
 
          endif_iter = FindPos(bra_target_pos);
+      }
+      else if (haveIfNotVariant)
+      {
+         opcode_after_beq_iter->m_isProcessed = true; // JMP was processed
+
+         Uint16 jmp_target_pos = opcode_after_beq_iter->opcode_data.jump_target_pos;
+
+         endif_iter = FindPos(jmp_target_pos);
+
+         negateExpression = true;
+
+         // there might be an error in the original compiler that sometimes issues a JMP and a BRA
+         // opcode combination; set the opcodes as processed
+         graph_iterator opcode_after_jmp_iter = opcode_after_beq_iter;
+         opcode_after_jmp_iter++;
+
+         if (!opcode_after_jmp_iter->m_isProcessed &&
+            opcode_after_jmp_iter->m_type == typeOpcode &&
+            opcode_after_jmp_iter->opcode_data.opcode == op_BRA)
+         {
+            opcode_after_jmp_iter->m_isProcessed = true;
+         }
+
+         graph_iterator beq_target_iter = FindPos(beq_target_pos);
+         if (!beq_target_iter->m_isProcessed &&
+            beq_target_iter->m_type == typeOpcode &&
+            beq_target_iter->opcode_data.opcode == op_JMP &&
+            beq_target_iter->opcode_data.jump_target_pos == beq_target_iter->m_pos + 2)
+         {
+            beq_target_iter->m_isProcessed = true;
+         }
       }
       else
       {
@@ -1753,7 +1818,9 @@ void CodeGraph::FindIfElse(FuncInfo& funcInfo)
 
       // insert statements
       std::ostringstream buffer;
-      buffer << "if (" << expressionIter->expression_data.expression << ") {";
+      buffer << "if (" <<
+         (negateExpression ? "!" : "") <<
+         expressionIter->expression_data.expression << ") {";
 
       CodeGraphItem& ifStatement = AddStatement(expressionIter, buffer.str());
       ifStatement.statement_data.indent_change_after = 1;
