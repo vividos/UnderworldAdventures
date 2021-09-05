@@ -48,7 +48,10 @@
     <ClCompile Include="..\zzip\fseeko.c" />
     <ClCompile Include="..\zzip\info.c" />
     <ClCompile Include="..\zzip\memdisk.c" />
-    <ClCompile Include="..\zzip\mmapped.c" />
+    <ClCompile Include="..\zzip\mmapped.c">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
     <ClCompile Include="..\zzip\plugin.c" />
     <ClCompile Include="..\zzip\stat.c" />
     <ClCompile Include="..\zzip\write.c" />
