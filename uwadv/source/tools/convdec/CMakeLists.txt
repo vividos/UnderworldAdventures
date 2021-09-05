@@ -8,7 +8,9 @@ cmake_minimum_required(VERSION 3.8)
 
 project(convdec)
 
-add_executable(${PROJECT_NAME} "convdec.cpp" "convdec.hpp")
+add_executable(${PROJECT_NAME}
+	"convdec.cpp"
+	"Decompiler.cpp" "Decompiler.hpp")
 
 target_include_directories(${PROJECT_NAME}
 	PRIVATE

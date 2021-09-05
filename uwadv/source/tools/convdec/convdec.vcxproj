@@ -11,10 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="convdec.hpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="convdec.cpp" />
+    <ClCompile Include="Decompiler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\base\base.vcxproj">
@@ -29,6 +27,9 @@
     <ProjectReference Include="..\..\underworld\underworld.vcxproj">
       <Project>{4cc50617-2229-460e-9a80-3c517a2d9090}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Decompiler.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{52EFCEBD-03BD-4590-987B-7A561CC8E6D5}</ProjectGuid>
