@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2003,2004,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@
 #include <functional>
 
 extern void DumpLevArk(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
+extern void DumpCommonObjectProperties(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
 extern void DumpObjectProperties(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
 extern void DumpUwExe(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
 extern void DumpCombineData(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
@@ -40,7 +41,8 @@ typedef std::function<void(const std::string & filename, const GameStrings & gam
 std::map<std::string, T_fileHandler> g_dumpFileHandlerMap =
 {
    { "lev.ark", DumpLevArk },
-   { "comobj.dat", DumpObjectProperties },
+   { "comobj.dat", DumpCommonObjectProperties },
+   { "objects.dat", DumpObjectProperties },
    { "cmb.dat", DumpCombineData },
    { "uw.exe", DumpUwExe },
    { "uw2.exe", DumpUwExe },
