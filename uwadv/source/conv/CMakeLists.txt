@@ -13,7 +13,7 @@ add_library(${PROJECT_NAME} STATIC
 	"CodeGraph.cpp" "CodeGraph.hpp"
 	"CodeVM.cpp" "CodeVM.hpp"
 	"Conversation.cpp" "Conversation.hpp"
-	"ConversationDebugger.hpp"
+	"ConversationDebugger.cpp" "ConversationDebugger.hpp"
 	"ConvStack.hpp"
 	"Opcodes.hpp")
 
