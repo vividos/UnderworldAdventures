@@ -1865,6 +1865,13 @@ void CodeGraph::AddGotoJumps(FuncInfo& funcInfo)
       if (iter->opcode_data.opcode == op_JMP ||
          iter->opcode_data.opcode == op_BRA)
       {
+         graph_iterator goto_target = FindPos(iter->opcode_data.jump_target_pos);
+         if (goto_target->m_type == typeFuncEnd)
+         {
+            AddStatement(iter, "return;");
+            continue;
+         }
+
          std::ostringstream buffer;
          buffer << "goto " << iter->opcode_data.jump_target << ";";
 
