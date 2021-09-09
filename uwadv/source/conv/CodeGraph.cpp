@@ -1469,6 +1469,7 @@ bool CodeGraph::FindAndAddNextSwitchCase(graph_iterator& expressionIter, graph_i
       {
          break_iter->m_isProcessed = true;
          second_jmp_iter->m_isProcessed = true;
+         break_iter = second_jmp_iter;
       }
    }
 
