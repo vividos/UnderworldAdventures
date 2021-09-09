@@ -1849,7 +1849,8 @@ void CodeGraph::AddGotoJumps(FuncInfo& funcInfo)
       if (iter->m_type != typeOpcode || iter->m_isProcessed)
          continue;
 
-      if (iter->opcode_data.opcode == op_JMP)
+      if (iter->opcode_data.opcode == op_JMP ||
+         iter->opcode_data.opcode == op_BRA)
       {
          std::ostringstream buffer;
          buffer << "goto " << iter->opcode_data.jump_target << ";";
@@ -1859,14 +1860,13 @@ void CodeGraph::AddGotoJumps(FuncInfo& funcInfo)
          graph_iterator target_iter = FindPos(iter->opcode_data.jump_target_pos);
 
          // check if a label was already inserted
-         if (target_iter->m_type != typeStatement ||
-            target_iter->statement_data.statement.find("label") != 0)
+         if (target_iter->m_labelName.empty())
          {
             // insert goto target label
             std::ostringstream buffer2;
             buffer2 << iter->opcode_data.jump_target << ":;";
 
-            CodeGraphItem& labelStatement = AddStatement(iter, buffer2.str());
+            CodeGraphItem& labelStatement = AddStatement(target_iter, buffer2.str());
             labelStatement.statement_data.indent_change_before = -1;
             labelStatement.statement_data.indent_change_after = 1;
          }
