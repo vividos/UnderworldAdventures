@@ -957,7 +957,7 @@ void CodeGraph::CombineOperators(FuncInfo& funcInfo)
 
       CombineOperatorAndExpressions(operatorIter, stop, insertIter, expressions);
 
-      // transfer label from fist expression
+      // transfer label from first expression
       if (!expressions.empty())
       {
          graph_iterator last_expr_iter = expressions.back();
@@ -1387,8 +1387,8 @@ void CodeGraph::FindSwitchCase(FuncInfo& funcInfo)
    // find open expression
    for (; iter != stop; ++iter)
    {
-      bool bIsExpression = iter->m_type == typeExpression && !iter->m_isProcessed;
-      if (!bIsExpression)
+      bool isExpression = iter->m_type == typeExpression && !iter->m_isProcessed;
+      if (!isExpression)
          continue;
 
       bool switchAdded = false;
@@ -1399,8 +1399,8 @@ void CodeGraph::FindSwitchCase(FuncInfo& funcInfo)
 
       do
       {
-         bool bRet = FindAndAddNextSwitchCase(expressionIter, stop, switchEnd, switchAdded);
-         if (!bRet)
+         bool ret = FindAndAddNextSwitchCase(expressionIter, stop, switchEnd, switchAdded);
+         if (!ret)
             break;
 
          // check if next expression is an expression
@@ -1578,8 +1578,8 @@ void CodeGraph::FindWhile(FuncInfo& funcInfo)
    // find open expression
    for (; iter != stop; ++iter)
    {
-      bool bIsExpression = iter->m_type == typeExpression && !iter->m_isProcessed;
-      if (!bIsExpression)
+      bool isExpression = iter->m_type == typeExpression && !iter->m_isProcessed;
+      if (!isExpression)
          continue;
 
       graph_iterator expressionIter = iter;
@@ -1703,8 +1703,8 @@ void CodeGraph::FindIfElse(FuncInfo& funcInfo)
    // find open expression
    for (; iter != stop; ++iter)
    {
-      bool bIsExpression = iter->m_type == typeExpression && !iter->m_isProcessed;
-      if (!bIsExpression)
+      bool isExpression = iter->m_type == typeExpression && !iter->m_isProcessed;
+      if (!isExpression)
          continue;
 
       graph_iterator expressionIter = iter;
