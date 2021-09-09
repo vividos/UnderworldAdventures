@@ -1887,13 +1887,14 @@ void CodeGraph::AddGotoJumps(FuncInfo& funcInfo)
          graph_iterator target_iter = FindPos(iter->opcode_data.jump_target_pos);
 
          // check if a label was already inserted
-         if (target_iter->m_labelName.empty())
+         if (target_iter->m_type != typeStatement ||
+            target_iter->statement_data.statement.find("label") != 0)
          {
             // insert goto target label
             std::ostringstream buffer2;
             buffer2 << iter->opcode_data.jump_target << ":;";
 
-            CodeGraphItem& labelStatement = AddStatement(target_iter, buffer2.str());
+            CodeGraphItem& labelStatement = AddStatement(target_iter, buffer2.str(), false);
             labelStatement.statement_data.indent_change_before = -1;
             labelStatement.statement_data.indent_change_after = 1;
          }
