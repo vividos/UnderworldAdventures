@@ -2119,23 +2119,29 @@ std::string CodeGraph::GetFunctionName(Uint16 pos)
       buffer << "set_global_and_exit";
       break;
 
-   case 0x0081: // uw1
-   case 0x008b: // uw1
-   case 0x0110: // uw2
+   case 0x0020:
+      buffer << "is_npc_not_attacking";
+      break;
+
+   case 0x0063:
+      buffer << "set_npc_attitude_upset_flee_player_and_exit";
+      break;
+
+   case 0x0081:
+   case 0x008b:
       buffer << "target_player_and_exit";
       break;
 
-   case 0x00b1: // uw1
-   case 0x0136: // uw2
+   case 0x00b1:
       buffer << "set_npc_attitude_and_exit";
       break;
 
-   case 0x00c2: // uw1
-      buffer << "set_npc_attitude_2_and_exit";
+   case 0x00c2:
+      buffer << "set_npc_attitude_mellow_and_exit";
       break;
 
-   case 0x00d1: // uw1
-      buffer << "set_npc_attitude_1_and_exit";
+   case 0x00d1:
+      buffer << "set_npc_attitude_upset_and_exit";
       break;
 
    case 0x00e0:
@@ -2152,6 +2158,10 @@ std::string CodeGraph::GetFunctionName(Uint16 pos)
 
    case 0x018f:
       buffer << "subtract_and_compare_game_times";
+      break;
+
+   case 0x029d:
+      buffer << "start";
       break;
 
    default:
