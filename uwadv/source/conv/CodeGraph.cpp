@@ -443,8 +443,6 @@ void CodeGraph::ProcessFunctionQueue()
 
       m_processedFunctions.insert(funcInfo.start);
 
-      //graph_iterator iter = FindPos(funcInfo.start);
-
       UaTrace("analyzing function \"%s\" at %04x\n",
          funcName.c_str(), funcInfo.start);
 
@@ -1443,29 +1441,20 @@ bool CodeGraph::FindAndAddNextSwitchCase(graph_iterator& expressionIter, graph_i
    if (beq_iter == stop)
       return false; // no BEQ found, try next expression
 
-   // find next JMP opcode, which is the break statement
-   graph_iterator break_iter = beq_iter;
-   ++break_iter;
-   for (; break_iter != stop; ++break_iter)
-   {
-      if (!break_iter->m_isProcessed && break_iter->m_type == typeOpcode)
-      {
-         if (break_iter->opcode_data.opcode == op_JMP)
-            break; // found
-         else
-         {
-            break_iter = stop; // other opcode; give up
-            break;
-         }
-      }
-   }
+   // get JMP opcode, which must precede the BEQ jump target
+   graph_iterator break_iter = FindPos(beq_iter->opcode_data.jump_target_pos);
+   if (break_iter == m_graph.end())
+      return false; // pos not found; give up
 
-   if (break_iter == stop)
+   --break_iter;
+   if (break_iter->m_isProcessed ||
+      break_iter->m_type != typeOpcode ||
+      break_iter->opcode_data.opcode != op_JMP)
       return false; // no JMP found, try next expression
 
-   // check if there is a second JMP immediately after this
+   // check if there is a second JMP immediately before this
    graph_iterator second_jmp_iter = break_iter;
-   ++second_jmp_iter;
+   --second_jmp_iter;
    if (second_jmp_iter != stop &&
       !second_jmp_iter->m_isProcessed &&
       second_jmp_iter->m_type == typeOpcode &&
@@ -1474,17 +1463,13 @@ bool CodeGraph::FindAndAddNextSwitchCase(graph_iterator& expressionIter, graph_i
       // is this really a "goto" jump? or fall-through?
 
       // check if both jump targets are equal
-      if (break_iter->opcode_data.jump_target_pos != second_jmp_iter->opcode_data.jump_target_pos)
+      // when yes, mark both processed
+      // when no, it's some sort of jump outside; let AddGotoJumps() handle it
+      if (break_iter->opcode_data.jump_target_pos == second_jmp_iter->opcode_data.jump_target_pos)
       {
-         std::ostringstream buffer;
-         buffer << "goto " << break_iter->opcode_data.jump_target << ";";
-
-         AddStatement(break_iter, buffer.str());
-      }
-      else
          break_iter->m_isProcessed = true;
-
-      ++break_iter;
+         second_jmp_iter->m_isProcessed = true;
+      }
    }
 
    // when first call, check if target of BEQ is an expression
