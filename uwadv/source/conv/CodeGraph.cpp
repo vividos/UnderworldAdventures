@@ -1403,8 +1403,10 @@ void CodeGraph::FindSwitchCase(FuncInfo& funcInfo)
          if (!ret)
             break;
 
-         // check if next expression is an expression
-         if (expressionIter->m_type != typeExpression || expressionIter->m_isProcessed == true)
+         // generate end-switch when no expression follows
+         if (expressionIter->m_type != typeExpression ||
+            expressionIter->m_isProcessed == true ||
+            expressionIter->m_pos >= switchEnd)
          {
             if (switchAdded)
             {
