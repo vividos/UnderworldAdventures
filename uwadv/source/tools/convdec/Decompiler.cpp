@@ -67,6 +67,7 @@ void Decompiler::Write(FILE* fd, bool showDisassembly)
 {
    fputs("; conversation for ", fd);
    fputs(m_strings.GetString(7, m_conversationNumber + 16).c_str(), fd);
+   fprintf(fd, " (%u)", m_conversationNumber);
    fputs("\n\n", fd);
    fflush(fd);
 
