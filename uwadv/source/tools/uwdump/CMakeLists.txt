@@ -10,6 +10,7 @@ project(uwdump)
 
 add_executable(${PROJECT_NAME}
 	"DumpArkArchive.cpp"
+	"DumpConversationArchive.cpp"
 	"DumpCombineData.cpp"
 	"DumpLevelArchive.cpp" "DumpLevelArchive.hpp"
 	"DumpObjectProperties.cpp"

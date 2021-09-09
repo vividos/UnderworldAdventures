@@ -81,6 +81,9 @@ void DumpArkArchive(const std::string& filename, const GameStrings& gameStrings,
          fileEntryInfoList[index].m_availSize = file.Read32();
    }
 
+   bool isCnvArk = filename.find("cnv") != std::string::npos ||
+      filename.find("CNV") != std::string::npos;
+
    size_t firstEmptyBlock = (size_t)-1;
    for (size_t index = 0; index < count; index++)
    {
@@ -130,10 +133,15 @@ void DumpArkArchive(const std::string& filename, const GameStrings& gameStrings,
          printf(", size: %08x, avail: %08x", info.m_dataSize, info.m_availSize);
       }
 
+      if (isCnvArk)
+      {
+         printf(", conversation for %s",
+            gameStrings.GetString(7, index + 16).c_str());
+      }
+
       printf("\n");
    }
 
-   if (filename.find("cnv") != std::string::npos ||
-      filename.find("CNV") != std::string::npos)
-      printf("decode actual conversations from conv.ark using the convdec tool!\n");
+   if (isCnvArk)
+      printf("decode actual conversations from cnv.ark using the convdec tool!\n");
 }
