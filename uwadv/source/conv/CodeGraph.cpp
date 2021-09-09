@@ -1779,6 +1779,31 @@ void CodeGraph::FindIfElse(FuncInfo& funcInfo)
          ++else_iter;
 
          endif_iter = FindPos(bra_target_pos);
+
+         // there might be a JMP opcode before the BRA; set this also to processed
+         graph_iterator opcode_before_bra_iter = opcode_before_target_iter;
+         opcode_before_bra_iter--;
+
+         if (!opcode_before_bra_iter->m_isProcessed &&
+            opcode_before_bra_iter->m_type == typeOpcode &&
+            opcode_before_bra_iter->opcode_data.opcode == op_JMP &&
+            opcode_before_bra_iter->opcode_data.jump_target_pos == bra_target_pos)
+         {
+            opcode_before_bra_iter->m_isProcessed = true;
+         }
+
+         // there also might be a JMP opcode before the endif
+         graph_iterator opcode_before_endif_iter = endif_iter;
+         while (opcode_before_endif_iter->m_type != typeOpcode)
+            opcode_before_endif_iter--;
+
+         if (!opcode_before_endif_iter->m_isProcessed &&
+            opcode_before_endif_iter->m_type == typeOpcode &&
+            opcode_before_endif_iter->opcode_data.opcode == op_JMP &&
+            opcode_before_endif_iter->opcode_data.jump_target_pos == bra_target_pos)
+         {
+            opcode_before_endif_iter->m_isProcessed = true;
+         }
       }
       else if (haveIfNotVariant)
       {
