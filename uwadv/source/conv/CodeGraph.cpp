@@ -228,6 +228,10 @@ void CodeGraph::CollectXrefs()
             opcode == op_BRA)
             target = static_cast<Uint16>((static_cast<Uint32>(target) + static_cast<Uint32>(item.m_pos + 1)) & 0xFFFF);
 
+         if (opcode == op_CALL &&
+            target == 0xFFFF)
+            continue; // happens in uw2 code
+
          // find target position
          graph_iterator target_pos = FindPos(target);
          UaAssert(target_pos != m_graph.end());
@@ -416,6 +420,12 @@ void CodeGraph::UpdateCallJumpTargets()
       // correct jump targets for opcodes here
       if (iter->m_type == typeOpcode && iter->opcode_data.opcode == op_CALL)
       {
+         if (iter->opcode_data.arg == 0xFFFF)
+         {
+            iter->opcode_data.jump_target = "invalid_FFFF";
+            continue; // happens in uw2 code
+         }
+
          graph_iterator target_iter = FindPos(iter->opcode_data.arg);
          iter->opcode_data.jump_target = target_iter->m_labelName;
       }
@@ -771,6 +781,9 @@ void CodeGraph::AddCallOperator(graph_iterator& iter, graph_iterator stop, const
             target_name.c_str(), iter->m_pos);
          return;
       }
+
+      if (target_name.find("invalid_") == 0)
+         return; // happens in uw2 code
 
       // add to list of caller
       UaAssert(m_functionMap.find(target_name) != m_functionMap.end());
