@@ -32,12 +32,13 @@ int main(int argc, char* argv[])
 
    if (argc < 3)
    {
-      printf("syntax: convdec <basepath> <slotnumber>\n"
+      printf("syntax: convdec <basepath> <slotnumber> {--show-disasm}\n"
          "   basepath is the path to the uw1 or uw2 folder.\n"
          "   slotnumber is the conversation slot number to decompile, either\n"
-         "   as decimal or hex; slotnumber can also be * to decompile all conversations\n");
+         "   as decimal or hex; slotnumber can also be * to decompile all conversations\n"
+         "   when --show-disasm is present, the disassembly for the decoded conversation is also shown\n");
       printf("example: convdec . 0x0001\n"
-         "         convdec \"c:\\uw1\\\" 42\n\n");
+         "         convdec \"c:\\uw1\\\" 42 --show-disasm\n\n");
       return 1;
    }
 
@@ -52,7 +53,7 @@ int main(int argc, char* argv[])
 
    Uint16 slotNumber = (Uint16)strtol(slotText.c_str(), NULL, isHex ? 16 : 10);
 
-   bool showDisassembly = true;
+   bool showDisassembly = argc >= 3 && std::string(argv[3]) == "--show-disasm";
 
    GameStrings gameStrings;
    Import::GameStringsImporter importer{ gameStrings };
