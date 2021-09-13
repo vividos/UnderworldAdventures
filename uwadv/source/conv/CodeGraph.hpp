@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -366,6 +366,9 @@ namespace Conv
       /// checks if an assignment expression may contain string assignment for babl_menu and babl_fmenu
       void CheckBablMenu(graph_iterator& start,
          const graph_iterator& stop, graph_iterator& lvalue, graph_iterator& rvalue);
+
+      /// replaces an integer expression with the corresponding string from the string block
+      void ReplaceIntExpressionWithString(graph_iterator& intExpression);
 
       // statement analysis functions
 

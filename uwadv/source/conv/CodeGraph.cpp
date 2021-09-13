@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -302,7 +302,7 @@ bool CodeGraph::FindFunctionEntryPoint(graph_iterator& iter, graph_iterator stop
    const Uint16 pattern_func_start[4] =
    { op_PUSHBP, op_SPTOBP, op_PUSHI, op_ADDSP };
 
-   graph_iterator found = FindOpcodePattern(iter, stop, pattern_func_start, 4);
+   graph_iterator found = FindOpcodePattern(iter, stop, pattern_func_start, sizeof(pattern_func_start));
 
    if (found == stop)
       return false; // no more functions
@@ -381,7 +381,7 @@ bool CodeGraph::FindFunctionEntryPoint(graph_iterator& iter, graph_iterator stop
 bool CodeGraph::FindFunctionExitPoint(graph_iterator& iter, graph_iterator stop, FuncInfo& funcInfo)
 {
    const Uint16 pattern_func_end[3] = { op_BPTOSP, op_POPBP, op_RET };
-   graph_iterator found = FindOpcodePattern(iter, stop, pattern_func_end, 3);
+   graph_iterator found = FindOpcodePattern(iter, stop, pattern_func_end, sizeof(pattern_func_end));
 
    if (found == stop)
       return false;
@@ -748,11 +748,11 @@ void CodeGraph::AddCallOperator(graph_iterator& iter, graph_iterator stop, const
    }
 
    // check if a PUSH_REG follows
-   bool bReturnValue = false;
+   bool isReturnValue = false;
    if (IsOpcode(pop_iter, op_PUSH_REG))
    {
       pop_iter->m_isProcessed = true;
-      bReturnValue = true;
+      isReturnValue = true;
    }
 
    // note: CALLI functions have 2 parameter, but the 1st is the number
@@ -761,8 +761,8 @@ void CodeGraph::AddCallOperator(graph_iterator& iter, graph_iterator stop, const
       --arguments;
 
    // operator with "arguments" needed expressions
-   CodeGraphItem& operatorItem = AddOperator(iter, arguments, bReturnValue,
-      bReturnValue ? dataTypeInt : dataTypeVoid);
+   CodeGraphItem& operatorItem = AddOperator(iter, arguments, isReturnValue,
+      isReturnValue ? dataTypeInt : dataTypeVoid);
 
    // correct opcode
    if (isIntrinsic)
@@ -772,7 +772,7 @@ void CodeGraph::AddCallOperator(graph_iterator& iter, graph_iterator stop, const
 
    operatorItem.operator_data.op_arg = call_target;
 
-   std::advance(iter, arguments + (bReturnValue ? 1 : 0) - 1);
+   std::advance(iter, arguments + (isReturnValue ? 1 : 0) - 1);
 
    if (!isIntrinsic)
    {
@@ -923,19 +923,19 @@ void CodeGraph::CombineOperators(FuncInfo& funcInfo)
    while (true)
    {
       // search next operator
-      bool bFound = false;
+      bool found = false;
       graph_iterator iter;
       for (iter = start; iter != stop; ++iter)
       {
          if (iter->m_type == typeOperator && !iter->m_isProcessed)
          {
             // found operator
-            bFound = true;
+            found = true;
             break;
          }
       }
 
-      if (!bFound)
+      if (!found)
          break; // no more operators
 
       // combine found operator with expressions to form new expression
@@ -1323,13 +1323,13 @@ void CodeGraph::CheckBablMenu(graph_iterator& start,
       return; // no operator with intrinsic found before end
 
    // check for babl_menu and babl_fmenu calls
-   std::string intr_name =
+   std::string functionName =
       m_mapImportedFunctions.find(iter->operator_data.op_arg)->second.name;
 
-   if (intr_name != "babl_menu" && intr_name != "babl_fmenu")
+   if (functionName != "babl_menu" && functionName != "babl_fmenu")
       return;
 
-   if (intr_name == "babl_fmenu")
+   if (functionName == "babl_fmenu")
    {
       // check that lvalue array value matches arg0 of babl_fmenu
       graph_iterator prev_iter = iter;
@@ -1345,22 +1345,27 @@ void CodeGraph::CheckBablMenu(graph_iterator& start,
       }
    }
 
-   // determine string id and format string
-   Uint16 str_id = rvalue->expression_data.pushi_imm_value;
+   ReplaceIntExpressionWithString(rvalue);
+}
 
-   if (str_id >= m_strings.size())
+void CodeGraph::ReplaceIntExpressionWithString(graph_iterator& intExpression)
+{
+   // determine string id and format string
+   Uint16 string_id = intExpression->expression_data.pushi_imm_value;
+
+   if (string_id >= m_strings.size())
       return; // invalid string id
 
-   UaAssert(str_id < m_strings.size());
+   UaAssert(string_id < m_strings.size());
 
-   if (str_id > 0)
+   if (string_id > 0)
    {
       std::ostringstream buffer;
-      buffer << "\"" << m_strings[str_id].c_str() << "\""
-         << "; // " << str_id;
+      buffer << "\"" << m_strings[string_id].c_str() << "\""
+         << "; // " << string_id;
 
-      rvalue->expression_data.expression = buffer.str();
-      rvalue->expression_data.is_pushi_imm = false;
+      intExpression->expression_data.expression = buffer.str();
+      intExpression->expression_data.is_pushi_imm = false;
    }
 }
 
