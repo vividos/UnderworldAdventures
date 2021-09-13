@@ -464,6 +464,8 @@ void CodeGraph::ProcessFunctionQueue()
 
       FindWhile(funcInfo);
 
+      FindDoWhile(funcInfo);
+
       FindIfElse(funcInfo);
 
       AddGotoJumps(funcInfo);
@@ -1653,6 +1655,99 @@ void CodeGraph::FindWhile(FuncInfo& funcInfo)
 
       CodeGraphItem& whileEndStatement = AddStatement(bra_iter, "} // end-while");
       whileEndStatement.statement_data.indent_change_before = -1;
+   }
+}
+
+/// For do...while statement, code looks like this:
+///
+/// label1:   <----+
+///   {code}       |
+///   {expression} |
+///   BEQ label2 --|--+
+///   JMP label1 --+  |
+/// label2:   <-------+
+///   ...
+///
+void CodeGraph::FindDoWhile(FuncInfo& funcInfo)
+{
+   graph_iterator iter = FindPos(funcInfo.start),
+      stop = FindPos(funcInfo.end);
+
+   // find open expression
+   for (; iter != stop; ++iter)
+   {
+      bool isExpression = iter->m_type == typeExpression && !iter->m_isProcessed;
+      if (!isExpression)
+         continue;
+
+      graph_iterator expressionIter = iter;
+
+      // a BEQ opcode must follow
+      graph_iterator beq_iter = expressionIter;
+      for (; beq_iter != stop; ++beq_iter)
+      {
+         if (!beq_iter->m_isProcessed && beq_iter->m_type == typeOpcode)
+         {
+            if (beq_iter->opcode_data.opcode == op_BEQ)
+               break; // found
+            else
+            {
+               beq_iter = stop;
+               break;
+            }
+         }
+      }
+
+      if (beq_iter == stop)
+         continue; // no BEQ found, try next expression
+
+      // BEQ must jump down (when not, there is another control structure)
+      UaAssert(beq_iter->m_pos < beq_iter->opcode_data.jump_target_pos);
+
+      // check if there is a JMP opcode after the BEQ
+      graph_iterator jmp_iter = beq_iter;
+      ++jmp_iter;
+
+      bool isJump = !jmp_iter->m_isProcessed &&
+         jmp_iter->m_type == typeOpcode &&
+         jmp_iter->opcode_data.opcode == op_JMP;
+
+      if (!isJump)
+         continue;
+
+      Uint16 jmp_target_pos = jmp_iter->opcode_data.jump_target_pos;
+      if (jmp_target_pos > beq_iter->m_pos)
+         continue; // a JMP opcode, but jumps down; might be an if statement
+
+      m_continuePositions.insert(std::make_tuple(jmp_target_pos, jmp_iter->m_pos));
+
+      graph_iterator jmp_target_iter = FindPos(jmp_target_pos);
+
+      // add statements
+      CodeGraphItem& doStatement = AddStatement(jmp_target_iter, "do {", false);
+      doStatement.statement_data.indent_change_after = 1;
+
+      std::ostringstream buffer;
+      buffer << "} while (" << expressionIter->expression_data.expression << ");";
+
+      CodeGraphItem& whileStatement = AddStatement(expressionIter, buffer.str());
+      whileStatement.statement_data.indent_change_before = -1;
+
+      beq_iter->m_isProcessed = true;
+      jmp_iter->m_isProcessed = true;
+
+      // if there's a second JMP following the JMP, mark that processed as well
+      graph_iterator second_jmp_iter = jmp_iter;
+      ++second_jmp_iter;
+
+      bool isSecondJump = !second_jmp_iter->m_isProcessed &&
+         second_jmp_iter->m_type == typeOpcode &&
+         second_jmp_iter->opcode_data.opcode == op_JMP;
+
+      if (isSecondJump)
+      {
+         second_jmp_iter->m_isProcessed = true;
+      }
    }
 }
 

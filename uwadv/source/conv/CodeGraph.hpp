@@ -378,6 +378,9 @@ namespace Conv
       /// finds while statements
       void FindWhile(FuncInfo& funcInfo);
 
+      /// finds do-while statements
+      void FindDoWhile(FuncInfo& funcInfo);
+
       /// finds if and if-else statements
       void FindIfElse(FuncInfo& funcInfo);
 
