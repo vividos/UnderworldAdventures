@@ -180,6 +180,38 @@ For more information about the inner workings of the conversation system of
 Ultima Underworld, just look into the file "docs/uw-formats.txt" in the source
 distribution of Underworld Adventures.
 
+### convdec - Underworld Conversation Decompiler
+
+convdbg is a conversation script decompiler for Ultima Underworld.
+Conversation is done with an assembler-like language that runs in a virtual
+machine. The tool tooks the assembler opcodes and tries to find functions,
+expressions and structured programming constructs (like if, switch and while
+loops). The tool also resolves the string indices used and so lets the user
+better understand the conversation code.
+
+The program needs some parameters to work. Here's the syntax:
+
+    convdbg <underworld-path> <slotnumber> {--show-disasm}
+
+The `underworld-path` specifies the path to the original Ultima Underworld 1
+or 2 game files. The Ultima Underworld Demo also works.
+
+The slot number specifies the conversation slot to use for decompiling. Slot
+numbers can be derived from the conversation names stored in string block 7,
+starting at string 16. So subtract 16 from the conversation name index to
+specify the slot. If you specify a star ('*' without the quotes), all
+available conversation slots are decoded sequentially.
+
+The --show-disasm is optional and can be specified as last parameter, in order
+to also show disassembly for the decoded conversations. Normally only the
+decompiled conversation language is shown. With this switch, the conversation
+position and opcodes are shown, interleaved with the decompiled code.
+
+The decompiled conversation code looks a lot like C code, but isn't thought
+to be compiled with a C compiler. It is merely used to better show the user
+what each conversation does, what internal functions are called and how the
+conversation flow is.
+
 ### xmi2mid - XMIDI to MIDI converter [uw1/2]
 
 xmi2mid is a converter for XMIDI files (*.xmi) that are used in Ultima
