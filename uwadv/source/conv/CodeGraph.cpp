@@ -200,7 +200,7 @@ void CodeGraph::CollectXrefs()
 
    // start function
    CodeGraphItem& startItem = m_graph.front();
-   startItem.m_labelName = "start";
+   startItem.m_labelName = "main";
    startItem.m_xrefCount = 1;
 
    graph_iterator iter = m_graph.begin(), stop = m_graph.end();
@@ -808,18 +808,18 @@ void CodeGraph::AddAssignmentOperator(graph_iterator iter)
    UaAssert(iter != m_graph.begin());
    --swap_iter;
 
-   bool bStoSwapArgs = false;
+   bool stoSwapArgs = false;
    if (IsOpcode(swap_iter, op_SWAP))
    {
       swap_iter->m_isProcessed = true;
 
-      bStoSwapArgs = true;
+      stoSwapArgs = true;
    }
 
    CodeGraphItem& operatorItem =
       AddOperator(iter, 2, false, dataTypeVoid);
 
-   operatorItem.operator_data.sto_swap_args = bStoSwapArgs;
+   operatorItem.operator_data.sto_swap_args = stoSwapArgs;
 }
 
 void CodeGraph::AddAddressOfLocalVarExpression(graph_iterator& iter, graph_iterator stop, FuncInfo& funcInfo)
@@ -837,8 +837,8 @@ void CodeGraph::AddAddressOfLocalVarExpression(graph_iterator& iter, graph_itera
    ++fetchm_iter;
    UaAssert(fetchm_iter != m_graph.end());
 
-   bool bIsFetchm = IsOpcode(fetchm_iter, op_FETCHM);
-   if (bIsFetchm)
+   bool isFetchm = IsOpcode(fetchm_iter, op_FETCHM);
+   if (isFetchm)
    {
       fetchm_iter->m_isProcessed = true;
       isAddress = false;
@@ -875,7 +875,7 @@ void CodeGraph::AddAddressOfLocalVarExpression(graph_iterator& iter, graph_itera
 
    AddExpression(iter, buffer.str(), isAddress);
 
-   if (bIsFetchm)
+   if (isFetchm)
       ++iter;
 }
 
@@ -1619,8 +1619,8 @@ void CodeGraph::FindWhile(FuncInfo& funcInfo)
       graph_iterator bra_iter = target_iter;
       --bra_iter;
 
-      bool bIsBranch = !bra_iter->m_isProcessed && beq_iter->m_type == typeOpcode && bra_iter->opcode_data.opcode == op_BRA;
-      if (!bIsBranch)
+      bool isBranch = !bra_iter->m_isProcessed && beq_iter->m_type == typeOpcode && bra_iter->opcode_data.opcode == op_BRA;
+      if (!isBranch)
          continue;
 
       Uint16 bra_target_pos = bra_iter->opcode_data.jump_target_pos;
