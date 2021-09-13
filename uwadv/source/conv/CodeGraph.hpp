@@ -436,6 +436,10 @@ namespace Conv
       /// set with processed functions
       std::set<Uint16> m_processedFunctions;
 
+      // set with all code position ranges where a potential "continue"
+      // statement be located in
+      std::set<std::tuple<Uint16, Uint16>> m_continuePositions;
+
       /// number of globals on stack before imported vars
       Uint16 m_numGlobals;
 

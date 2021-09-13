@@ -1624,7 +1624,7 @@ void CodeGraph::FindWhile(FuncInfo& funcInfo)
       Uint16 bra_target_pos = bra_iter->opcode_data.jump_target_pos;
 
       if (bra_target_pos > target_pos)
-         continue; // a BRA opcode, but jumps down; might be a if statement
+         continue; // a BRA opcode, but jumps down; might be an if statement
 
       // check that BRA target points to our expression
       if (expressionIter->m_pos != bra_target_pos)
@@ -1639,6 +1639,8 @@ void CodeGraph::FindWhile(FuncInfo& funcInfo)
 
          continue;
       }
+
+      m_continuePositions.insert(std::make_tuple(expressionIter->m_pos, bra_iter->m_pos));
 
       // add statements
       std::ostringstream buffer;
@@ -1884,6 +1886,20 @@ void CodeGraph::AddGotoJumps(FuncInfo& funcInfo)
             AddStatement(iter, "return;");
             continue;
          }
+
+         bool foundContinue = false;
+         for (auto positionRange : m_continuePositions)
+         {
+            if (goto_target->m_pos == std::get<0>(positionRange) &&
+               iter->m_pos < std::get<1>(positionRange))
+            {
+               AddStatement(iter, "continue;");
+               foundContinue = true;
+            }
+         }
+
+         if (foundContinue)
+            continue;
 
          std::ostringstream buffer;
          buffer << "goto " << iter->opcode_data.jump_target << ";";
