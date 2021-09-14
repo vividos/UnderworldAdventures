@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
 
    Uint16 slotNumber = (Uint16)strtol(slotText.c_str(), NULL, isHex ? 16 : 10);
 
-   bool showDisassembly = argc >= 3 && std::string(argv[3]) == "--show-disasm";
+   bool showDisassembly = argc > 3 && std::string(argv[3]) == "--show-disasm";
 
    GameStrings gameStrings;
    Import::GameStringsImporter importer{ gameStrings };
