@@ -135,6 +135,9 @@ namespace Conv
          /// number of expression this operator consumes
          Uint16 numNeededExpressions;
 
+         /// data types of all expressions
+         std::vector<DataType> expressionTypes;
+
          /// indicates if operator returns an expression
          bool returns_expr;
 
@@ -226,6 +229,28 @@ namespace Conv
 
       /// all caller functions
       std::set<std::string> caller;
+   };
+
+   /// infos about parameters for external functions
+   struct ParameterInfo
+   {
+      /// list of parameters for every parameter
+      std::vector<DataType> paramTypes;
+
+      // list of flags if the parameter is an array
+      std::vector<bool> paramIsArray;
+
+      /// ctor for parameter infos
+      ParameterInfo(
+         std::initializer_list<DataType> paramTypes_ = {},
+         std::initializer_list<bool> paramIsArray_ = {})
+         :paramTypes(paramTypes_),
+         paramIsArray(paramIsArray_)
+      {
+         if (paramIsArray.empty() &&
+            !paramTypes.empty())
+            paramIsArray.resize(paramTypes.size(), false);
+      }
    };
 
    /// conversation graph
@@ -329,7 +354,9 @@ namespace Conv
 
       /// collects all expressions for an operator
       void CollectExpressions(graph_iterator start, graph_iterator end,
-         unsigned int numNeededExpressions, std::vector<graph_iterator>& expressions, bool& isStatementBetween);
+         unsigned int numNeededExpressions,
+         const std::vector<DataType>& expressionTypes,
+         std::vector<graph_iterator>& expressions, bool& isStatementBetween);
 
       /// combines operator with found expressions
       void CombineOperatorAndExpressions(FuncInfo& funcInfo,
@@ -341,7 +368,8 @@ namespace Conv
          graph_iterator insertIter, std::vector<graph_iterator>& expressions);
 
       /// replaces a local variable expression with the actual value, to siplify function calls
-      void ReplaceLocalExpressionWithValue(FuncInfo& funcInfo, graph_iterator& expressionIter);
+      void ReplaceLocalExpressionWithValue(FuncInfo& funcInfo, graph_iterator& expressionIter,
+         DataType expressionType);
 
       /// combines return operator with expression
       void CombineReturnExpression(graph_iterator insertIter, std::vector<graph_iterator>& expressions);

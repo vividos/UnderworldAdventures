@@ -28,6 +28,18 @@
 
 using namespace Conv;
 
+/// mapping with all external functions and their parameter infos
+std::map<std::string, ParameterInfo> g_externalFuncParameterInfos =
+{
+   { "babl_menu", ParameterInfo({ dataTypeString }, { true }) },
+   { "babl_fmenu", ParameterInfo({ dataTypeString, dataTypeInt }, { true, true }) },
+   { "length", ParameterInfo({ dataTypeString }) },
+   { "compare", ParameterInfo({ dataTypeString, dataTypeString }) },
+   { "contains", ParameterInfo({ dataTypeString, dataTypeString }) },
+   { "print", ParameterInfo({ dataTypeString }) },
+   { "sex", ParameterInfo({ dataTypeString, dataTypeString }) },
+};
+
 std::string CodeGraphItem::Format() const
 {
    std::string item_text;
@@ -764,6 +776,23 @@ void CodeGraph::AddCallOperator(graph_iterator& iter, graph_iterator stop, const
    CodeGraphItem& operatorItem = AddOperator(iter, arguments, isReturnValue,
       isReturnValue ? dataTypeInt : dataTypeVoid);
 
+   if (isIntrinsic)
+   {
+      if (g_externalFuncParameterInfos.find(target_name) != g_externalFuncParameterInfos.end())
+      {
+         const ParameterInfo& paramInfo = g_externalFuncParameterInfos[target_name];
+         if (operatorItem.operator_data.numNeededExpressions ==
+            paramInfo.paramIsArray.size())
+         {
+            operatorItem.operator_data.expressionTypes = paramInfo.paramTypes;
+         }
+         else
+         {
+            UaTrace("warning: number of call expressions doesn't match external function parameter count\n");
+         }
+      }
+   }
+
    // correct opcode
    if (isIntrinsic)
       operatorItem.operator_data.op_opcode = op_CALLI;
@@ -954,7 +983,9 @@ void CodeGraph::CombineOperators(FuncInfo& funcInfo)
       if (operatorIter->operator_data.numNeededExpressions > 0)
       {
          CollectExpressions(start, operatorIter,
-            operatorIter->operator_data.numNeededExpressions, expressions, isStatementBetween);
+            operatorIter->operator_data.numNeededExpressions,
+            operatorIter->operator_data.expressionTypes,
+            expressions, isStatementBetween);
       }
 
       // when statement was in between, insert at operator place
@@ -992,7 +1023,9 @@ void CodeGraph::CombineOperators(FuncInfo& funcInfo)
 }
 
 void CodeGraph::CollectExpressions(graph_iterator start, graph_iterator end,
-   unsigned int numNeededExpressions, std::vector<graph_iterator>& expressions, bool& isStatementBetween)
+   unsigned int numNeededExpressions,
+   const std::vector<DataType>& expressionTypes,
+   std::vector<graph_iterator>& expressions, bool& isStatementBetween)
 {
    graph_iterator iter = end;
    --iter;
@@ -1110,9 +1143,19 @@ void CodeGraph::CombineCallOperator(FuncInfo& funcInfo, graph_iterator operatorI
    {
       CodeGraphItem& param = *expressions[n];
 
+      DataType expressionType = dataTypeInt;
+      if (!operatorIter->operator_data.expressionTypes.empty())
+      {
+         UaAssertMsg(
+            n < operatorIter->operator_data.expressionTypes.size(),
+            "number of expression types must match number of expressions");
+
+         expressionType = operatorIter->operator_data.expressionTypes[n];
+      }
+
       if (param.expression_data.isAddress &&
          param.expression_data.expression.find("local_") == 0)
-         ReplaceLocalExpressionWithValue(funcInfo, expressions[n]);
+         ReplaceLocalExpressionWithValue(funcInfo, expressions[n], expressionType);
 
       // check if lvalue is from PUSHI opcode
       if (param.expression_data.is_pushi_imm)
@@ -1139,7 +1182,8 @@ void CodeGraph::CombineCallOperator(FuncInfo& funcInfo, graph_iterator operatorI
    }
 }
 
-void CodeGraph::ReplaceLocalExpressionWithValue(FuncInfo& funcInfo, graph_iterator& expressionIter)
+void CodeGraph::ReplaceLocalExpressionWithValue(FuncInfo& funcInfo, graph_iterator& expressionIter,
+   DataType expressionType)
 {
    // find statement with assignment to a local variable
    std::string assignment = expressionIter->expression_data.expression + " = ";
@@ -1176,6 +1220,13 @@ void CodeGraph::ReplaceLocalExpressionWithValue(FuncInfo& funcInfo, graph_iterat
    expressionIter->expression_data.isAddress = false;
    expressionIter->expression_data.expression = value;
    expressionIter->expression_data.is_pushi_imm = false;
+
+   if (expressionType == dataTypeString)
+   {
+      expressionIter->expression_data.pushi_imm_value =
+         (Uint16)strtol(value.c_str(), nullptr, 10);
+      ReplaceIntExpressionWithString(expressionIter, true);
+   }
 
    iter->m_isProcessed = true;
    iter->statement_data.statement = "// " + iter->statement_data.statement;
