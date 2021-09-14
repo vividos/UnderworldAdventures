@@ -1388,10 +1388,10 @@ void CodeGraph::CheckBablMenu(graph_iterator& start,
       }
    }
 
-   ReplaceIntExpressionWithString(rvalue);
+   ReplaceIntExpressionWithString(rvalue, false);
 }
 
-void CodeGraph::ReplaceIntExpressionWithString(graph_iterator& intExpression)
+void CodeGraph::ReplaceIntExpressionWithString(graph_iterator& intExpression, bool useBlockComment)
 {
    // determine string id and format string
    Uint16 string_id = intExpression->expression_data.pushi_imm_value;
@@ -1403,9 +1403,18 @@ void CodeGraph::ReplaceIntExpressionWithString(graph_iterator& intExpression)
 
    if (string_id > 0)
    {
+      // replace linefeeds in text
+      std::string text{ m_strings[string_id] };
+
+      Base::String::Replace(text, "\n", "\\n");
+
       std::ostringstream buffer;
-      buffer << "\"" << m_strings[string_id].c_str() << "\""
-         << "; // " << string_id;
+      buffer << "\"" << text << "\"";
+
+      if (useBlockComment)
+         buffer << " /* " << string_id << " */";
+      else
+         buffer << "; // " << string_id;
 
       intExpression->expression_data.expression = buffer.str();
       intExpression->expression_data.is_pushi_imm = false;

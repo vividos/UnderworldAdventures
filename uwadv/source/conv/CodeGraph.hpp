@@ -372,7 +372,7 @@ namespace Conv
          const graph_iterator& stop, graph_iterator& lvalue, graph_iterator& rvalue);
 
       /// replaces an integer expression with the corresponding string from the string block
-      void ReplaceIntExpressionWithString(graph_iterator& intExpression);
+      void ReplaceIntExpressionWithString(graph_iterator& intExpression, bool useBlockComment);
 
       // statement analysis functions
 
