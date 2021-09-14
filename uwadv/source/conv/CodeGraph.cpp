@@ -968,7 +968,7 @@ void CodeGraph::CombineOperators(FuncInfo& funcInfo)
             insertIter = expressions.back();
       }
 
-      CombineOperatorAndExpressions(operatorIter, stop, insertIter, expressions);
+      CombineOperatorAndExpressions(funcInfo, operatorIter, stop, insertIter, expressions);
 
       // transfer label from first expression
       if (!expressions.empty())
@@ -1019,14 +1019,14 @@ void CodeGraph::CollectExpressions(graph_iterator start, graph_iterator end,
    UaAssert(expressions.size() == end->operator_data.numNeededExpressions);
 }
 
-void CodeGraph::CombineOperatorAndExpressions(graph_iterator operatorIter, graph_iterator stop,
+void CodeGraph::CombineOperatorAndExpressions(FuncInfo& funcInfo, graph_iterator operatorIter, graph_iterator stop,
    graph_iterator insertIter, std::vector<graph_iterator>& expressions)
 {
    switch (operatorIter->operator_data.op_opcode)
    {
    case op_CALL:
    case op_CALLI:
-      CombineCallOperator(operatorIter, insertIter, expressions);
+      CombineCallOperator(funcInfo, operatorIter, insertIter, expressions);
       break;
 
       // create a "return" statement
@@ -1083,7 +1083,7 @@ void CodeGraph::CombineOperatorAndExpressions(graph_iterator operatorIter, graph
    }
 }
 
-void CodeGraph::CombineCallOperator(graph_iterator operatorIter,
+void CodeGraph::CombineCallOperator(FuncInfo& funcInfo, graph_iterator operatorIter,
    graph_iterator insertIter, std::vector<graph_iterator>& expressions)
 {
    std::ostringstream buffer;
@@ -1110,12 +1110,13 @@ void CodeGraph::CombineCallOperator(graph_iterator operatorIter,
    {
       CodeGraphItem& param = *expressions[n];
 
+      if (param.expression_data.isAddress &&
+         param.expression_data.expression.find("local_") == 0)
+         ReplaceLocalExpressionWithValue(funcInfo, expressions[n]);
+
       // check if lvalue is from PUSHI opcode
       if (param.expression_data.is_pushi_imm)
          PushiImmediateToGlobal(expressions[n]);
-
-      // param must be address, since all params are passed by reference/pointer
-      UaAssert(true == param.expression_data.isAddress);
 
       buffer << param.expression_data.expression;
 
@@ -1136,6 +1137,48 @@ void CodeGraph::CombineCallOperator(graph_iterator operatorIter,
 
       AddStatement(insertIter, buffer.str());
    }
+}
+
+void CodeGraph::ReplaceLocalExpressionWithValue(FuncInfo& funcInfo, graph_iterator& expressionIter)
+{
+   // find statement with assignment to a local variable
+   std::string assignment = expressionIter->expression_data.expression + " = ";
+
+   graph_iterator start = FindPos(funcInfo.start);
+   graph_iterator iter = expressionIter;
+   --iter;
+   while (iter != start)
+   {
+      if (iter->m_type == typeStatement &&
+         iter->statement_data.statement.find(assignment) == 0)
+         break;
+      iter--;
+   }
+
+   if (iter == start)
+      return; // no assignment found
+
+   std::string value = iter->statement_data.statement.substr(assignment.size());
+   size_t endPos = value.find_first_of(';');
+   if (endPos != std::string::npos)
+      value = value.substr(0, endPos);
+
+   // check that value only consists of digits
+   for (char ch : value)
+      if (isdigit(ch) == 0 && ch != '-')
+         return;
+
+   // mark local variable as unknown, to prevent listing it
+   std::string localVarIndex = expressionIter->expression_data.expression.substr(6);
+   size_t localIndex = (size_t)strtol(localVarIndex.c_str(), nullptr, 10);
+   funcInfo.locals_types[localIndex] = dataTypeUnknown;
+
+   expressionIter->expression_data.isAddress = false;
+   expressionIter->expression_data.expression = value;
+   expressionIter->expression_data.is_pushi_imm = false;
+
+   iter->m_isProcessed = true;
+   iter->statement_data.statement = "// " + iter->statement_data.statement;
 }
 
 void CodeGraph::CombineReturnExpression(graph_iterator insertIter, std::vector<graph_iterator>& expressions)

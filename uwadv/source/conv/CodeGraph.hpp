@@ -332,12 +332,16 @@ namespace Conv
          unsigned int numNeededExpressions, std::vector<graph_iterator>& expressions, bool& isStatementBetween);
 
       /// combines operator with found expressions
-      void CombineOperatorAndExpressions(graph_iterator operatorIter, graph_iterator stop,
+      void CombineOperatorAndExpressions(FuncInfo& funcInfo,
+         graph_iterator operatorIter, graph_iterator stop,
          graph_iterator insertIter, std::vector<graph_iterator>& expressions);
 
       /// combines call operator with its parameters
-      void CombineCallOperator(graph_iterator operatorIter,
+      void CombineCallOperator(FuncInfo& funcInfo, graph_iterator operatorIter,
          graph_iterator insertIter, std::vector<graph_iterator>& expressions);
+
+      /// replaces a local variable expression with the actual value, to siplify function calls
+      void ReplaceLocalExpressionWithValue(FuncInfo& funcInfo, graph_iterator& expressionIter);
 
       /// combines return operator with expression
       void CombineReturnExpression(graph_iterator insertIter, std::vector<graph_iterator>& expressions);
