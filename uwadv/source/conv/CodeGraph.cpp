@@ -302,7 +302,7 @@ bool CodeGraph::FindFunctionEntryPoint(graph_iterator& iter, graph_iterator stop
    const Uint16 pattern_func_start[4] =
    { op_PUSHBP, op_SPTOBP, op_PUSHI, op_ADDSP };
 
-   graph_iterator found = FindOpcodePattern(iter, stop, pattern_func_start, sizeof(pattern_func_start));
+   graph_iterator found = FindOpcodePattern(iter, stop, pattern_func_start, SDL_arraysize(pattern_func_start));
 
    if (found == stop)
       return false; // no more functions
@@ -381,7 +381,7 @@ bool CodeGraph::FindFunctionEntryPoint(graph_iterator& iter, graph_iterator stop
 bool CodeGraph::FindFunctionExitPoint(graph_iterator& iter, graph_iterator stop, FuncInfo& funcInfo)
 {
    const Uint16 pattern_func_end[3] = { op_BPTOSP, op_POPBP, op_RET };
-   graph_iterator found = FindOpcodePattern(iter, stop, pattern_func_end, sizeof(pattern_func_end));
+   graph_iterator found = FindOpcodePattern(iter, stop, pattern_func_end, SDL_arraysize(pattern_func_end));
 
    if (found == stop)
       return false;
