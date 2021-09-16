@@ -2048,10 +2048,17 @@ void CodeGraph::FindIfElse(FuncInfo& funcInfo)
       beq_iter->m_isProcessed = true;
 
       // insert statements
+      std::string expressionText = expressionIter->expression_data.expression;
+      if (negateExpression)
+      {
+         if (expressionText.substr(0, 1) == "!")
+            expressionText = expressionText.substr(1);
+         else
+            expressionText = "!(" + expressionText + ")";
+      }
+
       std::ostringstream buffer;
-      buffer << "if (" <<
-         (negateExpression ? "!" : "") <<
-         expressionIter->expression_data.expression << ") {";
+      buffer << "if (" << expressionText << ") {";
 
       CodeGraphItem& ifStatement = AddStatement(expressionIter, buffer.str());
       ifStatement.statement_data.indent_change_after = 1;
