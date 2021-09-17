@@ -2050,7 +2050,8 @@ void CodeGraph::FindIfElse(FuncInfo& funcInfo)
       CodeGraphItem& ifStatement = AddStatement(expressionIter, buffer.str());
       ifStatement.statement_data.indent_change_after = 1;
 
-      if (else_iter != stop)
+      if (else_iter != stop &&
+         else_iter != endif_iter)
       {
          CodeGraphItem& elseStatement = AddStatement(else_iter, "} else {", false);
          elseStatement.statement_data.indent_change_before = -1;
