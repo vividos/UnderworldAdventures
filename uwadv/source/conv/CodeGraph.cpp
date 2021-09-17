@@ -2210,9 +2210,9 @@ void CodeGraph::PostProcessFunction(FuncInfo& funcInfo)
 
 void CodeGraph::MarkFunctionsUnused()
 {
-   std::for_each(m_functionMap.begin(), m_functionMap.end(), [&](const FunctionMap::value_type& val)
+   for (auto mapValue : m_functionMap)
    {
-      const FuncInfo& funcInfo = val.second;
+      const FuncInfo& funcInfo = mapValue.second;
 
       Uint16 startPos = funcInfo.start;
       if (m_processedFunctions.find(startPos) == m_processedFunctions.end())
@@ -2227,7 +2227,7 @@ void CodeGraph::MarkFunctionsUnused()
          UaTrace("removing function %s, it is never called\n", funcInfo.name.c_str());
          iter->m_xrefCount = 0;
       }
-   });
+   }
 }
 
 // helper functions
