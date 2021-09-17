@@ -1916,22 +1916,9 @@ void CodeGraph::FindIfElse(FuncInfo& funcInfo)
       graph_iterator expressionIter = iter;
 
       // a BEQ opcode must follow
-      graph_iterator beq_iter = expressionIter;
-      for (; beq_iter != stop; ++beq_iter)
-      {
-         if (!beq_iter->m_isProcessed && beq_iter->m_type == typeOpcode)
-         {
-            if (beq_iter->opcode_data.opcode == op_BEQ)
-               break; // found
-            else
-            {
-               beq_iter = stop;
-               break;
-            }
-         }
-      }
-
-      if (beq_iter == stop)
+      graph_iterator beq_iter = FindNextGraphItem(expressionIter, stop, typeOpcode);
+      if (beq_iter == stop ||
+         beq_iter->opcode_data.opcode != op_BEQ)
          continue; // no BEQ found, try next expression
 
       // BEQ must jump down (when not, there is another control structure)
@@ -2255,6 +2242,19 @@ CodeGraph::graph_iterator CodeGraph::FindPos(Uint16 target)
    // should not happen
    UaAssert(false);
    return stop;
+}
+
+CodeGraph::graph_iterator CodeGraph::FindNextGraphItem(
+   CodeGraph::graph_iterator iter, CodeGraph::graph_iterator stop, GraphItemType itemType)
+{
+   for (; iter != stop; ++iter)
+   {
+      if (!iter->m_isProcessed &&
+         iter->m_type == itemType)
+         break; // found
+   }
+
+   return iter;
 }
 
 bool CodeGraph::IsOpcode(const_graph_iterator iter, Uint16 opcode) const

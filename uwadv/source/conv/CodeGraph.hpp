@@ -435,6 +435,10 @@ namespace Conv
       /// finds first iterator for code position, or end() iterator
       graph_iterator FindPos(Uint16 target);
 
+      /// finds next iterator for graph item of given type
+      graph_iterator FindNextGraphItem(
+         graph_iterator iter, graph_iterator stop, GraphItemType itemType);
+
       /// checks if a given iter points to an opcode item and if it contains given opcode
       bool IsOpcode(const_graph_iterator iter, Uint16 opcode) const;
 
