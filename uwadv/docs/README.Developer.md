@@ -18,6 +18,10 @@ navigate the document.
 [3.5 Resource files in the "data" folder](#3-5-resource-files-in-the-data-folder)<br/>
 
 [4. Lua Scripting](#4-lua-scripting)<br/>
+[4.1 Lua functions that are called from the game](#4-1-lua-functions-that-are-called-from-the-game)<br/>
+[4.2 Game functions that can be called from Lua](#4-2-game-functions-that-can-be-called-from-lua)<br/>
+[4.3 Cutscenes control interface](#4-3-cutscenes-control-interface)<br/>
+[4.4 Character creation interface](#4-4-character-creation-interface)<br/>
 
 [A. Authors](#a-authors)<br/>
 
