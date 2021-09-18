@@ -33,6 +33,7 @@ extern void DumpLevArk(const std::string& filename, const GameStrings& gameStrin
 extern void DumpConversationArchive(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
 extern void DumpCommonObjectProperties(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
 extern void DumpObjectProperties(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
+extern void DumpExecutable(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
 extern void DumpUwExe(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
 extern void DumpCombineData(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
 extern void DumpArkArchive(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
@@ -48,6 +49,8 @@ std::map<std::string, T_fileHandler> g_dumpFileHandlerMap =
    { "uw.exe", DumpUwExe },
    { "uw2.exe", DumpUwExe },
    { "uwdemo.exe", DumpUwExe },
+   { "uwconfig.exe", DumpExecutable },
+   { "uwsound.exe", DumpExecutable },
    { "cnv.ark", DumpConversationArchive },
    { "byt.ark", DumpArkArchive },
    { "scd.ark", DumpArkArchive },

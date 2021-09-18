@@ -28,8 +28,12 @@ class GameStrings;
 extern bool DecodeBuiltInModels(const char* filename,
    std::vector<Model3DPtr>& allModels, bool dump = false);
 
+extern void DumpExecutable(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
+
 void DumpUwExe(const std::string& filename, const GameStrings& gameStrings, bool isUw2)
 {
+   DumpExecutable(filename, gameStrings, isUw2);
+
    printf("3D models dumping\n");
 
    std::vector<Model3DPtr> allModels;
