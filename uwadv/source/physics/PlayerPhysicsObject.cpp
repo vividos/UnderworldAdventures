@@ -57,6 +57,8 @@ PlayerPhysicsObject::PlayerPhysicsObject(Underworld::Player& player, bool enhanc
    m_moveFactors[moveJump] = 0.0;
    m_moveFactors[moveSlide] = 0.0;
    m_moveFactors[moveFloat] = 0.0;
+
+   ResetGravity();
 }
 
 void PlayerPhysicsObject::SetMovementMode(unsigned int set, unsigned int del)
@@ -114,13 +116,16 @@ void PlayerPhysicsObject::SetNewElapsedTime(double elapsedTime)
 
 Vector3d PlayerPhysicsObject::GetPosition()
 {
-   return Vector3d(m_player.GetXPos(), m_player.GetYPos(), m_player.GetHeight() + c_playerEllipsoidZ / 2.0 + 0.05);
+   return Vector3d{
+      m_player.GetXPos(),
+      m_player.GetYPos(),
+      m_player.GetHeight() + c_playerEllipsoidZ + 0.05 };
 }
 
 void PlayerPhysicsObject::SetPosition(Vector3d& pos)
 {
    m_player.SetPos(pos.x, pos.y);
-   m_player.SetHeight(pos.z - c_playerEllipsoidZ / 2.0);
+   m_player.SetHeight(pos.z - c_playerEllipsoidZ);
 }
 
 bool my_movement;

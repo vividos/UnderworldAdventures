@@ -28,7 +28,7 @@ using Underworld::Player;
 Player::Player()
    :m_name("GRONKEY"),
    m_xpos(32.0), m_ypos(32.0),
-   m_height(0.0),
+   m_height(96.0),
    m_rotateAngle(0.0),
    m_panAngle(0.0)
 {
