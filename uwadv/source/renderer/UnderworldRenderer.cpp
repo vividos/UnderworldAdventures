@@ -363,10 +363,10 @@ void UnderworldRenderer::RenderDecal(const Underworld::Object& obj, unsigned int
 
    // render quad
    glBegin(GL_QUADS);
-   glTexCoord2d(u1, v2); glVertex3d(base.x - to_right.x, base.y - to_right.y, base.z - decalheight);
-   glTexCoord2d(u2, v2); glVertex3d(base.x + to_right.x, base.y + to_right.y, base.z - decalheight);
-   glTexCoord2d(u2, v1); glVertex3d(base.x + to_right.x, base.y + to_right.y, base.z + decalheight);
-   glTexCoord2d(u1, v1); glVertex3d(base.x - to_right.x, base.y - to_right.y, base.z + decalheight);
+   glTexCoord2d(u1, v2); glVertex3d(base.x - to_right.x, base.y - to_right.y, base.z);
+   glTexCoord2d(u2, v2); glVertex3d(base.x + to_right.x, base.y + to_right.y, base.z);
+   glTexCoord2d(u2, v1); glVertex3d(base.x + to_right.x, base.y + to_right.y, base.z + 2 * decalheight);
+   glTexCoord2d(u1, v1); glVertex3d(base.x - to_right.x, base.y - to_right.y, base.z + 2 * decalheight);
    glEnd();
 
    glDisable(GL_POLYGON_OFFSET_FILL);
