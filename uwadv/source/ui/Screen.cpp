@@ -112,6 +112,13 @@ bool Screen::ProcessEvent(SDL_Event& event)
       if ((mod & KMOD_ALT) != 0) mod |= KMOD_ALT;
       if ((mod & KMOD_CTRL) != 0) mod |= KMOD_CTRL;
 
+      // quick fix for german keyboards that have Z mapped to scancode Y
+      if (event.key.keysym.scancode == SDL_SCANCODE_Z &&
+         event.key.keysym.sym == SDLK_y)
+      {
+         event.key.keysym.sym = SDLK_z;
+      }
+
       Base::KeyType key = m_screenKeymap->FindKey(event.key.keysym.sym, (SDL_Keymod)mod);
 
       // process key
