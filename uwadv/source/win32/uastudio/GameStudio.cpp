@@ -96,6 +96,12 @@ public:
       UaTrace("ShowCutscene: number=%i\n", cutsceneNumber);
    }
 
+   /// shows map
+   virtual void ShowMap() override
+   {
+      UaTrace("ShowMap\n");
+   }
+
    // virtual IPhysicsModelCallback methods
    virtual void GetSurroundingTriangles(unsigned int xpos,
       unsigned int ypos, std::vector<Triangle3dTextured>& allTriangles) override

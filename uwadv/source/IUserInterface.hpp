@@ -135,4 +135,7 @@ public:
 
    /// starts showing cutscene with given number
    virtual void ShowCutscene(unsigned int cutsceneNumber) = 0;
+
+   /// shows map
+   virtual void ShowMap() = 0;
 };

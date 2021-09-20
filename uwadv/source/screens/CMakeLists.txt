@@ -15,7 +15,7 @@ add_library(${PROJECT_NAME} STATIC
 	"CreateCharacterScreen.cpp" "CreateCharacterScreen.hpp"
 	"CutsceneViewScreen.cpp" "CutsceneViewScreen.hpp"
 	"IngameControls.cpp" "IngameControls.hpp"
-#	"MapViewScreen.cpp" "MapViewScreen.hpp"
+	"MapViewScreen.cpp" "MapViewScreen.hpp"
 	"OriginalIngameScreen.cpp" "OriginalIngameScreen.hpp"
 	"Panel.cpp" "Panel.hpp"
 	"SaveGameScreen.cpp" "SaveGameScreen.hpp"

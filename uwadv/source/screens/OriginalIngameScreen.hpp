@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -57,6 +57,7 @@ enum IngameAction
    ingameActionQuicksave,  ///< performs quicksaving
    ingameActionConversation, ///< starts conversation
    ingameActionCutscene,   ///< shows cutscene
+   ingameActionShowMap,    ///< shows map view
 };
 
 /// player move state
@@ -139,6 +140,9 @@ protected:
 
    /// starts showing cutscene with given number
    virtual void ShowCutscene(unsigned int cutsceneNumber) override;
+
+   /// shows map
+   virtual void ShowMap() override;
 
    /// takes a screenshot for savegame preview
    void DoSavegameScreenshot(unsigned int xres, unsigned int yres);

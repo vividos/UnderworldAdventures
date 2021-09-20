@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2005,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2005,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@
 #include "Audio.hpp"
 #include "SaveGameScreen.hpp"
 #include "CutsceneViewScreen.hpp"
+#include "MapViewScreen.hpp"
 #include "uwadv/DebugServer.hpp"
 #include "ConversationScreen.hpp"
 #include "Model3D.hpp"
@@ -857,6 +858,10 @@ void OriginalIngameScreen::DoAction(IngameAction action)
       m_game.ReplaceScreen(new CutsceneViewScreen(m_game, m_fadeoutParameter), true);
       break;
 
+   case ingameActionShowMap:
+      m_game.ReplaceScreen(new MapViewScreen(m_game), true);
+      break;
+
    default:
       break;
    }
@@ -969,6 +974,11 @@ void OriginalIngameScreen::ShowCutscene(unsigned int cutsceneNumber)
 {
    m_fadeoutParameter = cutsceneNumber;
    ScheduleAction(ingameActionCutscene, true);
+}
+
+void OriginalIngameScreen::ShowMap()
+{
+   ScheduleAction(ingameActionShowMap, true);
 }
 
 void OriginalIngameScreen::DoSavegameScreenshot(

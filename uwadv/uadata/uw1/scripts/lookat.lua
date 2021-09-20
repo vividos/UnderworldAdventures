@@ -159,13 +159,14 @@ function look_at_objinfo(objinfo, is_inv)
    then
       -- take a more in-depth look at some objects
 
+      -- read book, 0x013x
       if objinfo.item_id >= 0x0130 and objinfo.item_id < 0x0140
       then
-         -- read book, 0x013x
-         if objinfo.item_id == 0x013b
+         if objinfo.item_id == 0x013b -- a_map
          then
             -- map scroll, "Enscribed upon the scroll is your map."
             uw.print(uw.get_string(1, 151))
+            uw.show_map();
          else
             -- normal book
             uw.print("You read the " .. name .. "...")

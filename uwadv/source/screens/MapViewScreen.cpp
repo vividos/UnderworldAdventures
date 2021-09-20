@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -27,21 +27,7 @@ void MapViewScreen::Init()
    Screen::Init();
 }
 
-/*
-void MapViewScreen::Done()
-{
-}
-
-void MapViewScreen::HandleEvent(SDL_Event &event)
-{
-}
-
-void MapViewScreen::render()
-{
-}
-*/
-
 void MapViewScreen::Tick()
 {
-   core->PopScreen();
+   m_game.RemoveScreen();
 }

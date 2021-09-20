@@ -77,6 +77,7 @@ private:
    static int uw_change_level(lua_State* L); ///< uw.change_level
    static int uw_start_conv(lua_State* L);   ///< uw.start_conv
    static int uw_show_cutscene(lua_State* L);      ///< uw.show_cutscene
+   static int uw_show_map(lua_State* L);           ///< uw.show_map
    static int uw_show_ingame_anim(lua_State* L);   ///< uw.show_ingame_anim
    static int uw_cursor_use_item(lua_State* L);    ///< uw.cursor_use_item
    static int uw_cursor_target(lua_State* L);      ///< uw.cursor_target

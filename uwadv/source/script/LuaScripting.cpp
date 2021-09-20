@@ -288,6 +288,7 @@ void LuaScripting::RegisterFunctions()
    lua_register_table(L, "change_level", uw_change_level);
    lua_register_table(L, "start_conv", uw_start_conv);
    lua_register_table(L, "show_cutscene", uw_show_cutscene);
+   lua_register_table(L, "show_map", uw_show_map);
    lua_setglobal(L, "uw");
 
    // player object
@@ -411,6 +412,19 @@ int LuaScripting::uw_show_cutscene(lua_State* L)
    {
       size_t cutsceneNumber = static_cast<size_t>(lua_tointeger(L, -1));
       callback->ShowCutscene(cutsceneNumber);
+   }
+
+   return 0;
+}
+
+int LuaScripting::uw_show_map(lua_State* L)
+{
+   LuaScripting& self = GetScriptingFromSelf(L);
+
+   IUserInterface* callback = self.m_game->GetUserInterface();
+   if (callback != NULL)
+   {
+      callback->ShowMap();
    }
 
    return 0;

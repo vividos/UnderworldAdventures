@@ -53,10 +53,7 @@
     <ClCompile Include="CutsceneViewScreen.cpp" />
     <ClCompile Include="IngameControls.cpp" />
     <ClCompile Include="OriginalIngameScreen.cpp" />
-    <ClCompile Include="MapViewScreen.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="MapViewScreen.cpp" />
     <ClCompile Include="Panel.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

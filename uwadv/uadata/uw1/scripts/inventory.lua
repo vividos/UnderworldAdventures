@@ -55,4 +55,13 @@ function inventory_use(inv_pos)
 
    dump_invinfo_table(inv_pos)
 
+   inv_objinfo = inventory.get_info(inv_pos)
+
+   if inv_objinfo.item_id == 0x013b -- a_map
+   then
+      uw.show_map();
+   else
+      -- TODO implement using items
+   end
+
 end
