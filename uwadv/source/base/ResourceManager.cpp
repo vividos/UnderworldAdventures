@@ -122,7 +122,7 @@ Base::SDL_RWopsPtr ResourceManager::GetResourceFile(const std::string& relativeF
    // find all uadata resource files
    std::string zipFileSpec = m_uadataPath + "uadata??.zip";
    std::vector<std::string> fileList;
-   Base::FileSystem::FindFiles(zipFileSpec, fileList);
+   Base::FileSystem::FindFiles(zipFileSpec, fileList, false);
 
    std::sort(fileList.begin(), fileList.end());
 
@@ -210,7 +210,7 @@ void ResourceManager::RescanUnderworldFilenames(std::string uwPath)
       folderList.pop_front();
 
       std::vector<std::string> fileList;
-      FileSystem::FindFiles(path + "*.*", fileList);
+      FileSystem::FindFiles(uwPath + "*.*", fileList, true);
 
       for (auto filename : fileList)
       {
@@ -232,10 +232,10 @@ void ResourceManager::RescanUnderworldFilenames(std::string uwPath)
 void ResourceManager::RescanUnderworldZipArchives(const std::string& uwPath)
 {
    std::vector<std::string> fileList;
-   FileSystem::FindFiles(uwPath + "*.zip", fileList);
+   FileSystem::FindFiles(uwPath + "*.zip", fileList, false);
 
    // also find GoG.com zip archive
-   FileSystem::FindFiles(uwPath + "*.gog", fileList);
+   FileSystem::FindFiles(uwPath + "*.gog", fileList, false);
 
    for (auto zipFilename : fileList)
       RescanZipArchive(zipFilename);

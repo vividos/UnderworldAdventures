@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2005,2006,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2005,2006,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 #include "pch.hpp"
 #include "FileSystem.hpp"
 #include <filesystem>
+#include <deque>
 
 #ifdef HAVE_WIN32
 #ifdef HAVE_MINGW
@@ -79,21 +80,37 @@ bool PatternMatches(const std::string& path, const std::string& pattern)
 }
 
 /// The meta-files "." and ".." are not added to the file list.
-void Base::FileSystem::FindFiles(const std::string& searchPath, std::vector<std::string>& fileList)
+void Base::FileSystem::FindFiles(const std::string& searchPath, std::vector<std::string>& fileList,
+   bool recursive)
 {
    // find out base path
-   std::string basePath(searchPath);
+   std::string basePath{ searchPath };
    std::string::size_type pos = basePath.find_last_of("\\/");
    if (pos != std::string::npos)
       basePath.erase(pos + 1);
 
    std::string pattern = searchPath.substr(pos + 1);
 
-   for (auto entry : std::filesystem::directory_iterator(std::filesystem::path{ basePath }))
+   std::deque<std::string> filePathQueue;
+   filePathQueue.push_back(basePath);
+
+   while (!filePathQueue.empty())
    {
-      if (entry.is_regular_file() &&
-         PatternMatches(entry.path().filename().string(), pattern))
-         fileList.push_back(entry.path().string());
+      std::string folder = filePathQueue.front();
+      filePathQueue.pop_front();
+
+      for (auto entry : std::filesystem::directory_iterator(std::filesystem::path{ folder }))
+      {
+         if (entry.is_regular_file() &&
+            PatternMatches(entry.path().filename().string(), pattern))
+            fileList.push_back(entry.path().string());
+
+         if (recursive &&
+            entry.is_directory())
+         {
+            filePathQueue.push_back(entry.path().string());
+         }
+      }
    }
 }
 

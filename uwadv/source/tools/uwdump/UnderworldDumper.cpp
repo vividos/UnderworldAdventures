@@ -198,7 +198,7 @@ void UnderworldDumper::DumpFile(const std::string& path)
 void UnderworldDumper::DumpWildcardFiles(const std::string& path)
 {
    std::vector<std::string> fileList;
-   Base::FileSystem::FindFiles(path, fileList);
+   Base::FileSystem::FindFiles(path, fileList, true);
 
    for (const std::string& filename : fileList)
       DumpFile(filename);

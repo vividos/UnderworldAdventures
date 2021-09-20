@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2006,2019 Underworld Adventures Team
+// Copyright (c) 2006,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 //
 #include "pch.hpp"
 #include "FileSystem.hpp"
+#include "File.hpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -59,21 +60,51 @@ namespace UnitTest
       }
 
       /// Tests getting a list of files in a folder, using
-      /// Base::FileSystem::FindFiles().
-      /// \todo complete test
-      TEST_METHOD(TestListFiles)
+      /// Base::FileSystem::FindFiles(). Empty folder case.
+      TEST_METHOD(TestListFiles_EmptyFolder)
       {
+         // set up
          TempFolder testFolder;
          std::string path = testFolder.GetPathName();
 
-         // test empty folder
+         std::vector<std::string> fileList;
+
+         // run
          try
          {
-            std::vector<std::string> vFileList;
-            Base::FileSystem::FindFiles(path + "/*.*", vFileList);
+            Base::FileSystem::FindFiles(path + "/*.*", fileList, false);
+         }
+         catch (const Base::FileSystemException& ex)
+         {
+            ex;
+            Assert::Fail();
+         }
 
-            // note: folder list must not contain "." or ".."
-            Assert::IsTrue(vFileList.empty());
+         // check
+         // note: folder list must not contain "." or ".."
+         Assert::IsTrue(fileList.empty());
+      }
+
+      /// Tests getting a list of files in a folder, using
+      /// Base::FileSystem::FindFiles(). Single file in folder
+      TEST_METHOD(TestListFiles_FileInFolder)
+      {
+         // set up
+         TempFolder testFolder;
+         std::string path = testFolder.GetPathName();
+
+         Base::File testFile{ path + "testfile.bin", Base::modeWrite };
+         Assert::IsTrue(true == testFile.IsOpen());
+
+         testFile.Write8(0x42);
+         testFile.Close();
+
+         // run
+         std::vector<std::string> fileList;
+
+         try
+         {
+            Base::FileSystem::FindFiles(path + "/*.bin", fileList, false);
          }
          catch (const Base::FileSystemException& ex)
          {
@@ -82,6 +113,8 @@ namespace UnitTest
          }
 
          // test list with files
+         Assert::IsFalse(fileList.empty());
+         Assert::IsTrue(fileList.front().find("testfile.bin") != -1);
       }
    };
 } // namespace UnitTest

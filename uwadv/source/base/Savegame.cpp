@@ -276,7 +276,7 @@ void SavegamesManager::Rescan()
    m_savegamesList.clear();
 
    std::string strSearchPath = m_savegameFolder + "/uasave*.uas";
-   Base::FileSystem::FindFiles(strSearchPath, m_savegamesList);
+   Base::FileSystem::FindFiles(strSearchPath, m_savegamesList, false);
 
    // add quicksave savegame name
    if (!m_gamePrefix.empty() && IsQuicksaveAvail())
