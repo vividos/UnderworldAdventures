@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2005,2006,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2005,2006,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -51,6 +51,17 @@ namespace Underworld
       tileSlope_w = 0x09      ///< open tile with sloped floor going up west
    };
 
+   enum AutomapFlag
+   {
+      autommapDefault = 0x0,
+      automapDoor = 0x1,
+      automapTeleport = 0x3,
+      automapWater = 0x4,
+      automapBridge = 0x6,
+      automapLava = 0xc,
+      automapUndiscovered = 0x0f,
+   };
+
    /// tilemap tile info
    struct TileInfo
    {
@@ -65,7 +76,8 @@ namespace Underworld
          m_textureCeiling(Base::c_stockTexturesFloor),
          m_isMagicDisabled(false),
          m_isDoorPresent(false),
-         m_isSpecialLightFeature(false)
+         m_isSpecialLightFeature(false),
+         m_automapFlag(automapUndiscovered)
       {
       }
 
@@ -98,6 +110,9 @@ namespace Underworld
 
       /// special light feature \todo rename to a better name
       bool m_isSpecialLightFeature;
+
+      /// automap flag
+      AutomapFlag m_automapFlag;
    };
 
    /// tilemap

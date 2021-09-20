@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2005,2006,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2005,2006,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -140,6 +140,8 @@ void Tilemap::Load(Base::Savegame& sg)
       tile.m_isDoorPresent = sg.Read8() != 0;
       tile.m_isSpecialLightFeature = sg.Read8() != 0;
 
+      tile.m_automapFlag = static_cast<AutomapFlag>(sg.Read8());
+
       m_setUsedTextures.insert(tile.m_textureWall);
       m_setUsedTextures.insert(tile.m_textureFloor);
       m_setUsedTextures.insert(tile.m_textureCeiling);
@@ -172,6 +174,7 @@ void Tilemap::Save(Base::Savegame& sg) const
       sg.Write8(tile.m_isMagicDisabled ? 1 : 0);
       sg.Write8(tile.m_isDoorPresent ? 1 : 0);
       sg.Write8(tile.m_isSpecialLightFeature ? 1 : 0);
+      sg.Write8(tile.m_automapFlag);
    }
 
    sg.EndSection();
