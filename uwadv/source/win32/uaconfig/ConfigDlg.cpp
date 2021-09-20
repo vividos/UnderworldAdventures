@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2005,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2005,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,6 +21,9 @@
 //
 #include "ConfigDlg.hpp"
 #include "FileSystem.hpp"
+#include "Base.hpp"
+#include "Settings.hpp"
+#include "ResourceManager.hpp"
 #include <string>
 #include <atlconv.h>
 #include <mmsystem.h> // for midiOutGet*
@@ -168,6 +171,8 @@ LRESULT ConfigDlg::OnSetUw1Path(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 
    SetDlgItemText(IDC_EDIT_UW1_PATH, CA2CT(uw1path.c_str()));
 
+   CheckConfig();
+
    return 0;
 }
 
@@ -246,14 +251,6 @@ void ConfigDlg::LoadConfig()
       (WPARAM)(m_settings.GetInt(Base::settingWin32MidiDevice) + 1), 0);
 }
 
-/// checks if a file with given filename is available
-bool IsFileAvailable(const char* base, const char* fname)
-{
-   std::string filename(base);
-   filename += fname;
-   return Base::FileSystem::FileExists(filename.c_str());
-}
-
 bool ConfigDlg::CheckConfig()
 {
    _TCHAR buffer[MAX_PATH];
@@ -263,23 +260,20 @@ bool ConfigDlg::CheckConfig()
       GetDlgItemText(IDC_EDIT_UW1_PATH, buffer, MAX_PATH);
 
       std::string uw1path = CT2CA(buffer);
-      bool uw1_avail =
-         IsFileAvailable(uw1path.c_str(), "data/cnv.ark") &&
-         IsFileAvailable(uw1path.c_str(), "data/strings.pak") &&
-         IsFileAvailable(uw1path.c_str(), "data/pals.dat") &&
-         IsFileAvailable(uw1path.c_str(), "data/allpals.dat") &&
-         (IsFileAvailable(uw1path.c_str(), "uw.exe") ||
-            IsFileAvailable(uw1path.c_str(), "uwdemo.exe"));
 
-      if (!uw1_avail)
+      Base::Settings settings;
+      settings.SetValue(Base::SettingsType::settingUnderworldPath, uw1path.c_str());
+      settings.SetValue(Base::SettingsType::settingUw1Path, uw1path.c_str());
+      Base::ResourceManager resourceManager{ settings };
+
+      if (!resourceManager.DetectGameType(settings) ||
+         settings.GetGameType() != Base::gameUw1)
       {
          ShowMessageBox(_T("Couldn't find Ultima Underworld 1 game files in specified folder!"),
             MB_OK | MB_ICONEXCLAMATION);
          return false;
       }
    }
-
-   // TODO: check uw2 path
 
    // check screen resolution
    {
