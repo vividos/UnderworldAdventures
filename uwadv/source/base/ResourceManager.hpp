@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2006,2019 Underworld Adventures Team
+// Copyright (c) 2006,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ namespace Base
 
       /// detects game type based on the settingUnderworldPath settings value and sets game type,
       /// settingGamePrefix and settingUw1IsUwdemo settings
-      void DetectGameType(Settings& settings) const;
+      bool DetectGameType(Settings& settings) const;
 
       /// returns a file that can contain placeholder like %uw-path% and %uadata%
       SDL_RWopsPtr GetFileWithPlaceholder(const std::string& filename) const;

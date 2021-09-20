@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2006,2019 Underworld Adventures Team
+// Copyright (c) 2006,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ ResourceManager::ResourceManager(const Settings& settings)
    Rescan(settings);
 }
 
-void ResourceManager::DetectGameType(Settings& settings) const
+bool ResourceManager::DetectGameType(Settings& settings) const
 {
    settings.SetGameType(Base::gameUw1);
 
@@ -56,12 +56,18 @@ void ResourceManager::DetectGameType(Settings& settings) const
       settings.SetValue(Base::settingGamePrefix, isUw1Demo ? "uw_demo" : "uw1");
 
       settings.SetValue(Base::settingUw1IsUwdemo, isUw1Demo);
+
+      return true;
    }
    else if (CheckUw2GameFilesAvailable())
    {
       settings.SetGameType(Base::gameUw2);
       settings.SetValue(Base::settingGamePrefix, "uw2");
+
+      return true;
    }
+
+   return false;
 }
 
 /// returns a file that can contain placeholder like %uw-path% and %uadata%
@@ -201,31 +207,16 @@ void ResourceManager::RescanUnderworldFilenames(std::string uwPath)
 {
    m_mapLowercaseFilenamesToActualFilenames.clear();
 
-   std::deque<std::string> folderList;
-   folderList.push_back(uwPath);
+   std::vector<std::string> fileList;
+   FileSystem::FindFiles(uwPath + "*.*", fileList, true);
 
-   while (!folderList.empty())
+   for (auto filename : fileList)
    {
-      std::string path = folderList.front();
-      folderList.pop_front();
+      std::string lowerFilename = filename;
+      String::Lowercase(lowerFilename);
 
-      std::vector<std::string> fileList;
-      FileSystem::FindFiles(uwPath + "*.*", fileList, true);
-
-      for (auto filename : fileList)
-      {
-         if (FileSystem::FolderExists(filename))
-         {
-            folderList.push_back(filename + FileSystem::PathSeparator);
-            continue;
-         }
-
-         std::string lowerFilename = filename;
-         String::Lowercase(lowerFilename);
-
-         m_mapLowercaseFilenamesToActualFilenames.insert(
-            std::make_pair(lowerFilename, filename));
-      }
+      m_mapLowercaseFilenamesToActualFilenames.insert(
+         std::make_pair(lowerFilename, filename));
    }
 }
 
