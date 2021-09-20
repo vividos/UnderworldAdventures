@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019,2020 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2020,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -95,7 +95,8 @@ void Import::TextureLoader::LoadTextures(
    UaAssert(value == 2);
    UNUSED(value);
 
-   unsigned int xyres = file.Read8(); // x and y resolution (square textures)
+   const unsigned int xyres = file.Read8(); // x and y resolution (square textures)
+   const unsigned int dataLength = xyres * xyres;
 
    Uint16 numTextures = file.Read16();
 
@@ -112,8 +113,6 @@ void Import::TextureLoader::LoadTextures(
          continue;
 
       file.Seek(offsets[textureIndex], Base::seekBegin);
-
-      unsigned int dataLength = xyres * xyres;
 
       IndexedImage& textureImage = textureImages[startIndex + textureIndex];
       textureImage.Create(xyres, xyres);
