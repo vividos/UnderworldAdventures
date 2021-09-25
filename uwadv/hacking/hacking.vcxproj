@@ -61,6 +61,7 @@
     <ClCompile Include="critdec.cpp" />
     <ClCompile Include="fontdecode.cpp" />
     <ClCompile Include="gamestrings.cpp" />
+    <ClCompile Include="grdecode.cpp" />
     <ClCompile Include="hacking.cpp" />
     <ClCompile Include="levarkdec.cpp" />
     <ClCompile Include="miscdecode.cpp" />
