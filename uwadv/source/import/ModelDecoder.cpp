@@ -51,6 +51,36 @@ struct
    { 0x000550e0, 0x59aa64d4, 0x0005517a }, // another UW2 build
 };
 
+static std::map<Uint16, Uint8> s_colorOffsetToPaletteIndexMapping =
+{
+   // uw1
+   { 0x2920, 0x63 }, // gray
+   { 0x2922, 0x30 }, // blue
+   { 0x2924, 0x50 }, // yellow
+   { 0x2926, 0 }, // black/transparent
+   { 0x292a, 0 },
+   { 0x292c, 0 }, // only used in 00be node in model 1 door frame
+   { 0x292e, 0 }, // only used in 00be node in model 1 door frame
+   { 0x2936, 0 }, // only used in bridge
+
+   // uw2
+   { 0x2680, 0x63 },
+   { 0x2682, 0x30 },
+   { 0x2684, 0x50 },
+   { 0x2686, 0 },
+   { 0x268a, 0 },
+   { 0x268c, 0 }, // only used in 00be node in model 1 door frame
+   { 0x268e, 0 }, // only used in 00be node in model 1 door frame
+   { 0x2696, 0 }, // only used in bridge
+
+   // blackrock gem colors
+   { 0x2698, 0 },
+   { 0x269a, 0 },
+   { 0x269c, 0 },
+   { 0x269e, 0 },
+   { 0x26a0, 0 },
+};
+
 #define UaModelTrace if (dump) printf
 
 /// model name tables
@@ -167,6 +197,18 @@ double ModelReadTextureCoord(Base::File& file)
    return val / 65535.0;
 }
 
+/// Takes a color offset that points into the uw's executable's segment at the
+/// position where color indices are stored, maps it to the palette index and
+/// returns it
+Uint8 MapColorOffsetToPaletteIndex(Uint16 colorOffset)
+{
+   UaAssertMsg(
+      s_colorOffsetToPaletteIndexMapping.find(colorOffset) != s_colorOffsetToPaletteIndexMapping.end(),
+      "color offset must be mapped to a palette index");
+
+   return s_colorOffsetToPaletteIndexMapping[colorOffset];
+}
+
 /// stores a vertex in the vertex list, resizing it when necessary
 void ModelStoreVertex(const Vector3d& vertex, Uint16 vertno,
    std::vector<Vector3d>& vertex_list)
@@ -190,6 +232,10 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
       // read next command
       ModelNodeCommand cmd = (ModelNodeCommand)file.Read16();
       Uint16 refvert, vertno, unk1;
+
+      Uint16 colorOffset;
+      Uint8 palIndex = 0;
+
       double vx, vy, vz;
       double nx, ny, nz;
       Vector3d refvect;
@@ -226,9 +272,10 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
 
       case M3_UW_SUBMODEL: // 00ba submodel
       {
-         unk1 = file.Read16();
-         UaModelTrace("[submodel] start, unk1=%04x ", unk1);
+         colorOffset = file.Read16();
+         palIndex = MapColorOffsetToPaletteIndex(colorOffset);
 
+         UaModelTrace("[submodel] start, color=%04x (%02x) ", colorOffset, palIndex);
          unk1 = file.Read16();
 
          long here = file.Tell();
@@ -613,30 +660,39 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
       // shading/colour nodes
       case M3_UW_COLOR_DEF: // 0014 colour definition
          refvert = ModelReadVertexNumber(file);
-         unk1 = file.Read16();
+         colorOffset = file.Read16();
+         palIndex = MapColorOffsetToPaletteIndex(colorOffset);
          vertno = ModelReadVertexNumber(file);
-         UaModelTrace("[shade] color refvert=%u unk1=%04x vertno=%u", refvert, unk1, vertno);
+
+         UaModelTrace("[shade] color refvert=%u color=%04x (%02x) vertno=%u", refvert, colorOffset, palIndex, vertno);
          break;
 
       case M3_UW_FACE_SHADE: // 00BC define face shade
+         colorOffset = file.Read16();
+         palIndex = MapColorOffsetToPaletteIndex(colorOffset);
          unk1 = file.Read16();
-         vertno = file.Read16();
-         UaModelTrace("[shade] shade unk1=%02x unk2=%02x", unk1, vertno);
+
+         UaModelTrace("[shade] shade color=%04x (%02x) unk1=%02x", colorOffset, palIndex, unk1);
          break;
 
       case M3_UW_FACE_TWOSHADES: // 00BE ??? seems to define 2 colors
-         vertno = file.Read16();
-         unk1 = file.Read16();
-         UaModelTrace("[shade] twoshade unk1=%02x unk2=%02x ", vertno, unk1);
+         colorOffset = file.Read16();
+         palIndex = MapColorOffsetToPaletteIndex(colorOffset);
+         UaModelTrace("[shade] twoshade color1=%04x (%02x) ", colorOffset, palIndex);
+
+         colorOffset = file.Read16();
+         palIndex = MapColorOffsetToPaletteIndex(colorOffset);
+         UaModelTrace("color2=%04x (%02x) ", colorOffset, palIndex);
          break;
 
       case M3_UW_VERTEX_DARK: // 00D4 define vertex gouraud shading values
       {
          Uint16 nvert = file.Read16();
-         unk1 = file.Read16();
+         colorOffset = file.Read16();
+         palIndex = MapColorOffsetToPaletteIndex(colorOffset);
 
-         UaModelTrace("[shade] color nvert=%u, unk1=%04x vertlist=",
-            nvert, unk1);
+         UaModelTrace("[shade] gouraud nvert=%u, color=%04x (%02x) vertlist=",
+            nvert, colorOffset, palIndex);
 
          for (Uint16 n = 0; n < nvert; n++)
          {
@@ -663,11 +719,11 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
          // unknown nodes
       case M3_UW_FACE_UNK16: // 0016 ??? unknown
          vertno = ModelReadVertexNumber(file);
+         colorOffset = file.Read16();
+         palIndex = MapColorOffsetToPaletteIndex(colorOffset);
          unk1 = file.Read16();
-         UaModelTrace("[unkn] 0016 vertno=%02x unk1=%04x ", vertno, unk1);
 
-         unk1 = file.Read16();
-         UaModelTrace("unk2=%04x", unk1);
+         UaModelTrace("[unkn] 0016 vertno=%02x color=%04x (%02x) unk1=%04x", vertno, colorOffset, palIndex, unk1);
          break;
 
       case M3_UW_UNKNOWN_12: // 0012 ??? unknown
