@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2003,2004,2005,2006,2019 Underworld Adventures Team
+// Copyright (c) 2003,2004,2005,2006,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -83,7 +83,7 @@ namespace Import
    private:
       /// common uw1 and uw2 level loading
       void LoadUwLevels(Underworld::LevelList& levelList, bool uw2Mode,
-         unsigned int numLevels, unsigned int textureMapOffset);
+         unsigned int numLevels, unsigned int textureMapOffset, unsigned int automapOffset);
 
       /// loads texture mapping from current file
       void LoadTextureMapping(std::vector<Uint16>& textureMapping, bool uw2Mode);
@@ -95,6 +95,9 @@ namespace Import
       /// loads object list from current file
       void LoadObjectList(Underworld::ObjectList& objectList, const TileStartLinkList& tileStartLinkList,
          std::vector<Uint16>& textureMapping);
+
+      /// loads automap
+      void LoadAutomap(Underworld::Tilemap& tilemap);
 
    private:
       /// resource manager

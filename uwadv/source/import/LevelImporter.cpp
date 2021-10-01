@@ -77,15 +77,16 @@ void LevelImporter::LoadUwDemoLevel(Underworld::LevelList& levelList)
 
 void LevelImporter::LoadUw1Levels(Underworld::LevelList& levelList)
 {
-   LoadUwLevels(levelList, false, 9, 18);
+   LoadUwLevels(levelList, false, 9, 18, 27);
 }
 
 void LevelImporter::LoadUw2Levels(Underworld::LevelList& levelList)
 {
-   LoadUwLevels(levelList, true, 80, 80);
+   LoadUwLevels(levelList, true, 80, 80, 160);
 }
 
-void LevelImporter::LoadUwLevels(Underworld::LevelList& levelList, bool uw2Mode, unsigned int numLevels, unsigned int textureMapOffset)
+void LevelImporter::LoadUwLevels(Underworld::LevelList& levelList, bool uw2Mode, unsigned int numLevels,
+   unsigned int textureMapOffset, unsigned int automapOffset)
 {
    std::vector<Underworld::Level>& allLevels = levelList.GetVectorLevels();
 
@@ -116,6 +117,13 @@ void LevelImporter::LoadUwLevels(Underworld::LevelList& levelList, bool uw2Mode,
 
       // load object list
       LoadObjectList(level.GetObjectList(), tileStartLinkList, textureMapping);
+
+      // load automap
+      if (levArkFile.IsAvailable(levelIndex + automapOffset))
+      {
+         m_file = levArkFile.GetFile(levelIndex + automapOffset);
+         LoadAutomap(level.GetTilemap());
+      }
    }
 }
 
@@ -158,5 +166,17 @@ void Import::LevelImporter::LoadObjectList(Underworld::ObjectList& objectList,
 
             objectList.SetListStart(link, xpos, ypos);
          }
+      }
+}
+
+void Import::LevelImporter::LoadAutomap(Underworld::Tilemap& tilemap)
+{
+   for (Uint16 ypos = 0; ypos < 64; ypos++)
+      for (Uint16 xpos = 0; xpos < 64; xpos++)
+      {
+         Underworld::TileInfo& tileInfo = tilemap.GetTileInfo(xpos, ypos);
+
+         Uint8 automapFlag = m_file.Read8();
+         tileInfo.m_automapFlag = static_cast<Underworld::AutomapFlag>(automapFlag >> 4);
       }
 }
