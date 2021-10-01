@@ -180,7 +180,7 @@ void DumpExecutable(const std::string& filename, const GameStrings& gameStrings,
    }
 
    Uint16 main_data_segment = file.Read16();
-   printf("Found what looks like a mov dx, $%04x ... \n", main_data_segment);
+   printf("Found what looks like a mov dx, $%04x ...\n", main_data_segment);
 
    // Now we check for the Turbo C++ copyright string at data:0008
    Uint32 offset_data = header.SegmentOffsetToFileOffset(main_data_segment, 0);
@@ -258,5 +258,5 @@ void DumpExecutable(const std::string& filename, const GameStrings& gameStrings,
          segmentStartFileOffset);
    }
 
-   printf("Flags: C = Code, D = Data, O = Overlay\n");
+   printf("Flags: C = Code, D = Data, O = Overlay\n\n");
 }

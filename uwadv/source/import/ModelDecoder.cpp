@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -39,16 +39,16 @@
 struct
 {
    Uint32 table_offset;
-   Uint32 value;          /* 4 bytes at table_offset */
+   Uint32 value;          ///< 4 bytes at table_offset
    Uint32 base_offset;
 } g_model_offset_table[] =
 {
    { 0x0004e910, 0x40064ab6, 0x0004e99e },
-   { 0x0004ccd0, 0x40064ab6, 0x0004cd5e }, /* same models, different place */
-   { 0x0004e370, 0x40064ab6, 0x0004e3fe }, /* ditto (reported Gerd Bitzer) */
-   { 0x0004ec70, 0x40064ab6, 0x0004ecfe }, /* uw_demo models */
-   { 0x00054cf0, 0x59aa64d4, 0x00054d8a }, /* UW2 */
-   { 0x000550e0, 0x59aa64d4, 0x0005517a }, /* another UW2 build            */
+   { 0x0004ccd0, 0x40064ab6, 0x0004cd5e }, // same models, different place
+   { 0x0004e370, 0x40064ab6, 0x0004e3fe }, // ditto (reported Gerd Bitzer)
+   { 0x0004ec70, 0x40064ab6, 0x0004ecfe }, // uw_demo models
+   { 0x00054cf0, 0x59aa64d4, 0x00054d8a }, // UW2
+   { 0x000550e0, 0x59aa64d4, 0x0005517a }, // another UW2 build
 };
 
 #define UaModelTrace if (dump) printf
@@ -78,7 +78,7 @@ const char* c_modelNames[32] =
    "gravestone",
    "texture map (0x016e)",
    "-",
-   "?texture map (0x016f)",
+   "texture map (0x016f)",
    "moongate",
    "table",
    "chest",
@@ -98,9 +98,13 @@ enum ModelNodeCommand
    M3_UW_SORT_PLANE_ZY = 0x000C,
    M3_UW_SORT_PLANE_XY = 0x000E,
    M3_UW_SORT_PLANE_XZ = 0x0010,
-   M3_UW_COLOR_DEF = 0x0014, //???
-   M3_UW_FACE_UNK16 = 0x0016, //???
+   M3_UW_UNKNOWN_12 = 0x0012,
+   M3_UW_COLOR_DEF = 0x0014,
+   M3_UW_FACE_UNK16 = 0x0016,
+   M3_UW_FACE_UNK2E = 0x002E, // only uw2
    M3_UW_FACE_UNK40 = 0x0040,
+   M3_UW_FACE_UNK44 = 0x0044, // only uw2
+   M3_UW_TRANSLATE = 0x004a,
    M3_UW_FACE_PLANE = 0x0058,
    M3_UW_FACE_PLANE_ZY = 0x005E,
    M3_UW_FACE_PLANE_XY = 0x0060,
@@ -121,25 +125,49 @@ enum ModelNodeCommand
    M3_UW_VERTEX_YZ = 0x0094,
    M3_UW_FACE_SHORT = 0x00A0,
    M3_UW_TEXTURE_FACE = 0x00A8,
+   M3_UW_UNKNOWN_B2 = 0x00B2, // uw2 only
    M3_UW_TMAP_VERTICES = 0x00B4,
+   M3_UW_SUBMODEL = 0x00BA,
    M3_UW_FACE_SHADE = 0x00BC,
    M3_UW_FACE_TWOSHADES = 0x00BE,
+   M3_UW_TMAP_VERTICES2 = 0x00CE,
+   M3_UW_FACE_SHORT2 = 0x00D2, // uw2 only
    M3_UW_VERTEX_DARK = 0x00D4,
    M3_UW_FACE_GOURAUD = 0x00D6,
 };
 
+// shorthand texture coordinates for M3_UW_FACE_SHORT and M3_UW_FACE_SHORT2
+// nodes
+static const double shorthand_texcoords[8] =
+{
+   0.0, 0.0,
+   1.0, 0.0,
+   1.0, 1.0,
+   0.0, 1.0,
+};
+
+/// reads a 16-bit int as 8.8 fixed-point double value
 double ModelReadFixed(Base::File& file)
 {
    Sint16 val = static_cast<Sint16>(file.Read16());
    return val / 256.0;
 }
 
+/// reads a vertex number, ignoring the first 3 bits
 Uint16 ModelReadVertexNumber(Base::File& file)
 {
    Uint16 val = file.Read16();
-   return val / 8;
+   return val >> 3;
 }
 
+/// reads a 16-bit int as 0.16 fixed-point double texture coordinate
+double ModelReadTextureCoord(Base::File& file)
+{
+   Uint16 val = static_cast<Uint16>(file.Read16());
+   return val / 65535.0;
+}
+
+/// stores a vertex in the vertex list, resizing it when necessary
 void ModelStoreVertex(const Vector3d& vertex, Uint16 vertno,
    std::vector<Vector3d>& vertex_list)
 {
@@ -150,7 +178,7 @@ void ModelStoreVertex(const Vector3d& vertex, Uint16 vertno,
 }
 
 void ModelParseNode(Base::File& file, Vector3d& origin,
-   std::vector<Vector3d> vertex_list,
+   std::vector<Vector3d>& vertex_list,
    std::vector<Triangle3dTextured>& triangles,
    bool dump)
 {
@@ -188,7 +216,37 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
             vertno, unk1, vx, vy, vz);
          break;
 
-         // vertex definition nodes
+      case M3_UW_TRANSLATE: // 004a translate
+         vx = ModelReadFixed(file);
+         vz = ModelReadFixed(file); // z and y swapped
+         vy = ModelReadFixed(file);
+         UaModelTrace("[translate] delta=(%f,%f,%f)",
+            vx, vy, vz);
+         break;
+
+      case M3_UW_SUBMODEL: // 00ba submodel
+      {
+         unk1 = file.Read16();
+         UaModelTrace("[submodel] start, unk1=%04x ", unk1);
+
+         unk1 = file.Read16();
+
+         long here = file.Tell();
+         long offset = here - ((-unk1) & 0xffff);
+         UaModelTrace(" reloffset=%04x, submodel at 0x%08x\n", unk1, offset);
+
+         // parse submodel nodes
+         file.Seek(offset, Base::seekBegin);
+         ModelParseNode(file, origin, vertex_list, triangles, dump);
+
+         // return to "here"
+         file.Seek(here, Base::seekBegin);
+
+         UaModelTrace("      [submodel] end");
+      }
+      break;
+
+      // vertex definition nodes
       case M3_UW_VERTEX: // 007a define initial vertex
          vx = ModelReadFixed(file);
          vy = ModelReadFixed(file);
@@ -226,11 +284,13 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
          vx = ModelReadFixed(file);
          vertno = ModelReadVertexNumber(file);
 
+         UaAssertMsg(refvert < vertex_list.size(), "vertex list index must be valid");
+
          refvect = vertex_list[refvert];
          refvect.x += vx;
          ModelStoreVertex(refvect, vertno, vertex_list);
 
-         UaModelTrace("[vertex] vertno=%u vertex=(%f,%f,%f) x from=%u",
+         UaModelTrace("[vertex] vertno=%u vertex=(%f,%f,%f) offset-x from=%u",
             vertno, refvect.x, refvect.y, refvect.z, refvert);
          break;
 
@@ -239,11 +299,13 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
          vz = ModelReadFixed(file);
          vertno = ModelReadVertexNumber(file);
 
+         UaAssertMsg(refvert < vertex_list.size(), "vertex list index must be valid");
+
          refvect = vertex_list[refvert];
          refvect.z += vz;
          ModelStoreVertex(refvect, vertno, vertex_list);
 
-         UaModelTrace("[vertex] vertno=%u vertex=(%f,%f,%f) z from=%u",
+         UaModelTrace("[vertex] vertno=%u vertex=(%f,%f,%f) offset-z from=%u",
             vertno, refvect.x, refvect.y, refvect.z, refvert);
          break;
 
@@ -252,11 +314,13 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
          vy = ModelReadFixed(file);
          vertno = ModelReadVertexNumber(file);
 
+         UaAssertMsg(refvert < vertex_list.size(), "vertex list index must be valid");
+
          refvect = vertex_list[refvert];
          refvect.y += vy;
          ModelStoreVertex(refvect, vertno, vertex_list);
 
-         UaModelTrace("[vertex] vertno=%u vertex=(%f,%f,%f) y from=%u",
+         UaModelTrace("[vertex] vertno=%u vertex=(%f,%f,%f) offset-y from=%u",
             vertno, refvect.x, refvect.y, refvect.z, refvert);
          break;
 
@@ -266,12 +330,14 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
          refvert = ModelReadVertexNumber(file);
          vertno = ModelReadVertexNumber(file);
 
+         UaAssertMsg(refvert < vertex_list.size(), "vertex list index must be valid");
+
          refvect = vertex_list[refvert];
          refvect.x += vx;
          refvect.z += vz;
          ModelStoreVertex(refvect, vertno, vertex_list);
 
-         UaModelTrace("[vertex] vertno=%u vertex=(%f,%f,%f) xz from=%u",
+         UaModelTrace("[vertex] vertno=%u vertex=(%f,%f,%f) offset-xz from=%u",
             vertno, refvect.x, refvect.y, refvect.z, refvert);
          break;
 
@@ -281,12 +347,14 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
          refvert = ModelReadVertexNumber(file);
          vertno = ModelReadVertexNumber(file);
 
+         UaAssertMsg(refvert < vertex_list.size(), "vertex list index must be valid");
+
          refvect = vertex_list[refvert];
          refvect.x += vx;
          refvect.y += vy;
          ModelStoreVertex(refvect, vertno, vertex_list);
 
-         UaModelTrace("[vertex] vertno=%u vertex=(%f,%f,%f) xy from=%u",
+         UaModelTrace("[vertex] vertno=%u vertex=(%f,%f,%f) offset-xy from=%u",
             vertno, refvect.x, refvect.y, refvect.z, refvert);
          break;
 
@@ -296,12 +364,14 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
          refvert = ModelReadVertexNumber(file);
          vertno = ModelReadVertexNumber(file);
 
+         UaAssertMsg(refvert < vertex_list.size(), "vertex list index must be valid");
+
          refvect = vertex_list[refvert];
          refvect.y += vy;
          refvect.z += vz;
          ModelStoreVertex(refvect, vertno, vertex_list);
 
-         UaModelTrace("[vertex] vertno=%u vertex=(%f,%f,%f) yz from=%u",
+         UaModelTrace("[vertex] vertno=%u vertex=(%f,%f,%f) offset-yz from=%u",
             vertno, refvect.x, refvect.y, refvect.z, refvert);
          break;
 
@@ -314,7 +384,7 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
          refvect.z = 32.0; // todo: ceiling value
          ModelStoreVertex(refvect, vertno, vertex_list);
 
-         UaModelTrace("[vertex] vertno=%u vertex=(%f,%f,ceil) ceil from=%u unk1=%04x",
+         UaModelTrace("[vertex] vertno=%u vertex=(%f,%f,ceil) to-ceil from=%u unk1=%04x",
             vertno, refvect.x, refvect.y, refvert, unk1);
          break;
 
@@ -377,7 +447,7 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
             }
          break;
 
-         // face info nodes
+         // face definition nodes
       case M3_UW_FACE_VERTICES: // 007e define face vertices
       {
          Uint16 nvert = file.Read16();
@@ -394,7 +464,7 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
             tess.AddPolygonVertex(vert);
 
             UaModelTrace("%u", vertno);
-            if (i <= nvert - 1) UaModelTrace(" ");
+            if (i < nvert - 1) UaModelTrace(" ");
          }
 
          const std::vector<Triangle3dTextured>& tri = tess.Tessellate(0x0001);
@@ -404,15 +474,18 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
 
       case M3_UW_TEXTURE_FACE: // 00a8 define texture-mapped face
       case M3_UW_TMAP_VERTICES: // 00b4 define face vertices with u,v information
+      case M3_UW_TMAP_VERTICES2: // 00ce same as 00b4
       {
          UaModelTrace("[face] %s ", cmd == M3_UW_TEXTURE_FACE ? "tex" : "tmap");
 
          // read texture number
          if (cmd == M3_UW_TEXTURE_FACE)
          {
-            unk1 = file.Read16(); // texture number?
+            unk1 = file.Read16();
             UaModelTrace("texnum=%04x ", unk1);
          }
+         else
+            unk1 = 0;
 
          Uint16 nvert = file.Read16();
          PolygonTessellator tess;
@@ -423,8 +496,8 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
          {
             Uint16 vertno = ModelReadVertexNumber(file);
 
-            double u0 = ModelReadFixed(file);
-            double v0 = ModelReadFixed(file);
+            double u0 = ModelReadTextureCoord(file);
+            double v0 = ModelReadTextureCoord(file);
 
             Vertex3d vert;
             vert.pos = vertex_list[vertno];
@@ -433,7 +506,7 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
             tess.AddPolygonVertex(vert);
 
             UaModelTrace("%u (%f/%f)", vertno, u0, v0);
-            if (i <= nvert - 1) UaModelTrace(" ");
+            if (i < nvert - 1) UaModelTrace(" ");
          }
 
          const std::vector<Triangle3dTextured>& tri = tess.Tessellate(0x0002);
@@ -503,8 +576,8 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
       }
       break;
 
-      // unknown nodes
-      case M3_UW_COLOR_DEF: // 0014 ??? colour definition
+      // shading/colour nodes
+      case M3_UW_COLOR_DEF: // 0014 colour definition
          refvert = ModelReadVertexNumber(file);
          unk1 = file.Read16();
          vertno = ModelReadVertexNumber(file);
@@ -517,13 +590,13 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
          UaModelTrace("[shade] shade unk1=%02x unk2=%02x", unk1, vertno);
          break;
 
-      case M3_UW_FACE_TWOSHADES: // 00BE ??? seems to define 2 shades
+      case M3_UW_FACE_TWOSHADES: // 00BE ??? seems to define 2 colors
          vertno = file.Read16();
          unk1 = file.Read16();
          UaModelTrace("[shade] twoshade unk1=%02x unk2=%02x ", vertno, unk1);
          break;
 
-      case M3_UW_VERTEX_DARK: // 00D4 define dark vertex face (?)
+      case M3_UW_VERTEX_DARK: // 00D4 define vertex gouraud shading values
       {
          Uint16 nvert = file.Read16();
          unk1 = file.Read16();
@@ -536,7 +609,8 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
             vertno = ModelReadVertexNumber(file);
             unk1 = file.Read8();
 
-            UaModelTrace("%u (%02x) ", vertno, unk1);
+            UaModelTrace("%u (%02x)", vertno, unk1);
+            if (n < nvert - 1) UaModelTrace(" ");
          }
 
          if (nvert & 1)
@@ -545,19 +619,27 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
       break;
 
       case M3_UW_FACE_GOURAUD: // 00D6 define gouraud shading
-         UaModelTrace("[shade] gouraud");
+         UaModelTrace("[shade] gouraud on");
          break;
 
-      case M3_UW_FACE_UNK40: // 0040 ???
+      case M3_UW_FACE_UNK40: // 0040 ??? flat
          UaModelTrace("[shade] unknown");
          break;
 
-      case M3_UW_FACE_SHORT: // 00A0 ??? shorthand face definition
+      case M3_UW_FACE_SHORT: // 00A0 shorthand face definition
+      case M3_UW_FACE_SHORT2: // 00D2 shorthand face definition [uw2]
       {
-         vertno = ModelReadVertexNumber(file);
+         UaModelTrace("[face] shorthand ");
+
+         if (cmd == M3_UW_FACE_SHORT)
+         {
+            unk1 = file.Read16();
+            UaModelTrace("unk1=%04x ", unk1);
+         }
+
          PolygonTessellator tess;
 
-         UaModelTrace("[face] shorthand unk1=%u vertlist=", vertno);
+         UaModelTrace("vertlist=");
 
          for (Uint16 i = 0; i < 4; i++)
          {
@@ -565,9 +647,12 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
 
             Vertex3d vert;
             vert.pos = vertex_list[vertno];
+            vert.u = shorthand_texcoords[i * 2];
+            vert.v = shorthand_texcoords[i * 2 + 1];
             tess.AddPolygonVertex(vert);
 
-            UaModelTrace("%u ", vertno);
+            UaModelTrace("%u", vertno);
+            if (i < 3) UaModelTrace(" ");
          }
 
          const std::vector<Triangle3dTextured>& tri = tess.Tessellate(0x0003);
@@ -575,50 +660,33 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
       }
       break;
 
-      case 0x00d2: // 00D2 ??? shorthand face definition
-      {
+         // unknown nodes
+      case M3_UW_FACE_UNK16: // 0016 ??? unknown
          vertno = ModelReadVertexNumber(file);
-         PolygonTessellator tess;
-
-         UaModelTrace("[face] vertno=%u vertlist=", vertno);
-
-         for (Uint16 i = 0; i < 4; i++)
-         {
-            Uint8 vertno = file.Read8();
-
-            Vertex3d vert;
-            vert.pos = vertex_list[vertno];
-            tess.AddPolygonVertex(vert);
-
-            UaModelTrace("%u ", vertno);
-         }
-
-         const std::vector<Triangle3dTextured>& tri = tess.Tessellate(0x0004);
-         triangles.insert(triangles.begin(), tri.begin(), tri.end());
-
-         UaModelTrace("shorthand");
-      }
-      break;
-
-      case M3_UW_FACE_UNK16: // 0016 ???
-      {
-         //Uint32 pos = file.Tell();
-
-         Uint16 nvert = ModelReadVertexNumber(file);
          unk1 = file.Read16();
+         UaModelTrace("[unkn] 0016 vertno=%02x unk1=%04x ", vertno, unk1);
 
-         for (Uint16 n = 0; n < nvert; n++)
-         {
-            unk1 = file.Read8();
-         }
-
-         if (nvert & 1)
-            file.Read8(); // read alignment padding
-      }
-      break;
-
-      case 0x0012:
          unk1 = file.Read16();
+         UaModelTrace("unk2=%04x", unk1);
+         break;
+
+      case M3_UW_UNKNOWN_12: // 0012 ??? unknown
+         unk1 = file.Read16();
+         UaModelTrace("[unkn] 0012 unk1=%04x", unk1);
+         break;
+
+      case M3_UW_FACE_UNK2E: // 002e ??? unknown [uw2]
+         unk1 = file.Read16();
+         UaModelTrace("[unkn] 002e unk1=%02x", unk1);
+         break;
+
+      case M3_UW_FACE_UNK44: // 0044 ??? unknown [uw2]
+         UaModelTrace("[unkn] 0044");
+         break;
+
+      case M3_UW_UNKNOWN_B2: // 00b2 ??? unknown [uw2]
+         unk1 = file.Read16();
+         UaModelTrace("[unkn] 00b2 unk1=%02x", unk1);
          break;
 
       default:
@@ -685,8 +753,8 @@ bool DecodeBuiltInModels(const char* filename,
 
       Vector3d extents(ex, ez, ey);
 
-      UaModelTrace("dumping builtin model %u (%s)\noffset=0x%08x [unk1=0x%04x, extents=(%f,%f,%f) ]\n",
-         n, c_modelNames[n], base + offsets[n], unk1, ex, ey, ez);
+      UaModelTrace("dumping builtin model %u (%s)\nreloffset=%04x offset=0x%08x [unk1=0x%04x, extents=(%f,%f,%f)]\n",
+         n, c_modelNames[n], offsets[n], base + offsets[n], unk1, ex, ey, ez);
 
       Model3DBuiltIn* model = new Model3DBuiltIn;
 
@@ -699,12 +767,10 @@ bool DecodeBuiltInModels(const char* filename,
 
       UaModelTrace("\n");
 
-      /*model->*/origin.z -= extents.z / 2.0;
+      origin.z -= extents.z / 2.0;
       model->m_extents = extents;
 
-      // insert model
-      Model3DPtr model_ptr(model);
-      allModels.push_back(model_ptr);
+      allModels.push_back(Model3DPtr{ model });
    }
 
    return true;
