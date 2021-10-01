@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2003,2019 Underworld Adventures Team
+// Copyright (c) 2003,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -30,26 +30,43 @@ class GameStrings;
 class DumpLevelArchive
 {
 public:
-   DumpLevelArchive(const GameStrings& gameStrings)
-      :m_gameStrings(gameStrings)
+   // ctor
+   DumpLevelArchive(const GameStrings& gameStrings, bool isUw2)
+      :m_isUw2(isUw2),
+      m_gameStrings(gameStrings),
+      m_currentLevel(0),
+      m_currentFollowLevel(0)
    {
    }
 
-   void start(const std::string& filename, bool isUw2);
-   void process_level();
-   void dump_infos(bool isUw2);
-   void dump_special_link_chain(std::bitset<0x400>& visited, unsigned int pos, unsigned int indent = 0);
-   void dump_item(Uint16 pos);
-   void dump_npcinfos(Uint16 pos);
-
-   void follow_link(Uint16 link, unsigned int tilepos, bool special);
+   void Start(const std::string& filename);
 
 private:
+   void FixLevelData();
+   void DrawLevel();
+   void ProcessLevel();
+   void DumpObjectInfos();
+   void DumpSpecialLinkChain(std::bitset<0x400>& visited, unsigned int pos, unsigned int indent = 0);
+   void DumpObject(Uint16 pos);
+   void DumpNPCInfos(Uint16 pos);
+
+   void FollowLink(Uint16 link, unsigned int tilepos, bool special);
+
+private:
+   /// indicates if it's an uw2 lev.ark
+   bool m_isUw2;
+
+   /// game strings
+   const GameStrings& m_gameStrings;
+
    /// current underworld level
-   unsigned int level;
+   unsigned int m_currentLevel;
+
+   /// tilemap first byte
+   std::vector<Uint16> tilemap;
 
    /// recursion level for follow_link()
-   unsigned int follow_level;
+   unsigned int m_currentFollowLevel;
 
    /// link chain index from tilemap, 64*64 bytes long
    std::vector<Uint16> tilemap_links;
@@ -70,11 +87,8 @@ private:
    std::vector<Uint16> linkref;
 
    /// tilemap position for all objects, 0x400 long
-   std::vector<std::pair<Uint8, Uint8> > item_positions;
+   std::vector<std::pair<Uint8, Uint8>> item_positions;
 
    /// texture mapping table
    std::vector<Uint16> texmapping;
-
-   /// game strings
-   const GameStrings& m_gameStrings;
 };

@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2003,2004,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 #include "GameStrings.hpp"
 #include "File.hpp"
 #include "ArchiveFile.hpp"
+#include <algorithm>
 
 /// dumps .ark files
 void DumpArkArchive(const std::string& filename, const GameStrings& gameStrings, bool isUw2)
@@ -52,8 +53,11 @@ void DumpArkArchive(const std::string& filename, const GameStrings& gameStrings,
    std::vector<Uint32> offsetList;
    offsetList.resize(count);
 
+   std::vector<Uint32> orderedOffsetList;
+   orderedOffsetList.resize(count);
+
    for (size_t index = 0; index < count; index++)
-      offsetList[index] = file.Read32();
+      orderedOffsetList[index] = offsetList[index] = file.Read32();
 
    std::vector<Base::ArchiveFileEntryInfo> fileEntryInfoList;
    std::vector<Uint32> flagsList;
@@ -83,6 +87,12 @@ void DumpArkArchive(const std::string& filename, const GameStrings& gameStrings,
 
    bool isCnvArk = filename.find("cnv") != std::string::npos ||
       filename.find("CNV") != std::string::npos;
+
+   bool isLevArk = filename.find("lev") != std::string::npos ||
+      filename.find("LEV") != std::string::npos;
+
+   std::sort(orderedOffsetList.begin(), orderedOffsetList.end());
+   orderedOffsetList.push_back(fileLength);
 
    size_t firstEmptyBlock = (size_t)-1;
    for (size_t index = 0; index < count; index++)
@@ -122,7 +132,20 @@ void DumpArkArchive(const std::string& filename, const GameStrings& gameStrings,
 
       printf(", offset 0x%08x", offsetList[index]);
 
-      if (isUw2)
+      if (!isUw2)
+      {
+         Uint32 offset = offsetList[index];
+         auto iter = std::lower_bound(orderedOffsetList.begin(), orderedOffsetList.end(), offset);
+         if (iter == orderedOffsetList.end() ||
+            ++iter == orderedOffsetList.end())
+            printf(", unknown size");
+         else
+         {
+            Uint32 dataSize = *iter - offset;
+            printf(", size: %08x", dataSize);
+         }
+      }
+      else
       {
          const Base::ArchiveFileEntryInfo& info = fileEntryInfoList[index];
 
@@ -137,6 +160,26 @@ void DumpArkArchive(const std::string& filename, const GameStrings& gameStrings,
       {
          printf(", conversation for %s",
             gameStrings.GetString(7, index + 16).c_str());
+      }
+
+      if (isLevArk)
+      {
+         if (!isUw2)
+         {
+            printf(", type: %s",
+               index < 9 ? "tile map + object list" :
+               index < 18 ? "animation overlay info" :
+               index < 27 ? "texture mapping table" :
+               index < 36 ? "automap info" : "map notes");
+         }
+         else
+         {
+            printf(", type: %s",
+               index < 80 ? "tile map + object list" :
+               index < 160 ? "texture mapping table" :
+               index < 240 ? "automap info" :
+               index < 320 ? "map notes" : "unknown");
+         }
       }
 
       printf("\n");

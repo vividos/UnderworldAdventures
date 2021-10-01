@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2003,2004,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -38,15 +38,15 @@ void DumpLevArk(const std::string& filename, const GameStrings& gameStrings, boo
    DumpArkArchive(filename, gameStrings, isUw2);
    printf("\n");
 
-   DumpLevelArchive dumper{ gameStrings };
-   dumper.start(filename, isUw2);
+   DumpLevelArchive dumper{ gameStrings, isUw2 };
+   dumper.Start(filename);
 }
 
-void DumpLevelArchive::start(const std::string& filename, bool isUw2)
+void DumpLevelArchive::Start(const std::string& filename)
 {
    printf("level archive dumping\n");
 
-   Base::File file(filename.c_str(), Base::modeRead);
+   Base::File file{ filename.c_str(), Base::modeRead };
 
    if (!file.IsOpen())
    {
@@ -54,107 +54,16 @@ void DumpLevelArchive::start(const std::string& filename, bool isUw2)
       return;
    }
 
-   // do file blocks overview
-   {
-      // get file length
-      Uint32 filelen = file.FileLength();
-
-      Uint16 noffsets = file.Read16();
-
-      printf("file length: %08x bytes, %u slots\n\n", filelen, noffsets);
-
-      if (!isUw2)
-      {
-         // dump uw1 structure
-
-         // lev.ark offsets in map/ordered form
-         std::vector<Uint32> offsets_list;
-         std::vector<Uint32> offsets_ordered;
-
-         // read in all offsets
-         for (Uint16 n = 0; n < noffsets; n++)
-         {
-            Uint32 offset = file.Read32();
-            if (offset != 0)
-            {
-               offsets_ordered.push_back(offset);
-               offsets_list.push_back(offset);
-            }
-         }
-
-         std::sort(offsets_ordered.begin(), offsets_ordered.end());
-         offsets_ordered.push_back(filelen);
-
-         // dump blocks
-         printf("block  offset    size  description\n");
-         size_t max = offsets_list.size() - 1;
-         for (size_t i = 0; i < max; i++)
-         {
-            Uint32 offset = offsets_list[i];
-
-            // search offset
-            size_t a, max2 = offsets_ordered.size();
-            for (a = 0; a < max2 && offsets_ordered[a] != offset; a++);
-
-            Uint32 next_offset = offsets_ordered[i + 1];
-            if (a == max2 - 1)
-               next_offset = offsets_ordered[i];
-
-            next_offset -= offsets_ordered[i];
-
-            printf("%4u   %08x  %04x  %s\n",
-               i, offsets_ordered[i], next_offset,
-               next_offset == 0x7c08 ? "tile map + master object list" :
-               next_offset == 0x0180 ? "animation overlay info" :
-               next_offset == 0x007a ? "texture mapping table" :
-               next_offset == 0x1000 ? "automap info" : ""
-            );
-         }
-      }
-      else
-      {
-         // dumping uw2 structure
-         std::vector<Uint32> tablevalues;
-         tablevalues.resize(noffsets * 4);
-
-         file.Seek(6L, Base::seekBegin);
-
-         // read in all offsets, flags and size values
-         for (Uint16 n = 0; n < noffsets * 4; n++)
-            tablevalues[n] = file.Read32();
-
-         // dump the values
-         printf("block  offset    flags  blocksize  avail  description\n");
-
-         for (unsigned int i = 0; i < noffsets; i++)
-         {
-            if (tablevalues[i] == 0)
-               continue;
-
-            printf("%4u   %08x  %04x   %04x       %04x   %s\n",
-               i, tablevalues[i],
-               tablevalues[i + noffsets],
-               tablevalues[i + noffsets * 2],
-               tablevalues[i + noffsets * 3],
-               i < 80 ? "tile map + master object list" :
-               i < 160 ? "texture mapping table" :
-               i < 240 ? "automap info" :
-               i < 320 ? "map notes" : "unknown"
-            );
-         }
-         printf("\n");
-      }
-   }
-
-   unsigned int nlevels = !isUw2 ? 9 : 80;
-   unsigned int dumpedlevels = 0;
+   unsigned int numLevels = !m_isUw2 ? 9 : 80;
+   unsigned int numDumpedLevels = 0;
 
    // process all levels
-   for (level = 0; level < nlevels; level++)
+   for (m_currentLevel = 0; m_currentLevel < numLevels; m_currentLevel++)
    {
       objinfos.clear();
       npcinfos.clear();
 
+      tilemap.resize(0, 0);
       linkcount.clear();
       linkcount.resize(0x400, 0);
       linkref.clear();
@@ -165,16 +74,16 @@ void DumpLevelArchive::start(const std::string& filename, bool isUw2)
       freelist.clear();
       freelist.insert(0);
 
-      if (isUw2)
+      if (m_isUw2)
       {
          // load uw2 file
          SDL_RWops* rwops = SDL_RWFromFile(filename.c_str(), "rb");
          Base::ArchiveFile ark(Base::MakeRWopsPtr(rwops));
 
-         if (!ark.IsAvailable(level))
+         if (!ark.IsAvailable(m_currentLevel))
             continue;
 
-         Base::File levelFile = ark.GetFile(level);
+         Base::File levelFile = ark.GetFile(m_currentLevel);
          if (!levelFile.IsOpen())
             continue;
 
@@ -187,6 +96,9 @@ void DumpLevelArchive::start(const std::string& filename, bool isUw2)
          {
             for (unsigned int i = 0; i < 64 * 64; i++)
             {
+               Uint16 tileword1 = decoded[i * 2 + 0] | (decoded[i * 2 + 1] << 8);
+               tilemap.push_back(tileword1);
+
                Uint16 tileword2 = decoded[i * 2 + 2] | (decoded[i * 2 + 3] << 8);
 
                Uint16 index = GetBits(tileword2, 6, 10);
@@ -194,7 +106,7 @@ void DumpLevelArchive::start(const std::string& filename, bool isUw2)
             }
          }
 
-         // read in master object list
+         // read in object list
          {
             for (unsigned int i = 0; i < 0x100; i++)
             {
@@ -241,7 +153,7 @@ void DumpLevelArchive::start(const std::string& filename, bool isUw2)
 
          // texture mapping
          {
-            Base::File tex = ark.GetFile(80 + level);
+            Base::File tex = ark.GetFile(80 + m_currentLevel);
             if (tex.IsOpen())
             {
                std::vector<Uint8> origtexmap;
@@ -262,7 +174,7 @@ void DumpLevelArchive::start(const std::string& filename, bool isUw2)
       else
       {
          // load uw1 file
-         file.Seek(level * 4 + 2, Base::seekBegin);
+         file.Seek(m_currentLevel * 4 + 2, Base::seekBegin);
          Uint32 offset = file.Read32();
          file.Seek(offset, Base::seekBegin);
 
@@ -270,15 +182,17 @@ void DumpLevelArchive::start(const std::string& filename, bool isUw2)
          {
             for (unsigned int i = 0; i < 64 * 64; i++)
             {
-               Uint16 tileword1 = file.Read16(); UNUSED(tileword1);
-               Uint16 tileword2 = file.Read16(); UNUSED(tileword2);
+               Uint16 tileword1 = file.Read16();
+               tilemap.push_back(tileword1);
+
+               Uint16 tileword2 = file.Read16();
 
                Uint16 index = GetBits(tileword2, 6, 10);
                tilemap_links.push_back(index);
             }
          }
 
-         // read in master object list
+         // read in object list
          for (unsigned int i = 0; i < 0x400; i++)
          {
             // read object info
@@ -312,7 +226,7 @@ void DumpLevelArchive::start(const std::string& filename, bool isUw2)
 
          // texture mapping
          {
-            file.Seek((level + nlevels * 2) * 4 + 2, Base::seekBegin);
+            file.Seek((m_currentLevel + numLevels * 2) * 4 + 2, Base::seekBegin);
             offset = file.Read32();
             file.Seek(offset, Base::seekBegin);
 
@@ -324,54 +238,114 @@ void DumpLevelArchive::start(const std::string& filename, bool isUw2)
          }
       }
 
-      objinfos[4] |= 0x007f; // an_adventurer item_id
-      objinfos[0] &= ~(1 << 12); // not enchanted
+      FixLevelData();
 
-      process_level();
-      dump_infos(isUw2);
+      DrawLevel();
 
-      dumpedlevels++;
+      ProcessLevel();
+      DumpObjectInfos();
+
+      numDumpedLevels++;
    }
 
-   printf("dumped %u levels.\n", dumpedlevels);
+   printf("dumped %u levels.\n", numDumpedLevels);
 }
 
-void DumpLevelArchive::process_level()
+void DumpLevelArchive::FixLevelData()
 {
+   objinfos[4] |= 0x007f; // an_adventurer item_id
+   objinfos[0] &= ~(1 << 12); // not enchanted
+
    // fix is_quantity flag for all triggers and "a_delete object trap"
-   for (unsigned int j = 0; j < 0x0400; j++)
+   for (unsigned int objectIndex = 0; objectIndex < 0x0400; objectIndex++)
    {
-      Uint16 item_id = GetBits(objinfos[j * 4 + 0], 0, 9);
+      Uint16 item_id = GetBits(objinfos[objectIndex * 4 + 0], 0, 9);
       if ((item_id >= 0x01a0 && item_id <= 0x01bf) || item_id == 0x018b)
       {
          // clear is_quantity flag
-         objinfos[j * 4 + 0] &= ~(1L << 15);
-      }
-   }
-
-   // follow all links and special links, starting from the tilemap indices
-   for (unsigned int i = 0; i < 64 * 64; i++)
-   {
-      Uint16 index = tilemap_links[i];
-
-      if (index != 0)
-      {
-         follow_level = 0;
-         linkref[index] = 0xffff; // from tilemap
-         follow_link(index, i, false);
+         objinfos[objectIndex * 4 + 0] &= ~(1L << 15);
       }
    }
 }
 
-void DumpLevelArchive::dump_infos(bool isUw2)
+void DumpLevelArchive::DrawLevel()
 {
-   printf("dumping infos for level %u (0x%02x)\n\n", level, level);
+   printf("Level layout:\n");
+
+   for (unsigned int y = 0; y < 64; y++)
+   {
+      for (unsigned int x = 0; x < 64; x++)
+      {
+         Uint16 tileword1 = tilemap[(63 - y) * 64 + x];
+
+         bool isDoor = GetBits(tileword1, 15, 1) != 0;
+
+         if (isDoor)
+         {
+            printf("D");
+            continue;
+         }
+
+         Uint16 tileType = GetBits(tileword1, 0, 4);
+         switch (tileType)
+         {
+         case 0: // solid
+            printf("*");
+            break;
+
+         case 1: // open
+         case 6: // slope N
+         case 7: // slope S
+         case 8: // slope E
+         case 9: // slope W
+            printf(" ");
+            break;
+
+         case 2: // diagonal SE
+         case 5: // diagonal NW
+            printf("/");
+            break;
+
+         case 3: // diagonal SW
+         case 4: // diagonal NE
+            printf("\\");
+            break;
+
+         default:
+            printf("?");
+            break;
+         }
+      }
+      printf("\n");
+   }
+   printf("\n\n");
+}
+
+void DumpLevelArchive::ProcessLevel()
+{
+   // follow all links and special links, starting from the tilemap indices
+   for (unsigned int tileIndex = 0; tileIndex < 64 * 64; tileIndex++)
+   {
+      Uint16 objectIndex = tilemap_links[tileIndex];
+
+      if (objectIndex != 0)
+      {
+         m_currentFollowLevel = 0;
+         linkref[objectIndex] = 0xffff; // from tilemap
+         FollowLink(objectIndex, tileIndex, false);
+      }
+   }
+}
+
+void DumpLevelArchive::DumpObjectInfos()
+{
+   printf("dumping infos for level %u (0x%02x)\n\n", m_currentLevel, m_currentLevel);
 
    // dump every object in list
    {
-      printf("dumping master object list:\n");
+      printf("dumping object list:\n");
       for (unsigned int i = 0; i < 0x400; i++)
-         dump_item(i);
+         DumpObject(i);
 
       printf("\n");
    }
@@ -385,7 +359,7 @@ void DumpLevelArchive::dump_infos(bool isUw2)
          bool is_free = freelist.find(i) != freelist.end();
          if (is_free) continue;
 
-         dump_npcinfos(i);
+         DumpNPCInfos(i);
       }
       printf("\n");
    }
@@ -407,7 +381,7 @@ void DumpLevelArchive::dump_infos(bool isUw2)
          if (!is_quantity && special != 0 && item_id >= 0x0040 && item_id < 0x0080)
          {
             printf("\ninventory for npc:\n");
-            dump_npcinfos(i);
+            DumpNPCInfos(i);
 
             // follow inventory object chain
             Uint16 link = special;
@@ -416,7 +390,7 @@ void DumpLevelArchive::dump_infos(bool isUw2)
                bool is_free2 = freelist.find(link) != freelist.end();
                if (is_free2) break;
 
-               dump_item(link);
+               DumpObject(link);
                link = GetBits(objinfos[link * 4 + 2], 6, 10);
             } while (link != 0);
          }
@@ -436,7 +410,7 @@ void DumpLevelArchive::dump_infos(bool isUw2)
             Uint16 item_id = GetBits(objinfos[pos * 4], 0, 9);
 
             if (!is_free && j == item_id)
-               dump_item(pos);
+               DumpObject(pos);
          }
       }
       printf("\n");
@@ -453,7 +427,7 @@ void DumpLevelArchive::dump_infos(bool isUw2)
 
          // dump enchanted and "a_spell" items
          if (!is_free && enchanted && (item_id < 0x0140 || item_id >= 0x01c0 || item_id == 0x0120))
-            dump_item(i);
+            DumpObject(i);
       }
 
       printf("\n");
@@ -475,7 +449,7 @@ void DumpLevelArchive::dump_infos(bool isUw2)
             item_id == 0x0181)
             continue;
 
-         dump_special_link_chain(visited, pos, 0);
+         DumpSpecialLinkChain(visited, pos, 0);
       }
    }
 
@@ -484,7 +458,7 @@ void DumpLevelArchive::dump_infos(bool isUw2)
       printf("\ndumping texture mapping:\nwall textures:");
       {
          unsigned int i;
-         if (!isUw2)
+         if (!m_isUw2)
          {
             for (i = 0; i < 48; i++)
                printf("%c%04x", (i % 8) == 0 ? '\n' : ' ', texmapping[i]);
@@ -505,7 +479,7 @@ void DumpLevelArchive::dump_infos(bool isUw2)
    printf("\n");
 }
 
-void DumpLevelArchive::dump_special_link_chain(std::bitset<0x400>& visited, unsigned int pos,
+void DumpLevelArchive::DumpSpecialLinkChain(std::bitset<0x400>& visited, unsigned int pos,
    unsigned int indent)
 {
    unsigned int step = 0;
@@ -529,9 +503,9 @@ void DumpLevelArchive::dump_special_link_chain(std::bitset<0x400>& visited, unsi
 
       printf("{%02x} ", step);
       if (pos < 0x100)
-         dump_npcinfos(pos);
+         DumpNPCInfos(pos);
       else
-         dump_item(pos);
+         DumpObject(pos);
 
       if (item_id >= 0x0080 && item_id < 0x008e)
       {
@@ -547,13 +521,13 @@ void DumpLevelArchive::dump_special_link_chain(std::bitset<0x400>& visited, unsi
             Uint16 special2 = GetBits(objinfos[link * 4 + 3], 6, 10);
 
             if (is_link2 && special2 != 0)
-               dump_special_link_chain(visited, link, indent + 1);
+               DumpSpecialLinkChain(visited, link, indent + 1);
             else
             {
                { for (unsigned int i = 0; i < indent; i++) printf("     "); }
 
                // no special link, just dump item
-               dump_item(link);
+               DumpObject(link);
             }
 
 
@@ -589,11 +563,11 @@ void DumpLevelArchive::dump_special_link_chain(std::bitset<0x400>& visited, unsi
 
       // print target item
       printf("{--} ");
-      dump_item(pos);
+      DumpObject(pos);
    }
 }
 
-void DumpLevelArchive::dump_item(Uint16 pos)
+void DumpLevelArchive::DumpObject(Uint16 pos)
 {
    Uint16* objptr = &objinfos[pos * 4];
 
@@ -804,7 +778,7 @@ void DumpLevelArchive::dump_item(Uint16 pos)
    printf("\n");
 }
 
-void DumpLevelArchive::dump_npcinfos(Uint16 pos)
+void DumpLevelArchive::DumpNPCInfos(Uint16 pos)
 {
    Uint16* objptr = &objinfos[pos * 4];
    Uint8* infoptr = &npcinfos[pos * 19];
@@ -856,11 +830,11 @@ void DumpLevelArchive::dump_npcinfos(Uint16 pos)
    printf("\n");
 }
 
-void DumpLevelArchive::follow_link(Uint16 link, unsigned int tilepos, bool special)
+void DumpLevelArchive::FollowLink(Uint16 link, unsigned int tilepos, bool special)
 {
-   if (++follow_level > 32)
+   if (++m_currentFollowLevel > 32)
    {
-      printf("follow_link(): recursion level too high at objpos %04x\n", link);
+      printf("FollowLink(): recursion level too high at objpos %04x\n", link);
       return;
    }
 
@@ -891,7 +865,7 @@ void DumpLevelArchive::follow_link(Uint16 link, unsigned int tilepos, bool speci
          if (special_next != 0)
          {
             linkref[special_next] = link;
-            follow_link(special_next, 0, true);
+            FollowLink(special_next, 0, true);
          }
       }
 
@@ -904,5 +878,5 @@ void DumpLevelArchive::follow_link(Uint16 link, unsigned int tilepos, bool speci
          linkref[link] = oldlink;
    } while (link != 0);
 
-   --follow_level;
+   --m_currentFollowLevel;
 }
