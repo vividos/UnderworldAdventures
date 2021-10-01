@@ -1834,7 +1834,7 @@ void XMidiFile::InsertDisplayEvents()
 	CreateMT32SystemMessage(current->time+1, system_base, system_mem_offset(masterVol), 1,&seventy);
 
 	//CreateMT32SystemMessage(current->time, display_base, 0, display_mem_size, display );
-	CreateMT32SystemMessage(-1, display_base, 0, display_mem_size, display_beginning );
+	//CreateMT32SystemMessage(-1, display_base, 0, display_mem_size, display_beginning );
 
 	events[0]->events = list;
 
