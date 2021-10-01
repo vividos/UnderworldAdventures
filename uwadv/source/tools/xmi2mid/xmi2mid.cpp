@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2019 Underworld Adventures Team
+// Copyright (c) 2002,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -37,14 +37,29 @@ int main(int argc, char* argv[])
 
    int music_conversion;
    music_conversion = XMIDIFILE_CONVERT_MT32_TO_GM;
-   //music_conversion = XMIDIFILE_CONVERT_MT32_TO_GS;
-   //music_conversion = XMIDIFILE_CONVERT_MT32_TO_GS127;
-   //music_conversion = XMIDIFILE_CONVERT_NOCONVERSION;
+
+   if (argc == 3)
+   {
+      if (strcmp(argv[3], "--mt32-to-gm") != -1)
+         music_conversion = XMIDIFILE_CONVERT_MT32_TO_GM;
+      else if (strcmp(argv[3], "--mt32-to-gs") != -1)
+         music_conversion = XMIDIFILE_CONVERT_MT32_TO_GS;
+      else if (strcmp(argv[3], "--mt32-to-gs127") != -1)
+         music_conversion = XMIDIFILE_CONVERT_MT32_TO_GS127;
+      else if (strcmp(argv[3], "--gs127-to-gs") != -1)
+         music_conversion = XMIDIFILE_CONVERT_GS127_TO_GS;
+      else if (strcmp(argv[3], "--noconvert") != -1)
+         music_conversion = XMIDIFILE_CONVERT_NOCONVERSION;
+      else printf("error: invalid conversion option!");
+   }
 
    // load xmi file
    Detail::InputDataSource inputSource(Base::MakeRWopsPtr(SDL_RWFromFile(argv[1], "rb")));
 
    XMidiFile midifile(&inputSource, music_conversion);
+
+   int numTracks = midifile.number_of_tracks();
+   printf("opening input file %s, containing %i tracks\n", argv[1], numTracks);
 
    XMidiEventList* eventlist = midifile.GetEventList(0);
 
@@ -62,6 +77,8 @@ int main(int argc, char* argv[])
    }
 
    Detail::OutputDataSource outSource(rwops);
+
+   printf("writing output file %s\n", argv[2]);
    eventlist->write(&outSource);
 
    return 0;

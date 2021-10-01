@@ -216,10 +216,24 @@ conversation flow is.
 
 xmi2mid is a converter for XMIDI files (*.xmi) that are used in Ultima
 Underworld (and many other games) to ordinary midi (*.mid) files. Only the
-first track of an XMIDI file is extracted, though. The calling syntax for the
+first track of an XMIDI file is extracted, though. The Underworld xmi files
+all have only one track anyway. The calling syntax for the
 program is:
 
-    xmi2mid <xmi-file> <mid-file>
+    xmi2mid <xmi-file> <mid-file> {conversion-option}
+
+The third parameter {conversion-option} is optional and can be one of the
+following switches:
+
+    --mt32-to-gm    Converts from MT-32 to General MIDI patches
+    --mt32-to-gs    Converts to GS patches
+    --mt32-to-gs127 Converts to GS patches with a MT-32 patch bank installed
+                    in Bank 127
+    --gs127-to-gs   Converts from GS patches using Bank 127 to one that
+                    doesn't
+    --noconvert     No conversion is done
+
+The default option is `--mt32-to-gm` when the parameter is not specified.
 
 The program prints out an error if something strange occured, else the midi
 file is created.
