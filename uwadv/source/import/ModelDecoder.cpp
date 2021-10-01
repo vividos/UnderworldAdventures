@@ -514,6 +514,40 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
       }
       break;
 
+      case M3_UW_FACE_SHORT: // 00A0 shorthand face definition
+      case M3_UW_FACE_SHORT2: // 00D2 shorthand face definition [uw2]
+      {
+         UaModelTrace("[face] shorthand ");
+
+         if (cmd == M3_UW_FACE_SHORT)
+         {
+            unk1 = file.Read16();
+            UaModelTrace("unk1=%04x ", unk1);
+         }
+
+         PolygonTessellator tess;
+
+         UaModelTrace("vertlist=");
+
+         for (Uint16 i = 0; i < 4; i++)
+         {
+            Uint8 vertno = file.Read8();
+
+            Vertex3d vert;
+            vert.pos = vertex_list[vertno];
+            vert.u = shorthand_texcoords[i * 2];
+            vert.v = shorthand_texcoords[i * 2 + 1];
+            tess.AddPolygonVertex(vert);
+
+            UaModelTrace("%u", vertno);
+            if (i < 3) UaModelTrace(" ");
+         }
+
+         const std::vector<Triangle3dTextured>& tri = tess.Tessellate(0x0003);
+         triangles.insert(triangles.begin(), tri.begin(), tri.end());
+      }
+      break;
+
       // sort nodes
       case M3_UW_SORT_PLANE: // 0006 define sort node, arbitrary heading
          nx = ModelReadFixed(file);
@@ -625,40 +659,6 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
       case M3_UW_FACE_UNK40: // 0040 ??? flat
          UaModelTrace("[shade] unknown");
          break;
-
-      case M3_UW_FACE_SHORT: // 00A0 shorthand face definition
-      case M3_UW_FACE_SHORT2: // 00D2 shorthand face definition [uw2]
-      {
-         UaModelTrace("[face] shorthand ");
-
-         if (cmd == M3_UW_FACE_SHORT)
-         {
-            unk1 = file.Read16();
-            UaModelTrace("unk1=%04x ", unk1);
-         }
-
-         PolygonTessellator tess;
-
-         UaModelTrace("vertlist=");
-
-         for (Uint16 i = 0; i < 4; i++)
-         {
-            Uint8 vertno = file.Read8();
-
-            Vertex3d vert;
-            vert.pos = vertex_list[vertno];
-            vert.u = shorthand_texcoords[i * 2];
-            vert.v = shorthand_texcoords[i * 2 + 1];
-            tess.AddPolygonVertex(vert);
-
-            UaModelTrace("%u", vertno);
-            if (i < 3) UaModelTrace(" ");
-         }
-
-         const std::vector<Triangle3dTextured>& tri = tess.Tessellate(0x0003);
-         triangles.insert(triangles.begin(), tri.begin(), tri.end());
-      }
-      break;
 
          // unknown nodes
       case M3_UW_FACE_UNK16: // 0016 ??? unknown
