@@ -100,6 +100,7 @@ void GL_CALLBACK PolygonTessellator::OnBeginData(GLenum type, PolygonTessellator
 void GL_CALLBACK PolygonTessellator::OnEndData(PolygonTessellator* This)
 {
    This->m_currentType = 0;
+   This->m_vertexCache.clear();
 }
 
 void GL_CALLBACK PolygonTessellator::OnVertexData(Vertex3d* vert, PolygonTessellator* This)
