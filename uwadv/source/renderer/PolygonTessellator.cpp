@@ -47,6 +47,14 @@ PolygonTessellator::~PolygonTessellator()
 /// \param textureNumber texture number to use when storing triangles
 const std::vector<Triangle3dTextured>& PolygonTessellator::Tessellate(Uint16 textureNumber)
 {
+   if (m_polygonVertexList.size() == 3)
+   {
+      Triangle3dTextured tri{ textureNumber, m_polygonVertexList[0], m_polygonVertexList[1], m_polygonVertexList[2] };
+      m_triangles.push_back(tri);
+
+      return m_triangles;
+   }
+
    m_currentTextureNumber = textureNumber;
    m_vertexCache.clear();
 
