@@ -88,6 +88,8 @@ void Base::FileSystem::FindFiles(const std::string& searchPath, std::vector<std:
    std::string::size_type pos = basePath.find_last_of("\\/");
    if (pos != std::string::npos)
       basePath.erase(pos + 1);
+   else
+      basePath = ".";
 
    std::string pattern = searchPath.substr(pos + 1);
 
