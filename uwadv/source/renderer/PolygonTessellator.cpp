@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -23,6 +23,9 @@
 #include "PolygonTessellator.hpp"
 
 PolygonTessellator::PolygonTessellator()
+   :m_currentTextureNumber(0),
+   m_currentType(0),
+   m_isTriangleStart(false)
 {
    m_tessellator = gluNewTess();
 }
@@ -76,7 +79,7 @@ const std::vector<Triangle3dTextured>& PolygonTessellator::Tessellate(Uint16 tex
    size_t max = m_polygonVertexList.size();
    for (size_t index = 0; index < max; index++)
    {
-      Vertex3d& vertex = m_polygonVertexList[index];
+      const Vertex3d& vertex = m_polygonVertexList[index];
       GLdouble coords[3] = { vertex.pos.x, vertex.pos.y, vertex.pos.z };
 
       gluTessVertex(m_tessellator, coords, &m_polygonVertexList[index]);
@@ -101,38 +104,40 @@ void GL_CALLBACK PolygonTessellator::OnEndData(PolygonTessellator* This)
 
 void GL_CALLBACK PolygonTessellator::OnVertexData(Vertex3d* vert, PolygonTessellator* This)
 {
-   if (This->m_vertexCache.size() == 2)
+   if (This->m_vertexCache.size() < 2)
    {
-      // construct triangle
-      Triangle3dTextured tri{ This->m_currentTextureNumber,
-         This->m_vertexCache[0],
-         This->m_vertexCache[1],
-         *vert };
-
-      This->m_triangles.push_back(tri);
-
-      // check which vertices to throw away
-      switch (This->m_currentType)
-      {
-      case GL_TRIANGLES: // clear all; new set of vertices
-         This->m_vertexCache.clear();
-         break;
-
-      case GL_TRIANGLE_STRIP: // erase first vertex, insert second
-         This->m_vertexCache.erase(This->m_vertexCache.begin());
-         This->m_vertexCache.push_back(*vert);
-         break;
-
-      case GL_TRIANGLE_FAN: // delete second vertex, insert second
-         This->m_vertexCache.pop_back();
-         This->m_vertexCache.push_back(*vert);
-         break;
-      default:
-         break; // should not happen
-      }
-   }
-   else
+      // collect more vertices
       This->m_vertexCache.push_back(*vert);
+      return;
+   }
+
+   // construct triangle
+   Triangle3dTextured tri{ This->m_currentTextureNumber,
+      This->m_vertexCache[0],
+      This->m_vertexCache[1],
+      *vert };
+
+   This->m_triangles.push_back(tri);
+
+   // check which vertices to throw away
+   switch (This->m_currentType)
+   {
+   case GL_TRIANGLES: // clear all; new set of vertices
+      This->m_vertexCache.clear();
+      break;
+
+   case GL_TRIANGLE_STRIP: // erase first vertex, insert second
+      This->m_vertexCache.erase(This->m_vertexCache.begin());
+      This->m_vertexCache.push_back(*vert);
+      break;
+
+   case GL_TRIANGLE_FAN: // delete second vertex, insert second
+      This->m_vertexCache.pop_back();
+      This->m_vertexCache.push_back(*vert);
+      break;
+   default:
+      break; // should not happen
+   }
 }
 
 void GL_CALLBACK PolygonTessellator::OnCombinedData(GLdouble coords[3],
