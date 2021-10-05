@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -48,7 +48,8 @@ public:
    }
 
    /// tessellates the polygon and returns triangles
-   const std::vector<Triangle3dTextured>& Tessellate(Uint16 textureNumber);
+   const std::vector<Triangle3dTextured>& Tessellate(Uint16 textureNumber,
+      Uint8 colorIndex = 0, bool flatShaded = false);
 
 private:
    /// deleted copy ctor
@@ -78,8 +79,14 @@ private:
    /// GLU tessellator object
    GLUtesselator* m_tessellator;
 
-   /// current texture number
-   Uint16 m_currentTextureNumber;
+   /// texture number to use for triangles
+   Uint16 m_textureNumber;
+
+   /// color index to use for triangles
+   Uint8 m_colorIndex;
+
+   /// flat shaded flag, to use for triangles
+   bool m_flatShaded;
 
    /// current glBegin() parameter type
    GLenum m_currentType;

@@ -30,24 +30,35 @@ struct Triangle3dTextured
 {
    /// default ctor
    Triangle3dTextured()
-      :m_textureNumber(0)
+      :m_textureNumber(0),
+      m_colorIndex(0),
+      m_flatShaded(false)
    {
    }
 
-   /// ctor, setting vertex elements
-   Triangle3dTextured(const Vertex3d& pos1, const Vertex3d& pos2, const Vertex3d& pos3)
-      :m_textureNumber(0)
+   /// ctor, setting vertex elements and properties
+   Triangle3dTextured(const Vertex3d& pos1, const Vertex3d& pos2, const Vertex3d& pos3,
+      Uint16 textureNumber = 0, Uint8 colorIndex = 0, bool flatShaded = false)
+      :m_textureNumber(textureNumber),
+      m_colorIndex(colorIndex),
+      m_flatShaded(flatShaded)
    {
       m_vertices[0] = pos1;
       m_vertices[1] = pos2;
       m_vertices[2] = pos3;
    }
 
-   /// stock texture number used
-   Uint16 m_textureNumber;
-
    /// vertices
    Vertex3d m_vertices[3];
+
+   /// stock texture number used; 0 when not used
+   Uint16 m_textureNumber;
+
+   /// color palette index; when 0, use white
+   Uint8 m_colorIndex;
+
+   /// indicates if the triangle should be drawn flat-shaded or Gouraud shaded
+   bool m_flatShaded;
 
    /// sets triangle point properties
    void Set(unsigned int point, double x, double y, double z, double u, double v)

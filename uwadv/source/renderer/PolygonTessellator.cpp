@@ -23,7 +23,9 @@
 #include "PolygonTessellator.hpp"
 
 PolygonTessellator::PolygonTessellator()
-   :m_currentTextureNumber(0),
+   :m_textureNumber(0),
+   m_colorIndex(0),
+   m_flatShaded(false),
    m_currentType(0),
    m_isTriangleStart(false)
 {
@@ -45,18 +47,25 @@ PolygonTessellator::~PolygonTessellator()
 /// Tessellates the polygon into triangles with the polygon vertices passed
 /// with AddPolygonVertex().
 /// \param textureNumber texture number to use when storing triangles
-const std::vector<Triangle3dTextured>& PolygonTessellator::Tessellate(Uint16 textureNumber)
+/// \param colorIndex color index to use when storing triangles
+/// \param flatShaded
+const std::vector<Triangle3dTextured>& PolygonTessellator::Tessellate(
+   Uint16 textureNumber, Uint8 colorIndex, bool flatShaded)
 {
    if (m_polygonVertexList.size() == 3)
    {
-      Triangle3dTextured tri{ m_polygonVertexList[0], m_polygonVertexList[1], m_polygonVertexList[2] };
-      tri.m_textureNumber = textureNumber;
+      Triangle3dTextured tri{
+         m_polygonVertexList[0], m_polygonVertexList[1], m_polygonVertexList[2],
+         textureNumber, colorIndex, flatShaded };
+
       m_triangles.push_back(tri);
 
       return m_triangles;
    }
 
-   m_currentTextureNumber = textureNumber;
+   m_textureNumber = textureNumber;
+   m_colorIndex = colorIndex;
+
    m_vertexCache.clear();
 
    gluTessProperty(m_tessellator, GLU_TESS_BOUNDARY_ONLY, GL_FALSE);
@@ -125,8 +134,10 @@ void GL_CALLBACK PolygonTessellator::OnVertexData(Vertex3d* vert, PolygonTessell
    Triangle3dTextured tri{
       This->m_vertexCache[0],
       This->m_vertexCache[1],
-      *vert };
-   tri.m_textureNumber = This->m_currentTextureNumber;
+      *vert,
+      This->m_textureNumber,
+      This->m_colorIndex,
+      This->m_flatShaded };
 
    This->m_triangles.push_back(tri);
 
