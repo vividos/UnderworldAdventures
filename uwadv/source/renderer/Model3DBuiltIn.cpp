@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2004,2019,2020 Underworld Adventures Team
+// Copyright (c) 2004,2019,2020,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -81,14 +81,17 @@ void Model3DBuiltIn::Render(const Vector3d& viewerPos, const Underworld::Object&
       glEnd();
    }
 
-#if 0
-   //#ifdef HAVE_DEBUG
-      // draw extents box
+   glEnable(GL_CULL_FACE);
+
+   //DrawExtentsBox(base);
+}
+
+void Model3DBuiltIn::DrawExtentsBox(const Vector3d& base)
+{
+   glColor3ub(255, 255, 255);
    glDisable(GL_TEXTURE_2D);
 
-   Vector3d ext(extents);
-   ext.x *= 0.5;
-   ext.y *= 0.5;
+   Vector3d ext{ m_extents };
 
    glBegin(GL_LINE_LOOP);
    glVertex3d(base.x + ext.x, base.y + ext.y, base.z + ext.z);
@@ -119,9 +122,6 @@ void Model3DBuiltIn::Render(const Vector3d& viewerPos, const Underworld::Object&
    glEnd();
 
    glEnable(GL_TEXTURE_2D);
-#endif
-
-   glEnable(GL_CULL_FACE);
 }
 
 void Model3DBuiltIn::GetBoundingTriangles(const Underworld::Object& object,

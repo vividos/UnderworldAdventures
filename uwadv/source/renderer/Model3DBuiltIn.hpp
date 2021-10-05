@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2004,2019 Underworld Adventures Team
+// Copyright (c) 2004,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -40,7 +40,11 @@ public:
    virtual void GetBoundingTriangles(const Underworld::Object& object,
       Vector3d& base, std::vector<Triangle3dTextured>& allTriangles) override;
 
-protected:
+private:
+   /// draws a wireframe extents bounding box around the 3D model
+   void DrawExtentsBox(const Vector3d& base);
+
+private:
    /// model extents
    Vector3d m_extents;
 
