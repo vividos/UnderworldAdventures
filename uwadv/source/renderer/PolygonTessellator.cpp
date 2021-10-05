@@ -49,7 +49,8 @@ const std::vector<Triangle3dTextured>& PolygonTessellator::Tessellate(Uint16 tex
 {
    if (m_polygonVertexList.size() == 3)
    {
-      Triangle3dTextured tri{ textureNumber, m_polygonVertexList[0], m_polygonVertexList[1], m_polygonVertexList[2] };
+      Triangle3dTextured tri{ m_polygonVertexList[0], m_polygonVertexList[1], m_polygonVertexList[2] };
+      tri.m_textureNumber = textureNumber;
       m_triangles.push_back(tri);
 
       return m_triangles;
@@ -121,10 +122,11 @@ void GL_CALLBACK PolygonTessellator::OnVertexData(Vertex3d* vert, PolygonTessell
    }
 
    // construct triangle
-   Triangle3dTextured tri{ This->m_currentTextureNumber,
+   Triangle3dTextured tri{
       This->m_vertexCache[0],
       This->m_vertexCache[1],
       *vert };
+   tri.m_textureNumber = This->m_currentTextureNumber;
 
    This->m_triangles.push_back(tri);
 

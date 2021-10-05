@@ -111,7 +111,7 @@ namespace UnitTest
          TestPhysicsBody body{ initialPos, velocity };
 
          CollisionDetection detection{ std::vector<Triangle3dTextured> {
-            Triangle3dTextured{0,
+            Triangle3dTextured{
                Vertex3d{Vector3d{ 20.0, 20.0, 20.0 }},
                Vertex3d{Vector3d{ 20.0, 21.0, 20.0 }},
                Vertex3d{Vector3d{ 21.0, 20.0, 20.0 }}}
@@ -133,7 +133,7 @@ namespace UnitTest
          TestPhysicsBody body{ initialPos, velocity };
 
          CollisionDetection detection{ std::vector<Triangle3dTextured> {
-            Triangle3dTextured{0,
+            Triangle3dTextured{
                Vertex3d{Vector3d{ 1.5, -10.0, -10.0 }},
                Vertex3d{Vector3d{ 1.5, 10.0, -10.0 }},
                Vertex3d{Vector3d{ 1.5, 10.0, 10.0 }}
@@ -156,7 +156,7 @@ namespace UnitTest
          TestPhysicsBody body{ initialPos, velocity };
 
          CollisionDetection detection{ std::vector<Triangle3dTextured> {
-            Triangle3dTextured{0,
+            Triangle3dTextured{
                Vertex3d{Vector3d{ 20.0, 20.0, 20.0 }},
                Vertex3d{Vector3d{ 20.0, 21.0, 20.0 }},
                Vertex3d{Vector3d{ 21.0, 20.0, 20.0 }}}
@@ -180,7 +180,7 @@ namespace UnitTest
          TestPhysicsBody body{ initialPos, velocity };
 
          CollisionDetection detection{ std::vector<Triangle3dTextured> {
-            Triangle3dTextured{0,
+            Triangle3dTextured{
                Vertex3d{Vector3d{ 1.5, -10.0, -10.0 }},
                Vertex3d{Vector3d{ 1.5, 10.0, 10.0 }},
                Vertex3d{Vector3d{ 1.5, 10.0, -10.0 }}}
@@ -206,7 +206,7 @@ namespace UnitTest
          TestPhysicsBody body{ initialPos, velocity };
 
          CollisionDetection detection{ std::vector<Triangle3dTextured> {
-            Triangle3dTextured{0,
+            Triangle3dTextured{
                Vertex3d{Vector3d{ 0.75, -10.0, -10.0 }},
                Vertex3d{Vector3d{ 0.75, 10.0, 10.0 }},
                Vertex3d{Vector3d{ 0.75, 10.0, -10.0 }}}
@@ -231,7 +231,7 @@ namespace UnitTest
          TestPhysicsBody body{ initialPos, velocity };
 
          CollisionDetection detection{ std::vector<Triangle3dTextured> {
-            Triangle3dTextured{0,
+            Triangle3dTextured{
                Vertex3d{Vector3d{ 1.5, -10.0, -10.0 }},
                Vertex3d{Vector3d{ 1.5, 10.0, 10.0 }},
                Vertex3d{Vector3d{ 1.5, 10.0, -10.0 }}}
@@ -256,7 +256,7 @@ namespace UnitTest
          TestPhysicsBody body{ initialPos, velocity };
 
          CollisionDetection detection{ std::vector<Triangle3dTextured> {
-            Triangle3dTextured{0,
+            Triangle3dTextured{
                Vertex3d{Vector3d{ 1.0, 10.0, -2.0 }},
                Vertex3d{Vector3d{ 1.0, -10.0, -2.0 }},
                Vertex3d{Vector3d{ 2.0, 0.0, 3.0 }}}
@@ -283,7 +283,7 @@ namespace UnitTest
          TestPhysicsBody body{ initialPos, velocity };
 
          CollisionDetection detection{ std::vector<Triangle3dTextured> {
-            Triangle3dTextured{0,
+            Triangle3dTextured{
                Vertex3d{Vector3d{ 1.5, 0.0, 0.0 }},
                Vertex3d{Vector3d{ 20.0, 10.0, 0.0 }},
                Vertex3d{Vector3d{ 20.0, -10.0, 0.0 }}}
@@ -308,7 +308,7 @@ namespace UnitTest
          TestPhysicsBody body{ initialPos, velocity };
 
          CollisionDetection detection{ std::vector<Triangle3dTextured> {
-            Triangle3dTextured{0,
+            Triangle3dTextured{
                Vertex3d{Vector3d{ 20.0, -10.0, 0.0 }},
                Vertex3d{Vector3d{ 1.5, 0.0, 0.0 }},
                Vertex3d{Vector3d{ 20.0, 10.0, 0.0 }}}
@@ -333,7 +333,7 @@ namespace UnitTest
          TestPhysicsBody body{ initialPos, velocity };
 
          CollisionDetection detection{ std::vector<Triangle3dTextured> {
-            Triangle3dTextured{0,
+            Triangle3dTextured{
                Vertex3d{Vector3d{ 20.0, 10.0, 0.0 }},
                Vertex3d{Vector3d{ 20.0, -10.0, 0.0 }},
                Vertex3d{Vector3d{ 1.5, 0.0, 0.0 }}}
@@ -359,7 +359,7 @@ namespace UnitTest
          TestPhysicsBody body{ initialPos, velocity };
 
          CollisionDetection detection{ std::vector<Triangle3dTextured> {
-            Triangle3dTextured{0,
+            Triangle3dTextured{
                Vertex3d{Vector3d{ 1.5, 10.0, 0.0 }},
                Vertex3d{Vector3d{ 1.5, -10.0, 0.0 }},
                Vertex3d{Vector3d{ 20.0, 0.0, 2.0 }}} // last point is moved "up" a bit
@@ -384,7 +384,7 @@ namespace UnitTest
          TestPhysicsBody body{ initialPos, velocity };
 
          CollisionDetection detection{ std::vector<Triangle3dTextured> {
-            Triangle3dTextured{0,
+            Triangle3dTextured{
                Vertex3d{Vector3d{ 20.0, 0.0, 2.0 }},
                Vertex3d{Vector3d{ 1.5, 10.0, 0.0 }},
                Vertex3d{Vector3d{ 1.5, -10.0, 0.0 }}}
@@ -409,7 +409,7 @@ namespace UnitTest
          TestPhysicsBody body{ initialPos, velocity };
 
          CollisionDetection detection{ std::vector<Triangle3dTextured> {
-            Triangle3dTextured{0,
+            Triangle3dTextured{
                Vertex3d{Vector3d{ 1.5, -10.0, 0.0 }},
                Vertex3d{Vector3d{ 20.0, 0.0, 2.0 }},
                Vertex3d{Vector3d{ 1.5, 10.0, 0.0 }}}
@@ -434,7 +434,7 @@ namespace UnitTest
          TestPhysicsBody body{ initialPos, velocity };
 
          CollisionDetection detection{ std::vector<Triangle3dTextured> {
-            Triangle3dTextured{0,
+            Triangle3dTextured{
                Vertex3d{Vector3d{ 1.5, 10.0, -1.0 }},
                Vertex3d{Vector3d{ 1.5, -10.0, -1.0 }},
                Vertex3d{Vector3d{ 4.0, 0.0, 5.0 }}} // last point is moved "up" a bit
@@ -460,12 +460,12 @@ namespace UnitTest
          TestPhysicsBody body{ initialPos, velocity };
 
          CollisionDetection detection{ std::vector<Triangle3dTextured> {
-            Triangle3dTextured{0,
+            Triangle3dTextured{
                Vertex3d{Vector3d{ 2.0, 2.0, -2.0 }},
                Vertex3d{Vector3d{ 2.0, -2.0, -2.0 }},
                Vertex3d{Vector3d{ 2.0, 2.0, 10.0 }}
             },
-            Triangle3dTextured{0,
+            Triangle3dTextured{
                Vertex3d{Vector3d{ -2.0, 2.0, -2.0 }},
                Vertex3d{Vector3d{ 2.0, 2.0, -2.0 }},
                Vertex3d{Vector3d{ 2.0, 2.0, 10.0 }}
@@ -491,12 +491,12 @@ namespace UnitTest
          TestPhysicsBody body{ initialPos, velocity };
 
          CollisionDetection detection{ std::vector<Triangle3dTextured> {
-            Triangle3dTextured{0,
+            Triangle3dTextured{
                Vertex3d{Vector3d{ 2.0, 3.0, -2.0 }},
                Vertex3d{Vector3d{ 2.0, -2.0, -2.0 }},
                Vertex3d{Vector3d{ 2.0, 3.0, 10.0 }}
             },
-            Triangle3dTextured{0,
+            Triangle3dTextured{
                Vertex3d{Vector3d{ -2.0, 3.0, -2.0 }},
                Vertex3d{Vector3d{ 2.0, 3.0, -2.0 }},
                Vertex3d{Vector3d{ 2.0, 3.0, 10.0 }}
@@ -522,12 +522,12 @@ namespace UnitTest
          TestPhysicsBody body{ initialPos, velocity };
 
          CollisionDetection detection{ std::vector<Triangle3dTextured> {
-            Triangle3dTextured{0,
+            Triangle3dTextured{
                Vertex3d{Vector3d{ 3.0, 0.0, -2.0 }},
                Vertex3d{Vector3d{ 0.0, -2.0, -2.0 }},
                Vertex3d{Vector3d{ 3.0, 0.0, 10.0 }}
             },
-            Triangle3dTextured{0,
+            Triangle3dTextured{
                Vertex3d{Vector3d{ 0.0, 2.0, -2.0 }},
                Vertex3d{Vector3d{ 3.0, 0.0, -2.0 }},
                Vertex3d{Vector3d{ 3.0, 0.0, 10.0 }}
@@ -554,12 +554,12 @@ namespace UnitTest
          TestPhysicsBody body{ initialPos, velocity };
 
          CollisionDetection detection{ std::vector<Triangle3dTextured> {
-            Triangle3dTextured{0,
+            Triangle3dTextured{
                Vertex3d{Vector3d{ 3.0, 0.0, -2.0 }},
                Vertex3d{Vector3d{ 0.0, -2.0, -2.0 }},
                Vertex3d{Vector3d{ 3.0, 0.0, 10.0 }}
             },
-            Triangle3dTextured{0,
+            Triangle3dTextured{
                Vertex3d{Vector3d{ 0.0, 3.0, -2.0 }},
                Vertex3d{Vector3d{ 3.0, 1.0, -2.0 }},
                Vertex3d{Vector3d{ 3.0, 1.0, 10.0 }}
@@ -584,12 +584,12 @@ namespace UnitTest
          TestPhysicsBody body{ initialPos, velocity };
 
          CollisionDetection detection{ std::vector<Triangle3dTextured> {
-            Triangle3dTextured{0,
+            Triangle3dTextured{
                Vertex3d{Vector3d{ 2.0, -1.0, 10.0 }},
                Vertex3d{Vector3d{ 2.0, -1.0, -10.0 }},
                Vertex3d{Vector3d{ -10.0, -1.0, 0.0 }}
             },
-            Triangle3dTextured{0,
+            Triangle3dTextured{
                Vertex3d{Vector3d{ 2.0, -1.0, -10.0 }},
                Vertex3d{Vector3d{ 2.0, -1.0, 10.0 }},
                Vertex3d{Vector3d{ 12.0, 9.0, 10.0 }}
@@ -615,7 +615,7 @@ namespace UnitTest
          TestPhysicsBody body{ initialPos, velocity };
 
          CollisionDetection detection{ std::vector<Triangle3dTextured> {
-            Triangle3dTextured{0,
+            Triangle3dTextured{
                Vertex3d{Vector3d{ -2.0, -1.0, -10.0 }},
                Vertex3d{Vector3d{ -2.0, -1.0, 10.0 }},
                Vertex3d{Vector3d{ 10.0, -1.0, 0.0 }}}
@@ -640,12 +640,12 @@ namespace UnitTest
          TestPhysicsBody body{ initialPos, velocity };
 
          CollisionDetection detection{ std::vector<Triangle3dTextured> {
-            Triangle3dTextured{0,
+            Triangle3dTextured{
                Vertex3d{Vector3d{ 2.0, -1.0, 10.0 }},
                Vertex3d{Vector3d{ 2.0, -1.0, -10.0 }},
                Vertex3d{Vector3d{ -10.0, -1.0, 0.0 }}
             },
-            Triangle3dTextured{0,
+            Triangle3dTextured{
                Vertex3d{Vector3d{ 2.0, -1.0, -10.0 }},
                Vertex3d{Vector3d{ 2.0, -1.0, 10.0 }},
                Vertex3d{Vector3d{ 10.0, -1.0, 0.0 }}
@@ -670,7 +670,7 @@ namespace UnitTest
          TestPhysicsBody body{ initialPos, velocity };
 
          CollisionDetection detection{ std::vector<Triangle3dTextured> {
-            Triangle3dTextured{0,
+            Triangle3dTextured{
                Vertex3d{Vector3d{ -2.0, -1.0, -10.0 }},
                Vertex3d{Vector3d{ -2.0, -1.0, 10.0 }},
                Vertex3d{Vector3d{ 10.0, -0.9, 0.0 }}} // a little up from y = 1.0, creating an angle
@@ -695,7 +695,7 @@ namespace UnitTest
          TestPhysicsBody body{ initialPos, velocity };
 
          CollisionDetection detection{ std::vector<Triangle3dTextured> {
-            Triangle3dTextured{0,
+            Triangle3dTextured{
                Vertex3d{Vector3d{ -2.0, -0.4, -10.0 }},
                Vertex3d{Vector3d{ -2.0, -0.4, 10.0 }},
                Vertex3d{Vector3d{ 10.0, -0.4, 0.0 }}}
@@ -720,7 +720,7 @@ namespace UnitTest
          TestPhysicsBody body{ initialPos, velocity };
 
          CollisionDetection detection{ std::vector<Triangle3dTextured> {
-            Triangle3dTextured{0,
+            Triangle3dTextured{
                Vertex3d{Vector3d{ 0.5, -0.5, -10.0 }},
                Vertex3d{Vector3d{ 0.5, -0.5, 10.0 }},
                Vertex3d{Vector3d{ -10.0, -0.5, 0.0 }}}
@@ -745,7 +745,7 @@ namespace UnitTest
          TestPhysicsBody body{ initialPos, velocity };
 
          CollisionDetection detection{ std::vector<Triangle3dTextured> {
-            Triangle3dTextured{0,
+            Triangle3dTextured{
                Vertex3d{Vector3d{ 1.5, -0.5, -10.0 }},
                Vertex3d{Vector3d{ 1.5, -0.5, 10.0 }},
                Vertex3d{Vector3d{ -10.0, -0.5, 0.0 }}}
@@ -771,12 +771,12 @@ namespace UnitTest
          TestPhysicsBody body{ initialPos, velocity };
 
          CollisionDetection detection{ std::vector<Triangle3dTextured> {
-            Triangle3dTextured{0,
+            Triangle3dTextured{
                Vertex3d{Vector3d{ 3.0, 2.0, -2.0 }},
                Vertex3d{Vector3d{ 3.0, -2.0, -2.0 }},
                Vertex3d{Vector3d{ 3.0, 0.0, 2.0 }}
             },
-            Triangle3dTextured{0,
+            Triangle3dTextured{
                Vertex3d{Vector3d{ 2.0, 2.0, -2.0 }},
                Vertex3d{Vector3d{ 2.0, -2.0, -2.0 }},
                Vertex3d{Vector3d{ 2.0, 0.0, 2.0 }}
@@ -802,17 +802,17 @@ namespace UnitTest
 
          const double stepHeight = 0.2;
          CollisionDetection detection{ std::vector<Triangle3dTextured> {
-            Triangle3dTextured{0, // triangle where sphere is resting on
+            Triangle3dTextured{ // triangle where sphere is resting on
                Vertex3d{Vector3d{ 1.5, -1.0, -10.0 }},
                Vertex3d{Vector3d{ 1.5, -1.0, 10.0 }},
                Vertex3d{Vector3d{ -10.0, -1.0, 0.0 }}
             },
-            Triangle3dTextured{0, // triangle that builds the stair
+            Triangle3dTextured{ // triangle that builds the stair
                Vertex3d{Vector3d{ 1.5, -1.0 + stepHeight, 10.0 }},
                Vertex3d{Vector3d{ 1.5, -1.0 + stepHeight, -10.0 }},
                Vertex3d{Vector3d{ 1.5, -10.0, 0.0 }}
             },
-            Triangle3dTextured{0, // triangle for the elevated floor
+            Triangle3dTextured{ // triangle for the elevated floor
                Vertex3d{Vector3d{ 1.5, -1.0 + stepHeight, -10.0 }},
                Vertex3d{Vector3d{ 1.5, -1.0 + stepHeight, 10.0 }},
                Vertex3d{Vector3d{ 10.0, -1.0 + stepHeight, 0.0 }}
@@ -841,17 +841,17 @@ namespace UnitTest
 
          const double stepHeight = 1.1; // must be more than the sphere radius
          CollisionDetection detection{ std::vector<Triangle3dTextured> {
-            Triangle3dTextured{0, // triangle where sphere is resting on
+            Triangle3dTextured{ // triangle where sphere is resting on
                Vertex3d{Vector3d{ 1.5, -1.0, -10.0 }},
                Vertex3d{Vector3d{ 1.5, -1.0, 10.0 }},
                Vertex3d{Vector3d{ -10.0, -1.0, 0.0 }}
             },
-            Triangle3dTextured{0, // triangle that builds the stair
+            Triangle3dTextured{ // triangle that builds the stair
                Vertex3d{Vector3d{ 1.5, -1.0 + stepHeight, 10.0 }},
                Vertex3d{Vector3d{ 1.5, -1.0 + stepHeight, -10.0 }},
                Vertex3d{Vector3d{ 1.5, -10.0, 0.0 }}
             },
-            Triangle3dTextured{0, // triangle for the elevated floor
+            Triangle3dTextured{ // triangle for the elevated floor
                Vertex3d{Vector3d{ 1.5, -1.0 + stepHeight, -10.0 }},
                Vertex3d{Vector3d{ 1.5, -1.0 + stepHeight, 10.0 }},
                Vertex3d{Vector3d{ 10.0, -1.0 + stepHeight, 0.0 }}
@@ -879,17 +879,17 @@ namespace UnitTest
 
          const double stepHeight = 0.6;
          CollisionDetection detection{ std::vector<Triangle3dTextured> {
-            Triangle3dTextured{0, // triangle where sphere is resting on
+            Triangle3dTextured{ // triangle where sphere is resting on
                Vertex3d{Vector3d{ 1.5, -1.0, 10.0 }},
                Vertex3d{Vector3d{ 1.5, -1.0, -10.0 }},
                Vertex3d{Vector3d{ -10.0, -1.0, 0.0 }}
             },
-            Triangle3dTextured{0, // triangle that builds the stair
+            Triangle3dTextured{ // triangle that builds the stair
                Vertex3d{Vector3d{ 1.5, -1.0 - stepHeight, 10.0 }},
                Vertex3d{Vector3d{ 1.5, -1.0 - stepHeight, -10.0 }},
                Vertex3d{Vector3d{ 1.5, -10.0, 0.0 }}
             },
-            Triangle3dTextured{0, // triangle for the elevated floor
+            Triangle3dTextured{ // triangle for the elevated floor
                Vertex3d{Vector3d{ 1.5, -1.0 - stepHeight, -10.0 }},
                Vertex3d{Vector3d{ 1.5, -1.0 - stepHeight, 10.0 }},
                Vertex3d{Vector3d{ 10.0, -1.0 - stepHeight, 0.0 }}

@@ -45,7 +45,9 @@ void GeometryProvider::GetTileTriangles(unsigned int xpos,
       // diagonal walls
       {
          bool diag_used = true;
-         Triangle3dTextured diag_tri1{ walltex }, diag_tri2{ walltex };
+         Triangle3dTextured diag_tri1, diag_tri2;
+         diag_tri1.m_textureNumber = walltex;
+         diag_tri2.m_textureNumber = walltex;
 
          switch (tile.m_type)
          {
@@ -168,7 +170,9 @@ void GeometryProvider::GetTileTriangles(unsigned int xpos,
          if (z1 == nz1 && z2 == nz2)
             continue;
 
-         Triangle3dTextured tri1{ walltex }, tri2{ walltex };
+         Triangle3dTextured tri1, tri2;
+         tri1.m_textureNumber = walltex;
+         tri2.m_textureNumber = walltex;
 
          // now that we have all info, draw the tile wall
          AddWall(tri1, tri2, side,
@@ -186,8 +190,13 @@ void GeometryProvider::GetTileTriangles(unsigned int xpos,
    {
       double floor_slope_height = tile.m_floor + tile.m_slope;
 
-      Triangle3dTextured floor_tri1{ tile.m_textureFloor }, floor_tri2{ tile.m_textureFloor };
-      Triangle3dTextured ceil_tri1{ tile.m_textureCeiling }, ceil_tri2{ tile.m_textureCeiling };
+      Triangle3dTextured floor_tri1, floor_tri2;
+      floor_tri1.m_textureNumber = tile.m_textureFloor;
+      floor_tri2.m_textureNumber = tile.m_textureFloor;
+
+      Triangle3dTextured ceil_tri1, ceil_tri2;
+      ceil_tri1.m_textureNumber = tile.m_textureCeiling;
+      ceil_tri2.m_textureNumber = tile.m_textureCeiling;
       bool tri2_used = true;
 
       // common ceiling quad

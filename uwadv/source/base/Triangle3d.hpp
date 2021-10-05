@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2005,2006,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2005,2006,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -28,16 +28,15 @@
 /// also is a m_textureNumber member to specify used texture.
 struct Triangle3dTextured
 {
-   /// ctor, only setting texture number
-   Triangle3dTextured(Uint16 textureNumber)
-      :m_textureNumber(textureNumber)
+   /// default ctor
+   Triangle3dTextured()
+      :m_textureNumber(0)
    {
    }
 
    /// ctor, setting vertex elements
-   Triangle3dTextured(Uint16 textureNumber,
-      const Vertex3d& pos1, const Vertex3d& pos2, const Vertex3d& pos3)
-      :m_textureNumber(textureNumber)
+   Triangle3dTextured(const Vertex3d& pos1, const Vertex3d& pos2, const Vertex3d& pos3)
+      :m_textureNumber(0)
    {
       m_vertices[0] = pos1;
       m_vertices[1] = pos2;
