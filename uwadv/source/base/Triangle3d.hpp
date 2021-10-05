@@ -21,32 +21,7 @@
 //
 #pragma once
 
-#include "Math.hpp"
-
-/// \brief vertex in 3D space
-/// Represents a vertex in 3d space, which can form a triangle. The vertex
-/// additionally has texture coordinates associated with them.
-struct Vertex3d
-{
-   /// struct ctor
-   Vertex3d()
-      :u(0.0),
-      v(0.0)
-   {
-   }
-
-   /// ctor, setting vertex elements
-   Vertex3d(const Vector3d& pos_, double u = 0.0, double v = 0.0)
-      :pos(pos_)
-   {
-   }
-
-   /// vertex position
-   Vector3d pos;
-
-   /// texture coordinates
-   double u, v;
-};
+#include "Vertex3d.hpp"
 
 /// \brief textured triangle
 /// Represents a textured triangle made up with 3 Vertex3d objects. There

@@ -118,6 +118,7 @@
     <ClInclude Include="Uw2decode.hpp" />
     <ClInclude Include="Vector2d.hpp" />
     <ClInclude Include="Vector3d.hpp" />
+    <ClInclude Include="Vertex3d.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\thirdparty\zziplib-0.13.72\msvc16\zziplib.vcxproj">

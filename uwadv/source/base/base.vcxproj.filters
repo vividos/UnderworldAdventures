@@ -145,5 +145,8 @@
     <ClInclude Include="..\version.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Vertex3d.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
